@@ -476,7 +476,7 @@ AM_CONDITIONAL(MAKE_KEYRING, test x$keyring_plugin = xyes)
 AM_CONDITIONAL(MAKE_EXPENSE, test x$plugin_support = xyes)
 AM_CONDITIONAL(MAKE_SYNCTIME, test x$plugin_support = xyes)
 
-AC_OUTPUT(Makefile docs/Makefile Expense/Makefile KeyRing/Makefile intl/Makefile 
+AC_OUTPUT(Makefile docs/Makefile Expense/Makefile KeyRing/Makefile 
 		  dialer/Makefile po/Makefile.in SyncTime/Makefile
 		  jpilot.spec SlackBuild m4/Makefile empty/Makefile
 		  icons/Makefile)
