@@ -1,7 +1,7 @@
 /* alarms.c
  * A module of J-Pilot http://jpilot.org
  * 
- * Copyright (C) 2000-2001 by Judd Montgomery
+ * Copyright (C) 2000-2002 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -708,8 +708,14 @@ gint cb_timer_alarms(gpointer data)
 }
 
 /*
+ * This routine takes time (t) and either advances t to the next
+ * occurence of a repeating appointment, or the previous occurence
+ * 
+ * a is the appointment passed in
+ * t is an in/out param.
+ * fdom is first day of month (Sunday being 0)
+ * ndim is the number of days in the month
  * forward_or_backward should be -1 for backward or 1 for forward.
- * undo- comment
  */
 int forward_backward_in_appt_time(const struct Appointment *a,
 				  struct tm *t,
@@ -1043,7 +1049,6 @@ static int find_prev_next(struct Appointment *a,
       }
       break;
     default:
-      printf("xxx %d\n", (a->repeatType));//undo
    }/*switch */
 
    safety_counter=0;
