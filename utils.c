@@ -2552,8 +2552,12 @@ int pdb_file_read_record_by_id(char *DB_name,
 
    r = pi_file_read_record_by_id(pf1, uid, &temp_buf, sizep, idxp, attrp, catp);
    /* during the close bufp will be freed, so we copy it */
-   *bufp=malloc(*sizep);
-   memcpy(*bufp, temp_buf, *sizep);
+   if ( (r>0) && (*sizep>0) ) {
+      *bufp=malloc(*sizep);
+      memcpy(*bufp, temp_buf, *sizep);
+   } else {
+      *bufp=NULL;
+   }
 
    pi_file_close(pf1);
 
