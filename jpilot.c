@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.95 2004/11/26 08:49:19 rousseau Exp $ */
+/* $Id: jpilot.c,v 1.96 2004/11/27 13:25:24 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -787,7 +787,7 @@ int bad_sync_exit_status(int exit_status)
    return -1;
 }
 
-static void output_to_pane(const char *str)
+void output_to_pane(const char *str)
 {
    int w, h, new_y;
    long ivalue;
