@@ -264,6 +264,8 @@ but it should be in the first function to be called.
 <pre><b>int jp_logf(int level, char *format, ...);</b></pre>
 <b><tt>int level - </tt></b>is the logging level.&nbsp; It may be user
 configurable in the future, but right now I don't see a need for it.
+<p>You can turn on and off the debug level by using the -d command line
+ option though.&nbsp;
 <br><b><tt>char *format,... - </tt></b>is the same type of things that
 you would pass to printf.
 <p><tt>example:</tt>
@@ -377,9 +379,9 @@ not open display".&nbsp; "Out of Memory" may also belong here.</td>
 
 <td>&nbsp;</td>
 
-<td>*I didn't intend for the following levels to be used unless they are
+<td><b>I didn't intend for the following levels to be used unless they are
 needed.&nbsp; They provide more precise control over the logging output,
-but also override any future configurability.</td>
+but also override any future configurability.</b></td>
 </tr>
 
 <tr>
@@ -421,9 +423,32 @@ but also override any future configurability.</td>
 <center>X</center>
 </td>
 
-<td>Using this will force a message to be displayed in the output window.*</td>
+<td>Using this will force a message to be displayed in the output window.</td>
 </tr>
 </table>
+<br>
+The concept of the log levels is to use
+ LOG_DEBUG, LOG_INFO, LOG_WARN, and LOG_FATAL so that the
+ user can choose how much he/she wants to see.  For instance if you have a
+ plugin that collects a bunch of data you could use LOG_INFO and it may say:
+<tt>
+<p>plugin foo started. 
+<br>scanning yahoo.com 
+<br>scanning bizwax.com 
+<br>parsing data 
+<br>loading indexes 
+<br>printing info log messages...
+<br>plugin foo done data collecting. 
+</tt>
+<p>
+And then if the user doesn't want to see this he can set the log level 
+higher to LOG_WARN and only see LOG_WARN, or higher, or he can set it to 
+LOG_FATAL to only see memory errors and other fatal messages.&nbsp;
+ 
+<p>I only have the log level hard coded right now and with the "-d" flag
+ DEBUG is turned on, but it was coded to be flexible.
+<p>
+By using LOG_STDOUT, LOG_FILE, and LOG_GUI you override this flexibility.
 
 <p>
 <hr WIDTH="100%">
