@@ -80,7 +80,7 @@ char *field_names_ja[]={"kana(Last)", "Last",  "kana(First)", "First",
 #define ADDRESS_NOTE_COLUMN  1
 #define ADDRESS_PHONE_COLUMN 2
 
-#define ADDRESS_MAX_CLIST_NAME 24
+#define ADDRESS_MAX_CLIST_NAME 30
 #define ADDRESS_MAX_COLUMN_LEN 80
 
 GtkWidget *clist;
@@ -1680,8 +1680,6 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    gchar *empty_line[] = { "","","" };
    GdkPixmap *pixmap_note;
    GdkBitmap *mask_note;
-   GdkColor color;
-   GdkColormap *colormap;
    AddressList *temp_al;
    char str[ADDRESS_MAX_CLIST_NAME+8];
    char str2[ADDRESS_MAX_COLUMN_LEN+2];
@@ -1689,6 +1687,12 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    int show_priv;
    long use_jos, char_set;
    char *tmp_p1, *tmp_p2, *tmp_p3;
+   char blank[]="";
+   char slash[]=" / ";
+   char comma_space[]=", ";
+   char *field1, *field2, *field3;
+   char *delim1, *delim2;
+   char *tmp_delim1, *tmp_delim2;
 
    row_count=((GtkCList *)clist)->rows;
 
@@ -1733,49 +1737,54 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    get_pref(PREF_USE_JOS, &use_jos, NULL);
-   if (!use_jos && (char_set == CHAR_SET_JAPANESE)) {
-      by_company = address_app_info.sortByCompany;  
-      if (sort_override) {
-	 by_company=!(by_company & 1);
+
+   by_company = address_app_info.sortByCompany;
+   if (sort_override) {
+      by_company=!(by_company & 1);
+   }
+   if (by_company) {
+      show1=2; /*company */
+      show2=0; /*last name */
+      show3=1; /*first name */
+      delim1 = slash;
+      delim2 = comma_space;
+   } else {
+      show1=0; /*last name */
+      show2=1; /*first name */
+      show3=2; /*company */
+      delim1 = comma_space;
+      delim2 = slash;
+   }
+
+   entries_shown=0;
+
+   show_priv = show_privates(GET_PRIVATES);
+   for (temp_al = addr_list, i=0; temp_al; temp_al=temp_al->next) {
+      if ( ((temp_al->ma.attrib & 0x0F) != address_category) &&
+	   address_category != CATEGORY_ALL) {
+	 continue;
       }
-      if (by_company) {
-	 show1=2; /*company */
-	 show2=0; /*last name */
-	 show3=1; /*first name */
-      } else {
-	 show1=0; /*last name */
-	 show2=1; /*first name */
-	 show3=2; /*company */
+      /* Do masking like Palm OS 3.5 */
+      if ((show_priv == MASK_PRIVATES) && 
+	  (temp_al->ma.attrib & dlpRecAttrSecret)) {
+	 if (entries_shown+1>row_count) {
+	    gtk_clist_append(GTK_CLIST(clist), empty_line);
+	 }
+	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_NAME_COLUMN, "---------------");
+	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_PHONE_COLUMN, "---------------");
+	 clear_myaddress(&temp_al->ma);
+	 gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_al->ma));
+	 gtk_clist_set_background(GTK_CLIST(clist), entries_shown, NULL);
+	 entries_shown++;
+	 continue;
+      }
+      /* End Masking */
+      if ((show_priv != SHOW_PRIVATES) && 
+	  (temp_al->ma.attrib & dlpRecAttrSecret)) {
+	 continue;
       }
 
-      entries_shown=0;
-
-      show_priv = show_privates(GET_PRIVATES);
-      for (temp_al = addr_list, i=0; temp_al; temp_al=temp_al->next) {
-	 if ( ((temp_al->ma.attrib & 0x0F) != address_category) &&
-	     address_category != CATEGORY_ALL) {
-	    continue;
-	 }
-	 /* Do masking like Palm OS 3.5 */
-	 if ((show_priv == MASK_PRIVATES) && 
-	     (temp_al->ma.attrib & dlpRecAttrSecret)) {
-	    if (entries_shown+1>row_count) {
-	       gtk_clist_append(GTK_CLIST(clist), empty_line);
-	    }
-	    gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_NAME_COLUMN, "---------------");
-	    gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_PHONE_COLUMN, "---------------");
-	    clear_myaddress(&temp_al->ma);
-	    gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_al->ma));
-	    gtk_clist_set_background(GTK_CLIST(clist), entries_shown, NULL);
-	    entries_shown++;
-	    continue;
-	 }
-	 /* End Masking */
-	 if ((show_priv != SHOW_PRIVATES) && 
-	     (temp_al->ma.attrib & dlpRecAttrSecret)) {
-	    continue;
-	 }
-
+      if (!use_jos && (char_set == CHAR_SET_JAPANESE)) {
 	 str[0]='\0';
 	 if (temp_al->ma.a.entry[show1] || temp_al->ma.a.entry[show2]) {
 	    if (temp_al->ma.a.entry[show1] && temp_al->ma.a.entry[show2]) {
@@ -1811,178 +1820,71 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 	 if (entries_shown+1>row_count) {
 	    gtk_clist_append(GTK_CLIST(clist), empty_line);
 	 }
-	 lstrncpy_remove_cr_lfs(str2, str, ADDRESS_MAX_COLUMN_LEN);
-	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_NAME_COLUMN, str2);
-	 lstrncpy_remove_cr_lfs(str2, temp_al->ma.a.entry[temp_al->ma.a.showPhone+3], ADDRESS_MAX_COLUMN_LEN);
-	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_PHONE_COLUMN, str2);
-	 gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_al->ma));
-
-	 switch (temp_al->ma.rt) {
-	  case NEW_PC_REC:
-	    colormap = gtk_widget_get_colormap(clist);
-	    color.red=CLIST_NEW_RED;
-	    color.green=CLIST_NEW_GREEN;
-	    color.blue=CLIST_NEW_BLUE;
-	    gdk_color_alloc(colormap, &color);
-	    gtk_clist_set_background(GTK_CLIST(clist), entries_shown, &color);
-	    break;
-	  case DELETED_PALM_REC:
-	    colormap = gtk_widget_get_colormap(clist);
-	    color.red=CLIST_DEL_RED;
-	    color.green=CLIST_DEL_GREEN;
-	    color.blue=CLIST_DEL_BLUE;
-	    gdk_color_alloc(colormap, &color);
-	    gtk_clist_set_background(GTK_CLIST(clist), entries_shown, &color);
-	    break;
-	  case MODIFIED_PALM_REC:
-	    colormap = gtk_widget_get_colormap(clist);
-	    color.red=CLIST_MOD_RED;
-	    color.green=CLIST_MOD_GREEN;
-	    color.blue=CLIST_MOD_BLUE;
-	    gdk_color_alloc(colormap, &color);
-	    gtk_clist_set_background(GTK_CLIST(clist), entries_shown, &color);
-	    break;
-	  default:
-	    if (temp_al->ma.attrib & dlpRecAttrSecret) {
-	       colormap = gtk_widget_get_colormap(clist);
-	       color.red=CLIST_PRIVATE_RED;
-	       color.green=CLIST_PRIVATE_GREEN;
-	       color.blue=CLIST_PRIVATE_BLUE;
-	       gdk_color_alloc(colormap, &color);
-	       gtk_clist_set_background(GTK_CLIST(clist), entries_shown, &color);
-	    } else {
-	       gtk_clist_set_background(GTK_CLIST(clist), entries_shown, NULL);
-	    }
-	 }
-
-	 if (temp_al->ma.a.entry[18]) {
-	    /*Put a note pixmap up */
-	    get_pixmaps(clist, PIXMAP_NOTE, &pixmap_note, &mask_note);
-	    gtk_clist_set_pixmap(GTK_CLIST(clist), entries_shown, ADDRESS_NOTE_COLUMN, pixmap_note, mask_note);
-	 } else {
-	    gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_NOTE_COLUMN, "");
-	 }
-
-	 entries_shown++;
-      }
-   } else {
-      by_company = address_app_info.sortByCompany;
-      if (sort_override) {
-	 by_company=!(by_company & 1);
-      }
-      if (by_company) {
-	 show1=2; /*company */
-	 show2=0; /*last name */
-	 show3=1; /*first name */
       } else {
-	 show1=0; /*last name */
-	 show2=1; /*first name */
-	 show3=2; /*company */
-      }
-
-      entries_shown=0;
-
-      show_priv = show_privates(GET_PRIVATES);
-      for (temp_al = addr_list, i=0; temp_al; temp_al=temp_al->next) {
-	 if ( ((temp_al->ma.attrib & 0x0F) != category) &&
-	     category != CATEGORY_ALL) {
-	    continue;
-	 }
-	 /* Do masking like Palm OS 3.5 */
-	 if ((show_priv == MASK_PRIVATES) && 
-	     (temp_al->ma.attrib & dlpRecAttrSecret)) {
-	    if (entries_shown+1>row_count) {
-	       gtk_clist_append(GTK_CLIST(clist), empty_line);
-	    }
-	    gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_NAME_COLUMN, "---------------");
-	    gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_PHONE_COLUMN, "---------------");
-	    clear_myaddress(&temp_al->ma);
-	    gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_al->ma));
-	    gtk_clist_set_background(GTK_CLIST(clist), entries_shown, NULL);
-	    entries_shown++;
-	    continue;
-	 }
-	 /* End Masking */
-	 if ((show_priv != SHOW_PRIVATES) && 
-	     (temp_al->ma.attrib & dlpRecAttrSecret)) {
-	    continue;
-	 }
-
 	 str[0]='\0';
-	 if (temp_al->ma.a.entry[show1] || temp_al->ma.a.entry[show2]) {
-	    if (temp_al->ma.a.entry[show1] && temp_al->ma.a.entry[show2]) {
-	       g_snprintf(str, ADDRESS_MAX_CLIST_NAME, "%s, %s", temp_al->ma.a.entry[show1], temp_al->ma.a.entry[show2]);
-	    }
-	    if (temp_al->ma.a.entry[show1] && ! temp_al->ma.a.entry[show2]) {
-	       strncpy(str, temp_al->ma.a.entry[show1], ADDRESS_MAX_CLIST_NAME);
-	    }
-	    if (! temp_al->ma.a.entry[show1] && temp_al->ma.a.entry[show2]) {
-	       strncpy(str, temp_al->ma.a.entry[show2], ADDRESS_MAX_CLIST_NAME);
-	    }
-	 } else if (temp_al->ma.a.entry[show3]) {
-	    strncpy(str, temp_al->ma.a.entry[show3], ADDRESS_MAX_CLIST_NAME);
+	 field1=field2=field3=blank;
+	 tmp_delim1=delim1;
+	 tmp_delim2=delim2;
+	 if (temp_al->ma.a.entry[show1]) field1=temp_al->ma.a.entry[show1];
+	 if (temp_al->ma.a.entry[show2]) field2=temp_al->ma.a.entry[show2];
+	 if (temp_al->ma.a.entry[show3]) field3=temp_al->ma.a.entry[show3];
+	 if (by_company) {
+	    /* Company / Last, First */
+	    if (!(field1[0])) tmp_delim1=blank;
+	    if ((!field2[0]) || (!field3[0])) tmp_delim2=blank;
+	    if ((!field2[0]) && (!field3[0])) tmp_delim1=blank;
 	 } else {
-	    strcpy(str, "-Unnamed-");
+	    /* Last, First / Company */
+	    if ((!field1[0]) || (!field2[0])) tmp_delim1=blank;
+	    if (!(field3[0])) tmp_delim2=blank;
+	    if ((!field1[0]) && (!field2[0])) tmp_delim2=blank;
 	 }
+	 g_snprintf(str, ADDRESS_MAX_CLIST_NAME, "%s%s%s%s%s",
+		    field1, tmp_delim1, field2, tmp_delim2, field3);
+	 if (strlen(str)<1) strcpy(str, "-Unnamed-");
 	 str[ADDRESS_MAX_CLIST_NAME]='\0';
+
 	 if (entries_shown+1>row_count) {
 	    gtk_clist_append(GTK_CLIST(clist), empty_line);
 	 }
-	 lstrncpy_remove_cr_lfs(str2, str, ADDRESS_MAX_COLUMN_LEN);
-	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_NAME_COLUMN, str2);
-	 lstrncpy_remove_cr_lfs(str2, temp_al->ma.a.entry[temp_al->ma.a.showPhone+3], ADDRESS_MAX_COLUMN_LEN);
-	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_PHONE_COLUMN, str2);
-	 gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_al->ma));
-
-	 switch (temp_al->ma.rt) {
-	  case NEW_PC_REC:
-	  case REPLACEMENT_PALM_REC:
-	    colormap = gtk_widget_get_colormap(clist);
-	    color.red=CLIST_NEW_RED;
-	    color.green=CLIST_NEW_GREEN;
-	    color.blue=CLIST_NEW_BLUE;
-	    gdk_color_alloc(colormap, &color);
-	    gtk_clist_set_background(GTK_CLIST(clist), entries_shown, &color);
-	    break;
-	  case DELETED_PALM_REC:
-	    colormap = gtk_widget_get_colormap(clist);
-	    color.red=CLIST_DEL_RED;
-	    color.green=CLIST_DEL_GREEN;
-	    color.blue=CLIST_DEL_BLUE;
-	    gdk_color_alloc(colormap, &color);
-	    gtk_clist_set_background(GTK_CLIST(clist), entries_shown, &color);
-	    break;
-	  case MODIFIED_PALM_REC:
-	    colormap = gtk_widget_get_colormap(clist);
-	    color.red=CLIST_MOD_RED;
-	    color.green=CLIST_MOD_GREEN;
-	    color.blue=CLIST_MOD_BLUE;
-	    gdk_color_alloc(colormap, &color);
-	    gtk_clist_set_background(GTK_CLIST(clist), entries_shown, &color);
-	    break;
-	  default:
-	    if (temp_al->ma.attrib & dlpRecAttrSecret) {
-	       colormap = gtk_widget_get_colormap(clist);
-	       color.red=CLIST_PRIVATE_RED;
-	       color.green=CLIST_PRIVATE_GREEN;
-	       color.blue=CLIST_PRIVATE_BLUE;
-	       gdk_color_alloc(colormap, &color);
-	       gtk_clist_set_background(GTK_CLIST(clist), entries_shown, &color);
-	    } else {
-	       gtk_clist_set_background(GTK_CLIST(clist), entries_shown, NULL);
-	    }
-	 }
-
-	 if (temp_al->ma.a.entry[18]) {
-	    /*Put a note pixmap up */
-	    get_pixmaps(clist, PIXMAP_NOTE, &pixmap_note, &mask_note);
-	    gtk_clist_set_pixmap(GTK_CLIST(clist), entries_shown, ADDRESS_NOTE_COLUMN, pixmap_note, mask_note);
-	 } else {
-	    gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_NOTE_COLUMN, "");
-	 }
-
-	 entries_shown++;
       }
+      lstrncpy_remove_cr_lfs(str2, str, ADDRESS_MAX_COLUMN_LEN);
+      gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_NAME_COLUMN, str2);
+      lstrncpy_remove_cr_lfs(str2, temp_al->ma.a.entry[temp_al->ma.a.showPhone+3], ADDRESS_MAX_COLUMN_LEN);
+      gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_PHONE_COLUMN, str2);
+      gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_al->ma));
+
+      switch (temp_al->ma.rt) {
+       case NEW_PC_REC:
+	 set_bg_rbg_clist(clist, entries_shown,
+			  CLIST_NEW_RED, CLIST_NEW_GREEN, CLIST_NEW_BLUE);
+	 break;
+       case DELETED_PALM_REC:
+	 set_bg_rbg_clist(clist, entries_shown,
+			  CLIST_DEL_RED, CLIST_DEL_GREEN, CLIST_DEL_BLUE);
+	 break;
+       case MODIFIED_PALM_REC:
+	 set_bg_rbg_clist(clist, entries_shown,
+			  CLIST_MOD_RED, CLIST_MOD_GREEN, CLIST_MOD_BLUE);
+	 break;
+       default:
+	 if (temp_al->ma.attrib & dlpRecAttrSecret) {
+	    set_bg_rbg_clist(clist, entries_shown, 
+			     CLIST_PRIVATE_RED, CLIST_PRIVATE_GREEN, CLIST_PRIVATE_BLUE);
+	 } else {
+	    gtk_clist_set_background(GTK_CLIST(clist), entries_shown, NULL);
+	 }
+      }
+
+      if (temp_al->ma.a.entry[18]) {
+	 /*Put a note pixmap up */
+	 get_pixmaps(clist, PIXMAP_NOTE, &pixmap_note, &mask_note);
+	 gtk_clist_set_pixmap(GTK_CLIST(clist), entries_shown, ADDRESS_NOTE_COLUMN, pixmap_note, mask_note);
+      } else {
+	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_NOTE_COLUMN, "");
+      }
+
+      entries_shown++;
    }
 
    /* If there is an item in the list, select the first one */
