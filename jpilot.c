@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.111 2005/01/27 22:15:17 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.112 2005/02/02 05:42:58 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -601,6 +601,7 @@ static void cb_private(GtkWidget *widget, gpointer data)
       else {
 	 /* wrong password, hide the entries */
 	 gtk_check_menu_item_set_active(menu_hide_privates, TRUE);
+	 cb_private(NULL, GINT_TO_POINTER(HIDE_PRIVATES));
       }
       break;
    }
