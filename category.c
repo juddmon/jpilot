@@ -840,6 +840,15 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
    }
 #endif
 
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
+   if (char_set != CHAR_SET_LATIN1) {
+      for (i = 0; i < 16; i++) {
+	 if (Pdata.cai2.name[i][0] != '\0') {
+	    charset_j2p((unsigned char*)Pdata.cai2.name[i], 16, char_set);
+	 }
+      }
+   }
+
    memcpy(cai, &(Pdata.cai2), sizeof(struct CategoryAppInfo));
 
    return 0;
