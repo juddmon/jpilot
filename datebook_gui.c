@@ -1887,7 +1887,7 @@ static int get_details(struct Appointment *a, unsigned char *attrib)
 	 a->repeatEnd.tm_mon = glob_endon_day_tm.tm_mon;
 	 a->repeatEnd.tm_mday = glob_endon_day_tm.tm_mday;
 	 a->repeatEnd.tm_year = glob_endon_day_tm.tm_year;
-	 a->repeatEnd.tm_dst = -1;
+	 a->repeatEnd.tm_isdst = -1;
 	 mktime(&a->repeatEnd);
       } else {
 	 a->repeatForever=1;
@@ -1904,7 +1904,7 @@ static int get_details(struct Appointment *a, unsigned char *attrib)
 	 a->repeatEnd.tm_mon = glob_endon_week_tm.tm_mon;
 	 a->repeatEnd.tm_mday = glob_endon_week_tm.tm_mday;
 	 a->repeatEnd.tm_year = glob_endon_week_tm.tm_year;
-	 a->repeatEnd.tm_dst = -1;
+	 a->repeatEnd.tm_isdst = -1;
 	 mktime(&a->repeatEnd);
 
 	 get_pref(PREF_SHORTDATE, &ivalue, &svalue1);
@@ -1938,7 +1938,7 @@ static int get_details(struct Appointment *a, unsigned char *attrib)
 	 a->repeatEnd.tm_mon = glob_endon_mon_tm.tm_mon;
 	 a->repeatEnd.tm_mday = glob_endon_mon_tm.tm_mday;
 	 a->repeatEnd.tm_year = glob_endon_mon_tm.tm_year;
-	 a->repeatEnd.tm_dst = -1;
+	 a->repeatEnd.tm_isdst = -1;
 	 mktime(&a->repeatEnd);
 
 	 get_pref(PREF_SHORTDATE, &ivalue, &svalue1);
@@ -1975,7 +1975,7 @@ static int get_details(struct Appointment *a, unsigned char *attrib)
 	 a->repeatEnd.tm_mon = glob_endon_year_tm.tm_mon;
 	 a->repeatEnd.tm_mday = glob_endon_year_tm.tm_mday;
 	 a->repeatEnd.tm_year = glob_endon_year_tm.tm_year;
-	 a->repeatEnd.tm_dst = -1;
+	 a->repeatEnd.tm_isdst = -1;
 	 mktime(&a->repeatEnd);
 
 	 get_pref(PREF_SHORTDATE, &ivalue, &svalue1);
