@@ -33,8 +33,7 @@ case "${build_os}" in
   *) AC_MSG_WARN([Operating system ${build_os} not supported by
   jpilot-dialer]) ; dialer=no ;;
 esac
-
-AM_CONDITIONAL(JPILOT_DIALER, test x$dialer = xyes)
+#AM_CONDITIONAL(JPILOT_DIALER, test x$dialer = xyes)
 
 dnl Checks for programs.
 
@@ -181,7 +180,6 @@ if test "x$enable_pl_test" = "xyes"; then
       AC_SUBST(PILOT_LIBS)
    fi
 
-
    dnl *************************
    dnl * Try to run a pilot-link program (tests dynamic linking)
    dnl *************************
@@ -202,58 +200,69 @@ int main()
 * This test can be disabled by the --disable-pl-test option])
    , [ error ])
 
+fi
 
-   dnl *************************
-   dnl * Check pilot-link version for USB support in pilot-link >= 0.10.0
-   dnl *************************
+dnl *************************
+dnl * Check pilot-link version for USB support, etc.
+dnl *************************
+dnl FIXME - There has to be a better way to do this
 usb=no;
-#Check pilot-link version
-   AC_MSG_CHECKING(pilot-link version )
-   AC_TRY_RUN([
-#include <pi-version.h>
+
+AC_MSG_CHECKING(pilot-link version )
+
+AC_TRY_COMPILE([#include <pi-version.h>], [
 int main()
 {
-   if (
-   	  ((PILOT_LINK_VERSION==0) && (PILOT_LINK_MAJOR==11) &&
-       (PILOT_LINK_MINOR==0)) ||
-   	  ((PILOT_LINK_VERSION==0) && (PILOT_LINK_MAJOR==11) &&
-       (PILOT_LINK_MINOR==1)) ||
-   	  ((PILOT_LINK_VERSION==0) && (PILOT_LINK_MAJOR==11) &&
-       (PILOT_LINK_MINOR==2))
-	   ) {
-      /* 0.11.0, 1, 2 is broken */
-      return 110;
-	  }
-   if ((PILOT_LINK_VERSION<=0) && (PILOT_LINK_MAJOR<10)) {
-      /* 0.10.0 or older (0.9.5) */
-      return 95;
-   } else {
-      return 100;
-   }
+#if PILOT_LINK_VERSION==0
+# if PILOT_LINK_MAJOR==11
+#  if PILOT_LINK_MINOR==0
+#   error 0.11.0 is not compatible with J-Pilot
+#  endif
+#  if PILOT_LINK_MINOR==1
+#   error 0.11.1 is not compatible with J-Pilot
+#  endif
+#  if PILOT_LINK_MINOR==2
+#   error 0.11.2 is not compatible with J-Pilot
+#  endif
+# endif
+#endif
 }
-], , , [ error ] )
-   if test "$ac_status" = "110"; then
-      AC_MSG_RESULT([Not ok])
-      AC_MSG_ERROR([
-pilot-link versions 0.11.0, 1, 2 are broken... you must \
-use 0.11.3 or newer, or 0.95 and before for non-USB.])
-   fi
-   if test "$ac_status" = "100"; then
-      AC_MSG_RESULT([0.10.0 or newer... USB will be enabled])
-      usb=yes;
-      AC_DEFINE(ENABLE_USB, 1, [ USB support ])
-   fi
-   if test "$ac_status" = "95"; then
-      AC_MSG_RESULT(0.9.x or older)
-      AC_MSG_RESULT([*** Upgrade pilot-link to >0.10.0 and reconfigure/compile to use USB devices])
-      usb=no;
-   fi
+], ,
+ AC_MSG_ERROR([pilot-link versions 0.11.0 - 0.11.2 are not compatible with J-Pilot])
+)
+
+AC_TRY_COMPILE([#include <pi-version.h>], [
+int main()
+{
+#if PILOT_LINK_VERSION==0
+# if PILOT_LINK_MAJOR < 10
+#  error no usb, ok for serial or visor use
+# endif
+#endif
+}
+], try_again=yes,
+   AC_MSG_RESULT([older than 0.10.0 ... USB will NOT be enabled])
+)
+
+if test "x$try_again" = "xyes"; then
+AC_TRY_COMPILE([#include <pi-version.h>], [
+int main()
+{
+#if PILOT_LINK_VERSION==0
+# if PILOT_LINK_MAJOR > 9
+#  error good pilot-link version
+# endif
+#endif
+}
+], AC_MSG_RESULT([Uncertain ... USB will be enabled]);
+   usb=yes
+ , AC_MSG_RESULT([0.10.0 or newer... USB will be enabled]);
+   usb=yes
+)
+fi
 
 CFLAGS="$save_CFLAGS"
 LIBS="$save_LIBS"
-
-fi
-
 
 #
 # Enable/Disable features
