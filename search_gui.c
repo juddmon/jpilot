@@ -87,7 +87,7 @@ static int
       }
       if (found) {
 	 gtk_clist_prepend(GTK_CLIST(clist), empty_line);
-	 gtk_clist_set_text(GTK_CLIST(clist), 0, 0, "datebook");
+	 gtk_clist_set_text(GTK_CLIST(clist), 0, 0, _("datebook"));
 
 	 /*Add to the search list */
 	 new_sr = malloc(sizeof(struct search_record));
@@ -158,7 +158,7 @@ static int
 	    if ( jp_strstr(temp_al->ma.a.entry[i], needle,
 			       GTK_TOGGLE_BUTTON(case_sense_checkbox)->active) ) {
 	       gtk_clist_prepend(GTK_CLIST(clist), empty_line);
-	       gtk_clist_set_text(GTK_CLIST(clist), 0, 0, "address");
+	       gtk_clist_set_text(GTK_CLIST(clist), 0, 0, _("address"));
 	       gtk_clist_set_text(GTK_CLIST(clist), 0, 1, temp_al->ma.a.entry[i]);
 
 	       /*Add to the search list */
@@ -221,7 +221,7 @@ static int
       }
       if (found) {
 	 gtk_clist_prepend(GTK_CLIST(clist), empty_line);
-	 gtk_clist_set_text(GTK_CLIST(clist), 0, 0, "ToDo");
+	 gtk_clist_set_text(GTK_CLIST(clist), 0, 0, _("ToDo"));
 
 	 /*Add to the search list */
 	 new_sr = malloc(sizeof(struct search_record));
@@ -274,7 +274,7 @@ static int
       if (jp_strstr(temp_memo->mmemo.memo.text, needle,
 		 GTK_TOGGLE_BUTTON(case_sense_checkbox)->active) ) {
 	 gtk_clist_prepend(GTK_CLIST(clist), empty_line);
-	 gtk_clist_set_text(GTK_CLIST(clist), 0, 0, "memo");
+	 gtk_clist_set_text(GTK_CLIST(clist), 0, 0, _("memo"));
 	 if (temp_memo->mmemo.memo.text) {
 	    gtk_clist_set_text(GTK_CLIST(clist), 0, 1, temp_memo->mmemo.memo.text);
 	 }
@@ -328,7 +328,7 @@ static int
 		  if (plugin->menu_name) {
 		     gtk_clist_set_text(GTK_CLIST(clist), 0, 0, plugin->menu_name);
 		  } else {
-		     gtk_clist_set_text(GTK_CLIST(clist), 0, 0, "plugin ?");
+		     gtk_clist_set_text(GTK_CLIST(clist), 0, 0, _("plugin ?"));
 		  }
 		  if (temp_sr->line) {
 		     gtk_clist_set_text(GTK_CLIST(clist), 0, 1, temp_sr->line);

@@ -848,7 +848,7 @@ static int datebook_export_gui(int x, int y)
    export_window = gtk_widget_new(GTK_TYPE_WINDOW,
 				  "type", GTK_WINDOW_DIALOG,
 				  "x", x, "y", y,
-				  "title", "Export",
+				  "title", _("Export"),
 				  NULL);
 
    gtk_container_set_border_width(GTK_CONTAINER(export_window), 5);
@@ -3387,7 +3387,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
       gettext_noop("Mo"),
       gettext_noop("Tu"),
       gettext_noop("We"),
-      gettext_noop("RTh"),
+      gettext_noop("Th"),
       gettext_noop("Fr"),
       gettext_noop("Sa"),
       gettext_noop("Su")

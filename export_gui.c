@@ -251,7 +251,7 @@ int export_gui(int w, int h, int x, int y,
 				  "type", GTK_WINDOW_DIALOG,
 				  "x", x, "y", y,
 				  "width", w, "height", h,
-				  "title", "Export",
+				  "title", _("Export"),
 				  NULL);
 
    gtk_container_set_border_width(GTK_CONTAINER(export_window), 5);
