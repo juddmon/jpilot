@@ -1426,21 +1426,22 @@ void cb_dialer(GtkWidget *widget, gpointer data)
    char *Px;
    char number[100];
    char ext[100];
-
 #ifdef ENABLE_GTK2
    GtkTextIter    start_iter;
    GtkTextIter    end_iter;
    GtkTextBuffer *text_buffer;
+#endif
 
+   number[0]=ext[0]='\0';
+   text=data;
+
+#ifdef ENABLE_GTK2
    text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text));
    gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(text),&start_iter,&end_iter);
    str = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(text),&start_iter,&end_iter,TRUE);
 #else
    str=gtk_editable_get_chars(GTK_EDITABLE(text), 0, -1);
 #endif
-
-   number[0]=ext[0]='\0';
-   text=data;
 
    if (!str) return;
    printf("[%s]\n", str);
