@@ -532,7 +532,8 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    unsigned char buf[0xFFFF];
    int size;
    int flag;
-   
+   struct MyExpense *mex;
+
    jp_logf(LOG_DEBUG, "Expense: cb_add_new_record\n");
 
    flag=GPOINTER_TO_INT(data);
@@ -602,26 +603,41 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    /* jp_pc_write will give us a temporary PC unique ID. */
    /* The palm will give us an "official" unique ID during the sync */
    
-   br.unique_id = 0;
    /* Any attributes go here.  Usually just the category */
 
    br.attrib = glob_category_number_from_menu_item[glob_detail_category];
    jp_logf(LOG_DEBUG, "category is %d\n", br.attrib);
    br.buf = buf;
    br.size = size;
+   br.unique_id = 0;
+
+   if (flag==MODIFY_FLAG) {
+      mex = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
+      if (!mex) {
+	 return;
+      }
+      /* printf("mex->rt=%d\n", mex->rt); */
+      /* printf("mex->unique_id=%d\n", mex->unique_id); */
+      if ((mex->rt==PALM_REC) || (mex->rt==REPLACEMENT_PALM_REC)) {
+	 /* This code is to keep the unique ID intact */
+	 br.unique_id = mex->unique_id;
+	 br.rt = REPLACEMENT_PALM_REC;
+      }
+      cb_delete(NULL, MODIFY_FLAG);
+   }
+
+   /* mex will no longer point to valid memory after this cb_delete */
+   mex=NULL;
 
    /* Write out the record.  It goes to the .pc3 file until it gets synced */
    jp_pc_write("ExpenseDB", &br);
 
+   /* cb_delete will have already called this, but we have to call it again */
+   display_records();
+
    connect_changed_signals(CONNECT_SIGNALS);
    set_new_button_to(CLEAR_FLAG);
    
-   if (flag==MODIFY_FLAG) {
-      cb_delete(NULL, MODIFY_FLAG);
-   } else {
-      display_records();
-   }
-
    return;
 }
 
@@ -640,6 +656,7 @@ static int display_record(struct MyExpense *mex, int at_row)
 
    switch (mex->rt) {
     case NEW_PC_REC:
+    case REPLACEMENT_PALM_REC:
       colormap = gtk_widget_get_colormap(clist);
       color.red=CLIST_NEW_RED;
       color.green=CLIST_NEW_GREEN;
@@ -1054,15 +1071,15 @@ static void make_menus()
 	N_("Train"),
 	NULL
    };
-     
+
    jp_logf(LOG_DEBUG, "Expense: make_menus\n");
 
    /* This gets the application specific data out of the database for us.
     * We still need to write a function to unpack it from its blob form. */
-   
+
    jp_get_app_info("ExpenseDB", &buf, &buf_size);
    unpack_ExpenseAppInfo(&eai, buf, buf_size);
-   
+
    categories[0]=all;
    for (i=0, count=0; i<16; i++) {
       glob_category_number_from_menu_item[i]=0;
@@ -1074,15 +1091,14 @@ static void make_menus()
       glob_category_number_from_menu_item[count++]=i;
    }
    categories[count+1]=NULL;
-   
+
    records=NULL;
-   
+
    make_menu(categories, EXPENSE_CAT1, &menu_category1, menu_item_category1);
    /* Skip the ALL for this menu */
    make_menu(&categories[1], EXPENSE_CAT2, &menu_category2, menu_item_category2);
    make_menu(payment, EXPENSE_PAYMENT, &menu_payment, menu_item_payment);
    make_menu(expense_type, EXPENSE_TYPE, &menu_expense_type, menu_item_expense_type);
-   
 }
 
 /*returns 0 if not found, 1 if found */
