@@ -1145,9 +1145,9 @@ int dialog_generic(GtkWindow *main_window,
    gtk_container_add(GTK_CONTAINER(frame1), vbox1);
 
    label1 = gtk_label_new(text);
-   /*This doesn't seem to work... */
-   /*gtk_label_set_line_wrap(GTK_LABEL(label1), TRUE); */
-
+#ifdef ENABLE_GTK2
+   gtk_label_set_selectable(GTK_LABEL(label1), TRUE);
+#endif
    gtk_box_pack_start(GTK_BOX(vbox1), label1, FALSE, FALSE, 2);
    gtk_box_pack_start(GTK_BOX(vbox1), hbox1, TRUE, TRUE, 2);
 
