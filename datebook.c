@@ -647,8 +647,9 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
       ret = FALSE;
    }/*switch */
 
-   if (ret) {
-      /* Check for exceptions */
+   /* Check for exceptions */
+   if (ret && a->exceptions) {
+      days = dateToDays(date);
       for (i=0; i<a->exceptions; i++) {
 #ifdef JPILOT_DEBUG
 	 jp_logf(JP_LOG_DEBUG, "exception %d mon %d\n", i, a->exception[i].tm_mon);
@@ -658,9 +659,6 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
 	 jp_logf(JP_LOG_DEBUG, "today is yday %d\n", date->tm_yday);
 #endif
 	 exception_days = dateToDays(&(a->exception[i]));
-	 if (!days) {
-	    days = dateToDays(date);
-	 }
 	 if (exception_days == days) {
 	    ret = FALSE;
 	    break;
