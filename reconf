@@ -5,7 +5,7 @@ if [ -e Makefile ]
 then
 	make distclean
 fi
-rm -rf *.cache *.m4 config.guess config.log \
+rm -rf *.cache *.m4 config.guess config.log config.status \
 config.status config.sub depcomp ltmain.sh
 (cat m4/*.m4 > acinclude.m4 2> /dev/null)
 autoreconf --verbose --install
