@@ -185,6 +185,9 @@ char *other_to_UTF(const char *buf, int buf_len)
       g_strlcpy(outbuf, head, outbuf_len);
       g_strlcat(outbuf, "+", outbuf_len);
       g_strlcat(outbuf, tail, outbuf_len);
+
+      g_free(head);
+      g_free(tail);
   }
 
   jp_logf(JP_LOG_DEBUG, "%s:%s converted to [%s]\n", __FILE__, __FUNCTION__,
