@@ -1,7 +1,7 @@
 /* datebook_gui.c
  * A module of J-Pilot http://jpilot.org
  * 
- * Copyright (C) 1999-2001 by Judd Montgomery
+ * Copyright (C) 1999-2002 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -2831,8 +2831,7 @@ static int datebook_find()
 	    total_count = 1;
 	 }
 	 if (!gtk_clist_row_is_visible(GTK_CLIST(clist), found_at)) {
-	    move_scrolled_window_hack(scrolled_window,
-				      (float)found_at/(float)total_count);
+	    gtk_clist_moveto(GTK_CLIST(clist), found_at, 0, 0.5, 0.0);
 	 }
 	 jp_logf(LOG_DEBUG, "datebook_find(), selecting row %d\n", found_at);
 	 gtk_clist_select_row(GTK_CLIST(clist), found_at, 1);
