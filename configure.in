@@ -5,7 +5,7 @@ AC_INIT(jpilot.c)
 AC_CANONICAL_HOST
 
 dnl Every other copy of the package version number gets its value from here
-AM_INIT_AUTOMAKE(jpilot, 0.99.6)
+AM_INIT_AUTOMAKE(jpilot, 0.99.7)
 
 dnl create a config.h file (Automake will add -DHAVE_CONFIG_H)
 AM_CONFIG_HEADER(config.h)
@@ -67,7 +67,8 @@ AC_PROG_INTLTOOL
 dnl Set of available languages
 ALL_LINGUAS="ca cs da de es fr it ja nl no ru sv tr vi zh_CN zh_TW"
 
-AM_GNU_GETTEXT
+dnl AM_GNU_GETTEXT([])
+AM_GNU_GETTEXT([external])
 AM_GNU_GETTEXT_VERSION
 
 if test "x$MSGFMT" = "xno"; then
@@ -483,8 +484,8 @@ AM_CONDITIONAL(MAKE_KEYRING, test x$keyring_plugin = xyes)
 AM_CONDITIONAL(MAKE_EXPENSE, test x$plugin_support = xyes)
 AM_CONDITIONAL(MAKE_SYNCTIME, test x$plugin_support = xyes)
 
-AC_OUTPUT(Makefile docs/Makefile Expense/Makefile KeyRing/Makefile
-		  intl/Makefile dialer/Makefile po/Makefile.in SyncTime/Makefile
+AC_OUTPUT(Makefile docs/Makefile Expense/Makefile KeyRing/Makefile intl/Makefile 
+		  dialer/Makefile po/Makefile.in SyncTime/Makefile
 		  jpilot.spec SlackBuild m4/Makefile empty/Makefile
 		  icons/Makefile)
 
