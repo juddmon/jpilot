@@ -52,6 +52,7 @@ int datebook_compare(const void *v1, const void *v2)
 {
    AppointmentList **al1, **al2;
    struct Appointment *a1, *a2;
+   time_t time1, time2;
 
    al1=(AppointmentList **)v1;
    al2=(AppointmentList **)v2;
@@ -59,14 +60,10 @@ int datebook_compare(const void *v1, const void *v2)
    a1=&((*al1)->ma.a);
    a2=&((*al2)->ma.a);
 
-   if ((a1->event) || (a2->event)) {
-      return a2->event-a1->event;
-   }
+   time1 = mktime(&(a1->begin));
+   time2 = mktime(&(a2->begin));
 
-   /* Jim Rees pointed out my sorting error */
-   /* return ((a1->begin.tm_hour*60 + a1->begin.tm_min) > */
-   return ((a1->begin.tm_hour*60 + a1->begin.tm_min) -
-	   (a2->begin.tm_hour*60 + a2->begin.tm_min));
+   return(time1 - time2); 
 }
 
 static int datebook_sort(AppointmentList **al)

@@ -91,8 +91,8 @@ static int
 	 }
       }
       if (found) {
-	 gtk_clist_prepend(GTK_CLIST(clist), empty_line);
-	 gtk_clist_set_text(GTK_CLIST(clist), 0, 0, _("datebook"));
+	 gtk_clist_append(GTK_CLIST(clist), empty_line);
+	 gtk_clist_set_text(GTK_CLIST(clist), count, 0, _("datebook"));
 
 	 /*Add to the search list */
 	 new_sr = malloc(sizeof(struct search_record));
@@ -102,8 +102,7 @@ static int
 	 new_sr->next = search_rl;
 	 search_rl = new_sr;
 
-	 gtk_clist_set_row_data(GTK_CLIST(clist), 0, new_sr);
-	 count++;
+	 gtk_clist_set_row_data(GTK_CLIST(clist), count, new_sr);
 
 	 /*get the date */
 	 get_pref(PREF_SHORTDATE, &ivalue, &svalue1);
@@ -120,17 +119,20 @@ static int
 		       date_str,
 		       temp_al->ma.a.description);
 	    lstrncpy_remove_cr_lfs(str2, str, SEARCH_MAX_COLUMN_LEN);
-	    gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str2);
+	    gtk_clist_set_text(GTK_CLIST(clist), count, 1, str2);
 	 }
 	 if (found == 2) {
 	    g_snprintf(str, sizeof(str), "%s %s",
 		       date_str,
 		       temp_al->ma.a.note);
 	    lstrncpy_remove_cr_lfs(str2, str, SEARCH_MAX_COLUMN_LEN);
-	    gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str2);
+	    gtk_clist_set_text(GTK_CLIST(clist), count, 1, str2);
 	 }
+
+	 count++;
       }
    }
+
    jp_logf(JP_LOG_DEBUG, "calling free_AppointmentList\n");
    free_AppointmentList(&a_list);
    a_list = NULL;
