@@ -3977,5 +3977,8 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_signal_connect(GTK_OBJECT(main_calendar),
 		      "day_selected", cb_cal_changed,
 		      GINT_TO_POINTER(CAL_DAY_SELECTED));
+
+   set_date_labels();
+
    return 0;
 }
