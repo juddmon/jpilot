@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.86 2005/01/28 16:03:04 rikster5 Exp $ */
+/* $Id: utils.c,v 1.87 2005/02/23 19:29:52 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -710,8 +710,8 @@ void clist_select_row(GtkCList *clist,
                       int       row,
 		      int       column)
 {
-   gtk_clist_select_row(clist, row, column);
-   clist->focus_row = row;
+  clist->focus_row = row;
+  gtk_clist_select_row(clist, row, column);
 }
 
 
