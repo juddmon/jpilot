@@ -3145,7 +3145,7 @@ void set_date_labels()
    } else {
       sprintf(datef, "%%a., %s", svalue);
    }
-   strftime(str, sizeof(str), datef, &now);
+   jp_strftime(str, sizeof(str), datef, &now);
    gtk_label_set_text(GTK_LABEL(dow_label), str);
 }
 
