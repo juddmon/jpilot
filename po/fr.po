@@ -40,6 +40,8 @@ msgid ""
 "This record is deleted.\n"
 "Undelete it or copy it to make changes.\n"
 msgstr ""
+"Cet enregistrement est effacé.\n"
+"Restaurez le ou copier le avant de pouvoir le modifier.\n"
 
 #: address_gui.c:455 category.c:150 category.c:156 category.c:204
 #: category.c:261 datebook_gui.c:363 memo_gui.c:288 sync.c:1038 sync.c:1044
@@ -1552,7 +1554,7 @@ msgstr ""
 
 #: prefs_gui.c:542
 msgid "Show popup tooltips (default YES)"
-msgstr ""
+msgstr "Montre les bulles d'aide (défaut OUI)"
 
 #: prefs_gui.c:558
 msgid "Highlight calendar days with appointments"
@@ -1593,7 +1595,7 @@ msgstr "Utiliser la base de données Mañana"
 
 #: prefs_gui.c:669
 msgid "Use default number of days due"
-msgstr ""
+msgstr "Utilise le nombre de jours à 'échéance par défaut"
 
 #: prefs_gui.c:696
 msgid "Use Memo32 (pedit32)"
