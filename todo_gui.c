@@ -1678,7 +1678,7 @@ int todo_cycle_cat()
    }
    for (i=0; i<NUM_TODO_CAT_ITEMS; i++) {
       new_cat++;
-      if (new_cat > NUM_TODO_CAT_ITEMS) {
+      if (new_cat >= NUM_TODO_CAT_ITEMS) {
 	 todo_category = CATEGORY_ALL;
 	 break;
       }

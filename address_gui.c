@@ -2127,7 +2127,7 @@ int address_cycle_cat()
    }
    for (i=0; i<NUM_ADDRESS_CAT_ITEMS; i++) {
       new_cat++;
-      if (new_cat > NUM_ADDRESS_CAT_ITEMS) {
+      if (new_cat >= NUM_ADDRESS_CAT_ITEMS) {
 	 address_category = CATEGORY_ALL;
 	 break;
       }

@@ -1202,7 +1202,7 @@ int memo_cycle_cat()
    }
    for (i=0; i<NUM_MEMO_CAT_ITEMS; i++) {
       new_cat++;
-      if (new_cat > NUM_MEMO_CAT_ITEMS) {
+      if (new_cat >= NUM_MEMO_CAT_ITEMS) {
 	 memo_category = CATEGORY_ALL;
 	 break;
       }
