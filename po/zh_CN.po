@@ -1065,7 +1065,7 @@ msgstr "/文件(F)/tear"
 
 #: jpilot.c:1100
 msgid "/File/_Find"
-msgstr "文件(F)/查找(_F)"
+msgstr "/文件(F)/查找(_F)"
 
 #: jpilot.c:1101 jpilot.c:1107 jpilot.c:1109
 msgid "/File/sep1"
