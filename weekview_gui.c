@@ -16,8 +16,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-/* gtk2 */
-#define GTK_ENABLE_BROKEN
 #include "config.h"
 #include "i18n.h"
 #include <gtk/gtk.h>
@@ -36,8 +34,11 @@ extern int datebook_category;
 
 
 static GtkWidget *window=NULL;
-static GtkWidget *glob_week_texts[8];
 static GtkWidget *glob_dow_labels[8];
+static GtkWidget *glob_week_texts[8];
+#ifdef ENABLE_GTK2
+static GObject   *glob_week_text_buffers[8];
+#endif
 static struct tm glob_week_date;
 
 /* Function prototypes */
@@ -90,7 +91,11 @@ void freeze_weeks_appts()
    int i;
 
    for (i=0; i<8; i++) {
+#ifdef ENABLE_GTK2
+      gtk_widget_freeze_child_notify(glob_week_texts[i]);
+#else
       gtk_text_freeze(GTK_TEXT(glob_week_texts[i]));
+#endif
    }
 }
 
@@ -99,7 +104,11 @@ void thaw_weeks_appts()
    int i;
 
    for (i=0; i<8; i++) {
+#ifdef ENABLE_GTK2
+      gtk_widget_thaw_child_notify(glob_week_texts[i]);
+#else
       gtk_text_thaw(GTK_TEXT(glob_week_texts[i]));
+#endif
    }
 }
 
@@ -113,20 +122,31 @@ cb_week_move(GtkWidget *widget,
    if (GPOINTER_TO_INT(data)==1) {
       add_days_to_date(&glob_week_date, 7);
    }
+
    freeze_weeks_appts();
+
    clear_weeks_appts(glob_week_texts);
    display_weeks_appts(&glob_week_date, glob_week_texts);
+
    thaw_weeks_appts();
 }
 
 int clear_weeks_appts(GtkWidget **day_texts)
 {
    int i;
+#ifdef ENABLE_GTK2
+   GObject   *text_buffer;
+#endif
 
    for (i=0; i<8; i++) {
+#ifdef ENABLE_GTK2
+      text_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(day_texts[i])));
+      gtk_text_buffer_set_text(GTK_TEXT_BUFFER(text_buffer), "", -1);
+#else
       gtk_text_set_point(GTK_TEXT(day_texts[i]), 0);
       gtk_text_forward_delete(GTK_TEXT(day_texts[i]),
 			      gtk_text_get_length(GTK_TEXT(day_texts[i])));
+#endif
    }
    return 0;
 }
@@ -159,6 +179,9 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
    int db3_type;
    long use_db3_tags;
    struct db4_struct db4;
+#endif
+#ifdef ENABLE_GTK2
+   GObject   *text_buffer;
 #endif
 
    a_list = NULL;
@@ -215,10 +238,12 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
 	    }
 	    remove_cr_lfs(desc);
 	    strcat(desc, "\n");
-	    /* gtk_text_insert(GTK_TEXT(text[n]),
-			    small_font, NULL, NULL, desc, -1);*/
-	    gtk_text_insert(GTK_TEXT(text[n]),
-			    NULL, NULL, NULL, desc, -1);
+#ifdef ENABLE_GTK2
+	    text_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text[n])));
+	    gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(text_buffer),desc,-1);
+#else
+	    gtk_text_insert(GTK_TEXT(text[n]), NULL, NULL, NULL, desc, -1);
+#endif
 	 }
       }
    }
@@ -321,7 +346,19 @@ void weekview_gui(struct tm *date_in)
    for (i=0; i<8; i++) {
       glob_dow_labels[i] = gtk_label_new("");
       gtk_misc_set_alignment(GTK_MISC(glob_dow_labels[i]), 0.0, 0.5);
+#ifdef ENABLE_GTK2
+      glob_week_texts[i] = gtk_text_view_new();
+      glob_week_text_buffers[i] = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(glob_week_texts[i])));
+      gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(glob_week_texts[i]), FALSE);
+      gtk_text_view_set_editable(GTK_TEXT_VIEW(glob_week_texts[i]), FALSE);
+      gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(glob_week_texts[i]), GTK_WRAP_WORD);
+      gtk_container_set_border_width(GTK_CONTAINER(glob_week_texts[i]), 1);
+      gtk_text_buffer_create_tag(GTK_TEXT_BUFFER(glob_week_text_buffers[i]), 
+				 "gray_background", "background", "gray", 
+			         NULL);
+#else
       glob_week_texts[i] = gtk_text_new(NULL, NULL);
+#endif
       gtk_widget_set_usize(GTK_WIDGET(glob_week_texts[i]), 10, 10);
       if (i>3) {
 	 gtk_box_pack_start(GTK_BOX(vbox_right), glob_dow_labels[i], FALSE, FALSE, 0);
