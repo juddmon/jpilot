@@ -389,11 +389,11 @@ int get_address_app_info(struct AddressAppInfo *ai)
 
    get_pref(PREF_CHAR_SET, &char_set, NULL); 
    if (char_set != CHAR_SET_LATIN1) {
-      /* Convert to character set */
+      /* Convert to host character set */
       int i;
-      for (i = 0; i < 16; i++)
+      for (i = 0; i < CATCOUNT; i++)
 	if (ai->category.name[i][0] != '\0') {
-	   charset_p2j((unsigned char *)ai->category.name[i], 16, char_set);
+	   charset_p2j((unsigned char *)ai->category.name[i], HOSTCATLTH, char_set);
 	}
       for (i = 0; i < 19 + 3; i++)
 	if (ai->labels[i][0] != '\0') {
@@ -488,9 +488,13 @@ int get_addresses2(AddressList **address_list, int sort_order,
       if (char_set != CHAR_SET_LATIN1) {
 	 for (i = 0; i < 19; i++) {
 	    if ((a.entry[i] != NULL) && (a.entry[i][0] != '\0')) {
+/* JPA use new conversion routines
 	       if ((buf = (char *)realloc(buf, strlen(a.entry[i])*2+1)) != NULL) {
 		  strcpy(buf, a.entry[i]);
 		  charset_p2j((unsigned char *)buf, strlen(a.entry[i])*2+1, char_set);
+*/
+               buf = charset_p2newj((unsigned char *)a.entry[i], strlen(a.entry[i])+1, char_set);
+               if (buf) {
 		  if (strlen(buf) > strlen(a.entry[i])) {
 		     free(a.entry[i]);
 		     a.entry[i] = strdup(buf);

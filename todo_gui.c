@@ -205,7 +205,6 @@ set_new_button_to(int new_state)
       /* The line selected on the clist becomes unhighlighted, so we do this */
       gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
       gtk_widget_show(apply_record_button);
-      gtk_widget_hide(copy_record_button);
       gtk_widget_hide(delete_record_button);
       break;
     case NEW_FLAG:
@@ -240,7 +239,6 @@ set_new_button_to(int new_state)
       break;
     case CLEAR_FLAG:
       gtk_widget_hide(new_record_button);
-      gtk_widget_hide(copy_record_button);
       gtk_widget_hide(delete_record_button);
       break;
    }
@@ -854,11 +852,24 @@ void cb_delete_todo(GtkWidget *widget,
    MyToDo *mtodo;
    int flag;
    int show_priv;
+   long char_set; /* JPA */
 
    mtodo = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
    if (mtodo < (MyToDo *)CLIST_MIN_DATA) {
       return;
    }
+
+   /* JPA convert to Palm character set */
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
+   if (char_set != CHAR_SET_LATIN1) {
+      if (mtodo->todo.description)
+	charset_j2p((unsigned char *)mtodo->todo.description,
+		    strlen(mtodo->todo.description)+1, char_set);
+      if (mtodo->todo.note)
+	charset_j2p((unsigned char *)mtodo->todo.note,
+		    strlen(mtodo->todo.note)+1, char_set);
+   }
+
    /* Do masking like Palm OS 3.5 */
    show_priv = show_privates(GET_PRIVATES);
    if ((show_priv != SHOW_PRIVATES) &&

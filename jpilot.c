@@ -1899,7 +1899,15 @@ char *xpm_unlocked[] = {
    strcpy(title, PN" "VERSION);
    if ((svalue) && (svalue[0])) {
       strcat(title, " User: ");
-      strcat(title, svalue);
+      /* JPA convert user name so that it can be displayed in window title */
+      /* we assume user name is coded in jpilot.rc as it is the Palm Pilot */
+	{
+	   unsigned char *newvalue;
+
+	   newvalue = charset_p2newj((const unsigned char*)svalue, strlen(svalue)+1, char_set);
+	   strcat(title, newvalue);
+	   free(newvalue);
+	}
    }
 
    if ((bit_mask & MASK_X) || (bit_mask & MASK_Y)) {

@@ -193,10 +193,11 @@ void free_MemoList(MemoList **memo)
 
 int get_memo_app_info(struct MemoAppInfo *ai)
 {
-   int num,i;
+   int num;
    unsigned int rec_size;
    unsigned char *buf;
    long char_set;
+   int i;
    long ivalue;
    char DBname[32];
 
@@ -303,6 +304,7 @@ int get_memos2(MemoList **memo_list, int sort_order,
 	 continue;
       }
 
+      /* JPA unpacking sets memo buffer */
       num = unpack_Memo(&memo, br->buf, br->size);
 
       if (num <= 0) {
@@ -314,7 +316,13 @@ int get_memos2(MemoList **memo_list, int sort_order,
       }
       get_pref(PREF_CHAR_SET, &char_set, NULL);
       if (memo.text) {
-	 charset_p2j((unsigned char *)memo.text, strlen(memo.text)+1, char_set);
+	 /* JPA character set conversion may require a longer buffer */
+
+         unsigned char *newtext; /* new buffer */
+
+         newtext = charset_p2newj((const unsigned char *)memo.text, strlen(memo.text)+1, char_set);
+         free(memo.text);
+         memo.text = (char*)newtext;
       }
 
       temp_memo_list = malloc(sizeof(MemoList));

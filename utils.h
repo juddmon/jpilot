@@ -58,6 +58,20 @@
 
 #define SHADOW GTK_SHADOW_ETCHED_OUT
 
+/*
+ *          JPA define the maximum length of a category name
+ *             when expressed in Pilot character set (assuming 15
+ *             character plus a delimiter) or in host character
+ *             set (might be 50 or more if UTF-8).
+ *         Note : host length is temporarily kept as 16 until all
+ *             consequences are identified. In the meantime category
+ *             names may be (hopefully safely) truncated.
+ */
+
+#define HOSTCATLTH 16
+#define PILOTCATLTH 16
+#define CATCOUNT 16 /* number of categories */
+
 /*Used to mark the entry in the clist to add a record */
 /* FIXME: Move to libplugin */
 #define CLIST_NEW_ENTRY_DATA 100
@@ -325,12 +339,6 @@ int dat_get_addresses(FILE *in, AddressList **addrlist, struct CategoryAppInfo *
 int dat_get_todos(FILE *in, ToDoList **todolist, struct CategoryAppInfo *ai);
 int dat_get_memos(FILE *in, MemoList **memolist, struct CategoryAppInfo *ai);
 
-/*weekview_gui.c */
-void cb_weekview_gui(GtkWidget *widget, gpointer data);
-
-/*monthview_gui.c */
-void cb_monthview_gui(GtkWidget *widget, gpointer data);
-
 void free_search_record_list(struct search_record **sr);
 
 
@@ -513,18 +521,26 @@ char *multibyte_safe_memccpy(char *dst, const char *src, int c, size_t len);
 /*************************************
  * convert char code 
  *************************************/
+           /* host character set to Palm character set */
 #define charset_j2p(buf, max_len, char_set)  {\
 	if (char_set == CHAR_SET_JAPANESE) Euc2Sjis(buf, max_len);\
 	if (char_set == CHAR_SET_1250) Lat2Win(buf,max_len);\
 	if (char_set == CHAR_SET_1251) koi8_to_win1251(buf, max_len);\
 	if (char_set == CHAR_SET_1251_B) win1251_to_koi8(buf, max_len);\
-        if (char_set == CHAR_SET_1250UTF) UTF2Win(buf,max_len);}
+        if (char_set == CHAR_SET_1250UTF) UTF2Win(buf,max_len);\
+        if (char_set == CHAR_SET_LATINUTF) UTF2Lat(buf,max_len);} /* JPA */
+/* JPA - replaced by a function
 #define charset_p2j(buf, max_len, char_set) {\
         if (char_set == CHAR_SET_JAPANESE) Sjis2Euc(buf, max_len);\
         if (char_set == CHAR_SET_1250) Win2Lat(buf,max_len);\
         if (char_set == CHAR_SET_1251) win1251_to_koi8(buf, max_len);\
         if (char_set == CHAR_SET_1251_B) koi8_to_win1251(buf, max_len);\
         if (char_set == CHAR_SET_1250UTF) Win2UTF(buf,max_len);}
+*/
+
+/* Palm character set to host character set */
+void charset_p2j(unsigned char *buf, int max_len, int char_set);
+unsigned char *charset_p2newj(const unsigned char *buf, int max_len, int char_set);
 
 void jp_charset_p2j(unsigned char *buf, int max_len);
 void jp_charset_j2p(unsigned char *buf, int max_len);

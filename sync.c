@@ -2015,6 +2015,7 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
    char delete_log_message[256];
    int index, size, attr, category;
    long char_set;
+   int same; /* JPA */
 
    jp_logf(JP_LOG_DEBUG, "fast_sync_local_recs\n");
    get_pref(PREF_CHAR_SET, &char_set, NULL);
@@ -2160,6 +2161,10 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
 					  &attr, &category);
 	 /* ret = dlp_ReadRecordById(sd, db, header.unique_id, buffer,
 				  &index, &size, &attr, &category); */
+
+	 /* JPA check whether records are the same, before freeing space */
+         same = Pbuf && !memcmp(record, Pbuf, size);
+
 	 if (Pbuf) free (Pbuf);
 #ifdef JPILOT_DEBUG
 	 if (ret>=0 ) {
@@ -2173,21 +2178,25 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
 	    /* FIXME This code never worked right.  It could be because
 	     * Pbuf was freed in pi_file_close before here
 	     * I have not tested it since I fixed it */
-	    /* if (memcmp(record, Pbuf, size)==0)
-	    jp_logf(JP_LOG_DEBUG,"Binary is the same!\n"); */
-	    /* jp_logf(JP_LOG_GUI, "Deleting Palm id=%d,\n",header.unique_id);*/
-	    ret = dlp_DeleteRecord(sd, db, 0, header.unique_id);
-	    if (ret < 0) {
-	       jp_logf(JP_LOG_WARN, _("dlp_DeleteRecord failed\n"
-		      "This could be because the record was already deleted on the Palm\n"));
-	       charset_j2p((unsigned char *)error_log_message_d,255,char_set);
-	       dlp_AddSyncLogEntry(sd, error_log_message_d);
-	       dlp_AddSyncLogEntry(sd, "\n");
-	    } else {
-	       charset_j2p((unsigned char *)delete_log_message,255,char_set);
-	       dlp_AddSyncLogEntry(sd, delete_log_message);
-	       dlp_AddSyncLogEntry(sd, "\n");
-	       pdb_file_delete_record_by_id(DB_name, header.unique_id);
+            /* JPA this is indeed the case, moreover there was a */
+            /* bad condition in pdb_file_read_record_by_id() */
+            if (same) { /* JPA */
+	       /* if (memcmp(record, Pbuf, size)==0)
+		jp_logf(JP_LOG_DEBUG,"Binary is the same!\n"); */
+	       /* jp_logf(JP_LOG_GUI, "Deleting Palm id=%d,\n",header.unique_id);*/
+	       ret = dlp_DeleteRecord(sd, db, 0, header.unique_id);
+	       if (ret < 0) {
+		  jp_logf(JP_LOG_WARN, _("dlp_DeleteRecord failed\n"
+					 "This could be because the record was already deleted on the Palm\n"));
+		  charset_j2p((unsigned char *)error_log_message_d,255,char_set);
+		  dlp_AddSyncLogEntry(sd, error_log_message_d);
+		  dlp_AddSyncLogEntry(sd, "\n");
+	       } else {
+		  charset_j2p((unsigned char *)delete_log_message,255,char_set);
+		  dlp_AddSyncLogEntry(sd, delete_log_message);
+		  dlp_AddSyncLogEntry(sd, "\n");
+		  pdb_file_delete_record_by_id(DB_name, header.unique_id);
+	       }
 	    }
 	 }
 
@@ -2631,14 +2640,14 @@ int sync_categories(char *DB_name, int sd,
 
 #if SYNC_CAT_DEBUG
    printf("DB_name [%s]\n", DB_name);
-   for (i = 0; i < 16; i++) {
+   for (i = 0; i < CATCOUNT; i++) {
       if (local_cai.name[i][0] != '\0') {
 	 printf("local: cat %d [%s] ID %d renamed %d\n", i,
 		local_cai.name[i],
 		local_cai.ID[i], local_cai.renamed[i]);
       }
    }
-   for (i = 0; i < 16; i++) {
+   for (i = 0; i < CATCOUNT; i++) {
       if (remote_cai.name[i][0] != '\0') {
 	 printf("remote: cat %d [%s] ID %d renamed %d\n", i,
 		remote_cai.name[i],
@@ -2656,12 +2665,12 @@ int sync_categories(char *DB_name, int sd,
    }
    
    /* Go through the categories and try to sync them */
-   for (Li = loop = 0; ((Li < 16) && (loop<256)); Li++, loop++) {
+   for (Li = loop = 0; ((Li < CATCOUNT) && (loop<256)); Li++, loop++) {
       found_name=found_ID=FALSE;
       found_name_at=found_ID_at=0;
       /* Did a cat get deleted locally? */
       if ((local_cai.name[Li][0]==0) && (local_cai.ID[Li]!=0)) {
-	 for (Ri = 0; Ri < 16; Ri++) {
+	 for (Ri = 0; Ri < CATCOUNT; Ri++) {
 	    if ((remote_cai.ID[Ri]==local_cai.ID[Li]) && 
 		(remote_cai.name[Ri][0])) {
 	       remote_cai.renamed[Ri]=0;
@@ -2679,8 +2688,8 @@ int sync_categories(char *DB_name, int sd,
 	 continue;
       }
       /* Search for the local category name on the remote */
-      for (Ri = 0; Ri < 16; Ri++) {
-	 if (! strncmp(local_cai.name[Li], remote_cai.name[Ri], 16)) {
+      for (Ri = 0; Ri < CATCOUNT; Ri++) {
+	 if (! strncmp(local_cai.name[Li], remote_cai.name[Ri], PILOTCATLTH)) {
 	    found_name=TRUE;
 	    found_name_at=Ri;
 	 }
@@ -2707,11 +2716,11 @@ int sync_categories(char *DB_name, int sd,
 #endif
 	    r = pdb_file_swap_indexes(DB_name, Li, found_name_at);
 	    edit_cats_swap_cats_pc3(DB_name, Li, Ri);
-	    strncpy(tmp_name, local_cai.name[found_ID_at], 16);
-	    tmp_name[15]='\0';
+	    strncpy(tmp_name, local_cai.name[found_ID_at], PILOTCATLTH);
+	    tmp_name[PILOTCATLTH-1]='\0';
 	    strncpy(local_cai.name[found_ID_at],
-		    local_cai.name[Li], 16);
-	    strncpy(local_cai.name[Li], tmp_name, 16);
+		    local_cai.name[Li], PILOTCATLTH);
+	    strncpy(local_cai.name[Li], tmp_name, PILOTCATLTH);
 	    Li--;
 	    continue;
 	 }
@@ -2723,8 +2732,8 @@ int sync_categories(char *DB_name, int sd,
 	    printf("cat index %d case 3\n", Li);
 #endif
 	    strncpy(remote_cai.name[found_ID_at],
-		    local_cai.name[Li], 16);
-	    remote_cai.name[found_ID_at][15]='\0';
+		    local_cai.name[Li], PILOTCATLTH);
+	    remote_cai.name[found_ID_at][PILOTCATLTH-1]='\0';
 	 }
       }
       if ((!found_name) && (!found_ID)) {
@@ -2734,10 +2743,11 @@ int sync_categories(char *DB_name, int sd,
 	    printf("cat index %d case 4\n", Li);
 #endif
 	    strncpy(remote_cai.name[Li],
-		    local_cai.name[Li], 16);
-	    remote_cai.name[Li][15]='\0';
+		    local_cai.name[Li], PILOTCATLTH);
+	    remote_cai.name[Li][PILOTCATLTH-1]='\0';
 	    remote_cai.renamed[Li]=0;
-	    remote_cai.ID[Li]=remote_cai.ID[Li];//undo local?
+	    //remote_cai.ID[Li]=remote_cai.ID[Li]; undo local?
+ 	    remote_cai.ID[Li]=local_cai.ID[Li];
 	    continue;
 	 } else {
 	    /* 5: Add local category to remote in the next available slot.
@@ -2746,11 +2756,11 @@ int sync_categories(char *DB_name, int sd,
  	    printf("cat index %d case 5\n", Li);
 #endif
 	    found_a_hole=FALSE;
-	    for (i=1; i<16; i++) {
+	    for (i=1; i<CATCOUNT; i++) {
 	       if (remote_cai.name[i][0]=='\0') {
 		  strncpy(remote_cai.name[i],
-			  local_cai.name[Li], 16);
-		  remote_cai.name[i][15]='\0';
+			  local_cai.name[Li], PILOTCATLTH);
+		  remote_cai.name[i][PILOTCATLTH-1]='\0';
 		  remote_cai.renamed[i]=0;
 		  remote_cai.ID[i]=remote_cai.ID[Li];
 		  r = pdb_file_change_indexes(DB_name, Li, i);
@@ -2784,7 +2794,7 @@ int sync_categories(char *DB_name, int sd,
 #endif
    }
 
-   for (i = 0; i < 16; i++) {
+   for (i = 0; i < CATCOUNT; i++) {
       remote_cai.renamed[i]=0;
    }
 
