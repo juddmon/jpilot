@@ -1,4 +1,4 @@
-/* $Id: */
+/* $Id: otherconv.c,v 1.17 2004/12/07 06:31:59 rikster5 Exp $ */
 
 /*******************************************************************************
  * otherconv.c
@@ -144,16 +144,16 @@ int otherconv_init() {
   OC_FREE_ICONV(glob_topda);
   glob_topda = g_iconv_open(char_set_to_text(char_set), HOST_CS);
   if (glob_topda == (GIConv)(-1))
-     return -1;
+     return EXIT_FAILURE;
 
   /* (re)open the "from" iconv */
   OC_FREE_ICONV(glob_frompda);
   glob_frompda = g_iconv_open(HOST_CS, char_set_to_text(char_set));
   if (glob_frompda == (GIConv)(-1)) {
     OC_FREE_ICONV(glob_topda);
-    return -1;
+     return EXIT_FAILURE;
   }
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 /*
