@@ -332,7 +332,7 @@ int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
    }
 
    /* Set Month name label */
-   strftime(str, sizeof(str), "%B %Y", date_in);
+   jp_strftime(str, sizeof(str), "%B %Y", date_in);
    gtk_label_set_text(GTK_LABEL(glob_month_month_label), str);
 
    memcpy(&date, date_in, sizeof(struct tm));
@@ -394,7 +394,7 @@ int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
 	       strcpy(desc, "*");
 	    } else {
 	       get_pref_time_no_secs(datef);
-	       strftime(desc, sizeof(desc), datef, &(temp_al->ma.a.begin));
+	       jp_strftime(desc, sizeof(desc), datef, &(temp_al->ma.a.begin));
 	       strcat(desc, " ");
 	    }
 	    g_string_append(gstr, desc);
@@ -505,7 +505,7 @@ void monthview_gui(struct tm *date_in)
 
 
    /* Month name label */
-   strftime(str, sizeof(str), "%B %Y", &glob_month_date);
+   jp_strftime(str, sizeof(str), "%B %Y", &glob_month_date);
    glob_month_month_label = gtk_label_new(str);
    gtk_box_pack_start(GTK_BOX(vbox), glob_month_month_label, FALSE, FALSE, 0);
 
@@ -523,7 +523,7 @@ void monthview_gui(struct tm *date_in)
    hbox = gtk_hbox_new(TRUE, 0);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
    for (i=0; i<7; i++) {
-      strftime(str_dow, sizeof(str_dow), "%A", &date);
+      jp_strftime(str_dow, sizeof(str_dow), "%A", &date);
       label = gtk_label_new(str_dow);
       gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
       add_days_to_date(&date, 1);
