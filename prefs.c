@@ -117,6 +117,8 @@ static prefType glob_prefs[NUM_PREFS] = {
      {"version", CHARTYPE, CHARTYPE, 0, NULL, 0},
      {"utf-encoding", INTTYPE, INTTYPE, 0, NULL, 0},
      {"confirm-file-installation", INTTYPE, INTTYPE, 1, NULL, 0},
+     {"todo_days_due", INTTYPE, INTTYPE, -1, NULL, 0},
+     {"todo_days_till_due", INTTYPE, INTTYPE, 7, NULL, 0},
 };
 
 struct name_list {

@@ -33,6 +33,7 @@ static GtkWidget *main_window;
 static GtkWidget *port_entry;
 static GtkWidget *backups_entry;
 static GtkWidget *alarm_command_entry;
+static GtkWidget *todo_days_due_entry;
 
 extern int glob_app;
 
@@ -149,6 +150,18 @@ int make_pref_menu(GtkWidget **pref_menu, int pref_num)
    gtk_option_menu_set_menu(GTK_OPTION_MENU(*pref_menu), menu);
 
    return 0;
+}
+
+void cb_checkbox_todo_days_till_due(GtkWidget *widget, gpointer data)
+{
+   int num_days;
+   const char *entry_text;
+printf("cb_checkbox_todo_days_due\n");
+   entry_text = gtk_entry_get_text(GTK_ENTRY(todo_days_due_entry));
+   
+   sscanf(entry_text, "%d", &num_days);
+
+   set_pref(PREF_TODO_DAYS_TILL_DUE, num_days, NULL, TRUE);
 }
 
 void cb_checkbox_set_pref(GtkWidget *widget, gpointer data)
@@ -589,6 +602,33 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref),
 		      GINT_TO_POINTER(PREF_MANANA_MODE));
 #endif
+
+   /* Default Number of Days Due for ToDos */
+   hbox_temp = gtk_hbox_new(FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox_todo), hbox_temp, FALSE, FALSE, 0);
+
+   checkbutton = gtk_check_button_new_with_label(_("Use default number of days due"));
+   gtk_box_pack_start(GTK_BOX(hbox_temp), checkbutton, FALSE, FALSE, 0);
+   get_pref(PREF_TODO_DAYS_DUE, &ivalue, &cstr);
+   if (ivalue) {
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
+   }
+   gtk_signal_connect(GTK_OBJECT(checkbutton),
+		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref),
+		      GINT_TO_POINTER(PREF_TODO_DAYS_DUE));
+
+   todo_days_due_entry = gtk_entry_new_with_max_length(MAX_PREF_VALUE - 2);
+   get_pref(PREF_TODO_DAYS_TILL_DUE, &ivalue, &cstr);
+   temp[0]='\0';
+   g_snprintf(temp, sizeof(temp), "%ld", ivalue);
+      gtk_entry_set_text(GTK_ENTRY(todo_days_due_entry), temp);
+   gtk_box_pack_start(GTK_BOX(hbox_temp), todo_days_due_entry, FALSE, FALSE, 0);
+
+   gtk_signal_connect(GTK_OBJECT(todo_days_due_entry),
+		      "changed", GTK_SIGNAL_FUNC(cb_checkbox_todo_days_till_due),
+		      NULL);
+
+   gtk_widget_show_all(hbox_temp);
 
    /**********************************************************************/
    /* Memo preference tab */

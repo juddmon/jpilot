@@ -97,6 +97,7 @@ static void init()
 {
    time_t ltime;
    struct tm *now;
+   long ivalue;
 
    clist_col_selected=1;
    clist_row_selected=0;
@@ -106,6 +107,9 @@ static void init()
    now = localtime(&ltime);
 
    memcpy(&due_date, now, sizeof(struct tm));
+
+   get_pref(PREF_TODO_DAYS_TILL_DUE, &ivalue, NULL);
+   add_days_to_date(&due_date, ivalue);
 }
 
 static void update_due_button(GtkWidget *button, struct tm *t)
@@ -992,9 +996,20 @@ static void cb_category(GtkWidget *item, int selection)
 
 void cb_check_button_no_due_date(GtkWidget *widget, gpointer data)
 {
+   long till_due;
+   struct tm *now;
+   time_t ltime;
+
    if (GTK_TOGGLE_BUTTON(widget)->active) {
       update_due_button(due_date_button, NULL);
    } else {
+      time(&ltime);
+      now = localtime(&ltime);
+      memcpy(&due_date, now, sizeof(struct tm));
+
+      get_pref(PREF_TODO_DAYS_TILL_DUE, &till_due, NULL);
+      add_days_to_date(&due_date, till_due);
+
       update_due_button(due_date_button, &due_date);
    }   
 }
@@ -1005,14 +1020,13 @@ int todo_clear_details()
    struct tm *now;
    int new_cat;
    int sorted_position;
+   long default_due, till_due;
 
    time(&ltime);
    now = localtime(&ltime);
 
    /* Need to disconnect these signals first */
    connect_changed_signals(DISCONNECT_SIGNALS);
-
-   update_due_button(due_date_button, NULL);
 
 #ifdef ENABLE_GTK2
    gtk_widget_freeze_child_notify(todo_text);
@@ -1039,10 +1053,20 @@ int todo_clear_details()
 
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(private_checkbox), FALSE);
 
+   get_pref(PREF_TODO_DAYS_DUE, &default_due, NULL);
+   get_pref(PREF_TODO_DAYS_TILL_DUE, &till_due, NULL);
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(todo_no_due_date_checkbox),
-				TRUE);
+				! default_due);
 
    memcpy(&due_date, now, sizeof(struct tm));
+
+   if (default_due) {
+      add_days_to_date(&due_date, till_due);
+      update_due_button(due_date_button, &due_date);
+   } else {
+      update_due_button(due_date_button, NULL);
+   }
+   
 
 #ifdef ENABLE_GTK2
    gtk_widget_thaw_child_notify(todo_text);
