@@ -35,6 +35,7 @@
 #endif
 #include "log.h"
 #include "utils.h"
+#include "i18n.h"
 
 #define JPILOT_DEBUGno
 
@@ -652,19 +653,12 @@ int dat_get_appointments(FILE *in, AppointmentList **alist, struct CategoryAppIn
 	 jp_logf(JP_LOG_WARN, "dat_get_appointments(): Out of memory\n");
 	 return i;
       }
-      if (last_alist) {
-	 last_alist->next=temp_alist;
-	 last_alist=temp_alist;
-      } else {
-	 last_alist=temp_alist;
-	 *alist=last_alist;
-      }
-      last_alist->next=NULL;
-      last_alist->app_type=DATEBOOK;
 #ifdef JPILOT_DEBUG
       printf("----- record %d -----\n", i+1);
 #endif
-      memset(&(last_alist->ma.a), 0, sizeof(last_alist->ma.a));
+      memset(&(temp_alist->ma.a), 0, sizeof(temp_alist->ma.a));
+      temp_alist->next=NULL;
+      temp_alist->app_type=DATEBOOK;
 
       /* Record ID */
       /* Status Field */
@@ -675,7 +669,9 @@ int dat_get_appointments(FILE *in, AppointmentList **alist, struct CategoryAppIn
 	 printf("rec field %d %s: ", j, rec_fields[j]); print_field(&(fa[j]));
 #endif
 	 if (fa[j].type!=schema[j*2]) {
-	    jp_logf(JP_LOG_WARN, "Invalid schema ID record %d, field %d\n", i+1, j+3);
+	    jp_logf(JP_LOG_WARN, "%s:%d Invalid schema ID (%d) record %d, field %d\n", __FILE__, __LINE__, fa[j].type, i+1, j+3);
+	    jp_logf(JP_LOG_WARN, _("read of file terminated\n"));
+	    free(temp_alist);
 	    return 0;
 	 }
       }
@@ -691,56 +687,67 @@ int dat_get_appointments(FILE *in, AppointmentList **alist, struct CategoryAppIn
 	 }
 #endif
 	 if (fa[j].type!=schema[j*2+6]) {
-	    jp_logf(JP_LOG_WARN, "Invalid schema ID record %d, field %d\n", i+1, j+3);
+	    jp_logf(JP_LOG_WARN, "%s:%d Invalid schema ID (%d) record %d, field %d\n", __FILE__, __LINE__, fa[j].type, i+1, j+3);
+	    jp_logf(JP_LOG_WARN, _("read of file terminated\n"));
+	    free(temp_alist);
 	    return 0;
 	 }
 	 if (fa[j].type==DAT_TYPE_REPEAT) {
-	    get_repeat(in, &(last_alist->ma.a));
+	    get_repeat(in, &(temp_alist->ma.a));
 	 }
       }
       /* Start Time */
       t = fa[0].date;
       now = localtime(&t);
-      memcpy(&(last_alist->ma.a.begin), now, sizeof(struct tm));
+      memcpy(&(temp_alist->ma.a.begin), now, sizeof(struct tm));
       /* End Time */
       t = fa[1].i;
       now = localtime(&t);
-      memcpy(&(last_alist->ma.a.end), now, sizeof(struct tm));
+      memcpy(&(temp_alist->ma.a.end), now, sizeof(struct tm));
       /* Description */
       if (fa[2].str) {
-	 last_alist->ma.a.description=fa[2].str;
+	 temp_alist->ma.a.description=fa[2].str;
       } else {
-	 last_alist->ma.a.description=strdup("");
+	 temp_alist->ma.a.description=strdup("");
       }
       /* Duration */
       /* what is duration? (repeatForever?) */
       /* Note */
       if (fa[4].str) {
-	 last_alist->ma.a.note=fa[4].str;
+	 temp_alist->ma.a.note=fa[4].str;
       } else {
-	 last_alist->ma.a.note=strdup("");
+	 temp_alist->ma.a.note=strdup("");
       }
       /* Untimed */
-      last_alist->ma.a.event=fa[5].i;
+      temp_alist->ma.a.event=fa[5].i;
       /* Private */
-      last_alist->ma.attrib = 0;
+      temp_alist->ma.attrib = 0;
       if (fa[6].i) {
-	 last_alist->ma.attrib |= DAT_STATUS_PRIVATE;
+	 temp_alist->ma.attrib |= DAT_STATUS_PRIVATE;
       }
       /* Category */
-      last_alist->ma.unique_id = fa[7].i;
-      if (last_alist->ma.unique_id > 15) {
-	 last_alist->ma.unique_id = 15;
+      temp_alist->ma.unique_id = fa[7].i;
+      if (temp_alist->ma.unique_id > 15) {
+	 temp_alist->ma.unique_id = 15;
       }
-      if (last_alist->ma.unique_id < 0) {
-	 last_alist->ma.unique_id = 0;
+      if (temp_alist->ma.unique_id < 0) {
+	 temp_alist->ma.unique_id = 0;
       }	 
       /* Alarm Set */
-      last_alist->ma.a.alarm=fa[8].i;
+      temp_alist->ma.a.alarm=fa[8].i;
       /* Alarm Advance Units */
-      last_alist->ma.a.advance=fa[9].i;
+      temp_alist->ma.a.advance=fa[9].i;
       /* Alarm Advance Type */
-      last_alist->ma.a.advanceUnits=fa[10].i;
+      temp_alist->ma.a.advanceUnits=fa[10].i;
+
+      /* Append onto the end of the list */
+      if (last_alist) {
+	 last_alist->next=temp_alist;
+	 last_alist=temp_alist;
+      } else {
+	 last_alist=temp_alist;
+	 *alist=last_alist;
+      }
    }
    return 0;
 }
@@ -848,15 +855,8 @@ int dat_get_addresses(FILE *in, AddressList **addrlist, struct CategoryAppInfo *
 	 jp_logf(JP_LOG_WARN, "dat_get_addresses(): Out of memory\n");
 	 return i;
       }
-      if (last_addrlist) {
-	 last_addrlist->next=temp_addrlist;
-	 last_addrlist=temp_addrlist;
-      } else {
-	 last_addrlist=temp_addrlist;
-	 *addrlist=last_addrlist;
-      }
-      last_addrlist->next=NULL;
-      last_addrlist->app_type=ADDRESS;
+      temp_addrlist->next=NULL;
+      temp_addrlist->app_type=ADDRESS;
 #ifdef JPILOT_DEBUG
       printf("----- record %d -----\n", i+1);
 #endif
@@ -869,7 +869,9 @@ int dat_get_addresses(FILE *in, AddressList **addrlist, struct CategoryAppInfo *
 	 printf("rec field %d %s: ", j, rec_fields[j]); print_field(&(fa[j]));
 #endif
 	 if (fa[j].type!=schema[j*2]) {
-	    jp_logf(JP_LOG_WARN, "Invalid schema ID record %d, field %d\n", i+1, j+3);
+	    jp_logf(JP_LOG_WARN, "%s:%d Invalid schema ID (%d) record %d, field %d\n", __FILE__, __LINE__, fa[j].type, i+1, j+3);
+	    jp_logf(JP_LOG_WARN, _("read of file terminated\n"));
+	    free(temp_addrlist);
 	    return 0;
 	 }
       }
@@ -880,37 +882,47 @@ int dat_get_addresses(FILE *in, AddressList **addrlist, struct CategoryAppInfo *
 	 printf("field %d %s: ", j, field_names[j]); print_field(&(fa[j]));
 #endif
 	 if (fa[j].type!=schema[j*2+6]) {
-	    jp_logf(JP_LOG_WARN, "Invalid schema ID record %d, field %d\n", i+1, j+3);
+	    jp_logf(JP_LOG_WARN, "%s:%d Invalid schema ID (%d) record %d, field %d\n", __FILE__, __LINE__, fa[j].type, i+1, j+3);
+	    jp_logf(JP_LOG_WARN, _("read of file terminated\n"));
+	    free(temp_addrlist);
 	    return 0;
 	 }
       }
       for (k=0; k<19; k++) {
-	 last_addrlist->ma.a.entry[k]=fa[dat_order[k]].str;
+	 temp_addrlist->ma.a.entry[k]=fa[dat_order[k]].str;
       }
-      last_addrlist->ma.a.phoneLabel[0] = fa[4].i;
-      last_addrlist->ma.a.phoneLabel[1] = fa[6].i;
-      last_addrlist->ma.a.phoneLabel[2] = fa[8].i;
-      last_addrlist->ma.a.phoneLabel[3] = fa[10].i;
-      last_addrlist->ma.a.phoneLabel[4] = fa[12].i;
+      temp_addrlist->ma.a.phoneLabel[0] = fa[4].i;
+      temp_addrlist->ma.a.phoneLabel[1] = fa[6].i;
+      temp_addrlist->ma.a.phoneLabel[2] = fa[8].i;
+      temp_addrlist->ma.a.phoneLabel[3] = fa[10].i;
+      temp_addrlist->ma.a.phoneLabel[4] = fa[12].i;
       /* Private */
-      last_addrlist->ma.attrib = 0;
+      temp_addrlist->ma.attrib = 0;
       if (fa[20].i) {
-	 last_addrlist->ma.attrib |= DAT_STATUS_PRIVATE;
+	 temp_addrlist->ma.attrib |= DAT_STATUS_PRIVATE;
       }
       /* Category */
-      last_addrlist->ma.unique_id = fa[21].i;
-      if (last_addrlist->ma.unique_id > 15) {
-	 last_addrlist->ma.unique_id = 15;
+      temp_addrlist->ma.unique_id = fa[21].i;
+      if (temp_addrlist->ma.unique_id > 15) {
+	 temp_addrlist->ma.unique_id = 15;
       }
-      if (last_addrlist->ma.unique_id < 0) {
-	 last_addrlist->ma.unique_id = 0;
+      if (temp_addrlist->ma.unique_id < 0) {
+	 temp_addrlist->ma.unique_id = 0;
       }	 
       /* Show phone in list */
-      last_addrlist->ma.a.showPhone = fa[26].i - 1;
+      temp_addrlist->ma.a.showPhone = fa[26].i - 1;
       for (k=0; k<19; k++) {
-	 if (last_addrlist->ma.a.entry[k]==NULL) {
-	    last_addrlist->ma.a.entry[k]=strdup("");
+	 if (temp_addrlist->ma.a.entry[k]==NULL) {
+	    temp_addrlist->ma.a.entry[k]=strdup("");
 	 }
+      }
+      /* Append onto the end of the list */
+      if (temp_addrlist) {
+	 last_addrlist->next=temp_addrlist;
+	 last_addrlist=temp_addrlist;
+      } else {
+	 last_addrlist=temp_addrlist;
+	 *addrlist=last_addrlist;
       }
    }
    return 0;
@@ -975,17 +987,12 @@ int dat_get_todos(FILE *in, ToDoList **todolist, struct CategoryAppInfo *ai)
       temp_todolist = malloc(sizeof(ToDoList));
       if (!temp_todolist) {
 	 jp_logf(JP_LOG_WARN, "dat_get_todos(): Out of memory\n");
+	 jp_logf(JP_LOG_WARN, _("read of file terminated\n"));
+	 free(temp_todolist);
 	 return i;
       }
-      if (last_todolist) {
-	 last_todolist->next=temp_todolist;
-	 last_todolist=temp_todolist;
-      } else {
-	 last_todolist=temp_todolist;
-	 *todolist=last_todolist;
-      }
-      last_todolist->next=NULL;
-      last_todolist->app_type=TODO;
+      temp_todolist->next=NULL;
+      temp_todolist->app_type=TODO;
 #ifdef JPILOT_DEBUG
       printf("----- record %d -----\n", i+1);
 #endif
@@ -998,7 +1005,9 @@ int dat_get_todos(FILE *in, ToDoList **todolist, struct CategoryAppInfo *ai)
 	 printf("rec field %d %s: ", j, rec_fields[j]); print_field(&(fa[j]));
 #endif
 	 if (fa[j].type!=schema[j*2]) {
-	    jp_logf(JP_LOG_WARN, "Invalid schema ID record %d, field %d\n", i+1, j+3);
+	    jp_logf(JP_LOG_WARN, "%s:%d Invalid schema ID (%d) record %d, field %d\n", __FILE__, __LINE__, fa[j].type, i+1, j+3);
+	    jp_logf(JP_LOG_WARN, _("read of file terminated\n"));
+	    free(temp_todolist);
 	    return 0;
 	 }
       }
@@ -1009,36 +1018,38 @@ int dat_get_todos(FILE *in, ToDoList **todolist, struct CategoryAppInfo *ai)
 	 printf("field %d %s: ", j, field_names[j]); print_field(&(fa[j]));
 #endif
 	 if (fa[j].type!=schema[j*2+6]) {
-	    jp_logf(JP_LOG_WARN, "Invalid schema ID record %d, field %d\n", i+1, j+3);
+	    jp_logf(JP_LOG_WARN, "%s:%d Invalid schema ID (%d) record %d, field %d\n", __FILE__, __LINE__, fa[j].type, i+1, j+3);
+	    jp_logf(JP_LOG_WARN, _("read of file terminated\n"));
+	    free(temp_todolist);
 	    return 0;
 	 }
       }
       /* Description */
       if (fa[0].str) {
-	 last_todolist->mtodo.todo.description=fa[0].str;
+	 temp_todolist->mtodo.todo.description=fa[0].str;
       } else {
-	 last_todolist->mtodo.todo.description=strdup("");
+	 temp_todolist->mtodo.todo.description=strdup("");
       }
       /* Due Date */
       if (fa[1].date==0x749E77BF) {
-	 last_todolist->mtodo.todo.indefinite=1;
-	 memset(&(last_todolist->mtodo.todo.due), 0, sizeof(last_todolist->mtodo.todo.due));
+	 temp_todolist->mtodo.todo.indefinite=1;
+	 memset(&(temp_todolist->mtodo.todo.due), 0, sizeof(temp_todolist->mtodo.todo.due));
       } else {
 	 t = fa[1].date;
 	 now = localtime(&t);
-	 memcpy(&(last_todolist->mtodo.todo.due), now, sizeof(struct tm));
-	 last_todolist->mtodo.todo.indefinite=0;
+	 memcpy(&(temp_todolist->mtodo.todo.due), now, sizeof(struct tm));
+	 temp_todolist->mtodo.todo.indefinite=0;
       }
       /* Completed */
-      last_todolist->mtodo.todo.complete = (fa[2].i==0) ? 0 : 1;
+      temp_todolist->mtodo.todo.complete = (fa[2].i==0) ? 0 : 1;
       /* Priority */
       if (fa[3].i < 0) fa[3].i=0;
       if (fa[3].i > 5) fa[3].i=5;
-      last_todolist->mtodo.todo.priority = fa[3].i;
+      temp_todolist->mtodo.todo.priority = fa[3].i;
       /* Private */
-      last_todolist->mtodo.attrib = 0;
+      temp_todolist->mtodo.attrib = 0;
       if (fa[4].i) {
-	 last_todolist->mtodo.attrib |= DAT_STATUS_PRIVATE;
+	 temp_todolist->mtodo.attrib |= DAT_STATUS_PRIVATE;
       }
       /* Category */
       /* Normally the category would go into 4 bits of the attrib.
@@ -1047,12 +1058,20 @@ int dat_get_todos(FILE *in, ToDoList **todolist, struct CategoryAppInfo *ai)
        */
       if (fa[5].i < 0) fa[5].i=0;
       if (fa[5].i > 15) fa[5].i=15;
-      last_todolist->mtodo.unique_id = fa[5].i;
+      temp_todolist->mtodo.unique_id = fa[5].i;
       /* Note */
       if (fa[6].str) {
-	 last_todolist->mtodo.todo.note=fa[6].str;
+	 temp_todolist->mtodo.todo.note=fa[6].str;
       } else {
-	 last_todolist->mtodo.todo.note=strdup("");
+	 temp_todolist->mtodo.todo.note=strdup("");
+      }
+      /* Append onto the end of the list */
+      if (last_todolist) {
+	 last_todolist->next=temp_todolist;
+	 last_todolist=temp_todolist;
+      } else {
+	 last_todolist=temp_todolist;
+	 *todolist=last_todolist;
       }
    }
 
@@ -1109,15 +1128,8 @@ int dat_get_memos(FILE *in, MemoList **memolist, struct CategoryAppInfo *ai)
 	 jp_logf(JP_LOG_WARN, "dat_get_memos(): Out of memory\n");
 	 return i;
       }
-      if (last_memolist) {
-	 last_memolist->next=temp_memolist;
-	 last_memolist=temp_memolist;
-      } else {
-	 last_memolist=temp_memolist;
-	 *memolist=last_memolist;
-      }
-      last_memolist->next=NULL;
-      last_memolist->app_type=MEMO;
+      temp_memolist->next=NULL;
+      temp_memolist->app_type=MEMO;
 #ifdef JPILOT_DEBUG
       printf("----- record %d -----\n", i+1);
 #endif
@@ -1130,7 +1142,9 @@ int dat_get_memos(FILE *in, MemoList **memolist, struct CategoryAppInfo *ai)
 	 printf("rec field %d %s: ", j, rec_fields[j]); print_field(&(fa[j]));
 #endif
 	 if (fa[j].type!=schema[j*2]) {
-	    jp_logf(JP_LOG_WARN, "Invalid schema ID record %d, field %d\n", i+1, j+3);
+	    jp_logf(JP_LOG_WARN, "%s:%d Invalid schema ID (%d) record %d, field %d\n", __FILE__, __LINE__, fa[j].type, i+1, j+3);
+	    jp_logf(JP_LOG_WARN, _("read of file terminated\n"));
+	    free(temp_memolist);
 	    return 0;
 	 }
       }
@@ -1141,16 +1155,18 @@ int dat_get_memos(FILE *in, MemoList **memolist, struct CategoryAppInfo *ai)
 	 printf("field %d %s: ", j, field_names[j]); print_field(&(fa[j]));
 #endif
 	 if (fa[j].type!=schema[j*2+6]) {
-	    jp_logf(JP_LOG_WARN, "Invalid schema ID record %d, field %d\n", i+1, j+3);
+	    jp_logf(JP_LOG_WARN, "%s:%d Invalid schema ID (%d) record %d, field %d\n", __FILE__, __LINE__, fa[j].type, i+1, j+3);
+	    jp_logf(JP_LOG_WARN, _("read of file terminated\n"));
+	    free(temp_memolist);
 	    return 0;
 	 }
       }
       /* Memo */
-      last_memolist->mmemo.memo.text=fa[0].str;
+      temp_memolist->mmemo.memo.text=fa[0].str;
       /* Private */
-      last_memolist->mmemo.attrib = 0;
+      temp_memolist->mmemo.attrib = 0;
       if (fa[1].i) {
-	 last_memolist->mmemo.attrib |= DAT_STATUS_PRIVATE;
+	 temp_memolist->mmemo.attrib |= DAT_STATUS_PRIVATE;
       }
       /* Category */
       /* Normally the category would go into 4 bits of the attrib.
@@ -1159,7 +1175,16 @@ int dat_get_memos(FILE *in, MemoList **memolist, struct CategoryAppInfo *ai)
        */
       if (fa[2].i < 0) fa[2].i=0;
       if (fa[2].i > 15) fa[2].i=15;
-      last_memolist->mmemo.unique_id = fa[2].i;
+      temp_memolist->mmemo.unique_id = fa[2].i;
+      /* Append onto the end of the list */
+
+      if (last_memolist) {
+	 last_memolist->next=temp_memolist;
+	 last_memolist=temp_memolist;
+      } else {
+	 last_memolist=temp_memolist;
+	 *memolist=last_memolist;
+      }
    }
 
    return 0;
