@@ -661,7 +661,7 @@ int clist_find_id(GtkWidget *clist,
    *found_at = 0;
    *total_count = 0;
 
-   /*100000 is just to prevent ininite looping during a solar flare */
+   /* 100000 safety */
    for (found = i = 0; i<100000; i++) {
       ma = gtk_clist_get_row_data(GTK_CLIST(clist), i);
       if (ma < (MyAddress *)CLIST_MIN_DATA) {
@@ -1567,7 +1567,8 @@ int check_copy_DBs_to_home()
 	 in = fopen(srcname, "r");
 	 out = fopen(destname, "w");
 	 if (!in) {
-	    jp_logf(JP_LOG_WARN, _("Couldn't find empty DB file.\n"));
+	    jp_logf(JP_LOG_WARN, _("Couldn't find empty DB file %s: %s\n"),
+		    srcname, strerror(errno));
 	    jp_logf(JP_LOG_WARN, EPN); /* EPN is jpilot, or copilot depending on configure */
 	    jp_logf(JP_LOG_WARN, _(" may not be installed.\n"));
 	    return -1;
