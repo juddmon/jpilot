@@ -84,10 +84,12 @@ int plugin_sync(int sd)
       }
    }
 
-   jp_logf(LOG_GUI, "synctime: Setting the time on the pilot\n");
+   jp_logf(LOG_GUI, "synctime: Setting the time on the pilot... ");
    
    time(&ltime);
    r = dlp_SetSysDateTime(sd, ltime);
    
+   jp_logf(LOG_GUI, "Done\n");
+
    return 0;
 }
