@@ -41,7 +41,6 @@
 #define EDIT_CAT_ENTRY_OK     104
 #define EDIT_CAT_ENTRY_CANCEL 105
 
-
 struct dialog_cats_data {
    int button_hit;  
    int selected;
@@ -394,22 +393,37 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 {
    struct dialog_cats_data *Pdata;
    int i, r, count;
+   int j; /* JPA */
+   long char_set; /* JPA */
    int id;
    int button;
+   int catnum; /* JPA */
+   unsigned char currentname[HOSTCATLTH]; /* current category name */
+   unsigned char previousname[HOSTCATLTH]; /* previous category name */
+   unsigned char pilotentry[HOSTCATLTH /* yes! */]; /* entry text, in Pilot character set */
    char *button_text[]={gettext_noop("OK")};
    char *move_text[]={gettext_noop("Move"), gettext_noop("Delete"), gettext_noop("Cancel")};
    char *text;
    const char *entry_text;
    char temp[256];
 
+   get_pref(PREF_CHAR_SET, &char_set, NULL); /* JPA be prepared to make conversions */
    button = GPOINTER_TO_INT(data);
    Pdata = gtk_object_get_data(GTK_OBJECT(gtk_widget_get_toplevel(widget)), "dialog_cats_data");
+
+   /* JPA get the selected category number */
+   catnum = -1;
+   i = 0;
+   while ((i <= Pdata->selected) && (catnum < CATCOUNT)) {
+      if (Pdata->cai2.name[++catnum][0]) i++;
+   }
+   if (catnum >= CATCOUNT) catnum = -1; /* not found */
 
    if (Pdata) {
       switch (button) {
        case EDIT_CAT_NEW:
 	 count=0;
-	 for (i=1; i<16; i++) {
+	 for (i=1; i<CATCOUNT; i++) {
 	    r = gtk_clist_get_text(GTK_CLIST(Pdata->clist), i, 0, &text);
 	    if ((r) && (text[0])) {
 	       count++;
@@ -429,13 +443,13 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 	 Pdata->state=EDIT_CAT_NEW;
 	 break;
        case EDIT_CAT_RENAME:
-	 if ((Pdata->selected<0) || (Pdata->cai2.name[Pdata->selected][0]=='\0')) {
+	 if ((catnum<0) || (Pdata->cai2.name[catnum][0]=='\0')) {
 	    dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)), 0, 0,
 			   _("Edit Categories"), NULL,
 			   _("You must select a category to rename"), 1, button_text);
 	    return;
 	 }
-	 if (Pdata->selected==0) {
+ 	 if (catnum == 0) {
 	    g_snprintf(temp, sizeof(temp), _("You can't edit category %s.\n"), Pdata->cai1.name[0]);
 	    dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)), 0, 0,
 			   _("Edit Categories"), NULL,
@@ -454,13 +468,13 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 #ifdef EDIT_CATS_DEBUG
 	 printf("delete cat\n");
 #endif
-	 if (Pdata->selected<0) {
+	 if (catnum<0) {
 	    dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)), 0, 0,
 			   _("Edit Categories"), NULL,
 			   _("You must select a category to delete"), 1, button_text);
 	    return;
 	 }
-	 if (Pdata->selected==0) {
+	 if (catnum==0) {
 	    sprintf(temp, _("You can't delete category %s.\n"), Pdata->cai1.name[0]);
 	    dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)), 0, 0,
 			   _("Edit Categories"), NULL,
@@ -468,18 +482,18 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 	    return;
 	 }
 	 /* See if category is not-empty */
-	 if (Pdata->cai2.name[Pdata->selected][0]=='\0') {
+	 if (Pdata->cai2.name[catnum][0]=='\0') {
 	    return;
 	 }
 	 /* check to see if any records are in this cat. */
-	 count = jp_count_records_in_cat(Pdata->db_name, Pdata->selected);
+ 	 count = jp_count_records_in_cat(Pdata->db_name, catnum);
 #ifdef EDIT_CATS_DEBUG
 	 printf("count=%d\n", count);
 #endif
 	 if (count>0) {
 	    g_snprintf(temp, sizeof(temp), _("There are %d records in %s.\n"
-		    "Do you want to move them to %s, or delete them?"),
-		    count, Pdata->cai1.name[Pdata->selected], Pdata->cai1.name[0]);
+		       "Do you want to move them to %s, or delete them?"),
+		       count, Pdata->cai1.name[catnum], Pdata->cai1.name[0]);
 	    r = dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)), 0, 0,
 			       _("Edit Categories"), NULL,
 			       temp, 3, move_text);
@@ -488,11 +502,11 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 #ifdef EDIT_CATS_DEBUG
 	       printf("MOVE THEM\n");
 #endif
-	       r = edit_cats_change_cats_pc3(Pdata->db_name, Pdata->selected, 0);
+	       r = edit_cats_change_cats_pc3(Pdata->db_name, catnum, 0);
 #ifdef EDIT_CATS_DEBUG
 	       printf("moved %d pc records\n", r);
 #endif
-	       r = edit_cats_change_cats_pdb(Pdata->db_name, Pdata->selected, 0);
+	       r = edit_cats_change_cats_pdb(Pdata->db_name, catnum, 0);
 #ifdef EDIT_CATS_DEBUG
 	       printf("moved %d pdb->pc records\n", r);
 #endif
@@ -501,11 +515,11 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 #ifdef EDIT_CATS_DEBUG
 	       printf("DELETE THEM\n");
 #endif
-	       r = edit_cats_delete_cats_pc3(Pdata->db_name, Pdata->selected);
+	       r = edit_cats_delete_cats_pc3(Pdata->db_name, catnum);
 #ifdef EDIT_CATS_DEBUG
 	       printf("deleted %d pc records\n", r);
 #endif
-	       r = edit_cats_delete_cats_pdb(Pdata->db_name, Pdata->selected);
+	       r = edit_cats_delete_cats_pdb(Pdata->db_name, catnum);
 #ifdef EDIT_CATS_DEBUG
 	       printf("deleted %d pdb->pc records\n", r);
 #endif
@@ -521,10 +535,18 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 #ifdef EDIT_CATS_DEBUG
 	 printf("DELETE category\n");
 #endif
-	 Pdata->cai2.ID[Pdata->selected]=Pdata->cai1.ID[Pdata->selected];
-	 Pdata->cai2.name[Pdata->selected][0]='\0';
-	 Pdata->cai2.renamed[Pdata->selected]=1;
-	 gtk_clist_set_text(GTK_CLIST(Pdata->clist), Pdata->selected, 0, "");
+	 Pdata->cai2.ID[catnum]=Pdata->cai1.ID[catnum];
+	 Pdata->cai2.name[catnum][0]='\0';
+	 Pdata->cai2.renamed[catnum]=1;
+	 /* JPA move category names upward in listbox */
+	 /* we get the old text from listbox, to avoid making */
+	 /* character set conversions */
+         for (i=Pdata->selected; i<CATCOUNT-1; i++) {
+	    r = gtk_clist_get_text(GTK_CLIST(Pdata->clist), i+1, 0, &text);
+            if (r) gtk_clist_set_text(GTK_CLIST(Pdata->clist), i, 0, text);
+	 }
+	 /* JPA now clear the last category */
+	 gtk_clist_set_text(GTK_CLIST(Pdata->clist), CATCOUNT-1, 0, "");
 	 break;
        case EDIT_CAT_ENTRY_OK:
 	 if ((Pdata->state!=EDIT_CAT_RENAME) && (Pdata->state!=EDIT_CAT_NEW)) {
@@ -536,35 +558,56 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 	 if ( (!entry_text) || (!entry_text[0]) ) {
 	    return;
 	 }
-	 if (Pdata->state==EDIT_CAT_RENAME) {
-#ifdef EDIT_CATS_DEBUG
-	    printf("rename cat\n");
-#endif
-	    i=Pdata->selected;
-	    entry_text = gtk_entry_get_text(GTK_ENTRY(Pdata->entry));
-	    strncpy(Pdata->cai2.name[i], entry_text, 16);
-	    Pdata->cai2.name[i][15]='\0';
-	    Pdata->cai2.renamed[i]=1;
-	    gtk_clist_set_text(GTK_CLIST(Pdata->clist), i, 0, Pdata->cai2.name[i]);
-	 }
-	 if (Pdata->state==EDIT_CAT_NEW) {
-#ifdef EDIT_CATS_DEBUG
-	    printf("new cat\n");
-#endif
+
+ 	 if ((Pdata->state==EDIT_CAT_RENAME) || (Pdata->state==EDIT_CAT_NEW)) {
 	    /* Check for category being used more than once */
+	    /* moved here by JPA for use in both new and rename cases */
 	    entry_text = gtk_entry_get_text(GTK_ENTRY(Pdata->entry));
-	    for (i=0; i<16; i++) {
-	       if (!strcmp(entry_text, Pdata->cai2.name[i])) {
-		  g_snprintf(temp, sizeof(temp), _("The category %s can't be used more than once"), entry_text);
+	    /* JPA convert entry to Pilot character set before checking */
+	    /* note : don't know Pilot size until converted */
+	    strncpy(pilotentry, entry_text, HOSTCATLTH);
+	    pilotentry[HOSTCATLTH-1] = '\0';
+	    charset_j2p(pilotentry, HOSTCATLTH, char_set);
+	    pilotentry[PILOTCATLTH-1] = '\0';
+	    for (i=0; i<CATCOUNT; i++) {
+	       /* JPA allow a category to be renamed to its previous name */
+	       if (((i != catnum) || (Pdata->state != EDIT_CAT_RENAME))
+		   && !strcmp(pilotentry, Pdata->cai2.name[i])) {
+		  sprintf(temp, _("The category %s can't be used more than once"), entry_text);
 		  dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)), 0, 0,
 				 _("Edit Categories"), NULL,
 				 temp, 1, button_text);
 		  return;
 	       }
 	    }
+	 }
+	 if (Pdata->state==EDIT_CAT_RENAME) {
+#ifdef EDIT_CATS_DEBUG
+	    printf("rename cat\n");
+#endif
+	    i=Pdata->selected;
+	    entry_text = gtk_entry_get_text(GTK_ENTRY(Pdata->entry));
+ 	    //Pdata->cai2.renamed[i]=1;
+ 	    //gtk_clist_set_text(GTK_CLIST(Pdata->clist), i, 0, Pdata->cai2.name[i]);
+	    /* JPA strncpy(Pdata->cai2.name[catnum], entry_text, PILOTCATLTH); */
+	    /* JPA Pdata->cai2.name[catnum][PILOTCATLTH-1]='\0'; */
+	    Pdata->cai2.renamed[catnum]=1;
+	    /* JPA assuming gtk makes a copy */
+	    gtk_clist_set_text(GTK_CLIST(Pdata->clist), i, 0, entry_text);
+	    /* JPA enter new category name in Palm Pilot character set */
+	    charset_j2p((unsigned char*)entry_text, HOSTCATLTH, char_set);
+	    strncpy(Pdata->cai2.name[catnum], entry_text, PILOTCATLTH);
+	    Pdata->cai2.name[catnum][PILOTCATLTH-1]='\0';
+	 }
+	 
+	 if (Pdata->state==EDIT_CAT_NEW) {
+#ifdef EDIT_CATS_DEBUG
+	    printf("new cat\n");
+#endif
+	    /* JPA have already checked category is not being used more than once */
 	    /* Find a new category ID */
 	    id=128;
-	    for (i=1; i<16; i++) {
+	    for (i=1; i<CATCOUNT; i++) {
 	       if (Pdata->cai2.ID[i]==id) {
 		  id++;
 		  i=0;
@@ -572,16 +615,34 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 	    }
 	    /* Find an empty slot */
 	    /* When the new button was pressed we already checked for an empty slot */
-	    for (i=1; i<16; i++) {
+	    for (i=1; i<CATCOUNT; i++) {
 	       if (Pdata->cai2.name[i][0]=='\0') {
 #ifdef EDIT_CATS_DEBUG
 		  printf("slot %d is empty\n", i);
 #endif
+		  /* JPA get the old text from listbox, to avoid making */
+		  /* character set conversions */
+	          r = gtk_clist_get_text(GTK_CLIST(Pdata->clist), i, 0, &text);
+                  if (r) strncpy(currentname, text, HOSTCATLTH);
+                  currentname[HOSTCATLTH-1] = '\0';
 		  Pdata->cai2.ID[i]=id;
-		  strncpy(Pdata->cai2.name[i], entry_text, 16);
-		  Pdata->cai2.name[i][15]='\0';
+		  strcpy(Pdata->cai2.name[i], pilotentry);
 		  Pdata->cai2.renamed[i]=1;
-		  gtk_clist_set_text(GTK_CLIST(Pdata->clist), i, 0, Pdata->cai2.name[i]);
+		  gtk_clist_set_text(GTK_CLIST(Pdata->clist), i, 0, entry_text);
+		  /* JPA relabel category labels beyond the change */
+                  j = ++i;
+                  while (r && (i < CATCOUNT)) {
+		     while ((j < CATCOUNT) && (Pdata->cai2.name[j][0] == '\0')) j++;
+                     if (j < CATCOUNT) {
+                        strcpy(previousname, currentname);
+			r = gtk_clist_get_text(GTK_CLIST(Pdata->clist), i, 0, &text);
+                        if (r) strncpy(currentname, text, HOSTCATLTH);
+                        currentname[HOSTCATLTH-1] = '\0';
+		        gtk_clist_set_text(GTK_CLIST(Pdata->clist), i, 0, previousname);
+                        j++;
+		     }
+                     i++;
+		  }
 		  break;
 	       }
 	    }
@@ -632,7 +693,7 @@ static void cb_edit_cats_debug(GtkWidget *widget, gpointer data)
    int i;
 
    Pdata=data;
-   for (i=0; i<16; i++) {
+   for (i=0; i<CATCOUNT; i++) {
       printf("cai %2d [%16s] ID %3d %d: [%16s] ID %3d %d\n", i,
 	     Pdata->cai1.name[i], Pdata->cai1.ID[i], Pdata->cai1.renamed[i],
 	     Pdata->cai2.name[i], Pdata->cai2.ID[i], Pdata->cai2.renamed[i]);
@@ -671,7 +732,9 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
    GtkWidget *label;
    struct dialog_cats_data Pdata;
    int i;
+   int j;
    long char_set;
+   unsigned char *catname; /* JPA category names in host character set */
    char *titles[]={"category name"};
    gchar *empty_line[] = {""};
 
@@ -682,21 +745,28 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
    strncpy(Pdata.db_name, db_name, 16);
    Pdata.db_name[15]='\0';
 #ifdef EDIT_CATS_DEBUG
-   for (i = 0; i < 16; i++) {
+   for (i = 0; i < CATCOUNT; i++) {
       if (cai->name[i][0] != '\0') {
 	 printf("cat %d [%s] ID %d renamed %d\n", i, cai->name[i],
 		cai->ID[i], cai->renamed[i]);
       }
    }
 #endif
-   get_pref(PREF_CHAR_SET, &char_set, NULL);
-   if (char_set != CHAR_SET_LATIN1) {
-      for (i = 0; i < 16; i++) {
-	 if (cai->name[i][0] != '\0') {
-	    charset_p2j((unsigned char*)cai->name[i], 16, char_set);
-	 }
-      }
-   }
+
+/* removed by JPA : do not change category names as they will
+ * be written back to file.
+ *  We will however have to make a conversion for host dialog display
+ *
+ *   get_pref(PREF_CHAR_SET, &char_set, NULL);
+ *   if (char_set != CHAR_SET_LATIN1) {
+ *      for (i = 0; i < 16; i++) {
+ *	 if (cai->name[i][0] != '\0') {
+ *	    charset_p2j((unsigned char*)cai->name[i], 16, char_set);
+ *	 }
+ *      }
+ *   }
+ *
+ */
 
    dialog = gtk_widget_new(GTK_TYPE_WINDOW,
 			   "type", GTK_WINDOW_TOPLEVEL,
@@ -772,7 +842,7 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
 
    Pdata.label = label;
 
-   entry = gtk_entry_new_with_max_length(16);
+   entry = gtk_entry_new_with_max_length(HOSTCATLTH);
    gtk_signal_connect(GTK_OBJECT(entry), "activate",
 		      GTK_SIGNAL_FUNC(cb_edit_button),
 		      GINT_TO_POINTER(EDIT_CAT_ENTRY_OK));
@@ -792,11 +862,22 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
    Pdata.entry_box = vbox;
    Pdata.entry = entry;
 
-
-   for (i=0; i<16; i++) {
+   get_pref(PREF_CHAR_SET, &char_set, NULL); /* JPA */
+   for (i=j=0; i<CATCOUNT; i++,j++) {
       gtk_clist_append(GTK_CLIST(clist), empty_line);
-      if (cai->name[i][0] != '\0') {
-	 gtk_clist_set_text(GTK_CLIST(clist), i, 0, cai->name[i]);
+        /* JPA hide void category names */
+      while ((j < CATCOUNT) && ((cai->name[j][0] == '\0') || (j && !cai->ID[j]))) {
+	 /* JPA remove categories which have a null ID */
+	 /* to facilitate recovering from errors, */
+	 /* however we cannot synchronize them to the Palm Pilot */
+         if (j && !cai->ID[j]) cai->name[j][0] = '\0';
+         j++;
+      }
+      if (j < CATCOUNT) {
+	 /* gtk_clist_set_text(GTK_CLIST(clist), i, 0, cai->name[i]); JPA */
+          catname = charset_p2newj((unsigned char*)cai->name[j], PILOTCATLTH, char_set);
+	  gtk_clist_set_text(GTK_CLIST(clist), i, 0, catname); /* JPA */
+          free(catname);
       }
    }
 
@@ -852,21 +933,12 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
       return DIALOG_SAID_2;
    }
 #ifdef EDIT_CATS_DEBUG
-   for (i=0; i<16; i++) {
+   for (i=0; i<CATCOUNT; i++) {
       printf("name %d [%s] ID %d [%s] ID %d\n", i,
 			 Pdata.cai1.name[i], Pdata.cai1.ID[i],
 			 Pdata.cai2.name[i], Pdata.cai2.ID[i]);
    }
 #endif
-
-   get_pref(PREF_CHAR_SET, &char_set, NULL);
-   if (char_set != CHAR_SET_LATIN1) {
-      for (i = 0; i < 16; i++) {
-	 if (Pdata.cai2.name[i][0] != '\0') {
-	    charset_j2p((unsigned char*)Pdata.cai2.name[i], 16, char_set);
-	 }
-      }
-   }
 
    memcpy(cai, &(Pdata.cai2), sizeof(struct CategoryAppInfo));
 
