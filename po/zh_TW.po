@@ -1252,8 +1252,9 @@ msgid "One record"
 msgstr "一筆紀錄"
 
 #: print_gui.c:263
-msgid "All records in this category"
-msgstr "該種類裏的全部紀錄"
+#msgid "All records in this category"
+#this translation fails with gettext 0.11.5
+#msgstr "該種類裏的全部紀錄"
 
 #: print_gui.c:267
 msgid "Print all records"
