@@ -1,4 +1,4 @@
-/* $Id: memo.c,v 1.28 2004/11/22 00:52:42 rikster5 Exp $ */
+/* $Id: memo.c,v 1.29 2004/11/26 07:52:13 rousseau Exp $ */
 
 /*******************************************************************************
  * memo.c
@@ -199,8 +199,6 @@ int get_memo_app_info(struct MemoAppInfo *ai)
    int num;
    unsigned int rec_size;
    unsigned char *buf;
-   long char_set;
-   int i;
    long ivalue;
    char DBname[32];
 
