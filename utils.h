@@ -315,6 +315,7 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
 #define DAT_TYPE_CSTRING 5
 #define DAT_TYPE_DATE    3
 #define DAT_TYPE_BOOLEAN 6
+#define DAT_TYPE_BITFLAG 7
 #define DAT_TYPE_REPEAT  8
 
 /* Returns a dat type, or 0 */
