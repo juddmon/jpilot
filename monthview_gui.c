@@ -213,8 +213,8 @@ void create_month_texts()
    const char *str_fdow;
    char str[80];
    GtkWidget *hbox;
-   GdkColor color;
-   GdkColormap *colormap;
+   GtkWidget *vbox;
+   GtkWidget *label;
 
    /* Month name label */
    strftime(str, sizeof(str), "%B %Y", &glob_month_date);
@@ -240,23 +240,18 @@ void create_month_texts()
       gtk_text_set_word_wrap(GTK_TEXT(glob_month_texts[n]), FALSE);
       gtk_signal_connect(GTK_OBJECT(glob_month_texts[n]), "enter_notify_event",
 			 GTK_SIGNAL_FUNC(cb_enter_notify), GINT_TO_POINTER(n));
-      gtk_box_pack_start(GTK_BOX(glob_hbox_month_row[row]), glob_month_texts[n], TRUE, TRUE, 0);
+      vbox = gtk_vbox_new(FALSE, 0);
+      gtk_box_pack_start(GTK_BOX(glob_hbox_month_row[row]), vbox, TRUE, TRUE, 0);
+      sprintf(str, "%d", n + 1);
+      label = gtk_label_new(str);
+      gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
+      gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
+      gtk_box_pack_start(GTK_BOX(vbox), glob_month_texts[n], TRUE, TRUE, 0);
+
       if (++column > 6) {
 	 column=0;
 	 row++;
       }
-   }
-
-   color.red = 0xAAAA;
-   color.green = 0xAAAA;
-   color.blue = 0xAAAA;
-
-   colormap = gtk_widget_get_colormap(glob_month_texts[0]);
-   gdk_color_alloc(colormap, &color);
-
-   for (n=0; n<ndim; n++) {
-      sprintf(str, "%d\n", n + 1);
-      gtk_text_insert(GTK_TEXT(glob_month_texts[n]), NULL, NULL, &color, str, -1);
    }
 
    for (n=column; n<7; n++) {
@@ -290,14 +285,7 @@ int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
    a_list = NULL;
    text = day_texts;
    mask=0;
-/*
-   get_pref(PREF_CHAR_SET, &char_set, NULL);
-   if (char_set==CHAR_SET_1250) {
-       small_font = gdk_fontset_load("-misc-fixed-medium-r-*-*-*-100-*-*-*-iso8859-2");
-   } else {
-       small_font = gdk_fontset_load("-misc-fixed-medium-r-*-*-*-100-*-*-*-*-*");
-   }
-*/
+
    memcpy(&date, date_in, sizeof(struct tm));
 
    /* Get all of the appointments */
@@ -343,8 +331,6 @@ int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
 	    }
 	    remove_cr_lfs(desc);
 	    strcat(desc, "\n");
-/*	    gtk_text_insert(GTK_TEXT(text[n]),
-			    small_font, NULL, NULL, desc, -1);*/
 	    gtk_text_insert(GTK_TEXT(text[n]),
 			    NULL, NULL, NULL, desc, -1);
 	 }
@@ -358,16 +344,7 @@ int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
 
 void monthview_gui(struct tm *date_in)
 {
-   char *days[]={
-      gettext_noop("Sunday"),
-      gettext_noop("Monday"),
-      gettext_noop("Tuesday"),
-      gettext_noop("Wednesday"),
-      gettext_noop("Thursday"),
-      gettext_noop("Friday"),
-      gettext_noop("Saturday"),
-      gettext_noop("Sunday")};
-
+   struct tm date;
    GtkWidget *label;
    GtkWidget *button;
    GtkWidget *arrow;
@@ -377,6 +354,7 @@ void monthview_gui(struct tm *date_in)
    GtkWidget *hbox_temp;
    int i;
    char str[256];
+   char str_dow[256];
    long fdow;
    const char *str_fdow;
    char title[200];
@@ -394,19 +372,19 @@ void monthview_gui(struct tm *date_in)
 
    get_pref(PREF_FDOW, &fdow, &str_fdow);
 
-   window = gtk_widget_new(GTK_TYPE_WINDOW,
-			   "type", GTK_WINDOW_TOPLEVEL,
-			   "title", _("Monthly View"),
-			   NULL);
-
    get_pref(PREF_MONTHVIEW_WIDTH, &w, NULL);
    get_pref(PREF_MONTHVIEW_HEIGHT, &h, NULL);
+
+   g_snprintf(title, sizeof(title), "%s %s", PN, _("Monthly View"));
+
+   window = gtk_widget_new(GTK_TYPE_WINDOW,
+			   "type", GTK_WINDOW_TOPLEVEL,
+			   "title", title,
+			   NULL);
 
    gtk_window_set_default_size(GTK_WINDOW(window), w, h);
 
    gtk_container_set_border_width(GTK_CONTAINER(window), 10);
-   g_snprintf(title, sizeof(title), "%s %s", PN, _("Monthly View"));
-   gtk_window_set_title(GTK_WINDOW(window), title);
 
    gtk_signal_connect(GTK_OBJECT(window), "destroy",
                       GTK_SIGNAL_FUNC(cb_destroy), window);
@@ -459,12 +437,24 @@ void monthview_gui(struct tm *date_in)
    glob_month_month_label = gtk_label_new(str);
    gtk_box_pack_start(GTK_BOX(vbox), glob_month_month_label, FALSE, FALSE, 0);
 
+   /* We know this is on a Sunday */
+   memset(&date, 0, sizeof(date));
+   date.tm_hour=12;
+   date.tm_mday=3;
+   date.tm_mon=1;
+   date.tm_year=80;
+   mktime(&date);
+   /* Get to the first day of week */
+   if (fdow) add_days_to_date(&date, fdow);
+
    /* Days of the week */
    hbox = gtk_hbox_new(TRUE, 0);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
    for (i=0; i<7; i++) {
-      label = gtk_label_new(_(days[i+fdow]));
+      strftime(str_dow, sizeof(str_dow), "%A", &date);
+      label = gtk_label_new(str_dow);
       gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
+      add_days_to_date(&date, 1);
    }
 
    /* glob_month_vbox */
