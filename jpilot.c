@@ -2361,6 +2361,7 @@ char *xpm_unlocked[] = {
 
    gtk_idle_add(cb_check_version, window);
    
+   cb_output(NULL, GINT_TO_POINTER(OUTPUT_SETSIZE));
    gtk_main();
 
    return 0;
