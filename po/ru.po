@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: jpilot 0.99.5\n"
-"POT-Creation-Date: 2003-02-22 09:49-0500\n"
+"POT-Creation-Date: 2003-02-27 18:06-0500\n"
 "PO-Revision-Date: 2003-02-22 17:00+02:00\n"
 "Last-Translator: Vladimir Bormotov <bor@insight.donbass.com>\n"
 "Language-Team: Russian <ru@li.org>\n"
@@ -40,10 +40,11 @@ msgid "Unfiled"
 msgstr "Unfiled"
 
 #. Buttons
-#: KeyRing/keyring.c:1165 address_gui.c:625 alarms.c:223 datebook_gui.c:627
-#: datebook_gui.c:1103 export_gui.c:330 jpilot.c:352 jpilot.c:399 jpilot.c:467
-#: jpilot.c:511 jpilot.c:962 memo_gui.c:462 password.c:364 restore_gui.c:291
-#: todo_gui.c:594 utils.c:1049 utils.c:1188
+#: KeyRing/keyring.c:1165 address_gui.c:625 alarms.c:223 category.c:387
+#: category.c:761 category.c:790 datebook_gui.c:627 datebook_gui.c:1103
+#: export_gui.c:330 jpilot.c:352 jpilot.c:399 jpilot.c:467 jpilot.c:511
+#: jpilot.c:962 memo_gui.c:462 password.c:364 restore_gui.c:291 todo_gui.c:594
+#: utils.c:1049 utils.c:1188
 msgid "OK"
 msgstr "Ок"
 
@@ -112,7 +113,9 @@ msgid "%d of %d records"
 msgstr "%d из %d записей"
 
 #. Edit category button
-#: Expense/expense.c:1307 address_gui.c:2347 memo_gui.c:1315 todo_gui.c:1687
+#: Expense/expense.c:1307 address_gui.c:2347 category.c:408 category.c:422
+#: category.c:429 category.c:447 category.c:465 category.c:541 category.c:684
+#: memo_gui.c:1315 todo_gui.c:1687
 msgid "Edit Categories"
 msgstr "Категории..."
 
@@ -126,7 +129,8 @@ msgstr "Быстрый поиск"
 
 #. Delete Button
 #: Expense/expense.c:1341 KeyRing/keyring.c:1390 address_gui.c:2413
-#: datebook_gui.c:3810 memo_gui.c:1369 todo_gui.c:1760
+#: category.c:388 category.c:734 datebook_gui.c:3810 memo_gui.c:1369
+#: todo_gui.c:1760
 msgid "Delete"
 msgstr "Удалить"
 
@@ -226,6 +230,87 @@ msgstr "Отложеные встречи"
 msgid "Appointment"
 msgstr "Встреча"
 
+#: category.c:188 category.c:245 sync.c:978 sync.c:984 sync.c:1992 sync.c:2309
+#: sync.c:2546
+#, c-format
+msgid "Unable to open %s\n"
+msgstr "Hе могу открыть %s\n"
+
+#: category.c:204 category.c:261 sync.c:1007 sync.c:2008
+msgid "PC file corrupt?\n"
+msgstr "Файл на ПК испорчен?\n"
+
+#: category.c:211 category.c:221 category.c:268 category.c:279 category.c:289
+#: sync.c:1050 sync.c:1068 sync.c:1109 sync.c:1119 sync.c:2070 sync.c:2097
+#: sync.c:2140 sync.c:2150
+msgid "fseek failed - fatal error\n"
+msgstr "fseek неудался - фатальная ошибка\n"
+
+#: category.c:388
+#, fuzzy
+msgid "Move"
+msgstr " Пн "
+
+#. Create a "Quit" button
+#: KeyRing/keyring.c:1171 category.c:388 category.c:767 category.c:796
+#: datebook_gui.c:1108 datebook_gui.c:1542 export_gui.c:335 password.c:370
+#: print_gui.c:336 restore_gui.c:296 utils.c:1059
+msgid "Cancel"
+msgstr "Отмена"
+
+#: category.c:409
+msgid "The maximum number of categories (16) are already used"
+msgstr ""
+
+#: category.c:412
+#, fuzzy
+msgid "Enter New Category"
+msgstr "Категории..."
+
+#: category.c:423
+#, fuzzy
+msgid "You must select a category to rename"
+msgstr "Не удается добавить категорию %s на Palm.\n"
+
+#: category.c:427
+#, fuzzy, c-format
+msgid "You can't edit category %s.\n"
+msgstr "Не удается добавить категорию %s на Palm.\n"
+
+#: category.c:434
+msgid "Enter New Category Name"
+msgstr ""
+
+#: category.c:448
+#, fuzzy
+msgid "You must select a category to delete"
+msgstr "Не удается добавить категорию %s на Palm.\n"
+
+#: category.c:461
+#, c-format
+msgid ""
+"There are %d records in %s.\n"
+"Do you want to move them to %s, or delete them?"
+msgstr ""
+
+#: category.c:539
+#, c-format
+msgid "The category %s can't be used more than once"
+msgstr ""
+
+#: category.c:722
+msgid "New"
+msgstr ""
+
+#: category.c:728
+#, fuzzy
+msgid "Rename"
+msgstr "имя: "
+
+#: category.c:803
+msgid "debug"
+msgstr ""
+
 #: datebook_gui.c:185 datebook_gui.c:192 datebook_gui.c:3614
 #: datebook_gui.c:3621
 msgid "Su"
@@ -280,13 +365,6 @@ msgstr "Сохранить как"
 #: datebook_gui.c:1095 export_gui.c:322
 msgid "Browse"
 msgstr " Просмотр "
-
-#. Create a "Quit" button
-#: KeyRing/keyring.c:1171 datebook_gui.c:1108 datebook_gui.c:1542
-#: export_gui.c:335 password.c:370 print_gui.c:336 restore_gui.c:296
-#: utils.c:1059
-msgid "Cancel"
-msgstr "Отмена"
 
 #. Create a "Quit" button
 #: datebook_gui.c:1278 import_gui.c:322 install_gui.c:300 prefs_gui.c:736
@@ -392,7 +470,8 @@ msgstr "Вы не можете создать встречу повторяющуюся каждый %d %s\n"
 msgid ""
 "You can not have a weekly repeating appointment that doesn't repeat on any "
 "day of the week."
-msgstr "Вы не можете создать еженедельную встречу повторяющуюся каждый день недели."
+msgstr ""
+"Вы не можете создать еженедельную встречу повторяющуюся каждый день недели."
 
 #. This is a timeless event
 #: datebook_gui.c:2183
@@ -1380,19 +1459,10 @@ msgstr "Удаление записи %s не удалось."
 msgid "Deleted a %s record."
 msgstr "Запись %s удалена."
 
-#: sync.c:978 sync.c:984 sync.c:1992 sync.c:2309 sync.c:2546
-#, c-format
-msgid "Unable to open %s\n"
-msgstr "Hе могу открыть %s\n"
-
 #: sync.c:993
 #, c-format
 msgid "number of records = %d\n"
 msgstr "Количество записей = %d\n"
-
-#: sync.c:1007 sync.c:2008
-msgid "PC file corrupt?\n"
-msgstr "Файл на ПК испорчен?\n"
 
 #: sync.c:1014
 msgid "slow_sync_application(): Out of memory\n"
@@ -1401,11 +1471,6 @@ msgstr "slow_sync_application(): Hедостаточно памяти\n"
 #: sync.c:1040 sync.c:2060
 msgid "dlp_WriteRecord failed\n"
 msgstr "dlp_WriteRecord неудалось\n"
-
-#: sync.c:1050 sync.c:1068 sync.c:1109 sync.c:1119 sync.c:2070 sync.c:2097
-#: sync.c:2140 sync.c:2150
-msgid "fseek failed - fatal error\n"
-msgstr "fseek неудался - фатальная ошибка\n"
 
 #: sync.c:1199 sync.c:1539
 #, c-format

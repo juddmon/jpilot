@@ -1,14 +1,14 @@
 # JPILOT Messages.
-# Copyright (C) 2001 Free Software Foundation, Inc.
-# Regis Rampnoux <regisr@regix.com>, 2000-2002.
+# Copyright (C) 2001-2003 Free Software Foundation, Inc.
+# Regis Rampnoux <regisr@regix.com>, 2000-2003.
 #
 #. prefix label
 #: dialer.c:292
 msgid ""
 msgstr ""
-"Project-Id-Version: jpilot 0.99.4\n"
+"Project-Id-Version: jpilot 0.99.5\n"
 "POT-Creation-Date: 2003-02-22 09:49-0500\n"
-"PO-Revision-Date: 2003-01-11 19:19+0100\n"
+"PO-Revision-Date: 2003-03-13 23:58+0100\n"
 "Last-Translator: Regis Rampnoux <regisr@regix.com>\n"
 "Language-Team:  French <traduc@traduc.org>\n"
 "MIME-Version: 1.0\n"
@@ -256,9 +256,8 @@ msgstr "Sa"
 
 #: datebook_gui.c:529 datebook_gui.c:944 datebook_gui.c:2038
 #: datebook_gui.c:2045
-#, fuzzy
 msgid "Error"
-msgstr "erreur"
+msgstr "Erreur"
 
 #: datebook_gui.c:530
 msgid "File doesn't appear to be datebook.dat format\n"
@@ -389,13 +388,12 @@ msgid "You cannot have an appointment that repeats every %d %s(s)\n"
 msgstr "Vous ne pouvez pas avoir un rendez-vous répété tous les %d %s(s)\n"
 
 #: datebook_gui.c:2046
-#, fuzzy
 msgid ""
 "You can not have a weekly repeating appointment that doesn't repeat on any "
 "day of the week."
 msgstr ""
-"Vous ne pouvez pas avoir un rendez-vous répété qui ne se répète aucunjour de "
-"la semaine\n"
+"Vous ne pouvez pas avoir un rendez-vous hebdomadaire qui ne se répète aucun "
+"jour de la semaine"
 
 #. This is a timeless event
 #: datebook_gui.c:2183
@@ -403,15 +401,16 @@ msgid "No Time"
 msgstr "Pas d'heure"
 
 #: datebook_gui.c:2457
-#, fuzzy
 msgid "Invalid Appointment"
-msgstr "Rendez-vous passé"
+msgstr "Rendez-vous non valable"
 
 #: datebook_gui.c:2458
 msgid ""
 "The End Date of this appointment\n"
 "is before the start date."
 msgstr ""
+"La date de fin de ce rendez-vous\n"
+"est antérieure à celle de début."
 
 #. The No due date check box
 #: datebook_gui.c:2640 datebook_gui.c:4059 datebook_gui.c:4089
@@ -455,9 +454,8 @@ msgid "Starts on"
 msgstr "Commence le"
 
 #: datebook_gui.c:3924
-#, fuzzy
 msgid "Start Time"
-msgstr "Commence le"
+msgstr "Heure de début"
 
 #: datebook_gui.c:4009
 msgid "DateBk Tags"
@@ -753,90 +751,89 @@ msgid "/Plugins"
 msgstr "/Greffons"
 
 #: jpilot.c:1164
-#, fuzzy
 msgid "/Web"
-msgstr "Me"
+msgstr "/Web"
 
 #: jpilot.c:1165
 msgid "/Web/Netscape"
-msgstr ""
+msgstr "/Web/Netscape"
 
 #: jpilot.c:1166 jpilot.c:1168 jpilot.c:1170
 #, c-format
 msgid "/Web/Netscape/%s"
-msgstr ""
+msgstr "/Web/Netscape/%s"
 
 #: jpilot.c:1172
 msgid "/Web/Mozilla"
-msgstr ""
+msgstr "/Web/Mozilla"
 
 #: jpilot.c:1174 jpilot.c:1176 jpilot.c:1178 jpilot.c:1180
 #, c-format
 msgid "/Web/Mozilla/%s"
-msgstr ""
+msgstr "/Web/Mozilla/%s"
 
 #: jpilot.c:1183
 msgid "/Web/Galeon"
-msgstr ""
+msgstr "/Web/Galeon"
 
 #: jpilot.c:1184 jpilot.c:1186 jpilot.c:1188 jpilot.c:1190
 #, c-format
 msgid "/Web/Galeon/%s"
-msgstr ""
+msgstr "/Web/Galeon/%s"
 
 #: jpilot.c:1193
 msgid "/Web/Opera"
-msgstr ""
+msgstr "/Web/Opera"
 
 #: jpilot.c:1194 jpilot.c:1196 jpilot.c:1198
 #, c-format
 msgid "/Web/Opera/%s"
-msgstr ""
+msgstr "/Web/Opera/%s"
 
 #: jpilot.c:1201
 msgid "/Web/GnomeUrl"
-msgstr ""
+msgstr "/Web/GnomeUrl"
 
 #: jpilot.c:1202
 #, c-format
 msgid "/Web/GnomeUrl/%s"
-msgstr ""
+msgstr "/Web/GnomeUrl/%s"
 
 #: jpilot.c:1205
 msgid "/Web/Lynx"
-msgstr ""
+msgstr "/Web/Lynx"
 
 #: jpilot.c:1206
 #, c-format
 msgid "/Web/Lynx/%s"
-msgstr ""
+msgstr "/Web/Lynx/%s"
 
 #: jpilot.c:1209
 msgid "/Web/Links"
-msgstr ""
+msgstr "/Web/Links"
 
 #: jpilot.c:1210
 #, c-format
 msgid "/Web/Links/%s"
-msgstr ""
+msgstr "/Web/Links/%s"
 
 #: jpilot.c:1213
 msgid "/Web/W3M"
-msgstr ""
+msgstr "/Web/W3M"
 
 #: jpilot.c:1214
 #, c-format
 msgid "/Web/W3M/%s"
-msgstr ""
+msgstr "/Web/W3M/%s"
 
 #: jpilot.c:1217
 msgid "/Web/Konqueror"
-msgstr ""
+msgstr "/Web/Konqueror"
 
 #: jpilot.c:1218
 #, c-format
 msgid "/Web/Konqueror/%s"
-msgstr ""
+msgstr "/Web/Konqueror/%s"
 
 #: jpilot.c:1221
 msgid "/_Help"
@@ -1512,14 +1509,14 @@ msgid "Error reading at %s : %s %d\n"
 msgstr "Erreur en lecture à %s : %s %d\n"
 
 #: sync.c:2531
-#, fuzzy, c-format
+#, c-format
 msgid "%s:%d Error getting app info %s\n"
-msgstr "Erreur en lecture bloc appinfo pour %s\n"
+msgstr "%s:%d Erreur de lecture app info  %s\n"
 
 #: sync.c:2537 sync.c:2563
-#, fuzzy, c-format
+#, c-format
 msgid "%s:%d Error unpacking app info %s\n"
-msgstr "Erreur en lecture bloc appinfo pour %s\n"
+msgstr "%s:%d Erreur décompactage app info %s\n"
 
 #: sync.c:2556
 #, c-format
@@ -1552,14 +1549,14 @@ msgid "Warning ToDo note too long, truncating to %d\n"
 msgstr "Attention note de la tâche trop longue, coupée à %d\n"
 
 #: todo.c:356
-#, fuzzy, c-format
+#, c-format
 msgid "%s:%d Error reading category info %s\n"
-msgstr "Erreur en lecture à %s : %s %d\n"
+msgstr "%s:%d Erreur lecture catatégorie %s\n"
 
 #: todo.c:367
-#, fuzzy, c-format
+#, c-format
 msgid "%s:%d Error reading %s\n"
-msgstr "Erreur en lecture %s\n"
+msgstr "%s:%d Erreur en lecture %s\n"
 
 #: todo_gui.c:145
 msgid "Due Date"
@@ -1898,7 +1895,6 @@ msgid "France"
 msgstr "France"
 
 #: Expense/expense.c:1147
-#, fuzzy
 msgid "Germany"
 msgstr "Allemagne"
 

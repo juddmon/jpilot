@@ -451,7 +451,7 @@ msgstr "Deze gebeurtenis heeft geen bepaalde tijd"
 
 #: datebook_gui.c:3910
 msgid "Starts on"
-msgstr "Begint om"
+msgstr "Begint op"
 
 #: datebook_gui.c:3924
 msgid "Start Time"
@@ -688,7 +688,7 @@ msgstr "/Bestand/tear"
 
 #: jpilot.c:1146
 msgid "/File/_Find"
-msgstr "Bestand/_Zoeken"
+msgstr "/Bestand/_Zoeken"
 
 #: jpilot.c:1147 jpilot.c:1153 jpilot.c:1155
 msgid "/File/sep1"

@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: JPilot\n"
-"POT-Creation-Date: 2003-02-22 09:49-0500\n"
+"POT-Creation-Date: 2003-02-27 18:06-0500\n"
 "PO-Revision-Date: 2001-08-16 14:53GMT+1\n"
 "Last-Translator: Ragnar Wisløff <ragnar@wisloff.no>\n"
 "Language-Team: Norsk bokmål <no@li.org>\n"
@@ -41,10 +41,11 @@ msgid "Unfiled"
 msgstr ""
 
 #. Buttons
-#: KeyRing/keyring.c:1165 address_gui.c:625 alarms.c:223 datebook_gui.c:627
-#: datebook_gui.c:1103 export_gui.c:330 jpilot.c:352 jpilot.c:399 jpilot.c:467
-#: jpilot.c:511 jpilot.c:962 memo_gui.c:462 password.c:364 restore_gui.c:291
-#: todo_gui.c:594 utils.c:1049 utils.c:1188
+#: KeyRing/keyring.c:1165 address_gui.c:625 alarms.c:223 category.c:387
+#: category.c:761 category.c:790 datebook_gui.c:627 datebook_gui.c:1103
+#: export_gui.c:330 jpilot.c:352 jpilot.c:399 jpilot.c:467 jpilot.c:511
+#: jpilot.c:962 memo_gui.c:462 password.c:364 restore_gui.c:291 todo_gui.c:594
+#: utils.c:1049 utils.c:1188
 msgid "OK"
 msgstr "Greit"
 
@@ -116,7 +117,9 @@ msgid "%d of %d records"
 msgstr "%d av %d poster"
 
 #. Edit category button
-#: Expense/expense.c:1307 address_gui.c:2347 memo_gui.c:1315 todo_gui.c:1687
+#: Expense/expense.c:1307 address_gui.c:2347 category.c:408 category.c:422
+#: category.c:429 category.c:447 category.c:465 category.c:541 category.c:684
+#: memo_gui.c:1315 todo_gui.c:1687
 msgid "Edit Categories"
 msgstr ""
 
@@ -130,7 +133,8 @@ msgstr "Hurtigsøk"
 
 #. Delete Button
 #: Expense/expense.c:1341 KeyRing/keyring.c:1390 address_gui.c:2413
-#: datebook_gui.c:3810 memo_gui.c:1369 todo_gui.c:1760
+#: category.c:388 category.c:734 datebook_gui.c:3810 memo_gui.c:1369
+#: todo_gui.c:1760
 msgid "Delete"
 msgstr "Slette"
 
@@ -227,6 +231,84 @@ msgstr "Utsatt avtale"
 msgid "Appointment"
 msgstr "Avtale"
 
+#: category.c:188 category.c:245 sync.c:978 sync.c:984 sync.c:1992 sync.c:2309
+#: sync.c:2546
+#, c-format
+msgid "Unable to open %s\n"
+msgstr ""
+
+#: category.c:204 category.c:261 sync.c:1007 sync.c:2008
+msgid "PC file corrupt?\n"
+msgstr ""
+
+#: category.c:211 category.c:221 category.c:268 category.c:279 category.c:289
+#: sync.c:1050 sync.c:1068 sync.c:1109 sync.c:1119 sync.c:2070 sync.c:2097
+#: sync.c:2140 sync.c:2150
+msgid "fseek failed - fatal error\n"
+msgstr ""
+
+#: category.c:388
+#, fuzzy
+msgid "Move"
+msgstr "Ma"
+
+#. Create a "Quit" button
+#: KeyRing/keyring.c:1171 category.c:388 category.c:767 category.c:796
+#: datebook_gui.c:1108 datebook_gui.c:1542 export_gui.c:335 password.c:370
+#: print_gui.c:336 restore_gui.c:296 utils.c:1059
+msgid "Cancel"
+msgstr "Angre"
+
+#: category.c:409
+msgid "The maximum number of categories (16) are already used"
+msgstr ""
+
+#: category.c:412
+msgid "Enter New Category"
+msgstr ""
+
+#: category.c:423
+msgid "You must select a category to rename"
+msgstr ""
+
+#: category.c:427
+#, c-format
+msgid "You can't edit category %s.\n"
+msgstr ""
+
+#: category.c:434
+msgid "Enter New Category Name"
+msgstr ""
+
+#: category.c:448
+msgid "You must select a category to delete"
+msgstr ""
+
+#: category.c:461
+#, c-format
+msgid ""
+"There are %d records in %s.\n"
+"Do you want to move them to %s, or delete them?"
+msgstr ""
+
+#: category.c:539
+#, c-format
+msgid "The category %s can't be used more than once"
+msgstr ""
+
+#: category.c:722
+msgid "New"
+msgstr ""
+
+#: category.c:728
+#, fuzzy
+msgid "Rename"
+msgstr "Navn"
+
+#: category.c:803
+msgid "debug"
+msgstr ""
+
 # These days of the week are put in the buttons above the calendar and
 # the little buttons in the repeat weekly window.
 # They should be one letter if possible.  The English ones get truncated to
@@ -287,13 +369,6 @@ msgstr ""
 #: datebook_gui.c:1095 export_gui.c:322
 msgid "Browse"
 msgstr ""
-
-#. Create a "Quit" button
-#: KeyRing/keyring.c:1171 datebook_gui.c:1108 datebook_gui.c:1542
-#: export_gui.c:335 password.c:370 print_gui.c:336 restore_gui.c:296
-#: utils.c:1059
-msgid "Cancel"
-msgstr "Angre"
 
 #. Create a "Quit" button
 #: datebook_gui.c:1278 import_gui.c:322 install_gui.c:300 prefs_gui.c:736
@@ -1404,18 +1479,9 @@ msgstr ""
 msgid "Deleted a %s record."
 msgstr "%d av %d poster"
 
-#: sync.c:978 sync.c:984 sync.c:1992 sync.c:2309 sync.c:2546
-#, c-format
-msgid "Unable to open %s\n"
-msgstr ""
-
 #: sync.c:993
 #, c-format
 msgid "number of records = %d\n"
-msgstr ""
-
-#: sync.c:1007 sync.c:2008
-msgid "PC file corrupt?\n"
 msgstr ""
 
 #: sync.c:1014
@@ -1424,11 +1490,6 @@ msgstr ""
 
 #: sync.c:1040 sync.c:2060
 msgid "dlp_WriteRecord failed\n"
-msgstr ""
-
-#: sync.c:1050 sync.c:1068 sync.c:1109 sync.c:1119 sync.c:2070 sync.c:2097
-#: sync.c:2140 sync.c:2150
-msgid "fseek failed - fatal error\n"
 msgstr ""
 
 #: sync.c:1199 sync.c:1539

@@ -1,14 +1,16 @@
-# JPILOT-0.99.3a
+# JPILOT-0.99.5
 # Copyright (C) 2002 Free Software Foundation, Inc.
 # Eyüp Hakan Duran <hakan_duran@hotmail.com>, 2002.
+#
+#
 #
 #. prefix label
 #: dialer.c:292
 msgid ""
 msgstr ""
-"Project-Id-Version: jpilot 0.99.4\n"
+"Project-Id-Version: jpilot 0.99.5\n"
 "POT-Creation-Date: 2003-02-22 09:49-0500\n"
-"PO-Revision-Date: 2003-01-27 10:19GMT\n"
+"PO-Revision-Date: 2003-03-19 12:10GMT\n"
 "Last-Translator: Eyüp Hakan Duran <hakan_duran@hotmail.com>\n"
 "Language-Team: Turkish <gnu-tr-u12a@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -257,9 +259,8 @@ msgstr "Cts"
 
 #: datebook_gui.c:529 datebook_gui.c:944 datebook_gui.c:2038
 #: datebook_gui.c:2045
-#, fuzzy
 msgid "Error"
-msgstr "hata"
+msgstr "Hata"
 
 #: datebook_gui.c:530
 msgid "File doesn't appear to be datebook.dat format\n"
@@ -390,12 +391,8 @@ msgid "You cannot have an appointment that repeats every %d %s(s)\n"
 msgstr "Her %d %s'de yinelenen randevunuz olamaz\n"
 
 #: datebook_gui.c:2046
-#, fuzzy
-msgid ""
-"You can not have a weekly repeating appointment that doesn't repeat on any "
-"day of the week."
-msgstr ""
-"Haftanýn herhangi bir gününde yinelenmeyen haftalýk randevunuz olamaz.\n"
+msgid "You can not have a weekly repeating appointment that doesn't repeat on any day of the week."
+msgstr "Haftanýn herhangi bir gününde yinelenmeyen haftalýk randevunuz olamaz."
 
 #. This is a timeless event
 #: datebook_gui.c:2183
@@ -403,15 +400,16 @@ msgid "No Time"
 msgstr "Zaman Yok"
 
 #: datebook_gui.c:2457
-#, fuzzy
 msgid "Invalid Appointment"
-msgstr "Geçmiþ Randevu"
+msgstr "Geçersiz Randevu"
 
 #: datebook_gui.c:2458
 msgid ""
 "The End Date of this appointment\n"
 "is before the start date."
 msgstr ""
+"Bu randevunun Bitiþ Tarihi\n"
+"baþlangýç tarihinden önce."
 
 #. The No due date check box
 #: datebook_gui.c:2640 datebook_gui.c:4059 datebook_gui.c:4089
@@ -641,8 +639,7 @@ msgstr ""
 " -p eklentileri yüklemez.\n"
 " -a bu program son çalýþtýrýldýðýndan beri kaçýrýlmýþ alarmlarý yoksayar.\n"
 " -A geçmiþ ve gelecek tüm alarmlarý yoksayar.\n"
-" The PILOTPORT ve PILOTRATE çevre deðiþkenleri, hangi portun hangi hýzda "
-"eþzamanlanacaðýný\n"
+" The PILOTPORT ve PILOTRATE çevre deðiþkenleri, hangi portun hangi hýzda eþzamanlanacaðýný\n"
 " belirlemek için kullanýlýr.\n"
 " Eðer PILOTPORT atanmamýþsa, /dev/pilot'a öntanýmlanýr.\n"
 
@@ -753,90 +750,89 @@ msgid "/Plugins"
 msgstr "/Eklentiler"
 
 #: jpilot.c:1164
-#, fuzzy
 msgid "/Web"
-msgstr "Çar"
+msgstr "/Web"
 
 #: jpilot.c:1165
 msgid "/Web/Netscape"
-msgstr ""
+msgstr "/Web/Netscape"
 
 #: jpilot.c:1166 jpilot.c:1168 jpilot.c:1170
 #, c-format
 msgid "/Web/Netscape/%s"
-msgstr ""
+msgstr "/Web/Netscape/%s"
 
 #: jpilot.c:1172
 msgid "/Web/Mozilla"
-msgstr ""
+msgstr "/Web/Mozilla"
 
 #: jpilot.c:1174 jpilot.c:1176 jpilot.c:1178 jpilot.c:1180
 #, c-format
 msgid "/Web/Mozilla/%s"
-msgstr ""
+msgstr "/Web/Mozilla/%s"
 
 #: jpilot.c:1183
 msgid "/Web/Galeon"
-msgstr ""
+msgstr "/Web/Galeon"
 
 #: jpilot.c:1184 jpilot.c:1186 jpilot.c:1188 jpilot.c:1190
 #, c-format
 msgid "/Web/Galeon/%s"
-msgstr ""
+msgstr "/Web/Galeon/%s"
 
 #: jpilot.c:1193
 msgid "/Web/Opera"
-msgstr ""
+msgstr "/Web/Opera"
 
 #: jpilot.c:1194 jpilot.c:1196 jpilot.c:1198
 #, c-format
 msgid "/Web/Opera/%s"
-msgstr ""
+msgstr "/Web/Opera/%s"
 
 #: jpilot.c:1201
 msgid "/Web/GnomeUrl"
-msgstr ""
+msgstr "/Web/GnomeUrl"
 
 #: jpilot.c:1202
 #, c-format
 msgid "/Web/GnomeUrl/%s"
-msgstr ""
+msgstr "/Web/GnomeUrl/%s"
 
 #: jpilot.c:1205
 msgid "/Web/Lynx"
-msgstr ""
+msgstr "/Web/Lynx"
 
 #: jpilot.c:1206
 #, c-format
 msgid "/Web/Lynx/%s"
-msgstr ""
+msgstr "/Web/Lynx/%s"
 
 #: jpilot.c:1209
 msgid "/Web/Links"
-msgstr ""
+msgstr "/Web/Links"
 
 #: jpilot.c:1210
 #, c-format
 msgid "/Web/Links/%s"
-msgstr ""
+msgstr "/Web/Links/%s"
 
 #: jpilot.c:1213
 msgid "/Web/W3M"
-msgstr ""
+msgstr "/Web/W3M"
 
 #: jpilot.c:1214
 #, c-format
 msgid "/Web/W3M/%s"
-msgstr ""
+msgstr "/Web/W3M/%s"
 
 #: jpilot.c:1217
 msgid "/Web/Konqueror"
-msgstr ""
+msgstr "/Web/Konqueror"
 
 #: jpilot.c:1218
 #, c-format
 msgid "/Web/Konqueror/%s"
-msgstr ""
+msgstr "/Web/Konqueror/%s"
 
 #: jpilot.c:1221
 msgid "/_Help"
@@ -1166,10 +1162,8 @@ msgid "To restore your handheld:"
 msgstr "Avuçiçini geri yüklemek için:"
 
 #: restore_gui.c:236
-msgid ""
-"1. Choose all the applications you wish to restore.  The default is all."
-msgstr ""
-"1. Geri yüklemek istediðiniz tüm uygulamalarý seçiniz.  Öntaným tümünü seçer."
+msgid "1. Choose all the applications you wish to restore.  The default is all."
+msgstr "1. Geri yüklemek istediðiniz tüm uygulamalarý seçiniz.  Öntaným tümünü seçer."
 
 #: restore_gui.c:239
 msgid "2. Enter the User Name and User ID."
@@ -1513,14 +1507,14 @@ msgid "Error reading at %s : %s %d\n"
 msgstr "%s'i okuma sýrasýnda hata: %s %d\n"
 
 #: sync.c:2531
-#, fuzzy, c-format
+#, c-format
 msgid "%s:%d Error getting app info %s\n"
-msgstr "appinfo bloðu %s için okuma sýrasýnda hata\n"
+msgstr "%s:%d uyg bilgisi almada hata %s\n"
 
 #: sync.c:2537 sync.c:2563
-#, fuzzy, c-format
+#, c-format
 msgid "%s:%d Error unpacking app info %s\n"
-msgstr "appinfo bloðu %s için okuma sýrasýnda hata\n"
+msgstr "%s:%d uyg bilgisi paketini açmada hata %s\n"
 
 #: sync.c:2556
 #, c-format
@@ -1553,14 +1547,14 @@ msgid "Warning ToDo note too long, truncating to %d\n"
 msgstr "Uyarý: Ýþ listesi notu çok uzun, %d'ye kýsaltýlýyor\n"
 
 #: todo.c:356
-#, fuzzy, c-format
+#, c-format
 msgid "%s:%d Error reading category info %s\n"
-msgstr "%s'i okuma sýrasýnda hata: %s %d\n"
+msgstr "%s:%d Kategori bilgisi okumada hata %s\n"
 
 #: todo.c:367
-#, fuzzy, c-format
+#, c-format
 msgid "%s:%d Error reading %s\n"
-msgstr "%s'i okuma sýrasýnda hata\n"
+msgstr "%s:%d %s okumada hata\n"
 
 #: todo_gui.c:145
 msgid "Due Date"
@@ -1899,9 +1893,8 @@ msgid "France"
 msgstr "Fransa"
 
 #: Expense/expense.c:1147
-#, fuzzy
 msgid "Germany"
-msgstr "Almanca"
+msgstr "Almanya"
 
 #: Expense/expense.c:1148
 msgid "Hong Kong."

@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: jpilot 0.99.3\n"
-"POT-Creation-Date: 2003-02-22 09:49-0500\n"
+"POT-Creation-Date: 2003-02-27 18:06-0500\n"
 "PO-Revision-Date: 2002-10-17 10:00+0800\n"
 "Last-Translator: Anthony Fok <anthony@thizlinux.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -41,10 +41,11 @@ msgid "Unfiled"
 msgstr "未歸檔"
 
 #. Buttons
-#: KeyRing/keyring.c:1165 address_gui.c:625 alarms.c:223 datebook_gui.c:627
-#: datebook_gui.c:1103 export_gui.c:330 jpilot.c:352 jpilot.c:399 jpilot.c:467
-#: jpilot.c:511 jpilot.c:962 memo_gui.c:462 password.c:364 restore_gui.c:291
-#: todo_gui.c:594 utils.c:1049 utils.c:1188
+#: KeyRing/keyring.c:1165 address_gui.c:625 alarms.c:223 category.c:387
+#: category.c:761 category.c:790 datebook_gui.c:627 datebook_gui.c:1103
+#: export_gui.c:330 jpilot.c:352 jpilot.c:399 jpilot.c:467 jpilot.c:511
+#: jpilot.c:962 memo_gui.c:462 password.c:364 restore_gui.c:291 todo_gui.c:594
+#: utils.c:1049 utils.c:1188
 msgid "OK"
 msgstr "確定"
 
@@ -113,7 +114,9 @@ msgid "%d of %d records"
 msgstr "%2$d 筆紀錄（共 %1$d 筆）"
 
 #. Edit category button
-#: Expense/expense.c:1307 address_gui.c:2347 memo_gui.c:1315 todo_gui.c:1687
+#: Expense/expense.c:1307 address_gui.c:2347 category.c:408 category.c:422
+#: category.c:429 category.c:447 category.c:465 category.c:541 category.c:684
+#: memo_gui.c:1315 todo_gui.c:1687
 msgid "Edit Categories"
 msgstr ""
 
@@ -127,7 +130,8 @@ msgstr "快速尋找"
 
 #. Delete Button
 #: Expense/expense.c:1341 KeyRing/keyring.c:1390 address_gui.c:2413
-#: datebook_gui.c:3810 memo_gui.c:1369 todo_gui.c:1760
+#: category.c:388 category.c:734 datebook_gui.c:3810 memo_gui.c:1369
+#: todo_gui.c:1760
 msgid "Delete"
 msgstr "刪除"
 
@@ -226,6 +230,84 @@ msgstr "延遲約會"
 msgid "Appointment"
 msgstr "約會"
 
+#: category.c:188 category.c:245 sync.c:978 sync.c:984 sync.c:1992 sync.c:2309
+#: sync.c:2546
+#, c-format
+msgid "Unable to open %s\n"
+msgstr "無法開啟 %s\n"
+
+#: category.c:204 category.c:261 sync.c:1007 sync.c:2008
+msgid "PC file corrupt?\n"
+msgstr "PC 檔案損壞了？\n"
+
+#: category.c:211 category.c:221 category.c:268 category.c:279 category.c:289
+#: sync.c:1050 sync.c:1068 sync.c:1109 sync.c:1119 sync.c:2070 sync.c:2097
+#: sync.c:2140 sync.c:2150
+msgid "fseek failed - fatal error\n"
+msgstr "fseek 失敗 - 嚴重錯誤\n"
+
+#: category.c:388
+#, fuzzy
+msgid "Move"
+msgstr "一"
+
+#. Create a "Quit" button
+#: KeyRing/keyring.c:1171 category.c:388 category.c:767 category.c:796
+#: datebook_gui.c:1108 datebook_gui.c:1542 export_gui.c:335 password.c:370
+#: print_gui.c:336 restore_gui.c:296 utils.c:1059
+msgid "Cancel"
+msgstr "取消"
+
+#: category.c:409
+msgid "The maximum number of categories (16) are already used"
+msgstr ""
+
+#: category.c:412
+msgid "Enter New Category"
+msgstr ""
+
+#: category.c:423
+msgid "You must select a category to rename"
+msgstr ""
+
+#: category.c:427
+#, c-format
+msgid "You can't edit category %s.\n"
+msgstr ""
+
+#: category.c:434
+msgid "Enter New Category Name"
+msgstr ""
+
+#: category.c:448
+msgid "You must select a category to delete"
+msgstr ""
+
+#: category.c:461
+#, c-format
+msgid ""
+"There are %d records in %s.\n"
+"Do you want to move them to %s, or delete them?"
+msgstr ""
+
+#: category.c:539
+#, c-format
+msgid "The category %s can't be used more than once"
+msgstr ""
+
+#: category.c:722
+msgid "New"
+msgstr ""
+
+#: category.c:728
+#, fuzzy
+msgid "Rename"
+msgstr "名字："
+
+#: category.c:803
+msgid "debug"
+msgstr ""
+
 #: datebook_gui.c:185 datebook_gui.c:192 datebook_gui.c:3614
 #: datebook_gui.c:3621
 msgid "Su"
@@ -281,13 +363,6 @@ msgstr "存為"
 #: datebook_gui.c:1095 export_gui.c:322
 msgid "Browse"
 msgstr "瀏覽"
-
-#. Create a "Quit" button
-#: KeyRing/keyring.c:1171 datebook_gui.c:1108 datebook_gui.c:1542
-#: export_gui.c:335 password.c:370 print_gui.c:336 restore_gui.c:296
-#: utils.c:1059
-msgid "Cancel"
-msgstr "取消"
 
 #. Create a "Quit" button
 #: datebook_gui.c:1278 import_gui.c:322 install_gui.c:300 prefs_gui.c:736
@@ -1391,19 +1466,10 @@ msgstr "刪除一筆 %s 紀錄失敗。"
 msgid "Deleted a %s record."
 msgstr "刪除了一筆 %s 紀錄。"
 
-#: sync.c:978 sync.c:984 sync.c:1992 sync.c:2309 sync.c:2546
-#, c-format
-msgid "Unable to open %s\n"
-msgstr "無法開啟 %s\n"
-
 #: sync.c:993
 #, c-format
 msgid "number of records = %d\n"
 msgstr "紀錄數目 = %d\n"
-
-#: sync.c:1007 sync.c:2008
-msgid "PC file corrupt?\n"
-msgstr "PC 檔案損壞了？\n"
 
 #: sync.c:1014
 msgid "slow_sync_application(): Out of memory\n"
@@ -1412,11 +1478,6 @@ msgstr "slow_sync_application(): 內存不足\n"
 #: sync.c:1040 sync.c:2060
 msgid "dlp_WriteRecord failed\n"
 msgstr "dlp_WriteRecord 失敗\n"
-
-#: sync.c:1050 sync.c:1068 sync.c:1109 sync.c:1119 sync.c:2070 sync.c:2097
-#: sync.c:2140 sync.c:2150
-msgid "fseek failed - fatal error\n"
-msgstr "fseek 失敗 - 嚴重錯誤\n"
 
 #: sync.c:1199 sync.c:1539
 #, c-format
