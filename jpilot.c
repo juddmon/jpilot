@@ -1623,11 +1623,14 @@ void cb_font(GtkWidget *widget, gpointer data)
 #ifndef ENABLE_GTK2
 void jp_window_iconify(GtkWidget *window)
 {
+   GdkWindow * w;
+   Display *display;
+
    g_return_if_fail(window != NULL);
 
-   GdkWindow * w = window->window;
+   w = window->window;
 
-   Display *display = GDK_WINDOW_XDISPLAY(w);
+   display = GDK_WINDOW_XDISPLAY(w);
    XIconifyWindow(display,
 		  GDK_WINDOW_XWINDOW(w),
 		  DefaultScreen(display));
