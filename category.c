@@ -600,7 +600,7 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 	    /* JPA assuming gtk makes a copy */
 	    gtk_clist_set_text(GTK_CLIST(Pdata->clist), i, 0, entry_text);
 	    /* JPA enter new category name in Palm Pilot character set */
-	    charset_j2p(entry_text, HOSTCATLTH, char_set);
+	    charset_j2p((char *)entry_text, HOSTCATLTH, char_set);
 	    strncpy(Pdata->cai2.name[catnum], entry_text, PILOTCATLTH);
 	    Pdata->cai2.name[catnum][PILOTCATLTH-1]='\0';
 	 }
