@@ -2047,11 +2047,11 @@ char *xpm_unlocked[] = {
    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(g_output_text));
    gtk_box_pack_start_defaults(GTK_BOX(temp_hbox), scrolled_window);
 #else
-   g_output_text = gtk_text_new(NULL, NULL);
+   g_output_text = GTK_TEXT(gtk_text_new(NULL, NULL));
    gtk_text_set_editable(g_output_text, FALSE);
    gtk_text_set_word_wrap(g_output_text, TRUE);
    vscrollbar = gtk_vscrollbar_new(g_output_text->vadj);
-   gtk_box_pack_start(GTK_BOX(temp_hbox), g_output_text, TRUE, TRUE, 0);
+   gtk_box_pack_start(GTK_BOX(temp_hbox), GTK_WIDGET(g_output_text), TRUE, TRUE, 0);
    gtk_box_pack_start(GTK_BOX(temp_hbox), vscrollbar, FALSE, FALSE, 0);
 #endif
 
