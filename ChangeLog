@@ -1,3 +1,32 @@
+0.99.8-pre2 - 20/10/04 (Ludovic Rousseau)
+ some bugs fixed
+ add the same keyboards accelerators for the 4 applications:
+  Ctrl-D: Delete
+  Ctrl-O: Copy
+  Ctrl-N: New Record
+  Ctrl-R: Add Record
+  Ctrl-Return: Apply Changes
+  Ctrl-Y: Sync
+ KeyRing: can use non ASCII characters in name/account/password
+ nice GTK2 color icons in the menu
+
+0.99.8-pre1 - 02/10/04 (Ludovic Rousseau)
+ better UTF-8 handling (needed when using GTK2)
+ sort todo list by clicking on column title
+ lots of bugs fixed:
+  bug 1330: invalid postscript when printing the todo list contains ( or )
+  bug 1306: Keyring plugin truncates passwords
+  bug 1056: Undelete feature desired
+  bug 1338: Some repeating appointments do not show in monthview gui
+  bug 1176: Adding ability to e-mail directly from address book
+  bug 1182: Search screen needs a button
+  bug 1322: GTK2.4 libraries require changes to jpilotrc files to preserve colors
+  bug 1116: Word wrap provided when printing monthly calendar
+  bug 1154: resorting in address book should leave selection bar on same entry
+  bug 1107: show completed todos found through search regardless of show completed checkbox status
+  bug 1153: Patch reduces flicker when deleting records
+  bug 1131: ALT key for accelerator instead of control
+  bug 1184: truncating buffers with non ASCII charsets
 
 0.99.7 - 02/29/04
  Many bug fixes and small improvements
