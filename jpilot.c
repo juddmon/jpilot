@@ -91,7 +91,7 @@
 " -p do not load plugins.\n"\
 " -a ignore missed alarms since the last time this program was run.\n"\
 " -A ignore all alarms, past and future.\n"\
-" -i makes jpilot iconify itself upon launch"\
+" -i makes jpilot iconify itself upon launch\n"\
 " The PILOTPORT, and PILOTRATE env variables are used to specify which\n"\
 " port to sync on, and at what speed.\n"\
 " If PILOTPORT is not set then it defaults to /dev/pilot.\n")
@@ -1009,25 +1009,33 @@ struct url_command {
 
 /* These strings were taken from xchat 2.0.0 */
 struct url_command url_commands[]={
-     {NETSCAPE_EXISTING, "Open jpilot.org in existing", "netscape -remote 'openURL(http://jpilot.org)'"},
-     {NETSCAPE_NEW_WINDOW, "Open jpilot.org in new window", "netscape -remote 'openURL(http://jpilot.org,new-window)'"},
-     {NETSCAPE_NEW, "Open jpilot.org in new Netscape", "netscape http://jpilot.org"},
-     {MOZILLA_EXISTING, "Open jpilot.org in existing", "mozilla -remote 'openURL(http://jpilot.org)'"},
-     {MOZILLA_NEW_WINDOW, "Open jpilot.org in new window", "mozilla -remote 'openURL(http://jpilot.org,new-window)'"},
-     {MOZILLA_NEW_TAB, "Open jpilot.org in new tab", "mozilla -remote 'openURL(http://jpilot.org,new-tab)'"},
-     {MOZILLA_NEW, "Open jpilot.org in new Mozilla", "mozilla http://jpilot.org"},
-     {GALEON_EXISTING, "Open jpilot.org in existing", "galeon -x 'http://jpilot.org'"},
-     {GALEON_NEW_WINDOW, "Open jpilot.org in new window", "galeon -w 'http://jpilot.org'"},
-     {GALEON_NEW_TAB, "Open jpilot.org in new tab", "galeon -n 'http://jpilot.org'"},
-     {GALEON_NEW, "Open jpilot.org in new Galeon", "galeon 'http://jpilot.org'"},
-     {OPERA_EXISTING, "Open jpilot.org in existing", "opera -remote 'openURL(http://jpilot.org)' &"},
-     {OPERA_NEW_WINDOW, "Open jpilot.org in new window", "opera -remote 'openURL(http://jpilot.org,new-window)' &"},
-     {OPERA_NEW, "Open jpilot.org in new Opera", "opera http://jpilot.org &"},
-     {GNOME_URL, "Gnome URL Handler for jpilot.org", "gnome-moz-remote http://jpilot.org"},
-     {LYNX_NEW, "Lynx jpilot.org", "xterm -e lynx http://jpilot.org &"},
-     {LINKS_NEW, "Links jpilot.org", "xterm -e links http://jpilot.org &"},
-     {W3M_NEW, "w3m jpilot.org", "xterm -e w3m http://jpilot.org &"},
-     {KONQUEROR_NEW, "Konqueror jpilot.org", "konqueror http://jpilot.org"}
+     {NETSCAPE_EXISTING, "/Web/Netscape/Open jpilot.org in existing", "netscape -remote 'openURL(http://jpilot.org)'"},
+     {NETSCAPE_NEW_WINDOW, "/Web/Netscape/Open jpilot.org in new window", "netscape -remote 'openURL(http://jpilot.org,new-window)'"},
+     {NETSCAPE_NEW, "/Web/Netscape/Open jpilot.org in new Netscape", "netscape http://jpilot.org"},
+
+     {MOZILLA_EXISTING, "/Web/Mozilla/Open jpilot.org in existing", "mozilla -remote 'openURL(http://jpilot.org)'"},
+     {MOZILLA_NEW_WINDOW, "/Web/Mozilla/Open jpilot.org in new window", "mozilla -remote 'openURL(http://jpilot.org,new-window)'"},
+     {MOZILLA_NEW_TAB, "/Web/Mozilla/Open jpilot.org in new tab", "mozilla -remote 'openURL(http://jpilot.org,new-tab)'"},
+     {MOZILLA_NEW, "/Web/Mozilla/Open jpilot.org in new Mozilla", "mozilla http://jpilot.org"},
+
+     {GALEON_EXISTING, "/Web/Galeon/Open jpilot.org in existing", "galeon -x 'http://jpilot.org'"},
+     {GALEON_NEW_WINDOW, "/Web/Galeon/Open jpilot.org in new window", "galeon -w 'http://jpilot.org'"},
+     {GALEON_NEW_TAB, "/Web/Galeon/Open jpilot.org in new tab", "galeon -n 'http://jpilot.org'"},
+     {GALEON_NEW, "/Web/Galeon/Open jpilot.org in new Galeon", "galeon 'http://jpilot.org'"},
+
+     {OPERA_EXISTING, "/Web/Opera/Open jpilot.org in existing", "opera -remote 'openURL(http://jpilot.org)' &"},
+     {OPERA_NEW_WINDOW, "/Web/Opera/Open jpilot.org in new window", "opera -remote 'openURL(http://jpilot.org,new-window)' &"},
+     {OPERA_NEW, "/Web/Opera/Open jpilot.org in new Opera", "opera http://jpilot.org &"},
+
+     {GNOME_URL, "/Web/GnomeUrl/Gnome URL Handler for jpilot.org", "gnome-moz-remote http://jpilot.org"},
+
+     {LYNX_NEW, "/Web/Lynx/Lynx jpilot.org", "xterm -e lynx http://jpilot.org &"},
+
+     {LINKS_NEW, "/Web/Links/Links jpilot.org", "xterm -e links http://jpilot.org &"},
+
+     {W3M_NEW, "/Web/W3M/w3m jpilot.org", "xterm -e w3m http://jpilot.org &"},
+
+     {KONQUEROR_NEW, "/Web/Konqueror/Konqueror jpilot.org", "konqueror http://jpilot.org"}
 };
 
 void cb_web(GtkWidget *widget, gpointer data)
@@ -1065,60 +1073,60 @@ void get_main_menu(GtkWidget  *window,
 /* Some of this code was copied from the gtk_tut.txt file */
 {
   GtkItemFactoryEntry menu_items1[]={
-  { NULL, NULL,         NULL,           0,        "<Branch>" },
-  { NULL, NULL,         NULL,           0,        "<Tearoff>" },
-  { NULL, "<control>F", cb_search_gui,  0,        NULL },
-  { NULL, NULL,         NULL,           0,        "<Separator>" },
-  { NULL, "<control>I", cb_install_gui, 0,        NULL },
-  { NULL, NULL,         cb_import,      0,        NULL },
-  { NULL, "<control>A", cb_export,      0,        NULL },
-  { NULL, "<control>E", cb_prefs_gui,   0,        NULL },
-  { NULL, "<control>P", cb_print,       0,        NULL },
-  { NULL, NULL,         NULL,           0,        "<Separator>" },
-  { NULL, NULL,         cb_restore,     0,        NULL },
-  { NULL, NULL,         NULL,           0,        "<Separator>" },
-  { NULL, "<control>Q", delete_event,   0,        NULL },
-  { NULL, NULL,         NULL,           0,        "<Branch>" },
-  { NULL, "<control>Z", cb_private,     0,        NULL },
-  { NULL, "F1",         cb_app_button,  DATEBOOK, NULL },
-  { NULL, "F2",         cb_app_button,  ADDRESS,  NULL },
-  { NULL, "F3",         cb_app_button,  TODO,     NULL },
-  { NULL, "F4",         cb_app_button,  MEMO,     NULL },
-  { NULL, NULL,         NULL,           0,        "<Branch>" },
+  { _("/_File"),                           NULL,         NULL,           0,                  "<Branch>" },
+  { _("/File/tear"),                       NULL,         NULL,           0,                  "<Tearoff>" },
+  { _("/File/_Find"),                      "<control>F", cb_search_gui,  0,                  NULL },
+  { _("/File/sep1"),                       NULL,         NULL,           0,                  "<Separator>" },
+  { _("/File/_Install"),                   "<control>I", cb_install_gui, 0,                  NULL },
+  { _("/File/Import"),                     NULL,         cb_import,      0,                  NULL },
+  { _("/File/Export"),                     "<control>A", cb_export,      0,                  NULL },
+  { _("/File/Preferences"),                "<control>E", cb_prefs_gui,   0,                  NULL },
+  { _("/File/_Print"),                     "<control>P", cb_print,       0,                  NULL },
+  { _("/File/sep1"),                       NULL,         NULL,           0,                  "<Separator>" },
+  { _("/File/Restore Handheld"),           NULL,         cb_restore,     0,                  NULL },
+  { _("/File/sep1"),                       NULL,         NULL,           0,                  "<Separator>" },
+  { _("/File/Quit"),                       "<control>Q", delete_event,   0,                  NULL },
+  { _("/_View"),                           NULL,         NULL,           0,                  "<Branch>" },
+  { _("/View/Hide-Show-Mask Private Records"),"<control>Z",cb_private,   0,                  NULL },
+  { _("/View/Datebook"),                   "F1",         cb_app_button,  DATEBOOK,           NULL },
+  { _("/View/Addresses"),                  "F2",         cb_app_button,  ADDRESS,            NULL },
+  { _("/View/Todos"),                      "F3",         cb_app_button,  TODO,               NULL },
+  { _("/View/Memos"),                      "F4",         cb_app_button,  MEMO,               NULL },
+  { _("/_Plugins"),                        NULL,         NULL,           0,                  "<Branch>" },
 #ifdef WEBMENU
-  { NULL, NULL,         NULL,           0,        "<Branch>" },/* web */
-  { NULL, NULL,         NULL,           0,        "<Branch>" },
-  { NULL, NULL,         cb_web,         NETSCAPE_EXISTING, NULL },
-  { NULL, NULL,         cb_web,         NETSCAPE_NEW_WINDOW, NULL },
-  { NULL, NULL,         cb_web,         NETSCAPE_NEW, NULL },
-  { NULL, NULL,         NULL,           0,        "<Branch>" },
-  { NULL, NULL,         cb_web,         MOZILLA_EXISTING,  NULL },
-  { NULL, NULL,         cb_web,         MOZILLA_NEW_WINDOW,  NULL },
-  { NULL, NULL,         cb_web,         MOZILLA_NEW_TAB,  NULL },
-  { NULL, NULL,         cb_web,         MOZILLA_NEW,  NULL },
-  { NULL, NULL,         NULL,           0,        "<Branch>" },
-  { NULL, NULL,         cb_web,         GALEON_EXISTING,  NULL },
-  { NULL, NULL,         cb_web,         GALEON_NEW_WINDOW,  NULL },
-  { NULL, NULL,         cb_web,         GALEON_NEW_TAB,  NULL },
-  { NULL, NULL,         cb_web,         GALEON_NEW,  NULL },
-  { NULL, NULL,         NULL,           0,        "<Branch>" },
-  { NULL, NULL,         cb_web,         OPERA_EXISTING,    NULL },
-  { NULL, NULL,         cb_web,         OPERA_NEW_WINDOW,    NULL },
-  { NULL, NULL,         cb_web,         OPERA_NEW,    NULL },
-  { NULL, NULL,         NULL,           0,        "<Branch>" },
-  { NULL, NULL,         cb_web,         GNOME_URL,    NULL },
-  { NULL, NULL,         NULL,           0,        "<Branch>" },
-  { NULL, NULL,         cb_web,         LYNX_NEW,    NULL },
-  { NULL, NULL,         NULL,           0,        "<Branch>" },
-  { NULL, NULL,         cb_web,         LINKS_NEW,    NULL },
-  { NULL, NULL,         NULL,           0,        "<Branch>" },
-  { NULL, NULL,         cb_web,         W3M_NEW,    NULL },
-  { NULL, NULL,         NULL,           0,        "<Branch>" },
-  { NULL, NULL,         cb_web,         KONQUEROR_NEW,    NULL },
+  { _("/_Web"),                            NULL,         NULL,           0,                  "<Branch>" },/* web */
+  { _("/Web/Netscape"),                    NULL,         NULL,           0,                  "<Branch>" },
+  { url_commands[NETSCAPE_EXISTING].desc,  NULL,         cb_web,         NETSCAPE_EXISTING,  NULL },
+  { url_commands[NETSCAPE_NEW_WINDOW].desc,NULL,         cb_web,         NETSCAPE_NEW_WINDOW,NULL },
+  { url_commands[NETSCAPE_NEW].desc,       NULL,         cb_web,         NETSCAPE_NEW,       NULL },
+  { _("/Web/Mozilla"),                     NULL,         NULL,           0,                  "<Branch>" },
+  { url_commands[MOZILLA_EXISTING].desc,   NULL,         cb_web,         MOZILLA_EXISTING,   NULL },
+  { url_commands[MOZILLA_NEW_WINDOW].desc, NULL,         cb_web,         MOZILLA_NEW_WINDOW, NULL },
+  { url_commands[MOZILLA_NEW_TAB].desc,    NULL,         cb_web,         MOZILLA_NEW_TAB,    NULL },
+  { url_commands[MOZILLA_NEW].desc,        NULL,         cb_web,         MOZILLA_NEW,        NULL },
+  { _("/Web/Galeon"),                      NULL,         NULL,           0,                  "<Branch>" },
+  { url_commands[GALEON_EXISTING].desc,    NULL,         cb_web,         GALEON_EXISTING,    NULL },
+  { url_commands[GALEON_NEW_WINDOW].desc,  NULL,         cb_web,         GALEON_NEW_WINDOW,  NULL },
+  { url_commands[GALEON_NEW_TAB].desc,     NULL,         cb_web,         GALEON_NEW_TAB,     NULL },
+  { url_commands[GALEON_NEW].desc,         NULL,         cb_web,         GALEON_NEW,         NULL },
+  { _("/Web/Opera"),                       NULL,         NULL,           0,                  "<Branch>" },
+  { url_commands[OPERA_EXISTING].desc,     NULL,         cb_web,         OPERA_EXISTING,     NULL },
+  { url_commands[OPERA_NEW_WINDOW].desc,   NULL,         cb_web,         OPERA_NEW_WINDOW,   NULL },
+  { url_commands[OPERA_NEW].desc,          NULL,         cb_web,         OPERA_NEW,          NULL },
+  { _("/Web/GnomeUrl"),                    NULL,         NULL,           0,                  "<Branch>" },
+  { url_commands[GNOME_URL].desc,          NULL,         cb_web,         GNOME_URL,          NULL },
+  { _("/Web/Lynx"),                        NULL,         NULL,           0,                  "<Branch>" },
+  { url_commands[LYNX_NEW].desc,           NULL,         cb_web,         LYNX_NEW,           NULL },
+  { _("/Web/Links"),                       NULL,         NULL,           0,                  "<Branch>" },
+  { url_commands[LINKS_NEW].desc,          NULL,         cb_web,         LINKS_NEW,          NULL },
+  { _("/Web/W3M"),                         NULL,         NULL,           0,                  "<Branch>" },
+  { url_commands[W3M_NEW].desc,            NULL,         cb_web,         W3M_NEW,            NULL },
+  { _("/Web/Konqueror"),                   NULL,         NULL,           0,                  "<Branch>" },
+  { url_commands[KONQUEROR_NEW].desc,      NULL,         cb_web,         KONQUEROR_NEW,      NULL },
 #endif
-  { NULL, NULL,         NULL,           0,        "<LastBranch>" },
-  { NULL, NULL,         cb_about,       0,        NULL },
-  { "END",NULL,         NULL,           0,        NULL }
+  { _("/_Help"),                           NULL,         NULL,           0,                  "<LastBranch>" },
+  { _("/Help/J-Pilot"),                    NULL,         cb_about,       0,                  NULL },
+  { "END",                                 NULL,         NULL,           0,                  NULL }
  };
 
    GtkItemFactory *item_factory;
@@ -1148,90 +1156,6 @@ void get_main_menu(GtkWidget  *window,
       }
    }
 
-   i=0;
-   menu_items1[i++].path=strdup(_("/_File"));
-   menu_items1[i++].path=strdup(_("/File/tear"));
-   menu_items1[i++].path=strdup(_("/File/_Find"));
-   menu_items1[i++].path=strdup(_("/File/sep1"));
-   menu_items1[i++].path=strdup(_("/File/_Install"));
-   menu_items1[i++].path=strdup(_("/File/Import"));
-   menu_items1[i++].path=strdup(_("/File/Export"));
-   menu_items1[i++].path=strdup(_("/File/Preferences"));
-   menu_items1[i++].path=strdup(_("/File/_Print"));
-   menu_items1[i++].path=strdup(_("/File/sep1"));
-   menu_items1[i++].path=strdup(_("/File/Restore Handheld"));
-   menu_items1[i++].path=strdup(_("/File/sep1"));
-   menu_items1[i++].path=strdup(_("/File/Quit"));
-   menu_items1[i++].path=strdup(_("/_View"));
-   menu_items1[i++].path=strdup(_("/View/Hide-Show-Mask Private Records"));
-   menu_items1[i++].path=strdup(_("/View/Datebook"));
-   menu_items1[i++].path=strdup(_("/View/Addresses"));
-   menu_items1[i++].path=strdup(_("/View/Todos"));
-   menu_items1[i++].path=strdup(_("/View/Memos"));
-   menu_items1[i++].path=strdup(_("/_Plugins"));
-#ifdef WEBMENU
-   menu_items1[i++].path=strdup(_("/_Web"));
-   menu_items1[i++].path=strdup(_("/Web/Netscape"));
-   g_snprintf(temp_str, sizeof(temp_str), _("/Web/Netscape/%s"), url_commands[NETSCAPE_EXISTING].desc);
-   menu_items1[i++].path=strdup(temp_str);
-   g_snprintf(temp_str, sizeof(temp_str), _("/Web/Netscape/%s"), url_commands[NETSCAPE_NEW_WINDOW].desc);
-   menu_items1[i++].path=strdup(temp_str);
-   g_snprintf(temp_str, sizeof(temp_str), _("/Web/Netscape/%s"), url_commands[NETSCAPE_NEW].desc);
-   menu_items1[i++].path=strdup(temp_str);
-   menu_items1[i++].path=strdup(_("/Web/Mozilla"));
-
-   g_snprintf(temp_str, sizeof(temp_str), _("/Web/Mozilla/%s"), url_commands[MOZILLA_EXISTING].desc);
-   menu_items1[i++].path=strdup(temp_str);
-   g_snprintf(temp_str, sizeof(temp_str), _("/Web/Mozilla/%s"), url_commands[MOZILLA_NEW_WINDOW].desc);
-   menu_items1[i++].path=strdup(temp_str);
-   g_snprintf(temp_str, sizeof(temp_str), _("/Web/Mozilla/%s"), url_commands[MOZILLA_NEW_TAB].desc);
-   menu_items1[i++].path=strdup(temp_str);
-   g_snprintf(temp_str, sizeof(temp_str), _("/Web/Mozilla/%s"), url_commands[MOZILLA_NEW].desc);
-   menu_items1[i++].path=strdup(temp_str);
-
-   menu_items1[i++].path=strdup(_("/Web/Galeon"));
-   g_snprintf(temp_str, sizeof(temp_str), _("/Web/Galeon/%s"), url_commands[GALEON_EXISTING].desc);
-   menu_items1[i++].path=strdup(temp_str);
-   g_snprintf(temp_str, sizeof(temp_str), _("/Web/Galeon/%s"), url_commands[GALEON_NEW_WINDOW].desc);
-   menu_items1[i++].path=strdup(temp_str);
-   g_snprintf(temp_str, sizeof(temp_str), _("/Web/Galeon/%s"), url_commands[GALEON_NEW_TAB].desc);
-   menu_items1[i++].path=strdup(temp_str);
-   g_snprintf(temp_str, sizeof(temp_str), _("/Web/Galeon/%s"), url_commands[GALEON_NEW].desc);
-   menu_items1[i++].path=strdup(temp_str);
-
-   menu_items1[i++].path=strdup(_("/Web/Opera"));
-   g_snprintf(temp_str, sizeof(temp_str), _("/Web/Opera/%s"), url_commands[OPERA_EXISTING].desc);
-   menu_items1[i++].path=strdup(temp_str);
-   g_snprintf(temp_str, sizeof(temp_str), _("/Web/Opera/%s"), url_commands[OPERA_NEW_WINDOW].desc);
-   menu_items1[i++].path=strdup(temp_str);
-   g_snprintf(temp_str, sizeof(temp_str), _("/Web/Opera/%s"), url_commands[OPERA_NEW].desc);
-   menu_items1[i++].path=strdup(temp_str);
-
-   menu_items1[i++].path=strdup(_("/Web/GnomeUrl"));
-   g_snprintf(temp_str, sizeof(temp_str), _("/Web/GnomeUrl/%s"), url_commands[GNOME_URL].desc);
-   menu_items1[i++].path=strdup(temp_str);
-
-   menu_items1[i++].path=strdup(_("/Web/Lynx"));
-   g_snprintf(temp_str, sizeof(temp_str), _("/Web/Lynx/%s"), url_commands[LYNX_NEW].desc);
-   menu_items1[i++].path=strdup(temp_str);
-
-   menu_items1[i++].path=strdup(_("/Web/Links"));
-   g_snprintf(temp_str, sizeof(temp_str), _("/Web/Links/%s"), url_commands[LINKS_NEW].desc);
-   menu_items1[i++].path=strdup(temp_str);
-
-   menu_items1[i++].path=strdup(_("/Web/W3M"));
-   g_snprintf(temp_str, sizeof(temp_str), _("/Web/W3M/%s"), url_commands[W3M_NEW].desc);
-   menu_items1[i++].path=strdup(temp_str);
-
-   menu_items1[i++].path=strdup(_("/Web/Konqueror"));
-   g_snprintf(temp_str, sizeof(temp_str), _("/Web/Konqueror/%s"), url_commands[KONQUEROR_NEW].desc);
-   menu_items1[i++].path=strdup(temp_str);
-#endif
-
-   menu_items1[i++].path=strdup(_("/_Help"));
-   g_snprintf(temp_str, sizeof(temp_str), _("/_Help/%s"), PN);
-   menu_items1[i++].path=strdup(temp_str);
-
 #ifdef ENABLE_PLUGINS
    /* Go to first entry in the list */
    for (temp_list = plugin_list; temp_list; temp_list = temp_list->prev)
@@ -1257,7 +1181,7 @@ void get_main_menu(GtkWidget  *window,
 
    plugin_menu_strings = plugin_help_strings = NULL;
    if (count != 0) {
-     plugin_menu_strings = malloc(count * sizeof(char *));
+      plugin_menu_strings = malloc(count * sizeof(char *));
    }
    if (help_count != 0) {
       plugin_help_strings = malloc(help_count * sizeof(char *));
@@ -1293,7 +1217,6 @@ void get_main_menu(GtkWidget  *window,
    }
    nmenu_items = nmenu_items + help_count;
 #endif
-
 
    menu_items2=malloc(nmenu_items * sizeof(GtkItemFactoryEntry));
    if (!menu_items2) {
@@ -1342,14 +1265,12 @@ void get_main_menu(GtkWidget  *window,
    /* Skip the /_Plugins entry */
    i1++;
 #endif
-
    /* Copy the last part of the array until END */
-   for (; ; i1++, i2++) {
-      if (!strcmp(menu_items1[i1].path, "END")) {
-	 break;
-      }
+   for (; strcmp(menu_items1[i1].path, "END"); i1++, i2++) {
       menu_items2[i2]=menu_items1[i1];
    }
+   g_snprintf(temp_str, sizeof(temp_str), _("/_Help/%s"), PN);
+   menu_items2[i2-1].path = strdup(temp_str);
 
 #ifdef ENABLE_PLUGINS
    if (help_count) {
@@ -1391,7 +1312,7 @@ void get_main_menu(GtkWidget  *window,
 
    /* Attach the new accelerator group to the window. */
 #ifdef ENABLE_GTK2
-   gtk_window_add_accel_group(window, accel_group);
+   gtk_window_add_accel_group(GTK_WINDOW(window), accel_group);
 #else
    gtk_accel_group_attach(accel_group, GTK_OBJECT(window));
 #endif
@@ -1402,13 +1323,6 @@ void get_main_menu(GtkWidget  *window,
    }
 
    free(menu_items2);
-
-   for (i=0; i<sizeof(menu_items1)/sizeof(menu_items1[0]); i++) {
-      if (!strcmp(menu_items1[i].path, "END")) {
-	 break;
-      }
-      free(menu_items1[i].path);
-   }
 
 #ifdef ENABLE_PLUGINS
    if (count) {
