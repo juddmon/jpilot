@@ -107,6 +107,7 @@ static prefType glob_prefs[NUM_PREFS] = {
      {"last_addr_category", INTTYPE, INTTYPE, CATEGORY_ALL, NULL, 0},
      {"last_todo_category", INTTYPE, INTTYPE, CATEGORY_ALL, NULL, 0},
      {"last_memo_category", INTTYPE, INTTYPE, CATEGORY_ALL, NULL, 0},
+     {"mail_command", CHARTYPE, CHARTYPE, 0, NULL, 0},
      {"version", CHARTYPE, CHARTYPE, 0, NULL, 0},
 };
 
@@ -146,6 +147,10 @@ void pref_init()
 	 break;
        case PREF_DIAL_COMMAND:
 	 glob_prefs[i].svalue=strdup("jpilot-dial --lv 0 --rv 50 %n");
+	 glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
+	 break;
+       case PREF_MAIL_COMMAND:
+	 glob_prefs[i].svalue=strdup("mozilla -remote \"mailto(\%s)\"");
 	 glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
 	 break;
        default:

@@ -113,6 +113,7 @@ GtkWidget *address_quickfind_entry;
 static GtkWidget *notebook;
 static GtkWidget *pane;
 static GtkWidget *radio_button[NUM_PHONE_ENTRIES];
+static GtkWidget *dial_button[NUM_PHONE_ENTRIES];
 
 static struct AddressAppInfo address_app_info;
 static struct sorted_cats sort_l[NUM_ADDRESS_CAT_ITEMS];
@@ -1433,32 +1434,18 @@ void parse_phone_str(char *dest, char *src, int max_len)
    dest[i2]='\0';
 }
 
-void cb_dialer(GtkWidget *widget, gpointer data)
+void email_contact(GtkWidget *widget, gchar *str)
 {
-   GtkWidget *text;
-   gchar *str;
+   dialog_email(GTK_WINDOW(gtk_widget_get_toplevel(widget)), str);
+}
+
+void dial_contact(GtkWidget *widget, gchar *str)
+{
    char *Px;
    char number[100];
    char ext[100];
-#ifdef ENABLE_GTK2
-   GtkTextIter    start_iter;
-   GtkTextIter    end_iter;
-   GtkTextBuffer *text_buffer;
-#endif
 
    number[0]=ext[0]='\0';
-   text=data;
-
-#ifdef ENABLE_GTK2
-   text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text));
-   gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(text),&start_iter,&end_iter);
-   str = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(text),&start_iter,&end_iter,TRUE);
-#else
-   str=gtk_editable_get_chars(GTK_EDITABLE(text), 0, -1);
-#endif
-
-   if (!str) return;
-   printf("[%s]\n", str);
 
    parse_phone_str(number, str, sizeof(number));
 
@@ -1466,9 +1453,40 @@ void cb_dialer(GtkWidget *widget, gpointer data)
    if (Px) {
       parse_phone_str(ext, Px, sizeof(ext));
    }
-   g_free(str);
 
    dialog_dial(GTK_WINDOW(gtk_widget_get_toplevel(widget)), number, ext);
+}
+
+void cb_dial_or_mail(GtkWidget *widget, gpointer data)
+{
+   GtkWidget *text;
+   gchar *str;
+#ifdef ENABLE_GTK2
+   GtkTextIter    start_iter;
+   GtkTextIter    end_iter;
+   GtkTextBuffer *text_buffer;
+#endif
+   text=data;
+
+#ifdef ENABLE_GTK2
+   text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text));
+   gtk_text_buffer_get_bounds(text_buffer,&start_iter,&end_iter);
+   str = gtk_text_buffer_get_text(text_buffer,&start_iter,&end_iter,TRUE);
+#else
+   str=gtk_editable_get_chars(GTK_EDITABLE(text), 0, -1);
+#endif
+
+   if (!str) return;
+   printf("[%s]\n", str);
+
+   if (strstr(str,"@")) {
+      email_contact(widget, str);
+   }
+   else {
+      dial_contact(widget, str);
+   }
+
+   g_free(str);
 }
 
 void cb_address_quickfind(GtkWidget *widget,
@@ -1600,6 +1618,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    char *clist_text;
    const char *entry_text;
    long use_jos, char_set;
+
 
    if ((!event) && (clist_hack)) return;
 
@@ -1794,6 +1813,22 @@ static void cb_clist_selection(GtkWidget      *clist,
 					(menu_item[i][a->phoneLabel[i]]), TRUE);
 	 gtk_option_menu_set_history(GTK_OPTION_MENU(phone_list_menu[i]),
 				     a->phoneLabel[i]);
+	 if (!strcmp(address_app_info.labels[a->phoneLabel[i]+3],_("E-mail")))
+	 {
+#ifdef ENABLE_GTK2
+	    gtk_button_set_label(GTK_BUTTON(dial_button[i]),_("Mail"));
+#else
+	    gtk_object_set(GTK_OBJECT(dial_button[i]), "label", _("Mail"), NULL);
+#endif
+	 }
+	 else
+	 {
+#ifdef ENABLE_GTK2
+	    gtk_button_set_label(GTK_BUTTON(dial_button[i]),_("Dial"));
+#else
+	    gtk_object_set(GTK_OBJECT(dial_button[i]), "label", _("Dial"), NULL);
+#endif
+	 }
       }
    }
    if ((a->showPhone > -1) && (a->showPhone < NUM_PHONE_ENTRIES)) {
@@ -2717,11 +2752,18 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	    if (i2>2 && i2<8) {
 	       gtk_table_attach(GTK_TABLE(table1), GTK_WIDGET(phone_list_menu[i2-3]),
 				2, 3, i, i+1, GTK_SHRINK, 0, 0, 0);
-	       button = gtk_button_new_with_label(_("Dial"));
-	       gtk_signal_connect(GTK_OBJECT(button), "clicked",
-				  GTK_SIGNAL_FUNC(cb_dialer),
-				  address_text[i2]);
-	       gtk_table_attach(GTK_TABLE(table1), GTK_WIDGET(button),
+	       if (!strcmp(address_app_info.labels[i2], _("E-mail")))
+	       {
+		  dial_button[i2-3] = gtk_button_new_with_label(_("Mail"));
+	       }
+	       else
+	       {
+		  dial_button[i2-3] = gtk_button_new_with_label(_("Dial"));
+	       }
+	       gtk_signal_connect(GTK_OBJECT(dial_button[i2-3]), "clicked",
+				  GTK_SIGNAL_FUNC(cb_dial_or_mail),
+			          address_text[i2]);
+	       gtk_table_attach(GTK_TABLE(table1), GTK_WIDGET(dial_button[i2-3]),
 				0, 1, i, i+1, GTK_SHRINK, 0, 0, 0);
 	    } else {
 	       gtk_table_attach(GTK_TABLE(table1), GTK_WIDGET(label),
