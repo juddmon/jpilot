@@ -103,6 +103,10 @@ static prefType glob_prefs[NUM_PREFS] = {
      {"monthview_height", INTTYPE, INTTYPE, 480, NULL, 0},
      {"weekview_width", INTTYPE, INTTYPE, 640, NULL, 0},
      {"weekview_height", INTTYPE, INTTYPE, 480, NULL, 0},
+     {"last_date_category", INTTYPE, INTTYPE, CATEGORY_ALL, NULL, 0},
+     {"last_addr_category", INTTYPE, INTTYPE, CATEGORY_ALL, NULL, 0},
+     {"last_todo_category", INTTYPE, INTTYPE, CATEGORY_ALL, NULL, 0},
+     {"last_memo_category", INTTYPE, INTTYPE, CATEGORY_ALL, NULL, 0},
 };
 
 struct name_list {

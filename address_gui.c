@@ -2307,13 +2307,15 @@ int address_gui_cleanup()
    if (b==DIALOG_SAID_1) {
       cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
    }
-   free_AddressList(glob_address_list);
+   free_AddressList(&glob_address_list);
    connect_changed_signals(DISCONNECT_SIGNALS);
 #ifdef ENABLE_GTK2
    set_pref(PREF_ADDRESS_PANE, gtk_paned_get_position(GTK_PANED(pane)), NULL, TRUE);
 #else
    set_pref(PREF_ADDRESS_PANE, GTK_PANED(pane)->handle_xpos, NULL, TRUE);
 #endif
+   set_pref(PREF_LAST_ADDR_CATEGORY, address_category, NULL, TRUE);
+
    return 0;
 }
 
@@ -2367,6 +2369,9 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
       printf("cat %d [%s]\n", sort_l[i].cat_num, sort_l[i].Pcat);
    }
 #endif
+
+   get_pref(PREF_LAST_ADDR_CATEGORY, &ivalue, NULL);
+   address_category = ivalue;
 
    if (address_app_info.category.name[address_category][0]=='\0') {
       address_category=CATEGORY_ALL;

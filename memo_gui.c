@@ -1272,6 +1272,8 @@ int memo_gui_cleanup()
 #else
    set_pref(PREF_MEMO_PANE, GTK_PANED(pane)->handle_xpos, NULL, TRUE);
 #endif
+   set_pref(PREF_LAST_MEMO_CATEGORY, memo_category, NULL, TRUE);
+
    return 0;
 }
 
@@ -1314,6 +1316,9 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
       printf("cat %d %s\n", sort_l[i].cat_num, sort_l[i].Pcat);
    }
 #endif
+
+   get_pref(PREF_LAST_MEMO_CATEGORY, &ivalue, NULL);
+   memo_category = ivalue;
 
    if ((memo_category != CATEGORY_ALL) && (memo_app_info.category.name[memo_category][0]=='\0')) {
       memo_category=CATEGORY_ALL;

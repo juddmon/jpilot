@@ -1751,6 +1751,8 @@ int todo_gui_cleanup()
 #else
    set_pref(PREF_TODO_PANE, GTK_PANED(pane)->handle_xpos, NULL, TRUE);
 #endif
+   set_pref(PREF_LAST_TODO_CATEGORY, todo_category, NULL, TRUE);
+
    return 0;
 }
 
@@ -1804,6 +1806,9 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
       printf("cat %d %s\n", sort_l[i].cat_num, sort_l[i].Pcat);
    }
 #endif
+   
+   get_pref(PREF_LAST_TODO_CATEGORY, &ivalue, NULL);
+   todo_category = ivalue;
 
    if ((todo_category != CATEGORY_ALL) && (todo_app_info.category.name[todo_category][0]=='\0')) {
       todo_category=CATEGORY_ALL;
