@@ -60,10 +60,10 @@ AC_SUBST(cflags)
 dnl ******************************
 dnl * start gettext
 dnl ******************************
-AC_PROG_INTLTOOL
+#AC_PROG_INTLTOOL
 
 dnl Set of available languages
-ALL_LINGUAS="ca cs da de es fr it ja nl no ru sv tr zh_CN zh_TW"
+ALL_LINGUAS="ca cs da de es fr it ja nl no ru sv tr vi zh_CN zh_TW"
 
 AM_GNU_GETTEXT
 
@@ -468,7 +468,8 @@ AM_CONDITIONAL(MAKE_KEYRING, test x$keyring_plugin = xyes)
 AM_CONDITIONAL(MAKE_EXPENSE, test x$plugin_support = xyes)
 AM_CONDITIONAL(MAKE_SYNCTIME, test x$plugin_support = xyes)
 
-AC_OUTPUT(Makefile docs/Makefile Expense/Makefile KeyRing/Makefile intl/Makefile dialer/Makefile po/Makefile.in SyncTime/Makefile jpilot.spec SlackBuild)
+#AC_OUTPUT(Makefile docs/Makefile Expense/Makefile KeyRing/Makefile intl/Makefile dialer/Makefile po/Makefile.in SyncTime/Makefile jpilot.spec SlackBuild intl/Makefile m4/Makefile )
+AC_OUTPUT(Makefile docs/Makefile Expense/Makefile KeyRing/Makefile intl/Makefile dialer/Makefile po/Makefile.in SyncTime/Makefile jpilot.spec SlackBuild m4/Makefile )
 
 chmod +x SlackBuild
 
