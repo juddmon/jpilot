@@ -8,12 +8,12 @@ msgstr ""
 "Project-Id-Version: jpilot 0.99.6pre7\n"
 "Report-Msgid-Bugs-To: jpilot-devel@jpilot.org\n"
 "POT-Creation-Date: 2005-02-19 16:38+0100\n"
-"PO-Revision-Date: 2004-11-24 14:02+0900\n"
+"PO-Revision-Date: 2005-02-23 22:31+0900\n"
 "Last-Translator: Kazutaka HARADA <kazutaka802@yahoo.co.jp>\n"
 "Language-Team: Japanese Palm-UNIX ML <palm-unix-j@list.daionet.gr.jp>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=euc-jp\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Transfer-Encoding: 8bit"
 
 #: address.c:288 address.c:510 alarms.c:352 dat.c:181 dat.c:655 dat.c:857
 #: dat.c:991 dat.c:1130 datebook.c:96 datebook.c:379 datebook.c:386
@@ -204,9 +204,8 @@ msgid "Cancel"
 msgstr "キャンセル"
 
 #: address_gui.c:2641 datebook_gui.c:4324 memo_gui.c:1515 todo_gui.c:2132
-#, fuzzy
 msgid "Cancel the modifications   ESC"
-msgstr "変更を適用 Ctrl+Enter"
+msgstr "変更をキャンセル   ESC"
 
 #: address_gui.c:2644 category.c:413 category.c:836 datebook_gui.c:4327
 #: memo_gui.c:1517 todo_gui.c:2135 Expense/expense.c:1615
@@ -246,14 +245,12 @@ msgid "Add Record"
 msgstr "レコードの追加"
 
 #: address_gui.c:2689 datebook_gui.c:4374 memo_gui.c:1560 todo_gui.c:2178
-#, fuzzy
 msgid "Add the new record   Ctrl+Enter"
-msgstr "新規レコードの追加 Ctrl+R"
+msgstr "新規レコードの追加   Ctrl+Enter"
 
 #: address_gui.c:2691 datebook_gui.c:4376 memo_gui.c:1562 todo_gui.c:2180
-#, fuzzy
 msgid "Add the new record"
-msgstr "新規レコードの追加 Ctrl+R"
+msgstr "新規レコードの追加"
 
 #: address_gui.c:2695 datebook_gui.c:4380 memo_gui.c:1565 todo_gui.c:2183
 #: Expense/expense.c:1641 KeyRing/keyring.c:1596
@@ -265,9 +262,8 @@ msgid "Commit the modifications   Ctrl+Enter"
 msgstr "変更を適用 Ctrl+Enter"
 
 #: address_gui.c:2707 datebook_gui.c:4392 memo_gui.c:1577 todo_gui.c:2195
-#, fuzzy
 msgid "Commit the modifications"
-msgstr "変更を適用 Ctrl+Enter"
+msgstr "変更を反映"
 
 #: address_gui.c:2718 datebook_gui.c:4437 memo_gui.c:1589 todo_gui.c:2252
 msgid "Private"
@@ -705,7 +701,7 @@ msgstr "DatebookDB 内に不明な繰り返しタイプが見つかりました。\n"
 
 #: datebook_gui.c:3164 monthview_gui.c:210 weekview_gui.c:204
 msgid " (TODAY)"
-msgstr ""
+msgstr " (今日)"
 
 #: datebook_gui.c:4130 datebook_gui.c:4604
 msgid "Week"
@@ -1245,7 +1241,7 @@ msgstr "フォント選択ダイアログ"
 
 #: jpilot.c:2078
 msgid "calendar:week_start:0"
-msgstr ""
+msgstr "カレンダー:週の始まり:0"
 
 #: jpilot.c:2123
 msgid "Not loading plugins.\n"
@@ -1276,18 +1272,16 @@ msgid "Show private records   Ctrl-Z"
 msgstr "プライベートレコードを表示 Ctrl-Z"
 
 #: jpilot.c:2483
-#, fuzzy
 msgid "Show private records"
-msgstr "プライベートレコードを表示 Ctrl-Z"
+msgstr "プライベートレコードを表示"
 
 #: jpilot.c:2488
 msgid "Hide private records   Ctrl-Z"
 msgstr "プライベートレコードを隠蔽 Ctrl-Z"
 
 #: jpilot.c:2493
-#, fuzzy
 msgid "Hide private records"
-msgstr "プライベートレコードを隠蔽 Ctrl-Z"
+msgstr "プライベートレコードを隠蔽"
 
 # jpilot.c: old version
 #: jpilot.c:2498
@@ -1296,9 +1290,8 @@ msgstr "プライベートレコードのマスク Ctrl-Z"
 
 # jpilot.c: old version
 #: jpilot.c:2503
-#, fuzzy
 msgid "Mask private records"
-msgstr "プライベートレコードのマスク Ctrl-Z"
+msgstr "プライベートレコードのマスク"
 
 #: jpilot.c:2513
 msgid "Sync your palm to the desktop   Ctrl-Y"
@@ -1334,12 +1327,11 @@ msgstr "メモ帳"
 
 #: jpilot.c:2706
 msgid "Do it now"
-msgstr ""
+msgstr "今すぐ実行"
 
 #: jpilot.c:2706
-#, fuzzy
 msgid "Remind me later"
-msgstr "アラーム"
+msgstr "後で思い出させる"
 
 #: jpilot.c:2706
 msgid "Don't tell me again!"
@@ -1375,7 +1367,6 @@ msgid "\"."
 msgstr "\" を変更して下さい。."
 
 #: jpilot.c:2729
-#, fuzzy
 msgid "Select a UTF-8 encoding"
 msgstr "UTF-8 エンコードを選択して下さい。"
 
@@ -1622,11 +1613,11 @@ msgstr "DataBkサポートはこのビルドでは無効です"
 
 #: prefs_gui.c:558
 msgid "Annotate today in day, week, and month views"
-msgstr ""
+msgstr "日、週、月表示に(今日)を表示する"
 
 #: prefs_gui.c:563
 msgid "Append years on anniversaries in day, week, and month views"
-msgstr ""
+msgstr "日、週、月表示で、記念日に年を表示する"
 
 #: prefs_gui.c:575
 msgid "Mail Command"
@@ -2714,27 +2705,22 @@ msgid "Master Card"
 msgstr "マスターカード"
 
 #: Expense/expense.c:1653
-#, fuzzy
 msgid "Category:"
 msgstr "カテゴリ："
 
 #: Expense/expense.c:1666
-#, fuzzy
 msgid "Type:"
 msgstr "タイプ："
 
 #: Expense/expense.c:1679
-#, fuzzy
 msgid "Payment:"
 msgstr "支払い："
 
 #: Expense/expense.c:1692
-#, fuzzy
 msgid "Currency:"
 msgstr "通貨："
 
 #: Expense/expense.c:1705
-#, fuzzy
 msgid "Date:"
 msgstr "日付"
 
@@ -2751,17 +2737,14 @@ msgid "Year:"
 msgstr "年："
 
 #: Expense/expense.c:1763
-#, fuzzy
 msgid "Amount:"
 msgstr "合計："
 
 #: Expense/expense.c:1777
-#, fuzzy
 msgid "Vendor:"
 msgstr "ベンダー："
 
 #: Expense/expense.c:1791
-#, fuzzy
 msgid "City:"
 msgstr "都市："
 
@@ -2831,4 +2814,4 @@ msgstr "パスワード生成"
 #~ msgstr "バックアップ"
 
 #~ msgid "OK, I will do it"
-#~ msgstr "OK。実行します。"
+#~ msgstr "OK、実行します。"
