@@ -544,5 +544,6 @@ unsigned char *charset_p2newj(const unsigned char *buf, int max_len, int char_se
 
 void jp_charset_p2j(unsigned char *buf, int max_len);
 void jp_charset_j2p(unsigned char *buf, int max_len);
+size_t jp_strftime(char *s, size_t max, const char *format, const struct tm *tm);
 
 #endif
