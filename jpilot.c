@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.112 2005/02/02 05:42:58 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.113 2005/02/20 20:08:48 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -97,7 +97,10 @@ GtkWidget *g_hbox2, *g_vbox0_1;
 GtkWidget *glob_date_label;
 GtkTooltips *glob_tooltips;
 #ifdef ENABLE_GTK2
-gchar *glob_clipboard_text=NULL;
+/* GTK+ clipboard (Ctrl-V/Ctrl-C) */
+gchar *glob_gtk_clipboard_text = NULL;
+/* X11 clipboard (middle mouse clic) */
+gchar *glob_x11_clipboard_text = NULL;
 #endif
 gint glob_date_timer_tag;
 pid_t glob_child_pid;

@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.84 2005/01/27 22:22:33 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.85 2005/02/20 20:08:48 rousseau Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -50,7 +50,8 @@
 
 extern GtkTooltips *glob_tooltips;
 #ifdef ENABLE_GTK2
-extern gchar *glob_clipboard_text;
+extern gchar *glob_gtk_clipboard_text;
+extern gchar *glob_x11_clipboard_text;
 #endif
 
 static GtkWidget *clist;
@@ -1942,7 +1943,8 @@ int todo_gui_cleanup()
    free_ToDoList(&glob_todo_list);
    connect_changed_signals(DISCONNECT_SIGNALS);
 #ifdef ENABLE_GTK2
-   glob_clipboard_text = gtk_clipboard_wait_for_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
+   glob_gtk_clipboard_text = gtk_clipboard_wait_for_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
+   glob_x11_clipboard_text = gtk_clipboard_wait_for_text(gtk_clipboard_get(GDK_SELECTION_PRIMARY));
 #endif
 #ifdef ENABLE_GTK2
    set_pref(PREF_TODO_PANE, gtk_paned_get_position(GTK_PANED(pane)), NULL, TRUE);
@@ -2010,13 +2012,19 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
 #ifdef ENABLE_GTK2
    /* Preserve clipboard buffer across applications */
-   if (glob_clipboard_text != NULL)
+   if (glob_gtk_clipboard_text != NULL)
    {
       gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
-                             glob_clipboard_text,
-			     -1);
-      g_free(glob_clipboard_text);
-      glob_clipboard_text = NULL;
+                             glob_gtk_clipboard_text, -1);
+      g_free(glob_gtk_clipboard_text);
+      glob_gtk_clipboard_text = NULL;
+   }
+   if (glob_x11_clipboard_text != NULL)
+   {
+      gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_PRIMARY),
+                             glob_x11_clipboard_text, -1);
+      g_free(glob_x11_clipboard_text);
+      glob_x11_clipboard_text = NULL;
    }
 #endif
 
