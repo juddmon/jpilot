@@ -3234,34 +3234,53 @@ static gboolean
 cb_keyboard(GtkWidget *widget, GdkEventKey *event, gpointer *p) 
 {
    struct tm day;
-   int up, down;
+   struct tm *now;
+   time_t ltime;
+   int up, down, home;
 
-   up = down = 0;
+   up = down = home = 0;
    switch (event->keyval) {
     case GDK_Page_Up:
     case GDK_KP_Page_Up:
       up=1;
+      break;
     case GDK_Page_Down:
     case GDK_KP_Page_Down:
       down=1;
+      break;
+    case GDK_Home:
+    case GDK_KP_Home:
+      home=1;
+      time(&ltime);
+      now = localtime(&ltime);
+      current_day = now->tm_mday;
+      current_month = now->tm_mon;
+      current_year = now->tm_year;
+      break;
+   }
+   
+   if (up || down || home) {
       gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
 
-      bzero(&day, sizeof(day));
-      day.tm_year = current_year;
-      day.tm_mon = current_month;
-      day.tm_mday = current_day;
-      day.tm_hour = 12;
-      day.tm_min = 0;
+      if (up || down) {
+	 bzero(&day, sizeof(day));
+	 day.tm_year = current_year;
+	 day.tm_mon = current_month;
+	 day.tm_mday = current_day;
+	 day.tm_hour = 12;
+	 day.tm_min = 0;
 
-      if (up) {
-	 sub_days_from_date(&day, 1);
-      } else {
-	 add_days_to_date(&day, 1);
+	 if (up) {
+	    sub_days_from_date(&day, 1);
+	 }
+	 if (down) {
+	    add_days_to_date(&day, 1);
+	 }
+
+	 current_year = day.tm_year;
+	 current_month = day.tm_mon;
+	 current_day = day.tm_mday;
       }
-
-      current_year = day.tm_year;
-      current_month = day.tm_mon;
-      current_day = day.tm_mday;
 
       gtk_calendar_select_month(GTK_CALENDAR(main_calendar), current_month, current_year+1900);
       gtk_calendar_select_day(GTK_CALENDAR(main_calendar), current_day);
