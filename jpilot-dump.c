@@ -49,7 +49,7 @@
 " -v displays version and exits.\n"\
 " -h displays help and exits.\n"\
 " -B dump dateBook.\n"\
-" -NYYY/MM/DD dump apps on YYYY/MM/DD in dateBook.\n"\
+" -NYYYY/MM/DD dump apps on YYYY/MM/DD in dateBook.\n"\
 " -N dump apps on today in dateBook.\n"\
 " -M dump Memos.\n"\
 " -A dump Address book.\n"\
@@ -873,9 +873,9 @@ int main(int   argc,
 		Nmonth= (argv[i][7]-'0')*10+(argv[i][8]-'0');
 		Nday  = (argv[i][10]-'0')*10+(argv[i][11]-'0');
 	}
-/*
-printf("year=%d,month=%d,day=%d\n",Nyear,Nmonth,Nday);
-*/
+
+	 printf("year=%d,month=%d,day=%d\n",Nyear,Nmonth,Nday);
+
       }
       if (!strncasecmp(argv[i], "-A", 2)) {
 	dumpA = TRUE;
