@@ -332,7 +332,7 @@ msgstr "Rendez-vous"
 #: alarms.c:607 dialer.c:165
 #, c-format
 msgid "executing command = [%s]\n"
-msgstr "Exécuter la commande = [%s]\n"
+msgstr "Exécution de la commande = [%s]\n"
 
 #: alarms.c:614
 msgid "J-Pilot Alarm"
