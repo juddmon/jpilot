@@ -2043,6 +2043,7 @@ static int get_details(struct Appointment *a, unsigned char *attrib)
    /* Empty appointment descriptions crash PalmOS 2.0, but are fine in
     * later versions */
    if (a->description[0]=='\0') {
+      free(a->description);
       a->description=strdup(" ");
    }
    if (strlen(a->description)+1 > MAX_DESC_LEN) {
@@ -2092,6 +2093,7 @@ static int get_details(struct Appointment *a, unsigned char *attrib)
 /* This #endif is for the Datebk #ifdef */
 #endif
    if (a->note[0]=='\0') {
+      free(a->note);
       a->note=NULL;
    }
    if (a->note) {
