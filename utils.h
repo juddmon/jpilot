@@ -36,7 +36,7 @@
 
 #define PRINT_FILE_LINE printf("%s line %d\n", __FILE__, __LINE__)
 
-#ifdef WITH_PROMETHEON
+#ifdef ENABLE_PROMETHEON
 #define PN "CoPilot"
 #else
 #define PN "J-Pilot"
