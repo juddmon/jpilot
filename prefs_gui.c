@@ -486,7 +486,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 
    /* Confirm file installation */
    checkbutton = gtk_check_button_new_with_label
-     (_("Ask confirmation for files installation (J-Pilot -> PDA) (default YES)"));
+     (_("Ask confirmation for file installation (J-Pilot -> PDA) (default YES)"));
    gtk_box_pack_start(GTK_BOX(vbox_settings), checkbutton, FALSE, FALSE, 0);
    gtk_widget_show(checkbutton);
    get_pref(PREF_CONFIRM_INSTALL, &ivalue, &cstr);
