@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.83 2004/12/14 07:41:41 rikster5 Exp $ */
+/* $Id: utils.c,v 1.84 2004/12/21 08:01:56 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -704,6 +704,16 @@ int clist_find_id(GtkWidget *clist,
 
    return found;
 }
+
+/* Encapsulate broken GTK function to make it work as documented */
+void clist_select_row(GtkCList *clist, 
+                      int       row,
+		      int       column)
+{
+   gtk_clist_select_row(clist, row, column);
+   clist->focus_row = row;
+}
+
 
 int get_pixmaps(GtkWidget *widget,
 		int which_one,

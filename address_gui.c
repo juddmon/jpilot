@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.89 2004/12/14 07:41:41 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.90 2004/12/21 08:01:56 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -177,7 +177,7 @@ set_new_button_to(int new_state)
       gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_SINGLE);
       clist_hack=TRUE;
       /* The line selected on the clist becomes unhighlighted, so we do this */
-      gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
+      clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
       gtk_widget_show(apply_record_button);
       gtk_widget_hide(delete_record_button);
       break;
@@ -185,7 +185,7 @@ set_new_button_to(int new_state)
       gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_SINGLE);
       clist_hack=TRUE;
       /* The line selected on the clist becomes unhighlighted, so we do this */
-      gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
+      clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
       gtk_widget_show(add_record_button);
       gtk_widget_hide(copy_record_button);
       gtk_widget_hide(delete_record_button);
@@ -1588,7 +1588,7 @@ void cb_address_quickfind(GtkWidget *widget,
       if (!strncasecmp(clist_text, entry_text, strlen(entry_text))) {
 	 found = 1;
 	 found_at = i;
-	 gtk_clist_select_row(GTK_CLIST(clist), i, ADDRESS_NAME_COLUMN);
+	 clist_select_row(GTK_CLIST(clist), i, ADDRESS_NAME_COLUMN);
       }
    }
    line_count = i;
@@ -1698,13 +1698,13 @@ static void cb_clist_selection(GtkWidget      *clist,
    /* HACK, see clist hack explanation in memo_gui.c */
    if (clist_hack) {
       keep=record_changed;
-      gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, column);
+      clist_select_row(GTK_CLIST(clist), clist_row_selected, column);
       b=dialog_save_changed_record(pane, record_changed);
       if (b==DIALOG_SAID_1) {
 	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
       }
       set_new_button_to(CLEAR_FLAG);
-      gtk_clist_select_row(GTK_CLIST(clist), row, column);
+      clist_select_row(GTK_CLIST(clist), row, column);
       return;
    }
 
@@ -2156,14 +2156,14 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       /* Select the existing requested row, or row 0 if that is impossible */
       if (clist_row_selected <= entries_shown)
       {
-	 gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, ADDRESS_PHONE_COLUMN);
+	 clist_select_row(GTK_CLIST(clist), clist_row_selected, ADDRESS_PHONE_COLUMN);
 	 if (!gtk_clist_row_is_visible(GTK_CLIST(clist), clist_row_selected)) {
 	    gtk_clist_moveto(GTK_CLIST(clist), clist_row_selected, 0, 0.5, 0.0);
 	 }
       }
       else
       {
-	 gtk_clist_select_row(GTK_CLIST(clist), 0, ADDRESS_PHONE_COLUMN);
+	 clist_select_row(GTK_CLIST(clist), 0, ADDRESS_PHONE_COLUMN);
       }
    }
 
@@ -2233,7 +2233,7 @@ static int address_find()
 			glob_find_id,
 			&found_at);
       if (r) {
-	 gtk_clist_select_row(GTK_CLIST(clist), found_at, ADDRESS_PHONE_COLUMN);
+	 clist_select_row(GTK_CLIST(clist), found_at, ADDRESS_PHONE_COLUMN);
 	 if (!gtk_clist_row_is_visible(GTK_CLIST(clist), found_at)) {
 	    gtk_clist_moveto(GTK_CLIST(clist), found_at, 0, 0.5, 0.0);
 	 }
@@ -2336,7 +2336,7 @@ cb_key_pressed_quickfind(GtkWidget *widget, GdkEventKey *event, gpointer data)
    if (select_row<0) {
       select_row=row_count-1;
    }
-   gtk_clist_select_row(GTK_CLIST(clist), select_row, ADDRESS_NAME_COLUMN);
+   clist_select_row(GTK_CLIST(clist), select_row, ADDRESS_NAME_COLUMN);
    if (!gtk_clist_row_is_visible(GTK_CLIST(clist), select_row)) {
       gtk_clist_moveto(GTK_CLIST(clist), select_row, 0, 0.5, 0.0);
    }

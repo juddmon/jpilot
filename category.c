@@ -1,4 +1,4 @@
-/* $Id: category.c,v 1.20 2004/12/10 02:45:06 rikster5 Exp $ */
+/* $Id: category.c,v 1.21 2004/12/21 08:01:56 rikster5 Exp $ */
 
 /*******************************************************************************
  * category.c
@@ -689,7 +689,7 @@ void cb_clist_edit_cats(GtkWidget *widget,
       printf("cb_clist_edit_cats not in start state\n");
 #endif
       if (Pdata->selected!=row) {
-	 gtk_clist_select_row(GTK_CLIST(Pdata->clist), Pdata->selected, 0);
+	 clist_select_row(GTK_CLIST(Pdata->clist), Pdata->selected, 0);
       }
    }
 }

@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.70 2004/12/10 02:45:07 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.71 2004/12/21 08:01:56 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -99,7 +99,7 @@ set_new_button_to(int new_state)
       gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_SINGLE);
       clist_hack=TRUE;
       /* The line selected on the clist becomes unhighlighted, so we do this */
-      gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
+      clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
       gtk_widget_show(apply_record_button);
       gtk_widget_hide(delete_record_button);
       break;
@@ -107,7 +107,7 @@ set_new_button_to(int new_state)
       gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_SINGLE);
       clist_hack=TRUE;
       /* The line selected on the clist becomes unhighlighted, so we do this */
-      gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
+      clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
       gtk_widget_show(add_record_button);
       gtk_widget_hide(copy_record_button);
       gtk_widget_hide(delete_record_button);
@@ -1006,13 +1006,13 @@ static void cb_clist_selection(GtkWidget      *clist,
    /* HACK, see clist hack explanation in memo_gui.c */
    if (clist_hack) {
       keep=record_changed;
-      gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, column);
+      clist_select_row(GTK_CLIST(clist), clist_row_selected, column);
       b=dialog_save_changed_record(pane, record_changed);
       if (b==DIALOG_SAID_1) {
 	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
       }
       set_new_button_to(CLEAR_FLAG);
-      gtk_clist_select_row(GTK_CLIST(clist), row, column);
+      clist_select_row(GTK_CLIST(clist), row, column);
       return;
    }
 
@@ -1201,14 +1201,14 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    if ((main) && (entries_shown>0)) {
       /* Select the existing requested row, or row 0 if that is impossible */
       if (clist_row_selected <= entries_shown) {
-	 gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
+	 clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
 	 if (!gtk_clist_row_is_visible(GTK_CLIST(clist), clist_row_selected)) {
 	    gtk_clist_moveto(GTK_CLIST(clist), clist_row_selected, 0, 0.5, 0.0);
 	 }
       }
       else
       {
-	 gtk_clist_select_row(GTK_CLIST(clist), 0, 0);
+	 clist_select_row(GTK_CLIST(clist), 0, 0);
       }
    }
 
@@ -1241,7 +1241,7 @@ static int memo_find()
 			glob_find_id,
 			&found_at);
       if (r) {
-	 gtk_clist_select_row(GTK_CLIST(clist), found_at, 0);
+	 clist_select_row(GTK_CLIST(clist), found_at, 0);
 	 if (!gtk_clist_row_is_visible(GTK_CLIST(clist), found_at)) {
 	    gtk_clist_moveto(GTK_CLIST(clist), found_at, 0, 0.5, 0.0);
 	 }

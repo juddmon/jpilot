@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.45 2004/12/07 20:31:40 rikster5 Exp $ */
+/* $Id: utils.h,v 1.46 2004/12/21 08:01:56 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -312,6 +312,10 @@ int cal_dialog(GtkWindow *main_window,
 void set_bg_rgb_clist_row(GtkWidget *clist, int row, int r, int g, int b);
 
 void set_fg_rgb_clist_cell(GtkWidget *clist, int row, int col, int r, int g, int b);
+
+void clist_select_row(GtkCList *clist, 
+                      int       row,
+		      int       column);
 
 int clist_find_id(GtkWidget *clist,
 		  unsigned int unique_id,

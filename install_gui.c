@@ -1,4 +1,4 @@
-/* $Id: install_gui.c,v 1.20 2004/12/07 06:51:08 rikster5 Exp $ */
+/* $Id: install_gui.c,v 1.21 2004/12/21 08:01:56 rikster5 Exp $ */
 
 /*******************************************************************************
  * install_gui.c
@@ -222,7 +222,7 @@ static int
    if (kept_line_selected > count -1) {
       kept_line_selected = count - 1;
    }
-   gtk_clist_select_row(GTK_CLIST(clist), kept_line_selected, 0);
+   clist_select_row(GTK_CLIST(clist), kept_line_selected, 0);
    fclose(in);
    gtk_clist_thaw(GTK_CLIST(clist));
 

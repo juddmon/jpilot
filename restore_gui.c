@@ -1,4 +1,4 @@
-/* $Id: restore_gui.c,v 1.16 2004/12/07 06:51:08 rikster5 Exp $ */
+/* $Id: restore_gui.c,v 1.17 2004/12/21 08:01:56 rikster5 Exp $ */
 
 /*******************************************************************************
  * restore_gui.c
@@ -203,7 +203,7 @@ static int populate_clist()
    populate_clist_sub(path, 1, 1);
 
    for (i=0; i<GTK_CLIST(restore_clist)->rows; i++) {
-      gtk_clist_select_row(GTK_CLIST(restore_clist), i, 0);
+      clist_select_row(GTK_CLIST(restore_clist), i, 0);
    }
 
    return EXIT_SUCCESS;
