@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.18 2003/05/21 18:26:21 judd Exp $
+# $Id: Makefile.am,v 1.19 2003/06/02 01:24:04 judd Exp $
 
 SUBDIRS = intl Expense SyncTime KeyRing docs dialer po
 
@@ -15,6 +15,9 @@ EXTRA_DIST = reconf autogen.sh ChangeLog docs empty icons \
 	dialer/README \
 	dialer/jpilot-dial.c \
 	po/POTFILES
+
+dist-hook:
+	  rm -rf `find $(distdir)/ -name CVS`
 
 bin_PROGRAMS = jpilot jpilot-dump jpilot-sync
 jpilot_SOURCES = \
