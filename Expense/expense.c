@@ -40,6 +40,12 @@
 #define EXPENSE_PAYMENT 4
 #define EXPENSE_CURRENCY 5
 
+#define MAX_PAYMENTS       8
+#define MAX_CATEGORY1     17
+#define MAX_CATEGORY2     16
+#define MAX_EXPENSE_TYPES 28
+#define MAX_CURRENCYS     24
+
 #define CATEGORY_ALL 200
 
 #define CONNECT_SIGNALS 400
@@ -63,7 +69,7 @@ struct Expense {
 /* Global vars */
 /* This is the category that is currently being displayed */
 static int show_category;
-static int glob_category_number_from_menu_item[16];
+static int glob_category_number_from_menu_item[MAX_CATEGORY2];
 static void cb_clist_selection(GtkWidget      *clist,
 			       gint           row,
 			       gint           column,
@@ -80,15 +86,15 @@ static GtkWidget *entry_city;
 static GtkWidget *text_attendees;
 static GtkWidget *text_note;
 static GtkWidget *menu_payment;
-static GtkWidget *menu_item_payment[8];
+static GtkWidget *menu_item_payment[MAX_PAYMENTS];
 static GtkWidget *menu_category1;
 static GtkWidget *menu_category2;
-static GtkWidget *menu_item_category1[17];
-static GtkWidget *menu_item_category2[16];
+static GtkWidget *menu_item_category1[MAX_CATEGORY1];
+static GtkWidget *menu_item_category2[MAX_CATEGORY2];
 static GtkWidget *menu_expense_type;
-static GtkWidget *menu_item_expense_type[28];
+static GtkWidget *menu_item_expense_type[MAX_EXPENSE_TYPES];
 static GtkWidget *menu_currency;
-static GtkWidget *menu_item_currency[24];
+static GtkWidget *menu_item_currency[MAX_CURRENCYS];
 static GtkWidget *spinner_mon, *spinner_day, *spinner_year;
 static GtkAdjustment *adj_mon, *adj_day, *adj_year;
 static GtkWidget *scrolled_window;
@@ -884,7 +890,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    struct MyExpense *mex;
    int i, item_num, category;
    int keep, b;
-   
+
    jp_logf(JP_LOG_DEBUG, "Expense: cb_clist_selection\n");
 
    if ((!event) && (clist_hack)) return;
@@ -929,12 +935,24 @@ static void cb_clist_selection(GtkWidget      *clist,
       }
    }
 
-   gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
-       (menu_item_category2[item_num]), TRUE);
-   gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
-       (menu_item_expense_type[mex->ex.type]), TRUE);
-   gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
-       (menu_item_payment[mex->ex.payment]), TRUE);
+   if (item_num < MAX_CATEGORY2) {
+      gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
+				     (menu_item_category2[item_num]), TRUE);
+   } else {
+      jp_logf(JP_LOG_WARN, "Expense: Unknown category\n");
+   }
+   if (mex->ex.type < MAX_EXPENSE_TYPES) {
+      gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
+				     (menu_item_expense_type[mex->ex.type]), TRUE);
+   } else {
+      jp_logf(JP_LOG_WARN, "Expense: Unknown expense type\n");
+   }
+   if (mex->ex.payment < MAX_PAYMENTS) {
+      gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
+				     (menu_item_payment[mex->ex.payment]), TRUE);
+   } else {
+      jp_logf(JP_LOG_WARN, "Expense: Unknown payment type\n");
+   }
    if (mex->ex.currency > sizeof(menu_item_currency)/sizeof(menu_item_currency[0]))
 	   mex->ex.currency = 0;
    gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
@@ -1487,7 +1505,6 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    entry_city = gtk_entry_new();
    gtk_box_pack_start(GTK_BOX(temp_hbox), entry_city, TRUE, TRUE, 0);
 
-   
    label = gtk_label_new(_("Attendees"));
    gtk_box_pack_start(GTK_BOX(vbox2), label, FALSE, FALSE, 0);
 
