@@ -394,7 +394,7 @@ int get_pref_possibility(int which, int n, char *pref_str)
    };
 
    static const char *char_sets[] = {
-      "Latin1",
+      "Latin1 / No conversion",
       "Japanese",
       "Host ISO-8859-2 <-> Palm Windows1250 (EE)", 
       "Host Windows1251 <-> Palm KOI8-R",
