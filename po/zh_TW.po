@@ -1,16 +1,17 @@
+# translation of zh_TW.po to Traditional Chinese
 # translation of jpilot-0.99.8-pre3.po to Traditional Chinese
 # Chinese (traditional) translation for jpilot.
 # Copyright (C) 2002  Judd Montgomery <judd@jpilot.org>
 # This file is distributed under the same license as the jpilot package.
 # Anthony Fok <anthony@thizlinux.com>, 2002.
-# Jouston Huang <jouston@jouston.no-ip.com>, 2004.
+# Jouston Huang <jouston@jouston.no-ip.com>, 2004, 2005.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: jpilot-0.99.8-pre3\n"
+"Project-Id-Version: jpilot-0.99.8-pre7\n"
 "Report-Msgid-Bugs-To: jpilot-devel@jpilot.org\n"
 "POT-Creation-Date: 2005-01-08 11:39+0100\n"
-"PO-Revision-Date: 2004-12-24 14:47+0800\n"
+"PO-Revision-Date: 2005-01-14 22:27+0800\n"
 "Last-Translator: Jouston Huang <jouston@jouston.no-ip.com>\n"
 "Language-Team: Traditional Chinese <zh-l10n@i18n.linux.org.tw>\n"
 "MIME-Version: 1.0\n"
@@ -953,10 +954,8 @@ msgid " -T dump Todo list as CSV.\n"
 msgstr " -T 將代辦事項用CSV格式傾印出來.\n"
 
 #: jpilot-sync.c:65
-msgid ""
-" J-Pilot preferences are read to get port, rate, number of backups, etc.\n"
-msgstr ""
-" J-Pilot 的偏好設定將會讀取連接用那個埠, 連接速率或是要保留幾份備份等等.\n"
+msgid " J-Pilot preferences are read to get port, rate, number of backups, etc.\n"
+msgstr " J-Pilot 的偏好設定將會讀取連接用那個埠, 連接速率或是要保留幾份備份等等.\n"
 
 #: jpilot-sync.c:66
 msgid " -v = version\n"
@@ -983,8 +982,7 @@ msgid " -l = loop, otherwise sync once and exit.\n"
 msgstr " -l = 不停重複, 否則將只同步一次並且離開.\n"
 
 #: jpilot-sync.c:72
-msgid ""
-" -p {port} = Use this port to sync with instead of getting preferences.\n"
+msgid " -p {port} = Use this port to sync with instead of getting preferences.\n"
 msgstr " -p {port} = 使用這個連接埠同步而不使用偏好設定中所指定的連接埠.\n"
 
 #: jpilot.c:133
@@ -1118,24 +1116,20 @@ msgid "/_View"
 msgstr "/檢視(V)"
 
 #: jpilot.c:1326 jpilot.c:1327 jpilot.c:1328 jpilot.c:1582
-#, fuzzy
 msgid "/View/Hide Private Records"
-msgstr "/檢視(V)/穩藏、顯示或遮罩私人紀錄"
+msgstr "/檢視(V)/隱藏私人紀錄"
 
 #: jpilot.c:1327
-#, fuzzy
 msgid "/View/Show Private Records"
-msgstr "/檢視(V)/穩藏、顯示或遮罩私人紀錄"
+msgstr "/檢視(V)/顯示私人紀錄"
 
 #: jpilot.c:1328
-#, fuzzy
 msgid "/View/Mask Private Records"
-msgstr "/檢視(V)/穩藏、顯示或遮罩私人紀錄"
+msgstr "/檢視(V)/遮罩私人紀錄"
 
 #: jpilot.c:1329
-#, fuzzy
 msgid "/View/sep1"
-msgstr "/檔案(F)/sep1"
+msgstr "/檢視(V)/sep1"
 
 #: jpilot.c:1330
 msgid "/View/Datebook"
@@ -1252,19 +1246,16 @@ msgid "Clear"
 msgstr "清除"
 
 #: jpilot.c:2397
-#, fuzzy
 msgid "Show private records   Ctrl-Z"
-msgstr "顯示私人紀錄"
+msgstr "顯示私人紀錄   Ctrl-Z"
 
 #: jpilot.c:2402
-#, fuzzy
 msgid "Hide private records   Ctrl-Z"
-msgstr "隱藏私人紀錄"
+msgstr "隱藏私人紀錄   Ctrl-Z"
 
 #: jpilot.c:2407
-#, fuzzy
 msgid "Mask private records   Ctrl-Z"
-msgstr "遮罩私人紀錄"
+msgstr "遮罩私人紀錄   Ctrl-Z"
 
 #: jpilot.c:2418
 msgid "Sync your palm to the desktop   Ctrl-Y"
@@ -1304,12 +1295,11 @@ msgstr "備忘錄"
 
 #: jpilot.c:2595
 msgid "Do it now"
-msgstr ""
+msgstr "就這麼做吧"
 
 #: jpilot.c:2595
-#, fuzzy
 msgid "Remind me later"
-msgstr "提醒我"
+msgstr "稍後提醒我"
 
 #: jpilot.c:2595
 msgid "Don't tell me again!"
@@ -1345,7 +1335,7 @@ msgid "\"."
 msgstr "\"."
 
 #: jpilot.c:2618
-#, fuzzy
+
 msgid "Select a UTF-8 encoding"
 msgstr "選擇一個 UTF-8 字元集"
 
@@ -1748,8 +1738,7 @@ msgid "To restore your handheld:"
 msgstr "如何復原您的PDA:"
 
 #: restore_gui.c:252
-msgid ""
-"1. Choose all the applications you wish to restore.  The default is all."
+msgid "1. Choose all the applications you wish to restore.  The default is all."
 msgstr "1. 選擇所有您要復原的應用程式.  預設是全部."
 
 #: restore_gui.c:255
@@ -2670,29 +2659,24 @@ msgid "Master Card"
 msgstr "萬事達卡 (MasterCard)"
 
 #: Expense/expense.c:1653
-#, fuzzy
 msgid "Category:"
-msgstr "類別: "
+msgstr "類別:"
 
 #: Expense/expense.c:1666
-#, fuzzy
 msgid "Type:"
-msgstr "類型: "
+msgstr "類型:"
 
 #: Expense/expense.c:1679
-#, fuzzy
 msgid "Payment:"
-msgstr "付款方式: "
+msgstr "付款方式:"
 
 #: Expense/expense.c:1692
-#, fuzzy
 msgid "Currency:"
-msgstr "匯率: "
+msgstr "匯率:"
 
 #: Expense/expense.c:1705
-#, fuzzy
 msgid "Date:"
-msgstr "該月的第幾天"
+msgstr "日期:"
 
 #: Expense/expense.c:1722
 msgid "Month:"
@@ -2707,19 +2691,16 @@ msgid "Year:"
 msgstr "年:"
 
 #: Expense/expense.c:1763
-#, fuzzy
 msgid "Amount:"
-msgstr "金額: "
+msgstr "金額:"
 
 #: Expense/expense.c:1777
-#, fuzzy
 msgid "Vendor:"
-msgstr "廠商: "
+msgstr "廠商:"
 
 #: Expense/expense.c:1791
-#, fuzzy
 msgid "City:"
-msgstr "城市: "
+msgstr "城市:"
 
 #: Expense/expense.c:1805
 msgid "Attendees"
@@ -2784,5 +2765,3 @@ msgstr "密碼: "
 msgid "Generate Password"
 msgstr "自動產生密碼"
 
-#~ msgid "OK, I will do it"
-#~ msgstr "確定, 我真的確定"
