@@ -88,7 +88,7 @@ static int datebook_sort(AppointmentList **al)
    /* Allocate an array to be qsorted */
    sort_al = calloc(count, sizeof(AppointmentList *));
    if (!sort_al) {
-      jp_logf(JP_LOG_WARN, "datebook_sort(): Out of Memory\n");
+      jp_logf(JP_LOG_WARN, "datebook_sort(): %s\n", _("Out of memory"));
       return 0;
    }
 
@@ -371,14 +371,14 @@ int datebook_copy_appointment(struct Appointment *a1,
 {
    *a2=malloc(sizeof(struct Appointment));
    if (!(*a2)) {
-      jp_logf(JP_LOG_WARN, "datebook_copy_appointment(): Out of memory\n");
+      jp_logf(JP_LOG_WARN, "datebook_copy_appointment(): %s\n", _("Out of memory"));
       return -1;
    }
    memcpy(*a2, a1, sizeof(struct Appointment));
 
    (*a2)->exception = (struct tm *)malloc(a1->exceptions * sizeof(struct tm));
    if (!(*a2)->exception) {
-      jp_logf(JP_LOG_WARN, "datebook_copy_appointment(): Out of memory 2\n");
+      jp_logf(JP_LOG_WARN, "datebook_copy_appointment(): %s 2\n", _("Out of memory"));
       return -1;
    }
    memcpy((*a2)->exception, a1->exception, a1->exceptions * sizeof(struct tm));
@@ -408,7 +408,7 @@ int datebook_add_exception(struct Appointment *a, int year, int mon, int day)
 
    new_exception = malloc((a->exceptions + 1) * sizeof(struct tm));
    if (!new_exception) {
-      jp_logf(JP_LOG_WARN, "datebook_add_exception(): Out of memory\n");
+      jp_logf(JP_LOG_WARN, "datebook_add_exception(): %s\n", _("Out of memory"));
       return -1;
    }
    memcpy(new_exception, a->exception, (a->exceptions) * sizeof(struct tm));
@@ -656,7 +656,7 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
       }   
       break;
     default:
-      jp_logf(JP_LOG_WARN, "unknown repeatType (%d) found in DatebookDB\n",
+      jp_logf(JP_LOG_WARN, _("Unknown repeatType (%d) found in DatebookDB\n"),
 	   a->repeatType);
       ret = FALSE;
    }/*switch */
@@ -702,7 +702,7 @@ int get_datebook_app_info(struct AppointmentAppInfo *ai)
       free(buf);
    }
    if ((num<0) || (rec_size<=0)) {
-      jp_logf(JP_LOG_WARN, _("Error reading %s\n"), "DatebookDB.pdb");
+      jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), "DatebookDB.pdb");
       return -1;
    }
    get_pref(PREF_CHAR_SET, &char_set, NULL);
@@ -1054,7 +1054,7 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
 
       temp_a_list = malloc(sizeof(AppointmentList));
       if (!temp_a_list) {
-	 jp_logf(JP_LOG_WARN, "get_days_appointments(): Out of memory\n");
+	 jp_logf(JP_LOG_WARN, "get_days_appointments(): %s\n", _("Out of memory"));
 	 free_Appointment(&a);
 	 break;
       }
