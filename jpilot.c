@@ -83,6 +83,8 @@
 #define MASK_X      0x02
 #define MASK_Y      0x01
 
+#define APP_BUTTON_SIZE 44
+
 #define USAGE_STRING _("\n"EPN" [ [-v] || [-h] || [-d] || [-a] || [-A]\n"\
 " -v displays version and compile options and exits.\n"\
 " -h displays help and exits.\n"\
@@ -109,7 +111,7 @@ int glob_app = 0;
 int glob_focus = 1;
 GtkWidget *glob_dialog=NULL;
 unsigned char skip_plugins;
-static GtkWidget *box_locked, *box_locked_masked, *box_unlocked;
+static GtkWidget *button_locked, *button_locked_masked, *button_unlocked;
 
 int pipe_from_child, pipe_to_parent;
 int pipe_from_parent, pipe_to_child;
@@ -554,15 +556,15 @@ static void cb_private(GtkWidget *widget, gpointer data)
    switch (privates) {
     case SHOW_PRIVATES:
       privates = show_privates(MASK_PRIVATES);
-      gtk_widget_hide(box_locked);
-      gtk_widget_show(box_locked_masked);
-      gtk_widget_hide(box_unlocked);
+      gtk_widget_hide(button_locked);
+      gtk_widget_show(button_locked_masked);
+      gtk_widget_hide(button_unlocked);
       break;
     case MASK_PRIVATES:
       privates = show_privates(HIDE_PRIVATES);
-      gtk_widget_show(box_locked);
-      gtk_widget_hide(box_locked_masked);
-      gtk_widget_hide(box_unlocked);
+      gtk_widget_show(button_locked);
+      gtk_widget_hide(button_locked_masked);
+      gtk_widget_hide(button_unlocked);
       break;
     case HIDE_PRIVATES:
       /* Ask for the password, or don't depending on configure option */
@@ -582,9 +584,9 @@ static void cb_private(GtkWidget *widget, gpointer data)
       if (r_dialog==1) {
 	 privates = show_privates(SHOW_PRIVATES);
 	 if (privates==SHOW_PRIVATES) {
-	    gtk_widget_hide(box_locked);
-	    gtk_widget_hide(box_locked_masked);
-	    gtk_widget_show(box_unlocked);
+	    gtk_widget_hide(button_locked);
+	    gtk_widget_hide(button_locked_masked);
+	    gtk_widget_show(button_unlocked);
 	 }
       }
       break;
@@ -1762,7 +1764,7 @@ char *xpm_unlocked[] = {
    button_datebook = gtk_button_new();
    gtk_signal_connect(GTK_OBJECT(button_datebook), "clicked",
 		      GTK_SIGNAL_FUNC(cb_app_button), GINT_TO_POINTER(DATEBOOK));
-   gtk_widget_set_usize(button_datebook, 46, 46);
+   gtk_widget_set_usize(button_datebook, APP_BUTTON_SIZE, APP_BUTTON_SIZE);
    gtk_box_pack_start(GTK_BOX(g_vbox0), temp_hbox, FALSE, FALSE, 0);
    gtk_box_pack_start(GTK_BOX(temp_hbox), button_datebook, FALSE, FALSE, 0);
 
@@ -1771,7 +1773,7 @@ char *xpm_unlocked[] = {
    button_address = gtk_button_new();
    gtk_signal_connect(GTK_OBJECT(button_address), "clicked",
 		      GTK_SIGNAL_FUNC(cb_app_button), GINT_TO_POINTER(ADDRESS));
-   gtk_widget_set_usize(button_address, 46, 46);
+   gtk_widget_set_usize(button_address, APP_BUTTON_SIZE, APP_BUTTON_SIZE);
    gtk_box_pack_start(GTK_BOX(g_vbox0), temp_hbox, FALSE, FALSE, 0);
    gtk_box_pack_start(GTK_BOX(temp_hbox), button_address, FALSE, FALSE, 0);
 
@@ -1780,7 +1782,7 @@ char *xpm_unlocked[] = {
    button_todo = gtk_button_new();
    gtk_signal_connect(GTK_OBJECT(button_todo), "clicked",
 		      GTK_SIGNAL_FUNC(cb_app_button), GINT_TO_POINTER(TODO));
-   gtk_widget_set_usize(button_todo, 46, 46);
+   gtk_widget_set_usize(button_todo, APP_BUTTON_SIZE, APP_BUTTON_SIZE);
    gtk_box_pack_start(GTK_BOX(g_vbox0), temp_hbox, FALSE, FALSE, 0);
    gtk_box_pack_start(GTK_BOX(temp_hbox), button_todo, FALSE, FALSE, 0);
 
@@ -1789,7 +1791,7 @@ char *xpm_unlocked[] = {
    button_memo = gtk_button_new();
    gtk_signal_connect(GTK_OBJECT(button_memo), "clicked",
 		      GTK_SIGNAL_FUNC(cb_app_button), GINT_TO_POINTER(MEMO));
-   gtk_widget_set_usize(button_memo, 46, 46);
+   gtk_widget_set_usize(button_memo, APP_BUTTON_SIZE, APP_BUTTON_SIZE);
    gtk_box_pack_start(GTK_BOX(g_vbox0), temp_hbox, FALSE, FALSE, 0);
    gtk_box_pack_start(GTK_BOX(temp_hbox), button_memo, FALSE, FALSE, 0);
 
@@ -1804,15 +1806,32 @@ char *xpm_unlocked[] = {
    /* Create tooltips */
    glob_tooltips = gtk_tooltips_new();
 
-   /* Create Lock/Unlock boxes */
-   temp_hbox = gtk_hbox_new(FALSE, 0);
-   box_locked = gtk_hbox_new(FALSE, 0);
-   box_locked_masked = gtk_hbox_new(FALSE, 0);
-   box_unlocked = gtk_hbox_new(FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(g_vbox0), temp_hbox, FALSE, FALSE, 5);
-   gtk_box_pack_start(GTK_BOX(temp_hbox), box_locked, FALSE, TRUE, 0);
-   gtk_box_pack_start(GTK_BOX(temp_hbox), box_locked_masked, FALSE, TRUE, 0);
-   gtk_box_pack_start(GTK_BOX(temp_hbox), box_unlocked, FALSE, TRUE, 0);
+   /* Create Lock/Unlock buttons */
+   button_locked = gtk_button_new();
+   button_locked_masked = gtk_button_new();
+   button_unlocked = gtk_button_new();
+   gtk_signal_connect(GTK_OBJECT(button_locked), "clicked",
+		      GTK_SIGNAL_FUNC(cb_private), NULL);
+   gtk_signal_connect(GTK_OBJECT(button_locked_masked), "clicked",
+		      GTK_SIGNAL_FUNC(cb_private), NULL);
+   gtk_signal_connect(GTK_OBJECT(button_unlocked), "clicked",
+		      GTK_SIGNAL_FUNC(cb_private), NULL);
+   gtk_box_pack_start(GTK_BOX(g_vbox0), button_locked, FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(g_vbox0), button_locked_masked, FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(g_vbox0), button_unlocked, FALSE, FALSE, 0);
+
+   gtk_tooltips_set_tip(glob_tooltips, button_locked,
+			_("Show private records"), NULL);
+   gtk_tooltips_set_tip(glob_tooltips, button_locked_masked,
+			_("Hide private records"), NULL);
+   gtk_tooltips_set_tip(glob_tooltips, button_unlocked,
+			_("Mask private records"), NULL);
+
+#ifdef ENABLE_PRIVATE
+   /*Separator */
+   separator = gtk_hseparator_new();
+   gtk_box_pack_start(GTK_BOX(g_vbox0), separator, FALSE, TRUE, 5);
+#endif
 
    /* Create "Quit" button */
    button = gtk_button_new_with_label(_("Quit!"));
@@ -1898,13 +1917,13 @@ char *xpm_unlocked[] = {
 
    /* Show locked box */
 #ifdef ENABLE_PRIVATE
-   gtk_widget_show(box_locked);
-   gtk_widget_hide(box_locked_masked);
-   gtk_widget_hide(box_unlocked);
+   gtk_widget_show(button_locked);
+   gtk_widget_hide(button_locked_masked);
+   gtk_widget_hide(button_unlocked);
 #else
-   gtk_widget_hide(box_locked);
-   gtk_widget_hide(box_locked_masked);
-   gtk_widget_show(box_unlocked);
+   gtk_widget_hide(button_locked);
+   gtk_widget_hide(button_locked_masked);
+   gtk_widget_show(button_unlocked);
 #endif
 
    /* Create "locked" pixmap */
@@ -1913,7 +1932,7 @@ char *xpm_unlocked[] = {
 					 xpm_locked);
    pixmapwid = gtk_pixmap_new(pixmap, mask);
    gtk_widget_show(pixmapwid);
-   gtk_container_add(GTK_CONTAINER(box_locked), pixmapwid);
+   gtk_container_add(GTK_CONTAINER(button_locked), pixmapwid);
 
    /* Create "locked/masked" pixmap */
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
@@ -1921,7 +1940,7 @@ char *xpm_unlocked[] = {
 					 xpm_locked_masked);
    pixmapwid = gtk_pixmap_new(pixmap, mask);
    gtk_widget_show(pixmapwid);
-   gtk_container_add(GTK_CONTAINER(box_locked_masked), pixmapwid);
+   gtk_container_add(GTK_CONTAINER(button_locked_masked), pixmapwid);
 
    /* Create "unlocked" pixmap */
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
@@ -1929,7 +1948,7 @@ char *xpm_unlocked[] = {
 					 xpm_unlocked);
    pixmapwid = gtk_pixmap_new(pixmap, mask);
    gtk_widget_show(pixmapwid);
-   gtk_container_add(GTK_CONTAINER(box_unlocked), pixmapwid);
+   gtk_container_add(GTK_CONTAINER(button_unlocked), pixmapwid);
 
    gtk_tooltips_set_tip(glob_tooltips, button_datebook, _("Datebook/Go to Today"), NULL);
 
