@@ -1623,8 +1623,17 @@ static int sync_install(char *filename, int sd)
 
    jp_logf(JP_LOG_GUI, _("Installing %s "), Pc);
    f = pi_file_open(filename);
-   if (f==0) {
-      jp_logf(JP_LOG_WARN, _("\nUnable to open '%s'!\n"), filename);
+   if (f==NULL) {
+      int fd;
+
+      if ((fd = open(filename, O_RDONLY)) < 0) {
+	jp_logf(JP_LOG_WARN, _("\nUnable to open '%s': %s!\n"), filename,
+		strerror(errno));
+      } else {
+         close(fd);
+         jp_logf(JP_LOG_WARN, _("\nUnable to sync '%s': file corrupted?\n"),
+		 filename);
+      }
       return -1;
    }
    memset(&info, 0, sizeof(info));
