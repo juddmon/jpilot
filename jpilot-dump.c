@@ -1,4 +1,4 @@
-/* $Id: jpilot-dump.c,v 1.19 2004/12/18 00:58:04 rikster5 Exp $ */
+/* $Id: jpilot-dump.c,v 1.20 2005/03/19 16:53:58 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot-dump.c
@@ -103,6 +103,24 @@ void takeoutfunnies(char *str)
    }
 }
 
+/* convert from UTF8 to local encoding */
+void utf8_to_local(char *str)
+{
+#ifdef ENABLE_GTK2
+   char *local_buf;
+   
+   if (NULL == str)
+      return;
+
+   local_buf = g_locale_from_utf8(str, -1, NULL, NULL, NULL);
+   if (local_buf)
+   {
+      g_strlcpy(str, local_buf, strlen(str)+1);
+      free(local_buf);
+   }
+#endif
+}
+
 int dumpbook();
 int dumptodo();
 int dumpmemo();
@@ -165,6 +183,10 @@ printf("date is %s",asctime(&tm_dom));
 	&& (tal->mappt.rt != DELETED_PALM_REC)
 	&& (tal->mappt.rt != MODIFIED_PALM_REC)
        ) {
+       
+   utf8_to_local(tal->mappt.appt.description);
+   utf8_to_local(tal->mappt.appt.note);
+
  for ( i=2 ; formatB[i] != '\0' ; i++) {
   if ( formatB[i] != '%') {
    printf("%c",formatB[i]);
@@ -216,7 +238,7 @@ printf("date is %s",asctime(&tm_dom));
     	 takeoutfunnies(tal->mappt.appt.description);
 	 /* fall thru */
     case 'a' :
-    	 printf("%s",tal->mappt.appt.description);
+	 printf("%s",tal->mappt.appt.description);
 	 i++;
 	 break;
     case 'N' :	/* normal output */
@@ -407,6 +429,9 @@ int dumptodo()
 
    for (tal=al; tal; tal = tal->next) {
     if ( (tal->mtodo.rt != DELETED_PALM_REC) && (tal->mtodo.rt != MODIFIED_PALM_REC)) {
+
+   utf8_to_local(tal->mtodo.todo.description);
+   utf8_to_local(tal->mtodo.todo.note);
 
  for ( i=2 ; formatT[i] != '\0' ; i++) {
   if ( formatT[i] != '%') {
@@ -670,6 +695,8 @@ int dumpmemo()
    for (tal=al; tal; tal = tal->next) {
     if ( (tal->mmemo.rt != DELETED_PALM_REC) && (tal->mmemo.rt != MODIFIED_PALM_REC)) {
 
+   utf8_to_local(tal->mmemo.memo.text);
+
  for ( i=2 ; formatM[i] != '\0' ; i++) {
   if ( formatM[i] != '%') {
    printf("%c",formatM[i]);
@@ -744,6 +771,9 @@ int dumpaddress()
 
    for (tal=al; tal; tal = tal->next) {
     if ( (tal->maddr.rt != DELETED_PALM_REC) && (tal->maddr.rt != MODIFIED_PALM_REC)) {
+
+   for (num=0; num < 19; num++)
+      utf8_to_local(tal->maddr.addr.entry[num]);
 
  for ( i=2 ; formatA[i] != '\0' ; i++) {
   if ( formatA[i] != '%') {
