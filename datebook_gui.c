@@ -2214,6 +2214,8 @@ static int dayview_update_clist()
 
    /* Freeze clist to prevent flicker during updating */
    gtk_clist_freeze(GTK_CLIST(clist));
+   gtk_signal_disconnect_by_func(GTK_OBJECT(clist),
+				 GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
    gtk_clist_clear(GTK_CLIST(clist));
 
    /* Collect preferences and constant pixmaps for loop */
@@ -2365,6 +2367,9 @@ static int dayview_update_clist()
       }
 
    }
+
+   gtk_signal_connect(GTK_OBJECT(clist), "select_row",
+		      GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
 
    /* If there are items in the list, highlight the selected row */
    if (i>0) {
@@ -2841,7 +2846,6 @@ static void cb_clist_selection(GtkWidget      *clist,
    long use_db3_tags;
 #endif
 
-   if ((!event) && (column < 0)) return;
    if ((!event) && (clist_hack)) return;
 
 #ifdef ENABLE_DATEBK

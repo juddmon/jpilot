@@ -987,7 +987,6 @@ static void cb_clist_selection(GtkWidget      *clist,
    int sorted_position;
    int keep;
 
-   if ((!event) && (column < 0)) return;
    if ((!event) && (clist_hack)) return;
 
    /* HACK, see clist hack explanation in memo_gui.c */
@@ -1098,6 +1097,8 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
    /* Freeze clist to prevent flicker during updating */
    gtk_clist_freeze(GTK_CLIST(clist));
+   gtk_signal_disconnect_by_func(GTK_OBJECT(clist),
+				 GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
    gtk_clist_clear(GTK_CLIST(clist));
 
    show_priv = show_privates(GET_PRIVATES);
@@ -1177,6 +1178,9 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    }
 
    jp_logf(JP_LOG_DEBUG, "entries_shown=%d\n", entries_shown);
+
+   gtk_signal_connect(GTK_OBJECT(clist), "select_row",
+		      GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
 
    /* If there are items in the list, highlight the selected row */
    if ((main) && (entries_shown>0)) {

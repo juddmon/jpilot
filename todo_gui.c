@@ -1376,7 +1376,6 @@ static void cb_clist_selection(GtkWidget      *clist,
    time_t ltime;
    struct tm *now;
 
-   if ((!event) && (column < 0)) return;
    if ((!event) && (clist_hack)) return;
 
    /* HACK, see clist hack explanation in memo_gui.c */
@@ -1579,6 +1578,10 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
    /* Freeze clist to prevent flicker during updating */
    gtk_clist_freeze(GTK_CLIST(clist));
+   if (main) {
+      gtk_signal_disconnect_by_func(GTK_OBJECT(clist),
+				    GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
+   }
    gtk_clist_clear(GTK_CLIST(clist));
 
    /* Collect preferences and constant pixmaps for loop */
@@ -1723,6 +1726,11 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    }
 
    jp_logf(JP_LOG_DEBUG, "entries_shown=%d\n",entries_shown);
+
+   if (main) {
+      gtk_signal_connect(GTK_OBJECT(clist), "select_row",
+			 GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
+   }
 
    /* If there are items in the list, highlight the selected row */
    if ((main) && (entries_shown>0)) {
@@ -2013,8 +2021,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
                       GTK_SIGNAL_FUNC (cb_clist_click_column), NULL);
 
    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
-		      GTK_SIGNAL_FUNC(cb_clist_selection),
-		      todo_text);
+		      GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
    gtk_clist_set_shadow_type(GTK_CLIST(clist), SHADOW);
    gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
 
