@@ -6,9 +6,9 @@
 #: dialer.c:297
 msgid ""
 msgstr ""
-"Project-Id-Version: jpilot 0.99.3a\n"
+"Project-Id-Version: jpilot 0.99.4\n"
 "POT-Creation-Date: 2003-01-13 02:00-0500\n"
-"PO-Revision-Date: 2002-10-29 19:51GMT\n"
+"PO-Revision-Date: 2003-01-27 10:19GMT\n"
 "Last-Translator: Eyüp Hakan Duran <hakan_duran@hotmail.com>\n"
 "Language-Team: Turkish <gnu-tr-u12a@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -98,7 +98,7 @@ msgstr "Sýnýf "
 
 #: address_gui.c:1564 address_gui.c:2510
 msgid "kana("
-msgstr ""
+msgstr "kana("
 
 #: address_gui.c:1722 memo_gui.c:991 todo_gui.c:1340
 msgid "0 records"
@@ -106,7 +106,7 @@ msgstr "0 kayýt"
 
 #: address_gui.c:1811
 msgid "-Unnamed-"
-msgstr ""
+msgstr "-Adsýz-"
 
 #: address_gui.c:2002 memo_gui.c:1115 todo_gui.c:1473
 #, c-format
@@ -116,7 +116,7 @@ msgstr "%2$d kaydýn %1$d tanesi"
 #. Edit category button
 #: Expense/expense.c:1307 address_gui.c:2326 memo_gui.c:1292 todo_gui.c:1673
 msgid "Edit Categories"
-msgstr ""
+msgstr "Kategorileri Düzenle"
 
 #: address_gui.c:2353
 msgid "Phone"
@@ -184,7 +184,7 @@ msgstr "Tümü"
 #. Dial Phone Button
 #: address_gui.c:2585 dialer.c:311 dialer.c:336
 msgid "Dial"
-msgstr ""
+msgstr "Çevir"
 
 #: address_gui.c:2625
 msgid ""
@@ -385,11 +385,8 @@ msgid "You cannot have an appointment that repeats every %d %s(s)\n"
 msgstr "Her %d %s'de yinelenen randevunuz olamaz\n"
 
 #: datebook_gui.c:2080
-msgid ""
-"You can not have a weekly repeating appointment that doesn't repeat on any "
-"day of the week.\n"
-msgstr ""
-"Haftanýn herhangi bir gününde yinelenmeyen haftalýk randevunuz olamaz.\n"
+msgid "You can not have a weekly repeating appointment that doesn't repeat on any day of the week.\n"
+msgstr "Haftanýn herhangi bir gününde yinelenmeyen haftalýk randevunuz olamaz.\n"
 
 #. This is a timeless event
 #: datebook_gui.c:2217
@@ -435,12 +432,11 @@ msgstr "Bu olayýn belirli bir zamaný yok"
 
 #: datebook_gui.c:3901
 msgid "Starts on"
-msgstr "Baþlangýç"
+msgstr "Baþlangýç: "
 
 #: datebook_gui.c:3915
-#, fuzzy
 msgid "Start Time"
-msgstr "Baþlangýç"
+msgstr "Baþlama Zamaný"
 
 #: datebook_gui.c:4000
 msgid "DateBk Tags"
@@ -504,38 +500,36 @@ msgstr "Yýl"
 
 #: dialer.c:199
 msgid "Phone Dialer"
-msgstr ""
+msgstr "Telefon Çeviricisi"
 
 #: dialer.c:234
 msgid "Prefix 1"
-msgstr ""
+msgstr "Sýfat 1"
 
 #: dialer.c:256
 msgid "Prefix 2"
-msgstr ""
+msgstr "Sýfat 2"
 
 #: dialer.c:278
 msgid "Prefix 3"
-msgstr ""
+msgstr "Sýfat 3"
 
 #: dialer.c:293
 msgid "Phone number:"
-msgstr ""
+msgstr "Telefon numarasý:"
 
 #: dialer.c:324
-#, fuzzy
 msgid "Extension"
-msgstr "Gider"
+msgstr "Dahili"
 
 #: dialer.c:347
-#, fuzzy
 msgid "Dial Command"
-msgstr "Alarm Komutu"
+msgstr "Çevir Komutu"
 
 #. Buttons
 #: dialer.c:368
 msgid "Dismiss"
-msgstr ""
+msgstr "Bitir"
 
 #: export_gui.c:113
 msgid "File Browser"
@@ -605,10 +599,9 @@ msgstr "Çýkar"
 
 #: jpilot.c:88
 msgid "\n"
-msgstr ""
+msgstr "\n"
 
 #: jpilot.c:88
-#, fuzzy
 msgid ""
 " [ [-v] || [-h] || [-d] || [-a] || [-A]\n"
 " -v displays version and compile options and exits.\n"
@@ -621,14 +614,16 @@ msgid ""
 " port to sync on, and at what speed.\n"
 " If PILOTPORT is not set then it defaults to /dev/pilot.\n"
 msgstr ""
-"\n"
-"jpilot [ [-v] || [-h] || [-d] || [-a] || [-A]\n"
-" -v sürümü görüntüler ve çýkar.\n"
+" [ [-v] || [-h] || [-d] || [-a] || [-A]\n"
+" -v sürümü ve derleme seçeneklerini görüntüler ve çýkar.\n"
 " -h yardýmý görüntüler ve çýkar.\n"
 " -d yazýlým hata giderme bilgisini stdout'ta görüntüler.\n"
-" -p takýlabilirleri yüklemez.\n"
+" -p eklentileri yüklemez.\n"
 " -a bu program son çalýþtýrýldýðýndan beri kaçýrýlmýþ alarmlarý yoksayar.\n"
 " -A geçmiþ ve gelecek tüm alarmlarý yoksayar.\n"
+" The PILOTPORT ve PILOTRATE çevre deðiþkenleri, hangi portun hangi hýzda eþzamanlanacaðýný\n"
+" belirlemek için kullanýlýr.\n"
+" Eðer PILOTPORT atanmamýþsa, /dev/pilot'a öntanýmlanýr.\n"
 
 #: jpilot.c:374
 msgid "Help"
@@ -755,19 +750,16 @@ msgid "Clear"
 msgstr "Temizle"
 
 #: jpilot.c:1824
-#, fuzzy
 msgid "Show private records"
-msgstr "/Görünüm/Özel Kayýtlarý Gizle-Göster "
+msgstr "Özel kayýtlarý göster"
 
 #: jpilot.c:1826
-#, fuzzy
 msgid "Hide private records"
-msgstr "/Görünüm/Özel Kayýtlarý Gizle-Göster "
+msgstr "Özel kayýtlarý gizle"
 
 #: jpilot.c:1828
-#, fuzzy
 msgid "Mask private records"
-msgstr "Tüm kayýtlarý yazdýr"
+msgstr "Özel kayýtlarý maskele"
 
 #. Create "Quit" button
 #: jpilot.c:1837
@@ -968,7 +960,7 @@ msgstr "Manana'yý Eþzamanla"
 #. Show use Japanese Kana extention check box
 #: prefs_gui.c:625
 msgid "Use J-OS (Not Japanese PalmOS:WorkPad/CLIE)"
-msgstr ""
+msgstr "J-OS kullan (Japonca PalmOS deðil:WorkPad/CLIE)"
 
 #: prefs_gui.c:668
 msgid "Open alarm windows for appointment reminders"
@@ -1067,10 +1059,8 @@ msgid "To restore your handheld:"
 msgstr "Avuçiçini geri yüklemek için:"
 
 #: restore_gui.c:163
-msgid ""
-"1. Choose all the applications you wish to restore.  The default is all."
-msgstr ""
-"1. Geri yüklemek istediðiniz tüm uygulamalarý seçiniz.  Öntaným tümünü seçer."
+msgid "1. Choose all the applications you wish to restore.  The default is all."
+msgstr "1. Geri yüklemek istediðiniz tüm uygulamalarý seçiniz.  Öntaným tümünü seçer."
 
 #: restore_gui.c:166
 msgid "2. Enter the User Name and User ID."
@@ -1093,29 +1083,24 @@ msgid "User ID"
 msgstr "Kullanýcý No"
 
 #: search_gui.c:93
-#, fuzzy
 msgid "datebook"
-msgstr "Randevu defterini eþzamanla"
+msgstr "Randevu defteri"
 
 #: search_gui.c:167
-#, fuzzy
 msgid "address"
 msgstr "Adres"
 
 #: search_gui.c:232
-#, fuzzy
 msgid "ToDo"
 msgstr "Ýþ Listesi"
 
 #: search_gui.c:286
-#, fuzzy
 msgid "memo"
-msgstr "Notlarý eþzamanla"
+msgstr "Notlar"
 
 #: search_gui.c:342
-#, fuzzy
 msgid "plugin ?"
-msgstr "/Eklentiler"
+msgstr "eklenti ?"
 
 #: search_gui.c:419
 msgid "No records found"
@@ -1380,19 +1365,16 @@ msgid "Installed %s "
 msgstr "%s yüklendi "
 
 #: sync.c:1699 sync.c:1705
-#, fuzzy
 msgid "Cannot open "
-msgstr "Günlük (log) dosyasý açýlamadý\n"
+msgstr "Açýlamýyor "
 
 #: sync.c:1699
-#, fuzzy
 msgid "_to_install file\n"
-msgstr "jpilot_to_install dosyasý açýlamadý\n"
+msgstr "to_install dosyasý\n"
 
 #: sync.c:1705
-#, fuzzy
 msgid "_to_install.tmp file\n"
-msgstr "jpilot_to_install.tmp dosyasý açýlamadý\n"
+msgstr "to_install.tmp dosyasý\n"
 
 #: sync.c:2017
 msgid "fast_sync_local_recs(): Out of memory\n"
@@ -1417,29 +1399,29 @@ msgid "disk: number of records = %d\n"
 msgstr "disk: kayýt sayýsý = %d\n"
 
 #: sync.c:2526
-#, fuzzy, c-format
+#, c-format
 msgid "Error reading at %s : %s %d\n"
-msgstr "%s'i okuma sýrasýnda hata\n"
+msgstr "%s'i okuma sýrasýnda hata: %s %d\n"
 
 #: sync.c:2548
-#, fuzzy, c-format
+#, c-format
 msgid "Error reading appinfo block for %s\n"
-msgstr "%s'i okuma sýrasýnda hata\n"
+msgstr "appinfo bloðu %s için okuma sýrasýnda hata\n"
 
 #. Fix - need a func for this logging
 #: sync.c:2686 sync.c:2690
 #, c-format
 msgid "Could not add category %s to remote.\n"
-msgstr ""
+msgstr "Uzak'a (remote) %s kategorisi eklenemedi.\n"
 
 #: sync.c:2687 sync.c:2694
 msgid "Too many categories on remote.\n"
-msgstr ""
+msgstr "Uzak'ta (remote) çok sayýda kategori.\n"
 
 #: sync.c:2688 sync.c:2698
 #, c-format
 msgid "All records on desktop in %s will be moved to %s.\n"
-msgstr ""
+msgstr "%1$s'in masa üstündeki tüm kayýtlar %2$s'e taþýnacak.\n"
 
 #: todo.c:245
 #, c-format
@@ -1496,64 +1478,57 @@ msgstr "Sonlanma Tarihi:"
 
 #: utils.c:93
 msgid "Date compiled"
-msgstr ""
+msgstr "Derleme tarihi"
 
 #: utils.c:94
 msgid "Compiled with these options:"
-msgstr ""
+msgstr "Þu seçeneklerle derlendi:"
 
 #: utils.c:96
-#, fuzzy
 msgid "Installed Path"
-msgstr "%s yüklendi "
+msgstr "Yükleme Yolu"
 
 #: utils.c:98
 msgid "pilot-link version"
-msgstr ""
+msgstr "pilot-link sürümü"
 
 #: utils.c:102
 msgid "USB support"
-msgstr ""
+msgstr "USB desteði"
 
 #: utils.c:104 utils.c:110 utils.c:116 utils.c:122 utils.c:128 utils.c:134
 #: utils.c:140
-#, fuzzy
 msgid "yes"
-msgstr "Evet"
+msgstr "evet"
 
 #: utils.c:106 utils.c:112 utils.c:118 utils.c:124 utils.c:130 utils.c:136
 #: utils.c:142
-#, fuzzy
 msgid "no"
-msgstr "hiçbiri/yok"
+msgstr "hayýr"
 
 #: utils.c:108
-#, fuzzy
 msgid "Private record support"
-msgstr "Tüm kayýtlarý yazdýr"
+msgstr "Özel kayýt desteði"
 
 #: utils.c:114
 msgid "Datebk support"
-msgstr ""
+msgstr "Datebk desteði"
 
 #: utils.c:120
-#, fuzzy
 msgid "Plugin support"
-msgstr "/Eklentiler"
+msgstr "Eklenti desteði"
 
 #: utils.c:126
-#, fuzzy
 msgid "Manana support"
-msgstr "/Eklentiler"
+msgstr "Manana desteði"
 
 #: utils.c:132
 msgid "NLS support (foreign languages)"
-msgstr ""
+msgstr "NLS desteði (yabancý diller)"
 
 #: utils.c:138
-#, fuzzy
 msgid "GTK2 support"
-msgstr "/Eklentiler"
+msgstr "GTK2 desteði"
 
 #: utils.c:182
 msgid "Today is %A, %x %X"
@@ -1590,9 +1565,8 @@ msgstr "Boþ DB dosyasý bulunamadý.\n"
 
 #. EPN is jpilot, or copilot depending on configure
 #: utils.c:1545
-#, fuzzy
 msgid " may not be installed.\n"
-msgstr "jpilot yüklenemeyebilir.\n"
+msgstr " yüklenemeyebilir.\n"
 
 #: utils.c:2259
 msgid "PC ID is 0.\n"
@@ -1765,103 +1739,99 @@ msgstr "Master Kart"
 
 #: Expense/expense.c:1139
 msgid "Australia"
-msgstr ""
+msgstr "Avustralya"
 
 #: Expense/expense.c:1140
 msgid "Austria"
-msgstr ""
+msgstr "Avusturya"
 
 #: Expense/expense.c:1141
 msgid "Belgium"
-msgstr ""
+msgstr "Belçika"
 
 #: Expense/expense.c:1142
 msgid "Brazil"
-msgstr ""
+msgstr "Brezilya"
 
 #: Expense/expense.c:1143
 msgid "Canada"
-msgstr ""
+msgstr "Kanada"
 
 #: Expense/expense.c:1144
 msgid "Denmark"
-msgstr ""
+msgstr "Danimarka"
 
 #: Expense/expense.c:1145
 msgid "Finland"
-msgstr ""
+msgstr "Finlandiya"
 
 #: Expense/expense.c:1146
-#, fuzzy
 msgid "France"
-msgstr "Ýptal"
+msgstr "Fransa"
 
 #: Expense/expense.c:1147
 msgid "German"
-msgstr ""
+msgstr "Almanca"
 
 #: Expense/expense.c:1148
 msgid "Hong Kong."
-msgstr ""
+msgstr "Hong Kong."
 
 #: Expense/expense.c:1149
 msgid "Iceland"
-msgstr ""
+msgstr "Ýzlanda"
 
 #: Expense/expense.c:1150
 msgid "Ireland"
-msgstr ""
+msgstr "Ýrlanda"
 
 #: Expense/expense.c:1151
-#, fuzzy
 msgid "Italy"
-msgstr "Yükle"
+msgstr "Ýtalya"
 
 #: Expense/expense.c:1152
 msgid "Japan"
-msgstr ""
+msgstr "Japonya"
 
 #: Expense/expense.c:1153
 msgid "Luxembourg"
-msgstr ""
+msgstr "Lüksemburg"
 
 #: Expense/expense.c:1154
 msgid "Mexico"
-msgstr ""
+msgstr "Meksika"
 
 #: Expense/expense.c:1155
 msgid "Holland"
-msgstr ""
+msgstr "Hollanda"
 
 #: Expense/expense.c:1156
 msgid "New Zealand"
-msgstr ""
+msgstr "Yeni Zelanda"
 
 #: Expense/expense.c:1157
 msgid "Norway"
-msgstr ""
+msgstr "Norveç"
 
 #: Expense/expense.c:1158
-#, fuzzy
 msgid "Spain"
-msgstr "Tren"
+msgstr "Ýspanya"
 
 #: Expense/expense.c:1159
-#, fuzzy
 msgid "Sweden"
-msgstr "hafta"
+msgstr "Ýsveç"
 
 #: Expense/expense.c:1160
 msgid "Switzerland"
-msgstr ""
+msgstr "Ýsviçre"
 
 #: Expense/expense.c:1161
 msgid "U.K."
-msgstr ""
+msgstr "B.K."
 
 #: Expense/expense.c:1162
 msgid "U.S.A."
-msgstr ""
+msgstr "A.B.D."
 
 #: Expense/expense.c:1389
 msgid "Type: "
@@ -1872,9 +1842,8 @@ msgid "Payment: "
 msgstr "Ödeme: "
 
 #: Expense/expense.c:1407
-#, fuzzy
 msgid "Currency: "
-msgstr "Þu anki"
+msgstr "Para birimi: "
 
 #: Expense/expense.c:1419
 msgid "Month:"
@@ -1938,26 +1907,5 @@ msgstr "parola: "
 
 #. Button for random password
 #: KeyRing/keyring.c:1457
-#, fuzzy
 msgid "Generate Password"
-msgstr "PalmOS Parolasýný Giriniz"
-
-#~ msgid "Time:"
-#~ msgstr "Saat:"
-
-#~ msgid "RTh"
-#~ msgstr "Per"
-
-#~ msgid ""
-#~ "%s %s was written by\n"
-#~ "Judd Montgomery (Copyright) 1999-2002.\n"
-#~ "judd@jpilot.org\n"
-#~ "http://jpilot.org\n"
-#~ msgstr ""
-#~ "%s %s, Judd Montgomery tarafýndan\n"
-#~ "yazýlmýþtýr (c) 1999-2000.\n"
-#~ "judd@jpilot.org\n"
-#~ "http://jpilot.org\n"
-
-#~ msgid "Last Syned UserID-->\"%d\"\n"
-#~ msgstr "Son Eþzamanlanmýþ Kullanýcý No-->\"%d\"\n"
+msgstr "Parola Oluþtur"
