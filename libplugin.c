@@ -1,4 +1,4 @@
-/* $Id: libplugin.c,v 1.20 2004/12/07 06:51:08 rikster5 Exp $ */
+/* $Id: libplugin.c,v 1.21 2005/03/04 18:58:23 rousseau Exp $ */
 
 /*******************************************************************************
  * libplugin.c
@@ -723,7 +723,7 @@ int jp_read_DB_files(char *DB_name, GList **records)
    in = jp_open_home_file(PDB_name, "r");
    if (!in) {
       jp_logf(JP_LOG_WARN, _("Error opening file: %s\n"), PDB_name);
-      return EXIT_FAILURE;
+      return -1;
    }
    /*Read the database header */
    num = fread(&rdbh, sizeof(RawDBHeader), 1, in);
@@ -731,7 +731,7 @@ int jp_read_DB_files(char *DB_name, GList **records)
       if (ferror(in)) {
 	 jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), PDB_name);
 	 fclose(in);
-	 return EXIT_FAILURE;
+	 return -1;
       }
       if (feof(in)) {
 	 return JPILOT_EOF;
@@ -889,7 +889,7 @@ int jp_read_DB_files(char *DB_name, GList **records)
    pc_in = jp_open_home_file(PC_name, "r");
    if (pc_in==NULL) {
       jp_logf(JP_LOG_DEBUG, "jp_open_home_file failed: %s\n", PC_name);
-      return EXIT_FAILURE;
+      return -1;
    }
 
    while(!feof(pc_in)) {
@@ -897,6 +897,7 @@ int jp_read_DB_files(char *DB_name, GList **records)
       temp_br = malloc(sizeof(buf_rec));
       if (!temp_br) {
 	 jp_logf(JP_LOG_WARN, "jp_read_DB_files(): %s 3\n", _("Out of memory"));
+	 recs_returned = -1;
 	 break;
       }
       r = pc_read_next_rec(pc_in, temp_br);
