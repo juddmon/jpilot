@@ -1,4 +1,4 @@
-/* $Id: weekview_gui.c,v 1.29 2005/01/29 12:09:01 rousseau Exp $ */
+/* $Id: weekview_gui.c,v 1.30 2005/02/03 16:11:31 rikster5 Exp $ */
 
 /*******************************************************************************
  * weekview_gui.c
@@ -183,9 +183,6 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
    GObject   *text_buffer;
 #endif
 
-   /* Determine today for highlighting */
-   now_today = get_highlighted_today(date_in);
-
    a_list = NULL;
    text = day_texts;
 
@@ -199,6 +196,10 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
    for (i=0; i<8; i++, add_days_to_date(&date, 1)) {
       strftime(short_date, sizeof(short_date), svalue, &date);
       jp_strftime(str_dow, sizeof(str_dow), "%A", &date);
+
+      /* Determine today for highlighting */
+      now_today = get_highlighted_today(&date);
+
       g_snprintf(str, sizeof(str), "%s %s%s", str_dow, short_date,
 		 date.tm_mday == now_today ? _(" (TODAY)") : "");
       gtk_label_set_text(GTK_LABEL(glob_dow_labels[i]), str);
