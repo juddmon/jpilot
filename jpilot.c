@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.107 2005/01/10 06:20:54 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.108 2005/01/15 16:21:04 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -114,7 +114,7 @@ int glob_app = 0;
 int glob_focus = 1;
 GtkWidget *glob_dialog=NULL;
 unsigned char skip_plugins;
-static GtkWidget *button_locked, *button_locked_masked, *button_unlocked;
+static GtkWidget *button_locked, *button_locked_masked, *button_unlocked, *button_sync, *button_backup;
 GtkCheckMenuItem *menu_hide_privates;
 
 int pipe_from_child, pipe_to_parent;
@@ -1971,6 +1971,82 @@ char *xpm_unlocked[] = {
    "                      "
 };
 
+char * xpm_sync[] = {
+   "27 24 7 1",
+   " 	c None",
+   ".	c #020043",
+   "+	c #6B0000",
+   "@	c #002EC9",
+   "#	c #9D0505",
+   "$	c #F71711",
+   "%	c #00A0FF",
+   "                           ",
+   "           ++++            ",
+   "        ++++     .         ",
+   "       +#+      .@..       ",
+   "      +#+      .%@@@.      ",
+   "     +#+      .%@%@@@.     ",
+   "    +#+    . .%@%@@@@@.    ",
+   "    +#+    ..%%%@..@@@.    ",
+   "   +##+    .%%%..  .@@@.   ",
+   "   +#+     .%%%.    .@@.   ",
+   "   +#+     ......   .@@.   ",
+   "   +#+               .@.   ",
+   "   +#+               .@.   ",
+   "   +##+   ++++++     .@.   ",
+   "   +##+    +$$$+     .@.   ",
+   "   +###+  ++$$$+    .@@.   ",
+   "    +###++#$$$++    .@.    ",
+   "    +#####$#$+ +    .@.    ",
+   "     +###$#$+      .@.     ",
+   "      +###$+      .@.      ",
+   "       ++#+      .@.       ",
+   "         +     ....        ",
+   "            ....           ",
+   "                           "
+};
+
+char * xpm_backup[] = {
+   "27 24 13 1",
+   " 	c None",
+   ".	c #454545",
+   "+	c #B2B2B2",
+   "@	c #000000",
+   "#	c #FFFFFF",
+   "$	c #315D00",
+   "%	c #29B218",
+   "&	c #18B210",
+   "*	c #52B631",
+   "=	c #42B629",
+   "-	c #31B221",
+   ";	c #08AE08",
+   ">	c #848284",
+   "                           ",
+   "     .............         ",
+   "    .+++++++++++++@        ",
+   "    .+@@@@@@@@@@@+@        ",
+   "    .+@....#####@+@        ",
+   "    .+@.........@+@        ",
+   "    .+@#########@+@        ",
+   "    .+@#@#@@@@@#@+@ $$     ",
+   "    .+@#########@+@ $%$    ",
+   "    .+@#@#@@@@@#@+@ $%$    ",
+   "    .+@#########@+@ $%&$   ",
+   "    .+@########$$$$$$%&$   ",
+   "    .+@@@@@@@@@$**=-%%&&$  ",
+   "    .+@++++@+++$**=-%%&&$  ",
+   "    .+@++++@+++$**=-%%&&;$ ",
+   "    .+@@@@@@@@@$**=-%%&&;$>",
+   "    .++++++++++$**=-%%&&$>>",
+   "    .+..+..+..+$**=-%%&&$> ",
+   "    .+..+..+..+$$$$$$%&$>> ",
+   "    .++++++++++>>>>>$%&$>  ",
+   "     @@@@@@@@@@@@@  $%$>>  ",
+   "                    $%$>   ",
+   "                    $$>>   ",
+   "                     >>    "
+};
+
    sync_only=FALSE;
    skip_plugins=FALSE;
    skip_past_alarms=FALSE;
@@ -2412,13 +2488,13 @@ char *xpm_unlocked[] = {
       GDK_z, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
    /* Create "Sync" button */
-   button = gtk_button_new_with_label(_("Sync"));
-   gtk_signal_connect(GTK_OBJECT(button), "clicked",
+   button_sync = gtk_button_new();
+   gtk_signal_connect(GTK_OBJECT(button_sync), "clicked",
 		      GTK_SIGNAL_FUNC(cb_sync),
 		      GINT_TO_POINTER(skip_plugins ? SYNC_NO_PLUGINS : 0));
-   gtk_box_pack_start(GTK_BOX(g_vbox0), button, FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(g_vbox0), button_sync, FALSE, FALSE, 0);
 
-   gtk_tooltips_set_tip(glob_tooltips, button, _("Sync your palm to the desktop   Ctrl-Y"), NULL);
+   gtk_tooltips_set_tip(glob_tooltips, button_sync, _("Sync your palm to the desktop   Ctrl-Y"), NULL);
    gtk_widget_add_accelerator(button, "clicked", accel_group, GDK_y,
 	   GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
@@ -2431,15 +2507,15 @@ char *xpm_unlocked[] = {
    gtk_box_pack_start(GTK_BOX(g_vbox0), button, FALSE, FALSE, 0);
 #endif
    /* Create "Backup" button in left column */
-   button = gtk_button_new_with_label(_("Backup"));
-   gtk_signal_connect(GTK_OBJECT(button), "clicked",
+   button_backup = gtk_button_new();
+   gtk_signal_connect(GTK_OBJECT(button_backup), "clicked",
 		      GTK_SIGNAL_FUNC(cb_sync),
 		      GINT_TO_POINTER
 		      (skip_plugins ? SYNC_NO_PLUGINS | SYNC_FULL_BACKUP
 		      : SYNC_FULL_BACKUP));
-   gtk_box_pack_start(GTK_BOX(g_vbox0), button, FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(g_vbox0), button_backup, FALSE, FALSE, 0);
 
-   gtk_tooltips_set_tip(glob_tooltips, button, _("Sync your palm to the desktop\n"
+   gtk_tooltips_set_tip(glob_tooltips, button_backup, _("Sync your palm to the desktop\n"
 			"and then do a backup"), NULL);
 
    /*Separator */
@@ -2536,6 +2612,22 @@ char *xpm_unlocked[] = {
    pixmapwid = gtk_pixmap_new(pixmap, mask);
    gtk_widget_show(pixmapwid);
    gtk_container_add(GTK_CONTAINER(button_unlocked), pixmapwid);
+
+   /* Create "sync" pixmap */
+   pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
+					 &style->bg[GTK_STATE_NORMAL],
+					 xpm_sync);
+   pixmapwid = gtk_pixmap_new(pixmap, mask);
+   gtk_widget_show(pixmapwid);
+   gtk_container_add(GTK_CONTAINER(button_sync), pixmapwid);
+
+   /* Create "backup" pixmap */
+   pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
+					 &style->bg[GTK_STATE_NORMAL],
+					 xpm_backup);
+   pixmapwid = gtk_pixmap_new(pixmap, mask);
+   gtk_widget_show(pixmapwid);
+   gtk_container_add(GTK_CONTAINER(button_backup), pixmapwid);
 
    gtk_tooltips_set_tip(glob_tooltips, button_datebook, _("Datebook/Go to Today"), NULL);
 
