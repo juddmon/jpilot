@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.81 2004/12/10 02:45:07 rikster5 Exp $ */
+/* $Id: utils.c,v 1.82 2004/12/13 02:43:46 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -1204,10 +1204,9 @@ int dialog_generic_with_text(GtkWindow *main_window,
 			 GTK_SIGNAL_FUNC(cb_dialog_button),
 			 GINT_TO_POINTER(DIALOG_SAID_1 + i));
       gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
-      GTK_WIDGET_SET_FLAGS(button, GTK_CAN_DEFAULT);
-      if (0 == i)
+      if (i == 0)
       {
-	 GTK_WIDGET_SET_FLAGS(button, GTK_HAS_FOCUS);
+	 GTK_WIDGET_SET_FLAGS(button, GTK_CAN_DEFAULT);
 	 gtk_widget_grab_default(button);
       }
    }
