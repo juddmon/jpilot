@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.37 2004/12/10 22:21:04 rikster5 Exp $
+# $Id: Makefile.am,v 1.38 2005/01/08 13:26:13 rousseau Exp $
 
 SUBDIRS = Expense SyncTime KeyRing docs dialer po m4 empty icons
 
@@ -160,6 +160,6 @@ ChangeLog.cvs:
 
 ACLOCAL_AMFLAGS = -I m4
 
-desktopdir = $(datadir)/gnome/apps/Applications
+desktopdir = $(datadir)/applications
 desktop_DATA = jpilot.desktop
 
