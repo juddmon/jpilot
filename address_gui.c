@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.83 2004/11/28 16:20:04 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.84 2004/12/02 19:57:07 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -1327,8 +1327,8 @@ static void cb_add_new_record(GtkWidget *widget,
 #ifdef ENABLE_GTK2
 	    gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(gtk_txt_buf_address_text[i]),&start_iter,&end_iter);
 	    str1 = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(gtk_txt_buf_address_text[i]),&start_iter,&end_iter,TRUE);
-	    gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(address_text[i+NUM_ADDRESS_ENTRIES]),&start_iter,&end_iter);
-	    str2 = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(address_text[i+NUM_ADDRESS_ENTRIES]),&start_iter,&end_iter,TRUE);
+	    gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(gtk_txt_buf_address_text[i+NUM_ADDRESS_ENTRIES]),&start_iter,&end_iter);
+	    str2 = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(gtk_txt_buf_address_text[i+NUM_ADDRESS_ENTRIES]),&start_iter,&end_iter,TRUE);
 #else
 	    str1 = gtk_editable_get_chars(GTK_EDITABLE(address_text[i]), 0, -1);
 	    str2 = gtk_editable_get_chars(GTK_EDITABLE(address_text[i+NUM_ADDRESS_ENTRIES]), 0, -1);
