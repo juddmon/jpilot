@@ -1195,6 +1195,7 @@ int dialog_generic_with_text(GtkWindow *main_window,
       gtk_text_buffer_set_text(
 	 gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_widget)), text, -1);
       gtk_text_view_set_editable(GTK_TEXT_VIEW(text_widget), FALSE);
+      gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(text_widget), FALSE);
       gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text_widget), GTK_WRAP_WORD);
       gtk_box_pack_start(GTK_BOX(vbox1), text_widget, TRUE, TRUE, 0);
 #endif
