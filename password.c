@@ -265,7 +265,6 @@ static void cb_dialog_button(GtkWidget *widget,
 {
    struct dialog_data *Pdata;
    GtkWidget *w;
-   int i;
 
    w = gtk_widget_get_toplevel(widget);
 
