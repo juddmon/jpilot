@@ -30,10 +30,10 @@
 #include <dlfcn.h>
 
 GList *plugins = NULL;
-GList *plugins_eol = NULL;
 
 static int get_plugin_info(struct plugin_s *p, char *path);
 static int get_plugin_sync_bits();
+gint plugin_sort(gconstpointer a, gconstpointer b);
 
 /*
  * Write out the jpilot.plugins file that tells which plugins to sync
@@ -105,21 +105,34 @@ int load_plugins_sub1(DIR *dir, char *path, int *number, unsigned char user_only
 	       return count;
 	    }
 	    memcpy(new_plugin, &temp_plugin, sizeof(struct plugin_s));
-	    if (plugins==NULL) {
-	       plugins = g_list_append(plugins, new_plugin);
-	       plugins_eol=plugins;
-	    } else {
-	       plugins = g_list_append(plugins_eol, new_plugin);
-	       if (plugins_eol->next) {
-		  plugins_eol=plugins_eol->next;
-	       }
-	    }
+	    /* g_list_append searches the list until it reaches the end
+	     * we want to avoid that slowness, prepend works for that
+	     * in this case since we have the head */
+	    plugins = g_list_prepend(plugins, new_plugin);
 	    count++;
 	    (*number)++;
 	 }
       }
    }
+
+   plugins = g_list_sort(plugins, plugin_sort);
+
    return count;
+}
+
+gint plugin_sort(gconstpointer a, gconstpointer b)
+{
+   const char *ca = ((struct plugin_s *)a)->menu_name;
+   const char *cb = ((struct plugin_s *)b)->menu_name;
+
+   /* menu_name is NULL for plugin without menu entry */
+   if (ca == NULL)
+     ca = ((struct plugin_s *)a)->name;
+
+   if (cb == NULL)
+     cb = ((struct plugin_s *)b)->name;
+
+   return strcasecmp(ca, cb);
 }
 
 int load_plugins()
