@@ -112,7 +112,7 @@ int pipe_from_parent, pipe_to_child;
 GtkWidget *sync_window = NULL;
 static GtkAccelGroup *accel_group = NULL;
 
-static void delete_event(GtkWidget *widget, GdkEvent *event, gpointer data);
+static void cb_delete_event(GtkWidget *widget, GdkEvent *event, gpointer data);
 void install_gui_and_size(GtkWidget *main_window);
 void cb_payback(GtkWidget *widget, gpointer data);
 
@@ -1113,7 +1113,7 @@ void get_main_menu(GtkWidget  *window,
   { _("/File/sep1"),                       NULL,         NULL,           0,                  "<Separator>" },
   { _("/File/Restore Handheld"),           NULL,         cb_restore,     0,                  ICON(GTK_STOCK_REDO) },
   { _("/File/sep1"),                       NULL,         NULL,           0,                  "<Separator>" },
-  { _("/File/_Quit"),                      "<control>Q", delete_event,   0,                  ICON(GTK_STOCK_QUIT) },
+  { _("/File/_Quit"),                      "<control>Q", cb_delete_event,0,                  ICON(GTK_STOCK_QUIT) },
   { _("/_View"),                           NULL,         NULL,           0,                  "<Branch>" },
   { _("/View/Hide-Show-Mask Private Records"),"<control>Z",cb_private,   0,                  NULL },
   { _("/View/Datebook"),                   "F1",         cb_app_button,  DATEBOOK,           NULL },
@@ -1367,7 +1367,7 @@ void get_main_menu(GtkWidget  *window,
 #endif
 }
 
-static void delete_event(GtkWidget *widget, GdkEvent *event, gpointer data)
+static void cb_delete_event(GtkWidget *widget, GdkEvent *event, gpointer data)
 {
    int pw, ph;
    int x,y;
@@ -2031,7 +2031,7 @@ char *xpm_unlocked[] = {
    /* Set a handler for delete_event that immediately */
    /* exits GTK. */
    gtk_signal_connect(GTK_OBJECT(window), "delete_event",
-		      GTK_SIGNAL_FUNC(delete_event), NULL);
+		      GTK_SIGNAL_FUNC(cb_delete_event), NULL);
 
    gtk_container_set_border_width(GTK_CONTAINER(window), 0);
 
