@@ -23,8 +23,6 @@
 #include <string.h>
 #include <time.h>
 
-/* gtk2 */
-#define GTK_ENABLE_BROKEN
 #include <gtk/gtk.h>
 
 #include "libplugin.h"
@@ -126,7 +124,13 @@ static GtkWidget *entry_amount;
 static GtkWidget *entry_vendor;
 static GtkWidget *entry_city;
 static GtkWidget *text_attendees;
+#ifdef ENABLE_GTK2
+static GObject   *text_attendees_buffer;
+#endif
 static GtkWidget *text_note;
+#ifdef ENABLE_GTK2
+static GObject   *text_note_buffer;
+#endif
 static GtkWidget *menu_payment;
 static GtkWidget *menu_item_payment[MAX_PAYMENTS];
 static GtkWidget *menu_category1;
@@ -304,10 +308,17 @@ static void connect_changed_signals(int con_or_dis)
 			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
       gtk_signal_connect(GTK_OBJECT(spinner_year), "changed",
 			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+#ifdef ENABLE_GTK2
+      g_signal_connect(text_attendees_buffer, "changed",
+			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+      g_signal_connect(text_note_buffer, "changed",
+			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+#else
       gtk_signal_connect(GTK_OBJECT(text_attendees), "changed",
 			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
       gtk_signal_connect(GTK_OBJECT(text_note), "changed",
 			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+#endif
       gtk_signal_connect(GTK_OBJECT(entry_amount), "changed",
 			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
       gtk_signal_connect(GTK_OBJECT(entry_vendor), "changed",
@@ -327,10 +338,17 @@ static void connect_changed_signals(int con_or_dis)
 				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
       gtk_signal_disconnect_by_func(GTK_OBJECT(spinner_year),
 				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+#ifdef ENABLE_GTK2
+      g_signal_handlers_disconnect_by_func(text_attendees_buffer,
+				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+      g_signal_handlers_disconnect_by_func(text_note_buffer,
+				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+#else
       gtk_signal_disconnect_by_func(GTK_OBJECT(text_attendees),
 				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
       gtk_signal_disconnect_by_func(GTK_OBJECT(text_note),
 				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+#endif
       gtk_signal_disconnect_by_func(GTK_OBJECT(entry_amount),
 				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
       gtk_signal_disconnect_by_func(GTK_OBJECT(entry_vendor),
@@ -564,10 +582,15 @@ static void clear_details()
    gtk_entry_set_text(GTK_ENTRY(entry_amount), "");
    gtk_entry_set_text(GTK_ENTRY(entry_vendor), "");
    gtk_entry_set_text(GTK_ENTRY(entry_city), "");
+#ifdef ENABLE_GTK2
+   gtk_text_buffer_set_text(GTK_TEXT_BUFFER(text_attendees_buffer), "", -1);
+   gtk_text_buffer_set_text(GTK_TEXT_BUFFER(text_note_buffer), "", -1);
+#else
    gtk_text_backward_delete(GTK_TEXT(text_attendees),
 			    gtk_text_get_length(GTK_TEXT(text_attendees)));
    gtk_text_backward_delete(GTK_TEXT(text_note),
 			    gtk_text_get_length(GTK_TEXT(text_note)));
+#endif
 
    connect_changed_signals(CONNECT_SIGNALS);
 }
@@ -611,6 +634,10 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    int size;
    int flag;
    struct MyExpense *mex;
+#ifdef ENABLE_GTK2
+   GtkTextIter start_iter;
+   GtkTextIter end_iter;
+#endif
 
    jp_logf(JP_LOG_DEBUG, "Expense: cb_add_new_record\n");
 
@@ -652,12 +679,24 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    if (ex.city[0]=='\0') {
       ex.city=NULL;
    }
+#ifdef ENABLE_GTK2
+   gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(text_attendees_buffer),&start_iter,&end_iter);
+   ex.attendees = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(text_attendees_buffer),&start_iter,&end_iter,TRUE);
+#else
    /* gtk_editable_get_chars *does* allocate memory */
    ex.attendees = gtk_editable_get_chars(GTK_EDITABLE(text_attendees), 0, -1);
+#endif
    if (ex.attendees[0]=='\0') {
       ex.attendees=NULL;
    }
+
+#ifdef ENABLE_GTK2
+   gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(text_note_buffer),&start_iter,&end_iter);
+   ex.note = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(text_note_buffer),&start_iter,&end_iter,TRUE);
+#else
+   /* gtk_editable_get_chars *does* allocate memory */
    ex.note = gtk_editable_get_chars(GTK_EDITABLE(text_note), 0, -1);
+#endif
    if (ex.note[0]=='\0') {
       ex.note=NULL;
    }
@@ -1066,18 +1105,35 @@ static void cb_clist_selection(GtkWidget      *clist,
       gtk_entry_set_text(GTK_ENTRY(entry_city), "");
    }
    
+#ifdef ENABLE_GTK2
+   gtk_text_buffer_set_text(GTK_TEXT_BUFFER(text_attendees_buffer), "", -1);
+#else
    gtk_text_set_point(GTK_TEXT(text_attendees), 0);
    gtk_text_forward_delete(GTK_TEXT(text_attendees),
 			   gtk_text_get_length(GTK_TEXT(text_attendees)));
+#endif
+
    if (mex->ex.attendees) {
+#ifdef ENABLE_GTK2
+      gtk_text_buffer_set_text(GTK_TEXT_BUFFER(text_attendees_buffer), mex->ex.attendees, -1);
+#else
       gtk_text_insert(GTK_TEXT(text_attendees), NULL,NULL,NULL, mex->ex.attendees, -1);
+#endif
    }
 
+#ifdef ENABLE_GTK2
+   gtk_text_buffer_set_text(GTK_TEXT_BUFFER(text_note_buffer), "", -1);
+#else
    gtk_text_set_point(GTK_TEXT(text_note), 0);
    gtk_text_forward_delete(GTK_TEXT(text_note),
 			   gtk_text_get_length(GTK_TEXT(text_note)));
+#endif
    if (mex->ex.note) {
+#ifdef ENABLE_GTK2
+      gtk_text_buffer_set_text(GTK_TEXT_BUFFER(text_note_buffer), mex->ex.note, -1);
+#else
       gtk_text_insert(GTK_TEXT(text_note), NULL,NULL,NULL, mex->ex.note, -1);
+#endif
    }
    set_new_button_to(CLEAR_FLAG);
    connect_changed_signals(CONNECT_SIGNALS);
@@ -1579,9 +1635,16 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
 				  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
    gtk_box_pack_start(GTK_BOX(vbox2), scrolled_window, TRUE, TRUE, 0);
 
+#ifdef ENABLE_GTK2
+   text_attendees = gtk_text_view_new();
+   text_attendees_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_attendees)));
+   gtk_text_view_set_editable(GTK_TEXT_VIEW(text_attendees), TRUE);
+   gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text_attendees), GTK_WRAP_WORD);
+#else
    text_attendees = gtk_text_new(NULL, NULL);
    gtk_text_set_editable(GTK_TEXT(text_attendees), TRUE);
    gtk_text_set_word_wrap(GTK_TEXT(text_attendees), TRUE);
+#endif
    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(text_attendees));
 
    label = gtk_label_new(_("Note"));
@@ -1597,9 +1660,16 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_box_pack_start(GTK_BOX(vbox2), scrolled_window, TRUE, TRUE, 0);
 
 
+#ifdef ENABLE_GTK2
+   text_note = gtk_text_view_new();
+   text_note_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_note)));
+   gtk_text_view_set_editable(GTK_TEXT_VIEW(text_note), TRUE);
+   gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text_note), GTK_WRAP_WORD);
+#else
    text_note = gtk_text_new(NULL, NULL);
    gtk_text_set_editable(GTK_TEXT(text_note), TRUE);
    gtk_text_set_word_wrap(GTK_TEXT(text_note), TRUE);
+#endif
    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(text_note));
 
    gtk_widget_show_all(hbox);

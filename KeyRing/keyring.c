@@ -23,8 +23,6 @@
 #include <string.h>
 #include <time.h>
 
-/* gtk2 */
-#define GTK_ENABLE_BROKEN
 #include <gtk/gtk.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -65,6 +63,9 @@ static GtkWidget *entry_name;
 static GtkWidget *entry_account;
 static GtkWidget *entry_password;
 static GtkWidget *text_note;
+#ifdef ENABLE_GTK2
+static GObject   *text_note_buffer;
+#endif
 static GtkWidget *menu_category1;
 static GtkWidget *menu_category2;
 static GtkWidget *menu_item_category2[16];
@@ -407,8 +408,13 @@ static void connect_changed_signals(int con_or_dis)
       jp_logf(JP_LOG_DEBUG, "KeyRing: connect_changed_signals\n");
       connected=1;
 
+#ifdef ENABLE_GTK2
+      g_signal_connect(text_note_buffer, "changed",
+			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+#else
       gtk_signal_connect(GTK_OBJECT(text_note), "changed",
 			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+#endif
       gtk_signal_connect(GTK_OBJECT(entry_name), "changed",
 			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
       gtk_signal_connect(GTK_OBJECT(entry_account), "changed",
@@ -422,8 +428,13 @@ static void connect_changed_signals(int con_or_dis)
       jp_logf(JP_LOG_DEBUG, "KeyRing: disconnect_changed_signals\n");
       connected=0;
 
+#ifdef ENABLE_GTK2
+      g_signal_handlers_disconnect_by_func(text_note_buffer,
+				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+#else
       gtk_signal_disconnect_by_func(GTK_OBJECT(text_note),
 				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+#endif
       gtk_signal_disconnect_by_func(GTK_OBJECT(entry_name),
 				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
       gtk_signal_disconnect_by_func(GTK_OBJECT(entry_account),
@@ -556,8 +567,12 @@ static void clear_details()
    gtk_entry_set_text(GTK_ENTRY(entry_name), "");
    gtk_entry_set_text(GTK_ENTRY(entry_account), "");
    gtk_entry_set_text(GTK_ENTRY(entry_password), "");
+#ifdef ENABLE_GTK2
+   gtk_text_buffer_set_text(GTK_TEXT_BUFFER(text_note_buffer), "", -1);
+#else
    gtk_text_backward_delete(GTK_TEXT(text_note),
 			    gtk_text_get_length(GTK_TEXT(text_note)));
+#endif
 
    connect_changed_signals(CONNECT_SIGNALS);
 }
@@ -575,6 +590,10 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    int new_size;
    int flag;
    struct MyKeyRing *mkr;
+#ifdef ENABLE_GTK2
+   GtkTextIter start_iter;
+   GtkTextIter end_iter;
+#endif
 
    jp_logf(JP_LOG_DEBUG, "KeyRing: cb_add_new_record\n");
 
@@ -593,7 +612,12 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    kr.name = (char *)gtk_entry_get_text(GTK_ENTRY(entry_name));
    kr.account = (char *)gtk_entry_get_text(GTK_ENTRY(entry_account));
    kr.password = (char *)gtk_entry_get_text(GTK_ENTRY(entry_password));
+#ifdef ENABLE_GTK2
+   gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(text_note_buffer),&start_iter,&end_iter);
+   kr.note = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(text_note_buffer),&start_iter,&end_iter,TRUE);
+#else
    kr.note = (char *)gtk_editable_get_chars(GTK_EDITABLE(text_note), 0, -1);
+#endif
 
    jp_charset_j2p((unsigned char *)kr.name, strlen(kr.name)+1);
    jp_charset_j2p((unsigned char *)kr.account, strlen(kr.account)+1);
@@ -954,13 +978,21 @@ static void cb_clist_selection(GtkWidget      *clist,
       gtk_entry_set_text(GTK_ENTRY(entry_password), "");
    }
    
+#ifdef ENABLE_GTK2
+   gtk_text_buffer_set_text(GTK_TEXT_BUFFER(text_note_buffer), "", -1);
+#else
    gtk_text_set_point(GTK_TEXT(text_note), 0);
    gtk_text_forward_delete(GTK_TEXT(text_note),
 			   gtk_text_get_length(GTK_TEXT(text_note)));
+#endif
    if (mkr->kr.note) {
       temp_str = strdup(mkr->kr.note);
       jp_charset_p2j((unsigned char *)temp_str, strlen(mkr->kr.note)+1);
+#ifdef ENABLE_GTK2
+      gtk_text_buffer_set_text(GTK_TEXT_BUFFER(text_note_buffer), temp_str, -1);
+#else
       gtk_text_insert(GTK_TEXT(text_note), NULL,NULL,NULL, temp_str, -1);
+#endif
       free(temp_str);
    }
    set_new_button_to(CLEAR_FLAG);
@@ -1370,7 +1402,9 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    GtkWidget *temp_hbox;
    GtkWidget *button;
    GtkWidget *label;
+#ifndef ENABLE_GTK2
    GtkWidget *vscrollbar;
+#endif
    GtkWidget *table;
    GtkWindow *w;
    time_t ltime;
@@ -1569,12 +1603,26 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    temp_hbox = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), temp_hbox, TRUE, TRUE, 0);
 
+#ifdef ENABLE_GTK2
+   text_note = gtk_text_view_new();
+   text_note_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_note)));
+   gtk_text_view_set_editable(GTK_TEXT_VIEW(text_note), TRUE);
+   gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text_note), GTK_WRAP_WORD);
+
+   scrolled_window = gtk_scrolled_window_new(NULL, NULL);
+   gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
+				   GTK_POLICY_AUTOMATIC, GTK_POLICY_ALWAYS);
+   gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 1);
+   gtk_container_add(GTK_CONTAINER(scrolled_window), text_note);
+   gtk_box_pack_start_defaults(GTK_BOX(temp_hbox), scrolled_window);
+#else
    text_note = gtk_text_new(NULL, NULL);
    gtk_text_set_editable(GTK_TEXT(text_note), TRUE);
    gtk_text_set_word_wrap(GTK_TEXT(text_note), TRUE);
    vscrollbar = gtk_vscrollbar_new(GTK_TEXT(text_note)->vadj);
    gtk_box_pack_start(GTK_BOX(temp_hbox), text_note, TRUE, TRUE, 0);
    gtk_box_pack_start(GTK_BOX(temp_hbox), vscrollbar, FALSE, FALSE, 0);
+#endif
 
    gtk_widget_show_all(hbox);
    gtk_widget_show_all(vbox);
