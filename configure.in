@@ -13,6 +13,7 @@ AM_CONFIG_HEADER(config.h)
 AM_MAINTAINER_MODE
 
 AC_SUBST(VERSION)
+AC_SUBST(CFLAGS)
 
 AC_PROG_CC
 AC_ISC_POSIX
@@ -56,8 +57,7 @@ if test "x$with_ccoptions" != "x"; then
    AC_MSG_RESULT(Using supplied cc options $ccoptions)
 fi
 AC_SUBST(ccoptions)
-cflags=$CFLAGS
-AC_SUBST(cflags)
+
 
 dnl ******************************
 dnl * start gettext
@@ -180,9 +180,9 @@ if test "x$enable_pl_test" = "xyes"; then
    dnl *************************
 
    AC_MSG_CHECKING(to see if I can compile a pilot link program)
-   ac_save_CFLAGS="$CFLAGS"
+   save_CFLAGS="$CFLAGS"
    CFLAGS="$CFLAGS $PILOT_FLAGS"
-   ac_save_LIBS="$LIBS"
+   save_LIBS="$LIBS"
    LIBS="$LIBS $PILOT_LIBS"
 
    AC_TRY_LINK([#include "pi-version.h"
@@ -227,9 +227,9 @@ dnl FIXME - There has to be a better way to do this
 usb=no;
 
 dnl ** save CFLAGS
-ac_save_CFLAGS="$CFLAGS"
+save_CFLAGS="$CFLAGS"
 CFLAGS="$CFLAGS $PILOT_FLAGS"
-ac_save_LIBS="$LIBS"
+save_LIBS="$LIBS"
 LIBS="$LIBS $PILOT_LIBS"
 
 AC_MSG_CHECKING(pilot-link version )
@@ -506,7 +506,7 @@ echo "Compiling with plugin support..........   $enable_plugins"
 echo "Compiling with Mañana support..........   $enable_manana"
 echo "Compiling with Prometheon support......   $enable_prometheon"
 echo "GTK-2 support..........................   $have_gtk2"
-echo "Compiler Options.......................   $cflags $ccoptions"
+echo "Compiler Options.......................   $CFLAGS $ccoptions"
 echo "Prefix directory.......................   $prefix"
 echo "pilot-link headers.....................   $pilot_incl"
 echo "NLS support (foreign languages)........   $USE_NLS"

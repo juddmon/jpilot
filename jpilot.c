@@ -1564,7 +1564,7 @@ void jp_window_iconify(GtkWidget *window)
 void cb_payback(GtkWidget *widget, gpointer data)
 {
    int w, h;
-   char *button_text[]={"Don't show this again"};
+   char *button_text[]={"OK"};
    char *text=
      "Buy a Palm Tungsten, or Palm Zire, register it on-line and "
      "earn points for the J-Pilot project.\n\n"
