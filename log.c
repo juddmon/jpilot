@@ -90,11 +90,13 @@ int jp_logf(int level, char *format, ...)
 
 int jp_vlogf (int level, char *format, va_list val) {
 #define WRITE_MAX_BUF	4096
-   char       		buf[WRITE_MAX_BUF];
+   char       		real_buf[WRITE_MAX_BUF+32];
+   char			*buf;
    int			size;
+   int			len;
    static FILE		*fp=NULL;
    static int		err_count=0;
-   char			cmd[20];
+   char			cmd[16];
 
 
    if (!((level & glob_log_file_mask) ||
@@ -103,6 +105,7 @@ int jp_vlogf (int level, char *format, va_list val) {
       return 0;
    }
 
+   buf=&(real_buf[16]);
    buf[0] = '\0';
 
    if ((!fp) && (err_count>10)) {
@@ -122,11 +125,10 @@ int jp_vlogf (int level, char *format, va_list val) {
    }
 
    size = g_vsnprintf(buf, WRITE_MAX_BUF, format, val);
-   /*just in case g_vsnprintf reached the max */
-   if (size == -1) {
-      buf[WRITE_MAX_BUF-1] = '\0';
-      size=WRITE_MAX_BUF-1;
-   }
+   /* glibc >2.1 can return size > WRITE_MAX_BUF */
+   /* just in case g_vsnprintf reached the max */
+   buf[WRITE_MAX_BUF-1] = '\0';
+   size=strlen(buf);
 
    if ((fp) && (level & glob_log_file_mask)) {
       fwrite(buf, size, 1, fp);
@@ -138,9 +140,16 @@ int jp_vlogf (int level, char *format, va_list val) {
 
    if ((pipe_to_parent) && (level & glob_log_gui_mask)) {
       sprintf(cmd, "%d:", PIPE_PRINT);
-      write(pipe_to_parent, cmd, strlen(cmd));
+      len = strlen(cmd);
+      buf = buf-len;
+      strncpy(buf, cmd, len);
+      size += len;
+      buf[size]='\0';
+      buf[size+1]='\n';
+      size += 2;
+      //write(pipe_to_parent, cmd, strlen(cmd));
       write(pipe_to_parent, buf, size);
-      write(pipe_to_parent, "\0\n", 2);
+      //write(pipe_to_parent, "\0\n", 2);
       fsync(pipe_to_parent);
    }
 
@@ -157,18 +166,21 @@ int write_to_parent(int command, char *format, ...)
 {
 #define WRITE_MAX_BUF 4096
    va_list val;
-   char buf[WRITE_MAX_BUF];
+   int len, size;
+   char real_buf[WRITE_MAX_BUF+32];
+   char	*buf;
    char cmd[20];
 
+   buf=&(real_buf[16]);
    buf[0] = '\0';
 
    va_start(val, format);
    g_vsnprintf(buf, WRITE_MAX_BUF, format, val);
+   /* glibc >2.1 can return size > WRITE_MAX_BUF */
    /* just in case g_vsnprintf reached the max */
-   buf[WRITE_MAX_BUF-1] = 0;
+   buf[WRITE_MAX_BUF-1] = '\0';
+   size=strlen(buf);
    va_end(val);
-
-   sprintf(cmd, "%d:", command);
 
    /* This is for jpilot-sync */
    if (pipe_to_parent==STDOUT_FILENO) {
@@ -178,11 +190,24 @@ int write_to_parent(int command, char *format, ...)
       return TRUE;
    }
 
-   write(pipe_to_parent, cmd, strlen(cmd));
-   write(pipe_to_parent, buf, strlen(buf));
+   sprintf(cmd, "%d:", command);
+   len = strlen(cmd);
+   buf = buf-len;
+   strncpy(buf, cmd, len);
+   size += len;
+   buf[size]='\0';
+   buf[size+1]='\n';
+   size += 2;
+   //write(pipe_to_parent, cmd, strlen(cmd));
+   write(pipe_to_parent, buf, size);
+   //write(pipe_to_parent, "\0\n", 2);
+   fsync(pipe_to_parent);
+
+   //write(pipe_to_parent, cmd, strlen(cmd));
+   //write(pipe_to_parent, buf, strlen(buf));
    /* The pipe doesn't flush unless a CR is written for some reason */
    /* This is our key to the parent for a record separator */
-   write(pipe_to_parent, "\0\n", 2);
+   //write(pipe_to_parent, "\0\n", 2);
    fsync(pipe_to_parent);
 
    return TRUE;
