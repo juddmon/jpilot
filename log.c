@@ -148,10 +148,8 @@ int jp_vlogf (int level, char *format, va_list val) {
       buf[size]='\0';
       buf[size+1]='\n';
       size += 2;
-      //write(pipe_to_parent, cmd, strlen(cmd));
       r = write(pipe_to_parent, buf, size);
       if (r<0) fprintf(stderr, "write returned error %s %d\n", __FILE__, __LINE__);
-      //write(pipe_to_parent, "\0\n", 2);
       fsync(pipe_to_parent);
    }
 
@@ -197,20 +195,12 @@ int write_to_parent(int command, char *format, ...)
    buf = buf-len;
    strncpy(buf, cmd, len);
    size += len;
+   /* The pipe doesn't flush unless a CR is written */
+   /* This is our key to the parent for a record separator */
    buf[size]='\0';
    buf[size+1]='\n';
    size += 2;
-   //write(pipe_to_parent, cmd, strlen(cmd));
    write(pipe_to_parent, buf, size);
-   //write(pipe_to_parent, "\0\n", 2);
-   fsync(pipe_to_parent);
-
-   //write(pipe_to_parent, cmd, strlen(cmd));
-   //write(pipe_to_parent, buf, strlen(buf));
-   /* The pipe doesn't flush unless a CR is written for some reason */
-   /* This is our key to the parent for a record separator */
-   //write(pipe_to_parent, "\0\n", 2);
-   fsync(pipe_to_parent);
 
    return TRUE;
 }
