@@ -127,7 +127,7 @@ int make_pref_menu(GtkWidget **pref_menu, int pref_num)
        case PREF_SHORTDATE:
        case PREF_LONGDATE:
        case PREF_TIME:
-	 strftime(human_text, MAX_PREF_VALUE, format_text, now);
+	 jp_strftime(human_text, MAX_PREF_VALUE, format_text, now);
 	 break;
        default:
 	 strncpy(human_text, format_text, MAX_PREF_VALUE);
