@@ -17,8 +17,8 @@
 # began the translation.
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2002-01-30 22:58-0500\n"
+"Project-Id-Version: jpilot 0.99.2\n"
+"POT-Creation-Date: 2002-08-24 16:15-0400\n"
 "PO-Revision-Date: 2002-01-24 14:20GMT\n"
 "Last-Translator: Leopold Palomo <lepalom@wol.es>\n"
 "Language-Team: catalan <docsterms@caliu.upc.es>\n"
@@ -27,15 +27,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 0.9.5\n"
 
-#: address.c:239 datebook.c:217 memo.c:145 todo.c:253
+#: address.c:239 datebook.c:310 memo.c:145 todo.c:276
 msgid "error"
 msgstr "error"
 
-#: address.c:280 datebook.c:576 memo.c:197 todo.c:294
+#: address.c:280 datebook.c:672 memo.c:197 todo.c:317
 msgid "Error reading"
 msgstr "Error llegint"
 
-#: address_gui.c:361 datebook_gui.c:331 memo_gui.c:240 todo_gui.c:372
+#: address_gui.c:361 datebook_gui.c:333 memo_gui.c:240 todo_gui.c:372
 #, c-format
 msgid "Could not open file %s\n"
 msgstr "No puc obrir el fitxer %s. \n"
@@ -44,49 +44,48 @@ msgstr "No puc obrir el fitxer %s. \n"
 msgid "File doesn't appear to be address.dat format\n"
 msgstr "L'arxiu no sembla tenir el format d'adreces\n"
 
-#: Expense/expense.c:441 Expense/expense.c:1023 address_gui.c:454
-#: datebook_gui.c:529 memo_gui.c:369 todo_gui.c:499
+#: address_gui.c:454 datebook_gui.c:535 memo_gui.c:369 todo_gui.c:499
+#: Expense/expense.c:441 Expense/expense.c:1023
 msgid "Unfiled"
 msgstr "No registrat"
 
-#. Buttons
-#: KeyRing/keyring.c:1097 address_gui.c:545 alarms.c:227 datebook_gui.c:613
-#: datebook_gui.c:892 export_gui.c:327 jpilot.c:347 jpilot.c:392 jpilot.c:458
-#: jpilot.c:500 jpilot.c:711 jpilot.c:866 memo_gui.c:459 password.c:280
-#: restore_gui.c:217 todo_gui.c:589 utils.c:859
+#: address_gui.c:545 alarms.c:227 datebook_gui.c:619 datebook_gui.c:898
+#: export_gui.c:328 jpilot.c:348 jpilot.c:393 jpilot.c:459 jpilot.c:501
+#: jpilot.c:912 memo_gui.c:459 password.c:362 restore_gui.c:217 todo_gui.c:589
+#: utils.c:859 KeyRing/keyring.c:1097
 msgid "OK"
 msgstr "D'acord"
 
-#: address_gui.c:546 datebook_gui.c:614 memo_gui.c:460 todo_gui.c:590
+#: address_gui.c:546 datebook_gui.c:620 memo_gui.c:460 todo_gui.c:590
 #: utils.c:1000
 msgid "Yes"
 msgstr "Sí"
 
-#: address_gui.c:546 datebook_gui.c:614 memo_gui.c:460 todo_gui.c:590
+#: address_gui.c:546 datebook_gui.c:620 memo_gui.c:460 todo_gui.c:590
 #: utils.c:1000
 msgid "No"
 msgstr "No"
 
-#: address_gui.c:562 datebook_gui.c:622 memo_gui.c:470 todo_gui.c:600
+#: address_gui.c:562 datebook_gui.c:628 memo_gui.c:470 todo_gui.c:600
 #, c-format
 msgid "%s is a directory"
 msgstr "%s és un directori"
 
-#: address_gui.c:564 address_gui.c:581 datebook_gui.c:624 datebook_gui.c:641
+#: address_gui.c:564 address_gui.c:581 datebook_gui.c:630 datebook_gui.c:647
 #: memo_gui.c:472 memo_gui.c:489 todo_gui.c:602 todo_gui.c:619
 msgid "Error Opening File"
 msgstr "Error obrint arxiu"
 
-#: address_gui.c:568 datebook_gui.c:628 memo_gui.c:476 todo_gui.c:606
+#: address_gui.c:568 datebook_gui.c:634 memo_gui.c:476 todo_gui.c:606
 #, c-format
 msgid "Do you want to overwrite file %s?"
 msgstr "Voleu sobreescriure l'arxiu %s?"
 
-#: address_gui.c:570 datebook_gui.c:630 memo_gui.c:478 todo_gui.c:608
+#: address_gui.c:570 datebook_gui.c:636 memo_gui.c:478 todo_gui.c:608
 msgid "Overwrite File?"
 msgstr "Sobreescriure arxiu?"
 
-#: address_gui.c:571 datebook_gui.c:631 memo_gui.c:479 todo_gui.c:609
+#: address_gui.c:571 datebook_gui.c:637 memo_gui.c:479 todo_gui.c:609
 msgid "Overwrite File"
 msgstr "Sobreescrit arxiu"
 
@@ -98,9 +97,8 @@ msgstr "Empresa/Nom"
 msgid "Name/Company"
 msgstr "Nom/Empresa"
 
-#. Category Menu
-#: Expense/expense.c:1190 Expense/expense.c:1261 KeyRing/keyring.c:1273
-#: KeyRing/keyring.c:1349 address_gui.c:1077
+#: address_gui.c:1077 Expense/expense.c:1190 Expense/expense.c:1261
+#: KeyRing/keyring.c:1273 KeyRing/keyring.c:1349
 msgid "Category: "
 msgstr "Categoria"
 
@@ -121,58 +119,48 @@ msgstr "Telèfon"
 msgid "Quick Find"
 msgstr "Cerca ràpida"
 
-#. Delete Button
-#: Expense/expense.c:1223 KeyRing/keyring.c:1308 address_gui.c:1683
-#: datebook_gui.c:3370 memo_gui.c:1242 todo_gui.c:1571
+#: address_gui.c:1683 datebook_gui.c:3518 memo_gui.c:1242 todo_gui.c:1571
+#: Expense/expense.c:1223 KeyRing/keyring.c:1308
 msgid "Delete"
 msgstr "Suprimir"
 
-#. Create "Copy" button
-#: Expense/expense.c:1229 KeyRing/keyring.c:1314 address_gui.c:1690
-#: datebook_gui.c:3377 memo_gui.c:1248 todo_gui.c:1577
+#: address_gui.c:1690 datebook_gui.c:3525 memo_gui.c:1248 todo_gui.c:1577
+#: Expense/expense.c:1229 KeyRing/keyring.c:1314
 msgid "Copy"
 msgstr "Copiar"
 
-#. Create "New" button
-#: Expense/expense.c:1235 KeyRing/keyring.c:1320 address_gui.c:1697
-#: datebook_gui.c:3384 memo_gui.c:1254 todo_gui.c:1583
+#: address_gui.c:1697 datebook_gui.c:3532 memo_gui.c:1254 todo_gui.c:1583
+#: Expense/expense.c:1235 KeyRing/keyring.c:1320
 msgid "New Record"
 msgstr "Nou registre"
 
-#. Create "Add Record" button
-#: Expense/expense.c:1241 KeyRing/keyring.c:1326 address_gui.c:1703
-#: datebook_gui.c:3391 memo_gui.c:1260 todo_gui.c:1589
+#: address_gui.c:1703 datebook_gui.c:3539 memo_gui.c:1260 todo_gui.c:1589
+#: Expense/expense.c:1241 KeyRing/keyring.c:1326
 msgid "Add Record"
 msgstr "Afegir registre"
 
-#. Create "apply changes" button
-#: Expense/expense.c:1249 KeyRing/keyring.c:1334 address_gui.c:1712
-#: datebook_gui.c:3400 memo_gui.c:1268 todo_gui.c:1597
+#: address_gui.c:1712 datebook_gui.c:3548 memo_gui.c:1268 todo_gui.c:1597
+#: Expense/expense.c:1249 KeyRing/keyring.c:1334
 msgid "Apply Changes"
 msgstr "Aplicar Canvis"
 
-#. Private check box
-#: address_gui.c:1728 datebook_gui.c:3451 memo_gui.c:1294 todo_gui.c:1660
+#: address_gui.c:1728 datebook_gui.c:3599 memo_gui.c:1294 todo_gui.c:1660
 msgid "Private"
 msgstr "Privat"
 
-#. Page 1
-#: KeyRing/keyring.c:1198 address_gui.c:1748
+#: address_gui.c:1748 KeyRing/keyring.c:1198
 msgid "Name"
 msgstr "Nom"
 
-#. Page 2
 #: address_gui.c:1756
 msgid "Address"
 msgstr "Adreces"
 
-#. Page 3
-#: Expense/expense.c:393 Expense/expense.c:1044 address_gui.c:1764
+#: address_gui.c:1764 Expense/expense.c:393 Expense/expense.c:1044
 msgid "Other"
 msgstr "Altres"
 
-#. Page 3
-#: address_gui.c:1772 datebook_gui.c:1067 datebook_gui.c:1324 utils.c:2175
+#: address_gui.c:1772 datebook_gui.c:1074 datebook_gui.c:1331 utils.c:2177
 msgid "All"
 msgstr "Tot"
 
@@ -184,7 +172,6 @@ msgstr ""
 "Mostra\n"
 "a la llista"
 
-#. The Quickview page
 #: address_gui.c:1850
 msgid "Quick View"
 msgstr "Vista ràpida"
@@ -193,11 +180,11 @@ msgstr "Vista ràpida"
 msgid "Remind me"
 msgstr ""
 
-#: alarms.c:243 datebook_gui.c:3433
+#: alarms.c:243 datebook_gui.c:3581
 msgid "Minutes"
 msgstr "Minuts"
 
-#: alarms.c:245 datebook_gui.c:3437
+#: alarms.c:245 datebook_gui.c:3585
 msgid "Hours"
 msgstr "Hores"
 
@@ -213,121 +200,115 @@ msgstr "Cita"
 msgid "Postponed Appointment"
 msgstr "Cita"
 
-#: alarms.c:519 datebook_gui.c:3332
+#: alarms.c:519 datebook_gui.c:3480
 msgid "Appointment"
 msgstr "Cita"
 
-#: datebook_gui.c:179 datebook_gui.c:186 datebook_gui.c:3174
-#: datebook_gui.c:3181
+#: datebook_gui.c:181 datebook_gui.c:188 datebook_gui.c:3320
+#: datebook_gui.c:3327
 msgid "Su"
 msgstr "Di"
 
-#: datebook_gui.c:180 datebook_gui.c:3175
+#: datebook_gui.c:182 datebook_gui.c:3321
 msgid "Mo"
 msgstr "Dll"
 
-#: datebook_gui.c:181 datebook_gui.c:3176
+#: datebook_gui.c:183 datebook_gui.c:3322
 msgid "Tu"
 msgstr "Dt"
 
-#: datebook_gui.c:182 datebook_gui.c:3177
+#: datebook_gui.c:184 datebook_gui.c:3323
 msgid "We"
 msgstr "Dc"
 
-#: datebook_gui.c:183
+#: datebook_gui.c:185
 msgid "Th"
 msgstr "Dj"
 
-#: datebook_gui.c:184 datebook_gui.c:3179
+#: datebook_gui.c:186 datebook_gui.c:3325
 msgid "Fr"
 msgstr "Dv"
 
-#: datebook_gui.c:185 datebook_gui.c:3180
+#: datebook_gui.c:187 datebook_gui.c:3326
 msgid "Sa"
 msgstr "Ds"
 
-#: datebook_gui.c:519
+#: datebook_gui.c:525
 msgid "File doesn't appear to be datebook.dat format\n"
 msgstr "L'arxiu no sembla tenir el format d'agenda (datebook.dat)\n"
 
-#. Label for instructions
-#: datebook_gui.c:855
+#: datebook_gui.c:861
 msgid "Export All Datebook Records"
 msgstr "Exportar tots els registres de l'agenda"
 
-#: datebook_gui.c:874 export_gui.c:308
+#: datebook_gui.c:880 export_gui.c:309
 msgid "Save as"
 msgstr "Desar com"
 
-#: datebook_gui.c:884 export_gui.c:319
+#: datebook_gui.c:890 export_gui.c:320
 msgid "Browse"
 msgstr "Explorador"
 
-#. Create a "Quit" button
-#: KeyRing/keyring.c:1103 datebook_gui.c:897 datebook_gui.c:1325
-#: export_gui.c:332 password.c:286 print_gui.c:336 restore_gui.c:222
-#: utils.c:869
+#: datebook_gui.c:903 datebook_gui.c:1332 export_gui.c:333 password.c:368
+#: print_gui.c:336 restore_gui.c:222 utils.c:869 KeyRing/keyring.c:1103
 msgid "Cancel"
 msgstr "Anul·lar"
 
-#. Create a "Quit" button
-#: datebook_gui.c:1061 import_gui.c:313 install_gui.c:289 prefs_gui.c:682
+#: datebook_gui.c:1068 import_gui.c:313 install_gui.c:289 prefs_gui.c:682
 #: search_gui.c:575
 msgid "Done"
 msgstr "Fet"
 
-#. Create a "None" button
-#: datebook_gui.c:1073 datebook_gui.c:3561
+#: datebook_gui.c:1080 datebook_gui.c:3723
 msgid "None"
 msgstr "Cap"
 
-#: datebook_gui.c:1185
+#: datebook_gui.c:1192
 msgid "Begin On Date"
 msgstr "Comença a la data"
 
-#: datebook_gui.c:1190
+#: datebook_gui.c:1197
 msgid "End On Date"
 msgstr "Finalitza a la data"
 
-#: datebook_gui.c:1284 monthview_gui.c:346 monthview_gui.c:353 prefs.c:393
+#: datebook_gui.c:1291 monthview_gui.c:348 monthview_gui.c:355 prefs.c:393
 #: weekview_gui.c:135
 msgid "Sunday"
 msgstr "Diumenge"
 
-#: datebook_gui.c:1285 monthview_gui.c:347 prefs.c:394 weekview_gui.c:136
+#: datebook_gui.c:1292 monthview_gui.c:349 prefs.c:394 weekview_gui.c:136
 msgid "Monday"
 msgstr "Dilluns"
 
-#: datebook_gui.c:1286 monthview_gui.c:348 weekview_gui.c:137
+#: datebook_gui.c:1293 monthview_gui.c:350 weekview_gui.c:137
 msgid "Tuesday"
 msgstr "Dimarts"
 
-#: datebook_gui.c:1287 monthview_gui.c:349 weekview_gui.c:138
+#: datebook_gui.c:1294 monthview_gui.c:351 weekview_gui.c:138
 msgid "Wednesday"
 msgstr "Dimecres"
 
-#: datebook_gui.c:1288 monthview_gui.c:350 weekview_gui.c:139
+#: datebook_gui.c:1295 monthview_gui.c:352 weekview_gui.c:139
 msgid "Thursday"
 msgstr "Dijous"
 
-#: datebook_gui.c:1289 monthview_gui.c:351 weekview_gui.c:140
+#: datebook_gui.c:1296 monthview_gui.c:353 weekview_gui.c:140
 msgid "Friday"
 msgstr "Divendres"
 
-#: datebook_gui.c:1290 monthview_gui.c:352 weekview_gui.c:141
+#: datebook_gui.c:1297 monthview_gui.c:354 weekview_gui.c:141
 msgid "Saturday"
 msgstr "Dissabte"
 
-#: datebook_gui.c:1295
+#: datebook_gui.c:1302
 msgid "4th"
 msgstr "4t/4a"
 
-#: datebook_gui.c:1295
+#: datebook_gui.c:1302
 msgid "Last"
 msgstr "Últim"
 
-#. ---------------------------
-#: datebook_gui.c:1317
+#: datebook_gui.c:1324
 msgid ""
 "This is a repeating event.\n"
 "Do you want to apply these\n"
@@ -341,36 +322,36 @@ msgstr ""
 "o a TOTS els esdeveniments \n"
 "com aquest ?"
 
-#: datebook_gui.c:1323
+#: datebook_gui.c:1330
 msgid "Current"
 msgstr "Actual"
 
-#: datebook_gui.c:1540
+#: datebook_gui.c:1563
 msgid "none"
 msgstr "cap"
 
-#: datebook_gui.c:1541
+#: datebook_gui.c:1564
 msgid "day"
 msgstr "dia"
 
-#: datebook_gui.c:1542
+#: datebook_gui.c:1565
 msgid "week"
 msgstr "setmana"
 
-#: datebook_gui.c:1543
+#: datebook_gui.c:1566
 msgid "month"
 msgstr "mes"
 
-#: datebook_gui.c:1544
+#: datebook_gui.c:1567
 msgid "year"
 msgstr "any"
 
-#: datebook_gui.c:1771
+#: datebook_gui.c:1819
 #, c-format
 msgid "You cannot have an appointment that repeats every %d %s(s)\n"
 msgstr "No pot tenir una cita que es repeteix cada %d %s(s)\n"
 
-#: datebook_gui.c:1780
+#: datebook_gui.c:1828
 msgid ""
 "You can not have a weekly repeating appointment that doesn't repeat on any "
 "day of the week.\n"
@@ -378,113 +359,110 @@ msgstr ""
 "No pot tenir una cita repetida setmanalment que no es repeteix a cap dia de "
 "la setmana .\n"
 
-#. This is a timeless event
-#: datebook_gui.c:1912
+#: datebook_gui.c:1964
 msgid "No Time"
 msgstr "Sense temps"
 
-#. The No due date check box
-#: datebook_gui.c:2299 datebook_gui.c:3595 datebook_gui.c:3625
-#: datebook_gui.c:3681 datebook_gui.c:3730 todo_gui.c:120 todo_gui.c:1651
+#: datebook_gui.c:2367 datebook_gui.c:3757 datebook_gui.c:3787
+#: datebook_gui.c:3843 datebook_gui.c:3892 todo_gui.c:120 todo_gui.c:1651
 msgid "No Date"
 msgstr "Sense data"
 
-#: datebook_gui.c:3178
+#: datebook_gui.c:3324
 msgid "RTh"
 msgstr "Dj"
 
-#. Make Weekview button
-#: datebook_gui.c:3250 datebook_gui.c:3563
+#: datebook_gui.c:3401 datebook_gui.c:3725
 msgid "Week"
 msgstr "Setmana"
 
-#. Make Monthview button
-#: datebook_gui.c:3261 datebook_gui.c:3564
+#: datebook_gui.c:3412 datebook_gui.c:3726
 msgid "Month"
 msgstr "Mes"
 
-#. Make Category button
-#: datebook_gui.c:3276
+#: datebook_gui.c:3425
 msgid "Cats"
 msgstr "Cats"
 
-#: datebook_gui.c:3331
+#: datebook_gui.c:3479
 msgid "Time"
 msgstr "Temps"
 
-#: datebook_gui.c:3418
+#: datebook_gui.c:3566
 msgid "Alarm"
 msgstr "Alarma"
 
-#: datebook_gui.c:3439
+#: datebook_gui.c:3587
 msgid "Days"
 msgstr "Dies"
 
-#: datebook_gui.c:3462
+#: datebook_gui.c:3610
 msgid "This Event has no particular time"
 msgstr "Aquest esdeveniment no te hora particular"
 
-#: datebook_gui.c:3470
+#: datebook_gui.c:3618
 msgid "Starts on: "
 msgstr "Comença en: "
 
-#: datebook_gui.c:3482
+#: datebook_gui.c:3630
 msgid "Time:"
 msgstr "Temps:"
 
-#: datebook_gui.c:3562
+#: datebook_gui.c:3707
+msgid "DateBk Tags"
+msgstr ""
+
+#: datebook_gui.c:3724
 msgid "Day"
 msgstr "Dia"
 
-#: datebook_gui.c:3565
+#: datebook_gui.c:3727
 msgid "Year"
 msgstr "Any"
 
-#. no repeat page for notebook
-#: datebook_gui.c:3569
+#: datebook_gui.c:3731
 msgid "This event will not repeat"
 msgstr "Aquest esdeveniment no es repetirà"
 
-#: datebook_gui.c:3579 datebook_gui.c:3611 datebook_gui.c:3667
-#: datebook_gui.c:3714
+#: datebook_gui.c:3741 datebook_gui.c:3773 datebook_gui.c:3829
+#: datebook_gui.c:3876
 msgid "Frequency is Every"
 msgstr "La freqüència és cada "
 
-#: datebook_gui.c:3584
+#: datebook_gui.c:3746
 msgid "Day(s)"
 msgstr "Di(a)(es)"
 
-#. checkbutton
-#: datebook_gui.c:3587 datebook_gui.c:3619 datebook_gui.c:3675
-#: datebook_gui.c:3722
+#: datebook_gui.c:3749 datebook_gui.c:3781 datebook_gui.c:3837
+#: datebook_gui.c:3884
 msgid "End on"
 msgstr "Acaba en"
 
-#: datebook_gui.c:3616
+#: datebook_gui.c:3778
 msgid "Week(s)"
 msgstr "Setman(a)(es)"
 
-#: datebook_gui.c:3632
+#: datebook_gui.c:3794
 msgid "Repeat on Days:"
 msgstr "Repetir els dies:"
 
-#: datebook_gui.c:3672
+#: datebook_gui.c:3834
 msgid "Month(s)"
 msgstr "Mes"
 
-#: datebook_gui.c:3689
+#: datebook_gui.c:3851
 msgid "Repeat by:"
 msgstr "Repetir tots els"
 
-#: datebook_gui.c:3693
+#: datebook_gui.c:3855
 msgid "Day of week"
 msgstr "Dia de la setmana"
 
-#: datebook_gui.c:3702
+#: datebook_gui.c:3864
 msgid "Date"
 msgstr "Data"
 
-#: datebook_gui.c:3719
+#: datebook_gui.c:3881
 msgid "Year(s)"
 msgstr "Any(s)"
 
@@ -492,18 +470,16 @@ msgstr "Any(s)"
 msgid "File Browser"
 msgstr "Explorador"
 
-#. Label for instructions
-#: export_gui.c:264
+#: export_gui.c:265
 msgid "Select records to be exported"
 msgstr ""
 
-#: export_gui.c:266
+#: export_gui.c:267
 msgid "Use Ctrl and Shift Keys"
 msgstr ""
 
-#. Import button
 #: import_gui.c:270 import_gui.c:306 import_gui.c:409 import_gui.c:465
-#: jpilot.c:491
+#: jpilot.c:492
 msgid "Import"
 msgstr "Importar"
 
@@ -523,17 +499,14 @@ msgstr ""
 msgid "Record was not marked as private"
 msgstr ""
 
-#. Import All button
 #: import_gui.c:472
 msgid "Import All"
 msgstr "Importar"
 
-#. Skip button
 #: import_gui.c:479
 msgid "Skip"
 msgstr ""
 
-#. Quit button
 #: import_gui.c:486
 msgid "Quit"
 msgstr "Eixir!"
@@ -583,40 +556,43 @@ msgstr ""
 " Si PILOTPORT no ha estat definit, aleshores per defecte utilitza /dev/"
 "pilot.\n"
 
-#: jpilot.c:371
+#: jpilot.c:372
 msgid "Help"
 msgstr "Ajuda"
 
-#. Create a "Print" button
-#: jpilot.c:433 monthview_gui.c:417 print_gui.c:330 weekview_gui.c:303
+#: jpilot.c:434 monthview_gui.c:419 print_gui.c:330 weekview_gui.c:304
 msgid "Print"
 msgstr "Imprimir"
 
-#: jpilot.c:434
+#: jpilot.c:435
 msgid "There is no print support for this conduit."
 msgstr "No hi ha suport d'impressió per aquest conduit."
 
-#: jpilot.c:492
+#: jpilot.c:493
 msgid "There is no import support for this conduit."
 msgstr "No hi ha suport d'impressió per aquest conducte."
 
-#: jpilot.c:533
+#: jpilot.c:534
 msgid "Export"
 msgstr "Exportar"
 
-#: jpilot.c:534
+#: jpilot.c:535
 msgid "There is no export support for this conduit."
 msgstr "No hi ha suport d'exportació per aquest conducte."
 
-#: jpilot.c:711
+#: jpilot.c:717
+#, fuzzy
+msgid "Cancel Sync"
+msgstr "Anul·lar"
+
+#: jpilot.c:718
 msgid "Sync Anyway"
 msgstr "Sincronitzar de totes maneres?"
 
-#. -------------------------------------------
-#: jpilot.c:871
-#, c-format
+#: jpilot.c:917
+#, fuzzy, c-format
 msgid ""
-"%s was written by\n"
+"%s %s was written by\n"
 "Judd Montgomery (c) 1999-2001.\n"
 "judd@jpilot.org\n"
 "http://jpilot.org\n"
@@ -626,121 +602,118 @@ msgstr ""
 "judd@jpilot.org\n"
 "http://jpilot.org\n"
 
-#: jpilot.c:876
+#: jpilot.c:922
 #, c-format
 msgid "About %s"
 msgstr "Quant a %s"
 
-#: jpilot.c:966
+#: jpilot.c:1006
 msgid "/File"
 msgstr "/Arxiu"
 
-#: jpilot.c:967
+#: jpilot.c:1007
 msgid "/File/tear"
 msgstr "/Arxiu/tear"
 
-#: jpilot.c:968
+#: jpilot.c:1008
 msgid "/File/_Find"
 msgstr "/Arxiu/_Cercar"
 
-#: jpilot.c:969 jpilot.c:975 jpilot.c:977
+#: jpilot.c:1009 jpilot.c:1015 jpilot.c:1017
 msgid "/File/sep1"
 msgstr "/Arxiu/sep1"
 
-#: jpilot.c:970
+#: jpilot.c:1010
 msgid "/File/_Install"
 msgstr "/Arxiu/_Instal·lar"
 
-#: jpilot.c:971
+#: jpilot.c:1011
 msgid "/File/Import"
 msgstr "/Arxiu/_Importar"
 
-#: jpilot.c:972
+#: jpilot.c:1012
 msgid "/File/Export"
 msgstr "/Arxiu/_Exportar"
 
-#: jpilot.c:973
+#: jpilot.c:1013
 msgid "/File/Preferences"
 msgstr "/Arxiu/Preferències"
 
-#: jpilot.c:974
+#: jpilot.c:1014
 msgid "/File/_Print"
 msgstr "/Arxiu/_Imprimir"
 
-#: jpilot.c:976
+#: jpilot.c:1016
 msgid "/File/Restore Handheld"
 msgstr "/Arxiu/Restaurar "
 
-#: jpilot.c:978
+#: jpilot.c:1018
 msgid "/File/Quit"
 msgstr "/Arxiu/Eixir"
 
-#: jpilot.c:979
+#: jpilot.c:1019
 msgid "/_View"
 msgstr "/_Visualitzar"
 
-#: jpilot.c:980
+#: jpilot.c:1020
 msgid "/View/Hide-Show Private Records"
 msgstr "/Visualitzar/Oculta-Mostra registres privats"
 
-#: jpilot.c:981
+#: jpilot.c:1021
 msgid "/View/Datebook"
 msgstr "/Visualitzar/Agenda"
 
-#: jpilot.c:982
+#: jpilot.c:1022
 msgid "/View/Addresses"
 msgstr "/Visualitzar/Adreces"
 
-#: jpilot.c:983
+#: jpilot.c:1023
 msgid "/View/Todos"
 msgstr "/Visualitzar/Tasques"
 
-#: jpilot.c:984
+#: jpilot.c:1024
 msgid "/View/Memos"
 msgstr "/Visualitzar/Memos"
 
-#: jpilot.c:985 jpilot.c:1061
+#: jpilot.c:1025 jpilot.c:1101
 msgid "/Plugins"
 msgstr "/Connectors"
 
-#: jpilot.c:986
+#: jpilot.c:1026
 msgid "/_Help"
 msgstr "/_Ajuda"
 
-#: jpilot.c:987 jpilot.c:1038
+#: jpilot.c:1027 jpilot.c:1078
 #, c-format
 msgid "/_Help/%s"
 msgstr "/_Ajuda/%s"
 
-#: jpilot.c:1027
+#: jpilot.c:1067
 #, c-format
 msgid "/Plugins/%s"
 msgstr "/Connectors/%s"
 
-#: jpilot.c:1654
+#: jpilot.c:1702
 msgid "Clear"
 msgstr "Neteja"
 
-#. Create "Quit" button
-#: jpilot.c:1719
+#: jpilot.c:1767
 msgid "Quit!"
 msgstr "Eixir!"
 
-#. Create "Sync" button
-#: jpilot.c:1725
+#: jpilot.c:1773
 msgid "Sync"
 msgstr "Sincronitzar"
 
-#: jpilot.c:1732
+#: jpilot.c:1780
 msgid "Sync your palm to the desktop"
 msgstr "Sincronitzar el seu palm amb l'escriptori"
 
-#. Create "Backup" button in left column
-#: jpilot.c:1736
+#: jpilot.c:1784
 msgid "Backup"
 msgstr "Còpia de seguretat"
 
-#: jpilot.c:1744
+#: jpilot.c:1792
 msgid ""
 "Sync your palm to the desktop\n"
 "and then do a backup"
@@ -748,27 +721,27 @@ msgstr ""
 "Sincronitzar el seu palm amb l'escriptori\n"
 "i després fer una còpia de seguretat"
 
-#: jpilot.c:1825
+#: jpilot.c:1879
 msgid "Datebook/Go to Today"
 msgstr "Agenda/Aneu a avui"
 
-#: jpilot.c:1827
+#: jpilot.c:1881
 msgid "Address Book"
 msgstr "Llibreta d'adreces"
 
-#: jpilot.c:1829
+#: jpilot.c:1883
 msgid "ToDo List"
 msgstr "Llista de coses a fer"
 
-#: jpilot.c:1831
+#: jpilot.c:1885
 msgid "Memo Pad"
 msgstr "Memo Pad"
 
-#: log.c:89
+#: log.c:90
 msgid "Cannot open log file, giving up.\n"
 msgstr "No puc obrir el fitxer de registre, renuncio. \n"
 
-#: log.c:96
+#: log.c:97
 msgid "Cannot open log file\n"
 msgstr "No puc obrir el fitxer de registre. \n"
 
@@ -776,26 +749,23 @@ msgstr "No puc obrir el fitxer de registre. \n"
 msgid "File doesn't appear to be memopad.dat format\n"
 msgstr "L'arxiu no sembla tenir el format de notes (memopad.dat)\n"
 
-#. Memo32 check box
 #: memo_gui.c:1283
 msgid "Use Memo32 (pedit32)"
 msgstr "Utilitzar Memo32 (pedit32)"
 
-#: monthview_gui.c:382
+#: monthview_gui.c:384
 msgid "Monthly View"
 msgstr "Vista mensual"
 
-#. Create a "Quit" button
-#: monthview_gui.c:411 weekview_gui.c:297
+#: monthview_gui.c:413 weekview_gui.c:298
 msgid "Close"
 msgstr "Tancar"
 
-#: password.c:241
+#: password.c:323
 msgid "Palm Password"
 msgstr "Contrasenya del palm"
 
-#. Label
-#: password.c:263
+#: password.c:345
 msgid "Enter PalmOS Password"
 msgstr "Introduïu la contrasenya del PalmOS"
 
@@ -819,47 +789,38 @@ msgstr "Alarma"
 msgid "Conduits"
 msgstr "Conductes"
 
-#. Character Set
 #: prefs_gui.c:346
 msgid "Character Set "
 msgstr "Joc de caràcters"
 
-#. Shortdate
 #: prefs_gui.c:359
 msgid "Short date format "
 msgstr "Format de data curta"
 
-#. Longdate
 #: prefs_gui.c:372
 msgid "Long date format "
 msgstr "Format de data llarg "
 
-#. Time
 #: prefs_gui.c:386
 msgid "Time format "
 msgstr "Format d'hora "
 
-#. FDOW
 #: prefs_gui.c:400
 msgid "The first day of the week is "
 msgstr "El primer dia de la setmana és "
 
-#. GTK colors file
 #: prefs_gui.c:420
 msgid "My GTK colors file is "
 msgstr "El meu fitxer de colors GTK és."
 
-#. Port
 #: prefs_gui.c:434
 msgid "Serial Port (/dev/ttyS0, /dev/pilot)"
 msgstr "Port Sèrie (/dev/ttyS0, /dev/pilot)"
 
-#. Rate
 #: prefs_gui.c:449
 msgid "Serial Rate "
 msgstr "Velocitat port sèrie "
 
-#. Number of backups
 #: prefs_gui.c:462
 msgid "Number of backups to be archived"
 msgstr "Nombre de copies de seguretat per arxivar "
@@ -880,15 +841,19 @@ msgstr "Ressaltar els dies amb cites"
 msgid "Use DateBk3/4 note tags"
 msgstr "Utilitzar marcadors DateBk3 (no recomanat)"
 
-#: prefs_gui.c:532
+#: prefs_gui.c:528
+msgid "DateBk3/4 support disabled in this build"
+msgstr ""
+
+#: prefs_gui.c:535
 msgid "Sync datebook"
 msgstr "Sincronitzar l'agenda"
 
-#: prefs_gui.c:544
+#: prefs_gui.c:546
 msgid "Sync address"
 msgstr "Sincronitzar la llibreta d'adreces"
 
-#: prefs_gui.c:556
+#: prefs_gui.c:557
 msgid "Sync todo"
 msgstr "Sincronitzat tasques a fer"
 
@@ -908,7 +873,6 @@ msgstr "Obrir la finestra d'alarmes per el recordatori de cites"
 msgid "Execute this command"
 msgstr "Executa aquesta ordre"
 
-#. Shell warning
 #: prefs_gui.c:645
 msgid "WARNING: executing arbitrary shell commands can be dangerous!!!"
 msgstr ""
@@ -976,7 +940,6 @@ msgstr "Un registre per pàgina"
 msgid " Blank lines between each record"
 msgstr " Línia en blanc entre cada registre"
 
-#. Print Command
 #: print_gui.c:316
 msgid "Print Command (e.g. lpr, or cat > file.ps)"
 msgstr "Ordre d'impressió (ex. lpr, o cat > fitxer.ps)"
@@ -985,7 +948,6 @@ msgstr "Ordre d'impressió (ex. lpr, o cat > fitxer.ps)"
 msgid "Restore Handheld"
 msgstr "/Arxiu/Restaurar "
 
-#. Label for instructions
 #: restore_gui.c:159
 msgid "To restore your handheld:"
 msgstr ""
@@ -1031,168 +993,229 @@ msgstr "Cercar a: "
 msgid "Case Sensitive"
 msgstr "Sensible a caixa"
 
-#: sync.c:338
+#: sync.c:272
+#, c-format
+msgid "Exiting with status %s\n"
+msgstr ""
+
+#: sync.c:273
+msgid "Finished\n"
+msgstr ""
+
+#: sync.c:461
 #, c-format
 msgid " Syncing on device %s\n"
 msgstr "Sincronitzant amb el dispositiu %s\n"
 
-#: sync.c:339
+#: sync.c:462
 msgid " Press the HotSync button now\n"
 msgstr ".Prémer el botó HotSync ara\n"
 
-#: sync.c:425
+#: sync.c:558
 msgid "Check your serial port and settings\n"
 msgstr "Comprovi el seu port sèrie i els paràmetres\n"
 
-#. These are carefully worded so as not to be read by
-#. * the parent program and interpreted
-#: sync.c:459 sync.c:473 sync.c:485
-#, c-format
-msgid "Last Username-->\"%s\"\n"
+#: sync.c:598 sync.c:620 sync.c:642
+#, fuzzy, c-format
+msgid "Last Synced Username-->\"%s\"\n"
 msgstr "Últim nom d'usuari-->\"%s\"\n"
 
-#: sync.c:460 sync.c:474 sync.c:486
-#, c-format
-msgid "Last UserID-->\"%d\"\n"
+#: sync.c:599 sync.c:621
+#, fuzzy, c-format
+msgid "Last Synced UserID-->\"%d\"\n"
 msgstr "Últim identificador d'usuari-->\"%d\"\n"
 
-#: sync.c:461 sync.c:475 sync.c:487
-#, c-format
-msgid "Username-->\"%s\"\n"
+#: sync.c:600 sync.c:622 sync.c:644
+#, fuzzy, c-format
+msgid " This Username-->\"%s\"\n"
 msgstr "Nom d'usuari-->\"%s\"\n"
 
-#: sync.c:462 sync.c:476 sync.c:488
-#, c-format
-msgid "User ID-->%d\n"
+#: sync.c:601 sync.c:623 sync.c:645
+#, fuzzy, c-format
+msgid " This User ID-->%d\n"
 msgstr "Identificador d'usuari-->%d\n"
 
-#: sync.c:501
+#: sync.c:643
+#, fuzzy, c-format
+msgid "Last Syned UserID-->\"%d\"\n"
+msgstr "Últim identificador d'usuari-->\"%d\"\n"
+
+#: sync.c:666
+#, fuzzy, c-format
+msgid "Username is \"%s\"\n"
+msgstr "Nom d'usuari-->\"%s\"\n"
+
+#: sync.c:667
+#, fuzzy, c-format
+msgid "User ID is %d\n"
+msgstr "Identificador d'usuari-->%d"
+
+#: sync.c:669 sync.c:675
 #, c-format
 msgid "lastSyncPC = %d\n"
 msgstr "Última sincronització amb el PC= %d\n"
 
-#: sync.c:502
+#: sync.c:670
 #, c-format
 msgid "This PC = %lu\n"
 msgstr "Aquest PC = %lu\n"
 
-#: sync.c:521
+#: sync.c:671
+#, fuzzy, c-format
+msgid "Last Username = [%s]\n"
+msgstr "Últim nom d'usuari-->\"%s\"\n"
+
+#: sync.c:672
+#, fuzzy, c-format
+msgid "Last UserID = %d\n"
+msgstr "Últim identificador d'usuari-->\"%d\"\n"
+
+#: sync.c:673
+#, c-format
+msgid "Username = [%s]\n"
+msgstr ""
+
+#: sync.c:674
+#, c-format
+msgid "userID = %d\n"
+msgstr ""
+
+#: sync.c:691
 msgid "Sync canceled\n"
 msgstr "Sincronització anul·lada\n"
 
-#: sync.c:545
+#: sync.c:715
+#, fuzzy
+msgid "Finished restoring handheld.\n"
+msgstr "/Arxiu/Restaurar "
+
+#: sync.c:716
 msgid "You may need to sync to update J-Pilot.\n"
 msgstr "Caldria sincronitzar per actualitzar J-Pilot.\n"
 
-#: sync.c:562
+#: sync.c:734
 msgid "Doing a fast sync.\n"
 msgstr "Fent una sincronització ràpida.\n"
 
-#: sync.c:580
+#: sync.c:752
 msgid "Doing a slow sync.\n"
 msgstr "Fent una sincronització lenta.\n"
 
-#: sync.c:644
+#: sync.c:820
 msgid "Thank you for using J-Pilot."
 msgstr "Gràcies per fer servir J-Pilot."
 
-#: sync.c:718 sync.c:2178
+#: sync.c:863
+#, fuzzy
+msgid "Finished.\n"
+msgstr "Ha fallat.\n"
+
+#: sync.c:895 sync.c:2356
 #, c-format
 msgid "Syncing %s\n"
 msgstr "Ometent %s\n"
 
-#: sync.c:725 sync.c:1725 sync.c:2185
+#: sync.c:902 sync.c:1903 sync.c:2363
 #, c-format
 msgid "Wrote an %s record."
 msgstr "Escrits %s registres."
 
-#: sync.c:727 sync.c:1727 sync.c:2187
+#: sync.c:904 sync.c:1905 sync.c:2365
 #, c-format
 msgid "Writing an %s record failed."
 msgstr "Escrivint %s registre/s va fallà."
 
-#: sync.c:729 sync.c:1729 sync.c:2189
+#: sync.c:906 sync.c:1907 sync.c:2367
 #, c-format
 msgid "Deleting an %s record failed."
 msgstr "Esborrant %s registre/s va fallà."
 
-#: sync.c:731 sync.c:1731 sync.c:2191
+#: sync.c:908 sync.c:1909 sync.c:2369
 #, c-format
 msgid "Deleted an %s record."
 msgstr "Esborrats %s registres."
 
-#: sync.c:734 sync.c:1734 sync.c:2194
+#: sync.c:911 sync.c:1912 sync.c:2372
 #, c-format
 msgid "Wrote a %s record."
 msgstr "Escrits %s registres."
 
-#: sync.c:736 sync.c:1736 sync.c:2196
+#: sync.c:913 sync.c:1914 sync.c:2374
 #, c-format
 msgid "Writing a %s record failed."
 msgstr "Escrivint %s registres va fallà."
 
-#: sync.c:738 sync.c:1738 sync.c:2198
+#: sync.c:915 sync.c:1916 sync.c:2376
 #, c-format
 msgid "Deleting a %s record failed."
 msgstr "Esborrant %s registre/s va fallà."
 
-#: sync.c:740 sync.c:1740 sync.c:2200
+#: sync.c:917 sync.c:1918 sync.c:2378
 #, c-format
 msgid "Deleted a %s record."
 msgstr "%s registres esborrats."
 
-#: sync.c:745 sync.c:750 sync.c:1744 sync.c:2204
+#: sync.c:922 sync.c:927 sync.c:1922 sync.c:2382
 #, c-format
 msgid "Unable to open %s\n"
 msgstr "No s'ha pogut obrir %s\n"
 
-#: sync.c:760
+#: sync.c:937
 #, c-format
 msgid "number of records = %d\n"
 msgstr "número de registres = %d\n"
 
-#: sync.c:774 sync.c:1760
+#: sync.c:951 sync.c:1938
 msgid "PC file corrupt?\n"
 msgstr "El fitxer del PC està corrupte?\n"
 
-#: sync.c:781
+#: sync.c:958
 msgid "slow_sync_application(): Out of memory\n"
 msgstr "slow_sync_application(): Sense memòria\n"
 
-#: sync.c:801 sync.c:1798
+#: sync.c:978 sync.c:1976
 msgid "dlp_WriteRecord failed\n"
 msgstr "dlp_WriteRecord ha fallat\n"
 
-#: sync.c:811 sync.c:866 sync.c:876 sync.c:1808 sync.c:1828 sync.c:1867
-#: sync.c:1877
+#: sync.c:988 sync.c:1007 sync.c:1043 sync.c:1053 sync.c:1986 sync.c:2006
+#: sync.c:2045 sync.c:2055
 msgid "fseek failed - fatal error\n"
 msgstr "fseek ha fallat - error greu\n"
 
-#: sync.c:956 sync.c:1294
+#: sync.c:1133 sync.c:1471
 #, c-format
 msgid "%s (Creator ID '%s') is up to date, fetch skipped.\n"
 msgstr "%s (Creador d'ID '%s') està actualitzat, s'omet.\n"
 
-#: sync.c:960 sync.c:1298
+#: sync.c:1137 sync.c:1475
 #, c-format
 msgid "Fetching '%s' (Creator ID '%s')... "
 msgstr "Anant a '%s' (Creador d'ID '%s')..."
 
-#: sync.c:975 sync.c:1313 sync.c:1431
+#: sync.c:1144
+#, c-format
+msgid "Failed, unable to create file %s\n"
+msgstr ""
+
+#: sync.c:1148
+msgid "Failed, unable to back up database\n"
+msgstr ""
+
+#: sync.c:1152 sync.c:1490 sync.c:1609
 msgid "OK\n"
 msgstr "D'acord\n"
 
-#: sync.c:1211
+#: sync.c:1388
 #, c-format
 msgid "Skipping %s (Creator ID '%s')\n"
 msgstr "Ometent %s (Creator ID '%s')\n"
 
-#: sync.c:1361
+#: sync.c:1539
 #, c-format
 msgid "Installing %s "
 msgstr "Instal·lant %s"
 
-#: sync.c:1364
+#: sync.c:1542
 #, c-format
 msgid ""
 "\n"
@@ -1201,39 +1224,38 @@ msgstr ""
 "\n"
 "No es pot obrir '%s'!\n"
 
-#: sync.c:1374
+#: sync.c:1552
 #, c-format
 msgid "(Creator ID is '%s')..."
 msgstr "(Creació d'identificació és '%s')..."
 
-#: sync.c:1415
+#: sync.c:1593
 #, c-format
 msgid "Install %s failed"
 msgstr "Instal·lació de %s ha fallat"
 
-#: sync.c:1420
+#: sync.c:1598
 msgid "Failed.\n"
 msgstr "Ha fallat.\n"
 
-#. the space after the %s is a hack, the last char gets cut off
-#: sync.c:1426
+#: sync.c:1604
 #, c-format
 msgid "Installed %s "
 msgstr "S' ha instal·lat %s"
 
-#: sync.c:1451
+#: sync.c:1629
 msgid "Cannot open jpilot_to_install file\n"
 msgstr "No puc obrir l'arxiu jpilot_to_install.\n"
 
-#: sync.c:1457
+#: sync.c:1635
 msgid "Cannot open jpilot_to_install.tmp file\n"
 msgstr "No puc obrir l'arxiu jpilot_to_install.tmp\n"
 
-#: sync.c:1769
+#: sync.c:1947
 msgid "fast_sync_local_recs(): Out of memory\n"
 msgstr "fast_sync_local_recs(): Sense memòria\n"
 
-#: sync.c:1852
+#: sync.c:2030
 msgid ""
 "dlp_DeleteRecord failed\n"
 "This could be because the record was already deleted on the Palm\n"
@@ -1241,15 +1263,25 @@ msgstr ""
 "dlp_DeleteRecord ha fallat\n"
 "Això pot ser perquè el registre ja estava esborrat en el Palm\n"
 
-#: sync.c:2257
+#: sync.c:2435
 #, c-format
 msgid "palm: number of records = %d\n"
 msgstr "palm: nombre de registres = %d\n"
 
-#: sync.c:2258
+#: sync.c:2436
 #, c-format
 msgid "disk: number of records = %d\n"
 msgstr "disc: nombre de registres = %d\n"
+
+#: todo.c:245
+#, c-format
+msgid "Warning ToDo description too long, truncating to %d\n"
+msgstr ""
+
+#: todo.c:252
+#, c-format
+msgid "Warning ToDo note too long, truncating to %d\n"
+msgstr ""
 
 #: todo_gui.c:139
 msgid "Due Date"
@@ -1263,7 +1295,6 @@ msgstr "L'arxiu no sembla tenir el format de tasques pendents (todo.dat)\n"
 msgid "No date"
 msgstr "Sense data"
 
-#. The hide completed check box
 #: todo_gui.c:1519
 msgid "Hide Completed ToDos"
 msgstr "Amagar les tasques acabades"
@@ -1276,7 +1307,6 @@ msgstr "Tasca"
 msgid "Due"
 msgstr "Venciment"
 
-#. The completed check box
 #: todo_gui.c:1612
 msgid "Completed"
 msgstr "Acabat"
@@ -1290,6 +1320,7 @@ msgid "Date Due:"
 msgstr "Data de venciment:"
 
 #: utils.c:105
+#, c-format
 msgid "Today is %A, %x %X"
 msgstr "Avui és %A, %x %X"
 
@@ -1326,16 +1357,16 @@ msgstr "No puc trobar un fitxer buit DB. \n"
 msgid "jpilot may not be installed.\n"
 msgstr "jpilot no pot ser instal·lat?.\n"
 
-#: utils.c:2043
+#: utils.c:2045
 msgid "PC ID is 0.\n"
 msgstr "PC ID és 0.\n"
 
-#: utils.c:2044
+#: utils.c:2046
 #, c-format
 msgid "I generated a new PC ID.  It is %lu\n"
 msgstr "He generat un nou PC ID. És %lu\n"
 
-#: weekview_gui.c:269
+#: weekview_gui.c:270
 msgid "Weekly View"
 msgstr "Vista setmanal"
 
@@ -1531,12 +1562,10 @@ msgstr "Categoria"
 msgid "Attendees"
 msgstr ""
 
-#. Note textbox
 #: Expense/expense.c:1374 KeyRing/keyring.c:1377
 msgid "Note"
 msgstr "Cap"
 
-#. Label
 #: KeyRing/keyring.c:1080
 msgid "Enter KeyRing Password"
 msgstr "Introduïu la contrasenya del PalmOS"
@@ -1545,17 +1574,14 @@ msgstr "Introduïu la contrasenya del PalmOS"
 msgid "Account"
 msgstr ""
 
-#. name Entry
 #: KeyRing/keyring.c:1355
 msgid "name: "
 msgstr "Nom"
 
-#. account Entry
 #: KeyRing/keyring.c:1362
 msgid "account: "
 msgstr ""
 
-#. password
 #: KeyRing/keyring.c:1369
 msgid "password: "
 msgstr "Contrasenya del palm"
