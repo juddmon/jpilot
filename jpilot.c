@@ -1490,7 +1490,6 @@ void font_selection_ok(GtkWidget *w, GtkFontSelectionDialog *fs)
 {
    gchar *s = gtk_font_selection_dialog_get_font_name(fs);
 
-   g_print("%s\n", s);//removeme
 # ifndef ENABLE_GTK2
    GdkFont *f;
 # endif
@@ -2255,11 +2254,11 @@ char *xpm_unlocked[] = {
    jp_logf(JP_LOG_DEBUG, "w=%d, h=%d\n", w, h);
 
 #ifdef FONT_TEST
-//   f=gdk_fontset_load("-adobe-utopia-medium-r-normal-*-*-200-*-*-p-*-iso8859-1");
-//   f=gdk_fontset_load("-adobe-utopia-bold-i-normal-*-*-100-*-*-p-*-iso8859-2");
-//   SetFontRecursively(window, f);
-//   SetFontRecursively2(window, "Sans 14");
-//   SetFontRecursively2(menubar, "Sans 16");
+/*   f=gdk_fontset_load("-adobe-utopia-medium-r-normal-*-*-200-*-*-p-*-iso8859-1");
+   f=gdk_fontset_load("-adobe-utopia-bold-i-normal-*-*-100-*-*-p-*-iso8859-2");
+   SetFontRecursively(window, f);
+   SetFontRecursively2(window, "Sans 14");
+   SetFontRecursively2(menubar, "Sans 16");*/
 #endif
 #ifdef ALARMS
    alarms_init(skip_past_alarms, skip_all_alarms);

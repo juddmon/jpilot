@@ -2752,7 +2752,6 @@ int sync_categories(char *DB_name, int sd,
 		    local_cai.name[Li], PILOTCATLTH);
 	    remote_cai.name[Li][PILOTCATLTH-1]='\0';
 	    remote_cai.renamed[Li]=0;
-	    //remote_cai.ID[Li]=remote_cai.ID[Li]; undo local?
  	    remote_cai.ID[Li]=local_cai.ID[Li];
 	    continue;
 	 } else {

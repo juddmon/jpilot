@@ -2381,7 +2381,6 @@ set_new_button_to(int new_state)
       /* The line selected on the clist becomes unhighlighted, so we do this */
       gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
       gtk_widget_show(apply_record_button);
-      //gtk_widget_hide(copy_record_button);
       gtk_widget_hide(delete_record_button);
       break;
     case NEW_FLAG:
@@ -2416,7 +2415,6 @@ set_new_button_to(int new_state)
       break;
     case CLEAR_FLAG:
       gtk_widget_hide(new_record_button);
-      //gtk_widget_hide(copy_record_button);
       gtk_widget_hide(delete_record_button);
       break;
    }
@@ -2602,10 +2600,10 @@ static void cb_add_new_record(GtkWidget *widget,
 				new_a.begin.tm_mon, new_a.begin.tm_year+1900);
       gtk_calendar_select_day(GTK_CALENDAR(main_calendar), new_a.begin.tm_mday);
       gtk_calendar_thaw(GTK_CALENDAR(main_calendar));
-      glob_find_id=unique_id;//jbm
+      glob_find_id=unique_id;
    }
    free_Appointment(&new_a);
-   /*update_clist(); */
+   /* update_clist(); */
    /* Force the calendar redraw and re-read of appointments */
    gtk_signal_emit_by_name(GTK_OBJECT(main_calendar), "day_selected");
 

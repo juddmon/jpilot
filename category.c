@@ -587,8 +587,8 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 #endif
 	    i=Pdata->selected;
 	    entry_text = gtk_entry_get_text(GTK_ENTRY(Pdata->entry));
- 	    //Pdata->cai2.renamed[i]=1;
- 	    //gtk_clist_set_text(GTK_CLIST(Pdata->clist), i, 0, Pdata->cai2.name[i]);
+ 	    /* Pdata->cai2.renamed[i]=1; */
+ 	    /* gtk_clist_set_text(GTK_CLIST(Pdata->clist), i, 0, Pdata->cai2.name[i]); */
 	    /* JPA strncpy(Pdata->cai2.name[catnum], entry_text, PILOTCATLTH); */
 	    /* JPA Pdata->cai2.name[catnum][PILOTCATLTH-1]='\0'; */
 	    Pdata->cai2.renamed[catnum]=1;
