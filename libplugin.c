@@ -459,13 +459,13 @@ int jp_get_app_info(char *DB_name, unsigned char **buf, int *buf_size)
    g_snprintf(PDB_name, 255, "%s.pdb", DB_name);
    in = jp_open_home_file(PDB_name, "r");
    if (!in) {
-      jp_logf(JP_LOG_WARN, "Error opening %s\n", PDB_name);
+      jp_logf(JP_LOG_WARN, "%s:%d Error opening %s\n", __FILE__, __LINE__, PDB_name);
       return -1;
    }
    num = fread(&rdbh, sizeof(RawDBHeader), 1, in);
    if (num != 1) {
       if (ferror(in)) {
-	 jp_logf(JP_LOG_WARN, "Error reading %s\n", PDB_name);
+	 jp_logf(JP_LOG_WARN, "%s:%d Error reading %s\n", __FILE__, __LINE__, PDB_name);
 	 fclose(in);
 	 return -1;
       }
@@ -494,7 +494,7 @@ int jp_get_app_info(char *DB_name, unsigned char **buf, int *buf_size)
       if (ferror(in)) {
 	 fclose(in);
 	 free(*buf);
-	 jp_logf(JP_LOG_WARN, "Error reading %s\n", PDB_name);
+	 jp_logf(JP_LOG_WARN, "%s:%d Error reading %s\n", __FILE__, __LINE__, PDB_name);
 	 return -1;
       }
    }

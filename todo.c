@@ -333,6 +333,7 @@ int get_todo_app_info(struct ToDoAppInfo *ai)
 #ifdef ENABLE_MANANA
    long ivalue;
 #endif
+   char DBname[32];
 
    bzero(ai, sizeof(*ai));
    buf=NULL;
@@ -342,14 +343,17 @@ int get_todo_app_info(struct ToDoAppInfo *ai)
 #ifdef ENABLE_MANANA
    get_pref(PREF_MANANA_MODE, &ivalue, NULL);                                  
    if (ivalue) {
-      r = jp_get_app_info("MañanaDB", &buf, &rec_size);
+      strcpy(DBname, "MañanaDB");
    } else {
-      r = jp_get_app_info("ToDoDB", &buf, &rec_size);
+      strcpy(DBname, "ToDoDB");
    }
 #else
-   r = jp_get_app_info("ToDoDB", &buf, &rec_size);
+   strcpy(DBname, "ToDoDB");
 #endif
-   if (r<0) {
+   r = jp_get_app_info(DBname, &buf, &rec_size);
+
+   if ((r<0) || (rec_size<=0)) {
+      jp_logf(JP_LOG_WARN, _("%s:%d Error reading category info %s\n"), __FILE__, __LINE__, DBname);
       if (buf) {
 	 free(buf);
       }
@@ -360,15 +364,7 @@ int get_todo_app_info(struct ToDoAppInfo *ai)
       free(buf);
    }
    if (num <= 0) {
-#ifdef ENABLE_MANANA
-      if (ivalue) {
-	 jp_logf(JP_LOG_WARN, _("Error reading %s\n"), "MañanaDB.pdb");
-      } else {
-	 jp_logf(JP_LOG_WARN, _("Error reading %s\n"), "ToDoDB.pdb");
-      }
-#else
-      jp_logf(JP_LOG_WARN, _("Error reading %s\n"), "ToDoDB.pdb");
-#endif
+      jp_logf(JP_LOG_WARN, _("%s:%d Error reading %s\n"), __FILE__, __LINE__, DBname);
       return -1;
    }
 

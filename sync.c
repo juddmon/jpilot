@@ -2375,7 +2375,7 @@ int unpack_address_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_ra
    jp_logf(JP_LOG_DEBUG, "unpack_address_cai_from_ai\n");
 
    r = unpack_AddressAppInfo(&ai, ai_raw, len);
-   if (r <= 0) {
+   if ((r <= 0) || (len <= 0)) {
       jp_logf(JP_LOG_DEBUG, "unpack_AddressAppInfo failed %s %d\n", __FILE__, __LINE__);
       return -1;
    }
@@ -2415,7 +2415,7 @@ int unpack_todo_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, 
    jp_logf(JP_LOG_DEBUG, "unpack_todo_cai_from_ai\n");
 
    r = unpack_ToDoAppInfo(&ai, ai_raw, len);
-   if (r <= 0) {
+   if ((r <= 0) || (len <= 0)) {
       jp_logf(JP_LOG_DEBUG, "unpack_ToDoAppInfo failed %s %d\n", __FILE__, __LINE__);
       return -1;
    }
@@ -2455,7 +2455,7 @@ int unpack_memo_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, 
    jp_logf(JP_LOG_DEBUG, "unpack_memo_cai_from_ai\n");
 
    r = unpack_MemoAppInfo(&ai, ai_raw, len);
-   if (r <= 0) {
+   if ((r <= 0) || (len <= 0)) {
       jp_logf(JP_LOG_DEBUG, "unpack_MemoAppInfo failed %s %d\n", __FILE__, __LINE__);
       return -1;
    }
@@ -2527,8 +2527,16 @@ int sync_categories(char *DB_name, int sd,
       return -1;
    }
    r = pi_file_get_app_info(pf, &Papp_info, &size_Papp_info);
+   if (size_Papp_info >= 0) {
+      jp_logf(JP_LOG_WARN, _("%s:%d Error getting app info %s\n"), __FILE__, __LINE__, full_name);
+      return -1;
+   }
 
-   unpack_cai_from_ai(&local_cai, Papp_info, size_Papp_info);
+   r = unpack_cai_from_ai(&local_cai, Papp_info, size_Papp_info);
+   if (r < 0) {
+      jp_logf(JP_LOG_WARN, _("%s:%d Error unpacking app info %s\n"), __FILE__, __LINE__, full_name);
+      return -1;
+   }
 
    pi_file_close(pf);
 
@@ -2550,7 +2558,11 @@ int sync_categories(char *DB_name, int sd,
       return -1;
    }
 
-   unpack_cai_from_ai(&remote_cai, buf, size);
+   r = unpack_cai_from_ai(&remote_cai, buf, size);
+   if (r < 0) {
+      jp_logf(JP_LOG_WARN, _("%s:%d Error unpacking app info %s\n"), __FILE__, __LINE__, full_name);
+      return -1;
+   }
 
 #if SYNC_CAT_DEBUG
    printf("DB_name [%s]\n", DB_name);

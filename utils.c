@@ -1757,67 +1757,6 @@ int get_app_info_size(FILE *in, int *size)
    return 0;
 }
 
-int get_app_info(char *DB_name, unsigned char **buf, int *buf_size)
-{
-   FILE *in;
-   int num;
-   int rec_size;
-   RawDBHeader rdbh;
-   DBHeader dbh;
-   char PDB_name[256];
-
-   *buf_size=0;
-
-   g_snprintf(PDB_name, 255, "%s.pdb", DB_name);
-   in = jp_open_home_file(PDB_name, "r");
-   if (!in) {
-      jp_logf(JP_LOG_WARN, "Error opening %s\n", PDB_name);
-      return -1;
-   }
-   num = fread(&rdbh, sizeof(RawDBHeader), 1, in);
-   if (num != 1) {
-      if (ferror(in)) {
-	 jp_logf(JP_LOG_WARN, "Error reading %s 1\n", PDB_name);
-	 fclose(in);
-	 return -1;
-      }
-      if (feof(in)) {
-	 fclose(in);
-	 return JPILOT_EOF;
-      }      
-   }
-   raw_header_to_header(&rdbh, &dbh);
-
-   num = get_app_info_size(in, &rec_size);
-   if (num) {
-      jp_logf(JP_LOG_WARN, "2 Error reading %s\n", PDB_name);
-      fclose(in);
-      return -1;
-   }
-
-   fseek(in, dbh.app_info_offset, SEEK_SET);
-   *buf=malloc(rec_size);
-   if (!(*buf)) {
-      jp_logf(JP_LOG_WARN, "get_app_info(): Out of memory\n");
-      fclose(in);
-      return -1;
-   }
-   num = fread(*buf, rec_size, 1, in);
-   if (num != 1) {
-      if (ferror(in)) {
-	 fclose(in);
-	 free(*buf);
-	 jp_logf(JP_LOG_WARN, "Error reading %s 3\n", PDB_name);
-	 return -1;
-      }
-   }
-   fclose(in);
-
-   *buf_size=rec_size;
-
-   return 0;
-}
-
 /*
  * This deletes a record from the appropriate Datafile
  */
