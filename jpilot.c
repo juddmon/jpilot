@@ -1147,7 +1147,7 @@ void get_main_menu(GtkWidget  *window,
    }
 
    i=0;
-   menu_items1[i++].path=strdup(_("/File"));
+   menu_items1[i++].path=strdup(_("/_File"));
    menu_items1[i++].path=strdup(_("/File/tear"));
    menu_items1[i++].path=strdup(_("/File/_Find"));
    menu_items1[i++].path=strdup(_("/File/sep1"));
