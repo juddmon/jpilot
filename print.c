@@ -378,7 +378,7 @@ void ps_strncat(char *dest, char *src, int n)
 	 break;
       }
       if (strchr("()", src[i]) != NULL) {
-	 dest2[j] = '\\';
+	 if(j<n-1) dest2[j] = '\\'; else dest2[j]=' ';
 	 j++;
       }
       dest2[j] = src[i];
@@ -729,12 +729,12 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
 		 strftime(ht, sizeof(ht), "%H", &(temp_al->ma.a.begin));
 		 strftime(mt, sizeof(mt), "%M", &(temp_al->ma.a.begin));
 		 m = atoi(mt);
-		 snprintf(t1, sizeof(t1), "%s.%d", ht, (int)((m * 100.)/60));
+		 snprintf(t1, sizeof(t1), "%s.%02d", ht, (int)((m * 100.)/60));
 
 		 strftime(ht, sizeof(ht), "%H", &(temp_al->ma.a.end));
 		 strftime(mt, sizeof(mt), "%M", &(temp_al->ma.a.end));
 		 m = atoi(mt);
-		 snprintf(t2, sizeof(t2), "%s.%d", ht, (int)((m * 100.)/60));
+		 snprintf(t2, sizeof(t2), "%s.%02d", ht, (int)((m * 100.)/60));
 		 sprintf(short_date, "%s %s ", t1, t2);
 		 for (j=0; j<30;j++) short_date[j] =tolower(short_date[j]);
 	      }
