@@ -92,8 +92,10 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
 			   int *total_records);
 
 /* This funtion removes appointments from the list that obviously will not
- * occur in this month */
-int weed_datebook_list(AppointmentList **al, int mon, int year, int *mask);
+ * occur in this month.  Skip privates will ignore private records.
+ */
+int weed_datebook_list(AppointmentList **al, int mon, int year,
+		       int skip_privates, int *mask);
 
 /* Year is years since 1900 */
 /* Mon is 0-11 */

@@ -295,7 +295,7 @@ int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
 
    get_month_info(date.tm_mon, 1, date.tm_year, &dow, &ndim);
 
-   weed_datebook_list(&a_list, date.tm_mon, date.tm_year, &mask);
+   weed_datebook_list(&a_list, date.tm_mon, date.tm_year, 0, &mask);
 
    for (n=0, date.tm_mday=1; date.tm_mday<=ndim; date.tm_mday++, n++) {
       date.tm_sec=0;

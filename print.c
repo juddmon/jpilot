@@ -462,7 +462,7 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
 
    get_days_appointments2(&a_list, NULL, 2, 2, 2, NULL);
    get_month_info(date.tm_mon, 1, date.tm_year, &dow, &ndim);
-   weed_datebook_list(&a_list, date.tm_mon, date.tm_year, &mask);
+   weed_datebook_list(&a_list, date.tm_mon, date.tm_year, 0, &mask);
 
    /*------------------------------------------------------------------
     * Loop through the days in the month, printing appointments

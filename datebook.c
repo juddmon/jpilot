@@ -715,7 +715,8 @@ int get_datebook_app_info(struct AppointmentAppInfo *ai)
    return 0;
 }
 
-int weed_datebook_list(AppointmentList **al, int mon, int year, int *mask)
+int weed_datebook_list(AppointmentList **al, int mon, int year,
+		       int skip_privates, int *mask)
 {
    struct tm tm_fdom;
    struct tm tm_ldom;
@@ -751,6 +752,7 @@ int weed_datebook_list(AppointmentList **al, int mon, int year, int *mask)
     * search though it ~30 times.
     */
    for (prev_al=NULL, tal=*al; tal; tal = next_al) {
+      if (skip_privates && (tal->ma.attrib & dlpRecAttrSecret)) continue;
       trash_it=0;
       /* See if the appointment starts after the last day of the month */
       r = compareTimesToDay(&(tal->ma.a.begin), &tm_ldom);
@@ -868,6 +870,8 @@ int appointment_on_day_list(int mon, int year, int *mask)
    AppointmentList *tal, *al;
    int dow, ndim, num;
    int bit;
+   int show_priv;
+   int skip_privates;
 
    memset(&tm_dom, 0, sizeof(tm_dom));
    tm_dom.tm_hour=11;
@@ -876,13 +880,19 @@ int appointment_on_day_list(int mon, int year, int *mask)
    tm_dom.tm_year=year;
 
    al = NULL;
-   num = get_days_appointments2(&al, NULL, 2, 2, 2, NULL);
+   /* Get private records back
+    * We want to highlight a day with a private record if we are showing or
+    * masking private records */
+   num = get_days_appointments2(&al, NULL, 2, 2, 1, NULL);
+
+   show_priv = show_privates(GET_PRIVATES);
+   skip_privates = (show_priv==HIDE_PRIVATES);
 
    get_month_info(mon, 1, year, &dow, &ndim);
 
    *mask = 0;
 
-   weed_datebook_list(&al, mon, year, mask);
+   weed_datebook_list(&al, mon, year, skip_privates, mask);
 
    for (tm_dom.tm_mday=1, bit=1; tm_dom.tm_mday<=ndim; tm_dom.tm_mday++, bit=bit<<1) {
       if (*mask & bit) {
@@ -891,6 +901,7 @@ int appointment_on_day_list(int mon, int year, int *mask)
       mktime(&tm_dom);
 
       for (tal=al; tal; tal = tal->next) {
+	 if (skip_privates && (tal->ma.attrib & dlpRecAttrSecret)) continue;
 	 if (isApptOnDate(&(tal->ma.a), &tm_dom)) {
 	    *mask = *mask | bit;
 	    break;
