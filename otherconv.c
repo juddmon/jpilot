@@ -167,9 +167,11 @@ char *other_to_UTF(const char *buf, int buf_len)
       unsigned char *head, *tail;
       int outbuf_len;
       unsigned char *tmp_buf = (unsigned char *)buf;
+     static int call_depth = 0;
 
-      jp_logf(JP_LOG_WARN, "%s:%s g_convert_with_iconv error: %s, buff: %s\n",
-	 __FILE__, __FUNCTION__, err ? err->message : "last char truncated",
+      if (0 == call_depth)
+	 jp_logf(JP_LOG_WARN, "%s:%s g_convert_with_iconv error: %s, buff: %s\n",
+	    __FILE__, __FUNCTION__, err ? err->message : "last char truncated",
 	 buf);
       if (err != NULL)
 	 g_error_free(err);
@@ -183,7 +185,9 @@ char *other_to_UTF(const char *buf, int buf_len)
 	 buf_len), glob_frompda, &bytes_read, NULL, NULL);
       tmp_buf[bytes_read] = c;
 
+      call_depth++;
       tail = other_to_UTF(tmp_buf + bytes_read +1, buf_len - bytes_read - 1);
+      call_depth--;
 
       outbuf_len = strlen(head) +4 + strlen(tail)+1;
       outbuf = g_malloc(outbuf_len);
