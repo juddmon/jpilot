@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.85 2005/02/20 20:08:48 rousseau Exp $ */
+/* $Id: todo_gui.c,v 1.86 2005/03/02 01:31:31 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -1821,6 +1821,9 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 	 gtk_tooltips_set_tip(glob_tooltips, tooltip_widget, str, NULL);
       }
    }
+
+   /* return focus to clist after any big operation which requires a redraw */
+   gtk_widget_grab_focus(GTK_WIDGET(clist));
 
 }
 

@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.96 2005/02/20 20:08:48 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.97 2005/03/02 01:31:31 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -2195,6 +2195,9 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 	 gtk_tooltips_set_tip(glob_tooltips, category_menu1, str, NULL);
       }
    }
+
+   /* return focus to clist after any big operation which requires a redraw */
+   gtk_widget_grab_focus(GTK_WIDGET(clist));
 
 }
 

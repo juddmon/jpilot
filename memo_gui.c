@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.76 2005/02/20 20:08:48 rousseau Exp $ */
+/* $Id: memo_gui.c,v 1.77 2005/03/02 01:31:31 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -1243,6 +1243,9 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    if (main) {
       connect_changed_signals(CONNECT_SIGNALS);
    }
+
+   /* return focus to clist after any big operation which requires a redraw */
+   gtk_widget_grab_focus(GTK_WIDGET(clist));
 
    jp_logf(JP_LOG_DEBUG, "Leaving memo_update_clist()\n");
 }

@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.105 2005/02/20 20:08:48 rousseau Exp $ */
+/* $Id: datebook_gui.c,v 1.106 2005/03/02 01:31:31 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -2398,6 +2398,9 @@ static int dayview_update_clist()
    g_snprintf(str, sizeof(str), _("%d of %d records"), entries_shown, num_entries);
    gtk_tooltips_set_tip(glob_tooltips, GTK_CLIST(clist)->column[DB_APPT_COLUMN].button, str, NULL);
 
+   /* return focus to clist after any big operation which requires a redraw */
+   gtk_widget_grab_focus(GTK_WIDGET(clist));
+
    return EXIT_SUCCESS;
 }
 
@@ -3248,6 +3251,10 @@ void cb_cal_changed(GtkWidget *widget,
    }
    clist_row_selected = 0;
    dayview_update_clist();
+
+   /* Keep focus on calendar so that GTK accelerator keys for calendar
+    * can continue to be used */
+   gtk_widget_grab_focus(GTK_WIDGET(main_calendar));
 }
 
 /* Called by week and month views when a user clicks on a date so that we
