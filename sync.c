@@ -557,7 +557,9 @@ int jpilot_sync(struct my_sync_info *sync_info)
 #endif
       return SYNC_ERROR_PI_ACCEPT;
    }
-   
+
+   /* We must do this to take care of the password being required to sync
+    * on Palm OS 4.x */
    if (dlp_ReadSysInfo(sd, &sys_info) < 0) {
       write_to_parent(PIPE_PRINT, "dlp_ReadSysInfo error\n");
       pi_close(sd);
