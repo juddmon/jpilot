@@ -207,6 +207,11 @@ struct sorted_cats
    int cat_num;
 };
 
+/*
+ * Returns usgae string that needs to be freed by the caller
+ */
+void fprint_usage_string(FILE *out);
+
 int cat_compare(const void *v1, const void *v2);
 
 gint timeout_date(gpointer data);

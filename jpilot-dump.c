@@ -38,6 +38,7 @@
 #include "prefs.h"
 #include "datebook.h"
 #include "todo.h"
+#include "i18n.h"
 
 #ifndef FALSE
 #define FALSE 0
@@ -46,16 +47,19 @@
 #define TRUE 1
 #endif
 
-#define DUMP_USAGE_STRING "\njpilot_dump [ +format [-v] || [-h] || [-B] || [-M] || [-A] || [-T] ]\n"\
-" +B +M +A +T format like date +format (use -? for more info).\n"\
-" -v displays version and exits.\n"\
-" -h displays help and exits.\n"\
-" -B dump dateBook.\n"\
-" -NYYYY/MM/DD dump apps on YYYY/MM/DD in dateBook.\n"\
-" -N dump apps on today in dateBook.\n"\
-" -M dump Memos.\n"\
-" -A dump Address book.\n"\
-" -T dump Todo list as CSV.\n"\
+void fprint_jpd_usage_string(FILE *out)
+{
+   fprintf(out, "%s-dump jpilot_dump [ +format [-v] || [-h] || [-B] || [-M] || [-A] || [-T] ]\n", EPN);
+   fprintf(out, "%s", _(" +B +M +A +T format like date +format (use -? for more info).\n"));
+   fprintf(out, "%s", _(" -v displays version and exits.\n"));
+   fprintf(out, "%s", _(" -h displays help and exits.\n"));
+   fprintf(out, "%s", _(" -B dump dateBook.\n"));
+   fprintf(out, "%s", _(" -NYYYY/MM/DD dump apps on YYYY/MM/DD in dateBook.\n"));
+   fprintf(out, "%s", _(" -N dump apps on today in dateBook.\n"));
+   fprintf(out, "%s", _(" -M dump Memos.\n"));
+   fprintf(out, "%s", _(" -A dump Address book.\n"));
+   fprintf(out, "%s", _(" -T dump Todo list as CSV.\n"));
+}
 
 #define LIMIT(a,b,c) if (a < b) {a=b;} if (a > c) {a=c;}
 
@@ -866,7 +870,7 @@ int main(int   argc,
 	 exit(0);
       }
       if (!strncasecmp(argv[i], "-h", 2)) {
-	 printf("%s\n", DUMP_USAGE_STRING);
+	 fprint_jpd_usage_string(stderr);
 	 exit(0);
       }
       if (!strncasecmp(argv[i], "-B", 2)) {

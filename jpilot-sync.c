@@ -27,6 +27,7 @@
 #include "prefs.h"
 #include "sync.h"
 #include "plugins.h"
+#include "i18n.h"
 
 /* this is a hack for now until I clean up the code */
 int *glob_date_label;
@@ -43,15 +44,18 @@ void cb_app_button(GtkWidget *widget, gpointer data)
    return;
 }
 
-#define USAGE_STRING "\n"EPN"-sync [ -v || -h || [-d] [-P] [-b] [-l] [-p] port]\n"\
-" J-Pilot preferences are read to get port, rate, number of backups, etc.\n"\
-" -v = version\n"\
-" -h = help\n"\
-" -d = run in debug mode\n"\
-" -P = do not load plugins.\n"\
-" -b = Do a sync and then a backup, otherwise just do a sync.\n"\
-" -l = loop, otherwise sync once and exit.\n"\
-" -p {port} = Use this port to sync with instead of getting preferences.\n"\
+void fprint_jps_usage_string(FILE *out)
+{
+   fprintf(out, "%s-sync [ -v || -h || [-d] [-P] [-b] [-l] [-p] port]\n", EPN);
+   fprintf(out, "%s", _(" J-Pilot preferences are read to get port, rate, number of backups, etc.\n"));
+   fprintf(out, "%s", _(" -v = version\n"));
+   fprintf(out, "%s", _(" -h = help\n"));
+   fprintf(out, "%s", _(" -d = run in debug mode\n"));
+   fprintf(out, "%s", _(" -P = do not load plugins.\n"));
+   fprintf(out, "%s", _(" -b = Do a sync and then a backup, otherwise just do a sync.\n"));
+   fprintf(out, "%s", _(" -l = loop, otherwise sync once and exit.\n"));
+   fprintf(out, "%s", _(" -p {port} = Use this port to sync with instead of getting preferences.\n"));
+}
 
 static void sig_handler(int sig);
 
@@ -94,7 +98,7 @@ int main(int argc, char *argv[])
       }
       if ( (!strncmp(argv[i], "-h", 2)) || (!strncasecmp(argv[1], "-?", 2))
 	  ) {
-	 printf("%s\n", USAGE_STRING);
+	 fprint_jps_usage_string(stderr);
 	 exit(0);
       }
       if (!strncasecmp(argv[i], "-d", 2)) {

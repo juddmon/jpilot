@@ -84,18 +84,6 @@
 
 #define APP_BUTTON_SIZE 44
 
-#define USAGE_STRING "\n", EPN, "[-v] || [-h] || [-d] || [-a] || [-A] || [-i]\n"\
-" -v displays version and compile options and exits.\n"\
-" -h displays help and exits.\n"\
-" -d displays debug info to stdout.\n"\
-" -p do not load plugins.\n"\
-" -a ignore missed alarms since the last time this program was run.\n"\
-" -A ignore all alarms, past and future.\n"\
-" -i makes jpilot iconify itself upon launch\n"\
-" The PILOTPORT, and PILOTRATE env variables are used to specify\n"\
-" which port to sync on, and at what speed.\n"\
-" If PILOTPORT is not set then it defaults to /dev/pilot.\n");
-
 
 GtkWidget *g_hbox, *g_vbox0;
 GtkWidget *g_hbox2, *g_vbox0_1;
@@ -1791,7 +1779,7 @@ char *xpm_unlocked[] = {
       }
       if ( (!strncasecmp(argv[i], "-h", 2)) || 
 	  (!strncasecmp(argv[i], "-?", 2)) ) {
-	 printf(USAGE_STRING);
+	 fprint_usage_string(stderr);
 	 exit(0);
       }
       if (!strncasecmp(argv[i], "-d", 2)) {

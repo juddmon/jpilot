@@ -63,6 +63,23 @@ unsigned int glob_find_id;
 static int glob_cal_return_code;
 static int glob_cal_mon, glob_cal_day, glob_cal_year;
 
+/*
+ * Returns usgae string that needs to be freed by the caller
+ */
+void fprint_usage_string(FILE *out)
+{
+   fprintf(out, "%s [-v] || [-h] || [-d] || [-a] || [-A] || [-i]\n", EPN);
+   fprintf(out, "%s", _(" -v displays version and compile options and exits.\n"));
+   fprintf(out, "%s", _(" -h displays help and exits.\n"));
+   fprintf(out, "%s", _(" -d displays debug info to stdout.\n"));
+   fprintf(out, "%s", _(" -p do not load plugins.\n"));
+   fprintf(out, "%s", _(" -a ignore missed alarms since the last time this program was run.\n"));
+   fprintf(out, "%s", _(" -A ignore all alarms)); past and future.\n"));
+   fprintf(out, "%s", _(" -i makes jpilot iconify itself upon launch\n"));
+   fprintf(out, "%s", _(" The PILOTPORT, and PILOTRATE env variables are used to specify\n"));
+   fprintf(out, "%s", _(" which port to sync on, and at what speed.\n"));
+   fprintf(out, "%s", _(" If PILOTPORT is not set then it defaults to /dev/pilot.\n"));
+}
 
 void get_compile_options(char *string, int len)
 {
