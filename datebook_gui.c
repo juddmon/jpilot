@@ -3838,7 +3838,7 @@ GtkWidget *create_time_menu(int flags)
    for (i = 0; i < i_stop; i++) {
       if (flags&HOURS_FLAG) {
 	 t.tm_hour=i;
-	 strftime(buf, sizeof(buf), str, &t);
+	 jp_strftime(buf, sizeof(buf), str, &t);
       } else {
 	 snprintf(buf, sizeof(buf), "%02d", i*cb_factor);
       }
