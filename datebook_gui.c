@@ -3179,7 +3179,9 @@ cb_entry_pressed(GtkWidget *w, gpointer data)
    set_begin_end_labels(&begin_date, &end_date, UPDATE_DATE_ENTRIES |
 			UPDATE_DATE_MENUS);
 
-   return TRUE;
+   /* return FALSE to let Gtk know we did not handle the event
+    * this allows Gtk to finish handling it.*/
+    return FALSE;
 }
 
 static gboolean
