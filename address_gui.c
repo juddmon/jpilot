@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.94 2005/01/27 22:22:33 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.95 2005/01/30 02:54:37 judd Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -2797,7 +2797,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	 address_text[i2] = gtk_text_view_new();
 	 gtk_txt_buf_address_text[i2] = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(address_text[i2])));
 	 gtk_text_view_set_editable(GTK_TEXT_VIEW(address_text[i2]), TRUE);
-	 gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(address_text[i2]), GTK_WRAP_WORD);
+	 gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(address_text[i2]), GTK_WRAP_CHAR);
 	 gtk_container_set_border_width(GTK_CONTAINER(address_text[i2]), 1);
 #else
 	 address_text[i2] = gtk_text_new(NULL, NULL);
@@ -2875,7 +2875,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	 address_text[i2] = gtk_text_view_new();
 	 gtk_txt_buf_address_text[i2] = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(address_text[i2])));
 	 gtk_text_view_set_editable(GTK_TEXT_VIEW(address_text[i2]), TRUE);
-	 gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(address_text[i2]), GTK_WRAP_WORD);
+	 gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(address_text[i2]), GTK_WRAP_CHAR);
 	 gtk_container_set_border_width(GTK_CONTAINER(address_text[i2]), 1);
 #else
 	 address_text[i2] = gtk_text_new(NULL, NULL);
@@ -2965,7 +2965,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_txt_buf_text = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)));
    gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(text), FALSE);
    gtk_text_view_set_editable(GTK_TEXT_VIEW(text), FALSE);
-   gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text), GTK_WRAP_WORD);
+   gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text), GTK_WRAP_CHAR);
 
    scrolled_window = gtk_scrolled_window_new (NULL, NULL);
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
