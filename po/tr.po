@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: jpilot 0.99.3a\n"
-"POT-Creation-Date: 2002-12-27 18:19-0500\n"
+"POT-Creation-Date: 2003-01-09 22:11-0500\n"
 "PO-Revision-Date: 2002-10-29 19:51GMT\n"
 "Last-Translator: Eyüp Hakan Duran <hakan_duran@hotmail.com>\n"
 "Language-Team: Turkish <gnu-tr-u12a@lists.sourceforge.net>\n"
@@ -1531,7 +1531,7 @@ msgid "Manana support"
 msgstr "/Eklentiler"
 
 #: utils.c:132
-msgid "NLS support (foriegn languages)"
+msgid "NLS support (foreign languages)"
 msgstr ""
 
 #: utils.c:138

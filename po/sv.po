@@ -9,7 +9,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: jpilot 0.99.2\n"
-"POT-Creation-Date: 2002-12-27 18:19-0500\n"
+"POT-Creation-Date: 2003-01-09 22:11-0500\n"
 "PO-Revision-Date: 2002-10-04 17:01+0100\n"
 "Last-Translator: Johan Hilding <cooljon@telia.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -1548,7 +1548,7 @@ msgid "Manana support"
 msgstr "/Insticksmoduler"
 
 #: utils.c:132
-msgid "NLS support (foriegn languages)"
+msgid "NLS support (foreign languages)"
 msgstr ""
 
 #: utils.c:138

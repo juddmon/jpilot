@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: jpilot-1.99pre\n"
-"POT-Creation-Date: 2002-12-27 18:19-0500\n"
+"POT-Creation-Date: 2003-01-09 22:11-0500\n"
 "PO-Revision-Date: 2001-02-06 09:10+0200\n"
 "Last-Translator: Jiri Rubes <jr@slad.cz>\n"
 "Language-Team: CS <cs@li.org>\n"
@@ -2899,7 +2899,7 @@ msgid "Manana support"
 msgstr "/Moduly"
 
 #: utils.c:132
-msgid "NLS support (foriegn languages)"
+msgid "NLS support (foreign languages)"
 msgstr ""
 
 # jpilot.c:846 jpilot.c:915

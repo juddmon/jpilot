@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: jpilot 0.99.4\n"
-"POT-Creation-Date: 2002-12-28 13:21+0100\n"
+"POT-Creation-Date: 2003-01-09 22:11-0500\n"
 "PO-Revision-Date: 2002-12-28 13:47+0100\n"
 "Last-Translator: Regis Rampnoux <regisr@regix.com>\n"
 "Language-Team:  French <traduc@traduc.org>\n"
@@ -19,9 +19,9 @@ msgstr ""
 msgid "error"
 msgstr "erreur"
 
-#: address.c:386 address_gui.c:1459 datebook.c:703 memo.c:217 memo_gui.c:866
-#: todo.c:365 todo.c:367 todo.c:370 todo_gui.c:1159 Expense/expense.c:858
-#: Expense/expense.c:1771
+#: Expense/expense.c:858 Expense/expense.c:1771 address.c:386
+#: address_gui.c:1459 datebook.c:703 memo.c:217 memo_gui.c:866 todo.c:365
+#: todo.c:367 todo.c:370 todo_gui.c:1159
 #, c-format
 msgid "Error reading %s\n"
 msgstr "Erreur en lecture %s\n"
@@ -35,16 +35,16 @@ msgstr "Ne peut pas ouvrir %s\n"
 msgid "File doesn't appear to be address.dat format\n"
 msgstr "Le fichier n'est pas du type carnet d'adresses\n"
 
-#: address_gui.c:488 datebook_gui.c:539 memo_gui.c:373 todo_gui.c:514
-#: Expense/expense.c:432 Expense/expense.c:1104
+#: Expense/expense.c:432 Expense/expense.c:1104 address_gui.c:488
+#: datebook_gui.c:539 memo_gui.c:373 todo_gui.c:514
 msgid "Unfiled"
 msgstr "Non renseigné"
 
 #. Buttons
-#: address_gui.c:627 alarms.c:228 datebook_gui.c:626 datebook_gui.c:1101
-#: export_gui.c:330 jpilot.c:355 jpilot.c:402 jpilot.c:470 jpilot.c:514
-#: jpilot.c:945 memo_gui.c:463 password.c:368 restore_gui.c:218 todo_gui.c:604
-#: utils.c:1049 KeyRing/keyring.c:1165
+#: KeyRing/keyring.c:1165 address_gui.c:627 alarms.c:228 datebook_gui.c:626
+#: datebook_gui.c:1101 export_gui.c:330 jpilot.c:355 jpilot.c:402 jpilot.c:470
+#: jpilot.c:514 jpilot.c:945 memo_gui.c:463 password.c:368 restore_gui.c:218
+#: todo_gui.c:604 utils.c:1049
 msgid "OK"
 msgstr "OK"
 
@@ -90,8 +90,8 @@ msgid "Name/Company"
 msgstr "Nom/Société"
 
 #. Category Menu
-#: address_gui.c:1534 Expense/expense.c:1300 Expense/expense.c:1379
-#: KeyRing/keyring.c:1355 KeyRing/keyring.c:1431
+#: Expense/expense.c:1300 Expense/expense.c:1379 KeyRing/keyring.c:1355
+#: KeyRing/keyring.c:1431 address_gui.c:1534
 msgid "Category: "
 msgstr "Catégorie: "
 
@@ -113,7 +113,7 @@ msgid "%d of %d records"
 msgstr "%d de %d enregistrements"
 
 #. Edit category button
-#: address_gui.c:2327 memo_gui.c:1292 todo_gui.c:1673 Expense/expense.c:1307
+#: Expense/expense.c:1307 address_gui.c:2327 memo_gui.c:1292 todo_gui.c:1673
 msgid "Edit Categories"
 msgstr "Edition Catégories"
 
@@ -126,32 +126,32 @@ msgid "Quick Find"
 msgstr "Recherche rapide"
 
 #. Delete Button
-#: address_gui.c:2393 datebook_gui.c:3798 memo_gui.c:1343 todo_gui.c:1743
-#: Expense/expense.c:1341 KeyRing/keyring.c:1390
+#: Expense/expense.c:1341 KeyRing/keyring.c:1390 address_gui.c:2393
+#: datebook_gui.c:3798 memo_gui.c:1343 todo_gui.c:1743
 msgid "Delete"
 msgstr "Effacer"
 
 #. Create "Copy" button
-#: address_gui.c:2400 datebook_gui.c:3805 memo_gui.c:1349 todo_gui.c:1749
-#: Expense/expense.c:1347 KeyRing/keyring.c:1396
+#: Expense/expense.c:1347 KeyRing/keyring.c:1396 address_gui.c:2400
+#: datebook_gui.c:3805 memo_gui.c:1349 todo_gui.c:1749
 msgid "Copy"
 msgstr "Copier"
 
 #. Create "New" button
-#: address_gui.c:2407 datebook_gui.c:3812 memo_gui.c:1355 todo_gui.c:1755
-#: Expense/expense.c:1353 KeyRing/keyring.c:1402
+#: Expense/expense.c:1353 KeyRing/keyring.c:1402 address_gui.c:2407
+#: datebook_gui.c:3812 memo_gui.c:1355 todo_gui.c:1755
 msgid "New Record"
 msgstr "Nouveau"
 
 #. Create "Add Record" button
-#: address_gui.c:2413 datebook_gui.c:3819 memo_gui.c:1361 todo_gui.c:1761
-#: Expense/expense.c:1359 KeyRing/keyring.c:1408
+#: Expense/expense.c:1359 KeyRing/keyring.c:1408 address_gui.c:2413
+#: datebook_gui.c:3819 memo_gui.c:1361 todo_gui.c:1761
 msgid "Add Record"
 msgstr "Ajouter"
 
 #. Create "apply changes" button
-#: address_gui.c:2422 datebook_gui.c:3828 memo_gui.c:1369 todo_gui.c:1769
-#: Expense/expense.c:1367 KeyRing/keyring.c:1416
+#: Expense/expense.c:1367 KeyRing/keyring.c:1416 address_gui.c:2422
+#: datebook_gui.c:3828 memo_gui.c:1369 todo_gui.c:1769
 msgid "Apply Changes"
 msgstr "Appliquer"
 
@@ -161,7 +161,7 @@ msgid "Private"
 msgstr "Privé"
 
 #. Page 1
-#: address_gui.c:2458 KeyRing/keyring.c:1268
+#: KeyRing/keyring.c:1268 address_gui.c:2458
 msgid "Name"
 msgstr "Nom"
 
@@ -171,7 +171,7 @@ msgid "Address"
 msgstr "Adresse"
 
 #. Page 3
-#: address_gui.c:2474 Expense/expense.c:384 Expense/expense.c:1125
+#: Expense/expense.c:384 Expense/expense.c:1125 address_gui.c:2474
 msgid "Other"
 msgstr "Autre"
 
@@ -277,8 +277,9 @@ msgid "Browse"
 msgstr "Parcourir"
 
 #. Create a "Quit" button
-#: datebook_gui.c:1106 datebook_gui.c:1567 export_gui.c:335 password.c:374
-#: print_gui.c:336 restore_gui.c:223 utils.c:1059 KeyRing/keyring.c:1171
+#: KeyRing/keyring.c:1171 datebook_gui.c:1106 datebook_gui.c:1567
+#: export_gui.c:335 password.c:374 print_gui.c:336 restore_gui.c:223
+#: utils.c:1059
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -1514,7 +1515,8 @@ msgid "Manana support"
 msgstr "Support Manana"
 
 #: utils.c:132
-msgid "NLS support (foriegn languages)"
+#, fuzzy
+msgid "NLS support (foreign languages)"
 msgstr "Support NLS (autres langages)"
 
 #: utils.c:138
@@ -1522,7 +1524,6 @@ msgid "GTK2 support"
 msgstr "support GTK2"
 
 #: utils.c:182
-#, c-format
 msgid "Today is %A, %x %X"
 msgstr "Aujourd'hui %A, %x %X"
 

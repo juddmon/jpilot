@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: jpilot 0.99.1pre 07Feb01\n"
-"POT-Creation-Date: 2002-12-27 18:19-0500\n"
+"POT-Creation-Date: 2003-01-09 22:11-0500\n"
 "PO-Revision-Date: 2001-04-06 23:32+0900\n"
 "Last-Translator: Hiroshi Miura <miura@da-cha.org>\n"
 "Language-Team: Japanese Palm-UNIX ML <palm-unix-j@list.daionet.gr.jp>\n"
@@ -1537,7 +1537,7 @@ msgid "Manana support"
 msgstr "/プラグイン"
 
 #: utils.c:132
-msgid "NLS support (foriegn languages)"
+msgid "NLS support (foreign languages)"
 msgstr ""
 
 #: utils.c:138

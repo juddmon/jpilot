@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: JPilot\n"
-"POT-Creation-Date: 2002-12-27 18:19-0500\n"
+"POT-Creation-Date: 2003-01-09 22:11-0500\n"
 "PO-Revision-Date: 2001-08-16 14:53GMT+1\n"
 "Last-Translator: Ragnar Wisløff <ragnar@wisloff.no>\n"
 "Language-Team: Norsk bokmål <no@li.org>\n"
@@ -1539,7 +1539,7 @@ msgid "Manana support"
 msgstr "/Tillegg"
 
 #: utils.c:132
-msgid "NLS support (foriegn languages)"
+msgid "NLS support (foreign languages)"
 msgstr ""
 
 #: utils.c:138
