@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.113 2005/02/20 20:08:48 rousseau Exp $ */
+/* $Id: jpilot.c,v 1.114 2005/03/19 15:35:52 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -2058,7 +2058,7 @@ char * xpm_backup[] = {
    /*log all output to a file */
    glob_log_file_mask = JP_LOG_INFO | JP_LOG_WARN | JP_LOG_FATAL | JP_LOG_STDOUT;
    glob_log_stdout_mask = JP_LOG_INFO | JP_LOG_WARN | JP_LOG_FATAL | JP_LOG_STDOUT;
-   glob_log_gui_mask = JP_LOG_FATAL | JP_LOG_WARN | JP_LOG_GUI;
+   glob_log_gui_mask = JP_LOG_FATAL | JP_LOG_WARN | JP_LOG_GUI | JP_LOG_STDOUT;
    glob_find_id = 0;
 
    /* enable internationalization(i18n) before printing any output */
