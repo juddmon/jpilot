@@ -117,7 +117,7 @@
 #define CHAR_SET_TRADITIONAL_CHINESE  5 /* Taiwan Chinese */
 #define CHAR_SET_KOREAN   6 /* Korean Hangul */
 #define CHAR_SET_1250UTF  7 /* Czech, Polish (Unix: UTF-8) */
-#define CHAR_SET_LATINUTF 8 /* JPA : Latin European (Unix: UTF-8) */
+#define CHAR_SET_1252UTF  8 /* JPA : Latin European (Unix: UTF-8) */
 #define CHAR_SET_1253UTF  9 /* Modern Greek (Palm: Windows 1253, Host: UTF-8) */
 #define NUM_CHAR_SETS    10
 
