@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.37 2004/11/22 00:52:42 rikster5 Exp $ */
+/* $Id: prefs_gui.c,v 1.38 2004/11/24 20:42:26 rousseau Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -858,7 +858,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 		      GINT_TO_POINTER(PREF_SYNC_MANANA));
 #endif
    get_pref(PREF_CHAR_SET, &ivalue, &cstr);
-   if (ivalue == CHAR_SET_JAPANESE) {
+   if (ivalue == CHAR_SET_JAPANESE || ivalue == CHAR_SET_SJIS_UTF) {
       /*Show use Japanese Kana extention check box */
       checkbutton = gtk_check_button_new_with_label(_("Use J-OS (Not Japanese PalmOS:WorkPad/CLIE)"));
       gtk_box_pack_start(GTK_BOX(vbox_settings), checkbutton, FALSE, FALSE, 0);

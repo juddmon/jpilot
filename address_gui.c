@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.79 2004/11/22 00:52:41 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.80 2004/11/24 20:42:26 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -285,7 +285,7 @@ static void connect_changed_signals(int con_or_dis)
 			       GTK_SIGNAL_FUNC(cb_record_changed), NULL);
 	 }
       }
-      if (!use_jos && (char_set == CHAR_SET_JAPANESE)) {
+      if (!use_jos && (char_set == CHAR_SET_JAPANESE || char_set == CHAR_SET_SJIS_UTF)) {
 	 for (i=0; i<(NUM_ADDRESS_ENTRIES+NUM_ADDRESS_EXT_ENTRIES); i++) {
 #ifdef ENABLE_GTK2
 	    g_signal_connect(gtk_txt_buf_address_text[i], "changed",
@@ -333,7 +333,7 @@ static void connect_changed_signals(int con_or_dis)
 					  GTK_SIGNAL_FUNC(cb_record_changed), NULL);     
 	 }
       }
-      if (!use_jos && (char_set == CHAR_SET_JAPANESE)) {
+      if (!use_jos && (char_set == CHAR_SET_JAPANESE || char_set == CHAR_SET_SJIS_UTF)) {
 	 for (i=0; i<(NUM_ADDRESS_ENTRIES+NUM_ADDRESS_EXT_ENTRIES); i++) {
 #ifdef ENABLE_GTK2
             g_signal_handlers_disconnect_by_func(gtk_txt_buf_address_text[i],
@@ -769,7 +769,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 get_pref(PREF_USE_JOS, &use_jos, NULL);
 	 if (i==0) {
 	    fprintf(out, "CSV address: Category, Private, ");
-	    if (!use_jos && (char_set == CHAR_SET_JAPANESE)) {
+	    if (!use_jos && (char_set == CHAR_SET_JAPANESE || char_set == CHAR_SET_SJIS_UTF)) {
 	       for (n=0; (field_names_ja[n]) 
 		    && (n < NUM_ADDRESS_ENTRIES + (NUM_PHONE_ENTRIES * 2) + 1 
 			+ NUM_ADDRESS_EXT_ENTRIES); n++) {
@@ -794,7 +794,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 			address_app_info.category.name[maddr->attrib & 0x0F]);
 	 fprintf(out, "\"%s\",", csv_text);
 	 fprintf(out, "\"%s\",", (maddr->attrib & dlpRecAttrSecret) ? "1":"0");
-	 if (!use_jos && (char_set == CHAR_SET_JAPANESE)) {
+	 if (!use_jos && (char_set == CHAR_SET_JAPANESE || char_set == CHAR_SET_SJIS_UTF)) {
 	    char *tmp_p;
 	    for (n = 0; n < NUM_ADDRESS_ENTRIES + NUM_ADDRESS_EXT_ENTRIES; n++) {
 	       csv_text[0] = '\0';
@@ -1321,7 +1321,7 @@ static void cb_add_new_record(GtkWidget *widget,
       }
       get_pref(PREF_CHAR_SET, &char_set, NULL);
       get_pref(PREF_USE_JOS, &use_jos, NULL);
-      if (!use_jos && (char_set == CHAR_SET_JAPANESE)) {
+      if (!use_jos && (char_set == CHAR_SET_JAPANESE || char_set == CHAR_SET_SJIS_UTF)) {
 	 i=0;
 	 while (i<NUM_ADDRESS_EXT_ENTRIES) {
 #ifdef ENABLE_GTK2
@@ -1417,7 +1417,7 @@ void addr_clear_details()
    /*Clear all the address entry texts */
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    get_pref(PREF_USE_JOS, &use_jos, NULL);
-   if (!use_jos && (char_set == CHAR_SET_JAPANESE)) {
+   if (!use_jos && (char_set == CHAR_SET_JAPANESE || char_set == CHAR_SET_SJIS_UTF)) {
       for (i=0; i<(NUM_ADDRESS_ENTRIES+NUM_ADDRESS_EXT_ENTRIES); i++) {
 #ifdef ENABLE_GTK2
 	 gtk_text_buffer_set_text(GTK_TEXT_BUFFER(gtk_txt_buf_address_text[i]), "", -1);
@@ -1758,7 +1758,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    get_pref(PREF_USE_JOS, &use_jos, NULL);
-   if (!use_jos && (char_set == CHAR_SET_JAPANESE)) {
+   if (!use_jos && (char_set == CHAR_SET_JAPANESE || char_set == CHAR_SET_SJIS_UTF)) {
       for (i=0; i<(NUM_ADDRESS_ENTRIES+NUM_ADDRESS_EXT_ENTRIES); i++) {
 	 i2 = order_ja[i];
 	 if (i2<NUM_ADDRESS_ENTRIES) {
@@ -1844,7 +1844,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    get_pref(PREF_USE_JOS, &use_jos, NULL);
-   if (!use_jos && (char_set == CHAR_SET_JAPANESE)) {
+   if (!use_jos && (char_set == CHAR_SET_JAPANESE || char_set == CHAR_SET_SJIS_UTF)) {
       for (i=0; i<(NUM_ADDRESS_ENTRIES+NUM_ADDRESS_EXT_ENTRIES); i++) {
 #ifdef ENABLE_GTK2
 	 gtk_text_buffer_set_text(GTK_TEXT_BUFFER(gtk_txt_buf_address_text[i]), "", -1);
@@ -2045,7 +2045,7 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 	 continue;
       }
 
-      if (!use_jos && (char_set == CHAR_SET_JAPANESE)) {
+      if (!use_jos && (char_set == CHAR_SET_JAPANESE || char_set == CHAR_SET_SJIS_UTF)) {
 	 str[0]='\0';
 	 if (temp_al->maddr.addr.entry[show1] || temp_al->maddr.addr.entry[show2]) {
 	    if (temp_al->maddr.addr.entry[show1] && temp_al->maddr.addr.entry[show2]) {
@@ -2390,7 +2390,7 @@ static gboolean
 	 /* Find the next/prev widget */
 	 get_pref(PREF_CHAR_SET, &char_set, NULL);
 	 get_pref(PREF_USE_JOS, &use_jos, NULL);
-	 if (!use_jos && (char_set == CHAR_SET_JAPANESE)) {
+	 if (!use_jos && (char_set == CHAR_SET_JAPANESE || char_set == CHAR_SET_SJIS_UTF)) {
 	    for (i=0; i<(NUM_ADDRESS_ENTRIES+NUM_ADDRESS_EXT_ENTRIES); i++) {
 	       if (address_text[kana_order[i]] == widget) {
 		  break;
@@ -2411,7 +2411,7 @@ static gboolean
 	    if (i>=NUM_ADDRESS_ENTRIES)  i=0;
 	    if (i<0)  i=NUM_ADDRESS_ENTRIES-1;
 	 }
-	 if (!use_jos && (char_set == CHAR_SET_JAPANESE)) {
+	 if (!use_jos && (char_set == CHAR_SET_JAPANESE || char_set == CHAR_SET_SJIS_UTF)) {
 	    gtk_notebook_set_page(GTK_NOTEBOOK(notebook), kana_page[i]);
 	    gtk_widget_grab_focus(GTK_WIDGET(address_text[kana_order[i]]));
 	 } else {
@@ -2734,7 +2734,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    get_pref(PREF_USE_JOS, &use_jos, NULL);
-   if (!use_jos && (char_set == CHAR_SET_JAPANESE)) {
+   if (!use_jos && (char_set == CHAR_SET_JAPANESE || char_set == CHAR_SET_SJIS_UTF)) {
       label = NULL;
       for (i=0; i<(NUM_ADDRESS_ENTRIES+NUM_ADDRESS_EXT_ENTRIES); i++) {
 	 i2=kana_order[i];

@@ -1,4 +1,4 @@
-/* $Id: address.c,v 1.31 2004/11/22 00:52:41 rikster5 Exp $ */
+/* $Id: address.c,v 1.32 2004/11/24 20:42:26 rousseau Exp $ */
 
 /*******************************************************************************
  * address.c
@@ -270,7 +270,7 @@ int address_sort(AddressList **al, int sort_order)
       glob_sort_rule = !(ai.sortByCompany & SORT_BY_COMPANY);
    }
    get_pref(PREF_CHAR_SET, &char_set, NULL);
-   if (char_set == CHAR_SET_JAPANESE) {
+   if (char_set == CHAR_SET_JAPANESE || char_set == CHAR_SET_SJIS_UTF) {
       glob_sort_rule = glob_sort_rule | SORT_JAPANESE;
    } else {
       glob_sort_rule = glob_sort_rule & (SORT_JAPANESE-1);
