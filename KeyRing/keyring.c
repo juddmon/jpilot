@@ -968,7 +968,8 @@ static void make_menus()
    jp_get_app_info("Keys-Gtkr", &buf, &buf_size);
 
    /* This call should work, but the appinfo is too small, so we do it */
-   /* unpack_CategoryAppInfo(&ai, buf, buf_size); */
+   /* Keyring is not using a legal category app info structure */
+   //unpack_CategoryAppInfo(&ai, buf, buf_size+4);
    
    /* I'm going to be lazy and only get the names, since thats all I use */
    for (i=0; i<16; i++) {
