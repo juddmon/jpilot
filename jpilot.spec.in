@@ -19,6 +19,11 @@ under Linux and Unix using X-Windows and GTK+.  It is similar in
 functionality to the one that 3Com distributes and has many features
 not found in the 3Com desktop.
 
+%define _prefix %{prefix}
+%define _mandir %{prefix}/man
+%define _infodir %{prefix}/share/info
+%define _datadir %{prefix}/share
+
 %prep
 
 %setup -q

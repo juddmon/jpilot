@@ -5,7 +5,7 @@ AC_INIT(jpilot.c)
 AC_CANONICAL_HOST
 
 dnl Every other copy of the package version number gets its value from here
-AM_INIT_AUTOMAKE(jpilot, 0.99.5)
+AM_INIT_AUTOMAKE(jpilot, 0.99.6)
 
 dnl create a config.h file (Automake will add -DHAVE_CONFIG_H)
 AM_CONFIG_HEADER(config.h)
@@ -353,7 +353,7 @@ AC_ARG_ENABLE(datebk,
    enable_datebk=no;
    AC_MSG_RESULT(Datebk support disabled by configure options),
    enable_datebk=yes;
-   AC_DEFINE(ENABLE_DATEBK, 1, [ DateBk3/4 support ])
+   AC_DEFINE(ENABLE_DATEBK, 1, [ DateBk support ])
    )
 
 AC_ARG_ENABLE(manana,

@@ -534,8 +534,8 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 
 
 #ifdef ENABLE_DATEBK
-   /* Show use DateBk3/4 check box */
-   checkbutton = gtk_check_button_new_with_label(_("Use DateBk3/4 note tags"));
+   /* Show use DateBk check box */
+   checkbutton = gtk_check_button_new_with_label(_("Use DateBk note tags"));
    gtk_box_pack_start(GTK_BOX(vbox_settings), checkbutton, FALSE, FALSE, 0);
    get_pref(PREF_USE_DB3, &ivalue, &cstr);
    gtk_widget_show(checkbutton);
@@ -545,7 +545,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_signal_connect(GTK_OBJECT(checkbutton), 
 		      "clicked", GTK_SIGNAL_FUNC(cb_use_db3), NULL);
 #else
-   label = gtk_label_new(_("DateBk3/4 support disabled in this build"));
+   label = gtk_label_new(_("DateBk support disabled in this build"));
    gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
    gtk_box_pack_start(GTK_BOX(vbox_settings), label, FALSE, FALSE, 0);
 #endif

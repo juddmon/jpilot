@@ -1,4 +1,20 @@
-0.99.5 = 02/21/03
+0.99.6 - 06/30/03
+ Fixed categies incorrectly syncing on first time use
+ Added number of records tooltip to datebook
+ Fixed DST problem in alarms
+ Added a hide not yet due todos button
+ Added Record completion date on todos
+ bug 637 fix couldn't select start/end times in GTK2
+ Added number of records tooltip to datebook
+ Fixed bug 610, record dups when pressing page-up/down keys, and removed
+  home key from going to today
+ Fix DST on import
+ Made install remember its last path
+ Added plugin_pre_sync_pre_connect calls
+ address_gui.c: ldif export crash, fix
+ Many miscellaneous bugs fixes, etc.
+
+0.99.5 - 02/21/03
  Fixed serious bug resulting in overwriting appointments on the palm (Serious bug)
  Restore now restores latest files instead of ones from last backup (Critical bug)
  Added -export-dynamic to Makefile to resolve jp_logf unresolved errors

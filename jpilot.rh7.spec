@@ -1,6 +1,6 @@
 Summary: Jpilot pilot desktop software
 Name: jpilot
-Version: 0.99.5
+Version: 0.99.6
 Release: 1rh7
 Copyright: GPL
 Group: Applications/Productivity

@@ -14,7 +14,7 @@
 
 
 
-# $Id: Makefile,v 1.2 2003/06/05 04:30:59 judd Exp $
+# $Id: Makefile,v 1.3 2003/07/05 18:27:47 judd Exp $
 
 srcdir = .
 top_srcdir = ..
@@ -131,8 +131,8 @@ PACKAGE_STRING =
 PACKAGE_TARNAME = 
 PACKAGE_VERSION = 
 PATH_SEPARATOR = :
-PILOT_FLAGS =  -I/usr/include
-PILOT_LIBS = -L/usr/lib -lpisock
+PILOT_FLAGS =  -I/usr/extra/pilot/include
+PILOT_LIBS = -L/usr/extra/pilot/lib -lpisock
 PKG_CONFIG = 
 POSUB = po
 PROGNAME = 
@@ -142,7 +142,7 @@ SHELL = /bin/sh
 STRIP = strip
 USE_INCLUDED_LIBINTL = no
 USE_NLS = yes
-VERSION = 0.99.5
+VERSION = 0.99.6
 XGETTEXT = /usr/bin/xgettext
 ac_ct_CC = gcc
 ac_ct_RANLIB = ranlib
