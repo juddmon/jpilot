@@ -2343,7 +2343,7 @@ msgstr "PC ID est 0.\n"
 #: utils.c:2439
 #, c-format
 msgid "I generated a new PC ID.  It is %lu\n"
-msgstr "J'ai généré une pouveau PC ID. C'est %lu\n"
+msgstr "J'ai généré une nouveau PC ID. C'est %lu\n"
 
 #: weekview_gui.c:278
 msgid "Weekly View"
