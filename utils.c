@@ -600,6 +600,9 @@ void remove_cr_lfs(char *str)
 void lstrncpy_remove_cr_lfs(char *dest, char *src, int len)
 {
    int i;
+#ifdef ENABLE_GTK2
+   gchar* end;
+#endif
 
    if ((!src) || (!dest)) {
       return;
@@ -619,13 +622,9 @@ void lstrncpy_remove_cr_lfs(char *dest, char *src, int len)
    }
 
 #ifdef ENABLE_GTK2
-   {
-      gchar* end;
-
-      /* truncate the string on an UTF-8 character boundary */
-      if (!g_utf8_validate(dest, -1, (const gchar **)&end))
-	 *end = 0;
-   }
+   /* truncate the string on an UTF-8 character boundary */
+   if (!g_utf8_validate(dest, -1, (const gchar **)&end))
+     *end = 0;
 #endif
 }
 
@@ -3041,4 +3040,3 @@ size_t jp_strftime(char *s, size_t max, const char *format, const struct tm *tm)
 #endif
    return ret;
 }
-
