@@ -1,3 +1,16 @@
+0.99.8-pre8 - 19/02/05 (Ludovic Rousseau)
+ Cut-n-paste using GTK+ Ctrl-C/Ctrl-V now works across all four apps
+ Replace Sync and Backup text buttons by an color icon
+ Add Chinese BIG-5 Palm encoding
+ Update ja, zh_TW translations
+ GTK2 now uses CTRL+Enter consistently to apply changes
+ Add Cancel button with ESC accelerator
+ Added two preferences and code to
+  1) Mark current day in monthview and weekview guis by adding "TODAY"
+     to display
+  2) Display the absolute number of an event which repeats yearly
+     (usefulf or birthdays and anniversaries)
+
 0.99.8-pre7 - 08/01/05 (Ludovic Rousseau)
  Update zh_CN, zh_TW, cs and es translations
  Solve a crash in Japanese mode in address GUI
