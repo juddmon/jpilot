@@ -3552,6 +3552,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    GtkWidget *button;
    GtkWidget *separator;
    GtkWidget *label;
+   GtkWidget *table;
    GtkWidget *vscrollbar;
    GtkWidget *vbox1, *vbox2;
    GtkWidget *hbox2;
@@ -3897,8 +3898,8 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    hbox_temp = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
-   label = gtk_label_new(_("Starts on: "));
-   gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 5);
+   label = gtk_label_new(_("Starts on"));
+   gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 0);
 
    begin_date_button = gtk_button_new_with_label("");
    gtk_box_pack_start(GTK_BOX(hbox_temp), begin_date_button, FALSE, FALSE, 5);
@@ -3906,37 +3907,47 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 		      GTK_SIGNAL_FUNC(cb_cal_dialog),
 		      GINT_TO_POINTER(BEGIN_DATE_BUTTON));
 
-   hbox_temp = gtk_hbox_new(FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 5);
+   table = gtk_table_new(2, 4, FALSE);
+   gtk_table_set_row_spacings(GTK_TABLE(table), 0);
+   gtk_table_set_col_spacings(GTK_TABLE(table), 0);
+   gtk_box_pack_start(GTK_BOX(vbox2), table, FALSE, FALSE, 0);
 
-   label = gtk_label_new(_("Time:"));
-   gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 5);
+   label = gtk_label_new(_("Start Time"));
+   gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(label), 0, 1, 0, 1,
+		    GTK_SHRINK, GTK_SHRINK, 0, 0);
 
    begin_time_entry = gtk_entry_new_with_max_length(7);
-   gtk_box_pack_start(GTK_BOX(hbox_temp), begin_time_entry, FALSE, FALSE, 0);
+   gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(begin_time_entry),
+		    1, 2, 0, 1, GTK_SHRINK, GTK_SHRINK, 0, 0);
 
    /* Menu time choosers */
    option1=create_time_menu(0x40);
-   gtk_box_pack_start(GTK_BOX(hbox_temp), option1, FALSE, FALSE, 0);
+   gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(option1),
+		    2, 3, 0, 1, GTK_SHRINK, GTK_FILL, 0, 0);
 
    option2=create_time_menu(0x00);
-   gtk_box_pack_start(GTK_BOX(hbox_temp), option2, FALSE, FALSE, 0);
+   gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(option2),
+		    3, 4, 0, 1, GTK_SHRINK, GTK_FILL, 0, 0);
 
 
-   label = gtk_label_new("-");
-   gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 5);
+   label = gtk_label_new("End Time");
+   gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(label),
+		    0, 1, 1, 2, GTK_SHRINK, GTK_SHRINK, 0, 0);
 
    end_time_entry = gtk_entry_new_with_max_length(7);
-   gtk_box_pack_start(GTK_BOX(hbox_temp), end_time_entry, FALSE, FALSE, 0);
+   gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(end_time_entry),
+		    1, 2, 1, 2, GTK_SHRINK, GTK_SHRINK, 0, 0);
 
    gtk_widget_set_usize(GTK_WIDGET(begin_time_entry), 70, 0);
    gtk_widget_set_usize(GTK_WIDGET(end_time_entry), 70, 0);
 
    option3=create_time_menu(0x40 | 0x80);
-   gtk_box_pack_start(GTK_BOX(hbox_temp), option3, FALSE, FALSE, 0);
+   gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(option3),
+		    2, 3, 1, 2, GTK_SHRINK, GTK_FILL, 0, 0);
 
    option4=create_time_menu(0x80);
-   gtk_box_pack_start(GTK_BOX(hbox_temp), option4, FALSE, FALSE, 0);
+   gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(option4),
+		    3, 4, 1, 2, GTK_SHRINK, GTK_FILL, 0, 0);
 
    /* End time selection */
 
