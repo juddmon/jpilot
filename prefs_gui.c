@@ -239,10 +239,6 @@ void cb_sync_plugin(GtkWidget *widget,
 
 static gboolean cb_destroy(GtkWidget *widget)
 {
-   const char *entry_text;
-   const char *backups_text;
-   int num_backups;
-
    jp_logf(JP_LOG_DEBUG, "Cleanup\n");
 
    pref_write_rc_file();
