@@ -113,7 +113,7 @@ static void update_due_button(GtkWidget *button, struct tm *t)
 
    if (t) {
       get_pref(PREF_SHORTDATE, &ivalue, &short_date);
-      strftime(str, 250, short_date, t);
+      strftime(str, sizeof(str), short_date, t);
 
       gtk_label_set_text(GTK_LABEL(GTK_BIN(button)->child), str);
    } else {
@@ -328,7 +328,7 @@ static int todo_to_text(struct ToDo *todo, char *text, int len)
       strcpy(due, "Never");
    } else {
       get_pref(PREF_SHORTDATE, NULL, &short_date);
-      strftime(due, 20, short_date, &(todo->due));
+      strftime(due, sizeof(due), short_date, &(todo->due));
    }
    complete=todo->complete ? yes : no;
    description=todo->description ? todo->description : empty;
@@ -337,7 +337,6 @@ static int todo_to_text(struct ToDo *todo, char *text, int len)
    g_snprintf(text, len, "Due: %s\nPriority: %d\nComplete: %s\n\
 Description: %s\nNote: %s\n", due, todo->priority, complete,
 	      description, note);
-   text[len-1]='\0';
    return 0;
 }
 
@@ -376,11 +375,11 @@ int todo_import_callback(GtkWidget *parent_window, const char *file_path, int ty
    if (type==IMPORT_TYPE_CSV) {
       jp_logf(JP_LOG_DEBUG, "Todo import CSV [%s]\n", file_path);
       /* The first line is format, so we don't need it */
-      fgets(text, 1000, in);
+      fgets(text, sizeof(text), in);
       import_all=FALSE;
       while (1) {
 	 /* Read the category field */
-	 ret = read_csv_field(in, text, 65535);
+	 ret = read_csv_field(in, text, sizeof(text));
 	 if (feof(in)) break;
 #ifdef JPILOT_DEBUG
 	 printf("category is [%s]\n", text);
@@ -401,54 +400,54 @@ int todo_import_callback(GtkWidget *parent_window, const char *file_path, int ty
 	 }
 
 	 /* Read the private field */
-	 ret = read_csv_field(in, text, 65535);
+	 ret = read_csv_field(in, text, sizeof(text));
 #ifdef JPILOT_DEBUG
 	 printf("private is [%s]\n", text);
 #endif
 	 sscanf(text, "%d", &priv);
 
 	 /* Read the indefinite field */
-	 ret = read_csv_field(in, text, 65535);
+	 ret = read_csv_field(in, text, sizeof(text));
 #ifdef JPILOT_DEBUG
 	 printf("indefinite is [%s]\n", text);
 #endif
 	 sscanf(text, "%d", &indefinite);
 
 	 /* Read the Due Date field */
-	 ret = read_csv_field(in, text, 65535);
+	 ret = read_csv_field(in, text, sizeof(text));
 #ifdef JPILOT_DEBUG
 	 printf("due date is [%s]\n", text);
 #endif
 	 sscanf(text, "%d %d %d", &year, &month, &day);
 
 	 /* Read the Priority field */
-	 ret = read_csv_field(in, text, 65535);
+	 ret = read_csv_field(in, text, sizeof(text));
 #ifdef JPILOT_DEBUG
 	 printf("priority is [%s]\n", text);
 #endif
 	 sscanf(text, "%d", &priority);
 
 	 /* Read the Completed field */
-	 ret = read_csv_field(in, text, 65535);
+	 ret = read_csv_field(in, text, sizeof(text));
 #ifdef JPILOT_DEBUG
 	 printf("completed is [%s]\n", text);
 #endif
 	 sscanf(text, "%d", &completed);
 
 	 /* Read the Description field */
-	 ret = read_csv_field(in, description, 65535);
+	 ret = read_csv_field(in, description, sizeof(text));
 #ifdef JPILOT_DEBUG
 	 printf("todo description [%s]\n", description);
 #endif
 
 	 /* Read the Note field */
-	 ret = read_csv_field(in, note, 65535);
+	 ret = read_csv_field(in, note, sizeof(text));
 #ifdef JPILOT_DEBUG
 	 printf("todo note [%s]\n", note);
 #endif
 
 	 new_todo.indefinite=indefinite;
-	 bzero(&(new_todo.due), sizeof(new_todo.due));
+	 memset(&(new_todo.due), 0, sizeof(new_todo.due));
 	 new_todo.due.tm_year=year-1900;
 	 new_todo.due.tm_mon=month-1;
 	 new_todo.due.tm_mday=day;
@@ -456,7 +455,7 @@ int todo_import_callback(GtkWidget *parent_window, const char *file_path, int ty
 	 new_todo.description=description;
 	 new_todo.note=note;
 
-	 todo_to_text(&new_todo, text, 65535);
+	 todo_to_text(&new_todo, text, sizeof(text));
 	 if (!import_all) {
 	    ret=import_record_ask(parent_window, pane,
 				  text,
@@ -518,7 +517,7 @@ int todo_import_callback(GtkWidget *parent_window, const char *file_path, int ty
 	 }
 
 	 ret=0;
-	 todo_to_text(&(temp_todolist->mtodo.todo), text, 65535);
+	 todo_to_text(&(temp_todolist->mtodo.todo), text, sizeof(text));
 	 if (!import_all) {
 	    ret=import_record_ask(parent_window, pane,
 				  text,
@@ -600,25 +599,25 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
    /* this stuff is for ical only. */
    /* todo: create a pre-export switch */
    get_pref(PREF_USER, &userid, &svalue);
-   strncpy(text, svalue, 127);
-   text[127]='\0';
+   strncpy(text, svalue, sizeof(text));
+   text[sizeof(text)-1]='\0';
    str_to_ical_str(username, sizeof(username), text);
    get_pref(PREF_USER_ID, &userid, &svalue);
-   gethostname(text, 127);
-   text[127]='\0';
+   gethostname(text, sizeof(text));
+   text[sizeof(text)-1]='\0';
    str_to_ical_str(hostname, sizeof(hostname), text);
 
    list=GTK_CLIST(clist)->selection;
 
    if (!stat(filename, &statb)) {
       if (S_ISDIR(statb.st_mode)) {
-	 g_snprintf(text, 1024, _("%s is a directory"), filename);
+	 g_snprintf(text, sizeof(text), _("%s is a directory"), filename);
 	 dialog_generic(GTK_WINDOW(export_window),
 			0, 0, _("Error Opening File"),
 			"Directory", text, 1, button_text);
 	 return;
       }
-      g_snprintf(text, 1024, _("Do you want to overwrite file %s?"), filename);
+      g_snprintf(text, sizeof(text), _("Do you want to overwrite file %s?"), filename);
       r = dialog_generic(GTK_WINDOW(export_window),
 			 0, 0, _("Overwrite File?"),
 			 _("Overwrite File"), text, 2, button_overwrite_text);
@@ -629,7 +628,7 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 
    out = fopen(filename, "w");
    if (!out) {
-      g_snprintf(text, 1024, "Error Opening File: %s", filename);
+      g_snprintf(text, sizeof(text), "Error Opening File: %s", filename);
       dialog_generic(GTK_WINDOW(export_window),
 		     0, 0, _("Error Opening File"),
 		     "Filename", text, 1, button_text);
@@ -692,10 +691,9 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 get_pref_time_no_secs(pref_time);
 	 time(&ltime);
 	 now = localtime(&ltime);
-	 strftime(str1, 50, short_date, now);
-	 strftime(str2, 50, pref_time, now);
-	 g_snprintf(text, 100, "%s %s", str1, str2);
-	 text[100]='\0';
+	 strftime(str1, sizeof(str1), short_date, now);
+	 strftime(str2, sizeof(str2), pref_time, now);
+	 g_snprintf(text, sizeof(text), "%s %s", str1, str2);
 
 	 /* Todo Should I translate these? */
 	 fprintf(out, "ToDo: exported from %s on %s\n", PN, text);
@@ -705,7 +703,7 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 if (mtodo->todo.indefinite) {
 	    fprintf(out, "Due Date: Indefinite\n");
 	 } else {
-	    strftime(text, 20, "%Y %02m %02d", &(mtodo->todo.due));
+	    strftime(text, sizeof(text), "%Y %02m %02d", &(mtodo->todo.due));
 	    fprintf(out, "Due Date: %s\n", text);
 	 }
 	 fprintf(out, "Priority: %d\n", mtodo->todo.priority);
@@ -740,8 +738,7 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 str_to_ical_str(text, sizeof(text), 
 			 todo_app_info.category.name[mtodo->attrib & 0x0F]);
 	 fprintf(out, "CATEGORIES:%s\n", text);
-	 strncpy(str1, mtodo->todo.description, 50);
-	 str1[50] = '\0';
+	 g_snprintf(str1, sizeof(str1), "%s", mtodo->todo.description);
 	 if ((p = strchr(str1, '\n'))) {
 	    *p = '\0';
 	 }
@@ -1139,7 +1136,7 @@ static void clear_mytodos(MyToDo *mtodo)
 static void cb_edit_cats(GtkWidget *widget, gpointer data)
 {
    struct ToDoAppInfo ai;
-   char full_name[256];
+   char full_name[FILENAME_MAX];
    unsigned char buffer[65536];
    int num, r;
    int size;
@@ -1148,10 +1145,10 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
 
    jp_logf(JP_LOG_DEBUG, "cb_edit_cats\n");
 
-   get_home_file_name("ToDoDB.pdb", full_name, 250);
+   get_home_file_name("ToDoDB.pdb", full_name, sizeof(full_name));
 
    buf=NULL;
-   bzero(&ai, sizeof(ai));
+   memset(&ai, 0, sizeof(ai));
 
    pf = pi_file_open(full_name);
    r = pi_file_get_app_info(pf, &buf, &size);
@@ -1166,7 +1163,7 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
 
    edit_cats(widget, "ToDoDB", &(ai.category));
 
-   size = pack_ToDoAppInfo(&ai, buffer, 65535);
+   size = pack_ToDoAppInfo(&ai, buffer, sizeof(buffer));
 
    pdb_file_write_app_block("ToDoDB", buffer, size);
 
@@ -1423,7 +1420,7 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       if (!temp_todo->mtodo.todo.indefinite) {
 	  get_pref(PREF_SHORTDATE, &ivalue, &svalue);
 	  get_pref_possibility(PREF_SHORTDATE,ivalue,str);
-	  strftime(str, 50, svalue, &(temp_todo->mtodo.todo.due));
+	  strftime(str, sizeof(str), svalue, &(temp_todo->mtodo.todo.due));
       }
       else {
 	  sprintf(str, _("No date"));

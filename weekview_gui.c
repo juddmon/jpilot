@@ -194,9 +194,8 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
    }
 
    for (i=0; i<8; i++, add_days_to_date(&date, 1)) {
-      strftime(short_date, 30, svalue, &date);
-      g_snprintf(str, 80, "%s %s\n", _(days[(i + fdow)%7]), short_date);
-      str[80]='\0';
+      strftime(short_date, sizeof(short_date), svalue, &date);
+      g_snprintf(str, sizeof(str), "%s %s\n", _(days[(i + fdow)%7]), short_date);
       gtk_text_insert(GTK_TEXT(glob_week_texts[i]), NULL, NULL, &color, str, -1);
    }
 
@@ -226,7 +225,7 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
 	       desc[0]='\0';
 	    } else {
 	       get_pref_time_no_secs(datef);
-	       strftime(desc, 20, datef, &(temp_al->ma.a.begin));
+	       strftime(desc, sizeof(desc), datef, &(temp_al->ma.a.begin));
 	    }
 	    strcat(desc, " ");
 	    if (temp_al->ma.a.description) {
@@ -269,8 +268,7 @@ void weekview_gui(struct tm *date_in)
    window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
    gtk_window_set_default_size(GTK_WINDOW(window), 800, 600);
    gtk_container_set_border_width(GTK_CONTAINER(window), 10);
-   g_snprintf(title, 200, "%s %s", PN, _("Weekly View"));
-   title[199]='\0';
+   g_snprintf(title, sizeof(title), "%s %s", PN, _("Weekly View"));
    gtk_window_set_title(GTK_WINDOW(window), title);
 
    gtk_signal_connect(GTK_OBJECT(window), "destroy",

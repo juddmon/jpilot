@@ -212,13 +212,13 @@ int datebook_to_text(struct Appointment *a, char *text, int len)
    get_pref(PREF_TIME, NULL, &pref_time);
 
    /* Event date/time */
-   strftime(str_begin_date, 20, short_date, &(a->begin));
+   strftime(str_begin_date, sizeof(str_begin_date), short_date, &(a->begin));
    if (a->event) {
       sprintf(text_time, "Appointment starts on %s\nTime: Event",
 	      str_begin_date);
    } else {
-      strftime(str_begin_time, 20, pref_time, &(a->begin));
-      strftime(str_end_time, 20, pref_time, &(a->end));
+      strftime(str_begin_time, sizeof(str_begin_time), pref_time, &(a->begin));
+      strftime(str_end_time, sizeof(str_end_time), pref_time, &(a->end));
       str_begin_date[19]='\0';
       str_begin_time[19]='\0';
       str_end_time[19]='\0';
@@ -249,7 +249,7 @@ int datebook_to_text(struct Appointment *a, char *text, int len)
       sprintf(text_end_date, "End Date: Never\n");
    } else {
       strcpy(text_end_date, "End Date: ");
-      strftime(temp, 20, short_date, &(a->repeatEnd));
+      strftime(temp, sizeof(temp), short_date, &(a->repeatEnd));
       strcat(text_end_date, temp);
       strcat(text_end_date, "\n");
    }
@@ -280,7 +280,7 @@ int datebook_to_text(struct Appointment *a, char *text, int len)
       sprintf(text_exceptions, "Number of exceptions: %d", a->exceptions);
       for (i=0; i<a->exceptions; i++) {
 	 strcat(text_exceptions, "\n");
-	 strftime(temp, 20, short_date, &(a->exception[i]));
+	 strftime(temp, sizeof(temp), short_date, &(a->exception[i]));
 	 strcat(text_exceptions, temp);
 	 if (strlen(text_exceptions)>65000) {
 	    strcat(text_exceptions, "\nmore...");
@@ -314,8 +314,6 @@ int datebook_to_text(struct Appointment *a, char *text, int len)
 	      text_repeat_days,
 	      text_exceptions
 	      );
-
-   text[len-1]='\0';
 
    return 0;
 }
@@ -357,7 +355,7 @@ int datebook_import_callback(GtkWidget *parent_window, const char *file_path, in
       fgets(text, 2000, in);
       import_all=FALSE;
       while (1) {
-	 bzero(&new_a, sizeof(struct Appointment));
+	 memset(&new_a, 0, sizeof(new_a));
 	 /* Read the category field */
 	 ret = read_csv_field(in, text, 65535);
 	 if (feof(in)) break;
@@ -406,7 +404,7 @@ int datebook_import_callback(GtkWidget *parent_window, const char *file_path, in
 	 sscanf(text, "%d", &(new_a.event));
 
 	 /* Begin */
-	 bzero(&(new_a.begin), sizeof(new_a.begin));
+	 memset(&(new_a.begin), 0, sizeof(new_a.begin));
 	 ret = read_csv_field(in, text, 65535);
 	 text[65535]='\0';
 	 sscanf(text, "%d %d %d %d:%d", &year, &month, &day, &hour, &minute);
@@ -419,7 +417,7 @@ int datebook_import_callback(GtkWidget *parent_window, const char *file_path, in
 	 mktime(&(new_a.begin));
 
 	 /* End */
-	 bzero(&(new_a.end), sizeof(new_a.end));
+	 memset(&(new_a.end), 0, sizeof(new_a.end));
 	 ret = read_csv_field(in, text, 65535);
 	 text[65535]='\0';
 	 sscanf(text, "%d %d %d %d:%d", &year, &month, &day, &hour, &minute);
@@ -458,7 +456,7 @@ int datebook_import_callback(GtkWidget *parent_window, const char *file_path, in
 	 sscanf(text, "%d", &(new_a.repeatForever));
 
 	 /* Repeat End */
-	 bzero(&(new_a.repeatEnd), sizeof(new_a.repeatEnd));
+	 memset(&(new_a.repeatEnd), 0, sizeof(new_a.repeatEnd));
 	 ret = read_csv_field(in, text, 65535);
 	 text[65535]='\0';
 	 sscanf(text, "%d %d %d", &year, &month, &day);
@@ -673,13 +671,13 @@ void appt_export_ok(int type, const char *filename)
 
    if (!stat(filename, &statb)) {
       if (S_ISDIR(statb.st_mode)) {
-	 g_snprintf(text, 1024, _("%s is a directory"), filename);
+	 g_snprintf(text, sizeof(text), _("%s is a directory"), filename);
 	 dialog_generic(GTK_WINDOW(export_window),
 			0, 0, _("Error Opening File"),
 			"Directory", text, 1, button_text);
 	 return;
       }
-      g_snprintf(text, 1024, _("Do you want to overwrite file %s?"), filename);
+      g_snprintf(text, sizeof(text), _("Do you want to overwrite file %s?"), filename);
       r = dialog_generic(GTK_WINDOW(export_window),
 			 0, 0, _("Overwrite File?"),
 			 _("Overwrite File"), text, 2, button_overwrite_text);
@@ -690,7 +688,7 @@ void appt_export_ok(int type, const char *filename)
 
    out = fopen(filename, "w");
    if (!out) {
-      g_snprintf(text, 1024, "Error Opening File: %s", filename);
+      g_snprintf(text, sizeof(text), "Error Opening File: %s", filename);
       dialog_generic(GTK_WINDOW(export_window),
 		     0, 0, _("Error Opening File"),
 		     "Filename", text, 1, button_text);
@@ -1369,7 +1367,7 @@ void cb_monthview(GtkWidget *widget,
 {
    struct tm date;
 
-   bzero(&date, sizeof(date));
+   memset(&date, 0, sizeof(date));
    date.tm_mon=current_month;
    date.tm_mday=current_day;
    date.tm_year=current_year;
@@ -1452,7 +1450,7 @@ void cb_weekview(GtkWidget *widget,
 {
    struct tm date;
 
-   bzero(&date, sizeof(date));
+   memset(&date, 0, sizeof(date));
    date.tm_mon=current_month;
    date.tm_mday=current_day;
    date.tm_year=current_year;
@@ -1661,7 +1659,7 @@ static void set_begin_end_labels(struct tm *begin, struct tm *end, int flags)
    str[0]='\0';
 
    get_pref(PREF_SHORTDATE, &ivalue, &pref_date);
-   strftime(str, 250, pref_date, begin);
+   strftime(str, sizeof(str), pref_date, begin);
    gtk_label_set_text(GTK_LABEL(GTK_BIN(begin_date_button)->child), str);
 
    if (flags & UPDATE_DATE_ENTRIES) {
@@ -1671,8 +1669,8 @@ static void set_begin_end_labels(struct tm *begin, struct tm *end, int flags)
       } else {
 	 get_pref_time_no_secs(pref_time);
 
-	 strftime(time1_str, 250, pref_time, begin);
-	 strftime(time2_str, 250, pref_time, end);
+	 strftime(time1_str, sizeof(time1_str), pref_time, begin);
+	 strftime(time2_str, sizeof(time2_str), pref_time, end);
 
 	 gtk_entry_set_text(GTK_ENTRY(begin_time_entry), time1_str);
 	 gtk_entry_set_text(GTK_ENTRY(end_time_entry), time2_str);
@@ -1759,7 +1757,7 @@ static void clear_details()
 
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(private_checkbox), FALSE);
 
-   bzero(&today, sizeof(today));
+   memset(&today, 0, sizeof(today));
    today.tm_year = current_year;
    today.tm_mon = current_month;
    today.tm_mday = current_day;
@@ -1806,7 +1804,7 @@ static int get_details(struct Appointment *a, unsigned char *attrib)
    get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
 #endif
 
-   bzero(a, sizeof(*a));
+   memset(a, 0, sizeof(*a));
 
    *attrib = 0;
 
@@ -1932,7 +1930,7 @@ static int get_details(struct Appointment *a, unsigned char *attrib)
 	 } else {
 	    sprintf(datef, "%s %s", svalue1, svalue2);
 	 }
-	 strftime(str, 30, datef, &a->repeatEnd);
+	 strftime(str, sizeof(str), datef, &a->repeatEnd);
 
 	 jp_logf(JP_LOG_DEBUG, "repeat_end time = %s\n",str);
       } else {
@@ -1966,7 +1964,7 @@ static int get_details(struct Appointment *a, unsigned char *attrib)
 	 } else {
 	    sprintf(datef, "%s %s", svalue1, svalue2);
 	 }
-	 strftime(str, 30, datef, &a->repeatEnd);
+	 strftime(str, sizeof(str), datef, &a->repeatEnd);
 
 	 jp_logf(JP_LOG_DEBUG, "repeat_end time = %s\n",str);
       } else {
@@ -2004,7 +2002,7 @@ static int get_details(struct Appointment *a, unsigned char *attrib)
 	    sprintf(datef, "%s %s", svalue1, svalue2);
 	 }
 	 str[0]='\0';
-	 strftime(str, 30, datef, &a->repeatEnd);
+	 strftime(str, sizeof(str), datef, &a->repeatEnd);
 
 	 jp_logf(JP_LOG_DEBUG, "repeat_end time = %s\n",str);
       } else {
@@ -2062,9 +2060,8 @@ static int get_details(struct Appointment *a, unsigned char *attrib)
       jp_logf(JP_LOG_WARN,
 	      _("You cannot have an appointment that repeats every %d %s(s)\n"),
 	      a->repeatFrequency, _(period[page]));
-      g_snprintf(str, 200, _("You cannot have an appointment that repeats every %d %s(s)\n"),
+      g_snprintf(str, sizeof(str), _("You cannot have an appointment that repeats every %d %s(s)\n"),
 		  a->repeatFrequency, _(period[page]));
-      str[199]='\0';
       dialog_generic_ok(notebook, NULL, _("Error"), str);
       a->repeatFrequency = 1;
       return -1;
@@ -2092,7 +2089,7 @@ static void update_endon_button(GtkWidget *button, struct tm *t)
    char str[255];
 
    get_pref(PREF_SHORTDATE, &ivalue, &short_date);
-   strftime(str, 250, short_date, t);
+   strftime(str, sizeof(str), short_date, t);
 
    gtk_label_set_text(GTK_LABEL(GTK_BIN(button)->child), str);
 }
@@ -2121,9 +2118,9 @@ static int dayview_update_clist()
    int num_entries, entries_shown, num, i;
    AppointmentList *temp_al;
    gchar *empty_line[] = { "","","","",""};
-   char a_time[32];
    char begin_time[32];
    char end_time[32];
+   char a_time[sizeof(begin_time)+sizeof(end_time)+1];
    char datef[20];
    GdkPixmap *pixmap_note;
    GdkPixmap *pixmap_alarm;
@@ -2151,7 +2148,7 @@ static int dayview_update_clist()
    get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
 #endif
 
-   bzero(&new_time, sizeof(new_time));
+   memset(&new_time, 0, sizeof(new_time));
    new_time.tm_hour=11;
    new_time.tm_mday=current_day;
    new_time.tm_mon=current_month;
@@ -2215,10 +2212,10 @@ static int dayview_update_clist()
 	 strcpy(a_time, _("No Time"));
       } else {
 	 get_pref_time_no_secs_no_ampm(datef);
-	 strftime(begin_time, 20, datef, &(temp_al->ma.a.begin));
+	 strftime(begin_time, sizeof(begin_time), datef, &(temp_al->ma.a.begin));
 	 get_pref_time_no_secs(datef);
-	 strftime(end_time, 20, datef, &(temp_al->ma.a.end));
-	 sprintf(a_time, "%s-%s", begin_time, end_time);
+	 strftime(end_time, sizeof(end_time), datef, &(temp_al->ma.a.end));
+	 g_snprintf(a_time, sizeof(a_time), "%s-%s", begin_time, end_time);
       }
       gtk_clist_set_text(GTK_CLIST(clist), i, DB_TIME_COLUMN, a_time);
       lstrncpy_remove_cr_lfs(str2, temp_al->ma.a.description, DATEBOOK_MAX_COLUMN_LEN);
@@ -2320,8 +2317,7 @@ static int dayview_update_clist()
      {
 	extern GtkTooltips *glob_tooltips;
 	char str[82];
-	g_snprintf(str, 80, _("%d of %d records"), entries_shown, num_entries);
-	str[80]='\0';
+	g_snprintf(str, sizeof(str), _("%d of %d records"), entries_shown, num_entries);
 	gtk_tooltips_set_tip(glob_tooltips, GTK_CLIST(clist)->column[DB_APPT_COLUMN].button, str, NULL);
      }
 
@@ -2393,7 +2389,7 @@ cb_record_changed(GtkWidget *widget,
 time_t date2seconds(struct tm *date)
 {
    struct tm date2;
-   bzero(&date2, sizeof(date2));
+   memset(&date2, 0, sizeof(date2));
    memcpy(&date2, date, sizeof(date2));
    date2.tm_year=date->tm_year;
    date2.tm_mon=date->tm_mon;
@@ -2950,7 +2946,7 @@ void set_date_labels()
    } else {
       sprintf(datef, "%%a., %s", svalue);
    }
-   strftime(str, 50, datef, &now);
+   strftime(str, sizeof(str), datef, &now);
    gtk_label_set_text(GTK_LABEL(dow_label), str);
 }
 
@@ -3151,8 +3147,8 @@ static void entry_key_pressed(int next_digit, int begin_or_end)
    struct tm t1, t2;
    struct tm *Pt;
 
-   bzero(&t1, sizeof(t1));
-   bzero(&t2, sizeof(t2));
+   memset(&t1, 0, sizeof(t1));
+   memset(&t2, 0, sizeof(t2));
 
    if (begin_or_end) {
       Pt = &end_date;
@@ -3294,7 +3290,7 @@ cb_keyboard(GtkWidget *widget, GdkEventKey *event, gpointer *p)
       }
       set_new_button_to(CLEAR_FLAG);
 
-      bzero(&day, sizeof(day));
+      memset(&day, 0, sizeof(day));
       day.tm_year = current_year;
       day.tm_mon = current_month;
       day.tm_mday = current_day;
@@ -3565,7 +3561,7 @@ GtkWidget *create_time_menu(int flags)
 
    gtk_widget_set_usize(option, 60, 10);
 
-   bzero(&t, sizeof(t));
+   memset(&t, 0, sizeof(t));
 
    /* Hours menu */
    if (flags&0x40) {
@@ -3585,9 +3581,9 @@ GtkWidget *create_time_menu(int flags)
    for (i = 0; i < i_stop; i++) {
       if (flags&0x40) {
 	 t.tm_hour=i;
-	 strftime(buf, 10, str, &t);
+	 strftime(buf, sizeof(buf), str, &t);
       } else {
-	 sprintf(buf, "%02d", i*cb_factor);
+	 snprintf(buf, sizeof(buf), "%02d", i*cb_factor);
       }
       item = gtk_menu_item_new_with_label(buf);
       gtk_signal_connect(GTK_OBJECT(item), "select",

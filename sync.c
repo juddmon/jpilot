@@ -118,14 +118,14 @@ void sig_handler(int sig)
 int sync_lock(int *fd)
 {
    pid_t pid;
-   char lock_file[256];
+   char lock_file[FILENAME_MAX];
    int r;
    char str[12];
 #ifndef USE_FLOCK
    struct flock lock;
 #endif
 
-   get_home_file_name("sync_pid", lock_file, 255);
+   get_home_file_name("sync_pid", lock_file, sizeof(lock_file));
    *fd = open(lock_file, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
    if (*fd<0) {
       jp_logf(JP_LOG_WARN, "open lock file failed\n");
@@ -159,14 +159,14 @@ int sync_lock(int *fd)
 int sync_unlock(int fd)
 {
    pid_t pid;
-   char lock_file[256];
+   char lock_file[FILENAME_MAX];
    int r;
    char str[12];
 #ifndef USE_FLOCK
    struct flock lock;
 #endif
 
-   get_home_file_name("sync_pid", lock_file, 255);
+   get_home_file_name("sync_pid", lock_file, sizeof(lock_file));
 
 #ifndef USE_FLOCK
    lock.l_type = F_UNLCK;
@@ -412,7 +412,7 @@ int jp_sync(struct my_sync_info *sync_info)
    int found=0, fast_sync=0;
    int i;
    int dev_usb;
-   char link[256], dev_str[256], dev_dir[256], *Pc;
+   char link[FILENAME_MAX], dev_str[FILENAME_MAX], dev_dir[FILENAME_MAX], *Pc;
 #ifdef ENABLE_PLUGINS
    GList *plugin_list, *temp_list;
    struct plugin_s *plugin;
@@ -508,12 +508,9 @@ int jp_sync(struct my_sync_info *sync_info)
 
    /* This is for USB, whose device doesn't exist until the cradle is pressed
     * We will give them 5 seconds */
-   dev_str[0]='\0';
    link[0]='\0';
-   strncpy(dev_str, device, 255);
-   strncpy(dev_dir, device, 255);
-   dev_str[255]='0';
-   dev_dir[255]='0';
+   g_snprintf(dev_str, sizeof(dev_str), "%s", device);
+   g_snprintf(dev_dir, sizeof(dev_dir), "%s", device);
    dev_usb=0;
    for (Pc=&dev_dir[strlen(dev_dir)-1]; Pc>dev_dir; Pc--) {
       if (*Pc=='/') *Pc='\0';
@@ -524,7 +521,7 @@ int jp_sync(struct my_sync_info *sync_info)
       *Pc = '\0';
    }
    for (i=10; i>0; i--) {
-      ret = readlink(dev_str, link, 256);
+      ret = readlink(dev_str, link, sizeof(link));
       if (ret>0) {
 	 link[ret]='\0';
       } else {
@@ -545,8 +542,7 @@ int jp_sync(struct my_sync_info *sync_info)
 	    *Pc = '\0';
 	 }
       } else {
-	 g_snprintf(dev_str, 255, "%s/%s", dev_dir, link);
-	 dev_str[255]='\0';
+	 g_snprintf(dev_str, sizeof(dev_str), "%s/%s", dev_dir, link);
       }
       if (strstr(link, "usb") || strstr(link, "USB")) {
 	 dev_usb=1;
@@ -729,7 +725,7 @@ int jp_sync(struct my_sync_info *sync_info)
       U.userID=sync_info->userID;
       U.viewerID=0;
       U.lastSyncPC=0;
-      strncpy(U.username, sync_info->username, 128);
+      strncpy(U.username, sync_info->username, sizeof(U.username));
 
       dlp_WriteUserInfo(sd, &U);
 
@@ -953,7 +949,7 @@ int slow_sync_application(char *DB_name, int sd)
    PC3RecordHeader header;
    char *record;
    int rec_len;
-   char pc_filename[256];
+   char pc_filename[FILENAME_MAX];
    char write_log_message[256];
    char error_log_message_w[256];
    char error_log_message_d[256];
@@ -969,28 +965,27 @@ int slow_sync_application(char *DB_name, int sd)
    }
    get_pref(PREF_CHAR_SET, &char_set, NULL);
 
-   g_snprintf(log_entry, 255, _("Syncing %s\n"), DB_name);
-   log_entry[255]='\0';
+   g_snprintf(log_entry, sizeof(log_entry), _("Syncing %s\n"), DB_name);
    jp_logf(JP_LOG_GUI, log_entry);
-   g_snprintf(pc_filename, 255, "%s.pc3", DB_name);
+   g_snprintf(pc_filename, sizeof(pc_filename), "%s.pc3", DB_name);
    /* This is an attempt to use the proper pronoun most of the time */
    if (strchr("aeiou", tolower(DB_name[0]))) {
-      g_snprintf(write_log_message, 255,
+      g_snprintf(write_log_message, sizeof(write_log_message),
 	      _("Wrote an %s record."), DB_name);
-      g_snprintf(error_log_message_w, 255,
+      g_snprintf(error_log_message_w, sizeof(error_log_message_w),
 	      _("Writing an %s record failed."), DB_name);
-      g_snprintf(error_log_message_d, 255,
+      g_snprintf(error_log_message_d, sizeof(error_log_message_d),
 	      _("Deleting an %s record failed."), DB_name);
-      g_snprintf(delete_log_message, 256,
+      g_snprintf(delete_log_message, sizeof(delete_log_message),
 	      _("Deleted an %s record."), DB_name);
    } else {
-      g_snprintf(write_log_message, 255,
+      g_snprintf(write_log_message, sizeof(write_log_message),
 	      _("Wrote a %s record."), DB_name);
-      g_snprintf(error_log_message_w, 255,
+      g_snprintf(error_log_message_w, sizeof(error_log_message_w),
 	      _("Writing a %s record failed."), DB_name);
-      g_snprintf(error_log_message_d, 255,
+      g_snprintf(error_log_message_d, sizeof(error_log_message_d),
 	      _("Deleting a %s record failed."), DB_name);
-      g_snprintf(delete_log_message, 256,
+      g_snprintf(delete_log_message, sizeof(delete_log_message),
 	      _("Deleted a %s record."), DB_name);
    }
 
@@ -1002,9 +997,8 @@ int slow_sync_application(char *DB_name, int sd)
    /* Open the applications database, store access handle in db */
    ret = dlp_OpenDB(sd, 0, dlpOpenReadWrite, DB_name, &db);
    if (ret < 0) {
-      g_snprintf(log_entry, 255, _("Unable to open %s\n"), DB_name);
-      log_entry[255]='\0';
-      charset_j2p((unsigned char *)log_entry, 255, char_set);
+      g_snprintf(log_entry, sizeof(log_entry), _("Unable to open %s\n"), DB_name);
+      charset_j2p((unsigned char *)log_entry, sizeof(log_entry), char_set);
       dlp_AddSyncLogEntry(sd, log_entry);
       return -1;
    }
@@ -1165,7 +1159,7 @@ int fetch_extra_DBs(int sd, char *palm_dbname[])
 {
 #define MAX_DBNAME 50
    struct pi_file *pi_fp;
-   char full_name[256];
+   char full_name[FILENAME_MAX];
    struct stat statb;
    struct utimbuf times;
    int i;
@@ -1203,7 +1197,7 @@ int fetch_extra_DBs(int sd, char *palm_dbname[])
 
       filename_make_legal(db_copy_name);
 
-      get_home_file_name(db_copy_name, full_name, 255);
+      get_home_file_name(db_copy_name, full_name, sizeof(db_copy_name));
 
       statb.st_mtime = 0;
 
@@ -1273,11 +1267,11 @@ void move_removed_apps(GList *file_list)
 {
    DIR *dir;
    struct dirent *dirent;
-   char full_backup_path[300];
-   char full_remove_path[300];
-   char full_backup_file[300];
-   char full_remove_file[300];
-   char home_dir[256];
+   char full_backup_path[FILENAME_MAX];
+   char full_remove_path[FILENAME_MAX];
+   char full_backup_file[FILENAME_MAX];
+   char full_remove_file[FILENAME_MAX];
+   char home_dir[FILENAME_MAX];
    GList *list, *temp_list;
    int found;
 
@@ -1295,14 +1289,14 @@ void move_removed_apps(GList *file_list)
    }
 #endif
 
-   get_home_file_name("", home_dir, 255);
+   get_home_file_name("", home_dir, sizeof(home_dir));
 
    /* Make sure the removed directory exists */
-   g_snprintf(full_remove_path, 298, "%s/backup_removed", home_dir);
+   g_snprintf(full_remove_path, sizeof(full_remove_path), "%s/backup_removed", home_dir);
    mkdir(full_remove_path, 0700);
 
 
-   g_snprintf(full_backup_path, 298, "%s/backup/", home_dir);
+   g_snprintf(full_backup_path, sizeof(full_backup_path), "%s/backup/", home_dir);
    jp_logf(JP_LOG_DEBUG, "opening [%s]\n", full_backup_path);
    dir = opendir(full_backup_path);
    if (dir) {
@@ -1320,8 +1314,8 @@ void move_removed_apps(GList *file_list)
 	    }
 	 }
 	 if (!found) {
-	    g_snprintf(full_backup_file, 298, "%s/backup/%s", home_dir, dirent->d_name);
-	    g_snprintf(full_remove_file, 298, "%s/backup_removed/%s", home_dir, dirent->d_name);
+	    g_snprintf(full_backup_file, sizeof(full_backup_file), "%s/backup/%s", home_dir, dirent->d_name);
+	    g_snprintf(full_remove_file, sizeof(full_remove_file), "%s/backup_removed/%s", home_dir, dirent->d_name);
 	    jp_logf(JP_LOG_DEBUG, "[%s] not found\n", dirent->d_name);
 	    jp_logf(JP_LOG_DEBUG, "  moving [%s]\n  to [%s]\n", full_backup_file, full_remove_file);
 	    rename(full_backup_file, full_remove_file);
@@ -1342,8 +1336,8 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
 {
 #define MAX_DBNAME 50
    struct pi_file *pi_fp;
-   char full_name[256];
-   char full_backup_name[300];
+   char full_name[FILENAME_MAX];
+   char full_backup_name[FILENAME_MAX];
    char creator[5];
    struct stat statb;
    struct utimbuf times;
@@ -1518,8 +1512,8 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
 	  * having 2 different versions around */
 	 strcpy(db_copy_name, "Graffiti ShortCuts.prc");
       }
-      get_home_file_name(db_copy_name, full_name, 255);
-      get_home_file_name("backup/", full_backup_name, 255);
+      get_home_file_name(db_copy_name, full_name, sizeof(full_name));
+      get_home_file_name("backup/", full_backup_name, sizeof(full_backup_name));
       strcat(full_backup_name, db_copy_name);
 
       /* Add this to our file name list if not manually skipped */
@@ -1633,7 +1627,7 @@ static int sync_install(char *filename, int sd)
       jp_logf(JP_LOG_WARN, _("\nUnable to open '%s'!\n"), filename);
       return -1;
    }
-   bzero(&info, sizeof(info));
+   memset(&info, 0, sizeof(info));
    pi_file_get_info(f, &info);
    creator[0] = (info.creator & 0xFF000000) >> 24;
    creator[1] = (info.creator & 0x00FF0000) >> 16,
@@ -1709,9 +1703,8 @@ static int sync_install(char *filename, int sd)
    }
 
    if (r<0) {
-      g_snprintf(log_entry, 255, _("Install %s failed"), Pc);
-      log_entry[255]='\0';
-      charset_j2p((unsigned char *)log_entry, 255, char_set);
+      g_snprintf(log_entry, sizeof(log_entry), _("Install %s failed"), Pc);
+      charset_j2p((unsigned char *)log_entry, sizeof(log_entry), char_set);
       dlp_AddSyncLogEntry(sd, log_entry);
       dlp_AddSyncLogEntry(sd, "\n");;
       jp_logf(JP_LOG_GUI, _("Failed.\n"));
@@ -1721,9 +1714,8 @@ static int sync_install(char *filename, int sd)
    }
    else {
       /* the space after the %s is a hack, the last char gets cut off */
-      g_snprintf(log_entry, 255, _("Installed %s "), Pc);
-      log_entry[255]='\0';
-      charset_j2p((unsigned char *)log_entry, 255, char_set);
+      g_snprintf(log_entry, sizeof(log_entry), _("Installed %s "), Pc);
+      charset_j2p((unsigned char *)log_entry, sizeof(log_entry), char_set);
       dlp_AddSyncLogEntry(sd, log_entry);
       dlp_AddSyncLogEntry(sd, "\n");;
       jp_logf(JP_LOG_GUI, _("OK\n"));
@@ -1865,10 +1857,10 @@ static int get_oldest_newest_dir(char *oldest, char *newest, int *count)
 {
    DIR *dir;
    struct dirent *dirent;
-   char home_dir[256];
+   char home_dir[FILENAME_MAX];
    int r;
 
-   get_home_file_name("", home_dir, 255);
+   get_home_file_name("", home_dir, sizeof(home_dir));
    jp_logf(JP_LOG_DEBUG, "rotate_backups: opening dir %s\n", home_dir);
    *count = 0;
    oldest[0]='\0';
@@ -1910,13 +1902,13 @@ static int sync_rotate_backups(const int num_backups)
 {
    DIR *dir;
    struct dirent *dirent;
-   char home_dir[256];
-   char full_name[300];
-   char full_newdir[300];
-   char full_backup[300];
-   char full_oldest[300];
-   char full_src[300];
-   char full_dest[300];
+   char home_dir[FILENAME_MAX];
+   char full_name[FILENAME_MAX];
+   char full_newdir[FILENAME_MAX];
+   char full_backup[FILENAME_MAX];
+   char full_oldest[FILENAME_MAX];
+   char full_src[FILENAME_MAX];
+   char full_dest[FILENAME_MAX];
    int r;
    int count, safety;
    char oldest[20];
@@ -1925,7 +1917,7 @@ static int sync_rotate_backups(const int num_backups)
    time_t ltime;
    struct tm *now;
 
-   get_home_file_name("", home_dir, 255);
+   get_home_file_name("", home_dir, sizeof(home_dir));
 
    /* We use safety because if removing the directory fails then we
     * will get stuck in an endless loop */
@@ -1950,10 +1942,10 @@ static int sync_rotate_backups(const int num_backups)
    time(&ltime);
    now = localtime(&ltime);
    /* Create the new backup directory */
-   sprintf(newdir, "backup%02d%02d%02d%02d",
+   g_snprintf(newdir, sizeof(newdir), "backup%02d%02d%02d%02d",
 	   now->tm_mon+1, now->tm_mday, now->tm_hour, now->tm_min);
    if (strcmp(newdir, newest)) {
-      sprintf(full_newdir, "%s/%s", home_dir, newdir);
+      g_snprintf(full_newdir, sizeof(full_newdir), "%s/%s", home_dir, newdir);
       if (mkdir(full_newdir, 0700)==0) {
 	 count++;
       }
@@ -1961,13 +1953,13 @@ static int sync_rotate_backups(const int num_backups)
 
    /* Copy from the newest backup, if it exists */
    if (strcmp(newdir, newest)) {
-      sprintf(full_backup, "%s/backup", home_dir);
-      sprintf(full_newdir, "%s/%s", home_dir, newdir);
+      g_snprintf(full_backup, sizeof(full_backup), "%s/backup", home_dir);
+      g_snprintf(full_newdir, sizeof(full_newdir), "%s/%s", home_dir, newdir);
       dir = opendir(full_backup);
       if (dir) {
 	 while ((dirent = readdir(dir))) {
-	    sprintf(full_src, "%s/%s", full_backup, dirent->d_name);
-	    sprintf(full_dest, "%s/%s", full_newdir, dirent->d_name);
+	    g_snprintf(full_src, sizeof(full_src), "%s/%s", full_backup, dirent->d_name);
+	    g_snprintf(full_dest, sizeof(full_dest), "%s/%s", full_newdir, dirent->d_name);
 	    jp_copy_file(full_src, full_dest);
 	 }
 	 closedir(dir);
@@ -1977,14 +1969,14 @@ static int sync_rotate_backups(const int num_backups)
    /* Remove the oldest backup if needed */
    if (count > num_backups) {
       if ( (oldest[0]!='\0') && (strcmp(newdir, oldest)) ) {
-	 sprintf(full_oldest, "%s/%s", home_dir, oldest);
+	 g_snprintf(full_oldest, sizeof(full_oldest), "%s/%s", home_dir, oldest);
 	 jp_logf(JP_LOG_DEBUG, "removing dir [%s]\n", full_oldest);
 	 sync_remove_r(full_oldest);
       }
    }
 
    /* Delete the symlink */
-   sprintf(full_name, "%s/backup", home_dir);
+   g_snprintf(full_name, sizeof(full_name), "%s/backup", home_dir);
    unlink(full_name);
 
    /* Create the symlink */
@@ -2003,7 +1995,7 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
    char *record;
    void *Pbuf;
    int rec_len;
-   char pc_filename[256];
+   char pc_filename[FILENAME_MAX];
    char write_log_message[256];
    char error_log_message_w[256];
    char error_log_message_d[256];
@@ -2017,25 +2009,25 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
    if ((DB_name==NULL) || (strlen(DB_name) > 250)) {
       return -1;
    }
-   g_snprintf(pc_filename, 255, "%s.pc3", DB_name);
+   g_snprintf(pc_filename, sizeof(pc_filename), "%s.pc3", DB_name);
    /* This is an attempt to use the proper pronoun most of the time */
    if (strchr("aeiou", tolower(DB_name[0]))) {
-      g_snprintf(write_log_message, 255,
+      g_snprintf(write_log_message, sizeof(write_log_message),
 	      _("Wrote an %s record."), DB_name);
-      g_snprintf(error_log_message_w, 255,
+      g_snprintf(error_log_message_w, sizeof(error_log_message_w),
 	      _("Writing an %s record failed."), DB_name);
-      g_snprintf(error_log_message_d, 255,
+      g_snprintf(error_log_message_d, sizeof(error_log_message_d),
 	      _("Deleting an %s record failed."), DB_name);
-      g_snprintf(delete_log_message, 256,
+      g_snprintf(delete_log_message, sizeof(delete_log_message),
 	      _("Deleted an %s record."), DB_name);
    } else {
-      g_snprintf(write_log_message, 255,
+      g_snprintf(write_log_message, sizeof(write_log_message),
 	      _("Wrote a %s record."), DB_name);
-      g_snprintf(error_log_message_w, 255,
+      g_snprintf(error_log_message_w, sizeof(error_log_message_w),
 	      _("Writing a %s record failed."), DB_name);
-      g_snprintf(error_log_message_d, 255,
+      g_snprintf(error_log_message_d, sizeof(error_log_message_d),
 	      _("Deleting a %s record failed."), DB_name);
-      g_snprintf(delete_log_message, 256,
+      g_snprintf(delete_log_message, sizeof(delete_log_message),
 	      _("Deleted a %s record."), DB_name);
    }
    pc_in = jp_open_home_file(pc_filename, "r+");
@@ -2214,9 +2206,9 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
  */
 int pdb_file_swap_indexes(char *DB_name, int index1, int index2)
 {
-   char local_pdb_file[256];
-   char full_local_pdb_file[256];
-   char full_local_pdb_file2[256];
+   char local_pdb_file[FILENAME_MAX];
+   char full_local_pdb_file[FILENAME_MAX];
+   char full_local_pdb_file2[FILENAME_MAX];
    struct pi_file *pf1, *pf2;
    struct DBInfo infop;
    void *app_info;
@@ -2234,8 +2226,8 @@ int pdb_file_swap_indexes(char *DB_name, int index1, int index2)
 
    jp_logf(JP_LOG_DEBUG, "pi_file_swap_indexes\n");
 
-   g_snprintf(local_pdb_file, 250, "%s.pdb", DB_name);
-   get_home_file_name(local_pdb_file, full_local_pdb_file, 250);
+   g_snprintf(local_pdb_file, sizeof(local_pdb_file), "%s.pdb", DB_name);
+   get_home_file_name(local_pdb_file, full_local_pdb_file, sizeof(full_local_pdb_file));
    strcpy(full_local_pdb_file2, full_local_pdb_file);
    strcat(full_local_pdb_file2, "2");
 
@@ -2340,36 +2332,34 @@ int fast_sync_application(char *DB_name, int sd)
    jp_logf(JP_LOG_DEBUG, "fast_sync_application %s\n", DB_name);
    get_pref(PREF_CHAR_SET, &char_set, NULL);
 
-   g_snprintf(log_entry, 255, _("Syncing %s\n"), DB_name);
-   log_entry[255]='\0';
+   g_snprintf(log_entry, sizeof(log_entry), _("Syncing %s\n"), DB_name);
    jp_logf(JP_LOG_GUI, log_entry);
 
    /* This is an attempt to use the proper pronoun most of the time */
    if (strchr("aeiou", tolower(DB_name[0]))) {
-      g_snprintf(write_log_message, 255,
+      g_snprintf(write_log_message, sizeof(write_log_message),
 	      _("Wrote an %s record."),  DB_name);
-      g_snprintf(error_log_message_w, 255,
+      g_snprintf(error_log_message_w, sizeof(error_log_message_w),
 	      _("Writing an %s record failed."), DB_name);
-      g_snprintf(error_log_message_d, 255,
+      g_snprintf(error_log_message_d, sizeof(error_log_message_d),
 	      _("Deleting an %s record failed."), DB_name);
-      g_snprintf(delete_log_message, 256,
+      g_snprintf(delete_log_message, sizeof(delete_log_message),
 	      _("Deleted an %s record."),  DB_name);
    } else {
-      g_snprintf(write_log_message, 255,
+      g_snprintf(write_log_message, sizeof(write_log_message),
 	      _("Wrote a %s record."),  DB_name);
-      g_snprintf(error_log_message_w, 255,
+      g_snprintf(error_log_message_w, sizeof(error_log_message_w),
 	      _("Writing a %s record failed."), DB_name);
-      g_snprintf(error_log_message_d, 255,
+      g_snprintf(error_log_message_d, sizeof(error_log_message_d),
 	      _("Deleting a %s record failed."), DB_name);
-      g_snprintf(delete_log_message, 256,
+      g_snprintf(delete_log_message, sizeof(delete_log_message),
 	      _("Deleted a %s record."),  DB_name);
    }
    /* Open the applications database, store access handle in db */
    ret = dlp_OpenDB(sd, 0, dlpOpenReadWrite|dlpOpenSecret, DB_name, &db);
    if (ret < 0) {
-      g_snprintf(log_entry, 255, _("Unable to open %s\n"), DB_name);
-      log_entry[255]='\0';
-      charset_j2p((unsigned char *)log_entry, 255, char_set);
+      g_snprintf(log_entry, sizeof(log_entry), _("Unable to open %s\n"), DB_name);
+      charset_j2p((unsigned char *)log_entry, sizeof(log_entry), char_set);
       dlp_AddSyncLogEntry(sd, log_entry);
       return -1;
    }
@@ -2554,8 +2544,8 @@ int sync_categories(char *DB_name, int sd,
 )
 {
    struct CategoryAppInfo local_cai, remote_cai, orig_remote_cai;
-   char full_name[256];
-   char pdb_name[256];
+   char full_name[FILENAME_MAX];
+   char pdb_name[FILENAME_MAX];
    char log_entry[256];
    unsigned char buf[65536];
    char tmp_name[18];
@@ -2575,12 +2565,12 @@ int sync_categories(char *DB_name, int sd,
 
    jp_logf(JP_LOG_DEBUG, "sync_categories for %s\n", DB_name);
 
-   sprintf(pdb_name, "%s%s", DB_name, ".pdb");
-   get_home_file_name(pdb_name, full_name, 250);
+   g_snprintf(pdb_name, sizeof(pdb_name), "%s%s", DB_name, ".pdb");
+   get_home_file_name(pdb_name, full_name, sizeof(full_name));
 
    Papp_info=NULL;
-   bzero(&local_cai, sizeof(local_cai));
-   bzero(&remote_cai, sizeof(remote_cai));
+   memset(&local_cai, 0, sizeof(local_cai));
+   memset(&remote_cai, 0, sizeof(remote_cai));
 
    pf = pi_file_open(full_name);
    if (!pf) {
@@ -2604,14 +2594,13 @@ int sync_categories(char *DB_name, int sd,
    /* Open the applications database, store access handle in db */
    r = dlp_OpenDB(sd, 0, dlpOpenReadWrite, DB_name, &db);
    if (r < 0) {
-      g_snprintf(log_entry, 255, _("Unable to open %s\n"), DB_name);
-      log_entry[255]='\0';
-      charset_j2p((unsigned char *)log_entry, 255, char_set);
+      g_snprintf(log_entry, sizeof(log_entry), _("Unable to open %s\n"), DB_name);
+      charset_j2p((unsigned char *)log_entry, sizeof(log_entry), char_set);
       dlp_AddSyncLogEntry(sd, log_entry);
       return -1;
    }
 
-   size = dlp_ReadAppBlock(sd, db, 0, buf, 65535);
+   size = dlp_ReadAppBlock(sd, db, 0, buf, sizeof(buf));
    jp_logf(JP_LOG_DEBUG, "readappblock r=%d\n", size);
    if (size<=0) {
       jp_logf(JP_LOG_WARN, _("Error reading appinfo block for %s\n"), DB_name);
@@ -2734,7 +2723,7 @@ int sync_categories(char *DB_name, int sd,
 		    local_cai.name[Li], 16);
 	    remote_cai.name[Li][15]='\0';
 	    remote_cai.renamed[Li]=0;
-	    remote_cai.ID[Li]=remote_cai.ID[Li];
+	    remote_cai.ID[Li]=remote_cai.ID[Li];//undo local?
 	    continue;
 	 } else {
 	    /* 5: Add local category to remote in the next available slot.
@@ -2761,17 +2750,14 @@ int sync_categories(char *DB_name, int sd,
 	       jp_logf(JP_LOG_WARN, _("Too many categories on remote.\n"));
 	       jp_logf(JP_LOG_WARN, _("All records on desktop in %s will be moved to %s.\n"), local_cai.name[Li], local_cai.name[0]);
 	       /* Fix - need a func for this logging */
-	       g_snprintf(log_entry, 255, _("Could not add category %s to remote.\n"), local_cai.name[Li]);
-	       log_entry[255]='\0';
+	       g_snprintf(log_entry, sizeof(log_entry), _("Could not add category %s to remote.\n"), local_cai.name[Li]);
 	       charset_j2p((unsigned char *)log_entry, 255, char_set);
 	       dlp_AddSyncLogEntry(sd, log_entry);
-	       g_snprintf(log_entry, 255, _("Too many categories on remote.\n"));
-	       log_entry[255]='\0';
-	       charset_j2p((unsigned char *)log_entry, 255, char_set);
+	       g_snprintf(log_entry, sizeof(log_entry), _("Too many categories on remote.\n"));
+	       charset_j2p((unsigned char *)log_entry, sizeof(log_entry), char_set);
 	       dlp_AddSyncLogEntry(sd, log_entry);
-	       g_snprintf(log_entry, 255, _("All records on desktop in %s will be moved to %s.\n"), local_cai.name[Li], local_cai.name[0]);
-	       log_entry[255]='\0';
-	       charset_j2p((unsigned char *)log_entry, 255, char_set);
+	       g_snprintf(log_entry, sizeof(log_entry), _("All records on desktop in %s will be moved to %s.\n"), local_cai.name[Li], local_cai.name[0]);
+	       charset_j2p((unsigned char *)log_entry, sizeof(log_entry), char_set);
 	       dlp_AddSyncLogEntry(sd, log_entry);
 	       jp_logf(JP_LOG_DEBUG, "Moving local recs category %d to unfiled...", Li);
 	       edit_cats_change_cats_pc3(DB_name, Li, 0);

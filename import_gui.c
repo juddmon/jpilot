@@ -97,7 +97,11 @@ int read_csv_field(FILE *in, char *text, int size, int new_line)
 	 }
       }
       text[n++]=c;
-      if (n+1>size) return n;
+      if (n+1>=size)
+      {
+	  text[n++]='\0';
+	  return n;
+      }
    }
    text[n++]='\0';
    return n;
@@ -275,8 +279,7 @@ void import_gui(GtkWidget *main_window, GtkWidget *main_pane,
 #endif
    px+=40;
 
-   g_snprintf(temp, 255, "%s %s", PN, _("Import"));
-   temp[255]='\0';
+   g_snprintf(temp, sizeof(temp), "%s %s", PN, _("Import"));
 
    filew = gtk_widget_new(GTK_TYPE_FILE_SELECTION,
 			  "type", GTK_WINDOW_TOPLEVEL,
@@ -433,22 +436,22 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
 
    /* Private */
    if (priv) {
-      g_snprintf(str, 50, _("Record was marked as private"));
+      g_snprintf(str, sizeof(str), _("Record was marked as private"));
    } else {
-      g_snprintf(str, 50, _("Record was not marked as private"));
+      g_snprintf(str, sizeof(str), _("Record was not marked as private"));
    }
    label = gtk_label_new(str);
    gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
    gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
 
 
-   g_snprintf(str, 60, "Category before import was: [%s]", old_cat_name);
+   g_snprintf(str, sizeof(str), "Category before import was: [%s]", old_cat_name);
    label = gtk_label_new(str);
    gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
    gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
 
 
-   g_snprintf(str, 60, "Record will be put in category [%s]",
+   g_snprintf(str, sizeof(str), "Record will be put in category [%s]",
 	      cai->name[suggested_cat_num]);
    label = gtk_label_new(str);
    gtk_misc_set_alignment(GTK_MISC(label), 0, 0);

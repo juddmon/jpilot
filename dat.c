@@ -165,7 +165,7 @@ int get_repeat(FILE *in, struct Appointment *a)
 #endif
    if (a) {
       a->exception=NULL;
-      bzero(&(a->repeatEnd), sizeof(struct tm));
+      memset(&(a->repeatEnd), 0, sizeof(a->repeatEnd));
    }
 
    if (a) {
@@ -369,7 +369,7 @@ static int print_date(int palm_date)
 
    t = palm_date;/* - 20828448800; */
    now = localtime(&t);
-   strftime(text, 255, "%02m/%02d/%Y %02H:%02M:%02S", now);
+   strftime(text, sizeof(text), "%02m/%02d/%Y %02H:%02M:%02S", now);
    printf("%s\n", text);
 
    return 0;
@@ -460,7 +460,7 @@ int dat_check_if_dat_file(FILE *in)
 {
    char version[6];
 
-   bzero(version, 4);
+   memset(version, 0, sizeof(version));
    fseek(in, 0, SEEK_SET);
    /* Version */
    fread(version, 4, 1, in);
@@ -664,7 +664,7 @@ int dat_get_appointments(FILE *in, AppointmentList **alist, struct CategoryAppIn
 #ifdef JPILOT_DEBUG
       printf("----- record %d -----\n", i+1);
 #endif
-      bzero(&(last_alist->ma.a), sizeof(struct Appointment));
+      memset(&(last_alist->ma.a), 0, sizeof(last_alist->ma.a));
 
       /* Record ID */
       /* Status Field */
@@ -1022,7 +1022,7 @@ int dat_get_todos(FILE *in, ToDoList **todolist, struct CategoryAppInfo *ai)
       /* Due Date */
       if (fa[1].date==0x749E77BF) {
 	 last_todolist->mtodo.todo.indefinite=1;
-	 bzero(&(last_todolist->mtodo.todo.due), sizeof(struct tm));
+	 memset(&(last_todolist->mtodo.todo.due), 0, sizeof(last_todolist->mtodo.todo.due));
       } else {
 	 t = fa[1].date;
 	 now = localtime(&t);

@@ -198,7 +198,7 @@ int read_header(FILE *pc_in, PC3RecordHeader *header)
    }
    memcpy(packed_header, &l, sizeof(l));
    len=ntohl(l);
-   if (len > 255) {
+   if (len > sizeof(packed_header)-1) {
       jp_logf(JP_LOG_WARN, "read_header() error\n");
       return -1;
    }
@@ -280,7 +280,7 @@ int jp_install_remove_line(int deleted_line)
 
    for (line_count=0; (!feof(in)); line_count++) {
       line[0]='\0';
-      Pc = fgets(line, 1000, in);
+      Pc = fgets(line, sizeof(line), in);
       if (!Pc) {
 	 break;
       }
@@ -384,7 +384,7 @@ int jp_free_DB_records(GList **br_list)
    return 0;
 }
 
-/*These next 2 functions were copied from pi-file.c in the pilot-link app */
+/* These next 2 functions were copied from pi-file.c in the pilot-link app */
 /* Exact value of "Jan 1, 1970 0:00:00 GMT" - "Jan 1, 1904 0:00:00 GMT" */
 #define PILOT_TIME_DELTA (unsigned)(2082844800)
 
@@ -448,7 +448,7 @@ int jp_get_app_info(char *DB_name, unsigned char **buf, int *buf_size)
    int rec_size;
    RawDBHeader rdbh;
    DBHeader dbh;
-   char PDB_name[256];
+   char PDB_name[FILENAME_MAX];
 
    if ((!buf_size) || (!buf)) {
       return -1;
@@ -456,7 +456,7 @@ int jp_get_app_info(char *DB_name, unsigned char **buf, int *buf_size)
    *buf = NULL;
    *buf_size=0;
 
-   g_snprintf(PDB_name, 255, "%s.pdb", DB_name);
+   g_snprintf(PDB_name, sizeof(PDB_name), "%s.pdb", DB_name);
    in = jp_open_home_file(PDB_name, "r");
    if (!in) {
       jp_logf(JP_LOG_WARN, "%s:%d Error opening %s\n", __FILE__, __LINE__, PDB_name);
@@ -512,13 +512,13 @@ int jp_delete_record(char *DB_name, buf_rec *br, int flag)
 {
    FILE *pc_in;
    PC3RecordHeader header;
-   char PC_name[256];
+   char PC_name[FILENAME_MAX];
 
    if (br==NULL) {
       return -1;
    }
 
-   g_snprintf(PC_name, 255, "%s.pc3", DB_name);
+   g_snprintf(PC_name, sizeof(PC_name), "%s.pc3", DB_name);
 
    if ((br->rt==DELETED_PALM_REC) || (br->rt==MODIFIED_PALM_REC)) {
       jp_logf(JP_LOG_INFO, "This record is already deleted.\n"
@@ -609,10 +609,9 @@ int jp_pc_write(char *DB_name, buf_rec *br)
    unsigned int next_unique_id;
    unsigned char packed_header[256];
    int len;
-   char PC_name[256];
+   char PC_name[FILENAME_MAX];
 
-   g_snprintf(PC_name, 255, "%s.pc3", DB_name);
-   PC_name[255]='\0';
+   g_snprintf(PC_name, sizeof(PC_name), "%s.pc3", DB_name);
    if (br->unique_id==0) {
       get_next_unique_pc_id(&next_unique_id);
       header.unique_id=next_unique_id;
@@ -704,19 +703,17 @@ int jp_read_DB_files(char *DB_name, GList **records)
    RawDBHeader rdbh;
    DBHeader dbh;
    buf_rec *temp_br;
-   char PDB_name[256];
-   char PC_name[256];
+   char PDB_name[FILENAME_MAX];
+   char PC_name[FILENAME_MAX];
 
-   jp_logf(JP_LOG_DEBUG, "Entering jp_read_DB_files\n");
+   jp_logf(JP_LOG_DEBUG, "Entering jp_read_DB_files: %s\n", DB_name);
 
    mem_rh = last_mem_rh = NULL;
    *records = end_of_list = NULL;
    recs_returned = 0;
 
-   g_snprintf(PDB_name, 255, "%s.pdb", DB_name);
-   PDB_name[255]='\0';
-   g_snprintf(PC_name, 255, "%s.pc3", DB_name);
-   PC_name[255]='\0';
+   g_snprintf(PDB_name, sizeof(PDB_name), "%s.pdb", DB_name);
+   g_snprintf(PC_name, sizeof(PC_name), "%s.pc3", DB_name);
    in = jp_open_home_file(PDB_name, "r");
    if (!in) {
       jp_logf(JP_LOG_WARN, "Error opening %s\n", PDB_name);
@@ -885,7 +882,7 @@ int jp_read_DB_files(char *DB_name, GList **records)
    /* */
    pc_in = jp_open_home_file(PC_name, "r");
    if (pc_in==NULL) {
-      jp_logf(JP_LOG_DEBUG, "jp_open_home_file failed\n");
+      jp_logf(JP_LOG_DEBUG, "jp_open_home_file failed: %s\n", PC_name);
       return 0;
    }
 

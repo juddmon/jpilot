@@ -72,7 +72,7 @@ void get_compile_options(char *string, int len)
 {
    g_snprintf(string, len,
 	      "\n"PN" version "VERSION"\n"
-	      " Copyright (C) 1999-2002 by Judd Montgomery\n"
+	      " Copyright (C) 1999-2003 by Judd Montgomery\n"
 	      " judd@jpilot.org, http://jpilot.org\n"
 	      PN" comes with ABSOLUTELY NO WARRANTY; for details see the file\n"
 	      "COPYING included with the source code, or in /usr/docs/jpilot/.\n\n"
@@ -1278,11 +1278,11 @@ int get_home_file_name(char *file, char *full_name, int max_size)
 int check_hidden_dir()
 {
    struct stat statb;
-   char hidden_dir[260];
-   char test_file[260];
+   char hidden_dir[FILENAME_MAX];
+   char test_file[FILENAME_MAX];
    FILE *out;
 
-   get_home_file_name("", hidden_dir, 256);
+   get_home_file_name("", hidden_dir, sizeof(hidden_dir));
    hidden_dir[strlen(hidden_dir)-1]='\0';
 
    if (stat(hidden_dir, &statb)) {
@@ -1304,7 +1304,7 @@ int check_hidden_dir()
       return 1;
    }
    /*Can we write in it? */
-   get_home_file_name("test", test_file, 256);
+   get_home_file_name("test", test_file, sizeof(test_file));
    out = fopen(test_file, "w+");
    if (!out) {
       jp_logf(JP_LOG_WARN, "I can't write files in directory %s\n", hidden_dir);
@@ -1412,7 +1412,7 @@ int write_to_next_id(unsigned int unique_id)
 int get_next_unique_pc_id(unsigned int *next_unique_id)
 {
    FILE *pc_in_out;
-   char file_name[256];
+   char file_name[FILENAME_MAX];
    char str[256];
 
    pc_in_out = jp_open_home_file("next_id", "a+");
@@ -1460,8 +1460,8 @@ int get_next_unique_pc_id(unsigned int *next_unique_id)
 
 int read_gtkrc_file()
 {
-   char filename[256];
-   char fullname[256];
+   char filename[FILENAME_MAX];
+   char fullname[FILENAME_MAX];
    struct stat buf;
    long ivalue;
    const char *svalue;
@@ -1473,11 +1473,11 @@ int read_gtkrc_file()
      jp_logf(JP_LOG_DEBUG, "rc file from prefs is NULL\n");
    }
 
-   strncpy(filename, svalue, 255);
-   filename[255]='\0';
+   strncpy(filename, svalue, sizeof(filename));
+   filename[sizeof(filename)-1]='\0';
 
    /*Try to read the file out of the home directory first */
-   get_home_file_name(filename, fullname, 255);
+   get_home_file_name(filename, fullname, sizeof(fullname));
 
    if (stat(fullname, &buf)==0) {
       jp_logf(JP_LOG_DEBUG, "parsing %s\n", fullname);
@@ -1485,8 +1485,7 @@ int read_gtkrc_file()
       return 0;
    }
 
-   g_snprintf(fullname, 255, "%s/%s/%s/%s", BASE_DIR, "share", EPN, filename);
-   fullname[255]='\0';
+   g_snprintf(fullname, sizeof(fullname), "%s/%s/%s/%s", BASE_DIR, "share", EPN, filename);
    if (stat(fullname, &buf)==0) {
       jp_logf(JP_LOG_DEBUG, "parsing %s\n", fullname);
       gtk_rc_parse(fullname);
@@ -1497,10 +1496,10 @@ int read_gtkrc_file()
 
 FILE *jp_open_home_file(char *filename, char *mode)
 {
-   char fullname[256];
+   char fullname[FILENAME_MAX];
    FILE *pc_in;
 
-   get_home_file_name(filename, fullname, 255);
+   get_home_file_name(filename, fullname, sizeof(fullname));
 
    pc_in = fopen(fullname, mode);
    if (pc_in == NULL) {
@@ -1515,11 +1514,11 @@ FILE *jp_open_home_file(char *filename, char *mode)
 
 int rename_file(char *old_filename, char *new_filename)
 {
-   char old_fullname[256];
-   char new_fullname[256];
+   char old_fullname[FILENAME_MAX];
+   char new_fullname[FILENAME_MAX];
 
-   get_home_file_name(old_filename, old_fullname, 255);
-   get_home_file_name(new_filename, new_fullname, 255);
+   get_home_file_name(old_filename, old_fullname, sizeof(old_fullname));
+   get_home_file_name(new_filename, new_fullname, sizeof(new_fullname));
 
    return rename(old_fullname, new_fullname);
 }
@@ -1527,9 +1526,9 @@ int rename_file(char *old_filename, char *new_filename)
 
 int unlink_file(char *filename)
 {
-   char fullname[256];
+   char fullname[FILENAME_MAX];
 
-   get_home_file_name(filename, fullname, 255);
+   get_home_file_name(filename, fullname, sizeof(fullname));
 
    return unlink(fullname);
 }
@@ -1542,8 +1541,8 @@ int check_copy_DBs_to_home()
    FILE *in, *out;
    struct stat sbuf;
    int i, c, r;
-   char destname[1024];
-   char srcname[1024];
+   char destname[FILENAME_MAX];
+   char srcname[FILENAME_MAX];
    struct utimbuf times;
    char *dbname[]={
       "DatebookDB.pdb",
@@ -1556,15 +1555,15 @@ int check_copy_DBs_to_home()
    };
 
    for (i=0; dbname[i]!=NULL; i++) {
-      get_home_file_name(dbname[i], destname, 1000);
+      get_home_file_name(dbname[i], destname, sizeof(destname));
       r = stat(destname, &sbuf);
       if (((r)&&(errno==ENOENT)) || (sbuf.st_size==0)) {
 	 /*The file doesn't exist or is zero in size, copy an empty DB file */
-	 if ((strlen(BASE_DIR) + strlen(EPN) + strlen(dbname[i])) > 1000) {
+	 if ((strlen(BASE_DIR) + strlen(EPN) + strlen(dbname[i])) > sizeof(srcname)) {
 	    jp_logf(JP_LOG_DEBUG, "copy_DB_to_home filename too long\n");
 	    return -1;
 	 }
-	 sprintf(srcname, "%s/%s/%s/%s", BASE_DIR, "share", EPN, dbname[i]);
+	 g_snprintf(srcname, sizeof(srcname), "%s/%s/%s/%s", BASE_DIR, "share", EPN, dbname[i]);
 	 in = fopen(srcname, "r");
 	 out = fopen(destname, "w");
 	 if (!in) {
@@ -1613,7 +1612,7 @@ int jp_copy_file(char *src, char *dest)
       fclose(in);
       return -1;
    }
-   while ((r = fread(buf, 1, 10000, in))) {
+   while ((r = fread(buf, 1, sizeof(buf)-2, in))) {
       fwrite(buf, 1, r, out);
    }
    fclose(in);
@@ -1661,7 +1660,7 @@ int raw_header_to_header(RawDBHeader *rdbh, DBHeader *dbh)
    unsigned long temp;
 
    strncpy(dbh->db_name, rdbh->db_name, 31);
-   dbh->db_name[31] = '\0';
+   dbh->db_name[sizeof(dbh->db_name)-1] = '\0';
    dbh->flags = bytes_to_bin(rdbh->flags, 2);
    dbh->version = bytes_to_bin(rdbh->version, 2);
    temp = bytes_to_bin(rdbh->creation_time, 4);
@@ -1673,12 +1672,12 @@ int raw_header_to_header(RawDBHeader *rdbh, DBHeader *dbh)
    dbh->modification_number = bytes_to_bin(rdbh->modification_number, 4);
    dbh->app_info_offset = bytes_to_bin(rdbh->app_info_offset, 4);
    dbh->sort_info_offset = bytes_to_bin(rdbh->sort_info_offset, 4);
-   strncpy(dbh->type, rdbh->type, 4);
-   dbh->type[4] = '\0';
-   strncpy(dbh->creator_id, rdbh->creator_id, 4);
-   dbh->creator_id[4] = '\0';
-   strncpy(dbh->unique_id_seed, rdbh->unique_id_seed, 4);
-   dbh->unique_id_seed[4] = '\0';
+   strncpy(dbh->type, rdbh->type, sizeof(dbh->type));
+   dbh->type[sizeof(dbh->type)-1] = '\0';
+   strncpy(dbh->creator_id, rdbh->creator_id, sizeof(dbh->creator_id));
+   dbh->creator_id[sizeof(dbh->creator_id)-1] = '\0';
+   strncpy(dbh->unique_id_seed, rdbh->unique_id_seed, sizeof(dbh->unique_id_seed));
+   dbh->unique_id_seed[sizeof(dbh->unique_id_seed)-1] = '\0';
    dbh->next_record_list_id = bytes_to_bin(rdbh->next_record_list_id, 4);
    dbh->number_of_records = bytes_to_bin(rdbh->number_of_records, 2);
 
@@ -1795,7 +1794,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
    MyToDo *mtodo;
    struct Memo *memo;
    MyMemo *mmemo;
-   char filename[30];
+   char filename[FILENAME_MAX];
    unsigned char record[65536];
    PCRecType record_type;
    unsigned int unique_id;
@@ -1913,7 +1912,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
        case DATEBOOK:
 	 app=&mapp->a;
 	 /*memset(&app, 0, sizeof(app)); */
-	 header.rec_len = pack_Appointment(app, record, 65535);
+	 header.rec_len = pack_Appointment(app, record, sizeof(record)-1);
 	 if (!header.rec_len) {
 	    PRINT_FILE_LINE;
 	    jp_logf(JP_LOG_WARN, "pack_Appointment error\n");
@@ -1922,7 +1921,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
        case ADDRESS:
 	 address=&maddress->a;
 	 /* memset(&address, 0, sizeof(address)); */
-	 header.rec_len = pack_Address(address, record, 65535);
+	 header.rec_len = pack_Address(address, record, sizeof(record)-1);
 	 if (!header.rec_len) {
 	    PRINT_FILE_LINE;
 	    jp_logf(JP_LOG_WARN, "pack_Address error\n");
@@ -1931,7 +1930,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
        case TODO:
 	 todo=&mtodo->todo;
 	 /* memset(&todo, 0, sizeof(todo)); */
-	 header.rec_len = pack_ToDo(todo, record, 65535);
+	 header.rec_len = pack_ToDo(todo, record, sizeof(record)-1);
 	 if (!header.rec_len) {
 	    PRINT_FILE_LINE;
 	    jp_logf(JP_LOG_WARN, "pack_ToDo error\n");
@@ -1940,7 +1939,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
        case MEMO:
 	 memo=&mmemo->memo;
 	 /* memset(&memo, 0, sizeof(memo)); */
-	 header.rec_len = pack_Memo(memo, record, 65535);
+	 header.rec_len = pack_Memo(memo, record, sizeof(record)-1);
 
 	 if (!header.rec_len) {
 	    PRINT_FILE_LINE;
@@ -1971,8 +1970,8 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 int cleanup_pc_file(char *DB_name, unsigned int *max_id)
 {
    PC3RecordHeader header;
-   char pc_filename[256];
-   char pc_filename2[256];
+   char pc_filename[FILENAME_MAX];
+   char pc_filename2[FILENAME_MAX];
    FILE *pc_file;
    FILE *pc_file2;
    char *record;
@@ -1988,8 +1987,8 @@ int cleanup_pc_file(char *DB_name, unsigned int *max_id)
    record = NULL;
    pc_file = pc_file2 = NULL;
 
-   g_snprintf(pc_filename, 255, "%s.pc3", DB_name);
-   g_snprintf(pc_filename2, 255, "%s.pct", DB_name);
+   g_snprintf(pc_filename, sizeof(pc_filename), "%s.pc3", DB_name);
+   g_snprintf(pc_filename2, sizeof(pc_filename2), "%s.pct", DB_name);
 
    pc_file = jp_open_home_file(pc_filename , "r");
    if (!pc_file) {
@@ -2211,8 +2210,8 @@ int setup_sync(unsigned int flags)
    get_pref(PREF_PORT, &ivalue, &port);
    get_pref(PREF_NUM_BACKUPS, &num_backups, &svalue);
    get_pref(PREF_USER, &ivalue, &svalue);
-   strncpy(sync_info.username, svalue, 127);
-   sync_info.username[127]='\0';
+   strncpy(sync_info.username, svalue, sizeof(sync_info.username));
+   sync_info.username[sizeof(sync_info.username)-1]='\0';
    get_pref(PREF_USER_ID, (long*) &(sync_info.userID), &svalue);
    jp_logf(JP_LOG_DEBUG, "pref port=[%s]\n", port);
    jp_logf(JP_LOG_DEBUG, "num_backups=%d\n", num_backups);
@@ -2234,8 +2233,8 @@ int setup_sync(unsigned int flags)
    }
 
    sync_info.sync_over_ride = 0;
-   strncpy(sync_info.port, port, 128);
-   sync_info.port[127]='\0';
+   strncpy(sync_info.port, port, sizeof(sync_info.port));
+   sync_info.port[sizeof(sync_info.port)-1]='\0';
    sync_info.flags=flags;
    sync_info.num_backups=num_backups;
 
@@ -2394,16 +2393,16 @@ int make_category_menu(GtkWidget **category_menu,
 
 int pdb_file_count_recs(char *DB_name, int *num)
 {
-   char local_pdb_file[256];
-   char full_local_pdb_file[256];
+   char local_pdb_file[FILENAME_MAX];
+   char full_local_pdb_file[FILENAME_MAX];
    struct pi_file *pf;
 
    jp_logf(JP_LOG_DEBUG, "pdb_file_count_recs\n");
 
    *num = 0;
 
-   g_snprintf(local_pdb_file, 250, "%s.pdb", DB_name);
-   get_home_file_name(local_pdb_file, full_local_pdb_file, 250);
+   g_snprintf(local_pdb_file, sizeof(local_pdb_file), "%s.pdb", DB_name);
+   get_home_file_name(local_pdb_file, full_local_pdb_file, sizeof(full_local_pdb_file));
 
    pf = pi_file_open(full_local_pdb_file);
    if (!pf) {
@@ -2420,9 +2419,9 @@ int pdb_file_count_recs(char *DB_name, int *num)
 
 int pdb_file_delete_record_by_id(char *DB_name, pi_uid_t uid_in)
 {
-   char local_pdb_file[256];
-   char full_local_pdb_file[256];
-   char full_local_pdb_file2[256];
+   char local_pdb_file[FILENAME_MAX];
+   char full_local_pdb_file[FILENAME_MAX];
+   char full_local_pdb_file2[FILENAME_MAX];
    struct pi_file *pf1, *pf2;
    struct DBInfo infop;
    void *app_info;
@@ -2439,8 +2438,8 @@ int pdb_file_delete_record_by_id(char *DB_name, pi_uid_t uid_in)
 
    jp_logf(JP_LOG_DEBUG, "pdb_file_delete_record_by_id\n");
 
-   g_snprintf(local_pdb_file, 250, "%s.pdb", DB_name);
-   get_home_file_name(local_pdb_file, full_local_pdb_file, 250);
+   g_snprintf(local_pdb_file, sizeof(local_pdb_file), "%s.pdb", DB_name);
+   get_home_file_name(local_pdb_file, full_local_pdb_file, sizeof(full_local_pdb_file));
    strcpy(full_local_pdb_file2, full_local_pdb_file);
    strcat(full_local_pdb_file2, "2");
 
@@ -2494,9 +2493,9 @@ int pdb_file_delete_record_by_id(char *DB_name, pi_uid_t uid_in)
 int pdb_file_modify_record(char *DB_name, void *record_in, int size_in,
 			   int attr_in, int cat_in, pi_uid_t uid_in)
 {
-   char local_pdb_file[256];
-   char full_local_pdb_file[256];
-   char full_local_pdb_file2[256];
+   char local_pdb_file[FILENAME_MAX];
+   char full_local_pdb_file[FILENAME_MAX];
+   char full_local_pdb_file2[FILENAME_MAX];
    struct pi_file *pf1, *pf2;
    struct DBInfo infop;
    void *app_info;
@@ -2514,8 +2513,8 @@ int pdb_file_modify_record(char *DB_name, void *record_in, int size_in,
 
    jp_logf(JP_LOG_DEBUG, "pi_file_modify_record\n");
 
-   g_snprintf(local_pdb_file, 250, "%s.pdb", DB_name);
-   get_home_file_name(local_pdb_file, full_local_pdb_file, 250);
+   g_snprintf(local_pdb_file, sizeof(local_pdb_file), "%s.pdb", DB_name);
+   get_home_file_name(local_pdb_file, full_local_pdb_file, sizeof(full_local_pdb_file));
    strcpy(full_local_pdb_file2, full_local_pdb_file);
    strcat(full_local_pdb_file2, "2");
 
@@ -2576,16 +2575,16 @@ int pdb_file_read_record_by_id(char *DB_name,
 			       void **bufp, int *sizep, int *idxp,
 			       int *attrp, int *catp)
 {
-   char local_pdb_file[256];
-   char full_local_pdb_file[256];
+   char local_pdb_file[FILENAME_MAX];
+   char full_local_pdb_file[FILENAME_MAX];
    struct pi_file *pf1;
    void *temp_buf;
    int r;
 
    jp_logf(JP_LOG_DEBUG, "pdb_file_read_record_by_id\n");
 
-   g_snprintf(local_pdb_file, 250, "%s.pdb", DB_name);
-   get_home_file_name(local_pdb_file, full_local_pdb_file, 250);
+   g_snprintf(local_pdb_file, sizeof(local_pdb_file), "%s.pdb", DB_name);
+   get_home_file_name(local_pdb_file, full_local_pdb_file, sizeof(full_local_pdb_file));
 
    pf1 = pi_file_open(full_local_pdb_file);
    if (!pf1) {
@@ -2611,9 +2610,9 @@ int pdb_file_read_record_by_id(char *DB_name,
 
 int pdb_file_write_app_block(char *DB_name, void *bufp, int size_in)
 {
-   char local_pdb_file[256];
-   char full_local_pdb_file[256];
-   char full_local_pdb_file2[256];
+   char local_pdb_file[FILENAME_MAX];
+   char full_local_pdb_file[FILENAME_MAX];
+   char full_local_pdb_file2[FILENAME_MAX];
    struct pi_file *pf1, *pf2;
    struct DBInfo infop;
    void *app_info;
@@ -2630,8 +2629,8 @@ int pdb_file_write_app_block(char *DB_name, void *bufp, int size_in)
 
    jp_logf(JP_LOG_DEBUG, "pdb_file_write_app_block\n");
 
-   g_snprintf(local_pdb_file, 250, "%s.pdb", DB_name);
-   get_home_file_name(local_pdb_file, full_local_pdb_file, 250);
+   g_snprintf(local_pdb_file, sizeof(local_pdb_file), "%s.pdb", DB_name);
+   get_home_file_name(local_pdb_file, full_local_pdb_file, sizeof(full_local_pdb_file));
    strcpy(full_local_pdb_file2, full_local_pdb_file);
    strcat(full_local_pdb_file2, "2");
 
@@ -2681,7 +2680,7 @@ int pdb_file_write_app_block(char *DB_name, void *bufp, int size_in)
  */
 int pdb_file_write_dbinfo(char *full_DB_name, struct DBInfo *Pinfo_in)
 {
-   char full_local_pdb_file2[1024];
+   char full_local_pdb_file2[FILENAME_MAX];
    struct pi_file *pf1, *pf2;
    struct DBInfo infop;
    void *app_info;
@@ -2698,8 +2697,7 @@ int pdb_file_write_dbinfo(char *full_DB_name, struct DBInfo *Pinfo_in)
 
    jp_logf(JP_LOG_DEBUG, "pdb_file_write_dbinfo\n");
 
-   g_snprintf(full_local_pdb_file2, 1020, "%s2", full_DB_name);
-   full_local_pdb_file2[1020]='\0';
+   g_snprintf(full_local_pdb_file2, sizeof(full_local_pdb_file2), "%s2", full_DB_name);
 
    /* After we are finished, set the create and modify times of new file
       to the same as the old */
@@ -2743,3 +2741,4 @@ int pdb_file_write_dbinfo(char *full_DB_name, struct DBInfo *Pinfo_in)
 
    return 0;
 }
+

@@ -6,11 +6,11 @@ its name because it isn't allowed to use GNU in the name.  Just a warning.
 KeyRing can be found at:
 http://gnukeyring.sourceforge.net
 
-I used opensll for encryption.  You will have to get it and install it on
+I used OpenSSL for encryption.  You will have to get it and install it on
 your own.  Since the U.S.A. exports on encryption have been weakened it
 should be freely available and included in new distributions.
 
-There is no autoconf (configure) detection of openssl, so you may have to
+There is no autoconf (configure) detection of OpenSSL, so you may have to
 edit the Makefile appropriately if its not installed in a standard place.
 
 BUGS:
@@ -23,7 +23,7 @@ BUGS:
  Sort order isn't the same as on the palm.
  
 TODO:
- Update Configure script to detect openssl.
+ Update Configure script to detect OpenSSL.
  This requires a newer version of autoconf for me so I didn't do it right
  away.
 

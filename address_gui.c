@@ -84,7 +84,7 @@ char *field_names_ja[]={"kana(Last)", "Last",  "kana(First)", "First",
 #define ADDRESS_MAX_COLUMN_LEN 80
 
 GtkWidget *clist;
-GtkWidget *address_text[22];
+GtkWidget *address_text[NUM_ADDRESS_ENTRIES+NUM_ADDRESS_EXT_ENTRIES];
 GtkWidget *text;
 GtkWidget *vscrollbar;
 static GtkWidget *private_checkbox;
@@ -329,7 +329,6 @@ int address_print()
 
 int address_to_text(struct Address *addr, char *text, int len)
 {
-
    g_snprintf(text, len,
 	      "%s: %s\n%s: %s\n%s: %s\n%s: %s\n%s: %s\n"
 	      "%s: %s\n%s: %s\n%s: %s\n%s: %s\n%s: %s\n"
@@ -363,7 +362,6 @@ int address_to_text(struct Address *addr, char *text, int len)
 	      field_names[23], addr->phoneLabel[4],
 	      field_names[24], addr->showPhone
 	      );
-   text[len-1]='\0';
    return 0;
 }
 
@@ -398,11 +396,11 @@ int address_import_callback(GtkWidget *parent_window, const char *file_path, int
    if (type==IMPORT_TYPE_CSV) {
       jp_logf(JP_LOG_DEBUG, "Address import CSV [%s]\n", file_path);
       /* The first line is format, so we don't need it */
-      fgets(text, 1000, in);
+      fgets(text, sizeof(text), in);
       import_all=FALSE;
       while (1) {
 	 /* Read the category field */
-	 ret = read_csv_field(in, text, 65535);
+	 ret = read_csv_field(in, text, sizeof(text));
 	 if (feof(in)) break;
 #ifdef JPILOT_DEBUG
 	 printf("category is [%s]\n", text);
@@ -423,7 +421,7 @@ int address_import_callback(GtkWidget *parent_window, const char *file_path, int
 	 }
 
 	 /* Read the private field */
-	 ret = read_csv_field(in, text, 65535);
+	 ret = read_csv_field(in, text, sizeof(text));
 #ifdef JPILOT_DEBUG
 	 printf("private is [%s]\n", text);
 #endif
@@ -431,20 +429,17 @@ int address_import_callback(GtkWidget *parent_window, const char *file_path, int
 
 	 for (i=0; i<19; i++) {
 	    new_addr.entry[order[i]]=NULL;
-	    ret = read_csv_field(in, text, 65535);
-	    text[65535]='\0';
+	    ret = read_csv_field(in, text, sizeof(text));
 	    new_addr.entry[order[i]]=strdup(text);
 	 }
 	 for (i=0; i<5; i++) {
-	    ret = read_csv_field(in, text, 65535);
-	    text[65535]='\0';
+	    ret = read_csv_field(in, text, sizeof(text));
 	    sscanf(text, "%d", &(new_addr.phoneLabel[i]));
 	 }
-	 ret = read_csv_field(in, text, 65535);
-	 text[65535]='\0';
+	 ret = read_csv_field(in, text, sizeof(text));
 	 sscanf(text, "%d", &(new_addr.showPhone));
 
-	 address_to_text(&new_addr, text, 65535);
+	 address_to_text(&new_addr, text, sizeof(text));
 	 if (!import_all) {
 	    ret=import_record_ask(parent_window, pane,
 				  text,
@@ -507,7 +502,7 @@ int address_import_callback(GtkWidget *parent_window, const char *file_path, int
 
 	 ret=0;
 	 if (!import_all) {
-	    address_to_text(&(temp_addrlist->ma.a), text, 65535);
+	    address_to_text(&(temp_addrlist->ma.a), text, sizeof(text));
 	    ret=import_record_ask(parent_window, pane,
 				  text,
 				  &(address_app_info.category),
@@ -635,25 +630,25 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
    /* this stuff is for vcard only. */
    /* todo: create a pre-export switch */
    get_pref(PREF_USER, &userid, &svalue);
-   strncpy(text, svalue, 127);
-   text[127]='\0';
+   strncpy(text, svalue, sizeof(text));
+   text[sizeof(text)-1]='\0';
    str_to_ical_str(username, sizeof(username), text);
    get_pref(PREF_USER_ID, &userid, &svalue);
-   gethostname(text, 127);
-   text[127]='\0';
+   gethostname(text, sizeof(text));
+   text[sizeof(text)-1]='\0';
    str_to_ical_str(hostname, sizeof(hostname), text);
 
    list=GTK_CLIST(clist)->selection;
 
    if (!stat(filename, &statb)) {
       if (S_ISDIR(statb.st_mode)) {
-	 g_snprintf(text, 1024, _("%s is a directory"), filename);
+	 g_snprintf(text, sizeof(text), _("%s is a directory"), filename);
 	 dialog_generic(GTK_WINDOW(export_window),
 			0, 0, _("Error Opening File"),
 			"Directory", text, 1, button_text);
 	 return;
       }
-      g_snprintf(text, 1024, _("Do you want to overwrite file %s?"), filename);
+      g_snprintf(text, sizeof(text), _("Do you want to overwrite file %s?"), filename);
       r = dialog_generic(GTK_WINDOW(export_window),
 			 0, 0, _("Overwrite File?"),
 			 _("Overwrite File"), text, 2, button_overwrite_text);
@@ -664,7 +659,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 
    out = fopen(filename, "w");
    if (!out) {
-      g_snprintf(text, 1024, "Error Opening File: %s", filename);
+      g_snprintf(text, sizeof(text), "Error Opening File: %s", filename);
       dialog_generic(GTK_WINDOW(export_window),
 		     0, 0, _("Error Opening File"),
 		     "Filename", text, 1, button_text);
@@ -683,10 +678,9 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 get_pref_time_no_secs(pref_time);
 	 time(&ltime);
 	 now = localtime(&ltime);
-	 strftime(str1, 50, short_date, now);
-	 strftime(str2, 50, pref_time, now);
-	 g_snprintf(text, 100, "%s %s", str1, str2);
-	 text[100]='\0';
+	 strftime(str1, sizeof(str1), short_date, now);
+	 strftime(str2, sizeof(str2), pref_time, now);
+	 g_snprintf(text, sizeof(text), "%s %s", str1, str2);
 
 	 /* Todo Should I translate these? */
 	 fprintf(out, "Address: exported from %s on %s\n", PN, text);
@@ -1147,7 +1141,7 @@ static void cb_add_new_record(GtkWidget *widget,
    char *str0, *str1, *str2;
    long use_jos, char_set;
 
-   bzero(&a, sizeof(a));
+   memset(&a, 0, sizeof(a));
    unique_id=0;
    ma=NULL;
 
@@ -1345,11 +1339,11 @@ void cb_dialer(GtkWidget *widget, gpointer data)
    if (!str) return;
    printf("[%s]\n", str);
 
-   parse_phone_str(number, str, 90);
+   parse_phone_str(number, str, sizeof(number));
 
    Px = strstr(str, "x");
    if (Px) {
-      parse_phone_str(ext, Px, 90);
+      parse_phone_str(ext, Px, sizeof(ext));
    }
    g_free(str);
 
@@ -1368,7 +1362,7 @@ void cb_address_quickfind(GtkWidget *widget,
    if (!strlen(entry_text)) {
       return;
    }
-   /*100000 is just to prevent ininite looping during a solar flare */
+   /* 100000 is just paranoia, shouldn't happen */
    for (found = i = 0; i<100000; i++) {
       r = gtk_clist_get_text(GTK_CLIST(clist), i, ADDRESS_NAME_COLUMN, &clist_text);
       if (!r) {
@@ -1433,7 +1427,7 @@ static void clear_myaddress(MyAddress *ma)
 static void cb_edit_cats(GtkWidget *widget, gpointer data)
 {
    struct AddressAppInfo ai;
-   char full_name[256];
+   char full_name[FILENAME_MAX];
    char buffer[65536];
    int num, r;
    int size;
@@ -1442,10 +1436,10 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
 
    jp_logf(JP_LOG_DEBUG, "cb_edit_cats\n");
 
-   get_home_file_name("AddressDB.pdb", full_name, 250);
+   get_home_file_name("AddressDB.pdb", full_name, sizeof(full_name));
 
    buf=NULL;
-   bzero(&ai, sizeof(ai));
+   memset(&ai, 0, sizeof(ai));
 
    pf = pi_file_open(full_name);
    r = pi_file_get_app_info(pf, &buf, &size);
@@ -1460,7 +1454,7 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
 
    edit_cats(widget, "AddressDB", &(ai.category));
 
-   size = pack_AddressAppInfo(&ai, (unsigned char*)buffer, 65535);
+   size = pack_AddressAppInfo(&ai, (unsigned char*)buffer, sizeof(buffer));
 
    pdb_file_write_app_block("AddressDB", buffer, size);
 

@@ -373,7 +373,7 @@ int get_address_app_info(struct AddressAppInfo *ai)
    unsigned char *buf;
    long char_set;
 
-   bzero(ai, sizeof(*ai));
+   memset(ai, 0, sizeof(*ai));
    /* Put at least one entry in there */
    strcpy(ai->category.name[0], "Unfiled");
 

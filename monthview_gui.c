@@ -158,7 +158,7 @@ cb_enter_notify(GtkWidget *widget, GdkEvent *event, gpointer data)
 	 desc[0]='\0';
       } else {
 	 get_pref_time_no_secs(datef);
-	 strftime(desc, 20, datef, &(temp_al->ma.a.begin));
+	 strftime(desc, sizeof(desc), datef, &(temp_al->ma.a.begin));
       }
       strcat(desc, " ");
       if (temp_al->ma.a.description) {
@@ -207,7 +207,7 @@ void create_month_texts()
    GdkColormap *colormap;
 
    /* Month name label */
-   strftime(str, 60, "%B %Y", &glob_month_date);
+   strftime(str, sizeof(str), "%B %Y", &glob_month_date);
    gtk_label_set_text(GTK_LABEL(glob_month_month_label), str);
 
    get_month_info(glob_month_date.tm_mon, 1, glob_month_date.tm_year, &dow, &ndim);
@@ -324,7 +324,7 @@ int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
 	       desc[0]='\0';
 	    } else {
 	       get_pref_time_no_secs(datef);
-	       strftime(desc, 20, datef, &(temp_al->ma.a.begin));
+	       strftime(desc, sizeof(desc), datef, &(temp_al->ma.a.begin));
 	    }
 	    strcat(desc, " ");
 	    if (temp_al->ma.a.description) {
@@ -385,8 +385,7 @@ void monthview_gui(struct tm *date_in)
 
    window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
    gtk_container_set_border_width(GTK_CONTAINER(window), 10);
-   g_snprintf(title, 200, "%s %s", PN, _("Monthly View"));
-   title[199]='\0';
+   g_snprintf(title, sizeof(title), "%s %s", PN, _("Monthly View"));
    gtk_window_set_title(GTK_WINDOW(window), title);
 
    gtk_signal_connect(GTK_OBJECT(window), "destroy",
@@ -436,7 +435,7 @@ void monthview_gui(struct tm *date_in)
 
 
    /* Month name label */
-   strftime(str, 60, "%B %Y", &glob_month_date);
+   strftime(str, sizeof(str), "%B %Y", &glob_month_date);
    glob_month_month_label = gtk_label_new(str);
    gtk_box_pack_start(GTK_BOX(vbox), glob_month_month_label, TRUE, TRUE, 0);
 

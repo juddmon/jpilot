@@ -470,13 +470,13 @@ void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 
    if (!stat(filename, &statb)) {
       if (S_ISDIR(statb.st_mode)) {
-	 g_snprintf(text, 1024, _("%s is a directory"), filename);
+	 g_snprintf(text, sizeof(text), _("%s is a directory"), filename);
 	 dialog_generic(GTK_WINDOW(export_window),
 			0, 0, _("Error Opening File"),
 			"Directory", text, 1, button_text);
 	 return;
       }
-      g_snprintf(text, 1024, _("Do you want to overwrite file %s?"), filename);
+      g_snprintf(text,sizeof(text), _("Do you want to overwrite file %s?"), filename);
       r = dialog_generic(GTK_WINDOW(export_window),
 			 0, 0, _("Overwrite File?"),
 			 _("Overwrite File"), text, 2, button_overwrite_text);
@@ -487,7 +487,7 @@ void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 
    out = fopen(filename, "w");
    if (!out) {
-      g_snprintf(text, 1024, "Error Opening File: %s", filename);
+      g_snprintf(text,sizeof(text), "Error Opening File: %s", filename);
       dialog_generic(GTK_WINDOW(export_window),
 		     0, 0, _("Error Opening File"),
 		     "Filename", text, 1, button_text);
@@ -530,10 +530,9 @@ void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 get_pref_time_no_secs(pref_time);
 	 time(&ltime);
 	 now = localtime(&ltime);
-	 strftime(str1, 50, short_date, now);
-	 strftime(str2, 50, pref_time, now);
-	 g_snprintf(text, 100, "%s %s", str1, str2);
-	 text[100]='\0';
+	 strftime(str1, sizeof(str1), short_date, now);
+	 strftime(str2, sizeof(str2), pref_time, now);
+	 g_snprintf(text, sizeof(text), "%s %s", str1, str2);
 
 	 /* Todo Should I translate these? */
 	 fprintf(out, "Memo: %ld, exported from %s on %s\n",
@@ -832,9 +831,9 @@ static void clear_mymemo(MyMemo *mmemo)
 static void cb_edit_cats(GtkWidget *widget, gpointer data)
 {
    struct MemoAppInfo ai;
-   char db_name[256];
-   char pdb_name[256];
-   char full_name[256];
+   char db_name[FILENAME_MAX];
+   char pdb_name[FILENAME_MAX];
+   char full_name[FILENAME_MAX];
    unsigned char buffer[65536];
    int num, r;
    int size;
@@ -852,10 +851,10 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
       strcpy(pdb_name, "MemoDB.pdb");
       strcpy(db_name, "MemoDB");
    }
-   get_home_file_name(pdb_name, full_name, 250);
+   get_home_file_name(pdb_name, full_name, sizeof(pdb_name));
 
    buf=NULL;
-   bzero(&ai, sizeof(ai));
+   memset(&ai, 0, sizeof(ai));
 
    pf = pi_file_open(full_name);
    r = pi_file_get_app_info(pf, &buf, &size);
@@ -870,7 +869,7 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
 
    edit_cats(widget, db_name, &(ai.category));
 
-   size = pack_MemoAppInfo(&ai, buffer, 65535);
+   size = pack_MemoAppInfo(&ai, buffer, sizeof(buffer));
 
    pdb_file_write_app_block("MemoDB", buffer, size);
 

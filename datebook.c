@@ -251,7 +251,7 @@ int db3_parse_tag(char *note, int *type, struct db4_struct *db4)
 
    /* We need to guarantee these to be set upon return */
    if (db4) {
-      bzero(db4, sizeof(struct db4_struct));
+      memset(db4, 0, sizeof(*db4));
    }
    *type=DB3_TAG_TYPE_NONE;
 
@@ -690,7 +690,7 @@ int get_datebook_app_info(struct AppointmentAppInfo *ai)
    unsigned char *buf;
    long char_set;
 
-   bzero(ai, sizeof(*ai));
+   memset(ai, 0, sizeof(*ai));
    /* Put at least one entry in there */
    strcpy(ai->category.name[0], "Unfiled");
 
@@ -726,7 +726,7 @@ int weed_datebook_list(AppointmentList **al, int mon, int year, int *mask)
    int ret;
    int trash_it;
 
-   bzero(&tm_fdom, sizeof(tm_fdom));
+   memset(&tm_fdom, 0, sizeof(tm_fdom));
    tm_fdom.tm_hour=11;
    tm_fdom.tm_mday=1;
    tm_fdom.tm_mon=mon;
@@ -869,7 +869,7 @@ int appointment_on_day_list(int mon, int year, int *mask)
    int dow, ndim, num;
    int bit;
 
-   bzero(&tm_dom, sizeof(tm_dom));
+   memset(&tm_dom, 0, sizeof(tm_dom));
    tm_dom.tm_hour=11;
    tm_dom.tm_mday=1;
    tm_dom.tm_mon=mon;

@@ -87,16 +87,15 @@ static gboolean cb_destroy_dialog(GtkWidget *widget)
 
 static void set_prefix_label(struct dialog_data *Pdata)
 {
-   char str[80];
+   char str[70];
    
-   g_snprintf(str, 70, "%s%s%s",
+   g_snprintf(str, sizeof(str), "%s%s%s",
 	      GTK_TOGGLE_BUTTON(Pdata->check_pre1)->active ?
 	      gtk_entry_get_text(GTK_ENTRY(Pdata->entry_pre1)) : "",
 	      GTK_TOGGLE_BUTTON(Pdata->check_pre2)->active ?
 	      gtk_entry_get_text(GTK_ENTRY(Pdata->entry_pre2)) : "",
 	      GTK_TOGGLE_BUTTON(Pdata->check_pre3)->active ?
 	      gtk_entry_get_text(GTK_ENTRY(Pdata->entry_pre3)) : "");
-   str[70]='\0';
    gtk_label_set_text(GTK_LABEL(Pdata->label_prefix), str);
 }
 
@@ -108,7 +107,7 @@ static void cb_prefix_change(GtkWidget *widget, gpointer data)
 static void dialer(gpointer data, int phone_or_ext)
 {
    struct dialog_data *Pdata;
-   char str[80];
+   char str[70];
    char null_str[]="";
    const char *Pext;
    char command[1024];
@@ -118,7 +117,7 @@ static void dialer(gpointer data, int phone_or_ext)
    
    Pdata=data;
    if (phone_or_ext==CHOOSE_PHONE) {
-      g_snprintf(str, 70, "%s%s%s%s",
+      g_snprintf(str, sizeof(str), "%s%s%s%s",
 		 GTK_TOGGLE_BUTTON(Pdata->check_pre1)->active ?
 		 gtk_entry_get_text(GTK_ENTRY(Pdata->entry_pre1)) : "",
 		 GTK_TOGGLE_BUTTON(Pdata->check_pre2)->active ?
@@ -130,14 +129,14 @@ static void dialer(gpointer data, int phone_or_ext)
    if (phone_or_ext==CHOOSE_EXT) {
       Pext=gtk_entry_get_text(GTK_ENTRY(Pdata->entry_ext));
       if (!Pext) Pext=null_str;
-      strncpy(str, Pext, 70);
+      strncpy(str, Pext, sizeof(str));
    }
-   str[70]='\0';
+   str[sizeof(str)-1]='\0';
 
 
    pref_command = gtk_entry_get_text(GTK_ENTRY(Pdata->entry_command));
    /* Make a system call command string */
-   bzero(command, 1024);
+   memset(command, 0, sizeof(command));
    for (i=0; i<MAX_PREF_VALUE-1; i++) {
       c1 = pref_command[i];
       c2 = pref_command[i+1];

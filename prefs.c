@@ -259,9 +259,9 @@ static int get_rcfile_name(int n, char *rc_copy)
 {
    DIR *dir;
    struct dirent *dirent;
-   char full_name[256];
+   char full_name[FILENAME_MAX];
    int i;
-   char filename[256];
+   char filename[FILENAME_MAX];
    int found, count;
    struct name_list *temp_list, *new_entry;
 
@@ -293,7 +293,7 @@ static int get_rcfile_name(int n, char *rc_copy)
 	 closedir(dir);
       }
 
-      get_home_file_name("", full_name, 255);
+      get_home_file_name("", full_name, sizeof(full_name));
       jp_logf(JP_LOG_DEBUG, "opening dir %s\n", full_name);
       dir = opendir(full_name);
       if (dir) {

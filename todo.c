@@ -334,7 +334,7 @@ int get_todo_app_info(struct ToDoAppInfo *ai)
 #endif
    char DBname[32];
 
-   bzero(ai, sizeof(*ai));
+   memset(ai, 0, sizeof(*ai));
    buf=NULL;
    /* Put at least one entry in there */
    strcpy(ai->category.name[0], "Unfiled");

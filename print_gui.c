@@ -172,8 +172,7 @@ int print_gui(GtkWidget *main_window, int app, int date_button, int mon_week_day
 
 
    gtk_container_set_border_width(GTK_CONTAINER(window), 10);
-   g_snprintf(temp, 255, "%s %s", PN, _("Print Options"));
-   temp[255]='\0';
+   g_snprintf(temp, sizeof(temp), "%s %s", PN, _("Print Options"));
    gtk_window_set_title(GTK_WINDOW(window), temp);
 
    gtk_signal_connect(GTK_OBJECT(window), "destroy",

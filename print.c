@@ -106,7 +106,7 @@ int puttext(float x, float y, char *text)
 
    len = strlen(text);
    buf = (char *) malloc(2 * len + 1);
-   bzero(buf, 2 * len + 1);
+   memset(buf, 0, 2 * len + 1);
    ps_strncat(buf, text, 2 * len);
    fprintf(out, "%g inch %g inch moveto (%s) show\n", x, y, buf);
    free(buf);
@@ -183,13 +183,13 @@ int print_dayview(struct tm *date, AppointmentList *a_list)
    fprintf(out, "/Times-Bold-ISOLatin1 findfont 20 scalefont setfont\n"
            "newpath 0 setgray\n");
    get_pref(PREF_LONGDATE, &ivalue, &svalue);
-   /* strftime(str, 80, "%B %d, %Y", date); */
-   strftime(str, 80, svalue, date);
+   /* strftime(str, sizeof(str), "%B %d, %Y", date); */
+   strftime(str, sizeof(str), svalue, date);
    puttext(0.5, 10.25, str);
 
    /* Put the weekday name up */
    fprintf(out, "/Times-Roman-ISOLatin1 findfont 15 scalefont setfont\n");
-   strftime(str, 80, "%A", date);
+   strftime(str, sizeof(str), "%A", date);
    puttext(0.5, 10, str);
 
    /* Put the time of printing up */
@@ -199,8 +199,8 @@ int print_dayview(struct tm *date, AppointmentList *a_list)
    time(&ltime);
    now = localtime(&ltime);
    get_pref(PREF_SHORTDATE, &ivalue, &svalue);
-   g_snprintf(datef, 80, "%s %s", "Printed on: ", svalue);
-   strftime(str, 80, datef, now);
+   g_snprintf(datef, sizeof(date), "%s %s", "Printed on: ", svalue);
+   strftime(str, sizeof(str), datef, now);
    puttext(0.5, 0.9, str);
    puttext(7.5, 0.9, "J-Pilot");
    fprintf(out, "stroke\n");
@@ -276,7 +276,7 @@ int fill_in(struct tm *date, AppointmentList *a_list)
 	    }
 
 	    get_pref_time_no_secs(datef);
-	    strftime(str, 32, datef, &temp_al->ma.a.begin);
+	    strftime(str, sizeof(str), datef, &temp_al->ma.a.begin);
 
 	    if (hour24 > 11) {
 	       x=indent2;
@@ -515,9 +515,8 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
 	    tmp[0]='\0';
 	    if ( ! temp_al->ma.a.event) {
 	       get_pref_time_no_secs(datef1);
-	       g_snprintf(datef2, 19, "(%s )", datef1);
-	       datef2[19]='\0';
-	       strftime(tmp, 19, datef2, &(temp_al->ma.a.begin));
+	       g_snprintf(datef2, sizeof(datef2), "(%s )", datef1);
+	       strftime(tmp, sizeof(tmp), datef2, &(temp_al->ma.a.begin));
 	       tmp[19]='\0';
 	    }
 	    desc[0]='\0';
@@ -537,7 +536,7 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
    sub_months_from_date(&date, 1);
    date.tm_mday = 1;	/* Go to the first of the month */
    mktime(&date);
-   strftime(desc, 50, "(%B %Y) %w ", &date);
+   strftime(desc, sizeof(desc), "(%B %Y) %w ", &date);
    fprintf(out, "\n\n%%----------------------------------------\n"
            "%% Now generate the small months\n\n"
            "%s %d ", desc, days_in_mon(&date));
@@ -546,7 +545,7 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
    add_months_to_date(&date, 1);
    date.tm_mday = 1;	/* Go to the first of the month */
    mktime(&date);
-   strftime(desc, 50, "(%B %Y) %w ", &date);
+   strftime(desc, sizeof(desc), "(%B %Y) %w ", &date);
    fprintf(out, "%s %d SmallMonths\n", desc, days_in_mon(&date));
 
    /*------------------------------------------------------------------*/
@@ -703,7 +702,7 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
    memcpy(&date, date_in, sizeof(struct tm));
 
    for (n = 0; n < 7; n++, add_days_to_date(&date, 1)) {
-      strftime(short_date, 30, "%a, %d %b, %Y", &date);
+      strftime(short_date, sizeof(short_date), "%a, %d %b, %Y", &date);
       fprintf(out, "%d startday\n(%s) dateline\n", n, short_date);
 
       for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
@@ -719,8 +718,8 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
 	 }
 #endif
 	 if (isApptOnDate(&(temp_al->ma.a), &date)) {
-	    bzero(desc, 256);
-	    bzero(short_date, 32);
+	    memset(desc, 0, sizeof(desc));
+	    memset(short_date, 0, sizeof(short_date));
 
 	    if ( ! temp_al->ma.a.event)
 	      {
@@ -775,7 +774,7 @@ int print_address_header()
    date = localtime(&ltime);
 
    get_pref(PREF_SHORTDATE, &ivalue, &svalue);
-   strftime(str, 250, svalue, date);
+   strftime(str, sizeof(str), svalue, date);
 
    fprintf(out,
 	   "%%!PS-Adobe-2.0\n"
@@ -1032,7 +1031,7 @@ int print_addresses(AddressList *address_list)
       str[0]='\0';
       if (temp_al->ma.a.entry[show1] || temp_al->ma.a.entry[show2]) {
 	 if (temp_al->ma.a.entry[show1] && temp_al->ma.a.entry[show2]) {
-	    g_snprintf(str, 48, "%s, %s", temp_al->ma.a.entry[show1], temp_al->ma.a.entry[show2]);
+	    g_snprintf(str, sizeof(str), "%s, %s", temp_al->ma.a.entry[show1], temp_al->ma.a.entry[show2]);
 	 }
 	 if (temp_al->ma.a.entry[show1] && ! temp_al->ma.a.entry[show2]) {
 	    strncpy(str, temp_al->ma.a.entry[show1], 48);
@@ -1124,7 +1123,7 @@ int print_todos(ToDoList *todo_list, char *category_name)
 
    get_pref(PREF_SHORTDATE, &ivalue, &datef);
    now = localtime(&ltime);
-   strftime(str, 80, datef, now);
+   strftime(str, sizeof(str), datef, now);
    indent=strlen(str) + 8;
 
    for (temp_l = todo_list; temp_l; temp_l=temp_l->next) {
@@ -1138,7 +1137,7 @@ int print_todos(ToDoList *todo_list, char *category_name)
 	 sprintf(str, "%s           ", "No Due");
 	 str[indent-8]='\0';
       } else {
-	 strftime(str, 20, datef, &(todo->due));
+	 strftime(str, sizeof(str), datef, &(todo->due));
       }
       fprintf(out, "(%s) ", str);
 

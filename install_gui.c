@@ -252,8 +252,7 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y)
 
    line_selected = -1;
 
-   g_snprintf(temp, 255, "%s %s", PN, _("Install"));
-   temp[255]='\0';
+   g_snprintf(temp, sizeof(temp), "%s %s", PN, _("Install"));
    filew = gtk_widget_new(GTK_TYPE_FILE_SELECTION,
 			  "type", GTK_WINDOW_TOPLEVEL,
 			  "title", temp,
@@ -283,8 +282,8 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y)
 		      "clicked", GTK_SIGNAL_FUNC(cb_add), filew);
 
 
-   strncpy(temp, _("Files to be installed"), 255);
-   temp[255]='\0';
+   strncpy(temp, _("Files to be installed"), sizeof(temp));
+   temp[sizeof(temp)-1]='\0';
    titles[0]=temp;
    clist = gtk_clist_new_with_titles(1, titles);
    gtk_widget_set_usize(GTK_WIDGET(clist), 0, 166);

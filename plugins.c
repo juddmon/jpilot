@@ -75,7 +75,7 @@ int load_plugins_sub1(DIR *dir, char *path, int *number, unsigned char user_only
    int i, r;
    int count;
    struct dirent *dirent;
-   char full_name[256];
+   char full_name[FILENAME_MAX];
    struct plugin_s temp_plugin, *new_plugin;
 
    count = 0;
@@ -91,7 +91,7 @@ int load_plugins_sub1(DIR *dir, char *path, int *number, unsigned char user_only
       } else {
 	 jp_logf(JP_LOG_DEBUG, "found plugin %s\n", dirent->d_name);
 	 /* We know path has a trailing slash after it */
-	 g_snprintf(full_name, 250, "%s%s", path, dirent->d_name);
+	 g_snprintf(full_name, sizeof(full_name), "%s%s", path, dirent->d_name);
 	 r = get_plugin_info(&temp_plugin, full_name);
 	 temp_plugin.number = *number;
 	 temp_plugin.user_only = user_only;
@@ -125,7 +125,7 @@ int load_plugins_sub1(DIR *dir, char *path, int *number, unsigned char user_only
 int load_plugins()
 {
    DIR *dir;
-   char path[256];
+   char path[FILENAME_MAX];
    int count, number;
    GList *temp_list;
 
@@ -134,7 +134,7 @@ int load_plugins()
    plugins = NULL;
 
    /* ABILIB is for Irix, should normally be "lib" */
-   g_snprintf(path, 250, "%s/%s/%s/%s/", BASE_DIR, ABILIB, EPN, "plugins");
+   g_snprintf(path, sizeof(path), "%s/%s/%s/%s/", BASE_DIR, ABILIB, EPN, "plugins");
    jp_logf(JP_LOG_DEBUG, "opening dir %s\n", path);
    cleanup_path(path);
    dir = opendir(path);
@@ -143,7 +143,7 @@ int load_plugins()
       closedir(dir);
    }
 
-   get_home_file_name("plugins/", path, 240);
+   get_home_file_name("plugins/", path, sizeof(path));
    cleanup_path(path);
    jp_logf(JP_LOG_DEBUG, "opening dir %s\n", path);
    dir = opendir(path);

@@ -713,13 +713,13 @@ void cb_app_button(GtkWidget *widget, gpointer data)
 
 void cb_sync(GtkWidget *widget, unsigned int flags)
 {
-   char file[300];
-   char home_dir[300];
+   char file[FILENAME_MAX];
+   char home_dir[FILENAME_MAX];
    struct stat buf;
 
    /* If there are files to be installed, ask the user right before sync */
-   get_home_file_name("", home_dir, 298);
-   g_snprintf(file, 298, "%s/"EPN"_to_install", home_dir);
+   get_home_file_name("", home_dir, sizeof(home_dir));
+   g_snprintf(file, sizeof(file), "%s/"EPN"_to_install", home_dir);
 
    if (!stat(file, &buf)) {
       if (buf.st_size > 0) {
@@ -963,9 +963,9 @@ void cb_about(GtkWidget *widget, gpointer data)
    char about[256];
    char options[1024];
 
-   g_snprintf(about, 250, _("About %s"), PN);
+   g_snprintf(about, sizeof(about), _("About %s"), PN);
 
-   get_compile_options(options, 1024);
+   get_compile_options(options, sizeof(options));
 
    if (GTK_IS_WINDOW(window)) {
       dialog_generic(GTK_WINDOW(window),
@@ -1165,65 +1165,64 @@ void get_main_menu(GtkWidget  *window,
 #ifdef WEBMENU
    menu_items1[i++].path=strdup(_("/Web"));
    menu_items1[i++].path=strdup(_("/Web/Netscape"));
-   g_snprintf(temp_str, 100, _("/Web/Netscape/%s"), url_commands[NETSCAPE_EXISTING].desc);
+   g_snprintf(temp_str, sizeof(temp_str), _("/Web/Netscape/%s"), url_commands[NETSCAPE_EXISTING].desc);
    menu_items1[i++].path=strdup(temp_str);
-   g_snprintf(temp_str, 100, _("/Web/Netscape/%s"), url_commands[NETSCAPE_NEW_WINDOW].desc);
+   g_snprintf(temp_str, sizeof(temp_str), _("/Web/Netscape/%s"), url_commands[NETSCAPE_NEW_WINDOW].desc);
    menu_items1[i++].path=strdup(temp_str);
-   g_snprintf(temp_str, 100, _("/Web/Netscape/%s"), url_commands[NETSCAPE_NEW].desc);
+   g_snprintf(temp_str, sizeof(temp_str), _("/Web/Netscape/%s"), url_commands[NETSCAPE_NEW].desc);
    menu_items1[i++].path=strdup(temp_str);
    menu_items1[i++].path=strdup(_("/Web/Mozilla"));
 
-   g_snprintf(temp_str, 100, _("/Web/Mozilla/%s"), url_commands[MOZILLA_EXISTING].desc);
+   g_snprintf(temp_str, sizeof(temp_str), _("/Web/Mozilla/%s"), url_commands[MOZILLA_EXISTING].desc);
    menu_items1[i++].path=strdup(temp_str);
-   g_snprintf(temp_str, 100, _("/Web/Mozilla/%s"), url_commands[MOZILLA_NEW_WINDOW].desc);
+   g_snprintf(temp_str, sizeof(temp_str), _("/Web/Mozilla/%s"), url_commands[MOZILLA_NEW_WINDOW].desc);
    menu_items1[i++].path=strdup(temp_str);
-   g_snprintf(temp_str, 100, _("/Web/Mozilla/%s"), url_commands[MOZILLA_NEW_TAB].desc);
+   g_snprintf(temp_str, sizeof(temp_str), _("/Web/Mozilla/%s"), url_commands[MOZILLA_NEW_TAB].desc);
    menu_items1[i++].path=strdup(temp_str);
-   g_snprintf(temp_str, 100, _("/Web/Mozilla/%s"), url_commands[MOZILLA_NEW].desc);
+   g_snprintf(temp_str, sizeof(temp_str), _("/Web/Mozilla/%s"), url_commands[MOZILLA_NEW].desc);
    menu_items1[i++].path=strdup(temp_str);
 
    menu_items1[i++].path=strdup(_("/Web/Galeon"));
-   g_snprintf(temp_str, 100, _("/Web/Galeon/%s"), url_commands[GALEON_EXISTING].desc);
+   g_snprintf(temp_str, sizeof(temp_str), _("/Web/Galeon/%s"), url_commands[GALEON_EXISTING].desc);
    menu_items1[i++].path=strdup(temp_str);
-   g_snprintf(temp_str, 100, _("/Web/Galeon/%s"), url_commands[GALEON_NEW_WINDOW].desc);
+   g_snprintf(temp_str, sizeof(temp_str), _("/Web/Galeon/%s"), url_commands[GALEON_NEW_WINDOW].desc);
    menu_items1[i++].path=strdup(temp_str);
-   g_snprintf(temp_str, 100, _("/Web/Galeon/%s"), url_commands[GALEON_NEW_TAB].desc);
+   g_snprintf(temp_str, sizeof(temp_str), _("/Web/Galeon/%s"), url_commands[GALEON_NEW_TAB].desc);
    menu_items1[i++].path=strdup(temp_str);
-   g_snprintf(temp_str, 100, _("/Web/Galeon/%s"), url_commands[GALEON_NEW].desc);
+   g_snprintf(temp_str, sizeof(temp_str), _("/Web/Galeon/%s"), url_commands[GALEON_NEW].desc);
    menu_items1[i++].path=strdup(temp_str);
 
    menu_items1[i++].path=strdup(_("/Web/Opera"));
-   g_snprintf(temp_str, 100, _("/Web/Opera/%s"), url_commands[OPERA_EXISTING].desc);
+   g_snprintf(temp_str, sizeof(temp_str), _("/Web/Opera/%s"), url_commands[OPERA_EXISTING].desc);
    menu_items1[i++].path=strdup(temp_str);
-   g_snprintf(temp_str, 100, _("/Web/Opera/%s"), url_commands[OPERA_NEW_WINDOW].desc);
+   g_snprintf(temp_str, sizeof(temp_str), _("/Web/Opera/%s"), url_commands[OPERA_NEW_WINDOW].desc);
    menu_items1[i++].path=strdup(temp_str);
-   g_snprintf(temp_str, 100, _("/Web/Opera/%s"), url_commands[OPERA_NEW].desc);
+   g_snprintf(temp_str, sizeof(temp_str), _("/Web/Opera/%s"), url_commands[OPERA_NEW].desc);
    menu_items1[i++].path=strdup(temp_str);
 
    menu_items1[i++].path=strdup(_("/Web/GnomeUrl"));
-   g_snprintf(temp_str, 100, _("/Web/GnomeUrl/%s"), url_commands[GNOME_URL].desc);
+   g_snprintf(temp_str, sizeof(temp_str), _("/Web/GnomeUrl/%s"), url_commands[GNOME_URL].desc);
    menu_items1[i++].path=strdup(temp_str);
 
    menu_items1[i++].path=strdup(_("/Web/Lynx"));
-   g_snprintf(temp_str, 100, _("/Web/Lynx/%s"), url_commands[LYNX_NEW].desc);
+   g_snprintf(temp_str, sizeof(temp_str), _("/Web/Lynx/%s"), url_commands[LYNX_NEW].desc);
    menu_items1[i++].path=strdup(temp_str);
 
    menu_items1[i++].path=strdup(_("/Web/Links"));
-   g_snprintf(temp_str, 100, _("/Web/Links/%s"), url_commands[LINKS_NEW].desc);
+   g_snprintf(temp_str, sizeof(temp_str), _("/Web/Links/%s"), url_commands[LINKS_NEW].desc);
    menu_items1[i++].path=strdup(temp_str);
 
    menu_items1[i++].path=strdup(_("/Web/W3M"));
-   g_snprintf(temp_str, 100, _("/Web/W3M/%s"), url_commands[W3M_NEW].desc);
+   g_snprintf(temp_str, sizeof(temp_str), _("/Web/W3M/%s"), url_commands[W3M_NEW].desc);
    menu_items1[i++].path=strdup(temp_str);
 
    menu_items1[i++].path=strdup(_("/Web/Konqueror"));
-   g_snprintf(temp_str, 100, _("/Web/Konqueror/%s"), url_commands[KONQUEROR_NEW].desc);
+   g_snprintf(temp_str, sizeof(temp_str), _("/Web/Konqueror/%s"), url_commands[KONQUEROR_NEW].desc);
    menu_items1[i++].path=strdup(temp_str);
 #endif
 
    menu_items1[i++].path=strdup(_("/_Help"));
-   g_snprintf(temp_str, 100, _("/_Help/%s"), PN);
-   temp_str[100]='\0';
+   g_snprintf(temp_str, sizeof(temp_str), _("/_Help/%s"), PN);
    menu_items1[i++].path=strdup(temp_str);
 
 #ifdef ENABLE_PLUGINS
@@ -1262,7 +1261,7 @@ void get_main_menu(GtkWidget  *window,
    for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
       p = (struct plugin_s *)temp_list->data;
       if (p->menu_name) {
-	 g_snprintf(temp_str, 60, _("/Plugins/%s"), p->menu_name);
+	 g_snprintf(temp_str, sizeof(temp_str), _("/Plugins/%s"), p->menu_name);
 	 plugin_menu_strings[str_i++]=strdup(temp_str);
       }
    }
@@ -1273,7 +1272,7 @@ void get_main_menu(GtkWidget  *window,
    for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
       p = (struct plugin_s *)temp_list->data;
       if (p->help_name) {
-	 g_snprintf(temp_str, 60, _("/_Help/%s"), p->help_name);
+	 g_snprintf(temp_str, sizeof(temp_str), _("/_Help/%s"), p->help_name);
 	 plugin_help_strings[str_i++]=strdup(temp_str);
       }
    }
@@ -1748,7 +1747,7 @@ char *xpm_unlocked[] = {
    for (i=1; i<argc; i++) {
       if (!strncasecmp(argv[i], "-v", 2)) {
 	 char options[1024];
-	 get_compile_options(options, 1024);
+	 get_compile_options(options, sizeof(options));
 	 printf("%s\n", options);
 	 exit(0);
       }

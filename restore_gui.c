@@ -49,17 +49,17 @@ cb_restore_ok(GtkWidget *widget, gpointer data)
 {
    GList *list, *temp_list;
    char *text;
-   char file[300], backup_file[300];
-   char home_dir[300];
+   char file[FILENAME_MAX], backup_file[FILENAME_MAX];
+   char home_dir[FILENAME_MAX];
    struct stat buf, backup_buf;
    int r1, r2;
    
    list=GTK_CLIST(restore_clist)->selection;
 
-   get_home_file_name("", home_dir, 255);
+   get_home_file_name("", home_dir, sizeof(home_dir));
 
    /* Remove anything that was supposed to be installed */
-   g_snprintf(file, 298, "%s/"EPN"_to_install", home_dir);
+   g_snprintf(file, sizeof(file), "%s/"EPN"_to_install", home_dir);
    unlink(file);
 
    jp_logf(JP_LOG_WARN, "-----===== Restore Handheld ======-----\n");
@@ -69,8 +69,8 @@ cb_restore_ok(GtkWidget *widget, gpointer data)
       /* Look for the file in the JPILOT_HOME and JPILOT_HOME/backup.
        * Restore the newest modified date one, or the only one.
        */
-      g_snprintf(file, 298, "%s/%s", home_dir, text);
-      g_snprintf(backup_file, 298, "%s/backup/%s", home_dir, text);
+      g_snprintf(file, sizeof(file), "%s/%s", home_dir, text);
+      g_snprintf(backup_file, sizeof(backup_file), "%s/backup/%s", home_dir, text);
       r1 = stat(file, &buf);
       r2 = stat(backup_file, &backup_buf);
       if ((!r1) && (!r2)) {
@@ -176,14 +176,14 @@ static int populate_clist_sub(char *path, int check_for_dups, int check_exts)
 
 static int populate_clist()
 {
-   char path[256];
+   char path[FILENAME_MAX];
    int i;
 
-   get_home_file_name("backup", path, 255);
+   get_home_file_name("backup", path, sizeof(path));
    cleanup_path(path);
    populate_clist_sub(path, 0, 0);
 
-   get_home_file_name("", path, 255);
+   get_home_file_name("", path, sizeof(path));
    cleanup_path(path);
    populate_clist_sub(path, 1, 1);
 

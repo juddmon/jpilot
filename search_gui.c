@@ -108,24 +108,22 @@ static int
 	 if (svalue1 == NULL) {
 	    strcpy(datef, "%x");
 	 } else {
-	    strncpy(datef, svalue1, 50);
+	    strncpy(datef, svalue1, sizeof(datef));
 	 }
-	 strftime(date_str, 50, datef, &temp_al->ma.a.begin);
-	 date_str[49]='\0';
+	 strftime(date_str, sizeof(date_str), datef, &temp_al->ma.a.begin);
+	 date_str[sizeof(date_str)-1]='\0';
 
 	 if (found == 1) {
-	    g_snprintf(str, 200, "%s  %s",
+	    g_snprintf(str, sizeof(str), "%s  %s",
 		       date_str,
 		       temp_al->ma.a.description);
-	    str[199] = '\0';
 	    lstrncpy_remove_cr_lfs(str2, str, SEARCH_MAX_COLUMN_LEN);
 	    gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str2);
 	 }
 	 if (found == 2) {
-	    g_snprintf(str, 200, "%s %s",
+	    g_snprintf(str, sizeof(str), "%s %s",
 		       date_str,
 		       temp_al->ma.a.note);
-	    str[199] = '\0';
 	    lstrncpy_remove_cr_lfs(str2, str, SEARCH_MAX_COLUMN_LEN);
 	    gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str2);
 	 }
@@ -487,8 +485,7 @@ void cb_search_gui(GtkWidget *widget, gpointer data)
    window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
    gtk_window_set_default_size(GTK_WINDOW(window), 500, 300);
    gtk_container_set_border_width(GTK_CONTAINER(window), 10);
-   g_snprintf(temp, 255, "%s %s", PN, _("Search"));
-   temp[255]='\0';
+   g_snprintf(temp, sizeof(temp), "%s %s", PN, _("Search"));
    gtk_window_set_title(GTK_WINDOW(window), temp);
 
    gtk_signal_connect(GTK_OBJECT(window), "destroy",

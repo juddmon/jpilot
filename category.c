@@ -110,9 +110,9 @@ int jp_count_records_in_cat(char *db_name, int cat_index)
  */
 int pdb_file_change_indexes(char *DB_name, int old_index, int new_index)
 {
-   char local_pdb_file[256];
-   char full_local_pdb_file[256];
-   char full_local_pdb_file2[256];
+   char local_pdb_file[FILENAME_MAX];
+   char full_local_pdb_file[FILENAME_MAX];
+   char full_local_pdb_file2[FILENAME_MAX];
    struct pi_file *pf1, *pf2;
    struct DBInfo infop;
    void *app_info;
@@ -130,8 +130,8 @@ int pdb_file_change_indexes(char *DB_name, int old_index, int new_index)
 
    jp_logf(JP_LOG_DEBUG, "pi_file_change_indexes\n");
 
-   g_snprintf(local_pdb_file, 250, "%s.pdb", DB_name);
-   get_home_file_name(local_pdb_file, full_local_pdb_file, 250);
+   g_snprintf(local_pdb_file, sizeof(local_pdb_file), "%s.pdb", DB_name);
+   get_home_file_name(local_pdb_file, full_local_pdb_file, sizeof(full_local_pdb_file));
    strcpy(full_local_pdb_file2, full_local_pdb_file);
    strcat(full_local_pdb_file2, "2");
 
@@ -186,14 +186,14 @@ int pdb_file_change_indexes(char *DB_name, int old_index, int new_index)
 
 int edit_cats_delete_cats_pc3(char *DB_name, int cat)
 {
-   char local_pc_file[256];
+   char local_pc_file[FILENAME_MAX];
    int num;
    FILE *pc_in;
    PC3RecordHeader header;
    int rec_len;
    int count=0;
 
-   g_snprintf(local_pc_file, 250, "%s.pc3", DB_name);
+   g_snprintf(local_pc_file, sizeof(local_pc_file), "%s.pc3", DB_name);
 
    pc_in = jp_open_home_file(local_pc_file, "r+");
    if (pc_in==NULL) {
@@ -243,14 +243,14 @@ int edit_cats_delete_cats_pc3(char *DB_name, int cat)
 int _edit_cats_change_cats_pc3(char *DB_name, int old_cat,
 			       int new_cat, int swap)
 {
-   char local_pc_file[256];
+   char local_pc_file[FILENAME_MAX];
    int num;
    FILE *pc_in;
    PC3RecordHeader header;
    int rec_len;
    int count=0;
 
-   g_snprintf(local_pc_file, 250, "%s.pc3", DB_name);
+   g_snprintf(local_pc_file, sizeof(local_pc_file), "%s.pc3", DB_name);
 
    pc_in = jp_open_home_file(local_pc_file, "r+");
    if (pc_in==NULL) {
@@ -436,7 +436,7 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 	    return;
 	 }
 	 if (Pdata->selected==0) {
-	    sprintf(temp, _("You can't edit category %s.\n"), Pdata->cai1.name[0]);
+	    g_snprintf(temp, sizeof(temp), _("You can't edit category %s.\n"), Pdata->cai1.name[0]);
 	    dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)), 0, 0,
 			   _("Edit Categories"), NULL,
 			   temp, 1, button_text);
@@ -477,7 +477,7 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 	 printf("count=%d\n", count);
 #endif
 	 if (count>0) {
-	    sprintf(temp, _("There are %d records in %s.\n"
+	    g_snprintf(temp, sizeof(temp), _("There are %d records in %s.\n"
 		    "Do you want to move them to %s, or delete them?"),
 		    count, Pdata->cai1.name[Pdata->selected], Pdata->cai1.name[0]);
 	    r = dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)), 0, 0,
@@ -555,7 +555,7 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 	    entry_text = gtk_entry_get_text(GTK_ENTRY(Pdata->entry));
 	    for (i=0; i<16; i++) {
 	       if (!strcmp(entry_text, Pdata->cai2.name[i])) {
-		  sprintf(temp, _("The category %s can't be used more than once"), entry_text);
+		  g_snprintf(temp, sizeof(temp), _("The category %s can't be used more than once"), entry_text);
 		  dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)), 0, 0,
 				 _("Edit Categories"), NULL,
 				 temp, 1, button_text);
