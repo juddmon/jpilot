@@ -2179,9 +2179,6 @@ char *xpm_unlocked[] = {
    gtk_widget_set_name(button_todo, "button_app");
    gtk_widget_set_name(button_memo, "button_app");
 
-   separator = gtk_hseparator_new();
-   gtk_box_pack_start(GTK_BOX(g_vbox0), separator, FALSE, TRUE, 5);
-
    /* Create tooltips */
    glob_tooltips = gtk_tooltips_new();
 
@@ -2199,9 +2196,9 @@ char *xpm_unlocked[] = {
        GTK_SIGNAL_FUNC(cb_private), GINT_TO_POINTER(HIDE_PRIVATES));
    gtk_signal_connect(GTK_OBJECT(button_unlocked), "clicked",
        GTK_SIGNAL_FUNC(cb_private), GINT_TO_POINTER(MASK_PRIVATES));
-   gtk_box_pack_start(GTK_BOX(g_vbox0), button_locked, FALSE, FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(g_vbox0), button_locked_masked, FALSE, FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(g_vbox0), button_unlocked, FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(g_vbox0), button_locked, FALSE, FALSE, 20);
+   gtk_box_pack_start(GTK_BOX(g_vbox0), button_locked_masked, FALSE, FALSE, 20);
+   gtk_box_pack_start(GTK_BOX(g_vbox0), button_unlocked, FALSE, FALSE, 20);
 
    gtk_tooltips_set_tip(glob_tooltips, button_locked,
 			_("Show private records   Ctrl-Z"), NULL);
@@ -2217,10 +2214,6 @@ char *xpm_unlocked[] = {
 			_("Mask private records   Ctrl-Z"), NULL);
    gtk_widget_add_accelerator(button_unlocked, "clicked", accel_group,
       GDK_z, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-
-   /*Separator */
-   separator = gtk_hseparator_new();
-   gtk_box_pack_start(GTK_BOX(g_vbox0), separator, FALSE, TRUE, 5);
 
    /* Create "Sync" button */
    button = gtk_button_new_with_label(_("Sync"));
