@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.78 2004/12/10 02:45:07 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.79 2004/12/17 20:28:55 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -1341,6 +1341,39 @@ gint GtkClistCompareCheckbox(GtkCList *clist,
 
 }
 
+/* Function is used to sort clist based on the Due Date field */
+gint GtkClistCompareDates(GtkCList *clist,
+                          gconstpointer ptr1,
+                          gconstpointer ptr2)
+{
+   GtkCListRow *row1,  *row2;
+   MyToDo      *mtodo1,*mtodo2;
+   struct ToDo *todo1, *todo2;
+   time_t       time1,  time2;
+
+   row1 = (GtkCListRow *) ptr1;
+   row2 = (GtkCListRow *) ptr2;
+
+   mtodo1 = row1->data;
+   mtodo2 = row2->data;
+
+   todo1 = &(mtodo1->todo);
+   todo2 = &(mtodo2->todo);
+
+   if ( !(todo1->indefinite) && (todo2->indefinite) ) {
+      return -1;
+   }
+   if ( (todo1->indefinite) && !(todo2->indefinite) ) {
+      return 1;
+   }
+
+   /* Both todos have due dates which requires further comparison */
+   time1 = mktime(&(todo1->due));
+   time2 = mktime(&(todo2->due));
+
+   return(time1 - time2);
+}
+
 static void cb_clist_click_column(GtkWidget *clist, int column)
 {
    /* Clicking on same column toggles ascending/descending sort */
@@ -1361,10 +1394,16 @@ static void cb_clist_click_column(GtkWidget *clist, int column)
    clist_col_selected = column;
 
    gtk_clist_set_sort_column(GTK_CLIST(clist), column);
-   if (column == 0) {
+   switch (column) {
+    case 0: /* Checkbox column */
       gtk_clist_set_compare_func(GTK_CLIST(clist),GtkClistCompareCheckbox);
-   } else {
+      break;
+    case 3: /* Due Date column */
+      gtk_clist_set_compare_func(GTK_CLIST(clist),GtkClistCompareDates);
+      break;
+    default: /* All other columns can use GTK default sort function */
       gtk_clist_set_compare_func(GTK_CLIST(clist),NULL);
+      break;
    }
    gtk_clist_sort (GTK_CLIST (clist));
 
