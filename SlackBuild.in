@@ -1,10 +1,11 @@
 PACKAGE=@PACKAGE@
 VERSION=@VERSION@
-tar czvf $PACKAGE-$VERSION.tgz \
+ARCH=i386
+RELEASE=1
+tar czvf $PACKAGE-$VERSION-$ARCH-$RELEASE.tgz \
 /usr/bin/jpilot \
 /usr/bin/jpilot-dump \
 /usr/bin/jpilot-sync \
-/usr/bin/jpilot-upgrade-99 \
 /usr/lib/jpilot/plugins/libexpense.la \
 /usr/lib/jpilot/plugins/libexpense.so \
 /usr/lib/jpilot/plugins/libexpense.so.0 \
@@ -68,5 +69,6 @@ tar czvf $PACKAGE-$VERSION.tgz \
 /usr/share/locale/no/LC_MESSAGES/jpilot.mo \
 /usr/share/locale/sv/LC_MESSAGES/jpilot.mo \
 /usr/share/locale/tr/LC_MESSAGES/jpilot.mo \
+/usr/share/locale/vi/LC_MESSAGES/jpilot.mo \
 /usr/share/locale/zh_CN/LC_MESSAGES/jpilot.mo \
 /usr/share/locale/zh_TW/LC_MESSAGES/jpilot.mo
