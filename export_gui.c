@@ -204,6 +204,7 @@ void cb_export_category(GtkWidget *item, int selection)
       if (glob_cb_export_menu) {
 	 glob_cb_export_menu(export_clist, export_category);
       }
+      gtk_clist_select_all(GTK_CLIST(export_clist));
       jpilot_logf(LOG_DEBUG, "Leaving cb_export_category()\n");
    }
 }
