@@ -2107,7 +2107,7 @@ char *xpm_unlocked[] = {
 		      GTK_SIGNAL_FUNC(cb_app_button), GINT_TO_POINTER(DATEBOOK));
    gtk_widget_set_usize(button_datebook, APP_BUTTON_SIZE, APP_BUTTON_SIZE);
    gtk_box_pack_start(GTK_BOX(g_vbox0), temp_hbox, FALSE, FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(temp_hbox), button_datebook, FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(temp_hbox), button_datebook, TRUE, FALSE, 0);
 
    /* Create "Address" button */
    temp_hbox = gtk_hbox_new(FALSE, 0);
@@ -2116,7 +2116,7 @@ char *xpm_unlocked[] = {
 		      GTK_SIGNAL_FUNC(cb_app_button), GINT_TO_POINTER(ADDRESS));
    gtk_widget_set_usize(button_address, APP_BUTTON_SIZE, APP_BUTTON_SIZE);
    gtk_box_pack_start(GTK_BOX(g_vbox0), temp_hbox, FALSE, FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(temp_hbox), button_address, FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(temp_hbox), button_address, TRUE, FALSE, 0);
 
    /* Create "Todo" button */
    temp_hbox = gtk_hbox_new(FALSE, 0);
@@ -2125,7 +2125,7 @@ char *xpm_unlocked[] = {
 		      GTK_SIGNAL_FUNC(cb_app_button), GINT_TO_POINTER(TODO));
    gtk_widget_set_usize(button_todo, APP_BUTTON_SIZE, APP_BUTTON_SIZE);
    gtk_box_pack_start(GTK_BOX(g_vbox0), temp_hbox, FALSE, FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(temp_hbox), button_todo, FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(temp_hbox), button_todo, TRUE, FALSE, 0);
 
    /* Create "memo" button */
    temp_hbox = gtk_hbox_new(FALSE, 0);
@@ -2134,7 +2134,7 @@ char *xpm_unlocked[] = {
 		      GTK_SIGNAL_FUNC(cb_app_button), GINT_TO_POINTER(MEMO));
    gtk_widget_set_usize(button_memo, APP_BUTTON_SIZE, APP_BUTTON_SIZE);
    gtk_box_pack_start(GTK_BOX(g_vbox0), temp_hbox, FALSE, FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(temp_hbox), button_memo, FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(temp_hbox), button_memo, TRUE, FALSE, 0);
 
    gtk_widget_set_name(button_datebook, "button_app");
    gtk_widget_set_name(button_address, "button_app");
