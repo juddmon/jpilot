@@ -172,7 +172,8 @@ int print_dayview(struct tm *date, AppointmentList *a_list)
    long ivalue;
 
 #ifdef HAVE_LOCALE_H
-   setlocale(LC_NUMERIC,"C");
+   char *current_locale;
+   current_locale = setlocale(LC_NUMERIC,"C");
 #endif
 
    header();
@@ -216,7 +217,7 @@ int print_dayview(struct tm *date, AppointmentList *a_list)
 	   "%%%%EOF\n");
 
 #ifdef HAVE_LOCALE_H
-   setlocale(LC_ALL,"");
+   setlocale(LC_ALL, current_locale);
 #endif
 
    return 0;
@@ -446,7 +447,8 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
 #endif
 
 #ifdef HAVE_LOCALE_H
-   setlocale(LC_NUMERIC, "C");
+   char *current_locale;
+   current_locale = setlocale(LC_NUMERIC,"C");
 #endif
    if (! (out = print_open())) return(-1);
    fprintf(out, "%%!PS-Adobe-2.0\n\n"
@@ -559,7 +561,7 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
    print_close(out);
 
 #ifdef HAVE_LOCALE_H
-   setlocale(LC_ALL, "");
+   setlocale(LC_ALL, current_locale);
 #endif
      return(0);
 }
@@ -633,7 +635,8 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
    get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
 #endif
 #ifdef HAVE_LOCALE_H
-   setlocale(LC_NUMERIC, "C");
+   char *current_locale;
+   current_locale = setlocale(LC_NUMERIC,"C");
 #endif
      
    if (! (out = print_open())) return(-1);
@@ -751,7 +754,7 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
    print_close(out);
 
 #ifdef HAVE_LOCALE_H
-   setlocale(LC_ALL, "");
+   setlocale(LC_ALL, current_locale);
 #endif
      return(0);
 }
@@ -1003,7 +1006,8 @@ int print_addresses(AddressList *address_list)
    }
 
 #ifdef HAVE_LOCALE_H
-   setlocale(LC_NUMERIC,"C");
+   char *current_locale;
+   current_locale = setlocale(LC_NUMERIC,"C");
 #endif
 
    get_address_app_info(&address_app_info);
@@ -1079,7 +1083,7 @@ int print_addresses(AddressList *address_list)
    print_close(out);
 
 #ifdef HAVE_LOCALE_H
-   setlocale(LC_ALL,"");
+   setlocale(LC_ALL, current_locale);
 #endif
 
    return 0;
@@ -1109,7 +1113,8 @@ int print_todos(ToDoList *todo_list, char *category_name)
    }
 
 #ifdef HAVE_LOCALE_H
-   setlocale(LC_NUMERIC,"C");
+   char *current_locale;
+   current_locale = setlocale(LC_NUMERIC,"C");
 #endif
 
    fprintf(out, "%%!PS-Adobe-2.0\n\n"
@@ -1163,7 +1168,7 @@ int print_todos(ToDoList *todo_list, char *category_name)
    print_close(out);
 
 #ifdef HAVE_LOCALE_H
-   setlocale(LC_ALL,"");
+   setlocale(LC_ALL, current_locale);
 #endif
 
    return 0;
@@ -1187,7 +1192,8 @@ int print_memos(MemoList *memo_list)
    }
 
 #ifdef HAVE_LOCALE_H
-   setlocale(LC_NUMERIC,"C");
+   char *current_locale;
+   current_locale = setlocale(LC_NUMERIC,"C");
 #endif
 
    print_address_header();
@@ -1218,7 +1224,7 @@ int print_memos(MemoList *memo_list)
    fprintf(out, "%cEND\n", FLAG_CHAR);
 
 #ifdef HAVE_LOCALE_H
-   setlocale(LC_ALL,"");
+   setlocale(LC_ALL, current_locale);
 #endif
 
    print_close(out);
