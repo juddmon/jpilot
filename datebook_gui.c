@@ -358,7 +358,7 @@ int datebook_import_callback(GtkWidget *parent_window, const char *file_path, in
 
    in=fopen(file_path, "r");
    if (!in) {
-      jp_logf(JP_LOG_WARN, _("Could not open file %s\n"), file_path);
+      jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), file_path);
       return -1;
    }
    /* CSV */
@@ -686,7 +686,7 @@ void appt_export_ok(int type, const char *filename)
 	 g_snprintf(text, sizeof(text), _("%s is a directory"), filename);
 	 dialog_generic(GTK_WINDOW(export_window),
 			0, 0, _("Error Opening File"),
-			"Directory", text, 1, button_text);
+			_("Directory"), text, 1, button_text);
 	 return;
       }
       g_snprintf(text, sizeof(text), _("Do you want to overwrite file %s?"), filename);
@@ -700,10 +700,10 @@ void appt_export_ok(int type, const char *filename)
 
    out = fopen(filename, "w");
    if (!out) {
-      g_snprintf(text, sizeof(text), "Error Opening File: %s", filename);
+      g_snprintf(text, sizeof(text), _("Error opening file: %s"), filename);
       dialog_generic(GTK_WINDOW(export_window),
 		     0, 0, _("Error Opening File"),
-		     "Filename", text, 1, button_text);
+		     _("Filename"), text, 1, button_text);
       return;
    }
 
@@ -971,8 +971,8 @@ void appt_export_ok(int type, const char *filename)
 	 }
 	 break;
        default:
-	 jp_logf(JP_LOG_WARN, "Unknown export type\n");
-	 dialog_generic_ok(notebook, NULL, _("Error"), "Unknown export type");
+	 jp_logf(JP_LOG_WARN, _("Unknown export type\n"));
+	 dialog_generic_ok(notebook, NULL, _("Error"), _("Unknown export type"));
       }
    }
 
@@ -1253,6 +1253,7 @@ void cb_date_cats(GtkWidget *widget, gpointer data)
    struct AppointmentAppInfo ai;
    int i;
    int bit;
+   char title[200];
    GtkWidget *table;
    GtkWidget *button;
    GtkWidget *vbox, *hbox;
@@ -1276,7 +1277,8 @@ void cb_date_cats(GtkWidget *widget, gpointer data)
 				GTK_WINDOW(gtk_widget_get_toplevel(widget)));
 
    gtk_container_set_border_width(GTK_CONTAINER(window_date_cats), 10);
-   gtk_window_set_title(GTK_WINDOW(window_date_cats), PN" Datebook Categories");
+   g_snprintf(title, sizeof(title), "%s %s", PN, _("Datebook Categories"));
+   gtk_window_set_title(GTK_WINDOW(window_date_cats), title);
 
    gtk_signal_connect(GTK_OBJECT(window_date_cats), "destroy",
                       GTK_SIGNAL_FUNC(cb_destroy_date_cats), window_date_cats);
@@ -1542,28 +1544,25 @@ int dialog_4_or_last(int dow)
       gettext_noop("Saturday")
    };
    char text[255];
-   /* needs tagged */
    char *button_text[]={
        gettext_noop("4th"), gettext_noop("Last")
    };
 
-   /* needs tagged */
    sprintf(text,
-	   "This appointment can either\n"
+	   _("This appointment can either\n"
 	   "repeat on the 4th %s\n"
 	   "of the month, or on the last\n"
 	   "%s of the month.\n"
-	   "Which do you want?",
+	   "Which do you want?"),
 	   _(days[dow]), _(days[dow]));
    return dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(scrolled_window)),
 			 200, 200,
-			 "Question?", "Answer: ",
+			 _("Question?"), _("Answer: "),
 			 text, 2, button_text);
 }
 
 int dialog_current_all_cancel()
 {
-   /* needs tagged */
    char text[]=
      /*--------------------------- */
      gettext_noop("This is a repeating event.\n"
@@ -1579,7 +1578,7 @@ int dialog_current_all_cancel()
 
    return dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(scrolled_window)),
 			 200, 200, 
-			 "Question?", "Answer: ",
+			 _("Question?"), _("Answer: "),
 			 _(text), 3, button_text);
 }
 
@@ -2105,8 +2104,9 @@ static int get_details(struct Appointment *a, unsigned char *attrib)
       jp_logf(JP_LOG_WARN,
 	      _("You cannot have an appointment that repeats every %d %s(s)\n"),
 	      a->repeatFrequency, _(period[page]));
-      g_snprintf(str, sizeof(str), _("You cannot have an appointment that repeats every %d %s(s)\n"),
-		  a->repeatFrequency, _(period[page]));
+      g_snprintf(str, sizeof(str), 
+              _("You cannot have an appointment that repeats every %d %s(s)\n"),
+	      a->repeatFrequency, _(period[page]));
       dialog_generic_ok(notebook, NULL, _("Error"), str);
       a->repeatFrequency = 1;
       return -1;
@@ -2517,7 +2517,7 @@ static void cb_add_new_record(GtkWidget *widget,
 	 return;
       }
       if ((ma->rt==DELETED_PALM_REC) || (ma->rt==MODIFIED_PALM_REC)) {
-	 jp_logf(JP_LOG_INFO, "You can't modify a record that is deleted\n");
+	 jp_logf(JP_LOG_INFO, _("You can't modify a record that is deleted\n"));
 	 return;
       }
    } else {
@@ -2847,7 +2847,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 				      (radio_button_alarm_day), TRUE);
 	 break;
        default:
-	 jp_logf(JP_LOG_WARN, "Error in DateBookDB advanceUnits = %d\n",a->advanceUnits);
+	 jp_logf(JP_LOG_WARN, _("Error in DateBookDB advanceUnits = %d\n"),a->advanceUnits);
       }
       sprintf(temp, "%d", a->advance);
       gtk_entry_set_text(GTK_ENTRY(units_entry), temp);
@@ -3018,7 +3018,7 @@ static void cb_clist_selection(GtkWidget      *clist,
       gtk_notebook_set_page(GTK_NOTEBOOK(notebook), PAGE_YEAR);
       break;
     default:
-      jp_logf(JP_LOG_WARN, "unknown repeatType found in DatebookDB\n");
+      jp_logf(JP_LOG_WARN, _("Unknown repeatType found in DatebookDB\n"));
    }
 
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(private_checkbox),

@@ -456,13 +456,13 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
    gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
 
 
-   g_snprintf(str, sizeof(str), "Category before import was: [%s]", old_cat_name);
+   g_snprintf(str, sizeof(str), _("Category before import was: [%s]"), old_cat_name);
    label = gtk_label_new(str);
    gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
    gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
 
 
-   g_snprintf(str, sizeof(str), "Record will be put in category [%s]",
+   g_snprintf(str, sizeof(str), _("Record will be put in category [%s]"),
 	      cai->name[suggested_cat_num]);
    label = gtk_label_new(str);
    gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
