@@ -86,7 +86,9 @@ int main(int argc, char *argv[])
 
    for (i=1; i<argc; i++) {
       if (!strncasecmp(argv[i], "-v", 2)) {
-	 printf("%s\n", VERSION_STRING);
+	 char options[1024];
+	 get_compile_options(options, 1024);
+	 printf("%s\n", options);
 	 exit(0);
       }
       if ( (!strncmp(argv[i], "-h", 2)) || (!strncasecmp(argv[1], "-?", 2))

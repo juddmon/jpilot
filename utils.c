@@ -68,6 +68,75 @@ static int glob_cal_return_code;
 static int glob_cal_mon, glob_cal_day, glob_cal_year;
 
 
+void get_compile_options(char *string, int len)
+{
+   g_snprintf(string, len,
+	      "\n"PN" version "VERSION"\n"
+	      " Copyright (C) 1999-2002 by Judd Montgomery\n"
+	      " judd@jpilot.org, http://jpilot.org\n"
+	      PN" comes with ABSOLUTELY NO WARRANTY; for details see the file\n"
+	      "COPYING included with the source code, or in /usr/docs/jpilot/.\n\n"
+	      "This program is free software; you can redistribute it and/or modify\n"
+	      "it under the terms of the GNU General Public License as published by\n"
+	      "the Free Software Foundation; version 2 of the License.\n\n"
+	      "%s %s %s\n"
+	      "%s\n"
+	      " %s - %s\n"
+	      " %s - %d.%d.%d\n"
+	      " %s - %s\n"
+	      " %s - %s\n"
+	      " %s - %s\n"
+	      " %s - %s\n"
+	      " %s - %s\n"
+	      " %s - %s\n",
+	      _("Date compiled"), __DATE__, __TIME__,
+	      _("Compiled with these options:"),
+
+	      _("Installed Path"),
+	      BASE_DIR,
+	      _("pilot-link version"),
+	      PILOT_LINK_VERSION,
+	      PILOT_LINK_MAJOR,
+	      PILOT_LINK_MINOR,
+	      _("USB support"),
+#ifdef ENABLE_USB
+	      _("yes"),
+#else
+	      _("no"),
+#endif
+	      _("Private record support"),
+#ifdef ENABLE_PRIVATE
+	      _("yes"),
+#else
+	      _("no"),
+#endif
+	      _("Datebk support"),
+#ifdef ENABLE_DATEBK
+	      _("yes"),
+#else
+	      _("no"),
+#endif
+	      _("Plugin support"),
+#ifdef ENABLE_PLUGINS
+	      _("yes"),
+#else
+	      _("no"),
+#endif
+	      _("Mañana support"),
+#ifdef ENABLE_MANANA
+	      _("yes"),
+#else
+	      _("no"),
+#endif
+	      ("NLS support (foriegn languages)"),
+#ifdef ENABLE_NLS
+	      _("yes")
+#else
+	      _("no")
+#endif
+	      );
+}
+
 int cat_compare(const void *v1, const void *v2)
 {
    struct sorted_cats *s1, *s2;

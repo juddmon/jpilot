@@ -48,8 +48,6 @@
 #else
 #define EPN "jpilot"
 #endif
-#define VERSION_STRING "\n"PN" version "VERSION"\n"\
-" Copyright (C) 1999-2001 by Judd Montgomery\n"
 
 #define	FPI_STRING	"-//Judd Montgomery//NONSGML "PN" "VERSION"//EN"
 
@@ -249,6 +247,7 @@ int setup_sync(unsigned int flags);
 
 /* Found in jpilot.c */
 void cb_sync(GtkWidget *widget, unsigned int flags);
+void get_compile_options(char *string, int len);
 
 /* Returns the number of the button that was pressed */
 int dialog_generic(GtkWindow *main_window,

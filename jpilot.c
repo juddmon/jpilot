@@ -88,7 +88,7 @@
 #define MASK_Y      0x01
 
 #define USAGE_STRING _("\n"EPN" [ [-v] || [-h] || [-d] || [-a] || [-A]\n"\
-" -v displays version and exits.\n"\
+" -v displays version and compile options and exits.\n"\
 " -h displays help and exits.\n"\
 " -d displays debug info to stdout.\n"\
 " -p do not load plugins.\n"\
@@ -939,77 +939,18 @@ static void cb_read_pipe_from_child(gpointer data,
 
 void cb_about(GtkWidget *widget, gpointer data)
 {
-   char text[255];
-   char text2[1024];
    char *button_text[]={gettext_noop("OK")};
    char about[256];
    char options[1024];
 
-   g_snprintf(text, 250,
-	   _("%s %s was written by\n"
-	     "Judd Montgomery (Copyright) 1999-2002.\n"
-	     "judd@jpilot.org\n"
-	     "http://jpilot.org\n"),   
-	      PN, VERSION);
    g_snprintf(about, 250, _("About %s"), PN);
 
-   g_snprintf(options, 1024,
-	      "%s - %d.%d.%d\n"
-	      "%s - %s\n"
-	      "%s - %s\n"
-	      "%s - %s\n"
-	      "%s - %s\n"
-	      "%s - %s\n"
-	      "%s - %s\n",
-	      _("Compiled with pilot-link version"),
-	      PILOT_LINK_VERSION,
-	      PILOT_LINK_MAJOR,
-	      PILOT_LINK_MINOR,
-	      _("USB support enabled"),
-#ifdef ENABLE_USB
-	      _("yes"),
-#else
-	      _("no"),
-#endif
-	      _("Compiled with private record support"),
-#ifdef ENABLE_PRIVATE
-	      _("yes"),
-#else
-	      _("no"),
-#endif
-	      _("Compiled with Datebk support"),
-#ifdef ENABLE_DATEBK
-	      _("yes"),
-#else
-	      _("no"),
-#endif
-	      _("Compiled with plugin support"),
-#ifdef ENABLE_PLUGINS
-	      _("yes"),
-#else
-	      _("no"),
-#endif
-	      _("Compiled with Mañana support"),
-#ifdef ENABLE_MANANA
-	      _("yes"),
-#else
-	      _("no"),
-#endif
-	      ("NLS support (foriegn languages)"),
-#ifdef ENABLE_NLS
-	      _("yes")
-#else
-	      _("no")
-#endif
-	      );
+   get_compile_options(options, 1024);
 
-   g_snprintf(text2, 1024, "%s\n%s", text, options);
-#if 0
-#endif
-     if (GTK_IS_WINDOW(window)) {
+   if (GTK_IS_WINDOW(window)) {
       dialog_generic(GTK_WINDOW(window),
  		     0, 0,
-		     about, "oOo", text2, 1, button_text);
+		     about, "oOo", options, 1, button_text);
    }
 }
 
@@ -1544,7 +1485,9 @@ char *xpm_unlocked[] = {
 
    for (i=1; i<argc; i++) {
       if (!strncasecmp(argv[i], "-v", 2)) {
-	 printf("%s\n", VERSION_STRING);
+	 char options[1024];
+	 get_compile_options(options, 1024);
+	 printf("%s\n", options);
 	 exit(0);
       }
       if ( (!strncasecmp(argv[i], "-h", 2)) || 
