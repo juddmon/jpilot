@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.48 2004/11/27 11:54:58 rousseau Exp $ */
+/* $Id: sync.c,v 1.49 2004/11/27 11:57:53 rousseau Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -2288,7 +2288,7 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
 #ifdef JPILOT_DEBUG
 	 if (ret>=0 ) {
 	    printf("read record by id %s returned %d\n", DB_name, ret);
-	    printf("id %d, index %d, size %d, attr 0x%x, category %d\n",
+	    printf("id %ld, index %d, size %d, attr 0x%x, category %d\n",
 		   header.unique_id, index, size, attr, category);
 	 }
 #endif
