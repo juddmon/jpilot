@@ -195,7 +195,7 @@ msgstr "Effacer"
 
 #: address_gui.c:2591 datebook_gui.c:4251 memo_gui.c:1465 todo_gui.c:2024
 msgid "Delete the selected record   Ctrl+D"
-msgstr ""
+msgstr "Efface l'enregistrement sélectionné   Ctrl+D"
 
 #: address_gui.c:2593 datebook_gui.c:4254 memo_gui.c:1467 todo_gui.c:2026
 msgid "Undelete"
@@ -208,7 +208,7 @@ msgstr "Copier"
 
 #: address_gui.c:2607 datebook_gui.c:4268 memo_gui.c:1480 todo_gui.c:2039
 msgid "Copy the record   Ctrl+O"
-msgstr ""
+msgstr "Copie l'enregistrement   Ctrl+O"
 
 #: address_gui.c:2610 datebook_gui.c:4271 memo_gui.c:1482 todo_gui.c:2041
 #: Expense/expense.c:1515 KeyRing/keyring.c:1567
@@ -217,7 +217,7 @@ msgstr "Nouveau"
 
 #: address_gui.c:2616 datebook_gui.c:4278 memo_gui.c:1489 todo_gui.c:2048
 msgid "Add a new record   Ctrl+N"
-msgstr ""
+msgstr "Ajouter un nouvel enregistrement   Ctrl+N"
 
 #: address_gui.c:2619 datebook_gui.c:4281 memo_gui.c:1491 todo_gui.c:2050
 #: Expense/expense.c:1521 KeyRing/keyring.c:1573
@@ -226,7 +226,7 @@ msgstr "Ajouter"
 
 #: address_gui.c:2628 datebook_gui.c:4290 memo_gui.c:1500 todo_gui.c:2059
 msgid "Add the new record   Ctrl+R"
-msgstr ""
+msgstr "Ajouter le nouvel enregistrement   Ctrl+R"
 
 #: address_gui.c:2631 datebook_gui.c:4293 memo_gui.c:1502 todo_gui.c:2061
 #: Expense/expense.c:1529 KeyRing/keyring.c:1581
@@ -235,7 +235,7 @@ msgstr "Appliquer"
 
 #: address_gui.c:2640 datebook_gui.c:4302 memo_gui.c:1511 todo_gui.c:2070
 msgid "Commit the modifications   Ctrl+Enter"
-msgstr ""
+msgstr "Appliquer les modifications   Ctrl+Entrée"
 
 #: address_gui.c:2650 datebook_gui.c:4347 memo_gui.c:1522 todo_gui.c:2127
 msgid "Private"
@@ -1239,9 +1239,8 @@ msgid "Mask private records"
 msgstr "Masquer les enregistrements privés"
 
 #: jpilot.c:2177
-#, fuzzy
 msgid "Sync your palm to the desktop   Ctrl-Y"
-msgstr "Synchronise le Palm au bureau"
+msgstr "Synchronise le Palm avec l'ordinateur   Ctrl-Y"
 
 #: jpilot.c:2183
 msgid "Font"
@@ -1537,7 +1536,8 @@ msgstr "Montrer les enregistrements modifiés (NON par défaut)"
 
 #: prefs_gui.c:489
 msgid "Ask confirmation for file installation (J-Pilot -> PDA) (default YES)"
-msgstr ""
+msgstr "Demande confirmation pour l'installation de fichier (J-Pilot -> "
+"PDA) (OUI par défaut)"
 
 #: prefs_gui.c:505
 msgid "Highlight calendar days with appointments"
@@ -1553,7 +1553,7 @@ msgstr "Le support pour DateBk est désactivé pour cet exécutable"
 
 #: prefs_gui.c:536
 msgid "There are no address preferences at this time"
-msgstr ""
+msgstr "Il n'y a pas encore de préférences pour adresse"
 
 #: prefs_gui.c:544
 msgid "Hide Completed ToDos"
