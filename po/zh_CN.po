@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: jpilot 0.99.2\n"
-"POT-Creation-Date: 2002-02-06 14:38-0500\n"
+"POT-Creation-Date: 2002-10-07 20:50-0400\n"
 "PO-Revision-Date: 2002-10-03 10:17+0800\n"
 "Last-Translator: Anthony Fok <anthony@thizlinux.com>\n"
 "Language-Team: Chinese (simplified) <i18n-translation@lists.linux.net.cn>\n"
@@ -14,156 +14,157 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: address.c:239 datebook.c:217 memo.c:145 todo.c:253
+#: address.c:239 datebook.c:311 memo.c:153 todo.c:279
 msgid "error"
 msgstr "错误"
 
-#: address.c:280 datebook.c:579 memo.c:197 todo.c:294
-msgid "Error reading"
+#: address.c:290 datebook.c:683 memo.c:215 todo.c:361 todo.c:363 todo.c:366
+#, fuzzy, c-format
+msgid "Error reading %s\n"
 msgstr "读入错误："
 
-#: address_gui.c:361 datebook_gui.c:331 memo_gui.c:240 todo_gui.c:372
+#: address_gui.c:360 datebook_gui.c:333 memo_gui.c:239 todo_gui.c:383
 #, c-format
 msgid "Could not open file %s\n"
 msgstr "无法打开文件 %s\n"
 
-#: address_gui.c:444
+#: address_gui.c:443
 msgid "File doesn't appear to be address.dat format\n"
 msgstr "文件似乎不是 address.dat 格式\n"
 
-#: Expense/expense.c:441 Expense/expense.c:1023 address_gui.c:454
-#: datebook_gui.c:529 memo_gui.c:369 todo_gui.c:499
+#: Expense/expense.c:441 Expense/expense.c:1041 address_gui.c:453
+#: datebook_gui.c:535 memo_gui.c:368 todo_gui.c:510
 msgid "Unfiled"
 msgstr "未归档"
 
 #. Buttons
-#: KeyRing/keyring.c:1097 address_gui.c:545 alarms.c:227 datebook_gui.c:613
-#: datebook_gui.c:892 export_gui.c:327 jpilot.c:347 jpilot.c:392 jpilot.c:458
-#: jpilot.c:500 jpilot.c:711 jpilot.c:866 memo_gui.c:459 password.c:280
-#: restore_gui.c:217 todo_gui.c:589 utils.c:859
+#: KeyRing/keyring.c:1122 address_gui.c:544 alarms.c:228 datebook_gui.c:622
+#: datebook_gui.c:900 export_gui.c:329 jpilot.c:350 jpilot.c:397 jpilot.c:465
+#: jpilot.c:509 jpilot.c:929 memo_gui.c:458 password.c:368 restore_gui.c:217
+#: todo_gui.c:600 utils.c:863
 msgid "OK"
 msgstr "确定"
 
-#: address_gui.c:546 datebook_gui.c:614 memo_gui.c:460 todo_gui.c:590
-#: utils.c:1000
+#: address_gui.c:545 datebook_gui.c:623 memo_gui.c:459 todo_gui.c:601
+#: utils.c:1006
 msgid "Yes"
 msgstr "是"
 
-#: address_gui.c:546 datebook_gui.c:614 memo_gui.c:460 todo_gui.c:590
-#: utils.c:1000
+#: address_gui.c:545 datebook_gui.c:623 memo_gui.c:459 todo_gui.c:601
+#: utils.c:1006
 msgid "No"
 msgstr "否"
 
-#: address_gui.c:562 datebook_gui.c:622 memo_gui.c:470 todo_gui.c:600
+#: address_gui.c:561 datebook_gui.c:631 memo_gui.c:469 todo_gui.c:611
 #, c-format
 msgid "%s is a directory"
 msgstr "%s 是目录"
 
-#: address_gui.c:564 address_gui.c:581 datebook_gui.c:624 datebook_gui.c:641
-#: memo_gui.c:472 memo_gui.c:489 todo_gui.c:602 todo_gui.c:619
+#: address_gui.c:563 address_gui.c:580 datebook_gui.c:633 datebook_gui.c:650
+#: memo_gui.c:471 memo_gui.c:488 todo_gui.c:613 todo_gui.c:630
 msgid "Error Opening File"
 msgstr "打开文件时发生错误"
 
-#: address_gui.c:568 datebook_gui.c:628 memo_gui.c:476 todo_gui.c:606
+#: address_gui.c:567 datebook_gui.c:637 memo_gui.c:475 todo_gui.c:617
 #, c-format
 msgid "Do you want to overwrite file %s?"
 msgstr "您要覆盖文件 %s 吗？"
 
-#: address_gui.c:570 datebook_gui.c:630 memo_gui.c:478 todo_gui.c:608
+#: address_gui.c:569 datebook_gui.c:639 memo_gui.c:477 todo_gui.c:619
 msgid "Overwrite File?"
 msgstr "覆盖文件？"
 
-#: address_gui.c:571 datebook_gui.c:631 memo_gui.c:479 todo_gui.c:609
+#: address_gui.c:570 datebook_gui.c:640 memo_gui.c:478 todo_gui.c:620
 msgid "Overwrite File"
 msgstr "覆盖文件"
 
-#: address_gui.c:759 address_gui.c:1637
+#: address_gui.c:762 address_gui.c:1651
 msgid "Company/Name"
 msgstr "公司/姓名"
 
-#: address_gui.c:761 address_gui.c:1639
+#: address_gui.c:764 address_gui.c:1653
 msgid "Name/Company"
 msgstr "姓名/公司"
 
 #. Category Menu
-#: Expense/expense.c:1190 Expense/expense.c:1261 KeyRing/keyring.c:1273
-#: KeyRing/keyring.c:1349 address_gui.c:1077
+#: Expense/expense.c:1207 Expense/expense.c:1278 KeyRing/keyring.c:1312
+#: KeyRing/keyring.c:1388 address_gui.c:1090
 msgid "Category: "
 msgstr "种类："
 
-#: address_gui.c:1193 memo_gui.c:916 todo_gui.c:1190
+#: address_gui.c:1206 memo_gui.c:933 todo_gui.c:1223
 msgid "0 records"
 msgstr "0 项纪录"
 
-#: address_gui.c:1334 memo_gui.c:1038 todo_gui.c:1321
+#: address_gui.c:1348 memo_gui.c:1056 todo_gui.c:1355
 #, c-format
 msgid "%d of %d records"
 msgstr "%2$d 项纪录（共 %1$d 项）"
 
-#: address_gui.c:1644
+#: address_gui.c:1658
 msgid "Phone"
 msgstr "电话"
 
-#: address_gui.c:1666
+#: address_gui.c:1680
 msgid "Quick Find"
 msgstr "快速查找"
 
 #. Delete Button
-#: Expense/expense.c:1223 KeyRing/keyring.c:1308 address_gui.c:1683
-#: datebook_gui.c:3370 memo_gui.c:1242 todo_gui.c:1571
+#: Expense/expense.c:1240 KeyRing/keyring.c:1347 address_gui.c:1697
+#: datebook_gui.c:3559 memo_gui.c:1269 todo_gui.c:1611
 msgid "Delete"
 msgstr "删除"
 
 #. Create "Copy" button
-#: Expense/expense.c:1229 KeyRing/keyring.c:1314 address_gui.c:1690
-#: datebook_gui.c:3377 memo_gui.c:1248 todo_gui.c:1577
+#: Expense/expense.c:1246 KeyRing/keyring.c:1353 address_gui.c:1704
+#: datebook_gui.c:3566 memo_gui.c:1275 todo_gui.c:1617
 msgid "Copy"
 msgstr "复制"
 
 #. Create "New" button
-#: Expense/expense.c:1235 KeyRing/keyring.c:1320 address_gui.c:1697
-#: datebook_gui.c:3384 memo_gui.c:1254 todo_gui.c:1583
+#: Expense/expense.c:1252 KeyRing/keyring.c:1359 address_gui.c:1711
+#: datebook_gui.c:3573 memo_gui.c:1281 todo_gui.c:1623
 msgid "New Record"
 msgstr "新建纪录"
 
 #. Create "Add Record" button
-#: Expense/expense.c:1241 KeyRing/keyring.c:1326 address_gui.c:1703
-#: datebook_gui.c:3391 memo_gui.c:1260 todo_gui.c:1589
+#: Expense/expense.c:1258 KeyRing/keyring.c:1365 address_gui.c:1717
+#: datebook_gui.c:3580 memo_gui.c:1287 todo_gui.c:1629
 msgid "Add Record"
 msgstr "添加纪录"
 
 #. Create "apply changes" button
-#: Expense/expense.c:1249 KeyRing/keyring.c:1334 address_gui.c:1712
-#: datebook_gui.c:3400 memo_gui.c:1268 todo_gui.c:1597
+#: Expense/expense.c:1266 KeyRing/keyring.c:1373 address_gui.c:1726
+#: datebook_gui.c:3589 memo_gui.c:1295 todo_gui.c:1637
 msgid "Apply Changes"
 msgstr "应用改动"
 
 #. Private check box
-#: address_gui.c:1728 datebook_gui.c:3451 memo_gui.c:1294 todo_gui.c:1660
+#: address_gui.c:1742 datebook_gui.c:3640 memo_gui.c:1312 todo_gui.c:1700
 msgid "Private"
 msgstr "私有的"
 
 #. Page 1
-#: KeyRing/keyring.c:1198 address_gui.c:1748
+#: KeyRing/keyring.c:1225 address_gui.c:1762
 msgid "Name"
 msgstr "姓名"
 
 #. Page 2
-#: address_gui.c:1756
+#: address_gui.c:1770
 msgid "Address"
 msgstr "地址"
 
 #. Page 3
-#: Expense/expense.c:393 Expense/expense.c:1044 address_gui.c:1764
+#: Expense/expense.c:393 Expense/expense.c:1062 address_gui.c:1778
 msgid "Other"
 msgstr "其他"
 
 #. Page 3
-#: address_gui.c:1772 datebook_gui.c:1067 datebook_gui.c:1324 utils.c:2175
+#: address_gui.c:1786 datebook_gui.c:1088 datebook_gui.c:1354 utils.c:2200
 msgid "All"
 msgstr "全部"
 
-#: address_gui.c:1842
+#: address_gui.c:1856
 msgid ""
 "Show\n"
 "In List"
@@ -172,149 +173,149 @@ msgstr ""
 "显示"
 
 #. The Quickview page
-#: address_gui.c:1850
+#: address_gui.c:1864
 msgid "Quick View"
 msgstr "快速查看"
 
-#: alarms.c:233
+#: alarms.c:234
 msgid "Remind me"
 msgstr "提醒我"
 
-#: alarms.c:243 datebook_gui.c:3433
+#: alarms.c:244 datebook_gui.c:3622
 msgid "Minutes"
 msgstr "分钟"
 
-#: alarms.c:245 datebook_gui.c:3437
+#: alarms.c:246 datebook_gui.c:3626
 msgid "Hours"
 msgstr "小时"
 
-#: alarms.c:510
+#: alarms.c:511
 msgid "Appointment Reminder"
 msgstr "约会提醒"
 
-#: alarms.c:513
+#: alarms.c:514
 msgid "Past Appointment"
 msgstr "过往约会"
 
-#: alarms.c:516
+#: alarms.c:517
 msgid "Postponed Appointment"
 msgstr "延迟约会"
 
-#: alarms.c:519 datebook_gui.c:3332
+#: alarms.c:520 datebook_gui.c:3521
 msgid "Appointment"
 msgstr "约会"
 
-#: datebook_gui.c:179 datebook_gui.c:186 datebook_gui.c:3174
-#: datebook_gui.c:3181
+#: datebook_gui.c:181 datebook_gui.c:188 datebook_gui.c:3361
+#: datebook_gui.c:3368
 msgid "Su"
 msgstr "日"
 
-#: datebook_gui.c:180 datebook_gui.c:3175
+#: datebook_gui.c:182 datebook_gui.c:3362
 msgid "Mo"
 msgstr "一"
 
-#: datebook_gui.c:181 datebook_gui.c:3176
+#: datebook_gui.c:183 datebook_gui.c:3363
 msgid "Tu"
 msgstr "二"
 
-#: datebook_gui.c:182 datebook_gui.c:3177
+#: datebook_gui.c:184 datebook_gui.c:3364
 msgid "We"
 msgstr "三"
 
-#: datebook_gui.c:183
+#: datebook_gui.c:185
 msgid "Th"
 msgstr "四"
 
-#: datebook_gui.c:184 datebook_gui.c:3179
+#: datebook_gui.c:186 datebook_gui.c:3366
 msgid "Fr"
 msgstr "五"
 
-#: datebook_gui.c:185 datebook_gui.c:3180
+#: datebook_gui.c:187 datebook_gui.c:3367
 msgid "Sa"
 msgstr "六"
 
-#: datebook_gui.c:519
+#: datebook_gui.c:525
 msgid "File doesn't appear to be datebook.dat format\n"
 msgstr "文件似乎不是 datebook.dat 格式\n"
 
 #. Label for instructions
-#: datebook_gui.c:855
+#: datebook_gui.c:863
 msgid "Export All Datebook Records"
 msgstr "导出全部 Datebook 纪录"
 
-#: datebook_gui.c:874 export_gui.c:308
+#: datebook_gui.c:882 export_gui.c:310
 msgid "Save as"
 msgstr "存为"
 
-#: datebook_gui.c:884 export_gui.c:319
+#: datebook_gui.c:892 export_gui.c:321
 msgid "Browse"
 msgstr "浏览"
 
 #. Create a "Quit" button
-#: KeyRing/keyring.c:1103 datebook_gui.c:897 datebook_gui.c:1325
-#: export_gui.c:332 password.c:286 print_gui.c:336 restore_gui.c:222
-#: utils.c:869
+#: KeyRing/keyring.c:1128 datebook_gui.c:905 datebook_gui.c:1355
+#: export_gui.c:334 password.c:374 print_gui.c:336 restore_gui.c:222
+#: utils.c:873
 msgid "Cancel"
 msgstr "取消"
 
 #. Create a "Quit" button
-#: datebook_gui.c:1061 import_gui.c:313 install_gui.c:289 prefs_gui.c:682
+#: datebook_gui.c:1082 import_gui.c:313 install_gui.c:289 prefs_gui.c:701
 #: search_gui.c:575
 msgid "Done"
 msgstr "完成"
 
 #. Create a "None" button
-#: datebook_gui.c:1073 datebook_gui.c:3561
+#: datebook_gui.c:1094 datebook_gui.c:3764
 msgid "None"
 msgstr "无"
 
-#: datebook_gui.c:1185
+#: datebook_gui.c:1215
 msgid "Begin On Date"
 msgstr "开始日期"
 
-#: datebook_gui.c:1190
+#: datebook_gui.c:1220
 msgid "End On Date"
 msgstr "终束日期"
 
-#: datebook_gui.c:1284 monthview_gui.c:346 monthview_gui.c:353 prefs.c:393
+#: datebook_gui.c:1314 monthview_gui.c:348 monthview_gui.c:355 prefs.c:395
 #: weekview_gui.c:135
 msgid "Sunday"
 msgstr "星期日"
 
-#: datebook_gui.c:1285 monthview_gui.c:347 prefs.c:394 weekview_gui.c:136
+#: datebook_gui.c:1315 monthview_gui.c:349 prefs.c:396 weekview_gui.c:136
 msgid "Monday"
 msgstr "星期一"
 
-#: datebook_gui.c:1286 monthview_gui.c:348 weekview_gui.c:137
+#: datebook_gui.c:1316 monthview_gui.c:350 weekview_gui.c:137
 msgid "Tuesday"
 msgstr "星期二"
 
-#: datebook_gui.c:1287 monthview_gui.c:349 weekview_gui.c:138
+#: datebook_gui.c:1317 monthview_gui.c:351 weekview_gui.c:138
 msgid "Wednesday"
 msgstr "星期三"
 
-#: datebook_gui.c:1288 monthview_gui.c:350 weekview_gui.c:139
+#: datebook_gui.c:1318 monthview_gui.c:352 weekview_gui.c:139
 msgid "Thursday"
 msgstr "星期四"
 
-#: datebook_gui.c:1289 monthview_gui.c:351 weekview_gui.c:140
+#: datebook_gui.c:1319 monthview_gui.c:353 weekview_gui.c:140
 msgid "Friday"
 msgstr "星期五"
 
-#: datebook_gui.c:1290 monthview_gui.c:352 weekview_gui.c:141
+#: datebook_gui.c:1320 monthview_gui.c:354 weekview_gui.c:141
 msgid "Saturday"
 msgstr "星期六"
 
-#: datebook_gui.c:1295
+#: datebook_gui.c:1325
 msgid "4th"
 msgstr "第四周"
 
-#: datebook_gui.c:1295
+#: datebook_gui.c:1325
 msgid "Last"
 msgstr "月尾周"
 
 #. ---------------------------
-#: datebook_gui.c:1317
+#: datebook_gui.c:1347
 msgid ""
 "This is a repeating event.\n"
 "Do you want to apply these\n"
@@ -326,146 +327,152 @@ msgstr ""
 "您刚做的修改，是仅适用于“当前”事件，\n"
 "抑或是这事件“每次发生”时都适用？"
 
-#: datebook_gui.c:1323
+#: datebook_gui.c:1353
 msgid "Current"
 msgstr "当前事件"
 
-#: datebook_gui.c:1540
+#: datebook_gui.c:1589
 msgid "none"
 msgstr "无"
 
-#: datebook_gui.c:1541
+#: datebook_gui.c:1590
 msgid "day"
 msgstr "天"
 
-#: datebook_gui.c:1542
+#: datebook_gui.c:1591
 msgid "week"
 msgstr "周"
 
-#: datebook_gui.c:1543
+#: datebook_gui.c:1592
 msgid "month"
 msgstr "个月"
 
-#: datebook_gui.c:1544
+#: datebook_gui.c:1593
 msgid "year"
 msgstr "年"
 
-#: datebook_gui.c:1771
+#: datebook_gui.c:1845
 #, c-format
 msgid "You cannot have an appointment that repeats every %d %s(s)\n"
 msgstr "您添加的约会不可以每 %d %s重复一次。\n"
 
-#: datebook_gui.c:1780
-msgid "You can not have a weekly repeating appointment that doesn't repeat on any day of the week.\n"
+#: datebook_gui.c:1854
+msgid ""
+"You can not have a weekly repeating appointment that doesn't repeat on any "
+"day of the week.\n"
 msgstr "您添加了一个每周重复的约会，但未定在每周的哪一天重复。\n"
 
 #. This is a timeless event
-#: datebook_gui.c:1912
+#: datebook_gui.c:1990
 msgid "No Time"
 msgstr "未定时间"
 
 #. The No due date check box
-#: datebook_gui.c:2299 datebook_gui.c:3595 datebook_gui.c:3625
-#: datebook_gui.c:3681 datebook_gui.c:3730 todo_gui.c:120 todo_gui.c:1651
+#: datebook_gui.c:2408 datebook_gui.c:3798 datebook_gui.c:3828
+#: datebook_gui.c:3884 datebook_gui.c:3933 todo_gui.c:123 todo_gui.c:1691
 msgid "No Date"
 msgstr "无限期"
 
-#: datebook_gui.c:3178
+#: datebook_gui.c:3365
 msgid "RTh"
 msgstr "四"
 
 #. Make Weekview button
-#: datebook_gui.c:3250 datebook_gui.c:3563
+#: datebook_gui.c:3442 datebook_gui.c:3766
 msgid "Week"
 msgstr "周"
 
 #. Make Monthview button
-#: datebook_gui.c:3261 datebook_gui.c:3564
+#: datebook_gui.c:3453 datebook_gui.c:3767
 msgid "Month"
 msgstr "月"
 
 #. Make Category button
-#: datebook_gui.c:3276
+#: datebook_gui.c:3466
 msgid "Cats"
 msgstr "种类"
 
-#: datebook_gui.c:3331
+#: datebook_gui.c:3520
 msgid "Time"
 msgstr "时间"
 
-#: datebook_gui.c:3418
+#: datebook_gui.c:3607
 msgid "Alarm"
 msgstr "闹铃"
 
-#: datebook_gui.c:3439
+#: datebook_gui.c:3628
 msgid "Days"
 msgstr "天"
 
-#: datebook_gui.c:3462
+#: datebook_gui.c:3651
 msgid "This Event has no particular time"
 msgstr "此事件无特定时间"
 
-#: datebook_gui.c:3470
+#: datebook_gui.c:3659
 msgid "Starts on: "
 msgstr "开始日期："
 
-#: datebook_gui.c:3482
+#: datebook_gui.c:3671
 msgid "Time:"
 msgstr "时间："
 
-#: datebook_gui.c:3562
+#: datebook_gui.c:3748
+msgid "DateBk Tags"
+msgstr ""
+
+#: datebook_gui.c:3765
 msgid "Day"
 msgstr "天"
 
-#: datebook_gui.c:3565
+#: datebook_gui.c:3768
 msgid "Year"
 msgstr "年"
 
 #. no repeat page for notebook
-#: datebook_gui.c:3569
+#: datebook_gui.c:3772
 msgid "This event will not repeat"
 msgstr "此事件不会重复"
 
-#: datebook_gui.c:3579 datebook_gui.c:3611 datebook_gui.c:3667
-#: datebook_gui.c:3714
+#: datebook_gui.c:3782 datebook_gui.c:3814 datebook_gui.c:3870
+#: datebook_gui.c:3917
 msgid "Frequency is Every"
 msgstr "重复频率是每"
 
-#: datebook_gui.c:3584
+#: datebook_gui.c:3787
 msgid "Day(s)"
 msgstr "天"
 
 #. checkbutton
-#: datebook_gui.c:3587 datebook_gui.c:3619 datebook_gui.c:3675
-#: datebook_gui.c:3722
+#: datebook_gui.c:3790 datebook_gui.c:3822 datebook_gui.c:3878
+#: datebook_gui.c:3925
 msgid "End on"
 msgstr "结束日期："
 
-#: datebook_gui.c:3616
+#: datebook_gui.c:3819
 msgid "Week(s)"
 msgstr "周"
 
-#: datebook_gui.c:3632
+#: datebook_gui.c:3835
 msgid "Repeat on Days:"
 msgstr "哪天重复："
 
-#: datebook_gui.c:3672
+#: datebook_gui.c:3875
 msgid "Month(s)"
 msgstr "月"
 
-#: datebook_gui.c:3689
+#: datebook_gui.c:3892
 msgid "Repeat by:"
 msgstr "重复方式："
 
-#: datebook_gui.c:3693
+#: datebook_gui.c:3896
 msgid "Day of week"
 msgstr "第几周第几天"
 
-#: datebook_gui.c:3702
+#: datebook_gui.c:3905
 msgid "Date"
 msgstr "该月的第几天"
 
-#: datebook_gui.c:3719
+#: datebook_gui.c:3922
 msgid "Year(s)"
 msgstr "年"
 
@@ -474,17 +481,17 @@ msgid "File Browser"
 msgstr "文件浏览器"
 
 #. Label for instructions
-#: export_gui.c:264
+#: export_gui.c:266
 msgid "Select records to be exported"
 msgstr "请选择要导出的纪录"
 
-#: export_gui.c:266
+#: export_gui.c:268
 msgid "Use Ctrl and Shift Keys"
 msgstr "使用 Ctrl 和 Shift 键"
 
 #. Import button
 #: import_gui.c:270 import_gui.c:306 import_gui.c:409 import_gui.c:465
-#: jpilot.c:491
+#: jpilot.c:498
 msgid "Import"
 msgstr "导入"
 
@@ -560,41 +567,46 @@ msgstr ""
 " PILOTPORT 和 PILOTRATE 这两个环境变量是用来指定同步的端口和速率。\n"
 " 如果未设置 PILOTPORT，其默认值为 /dev/pilot。\n"
 
-#: jpilot.c:371
+#: jpilot.c:374
 msgid "Help"
 msgstr "帮助"
 
 #. Create a "Print" button
-#: jpilot.c:433 monthview_gui.c:417 print_gui.c:330 weekview_gui.c:303
+#: jpilot.c:438 monthview_gui.c:419 print_gui.c:330 weekview_gui.c:304
 msgid "Print"
 msgstr "打印"
 
-#: jpilot.c:434
+#: jpilot.c:439
 msgid "There is no print support for this conduit."
 msgstr "这个管道不支持打印。"
 
-#: jpilot.c:492
+#: jpilot.c:499
 msgid "There is no import support for this conduit."
 msgstr "这个管道不支持导入"
 
-#: jpilot.c:533
+#: jpilot.c:542
 msgid "Export"
 msgstr "导出"
 
-#: jpilot.c:534
+#: jpilot.c:543
 msgid "There is no export support for this conduit."
 msgstr "这个管道不支持导出"
 
-#: jpilot.c:711
+#: jpilot.c:734
+#, fuzzy
+msgid "Cancel Sync"
+msgstr "取消"
+
+#: jpilot.c:735
 msgid "Sync Anyway"
 msgstr "忽略问题，照样同步"
 
 #. -------------------------------------------
-#: jpilot.c:871
-#, c-format
+#: jpilot.c:934
+#, fuzzy, c-format
 msgid ""
-"%s was written by\n"
-"Judd Montgomery (c) 1999-2001.\n"
+"%s %s was written by\n"
+"Judd Montgomery (Copyright) 1999-2002.\n"
 "judd@jpilot.org\n"
 "http://jpilot.org\n"
 msgstr ""
@@ -603,121 +615,121 @@ msgstr ""
 "judd@jpilot.org\n"
 "http://jpilot.org\n"
 
-#: jpilot.c:876
+#: jpilot.c:939
 #, c-format
 msgid "About %s"
 msgstr "关于 %s"
 
-#: jpilot.c:966
+#: jpilot.c:1023
 msgid "/File"
 msgstr "/文件(_F)"
 
-#: jpilot.c:967
+#: jpilot.c:1024
 msgid "/File/tear"
 msgstr "/文件(_F)/tear"
 
-#: jpilot.c:968
+#: jpilot.c:1025
 msgid "/File/_Find"
 msgstr "文件(_F)/查找(_F)"
 
-#: jpilot.c:969 jpilot.c:975 jpilot.c:977
+#: jpilot.c:1026 jpilot.c:1032 jpilot.c:1034
 msgid "/File/sep1"
 msgstr "/文件(_F)/sep1"
 
-#: jpilot.c:970
+#: jpilot.c:1027
 msgid "/File/_Install"
 msgstr "/文件(_F)/安装(_I)"
 
-#: jpilot.c:971
+#: jpilot.c:1028
 msgid "/File/Import"
 msgstr "/文件(_F)/导入"
 
-#: jpilot.c:972
+#: jpilot.c:1029
 msgid "/File/Export"
 msgstr "/文件(_F)/导出"
 
-#: jpilot.c:973
+#: jpilot.c:1030
 msgid "/File/Preferences"
 msgstr "/文件(_F)/首选项"
 
-#: jpilot.c:974
+#: jpilot.c:1031
 msgid "/File/_Print"
 msgstr "/文件(_F)/打印(_P)"
 
-#: jpilot.c:976
+#: jpilot.c:1033
 msgid "/File/Restore Handheld"
 msgstr "/文件(_F)/恢复手持电脑"
 
-#: jpilot.c:978
+#: jpilot.c:1035
 msgid "/File/Quit"
 msgstr "/文件(_F)/退出"
 
-#: jpilot.c:979
+#: jpilot.c:1036
 msgid "/_View"
 msgstr "/查看(_V)"
 
-#: jpilot.c:980
+#: jpilot.c:1037
 msgid "/View/Hide-Show Private Records"
 msgstr "/查看(_V)/稳藏或显示私人纪录"
 
-#: jpilot.c:981
+#: jpilot.c:1038
 msgid "/View/Datebook"
 msgstr "/查看(_V)/行事历"
 
-#: jpilot.c:982
+#: jpilot.c:1039
 msgid "/View/Addresses"
 msgstr "/查看(_V)/地址簿"
 
-#: jpilot.c:983
+#: jpilot.c:1040
 msgid "/View/Todos"
 msgstr "/查看(_V)/待办工作"
 
-#: jpilot.c:984
+#: jpilot.c:1041
 msgid "/View/Memos"
 msgstr "/查看(_V)/备忘录"
 
-#: jpilot.c:985 jpilot.c:1061
+#: jpilot.c:1042 jpilot.c:1118
 msgid "/Plugins"
 msgstr "/插件"
 
-#: jpilot.c:986
+#: jpilot.c:1043
 msgid "/_Help"
 msgstr "/帮助(_H)"
 
-#: jpilot.c:987 jpilot.c:1038
+#: jpilot.c:1044 jpilot.c:1095
 #, c-format
 msgid "/_Help/%s"
 msgstr "/帮助(_H)/%s"
 
-#: jpilot.c:1027
+#: jpilot.c:1084
 #, c-format
 msgid "/Plugins/%s"
 msgstr "/插件/%s"
 
-#: jpilot.c:1654
+#: jpilot.c:1720
 msgid "Clear"
 msgstr "清除"
 
 #. Create "Quit" button
-#: jpilot.c:1719
+#: jpilot.c:1785
 msgid "Quit!"
 msgstr " 退出!"
 
 #. Create "Sync" button
-#: jpilot.c:1725
+#: jpilot.c:1791
 msgid "Sync"
 msgstr "同步"
 
-#: jpilot.c:1732
+#: jpilot.c:1798
 msgid "Sync your palm to the desktop"
 msgstr "把您的 Palm 与桌面同步"
 
 #. Create "Backup" button in left column
-#: jpilot.c:1736
+#: jpilot.c:1802
 msgid "Backup"
 msgstr "备份"
 
-#: jpilot.c:1744
+#: jpilot.c:1810
 msgid ""
 "Sync your palm to the desktop\n"
 "and then do a backup"
@@ -725,191 +737,218 @@ msgstr ""
 "把您的 Palm 与桌面同步\n"
 "并作备份"
 
-#: jpilot.c:1825
+#: jpilot.c:1897
 msgid "Datebook/Go to Today"
 msgstr "行事历/跳到今天"
 
-#: jpilot.c:1827
+#: jpilot.c:1899
 msgid "Address Book"
 msgstr "地址簿"
 
-#: jpilot.c:1829
+#: jpilot.c:1901
 msgid "ToDo List"
 msgstr "待办工作"
 
-#: jpilot.c:1831
+#: jpilot.c:1903
 msgid "Memo Pad"
 msgstr "备忘录"
 
-#: log.c:89
+#: log.c:90
 msgid "Cannot open log file, giving up.\n"
 msgstr "无法打开日志文件，放弃操作。\n"
 
-#: log.c:96
+#: log.c:97
 msgid "Cannot open log file\n"
 msgstr "无法打开日志文件。\n"
 
-#: memo_gui.c:352
+#: memo_gui.c:351
 msgid "File doesn't appear to be memopad.dat format\n"
 msgstr "文件似乎不是 memopad.dat 格式\n"
 
 #. Memo32 check box
-#: memo_gui.c:1283
+#: memo_gui.c:1225
 msgid "Use Memo32 (pedit32)"
 msgstr "使用 Memo32 (pedit32)"
 
-#: monthview_gui.c:382
+#: monthview_gui.c:384
 msgid "Monthly View"
 msgstr "月份视图"
 
 #. Create a "Quit" button
-#: monthview_gui.c:411 weekview_gui.c:297
+#: monthview_gui.c:413 weekview_gui.c:298
 msgid "Close"
 msgstr "关闭"
 
-#: password.c:241
+#: password.c:323
 msgid "Palm Password"
 msgstr "Palm 口令"
 
-#. Label
-#: password.c:263
+#: password.c:348
+#, fuzzy
+msgid "Incorrect, Reenter PalmOS Password"
+msgstr "请输入 PalmOS 口令"
+
+#: password.c:350
 msgid "Enter PalmOS Password"
 msgstr "请输入 PalmOS 口令"
 
-#: prefs_gui.c:306
+#: prefs_gui.c:304
 msgid "Preferences"
 msgstr "首选项"
 
-#: prefs_gui.c:329
+#: prefs_gui.c:327
 msgid "Locale"
 msgstr "区域设置"
 
-#: prefs_gui.c:331
+#: prefs_gui.c:329
 msgid "Settings"
 msgstr "设置"
 
-#: prefs_gui.c:333
+#: prefs_gui.c:331
 msgid "Alarms"
 msgstr "警告"
 
-#: prefs_gui.c:335
+#: prefs_gui.c:333
 msgid "Conduits"
 msgstr "管道"
 
 #. Character Set
-#: prefs_gui.c:346
+#: prefs_gui.c:344
 msgid "Character Set "
 msgstr "字符集 "
 
 #. Shortdate
-#: prefs_gui.c:359
+#: prefs_gui.c:357
 msgid "Short date format "
 msgstr "短日期格式 "
 
 #. Longdate
-#: prefs_gui.c:372
+#: prefs_gui.c:370
 msgid "Long date format "
 msgstr "长日期格式 "
 
 #. Time
-#: prefs_gui.c:386
+#: prefs_gui.c:384
 msgid "Time format "
 msgstr "时间格式 "
 
 #. FDOW
-#: prefs_gui.c:400
+#: prefs_gui.c:398
 msgid "The first day of the week is "
 msgstr "一周的第一天是 "
 
 #. GTK colors file
-#: prefs_gui.c:420
+#: prefs_gui.c:418
 msgid "My GTK colors file is "
 msgstr "我的 GTK 色彩文件是 "
 
 #. Port
-#: prefs_gui.c:434
+#: prefs_gui.c:432
 msgid "Serial Port (/dev/ttyS0, /dev/pilot)"
 msgstr "串行接口 (/dev/ttyS0, /dev/pilot)"
 
 #. Rate
-#: prefs_gui.c:449
+#: prefs_gui.c:447
 msgid "Serial Rate "
 msgstr "串行速率 "
 
 #. Number of backups
-#: prefs_gui.c:462
+#: prefs_gui.c:460
 msgid "Number of backups to be archived"
 msgstr "要归档的备份数目"
 
-#: prefs_gui.c:478
+#: prefs_gui.c:476
 msgid "Show deleted records (default NO)"
 msgstr "显示已删除的纪录（默认不显示）"
 
-#: prefs_gui.c:491
+#: prefs_gui.c:489
 msgid "Show modified deleted records (default NO)"
 msgstr "显示已修改的已删除纪录（默认不显示）"
 
-#: prefs_gui.c:505
+#: prefs_gui.c:503
 msgid "Highlight calendar days with appointments"
 msgstr "日历上突出显示有约会的日子"
 
-#: prefs_gui.c:518
+#. Show use DateBk3/4 check box
+#: prefs_gui.c:516
 msgid "Use DateBk3/4 note tags"
 msgstr "使用 DateBk3/4 备忘标记"
 
-#: prefs_gui.c:532
+#: prefs_gui.c:526
+msgid "DateBk3/4 support disabled in this build"
+msgstr ""
+
+#. Show sync datebook check box
+#: prefs_gui.c:533
 msgid "Sync datebook"
 msgstr "同步行事历"
 
+#. Show sync address check box
 #: prefs_gui.c:544
 msgid "Sync address"
 msgstr "同步地址"
 
-#: prefs_gui.c:556
+#. Show sync todo check box
+#: prefs_gui.c:555
 msgid "Sync todo"
 msgstr "同步待办工作"
 
-#: prefs_gui.c:568
+#. Show sync memo check box
+#: prefs_gui.c:566
 msgid "Sync memo"
 msgstr "同步备忘录"
 
-#: prefs_gui.c:580
+#: prefs_gui.c:578
 msgid "Sync memo32 (pedit32)"
 msgstr "同步 memo32 (pedit32)"
 
-#: prefs_gui.c:622
+#. Show sync Ma�ana check box
+#: prefs_gui.c:590
+#, fuzzy
+msgid "Sync Maana"
+msgstr "忽略问题，照样同步"
+
+#: prefs_gui.c:633
 msgid "Open alarm windows for appointment reminders"
 msgstr "约会提醒时打开闹铃窗口"
 
-#: prefs_gui.c:634
+#: prefs_gui.c:645
 msgid "Execute this command"
 msgstr "执行此命令"
 
 #. Shell warning
-#: prefs_gui.c:645
+#: prefs_gui.c:656
 msgid "WARNING: executing arbitrary shell commands can be dangerous!!!"
 msgstr "警告：任意执行 shell 命令有相当的危险性!!!"
 
-#: prefs_gui.c:653
+#: prefs_gui.c:664
 msgid "Alarm Command"
 msgstr "闹铃命令"
 
-#: prefs_gui.c:663
+#: prefs_gui.c:674
 msgid "%t is replaced with the alarm time"
 msgstr "%t 代表闹铃时间"
 
-#: prefs_gui.c:667
+#: prefs_gui.c:678
 #, c-format
 msgid "%d is replaced with the alarm date"
 msgstr "%d 代表闹铃日期"
 
-#: prefs_gui.c:672
+#: prefs_gui.c:683
 msgid "%D is replaced with the alarm description"
 msgstr "%D 代表闹铃描述"
 
-#: prefs_gui.c:676
+#: prefs_gui.c:687
 msgid "%N is replaced with the alarm note"
 msgstr "%N 代表闹铃备忘"
+
+#: prefs_gui.c:691
+msgid "%D (description substitution) is disabled in this build"
+msgstr ""
+
+#: prefs_gui.c:695
+msgid "%N (note substitution) is disabled in this build"
+msgstr ""
 
 #: print_gui.c:175
 msgid "Print Options"
@@ -966,7 +1005,8 @@ msgid "To restore your handheld:"
 msgstr "如何恢复您的手持电脑："
 
 #: restore_gui.c:162
-msgid "1. Choose all the applications you wish to restore.  The default is all."
+msgid ""
+"1. Choose all the applications you wish to restore.  The default is all."
 msgstr "1. 选择所有您要复原的应用程序。默认是全部。"
 
 #: restore_gui.c:165
@@ -1005,168 +1045,231 @@ msgstr "搜索："
 msgid "Case Sensitive"
 msgstr "区分大小写"
 
-#: sync.c:338
+#: sync.c:272
+#, c-format
+msgid "Exiting with status %s\n"
+msgstr ""
+
+#: sync.c:273
+msgid "Finished\n"
+msgstr ""
+
+#: sync.c:437
 #, c-format
 msgid " Syncing on device %s\n"
 msgstr " 正在设备 %s 上同步\n"
 
-#: sync.c:339
+#: sync.c:438
 msgid " Press the HotSync button now\n"
 msgstr " 现在请按 HotSync 键\n"
 
-#: sync.c:446
+#: sync.c:534
 msgid "Check your serial port and settings\n"
 msgstr "检查您的串口和设置\n"
 
-#. These are carefully worded so as not to be read by
-#. * the parent program and interpreted
-#: sync.c:480 sync.c:494 sync.c:506
-#, c-format
-msgid "Last Username-->\"%s\"\n"
+#: sync.c:602 sync.c:624 sync.c:646
+#, fuzzy, c-format
+msgid "Last Synced Username-->\"%s\"\n"
 msgstr "上一个用户名-->\"%s\"\n"
 
-#: sync.c:481 sync.c:495 sync.c:507
-#, c-format
-msgid "Last UserID-->\"%d\"\n"
+#: sync.c:603 sync.c:625
+#, fuzzy, c-format
+msgid "Last Synced UserID-->\"%d\"\n"
 msgstr "上一个用户 ID->\"%d\"\n"
 
-#: sync.c:482 sync.c:496 sync.c:508
-#, c-format
-msgid "Username-->\"%s\"\n"
+#: sync.c:604 sync.c:626 sync.c:648
+#, fuzzy, c-format
+msgid " This Username-->\"%s\"\n"
 msgstr "用户名-->\"%s\"\n"
 
-#: sync.c:483 sync.c:497 sync.c:509
-#, c-format
-msgid "User ID-->%d\n"
+#: sync.c:605 sync.c:627 sync.c:649
+#, fuzzy, c-format
+msgid " This User ID-->%d\n"
 msgstr "用户 ID-->%d\n"
 
-#: sync.c:522
+#: sync.c:647
+#, fuzzy, c-format
+msgid "Last Syned UserID-->\"%d\"\n"
+msgstr "上一个用户 ID->\"%d\"\n"
+
+#: sync.c:670
+#, fuzzy, c-format
+msgid "Username is \"%s\"\n"
+msgstr "用户名-->\"%s\"\n"
+
+#: sync.c:671
+#, fuzzy, c-format
+msgid "User ID is %d\n"
+msgstr "用户 ID-->%d\n"
+
+#: sync.c:673 sync.c:679
 #, c-format
 msgid "lastSyncPC = %d\n"
 msgstr "上次同步的PC = %d\n"
 
-#: sync.c:523
+#: sync.c:674
 #, c-format
 msgid "This PC = %lu\n"
 msgstr "这部 PC = %lu\n"
 
-#: sync.c:542
+#: sync.c:675
+#, fuzzy, c-format
+msgid "Last Username = [%s]\n"
+msgstr "上一个用户名-->\"%s\"\n"
+
+#: sync.c:676
+#, fuzzy, c-format
+msgid "Last UserID = %d\n"
+msgstr "上一个用户 ID->\"%d\"\n"
+
+#: sync.c:677
+#, fuzzy, c-format
+msgid "Username = [%s]\n"
+msgstr "用户名-->\"%s\"\n"
+
+#: sync.c:678
+#, fuzzy, c-format
+msgid "userID = %d\n"
+msgstr "用户 ID-->%d\n"
+
+#: sync.c:695
 msgid "Sync canceled\n"
 msgstr "同步已取消\n"
 
-#: sync.c:566
+#. Do not translate this text
+#: sync.c:719
+#, fuzzy
+msgid "Finished restoring handheld.\n"
+msgstr "/文件(_F)/恢复手持电脑"
+
+#: sync.c:720
 msgid "You may need to sync to update J-Pilot.\n"
 msgstr "您可能需要“同步”以更新 J-Pilot。\n"
 
-#: sync.c:583
+#: sync.c:738
 msgid "Doing a fast sync.\n"
 msgstr "正在进行快速同步。\n"
 
-#: sync.c:601
+#: sync.c:761
 msgid "Doing a slow sync.\n"
 msgstr "正在进行慢速同步。\n"
 
-#: sync.c:665
+#: sync.c:834
 msgid "Thank you for using J-Pilot."
 msgstr "感谢您使用 J-Pilot。"
 
-#: sync.c:739 sync.c:2199
+#. Do not translate this text
+#: sync.c:877
+#, fuzzy
+msgid "Finished.\n"
+msgstr "失败。\n"
+
+#: sync.c:909 sync.c:2405
 #, c-format
 msgid "Syncing %s\n"
 msgstr "正在同步 %s\n"
 
-#: sync.c:746 sync.c:1746 sync.c:2206
+#: sync.c:916 sync.c:1931 sync.c:2412
 #, c-format
 msgid "Wrote an %s record."
 msgstr "写了一项 %s 纪录。"
 
-#: sync.c:748 sync.c:1748 sync.c:2208
+#: sync.c:918 sync.c:1933 sync.c:2414
 #, c-format
 msgid "Writing an %s record failed."
 msgstr "写入一项 %s 纪录失败。"
 
-#: sync.c:750 sync.c:1750 sync.c:2210
+#: sync.c:920 sync.c:1935 sync.c:2416
 #, c-format
 msgid "Deleting an %s record failed."
 msgstr "删除一项 %s 纪录失败。"
 
-#: sync.c:752 sync.c:1752 sync.c:2212
+#: sync.c:922 sync.c:1937 sync.c:2418
 #, c-format
 msgid "Deleted an %s record."
 msgstr "删除了一项 %s 纪录。"
 
-#: sync.c:755 sync.c:1755 sync.c:2215
+#: sync.c:925 sync.c:1940 sync.c:2421
 #, c-format
 msgid "Wrote a %s record."
 msgstr "写了一项 %s 纪录。"
 
-#: sync.c:757 sync.c:1757 sync.c:2217
+#: sync.c:927 sync.c:1942 sync.c:2423
 #, c-format
 msgid "Writing a %s record failed."
 msgstr "写入一项 %s 纪录失败。"
 
-#: sync.c:759 sync.c:1759 sync.c:2219
+#: sync.c:929 sync.c:1944 sync.c:2425
 #, c-format
 msgid "Deleting a %s record failed."
 msgstr "删除一项 %s 纪录失败。"
 
-#: sync.c:761 sync.c:1761 sync.c:2221
+#: sync.c:931 sync.c:1946 sync.c:2427
 #, c-format
 msgid "Deleted a %s record."
 msgstr "删除了一项 %s 纪录。"
 
-#: sync.c:766 sync.c:771 sync.c:1765 sync.c:2225
+#: sync.c:936 sync.c:942 sync.c:1950 sync.c:2432
 #, c-format
 msgid "Unable to open %s\n"
 msgstr "无法打开 %s\n"
 
-#: sync.c:781
+#: sync.c:952
 #, c-format
 msgid "number of records = %d\n"
 msgstr "纪录数目 = %d\n"
 
-#: sync.c:795 sync.c:1781
+#: sync.c:966 sync.c:1966
 msgid "PC file corrupt?\n"
 msgstr "PC 文件损坏了？\n"
 
-#: sync.c:802
+#: sync.c:973
 msgid "slow_sync_application(): Out of memory\n"
 msgstr "slow_sync_application(): 内存不足\n"
 
-#: sync.c:822 sync.c:1819
+#: sync.c:999 sync.c:2018
 msgid "dlp_WriteRecord failed\n"
 msgstr "dlp_WriteRecord 失败\n"
 
-#: sync.c:832 sync.c:887 sync.c:897 sync.c:1829 sync.c:1849 sync.c:1888
-#: sync.c:1898
+#: sync.c:1009 sync.c:1027 sync.c:1068 sync.c:1078 sync.c:2028 sync.c:2055
+#: sync.c:2094 sync.c:2104
 msgid "fseek failed - fatal error\n"
 msgstr "fseek 失败 - 严重错误\n"
 
-#: sync.c:977 sync.c:1315
+#: sync.c:1158 sync.c:1499
 #, c-format
 msgid "%s (Creator ID '%s') is up to date, fetch skipped.\n"
 msgstr "%s (创建者 ID '%s') 已经是最新的了，跳过获取。\n"
 
-#: sync.c:981 sync.c:1319
+#: sync.c:1162 sync.c:1503
 #, c-format
 msgid "Fetching '%s' (Creator ID '%s')... "
 msgstr "正在获取 '%s' (创建者 ID '%s')... "
 
-#: sync.c:996 sync.c:1334 sync.c:1452
+#: sync.c:1169
+#, c-format
+msgid "Failed, unable to create file %s\n"
+msgstr ""
+
+#: sync.c:1173
+msgid "Failed, unable to back up database\n"
+msgstr ""
+
+#: sync.c:1177 sync.c:1518 sync.c:1637
 msgid "OK\n"
 msgstr "确定\n"
 
-#: sync.c:1232
+#: sync.c:1416
 #, c-format
 msgid "Skipping %s (Creator ID '%s')\n"
 msgstr "跳过 %s (创建者 ID '%s')\n"
 
-#: sync.c:1382
+#: sync.c:1567
 #, c-format
 msgid "Installing %s "
 msgstr "正在安装 %s "
 
-#: sync.c:1385
+#: sync.c:1570
 #, c-format
 msgid ""
 "\n"
@@ -1175,39 +1278,39 @@ msgstr ""
 "\n"
 "无法打开 '%s'!\n"
 
-#: sync.c:1395
+#: sync.c:1580
 #, c-format
 msgid "(Creator ID is '%s')..."
 msgstr "(创建者 ID 是 '%s')..."
 
-#: sync.c:1436
+#: sync.c:1621
 #, c-format
 msgid "Install %s failed"
 msgstr "安装 %s 失败"
 
-#: sync.c:1441
+#: sync.c:1626
 msgid "Failed.\n"
 msgstr "失败。\n"
 
 #. the space after the %s is a hack, the last char gets cut off
-#: sync.c:1447
+#: sync.c:1632
 #, c-format
 msgid "Installed %s "
 msgstr "已安装 %s "
 
-#: sync.c:1472
+#: sync.c:1657
 msgid "Cannot open jpilot_to_install file\n"
 msgstr "无法打开 jpilot_to_install 文件\n"
 
-#: sync.c:1478
+#: sync.c:1663
 msgid "Cannot open jpilot_to_install.tmp file\n"
 msgstr "无法打开 jpilot_to_install.tmp 文件\n"
 
-#: sync.c:1790
+#: sync.c:1975
 msgid "fast_sync_local_recs(): Out of memory\n"
 msgstr "fast_sync_local_recs(): 内存不足\n"
 
-#: sync.c:1873
+#: sync.c:2079
 msgid ""
 "dlp_DeleteRecord failed\n"
 "This could be because the record was already deleted on the Palm\n"
@@ -1215,101 +1318,116 @@ msgstr ""
 "dlp_DeleteRecord 失败\n"
 "可能是因为这项纪录已经在 Palm 上删除了\n"
 
-#: sync.c:2278
+#: sync.c:2485
 #, c-format
 msgid "palm: number of records = %d\n"
 msgstr "Palm：纪录数目 = %d\n"
 
-#: sync.c:2279
+#: sync.c:2486
 #, c-format
 msgid "disk: number of records = %d\n"
 msgstr "磁盘：纪录数目 = %d\n"
 
-#: todo_gui.c:139
+#: todo.c:245
+#, c-format
+msgid "Warning ToDo description too long, truncating to %d\n"
+msgstr ""
+
+#: todo.c:252
+#, c-format
+msgid "Warning ToDo note too long, truncating to %d\n"
+msgstr ""
+
+#: todo_gui.c:151
 msgid "Due Date"
 msgstr "到期日"
 
-#: todo_gui.c:489
+#: todo_gui.c:500
 msgid "File doesn't appear to be todo.dat format\n"
 msgstr "文件似乎不是 todo.dat 格式\n"
 
-#: todo_gui.c:1244
+#: todo_gui.c:1277
 msgid "No date"
 msgstr ""
 
+#. Ma�ana check box
+#: todo_gui.c:1551
+msgid "Use Maana database"
+msgstr ""
+
 #. The hide completed check box
-#: todo_gui.c:1519
+#: todo_gui.c:1560
 msgid "Hide Completed ToDos"
 msgstr "隐藏已完成的工作"
 
-#: todo_gui.c:1536
+#: todo_gui.c:1576
 msgid "Task"
 msgstr "任务"
 
-#: todo_gui.c:1537
+#: todo_gui.c:1577
 msgid "Due"
 msgstr "预期"
 
 #. The completed check box
-#: todo_gui.c:1612
+#: todo_gui.c:1652
 msgid "Completed"
 msgstr "已完成"
 
-#: todo_gui.c:1620
+#: todo_gui.c:1660
 msgid "Priority: "
 msgstr "优先级："
 
-#: todo_gui.c:1640
+#: todo_gui.c:1680
 msgid "Date Due:"
 msgstr "到期日："
 
-#: utils.c:105
+#: utils.c:106
 msgid "Today is %A, %x %X"
 msgstr "今天是 %A, %x, %X"
 
-#: utils.c:107
+#: utils.c:108
 #, c-format
 msgid "Today is %%A, %s %s"
 msgstr "今天是 %%A, %s %s"
 
-#: utils.c:864
+#: utils.c:868
 msgid "Today"
 msgstr "今天"
 
-#: utils.c:1012
+#: utils.c:1018
 msgid "Save Changed Record?"
 msgstr "保存纪录修改？"
 
-#: utils.c:1013
+#: utils.c:1019
 msgid "Do you want to save the changes to this record?"
 msgstr "您要保存对于此项纪录的修改吗？"
 
-#: utils.c:1018
+#: utils.c:1024
 msgid "Save New Record?"
 msgstr "保存新纪录？"
 
-#: utils.c:1019
+#: utils.c:1025
 msgid "Do you want to save this new record?"
 msgstr "您要保存此项新建的纪录吗？"
 
-#: utils.c:1347
+#: utils.c:1353
 msgid "Couldn't find empty DB file.\n"
 msgstr "找不到空的 DB 文件。\n"
 
-#: utils.c:1348
+#: utils.c:1354
 msgid "jpilot may not be installed.\n"
 msgstr "可能未安装 jpilot。\n"
 
-#: utils.c:2043
+#: utils.c:2068
 msgid "PC ID is 0.\n"
 msgstr "PC ID 是 0。\n"
 
-#: utils.c:2044
+#: utils.c:2069
 #, c-format
 msgid "I generated a new PC ID.  It is %lu\n"
 msgstr "我生成了一项新的 PC ID，是 %lu\n"
 
-#: weekview_gui.c:269
+#: weekview_gui.c:270
 msgid "Weekly View"
 msgstr "每周视图"
 
@@ -1321,111 +1439,111 @@ msgstr "开支"
 msgid "About Expense"
 msgstr "关于开支"
 
-#: Expense/expense.c:359 Expense/expense.c:1027
+#: Expense/expense.c:359 Expense/expense.c:1045
 msgid "Airfare"
 msgstr "飞机票"
 
-#: Expense/expense.c:361 Expense/expense.c:1028
+#: Expense/expense.c:361 Expense/expense.c:1046
 msgid "Breakfast"
 msgstr "早餐"
 
-#: Expense/expense.c:363 Expense/expense.c:1029
+#: Expense/expense.c:363 Expense/expense.c:1047
 msgid "Bus"
 msgstr "公共汽车"
 
-#: Expense/expense.c:365 Expense/expense.c:1030
+#: Expense/expense.c:365 Expense/expense.c:1048
 msgid "BusinessMeals"
 msgstr "商务客饭"
 
-#: Expense/expense.c:367 Expense/expense.c:1031
+#: Expense/expense.c:367 Expense/expense.c:1049
 msgid "CarRental"
 msgstr "租车"
 
-#: Expense/expense.c:369 Expense/expense.c:1032
+#: Expense/expense.c:369 Expense/expense.c:1050
 msgid "Dinner"
 msgstr "晚餐"
 
-#: Expense/expense.c:371 Expense/expense.c:1033
+#: Expense/expense.c:371 Expense/expense.c:1051
 msgid "Entertainment"
 msgstr "娱乐"
 
-#: Expense/expense.c:373 Expense/expense.c:1034
+#: Expense/expense.c:373 Expense/expense.c:1052
 msgid "Fax"
 msgstr "传真"
 
-#: Expense/expense.c:375 Expense/expense.c:1035
+#: Expense/expense.c:375 Expense/expense.c:1053
 msgid "Gas"
 msgstr "汽油"
 
-#: Expense/expense.c:377 Expense/expense.c:1036
+#: Expense/expense.c:377 Expense/expense.c:1054
 msgid "Gifts"
 msgstr "礼品"
 
-#: Expense/expense.c:379 Expense/expense.c:1037
+#: Expense/expense.c:379 Expense/expense.c:1055
 msgid "Hotel"
 msgstr "酒店"
 
-#: Expense/expense.c:381 Expense/expense.c:1038
+#: Expense/expense.c:381 Expense/expense.c:1056
 msgid "Incidentals"
 msgstr "附带开支"
 
-#: Expense/expense.c:383 Expense/expense.c:1039
+#: Expense/expense.c:383 Expense/expense.c:1057
 msgid "Laundry"
 msgstr "洗衣"
 
-#: Expense/expense.c:385 Expense/expense.c:1040
+#: Expense/expense.c:385 Expense/expense.c:1058
 msgid "Limo"
 msgstr "豪华轿车"
 
-#: Expense/expense.c:387 Expense/expense.c:1041
+#: Expense/expense.c:387 Expense/expense.c:1059
 msgid "Lodging"
 msgstr "寄宿"
 
-#: Expense/expense.c:389 Expense/expense.c:1042
+#: Expense/expense.c:389 Expense/expense.c:1060
 msgid "Lunch"
 msgstr "午餐"
 
-#: Expense/expense.c:391 Expense/expense.c:1043
+#: Expense/expense.c:391 Expense/expense.c:1061
 msgid "Mileage"
 msgstr "里程"
 
-#: Expense/expense.c:395 Expense/expense.c:1045
+#: Expense/expense.c:395 Expense/expense.c:1063
 msgid "Parking"
 msgstr "泊车"
 
-#: Expense/expense.c:397 Expense/expense.c:1046
+#: Expense/expense.c:397 Expense/expense.c:1064
 msgid "Postage"
 msgstr "邮费"
 
-#: Expense/expense.c:399 Expense/expense.c:1047
+#: Expense/expense.c:399 Expense/expense.c:1065
 msgid "Snack"
 msgstr "小食"
 
-#: Expense/expense.c:401 Expense/expense.c:1048
+#: Expense/expense.c:401 Expense/expense.c:1066
 msgid "Subway"
 msgstr "地下铁路"
 
-#: Expense/expense.c:403 Expense/expense.c:1049
+#: Expense/expense.c:403 Expense/expense.c:1067
 msgid "Supplies"
 msgstr "用品"
 
-#: Expense/expense.c:405 Expense/expense.c:1050
+#: Expense/expense.c:405 Expense/expense.c:1068
 msgid "Taxi"
 msgstr "计程车"
 
-#: Expense/expense.c:407 Expense/expense.c:1051
+#: Expense/expense.c:407 Expense/expense.c:1069
 msgid "Telephone"
 msgstr "电话"
 
-#: Expense/expense.c:409 Expense/expense.c:1052
+#: Expense/expense.c:409 Expense/expense.c:1070
 msgid "Tips"
 msgstr "小帐"
 
-#: Expense/expense.c:411 Expense/expense.c:1053
+#: Expense/expense.c:411 Expense/expense.c:1071
 msgid "Tolls"
 msgstr "通行费"
 
-#: Expense/expense.c:413 Expense/expense.c:1054
+#: Expense/expense.c:413 Expense/expense.c:1072
 msgid "Train"
 msgstr "火车"
 
@@ -1433,11 +1551,11 @@ msgstr "火车"
 msgid "AmEx"
 msgstr "美国运通 (AmEx)"
 
-#: Expense/expense.c:429 Expense/expense.c:1017
+#: Expense/expense.c:429 Expense/expense.c:1035
 msgid "Cash"
 msgstr "现金"
 
-#: Expense/expense.c:431 Expense/expense.c:1018
+#: Expense/expense.c:431 Expense/expense.c:1036
 msgid "Check"
 msgstr "支票"
 
@@ -1449,87 +1567,91 @@ msgstr "信用卡"
 msgid "MasterCard"
 msgstr "万事达卡 (MasterCard)"
 
-#: Expense/expense.c:437 Expense/expense.c:1021
+#: Expense/expense.c:437 Expense/expense.c:1039
 msgid "Prepaid"
 msgstr "已先支付"
 
-#: Expense/expense.c:439 Expense/expense.c:1022
+#: Expense/expense.c:439 Expense/expense.c:1040
 msgid "VISA"
 msgstr "VISA 卡"
 
-#: Expense/expense.c:1016
+#: Expense/expense.c:1034
 msgid "American Express"
 msgstr "美国运通 (American Express)"
 
-#: Expense/expense.c:1019
+#: Expense/expense.c:1037
 msgid "Credit Card"
 msgstr "信用卡"
 
-#: Expense/expense.c:1020
+#: Expense/expense.c:1038
 msgid "Master Card"
 msgstr "万事达卡 (MasterCard)"
 
-#: Expense/expense.c:1270
+#: Expense/expense.c:1287
 msgid "Type: "
 msgstr "类型："
 
-#: Expense/expense.c:1279
+#: Expense/expense.c:1296
 msgid "Payment: "
 msgstr "付款："
 
-#: Expense/expense.c:1291
+#: Expense/expense.c:1308
 msgid "Month:"
 msgstr "月："
 
-#: Expense/expense.c:1305
+#: Expense/expense.c:1322
 msgid "Day:"
 msgstr "日："
 
-#: Expense/expense.c:1319
+#: Expense/expense.c:1336
 msgid "Year:"
 msgstr "年："
 
-#: Expense/expense.c:1336
+#: Expense/expense.c:1353
 msgid "Amount: "
 msgstr "金额："
 
-#: Expense/expense.c:1345
+#: Expense/expense.c:1362
 msgid "Vendor: "
 msgstr "商户："
 
-#: Expense/expense.c:1354
+#: Expense/expense.c:1371
 msgid "City: "
 msgstr "城市："
 
-#: Expense/expense.c:1360
+#: Expense/expense.c:1377
 msgid "Attendees"
 msgstr "参加者"
 
 #. Note textbox
-#: Expense/expense.c:1374 KeyRing/keyring.c:1377
+#: Expense/expense.c:1391 KeyRing/keyring.c:1416
 msgid "Note"
 msgstr "注释"
 
-#. Label
-#: KeyRing/keyring.c:1080
+#: KeyRing/keyring.c:1102
+#, fuzzy
+msgid "Incorrect, Reenter KeyRing Password"
+msgstr "输入 KeyRing 口令"
+
+#: KeyRing/keyring.c:1104
 msgid "Enter KeyRing Password"
 msgstr "输入 KeyRing 口令"
 
-#: KeyRing/keyring.c:1198
+#: KeyRing/keyring.c:1225
 msgid "Account"
 msgstr "帐号"
 
 #. name Entry
-#: KeyRing/keyring.c:1355
+#: KeyRing/keyring.c:1394
 msgid "name: "
 msgstr "名字："
 
 #. account Entry
-#: KeyRing/keyring.c:1362
+#: KeyRing/keyring.c:1401
 msgid "account: "
 msgstr "帐号："
 
 #. password
-#: KeyRing/keyring.c:1369
+#: KeyRing/keyring.c:1408
 msgid "password: "
 msgstr "口令："
