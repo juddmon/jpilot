@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Id: Makefile.in,v 1.16 2002/10/25 01:04:35 judd Exp $
+# $Id: Makefile.in,v 1.17 2002/11/14 02:51:32 judd Exp $
 SHELL = @SHELL@
 
 srcdir = @srcdir@
@@ -121,6 +121,7 @@ PILOT_LIBS = @PILOT_LIBS@
 PLUGIN_SUPPORT = @PLUGIN_SUPPORT@
 POFILES = @POFILES@
 POSUB = @POSUB@
+PROGNAME = @PROGNAME@
 RANLIB = @RANLIB@
 STRIP = @STRIP@
 USE_INCLUDED_LIBINTL = @USE_INCLUDED_LIBINTL@
@@ -153,13 +154,14 @@ EXTRA_DIST = reconf autogen.sh ChangeLog docs empty icons \
 	m4/progtest.m4
 
 
-bin_PROGRAMS = jpilot jpilot-dump jpilot-sync jpilot-upgrade-99
+bin_PROGRAMS = jpilot jpilot-dump jpilot-sync
 jpilot_SOURCES = \
 	address.c \
 	address.h \
 	address_gui.c \
 	alarms.c \
 	alarms.h \
+	category.c \
 	cp1250.c \
 	cp1250.h \
 	dat.c \
@@ -223,6 +225,7 @@ jpilot_SOURCES = \
 
 jpilot_dump_SOURCES = \
 	address.c \
+	category.c \
 	cp1250.c \
 	datebook.c \
 	japanese.c \
@@ -240,6 +243,7 @@ jpilot_dump_SOURCES = \
 
 jpilot_sync_SOURCES = \
 	cp1250.c \
+	category.c \
 	jpilot-sync.c \
 	japanese.c \
 	libplugin.c \
@@ -252,17 +256,6 @@ jpilot_sync_SOURCES = \
 	utils.c
 
 
-jpilot_upgrade_99_SOURCES = \
-	cp1250.c \
-	jpilot-upgrade-99.c \
-	libplugin.c \
-	japanese.c \
-	log.c \
-	prefs.c \
-	russian.c \
-	utils.c
-
-
 localedir = $(datadir)/locale
 gnulocaledir = $(prefix)/share/locale
 I18NDEFS = -DLOCALEDIR=\"$(localedir)\" -DGNULOCALEDIR=\"$(gnulocaledir)\"
@@ -272,7 +265,6 @@ CFLAGS = -Wall @CFLAGS@ @ccoptions@ @PILOT_FLAGS@ @GTK_CFLAGS@ ${I18NDEFS}
 jpilot_LDADD = @LIBS@ @PILOT_LIBS@ @GTK_LIBS@
 jpilot_dump_LDADD = @LIBS@ @PILOT_LIBS@ @GTK_LIBS@
 jpilot_sync_LDADD = @LIBS@ @PILOT_LIBS@ @GTK_LIBS@
-jpilot_upgrade_99_LDADD = @LIBS@ @PILOT_LIBS@ @GTK_LIBS@
 
 # Automatically update the libtool script if it becomes out-of-date.
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
@@ -288,47 +280,41 @@ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = config.h
 CONFIG_CLEAN_FILES = intl/Makefile jpilot.spec SlackBuild
-bin_PROGRAMS = jpilot$(EXEEXT) jpilot-dump$(EXEEXT) jpilot-sync$(EXEEXT) \
-	jpilot-upgrade-99$(EXEEXT)
+bin_PROGRAMS = jpilot$(EXEEXT) jpilot-dump$(EXEEXT) jpilot-sync$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 
 am_jpilot_OBJECTS = address.$(OBJEXT) address_gui.$(OBJEXT) \
-	alarms.$(OBJEXT) cp1250.$(OBJEXT) dat.$(OBJEXT) \
-	datebook.$(OBJEXT) datebook_gui.$(OBJEXT) dialer.$(OBJEXT) \
-	export_gui.$(OBJEXT) import_gui.$(OBJEXT) install_gui.$(OBJEXT) \
-	japanese.$(OBJEXT) jpilot.$(OBJEXT) libplugin.$(OBJEXT) \
-	log.$(OBJEXT) memo.$(OBJEXT) memo_gui.$(OBJEXT) \
-	monthview_gui.$(OBJEXT) password.$(OBJEXT) plugins.$(OBJEXT) \
-	prefs.$(OBJEXT) prefs_gui.$(OBJEXT) print.$(OBJEXT) \
-	print_gui.$(OBJEXT) print_headers.$(OBJEXT) \
+	alarms.$(OBJEXT) category.$(OBJEXT) cp1250.$(OBJEXT) \
+	dat.$(OBJEXT) datebook.$(OBJEXT) datebook_gui.$(OBJEXT) \
+	dialer.$(OBJEXT) export_gui.$(OBJEXT) import_gui.$(OBJEXT) \
+	install_gui.$(OBJEXT) japanese.$(OBJEXT) jpilot.$(OBJEXT) \
+	libplugin.$(OBJEXT) log.$(OBJEXT) memo.$(OBJEXT) \
+	memo_gui.$(OBJEXT) monthview_gui.$(OBJEXT) password.$(OBJEXT) \
+	plugins.$(OBJEXT) prefs.$(OBJEXT) prefs_gui.$(OBJEXT) \
+	print.$(OBJEXT) print_gui.$(OBJEXT) print_headers.$(OBJEXT) \
 	print_logo.$(OBJEXT) restore_gui.$(OBJEXT) russian.$(OBJEXT) \
 	search_gui.$(OBJEXT) sync.$(OBJEXT) todo.$(OBJEXT) \
 	todo_gui.$(OBJEXT) utils.$(OBJEXT) weekview_gui.$(OBJEXT)
 jpilot_OBJECTS = $(am_jpilot_OBJECTS)
 jpilot_DEPENDENCIES =
 jpilot_LDFLAGS =
-am_jpilot_dump_OBJECTS = address.$(OBJEXT) cp1250.$(OBJEXT) \
-	datebook.$(OBJEXT) japanese.$(OBJEXT) jpilot-dump.$(OBJEXT) \
-	libplugin.$(OBJEXT) log.$(OBJEXT) memo.$(OBJEXT) \
-	password.$(OBJEXT) plugins.$(OBJEXT) prefs.$(OBJEXT) \
-	russian.$(OBJEXT) todo.$(OBJEXT) utils.$(OBJEXT)
+am_jpilot_dump_OBJECTS = address.$(OBJEXT) category.$(OBJEXT) \
+	cp1250.$(OBJEXT) datebook.$(OBJEXT) japanese.$(OBJEXT) \
+	jpilot-dump.$(OBJEXT) libplugin.$(OBJEXT) log.$(OBJEXT) \
+	memo.$(OBJEXT) password.$(OBJEXT) plugins.$(OBJEXT) \
+	prefs.$(OBJEXT) russian.$(OBJEXT) todo.$(OBJEXT) \
+	utils.$(OBJEXT)
 jpilot_dump_OBJECTS = $(am_jpilot_dump_OBJECTS)
 jpilot_dump_DEPENDENCIES =
 jpilot_dump_LDFLAGS =
-am_jpilot_sync_OBJECTS = cp1250.$(OBJEXT) jpilot-sync.$(OBJEXT) \
-	japanese.$(OBJEXT) libplugin.$(OBJEXT) log.$(OBJEXT) \
-	password.$(OBJEXT) plugins.$(OBJEXT) prefs.$(OBJEXT) \
-	russian.$(OBJEXT) sync.$(OBJEXT) utils.$(OBJEXT)
+am_jpilot_sync_OBJECTS = cp1250.$(OBJEXT) category.$(OBJEXT) \
+	jpilot-sync.$(OBJEXT) japanese.$(OBJEXT) libplugin.$(OBJEXT) \
+	log.$(OBJEXT) password.$(OBJEXT) plugins.$(OBJEXT) \
+	prefs.$(OBJEXT) russian.$(OBJEXT) sync.$(OBJEXT) \
+	utils.$(OBJEXT)
 jpilot_sync_OBJECTS = $(am_jpilot_sync_OBJECTS)
 jpilot_sync_DEPENDENCIES =
 jpilot_sync_LDFLAGS =
-am_jpilot_upgrade_99_OBJECTS = cp1250.$(OBJEXT) \
-	jpilot-upgrade-99.$(OBJEXT) libplugin.$(OBJEXT) \
-	japanese.$(OBJEXT) log.$(OBJEXT) prefs.$(OBJEXT) \
-	russian.$(OBJEXT) utils.$(OBJEXT)
-jpilot_upgrade_99_OBJECTS = $(am_jpilot_upgrade_99_OBJECTS)
-jpilot_upgrade_99_DEPENDENCIES =
-jpilot_upgrade_99_LDFLAGS =
 
 DEFS = @DEFS@
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I.
@@ -339,17 +325,15 @@ depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/address.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/address_gui.Po ./$(DEPDIR)/alarms.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/cp1250.Po ./$(DEPDIR)/dat.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/datebook.Po ./$(DEPDIR)/datebook_gui.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/dialer.Po ./$(DEPDIR)/export_gui.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/import_gui.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/category.Po ./$(DEPDIR)/cp1250.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/dat.Po ./$(DEPDIR)/datebook.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/datebook_gui.Po ./$(DEPDIR)/dialer.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/export_gui.Po ./$(DEPDIR)/import_gui.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/install_gui.Po ./$(DEPDIR)/japanese.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/jpilot-dump.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/jpilot-sync.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/jpilot-upgrade-99.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/jpilot.Po ./$(DEPDIR)/libplugin.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/log.Po ./$(DEPDIR)/memo.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/memo_gui.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/jpilot-sync.Po ./$(DEPDIR)/jpilot.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/libplugin.Po ./$(DEPDIR)/log.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/memo.Po ./$(DEPDIR)/memo_gui.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/monthview_gui.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/password.Po ./$(DEPDIR)/plugins.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/prefs.Po ./$(DEPDIR)/prefs_gui.Po \
@@ -368,7 +352,7 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 DIST_SOURCES = $(jpilot_SOURCES) $(jpilot_dump_SOURCES) \
-	$(jpilot_sync_SOURCES) $(jpilot_upgrade_99_SOURCES)
+	$(jpilot_sync_SOURCES)
 
 RECURSIVE_TARGETS = info-recursive dvi-recursive install-info-recursive \
 	uninstall-info-recursive all-recursive install-data-recursive \
@@ -380,7 +364,7 @@ DIST_COMMON = README ABOUT-NLS AUTHORS COPYING ChangeLog INSTALL \
 	configure.in depcomp install-sh jpilot.spec.in ltconfig \
 	ltmain.sh missing mkinstalldirs
 DIST_SUBDIRS = $(SUBDIRS)
-SOURCES = $(jpilot_SOURCES) $(jpilot_dump_SOURCES) $(jpilot_sync_SOURCES) $(jpilot_upgrade_99_SOURCES)
+SOURCES = $(jpilot_SOURCES) $(jpilot_dump_SOURCES) $(jpilot_sync_SOURCES)
 
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
@@ -464,9 +448,6 @@ jpilot-dump$(EXEEXT): $(jpilot_dump_OBJECTS) $(jpilot_dump_DEPENDENCIES)
 jpilot-sync$(EXEEXT): $(jpilot_sync_OBJECTS) $(jpilot_sync_DEPENDENCIES) 
 	@rm -f jpilot-sync$(EXEEXT)
 	$(LINK) $(jpilot_sync_LDFLAGS) $(jpilot_sync_OBJECTS) $(jpilot_sync_LDADD) $(LIBS)
-jpilot-upgrade-99$(EXEEXT): $(jpilot_upgrade_99_OBJECTS) $(jpilot_upgrade_99_DEPENDENCIES) 
-	@rm -f jpilot-upgrade-99$(EXEEXT)
-	$(LINK) $(jpilot_upgrade_99_LDFLAGS) $(jpilot_upgrade_99_OBJECTS) $(jpilot_upgrade_99_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT) core *.core
@@ -477,6 +458,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/address.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/address_gui.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/alarms.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/category.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cp1250.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dat.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/datebook.Po@am__quote@
@@ -488,7 +470,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/japanese.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jpilot-dump.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jpilot-sync.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jpilot-upgrade-99.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jpilot.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libplugin.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/log.Po@am__quote@
@@ -840,8 +821,6 @@ jpilot-dump.o: jpilot-dump.c config.h utils.h log.h prefs.h \
 
 jpilot-sync.o: jpilot-sync.c config.h utils.h log.h prefs.h sync.h \
 	libplugin.h password.h
-
-jpilot-upgrade-99.o: jpilot-upgrade-99.c config.h utils.h
 libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status --recheck
 
