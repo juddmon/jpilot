@@ -1782,6 +1782,29 @@ char *xpm_unlocked[] = {
    pref_init();
    /* read jpilot.rc file for preferences */
    pref_read_rc_file();
+
+   /* Extract first day of week preference from locale in GTK2 */
+#ifdef ENABLE_GTK2
+#  if defined(ENABLE_NLS)
+      char *week_start;
+      int   pref_fdow = 0;
+
+      textdomain("gtk20");
+
+      week_start = _("calendar:week_start:0");
+      if (strncmp(week_start, "calendar:week_start:", 20) == 0)
+	 pref_fdow = *(week_start + 20) - '0';
+
+      if (pref_fdow > 1)
+	 pref_fdow = 1;
+      if (pref_fdow < 0)
+	 pref_fdow = 0;
+      set_pref_possibility(PREF_FDOW, pref_fdow, TRUE);
+
+      textdomain(EPN);
+#  endif
+#endif
+
 #ifdef ENABLE_GTK2
    if (otherconv_init()) {
       printf("Error: could not set encoding\n");

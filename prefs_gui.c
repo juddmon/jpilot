@@ -403,6 +403,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
 
    /* FDOW */
+#  ifndef ENABLE_GTK2   
    label = gtk_label_new(_("The first day of the week is "));
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
 			     0, 1, 4, 5);
@@ -414,6 +415,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 
    get_pref(PREF_FDOW, &ivalue, &cstr);
    gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
+#  endif
 
    /**********************************************************************/
    /* Settings preference tab */
