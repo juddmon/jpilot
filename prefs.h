@@ -126,7 +126,8 @@
 #define CHAR_SET_KOI8_R_UTF 11 /* Cyrillic (KOI8-R) */
 #define CHAR_SET_GB2312_UTF 12 /* Chinese (GB2312) */
 #define CHAR_SET_SJIS_UTF 13 /* Japanese (SJIS) */
-#define NUM_CHAR_SETS    14
+#define CHAR_SET_1255_UTF 14 /* Hebrew (CP1255) */
+#define NUM_CHAR_SETS    15
 
 #define MAX_PREF_VALUE 200
 

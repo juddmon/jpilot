@@ -89,6 +89,10 @@ char *char_set_to_text(int char_set)
 	 sprintf(text_char_set, "SJIS");
 	 break;
 
+      case CHAR_SET_1255_UTF:
+	 sprintf(text_char_set, "CP1255");
+	 break;
+
       case CHAR_SET_1252_UTF:
       default:
 	 sprintf(text_char_set, "CP1252");

@@ -449,6 +449,7 @@ int get_pref_possibility(int which, int n, char *pref_str)
       "UTF: Cyrillic (KOI8-R)",
       "UTF: Chinese (GB2312)",
       "UTF: Japanese (SJIS)",
+      "UTF: Hebrew (CP1255)",
    };
 
    static const char *paper_sizes[] = {
