@@ -33,6 +33,7 @@
 #include <locale.h>
 #endif
 
+#include <pi-version.h>
 #include <pi-datebook.h>
 #include <gdk/gdkkeysyms.h>
 
@@ -756,7 +757,7 @@ int bad_sync_exit_status(int exit_status)
 static void output_to_pane(const char *str)
 {
    int w, h, new_y;
-   unsigned long ivalue;
+   long ivalue;
 
    gtk_text_insert(GTK_TEXT(g_output_text), NULL, NULL, NULL, str, -1);
    get_pref(PREF_OUTPUT_HEIGHT, &ivalue, NULL);
@@ -831,7 +832,7 @@ static void cb_read_pipe_from_child(gpointer data,
       sscanf(buf, "%d:", &command);
 
       Pstr1 = strstr(buf, ":");
-      if (Pstr1>0) {
+      if (Pstr1 != NULL) {
 	 Pstr1++;
       }
 #ifdef PIPE_DEBUG
@@ -915,7 +916,7 @@ static void cb_read_pipe_from_child(gpointer data,
 #endif
 	       if (ret == DIALOG_SAID_2) {
 		  sprintf(command_str, "%d:\n", PIPE_SYNC_CONTINUE);
-		  //cb_sync(NULL, SYNC_OVERRIDE_USER | (skip_plugins ? SYNC_NO_PLUGINS : 0));
+		  /* cb_sync(NULL, SYNC_OVERRIDE_USER | (skip_plugins ? SYNC_NO_PLUGINS : 0)); */
 	       } else {
 		  sprintf(command_str, "%d:\n", PIPE_SYNC_CANCEL);
 	       }
@@ -939,22 +940,76 @@ static void cb_read_pipe_from_child(gpointer data,
 void cb_about(GtkWidget *widget, gpointer data)
 {
    char text[255];
+   char text2[1024];
    char *button_text[]={gettext_noop("OK")};
    char about[256];
+   char options[1024];
 
-   sprintf(text,
-	   /*-------------------------------------------*/
+   g_snprintf(text, 250,
 	   _("%s %s was written by\n"
 	     "Judd Montgomery (Copyright) 1999-2002.\n"
 	     "judd@jpilot.org\n"
 	     "http://jpilot.org\n"),   
-	   PN, VERSION);
+	      PN, VERSION);
    g_snprintf(about, 250, _("About %s"), PN);
 
-   if (GTK_IS_WINDOW(window)) {
+   g_snprintf(options, 1024,
+	      "%s - %d.%d.%d\n"
+	      "%s - %s\n"
+	      "%s - %s\n"
+	      "%s - %s\n"
+	      "%s - %s\n"
+	      "%s - %s\n"
+	      "%s - %s\n",
+	      _("Compiled with pilot-link version"),
+	      PILOT_LINK_VERSION,
+	      PILOT_LINK_MAJOR,
+	      PILOT_LINK_MINOR,
+	      _("USB support enabled"),
+#ifdef ENABLE_USB
+	      _("yes"),
+#else
+	      _("no"),
+#endif
+	      _("Compiled with private record support"),
+#ifdef ENABLE_PRIVATE
+	      _("yes"),
+#else
+	      _("no"),
+#endif
+	      _("Compiled with Datebk support"),
+#ifdef ENABLE_DATEBK
+	      _("yes"),
+#else
+	      _("no"),
+#endif
+	      _("Compiled with plugin support"),
+#ifdef ENABLE_PLUGINS
+	      _("yes"),
+#else
+	      _("no"),
+#endif
+	      _("Compiled with Mañana support"),
+#ifdef ENABLE_MANANA
+	      _("yes"),
+#else
+	      _("no"),
+#endif
+	      ("NLS support (foriegn languages)"),
+#ifdef ENABLE_NLS
+	      _("yes")
+#else
+	      _("no")
+#endif
+	      );
+
+   g_snprintf(text2, 1024, "%s\n%s", text, options);
+#if 0
+#endif
+     if (GTK_IS_WINDOW(window)) {
       dialog_generic(GTK_WINDOW(window),
  		     0, 0,
-		     about, "oOo", text, 1, button_text);
+		     about, "oOo", text2, 1, button_text);
    }
 }
 
@@ -1620,6 +1675,7 @@ char *xpm_unlocked[] = {
       break;
 #endif
     default:
+      break;
       /* do nothing */
    }
 
