@@ -1640,7 +1640,6 @@ int main(int argc, char *argv[])
    GtkWidget *menubar;
 #ifdef ENABLE_GTK2
    GtkWidget *scrolled_window;
-   char utf8_locale[50];  
 #else
    GtkWidget *vscrollbar;
 #endif
