@@ -2652,10 +2652,15 @@ int sync_categories(char *DB_name, int sd,
       /* Did a cat get deleted locally? */
       if ((local_cai.name[Li][0]==0) && (local_cai.ID[Li]!=0)) {
 	 for (Ri = 0; Ri < 16; Ri++) {
-	    if (remote_cai.ID[Ri]==local_cai.ID[Li]) {
+	    if ((remote_cai.ID[Ri]==local_cai.ID[Li]) && 
+		(remote_cai.name[Ri][0])) {
 	       remote_cai.renamed[Ri]=0;
 	       remote_cai.name[Ri][0]='\0';
-	       //undo need to move these records to unfiled on handheld
+	       /* This category was deleted.
+		Move the records to unfiled */
+	       printf("Moving category %d to unfiled...", Ri);//undo
+	       r = dlp_MoveCategory(sd, db, Ri, 0);
+	       printf("returned %d\n", r);//undo
 	    }
 	 }
 	 continue;
@@ -2745,9 +2750,25 @@ int sync_categories(char *DB_name, int sd,
 	       }
 	    }
 	    if (!found_a_hole) {
-	       jp_logf(JP_LOG_WARN, _("Could not add category %s to remote."), local_cai.name[Li]);
-	       jp_logf(JP_LOG_WARN, _("Too many categories on remote."));
-	       //undo should move all of these records in unfiled and log it.
+	       jp_logf(JP_LOG_WARN, _("Could not add category %s to remote.\n"), local_cai.name[Li]);
+	       jp_logf(JP_LOG_WARN, _("Too many categories on remote.\n"));
+	       jp_logf(JP_LOG_WARN, _("All records on desktop in %s will be moved to %s.\n"), local_cai.name[Li], local_cai.name[0]);
+	       /* Fix - need a func for this logging */
+	       g_snprintf(log_entry, 255, _("Could not add category %s to remote.\n"), local_cai.name[Li]);
+	       log_entry[255]='\0';
+	       charset_j2p((unsigned char *)log_entry, 255, char_set);
+	       dlp_AddSyncLogEntry(sd, log_entry);
+	       g_snprintf(log_entry, 255, _("Too many categories on remote.\n"));
+	       log_entry[255]='\0';
+	       charset_j2p((unsigned char *)log_entry, 255, char_set);
+	       dlp_AddSyncLogEntry(sd, log_entry);
+	       g_snprintf(log_entry, 255, _("All records on desktop in %s will be moved to %s.\n"), local_cai.name[Li], local_cai.name[0]);
+	       log_entry[255]='\0';
+	       charset_j2p((unsigned char *)log_entry, 255, char_set);
+	       dlp_AddSyncLogEntry(sd, log_entry);
+	       printf("\nMoving categories on local\n");//undo
+	       edit_cats_change_cats_pc3(DB_name, Li, 0);
+	       edit_cats_change_cats_pdb(DB_name, Li, 0);
 	    }
 	 }
       }
@@ -2755,7 +2776,7 @@ int sync_categories(char *DB_name, int sd,
       printf("cat index %d case (none)\n", Li);
 #endif
    }
-      
+
    for (i = 0; i < 16; i++) {
       remote_cai.renamed[i]=0;
    }
