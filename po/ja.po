@@ -1117,15 +1117,15 @@ msgstr "/表示(_V)"
 
 #: jpilot.c:1128 jpilot.c:1129 jpilot.c:1130 jpilot.c:1383
 msgid "/View/Hide Private Records"
-msgstr "/表示(_V)/プライベートレコードの隠蔽"
+msgstr "/表示(V)/プライベートレコードの隠蔽"
 
 #: jpilot.c:1129
 msgid "/View/Show Private Records"
-msgstr "/表示(_V)/プライベートレコードの表示"
+msgstr "/表示(V)/プライベートレコードの表示"
 
 #: jpilot.c:1130
 msgid "/View/Mask Private Records"
-msgstr "/表示(_V)/プライベートレコードのマスク"
+msgstr "/表示(V)/プライベートレコードのマスク"
 
 #: jpilot.c:1131
 msgid "/View/sep1"
