@@ -161,15 +161,19 @@ char *other_to_UTF(const char *buf, int buf_len)
 
   outbuf = (char *)g_convert_with_iconv((gchar *)buf, oc_strnlen(buf, buf_len),
      glob_frompda, &bytes_read, NULL, &err);
-  if (err != NULL) {
+  if (err != NULL || bytes_read < oc_strnlen (buf, buf_len)) {
       char c;
       unsigned char *head, *tail;
       int outbuf_len;
       unsigned char *tmp_buf = (unsigned char *)buf;
 
       jp_logf(JP_LOG_WARN, "%s:%s g_convert_with_iconv error: %s, buff: %s\n",
-	      __FILE__, __FUNCTION__, err->message, buf);
-      g_error_free(err);
+	 __FILE__, __FUNCTION__, err ? err->message : "last char truncated",
+	 buf);
+      if (err != NULL)
+	 g_error_free(err);
+      else
+	 g_free(outbuf);
 
       /* convert the head, skip the problematic char, convert the tail */
       c = tmp_buf[bytes_read];
