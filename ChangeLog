@@ -1,3 +1,12 @@
+0.99.8-pre7 - 08/01/05 (Ludovic Rousseau)
+ Update zh_CN, zh_TW, cs and es translations
+ Solve a crash in Japanese mode in address GUI
+ Extract the first day of week (sunday or monday) from the system locale setting
+ Add menu color icons for the 4 main applications
+ Improve todo sorting
+ Allow to cycle through the KeyRing categories by calling again the plugin
+ Some more bugs fixed
+
 0.99.8-pre6 - 27/11/04 (Ludovic Rousseau)
  Solve the "different user ID sync" bug
  Solve the GUI "freeze" bug
