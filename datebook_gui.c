@@ -2151,6 +2151,7 @@ static void clear_myappointment(MyAppointment *ma)
 static int dayview_update_clist()
 {
    int num_entries, entries_shown, num, i;
+   int row_count;
    AppointmentList *temp_al;
    gchar *empty_line[] = { "","","","",""};
    char begin_time[32];
@@ -2193,6 +2194,12 @@ static int dayview_update_clist()
 
    mktime(&new_time);
 
+   row_count=(GTK_CLIST(clist))->rows;
+
+   /* Need to remove pointers to data we are about to delete */
+   for (i=0; i<row_count; i++) {
+      gtk_clist_set_row_data(GTK_CLIST(clist), i, NULL);
+   }
    free_AppointmentList(&glob_al);
 
    num = get_days_appointments2(&glob_al, &new_time, 2, 2, 1,

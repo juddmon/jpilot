@@ -845,6 +845,11 @@ static void display_records()
    
    row_count=((GtkCList *)clist)->rows;
 
+   /* Need to remove pointers to data we are about to delete */
+   for (i=0; i<row_count; i++) {
+      gtk_clist_set_row_data(GTK_CLIST(clist), i, NULL);
+   }
+
    connect_changed_signals(DISCONNECT_SIGNALS);
    set_new_button_to(CLEAR_FLAG);
 
@@ -1485,7 +1490,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_box_pack_start(GTK_BOX(temp_hbox), delete_record_button, TRUE, TRUE, 0);
    
    copy_record_button = gtk_button_new_with_label(_("Copy"));
-   gtk_box_pack_start(GTK_BOX(temp_hbox), button, TRUE, TRUE, 0);
+   gtk_box_pack_start(GTK_BOX(temp_hbox), copy_record_button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(copy_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record), 
 		      GINT_TO_POINTER(COPY_FLAG));

@@ -1815,6 +1815,11 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
    row_count=(GTK_CLIST(clist))->rows;
 
+   /* Need to remove pointers to data we are about to delete */
+   for (i=0; i<row_count; i++) {
+      gtk_clist_set_row_data(GTK_CLIST(clist), i, NULL);
+   }
+
    free_AddressList(&addr_list);
 
 #ifdef JPILOT_DEBUG

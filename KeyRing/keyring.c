@@ -793,6 +793,11 @@ static void display_records()
 
    row_count=((GtkCList *)clist)->rows;
 
+   /* Need to remove pointers to data we are about to delete */
+   for (i=0; i<row_count; i++) {
+      gtk_clist_set_row_data(GTK_CLIST(clist), i, NULL);
+   }
+
    connect_changed_signals(DISCONNECT_SIGNALS);
    set_new_button_to(CLEAR_FLAG);
 /*
