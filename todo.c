@@ -1,9 +1,9 @@
-/* $Id: todo.c,v 1.33 2004/11/25 20:57:05 rikster5 Exp $ */
+/* $Id: todo.c,v 1.34 2004/11/28 16:20:04 rousseau Exp $ */
 
 /*******************************************************************************
  * todo.c
  * A module of J-Pilot http://jpilot.org
- * 
+ *
  * Copyright (C) 1999-2002 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
@@ -328,10 +328,9 @@ void free_ToDoList(ToDoList **todo)
 
 int get_todo_app_info(struct ToDoAppInfo *ai)
 {
-   int num, i, r;
+   int num, r;
    int rec_size;
    unsigned char *buf;
-   long char_set;
 #ifdef ENABLE_MANANA
    long ivalue;
 #endif
@@ -343,7 +342,7 @@ int get_todo_app_info(struct ToDoAppInfo *ai)
    strcpy(ai->category.name[0], "Unfiled");
 
 #ifdef ENABLE_MANANA
-   get_pref(PREF_MANANA_MODE, &ivalue, NULL);                                  
+   get_pref(PREF_MANANA_MODE, &ivalue, NULL);
    if (ivalue) {
       strcpy(DBname, "MañanaDB");
    } else {
@@ -370,15 +369,6 @@ int get_todo_app_info(struct ToDoAppInfo *ai)
       return -1;
    }
 
-   get_pref(PREF_CHAR_SET, &char_set, NULL);
-   if (char_set != CHAR_SET_LATIN1) {
-      for (i = 0; i < 16; i++) {
-	 if (ai->category.name[i][0] != '\0') {
-	    charset_p2j(ai->category.name[i], 16, char_set);
-	 }
-      }
-   }
-
    return 0;
 }
 
@@ -386,7 +376,7 @@ int get_todos(ToDoList **todo_list, int sort_order)
 {
    return get_todos2(todo_list, sort_order, 1, 1, 1, 1, CATEGORY_ALL);
 }
-/* 
+/*
  * sort_order: 0=descending,  1=ascending
  * modified, deleted and private, completed:
  *  0 for no, 1 for yes, 2 for use prefs
@@ -463,7 +453,7 @@ int get_todos2(ToDoList **todo_list, int sort_order,
 	   ((br->rt==MODIFIED_PALM_REC) && (!keep_modified)) ) {
 	 continue;
       }
-      if ((keep_priv != SHOW_PRIVATES) && 
+      if ((keep_priv != SHOW_PRIVATES) &&
 	  (br->attrib & dlpRecAttrSecret)) {
 	 continue;
       }

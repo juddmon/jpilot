@@ -1,4 +1,4 @@
-%define version 0.99.8-pre6
+%define version 0.99.8-pre7-beta
 
 Summary:   palm pilot desktop for Linux
 Name:      jpilot
@@ -47,7 +47,7 @@ install jpilotrc.* $RPM_BUILD_ROOT%{_datadir}/jpilot/
 install empty/*.pdb $RPM_BUILD_ROOT%{_datadir}/jpilot/
 strip jpilot
 install -d $RPM_BUILD_ROOT%{_bindir}
-make DESTDIR=$RPM_BUILD_ROOT install 
+make DESTDIR=$RPM_BUILD_ROOT install
 
 mkdir -p $RPM_BUILD_ROOT%{prefix}/share/pixmaps
 install -m644 icons/*.xpm $RPM_BUILD_ROOT%{prefix}/share/pixmaps

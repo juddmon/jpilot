@@ -1,4 +1,4 @@
-/* $Id: plugins.c,v 1.13 2004/11/22 00:52:42 rikster5 Exp $ */
+/* $Id: plugins.c,v 1.14 2004/11/28 16:20:04 rousseau Exp $ */
 
 /*******************************************************************************
  * plugins.c
@@ -69,8 +69,8 @@ void write_plugin_sync_file()
 }
 
 
-/* 
- * This is just a repeated subroutine to load_plugins not needing 
+/*
+ * This is just a repeated subroutine to load_plugins not needing
  * a name of its own.
  * Assumes dir has already been checked
  */
@@ -195,7 +195,7 @@ static int get_plugin_sync_bits()
    if (!in) {
       return 0;
    }
-   for (i=0; (!feof(in)); i++) {   
+   for (i=0; (!feof(in)); i++) {
       if (i>1000) {
 	 jp_logf(JP_LOG_WARN, "load_plugins(): %s\n", _("infinite loop"));
 	 fclose(in);
@@ -280,7 +280,7 @@ static int get_plugin_info(struct plugin_s *p, char *path)
    /* plugin_versionM */
 #if defined __OpenBSD__ && !defined __ELF__
 #define dlsym(x,y) dlsym(x, "_" y)
-#endif     
+#endif
    plugin_versionM = dlsym(h, "plugin_version");
    if (plugin_versionM==NULL)  {
       err = dlerror();

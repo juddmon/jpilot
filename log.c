@@ -1,9 +1,9 @@
-/* $Id: log.c,v 1.22 2004/11/27 12:05:00 rousseau Exp $ */
+/* $Id: log.c,v 1.23 2004/11/28 16:20:04 rousseau Exp $ */
 
 /*******************************************************************************
  * log.c
  * A module of J-Pilot http://jpilot.org
- * 
+ *
  * Copyright (C) 1999-2002 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify

@@ -1,9 +1,9 @@
-/* $Id: datebook_gui.c,v 1.92 2004/11/26 01:01:55 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.93 2004/11/28 16:20:04 rousseau Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
  * A module of J-Pilot http://jpilot.org
- * 
+ *
  * Copyright (C) 1999-2002 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
@@ -520,7 +520,7 @@ int datebook_import_callback(GtkWidget *parent_window, const char *file_path, in
 	    new_appt.exception[i].tm_year=year-1900;
 	    new_appt.exception[i].tm_mon=month-1;
 	    new_appt.exception[i].tm_mday=day;
-	    new_appt.exception[i].tm_isdst=-1;	 
+	    new_appt.exception[i].tm_isdst=-1;
 	    mktime(&(new_appt.exception[i]));
 	    for (; (str_i<65535) && (text[str_i]); str_i++) {
 	       if (text[str_i]==',') {
@@ -1300,7 +1300,7 @@ void cb_date_cats(GtkWidget *widget, gpointer data)
    for (i=0, bit=1; i<16; i++, bit <<= 1) {
       if (ai.category.name[i][0]) {
 	 toggle_button[i]=gtk_toggle_button_new_with_label
-	   (ai.category.name[i]);	 
+	   (ai.category.name[i]);
 	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(toggle_button[i]),
 				      datebook_category & bit);
 	 gtk_table_attach_defaults
@@ -1582,7 +1582,7 @@ int dialog_current_all_cancel()
    };
 
    return dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(scrolled_window)),
-			 200, 200, 
+			 200, 200,
 			 _("Question?"), _("Answer: "),
 			 _(text), 3, button_text);
 }
@@ -1607,7 +1607,7 @@ int dialog_easter(int mday)
 	   "Birthday!\n", who);
 
    return dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(scrolled_window)),
-			 200, 200, 
+			 200, 200,
 			 "Happy Birthday to Me!", "(iiiii)",
 			 text, 1, button_text);
 }
@@ -2109,7 +2109,7 @@ static int appt_get_details(struct Appointment *appt, unsigned char *attrib)
       jp_logf(JP_LOG_WARN,
 	      _("You cannot have an appointment that repeats every %d %s(s)\n"),
 	      appt->repeatFrequency, _(period[page]));
-      g_snprintf(str, sizeof(str), 
+      g_snprintf(str, sizeof(str),
               _("You cannot have an appointment that repeats every %d %s(s)\n"),
 	      appt->repeatFrequency, _(period[page]));
       dialog_generic_ok(notebook, NULL, _("Error"), str);
@@ -2224,9 +2224,9 @@ static int dayview_update_clist()
    get_pixmaps(scrolled_window, PIXMAP_ALARM,&pixmap_alarm, &mask_alarm);
 #  ifdef ENABLE_DATEBK
    get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
-   get_pixmaps(scrolled_window, PIXMAP_FLOAT_CHECK, 
+   get_pixmaps(scrolled_window, PIXMAP_FLOAT_CHECK,
 	       &pixmap_float_check, &mask_float_check);
-   get_pixmaps(scrolled_window, PIXMAP_FLOAT_CHECKED, 
+   get_pixmaps(scrolled_window, PIXMAP_FLOAT_CHECKED,
 	       &pixmap_float_checked, &mask_float_checked);
 #  endif
 
@@ -2246,7 +2246,7 @@ static int dayview_update_clist()
       }
 #endif
       /* Do masking like Palm OS 3.5 */
-      if ((show_priv == MASK_PRIVATES) && 
+      if ((show_priv == MASK_PRIVATES) &&
 	  (temp_al->mappt.attrib & dlpRecAttrSecret)) {
 	 gtk_clist_append(GTK_CLIST(clist), empty_line);
 	 gtk_clist_set_text(GTK_CLIST(clist), i, DB_TIME_COLUMN, "----------");
@@ -2260,7 +2260,7 @@ static int dayview_update_clist()
       /* End Masking */
 
       /* Hide the private records if need be */
-      if ((show_priv != SHOW_PRIVATES) && 
+      if ((show_priv != SHOW_PRIVATES) &&
 	  (temp_al->mappt.attrib & dlpRecAttrSecret)) {
 	 i--;
 	 continue;
@@ -2286,11 +2286,11 @@ static int dayview_update_clist()
 #ifdef ENABLE_DATEBK
       if (use_db3_tags) {
 	 if (db4.floating_event==DB3_FLOAT) {
-	    gtk_clist_set_pixmap(GTK_CLIST(clist), i, DB_FLOAT_COLUMN, pixmap_float_check, 
+	    gtk_clist_set_pixmap(GTK_CLIST(clist), i, DB_FLOAT_COLUMN, pixmap_float_check,
 				 mask_float_check);
 	 }
 	 if (db4.floating_event==DB3_FLOAT_COMPLETE) {
-	    gtk_clist_set_pixmap(GTK_CLIST(clist), i, DB_FLOAT_COLUMN, pixmap_float_checked, 
+	    gtk_clist_set_pixmap(GTK_CLIST(clist), i, DB_FLOAT_COLUMN, pixmap_float_checked,
 				 mask_float_checked);
 	 }
       }
@@ -2359,7 +2359,7 @@ static int dayview_update_clist()
 	 break;
        default:
 	 if (temp_al->mappt.attrib & dlpRecAttrSecret) {
-	    set_bg_rgb_clist_row(clist, i, 
+	    set_bg_rgb_clist_row(clist, i,
 			     CLIST_PRIVATE_RED, CLIST_PRIVATE_GREEN, CLIST_PRIVATE_BLUE);
 	 } else {
 	    gtk_clist_set_row_style(GTK_CLIST(clist), i, NULL);
@@ -2556,7 +2556,7 @@ static void cb_add_new_record(GtkWidget *widget,
       if (mappt < (MyAppointment *)CLIST_MIN_DATA) {
 	 return;
       }
-      if ((mappt->rt==DELETED_PALM_REC) || 
+      if ((mappt->rt==DELETED_PALM_REC) ||
 	  (mappt->rt==DELETED_PC_REC)   ||
           (mappt->rt==MODIFIED_PALM_REC)) {
 	 jp_logf(JP_LOG_INFO, _("You can't modify a record that is deleted\n"));
@@ -2646,7 +2646,7 @@ static void cb_add_new_record(GtkWidget *widget,
    } else {
       unique_id=0; /* Has to be zero */
       pc_datebook_write(&new_appt, NEW_PC_REC, attrib, &unique_id);
-      /* Fixme - what should happen here is that the calendar should be 
+      /* Fixme - what should happen here is that the calendar should be
          positioned on the or the next future occurrence */
       gtk_calendar_freeze(GTK_CALENDAR(main_calendar));
       gtk_calendar_select_day(GTK_CALENDAR(main_calendar), 1);
@@ -2776,7 +2776,7 @@ void cb_undelete_appt(GtkWidget *widget,
       {
 	 undelete_pc_record(DATEBOOK, mappt, flag);
       }
-      /* Possible later addition of undelete for modified records 
+      /* Possible later addition of undelete for modified records
       else if (mappt->rt == MODIFIED_PALM_REC)
       {
 	 cb_add_new_record(widget, GINT_TO_POINTER(COPY_FLAG));
@@ -2799,7 +2799,7 @@ void cb_check_button_alarm(GtkWidget *widget, gpointer data)
 
 void cb_check_button_notime(GtkWidget *widget, gpointer data)
 {
-   set_begin_end_labels(&begin_date, &end_date, UPDATE_DATE_ENTRIES | 
+   set_begin_end_labels(&begin_date, &end_date, UPDATE_DATE_ENTRIES |
                                                 UPDATE_DATE_MENUS);
 }
 
@@ -2921,25 +2921,25 @@ static void cb_clist_selection(GtkWidget      *clist,
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_button_alarm), TRUE);
       switch (appt->advanceUnits) {
        case advMinutes:
-	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON 
+	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
 				      (radio_button_alarm_min), TRUE);
-	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON 
+	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
 				      (radio_button_alarm_hour), FALSE);
-	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON 
+	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
 				      (radio_button_alarm_day), FALSE);
 	 break;
        case advHours:
-	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON 
+	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
 				      (radio_button_alarm_min), FALSE);
-	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON 
+	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
 				      (radio_button_alarm_hour), TRUE);
-	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON 
+	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
 				      (radio_button_alarm_day), FALSE);
 	 break;
        case advDays:
-	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON 
+	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
 				      (radio_button_alarm_min), FALSE);
-	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON 
+	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
 				      (radio_button_alarm_hour), FALSE);
 	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
 				      (radio_button_alarm_day), TRUE);
@@ -3307,10 +3307,10 @@ int datebook_refresh(int first)
    }
 #endif
 
-   /* Need to disconnect signal before using gtk_calendar_select_day 
+   /* Need to disconnect signal before using gtk_calendar_select_day
       or callback will be activated inadvertently. */
    gtk_signal_disconnect_by_func(GTK_OBJECT(main_calendar),
-				 GTK_SIGNAL_FUNC(cb_cal_changed), 
+				 GTK_SIGNAL_FUNC(cb_cal_changed),
 				 GINT_TO_POINTER(CAL_DAY_SELECTED));
 
    if (first) {
@@ -3431,7 +3431,7 @@ cb_entry_key_pressed(GtkWidget *widget, GdkEventKey *event,
 
    jp_logf(JP_LOG_DEBUG, "cb_entry_key_pressed key = %d\n", event->keyval);
 
-   gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event"); 
+   gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
 
    if ((event->keyval >= GDK_0) && (event->keyval <= GDK_9)) {
       digit = (event->keyval)-GDK_0;
@@ -3478,14 +3478,14 @@ cb_entry_key_pressed(GtkWidget *widget, GdkEventKey *event,
 
 static gboolean
 cb_key_pressed(GtkWidget *widget, GdkEventKey *event,
-	       gpointer next_widget) 
+	       gpointer next_widget)
 {
 #ifdef ENABLE_GTK2
       GtkTextIter    cursor_pos_iter;
       GtkTextBuffer *text_buffer;
 #endif
 
-   if (event->keyval == GDK_Tab) { 
+   if (event->keyval == GDK_Tab) {
 #ifdef ENABLE_GTK2
       text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget));
       gtk_text_buffer_get_iter_at_mark(text_buffer,&cursor_pos_iter,gtk_text_buffer_get_insert(text_buffer));
@@ -3495,16 +3495,16 @@ cb_key_pressed(GtkWidget *widget, GdkEventKey *event,
 	  gtk_text_get_length(GTK_TEXT(widget)))
 #endif
 	  {
-	     gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event"); 
+	     gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
 	     gtk_widget_grab_focus(GTK_WIDGET(next_widget));
 	     return TRUE;
 	  }
    }
-   return FALSE; 
+   return FALSE;
 }
 
 static gboolean
-cb_keyboard(GtkWidget *widget, GdkEventKey *event, gpointer *p) 
+cb_keyboard(GtkWidget *widget, GdkEventKey *event, gpointer *p)
 {
    struct tm day;
    int up, down;
@@ -3521,7 +3521,7 @@ cb_keyboard(GtkWidget *widget, GdkEventKey *event, gpointer *p)
       down=1;
       break;
    }
-   
+
    if (up || down) {
       gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
 
@@ -3562,7 +3562,7 @@ cb_keyboard(GtkWidget *widget, GdkEventKey *event, gpointer *p)
 
       return TRUE;
    }
-   return FALSE; 
+   return FALSE;
 }
 
 int datebook_gui_cleanup()
@@ -3625,11 +3625,11 @@ static void connect_changed_signals(int con_or_dis)
    if ((con_or_dis==CONNECT_SIGNALS) && (!connected)) {
       connected=1;
       gtk_signal_connect(GTK_OBJECT(radio_button_alarm_min), "toggled",
-			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);     
+			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
       gtk_signal_connect(GTK_OBJECT(radio_button_alarm_hour), "toggled",
-			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);     
+			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
       gtk_signal_connect(GTK_OBJECT(radio_button_alarm_day), "toggled",
-			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);     
+			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
 
       gtk_signal_connect(GTK_OBJECT(check_button_alarm), "toggled",
 			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
@@ -3716,11 +3716,11 @@ static void connect_changed_signals(int con_or_dis)
    if ((con_or_dis==DISCONNECT_SIGNALS) && (connected)) {
       connected=0;
       gtk_signal_disconnect_by_func(GTK_OBJECT(radio_button_alarm_min),
-				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);     
+				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
       gtk_signal_disconnect_by_func(GTK_OBJECT(radio_button_alarm_hour),
-				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);     
+				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
       gtk_signal_disconnect_by_func(GTK_OBJECT(radio_button_alarm_day),
-				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);     
+				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
 
       gtk_signal_disconnect_by_func(GTK_OBJECT(check_button_alarm),
 				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
@@ -3848,7 +3848,7 @@ GtkWidget *create_time_menu(int flags)
    }
 
    gtk_option_menu_set_menu(GTK_OPTION_MENU(option), menu);
-   gtk_signal_connect(GTK_OBJECT(menu), "hide", 
+   gtk_signal_connect(GTK_OBJECT(menu), "hide",
                       GTK_SIGNAL_FUNC(cb_hide_menu_time), NULL);
 
    return option;
@@ -4116,7 +4116,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_box_pack_start(GTK_BOX(vbox1), scrolled_window2, FALSE, FALSE, 0);
    //gtk_box_pack_start(GTK_BOX(vbox1), vbox_no_time_appts, FALSE, FALSE, 0);
 #endif
-   
+
    /* create a new scrolled window. */
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
 
@@ -4138,7 +4138,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    } else {
       clist = gtk_clist_new_with_titles(4, titles);
    }
-#else 
+#else
    clist = gtk_clist_new_with_titles(4, titles);
 #endif
 
@@ -4190,9 +4190,9 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
    /*gtk_clist_set_sort_column (GTK_CLIST(clist), 0); */
    /*gtk_clist_set_auto_sort(GTK_CLIST(clist), TRUE); */
-#endif   
+#endif
 
-   
+
    /*
     * Hide ToDo button
     */
@@ -4271,7 +4271,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    /* Create "Copy" button */
    copy_record_button = gtk_button_new_with_label(_("Copy"));
    gtk_signal_connect(GTK_OBJECT(copy_record_button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_add_new_record), 
+		      GTK_SIGNAL_FUNC(cb_add_new_record),
 		      GINT_TO_POINTER(COPY_FLAG));
    gtk_box_pack_start(GTK_BOX(hbox_temp), copy_record_button, TRUE, TRUE, 0);
    gtk_widget_add_accelerator(copy_record_button, "clicked", accel_group, GDK_o,
@@ -4734,7 +4734,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    } else {
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(show_todos_button), TRUE);
    }
-   
+
 #ifdef ENABLE_GTK2
    gtk_text_view_set_editable(GTK_TEXT_VIEW(text_widget1), TRUE);
    gtk_text_view_set_editable(GTK_TEXT_VIEW(text_widget2), TRUE);
@@ -4751,6 +4751,6 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    /* The focus doesn't do any good on the application button */
    gtk_widget_grab_focus(GTK_WIDGET(main_calendar));
-   
+
    return 0;
 }

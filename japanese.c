@@ -24,12 +24,12 @@ void multibyte_safe_strncpy(char *dst, char *src, size_t max_len);
 #define isEuc(c) \
     (0xa0 < ((unsigned char) (c)) && ((unsigned char) (c)) < 0xff)
 
-/* convert SJIS char to EUC char 
+/* convert SJIS char to EUC char
 
    this does not support Machine dependent codes.
    args: hi: first byte of sjis char.
          lo: second byte of sjis char.
-   return:   euc char in 16bit value. 
+   return:   euc char in 16bit value.
 
  */
 static unsigned int SjisToEuc(unsigned char hi, unsigned char lo)
@@ -41,9 +41,9 @@ static unsigned int SjisToEuc(unsigned char hi, unsigned char lo)
             (lo + (lo >= 0x7f ? 0x60 : 0x61));
 }
 
-/* 
+/*
    args: source char pointer, destination source pointer, a length of srting
-   Length include null termination.  
+   Length include null termination.
    return the pointer of nul termination code.
  */
 char *Sjis2EucCpy(char *dest, char *src, int max_len)
@@ -69,7 +69,7 @@ char *Sjis2EucCpy(char *dest, char *src, int max_len)
 	    n += 2;
 	} else if ((*p) & 0x80) {	            /* irregular japanese char */
 	    p++;                                    /* ??abort and return NULL?? */
-	    /* discard it */ 
+	    /* discard it */
 	} else {
 	    *q++ = *p++;
 	    n++;
@@ -84,7 +84,7 @@ char *Sjis2EucCpy(char *dest, char *src, int max_len)
     return (char *)q;
 }
 
-/* 
+/*
    convert strings from Sjis to EUC.
    max_len includes null termiantion.
    size of buf must be more than max_len.
@@ -96,9 +96,9 @@ void Sjis2Euc(char *buf, int max_len)
 	char *dst;
 
 	if (buf == NULL) return;
-	if ((dst = (char *)malloc(max_len)) != NULL) { 
+	if ((dst = (char *)malloc(max_len)) != NULL) {
                             /* assign buffer for destination. */
-		if (Sjis2EucCpy(dst, buf, max_len) != NULL) { 
+		if (Sjis2EucCpy(dst, buf, max_len) != NULL) {
 			multibyte_safe_strncpy(buf, dst, max_len);
 			buf[max_len-1] = '\0';  /* i am a paranoire B-) */
 		}
@@ -117,10 +117,10 @@ void Sjis2Euc_x(char *buf, int max_len)
 {
     char *dst;
     char *p;
-    
+
     if (buf == NULL) return;
     if ((dst = (char *)malloc(max_len*2)) == NULL) return; /* assign buffer for destination. */
-    if ((p = Sjis2EucCpy(dst, buf, max_len*2)) != NULL) { 
+    if ((p = Sjis2EucCpy(dst, buf, max_len*2)) != NULL) {
 	if (strlen(dst) > strlen(buf)) {
 	    free(buf);
 	    buf = strdup(dst);
@@ -136,7 +136,7 @@ void Sjis2Euc_x(char *buf, int max_len)
    Convert one char from euc to sjis.
    args:  hi:  first byte of euc code.
           lo:  second byte of euc code.
-   return:  16bit value of sjis char code. 
+   return:  16bit value of sjis char code.
  */
 static unsigned int EucToSjis(unsigned char hi, unsigned char lo)
 {
@@ -147,14 +147,14 @@ static unsigned int EucToSjis(unsigned char hi, unsigned char lo)
     return ((hi / 2 + (hi < 0xdf ? 0x30 : 0x70)) << 8) | (lo - 2);
 }
 
-/* 
-   Convert string from euc to sjis with coping to another buffer. 
-   Theoritically, strlen(EUC) >= strlen(SJIS), 
+/*
+   Convert string from euc to sjis with coping to another buffer.
+   Theoritically, strlen(EUC) >= strlen(SJIS),
     then it is ok that dest == src.
  */
 char *Euc2SjisCpy(char *dest, char *src, int max_len)
 {
-    unsigned char *p, *q; 
+    unsigned char *p, *q;
     unsigned char hi, lo;
     unsigned int w;
     int n = 0;
@@ -200,7 +200,7 @@ void Euc2Sjis(char *buf, int max_len)
 	(void *)Euc2SjisCpy(buf, buf, max_len);
 }
 
-/* 
+/*
    convert strings from Sjis to EUC.
    max_len includes null termiantion.
    size of buf must be more than max_len.
@@ -213,7 +213,7 @@ void jp_Sjis2Euc(char *buf, int max_len)
 
 	if (buf == NULL) return;
 	if (max_len > 0xFFFF) max_len = 0xFFFF;
-	if (Sjis2EucCpy(dst, buf, max_len) != NULL) { 
+	if (Sjis2EucCpy(dst, buf, max_len) != NULL) {
 		multibyte_safe_strncpy(buf, dst, max_len);
 		buf[max_len-1] = '\0';  /* i am a paranoire B-) */
 	}

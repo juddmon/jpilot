@@ -1,9 +1,9 @@
-/* $Id: sync.c,v 1.49 2004/11/27 11:57:53 rousseau Exp $ */
+/* $Id: sync.c,v 1.50 2004/11/28 16:20:04 rousseau Exp $ */
 
 /*******************************************************************************
  * sync.c
  * A module of J-Pilot http://jpilot.org
- * 
+ *
  * Copyright (C) 1999-2002 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
@@ -405,7 +405,7 @@ static int wait_for_response(int sd)
 
    /* Back to normal */
    pi_watchdog(sd, 0);
-   
+
    return command;
 }
 
@@ -614,7 +614,7 @@ int jp_sync(struct my_sync_info *sync_info)
    ret = jp_pilot_connect(&sd, device);
    if (ret) {
       return ret;
-   }   
+   }
 #endif
 
    /* The connection has been established here */
@@ -727,7 +727,7 @@ int jp_sync(struct my_sync_info *sync_info)
 
 #ifdef ENABLE_PRIVATE
    if (U.passwordLength > 0) {
-      bin_to_hex_str((unsigned char *)U.password, hex_password, 
+      bin_to_hex_str((unsigned char *)U.password, hex_password,
 		     ((U.passwordLength > 0)&&(U.passwordLength < PASSWD_LEN))
 		     ? U.passwordLength : PASSWD_LEN);
    } else {
@@ -811,7 +811,7 @@ int jp_sync(struct my_sync_info *sync_info)
 	 fast_sync_application("ToDoDB", sd);
       }
       if (get_pref_int_default(PREF_SYNC_MEMO, 1)) {
-	 sync_categories("MemoDB", sd, 
+	 sync_categories("MemoDB", sd,
 			 unpack_memo_cai_from_ai,
 			 pack_memo_cai_into_ai);
 	 fast_sync_application("MemoDB", sd);
@@ -1478,7 +1478,7 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
 	{ 0, 0, "PMNe", NULL},
 	{ 0, 0, "ppp_", NULL},
 	{ 0, 0, "u8EZ", NULL},
-	{ 0, 0, NULL, NULL} 
+	{ 0, 0, NULL, NULL}
    };
 
    /*
@@ -1540,14 +1540,14 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
 	 /* Look at the skip list */
 	 manual_skip=0;
 	 for (i=0; skip_db[i].creator || skip_db[i].dbname; i++) {
-	    if (skip_db[i].creator && 
+	    if (skip_db[i].creator &&
 		!strcmp(creator, skip_db[i].creator)) {
-	       if (skip_db[i].flags && 
+	       if (skip_db[i].flags &&
 		   (info.flags & skip_db[i].flags) != skip_db[i].flags) {
 		  manual_skip=1;
 		  break;
 	       }
-	       else if (skip_db[i].not_flags && 
+	       else if (skip_db[i].not_flags &&
 			!(info.flags & skip_db[i].not_flags)) {
 		  manual_skip=1;
 		  break;
@@ -1559,12 +1559,12 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
 	    }
 	    if (skip_db[i].dbname &&
 		!strcmp(info.name,skip_db[i].dbname)) {
-	       if (skip_db[i].flags && 
+	       if (skip_db[i].flags &&
 		   (info.flags & skip_db[i].flags) != skip_db[i].flags) {
 		  manual_skip=1;
 		  break;
 	       }
-	       else if (skip_db[i].not_flags && 
+	       else if (skip_db[i].not_flags &&
 			(info.flags & skip_db[i].not_flags)) {
 		  manual_skip=1;
 		  break;
@@ -1941,7 +1941,7 @@ static int compare_back_dates(char *s1, char *s2)
    if (((i1/1000000) <= 3) && ((i2/1000000) >= 10)) {
       return 1;
    }
-   if (((i1/1000000) >= 10) && ((i2/1000000) <= 3)) { 
+   if (((i1/1000000) >= 10) && ((i2/1000000) <= 3)) {
       return 2;
    }
    if (i1>i2) {
@@ -1972,7 +1972,7 @@ int sync_remove_r(char *full_path)
 	 }
 	 strncpy(last4, dirent->d_name+len-4, 4);
 	 last4[4]='\0';
-	 if ((strcmp(last4, ".pdb")==0) || 
+	 if ((strcmp(last4, ".pdb")==0) ||
 	     (strcmp(last4, ".prc")==0) ||
 	     (strcmp(last4, ".pqa")==0)) {
 	    unlink(full_src);
@@ -2274,7 +2274,7 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
 	    fclose(pc_in);
 	    return -1;
 	 }
-	 ret = pdb_file_read_record_by_id(DB_name, 
+	 ret = pdb_file_read_record_by_id(DB_name,
 					  header.unique_id,
 					  &Pbuf, &size, &index,
 					  &attr, &category);
@@ -2394,7 +2394,7 @@ int pdb_file_swap_indexes(char *DB_name, int index1, int index2)
    pi_file_get_app_info(pf1, &app_info, &size);
    pi_file_set_app_info(pf2, app_info, size);
 
-   pi_file_get_sort_info(pf1, &sort_info, &size);  
+   pi_file_get_sort_info(pf1, &sort_info, &size);
    pi_file_set_sort_info(pf2, sort_info, size);
 
    count = 0;
@@ -2442,7 +2442,7 @@ int pdb_file_swap_indexes(char *DB_name, int index1, int index2)
  *     if RR==OLR (Original LR) remove RR, and LR
  *   Case 4:
  *   if LR changed
- *     We have a new local record (NLR) and a 
+ *     We have a new local record (NLR) and a
  *        modified (deleted) local record (MLR)
  *     if NLR==RR then do nothing (either both were changed equally, or
  *				   local was changed and changed back)
@@ -2575,7 +2575,7 @@ int unpack_address_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_ra
 {
    struct AddressAppInfo ai;
    int r;
-   
+
    jp_logf(JP_LOG_DEBUG, "unpack_address_cai_from_ai\n");
 
    r = unpack_AddressAppInfo(&ai, ai_raw, len);
@@ -2584,7 +2584,7 @@ int unpack_address_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_ra
       return -1;
    }
    memcpy(cai, &(ai.category), sizeof(struct CategoryAppInfo));
-	  
+
    return 0;
 }
 
@@ -2607,7 +2607,7 @@ int pack_address_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw,
       jp_logf(JP_LOG_DEBUG, "pack_AddressAppInfo failed %s %d\n", __FILE__, __LINE__);
       return -1;
    }
-   
+
    return 0;
 }
 
@@ -2615,7 +2615,7 @@ int unpack_todo_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, 
 {
    struct ToDoAppInfo ai;
    int r;
-   
+
    jp_logf(JP_LOG_DEBUG, "unpack_todo_cai_from_ai\n");
 
    r = unpack_ToDoAppInfo(&ai, ai_raw, len);
@@ -2624,7 +2624,7 @@ int unpack_todo_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, 
       return -1;
    }
    memcpy(cai, &(ai.category), sizeof(struct CategoryAppInfo));
-	  
+
    return 0;
 }
 
@@ -2647,7 +2647,7 @@ int pack_todo_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, in
       jp_logf(JP_LOG_DEBUG, "pack_ToDooAppInfo failed %s %d\n", __FILE__, __LINE__);
       return -1;
    }
-   
+
    return 0;
 }
 
@@ -2655,7 +2655,7 @@ int unpack_memo_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, 
 {
    struct MemoAppInfo ai;
    int r;
-   
+
    jp_logf(JP_LOG_DEBUG, "unpack_memo_cai_from_ai\n");
 
    r = unpack_MemoAppInfo(&ai, ai_raw, len);
@@ -2664,7 +2664,7 @@ int unpack_memo_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, 
       return -1;
    }
    memcpy(cai, &(ai.category), sizeof(struct CategoryAppInfo));
-	  
+
    return 0;
 }
 
@@ -2687,7 +2687,7 @@ int pack_memo_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, in
       jp_logf(JP_LOG_DEBUG, "pack_MemoAppInfo failed %s %d\n", __FILE__, __LINE__);
       return -1;
    }
-   
+
    return 0;
 }
 
@@ -2798,7 +2798,7 @@ int sync_categories(char *DB_name, int sd,
       dlp_CloseDB(sd, db);
       return 0;
    }
-   
+
    /* Go through the categories and try to sync them */
    for (Li = loop = 0; ((Li < CATCOUNT) && (loop<256)); Li++, loop++) {
       found_name=found_ID=FALSE;
@@ -2806,7 +2806,7 @@ int sync_categories(char *DB_name, int sd,
       /* Did a cat get deleted locally? */
       if ((local_cai.name[Li][0]==0) && (local_cai.ID[Li]!=0)) {
 	 for (Ri = 0; Ri < CATCOUNT; Ri++) {
-	    if ((remote_cai.ID[Ri]==local_cai.ID[Li]) && 
+	    if ((remote_cai.ID[Ri]==local_cai.ID[Li]) &&
 		(remote_cai.name[Ri][0])) {
 #ifdef SYNC_CAT_DEBUG
 	       printf("cat %d deleted local, del cat on remote\n", Li);

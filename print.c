@@ -1,4 +1,4 @@
-/* $Id: print.c,v 1.26 2004/11/26 01:01:55 rikster5 Exp $ */
+/* $Id: print.c,v 1.27 2004/11/28 16:20:04 rousseau Exp $ */
 
 /*******************************************************************************
  * print.c
@@ -47,7 +47,7 @@ void ps_strncat(char *dest, char *src, int n);
 
 char *PaperSizes[] = { "Letter", "Legal", "Statement", "Tabloid", "Ledger",
                        "Folio", "Quarto", "7x9", "9x11", "9x12", "10x13",
-                       "10x14", "Executive", "A0", "A1", "A2", "A3", "A4",  
+                       "10x14", "Executive", "A0", "A1", "A2", "A3", "A4",
                        "A5", "A6", "A7", "A8", "A9", "A10", "B0", "B1", "B2",
                        "B3", "B4", "B5", "B6", "B7", "B8", "B9", "B10",
                        "ISOB0", "ISOB1", "ISOB2", "ISOB3", "ISOB4", "ISOB5",
@@ -298,7 +298,7 @@ int fill_in(struct tm *date, AppointmentList *a_list)
 }
 
 int print_days_appts(struct tm *date)
-{   
+{
    AppointmentList *a_list;
 
    out = print_open();
@@ -391,7 +391,7 @@ int days_in_mon(struct tm *date)
  *			appointments.
  *----------------------------------------------------------------------*/
 
-char *MonthNames[] = { 
+char *MonthNames[] = {
    "January", "February", "March", "April", "May", "June", "July",
    "August", "September", "October", "November", "December"
 };
@@ -636,7 +636,7 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
    char *current_locale;
    current_locale = setlocale(LC_NUMERIC,"C");
 #endif
-     
+
    /*------------------------------------------------------------------
     * Set up the PostScript output file, and print the header to it.
     *------------------------------------------------------------------*/
@@ -783,9 +783,9 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
 }
 
 /*----------------------------------------------------------------------
- * 
+ *
  * Address code
- * 
+ *
  *----------------------------------------------------------------------*/
 
 int print_address_header()
@@ -877,7 +877,7 @@ int print_address_header()
 	   "findfont\n"
 	   "dup length dict\n"
 	   "begin\n"
-	   "{ def\n" 
+	   "{ def\n"
 	   "} forall\n"
 	   "/Encoding ISOLatin1Encoding def\n"
 	   "currentdict\n"
@@ -914,7 +914,7 @@ int print_address_header()
 	   "} bind def\n"
 	   "%%\n"
 	   "%%\n");
-   fprintf(out, 
+   fprintf(out,
 	   "/setup\n"
 	   "{\n"
 	   "/Times-Roman-ISOLatin1 10 selectfont\n"
@@ -1112,9 +1112,9 @@ int print_addresses(AddressList *address_list)
 }
 
 /*
- * 
+ *
  * ToDo code
- * 
+ *
  */
 int print_todos(ToDoList *todo_list, char *category_name)
 {
@@ -1199,9 +1199,9 @@ int print_todos(ToDoList *todo_list, char *category_name)
       }
       fprintf(out, " Todo\n");
 
-      if (one_rec_per_page) {	
-	 fprintf(out, "NewPage\n");	
-      }	
+      if (one_rec_per_page) {
+	 fprintf(out, "NewPage\n");
+      }
    }
    fprintf(out, "showpage\n");
 
@@ -1214,9 +1214,9 @@ int print_todos(ToDoList *todo_list, char *category_name)
    return 0;
 }
 /*
- * 
+ *
  * Memo code
- * 
+ *
  */
 int print_memos(MemoList *memo_list)
 {

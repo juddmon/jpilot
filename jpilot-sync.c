@@ -1,9 +1,9 @@
-/* $Id: jpilot-sync.c,v 1.19 2004/11/27 13:28:36 rousseau Exp $ */
+/* $Id: jpilot-sync.c,v 1.20 2004/11/28 16:20:04 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot-sync.c
  * A module of J-Pilot http://jpilot.org
- * 
+ *
  * Copyright (C) 1999-2002 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify

@@ -1,9 +1,9 @@
-/* $Id: memo.c,v 1.29 2004/11/26 07:52:13 rousseau Exp $ */
+/* $Id: memo.c,v 1.30 2004/11/28 16:20:04 rousseau Exp $ */
 
 /*******************************************************************************
  * memo.c
  * A module of J-Pilot http://jpilot.org
- * 
+ *
  * Copyright (C) 1999-2002 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
@@ -130,7 +130,7 @@ int memo_sort(MemoList **memol, int sort_order)
 
 /*
  * This function writes to the MemoDB.pc3 file
- * 
+ *
  * memo - input - a memo to be written
  * rt - input - type of record to be written
  * attrib - input - attributes of record
@@ -229,7 +229,7 @@ int get_memos(MemoList **memo_list, int sort_order)
 {
    return get_memos2(memo_list, sort_order, 1, 1, 1, CATEGORY_ALL);
 }
-/* 
+/*
  * sort_order: 0=descending, 1=ascending (memos are sorted if set in pdb file)
  * modified, deleted and private, 0 for no, 1 for yes, 2 for use prefs
  */
@@ -292,7 +292,7 @@ int get_memos2(MemoList **memo_list, int sort_order,
 	   ((br->rt==MODIFIED_PALM_REC) && (!keep_modified)) ) {
 	 continue;
       }
-      if ((keep_priv != SHOW_PRIVATES) && 
+      if ((keep_priv != SHOW_PRIVATES) &&
 	  (br->attrib & dlpRecAttrSecret)) {
 	 continue;
       }

@@ -1,4 +1,4 @@
-/* $Id: install_gui.c,v 1.18 2004/11/22 00:52:42 rikster5 Exp $ */
+/* $Id: install_gui.c,v 1.19 2004/11/28 16:20:04 rousseau Exp $ */
 
 /*******************************************************************************
  * install_gui.c
@@ -280,7 +280,7 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y)
 
    /*Even though I hide the ok button I still want to connect its signal */
    /*because a double click on the file name also calls this callback */
-   gtk_widget_hide(GTK_WIDGET(GTK_FILE_SELECTION(filew)->ok_button));   
+   gtk_widget_hide(GTK_WIDGET(GTK_FILE_SELECTION(filew)->ok_button));
    gtk_signal_connect(GTK_OBJECT(GTK_FILE_SELECTION(filew)->ok_button),
 		      "clicked", GTK_SIGNAL_FUNC(cb_add), filew);
 

@@ -1,9 +1,9 @@
-/* $Id: dat.c,v 1.14 2004/11/22 00:52:42 rikster5 Exp $ */
+/* $Id: dat.c,v 1.15 2004/11/28 16:20:04 rousseau Exp $ */
 
 /*******************************************************************************
  * dat.c
  * A module of J-Pilot http://jpilot.org
- * 
+ *
  * Copyright (C) 2001-2002 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@
  * http://ourworld.compuserve.com/homepages/nseessle/frames/pilot/dat_e.htm
  * http://www.geocities.com/Heartland/Acres/3216/todo_dat.htm
  * Scott Leighton helphand@pacbell.net
- * 
+ *
  * For their descriptions of the dat formats.
  */
 
@@ -734,7 +734,7 @@ int dat_get_appointments(FILE *in, AppointmentList **alist, struct CategoryAppIn
       }
       if (temp_alist->mappt.unique_id < 0) {
 	 temp_alist->mappt.unique_id = 0;
-      }	 
+      }
       /* Alarm Set */
       temp_alist->mappt.appt.alarm=fa[8].i;
       /* Alarm Advance Units */
@@ -910,7 +910,7 @@ int dat_get_addresses(FILE *in, AddressList **addrlist, struct CategoryAppInfo *
       }
       if (temp_addrlist->maddr.unique_id < 0) {
 	 temp_addrlist->maddr.unique_id = 0;
-      }	 
+      }
       /* Show phone in list */
       temp_addrlist->maddr.addr.showPhone = fa[26].i - 1;
       for (k=0; k<19; k++) {

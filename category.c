@@ -1,9 +1,9 @@
-/* $Id: category.c,v 1.17 2004/11/22 00:52:42 rikster5 Exp $ */
+/* $Id: category.c,v 1.18 2004/11/28 16:20:04 rousseau Exp $ */
 
 /*******************************************************************************
  * category.c
  * A module of J-Pilot http://jpilot.org
- * 
+ *
  * Copyright (C) 2002 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
@@ -46,7 +46,7 @@
 #define EDIT_CAT_ENTRY_CANCEL 105
 
 struct dialog_cats_data {
-   int button_hit;  
+   int button_hit;
    int selected;
    int state;
    GtkWidget *clist;
@@ -163,7 +163,7 @@ int pdb_file_change_indexes(char *DB_name, int old_index, int new_index)
    pi_file_get_app_info(pf1, &app_info, &size);
    pi_file_set_app_info(pf2, app_info, size);
 
-   pi_file_get_sort_info(pf1, &sort_info, &size);  
+   pi_file_get_sort_info(pf1, &sort_info, &size);
    pi_file_set_sort_info(pf2, sort_info, size);
 
    count = 0;
@@ -341,7 +341,7 @@ int edit_cats_change_cats_pdb(char *DB_name, int old_cat, int new_cat)
    GList *temp_list;
 
    jp_logf(JP_LOG_DEBUG, "edit_cats_change_cats_pdb\n");
-#ifdef EDIT_CATS_DEBUG 
+#ifdef EDIT_CATS_DEBUG
   printf("edit_cats_change_cats_pdb\n");
 #endif
 
@@ -607,7 +607,7 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 	    strncpy(Pdata->cai2.name[catnum], entry_text, PILOTCATLTH);
 	    Pdata->cai2.name[catnum][PILOTCATLTH-1]='\0';
 	 }
-	 
+
 	 if (Pdata->state==EDIT_CAT_NEW) {
 #ifdef EDIT_CATS_DEBUG
 	    printf("new cat\n");
@@ -932,7 +932,7 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
    gtk_widget_hide(Pdata.entry_box);
 
    gtk_main();
-   
+
    /* OK, we're back */
 #ifdef EDIT_CATS_DEBUG
    if (Pdata.button_hit==DIALOG_SAID_1) {

@@ -1,4 +1,4 @@
-/* $Id: libplugin.c,v 1.18 2004/11/22 00:52:42 rikster5 Exp $ */
+/* $Id: libplugin.c,v 1.19 2004/11/28 16:20:04 rousseau Exp $ */
 
 /*******************************************************************************
  * libplugin.c
@@ -197,7 +197,7 @@ int read_header(FILE *pc_in, PC3RecordHeader *header)
    num = fread(&l, sizeof(l), 1, pc_in);
    if (feof(pc_in)) {
       return JPILOT_EOF;
-   }      
+   }
    if (num!=1) {
       return num;
    }
@@ -210,7 +210,7 @@ int read_header(FILE *pc_in, PC3RecordHeader *header)
    num = fread(packed_header+sizeof(l), len-sizeof(l), 1, pc_in);
    if (feof(pc_in)) {
       return JPILOT_EOF;
-   }      
+   }
    if (num!=1) {
       return num;
    }
@@ -259,7 +259,7 @@ int jp_edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
 }
 
 /*
- * file must not be open elsewhere when this is called 
+ * file must not be open elsewhere when this is called
  * the first line in file is 0
  */
 int jp_install_remove_line(int deleted_line)
@@ -477,7 +477,7 @@ int jp_get_app_info(char *DB_name, unsigned char **buf, int *buf_size)
       if (feof(in)) {
 	 fclose(in);
 	 return JPILOT_EOF;
-      }      
+      }
    }
    raw_header_to_header(&rdbh, &dbh);
 
@@ -547,7 +547,7 @@ int jp_delete_record(char *DB_name, buf_rec *br, int flag)
 	 }
 	 if (header.header_version==2) {
 	    /* Keep unique ID intact */
-	    if ((header.unique_id==br->unique_id) && 
+	    if ((header.unique_id==br->unique_id) &&
 		((header.rt==NEW_PC_REC) || (header.rt==REPLACEMENT_PALM_REC))
 		) {
 	       if (fseek(pc_in, -header.header_len, SEEK_CUR)) {
@@ -735,7 +735,7 @@ int jp_read_DB_files(char *DB_name, GList **records)
       }
       if (feof(in)) {
 	 return JPILOT_EOF;
-      }      
+      }
    }
    raw_header_to_header(&rdbh, &dbh);
 #ifdef JPILOT_DEBUG
@@ -758,7 +758,7 @@ int jp_read_DB_files(char *DB_name, GList **records)
 	 }
 	 if (feof(in)) {
 	    return JPILOT_EOF;
-	 }      
+	 }
       }
 
       offset = ((rh.Offset[0]*256+rh.Offset[1])*256+rh.Offset[2])*256+rh.Offset[3];

@@ -1,9 +1,9 @@
-/* $Id: jpilot.c,v 1.97 2004/11/27 13:27:42 rousseau Exp $ */
+/* $Id: jpilot.c,v 1.98 2004/11/28 16:20:04 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot.c
  * A module of J-Pilot http://jpilot.org
- * 
+ *
  * Copyright (C) 1999-2003 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
@@ -134,7 +134,7 @@ void geometry_error(const char *str)
 }
 
 /* gtk_init must already have been called, or will seg fault */
-gboolean parse_geometry(const char *str, 
+gboolean parse_geometry(const char *str,
 			int window_width, int window_height,
 			int *w, int *h, int *x, int *y,
 			int *mask)
@@ -279,7 +279,7 @@ int gui_cleanup()
 	 }
       }
    }
-#endif   
+#endif
 
    switch(glob_app) {
     case DATEBOOK:
@@ -543,7 +543,7 @@ void cb_export(GtkWidget *widget, gpointer data)
    }
 #endif
    dialog_generic(GTK_WINDOW(window), 0, 0,
-		  _("Export"), NULL, 
+		  _("Export"), NULL,
 		  _("There is no export support for this conduit."),
 		  1, button_text);
 }
@@ -799,7 +799,7 @@ void output_to_pane(const char *str)
 
    if (! g_utf8_validate(str, -1, NULL)) {
       gchar *utf8_text;
-      
+
       utf8_text = g_locale_to_utf8 (str, -1, NULL, NULL, NULL);
       gtk_text_buffer_insert_at_cursor(g_output_text_buffer, utf8_text, -1);
       g_free(utf8_text);
@@ -876,7 +876,7 @@ static void cb_read_pipe_from_child(gpointer data,
 	    break;
 	 }
       }
-      
+
       if (buf_len < 1) break;
 
       /* Look for the command */
@@ -1074,7 +1074,7 @@ struct url_command url_commands[]={
 void cb_web(GtkWidget *widget, gpointer data)
 {
    int sel;
-   
+
    sel=GPOINTER_TO_INT(data);
    jp_logf(JP_LOG_INFO, PN": executing %s\n", url_commands[sel].command);
    system(url_commands[sel].command);
@@ -1096,7 +1096,7 @@ void install_gui_and_size(GtkWidget *main_window)
 void cb_install_gui(GtkWidget *widget, gpointer data)
 {
    jp_logf(JP_LOG_DEBUG, "cb_install_gui()\n");
-   
+
    install_gui_and_size(window);
 }
 
@@ -1615,7 +1615,7 @@ void cb_payback(GtkWidget *widget, gpointer data)
      "in the help menu.\n\n\n"
      "PALM, TUNGSTEN and ZIRE are among the trademarks of palmOne, Inc."
      ;
-     
+
    gdk_window_get_size(window->window, &w, &h);
 
 #ifdef ENABLE_GTK2
@@ -1635,7 +1635,7 @@ gint cb_check_version(gpointer main_window)
    const char *Pver;
    long lver;
    char str_ver[8];
-     
+
    jp_logf(JP_LOG_DEBUG, "cb_check_version\n");
 
    get_pref(PREF_VERSION, NULL, &Pver);
@@ -1648,7 +1648,7 @@ gint cb_check_version(gpointer main_window)
    micro=lver%100;
 
    set_pref(PREF_VERSION, 0, "009907", 1);
-   
+
    /* 2004 Oct 2 */
    if ((time(NULL) < 1096675200) && (lver<9907)) {
       cb_payback(0, 0);
@@ -1700,7 +1700,7 @@ int main(int argc, char *argv[])
 # ifndef ENABLE_GTK2
    GdkFont *f;
 # endif
-#endif   
+#endif
 char *xpm_locked[] = {
    "15 18 4 1",
    "       c None",
@@ -1842,7 +1842,7 @@ char *xpm_unlocked[] = {
 	 printf("\n%s\n", options);
 	 exit(0);
       }
-      if ( (!strncasecmp(argv[i], "-h", 2)) || 
+      if ( (!strncasecmp(argv[i], "-h", 2)) ||
 	  (!strncasecmp(argv[i], "-?", 2)) ) {
 	 fprint_usage_string(stderr);
 	 exit(0);
@@ -2275,7 +2275,7 @@ char *xpm_unlocked[] = {
 
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask, NULL, jpilot_icon4_xpm);
    gdk_window_set_icon(window->window, NULL, pixmap, mask);
-   gdk_window_set_icon_name(window->window, PN);  
+   gdk_window_set_icon_name(window->window, PN);
 
    /* Create "Datebook" pixmap */
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
@@ -2356,12 +2356,12 @@ char *xpm_unlocked[] = {
 
    gtk_tooltips_set_tip(glob_tooltips, button_memo, _("Memo Pad"), NULL);
 
-   /* Enable tooltips if preference is set */ 
+   /* Enable tooltips if preference is set */
    get_pref(PREF_SHOW_TOOLTIPS, &pref_show_tooltips, NULL);
    if (pref_show_tooltips)
-      gtk_tooltips_enable(glob_tooltips);   
+      gtk_tooltips_enable(glob_tooltips);
    else
-      gtk_tooltips_disable(glob_tooltips);   
+      gtk_tooltips_disable(glob_tooltips);
 
    /*Set a callback for our pipe from the sync child process */
    gdk_input_add(pipe_from_child, GDK_INPUT_READ, cb_read_pipe_from_child, window);
@@ -2436,7 +2436,7 @@ char *xpm_unlocked[] = {
 #endif
 
    gtk_idle_add(cb_check_version, window);
-   
+
    gtk_main();
 
 #ifdef ENABLE_GTK2

@@ -1,9 +1,9 @@
-/* $Id: restore_gui.c,v 1.14 2004/11/26 08:21:06 rousseau Exp $ */
+/* $Id: restore_gui.c,v 1.15 2004/11/28 16:20:04 rousseau Exp $ */
 
 /*******************************************************************************
  * restore_gui.c
  * A module of J-Pilot http://jpilot.org
- * 
+ *
  * Copyright (C) 2001-2002 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
@@ -56,7 +56,7 @@ cb_restore_ok(GtkWidget *widget, gpointer data)
    char home_dir[FILENAME_MAX];
    struct stat buf, backup_buf;
    int r1, r2;
-   
+
    list=GTK_CLIST(restore_clist)->selection;
 
    get_home_file_name("", home_dir, sizeof(home_dir));
@@ -95,7 +95,7 @@ cb_restore_ok(GtkWidget *widget, gpointer data)
 	 install_append_line(backup_file);
       }
    }
-   
+
    setup_sync(SYNC_NO_PLUGINS|SYNC_OVERRIDE_USER|SYNC_RESTORE);
 
    gtk_widget_destroy(data);
@@ -170,7 +170,7 @@ static int populate_clist_sub(char *path, int check_for_dups, int check_exts)
 #ifdef ENABLE_GTK2
 	 {
 	    gchar *utf8_text;
-	    
+
 	    utf8_text = g_locale_to_utf8(row_text[0], -1, NULL, NULL, NULL);
 	    row_text[0] = utf8_text;
 	    gtk_clist_append(GTK_CLIST(restore_clist), row_text);
@@ -205,7 +205,7 @@ static int populate_clist()
    for (i=0; i<GTK_CLIST(restore_clist)->rows; i++) {
       gtk_clist_select_row(GTK_CLIST(restore_clist), i, 0);
    }
-   
+
    return 0;
 }
 
@@ -247,19 +247,19 @@ int restore_gui(GtkWidget *main_window, int w, int h, int x, int y)
 
    /* Label for instructions */
    label = gtk_label_new(_("To restore your handheld:"));
-   gtk_misc_set_alignment(GTK_MISC(label), 0, 0);   
+   gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
    gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
    label = gtk_label_new(_("1. Choose all the applications you wish to restore.  The default is all."));
-   gtk_misc_set_alignment(GTK_MISC(label), 0, 0);   
+   gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
    gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
    label = gtk_label_new(_("2. Enter the User Name and User ID."));
-   gtk_misc_set_alignment(GTK_MISC(label), 0, 0);   
+   gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
    gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
    label = gtk_label_new(_("3. Press the OK button."));
-   gtk_misc_set_alignment(GTK_MISC(label), 0, 0);   
+   gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
    gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
    label = gtk_label_new(_("This will overwrite data that is currently on the handheld."));
-   gtk_misc_set_alignment(GTK_MISC(label), 0, 0);   
+   gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
    gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
 
    /* Put the memo list window up */

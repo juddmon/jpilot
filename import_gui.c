@@ -1,4 +1,4 @@
-/* $Id: import_gui.c,v 1.16 2004/11/22 06:58:09 rikster5 Exp $ */
+/* $Id: import_gui.c,v 1.17 2004/11/28 16:20:04 rousseau Exp $ */
 
 /*******************************************************************************
  * import_gui.c
@@ -291,7 +291,7 @@ void import_gui(GtkWidget *main_window, GtkWidget *main_pane,
 
    /*Even though I hide the ok button I still want to connect its signal */
    /*because a double click on the file name also calls this callback */
-   gtk_widget_hide(GTK_WIDGET(GTK_FILE_SELECTION(filew)->ok_button));   
+   gtk_widget_hide(GTK_WIDGET(GTK_FILE_SELECTION(filew)->ok_button));
    gtk_signal_connect(GTK_OBJECT(GTK_FILE_SELECTION(filew)->ok_button),
 		      "clicked", GTK_SIGNAL_FUNC(cb_import), filew);
 
@@ -353,7 +353,7 @@ void import_gui(GtkWidget *main_window, GtkWidget *main_pane,
 }
 
 
-/* 
+/*
  * Import record display and choice.
  * Put up the record for viewing and ask if it should be imported.
  */

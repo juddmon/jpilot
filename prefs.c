@@ -1,4 +1,4 @@
-/* $Id: prefs.c,v 1.49 2004/11/26 01:01:55 rikster5 Exp $ */
+/* $Id: prefs.c,v 1.50 2004/11/28 16:20:04 rousseau Exp $ */
 
 /*******************************************************************************
  * prefs.c
@@ -309,7 +309,7 @@ static int get_rcfile_name(int n, char *rc_copy)
 	       if (!new_entry) {
 		  jp_logf(JP_LOG_FATAL, "get_rcfile_name(): %s\n", _("Out of memory"));
 		  return -1;
-	       }  
+	       }
 	       new_entry->name = strdup(dirent->d_name);
 	       new_entry->next = dir_list;
 	       dir_list = new_entry;
@@ -334,7 +334,7 @@ static int get_rcfile_name(int n, char *rc_copy)
 	       if (!new_entry) {
 		  jp_logf(JP_LOG_FATAL, "get_rcfile_name(): %s 2\n", _("Out of memory"));
 		  return -1;
-	       }  
+	       }
 	       new_entry->name = strdup(dirent->d_name);
 	       new_entry->next = dir_list;
 	       dir_list = new_entry;
@@ -424,7 +424,7 @@ int get_pref_possibility(int which, int n, char *pref_str)
    static const char *char_sets[] = {
       "Latin1 / No conversion",
       "Japanese",
-      "Host ISO-8859-2 <-> Palm Windows1250 (EE)", 
+      "Host ISO-8859-2 <-> Palm Windows1250 (EE)",
       "Host Windows1251 <-> Palm KOI8-R",
       "Host KOI8-R <-> Palm Windows-1251",
       "Chinese(Big5)",

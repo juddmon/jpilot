@@ -86,7 +86,7 @@ void win1251_to_koi8(char *const buf, int buf_len)
    if (buf == NULL) return;
 
    for (i=0, p = (unsigned char *)buf; *p && i < buf_len; p++, i++) {
-      *p = w2k[(*p)]; 
+      *p = w2k[(*p)];
    }
 }
 

@@ -1,4 +1,4 @@
-/* $Id: monthview_gui.c,v 1.28 2004/11/26 01:14:38 rikster5 Exp $ */
+/* $Id: monthview_gui.c,v 1.29 2004/11/28 16:20:04 rousseau Exp $ */
 
 /*******************************************************************************
  * monthview_gui.c
@@ -248,7 +248,7 @@ void create_month_boxes_texts(GtkWidget *month_vbox)
 #ifdef ENABLE_GTK2
 	    /* text variable only used to save some typing */
 	    text = glob_month_text_views[n] = gtk_text_view_new();
-	    glob_month_text_buffers[n] = 
+	    glob_month_text_buffers[n] =
 	      G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)));
 	    gtk_widget_set_usize(GTK_WIDGET(text), 10, 10);
 	    gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(text), FALSE);
@@ -270,7 +270,7 @@ void create_month_boxes_texts(GtkWidget *month_vbox)
       }
    }
    glob_last_hbox_row = hbox_row;
-   
+
 #ifdef ENABLE_GTK2
    text = gtk_text_view_new();
    big_text_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)));
@@ -440,7 +440,7 @@ void monthview_gui(struct tm *date_in)
 
    if (window) {
 #ifdef ENABLE_GTK2
-      /* Shift focus to existing window if called again 
+      /* Shift focus to existing window if called again
          and window is still alive. */
       gtk_window_present(GTK_WINDOW(window));
 #endif
@@ -483,7 +483,7 @@ void monthview_gui(struct tm *date_in)
    button = gtk_button_new();
    arrow = gtk_arrow_new(GTK_ARROW_LEFT, GTK_SHADOW_OUT);
    gtk_container_add(GTK_CONTAINER(button), arrow);
-   gtk_signal_connect(GTK_OBJECT(button), "clicked", 
+   gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_month_move),
 		      GINT_TO_POINTER(-1));
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 3);
@@ -505,7 +505,7 @@ void monthview_gui(struct tm *date_in)
    button = gtk_button_new();
    arrow = gtk_arrow_new(GTK_ARROW_RIGHT, GTK_SHADOW_OUT);
    gtk_container_add(GTK_CONTAINER(button), arrow);
-   gtk_signal_connect(GTK_OBJECT(button), "clicked", 
+   gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_month_move),
 		      GINT_TO_POINTER(1));
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 3);

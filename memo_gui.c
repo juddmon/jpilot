@@ -1,9 +1,9 @@
-/* $Id: memo_gui.c,v 1.65 2004/11/26 08:21:06 rousseau Exp $ */
+/* $Id: memo_gui.c,v 1.66 2004/11/28 16:20:04 rousseau Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
  * A module of J-Pilot http://jpilot.org
- * 
+ *
  * Copyright (C) 1999-2002 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
@@ -170,7 +170,7 @@ cb_record_changed(GtkWidget *widget,
    }
    else if (record_changed==UNDELETE_FLAG)
    {
-      jp_logf(JP_LOG_INFO|JP_LOG_GUI, 
+      jp_logf(JP_LOG_INFO|JP_LOG_GUI,
               _("This record is deleted.\n"
 	        "Undelete it or copy it to make changes.\n"));
    }
@@ -209,7 +209,7 @@ static void connect_changed_signals(int con_or_dis)
       for (i=0; i<NUM_MEMO_CAT_ITEMS; i++) {
 	 if (memo_cat_menu_item2[i]) {
 	    gtk_signal_disconnect_by_func(GTK_OBJECT(memo_cat_menu_item2[i]),
-					  GTK_SIGNAL_FUNC(cb_record_changed), NULL);     
+					  GTK_SIGNAL_FUNC(cb_record_changed), NULL);
 	 }
       }
 #ifdef ENABLE_GTK2
@@ -741,7 +741,7 @@ void cb_undelete_memo(GtkWidget *widget,
       {
 	 undelete_pc_record(MEMO, mmemo, flag);
       }
-      /* Possible later addition of undelete for modified records 
+      /* Possible later addition of undelete for modified records
       else if (mmemo->rt == MODIFIED_PALM_REC)
       {
 	 cb_add_new_record(widget, GINT_TO_POINTER(COPY_FLAG));
@@ -891,7 +891,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
       if (mmemo < (MyMemo *)CLIST_MIN_DATA) {
 	 return;
       }
-      if ((mmemo->rt==DELETED_PALM_REC) || 
+      if ((mmemo->rt==DELETED_PALM_REC) ||
 	  (mmemo->rt==DELETED_PC_REC)   ||
           (mmemo->rt==MODIFIED_PALM_REC)) {
 	 jp_logf(JP_LOG_INFO, _("You can't modify a record that is deleted\n"));
@@ -1126,7 +1126,7 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       }
 
       /* Do masking like Palm OS 3.5 */
-      if ((show_priv == MASK_PRIVATES) && 
+      if ((show_priv == MASK_PRIVATES) &&
 	  (temp_memo->mmemo.attrib & dlpRecAttrSecret)) {
 	 gtk_clist_append(GTK_CLIST(clist), empty_line);
 	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, 0, "----------------------------------------");
@@ -1139,14 +1139,14 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       /* End Masking */
 
       /* Hide the private records if need be */
-      if ((show_priv != SHOW_PRIVATES) && 
+      if ((show_priv != SHOW_PRIVATES) &&
 	  (temp_memo->mmemo.attrib & dlpRecAttrSecret)) {
 	 continue;
       }
 
       /* Add entry to clist */
       gtk_clist_append(GTK_CLIST(clist), empty_line);
-      
+
       sprintf(str, "%d. ", entries_shown + 1);
 
       len1 = strlen(str);
@@ -1183,7 +1183,7 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 	 break;
        default:
 	 if (temp_memo->mmemo.attrib & dlpRecAttrSecret) {
-	    set_bg_rgb_clist_row(clist, entries_shown, 
+	    set_bg_rgb_clist_row(clist, entries_shown,
 			     CLIST_PRIVATE_RED, CLIST_PRIVATE_GREEN, CLIST_PRIVATE_BLUE);
 	 } else {
 	    gtk_clist_set_row_style(GTK_CLIST(clist), entries_shown, NULL);
@@ -1218,7 +1218,7 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    if (tooltip_widget) {
       if (memo_list==NULL) {
 	    gtk_tooltips_set_tip(glob_tooltips, tooltip_widget, _("0 records"), NULL);
-      } 
+      }
       else {
 	 sprintf(str, _("%d of %d records"), entries_shown, num_entries);
 	 gtk_tooltips_set_tip(glob_tooltips, tooltip_widget, str, NULL);
@@ -1309,7 +1309,7 @@ int memo_refresh()
    memo_update_clist(clist, category_menu1, &glob_memo_list, memo_category, TRUE);
    if (index<0) {
       jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
-   } else {	 
+   } else {
       gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), index);
       gtk_check_menu_item_set_active
 	(GTK_CHECK_MENU_ITEM(memo_cat_menu_item1[index]), TRUE);
@@ -1495,7 +1495,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    copy_record_button = gtk_button_new_with_label(_("Copy"));
    gtk_signal_connect(GTK_OBJECT(copy_record_button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_add_new_record), 
+		      GTK_SIGNAL_FUNC(cb_add_new_record),
 		      GINT_TO_POINTER(COPY_FLAG));
    gtk_box_pack_start(GTK_BOX(hbox_temp), copy_record_button, TRUE, TRUE, 0);
    gtk_widget_add_accelerator(copy_record_button, "clicked", accel_group, GDK_o,
@@ -1504,7 +1504,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    new_record_button = gtk_button_new_with_label(_("New Record"));
    gtk_signal_connect(GTK_OBJECT(new_record_button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_add_new_record), 
+		      GTK_SIGNAL_FUNC(cb_add_new_record),
 		      GINT_TO_POINTER(CLEAR_FLAG));
    gtk_box_pack_start(GTK_BOX(hbox_temp), new_record_button, TRUE, TRUE, 0);
    gtk_widget_add_accelerator(new_record_button, "clicked", accel_group, GDK_n,
@@ -1524,7 +1524,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    apply_record_button = gtk_button_new_with_label(_("Apply Changes"));
    gtk_signal_connect(GTK_OBJECT(apply_record_button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_add_new_record), 
+		      GTK_SIGNAL_FUNC(cb_add_new_record),
 		      GINT_TO_POINTER(MODIFY_FLAG));
    gtk_box_pack_start(GTK_BOX(hbox_temp), apply_record_button, TRUE, TRUE, 0);
    gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(GTK_BIN(apply_record_button)->child)),

@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.39 2004/11/25 20:57:05 rikster5 Exp $ */
+/* $Id: prefs_gui.c,v 1.40 2004/11/28 16:20:04 rousseau Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -48,7 +48,7 @@ extern GtkTooltips *glob_tooltips;
 void r(GtkWidget *w, gpointer data)
 {
    GtkStyle *style;
-   
+
    style = gtk_rc_get_style(GTK_WIDGET(w));
    if (style) gtk_rc_style_unref(style);
    if (GTK_IS_CONTAINER(w)) {
@@ -60,10 +60,10 @@ void set_colors()
 {
    GtkStyle* style;
    int i;
-   
+
    r(main_window, NULL);
    r(window, NULL);
-   
+
    gtk_rc_reparse_all();
    read_gtkrc_file();
    gtk_rc_reparse_all();
@@ -181,7 +181,7 @@ void cb_checkbox_todo_days_till_due(GtkWidget *widget, gpointer data)
    const char *entry_text;
 
    entry_text = gtk_entry_get_text(GTK_ENTRY(todo_days_due_entry));
-   
+
    sscanf(entry_text, "%d", &num_days);
 
    set_pref(PREF_TODO_DAYS_TILL_DUE, num_days, NULL, TRUE);
@@ -190,9 +190,9 @@ void cb_checkbox_todo_days_till_due(GtkWidget *widget, gpointer data)
 void cb_checkbox_show_tooltips(GtkWidget *widget, gpointer data)
 {
    if (GTK_TOGGLE_BUTTON(widget)->active)
-      gtk_tooltips_enable(glob_tooltips);   
+      gtk_tooltips_enable(glob_tooltips);
    else
-      gtk_tooltips_disable(glob_tooltips);   
+      gtk_tooltips_disable(glob_tooltips);
 
    set_pref(PREF_SHOW_TOOLTIPS, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
 }
@@ -295,7 +295,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    if (window) {
       jp_logf(JP_LOG_DEBUG, "pref_window is already up\n");
 #ifdef ENABLE_GTK2
-      /* Shift focus to existing window if called again 
+      /* Shift focus to existing window if called again
          and window is still alive. */
       gtk_window_present(GTK_WINDOW(window));
 #endif
@@ -416,7 +416,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
 
    /* FDOW */
-#  ifndef ENABLE_GTK2   
+#  ifndef ENABLE_GTK2
    label = gtk_label_new(_("The first day of the week is "));
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
 			     0, 1, 4, 5);
@@ -519,7 +519,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    if (ivalue) {
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
-   gtk_signal_connect(GTK_OBJECT(checkbutton), 
+   gtk_signal_connect(GTK_OBJECT(checkbutton),
 		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref),
 		      GINT_TO_POINTER(PREF_SHOW_MODIFIED));
 
@@ -532,7 +532,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    if (ivalue) {
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
-   gtk_signal_connect(GTK_OBJECT(checkbutton), 
+   gtk_signal_connect(GTK_OBJECT(checkbutton),
 		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref),
 		      GINT_TO_POINTER(PREF_CONFIRM_FILE_INSTALL));
 
@@ -545,7 +545,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    if (ivalue) {
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
-   gtk_signal_connect(GTK_OBJECT(checkbutton), 
+   gtk_signal_connect(GTK_OBJECT(checkbutton),
 		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_show_tooltips),
 		      NULL);
 
@@ -561,8 +561,8 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    if (ivalue) {
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
-   gtk_signal_connect(GTK_OBJECT(checkbutton), 
-		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref), 
+   gtk_signal_connect(GTK_OBJECT(checkbutton),
+		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref),
 		      GINT_TO_POINTER(PREF_DATEBOOK_HIGHLIGHT_DAYS));
 
 #ifdef ENABLE_DATEBK
@@ -574,8 +574,8 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    if (ivalue) {
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
-   gtk_signal_connect(GTK_OBJECT(checkbutton), 
-		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref), 
+   gtk_signal_connect(GTK_OBJECT(checkbutton),
+		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref),
 		      GINT_TO_POINTER(PREF_USE_DB3));
 #else
    label = gtk_label_new(_("DateBk support disabled in this build"));
@@ -705,7 +705,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 
    /**********************************************************************/
    /* Alarms preference tab */
-   
+
    /* Show open alarm windows check box */
    checkbutton = gtk_check_button_new_with_label
      (_("Open alarm windows for appointment reminders"));
@@ -715,8 +715,8 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    if (ivalue) {
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
-   gtk_signal_connect(GTK_OBJECT(checkbutton), 
-		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref), 
+   gtk_signal_connect(GTK_OBJECT(checkbutton),
+		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref),
 		      GINT_TO_POINTER(PREF_OPEN_ALARM_WINDOWS));
 
    /* Show open alarm windows check box */
@@ -728,8 +728,8 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    if (ivalue) {
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
-   gtk_signal_connect(GTK_OBJECT(checkbutton), 
-		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref), 
+   gtk_signal_connect(GTK_OBJECT(checkbutton),
+		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref),
 		      GINT_TO_POINTER(PREF_DO_ALARM_COMMAND));
 
    /* Shell warning */
@@ -779,7 +779,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
    gtk_box_pack_start(GTK_BOX(vbox_alarms), label, FALSE, FALSE, 0);
 #endif
-   
+
    /**********************************************************************/
    /* Conduits preference tab */
 
@@ -791,8 +791,8 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    if (ivalue) {
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
-   gtk_signal_connect(GTK_OBJECT(checkbutton), 
-		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref), 
+   gtk_signal_connect(GTK_OBJECT(checkbutton),
+		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref),
 		      GINT_TO_POINTER(PREF_SYNC_DATEBOOK));
 
    /* Show sync address check box */
@@ -803,8 +803,8 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    if (ivalue) {
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
-   gtk_signal_connect(GTK_OBJECT(checkbutton), 
-		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref), 
+   gtk_signal_connect(GTK_OBJECT(checkbutton),
+		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref),
 		      GINT_TO_POINTER(PREF_SYNC_ADDRESS));
 
    /* Show sync todo check box */
@@ -815,8 +815,8 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    if (ivalue) {
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
-   gtk_signal_connect(GTK_OBJECT(checkbutton), 
-		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref), 
+   gtk_signal_connect(GTK_OBJECT(checkbutton),
+		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref),
 		      GINT_TO_POINTER(PREF_SYNC_TODO));
 
    /* Show sync memo check box */
@@ -827,8 +827,8 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    if (ivalue) {
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
-   gtk_signal_connect(GTK_OBJECT(checkbutton), 
-		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref), 
+   gtk_signal_connect(GTK_OBJECT(checkbutton),
+		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref),
 		      GINT_TO_POINTER(PREF_SYNC_MEMO));
 
    /* Show sync Memo32 check box */
@@ -840,8 +840,8 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    if (ivalue) {
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
-   gtk_signal_connect(GTK_OBJECT(checkbutton), 
-		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref), 
+   gtk_signal_connect(GTK_OBJECT(checkbutton),
+		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref),
 		      GINT_TO_POINTER(PREF_SYNC_MEMO32));
 
 #ifdef ENABLE_MANANA
@@ -853,8 +853,8 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    if (ivalue) {
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
-   gtk_signal_connect(GTK_OBJECT(checkbutton), 
-		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref), 
+   gtk_signal_connect(GTK_OBJECT(checkbutton),
+		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref),
 		      GINT_TO_POINTER(PREF_SYNC_MANANA));
 #endif
    get_pref(PREF_CHAR_SET, &ivalue, &cstr);
@@ -867,11 +867,11 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
       if (ivalue) {
 	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
       }
-      gtk_signal_connect(GTK_OBJECT(checkbutton), 
-			 "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref), 
-			 GINT_TO_POINTER(PREF_USE_JOS));	   
+      gtk_signal_connect(GTK_OBJECT(checkbutton),
+			 "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref),
+			 GINT_TO_POINTER(PREF_USE_JOS));
    }
-   
+
 #ifdef  ENABLE_PLUGINS
    if (!skip_plugins) {
       plugin_list=NULL;
@@ -888,7 +888,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 	    if (Pplugin->sync_on) {
 	       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
 	    }
-	    gtk_signal_connect(GTK_OBJECT(checkbutton), "clicked", 
+	    gtk_signal_connect(GTK_OBJECT(checkbutton), "clicked",
 			       GTK_SIGNAL_FUNC(cb_sync_plugin),
 			       GINT_TO_POINTER(Pplugin->number));
 	 }

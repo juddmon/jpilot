@@ -1,4 +1,4 @@
-/* $Id: address.c,v 1.32 2004/11/24 20:42:26 rousseau Exp $ */
+/* $Id: address.c,v 1.33 2004/11/28 16:20:04 rousseau Exp $ */
 
 /*******************************************************************************
  * address.c
@@ -99,7 +99,7 @@ int address_compare(const void *v1, const void *v2)
 	 if (a1->entry[sort1] && a1->entry[sort2]) {
 	    if ((str1 = (char *)malloc(strlen(a1->entry[sort1])+strlen(a1->entry[sort2])+1)) == NULL) {
 	       return 0;
-	    }	      
+	    }
 	    strcpy(str1, a1->entry[sort1]);
 	    strcat(str1, a1->entry[sort2]);
 	 }
@@ -141,7 +141,7 @@ int address_compare(const void *v1, const void *v2)
 	 if ((!a2->entry[sort1]) && a2->entry[sort2]) {
 	    if ((str2 = (char *)malloc(strlen(a2->entry[sort2])+1)) == NULL) {
 	       return 0;
-	    }	      
+	    }
 	    strcpy(str2, a2->entry[sort2]);
 	 }
       } else if (a2->entry[sort3]) {
@@ -243,7 +243,7 @@ int address_compare(const void *v1, const void *v2)
    return i;
 }
 
-/* 
+/*
  * sort_order: 0=descending,  1=ascending
  */
 int address_sort(AddressList **al, int sort_order)
@@ -391,14 +391,11 @@ int get_address_app_info(struct AddressAppInfo *ai)
       return -1;
    }
 
-   get_pref(PREF_CHAR_SET, &char_set, NULL); 
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
    if (char_set != CHAR_SET_LATIN1) {
       /* Convert to host character set */
       int i;
-      for (i = 0; i < CATCOUNT; i++)
-	if (ai->category.name[i][0] != '\0') {
-	   charset_p2j(ai->category.name[i], HOSTCATLTH, char_set);
-	}
+
       for (i = 0; i < 19 + 3; i++)
 	if (ai->labels[i][0] != '\0') {
 	   charset_p2j(ai->labels[i],16, char_set);
@@ -416,7 +413,7 @@ int get_addresses(AddressList **address_list, int sort_order)
 {
    return get_addresses2(address_list, sort_order, 1, 1, 1, CATEGORY_ALL);
 }
-/* 
+/*
  * sort_order: 0=descending,  1=ascending
  * modified, deleted and private, 0 for no, 1 for yes, 2 for use prefs
  */
@@ -474,7 +471,7 @@ int get_addresses2(AddressList **address_list, int sort_order,
 	   ((br->rt==MODIFIED_PALM_REC) && (!keep_modified)) ) {
 	 continue;
       }
-      if ((keep_priv != SHOW_PRIVATES) && 
+      if ((keep_priv != SHOW_PRIVATES) &&
 	  (br->attrib & dlpRecAttrSecret)) {
 	 continue;
       }

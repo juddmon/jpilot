@@ -1,9 +1,9 @@
-/* $Id: todo_gui.c,v 1.73 2004/11/26 08:21:06 rousseau Exp $ */
+/* $Id: todo_gui.c,v 1.74 2004/11/28 16:20:04 rousseau Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
  * A module of J-Pilot http://jpilot.org
- * 
+ *
  * Copyright (C) 1999-2002 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
@@ -347,12 +347,12 @@ static void connect_changed_signals(int con_or_dis)
       for (i=0; i<NUM_TODO_CAT_ITEMS; i++) {
 	 if (todo_cat_menu_item2[i]) {
 	    gtk_signal_disconnect_by_func(GTK_OBJECT(todo_cat_menu_item2[i]),
-					  GTK_SIGNAL_FUNC(cb_record_changed), NULL);     
+					  GTK_SIGNAL_FUNC(cb_record_changed), NULL);
 	 }
       }
       for (i=0; i<NUM_TODO_PRIORITIES; i++) {
 	 gtk_signal_disconnect_by_func(GTK_OBJECT(radio_button_todo[i]),
-				       GTK_SIGNAL_FUNC(cb_record_changed), NULL);     
+				       GTK_SIGNAL_FUNC(cb_record_changed), NULL);
       }
 #ifdef ENABLE_GTK2
       g_signal_handlers_disconnect_by_func(todo_text_buffer,
@@ -799,7 +799,7 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 		 now->tm_hour,
 		 now->tm_min,
 		 now->tm_sec);
-	 str_to_ical_str(text, sizeof(text), 
+	 str_to_ical_str(text, sizeof(text),
 			 todo_app_info.category.name[mtodo->attrib & 0x0F]);
 	 fprintf(out, "CATEGORIES:%s\n", text);
 	 g_snprintf(str1, sizeof(str1), "%s", mtodo->todo.description);
@@ -975,7 +975,7 @@ void cb_undelete_todo(GtkWidget *widget,
       {
 	 undelete_pc_record(TODO, mtodo, flag);
       }
-      /* Possible later addition of undelete for modified records 
+      /* Possible later addition of undelete for modified records
       else if (mtodo->rt == MODIFIED_PALM_REC)
       {
 	 cb_add_new_record(widget, GINT_TO_POINTER(COPY_FLAG));
@@ -1021,7 +1021,7 @@ void cb_check_button_no_due_date(GtkWidget *widget, gpointer data)
       add_days_to_date(&due_date, till_due);
 
       update_due_button(due_date_button, &due_date);
-   }   
+   }
 }
 
 int todo_clear_details()
@@ -1076,7 +1076,7 @@ int todo_clear_details()
    } else {
       update_due_button(due_date_button, NULL);
    }
-   
+
 
 #ifdef ENABLE_GTK2
    gtk_widget_thaw_child_notify(todo_text);
@@ -1170,7 +1170,7 @@ int todo_get_details(struct ToDo *new_todo, unsigned char *attrib)
    jp_logf(JP_LOG_DEBUG, "indefinite=%d\n",new_todo->indefinite);
    if (!new_todo->indefinite)
      jp_logf(JP_LOG_DEBUG, "due: %d/%d/%d\n",new_todo->due.tm_mon,
-	    new_todo->due.tm_mday, 
+	    new_todo->due.tm_mday,
 	    new_todo->due.tm_year);
    jp_logf(JP_LOG_DEBUG, "priority=%d\n",new_todo->priority);
    jp_logf(JP_LOG_DEBUG, "complete=%d\n",new_todo->complete);
@@ -1224,7 +1224,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
       if (mtodo < (MyToDo *)CLIST_MIN_DATA) {
 	 return;
       }
-      if ((mtodo->rt==DELETED_PALM_REC) || 
+      if ((mtodo->rt==DELETED_PALM_REC) ||
 	  (mtodo->rt==DELETED_PC_REC)   ||
           (mtodo->rt==MODIFIED_PALM_REC)) {
 	 jp_logf(JP_LOG_INFO, _("You can't modify a record that is deleted\n"));
@@ -1324,12 +1324,12 @@ gint GtkClistCompareCheckbox(GtkCList *clist,
 
    row1 = (GtkCListRow *) ptr1;
    row2 = (GtkCListRow *) ptr2;
-   
-   mtodo1 = row1->data; 
-   mtodo2 = row2->data; 
 
-   todo1 = &(mtodo1->todo); 
-   todo2 = &(mtodo2->todo); 
+   mtodo1 = row1->data;
+   mtodo2 = row2->data;
+
+   todo1 = &(mtodo1->todo);
+   todo2 = &(mtodo2->todo);
 
    if (todo1->complete && !todo2->complete) {
       return -1;
@@ -1609,7 +1609,7 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       }
 
       /* Do masking like Palm OS 3.5 */
-      if ((show_priv == MASK_PRIVATES) && 
+      if ((show_priv == MASK_PRIVATES) &&
 	  (temp_todo->mtodo.attrib & dlpRecAttrSecret)) {
 	 gtk_clist_append(GTK_CLIST(clist), empty_line);
 	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, TODO_CHECK_COLUMN, "---");
@@ -1623,8 +1623,8 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 	 continue;
       }
       /* End Masking */
-      
-      /* Allow a record found through search window to temporarily be 
+
+      /* Allow a record found through search window to temporarily be
          displayed even if it would normally be hidden by option settings */
       if (!glob_find_id || (glob_find_id != temp_todo->mtodo.unique_id))
       {
@@ -1650,7 +1650,7 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       }
 
       /* Hide the private records if need be */
-      if ((show_priv != SHOW_PRIVATES) && 
+      if ((show_priv != SHOW_PRIVATES) &&
 	  (temp_todo->mtodo.attrib & dlpRecAttrSecret)) {
 	 continue;
       }
@@ -1709,7 +1709,7 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 	 break;
        default:
 	 if (temp_todo->mtodo.attrib & dlpRecAttrSecret) {
-	    set_bg_rgb_clist_row(clist, entries_shown, 
+	    set_bg_rgb_clist_row(clist, entries_shown,
 			     CLIST_PRIVATE_RED, CLIST_PRIVATE_GREEN, CLIST_PRIVATE_BLUE);
 	 } else {
 	    gtk_clist_set_row_style(GTK_CLIST(clist), entries_shown, NULL);
@@ -1795,7 +1795,7 @@ static int todo_find()
 
 static gboolean
   cb_key_pressed(GtkWidget *widget, GdkEventKey *event,
-		 gpointer next_widget) 
+		 gpointer next_widget)
 {
 #ifdef ENABLE_GTK2
       GtkTextIter   cursor_pos_iter;
@@ -1811,12 +1811,12 @@ static gboolean
       if (gtk_text_get_point(GTK_TEXT(widget)) ==
 	  gtk_text_get_length(GTK_TEXT(widget))) {
 #endif
-	 gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event"); 
+	 gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
 	 gtk_widget_grab_focus(GTK_WIDGET(next_widget));
 	 return TRUE;
       }
    }
-   return FALSE; 
+   return FALSE;
 }
 
 /* This redraws the clist and goes back to the same line number */
@@ -1871,7 +1871,7 @@ int todo_refresh()
       index=find_sorted_cat(todo_category)+1;
    }
    todo_update_clist(clist, category_menu1, &glob_todo_list, todo_category, TRUE);
-   if (index<0) {   
+   if (index<0) {
       jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
    } else {
       gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), index);
@@ -1927,6 +1927,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    const char *svalue;
    char *titles[]={"","","","",""};
    GtkAccelGroup *accel_group;
+   long char_set;
 
    init();
 
@@ -1935,9 +1936,10 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
       todo_cat_menu_item2[i] = NULL;
    }
 
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
    get_todo_app_info(&todo_app_info);
    for (i=0; i<NUM_TODO_CAT_ITEMS; i++) {
-      sort_l[i].Pcat = todo_app_info.category.name[i];
+      sort_l[i].Pcat = charset_p2newj(todo_app_info.category.name[i], 31, char_set);
       sort_l[i].cat_num = i;
    }
    qsort(sort_l, NUM_TODO_CAT_ITEMS, sizeof(struct sorted_cats), cat_compare);
@@ -1946,7 +1948,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
       printf("cat %d %s\n", sort_l[i].cat_num, sort_l[i].Pcat);
    }
 #endif
-   
+
    get_pref(PREF_LAST_TODO_CATEGORY, &ivalue, NULL);
    todo_category = ivalue;
 
@@ -2072,7 +2074,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    copy_record_button = gtk_button_new_with_label(_("Copy"));
    gtk_signal_connect(GTK_OBJECT(copy_record_button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_add_new_record), 
+		      GTK_SIGNAL_FUNC(cb_add_new_record),
 		      GINT_TO_POINTER(COPY_FLAG));
    gtk_box_pack_start(GTK_BOX(hbox_temp), copy_record_button, TRUE, TRUE, 0);
    gtk_widget_add_accelerator(copy_record_button, "clicked", accel_group, GDK_o,
@@ -2081,7 +2083,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    new_record_button = gtk_button_new_with_label(_("New Record"));
    gtk_signal_connect(GTK_OBJECT(new_record_button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_add_new_record), 
+		      GTK_SIGNAL_FUNC(cb_add_new_record),
 		      GINT_TO_POINTER(CLEAR_FLAG));
    gtk_box_pack_start(GTK_BOX(hbox_temp), new_record_button, TRUE, TRUE, 0);
    gtk_widget_add_accelerator(new_record_button, "clicked", accel_group, GDK_n,
@@ -2090,7 +2092,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    add_record_button = gtk_button_new_with_label(_("Add Record"));
    gtk_signal_connect(GTK_OBJECT(add_record_button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_add_new_record), 
+		      GTK_SIGNAL_FUNC(cb_add_new_record),
 		      GINT_TO_POINTER(NEW_FLAG));
    gtk_box_pack_start(GTK_BOX(hbox_temp), add_record_button, TRUE, TRUE, 0);
    gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(GTK_BIN(add_record_button)->child)),

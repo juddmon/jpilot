@@ -1,9 +1,9 @@
-/* $Id: utils.c,v 1.77 2004/11/27 16:14:02 rikster5 Exp $ */
+/* $Id: utils.c,v 1.78 2004/11/28 16:20:04 rousseau Exp $ */
 
 /*******************************************************************************
  * utils.c
  * A module of J-Pilot http://jpilot.org
- * 
+ *
  * Copyright (C) 1999-2002 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
@@ -236,7 +236,7 @@ int add_days_to_date(struct tm *date, int n)
    date->tm_isdst=-1;
    mktime(date);
 
-   return 0;  
+   return 0;
 }
 
 /*
@@ -309,7 +309,7 @@ int add_months_to_date(struct tm *date, int n)
 
    date->tm_isdst=-1;
    mktime(date);
-   return 0;  
+   return 0;
 }
 
 /*
@@ -343,7 +343,7 @@ int sub_months_from_date(struct tm *date, int n)
 
    date->tm_isdst=-1;
    mktime(date);
-   return 0;  
+   return 0;
 }
 
 /*
@@ -650,11 +650,11 @@ void set_bg_rgb_clist_row(GtkWidget *clist, int row, int r, int g, int b)
    else {
       new_style = gtk_style_new();
    }
-   
+
    color.red=r;
    color.green=g;
    color.blue=b;
-  
+
    new_style->base[GTK_STATE_NORMAL] = color;
    gtk_clist_set_row_style(GTK_CLIST(clist), row, new_style);
 }
@@ -663,7 +663,7 @@ void set_fg_rgb_clist_cell(GtkWidget *clist, int row, int col, int r, int g, int
 {
    GtkStyle *old_style, *new_style;
    GdkColor fg_color;
-   
+
    if ((old_style = gtk_clist_get_row_style(GTK_CLIST(clist), row)) ||
        (old_style = gtk_widget_get_style(clist))) {
       new_style = gtk_style_copy(old_style);
@@ -1163,7 +1163,7 @@ int dialog_generic_with_text(GtkWindow *main_window,
    if (main_window) {
       gtk_window_set_transient_for(GTK_WINDOW(glob_dialog), GTK_WINDOW(main_window));
    }
-   
+
    frame1 = gtk_frame_new(frame_text);
    gtk_frame_set_label_align(GTK_FRAME(frame1), 0.5, 0.0);
    vbox1 = gtk_vbox_new(FALSE, 5);
@@ -1899,7 +1899,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 	 }
 	 /* Keep unique ID intact */
 	 if (header.header_version==2) {
-	    if ((header.unique_id==unique_id) && 
+	    if ((header.unique_id==unique_id) &&
 		((header.rt==NEW_PC_REC)||(header.rt==REPLACEMENT_PALM_REC))) {
 	       if (fseek(pc_in, -header.header_len, SEEK_CUR)) {
 		  jp_logf(JP_LOG_WARN, "fseek failed\n");
@@ -1977,7 +1977,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       }
       jp_logf(JP_LOG_DEBUG, "writing header to pc file\n");
       write_header(pc_in, &header);
-      /* This record be used for making sure that the palm record 
+      /* This record be used for making sure that the palm record
        * hasn't changed before we delete it */
       jp_logf(JP_LOG_DEBUG, "writing record to pc file, %d bytes\n", header.rec_len);
       fwrite(record, header.rec_len, 1, pc_in);
@@ -2225,7 +2225,7 @@ int cleanup_pc_file(char *DB_name, unsigned int *max_id)
 	 if (header.rt == NEW_PC_REC) {
 	    header.unique_id = next_id++;
 	 }
-	 if ((header.unique_id > *max_id) 
+	 if ((header.unique_id > *max_id)
 	     && (header.rt != PALM_REC)
 	     && (header.rt != MODIFIED_PALM_REC)
 	     && (header.rt != DELETED_PALM_REC)
@@ -2298,7 +2298,7 @@ int cleanup_pc_files()
    if (ret<0) {
       fail_flag=1;
    } else if (max_id > max_max_id) {
-      max_max_id = max_id; 
+      max_max_id = max_id;
    }
    jp_logf(JP_LOG_DEBUG, "cleanup_pc_file for AddressDB\n");
    ret = cleanup_pc_file("AddressDB", &max_id);
@@ -2306,7 +2306,7 @@ int cleanup_pc_files()
    if (ret<0) {
       fail_flag=1;
    } else if (max_id > max_max_id) {
-      max_max_id = max_id; 
+      max_max_id = max_id;
    }
    jp_logf(JP_LOG_DEBUG, "cleanup_pc_file for ToDoDB\n");
    ret = cleanup_pc_file("ToDoDB", &max_id);
@@ -2314,7 +2314,7 @@ int cleanup_pc_files()
    if (ret<0) {
       fail_flag=1;
    } else if (max_id > max_max_id) {
-      max_max_id = max_id; 
+      max_max_id = max_id;
    }
    jp_logf(JP_LOG_DEBUG, "cleanup_pc_file for MemoDB\n");
    ret += cleanup_pc_file("MemoDB", &max_id);
@@ -2322,7 +2322,7 @@ int cleanup_pc_files()
    if (ret<0) {
       fail_flag=1;
    } else if (max_id > max_max_id) {
-      max_max_id = max_id; 
+      max_max_id = max_id;
    }
    jp_logf(JP_LOG_DEBUG, "cleanup_pc_file for Memo32DB\n");
    ret += cleanup_pc_file("Memo32DB", &max_id);
@@ -2330,7 +2330,7 @@ int cleanup_pc_files()
    if (ret<0) {
       fail_flag=1;
    } else if (max_id > max_max_id) {
-      max_max_id = max_id; 
+      max_max_id = max_id;
    }
 #ifdef ENABLE_PLUGINS
    plugin_list = get_plugin_list();
@@ -2347,7 +2347,7 @@ int cleanup_pc_files()
       if (ret<0) {
 	 fail_flag=1;
       } else if (max_id > max_max_id) {
-	 max_max_id = max_id; 
+	 max_max_id = max_id;
       }
    }
 #endif
@@ -2439,7 +2439,7 @@ void multibyte_safe_strncpy(char *dst, char *src, size_t len)
 	    if (*p) {
 	       *q++ = *p++;
 	       n++;
-	    } 
+	    }
 	 } else {
 	    *q++ = *p++;
 	    n++;
@@ -2488,11 +2488,11 @@ char *multibyte_safe_memccpy(char *dst, const char *src, int c, size_t len)
 	 if (*(p-1) == (char)(c & 0xff))
 	    return q;
       }
-      if (!(*p & 0x80) && (n < len-1)) 
+      if (!(*p & 0x80) && (n < len-1))
 	*q++ = *p++;
 
       *q = '\0';
-      return NULL; 
+      return NULL;
    } else
      return memccpy(dst, src, c, len);
 }
@@ -2707,7 +2707,7 @@ int pdb_file_delete_record_by_id(char *DB_name, pi_uid_t uid_in)
    pi_file_get_app_info(pf1, &app_info, &size);
    pi_file_set_app_info(pf2, app_info, size);
 
-   pi_file_get_sort_info(pf1, &sort_info, &size);  
+   pi_file_get_sort_info(pf1, &sort_info, &size);
    pi_file_set_sort_info(pf2, sort_info, size);
 
    for(idx=0;;idx++) {
@@ -2782,7 +2782,7 @@ int pdb_file_modify_record(char *DB_name, void *record_in, int size_in,
    pi_file_get_app_info(pf1, &app_info, &size);
    pi_file_set_app_info(pf2, app_info, size);
 
-   pi_file_get_sort_info(pf1, &sort_info, &size);  
+   pi_file_get_sort_info(pf1, &sort_info, &size);
    pi_file_set_sort_info(pf2, sort_info, size);
 
    found = 0;
@@ -2813,7 +2813,7 @@ int pdb_file_modify_record(char *DB_name, void *record_in, int size_in,
    return 0;
 }
 
-int pdb_file_read_record_by_id(char *DB_name, 
+int pdb_file_read_record_by_id(char *DB_name,
 			       pi_uid_t uid,
 			       void **bufp, int *sizep, int *idxp,
 			       int *attrp, int *catp)
@@ -2899,7 +2899,7 @@ int pdb_file_write_app_block(char *DB_name, void *bufp, int size_in)
    pi_file_get_app_info(pf1, &app_info, &size);
    pi_file_set_app_info(pf2, bufp, size_in);
 
-   pi_file_get_sort_info(pf1, &sort_info, &size);  
+   pi_file_get_sort_info(pf1, &sort_info, &size);
    pi_file_set_sort_info(pf2, sort_info, size);
 
    for(idx=0;;idx++) {
@@ -2965,7 +2965,7 @@ int pdb_file_write_dbinfo(char *full_DB_name, struct DBInfo *Pinfo_in)
    pi_file_get_app_info(pf1, &app_info, &size);
    pi_file_set_app_info(pf2, app_info, size);
 
-   pi_file_get_sort_info(pf1, &sort_info, &size);  
+   pi_file_get_sort_info(pf1, &sort_info, &size);
    pi_file_set_sort_info(pf2, sort_info, size);
 
    for(idx=0;;idx++) {

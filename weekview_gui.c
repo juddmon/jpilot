@@ -1,4 +1,4 @@
-/* $Id: weekview_gui.c,v 1.25 2004/11/26 08:06:04 rousseau Exp $ */
+/* $Id: weekview_gui.c,v 1.26 2004/11/28 16:20:04 rousseau Exp $ */
 
 /*******************************************************************************
  * weekview_gui.c
@@ -267,7 +267,7 @@ void weekview_gui(struct tm *date_in)
 
    if (window) {
 #ifdef ENABLE_GTK2
-      /* Shift focus to existing window if called again 
+      /* Shift focus to existing window if called again
          and window is still alive. */
       gtk_window_present(GTK_WINDOW(window));
 #endif
@@ -307,7 +307,7 @@ void weekview_gui(struct tm *date_in)
    button = gtk_button_new();
    arrow = gtk_arrow_new(GTK_ARROW_LEFT, GTK_SHADOW_OUT);
    gtk_container_add(GTK_CONTAINER(button), arrow);
-   gtk_signal_connect(GTK_OBJECT(button), "clicked", 
+   gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_week_move),
 		      GINT_TO_POINTER(-1));
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 3);
@@ -328,7 +328,7 @@ void weekview_gui(struct tm *date_in)
    button = gtk_button_new();
    arrow = gtk_arrow_new(GTK_ARROW_RIGHT, GTK_SHADOW_OUT);
    gtk_container_add(GTK_CONTAINER(button), arrow);
-   gtk_signal_connect(GTK_OBJECT(button), "clicked", 
+   gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_week_move),
 		      GINT_TO_POINTER(1));
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 3);
@@ -357,8 +357,8 @@ void weekview_gui(struct tm *date_in)
       gtk_text_view_set_editable(GTK_TEXT_VIEW(glob_week_texts[i]), FALSE);
       gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(glob_week_texts[i]), GTK_WRAP_WORD);
       gtk_container_set_border_width(GTK_CONTAINER(glob_week_texts[i]), 1);
-      gtk_text_buffer_create_tag(GTK_TEXT_BUFFER(glob_week_text_buffers[i]), 
-				 "gray_background", "background", "gray", 
+      gtk_text_buffer_create_tag(GTK_TEXT_BUFFER(glob_week_text_buffers[i]),
+				 "gray_background", "background", "gray",
 			         NULL);
 #else
       glob_week_texts[i] = gtk_text_new(NULL, NULL);

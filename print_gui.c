@@ -1,4 +1,4 @@
-/* $Id: print_gui.c,v 1.13 2004/11/26 01:01:56 rikster5 Exp $ */
+/* $Id: print_gui.c,v 1.14 2004/11/28 16:20:04 rousseau Exp $ */
 
 /*******************************************************************************
  * print_gui.c
@@ -156,7 +156,7 @@ int print_gui(GtkWidget *main_window, int app, int date_button, int mon_week_day
    char temp_str[10];
    char temp[256];
    const char *svalue;
-   GSList *group;   
+   GSList *group;
 
    jp_logf(JP_LOG_DEBUG, "print_gui\n");
    if (GTK_IS_WINDOW(window)) {

@@ -1,9 +1,9 @@
-/* $Id: dialer.c,v 1.9 2004/11/22 00:52:42 rikster5 Exp $ */
+/* $Id: dialer.c,v 1.10 2004/11/28 16:20:04 rousseau Exp $ */
 
 /*******************************************************************************
  * dialer.c
  * A module of J-Pilot http://jpilot.org
- * 
+ *
  * Copyright (C) 1999-2002 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
@@ -91,7 +91,7 @@ static gboolean cb_destroy_dialog(GtkWidget *widget)
 static void set_prefix_label(struct dialog_data *Pdata)
 {
    char str[70];
-   
+
    g_snprintf(str, sizeof(str), "%s%s%s",
 	      GTK_TOGGLE_BUTTON(Pdata->check_pre1)->active ?
 	      gtk_entry_get_text(GTK_ENTRY(Pdata->entry_pre1)) : "",
@@ -117,7 +117,7 @@ static void dialer(gpointer data, int phone_or_ext)
    const char *pref_command;
    char c1, c2;
    int i, len;
-   
+
    Pdata=data;
    if (phone_or_ext==CHOOSE_PHONE) {
       g_snprintf(str, sizeof(str), "%s%s%s%s",

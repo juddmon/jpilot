@@ -1,4 +1,4 @@
-/* $Id: datebook.c,v 1.41 2004/11/22 06:58:09 rikster5 Exp $ */
+/* $Id: datebook.c,v 1.42 2004/11/28 16:20:04 rousseau Exp $ */
 
 /*******************************************************************************
  * datebook.c
@@ -73,7 +73,7 @@ int datebook_compare(const void *v1, const void *v2)
 	   (appt2->begin.tm_hour*60 + appt2->begin.tm_min));
 }
 
-int datebook_sort(AppointmentList **al, 
+int datebook_sort(AppointmentList **al,
                   int (*compare_func)(const void*, const void*))
 {
    AppointmentList *temp_al;
@@ -226,7 +226,7 @@ void db3_fill_struct(char *note, int type, struct db4_struct *db4)
  * Parses the note tag and looks for db3 or db4 tags.
  * returns -1: error, 0: false, 1: true
  * for true: will in db4
- * 
+ *
  * db4 can be passed in NULL for just checking for datebk tags.
  */
 int db3_parse_tag(char *note, int *type, struct db4_struct *db4)
@@ -239,7 +239,7 @@ int db3_parse_tag(char *note, int *type, struct db4_struct *db4)
 	"@blL", /* b bold, l large, L large bold */
 	"@ABCDEFGHIJKLMNO", /* Category */
 	"@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrst", /* icon */
-	"@s", /* Spans midnight */ 
+	"@s", /* Spans midnight */
 	NULL, /* Lower 2 digits of next 2 chars are time zone */
 	NULL,
 	"@l\n", /* l link, EOL for datebk3 tags */
@@ -300,10 +300,10 @@ int db3_parse_tag(char *note, int *type, struct db4_struct *db4)
       }
       if (allowed[i]==NULL) continue;
       if (!strchr(allowed[i], note[i])) {
-	 return 0;	 
+	 return 0;
       }
    }
-   
+
    /* If we made it this far then its a db4 tag */
    *type=DB3_TAG_TYPE_DB4;
    if (note[i]) {
@@ -626,7 +626,7 @@ unsigned int isApptOnDate(struct Appointment *appt, struct tm *date)
 	(date->tm_mon == 1) && (date->tm_mday == 28)) {
 	 ret = TRUE;
 	 break;
-      }   
+      }
       break;
     default:
       jp_logf(JP_LOG_WARN, _("Unknown repeatType (%d) found in DatebookDB\n"),
@@ -658,10 +658,9 @@ unsigned int isApptOnDate(struct Appointment *appt, struct tm *date)
 
 int get_datebook_app_info(struct AppointmentAppInfo *ai)
 {
-   int num,i;
+   int num;
    int rec_size;
    unsigned char *buf;
-   long char_set;
 
    memset(ai, 0, sizeof(*ai));
    /* Put at least one entry in there */
@@ -675,14 +674,6 @@ int get_datebook_app_info(struct AppointmentAppInfo *ai)
    if ((num<0) || (rec_size<=0)) {
       jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), "DatebookDB.pdb");
       return -1;
-   }
-   get_pref(PREF_CHAR_SET, &char_set, NULL);
-   if (char_set != CHAR_SET_LATIN1) {
-      for (i = 0; i < 16; i++) {
-	 if (ai->category.name[i][0] != '\0') {
-	    charset_p2j(ai->category.name[i], 16, char_set);
-	 }
-      }
    }
 
    return 0;
@@ -965,7 +956,7 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
 	   ((br->rt==MODIFIED_PALM_REC) && (!keep_modified)) ) {
 	 continue;
       }
-      if ((keep_priv != SHOW_PRIVATES) && 
+      if ((keep_priv != SHOW_PRIVATES) &&
 	  (br->attrib & dlpRecAttrSecret)) {
 	 continue;
       }

@@ -1,4 +1,4 @@
-/* $Id: search_gui.c,v 1.32 2004/11/26 01:01:56 rikster5 Exp $ */
+/* $Id: search_gui.c,v 1.33 2004/11/28 16:20:04 rousseau Exp $ */
 
 /*******************************************************************************
  * search_gui.c
@@ -66,7 +66,7 @@ int datebook_search_sort_compare(const void *v1, const void *v2)
    time1 = mktime(&(appt1->begin));
    time2 = mktime(&(appt2->begin));
 
-   return(time2 - time1); 
+   return(time2 - time1);
 }
 
 static int search_datebook(const char *needle, GtkWidget *clist)
@@ -138,7 +138,7 @@ static int search_datebook(const char *needle, GtkWidget *clist)
 	 date_str[sizeof(date_str)-1]='\0';
 
 	 if (found == 1) {
-#ifdef ENABLE_GTK2    
+#ifdef ENABLE_GTK2
 	    g_snprintf(str, sizeof(str), "%s\t%s",
 #else
 	    g_snprintf(str, sizeof(str), "%s  %s",
@@ -149,7 +149,7 @@ static int search_datebook(const char *needle, GtkWidget *clist)
 	    gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str2);
 	 }
 	 if (found == 2) {
-#ifdef ENABLE_GTK2    
+#ifdef ENABLE_GTK2
 	    g_snprintf(str, sizeof(str), "%s\t%s",
 #else
 	    g_snprintf(str, sizeof(str), "%s  %s",
@@ -508,7 +508,7 @@ void cb_search_gui(GtkWidget *widget, gpointer data)
 
    if (GTK_IS_WIDGET(window)) {
 #ifdef ENABLE_GTK2
-      /* Shift focus to existing window if called again 
+      /* Shift focus to existing window if called again
          and window is still alive. */
       gtk_window_present(GTK_WINDOW(window));
 #endif

@@ -1,8 +1,8 @@
-/* $Id: jpilot-dump.c,v 1.16 2004/11/27 13:28:36 rousseau Exp $ */
+/* $Id: jpilot-dump.c,v 1.17 2004/11/28 16:20:04 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot-dump.c
- * 
+ *
  * Paul Landes <landesp@acm.org>: 2/06/2004 added phone label tags
  * hvrietsc: 10/19/2000 added memo dump
  * hvrietsc: 10/17/2000 added %p for priority of todo
@@ -157,9 +157,9 @@ printf("in dump year=%d,month=%d,day=%d\n",Nyear,Nmonth,Nday);
 printf("date is %s",asctime(&tm_dom));
 */
    for (tal=al; tal; tal = tal->next) {
-    if ( 
+    if (
         ((dumpN == FALSE) ||  (isApptOnDate(&(tal->mappt.appt), &tm_dom) == TRUE))
-	&& (tal->mappt.rt != DELETED_PALM_REC) 
+	&& (tal->mappt.rt != DELETED_PALM_REC)
 	&& (tal->mappt.rt != MODIFIED_PALM_REC)
        ) {
  for ( i=2 ; formatB[i] != '\0' ; i++) {
@@ -293,7 +293,7 @@ printf("date is %s",asctime(&tm_dom));
 	         printf("%.2d",hour);
 	 } else {
 	         printf("%.2d",hour-12);
-	 }	 
+	 }
 	 i++;
 	 break;
     case 'l' :
@@ -301,7 +301,7 @@ printf("date is %s",asctime(&tm_dom));
 	         printf("%d",hour);
 	 } else {
 	         printf("%d",hour-12);
-	 }	 
+	 }
 	 i++;
 	 break;
     case 'M' :
@@ -313,7 +313,7 @@ printf("date is %s",asctime(&tm_dom));
 	         printf("AM");
 	 } else {
 	         printf("PM");
-	 }	 
+	 }
 	 i++;
 	 break;
     case 'T' :
@@ -423,7 +423,7 @@ int dumptodo()
     case 'p' :
          printf("%d",tal->mtodo.todo.priority);
          i++;
-         break;  
+         break;
     case 'q' :
 	 printf("'");
 	 i++;
@@ -551,7 +551,7 @@ int dumptodo()
 	         printf("%.2d",hour);
 	 } else {
 	         printf("%.2d",hour-12);
-	 }	 
+	 }
 	 i++;
 	 break;
     case 'l' :
@@ -559,7 +559,7 @@ int dumptodo()
 	         printf("%d",hour);
 	 } else {
 	         printf("%d",hour-12);
-	 }	 
+	 }
 	 i++;
 	 break;
     case 'M' :
@@ -571,7 +571,7 @@ int dumptodo()
 	         printf("AM");
 	 } else {
 	         printf("PM");
-	 }	 
+	 }
 	 i++;
 	 break;
     case 'T' :
@@ -787,7 +787,7 @@ int dumpaddress()
     case 'l' : num=0; PRIT; i++; break;
     case 'f' : num=1; PRIT; i++; break;
     case 'c' : num=2; PRIT; i++; break;
-    case 'p' : num=3; 
+    case 'p' : num=3;
     	switch  (formatA[i+2]) {
 	case '1' : num=3; PRIT; i++; break;
 	case '2' : num=4; PRIT; i++; break;

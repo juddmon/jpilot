@@ -1,9 +1,9 @@
-/* $Id: export_gui.c,v 1.12 2004/11/22 00:52:42 rikster5 Exp $ */
+/* $Id: export_gui.c,v 1.13 2004/11/28 16:20:04 rousseau Exp $ */
 
 /*******************************************************************************
  * export_gui.c
  * A module of J-Pilot http://jpilot.org
- * 
+ *
  * Copyright (C) 1999-2002 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
