@@ -1056,9 +1056,8 @@ void get_main_menu(GtkWidget  *window,
 		   GtkWidget **menubar,
 		   GList *plugin_list)
 /* Some of this code was copied from the gtk_tut.txt file */
-#define NUM_FACTORY_ITEMS 52
 {
-  GtkItemFactoryEntry menu_items1[NUM_FACTORY_ITEMS]={
+  GtkItemFactoryEntry menu_items1[]={
   { NULL, NULL,         NULL,           0,        "<Branch>" },
   { NULL, NULL,         NULL,           0,        "<Tearoff>" },
   { NULL, "<control>F", cb_search_gui,  0,        NULL },
@@ -1079,6 +1078,7 @@ void get_main_menu(GtkWidget  *window,
   { NULL, "F3",         cb_app_button,  TODO,     NULL },
   { NULL, "F4",         cb_app_button,  MEMO,     NULL },
   { NULL, NULL,         NULL,           0,        "<Branch>" },
+#ifdef WEBMENU
   { NULL, NULL,         NULL,           0,        "<Branch>" },/* web */
   { NULL, NULL,         NULL,           0,        "<Branch>" },
   { NULL, NULL,         cb_web,         NETSCAPE_EXISTING, NULL },
@@ -1108,6 +1108,7 @@ void get_main_menu(GtkWidget  *window,
   { NULL, NULL,         cb_web,         W3M_NEW,    NULL },
   { NULL, NULL,         NULL,           0,        "<Branch>" },
   { NULL, NULL,         cb_web,         KONQUEROR_NEW,    NULL },
+#endif
   { NULL, NULL,         NULL,           0,        "<LastBranch>" },
   { NULL, NULL,         cb_about,       0,        NULL },
   { "END",NULL,         NULL,           0,        NULL }
@@ -1133,7 +1134,7 @@ void get_main_menu(GtkWidget  *window,
 
    /* Irix doesn't like non-constant expressions in a static initializer */
    /* So we have to do this to keep the compiler happy */
-   for (i=0; i<NUM_FACTORY_ITEMS; i++) {
+   for (i=0; i<sizeof(menu_items1)/sizeof(menu_items1[0]); i++) {
       if (menu_items1[i].callback==cb_prefs_gui) {
 	 menu_items1[i].callback_action = GPOINTER_TO_INT(window);
 	 break;
@@ -1155,12 +1156,13 @@ void get_main_menu(GtkWidget  *window,
    menu_items1[i++].path=strdup(_("/File/sep1"));
    menu_items1[i++].path=strdup(_("/File/Quit"));
    menu_items1[i++].path=strdup(_("/_View"));
-   menu_items1[i++].path=strdup(_("/View/Hide-Show Private Records"));
+   menu_items1[i++].path=strdup(_("/View/Hide-Show-Mask Private Records"));
    menu_items1[i++].path=strdup(_("/View/Datebook"));
    menu_items1[i++].path=strdup(_("/View/Addresses"));
    menu_items1[i++].path=strdup(_("/View/Todos"));
    menu_items1[i++].path=strdup(_("/View/Memos"));
    menu_items1[i++].path=strdup(_("/Plugins"));
+#ifdef WEBMENU
    menu_items1[i++].path=strdup(_("/Web"));
    menu_items1[i++].path=strdup(_("/Web/Netscape"));
    g_snprintf(temp_str, 100, _("/Web/Netscape/%s"), url_commands[NETSCAPE_EXISTING].desc);
@@ -1217,6 +1219,7 @@ void get_main_menu(GtkWidget  *window,
    menu_items1[i++].path=strdup(_("/Web/Konqueror"));
    g_snprintf(temp_str, 100, _("/Web/Konqueror/%s"), url_commands[KONQUEROR_NEW].desc);
    menu_items1[i++].path=strdup(temp_str);
+#endif
 
    menu_items1[i++].path=strdup(_("/_Help"));
    g_snprintf(temp_str, 100, _("/_Help/%s"), PN);
@@ -1393,8 +1396,7 @@ void get_main_menu(GtkWidget  *window,
 
    free(menu_items2);
 
-   /* NUM_FACTORY_ITEMS is just a safety, the loop stops at END */
-   for (i=0; i<NUM_FACTORY_ITEMS; i++) {
+   for (i=0; i<sizeof(menu_items1)/sizeof(menu_items1[0]); i++) {
       if (!strcmp(menu_items1[i].path, "END")) {
 	 break;
       }
