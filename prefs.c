@@ -99,6 +99,10 @@ static prefType glob_prefs[NUM_PREFS] = {
      {"todo_completion_date", INTTYPE, INTTYPE, 0, NULL, 0},
      {"install_path", CHARTYPE, CHARTYPE, 0, NULL, 0},
      {"memo_show_prefs", INTTYPE, INTTYPE, 1, NULL, 0},
+     {"monthview_width", INTTYPE, INTTYPE, 640, NULL, 0},
+     {"monthview_height", INTTYPE, INTTYPE, 480, NULL, 0},
+     {"weekview_width", INTTYPE, INTTYPE, 640, NULL, 0},
+     {"weekview_height", INTTYPE, INTTYPE, 480, NULL, 0},
 };
 
 struct name_list {
@@ -169,6 +173,21 @@ void jp_free_prefs(prefType prefs[], int count)
 	 free(prefs[i].svalue);
 	 prefs[i].svalue=NULL;
       }
+   }
+}
+
+/* Get just the formatting for just the hour and am/pm if its set */
+/* datef needs to be preallocated */
+void get_pref_hour_ampm(char *datef)
+{
+   const char *svalue;
+
+   get_pref(PREF_TIME, NULL, &svalue);
+   strncpy(datef, svalue, 2);
+   datef[2]='\0';
+   if (!strncasecmp(&(svalue[strlen(svalue)-2]), "%p", 2)) {
+      strncpy(&(datef[2]), &(svalue[strlen(svalue)-2]), 2);
+      datef[4]='\0';
    }
 }
 
@@ -403,7 +422,8 @@ int get_pref_possibility(int which, int n, char *pref_str)
       "Host KOI8-R <-> Palm Windows-1251",
       "Chinese(Big5)",
       "Korean",
-      "Host UTF-8 <-> Palm Windows1250 (EE)"
+      "Host UTF-8 <-> Palm Windows1250 (EE)",
+      "Host UTF-8 <-> Palm Windows1252" /* JPA */
    };
 
    static const char *paper_sizes[] = {

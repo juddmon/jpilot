@@ -48,7 +48,7 @@ static struct tm glob_month_date;
 
 
 int display_months_appts(struct tm *glob_month_date, GtkWidget **glob_month_texts);
-void create_month_boxes();
+void create_month_boxes(GtkWidget *month_vbox);
 void create_month_texts();
 void destroy_month_boxes();
 
@@ -56,13 +56,19 @@ void destroy_month_boxes();
 static gboolean cb_destroy(GtkWidget *widget)
 {
    window = NULL;
+
    return FALSE;
 }
 
 static void
 cb_quit(GtkWidget *widget, gpointer data)
 {
-   window = NULL;
+   int w, h;
+
+   gdk_window_get_size(window->window, &w, &h);
+   set_pref(PREF_MONTHVIEW_WIDTH, w, NULL, FALSE);
+   set_pref(PREF_MONTHVIEW_HEIGHT, h, NULL, FALSE);
+
    gtk_widget_destroy(data);
 }
 
@@ -79,7 +85,7 @@ cb_month_move(GtkWidget *widget,
       add_days_to_date(&glob_month_date, 30);
    }
    destroy_month_boxes();
-   create_month_boxes();
+   create_month_boxes(glob_month_vbox);
    create_month_texts();
    display_months_appts(&glob_month_date, glob_month_texts);
 }
@@ -172,14 +178,17 @@ cb_enter_notify(GtkWidget *widget, GdkEvent *event, gpointer data)
    free_AppointmentList(&a_list);
 }
 
-void create_month_boxes()
+void create_month_boxes(GtkWidget *month_vbox)
 {
    int i;
 
    for (i=0; i<6; i++) {
       glob_hbox_month_row[i] = gtk_hbox_new(TRUE, 0);
-      gtk_box_pack_start(GTK_BOX(glob_month_vbox), glob_hbox_month_row[i], TRUE, TRUE, 0);
+      gtk_box_pack_start(GTK_BOX(month_vbox), glob_hbox_month_row[i], TRUE, TRUE, 0);
    }
+   big_text = gtk_text_new(NULL, NULL);
+   gtk_widget_set_usize(GTK_WIDGET(big_text), 10, 10);
+   gtk_box_pack_start(GTK_BOX(month_vbox), big_text, TRUE, TRUE, 0);
 }
 
 void destroy_month_boxes()
@@ -192,6 +201,7 @@ void destroy_month_boxes()
 	 glob_hbox_month_row[i]=NULL;
       }
    }
+   gtk_widget_destroy(big_text);
 }
 
 void create_month_texts()
@@ -219,14 +229,14 @@ void create_month_texts()
    column=0;
    for (n=(7+dow-fdow)%7; n>0; n--) {
       hbox = gtk_hbox_new(TRUE, 0);
-      gtk_widget_set_usize(GTK_WIDGET(hbox), 110, 90);
+      gtk_widget_set_usize(GTK_WIDGET(hbox), 10, 10);
       gtk_box_pack_start(GTK_BOX(glob_hbox_month_row[0]), hbox, TRUE, TRUE, 0);
       column++;
    }
 
    for (n=0; n<ndim; n++) {
       glob_month_texts[n] = gtk_text_new(NULL, NULL);
-      gtk_widget_set_usize(GTK_WIDGET(glob_month_texts[n]), 110, 90);
+      gtk_widget_set_usize(GTK_WIDGET(glob_month_texts[n]), 10, 10);
       gtk_text_set_word_wrap(GTK_TEXT(glob_month_texts[n]), FALSE);
       gtk_signal_connect(GTK_OBJECT(glob_month_texts[n]), "enter_notify_event",
 			 GTK_SIGNAL_FUNC(cb_enter_notify), GINT_TO_POINTER(n));
@@ -252,7 +262,7 @@ void create_month_texts()
    for (n=column; n<7; n++) {
       if (column==0) break;
       hbox = gtk_hbox_new(TRUE, 0);
-      gtk_widget_set_usize(GTK_WIDGET(hbox), 110, 90);
+      gtk_widget_set_usize(GTK_WIDGET(hbox), 10, 10);
       gtk_box_pack_start(GTK_BOX(glob_hbox_month_row[row]), hbox, TRUE, TRUE, 0);
    }
 }
@@ -370,6 +380,7 @@ void monthview_gui(struct tm *date_in)
    long fdow;
    const char *str_fdow;
    char title[200];
+   unsigned long w, h;
 
    if (window) {
       return;
@@ -383,7 +394,16 @@ void monthview_gui(struct tm *date_in)
 
    get_pref(PREF_FDOW, &fdow, &str_fdow);
 
-   window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+   window = gtk_widget_new(GTK_TYPE_WINDOW,
+			   "type", GTK_WINDOW_TOPLEVEL,
+			   "title", _("Monthly View"),
+			   NULL);
+
+   get_pref(PREF_MONTHVIEW_WIDTH, &w, NULL);
+   get_pref(PREF_MONTHVIEW_HEIGHT, &h, NULL);
+
+   gtk_window_set_default_size(GTK_WINDOW(window), w, h);
+
    gtk_container_set_border_width(GTK_CONTAINER(window), 10);
    g_snprintf(title, sizeof(title), "%s %s", PN, _("Monthly View"));
    gtk_window_set_title(GTK_WINDOW(window), title);
@@ -437,27 +457,22 @@ void monthview_gui(struct tm *date_in)
    /* Month name label */
    strftime(str, sizeof(str), "%B %Y", &glob_month_date);
    glob_month_month_label = gtk_label_new(str);
-   gtk_box_pack_start(GTK_BOX(vbox), glob_month_month_label, TRUE, TRUE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox), glob_month_month_label, FALSE, FALSE, 0);
 
    /* Days of the week */
    hbox = gtk_hbox_new(TRUE, 0);
-   gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
    for (i=0; i<7; i++) {
       label = gtk_label_new(_(days[i+fdow]));
-      gtk_box_pack_start(GTK_BOX(hbox), label, TRUE, TRUE, 0);
+      gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
    }
 
    /* glob_month_vbox */
-   glob_month_vbox = gtk_vbox_new(TRUE, 0);
-   gtk_box_pack_start(GTK_BOX(vbox), glob_month_vbox, TRUE, TRUE, 0);
+   glob_month_vbox = vbox;
 
-   create_month_boxes();
+   create_month_boxes(glob_month_vbox);
 
    create_month_texts();
-
-   big_text = gtk_text_new(NULL, NULL);
-   gtk_widget_set_usize(GTK_WIDGET(big_text), 0, 100);
-   gtk_box_pack_start(GTK_BOX(vbox), big_text, TRUE, TRUE, 0);
 
    display_months_appts(&glob_month_date, glob_month_texts);
 

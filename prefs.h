@@ -88,8 +88,12 @@
 #define PREF_TODO_COMPLETION_DATE 64
 #define PREF_INSTALL_PATH 65
 #define PREF_SHOW_MEMO_PREFS 66
+#define PREF_MONTHVIEW_WIDTH 67
+#define PREF_MONTHVIEW_HEIGHT 68
+#define PREF_WEEKVIEW_WIDTH 69
+#define PREF_WEEKVIEW_HEIGHT 70
 
-#define NUM_PREFS 67
+#define NUM_PREFS 71
 
 #define MAX_PREF_NUM_BACKUPS 99
 
@@ -105,7 +109,8 @@
 #define CHAR_SET_TRADITIONAL_CHINESE  5 /* Taiwan Chinese */
 #define CHAR_SET_KOREAN   6 /* Korean Hangul */
 #define CHAR_SET_1250UTF  7 /* Czech, Polish (Unix: UTF-8) */
-#define NUM_CHAR_SETS     8
+#define CHAR_SET_LATINUTF 8 /* JPA : Latin European (Unix: UTF-8) */
+#define NUM_CHAR_SETS     9
 
 #define MAX_PREF_VALUE 200
 
@@ -119,6 +124,7 @@ int set_pref(int which, long n, const char *string, int save);
 int set_pref_possibility(int which, long n, int save);
 int get_pref_possibility(int which, int n, char *ret);
 int get_pref_dmy_order();
+void get_pref_hour_ampm(char *datef);
 int get_pref_time_no_secs(char *datef);
 int get_pref_time_no_secs_no_ampm(char *datef);
 
