@@ -455,8 +455,9 @@ int get_todos2(ToDoList **todo_list, int sort_order,
 	 continue;
       }
 
-      if ( ((br->rt==DELETED_PALM_REC) && (!keep_deleted)) ||
-	  ((br->rt==MODIFIED_PALM_REC) && (!keep_modified)) ) {
+      if ( ((br->rt==DELETED_PALM_REC)  && (!keep_deleted)) ||
+	   ((br->rt==DELETED_PC_REC)    && (!keep_deleted)) ||
+	   ((br->rt==MODIFIED_PALM_REC) && (!keep_modified)) ) {
 	 continue;
       }
       if ((keep_priv != SHOW_PRIVATES) && 

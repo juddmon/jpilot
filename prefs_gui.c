@@ -240,7 +240,6 @@ void cb_do_command(GtkWidget *widget,
 }
 
 
-
 static gboolean cb_destroy(GtkWidget *widget)
 {
    const char *entry_text;
@@ -266,14 +265,16 @@ static gboolean cb_destroy(GtkWidget *widget)
    if (num_backups > 99) {
       num_backups = 99;
    }
-   set_pref(PREF_NUM_BACKUPS, num_backups, NULL, TRUE);
+   set_pref(PREF_NUM_BACKUPS, num_backups, NULL, FALSE);
 
    pref_write_rc_file();
 
    window = NULL;
-   if (glob_app==DATEBOOK) {
-      cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
-   }
+
+   /* Preference changes can affect visual elements of applications.
+    * Redraw the screen to incorporate any changes made. */
+   cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
+
    return FALSE;
 }
 

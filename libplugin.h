@@ -108,12 +108,13 @@ typedef struct {
 int get_next_unique_pc_id(unsigned int *next_unique_id);
 
 /* used for jp_delete_record */
-#define CLEAR_FLAG  1
-#define CANCEL_FLAG 2
-#define DELETE_FLAG 3
-#define MODIFY_FLAG 4
-#define NEW_FLAG    5
-#define COPY_FLAG   6
+#define CLEAR_FLAG    1
+#define CANCEL_FLAG   2
+#define DELETE_FLAG   3
+#define MODIFY_FLAG   4
+#define NEW_FLAG      5
+#define COPY_FLAG     6
+#define UNDELETE_FLAG 7
 
 #define CLIST_DEL_RED 0xCCCC
 #define CLIST_DEL_GREEN 0xCCCC

@@ -1890,7 +1890,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
    }
 
    if ((record_type==DELETED_PALM_REC) || (record_type==MODIFIED_PALM_REC)) {
-      jp_logf(JP_LOG_INFO, _("This record is already deleted.\n"
+      jp_logf(JP_LOG_INFO|JP_LOG_GUI, _("This record is already deleted.\n"
 	   "It is scheduled to be deleted from the Palm on the next sync.\n"));
       return 0;
    }
@@ -2001,6 +2001,161 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       break;
    }
    return 0;
+}
+
+/*
+ * This undeletes a record from the appropriate Datafile
+ */
+int undelete_pc_record(AppType app_type, void *VP, int flag)
+{
+   PC3RecordHeader header;
+   struct Appointment *app;
+   MyAppointment *mapp;
+   struct Address *address;
+   MyAddress *maddress;
+   struct ToDo *todo;
+   MyToDo *mtodo;
+   struct Memo *memo;
+   MyMemo *mmemo;
+   unsigned int unique_id;
+   long ivalue;
+   char filename[FILENAME_MAX];
+   char filename2[FILENAME_MAX];
+   FILE *pc_file  = NULL;
+   FILE *pc_file2 = NULL;
+   char *record;
+   int found;
+   int ret;
+   int num;
+
+   if (VP==NULL) {
+      return -1;
+   }
+
+   /* to keep the compiler happy with -Wall*/
+   mapp     = NULL;
+   maddress = NULL;
+   mtodo    = NULL;
+   mmemo    = NULL;
+   switch (app_type) {
+    case DATEBOOK:
+      mapp = (MyAppointment *) VP;
+      unique_id = mapp->unique_id;
+      strcpy(filename, "DatebookDB.pc3");
+      break;
+    case ADDRESS:
+      maddress = (MyAddress *) VP;
+      unique_id = maddress->unique_id;
+      strcpy(filename, "AddressDB.pc3");
+      break;
+    case TODO:
+      mtodo = (MyToDo *) VP;
+      unique_id = mtodo->unique_id;
+#ifdef ENABLE_MANANA
+      get_pref(PREF_MANANA_MODE, &ivalue, NULL);
+      if (ivalue) {
+	 strcpy(filename, "MañanaDB.pc3");
+      } else {
+	 strcpy(filename, "ToDoDB.pc3");
+      }
+#else
+      strcpy(filename, "ToDoDB.pc3");
+#endif
+      break;
+    case MEMO:
+      mmemo = (MyMemo *) VP;
+      unique_id = mmemo->unique_id;
+      get_pref(PREF_MEMO32_MODE, &ivalue, NULL);
+      if (ivalue) {
+	 strcpy(filename, "Memo32DB.pc3");
+      } else {
+	 strcpy(filename, "MemoDB.pc3");
+      }
+      break;
+    default:
+      return 0;
+   }
+
+   found  = FALSE;
+   record = NULL;
+
+   g_snprintf(filename2, sizeof(filename2), "%s.pct", filename);
+
+   pc_file = jp_open_home_file(filename , "r");
+   if (!pc_file) {
+      return -1;
+   }
+
+   pc_file2=jp_open_home_file(filename2, "w");
+   if (!pc_file2) {
+      fclose(pc_file);
+      return -1;
+   }
+
+   while(!feof(pc_file)) {
+      read_header(pc_file, &header);
+      if (feof(pc_file)) {
+	 break;
+      }
+      /* Skip copying DELETED_PALM_REC entry which undeletes it */
+      if (header.unique_id == unique_id &&
+	  header.rt == DELETED_PALM_REC) {
+	 found = TRUE;
+	 if (fseek(pc_file, header.rec_len, SEEK_CUR)) {
+	    jp_logf(JP_LOG_WARN, "fseek failed\n");
+	    ret = -1;
+	    break;
+	 }
+	 continue;
+      }
+      /* Change header on DELETED_PC_REC to undelete this type */
+      if (header.unique_id == unique_id &&
+          header.rt == DELETED_PC_REC) {
+	  found = TRUE;
+          header.rt = NEW_PC_REC;
+      }
+
+      /* Otherwise, keep whatever is there by copying it to the new pc3 file */
+      record = malloc(header.rec_len);
+      if (!record) {
+	 jp_logf(JP_LOG_WARN, "cleanup_pc_file(): Out of memory\n");
+	 ret = -1;
+	 break;
+      }
+      num = fread(record, header.rec_len, 1, pc_file);
+      if (num != 1) {
+	 if (ferror(pc_file)) {
+	    ret = -1;
+	    break;
+	 }
+      }
+      ret = write_header(pc_file2, &header);
+      ret = fwrite(record, header.rec_len, 1, pc_file2);
+      if (ret != 1) {
+	 ret = -1;
+	 break;
+      }
+      free(record);
+      record = NULL;
+   }
+
+   if (record) {
+      free(record);
+   }
+   if (pc_file) {
+      fclose(pc_file);
+   }
+   if (pc_file2) {
+      fclose(pc_file2);
+   }
+
+   if (found) {
+      rename_file(filename2, filename);
+   } else {
+      unlink_file(filename2);
+   }
+
+   return ret;
 }
 
 

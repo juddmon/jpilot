@@ -989,8 +989,9 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
 	 continue;
       }
 
-      if ( ((br->rt==DELETED_PALM_REC) && (!keep_deleted)) ||
-	  ((br->rt==MODIFIED_PALM_REC) && (!keep_modified)) ) {
+      if ( ((br->rt==DELETED_PALM_REC)  && (!keep_deleted)) ||
+	   ((br->rt==DELETED_PC_REC)    && (!keep_deleted)) ||
+	   ((br->rt==MODIFIED_PALM_REC) && (!keep_modified)) ) {
 	 continue;
       }
       if ((keep_priv != SHOW_PRIVATES) && 

@@ -129,6 +129,7 @@ static GtkWidget *new_record_button;
 static GtkWidget *apply_record_button;
 static GtkWidget *add_record_button;
 static GtkWidget *delete_record_button;
+static GtkWidget *undelete_record_button;
 static GtkWidget *copy_record_button;
 static int record_changed;
 static int clist_hack;
@@ -193,6 +194,12 @@ set_new_button_to(int new_state)
       gtk_widget_show(copy_record_button);
       gtk_widget_show(delete_record_button);
       break;
+    case UNDELETE_FLAG:
+      gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
+      clist_hack=FALSE;
+      gtk_widget_hide(delete_record_button);
+      gtk_widget_show(undelete_record_button);
+      break;
     default:
       return;
    }
@@ -208,8 +215,15 @@ set_new_button_to(int new_state)
       gtk_widget_show(delete_record_button);
       break;
     case CLEAR_FLAG:
-      gtk_widget_hide(new_record_button);
-      gtk_widget_hide(delete_record_button);
+      if (new_state != UNDELETE_FLAG)
+      {
+         gtk_widget_hide(new_record_button);
+         gtk_widget_hide(delete_record_button);
+      }
+      break;
+    case UNDELETE_FLAG:
+      gtk_widget_hide(undelete_record_button);
+      gtk_widget_show(delete_record_button);
       break;
    }
    record_changed=new_state;
@@ -1119,6 +1133,46 @@ void cb_delete_address(GtkWidget *widget,
    }
 }
 
+void cb_undelete_address(GtkWidget *widget,
+		         gpointer   data)
+{
+   MyAddress *maddr;
+   int flag;
+   int show_priv;
+
+   maddr = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
+   if (maddr < (MyAddress *)CLIST_MIN_DATA) {
+      return;
+   }
+
+   /* Do masking like Palm OS 3.5 */
+   show_priv = show_privates(GET_PRIVATES);
+   if ((show_priv != SHOW_PRIVATES) &&
+       (maddr->attrib & dlpRecAttrSecret)) {
+      return;
+   }
+   /* End Masking */
+
+   jp_logf(JP_LOG_DEBUG, "maddr->unique_id = %d\n",maddr->unique_id);
+   jp_logf(JP_LOG_DEBUG, "maddr->rt = %d\n",maddr->rt);
+
+   flag = GPOINTER_TO_INT(data);
+   if (flag==UNDELETE_FLAG) {
+      if (maddr->rt == DELETED_PALM_REC ||
+	 (maddr->rt == DELETED_PC_REC))
+      {
+	 undelete_pc_record(ADDRESS, maddr, flag);
+      }
+      /* Possible later addition of undelete for modified records 
+      else if (maddr->rt == MODIFIED_PALM_REC)
+      {
+	 cb_add_new_record(widget, GINT_TO_POINTER(COPY_FLAG));
+      }
+      */
+   }
+
+   address_clist_redraw();
+}
 void cb_resort(GtkWidget *widget,
 	       gpointer   data)
 {
@@ -1246,7 +1300,9 @@ static void cb_add_new_record(GtkWidget *widget,
 	 if (ma < (MyAddress *)CLIST_MIN_DATA) {
 	    return;
 	 }
-	 if ((ma->rt==DELETED_PALM_REC) || (ma->rt==MODIFIED_PALM_REC)) {
+	 if ((ma->rt==DELETED_PALM_REC) || 
+	     (ma->rt==DELETED_PC_REC)   ||
+	     (ma->rt==MODIFIED_PALM_REC)) {
 	    jp_logf(JP_LOG_INFO, _("You can't modify a record that is deleted\n"));
 	    return;
 	 }
@@ -1645,7 +1701,18 @@ static void cb_clist_selection(GtkWidget      *clist,
       return;
    }
 
-   set_new_button_to(CLEAR_FLAG);
+   if (ma->rt == DELETED_PALM_REC ||
+      (ma->rt == DELETED_PC_REC))
+      /* Possible later addition of undelete code for modified deleted records
+         || ma->rt == MODIFIED_PALM_REC
+      */
+   {
+      set_new_button_to(UNDELETE_FLAG);
+   }
+   else
+   {
+      set_new_button_to(CLEAR_FLAG);
+   }
 
    connect_changed_signals(DISCONNECT_SIGNALS);
 
@@ -2053,6 +2120,7 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 			  CLIST_NEW_RED, CLIST_NEW_GREEN, CLIST_NEW_BLUE);
 	 break;
        case DELETED_PALM_REC:
+       case DELETED_PC_REC:
 	 set_bg_rgb_clist_row(clist, entries_shown,
 			  CLIST_DEL_RED, CLIST_DEL_GREEN, CLIST_DEL_BLUE);
 	 break;
@@ -2106,9 +2174,6 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       gtk_tooltips_set_tip(glob_tooltips, category_menu1, str, NULL);
    }
 
-   if (main) {
-      set_new_button_to(CLEAR_FLAG);
-   }
 }
 
 /*default set is which menu item is to be set on by default */
@@ -2539,6 +2604,12 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 		      GINT_TO_POINTER(DELETE_FLAG));
    gtk_box_pack_start(GTK_BOX(hbox_temp), delete_record_button, TRUE, TRUE, 0);
 
+   undelete_record_button = gtk_button_new_with_label(_("Undelete"));
+   gtk_signal_connect(GTK_OBJECT(undelete_record_button), "clicked",
+		      GTK_SIGNAL_FUNC(cb_undelete_address),
+		      GINT_TO_POINTER(UNDELETE_FLAG));
+   gtk_box_pack_start(GTK_BOX(hbox_temp), undelete_record_button, TRUE, TRUE, 0);
+
    /* Create "Copy" button */
    copy_record_button = gtk_button_new_with_label(_("Copy"));
    gtk_signal_connect(GTK_OBJECT(copy_record_button), "clicked",
@@ -2852,6 +2923,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    gtk_widget_hide(add_record_button);
    gtk_widget_hide(apply_record_button);
+   gtk_widget_hide(undelete_record_button);
 
    get_pref(PREF_ADDRESS_NOTEBOOK_PAGE, &notebook_page, NULL);
 

@@ -68,6 +68,7 @@ static GtkWidget *new_record_button;
 static GtkWidget *apply_record_button;
 static GtkWidget *add_record_button;
 static GtkWidget *delete_record_button;
+static GtkWidget *undelete_record_button;
 static GtkWidget *copy_record_button;
 static GtkWidget *category_menu1;
 static GtkWidget *category_menu2;
@@ -224,6 +225,12 @@ set_new_button_to(int new_state)
       gtk_widget_show(copy_record_button);
       gtk_widget_show(delete_record_button);
       break;
+    case UNDELETE_FLAG:
+      gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
+      clist_hack=FALSE;
+      gtk_widget_hide(delete_record_button);
+      gtk_widget_show(undelete_record_button);
+      break;
     default:
       return;
    }
@@ -239,8 +246,22 @@ set_new_button_to(int new_state)
       gtk_widget_show(delete_record_button);
       break;
     case CLEAR_FLAG:
-      gtk_widget_hide(new_record_button);
-      gtk_widget_hide(delete_record_button);
+      if (new_state != UNDELETE_FLAG)
+      {
+         gtk_widget_hide(new_record_button);
+         gtk_widget_hide(delete_record_button);
+      }
+      else
+      {
+	 gtk_widget_hide(delete_record_button);
+      }
+      break;
+    case UNDELETE_FLAG:
+      if (new_state != UNDELETE_FLAG)
+      {
+	 gtk_widget_hide(undelete_record_button);
+	 gtk_widget_show(delete_record_button);
+      }
       break;
    }
    record_changed=new_state;
@@ -911,6 +932,47 @@ void cb_delete_todo(GtkWidget *widget,
    }
 }
 
+void cb_undelete_todo(GtkWidget *widget,
+		      gpointer   data)
+{
+   MyToDo *mtodo;
+   int flag;
+   int show_priv;
+
+   mtodo = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
+   if (mtodo < (MyToDo *)CLIST_MIN_DATA) {
+      return;
+   }
+
+   /* Do masking like Palm OS 3.5 */
+   show_priv = show_privates(GET_PRIVATES);
+   if ((show_priv != SHOW_PRIVATES) &&
+       (mtodo->attrib & dlpRecAttrSecret)) {
+      return;
+   }
+   /* End Masking */
+
+   jp_logf(JP_LOG_DEBUG, "mtodo->unique_id = %d\n",mtodo->unique_id);
+   jp_logf(JP_LOG_DEBUG, "mtodo->rt = %d\n",mtodo->rt);
+
+   flag = GPOINTER_TO_INT(data);
+   if (flag==UNDELETE_FLAG) {
+      if (mtodo->rt == DELETED_PALM_REC ||
+          mtodo->rt == DELETED_PC_REC)
+      {
+	 undelete_pc_record(TODO, mtodo, flag);
+      }
+      /* Possible later addition of undelete for modified records 
+      else if (mtodo->rt == MODIFIED_PALM_REC)
+      {
+	 cb_add_new_record(widget, GINT_TO_POINTER(COPY_FLAG));
+      }
+      */
+   }
+
+   todo_clist_redraw();
+}
+
 static void cb_category(GtkWidget *item, int selection)
 {
    int b;
@@ -1178,7 +1240,9 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
       if (mtodo < (MyToDo *)CLIST_MIN_DATA) {
 	 return;
       }
-      if ((mtodo->rt==DELETED_PALM_REC) || (mtodo->rt==MODIFIED_PALM_REC)) {
+      if ((mtodo->rt==DELETED_PALM_REC) || 
+	  (mtodo->rt==DELETED_PC_REC)   ||
+          (mtodo->rt==MODIFIED_PALM_REC)) {
 	 jp_logf(JP_LOG_INFO, _("You can't modify a record that is deleted\n"));
 	 return;
       }
@@ -1301,8 +1365,22 @@ static void cb_clist_selection(GtkWidget      *clist,
    clist_row_selected=row;
 
    mtodo = gtk_clist_get_row_data(GTK_CLIST(clist), row);
+   if (mtodo==NULL) {
+      return;
+   }
 
-   set_new_button_to(CLEAR_FLAG);
+   if (mtodo->rt == DELETED_PALM_REC ||
+      (mtodo->rt == DELETED_PC_REC))
+      /* Possible later addition of undelete code for modified deleted records
+         || mtodo->rt == MODIFIED_PALM_REC
+      */
+   {
+      set_new_button_to(UNDELETE_FLAG);
+   }
+   else
+   {
+      set_new_button_to(CLEAR_FLAG);
+   }
 
    connect_changed_signals(DISCONNECT_SIGNALS);
 
@@ -1575,6 +1653,7 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 			  CLIST_NEW_RED, CLIST_NEW_GREEN, CLIST_NEW_BLUE);
 	 break;
        case DELETED_PALM_REC:
+       case DELETED_PC_REC:
 	 set_bg_rgb_clist_row(clist, entries_shown,
 			  CLIST_DEL_RED, CLIST_DEL_GREEN, CLIST_DEL_BLUE);
 	 break;
@@ -1651,9 +1730,6 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       gtk_tooltips_set_tip(glob_tooltips, tooltip_widget, str, NULL);
    }
 
-   if (main) {
-      set_new_button_to(CLEAR_FLAG);
-   }
 }
 
 static int todo_find()
@@ -2008,6 +2084,12 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 		      GINT_TO_POINTER(DELETE_FLAG));
    gtk_box_pack_start(GTK_BOX(hbox_temp), delete_record_button, TRUE, TRUE, 0);
 
+   undelete_record_button = gtk_button_new_with_label(_("Undelete"));
+   gtk_signal_connect(GTK_OBJECT(undelete_record_button), "clicked",
+		      GTK_SIGNAL_FUNC(cb_undelete_todo),
+		      GINT_TO_POINTER(UNDELETE_FLAG));
+   gtk_box_pack_start(GTK_BOX(hbox_temp), undelete_record_button, TRUE, TRUE, 0);
+
    copy_record_button = gtk_button_new_with_label(_("Copy"));
    gtk_signal_connect(GTK_OBJECT(copy_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record), 
@@ -2172,6 +2254,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    gtk_widget_hide(add_record_button);
    gtk_widget_hide(apply_record_button);
+   gtk_widget_hide(undelete_record_button);
    /* Call routine to determine if preference boxes should be hidden */
    cb_hide_show_prefs(prefs_checkbox, NULL);
 

@@ -900,10 +900,9 @@ int jp_read_DB_files(char *DB_name, GList **records)
 	 free(temp_br);
 	 break;
       }
-      if ((temp_br->rt!=DELETED_PC_REC)
-	  &&(temp_br->rt!=DELETED_PALM_REC)
-	  &&(temp_br->rt!=MODIFIED_PALM_REC)
-	  &&(temp_br->rt!=DELETED_DELETED_PALM_REC)) {
+      if (temp_br->rt!=DELETED_PALM_REC  &&
+	  temp_br->rt!=MODIFIED_PALM_REC &&
+	  temp_br->rt!=DELETED_DELETED_PALM_REC) {
 
 	 /* g_list_append parses the list to get to the end on every call.
 	  * To speed it up we have to give the last record
