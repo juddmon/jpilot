@@ -2668,7 +2668,7 @@ void cb_delete_appt(GtkWidget *widget, gpointer data)
    MyAppointment *ma;
    struct Appointment *a;
    int flag;
-   int result;
+   int result = 0;
    int show_priv;
    unsigned long char_set;
 
@@ -2734,7 +2734,7 @@ void cb_delete_appt(GtkWidget *widget, gpointer data)
       }
    }
 
-   if (flag == DELETE_FLAG) {
+   if ((flag == DELETE_FLAG) || (result == DIALOG_SAID_CURRENT))  {
       dayview_update_clist();
       highlight_days();
    }
