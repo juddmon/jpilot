@@ -2,13 +2,11 @@
 # Copyright (C) YEAR Free Software Foundation, Inc.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#. prefix label
-#: dialer.c:297
 msgid ""
 msgstr ""
 "Project-Id-Version: jpilot 0.99.3\n"
 "POT-Creation-Date: 2003-01-13 02:00-0500\n"
-"PO-Revision-Date: 2002-12-26 12:55+02:00\n"
+"PO-Revision-Date: 2003-02-02 23:41+02:00\n"
 "Last-Translator: Vladimir Bormotov <bor@insight.donbass.com>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -183,7 +181,7 @@ msgstr "Все"
 #. Dial Phone Button
 #: address_gui.c:2585 dialer.c:311 dialer.c:336
 msgid "Dial"
-msgstr ""
+msgstr "Позвонить"
 
 #: address_gui.c:2625
 msgid ""
@@ -438,7 +436,6 @@ msgid "Starts on"
 msgstr "Hачинается в"
 
 #: datebook_gui.c:3915
-#, fuzzy
 msgid "Start Time"
 msgstr "Hачинается в"
 
@@ -504,38 +501,36 @@ msgstr "Год(ы)"
 
 #: dialer.c:199
 msgid "Phone Dialer"
-msgstr ""
+msgstr "Hомеронабиратель"
 
 #: dialer.c:234
 msgid "Prefix 1"
-msgstr ""
+msgstr "Префикс 1"
 
 #: dialer.c:256
 msgid "Prefix 2"
-msgstr ""
+msgstr "Префикс 2"
 
 #: dialer.c:278
 msgid "Prefix 3"
-msgstr ""
+msgstr "Префикс 3"
 
 #: dialer.c:293
 msgid "Phone number:"
-msgstr ""
+msgstr "Hомер телефона:"
 
 #: dialer.c:324
-#, fuzzy
 msgid "Extension"
 msgstr "Расходы"
 
 #: dialer.c:347
-#, fuzzy
 msgid "Dial Command"
-msgstr "Команда Сигнала"
+msgstr "Команда Hабора"
 
 #. Buttons
 #: dialer.c:368
 msgid "Dismiss"
-msgstr ""
+msgstr "Отменить"
 
 #: export_gui.c:113
 msgid "File Browser"
@@ -756,19 +751,16 @@ msgid "Clear"
 msgstr "Очистить"
 
 #: jpilot.c:1824
-#, fuzzy
 msgid "Show private records"
-msgstr "/Просмотр/Скрыть-Показать Личные"
+msgstr "Показать личные записи"
 
 #: jpilot.c:1826
-#, fuzzy
 msgid "Hide private records"
-msgstr "/Просмотр/Скрыть-Показать Личные"
+msgstr "Скрыть личные записи"
 
 #: jpilot.c:1828
-#, fuzzy
 msgid "Mask private records"
-msgstr "Поддерка личнфх записей"
+msgstr "Маскировать личные записи"
 
 #. Create "Quit" button
 #: jpilot.c:1837
@@ -1530,18 +1522,16 @@ msgid "Plugin support"
 msgstr "Поддержка дополнений"
 
 #: utils.c:126
-#, fuzzy
 msgid "Manana support"
 msgstr "Поддержка Manana"
 
 #: utils.c:132
 msgid "NLS support (foreign languages)"
-msgstr ""
+msgstr "Поддержка NSL (другие языки)"
 
 #: utils.c:138
-#, fuzzy
 msgid "GTK2 support"
-msgstr "поддержка USB"
+msgstr "Поддержка GTK2"
 
 #: utils.c:182
 msgid "Today is %A, %x %X"
@@ -1922,20 +1912,3 @@ msgstr "пароль: "
 #: KeyRing/keyring.c:1457
 msgid "Generate Password"
 msgstr "Генерация пароля"
-
-#~ msgid "Time:"
-#~ msgstr "Время:"
-
-#~ msgid ""
-#~ "%s %s was written by\n"
-#~ "Judd Montgomery (Copyright) 1999-2002.\n"
-#~ "judd@jpilot.org\n"
-#~ "http://jpilot.org\n"
-#~ msgstr ""
-#~ "%s %s написана\n"
-#~ "Judd Montgomery (Copyright) 1999-2002.\n"
-#~ "judd@jpilot.org\n"
-#~ "http://jpilot.org\n"
-
-#~ msgid "Last Syned UserID-->\"%d\"\n"
-#~ msgstr "Последняя синх. ИдентификаторПользователя --> \"%d\"\n"
