@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JPilot\n"
 "Report-Msgid-Bugs-To: jpilot-devel@jpilot.org\n"
-"POT-Creation-Date: 2004-11-21 23:25+0100\n"
+"POT-Creation-Date: 2005-01-08 11:39+0100\n"
 "PO-Revision-Date: 2001-08-16 14:53GMT+1\n"
 "Last-Translator: Ragnar Wisløff <ragnar@wisloff.no>\n"
 "Language-Team: Norsk bokmål <no@li.org>\n"
@@ -15,452 +15,452 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 0.9.5\n"
 
-#: address.c:284 address.c:509 alarms.c:349 dat.c:177 dat.c:651 dat.c:853
-#: dat.c:987 dat.c:1126 datebook.c:92 datebook.c:375 datebook.c:382
-#: datebook.c:412 datebook.c:1039 jpilot.c:1265 libplugin.c:489
-#: libplugin.c:668 libplugin.c:775 libplugin.c:854 libplugin.c:895 memo.c:92
-#: memo.c:322 plugins.c:105 prefs.c:328 prefs.c:353 prefs.c:867 sync.c:246
-#: sync.c:1073 sync.c:2191 todo.c:203 todo.c:509 utils.c:2270
+#: address.c:288 address.c:510 alarms.c:352 dat.c:181 dat.c:655 dat.c:857
+#: dat.c:991 dat.c:1130 datebook.c:96 datebook.c:379 datebook.c:386
+#: datebook.c:416 datebook.c:1016 jpilot.c:1463 libplugin.c:493
+#: libplugin.c:672 libplugin.c:779 libplugin.c:858 libplugin.c:899 memo.c:95
+#: memo.c:323 plugins.c:108 prefs.c:310 prefs.c:335 prefs.c:849 sync.c:251
+#: sync.c:1124 sync.c:2274 todo.c:206 todo.c:502 utils.c:2241
 msgid "Out of memory"
 msgstr ""
 
-#: address.c:335 datebook.c:334 libplugin.c:203 memo.c:155 todo.c:283
-#: utils.c:1975 utils.c:1984 utils.c:1993 utils.c:2003
+#: address.c:339 datebook.c:338 libplugin.c:207 memo.c:158 todo.c:286
+#: utils.c:1946 utils.c:1955 utils.c:1964 utils.c:1974
 msgid "error"
 msgstr "feil"
 
-#: address.c:386 address_gui.c:1662 datebook.c:690 libplugin.c:728
-#: libplugin.c:752 memo.c:220 memo_gui.c:973 todo_gui.c:1296
-#: Expense/expense.c:998 Expense/expense.c:1946
+#: address.c:390 address_gui.c:1664 datebook.c:675 libplugin.c:732
+#: libplugin.c:756 memo.c:221 memo_gui.c:976 todo_gui.c:1298
+#: Expense/expense.c:1125 Expense/expense.c:2101
 #, fuzzy, c-format
 msgid "Error reading file: %s\n"
 msgstr "Feil under lesing"
 
-#: address_gui.c:247 datebook_gui.c:2485 memo_gui.c:171 todo_gui.c:293
+#: address_gui.c:250 datebook_gui.c:2479 memo_gui.c:174 todo_gui.c:295
 msgid ""
 "This record is deleted.\n"
 "Undelete it or copy it to make changes.\n"
 msgstr ""
 
-#: address_gui.c:455 category.c:150 category.c:156 category.c:204
-#: category.c:261 datebook_gui.c:364 memo_gui.c:288 sync.c:1038 sync.c:1044
-#: sync.c:2166 sync.c:2382 sync.c:2388 sync.c:2505 sync.c:2752 todo_gui.c:433
-#: utils.c:2684 utils.c:2729 utils.c:2735 utils.c:2804 utils.c:2810
-#: utils.c:2866 utils.c:2921 utils.c:2927 utils.c:2986 utils.c:2993
+#: address_gui.c:458 category.c:153 category.c:159 category.c:207
+#: category.c:264 datebook_gui.c:366 memo_gui.c:291 sync.c:1087 sync.c:1093
+#: sync.c:2249 sync.c:2465 sync.c:2471 sync.c:2588 sync.c:2839 todo_gui.c:435
+#: utils.c:2655 utils.c:2700 utils.c:2706 utils.c:2775 utils.c:2781
+#: utils.c:2837 utils.c:2892 utils.c:2898 utils.c:2957 utils.c:2964
 #, fuzzy, c-format
 msgid "Unable to open file: %s\n"
 msgstr "Kan ikke åpne loggfil\n"
 
-#: address_gui.c:534
+#: address_gui.c:537
 msgid "File doesn't appear to be address.dat format\n"
 msgstr ""
 
-#: address_gui.c:544 datebook_gui.c:574 memo_gui.c:423 todo_gui.c:559
-#: Expense/expense.c:515 Expense/expense.c:1278
+#: address_gui.c:547 datebook_gui.c:576 memo_gui.c:426 todo_gui.c:561
+#: Expense/expense.c:613 Expense/expense.c:1393
 msgid "Unfiled"
 msgstr ""
 
-#: address_gui.c:683 alarms.c:223 category.c:409 category.c:860 category.c:900
-#: datebook_gui.c:661 datebook_gui.c:1141 export_gui.c:336 jpilot.c:353
-#: jpilot.c:400 jpilot.c:468 jpilot.c:512 jpilot.c:993 memo_gui.c:513
-#: password.c:346 restore_gui.c:304 todo_gui.c:649 utils.c:1100 utils.c:1262
-#: KeyRing/keyring.c:1294
+#: address_gui.c:686 alarms.c:226 category.c:412 category.c:863 category.c:903
+#: datebook_gui.c:663 datebook_gui.c:1143 export_gui.c:339 jpilot.c:354
+#: jpilot.c:400 jpilot.c:468 jpilot.c:512 jpilot.c:951 memo_gui.c:516
+#: password.c:349 restore_gui.c:307 todo_gui.c:651 utils.c:1084 utils.c:1245
+#: KeyRing/keyring.c:1305
 msgid "OK"
 msgstr "Greit"
 
-#: address_gui.c:684 datebook_gui.c:662 memo_gui.c:514 todo_gui.c:650
-#: utils.c:1280
+#: address_gui.c:687 datebook_gui.c:664 memo_gui.c:517 todo_gui.c:652
+#: utils.c:1263
 #, fuzzy
 msgid "Yes"
 msgstr "år"
 
-#: address_gui.c:684 datebook_gui.c:662 memo_gui.c:514 todo_gui.c:650
-#: utils.c:1280
+#: address_gui.c:687 datebook_gui.c:664 memo_gui.c:517 todo_gui.c:652
+#: utils.c:1263
 #, fuzzy
 msgid "No"
 msgstr "Ingen"
 
-#: address_gui.c:708 datebook_gui.c:689 memo_gui.c:524 todo_gui.c:676
+#: address_gui.c:711 datebook_gui.c:691 memo_gui.c:527 todo_gui.c:678
 #, c-format
 msgid "%s is a directory"
 msgstr ""
 
-#: address_gui.c:710 address_gui.c:727 datebook_gui.c:691 datebook_gui.c:708
-#: memo_gui.c:526 memo_gui.c:543 todo_gui.c:678 todo_gui.c:695
+#: address_gui.c:713 address_gui.c:730 datebook_gui.c:693 datebook_gui.c:710
+#: memo_gui.c:529 memo_gui.c:546 todo_gui.c:680 todo_gui.c:697
 #, fuzzy
 msgid "Error Opening File"
 msgstr "Feil under lesing"
 
-#: address_gui.c:711 datebook_gui.c:692 memo_gui.c:527 todo_gui.c:679
+#: address_gui.c:714 datebook_gui.c:694 memo_gui.c:530 todo_gui.c:681
 msgid "Directory"
 msgstr ""
 
-#: address_gui.c:714 datebook_gui.c:695 memo_gui.c:530 todo_gui.c:682
+#: address_gui.c:717 datebook_gui.c:697 memo_gui.c:533 todo_gui.c:684
 #, c-format
 msgid "Do you want to overwrite file %s?"
 msgstr ""
 
-#: address_gui.c:716 datebook_gui.c:697 memo_gui.c:532 todo_gui.c:684
+#: address_gui.c:719 datebook_gui.c:699 memo_gui.c:535 todo_gui.c:686
 msgid "Overwrite File?"
 msgstr ""
 
-#: address_gui.c:717 datebook_gui.c:698 memo_gui.c:533 todo_gui.c:685
+#: address_gui.c:720 datebook_gui.c:700 memo_gui.c:536 todo_gui.c:687
 msgid "Overwrite File"
 msgstr ""
 
-#: address_gui.c:725 datebook_gui.c:706 memo_gui.c:541 todo_gui.c:693
+#: address_gui.c:728 datebook_gui.c:708 memo_gui.c:544 todo_gui.c:695
 #, fuzzy, c-format
 msgid "Error opening file: %s"
 msgstr "Feil under lesing"
 
-#: address_gui.c:728 datebook_gui.c:709 memo_gui.c:544 todo_gui.c:696
+#: address_gui.c:731 datebook_gui.c:711 memo_gui.c:547 todo_gui.c:698
 #, fuzzy
 msgid "Filename"
 msgstr "Navn"
 
-#: address_gui.c:736
+#: address_gui.c:739
 #, c-format
 msgid "Can't export address %d\n"
 msgstr ""
 
-#: address_gui.c:801 address_gui.c:809 address_gui.c:826
+#: address_gui.c:804 address_gui.c:812 address_gui.c:829
 #, fuzzy
 msgid "Field"
 msgstr "Ferdig\n"
 
-#: address_gui.c:1025 datebook_gui.c:977 memo_gui.c:599 todo_gui.c:832
+#: address_gui.c:1028 datebook_gui.c:979 memo_gui.c:602 todo_gui.c:834
 msgid "Unknown export type\n"
 msgstr ""
 
-#: address_gui.c:1209 address_gui.c:2562
+#: address_gui.c:1212 address_gui.c:2559
 msgid "Company/Name"
 msgstr "Bedrift/Navn"
 
-#: address_gui.c:1211 address_gui.c:2564
+#: address_gui.c:1214 address_gui.c:2561
 msgid "Name/Company"
 msgstr "Navn/Bedrift"
 
-#: address_gui.c:1309 datebook_gui.c:2563 memo_gui.c:894 todo_gui.c:1228
+#: address_gui.c:1312 datebook_gui.c:2557 memo_gui.c:897 todo_gui.c:1230
 msgid "You can't modify a record that is deleted\n"
 msgstr ""
 
-#: address_gui.c:1452 address_gui.c:1833 address_gui.c:2304 memo_gui.c:802
-#: memo_gui.c:1056 memo_gui.c:1308 todo_gui.c:1094 todo_gui.c:1454
-#: todo_gui.c:1467 todo_gui.c:1875
+#: address_gui.c:1455 address_gui.c:1835 address_gui.c:2301 memo_gui.c:805
+#: memo_gui.c:1059 memo_gui.c:1307 todo_gui.c:1096 todo_gui.c:1495
+#: todo_gui.c:1508 todo_gui.c:1910
 msgid "Category is not legal\n"
 msgstr ""
 
-#: address_gui.c:1751 Expense/expense.c:1462 Expense/expense.c:1541
-#: KeyRing/keyring.c:1520 KeyRing/keyring.c:1596
+#: address_gui.c:1753 Expense/expense.c:1572 KeyRing/keyring.c:1533
+#: KeyRing/keyring.c:1609
 msgid "Category: "
 msgstr "Kategori"
 
-#: address_gui.c:1783 address_gui.c:2746
+#: address_gui.c:1785 address_gui.c:2742
 msgid "kana("
 msgstr ""
 
-#: address_gui.c:1895 address_gui.c:2847
+#: address_gui.c:1897 address_gui.c:2843
 msgid "E-mail"
 msgstr ""
 
-#: address_gui.c:1897 address_gui.c:1900 address_gui.c:2848
+#: address_gui.c:1899 address_gui.c:1902 address_gui.c:2844
 msgid "Mail"
 msgstr ""
 
-#: address_gui.c:1905 address_gui.c:1908 address_gui.c:2851 dialer.c:305
-#: dialer.c:330
+#: address_gui.c:1907 address_gui.c:1910 address_gui.c:2847 dialer.c:308
+#: dialer.c:333
 msgid "Dial"
 msgstr ""
 
-#: address_gui.c:2076 address_gui.c:2100
+#: address_gui.c:2078 address_gui.c:2102
 msgid "-Unnamed-"
 msgstr ""
 
-#: address_gui.c:2173 memo_gui.c:1217 todo_gui.c:1763
+#: address_gui.c:2175 memo_gui.c:1220 todo_gui.c:1802
 msgid "0 records"
 msgstr "0 poster"
 
-#: address_gui.c:2176 datebook_gui.c:2395 memo_gui.c:1220 todo_gui.c:1766
+#: address_gui.c:2178 datebook_gui.c:2389 memo_gui.c:1223 todo_gui.c:1805
 #, c-format
 msgid "%d of %d records"
 msgstr "%d av %d poster"
 
-#: address_gui.c:2542 category.c:439 category.c:453 category.c:460
-#: category.c:478 category.c:485 category.c:503 category.c:583 category.c:778
-#: memo_gui.c:1434 todo_gui.c:2003 Expense/expense.c:1469
+#: address_gui.c:2539 category.c:442 category.c:456 category.c:463
+#: category.c:481 category.c:488 category.c:506 category.c:586 category.c:781
+#: memo_gui.c:1432 todo_gui.c:2040 Expense/expense.c:1578
 msgid "Edit Categories"
 msgstr ""
 
-#: address_gui.c:2569
+#: address_gui.c:2566
 msgid "Phone"
 msgstr "Telefon"
 
-#: address_gui.c:2590
+#: address_gui.c:2587
 msgid "Quick Find"
 msgstr "Hurtigsøk"
 
-#: address_gui.c:2607 category.c:410 category.c:833 datebook_gui.c:4261
-#: memo_gui.c:1479 todo_gui.c:2058 Expense/expense.c:1503
-#: KeyRing/keyring.c:1555
+#: address_gui.c:2604 category.c:413 category.c:836 datebook_gui.c:4246
+#: memo_gui.c:1477 todo_gui.c:2095 Expense/expense.c:1615
+#: KeyRing/keyring.c:1568
 msgid "Delete"
 msgstr "Slette"
 
-#: address_gui.c:2614 datebook_gui.c:4268 memo_gui.c:1486 todo_gui.c:2065
+#: address_gui.c:2611 datebook_gui.c:4253 memo_gui.c:1484 todo_gui.c:2102
 msgid "Delete the selected record   Ctrl+D"
 msgstr ""
 
-#: address_gui.c:2616 datebook_gui.c:4271 memo_gui.c:1488 todo_gui.c:2067
+#: address_gui.c:2613 datebook_gui.c:4256 memo_gui.c:1486 todo_gui.c:2104
 #, fuzzy
 msgid "Undelete"
 msgstr "Slette"
 
-#: address_gui.c:2623 datebook_gui.c:4278 memo_gui.c:1494 todo_gui.c:2073
-#: Expense/expense.c:1509 KeyRing/keyring.c:1561
+#: address_gui.c:2620 datebook_gui.c:4263 memo_gui.c:1492 todo_gui.c:2110
+#: Expense/expense.c:1621 KeyRing/keyring.c:1574
 msgid "Copy"
 msgstr "Kopier"
 
-#: address_gui.c:2630 datebook_gui.c:4285 memo_gui.c:1501 todo_gui.c:2080
+#: address_gui.c:2627 datebook_gui.c:4270 memo_gui.c:1499 todo_gui.c:2117
 msgid "Copy the record   Ctrl+O"
 msgstr ""
 
-#: address_gui.c:2633 datebook_gui.c:4288 memo_gui.c:1503 todo_gui.c:2082
-#: Expense/expense.c:1515 KeyRing/keyring.c:1567
+#: address_gui.c:2630 datebook_gui.c:4273 memo_gui.c:1501 todo_gui.c:2119
+#: Expense/expense.c:1627 KeyRing/keyring.c:1580
 msgid "New Record"
 msgstr "Ny post"
 
-#: address_gui.c:2639 datebook_gui.c:4295 memo_gui.c:1510 todo_gui.c:2089
+#: address_gui.c:2636 datebook_gui.c:4280 memo_gui.c:1508 todo_gui.c:2126
 msgid "Add a new record   Ctrl+N"
 msgstr ""
 
-#: address_gui.c:2642 datebook_gui.c:4298 memo_gui.c:1512 todo_gui.c:2091
-#: Expense/expense.c:1521 KeyRing/keyring.c:1573
+#: address_gui.c:2639 datebook_gui.c:4283 memo_gui.c:1510 todo_gui.c:2128
+#: Expense/expense.c:1633 KeyRing/keyring.c:1586
 msgid "Add Record"
 msgstr "Legg til post"
 
-#: address_gui.c:2651 datebook_gui.c:4307 memo_gui.c:1521 todo_gui.c:2100
+#: address_gui.c:2648 datebook_gui.c:4292 memo_gui.c:1519 todo_gui.c:2137
 msgid "Add the new record   Ctrl+R"
 msgstr ""
 
-#: address_gui.c:2654 datebook_gui.c:4310 memo_gui.c:1523 todo_gui.c:2102
-#: Expense/expense.c:1529 KeyRing/keyring.c:1581
+#: address_gui.c:2651 datebook_gui.c:4295 memo_gui.c:1521 todo_gui.c:2139
+#: Expense/expense.c:1641 KeyRing/keyring.c:1594
 msgid "Apply Changes"
 msgstr "Lagre endringer"
 
-#: address_gui.c:2663 datebook_gui.c:4319 memo_gui.c:1532 todo_gui.c:2111
+#: address_gui.c:2660 datebook_gui.c:4304 memo_gui.c:1530 todo_gui.c:2148
 msgid "Commit the modifications   Ctrl+Enter"
 msgstr ""
 
-#: address_gui.c:2673 datebook_gui.c:4364 memo_gui.c:1543 todo_gui.c:2168
+#: address_gui.c:2670 datebook_gui.c:4349 memo_gui.c:1541 todo_gui.c:2205
 msgid "Private"
 msgstr "Privat"
 
-#: address_gui.c:2693 KeyRing/keyring.c:1447
+#: address_gui.c:2690 KeyRing/keyring.c:1459
 msgid "Name"
 msgstr "Navn"
 
-#: address_gui.c:2701 prefs_gui.c:344
+#: address_gui.c:2698 prefs_gui.c:347
 msgid "Address"
 msgstr "Adresse"
 
-#: address_gui.c:2709 Expense/expense.c:467 Expense/expense.c:1299
+#: address_gui.c:2706 Expense/expense.c:565 Expense/expense.c:1414
 msgid "Other"
 msgstr "Andre"
 
-#: address_gui.c:2717 datebook_gui.c:1324 datebook_gui.c:1578 utils.c:2640
+#: address_gui.c:2714 datebook_gui.c:1326 datebook_gui.c:1576 utils.c:2611
 msgid "All"
 msgstr "Alle"
 
-#: address_gui.c:2903
+#: address_gui.c:2899
 msgid ""
 "Show\n"
 "In List"
 msgstr ""
 
-#: address_gui.c:2911
+#: address_gui.c:2907
 msgid "Quick View"
 msgstr "Kortversjon"
 
-#: alarms.c:229
+#: alarms.c:232
 msgid "Remind me"
 msgstr "Minn meg på"
 
-#: alarms.c:239 datebook_gui.c:4346
+#: alarms.c:242 datebook_gui.c:4331
 msgid "Minutes"
 msgstr "Minutter"
 
-#: alarms.c:241 datebook_gui.c:4350
+#: alarms.c:244 datebook_gui.c:4335
 msgid "Hours"
 msgstr "Timer"
 
-#: alarms.c:436
+#: alarms.c:439
 #, fuzzy, c-format
 msgid "Unable to open %s%s file\n"
 msgstr "Kan ikke åpne loggfil\n"
 
-#: alarms.c:522
+#: alarms.c:524
 msgid "Appointment Reminder"
 msgstr "Avtale-påminnelse"
 
-#: alarms.c:525
+#: alarms.c:527
 msgid "Past Appointment"
 msgstr "Forbigåtte avtaler"
 
-#: alarms.c:528
+#: alarms.c:530
 msgid "Postponed Appointment"
 msgstr "Utsatt avtale"
 
-#: alarms.c:531 datebook_gui.c:4169
+#: alarms.c:533 datebook_gui.c:4154
 msgid "Appointment"
 msgstr "Avtale"
 
-#: alarms.c:605 dialer.c:162
+#: alarms.c:607 dialer.c:165
 #, fuzzy, c-format
 msgid "executing command = [%s]\n"
 msgstr "Utfør denne kommandoen"
 
-#: alarms.c:612
+#: alarms.c:614
 msgid "J-Pilot Alarm"
 msgstr ""
 
-#: alarms.c:1129
+#: alarms.c:1131
 msgid "infinite loop, breaking\n"
 msgstr ""
 
-#: alarms.c:1497
+#: alarms.c:1499
 #, c-format
 msgid "Unable to open %s.alarms file\n"
 msgstr ""
 
-#: category.c:183 sync.c:2419 utils.c:2756 utils.c:2840 utils.c:2947
-#: utils.c:3013
+#: category.c:186 sync.c:2502 utils.c:2727 utils.c:2811 utils.c:2918
+#: utils.c:2984
 #, fuzzy
 msgid "rename failed"
 msgstr "Innstallering av %s mislyktes"
 
-#: category.c:220 category.c:277 sync.c:1066 sync.c:2182
+#: category.c:223 category.c:280 sync.c:1116 sync.c:2265
 msgid "PC file corrupt?\n"
 msgstr ""
 
-#: category.c:227 category.c:237 category.c:284 category.c:295 category.c:305
-#: sync.c:1109 sync.c:1127 sync.c:1175 sync.c:1185 sync.c:2244 sync.c:2271
-#: sync.c:2323 sync.c:2333
+#: category.c:230 category.c:240 category.c:287 category.c:298 category.c:308
+#: sync.c:1160 sync.c:1179 sync.c:1228 sync.c:1239 sync.c:2327 sync.c:2354
+#: sync.c:2406 sync.c:2416
 msgid "fseek failed - fatal error\n"
 msgstr ""
 
-#: category.c:410
+#: category.c:413
 #, fuzzy
 msgid "Move"
 msgstr "Ma"
 
-#: category.c:410 category.c:866 category.c:906 datebook_gui.c:1146
-#: datebook_gui.c:1579 export_gui.c:341 password.c:352 print_gui.c:335
-#: restore_gui.c:309 utils.c:1110 KeyRing/keyring.c:1300
+#: category.c:413 category.c:869 category.c:909 datebook_gui.c:1148
+#: datebook_gui.c:1576 export_gui.c:344 password.c:355 print_gui.c:338
+#: restore_gui.c:312 utils.c:1094 KeyRing/keyring.c:1311
 msgid "Cancel"
 msgstr "Angre"
 
-#: category.c:440
+#: category.c:443
 msgid "The maximum number of categories (16) are already used"
 msgstr ""
 
-#: category.c:443
+#: category.c:446
 msgid "Enter New Category"
 msgstr ""
 
-#: category.c:454
+#: category.c:457
 msgid "You must select a category to rename"
 msgstr ""
 
-#: category.c:458
+#: category.c:461
 #, c-format
 msgid "You can't edit category %s.\n"
 msgstr ""
 
-#: category.c:465
+#: category.c:468
 msgid "Enter New Category Name"
 msgstr ""
 
-#: category.c:479
+#: category.c:482
 msgid "You must select a category to delete"
 msgstr ""
 
-#: category.c:483
+#: category.c:486
 #, c-format
 msgid "You can't delete category %s.\n"
 msgstr ""
 
-#: category.c:499
+#: category.c:502
 #, c-format
 msgid ""
 "There are %d records in %s.\n"
 "Do you want to move them to %s, or delete them?"
 msgstr ""
 
-#: category.c:558
+#: category.c:561
 #, c-format
 msgid "invalid state file %s line %d\n"
 msgstr ""
 
-#: category.c:581
+#: category.c:584
 #, c-format
 msgid "The category %s can't be used more than once"
 msgstr ""
 
-#: category.c:803
+#: category.c:806
 #, fuzzy
 msgid "category name"
 msgstr "Kategori"
 
-#: category.c:821
+#: category.c:824
 msgid "New"
 msgstr ""
 
-#: category.c:827
+#: category.c:830
 #, fuzzy
 msgid "Rename"
 msgstr "Navn"
 
-#: category.c:913
+#: category.c:916
 msgid "debug"
 msgstr ""
 
-#: dat.c:451
+#: dat.c:455
 msgid "unknown type ="
 msgstr ""
 
-#: dat.c:532
+#: dat.c:536
 #, c-format
 msgid "fields per row count != %d, unknown format\n"
 msgstr ""
 
-#: dat.c:546
+#: dat.c:550
 #, c-format
 msgid "field count != %d, unknown format\n"
 msgstr ""
 
-#: dat.c:554
+#: dat.c:558
 msgid "Unknown format, file has wrong schema\n"
 msgstr ""
 
-#: dat.c:555
+#: dat.c:559
 msgid "File schema is:"
 msgstr ""
 
-#: dat.c:560
+#: dat.c:564
 msgid "It should be:  "
 msgstr ""
 
-#: dat.c:670 dat.c:688 dat.c:870 dat.c:883 dat.c:1006 dat.c:1019 dat.c:1143
-#: dat.c:1156
+#: dat.c:674 dat.c:692 dat.c:874 dat.c:887 dat.c:1010 dat.c:1023 dat.c:1147
+#: dat.c:1160
 #, c-format
 msgid "%s:%d Record %d, field %d: Invalid type.  Expected %d, found %d\n"
 msgstr ""
 
-#: dat.c:671 dat.c:689 dat.c:871 dat.c:884 dat.c:988 dat.c:1007 dat.c:1020
-#: dat.c:1144 dat.c:1157
+#: dat.c:675 dat.c:693 dat.c:875 dat.c:888 dat.c:992 dat.c:1011 dat.c:1024
+#: dat.c:1148 dat.c:1161
 msgid "read of file terminated\n"
 msgstr ""
 
-#: datebook.c:646
+#: datebook.c:632
 #, c-format
 msgid "Unknown repeatType (%d) found in DatebookDB\n"
 msgstr ""
@@ -469,125 +469,125 @@ msgstr ""
 # the little buttons in the repeat weekly window.
 # They should be one letter if possible.  The English ones get truncated to
 # one letter.
-#: datebook_gui.c:214 datebook_gui.c:221 datebook_gui.c:3986
-#: datebook_gui.c:3993
+#: datebook_gui.c:216 datebook_gui.c:223 datebook_gui.c:3971
+#: datebook_gui.c:3978
 msgid "Su"
 msgstr "Sø"
 
-#: datebook_gui.c:215 datebook_gui.c:3987
+#: datebook_gui.c:217 datebook_gui.c:3972
 msgid "Mo"
 msgstr "Ma"
 
-#: datebook_gui.c:216 datebook_gui.c:3988
+#: datebook_gui.c:218 datebook_gui.c:3973
 msgid "Tu"
 msgstr "Ti"
 
-#: datebook_gui.c:217 datebook_gui.c:3989
+#: datebook_gui.c:219 datebook_gui.c:3974
 msgid "We"
 msgstr "On"
 
-#: datebook_gui.c:218 datebook_gui.c:3990
+#: datebook_gui.c:220 datebook_gui.c:3975
 #, fuzzy
 msgid "Th"
 msgstr "To"
 
-#: datebook_gui.c:219 datebook_gui.c:3991
+#: datebook_gui.c:221 datebook_gui.c:3976
 msgid "Fr"
 msgstr "Fr"
 
-#: datebook_gui.c:220 datebook_gui.c:3992
+#: datebook_gui.c:222 datebook_gui.c:3977
 msgid "Sa"
 msgstr "Lø"
 
-#: datebook_gui.c:553 datebook_gui.c:2054
+#: datebook_gui.c:555 datebook_gui.c:2049
 #, c-format
 msgid "Appointment description text > %d, truncating to %d\n"
 msgstr ""
 
-#: datebook_gui.c:563 datebook_gui.c:978 datebook_gui.c:2115
-#: datebook_gui.c:2122
+#: datebook_gui.c:565 datebook_gui.c:980 datebook_gui.c:2110
+#: datebook_gui.c:2117
 #, fuzzy
 msgid "Error"
 msgstr "feil"
 
-#: datebook_gui.c:564
+#: datebook_gui.c:566
 msgid "File doesn't appear to be datebook.dat format\n"
 msgstr ""
 
-#: datebook_gui.c:978
+#: datebook_gui.c:980
 msgid "Unknown export type"
 msgstr ""
 
-#: datebook_gui.c:1087 export_gui.c:255 jpilot.c:545
+#: datebook_gui.c:1089 export_gui.c:258 jpilot.c:545
 msgid "Export"
 msgstr ""
 
-#: datebook_gui.c:1104
+#: datebook_gui.c:1106
 msgid "Export All Datebook Records"
 msgstr ""
 
-#: datebook_gui.c:1123 export_gui.c:317
+#: datebook_gui.c:1125 export_gui.c:320
 msgid "Save as"
 msgstr ""
 
-#: datebook_gui.c:1133 export_gui.c:328
+#: datebook_gui.c:1135 export_gui.c:331
 msgid "Browse"
 msgstr ""
 
-#: datebook_gui.c:1283
+#: datebook_gui.c:1285
 msgid "Datebook Categories"
 msgstr ""
 
-#: datebook_gui.c:1318 import_gui.c:325 prefs_gui.c:898
+#: datebook_gui.c:1320 import_gui.c:311 prefs_gui.c:901
 msgid "Done"
 msgstr "Ferdig"
 
-#: datebook_gui.c:1330 datebook_gui.c:4529
+#: datebook_gui.c:1332 datebook_gui.c:4514
 msgid "None"
 msgstr "Ingen"
 
-#: datebook_gui.c:1442
+#: datebook_gui.c:1444
 #, fuzzy
 msgid "Begin On Date"
 msgstr "Slutt-dato"
 
-#: datebook_gui.c:1447
+#: datebook_gui.c:1449
 msgid "End On Date"
 msgstr "Slutt-dato"
 
-#: datebook_gui.c:1541 prefs.c:466
+#: datebook_gui.c:1543 prefs.c:409
 msgid "Sunday"
 msgstr "Søndag"
 
-#: datebook_gui.c:1542 prefs.c:467
+#: datebook_gui.c:1544 prefs.c:410
 msgid "Monday"
 msgstr "Mandag"
 
-#: datebook_gui.c:1543
+#: datebook_gui.c:1545
 msgid "Tuesday"
 msgstr "Tirsdag"
 
-#: datebook_gui.c:1544
+#: datebook_gui.c:1546
 msgid "Wednesday"
 msgstr "Onsdag"
 
-#: datebook_gui.c:1545
+#: datebook_gui.c:1547
 msgid "Thursday"
 msgstr "Torsdag"
 
-#: datebook_gui.c:1546
+#: datebook_gui.c:1548
 msgid "Friday"
 msgstr "Fredag"
 
-#: datebook_gui.c:1547
+#: datebook_gui.c:1549
 msgid "Saturday"
 msgstr "Lørdag"
 
-#: datebook_gui.c:1551
+#: datebook_gui.c:1552
 msgid "4th"
 msgstr ""
 
-#: datebook_gui.c:1551
+#: datebook_gui.c:1552
 msgid "Last"
 msgstr ""
 
@@ -601,11 +601,11 @@ msgid ""
 "Which do you want?"
 msgstr ""
 
-#: datebook_gui.c:1563 datebook_gui.c:1584
+#: datebook_gui.c:1563 datebook_gui.c:1581
 msgid "Question?"
 msgstr ""
 
-#: datebook_gui.c:1563 datebook_gui.c:1584
+#: datebook_gui.c:1563 datebook_gui.c:1581
 msgid "Answer: "
 msgstr ""
 
@@ -618,36 +618,36 @@ msgid ""
 "occurrences of this event?"
 msgstr ""
 
-#: datebook_gui.c:1577
+#: datebook_gui.c:1576
 msgid "Current"
 msgstr ""
 
-#: datebook_gui.c:1822
+#: datebook_gui.c:1817
 msgid "none"
 msgstr "ingen"
 
-#: datebook_gui.c:1823
+#: datebook_gui.c:1818
 msgid "day"
 msgstr "dag"
 
-#: datebook_gui.c:1824
+#: datebook_gui.c:1819
 msgid "week"
 msgstr "uke"
 
-#: datebook_gui.c:1825
+#: datebook_gui.c:1820
 msgid "month"
 msgstr "måned"
 
-#: datebook_gui.c:1826
+#: datebook_gui.c:1821
 msgid "year"
 msgstr "år"
 
-#: datebook_gui.c:2110 datebook_gui.c:2113
+#: datebook_gui.c:2105 datebook_gui.c:2108
 #, c-format
 msgid "You cannot have an appointment that repeats every %d %s(s)\n"
 msgstr "Du kan ikke ha en avtale som repeteres hver %d %s\n"
 
-#: datebook_gui.c:2123
+#: datebook_gui.c:2118
 #, fuzzy
 msgid ""
 "You can not have a weekly repeating appointment that doesn't repeat on any "
@@ -656,112 +656,112 @@ msgstr ""
 "Du kan ikke ha en avtale med ukentlig gjentagelse som ikke repeteres på en "
 "ukedag.\n"
 
-#: datebook_gui.c:2277
+#: datebook_gui.c:2271
 msgid "No Time"
 msgstr "Ingen tid"
 
-#: datebook_gui.c:2579
+#: datebook_gui.c:2573
 #, fuzzy
 msgid "Invalid Appointment"
 msgstr "Forbigåtte avtaler"
 
-#: datebook_gui.c:2580
+#: datebook_gui.c:2574
 msgid ""
 "The End Date of this appointment\n"
 "is before the start date."
 msgstr ""
 
-#: datebook_gui.c:2835 datebook_gui.c:4563 datebook_gui.c:4593
-#: datebook_gui.c:4649 datebook_gui.c:4698 todo_gui.c:127 todo_gui.c:2159
+#: datebook_gui.c:2829 datebook_gui.c:4548 datebook_gui.c:4578
+#: datebook_gui.c:4634 datebook_gui.c:4683 todo_gui.c:129 todo_gui.c:2196
 msgid "No Date"
 msgstr "Ingen forfallsdato"
 
-#: datebook_gui.c:2949
+#: datebook_gui.c:2943
 #, c-format
 msgid "Error in DateBookDB advanceUnits = %d\n"
 msgstr ""
 
-#: datebook_gui.c:3120
+#: datebook_gui.c:3114
 msgid "Unknown repeatType found in DatebookDB\n"
 msgstr ""
 
-#: datebook_gui.c:4074 datebook_gui.c:4531
+#: datebook_gui.c:4059 datebook_gui.c:4516
 msgid "Week"
 msgstr "Uke"
 
-#: datebook_gui.c:4080
+#: datebook_gui.c:4065
 #, fuzzy
 msgid "W"
 msgstr "On"
 
-#: datebook_gui.c:4082
+#: datebook_gui.c:4067
 msgid "View appointments by week"
 msgstr ""
 
-#: datebook_gui.c:4085 datebook_gui.c:4532
+#: datebook_gui.c:4070 datebook_gui.c:4517
 msgid "Month"
 msgstr "Måned"
 
-#: datebook_gui.c:4092
+#: datebook_gui.c:4077
 #, fuzzy
 msgid "M"
 msgstr "Ma"
 
-#: datebook_gui.c:4094
+#: datebook_gui.c:4079
 msgid "View appointments by month"
 msgstr ""
 
-#: datebook_gui.c:4099
+#: datebook_gui.c:4084
 msgid "Cats"
 msgstr "Katter"
 
-#: datebook_gui.c:4168
+#: datebook_gui.c:4153
 msgid "Time"
 msgstr "Ingen tid"
 
-#: datebook_gui.c:4205
+#: datebook_gui.c:4190
 msgid "Show ToDos"
 msgstr ""
 
-#: datebook_gui.c:4220 todo_gui.c:2018
+#: datebook_gui.c:4205 todo_gui.c:2055
 msgid "Task"
 msgstr "Oppgave"
 
-#: datebook_gui.c:4221 todo_gui.c:2019
+#: datebook_gui.c:4206 todo_gui.c:2056
 msgid "Due"
 msgstr "Forfall"
 
-#: datebook_gui.c:4331
+#: datebook_gui.c:4316
 msgid "Alarm"
 msgstr "Alarm"
 
-#: datebook_gui.c:4352
+#: datebook_gui.c:4337
 msgid "Days"
 msgstr "Dager"
 
-#: datebook_gui.c:4375
+#: datebook_gui.c:4360
 msgid "This Event has no particular time"
 msgstr "Denne avtalen har ingen tidsangivelse"
 
-#: datebook_gui.c:4383
+#: datebook_gui.c:4368
 msgid "Starts on"
 msgstr "Starter den"
 
-#: datebook_gui.c:4397
+#: datebook_gui.c:4382
 #, fuzzy
 msgid "Start Time"
 msgstr "Starter den"
 
-#: datebook_gui.c:4415
+#: datebook_gui.c:4400
 #, fuzzy
 msgid "End Time"
 msgstr "Ingen tid"
 
-#: datebook_gui.c:4513
+#: datebook_gui.c:4498
 msgid "DateBk Tags"
 msgstr ""
 
-#: datebook_gui.c:4530
+#: datebook_gui.c:4515
 msgid "Day"
 msgstr "Dag"
 
@@ -769,237 +769,237 @@ msgstr "Dag"
 # msgstr "Pr. uke"
 # msgid "MonthView"
 # msgstr "Pr. mnd"
-#: datebook_gui.c:4533
+#: datebook_gui.c:4518
 msgid "Year"
 msgstr "År"
 
-#: datebook_gui.c:4537
+#: datebook_gui.c:4522
 msgid "This event will not repeat"
 msgstr "Denne avtalen skal ikke gjentas"
 
-#: datebook_gui.c:4547 datebook_gui.c:4579 datebook_gui.c:4635
-#: datebook_gui.c:4682
+#: datebook_gui.c:4532 datebook_gui.c:4564 datebook_gui.c:4620
+#: datebook_gui.c:4667
 msgid "Frequency is Every"
 msgstr "Frekvens er"
 
-#: datebook_gui.c:4552
+#: datebook_gui.c:4537
 msgid "Day(s)"
 msgstr "dag(er)"
 
-#: datebook_gui.c:4555 datebook_gui.c:4587 datebook_gui.c:4643
-#: datebook_gui.c:4690
+#: datebook_gui.c:4540 datebook_gui.c:4572 datebook_gui.c:4628
+#: datebook_gui.c:4675
 msgid "End on"
 msgstr "Slutt-dato"
 
-#: datebook_gui.c:4584
+#: datebook_gui.c:4569
 msgid "Week(s)"
 msgstr "uker(r)"
 
-#: datebook_gui.c:4600
+#: datebook_gui.c:4585
 msgid "Repeat on Days:"
 msgstr "Gjenta på følgende dager: "
 
-#: datebook_gui.c:4640
+#: datebook_gui.c:4625
 msgid "Month(s)"
 msgstr "måned(er)"
 
-#: datebook_gui.c:4657
+#: datebook_gui.c:4642
 msgid "Repeat by:"
 msgstr "Gjenta på:"
 
-#: datebook_gui.c:4661
+#: datebook_gui.c:4646
 msgid "Day of week"
 msgstr "ukedag"
 
-#: datebook_gui.c:4670
+#: datebook_gui.c:4655
 msgid "Date"
 msgstr "dato"
 
-#: datebook_gui.c:4687
+#: datebook_gui.c:4672
 msgid "Year(s)"
 msgstr "år"
 
-#: dialer.c:193
+#: dialer.c:196
 msgid "Phone Dialer"
 msgstr ""
 
-#: dialer.c:228
+#: dialer.c:231
 msgid "Prefix 1"
 msgstr ""
 
-#: dialer.c:250
+#: dialer.c:253
 msgid "Prefix 2"
 msgstr ""
 
-#: dialer.c:272
+#: dialer.c:275
 msgid "Prefix 3"
 msgstr ""
 
-#: dialer.c:287
+#: dialer.c:290
 msgid "Phone number:"
 msgstr ""
 
-#: dialer.c:318
+#: dialer.c:321
 msgid "Extension"
 msgstr ""
 
-#: dialer.c:341
+#: dialer.c:344
 #, fuzzy
 msgid "Dial Command"
 msgstr "Alarm-kommando"
 
-#: dialer.c:362
+#: dialer.c:365
 msgid "Dismiss"
 msgstr ""
 
-#: export_gui.c:113
+#: export_gui.c:116
 msgid "File Browser"
 msgstr ""
 
-#: export_gui.c:273
+#: export_gui.c:276
 msgid "Select records to be exported"
 msgstr ""
 
-#: export_gui.c:275
+#: export_gui.c:278
 msgid "Use Ctrl and Shift Keys"
 msgstr ""
 
-#: import_gui.c:279 import_gui.c:318 import_gui.c:431 import_gui.c:511
+#: import_gui.c:265 import_gui.c:304 import_gui.c:417 import_gui.c:497
 #: jpilot.c:501
 msgid "Import"
 msgstr ""
 
-#: import_gui.c:312 install_gui.c:307
+#: import_gui.c:298 install_gui.c:311
 msgid "To change to a hidden directory type it below and hit TAB"
 msgstr "For å bytte til en skjult katalog, angi den under og trykk TAB"
 
-#: import_gui.c:338
+#: import_gui.c:324
 msgid "Import File Type"
 msgstr ""
 
-#: import_gui.c:450
+#: import_gui.c:436
 msgid "Record was marked as private"
 msgstr ""
 
-#: import_gui.c:452
+#: import_gui.c:438
 msgid "Record was not marked as private"
 msgstr ""
 
-#: import_gui.c:459
+#: import_gui.c:445
 #, c-format
 msgid "Category before import was: [%s]"
 msgstr ""
 
-#: import_gui.c:465
+#: import_gui.c:451
 #, fuzzy, c-format
 msgid "Record will be put in category [%s]"
 msgstr "Alle poster i denne kategorien"
 
-#: import_gui.c:518
+#: import_gui.c:504
 msgid "Import All"
 msgstr ""
 
-#: import_gui.c:525
+#: import_gui.c:511
 msgid "Skip"
 msgstr ""
 
-#: import_gui.c:532
+#: import_gui.c:518
 #, fuzzy
 msgid "Quit"
 msgstr "Avslutt"
 
-#: install_gui.c:254
+#: install_gui.c:258
 msgid "Install"
 msgstr "/Arkiv/_Installere"
 
-#: install_gui.c:284
+#: install_gui.c:288
 msgid "Files to be installed"
 msgstr "Filer som skal installeres"
 
-#: install_gui.c:313
+#: install_gui.c:317
 msgid "Add"
 msgstr "Legg til"
 
-#: install_gui.c:320
+#: install_gui.c:324
 msgid "Remove"
 msgstr "Fjern"
 
-#: install_gui.c:327 monthview_gui.c:486 search_gui.c:583 weekview_gui.c:312
+#: install_gui.c:331 monthview_gui.c:493 search_gui.c:585 weekview_gui.c:316
 msgid "Close"
 msgstr "Lukk"
 
-#: jpilot-dump.c:57
+#: jpilot-dump.c:64
 msgid " +B +M +A +T format like date +format (use -? for more info).\n"
 msgstr ""
 
-#: jpilot-dump.c:58
+#: jpilot-dump.c:65
 msgid " -v displays version and exits.\n"
 msgstr ""
 
-#: jpilot-dump.c:59 utils.c:74
+#: jpilot-dump.c:66 utils.c:77
 msgid " -h displays help and exits.\n"
 msgstr ""
 
-#: jpilot-dump.c:60
+#: jpilot-dump.c:67
 msgid " -B dump dateBook.\n"
 msgstr ""
 
-#: jpilot-dump.c:61
+#: jpilot-dump.c:68
 msgid " -NYYYY/MM/DD dump apps on YYYY/MM/DD in dateBook.\n"
 msgstr ""
 
-#: jpilot-dump.c:62
+#: jpilot-dump.c:69
 msgid " -N dump apps on today in dateBook.\n"
 msgstr ""
 
-#: jpilot-dump.c:63
+#: jpilot-dump.c:70
 msgid " -M dump Memos.\n"
 msgstr ""
 
-#: jpilot-dump.c:64
+#: jpilot-dump.c:71
 #, fuzzy
 msgid " -A dump Address book.\n"
 msgstr "Adressebok"
 
-#: jpilot-dump.c:65
+#: jpilot-dump.c:72
 msgid " -T dump Todo list as CSV.\n"
 msgstr ""
 
-#: jpilot-sync.c:53
+#: jpilot-sync.c:65
 msgid ""
 " J-Pilot preferences are read to get port, rate, number of backups, etc.\n"
 msgstr ""
 
-#: jpilot-sync.c:54
+#: jpilot-sync.c:66
 msgid " -v = version\n"
 msgstr ""
 
-#: jpilot-sync.c:55
+#: jpilot-sync.c:67
 msgid " -h = help\n"
 msgstr ""
 
-#: jpilot-sync.c:56
+#: jpilot-sync.c:68
 msgid " -d = run in debug mode\n"
 msgstr ""
 
-#: jpilot-sync.c:57
+#: jpilot-sync.c:69
 msgid " -P = do not load plugins.\n"
 msgstr ""
 
-#: jpilot-sync.c:58
+#: jpilot-sync.c:70
 msgid " -b = Do a sync and then a backup, otherwise just do a sync.\n"
 msgstr ""
 
-#: jpilot-sync.c:59
+#: jpilot-sync.c:71
 msgid " -l = loop, otherwise sync once and exit.\n"
 msgstr ""
 
-#: jpilot-sync.c:60
+#: jpilot-sync.c:72
 msgid ""
 " -p {port} = Use this port to sync with instead of getting preferences.\n"
 msgstr ""
 
-#: jpilot.c:132
+#: jpilot.c:133
 #, c-format
 msgid "Invalid geometry specification: \"%s\"\n"
 msgstr ""
@@ -1008,7 +1008,7 @@ msgstr ""
 msgid "Help"
 msgstr "Hjelp"
 
-#: jpilot.c:441 monthview_gui.c:492 print_gui.c:329 weekview_gui.c:318
+#: jpilot.c:441 monthview_gui.c:499 print_gui.c:332 weekview_gui.c:322
 msgid "Print"
 msgstr "Skriv ut"
 
@@ -1026,7 +1026,7 @@ msgstr "Det finnes ikke skriverstøtte for dette tillegget"
 msgid "There is no export support for this conduit."
 msgstr "Det finnes ikke skriverstøtte for dette tillegget"
 
-#: jpilot.c:754
+#: jpilot.c:715
 msgid ""
 "This palm doesn't have the same user name\n"
 "or user ID as the one that was synced the\n"
@@ -1034,7 +1034,7 @@ msgid ""
 "Read the user manual if you are uncertain."
 msgstr ""
 
-#: jpilot.c:762
+#: jpilot.c:722
 msgid ""
 "This palm has a NULL user id.\n"
 "Every palm must have a unique user id in order to sync properly.\n"
@@ -1045,251 +1045,251 @@ msgid ""
 "Read the user manual if you are uncertain."
 msgstr ""
 
-#: jpilot.c:769
+#: jpilot.c:728
 #, fuzzy
 msgid "Cancel Sync"
 msgstr "Angre"
 
-#: jpilot.c:770
+#: jpilot.c:728
 msgid "Sync Anyway"
 msgstr ""
 
-#: jpilot.c:780 jpilot.c:785
+#: jpilot.c:738 jpilot.c:743
 #, fuzzy
 msgid "Sync Problem"
 msgstr "Synkroniser notater"
 
-#: jpilot.c:780 jpilot.c:785 jpilot.c:2222
+#: jpilot.c:738 jpilot.c:743 jpilot.c:2412
 msgid "Sync"
 msgstr "Synkroniser"
 
-#: jpilot.c:984
+#: jpilot.c:942
 msgid "Unknown command from sync process\n"
 msgstr ""
 
-#: jpilot.c:1005 Expense/expense.c:412 KeyRing/keyring.c:499
+#: jpilot.c:963 Expense/expense.c:510 KeyRing/keyring.c:506
 #, c-format
 msgid "About %s"
 msgstr "Om %s"
 
-#: jpilot.c:1114
+#: jpilot.c:1312
 #, fuzzy
 msgid "/_File"
 msgstr "/_Arkiv"
 
-#: jpilot.c:1115
+#: jpilot.c:1313
 msgid "/File/tear"
 msgstr "/_Arkiv/tear"
 
-#: jpilot.c:1116
+#: jpilot.c:1314
 msgid "/File/_Find"
 msgstr "/Arkiv/Skriv ut"
 
-#: jpilot.c:1117 jpilot.c:1123 jpilot.c:1125
+#: jpilot.c:1315 jpilot.c:1321 jpilot.c:1323
 msgid "/File/sep1"
 msgstr "/Arkiv/sep1"
 
-#: jpilot.c:1118
+#: jpilot.c:1316
 msgid "/File/_Install"
 msgstr "/Arkiv/_Installer"
 
-#: jpilot.c:1119
+#: jpilot.c:1317
 #, fuzzy
 msgid "/File/Import"
 msgstr "/Arkiv/Skriv ut"
 
-#: jpilot.c:1120
+#: jpilot.c:1318
 #, fuzzy
 msgid "/File/Export"
 msgstr "/Arkiv/Skriv ut"
 
-#: jpilot.c:1121 jpilot.c:2421
+#: jpilot.c:1319 jpilot.c:2613
 msgid "/File/Preferences"
 msgstr "/Arkiv/Innstillinger"
 
-#: jpilot.c:1122
+#: jpilot.c:1320
 msgid "/File/_Print"
 msgstr "/Arkiv/Skriv ut"
 
-#: jpilot.c:1124
+#: jpilot.c:1322
 msgid "/File/Restore Handheld"
 msgstr ""
 
-#: jpilot.c:1126
+#: jpilot.c:1324
 msgid "/File/_Quit"
 msgstr "/Arkiv/Avslutt"
 
-#: jpilot.c:1127
+#: jpilot.c:1325
 msgid "/_View"
 msgstr "/_Vis"
 
-#: jpilot.c:1128 jpilot.c:1129 jpilot.c:1130 jpilot.c:1383
+#: jpilot.c:1326 jpilot.c:1327 jpilot.c:1328 jpilot.c:1582
 #, fuzzy
 msgid "/View/Hide Private Records"
 msgstr "/Vis/Gjem - visning av private poster"
 
-#: jpilot.c:1129
+#: jpilot.c:1327
 #, fuzzy
 msgid "/View/Show Private Records"
 msgstr "/Vis/Gjem - visning av private poster"
 
-#: jpilot.c:1130
+#: jpilot.c:1328
 #, fuzzy
 msgid "/View/Mask Private Records"
 msgstr "/Vis/Gjem - visning av private poster"
 
-#: jpilot.c:1131
+#: jpilot.c:1329
 #, fuzzy
 msgid "/View/sep1"
 msgstr "/Arkiv/sep1"
 
-#: jpilot.c:1132
+#: jpilot.c:1330
 msgid "/View/Datebook"
 msgstr "/Vis/Kalender"
 
-#: jpilot.c:1133
+#: jpilot.c:1331
 msgid "/View/Addresses"
 msgstr "/Vis/Adresser"
 
-#: jpilot.c:1134
+#: jpilot.c:1332
 msgid "/View/Todos"
 msgstr "/Vis/Huskeliste"
 
-#: jpilot.c:1135
+#: jpilot.c:1333
 msgid "/View/Memos"
 msgstr "/Vis/Notater"
 
-#: jpilot.c:1136 jpilot.c:1270
+#: jpilot.c:1334 jpilot.c:1468
 #, fuzzy
 msgid "/_Plugins"
 msgstr "/Tillegg"
 
-#: jpilot.c:1138
+#: jpilot.c:1336
 #, fuzzy
 msgid "/_Web"
 msgstr "On"
 
-#: jpilot.c:1139
+#: jpilot.c:1337
 msgid "/Web/Netscape"
 msgstr ""
 
-#: jpilot.c:1143
+#: jpilot.c:1341
 msgid "/Web/Mozilla"
 msgstr ""
 
-#: jpilot.c:1148
+#: jpilot.c:1346
 msgid "/Web/Galeon"
 msgstr ""
 
-#: jpilot.c:1153
+#: jpilot.c:1351
 msgid "/Web/Opera"
 msgstr ""
 
-#: jpilot.c:1157
+#: jpilot.c:1355
 msgid "/Web/GnomeUrl"
 msgstr ""
 
-#: jpilot.c:1159
+#: jpilot.c:1357
 msgid "/Web/Lynx"
 msgstr ""
 
-#: jpilot.c:1161
+#: jpilot.c:1359
 msgid "/Web/Links"
 msgstr ""
 
-#: jpilot.c:1163
+#: jpilot.c:1361
 msgid "/Web/W3M"
 msgstr ""
 
-#: jpilot.c:1165
+#: jpilot.c:1363
 msgid "/Web/Konqueror"
 msgstr ""
 
-#: jpilot.c:1168
+#: jpilot.c:1366
 msgid "/_Help"
 msgstr "/_Hjelp"
 
-#: jpilot.c:1169
+#: jpilot.c:1367
 msgid "/Help/PayBack program"
 msgstr "/Hjelp/PayBack program"
 
-#: jpilot.c:1170
+#: jpilot.c:1368
 msgid "/Help/J-Pilot"
 msgstr "/Hjelp/J-Pilot"
 
-#: jpilot.c:1237
+#: jpilot.c:1435
 #, fuzzy, c-format
 msgid "/_Plugins/%s"
 msgstr "/Tillegg/%s"
 
-#: jpilot.c:1248
+#: jpilot.c:1446
 #, c-format
 msgid "/_Help/%s"
 msgstr "/_Hjelp/%s"
 
-#: jpilot.c:1552
+#: jpilot.c:1743
 msgid "Font Selection Dialog"
 msgstr ""
 
-#: jpilot.c:1809
+#: jpilot.c:1998
 msgid "calendar:week_start:0"
 msgstr ""
 
-#: jpilot.c:1855
+#: jpilot.c:2043
 msgid "Not loading plugins.\n"
 msgstr ""
 
-#: jpilot.c:1859
+#: jpilot.c:2047
 msgid "Ignoring all alarms.\n"
 msgstr ""
 
-#: jpilot.c:1863
+#: jpilot.c:2051
 msgid "Ignoring past alarms.\n"
 msgstr ""
 
-#: jpilot.c:1933 jpilot.c:1941
+#: jpilot.c:2121 jpilot.c:2129
 msgid "Unable to open pipe\n"
 msgstr ""
 
-#: jpilot.c:1990
+#: jpilot.c:2180
 #, fuzzy
 msgid " User: "
 msgstr "Navn"
 
-#: jpilot.c:2137
+#: jpilot.c:2327
 msgid "Clear"
 msgstr "Fjern"
 
-#: jpilot.c:2207
+#: jpilot.c:2397
 #, fuzzy
 msgid "Show private records   Ctrl-Z"
 msgstr "/Vis/Gjem - visning av private poster"
 
-#: jpilot.c:2212
+#: jpilot.c:2402
 #, fuzzy
 msgid "Hide private records   Ctrl-Z"
 msgstr "/Vis/Gjem - visning av private poster"
 
-#: jpilot.c:2217
+#: jpilot.c:2407
 #, fuzzy
 msgid "Mask private records   Ctrl-Z"
 msgstr "Skriv ut alle poster"
 
-#: jpilot.c:2228
+#: jpilot.c:2418
 #, fuzzy
 msgid "Sync your palm to the desktop   Ctrl-Y"
 msgstr "Synkroniser Palm'en med PC'en"
 
-#: jpilot.c:2234
+#: jpilot.c:2424
 #, fuzzy
 msgid "Font"
 msgstr "Måned"
 
-#: jpilot.c:2241
+#: jpilot.c:2431
 msgid "Backup"
 msgstr "Ta sikkerhetskopi"
 
-#: jpilot.c:2249
+#: jpilot.c:2439
 msgid ""
 "Sync your palm to the desktop\n"
 "and then do a backup"
@@ -1297,31 +1297,36 @@ msgstr ""
 "Synkroniser Palm'en med PC'en\n"
 "Ta deretter sikkerhetskopi"
 
-#: jpilot.c:2347
+#: jpilot.c:2537
 msgid "Datebook/Go to Today"
 msgstr "Kalender/Gå til i dag"
 
-#: jpilot.c:2349
+#: jpilot.c:2539
 msgid "Address Book"
 msgstr "Adressebok"
 
-#: jpilot.c:2351
+#: jpilot.c:2541
 msgid "ToDo List"
 msgstr "Huskeliste"
 
-#: jpilot.c:2353
+#: jpilot.c:2543
 msgid "Memo Pad"
 msgstr "Notater"
 
-#: jpilot.c:2404
-msgid "OK, I will do it"
+#: jpilot.c:2595
+msgid "Do it now"
 msgstr ""
 
-#: jpilot.c:2404
+#: jpilot.c:2595
+#, fuzzy
+msgid "Remind me later"
+msgstr "Minn meg på"
+
+#: jpilot.c:2595
 msgid "Don't tell me again!"
 msgstr ""
 
-#: jpilot.c:2417
+#: jpilot.c:2609
 msgid ""
 "J-Pilot is using the GTK2 graphical toolkit. This version of the toolkit "
 "uses UTF-8 to encode characters.\n"
@@ -1330,1402 +1335,1413 @@ msgid ""
 "\n"
 msgstr ""
 
-#: jpilot.c:2420
+#: jpilot.c:2612
 msgid "Go to the menu \""
 msgstr ""
 
-#: jpilot.c:2422
+#: jpilot.c:2614
 msgid "\" and change the \""
 msgstr ""
 
-#: jpilot.c:2423 prefs_gui.c:364
+#: jpilot.c:2615 prefs_gui.c:367
 msgid "Character Set "
 msgstr "Tegnsett"
 
-#: jpilot.c:2424
+#: jpilot.c:2616
 msgid "\"."
 msgstr ""
 
-#: jpilot.c:2426
-msgid "Select an UTF-8 encoding"
+#: jpilot.c:2618
+msgid "Select a UTF-8 encoding"
 msgstr ""
 
-#: libplugin.c:165
+#: libplugin.c:169
 #, c-format
 msgid "Unknown PC header version = %d\n"
 msgstr ""
 
-#: libplugin.c:463
+#: libplugin.c:467
 #, fuzzy, c-format
 msgid "%s:%d Error opening file: %s\n"
 msgstr "Feil under lesing"
 
-#: libplugin.c:469 libplugin.c:498 sync.c:2728 todo.c:366
+#: libplugin.c:473 libplugin.c:502 sync.c:2815 todo.c:368
 #, fuzzy, c-format
 msgid "%s:%d Error reading file: %s\n"
 msgstr "Feil under lesing"
 
-#: libplugin.c:525 utils.c:1913
+#: libplugin.c:529 utils.c:1884
 msgid ""
 "This record is already deleted.\n"
 "It is scheduled to be deleted from the Palm on the next sync.\n"
 msgstr ""
 
-#: libplugin.c:534 utils.c:1922 utils.c:1959
+#: libplugin.c:538 utils.c:1893 utils.c:1930
 msgid "Unable to open PC records file\n"
 msgstr ""
 
-#: libplugin.c:540 utils.c:1928
+#: libplugin.c:544 utils.c:1899
 #, fuzzy
 msgid "Couldn't find record to delete\n"
 msgstr "Kan ikke åpne loggfil\n"
 
-#: libplugin.c:559 utils.c:1946
+#: libplugin.c:563 utils.c:1917
 #, c-format
 msgid "Unknown header version %d\n"
 msgstr ""
 
-#: libplugin.c:572
+#: libplugin.c:576
 #, fuzzy
 msgid "Couldn't open PC records file\n"
 msgstr "Kan ikke åpne loggfil\n"
 
-#: libplugin.c:629 libplugin.c:721 utils.c:1476 utils.c:1488
+#: libplugin.c:633 libplugin.c:725 utils.c:1448 utils.c:1460
 #, fuzzy, c-format
 msgid "Error opening file: %s\n"
 msgstr "Feil under lesing"
 
-#: libplugin.c:658
+#: libplugin.c:662
 #, fuzzy
 msgid "Error reading PC file 1\n"
 msgstr "Feil under lesing"
 
-#: libplugin.c:674
+#: libplugin.c:678
 #, fuzzy
 msgid "Error reading PC file 2\n"
 msgstr "Feil under lesing"
 
-#: libplugin.c:846
+#: libplugin.c:850
 #, fuzzy, c-format
 msgid "Error reading %s 5\n"
 msgstr "Feil under lesing"
 
-#: log.c:112
+#: log.c:95
 #, fuzzy, c-format
 msgid "Unable to open log file, giving up.\n"
 msgstr "Kan ikke åpne loggfil, gir opp.\n"
 
-#: log.c:119
+#: log.c:102
 #, fuzzy, c-format
 msgid "Unable to open log file\n"
 msgstr "Kan ikke åpne loggfil\n"
 
-#: memo_gui.c:305
+#: memo_gui.c:308
 msgid "Memo text > 65535, truncating\n"
 msgstr ""
 
-#: memo_gui.c:335
+#: memo_gui.c:338
 #, c-format
 msgid "Imported Memo %s\n"
 msgstr ""
 
-#: memo_gui.c:406
+#: memo_gui.c:409
 msgid "File doesn't appear to be memopad.dat format\n"
 msgstr ""
 
-#: memo_gui.c:555 memo_gui.c:570
+#: memo_gui.c:558 memo_gui.c:573
 #, c-format
 msgid "Can't export memo %d\n"
 msgstr ""
 
-#: monthview_gui.c:450
+#: monthview_gui.c:457
 msgid "Monthly View"
 msgstr "Månedlig visning"
 
-#: password.c:301
+#: password.c:304
 msgid "Palm Password"
 msgstr "Palm-passord"
 
-#: password.c:326
+#: password.c:329
 #, fuzzy
 msgid "Incorrect, Reenter PalmOS Password"
 msgstr "Angi Palm-passord"
 
-#: password.c:328
+#: password.c:331
 msgid "Enter PalmOS Password"
 msgstr "Angi Palm-passord"
 
-#: plugins.c:85 plugins.c:197 restore_gui.c:130
+#: plugins.c:88 plugins.c:200 restore_gui.c:133
 msgid "infinite loop"
 msgstr ""
 
-#: plugins.c:210
+#: plugins.c:213
 #, c-format
 msgid "While reading %s%s line 1:[%s]\n"
 msgstr ""
 
-#: plugins.c:211
+#: plugins.c:214
 msgid "Wrong Version\n"
 msgstr ""
 
-#: plugins.c:212
+#: plugins.c:215
 msgid "Check preferences->conduits\n"
 msgstr ""
 
-#: plugins.c:268
+#: plugins.c:271
 #, c-format
 msgid ""
 "Open failed on plugin [%s]\n"
 " error [%s]\n"
 msgstr ""
 
-#: plugins.c:285 plugins.c:311
+#: plugins.c:288 plugins.c:314
 #, c-format
 msgid " plugin is invalid: [%s]\n"
 msgstr ""
 
-#: plugins.c:293
+#: plugins.c:296
 #, fuzzy, c-format
 msgid "Plugin:[%s]\n"
 msgstr "/Tillegg/%s"
 
-#: plugins.c:294
+#: plugins.c:297
 #, c-format
 msgid "This plugin is version (%d.%d).\n"
 msgstr ""
 
-#: plugins.c:296
+#: plugins.c:299
 msgid "It is too old to work with this version of J-Pilot.\n"
 msgstr ""
 
-#: prefs_gui.c:308
+#: prefs_gui.c:311
 msgid "Preferences"
 msgstr "Innstillinger"
 
-#: prefs_gui.c:338
+#: prefs_gui.c:341
 msgid "Locale"
 msgstr "Språk"
 
-#: prefs_gui.c:340
+#: prefs_gui.c:343
 msgid "Settings"
 msgstr "Innstillinger"
 
-#: prefs_gui.c:342
+#: prefs_gui.c:345
 #, fuzzy
 msgid "Datebook"
 msgstr "Synkroniser dagbok"
 
-#: prefs_gui.c:346
+#: prefs_gui.c:349
 #, fuzzy
 msgid "ToDo"
 msgstr "Huskeliste"
 
-#: prefs_gui.c:348
+#: prefs_gui.c:351
 #, fuzzy
 msgid "Memo"
 msgstr "Synkroniser notater"
 
-#: prefs_gui.c:350
+#: prefs_gui.c:353
 msgid "Alarms"
 msgstr "Alarm"
 
-#: prefs_gui.c:352
+#: prefs_gui.c:355
 msgid "Conduits"
 msgstr "Tillegg"
 
-#: prefs_gui.c:377
+#: prefs_gui.c:380
 msgid "Short date format "
 msgstr "Kort datoangivelse "
 
-#: prefs_gui.c:390
+#: prefs_gui.c:393
 msgid "Long date format "
 msgstr "Lang datoangivelse "
 
-#: prefs_gui.c:403
+#: prefs_gui.c:406
 msgid "Time format "
 msgstr "Tidsangivelse "
 
-#: prefs_gui.c:417
+#: prefs_gui.c:420
 msgid "The first day of the week is "
 msgstr "Første dag i uken er "
 
-#: prefs_gui.c:438
+#: prefs_gui.c:441
 msgid "My GTK colors file is "
 msgstr "Min GTK-fargefil er "
 
-#: prefs_gui.c:451
+#: prefs_gui.c:454
 msgid "Serial Port (/dev/ttyS0, /dev/pilot)"
 msgstr "Seriellport (/dev/ttyS0, /dev/pilot)"
 
-#: prefs_gui.c:468
+#: prefs_gui.c:471
 msgid "Serial Rate (Does not affect USB)"
 msgstr ""
 
-#: prefs_gui.c:481
+#: prefs_gui.c:484
 msgid "Number of backups to be archived"
 msgstr "Antall kopier som skal arkiveres"
 
-#: prefs_gui.c:499
+#: prefs_gui.c:502
 msgid "Show deleted records (default NO)"
 msgstr "Vise slettede poster? (standard: nei)"
 
-#: prefs_gui.c:512
+#: prefs_gui.c:515
 msgid "Show modified deleted records (default NO)"
 msgstr "Vise endrede slettede poster? (standard: nei)"
 
-#: prefs_gui.c:525
+#: prefs_gui.c:528
 msgid "Ask confirmation for file installation (J-Pilot -> PDA) (default YES)"
 msgstr ""
 
-#: prefs_gui.c:538
+#: prefs_gui.c:541
 msgid "Show popup tooltips (default YES)"
 msgstr ""
 
-#: prefs_gui.c:554
+#: prefs_gui.c:557
 msgid "Highlight calendar days with appointments"
 msgstr "Markere dager med avtaler"
 
-#: prefs_gui.c:567
+#: prefs_gui.c:570
 #, fuzzy
 msgid "Use DateBk note tags"
 msgstr "Bruk DateBk notat-markeringer"
 
-#: prefs_gui.c:578
+#: prefs_gui.c:581
 msgid "DateBk support disabled in this build"
 msgstr ""
 
-#: prefs_gui.c:590
+#: prefs_gui.c:593
 #, fuzzy
 msgid "Mail Command"
 msgstr "Alarm-kommando"
 
-#: prefs_gui.c:604
+#: prefs_gui.c:607
 #, fuzzy, c-format
 msgid "%s is replaced by the e-mail address"
 msgstr "%t erstattes med alarm-tidspunktet"
 
-#: prefs_gui.c:612
+#: prefs_gui.c:615
 msgid "Hide Completed ToDos"
 msgstr "Gjem ferdige oppgaver?"
 
-#: prefs_gui.c:624
+#: prefs_gui.c:627
 msgid "Hide ToDos not yet due"
 msgstr ""
 
-#: prefs_gui.c:636
+#: prefs_gui.c:639
 msgid "Record Completion Date"
 msgstr ""
 
-#: prefs_gui.c:649
+#: prefs_gui.c:652
 msgid "Use Manana database"
 msgstr ""
 
-#: prefs_gui.c:665
+#: prefs_gui.c:668
 msgid "Use default number of days due"
 msgstr ""
 
-#: prefs_gui.c:692
+#: prefs_gui.c:695
 msgid "Use Memo32 (pedit32)"
 msgstr ""
 
-#: prefs_gui.c:708
+#: prefs_gui.c:711
 msgid "Open alarm windows for appointment reminders"
 msgstr "Åpne alarmvinduer ved avtale-påminnelser"
 
-#: prefs_gui.c:721
+#: prefs_gui.c:724
 msgid "Execute this command"
 msgstr "Utfør denne kommandoen"
 
-#: prefs_gui.c:733
+#: prefs_gui.c:736
 msgid "WARNING: executing arbitrary shell commands can be dangerous!!!"
 msgstr ""
 "ADVARSEL: å utføre tilfeldige skall-kommandoer kan gi uforutsette resultater!"
 
-#: prefs_gui.c:741
+#: prefs_gui.c:744
 msgid "Alarm Command"
 msgstr "Alarm-kommando"
 
-#: prefs_gui.c:754
+#: prefs_gui.c:757
 msgid "%t is replaced with the alarm time"
 msgstr "%t erstattes med alarm-tidspunktet"
 
-#: prefs_gui.c:758
+#: prefs_gui.c:761
 #, c-format
 msgid "%d is replaced with the alarm date"
 msgstr "%d erstattes med alarm-datoen"
 
-#: prefs_gui.c:763
+#: prefs_gui.c:766
 msgid "%D is replaced with the alarm description"
 msgstr "%D erstattes med alarm-beskrivelsen"
 
-#: prefs_gui.c:767
+#: prefs_gui.c:770
 msgid "%N is replaced with the alarm note"
 msgstr "%N erstattes med alarm-meldingen"
 
-#: prefs_gui.c:771
+#: prefs_gui.c:774
 msgid "%D (description substitution) is disabled in this build"
 msgstr ""
 
-#: prefs_gui.c:775
+#: prefs_gui.c:778
 msgid "%N (note substitution) is disabled in this build"
 msgstr ""
 
-#: prefs_gui.c:784
+#: prefs_gui.c:787
 msgid "Sync datebook"
 msgstr "Synkroniser dagbok"
 
-#: prefs_gui.c:796
+#: prefs_gui.c:799
 msgid "Sync address"
 msgstr "Synkroniseradresser"
 
-#: prefs_gui.c:808
+#: prefs_gui.c:811
 msgid "Sync todo"
 msgstr "Synkroniser oppgaver"
 
-#: prefs_gui.c:820
+#: prefs_gui.c:823
 msgid "Sync memo"
 msgstr "Synkroniser notater"
 
-#: prefs_gui.c:833
+#: prefs_gui.c:836
 #, fuzzy
 msgid "Sync memo32 (pedit32)"
 msgstr "Synkroniser notater"
 
-#: prefs_gui.c:846
+#: prefs_gui.c:849
 msgid "Sync Manana"
 msgstr ""
 
-#: prefs_gui.c:860
+#: prefs_gui.c:863
 msgid "Use J-OS (Not Japanese PalmOS:WorkPad/CLIE)"
 msgstr ""
 
-#: prefs_gui.c:881
+#: prefs_gui.c:884
 #, fuzzy, c-format
 msgid "Sync %s (%s)"
 msgstr "Hopper over %s\n"
 
-#: print_gui.c:175
+#: print_gui.c:178
 msgid "Print Options"
 msgstr "Skriverinnstilinger"
 
-#: print_gui.c:189
+#: print_gui.c:192
 msgid "Paper Size"
 msgstr ""
 
-#: print_gui.c:206
+#: print_gui.c:209
 msgid "Daily Printout"
 msgstr ""
 
-#: print_gui.c:212
+#: print_gui.c:215
 #, fuzzy
 msgid "Weekly Printout"
 msgstr "Ukentlig visning"
 
-#: print_gui.c:218
+#: print_gui.c:221
 #, fuzzy
 msgid "Monthly Printout"
 msgstr "Månedlig visning"
 
-#: print_gui.c:258
+#: print_gui.c:261
 msgid "One record"
 msgstr "En post"
 
-#: print_gui.c:262
+#: print_gui.c:265
 msgid "All records in this category"
 msgstr "Alle poster i denne kategorien"
 
-#: print_gui.c:266
+#: print_gui.c:269
 msgid "Print all records"
 msgstr "Skriv ut alle poster"
 
-#: print_gui.c:289
+#: print_gui.c:292
 msgid "One record per page"
 msgstr "En post per side"
 
-#: print_gui.c:305
+#: print_gui.c:308
 msgid " Blank lines between each record"
 msgstr " blanke linjer mellom hver post"
 
-#: print_gui.c:315
+#: print_gui.c:318
 msgid "Print Command (e.g. lpr, or cat > file.ps)"
 msgstr "Utskriftskomando (f.eks. lpr, eller cat > fil.ps)"
 
-#: restore_gui.c:65 restore_gui.c:226
+#: restore_gui.c:68 restore_gui.c:229
 msgid "Restore Handheld"
 msgstr ""
 
-#: restore_gui.c:246
+#: restore_gui.c:249
 msgid "To restore your handheld:"
 msgstr ""
 
-#: restore_gui.c:249
+#: restore_gui.c:252
 msgid ""
 "1. Choose all the applications you wish to restore.  The default is all."
 msgstr ""
 
-#: restore_gui.c:252
+#: restore_gui.c:255
 msgid "2. Enter the User Name and User ID."
 msgstr ""
 
-#: restore_gui.c:255
+#: restore_gui.c:258
 #, fuzzy
 msgid "3. Press the OK button."
 msgstr "Trykk på HotSync-knappen nå\n"
 
-#: restore_gui.c:258
+#: restore_gui.c:261
 msgid "This will overwrite data that is currently on the handheld."
 msgstr ""
 
-#: restore_gui.c:279
+#: restore_gui.c:282
 #, fuzzy
 msgid "User Name"
 msgstr "Navn"
 
-#: restore_gui.c:292
+#: restore_gui.c:295
 #, fuzzy
 msgid "User ID"
 msgstr "Navn"
 
-#: search_gui.c:116
+#: search_gui.c:118
 #, fuzzy
 msgid "datebook"
 msgstr "Synkroniser dagbok"
 
-#: search_gui.c:197
+#: search_gui.c:199
 #, fuzzy
 msgid "address"
 msgstr "Adresse"
 
-#: search_gui.c:263
+#: search_gui.c:265
 #, fuzzy
 msgid "todo"
 msgstr "Synkroniser oppgaver"
 
-#: search_gui.c:317
+#: search_gui.c:319
 #, fuzzy
 msgid "memo"
 msgstr "Synkroniser notater"
 
-#: search_gui.c:373
+#: search_gui.c:375
 #, fuzzy
 msgid "plugin ?"
 msgstr "/Tillegg"
 
-#: search_gui.c:445
+#: search_gui.c:447
 msgid "No records found"
 msgstr "Ingen poster funnet"
 
-#: search_gui.c:524 search_gui.c:577
+#: search_gui.c:526 search_gui.c:579
 msgid "Search"
 msgstr "Søk"
 
-#: search_gui.c:539
+#: search_gui.c:541
 msgid "Search for: "
 msgstr "Søk etter: "
 
-#: search_gui.c:546
+#: search_gui.c:548
 msgid "Case Sensitive"
 msgstr "Skill store/små bokstaver"
 
-#: sync.c:134
+#: sync.c:139
 #, fuzzy
 msgid "open lock file failed\n"
 msgstr "Kan ikke åpne loggfil\n"
 
-#: sync.c:147
+#: sync.c:152
 #, fuzzy
 msgid "lock failed\n"
 msgstr "Ferdig\n"
 
-#: sync.c:150
+#: sync.c:155
 #, c-format
 msgid "sync file is locked by pid %d\n"
 msgstr ""
 
-#: sync.c:184
+#: sync.c:189
 msgid "unlock failed\n"
 msgstr ""
 
-#: sync.c:187
+#: sync.c:192
 #, c-format
 msgid "sync is locked by pid %d\n"
 msgstr ""
 
-#: sync.c:238
+#: sync.c:243
 #, fuzzy, c-format
 msgid "%s: press the hotsync button on the cradle or \"kill %d\"\n"
 msgstr "Trykk på HotSync-knappen nå\n"
 
-#: sync.c:288
+#: sync.c:293
 #, c-format
 msgid "Exiting with status %s\n"
 msgstr ""
 
-#: sync.c:289
+#: sync.c:294
 msgid "Finished\n"
 msgstr ""
 
-#: sync.c:496
+#: sync.c:434 sync.c:551
 msgid "Check your serial port and settings\n"
 msgstr "Kontroller serieporten og innstillingene\n"
 
-#: sync.c:592
+#: sync.c:649
 #, c-format
 msgid " Syncing on device %s\n"
 msgstr ""
 
-#: sync.c:593
+#: sync.c:650
 msgid " Press the HotSync button now\n"
 msgstr "Trykk på HotSync-knappen nå\n"
 
-#: sync.c:646 sync.c:668 sync.c:690
+#: sync.c:696 sync.c:718 sync.c:740
 #, c-format
 msgid "Last Synced Username-->\"%s\"\n"
 msgstr ""
 
-#: sync.c:647 sync.c:669 sync.c:691
+#: sync.c:697 sync.c:719 sync.c:741
 #, c-format
 msgid "Last Synced UserID-->\"%d\"\n"
 msgstr ""
 
-#: sync.c:648 sync.c:670 sync.c:692
+#: sync.c:698 sync.c:720 sync.c:742
 #, c-format
 msgid " This Username-->\"%s\"\n"
 msgstr ""
 
-#: sync.c:649 sync.c:671 sync.c:693
+#: sync.c:699 sync.c:721 sync.c:743
 #, c-format
 msgid " This User ID-->%d\n"
 msgstr ""
 
-#: sync.c:714
+#: sync.c:764
 #, c-format
 msgid "Username is \"%s\"\n"
 msgstr ""
 
-#: sync.c:715
+#: sync.c:765
 #, fuzzy, c-format
 msgid "User ID is %d\n"
 msgstr "Navn"
 
-#: sync.c:717 sync.c:723
+#: sync.c:767 sync.c:773
 #, c-format
 msgid "lastSyncPC = %d\n"
 msgstr ""
 
-#: sync.c:718
+#: sync.c:768
 #, c-format
 msgid "This PC = %lu\n"
 msgstr ""
 
-#: sync.c:719
+#: sync.c:769
 #, c-format
 msgid "Last Username = [%s]\n"
 msgstr ""
 
-#: sync.c:720
+#: sync.c:770
 #, c-format
 msgid "Last UserID = %d\n"
 msgstr ""
 
-#: sync.c:721
+#: sync.c:771
 #, c-format
 msgid "Username = [%s]\n"
 msgstr ""
 
-#: sync.c:722
+#: sync.c:772
 #, c-format
 msgid "userID = %d\n"
 msgstr ""
 
-#: sync.c:740
+#: sync.c:790
 msgid "Sync canceled\n"
 msgstr ""
 
-#: sync.c:762
+#: sync.c:812
 msgid "Finished restoring handheld.\n"
 msgstr ""
 
-#: sync.c:763
+#: sync.c:813
 msgid "You may need to sync to update J-Pilot.\n"
 msgstr ""
 
-#: sync.c:794
+#: sync.c:843
 msgid "Doing a fast sync.\n"
 msgstr "Utfører hurtigsynkronisering\n"
 
-#: sync.c:833
+#: sync.c:882
 msgid "Doing a slow sync.\n"
 msgstr "Utfører en treg synkronisering\n"
 
-#: sync.c:934
+#: sync.c:983
 msgid "Thank you for using J-Pilot."
 msgstr "Takk for at du bruker J-Pilot."
 
-#: sync.c:976
+#: sync.c:1025
 #, fuzzy
 msgid "Finished.\n"
 msgstr "Ferdig\n"
 
-#: sync.c:1012 sync.c:2479
+#: sync.c:1061 sync.c:2562
 #, fuzzy, c-format
 msgid "Syncing %s\n"
 msgstr "Hopper over %s\n"
 
-#: sync.c:1018 sync.c:2147 sync.c:2485
+#: sync.c:1067 sync.c:2230 sync.c:2568
 #, fuzzy, c-format
 msgid "Wrote an %s record."
 msgstr "Skriv ut alle poster"
 
-#: sync.c:1020 sync.c:2149 sync.c:2487
+#: sync.c:1069 sync.c:2232 sync.c:2570
 #, c-format
 msgid "Writing an %s record failed."
 msgstr ""
 
-#: sync.c:1022 sync.c:2151 sync.c:2489
+#: sync.c:1071 sync.c:2234 sync.c:2572
 #, c-format
 msgid "Deleting an %s record failed."
 msgstr ""
 
-#: sync.c:1024 sync.c:2153 sync.c:2491
+#: sync.c:1073 sync.c:2236 sync.c:2574
 #, c-format
 msgid "Deleted an %s record."
 msgstr ""
 
-#: sync.c:1027 sync.c:2156 sync.c:2494
+#: sync.c:1076 sync.c:2239 sync.c:2577
 #, fuzzy, c-format
 msgid "Wrote a %s record."
 msgstr "Skriv ut alle poster"
 
-#: sync.c:1029 sync.c:2158 sync.c:2496
+#: sync.c:1078 sync.c:2241 sync.c:2579
 #, c-format
 msgid "Writing a %s record failed."
 msgstr ""
 
-#: sync.c:1031 sync.c:2160 sync.c:2498
+#: sync.c:1080 sync.c:2243 sync.c:2581
 #, c-format
 msgid "Deleting a %s record failed."
 msgstr ""
 
-#: sync.c:1033 sync.c:2162 sync.c:2500
+#: sync.c:1082 sync.c:2245 sync.c:2583
 #, fuzzy, c-format
 msgid "Deleted a %s record."
 msgstr "%d av %d poster"
 
-#: sync.c:1052
+#: sync.c:1102
 #, c-format
 msgid "number of records = %d\n"
 msgstr ""
 
-#: sync.c:1163 sync.c:2307
+#: sync.c:1216 sync.c:2390
 msgid ""
 "dlp_DeleteRecord failed\n"
 "This could be because the record was already deleted on the Palm\n"
 msgstr ""
 
-#: sync.c:1281 sync.c:1661
+#: sync.c:1316 sync.c:1729
 #, fuzzy, c-format
 msgid "%s (Creator ID '%s') is up to date, fetch skipped.\n"
 msgstr "%s er oppdatert, dropper overføring\n"
 
-#: sync.c:1285 sync.c:1665
+#: sync.c:1320 sync.c:1733
 #, fuzzy, c-format
 msgid "Fetching '%s' (Creator ID '%s')... "
 msgstr "Henter '%s'... "
 
-#: sync.c:1292 sync.c:1671
+#: sync.c:1327 sync.c:1739
 #, c-format
 msgid "Failed, unable to create file %s\n"
 msgstr ""
 
-#: sync.c:1303 sync.c:1680
+#: sync.c:1338 sync.c:1748
 #, c-format
 msgid "Failed, unable to back up database %s\n"
 msgstr ""
 
-#: sync.c:1307 sync.c:1684 sync.c:1851
+#: sync.c:1342 sync.c:1752 sync.c:1934
 msgid "OK\n"
 msgstr "Greit\n"
 
-#: sync.c:1577
+#: sync.c:1645
 #, c-format
 msgid "Skipping %s (Creator ID '%s')\n"
 msgstr ""
 
-#: sync.c:1737
+#: sync.c:1820
 #, fuzzy, c-format
 msgid "Installing %s "
 msgstr "Innstallerer %s... "
 
-#: sync.c:1743
+#: sync.c:1826
 #, fuzzy, c-format
 msgid ""
 "\n"
 "Unable to open file: '%s': %s!\n"
 msgstr "Kan ikke åpne loggfil\n"
 
-#: sync.c:1747
+#: sync.c:1830
 #, c-format
 msgid ""
 "\n"
 "Unable to sync file: '%s': file corrupted?\n"
 msgstr ""
 
-#: sync.c:1759
+#: sync.c:1842
 #, c-format
 msgid "(Creator ID is '%s')..."
 msgstr ""
 
-#: sync.c:1779 sync.c:1792 sync.c:1807 sync.c:1820
+#: sync.c:1862 sync.c:1875 sync.c:1890 sync.c:1903
 #, fuzzy, c-format
 msgid ""
 "\n"
 "Unable to open file: %s\n"
 msgstr "Kan ikke åpne loggfil\n"
 
-#: sync.c:1836
+#: sync.c:1919
 #, c-format
 msgid "Install %s failed"
 msgstr "Innstallering av %s mislyktes"
 
-#: sync.c:1840
+#: sync.c:1923
 #, fuzzy
 msgid "Failed.\n"
 msgstr "Ferdig\n"
 
-#: sync.c:1847
+#: sync.c:1930
 #, c-format
 msgid "Installed %s "
 msgstr "%s innstallert"
 
-#: sync.c:1871 sync.c:1877
+#: sync.c:1954 sync.c:1960
 #, fuzzy, c-format
 msgid "Unable to open file: %s%s\n"
 msgstr "Kan ikke åpne loggfil\n"
 
-#: sync.c:2057
+#: sync.c:2140
 msgid "Unable to read home dir\n"
 msgstr ""
 
-#: sync.c:2563
+#: sync.c:2647
 #, c-format
 msgid "palm: number of records = %d\n"
 msgstr ""
 
-#: sync.c:2564
+#: sync.c:2648
 #, c-format
 msgid "disk: number of records = %d\n"
 msgstr ""
 
-#: sync.c:2737
+#: sync.c:2824
 #, fuzzy, c-format
 msgid "%s:%d Error getting app info %s\n"
 msgstr "Feil under lesing"
 
-#: sync.c:2743 sync.c:2770
+#: sync.c:2830 sync.c:2872
 #, fuzzy, c-format
 msgid "%s:%d Error unpacking app info %s\n"
 msgstr "Feil under lesing"
 
-#: sync.c:2762
+#: sync.c:2852 sync.c:2864
 #, fuzzy, c-format
 msgid "Error reading appinfo block for %s\n"
 msgstr "Feil under lesing"
 
-#: sync.c:2909 sync.c:2913
+#: sync.c:3012 sync.c:3016
 #, c-format
 msgid "Could not add category %s to remote.\n"
 msgstr ""
 
-#: sync.c:2910 sync.c:2916
+#: sync.c:3013 sync.c:3019
 msgid "Too many categories on remote.\n"
 msgstr ""
 
-#: sync.c:2911 sync.c:2919
+#: sync.c:3014 sync.c:3022
 #, c-format
 msgid "All records on desktop in %s will be moved to %s.\n"
 msgstr ""
 
-#: todo.c:245
+#: todo.c:248
 #, c-format
 msgid "ToDo description text > %d, truncating to %d\n"
 msgstr ""
 
-#: todo.c:252
+#: todo.c:255
 #, c-format
 msgid "ToDo note text > %d, truncating to %d\n"
 msgstr ""
 
-#: todo.c:355
+#: todo.c:357
 #, fuzzy, c-format
 msgid "%s:%d Error reading category info %s\n"
 msgstr "Feil under lesing"
 
-#: todo_gui.c:146
+#: todo_gui.c:148
 msgid "Due Date"
 msgstr "Ingen forfallsdato"
 
-#: todo_gui.c:549
+#: todo_gui.c:551
 msgid "File doesn't appear to be todo.dat format\n"
 msgstr ""
 
-#: todo_gui.c:708 todo_gui.c:723
+#: todo_gui.c:710 todo_gui.c:725
 #, c-format
 msgid "Can't export todo %d\n"
 msgstr ""
 
-#: todo_gui.c:1495
+#: todo_gui.c:1536
 msgid "Priority out of range\n"
 msgstr ""
 
-#: todo_gui.c:1685
+#: todo_gui.c:1724
 #, c-format
 msgid "No date"
 msgstr "Ingen forfallsdato"
 
-#: todo_gui.c:2120
+#: todo_gui.c:2157
 msgid "Completed"
 msgstr "Utført"
 
-#: todo_gui.c:2128
+#: todo_gui.c:2165
 msgid "Priority: "
 msgstr "Prioritet: "
 
-#: todo_gui.c:2148
+#: todo_gui.c:2185
 msgid "Date Due:"
 msgstr "Forfallsdato:"
 
-#: todo_gui.c:2210 Expense/expense.c:1672 KeyRing/keyring.c:1629
+#: todo_gui.c:2247 Expense/expense.c:1828 KeyRing/keyring.c:1642
 msgid "Note"
 msgstr "Notat"
 
-#: utils.c:73
+#: utils.c:76
 msgid " -v displays version and compile options and exits.\n"
 msgstr ""
 
-#: utils.c:75
+#: utils.c:78
 msgid " -d displays debug info to stdout.\n"
 msgstr ""
 
-#: utils.c:76
+#: utils.c:79
 msgid " -p do not load plugins.\n"
 msgstr ""
 
-#: utils.c:77
+#: utils.c:80
 msgid " -a ignore missed alarms since the last time this program was run.\n"
 msgstr ""
 
-#: utils.c:78
+#: utils.c:81
 msgid " -A ignore all alarms)); past and future.\n"
 msgstr ""
 
-#: utils.c:79
+#: utils.c:82
 msgid " -i makes jpilot iconify itself upon launch\n"
 msgstr ""
 
-#: utils.c:80
+#: utils.c:83
 msgid " The PILOTPORT, and PILOTRATE env variables are used to specify\n"
 msgstr ""
 
-#: utils.c:81
+#: utils.c:84
 msgid " which port to sync on, and at what speed.\n"
 msgstr ""
 
-#: utils.c:82
+#: utils.c:85
 msgid " If PILOTPORT is not set then it defaults to /dev/pilot.\n"
 msgstr ""
 
-#: utils.c:107
+#: utils.c:110
 msgid "Date compiled"
 msgstr ""
 
-#: utils.c:108
+#: utils.c:111
 msgid "Compiled with these options:"
 msgstr ""
 
-#: utils.c:110
+#: utils.c:113
 #, fuzzy
 msgid "Installed Path"
 msgstr "%s innstallert"
 
-#: utils.c:112
+#: utils.c:115
 msgid "pilot-link version"
 msgstr ""
 
-#: utils.c:116
+#: utils.c:119
 msgid "USB support"
 msgstr ""
 
-#: utils.c:118 utils.c:124 utils.c:130 utils.c:136 utils.c:142 utils.c:148
-#: utils.c:154
+#: utils.c:121 utils.c:127 utils.c:133 utils.c:139 utils.c:145 utils.c:151
+#: utils.c:157
 #, fuzzy
 msgid "yes"
 msgstr "år"
 
-#: utils.c:120 utils.c:126 utils.c:132 utils.c:138 utils.c:144 utils.c:150
-#: utils.c:156
+#: utils.c:123 utils.c:129 utils.c:135 utils.c:141 utils.c:147 utils.c:153
+#: utils.c:159
 #, fuzzy
 msgid "no"
 msgstr "ingen"
 
-#: utils.c:122
+#: utils.c:125
 #, fuzzy
 msgid "Private record support"
 msgstr "Skriv ut alle poster"
 
-#: utils.c:128
+#: utils.c:131
 msgid "Datebk support"
 msgstr ""
 
-#: utils.c:134
+#: utils.c:137
 #, fuzzy
 msgid "Plugin support"
 msgstr "/Tillegg"
 
-#: utils.c:140
+#: utils.c:143
 #, fuzzy
 msgid "Manana support"
 msgstr "/Tillegg"
 
-#: utils.c:146
+#: utils.c:149
 msgid "NLS support (foreign languages)"
 msgstr ""
 
-#: utils.c:152
+#: utils.c:155
 #, fuzzy
 msgid "GTK2 support"
 msgstr "/Tillegg"
 
-#: utils.c:196
+#: utils.c:198
 #, c-format
 msgid "Today is %A, %x %X"
 msgstr "I dag er %A %x %X"
 
-#: utils.c:198
+#: utils.c:200
 #, c-format
 msgid "Today is %%A, %s %s"
 msgstr "I dag er det %%A %s %s"
 
-#: utils.c:1105
+#: utils.c:1089
 msgid "Today"
 msgstr "dag"
 
-#: utils.c:1289
+#: utils.c:1272
 msgid "Save Changed Record?"
 msgstr ""
 
-#: utils.c:1290
+#: utils.c:1273
 msgid "Do you want to save the changes to this record?"
 msgstr ""
 
-#: utils.c:1295
+#: utils.c:1278
 #, fuzzy
 msgid "Save New Record?"
 msgstr "Ny post"
 
-#: utils.c:1296
+#: utils.c:1279
 msgid "Do you want to save this new record?"
 msgstr ""
 
-#: utils.c:1316 KeyRing/keyring.c:1352
+#: utils.c:1299 KeyRing/keyring.c:1363
 msgid "Can't get HOME environment variable\n"
 msgstr ""
 
-#: utils.c:1323 KeyRing/keyring.c:1357
+#: utils.c:1306 KeyRing/keyring.c:1368
 msgid "Your HOME environment variable is too long for me\n"
 msgstr ""
 
-#: utils.c:1348 utils.c:1352
+#: utils.c:1331 utils.c:1335
 #, c-format
 msgid "Can't create directory %s\n"
 msgstr ""
 
-#: utils.c:1358
+#: utils.c:1341
 #, c-format
 msgid ""
 "%s doesn't appear to be a directory.\n"
 "I need it to be.\n"
 msgstr ""
 
-#: utils.c:1366
+#: utils.c:1349
 #, c-format
 msgid "I can't write files in directory %s\n"
 msgstr ""
 
-#: utils.c:1435 utils.c:1444
+#: utils.c:1407 utils.c:1416
 msgid "Error writing PC header to file: next_id\n"
 msgstr ""
 
-#: utils.c:1440
+#: utils.c:1412
 msgid "Error writing next id to file: next_id\n"
 msgstr ""
 
-#: utils.c:1457
+#: utils.c:1429
 #, fuzzy
 msgid "Error opening file: next_id\n"
 msgstr "Feil under lesing"
 
-#: utils.c:1626
+#: utils.c:1597
 #, fuzzy, c-format
 msgid "Couldn't find empty DB file %s: %s\n"
 msgstr "Kan ikke åpne loggfil\n"
 
-#: utils.c:1629
+#: utils.c:1600
 #, fuzzy
 msgid " may not be installed.\n"
 msgstr "Filer som skal installeres"
 
-#: utils.c:1812
+#: utils.c:1783
 #, fuzzy
 msgid "Error reading file"
 msgstr "Feil under lesing"
 
-#: utils.c:2438
+#: utils.c:2409
 msgid "PC ID is 0.\n"
 msgstr "PC ID er 0.\n"
 
-#: utils.c:2439
+#: utils.c:2410
 #, fuzzy, c-format
 msgid "I generated a new PC ID.  It is %lu\n"
 msgstr "En ny PC ID laget.  Denne er %d\n"
 
-#: weekview_gui.c:278
+#: weekview_gui.c:282
 msgid "Weekly View"
 msgstr "Ukentlig visning"
 
-#: Expense/expense.c:77
+#: Expense/expense.c:97
 msgid "Australia"
 msgstr ""
 
-#: Expense/expense.c:78
+#: Expense/expense.c:98
 msgid "Austria"
 msgstr ""
 
-#: Expense/expense.c:79
+#: Expense/expense.c:99
 msgid "Belgium"
 msgstr ""
 
-#: Expense/expense.c:80
+#: Expense/expense.c:100
 msgid "Brazil"
 msgstr ""
 
-#: Expense/expense.c:81
+#: Expense/expense.c:101
 msgid "Canada"
 msgstr ""
 
-#: Expense/expense.c:82
+#: Expense/expense.c:102
 msgid "Denmark"
 msgstr ""
 
-#: Expense/expense.c:83
+#: Expense/expense.c:103
 msgid "EU (Euro)"
 msgstr ""
 
-#: Expense/expense.c:84
+#: Expense/expense.c:104
 msgid "Finland"
 msgstr ""
 
-#: Expense/expense.c:85
+#: Expense/expense.c:105
 #, fuzzy
 msgid "France"
 msgstr "Angre"
 
-#: Expense/expense.c:86
+#: Expense/expense.c:106
 msgid "Germany"
 msgstr ""
 
-#: Expense/expense.c:87
+#: Expense/expense.c:107
 msgid "Hong Kong"
 msgstr ""
 
-#: Expense/expense.c:88
+#: Expense/expense.c:108
 msgid "Iceland"
 msgstr ""
 
-#: Expense/expense.c:89
+#: Expense/expense.c:109
 msgid "India"
 msgstr ""
 
-#: Expense/expense.c:90
+#: Expense/expense.c:110
 #, fuzzy
 msgid "Indonesia"
 msgstr "ingen"
 
-#: Expense/expense.c:91
+#: Expense/expense.c:111
 msgid "Ireland"
 msgstr ""
 
-#: Expense/expense.c:92
+#: Expense/expense.c:112
 #, fuzzy
 msgid "Italy"
 msgstr "/Arkiv/_Installere"
 
-#: Expense/expense.c:93
+#: Expense/expense.c:113
 msgid "Japan"
 msgstr ""
 
-#: Expense/expense.c:94
+#: Expense/expense.c:114
 msgid "Korea"
 msgstr ""
 
-#: Expense/expense.c:95
+#: Expense/expense.c:115
 msgid "Luxembourg"
 msgstr ""
 
-#: Expense/expense.c:96
+#: Expense/expense.c:116
 msgid "Malaysia"
 msgstr ""
 
-#: Expense/expense.c:97
+#: Expense/expense.c:117
 msgid "Mexico"
 msgstr ""
 
-#: Expense/expense.c:98
+#: Expense/expense.c:118
 msgid "Netherlands"
 msgstr ""
 
-#: Expense/expense.c:99
+#: Expense/expense.c:119
 msgid "New Zealand"
 msgstr ""
 
-#: Expense/expense.c:100
+#: Expense/expense.c:120
 msgid "Norway"
 msgstr ""
 
-#: Expense/expense.c:101
+#: Expense/expense.c:121
 msgid "P.R.C."
 msgstr ""
 
-#: Expense/expense.c:102
+#: Expense/expense.c:122
 msgid "Philippines"
 msgstr ""
 
-#: Expense/expense.c:103
+#: Expense/expense.c:123
 msgid "Singapore"
 msgstr ""
 
-#: Expense/expense.c:104
+#: Expense/expense.c:124
 #, fuzzy
 msgid "Spain"
 msgstr "Skriv ut"
 
-#: Expense/expense.c:105
+#: Expense/expense.c:125
 #, fuzzy
 msgid "Sweden"
 msgstr "uke"
 
-#: Expense/expense.c:106
+#: Expense/expense.c:126
 msgid "Switzerland"
 msgstr ""
 
-#: Expense/expense.c:107
+#: Expense/expense.c:127
 #, fuzzy
 msgid "Taiwan"
 msgstr "Skriv ut"
 
-#: Expense/expense.c:108
+#: Expense/expense.c:128
 #, fuzzy
 msgid "Thailand"
 msgstr "Skriv ut"
 
-#: Expense/expense.c:109
+#: Expense/expense.c:129
 msgid "United Kingdom"
 msgstr ""
 
-#: Expense/expense.c:110
+#: Expense/expense.c:130
 msgid "United States"
 msgstr ""
 
-#: Expense/expense.c:401 Expense/expense.c:412
+#: Expense/expense.c:499 Expense/expense.c:510
 msgid "Expense"
 msgstr ""
 
-#: Expense/expense.c:433 Expense/expense.c:1282
+#: Expense/expense.c:531 Expense/expense.c:1397
 msgid "Airfare"
 msgstr ""
 
-#: Expense/expense.c:435 Expense/expense.c:1283
+#: Expense/expense.c:533 Expense/expense.c:1398
 msgid "Breakfast"
 msgstr ""
 
-#: Expense/expense.c:437 Expense/expense.c:1284
+#: Expense/expense.c:535 Expense/expense.c:1399
 msgid "Bus"
 msgstr ""
 
-#: Expense/expense.c:439 Expense/expense.c:1285
+#: Expense/expense.c:537 Expense/expense.c:1400
 msgid "BusinessMeals"
 msgstr ""
 
-#: Expense/expense.c:441 Expense/expense.c:1286
+#: Expense/expense.c:539 Expense/expense.c:1401
 msgid "CarRental"
 msgstr ""
 
-#: Expense/expense.c:443 Expense/expense.c:1287
+#: Expense/expense.c:541 Expense/expense.c:1402
 #, fuzzy
 msgid "Dinner"
 msgstr "ingen"
 
-#: Expense/expense.c:445 Expense/expense.c:1288
+#: Expense/expense.c:543 Expense/expense.c:1403
 msgid "Entertainment"
 msgstr ""
 
-#: Expense/expense.c:447 Expense/expense.c:1289
+#: Expense/expense.c:545 Expense/expense.c:1404
 msgid "Fax"
 msgstr ""
 
-#: Expense/expense.c:449 Expense/expense.c:1290
+#: Expense/expense.c:547 Expense/expense.c:1405
 msgid "Gas"
 msgstr ""
 
-#: Expense/expense.c:451 Expense/expense.c:1291
+#: Expense/expense.c:549 Expense/expense.c:1406
 msgid "Gifts"
 msgstr ""
 
-#: Expense/expense.c:453 Expense/expense.c:1292
+#: Expense/expense.c:551 Expense/expense.c:1407
 #, fuzzy
 msgid "Hotel"
 msgstr "Notat"
 
-#: Expense/expense.c:455 Expense/expense.c:1293
+#: Expense/expense.c:553 Expense/expense.c:1408
 msgid "Incidentals"
 msgstr ""
 
-#: Expense/expense.c:457 Expense/expense.c:1294
+#: Expense/expense.c:555 Expense/expense.c:1409
 #, fuzzy
 msgid "Laundry"
 msgstr "Søndag"
 
-#: Expense/expense.c:459 Expense/expense.c:1295
+#: Expense/expense.c:557 Expense/expense.c:1410
 msgid "Limo"
 msgstr ""
 
-#: Expense/expense.c:461 Expense/expense.c:1296
+#: Expense/expense.c:559 Expense/expense.c:1411
 msgid "Lodging"
 msgstr ""
 
-#: Expense/expense.c:463 Expense/expense.c:1297
+#: Expense/expense.c:561 Expense/expense.c:1412
 msgid "Lunch"
 msgstr ""
 
-#: Expense/expense.c:465 Expense/expense.c:1298
+#: Expense/expense.c:563 Expense/expense.c:1413
 msgid "Mileage"
 msgstr ""
 
-#: Expense/expense.c:469 Expense/expense.c:1300
+#: Expense/expense.c:567 Expense/expense.c:1415
 #, fuzzy
 msgid "Parking"
 msgstr "Skriv ut"
 
-#: Expense/expense.c:471 Expense/expense.c:1301
+#: Expense/expense.c:569 Expense/expense.c:1416
 msgid "Postage"
 msgstr ""
 
-#: Expense/expense.c:473 Expense/expense.c:1302
+#: Expense/expense.c:571 Expense/expense.c:1417
 #, fuzzy
 msgid "Snack"
 msgstr "Synkroniser"
 
-#: Expense/expense.c:475 Expense/expense.c:1303
+#: Expense/expense.c:573 Expense/expense.c:1418
 #, fuzzy
 msgid "Subway"
 msgstr "Søndag"
 
-#: Expense/expense.c:477 Expense/expense.c:1304
+#: Expense/expense.c:575 Expense/expense.c:1419
 msgid "Supplies"
 msgstr ""
 
-#: Expense/expense.c:479 Expense/expense.c:1305
+#: Expense/expense.c:577 Expense/expense.c:1420
 msgid "Taxi"
 msgstr ""
 
-#: Expense/expense.c:481 Expense/expense.c:1306
+#: Expense/expense.c:579 Expense/expense.c:1421
 msgid "Telephone"
 msgstr ""
 
-#: Expense/expense.c:483 Expense/expense.c:1307
+#: Expense/expense.c:581 Expense/expense.c:1422
 msgid "Tips"
 msgstr ""
 
-#: Expense/expense.c:485 Expense/expense.c:1308
+#: Expense/expense.c:583 Expense/expense.c:1423
 msgid "Tolls"
 msgstr ""
 
-#: Expense/expense.c:487 Expense/expense.c:1309
+#: Expense/expense.c:585 Expense/expense.c:1424
 #, fuzzy
 msgid "Train"
 msgstr "Skriv ut"
 
-#: Expense/expense.c:501
+#: Expense/expense.c:599
 msgid "AmEx"
 msgstr ""
 
-#: Expense/expense.c:503 Expense/expense.c:1272
+#: Expense/expense.c:601 Expense/expense.c:1387
 #, fuzzy
 msgid "Cash"
 msgstr "Katter"
 
-#: Expense/expense.c:505 Expense/expense.c:1273
+#: Expense/expense.c:603 Expense/expense.c:1388
 msgid "Check"
 msgstr ""
 
-#: Expense/expense.c:507
+#: Expense/expense.c:605
 msgid "CreditCard"
 msgstr ""
 
-#: Expense/expense.c:509
+#: Expense/expense.c:607
 msgid "MasterCard"
 msgstr ""
 
-#: Expense/expense.c:511 Expense/expense.c:1276
+#: Expense/expense.c:609 Expense/expense.c:1391
 msgid "Prepaid"
 msgstr ""
 
-#: Expense/expense.c:513 Expense/expense.c:1277
+#: Expense/expense.c:611 Expense/expense.c:1392
 msgid "VISA"
 msgstr ""
 
-#: Expense/expense.c:1077
+#: Expense/expense.c:1197
 msgid "Expense: Unknown category\n"
 msgstr ""
 
-#: Expense/expense.c:1083
+#: Expense/expense.c:1203
 msgid "Expense: Unknown expense type\n"
 msgstr ""
 
-#: Expense/expense.c:1089
+#: Expense/expense.c:1209
 msgid "Expense: Unknown payment type\n"
 msgstr ""
 
-#: Expense/expense.c:1271
+#: Expense/expense.c:1386
 msgid "American Express"
 msgstr ""
 
-#: Expense/expense.c:1274
+#: Expense/expense.c:1389
 msgid "Credit Card"
 msgstr ""
 
-#: Expense/expense.c:1275
+#: Expense/expense.c:1390
 msgid "Master Card"
 msgstr ""
 
-#: Expense/expense.c:1551
-msgid "Type: "
+#: Expense/expense.c:1653
+#, fuzzy
+msgid "Category:"
+msgstr "Kategori"
+
+#: Expense/expense.c:1666
+#, fuzzy
+msgid "Type:"
+msgstr "Tid:"
+
+#: Expense/expense.c:1679
+msgid "Payment:"
 msgstr ""
 
-#: Expense/expense.c:1560
-msgid "Payment: "
+#: Expense/expense.c:1692
+msgid "Currency:"
 msgstr ""
 
-#: Expense/expense.c:1569
-msgid "Currency: "
-msgstr ""
+#: Expense/expense.c:1705
+#, fuzzy
+msgid "Date:"
+msgstr "dato"
 
-#: Expense/expense.c:1581
+#: Expense/expense.c:1722
 #, fuzzy
 msgid "Month:"
 msgstr "Måned"
 
-#: Expense/expense.c:1595
+#: Expense/expense.c:1736
 #, fuzzy
 msgid "Day:"
 msgstr "Dag"
@@ -2734,66 +2750,66 @@ msgstr "Dag"
 # msgstr "Pr. uke"
 # msgid "MonthView"
 # msgstr "Pr. mnd"
-#: Expense/expense.c:1609
+#: Expense/expense.c:1750
 #, fuzzy
 msgid "Year:"
 msgstr "År"
 
-#: Expense/expense.c:1626
+#: Expense/expense.c:1763
 #, fuzzy
-msgid "Amount: "
+msgid "Amount:"
 msgstr "Om %s"
 
-#: Expense/expense.c:1635
-msgid "Vendor: "
+#: Expense/expense.c:1777
+msgid "Vendor:"
 msgstr ""
 
-#: Expense/expense.c:1644
+#: Expense/expense.c:1791
 #, fuzzy
-msgid "City: "
+msgid "City:"
 msgstr "Kategori"
 
-#: Expense/expense.c:1649
+#: Expense/expense.c:1805
 msgid "Attendees"
 msgstr ""
 
-#: KeyRing/keyring.c:169
+#: KeyRing/keyring.c:176
 msgid "KeyRing: pack_KeyRing(): buf_size too small\n"
 msgstr ""
 
-#: KeyRing/keyring.c:488 KeyRing/keyring.c:499
+#: KeyRing/keyring.c:495 KeyRing/keyring.c:506
 msgid "KeyRing"
 msgstr ""
 
-#: KeyRing/keyring.c:1272
+#: KeyRing/keyring.c:1283
 #, fuzzy
 msgid "Incorrect, Reenter KeyRing Password"
 msgstr "Angi Palm-passord"
 
-#: KeyRing/keyring.c:1274
+#: KeyRing/keyring.c:1285
 #, fuzzy
 msgid "Enter a NEW KeyRing Password"
 msgstr "Angi Palm-passord"
 
-#: KeyRing/keyring.c:1276
+#: KeyRing/keyring.c:1287
 #, fuzzy
 msgid "Enter KeyRing Password"
 msgstr "Angi Palm-passord"
 
-#: KeyRing/keyring.c:1362
+#: KeyRing/keyring.c:1373
 #, c-format
 msgid "KeyRing: file %s not found.\n"
 msgstr ""
 
-#: KeyRing/keyring.c:1363
+#: KeyRing/keyring.c:1374
 msgid "KeyRing: Try Syncing.\n"
 msgstr ""
 
-#: KeyRing/keyring.c:1447
+#: KeyRing/keyring.c:1459
 msgid "Account"
 msgstr ""
 
-#: KeyRing/keyring.c:1464
+#: KeyRing/keyring.c:1476
 #, fuzzy
 msgid ""
 "Change\n"
@@ -2801,21 +2817,21 @@ msgid ""
 "Password"
 msgstr "Angi Palm-passord"
 
-#: KeyRing/keyring.c:1602
+#: KeyRing/keyring.c:1615
 #, fuzzy
 msgid "name: "
 msgstr "Navn"
 
-#: KeyRing/keyring.c:1609
+#: KeyRing/keyring.c:1622
 msgid "account: "
 msgstr ""
 
-#: KeyRing/keyring.c:1616
+#: KeyRing/keyring.c:1629
 #, fuzzy
 msgid "password: "
 msgstr "Palm-passord"
 
-#: KeyRing/keyring.c:1622
+#: KeyRing/keyring.c:1635
 #, fuzzy
 msgid "Generate Password"
 msgstr "Angi Palm-passord"
@@ -2857,9 +2873,6 @@ msgstr "Angi Palm-passord"
 #, fuzzy
 #~ msgid "_to_install file\n"
 #~ msgstr "Kan ikke åpne loggfil\n"
-
-#~ msgid "Time:"
-#~ msgstr "Tid:"
 
 #~ msgid "RTh"
 #~ msgstr "To"
