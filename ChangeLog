@@ -1,5 +1,6 @@
 0.99.4 - 12/25/02
  Ported code to GTK-2 (I used GTK-2.2)
+ Added random password generation to KeyRing
  Added a dialer program and GUI launcher
  Added Syncronization of categories and editing categories on desktop
  Added Export of iCalendar format from ToDo and Datebook
