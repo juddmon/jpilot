@@ -33,6 +33,7 @@ static GtkWidget *main_window;
 static GtkWidget *port_entry;
 static GtkWidget *backups_entry;
 static GtkWidget *alarm_command_entry;
+static GtkWidget *mail_command_entry;
 static GtkWidget *todo_days_due_entry;
 
 extern int glob_app;
@@ -214,6 +215,10 @@ static gboolean cb_destroy(GtkWidget *widget)
    entry_text = gtk_entry_get_text(GTK_ENTRY(alarm_command_entry));
    jp_logf(JP_LOG_DEBUG, "alarm_command_entry = [%s]\n", entry_text);
    set_pref(PREF_ALARM_COMMAND, 0, entry_text, FALSE);
+
+   entry_text = gtk_entry_get_text(GTK_ENTRY(mail_command_entry));
+   jp_logf(JP_LOG_DEBUG, "mail_command_entry = [%s]\n", entry_text);
+   set_pref(PREF_MAIL_COMMAND, 0, entry_text, FALSE);
 
    backups_text = gtk_entry_get_text(GTK_ENTRY(backups_entry));
    jp_logf(JP_LOG_DEBUG, "backups_entry = [%s]\n", backups_text);
@@ -546,8 +551,24 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 
    /**********************************************************************/
    /* Address preference tab */
-   label = gtk_label_new(_("There are no address preferences at this time"));
-   gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
+
+   /* Command to use for e-mailing from address book */
+   hbox_temp = gtk_hbox_new(FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox_address), hbox_temp, FALSE, FALSE, 0);
+
+   label = gtk_label_new(_("Mail Command"));
+   gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 0);
+
+   mail_command_entry = gtk_entry_new_with_max_length(MAX_PREF_VALUE - 2);
+
+   get_pref(PREF_MAIL_COMMAND, &ivalue, &cstr);
+   if (cstr) {
+      gtk_entry_set_text(GTK_ENTRY(mail_command_entry), cstr);
+   }
+   gtk_box_pack_start(GTK_BOX(hbox_temp), mail_command_entry, TRUE, TRUE, 1);
+
+   label = gtk_label_new(_("%s is replaced by the e-mail address"));
+   gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.0);
    gtk_box_pack_start(GTK_BOX(vbox_address), label, FALSE, FALSE, 0);
 
    /**********************************************************************/

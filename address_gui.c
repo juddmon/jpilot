@@ -34,7 +34,6 @@
 #include "print.h"
 #include "password.h"
 #include "export.h"
-#include "mailer.h"
 #include <pi-dlp.h>
 /* There are a large number of calls to gtk_text_insert in the code.  To
  * add ifdef/endif blocks around all of them would make the code unreadable.
@@ -1493,7 +1492,20 @@ void parse_phone_str(char *dest, char *src, int max_len)
 
 void email_contact(GtkWidget *widget, gchar *str)
 {
-   dialog_email(GTK_WINDOW(gtk_widget_get_toplevel(widget)), str);
+   char command[1024];
+   const char *pref_command;
+   
+   get_pref(PREF_MAIL_COMMAND, NULL, &pref_command);
+   if (!pref_command) {
+      return;
+   }
+
+   /* Make a system call command string */
+   g_snprintf(command, sizeof(command), pref_command, str);
+   command[1023]='\0';
+
+   jp_logf(JP_LOG_STDOUT|JP_LOG_FILE, "executing command = [%s]\n", command);
+   system(command);
 }
 
 void dial_contact(GtkWidget *widget, gchar *str)
