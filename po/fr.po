@@ -876,7 +876,7 @@ msgstr "/_Aide"
 
 #: jpilot.c:1134
 msgid "/Help/PayBack program"
-msgstr ""
+msgstr "/Aide/PayBack program"
 
 #: jpilot.c:1135
 msgid "/Help/J-Pilot"
