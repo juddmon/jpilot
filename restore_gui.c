@@ -164,7 +164,18 @@ static int populate_clist_sub(char *path, int check_for_dups, int check_exts)
 	    if (found) continue;
 	 }
 	 row_text[0]=dirent->d_name;
+#ifdef ENABLE_GTK2
+	 {
+	    gchar *utf8_text;
+	    
+	    utf8_text = g_locale_to_utf8(row_text[0], -1, NULL, NULL, NULL);
+	    row_text[0] = utf8_text;
+	    gtk_clist_append(GTK_CLIST(restore_clist), row_text);
+	    g_free(utf8_text);
+	 }
+#else
 	 gtk_clist_append(GTK_CLIST(restore_clist), row_text);
+#endif
 	 num++;
       }
       closedir(dir);
