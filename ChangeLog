@@ -1,3 +1,10 @@
+0.99.3 - ?
+ Support for OS 4.X passwords.
+ Better DateBk support
+ (seperate entry field for tag, better detection of datebk records)
+ Pop up dialogs during the sync when different user name, null ID is found.
+ Lots of patches, bug fixes and minor improvements.
+
 0.99.2 - 02/06/02
  Made changes to support pilot-link 0.10.1 and USB (palm m series and clies)
  Export for Datebook, Address, Todo, and Memo
