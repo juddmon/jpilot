@@ -1,4 +1,4 @@
-%define version 0.99.5
+%define version 0.99.6
 
 Summary:   palm pilot desktop for Linux
 Name:      jpilot
@@ -19,6 +19,11 @@ under Linux and Unix using X-Windows and GTK+.  It is similar in
 functionality to the one that 3Com distributes and has many features
 not found in the 3Com desktop.
 
+%define _prefix %{prefix}
+%define _mandir %{prefix}/man
+%define _infodir %{prefix}/share/info
+%define _datadir %{prefix}/share
+
 %prep
 
 %setup -q
@@ -36,6 +41,9 @@ make
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT%{_mandir}/man1
 install docs/jpilot*.1 $RPM_BUILD_ROOT%{_mandir}/man1
+install -d $RPM_BUILD_ROOT%{_datadir}/jpilot/
+install jpilotrc.* $RPM_BUILD_ROOT%{_datadir}/jpilot/
+install empty/*.pdb $RPM_BUILD_ROOT%{_datadir}/jpilot/
 strip jpilot
 install -d $RPM_BUILD_ROOT%{_bindir}
 make DESTDIR=$RPM_BUILD_ROOT install 
@@ -94,6 +102,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/jpilot/plugins/libkeyring.la
 %{_datadir}/locale/*/LC_MESSAGES/jpilot.mo
 %{_mandir}/man1/jpilot.1.gz
+%{_mandir}/man1/jpilot-dial.1.gz
 %{_mandir}/man1/jpilot-sync.1.gz
 %{prefix}/share/pixmaps/*
 
