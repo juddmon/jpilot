@@ -815,10 +815,10 @@ int jp_pref_read_rc_file(char *filename, prefType prefs[], int num_prefs)
    }
 
    while (!feof(in)) {
-      fgets(line, 1024, in);
+      fgets(line, sizeof(line), in);
       if (feof(in)) break;
-      line[1023] = ' ';
-      line[1023] = '\0';
+      line[sizeof(line)-2] = ' ';
+      line[sizeof(line)-1] = '\0';
       field1 = strtok(line, " ");
       field2 = (field1 != NULL)	? strtok(NULL, "\n") : NULL;/* jonh */
       if ((field1 == NULL) || (field2 == NULL)) {
