@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.103 2005/01/27 22:15:16 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.104 2005/01/27 22:22:33 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -4318,15 +4318,10 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_signal_connect(GTK_OBJECT(cancel_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_cancel), NULL);
    gtk_box_pack_start(GTK_BOX(hbox_temp), cancel_record_button, TRUE, TRUE, 0);
-#ifdef ENABLE_GTK2
    gtk_widget_add_accelerator(cancel_record_button, "clicked", accel_group,
       GDK_Escape, 0, GTK_ACCEL_VISIBLE);
    gtk_tooltips_set_tip(glob_tooltips, cancel_record_button,
 			_("Cancel the modifications   ESC"), NULL);
-#else
-   gtk_tooltips_set_tip(glob_tooltips, cancel_record_button,
-			_("Cancel the modifications"), NULL);
-#endif
 
    /* Create "Delete" button */
    delete_record_button = gtk_button_new_with_label(_("Delete"));
