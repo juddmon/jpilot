@@ -1795,7 +1795,7 @@ static void clear_details()
    connect_changed_signals(CONNECT_SIGNALS);
 }
 
-static int get_details(struct Appointment *appt, unsigned char *attrib)
+static int appt_get_details(struct Appointment *appt, unsigned char *attrib)
 {
    int i;
    time_t ltime, ltime2;
@@ -2565,7 +2565,7 @@ static void cb_add_new_record(GtkWidget *widget,
    } else {
       mappt=NULL;
    }
-   r = get_details(&new_appt, &attrib);
+   r = appt_get_details(&new_appt, &attrib);
    if (r < 0) {
       free_Appointment(&new_appt);
       return;
