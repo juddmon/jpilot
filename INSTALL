@@ -48,6 +48,7 @@ jpilot
 
 make uninstall is an option also.
 To make an rpm just do rpm -tb jpilot-{version}.tar.gz
+  On some systems use rpmbuild -tb jpilot-{version}.tar.gz
 ==============================================================================
 
 
