@@ -28,6 +28,9 @@
 #include "sync.h"
 #include "plugins.h"
 #include "i18n.h"
+#ifdef ENABLE_GTK2
+#include "otherconv.h"
+#endif
 
 /* this is a hack for now until I clean up the code */
 int *glob_date_label;
