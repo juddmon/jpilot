@@ -107,7 +107,7 @@ void sig_handler(int sig)
 
    /*wait for any child processes */
    waitpid(-1, &status, WNOHANG);
-     
+
    /*refresh the screen after a sync */
    /*cb_app_button(NULL, GINT_TO_POINTER(REDRAW));*/
 
@@ -253,7 +253,9 @@ int sync_once(struct my_sync_info *sync_info)
 	 /* close(pipe_from_parent); */
 	 break;
        default:
-	 signal(SIGCHLD, sig_handler);
+	 if (!(sync_info->flags & SYNC_NO_FORK)) {
+	    signal(SIGCHLD, sig_handler);
+	 }
 	 return 0;
       }
       /* Close all file descriptors in the child except stdout, stderr and
