@@ -632,13 +632,12 @@ void free_search_record_list(struct search_record **sr)
    *sr = NULL;
 }
 
-void set_bg_rbg_clist(GtkWidget *clist, int row, int r, int g, int b)
+void set_bg_rgb_clist_row(GtkWidget *clist, int row, int r, int g, int b)
 {
    GtkStyle *old_style, *new_style;
    GdkColor color;
 
-   if ((old_style = gtk_clist_get_row_style(GTK_CLIST(clist), row)) ||
-       (old_style = gtk_widget_get_style(clist))) {
+   if ((old_style = gtk_widget_get_style(clist))) {
       new_style = gtk_style_copy(old_style);
    }
    else {
@@ -656,20 +655,21 @@ void set_bg_rbg_clist(GtkWidget *clist, int row, int r, int g, int b)
 void set_fg_rgb_clist_cell(GtkWidget *clist, int row, int col, int r, int g, int b)
 {
    GtkStyle *old_style, *new_style;
-   GdkColor color;
+   GdkColor fg_color;
    
    if ((old_style = gtk_clist_get_row_style(GTK_CLIST(clist), row)) ||
        (old_style = gtk_widget_get_style(clist))) {
       new_style = gtk_style_copy(old_style);
-   } else {
+   }
+   else {
       new_style = gtk_style_new();
    }
 
-   color.red=r;
-   color.green=g;
-   color.blue=b;
-   new_style->fg[GTK_STATE_NORMAL]   = color;
-   new_style->fg[GTK_STATE_SELECTED] = color;
+   fg_color.red=r;
+   fg_color.green=g;
+   fg_color.blue=b;
+   new_style->fg[GTK_STATE_NORMAL]   = fg_color;
+   new_style->fg[GTK_STATE_SELECTED] = fg_color;
    gtk_clist_set_cell_style(GTK_CLIST(clist), row, col, new_style);
 }
 

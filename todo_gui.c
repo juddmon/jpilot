@@ -1494,7 +1494,7 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       }
 
       /* Clear any existing overdue highlighting */
-      gtk_clist_set_cell_style(GTK_CLIST(clist), entries_shown, TODO_DATE_COLUMN, NULL);
+      gtk_clist_set_cell_style(GTK_CLIST(clist), entries_shown, TODO_DATE_COLUMN,NULL);
 
       /* Do masking like Palm OS 3.5 */
       if ((show_priv == MASK_PRIVATES) && 
@@ -1508,7 +1508,7 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, TODO_DATE_COLUMN, "----------");
 	 clear_mytodos(&temp_todo->mtodo);
 	 gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_todo->mtodo));
-	 gtk_clist_set_background(GTK_CLIST(clist), entries_shown, NULL);
+	 gtk_clist_set_row_style(GTK_CLIST(clist), entries_shown, NULL);
 	 entries_shown++;
 	 continue;
       }
@@ -1520,6 +1520,9 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
       /*Hide the not due yet records if need be */
       if ((hide_not_due) && (!(temp_todo->mtodo.todo.indefinite))) {
+	 time_t ltime;
+	 struct tm *now, *due;
+	 int comp_now, comp_due;
 	 time(&ltime);
 	 now = localtime(&ltime);
 	 comp_now=now->tm_year*380+now->tm_mon*31+now->tm_mday-1;
@@ -1558,20 +1561,20 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       switch (temp_todo->mtodo.rt) {
        case NEW_PC_REC:
        case REPLACEMENT_PALM_REC:
-	 set_bg_rbg_clist(clist, entries_shown,
+	 set_bg_rgb_clist_row(clist, entries_shown,
 			  CLIST_NEW_RED, CLIST_NEW_GREEN, CLIST_NEW_BLUE);
 	 break;
        case DELETED_PALM_REC:
-	 set_bg_rbg_clist(clist, entries_shown,
+	 set_bg_rgb_clist_row(clist, entries_shown,
 			  CLIST_DEL_RED, CLIST_DEL_GREEN, CLIST_DEL_BLUE);
 	 break;
        case MODIFIED_PALM_REC:
-	 set_bg_rbg_clist(clist, entries_shown,
+	 set_bg_rgb_clist_row(clist, entries_shown,
 			  CLIST_MOD_RED, CLIST_MOD_GREEN, CLIST_MOD_BLUE);
 	 break;
        default:
 	 if (temp_todo->mtodo.attrib & dlpRecAttrSecret) {
-	    set_bg_rbg_clist(clist, entries_shown, 
+	    set_bg_rgb_clist_row(clist, entries_shown, 
 			     CLIST_PRIVATE_RED, CLIST_PRIVATE_GREEN, CLIST_PRIVATE_BLUE);
 	 } else {
 	    gtk_clist_set_row_style(GTK_CLIST(clist), entries_shown, NULL);

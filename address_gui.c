@@ -1912,7 +1912,7 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_PHONE_COLUMN, "---------------");
 	 clear_myaddress(&temp_al->ma);
 	 gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_al->ma));
-	 gtk_clist_set_background(GTK_CLIST(clist), entries_shown, NULL);
+	 gtk_clist_set_row_style(GTK_CLIST(clist), entries_shown, NULL);
 	 entries_shown++;
 	 continue;
       }
@@ -1997,23 +1997,23 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       switch (temp_al->ma.rt) {
        case NEW_PC_REC:
        case REPLACEMENT_PALM_REC:
-	 set_bg_rbg_clist(clist, entries_shown,
+	 set_bg_rgb_clist_row(clist, entries_shown,
 			  CLIST_NEW_RED, CLIST_NEW_GREEN, CLIST_NEW_BLUE);
 	 break;
        case DELETED_PALM_REC:
-	 set_bg_rbg_clist(clist, entries_shown,
+	 set_bg_rgb_clist_row(clist, entries_shown,
 			  CLIST_DEL_RED, CLIST_DEL_GREEN, CLIST_DEL_BLUE);
 	 break;
        case MODIFIED_PALM_REC:
-	 set_bg_rbg_clist(clist, entries_shown,
+	 set_bg_rgb_clist_row(clist, entries_shown,
 			  CLIST_MOD_RED, CLIST_MOD_GREEN, CLIST_MOD_BLUE);
 	 break;
        default:
 	 if (temp_al->ma.attrib & dlpRecAttrSecret) {
-	    set_bg_rbg_clist(clist, entries_shown, 
+	    set_bg_rgb_clist_row(clist, entries_shown, 
 			     CLIST_PRIVATE_RED, CLIST_PRIVATE_GREEN, CLIST_PRIVATE_BLUE);
 	 } else {
-	    gtk_clist_set_background(GTK_CLIST(clist), entries_shown, NULL);
+	    gtk_clist_set_row_style(GTK_CLIST(clist), entries_shown, NULL);
 	 }
       }
 
