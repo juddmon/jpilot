@@ -1,4 +1,4 @@
-/* $Id: jpilot-sync.c,v 1.18 2004/11/22 00:52:42 rikster5 Exp $ */
+/* $Id: jpilot-sync.c,v 1.19 2004/11/27 13:28:36 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot-sync.c
@@ -43,6 +43,12 @@ GtkWidget *glob_dialog;
 pid_t glob_child_pid;
 
 unsigned char skip_plugins;
+
+/* used only in GUI mode */
+pid_t jpilot_master_pid = -1;
+void output_to_pane(const char *str)
+{
+}
 
 /* hack */
 void cb_app_button(GtkWidget *widget, gpointer data)

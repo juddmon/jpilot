@@ -1,4 +1,4 @@
-/* $Id: jpilot-dump.c,v 1.15 2004/11/22 00:52:42 rikster5 Exp $ */
+/* $Id: jpilot-dump.c,v 1.16 2004/11/27 13:28:36 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot-dump.c
@@ -70,6 +70,12 @@ void fprint_jpd_usage_string(FILE *out)
 }
 
 #define LIMIT(a,b,c) if (a < b) {a=b;} if (a > c) {a=c;}
+
+/* used only in GUI mode */
+pid_t jpilot_master_pid = -1;
+void output_to_pane(const char *str)
+{
+}
 
 /*
  * Parse the string and replace CR and LFs with spaces
