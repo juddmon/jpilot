@@ -5,165 +5,184 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: jpilot 0.99.3\n"
-"POT-Creation-Date: 2002-10-13 23:35-0400\n"
-"PO-Revision-Date: 2002-11-03 23:54+02:00\n"
+"POT-Creation-Date: 2002-12-27 18:13-0500\n"
+"PO-Revision-Date: 2002-12-26 12:55+02:00\n"
 "Last-Translator: Vladimir Bormotov <bor@insight.donbass.com>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: address.c:239 datebook.c:311 memo.c:153 todo.c:279
+#: address.c:335 datebook.c:331 memo.c:155 todo.c:283
 msgid "error"
 msgstr "ошибка"
 
-#: address.c:290 datebook.c:683 memo.c:215 todo.c:361 todo.c:363 todo.c:366
+#: Expense/expense.c:858 Expense/expense.c:1771 address.c:386
+#: address_gui.c:1459 datebook.c:703 memo.c:217 memo_gui.c:866 todo.c:365
+#: todo.c:367 todo.c:370 todo_gui.c:1159
 #, c-format
 msgid "Error reading %s\n"
 msgstr "Ошибка чтения %s\n"
 
-#: address_gui.c:360 datebook_gui.c:333 memo_gui.c:239 todo_gui.c:383
+#: address_gui.c:395 datebook_gui.c:337 memo_gui.c:244 todo_gui.c:387
 #, c-format
 msgid "Could not open file %s\n"
 msgstr "Hе могу открыть файл %s\n"
 
-#: address_gui.c:443
+#: address_gui.c:478
 msgid "File doesn't appear to be address.dat format\n"
 msgstr "Формат файла не соотвевует формату address.dat\n"
 
-#: Expense/expense.c:441 Expense/expense.c:1041 address_gui.c:453
-#: datebook_gui.c:535 memo_gui.c:368 todo_gui.c:510
+#: Expense/expense.c:432 Expense/expense.c:1104 address_gui.c:488
+#: datebook_gui.c:539 memo_gui.c:373 todo_gui.c:514
 msgid "Unfiled"
 msgstr "Unfiled"
 
 #. Buttons
-#: KeyRing/keyring.c:1122 address_gui.c:544 alarms.c:228 datebook_gui.c:622
-#: datebook_gui.c:900 export_gui.c:329 jpilot.c:350 jpilot.c:397 jpilot.c:465
-#: jpilot.c:509 jpilot.c:929 memo_gui.c:458 password.c:368 restore_gui.c:217
-#: todo_gui.c:600 utils.c:863
+#: KeyRing/keyring.c:1165 address_gui.c:627 alarms.c:228 datebook_gui.c:626
+#: datebook_gui.c:1101 export_gui.c:330 jpilot.c:355 jpilot.c:402 jpilot.c:470
+#: jpilot.c:514 jpilot.c:945 memo_gui.c:463 password.c:368 restore_gui.c:218
+#: todo_gui.c:604 utils.c:1049
 msgid "OK"
 msgstr "Ок"
 
-#: address_gui.c:545 datebook_gui.c:623 memo_gui.c:459 todo_gui.c:601
-#: utils.c:1006
+#: address_gui.c:628 datebook_gui.c:627 memo_gui.c:464 todo_gui.c:605
+#: utils.c:1192
 msgid "Yes"
 msgstr "Да"
 
-#: address_gui.c:545 datebook_gui.c:623 memo_gui.c:459 todo_gui.c:601
-#: utils.c:1006
+#: address_gui.c:628 datebook_gui.c:627 memo_gui.c:464 todo_gui.c:605
+#: utils.c:1192
 msgid "No"
 msgstr "Hет"
 
-#: address_gui.c:561 datebook_gui.c:631 memo_gui.c:469 todo_gui.c:611
+#: address_gui.c:652 datebook_gui.c:654 memo_gui.c:474 todo_gui.c:631
 #, c-format
 msgid "%s is a directory"
 msgstr "%s - это каталог"
 
-#: address_gui.c:563 address_gui.c:580 datebook_gui.c:633 datebook_gui.c:650
-#: memo_gui.c:471 memo_gui.c:488 todo_gui.c:613 todo_gui.c:630
+#: address_gui.c:654 address_gui.c:671 datebook_gui.c:656 datebook_gui.c:673
+#: memo_gui.c:476 memo_gui.c:493 todo_gui.c:633 todo_gui.c:650
 msgid "Error Opening File"
 msgstr "Ошибка открытия файла"
 
-#: address_gui.c:567 datebook_gui.c:637 memo_gui.c:475 todo_gui.c:617
+#: address_gui.c:658 datebook_gui.c:660 memo_gui.c:480 todo_gui.c:637
 #, c-format
 msgid "Do you want to overwrite file %s?"
 msgstr "Вы хотите заменить файл %s?"
 
-#: address_gui.c:569 datebook_gui.c:639 memo_gui.c:477 todo_gui.c:619
+#: address_gui.c:660 datebook_gui.c:662 memo_gui.c:482 todo_gui.c:639
 msgid "Overwrite File?"
 msgstr "Заменить файл?"
 
-#: address_gui.c:570 datebook_gui.c:640 memo_gui.c:478 todo_gui.c:620
+#: address_gui.c:661 datebook_gui.c:663 memo_gui.c:483 todo_gui.c:640
 msgid "Overwrite File"
 msgstr "Заменить файл"
 
-#: address_gui.c:762 address_gui.c:1651
+#: address_gui.c:1078 address_gui.c:2347
 msgid "Company/Name"
 msgstr "Коммпания/Имя"
 
-#: address_gui.c:764 address_gui.c:1653
+#: address_gui.c:1080 address_gui.c:2349
 msgid "Name/Company"
 msgstr "Имя/Компания"
 
 #. Category Menu
-#: Expense/expense.c:1207 Expense/expense.c:1278 KeyRing/keyring.c:1312
-#: KeyRing/keyring.c:1388 address_gui.c:1090
+#: Expense/expense.c:1300 Expense/expense.c:1379 KeyRing/keyring.c:1355
+#: KeyRing/keyring.c:1431 address_gui.c:1534
 msgid "Category: "
 msgstr "Категория: "
 
-#: address_gui.c:1206 memo_gui.c:933 todo_gui.c:1223
+#: address_gui.c:1566 address_gui.c:2511
+msgid "kana("
+msgstr ""
+
+#: address_gui.c:1724 memo_gui.c:992 todo_gui.c:1341
 msgid "0 records"
 msgstr "0 записей"
 
-#: address_gui.c:1348 memo_gui.c:1056 todo_gui.c:1355
+#: address_gui.c:1813
+msgid "-Unnamed-"
+msgstr "-БезИмени-"
+
+#: address_gui.c:2004 memo_gui.c:1116 todo_gui.c:1474
 #, c-format
 msgid "%d of %d records"
 msgstr "%d из %d записей"
 
-#: address_gui.c:1658
+#. Edit category button
+#: Expense/expense.c:1307 address_gui.c:2327 memo_gui.c:1292 todo_gui.c:1673
+msgid "Edit Categories"
+msgstr "Категории..."
+
+#: address_gui.c:2354
 msgid "Phone"
 msgstr "Телефон"
 
-#: address_gui.c:1680
+#: address_gui.c:2376
 msgid "Quick Find"
 msgstr "Быстрый поиск"
 
 #. Delete Button
-#: Expense/expense.c:1240 KeyRing/keyring.c:1347 address_gui.c:1697
-#: datebook_gui.c:3584 memo_gui.c:1269 todo_gui.c:1611
+#: Expense/expense.c:1341 KeyRing/keyring.c:1390 address_gui.c:2393
+#: datebook_gui.c:3798 memo_gui.c:1343 todo_gui.c:1743
 msgid "Delete"
 msgstr "Удалить"
 
 #. Create "Copy" button
-#: Expense/expense.c:1246 KeyRing/keyring.c:1353 address_gui.c:1704
-#: datebook_gui.c:3591 memo_gui.c:1275 todo_gui.c:1617
+#: Expense/expense.c:1347 KeyRing/keyring.c:1396 address_gui.c:2400
+#: datebook_gui.c:3805 memo_gui.c:1349 todo_gui.c:1749
 msgid "Copy"
 msgstr "Копировать"
 
 #. Create "New" button
-#: Expense/expense.c:1252 KeyRing/keyring.c:1359 address_gui.c:1711
-#: datebook_gui.c:3598 memo_gui.c:1281 todo_gui.c:1623
+#: Expense/expense.c:1353 KeyRing/keyring.c:1402 address_gui.c:2407
+#: datebook_gui.c:3812 memo_gui.c:1355 todo_gui.c:1755
 msgid "New Record"
 msgstr "Hовая запись"
 
 #. Create "Add Record" button
-#: Expense/expense.c:1258 KeyRing/keyring.c:1365 address_gui.c:1717
-#: datebook_gui.c:3605 memo_gui.c:1287 todo_gui.c:1629
+#: Expense/expense.c:1359 KeyRing/keyring.c:1408 address_gui.c:2413
+#: datebook_gui.c:3819 memo_gui.c:1361 todo_gui.c:1761
 msgid "Add Record"
 msgstr "Добавить запись"
 
 #. Create "apply changes" button
-#: Expense/expense.c:1266 KeyRing/keyring.c:1373 address_gui.c:1726
-#: datebook_gui.c:3614 memo_gui.c:1295 todo_gui.c:1637
+#: Expense/expense.c:1367 KeyRing/keyring.c:1416 address_gui.c:2422
+#: datebook_gui.c:3828 memo_gui.c:1369 todo_gui.c:1769
 msgid "Apply Changes"
 msgstr "Применить изменения"
 
 #. Private check box
-#: address_gui.c:1742 datebook_gui.c:3665 memo_gui.c:1312 todo_gui.c:1700
+#: address_gui.c:2438 datebook_gui.c:3879 memo_gui.c:1386 todo_gui.c:1832
 msgid "Private"
 msgstr "Личное"
 
 #. Page 1
-#: KeyRing/keyring.c:1225 address_gui.c:1762
+#: KeyRing/keyring.c:1268 address_gui.c:2458
 msgid "Name"
 msgstr "Имя"
 
 #. Page 2
-#: address_gui.c:1770
+#: address_gui.c:2466
 msgid "Address"
 msgstr "Адрес"
 
 #. Page 3
-#: Expense/expense.c:393 Expense/expense.c:1062 address_gui.c:1778
+#: Expense/expense.c:384 Expense/expense.c:1125 address_gui.c:2474
 msgid "Other"
 msgstr "Прочее"
 
-#. Page 3
-#: address_gui.c:1786 datebook_gui.c:1088 datebook_gui.c:1365 utils.c:2200
+#. Page 4
+#: address_gui.c:2482 datebook_gui.c:1289 datebook_gui.c:1566 utils.c:2391
 msgid "All"
 msgstr "Все"
 
-#: address_gui.c:1856
+#: address_gui.c:2586
+msgid "Dial"
+msgstr ""
+
+#: address_gui.c:2626
 msgid ""
 "Show\n"
 "In List"
@@ -172,7 +191,7 @@ msgstr ""
 "в списке"
 
 #. The Quickview page
-#: address_gui.c:1864
+#: address_gui.c:2634
 msgid "Quick View"
 msgstr "Быстрый просмотр"
 
@@ -180,11 +199,11 @@ msgstr "Быстрый просмотр"
 msgid "Remind me"
 msgstr "Hапомни мне"
 
-#: alarms.c:244 datebook_gui.c:3647
+#: alarms.c:244 datebook_gui.c:3861
 msgid "Minutes"
 msgstr "Минуты"
 
-#: alarms.c:246 datebook_gui.c:3651
+#: alarms.c:246 datebook_gui.c:3865
 msgid "Hours"
 msgstr "Часы"
 
@@ -201,121 +220,125 @@ msgstr "Прошедшие встречи"
 msgid "Postponed Appointment"
 msgstr "Отложеные встречи"
 
-#: alarms.c:520 datebook_gui.c:3546
+#: alarms.c:520 datebook_gui.c:3760
 msgid "Appointment"
 msgstr "Встреча"
 
-#: datebook_gui.c:181 datebook_gui.c:188 datebook_gui.c:3386
-#: datebook_gui.c:3393
+#: datebook_gui.c:185 datebook_gui.c:192 datebook_gui.c:3597
+#: datebook_gui.c:3604
 msgid "Su"
 msgstr " Вс "
 
-#: datebook_gui.c:182 datebook_gui.c:3387
+#: datebook_gui.c:186 datebook_gui.c:3598
 msgid "Mo"
 msgstr " Пн "
 
-#: datebook_gui.c:183 datebook_gui.c:3388
+#: datebook_gui.c:187 datebook_gui.c:3599
 msgid "Tu"
 msgstr " Вт "
 
-#: datebook_gui.c:184 datebook_gui.c:3389
+#: datebook_gui.c:188 datebook_gui.c:3600
 msgid "We"
 msgstr " Ср "
 
-#: datebook_gui.c:185
-msgid "RTh"
+#: datebook_gui.c:189 datebook_gui.c:3601
+msgid "Th"
 msgstr " Чт "
 
-#: datebook_gui.c:186 datebook_gui.c:3391
+#: datebook_gui.c:190 datebook_gui.c:3602
 msgid "Fr"
 msgstr " Пт "
 
-#: datebook_gui.c:187 datebook_gui.c:3392
+#: datebook_gui.c:191 datebook_gui.c:3603
 msgid "Sa"
 msgstr " Сб "
 
-#: datebook_gui.c:525
+#: datebook_gui.c:529
 msgid "File doesn't appear to be datebook.dat format\n"
 msgstr "Формат файла не соотвевует формату datebook.dat\n"
 
+#: datebook_gui.c:1050 export_gui.c:252 jpilot.c:547
+msgid "Export"
+msgstr "Экспорт"
+
 #. Label for instructions
-#: datebook_gui.c:863
+#: datebook_gui.c:1064
 msgid "Export All Datebook Records"
 msgstr "Экспорт всех записей из Расписания"
 
-#: datebook_gui.c:882 export_gui.c:310
+#: datebook_gui.c:1083 export_gui.c:311
 msgid "Save as"
 msgstr "Сохранить как"
 
-#: datebook_gui.c:892 export_gui.c:321
+#: datebook_gui.c:1093 export_gui.c:322
 msgid "Browse"
 msgstr " Просмотр "
 
 #. Create a "Quit" button
-#: KeyRing/keyring.c:1128 datebook_gui.c:905 datebook_gui.c:1366
-#: export_gui.c:334 password.c:374 print_gui.c:336 restore_gui.c:222
-#: utils.c:873
+#: KeyRing/keyring.c:1171 datebook_gui.c:1106 datebook_gui.c:1567
+#: export_gui.c:335 password.c:374 print_gui.c:336 restore_gui.c:223
+#: utils.c:1059
 msgid "Cancel"
 msgstr "Отмена"
 
 #. Create a "Quit" button
-#: datebook_gui.c:1082 import_gui.c:313 install_gui.c:289 prefs_gui.c:701
-#: search_gui.c:575
+#: datebook_gui.c:1283 import_gui.c:322 install_gui.c:294 prefs_gui.c:736
+#: search_gui.c:538
 msgid "Done"
 msgstr "Готово"
 
 #. Create a "None" button
-#: datebook_gui.c:1094 datebook_gui.c:3789
+#: datebook_gui.c:1295 datebook_gui.c:4003
 msgid "None"
 msgstr "Нету"
 
-#: datebook_gui.c:1215
+#: datebook_gui.c:1416
 msgid "Begin On Date"
 msgstr "Дата начала"
 
-#: datebook_gui.c:1220
+#: datebook_gui.c:1421
 msgid "End On Date"
 msgstr "Дата завершения"
 
-#: datebook_gui.c:1316 monthview_gui.c:348 monthview_gui.c:355 prefs.c:395
-#: weekview_gui.c:135
+#: datebook_gui.c:1517 monthview_gui.c:352 monthview_gui.c:359 prefs.c:407
+#: weekview_gui.c:137
 msgid "Sunday"
 msgstr "Воскресенье"
 
-#: datebook_gui.c:1317 monthview_gui.c:349 prefs.c:396 weekview_gui.c:136
+#: datebook_gui.c:1518 monthview_gui.c:353 prefs.c:408 weekview_gui.c:138
 msgid "Monday"
 msgstr "Понедельник"
 
-#: datebook_gui.c:1318 monthview_gui.c:350 weekview_gui.c:137
+#: datebook_gui.c:1519 monthview_gui.c:354 weekview_gui.c:139
 msgid "Tuesday"
 msgstr "Вторник"
 
-#: datebook_gui.c:1319 monthview_gui.c:351 weekview_gui.c:138
+#: datebook_gui.c:1520 monthview_gui.c:355 weekview_gui.c:140
 msgid "Wednesday"
 msgstr "Среда"
 
-#: datebook_gui.c:1320 monthview_gui.c:352 weekview_gui.c:139
+#: datebook_gui.c:1521 monthview_gui.c:356 weekview_gui.c:141
 msgid "Thursday"
 msgstr "Четверг"
 
-#: datebook_gui.c:1321 monthview_gui.c:353 weekview_gui.c:140
+#: datebook_gui.c:1522 monthview_gui.c:357 weekview_gui.c:142
 msgid "Friday"
 msgstr "Пятница"
 
-#: datebook_gui.c:1322 monthview_gui.c:354 weekview_gui.c:141
+#: datebook_gui.c:1523 monthview_gui.c:358 weekview_gui.c:143
 msgid "Saturday"
 msgstr "Суббота"
 
-#: datebook_gui.c:1327
+#: datebook_gui.c:1528
 msgid "4th"
 msgstr "4-ый"
 
-#: datebook_gui.c:1327
+#: datebook_gui.c:1528
 msgid "Last"
 msgstr "Последнее"
 
 #. ---------------------------
-#: datebook_gui.c:1358
+#: datebook_gui.c:1559
 msgid ""
 "This is a repeating event.\n"
 "Do you want to apply these\n"
@@ -329,152 +352,149 @@ msgstr ""
 "событию, или ко ВСЕМ таким\n"
 "событиям?"
 
-#: datebook_gui.c:1364
+#: datebook_gui.c:1565
 msgid "Current"
 msgstr "Текущее"
 
-#: datebook_gui.c:1614
+#: datebook_gui.c:1815
 msgid "none"
 msgstr "ничего"
 
-#: datebook_gui.c:1615
+#: datebook_gui.c:1816
 msgid "day"
 msgstr "день"
 
-#: datebook_gui.c:1616
+#: datebook_gui.c:1817
 msgid "week"
 msgstr "неделя"
 
-#: datebook_gui.c:1617
+#: datebook_gui.c:1818
 msgid "month"
 msgstr "месяц"
 
-#: datebook_gui.c:1618
+#: datebook_gui.c:1819
 msgid "year"
 msgstr "год"
 
-#: datebook_gui.c:1870
+#: datebook_gui.c:2071
 #, c-format
 msgid "You cannot have an appointment that repeats every %d %s(s)\n"
 msgstr "Вы не можете создать встречу повторяющуюся каждый %d %s\n"
 
-#: datebook_gui.c:1879
+#: datebook_gui.c:2080
 msgid ""
 "You can not have a weekly repeating appointment that doesn't repeat on any "
 "day of the week.\n"
-msgstr "Вы не можете создать еженедельную встречу повторяющуюся каждый день недели.\n"
+msgstr ""
+"Вы не можете создать еженедельную встречу повторяющуюся каждый день недели.\n"
 
 #. This is a timeless event
-#: datebook_gui.c:2015
+#: datebook_gui.c:2217
 msgid "No Time"
 msgstr " Без времени "
 
 #. The No due date check box
-#: datebook_gui.c:2433 datebook_gui.c:3823 datebook_gui.c:3853
-#: datebook_gui.c:3909 datebook_gui.c:3958 todo_gui.c:123 todo_gui.c:1691
+#: datebook_gui.c:2636 datebook_gui.c:4037 datebook_gui.c:4067
+#: datebook_gui.c:4123 datebook_gui.c:4172 todo_gui.c:127 todo_gui.c:1823
 msgid "No Date"
 msgstr " Без даты "
 
-#: datebook_gui.c:3390
-msgid "RTh"
-msgstr " Чт "
-
 #. Make Weekview button
-#: datebook_gui.c:3467 datebook_gui.c:3791
+#: datebook_gui.c:3681 datebook_gui.c:4005
 msgid "Week"
 msgstr "Hеделя"
 
 #. Make Monthview button
-#: datebook_gui.c:3478 datebook_gui.c:3792
+#: datebook_gui.c:3692 datebook_gui.c:4006
 msgid "Month"
 msgstr "Месяц"
 
 #. Make Category button
-#: datebook_gui.c:3491
+#: datebook_gui.c:3705
 msgid "Cats"
 msgstr "Категории"
 
-#: datebook_gui.c:3545
+#: datebook_gui.c:3759
 msgid "Time"
 msgstr "Время"
 
-#: datebook_gui.c:3632
+#: datebook_gui.c:3846
 msgid "Alarm"
 msgstr "Сигнал"
 
-#: datebook_gui.c:3653
+#: datebook_gui.c:3867
 msgid "Days"
 msgstr "Дни"
 
-#: datebook_gui.c:3676
+#: datebook_gui.c:3890
 msgid "This Event has no particular time"
 msgstr "Hе указано время События"
 
-#: datebook_gui.c:3684
+#: datebook_gui.c:3898
 msgid "Starts on: "
 msgstr "Hачинается в: "
 
-#: datebook_gui.c:3696
+#: datebook_gui.c:3910
 msgid "Time:"
 msgstr "Время:"
 
-#: datebook_gui.c:3773
+#: datebook_gui.c:3987
 msgid "DateBk Tags"
 msgstr "Записи DateBk"
 
-#: datebook_gui.c:3790
+#: datebook_gui.c:4004
 msgid "Day"
 msgstr "День"
 
-#: datebook_gui.c:3793
+#: datebook_gui.c:4007
 msgid "Year"
 msgstr "Год"
 
 #. no repeat page for notebook
-#: datebook_gui.c:3797
+#: datebook_gui.c:4011
 msgid "This event will not repeat"
 msgstr "Событие не повторяется"
 
-#: datebook_gui.c:3807 datebook_gui.c:3839 datebook_gui.c:3895
-#: datebook_gui.c:3942
+#: datebook_gui.c:4021 datebook_gui.c:4053 datebook_gui.c:4109
+#: datebook_gui.c:4156
 msgid "Frequency is Every"
 msgstr "Частота каждые(й)"
 
-#: datebook_gui.c:3812
+#: datebook_gui.c:4026
 msgid "Day(s)"
 msgstr "День(дни)"
 
 #. checkbutton
-#: datebook_gui.c:3815 datebook_gui.c:3847 datebook_gui.c:3903
-#: datebook_gui.c:3950
+#: datebook_gui.c:4029 datebook_gui.c:4061 datebook_gui.c:4117
+#: datebook_gui.c:4164
 msgid "End on"
 msgstr "Завершится"
 
-#: datebook_gui.c:3844
+#: datebook_gui.c:4058
 msgid "Week(s)"
 msgstr "Hеделя(ли)"
 
-#: datebook_gui.c:3860
+#: datebook_gui.c:4074
 msgid "Repeat on Days:"
 msgstr "Повторится в дни:"
 
-#: datebook_gui.c:3900
+#: datebook_gui.c:4114
 msgid "Month(s)"
 msgstr "Месяц(а)"
 
-#: datebook_gui.c:3917
+#: datebook_gui.c:4131
 msgid "Repeat by:"
 msgstr "Повторять каждый:"
 
-#: datebook_gui.c:3921
+#: datebook_gui.c:4135
 msgid "Day of week"
 msgstr "День недели"
 
-#: datebook_gui.c:3930
+#: datebook_gui.c:4144
 msgid "Date"
 msgstr "Дату"
 
-#: datebook_gui.c:3947
+#: datebook_gui.c:4161
 msgid "Year(s)"
 msgstr "Год(ы)"
 
@@ -483,72 +503,75 @@ msgid "File Browser"
 msgstr "Просмотр файлов"
 
 #. Label for instructions
-#: export_gui.c:266
+#: export_gui.c:267
 msgid "Select records to be exported"
 msgstr "Выберите записи для экспорта"
 
-#: export_gui.c:268
+#: export_gui.c:269
 msgid "Use Ctrl and Shift Keys"
 msgstr "Используйте кнопки Ctrl и Shift"
 
 #. Import button
-#: import_gui.c:270 import_gui.c:306 import_gui.c:409 import_gui.c:465
-#: jpilot.c:498
+#: import_gui.c:278 import_gui.c:315 import_gui.c:420 import_gui.c:478
+#: jpilot.c:503
 msgid "Import"
 msgstr "Импорт"
 
-#: import_gui.c:300 install_gui.c:269
+#: import_gui.c:309 install_gui.c:274
 msgid "To change to a hidden directory type it below and hit TAB"
 msgstr "Для перехода в скрытый каталог нажмите TAB ниже"
 
-#: import_gui.c:326
+#: import_gui.c:335
 msgid "Import File Type"
 msgstr "Импортировать тип файла"
 
-#: import_gui.c:423
+#: import_gui.c:436
 msgid "Record was marked as private"
 msgstr "Запись отмечена как личная"
 
-#: import_gui.c:425
+#: import_gui.c:438
 msgid "Record was not marked as private"
 msgstr "Запись не отмечена как личная"
 
 #. Import All button
-#: import_gui.c:472
+#: import_gui.c:485
 msgid "Import All"
 msgstr "Импортировать все"
 
 #. Skip button
-#: import_gui.c:479
+#: import_gui.c:492
 msgid "Skip"
 msgstr "Пропустить"
 
 #. Quit button
-#: import_gui.c:486
+#: import_gui.c:499
 msgid "Quit"
 msgstr "Выход"
 
-#: install_gui.c:224
+#: install_gui.c:228
 msgid "Install"
 msgstr "Установить"
 
-#: install_gui.c:246
+#: install_gui.c:251
 msgid "Files to be installed"
 msgstr "Файлы для установки"
 
-#: install_gui.c:275
+#: install_gui.c:280
 msgid "Add"
 msgstr "Добавить"
 
-#: install_gui.c:282
+#: install_gui.c:287
 msgid "Remove"
 msgstr "Удалить"
 
-#: jpilot.c:88
+#: jpilot.c:93
+msgid "\n"
+msgstr "\n"
+
+#: jpilot.c:93
 msgid ""
-"\n"
-"jpilot [ [-v] || [-h] || [-d] || [-a] || [-A]\n"
-" -v displays version and exits.\n"
+" [ [-v] || [-h] || [-d] || [-a] || [-A]\n"
+" -v displays version and compile options and exits.\n"
 " -h displays help and exits.\n"
 " -d displays debug info to stdout.\n"
 " -p do not load plugins.\n"
@@ -558,8 +581,7 @@ msgid ""
 " port to sync on, and at what speed.\n"
 " If PILOTPORT is not set then it defaults to /dev/pilot.\n"
 msgstr ""
-"\n"
-"jpilot [ [-v] || [-h] || [-d] || [-a] || [-A]\n"
+" [ [-v] || [-h] || [-d] || [-a] || [-A]\n"
 " -v вывести версию и выйти.\n"
 " -h вывести справку и выйти.\n"
 " -d выводить отладочную информацию на strout.\n"
@@ -570,168 +592,150 @@ msgstr ""
 " порта синхронизации и его скорости.\n"
 " Если PILOTPORT не утсановлена, то используется /dev/pilot.\n"
 
-#: jpilot.c:374
+#: jpilot.c:379
 msgid "Help"
 msgstr "Помощь"
 
 #. Create a "Print" button
-#: jpilot.c:438 monthview_gui.c:419 print_gui.c:330 weekview_gui.c:304
+#: jpilot.c:443 monthview_gui.c:423 print_gui.c:330 weekview_gui.c:306
 msgid "Print"
 msgstr " Печать "
 
-#: jpilot.c:439
+#: jpilot.c:444
 msgid "There is no print support for this conduit."
 msgstr "Отсутсвует поддержка принтера для этого модуля синхр."
 
-#: jpilot.c:499
+#: jpilot.c:504
 msgid "There is no import support for this conduit."
 msgstr "Отсутсвует поддержка импорта для этого модуля синхр."
 
-#: jpilot.c:542
-msgid "Export"
-msgstr "Экспорт"
-
-#: jpilot.c:543
+#: jpilot.c:548
 msgid "There is no export support for this conduit."
 msgstr "Отсутсвует поддержка экспорта для этого модуля синхронизации"
 
-#: jpilot.c:734
+#: jpilot.c:739
 msgid "Cancel Sync"
 msgstr "Отменить синхронизацию"
 
-#: jpilot.c:735
+#: jpilot.c:740
 msgid "Sync Anyway"
 msgstr "Синхронизировать всеравно"
 
-#. -------------------------------------------
-#: jpilot.c:934
-#, c-format
-msgid ""
-"%s %s was written by\n"
-"Judd Montgomery (Copyright) 1999-2002.\n"
-"judd@jpilot.org\n"
-"http://jpilot.org\n"
-msgstr ""
-"%s %s написана\n"
-"Judd Montgomery (Copyright) 1999-2002.\n"
-"judd@jpilot.org\n"
-"http://jpilot.org\n"
-
-#: jpilot.c:939
+#: jpilot.c:949
 #, c-format
 msgid "About %s"
 msgstr "О %s"
 
-#: jpilot.c:1023
+#: jpilot.c:1035
 msgid "/File"
 msgstr "/Файл"
 
-#: jpilot.c:1024
+#: jpilot.c:1036
 msgid "/File/tear"
 msgstr "/Файл/tear"
 
-#: jpilot.c:1025
+#: jpilot.c:1037
 msgid "/File/_Find"
 msgstr "/Файл/_Hайти"
 
-#: jpilot.c:1026 jpilot.c:1032 jpilot.c:1034
+#: jpilot.c:1038 jpilot.c:1044 jpilot.c:1046
 msgid "/File/sep1"
 msgstr "/Файл/sep1"
 
-#: jpilot.c:1027
+#: jpilot.c:1039
 msgid "/File/_Install"
 msgstr "/Файл/_Установить"
 
-#: jpilot.c:1028
+#: jpilot.c:1040
 msgid "/File/Import"
 msgstr "/Файл/Импорт"
 
-#: jpilot.c:1029
+#: jpilot.c:1041
 msgid "/File/Export"
 msgstr "/Файл/Экспорт"
 
-#: jpilot.c:1030
+#: jpilot.c:1042
 msgid "/File/Preferences"
 msgstr "/Файл/Свойства"
 
-#: jpilot.c:1031
+#: jpilot.c:1043
 msgid "/File/_Print"
 msgstr "/Файл/_Печать"
 
-#: jpilot.c:1033
+#: jpilot.c:1045
 msgid "/File/Restore Handheld"
 msgstr "/Файл/Восстановить содержимое КПК"
 
-#: jpilot.c:1035
+#: jpilot.c:1047
 msgid "/File/Quit"
 msgstr "/Файл/Выход"
 
-#: jpilot.c:1036
+#: jpilot.c:1048
 msgid "/_View"
 msgstr "/_Просмотр"
 
-#: jpilot.c:1037
+#: jpilot.c:1049
 msgid "/View/Hide-Show Private Records"
 msgstr "/Просмотр/Скрыть-Показать Личные"
 
-#: jpilot.c:1038
+#: jpilot.c:1050
 msgid "/View/Datebook"
 msgstr "/Просмотр/Расписание"
 
-#: jpilot.c:1039
+#: jpilot.c:1051
 msgid "/View/Addresses"
 msgstr "/Просмотр/Адреса"
 
-#: jpilot.c:1040
+#: jpilot.c:1052
 msgid "/View/Todos"
 msgstr "/Просмотр/Дела"
 
-#: jpilot.c:1041
+#: jpilot.c:1053
 msgid "/View/Memos"
 msgstr "/Просмотр/Записи"
 
-#: jpilot.c:1042 jpilot.c:1118
+#: jpilot.c:1054 jpilot.c:1130
 msgid "/Plugins"
 msgstr "/Дополнения"
 
-#: jpilot.c:1043
+#: jpilot.c:1055
 msgid "/_Help"
 msgstr "/_Справка"
 
-#: jpilot.c:1044 jpilot.c:1095
+#: jpilot.c:1056 jpilot.c:1107
 #, c-format
 msgid "/_Help/%s"
 msgstr "/_Справка/%s"
 
-#: jpilot.c:1084
+#: jpilot.c:1096
 #, c-format
 msgid "/Plugins/%s"
 msgstr "/Дополнения/%s"
 
-#: jpilot.c:1720
+#: jpilot.c:1760
 msgid "Clear"
 msgstr "Очистить"
 
 #. Create "Quit" button
-#: jpilot.c:1785
+#: jpilot.c:1825
 msgid "Quit!"
 msgstr " Выход! "
 
 #. Create "Sync" button
-#: jpilot.c:1791
+#: jpilot.c:1831
 msgid "Sync"
 msgstr "Синхр."
 
-#: jpilot.c:1798
+#: jpilot.c:1838
 msgid "Sync your palm to the desktop"
 msgstr "Синхронизировать Palm с ПК"
 
 #. Create "Backup" button in left column
-#: jpilot.c:1802
+#: jpilot.c:1842
 msgid "Backup"
 msgstr " Архив "
 
-#: jpilot.c:1810
+#: jpilot.c:1850
 msgid ""
 "Sync your palm to the desktop\n"
 "and then do a backup"
@@ -739,45 +743,45 @@ msgstr ""
 "Синхронизировать Palm с десктопом\n"
 "и записать архив"
 
-#: jpilot.c:1897
+#: jpilot.c:1937
 msgid "Datebook/Go to Today"
 msgstr "Расписание/Сегодня"
 
-#: jpilot.c:1899
+#: jpilot.c:1939
 msgid "Address Book"
 msgstr "Адреса"
 
-#: jpilot.c:1901
+#: jpilot.c:1941
 msgid "ToDo List"
 msgstr "Список Дел"
 
-#: jpilot.c:1903
+#: jpilot.c:1943
 msgid "Memo Pad"
 msgstr "Записи"
 
-#: log.c:90
+#: log.c:112
 msgid "Cannot open log file, giving up.\n"
 msgstr "Hе удается открыть файл протокола, начинаем с начала.\n"
 
-#: log.c:97
+#: log.c:119
 msgid "Cannot open log file\n"
 msgstr "Hе удается открыть файл протокола\n"
 
-#: memo_gui.c:351
+#: memo_gui.c:356
 msgid "File doesn't appear to be memopad.dat format\n"
 msgstr "Формат файла не соотвевует формату memopad.dat\n"
 
 #. Memo32 check box
-#: memo_gui.c:1225
+#: memo_gui.c:1299
 msgid "Use Memo32 (pedit32)"
 msgstr "Использовать Memo32 (pedit32)"
 
-#: monthview_gui.c:384
+#: monthview_gui.c:388
 msgid "Monthly View"
 msgstr "Просмотр месяца"
 
 #. Create a "Quit" button
-#: monthview_gui.c:413 weekview_gui.c:298
+#: monthview_gui.c:417 weekview_gui.c:300
 msgid "Close"
 msgstr " Закрыть "
 
@@ -793,164 +797,165 @@ msgstr "Hеверный Пароль PalmOS, повторите еще раз"
 msgid "Enter PalmOS Password"
 msgstr "Введите пароль PalmOS"
 
-#: prefs_gui.c:304
+#: prefs_gui.c:326
 msgid "Preferences"
 msgstr "Свойства"
 
-#: prefs_gui.c:327
+#: prefs_gui.c:349
 msgid "Locale"
 msgstr " Локализация "
 
-#: prefs_gui.c:329
+#: prefs_gui.c:351
 msgid "Settings"
 msgstr " Установки "
 
-#: prefs_gui.c:331
+#: prefs_gui.c:353
 msgid "Alarms"
 msgstr " Сигналы "
 
-#: prefs_gui.c:333
+#: prefs_gui.c:355
 msgid "Conduits"
 msgstr " Модули Синхр. "
 
 #. Character Set
-#: prefs_gui.c:344
+#: prefs_gui.c:366
 msgid "Character Set "
 msgstr "Кодировка символов "
 
 #. Shortdate
-#: prefs_gui.c:357
+#: prefs_gui.c:379
 msgid "Short date format "
 msgstr "Короткий формат даты "
 
 #. Longdate
-#: prefs_gui.c:370
+#: prefs_gui.c:392
 msgid "Long date format "
 msgstr "Длинный формат даты "
 
 #. Time
-#: prefs_gui.c:384
+#: prefs_gui.c:406
 msgid "Time format "
 msgstr "Формат времени "
 
 #. FDOW
-#: prefs_gui.c:398
+#: prefs_gui.c:420
 msgid "The first day of the week is "
 msgstr "Первый день недели "
 
 #. GTK colors file
-#: prefs_gui.c:418
+#: prefs_gui.c:440
 msgid "My GTK colors file is "
 msgstr "Цветовая палитра GTK "
 
 #. Port
-#: prefs_gui.c:432
+#: prefs_gui.c:454
 msgid "Serial Port (/dev/ttyS0, /dev/pilot)"
-msgstr ""
-"Порт синжронизации \n"
-"(/dev/ttyS0, /dev/pilot)"
+msgstr "Порт синжронизации (/dev/ttyS0, /dev/pilot)"
 
 #. Rate
-#: prefs_gui.c:447
+#: prefs_gui.c:469
 msgid "Serial Rate "
 msgstr "Скорость порта "
 
 #. Number of backups
-#: prefs_gui.c:460
+#: prefs_gui.c:482
 msgid "Number of backups to be archived"
 msgstr "Количесво хранимых Архивов "
 
-#: prefs_gui.c:476
+#: prefs_gui.c:498
 msgid "Show deleted records (default NO)"
 msgstr "Показывать удаленные записи (по умолчанию HЕТ)"
 
-#: prefs_gui.c:489
+#: prefs_gui.c:511
 msgid "Show modified deleted records (default NO)"
 msgstr "Показывать измененные удаленные записи (по умолчанию HЕТ)"
 
-#: prefs_gui.c:503
+#: prefs_gui.c:525
 msgid "Highlight calendar days with appointments"
 msgstr "Выделять дни с назначеными встречами в календаре"
 
 #. Show use DateBk3/4 check box
-#: prefs_gui.c:516
+#: prefs_gui.c:538
 msgid "Use DateBk3/4 note tags"
 msgstr "Использовать поля записей DateBk3/4"
 
-#: prefs_gui.c:526
+#: prefs_gui.c:548
 msgid "DateBk3/4 support disabled in this build"
 msgstr "Поддержка DateBk3/4 выключина при компиляции"
 
 #. Show sync datebook check box
-#: prefs_gui.c:533
+#: prefs_gui.c:555
 msgid "Sync datebook"
 msgstr "Синхронизировать Расписание"
 
 #. Show sync address check box
-#: prefs_gui.c:544
+#: prefs_gui.c:566
 msgid "Sync address"
 msgstr "Синхронизировать Адреса"
 
 #. Show sync todo check box
-#: prefs_gui.c:555
+#: prefs_gui.c:577
 msgid "Sync todo"
 msgstr "Синхронизировать Дела"
 
 #. Show sync memo check box
-#: prefs_gui.c:566
+#: prefs_gui.c:588
 msgid "Sync memo"
 msgstr "Синхронизировать Записи"
 
-#: prefs_gui.c:578
+#: prefs_gui.c:600
 msgid "Sync memo32 (pedit32)"
 msgstr "Синхронизировать memo32 (pedit32)"
 
-#. TRANSLATOR: If your charset allows write "Ma~nana" (= n with tilde) in
-#. the translation
 #. Show sync Ma~nana check box
-#: prefs_gui.c:590
+#: prefs_gui.c:612
 msgid "Sync Manana"
 msgstr "Синхронизировать Manana"
 
-#: prefs_gui.c:633
+#. Show use Japanese Kana extention check box
+#: prefs_gui.c:625
+msgid "Use J-OS (Not Japanese PalmOS:WorkPad/CLIE)"
+msgstr "Использовать J-OS (Not Japanese PalmOS:WorkPad/CLIE)"
+
+#: prefs_gui.c:668
 msgid "Open alarm windows for appointment reminders"
 msgstr "Выводить окно Сигнала для напоминания о встрече"
 
-#: prefs_gui.c:645
+#: prefs_gui.c:680
 msgid "Execute this command"
 msgstr "Выполнить команду"
 
 #. Shell warning
-#: prefs_gui.c:656
+#: prefs_gui.c:691
 msgid "WARNING: executing arbitrary shell commands can be dangerous!!!"
 msgstr "ВHИМАHИЕ: выполнение произвольной команды может быть опасно!!!"
 
-#: prefs_gui.c:664
+#: prefs_gui.c:699
 msgid "Alarm Command"
 msgstr "Команда Сигнала"
 
-#: prefs_gui.c:674
+#: prefs_gui.c:709
 msgid "%t is replaced with the alarm time"
 msgstr "вместо %t будет подставлено время Сигнала"
 
-#: prefs_gui.c:678
+#: prefs_gui.c:713
 #, c-format
 msgid "%d is replaced with the alarm date"
 msgstr "вместо %d будет подставлена дата Сигнала"
 
-#: prefs_gui.c:683
+#: prefs_gui.c:718
 msgid "%D is replaced with the alarm description"
 msgstr "вместо %D будет подставлено описание Сигнала"
 
-#: prefs_gui.c:687
+#: prefs_gui.c:722
 msgid "%N is replaced with the alarm note"
 msgstr "вместо %N будет подставлена заметка Сигнала"
 
-#: prefs_gui.c:691
+#: prefs_gui.c:726
 msgid "%D (description substitution) is disabled in this build"
 msgstr "%D (подстановка описания) запрещена при компиляции"
 
-#: prefs_gui.c:695
+#: prefs_gui.c:730
 msgid "%N (note substitution) is disabled in this build"
 msgstr "%N (подстановка заметки) запрещена при компиляции"
 
@@ -999,318 +1004,340 @@ msgstr " Пустые строки между каждой записью"
 msgid "Print Command (e.g. lpr, or cat > file.ps)"
 msgstr " Команда печати (напр. lpr или cat > file.ps)"
 
-#: restore_gui.c:143
+#: restore_gui.c:141
 msgid "Restore Handheld"
 msgstr "Восстановить КПК из Архива"
 
 #. Label for instructions
-#: restore_gui.c:159
+#: restore_gui.c:160
 msgid "To restore your handheld:"
 msgstr "Для восстановления вашего КПК:"
 
-#: restore_gui.c:162
+#: restore_gui.c:163
 msgid ""
 "1. Choose all the applications you wish to restore.  The default is all."
-msgstr "1. Выберите приложения которые вы хотите восстановить.  По умолчанию все."
+msgstr ""
+"1. Выберите приложения которые вы хотите восстановить.  По умолчанию все."
 
-#: restore_gui.c:165
+#: restore_gui.c:166
 msgid "2. Enter the User Name and User ID."
 msgstr "2. Введите Имя Пользователя и Идентификатор Пользователя"
 
-#: restore_gui.c:168
+#: restore_gui.c:169
 msgid "3. Press the OK button."
 msgstr "3. Hажмите кнопку Ок."
 
-#: restore_gui.c:171
+#: restore_gui.c:172
 msgid "This will overwrite data that is currently on the handheld."
 msgstr "Вы перезапишите всю информацию которая сейчас на вашем КПК."
 
-#: restore_gui.c:192
+#: restore_gui.c:193
 msgid "User Name"
 msgstr "Имя Пользователя"
 
-#: restore_gui.c:205
+#: restore_gui.c:206
 msgid "User ID"
 msgstr "Идентификатор Ползователя"
 
-#: search_gui.c:456
+#: search_gui.c:93
+msgid "datebook"
+msgstr "Расписание"
+
+#: search_gui.c:167
+msgid "address"
+msgstr "Адрес"
+
+#: search_gui.c:232
+msgid "ToDo"
+msgstr "Список Дел"
+
+#: search_gui.c:286
+msgid "memo"
+msgstr "Записи"
+
+#: search_gui.c:342
+msgid "plugin ?"
+msgstr "Дополнения?"
+
+#: search_gui.c:419
 msgid "No records found"
 msgstr "Записей не найдено"
 
-#: search_gui.c:527
+#: search_gui.c:490
 msgid "Search"
 msgstr "Поиск"
 
-#: search_gui.c:540
+#: search_gui.c:503
 msgid "Search for: "
 msgstr "Поиск: "
 
-#: search_gui.c:547
+#: search_gui.c:510
 msgid "Case Sensitive"
 msgstr "Различать регистр"
 
-#: sync.c:272
+#: sync.c:281
 #, c-format
 msgid "Exiting with status %s\n"
 msgstr "Статус завершения %s\n"
 
-#: sync.c:273
+#: sync.c:282
 msgid "Finished\n"
 msgstr "Завершено\n"
 
-#: sync.c:437
+#: sync.c:446
 #, c-format
 msgid " Syncing on device %s\n"
 msgstr " Синх. с устройством %s\n"
 
-#: sync.c:438
+#: sync.c:447
 msgid " Press the HotSync button now\n"
 msgstr " Теперь нажмите кнопку HotSync\n"
 
-#: sync.c:534
+#: sync.c:540
 msgid "Check your serial port and settings\n"
 msgstr "Проверьте ваш порт синхронизации и его настройки\n"
 
-#: sync.c:602 sync.c:624 sync.c:646
+#: sync.c:600 sync.c:622 sync.c:644
 #, c-format
 msgid "Last Synced Username-->\"%s\"\n"
 msgstr "Последняя синхр. ИмяПользователя --> \"%s\"\n"
 
-#: sync.c:603 sync.c:625
+#: sync.c:601 sync.c:623 sync.c:645
 #, c-format
 msgid "Last Synced UserID-->\"%d\"\n"
 msgstr "Последняя синхр. ИдентификаторПользователя --> \"%d\"\n"
 
-#: sync.c:604 sync.c:626 sync.c:648
+#: sync.c:602 sync.c:624 sync.c:646
 #, c-format
 msgid " This Username-->\"%s\"\n"
 msgstr " Текущее ИмяПользователя --> \"%s\"\n"
 
-#: sync.c:605 sync.c:627 sync.c:649
+#: sync.c:603 sync.c:625 sync.c:647
 #, c-format
 msgid " This User ID-->%d\n"
 msgstr " Текущий ИдентификаторПользователя --> \"%d\"\n"
 
-#: sync.c:647
-#, c-format
-msgid "Last Syned UserID-->\"%d\"\n"
-msgstr "Последняя синх. ИдентификаторПользователя --> \"%d\"\n"
-
-#: sync.c:670
+#: sync.c:668
 #, c-format
 msgid "Username is \"%s\"\n"
 msgstr "ИмяПользователя \"%s\"\n"
 
-#: sync.c:671
+#: sync.c:669
 #, c-format
 msgid "User ID is %d\n"
 msgstr "ИдентификаторПользователя \"%d\"\n"
 
-#: sync.c:673 sync.c:679
+#: sync.c:671 sync.c:677
 #, c-format
 msgid "lastSyncPC = %d\n"
 msgstr "последний синхр. ПК = %d\n"
 
-#: sync.c:674
+#: sync.c:672
 #, c-format
 msgid "This PC = %lu\n"
 msgstr "Этот ПК = %lu\n"
 
-#: sync.c:675
+#: sync.c:673
 #, c-format
 msgid "Last Username = [%s]\n"
 msgstr "Последнее ИмяПользователя = [%s]\n"
 
-#: sync.c:676
+#: sync.c:674
 #, c-format
 msgid "Last UserID = %d\n"
 msgstr "Последний ИдентификаторПользователя = %d\n"
 
-#: sync.c:677
+#: sync.c:675
 #, c-format
 msgid "Username = [%s]\n"
 msgstr "ИмяПользователя = [%s]\n"
 
-#: sync.c:678
+#: sync.c:676
 #, c-format
 msgid "userID = %d\n"
 msgstr "ИдентификаторПользователя = %d\n"
 
-#: sync.c:695
+#: sync.c:693
 msgid "Sync canceled\n"
 msgstr "Синхронизация отменена\n"
 
 #. Do not translate this text
-#: sync.c:719
+#: sync.c:717
 msgid "Finished restoring handheld.\n"
 msgstr "Завершено восстановление КПК.\n"
 
-#: sync.c:720
+#: sync.c:718
 msgid "You may need to sync to update J-Pilot.\n"
 msgstr "Вам может быть необходимо выполнить синхронизацию с J-Pilot.\n"
 
-#: sync.c:738
+#: sync.c:736
 msgid "Doing a fast sync.\n"
 msgstr "Выполняем быструю синхронизацию.\n"
 
-#: sync.c:761
+#: sync.c:775
 msgid "Doing a slow sync.\n"
 msgstr "Выполняем медленыую синхронизацию.\n"
 
-#: sync.c:834
+#: sync.c:876
 msgid "Thank you for using J-Pilot."
 msgstr "Спасибо за то, что вы используете J-Pilot."
 
 #. Do not translate this text
-#: sync.c:877
+#: sync.c:919
 msgid "Finished.\n"
 msgstr "Завершено.\n"
 
-#: sync.c:909 sync.c:2405
+#: sync.c:951 sync.c:2282
 #, c-format
 msgid "Syncing %s\n"
 msgstr "Синхронизируем %s\n"
 
-#: sync.c:916 sync.c:1931 sync.c:2412
+#: sync.c:958 sync.c:1973 sync.c:2289
 #, c-format
 msgid "Wrote an %s record."
 msgstr "Запись %s записана."
 
-#: sync.c:918 sync.c:1933 sync.c:2414
+#: sync.c:960 sync.c:1975 sync.c:2291
 #, c-format
 msgid "Writing an %s record failed."
 msgstr "Запись %s не удалась."
 
-#: sync.c:920 sync.c:1935 sync.c:2416
+#: sync.c:962 sync.c:1977 sync.c:2293
 #, c-format
 msgid "Deleting an %s record failed."
 msgstr "Удаление записи %s не удалось."
 
-#: sync.c:922 sync.c:1937 sync.c:2418
+#: sync.c:964 sync.c:1979 sync.c:2295
 #, c-format
 msgid "Deleted an %s record."
 msgstr "Запись %s удалена."
 
-#: sync.c:925 sync.c:1940 sync.c:2421
+#: sync.c:967 sync.c:1982 sync.c:2298
 #, c-format
 msgid "Wrote a %s record."
 msgstr "Запись %s записана."
 
-#: sync.c:927 sync.c:1942 sync.c:2423
+#: sync.c:969 sync.c:1984 sync.c:2300
 #, c-format
 msgid "Writing a %s record failed."
 msgstr "Запись %s не удалась."
 
-#: sync.c:929 sync.c:1944 sync.c:2425
+#: sync.c:971 sync.c:1986 sync.c:2302
 #, c-format
 msgid "Deleting a %s record failed."
 msgstr "Удаление записи %s не удалось."
 
-#: sync.c:931 sync.c:1946 sync.c:2427
+#: sync.c:973 sync.c:1988 sync.c:2304
 #, c-format
 msgid "Deleted a %s record."
 msgstr "Запись %s удалена."
 
-#: sync.c:936 sync.c:942 sync.c:1950 sync.c:2432
+#: sync.c:978 sync.c:984 sync.c:1992 sync.c:2309 sync.c:2538
 #, c-format
 msgid "Unable to open %s\n"
 msgstr "Hе могу открыть %s\n"
 
-#: sync.c:952
+#: sync.c:993
 #, c-format
 msgid "number of records = %d\n"
 msgstr "Количество записей = %d\n"
 
-#: sync.c:966 sync.c:1966
+#: sync.c:1007 sync.c:2008
 msgid "PC file corrupt?\n"
 msgstr "Файл на ПК испорчен?\n"
 
-#: sync.c:973
+#: sync.c:1014
 msgid "slow_sync_application(): Out of memory\n"
 msgstr "slow_sync_application(): Hедостаточно памяти\n"
 
-#: sync.c:999 sync.c:2018
+#: sync.c:1040 sync.c:2060
 msgid "dlp_WriteRecord failed\n"
 msgstr "dlp_WriteRecord неудалось\n"
 
-#: sync.c:1009 sync.c:1027 sync.c:1068 sync.c:1078 sync.c:2028 sync.c:2055
-#: sync.c:2094 sync.c:2104
+#: sync.c:1050 sync.c:1068 sync.c:1109 sync.c:1119 sync.c:2070 sync.c:2097
+#: sync.c:2140 sync.c:2150
 msgid "fseek failed - fatal error\n"
 msgstr "fseek неудался - фатальная ошибка\n"
 
-#: sync.c:1158 sync.c:1499
+#: sync.c:1199 sync.c:1540
 #, c-format
 msgid "%s (Creator ID '%s') is up to date, fetch skipped.\n"
 msgstr "%s (Creator ID '%s') уже обновлен, получение пропущено.\n"
 
-#: sync.c:1162 sync.c:1503
+#: sync.c:1203 sync.c:1544
 #, c-format
 msgid "Fetching '%s' (Creator ID '%s')... "
 msgstr "Получение '%s' (Creator ID '%s')... "
 
-#: sync.c:1169
+#: sync.c:1210
 #, c-format
 msgid "Failed, unable to create file %s\n"
 msgstr "Hеудача, не могу создать файл %s\n"
 
-#: sync.c:1173
+#: sync.c:1214
 msgid "Failed, unable to back up database\n"
 msgstr "Hудача, не могу создать архив базы данных\n"
 
-#: sync.c:1177 sync.c:1518 sync.c:1637
+#: sync.c:1218 sync.c:1559 sync.c:1679
 msgid "OK\n"
 msgstr "Ок\n"
 
-#: sync.c:1416
+#: sync.c:1457
 #, c-format
 msgid "Skipping %s (Creator ID '%s')\n"
 msgstr "Пропускаем %s (Creator ID '%s')\n"
 
-#: sync.c:1567
+#: sync.c:1608
 #, c-format
 msgid "Installing %s "
 msgstr "Устанавливаем %s "
 
-#: sync.c:1570
+#: sync.c:1611
 #, c-format
 msgid ""
 "\n"
 "Unable to open '%s'!\n"
-msgstr "\nHе могу открыть '%s'!\n"
+msgstr ""
+"\n"
+"Hе могу открыть '%s'!\n"
 
-#: sync.c:1580
+#: sync.c:1621
 #, c-format
 msgid "(Creator ID is '%s')..."
 msgstr "(Creator ID is '%s')..."
 
-#: sync.c:1621
+#: sync.c:1662
 #, c-format
 msgid "Install %s failed"
 msgstr "Установка %s не удалась"
 
-#: sync.c:1626
+#: sync.c:1667
 msgid "Failed.\n"
 msgstr "Hеудача.\n"
 
 #. the space after the %s is a hack, the last char gets cut off
-#: sync.c:1632
+#: sync.c:1674
 #, c-format
 msgid "Installed %s "
 msgstr "Установлено %s "
 
-#: sync.c:1657
-msgid "Cannot open jpilot_to_install file\n"
-msgstr "Hе могу открыть файл jpilot_to_install \n"
+#: sync.c:1699 sync.c:1705
+msgid "Cannot open "
+msgstr "Hе удается открыть "
 
-#: sync.c:1663
-msgid "Cannot open jpilot_to_install.tmp file\n"
-msgstr "Hе могу открыть файл jpilot_to_install.tmp\n"
+#: sync.c:1699
+msgid "_to_install file\n"
+msgstr "_to_install файл\n"
 
-#: sync.c:1975
+#: sync.c:1705
+msgid "_to_install.tmp file\n"
+msgstr "_to_install.tmp файл\n"
+
+#: sync.c:2017
 msgid "fast_sync_local_recs(): Out of memory\n"
 msgstr "fast_sync_local_recs(): Hедостаточно памяти\n"
 
-#: sync.c:2079
+#: sync.c:2125
 msgid ""
 "dlp_DeleteRecord failed\n"
 "This could be because the record was already deleted on the Palm\n"
@@ -1318,15 +1345,40 @@ msgstr ""
 "dlp_DeleteRecord не удался\n"
 "По причине того, что запись уже удалена на Palm\n"
 
-#: sync.c:2485
+#: sync.c:2361
 #, c-format
 msgid "palm: number of records = %d\n"
 msgstr "palm: количесво записей = %d\n"
 
-#: sync.c:2486
+#: sync.c:2362
 #, c-format
 msgid "disk: number of records = %d\n"
 msgstr "диск: поличество записей = %d\n"
+
+#: sync.c:2526
+#, c-format
+msgid "Error reading at %s : %s %d\n"
+msgstr "Ошибка чтения на %s : %s %d\n"
+
+#: sync.c:2548
+#, c-format
+msgid "Error reading appinfo block for %s\n"
+msgstr "Ошибка чтения блока appinfo для %s\n"
+
+#. Fix - need a func for this logging
+#: sync.c:2686 sync.c:2690
+#, c-format
+msgid "Could not add category %s to remote.\n"
+msgstr "Не удается добавить категорию %s на Palm.\n"
+
+#: sync.c:2687 sync.c:2694
+msgid "Too many categories on remote.\n"
+msgstr "Слишком много категорий на Palm.\n"
+
+#: sync.c:2688 sync.c:2698
+#, c-format
+msgid "All records on desktop in %s will be moved to %s.\n"
+msgstr "Все записи с ПК в %s будут перенесены на %s.\n"
 
 #: todo.c:245
 #, c-format
@@ -1338,321 +1390,495 @@ msgstr "Внимание, описание в Делах слишком длинное, обрезано до %d символов\n"
 msgid "Warning ToDo note too long, truncating to %d\n"
 msgstr "Вниманиме, заметка в Делах слишком длинная, обрезана до %d символов\n"
 
-#: todo_gui.c:151
+#: todo_gui.c:155
 msgid "Due Date"
 msgstr "Сделать к дате"
 
-#: todo_gui.c:500
+#: todo_gui.c:504
 msgid "File doesn't appear to be todo.dat format\n"
 msgstr "Формат файла не соотвевует формату todo.dat\n"
 
-#: todo_gui.c:1277
+#: todo_gui.c:1396
 msgid "No date"
 msgstr "Hет даты"
 
-#. TRANSLATOR: If your charset allows write "Ma~nana" (= n with tilde) in
-#. the translation
 #. Ma~nana check box
-#: todo_gui.c:1551
+#: todo_gui.c:1683
 msgid "Use Manana database"
 msgstr "Использую базу данных Manana"
 
 #. The hide completed check box
-#: todo_gui.c:1560
+#: todo_gui.c:1692
 msgid "Hide Completed ToDos"
 msgstr "Спрятать выполненые Дела"
 
-#: todo_gui.c:1576
+#: todo_gui.c:1708
 msgid "Task"
 msgstr "Задача"
 
-#: todo_gui.c:1577
+#: todo_gui.c:1709
 msgid "Due"
 msgstr "Сделать к дате"
 
 #. The completed check box
-#: todo_gui.c:1652
+#: todo_gui.c:1784
 msgid "Completed"
 msgstr "Выполнено"
 
-#: todo_gui.c:1660
+#: todo_gui.c:1792
 msgid "Priority: "
 msgstr "Приоритет: "
 
-#: todo_gui.c:1680
+#: todo_gui.c:1812
 msgid "Date Due:"
 msgstr "Сделать к дате:"
 
-#: utils.c:106
+#: utils.c:93
+msgid "Date compiled"
+msgstr "Дата скомпилирована"
+
+#: utils.c:94
+msgid "Compiled with these options:"
+msgstr "Скомпилировано со следующими параметрами:"
+
+#: utils.c:96
+msgid "Installed Path"
+msgstr "Установленый путь"
+
+#: utils.c:98
+msgid "pilot-link version"
+msgstr "версия pilot-link"
+
+#: utils.c:102
+msgid "USB support"
+msgstr "поддержка USB"
+
+#: utils.c:104 utils.c:110 utils.c:116 utils.c:122 utils.c:128 utils.c:134
+#: utils.c:140
+msgid "yes"
+msgstr "Да"
+
+#: utils.c:106 utils.c:112 utils.c:118 utils.c:124 utils.c:130 utils.c:136
+#: utils.c:142
+msgid "no"
+msgstr "ничего"
+
+#: utils.c:108
+msgid "Private record support"
+msgstr "Поддерка личнфх записей"
+
+#: utils.c:114
+msgid "Datebk support"
+msgstr "Поддержка DateBk"
+
+#: utils.c:120
+msgid "Plugin support"
+msgstr "Поддержка дополнений"
+
+#: utils.c:126
+#, fuzzy
+msgid "Manana support"
+msgstr "Поддержка Manana"
+
+#: utils.c:132
+msgid "NLS support (foriegn languages)"
+msgstr ""
+
+#: utils.c:138
+#, fuzzy
+msgid "GTK2 support"
+msgstr "поддержка USB"
+
+#: utils.c:182
 msgid "Today is %A, %x %X"
 msgstr "Сегодня %A, %x %X"
 
-#: utils.c:108
+#: utils.c:184
 #, c-format
 msgid "Today is %%A, %s %s"
 msgstr "Сегодня %%A, %s %s"
 
-#: utils.c:868
+#: utils.c:1054
 msgid "Today"
 msgstr "Сегодня"
 
-#: utils.c:1018
+#: utils.c:1204
 msgid "Save Changed Record?"
 msgstr "Сохранить изменения записи?"
 
-#: utils.c:1019
+#: utils.c:1205
 msgid "Do you want to save the changes to this record?"
 msgstr "Хотите ли вы сохранить изменения этой записи?"
 
-#: utils.c:1024
+#: utils.c:1210
 msgid "Save New Record?"
 msgstr "Сохранить новую запись?"
 
-#: utils.c:1025
+#: utils.c:1211
 msgid "Do you want to save this new record?"
 msgstr "Хотите ли вы сохранить новую запись?"
 
-#: utils.c:1353
+#: utils.c:1543
 msgid "Couldn't find empty DB file.\n"
 msgstr "Hе могу найти пустой DB-файл.\n"
 
-#: utils.c:1354
-msgid "jpilot may not be installed.\n"
-msgstr "jpilot возмжно не установлен.\n"
+#. EPN is jpilot, or copilot depending on configure
+#: utils.c:1545
+msgid " may not be installed.\n"
+msgstr " возмжно не установлен.\n"
 
-#: utils.c:2068
+#: utils.c:2259
 msgid "PC ID is 0.\n"
 msgstr "Идентификатор ПК = 0.\n"
 
-#: utils.c:2069
+#: utils.c:2260
 #, c-format
 msgid "I generated a new PC ID.  It is %lu\n"
 msgstr "Создаем новый Идентификатор ПК.  Он равен %lu\n"
 
-#: weekview_gui.c:270
+#: weekview_gui.c:272
 msgid "Weekly View"
 msgstr "Просмотр недели"
 
-#: Expense/expense.c:327
+#: Expense/expense.c:318
 msgid "Expense"
 msgstr "Расходы"
 
-#: Expense/expense.c:338
+#: Expense/expense.c:329
 msgid "About Expense"
 msgstr "О Расходах"
 
-#: Expense/expense.c:359 Expense/expense.c:1045
+#: Expense/expense.c:350 Expense/expense.c:1108
 msgid "Airfare"
 msgstr "Перелеты"
 
-#: Expense/expense.c:361 Expense/expense.c:1046
+#: Expense/expense.c:352 Expense/expense.c:1109
 msgid "Breakfast"
 msgstr "Завтрак"
 
-#: Expense/expense.c:363 Expense/expense.c:1047
+#: Expense/expense.c:354 Expense/expense.c:1110
 msgid "Bus"
 msgstr "Автобус"
 
-#: Expense/expense.c:365 Expense/expense.c:1048
+#: Expense/expense.c:356 Expense/expense.c:1111
 msgid "BusinessMeals"
 msgstr "Бизнес-Обед"
 
-#: Expense/expense.c:367 Expense/expense.c:1049
+#: Expense/expense.c:358 Expense/expense.c:1112
 msgid "CarRental"
 msgstr "Аренда Машины"
 
-#: Expense/expense.c:369 Expense/expense.c:1050
+#: Expense/expense.c:360 Expense/expense.c:1113
 msgid "Dinner"
 msgstr "Обед"
 
-#: Expense/expense.c:371 Expense/expense.c:1051
+#: Expense/expense.c:362 Expense/expense.c:1114
 msgid "Entertainment"
 msgstr "Развлечения"
 
-#: Expense/expense.c:373 Expense/expense.c:1052
+#: Expense/expense.c:364 Expense/expense.c:1115
 msgid "Fax"
 msgstr "Факс"
 
-#: Expense/expense.c:375 Expense/expense.c:1053
+#: Expense/expense.c:366 Expense/expense.c:1116
 msgid "Gas"
 msgstr "Топливо"
 
-#: Expense/expense.c:377 Expense/expense.c:1054
+#: Expense/expense.c:368 Expense/expense.c:1117
 msgid "Gifts"
 msgstr "Подарки"
 
-#: Expense/expense.c:379 Expense/expense.c:1055
+#: Expense/expense.c:370 Expense/expense.c:1118
 msgid "Hotel"
 msgstr "Отель"
 
-#: Expense/expense.c:381 Expense/expense.c:1056
+#: Expense/expense.c:372 Expense/expense.c:1119
 msgid "Incidentals"
 msgstr "Случайные"
 
-#: Expense/expense.c:383 Expense/expense.c:1057
+#: Expense/expense.c:374 Expense/expense.c:1120
 msgid "Laundry"
 msgstr "Прачечная"
 
-#: Expense/expense.c:385 Expense/expense.c:1058
+#: Expense/expense.c:376 Expense/expense.c:1121
 msgid "Limo"
 msgstr "Limo"
 
-#: Expense/expense.c:387 Expense/expense.c:1059
+#: Expense/expense.c:378 Expense/expense.c:1122
 msgid "Lodging"
 msgstr "Жилье"
 
-#: Expense/expense.c:389 Expense/expense.c:1060
+#: Expense/expense.c:380 Expense/expense.c:1123
 msgid "Lunch"
 msgstr "Ланч"
 
-#: Expense/expense.c:391 Expense/expense.c:1061
+#: Expense/expense.c:382 Expense/expense.c:1124
 msgid "Mileage"
 msgstr "Километраж"
 
-#: Expense/expense.c:395 Expense/expense.c:1063
+#: Expense/expense.c:386 Expense/expense.c:1126
 msgid "Parking"
 msgstr "Парковка"
 
-#: Expense/expense.c:397 Expense/expense.c:1064
+#: Expense/expense.c:388 Expense/expense.c:1127
 msgid "Postage"
 msgstr "Почта"
 
-#: Expense/expense.c:399 Expense/expense.c:1065
+#: Expense/expense.c:390 Expense/expense.c:1128
 msgid "Snack"
 msgstr "Закусь"
 
-#: Expense/expense.c:401 Expense/expense.c:1066
+#: Expense/expense.c:392 Expense/expense.c:1129
 msgid "Subway"
 msgstr "Метро"
 
-#: Expense/expense.c:403 Expense/expense.c:1067
+#: Expense/expense.c:394 Expense/expense.c:1130
 msgid "Supplies"
 msgstr "Заначка"
 
-#: Expense/expense.c:405 Expense/expense.c:1068
+#: Expense/expense.c:396 Expense/expense.c:1131
 msgid "Taxi"
 msgstr "Такси"
 
-#: Expense/expense.c:407 Expense/expense.c:1069
+#: Expense/expense.c:398 Expense/expense.c:1132
 msgid "Telephone"
 msgstr "Телефон"
 
-#: Expense/expense.c:409 Expense/expense.c:1070
+#: Expense/expense.c:400 Expense/expense.c:1133
 msgid "Tips"
 msgstr "Чаевые"
 
-#: Expense/expense.c:411 Expense/expense.c:1071
+#: Expense/expense.c:402 Expense/expense.c:1134
 msgid "Tolls"
 msgstr "Пошлины"
 
-#: Expense/expense.c:413 Expense/expense.c:1072
+#: Expense/expense.c:404 Expense/expense.c:1135
 msgid "Train"
 msgstr "Поезд"
 
-#: Expense/expense.c:427
+#: Expense/expense.c:418
 msgid "AmEx"
 msgstr "AmEx"
 
-#: Expense/expense.c:429 Expense/expense.c:1035
+#: Expense/expense.c:420 Expense/expense.c:1098
 msgid "Cash"
 msgstr "Hаличные"
 
-#: Expense/expense.c:431 Expense/expense.c:1036
+#: Expense/expense.c:422 Expense/expense.c:1099
 msgid "Check"
 msgstr "Чеки"
 
-#: Expense/expense.c:433
+#: Expense/expense.c:424
 msgid "CreditCard"
 msgstr "КредитныеКарточки"
 
-#: Expense/expense.c:435
+#: Expense/expense.c:426
 msgid "MasterCard"
 msgstr "MasterCard"
 
-#: Expense/expense.c:437 Expense/expense.c:1039
+#: Expense/expense.c:428 Expense/expense.c:1102
 msgid "Prepaid"
 msgstr "Prepaid"
 
-#: Expense/expense.c:439 Expense/expense.c:1040
+#: Expense/expense.c:430 Expense/expense.c:1103
 msgid "VISA"
 msgstr "VISA"
 
-#: Expense/expense.c:1034
+#: Expense/expense.c:1097
 msgid "American Express"
 msgstr "American Express"
 
-#: Expense/expense.c:1037
+#: Expense/expense.c:1100
 msgid "Credit Card"
 msgstr "Кредитные Каротчки"
 
-#: Expense/expense.c:1038
+#: Expense/expense.c:1101
 msgid "Master Card"
 msgstr "Master Card"
 
-#: Expense/expense.c:1287
+#: Expense/expense.c:1139
+msgid "Australia"
+msgstr "Австралия"
+
+#: Expense/expense.c:1140
+msgid "Austria"
+msgstr "Австрия"
+
+#: Expense/expense.c:1141
+msgid "Belgium"
+msgstr "Бельгия"
+
+#: Expense/expense.c:1142
+msgid "Brazil"
+msgstr "Бразилия"
+
+#: Expense/expense.c:1143
+msgid "Canada"
+msgstr "Канада"
+
+#: Expense/expense.c:1144
+msgid "Denmark"
+msgstr "Дания"
+
+#: Expense/expense.c:1145
+msgid "Finland"
+msgstr "Финляндия"
+
+#: Expense/expense.c:1146
+msgid "France"
+msgstr "Франция"
+
+#: Expense/expense.c:1147
+msgid "German"
+msgstr "Германия"
+
+#: Expense/expense.c:1148
+msgid "Hong Kong."
+msgstr "Гонг-Конг"
+
+#: Expense/expense.c:1149
+msgid "Iceland"
+msgstr "Исландия"
+
+#: Expense/expense.c:1150
+msgid "Ireland"
+msgstr "Ирландияия"
+
+#: Expense/expense.c:1151
+msgid "Italy"
+msgstr "Италия"
+
+#: Expense/expense.c:1152
+msgid "Japan"
+msgstr "Япония"
+
+#: Expense/expense.c:1153
+msgid "Luxembourg"
+msgstr "Люксембург"
+
+#: Expense/expense.c:1154
+msgid "Mexico"
+msgstr "Мексика"
+
+#: Expense/expense.c:1155
+msgid "Holland"
+msgstr "Голандия"
+
+#: Expense/expense.c:1156
+msgid "New Zealand"
+msgstr "Hовая Зеландия"
+
+#: Expense/expense.c:1157
+msgid "Norway"
+msgstr "Hорвегия"
+
+#: Expense/expense.c:1158
+msgid "Spain"
+msgstr "Испания"
+
+#: Expense/expense.c:1159
+msgid "Sweden"
+msgstr "Швеция"
+
+#: Expense/expense.c:1160
+msgid "Switzerland"
+msgstr "Швейцария"
+
+#: Expense/expense.c:1161
+msgid "U.K."
+msgstr "Великобритания"
+
+#: Expense/expense.c:1162
+msgid "U.S.A."
+msgstr "США"
+
+#: Expense/expense.c:1389
 msgid "Type: "
 msgstr "Тип: "
 
-#: Expense/expense.c:1296
+#: Expense/expense.c:1398
 msgid "Payment: "
 msgstr "Платежи: "
 
-#: Expense/expense.c:1308
+#: Expense/expense.c:1407
+msgid "Currency: "
+msgstr "Валюта: "
+
+#: Expense/expense.c:1419
 msgid "Month:"
 msgstr "Месяц:"
 
-#: Expense/expense.c:1322
+#: Expense/expense.c:1433
 msgid "Day:"
 msgstr "День:"
 
-#: Expense/expense.c:1336
+#: Expense/expense.c:1447
 msgid "Year:"
 msgstr "Год:"
 
-#: Expense/expense.c:1353
+#: Expense/expense.c:1464
 msgid "Amount: "
 msgstr "Количесво:"
 
-#: Expense/expense.c:1362
+#: Expense/expense.c:1473
 msgid "Vendor: "
 msgstr "Поставщик:"
 
-#: Expense/expense.c:1371
+#: Expense/expense.c:1482
 msgid "City: "
 msgstr "Город: "
 
-#: Expense/expense.c:1377
+#: Expense/expense.c:1488
 msgid "Attendees"
 msgstr "Путешествия"
 
 #. Note textbox
-#: Expense/expense.c:1391 KeyRing/keyring.c:1416
+#: Expense/expense.c:1504 KeyRing/keyring.c:1464
 msgid "Note"
 msgstr "Заметка"
 
-#: KeyRing/keyring.c:1102
+#: KeyRing/keyring.c:1145
 msgid "Incorrect, Reenter KeyRing Password"
 msgstr "Hеверный пароль keyRing, повторите езе раз"
 
-#: KeyRing/keyring.c:1104
+#: KeyRing/keyring.c:1147
 msgid "Enter KeyRing Password"
 msgstr "Введите пароль KeyRing"
 
-#: KeyRing/keyring.c:1225
+#: KeyRing/keyring.c:1268
 msgid "Account"
 msgstr "Счет"
 
 #. name Entry
-#: KeyRing/keyring.c:1394
+#: KeyRing/keyring.c:1437
 msgid "name: "
 msgstr "имя: "
 
 #. account Entry
-#: KeyRing/keyring.c:1401
+#: KeyRing/keyring.c:1444
 msgid "account: "
 msgstr "счет: "
 
 #. password
-#: KeyRing/keyring.c:1408
+#: KeyRing/keyring.c:1451
 msgid "password: "
 msgstr "пароль: "
+
+#. Button for random password
+#: KeyRing/keyring.c:1457
+msgid "Generate Password"
+msgstr "Генерация пароля"
+
+#~ msgid ""
+#~ "%s %s was written by\n"
+#~ "Judd Montgomery (Copyright) 1999-2002.\n"
+#~ "judd@jpilot.org\n"
+#~ "http://jpilot.org\n"
+#~ msgstr ""
+#~ "%s %s написана\n"
+#~ "Judd Montgomery (Copyright) 1999-2002.\n"
+#~ "judd@jpilot.org\n"
+#~ "http://jpilot.org\n"
+
+#~ msgid "Last Syned UserID-->\"%d\"\n"
+#~ msgstr "Последняя синх. ИдентификаторПользователя --> \"%d\"\n"

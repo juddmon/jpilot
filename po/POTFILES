@@ -4,9 +4,11 @@
      ../dat.c \
      ../datebook.c \
      ../datebook_gui.c \
+     ../dialer.c \
      ../export_gui.c \
      ../import_gui.c \
      ../install_gui.c \
+     ../jpilot-sync.c \
      ../jpilot.c \
      ../libplugin.c \
      ../log.c \
@@ -20,6 +22,7 @@
      ../print.c \
      ../print_gui.c \
      ../print_headers.c \
+     ../print_logo.c \
      ../restore_gui.c \
      ../search_gui.c \
      ../sync.c \
