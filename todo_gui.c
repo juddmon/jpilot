@@ -135,15 +135,6 @@ static void cb_cal_dialog(GtkWidget *widget,
    struct tm *Pt;
    GtkWidget *Pcheck_button;
    GtkWidget *Pbutton;
-   GtkWidget *w, *window;
-   int i;
-
-   for (w=widget, window=NULL, i=10; w && (i>0); w=w->parent, i--) {
-      if (GTK_IS_WINDOW(w)) {
-	 window=w;
-	 break;
-      }
-   }
 
    Pcheck_button = todo_no_due_date_checkbox;
    Pt = &due_date;
@@ -151,7 +142,7 @@ static void cb_cal_dialog(GtkWidget *widget,
 
    get_pref(PREF_FDOW, &fdow, NULL);
 
-   r = cal_dialog(GTK_WINDOW(window), _("Due Date"), fdow,
+   r = cal_dialog(GTK_WINDOW(gtk_widget_get_toplevel(widget)), _("Due Date"), fdow,
 		  &(Pt->tm_mon),
 		  &(Pt->tm_mday),
 		  &(Pt->tm_year));

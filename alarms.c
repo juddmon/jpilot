@@ -98,22 +98,17 @@ int alarms_find_next(struct tm *date1, struct tm *date2, int soonest_only);
  * Start of Dialog window code
  */
 static void cb_dialog_button(GtkWidget *widget,
-			       gpointer   data)
+			     gpointer   data)
 {
    struct alarm_dialog_data *Pdata;
    GtkWidget *w;
-   int i;
 
-   for (w=widget, i=10; w && (i>0); w=w->parent, i--) {
-      if (GTK_IS_WINDOW(w)) {
-	 Pdata = gtk_object_get_data(GTK_OBJECT(w), "alarm");
-	 if (Pdata) {
-	    Pdata->button_hit = GPOINTER_TO_INT(data);
-	 }
-	 gtk_widget_destroy(GTK_WIDGET(w));
-	 break;
-      }
+   w=gtk_widget_get_toplevel(widget);
+   Pdata = gtk_object_get_data(GTK_OBJECT(w), "alarm");
+   if (Pdata) {
+      Pdata->button_hit = GPOINTER_TO_INT(data);
    }
+   gtk_widget_destroy(GTK_WIDGET(w));
 }
 
 static gboolean cb_destroy_dialog(GtkWidget *widget)

@@ -1221,20 +1221,12 @@ void cb_date_cats(GtkWidget *widget, gpointer data)
    GtkWidget *table;
    GtkWidget *button;
    GtkWidget *vbox, *hbox;
-   GtkWidget *w, *window;
 
    jp_logf(JP_LOG_DEBUG, "cb_date_cats\n");
    if (GTK_IS_WINDOW(window_date_cats)) {
       gdk_window_raise(window_date_cats->window);
       jp_logf(JP_LOG_DEBUG, "date_cats window is already up\n");
       return;
-   }
-
-   for (w=widget, window=NULL, i=15; w && (i>0); w=w->parent, i--) {
-      if (GTK_IS_WINDOW(w)) {
-	 window=w;
-	 break;
-      }
    }
 
    get_datebook_app_info(&ai);
@@ -1245,7 +1237,8 @@ void cb_date_cats(GtkWidget *widget, gpointer data)
 
    gtk_window_set_modal(GTK_WINDOW(window_date_cats), TRUE);
 
-   gtk_window_set_transient_for(GTK_WINDOW(window_date_cats), GTK_WINDOW(window));
+   gtk_window_set_transient_for(GTK_WINDOW(window_date_cats),
+				GTK_WINDOW(gtk_widget_get_toplevel(widget)));
 
    gtk_container_set_border_width(GTK_CONTAINER(window_date_cats), 10);
    gtk_window_set_title(GTK_WINDOW(window_date_cats), PN" Datebook Categories");
@@ -1369,8 +1362,6 @@ static void cb_cal_dialog(GtkWidget *widget,
    struct tm *Pt;
    GtkWidget *Pcheck_button;
    GtkWidget *Pbutton;
-   GtkWidget *w, *window;
-   int i;
 
    switch (GPOINTER_TO_INT(data)) {
     case PAGE_DAY:
@@ -1407,20 +1398,13 @@ static void cb_cal_dialog(GtkWidget *widget,
 
    get_pref(PREF_FDOW, &fdow, NULL);
 
-   for (w=widget, window=NULL, i=15; w && (i>0); w=w->parent, i--) {
-      if (GTK_IS_WINDOW(w)) {
-	 window=w;
-	 break;
-      }
-   }
-
    if (GPOINTER_TO_INT(data) == BEGIN_DATE_BUTTON) {
-      r = cal_dialog(GTK_WINDOW(window), _("Begin On Date"), fdow,
+      r = cal_dialog(GTK_WINDOW(gtk_widget_get_toplevel(widget)), _("Begin On Date"), fdow,
 		     &(Pt->tm_mon),
 		     &(Pt->tm_mday),
 		     &(Pt->tm_year));
    } else {
-      r = cal_dialog(GTK_WINDOW(window), _("End On Date"), fdow,
+      r = cal_dialog(GTK_WINDOW(gtk_widget_get_toplevel(widget)), _("End On Date"), fdow,
 		     &(Pt->tm_mon),
 		     &(Pt->tm_mday),
 		     &(Pt->tm_year));
@@ -1513,8 +1497,6 @@ static void init()
 
 int dialog_4_or_last(int dow)
 {
-   GtkWidget *w, *window;
-   int i;
    char *days[]={
       gettext_noop("Sunday"),
       gettext_noop("Monday"),
@@ -1530,13 +1512,6 @@ int dialog_4_or_last(int dow)
        gettext_noop("4th"), gettext_noop("Last")
    };
 
-   for (w=scrolled_window, window=NULL, i=15; w && (i>0); w=w->parent, i--) {
-      if (GTK_IS_WINDOW(w)) {
-	 window=w;
-	 break;
-      }
-   }
-
    /* needs tagged */
    sprintf(text,
 	   "This appointment can either\n"
@@ -1545,7 +1520,7 @@ int dialog_4_or_last(int dow)
 	   "%s of the month.\n"
 	   "Which do you want?",
 	   _(days[dow]), _(days[dow]));
-   return dialog_generic(GTK_WINDOW(window),
+   return dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(scrolled_window)),
 			 200, 200,
 			 "Question?", "Answer: ",
 			 text, 2, button_text);
@@ -1553,8 +1528,6 @@ int dialog_4_or_last(int dow)
 
 int dialog_current_all_cancel()
 {
-   GtkWidget *w, *window;
-   int i;
    /* needs tagged */
    char text[]=
      /*--------------------------- */
@@ -1569,13 +1542,7 @@ int dialog_current_all_cancel()
       gettext_noop("Cancel")
    };
 
-   for (w=scrolled_window, window=NULL, i=15; w && (i>0); w=w->parent, i--) {
-      if (GTK_IS_WINDOW(w)) {
-	 window=w;
-	 break;
-      }
-   }
-   return dialog_generic(GTK_WINDOW(window),
+   return dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(scrolled_window)),
 			 200, 200, 
 			 "Question?", "Answer: ",
 			 _(text), 3, button_text);
@@ -1584,8 +1551,6 @@ int dialog_current_all_cancel()
 #ifdef EASTER
 int dialog_easter(int mday)
 {
-   GtkWidget *w, *window;
-   int i;
    char text[255];
    char who[50];
    char *button_text[]={"I'll send a present!!!"
@@ -1602,13 +1567,7 @@ int dialog_easter(int mday)
 	   "%s\'s\n"
 	   "Birthday!\n", who);
 
-   for (w=scrolled_window, window=NULL, i=15; w && (i>0); w=w->parent, i--) {
-      if (GTK_IS_WINDOW(w)) {
-	 window=w;
-	 break;
-      }
-   }
-   return dialog_generic(GTK_WINDOW(window),
+   return dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(scrolled_window)),
 			 200, 200, 
 			 "Happy Birthday to Me!", "(iiiii)",
 			 text, 1, button_text);
@@ -3276,7 +3235,6 @@ cb_keyboard(GtkWidget *widget, GdkEventKey *event, gpointer *p)
 
 int datebook_gui_cleanup()
 {
-   GtkWidget *widget;
    int b;
 
    free_AppointmentList(&glob_al);
@@ -3297,17 +3255,12 @@ int datebook_gui_cleanup()
    }
 #endif
    /* Remove the accelerators */
-   for (widget=main_calendar; widget; widget=widget->parent) {
-      if (GTK_IS_WINDOW(widget)) {
 #ifndef ENABLE_GTK2
-	 gtk_accel_group_detach(accel_group, GTK_OBJECT(widget));
+   gtk_accel_group_detach(accel_group, GTK_OBJECT(gtk_widget_get_toplevel(main_calendar)));
 #endif
 	 /* GTK2 FIXME figure the above out */
-	 gtk_signal_disconnect_by_func(GTK_OBJECT(widget),
-				       GTK_SIGNAL_FUNC(cb_keyboard), NULL);
-	 break;
-      }
-   }
+   gtk_signal_disconnect_by_func(GTK_OBJECT(gtk_widget_get_toplevel(main_calendar)),
+				 GTK_SIGNAL_FUNC(cb_keyboard), NULL);
 
    return 0;
 }
@@ -3555,7 +3508,6 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    GtkWidget *pixmapwid;
    GdkPixmap *pixmap;
    GdkBitmap *mask;
-   GtkWidget *widget;
    GtkWidget *button;
    GtkWidget *separator;
    GtkWidget *label;
@@ -3672,20 +3624,13 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_widget_grab_focus(GTK_WIDGET(main_calendar));
 
    /* Make accelerators for some buttons window */
-   accel_group=NULL;
-   for (widget=vbox; widget; widget=widget->parent) {
-      if (GTK_IS_WINDOW(widget)) {
-	 accel_group = gtk_accel_group_new();
+   accel_group = gtk_accel_group_new();
 #ifndef ENABLE_GTK2
-	 gtk_accel_group_attach(accel_group, GTK_OBJECT(widget));
+   gtk_accel_group_attach(accel_group, GTK_OBJECT(gtk_widget_get_toplevel(vbox)));
 #endif
-	 /* GTK2 FIXME figure the above out */
-
-	 gtk_signal_connect(GTK_OBJECT(widget), "key_press_event",
-			    GTK_SIGNAL_FUNC(cb_keyboard), NULL);
-	 break;
-      }
-   }
+   /* GTK2 FIXME figure the above out */
+   gtk_signal_connect(GTK_OBJECT(gtk_widget_get_toplevel(vbox)), "key_press_event",
+		      GTK_SIGNAL_FUNC(cb_keyboard), NULL);
 
    /* Make Weekview button */
    button = gtk_button_new_with_label(_("Week"));

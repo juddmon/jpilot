@@ -381,7 +381,6 @@ int edit_cats_delete_cats_pdb(char *DB_name, int cat)
 static void cb_edit_button(GtkWidget *widget, gpointer data)
 {
    struct dialog_cats_data *Pdata;
-   GtkWidget *w;
    int i, r, count;
    int id;
    int button;
@@ -392,13 +391,7 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
    char temp[256];
 
    button = GPOINTER_TO_INT(data);
-   Pdata=NULL;
-   for (w=widget, i=15; w && (i>0); w=w->parent, i--) {
-      if (GTK_IS_WINDOW(w)) {
-	 Pdata = gtk_object_get_data(GTK_OBJECT(w), "dialog_cats_data");
-	 break;
-      }
-   }
+   Pdata = gtk_object_get_data(GTK_OBJECT(gtk_widget_get_toplevel(widget)), "dialog_cats_data");
 
    if (Pdata) {
       switch (button) {
@@ -411,7 +404,7 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 	    }
 	 }
 	 if (count>14) {
-	    dialog_generic(GTK_WINDOW(w), 0, 0,
+	    dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)), 0, 0,
 			   _("Edit Categories"), NULL,
 			   _("The maximum number of categories (16) are already used"), 1, button_text);
 	    return;
@@ -425,14 +418,14 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 	 break;
        case EDIT_CAT_RENAME:
 	 if ((Pdata->selected<0) || (Pdata->cai2.name[Pdata->selected][0]=='\0')) {
-	    dialog_generic(GTK_WINDOW(w), 0, 0,
+	    dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)), 0, 0,
 			   _("Edit Categories"), NULL,
 			   _("You must select a category to rename"), 1, button_text);
 	    return;
 	 }
 	 if (Pdata->selected==0) {
 	    sprintf(temp, _("You can't edit category %s.\n"), Pdata->cai1.name[0]);
-	    dialog_generic(GTK_WINDOW(w), 0, 0,
+	    dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)), 0, 0,
 			   _("Edit Categories"), NULL,
 			   temp, 1, button_text);
 	    return;
@@ -450,7 +443,7 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 	 printf("delete cat\n");
 #endif
 	 if (Pdata->selected<0) {
-	    dialog_generic(GTK_WINDOW(w), 0, 0,
+	    dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)), 0, 0,
 			   _("Edit Categories"), NULL,
 			   _("You must select a category to delete"), 1, button_text);
 	    return;
@@ -468,7 +461,7 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 	    sprintf(temp, _("There are %d records in %s.\n"
 		    "Do you want to move them to %s, or delete them?"),
 		    count, Pdata->cai1.name[Pdata->selected], Pdata->cai1.name[0]);
-	    r = dialog_generic(GTK_WINDOW(w), 0, 0,
+	    r = dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)), 0, 0,
 			       _("Edit Categories"), NULL,
 			       temp, 3, move_text);
 	    switch (r) {
@@ -544,7 +537,7 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 	    for (i=0; i<16; i++) {
 	       if (!strcmp(entry_text, Pdata->cai2.name[i])) {
 		  sprintf(temp, _("The category %s can't be used more than once"), entry_text);
-		  dialog_generic(GTK_WINDOW(w), 0, 0,
+		  dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)), 0, 0,
 				 _("Edit Categories"), NULL,
 				 temp, 1, button_text);
 		  return;
@@ -632,16 +625,10 @@ static void cb_dialog_button(GtkWidget *widget, gpointer data)
 {
    struct dialog_cats_data *Pdata;
    GtkWidget *w;
-   int i;
 
-   Pdata=NULL;
-   for (w=widget, i=15; w && (i>0); w=w->parent, i--) {
-      if (GTK_IS_WINDOW(w)) {
-	 Pdata = gtk_object_get_data(GTK_OBJECT(w), "dialog_cats_data");
-	 Pdata->button_hit=GPOINTER_TO_INT(data);
-	 break;
-      }
-   }
+   w = gtk_widget_get_toplevel(widget);
+   Pdata = gtk_object_get_data(GTK_OBJECT(w), "dialog_cats_data");
+   Pdata->button_hit=GPOINTER_TO_INT(data);
 
    gtk_widget_destroy(GTK_WIDGET(w));
 }
@@ -663,7 +650,6 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
    GtkWidget *entry;
    GtkWidget *separator;
    GtkWidget *label;
-   GtkWidget *w;
    struct dialog_cats_data Pdata;
    int i;
    long char_set;
@@ -705,13 +691,7 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
 
    gtk_window_set_modal(GTK_WINDOW(dialog), TRUE);
 
-   /* Find the main window from some widget */
-   for (w=widget, i=10; w && (i>0); w=w->parent, i--) {
-      if (GTK_IS_WINDOW(w)) {
-	 gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(w));
-	 break;
-      }
-   }
+   gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_widget_get_toplevel(widget)));
 
    hbox = gtk_hbox_new(FALSE, 0);
 

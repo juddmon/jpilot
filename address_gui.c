@@ -1332,8 +1332,6 @@ void cb_dialer(GtkWidget *widget, gpointer data)
    char *Px;
    char number[100];
    char ext[100];
-   int i;
-   GtkWidget *w, *window;
 
    number[0]=ext[0]='\0';
    text=data;
@@ -1349,13 +1347,7 @@ void cb_dialer(GtkWidget *widget, gpointer data)
    }
    g_free(str);
 
-   for (w=widget, window=NULL, i=15; w && (i>0); w=w->parent, i--) {
-      if (GTK_IS_WINDOW(w)) {
-	 window=w;
-	 break;
-      }
-   }
-   dialog_dial(GTK_WINDOW(window), number, ext);
+   dialog_dial(GTK_WINDOW(gtk_widget_get_toplevel(widget)), number, ext);
 }
 
 void cb_address_quickfind(GtkWidget *widget,

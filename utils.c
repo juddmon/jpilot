@@ -1185,17 +1185,11 @@ int dialog_generic(GtkWindow *main_window,
 int dialog_generic_ok(GtkWidget *widget,
 		      char *title, char *frame_text, char *text)
 {
-   GtkWidget *w;
-   int i;
    char *button_text[] = { gettext_noop("OK") };
 
    if (widget) {
-      for (w=widget, i=15; w && (i>0); w=w->parent, i--) {
-	 if (GTK_IS_WINDOW(w)) {
-	    return dialog_generic(GTK_WINDOW(w), 0, 0,
-				  title, frame_text, text, 1, button_text);
-	 }
-      }
+      return dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(widget))),
+			    0, 0, title, frame_text, text, 1, button_text);
    }
    return dialog_generic(NULL, 0, 0, title, frame_text, text, 1, button_text);
 }
@@ -1208,8 +1202,7 @@ int dialog_generic_ok(GtkWidget *widget,
  */
 int dialog_save_changed_record(GtkWidget *widget, int changed)
 {
-   GtkWidget *w;
-   int i, b;
+   int b;
    char *button_text[]={gettext_noop("Yes"), gettext_noop("No")};
 
    b=0;
@@ -1217,24 +1210,19 @@ int dialog_save_changed_record(GtkWidget *widget, int changed)
    if ((changed!=MODIFY_FLAG) && (changed!=NEW_FLAG)) {
       return 0;
    }
-   /* Find the main window from some global widget and do a dialog */
-   for (w=widget, i=15; w && (i>0); w=w->parent, i--) {
-      if (GTK_IS_WINDOW(w)) {
-	 if (changed==MODIFY_FLAG) {
-	    b=dialog_generic(GTK_WINDOW(w), 0, 0,
-			     _("Save Changed Record?"), NULL,
-			     _("Do you want to save the changes to this record?"),
-			     2, button_text);
-	 }
-	 if (changed==NEW_FLAG) {
-	    b=dialog_generic(GTK_WINDOW(w), 0, 0,
-			     _("Save New Record?"), NULL,
-			     _("Do you want to save this new record?"),
-			     2, button_text);
-	 }
-	 break;
-      }
+   if (changed==MODIFY_FLAG) {
+      b=dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)), 0, 0,
+		       _("Save Changed Record?"), NULL,
+		       _("Do you want to save the changes to this record?"),
+		       2, button_text);
    }
+   if (changed==NEW_FLAG) {
+      b=dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)), 0, 0,
+		       _("Save New Record?"), NULL,
+		       _("Do you want to save this new record?"),
+		       2, button_text);
+   }
+
    return b;
 }
 
