@@ -2224,6 +2224,7 @@ static int dayview_update_clist()
    jp_logf(JP_LOG_DEBUG, "datebook_category = 0x%x\n", datebook_category);
 #endif
 
+   gtk_clist_freeze(GTK_CLIST(clist));
    gtk_clist_clear(GTK_CLIST(clist));
 
    show_priv = show_privates(GET_PRIVATES);
@@ -2363,19 +2364,27 @@ static int dayview_update_clist()
       }
    }
 
-   /*If there is an item in the list, select the first one */
+   /* If there are items in the list, highlight the selected row */
    if (i>0) {
-      gtk_clist_select_row(GTK_CLIST(clist), 0, 1);
-      cb_clist_selection(clist, 0, 1, (GdkEventButton *)455, "");
+      /* Select the existing requested row, or row 0 if that is impossible */
+      if (clist_row_selected <= entries_shown) {
+	 gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, 1);
+	 cb_clist_selection(clist, clist_row_selected, 1, (GdkEventButton *)455, NULL);
+      }
+      else
+      {
+	 gtk_clist_select_row(GTK_CLIST(clist), 0, 1);
+	 cb_clist_selection(clist, 0, 1, (GdkEventButton *)455, NULL);
+      }
    } else {
       set_new_button_to(CLEAR_FLAG);
       clear_details();
    }
 
-     {
-	g_snprintf(str, sizeof(str), _("%d of %d records"), entries_shown, num_entries);
-	gtk_tooltips_set_tip(glob_tooltips, GTK_CLIST(clist)->column[DB_APPT_COLUMN].button, str, NULL);
-     }
+   gtk_clist_thaw(GTK_CLIST(clist));
+
+   g_snprintf(str, sizeof(str), _("%d of %d records"), entries_shown, num_entries);
+   gtk_tooltips_set_tip(glob_tooltips, GTK_CLIST(clist)->column[DB_APPT_COLUMN].button, str, NULL);
 
    return 0;
 }
@@ -2712,11 +2721,18 @@ void cb_delete_appt(GtkWidget *widget, gpointer data)
    }
 
    delete_pc_record(DATEBOOK, ma, flag);
+   if (flag==DELETE_FLAG) {
+      /* when we redraw we want to go to the line above the deleted one */
+      if (clist_row_selected>0) {
+	 clist_row_selected--;
+      }
+   }
 
-   /* Force the calendar redraw and re-read of appointments */
-   gtk_signal_emit_by_name(GTK_OBJECT(main_calendar), "day_selected");
-
-   highlight_days();
+   if (flag == DELETE_FLAG) {
+      /* Force the calendar redraw and re-read of appointments */
+      gtk_signal_emit_by_name(GTK_OBJECT(main_calendar), "day_selected");
+      highlight_days();
+   }
 }
 
 void cb_undelete_appt(GtkWidget *widget,
