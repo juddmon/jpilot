@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.15 2003/02/22 15:13:47 judd Exp $
+# $Id: Makefile.am,v 1.16 2003/04/22 22:16:56 judd Exp $
 
 SUBDIRS = intl Expense SyncTime KeyRing docs dialer po
 
@@ -148,28 +148,40 @@ desktop_DATA = jpilot.desktop
 # HTML documentation, etc.
 ###
 install-data-local:
-	$(INSTALL) -d -m 755 $(prefix)/share/$(PACKAGE)
-	$(INSTALL) -m 644 jpilotrc.blue $(prefix)/share/$(PACKAGE)
-	$(INSTALL) -m 644 jpilotrc.default $(prefix)/share/$(PACKAGE)/
-	$(INSTALL) -m 644 jpilotrc.green $(prefix)/share/$(PACKAGE)/
-	$(INSTALL) -m 644 jpilotrc.purple $(prefix)/share/$(PACKAGE)/
-	$(INSTALL) -m 644 jpilotrc.steel $(prefix)/share/$(PACKAGE)/
-	$(INSTALL) -m 644 empty/DatebookDB.pdb $(prefix)/share/$(PACKAGE)/
-	$(INSTALL) -m 644 empty/AddressDB.pdb $(prefix)/share/$(PACKAGE)/
-	$(INSTALL) -m 644 empty/ToDoDB.pdb $(prefix)/share/$(PACKAGE)/
-	$(INSTALL) -m 644 empty/MemoDB.pdb $(prefix)/share/$(PACKAGE)/
-	$(INSTALL) -m 644 empty/Memo32DB.pdb $(prefix)/share/$(PACKAGE)/
-	$(INSTALL) -m 644 empty/ExpenseDB.pdb $(prefix)/share/$(PACKAGE)/
-
+	$(INSTALL) -d -m 755 $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)
+	$(INSTALL) -m 644 docs/manual.html $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)/
+	$(INSTALL) -m 644 docs/plugin.html $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)
+	$(INSTALL) -m 644 docs/jpilot-address.png $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)
+	$(INSTALL) -m 644 docs/jpilot-datebook.png $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)
+	$(INSTALL) -m 644 docs/jpilot-expense.png $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)
+	$(INSTALL) -m 644 docs/jpilot-install.png $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)
+	$(INSTALL) -m 644 docs/jpilot-memo.png $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)
+	$(INSTALL) -m 644 docs/jpilot-prefs.png $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)
+	$(INSTALL) -m 644 docs/jpilot-print.png $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)
+	$(INSTALL) -m 644 docs/jpilot-search.png $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)
+	$(INSTALL) -m 644 docs/jpilot-todo.png $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)
+	$(INSTALL) -m 644 docs/jpilot-toplogo.jpg $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)
+	$(INSTALL) -d -m 755 $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)/icons
+	$(INSTALL) -m 644 icons/README $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)/icons/README
+	$(INSTALL) -m 644 icons/jpilot-icon1.xpm $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)/icons/
+	$(INSTALL) -m 644 icons/jpilot-icon2.xpm $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)/icons/
+	$(INSTALL) -m 644 icons/jpilot-icon3.xpm $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)/icons/
+	$(INSTALL) -m 644 icons/jpilot-icon4.xpm $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)/icons/
+	$(INSTALL) -m 644 BUGS $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)/
+	$(INSTALL) -m 644 ChangeLog $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)/
+	$(INSTALL) -m 644 COPYING $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)/
+	$(INSTALL) -m 644 AUTHORS $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)/
+	$(INSTALL) -m 644 INSTALL $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)/
+	$(INSTALL) -m 644 README $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)/
+	$(INSTALL) -m 644 TODO $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)/
+	$(INSTALL) -m 644 UPGRADING $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)/
+	$(INSTALL) -d -m 755 $(DESTDIR)/$(prefix)/share/$(PACKAGE)
+	$(INSTALL) -m 644 jpilotrc.blue $(DESTDIR)/$(prefix)/share/$(PACKAGE)/
+	$(INSTALL) -m 644 jpilotrc.default $(DESTDIR)/$(prefix)/share/$(PACKAGE)/
+	$(INSTALL) -m 644 jpilotrc.green $(DESTDIR)/$(prefix)/share/$(PACKAGE)/
+	$(INSTALL) -m 644 jpilotrc.purple $(DESTDIR)/$(prefix)/share/$(PACKAGE)/
+	$(INSTALL) -m 644 jpilotrc.steel $(DESTDIR)/$(prefix)/share/$(PACKAGE)/
 uninstall-local:
-	rm -f $(prefix)/share/$(PACKAGE)/jpilotrc.blue
-	rm -f $(prefix)/share/$(PACKAGE)/jpilotrc.default
-	rm -f $(prefix)/share/$(PACKAGE)/jpilotrc.green
-	rm -f $(prefix)/share/$(PACKAGE)/jpilotrc.purple
-	rm -f $(prefix)/share/$(PACKAGE)/jpilotrc.steel
-	rm -f $(prefix)/share/$(PACKAGE)/empty/DatebookDB.pdb
-	rm -f $(prefix)/share/$(PACKAGE)/empty/AddressDB.pdb
-	rm -f $(prefix)/share/$(PACKAGE)/empty/ToDoDB.pdb
-	rm -f $(prefix)/share/$(PACKAGE)/empty/MemoDB.pdb
-	rm -f $(prefix)/share/$(PACKAGE)/empty/Memo32DB.pdb
-	rm -f $(prefix)/share/$(PACKAGE)/empty/ExpenseDB.pdb
+	rm -f $(DESTDIR)/$(prefix)/share/$(PACKAGE)/jpilotrc.*
+	rm -f $(DESTDIR)/$(prefix)/share/$(PACKAGE)/empty/*
+	rm -f $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)/
