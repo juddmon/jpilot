@@ -1056,7 +1056,6 @@ msgid "About %s"
 msgstr "关于 %s"
 
 #: jpilot.c:1098
-#, fuzzy
 msgid "/_File"
 msgstr "/文件(_F)"
 
@@ -1176,11 +1175,11 @@ msgstr "/帮助(_H)"
 
 #: jpilot.c:1150
 msgid "/Help/PayBack program"
-msgstr ""
+msgstr "/帮助(_H)/PayBack program"
 
 #: jpilot.c:1151
 msgid "/Help/J-Pilot"
-msgstr ""
+msgstr "/帮助(_H)/J-Pilot"
 
 #: jpilot.c:1218
 #, fuzzy, c-format
