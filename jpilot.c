@@ -773,24 +773,14 @@ static void output_to_pane(const char *str)
    long ivalue;
 
 #ifdef ENABLE_GTK2
-   gchar *utf8_text = NULL;
-   if (!g_utf8_validate(str, -1, NULL)) {
-      /* the text is not UTF-8 valid */
-      GError *error = NULL;
-
-      utf8_text = g_convert(str, strlen(str), "UTF-8", "ISO-8859-1", NULL,
-			    NULL, &error);
-
-      if (error) {
-	 g_error_free(error);
-	 printf("Can't convert: %s\n", str);
-      } else {
-	 str = utf8_text;
-      }
-   }
-   
-   gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(g_output_text_buffer), str, -1);
-   if (utf8_text) g_free(utf8_text);
+   if (! g_utf8_validate(str, -1, NULL)) {
+      gchar *utf8_text;
+      
+      utf8_text = g_locale_to_utf8 (str, -1, NULL, NULL, NULL);
+      gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(g_output_text_buffer), utf8_text, -1);
+      g_free(utf8_text);
+   } else
+      gtk_text_insert(GTK_TEXT_BUFFER(g_output_text), NULL, NULL, NULL, str, -1);
    gtk_text_view_scroll_mark_onscreen(GTK_TEXT_VIEW(g_output_text), gtk_text_buffer_get_insert(GTK_TEXT_BUFFER(g_output_text_buffer)));
 #else
    gtk_text_insert(GTK_TEXT(g_output_text), NULL, NULL, NULL, str, -1);
