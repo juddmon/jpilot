@@ -33,6 +33,7 @@
 #include "libplugin.h"
 #include "japanese.h"
 #include "cp1250.h"
+#include "cp1253.h"
 #include "russian.h"
 
 #define PRINT_FILE_LINE printf("%s line %d\n", __FILE__, __LINE__)

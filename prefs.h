@@ -110,7 +110,8 @@
 #define CHAR_SET_KOREAN   6 /* Korean Hangul */
 #define CHAR_SET_1250UTF  7 /* Czech, Polish (Unix: UTF-8) */
 #define CHAR_SET_LATINUTF 8 /* JPA : Latin European (Unix: UTF-8) */
-#define NUM_CHAR_SETS     9
+#define CHAR_SET_1253UTF  9 /* Modern Greek (Palm: Windows 1253, Host: UTF-8) */
+#define NUM_CHAR_SETS    10
 
 #define MAX_PREF_VALUE 200
 

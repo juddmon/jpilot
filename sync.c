@@ -41,9 +41,6 @@
 #include <ctype.h>
 #include "utils.h"
 #include "sync.h"
-#include "japanese.h"
-#include "cp1250.h"
-#include "russian.h"
 #include "log.h"
 #include "prefs.h"
 #include "datebook.h"

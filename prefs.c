@@ -423,7 +423,8 @@ int get_pref_possibility(int which, int n, char *pref_str)
       "Chinese(Big5)",
       "Korean",
       "Host UTF-8 <-> Palm Windows1250 (EE)",
-      "Host UTF-8 <-> Palm Windows1252" /* JPA */
+      "Host UTF-8 <-> Palm Windows1252", /* JPA */
+      "Host UTF-8 <-> Palm Windows1253 (Greek)"
    };
 
    static const char *paper_sizes[] = {
