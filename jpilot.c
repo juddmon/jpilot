@@ -84,7 +84,7 @@
 
 #define APP_BUTTON_SIZE 44
 
-#define USAGE_STRING _("\n"EPN" [ [-v] || [-h] || [-d] || [-a] || [-A] || [-i]\n"\
+#define USAGE_STRING _("\n"EPN" [-v] || [-h] || [-d] || [-a] || [-A] || [-i]\n"\
 " -v displays version and compile options and exits.\n"\
 " -h displays help and exits.\n"\
 " -d displays debug info to stdout.\n"\
@@ -92,8 +92,8 @@
 " -a ignore missed alarms since the last time this program was run.\n"\
 " -A ignore all alarms, past and future.\n"\
 " -i makes jpilot iconify itself upon launch\n"\
-" The PILOTPORT, and PILOTRATE env variables are used to specify which\n"\
-" port to sync on, and at what speed.\n"\
+" The PILOTPORT, and PILOTRATE env variables are used to specify\n"\
+" which port to sync on, and at what speed.\n"\
 " If PILOTPORT is not set then it defaults to /dev/pilot.\n")
 
 
@@ -1331,7 +1331,6 @@ void get_main_menu(GtkWidget  *window,
       }
       free(plugin_menu_strings);
    }
-   /* Not sure if these should be freed, or not */
    if (help_count) {
       for (str_i=0; str_i < help_count; str_i++) {
 	 free(plugin_help_strings[str_i]);
