@@ -269,7 +269,7 @@ configurable in the future, but right now I don't see a need for it.
 <br><b><tt>char *format,... - </tt></b>is the same type of things that
 you would pass to printf.
 <p><tt>example:</tt>
-<br><tt>plugin_logf(LOG_WARN, "error number %d: %s\n", n, err);</tt>
+<br><tt>plugin_logf(JP_LOG_WARN, "error number %d: %s\n", n, err);</tt>
 <p>There are 3 places for logging output to go to.&nbsp; Standard output
 (stdout, usually the terminal window), the log file in ~/.jpilot/, and
 the ouput window (the one that pops up while you are syncing).
@@ -294,7 +294,7 @@ debug output.
 </tr>
 
 <tr>
-<td>LOG_DEBUG</td>
+<td>JP_LOG_DEBUG</td>
 
 <td>
 <center>Debug
@@ -314,7 +314,7 @@ is in debug mode.&nbsp; These message should be things like "x=%d", or
 </tr>
 
 <tr>
-<td>LOG_INFO</td>
+<td>JP_LOG_INFO</td>
 
 <td>
 <center>X</center>
@@ -333,7 +333,7 @@ in the cradle now", "Syncing xxx plugin", etc.&nbsp;</td>
 </tr>
 
 <tr>
-<td>LOG_WARN</td>
+<td>JP_LOG_WARN</td>
 
 <td>
 <center>X</center>
@@ -352,7 +352,7 @@ e.g. "Out of Memory", "Could not open file".</td>
 </tr>
 
 <tr>
-<td>LOG_FATAL</td>
+<td>JP_LOG_FATAL</td>
 
 <td>
 <center>X</center>
@@ -385,7 +385,7 @@ but also override any future configurability.</b></td>
 </tr>
 
 <tr>
-<td>LOG_STDOUT</td>
+<td>JP_LOG_STDOUT</td>
 
 <td>
 <center>X</center>
@@ -399,7 +399,7 @@ but also override any future configurability.</b></td>
 </tr>
 
 <tr>
-<td>LOG_FILE</td>
+<td>JP_LOG_FILE</td>
 
 <td>&nbsp;</td>
 
@@ -413,7 +413,7 @@ but also override any future configurability.</b></td>
 </tr>
 
 <tr>
-<td>LOG_GUI</td>
+<td>JP_LOG_GUI</td>
 
 <td>&nbsp;</td>
 
@@ -428,9 +428,9 @@ but also override any future configurability.</b></td>
 </table>
 <br>
 The concept of the log levels is to use
- LOG_DEBUG, LOG_INFO, LOG_WARN, and LOG_FATAL so that the
+ JP_LOG_DEBUG, JP_LOG_INFO, JP_LOG_WARN, and JP_LOG_FATAL so that the
  user can choose how much he/she wants to see.  For instance if you have a
- plugin that collects a bunch of data you could use LOG_INFO and it may say:
+ plugin that collects a bunch of data you could use JP_LOG_INFO and it may say:
 <tt>
 <p>plugin foo started. 
 <br>scanning yahoo.com 
@@ -442,13 +442,13 @@ The concept of the log levels is to use
 </tt>
 <p>
 And then if the user doesn't want to see this he can set the log level 
-higher to LOG_WARN and only see LOG_WARN, or higher, or he can set it to 
-LOG_FATAL to only see memory errors and other fatal messages.&nbsp;
+higher to JP_LOG_WARN and only see LOG_WARN, or higher, or he can set it to 
+JP_LOG_FATAL to only see memory errors and other fatal messages.&nbsp;
  
 <p>I only have the log level hard coded right now and with the "-d" flag
  DEBUG is turned on, but it was coded to be flexible.
 <p>
-By using LOG_STDOUT, LOG_FILE, and LOG_GUI you override this flexibility.
+By using JP_LOG_STDOUT, JP_LOG_FILE, and JP_LOG_GUI you override this flexibility.
 
 <p>
 <hr WIDTH="100%">
