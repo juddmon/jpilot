@@ -82,7 +82,8 @@ int main(int argc, char *argv[])
 
    pipe_from_parent=STDIN_FILENO;
    pipe_to_parent=STDOUT_FILENO;
-   glob_log_stdout_mask = JP_LOG_INFO | JP_LOG_WARN | JP_LOG_FATAL | JP_LOG_STDOUT;
+   glob_log_stdout_mask = JP_LOG_INFO | JP_LOG_WARN | JP_LOG_FATAL |
+     JP_LOG_STDOUT | JP_LOG_GUI;
 
    for (i=1; i<argc; i++) {
       if (!strncasecmp(argv[i], "-v", 2)) {
