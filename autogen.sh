@@ -1,4 +1,4 @@
-# $Id: autogen.sh,v 1.10 2004/10/02 07:45:52 rousseau Exp $
+# $Id: autogen.sh,v 1.11 2004/11/14 19:15:41 rousseau Exp $
 
 set -x
 
@@ -12,10 +12,10 @@ set -x
 #gettextize -f --intl
 
 rm -f configure Makefile.in Makefile config.h.in
-aclocal -I m4
 
 echo "Running intltoolize"
 #gettextize --force --intl
+aclocal -I m4
 intltoolize --force --copy --automake
 
 autoheader
