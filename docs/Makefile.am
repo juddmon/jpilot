@@ -1,10 +1,10 @@
-# $Id: Makefile.am,v 1.4 2003/07/05 23:12:18 judd Exp $
+# $Id: Makefile.am,v 1.5 2004/02/22 20:34:29 judd Exp $
 
 # install the man pages
 man_MANS = jpilot.1 jpilot-dial.1 jpilot-sync.1 jpilot-upgrade-99.1
 
 # install the manual docs
-docdir = $(prefix)/doc/$(PACKAGE)-$(VERSION)
+docdir = $(prefix)/share/doc/$(PACKAGE)-$(VERSION)
 doc_DATA = manual.html \
 	    plugin.html \
 	    jpilot-address.png \

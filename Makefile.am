@@ -1,6 +1,6 @@
-# $Id: Makefile.am,v 1.23 2004/02/21 01:39:23 judd Exp $
+# $Id: Makefile.am,v 1.24 2004/02/22 20:33:09 judd Exp $
 
-SUBDIRS = intl Expense SyncTime KeyRing docs dialer po m4 empty icons
+SUBDIRS = Expense SyncTime KeyRing docs dialer po m4 empty icons
 
 # install the manual docs
 colordir = $(prefix)/share/$(PACKAGE)
