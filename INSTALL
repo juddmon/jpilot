@@ -1,17 +1,28 @@
-you need to have gtk1.2 or better (I haven't tried anything older)
+You need to have gtk1.2 or better.
 gtk requires glib.
 you can get these at http://www.gtk.org
 
 pilot link must be installed and working.
 ftp://ryeham.ee.ryerson.ca/pub/PalmOS/
+RedHat users must also have the pilot-link-dev rpm installed for the header
+ files.
 
 jpilot currently uses the PILOTPORT and PILOTRATE environment variables, as
 does pilot-link.
 
 
-edit the first few lines of Makefile
+edit the first few lines of Makefile if neccessary.
 make
 mkdir ~/.jpilot/
-cp jpilotrc ~/.jpilot/
-jpilot
-you may want to sync before you do anything
+cp jpilotrc ~/.jpilot/ (or you can do a cp jpilotrc.blue ~/.jpilot/jpilotrc
+ if you like blue better)
+./jpilot
+Put the executable in /usr/local/bin, or somewhere.
+
+
+Currently, you have to sync before the program will behave correctly.
+JPilot was written in such a way that it should be very safe to sync.
+I have had no reports of data being corrupted, or lost.  There is always
+that possibility though.  As with anything else, backup your data if you
+cannot afford to lose it.  Just make sure your backup software destroy it
+first ;)

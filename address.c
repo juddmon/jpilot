@@ -23,6 +23,7 @@
 #include <pi-dlp.h>
 #include "address.h"
 #include "utils.h"
+#include "log.h"
 
 #define ADDRESS_EOF 7
 
@@ -33,7 +34,7 @@ int print_address_list(AddressList **al)
 
    for (prev_al=NULL, temp_al=*al; temp_al;
 	prev_al=temp_al, temp_al=temp_al->next) {
-      printf("entry[0]=[%s]\n", temp_al->ma.a.entry[0]);
+      logf(LOG_FILE | LOG_STDOUT, "entry[0]=[%s]\n", temp_al->ma.a.entry[0]);
    }
 }
 #endif
@@ -133,27 +134,21 @@ static int pc_address_read_next_rec(FILE *in, MyAddress *ma)
    PCRecordHeader header;
    int rec_len, num;
    char *record;
-   //DatebookRecType rt;
    
    if (feof(in)) {
       return ADDRESS_EOF;
    }
-//  if (ftell(in)==0) {
-//     printf("Error: File header not read\n");
-//      return ADDRESS_EOF;
-//   }
    num = fread(&header, sizeof(header), 1, in);
    if (feof(in)) {
       return ADDRESS_EOF;
    }
    if (num != 1) {
-      printf("error on fread\n");
+      logf(LOG_WARN, "error on fread\n");
       return ADDRESS_EOF;
    }
    rec_len = header.rec_len;
    ma->rt = header.rt;
    ma->attrib = header.attrib;
-   //printf("read attrib = %d\n", ma->attrib);
    ma->unique_id = header.unique_id;
    record = malloc(rec_len);
    if (!record) {
@@ -180,18 +175,18 @@ int pc_address_write(struct Address *a, PCRecType rt, unsigned char attrib)
 
    get_next_unique_pc_id(&next_unique_id);
 #ifdef JPILOT_DEBUG
-   printf("next unique id = %d\n",next_unique_id);
+   logf(LOG_DEBUG, "next unique id = %d\n",next_unique_id);
 #endif
    
    out = open_file("AddressDB.pc", "a");
    if (!out) {
-      printf("Error opening AddressDB.pc\n");
+      logf(LOG_WARN, "Error opening AddressDB.pc\n");
       return -1;
    }
    rec_len = pack_Address(a, record, 65535);
    if (!rec_len) {
       PRINT_FILE_LINE;
-      printf("pack_Address error\n");
+      logf(LOG_WARN, "pack_Address error\n");
    }
    header.rec_len=rec_len;
    header.rt=rt;
@@ -226,19 +221,20 @@ int get_address_app_info(struct AddressAppInfo *ai)
 
    in = open_file("AddressDB.pdb", "r");
    if (!in) {
-      printf("Error opening AddressDB.pdb\n");
+      logf(LOG_WARN, "Error opening AddressDB.pdb\n");
       return -1;
    }
    fread(&rdbh, sizeof(RawDBHeader), 1, in);
    if (feof(in)) {
-      printf("Error reading AddressDB.pdb\n");
+      logf(LOG_WARN, "Error reading AddressDB.pdb\n");
       fclose(in);
       return -1;
    }
    raw_header_to_header(&rdbh, &dbh);
 
+   get_app_info_size(in, &rec_size);
+
    fseek(in, dbh.app_info_offset, SEEK_SET);
-   rec_size = 865;
    buf=malloc(rec_size);
    if (!buf) {
       fclose(in);
@@ -247,7 +243,7 @@ int get_address_app_info(struct AddressAppInfo *ai)
    num = fread(buf, 1, rec_size, in);
    if (feof(in)) {
       fclose(in);
-      printf("Error reading AddressDB.pdb\n");
+      logf(LOG_WARN, "Error reading AddressDB.pdb\n");
       return -1;
    }
    unpack_AddressAppInfo(ai, buf, rec_size);
@@ -261,15 +257,9 @@ int get_address_app_info(struct AddressAppInfo *ai)
 int get_addresses(AddressList **address_list)
 {
    FILE *in, *pc_in;
-//   *address_list=NULL;
-//   char db_name[34];
-//   char filler[100];
    char *buf;
-//   unsigned char char_num_records[4];
-//   unsigned char char_ai_offset[4];//app info offset
-   int num_records, i, num, r;
+   int num_records, recs_returned, i, num, r;
    unsigned int offset, next_offset, rec_size;
-//   unsigned char c;
    long fpos;  //file position indicator
    unsigned char attrib;
    unsigned int unique_id;
@@ -278,41 +268,43 @@ int get_addresses(AddressList **address_list)
    RawDBHeader rdbh;
    DBHeader dbh;
    struct Address a;
-   struct AddressAppInfo ai;
    AddressList *temp_address_list;
    MyAddress ma;
 
    mem_rh = NULL;
+   recs_returned = 0;
 
    in = open_file("AddressDB.pdb", "r");
    if (!in) {
-      printf("Error opening AddressDB.pdb\n");
+      logf(LOG_WARN, "Error opening AddressDB.pdb\n");
       return -1;
    }
    //Read the database header
    fread(&rdbh, sizeof(RawDBHeader), 1, in);
    if (feof(in)) {
-      printf("Error opening AddressDB.pdb\n");
+      logf(LOG_WARN, "Error opening AddressDB.pdb\n");
       return -1;
    }
    raw_header_to_header(&rdbh, &dbh);
    
-   //printf("db_name = %s\n", dbh.db_name);
-   //printf("num records = %d\n", dbh.number_of_records);
-   //printf("app info offset = %d\n", dbh.app_info_offset);
+   logf(LOG_DEBUG, "db_name = %s\n", dbh.db_name);
+   logf(LOG_DEBUG, "num records = %d\n", dbh.number_of_records);
+   logf(LOG_DEBUG, "app info offset = %d\n", dbh.app_info_offset);
 
    //fread(filler, 2, 1, in);
 
    //Read each record entry header
    num_records = dbh.number_of_records;
-   //printf("sizeof(record_header)=%d\n",sizeof(record_header));
+   //logf(LOG_DEBUG, "sizeof(record_header)=%d\n",sizeof(record_header));
    for (i=1; i<num_records+1; i++) {
       fread(&rh, sizeof(record_header), 1, in);
       offset = ((rh.Offset[0]*256+rh.Offset[1])*256+rh.Offset[2])*256+rh.Offset[3];
-      //printf("record header %u offset = %u\n",i, offset);
-      //printf("       attrib 0x%x\n",rh.attrib);
-      //printf("    unique_ID %d %d %d = ",rh.unique_ID[0],rh.unique_ID[1],rh.unique_ID[2]);
-      //printf("%d\n",(rh.unique_ID[0]*256+rh.unique_ID[1])*256+rh.unique_ID[2]);
+#ifdef JPILOT_DEBUG
+      logf(LOG_DEBUG, "record header %u offset = %u\n",i, offset);
+      logf(LOG_DEBUG, "       attrib 0x%x\n",rh.attrib);
+      logf(LOG_DEBUG, "    unique_ID %d %d %d = ",rh.unique_ID[0],rh.unique_ID[1],rh.unique_ID[2]);
+      logf(LOG_DEBUG, "%d\n",(rh.unique_ID[0]*256+rh.unique_ID[1])*256+rh.unique_ID[2]);
+#endif
       temp_mem_rh = (mem_rec_header *)malloc(sizeof(mem_rec_header));
       temp_mem_rh->next = mem_rh;
       mem_rh = temp_mem_rh;
@@ -322,70 +314,35 @@ int get_addresses(AddressList **address_list)
       mem_rh->unique_id = (rh.unique_ID[0]*256+rh.unique_ID[1])*256+rh.unique_ID[2];
    }
 
-   /*
-   fseek(in, dbh.app_info_offset, SEEK_SET);
-   find_next_offset(mem_rh, 0, &next_offset, &attrib, &unique_id);
-   rec_size = next_offset - dbh.app_info_offset;
-   //printf("rec_size = %u\n",rec_size);
-   //printf("fpos,next_offset = %u %u\n",fpos,next_offset);
-   //printf("----------\n");
-   buf=malloc(rec_size);
-   num = fread(buf, 1, rec_size, in);
-   unpack_AddressAppInfo(&ai, buf, rec_size);
-   free(buf);
-//struct CategoryAppInfo {
-//   unsigned int renamed[16];
-//   char name[16][16];
-//   unsigned char ID[16];
-//   unsigned char lastUniqueID;
-//}
+   if (num_records) {
+      find_next_offset(mem_rh, 0, &next_offset, &attrib, &unique_id);
+      fseek(in, next_offset, SEEK_SET);
+      while(!feof(in)) {
+	 fpos = ftell(in);
+	 find_next_offset(mem_rh, fpos, &next_offset, &attrib, &unique_id);
+	 rec_size = next_offset - fpos;
+#ifdef JPILOT_DEBUG
+	 logf(LOG_DEBUG, "rec_size = %u\n",rec_size);
+	 logf(LOG_DEBUG, "fpos,next_offset = %u %u\n",fpos,next_offset);
+	 logf(LOG_DEBUG, "----------\n");
+#endif
+	 if (feof(in)) break;
+	 buf = malloc(rec_size);
+	 if (!buf) break;
+	 num = fread(buf, 1, rec_size, in);
 
-   for (i=0;i<16;i++) {
-      printf("renamed:[%02d]:\n",ai.category.renamed[i]);
-      print_string(ai.category.name[i],16);
-      printf("category name:[%02d]:",i);
-      print_string(ai.category.name[i],16);
-      printf("category ID:%d\n", ai.category.ID[i]);
-   }
-
-   for (i=0;i<22;i++) {
-      printf("labels[%02d]:",i);
-      print_string(ai.labels[i],16);
-   }
-   for (i=0;i<8;i++) {
-      printf("phoneLabels[%d]:",i);
-      print_string(ai.phoneLabels[i],16);
-   }
-   printf("country %d\n",ai.country);
-   printf("sortByCompany %d\n",ai.sortByCompany);
-    */
-   
-   find_next_offset(mem_rh, 0, &next_offset, &attrib, &unique_id);
-   fseek(in, next_offset, SEEK_SET);
-   
-   while(!feof(in)) {
-      fpos = ftell(in);
-      find_next_offset(mem_rh, fpos, &next_offset, &attrib, &unique_id);
-      //next_offset += 223;
-      rec_size = next_offset - fpos;
-      //printf("rec_size = %u\n",rec_size);
-      //printf("fpos,next_offset = %u %u\n",fpos,next_offset);
-      //printf("----------\n");
-      if (feof(in)) break;
-      buf = malloc(rec_size);
-      if (!buf) break;
-      num = fread(buf, 1, rec_size, in);
-
-      unpack_Address(&a, buf, rec_size);
-      free(buf);
-      temp_address_list = malloc(sizeof(AddressList));
-      memcpy(&(temp_address_list->ma.a), &a, sizeof(struct Address));
-      //temp_address_list->ma.a = temp_a;
-      temp_address_list->ma.rt = PALM_REC;
-      temp_address_list->ma.attrib = attrib;
-      temp_address_list->ma.unique_id = unique_id;
-      temp_address_list->next = *address_list;
-      *address_list = temp_address_list;
+	 unpack_Address(&a, buf, rec_size);
+	 free(buf);
+	 temp_address_list = malloc(sizeof(AddressList));
+	 memcpy(&(temp_address_list->ma.a), &a, sizeof(struct Address));
+	 //temp_address_list->ma.a = temp_a;
+	 temp_address_list->ma.rt = PALM_REC;
+	 temp_address_list->ma.attrib = attrib;
+	 temp_address_list->ma.unique_id = unique_id;
+	 temp_address_list->next = *address_list;
+	 *address_list = temp_address_list;
+	 recs_returned++;
+      }
    }
    fclose(in);
    free_mem_rec_header(&mem_rh);
@@ -395,7 +352,7 @@ int get_addresses(AddressList **address_list)
    //
    pc_in = open_file("AddressDB.pc", "r");
    if (pc_in==NULL) {
-      return 0;
+      return -1;
    }
    //r = pc_datebook_read_file_header(pc_in);
    while(!feof(pc_in)) {
@@ -403,18 +360,20 @@ int get_addresses(AddressList **address_list)
       if (r==ADDRESS_EOF) break;
       if ((ma.rt!=DELETED_PC_REC)
 	  &&(ma.rt!=DELETED_PALM_REC)
+	  &&(ma.rt!=MODIFIED_PALM_REC)
 	  &&(ma.rt!=DELETED_DELETED_PALM_REC)) {
 	 temp_address_list = malloc(sizeof(AddressList));
 	 memcpy(&(temp_address_list->ma), &ma, sizeof(MyAddress));
 	 temp_address_list->next = *address_list;
 	 *address_list = temp_address_list;
+	 recs_returned++;
 
 	 //temp_address_list->ma.attrib=0;
       } else {
 	 //this doesnt really free it, just the string pointers
 	 free_Address(&(ma.a));
       }
-      if (ma.rt==DELETED_PALM_REC) {
+      if ((ma.rt==DELETED_PALM_REC) || (ma.rt==MODIFIED_PALM_REC)) {
 	 for (temp_address_list = *address_list; temp_address_list;
 	      temp_address_list=temp_address_list->next) {
 	    if (temp_address_list->ma.unique_id == ma.unique_id) {
@@ -429,4 +388,6 @@ int get_addresses(AddressList **address_list)
    print_address_list(address_list);
 #endif
    address_sort(address_list);
+   
+   return recs_returned;
 }

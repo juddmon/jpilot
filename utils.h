@@ -21,6 +21,8 @@
 
 #include <time.h>
 #include <stdio.h>
+#include <unistd.h>
+#include <sys/types.h>
 #include <pi-datebook.h>
 #include <pi-address.h>
 #include <pi-todo.h>
@@ -28,8 +30,19 @@
 #include <gtk/gtk.h>
 
 #define PRINT_FILE_LINE printf("%s line %d\n", __FILE__, __LINE__)
-#define VERSION_STRING "\nJPilot version 0.91\n"\
+#define VERSION "0.92"
+#define VERSION_STRING "\nJPilot version "VERSION"\n"\
 " Copyright (C) 1999 by Judd Montgomery\n"
+
+#define USAGE_STRING "\njpilot [ [-v] || [-h] || [-d]\n"\
+" -v displays version and exits.\n"\
+" -h displays help and exits.\n"\
+" -d displays debug info to stdout.\n"\
+" The PILOTPORT, and PILOTRATE env variables are used to specify which\n"\
+" port to sync on, and at what speed.\n"\
+" If PILOTPORT is not set then it defaults to /dev/pilot.\n"
+
+
 #define CATEGORY_ALL 100
 
 #define SHADOW GTK_SHADOW_ETCHED_OUT
@@ -39,15 +52,27 @@
 #define CLIST_ADDING_ENTRY_DATA 101
 #define CLIST_MIN_DATA 199
 
-#define CLIST_DEL_RED 65535;
-#define CLIST_DEL_GREEN 55000;
-#define CLIST_DEL_BLUE 55000;
+//#define CLIST_DEL_RED 65535;
+//#define CLIST_DEL_GREEN 55000;
+//#define CLIST_DEL_BLUE 55000;
+#define CLIST_DEL_RED 0xCCCC;
+#define CLIST_DEL_GREEN 0xCCCC;
+#define CLIST_DEL_BLUE 0xCCCC;
 #define CLIST_NEW_RED 55000;
 #define CLIST_NEW_GREEN 55000;
 #define CLIST_NEW_BLUE 65535;
+#define CLIST_MOD_RED 55000;
+#define CLIST_MOD_GREEN 65535;
+#define CLIST_MOD_BLUE 65535;
 
 #define SPENT_PC_RECORD_BIT 256
 
+#define CLEAR_FLAG 1
+#define CANCEL_FLAG 2
+#define DELETE_FLAG 3
+#define MODIFY_FLAG 4
+#define NEW_FLAG 5
+  
 typedef enum {
    PALM_REC = 100L,
    MODIFIED_PALM_REC = 101L,
@@ -185,7 +210,7 @@ int find_next_offset(mem_rec_header *mem_rh, long fpos,
 		     unsigned char *attrib, unsigned int *unique_id);
 int get_next_unique_pc_id(unsigned int *next_unique_id);
 //The VP is a pointer to MyAddress, MyAppointment, etc.
-int delete_pc_record(AppType app_type, void *VP);
+int delete_pc_record(AppType app_type, void *VP, int flag);
 
 void get_month_info(int month, int day, int year, int *dow, int *ndim);
 void get_this_month_info(int *dow, int *ndim);
@@ -194,8 +219,12 @@ unsigned long unix_time_to_pilot_time (time_t t);
 unsigned int bytes_to_bin(unsigned char *bytes, unsigned int num_bytes);
 void free_mem_rec_header(mem_rec_header **mem_rh);
 void print_string(char *str, int len);
+//
+//Warning, this function will move the file pointer
+//
+int get_app_info_size(FILE *in, int *size);
 int cleanup_pc_files();
-void cb_sync(GtkWidget *widget,
-	     gpointer  data);
+void cb_backup(GtkWidget *widget, gpointer data);
+void cb_sync(GtkWidget *widget, gpointer data);
 
 #endif

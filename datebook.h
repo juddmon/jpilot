@@ -28,3 +28,10 @@ int datebook_cleanup();
 int pc_datebook_write(struct Appointment *a, PCRecType rt, unsigned char attrib);
 void free_AppointmentList(AppointmentList **al);
 int get_days_appointments(AppointmentList **al_out, struct tm *now);
+int datebook_dup_appointment(struct Appointment *a1,
+			     struct Appointment **a2);
+// Year is years since 1900
+// Mon is 0-11
+// Day is 1-31
+//
+int datebook_add_exception(struct Appointment *a, int year, int mon, int day);

@@ -1,3 +1,11 @@
+If you wish to report a bug, and the bug is reproduceable it may be helpful to
+me if you run jpilot -d to run in debug mode, reproduce the error and then
+send me the log file from ~/.jpilot/jpilot.log
+
+----------------------------------------------------------------------
+
+These are the bugs that I know about:
+
 *Priority High:
 
 *Priority Medium:
@@ -5,18 +13,9 @@
 *Priority Low:
 
  - Things don't work quite right if you've never synced before.
-
- - It seems like the sync doesn't always work with xcopilot.
- If xcopilot hasn't been run in a while and you don't set the date on it, it
- seems to not update the datebase modification times correctly.  On every sync
- it would not bring back the palm database because the modification time
- hadn't changed.  pilot-xfer behaves the same way.
- I set the time on xcopilot and then could not reproduce this problem again.
+ - I'll probably fix this some day.
 
 *Priority Who Cares?:
- - If you click really fast on the buttons to scroll through the months, then
- it will segmentation fault.
- I think I have fixed this though.
 
 *Quirks (not really bugs):
 

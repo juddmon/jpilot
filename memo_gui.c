@@ -19,13 +19,18 @@
 #include <gtk/gtk.h>
 #include <time.h>
 #include "utils.h"
+#include "log.h"
+
+extern GtkTooltips *glob_tooltips;
 
 struct MemoAppInfo memo_app_info;
 int memo_category;
 int clist_row_selected;
 GtkWidget *clist;
 GtkWidget *memo_text;
-GtkWidget *memo_cat_label;
+GtkWidget *memo_cat_menu2;
+GtkWidget *memo_cat_menu_item[16];
+GtkWidget *category_menu1;
 
 static void update_memo_screen();
 
@@ -34,14 +39,18 @@ void cb_delete_memo(GtkWidget *widget,
 		    gpointer   data)
 {
    MyMemo *mmemo;
+   int flag;
    
    mmemo = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
    if (mmemo < (MyMemo *)CLIST_MIN_DATA) {
       return;
    }
-   //printf("ma->unique_id = %d\n",ma->unique_id);
-   //printf("ma->rt = %d\n",ma->rt);
-   delete_pc_record(MEMO, mmemo);
+   logf(LOG_DEBUG, "mmemo->unique_id = %d\n",mmemo->unique_id);
+   logf(LOG_DEBUG, "mmemo->rt = %d\n",mmemo->rt);
+   flag = GPOINTER_TO_INT(data);
+   if ((flag==MODIFY_FLAG) || (flag==DELETE_FLAG)) {
+      delete_pc_record(MEMO, mmemo, flag);
+   }
 
    update_memo_screen();
 }
@@ -51,7 +60,7 @@ void cb_memo_category(GtkWidget *item, int selection)
 {
    if ((GTK_CHECK_MENU_ITEM(item))->active) {
       memo_category = selection;
-      //printf("address_category = %d\n",address_category);
+      logf(LOG_DEBUG, "memo_category = %d\n", memo_category);
       memo_clear_details();
       update_memo_screen();
    }
@@ -70,6 +79,8 @@ int memo_clear_details()
 
 int memo_get_details(struct Memo *new_memo, unsigned char *attrib)
 {
+   int i;
+   
    new_memo->text = gtk_editable_get_chars
      (GTK_EDITABLE(memo_text), 0, -1);
    if (new_memo->text[0]=='\0') {
@@ -77,11 +88,54 @@ int memo_get_details(struct Memo *new_memo, unsigned char *attrib)
       new_memo->text=NULL;
    }
 
-   if (memo_category == CATEGORY_ALL) {
-      *attrib = 0;
-   } else {
-      *attrib = memo_category;
+   //Get the category that is set from the menu
+   for (i=0; i<16; i++) {
+      if (GTK_IS_WIDGET(memo_cat_menu_item[i])) {
+	 if (GTK_CHECK_MENU_ITEM(memo_cat_menu_item[i])->active) {
+	    *attrib = i;
+	    break;
+	 }
+      }
    }
+}
+
+static void cb_add_new_record(GtkWidget *widget,
+		       gpointer   data)
+{
+   MyMemo *mmemo;
+   struct Memo new_memo;
+   unsigned char attrib;
+   int flag;
+   
+   flag=GPOINTER_TO_INT(data);
+   
+   if (flag==CLEAR_FLAG) {
+      //Clear button was hit
+      memo_clear_details();
+      return;
+   }
+   if ((flag!=NEW_FLAG) && (flag!=MODIFY_FLAG)) {
+      return;
+   }
+   if (flag==MODIFY_FLAG) {
+      mmemo = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
+      if (mmemo < (MyMemo *)CLIST_MIN_DATA) {
+	 return;
+      }
+      if ((mmemo->rt==DELETED_PALM_REC) || (mmemo->rt==MODIFIED_PALM_REC)) {
+	 logf(LOG_INFO, "You can't modify a record that is deleted\n");
+	 return;
+      }
+   }
+   memo_get_details(&new_memo, &attrib);
+   pc_memo_write(&new_memo, NEW_PC_REC, attrib);
+   free_Memo(&new_memo);
+   if (flag==MODIFY_FLAG) {
+      cb_delete_memo(NULL, data);
+   } else {
+      update_memo_screen();
+   }
+   return;
 }
 
 static void cb_clist_selection(GtkWidget      *clist,
@@ -92,13 +146,15 @@ static void cb_clist_selection(GtkWidget      *clist,
 {
    struct Memo *memo;//, new_a;
    MyMemo *mmemo;
+#ifdef OLD_ENTRY
    struct Memo new_memo;
    unsigned char attrib;
-
+#endif
    clist_row_selected=row;
 
    mmemo = gtk_clist_get_row_data(GTK_CLIST(clist), row);
 
+#ifdef OLD_ENTRY
    if (mmemo == GINT_TO_POINTER(CLIST_NEW_ENTRY_DATA)) {
       gtk_clist_set_text(GTK_CLIST(clist), row, 0,
 			 "Fill in details, then click here again");
@@ -115,12 +171,18 @@ static void cb_clist_selection(GtkWidget      *clist,
       update_memo_screen();
       return;
    }
+#endif
 
    if (mmemo==NULL) {
       return;
    }
    memo=&(mmemo->memo);
    
+   gtk_check_menu_item_set_active
+     (GTK_CHECK_MENU_ITEM(memo_cat_menu_item[mmemo->attrib & 0x0F]), TRUE);
+   gtk_option_menu_set_history
+     (GTK_OPTION_MENU(memo_cat_menu2), mmemo->attrib & 0x0F);
+
    gtk_text_freeze(GTK_TEXT(memo_text));
 
    gtk_text_set_point(GTK_TEXT(memo_text), 0);
@@ -138,7 +200,6 @@ static void update_memo_screen()
    int num_entries, entries_shown, precount;
    char *last;
    gchar *empty_line[] = { "" };
-   char a_time[16];
    GdkColor color;
    GdkColormap *colormap;
    MemoList *temp_memo;
@@ -156,17 +217,15 @@ static void update_memo_screen()
    //   return;
    //}
 
-   if (memo_category==CATEGORY_ALL) {
-      sprintf(str, "Category: %s", "All");
-   } else {
-      sprintf(str, "Category: %s", memo_app_info.category.name[memo_category]);
-   }
-   gtk_label_set_text(GTK_LABEL(memo_cat_label), str);
-   
    //Clear the text box to make things look nice
-//   gtk_text_set_point(GTK_TEXT(memo_text), 0);
-//   gtk_text_forward_delete(GTK_TEXT(memo_text),
-//			   gtk_text_get_length(GTK_TEXT(memo_text)));
+   //gtk_text_set_point(GTK_TEXT(memo_text), 0);
+   //gtk_text_forward_delete(GTK_TEXT(memo_text),
+   //gtk_text_get_length(GTK_TEXT(memo_text)));
+
+   if (memo_list==NULL) {
+      gtk_tooltips_set_tip(glob_tooltips, category_menu1, "0 records", NULL);   
+      return;
+   }
 
    gtk_clist_freeze(GTK_CLIST(clist));
 
@@ -176,6 +235,12 @@ static void update_memo_screen()
 	  memo_category != CATEGORY_ALL) {
 	 continue;
       }
+      if (temp_memo->mmemo.rt == MODIFIED_PALM_REC) {
+	 //todo - this will be in preferences as to whether you want to 
+	 //see deleted records, or not.
+	 num_entries--;
+	 continue;
+      }      
       precount++;
    }
 
@@ -185,6 +250,11 @@ static void update_memo_screen()
 	  memo_category != CATEGORY_ALL) {
 	 continue;
       }
+      if (temp_memo->mmemo.rt == MODIFIED_PALM_REC) {
+	 //todo - this will be in preferences as to whether you want to 
+	 //see deleted records, or not.
+	 continue;
+      }      
 
       entries_shown++;
       gtk_clist_prepend(GTK_CLIST(clist), empty_line);
@@ -215,15 +285,24 @@ static void update_memo_screen()
 	 gdk_color_alloc(colormap, &color);
 	 gtk_clist_set_background(GTK_CLIST(clist), 0, &color);
       }  
+      if (temp_memo->mmemo.rt == MODIFIED_PALM_REC) {
+	 colormap = gtk_widget_get_colormap(clist);
+	 color.red=CLIST_MOD_RED;
+	 color.green=CLIST_MOD_GREEN;
+	 color.blue=CLIST_MOD_BLUE;
+	 gdk_color_alloc(colormap, &color);
+	 gtk_clist_set_background(GTK_CLIST(clist), 0, &color);
+      }  
    }
 
-   //printf("entries_shown=%d\n",entries_shown);
+   logf(LOG_DEBUG, "entries_shown=%d\n",entries_shown);
+#ifdef OLD_ENTRY
    gtk_clist_append(GTK_CLIST(clist), empty_line);
    gtk_clist_set_text(GTK_CLIST(clist), entries_shown, 0,
 		      "Select here to add an entry");
    gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown,
 			  GINT_TO_POINTER(CLIST_NEW_ENTRY_DATA));
-
+#endif
    //If there is an item in the list, select the first one
    if (entries_shown>0) {
       gtk_clist_select_row(GTK_CLIST(clist), 0, 0);
@@ -231,26 +310,83 @@ static void update_memo_screen()
    }
    
    gtk_clist_thaw(GTK_CLIST(clist));
+
+   sprintf(str, "%d of %d records", entries_shown, num_entries);
+   gtk_tooltips_set_tip(glob_tooltips, category_menu1, str, NULL);   
 }
 
+static int make_category_menu1(GtkWidget **category_menu)
+{
+   GtkWidget *menu_item;
+   GtkWidget *menu;
+   GSList    *group;
+   int i;
 
+   *category_menu = gtk_option_menu_new();
+   
+   menu = gtk_menu_new();
+   group = NULL;
+   
+   menu_item = gtk_radio_menu_item_new_with_label(group, "All");
+   gtk_signal_connect(GTK_OBJECT(menu_item), "activate",
+		      cb_memo_category, GINT_TO_POINTER(CATEGORY_ALL));
+   group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(menu_item));
+   gtk_menu_append(GTK_MENU(menu), menu_item);
+   gtk_widget_show(menu_item);
+   for (i=0; i<16; i++) {
+      if (memo_app_info.category.name[i][0]) {
+	 menu_item = gtk_radio_menu_item_new_with_label(
+		     group, memo_app_info.category.name[i]);
+	 gtk_signal_connect(GTK_OBJECT(menu_item), "activate",
+			    cb_memo_category, GINT_TO_POINTER(i));
+	 group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(menu_item));
+	 gtk_menu_append(GTK_MENU(menu), menu_item);
+	 gtk_widget_show(menu_item);
+      }
+   }
+
+   gtk_option_menu_set_menu(GTK_OPTION_MENU(*category_menu), menu);
+}
+
+static int make_category_menu2()
+{
+   int i;
+   
+   GtkWidget *menu;
+   GSList    *group;
+
+   memo_cat_menu2 = gtk_option_menu_new();
+   
+   menu = gtk_menu_new();
+   group = NULL;
+   
+   for (i=0; i<16; i++) {
+      if (memo_app_info.category.name[i][0]) {
+	 memo_cat_menu_item[i] = gtk_radio_menu_item_new_with_label
+	   (group, memo_app_info.category.name[i]);
+	 group = gtk_radio_menu_item_group
+	   (GTK_RADIO_MENU_ITEM(memo_cat_menu_item[i]));
+	 gtk_menu_append(GTK_MENU(menu), memo_cat_menu_item[i]);
+	 gtk_widget_show(memo_cat_menu_item[i]);
+      }
+   }
+   gtk_option_menu_set_menu(GTK_OPTION_MENU(memo_cat_menu2), menu);
+}
+
+//
+//Main function
+//
 int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
 {
    extern GtkWidget *glob_date_label;
    extern glob_date_timer_tag;
    GtkWidget *vbox1, *vbox2, *hbox_temp;
    GtkWidget *separator;
-   GtkWidget *label;
    GtkWidget *button;
    time_t ltime;
    struct tm *now;
 #define MAX_STR 100
    char str[MAX_STR];
-   int i;
-   GtkWidget *category_menu;
-   GtkWidget *menu_item;
-   GtkWidget *menu;
-   GSList    *group;
    GtkWidget *scrolled_window;
    GtkWidget *vscrollbar;
    //GtkWidget *memo_list_menu;
@@ -267,7 +403,8 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    //Add buttons in left vbox
    button = gtk_button_new_with_label("Delete");
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_delete_memo), NULL);
+		      GTK_SIGNAL_FUNC(cb_delete_memo),
+		      GINT_TO_POINTER(DELETE_FLAG));
    gtk_box_pack_start(GTK_BOX(vbox), button, TRUE, TRUE, 0);
    gtk_widget_show(button);
    
@@ -292,40 +429,12 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_widget_show(separator);
 
 
-   //Put the category menu up
-   category_menu = gtk_option_menu_new();
-   
-   menu = gtk_menu_new();
-   group = NULL;
-   
-   //gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_item), TRUE);
-   //gtk_check_menu_item_select(GTK_CHECK_MENU_ITEM(menu_item));
-   //gtk_check_menu_item_activate(GTK_CHECK_MENU_ITEM(menu_item));
-   menu_item = gtk_radio_menu_item_new_with_label(group, "All");
-   gtk_signal_connect(GTK_OBJECT(menu_item), "activate",
-		      cb_memo_category, GINT_TO_POINTER(CATEGORY_ALL));
-   group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(menu_item));
-   gtk_menu_append(GTK_MENU(menu), menu_item);
-   gtk_widget_show(menu_item);
-   for (i=0; i<16; i++) {
-      if (memo_app_info.category.name[i][0]) {
-	 menu_item = gtk_radio_menu_item_new_with_label(
-		     group, memo_app_info.category.name[i]);
-	 gtk_signal_connect(GTK_OBJECT(menu_item), "activate",
-			    cb_memo_category, GINT_TO_POINTER(i));
-	 group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(menu_item));
-	 gtk_menu_append(GTK_MENU(menu), menu_item);
-	 gtk_widget_show(menu_item);
-      }
-   }
+   //Put the left-hand category menu up
+   make_category_menu1(&category_menu1);   
+   gtk_box_pack_start(GTK_BOX(vbox1), category_menu1, FALSE, FALSE, 0);
+   gtk_widget_show(category_menu1);
 
-   gtk_option_menu_set_menu(GTK_OPTION_MENU(category_menu), menu);
-   //gtk_option_menu_set_history (GTK_OPTION_MENU (category_menu), history);
-   
-   gtk_box_pack_start (GTK_BOX (vbox1), category_menu, FALSE, FALSE, 0);
-   gtk_widget_show (category_menu);
-   
-   
+
    //Put the address list window up
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
    //gtk_widget_set_usize(GTK_WIDGET(scrolled_window), 330, 200);
@@ -351,14 +460,54 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    
    
    
+   //
+   // The right hand part of the main window follows:
+   //
+   hbox_temp = gtk_hbox_new(FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
+   gtk_widget_show(hbox_temp);
+
+   
+   //Add record modification buttons on right side
+   button = gtk_button_new_with_label("Add It");
+   gtk_signal_connect(GTK_OBJECT(button), "clicked",
+		      GTK_SIGNAL_FUNC(cb_add_new_record), 
+		      GINT_TO_POINTER(NEW_FLAG));
+   gtk_box_pack_start(GTK_BOX(hbox_temp), button, TRUE, TRUE, 0);
+   gtk_widget_show(button);
+   
+   button = gtk_button_new_with_label("Apply Changes");
+   gtk_signal_connect(GTK_OBJECT(button), "clicked",
+		      GTK_SIGNAL_FUNC(cb_add_new_record), 
+		      GINT_TO_POINTER(MODIFY_FLAG));
+   gtk_box_pack_start(GTK_BOX(hbox_temp), button, TRUE, TRUE, 0);
+   gtk_widget_show(button);
+   
+   button = gtk_button_new_with_label("Clear");
+   gtk_signal_connect(GTK_OBJECT(button), "clicked",
+		      GTK_SIGNAL_FUNC(cb_add_new_record), 
+		      GINT_TO_POINTER(CLEAR_FLAG));
+   gtk_box_pack_start(GTK_BOX(hbox_temp), button, TRUE, TRUE, 0);
+   gtk_widget_show(button);
+
+
+   //Separator
+   separator = gtk_hseparator_new();
+   gtk_box_pack_start(GTK_BOX(vbox2), separator, FALSE, FALSE, 5);
+   gtk_widget_show(separator);
+
+
+   //Put the right-hand category menu up
+   make_category_menu2();   
+   gtk_box_pack_start(GTK_BOX (vbox2), memo_cat_menu2, FALSE, FALSE, 0);
+   gtk_widget_show(memo_cat_menu2);
+   
+   
    //The Description text box on the right side
    hbox_temp = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
    gtk_widget_show(hbox_temp);
 
-   memo_cat_label = gtk_label_new("category:");
-   gtk_box_pack_start(GTK_BOX(hbox_temp), memo_cat_label, FALSE, FALSE, 0);
-   gtk_widget_show(memo_cat_label);
 
    hbox_temp = gtk_hbox_new (FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, TRUE, TRUE, 0);

@@ -23,8 +23,47 @@
 #include <pi-dlp.h>
 //#include "memo.h"
 #include "utils.h"
+#include "log.h"
 
 #define MEMO_EOF 7
+
+
+
+int pc_memo_write(struct Memo *memo, PCRecType rt, unsigned char attrib)
+{
+   PCRecordHeader header;
+   //PCFileHeader   file_header;
+   FILE *out;
+   char record[65536];
+   int rec_len;
+   unsigned int next_unique_id;
+
+   get_next_unique_pc_id(&next_unique_id);
+#ifdef JPILOT_DEBUG
+   logf(LOG_DEBUG, "next unique id = %d\n",next_unique_id);
+#endif
+   
+   out = open_file("MemoDB.pc", "a");
+   if (!out) {
+      logf(LOG_WARN, "Error opening MemoDB.pc\n");
+      return -1;
+   }
+   rec_len = pack_Memo(memo, record, 65535);
+   if (!rec_len) {
+      PRINT_FILE_LINE;
+      logf(LOG_WARN, "pack_Memo error\n");
+      return -1;
+   }
+   header.rec_len=rec_len;
+   header.rt=rt;
+   header.attrib=attrib;
+   header.unique_id=next_unique_id;
+   fwrite(&header, sizeof(header), 1, out);
+   fwrite(record, rec_len, 1, out);
+   fflush(out);
+   fclose(out);
+}
+
 
 static int pc_memo_read_next_rec(FILE *in, MyMemo *mmemo)
 {
@@ -35,10 +74,6 @@ static int pc_memo_read_next_rec(FILE *in, MyMemo *mmemo)
    if (feof(in)) {
       return MEMO_EOF;
    }
-//  if (ftell(in)==0) {
-//     printf("Error: File header not read\n");
-//      return MEMO_EOF;
-//   }
    fread(&header, sizeof(header), 1, in);
    if (feof(in)) {
       return MEMO_EOF;
@@ -46,7 +81,6 @@ static int pc_memo_read_next_rec(FILE *in, MyMemo *mmemo)
    rec_len = header.rec_len;
    mmemo->rt = header.rt;
    mmemo->attrib = header.attrib;
-   //printf("read attrib = %d\n", mmemo->attrib);
    mmemo->unique_id = header.unique_id;
    record = malloc(rec_len);
    if (!record) {
@@ -85,18 +119,19 @@ int get_memo_app_info(struct MemoAppInfo *ai)
 
    in = open_file("MemoDB.pdb", "r");
    if (!in) {
-      printf("Error opening MemoDB.pdb\n");
+      logf(LOG_WARN, "Error opening MemoDB.pdb\n");
       return -1;
    }
    fread(&rdbh, sizeof(RawDBHeader), 1, in);
    if (feof(in)) {
-      printf("Error reading MemoDB.pdb\n");
+      logf(LOG_WARN, "Error reading MemoDB.pdb\n");
       return -1;
    }
    raw_header_to_header(&rdbh, &dbh);
 
+   get_app_info_size(in, &rec_size);
+
    fseek(in, dbh.app_info_offset, SEEK_SET);
-   rec_size = 393;
    buf=malloc(rec_size);
    if (!buf) {
       fclose(in);
@@ -105,7 +140,7 @@ int get_memo_app_info(struct MemoAppInfo *ai)
    num = fread(buf, 1, rec_size, in);
    if (feof(in)) {
       fclose(in);
-      printf("Error reading MemoDB.pdb\n");
+      logf(LOG_WARN, "Error reading MemoDB.pdb\n");
       return -1;
    }
    unpack_MemoAppInfo(ai, buf, rec_size);
@@ -122,7 +157,7 @@ int get_memos(MemoList **memo_list)
    char *buf;
 //   unsigned char char_num_records[4];
 //   unsigned char char_ai_offset[4];//app info offset
-   int num_records, i, num, r;
+   int num_records, recs_returned, i, num, r;
    unsigned int offset, next_offset, rec_size;
 //   unsigned char c;
    long fpos;  //file position indicator
@@ -139,36 +174,38 @@ int get_memos(MemoList **memo_list)
 
    mem_rh = NULL;
    *memo_list=NULL;
+   recs_returned = 0;
 
    in = open_file("MemoDB.pdb", "r");
    if (!in) {
-      printf("Error opening MemoDB.pdb\n");
+      logf(LOG_WARN, "Error opening MemoDB.pdb\n");
       return -1;
    }
    //Read the database header
    fread(&rdbh, sizeof(RawDBHeader), 1, in);
    if (feof(in)) {
-      printf("Error opening MemoDB.pdb\n");
+      logf(LOG_WARN, "Error opening MemoDB.pdb\n");
       return -1;
    }
    raw_header_to_header(&rdbh, &dbh);
    
-   //printf("db_name = %s\n", dbh.db_name);
-   //printf("num records = %d\n", dbh.number_of_records);
-   //printf("app info offset = %d\n", dbh.app_info_offset);
+   logf(LOG_DEBUG, "db_name = %s\n", dbh.db_name);
+   logf(LOG_DEBUG, "num records = %d\n", dbh.number_of_records);
+   logf(LOG_DEBUG, "app info offset = %d\n", dbh.app_info_offset);
 
    //fread(filler, 2, 1, in);
 
    //Read each record entry header
    num_records = dbh.number_of_records;
-   //printf("sizeof(record_header)=%d\n",sizeof(record_header));
    for (i=1; i<num_records+1; i++) {
       fread(&rh, sizeof(record_header), 1, in);
       offset = ((rh.Offset[0]*256+rh.Offset[1])*256+rh.Offset[2])*256+rh.Offset[3];
-      //printf("record header %u offset = %u\n",i, offset);
-      //printf("       attrib %d\n",rh.attrib);
-      //printf("    unique_ID %d %d %d = ",rh.unique_ID[0],rh.unique_ID[1],rh.unique_ID[2]);
-      //printf("%d\n",(rh.unique_ID[0]*256+rh.unique_ID[1])*256+rh.unique_ID[2]);
+#ifdef JPILOT_DEBUG
+      logf(LOG_DEBUG, "record header %u offset = %u\n",i, offset);
+      logf(LOG_DEBUG, "       attrib 0x%x\n",rh.attrib);
+      logf(LOG_DEBUG, "    unique_ID %d %d %d = ",rh.unique_ID[0],rh.unique_ID[1],rh.unique_ID[2]);
+      logf(LOG_DEBUG, "%d\n",(rh.unique_ID[0]*256+rh.unique_ID[1])*256+rh.unique_ID[2]);
+#endif
       temp_mem_rh = (mem_rec_header *)malloc(sizeof(mem_rec_header));
       temp_mem_rh->next = mem_rh;
       mem_rh = temp_mem_rh;
@@ -178,69 +215,36 @@ int get_memos(MemoList **memo_list)
       mem_rh->unique_id = (rh.unique_ID[0]*256+rh.unique_ID[1])*256+rh.unique_ID[2];
    }
 
-   /*
-   fseek(in, dbh.app_info_offset, SEEK_SET);
-   find_next_offset(mem_rh, 0, &next_offset, &attrib, &unique_id);
-   rec_size = next_offset - dbh.app_info_offset;
-   //printf("rec_size = %u\n",rec_size);
-   //printf("fpos,next_offset = %u %u\n",fpos,next_offset);
-   //printf("----------\n");
-   buf=malloc(rec_size);
-   num = fread(buf, 1, rec_size, in);
-   unpack_AddressAppInfo(&ai, buf, rec_size);
-   free(buf);
-//struct CategoryAppInfo {
-//   unsigned int renamed[16];
-//   char name[16][16];
-//   unsigned char ID[16];
-//   unsigned char lastUniqueID;
-//}
-
-   for (i=0;i<16;i++) {
-      printf("renamed:[%02d]:\n",ai.category.renamed[i]);
-      print_string(ai.category.name[i],16);
-      printf("category name:[%02d]:",i);
-      print_string(ai.category.name[i],16);
-      printf("category ID:%d\n", ai.category.ID[i]);
-   }
-
-   for (i=0;i<22;i++) {
-      printf("labels[%02d]:",i);
-      print_string(ai.labels[i],16);
-   }
-   for (i=0;i<8;i++) {
-      printf("phoneLabels[%d]:",i);
-      print_string(ai.phoneLabels[i],16);
-   }
-   printf("country %d\n",ai.country);
-   printf("sortByCompany %d\n",ai.sortByCompany);
-    */
-   
    find_next_offset(mem_rh, 0, &next_offset, &attrib, &unique_id);
    fseek(in, next_offset, SEEK_SET);
-   
-   while(!feof(in)) {
-      fpos = ftell(in);
-      find_next_offset(mem_rh, fpos, &next_offset, &attrib, &unique_id);
-      //next_offset += 223;
-      rec_size = next_offset - fpos;
-      //printf("rec_size = %u\n",rec_size);
-      //printf("fpos,next_offset = %u %u\n",fpos,next_offset);
-      //printf("----------\n");
-      if (feof(in)) break;
-      buf = malloc(rec_size);
-      if (!buf) break;
-      num = fread(buf, 1, rec_size, in);
 
-      unpack_Memo(&memo, buf, rec_size);
-      free(buf);
-      temp_memo_list = malloc(sizeof(MemoList));
-      memcpy(&(temp_memo_list->mmemo.memo), &memo, sizeof(struct Memo));
-      temp_memo_list->mmemo.rt = PALM_REC;
-      temp_memo_list->mmemo.attrib = attrib;
-      temp_memo_list->mmemo.unique_id = unique_id;
-      temp_memo_list->next = *memo_list;
-      *memo_list = temp_memo_list;
+   if (num_records) {
+      while(!feof(in)) {
+	 fpos = ftell(in);
+	 find_next_offset(mem_rh, fpos, &next_offset, &attrib, &unique_id);
+	 //next_offset += 223;
+	 rec_size = next_offset - fpos;
+#ifdef JPILOT_DEBUG
+	 logf(LOG_DEBUG, "rec_size = %u\n",rec_size);
+	 logf(LOG_DEBUG, "fpos,next_offset = %u %u\n",fpos,next_offset);
+	 logf(LOG_DEBUG, "----------\n");
+#endif
+	 if (feof(in)) break;
+	 buf = malloc(rec_size);
+	 if (!buf) break;
+	 num = fread(buf, 1, rec_size, in);
+	 
+	 unpack_Memo(&memo, buf, rec_size);
+	 free(buf);
+	 temp_memo_list = malloc(sizeof(MemoList));
+	 memcpy(&(temp_memo_list->mmemo.memo), &memo, sizeof(struct Memo));
+	 temp_memo_list->mmemo.rt = PALM_REC;
+	 temp_memo_list->mmemo.attrib = attrib;
+	 temp_memo_list->mmemo.unique_id = unique_id;
+	 temp_memo_list->next = *memo_list;
+	 *memo_list = temp_memo_list;
+	 recs_returned++;
+      }
    }
    fclose(in);
    free_mem_rec_header(&mem_rh);
@@ -258,18 +262,20 @@ int get_memos(MemoList **memo_list)
       if (r==MEMO_EOF) break;
       if ((mmemo.rt!=DELETED_PC_REC)
 	  &&(mmemo.rt!=DELETED_PALM_REC)
+	  &&(mmemo.rt!=MODIFIED_PALM_REC)
 	  &&(mmemo.rt!=DELETED_DELETED_PALM_REC)) {
 	 temp_memo_list = malloc(sizeof(MemoList));
 	 memcpy(&(temp_memo_list->mmemo), &mmemo, sizeof(MyMemo));
 	 temp_memo_list->next = *memo_list;
 	 *memo_list = temp_memo_list;
+	 recs_returned++;
 
 	 //temp_address_list->ma.attrib=0;
       } else {
 	 //this doesnt really free it, just the string pointers
 	 free_Memo(&(mmemo.memo));
       }
-      if (mmemo.rt==DELETED_PALM_REC) {
+      if ((mmemo.rt==DELETED_PALM_REC) || (mmemo.rt==MODIFIED_PALM_REC)) {
 	 for (temp_memo_list = *memo_list; temp_memo_list;
 	      temp_memo_list=temp_memo_list->next) {
 	    if (temp_memo_list->mmemo.unique_id == mmemo.unique_id) {
@@ -279,40 +285,6 @@ int get_memos(MemoList **memo_list)
       }
    }
    fclose(pc_in);
-}
 
-
-int pc_memo_write(struct Memo *memo, PCRecType rt, unsigned char attrib)
-{
-   PCRecordHeader header;
-   //PCFileHeader   file_header;
-   FILE *out;
-   char record[65536];
-   int rec_len;
-   unsigned int next_unique_id;
-
-   get_next_unique_pc_id(&next_unique_id);
-#ifdef JPILOT_DEBUG
-   printf("next unique id = %d\n",next_unique_id);
-#endif
-   
-   out = open_file("MemoDB.pc", "a");
-   if (!out) {
-      printf("Error opening MemoDB.pc\n");
-      return -1;
-   }
-   rec_len = pack_Memo(memo, record, 65535);
-   if (!rec_len) {
-      PRINT_FILE_LINE;
-      printf("pack_Memo error\n");
-      return -1;
-   }
-   header.rec_len=rec_len;
-   header.rt=rt;
-   header.attrib=attrib;
-   header.unique_id=next_unique_id;
-   fwrite(&header, sizeof(header), 1, out);
-   fwrite(record, rec_len, 1, out);
-   fflush(out);
-   fclose(out);
+   return recs_returned;
 }

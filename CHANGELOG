@@ -1,6 +1,7 @@
 0.90a - 06/23/99
  Initial release.
-0.91 - 
+
+0.91 - 07/03/99
  Fixed some feof() problem that caused datebook to not work on RedHat 6.0
  I rewrote the entire datebook.c file
  Put in code to create and test for writability of ~/.jpilot/
@@ -18,3 +19,20 @@
   4th occurence of that day in the a month, or the last occurence of that day
   in the month.  This is only asked when it cannot be deduced.
   The Palm Pilot will also ask this question.
+ Fixed Mobile not being displayed in address app.
+
+0.92 - 00/00/99
+ Fixed problem reading palm db files with 0 records.
+ Added option for viewing only uncompleted todos.
+ Fixed a GUI problem when adding an address the phone menus didn't update
+  right while selecting addresses on the left pane.
+ Added a window to show the syncing output.
+ Added a full backup button.
+ Added forking of a process to do the sync in the background.
+ Fixed category label in todo, address, and memo apps.
+ Added modify capability in datebook, address, todo, and memo apps.
+ Added the ability to check/uncheck todos.
+ When deleteing repeating appointments it will now ask if you intend to delete
+  just one occurence, or all occurences.
+ Added some tooltips to show how many records are in a DB.
+ 

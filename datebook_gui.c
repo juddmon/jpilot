@@ -23,6 +23,8 @@
 //I suspect that this is a GTK bug.  I have worked around it with this hack
 //for now.
 
+#define EASTER
+
 #include <gtk/gtk.h>
 #include <time.h>
 #include <stdio.h>
@@ -30,6 +32,9 @@
 #include <pi-datebook.h>
 
 #include "datebook.h"
+#include "log.h"
+
+//extern GtkTooltips *glob_tooltips;
 
 #define PAGE_NONE  0
 #define PAGE_DAY   1
@@ -45,8 +50,14 @@
    
 #define SHADOW GTK_SHADOW_ETCHED_OUT
 
-#define DIALOG_SAID_LAST 454
-#define DIALOG_SAID_4TH  455
+#define DIALOG_SAID_1        454
+#define DIALOG_SAID_FOURTH   454
+#define DIALOG_SAID_CURRENT  454
+#define DIALOG_SAID_2        455
+#define DIALOG_SAID_LAST     455
+#define DIALOG_SAID_ALL      455
+#define DIALOG_SAID_3        456
+#define DIALOG_SAID_CANCEL   456
 
 //#define DATE_CHART
 
@@ -94,7 +105,6 @@ int get_date_chart(GtkWidget *widget, GtkWidget **out_pixmapwid)
    *out_pixmapwid = pixmapwid;
 }
 #endif
-
 
 
 void cb_clist1_selection(GtkWidget      *clist,
@@ -147,9 +157,9 @@ GtkWidget *toggle_button_repeat_days[7];
 GtkWidget *toggle_button_repeat_mon_byday;
 GtkWidget *toggle_button_repeat_mon_bydate;
 GtkWidget *notebook;
-int current_day; //range 1-31
+int current_day;   //range 1-31
 int current_month; //range 0-11
-int current_year;
+int current_year;  //years since 1900
 int clist_row_selected;
 AppointmentList *current_al;
 
@@ -174,6 +184,7 @@ GtkWidget *scrolled_window1;
 GtkWidget *dialog;
 int dialog_result;
 
+
 char *nums[]={"1","2","3","4","5","6","7","8","9","10","11","12","13","14",
      "15","16","17","18","19","20","21","22","23","24","25","26","27","28",
      "29","30","31"
@@ -188,7 +199,7 @@ char *days[]={"S","M","T","W","R","F","S"};
 
 init()
 {
-   time_t ltime, t;
+   time_t ltime;
    struct tm *now;
 
    time( &ltime );
@@ -202,20 +213,33 @@ init()
    clist_row_selected=0;
 }
 
-void cb_dialog_button_4th(GtkWidget *widget,
-			  gpointer   data)
+
+//
+//Start of Dialog window code for 4th, or last
+//
+void cb_dialog_button_1(GtkWidget *widget,
+			gpointer   data)
 {
    //dialog_result=GPOINTER_TO_INT(data);
-   dialog_result=DIALOG_SAID_4TH;
+   dialog_result=DIALOG_SAID_1;
 
    gtk_widget_destroy(dialog);
 }
 
-void cb_dialog_button_last(GtkWidget *widget,
-		      gpointer   data)
+void cb_dialog_button_2(GtkWidget *widget,
+			gpointer   data)
 {
    //dialog_result=GPOINTER_TO_INT(data);
-   dialog_result=DIALOG_SAID_LAST;
+   dialog_result=DIALOG_SAID_2;
+
+   gtk_widget_destroy(dialog);
+}
+
+void cb_dialog_button_3(GtkWidget *widget,
+			gpointer   data)
+{
+   //dialog_result=GPOINTER_TO_INT(data);
+   dialog_result=DIALOG_SAID_3;
 
    gtk_widget_destroy(dialog);
 }
@@ -227,7 +251,8 @@ static gboolean cb_destroy_dialog(GtkWidget *widget)
    return FALSE;
 }
 
-int dialog_4_or_last(int dow) {
+//nob = number of buttons (1-3)
+int dialog_generic(char *text, int nob, char *button_text[]) {
    GtkWidget *button, *label1;
    GdkWindow *main_window;
    gint px, py, pw, ph = 0;
@@ -235,15 +260,13 @@ int dialog_4_or_last(int dow) {
    
    GtkWidget *hbox1, *vbox1;
    GtkWidget *frame1;
-   char *days[]={"Sunday","Monday","Tuesday","Wednesday","Thurday",
-	"Friday","Saturday"};
-   char text[255];
 
    main_window = scrolled_window1->parent->window;
    
    gdk_window_get_position(main_window, &px, &py);
    gdk_window_get_size(main_window, &pw, &ph);
 
+   //Center the window in the main window
    w=200;
    h=200;
    x=px+pw/2-w/2;
@@ -276,31 +299,35 @@ int dialog_4_or_last(int dow) {
    gtk_container_add(GTK_CONTAINER(frame1), vbox1);
 
    label1 = gtk_label_new(text);
-   sprintf(text,
-	   "This appointment can either\n"
-	   "repeat on the 4th %s of\n"
-	   "the month, or on the Last\n"
-	   "%s of the month.\n"
-	   "Which do you want?",
-	   days[dow], days[dow]);
-   label1 = gtk_label_new(text);
-   //This doesn't seem to work...
+   //This doesn\'t seem to work...
    //gtk_label_set_line_wrap(GTK_LABEL(label1), TRUE);
 
-   gtk_box_pack_start(GTK_BOX(vbox1), label1, FALSE, FALSE, 5);
-   gtk_box_pack_start(GTK_BOX(vbox1), hbox1, TRUE, TRUE, 5);
+   gtk_box_pack_start(GTK_BOX(vbox1), label1, FALSE, FALSE, 2);
+   gtk_box_pack_start(GTK_BOX(vbox1), hbox1, TRUE, TRUE, 2);
 
-   button = gtk_button_new_with_label("4th");
-   gtk_signal_connect_object(GTK_OBJECT(button), "clicked",
-                             GTK_SIGNAL_FUNC(cb_dialog_button_4th),
-                             GINT_TO_POINTER(DIALOG_SAID_4TH));
-   gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 5);
+   if (nob > 0) {
+      button = gtk_button_new_with_label(button_text[0]);
+      gtk_signal_connect_object(GTK_OBJECT(button), "clicked",
+				GTK_SIGNAL_FUNC(cb_dialog_button_1),
+				GINT_TO_POINTER(DIALOG_SAID_1));
+      gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
+   }
 
-   button = gtk_button_new_with_label("Last");
-   gtk_signal_connect_object(GTK_OBJECT(button), "clicked",
-                             GTK_SIGNAL_FUNC(cb_dialog_button_last),
-                             GINT_TO_POINTER(DIALOG_SAID_LAST));
-   gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 5);
+   if (nob > 1) {
+      button = gtk_button_new_with_label(button_text[1]);
+      gtk_signal_connect_object(GTK_OBJECT(button), "clicked",
+				GTK_SIGNAL_FUNC(cb_dialog_button_2),
+				GINT_TO_POINTER(DIALOG_SAID_2));
+      gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
+   }
+
+   if (nob > 2) {
+      button = gtk_button_new_with_label(button_text[2]);
+      gtk_signal_connect_object(GTK_OBJECT(button), "clicked",
+				GTK_SIGNAL_FUNC(cb_dialog_button_3),
+				GINT_TO_POINTER(DIALOG_SAID_3));
+      gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
+   }
 
    gtk_widget_show_all(dialog);
 
@@ -308,6 +335,65 @@ int dialog_4_or_last(int dow) {
    
    return dialog_result;
 }
+
+int dialog_4_or_last(int dow)
+{
+   char *days[]={"Sunday","Monday","Tuesday","Wednesday","Thurday",
+      "Friday","Saturday"};
+   char text[255];
+   char *button_text[]={"4th","Last"
+   };
+   
+   sprintf(text,
+	   "This appointment can either\n"
+	   "repeat on the 4th %s\n"
+	   "of the month, or on the Last\n"
+	   "%s of the month.\n"
+	   "Which do you want?",
+	   days[dow], days[dow]);
+   return dialog_generic(text, 2, button_text);
+}
+
+int dialog_current_all_cancel()
+{
+   char text[]=
+     //---------------------------
+     "This is a repeating event.\n"
+     "Do you want to apply these\n"
+     "changes to just the CURRENT\n"
+     "event, or ALL of the\n"
+     "occurrences of this event?";
+   char *button_text[]={"Current","All","Cancel"
+   };
+   
+   return dialog_generic(text, 3, button_text);
+}
+
+#ifdef EASTER
+int dialog_easter(int mday)
+{
+   char text[255];
+   char who[50];
+   char *button_text[]={"I'll send a present!!!"
+   };
+   if (mday==29) {
+      strcpy(who, "Judd Montgomery");
+   }
+   if (mday==20) {
+      strcpy(who, "Jacki Montgomery");
+   }
+   sprintf(text,
+	   //---------------------------
+	   "Today is\n"
+	   "%s\'s\n"
+	   "Birthday!\n", who);
+   
+   return dialog_generic(text, 1, button_text);
+}
+//
+//End of Dialog window code
+//
+#endif
 
 //
 // month = 0-11
@@ -320,7 +406,6 @@ int dialog_4_or_last(int dow) {
 long get_dom_type(int month, int dom, int year, int dow)
 {
    long r;
-   int occurrence;
    int ndim; // ndim = number of days in month 28-31
    int dow_fdof; //Day of the week for the first day of the month
    int result;
@@ -357,8 +442,10 @@ long get_dom_type(int month, int dom, int year, int dow)
    return r;
 }
 
-clear_details()
+static void clear_details()
 {
+   int i;
+   
    gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinner_begin_mon), current_month+1);
    gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinner_begin_day), current_day);
    gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinner_begin_year), current_year+1900);
@@ -374,11 +461,28 @@ clear_details()
    gtk_text_backward_delete(GTK_TEXT(text2),
 			    gtk_text_get_length(GTK_TEXT(text2)));
    gtk_notebook_set_page(GTK_NOTEBOOK(notebook), PAGE_NONE);
+   // Clear the notebook pages
+   
+   gtk_entry_set_text(GTK_ENTRY(repeat_day_entry), "1");
+   gtk_entry_set_text(GTK_ENTRY(repeat_week_entry), "1");
+   gtk_entry_set_text(GTK_ENTRY(repeat_mon_entry), "1");
+   gtk_entry_set_text(GTK_ENTRY(repeat_year_entry), "1");
+
+   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_button_day_endon), FALSE);
+   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_button_week_endon), FALSE);
+   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_button_mon_endon), FALSE);
+   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_button_year_endon), FALSE);
+   
+   for(i=0; i<7; i++) {
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(toggle_button_repeat_days[i]), FALSE);
+   }
+   
+   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(toggle_button_repeat_mon_bydate), TRUE);
 }
 
 get_details(struct Appointment *a)
 {
-   int s, i;
+   int i;
    time_t ltime;
    struct tm *now;
    char str[30];
@@ -415,7 +519,7 @@ get_details(struct Appointment *a)
 
    if (GTK_TOGGLE_BUTTON(check_button_notime)->active) {
       a->event=1;
-      //printf("notime\n");
+      //This event doesn't have a time
       a->begin.tm_hour = 12;
       a->begin.tm_min  = 0;
       a->begin.tm_sec  = 0;
@@ -427,29 +531,25 @@ get_details(struct Appointment *a)
    }
 
    mktime(&a->begin);
-   strftime(str,30,"%x %X",&a->begin);
-   //printf("begin time = %s\n",str);
 
    mktime(&a->end);
-   strftime(str,30,"%x %X",&a->end);
-   //printf("end time = %s\n",str);
 
    if (GTK_TOGGLE_BUTTON(check_button_alarm)->active) {
       a->alarm = 1;
       text = gtk_entry_get_text(GTK_ENTRY(units_entry));
       a->advance=atoi(text);
-      //printf("alarm advance %s", text);
+      logf(LOG_DEBUG, "alarm advance %s", text);
       if (GTK_TOGGLE_BUTTON(radio_button_alarm_min)->active) {
 	 a->advanceUnits = advMinutes;
-	 //printf("min\n");
+	 logf(LOG_DEBUG, "min\n");
       }
       if (GTK_TOGGLE_BUTTON(radio_button_alarm_hour)->active) {
 	 a->advanceUnits = advHours;
-	 //printf("hour\n");
+	 logf(LOG_DEBUG, "hour\n");
       }
       if (GTK_TOGGLE_BUTTON(radio_button_alarm_day)->active) {
 	 a->advanceUnits = advDays;
-	 //printf("day\n");
+	 logf(LOG_DEBUG, "day\n");
       }
    } else {
       a->alarm = 0;
@@ -465,16 +565,16 @@ get_details(struct Appointment *a)
    switch (page) {
     case PAGE_NONE:
       a->repeatType=repeatNone;
-      //printf("no repeat\n");
+      logf(LOG_DEBUG, "no repeat\n");
       break;
     case PAGE_DAY:
       a->repeatType=repeatDaily;
       text = gtk_entry_get_text(GTK_ENTRY(repeat_day_entry));
       a->repeatFrequency = atoi(text);
-      //printf("every %s day(s)\n", text);
+      logf(LOG_DEBUG, "every %s day(s)\n", text);
       if (GTK_TOGGLE_BUTTON(check_button_day_endon)->active) {
 	 a->repeatForever=0;
-	 //printf("end on day\n");
+	 logf(LOG_DEBUG, "end on day\n");
 	 a->repeatEnd.tm_mon = 
 	   gtk_spin_button_get_value_as_int
 	   (GTK_SPIN_BUTTON(spinner_endon_day_mon)) - 1;
@@ -485,8 +585,6 @@ get_details(struct Appointment *a)
 	   gtk_spin_button_get_value_as_int
 	   (GTK_SPIN_BUTTON(spinner_endon_day_year)) - 1900;
 	 mktime(&a->repeatEnd);
-	 strftime(str,30,"%x %X",&a->repeatEnd);
-	 //printf("repeat_end time = %s\n",str);
       } else {
 	 a->repeatForever=1;
       }
@@ -495,10 +593,10 @@ get_details(struct Appointment *a)
       a->repeatType=repeatWeekly;
       text = gtk_entry_get_text(GTK_ENTRY(repeat_week_entry));
       a->repeatFrequency = atoi(text);
-      //printf("every %s week(s)\n", text);
+      logf(LOG_DEBUG, "every %s week(s)\n", text);
       if (GTK_TOGGLE_BUTTON(check_button_week_endon)->active) {
 	 a->repeatForever=0;
-	 //printf("end on week\n");
+	 logf(LOG_DEBUG, "end on week\n");
 	 a->repeatEnd.tm_mon = 
 	   gtk_spin_button_get_value_as_int
 	   (GTK_SPIN_BUTTON(spinner_endon_week_mon)) - 1;
@@ -510,24 +608,23 @@ get_details(struct Appointment *a)
 	   (GTK_SPIN_BUTTON(spinner_endon_week_year)) - 1900;
 	 mktime(&a->repeatEnd);
 	 strftime(str,30,"%x %X",&a->repeatEnd);
-	 //printf("repeat_end time = %s\n",str);
+	 logf(LOG_DEBUG, "repeat_end time = %s\n",str);
       } else {
 	 a->repeatForever=1;
       }
-      //printf("Repeat Days:");
+      logf(LOG_DEBUG, "Repeat Days:");
       for (i=0; i<7; i++) {
 	 a->repeatDays[i]=(GTK_TOGGLE_BUTTON(toggle_button_repeat_days[i])->active);
-	 //printf("%d",(GTK_TOGGLE_BUTTON(toggle_button_repeat_days[i])->active));
       }
-      //printf("\n");
+      logf(LOG_DEBUG, "\n");
       break;
     case PAGE_MONTH:
       text = gtk_entry_get_text(GTK_ENTRY(repeat_mon_entry));
       a->repeatFrequency = atoi(text);
-      //printf("every %s month(s)\n", text);
+      logf(LOG_DEBUG, "every %s month(s)\n", text);
       if (GTK_TOGGLE_BUTTON(check_button_mon_endon)->active) {
 	 a->repeatForever=0;
-	 //printf("end on month\n");
+	 logf(LOG_DEBUG, "end on month\n");
 	 a->repeatEnd.tm_mon = 
 	   gtk_spin_button_get_value_as_int
 	   (GTK_SPIN_BUTTON(spinner_endon_mon_mon)) - 1;
@@ -539,28 +636,28 @@ get_details(struct Appointment *a)
 	   (GTK_SPIN_BUTTON(spinner_endon_mon_year)) - 1900;
 	 mktime(&a->repeatEnd);
 	 strftime(str,30,"%x %X",&a->repeatEnd);
-	 //printf("repeat_end time = %s\n",str);
+	 logf(LOG_DEBUG, "repeat_end time = %s\n",str);
       } else {
 	 a->repeatForever=1;
       }
       if (GTK_TOGGLE_BUTTON(toggle_button_repeat_mon_byday)->active) {
 	 a->repeatType=repeatMonthlyByDay;
 	 a->repeatDay = get_dom_type(a->begin.tm_mon, a->begin.tm_mday, a->begin.tm_year, a->begin.tm_wday);
-	 //printf("***by day\n");
+	 logf(LOG_DEBUG, "***by day\n");
       }
       if (GTK_TOGGLE_BUTTON(toggle_button_repeat_mon_bydate)->active) {
 	 a->repeatType=repeatMonthlyByDate;
-	 //printf("***by date\n");
+	 logf(LOG_DEBUG, "***by date\n");
       }
       break;
     case PAGE_YEAR:
       a->repeatType=repeatYearly;
       text = gtk_entry_get_text(GTK_ENTRY(repeat_year_entry));
       a->repeatFrequency = atoi(text);
-      //printf("every %s years(s)\n", text);
+      logf(LOG_DEBUG, "every %s years(s)\n", text);
       if (GTK_TOGGLE_BUTTON(check_button_year_endon)->active) {
 	 a->repeatForever=0;
-	 //printf("end on year\n");
+	 logf(LOG_DEBUG, "end on year\n");
 	 a->repeatEnd.tm_mon = 
 	   gtk_spin_button_get_value_as_int
 	   (GTK_SPIN_BUTTON(spinner_endon_year_mon)) - 1;
@@ -572,7 +669,7 @@ get_details(struct Appointment *a)
 	   (GTK_SPIN_BUTTON(spinner_endon_year_year)) - 1900;
 	 mktime(&a->repeatEnd);
 	 strftime(str,30,"%x %X",&a->repeatEnd);
-	 //printf("repeat_end time = %s\n",str);
+	 logf(LOG_DEBUG, "repeat_end time = %s\n",str);
       } else {
 	 a->repeatForever=1;
       }
@@ -580,13 +677,13 @@ get_details(struct Appointment *a)
    }
 
    a->description = gtk_editable_get_chars(GTK_EDITABLE(text1), 0, -1);
-   //printf("text1=[%s]\n",a->description);
+   logf(LOG_DEBUG, "text1=[%s]\n",a->description);
    
    a->note = gtk_editable_get_chars(GTK_EDITABLE(text2), 0, -1);
    if (a->note[0]=='\0') {
       a->note=NULL;
    } else {
-      //printf("text2=[%s]\n",a->note);
+      logf(LOG_DEBUG, "text2=[%s]\n",a->note);
    }
    
    //We won't allow a repeat frequency of less than 1
@@ -633,6 +730,12 @@ int update_dayview_screen()
 			    gtk_text_get_length(GTK_TEXT(text1)));
    
    for (temp_al = current_al, i=0; temp_al; temp_al=temp_al->next, i++) {
+      if (temp_al->ma.rt == MODIFIED_PALM_REC) {
+	 //todo - this will be in preferences as to whether you want to 
+	 //see deleted records, or not.
+	 i--;
+	 continue;
+      }
       gtk_clist_append(GTK_CLIST(clist1), empty_line);
       if (temp_al->ma.a.event) {
 	 //This is a timeless event
@@ -662,7 +765,15 @@ int update_dayview_screen()
 	 gdk_color_alloc(colormap, &color);
 	 gtk_clist_set_background(GTK_CLIST(clist1), i, &color);
       }
-      
+      if (temp_al->ma.rt == MODIFIED_PALM_REC) {
+	 colormap = gtk_widget_get_colormap(clist1);
+	 color.red=CLIST_MOD_RED;
+	 color.green=CLIST_MOD_GREEN;
+	 color.blue=CLIST_MOD_BLUE;
+	 gdk_color_alloc(colormap, &color);
+	 gtk_clist_set_background(GTK_CLIST(clist1), i, &color);
+      }
+
       if ( (temp_al->ma.a.note) || (temp_al->ma.a.alarm) ) {
 	 get_pixmaps(scrolled_window1,
 		     &pixmap_note, &pixmap_alarm, &pixmap_check, &pixmap_checked,
@@ -679,11 +790,13 @@ int update_dayview_screen()
 	 gtk_clist_set_pixmap(GTK_CLIST(clist1), i, 3, pixmap_alarm, mask_alarm);
       }
    }
+#ifdef OLD_ENTRY
    gtk_clist_append(GTK_CLIST(clist1), empty_line);
    gtk_clist_set_text(GTK_CLIST(clist1), i, 0, "New");
    gtk_clist_set_text(GTK_CLIST(clist1), i, 1, "Select to add an appointment");
    gtk_clist_set_row_data(GTK_CLIST(clist1), i,
 			  GINT_TO_POINTER(CLIST_NEW_ENTRY_DATA));
+#endif
    //If there is an item in the list, select the first one
    if (i>0) {
       gtk_clist_select_row(GTK_CLIST(clist1), 0, 1);
@@ -698,6 +811,8 @@ void cb_spin_mon_day_year(GtkAdjustment *adj, gpointer data)
    int total1, total2;
    int days_in_month[]={31,28,31,30,31,30,31,31,30,31,30,31
    };
+   
+   year=mon=day=0;
    //allow the days range to only go as high as the number of days
    //in the month
    if (GPOINTER_TO_INT(data) == 1) {
@@ -772,16 +887,129 @@ void cb_spin_mon_day_year(GtkAdjustment *adj, gpointer data)
 }
 
 
+static void cb_add_new_record(GtkWidget *widget,
+			      gpointer   data)
+{
+   MyAppointment *ma;
+   struct Appointment *a;
+   struct Appointment new_a;
+   int flag;
+   int create_exception=0;
+   
+   flag=GPOINTER_TO_INT(data);
+   
+   if (flag==CLEAR_FLAG) {
+      //Clear button was hit
+      clear_details();
+      return;
+   }
+   if ((flag!=NEW_FLAG) && (flag!=MODIFY_FLAG)) {
+      return;
+   }
+   if (flag==MODIFY_FLAG) {
+      ma = gtk_clist_get_row_data(GTK_CLIST(clist1), clist_row_selected);
+      if (ma < (MyAppointment *)CLIST_MIN_DATA) {
+	 return;
+      }
+      if ((ma->rt==DELETED_PALM_REC) || (ma->rt==MODIFIED_PALM_REC)) {
+	 logf(LOG_INFO, "You can't modify a record that is deleted\n");
+	 return;
+      }
+   } else {
+      ma=NULL;
+   }
+   get_details(&new_a);
+   if ((flag==MODIFY_FLAG) && (new_a.repeatType != repeatNone)) {
+      //We need more user input
+      //Pop up a dialog
+      dialog_current_all_cancel();
+      if (dialog_result==DIALOG_SAID_CANCEL) {
+	 return;
+      }
+      if (dialog_result==DIALOG_SAID_CURRENT) {
+ 	 //Create an exception in the appointment
+	 create_exception=1;
+	 new_a.repeatType = repeatNone;
+	 new_a.begin.tm_year = current_year;
+	 new_a.begin.tm_mon = current_month;
+	 new_a.begin.tm_mday = current_day;
+	 mktime(&new_a.begin);
+	 new_a.repeatType = repeatNone;
+	 new_a.end.tm_year = current_year;
+	 new_a.end.tm_mon = current_month;
+	 new_a.end.tm_mday = current_day;
+	 mktime(&new_a.end);
+      }
+      if (dialog_result==DIALOG_SAID_ALL) {
+	 //We still need to keep the exceptions of the original record
+	 new_a.exception = (struct tm *)malloc(ma->a.exceptions * sizeof(struct tm));
+	 memcpy(new_a.exception, ma->a.exception, ma->a.exceptions * sizeof(struct tm));
+	 new_a.exceptions = ma->a.exceptions;
+      }
+   }
+   pc_datebook_write(&new_a, NEW_PC_REC, 0);
+   free_Appointment(&new_a);
+   if (flag==MODIFY_FLAG) {
+      //
+      //We need to take care of the 2 options allowed when modifying
+      //repeating appointments
+      //
+      if (create_exception) {
+	 datebook_copy_appointment(&(ma->a), &a);
+	 datebook_add_exception(a, current_year, current_month, current_day);
+	 pc_datebook_write(a, NEW_PC_REC, 0);
+	 free_Appointment(a);
+	 free(a);
+      }
+      delete_pc_record(DATEBOOK, ma, flag);
+   }
+   //update_dayview_screen();
+   //Force the DOW week button to be clicked on to force a re-read, redraw
+   gtk_signal_emit_by_name(GTK_OBJECT(day_button[current_day-1]), "clicked");
+
+   return;
+}
+
+
 void cb_delete_appt(GtkWidget *widget, gpointer data)
 {
    MyAppointment *ma;
+   struct Appointment *a;
+   int flag;
    
    ma = gtk_clist_get_row_data(GTK_CLIST(clist1), clist_row_selected);
    if (ma < (MyAppointment *)CLIST_MIN_DATA) {
       return;
    }
-   delete_pc_record(DATEBOOK, ma);
-   //pc_datebook_delete(ma);
+   flag = GPOINTER_TO_INT(data);
+   if ((flag!=MODIFY_FLAG) && (flag!=DELETE_FLAG)) {
+      return;
+   }
+
+   //
+   //We need to take care of the 2 options allowed when modifying
+   //repeating appointments
+   //
+   if (ma->a.repeatType != repeatNone) {
+      //We need more user input
+      //Pop up a dialog
+      dialog_current_all_cancel();
+      if (dialog_result==DIALOG_SAID_CANCEL) {
+	 return;
+      }
+      if (dialog_result==DIALOG_SAID_CURRENT) {
+ 	 //Create an exception in the appointment
+	 datebook_copy_appointment(&(ma->a), &a);
+	 datebook_add_exception(a, current_year, current_month, current_day);
+	 pc_datebook_write(a, NEW_PC_REC, 0);
+	 free_Appointment(a);
+	 free(a);
+	 //Since this was really a modify, and not a delete
+	 flag=MODIFY_FLAG;
+      }
+   }
+   delete_pc_record(DATEBOOK, ma, flag);
+   
    //Force the DOW week button to be clicked on to force a re-read, redraw
    gtk_signal_emit_by_name(GTK_OBJECT(day_button[current_day-1]), "clicked");
 }
@@ -807,26 +1035,6 @@ void cb_check_button_alarm(GtkWidget *widget, gpointer data)
    }
 }
 
-/*
-int cb_backup( GtkWidget *widget,
-                 gpointer   data )
-{
-   cleanup_pc_files();
-   return 0;
-
-   g_print("fork\n");
-   switch ( fork(0) ){
-    case -1:
-      perror("fork");
-      exit(7);
-    case 0:
-      //system("ls");
-      exit(0);
-    default:
-      return;
-   }
-}
-*/
 
 void cb_clist1_selection(GtkWidget      *clist,
 			 gint           row,
@@ -834,23 +1042,24 @@ void cb_clist1_selection(GtkWidget      *clist,
 			 GdkEventButton *event,
 			 gpointer       data)
 {
-   struct Appointment *a, new_a;
+#ifdef OLD_ENTRY
+   struct Appointment new_a;
+#endif
+   struct Appointment *a;
    MyAppointment *ma;
    char temp[20];
-   gchar *text;
-   int i, rec_len, found;
-   char record[65536];
+   int i;
    
-   //g_print("event %d\n",event);
-   //g_print("data %d\n",data);
    if (!event) return;
 
    clist_row_selected=row;
 
+   a=NULL;
    ma = gtk_clist_get_row_data(GTK_CLIST(clist1), row);
    if (ma) {
       a=&(ma->a);
    }
+#ifdef OLD_ENTRY
    //Hack #1
    //If we are not in add data mode then switch the mode on the clist
    //back to what its supposed to be
@@ -880,6 +1089,7 @@ void cb_clist1_selection(GtkWidget      *clist,
       clear_details();
       return;
    }
+#endif
    gtk_text_set_point(GTK_TEXT(text1), 0);
    gtk_text_forward_delete(GTK_TEXT(text1),
 			    gtk_text_get_length(GTK_TEXT(text1)));
@@ -920,7 +1130,7 @@ void cb_clist1_selection(GtkWidget      *clist,
 				      (radio_button_alarm_day), TRUE);
 	 break;
        default:
-	 g_print("Error in DateBookDB advanceUnits = %d\n",a->advanceUnits);
+	 logf(LOG_WARN, "Error in DateBookDB advanceUnits = %d\n",a->advanceUnits);
       }
       sprintf(temp, "%d", a->advance);
       gtk_entry_set_text(GTK_ENTRY(units_entry), temp);
@@ -997,7 +1207,7 @@ void cb_clist1_selection(GtkWidget      *clist,
       break;
     case repeatMonthlyByDate:
     case repeatMonthlyByDay:
-      //for day: printf("repeat day=%d\n",a->repeatDay);
+      logf(LOG_DEBUG, "repeat day=%d\n",a->repeatDay);
       if ((a->repeatForever)) {
 	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
 				      (check_button_mon_endon), FALSE);
@@ -1044,7 +1254,8 @@ void cb_clist1_selection(GtkWidget      *clist,
 
       gtk_notebook_set_page(GTK_NOTEBOOK(notebook), PAGE_YEAR);
       break;
-    default: g_print("unknown repeatType found in DatebookDB\n");
+    default:
+      logf(LOG_WARN, "unknown repeatType found in DatebookDB\n");
    }
 
    return;
@@ -1078,14 +1289,17 @@ void cb_day_button(GtkWidget *widget,
 		   gpointer   data)
 {
    int num;
+#ifdef EASTER
+   static int Easter=0;
+#endif
 
    num = GPOINTER_TO_INT(data);
    if ((num<1) || (num>31)) {
       PRINT_FILE_LINE;
-      printf("num is out of range\n");
+      logf(LOG_WARN, "cb_day_button: num is out of range\n");
       return;
    }
-   //g_print ("%d:cb_day_button\n", num);
+   logf(LOG_DEBUG, "cb_day_button, num = %d\n", num);
    if (GTK_IS_BUTTON(day_button[current_day-1])) {
       gtk_widget_set_name(GTK_WIDGET(day_button[current_day-1]), "button");
    }
@@ -1094,6 +1308,21 @@ void cb_day_button(GtkWidget *widget,
       gtk_widget_set_name(GTK_WIDGET(day_button[current_day-1]), "button_set");
    }
    set_date_labels();
+   //
+   //Easter Egg
+   //
+#ifdef EASTER
+   if (((current_day==29) && (current_month==7)) ||
+       ((current_day==20) && (current_month==11))) {
+      Easter++;
+      if (Easter>4) {
+	 Easter=0;
+	 dialog_easter(current_day);
+      }
+   } else {
+      Easter=0;
+   }
+#endif
    update_dayview_screen();
 }
 
@@ -1126,7 +1355,6 @@ void paint_calendar(GtkWidget *widget, gpointer data)
 	    //gtk_signal_handlers_destroy(GTK_OBJECT(day_button[i]));
 	    gtk_widget_destroy(GTK_WIDGET(day_button[i]));
 	 }
-	 //g_print("destroying %d\n",i+1);
       }
       if (GPOINTER_TO_INT(data) == CAL_LEFT_MON) {
 	 current_month--;
@@ -1209,7 +1437,6 @@ void paint_calendar(GtkWidget *widget, gpointer data)
    }
 }
 
-
 int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 {
    extern GtkWidget *glob_date_label;
@@ -1218,6 +1445,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    GtkWidget *hbox2;
    GtkWidget *hbox_text1, *hbox_text2;
    GtkWidget *hbox_table;
+   GtkWidget *hbox_temp;
    GtkWidget *hbox_notime;
    GtkWidget *vbox_detail;
    GtkWidget *vbox_todays_sched;
@@ -1237,7 +1465,6 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    GtkWidget *hbox_repeat_year2;
    GtkWidget *vbox_filler;
    GtkWidget *vbox_begin_labels;
-   //GtkWidget *hbox_end_date;
    GtkWidget *dow_hbox;
    GtkWidget *button;
    GtkWidget *separator;
@@ -1252,21 +1479,6 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    GtkWidget *vscrollbar;
    GtkWidget *arrow;
 
-   GdkPixmap *pixmap_note;
-   GdkPixmap *pixmap_alarm;
-   GdkPixmap *pixmap_check;
-   GdkPixmap *pixmap_checked;
-   GdkBitmap *mask_note;
-   GdkBitmap *mask_alarm;
-   GdkBitmap *mask_check;
-   GdkBitmap *mask_checked;
-
-   GtkWidget *pixmapwid;
-   //GdkPixmap *pixmap;
-   //GdkPixmap *pixmap_note;
-   //GdkBitmap *mask;
-   //GtkStyle *style;
-   //GtkWidget *list;
    GSList *group;
    
    time_t ltime;
@@ -1275,7 +1487,6 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    int i;
 #define MAX_STR 100
    char str[MAX_STR];
-   char dow[50];
    char *day_letters[] = {"S","M","T","W","R","F","S"};
 
    init();
@@ -1293,19 +1504,12 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    // Create "Delete" button in left column
    button = gtk_button_new_with_label ("Delete");
-   gtk_signal_connect(GTK_OBJECT (button), "clicked",
-		      GTK_SIGNAL_FUNC (cb_delete_appt), NULL);
+   gtk_signal_connect(GTK_OBJECT(button), "clicked",
+		      GTK_SIGNAL_FUNC(cb_delete_appt),
+		      GINT_TO_POINTER(DELETE_FLAG));
    gtk_box_pack_start(GTK_BOX (vbox), button, FALSE, FALSE, 0);
    gtk_widget_show(button);
 
-   /*
-   // Create "Backup" button in left column
-   button = gtk_button_new_with_label ("Backup");
-   gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_backup), NULL);
-   gtk_box_pack_start(GTK_BOX (vbox), button, FALSE, FALSE, 0);
-   gtk_widget_show(button);
-*/
    //Make the Today is: label
    time(&ltime);
    now = localtime(&ltime);
@@ -1474,24 +1678,51 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    //gtk_clist_set_auto_sort(GTK_CLIST(clist1), TRUE);
    gtk_widget_show(clist1);
 
+
+   //
+   // The right hand part of the main window follows:
+   //
+   hbox_temp = gtk_hbox_new(FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
+   gtk_widget_show(hbox_temp);
+
+   
+   //Add record modification buttons on right side
+   button = gtk_button_new_with_label("Add It");
+   gtk_signal_connect(GTK_OBJECT(button), "clicked",
+		      GTK_SIGNAL_FUNC(cb_add_new_record), 
+		      GINT_TO_POINTER(NEW_FLAG));
+   gtk_box_pack_start(GTK_BOX(hbox_temp), button, TRUE, TRUE, 0);
+   gtk_widget_show(button);
+   
+   button = gtk_button_new_with_label("Apply Changes");
+   gtk_signal_connect(GTK_OBJECT(button), "clicked",
+		      GTK_SIGNAL_FUNC(cb_add_new_record), 
+		      GINT_TO_POINTER(MODIFY_FLAG));
+   gtk_box_pack_start(GTK_BOX(hbox_temp), button, TRUE, TRUE, 0);
+   gtk_widget_show(button);
+   
+   button = gtk_button_new_with_label("Clear");
+   gtk_signal_connect(GTK_OBJECT(button), "clicked",
+		      GTK_SIGNAL_FUNC(cb_add_new_record), 
+		      GINT_TO_POINTER(CLEAR_FLAG));
+   gtk_box_pack_start(GTK_BOX(hbox_temp), button, TRUE, TRUE, 0);
+   gtk_widget_show(button);
+
+
    //start details
 
-   frame = gtk_frame_new ("Details");
-   gtk_frame_set_label_align( GTK_FRAME(frame), 0.5, 0.0);
-   //gtk_container_set_border_width (GTK_CONTAINER (frame), 5);
-   gtk_box_pack_start (GTK_BOX (vbox2), frame, TRUE, TRUE, 0);
+   frame = gtk_frame_new("Details");
+   gtk_frame_set_label_align(GTK_FRAME(frame), 0.5, 0.0);
+   gtk_container_set_border_width(GTK_CONTAINER(frame), 0);
+   gtk_box_pack_start(GTK_BOX(vbox2), frame, TRUE, TRUE, 0);
 
-   vbox_detail = gtk_vbox_new (FALSE, 0);
-
-   //Get away from the edge
-   //vbox_filler = gtk_vbox_new (FALSE, 0);
-   //gtk_box_pack_start (GTK_BOX (hbox_alarm), vbox_filler, FALSE, FALSE, 2);
-   //gtk_widget_show (vbox_filler);
+   vbox_detail = gtk_vbox_new(FALSE, 0);
 
    //The checkbox for Alarm
-   hbox_alarm1 = gtk_hbox_new (FALSE, 0);
-   gtk_box_pack_start (GTK_BOX (vbox_detail), hbox_alarm1, FALSE, FALSE, 0);
-   gtk_widget_show (hbox_alarm1);
+   hbox_alarm1 = gtk_hbox_new(FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox_detail), hbox_alarm1, FALSE, FALSE, 0);
+   gtk_widget_show(hbox_alarm1);
 
    check_button_alarm = gtk_check_button_new_with_label ("Alarm");
    gtk_box_pack_start (GTK_BOX (hbox_alarm1), check_button_alarm, FALSE, FALSE, 5);
@@ -1501,7 +1732,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    hbox_alarm2 = gtk_hbox_new (FALSE, 0);
    gtk_box_pack_start (GTK_BOX (hbox_alarm1), hbox_alarm2, FALSE, FALSE, 0);
-   gtk_widget_show (hbox_alarm2);
+   //gtk_widget_show(hbox_alarm2);
 
    //Units entry for alarm
    units_entry = gtk_entry_new_with_max_length(2);

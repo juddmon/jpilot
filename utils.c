@@ -20,9 +20,11 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include "utils.h"
+#include "log.h"
 #include <pi-datebook.h>
 #include <pi-address.h>
-//#include <sys/types.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 //#include <unistd.h>
 #include <utime.h>
 
@@ -231,10 +233,10 @@ int get_home_file_name(char *file, char *full_name, int max_size)
 
    home = getenv("HOME");
    if (!home) {//Not home;
-      printf("Can't get HOME environment variable\n");
+      logf(LOG_WARN, "Can't get HOME environment variable\n");
    }
    if (strlen(home)>(max_size-strlen(file)-2)) {
-      printf("Your HOME environment variable is too long for me\n");
+      logf(LOG_WARN, "Your HOME environment variable is too long for me\n");
       home=default_path;
    }
    sprintf(full_name, "%s/.jpilot/%s", home, file);
@@ -254,23 +256,22 @@ int check_hidden_dir()
    
    get_home_file_name("", hidden_dir, 256);
    hidden_dir[strlen(hidden_dir)-1]='\0';
-   //printf("home name = %s\n", hidden_dir);
 
    if (stat(hidden_dir, &statb)) {
       //directory isn\'t there, create it
       if (mkdir(hidden_dir, 0777)) {
 	 //Can\'t create directory
-	 printf("Can't create directory %s\n", hidden_dir);
+	 logf(LOG_WARN, "Can't create directory %s\n", hidden_dir);
 	 return 1;
       }
       if (stat(hidden_dir, &statb)) {
-	 printf("Can't create directory %s\n", hidden_dir);
+	 logf(LOG_WARN, "Can't create directory %s\n", hidden_dir);
 	 return 1;
       }
    }
    //Is it a directory?
    if (!S_ISDIR(statb.st_mode)) {
-      printf("%s doesn't appear to be a directory.\n"
+      logf(LOG_WARN, "%s doesn't appear to be a directory.\n"
 	     "I need it to be.\n", hidden_dir);
       return 1;
    }
@@ -278,7 +279,7 @@ int check_hidden_dir()
    get_home_file_name("test", test_file, 256);
    out = fopen(test_file, "w+");
    if (!out) {
-      printf("I can't write files in directory %s\n", hidden_dir);
+      logf(LOG_WARN, "I can't write files in directory %s\n", hidden_dir);
    } else {
       fclose(out);
       unlink(test_file);
@@ -343,16 +344,15 @@ int get_next_unique_pc_id(unsigned int *next_unique_id)
 
    pc_in_out = open_file("next_id", "a+");
    if (pc_in_out==NULL) {
-      printf("Error opening %s\n",file_name);
+      logf(LOG_WARN, "Error opening %s\n",file_name);
       return -1;
    }
 
    if (ftell(pc_in_out)==0) {
       //We have to write out the file header
-      //printf("writing pc header\n");
       *next_unique_id=1;
       if (fwrite(next_unique_id, sizeof(*next_unique_id), 1, pc_in_out) != 1) {
-	 printf("Error writing pc header to file: next_id\n");
+	 logf(LOG_WARN, "Error writing pc header to file: next_id\n");
 	 fclose(pc_in_out);
 	 return 0;
       }
@@ -361,18 +361,18 @@ int get_next_unique_pc_id(unsigned int *next_unique_id)
    fclose(pc_in_out);
    pc_in_out = open_file("next_id", "r+");
    if (pc_in_out==NULL) {
-      printf("Error opening %s\n",file_name);
+      logf(LOG_WARN, "Error opening %s\n",file_name);
       return -1;
    }
    fread(next_unique_id, sizeof(*next_unique_id), 1, pc_in_out);
    (*next_unique_id)++;
    if (fseek(pc_in_out, 0, SEEK_SET)) {
-      printf("fseek failed\n");
+      logf(LOG_WARN, "fseek failed\n");
    }
    //rewind(pc_in_out);
    //todo - if > 16777216 then cleanup (thats a lot of records!)
    if (fwrite(next_unique_id, sizeof(*next_unique_id), 1, pc_in_out) != 1) {
-      printf("Error writing pc header to file: next_id\n");
+      logf(LOG_WARN, "Error writing pc header to file: next_id\n");
    }
    fflush(pc_in_out);
    fclose(pc_in_out);
@@ -385,10 +385,10 @@ int read_rc_file()
 
    home = getenv("HOME");
    if (!home) {//Not home;
-      printf("Can't get HOME environment variable\n");
+      logf(LOG_WARN, "Can't get HOME environment variable\n");
    }
    if (strlen(home) > 256-20) {
-      printf("Your HOME environment variable is too long for me\n");
+      logf(LOG_WARN, "Your HOME environment variable is too long for me\n");
       home=default_path;
    }
    sprintf(file_name, "%s/.jpilot/jpilotrc", home);
@@ -404,10 +404,10 @@ FILE *open_file(char *filename, char *mode)
 
    home = getenv("HOME");
    if (!home) {//Not home;
-      printf("Can't get HOME environment variable\n");
+      logf(LOG_WARN, "Can't get HOME environment variable\n");
    }
    if (strlen(home) > 256-10-strlen(filename)) {
-      printf("Your HOME environment variable is too long for me\n");
+      logf(LOG_WARN, "Your HOME environment variable is too long for me\n");
       home=default_path;
    }
    sprintf(file_name, "%s/.jpilot/%s", home, filename);
@@ -428,10 +428,10 @@ int unlink_file(char *filename)
 
    home = getenv("HOME");
    if (!home) {//Not home;
-      printf("Can't get HOME environment variable\n");
+      logf(LOG_WARN, "Can't get HOME environment variable\n");
    }
    if (strlen(home) > 256-10-strlen(filename)) {
-      printf("Your HOME environment variable is too long for me\n");
+      logf(LOG_WARN, "Your HOME environment variable is too long for me\n");
       home=default_path;
    }
    sprintf(file_name, "%s/.jpilot/%s", home, filename);
@@ -539,17 +539,56 @@ void print_string(char *str, int len)
    for (i=0;i<len;i++) {
       c=str[i];
       if (c < ' ' || c >= 0x7f)
-	printf("%x",c);
+	logf(LOG_STDOUT, "%x",c);
       else
 	putchar(c);
    }
-   printf("\n");
+   logf(LOG_STDOUT, "\n");
 }
 
 //
-//This deletes an appointment from the appropriate Datafile
+//Warning, this function will move the file pointer
 //
-int delete_pc_record(AppType app_type, void *VP)
+int get_app_info_size(FILE *in, int *size)
+{
+   RawDBHeader rdbh;
+   DBHeader dbh;
+   unsigned int offset;
+   record_header rh;
+
+   fseek(in, 0, SEEK_SET);
+   
+   fread(&rdbh, sizeof(RawDBHeader), 1, in);
+   if (feof(in)) {
+      logf(LOG_WARN, "Error reading file in get_app_info_size\n");
+      return -1;
+   }
+   
+   raw_header_to_header(&rdbh, &dbh);
+
+   if (dbh.app_info_offset==0) {
+      *size=0;
+      return 0;
+   }
+   if (dbh.sort_info_offset!=0) {
+      *size = dbh.sort_info_offset - dbh.app_info_offset;
+      return 0;
+   }
+   if (dbh.number_of_records==0) {
+      fseek(in, 0, SEEK_END);
+      *size=ftell(in) - dbh.app_info_offset;
+      return 0;
+   }
+
+   fread(&rh, sizeof(record_header), 1, in);
+   offset = ((rh.Offset[0]*256+rh.Offset[1])*256+rh.Offset[2])*256+rh.Offset[3];
+   *size=offset - dbh.app_info_offset;
+}
+
+//
+//This deletes a record from the appropriate Datafile
+//
+int delete_pc_record(AppType app_type, void *VP, int flag)
 {
 //   int unique_id;
    FILE *pc_in;
@@ -571,6 +610,7 @@ int delete_pc_record(AppType app_type, void *VP)
       return;
    }
    
+   mapp=NULL;//to keep the compiler happy
    switch (app_type) {
     case DATEBOOK:
       mapp = (MyAppointment *) VP;
@@ -600,61 +640,65 @@ int delete_pc_record(AppType app_type, void *VP)
       return;
    }
    
-   if (record_type==DELETED_PALM_REC) {
-      printf("This record is already deleted.\n");
-      printf("It is scheduled to be deleted from the Palm on the next sync.\n");
+   if ((record_type==DELETED_PALM_REC) || (record_type==MODIFIED_PALM_REC)) {
+      logf(LOG_INFO, "This record is already deleted.\n"
+	   "It is scheduled to be deleted from the Palm on the next sync.\n");
       return 0;
    }
-   //printf("record type %d\n",record_type);
    switch (record_type) {
     case NEW_PC_REC:
       pc_in=open_file(filename, "r+");
       if (pc_in==NULL) {
-	 printf("Couldn't open PC records file\n");
+	 logf(LOG_WARN, "Couldn't open PC records file\n");
 	 return -1;
       }
       while(!feof(pc_in)) {
 	 fread(&header, sizeof(header), 1, pc_in);
 	 if (feof(pc_in)) {
-	    printf("couldn't find record to delete\n");
+	    logf(LOG_WARN, "couldn't find record to delete\n");
 	    return -1;
 	 }
 	 if (header.unique_id==unique_id) {
 	    if (fseek(pc_in, -sizeof(header), SEEK_CUR)) {
-	       printf("fseek failed\n");
+	       logf(LOG_WARN, "fseek failed\n");
 	    }
 	    header.rt=DELETED_PC_REC;
 	    fwrite(&header, sizeof(header), 1, pc_in);
-	    //printf("record deleted\n");
+	    logf(LOG_DEBUG, "record deleted\n");
 	    fclose(pc_in);
 	    return 0;
 	 }
 	 if (fseek(pc_in, header.rec_len, SEEK_CUR)) {
-	    printf("fseek failed\n");
+	    logf(LOG_WARN, "fseek failed\n");
 	 }
       }
       fclose(pc_in);
       return -1;
 	 
     case PALM_REC:
-      printf("Deleteing Palm ID %d\n",unique_id);
+      logf(LOG_DEBUG, "Deleteing Palm ID %d\n",unique_id);
       
       //todo
       //find_palm_appt_by_ID(unique_id, &a);
       pc_in=open_file(filename, "a");
       if (pc_in==NULL) {
-	 printf("Couldn't open PC records file\n");
+	 logf(LOG_WARN, "Couldn't open PC records file\n");
 	 return -1;
       }
       header.unique_id=unique_id;
-      header.rt=DELETED_PALM_REC;
+      if (flag==MODIFY_FLAG) {
+	 header.rt=MODIFIED_PALM_REC;
+      } else {
+	 header.rt=DELETED_PALM_REC;
+      }
       switch (app_type) {
        case DATEBOOK:
-	 memset(&app, 0, sizeof(app));
+	 app=mapp->a;
+	 //memset(&app, 0, sizeof(app));
 	 header.rec_len = pack_Appointment(&app, record, 65535);
 	 if (!header.rec_len) {
 	    PRINT_FILE_LINE;
-	    printf("pack_Appointment error\n");
+	    logf(LOG_WARN, "pack_Appointment error\n");
 	 }
 	 break;
        case ADDRESS:
@@ -662,7 +706,7 @@ int delete_pc_record(AppType app_type, void *VP)
 	 header.rec_len = pack_Address(&address, record, 65535);
 	 if (!header.rec_len) {
 	    PRINT_FILE_LINE;
-	    printf("pack_Address error\n");
+	    logf(LOG_WARN, "pack_Address error\n");
 	 }
 	 break;
        case TODO:
@@ -670,7 +714,7 @@ int delete_pc_record(AppType app_type, void *VP)
 	 header.rec_len = pack_ToDo(&todo, record, 65535);
 	 if (!header.rec_len) {
 	    PRINT_FILE_LINE;
-	    printf("pack_Address error\n");
+	    logf(LOG_WARN, "pack_ToDo error\n");
 	 }
 	 break;
        case MEMO:
@@ -678,10 +722,11 @@ int delete_pc_record(AppType app_type, void *VP)
 	 header.rec_len = pack_Memo(&memo, record, 65535);
 	 if (!header.rec_len) {
 	    PRINT_FILE_LINE;
-	    printf("pack_Address error\n");
+	    logf(LOG_WARN, "pack_Memo error\n");
 	 }
 	 break;
        default:
+	 fclose(pc_in);
 	 return;
       }
       //todo check write
@@ -691,7 +736,7 @@ int delete_pc_record(AppType app_type, void *VP)
       //This will be used for making sure that the palm record hasn't changed
       //before we delete it
       fwrite(record, header.rec_len, 1, pc_in);
-      //printf("record deleted\n");
+      logf(LOG_DEBUG, "record deleted\n");
       fclose(pc_in);
       return 0;
       break;
@@ -735,7 +780,7 @@ int cleanup_pc_file(AppType app_type)
 	 r++;
       }
       if (fseek(pc_file, header.rec_len, SEEK_CUR)) {
-	 printf("fseek failed\n");
+	 logf(LOG_WARN, "fseek failed\n");
 	 return -1;
       }
    }
@@ -761,10 +806,19 @@ int cleanup_pc_files()
    }
 }
 
+void cb_backup(GtkWidget *widget,
+	       gpointer   data)
+{
+   sync_once(NULL, TRUE);
+   return;
+}
+
+
 void cb_sync(GtkWidget *widget,
 	     gpointer  data)
 {
-   jpilot_sync(NULL);
+   sync_once(NULL, FALSE);
+   return;
    //datebook_cleanup();
    //todo - force a refresh of whatever app is running
    //Force a refresh of the calendar

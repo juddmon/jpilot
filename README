@@ -5,17 +5,22 @@ It is very useable, but still has many planned updates to make it better.
 
 If you like it feel to send me donations ;)
 I collect coins from anywhere, anytime also.
-email me and I'll send you my address.
-
-If you use this program send me an email and let me know.  I'd like to know
+At least send me an email and let me know you are using it.  I'd like to know
 how many people this is useful to.
 
+Judd Montgomery
+P.O. Box 665
+Sunbury, OH 43074
+
+
 jpilot reads the PILOTPORT environment variable to get the port to sync on.
-If this is not set, then it defaults to /dev/pilot.
+If this is not set, then it defaults to /dev/pilot.  It also reads PILOTRATE
+to get the serial port rate.
 
 jpilot-syncd is a syncing daemon for jpilot.  It just sits and waits for the
 Sync button to be pressed on the Palm pilot and then it syncs it.  This is
-just an optional program.  It is not necessary.
+just an optional program.  It is not necessary.  I removed this in 0.92,
+I'll probably put it back.
 
 COLORS:
 
@@ -24,10 +29,16 @@ screens.  If you create your own cool jpilotrc files feel free to send them
 back to me and if I like it, I'll include it in the release.  I'll probably
 make a few selectable with a pull-down menu.
 
-MODIFYING RECORDS:
+HOME:
 
-Even though you can't modify records at the moment, the GUI is set up to
-make it easy to do.  Just click the add line in the left screen, then select
-the record that you would like to modify, and it will come up.  Make the
-changes and add it.  Then you can delete the old one.  This is what modify
-will eventually do for you.
+jpilot uses the HOME environment variable to make it easy to allow multiple
+pilots to be synced under the same user.  Just set HOME to the directory
+you want jpilot to use.
+
+OOPS, REVERTING:
+
+You can always make the databases revert back to the last time that the
+pilot was synced.  All you have to do is "rm ~/.jpilot/*.pc".
+Deleted records will come back, etc.  Nothing is permanent until the
+sync/backup.  You can do this if you make a mistake, or just to play around 
+with jpilot and then delete the changed records without syncing them.

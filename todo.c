@@ -23,6 +23,7 @@
 #include <pi-dlp.h>
 #include "address.h"
 #include "utils.h"
+#include "log.h"
 
 #define TODO_EOF 7
 
@@ -185,10 +186,6 @@ static int pc_todo_read_next_rec(FILE *in, MyToDo *mtodo)
    if (feof(in)) {
       return TODO_EOF;
    }
-//  if (ftell(in)==0) {
-//     printf("Error: File header not read\n");
-//      return TODO_EOF;
-//   }
    fread(&header, sizeof(header), 1, in);
    if (feof(in)) {
       return TODO_EOF;
@@ -196,7 +193,6 @@ static int pc_todo_read_next_rec(FILE *in, MyToDo *mtodo)
    rec_len = header.rec_len;
    mtodo->rt = header.rt;
    mtodo->attrib = header.attrib;
-   //printf("read attrib = %d\n", mtodo->attrib);
    mtodo->unique_id = header.unique_id;
    record = malloc(rec_len);
    if (!record) {
@@ -223,18 +219,18 @@ int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib)
 
    get_next_unique_pc_id(&next_unique_id);
 #ifdef JPILOT_DEBUG
-   printf("next unique id = %d\n",next_unique_id);
+   logf(LOG_DEBUG, "next unique id = %d\n",next_unique_id);
 #endif
    
    out = open_file("ToDoDB.pc", "a");
    if (!out) {
-      printf("Error opening ToDoDB.pc\n");
+      logf(LOG_WARN, "Error opening ToDoDB.pc\n");
       return -1;
    }
    //todo check return code - if 0 then buffer was too small
    rec_len = pack_ToDo(todo, record, 65535);
    if (!rec_len) {
-      printf("pack_ToDo failed\n");
+      logf(LOG_WARN, "pack_ToDo failed\n");
       PRINT_FILE_LINE;
       return -1;
    }
@@ -273,19 +269,20 @@ int get_todo_app_info(struct ToDoAppInfo *ai)
 
    in = open_file("ToDoDB.pdb", "r");
    if (!in) {
-      printf("Error opening ToDoDB.pdb\n");
+      logf(LOG_WARN, "Error opening ToDoDB.pdb\n");
       return -1;
    }
    fread(&rdbh, sizeof(RawDBHeader), 1, in);
    if (feof(in)) {
       fclose(in);
-      printf("Error reading ToDoDB.pdb\n");
+      logf(LOG_WARN, "Error reading ToDoDB.pdb\n");
       return -1;
    }
    raw_header_to_header(&rdbh, &dbh);
 
+   get_app_info_size(in, &rec_size);
+
    fseek(in, dbh.app_info_offset, SEEK_SET);
-   rec_size = 300;
    buf=malloc(rec_size);
    if (!buf) {
       fclose(in);
@@ -294,7 +291,7 @@ int get_todo_app_info(struct ToDoAppInfo *ai)
    num = fread(buf, 1, rec_size, in);
    if (feof(in)) {
       fclose(in);
-      printf("sd Error reading ToDoDB.pdb\n");
+      logf(LOG_WARN, "Error reading ToDoDB.pdb\n");
       return -1;
    }
    unpack_ToDoAppInfo(ai, buf, rec_size);
@@ -311,7 +308,7 @@ int get_todos(ToDoList **todo_list)
    char *buf;
 //   unsigned char char_num_records[4];
 //   unsigned char char_ai_offset[4];//app info offset
-   int num_records, i, num, r;
+   int num_records, recs_returned, i, num, r;
    unsigned int offset, next_offset, rec_size;
 //   unsigned char c;
    long fpos;  //file position indicator
@@ -328,36 +325,37 @@ int get_todos(ToDoList **todo_list)
 
    mem_rh = NULL;
    *todo_list=NULL;
+   recs_returned = 0;
 
    in = open_file("ToDoDB.pdb", "r");
    if (!in) {
-      printf("Error opening ToDoDB.pdb\n");
+      logf(LOG_WARN, "Error opening ToDoDB.pdb\n");
       return -1;
    }
    //Read the database header
    fread(&rdbh, sizeof(RawDBHeader), 1, in);
    if (feof(in)) {
-      printf("Error opening ToDoDB.pdb\n");
+      logf(LOG_WARN, "Error opening ToDoDB.pdb\n");
       return -1;
    }
    raw_header_to_header(&rdbh, &dbh);
-   
-   //printf("db_name = %s\n", dbh.db_name);
-   //printf("num records = %d\n", dbh.number_of_records);
-   //printf("app info offset = %d\n", dbh.app_info_offset);
-
-   //fread(filler, 2, 1, in);
+#ifdef JPILOT_DEBUG
+   logf(LOG_DEBUG, "db_name = %s\n", dbh.db_name);
+   logf(LOG_DEBUG, "num records = %d\n", dbh.number_of_records);
+   logf(LOG_DEBUG, "app info offset = %d\n", dbh.app_info_offset);
+#endif
 
    //Read each record entry header
    num_records = dbh.number_of_records;
-   //printf("sizeof(record_header)=%d\n",sizeof(record_header));
    for (i=1; i<num_records+1; i++) {
       fread(&rh, sizeof(record_header), 1, in);
       offset = ((rh.Offset[0]*256+rh.Offset[1])*256+rh.Offset[2])*256+rh.Offset[3];
-      //printf("record header %u offset = %u\n",i, offset);
-      //printf("       attrib %d\n",rh.attrib);
-      //printf("    unique_ID %d %d %d = ",rh.unique_ID[0],rh.unique_ID[1],rh.unique_ID[2]);
-      //printf("%d\n",(rh.unique_ID[0]*256+rh.unique_ID[1])*256+rh.unique_ID[2]);
+#ifdef JPILOT_DEBUG
+      logf(LOG_DEBUG, "record header %u offset = %u\n",i, offset);
+      logf(LOG_DEBUG, "       attrib 0x%x\n",rh.attrib);
+      logf(LOG_DEBUG, "    unique_ID %d %d %d = ",rh.unique_ID[0],rh.unique_ID[1],rh.unique_ID[2]);
+      logf(LOG_DEBUG, "%d\n",(rh.unique_ID[0]*256+rh.unique_ID[1])*256+rh.unique_ID[2]);
+#endif
       temp_mem_rh = (mem_rec_header *)malloc(sizeof(mem_rec_header));
       temp_mem_rh->next = mem_rh;
       mem_rh = temp_mem_rh;
@@ -367,33 +365,36 @@ int get_todos(ToDoList **todo_list)
       mem_rh->unique_id = (rh.unique_ID[0]*256+rh.unique_ID[1])*256+rh.unique_ID[2];
    }
 
-   
-   find_next_offset(mem_rh, 0, &next_offset, &attrib, &unique_id);
-   fseek(in, next_offset, SEEK_SET);
-   
-   while(!feof(in)) {
-      fpos = ftell(in);
-      find_next_offset(mem_rh, fpos, &next_offset, &attrib, &unique_id);
-      //next_offset += 223;
-      rec_size = next_offset - fpos;
-      //printf("rec_size = %u\n",rec_size);
-      //printf("fpos,next_offset = %u %u\n",fpos,next_offset);
-      //printf("----------\n");
-      if (feof(in)) break;
-      buf = malloc(rec_size);
-      if (!buf) break;
-      num = fread(buf, 1, rec_size, in);
+   if (num_records) {
+      find_next_offset(mem_rh, 0, &next_offset, &attrib, &unique_id);
+      fseek(in, next_offset, SEEK_SET);
+      while(!feof(in)) {
+	 fpos = ftell(in);
+	 find_next_offset(mem_rh, fpos, &next_offset, &attrib, &unique_id);
+	 //next_offset += 223;
+	 rec_size = next_offset - fpos;
+#ifdef JPILOT_DEBUG
+	 logf(LOG_DEBUG, "rec_size = %u\n",rec_size);
+	 logf(LOG_DEBUG, "fpos,next_offset = %u %u\n",fpos,next_offset);
+	 logf(LOG_DEBUG, "----------\n");
+#endif
+	 if (feof(in)) break;
+	 buf = malloc(rec_size);
+	 if (!buf) break;
+	 num = fread(buf, 1, rec_size, in);
 
-      unpack_ToDo(&todo, buf, rec_size);
-      free(buf);
-      temp_todo_list = malloc(sizeof(ToDoList));
-      memcpy(&(temp_todo_list->mtodo.todo), &todo, sizeof(struct ToDo));
-      //temp_address_list->ma.a = temp_a;
-      temp_todo_list->mtodo.rt = PALM_REC;
-      temp_todo_list->mtodo.attrib = attrib;
-      temp_todo_list->mtodo.unique_id = unique_id;
-      temp_todo_list->next = *todo_list;
-      *todo_list = temp_todo_list;
+	 unpack_ToDo(&todo, buf, rec_size);
+	 free(buf);
+	 temp_todo_list = malloc(sizeof(ToDoList));
+	 memcpy(&(temp_todo_list->mtodo.todo), &todo, sizeof(struct ToDo));
+	 //temp_address_list->ma.a = temp_a;
+	 temp_todo_list->mtodo.rt = PALM_REC;
+	 temp_todo_list->mtodo.attrib = attrib;
+	 temp_todo_list->mtodo.unique_id = unique_id;
+	 temp_todo_list->next = *todo_list;
+	 *todo_list = temp_todo_list;
+	 recs_returned++;
+      }
    }
    fclose(in);
    free_mem_rec_header(&mem_rh);
@@ -411,18 +412,20 @@ int get_todos(ToDoList **todo_list)
       if (r==TODO_EOF) break;
       if ((mtodo.rt!=DELETED_PC_REC)
 	  &&(mtodo.rt!=DELETED_PALM_REC)
+	  &&(mtodo.rt!=MODIFIED_PALM_REC)
 	  &&(mtodo.rt!=DELETED_DELETED_PALM_REC)) {
 	 temp_todo_list = malloc(sizeof(ToDoList));
 	 memcpy(&(temp_todo_list->mtodo), &mtodo, sizeof(MyToDo));
 	 temp_todo_list->next = *todo_list;
 	 *todo_list = temp_todo_list;
+	 recs_returned++;
 
 	 //temp_address_list->ma.attrib=0;
       } else {
 	 //this doesnt really free it, just the string pointers
 	 free_ToDo(&(mtodo.todo));
       }
-      if (mtodo.rt==DELETED_PALM_REC) {
+      if ((mtodo.rt==DELETED_PALM_REC) || (mtodo.rt==MODIFIED_PALM_REC)) {
 	 for (temp_todo_list = *todo_list; temp_todo_list;
 	      temp_todo_list=temp_todo_list->next) {
 	    if (temp_todo_list->mtodo.unique_id == mtodo.unique_id) {
@@ -434,4 +437,6 @@ int get_todos(ToDoList **todo_list)
    fclose(pc_in);
 
    todo_sort(todo_list);
+
+   return recs_returned;
 }

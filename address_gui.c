@@ -20,6 +20,7 @@
 #include <time.h>
 #include "utils.h"
 #include "address.h"
+#include "log.h"
 
 //#define SHADOW GTK_SHADOW_IN
 //#define SHADOW GTK_SHADOW_OUT
@@ -31,11 +32,17 @@ GtkWidget *address_text[22];
 GtkWidget *vbox2_1, *vbox2_2;
 GtkWidget *text;
 GtkWidget *vscrollbar;
-GtkWidget *menu_item[9][8];
+GtkWidget *phone_list_menu[5];
+GtkWidget *menu;
+GtkWidget *menu_item[8][8];
+GtkWidget *address_cat_menu2;
+GtkWidget *address_cat_menu_item[16];
+GtkWidget *category_menu1;
 struct AddressAppInfo address_app_info;
 int address_category;
 int address_phone_label_selected[5];
 int clist_row_selected;
+extern GtkTooltips *glob_tooltips;
 
 void update_address_screen();
 
@@ -43,23 +50,27 @@ void cb_delete_address(GtkWidget *widget,
 		       gpointer   data)
 {
    MyAddress *ma;
-   
+   int flag;
+
    ma = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
    if (ma < (MyAddress *)CLIST_MIN_DATA) {
       return;
    }
-   //printf("ma->unique_id = %d\n",ma->unique_id);
-   //printf("ma->rt = %d\n",ma->rt);
-   delete_pc_record(ADDRESS, ma);
+   flag = GPOINTER_TO_INT(data);
+   if ((flag==MODIFY_FLAG) || (flag==DELETE_FLAG)) {
+      delete_pc_record(ADDRESS, ma, flag);
+   }
 
    update_address_screen();
 }
 
 void cb_phone_menu(GtkWidget *item, unsigned int value)
 {
+   if (!item)
+     return;
    if ((GTK_CHECK_MENU_ITEM(item))->active) {
-      //printf("phone_menu = %d\n", (value & 0xF0) >> 4);
-      //printf("selection = %d\n", value & 0x0F);
+      logf(LOG_DEBUG, "phone_menu = %d\n", (value & 0xF0) >> 4);
+      logf(LOG_DEBUG, "selection = %d\n", value & 0x0F);
       address_phone_label_selected[(value & 0xF0) >> 4] = value & 0x0F;
    }
 }
@@ -69,88 +80,124 @@ void cb_new_address_done(GtkWidget *widget,
 {
    int i, found;
    struct Address a;
+   MyAddress *ma;
    unsigned char attrib;
    
    gtk_widget_hide(vbox2_2);
    gtk_widget_show(vbox2_1);
-   if (data==0) {
+   if (GPOINTER_TO_INT(data)==CANCEL_FLAG) {
       //Cancel button was hit
       return;
    }
-   found=0;
-   a.showPhone=0;
-   for (i=0; i<19; i++) {
-      a.entry[i] = 
-	gtk_editable_get_chars(GTK_EDITABLE(address_text[i]), 0, -1);
-      //printf("a.entry[%d] = [%s]\n", i, a.entry[i]);
-      if (i>2 && i<8 && !found) {
-	 if (a.entry[i][0]!='\0') {
-	    found=1;
-	    a.showPhone=i-3;
+   if ((GPOINTER_TO_INT(data)==NEW_FLAG) || 
+       (GPOINTER_TO_INT(data)==MODIFY_FLAG)) {
+      //These rec_types are both the same for now
+      if (GPOINTER_TO_INT(data)==MODIFY_FLAG) {
+	 ma = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
+	 if (ma < (MyAddress *)CLIST_MIN_DATA) {
+	    return;
+	 }
+	 if ((ma->rt==DELETED_PALM_REC) || (ma->rt==MODIFIED_PALM_REC)) {
+	    logf(LOG_INFO, "You can't modify a record that is deleted\n");
+	    return;
 	 }
       }
-   }
-   //printf("showPhone = %d\n", a.showPhone);
-   for (i=0; i<5; i++) {
-      //printf("phone label selected[%d]=%d\n",i,address_phone_label_selected[i]);
-      a.phoneLabel[i]=address_phone_label_selected[i];
-   }
+      found=0;
+      a.showPhone=0;
+      for (i=0; i<19; i++) {
+	 a.entry[i] = 
+	   gtk_editable_get_chars(GTK_EDITABLE(address_text[i]), 0, -1);
+	 if (i>2 && i<8 && !found) {
+	    if (a.entry[i][0]!='\0') {
+	       found=1;
+	       a.showPhone=i-3;
+	    }
+	 }
+      }
+      for (i=0; i<5; i++) {
+	 a.phoneLabel[i]=address_phone_label_selected[i];
+      }
 
-   if (address_category == CATEGORY_ALL) {
+      //Get the category that is set from the menu
       attrib = 0;
-   } else {
-      attrib = address_category;
-   }
-   //printf("attrib = %d\n", attrib);
+      for (i=0; i<16; i++) {
+	 if (GTK_IS_WIDGET(address_cat_menu_item[i])) {
+	    if (GTK_CHECK_MENU_ITEM(address_cat_menu_item[i])->active) {
+	       attrib = i;
+	       break;
+	    }
+	 }
+      }
 
-   pc_address_write(&a, NEW_PC_REC, attrib);
-   free_Address(&a);
-   update_address_screen();
+      pc_address_write(&a, NEW_PC_REC, attrib);
+      free_Address(&a);
+      if (GPOINTER_TO_INT(data) == MODIFY_FLAG) {
+	 cb_delete_address(NULL, data);
+      } else {
+	 update_address_screen();
+      }
+   }
 }
 
-void cb_new_address(GtkWidget *widget,
-		    gpointer   data)
+void clear_address_entries()
 {
    int i;
    
-   gtk_widget_hide(vbox2_1);
-   gtk_widget_show(vbox2_2);
-
    //Clear all the address entry texts
    for (i=0; i<19; i++) {
       gtk_text_set_point(GTK_TEXT(address_text[i]), 0);
       gtk_text_forward_delete(GTK_TEXT(address_text[i]),
 			      gtk_text_get_length(GTK_TEXT(address_text[i])));
    }
+   for (i=0; i<5; i++) {
+      if (GTK_IS_WIDGET(menu_item[i][i])) {
+	 gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
+					(menu_item[i][i]), TRUE);
+	 gtk_option_menu_set_history(GTK_OPTION_MENU(phone_list_menu[i]), i);
+      }
+   }   
+}
 
+void cb_address_clear(GtkWidget *widget,
+		      gpointer   data)
+{
+   clear_address_entries();
+}
+
+void cb_new_address_mode(GtkWidget *widget,
+			    gpointer   data)
+{
+   //clear_address_entries();
+   gtk_widget_hide(vbox2_1);
+   gtk_widget_show(vbox2_2);
 }
 
 
-void cb_add_category(GtkWidget *item, int selection)
+void cb_address_category(GtkWidget *item, int selection)
 {
+   if (!item)
+     return;
    if ((GTK_CHECK_MENU_ITEM(item))->active) {
       address_category = selection;
-      //printf("address_category = %d\n",address_category);
+      logf(LOG_DEBUG, "address_category = %d\n",address_category);
       update_address_screen();
    }
 }
 
 
-void cb_add_clist_sel(GtkWidget      *clist,
-			 gint           row,
-			 gint           column,
-			 GdkEventButton *event,
-			 gpointer       data)
+void cb_address_clist_sel(GtkWidget      *clist,
+			  gint           row,
+			  gint           column,
+			  GdkEventButton *event,
+			  gpointer       data)
 {
    //The rename-able phone entries are indexes 3,4,5,6,7
-   struct Address *a, new_a;
+   struct Address *a;
    MyAddress *ma;
    int i, i2;
    //This is because the palm doesn\'t show the address entries in order
    int order[22]={0,1,13,2,3,4,5,6,7,8,9,10,11,12,14,15,16,17,18,19,20,21
    };
-   char str[12];
-   //GtkWidget *text;
 
    clist_row_selected=row;
 
@@ -190,6 +237,13 @@ void cb_add_clist_sel(GtkWidget      *clist,
 
    //todo - maybe only make this happen in new mode?
    //Update all the new entry text boxes with info
+   if (GTK_IS_WIDGET(address_cat_menu_item[ma->attrib & 0x0F])) {
+      gtk_check_menu_item_set_active
+	(GTK_CHECK_MENU_ITEM(address_cat_menu_item[ma->attrib & 0x0F]), TRUE);
+      gtk_option_menu_set_history
+	(GTK_OPTION_MENU(address_cat_menu2), ma->attrib & 0x0F);
+   }
+
    for (i=0; i<19; i++) {
       gtk_text_set_point(GTK_TEXT(address_text[i]), 0);
       gtk_text_forward_delete(GTK_TEXT(address_text[i]),
@@ -199,8 +253,12 @@ void cb_add_clist_sel(GtkWidget      *clist,
       }
    }
    for (i=0; i<5; i++) {
-      gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(
-				     menu_item[i][a->phoneLabel[i]+1]), TRUE);
+      if (GTK_IS_WIDGET(menu_item[i][a->phoneLabel[i]])) {
+	 gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
+					(menu_item[i][a->phoneLabel[i]]), TRUE);
+	 gtk_option_menu_set_history(GTK_OPTION_MENU(phone_list_menu[i]),
+				     a->phoneLabel[i]);
+      }
    }
 }
 
@@ -209,7 +267,6 @@ void update_address_screen()
    int num_entries, entries_shown, i;
    int show1, show2, show3;
    gchar *empty_line[] = { "","","" };
-   char a_time[16];
    GdkPixmap *pixmap_note;
    GdkPixmap *pixmap_alarm;
    GdkPixmap *pixmap_check;
@@ -228,22 +285,22 @@ void update_address_screen()
 
 #ifdef JPILOT_DEBUG
     for (i=0;i<16;i++) {
-      printf("renamed:[%02d]:\n",address_app_info.category.renamed[i]);
-      printf("category name:[%02d]:",i);
+      logf(LOG_DEBUG, "renamed:[%02d]:\n",address_app_info.category.renamed[i]);
+      logf(LOG_DEBUG, "category name:[%02d]:",i);
       print_string(address_app_info.category.name[i],16);
-      printf("category ID:%d\n", address_app_info.category.ID[i]);
+      logf(LOG_DEBUG, "category ID:%d\n", address_app_info.category.ID[i]);
    }
 
    for (i=0;i<22;i++) {
-      printf("labels[%02d]:",i);
+      logf(LOG_DEBUG, "labels[%02d]:",i);
       print_string(address_app_info.labels[i],16);
    }
    for (i=0;i<8;i++) {
-      printf("phoneLabels[%d]:",i);
+      logf(LOG_DEBUG, "phoneLabels[%d]:",i);
       print_string(address_app_info.phoneLabels[i],16);
    }
-   printf("country %d\n",address_app_info.country);
-   printf("sortByCompany %d\n",address_app_info.sortByCompany);
+   logf(LOG_DEBUG, "country %d\n",address_app_info.country);
+   logf(LOG_DEBUG, "sortByCompany %d\n",address_app_info.sortByCompany);
 #endif
 
    num_entries = get_addresses(&address_list);
@@ -252,6 +309,7 @@ void update_address_screen()
 	//		    gtk_text_get_length(GTK_TEXT(text1)));
    
    if (address_list==NULL) {
+      gtk_tooltips_set_tip(glob_tooltips, category_menu1, "0 records", NULL);   
       return;
    }
    
@@ -279,7 +337,13 @@ void update_address_screen()
 	  address_category != CATEGORY_ALL) {
 	 continue;
       }
-
+      if (temp_al->ma.rt == MODIFIED_PALM_REC) {
+	 //todo - this will be in preferences as to whether you want to 
+	 //see deleted records, or not.
+	 num_entries--;
+	 continue;
+      }
+      
       entries_shown++;
       str[0]='\0';
       if (temp_al->ma.a.entry[show1] || temp_al->ma.a.entry[show2]) {
@@ -318,6 +382,14 @@ void update_address_screen()
 	 gdk_color_alloc(colormap, &color);
 	 gtk_clist_set_background(GTK_CLIST(clist), 0, &color);
       }
+      if (temp_al->ma.rt == MODIFIED_PALM_REC) {
+	 colormap = gtk_widget_get_colormap(clist);
+	 color.red=CLIST_MOD_RED;
+	 color.green=CLIST_MOD_GREEN;
+	 color.blue=CLIST_MOD_BLUE;
+	 gdk_color_alloc(colormap, &color);
+	 gtk_clist_set_background(GTK_CLIST(clist), 0, &color);
+      }
       
       if (temp_al->ma.a.entry[18]) {
 	 //Put a note pixmap up
@@ -339,55 +411,110 @@ void update_address_screen()
    }
    
    gtk_clist_thaw(GTK_CLIST(clist));
+   
+   sprintf(str, "%d of %d records", entries_shown, num_entries);
+   gtk_tooltips_set_tip(glob_tooltips, category_menu1, str, NULL);   
 }
 
-//default set is which one is to be set on by default
-//set is which set in the array to use
-int make_phone_menu(GtkWidget **phone_list_menu, int default_set,
-		    unsigned int callback_id, int set)
+//default set is which menu item is to be set on by default
+//set is which set in the menu_item array to use
+int make_phone_menu(int default_set, unsigned int callback_id, int set)
 {
-   int i, i2;
-   GtkWidget *menu;
+   int i;
    GSList *group;
    
-   *phone_list_menu = gtk_option_menu_new();
+   phone_list_menu[set] = gtk_option_menu_new();
    
    menu = gtk_menu_new();
    group = NULL;
    
-   //printf("default_set=%d\n",default_set);
-   //printf("callback_id=%d\n",callback_id);
-   //gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_item), TRUE);
-   //gtk_check_menu_item_select(GTK_CHECK_MENU_ITEM(menu_item));
-   //gtk_check_menu_item_activate(GTK_CHECK_MENU_ITEM(menu_item));
-   for (i=0; i<9; i++) {
-      if (i==0) {
-	 i2=default_set;
-      } else {
-	 i2=i-1;
-      }
-      if (address_app_info.phoneLabels[i2][0]) {
+   for (i=0; i<8; i++) {
+      if (address_app_info.phoneLabels[i][0]) {
 	 menu_item[set][i] = gtk_radio_menu_item_new_with_label(
-			group, address_app_info.phoneLabels[i2]);
+			group, address_app_info.phoneLabels[i]);
 	 gtk_signal_connect(GTK_OBJECT(menu_item[set][i]), "activate",
-			    cb_phone_menu, GINT_TO_POINTER(callback_id + i2));
-	 if (i2==default_set) {
-	    gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(
-					   menu_item[set][i]), TRUE);
-	 }
+			    cb_phone_menu, GINT_TO_POINTER(callback_id + i));
 	 group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(menu_item[set][i]));
 	 gtk_menu_append(GTK_MENU(menu), menu_item[set][i]);
 	 gtk_widget_show(menu_item[set][i]);
       }
    }
+   //Set this one to active
+   if (GTK_IS_WIDGET(menu_item[set][default_set])) {
+      gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(
+				     menu_item[set][default_set]), TRUE);
+   }
    
-   gtk_option_menu_set_menu(GTK_OPTION_MENU(*phone_list_menu), menu);
-   //gtk_option_menu_set_history (GTK_OPTION_MENU (category_menu), history);
-   //gtk_widget_set_usize(GTK_WIDGET(*phone_list_menu), 20, 0);
+   gtk_option_menu_set_menu(GTK_OPTION_MENU(phone_list_menu[set]), menu);
+   //Make this one show up by default
+   gtk_option_menu_set_history(GTK_OPTION_MENU(phone_list_menu[set]),
+			       default_set);
    
-   gtk_widget_show(*phone_list_menu);
+   gtk_widget_show(phone_list_menu[set]);
 }
+
+static int make_category_menu1(GtkWidget **category_menu)
+{
+   GtkWidget *menu_item;
+   GtkWidget *menu;
+   GSList    *group;
+   int i;
+
+   *category_menu = gtk_option_menu_new();
    
+   menu = gtk_menu_new();
+   group = NULL;
+   
+   menu_item = gtk_radio_menu_item_new_with_label(group, "All");
+   gtk_signal_connect(GTK_OBJECT(menu_item), "activate",
+		      cb_address_category, GINT_TO_POINTER(CATEGORY_ALL));
+   group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(menu_item));
+   gtk_menu_append(GTK_MENU(menu), menu_item);
+   gtk_widget_show(menu_item);
+   for (i=0; i<16; i++) {
+      if (address_app_info.category.name[i][0]) {
+	 menu_item = gtk_radio_menu_item_new_with_label(
+		     group, address_app_info.category.name[i]);
+	 gtk_signal_connect(GTK_OBJECT(menu_item), "activate",
+			    cb_address_category, GINT_TO_POINTER(i));
+	 group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(menu_item));
+	 gtk_menu_append(GTK_MENU(menu), menu_item);
+	 gtk_widget_show(menu_item);
+      }
+   }
+
+   gtk_option_menu_set_menu(GTK_OPTION_MENU(*category_menu), menu);
+}
+
+static int make_category_menu2()
+{
+   int i;
+   
+   GtkWidget *menu;
+   GSList    *group;
+
+   address_cat_menu2 = gtk_option_menu_new();
+   
+   menu = gtk_menu_new();
+   group = NULL;
+   
+   for (i=0; i<16; i++) {
+      if (address_app_info.category.name[i][0]) {
+	 address_cat_menu_item[i] = gtk_radio_menu_item_new_with_label
+	   (group, address_app_info.category.name[i]);
+	 group = gtk_radio_menu_item_group
+	   (GTK_RADIO_MENU_ITEM(address_cat_menu_item[i]));
+	 gtk_menu_append(GTK_MENU(menu), address_cat_menu_item[i]);
+	 gtk_widget_show(address_cat_menu_item[i]);
+      }
+   }
+   gtk_option_menu_set_menu(GTK_OPTION_MENU(address_cat_menu2), menu);
+}
+
+
+//
+//Main function
+//
 int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 {
    extern GtkWidget *glob_date_label;
@@ -404,11 +531,6 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    GtkWidget *table1, *table2, *table3;
 //   GtkWidget *calendar;
    GtkWidget *scrolled_window;
-   GtkWidget *category_menu;
-   GtkWidget *menu_item;
-   GtkWidget *menu;
-   GSList    *group;
-   GtkWidget *phone_list_menu;
    GtkWidget *notebook_tab;
    
    time_t ltime;
@@ -421,7 +543,11 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    clist_row_selected=0;
 
-   get_address_app_info(&address_app_info);
+   if (get_address_app_info(&address_app_info)) {
+      for (i=0; i<16; i++) {
+	 address_app_info.category.name[i][0]='\0';
+      }
+   }
 
    vbox1 = gtk_vbox_new (FALSE, 0);
    vbox2_1 = gtk_vbox_new (FALSE, 0);
@@ -433,14 +559,8 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    //Add buttons in left vbox
    button = gtk_button_new_with_label("Delete");
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_delete_address), NULL);
-   gtk_box_pack_start(GTK_BOX(vbox), button, TRUE, TRUE, 0);
-   gtk_widget_show(button);
-   
-   //Add buttons in left vbox
-   button = gtk_button_new_with_label("New");
-   gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_new_address), NULL);
+		      GTK_SIGNAL_FUNC(cb_delete_address),
+		      GINT_TO_POINTER(DELETE_FLAG));
    gtk_box_pack_start(GTK_BOX(vbox), button, TRUE, TRUE, 0);
    gtk_widget_show(button);
    
@@ -464,38 +584,9 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_widget_show(separator);
 
    //Put the category menu up
-   category_menu = gtk_option_menu_new();
-   
-   menu = gtk_menu_new();
-   group = NULL;
-   
-   //gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_item), TRUE);
-   //gtk_check_menu_item_select(GTK_CHECK_MENU_ITEM(menu_item));
-   //gtk_check_menu_item_activate(GTK_CHECK_MENU_ITEM(menu_item));
-   menu_item = gtk_radio_menu_item_new_with_label(group, "All");
-   gtk_signal_connect(GTK_OBJECT(menu_item), "activate",
-		      cb_add_category, GINT_TO_POINTER(CATEGORY_ALL));
-   group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(menu_item));
-   gtk_menu_append(GTK_MENU(menu), menu_item);
-   gtk_widget_show(menu_item);
-   for (i=0; i<16; i++) {
-      if (address_app_info.category.name[i][0]) {
-	 menu_item = gtk_radio_menu_item_new_with_label(
-		     group, address_app_info.category.name[i]);
-	 gtk_signal_connect(GTK_OBJECT(menu_item), "activate",
-			    cb_add_category, GINT_TO_POINTER(i));
-	 group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(menu_item));
-	 gtk_menu_append(GTK_MENU(menu), menu_item);
-	 gtk_widget_show(menu_item);
-      }
-   }
-
-   gtk_option_menu_set_menu(GTK_OPTION_MENU(category_menu), menu);
-   //gtk_option_menu_set_history (GTK_OPTION_MENU (category_menu), history);
-   
-   gtk_box_pack_start (GTK_BOX (vbox1), category_menu, FALSE, FALSE, 0);
-   gtk_widget_show (category_menu);
-   
+   make_category_menu1(&category_menu1);
+   gtk_box_pack_start(GTK_BOX(vbox1), category_menu1, FALSE, FALSE, 0);
+   gtk_widget_show(category_menu1);
    
    //Put the address list window up
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
@@ -508,7 +599,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    clist = gtk_clist_new(3);
    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
-		      GTK_SIGNAL_FUNC(cb_add_clist_sel),
+		      GTK_SIGNAL_FUNC(cb_address_clist_sel),
 		      text);
    gtk_clist_set_shadow_type(GTK_CLIST(clist), SHADOW);
    gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
@@ -539,6 +630,19 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_widget_show(vbox2_1_sub1);
 
 
+   //The Right hand side of the screen
+   button = gtk_button_new_with_label("Add or Modify a Record");
+   gtk_signal_connect(GTK_OBJECT(button), "clicked",
+		      GTK_SIGNAL_FUNC(cb_new_address_mode), NULL);
+   gtk_box_pack_start(GTK_BOX(vbox2_1_sub1), button, FALSE, FALSE, 0);
+   gtk_widget_show(button);
+
+   //Separator
+   separator = gtk_hseparator_new();
+   gtk_box_pack_start(GTK_BOX(vbox2_1_sub1), separator, FALSE, FALSE, 5);
+   gtk_widget_show(separator);
+
+
    //The text box on the right side
    hbox_temp = gtk_hbox_new (FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2_1_sub1), hbox_temp, TRUE, TRUE, 0);
@@ -560,18 +664,46 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_box_pack_start(GTK_BOX(vbox2_2), hbox_temp, FALSE, FALSE, 0);
    gtk_widget_show(hbox_temp);
 
-   button = gtk_button_new_with_label("Add it");
+   button = gtk_button_new_with_label("Add It");
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_new_address_done), GINT_TO_POINTER(1));
+		      GTK_SIGNAL_FUNC(cb_new_address_done),
+		      GINT_TO_POINTER(NEW_FLAG));
+   gtk_box_pack_start(GTK_BOX(hbox_temp), button, TRUE, TRUE, 0);
+   gtk_widget_show(button);
+
+   button = gtk_button_new_with_label("Apply Changes");
+   gtk_signal_connect(GTK_OBJECT(button), "clicked",
+		      GTK_SIGNAL_FUNC(cb_new_address_done),
+		      GINT_TO_POINTER(MODIFY_FLAG));
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, TRUE, TRUE, 0);
    gtk_widget_show(button);
 
    button = gtk_button_new_with_label("Cancel");
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_new_address_done), GINT_TO_POINTER(0));
+		      GTK_SIGNAL_FUNC(cb_new_address_done), 
+		      GINT_TO_POINTER(CANCEL_FLAG));
    gtk_box_pack_end(GTK_BOX(hbox_temp), button, TRUE, TRUE, 0);
    gtk_widget_show(button);
 
+
+   button = gtk_button_new_with_label("Clear");
+   gtk_signal_connect(GTK_OBJECT(button), "clicked",
+		      GTK_SIGNAL_FUNC(cb_address_clear), NULL);
+   gtk_box_pack_end(GTK_BOX(hbox_temp), button, TRUE, TRUE, 0);
+   gtk_widget_show(button);
+   
+
+   //Separator
+   separator = gtk_hseparator_new();
+   gtk_box_pack_start(GTK_BOX(vbox2_2), separator, FALSE, FALSE, 5);
+   gtk_widget_show(separator);
+
+   
+   //Add the new category menu
+   make_category_menu2();
+   gtk_box_pack_start(GTK_BOX(vbox2_2), address_cat_menu2, FALSE, FALSE, 0);
+   gtk_widget_show(address_cat_menu2);
+   
    
    //Add the notebook for new entries
    notebook = gtk_notebook_new();
@@ -609,12 +741,13 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    table3 = gtk_table_new(9, 2, FALSE);
    gtk_box_pack_start(GTK_BOX(vbox_temp3), table3, TRUE, TRUE, 0);
 
+   label = NULL;
    for (i=0; i<19; i++) {
       i2=order[i];
       if (i2>2 && i2<8) {
-	 make_phone_menu(&phone_list_menu, i2-3, (i2-3)<<4, i2-3);
+	 make_phone_menu(i2-3, (i2-3)<<4, i2-3);
       } else {
-	 label = gtk_label_new(address_app_info.labels[i2]);
+ 	 label = gtk_label_new(address_app_info.labels[i2]);
 	 //gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_LEFT);
       }
       address_text[i2] = gtk_text_new(NULL, NULL);
@@ -625,7 +758,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
       //hbox_temp = gtk_hbox_new(FALSE, 0);
       if (i<9) {
 	 if (i2>2 && i2<8) {
-	    gtk_table_attach_defaults(GTK_TABLE(table1), GTK_WIDGET(phone_list_menu),
+	    gtk_table_attach_defaults(GTK_TABLE(table1), GTK_WIDGET(phone_list_menu[i2-3]),
 				      0, 1, i, i+1);
 	 } else {
 	    gtk_table_attach_defaults(GTK_TABLE(table1), GTK_WIDGET(label),

@@ -22,8 +22,10 @@
 
 //todo - this is a hack for now until I clean up the code
 int *glob_date_label;
+int pipe_in, pipe_out;
+extern pid_t glob_child_pid;
 
-#define VERSION_STRING "\nJPilot version 0.91\n"\
+#define VERSION_STRING "\nJPilot version 0.92\n"\
 " Copyright (C) 1999 by Judd Montgomery\n"
 
 #define USAGE_STRING "\njpilot-syncd [ [-v] || [-h] || [port(/dev/??)] ]\n"\
