@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.72 2004/11/22 06:58:09 rikster5 Exp $ */
+/* $Id: utils.c,v 1.73 2004/11/25 19:17:22 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -2510,6 +2510,14 @@ void charset_j2p(char *buf, int max_len, long char_set)
       UTF_to_other(buf, max_len);
       break;
    }
+}
+
+void jp_charset_j2p(char *const buf, int max_len)
+{
+   long char_set;
+
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
+   charset_j2p(buf, max_len, char_set);
 }
 
 void jp_charset_p2j(char *const buf, int max_len)
