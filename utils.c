@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.73 2004/11/25 19:17:22 rikster5 Exp $ */
+/* $Id: utils.c,v 1.74 2004/11/26 01:01:56 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -180,7 +180,6 @@ gint timeout_date(gpointer data)
    char str[102];
    char datef[102];
    const char *svalue1, *svalue2;
-   long ivalue;
    time_t ltime;
    struct tm *now;
 
@@ -191,9 +190,9 @@ gint timeout_date(gpointer data)
    now = localtime(&ltime);
 
 
-   /*Build a long date string */
-   get_pref(PREF_LONGDATE, &ivalue, &svalue1);
-   get_pref(PREF_TIME, &ivalue, &svalue2);
+   /* Build a long date string */
+   get_pref(PREF_LONGDATE, NULL, &svalue1);
+   get_pref(PREF_TIME, NULL, &svalue2);
 
    if ((svalue1==NULL)||(svalue2==NULL)) {
       strcpy(datef, _("Today is %A, %x %X"));
@@ -1489,10 +1488,9 @@ int read_gtkrc_file()
    char filename[FILENAME_MAX];
    char fullname[FILENAME_MAX];
    struct stat buf;
-   long ivalue;
    const char *svalue;
 
-   get_pref(PREF_RCFILE, &ivalue, &svalue);
+   get_pref(PREF_RCFILE, NULL, &svalue);
    if (svalue) {
      jp_logf(JP_LOG_DEBUG, "rc file from prefs is %s\n", svalue);
    } else {
@@ -2362,7 +2360,7 @@ int cleanup_pc_files()
 
 int setup_sync(unsigned int flags)
 {
-   long ivalue, num_backups;
+   long num_backups;
    const char *svalue;
    const char *port;
    int r;
@@ -2373,7 +2371,7 @@ int setup_sync(unsigned int flags)
 
    /* look in env for PILOTRATE first */
    if (!(getenv("PILOTRATE"))) {
-      get_pref(PREF_RATE, &ivalue, &svalue);
+      get_pref(PREF_RATE, NULL, &svalue);
       jp_logf(JP_LOG_DEBUG, "setting PILOTRATE=[%s]\n", svalue);
       if (svalue) {
 #ifdef HAVE_SETENV
@@ -2385,16 +2383,15 @@ int setup_sync(unsigned int flags)
       }
    }
 
-   get_pref(PREF_PORT, &ivalue, &port);
-   get_pref(PREF_NUM_BACKUPS, &num_backups, &svalue);
-   get_pref(PREF_USER, &ivalue, &svalue);
-   strncpy(sync_info.username, svalue, sizeof(sync_info.username));
-   sync_info.username[sizeof(sync_info.username)-1]='\0';
-   get_pref(PREF_USER_ID, (long*) &(sync_info.userID), &svalue);
+   get_pref(PREF_PORT, NULL, &port);
+   get_pref(PREF_NUM_BACKUPS, &num_backups, NULL);
    jp_logf(JP_LOG_DEBUG, "pref port=[%s]\n", port);
    jp_logf(JP_LOG_DEBUG, "num_backups=%d\n", num_backups);
+   get_pref(PREF_USER, NULL, &svalue);
+   strncpy(sync_info.username, svalue, sizeof(sync_info.username));
+   sync_info.username[sizeof(sync_info.username)-1]='\0';
 
-   get_pref(PREF_PC_ID, (long*) &(sync_info.PC_ID), &svalue);
+   get_pref(PREF_PC_ID, (long*) &(sync_info.PC_ID), NULL);
    if (sync_info.PC_ID == 0) {
       srandom(time(NULL));
       /* RAND_MAX is 32768 on Solaris machines for some reason.

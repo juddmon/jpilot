@@ -1,4 +1,4 @@
-/* $Id: weekview_gui.c,v 1.22 2004/11/22 00:52:43 rikster5 Exp $ */
+/* $Id: weekview_gui.c,v 1.23 2004/11/26 01:01:56 rikster5 Exp $ */
 
 /*******************************************************************************
  * weekview_gui.c
@@ -193,9 +193,7 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
 
    memcpy(&date, date_in, sizeof(struct tm));
 
-   get_pref(PREF_FDOW, &fdow, &svalue);
-
-   get_pref(PREF_SHORTDATE, &ivalue, &svalue);
+   get_pref(PREF_SHORTDATE, NULL, &svalue);
    if (svalue==NULL) {
       svalue = default_date;
    }
@@ -264,7 +262,6 @@ void weekview_gui(struct tm *date_in)
    GtkWidget *vbox, *hbox;
    GtkWidget *hbox_temp;
    GtkWidget *vbox_left, *vbox_right;
-   const char *str_fdow;
    long fdow;
    int i;
    char title[200];
@@ -333,7 +330,7 @@ void weekview_gui(struct tm *date_in)
 		      GINT_TO_POINTER(1));
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 3);
 
-   get_pref(PREF_FDOW, &fdow, &str_fdow);
+   get_pref(PREF_FDOW, &fdow, NULL);
 
    hbox = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 0);

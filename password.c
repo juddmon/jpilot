@@ -1,4 +1,4 @@
-/* $Id: password.c,v 1.15 2004/11/22 00:52:42 rikster5 Exp $ */
+/* $Id: password.c,v 1.16 2004/11/26 01:01:55 rikster5 Exp $ */
 
 /*******************************************************************************
  * password.c
@@ -177,7 +177,6 @@ int verify_password(char *password)
    unsigned char password_lower[PASSWD_LEN+2];
    const char *pref_password;
    char hex_str[68];
-   long ivalue;
 #endif
 
 #ifdef ENABLE_PRIVATE
@@ -194,7 +193,7 @@ int verify_password(char *password)
    /* Check to see that the password matches */
    palm_encode_hash(password_lower, encoded);
    bin_to_hex_str(encoded, hex_str, 32);
-   get_pref(PREF_PASSWORD, &ivalue, &pref_password);
+   get_pref(PREF_PASSWORD, NULL, &pref_password);
    if (!strcmp(hex_str, pref_password)) {
       return TRUE;
    }
@@ -208,7 +207,7 @@ int verify_password(char *password)
    palm_encode_md5((unsigned char *)password, encoded);
    bin_to_hex_str(encoded, hex_str, 32);
    hex_str[32]='\0';
-   get_pref(PREF_PASSWORD, &ivalue, &pref_password);
+   get_pref(PREF_PASSWORD, NULL, &pref_password);
    if (!strcmp(hex_str, pref_password)) {
       return TRUE;
    }

@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.63 2004/11/22 00:52:42 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.64 2004/11/26 01:01:55 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -1354,7 +1354,6 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    GtkWidget *vscrollbar;
 #endif
    long ivalue;
-   const char *svalue;
    GtkAccelGroup *accel_group;
    long char_set;
 
@@ -1393,7 +1392,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
       accel_group);
 
    pane = gtk_hpaned_new();
-   get_pref(PREF_MEMO_PANE, &ivalue, &svalue);
+   get_pref(PREF_MEMO_PANE, &ivalue, NULL);
    gtk_paned_set_position(GTK_PANED(pane), ivalue + 2);
 
    gtk_box_pack_start(GTK_BOX(hbox), pane, TRUE, TRUE, 5);

@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.91 2004/11/25 20:57:05 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.92 2004/11/26 01:01:55 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -676,7 +676,7 @@ void appt_export_ok(int type, const char *filename)
 
    /* this stuff is for ical only. */
    /* todo: create a pre-export switch */
-   get_pref(PREF_USER, &userid, &svalue);
+   get_pref(PREF_USER, NULL, &svalue);
    strncpy(text, svalue, 127);
    text[127]='\0';
    str_to_ical_str(username, sizeof(username), text);
@@ -1668,7 +1668,6 @@ long get_dom_type(int month, int dom, int year, int dow)
  */
 static void set_begin_end_labels(struct tm *begin, struct tm *end, int flags)
 {
-   long ivalue;
    char str[255];
    char time1_str[255];
    char time2_str[255];
@@ -1677,7 +1676,7 @@ static void set_begin_end_labels(struct tm *begin, struct tm *end, int flags)
 
    str[0]='\0';
 
-   get_pref(PREF_SHORTDATE, &ivalue, &pref_date);
+   get_pref(PREF_SHORTDATE, NULL, &pref_date);
    strftime(str, sizeof(str), pref_date, begin);
    gtk_label_set_text(GTK_LABEL(GTK_BIN(begin_date_button)->child), str);
 
@@ -1806,7 +1805,6 @@ static int appt_get_details(struct Appointment *appt, unsigned char *attrib)
    char str[30];
    gint page;
    int total_repeat_days;
-   long ivalue;
    char datef[32];
    const char *svalue1, *svalue2;
    const gchar *text1;
@@ -1951,8 +1949,8 @@ static int appt_get_details(struct Appointment *appt, unsigned char *attrib)
 	 appt->repeatEnd.tm_isdst = -1;
 	 mktime(&appt->repeatEnd);
 
-	 get_pref(PREF_SHORTDATE, &ivalue, &svalue1);
-	 get_pref(PREF_TIME, &ivalue, &svalue2);
+	 get_pref(PREF_SHORTDATE, NULL, &svalue1);
+	 get_pref(PREF_TIME, NULL, &svalue2);
 	 if ((svalue1==NULL) || (svalue2==NULL)) {
 	    strcpy(datef, "%x %X");
 	 } else {
@@ -1985,8 +1983,8 @@ static int appt_get_details(struct Appointment *appt, unsigned char *attrib)
 	 appt->repeatEnd.tm_isdst = -1;
 	 mktime(&appt->repeatEnd);
 
-	 get_pref(PREF_SHORTDATE, &ivalue, &svalue1);
-	 get_pref(PREF_TIME, &ivalue, &svalue2);
+	 get_pref(PREF_SHORTDATE, NULL, &svalue1);
+	 get_pref(PREF_TIME, NULL, &svalue2);
 	 if ((svalue1==NULL) || (svalue2==NULL)) {
 	    strcpy(datef, "%x %X");
 	 } else {
@@ -2022,8 +2020,8 @@ static int appt_get_details(struct Appointment *appt, unsigned char *attrib)
 	 appt->repeatEnd.tm_isdst = -1;
 	 mktime(&appt->repeatEnd);
 
-	 get_pref(PREF_SHORTDATE, &ivalue, &svalue1);
-	 get_pref(PREF_TIME, &ivalue, &svalue2);
+	 get_pref(PREF_SHORTDATE, NULL, &svalue1);
+	 get_pref(PREF_TIME, NULL, &svalue2);
 	 if ((svalue1==NULL) || (svalue2==NULL)) {
 	    strcpy(datef, "%x %X");
 	 } else {
@@ -2136,11 +2134,10 @@ static int appt_get_details(struct Appointment *appt, unsigned char *attrib)
 
 static void update_endon_button(GtkWidget *button, struct tm *t)
 {
-   long ivalue;
    const char *short_date;
    char str[255];
 
-   get_pref(PREF_SHORTDATE, &ivalue, &short_date);
+   get_pref(PREF_SHORTDATE, NULL, &short_date);
    strftime(str, sizeof(str), short_date, t);
 
    gtk_label_set_text(GTK_LABEL(GTK_BIN(button)->child), str);
@@ -3136,7 +3133,6 @@ void set_date_labels()
    char str[50];
    char datef[50];
    const char *svalue;
-   long ivalue;
 
    now.tm_sec=0;
    now.tm_min=0;
@@ -3149,7 +3145,7 @@ void set_date_labels()
    now.tm_year = current_year;
    mktime(&now);
 
-   get_pref(PREF_LONGDATE, &ivalue, &svalue);
+   get_pref(PREF_LONGDATE, NULL, &svalue);
    if (svalue==NULL) {
       strcpy(datef, "%x");
    } else {
@@ -3238,10 +3234,9 @@ static void highlight_days()
 {
    int bit, mask;
    int dow_int, ndim, i;
-   const char *svalue;
    long ivalue;
 
-   get_pref(PREF_DATEBOOK_HIGHLIGHT_DAYS, &ivalue, &svalue);
+   get_pref(PREF_DATEBOOK_HIGHLIGHT_DAYS, &ivalue, NULL);
    if (!ivalue) {
       return;
    }
@@ -3884,7 +3879,6 @@ void cb_todos_show(GtkWidget *widget, gpointer data)
 {
    int w, h;
    long ivalue;
-   const char *svalue;
 
    set_pref(PREF_DATEBOOK_TODO_SHOW, GTK_TOGGLE_BUTTON(show_todos_button)->active, NULL, TRUE);
 
@@ -3896,7 +3890,7 @@ void cb_todos_show(GtkWidget *widget, gpointer data)
 #endif
    }
    if (GTK_TOGGLE_BUTTON(widget)->active) {
-      get_pref(PREF_DATEBOOK_TODO_PANE, &ivalue, &svalue);
+      get_pref(PREF_DATEBOOK_TODO_PANE, &ivalue, NULL);
       gtk_paned_set_position(GTK_PANED(todo_pane), ivalue + 2);
       gtk_widget_show_all(GTK_WIDGET(todo_vbox));
    } else {
@@ -3971,12 +3965,10 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    char *titles[]={"","","","",""};
 
    long fdow;
-   const char *str_fdow;
    long ivalue;
 #ifdef ENABLE_DATEBK
    long use_db3_tags;
 #endif
-   const char *svalue;
 
    time_t ltime;
    struct tm *now;
@@ -4007,7 +3999,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    get_pref(PREF_DATEBOOK_PANE, &ivalue, NULL);
    gtk_paned_set_position(GTK_PANED(pane), ivalue + 2);
 
-   get_pref(PREF_DATEBOOK_TODO_PANE, &ivalue, &svalue);
+   get_pref(PREF_DATEBOOK_TODO_PANE, &ivalue, NULL);
    gtk_paned_set_position(GTK_PANED(todo_pane), ivalue + 2);
 
    gtk_box_pack_start(GTK_BOX(hbox), pane, TRUE, TRUE, 5);
@@ -4452,7 +4444,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    /* End begin and end dates */
 
    note_pane = gtk_vpaned_new();
-   get_pref(PREF_DATEBOOK_NOTE_PANE, &ivalue, &svalue);
+   get_pref(PREF_DATEBOOK_NOTE_PANE, &ivalue, NULL);
    gtk_paned_set_position(GTK_PANED(note_pane), ivalue + 2);
    gtk_box_pack_start(GTK_BOX(vbox2), note_pane, TRUE, TRUE, 5);
 
@@ -4602,7 +4594,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    label = gtk_label_new (_("Repeat on Days:"));
    gtk_box_pack_start(GTK_BOX(hbox_repeat_week3), label, FALSE, FALSE, 0);
 
-   get_pref(PREF_FDOW, &fdow, &str_fdow);
+   get_pref(PREF_FDOW, &fdow, NULL);
 
    for (i=0, j=fdow; i<7; i++, j++) {
       if (j>6) {
@@ -4735,7 +4727,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_widget_hide(apply_record_button);
    gtk_widget_hide(undelete_record_button);
 
-   get_pref(PREF_DATEBOOK_TODO_SHOW, &ivalue, &svalue);
+   get_pref(PREF_DATEBOOK_TODO_SHOW, &ivalue, NULL);
    if (!ivalue) {
       gtk_widget_hide_all(todo_vbox);
       gtk_paned_set_position(GTK_PANED(todo_pane), 100000);

@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.92 2004/11/25 20:57:05 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.93 2004/11/26 01:01:55 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -1984,7 +1984,7 @@ char *xpm_unlocked[] = {
    parse_geometry(geometry_str, pref_width, pref_height,
 		  &w, &h, &x, &y, &bit_mask);
 
-   get_pref(PREF_USER, &ivalue, &svalue);
+   get_pref(PREF_USER, NULL, &svalue);
 
    strcpy(title, PN" "VERSION);
    if ((svalue) && (svalue[0])) {

@@ -1,4 +1,4 @@
-/* $Id: search_gui.c,v 1.31 2004/11/22 00:52:42 rikster5 Exp $ */
+/* $Id: search_gui.c,v 1.32 2004/11/26 01:01:56 rikster5 Exp $ */
 
 /*******************************************************************************
  * search_gui.c
@@ -80,7 +80,6 @@ static int search_datebook(const char *needle, GtkWidget *clist)
    char date_str[52];
    char datef[52];
    const char *svalue1;
-   long ivalue;
    struct search_record *new_sr;
 
    /*Search Appointments */
@@ -129,7 +128,7 @@ static int search_datebook(const char *needle, GtkWidget *clist)
 	 gtk_clist_set_row_data(GTK_CLIST(clist), 0, new_sr);
 
 	 /*get the date */
-	 get_pref(PREF_SHORTDATE, &ivalue, &svalue1);
+	 get_pref(PREF_SHORTDATE, NULL, &svalue1);
 	 if (svalue1 == NULL) {
 	    strcpy(datef, "%x");
 	 } else {

@@ -1,4 +1,4 @@
-/* $Id: print_gui.c,v 1.12 2004/11/22 00:52:42 rikster5 Exp $ */
+/* $Id: print_gui.c,v 1.13 2004/11/26 01:01:56 rikster5 Exp $ */
 
 /*******************************************************************************
  * print_gui.c
@@ -321,7 +321,7 @@ int print_gui(GtkWidget *main_window, int app, int date_button, int mon_week_day
    print_command_entry = gtk_entry_new_with_max_length(250);
    gtk_box_pack_start(GTK_BOX(vbox), print_command_entry, FALSE, FALSE, 0);
 
-   get_pref(PREF_PRINT_COMMAND, &ivalue, &svalue);
+   get_pref(PREF_PRINT_COMMAND, NULL, &svalue);
    gtk_entry_set_text(GTK_ENTRY(print_command_entry), svalue);
 
 

@@ -1,4 +1,4 @@
-/* $Id: monthview_gui.c,v 1.26 2004/11/22 00:52:42 rikster5 Exp $ */
+/* $Id: monthview_gui.c,v 1.27 2004/11/26 01:01:55 rikster5 Exp $ */
 
 /*******************************************************************************
  * monthview_gui.c
@@ -435,7 +435,6 @@ void monthview_gui(struct tm *date_in)
    char str[256];
    char str_dow[256];
    long fdow;
-   const char *str_fdow;
    char title[200];
    long w, h;
 
@@ -445,7 +444,7 @@ void monthview_gui(struct tm *date_in)
 
    memcpy(&glob_month_date, date_in, sizeof(struct tm));
 
-   get_pref(PREF_FDOW, &fdow, &str_fdow);
+   get_pref(PREF_FDOW, &fdow, NULL);
 
    get_pref(PREF_MONTHVIEW_WIDTH, &w, NULL);
    get_pref(PREF_MONTHVIEW_HEIGHT, &h, NULL);

@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.71 2004/11/25 20:57:05 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.72 2004/11/26 01:01:56 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -117,12 +117,11 @@ static void init()
 
 static void update_due_button(GtkWidget *button, struct tm *t)
 {
-   long ivalue;
    const char *short_date;
    char str[255];
 
    if (t) {
-      get_pref(PREF_SHORTDATE, &ivalue, &short_date);
+      get_pref(PREF_SHORTDATE, NULL, &short_date);
       strftime(str, sizeof(str), short_date, t);
 
       gtk_label_set_text(GTK_LABEL(GTK_BIN(button)->child), str);
@@ -663,11 +662,11 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 
    /* this stuff is for ical only. */
    /* todo: create a pre-export switch */
-   get_pref(PREF_USER, &userid, &svalue);
+   get_pref(PREF_USER, NULL, &svalue);
    strncpy(text, svalue, sizeof(text));
    text[sizeof(text)-1]='\0';
    str_to_ical_str(username, sizeof(username), text);
-   get_pref(PREF_USER_ID, &userid, &svalue);
+   get_pref(PREF_USER_ID, &userid, NULL);
    gethostname(text, sizeof(text));
    text[sizeof(text)-1]='\0';
    str_to_ical_str(hostname, sizeof(hostname), text);
@@ -1567,7 +1566,6 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    ToDoList *temp_todo;
    char str[50];
    char str2[TODO_MAX_COLUMN_LEN+2];
-   long ivalue;
    const char *svalue;
    long hide_completed;
    long hide_not_due;
@@ -1680,8 +1678,7 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
       /* Print the due date */
       if (!temp_todo->mtodo.todo.indefinite) {
-	  get_pref(PREF_SHORTDATE, &ivalue, &svalue);
-	  get_pref_possibility(PREF_SHORTDATE,ivalue,str);
+	  get_pref(PREF_SHORTDATE, NULL, &svalue);
 	  strftime(str, sizeof(str), svalue, &(temp_todo->mtodo.todo.due));
       }
       else {

@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.80 2004/11/24 20:42:26 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.81 2004/11/26 01:01:55 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -695,11 +695,11 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 
    /* this stuff is for vcard only. */
    /* todo: create a pre-export switch */
-   get_pref(PREF_USER, &userid, &svalue);
+   get_pref(PREF_USER, NULL, &svalue);
    strncpy(text, svalue, sizeof(text));
    text[sizeof(text)-1]='\0';
    str_to_ical_str(username, sizeof(username), text);
-   get_pref(PREF_USER_ID, &userid, &svalue);
+   get_pref(PREF_USER_ID, &userid, NULL);
    gethostname(text, sizeof(text));
    text[sizeof(text)-1]='\0';
    str_to_ical_str(hostname, sizeof(hostname), text);
@@ -2466,7 +2466,6 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    GtkWidget *notebook_tab;
    GSList *group;
    long ivalue, notebook_page;
-   const char *svalue;
    char *titles[]={"","",""};
    GtkAccelGroup *accel_group;
 
@@ -2508,7 +2507,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
       accel_group);
 
    pane = gtk_hpaned_new();
-   get_pref(PREF_ADDRESS_PANE, &ivalue, &svalue);
+   get_pref(PREF_ADDRESS_PANE, &ivalue, NULL);
    gtk_paned_set_position(GTK_PANED(pane), ivalue + 2);
 
    gtk_box_pack_start(GTK_BOX(hbox), pane, TRUE, TRUE, 5);

@@ -1,4 +1,4 @@
-/* $Id: alarms.c,v 1.24 2004/11/22 00:52:41 rikster5 Exp $ */
+/* $Id: alarms.c,v 1.25 2004/11/26 01:01:55 rikster5 Exp $ */
 
 /*******************************************************************************
  * alarms.c
@@ -508,7 +508,6 @@ int alarms_do_one(struct Appointment *appt,
    char date_str[50];
    char command[1024];
    char *reason;
-   long ivalue;
    long wants_windows;
    long do_command;
    const char *pref_date;
@@ -533,7 +532,7 @@ int alarms_do_one(struct Appointment *appt,
     default:
       reason=_("Appointment");
    }
-   get_pref(PREF_SHORTDATE, &ivalue, &pref_date);
+   get_pref(PREF_SHORTDATE, NULL, &pref_date);
    get_pref_time_no_secs(pref_time);
 
    Pnow = localtime(&t_alarm);
@@ -555,7 +554,7 @@ int alarms_do_one(struct Appointment *appt,
       note_str[sizeof(note_str)-1]='\0';
    }
 
-   get_pref(PREF_ALARM_COMMAND, &ivalue, &pref_command);
+   get_pref(PREF_ALARM_COMMAND, NULL, &pref_command);
    get_pref(PREF_DO_ALARM_COMMAND, &do_command, NULL);
 #ifdef ALARMS_DEBUG
    printf("pref_command = [%s]\n", pref_command);

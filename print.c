@@ -1,4 +1,4 @@
-/* $Id: print.c,v 1.25 2004/11/22 00:52:42 rikster5 Exp $ */
+/* $Id: print.c,v 1.26 2004/11/26 01:01:55 rikster5 Exp $ */
 
 /*******************************************************************************
  * print.c
@@ -65,10 +65,9 @@ char *PaperSizes[] = { "Letter", "Legal", "Statement", "Tabloid", "Ledger",
 
 FILE *print_open()
 {
-   long ivalue;
    const char *command;
 
-   get_pref(PREF_PRINT_COMMAND, &ivalue, &command);
+   get_pref(PREF_PRINT_COMMAND, NULL, &command);
    if (command) {
       return popen(command, "w");
    } else {
@@ -157,7 +156,6 @@ int print_dayview(struct tm *date, AppointmentList *a_list)
    time_t ltime;
    struct tm *now;
    const char *svalue;
-   long ivalue;
 
 #ifdef HAVE_LOCALE_H
    char *current_locale;
@@ -171,7 +169,7 @@ int print_dayview(struct tm *date, AppointmentList *a_list)
    /* Put the month name up */
    fprintf(out, "/Times-Bold-ISOLatin1 findfont 20 scalefont setfont\n"
                 "newpath 0 setgray\n");
-   get_pref(PREF_LONGDATE, &ivalue, &svalue);
+   get_pref(PREF_LONGDATE, NULL, &svalue);
    strftime(str, sizeof(str), svalue, date);
    puttext(0.5, 10.25, str);
 
@@ -186,7 +184,7 @@ int print_dayview(struct tm *date, AppointmentList *a_list)
 
    time(&ltime);
    now = localtime(&ltime);
-   get_pref(PREF_SHORTDATE, &ivalue, &svalue);
+   get_pref(PREF_SHORTDATE, NULL, &svalue);
    g_snprintf(datef, sizeof(datef), "%s %s", "Printed on: ", svalue);
    strftime(str, sizeof(str), datef, now);
    puttext(0.5, 0.9, str);
@@ -408,7 +406,6 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
    int dow;
    int ndim;
    int n;
-   const char *svalue;
    long fdow;
    int mask;
 #ifdef ENABLE_DATEBK
@@ -482,7 +479,7 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
    date.tm_isdst=-1;
    mktime(&date);
 
-   get_pref(PREF_FDOW, &fdow, &svalue);
+   get_pref(PREF_FDOW, &fdow, NULL);
 
    fprintf(out,
 	   "(%s, %d) %d (%s) (%s version %s) %ld InitialisePage\n\n",
@@ -795,14 +792,13 @@ int print_address_header()
 {
    time_t ltime;
    struct tm *date;
-   long ivalue;
    const char *svalue;
    char str[256];
 
    time(&ltime);
    date = localtime(&ltime);
 
-   get_pref(PREF_SHORTDATE, &ivalue, &svalue);
+   get_pref(PREF_SHORTDATE, NULL, &svalue);
    strftime(str, sizeof(str), svalue, date);
 
    fprintf(out,
@@ -1124,7 +1120,6 @@ int print_todos(ToDoList *todo_list, char *category_name)
 {
    long one_rec_per_page;
    long lines_between_recs;
-   long ivalue;
    ToDoList *temp_l;
    struct ToDo *todo;
    int indent;
@@ -1153,7 +1148,7 @@ int print_todos(ToDoList *todo_list, char *category_name)
    get_pref(PREF_PRINT_ONE_PER_PAGE, &one_rec_per_page, NULL);
    get_pref(PREF_NUM_BLANK_LINES, &lines_between_recs, NULL);
 
-   get_pref(PREF_SHORTDATE, &ivalue, &datef);
+   get_pref(PREF_SHORTDATE, NULL, &datef);
    now = localtime(&ltime);
    strftime(str, sizeof(str), datef, now);
    indent=strlen(str) + 8;

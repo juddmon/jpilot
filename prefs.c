@@ -1,4 +1,4 @@
-/* $Id: prefs.c,v 1.48 2004/11/25 20:57:05 rikster5 Exp $ */
+/* $Id: prefs.c,v 1.49 2004/11/26 01:01:55 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs.c
@@ -224,11 +224,10 @@ int get_pref_time_no_secs(char *datef)
    /* "%I:%M:%S" */
    /* "%I:%M" */
    /* "%I:%M%p" */
-   long ivalue;
    const char *svalue;
    int i1, i2;
 
-   get_pref(PREF_TIME, &ivalue, &svalue);
+   get_pref(PREF_TIME, NULL, &svalue);
    if (!svalue) {
       return -1;
    }
@@ -251,10 +250,9 @@ int get_pref_time_no_secs(char *datef)
 
 int get_pref_time_no_secs_no_ampm(char *datef)
 {
-   long ivalue;
    const char *svalue;
 
-   get_pref(PREF_TIME, &ivalue, &svalue);
+   get_pref(PREF_TIME, NULL, &svalue);
    if (!svalue) {
       return -1;
    }
