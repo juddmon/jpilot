@@ -37,6 +37,7 @@ static GtkWidget *mail_command_entry;
 static GtkWidget *todo_days_due_entry;
 
 extern int glob_app;
+extern GtkTooltips *glob_tooltips;
 
 #ifdef COLORS
 
@@ -163,6 +164,16 @@ void cb_checkbox_todo_days_till_due(GtkWidget *widget, gpointer data)
    sscanf(entry_text, "%d", &num_days);
 
    set_pref(PREF_TODO_DAYS_TILL_DUE, num_days, NULL, TRUE);
+}
+
+void cb_checkbox_show_tooltips(GtkWidget *widget, gpointer data)
+{
+   if (GTK_TOGGLE_BUTTON(widget)->active)
+      gtk_tooltips_enable(glob_tooltips);   
+   else
+      gtk_tooltips_disable(glob_tooltips);   
+
+   set_pref(PREF_SHOW_TOOLTIPS, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
 }
 
 void cb_checkbox_set_pref(GtkWidget *widget, gpointer data)
@@ -516,6 +527,19 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_signal_connect(GTK_OBJECT(checkbutton), 
 		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref),
 		      GINT_TO_POINTER(PREF_CONFIRM_INSTALL));
+
+   /* Show tooltips check box */
+   checkbutton = gtk_check_button_new_with_label
+     (_("Show popup tooltips (default YES)"));
+   gtk_box_pack_start(GTK_BOX(vbox_settings), checkbutton, FALSE, FALSE, 0);
+   gtk_widget_show(checkbutton);
+   get_pref(PREF_SHOW_TOOLTIPS, &ivalue, &cstr);
+   if (ivalue) {
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
+   }
+   gtk_signal_connect(GTK_OBJECT(checkbutton), 
+		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_show_tooltips),
+		      NULL);
 
    /**********************************************************************/
    /* Datebook preference tab */
