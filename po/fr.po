@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jpilot 0.99.7\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-10-01 23:10+0200\n"
+"POT-Creation-Date: 2004-10-01 23:53+0200\n"
 "PO-Revision-Date: 2004-10-01 23:05+0100\n"
 "Last-Translator: Ludovic Rousseau <ludovic.rousseau@free.fr>\n"
 "Language-Team: French <traduc@traduc.org>\n"
@@ -53,14 +53,6 @@ msgstr "Le fichier n'est pas du type carnet d'adresses\n"
 msgid "Unfiled"
 msgstr "Non renseigné"
 
-#. JPA
-#. current category name
-#. previous category name
-#. yes!
-#. entry text, in Pilot character set
-#. Buttons
-#. Bottom Buttons
-#. Buttons
 #: address_gui.c:679 alarms.c:223 category.c:404 category.c:855 category.c:895
 #: datebook_gui.c:660 datebook_gui.c:1140 export_gui.c:336 jpilot.c:343
 #: jpilot.c:390 jpilot.c:458 jpilot.c:502 jpilot.c:967 memo_gui.c:500
@@ -140,14 +132,12 @@ msgstr "Nom/Société"
 msgid "You can't modify a record that is deleted\n"
 msgstr "Vous ne pouvez pas modifier un enregistrement effacé\n"
 
-#. Illegal category
 #: address_gui.c:1449 address_gui.c:1821 address_gui.c:2301 memo_gui.c:790
 #: memo_gui.c:1055 memo_gui.c:1327 todo_gui.c:1105 todo_gui.c:1477
 #: todo_gui.c:1490 todo_gui.c:1900
 msgid "Category is not legal\n"
 msgstr "Catégorie illégale\n"
 
-#. Category Menu
 #: address_gui.c:1739 Expense/expense.c:1462 Expense/expense.c:1541
 #: KeyRing/keyring.c:1514 KeyRing/keyring.c:1590
 msgid "Category: "
@@ -165,7 +155,6 @@ msgstr "Mél"
 msgid "Mail"
 msgstr "Mél"
 
-#. Dial Phone Button
 #: address_gui.c:1894 address_gui.c:1896 address_gui.c:2832 dialer.c:305
 #: dialer.c:330
 msgid "Dial"
@@ -184,7 +173,6 @@ msgstr "-Sans-nom-"
 msgid "%d of %d records"
 msgstr "%d de %d enregistrements"
 
-#. Edit category button
 #: address_gui.c:2535 category.c:434 category.c:448 category.c:455
 #: category.c:473 category.c:480 category.c:498 category.c:578 category.c:773
 #: memo_gui.c:1446 todo_gui.c:2031 Expense/expense.c:1469
@@ -199,72 +187,52 @@ msgstr "Téléphone"
 msgid "Quick Find"
 msgstr "Recherche rapide"
 
-#. Delete Button
-#. Add record modification buttons on right side
-#. Create "event" button
-#. Create "Delete" button
-#. Add record modification buttons on right side
-#. Add record modification buttons on right side
-#. Delete button
-#. Delete, Copy, New, etc record buttons
-#. Add record button
 #: address_gui.c:2601 category.c:405 category.c:828 datebook_gui.c:4247
 #: memo_gui.c:1501 todo_gui.c:2146 Expense/expense.c:1503
 #: KeyRing/keyring.c:1549
 msgid "Delete"
 msgstr "Effacer"
 
-#. Create "Undelete" button
 #: address_gui.c:2607 datebook_gui.c:4254 memo_gui.c:1507 todo_gui.c:2152
 msgid "Undelete"
 msgstr "Restaurer"
 
-#. Create "Copy" button
 #: address_gui.c:2614 datebook_gui.c:4261 memo_gui.c:1513 todo_gui.c:2158
 #: Expense/expense.c:1509 KeyRing/keyring.c:1555
 msgid "Copy"
 msgstr "Copier"
 
-#. Create "New" button
 #: address_gui.c:2621 datebook_gui.c:4268 memo_gui.c:1519 todo_gui.c:2164
 #: Expense/expense.c:1515 KeyRing/keyring.c:1561
 msgid "New Record"
 msgstr "Nouveau"
 
-#. Create "Add Record" button
 #: address_gui.c:2627 datebook_gui.c:4275 memo_gui.c:1525 todo_gui.c:2170
 #: Expense/expense.c:1521 KeyRing/keyring.c:1567
 msgid "Add Record"
 msgstr "Ajouter"
 
-#. Create "apply changes" button
 #: address_gui.c:2636 datebook_gui.c:4284 memo_gui.c:1533 todo_gui.c:2178
 #: Expense/expense.c:1529 KeyRing/keyring.c:1575
 msgid "Apply Changes"
 msgstr "Appliquer"
 
-#. Private check box
 #: address_gui.c:2652 datebook_gui.c:4335 memo_gui.c:1550 todo_gui.c:2241
 msgid "Private"
 msgstr "Privé"
 
-#. Page 1
 #: address_gui.c:2672 KeyRing/keyring.c:1441
 msgid "Name"
 msgstr "Nom"
 
-#. Page 2
 #: address_gui.c:2680
 msgid "Address"
 msgstr "Adresse"
 
-#. Page 3
 #: address_gui.c:2688 Expense/expense.c:467 Expense/expense.c:1299
 msgid "Other"
 msgstr "Autre"
 
-#. Page 4
-#. Create a "All" button
 #: address_gui.c:2696 datebook_gui.c:1323 datebook_gui.c:1577 utils.c:2643
 msgid "All"
 msgstr "Tous"
@@ -277,7 +245,6 @@ msgstr ""
 "Montrer\n"
 "dans la liste"
 
-#. The Quickview page
 #: address_gui.c:2891
 msgid "Quick View"
 msgstr "Affichage rapide"
@@ -352,7 +319,6 @@ msgstr "fseek échoué - erreur fatale\n"
 msgid "Move"
 msgstr "Déplacer"
 
-#. Create a "Quit" button
 #: category.c:405 category.c:861 category.c:901 datebook_gui.c:1145
 #: datebook_gui.c:1578 export_gui.c:341 password.c:370 print_gui.c:335
 #: restore_gui.c:297 utils.c:1100 KeyRing/keyring.c:1294
@@ -408,7 +374,6 @@ msgstr "état invalide fichier %s ligne %d\n"
 msgid "The category %s can't be used more than once"
 msgstr "La catégorie %s ne peut pas être utilisée plusieures fois"
 
-#. correctly translate title
 #: category.c:798
 msgid "category name"
 msgstr "Catégorie"
@@ -519,7 +484,6 @@ msgstr "Type d'export inconnu"
 msgid "Export"
 msgstr "Export"
 
-#. Label for instructions
 #: datebook_gui.c:1103
 msgid "Export All Datebook Records"
 msgstr "Exporter tous les enregistrements agenda"
@@ -536,15 +500,11 @@ msgstr "Parcourir"
 msgid "Datebook Categories"
 msgstr "Catégories agenda"
 
-#. Create a "Quit" button
-#. Create a "Done" button
 #: datebook_gui.c:1317 import_gui.c:325 install_gui.c:327 prefs_gui.c:740
 #: search_gui.c:555
 msgid "Done"
 msgstr "Valider"
 
-#. Create a "None" button
-#. labels for notebook
 #: datebook_gui.c:1329 datebook_gui.c:4495
 msgid "None"
 msgstr "Aucun"
@@ -616,7 +576,6 @@ msgstr "Question ?"
 msgid "Answer: "
 msgstr "Réponse : "
 
-#. ---------------------------
 #: datebook_gui.c:1570
 msgid ""
 "This is a repeating event.\n"
@@ -668,7 +627,6 @@ msgstr ""
 "Vous ne pouvez pas avoir une rendez-vous hebdomadaire qui ne se répèteaucun "
 "jour de la semaine"
 
-#. This is a timeless event
 #: datebook_gui.c:2270
 msgid "No Time"
 msgstr "Pas d'heure"
@@ -685,7 +643,6 @@ msgstr ""
 "La date de fin de ce rendez-vous\n"
 "est antérieure à celle de début."
 
-#. The No due date check box
 #: datebook_gui.c:2825 datebook_gui.c:4529 datebook_gui.c:4559
 #: datebook_gui.c:4615 datebook_gui.c:4664 todo_gui.c:126 todo_gui.c:2232
 msgid "No Date"
@@ -700,7 +657,6 @@ msgstr "Erreur dans DateBookDB advanceUnits = %d\n"
 msgid "Unknown repeatType found in DatebookDB\n"
 msgstr "repeatType inconnu trouvé dans DatebookDB\n"
 
-#. Make Weekview button
 #: datebook_gui.c:4060 datebook_gui.c:4497
 msgid "Week"
 msgstr "Semaine"
@@ -713,7 +669,6 @@ msgstr "S"
 msgid "View appointments by week"
 msgstr "Voir les rendez-vous par semaine"
 
-#. Make Monthview button
 #: datebook_gui.c:4071 datebook_gui.c:4498
 msgid "Month"
 msgstr "Mois"
@@ -726,7 +681,6 @@ msgstr "M"
 msgid "View appointments by month"
 msgstr "Voir les rendez-vous par mois"
 
-#. Make Category button
 #: datebook_gui.c:4085
 msgid "Cats"
 msgstr "Cats"
@@ -735,9 +689,6 @@ msgstr "Cats"
 msgid "Time"
 msgstr "Heure"
 
-#.
-#. * Hide ToDo button
-#.
 #: datebook_gui.c:4191
 msgid "Show ToDos"
 msgstr "Montrer les tâches à faire"
@@ -786,7 +737,6 @@ msgstr "Jour"
 msgid "Year"
 msgstr "Année"
 
-#. no repeat page for notebook
 #: datebook_gui.c:4503
 msgid "This event will not repeat"
 msgstr "Cet évènement de se répètera pas"
@@ -800,7 +750,6 @@ msgstr "La fréquence est chaque"
 msgid "Day(s)"
 msgstr "Jour(s)"
 
-#. checkbutton
 #: datebook_gui.c:4521 datebook_gui.c:4553 datebook_gui.c:4609
 #: datebook_gui.c:4656
 msgid "End on"
@@ -862,7 +811,6 @@ msgstr "Extension"
 msgid "Dial Command"
 msgstr "commande de numérotation"
 
-#. Buttons
 #: dialer.c:362
 msgid "Dismiss"
 msgstr "Annuler"
@@ -871,7 +819,6 @@ msgstr "Annuler"
 msgid "File Browser"
 msgstr "Parcourir les fichiers"
 
-#. Label for instructions
 #: export_gui.c:273
 msgid "Select records to be exported"
 msgstr "Sélectionnez les enregistrements à exporter"
@@ -880,7 +827,6 @@ msgstr "Sélectionnez les enregistrements à exporter"
 msgid "Use Ctrl and Shift Keys"
 msgstr "Utilisez les touches Ctrl et Shift"
 
-#. Import button
 #: import_gui.c:279 import_gui.c:318 import_gui.c:431 import_gui.c:511
 #: jpilot.c:491
 msgid "Import"
@@ -912,17 +858,14 @@ msgstr "La catégorie avant l'import était : [%s]"
 msgid "Record will be put in category [%s]"
 msgstr "Les enregistrements seront rangés dans la catégorie [%s]"
 
-#. Import All button
 #: import_gui.c:518
 msgid "Import All"
 msgstr "Importer tout"
 
-#. Skip button
 #: import_gui.c:525
 msgid "Skip"
 msgstr "Sauter"
 
-#. Quit button
 #: import_gui.c:532
 msgid "Quit"
 msgstr "Quitter"
@@ -931,7 +874,6 @@ msgstr "Quitter"
 msgid "Install"
 msgstr "Installer"
 
-#. i18n hack to have title correctly translated
 #: install_gui.c:284
 msgid "Files to be installed"
 msgstr "Fichiers à installer"
@@ -943,6 +885,42 @@ msgstr "Ajouter"
 #: install_gui.c:320
 msgid "Remove"
 msgstr "Supprimer"
+
+#: jpilot-dump.c:53
+msgid " +B +M +A +T format like date +format (use -? for more info).\n"
+msgstr " +B +M +A +T format comme date +format (utiliser -? pour la doc).\n"
+
+#: jpilot-dump.c:54
+msgid " -v displays version and exits.\n"
+msgstr " -v affiche la version et sort.\n"
+
+#: jpilot-dump.c:55 utils.c:73
+msgid " -h displays help and exits.\n"
+msgstr " -h affiche l'aide et sort.\n"
+
+#: jpilot-dump.c:56
+msgid " -B dump dateBook.\n"
+msgstr " -B dump agenda.\n"
+
+#: jpilot-dump.c:57
+msgid " -NYYYY/MM/DD dump apps on YYYY/MM/DD in dateBook.\n"
+msgstr " -NYYYY/MM/DD dump rendez-vous du YYYY/MM/DD.\n"
+
+#: jpilot-dump.c:58
+msgid " -N dump apps on today in dateBook.\n"
+msgstr " -N dump rendez-vous d'aujourd'hui.\n"
+
+#: jpilot-dump.c:59
+msgid " -M dump Memos.\n"
+msgstr " -M dump mémos.\n"
+
+#: jpilot-dump.c:60
+msgid " -A dump Address book.\n"
+msgstr " -A dump le carnet d'adresse.\n"
+
+#: jpilot-dump.c:61
+msgid " -T dump Todo list as CSV.\n"
+msgstr " -T dump tâches en CSV.\n"
 
 #: jpilot-sync.c:50
 msgid ""
@@ -983,7 +961,6 @@ msgstr ""
 " -p {port} = utilise ce port pour synchroniser plutôt que celui des "
 "préférences\n"
 
-#. The log window hasn't been created yet
 #: jpilot.c:122
 #, c-format
 msgid "Invalid geometry specification: \"%s\"\n"
@@ -993,7 +970,6 @@ msgstr "Spécification de géométrie invalide : \"%s\"\n"
 msgid "Help"
 msgstr "Aide"
 
-#. Create a "Print" button
 #: jpilot.c:431 monthview_gui.c:492 print_gui.c:329 weekview_gui.c:318
 msgid "Print"
 msgstr "Imprimer"
@@ -1052,7 +1028,6 @@ msgstr "Sync quand même"
 msgid "Sync Problem"
 msgstr "Problème de synchronisation"
 
-#. Create "Sync" button
 #: jpilot.c:760 jpilot.c:765 jpilot.c:2151
 msgid "Sync"
 msgstr "Sync"
@@ -1142,7 +1117,6 @@ msgstr "/_Greffons"
 msgid "/_Web"
 msgstr "/_Web"
 
-#. web
 #: jpilot.c:1101
 msgid "/Web/Netscape"
 msgstr "/Web/Netscape"
@@ -1241,7 +1215,6 @@ msgstr "Cacher les enregistrements privés"
 msgid "Mask private records"
 msgstr "Masquer les enregistrements privés"
 
-#. Create "Quit" button
 #: jpilot.c:2145
 msgid "Quit!"
 msgstr "Quitter !"
@@ -1250,12 +1223,10 @@ msgstr "Quitter !"
 msgid "Sync your palm to the desktop"
 msgstr "Synchronise le Palm au bureau"
 
-#. Create "Font" button
 #: jpilot.c:2163
 msgid "Font"
 msgstr "Police"
 
-#. Create "Backup" button in left column
 #: jpilot.c:2170
 msgid "Backup"
 msgstr "Sauver"
@@ -1313,7 +1284,6 @@ msgstr "Allez dans le menu \""
 msgid "\" and change the \""
 msgstr "\" et changez le \""
 
-#. Character Set
 #: jpilot.c:2345 prefs_gui.c:371
 msgid "Character Set "
 msgstr "Jeu de caractères"
@@ -1412,7 +1382,6 @@ msgstr "Le fichier n'est pas au format bloc-notes\n"
 msgid "Can't export memo %d\n"
 msgstr "Imposible d'exporter le mémo %d\n"
 
-#. Memo32 check box
 #: memo_gui.c:1453
 msgid "Use Memo32 (pedit32)"
 msgstr "Utiliser Memo32 (pedit32)"
@@ -1421,7 +1390,6 @@ msgstr "Utiliser Memo32 (pedit32)"
 msgid "Monthly View"
 msgstr "Vue mensuelle"
 
-#. Create a "Quit" button
 #: monthview_gui.c:486 weekview_gui.c:312
 msgid "Close"
 msgstr "Fermer"
@@ -1503,42 +1471,34 @@ msgstr "Alarmes"
 msgid "Conduits"
 msgstr "Conduits"
 
-#. Shortdate
 #: prefs_gui.c:384
 msgid "Short date format "
 msgstr "Date format court"
 
-#. Longdate
 #: prefs_gui.c:397
 msgid "Long date format "
 msgstr "Date format long"
 
-#. Time
 #: prefs_gui.c:411
 msgid "Time format "
 msgstr "Format de l'heure "
 
-#. FDOW
 #: prefs_gui.c:425
 msgid "The first day of the week is "
 msgstr "Le premier jour de la semaine est "
 
-#. GTK colors file
 #: prefs_gui.c:445
 msgid "My GTK colors file is "
 msgstr "Mon fichier couleurs GTK est "
 
-#. Port
 #: prefs_gui.c:459
 msgid "Serial Port (/dev/ttyS0, /dev/pilot)"
 msgstr "port série (/dev/ttyS0, /dev/pilot)"
 
-#. Rate
 #: prefs_gui.c:474
 msgid "Serial Rate (Does not affect USB)"
 msgstr "Vitesse port série (sans effet pour USB)"
 
-#. Number of backups
 #: prefs_gui.c:487
 msgid "Number of backups to be archived"
 msgstr "Nombre de sauvegardes à archiver"
@@ -1555,7 +1515,6 @@ msgstr "Montrer les enregistrements modifiés (NON par défaut)"
 msgid "Highlight calendar days with appointments"
 msgstr "Surligner les jours avec rendez-vous"
 
-#. Show use DateBk check box
 #: prefs_gui.c:543
 msgid "Use DateBk note tags"
 msgstr "Utilise DateBk note tags"
@@ -1564,22 +1523,18 @@ msgstr "Utilise DateBk note tags"
 msgid "DateBk support disabled in this build"
 msgstr "Le support pour DateBk est désactivé pour cet exécutable"
 
-#. Show sync datebook check box
 #: prefs_gui.c:560
 msgid "Sync datebook"
 msgstr "Sync agenda"
 
-#. Show sync address check box
 #: prefs_gui.c:571
 msgid "Sync address"
 msgstr "Sync carnet d'adresses"
 
-#. Show sync todo check box
 #: prefs_gui.c:582
 msgid "Sync todo"
 msgstr "Sync tâches"
 
-#. Show sync memo check box
 #: prefs_gui.c:593
 msgid "Sync memo"
 msgstr "Sync bloc-notes"
@@ -1588,17 +1543,14 @@ msgstr "Sync bloc-notes"
 msgid "Sync memo32 (pedit32)"
 msgstr "Sync memo32 (pedit32)"
 
-#. Show sync Ma~nana check box
 #: prefs_gui.c:617
 msgid "Sync Manana"
 msgstr "Sync Mañana"
 
-#. Show use Japanese Kana extention check box
 #: prefs_gui.c:630
 msgid "Use J-OS (Not Japanese PalmOS:WorkPad/CLIE)"
 msgstr "Utilise J-OS (Sauf PalmOS:WorkPad/CLIE japonais)"
 
-#. Make a checkbox for each plugin
 #: prefs_gui.c:652
 #, c-format
 msgid "Sync %s (%s)"
@@ -1612,7 +1564,6 @@ msgstr "Ouvrir une fenêtre de rappel pour les rendez vous"
 msgid "Execute this command"
 msgstr "Exécuter la commande"
 
-#. Shell warning
 #: prefs_gui.c:695
 msgid "WARNING: executing arbitrary shell commands can be dangerous!!!"
 msgstr "ATTENTION : exécuter des commandes shell peut être dangereux !!!"
@@ -1686,7 +1637,6 @@ msgstr "Un enregistrement par page"
 msgid " Blank lines between each record"
 msgstr "Lignes blanches entre les enregistrements"
 
-#. Print Command
 #: print_gui.c:315
 msgid "Print Command (e.g. lpr, or cat > file.ps)"
 msgstr "Commande d'impression (e.g. lpr ou cat > fichier.ps)"
@@ -1695,7 +1645,6 @@ msgstr "Commande d'impression (e.g. lpr ou cat > fichier.ps)"
 msgid "Restore Handheld"
 msgstr "Restaure le PDA"
 
-#. Label for instructions
 #: restore_gui.c:234
 msgid "To restore your handheld:"
 msgstr "Restaurer votre PDA"
@@ -1749,7 +1698,6 @@ msgstr "Greffons ?"
 msgid "No records found"
 msgstr "Aucun enregistrement trouvé"
 
-#. Create a "Search" button
 #: search_gui.c:499 search_gui.c:549
 msgid "Search"
 msgstr "Recherche"
@@ -2032,7 +1980,6 @@ msgstr "Installation de %s echouée"
 msgid "Failed.\n"
 msgstr "Echoué.\n"
 
-#. the space after the %s is a hack, the last char gets cut off
 #: sync.c:1737
 #, c-format
 msgid "Installed %s "
@@ -2072,7 +2019,6 @@ msgstr "%s:%d Erreur décompactage app info %s\n"
 msgid "Error reading appinfo block for %s\n"
 msgstr "Erreur en lecture bloc appinfo pour %s\n"
 
-#. Fix - need a func for this logging
 #: sync.c:2780 sync.c:2784
 #, c-format
 msgid "Could not add category %s to remote.\n"
@@ -2124,7 +2070,6 @@ msgstr "Priorité hors limite\n"
 msgid "No date"
 msgstr "Sans date"
 
-#. Show Memo Preferences button
 #: todo_gui.c:2043
 msgid "Show Preferences"
 msgstr "Afficher préférences"
@@ -2145,7 +2090,6 @@ msgstr "Cacher les tâches à date non échue"
 msgid "Record Completion Date"
 msgstr "Date de fin de l'enregistrement"
 
-#. The completed check box
 #: todo_gui.c:2193
 msgid "Completed"
 msgstr "Terminé"
@@ -2158,7 +2102,6 @@ msgstr "Priorité : "
 msgid "Date Due:"
 msgstr "Date prévue : "
 
-#. Note textbox
 #: todo_gui.c:2283 Expense/expense.c:1672 KeyRing/keyring.c:1623
 msgid "Note"
 msgstr "Note"
@@ -2166,10 +2109,6 @@ msgstr "Note"
 #: utils.c:72
 msgid " -v displays version and compile options and exits.\n"
 msgstr " -v affiche la version, les options de compilation et sort.\n"
-
-#: utils.c:73
-msgid " -h displays help and exits.\n"
-msgstr " -h afficche l'aide et sort.\n"
 
 #: utils.c:74
 msgid " -d displays debug info to stdout.\n"
@@ -2287,7 +2226,6 @@ msgstr "Sauver nouvel enregistrement ?"
 msgid "Do you want to save this new record?"
 msgstr "Voulez vous sauvegarder ce nouvel enregistrement ?"
 
-#. Not home;
 #: utils.c:1296 KeyRing/keyring.c:1346
 msgid "Can't get HOME environment variable\n"
 msgstr "Ne peut pas récupérer la variable d'environnement HOME\n"
@@ -2296,7 +2234,6 @@ msgstr "Ne peut pas récupérer la variable d'environnement HOME\n"
 msgid "Your HOME environment variable is too long for me\n"
 msgstr "Votre variable d'environnement HOME est trop longue pour moi\n"
 
-#. Can't create directory
 #: utils.c:1328 utils.c:1332
 #, c-format
 msgid "Can't create directory %s\n"
@@ -2333,7 +2270,6 @@ msgstr "Erreur d'ouverture du fichier : next_id\n"
 msgid "Couldn't find empty DB file %s: %s\n"
 msgstr "Ne peut pas trouver la base vide %s : %s.\n"
 
-#. EPN is jpilot, or copilot depending on configure
 #: utils.c:1609
 msgid " may not be installed.\n"
 msgstr " peut ne pas être installé.\n"
@@ -2736,7 +2672,6 @@ msgstr "KeyRing : essai de synchronisation.\n"
 msgid "Account"
 msgstr "Compte"
 
-#. Change Password button
 #: KeyRing/keyring.c:1458
 msgid ""
 "Change\n"
@@ -2747,22 +2682,18 @@ msgstr ""
 "KeyRing\n"
 "Mot de passe"
 
-#. name Entry
 #: KeyRing/keyring.c:1596
 msgid "name: "
 msgstr "nom : "
 
-#. account Entry
 #: KeyRing/keyring.c:1603
 msgid "account: "
 msgstr "compte : "
 
-#. password
 #: KeyRing/keyring.c:1610
 msgid "password: "
 msgstr "Mot de passe : "
 
-#. Button for random password
 #: KeyRing/keyring.c:1616
 msgid "Generate Password"
 msgstr "Génération d'un mot de passe"
