@@ -621,7 +621,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
 
    jp_charset_j2p((unsigned char *)kr.name, strlen(kr.name)+1);
    jp_charset_j2p((unsigned char *)kr.account, strlen(kr.account)+1);
-   jp_charset_j2p((unsigned char *)kr.password, strlen(kr.account)+1);
+   jp_charset_j2p((unsigned char *)kr.password, strlen(kr.password)+1);
    jp_charset_j2p((unsigned char *)kr.note, strlen(kr.note)+1);
 
    pack_KeyRing(&kr, buf, 0xFFFF, &new_size);
