@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.31 2004/10/17 12:00:39 rousseau Exp $
+# $Id: Makefile.am,v 1.32 2004/10/17 13:55:13 rousseau Exp $
 
 SUBDIRS = Expense SyncTime KeyRing docs dialer po m4 empty icons
 
@@ -52,6 +52,7 @@ jpilot_SOURCES = \
 	log.c \
 	log.h \
 	mailer.c \
+	mailer.h \
 	memo.c \
 	memo_gui.c \
 	memo.h \
