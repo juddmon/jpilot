@@ -324,7 +324,7 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y)
 		      "clicked", GTK_SIGNAL_FUNC(cb_remove), filew);
    gtk_widget_show(button);
 
-   button = gtk_button_new_with_label(_("Done"));
+   button = gtk_button_new_with_label(_("Close"));
    gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->ok_button->parent),
 		      button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button),
