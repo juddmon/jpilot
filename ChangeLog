@@ -1,3 +1,13 @@
+0.99.7 - 02/29/04
+ Many bug fixes and small improvements
+ Memo preferences hide-able
+ Rewrote month and weekviews to be faster and resizable
+ Iconify at startup
+ More GTK2 support
+ Added cp1253 support
+ Remember last categories
+ Highlight Overdue Todos
+
 0.99.6 - 07/13/03
  Fixed categies incorrectly syncing on first time use
  Added number of records tooltip to datebook
@@ -5,7 +15,6 @@
  Added a hide not yet due todos button
  Added Record completion date on todos
  bug 637 fix couldn't select start/end times in GTK2
- Added number of records tooltip to datebook
  Fixed bug 610, record dups when pressing page-up/down keys, and removed
   home key from going to today
  Fix DST on import
