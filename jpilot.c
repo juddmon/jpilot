@@ -974,6 +974,9 @@ void cb_about(GtkWidget *widget, gpointer data)
    gdk_window_get_size(window->window, &w, &h);
 
    w = w/2;
+#ifdef ENABLE_GTK2
+   h = 1;
+#endif
 
    g_snprintf(about, sizeof(about), _("About %s"), PN);
 
@@ -1582,6 +1585,10 @@ void cb_payback(GtkWidget *widget, gpointer data)
      ;
      
    gdk_window_get_size(window->window, &w, &h);
+
+#ifdef ENABLE_GTK2
+   h = 2;
+#endif
 
    if (GTK_IS_WINDOW(window)) {
       dialog_generic_with_text(GTK_WINDOW(window), w/2, h*2/3,
