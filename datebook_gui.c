@@ -3959,10 +3959,9 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 		      GTK_SIGNAL_FUNC(cb_weekview), NULL);
    gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 0);
    gtk_widget_show(button);
-
    gtk_label_set_pattern(GTK_LABEL(GTK_BIN(button)->child), "_");
-   gtk_widget_add_accelerator(GTK_WIDGET(button), "clicked", accel_group, 'W',
-			      GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+   gtk_widget_add_accelerator(GTK_WIDGET(button), "clicked", accel_group, *_("W"),
+			      GDK_MOD1_MASK, GTK_ACCEL_VISIBLE);
    gtk_tooltips_set_tip(glob_tooltips, button, _("View appointments by week"), NULL);
 
    /* Make Monthview button */
@@ -3973,8 +3972,8 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_widget_show(button);
 
    gtk_label_set_pattern(GTK_LABEL(GTK_BIN(button)->child), "_");
-   gtk_widget_add_accelerator(GTK_WIDGET(button), "clicked", accel_group, 'M',
-			      GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+   gtk_widget_add_accelerator(GTK_WIDGET(button), "clicked", accel_group, *_("M"),
+			      GDK_MOD1_MASK, GTK_ACCEL_VISIBLE);
    gtk_tooltips_set_tip(glob_tooltips, button, _("View appointments by month"), NULL);
 
 #ifdef ENABLE_DATEBK
