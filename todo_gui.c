@@ -910,6 +910,12 @@ void cb_hide_not_due(GtkWidget *widget,
    todo_clist_redraw();
 }
 
+void cb_todo_completion_date(GtkWidget *widget,
+			     gpointer   data)
+{
+   set_pref(PREF_TODO_COMPLETION_DATE, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
+}
+
 int todo_clear_details()
 {
    time_t ltime;
@@ -946,7 +952,7 @@ int todo_clear_details()
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(todo_no_due_date_checkbox),
 				TRUE);
 
-   memcpy(&due_date, now, sizeof(now));
+   memcpy(&due_date, now, sizeof(struct tm));
 
    gtk_text_thaw(GTK_TEXT(todo_text));
    gtk_text_thaw(GTK_TEXT(todo_text_note));
@@ -974,10 +980,14 @@ int todo_get_details(struct ToDo *new_todo, unsigned char *attrib)
    int i;
 
    new_todo->indefinite = (GTK_TOGGLE_BUTTON(todo_no_due_date_checkbox)->active);
-   if (!new_todo->indefinite) {
+   if (!(new_todo->indefinite)) {
       new_todo->due.tm_mon = due_date.tm_mon;
       new_todo->due.tm_mday = due_date.tm_mday;
       new_todo->due.tm_year = due_date.tm_year;
+      jp_logf(JP_LOG_DEBUG, "todo_get_details: setting due date=%d/%d/%d\n", new_todo->due.tm_mon,
+	      new_todo->due.tm_mday, new_todo->due.tm_year);
+   } else {
+      bzero(&(new_todo->due), sizeof(new_todo->due));
    }
    new_todo->priority=1;
    for (i=0; i<NUM_TODO_PRIORITIES; i++) {
@@ -1290,6 +1300,22 @@ static void cb_clist_selection(GtkWidget      *clist,
    /*If they have clicked on the checkmark box then do a modify */
    if (column==0) {
       todo->complete = !(todo->complete);
+      /* See if we need to mark the due date as the date completed */
+      if (todo->complete) {
+	 long todo_completion_date;
+	 get_pref(PREF_TODO_COMPLETION_DATE, &todo_completion_date, NULL);
+	 if (todo_completion_date) {
+	    time_t ltime;
+	    struct tm *now;
+	    time(&ltime);
+	    now = localtime(&ltime);
+	    memcpy(&due_date, now, sizeof(struct tm));
+	    jp_logf(JP_LOG_DEBUG, "cb_clist_selection: setting due date=%d/%d/%d\n", due_date.tm_mon,
+		    due_date.tm_mday, due_date.tm_year);
+	    update_due_button(due_date_button, NULL);
+	    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(todo_no_due_date_checkbox), FALSE);
+	 }
+      }
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(todo_completed_checkbox), todo->complete);
       gtk_signal_emit_by_name(GTK_OBJECT(apply_record_button), "clicked");
    }
@@ -1634,6 +1660,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    GSList    *group;
    long hide_completed;
    long hide_not_due;
+   long todo_completion_date;
    long ivalue;
    const char *svalue;
    char *titles[]={"","","","",""};
@@ -1712,6 +1739,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    
    get_pref(PREF_HIDE_COMPLETED, &hide_completed, &svalue);
    get_pref(PREF_HIDE_NOT_DUE, &hide_not_due, &svalue);
+   get_pref(PREF_TODO_COMPLETION_DATE, &todo_completion_date, &svalue);
 
 #ifdef ENABLE_MANANA
    /* Ma~nana check box */
@@ -1736,6 +1764,13 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbox), hide_not_due);
    gtk_signal_connect(GTK_OBJECT(checkbox), "clicked",
 		      GTK_SIGNAL_FUNC(cb_hide_not_due), NULL);
+
+   /*The show only due items check box */
+   checkbox = gtk_check_button_new_with_label(_("Record Completion Date"));
+   gtk_box_pack_start(GTK_BOX(vbox1), checkbox, FALSE, FALSE, 0);
+   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbox), todo_completion_date);
+   gtk_signal_connect(GTK_OBJECT(checkbox), "clicked",
+		      GTK_SIGNAL_FUNC(cb_todo_completion_date), NULL);
 
    /*Put the todo list window up */
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
