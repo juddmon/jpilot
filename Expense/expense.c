@@ -1144,7 +1144,7 @@ static void make_menus()
       N_("Denmark"),
       N_("Finland"),
       N_("France"),
-      N_("German"),
+      N_("Germany"),
       N_("Hong Kong."),
       N_("Iceland"), 
       N_("Ireland"),
