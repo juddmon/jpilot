@@ -1320,7 +1320,7 @@ static void cb_add_new_record(GtkWidget *widget,
    }
 }
 
-void clear_details()
+void addr_clear_details()
 {
    int i;
    int new_cat;
@@ -1328,8 +1328,8 @@ void clear_details()
    long use_jos, char_set;
 
    /* Need to disconnect these signals first */
-   set_new_button_to(NEW_FLAG);
    connect_changed_signals(DISCONNECT_SIGNALS);
+   //set_new_button_to(NEW_FLAG);
 
    /* Clear the quickview */
 #ifdef ENABLE_GTK2
@@ -1386,6 +1386,7 @@ void clear_details()
    }
 
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(private_checkbox), FALSE);
+   set_new_button_to(CLEAR_FLAG);
 
    connect_changed_signals(CONNECT_SIGNALS);
 }
@@ -1393,9 +1394,10 @@ void clear_details()
 void cb_address_clear(GtkWidget *widget,
 		      gpointer   data)
 {
-   clear_details();
+   addr_clear_details();
    gtk_notebook_set_page(GTK_NOTEBOOK(notebook), 0);
    gtk_widget_grab_focus(GTK_WIDGET(address_text[0]));
+   set_new_button_to(NEW_FLAG);
 }
 
 /* Attempt to make the best possible string out of whatever garbage we find
@@ -1811,9 +1813,10 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    char *delim1, *delim2;
    char *tmp_delim1, *tmp_delim2;
 
-   row_count=((GtkCList *)clist)->rows;
+   row_count=(GTK_CLIST(clist))->rows;
 
    free_AddressList(&addr_list);
+
 #ifdef JPILOT_DEBUG
     for (i=0;i<NUM_ADDRESS_CAT_ITEMS;i++) {
       jp_logf(JP_LOG_DEBUG, "renamed:[%02d]:\n",address_app_info.category.renamed[i]);
@@ -1834,9 +1837,17 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    jp_logf(JP_LOG_DEBUG, "sortByCompany %d\n",address_app_info.sortByCompany);
 #endif
 
+   /* Need to get all records including private ones for the tooltips calculation */
    num_entries = get_addresses2(&addr_list, SORT_ASCENDING, 2, 2, 1, CATEGORY_ALL);
 
+   /* Start by clearing existing entry */
+   addr_clear_details();
+
    if (addr_list==NULL) {
+      /* Remove row 1 if the last item has just been deleted */
+      if (row_count == 1) {
+         gtk_clist_remove(GTK_CLIST(clist),0);
+      }
       if (tooltip_widget) {
 	 gtk_tooltips_set_tip(glob_tooltips, category_menu1, _("0 records"), NULL);
       }
@@ -2023,8 +2034,8 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
    gtk_clist_thaw(GTK_CLIST(clist));
 
-   sprintf(str, _("%d of %d records"), entries_shown, num_entries);
    if (tooltip_widget) {
+      sprintf(str, _("%d of %d records"), entries_shown, num_entries);
       gtk_tooltips_set_tip(glob_tooltips, category_menu1, str, NULL);
    }
 
@@ -2111,7 +2122,8 @@ int address_clist_redraw()
 			address_category, TRUE);
 
    gtk_clist_select_row(GTK_CLIST(clist), line_num, ADDRESS_NAME_COLUMN);
-   cb_clist_selection(clist, line_num, ADDRESS_NAME_COLUMN, (GdkEventButton *)455, NULL);
+   //cb_clist_selection(clist, line_num, ADDRESS_NAME_COLUMN, (GdkEventButton *)455, NULL);
+   cb_clist_selection(clist, line_num, ADDRESS_NAME_COLUMN, (gpointer)455, NULL);
 
    return 0;
 }
@@ -2772,5 +2784,4 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    address_refresh();
 
    return 0;
-
 }

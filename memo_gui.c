@@ -36,6 +36,7 @@
 
 
 #define MEMO_MAX_COLUMN_LEN 80
+#define MEMO_CLIST_CHAR_WIDTH 50
 
 #define NUM_MEMO_CAT_ITEMS 16
 
@@ -702,8 +703,8 @@ static int memo_clear_details()
    int sorted_position;
 
    jp_logf(JP_LOG_DEBUG, "memo_clear_details()\n");
+
    /* Need to disconnect these signals first */
-   set_new_button_to(NEW_FLAG);
    connect_changed_signals(DISCONNECT_SIGNALS);
 
 #ifdef ENABLE_GTK2
@@ -1009,7 +1010,6 @@ static void cb_clist_selection(GtkWidget      *clist,
 static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 			      MemoList *memo_list, int category, int main)
 {
-#define MEMO_CLIST_CHAR_WIDTH 50
    int num_entries, entries_shown, i;
    int row_count;
    size_t copy_max_length;
@@ -1023,14 +1023,21 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
    jp_logf(JP_LOG_DEBUG, "memo_update_clist()\n");
 
-   row_count=((GtkCList *)clist)->rows;
+   row_count=(GTK_CLIST(clist))->rows;
 
    free_MemoList(&memo_list);
 
-   /* Need to get the private ones back for the hints calculation */
+   /* Need to get all records including private ones for the tooltips calculation */
    num_entries = get_memos2(&memo_list, SORT_ASCENDING, 2, 2, 1, CATEGORY_ALL);
 
+   /* Start by clearing existing entry */
+   memo_clear_details();
+
    if (memo_list==NULL) {
+      /* Remove row 1 if the last item has just been deleted */
+      if (row_count == 1) {
+         gtk_clist_remove(GTK_CLIST(clist),0);
+      }
       if (tooltip_widget) {
 	 gtk_tooltips_set_tip(glob_tooltips, tooltip_widget, _("0 records"), NULL);
       }
@@ -1135,13 +1142,13 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    /*If there is an item in the list, select the first one */
    if ((main) && (entries_shown>0)) {
       gtk_clist_select_row(GTK_CLIST(clist), 0, 0);
-      cb_clist_selection(clist, 0, 0, (gpointer)455, NULL);
+      cb_clist_selection(clist, 0, 0, (GdkEventButton *)455, NULL);
    }
 
    gtk_clist_thaw(GTK_CLIST(clist));
 
-   sprintf(str, _("%d of %d records"), entries_shown, num_entries);
    if (tooltip_widget) {
+      sprintf(str, _("%d of %d records"), entries_shown, num_entries);
       gtk_tooltips_set_tip(glob_tooltips, tooltip_widget, str, NULL);
    }
 
@@ -1485,7 +1492,6 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_widget_hide(apply_record_button);
 
    memo_refresh();
-   memo_find();
 
    return 0;
 }

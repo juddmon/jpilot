@@ -38,6 +38,7 @@
 #include "export.h"
 
 #define TODO_MAX_COLUMN_LEN 80
+#define MAX_RADIO_BUTTON_LEN 100
 
 #define NUM_TODO_PRIORITIES 5
 #define NUM_TODO_CAT_ITEMS 16
@@ -983,7 +984,6 @@ int todo_clear_details()
    now = localtime(&ltime);
 
    /* Need to disconnect these signals first */
-   set_new_button_to(NEW_FLAG);
    connect_changed_signals(DISCONNECT_SIGNALS);
 
    update_due_button(due_date_button, NULL);
@@ -1447,17 +1447,22 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    long hide_not_due;
    int show_priv;
 
-   row_count=((GtkCList *)clist)->rows;
+   row_count=(GTK_CLIST(clist))->rows;
 
    free_ToDoList(&todo_list);
 
-   /* Need to get the private ones back for the hints calculation */
+   /* Need to get all records including private ones for the tooltips calculation */
    num_entries = get_todos2(&todo_list, SORT_ASCENDING, 2, 2, 1, 1, CATEGORY_ALL);
 
-   get_pref(PREF_HIDE_COMPLETED, &hide_completed, NULL);
-   get_pref(PREF_HIDE_NOT_DUE, &hide_not_due, NULL);
-
+   /* Start by clearing existing entry if in main window */
+   if (main) {
+      todo_clear_details();
+   }
    if (todo_list==NULL) {
+      /* Remove row 1 if the last item has just been deleted */
+      if (row_count == 1) {
+         gtk_clist_remove(GTK_CLIST(clist),0);
+      }
       if (tooltip_widget) {
 	 gtk_tooltips_set_tip(glob_tooltips, tooltip_widget, _("0 records"), NULL);
       }
@@ -1465,6 +1470,9 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    }
 
    gtk_clist_freeze(GTK_CLIST(clist));
+
+   get_pref(PREF_HIDE_COMPLETED, &hide_completed, NULL);
+   get_pref(PREF_HIDE_NOT_DUE, &hide_not_due, NULL);
 
    entries_shown=0;
    show_priv = show_privates(GET_PRIVATES);
@@ -1591,8 +1599,8 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
    gtk_clist_thaw(GTK_CLIST(clist));
 
-   sprintf(str, _("%d of %d records"), entries_shown, num_entries);
    if (tooltip_widget) {
+      sprintf(str, _("%d of %d records"), entries_shown, num_entries);
       gtk_tooltips_set_tip(glob_tooltips, tooltip_widget, str, NULL);
    }
 
@@ -1753,8 +1761,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    GtkWidget *prefs_checkbox;
    time_t ltime;
    struct tm *now;
-#define MAX_STR 100
-   char str[MAX_STR];
+   char str[MAX_RADIO_BUTTON_LEN];
    int i;
    int n;
    GSList    *group;
@@ -2114,10 +2121,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_widget_hide(add_record_button);
    gtk_widget_hide(apply_record_button);
 
-   todo_clear_details();
-
    todo_refresh();
-   todo_find();
 
    return 0;
 }
