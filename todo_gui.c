@@ -1272,7 +1272,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 
    if ((!event) && (clist_hack)) return;
 
-   /* HACK */
+   /* HACK, see clist hack explanation in memo_gui.c */
    if (clist_hack) {
       keep=record_changed;
       gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, column);

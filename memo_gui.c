@@ -935,7 +935,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 
    if ((!event) && (clist_hack)) return;
 
-   /* HACK */
+   /* HACK, see clist hack explanation in memo_gui.c */
    if (clist_hack) {
       keep=record_changed;
       gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, column);
@@ -1379,6 +1379,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
 		      GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
    gtk_clist_set_shadow_type(GTK_CLIST(clist), SHADOW);
    /*
+    * clist hack explanation:
     * There is a strange hack here.
     * If a clist is in browse mode and a callback is called on it and then
     * a dialog window is opened (which we do if a record has changed, and we

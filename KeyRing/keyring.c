@@ -341,7 +341,7 @@ set_new_button_to(int new_state)
       /* The line selected on the clist becomes unhighlighted, so we do this */
       gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
       gtk_widget_show(apply_record_button);
-      gtk_widget_hide(copy_record_button);
+      //gtk_widget_hide(copy_record_button);
       gtk_widget_hide(delete_record_button);
       break;
     case NEW_FLAG:
@@ -376,7 +376,7 @@ set_new_button_to(int new_state)
       break;
     case CLEAR_FLAG:
       gtk_widget_hide(new_record_button);
-      gtk_widget_hide(copy_record_button);
+      //gtk_widget_hide(copy_record_button);
       gtk_widget_hide(delete_record_button);
       break;
    }
@@ -887,7 +887,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    if (row<0) {
       return;
    }
-   /* HACK */
+   /* HACK, see clist hack explanation in memo_gui.c */
    if (clist_hack) {
       keep=record_changed;
       gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, column);
