@@ -24,7 +24,7 @@
 static GIConv glob_topda = NULL;
 static GIConv glob_frompda = NULL;
 
-#define HOST_CS "UTF-8"
+#define HOST_CS "UTF-8//IGNORE"
 
 /* You can't do #ifndef __FUNCTION__ */
 #if !defined(__GNUC__) && !defined(__IBMC__)
@@ -162,29 +162,12 @@ unsigned char *other_to_UTF(const unsigned char *buf, int buf_len)
   outbuf = (char *)g_convert_with_iconv((gchar *)buf, oc_strnlen(buf, buf_len),
      glob_frompda, &bytes_read, NULL, &err);
   if (err != NULL) {
-      char c;
-      unsigned char *head, *tail;
-      int outbuf_len;
-      unsigned char *tmp_buf = (unsigned char *)buf;
-
       jp_logf(JP_LOG_WARN, "%s:%s g_convert_with_iconv error: %s, buff: %s\n",
 	      __FILE__, __FUNCTION__, err->message, buf);
       g_error_free(err);
 
-      /* convert the head, skip the problematic char, convert the tail */
-      c = tmp_buf[bytes_read];
-      tmp_buf[bytes_read] = '\0';
-      head = (char *)g_convert_with_iconv((gchar *)tmp_buf, oc_strnlen(tmp_buf,
-	 buf_len), glob_frompda, &bytes_read, NULL, NULL);
-      tmp_buf[bytes_read] = c;
-
-      tail = other_to_UTF(tmp_buf + bytes_read +1, buf_len);
-
-      outbuf_len = strlen(head)+1+strlen(tail)+1;
-      outbuf = g_malloc(outbuf_len);
-      g_strlcpy(outbuf, head, outbuf_len);
-      g_strlcat(outbuf, "+", outbuf_len);
-      g_strlcat(outbuf, tail, outbuf_len);
+      /* return the unconverted text */
+      outbuf = buf;
   }
 
   jp_logf(JP_LOG_DEBUG, "%s:%s converted to [%s]\n", __FILE__, __FUNCTION__,
