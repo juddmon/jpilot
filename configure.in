@@ -5,7 +5,7 @@ AC_INIT(jpilot.c)
 AC_CANONICAL_HOST
 
 dnl Every other copy of the package version number gets its value from here
-AM_INIT_AUTOMAKE(jpilot, 0.99.8-pre5)
+AM_INIT_AUTOMAKE(jpilot, 0.99.8-pre6)
 
 dnl create a config.h file (Automake will add -DHAVE_CONFIG_H)
 AM_CONFIG_HEADER(config.h)

@@ -1,3 +1,8 @@
+0.99.8-pre6 - 27/11/04 (Ludovic Rousseau)
+ Solve the "different user ID sync" bug
+ Solve the GUI "freeze" bug
+ Some more bugs fixed
+
 0.99.8-pre5 - 26/11/04 (Ludovic Rousseau)
  Solve the "undefined symbol: jp_charset_j2p" error
  Fix Japanese menu
