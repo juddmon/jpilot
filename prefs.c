@@ -1,4 +1,4 @@
-/* $Id: prefs.c,v 1.54 2005/01/15 17:00:14 rousseau Exp $ */
+/* $Id: prefs.c,v 1.55 2005/01/21 08:07:50 rousseau Exp $ */
 
 /*******************************************************************************
  * prefs.c
@@ -438,10 +438,10 @@ int get_pref_possibility(int which, int n, char *pref_str)
       "UTF: Latin 2, Estern Europe (ISO8859-2)",
       "UTF: Cyrillic (KOI8-R)",
       "UTF: Cyrillic (CP1251)",
-      "UTF: Chinese (GBK)",
+      "UTF: Simplified Chinese (GBK)",
       "UTF: Japanese (SJIS)",
       "UTF: Hebrew (CP1255)",
-      "UTF: Chinese (BIG-5)",
+      "UTF: Traditional Chinese (BIG-5)",
    };
 
    static const char *paper_sizes[] = {
