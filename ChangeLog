@@ -1,4 +1,6 @@
 0.99.3 - 11/01/02
+ Added Simplified Chinese translation
+ Added Traditional Chinese translation
  Made dialog windows Modal
  Manana support http://bill.sexton.tripod.com/download.htm
  Changed code to keep unique IDs intact.

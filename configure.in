@@ -48,7 +48,7 @@ dnl start gettext
 AC_PROG_INTLTOOL
 
 dnl Set of available languages
-ALL_LINGUAS="ca cs da de es fr it ja nl no sv tr"
+ALL_LINGUAS="ca cs da de es fr it ja nl no sv tr zh_CN zh_TW"
 
 dnl ud_GNU_GETTEXT
 dnl AM_WITH_NLS

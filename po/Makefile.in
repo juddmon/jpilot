@@ -20,7 +20,7 @@ srcdir = .
 top_srcdir = ..
 
 
-prefix = /usr
+prefix = /usr/local
 exec_prefix = ${prefix}
 datadir = ${prefix}/share
 localedir = $(datadir)/locale
@@ -50,14 +50,14 @@ INCLUDES = -I.. -I$(top_srcdir)/intl
 
 COMPILE = $(CC) -c $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS) $(XCFLAGS)
 
-POFILES =  ca.po cs.po da.po de.po es.po fr.po it.po ja.po nl.po no.po sv.po tr.po
-GMOFILES =  ca.gmo cs.gmo da.gmo de.gmo es.gmo fr.gmo it.gmo ja.gmo nl.gmo no.gmo sv.gmo tr.gmo
+POFILES =  ca.po cs.po da.po de.po es.po fr.po it.po ja.po nl.po no.po sv.po tr.po zh_CN.po zh_TW.po
+GMOFILES =  ca.gmo cs.gmo da.gmo de.gmo es.gmo fr.gmo it.gmo ja.gmo nl.gmo no.gmo sv.gmo tr.gmo zh_CN.gmo zh_TW.gmo
 DISTFILES = ChangeLog Makefile.in.in POTFILES.in $(PACKAGE).pot \
 $(POFILES) $(GMOFILES)
 
 POTFILES = \
 
-CATALOGS =  ca.gmo cs.gmo da.gmo de.gmo es.gmo fr.gmo it.gmo ja.gmo nl.gmo no.gmo sv.gmo tr.gmo
+CATALOGS =  ca.gmo cs.gmo da.gmo de.gmo es.gmo fr.gmo it.gmo ja.gmo nl.gmo no.gmo sv.gmo tr.gmo zh_CN.gmo zh_TW.gmo
 
 .SUFFIXES:
 .SUFFIXES: .c .o .po .pox .gmo .mo
