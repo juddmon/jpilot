@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: JPilot\n"
-"POT-Creation-Date: 2003-02-20 19:09-0500\n"
+"POT-Creation-Date: 2003-02-22 09:49-0500\n"
 "PO-Revision-Date: 2001-08-16 14:53GMT+1\n"
 "Last-Translator: Ragnar Wisløff <ragnar@wisloff.no>\n"
 "Language-Team: Norsk bokmål <no@li.org>\n"
@@ -43,7 +43,7 @@ msgstr ""
 #. Buttons
 #: KeyRing/keyring.c:1165 address_gui.c:625 alarms.c:223 datebook_gui.c:627
 #: datebook_gui.c:1103 export_gui.c:330 jpilot.c:352 jpilot.c:399 jpilot.c:467
-#: jpilot.c:511 jpilot.c:962 memo_gui.c:462 password.c:365 restore_gui.c:291
+#: jpilot.c:511 jpilot.c:962 memo_gui.c:462 password.c:364 restore_gui.c:291
 #: todo_gui.c:594 utils.c:1049 utils.c:1188
 msgid "OK"
 msgstr "Greit"
@@ -290,7 +290,7 @@ msgstr ""
 
 #. Create a "Quit" button
 #: KeyRing/keyring.c:1171 datebook_gui.c:1108 datebook_gui.c:1542
-#: export_gui.c:335 password.c:371 print_gui.c:336 restore_gui.c:296
+#: export_gui.c:335 password.c:370 print_gui.c:336 restore_gui.c:296
 #: utils.c:1059
 msgid "Cancel"
 msgstr "Angre"
@@ -944,16 +944,16 @@ msgstr "Månedlig visning"
 msgid "Close"
 msgstr "Lukk"
 
-#: password.c:320
+#: password.c:319
 msgid "Palm Password"
 msgstr "Palm-passord"
 
-#: password.c:345
+#: password.c:344
 #, fuzzy
 msgid "Incorrect, Reenter PalmOS Password"
 msgstr "Angi Palm-passord"
 
-#: password.c:347
+#: password.c:346
 msgid "Enter PalmOS Password"
 msgstr "Angi Palm-passord"
 
