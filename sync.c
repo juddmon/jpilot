@@ -17,7 +17,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "config.h"
+#define PIPE_DEBUG
+
+# include "config.h"
 #include "i18n.h"
 #include <stdlib.h>
 #include <string.h>
@@ -273,8 +275,8 @@ int sync_once(struct my_sync_info *sync_info)
 
    r = jp_sync(sync_info_copy);
    if (r) {
-      write_to_parent(PIPE_PRINT, _("Exiting with status %s\n"), get_error_str(r));
-      write_to_parent(PIPE_PRINT, _("Finished\n"));
+      jp_logf(LOG_WARN, _("Exiting with status %s\n"), get_error_str(r));
+      jp_logf(LOG_WARN, _("Finished\n"));
    }
 #ifdef USE_LOCKING
    sync_unlock(fd);
@@ -319,8 +321,8 @@ static int wait_for_response(int sd)
 
    /* Prevent the palm from timing out */
    pi_watchdog(sd, 7);
-   /* 60 iterations is 60 seconds */
-   for (i=0; i<60; i++) {
+   /* 120 iterations is 2 minutes */
+   for (i=0; i<120; i++) {
 #ifdef PIPE_DEBUG
       printf("child wait_for_response() for\n");
       printf("pipe_from_parent = %d\n", pipe_from_parent);
@@ -331,10 +333,10 @@ static int wait_for_response(int sd)
       FD_ZERO(&fds);
       FD_SET(pipe_from_parent, &fds);
       ret=select(pipe_from_parent+1, &fds, NULL, NULL, &tv);
-      if (ret<0) {
+      /* if (ret<0) {
 	 int err=errno;
-	 write_to_parent(PIPE_PRINT, "sync select %s\n", strerror(err));
-      }
+	 jp_logf(LOG_WARN, "sync select %s\n", strerror(err));
+      }*/
       if (ret==0) continue;
       /* this happens when waiting, probably a signal in pilot-link */
 
@@ -354,7 +356,7 @@ static int wait_for_response(int sd)
 	    int err=errno;
 	    printf("ret<1\n");
 	    printf("read from parent: %s\n", strerror(err));
-	    write_to_parent(PIPE_PRINT, "read from parent %s\n", strerror(err));
+	    jp_logf(LOG_WARN, "read from parent %s\n", strerror(err));
 	    break;
 	 }
 #ifdef PIPE_DEBUG
@@ -437,10 +439,10 @@ int jp_sync(struct my_sync_info *sync_info)
       }
    }
 
-   write_to_parent(PIPE_PRINT, "****************************************\n");
-   write_to_parent(PIPE_PRINT, _(" Syncing on device %s\n"), device);
-   write_to_parent(PIPE_PRINT, _(" Press the HotSync button now\n"));
-   write_to_parent(PIPE_PRINT, "****************************************\n");
+   jp_logf(LOG_GUI, "****************************************\n");
+   jp_logf(LOG_GUI, _(" Syncing on device %s\n"), device);
+   jp_logf(LOG_GUI, _(" Press the HotSync button now\n"));
+   jp_logf(LOG_GUI, "****************************************\n");
 
    /* pilot-link older than 0.9.5 didn't have web clipping flag */
 #if PILOT_LINK_VERSION <= 0
@@ -467,10 +469,7 @@ int jp_sync(struct my_sync_info *sync_info)
    if (sd < 0) {
       int err = errno;
       perror("pi_socket");
-      write_to_parent(PIPE_PRINT, "pi_socket %s\n", strerror(err));
-#ifdef ENABLE_PLUGINS
-      free_plugin_list(&plugin_list);
-#endif
+      jp_logf(LOG_WARN, "pi_socket %s\n", strerror(err));
       return -1;
    }
 
@@ -534,38 +533,29 @@ int jp_sync(struct my_sync_info *sync_info)
    }
    if (ret == -1) {
       perror("pi_bind");
-      write_to_parent(PIPE_PRINT, "pi_bind %s\n", strerror(errno));
-      write_to_parent(PIPE_PRINT, _("Check your serial port and settings\n"));
-#ifdef ENABLE_PLUGINS
-      free_plugin_list(&plugin_list);
-#endif
+      jp_logf(LOG_WARN, "pi_bind %s\n", strerror(errno));
+      jp_logf(LOG_WARN, _("Check your serial port and settings\n"));
       return SYNC_ERROR_BIND;
    }
 
    ret = pi_listen(sd, 1);
    if (ret == -1) {
       perror("pi_listen");
-      write_to_parent(PIPE_PRINT, "pi_listen %s\n", strerror(errno));
-#ifdef ENABLE_PLUGINS
-      free_plugin_list(&plugin_list);
-#endif
+      jp_logf(LOG_WARN, "pi_listen %s\n", strerror(errno));
       return SYNC_ERROR_LISTEN;
    }
 
    sd = pi_accept(sd, 0, 0);
    if(sd == -1) {
       perror("pi_accept");
-      write_to_parent(PIPE_PRINT, "pi_accept %s\n", strerror(errno));
-#ifdef ENABLE_PLUGINS
-      free_plugin_list(&plugin_list);
-#endif
+      jp_logf(LOG_WARN, "pi_accept %s\n", strerror(errno));
       return SYNC_ERROR_PI_ACCEPT;
    }
 
    /* We must do this to take care of the password being required to sync
     * on Palm OS 4.x */
    if (dlp_ReadSysInfo(sd, &sys_info) < 0) {
-      write_to_parent(PIPE_PRINT, "dlp_ReadSysInfo error\n");
+      jp_logf(LOG_WARN, "dlp_ReadSysInfo error\n");
       pi_close(sd);
       return SYNC_ERROR_READSYSINFO;
    }
@@ -596,6 +586,7 @@ int jp_sync(struct my_sync_info *sync_info)
    }
 #endif
 
+   U.username[0]='\0';
    dlp_ReadUserInfo(sd, &U);
 
    /* Do some checks to see if this is the same palm that was synced
@@ -603,10 +594,10 @@ int jp_sync(struct my_sync_info *sync_info)
     */
    if ( (U.userID == 0) &&
       (!(sync_info->flags & SYNC_RESTORE)) ) {
-      write_to_parent(PIPE_PRINT, _("Last Synced Username-->\"%s\"\n"), sync_info->username);
-      write_to_parent(PIPE_PRINT, _("Last Synced UserID-->\"%d\"\n"), sync_info->userID);
-      write_to_parent(PIPE_PRINT, _(" This Username-->\"%s\"\n"), U.username);
-      write_to_parent(PIPE_PRINT, _(" This User ID-->%d\n"), U.userID);
+      jp_logf(LOG_GUI, _("Last Synced Username-->\"%s\"\n"), sync_info->username);
+      jp_logf(LOG_GUI, _("Last Synced UserID-->\"%d\"\n"), sync_info->userID);
+      jp_logf(LOG_GUI, _(" This Username-->\"%s\"\n"), U.username);
+      jp_logf(LOG_GUI, _(" This User ID-->%d\n"), U.userID);
 
       if (sync_info->flags & SYNC_NO_FORK) {
 	 return SYNC_ERROR_NULL_USERID;
@@ -625,10 +616,10 @@ int jp_sync(struct my_sync_info *sync_info)
        (sync_info->userID != 0) &&
        (!(sync_info->flags & SYNC_OVERRIDE_USER)) &&
        (!(sync_info->flags & SYNC_RESTORE))) {
-      write_to_parent(PIPE_PRINT, _("Last Synced Username-->\"%s\"\n"), sync_info->username);
-      write_to_parent(PIPE_PRINT, _("Last Synced UserID-->\"%d\"\n"), sync_info->userID);
-      write_to_parent(PIPE_PRINT, _(" This Username-->\"%s\"\n"), U.username);
-      write_to_parent(PIPE_PRINT, _(" This User ID-->%d\n"), U.userID);
+      jp_logf(LOG_GUI, _("Last Synced Username-->\"%s\"\n"), sync_info->username);
+      jp_logf(LOG_GUI, _("Last Synced UserID-->\"%d\"\n"), sync_info->userID);
+      jp_logf(LOG_GUI, _(" This Username-->\"%s\"\n"), U.username);
+      jp_logf(LOG_GUI, _(" This User ID-->%d\n"), U.userID);
 
       if (sync_info->flags & SYNC_NO_FORK) {
 	 return SYNC_ERROR_NOT_SAME_USERID;
@@ -647,10 +638,10 @@ int jp_sync(struct my_sync_info *sync_info)
        (sync_info->username[0]!='\0') &&
        (!(sync_info->flags & SYNC_OVERRIDE_USER)) &&
        (!(sync_info->flags & SYNC_RESTORE))) {
-      write_to_parent(PIPE_PRINT, _("Last Synced Username-->\"%s\"\n"), sync_info->username);
-      write_to_parent(PIPE_PRINT, _("Last Synced UserID-->\"%d\"\n"), sync_info->userID);
-      write_to_parent(PIPE_PRINT, _(" This Username-->\"%s\"\n"), U.username);
-      write_to_parent(PIPE_PRINT, _(" This User ID-->%d\n"), U.userID);
+      jp_logf(LOG_GUI, _("Last Synced Username-->\"%s\"\n"), sync_info->username);
+      jp_logf(LOG_GUI, _("Last Synced UserID-->\"%d\"\n"), sync_info->userID);
+      jp_logf(LOG_GUI, _(" This Username-->\"%s\"\n"), U.username);
+      jp_logf(LOG_GUI, _(" This User ID-->%d\n"), U.userID);
       write_to_parent(PIPE_WAITING_ON_USER, "%d:\n", SYNC_ERROR_NOT_SAME_USER);
       if (sync_info->flags & SYNC_NO_FORK) {
 	 return SYNC_ERROR_NOT_SAME_USER;
@@ -671,11 +662,11 @@ int jp_sync(struct my_sync_info *sync_info)
    if (!(sync_info->flags & SYNC_RESTORE)) {
       write_to_parent(PIPE_USERNAME, "\"%s\"\n", U.username);
       write_to_parent(PIPE_USERID, "%d", U.userID);
-      write_to_parent(PIPE_PRINT, _("Username is \"%s\"\n"), U.username);
-      write_to_parent(PIPE_PRINT, _("User ID is %d\n"), U.userID);
+      jp_logf(LOG_GUI, _("Username is \"%s\"\n"), U.username);
+      jp_logf(LOG_GUI, _("User ID is %d\n"), U.userID);
    }
-   write_to_parent(PIPE_PRINT, _("lastSyncPC = %d\n"), U.lastSyncPC);
-   write_to_parent(PIPE_PRINT, _("This PC = %lu\n"), sync_info->PC_ID);
+   jp_logf(LOG_GUI, _("lastSyncPC = %d\n"), U.lastSyncPC);
+   jp_logf(LOG_GUI, _("This PC = %lu\n"), sync_info->PC_ID);
    jp_logf(LOG_DEBUG, _("Last Username = [%s]\n"), sync_info->username);
    jp_logf(LOG_DEBUG, _("Last UserID = %d\n"), sync_info->userID);
    jp_logf(LOG_DEBUG, _("Username = [%s]\n"), U.username);
@@ -696,8 +687,8 @@ int jp_sync(struct my_sync_info *sync_info)
 #endif
 
    if (dlp_OpenConduit(sd)<0) {
-      write_to_parent(PIPE_PRINT, _("Sync canceled\n"));
-      write_to_parent(PIPE_PRINT, "dlp_OpenConduit() failed\n");
+      jp_logf(LOG_WARN, _("Sync canceled\n"));
+      jp_logf(LOG_WARN, "dlp_OpenConduit() failed\n");
 #ifdef ENABLE_PLUGINS
       free_plugin_list(&plugin_list);
 #endif
@@ -720,8 +711,8 @@ int jp_sync(struct my_sync_info *sync_info)
       pi_close(sd);
 
       /* Do not translate this text */
-      write_to_parent(PIPE_PRINT, _("Finished restoring handheld.\n"));
-      write_to_parent(PIPE_PRINT, _("You may need to sync to update J-Pilot.\n"));
+      jp_logf(LOG_GUI, _("Finished restoring handheld.\n"));
+      jp_logf(LOG_GUI, _("You may need to sync to update J-Pilot.\n"));
       write_to_parent(PIPE_FINISHED, "\n");
       return 0;
    }
@@ -739,7 +730,7 @@ int jp_sync(struct my_sync_info *sync_info)
    if ( (!(sync_info->flags & SYNC_OVERRIDE_USER)) &&
        (U.lastSyncPC == sync_info->PC_ID) ) {
       fast_sync=1;
-      write_to_parent(PIPE_PRINT, _("Doing a fast sync.\n"));
+      jp_logf(LOG_GUI, _("Doing a fast sync.\n"));
       if (get_pref_int_default(PREF_SYNC_DATEBOOK, 1)) {
 	 /* sync_categories("DatebookDB", sd); */
 	 fast_sync_application("DatebookDB", sd);
@@ -778,7 +769,7 @@ int jp_sync(struct my_sync_info *sync_info)
 #endif
    } else {
       fast_sync=0;
-      write_to_parent(PIPE_PRINT, _("Doing a slow sync.\n"));
+      jp_logf(LOG_GUI, _("Doing a slow sync.\n"));
       if (get_pref_int_default(PREF_SYNC_DATEBOOK, 1)) {
 	 /* sync_categories("DatebookDB", sd); */
 	 slow_sync_application("DatebookDB", sd);
@@ -922,7 +913,7 @@ int jp_sync(struct my_sync_info *sync_info)
 #endif
 
    /* Do not translate this text */
-   write_to_parent(PIPE_PRINT, _("Finished.\n"));
+   jp_logf(LOG_GUI, _("Finished.\n"));
    write_to_parent(PIPE_FINISHED, "\n");
 
    return 0;
@@ -956,7 +947,7 @@ int slow_sync_application(char *DB_name, int sd)
 
    g_snprintf(log_entry, 255, _("Syncing %s\n"), DB_name);
    log_entry[255]='\0';
-   write_to_parent(PIPE_PRINT, log_entry);
+   jp_logf(LOG_GUI, log_entry);
    g_snprintf(pc_filename, 255, "%s.pc3", DB_name);
    /* This is an attempt to use the proper pronoun most of the time */
    if (strchr("aeiou", tolower(DB_name[0]))) {
@@ -981,7 +972,7 @@ int slow_sync_application(char *DB_name, int sd)
 
    pc_in = jp_open_home_file(pc_filename, "r+");
    if (pc_in==NULL) {
-      write_to_parent(PIPE_PRINT, _("Unable to open %s\n"), pc_filename);
+      jp_logf(LOG_WARN, _("Unable to open %s\n"), pc_filename);
       return -1;
    }
    /* Open the applications database, store access handle in db */
@@ -991,13 +982,12 @@ int slow_sync_application(char *DB_name, int sd)
       log_entry[255]='\0';
       charset_j2p(log_entry, 255, char_set);
       dlp_AddSyncLogEntry(sd, log_entry);
-      dlp_AddSyncLogEntry(sd, "\r");
       return -1;
    }
 
 #ifdef JPILOT_DEBUG
    dlp_ReadOpenDBInfo(sd, db, &num);
-   write_to_parent(PIPE_PRINT ,_("number of records = %d\n"), num);
+   jp_logf(LOG_GUI ,_("number of records = %d\n"), num);
 #endif
    while(!feof(pc_in)) {
       num = read_header(pc_in, &header);
@@ -1011,14 +1001,14 @@ int slow_sync_application(char *DB_name, int sd)
       }
       rec_len = header.rec_len;
       if (rec_len > 0x10000) {
-	 write_to_parent(PIPE_PRINT, _("PC file corrupt?\n"));
+	 jp_logf(LOG_WARN, _("PC file corrupt?\n"));
 	 fclose(pc_in);
 	 return -1;
       }
       if ((header.rt==NEW_PC_REC) || (header.rt==REPLACEMENT_PALM_REC)) {
 	 record = malloc(rec_len);
 	 if (!record) {
-	    write_to_parent(PIPE_PRINT, _("slow_sync_application(): Out of memory\n"));
+	    jp_logf(LOG_WARN, _("slow_sync_application(): Out of memory\n"));
 	    break;
 	 }
 	 num = fread(record, rec_len, 1, pc_in);
@@ -1044,17 +1034,17 @@ int slow_sync_application(char *DB_name, int sd)
 	 }
 
 	 if (ret < 0) {
-	    write_to_parent(PIPE_PRINT, _("dlp_WriteRecord failed\n"));
+	    jp_logf(LOG_WARN, _("dlp_WriteRecord failed\n"));
 	    charset_j2p(error_log_message_w,255,char_set);
 	    dlp_AddSyncLogEntry(sd, error_log_message_w);
-	    dlp_AddSyncLogEntry(sd, "\n\r");
+	    dlp_AddSyncLogEntry(sd, "\n");
 	 } else {
 	    charset_j2p(write_log_message,255,char_set);
 	    dlp_AddSyncLogEntry(sd, write_log_message);
-	    dlp_AddSyncLogEntry(sd, "\n\r");
+	    dlp_AddSyncLogEntry(sd, "\n");
 	    /*Now mark the record as deleted in the pc file */
 	    if (fseek(pc_in, -(header.header_len+rec_len), SEEK_CUR)) {
-	       write_to_parent(PIPE_PRINT, _("fseek failed - fatal error\n"));
+	       jp_logf(LOG_WARN, _("fseek failed - fatal error\n"));
 	       fclose(pc_in);
 	       return -1;
 	    }
@@ -1072,7 +1062,7 @@ int slow_sync_application(char *DB_name, int sd)
 	    }
 	 }
 	 if (fseek(pc_in, -rec_len, SEEK_CUR)) {
-	    write_to_parent(PIPE_PRINT, _("fseek failed - fatal error\n"));
+	    jp_logf(LOG_WARN, _("fseek failed - fatal error\n"));
 	    fclose(pc_in);
 	    return -1;
 	 }
@@ -1096,24 +1086,24 @@ int slow_sync_application(char *DB_name, int sd)
 	 /* if (ret>=0 ) {
 	    printf("id %ld, index %d, size %d, attr 0x%x, category %d\n",id, index, size, attr, category);
 	 }
-	 write_to_parent(PIPE_PRINT, "Deleting Palm id=%d,\n",header.unique_id); */
+	 jp_logf(LOG_WARN, "Deleting Palm id=%d,\n",header.unique_id); */
 
 	 ret = dlp_DeleteRecord(sd, db, 0, header.unique_id);
 
 	 if (ret < 0) {
-	    write_to_parent(PIPE_PRINT, "dlp_DeleteRecord failed\n"\
+	    jp_logf(LOG_WARN, "dlp_DeleteRecord failed\n"\
             "This could be because the record was already deleted on the Palm\n");
 	    charset_j2p(error_log_message_d,255,char_set);
 	    dlp_AddSyncLogEntry(sd, error_log_message_d);
-	    dlp_AddSyncLogEntry(sd, "\n\r");
+	    dlp_AddSyncLogEntry(sd, "\n");
 	 } else {
 	    charset_j2p(delete_log_message,255,char_set);
 	    dlp_AddSyncLogEntry(sd, delete_log_message);
-	    dlp_AddSyncLogEntry(sd, "\n\r");
+	    dlp_AddSyncLogEntry(sd, "\n");
 	 }
 	 /*Now mark the record as deleted */
 	 if (fseek(pc_in, -header.header_len, SEEK_CUR)) {
-	    write_to_parent(PIPE_PRINT, _("fseek failed - fatal error\n"));
+	    jp_logf(LOG_WARN, _("fseek failed - fatal error\n"));
 	    fclose(pc_in);
 	    return -1;
 	 }
@@ -1123,7 +1113,7 @@ int slow_sync_application(char *DB_name, int sd)
 
       /*skip this record now that we are done with it */
       if (fseek(pc_in, rec_len, SEEK_CUR)) {
-	 write_to_parent(PIPE_PRINT, _("fseek failed - fatal error\n"));
+	 jp_logf(LOG_WARN, _("fseek failed - fatal error\n"));
 	 fclose(pc_in);
 	 return -1;
       }
@@ -1132,7 +1122,7 @@ int slow_sync_application(char *DB_name, int sd)
 
 #ifdef JPILOT_DEBUG
    dlp_ReadOpenDBInfo(sd, db, &num);
-   write_to_parent(PIPE_PRINT ,"number of records = %d\n", num);
+   jp_logf(LOG_WARN ,"number of records = %d\n", num);
 #endif
 
    dlp_ResetSyncFlags(sd, db);
@@ -1203,27 +1193,26 @@ int fetch_extra_DBs(int sd, char *palm_dbname[])
 
       /* If modification times are the same then we don t need to fetch it */
       if (info.modifyDate == statb.st_mtime) {
-	 write_to_parent(PIPE_PRINT, _("%s (Creator ID '%s') is up to date, fetch skipped.\n"), db_copy_name, creator);
+	 jp_logf(LOG_GUI, _("%s (Creator ID '%s') is up to date, fetch skipped.\n"), db_copy_name, creator);
 	 continue;
       }
 
-      write_to_parent(PIPE_PRINT, _("Fetching '%s' (Creator ID '%s')... "), info.name, creator);
+      jp_logf(LOG_GUI, _("Fetching '%s' (Creator ID '%s')... "), info.name, creator);
 
       info.flags &= 0xff;
 
       pi_fp = pi_file_create(full_name, &info);
 
       if (pi_fp==0) {
-	 write_to_parent(PIPE_PRINT, _("Failed, unable to create file %s\n"), full_name);
+	 jp_logf(LOG_WARN, _("Failed, unable to create file %s\n"), full_name);
 	 continue;
       }
       if (pi_file_retrieve(pi_fp, sd, 0)<0) {
-	 write_to_parent(PIPE_PRINT, _("Failed, unable to back up database\n"));
-	 write_to_parent(PIPE_PRINT, "1\n");//undo
+	 jp_logf(LOG_WARN, _("Failed, unable to back up database\n"));
 	 times.actime = 0;
 	 times.modtime = 0;
       } else {
-	 write_to_parent(PIPE_PRINT, _("OK\n"));
+	 jp_logf(LOG_GUI, _("OK\n"));
 	 times.actime = info.createDate;
 	 times.modtime = info.modifyDate;
       }
@@ -1419,7 +1408,7 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
       jp_logf(LOG_DEBUG, "dbname = %s\n",info.name);
       jp_logf(LOG_DEBUG, "exclude from sync = %d\n",info.miscFlags & dlpDBMiscFlagExcludeFromSync);
       jp_logf(LOG_DEBUG, "flag backup = %d\n",info.flags & dlpDBFlagBackup);
-      /*write_to_parent(PIPE_PRINT, "type = %x\n",info.type);*/
+      /*jp_logf(LOG_DEBUG, "type = %x\n",info.type);*/
       jp_logf(LOG_DEBUG, "Creator ID = [%s]\n", creator);
 #endif
       if (flags & SYNC_FULL_BACKUP) {
@@ -1462,7 +1451,7 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
 	    }
 	 }
 	 if (manual_skip) {
-	    write_to_parent(PIPE_PRINT, _("Skipping %s (Creator ID '%s')\n"), info.name, creator);
+	    jp_logf(LOG_GUI, _("Skipping %s (Creator ID '%s')\n"), info.name, creator);
 	    continue;
 	 }
       }
@@ -1539,33 +1528,32 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
       }
       stat(file_name, &statb);
 #ifdef JPILOT_DEBUG
-      write_to_parent(PIPE_PRINT, "palm dbtime= %d, local dbtime = %d\n", info.modifyDate, statb.st_mtime);
-      write_to_parent(PIPE_PRINT, "flags=0x%x\n", info.flags);
-      write_to_parent(PIPE_PRINT, "backup_flag=%d\n", info.flags & dlpDBFlagBackup);
+      jp_logf(LOG_GUI, "palm dbtime= %d, local dbtime = %d\n", info.modifyDate, statb.st_mtime);
+      jp_logf(LOG_GUI, "flags=0x%x\n", info.flags);
+      jp_logf(LOG_GUI, "backup_flag=%d\n", info.flags & dlpDBFlagBackup);
 #endif
       /* If modification times are the same then we don t need to fetch it */
       if (info.modifyDate == statb.st_mtime) {
-	 write_to_parent(PIPE_PRINT, _("%s (Creator ID '%s') is up to date, fetch skipped.\n"), db_copy_name, creator);
+	 jp_logf(LOG_GUI, _("%s (Creator ID '%s') is up to date, fetch skipped.\n"), db_copy_name, creator);
 	 continue;
       }
 
-      write_to_parent(PIPE_PRINT, _("Fetching '%s' (Creator ID '%s')... "), info.name, creator);
+      jp_logf(LOG_GUI, _("Fetching '%s' (Creator ID '%s')... "), info.name, creator);
 
       info.flags &= 0xff;
 
       pi_fp = pi_file_create(file_name, &info);
       if (pi_fp==0) {
-	 write_to_parent(PIPE_PRINT, "Failed, unable to create file %s\n",
+	 jp_logf(LOG_WARN, "Failed, unable to create file %s\n",
 		main_app ? full_name : full_backup_name);
 	 continue;
       }
       if (pi_file_retrieve(pi_fp, sd, 0)<0) {
-	 write_to_parent(PIPE_PRINT, "Failed, unable to back up database\n");
-	 write_to_parent(PIPE_PRINT, "2\n");//undo
+	 jp_logf(LOG_WARN, "Failed, unable to back up database\n");
 	 times.actime = 0;
 	 times.modtime = 0;
       } else {
-	 write_to_parent(PIPE_PRINT, _("OK\n"));
+	 jp_logf(LOG_GUI, _("OK\n"));
 	 times.actime = info.createDate;
 	 times.modtime = info.modifyDate;
       }
@@ -1614,10 +1602,10 @@ static int sync_install(char *filename, int sd)
       Pc++;
    }
 
-   write_to_parent(PIPE_PRINT, _("Installing %s "), Pc);
+   jp_logf(LOG_GUI, _("Installing %s "), Pc);
    f = pi_file_open(filename);
    if (f==0) {
-      write_to_parent(PIPE_PRINT, _("\nUnable to open '%s'!\n"), filename);
+      jp_logf(LOG_WARN, _("\nUnable to open '%s'!\n"), filename);
       return -1;
    }
    bzero(&info, sizeof(info));
@@ -1627,7 +1615,7 @@ static int sync_install(char *filename, int sd)
    creator[2] = (info.creator & 0x0000FF00) >> 8,
    creator[3] = (info.creator & 0x000000FF);
    creator[4] = '\0';
-   write_to_parent(PIPE_PRINT, _("(Creator ID is '%s')..."), creator);
+   jp_logf(LOG_GUI, _("(Creator ID is '%s')..."), creator);
 
    r = pi_file_install(f, sd, 0);
    if (r<0) {
@@ -1672,8 +1660,9 @@ static int sync_install(char *filename, int sd)
       log_entry[255]='\0';
       charset_j2p(log_entry, 255, char_set);
       dlp_AddSyncLogEntry(sd, log_entry);
-      dlp_AddSyncLogEntry(sd, "\n\r");;
-      write_to_parent(PIPE_PRINT, _("Failed.\n"));
+      dlp_AddSyncLogEntry(sd, "\n");;
+      jp_logf(LOG_GUI, _("Failed.\n"));
+      jp_logf(LOG_WARN, log_entry);
       pi_file_close(f);
       return -1;
    }
@@ -1683,8 +1672,8 @@ static int sync_install(char *filename, int sd)
       log_entry[255]='\0';
       charset_j2p(log_entry, 255, char_set);
       dlp_AddSyncLogEntry(sd, log_entry);
-      dlp_AddSyncLogEntry(sd, "\n\r");;
-      write_to_parent(PIPE_PRINT, _("OK\n"));
+      dlp_AddSyncLogEntry(sd, "\n");;
+      jp_logf(LOG_GUI, _("OK\n"));
    }
    pi_file_close(f);
 
@@ -1704,13 +1693,13 @@ static int sync_process_install_file(int sd)
 
    in = jp_open_home_file(EPN"_to_install", "r");
    if (!in) {
-      write_to_parent(PIPE_PRINT, _("Cannot open "EPN"_to_install file\n"));
+      jp_logf(LOG_WARN, _("Cannot open "EPN"_to_install file\n"));
       return -1;
    }
 
    out = jp_open_home_file(EPN"_to_install.tmp", "w");
    if (!out) {
-      write_to_parent(PIPE_PRINT, _("Cannot open "EPN"_to_install.tmp file\n"));
+      jp_logf(LOG_WARN, _("Cannot open "EPN"_to_install.tmp file\n"));
       fclose(in);
       return -1;
    }
@@ -1997,7 +1986,7 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
    }
    pc_in = jp_open_home_file(pc_filename, "r+");
    if (pc_in==NULL) {
-      write_to_parent(PIPE_PRINT, _("Unable to open %s\n"), pc_filename);
+      jp_logf(LOG_WARN, _("Unable to open %s\n"), pc_filename);
       return -1;
    }
 
@@ -2013,7 +2002,7 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
       }
       rec_len = header.rec_len;
       if (rec_len > 0x10000) {
-	 write_to_parent(PIPE_PRINT, _("PC file corrupt?\n"));
+	 jp_logf(LOG_WARN, _("PC file corrupt?\n"));
 	 fclose(pc_in);
 	 return -1;
       }
@@ -2022,7 +2011,7 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
 	 jp_logf(LOG_DEBUG, "new pc record\n");
 	 record = malloc(rec_len);
 	 if (!record) {
-	    write_to_parent(PIPE_PRINT, _("fast_sync_local_recs(): Out of memory\n"));
+	    jp_logf(LOG_WARN, _("fast_sync_local_recs(): Out of memory\n"));
 	    break;
 	 }
 	 num = fread(record, rec_len, 1, pc_in);
@@ -2065,17 +2054,17 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
 	 }
 
 	 if (ret < 0) {
-	    write_to_parent(PIPE_PRINT, _("dlp_WriteRecord failed\n"));
+	    jp_logf(LOG_WARN, _("dlp_WriteRecord failed\n"));
 	    charset_j2p(error_log_message_w,255,char_set);
 	    dlp_AddSyncLogEntry(sd, error_log_message_w);
-	    dlp_AddSyncLogEntry(sd, "\n\r");
+	    dlp_AddSyncLogEntry(sd, "\n");
 	 } else {
 	    charset_j2p(write_log_message,255,char_set);
 	    dlp_AddSyncLogEntry(sd, write_log_message);
-	    dlp_AddSyncLogEntry(sd, "\n\r");
+	    dlp_AddSyncLogEntry(sd, "\n");
 	    /* Now mark the record as deleted in the pc file */
 	    if (fseek(pc_in, -(header.header_len+rec_len), SEEK_CUR)) {
-	       write_to_parent(PIPE_PRINT, _("fseek failed - fatal error\n"));
+	       jp_logf(LOG_WARN, _("fseek failed - fatal error\n"));
 	       fclose(pc_in);
 	       return -1;
 	    }
@@ -2102,7 +2091,7 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
 	    }
 	 }
 	 if (fseek(pc_in, -rec_len, SEEK_CUR)) {
-	    write_to_parent(PIPE_PRINT, _("fseek failed - fatal error\n"));
+	    jp_logf(LOG_WARN, _("fseek failed - fatal error\n"));
 	    fclose(pc_in);
 	    return -1;
 	 }
@@ -2127,25 +2116,25 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
 	     * I have not tested it since I fixed it */
 	    /* if (memcmp(record, Pbuf, size)==0)
 	    jp_logf(LOG_DEBUG,"Binary is the same!\n"); */
-	    /* write_to_parent(PIPE_PRINT, "Deleting Palm id=%d,\n",header.unique_id);*/
+	    /* jp_logf(LOG_GUI, "Deleting Palm id=%d,\n",header.unique_id);*/
 	    ret = dlp_DeleteRecord(sd, db, 0, header.unique_id);
 	    if (ret < 0) {
-	       write_to_parent(PIPE_PRINT, _("dlp_DeleteRecord failed\n"
+	       jp_logf(LOG_WARN, _("dlp_DeleteRecord failed\n"
 		      "This could be because the record was already deleted on the Palm\n"));
 	       charset_j2p(error_log_message_d,255,char_set);
 	       dlp_AddSyncLogEntry(sd, error_log_message_d);
-	       dlp_AddSyncLogEntry(sd, "\n\r");
+	       dlp_AddSyncLogEntry(sd, "\n");
 	    } else {
 	       charset_j2p(delete_log_message,255,char_set);
 	       dlp_AddSyncLogEntry(sd, delete_log_message);
-	       dlp_AddSyncLogEntry(sd, "\n\r");
+	       dlp_AddSyncLogEntry(sd, "\n");
 	       pdb_file_delete_record_by_id(DB_name, header.unique_id);
 	    }
 	 }
 
 	 /*Now mark the record as deleted */
 	 if (fseek(pc_in, -header.header_len, SEEK_CUR)) {
-	    write_to_parent(PIPE_PRINT, _("fseek failed - fatal error\n"));
+	    jp_logf(LOG_WARN, _("fseek failed - fatal error\n"));
 	    fclose(pc_in);
 	    return -1;
 	 }
@@ -2155,7 +2144,7 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
 
       /*skip this record now that we are done with it */
       if (fseek(pc_in, rec_len, SEEK_CUR)) {
-	 write_to_parent(PIPE_PRINT, _("fseek failed - fatal error\n"));
+	 jp_logf(LOG_WARN, _("fseek failed - fatal error\n"));
 	 fclose(pc_in);
 	 return -1;
       }
@@ -2359,7 +2348,7 @@ int fast_sync_application(char *DB_name, int sd)
    }
    g_snprintf(log_entry, 255, _("Syncing %s\n"), DB_name);
    log_entry[255]='\0';
-   write_to_parent(PIPE_PRINT, log_entry);
+   jp_logf(LOG_GUI, log_entry);
 
    /* This is an attempt to use the proper pronoun most of the time */
    if (strchr("aeiou", tolower(DB_name[0]))) {
@@ -2388,7 +2377,6 @@ int fast_sync_application(char *DB_name, int sd)
       log_entry[255]='\0';
       charset_j2p(log_entry, 255, char_set);
       dlp_AddSyncLogEntry(sd, log_entry);
-      dlp_AddSyncLogEntry(sd, "\r");
       return -1;
    }
 
