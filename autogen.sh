@@ -1,4 +1,4 @@
-# $Id: autogen.sh,v 1.3 2002/12/11 22:14:43 judd Exp $
+# $Id: autogen.sh,v 1.4 2002/12/20 18:11:58 judd Exp $
 
 rm -f configure Makefile.in Makefile config.h.in
 aclocal
@@ -12,8 +12,8 @@ automake --add-missing --foreign
 autoconf
 
 if test x$NOCONFIGURE = x; then
-  echo Running $srcdir/configure $conf_flags "$@" ...
-  configure $conf_flags "$@" \
+  echo Running configure $conf_flags "$@" ...
+  ./configure $conf_flags "$@" \
   && echo Now type \make\' to compile $PKG_NAME || exit 1
 else
   echo Skipping configure process.
