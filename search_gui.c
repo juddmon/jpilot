@@ -97,14 +97,15 @@ static int search_datebook(const char *needle, GtkWidget *clist)
    for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
       found = 0;
       if ( (temp_al->mappt.appt.description) &&
-	  (temp_al->mappt.appt.description[0]) ) {
+	   (temp_al->mappt.appt.description[0]) ) {
 	 if ( jp_strstr(temp_al->mappt.appt.description, needle,
 	      GTK_TOGGLE_BUTTON(case_sense_checkbox)->active) ) {
 	    found = 1;
 	 }
       }
-      if ( (temp_al->mappt.appt.note) &&
-	  (temp_al->mappt.appt.note[0]) ) {
+      if ( !found &&
+           (temp_al->mappt.appt.note) &&
+	   (temp_al->mappt.appt.note[0]) ) {
 	 if ( jp_strstr(temp_al->mappt.appt.note, needle,
 	      GTK_TOGGLE_BUTTON(case_sense_checkbox)->active) ) {
 	    found = 2;
@@ -213,6 +214,7 @@ static int search_address(const char *needle, GtkWidget *clist)
 	 }
       }
    }
+
    jp_logf(JP_LOG_DEBUG, "calling free_AddressList\n");
    free_AddressList(&a_list);
    a_list = NULL;
@@ -242,14 +244,15 @@ static int search_todo(const char *needle, GtkWidget *clist)
    for (temp_todo = todo_list; temp_todo; temp_todo=temp_todo->next) {
       found = 0;
       if ( (temp_todo->mtodo.todo.description) &&
-	  (temp_todo->mtodo.todo.description[0]) ) {
+	   (temp_todo->mtodo.todo.description[0]) ) {
 	 if ( jp_strstr(temp_todo->mtodo.todo.description, needle,
 			    GTK_TOGGLE_BUTTON(case_sense_checkbox)->active) ) {
 	    found = 1;
 	 }
       }
-      if ( (temp_todo->mtodo.todo.note) &&
-	  (temp_todo->mtodo.todo.note[0]) ) {
+      if ( !found &&
+           (temp_todo->mtodo.todo.note) &&
+	   (temp_todo->mtodo.todo.note[0]) ) {
 	 if ( jp_strstr(temp_todo->mtodo.todo.note, needle,
 			    GTK_TOGGLE_BUTTON(case_sense_checkbox)->active) ) {
 	    found = 2;
@@ -280,6 +283,7 @@ static int search_todo(const char *needle, GtkWidget *clist)
 	 }
       }
    }
+
    jp_logf(JP_LOG_DEBUG, "calling free_ToDoList\n");
    free_ToDoList(&todo_list);
    todo_list = NULL;
@@ -328,6 +332,7 @@ static int search_memo(const char *needle, GtkWidget *clist)
 	 count++;
       }
    }
+
    jp_logf(JP_LOG_DEBUG, "calling free_MemoList\n");
    free_MemoList(&memo_list);
    memo_list = NULL;
