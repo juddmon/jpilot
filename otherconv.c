@@ -167,7 +167,7 @@ unsigned char *other_to_UTF(const unsigned char *buf, int buf_len)
       g_error_free(err);
 
       /* return the unconverted text */
-      outbuf = buf;
+      outbuf = g_strdup(buf);
   }
 
   jp_logf(JP_LOG_DEBUG, "%s:%s converted to [%s]\n", __FILE__, __FUNCTION__,
