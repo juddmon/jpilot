@@ -4246,6 +4246,9 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 		      GTK_SIGNAL_FUNC(cb_delete_appt),
 		      GINT_TO_POINTER(DELETE_FLAG));
    gtk_box_pack_start(GTK_BOX(hbox_temp), delete_record_button, TRUE, TRUE, 0);
+   gtk_widget_add_accelerator(delete_record_button, "clicked", accel_group,
+	 GDK_d, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+   gtk_tooltips_set_tip(glob_tooltips, delete_record_button, _("Delete the selected record   Ctrl+D"), NULL);
 
    /* Create "Undelete" button */
    undelete_record_button = gtk_button_new_with_label(_("Undelete"));
@@ -4260,6 +4263,9 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 		      GTK_SIGNAL_FUNC(cb_add_new_record), 
 		      GINT_TO_POINTER(COPY_FLAG));
    gtk_box_pack_start(GTK_BOX(hbox_temp), copy_record_button, TRUE, TRUE, 0);
+   gtk_widget_add_accelerator(copy_record_button, "clicked", accel_group, GDK_o,
+      GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+   gtk_tooltips_set_tip(glob_tooltips, copy_record_button, _("Copy the record   Ctrl+O"), NULL);
 
    /* Create "New" button */
    new_record_button = gtk_button_new_with_label(_("New Record"));
@@ -4267,6 +4273,9 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 		      GTK_SIGNAL_FUNC(cb_add_new_record),
 		      GINT_TO_POINTER(CLEAR_FLAG));
    gtk_box_pack_start(GTK_BOX(hbox_temp), new_record_button, TRUE, TRUE, 0);
+   gtk_widget_add_accelerator(new_record_button, "clicked", accel_group, GDK_n,
+      GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+   gtk_tooltips_set_tip(glob_tooltips, new_record_button, _("Add a new record   Ctrl+N"), NULL);
 
    /* Create "Add Record" button */
    add_record_button = gtk_button_new_with_label(_("Add Record"));
@@ -4276,6 +4285,9 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_box_pack_start(GTK_BOX(hbox_temp), add_record_button, TRUE, TRUE, 0);
    gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(GTK_BIN(add_record_button)->child)),
 		       "label_high");
+   gtk_widget_add_accelerator(add_record_button, "clicked", accel_group,
+      GDK_r, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+   gtk_tooltips_set_tip(glob_tooltips, add_record_button, _("Add the new record   Ctrl+R"), NULL);
 
    /* Create "apply changes" button */
    apply_record_button = gtk_button_new_with_label(_("Apply Changes"));
@@ -4285,6 +4297,9 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_box_pack_start(GTK_BOX(hbox_temp), apply_record_button, TRUE, TRUE, 0);
    gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(GTK_BIN(apply_record_button)->child)),
 		       "label_high");
+   gtk_widget_add_accelerator(apply_record_button, "clicked", accel_group,
+      GDK_Return, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+   gtk_tooltips_set_tip(glob_tooltips, apply_record_button, _("Commit the modifications   Ctrl+Enter"), NULL);
 
 
    /* start details */
