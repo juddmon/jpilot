@@ -96,8 +96,6 @@ GtkWidget *address_cat_menu_item1[NUM_ADDRESS_CAT_ITEMS+1];
 GtkWidget *address_cat_menu_item2[NUM_ADDRESS_CAT_ITEMS];
 static GtkWidget *category_menu1;
 static GtkWidget *category_menu2;
-//undo VV shouldnt be global anymore
-static GtkWidget *scrolled_window;
 GtkWidget *address_quickfind_entry;
 static GtkWidget *notebook;
 static GtkWidget *pane;
@@ -2241,6 +2239,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 {
    extern GtkWidget *glob_date_label;
    extern int glob_date_timer_tag;
+   GtkWidget *scrolled_window;
    GtkWidget *pixmapwid;
    GdkPixmap *pixmap;
    GdkBitmap *mask;

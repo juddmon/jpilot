@@ -59,7 +59,6 @@ static GtkWidget *memo_cat_menu_item1[NUM_MEMO_CAT_ITEMS+1];
 static GtkWidget *memo_cat_menu_item2[NUM_MEMO_CAT_ITEMS];
 static GtkWidget *category_menu1;
 static GtkWidget *category_menu2;
-static GtkWidget *scrolled_window;
 static GtkWidget *pane;
 static struct sorted_cats sort_l[NUM_MEMO_CAT_ITEMS];
 static GtkWidget *new_record_button;
@@ -1214,6 +1213,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    extern GtkWidget *glob_date_label;
    extern int glob_date_timer_tag;
    int i;
+   GtkWidget *scrolled_window;
    GtkWidget *vbox1, *vbox2, *hbox_temp;
    GtkWidget *separator;
    GtkWidget *button;
@@ -1331,6 +1331,9 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_clist_set_column_width(GTK_CLIST(clist), 0, 50);
 
    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
+
+   /* The focus doesn't do any good on the application button */
+   gtk_widget_grab_focus(GTK_WIDGET(clist));
 
    /*
     * The right hand part of the main window follows:

@@ -74,7 +74,6 @@ static GtkWidget *apply_record_button;
 static GtkWidget *add_record_button;
 static GtkWidget *category_menu1;
 static GtkWidget *category_menu2;
-static GtkWidget *scrolled_window;
 static GtkWidget *pane;
 
 static ToDoList *glob_todo_list=NULL;
@@ -1583,6 +1582,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 {
    extern GtkWidget *glob_date_label;
    extern int glob_date_timer_tag;
+   GtkWidget *scrolled_window;
    GtkWidget *pixmapwid;
    GdkPixmap *pixmap;
    GdkBitmap *mask;
@@ -1730,6 +1730,9 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), TODO_TEXT_COLUMN, FALSE);
 
    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
+
+   /* The focus doesn't do any good on the application button */
+   gtk_widget_grab_focus(GTK_WIDGET(clist));
 
    /* */
    /* The right hand part of the main window follows: */

@@ -3660,6 +3660,8 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 				GTK_CALENDAR_SHOW_WEEK_NUMBERS | fdow);
    gtk_box_pack_start(GTK_BOX(hbox_temp), main_calendar, FALSE, FALSE, 0);
 
+   /* The focus doesn't do any good on the application button */
+   gtk_widget_grab_focus(GTK_WIDGET(main_calendar));
 
    /* Make accelerators for some buttons window */
    accel_group=NULL;
