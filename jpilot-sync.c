@@ -82,6 +82,7 @@ int main(int argc, char *argv[])
 
    pipe_from_parent=STDIN_FILENO;
    pipe_to_parent=STDOUT_FILENO;
+   glob_log_stdout_mask = LOG_INFO | LOG_WARN | LOG_FATAL | LOG_STDOUT;
 
    for (i=1; i<argc; i++) {
       if (!strncasecmp(argv[i], "-v", 2)) {
