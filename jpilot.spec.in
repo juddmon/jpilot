@@ -106,6 +106,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man1/jpilot.1.gz
 %{_mandir}/man1/jpilot-dial.1.gz
 %{_mandir}/man1/jpilot-sync.1.gz
+%{_mandir}/man1/jpilot-dump.1.gz
+%{_mandir}/man1/jpilot-upgrade-99.1.gz
 %{prefix}/share/pixmaps/*
 %{_datadir}/gnome/apps/Applications/jpilot.desktop
 

@@ -1,7 +1,7 @@
-# $Id: Makefile.am,v 1.5 2004/02/22 20:34:29 judd Exp $
+# $Id: Makefile.am,v 1.6 2004/02/29 23:04:31 judd Exp $
 
 # install the man pages
-man_MANS = jpilot.1 jpilot-dial.1 jpilot-sync.1 jpilot-upgrade-99.1
+man_MANS = jpilot.1 jpilot-dial.1 jpilot-sync.1 jpilot-dump.1 jpilot-upgrade-99.1
 
 # install the manual docs
 docdir = $(prefix)/share/doc/$(PACKAGE)-$(VERSION)
