@@ -20,6 +20,7 @@
 #include "config.h"
 #include "i18n.h"
 #include <gtk/gtk.h>
+#include <gdk/gdkkeysyms.h>
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
@@ -45,6 +46,7 @@ static struct search_record *search_rl = NULL;
 static GtkWidget *case_sense_checkbox;
 static GtkWidget *window = NULL;
 static GtkWidget *entry = NULL;
+static GtkAccelGroup *accel_group = NULL;
 
 static int
   search_datebook(const char *needle, GtkWidget *clist)
@@ -502,6 +504,9 @@ void cb_search_gui(GtkWidget *widget, gpointer data)
    gtk_signal_connect(GTK_OBJECT(window), "destroy",
                       GTK_SIGNAL_FUNC(cb_destroy), window);
 
+   accel_group = gtk_accel_group_new();
+   gtk_window_add_accel_group(GTK_WINDOW(window), accel_group);
+
    vbox = gtk_vbox_new(FALSE, 0);
    gtk_container_add(GTK_CONTAINER(window), vbox);
 
@@ -556,6 +561,7 @@ void cb_search_gui(GtkWidget *widget, gpointer data)
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_quit), window);
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
+   gtk_widget_add_accelerator(button, "clicked", accel_group, GDK_Escape, 0, 0);
 
    gtk_widget_show_all(window);
 }
