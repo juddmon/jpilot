@@ -2,9 +2,17 @@ PACKAGE=@PACKAGE@
 VERSION=@VERSION@
 ARCH=i386
 RELEASE=1
+#
+mkdir install
+cp description-pak install/description
+echo "cat /install/description" > install/doinst.sh
+#
 tar czvf $PACKAGE-$VERSION-$ARCH-$RELEASE.tgz \
+install/description \
+install/doinst.sh \
 /usr/bin/jpilot \
 /usr/bin/jpilot-dump \
+/usr/bin/jpilot-dial \
 /usr/bin/jpilot-sync \
 /usr/lib/jpilot/plugins/libexpense.la \
 /usr/lib/jpilot/plugins/libexpense.so \
@@ -20,6 +28,7 @@ tar czvf $PACKAGE-$VERSION-$ARCH-$RELEASE.tgz \
 /usr/lib/jpilot/plugins/libkeyring.so.0.0.0 \
 /usr/man/man1/jpilot.1 \
 /usr/man/man1/jpilot-dial.1 \
+/usr/man/man1/jpilot-upgrade-99.1 \
 /usr/man/man1/jpilot-sync.1 \
 /usr/doc/$PACKAGE-$VERSION/AUTHORS \
 /usr/doc/$PACKAGE-$VERSION/BUGS \
@@ -67,8 +76,13 @@ tar czvf $PACKAGE-$VERSION-$ARCH-$RELEASE.tgz \
 /usr/share/locale/ja/LC_MESSAGES/jpilot.mo \
 /usr/share/locale/nl/LC_MESSAGES/jpilot.mo \
 /usr/share/locale/no/LC_MESSAGES/jpilot.mo \
+/usr/share/locale/ru/LC_MESSAGES/jpilot.mo \
 /usr/share/locale/sv/LC_MESSAGES/jpilot.mo \
 /usr/share/locale/tr/LC_MESSAGES/jpilot.mo \
 /usr/share/locale/vi/LC_MESSAGES/jpilot.mo \
 /usr/share/locale/zh_CN/LC_MESSAGES/jpilot.mo \
 /usr/share/locale/zh_TW/LC_MESSAGES/jpilot.mo
+#
+rm install/description
+rm install/doinst.sh
+rmdir install
