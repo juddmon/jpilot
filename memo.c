@@ -198,6 +198,8 @@ int get_memo_app_info(struct MemoAppInfo *ai)
    long ivalue;
 
    bzero(ai, sizeof(*ai));
+   /* Put at least one entry in there */
+   strcpy(ai->category.name[0], "Unfiled");
 
    get_pref(PREF_MEMO32_MODE, &ivalue, NULL);
    if (ivalue) {
@@ -210,7 +212,7 @@ int get_memo_app_info(struct MemoAppInfo *ai)
       free(buf);
    }
    if (num <= 0) {
-      jpilot_logf(LOG_WARN, _("Error reading"), "MemoDB.pdb");
+      jpilot_logf(LOG_WARN, _("Error reading %s\n"), "MemoDB.pdb");
       return -1;
    }
 

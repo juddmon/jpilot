@@ -278,6 +278,8 @@ int get_address_app_info(struct AddressAppInfo *ai)
    long char_set;
 
    bzero(ai, sizeof(*ai));
+   /* Put at least one entry in there */
+   strcpy(ai->category.name[0], "Unfiled");
 
    jp_get_app_info("AddressDB", &buf, &rec_size);
    num = unpack_AddressAppInfo(ai, buf, rec_size);
@@ -285,7 +287,7 @@ int get_address_app_info(struct AddressAppInfo *ai)
       free(buf);
    }
    if (num <= 0) {
-      jpilot_logf(LOG_WARN, _("Error reading"), "AddressDB.pdb");
+      jpilot_logf(LOG_WARN, _("Error reading %s\n"), "AddressDB.pdb");
       return -1;
    }
 
