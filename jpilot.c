@@ -547,9 +547,12 @@ void cb_export(GtkWidget *widget, gpointer data)
 static void cb_private(GtkWidget *widget, gpointer data)
 {
    int privates, was_privates;
+   int r_dialog;
+#ifdef ENABLE_PRIVATE
    char ascii_password[64];
-   int r_pass, r_dialog;
+   int r_pass;
    int retry;
+#endif
 
    was_privates = privates = show_privates(GET_PRIVATES);
 
@@ -1827,11 +1830,9 @@ char *xpm_unlocked[] = {
    gtk_tooltips_set_tip(glob_tooltips, button_unlocked,
 			_("Mask private records"), NULL);
 
-#ifdef ENABLE_PRIVATE
    /*Separator */
    separator = gtk_hseparator_new();
    gtk_box_pack_start(GTK_BOX(g_vbox0), separator, FALSE, TRUE, 5);
-#endif
 
    /* Create "Quit" button */
    button = gtk_button_new_with_label(_("Quit!"));
