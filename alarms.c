@@ -283,6 +283,7 @@ int dialog_alarm(char *title, char *frame_text,
 time_t mktime_dst_adj(struct tm *tm)
 {
    struct tm t;
+
    memcpy(&t, tm, sizeof(t));
    t.tm_isdst=-1;
    return mktime(&t);
@@ -888,6 +889,14 @@ static int find_prev_next(struct Appointment *a,
    t.tm_min=a->begin.tm_min;
    t.tm_isdst=-1;
 
+   mktime(&t);
+#ifdef ALARMS_DEBUG
+	{
+	   char str[100];
+	   strftime(str, 80, "%B %d, %Y %H:%M", &t);
+	   printf("fpn: debug=%s\n", str);
+	}
+#endif
    freq = 0;
    switch (a->repeatType) {
     case repeatNone:
@@ -931,6 +940,32 @@ static int find_prev_next(struct Appointment *a,
       Pnow = localtime(&t_future);
       memcpy(tm_next, Pnow, sizeof(struct tm));
       forward=backward=0;
+      /* since the code above disregarged DST in the above calcs,
+       * we have to try to correct for it here */
+      if (tm_prev->tm_hour<a->begin.tm_hour) {
+	 t_past+=3600; /* 1 hour for dst */
+	 Pnow = localtime(&t_past);
+	 memcpy(tm_prev, Pnow, sizeof(struct tm));
+      }
+      if (tm_prev->tm_hour>a->begin.tm_hour) {
+	 t_past-=3600; /* 1 hour for dst */
+	 Pnow = localtime(&t_past);
+	 memcpy(tm_prev, Pnow, sizeof(struct tm));
+      }
+      if (tm_next->tm_hour<a->begin.tm_hour) {
+	 t_future+=3600; /* 1 hour for dst */
+	 Pnow = localtime(&t_future);
+	 memcpy(tm_next, Pnow, sizeof(struct tm));
+      }
+      if (tm_next->tm_hour>a->begin.tm_hour) {
+	 t_future-=3600; /* 1 hour for dst */
+	 Pnow = localtime(&t_future);
+	 memcpy(tm_next, Pnow, sizeof(struct tm));
+      }
+      if (t_future<t1) {
+  	 *next_found=0;
+	 forward=1;
+      }
 #ifdef ALARMS_DEBUG
 	{
 	   char str[100];
@@ -1033,7 +1068,7 @@ static int find_prev_next(struct Appointment *a,
       if (t.tm_mday > ndim) {
 	 t.tm_mday -= 7;
       }
-#ifdef ALARMS_DEBUG      
+#ifdef ALARMS_DEBUG
 	{
 	   char str[100];
 	   strftime(str, 80, "%B %d, %Y %H:%M", &t);
@@ -1100,6 +1135,8 @@ static int find_prev_next(struct Appointment *a,
 	 break;
       }
       t_temp = mktime_dst_adj(&t);
+      t.tm_isdst=-1;
+      t_temp = mktime(&t);
 #ifdef ALARMS_DEBUG
 	{
 	   char str[100];
