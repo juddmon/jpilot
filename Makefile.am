@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.22 2003/07/31 19:00:30 judd Exp $
+# $Id: Makefile.am,v 1.23 2004/02/21 01:39:23 judd Exp $
 
 SUBDIRS = intl Expense SyncTime KeyRing docs dialer po m4 empty icons
 
@@ -8,7 +8,7 @@ color_DATA = \
 	jpilotrc.blue jpilotrc.default jpilotrc.green jpilotrc.purple \
 	jpilotrc.steel
 
-EXTRA_DIST = reconf autogen.sh ChangeLog \
+EXTRA_DIST = config.rpath  reconf autogen.sh ChangeLog \
 	config.rpath mkinstalldirs \
 	jpilot.spec jpilot.kdelnk jpilot.rh7.spec \
 	jpilot.desktop \
@@ -31,6 +31,8 @@ jpilot_SOURCES = \
 	category.c \
 	cp1250.c \
 	cp1250.h \
+	cp1253.c \
+	cp1253.h \
 	dat.c \
 	datebook.c \
 	datebook.h \
@@ -89,6 +91,7 @@ jpilot_dump_SOURCES = \
 	address.c \
 	category.c \
 	cp1250.c \
+	cp1253.c \
 	datebook.c \
 	japanese.c \
 	jpilot-dump.c \
@@ -107,6 +110,7 @@ jpilot-dump.o: jpilot-dump.c config.h utils.h log.h prefs.h \
 
 jpilot_sync_SOURCES = \
 	cp1250.c \
+	cp1253.c \
 	category.c \
 	jpilot-sync.c \
 	japanese.c \
@@ -137,6 +141,12 @@ jpilot_sync_LDADD=@LIBS@ @PILOT_LIBS@ @GTK_LIBS@
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
 libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status --recheck
+
+better-world:
+	echo "make better-world: rm -rf -any -all windows"
+
+peace:
+	echo "make peace: not war"
 
 #ChangeLog:
 #	rcs2log > $@
