@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.43 2005/01/27 22:15:17 rikster5 Exp $ */
+/* $Id: prefs_gui.c,v 1.44 2005/02/19 15:44:29 rousseau Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -519,20 +519,20 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 		      NULL);
 
    /* Show deleted files check box */
-   add_checkbutton("Show deleted records (default NO)",
+   add_checkbutton(_("Show deleted records (default NO)"),
 		   PREF_SHOW_DELETED, vbox_settings, cb_checkbox_set_pref);
 
    /* Show modified files check box */
-   add_checkbutton("Show modified deleted records (default NO)",
+   add_checkbutton(_("Show modified deleted records (default NO)"),
 		   PREF_SHOW_MODIFIED, vbox_settings, cb_checkbox_set_pref);
 
    /* Confirm file installation */
    add_checkbutton(
-      "Ask confirmation for file installation (J-Pilot -> PDA) (default YES)",
+      _("Ask confirmation for file installation (J-Pilot -> PDA) (default YES)"),
       PREF_CONFIRM_FILE_INSTALL, vbox_settings, cb_checkbox_set_pref);
 
    /* Show tooltips check box */
-   add_checkbutton("Show popup tooltips (default YES)",
+   add_checkbutton(_("Show popup tooltips (default YES)"),
 		   PREF_SHOW_TOOLTIPS, vbox_settings,
 		   cb_checkbox_show_tooltips);
 
@@ -540,13 +540,13 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    /* Datebook preference tab */
 
    /* Show highlight days check box */
-   add_checkbutton("Highlight calendar days with appointments",
+   add_checkbutton(_("Highlight calendar days with appointments"),
 		   PREF_DATEBOOK_HIGHLIGHT_DAYS, vbox_datebook,
 		   cb_checkbox_set_pref);
 
 #ifdef ENABLE_DATEBK
    /* Show use DateBk check box */
-   add_checkbutton("Use DateBk note tags",
+   add_checkbutton(_("Use DateBk note tags"),
 		   PREF_USE_DB3, vbox_datebook, cb_checkbox_set_pref);
 #else
    label = gtk_label_new(_("DateBk support disabled in this build"));
@@ -555,12 +555,12 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 #endif
 
     /* Highlight today on month and week view */
-    add_checkbutton("Annotate today in day, week, and month views",
+    add_checkbutton(_("Annotate today in day, week, and month views"),
  		   PREF_DATEBOOK_HI_TODAY, vbox_datebook, cb_checkbox_set_pref);
  
     /* Show number of years on aniversaries in month and week view */
     add_checkbutton(
- 	"Append years on anniversaries in day, week, and month views",
+ 	_("Append years on anniversaries in day, week, and month views"),
  	PREF_DATEBOOK_ANNI_YEARS, vbox_datebook,
  	cb_checkbox_set_pref);
  
@@ -594,20 +594,20 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    /* ToDo preference tab */
 
    /* The hide completed check box */
-   add_checkbutton("Hide Completed ToDos",
+   add_checkbutton(_("Hide Completed ToDos"),
 		   PREF_TODO_HIDE_COMPLETED, vbox_todo, cb_checkbox_set_pref);
 
    /* The hide todos not yet due check box */
-   add_checkbutton("Hide ToDos not yet due",
+   add_checkbutton(_("Hide ToDos not yet due"),
 		   PREF_TODO_HIDE_NOT_DUE, vbox_todo, cb_checkbox_set_pref);
 
    /* The record todo completion date check box */
-   add_checkbutton("Record Completion Date",
+   add_checkbutton(_("Record Completion Date"),
 		   PREF_TODO_COMPLETION_DATE, vbox_todo, cb_checkbox_set_pref);
 
 #ifdef ENABLE_MANANA
    /* Use Manana check box */
-   add_checkbutton("Use Manana database",
+   add_checkbutton(_("Use Manana database"),
 		   PREF_MANANA_MODE, vbox_todo, cb_checkbox_set_pref);
 #endif
 
@@ -615,7 +615,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    hbox_temp = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox_todo), hbox_temp, FALSE, FALSE, 0);
 
-   add_checkbutton("Use default number of days due",
+   add_checkbutton(_("Use default number of days due"),
 		   PREF_TODO_DAYS_DUE, hbox_temp, cb_checkbox_set_pref);
 
    todo_days_due_entry = gtk_entry_new_with_max_length(MAX_PREF_VALUE - 2);
@@ -635,18 +635,18 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    /* Memo preference tab */
 
    /* Memo32 check box */
-   add_checkbutton("Use Memo32 (pedit32)",
+   add_checkbutton(_("Use Memo32 (pedit32)"),
 		   PREF_MEMO32_MODE, vbox_memo, cb_checkbox_set_pref);
 
    /**********************************************************************/
    /* Alarms preference tab */
 
    /* Show open alarm windows check box */
-   add_checkbutton("Open alarm windows for appointment reminders",
+   add_checkbutton(_("Open alarm windows for appointment reminders"),
 		   PREF_OPEN_ALARM_WINDOWS, vbox_alarms, cb_checkbox_set_pref);
 
    /* Show open alarm windows check box */
-   add_checkbutton("Execute this command",
+   add_checkbutton(_("Execute this command"),
 		   PREF_DO_ALARM_COMMAND, vbox_alarms, cb_checkbox_set_pref);
 
    /* Shell warning */
@@ -701,34 +701,34 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    /* Conduits preference tab */
 
    /* Show sync datebook check box */
-   add_checkbutton("Sync datebook",
+   add_checkbutton(_("Sync datebook"),
 		   PREF_SYNC_DATEBOOK, vbox_conduits, cb_checkbox_set_pref);
 
    /* Show sync address check box */
-   add_checkbutton("Sync address",
+   add_checkbutton(_("Sync address"),
 		   PREF_SYNC_ADDRESS, vbox_conduits, cb_checkbox_set_pref);
 
    /* Show sync todo check box */
-   add_checkbutton("Sync todo",
+   add_checkbutton(_("Sync todo"),
 		   PREF_SYNC_TODO, vbox_conduits, cb_checkbox_set_pref);
 
    /* Show sync memo check box */
-   add_checkbutton("Sync memo",
+   add_checkbutton(_("Sync memo"),
 		   PREF_SYNC_MEMO, vbox_conduits, cb_checkbox_set_pref);
 
    /* Show sync Memo32 check box */
-   add_checkbutton("Sync memo32 (pedit32)",
+   add_checkbutton(_("Sync memo32 (pedit32)"),
 		   PREF_SYNC_MEMO32, vbox_conduits, cb_checkbox_set_pref);
 
 #ifdef ENABLE_MANANA
    /* Show sync Ma~nana check box */
-   add_checkbutton("Sync Manana",
+   add_checkbutton(_("Sync Manana"),
 		   PREF_SYNC_MANANA, vbox_conduits, cb_checkbox_set_pref);
 #endif
    get_pref(PREF_CHAR_SET, &ivalue, &cstr);
    if (ivalue == CHAR_SET_JAPANESE || ivalue == CHAR_SET_SJIS_UTF) {
        /* Show use Japanese Kana extention check box */
-       add_checkbutton("Use J-OS (Not Japanese PalmOS:WorkPad/CLIE)",
+       add_checkbutton(_("Use J-OS (Not Japanese PalmOS:WorkPad/CLIE)"),
 		       PREF_USE_JOS, vbox_settings, cb_checkbox_set_pref);
    }
 
