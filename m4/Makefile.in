@@ -109,14 +109,13 @@ INTL_LIBTOOL_SUFFIX_PREFIX = @INTL_LIBTOOL_SUFFIX_PREFIX@
 LIBICONV = @LIBICONV@
 LIBTOOL = @LIBTOOL@
 LN_S = @LN_S@
-MAKE_KEYRING = @MAKE_KEYRING@
 MKINSTALLDIRS = @MKINSTALLDIRS@
 MSGFMT = @MSGFMT@
 OBJDUMP = @OBJDUMP@
 PACKAGE = @PACKAGE@
 PILOT_FLAGS = @PILOT_FLAGS@
 PILOT_LIBS = @PILOT_LIBS@
-PLUGIN_SUPPORT = @PLUGIN_SUPPORT@
+PKG_CONFIG = @PKG_CONFIG@
 POFILES = @POFILES@
 POSUB = @POSUB@
 PROGNAME = @PROGNAME@
@@ -130,6 +129,7 @@ am__quote = @am__quote@
 ccoptions = @ccoptions@
 cflags = @cflags@
 install_sh = @install_sh@
+plugin_support = @plugin_support@
 EXTRA_DIST = codeset.m4 \
              iconv.m4 \
 	     progtest.m4 \
