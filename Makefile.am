@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.13 2003/02/20 23:13:07 judd Exp $
+# $Id: Makefile.am,v 1.14 2003/02/21 00:12:32 judd Exp $
 
 SUBDIRS = intl Expense SyncTime KeyRing docs dialer po
 
@@ -10,15 +10,7 @@ EXTRA_DIST = reconf autogen.sh ChangeLog docs empty icons \
 	jpilotrc.blue jpilotrc.default jpilotrc.green jpilotrc.purple \
 	jpilotrc.steel SlackBuild \
 	intltool-extract.in intltool-merge.in intltool-update.in \
-	m4/ChangeLog \
-	m4/codeset.m4 \
-	m4/gettext.m4 \
-	m4/glibc21.m4 \
 	m4/gtk-2.0.m4 \
-	m4/iconv.m4 \
-	m4/isc-posix.m4 \
-	m4/lcmessage.m4 \
-	m4/progtest.m4 \
 	dialer/Makefile.unix \
 	dialer/README \
 	dialer/jpilot-dial.c

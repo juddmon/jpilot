@@ -1,3 +1,13 @@
+0.99.5 = 02/20/03
+ Fixed serious bug resulting in overwriting appointments on the palm (Serious bug)
+ Restore now restores latest files instead of ones from last backup (Critical bug)
+ Added -export-dynamic to Makefile to resolve jp_logf unresolved errors
+ Made home key go to today in datebook
+ Added dialog error windows instead of logging them
+ If files are to be installed a prompt window opens before a sync/backup
+ Browser windows open from jpilot menu
+ When app button is pressed it will cycle through categories
+
 0.99.4 - 01/13/03
  Ported code to GTK-2 (I used GTK-2.2)
  Added random password generation to KeyRing
