@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.85 2005/01/27 22:15:17 rikster5 Exp $ */
+/* $Id: utils.c,v 1.86 2005/01/28 16:03:04 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -3060,7 +3060,7 @@ int get_highlighted_today(struct tm *date)
 
    /* Quit immediately if the user option is not enabled */
    if (!get_pref_int_default(PREF_DATEBOOK_HI_TODAY, FALSE))
-      return EXIT_FAILURE;
+      return -1;
 
    /* Get now time */
    now = time(NULL);
@@ -3069,7 +3069,7 @@ int get_highlighted_today(struct tm *date)
    /* Check if option is on and return today's day of month if the month
     * and year match was was passed in */
    if (now_tm->tm_mon != date->tm_mon || now_tm->tm_year != date->tm_year)
-      return EXIT_FAILURE;
+      return -1;
 
    /* Today is within the passed month, return the day of month */
    return now_tm->tm_mday;
