@@ -609,6 +609,9 @@ int datebook_import(GtkWidget *window)
 /*
  * Start Export code
  */
+
+GtkWidget *export_window;
+
 void appt_export_ok(int type, const char *filename)
 {
    MyAppointment *ma;
@@ -626,13 +629,13 @@ void appt_export_ok(int type, const char *filename)
    if (!stat(filename, &statb)) {
       if (S_ISDIR(statb.st_mode)) {
 	 g_snprintf(text, 1024, _("%s is a directory"), filename);
-	 dialog_generic(NULL,
+	 dialog_generic(GTK_WINDOW(export_window),
 			0, 0, _("Error Opening File"),
 			"Directory", text, 1, button_text);
 	 return;
       }
       g_snprintf(text, 1024, _("Do you want to overwrite file %s?"), filename);
-      r = dialog_generic(NULL,
+      r = dialog_generic(GTK_WINDOW(export_window),
 			 0, 0, _("Overwrite File?"),
 			 _("Overwrite File"), text, 2, button_overwrite_text);
       if (r!=DIALOG_SAID_1) {
@@ -643,7 +646,7 @@ void appt_export_ok(int type, const char *filename)
    out = fopen(filename, "w");
    if (!out) {
       g_snprintf(text, 1024, "Error Opening File: %s", filename);
-      dialog_generic(NULL,
+      dialog_generic(GTK_WINDOW(export_window),
 		     0, 0, _("Error Opening File"),
 		     "Filename", text, 1, button_text);
       return;
@@ -828,7 +831,6 @@ cb_export_type(GtkWidget *widget,
 
 static int datebook_export_gui(int x, int y)
 {
-   GtkWidget *export_window;
    GtkWidget *button;
    GtkWidget *vbox;
    GtkWidget *hbox;
@@ -1016,6 +1018,7 @@ void cb_date_cats(GtkWidget *widget, gpointer data)
    GtkWidget *table;
    GtkWidget *button;
    GtkWidget *vbox, *hbox;
+   GtkWidget *w, *window;
 
    jpilot_logf(LOG_DEBUG, "cb_date_cats\n");
    if (GTK_IS_WINDOW(window_date_cats)) {
@@ -1024,11 +1027,22 @@ void cb_date_cats(GtkWidget *widget, gpointer data)
       return;
    }
 
+   for (w=widget, window=NULL, i=15; w && (i>0); w=w->parent, i--) {
+      if (GTK_IS_WINDOW(w)) {
+	 window=w;
+	 break;
+      }
+   }
+
    get_datebook_app_info(&ai);
 
    window_date_cats = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
    gtk_window_set_position(GTK_WINDOW(window_date_cats), GTK_WIN_POS_MOUSE);
+
+   gtk_window_set_modal(GTK_WINDOW(window_date_cats), TRUE);
+
+   gtk_window_set_transient_for(GTK_WINDOW(window_date_cats), GTK_WINDOW(window));
 
    gtk_container_set_border_width(GTK_CONTAINER(window_date_cats), 10);
    gtk_window_set_title(GTK_WINDOW(window_date_cats), PN" Datebook Categories");
@@ -1152,6 +1166,8 @@ static void cb_cal_dialog(GtkWidget *widget,
    struct tm *Pt;
    GtkWidget *Pcheck_button;
    GtkWidget *Pbutton;
+   GtkWidget *w, *window;
+   int i;
 
    switch (GPOINTER_TO_INT(data)) {
     case PAGE_DAY:
@@ -1188,13 +1204,20 @@ static void cb_cal_dialog(GtkWidget *widget,
 
    get_pref(PREF_FDOW, &fdow, NULL);
 
+   for (w=widget, window=NULL, i=15; w && (i>0); w=w->parent, i--) {
+      if (GTK_IS_WINDOW(w)) {
+	 window=w;
+	 break;
+      }
+   }
+
    if (GPOINTER_TO_INT(data) == BEGIN_DATE_BUTTON) {
-      r = cal_dialog(_("Begin On Date"), fdow,
+      r = cal_dialog(GTK_WINDOW(window), _("Begin On Date"), fdow,
 		     &(Pt->tm_mon),
 		     &(Pt->tm_mday),
 		     &(Pt->tm_year));
    } else {
-      r = cal_dialog(_("End On Date"), fdow,
+      r = cal_dialog(GTK_WINDOW(window), _("End On Date"), fdow,
 		     &(Pt->tm_mon),
 		     &(Pt->tm_mday),
 		     &(Pt->tm_year));
@@ -1310,8 +1333,8 @@ int dialog_4_or_last(int dow)
 	   "%s of the month.\n"
 	   "Which do you want?",
 	   _(days[dow]), _(days[dow]));
-   return dialog_generic(scrolled_window->parent->window,
-			 200, 200, 
+   return dialog_generic(GTK_WINDOW(scrolled_window->parent),
+			 200, 200,
 			 "Question?", "Answer: ",
 			 text, 2, button_text);
 }
@@ -1332,7 +1355,7 @@ int dialog_current_all_cancel()
       gettext_noop("Cancel")
    };
 
-   return dialog_generic(scrolled_window->parent->window,
+   return dialog_generic(GTK_WINDOW(scrolled_window->parent),
 			 200, 200, 
 			 "Question?", "Answer: ",
 			 _(text), 3, button_text);
@@ -1357,7 +1380,7 @@ int dialog_easter(int mday)
 	   "%s\'s\n"
 	   "Birthday!\n", who);
 
-   return dialog_generic(scrolled_window->parent->window,
+   return dialog_generic(GTK_WINDOW(scrolled_window->parent),
 			 200, 200, 
 			 "Happy Birthday to Me!", "(iiiii)",
 			 text, 1, button_text);
@@ -1517,6 +1540,8 @@ static void clear_details()
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_button_mon_endon), FALSE);
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_button_year_endon), FALSE);
 
+   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_button_notime), TRUE);
+
    for(i=0; i<7; i++) {
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(toggle_button_repeat_days[i]), FALSE);
    }
@@ -1532,6 +1557,7 @@ static void clear_details()
    today.tm_hour = 12;
    today.tm_min = 0;
    mktime(&today);
+   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(toggle_button_repeat_days[today.tm_wday]), TRUE);
 
    memcpy(&glob_endon_day_tm, &today, sizeof(glob_endon_day_tm));
    memcpy(&glob_endon_week_tm, &today, sizeof(glob_endon_week_tm));

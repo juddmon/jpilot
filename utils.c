@@ -810,7 +810,8 @@ cb_quit(GtkWidget *widget,
  * This function will bring up the cal at mon, day, year
  * After a new date is selected it will return mon, day, year
  */
-int cal_dialog(const char *title, int monday_is_fdow,
+int cal_dialog(GtkWindow *main_window,
+	       const char *title, int monday_is_fdow,
 	       int *mon, int *day, int *year)
 {
    GtkWidget *button;
@@ -826,6 +827,8 @@ int cal_dialog(const char *title, int monday_is_fdow,
    gtk_window_set_position(GTK_WINDOW(cal_window), GTK_WIN_POS_MOUSE);
 
    gtk_window_set_modal(GTK_WINDOW(cal_window), TRUE);
+
+   gtk_window_set_transient_for(GTK_WINDOW(cal_window), GTK_WINDOW(main_window));
 
    gtk_signal_connect(GTK_OBJECT(cal_window), "destroy",
 		      GTK_SIGNAL_FUNC(cb_destroy), cal_window);
@@ -908,7 +911,7 @@ static gboolean cb_destroy_dialog(GtkWidget *widget)
 }
 
 /*nob = number of buttons (1-3) */
-int dialog_generic(GdkWindow *main_window,
+int dialog_generic(GtkWindow *main_window,
 		   int w, int h,
 		   char *title, char *frame_text,
 		   char *text, int nob, char *button_text[])
@@ -939,6 +942,8 @@ int dialog_generic(GdkWindow *main_window,
 
    gtk_window_set_modal(GTK_WINDOW(glob_dialog), TRUE);
 
+   gtk_window_set_transient_for(GTK_WINDOW(glob_dialog), GTK_WINDOW(main_window));
+   
    frame1 = gtk_frame_new(frame_text);
    gtk_frame_set_label_align(GTK_FRAME(frame1), 0.5, 0.0);
    vbox1 = gtk_vbox_new(FALSE, 5);
@@ -1009,13 +1014,13 @@ int dialog_save_changed_record(GtkWidget *widget, int changed)
    for (w=widget, i=10; w && (i>0); w=w->parent, i--) {
       if (GTK_IS_WINDOW(w)) {
 	 if (changed==MODIFY_FLAG) {
-	    b=dialog_generic(GTK_WIDGET(w)->window, 0, 0,
+	    b=dialog_generic(GTK_WINDOW(w), 0, 0,
 			     _("Save Changed Record?"), "",
 			     _("Do you want to save the changes to this record?"),
 			     2, button_text);
 	 }
 	 if (changed==NEW_FLAG) {
-	    b=dialog_generic(GTK_WIDGET(w)->window, 0, 0,
+	    b=dialog_generic(GTK_WINDOW(w), 0, 0,
 			     _("Save New Record?"), "",
 			     _("Do you want to save this new record?"),
 			     2, button_text);

@@ -224,6 +224,7 @@ gboolean parse_geometry(const char *str,
    return TRUE;
 }
 
+#if 0
 static void cb_focus(GtkWidget *widget, GdkEvent *event, gpointer data)
 {
    int i;
@@ -239,6 +240,7 @@ static void cb_focus(GtkWidget *widget, GdkEvent *event, gpointer data)
       }
    }
 }
+#endif
 
 int create_main_boxes()
 {
@@ -367,7 +369,7 @@ void call_plugin_help(int number)
 	       text = NULL;
 	       plugin->plugin_help(&text, &width, &height);
 	       if (text) {
-		  dialog_generic(GTK_WIDGET(window)->window,
+		  dialog_generic(GTK_WINDOW(window),
 				width, height,
 				 _("Help"), plugin->name, text, 1, button_text);
 		  free(text);
@@ -432,7 +434,7 @@ void cb_print(GtkWidget *widget, gpointer data)
       }
    }
 #endif
-   dialog_generic(GTK_WIDGET(window)->window, 0, 0,
+   dialog_generic(GTK_WINDOW(window), 0, 0,
 		  _("Print"), "", 
 		  _("There is no print support for this conduit."),
 		  1, button_text);
@@ -492,7 +494,7 @@ void cb_import(GtkWidget *widget, gpointer data)
       }
    }
 #endif
-   dialog_generic(GTK_WIDGET(window)->window, 0, 0,
+   dialog_generic(GTK_WINDOW(window), 0, 0,
 		  _("Import"), "", 
 		  _("There is no import support for this conduit."),
 		  1, button_text);
@@ -536,7 +538,7 @@ void cb_export(GtkWidget *widget, gpointer data)
       }
    }
 #endif
-   dialog_generic(GTK_WIDGET(window)->window, 0, 0,
+   dialog_generic(GTK_WINDOW(window), 0, 0,
 		  _("Export"), "", 
 		  _("There is no export support for this conduit."),
 		  1, button_text);
@@ -737,12 +739,12 @@ int bad_sync_exit_status(int exit_status)
    }
    if ((exit_status == SYNC_ERROR_NOT_SAME_USERID) ||
        (exit_status == SYNC_ERROR_NOT_SAME_USER)) {
-      return dialog_generic(GTK_WIDGET(window)->window,
+      return dialog_generic(GTK_WINDOW(window),
 			      0, 0,
 			      "Sync Problem", "Sync", text1, 2, button_text);
    }
    if (exit_status == SYNC_ERROR_NULL_USERID) {
-      return dialog_generic(GTK_WIDGET(window)->window,
+      return dialog_generic(GTK_WINDOW(window),
 			    0, 0,
 			    "Sync Problem", "Sync", text2, 1, button_text);
    }
@@ -936,7 +938,7 @@ void cb_about(GtkWidget *widget, gpointer data)
    g_snprintf(about, 250, _("About %s"), PN);
 
    if (GTK_IS_WINDOW(window)) {
-      dialog_generic(GTK_WIDGET(window)->window,
+      dialog_generic(GTK_WINDOW(window),
  		     0, 0,
 		     about, "oOo", text, 1, button_text);
    }
@@ -1644,11 +1646,13 @@ char *xpm_unlocked[] = {
 
    gtk_window_set_default_size(GTK_WINDOW(window), pref_width, pref_height);
 
+#if 0
    gtk_signal_connect(GTK_OBJECT(window), "focus_in_event",
 		      GTK_SIGNAL_FUNC(cb_focus), GINT_TO_POINTER(1));
 
    gtk_signal_connect(GTK_OBJECT(window), "focus_out_event",
 		      GTK_SIGNAL_FUNC(cb_focus), GINT_TO_POINTER(0));
+#endif
 
    /* Set a handler for delete_event that immediately */
    /* exits GTK. */

@@ -132,6 +132,15 @@ static void cb_cal_dialog(GtkWidget *widget,
    struct tm *Pt;
    GtkWidget *Pcheck_button;
    GtkWidget *Pbutton;
+   GtkWidget *w, *window;
+   int i;
+
+   for (w=widget, window=NULL, i=10; w && (i>0); w=w->parent, i--) {
+      if (GTK_IS_WINDOW(w)) {
+	 window=w;
+	 break;
+      }
+   }
 
    Pcheck_button = todo_no_due_date_checkbox;
    Pt = &due_date;
@@ -139,7 +148,7 @@ static void cb_cal_dialog(GtkWidget *widget,
 
    get_pref(PREF_FDOW, &fdow, NULL);
 
-   r = cal_dialog(_("Due Date"), fdow,
+   r = cal_dialog(GTK_WINDOW(window), _("Due Date"), fdow,
 		  &(Pt->tm_mon),
 		  &(Pt->tm_mday),
 		  &(Pt->tm_year));
@@ -600,13 +609,13 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
    if (!stat(filename, &statb)) {
       if (S_ISDIR(statb.st_mode)) {
 	 g_snprintf(text, 1024, _("%s is a directory"), filename);
-	 dialog_generic(GTK_WIDGET(export_window)->window,
+	 dialog_generic(GTK_WINDOW(export_window),
 			0, 0, _("Error Opening File"),
 			"Directory", text, 1, button_text);
 	 return;
       }
       g_snprintf(text, 1024, _("Do you want to overwrite file %s?"), filename);
-      r = dialog_generic(GTK_WIDGET(export_window)->window,
+      r = dialog_generic(GTK_WINDOW(export_window),
 			 0, 0, _("Overwrite File?"),
 			 _("Overwrite File"), text, 2, button_overwrite_text);
       if (r!=DIALOG_SAID_1) {
@@ -617,7 +626,7 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
    out = fopen(filename, "w");
    if (!out) {
       g_snprintf(text, 1024, "Error Opening File: %s", filename);
-      dialog_generic(GTK_WIDGET(export_window)->window,
+      dialog_generic(GTK_WINDOW(export_window),
 		     0, 0, _("Error Opening File"),
 		     "Filename", text, 1, button_text);
       return;

@@ -242,7 +242,7 @@ int setup_sync(unsigned int flags);
 void cb_sync(GtkWidget *widget, unsigned int flags);
 
 /* Returns the number of the button that was pressed */
-int dialog_generic(GdkWindow *main_window,
+int dialog_generic(GtkWindow *main_window,
 		   int w, int h,
 		   char *title, char *frame_text,
 		   char *text, int nob, char *button_text[]);
@@ -260,7 +260,8 @@ int dialog_save_changed_record(GtkWidget *widget, int changed);
  * This function will bring up the cal at mon, day, year
  * After a new date is selected it will return mon, day, year
  */
-int cal_dialog(const char *title, int monday_is_fdow,
+int cal_dialog(GtkWindow *main_window,
+	       const char *title, int monday_is_fdow,
 	       int *mon, int *day, int *year);
 
 int clist_find_id(GtkWidget *clist,

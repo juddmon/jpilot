@@ -111,6 +111,7 @@ static void cb_dialog_button(GtkWidget *widget,
 	    Pdata->button_hit = GPOINTER_TO_INT(data);
 	 }
 	 gtk_widget_destroy(GTK_WIDGET(w));
+	 break;
       }
    }
 }
