@@ -4,9 +4,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: jpilot 0.99.1q\n"
+"Project-Id-Version: jpilot 0.99.3a\n"
 "POT-Creation-Date: 2002-10-13 23:35-0400\n"
-"PO-Revision-Date: 2001-09-18 23:24+0200\n"
+"PO-Revision-Date: 2002-11-09 23:24+0100\n"
 "Last-Translator: Keld Simonsen <keld@dkuug.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
 "MIME-Version: 1.0\n"
@@ -18,14 +18,14 @@ msgid "error"
 msgstr "fejl"
 
 #: address.c:290 datebook.c:683 memo.c:215 todo.c:361 todo.c:363 todo.c:366
-#, fuzzy, c-format
+#, c-format
 msgid "Error reading %s\n"
-msgstr "Fejl ved læsning"
+msgstr "Fejl ved læsning af %s\n"
 
 #: address_gui.c:360 datebook_gui.c:333 memo_gui.c:239 todo_gui.c:383
-#, fuzzy, c-format
+#, c-format
 msgid "Could not open file %s\n"
-msgstr "Kan ikke åbne logfil\n"
+msgstr "Kan ikke åbne fil %s\n"
 
 #: address_gui.c:443
 msgid "File doesn't appear to be address.dat format\n"
@@ -46,15 +46,13 @@ msgstr "O.k."
 
 #: address_gui.c:545 datebook_gui.c:623 memo_gui.c:459 todo_gui.c:601
 #: utils.c:1006
-#, fuzzy
 msgid "Yes"
-msgstr "år"
+msgstr "Ja"
 
 #: address_gui.c:545 datebook_gui.c:623 memo_gui.c:459 todo_gui.c:601
 #: utils.c:1006
-#, fuzzy
 msgid "No"
-msgstr "Ingen"
+msgstr "Nej"
 
 #: address_gui.c:561 datebook_gui.c:631 memo_gui.c:469 todo_gui.c:611
 #, c-format
@@ -226,7 +224,6 @@ msgid "We"
 msgstr "on"
 
 #: datebook_gui.c:185
-#, fuzzy
 msgid "Th"
 msgstr "to"
 
@@ -274,9 +271,8 @@ msgid "None"
 msgstr "Ingen"
 
 #: datebook_gui.c:1215
-#, fuzzy
 msgid "Begin On Date"
-msgstr "Slutdato"
+msgstr "Startdato"
 
 #: datebook_gui.c:1220
 msgid "End On Date"
@@ -359,12 +355,8 @@ msgid "You cannot have an appointment that repeats every %d %s(s)\n"
 msgstr "Du kan ikke have en aftale som gentages hver %d %s\n"
 
 #: datebook_gui.c:1879
-msgid ""
-"You can not have a weekly repeating appointment that doesn't repeat on any "
-"day of the week.\n"
-msgstr ""
-"Du kan ikke have en aftale med ugentlig gentagelse som ikke gentages på en "
-"bestemt ugedag.\n"
+msgid "You can not have a weekly repeating appointment that doesn't repeat on any day of the week.\n"
+msgstr "Du kan ikke have en aftale med ugentlig gentagelse som ikke gentages på en bestemt ugedag.\n"
 
 #. This is a timeless event
 #: datebook_gui.c:2015
@@ -490,9 +482,8 @@ msgstr "Filbladrer"
 
 #. Label for instructions
 #: export_gui.c:266
-#, fuzzy
 msgid "Select records to be exported"
-msgstr "Vælg notater der skal eksporteres"
+msgstr "Vælg poster der skal eksporteres"
 
 #: export_gui.c:268
 msgid "Use Ctrl and Shift Keys"
@@ -506,9 +497,7 @@ msgstr "Importér"
 
 #: import_gui.c:300 install_gui.c:269
 msgid "To change to a hidden directory type it below and hit TAB"
-msgstr ""
-"For at ændre til et skjult katalog skal du angive det nedenunder og trykke "
-"TAB"
+msgstr "For at ændre til et skjult katalog skal du angive det nedenunder og trykke TAB"
 
 #: import_gui.c:326
 msgid "Import File Type"
@@ -524,9 +513,8 @@ msgstr ""
 
 #. Import All button
 #: import_gui.c:472
-#, fuzzy
 msgid "Import All"
-msgstr "Importér"
+msgstr "Importér alt"
 
 #. Skip button
 #: import_gui.c:479
@@ -535,9 +523,8 @@ msgstr ""
 
 #. Quit button
 #: import_gui.c:486
-#, fuzzy
 msgid "Quit"
-msgstr "Afslut!"
+msgstr "Afslut"
 
 #: install_gui.c:224
 msgid "Install"
@@ -596,9 +583,8 @@ msgid "There is no export support for this conduit."
 msgstr "Der findes ikke understøttelse af eksportering for dette tillæg."
 
 #: jpilot.c:734
-#, fuzzy
 msgid "Cancel Sync"
-msgstr "Annullér"
+msgstr "Annullér sync"
 
 #: jpilot.c:735
 msgid "Sync Anyway"
@@ -606,15 +592,15 @@ msgstr ""
 
 #. -------------------------------------------
 #: jpilot.c:934
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%s %s was written by\n"
 "Judd Montgomery (Copyright) 1999-2002.\n"
 "judd@jpilot.org\n"
 "http://jpilot.org\n"
 msgstr ""
-"%s blev skrevet af\n"
-"Judd Montgomery (c) 1999-2000.\n"
+"%s %s blev skrevet af\n"
+"Judd Montgomery (c) 1999-2002.\n"
 "judd@jpilot.org\n"
 "http://jpilot.org\n"
 
@@ -787,9 +773,8 @@ msgid "Palm Password"
 msgstr "Palm-adgangskode"
 
 #: password.c:348
-#, fuzzy
 msgid "Incorrect, Reenter PalmOS Password"
-msgstr "Indtast PalmOS-adgangskode"
+msgstr "Forkert, genindtast PalmOS-adgangskode"
 
 #: password.c:350
 msgid "Enter PalmOS Password"
@@ -1000,9 +985,8 @@ msgid "Print Command (e.g. lpr, or cat > file.ps)"
 msgstr "Udskriftskommando (fx lpr, eller cat > fil.ps)"
 
 #: restore_gui.c:143
-#, fuzzy
 msgid "Restore Handheld"
-msgstr "/Filer/Genskab håndholdt"
+msgstr "Genskab håndholdt"
 
 #. Label for instructions
 #: restore_gui.c:159
@@ -1010,8 +994,7 @@ msgid "To restore your handheld:"
 msgstr "Genskab indhold på håndholdt ved:"
 
 #: restore_gui.c:162
-msgid ""
-"1. Choose all the applications you wish to restore.  The default is all."
+msgid "1. Choose all the applications you wish to restore.  The default is all."
 msgstr "1. Vælg alle de programmer du vil genskabe. Normalt alle."
 
 #: restore_gui.c:165
@@ -1073,39 +1056,39 @@ msgid "Check your serial port and settings\n"
 msgstr "Kontrollér serielporten og indstillingerne\n"
 
 #: sync.c:602 sync.c:624 sync.c:646
-#, fuzzy, c-format
+#, c-format
 msgid "Last Synced Username-->\"%s\"\n"
-msgstr "Seneste brugernavn -->\"%s\"\n"
+msgstr "Seneste synket brugernavn -->\"%s\"\n"
 
 #: sync.c:603 sync.c:625
-#, fuzzy, c-format
+#, c-format
 msgid "Last Synced UserID-->\"%d\"\n"
-msgstr "Seneste bruger-id -->\"%d\"\n"
+msgstr "Seneste synket bruger-id -->\"%d\"\n"
 
 #: sync.c:604 sync.c:626 sync.c:648
-#, fuzzy, c-format
+#, c-format
 msgid " This Username-->\"%s\"\n"
-msgstr "Brugernavn -->\"%s\"\n"
+msgstr " Dette brugernavn -->\"%s\"\n"
 
 #: sync.c:605 sync.c:627 sync.c:649
-#, fuzzy, c-format
+#, c-format
 msgid " This User ID-->%d\n"
-msgstr "Bruger-id-->%d\n"
+msgstr " Denne bruger-id-->%d\n"
 
 #: sync.c:647
-#, fuzzy, c-format
+#, c-format
 msgid "Last Syned UserID-->\"%d\"\n"
-msgstr "Seneste bruger-id -->\"%d\"\n"
+msgstr "Seneste synket bruger-id -->\"%d\"\n"
 
 #: sync.c:670
-#, fuzzy, c-format
+#, c-format
 msgid "Username is \"%s\"\n"
-msgstr "Brugernavn -->\"%s\"\n"
+msgstr "Brugernavn er \"%s\"\n"
 
 #: sync.c:671
-#, fuzzy, c-format
+#, c-format
 msgid "User ID is %d\n"
-msgstr "Bruger-id"
+msgstr "Bruger-id er %d\n"
 
 #: sync.c:673 sync.c:679
 #, c-format
@@ -1118,24 +1101,24 @@ msgid "This PC = %lu\n"
 msgstr "Denne pc = %lu\n"
 
 #: sync.c:675
-#, fuzzy, c-format
+#, c-format
 msgid "Last Username = [%s]\n"
-msgstr "Seneste brugernavn -->\"%s\"\n"
+msgstr "Seneste brugernavn [%s]\n"
 
 #: sync.c:676
-#, fuzzy, c-format
+#, c-format
 msgid "Last UserID = %d\n"
-msgstr "Seneste bruger-id -->\"%d\"\n"
+msgstr "Seneste bruger-id = %d\n"
 
 #: sync.c:677
 #, c-format
 msgid "Username = [%s]\n"
-msgstr ""
+msgstr "Brugernavn = [%s]\n"
 
 #: sync.c:678
 #, c-format
 msgid "userID = %d\n"
-msgstr ""
+msgstr "Bruger-id = %d\n"
 
 #: sync.c:695
 msgid "Sync canceled\n"
@@ -1143,9 +1126,8 @@ msgstr "Synkronisering annulleret\n"
 
 #. Do not translate this text
 #: sync.c:719
-#, fuzzy
 msgid "Finished restoring handheld.\n"
-msgstr "/Filer/Genskab håndholdt"
+msgstr "Afsluttede genskabelse af håndholdt.\n"
 
 #: sync.c:720
 msgid "You may need to sync to update J-Pilot.\n"
@@ -1165,9 +1147,8 @@ msgstr "Tak for at du bruger J-Pilot."
 
 #. Do not translate this text
 #: sync.c:877
-#, fuzzy
 msgid "Finished.\n"
-msgstr "mislykkedes.\n"
+msgstr "Færdig.\n"
 
 #: sync.c:909 sync.c:2405
 #, c-format
@@ -1406,28 +1387,24 @@ msgid "Save Changed Record?"
 msgstr ""
 
 #: utils.c:1019
-#, fuzzy
 msgid "Do you want to save the changes to this record?"
-msgstr "Ønsker du at overskrive filen %s?"
+msgstr ""
 
 #: utils.c:1024
-#, fuzzy
 msgid "Save New Record?"
-msgstr "Ny post"
+msgstr "Gem ny post?"
 
 #: utils.c:1025
-#, fuzzy
 msgid "Do you want to save this new record?"
-msgstr "Ønsker du at overskrive filen %s?"
+msgstr "Ønsker du at gemme denne nye post?"
 
 #: utils.c:1353
 msgid "Couldn't find empty DB file.\n"
 msgstr ""
 
 #: utils.c:1354
-#, fuzzy
 msgid "jpilot may not be installed.\n"
-msgstr "Filer som skal installeres"
+msgstr ""
 
 #: utils.c:2068
 msgid "PC ID is 0.\n"
@@ -1444,16 +1421,15 @@ msgstr "Ugentlig visning"
 
 #: Expense/expense.c:327
 msgid "Expense"
-msgstr ""
+msgstr "Expense"
 
 #: Expense/expense.c:338
-#, fuzzy
 msgid "About Expense"
-msgstr "Om %s"
+msgstr "Om Expense"
 
 #: Expense/expense.c:359 Expense/expense.c:1045
 msgid "Airfare"
-msgstr ""
+msgstr "Flyrejse"
 
 #: Expense/expense.c:361 Expense/expense.c:1046
 msgid "Breakfast"
@@ -1461,7 +1437,7 @@ msgstr ""
 
 #: Expense/expense.c:363 Expense/expense.c:1047
 msgid "Bus"
-msgstr ""
+msgstr "Bus"
 
 #: Expense/expense.c:365 Expense/expense.c:1048
 msgid "BusinessMeals"
@@ -1472,9 +1448,8 @@ msgid "CarRental"
 msgstr ""
 
 #: Expense/expense.c:369 Expense/expense.c:1050
-#, fuzzy
 msgid "Dinner"
-msgstr "ingen"
+msgstr ""
 
 #: Expense/expense.c:371 Expense/expense.c:1051
 msgid "Entertainment"
@@ -1493,18 +1468,16 @@ msgid "Gifts"
 msgstr ""
 
 #: Expense/expense.c:379 Expense/expense.c:1055
-#, fuzzy
 msgid "Hotel"
-msgstr "Notat"
+msgstr "Hotel"
 
 #: Expense/expense.c:381 Expense/expense.c:1056
 msgid "Incidentals"
 msgstr ""
 
 #: Expense/expense.c:383 Expense/expense.c:1057
-#, fuzzy
 msgid "Laundry"
-msgstr "søndag"
+msgstr ""
 
 #: Expense/expense.c:385 Expense/expense.c:1058
 msgid "Limo"
@@ -1523,23 +1496,20 @@ msgid "Mileage"
 msgstr ""
 
 #: Expense/expense.c:395 Expense/expense.c:1063
-#, fuzzy
 msgid "Parking"
-msgstr "Udskriv"
+msgstr ""
 
 #: Expense/expense.c:397 Expense/expense.c:1064
 msgid "Postage"
 msgstr ""
 
 #: Expense/expense.c:399 Expense/expense.c:1065
-#, fuzzy
 msgid "Snack"
-msgstr "Synk"
+msgstr ""
 
 #: Expense/expense.c:401 Expense/expense.c:1066
-#, fuzzy
 msgid "Subway"
-msgstr "søndag"
+msgstr ""
 
 #: Expense/expense.c:403 Expense/expense.c:1067
 msgid "Supplies"
@@ -1562,18 +1532,16 @@ msgid "Tolls"
 msgstr ""
 
 #: Expense/expense.c:413 Expense/expense.c:1072
-#, fuzzy
 msgid "Train"
-msgstr "Udskriv"
+msgstr ""
 
 #: Expense/expense.c:427
 msgid "AmEx"
 msgstr ""
 
 #: Expense/expense.c:429 Expense/expense.c:1035
-#, fuzzy
 msgid "Cash"
-msgstr "kategorier"
+msgstr ""
 
 #: Expense/expense.c:431 Expense/expense.c:1036
 msgid "Check"
@@ -1616,37 +1584,32 @@ msgid "Payment: "
 msgstr ""
 
 #: Expense/expense.c:1308
-#, fuzzy
 msgid "Month:"
-msgstr "Måned"
+msgstr "Måned:"
 
 #: Expense/expense.c:1322
-#, fuzzy
 msgid "Day:"
-msgstr "dag"
+msgstr "Dag:"
 
 # msgid "WeekView"
 # msgstr "Pr. uge"
 # msgid "MonthView"
 # msgstr "Pr. mnd"
 #: Expense/expense.c:1336
-#, fuzzy
 msgid "Year:"
-msgstr "år"
+msgstr "År:"
 
 #: Expense/expense.c:1353
-#, fuzzy
 msgid "Amount: "
-msgstr "Om %s"
+msgstr ""
 
 #: Expense/expense.c:1362
 msgid "Vendor: "
 msgstr ""
 
 #: Expense/expense.c:1371
-#, fuzzy
 msgid "City: "
-msgstr "Kategori: "
+msgstr ""
 
 #: Expense/expense.c:1377
 msgid "Attendees"
@@ -1658,14 +1621,12 @@ msgid "Note"
 msgstr "Notat"
 
 #: KeyRing/keyring.c:1102
-#, fuzzy
 msgid "Incorrect, Reenter KeyRing Password"
-msgstr "Indtast PalmOS-adgangskode"
+msgstr ""
 
 #: KeyRing/keyring.c:1104
-#, fuzzy
 msgid "Enter KeyRing Password"
-msgstr "Indtast PalmOS-adgangskode"
+msgstr "Indtast KeyRing-adgangskode"
 
 #: KeyRing/keyring.c:1225
 msgid "Account"
@@ -1673,9 +1634,8 @@ msgstr ""
 
 #. name Entry
 #: KeyRing/keyring.c:1394
-#, fuzzy
 msgid "name: "
-msgstr "Navn"
+msgstr ""
 
 #. account Entry
 #: KeyRing/keyring.c:1401
@@ -1684,6 +1644,5 @@ msgstr ""
 
 #. password
 #: KeyRing/keyring.c:1408
-#, fuzzy
 msgid "password: "
-msgstr "Palm-adgangskode"
+msgstr ""
