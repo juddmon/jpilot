@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.71 2004/12/21 08:01:56 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.72 2005/01/10 06:20:54 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -48,6 +48,9 @@
 #define DISCONNECT_SIGNALS 401
 
 extern GtkTooltips *glob_tooltips;
+#ifdef ENABLE_GTK2
+extern gchar *glob_clipboard_text;
+#endif
 
 struct MemoAppInfo memo_app_info;
 static int memo_category = CATEGORY_ALL;
@@ -1325,6 +1328,9 @@ int memo_gui_cleanup()
    free_MemoList(&glob_memo_list);
    connect_changed_signals(DISCONNECT_SIGNALS);
 #ifdef ENABLE_GTK2
+   glob_clipboard_text = gtk_clipboard_wait_for_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
+#endif
+#ifdef ENABLE_GTK2
    set_pref(PREF_MEMO_PANE, gtk_paned_get_position(GTK_PANED(pane)), NULL, TRUE);
 #else
    set_pref(PREF_MEMO_PANE, GTK_PANED(pane)->handle_xpos, NULL, TRUE);
@@ -1382,6 +1388,18 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    if ((memo_category != CATEGORY_ALL) && (memo_app_info.category.name[memo_category][0]=='\0')) {
       memo_category=CATEGORY_ALL;
    }
+
+#ifdef ENABLE_GTK2
+   /* Preserve clipboard buffer across applications */
+   if (glob_clipboard_text != NULL)
+   {
+      gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
+                             glob_clipboard_text,
+			     -1);
+      g_free(glob_clipboard_text);
+      glob_clipboard_text = NULL;
+   }
+#endif
 
    accel_group = gtk_accel_group_new();
    gtk_window_add_accel_group(GTK_WINDOW(gtk_widget_get_toplevel(vbox)),

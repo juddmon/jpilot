@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.106 2004/12/13 02:25:32 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.107 2005/01/10 06:20:54 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -96,6 +96,9 @@ GtkWidget *g_hbox2, *g_vbox0_1;
 
 GtkWidget *glob_date_label;
 GtkTooltips *glob_tooltips;
+#ifdef ENABLE_GTK2
+gchar *glob_clipboard_text=NULL;
+#endif
 gint glob_date_timer_tag;
 pid_t glob_child_pid;
 pid_t jpilot_master_pid;
