@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.82 2005/01/16 03:46:08 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.83 2005/01/27 06:56:50 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -73,6 +73,7 @@ static GtkWidget *add_record_button;
 static GtkWidget *delete_record_button;
 static GtkWidget *undelete_record_button;
 static GtkWidget *copy_record_button;
+static GtkWidget *cancel_record_button;
 static GtkWidget *category_menu1;
 static GtkWidget *category_menu2;
 static GtkWidget *pane;
@@ -220,6 +221,7 @@ set_new_button_to(int new_state)
       /* The line selected on the clist becomes unhighlighted, so we do this */
       clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
       gtk_widget_show(apply_record_button);
+      gtk_widget_show(cancel_record_button);
       gtk_widget_hide(delete_record_button);
       break;
     case NEW_FLAG:
@@ -228,6 +230,7 @@ set_new_button_to(int new_state)
       /* The line selected on the clist becomes unhighlighted, so we do this */
       clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
       gtk_widget_show(add_record_button);
+      gtk_widget_show(cancel_record_button);
       gtk_widget_hide(copy_record_button);
       gtk_widget_hide(delete_record_button);
       break;
@@ -250,11 +253,13 @@ set_new_button_to(int new_state)
    switch (record_changed) {
     case MODIFY_FLAG:
       gtk_widget_hide(apply_record_button);
+      gtk_widget_hide(cancel_record_button);
       gtk_widget_show(copy_record_button);
       gtk_widget_show(delete_record_button);
       break;
     case NEW_FLAG:
       gtk_widget_hide(add_record_button);
+      gtk_widget_hide(cancel_record_button);
       gtk_widget_show(copy_record_button);
       gtk_widget_show(delete_record_button);
       break;
@@ -987,6 +992,12 @@ void cb_undelete_todo(GtkWidget *widget,
    }
 
    todo_clist_redraw();
+}
+
+static void cb_cancel(GtkWidget *widget, gpointer data)
+{
+   set_new_button_to(CLEAR_FLAG);
+   todo_refresh();
 }
 
 static void cb_category(GtkWidget *item, int selection)
@@ -2109,6 +2120,22 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
 
    /* Add record modification buttons on right side */
+
+   /* Create Cancel button */
+   cancel_record_button = gtk_button_new_with_label(_("Cancel"));
+   gtk_signal_connect(GTK_OBJECT(cancel_record_button), "clicked",
+		      GTK_SIGNAL_FUNC(cb_cancel), NULL);
+   gtk_box_pack_start(GTK_BOX(hbox_temp), cancel_record_button, TRUE, TRUE, 0);
+#ifdef ENABLE_GTK2
+   gtk_widget_add_accelerator(cancel_record_button, "clicked", accel_group,
+      GDK_Escape, 0, GTK_ACCEL_VISIBLE);
+   gtk_tooltips_set_tip(glob_tooltips, cancel_record_button,
+			_("Cancel the modifications   ESC"), NULL);
+#else
+   gtk_tooltips_set_tip(glob_tooltips, cancel_record_button,
+			_("Cancel the modifications"), NULL);
+#endif
+
    /* Delete button */
    delete_record_button = gtk_button_new_with_label(_("Delete"));
    gtk_signal_connect(GTK_OBJECT(delete_record_button), "clicked",
@@ -2309,6 +2336,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_widget_hide(add_record_button);
    gtk_widget_hide(apply_record_button);
    gtk_widget_hide(undelete_record_button);
+   gtk_widget_hide(cancel_record_button);
 
    todo_refresh();
 
