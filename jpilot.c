@@ -1180,10 +1180,10 @@ void get_main_menu(GtkWidget  *window,
    }
 
    plugin_menu_strings = plugin_help_strings = NULL;
-   if (count != 0) {
+   if (count) {
       plugin_menu_strings = malloc(count * sizeof(char *));
    }
-   if (help_count != 0) {
+   if (help_count) {
       plugin_help_strings = malloc(help_count * sizeof(char *));
    }
 
@@ -1330,6 +1330,13 @@ void get_main_menu(GtkWidget  *window,
 	 free(plugin_menu_strings[str_i]);
       }
       free(plugin_menu_strings);
+   }
+   /* Not sure if these should be freed, or not */
+   if (help_count) {
+      for (str_i=0; str_i < help_count; str_i++) {
+	 free(plugin_help_strings[str_i]);
+      }
+      free(plugin_help_strings);
    }
 #endif
 }

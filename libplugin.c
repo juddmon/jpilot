@@ -703,6 +703,7 @@ int jp_read_DB_files(char *DB_name, GList **records)
    RawDBHeader rdbh;
    DBHeader dbh;
    buf_rec *temp_br;
+   int temp_br_used;
    char PDB_name[FILENAME_MAX];
    char PC_name[FILENAME_MAX];
 
@@ -887,6 +888,7 @@ int jp_read_DB_files(char *DB_name, GList **records)
    }
 
    while(!feof(pc_in)) {
+      temp_br_used = 0;
       temp_br = malloc(sizeof(buf_rec));
       if (!temp_br) {
 	 jp_logf(JP_LOG_WARN, "jp_read_DB_files(): Out of memory 3\n");
@@ -914,7 +916,7 @@ int jp_read_DB_files(char *DB_name, GList **records)
 	       end_of_list=end_of_list->next;
 	    }
 	 }
-
+         temp_br_used = 1;
 	 recs_returned++;
       }
       if ((temp_br->rt==DELETED_PALM_REC) || (temp_br->rt==MODIFIED_PALM_REC)) {
@@ -931,6 +933,11 @@ int jp_read_DB_files(char *DB_name, GList **records)
 	       }
 	    }
 	 }
+      }
+
+      if (!temp_br_used) {
+         free(temp_br->buf);
+         free(temp_br);
       }
    }
    fclose(pc_in);

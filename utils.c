@@ -838,12 +838,6 @@ char * xpm_float_checked[] = {
    static GdkBitmap *mask_checked;
    static GdkBitmap *mask_float_check;
    static GdkBitmap *mask_float_checked;
-   GtkWidget *pixmapwid_note;
-   GtkWidget *pixmapwid_alarm;
-   GtkWidget *pixmapwid_check;
-   GtkWidget *pixmapwid_checked;
-   GtkWidget *pixmapwid_float_check;
-   GtkWidget *pixmapwid_float_checked;
    GtkStyle *style;
 
    if (inited) {
@@ -858,45 +852,33 @@ char * xpm_float_checked[] = {
    pixmap_note = gdk_pixmap_create_from_xpm_d(widget->window,  &mask_note,
 					      &style->bg[GTK_STATE_NORMAL],
 					      (gchar **)xpm_note);
-   pixmapwid_note = gtk_pixmap_new(pixmap_note, mask_note);
-   gtk_widget_show(pixmapwid_note);
 
    /*Make the alarm pixmap */
    pixmap_alarm = gdk_pixmap_create_from_xpm_d(widget->window,  &mask_alarm,
 					       &style->bg[GTK_STATE_NORMAL],
 					       (gchar **)xpm_alarm);
-   pixmapwid_alarm = gtk_pixmap_new(pixmap_alarm, mask_alarm);
-   gtk_widget_show(pixmapwid_alarm);
 
    /*Make the check pixmap */
    pixmap_check = gdk_pixmap_create_from_xpm_d(widget->window,  &mask_check,
 					       &style->bg[GTK_STATE_NORMAL],
 					       (gchar **)xpm_check);
-   pixmapwid_check = gtk_pixmap_new(pixmap_check, mask_check);
-   gtk_widget_show(pixmapwid_check);
 
    /*Make the checked pixmap */
    pixmap_checked = gdk_pixmap_create_from_xpm_d(widget->window,  &mask_checked,
 					       &style->bg[GTK_STATE_NORMAL],
 					       (gchar **)xpm_checked);
-   pixmapwid_checked = gtk_pixmap_new(pixmap_checked, mask_checked);
-   gtk_widget_show(pixmapwid_checked);
 
    /*Make the float_checked pixmap */
    pixmap_float_check = gdk_pixmap_create_from_xpm_d
      (widget->window,  &mask_float_check,
       &style->bg[GTK_STATE_NORMAL],
       (gchar **)xpm_float_check);
-   pixmapwid_float_check = gtk_pixmap_new(pixmap_float_check, mask_float_check);
-   gtk_widget_show(pixmapwid_float_check);
 
    /*Make the float_checked pixmap */
    pixmap_float_checked = gdk_pixmap_create_from_xpm_d
      (widget->window,  &mask_float_checked,
       &style->bg[GTK_STATE_NORMAL],
       (gchar **)xpm_float_checked);
-   pixmapwid_float_checked = gtk_pixmap_new(pixmap_float_checked, mask_float_checked);
-   gtk_widget_show(pixmapwid_float_checked);
 
    assign:
    switch (which_one) {

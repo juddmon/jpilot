@@ -2303,11 +2303,11 @@ int address_gui_cleanup()
 {
    int b;
 
-   free_AddressList(&glob_address_list);
    b=dialog_save_changed_record(pane, record_changed);
    if (b==DIALOG_SAID_1) {
       cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
    }
+   free_AddressList(glob_address_list);
    connect_changed_signals(DISCONNECT_SIGNALS);
 #ifdef ENABLE_GTK2
    set_pref(PREF_ADDRESS_PANE, gtk_paned_get_position(GTK_PANED(pane)), NULL, TRUE);
@@ -2380,7 +2380,6 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    vbox1 = gtk_vbox_new(FALSE, 0);
    vbox2 = gtk_vbox_new(FALSE, 0);
-   hbox_temp = gtk_hbox_new(FALSE, 0);
    gtk_paned_pack1(GTK_PANED(pane), vbox1, TRUE, FALSE);
    gtk_paned_pack2(GTK_PANED(pane), vbox2, TRUE, FALSE);
 

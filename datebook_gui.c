@@ -3447,13 +3447,14 @@ int datebook_gui_cleanup()
 {
    int b;
 
-   free_AppointmentList(&glob_al);
-   free_ToDoList(&datebook_todo_list);
-
    b=dialog_save_changed_record(pane, record_changed);
    if (b==DIALOG_SAID_1) {
       cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
    }
+
+   free_AppointmentList(&glob_al);
+   free_ToDoList(&datebook_todo_list);
+
    connect_changed_signals(DISCONNECT_SIGNALS);
 #ifdef ENABLE_GTK2
    set_pref(PREF_DATEBOOK_PANE, gtk_paned_get_position(GTK_PANED(pane)), NULL, TRUE);
