@@ -1,4 +1,4 @@
-/* $Id: search_gui.c,v 1.33 2004/11/28 16:20:04 rousseau Exp $ */
+/* $Id: search_gui.c,v 1.34 2004/12/10 02:17:51 rikster5 Exp $ */
 
 /*******************************************************************************
  * search_gui.c
@@ -455,11 +455,11 @@ static void cb_search(GtkWidget *widget, gpointer data)
 	cb_entry(entry, data);
 }
 
-static void cb_clist_select(GtkWidget      *clist,
-		            gint           row,
-		            gint           column,
-		            GdkEventButton *event,
-		            gpointer       data)
+static void cb_clist_selection(GtkWidget      *clist,
+		               gint           row,
+		               gint           column,
+		               GdkEventButton *event,
+		               gpointer       data)
 {
 
    struct search_record *sr;
@@ -559,7 +559,7 @@ void cb_search_gui(GtkWidget *widget, gpointer data)
 
    clist = gtk_clist_new(2);
    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
-		      GTK_SIGNAL_FUNC(cb_clist_select),
+		      GTK_SIGNAL_FUNC(cb_clist_selection),
 		      NULL);
    gtk_clist_set_shadow_type(GTK_CLIST(clist), SHADOW);
    gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
