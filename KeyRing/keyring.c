@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.27 2004/12/07 06:51:09 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.28 2004/12/07 20:31:40 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -1901,14 +1901,13 @@ int plugin_search(const char *search_string, int case_sense,
 
 static int keyring_find(int unique_id)
 {
-   int r, found_at, total_count;
+   int r, found_at;
    
    jp_logf(JP_LOG_DEBUG, "KeyRing: keyring_find\n");
 
    r = clist_find_id(clist,
 		     unique_id,
-		     &found_at,
-		     &total_count);
+		     &found_at);
    if (r) {
       cb_clist_selection(clist, found_at, 0, (gpointer)455, NULL);
       gtk_clist_select_row(GTK_CLIST(clist), found_at, 0);

@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.85 2004/12/07 06:51:08 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.86 2004/12/07 20:31:39 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -2226,19 +2226,14 @@ static int make_phone_menu(int default_set, unsigned int callback_id, int set)
 /* returns 1 if found, 0 if not */
 static int address_find()
 {
-   int r, found_at, total_count;
+   int r, found_at;
 
    r = 0;
    if (glob_find_id) {
       r = clist_find_id(clist,
 			glob_find_id,
-			&found_at,
-			&total_count);
+			&found_at);
       if (r) {
-	 /*avoid dividing by zero */
-	 if (total_count == 0) {
-	    total_count = 1;
-	 }
 	 gtk_clist_select_row(GTK_CLIST(clist), found_at, ADDRESS_PHONE_COLUMN);
 	 if (!gtk_clist_row_is_visible(GTK_CLIST(clist), found_at)) {
 	    gtk_clist_moveto(GTK_CLIST(clist), found_at, 0, 0.5, 0.0);

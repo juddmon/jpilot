@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.79 2004/12/07 06:51:08 rikster5 Exp $ */
+/* $Id: utils.c,v 1.80 2004/12/07 20:31:40 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -683,14 +683,12 @@ void set_fg_rgb_clist_cell(GtkWidget *clist, int row, int col, int r, int g, int
 /*returns 0 if not found, 1 if found */
 int clist_find_id(GtkWidget *clist,
 		  unsigned int unique_id,
-		  int *found_at,
-		  int *total_count)
+		  int *found_at)
 {
    int i, found;
    MyAddress *maddr;
 
    *found_at = 0;
-   *total_count = 0;
 
    /* 100000 safety */
    for (found = i = 0; i<100000; i++) {
@@ -698,15 +696,12 @@ int clist_find_id(GtkWidget *clist,
       if (maddr < (MyAddress *)CLIST_MIN_DATA) {
 	 break;
       }
-      if (found) {
-	 continue;
-      }
       if (maddr->unique_id==unique_id) {
 	 found = TRUE;
 	 *found_at = i;
+         break;
       }
    }
-   *total_count = i;
 
    return found;
 }

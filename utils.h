@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.44 2004/11/22 06:58:09 rikster5 Exp $ */
+/* $Id: utils.h,v 1.45 2004/12/07 20:31:40 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -315,8 +315,7 @@ void set_fg_rgb_clist_cell(GtkWidget *clist, int row, int col, int r, int g, int
 
 int clist_find_id(GtkWidget *clist,
 		  unsigned int unique_id,
-		  int *found_at,
-		  int *total_count);
+		  int *found_at);
 
 int check_copy_DBs_to_home();
 

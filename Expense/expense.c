@@ -1,4 +1,4 @@
-/* $Id: expense.c,v 1.31 2004/12/07 06:51:09 rikster5 Exp $ */
+/* $Id: expense.c,v 1.32 2004/12/07 20:31:40 rikster5 Exp $ */
 
 /*******************************************************************************
  * expense.c
@@ -1362,14 +1362,12 @@ static void make_menus()
 /*returns 0 if not found, 1 if found */
 static int expense_clist_find_id(GtkWidget *clist,
 			 unsigned int unique_id,
-			 int *found_at,
-			 int *total_count)
+			 int *found_at)
 {
    int i, found;
    struct MyExpense *mex;
    
    *found_at = 0;
-   *total_count = 0;
 
    jp_logf(JP_LOG_DEBUG, "Expense: expense_clist_find_id\n");
 
@@ -1379,15 +1377,12 @@ static int expense_clist_find_id(GtkWidget *clist,
       if (!mex) {
 	 break;
       }
-      if (found) {
-	 continue;
-      }
       if (mex->unique_id==unique_id) {
 	 found = 1;
 	 *found_at = i;
+         break;
       }
    }
-   *total_count = i;
    
    return found;
 }
@@ -1395,18 +1390,14 @@ static int expense_clist_find_id(GtkWidget *clist,
 
 static int expense_find(int unique_id)
 {
-   int r, found_at, total_count;
+   int r, found_at;
    
    jp_logf(JP_LOG_DEBUG, "Expense: expense_find\n");
 
    r = expense_clist_find_id(clist,
 		     unique_id,
-		     &found_at,
-		     &total_count);
+		     &found_at);
    if (r) {
-      if (total_count == 0) {
-	 total_count = 1;
-      }
       gtk_clist_select_row(GTK_CLIST(clist), found_at, 0);
       cb_clist_selection(clist, found_at, 0, (gpointer)455, NULL);
       gtk_clist_moveto(GTK_CLIST(clist), found_at, 0, 0.5, 0.0);

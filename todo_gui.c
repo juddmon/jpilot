@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.75 2004/12/07 06:51:08 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.76 2004/12/07 20:31:40 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -1772,17 +1772,13 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
 static int todo_find()
 {
-   int r, found_at, total_count;
+   int r, found_at;
 
    if (glob_find_id) {
       r = clist_find_id(clist,
 			glob_find_id,
-			&found_at,
-			&total_count);
+			&found_at);
       if (r) {
-	 if (total_count == 0) {
-	    total_count = 1;
-	 }
 	 gtk_clist_select_row(GTK_CLIST(clist), found_at, TODO_PRIORITY_COLUMN);
 	 if (!gtk_clist_row_is_visible(GTK_CLIST(clist), found_at)) {
 	    gtk_clist_moveto(GTK_CLIST(clist), found_at, 0, 0.5, 0.0);

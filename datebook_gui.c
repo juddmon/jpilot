@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.94 2004/12/07 06:51:08 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.95 2004/12/07 20:31:40 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -3259,18 +3259,14 @@ static void highlight_days()
 
 static int datebook_find()
 {
-   int r, found_at, total_count;
+   int r, found_at;
 
    jp_logf(JP_LOG_DEBUG, "datebook_find(), glob_find_id = %d\n", glob_find_id);
    if (glob_find_id) {
       r = clist_find_id(clist,
 			glob_find_id,
-			&found_at,
-			&total_count);
+			&found_at);
       if (r) {
-	 if (total_count == 0) {
-	    total_count = 1;
-	 }
 	 if (!gtk_clist_row_is_visible(GTK_CLIST(clist), found_at)) {
 	    gtk_clist_moveto(GTK_CLIST(clist), found_at, 0, 0.5, 0.0);
 	 }
