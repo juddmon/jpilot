@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.32 2004/10/17 13:55:13 rousseau Exp $
+# $Id: Makefile.am,v 1.33 2004/10/17 14:04:10 rousseau Exp $
 
 SUBDIRS = Expense SyncTime KeyRing docs dialer po m4 empty icons
 
@@ -15,12 +15,15 @@ EXTRA_DIST = config.rpath reconf autogen.sh ChangeLog ChangeLog.cvs \
 	jpilot.desktop \
 	$(color_DATA) \
 	SlackBuild \
+	intltool-extract.in intltool-merge.in intltool-update.in \
 	m4/gtk-2.0.m4 \
 	dialer/Makefile.unix \
 	dialer/README \
 	dialer/jpilot-dial.c \
 	po/POTFILES \
 	jpilot.xpm
+
+DISTCLEANFILES = intltool-extract intltool-merge intltool-update
 
 bin_PROGRAMS = jpilot jpilot-dump jpilot-sync
 jpilot_SOURCES = \
