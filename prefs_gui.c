@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.44 2005/02/19 15:44:29 rousseau Exp $ */
+/* $Id: prefs_gui.c,v 1.45 2005/02/20 20:06:40 rousseau Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -271,7 +271,7 @@ add_checkbutton(const char *text, int which, GtkWidget *vbox,
 		void cb(GtkWidget *widget, gpointer data))
 {
    /* Create button */
-   GtkWidget *checkbutton = gtk_check_button_new_with_label(_(text));
+   GtkWidget *checkbutton = gtk_check_button_new_with_label(text);
    gtk_box_pack_start(GTK_BOX(vbox), checkbutton, FALSE, FALSE, 0);
    gtk_widget_show(checkbutton);
 
