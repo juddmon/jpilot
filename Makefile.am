@@ -1,13 +1,24 @@
-# $Id: Makefile.am,v 1.1 2002/08/28 16:50:47 judd Exp $
+# $Id: Makefile.am,v 1.2 2002/10/09 01:55:05 judd Exp $
 
-SUBDIRS = po Expense SyncTime KeyRing docs intl
+SUBDIRS = po Expense SyncTime KeyRing docs intl m4
 
-EXTRA_DIST = config.rpath  reconf autogen.sh ChangeLog docs empty icons \
-	BUGS CHANGELOG CREDITS \
-	ChangeLog UPGRADING jpilot-col.spec jpilot.kdelnk jpilot.rh7.spec \
+EXTRA_DIST = reconf autogen.sh ChangeLog docs empty icons \
+	BUGS jpilot.spec jpilot-col.spec jpilot.kdelnk jpilot.rh7.spec \
+	ChangeLog UPGRADING \
 	jpilotrc.blue jpilotrc.default jpilotrc.green jpilotrc.purple \
 	jpilotrc.steel SlackBuild \
-	intltool-extract.in intltool-merge.in intltool-update.in
+	intltool-extract.in intltool-merge.in intltool-update.in \
+	m4/ChangeLog \
+	m4/Makefile \
+	m4/Makefile.am \
+	m4/Makefile.in \
+	m4/codeset.m4 \
+	m4/gettext.m4 \
+	m4/glibc21.m4 \
+	m4/iconv.m4 \
+	m4/isc-posix.m4 \
+	m4/lcmessage.m4 \
+	m4/progtest.m4
 
 bin_PROGRAMS = jpilot jpilot-dump jpilot-sync jpilot-upgrade-99
 jpilot_SOURCES = \
@@ -138,10 +149,40 @@ LIBTOOL_DEPS = @LIBTOOL_DEPS@
 libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status --recheck
 
-ChangeLog:
-	rcs2log > $@
-
-.PHONY: ChangeLog
+#ChangeLog:
+#	rcs2log > $@
+#
+#.PHONY: ChangeLog
 
 
 ACLOCAL_AMFLAGS = -I m4
+
+###
+# HTML documentation, etc.
+###
+install-data-local:
+	$(INSTALL) -d -m 755 $(prefix)/share/$(PACKAGE)
+	$(INSTALL) -m 644 jpilotrc.blue $(prefix)/share/$(PACKAGE)
+	$(INSTALL) -m 644 jpilotrc.default $(prefix)/share/$(PACKAGE)/
+	$(INSTALL) -m 644 jpilotrc.green $(prefix)/share/$(PACKAGE)/
+	$(INSTALL) -m 644 jpilotrc.purple $(prefix)/share/$(PACKAGE)/
+	$(INSTALL) -m 644 jpilotrc.steel $(prefix)/share/$(PACKAGE)/
+	$(INSTALL) -m 644 empty/DatebookDB.pdb $(prefix)/share/$(PACKAGE)/
+	$(INSTALL) -m 644 empty/AddressDB.pdb $(prefix)/share/$(PACKAGE)/
+	$(INSTALL) -m 644 empty/ToDoDB.pdb $(prefix)/share/$(PACKAGE)/
+	$(INSTALL) -m 644 empty/MemoDB.pdb $(prefix)/share/$(PACKAGE)/
+	$(INSTALL) -m 644 empty/Memo32DB.pdb $(prefix)/share/$(PACKAGE)/
+	$(INSTALL) -m 644 empty/ExpenseDB.pdb $(prefix)/share/$(PACKAGE)/
+
+uninstall-local:
+	rm -f $(prefix)/share/$(PACKAGE)/jpilotrc.blue
+	rm -f $(prefix)/share/$(PACKAGE)/jpilotrc.default
+	rm -f $(prefix)/share/$(PACKAGE)/jpilotrc.green
+	rm -f $(prefix)/share/$(PACKAGE)/jpilotrc.purple
+	rm -f $(prefix)/share/$(PACKAGE)/jpilotrc.steel
+	rm -f $(prefix)/share/$(PACKAGE)/empty/DatebookDB.pdb
+	rm -f $(prefix)/share/$(PACKAGE)/empty/AddressDB.pdb
+	rm -f $(prefix)/share/$(PACKAGE)/empty/ToDoDB.pdb
+	rm -f $(prefix)/share/$(PACKAGE)/empty/MemoDB.pdb
+	rm -f $(prefix)/share/$(PACKAGE)/empty/Memo32DB.pdb
+	rm -f $(prefix)/share/$(PACKAGE)/empty/ExpenseDB.pdb

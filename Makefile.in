@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Id: Makefile.in,v 1.14 2002/10/03 15:57:08 judd Exp $
+# $Id: Makefile.in,v 1.15 2002/10/09 01:55:05 judd Exp $
 SHELL = @SHELL@
 
 srcdir = @srcdir@
@@ -132,14 +132,25 @@ ccoptions = @ccoptions@
 cflags = @cflags@
 install_sh = @install_sh@
 
-SUBDIRS = po Expense SyncTime KeyRing docs intl
+SUBDIRS = po Expense SyncTime KeyRing docs intl m4
 
-EXTRA_DIST = config.rpath  reconf autogen.sh ChangeLog docs empty icons \
-	BUGS CHANGELOG CREDITS \
-	ChangeLog UPGRADING jpilot-col.spec jpilot.kdelnk jpilot.rh7.spec \
+EXTRA_DIST = reconf autogen.sh ChangeLog docs empty icons \
+	BUGS jpilot.spec jpilot-col.spec jpilot.kdelnk jpilot.rh7.spec \
+	ChangeLog UPGRADING \
 	jpilotrc.blue jpilotrc.default jpilotrc.green jpilotrc.purple \
 	jpilotrc.steel SlackBuild \
-	intltool-extract.in intltool-merge.in intltool-update.in
+	intltool-extract.in intltool-merge.in intltool-update.in \
+	m4/ChangeLog \
+	m4/Makefile \
+	m4/Makefile.am \
+	m4/Makefile.in \
+	m4/codeset.m4 \
+	m4/gettext.m4 \
+	m4/glibc21.m4 \
+	m4/iconv.m4 \
+	m4/isc-posix.m4 \
+	m4/lcmessage.m4 \
+	m4/progtest.m4
 
 
 bin_PROGRAMS = jpilot jpilot-dump jpilot-sync jpilot-upgrade-99
@@ -265,6 +276,11 @@ jpilot_upgrade_99_LDADD = @LIBS@ @PILOT_LIBS@ @GTK_LIBS@
 # Automatically update the libtool script if it becomes out-of-date.
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
 
+
+#ChangeLog:
+#	rcs2log > $@
+#
+#.PHONY: ChangeLog
 ACLOCAL_AMFLAGS = -I m4
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -357,10 +373,10 @@ RECURSIVE_TARGETS = info-recursive dvi-recursive install-info-recursive \
 	install-exec-recursive installdirs-recursive install-recursive \
 	uninstall-recursive check-recursive installcheck-recursive
 DIST_COMMON = README ABOUT-NLS AUTHORS COPYING ChangeLog INSTALL \
-	Makefile.am Makefile.in NEWS SlackBuild.in TODO aclocal.m4 \
-	config.guess config.h.in config.sub configure configure.in \
-	depcomp install-sh jpilot.spec.in ltconfig ltmain.sh missing \
-	mkinstalldirs
+	Makefile.am Makefile.in SlackBuild.in TODO aclocal.m4 \
+	config.guess config.h.in config.rpath config.sub configure \
+	configure.in depcomp install-sh jpilot.spec.in ltconfig \
+	ltmain.sh missing mkinstalldirs
 DIST_SUBDIRS = $(SUBDIRS)
 SOURCES = $(jpilot_SOURCES) $(jpilot_dump_SOURCES) $(jpilot_sync_SOURCES) $(jpilot_upgrade_99_SOURCES)
 
@@ -374,7 +390,7 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno
 $(srcdir)/Makefile.in:  Makefile.am  $(top_srcdir)/configure.in $(ACLOCAL_M4)
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  Makefile
+	  $(AUTOMAKE) --foreign  Makefile
 Makefile:  $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__depfiles_maybe)
 
@@ -636,7 +652,7 @@ distcleancheck_listfiles = find . -type f -print
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
 	mkdir $(distdir)
-	$(mkinstalldirs) $(distdir)/. $(distdir)/intl $(distdir)/po
+	$(mkinstalldirs) $(distdir)/. $(distdir)/intl $(distdir)/m4 $(distdir)/po
 	@list='$(DISTFILES)'; for file in $$list; do \
 	  if test -f $$file || test -d $$file; then d=.; else d=$(srcdir); fi; \
 	  dir=`echo "$$file" | sed -e 's,/[^/]*$$,,'`; \
@@ -772,7 +788,7 @@ info: info-recursive
 
 info-am:
 
-install-data-am:
+install-data-am: install-data-local
 
 install-exec-am: install-binPROGRAMS
 
@@ -792,7 +808,7 @@ mostlyclean: mostlyclean-recursive
 mostlyclean-am: mostlyclean-compile mostlyclean-generic \
 	mostlyclean-libtool
 
-uninstall-am: uninstall-binPROGRAMS uninstall-info-am
+uninstall-am: uninstall-binPROGRAMS uninstall-info-am uninstall-local
 
 uninstall-info: uninstall-info-recursive
 
@@ -803,17 +819,17 @@ uninstall-info: uninstall-info-recursive
 	distclean-libtool distclean-recursive distclean-tags \
 	distcleancheck distdir dvi dvi-am dvi-recursive info info-am \
 	info-recursive install install-am install-binPROGRAMS \
-	install-data install-data-am install-data-recursive \
-	install-exec install-exec-am install-exec-recursive \
-	install-info install-info-am install-info-recursive install-man \
-	install-recursive install-strip installcheck installcheck-am \
-	installdirs installdirs-am installdirs-recursive \
-	maintainer-clean maintainer-clean-generic \
-	maintainer-clean-recursive mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool mostlyclean-recursive \
-	tags tags-recursive uninstall uninstall-am \
-	uninstall-binPROGRAMS uninstall-info-am \
-	uninstall-info-recursive uninstall-recursive
+	install-data install-data-am install-data-local \
+	install-data-recursive install-exec install-exec-am \
+	install-exec-recursive install-info install-info-am \
+	install-info-recursive install-man install-recursive \
+	install-strip installcheck installcheck-am installdirs \
+	installdirs-am installdirs-recursive maintainer-clean \
+	maintainer-clean-generic maintainer-clean-recursive mostlyclean \
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	mostlyclean-recursive tags tags-recursive uninstall \
+	uninstall-am uninstall-binPROGRAMS uninstall-info-am \
+	uninstall-info-recursive uninstall-local uninstall-recursive
 
 
 jpilot-dump.o: jpilot-dump.c config.h utils.h log.h prefs.h \
@@ -826,10 +842,35 @@ jpilot-upgrade-99.o: jpilot-upgrade-99.c config.h utils.h
 libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status --recheck
 
-ChangeLog:
-	rcs2log > $@
+###
+# HTML documentation, etc.
+###
+install-data-local:
+	$(INSTALL) -d -m 755 $(prefix)/share/$(PACKAGE)
+	$(INSTALL) -m 644 jpilotrc.blue $(prefix)/share/$(PACKAGE)
+	$(INSTALL) -m 644 jpilotrc.default $(prefix)/share/$(PACKAGE)/
+	$(INSTALL) -m 644 jpilotrc.green $(prefix)/share/$(PACKAGE)/
+	$(INSTALL) -m 644 jpilotrc.purple $(prefix)/share/$(PACKAGE)/
+	$(INSTALL) -m 644 jpilotrc.steel $(prefix)/share/$(PACKAGE)/
+	$(INSTALL) -m 644 empty/DatebookDB.pdb $(prefix)/share/$(PACKAGE)/
+	$(INSTALL) -m 644 empty/AddressDB.pdb $(prefix)/share/$(PACKAGE)/
+	$(INSTALL) -m 644 empty/ToDoDB.pdb $(prefix)/share/$(PACKAGE)/
+	$(INSTALL) -m 644 empty/MemoDB.pdb $(prefix)/share/$(PACKAGE)/
+	$(INSTALL) -m 644 empty/Memo32DB.pdb $(prefix)/share/$(PACKAGE)/
+	$(INSTALL) -m 644 empty/ExpenseDB.pdb $(prefix)/share/$(PACKAGE)/
 
-.PHONY: ChangeLog
+uninstall-local:
+	rm -f $(prefix)/share/$(PACKAGE)/jpilotrc.blue
+	rm -f $(prefix)/share/$(PACKAGE)/jpilotrc.default
+	rm -f $(prefix)/share/$(PACKAGE)/jpilotrc.green
+	rm -f $(prefix)/share/$(PACKAGE)/jpilotrc.purple
+	rm -f $(prefix)/share/$(PACKAGE)/jpilotrc.steel
+	rm -f $(prefix)/share/$(PACKAGE)/empty/DatebookDB.pdb
+	rm -f $(prefix)/share/$(PACKAGE)/empty/AddressDB.pdb
+	rm -f $(prefix)/share/$(PACKAGE)/empty/ToDoDB.pdb
+	rm -f $(prefix)/share/$(PACKAGE)/empty/MemoDB.pdb
+	rm -f $(prefix)/share/$(PACKAGE)/empty/Memo32DB.pdb
+	rm -f $(prefix)/share/$(PACKAGE)/empty/ExpenseDB.pdb
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
