@@ -581,7 +581,7 @@ void print_month_header(FILE *f)
         "        /Helvetica-Oblique findfont fsize scalefont setfont\n"
         "        X Y m show\n"
         "        /Helvetica-ISOLatin1 findfont fsize scalefont setfont\n"
-        "        X 3.2 fsize mul add Y m ApptText show\n"
+        "        X 4.2 fsize mul add Y m ApptText show\n"
         "        /Y Y fsize sub def\n"
         "} def\n"
         "\n"
