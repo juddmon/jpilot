@@ -707,21 +707,21 @@ int clist_find_id(GtkWidget *clist,
 		  int *total_count)
 {
    int i, found;
-   MyAddress *ma;
+   MyAddress *maddr;
 
    *found_at = 0;
    *total_count = 0;
 
    /* 100000 safety */
    for (found = i = 0; i<100000; i++) {
-      ma = gtk_clist_get_row_data(GTK_CLIST(clist), i);
-      if (ma < (MyAddress *)CLIST_MIN_DATA) {
+      maddr = gtk_clist_get_row_data(GTK_CLIST(clist), i);
+      if (maddr < (MyAddress *)CLIST_MIN_DATA) {
 	 break;
       }
       if (found) {
 	 continue;
       }
-      if (ma->unique_id==unique_id) {
+      if (maddr->unique_id==unique_id) {
 	 found = 1;
 	 *found_at = i;
       }
@@ -1843,10 +1843,10 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 {
    FILE *pc_in;
    PC3RecordHeader header;
-   struct Appointment *app;
-   MyAppointment *mapp;
-   struct Address *address;
-   MyAddress *maddress;
+   struct Appointment *appt;
+   MyAppointment *mappt;
+   struct Address *addr;
+   MyAddress *maddr;
    struct ToDo *todo;
    MyToDo *mtodo;
    struct Memo *memo;
@@ -1862,21 +1862,21 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
    }
 
    /* to keep the compiler happy with -Wall*/
-   mapp=NULL;
-   maddress=NULL;
+   mappt=NULL;
+   maddr=NULL;
    mtodo=NULL;
    mmemo=NULL;
    switch (app_type) {
     case DATEBOOK:
-      mapp = (MyAppointment *) VP;
-      record_type = mapp->rt;
-      unique_id = mapp->unique_id;
+      mappt = (MyAppointment *) VP;
+      record_type = mappt->rt;
+      unique_id = mappt->unique_id;
       strcpy(filename, "DatebookDB.pc3");
       break;
     case ADDRESS:
-      maddress = (MyAddress *) VP;
-      record_type = maddress->rt;
-      unique_id = maddress->unique_id;
+      maddr = (MyAddress *) VP;
+      record_type = maddr->rt;
+      unique_id = maddr->unique_id;
       strcpy(filename, "AddressDB.pc3");
       break;
     case TODO:
@@ -1967,18 +1967,18 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       }
       switch (app_type) {
        case DATEBOOK:
-	 app=&mapp->a;
-	 /*memset(&app, 0, sizeof(app)); */
-	 header.rec_len = pack_Appointment(app, record, sizeof(record)-1);
+	 appt=&mappt->appt;
+	 /*memset(&appt, 0, sizeof(appt)); */
+	 header.rec_len = pack_Appointment(appt, record, sizeof(record)-1);
 	 if (!header.rec_len) {
 	    PRINT_FILE_LINE;
 	    jp_logf(JP_LOG_WARN, "pack_Appointment %s\n", _("error"));
 	 }
 	 break;
        case ADDRESS:
-	 address=&maddress->a;
-	 /* memset(&address, 0, sizeof(address)); */
-	 header.rec_len = pack_Address(address, record, sizeof(record)-1);
+	 addr=&maddr->addr;
+	 /* memset(&addr, 0, sizeof(addr)); */
+	 header.rec_len = pack_Address(addr, record, sizeof(record)-1);
 	 if (!header.rec_len) {
 	    PRINT_FILE_LINE;
 	    jp_logf(JP_LOG_WARN, "pack_Address %s\n", _("error"));
@@ -2029,8 +2029,8 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 int undelete_pc_record(AppType app_type, void *VP, int flag)
 {
    PC3RecordHeader header;
-   MyAppointment *mapp;
-   MyAddress *maddress;
+   MyAppointment *mappt;
+   MyAddress *maddr;
    MyToDo *mtodo;
    MyMemo *mmemo;
    unsigned int unique_id;
@@ -2049,19 +2049,19 @@ int undelete_pc_record(AppType app_type, void *VP, int flag)
    }
 
    /* to keep the compiler happy with -Wall*/
-   mapp     = NULL;
-   maddress = NULL;
-   mtodo    = NULL;
-   mmemo    = NULL;
+   mappt = NULL;
+   maddr = NULL;
+   mtodo = NULL;
+   mmemo = NULL;
    switch (app_type) {
     case DATEBOOK:
-      mapp = (MyAppointment *) VP;
-      unique_id = mapp->unique_id;
+      mappt = (MyAppointment *) VP;
+      unique_id = mappt->unique_id;
       strcpy(filename, "DatebookDB.pc3");
       break;
     case ADDRESS:
-      maddress = (MyAddress *) VP;
-      unique_id = maddress->unique_id;
+      maddr = (MyAddress *) VP;
+      unique_id = maddr->unique_id;
       strcpy(filename, "AddressDB.pc3");
       break;
     case TODO:

@@ -369,7 +369,7 @@ int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
 #ifdef ENABLE_DATEBK
 	 get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
 	 if (use_db3_tags) {
-	    ret = db3_parse_tag(temp_al->ma.a.note, &db3_type, &db4);
+	    ret = db3_parse_tag(temp_al->mappt.appt.note, &db3_type, &db4);
 	    jp_logf(JP_LOG_DEBUG, "category = 0x%x\n", db4.category);
 	    cat_bit=1<<db4.category;
 	    if (!(cat_bit & datebook_category)) {
@@ -378,7 +378,7 @@ int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
 	    }
 	 }
 #endif
-	 if (isApptOnDate(&(temp_al->ma.a), &date)) {
+	 if (isApptOnDate(&(temp_al->mappt.appt), &date)) {
 	    if (num_shown) {
 #ifdef ENABLE_GTK2
 	       gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(text_buffers[n]), "\n", -1);
@@ -390,17 +390,17 @@ int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
 	       gstr=g_string_new("");
 	    }
 	    num_shown++;
-	    if (temp_al->ma.a.event) {
+	    if (temp_al->mappt.appt.event) {
 	       strcpy(desc, "*");
 	    } else {
 	       get_pref_time_no_secs(datef);
-	       jp_strftime(desc, sizeof(desc), datef, &(temp_al->ma.a.begin));
+	       jp_strftime(desc, sizeof(desc), datef, &(temp_al->mappt.appt.begin));
 	       strcat(desc, " ");
 	    }
 	    g_string_append(gstr, desc);
-	    g_string_append(gstr, temp_al->ma.a.description);
-	    if (temp_al->ma.a.description) {
-	       strncat(desc, temp_al->ma.a.description, 36);
+	    g_string_append(gstr, temp_al->mappt.appt.description);
+	    if (temp_al->mappt.appt.description) {
+	       strncat(desc, temp_al->mappt.appt.description, 36);
 	       desc[35]='\0';
 	    }
 	    remove_cr_lfs(desc);

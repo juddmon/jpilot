@@ -148,7 +148,7 @@ static int get_categories(FILE *in, struct CategoryAppInfo *ai)
    return count;
 }
 
-int get_repeat(FILE *in, struct Appointment *a)
+int get_repeat(FILE *in, struct Appointment *appt)
 {
    time_t t;
    struct tm *now;
@@ -164,16 +164,16 @@ int get_repeat(FILE *in, struct Appointment *a)
    printf("  repeat entry follows:\n");
    printf("%d exceptions\n", s);
 #endif
-   if (a) {
-      a->exception=NULL;
-      memset(&(a->repeatEnd), 0, sizeof(a->repeatEnd));
+   if (appt) {
+      appt->exception=NULL;
+      memset(&(appt->repeatEnd), 0, sizeof(appt->repeatEnd));
    }
 
-   if (a) {
-      a->exceptions=s;
+   if (appt) {
+      appt->exceptions=s;
       if (s>0) {
-	 a->exception=malloc(sizeof(struct tm) * s);
-	 if (!(a->exceptions)) {
+	 appt->exception=malloc(sizeof(struct tm) * s);
+	 if (!(appt->exceptions)) {
 	    jp_logf(JP_LOG_WARN, "get_repeat(): %s\n", _("Out of memory"));
 	 }
       }
@@ -183,10 +183,10 @@ int get_repeat(FILE *in, struct Appointment *a)
    for (i=0; i<s; i++) {
       fread(str_long, 4, 1, in);
       l = x86_long(str_long);
-      if (a) {
+      if (appt) {
 	 t = l;
 	 now = localtime(&t);
-	 memcpy(&(a->exception[i]), now, sizeof(struct tm));
+	 memcpy(&(appt->exception[i]), now, sizeof(struct tm));
       }
 #ifdef JPILOT_DEBUG
       printf("date_exception_entry: ");
@@ -201,8 +201,8 @@ int get_repeat(FILE *in, struct Appointment *a)
 #endif
 
    if (s==0x0000) {
-      if (a) {
-	 a->repeatType=repeatNone;
+      if (appt) {
+	 appt->repeatType=repeatNone;
       }
       return 0;
    }
@@ -231,8 +231,8 @@ int get_repeat(FILE *in, struct Appointment *a)
 
    fread(str_long, 4, 1, in);
    repeat_type = x86_long(str_long);
-   if (a) {
-      a->repeatType=repeat_type;
+   if (appt) {
+      appt->repeatType=repeat_type;
    }
 #ifdef JPILOT_DEBUG
    printf("repeatType=%d ", repeat_type);
@@ -265,29 +265,29 @@ int get_repeat(FILE *in, struct Appointment *a)
 #ifdef JPILOT_DEBUG
    printf("Interval = %d\n", l);
 #endif
-   if (a) {
-      a->repeatFrequency=l;
+   if (appt) {
+      appt->repeatFrequency=l;
    }
 
    fread(str_long, 4, 1, in);
    l = x86_long(str_long);
-   if (a) {
+   if (appt) {
       t = l;
       now = localtime(&t);
-      memcpy(&(a->repeatEnd), now, sizeof(struct tm));
+      memcpy(&(appt->repeatEnd), now, sizeof(struct tm));
    }
    if (t==0x749e77bf) {
-      a->repeatForever=TRUE;
+      appt->repeatForever=TRUE;
    } else {
-      a->repeatForever=FALSE;
+      appt->repeatForever=FALSE;
    }
 #ifdef JPILOT_DEBUG
    printf("repeatEnd: 0x%x -> ", l); print_date(l);
 #endif
    fread(str_long, 4, 1, in);
    l = x86_long(str_long);
-   if (a) {
-      a->repeatWeekstart=l;
+   if (appt) {
+      appt->repeatWeekstart=l;
    }
 #ifdef JPILOT_DEBUG
    printf("First Day of Week = %d\n", l);
@@ -310,7 +310,7 @@ int get_repeat(FILE *in, struct Appointment *a)
 
       fread(str_long, 1, 1, in);
       for (i=0, bit=1; i<7; i++, bit=bit<<1) {
-	 a->repeatDays[i]=( str_long[0] & bit );
+	 appt->repeatDays[i]=( str_long[0] & bit );
       }
 #ifdef JPILOT_DEBUG
       printf("Days Mask = %x\n", str_long[0]);
@@ -654,7 +654,7 @@ int dat_get_appointments(FILE *in, AppointmentList **alist, struct CategoryAppIn
 #ifdef JPILOT_DEBUG
       printf("----- record %d -----\n", i+1);
 #endif
-      memset(&(temp_alist->ma.a), 0, sizeof(temp_alist->ma.a));
+      memset(&(temp_alist->mappt.appt), 0, sizeof(temp_alist->mappt.appt));
       temp_alist->next=NULL;
       temp_alist->app_type=DATEBOOK;
 
@@ -691,52 +691,52 @@ int dat_get_appointments(FILE *in, AppointmentList **alist, struct CategoryAppIn
 	    return 0;
 	 }
 	 if (fa[j].type==DAT_TYPE_REPEAT) {
-	    get_repeat(in, &(temp_alist->ma.a));
+	    get_repeat(in, &(temp_alist->mappt.appt));
 	 }
       }
       /* Start Time */
       t = fa[0].date;
       now = localtime(&t);
-      memcpy(&(temp_alist->ma.a.begin), now, sizeof(struct tm));
+      memcpy(&(temp_alist->mappt.appt.begin), now, sizeof(struct tm));
       /* End Time */
       t = fa[1].i;
       now = localtime(&t);
-      memcpy(&(temp_alist->ma.a.end), now, sizeof(struct tm));
+      memcpy(&(temp_alist->mappt.appt.end), now, sizeof(struct tm));
       /* Description */
       if (fa[2].str) {
-	 temp_alist->ma.a.description=fa[2].str;
+	 temp_alist->mappt.appt.description=fa[2].str;
       } else {
-	 temp_alist->ma.a.description=strdup("");
+	 temp_alist->mappt.appt.description=strdup("");
       }
       /* Duration */
       /* what is duration? (repeatForever?) */
       /* Note */
       if (fa[4].str) {
-	 temp_alist->ma.a.note=fa[4].str;
+	 temp_alist->mappt.appt.note=fa[4].str;
       } else {
-	 temp_alist->ma.a.note=strdup("");
+	 temp_alist->mappt.appt.note=strdup("");
       }
       /* Untimed */
-      temp_alist->ma.a.event=fa[5].i;
+      temp_alist->mappt.appt.event=fa[5].i;
       /* Private */
-      temp_alist->ma.attrib = 0;
+      temp_alist->mappt.attrib = 0;
       if (fa[6].i) {
-	 temp_alist->ma.attrib |= DAT_STATUS_PRIVATE;
+	 temp_alist->mappt.attrib |= DAT_STATUS_PRIVATE;
       }
       /* Category */
-      temp_alist->ma.unique_id = fa[7].i;
-      if (temp_alist->ma.unique_id > 15) {
-	 temp_alist->ma.unique_id = 15;
+      temp_alist->mappt.unique_id = fa[7].i;
+      if (temp_alist->mappt.unique_id > 15) {
+	 temp_alist->mappt.unique_id = 15;
       }
-      if (temp_alist->ma.unique_id < 0) {
-	 temp_alist->ma.unique_id = 0;
+      if (temp_alist->mappt.unique_id < 0) {
+	 temp_alist->mappt.unique_id = 0;
       }	 
       /* Alarm Set */
-      temp_alist->ma.a.alarm=fa[8].i;
+      temp_alist->mappt.appt.alarm=fa[8].i;
       /* Alarm Advance Units */
-      temp_alist->ma.a.advance=fa[9].i;
+      temp_alist->mappt.appt.advance=fa[9].i;
       /* Alarm Advance Type */
-      temp_alist->ma.a.advanceUnits=fa[10].i;
+      temp_alist->mappt.appt.advanceUnits=fa[10].i;
 
       /* Append onto the end of the list */
       if (last_alist) {
@@ -887,31 +887,31 @@ int dat_get_addresses(FILE *in, AddressList **addrlist, struct CategoryAppInfo *
 	 }
       }
       for (k=0; k<19; k++) {
-	 temp_addrlist->ma.a.entry[k]=fa[dat_order[k]].str;
+	 temp_addrlist->maddr.addr.entry[k]=fa[dat_order[k]].str;
       }
-      temp_addrlist->ma.a.phoneLabel[0] = fa[4].i;
-      temp_addrlist->ma.a.phoneLabel[1] = fa[6].i;
-      temp_addrlist->ma.a.phoneLabel[2] = fa[8].i;
-      temp_addrlist->ma.a.phoneLabel[3] = fa[10].i;
-      temp_addrlist->ma.a.phoneLabel[4] = fa[12].i;
+      temp_addrlist->maddr.addr.phoneLabel[0] = fa[4].i;
+      temp_addrlist->maddr.addr.phoneLabel[1] = fa[6].i;
+      temp_addrlist->maddr.addr.phoneLabel[2] = fa[8].i;
+      temp_addrlist->maddr.addr.phoneLabel[3] = fa[10].i;
+      temp_addrlist->maddr.addr.phoneLabel[4] = fa[12].i;
       /* Private */
-      temp_addrlist->ma.attrib = 0;
+      temp_addrlist->maddr.attrib = 0;
       if (fa[20].i) {
-	 temp_addrlist->ma.attrib |= DAT_STATUS_PRIVATE;
+	 temp_addrlist->maddr.attrib |= DAT_STATUS_PRIVATE;
       }
       /* Category */
-      temp_addrlist->ma.unique_id = fa[21].i;
-      if (temp_addrlist->ma.unique_id > 15) {
-	 temp_addrlist->ma.unique_id = 15;
+      temp_addrlist->maddr.unique_id = fa[21].i;
+      if (temp_addrlist->maddr.unique_id > 15) {
+	 temp_addrlist->maddr.unique_id = 15;
       }
-      if (temp_addrlist->ma.unique_id < 0) {
-	 temp_addrlist->ma.unique_id = 0;
+      if (temp_addrlist->maddr.unique_id < 0) {
+	 temp_addrlist->maddr.unique_id = 0;
       }	 
       /* Show phone in list */
-      temp_addrlist->ma.a.showPhone = fa[26].i - 1;
+      temp_addrlist->maddr.addr.showPhone = fa[26].i - 1;
       for (k=0; k<19; k++) {
-	 if (temp_addrlist->ma.a.entry[k]==NULL) {
-	    temp_addrlist->ma.a.entry[k]=strdup("");
+	 if (temp_addrlist->maddr.addr.entry[k]==NULL) {
+	    temp_addrlist->maddr.addr.entry[k]=strdup("");
 	 }
       }
       /* Append onto the end of the list */

@@ -359,7 +359,7 @@ static void connect_changed_signals(int con_or_dis)
 int address_print()
 {
    long this_many;
-   MyAddress *ma;
+   MyAddress *maddr;
    AddressList *address_list;
    AddressList address_list1;
 
@@ -367,11 +367,11 @@ int address_print()
 
    address_list=NULL;
    if (this_many==1) {
-      ma = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
-      if (ma < (MyAddress *)CLIST_MIN_DATA) {
+      maddr = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
+      if (maddr < (MyAddress *)CLIST_MIN_DATA) {
 	 return -1;
       }
-      memcpy(&(address_list1.ma), ma, sizeof(MyAddress));
+      memcpy(&(address_list1.maddr), maddr, sizeof(MyAddress));
       address_list1.next=NULL;
       address_list = &address_list1;
    }
@@ -539,7 +539,7 @@ int address_import_callback(GtkWidget *parent_window, const char *file_path, int
       dat_get_addresses(in, &addrlist, &cai);
       import_all=FALSE;
       for (temp_addrlist=addrlist; temp_addrlist; temp_addrlist=temp_addrlist->next) {
-	 index=temp_addrlist->ma.unique_id-1;
+	 index=temp_addrlist->maddr.unique_id-1;
 	 if (index<0) {
 	    strncpy(old_cat_name, _("Unfiled"), 16);
 	    old_cat_name[16]='\0';
@@ -550,7 +550,7 @@ int address_import_callback(GtkWidget *parent_window, const char *file_path, int
 	 }
 	 attrib=0;
 	 /* Figure out what category it was in the dat file */
-	 index=temp_addrlist->ma.unique_id-1;
+	 index=temp_addrlist->maddr.unique_id-1;
 	 suggested_cat_num=0;
 	 if (index>-1) {
 	    for (i=0; i<NUM_ADDRESS_CAT_ITEMS; i++) {
@@ -565,12 +565,12 @@ int address_import_callback(GtkWidget *parent_window, const char *file_path, int
 
 	 ret=0;
 	 if (!import_all) {
-	    address_to_text(&(temp_addrlist->ma.a), text, sizeof(text));
+	    address_to_text(&(temp_addrlist->maddr.addr), text, sizeof(text));
 	    ret=import_record_ask(parent_window, pane,
 				  text,
 				  &(address_app_info.category),
 				  old_cat_name,
-				  (temp_addrlist->ma.attrib & 0x10),
+				  (temp_addrlist->maddr.attrib & 0x10),
 				  suggested_cat_num,
 				  &new_cat_num);
 	 } else {
@@ -582,9 +582,9 @@ int address_import_callback(GtkWidget *parent_window, const char *file_path, int
 	    import_all=TRUE;
 	 }
 	 attrib = (new_cat_num & 0x0F) |
-	   ((temp_addrlist->ma.attrib & 0x10) ? dlpRecAttrSecret : 0);
+	   ((temp_addrlist->maddr.attrib & 0x10) ? dlpRecAttrSecret : 0);
 	 if ((ret==DIALOG_SAID_IMPORT_YES) || (import_all)) {
-	    pc_address_write(&(temp_addrlist->ma.a), NEW_PC_REC, attrib, NULL);
+	    pc_address_write(&(temp_addrlist->maddr.addr), NEW_PC_REC, attrib, NULL);
 	 }
       }
       free_AddressList(&addrlist);
@@ -670,7 +670,7 @@ static char *vCardMapType(int label)
 void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 		       int type, const char *filename)
 {
-   MyAddress *ma;
+   MyAddress *maddr;
    GList *list, *temp_list;
    FILE *out;
    struct stat statb;
@@ -730,8 +730,8 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
    }
 
    for (i=0, temp_list=list; temp_list; temp_list = temp_list->next, i++) {
-      ma = gtk_clist_get_row_data(GTK_CLIST(clist), (int) temp_list->data);
-      if (!ma) {
+      maddr = gtk_clist_get_row_data(GTK_CLIST(clist), (int) temp_list->data);
+      if (!maddr) {
 	 continue;
 	 jp_logf(JP_LOG_WARN, _("Can't export address %d\n"), (long) temp_list->data + 1);
       }
@@ -747,19 +747,19 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 
 	 /* Todo Should I translate these? */
 	 fprintf(out, "Address: exported from %s on %s\n", PN, text);
-	 fprintf(out, "Category: %s\n", address_app_info.category.name[ma->attrib & 0x0F]);
+	 fprintf(out, "Category: %s\n", address_app_info.category.name[maddr->attrib & 0x0F]);
 	 fprintf(out, "Private: %s\n",
-		 (ma->attrib & dlpRecAttrSecret) ? "Yes":"No");
+		 (maddr->attrib & dlpRecAttrSecret) ? "Yes":"No");
 	 for (n=0; (field_names[n]) && (n < NUM_ADDRESS_ENTRIES); n++) {
 	    fprintf(out, "%s: ", field_names[n]);
-	    fprintf(out, "%s\n", ma->a.entry[order[n]] ?
-		    ma->a.entry[order[n]] : "");
+	    fprintf(out, "%s\n", maddr->addr.entry[order[n]] ?
+		    maddr->addr.entry[order[n]] : "");
 	 }
 	 for (n = 0; (field_names[n + NUM_ADDRESS_ENTRIES]) && ( n < NUM_PHONE_ENTRIES); n++) {
 	    fprintf(out, "%s: ", field_names[n + NUM_ADDRESS_ENTRIES]);
-	    fprintf(out, "%d\n", ma->a.phoneLabel[n]);
+	    fprintf(out, "%d\n", maddr->addr.phoneLabel[n]);
 	 }
-	 fprintf(out, "Show Phone: %d\n\n", ma->a.showPhone);
+	 fprintf(out, "Show Phone: %d\n\n", maddr->addr.showPhone);
 	 break;
        case EXPORT_TYPE_CSV:
 	 get_pref(PREF_CHAR_SET, &char_set, NULL);
@@ -788,53 +788,53 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 }
 	 len=0;
 	 str_to_csv_str(csv_text,
-			address_app_info.category.name[ma->attrib & 0x0F]);
+			address_app_info.category.name[maddr->attrib & 0x0F]);
 	 fprintf(out, "\"%s\",", csv_text);
-	 fprintf(out, "\"%s\",", (ma->attrib & dlpRecAttrSecret) ? "1":"0");
+	 fprintf(out, "\"%s\",", (maddr->attrib & dlpRecAttrSecret) ? "1":"0");
 	 if (!use_jos && (char_set == CHAR_SET_JAPANESE)) {
 	    char *tmp_p;
 	    for (n = 0; n < NUM_ADDRESS_ENTRIES + NUM_ADDRESS_EXT_ENTRIES; n++) {
 	       csv_text[0] = '\0';
 	       if ((order_ja[n] < NUM_ADDRESS_EXT_ENTRIES)
-		   && (tmp_p = strchr(ma->a.entry[order_ja[n]],'\1'))) {
-		  if (strlen(ma->a.entry[order_ja[n]]) > 65535) {
+		   && (tmp_p = strchr(maddr->addr.entry[order_ja[n]],'\1'))) {
+		  if (strlen(maddr->addr.entry[order_ja[n]]) > 65535) {
 		     jp_logf(JP_LOG_WARN, "%s > 65535\n", _("Field"));
 		  } else {
 		     *(tmp_p) = '\0';
-		     str_to_csv_str(csv_text, ma->a.entry[order_ja[n]]);
+		     str_to_csv_str(csv_text, maddr->addr.entry[order_ja[n]]);
 		     *(tmp_p) = '\1';
 		  }
 	       } else if (order_ja[n] < NUM_ADDRESS_ENTRIES) {
-		  if (strlen(ma->a.entry[i]) > 65535) {
+		  if (strlen(maddr->addr.entry[i]) > 65535) {
 		     jp_logf(JP_LOG_WARN, "%s > 65535\n", _("Field"));
 		  } else {
-		     str_to_csv_str(csv_text, ma->a.entry[order_ja[n]]);
+		     str_to_csv_str(csv_text, maddr->addr.entry[order_ja[n]]);
 		  }
-	       } else if (ma->a.entry[order_ja[n] - NUM_ADDRESS_ENTRIES] 
-			  && (tmp_p = strchr(ma->a.entry[order_ja[n] - NUM_ADDRESS_ENTRIES], '\1'))) {
+	       } else if (maddr->addr.entry[order_ja[n] - NUM_ADDRESS_ENTRIES] 
+			  && (tmp_p = strchr(maddr->addr.entry[order_ja[n] - NUM_ADDRESS_ENTRIES], '\1'))) {
 		  str_to_csv_str(csv_text, (tmp_p + 1));
 	       } else {
-		  str_to_csv_str(csv_text, ma->a.entry[order_ja[n]]);
+		  str_to_csv_str(csv_text, maddr->addr.entry[order_ja[n]]);
 	       }
 	       fprintf(out, "\"%s\", ", csv_text);
 	    }
 	 } else {
 	    for (n = 0; n < NUM_ADDRESS_ENTRIES; n++) {
 	       csv_text[0]='\0';
-	       if (ma->a.entry[order[n]]) {
-		  if (strlen(ma->a.entry[order[n]])>65535) {
+	       if (maddr->addr.entry[order[n]]) {
+		  if (strlen(maddr->addr.entry[order[n]])>65535) {
 		     jp_logf(JP_LOG_WARN, "%s > 65535\n", _("Field"));
 		  } else {
-		     str_to_csv_str(csv_text, ma->a.entry[order[n]]);
+		     str_to_csv_str(csv_text, maddr->addr.entry[order[n]]);
 		  }
 	       }
 	       fprintf(out, "\"%s\",", csv_text);
 	    }
 	 }
 	 for (n = 0; n < NUM_PHONE_ENTRIES; n++) {
-	    fprintf(out, "\"%d\",", ma->a.phoneLabel[n]);
+	    fprintf(out, "\"%d\",", maddr->addr.phoneLabel[n]);
 	 }
-	 fprintf(out, "\"%d\"", ma->a.showPhone);
+	 fprintf(out, "\"%d\"", maddr->addr.showPhone);
 	 fprintf(out, "\n");
 	 break;
 
@@ -842,17 +842,17 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 /* RFC 2426: vCard MIME Directory Profile */
 	 fprintf(out, "BEGIN:VCARD\nVERSION:3.0\n");
 	 fprintf(out, "PRODID:%s\n", FPI_STRING);
-	 if (ma->attrib & dlpRecAttrSecret) {
+	 if (maddr->attrib & dlpRecAttrSecret) {
 	    fprintf(out, "CLASS:PRIVATE\n");
 	 }
 	 fprintf(out, "UID:palm-addressbook-%08x-%08lx-%s@%s\n",
-		 ma->unique_id, userid, username, hostname);
+		 maddr->unique_id, userid, username, hostname);
 	 str_to_vcard_str(csv_text, sizeof(csv_text), 
-			  address_app_info.category.name[ma->attrib & 0x0F]);
+			  address_app_info.category.name[maddr->attrib & 0x0F]);
 	 fprintf(out, "CATEGORIES:%s\n", csv_text);
-	 if (ma->a.entry[0] || ma->a.entry[1]) {
-	    char *last = ma->a.entry[0];
-	    char *first = ma->a.entry[1];
+	 if (maddr->addr.entry[0] || maddr->addr.entry[1]) {
+	    char *last = maddr->addr.entry[0];
+	    char *first = maddr->addr.entry[1];
 	    fprintf(out, "FN:");
 	    if (first) {
 	       str_to_vcard_str(csv_text, sizeof(csv_text), first);
@@ -878,40 +878,40 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	       fprintf(out, "%s", csv_text);
 	    }
 	    fprintf(out, "\n");
-	 } else if (ma->a.entry[2]) {
-	    str_to_vcard_str(csv_text, sizeof(csv_text), ma->a.entry[2]);
+	 } else if (maddr->addr.entry[2]) {
+	    str_to_vcard_str(csv_text, sizeof(csv_text), maddr->addr.entry[2]);
 	    fprintf(out, "FN:%s\nN:%s\n", csv_text, csv_text);
 	 } else {
 	    fprintf(out, "FN:-Unknown-\nN:known-;-Un\n");
 	 }
-	 if (ma->a.entry[13]) {
-	    str_to_vcard_str(csv_text, sizeof(csv_text), ma->a.entry[13]);
+	 if (maddr->addr.entry[13]) {
+	    str_to_vcard_str(csv_text, sizeof(csv_text), maddr->addr.entry[13]);
 	    fprintf(out, "TITLE:%s\n", csv_text);
 	 }
-	 if (ma->a.entry[2]) {
-	    str_to_vcard_str(csv_text, sizeof(csv_text), ma->a.entry[2]);
+	 if (maddr->addr.entry[2]) {
+	    str_to_vcard_str(csv_text, sizeof(csv_text), maddr->addr.entry[2]);
 	    fprintf(out, "ORG:%s\n", csv_text);
 	 }
 	 for (n = 3; n < 8; n++) {
-	    if (ma->a.entry[n]) {
-	       str_to_vcard_str(csv_text, sizeof(csv_text), ma->a.entry[n]);
-	       if (ma->a.phoneLabel[n - 3] == 4) {
+	    if (maddr->addr.entry[n]) {
+	       str_to_vcard_str(csv_text, sizeof(csv_text), maddr->addr.entry[n]);
+	       if (maddr->addr.phoneLabel[n - 3] == 4) {
 		  fprintf(out, "EMAIL:%s\n", csv_text);
 	       } else {
-		  fprintf(out, "TEL;TYPE=%s", vCardMapType(ma->a.phoneLabel[n - 3]));
-		  if (ma->a.showPhone == n - 3) {
+		  fprintf(out, "TEL;TYPE=%s", vCardMapType(maddr->addr.phoneLabel[n - 3]));
+		  if (maddr->addr.showPhone == n - 3) {
 		     fprintf(out, ",pref");
 		  }
 		  fprintf(out, ":%s\n", csv_text);
 	       }
 	    }
 	 }
-	 if (ma->a.entry[8] || ma->a.entry[9] || ma->a.entry[10] || ma->a.entry[11] || ma->a.entry[12]) {
+	 if (maddr->addr.entry[8] || maddr->addr.entry[9] || maddr->addr.entry[10] || maddr->addr.entry[11] || maddr->addr.entry[12]) {
 	    /* XXX wrap this line. */
 	    fprintf(out, "ADR:;;");
 	    for (n = 8; n < 13; n++) {
-	       if (ma->a.entry[n]) {
-		  str_to_vcard_str(csv_text, sizeof(csv_text), ma->a.entry[n]);
+	       if (maddr->addr.entry[n]) {
+		  str_to_vcard_str(csv_text, sizeof(csv_text), maddr->addr.entry[n]);
 		  fprintf(out, "%s", csv_text);
 	       }
 	       if (n < 12) {
@@ -920,14 +920,14 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	    }
 	    fprintf(out, "\n");
 	 }
-	 if (ma->a.entry[14] || ma->a.entry[15] || ma->a.entry[16] ||
-	     ma->a.entry[17] || ma->a.entry[18]) {
+	 if (maddr->addr.entry[14] || maddr->addr.entry[15] || maddr->addr.entry[16] ||
+	     maddr->addr.entry[17] || maddr->addr.entry[18]) {
 	    char *labels[]={"Custom1","Custom2","Custom3","Custom4","Note"};
 	    int firstnote=1;
 	    fprintf(out, "NOTE:");
 	    for (n=14;n<=18;n++) {
-	       if (ma->a.entry[n]) {
-		  str_to_vcard_str(csv_text, sizeof(csv_text), ma->a.entry[n]);
+	       if (maddr->addr.entry[n]) {
+		  str_to_vcard_str(csv_text, sizeof(csv_text), maddr->addr.entry[n]);
 		  if (firstnote == 0) {
 		     fprintf(out, " ");
 		  }
@@ -952,11 +952,11 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 {
 	    char *cn;
 	    char *email = NULL;
-	    char *last = ma->a.entry[0];
-	    char *first = ma->a.entry[1];
+	    char *last = maddr->addr.entry[0];
+	    char *first = maddr->addr.entry[1];
 	    for (n = 3; n < 8; n++) {
-	       if (ma->a.entry[n] && ma->a.phoneLabel[n - 3] == 4) {
-		  email = ma->a.entry[n];
+	       if (maddr->addr.entry[n] && maddr->addr.phoneLabel[n - 3] == 4) {
+		  email = maddr->addr.entry[n];
 		  break;
 	       }
 	    }
@@ -968,8 +968,8 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 		  last = first;
 		  first = NULL;
 	       }
-	    } else if (ma->a.entry[2]) {
-	       last = ma->a.entry[2];
+	    } else if (maddr->addr.entry[2]) {
+	       last = maddr->addr.entry[2];
 	       cn = last;
 	    } else {
 	       last = "Unknown";
@@ -987,37 +987,37 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	    ldif_out(out, "sn", "%s", last);
 	    if (first)
 	      ldif_out(out, "givenName", "%s", first);
-	    if (ma->a.entry[2])
-	      ldif_out(out, "o", "%s", ma->a.entry[2]);
+	    if (maddr->addr.entry[2])
+	      ldif_out(out, "o", "%s", maddr->addr.entry[2]);
 	    for (n = 3; n < 8; n++) {
-	       if (ma->a.entry[n]) {
-		  ldif_out(out, ldifMapType(ma->a.phoneLabel[n - 3]), "%s", ma->a.entry[n]);
+	       if (maddr->addr.entry[n]) {
+		  ldif_out(out, ldifMapType(maddr->addr.phoneLabel[n - 3]), "%s", maddr->addr.entry[n]);
 	       }
 	    }
-	    if (ma->a.entry[8])
-	      ldif_out(out, "postalAddress", "%s", ma->a.entry[8]);
-	    if (ma->a.entry[9])
-	      ldif_out(out, "l", "%s", ma->a.entry[9]);
-	    if (ma->a.entry[10])
-	      ldif_out(out, "st", "%s", ma->a.entry[10]);
-	    if (ma->a.entry[11])
-	      ldif_out(out, "postalCode", "%s", ma->a.entry[11]);
-	    if (ma->a.entry[12])
-	      ldif_out(out, "c", "%s", ma->a.entry[12]);
-	    if (ma->a.entry[13])
-	      ldif_out(out, "title", "%s", ma->a.entry[13]);
-	    if (ma->a.entry[14])
-	      ldif_out(out, "custom1", "%s", ma->a.entry[14]);
-	    if (ma->a.entry[15])
-	      ldif_out(out, "custom2", "%s", ma->a.entry[15]);
-	    if (ma->a.entry[16])
-	      ldif_out(out, "custom3", "%s", ma->a.entry[16]);
-	    if (ma->a.entry[17])
-	      ldif_out(out, "custom4", "%s", ma->a.entry[17]);
-	    if (ma->a.entry[18])
-	      ldif_out(out, "description", "%s", ma->a.entry[18]);
-/*	    if (ma->a.entry[19])
-	      ldif_out(out, "seeAlso", "%s", ma->a.entry[19]);*/
+	    if (maddr->addr.entry[8])
+	      ldif_out(out, "postalAddress", "%s", maddr->addr.entry[8]);
+	    if (maddr->addr.entry[9])
+	      ldif_out(out, "l", "%s", maddr->addr.entry[9]);
+	    if (maddr->addr.entry[10])
+	      ldif_out(out, "st", "%s", maddr->addr.entry[10]);
+	    if (maddr->addr.entry[11])
+	      ldif_out(out, "postalCode", "%s", maddr->addr.entry[11]);
+	    if (maddr->addr.entry[12])
+	      ldif_out(out, "c", "%s", maddr->addr.entry[12]);
+	    if (maddr->addr.entry[13])
+	      ldif_out(out, "title", "%s", maddr->addr.entry[13]);
+	    if (maddr->addr.entry[14])
+	      ldif_out(out, "custom1", "%s", maddr->addr.entry[14]);
+	    if (maddr->addr.entry[15])
+	      ldif_out(out, "custom2", "%s", maddr->addr.entry[15]);
+	    if (maddr->addr.entry[16])
+	      ldif_out(out, "custom3", "%s", maddr->addr.entry[16]);
+	    if (maddr->addr.entry[17])
+	      ldif_out(out, "custom4", "%s", maddr->addr.entry[17]);
+	    if (maddr->addr.entry[18])
+	      ldif_out(out, "description", "%s", maddr->addr.entry[18]);
+/*	    if (maddr->addr.entry[19])
+	      ldif_out(out, "seeAlso", "%s", maddr->addr.entry[19]);*/
 	    fprintf(out, "\n");
 	    break;
 	 }
@@ -1093,23 +1093,23 @@ static int find_sorted_cat(int cat)
 void cb_delete_address(GtkWidget *widget,
 		       gpointer   data)
 {
-   MyAddress *ma;
+   MyAddress *maddr;
    int flag;
    int show_priv;
    long char_set; /* JPA */
    int i; /* JPA */
 
-   ma = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
-   if (ma < (MyAddress *)CLIST_MIN_DATA) {
+   maddr = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
+   if (maddr < (MyAddress *)CLIST_MIN_DATA) {
       return;
    }
    /* JPA convert to Palm character set */
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    if (char_set != CHAR_SET_LATIN1) {
       for (i=0; i<19; i++) {
-	 if (ma->a.entry[i]) {
-	    charset_j2p((unsigned char *)ma->a.entry[i],
-			strlen(ma->a.entry[i])+1, char_set);
+	 if (maddr->addr.entry[i]) {
+	    charset_j2p((unsigned char *)maddr->addr.entry[i],
+			strlen(maddr->addr.entry[i])+1, char_set);
 	 }
       }
    }
@@ -1117,13 +1117,13 @@ void cb_delete_address(GtkWidget *widget,
    /* Do masking like Palm OS 3.5 */
    show_priv = show_privates(GET_PRIVATES);
    if ((show_priv != SHOW_PRIVATES) &&
-       (ma->attrib & dlpRecAttrSecret)) {
+       (maddr->attrib & dlpRecAttrSecret)) {
       return;
    }
    /* End Masking */
    flag = GPOINTER_TO_INT(data);
    if ((flag==MODIFY_FLAG) || (flag==DELETE_FLAG)) {
-      delete_pc_record(ADDRESS, ma, flag);
+      delete_pc_record(ADDRESS, maddr, flag);
       if (flag==DELETE_FLAG) {
 	 /* when we redraw we want to go to the line above the deleted one */
 	 if (clist_row_selected>0) {
@@ -1181,7 +1181,7 @@ void cb_resort(GtkWidget *widget,
 	       gpointer   data)
 {
    int by_company;
-   MyAddress *ma;
+   MyAddress *maddr;
 
    by_company=GPOINTER_TO_INT(data);
 
@@ -1193,12 +1193,12 @@ void cb_resort(GtkWidget *widget,
    }
 
    /* Return to this record after resorting */
-   ma = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
-   if (ma < (MyAddress *)CLIST_MIN_DATA) {
+   maddr = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
+   if (maddr < (MyAddress *)CLIST_MIN_DATA) {
       glob_find_id = 0;
    }
    else {
-      glob_find_id = ma->unique_id;
+      glob_find_id = maddr->unique_id;
    }
 
    address_clist_redraw();
@@ -1264,8 +1264,8 @@ static void cb_add_new_record(GtkWidget *widget,
 			      gpointer   data)
 {
    int i;
-   struct Address a;
-   MyAddress *ma;
+   struct Address addr;
+   MyAddress *maddr;
    unsigned char attrib;
    int flag;
    unsigned int unique_id;
@@ -1277,20 +1277,20 @@ static void cb_add_new_record(GtkWidget *widget,
    GtkTextIter end_iter;
 #endif
 
-   memset(&a, 0, sizeof(a));
+   memset(&addr, 0, sizeof(addr));
    flag=GPOINTER_TO_INT(data);
    unique_id=0;
-   ma=NULL;
+   maddr=NULL;
 
    /* Do masking like Palm OS 3.5 */
    if ((flag==COPY_FLAG) || (flag==MODIFY_FLAG)) {
       show_priv = show_privates(GET_PRIVATES);
-      ma = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
-      if (ma < (MyAddress *)CLIST_MIN_DATA) {
+      maddr = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
+      if (maddr < (MyAddress *)CLIST_MIN_DATA) {
 	 return;
       }
       if ((show_priv != SHOW_PRIVATES) &&
-	  (ma->attrib & dlpRecAttrSecret)) {
+	  (maddr->attrib & dlpRecAttrSecret)) {
 	 return;
       }
    }
@@ -1298,22 +1298,22 @@ static void cb_add_new_record(GtkWidget *widget,
    if ((flag==NEW_FLAG) || (flag==COPY_FLAG) || (flag==MODIFY_FLAG)) {
       /*These rec_types are both the same for now */
       if (flag==MODIFY_FLAG) {
-	 ma = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
-	 unique_id=ma->unique_id;
-	 if (ma < (MyAddress *)CLIST_MIN_DATA) {
+	 maddr = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
+	 unique_id=maddr->unique_id;
+	 if (maddr < (MyAddress *)CLIST_MIN_DATA) {
 	    return;
 	 }
-	 if ((ma->rt==DELETED_PALM_REC) || 
-	     (ma->rt==DELETED_PC_REC)   ||
-	     (ma->rt==MODIFIED_PALM_REC)) {
+	 if ((maddr->rt==DELETED_PALM_REC) || 
+	     (maddr->rt==DELETED_PC_REC)   ||
+	     (maddr->rt==MODIFIED_PALM_REC)) {
 	    jp_logf(JP_LOG_INFO, _("You can't modify a record that is deleted\n"));
 	    return;
 	 }
       }
-      a.showPhone=0;
+      addr.showPhone=0;
       for (i=0; i<NUM_PHONE_ENTRIES; i++) {
 	 if (GTK_TOGGLE_BUTTON(radio_button[i])->active) {
-	    a.showPhone=i;
+	    addr.showPhone=i;
 	 }
       }
       get_pref(PREF_CHAR_SET, &char_set, NULL);
@@ -1336,7 +1336,7 @@ static void cb_add_new_record(GtkWidget *widget,
 	       } else {
 		  strcpy(str0,str2);
 	       }
-	       a.entry[i] = str0;
+	       addr.entry[i] = str0;
 	       free(str1);free(str2);
 	    }
 	    i++;
@@ -1344,10 +1344,10 @@ static void cb_add_new_record(GtkWidget *widget,
 	 while (i<NUM_ADDRESS_ENTRIES) {
 #ifdef ENABLE_GTK2
 	    gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(gtk_txt_buf_address_text[i]),&start_iter,&end_iter);
-	    a.entry[i] =
+	    addr.entry[i] =
 	      gtk_text_buffer_get_text(GTK_TEXT_BUFFER(gtk_txt_buf_address_text[i]),&start_iter,&end_iter,TRUE);
 #else
-	    a.entry[i] =
+	    addr.entry[i] =
 	      gtk_editable_get_chars(GTK_EDITABLE(address_text[i]), 0, -1);
 #endif
 	    i++;
@@ -1356,16 +1356,16 @@ static void cb_add_new_record(GtkWidget *widget,
 	 for (i=0; i<NUM_ADDRESS_ENTRIES; i++) {
 #ifdef ENABLE_GTK2
 	    gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(gtk_txt_buf_address_text[i]),&start_iter,&end_iter);
-	    a.entry[i] =
+	    addr.entry[i] =
 	      gtk_text_buffer_get_text(GTK_TEXT_BUFFER(gtk_txt_buf_address_text[i]),&start_iter,&end_iter,TRUE);
 #else
-	    a.entry[i] =
+	    addr.entry[i] =
 	      gtk_editable_get_chars(GTK_EDITABLE(address_text[i]), 0, -1);
 #endif
 	 }
       }
       for (i=0; i<NUM_PHONE_ENTRIES; i++) {
-	 a.phoneLabel[i]=address_phone_label_selected[i];
+	 addr.phoneLabel[i]=address_phone_label_selected[i];
       }
 
       /*Get the attributes */
@@ -1375,18 +1375,18 @@ static void cb_add_new_record(GtkWidget *widget,
 
       if (flag==MODIFY_FLAG) {
 	 cb_delete_address(NULL, data);
-	 if ((ma->rt==PALM_REC) || (ma->rt==REPLACEMENT_PALM_REC)) {
-	    pc_address_write(&a, REPLACEMENT_PALM_REC, attrib, &unique_id);
+	 if ((maddr->rt==PALM_REC) || (maddr->rt==REPLACEMENT_PALM_REC)) {
+	    pc_address_write(&addr, REPLACEMENT_PALM_REC, attrib, &unique_id);
 	 } else {
 	    unique_id=0;
-	    pc_address_write(&a, NEW_PC_REC, attrib, &unique_id);
+	    pc_address_write(&addr, NEW_PC_REC, attrib, &unique_id);
 	 }
       } else {
 	 unique_id=0;
-	 pc_address_write(&a, NEW_PC_REC, attrib, &unique_id);
+	 pc_address_write(&addr, NEW_PC_REC, attrib, &unique_id);
       }
       address_clist_redraw();
-      free_Address(&a);
+      free_Address(&addr);
       glob_find_id = unique_id;
       address_find();
    }
@@ -1617,20 +1617,20 @@ static void cb_category(GtkWidget *item, int selection)
 
 
 /* Do masking like Palm OS 3.5 */
-static void clear_myaddress(MyAddress *ma)
+static void clear_myaddress(MyAddress *maddr)
 {
    int i;
 
-   ma->unique_id=0;
-   ma->attrib=ma->attrib & 0xF8;
+   maddr->unique_id=0;
+   maddr->attrib=maddr->attrib & 0xF8;
    for (i=0; i<5; i++) {
-      ma->a.phoneLabel[i]=0;
+      maddr->addr.phoneLabel[i]=0;
    }
-   ma->a.showPhone=0;
+   maddr->addr.showPhone=0;
    for (i=0; i<19; i++) {
-      if (ma->a.entry) {
-	 free(ma->a.entry[i]);
-	 ma->a.entry[i]=NULL;
+      if (maddr->addr.entry) {
+	 free(maddr->addr.entry[i]);
+	 maddr->addr.entry[i]=NULL;
       }
    }
    return;
@@ -1681,8 +1681,8 @@ static void cb_clist_selection(GtkWidget      *clist,
 			       gpointer       data)
 {
    /* The rename-able phone entries are indexes 3,4,5,6,7 */
-   struct Address *a;
-   MyAddress *ma;
+   struct Address *addr;
+   MyAddress *maddr;
    int cat, count, sorted_position;
    int i, i2;
    int keep, b;
@@ -1708,15 +1708,15 @@ static void cb_clist_selection(GtkWidget      *clist,
 
    clist_row_selected=row;
 
-   ma = gtk_clist_get_row_data(GTK_CLIST(clist), row);
-   if (ma==NULL) {
+   maddr = gtk_clist_get_row_data(GTK_CLIST(clist), row);
+   if (maddr==NULL) {
       return;
    }
 
-   if (ma->rt == DELETED_PALM_REC ||
-      (ma->rt == DELETED_PC_REC))
+   if (maddr->rt == DELETED_PALM_REC ||
+      (maddr->rt == DELETED_PC_REC))
       /* Possible later addition of undelete code for modified deleted records
-         || ma->rt == MODIFIED_PALM_REC
+         || maddr->rt == MODIFIED_PALM_REC
       */
    {
       set_new_button_to(UNDELETE_FLAG);
@@ -1728,7 +1728,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 
    connect_changed_signals(DISCONNECT_SIGNALS);
 
-   a=&(ma->a);
+   addr=&(maddr->addr);
    clist_text = NULL;
    gtk_clist_get_text(GTK_CLIST(clist), row, ADDRESS_NAME_COLUMN, &clist_text);
    entry_text = gtk_entry_get_text(GTK_ENTRY(address_quickfind_entry));
@@ -1750,7 +1750,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 
    gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL, _("Category: "), -1);
    gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL,
-		   address_app_info.category.name[ma->attrib & 0x0F], -1);
+		   address_app_info.category.name[maddr->attrib & 0x0F], -1);
    gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL, "\n", -1);
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
@@ -1759,27 +1759,27 @@ static void cb_clist_selection(GtkWidget      *clist,
       for (i=0; i<(NUM_ADDRESS_ENTRIES+NUM_ADDRESS_EXT_ENTRIES); i++) {
 	 i2 = order_ja[i];
 	 if (i2<NUM_ADDRESS_ENTRIES) {
-	    if (a->entry[i2]) {
+	    if (addr->entry[i2]) {
 	       if (i2>2 && i2<8) {
 		  gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL,
-				  address_app_info.phoneLabels[a->phoneLabel[i2-3]], -1);
+				  address_app_info.phoneLabels[addr->phoneLabel[i2-3]], -1);
 	       } else {
 		  gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL, address_app_info.labels[i2], -1); 
 	       }
 	       gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL, ": ", -1);
 
-	       if ((tmp_p = strchr(a->entry[i2],'\1'))) {
+	       if ((tmp_p = strchr(addr->entry[i2],'\1'))) {
 		  *(tmp_p) = '\0';
-		  gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL, a->entry[i2], -1); 
+		  gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL, addr->entry[i2], -1); 
 		  *(tmp_p) = '\1';
 	       } else {
-		  gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL, a->entry[i2], -1); 
+		  gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL, addr->entry[i2], -1); 
 	       }
 	       gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL, "\n", -1);
 	    }
 	 } else {
-	    if (a->entry[i2-NUM_ADDRESS_ENTRIES]) {    
-	       if ((tmp_p = strchr(a->entry[i2-NUM_ADDRESS_ENTRIES],'\1'))) {
+	    if (addr->entry[i2-NUM_ADDRESS_ENTRIES]) {    
+	       if ((tmp_p = strchr(addr->entry[i2-NUM_ADDRESS_ENTRIES],'\1'))) {
 		  gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL, _("kana("), -1); 
 		  gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL, 
 				  address_app_info.labels[i2-NUM_ADDRESS_ENTRIES], -1); 
@@ -1793,16 +1793,16 @@ static void cb_clist_selection(GtkWidget      *clist,
    } else {
       for (i=0; i<NUM_ADDRESS_ENTRIES; i++) {
 	 i2=order[i];
-	 if (a->entry[i2]) {
+	 if (addr->entry[i2]) {
 	    if (i2>2 && i2<8) {
 	       gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL,
-			       address_app_info.phoneLabels[a->phoneLabel[i2-3]],
+			       address_app_info.phoneLabels[addr->phoneLabel[i2-3]],
 			       -1);
 	    } else {
 	       gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL, address_app_info.labels[i2], -1);
 	    }
 	    gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL, ": ", -1);
-	    gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL, a->entry[i2], -1);
+	    gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL, addr->entry[i2], -1);
 	    gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL, "\n", -1);
 	 }
       }
@@ -1813,7 +1813,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    gtk_text_thaw(GTK_TEXT(text));
 #endif
 
-   cat = ma->attrib & 0x0F;
+   cat = maddr->attrib & 0x0F;
    sorted_position = find_sorted_cat(cat);
    if (address_cat_menu_item2[sorted_position]==NULL) {
       /* Illegal category, Assume that category 0 is Unfiled and valid*/
@@ -1851,22 +1851,22 @@ static void cb_clist_selection(GtkWidget      *clist,
 				 gtk_text_get_length(GTK_TEXT(address_text[i])));
 #endif
 	 if (i<NUM_ADDRESS_EXT_ENTRIES){
-	    if (a->entry[i]) {
-	       if ((tmp_p = strchr(a->entry[i],'\1'))) {
+	    if (addr->entry[i]) {
+	       if ((tmp_p = strchr(addr->entry[i],'\1'))) {
 		  *(tmp_p) = '\0';
-		  gtk_text_insert(GTK_TEXT(address_text[i]), NULL,NULL,NULL, a->entry[i], -1); 
+		  gtk_text_insert(GTK_TEXT(address_text[i]), NULL,NULL,NULL, addr->entry[i], -1); 
 		  *(tmp_p) = '\1';
 	       } else {
-		  gtk_text_insert(GTK_TEXT(address_text[i]), NULL,NULL,NULL, a->entry[i], -1); 
+		  gtk_text_insert(GTK_TEXT(address_text[i]), NULL,NULL,NULL, addr->entry[i], -1); 
 	       }
 	    }
 	 } else if (i < NUM_ADDRESS_ENTRIES){
-	    if (a->entry[i]) {
-	       gtk_text_insert(GTK_TEXT(address_text[i]), NULL,NULL,NULL, a->entry[i], -1); 
+	    if (addr->entry[i]) {
+	       gtk_text_insert(GTK_TEXT(address_text[i]), NULL,NULL,NULL, addr->entry[i], -1); 
 	    }
 	 } else {
-	    if (a->entry[i-NUM_ADDRESS_ENTRIES]) {
-	       if ((tmp_p = strchr(a->entry[i-NUM_ADDRESS_ENTRIES],'\1'))) {
+	    if (addr->entry[i-NUM_ADDRESS_ENTRIES]) {
+	       if ((tmp_p = strchr(addr->entry[i-NUM_ADDRESS_ENTRIES],'\1'))) {
 		  gtk_text_insert(GTK_TEXT(address_text[i]), NULL,NULL,NULL, tmp_p+1, -1); 
 	       }
 	    }
@@ -1881,18 +1881,18 @@ static void cb_clist_selection(GtkWidget      *clist,
 	 gtk_text_forward_delete(GTK_TEXT(address_text[i]),
 				 gtk_text_get_length(GTK_TEXT(address_text[i])));
 #endif
-	 if (a->entry[i]) {
-	    gtk_text_insert(GTK_TEXT(address_text[i]), NULL,NULL,NULL, a->entry[i], -1);
+	 if (addr->entry[i]) {
+	    gtk_text_insert(GTK_TEXT(address_text[i]), NULL,NULL,NULL, addr->entry[i], -1);
 	 }
       }
    }
    for (i=0; i<NUM_PHONE_ENTRIES; i++) {
-      if (GTK_IS_WIDGET(menu_item[i][a->phoneLabel[i]])) {
+      if (GTK_IS_WIDGET(menu_item[i][addr->phoneLabel[i]])) {
 	 gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
-					(menu_item[i][a->phoneLabel[i]]), TRUE);
+					(menu_item[i][addr->phoneLabel[i]]), TRUE);
 	 gtk_option_menu_set_history(GTK_OPTION_MENU(phone_list_menu[i]),
-				     a->phoneLabel[i]);
-	 if (!strcmp(address_app_info.labels[a->phoneLabel[i]+3],_("E-mail"))) {
+				     addr->phoneLabel[i]);
+	 if (!strcmp(address_app_info.labels[addr->phoneLabel[i]+3],_("E-mail"))) {
 #ifdef ENABLE_GTK2
 	    gtk_button_set_label(GTK_BUTTON(dial_button[i]),_("Mail"));
 	    gtk_object_set_data(GTK_OBJECT(dial_button[i]), "mail", GINT_TO_POINTER(1));
@@ -1911,12 +1911,12 @@ static void cb_clist_selection(GtkWidget      *clist,
 	 }
       }
    }
-   if ((a->showPhone > -1) && (a->showPhone < NUM_PHONE_ENTRIES)) {
-      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button[a->showPhone]),
+   if ((addr->showPhone > -1) && (addr->showPhone < NUM_PHONE_ENTRIES)) {
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button[addr->showPhone]),
 				   TRUE);
    }
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(private_checkbox),
-				ma->attrib & dlpRecAttrSecret);
+				maddr->attrib & dlpRecAttrSecret);
 
    connect_changed_signals(CONNECT_SIGNALS);
 }
@@ -2018,18 +2018,18 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    entries_shown=0;
 
    for (temp_al = *addr_list, i=0; temp_al; temp_al=temp_al->next) {
-      if ( ((temp_al->ma.attrib & 0x0F) != category) &&
+      if ( ((temp_al->maddr.attrib & 0x0F) != category) &&
 	   category != CATEGORY_ALL) {
 	 continue;
       }
       /* Do masking like Palm OS 3.5 */
       if ((show_priv == MASK_PRIVATES) && 
-	  (temp_al->ma.attrib & dlpRecAttrSecret)) {
+	  (temp_al->maddr.attrib & dlpRecAttrSecret)) {
 	 gtk_clist_append(GTK_CLIST(clist), empty_line);
 	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_NAME_COLUMN, "---------------");
 	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_PHONE_COLUMN, "---------------");
-	 clear_myaddress(&temp_al->ma);
-	 gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_al->ma));
+	 clear_myaddress(&temp_al->maddr);
+	 gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_al->maddr));
 	 gtk_clist_set_row_style(GTK_CLIST(clist), entries_shown, NULL);
 	 entries_shown++;
 	 continue;
@@ -2038,39 +2038,39 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
       /* Hide the private records if need be */
       if ((show_priv != SHOW_PRIVATES) && 
-	  (temp_al->ma.attrib & dlpRecAttrSecret)) {
+	  (temp_al->maddr.attrib & dlpRecAttrSecret)) {
 	 continue;
       }
 
       if (!use_jos && (char_set == CHAR_SET_JAPANESE)) {
 	 str[0]='\0';
-	 if (temp_al->ma.a.entry[show1] || temp_al->ma.a.entry[show2]) {
-	    if (temp_al->ma.a.entry[show1] && temp_al->ma.a.entry[show2]) {
-	       if ((tmp_p1 = strchr(temp_al->ma.a.entry[show1],'\1'))) *tmp_p1='\0';
-	       if ((tmp_p2 = strchr(temp_al->ma.a.entry[show2],'\1'))) *tmp_p2='\0';
-	       g_snprintf(str, ADDRESS_MAX_CLIST_NAME, "%s, %s", temp_al->ma.a.entry[show1], temp_al->ma.a.entry[show2]);
+	 if (temp_al->maddr.addr.entry[show1] || temp_al->maddr.addr.entry[show2]) {
+	    if (temp_al->maddr.addr.entry[show1] && temp_al->maddr.addr.entry[show2]) {
+	       if ((tmp_p1 = strchr(temp_al->maddr.addr.entry[show1],'\1'))) *tmp_p1='\0';
+	       if ((tmp_p2 = strchr(temp_al->maddr.addr.entry[show2],'\1'))) *tmp_p2='\0';
+	       g_snprintf(str, ADDRESS_MAX_CLIST_NAME, "%s, %s", temp_al->maddr.addr.entry[show1], temp_al->maddr.addr.entry[show2]);
 	       if (tmp_p1) *tmp_p1='\1';
 	       if (tmp_p2) *tmp_p2='\1';
 	    }
-	    if (temp_al->ma.a.entry[show1] && ! temp_al->ma.a.entry[show2]) {
-	       if ((tmp_p1 = strchr(temp_al->ma.a.entry[show1],'\1'))) *tmp_p1='\0';
-	       if (temp_al->ma.a.entry[show3]) {
-		  if ((tmp_p3 = strchr(temp_al->ma.a.entry[show3],'\1'))) *tmp_p3='\0';
-		  g_snprintf(str, ADDRESS_MAX_CLIST_NAME, "%s, %s", temp_al->ma.a.entry[show1], temp_al->ma.a.entry[show3]);
+	    if (temp_al->maddr.addr.entry[show1] && ! temp_al->maddr.addr.entry[show2]) {
+	       if ((tmp_p1 = strchr(temp_al->maddr.addr.entry[show1],'\1'))) *tmp_p1='\0';
+	       if (temp_al->maddr.addr.entry[show3]) {
+		  if ((tmp_p3 = strchr(temp_al->maddr.addr.entry[show3],'\1'))) *tmp_p3='\0';
+		  g_snprintf(str, ADDRESS_MAX_CLIST_NAME, "%s, %s", temp_al->maddr.addr.entry[show1], temp_al->maddr.addr.entry[show3]);
 		  if (tmp_p3) *tmp_p3='\1';
 	       } else {
-		  multibyte_safe_strncpy(str, temp_al->ma.a.entry[show1], ADDRESS_MAX_CLIST_NAME);
+		  multibyte_safe_strncpy(str, temp_al->maddr.addr.entry[show1], ADDRESS_MAX_CLIST_NAME);
 	       }
 	       if (tmp_p1) *tmp_p1='\1';
 	    }
-	    if (! temp_al->ma.a.entry[show1] && temp_al->ma.a.entry[show2]) {
-	       if ((tmp_p2 = strchr(temp_al->ma.a.entry[show2],'\1'))) *tmp_p2='\0';
-	       multibyte_safe_strncpy(str, temp_al->ma.a.entry[show2], ADDRESS_MAX_CLIST_NAME);
+	    if (! temp_al->maddr.addr.entry[show1] && temp_al->maddr.addr.entry[show2]) {
+	       if ((tmp_p2 = strchr(temp_al->maddr.addr.entry[show2],'\1'))) *tmp_p2='\0';
+	       multibyte_safe_strncpy(str, temp_al->maddr.addr.entry[show2], ADDRESS_MAX_CLIST_NAME);
 	       if (tmp_p2) *tmp_p2='\1';
 	    }
-	 } else if (temp_al->ma.a.entry[show3]) {
-	    if ((tmp_p3 = strchr(temp_al->ma.a.entry[show3],'\1'))) *tmp_p3='\0';
-	    multibyte_safe_strncpy(str, temp_al->ma.a.entry[show3], ADDRESS_MAX_CLIST_NAME);
+	 } else if (temp_al->maddr.addr.entry[show3]) {
+	    if ((tmp_p3 = strchr(temp_al->maddr.addr.entry[show3],'\1'))) *tmp_p3='\0';
+	    multibyte_safe_strncpy(str, temp_al->maddr.addr.entry[show3], ADDRESS_MAX_CLIST_NAME);
 	    if (tmp_p3) *tmp_p3='\1';
 	 } else {
 	    strcpy(str, _("-Unnamed-"));
@@ -2081,9 +2081,9 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 	 field1=field2=field3=blank;
 	 tmp_delim1=delim1;
 	 tmp_delim2=delim2;
-	 if (temp_al->ma.a.entry[show1]) field1=temp_al->ma.a.entry[show1];
-	 if (temp_al->ma.a.entry[show2]) field2=temp_al->ma.a.entry[show2];
-	 if (temp_al->ma.a.entry[show3]) field3=temp_al->ma.a.entry[show3];
+	 if (temp_al->maddr.addr.entry[show1]) field1=temp_al->maddr.addr.entry[show1];
+	 if (temp_al->maddr.addr.entry[show2]) field2=temp_al->maddr.addr.entry[show2];
+	 if (temp_al->maddr.addr.entry[show3]) field3=temp_al->maddr.addr.entry[show3];
 	 if (by_company) {
 	    /* Company / Last, First */
 	    if (!(field1[0])) tmp_delim1=blank;
@@ -2107,12 +2107,12 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_NAME_COLUMN, str2);
       /* Clear string so previous data won't be used inadvertently in next set_text */
       str2[0] = '\0';
-      lstrncpy_remove_cr_lfs(str2, temp_al->ma.a.entry[temp_al->ma.a.showPhone+3], ADDRESS_MAX_COLUMN_LEN);
+      lstrncpy_remove_cr_lfs(str2, temp_al->maddr.addr.entry[temp_al->maddr.addr.showPhone+3], ADDRESS_MAX_COLUMN_LEN);
       gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_PHONE_COLUMN, str2);
-      gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_al->ma));
+      gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_al->maddr));
 
       /* Highlight row background depending on status */
-      switch (temp_al->ma.rt) {
+      switch (temp_al->maddr.rt) {
        case NEW_PC_REC:
        case REPLACEMENT_PALM_REC:
 	 set_bg_rgb_clist_row(clist, entries_shown,
@@ -2128,7 +2128,7 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 			  CLIST_MOD_RED, CLIST_MOD_GREEN, CLIST_MOD_BLUE);
 	 break;
        default:
-	 if (temp_al->ma.attrib & dlpRecAttrSecret) {
+	 if (temp_al->maddr.attrib & dlpRecAttrSecret) {
 	    set_bg_rgb_clist_row(clist, entries_shown, 
 			     CLIST_PRIVATE_RED, CLIST_PRIVATE_GREEN, CLIST_PRIVATE_BLUE);
 	 } else {
@@ -2137,7 +2137,7 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       }
 
       /* Put a note pixmap up */
-      if (temp_al->ma.a.entry[18]) {
+      if (temp_al->maddr.addr.entry[18]) {
 	 gtk_clist_set_pixmap(GTK_CLIST(clist), entries_shown, ADDRESS_NOTE_COLUMN, pixmap_note, mask_note);
       } else {
 	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_NOTE_COLUMN, "");

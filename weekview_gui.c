@@ -215,7 +215,7 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
 #ifdef ENABLE_DATEBK
 	 get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
 	 if (use_db3_tags) {
-	    ret = db3_parse_tag(temp_al->ma.a.note, &db3_type, &db4);
+	    ret = db3_parse_tag(temp_al->mappt.appt.note, &db3_type, &db4);
 	    jp_logf(JP_LOG_DEBUG, "category = 0x%x\n", db4.category);
 	    cat_bit=1<<db4.category;
 	    if (!(cat_bit & datebook_category)) {
@@ -224,16 +224,16 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
 	    }
 	 }
 #endif
-	 if (isApptOnDate(&(temp_al->ma.a), &date)) {
-	    if (temp_al->ma.a.event) {
+	 if (isApptOnDate(&(temp_al->mappt.appt), &date)) {
+	    if (temp_al->mappt.appt.event) {
 	       strcpy(desc, "*");
 	    } else {
 	       get_pref_time_no_secs(datef);
-	       strftime(desc, sizeof(desc), datef, &(temp_al->ma.a.begin));
+	       strftime(desc, sizeof(desc), datef, &(temp_al->mappt.appt.begin));
 	       strcat(desc, " ");
 	    }
-	    if (temp_al->ma.a.description) {
-	       strncat(desc, temp_al->ma.a.description, 70);
+	    if (temp_al->mappt.appt.description) {
+	       strncat(desc, temp_al->mappt.appt.description, 70);
 	       desc[62]='\0';
 	    }
 	    remove_cr_lfs(desc);

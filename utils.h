@@ -145,26 +145,26 @@ typedef struct {
    PCRecType rt;
    unsigned int unique_id;
    unsigned char attrib;
-   struct Appointment a;
+   struct Appointment appt;
 } MyAppointment;
 
 typedef struct AppointmentList_s {
    AppType app_type;
    struct AppointmentList_s *next;
-   MyAppointment ma;
+   MyAppointment mappt;
 } AppointmentList;
 
 typedef struct {
    PCRecType rt;
    unsigned int unique_id;
    unsigned char attrib;
-   struct Address a;
+   struct Address addr;
 } MyAddress;
 
 typedef struct AddressList_s {
    AppType app_type;
    struct AddressList_s *next;
-   MyAddress ma;
+   MyAddress maddr;
 } AddressList;
 
 typedef struct {

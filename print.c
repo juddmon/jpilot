@@ -256,10 +256,10 @@ int fill_in(struct tm *date, AppointmentList *a_list)
 	 clip_to_box(5.0, 0.5, 8.0, 9.5);
       }
       for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
-	 if (temp_al->ma.a.description == NULL) {
+	 if (temp_al->mappt.appt.description == NULL) {
 	    continue;
 	 }
-	 if (temp_al->ma.a.event) {
+	 if (temp_al->mappt.appt.event) {
 	    strcpy(str, " ");
 	    if (!am) {
 	       continue;
@@ -268,7 +268,7 @@ int fill_in(struct tm *date, AppointmentList *a_list)
 	    y=default_y - defaults1 * step;
 	    defaults1++;
 	 } else {
-	    hour24 = temp_al->ma.a.begin.tm_hour;
+	    hour24 = temp_al->mappt.appt.begin.tm_hour;
 	    if ((hour24 > 11) && (am)) {
 	       continue;
 	    }
@@ -277,7 +277,7 @@ int fill_in(struct tm *date, AppointmentList *a_list)
 	    }
 
 	    get_pref_time_no_secs(datef);
-	    strftime(str, sizeof(str), datef, &temp_al->ma.a.begin);
+	    strftime(str, sizeof(str), datef, &temp_al->mappt.appt.begin);
 
 	    if (hour24 > 11) {
 	       x=indent2;
@@ -297,9 +297,9 @@ int fill_in(struct tm *date, AppointmentList *a_list)
 	       }
 	    }
 	 }
-	 if (temp_al->ma.a.description) {
+	 if (temp_al->mappt.appt.description) {
 	    strcat(str, " ");
-	    strncat(str, temp_al->ma.a.description, sizeof(str)-strlen(str)-2);
+	    strncat(str, temp_al->mappt.appt.description, sizeof(str)-strlen(str)-2);
 	    str[128]='\0';
 	 }
 	 if (y > 1.0) {
@@ -503,7 +503,7 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
       for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
 #ifdef ENABLE_DATEBK
 	 if (use_db3_tags) {
-	    ret = db3_parse_tag(temp_al->ma.a.note, &db3_type, &db4);
+	    ret = db3_parse_tag(temp_al->mappt.appt.note, &db3_type, &db4);
 	    /* jp_logf(JP_LOG_DEBUG, "category = 0x%x\n", db4.category); */
 	    cat_bit=1<<db4.category;
 	    if (!(cat_bit & datebook_category)) {
@@ -512,20 +512,20 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
 	    }
 	 }
 #endif
-	 if (isApptOnDate(&(temp_al->ma.a), &date)) {
+	 if (isApptOnDate(&(temp_al->mappt.appt), &date)) {
 	    char tmp[20];
 	    char datef1[20];
 	    char datef2[20];
 	    tmp[0]='\0';
-	    if ( ! temp_al->ma.a.event) {
+	    if ( ! temp_al->mappt.appt.event) {
 	       get_pref_time_no_secs(datef1);
 	       g_snprintf(datef2, sizeof(datef2), "(%s )", datef1);
-	       strftime(tmp, sizeof(tmp), datef2, &(temp_al->ma.a.begin));
+	       strftime(tmp, sizeof(tmp), datef2, &(temp_al->mappt.appt.begin));
 	       tmp[19]='\0';
 	    }
 	    desc[0]='\0';
-	    if (temp_al->ma.a.description) {
-	       ps_strncat(desc, temp_al->ma.a.description, 100);
+	    if (temp_al->mappt.appt.description) {
+	       ps_strncat(desc, temp_al->mappt.appt.description, 100);
 	       desc[100]='\0';
 	    }
 	    remove_cr_lfs(desc);
@@ -587,7 +587,7 @@ void reset_first_last(void)
 void check_first_last(AppointmentList *al)
 {
    struct tm *ApptTime;
-   ApptTime = &(al->ma.a.begin);
+   ApptTime = &(al->mappt.appt.begin);
    if (ApptTime->tm_hour == first_hour) {
       if (ApptTime->tm_min < first_min) first_min = ApptTime->tm_min;
    }
@@ -596,7 +596,7 @@ void check_first_last(AppointmentList *al)
       first_min  = ApptTime->tm_min;
    }
 
-   ApptTime = &(al->ma.a.end);
+   ApptTime = &(al->mappt.appt.end);
    if (ApptTime->tm_hour == last_hour) {
       if (ApptTime->tm_min > last_min) last_min = ApptTime->tm_min;
    } else if (ApptTime->tm_hour > last_hour) {
@@ -667,13 +667,13 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
       for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
 #ifdef ENABLE_DATEBK
 	 if (use_db3_tags) {
-	    ret = db3_parse_tag(temp_al->ma.a.note, &db3_type, &db4);
+	    ret = db3_parse_tag(temp_al->mappt.appt.note, &db3_type, &db4);
 	    cat_bit=1<<db4.category;
 	    if (!(cat_bit & datebook_category)) continue;
 	 }
 #endif
-	 if (isApptOnDate(&(temp_al->ma.a), &date))
-	   if ( ! temp_al->ma.a.event)
+	 if (isApptOnDate(&(temp_al->mappt.appt), &date))
+	   if ( ! temp_al->mappt.appt.event)
 	     check_first_last(temp_al);
       }
    }
@@ -713,7 +713,7 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
       for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
 #ifdef ENABLE_DATEBK
 	 if (use_db3_tags) {
-	    ret = db3_parse_tag(temp_al->ma.a.note, &db3_type, &db4);
+	    ret = db3_parse_tag(temp_al->mappt.appt.note, &db3_type, &db4);
 	    jp_logf(JP_LOG_DEBUG, "category = 0x%x\n", db4.category);
 	    cat_bit=1<<db4.category;
 	    if (!(cat_bit & datebook_category)) {
@@ -722,29 +722,29 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
 	    }
 	 }
 #endif
-	 if (isApptOnDate(&(temp_al->ma.a), &date)) {
+	 if (isApptOnDate(&(temp_al->mappt.appt), &date)) {
 	    memset(desc, 0, sizeof(desc));
 	    memset(short_date, 0, sizeof(short_date));
 
-	    if ( ! temp_al->ma.a.event)
+	    if ( ! temp_al->mappt.appt.event)
 	      {
 		 char t1[6], t2[6], ht[3], mt[3];
 		 int j, m;
 
-		 strftime(ht, sizeof(ht), "%H", &(temp_al->ma.a.begin));
-		 strftime(mt, sizeof(mt), "%M", &(temp_al->ma.a.begin));
+		 strftime(ht, sizeof(ht), "%H", &(temp_al->mappt.appt.begin));
+		 strftime(mt, sizeof(mt), "%M", &(temp_al->mappt.appt.begin));
 		 m = atoi(mt);
 		 snprintf(t1, sizeof(t1), "%s.%02d", ht, (int)((m * 100.)/60));
 
-		 strftime(ht, sizeof(ht), "%H", &(temp_al->ma.a.end));
-		 strftime(mt, sizeof(mt), "%M", &(temp_al->ma.a.end));
+		 strftime(ht, sizeof(ht), "%H", &(temp_al->mappt.appt.end));
+		 strftime(mt, sizeof(mt), "%M", &(temp_al->mappt.appt.end));
 		 m = atoi(mt);
 		 snprintf(t2, sizeof(t2), "%s.%02d", ht, (int)((m * 100.)/60));
 		 sprintf(short_date, "%s %s ", t1, t2);
 		 for (j=0; j<30;j++) short_date[j] =tolower(short_date[j]);
 	      }
-	    if (temp_al->ma.a.description) {
-	       ps_strncat(desc, temp_al->ma.a.description, 250);
+	    if (temp_al->mappt.appt.description) {
+	       ps_strncat(desc, temp_al->mappt.appt.description, 250);
 	       remove_cr_lfs(desc);
 	    }
 	    fprintf(out, "%s (%s) itemline\n", short_date, desc);
@@ -993,7 +993,7 @@ int print_addresses(AddressList *address_list)
    long lines_between_recs;
    AddressList *temp_al;
    struct AddressAppInfo address_app_info;
-   struct Address *a;
+   struct Address *addr;
    int show1, show2, show3;
    int j, i, i2;
    int len;
@@ -1035,18 +1035,18 @@ int print_addresses(AddressList *address_list)
       fprintf(out, "%cHLINE\n", FLAG_CHAR);
 
       str[0]='\0';
-      if (temp_al->ma.a.entry[show1] || temp_al->ma.a.entry[show2]) {
-	 if (temp_al->ma.a.entry[show1] && temp_al->ma.a.entry[show2]) {
-	    g_snprintf(str, sizeof(str), "%s, %s", temp_al->ma.a.entry[show1], temp_al->ma.a.entry[show2]);
+      if (temp_al->maddr.addr.entry[show1] || temp_al->maddr.addr.entry[show2]) {
+	 if (temp_al->maddr.addr.entry[show1] && temp_al->maddr.addr.entry[show2]) {
+	    g_snprintf(str, sizeof(str), "%s, %s", temp_al->maddr.addr.entry[show1], temp_al->maddr.addr.entry[show2]);
 	 }
-	 if (temp_al->ma.a.entry[show1] && ! temp_al->ma.a.entry[show2]) {
-	    strncpy(str, temp_al->ma.a.entry[show1], 48);
+	 if (temp_al->maddr.addr.entry[show1] && ! temp_al->maddr.addr.entry[show2]) {
+	    strncpy(str, temp_al->maddr.addr.entry[show1], 48);
 	 }
-	 if (! temp_al->ma.a.entry[show1] && temp_al->ma.a.entry[show2]) {
-	    strncpy(str, temp_al->ma.a.entry[show2], 48);
+	 if (! temp_al->maddr.addr.entry[show1] && temp_al->maddr.addr.entry[show2]) {
+	    strncpy(str, temp_al->maddr.addr.entry[show2], 48);
 	 }
-      } else if (temp_al->ma.a.entry[show3]) {
-	    strncpy(str, temp_al->ma.a.entry[show3], 48);
+      } else if (temp_al->maddr.addr.entry[show3]) {
+	    strncpy(str, temp_al->maddr.addr.entry[show3], 48);
       } else {
 	    strcpy(str, "-Unnamed-");
       }
@@ -1055,13 +1055,13 @@ int print_addresses(AddressList *address_list)
       fprintf(out, "%s\n", str);
       courier_12();
 
-      a = &(temp_al->ma.a);
+      addr = &(temp_al->maddr.addr);
       for (i=0; i<NUM_ADDRESS_ENTRIES; i++) {
 	 i2=order[i];
-	 if (a->entry[i2]) {
+	 if (addr->entry[i2]) {
 	    if (i2>2 && i2<8) {
-	       fprintf(out, "%s: ", address_app_info.phoneLabels[a->phoneLabel[i2-3]]);
-	       len = strlen(address_app_info.phoneLabels[a->phoneLabel[i2-3]]);
+	       fprintf(out, "%s: ", address_app_info.phoneLabels[addr->phoneLabel[i2-3]]);
+	       len = strlen(address_app_info.phoneLabels[addr->phoneLabel[i2-3]]);
 	    } else {
 	       fprintf(out, "%s: ", address_app_info.labels[i2]);
 	       len = strlen(address_app_info.labels[i2]);
@@ -1069,7 +1069,7 @@ int print_addresses(AddressList *address_list)
 	    for (j=16-len; j; j--) {
 	       fprintf(out, " ");
 	    }
-	    f_indent_print(out, 18, a->entry[i2]);
+	    f_indent_print(out, 18, addr->entry[i2]);
 	    fprintf(out, "\n");
 	 }
       }

@@ -145,9 +145,9 @@ printf("date is %s",asctime(&tm_dom));
 */
    for (tal=al; tal; tal = tal->next) {
     if ( 
-        ((dumpN == FALSE) ||  (isApptOnDate(&(tal->ma.a), &tm_dom) == TRUE))
-	&& (tal->ma.rt != DELETED_PALM_REC) 
-	&& (tal->ma.rt != MODIFIED_PALM_REC)
+        ((dumpN == FALSE) ||  (isApptOnDate(&(tal->mappt.appt), &tm_dom) == TRUE))
+	&& (tal->mappt.rt != DELETED_PALM_REC) 
+	&& (tal->mappt.rt != MODIFIED_PALM_REC)
        ) {
  for ( i=2 ; formatB[i] != '\0' ; i++) {
   if ( formatB[i] != '%') {
@@ -173,15 +173,15 @@ printf("date is %s",asctime(&tm_dom));
 	 i++;
 	 break;
     case 'w' :
-         printf("%d",tal->ma.a.alarm);
+         printf("%d",tal->mappt.appt.alarm);
 	 i++;
 	 break;
     case 'v' :
-    	 printf("%d",tal->ma.a.advance);
+    	 printf("%d",tal->mappt.appt.advance);
 	 i++;
 	 break;
     case 'u' :
-    	 switch (tal->ma.a.advanceUnits) {
+    	 switch (tal->mappt.appt.advanceUnits) {
 	 case advMinutes : printf("m"); break;
 	 case advHours   : printf("h"); break;
 	 case advDays    : printf("d"); break;
@@ -190,34 +190,34 @@ printf("date is %s",asctime(&tm_dom));
 	 i++;
 	 break;
     case 'X' :
-    	 takeoutfunnies(tal->ma.a.note);
+    	 takeoutfunnies(tal->mappt.appt.note);
 	 /* fall thru */
     case 'x' :
-    	 if (tal->ma.a.note != NULL) printf("%s",tal->ma.a.note);
+    	 if (tal->mappt.appt.note != NULL) printf("%s",tal->mappt.appt.note);
 	 i++;
 	 break;
     case 'A' :
-    	 takeoutfunnies(tal->ma.a.description);
+    	 takeoutfunnies(tal->mappt.appt.description);
 	 /* fall thru */
     case 'a' :
-    	 printf("%s",tal->ma.a.description);
+    	 printf("%s",tal->mappt.appt.description);
 	 i++;
 	 break;
     case 'N' :	/* normal output */
     	 /* start date+time, end date+time, "description" */
-    	 takeoutfunnies(tal->ma.a.description);
+    	 takeoutfunnies(tal->mappt.appt.description);
     	 printf("%.4d/%.2d/%.2d,%.2d:%.2d,%.4d/%.2d/%.2d,%.2d:%.2d,\"%s\"",
-		tal->ma.a.begin.tm_year+1900,
-		tal->ma.a.begin.tm_mon+1,
-		tal->ma.a.begin.tm_mday,
-		tal->ma.a.begin.tm_hour,
-		tal->ma.a.begin.tm_min,
-		tal->ma.a.end.tm_year+1900,
-		tal->ma.a.end.tm_mon+1,
-		tal->ma.a.end.tm_mday,
-		tal->ma.a.end.tm_hour,
-		tal->ma.a.end.tm_min,
-		tal->ma.a.description
+		tal->mappt.appt.begin.tm_year+1900,
+		tal->mappt.appt.begin.tm_mon+1,
+		tal->mappt.appt.begin.tm_mday,
+		tal->mappt.appt.begin.tm_hour,
+		tal->mappt.appt.begin.tm_min,
+		tal->mappt.appt.end.tm_year+1900,
+		tal->mappt.appt.end.tm_mon+1,
+		tal->mappt.appt.end.tm_mday,
+		tal->mappt.appt.end.tm_hour,
+		tal->mappt.appt.end.tm_min,
+		tal->mappt.appt.description
 	 );
 	 i++;
 	 break;
@@ -225,17 +225,17 @@ printf("date is %s",asctime(&tm_dom));
     case 'b' :
     case 'e' :
 	 if (formatB[i+1] == 'b') {
-	 	year   = tal->ma.a.begin.tm_year+1900;
-	 	month  = tal->ma.a.begin.tm_mon+1;
-	 	day    = tal->ma.a.begin.tm_mday;
-	 	hour   = tal->ma.a.begin.tm_hour;
-	 	minute = tal->ma.a.begin.tm_min;
+	 	year   = tal->mappt.appt.begin.tm_year+1900;
+	 	month  = tal->mappt.appt.begin.tm_mon+1;
+	 	day    = tal->mappt.appt.begin.tm_mday;
+	 	hour   = tal->mappt.appt.begin.tm_hour;
+	 	minute = tal->mappt.appt.begin.tm_min;
 	 } else {
-	 	year   = tal->ma.a.end.tm_year+1900;
-	 	month  = tal->ma.a.end.tm_mon+1;
-	 	day    = tal->ma.a.end.tm_mday;
-	 	hour   = tal->ma.a.end.tm_hour;
-	 	minute = tal->ma.a.end.tm_min;
+	 	year   = tal->mappt.appt.end.tm_year+1900;
+	 	month  = tal->mappt.appt.end.tm_mon+1;
+	 	day    = tal->mappt.appt.end.tm_mday;
+	 	hour   = tal->mappt.appt.end.tm_hour;
+	 	minute = tal->mappt.appt.end.tm_min;
 	 }
 /*       i++;  move to next one */
 /* do %bx and %ex ones */
@@ -727,7 +727,7 @@ int dumpaddress()
    num = get_addresses(&al,i);
 
    for (tal=al; tal; tal = tal->next) {
-    if ( (tal->ma.rt != DELETED_PALM_REC) && (tal->ma.rt != MODIFIED_PALM_REC)) {
+    if ( (tal->maddr.rt != DELETED_PALM_REC) && (tal->maddr.rt != MODIFIED_PALM_REC)) {
 
  for ( i=2 ; formatA[i] != '\0' ; i++) {
   if ( formatA[i] != '%') {
@@ -753,23 +753,23 @@ int dumpaddress()
 	 i++;
 	 break;
     case 'C' :
-    	 printf("%s",glob_PAddress_app_info->category.name[tal->ma.attrib & 0x0F]);
+    	 printf("%s",glob_PAddress_app_info->category.name[tal->maddr.attrib & 0x0F]);
 	 i++;
 	 break;
     case 'N' :	/* normal output */
 	 for (num=0; num < 19 ; num++) {
-	 	if (tal->ma.a.entry[num] == NULL) {
+	 	if (tal->maddr.addr.entry[num] == NULL) {
 			printf("\n");
 		} else {
-			printf("%s\n",tal->ma.a.entry[num]);
+			printf("%s\n",tal->maddr.addr.entry[num]);
 		}
 	 }
 	 i++;
          break;
 
-#define PRIT if (tal->ma.a.entry[num] != NULL) { printf("%s",tal->ma.a.entry[num]); }
+#define PRIT if (tal->maddr.addr.entry[num] != NULL) { printf("%s",tal->maddr.addr.entry[num]); }
 
-#define PRITE if (tal->ma.a.entry[num + 3] != NULL) { printf("%d",tal->ma.a.phoneLabel[num]); }
+#define PRITE if (tal->maddr.addr.entry[num + 3] != NULL) { printf("%d",tal->maddr.addr.phoneLabel[num]); }
 
     case 'l' : num=0; PRIT; i++; break;
     case 'f' : num=1; PRIT; i++; break;
@@ -810,10 +810,10 @@ int dumpaddress()
 	i++;
 	break;
     case 'X' :
-    	 takeoutfunnies(tal->ma.a.entry[18]);
+    	 takeoutfunnies(tal->maddr.addr.entry[18]);
 	 /* fall thru */
     case 'x' :
-    	 if (tal->ma.a.entry[18] != NULL) printf("%s",tal->ma.a.entry[18]);
+    	 if (tal->maddr.addr.entry[18] != NULL) printf("%s",tal->maddr.addr.entry[18]);
 	 i++;
 	 break;
     default:	/* one letter ones */

@@ -76,16 +76,16 @@ static int
 
    for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
       found = 0;
-      if ( (temp_al->ma.a.description) &&
-	  (temp_al->ma.a.description[0]) ) {
-	 if ( jp_strstr(temp_al->ma.a.description, needle,
+      if ( (temp_al->mappt.appt.description) &&
+	  (temp_al->mappt.appt.description[0]) ) {
+	 if ( jp_strstr(temp_al->mappt.appt.description, needle,
 	      GTK_TOGGLE_BUTTON(case_sense_checkbox)->active) ) {
 	    found = 1;
 	 }
       }
-      if ( (temp_al->ma.a.note) &&
-	  (temp_al->ma.a.note[0]) ) {
-	 if ( jp_strstr(temp_al->ma.a.note, needle,
+      if ( (temp_al->mappt.appt.note) &&
+	  (temp_al->mappt.appt.note[0]) ) {
+	 if ( jp_strstr(temp_al->mappt.appt.note, needle,
 	      GTK_TOGGLE_BUTTON(case_sense_checkbox)->active) ) {
 	    found = 2;
 	 }
@@ -98,7 +98,7 @@ static int
 	 new_sr = malloc(sizeof(struct search_record));
 	 new_sr->app_type = DATEBOOK;
 	 new_sr->plugin_flag = 0;
-	 new_sr->unique_id = temp_al->ma.unique_id;
+	 new_sr->unique_id = temp_al->mappt.unique_id;
 	 new_sr->next = search_rl;
 	 search_rl = new_sr;
 
@@ -111,20 +111,20 @@ static int
 	 } else {
 	    strncpy(datef, svalue1, sizeof(datef));
 	 }
-	 strftime(date_str, sizeof(date_str), datef, &temp_al->ma.a.begin);
+	 strftime(date_str, sizeof(date_str), datef, &temp_al->mappt.appt.begin);
 	 date_str[sizeof(date_str)-1]='\0';
 
 	 if (found == 1) {
 	    g_snprintf(str, sizeof(str), "%s  %s",
 		       date_str,
-		       temp_al->ma.a.description);
+		       temp_al->mappt.appt.description);
 	    lstrncpy_remove_cr_lfs(str2, str, SEARCH_MAX_COLUMN_LEN);
 	    gtk_clist_set_text(GTK_CLIST(clist), count, 1, str2);
 	 }
 	 if (found == 2) {
 	    g_snprintf(str, sizeof(str), "%s %s",
 		       date_str,
-		       temp_al->ma.a.note);
+		       temp_al->mappt.appt.note);
 	    lstrncpy_remove_cr_lfs(str2, str, SEARCH_MAX_COLUMN_LEN);
 	    gtk_clist_set_text(GTK_CLIST(clist), count, 1, str2);
 	 }
@@ -162,19 +162,19 @@ static int
 
    for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
       for (i=0; i<19; i++) {
-	 if (temp_al->ma.a.entry[i]) {
-	    if ( jp_strstr(temp_al->ma.a.entry[i], needle,
+	 if (temp_al->maddr.addr.entry[i]) {
+	    if ( jp_strstr(temp_al->maddr.addr.entry[i], needle,
 			       GTK_TOGGLE_BUTTON(case_sense_checkbox)->active) ) {
 	       gtk_clist_prepend(GTK_CLIST(clist), empty_line);
 	       gtk_clist_set_text(GTK_CLIST(clist), 0, 0, _("address"));
-	       lstrncpy_remove_cr_lfs(str2, temp_al->ma.a.entry[i], SEARCH_MAX_COLUMN_LEN);
+	       lstrncpy_remove_cr_lfs(str2, temp_al->maddr.addr.entry[i], SEARCH_MAX_COLUMN_LEN);
 	       gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str2);
 
 	       /*Add to the search list */
 	       new_sr = malloc(sizeof(struct search_record));
 	       new_sr->app_type = ADDRESS;
 	       new_sr->plugin_flag = 0;
-	       new_sr->unique_id = temp_al->ma.unique_id;
+	       new_sr->unique_id = temp_al->maddr.unique_id;
 	       new_sr->next = search_rl;
 	       search_rl = new_sr;
 

@@ -488,7 +488,7 @@ void make_command_safe(char *command)
  * Do alarm setting (play sound, or whatever).
  * if user postpones then put in postponed alarm list.
  */
-int alarms_do_one(struct Appointment *a,
+int alarms_do_one(struct Appointment *appt,
 		  unsigned long unique_id,
 		  time_t t_alarm,
 		  AlarmType type)
@@ -536,19 +536,19 @@ int alarms_do_one(struct Appointment *a,
    Pnow = localtime(&t_alarm);
 
    strftime(date_str, sizeof(date_str), pref_date, Pnow);
-   tm_copy_with_dst_adj(&begin, &(a->begin));
+   tm_copy_with_dst_adj(&begin, &(appt->begin));
    strftime(time1_str, sizeof(time1_str), pref_time, &begin);
-   tm_copy_with_dst_adj(&end, &(a->end));
+   tm_copy_with_dst_adj(&end, &(appt->end));
    strftime(time2_str, sizeof(time2_str), pref_time, &end);
    g_snprintf(time_str, sizeof(time_str), "%s %s-%s\n", date_str, time1_str, time2_str);
    desc_str[0]='\0';
    note_str[0]='\0';
-   if (a->description) {
-      strncpy(desc_str, a->description, sizeof(desc_str));
+   if (appt->description) {
+      strncpy(desc_str, appt->description, sizeof(desc_str));
       desc_str[sizeof(desc_str)-1]='\0';
    }
-   if (a->note) {
-      strncpy(note_str, a->note, sizeof(note_str));
+   if (appt->note) {
+      strncpy(note_str, appt->note, sizeof(note_str));
       note_str[sizeof(note_str)-1]='\0';
    }
 
@@ -660,11 +660,11 @@ gint cb_timer_alarms(gpointer data)
       printf("alarm_advance=%ld\n", temp_alarm->alarm_advance);
 #endif
       for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
-	 if (temp_al->ma.unique_id == temp_alarm->unique_id) {
+	 if (temp_al->mappt.unique_id == temp_alarm->unique_id) {
 #ifdef ALARMS_DEBUG
-	    printf("%s\n", temp_al->ma.a.description);
+	    printf("%s\n", temp_al->mappt.appt.description);
 #endif
-	    alarms_do_one(&(temp_al->ma.a),
+	    alarms_do_one(&(temp_al->mappt.appt),
 			  temp_alarm->unique_id,
 			  temp_alarm->event_time,
 			  ALARM_MISSED);
@@ -673,7 +673,7 @@ gint cb_timer_alarms(gpointer data)
       }
       /* Be careful, this modifies the list we are parsing and
        removes the current node */
-      alarms_remove_from_to_list(temp_al->ma.unique_id);
+      alarms_remove_from_to_list(temp_al->mappt.unique_id);
    }
 
    if (next_alarm) {
@@ -684,15 +684,15 @@ gint cb_timer_alarms(gpointer data)
 	 }
 	 for (temp_alarm=next_alarm; temp_alarm; temp_alarm=ta_next) {
 	    for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
-	       if (temp_al->ma.unique_id == temp_alarm->unique_id) {
+	       if (temp_al->mappt.unique_id == temp_alarm->unique_id) {
 #ifdef ALARMS_DEBUG
 		  printf("** next unique_id=%d\n", temp_alarm->unique_id);
 		  printf("** next type=%s\n", print_type(temp_alarm->type));
 		  printf("** next event_time=%s\n", print_date(temp_alarm->event_time));
 		  printf("** next alarm_advance=%ld\n", temp_alarm->alarm_advance);
-		  printf("** next %s\n", temp_al->ma.a.description);
+		  printf("** next %s\n", temp_al->mappt.appt.description);
 #endif		  
-		  alarms_do_one(&(temp_al->ma.a),
+		  alarms_do_one(&(temp_al->mappt.appt),
 				temp_alarm->unique_id,
 				temp_alarm->event_time,
 				ALARM_NEW);
@@ -730,18 +730,18 @@ gint cb_timer_alarms(gpointer data)
  * ndim is the number of days in the month
  * forward_or_backward should be -1 for backward or 1 for forward.
  */
-int forward_backward_in_appt_time(const struct Appointment *a,
+int forward_backward_in_appt_time(const struct Appointment *appt,
 				  struct tm *t,
 				  int fdom, int ndim,
 				  int forward_or_backward)
 {
    int count, dow, freq;
 
-   freq = a->repeatFrequency;
+   freq = appt->repeatFrequency;
 
    /* Go forward in time */
    if (forward_or_backward==1) {
-      switch (a->repeatType) {
+      switch (appt->repeatType) {
        case repeatNone:
 	 break;
        case repeatDaily:
@@ -760,7 +760,7 @@ int forward_backward_in_appt_time(const struct Appointment *a,
 	       add_days_to_date(t, (freq-1)*7);
 	       dow=0;
 	    }
-	    if (a->repeatDays[dow]) {
+	    if (appt->repeatDays[dow]) {
 #ifdef ALARMS_DEBUG      
 	       printf("fpn: repeatDay[dow] dow=%d\n", dow);
 #endif
@@ -771,17 +771,17 @@ int forward_backward_in_appt_time(const struct Appointment *a,
        case repeatMonthlyByDay:
 	 add_months_to_date(t, freq);
 	 get_month_info(t->tm_mon, 1, t->tm_year, &fdom, &ndim);
-	 t->tm_mday=((a->repeatDay+7-fdom)%7) - ((a->repeatDay)%7) + a->repeatDay + 1;
+	 t->tm_mday=((appt->repeatDay+7-fdom)%7) - ((appt->repeatDay)%7) + appt->repeatDay + 1;
 	 if (t->tm_mday > ndim-1) {
 	    t->tm_mday -= 7;
 	 }
 	 break;
        case repeatMonthlyByDate:
-	 t->tm_mday=a->begin.tm_mday;
+	 t->tm_mday=appt->begin.tm_mday;
 	 add_months_to_date(t, freq);
 	 break;
        case repeatYearly:
-	 t->tm_mday=a->begin.tm_mday;
+	 t->tm_mday=appt->begin.tm_mday;
 	 add_years_to_date(t, freq);
 	 break;
       }/*switch */
@@ -789,7 +789,7 @@ int forward_backward_in_appt_time(const struct Appointment *a,
    }
    /* Go back in time */
    if (forward_or_backward==-1) {
-      switch (a->repeatType) {
+      switch (appt->repeatType) {
        case repeatNone:
 	 break;
        case repeatDaily:
@@ -808,7 +808,7 @@ int forward_backward_in_appt_time(const struct Appointment *a,
 	       sub_days_from_date(t, (freq-1)*7);
 	       dow=6;
 	    }
-	    if (a->repeatDays[dow]) {
+	    if (appt->repeatDays[dow]) {
 #ifdef ALARMS_DEBUG      
 	       printf("fpn: repeatDay[dow] dow=%d\n", dow);
 #endif
@@ -819,17 +819,17 @@ int forward_backward_in_appt_time(const struct Appointment *a,
        case repeatMonthlyByDay:
 	 sub_months_from_date(t, freq);
 	 get_month_info(t->tm_mon, 1, t->tm_year, &fdom, &ndim);
-	 t->tm_mday=((a->repeatDay+7-fdom)%7) - ((a->repeatDay)%7) + a->repeatDay + 1;
+	 t->tm_mday=((appt->repeatDay+7-fdom)%7) - ((appt->repeatDay)%7) + appt->repeatDay + 1;
 	 if (t->tm_mday > ndim-1) {
 	    t->tm_mday -= 7;
 	 }
 	 break;
        case repeatMonthlyByDate:
-	 t->tm_mday=a->begin.tm_mday;
+	 t->tm_mday=appt->begin.tm_mday;
 	 sub_months_from_date(t, freq);
 	 break;
        case repeatYearly:
-	 t->tm_mday=a->begin.tm_mday;
+	 t->tm_mday=appt->begin.tm_mday;
 	 sub_years_from_date(t, freq);
 	 break;
       }/*switch */
@@ -837,7 +837,7 @@ int forward_backward_in_appt_time(const struct Appointment *a,
    return 0;
 }
 
-static int find_prev_next(struct Appointment *a,
+static int find_prev_next(struct Appointment *appt,
 			  int adv,
 			  struct tm *date1,
 			  struct tm *date2,
@@ -880,11 +880,11 @@ static int find_prev_next(struct Appointment *a,
    memset(tm_next, 0, sizeof(*tm_next));
 
    memset(&t, 0, sizeof(t));
-   t.tm_year=a->begin.tm_year;
-   t.tm_mon=a->begin.tm_mon;
-   t.tm_mday=a->begin.tm_mday;
-   t.tm_hour=a->begin.tm_hour;
-   t.tm_min=a->begin.tm_min;
+   t.tm_year=appt->begin.tm_year;
+   t.tm_mon=appt->begin.tm_mon;
+   t.tm_mday=appt->begin.tm_mday;
+   t.tm_hour=appt->begin.tm_hour;
+   t.tm_min=appt->begin.tm_min;
    t.tm_isdst=-1;
 
    mktime(&t);
@@ -896,20 +896,20 @@ static int find_prev_next(struct Appointment *a,
 	}
 #endif
    freq = 0;
-   switch (a->repeatType) {
+   switch (appt->repeatType) {
     case repeatNone:
 #ifdef ALARMS_DEBUG
       printf("fpn: repeatNone\n");
 #endif
-      t_alarm=mktime_dst_adj(&(a->begin)) - adv;
+      t_alarm=mktime_dst_adj(&(appt->begin)) - adv;
       if ((t_alarm < t2) && (t_alarm > t1)) {
-	 memcpy(tm_prev, &(a->begin), sizeof(struct tm));
+	 memcpy(tm_prev, &(appt->begin), sizeof(struct tm));
 	 *prev_found=1;
 #ifdef ALARMS_DEBUG
 	 printf("fpn: prev_found none\n");
 #endif
       } else if (t_alarm > t2) {
-	 memcpy(tm_next, &(a->begin), sizeof(struct tm));
+	 memcpy(tm_next, &(appt->begin), sizeof(struct tm));
 	 *next_found=1;
 #ifdef ALARMS_DEBUG
 	 printf("fpn: next_found none\n");
@@ -921,8 +921,8 @@ static int find_prev_next(struct Appointment *a,
 #ifdef ALARMS_DEBUG
       printf("fpn: repeatDaily\n");
 #endif
-      freq = a->repeatFrequency;
-      t_interval = a->repeatFrequency * 86400;
+      freq = appt->repeatFrequency;
+      t_interval = appt->repeatFrequency * 86400;
       if (t_interval==0) t_interval=1;
       t_alarm = mktime_dst_adj(&t);
       if ((t2 + adv) > t_alarm) {
@@ -940,22 +940,22 @@ static int find_prev_next(struct Appointment *a,
       forward=backward=0;
       /* since the code above disregarged DST in the above calcs,
        * we have to try to correct for it here */
-      if (tm_prev->tm_hour<a->begin.tm_hour) {
+      if (tm_prev->tm_hour<appt->begin.tm_hour) {
 	 t_past+=3600; /* 1 hour for dst */
 	 Pnow = localtime(&t_past);
 	 memcpy(tm_prev, Pnow, sizeof(struct tm));
       }
-      if (tm_prev->tm_hour>a->begin.tm_hour) {
+      if (tm_prev->tm_hour>appt->begin.tm_hour) {
 	 t_past-=3600; /* 1 hour for dst */
 	 Pnow = localtime(&t_past);
 	 memcpy(tm_prev, Pnow, sizeof(struct tm));
       }
-      if (tm_next->tm_hour<a->begin.tm_hour) {
+      if (tm_next->tm_hour<appt->begin.tm_hour) {
 	 t_future+=3600; /* 1 hour for dst */
 	 Pnow = localtime(&t_future);
 	 memcpy(tm_next, Pnow, sizeof(struct tm));
       }
-      if (tm_next->tm_hour>a->begin.tm_hour) {
+      if (tm_next->tm_hour>appt->begin.tm_hour) {
 	 t_future-=3600; /* 1 hour for dst */
 	 Pnow = localtime(&t_future);
 	 memcpy(tm_next, Pnow, sizeof(struct tm));
@@ -978,9 +978,9 @@ static int find_prev_next(struct Appointment *a,
 #ifdef ALARMS_DEBUG
       printf("fpn: repeatWeekly\n");
 #endif
-      freq = a->repeatFrequency;
+      freq = appt->repeatFrequency;
       /* Check for future start date */
-      begin_days = dateToDays(&(a->begin));
+      begin_days = dateToDays(&(appt->begin));
       days = dateToDays(&t);
       if (days > begin_days) {
 	 /* appt started in past, get to current date sooner */
@@ -990,16 +990,16 @@ static int find_prev_next(struct Appointment *a,
       }
       t.tm_isdst=-1;
       mktime(&t);
-      begin_days = dateToDays(&(a->begin));
+      begin_days = dateToDays(&(appt->begin));
       days = dateToDays(&t);
 #ifdef ALARMS_DEBUG
       printf("fpn: begin_days %d days %d\n", begin_days, days);
-      printf("fpn: t.tm_wday %d a->begin.tm_wday %d\n", t.tm_wday, a->begin.tm_wday);
+      printf("fpn: t.tm_wday %d appt->begin.tm_wday %d\n", t.tm_wday, appt->begin.tm_wday);
 #endif
       get_pref(PREF_FDOW, &fdow, NULL);
 
       /* Offset is how many weeks we are off of an iteration */
-      offset = ((int)((days - t.tm_wday) - (begin_days - a->begin.tm_wday))/7)%freq;
+      offset = ((int)((days - t.tm_wday) - (begin_days - appt->begin.tm_wday))/7)%freq;
 #ifdef ALARMS_DEBUG
       printf("fpn: offset %d\n", offset);
 #endif
@@ -1010,7 +1010,7 @@ static int find_prev_next(struct Appointment *a,
       }
       found=0;
       for (count=0, i=t.tm_wday; i>=0; i--, count++) {
-	 if (a->repeatDays[i]) {
+	 if (appt->repeatDays[i]) {
 	    sub_days_from_date(&t, count);
 	    found=1;
 #ifdef ALARMS_DEBUG
@@ -1025,7 +1025,7 @@ static int find_prev_next(struct Appointment *a,
       }
       if (!found) {
 	 for (count=0, i=t.tm_wday; i<7; i++, count++) {
-	    if (a->repeatDays[i]) {
+	    if (appt->repeatDays[i]) {
 	       add_days_to_date(&t, count);
 	       found=1;
 	       break;
@@ -1038,27 +1038,27 @@ static int find_prev_next(struct Appointment *a,
       printf("fpn: repeatMonthlyByDay\n");
 #endif
       /* Check for future start date */
-      begin_days = dateToDays(&(a->begin));
+      begin_days = dateToDays(&(appt->begin));
       days = dateToDays(&t);
       if (days > begin_days) {
 	 /* appt started in past, get to current date sooner */
 	 t.tm_mon=date2->tm_mon;
 	 t.tm_year=date2->tm_year;
       }
-      freq = a->repeatFrequency;
+      freq = appt->repeatFrequency;
 #ifdef ALARMS_DEBUG
       printf("fpn: freq=%d\n", freq);
 #endif
-      offset = ((t.tm_year - a->begin.tm_year)*12 +
-		(t.tm_mon - a->begin.tm_mon))%(a->repeatFrequency);
+      offset = ((t.tm_year - appt->begin.tm_year)*12 +
+		(t.tm_mon - appt->begin.tm_mon))%(appt->repeatFrequency);
       /* This will adjust for leap year, and exceeding the end of the month */
-      if (((t.tm_year - a->begin.tm_year)*12 + (t.tm_mon - a->begin.tm_mon)) < 0) {
+      if (((t.tm_year - appt->begin.tm_year)*12 + (t.tm_mon - appt->begin.tm_mon)) < 0) {
 	 add_months_to_date(&t, offset);
       } else {
 	 sub_months_from_date(&t, offset);
       }
       get_month_info(t.tm_mon, 1, t.tm_year, &fdom, &ndim);
-      t.tm_mday=((a->repeatDay+7-fdom)%7) - ((a->repeatDay)%7) + a->repeatDay + 1;
+      t.tm_mday=((appt->repeatDay+7-fdom)%7) - ((appt->repeatDay)%7) + appt->repeatDay + 1;
 #ifdef ALARMS_DEBUG
       printf("fpn: %02d/01/%02d, fdom=%d\n", t.tm_mon+1, t.tm_year+1900, fdom);
       printf("fpn: mday = %d\n", t.tm_mday);
@@ -1079,7 +1079,7 @@ static int find_prev_next(struct Appointment *a,
       printf("fpn: repeatMonthlyByDate\n");
 #endif
       /* Check for future start date */
-      begin_days = dateToDays(&(a->begin));
+      begin_days = dateToDays(&(appt->begin));
       days = dateToDays(&t);
       if (days > begin_days) {
 	 /* appt started in past, get to current date sooner */
@@ -1087,11 +1087,11 @@ static int find_prev_next(struct Appointment *a,
 	 t.tm_year=date2->tm_year;
       }
 
-      freq = a->repeatFrequency;
-      offset = ((t.tm_year - a->begin.tm_year)*12 +
-		(t.tm_mon - a->begin.tm_mon))%(a->repeatFrequency);
+      freq = appt->repeatFrequency;
+      offset = ((t.tm_year - appt->begin.tm_year)*12 +
+		(t.tm_mon - appt->begin.tm_mon))%(appt->repeatFrequency);
       /* This will adjust for leap year, and exceeding the end of the month */
-      if (((t.tm_year - a->begin.tm_year)*12 + (t.tm_mon - a->begin.tm_mon)) < 0) {
+      if (((t.tm_year - appt->begin.tm_year)*12 + (t.tm_mon - appt->begin.tm_mon)) < 0) {
 	 add_months_to_date(&t, offset);
       } else {
 	 sub_months_from_date(&t, offset);
@@ -1101,20 +1101,20 @@ static int find_prev_next(struct Appointment *a,
 #ifdef ALARMS_DEBUG
       printf("fpn: repeatYearly\n");
 #endif
-      begin_days = dateToDays(&(a->begin));
+      begin_days = dateToDays(&(appt->begin));
       days = dateToDays(&t);
       if (days > begin_days) {
 	 /* appt started in past, get to current date sooner */
 	 t.tm_year=date2->tm_year;
       }
-      freq = a->repeatFrequency;
-      offset = (t.tm_year - a->begin.tm_year)%(a->repeatFrequency);
+      freq = appt->repeatFrequency;
+      offset = (t.tm_year - appt->begin.tm_year)%(appt->repeatFrequency);
 #ifdef ALARMS_DEBUG      
-      printf("fpn: (%d - %d)%%%d\n", t.tm_year,a->begin.tm_year,a->repeatFrequency);
+      printf("fpn: (%d - %d)%%%d\n", t.tm_year,appt->begin.tm_year,appt->repeatFrequency);
       printf("fpn: *** years offset = %d\n", offset);
 #endif
       /* This will adjust for leap year, and exceeding the end of the month */
-      if ((t.tm_year - a->begin.tm_year) < 0) {
+      if ((t.tm_year - appt->begin.tm_year) < 0) {
 	 add_years_to_date(&t, offset);
       } else {
 	 sub_years_from_date(&t, offset);
@@ -1127,8 +1127,8 @@ static int find_prev_next(struct Appointment *a,
       safety_counter++;
       if (safety_counter > 3000) {
 	 jp_logf(JP_LOG_STDOUT|JP_LOG_FILE, "find_prev_next(): %s\n", _("infinite loop, breaking\n"));
-	 if (a->description) {
-	    jp_logf(JP_LOG_STDOUT|JP_LOG_FILE, "desc=[%s]\n", a->description);
+	 if (appt->description) {
+	    jp_logf(JP_LOG_STDOUT|JP_LOG_FILE, "desc=[%s]\n", appt->description);
 	 }
 	 break;
       }
@@ -1144,10 +1144,10 @@ static int find_prev_next(struct Appointment *a,
 #endif
       /* Check for exceptions */
       found_exception=0;
-      for (i=0; i<a->exceptions; i++) {
-	 if ((t.tm_mday==a->exception[i].tm_mday) &&
-	     (t.tm_mon==a->exception[i].tm_mon) &&
-	     (t.tm_year==a->exception[i].tm_year)
+      for (i=0; i<appt->exceptions; i++) {
+	 if ((t.tm_mday==appt->exception[i].tm_mday) &&
+	     (t.tm_mon==appt->exception[i].tm_mon) &&
+	     (t.tm_year==appt->exception[i].tm_year)
 	     ) {
 	    found_exception=1;
 	    break;
@@ -1155,16 +1155,16 @@ static int find_prev_next(struct Appointment *a,
       }
       if (found_exception) {
 	 if (forward) {
-	    forward_backward_in_appt_time(a, &t, fdom, ndim, 1);
+	    forward_backward_in_appt_time(appt, &t, fdom, ndim, 1);
 	    continue;
 	 }
 	 if (backward) {
-	    forward_backward_in_appt_time(a, &t, fdom, ndim, -1);
+	    forward_backward_in_appt_time(appt, &t, fdom, ndim, -1);
 	    continue;
 	 }
       }
       /* See that we aren't before the begin date */
-      t_begin = mktime_dst_adj(&(a->begin));
+      t_begin = mktime_dst_adj(&(appt->begin));
       if (t_temp < t_begin - adv) {
 #ifdef ALARMS_DEBUG      
 	 printf("fpn: before begin date\n");
@@ -1172,8 +1172,8 @@ static int find_prev_next(struct Appointment *a,
 	 backward=0;
       }
       /* If the appointment has an end date, see that we are not past it */
-      if (!(a->repeatForever)) {
-	 t_end = mktime_dst_adj(&(a->repeatEnd));
+      if (!(appt->repeatForever)) {
+	 t_end = mktime_dst_adj(&(appt->repeatEnd));
 	 if (t_temp > t_end) {
 #ifdef ALARMS_DEBUG
 	    printf("fpn: after end date\n");
@@ -1198,11 +1198,11 @@ static int find_prev_next(struct Appointment *a,
 #endif
       }
       if (forward) {
-	 forward_backward_in_appt_time(a, &t, fdom, ndim, 1);
+	 forward_backward_in_appt_time(appt, &t, fdom, ndim, 1);
 	 continue;
       }
       if (backward) {
-	 forward_backward_in_appt_time(a, &t, fdom, ndim, -1);
+	 forward_backward_in_appt_time(appt, &t, fdom, ndim, -1);
 	 continue;
       }
    }
@@ -1302,18 +1302,18 @@ int alarms_find_next(struct tm *date1_in, struct tm *date2_in, int soonest_only)
       /*
        * No alarm, skip
        */
-      if (!temp_al->ma.a.alarm) {
+      if (!temp_al->mappt.appt.alarm) {
 	 continue;
       }
 #ifdef ALARMS_DEBUG      
-      printf("\n[%s]\n", temp_al->ma.a.description);
+      printf("\n[%s]\n", temp_al->mappt.appt.description);
 #endif
       /*
        * See if the appointment starts before date1
        * and is a non repeating appointment
        */
-      if (temp_al->ma.a.repeatType == repeatNone) {
-	 t_alarm = mktime_dst_adj(&(temp_al->ma.a.begin));
+      if (temp_al->mappt.appt.repeatType == repeatNone) {
+	 t_alarm = mktime_dst_adj(&(temp_al->mappt.appt.begin));
 	 if (t_alarm < t1) {
 #ifdef ALARMS_DEBUG      
 	    printf("non repeat before t1, t_alarm<t1, %ld<%ld\n",t_alarm,t1);
@@ -1323,11 +1323,11 @@ int alarms_find_next(struct tm *date1_in, struct tm *date2_in, int soonest_only)
       }
 
       /* If the appointment has an end date, see that we are not past it */
-      if (!(temp_al->ma.a.repeatForever)) {
-	 t_end = mktime_dst_adj(&(temp_al->ma.a.repeatEnd));
+      if (!(temp_al->mappt.appt.repeatForever)) {
+	 t_end = mktime_dst_adj(&(temp_al->mappt.appt.repeatEnd));
 	 /* We need to add 24 hours to the end date to make it inclusive */
 	 t_end += 86400;
-	 t_begin = mktime_dst_adj(&(temp_al->ma.a.begin));
+	 t_begin = mktime_dst_adj(&(temp_al->mappt.appt.begin));
 	 if (t_end < t2) {
 #ifdef ALARMS_DEBUG      
 	    printf("past end date\n");
@@ -1337,26 +1337,26 @@ int alarms_find_next(struct tm *date1_in, struct tm *date2_in, int soonest_only)
       }
 
 #ifdef ALARMS_DEBUG      
-      printf("alarm advance %d ", temp_al->ma.a.advance);
+      printf("alarm advance %d ", temp_al->mappt.appt.advance);
 #endif
       adv = 0;
-      if (temp_al->ma.a.advanceUnits == advMinutes) {
+      if (temp_al->mappt.appt.advanceUnits == advMinutes) {
 #ifdef ALARMS_DEBUG      
 	 printf("minutes\n");
 #endif
-	 adv = temp_al->ma.a.advance*60;
+	 adv = temp_al->mappt.appt.advance*60;
       }
-      if (temp_al->ma.a.advanceUnits == advHours) {
+      if (temp_al->mappt.appt.advanceUnits == advHours) {
 #ifdef ALARMS_DEBUG      
 	 printf("hours\n");
 #endif
-	 adv = temp_al->ma.a.advance*3600;
+	 adv = temp_al->mappt.appt.advance*3600;
       }
-      if (temp_al->ma.a.advanceUnits == advDays) {
+      if (temp_al->mappt.appt.advanceUnits == advDays) {
 #ifdef ALARMS_DEBUG      
 	 printf("days\n");
 #endif
-	 adv = temp_al->ma.a.advance*86400;
+	 adv = temp_al->mappt.appt.advance*86400;
       }
 
 #ifdef ALARMS_DEBUG      
@@ -1366,7 +1366,7 @@ int alarms_find_next(struct tm *date1_in, struct tm *date2_in, int soonest_only)
       t_prev=t_future=t_interval=0;
       prev_found=next_found=0;
 
-      find_prev_next(&(temp_al->ma.a),
+      find_prev_next(&(temp_al->mappt.appt),
 		     adv,
 		     &date1,
 		     &date2,
@@ -1399,8 +1399,8 @@ int alarms_find_next(struct tm *date1_in, struct tm *date2_in, int soonest_only)
 	 }
       }
       if (next_found) {
-	 if (!(temp_al->ma.a.repeatForever)) {
-	    t_end = mktime_dst_adj(&(temp_al->ma.a.repeatEnd));
+	 if (!(temp_al->mappt.appt.repeatForever)) {
+	    t_end = mktime_dst_adj(&(temp_al->mappt.appt.repeatEnd));
 	    if (t_future > t_end) {
 #ifdef ALARMS_DEBUG      
 	       printf("failed future is after t_end\n");
@@ -1415,11 +1415,11 @@ int alarms_find_next(struct tm *date1_in, struct tm *date2_in, int soonest_only)
       printf("t_prev=   %s\n", prev_found ? print_date(t_prev):"None");
       printf("t_future= %s\n", next_found ? print_date(t_future):"None");
       printf("alarm me= %s\n", next_found ? print_date(t_future):"None");
-      printf("desc=[%s]\n", temp_al->ma.a.description);
+      printf("desc=[%s]\n", temp_al->mappt.appt.description);
 #endif
       if (!soonest_only) {
 	 if (prev_found) {
-	    alarms_add_to_list(temp_al->ma.unique_id, ALARM_MISSED, t_prev, adv);
+	    alarms_add_to_list(temp_al->mappt.unique_id, ALARM_MISSED, t_prev, adv);
 	 }
       }
       if (next_found) {
@@ -1445,7 +1445,7 @@ int alarms_find_next(struct tm *date1_in, struct tm *date2_in, int soonest_only)
 	    if (ta) {
 	       ta->next = next_alarm;
 	       next_alarm = ta;
-	       next_alarm->unique_id = temp_al->ma.unique_id;
+	       next_alarm->unique_id = temp_al->mappt.unique_id;
 	       next_alarm->type = ALARM_NEW;
 	       next_alarm->event_time = t_future;
 	       next_alarm->alarm_advance = adv;

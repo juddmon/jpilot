@@ -48,7 +48,7 @@ int print_address_list(AddressList **al)
 
    for (prev_al=NULL, temp_al=*al; temp_al;
 	prev_al=temp_al, temp_al=temp_al->next) {
-      jp_logf(JP_LOG_FILE | JP_LOG_STDOUT, "entry[0]=[%s]\n", temp_al->ma.a.entry[0]);
+      jp_logf(JP_LOG_FILE | JP_LOG_STDOUT, "entry[0]=[%s]\n", temp_al->maddr.addr.entry[0]);
    }
 }
 #endif
@@ -64,8 +64,8 @@ int address_compare(const void *v1, const void *v2)
    al1=(AddressList **)v1;
    al2=(AddressList **)v2;
 
-   a1=&((*al1)->ma.a);
-   a2=&((*al2)->ma.a);
+   a1=&((*al1)->maddr.addr);
+   a2=&((*al2)->maddr.addr);
 
    if (glob_sort_rule & SORT_BY_COMPANY) {
       sort1=2; /*company */
@@ -314,7 +314,7 @@ int address_sort(AddressList **al, int sort_order)
    return 0;
 }
 
-int pc_address_write(struct Address *a, PCRecType rt, unsigned char attrib,
+int pc_address_write(struct Address *addr, PCRecType rt, unsigned char attrib,
 		     unsigned int *unique_id)
 {
    char record[65536];
@@ -325,11 +325,11 @@ int pc_address_write(struct Address *a, PCRecType rt, unsigned char attrib,
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    if (char_set != CHAR_SET_LATIN1) {
       for (i = 0; i < 19; i++) {
-	 if (a->entry[i]) charset_j2p((unsigned char *)a->entry[i], strlen(a->entry[i])+1, char_set);
+	 if (addr->entry[i]) charset_j2p((unsigned char *)addr->entry[i], strlen(addr->entry[i])+1, char_set);
       }
    }
 
-   rec_len = pack_Address(a, (unsigned char *)record, 65535);
+   rec_len = pack_Address(addr, (unsigned char *)record, 65535);
    if (!rec_len) {
       PRINT_FILE_LINE;
       jp_logf(JP_LOG_WARN, "pack_Address %s\n", _("error"));
@@ -359,7 +359,7 @@ void free_AddressList(AddressList **al)
    AddressList *temp_al, *temp_al_next;
 
    for (temp_al = *al; temp_al; temp_al=temp_al_next) {
-      free_Address(&(temp_al->ma.a));
+      free_Address(&(temp_al->maddr.addr));
       temp_al_next = temp_al->next;
       free(temp_al);
    }
@@ -422,7 +422,7 @@ int get_addresses2(AddressList **address_list, int sort_order,
    GList *records;
    GList *temp_list;
    int recs_returned, i, num;
-   struct Address a;
+   struct Address addr;
    AddressList *temp_a_list;
    long keep_modified, keep_deleted;
    int keep_priv;
@@ -475,7 +475,7 @@ int get_addresses2(AddressList **address_list, int sort_order,
 	 continue;
       }
 
-      num = unpack_Address(&a, br->buf, br->size);
+      num = unpack_Address(&addr, br->buf, br->size);
 
       if (num <= 0) {
 	 continue;
@@ -488,15 +488,15 @@ int get_addresses2(AddressList **address_list, int sort_order,
       get_pref(PREF_CHAR_SET, &char_set, NULL);
       if (char_set != CHAR_SET_LATIN1) {
 	 for (i = 0; i < 19; i++) {
-	    if ((a.entry[i] != NULL) && (a.entry[i][0] != '\0')) {
-               buf = charset_p2newj((unsigned char *)a.entry[i], strlen(a.entry[i])+1, char_set);
+	    if ((addr.entry[i] != NULL) && (addr.entry[i][0] != '\0')) {
+               buf = charset_p2newj((unsigned char *)addr.entry[i], strlen(addr.entry[i])+1, char_set);
                if (buf) {
-		  if (strlen(buf) > strlen(a.entry[i])) {
-		     free(a.entry[i]);
-		     a.entry[i] = strdup(buf);
+		  if (strlen(buf) > strlen(addr.entry[i])) {
+		     free(addr.entry[i]);
+		     addr.entry[i] = strdup(buf);
 		     free(buf);
 		  } else {
-		     multibyte_safe_strncpy(a.entry[i], buf, strlen(a.entry[i])+1);
+		     multibyte_safe_strncpy(addr.entry[i], buf, strlen(addr.entry[i])+1);
 		     free(buf);
 		  }
 	       }
@@ -509,11 +509,11 @@ int get_addresses2(AddressList **address_list, int sort_order,
 	 jp_logf(JP_LOG_WARN, "get_addresses2(): %s\n", _("Out of memory"));
 	 break;
       }
-      memcpy(&(temp_a_list->ma.a), &a, sizeof(struct Address));
+      memcpy(&(temp_a_list->maddr.addr), &addr, sizeof(struct Address));
       temp_a_list->app_type = ADDRESS;
-      temp_a_list->ma.rt = br->rt;
-      temp_a_list->ma.attrib = br->attrib;
-      temp_a_list->ma.unique_id = br->unique_id;
+      temp_a_list->maddr.rt = br->rt;
+      temp_a_list->maddr.attrib = br->attrib;
+      temp_a_list->maddr.unique_id = br->unique_id;
       temp_a_list->next = *address_list;
       *address_list = temp_a_list;
       recs_returned++;
