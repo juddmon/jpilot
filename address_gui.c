@@ -1,7 +1,7 @@
 /* address_gui.c
  * A module of J-Pilot http://jpilot.org
  * 
- * Copyright (C) 1999-2001 by Judd Montgomery
+ * Copyright (C) 1999-2002 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1096,7 +1096,6 @@ void cb_dialer(GtkWidget *widget, gpointer data)
 
    Px = strstr(str, "x");
    if (Px) {
-      //undo printf("Px = [%s]\n", Px);
       parse_phone_str(ext, Px, 90);
    }
    g_free(str);
@@ -1141,8 +1140,7 @@ void cb_address_quickfind(GtkWidget *widget,
    line_count = i;
 
    if (found) {
-      move_scrolled_window(scrolled_window,
-			   ((float)found_at)/((float)line_count));
+      gtk_clist_moveto(GTK_CLIST(clist), found_at, 0, 0.5, 0.0);
    }
 }
 
@@ -1184,6 +1182,43 @@ static void clear_myaddress(MyAddress *ma)
    return;
 }
 /* End Masking */
+
+static void cb_edit_cats(GtkWidget *widget, gpointer data)
+{
+   struct AddressAppInfo ai;
+   char full_name[256];
+   char buffer[65536];
+   int num, r;
+   int size;
+   void *buf;
+   struct pi_file *pf;
+
+   jp_logf(LOG_DEBUG, "cb_edit_cats\n");
+
+   get_home_file_name("AddressDB.pdb", full_name, 250);
+
+   buf=NULL;
+   bzero(&ai, sizeof(ai));
+
+   pf = pi_file_open(full_name);
+   r = pi_file_get_app_info(pf, &buf, &size);
+
+   num = unpack_AddressAppInfo(&ai, buf, size);
+   if (num <= 0) {
+      jp_logf(LOG_WARN, _("Error reading %s\n"), "AddressDB.pdb");
+      return;
+   }
+
+   pi_file_close(pf);
+
+   edit_cats(widget, "AddressDB", &(ai.category));
+
+   size = pack_AddressAppInfo(&ai, buffer, 65535);
+
+   pdb_file_write_app_block("AddressDB", buffer, size);
+
+   cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
+}
 
 static void cb_clist_selection(GtkWidget      *clist,
 			       gint           row,
@@ -1777,8 +1812,7 @@ static int address_find()
 	 gtk_clist_select_row(GTK_CLIST(clist), found_at, ADDRESS_PHONE_COLUMN);
 	 cb_clist_selection(clist, found_at, ADDRESS_PHONE_COLUMN, (GdkEventButton *)455, NULL);
 	 if (!gtk_clist_row_is_visible(GTK_CLIST(clist), found_at)) {
-	    move_scrolled_window_hack(scrolled_window,
-				      (float)found_at/(float)total_count);
+	    gtk_clist_moveto(GTK_CLIST(clist), found_at, 0, 0.5, 0.0);
 	 }
       }
       glob_find_id = 0;
@@ -1858,8 +1892,7 @@ cb_key_pressed_quickfind(GtkWidget *widget, GdkEventKey *event, gpointer data)
    gtk_clist_select_row(GTK_CLIST(clist), select_row, ADDRESS_NAME_COLUMN);
    cb_clist_selection(clist, select_row, ADDRESS_PHONE_COLUMN, (GdkEventButton *)455, NULL);
    if (!gtk_clist_row_is_visible(GTK_CLIST(clist), select_row)) {
-      move_scrolled_window_hack(scrolled_window,
-				(float)select_row/(float)row_count);
+      gtk_clist_moveto(GTK_CLIST(clist), select_row, 0, 0.5, 0.0);
    }
    return TRUE;
 }
@@ -1913,7 +1946,11 @@ static gboolean
 	    if (i>=NUM_ADDRESS_ENTRIES)  i=0;
 	    if (i<0)  i=NUM_ADDRESS_ENTRIES-1;
 	 }
-	 gtk_notebook_set_page(GTK_NOTEBOOK(notebook), page[i]);
+	 if (!use_jos && (char_set == CHAR_SET_JAPANESE)) {
+	    gtk_notebook_set_page(GTK_NOTEBOOK(notebook), kana_page[i]);
+	 } else {
+	    gtk_notebook_set_page(GTK_NOTEBOOK(notebook), page[i]);
+	 }
 	 gtk_widget_grab_focus(GTK_WIDGET(address_text[order[i]]));
 	 return TRUE;
       }
@@ -2015,11 +2052,22 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    separator = gtk_hseparator_new();
    gtk_box_pack_start(GTK_BOX(vbox1), separator, FALSE, FALSE, 5);
 
+   /* Category Box */
+   hbox_temp = gtk_hbox_new(FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox1), hbox_temp, FALSE, FALSE, 0);
+
    /* Put the category menu up */
    make_category_menu(&category_menu1, address_cat_menu_item1,
 		      sort_l, cb_category, TRUE);
-   gtk_box_pack_start(GTK_BOX(vbox1), category_menu1, FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu1, TRUE, TRUE, 0);
 
+   /* Edit category button */
+   button = gtk_button_new_with_label(_("Edit Categories"));
+   gtk_signal_connect(GTK_OBJECT(button), "clicked",
+		      GTK_SIGNAL_FUNC(cb_edit_cats), NULL);
+   gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
+
+   
    /* Put the address list window up */
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
    /*gtk_widget_set_usize(GTK_WIDGET(scrolled_window), 150, 0); */
@@ -2251,7 +2299,6 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
       for (i=0; i<NUM_PHONE_ENTRIES; i++) {
 	 radio_button[i] = gtk_radio_button_new(group);
 	 group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button[i]));
-	 /* gtk_widget_set_usize(GTK_WIDGET(radio_button[i]), 5, 0);undo*/
 	 gtk_table_attach(GTK_TABLE(table1), GTK_WIDGET(radio_button[i]),
 			  1, 2, i+4+3, i+5+3, GTK_SHRINK, 0, 0, 0);
       }
@@ -2316,7 +2363,6 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
       for (i=0; i<NUM_PHONE_ENTRIES; i++) {
 	 radio_button[i] = gtk_radio_button_new_with_label(group, _("Show\nIn List"));
 	 group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button[i]));
-	 /* gtk_widget_set_usize(GTK_WIDGET(radio_button[i]), 5, 0);undo*/
 	 gtk_table_attach(GTK_TABLE(table1), GTK_WIDGET(radio_button[i]),
 			  1, 2, i+4, i+5, GTK_SHRINK, 0, 0, 0);
       }

@@ -1,7 +1,7 @@
 /* memo_gui.c
  * A module of J-Pilot http://jpilot.org
  * 
- * Copyright (C) 1999-2001 by Judd Montgomery
+ * Copyright (C) 1999-2002 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -821,6 +821,55 @@ static void clear_mymemo(MyMemo *mmemo)
 /* End Masking */
 
 
+static void cb_edit_cats(GtkWidget *widget, gpointer data)
+{
+   struct MemoAppInfo ai;
+   char db_name[256];
+   char pdb_name[256];
+   char full_name[256];
+   char buffer[65536];
+   int num, r;
+   int size;
+   void *buf;
+   long ivalue;
+   struct pi_file *pf;
+
+   jp_logf(LOG_DEBUG, "cb_edit_cats\n");
+
+   get_pref(PREF_MEMO32_MODE, &ivalue, NULL);
+   if (ivalue) {
+      strcpy(pdb_name, "Memo32DB.pdb");
+      strcpy(db_name, "Memo32DB");
+   } else {
+      strcpy(pdb_name, "MemoDB.pdb");
+      strcpy(db_name, "MemoDB");
+   }
+   get_home_file_name(pdb_name, full_name, 250);
+
+   buf=NULL;
+   bzero(&ai, sizeof(ai));
+
+   pf = pi_file_open(full_name);
+   r = pi_file_get_app_info(pf, &buf, &size);
+
+   num = unpack_MemoAppInfo(&ai, buf, size);
+   if (num <= 0) {
+      jp_logf(LOG_WARN, _("Error reading %s\n"), pdb_name);
+      return;
+   }
+
+   pi_file_close(pf);
+
+   edit_cats(widget, db_name, &(ai.category));
+
+   size = pack_MemoAppInfo(&ai, buffer, 65535);
+
+   pdb_file_write_app_block("MemoDB", buffer, size);
+
+   cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
+}
+
+
 static void cb_clist_selection(GtkWidget      *clist,
 			       gint           row,
 			       gint           column,
@@ -1081,8 +1130,7 @@ static int memo_find()
 	 gtk_clist_select_row(GTK_CLIST(clist), found_at, 0);
 	 cb_clist_selection(clist, found_at, 0, (gpointer)455, NULL);
 	 if (!gtk_clist_row_is_visible(GTK_CLIST(clist), found_at)) {
-	    move_scrolled_window_hack(scrolled_window,
-				      (float)found_at/(float)total_count);
+	    gtk_clist_moveto(GTK_CLIST(clist), found_at, 0, 0.5, 0.0);
 	 }
       }
       glob_find_id = 0;
@@ -1215,10 +1263,21 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_box_pack_start(GTK_BOX(vbox1), separator, FALSE, FALSE, 5);
 
 
+   /* Category Box */
+   hbox_temp = gtk_hbox_new(FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox1), hbox_temp, FALSE, FALSE, 0);
+
    /* Put the left-hand category menu up */
    make_category_menu(&category_menu1, memo_cat_menu_item1,
 		      sort_l, cb_category, TRUE);
-   gtk_box_pack_start(GTK_BOX(vbox1), category_menu1, FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu1, TRUE, TRUE, 0);
+
+
+   /* Edit category button */
+   button = gtk_button_new_with_label(_("Edit Categories"));
+   gtk_signal_connect(GTK_OBJECT(button), "clicked",
+		      GTK_SIGNAL_FUNC(cb_edit_cats), NULL);
+   gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
 
 
    /* Memo32 check box */
