@@ -1121,24 +1121,20 @@ msgid "/_View"
 msgstr "/Affichage"
 
 #: jpilot.c:1128 jpilot.c:1129 jpilot.c:1130 jpilot.c:1383
-#, fuzzy
 msgid "/View/Hide Private Records"
-msgstr "/Affichage/Masquer-Montrer les enregistrements privés"
+msgstr "/Affichage/Cacher les enregistrements privés"
 
 #: jpilot.c:1129
-#, fuzzy
 msgid "/View/Show Private Records"
-msgstr "/Affichage/Masquer-Montrer les enregistrements privés"
+msgstr "/Affichage/Montrer les enregistrements privés"
 
 #: jpilot.c:1130
-#, fuzzy
 msgid "/View/Mask Private Records"
-msgstr "/Affichage/Masquer-Montrer les enregistrements privés"
+msgstr "/Affichage/Masquer les enregistrements privés"
 
 #: jpilot.c:1131
-#, fuzzy
 msgid "/View/sep1"
-msgstr "/Fichier/sep1"
+msgstr "/Affichage/sep1"
 
 #: jpilot.c:1132
 msgid "/View/Datebook"
@@ -1255,19 +1251,16 @@ msgid "Clear"
 msgstr "Effacer"
 
 #: jpilot.c:2207
-#, fuzzy
 msgid "Show private records   Ctrl-Z"
-msgstr "Montrer les enregistrements privés"
+msgstr "Montrer les enregistrements privés   Ctrl-Z"
 
 #: jpilot.c:2212
-#, fuzzy
 msgid "Hide private records   Ctrl-Z"
-msgstr "Cacher les enregistrements privés"
+msgstr "Cacher les enregistrements privés   Ctrl-Z"
 
 #: jpilot.c:2217
-#, fuzzy
 msgid "Mask private records   Ctrl-Z"
-msgstr "Masquer les enregistrements privés"
+msgstr "Masquer les enregistrements privés   Ctrl-Z"
 
 #: jpilot.c:2228
 msgid "Sync your palm to the desktop   Ctrl-Y"
