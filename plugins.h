@@ -19,7 +19,7 @@
 #include "config.h"
 #ifdef  ENABLE_PLUGINS
 
-# ifndef __PLUGINS_H__
+#ifndef __PLUGINS_H__
 #define __PLUGINS_H__
 
 #include <stdlib.h>
@@ -57,6 +57,7 @@ struct plugin_s
    int (*plugin_startup)(jp_startup_info *info);
    int (*plugin_gui)(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id);
    int (*plugin_help)(char **text, int *width, int *height);
+   int (*plugin_print)();
    int (*plugin_gui_cleanup)(void);
    int (*plugin_pre_sync)(void);
    int (*plugin_sync)(int sd);
@@ -118,6 +119,7 @@ int plugin_get_db_name(char *name, int len);
 int plugin_startup(jp_startup_info *info);
 int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id);
 int plugin_help(char **text, int *width, int *height);
+int plugin_print();
 int plugin_gui_cleanup(void);
 int plugin_pre_sync(void);
 int plugin_sync(int sd);

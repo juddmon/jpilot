@@ -18,6 +18,7 @@
  */
 
 #include "config.h"
+#include "i18n.h"
 #include <sys/types.h>
 #include <dirent.h>
 #include <stdio.h>
@@ -30,7 +31,7 @@
 /*These are the default settings */
 /*name, usertype, filetype, ivalue, char svalue[MAX_PREF_VALUE+2]; */
 static prefType glob_prefs[NUM_PREFS] = {
-   {"jpilotrc", CHARTYPE, CHARTYPE, 0, "jpilotrc.default"},
+     {"jpilotrc", CHARTYPE, CHARTYPE, 0, "jpilotrc.default"},
      {"time", CHARTYPE, INTTYPE, 0, ""},
      {"sdate", CHARTYPE, INTTYPE, 0, ""},
      {"ldate", CHARTYPE, INTTYPE, 0, ""},
@@ -43,6 +44,7 @@ static prefType glob_prefs[NUM_PREFS] = {
      {"rate", CHARTYPE, INTTYPE, 4, ""},
      {"user", CHARTYPE, CHARTYPE, 0, ""},
      {"user_id", INTTYPE, INTTYPE, 0, ""},
+     {"pc_id", INTTYPE, INTTYPE, 0, ""},
      {"num_backups", INTTYPE, INTTYPE, 2, ""},
      {"window_width", INTTYPE, INTTYPE, 770, ""},
      {"window_height", INTTYPE, INTTYPE, 500, ""},
@@ -50,6 +52,12 @@ static prefType glob_prefs[NUM_PREFS] = {
      {"address_pane", INTTYPE, INTTYPE, 340, ""},
      {"todo_pane", INTTYPE, INTTYPE, 370, ""},
      {"memo_pane", INTTYPE, INTTYPE, 370, ""},
+     {"use_db3", INTTYPE, INTTYPE, 0, ""},
+     {"last_app", INTTYPE, INTTYPE, DATEBOOK, ""},
+     {"print_this_many", INTTYPE, INTTYPE, 3, ""},
+     {"print_one_per_page", INTTYPE, INTTYPE, 0, ""},
+     {"print_blank_lines", INTTYPE, INTTYPE, 1, ""},
+     {"print_command", CHARTYPE, CHARTYPE, 0, "lpr -h"},
 };
 
 struct jlist {
@@ -60,18 +68,68 @@ struct jlist {
 static struct jlist *dir_list=NULL;
 
 
+int get_pref_time_no_secs(char *datef)
+{
+   /* "%I:%M:%S %p" */
+   /* "%I:%M:%S" */
+   /* "%I:%M" */
+   /* "%I:%M%p" */
+   long ivalue;
+   const char *svalue;
+   int i1, i2;
+   
+   get_pref(PREF_TIME, &ivalue, &svalue);
+   if (!svalue) {
+      return -1;
+   }
+   for (i1=0, i2=0; ; i1++, i2++) {
+      if (svalue[i2]=='S') {
+	 i1-=2;
+	 i2++;
+      }
+      if (svalue[i2]==' ') {
+	 i1--;
+	 continue;
+      }
+      datef[i1]=svalue[i2];
+      if (svalue[i2]=='\0') {
+	 break;
+      }
+   }
+   return 0;
+}
+
+int get_pref_time_no_secs_no_ampm(char *datef)
+{
+   long ivalue;
+   const char *svalue;
+   
+   get_pref(PREF_TIME, &ivalue, &svalue);
+   if (!svalue) {
+      return -1;
+   }
+   if (svalue) {
+      strncpy(datef, svalue, 5);
+      datef[5]='\0';
+   } else {
+      datef[0]='\0';
+   }
+
+   return 0;
+}
+
 int get_pref_dmy_order()
 {
    long n;
    
    get_pref(PREF_SHORTDATE, &n, NULL);
-   if (n<2) {
+   if (n<1) {
       return PREF_MDY;
    }
-   if ((n>1) && (n<5)) {
+   if ((n>0) && (n<4)) {
       return PREF_DMY;
    }
-   if ((n>4)) {
+   if ((n>3)) {
       return PREF_YMD;
    }
    return 0;
@@ -116,7 +174,7 @@ static int get_rcfile_name(int n, char *rc_copy)
 	       jpilot_logf(LOG_DEBUG, "found %s\n", dirent->d_name);
 	       new_entry = malloc(sizeof(struct jlist));
 	       if (!new_entry) {
-		  jpilot_logf(LOG_FATAL, "out of memory\n");
+		  jpilot_logf(LOG_FATAL, _("out of memory\n"));
 		  return -1;
 	       }  
 	       new_entry->name = strdup(dirent->d_name);
@@ -141,7 +199,7 @@ static int get_rcfile_name(int n, char *rc_copy)
 	       jpilot_logf(LOG_DEBUG, "found %s\n", dirent->d_name);
 	       new_entry = malloc(sizeof(struct jlist));
 	       if (!new_entry) {
-		  jpilot_logf(LOG_FATAL, "out of memory\n");
+		  jpilot_logf(LOG_FATAL, _("out of memory\n"));
 		  return -1;
 	       }  
 	       new_entry->name = strdup(dirent->d_name);
@@ -177,7 +235,6 @@ static int get_rcfile_name(int n, char *rc_copy)
 int get_pref_possibility(int which, int n, char *pref_str)
 {
    const char *short_date_formats[] = {
-      "%x",
       "%m/%d/%y",
       "%d/%m/%y",
       "%d.%m.%y",
@@ -188,7 +245,6 @@ int get_pref_possibility(int which, int n, char *pref_str)
    };
 
    const char *long_date_formats[] = {
-      "%x",
       "%B %d, %Y",
       "%d %B %Y",
       "%d. %B %Y",
@@ -198,7 +254,6 @@ int get_pref_possibility(int which, int n, char *pref_str)
    };
 
    const char *time_formats[] = {
-      "%X",
       "%I:%M:%S %p",
       "%H:%M:%S",
       "%I.%M.%S %p",
@@ -218,16 +273,16 @@ int get_pref_possibility(int which, int n, char *pref_str)
 
    static const char *rates[] = {
       "300",
-	"1200",
-	"2400",
-	"4800",
-	"9600",
-	"19200",
-	"38400",
-	"57600",
-	"115200",
-	"230400",
-	"460800"
+      "1200",
+      "2400",
+      "4800",
+      "9600",
+      "19200",
+      "38400",
+      "57600",
+      "115200",
+      "230400",
+      "460800"
    };
 
    switch(which) {

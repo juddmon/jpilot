@@ -104,7 +104,6 @@ static void free_myexpense_list(struct MyExpense **PPme)
    *PPme=NULL;
 }
 
-
 /*
  * This is a mandatory plugin function.
  */
@@ -516,7 +515,7 @@ static void display_records()
 
    gtk_clist_thaw(GTK_CLIST(clist));
 
-   free_buf_rec_list(&records);
+   jp_free_DB_records(&records);
 }
 
 /*
@@ -1139,7 +1138,9 @@ int plugin_gui_cleanup() {
  */
 int plugin_startup(jp_startup_info *info)
 {
+   int maj, min;
    jp_init();
+
    jp_logf(LOG_DEBUG, "Expense: plugin_startup\n");
    if (info) {
       if (info->base_dir) {

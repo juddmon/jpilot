@@ -17,6 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include "config.h"
+#include "i18n.h"
 #include <stdio.h>
 #include <pi-source.h>
 #include <pi-socket.h>
@@ -25,6 +26,7 @@
 #include "address.h"
 #include "utils.h"
 #include "log.h"
+#include "prefs.h"
 
 #if defined(WITH_JAPANESE)
 #include "japanese.h"
@@ -111,7 +113,10 @@ int address_compare(const void *v1, const void *v2)
    return strncasecmp(str2, str1, 99);
 }
 
-int address_sort(AddressList **al)
+/* 
+ * sort_order: 0=descending,  1=ascending
+ */
+int address_sort(AddressList **al, int sort_order)
 {
    AddressList *temp_al;
    AddressList **sort_al;
@@ -135,7 +140,7 @@ int address_sort(AddressList **al)
    /* Allocate an array to be qsorted */
    sort_al = calloc(count, sizeof(AddressList *));
    if (!sort_al) {
-      jpilot_logf(LOG_WARN, "Out of Memory\n");
+      jpilot_logf(LOG_WARN, _("Out of Memory\n"));
       return 0;
    }
    
@@ -148,12 +153,20 @@ int address_sort(AddressList **al)
    qsort(sort_al, count, sizeof(AddressList *), address_compare);
 
    /* Put the linked list in the order of the array */
-   sort_al[count-1]->next = NULL;
-   for (i=count-1; i; i--) {
-      sort_al[i-1]->next=sort_al[i];
+   if (sort_order==SORT_ASCENDING) {
+      for (i=count-1; i>0; i--) {
+	 sort_al[i]->next=sort_al[i-1];
+      }
+      sort_al[0]->next = NULL;
+      *al = sort_al[count-1];
+   } else {
+      /* Descending order */
+      sort_al[count-1]->next = NULL;
+      for (i=count-1; i; i--) {
+	 sort_al[i-1]->next=sort_al[i];
+      }
+      *al = sort_al[0];
    }
-
-   *al = sort_al[0];
 
    free(sort_al);
 
@@ -172,7 +185,7 @@ static int pc_address_read_next_rec(FILE *in, MyAddress *ma)
    num = fread(&header, sizeof(header), 1, in);
    if (num != 1) {
       if (ferror(in)) {
-	 jpilot_logf(LOG_WARN, "Error reading AddressDB.pc\n");
+	 jpilot_logf(LOG_WARN, _("Error reading %s\n"),"AddressDB.pc");
 	 return ADDRESS_EOF;
       }
       if (feof(in)) {
@@ -186,14 +199,14 @@ static int pc_address_read_next_rec(FILE *in, MyAddress *ma)
    record = malloc(rec_len);
    if (!record) {
       if (rec_len > 0) {
-	 jpilot_logf(LOG_WARN, "Out of memory 1\n");
+	 jpilot_logf(LOG_WARN, _("Out of memory 1\n"));
       }
       return ADDRESS_EOF;
    }
    num = fread(record, rec_len, 1, in);
    if (num != 1) {
       if (ferror(in)) {
-	 jpilot_logf(LOG_WARN, "Error reading AddressDB.pc\n");
+	 jpilot_logf(LOG_WARN, _("Error reading %s\n"),"AddressDB.pc");
 	 free(record);
 	 return ADDRESS_EOF;
       }
@@ -224,13 +237,13 @@ int pc_address_write(struct Address *a, PCRecType rt, unsigned char attrib,
    
    out = open_file("AddressDB.pc", "a");
    if (!out) {
-      jpilot_logf(LOG_WARN, "Error opening AddressDB.pc\n");
+      jpilot_logf(LOG_WARN, _("Error opening %s\n"), "AddressDB.pc");
       return -1;
    }
    rec_len = pack_Address(a, record, 65535);
    if (!rec_len) {
       PRINT_FILE_LINE;
-      jpilot_logf(LOG_WARN, "pack_Address error\n");
+      jpilot_logf(LOG_WARN, "pack_Address %s\n",_("error"));
       return -1;
    }
    header.rec_len=rec_len;
@@ -265,15 +278,16 @@ int get_address_app_info(struct AddressAppInfo *ai)
    RawDBHeader rdbh;
    DBHeader dbh;
 
+   bzero(ai, sizeof(*ai));
    in = open_file("AddressDB.pdb", "r");
    if (!in) {
-      jpilot_logf(LOG_WARN, "Error opening AddressDB.pdb\n");
+      jpilot_logf(LOG_WARN, _("Error opening %s\n"), "AddressDB.pdb");
       return -1;
    }
    num = fread(&rdbh, sizeof(RawDBHeader), 1, in);
    if (num != 1) {
       if (ferror(in)) {
-	 jpilot_logf(LOG_WARN, "Error reading AddressDB.pdb\n");
+	 jpilot_logf(LOG_WARN, _("Error reading %s\n"), "AddressDB.pdb");
 	 fclose(in);
 	 return -1;
       }
@@ -291,7 +305,7 @@ int get_address_app_info(struct AddressAppInfo *ai)
    buf=malloc(rec_size);
    if (!buf) {
       if (rec_size > 0) {
-	 jpilot_logf(LOG_WARN, "Out of memory 2\n");
+	 jpilot_logf(LOG_WARN, _("Out of memory 2\n"));
       }
       fclose(in);
       return -1;
@@ -301,7 +315,7 @@ int get_address_app_info(struct AddressAppInfo *ai)
       if (ferror(in)) {
 	 fclose(in);
 	 free(buf);
-	 jpilot_logf(LOG_WARN, "Error reading AddressDB.pdb\n");
+	 jpilot_logf(LOG_WARN, _("Error reading %s\n"), "AddressDB.pdb");
 	 return -1;
       }
    }
@@ -310,7 +324,7 @@ int get_address_app_info(struct AddressAppInfo *ai)
       if (ferror(in)) {
 	 fclose(in);
 	 free(buf);
-	 jpilot_logf(LOG_WARN, "Error in unpack_AddressAppInfo\n");
+	 jpilot_logf(LOG_WARN, _("Error in %s\n"), "unpack_AddressAppInfo");
 	 return -1;
       }
    }
@@ -336,29 +350,54 @@ int get_address_app_info(struct AddressAppInfo *ai)
    return 0;
 }
 
-int get_addresses(AddressList **address_list)
+
+int get_addresses(AddressList **address_list, int sort_order)
+{
+   return get_addresses2(address_list, sort_order, 1, 1, CATEGORY_ALL);
+}
+/* 
+ * sort_order: 0=descending,  1=ascending
+ * modified and deleted, 0 for no, 1 for yes, 2 for use prefs
+ */
+int get_addresses2(AddressList **address_list, int sort_order,
+		  int modified, int deleted, int category)
 {
    FILE *in, *pc_in;
    char *buf;
    int num_records, recs_returned, i, num, r;
-   unsigned int offset, next_offset, rec_size;
+   int out_of_order;
+   unsigned int offset, prev_offset, next_offset, rec_size;
    long fpos;  /*file position indicator */
    unsigned char attrib;
    unsigned int unique_id;
-   mem_rec_header *mem_rh, *temp_mem_rh;
+   mem_rec_header *mem_rh, *temp_mem_rh, *last_mem_rh;
    record_header rh;
    RawDBHeader rdbh;
    DBHeader dbh;
    struct Address a;
    AddressList *temp_address_list;
+   AddressList *tal, *next_al, *prev_al;
    MyAddress ma;
+   long keep_modified, keep_deleted;
+   
+   keep_modified = modified;
+   keep_deleted = deleted;
 
-   mem_rh = NULL;
+   if (modified==2) {
+      get_pref(PREF_SHOW_MODIFIED, &keep_modified, NULL);
+   }
+   if (deleted==2) {
+      get_pref(PREF_SHOW_DELETED, &keep_deleted, NULL);
+   }
+
+   mem_rh = last_mem_rh = NULL;
    recs_returned = 0;
+   out_of_order = 0;
+   prev_offset = 0;
 
    in = open_file("AddressDB.pdb", "r");
    if (!in) {
-      jpilot_logf(LOG_WARN, "Error opening AddressDB.pdb\n");
+      jpilot_logf(LOG_WARN, _("Error opening %s\n"), "AddressDB.pdb");
       return -1;
    }
    /*Read the database header */
@@ -366,7 +405,7 @@ int get_addresses(AddressList **address_list)
    if (num != 1) {
       if (ferror(in)) {
 	 fclose(in);
-	 jpilot_logf(LOG_WARN, "Error reading AddressDB.pdb\n");
+	 jpilot_logf(LOG_WARN, _("Error reading %s\n"), "AddressDB.pdb");
 	 return -1;
       }
       if (feof(in)) {
@@ -390,7 +429,7 @@ int get_addresses(AddressList **address_list)
       if (num != 1) {
 	 if (ferror(in)) {
 	    fclose(in);
-	    jpilot_logf(LOG_WARN, "Error reading AddressDB.pdb\n");
+	    jpilot_logf(LOG_WARN, _("Error reading %s\n"), "AddressDB.pdb");
 	    return -1;
 	 }
 	 if (feof(in)) {
@@ -398,6 +437,12 @@ int get_addresses(AddressList **address_list)
 	 }      
       }
       offset = ((rh.Offset[0]*256+rh.Offset[1])*256+rh.Offset[2])*256+rh.Offset[3];
+
+      if (offset < prev_offset) {
+	 out_of_order = 1;
+      }
+      prev_offset = offset;
+
 #ifdef JPILOT_DEBUG
       jpilot_logf(LOG_DEBUG, "record header %u offset = %u\n",i, offset);
       jpilot_logf(LOG_DEBUG, "       attrib 0x%x\n",rh.attrib);
@@ -405,20 +450,48 @@ int get_addresses(AddressList **address_list)
       jpilot_logf(LOG_DEBUG, "%d\n",(rh.unique_ID[0]*256+rh.unique_ID[1])*256+rh.unique_ID[2]);
 #endif
       temp_mem_rh = (mem_rec_header *)malloc(sizeof(mem_rec_header));
-      temp_mem_rh->next = mem_rh;
-      mem_rh = temp_mem_rh;
-      mem_rh->rec_num = i;
-      mem_rh->offset = offset;
-      mem_rh->attrib = rh.attrib;
-      mem_rh->unique_id = (rh.unique_ID[0]*256+rh.unique_ID[1])*256+rh.unique_ID[2];
+      temp_mem_rh->next = NULL;
+      temp_mem_rh->rec_num = i;
+      temp_mem_rh->offset = offset;
+      temp_mem_rh->attrib = rh.attrib;
+      temp_mem_rh->unique_id = (rh.unique_ID[0]*256+rh.unique_ID[1])*256+rh.unique_ID[2];
+      if (mem_rh == NULL) {
+	 mem_rh = temp_mem_rh;
+	 last_mem_rh = temp_mem_rh;
+      } else {
+	 last_mem_rh->next = temp_mem_rh;
+	 last_mem_rh = temp_mem_rh;
+      }
    }
 
+   temp_mem_rh = mem_rh;
+
    if (num_records) {
-      find_next_offset(mem_rh, 0, &next_offset, &attrib, &unique_id);
+      if (out_of_order) {
+	 find_next_offset(mem_rh, 0, &next_offset, &attrib, &unique_id);
+      } else {
+	 if (mem_rh) {
+	    next_offset = mem_rh->offset;
+	    attrib = mem_rh->attrib;
+	    unique_id = mem_rh->unique_id;
+	 }
+      }
       fseek(in, next_offset, SEEK_SET);
       while(!feof(in)) {
 	 fpos = ftell(in);
-	 find_next_offset(mem_rh, fpos, &next_offset, &attrib, &unique_id);
+	 if (out_of_order) {
+	    find_next_offset(mem_rh, fpos, &next_offset, &attrib, &unique_id);
+	 } else {
+	    next_offset = 0xFFFFFF;
+	    if (temp_mem_rh) {
+	       attrib = temp_mem_rh->attrib;
+	       unique_id = temp_mem_rh->unique_id;
+	       if (temp_mem_rh->next) {
+		  temp_mem_rh = temp_mem_rh->next;
+		  next_offset = temp_mem_rh->offset;
+	       }
+	    }
+	 }
 	 rec_size = next_offset - fpos;
 #ifdef JPILOT_DEBUG
 	 jpilot_logf(LOG_DEBUG, "rec_size = %u\n",rec_size);
@@ -428,7 +501,7 @@ int get_addresses(AddressList **address_list)
 	 buf = malloc(rec_size);
 	 if (!buf) {
 	    if (rec_size > 0) {
-	       jpilot_logf(LOG_WARN, "Out of memory 3\n");
+	       jpilot_logf(LOG_WARN, _("Out of memory 3\n"));
 	    }
 	    break;
 	 }
@@ -438,6 +511,13 @@ int get_addresses(AddressList **address_list)
 	       free(buf);
 	       break;
 	    }
+	 }
+
+	 /* check category */
+	 if ( ((attrib & 0x0F) != category) &&
+	     category != CATEGORY_ALL) {
+	    free(buf);
+	    continue;
 	 }
 
 	 num = unpack_Address(&a, buf, rec_size);
@@ -474,7 +554,7 @@ int get_addresses(AddressList **address_list)
    /* */
    pc_in = open_file("AddressDB.pc", "r");
    if (pc_in==NULL) {
-      jpilot_logf(LOG_WARN, "Error opening AddressDB.pc\n");
+      jpilot_logf(LOG_WARN, _("Error opening %s\n"), "AddressDB.pc\n");
       return -1;
    }
    /*r = pc_datebook_read_file_header(pc_in); */
@@ -486,9 +566,14 @@ int get_addresses(AddressList **address_list)
 	  &&(ma.rt!=DELETED_PALM_REC)
 	  &&(ma.rt!=MODIFIED_PALM_REC)
 	  &&(ma.rt!=DELETED_DELETED_PALM_REC)) {
+	 /* check category */
+	 if ( ((ma.attrib & 0x0F) != category) &&
+	     category != CATEGORY_ALL) {
+	    continue;
+	 }
 	 temp_address_list = malloc(sizeof(AddressList));
 	 if (!temp_address_list) {
-	    jpilot_logf(LOG_WARN, "Out of memory 4\n");
+	    jpilot_logf(LOG_WARN, _("Out of memory 4\n"));
 	    break;
 	 }
 	 memcpy(&(temp_address_list->ma), &ma, sizeof(MyAddress));
@@ -501,21 +586,42 @@ int get_addresses(AddressList **address_list)
 	 /*this doesnt really free it, just the string pointers */
 	 free_Address(&(ma.a));
       }
-      if ((ma.rt==DELETED_PALM_REC) || (ma.rt==MODIFIED_PALM_REC)) {
+
+      if ( ((ma.rt==DELETED_PALM_REC) && (keep_deleted)) || 
+	  ((ma.rt==MODIFIED_PALM_REC) && (keep_modified)) ) {
 	 for (temp_address_list = *address_list; temp_address_list;
 	      temp_address_list=temp_address_list->next) {
 	    if (temp_address_list->ma.unique_id == ma.unique_id) {
 	       temp_address_list->ma.rt = ma.rt;
 	    }
 	 }
+      } else if ( ((ma.rt==DELETED_PALM_REC) && (!keep_deleted)) || 
+		 ((ma.rt==MODIFIED_PALM_REC) && (!keep_modified)) ) {
+	 for (prev_al=NULL, tal=*address_list; tal; tal = next_al) {
+	    if (tal->ma.unique_id == ma.unique_id) {
+	       /* Remove it from this list */
+	       if (prev_al) {
+		  prev_al->next=tal->next;
+	       } else {
+		  *address_list=tal->next;
+	       }
+	       next_al=tal->next;
+	       free_Address(&(tal->ma.a));
+	       free(tal);
+	    } else {
+	       prev_al=tal;
+	       next_al=tal->next;
+	    }
+	 }
       }
    }
+
    fclose(pc_in);
 
 #ifdef JPILOT_DEBUG
    print_address_list(address_list);
 #endif
-   address_sort(address_list);
+   address_sort(address_list, sort_order);
    
    jpilot_logf(LOG_DEBUG, "Leaving get_addresses\n");
    

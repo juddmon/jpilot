@@ -1,0 +1,753 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Free Software Foundation, Inc.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2000-02-09 21:20-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: ENCODING\n"
+
+#: address.c:143 datebook.c:86 memo.c:62 todo.c:187
+msgid "Out of Memory\n"
+msgstr ""
+
+#: address.c:188 address.c:209 address.c:290 address.c:318 address.c:408
+#: address.c:432 datebook.c:598 datebook.c:626 datebook.c:852 memo.c:138
+#: memo.c:158 memo.c:202 memo.c:231 memo.c:309 memo.c:333 memo.c:415
+#: todo.c:232 todo.c:251 todo.c:335 todo.c:363 todo.c:443 todo.c:467
+#: todo.c:546
+#, c-format
+msgid "Error reading %s\n"
+msgstr ""
+
+#: address.c:202
+msgid "Out of memory 1\n"
+msgstr ""
+
+#: address.c:240 address.c:284 address.c:400 address.c:557 datebook.c:279
+#: datebook.c:592 datebook.c:845 datebook.c:1004 memo.c:103 memo.c:196
+#: memo.c:302 todo.c:283 todo.c:328 todo.c:436
+#, c-format
+msgid "Error opening %s\n"
+msgstr ""
+
+#: address.c:246 datebook.c:285 memo.c:109
+msgid "error"
+msgstr ""
+
+#: address.c:308
+msgid "Out of memory 2\n"
+msgstr ""
+
+#: address.c:327
+#, c-format
+msgid "Error in %s\n"
+msgstr ""
+
+#: address.c:504
+msgid "Out of memory 3\n"
+msgstr ""
+
+#: address.c:576
+msgid "Out of memory 4\n"
+msgstr ""
+
+#: address_gui.c:348
+msgid "Category: "
+msgstr ""
+
+#: address_gui.c:449 memo_gui.c:315 todo_gui.c:472
+msgid "0 records"
+msgstr ""
+
+#: address_gui.c:560 memo_gui.c:424 todo_gui.c:583
+#, c-format
+msgid "%d of %d records"
+msgstr ""
+
+#: address_gui.c:615 datebook_gui.c:315 memo_gui.c:440 todo_gui.c:600
+msgid "All"
+msgstr ""
+
+#: address_gui.c:847 datebook_gui.c:2108 memo_gui.c:620 todo_gui.c:811
+msgid "Delete"
+msgstr "削除"
+
+#: address_gui.c:909
+msgid "Quick Find"
+msgstr "簡易検索"
+
+#: address_gui.c:927
+msgid "Quick View"
+msgstr "内容"
+
+#: address_gui.c:938
+msgid "Add or Modify a Record"
+msgstr "レコードの追加/変更"
+
+#: address_gui.c:971 datebook_gui.c:2335 memo_gui.c:687 todo_gui.c:884
+msgid "Add It"
+msgstr "追加"
+
+#: address_gui.c:978 datebook_gui.c:2342 memo_gui.c:694 todo_gui.c:890
+msgid "Apply Changes"
+msgstr "変更"
+
+#: address_gui.c:985 print_gui.c:220
+msgid "Cancel"
+msgstr ""
+
+#: address_gui.c:993 datebook_gui.c:2349 memo_gui.c:701 todo_gui.c:896
+msgid "New"
+msgstr "新規"
+
+#: address_gui.c:1019
+msgid "Name"
+msgstr ""
+
+#: address_gui.c:1026
+#, fuzzy
+msgid "Address"
+msgstr "/表示/アドレス帳"
+
+#: address_gui.c:1034
+msgid "Other"
+msgstr ""
+
+#: datebook.c:193 datebook.c:212 datebook.c:243
+#, c-format
+msgid "Error on reading %s\n"
+msgstr ""
+
+#: datebook.c:206 datebook.c:321 datebook.c:328 datebook.c:358 datebook.c:947
+#: datebook.c:1024 memo.c:151 memo.c:222 memo.c:356 memo.c:409 memo.c:438
+#: memo.c:472 sync.c:1385 todo.c:245 todo.c:354 todo.c:490 todo.c:574
+#: todo.c:615
+msgid "Out of memory\n"
+msgstr ""
+
+#: datebook.c:982
+msgid "Out of memory"
+msgstr ""
+
+#: datebook_gui.c:309 install_gui.c:281 prefs_gui.c:386 search_gui.c:634
+msgid "Done"
+msgstr "完了"
+
+#: datebook_gui.c:321 datebook_gui.c:2712
+msgid "None"
+msgstr "なし"
+
+#: datebook_gui.c:457 monthview_gui.c:239 monthview_gui.c:246
+#: weekview_gui.c:111
+msgid "Sunday"
+msgstr "日曜日"
+
+#: datebook_gui.c:458 monthview_gui.c:240 weekview_gui.c:112
+msgid "Monday"
+msgstr "月曜日"
+
+#: datebook_gui.c:459 monthview_gui.c:241 weekview_gui.c:113
+msgid "Tuesday"
+msgstr "火曜日"
+
+#: datebook_gui.c:460 monthview_gui.c:242 weekview_gui.c:114
+msgid "Wednesday"
+msgstr "水曜日"
+
+#: datebook_gui.c:461 monthview_gui.c:243 weekview_gui.c:115
+msgid "Thursday"
+msgstr "木曜日"
+
+#: datebook_gui.c:462 monthview_gui.c:244 weekview_gui.c:116
+msgid "Friday"
+msgstr "金曜日"
+
+#: datebook_gui.c:463 monthview_gui.c:245 weekview_gui.c:117
+msgid "Saturday"
+msgstr "土曜日"
+
+#: datebook_gui.c:631
+msgid "none"
+msgstr "なし"
+
+#: datebook_gui.c:632
+msgid "day"
+msgstr "日"
+
+#: datebook_gui.c:633
+msgid "week"
+msgstr "週"
+
+#: datebook_gui.c:634
+msgid "month"
+msgstr "月"
+
+#: datebook_gui.c:635
+msgid "year"
+msgstr "年"
+
+#: datebook_gui.c:880
+#, c-format
+msgid "You cannot have an appointment that repeats every %d %s(s)\n"
+msgstr ""
+
+#: datebook_gui.c:889
+msgid ""
+"You can not have a weekly repeating appointment that doesn't repeat on any "
+"day of the week.\n"
+msgstr ""
+
+#: datebook_gui.c:987
+msgid "No Time"
+msgstr ""
+
+#: datebook_gui.c:1814 datebook_gui.c:1821 datebook_gui.c:2075
+#: datebook_gui.c:2082
+msgid "Su"
+msgstr "日"
+
+#: datebook_gui.c:1815 datebook_gui.c:2076
+msgid "Mo"
+msgstr "月"
+
+#: datebook_gui.c:1816 datebook_gui.c:2077
+msgid "Tu"
+msgstr "火"
+
+#: datebook_gui.c:1817 datebook_gui.c:2078
+msgid "We"
+msgstr "水"
+
+#: datebook_gui.c:1818 datebook_gui.c:2079
+msgid "RTh"
+msgstr "木"
+
+#: datebook_gui.c:1819 datebook_gui.c:2080
+msgid "Fr"
+msgstr "金"
+
+#: datebook_gui.c:1820 datebook_gui.c:2081
+msgid "Sa"
+msgstr "土"
+
+#: datebook_gui.c:2155
+msgid "Go backward 1 year"
+msgstr ""
+
+#: datebook_gui.c:2168
+msgid "Go backward 1 month"
+msgstr ""
+
+#: datebook_gui.c:2186
+msgid "Go forward 1 month"
+msgstr ""
+
+#: datebook_gui.c:2199
+msgid "Go forward 1 year"
+msgstr ""
+
+#: datebook_gui.c:2217 datebook_gui.c:2714
+msgid "Week"
+msgstr "週"
+
+#: datebook_gui.c:2223 datebook_gui.c:2715
+msgid "Month"
+msgstr "月"
+
+#: datebook_gui.c:2249
+msgid "Daily Schedule"
+msgstr "一日の予定"
+
+#: datebook_gui.c:2359
+msgid "Details"
+msgstr "詳細"
+
+#: datebook_gui.c:2371
+msgid "Alarm"
+msgstr "アラーム"
+
+#: datebook_gui.c:2390
+msgid "Minutes"
+msgstr "分"
+
+#: datebook_gui.c:2394
+msgid "Hours"
+msgstr "時"
+
+#: datebook_gui.c:2396
+msgid "Days"
+msgstr "日"
+
+#: datebook_gui.c:2416
+msgid "This Event has no particular time"
+msgstr "時刻指定なし"
+
+#: datebook_gui.c:2435
+#, fuzzy
+msgid "Begin: "
+msgstr "開始:"
+
+#: datebook_gui.c:2463 todo_gui.c:983
+msgid "Month:"
+msgstr "月:"
+
+#: datebook_gui.c:2477 todo_gui.c:985
+msgid "Day:"
+msgstr "日:"
+
+#: datebook_gui.c:2492 todo_gui.c:987
+msgid "Year:"
+msgstr "年:"
+
+#: datebook_gui.c:2510
+msgid "Hour:"
+msgstr "時:"
+
+#: datebook_gui.c:2528
+msgid "Min:"
+msgstr "分:"
+
+#: datebook_gui.c:2545
+msgid "End: "
+msgstr "終わり:"
+
+#: datebook_gui.c:2713
+msgid "Day"
+msgstr "日"
+
+#: datebook_gui.c:2716
+msgid "Year"
+msgstr "年"
+
+#: datebook_gui.c:2723
+msgid "This event will not repeat"
+msgstr "繰り返しなし"
+
+#: datebook_gui.c:2734 datebook_gui.c:2822 datebook_gui.c:2939
+#: datebook_gui.c:3048
+msgid "Frequency is Every"
+msgstr "繰り返し周期"
+
+#: datebook_gui.c:2742
+msgid "Day(s)"
+msgstr "日毎"
+
+#: datebook_gui.c:2746 datebook_gui.c:2834 datebook_gui.c:2951
+#: datebook_gui.c:3060
+msgid "End on"
+msgstr "終わりは"
+
+#: datebook_gui.c:2830
+msgid "Week(s)"
+msgstr "週毎"
+
+#: datebook_gui.c:2902
+msgid "Repeat on Days:"
+msgstr "繰り返し曜日:"
+
+#: datebook_gui.c:2947
+msgid "Month(s)"
+msgstr "月毎"
+
+#: datebook_gui.c:3020
+msgid "Repeat by:"
+msgstr "繰り返し設定:"
+
+#: datebook_gui.c:3025
+msgid "Day of week"
+msgstr "曜日"
+
+#: datebook_gui.c:3035
+msgid "Date"
+msgstr "日付"
+
+#: datebook_gui.c:3056
+msgid "Year(s)"
+msgstr "年毎"
+
+#: install_gui.c:222
+#, fuzzy
+msgid "Install"
+msgstr "/ファイル/インストール"
+
+#: install_gui.c:238
+msgid "Files to be installed"
+msgstr "インストールするファイル"
+
+#: install_gui.c:261
+msgid "To change to a hidden directory type it below and hit TAB"
+msgstr "隠されたディレクトリに移動するにはディレクトリ名を入力して TAB"
+
+#: install_gui.c:267
+msgid "Add"
+msgstr "追加"
+
+#: install_gui.c:274
+msgid "Remove"
+msgstr "削除"
+
+#: jpilot.c:232 jpilot.c:300 jpilot.c:633
+msgid "OK"
+msgstr ""
+
+#: jpilot.c:237
+msgid "Help"
+msgstr "ヘルプ"
+
+#: jpilot.c:304 print_gui.c:214
+msgid "Print"
+msgstr ""
+
+#: jpilot.c:305
+msgid "There is no print support for this conduit."
+msgstr ""
+
+#: jpilot.c:529
+msgid "Hide this window"
+msgstr "このウインドウを隠す"
+
+#: jpilot.c:685
+msgid "/_File"
+msgstr "/ファイル"
+
+#: jpilot.c:686
+msgid "/_File/tear"
+msgstr "/ファイル/tear"
+
+#: jpilot.c:687
+msgid "/File/_Search"
+msgstr "/ファイル/検索"
+
+#: jpilot.c:688 jpilot.c:692
+msgid "/File/sep1"
+msgstr "/ファイル/sep1"
+
+#: jpilot.c:689
+msgid "/File/_Install"
+msgstr "/ファイル/インストール"
+
+#: jpilot.c:690
+msgid "/File/Preferences"
+msgstr "/ファイル/プリファレンス"
+
+## kei added manually
+#: jpilot.c:691
+#, fuzzy
+msgid "/File/Print"
+msgstr "/ファイル/印刷"
+
+#: jpilot.c:693
+msgid "/File/Quit"
+msgstr "/ファイル/終了"
+
+#: jpilot.c:694
+msgid "/_View"
+msgstr "/表示"
+
+#: jpilot.c:695
+msgid "/View/Datebook"
+msgstr "/表示/Datebook"
+
+#: jpilot.c:696
+msgid "/View/Addresses"
+msgstr "/表示/アドレス帳"
+
+#: jpilot.c:697
+msgid "/View/Todos"
+msgstr "/表示/Todo"
+
+#: jpilot.c:698
+msgid "/View/Memos"
+msgstr "/表示/メモ"
+
+#: jpilot.c:699 jpilot.c:768
+msgid "/Plugins"
+msgstr "/プラグイン"
+
+#: jpilot.c:700
+msgid "/_Help"
+msgstr "/ヘルプ"
+
+#: jpilot.c:701
+msgid "/_Help/About J-Pilot"
+msgstr "/ヘルプ/J-Pilotについて"
+
+#: jpilot.c:734
+#, c-format
+msgid "/Plugins/%s"
+msgstr "/プラグイン/%s"
+
+#: jpilot.c:745
+#, c-format
+msgid "/_Help/%s"
+msgstr "/ヘルプ/%s"
+
+#: jpilot.c:1154
+msgid "Quit!"
+msgstr "終了"
+
+#: jpilot.c:1169
+msgid "Sync your palm to the desktop"
+msgstr ""
+
+#: jpilot.c:1173
+msgid "Backup"
+msgstr ""
+
+#: jpilot.c:1182
+msgid ""
+"Sync your palm to the desktop\n"
+"and then do a backup"
+msgstr ""
+
+#: jpilot.c:1234
+msgid "Datebook/Go to Today"
+msgstr ""
+
+#: jpilot.c:1236
+msgid "Address Book"
+msgstr ""
+
+#: jpilot.c:1238
+msgid "ToDo List"
+msgstr ""
+
+#: jpilot.c:1240
+msgid "Memo Pad"
+msgstr ""
+
+#: log.c:69
+msgid "Cannot open log file, giving up.\n"
+msgstr ""
+
+#: log.c:76
+msgid "Cannot open log file\n"
+msgstr ""
+
+#: memo.c:166 todo.c:259 todo.c:288 todo.c:369 todo.c:562
+msgid "failed"
+msgstr ""
+
+#: memo.c:237
+msgid "Error reading"
+msgstr ""
+
+#: prefs.c:177 prefs.c:202
+msgid "out of memory\n"
+msgstr ""
+
+#: prefs_gui.c:204
+#, fuzzy
+msgid "Preferences"
+msgstr "/ファイル/プリファレンス"
+
+#: prefs_gui.c:221
+msgid "Short date format "
+msgstr "短い日付形式"
+
+#: prefs_gui.c:234
+msgid "Long date format "
+msgstr "長い日付形式"
+
+#: prefs_gui.c:248
+msgid "Time format "
+msgstr "時刻形式"
+
+#: prefs_gui.c:262
+msgid "The first day of the week is "
+msgstr "一週間の始まり"
+
+#: prefs_gui.c:276
+msgid "My GTK colors file is "
+msgstr "GTK カラーファイルの設定"
+
+#: prefs_gui.c:290
+msgid "Serial Port "
+msgstr "シリアルポートの選択"
+
+#: prefs_gui.c:305
+msgid "Serial Rate "
+msgstr "シリアル速度の選択"
+
+#: prefs_gui.c:318
+msgid "Number of backups to be archived"
+msgstr "保存するバックアップの個数"
+
+#: prefs_gui.c:334
+msgid "Show deleted records (default NO)"
+msgstr "削除されたレコードを表示(デフォールト NO)"
+
+#: prefs_gui.c:347
+msgid "Show modified deleted records (default NO)"
+msgstr "修正したレコードを表示(デフォールト NO)"
+
+#: prefs_gui.c:361
+msgid "Highlight calendar days with appointments"
+msgstr "約束のある日をハイライトする"
+
+## kei added manually
+msgid "Use DateBk3 note tags"
+msgstr "DateBk3 のノートタグを使う"
+
+#: prefs_gui.c:374
+msgid "Use DateBk3 note tags"
+msgstr ""
+
+#: print_gui.c:135
+msgid "Print Options"
+msgstr ""
+
+#: print_gui.c:149
+msgid "One record"
+msgstr ""
+
+#: print_gui.c:153
+msgid "All records in this category"
+msgstr ""
+
+#: print_gui.c:157
+msgid "Print all records"
+msgstr ""
+
+#: print_gui.c:177
+msgid "One record per page"
+msgstr ""
+
+#: print_gui.c:191
+msgid " Blank lines between each record"
+msgstr ""
+
+#: print_gui.c:200
+msgid "Print Command (e.g. lpr, or cat > file.ps)"
+msgstr ""
+
+#: search_gui.c:512
+msgid "No records found"
+msgstr ""
+
+#: search_gui.c:583
+#, fuzzy
+msgid "Search"
+msgstr "検索文字列: "
+
+#: search_gui.c:596
+msgid "Search for: "
+msgstr "検索文字列: "
+
+#: search_gui.c:603
+msgid "Case Sensitive"
+msgstr "大文字小文字を区別"
+
+#: sync.c:362
+msgid " Press the HotSync button now\n"
+msgstr ""
+
+#: sync.c:381
+msgid "Check your serial port and settings\n"
+msgstr ""
+
+#: sync.c:487
+msgid "Doing a fast sync.\n"
+msgstr ""
+
+#: sync.c:494
+msgid "Doing a slow sync.\n"
+msgstr ""
+
+#: sync.c:542
+msgid "Thank you for using J-Pilot."
+msgstr ""
+
+#: sync.c:570
+msgid "Finished.\n"
+msgstr ""
+
+#: sync.c:842
+#, c-format
+msgid "Skipping %s\n"
+msgstr ""
+
+#: sync.c:917
+#, c-format
+msgid "%s is up to date, fetch skipped.\n"
+msgstr ""
+
+#: sync.c:921
+#, c-format
+msgid "Fetching '%s'... "
+msgstr ""
+
+#: sync.c:938 sync.c:1016
+msgid "OK\n"
+msgstr ""
+
+#: sync.c:973
+#, c-format
+msgid "Installing %s... "
+msgstr ""
+
+#: sync.c:1003
+#, c-format
+msgid "Install %s failed"
+msgstr ""
+
+#: sync.c:1012
+#, c-format
+msgid "Installed %s"
+msgstr ""
+
+#: todo_gui.c:844
+msgid "Hide Completed ToDos"
+msgstr "完了したToDoを表示しない"
+
+#: todo_gui.c:909
+msgid "Completed"
+msgstr "完了"
+
+#: todo_gui.c:917
+msgid "Priority: "
+msgstr "優先度"
+
+#: todo_gui.c:947
+msgid "No Due Date"
+msgstr "締め切りなし"
+
+#: todo_gui.c:960
+msgid "Date Due:"
+msgstr "締め切り:"
+
+#: utils.c:74
+msgid "Today is %A, %x %X"
+msgstr "今日は %A, %x %X"
+
+#: utils.c:76
+msgid "Today is %%A, %s %s"
+msgstr "今日は %%A, %s %s"
+
+#: utils.c:1671
+msgid "PC ID is 0.\n"
+msgstr ""
+
+#: utils.c:1672
+#, c-format
+msgid "I generated a new PC ID.  It is %d\n"
+msgstr ""
+
+#~ msgid "4th"
+#~ msgstr "第4"
+
+#~ msgid "Last"
+#~ msgstr "最後"
+
+# msgid "WeekView"
+# msgstr "一週間の予定"
+#~ msgid "MonthView"
+#~ msgstr "一月の予定"

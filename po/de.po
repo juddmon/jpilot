@@ -1,0 +1,445 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Free Software Foundation, Inc.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JPilot\n"
+"POT-Creation-Date: 1999-12-27 03:32+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Henrik Becker <Henrik-Becker@gmx.de>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=3Dlatin1\n"
+"Content-Transfer-Encoding: iso-8859-1\n"
+
+#: address_gui.c:808 datebook_gui.c:1799 memo_gui.c:572 todo_gui.c:749
+msgid "Delete"
+msgstr "Löschen"
+
+#: address_gui.c:869
+msgid "Quick Find"
+msgstr "Eintrag suchen"
+
+#: address_gui.c:887
+msgid "Quick View"
+msgstr "Ansicht"
+
+#: address_gui.c:898
+msgid "Add or Modify a Record"
+msgstr "Eintrag hinzufügen oder ändern"
+
+#: datebook_gui.c:266 monthview_gui.c:224 monthview_gui.c:225
+#: weekview_gui.c:113
+msgid "Sunday"
+msgstr "Sonntag"
+
+#: datebook_gui.c:266 monthview_gui.c:224 weekview_gui.c:113
+msgid "Monday"
+msgstr "Montag"
+
+#: datebook_gui.c:266 monthview_gui.c:224 weekview_gui.c:113
+msgid "Tuesday"
+msgstr "Dienstag"
+
+#: datebook_gui.c:266 monthview_gui.c:224 weekview_gui.c:113
+msgid "Wednesday"
+msgstr "Mittwoch"
+
+#: datebook_gui.c:266 monthview_gui.c:224 weekview_gui.c:113
+msgid "Thursday"
+msgstr "Donnerstag"
+
+#: datebook_gui.c:267 monthview_gui.c:225 weekview_gui.c:114
+msgid "Friday"
+msgstr "Freitag"
+
+#: datebook_gui.c:267 monthview_gui.c:225 weekview_gui.c:114
+msgid "Saturday"
+msgstr "Samstag"
+
+#: datebook_gui.c:271
+msgid "4th"
+msgstr "vierter"
+
+#: datebook_gui.c:271
+msgid "Last"
+msgstr "Letzter"
+
+#: datebook_gui.c:432
+msgid "none"
+msgstr "Keiner"
+
+#: datebook_gui.c:432
+msgid "day"
+msgstr "Tag"
+
+#: datebook_gui.c:432
+msgid "week"
+msgstr "Woche"
+
+#: datebook_gui.c:432
+msgid "month"
+msgstr "Monat"
+
+#: datebook_gui.c:432
+msgid "year"
+msgstr "Jahr"
+
+#These days of the week are put in the buttons above the calendar and
+# the little buttons in the repeat weekly window.
+# They should be one letter if possible.  The English ones get truncated to
+# one letter.
+
+#: datebook_gui.c:1545
+msgid "Su"
+msgstr "So"
+
+#: datebook_gui.c:1545
+msgid "Mo"
+msgstr "Mo"
+
+#: datebook_gui.c:1545
+msgid "Tu"
+msgstr "Di"
+
+#: datebook_gui.c:1545
+msgid "We"
+msgstr "Mi"
+
+#: datebook_gui.c:1545
+msgid "RTh"
+msgstr "Do"
+
+#: datebook_gui.c:1545
+msgid "Fr"
+msgstr "Fr"
+
+#: datebook_gui.c:1545
+msgid "Sa"
+msgstr "Sa"
+
+#: datebook_gui.c:1896
+msgid "Week"
+msgstr "Wochenansicht"
+
+#: datebook_gui.c:1902
+msgid "Month"
+msgstr "Monatsansicht"
+
+#: datebook_gui.c:1916
+msgid "Daily Schedule"
+msgstr "Tagesplanung"
+
+#: datebook_gui.c:1980 memo_gui.c:639 todo_gui.c:830
+msgid "Add It"
+msgstr "Hinzufügen"
+
+#: datebook_gui.c:1987 memo_gui.c:646 todo_gui.c:837
+msgid "Apply Changes"
+msgstr "Änderungen übernehmen"
+
+#: datebook_gui.c:1994 memo_gui.c:653 todo_gui.c:844
+msgid "New"
+msgstr "Neu"
+
+#: datebook_gui.c:2004
+msgid "Details"
+msgstr "Details"
+
+#: datebook_gui.c:2016
+msgid "Alarm"
+msgstr "Alarm"
+
+#: datebook_gui.c:2035
+msgid "Minutes"
+msgstr "Minuten"
+
+#: datebook_gui.c:2039
+msgid "Hours"
+msgstr "Stunden"
+
+#: datebook_gui.c:2041
+msgid "Days"
+msgstr "Tage"
+
+#: datebook_gui.c:2061
+msgid "This Event has no particular time"
+msgstr "Keine Zeitangabe"
+
+#: datebook_gui.c:2080
+msgid "Begin:"
+msgstr "Beginn:"
+
+#: datebook_gui.c:2109 todo_gui.c:920
+msgid "Month:"
+msgstr "Monat:"
+
+#: datebook_gui.c:2123 todo_gui.c:923
+msgid "Day:"
+msgstr "Tag:"
+
+#: datebook_gui.c:2138 todo_gui.c:926
+msgid "Year:"
+msgstr "Jahr:"
+
+#: datebook_gui.c:2156
+msgid "Hour:"
+msgstr "Stunde:"
+
+#: datebook_gui.c:2174
+msgid "Min:"
+msgstr "Min.:"
+
+#: datebook_gui.c:2191
+msgid "End: "
+msgstr "Ende:"
+
+#: datebook_gui.c:2356
+msgid "None"
+msgstr "Keine"
+
+#: datebook_gui.c:2357
+msgid "Day"
+msgstr "Tag"
+
+#: datebook_gui.c:2358
+#msgid "WeekView"
+#msgstr "Woche"
+
+#: datebook_gui.c:2359
+#msgid "MonthView"
+#msgstr "Monat"
+
+#: datebook_gui.c:2360
+msgid "Year"
+msgstr "Jahr"
+
+#: datebook_gui.c:2367
+msgid "This event will not repeat"
+msgstr "Keine Wiederholungen des Termins"
+
+#: datebook_gui.c:2378 datebook_gui.c:2466 datebook_gui.c:2575
+#: datebook_gui.c:2684
+msgid "Frequency is Every"
+msgstr "Wiederholung alle/jeden"
+
+#: datebook_gui.c:2386
+msgid "Day(s)"
+msgstr "Tag(e)"
+
+#: datebook_gui.c:2390 datebook_gui.c:2478 datebook_gui.c:2587
+#: datebook_gui.c:2696
+msgid "End on"
+msgstr "Endet"
+
+#: datebook_gui.c:2474
+msgid "Week(s)"
+msgstr "Woche(n)"
+
+#: datebook_gui.c:2546
+msgid "Repeat on Days:"
+msgstr "Wochentage für Wiederholung:"
+
+#: datebook_gui.c:2583
+msgid "Month(s)"
+msgstr "Monat(e)"
+
+#: datebook_gui.c:2656
+msgid "Repeat by:"
+msgstr "Wiederholung mit:"
+
+#: datebook_gui.c:2661
+msgid "Day of week"
+msgstr "Wochentag"
+
+#: datebook_gui.c:2671
+msgid "Date"
+msgstr "Datum"
+
+#: datebook_gui.c:2692
+msgid "Year(s)"
+msgstr "Jahr(e)"
+
+#: install_gui.c:215
+msgid "Files to be installed"
+msgstr "Zu installierende Dateien"
+
+#: install_gui.c:258
+msgid "To change to a hidden directory type it below and hit TAB"
+msgstr "Um ein verstecktes Verzeichnis aufzurufen, Namen eintippen und Tabulator-Taste drücken."
+
+#: install_gui.c:264
+msgid "Add"
+msgstr "Hinzufügen"
+
+#: install_gui.c:271
+msgid "Remove"
+msgstr "Streichen"
+
+#: install_gui.c:278 prefs_gui.c:363 search_gui.c:647
+msgid "Done"
+msgstr "Beenden"
+
+#: jpilot.c:224
+msgid "Help"
+msgstr "Hilfe"
+
+#: jpilot.c:448
+msgid "Hide this window"
+msgstr "Fenster ausblenden"
+
+#: jpilot.c:563
+msgid "/_File"
+msgstr "/_Datei"
+
+#: jpilot.c:564
+msgid "/_File/tear"
+msgstr "/_Datei/tear"
+
+#: jpilot.c:565
+msgid "/File/_Search"
+msgstr "/Datei/_Suchen"
+
+#: jpilot.c:566 jpilot.c:569
+msgid "/File/sep1"
+msgstr "/Datei/sep1"
+
+#: jpilot.c:567
+msgid "/File/_Install"
+msgstr "/Datei/_Installieren"
+
+#: jpilot.c:568
+msgid "/File/Preferences"
+msgstr "/Datei/Einstellungen"
+
+#: jpilot.c:570
+msgid "/File/Quit"
+msgstr "/Datei/Beenden"
+
+#: jpilot.c:571
+msgid "/_View"
+msgstr "/_Ansicht"
+
+#: jpilot.c:572
+msgid "/View/Datebook"
+msgstr "/Ansicht/Terminplaner"
+
+#: jpilot.c:573
+msgid "/View/Addresses"
+msgstr "/Ansicht/Adressen"
+
+#: jpilot.c:574
+msgid "/View/Todos"
+msgstr "/Ansicht/Aufgaben"
+
+#: jpilot.c:575
+msgid "/View/Memos"
+msgstr "/Ansicht/Merkzettel"
+
+#: jpilot.c:576 jpilot.c:663
+msgid "/Plugins"
+msgstr "/Plugins"
+
+#: jpilot.c:577
+msgid "/_Help"
+msgstr "/_Hilfe"
+
+#: jpilot.c:578
+msgid "/_Help/About J-Pilot"
+msgstr "/Hilfe/Über J-Pilot"
+
+#: jpilot.c:629
+#, c-format
+msgid "/Plugins/%s"
+msgstr "/Plugins/%s"
+
+#: jpilot.c:640
+#, c-format
+msgid "/_Help/%s"
+msgstr "/_Hilfe/%s"
+
+#: jpilot.c:1017
+msgid "Quit!"
+msgstr "Beenden!"
+
+#: prefs_gui.c:211
+msgid "Short date format "
+msgstr "Datumskurzformat"
+
+#: prefs_gui.c:224
+msgid "Long date format "
+msgstr "Datumsformat"
+
+#: prefs_gui.c:238
+msgid "Time format "
+msgstr "Zeitformat"
+
+#: prefs_gui.c:252
+msgid "The first day of the week is "
+msgstr "Erster Wochentag ist"
+
+#: prefs_gui.c:266
+msgid "My GTK colors file is "
+msgstr "Als GTK-Farbdatei wähle ich"
+
+#: prefs_gui.c:280
+msgid "Serial Port "
+msgstr "Serielle Schnittstelle"
+
+#: prefs_gui.c:295
+msgid "Serial Rate "
+msgstr "Schnittstellengeschwindigkeit"
+
+#: prefs_gui.c:308
+msgid "Number of backups to be archived"
+msgstr "Wieviele Backups sollen angelegt werden?"
+
+#: prefs_gui.c:324
+msgid "Show deleted records (default NO)"
+msgstr "Gelöschte Einträge anzeigen? (Standard: NO)"
+
+#: prefs_gui.c:337
+msgid "Show modified deleted records (default NO)"
+msgstr "Veränderte gelöschte Einträge anzeigen? (Standard: NO)"
+
+#: prefs_gui.c:351
+msgid "Highlight calendar days with appointments"
+msgstr "Tage mit Terminen farblich kennzeichnen?"
+
+#: search_gui.c:609
+msgid "Search for: "
+msgstr "Suchen nach: "
+
+#: search_gui.c:616
+msgid "Case Sensitive"
+msgstr "Gross- u. Kleinschreibung beachten?"
+
+#: todo_gui.c:787
+msgid "Hide Completed ToDos"
+msgstr "Erledigte Aufgaben ausblenden?"
+
+#: todo_gui.c:859
+msgid "Completed"
+msgstr "Erledigt"
+
+#: todo_gui.c:868
+msgid "Priority: "
+msgstr "Priorität:"
+
+#: todo_gui.c:894
+msgid "Date Due:"
+msgstr "Fälligkeitsdatum:"
+
+#: todo_gui.c:963
+msgid "No Due Date"
+msgstr "Kein Fälligkeitsdatum"
+
+#: utils.c:76
+msgid "Today is %A, %x %X"
+msgstr "Heute ist %A, %x %X"
+
+#: utils.c:78
+msgid "Today is %%A, %s %s"
+msgstr "Heute ist %%A, %s %s"

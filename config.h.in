@@ -1,5 +1,16 @@
 /* config.h.in.  Generated automatically from configure.in by autoheader.  */
 
+#undef ENABLE_NLS
+#undef HAVE_CATGETS
+#undef HAVE_GETTEXT
+#undef HAVE_GETCWD
+#undef HAVE_LOCALE_H
+#undef HAVE_STRING_H
+#undef HAVE_LC_MESSAGES
+#undef HAVE_STPCPY
+#undef PACKAGE
+#undef VERSION
+
 /* Define for Japanese character support */
 #undef WITH_JAPANESE
 
@@ -12,6 +23,9 @@
 
 /* Define if you have the strftime function.  */
 #undef HAVE_STRFTIME
+
+/* Define if you need to in order for stat and other things to work.  */
+#undef _POSIX_SOURCE
 
 /* Define if you have <sys/wait.h> that is POSIX.1 compatible.  */
 #undef HAVE_SYS_WAIT_H
@@ -57,3 +71,7 @@
 
 /* Define if you have the pisock library (-lpisock).  */
 #undef HAVE_LIBPISOCK
+
+/* This forces DateBk3 extensions */
+/* I don't recommend using DateBk3 */
+#define USE_DB3

@@ -16,6 +16,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#include "config.h"
+#include "i18n.h"
 #include <gtk/gtk.h>
 #include <string.h>
 #include <stdlib.h>
@@ -24,10 +26,12 @@
 #include "utils.h"
 #include "log.h"
 
+
 static int update_clist();
 
-GtkWidget *clist;
-int line_selected;
+static GtkWidget *clist;
+static int line_selected;
+static GtkWidget *filew=NULL;
 
 /* */
 /*file must not be open elsewhere when this is called */
@@ -100,6 +104,7 @@ static int install_append_line(char *line)
 /*---------- */
 static gboolean cb_destroy(GtkWidget *widget)
 {
+   filew = NULL;
    return FALSE;
 }
 
@@ -108,6 +113,7 @@ static void
 	   gpointer   data)
 {
    jpilot_logf(LOG_DEBUG, "Quit\n");
+   filew = NULL;
    gtk_widget_destroy(data);
 }
 
@@ -202,20 +208,22 @@ static void cb_clist_selection(GtkWidget      *clist,
   
 void cb_install_gui(GtkWidget *widget, gpointer data)
 {
-   static GtkWidget *filew=NULL;
    GtkWidget *scrolled_window;
    GtkWidget *button;
    GtkWidget *label;
+   char temp[256];
    gchar *titles[] = {"Files to be installed"
    };
    
-   if (GTK_IS_WIDGET(filew)) {
+   if (filew) {
       return;
    }
    
    line_selected = -1;
 
-   filew = gtk_file_selection_new(PN" Install");
+   g_snprintf(temp, 255, "%s %s", PN, _("Install"));
+   temp[255]='\0';
+   filew = gtk_file_selection_new(temp);
    gtk_file_selection_hide_fileop_buttons((gpointer) filew);
 
    gtk_widget_hide((GTK_FILE_SELECTION(filew)->cancel_button));
@@ -229,6 +237,9 @@ void cb_install_gui(GtkWidget *widget, gpointer data)
 		      "clicked", GTK_SIGNAL_FUNC(cb_add), filew);
 
 
+   strncpy(temp, _("Files to be installed"), 255);
+   temp[255]='\0';
+   titles[0]=temp;
    clist = gtk_clist_new_with_titles(1, titles);
    gtk_widget_set_usize(GTK_WIDGET(clist), 0, 166);
    gtk_clist_column_titles_passive(GTK_CLIST(clist));
@@ -249,27 +260,27 @@ void cb_install_gui(GtkWidget *widget, gpointer data)
    gtk_widget_show(scrolled_window);
 
    
-   label = gtk_label_new("To change to a hidden directory type it below and hit TAB");
+   label = gtk_label_new(_("To change to a hidden directory type it below and hit TAB"));
    gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->main_vbox),
 		      label, FALSE, FALSE, 0);
    gtk_widget_show(label);
 
 
-   button = gtk_button_new_with_label("Add");
+   button = gtk_button_new_with_label(_("Add"));
    gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->ok_button->parent),
 		      button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button),
 		      "clicked", GTK_SIGNAL_FUNC(cb_add), filew);
    gtk_widget_show(button);
 
-   button = gtk_button_new_with_label("Remove");
+   button = gtk_button_new_with_label(_("Remove"));
    gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->ok_button->parent),
 		      button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button),
 		      "clicked", GTK_SIGNAL_FUNC(cb_remove), filew);
    gtk_widget_show(button);
 
-   button = gtk_button_new_with_label("Done");
+   button = gtk_button_new_with_label(_("Done"));
    gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->ok_button->parent),
 		      button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button),

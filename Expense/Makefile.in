@@ -21,16 +21,30 @@ GTKFLAGS = @GTK_CFLAGS@
 GTKLIBS = @GTK_LIBS@
 
 # Targets
-all: libexpense.so
+all: libplugin.h libplugin.la libexpense.so
 
-libexpense.so: expense.o libplugin.a
-	ld -shared -ldl -o libexpense.so expense.o -L. -lplugin
+libexpense.so: expense.o
+	../libtool --mode=link \
+	$(CC) $(OPTIONS) -o libexpense.la \
+	expense.lo ../libplugin.lo \
+	-rpath $(prefix)/lib/jpilot/plugins \
+	-version-info 1:1
+#	-L. -lplugin
+#	ld -shared -ldl -o libexpense.so expense.o -L. -lplugin
 
 expense.o: expense.c libplugin.h
+	../libtool --mode=compile \
 	$(CC) $(OPTIONS) $(GTKFLAGS) $(PILOT_FLAGS) -c expense.c
 
+libplugin.h: ../libplugin.h
+	rm -f libplugin.h; ln -s ../libplugin.h libplugin.h; \
+
+libplugin.la: ../libplugin.c
+	rm -f libplugin.la; ln -s ../libplugin.la libplugin.la; \
+	cd ..; make libplugin
+
 clean: 
-	rm -f *.o *~ config.cache 
+	rm -f *.o *~ config.cache .libs/* *.so *.so.? *.so.?.? *.lo
 
 distclean: clean
 	rm -f config.status config.log *.so Makefile
@@ -40,9 +54,10 @@ distclean: clean
 # ~/.jpilot/plugins
 #
 install:
-	./install-sh -d -m 755 $(prefix)/share/jpilot/plugins
-	./install-sh -c -m 755 -g bin -o bin libexpense.so \
-	$(prefix)/share/jpilot/plugins
+	./install-sh -d -m 755 $(prefix)/lib/jpilot; \
+	./install-sh -d -m 755 $(prefix)/lib/jpilot/plugins; \
+	../libtool --mode=install ./install-sh \
+	libexpense.la $(prefix)/lib/jpilot/plugins
 
 uninstall:
-	rm $(prefix)/share/jpilot/plugins/libexpense.so
+	rm -f $(prefix)/lib/jpilot/plugins/libexpense.so*

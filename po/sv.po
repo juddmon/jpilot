@@ -1,0 +1,755 @@
+# J-Pilot på svenska/J-Pilot in swedish
+# Copyright (C) YEAR Free Software Foundation, Inc.
+# Erik Bågfors <erik@bagfors.nu>, 2000.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JPilot\n"
+"POT-Creation-Date: 2000-02-09 21:20-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Erik Bågfors <erik@bagfors.nu>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=latin1\n"
+"Content-Transfer-Encoding: iso-8859-1\n"
+
+#: address.c:143 datebook.c:86 memo.c:62 todo.c:187
+msgid "Out of Memory\n"
+msgstr "Slut på minne\n"
+
+#: address.c:188 address.c:209 address.c:290 address.c:318 address.c:408
+#: address.c:432 datebook.c:598 datebook.c:626 datebook.c:852 memo.c:138
+#: memo.c:158 memo.c:202 memo.c:231 memo.c:309 memo.c:333 memo.c:415
+#: todo.c:232 todo.c:251 todo.c:335 todo.c:363 todo.c:443 todo.c:467
+#: todo.c:546
+#, c-format
+msgid "Error reading %s\n"
+msgstr "Fel vid läsning av %s\n"
+
+#: address.c:202
+msgid "Out of memory 1\n"
+msgstr "Slut på minne 1\n"
+
+#: address.c:240 address.c:284 address.c:400 address.c:557 datebook.c:279
+#: datebook.c:592 datebook.c:845 datebook.c:1004 memo.c:103 memo.c:196
+#: memo.c:302 todo.c:283 todo.c:328 todo.c:436
+#, c-format
+msgid "Error opening %s\n"
+msgstr "Fel vid öppning av %s\n"
+
+#: address.c:246 datebook.c:285 memo.c:109
+msgid "error"
+msgstr "error"
+
+#: address.c:308
+msgid "Out of memory 2\n"
+msgstr "Slut på minne 2\n"
+
+#: address.c:327
+#, c-format
+msgid "Error in %s\n"
+msgstr "Fel i %s\n"
+
+#: address.c:504
+msgid "Out of memory 3\n"
+msgstr "Slut på minne 3\n"
+
+#: address.c:576
+msgid "Out of memory 4\n"
+msgstr "Slut på minne 4\n"
+
+#: address_gui.c:348
+msgid "Category: "
+msgstr "Kategori"
+
+#: address_gui.c:449 memo_gui.c:315 todo_gui.c:472
+msgid "0 records"
+msgstr "O poster"
+
+#: address_gui.c:560 memo_gui.c:424 todo_gui.c:583
+#, c-format
+msgid "%d of %d records"
+msgstr "%d av %d poster"
+
+#: address_gui.c:615 datebook_gui.c:315 memo_gui.c:440 todo_gui.c:600
+msgid "All"
+msgstr "Alla"
+
+#: address_gui.c:847 datebook_gui.c:2108 memo_gui.c:620 todo_gui.c:811
+msgid "Delete"
+msgstr "Radera"
+
+#: address_gui.c:909
+msgid "Quick Find"
+msgstr "Snabb sök"
+
+#: address_gui.c:927
+msgid "Quick View"
+msgstr "Snabb överblick"
+
+#: address_gui.c:938
+msgid "Add or Modify a Record"
+msgstr "Lägg till eller ändra en post"
+
+#: address_gui.c:971 datebook_gui.c:2335 memo_gui.c:687 todo_gui.c:884
+msgid "Add It"
+msgstr "Lägg till"
+
+#: address_gui.c:978 datebook_gui.c:2342 memo_gui.c:694 todo_gui.c:890
+msgid "Apply Changes"
+msgstr "Genomför ändringar"
+
+#: address_gui.c:985 print_gui.c:220
+msgid "Cancel"
+msgstr "Avbryt"
+
+#: address_gui.c:993 datebook_gui.c:2349 memo_gui.c:701 todo_gui.c:896
+msgid "New"
+msgstr "Ny"
+
+#: address_gui.c:1019
+msgid "Name"
+msgstr "Namn"
+
+#: address_gui.c:1026
+#, fuzzy
+msgid "Address"
+msgstr "Adresser"
+
+#: address_gui.c:1034
+msgid "Other"
+msgstr "Annat"
+
+#: datebook.c:193 datebook.c:212 datebook.c:243
+#, c-format
+msgid "Error on reading %s\n"
+msgstr "Fel vid läsning av %s\n"
+
+#: datebook.c:206 datebook.c:321 datebook.c:328 datebook.c:358 datebook.c:947
+#: datebook.c:1024 memo.c:151 memo.c:222 memo.c:356 memo.c:409 memo.c:438
+#: memo.c:472 sync.c:1385 todo.c:245 todo.c:354 todo.c:490 todo.c:574
+#: todo.c:615
+msgid "Out of memory\n"
+msgstr "Slut på minne\n"
+
+#: datebook.c:982
+msgid "Out of memory"
+msgstr "Slut på minne"
+
+#: datebook_gui.c:309 install_gui.c:281 prefs_gui.c:386 search_gui.c:634
+msgid "Done"
+msgstr "Klar"
+
+#: datebook_gui.c:321 datebook_gui.c:2712
+msgid "None"
+msgstr "Ingen"
+
+#: datebook_gui.c:457 monthview_gui.c:239 monthview_gui.c:246
+#: weekview_gui.c:111
+msgid "Sunday"
+msgstr "Söndag"
+
+#: datebook_gui.c:458 monthview_gui.c:240 weekview_gui.c:112
+msgid "Monday"
+msgstr "Måndag"
+
+#: datebook_gui.c:459 monthview_gui.c:241 weekview_gui.c:113
+msgid "Tuesday"
+msgstr "Tisdag"
+
+#: datebook_gui.c:460 monthview_gui.c:242 weekview_gui.c:114
+msgid "Wednesday"
+msgstr "Onsdag"
+
+#: datebook_gui.c:461 monthview_gui.c:243 weekview_gui.c:115
+msgid "Thursday"
+msgstr "Torsdag"
+
+#: datebook_gui.c:462 monthview_gui.c:244 weekview_gui.c:116
+msgid "Friday"
+msgstr "Fredag"
+
+#: datebook_gui.c:463 monthview_gui.c:245 weekview_gui.c:117
+msgid "Saturday"
+msgstr "Lördag"
+
+#: datebook_gui.c:631
+msgid "none"
+msgstr "ingen"
+
+#: datebook_gui.c:632
+msgid "day"
+msgstr "dag"
+
+#: datebook_gui.c:633
+msgid "week"
+msgstr "vecka"
+
+#: datebook_gui.c:634
+msgid "month"
+msgstr "månad"
+
+#: datebook_gui.c:635
+msgid "year"
+msgstr "år"
+
+#: datebook_gui.c:880
+#, c-format
+msgid "You cannot have an appointment that repeats every %d %s(s)\n"
+msgstr "Du kan inte ha ett möte som repeteras varje %d %s\n"
+
+#: datebook_gui.c:889
+msgid ""
+"You can not have a weekly repeating appointment that doesn't repeat on any "
+"day of the week.\n"
+msgstr ""
+"Du kan inte ha ett möte med veckovis upprepning som inte upprepas på någon "
+"veckodag.\n"
+
+#: datebook_gui.c:987
+msgid "No Time"
+msgstr "Ingen tid"
+
+# These days of the week are put in the buttons above the calendar and
+# the little buttons in the repeat weekly window.
+# They should be one letter if possible.  The English ones get truncated to
+# one letter.
+#: datebook_gui.c:1814 datebook_gui.c:1821 datebook_gui.c:2075
+#: datebook_gui.c:2082
+msgid "Su"
+msgstr "Sö"
+
+#: datebook_gui.c:1815 datebook_gui.c:2076
+msgid "Mo"
+msgstr "Må"
+
+#: datebook_gui.c:1816 datebook_gui.c:2077
+msgid "Tu"
+msgstr "Ti"
+
+#: datebook_gui.c:1817 datebook_gui.c:2078
+msgid "We"
+msgstr "On"
+
+#: datebook_gui.c:1818 datebook_gui.c:2079
+msgid "RTh"
+msgstr "To"
+
+#: datebook_gui.c:1819 datebook_gui.c:2080
+msgid "Fr"
+msgstr "Fr"
+
+#: datebook_gui.c:1820 datebook_gui.c:2081
+msgid "Sa"
+msgstr "Lö"
+
+#: datebook_gui.c:2155
+msgid "Go backward 1 year"
+msgstr "Gå bakåt 1 år"
+
+#: datebook_gui.c:2168
+msgid "Go backward 1 month"
+msgstr "Gå bakåt 1 månad"
+
+#: datebook_gui.c:2186
+msgid "Go forward 1 month"
+msgstr "Gå framåt 1 månad"
+
+#: datebook_gui.c:2199
+msgid "Go forward 1 year"
+msgstr "Gå framåt 1 år"
+
+#: datebook_gui.c:2217 datebook_gui.c:2714
+msgid "Week"
+msgstr "Vecka"
+
+#: datebook_gui.c:2223 datebook_gui.c:2715
+msgid "Month"
+msgstr "Månad"
+
+#: datebook_gui.c:2249
+msgid "Daily Schedule"
+msgstr "Dagligt schema"
+
+#: datebook_gui.c:2359
+msgid "Details"
+msgstr "Detaljer"
+
+#: datebook_gui.c:2371
+msgid "Alarm"
+msgstr "Alarm"
+
+#: datebook_gui.c:2390
+msgid "Minutes"
+msgstr "Minuter"
+
+#: datebook_gui.c:2394
+msgid "Hours"
+msgstr "Timmar"
+
+#: datebook_gui.c:2396
+msgid "Days"
+msgstr "Dagar"
+
+#: datebook_gui.c:2416
+msgid "This Event has no particular time"
+msgstr "Ingen tid"
+
+#: datebook_gui.c:2435
+#, fuzzy
+msgid "Begin: "
+msgstr "Början: "
+
+#: datebook_gui.c:2463 todo_gui.c:983
+msgid "Month:"
+msgstr "Månad:"
+
+#: datebook_gui.c:2477 todo_gui.c:985
+msgid "Day:"
+msgstr "Dag:"
+
+#: datebook_gui.c:2492 todo_gui.c:987
+msgid "Year:"
+msgstr "År:"
+
+#: datebook_gui.c:2510
+msgid "Hour:"
+msgstr "Timmar:"
+
+#: datebook_gui.c:2528
+msgid "Min:"
+msgstr "Min:"
+
+#: datebook_gui.c:2545
+msgid "End: "
+msgstr "Slutar: "
+
+#: datebook_gui.c:2713
+msgid "Day"
+msgstr "Dag"
+
+# msgid "WeekView"
+# msgstr "Veckovy"
+# msgid "MonthView"
+# msgstr "Månadsvy"
+#: datebook_gui.c:2716
+msgid "Year"
+msgstr "År"
+
+#: datebook_gui.c:2723
+msgid "This event will not repeat"
+msgstr "Ingen återupprepning för denna händelse"
+
+#: datebook_gui.c:2734 datebook_gui.c:2822 datebook_gui.c:2939
+#: datebook_gui.c:3048
+msgid "Frequency is Every"
+msgstr "Upprepning varje"
+
+#: datebook_gui.c:2742
+msgid "Day(s)"
+msgstr "Dag(ar)"
+
+#: datebook_gui.c:2746 datebook_gui.c:2834 datebook_gui.c:2951
+#: datebook_gui.c:3060
+msgid "End on"
+msgstr "Slutar på"
+
+#: datebook_gui.c:2830
+msgid "Week(s)"
+msgstr "vecka/veckor"
+
+#: datebook_gui.c:2902
+msgid "Repeat on Days:"
+msgstr "Upprepning på följande dagar:"
+
+#: datebook_gui.c:2947
+msgid "Month(s)"
+msgstr "Månad(er)"
+
+#: datebook_gui.c:3020
+msgid "Repeat by:"
+msgstr "Upprepa på:"
+
+#: datebook_gui.c:3025
+msgid "Day of week"
+msgstr "Veckodag"
+
+#: datebook_gui.c:3035
+msgid "Date"
+msgstr "Datum"
+
+#: datebook_gui.c:3056
+msgid "Year(s)"
+msgstr "År(e)"
+
+#: install_gui.c:222
+#, fuzzy
+msgid "Install"
+msgstr "/Arkiv/_Installera"
+
+#: install_gui.c:238
+msgid "Files to be installed"
+msgstr "Filer att installera"
+
+#: install_gui.c:261
+msgid "To change to a hidden directory type it below and hit TAB"
+msgstr "För att flytta till ett gömt bibliotek skriv det nedan och tryck TAB"
+
+#: install_gui.c:267
+msgid "Add"
+msgstr "Lägg till"
+
+#: install_gui.c:274
+msgid "Remove"
+msgstr "Ta bort"
+
+#: jpilot.c:232 jpilot.c:300 jpilot.c:633
+msgid "OK"
+msgstr "OK"
+
+#: jpilot.c:237
+msgid "Help"
+msgstr "Hjälp"
+
+#: jpilot.c:304 print_gui.c:214
+msgid "Print"
+msgstr "Skriv ut"
+
+#: jpilot.c:305
+msgid "There is no print support for this conduit."
+msgstr "Det finns inget skrivastöd för detta tillägg"
+
+#: jpilot.c:529
+msgid "Hide this window"
+msgstr "Göm detta fönster"
+
+#: jpilot.c:685
+msgid "/_File"
+msgstr "/_Arkiv"
+
+#: jpilot.c:686
+msgid "/_File/tear"
+msgstr "/_Arkiv/tear"
+
+#: jpilot.c:687
+msgid "/File/_Search"
+msgstr "/Arkiv/_Sök"
+
+#: jpilot.c:688 jpilot.c:692
+msgid "/File/sep1"
+msgstr "/Arkiv/sep1"
+
+#: jpilot.c:689
+msgid "/File/_Install"
+msgstr "/Arkiv/_Installera"
+
+#: jpilot.c:690
+msgid "/File/Preferences"
+msgstr "/Arkiv/Inställningar"
+
+#: jpilot.c:691
+#, fuzzy
+msgid "/File/Print"
+msgstr "/Arkiv/Skriv ut"
+
+#: jpilot.c:693
+msgid "/File/Quit"
+msgstr "/Arkiv/Avsluta"
+
+#: jpilot.c:694
+msgid "/_View"
+msgstr "/_Visa"
+
+#: jpilot.c:695
+msgid "/View/Datebook"
+msgstr "/Visa/Kalender"
+
+#: jpilot.c:696
+msgid "/View/Addresses"
+msgstr "/Visa/Adresser"
+
+#: jpilot.c:697
+msgid "/View/Todos"
+msgstr "/Visa/Att göra lista"
+
+#: jpilot.c:698
+msgid "/View/Memos"
+msgstr "/Visa/Minnesanteckningar"
+
+#: jpilot.c:699 jpilot.c:768
+msgid "/Plugins"
+msgstr "/Plugins"
+
+#: jpilot.c:700
+msgid "/_Help"
+msgstr "/_Hjälp"
+
+#: jpilot.c:701
+msgid "/_Help/About J-Pilot"
+msgstr "/Hjälp/Om J-Pilot"
+
+#: jpilot.c:734
+#, c-format
+msgid "/Plugins/%s"
+msgstr "/Tillägg/%s"
+
+#: jpilot.c:745
+#, c-format
+msgid "/_Help/%s"
+msgstr "/_Hjälp/%s"
+
+#: jpilot.c:1154
+msgid "Quit!"
+msgstr "Avsluta!"
+
+#: jpilot.c:1169
+msgid "Sync your palm to the desktop"
+msgstr "Synkronisera din palm med datorn"
+
+#: jpilot.c:1173
+msgid "Backup"
+msgstr "Ta backup"
+
+#: jpilot.c:1182
+msgid ""
+"Sync your palm to the desktop\n"
+"and then do a backup"
+msgstr ""
+"Synkronisera din palm med datorn\n"
+"gör sedan en backup"
+
+#: jpilot.c:1234
+msgid "Datebook/Go to Today"
+msgstr "Kalender/Gå till idag"
+
+#: jpilot.c:1236
+msgid "Address Book"
+msgstr "Adressbok"
+
+#: jpilot.c:1238
+msgid "ToDo List"
+msgstr "Att göra lista"
+
+#: jpilot.c:1240
+msgid "Memo Pad"
+msgstr "Anteckningar"
+
+#: log.c:69
+msgid "Cannot open log file, giving up.\n"
+msgstr "Kan inte öppna loggfil, ger upp.\n"
+
+#: log.c:76
+msgid "Cannot open log file\n"
+msgstr "Kan inte öppna loggfil\n"
+
+#: memo.c:166 todo.c:259 todo.c:288 todo.c:369 todo.c:562
+msgid "failed"
+msgstr "misslyckades"
+
+#: memo.c:237
+msgid "Error reading"
+msgstr "Fel vid läsning"
+
+#: prefs.c:177 prefs.c:202
+msgid "out of memory\n"
+msgstr "slut på minne\n"
+
+#: prefs_gui.c:204
+#, fuzzy
+msgid "Preferences"
+msgstr "Inställningar"
+
+#: prefs_gui.c:221
+msgid "Short date format "
+msgstr "Kort datum format "
+
+#: prefs_gui.c:234
+msgid "Long date format "
+msgstr "Långt datum format "
+
+#: prefs_gui.c:248
+msgid "Time format "
+msgstr "Tidsformat "
+
+#: prefs_gui.c:262
+msgid "The first day of the week is "
+msgstr "Första dagen i veckan är "
+
+#: prefs_gui.c:276
+msgid "My GTK colors file is "
+msgstr "Min GTK-Färgfil är "
+
+#: prefs_gui.c:290
+msgid "Serial Port "
+msgstr "Serieport "
+
+#: prefs_gui.c:305
+msgid "Serial Rate "
+msgstr "Seriell överföringshastighet "
+
+#: prefs_gui.c:318
+msgid "Number of backups to be archived"
+msgstr "Antal backupper som skall arkiveras?"
+
+#: prefs_gui.c:334
+msgid "Show deleted records (default NO)"
+msgstr "Visa raderade poster? (Standard: Nej)"
+
+#: prefs_gui.c:347
+msgid "Show modified deleted records (default NO)"
+msgstr "Visa modifierade raderade poster? (Standard: Nej)"
+
+#: prefs_gui.c:361
+msgid "Highlight calendar days with appointments"
+msgstr "Markera kalenderdagar med händelser"
+
+#: prefs_gui.c:374
+msgid "Use DateBk3 note tags"
+msgstr "Använd DateBk3 anteckningstaggar"
+
+#: print_gui.c:135
+msgid "Print Options"
+msgstr "Skrivarinställningar"
+
+#: print_gui.c:149
+msgid "One record"
+msgstr "En post"
+
+#: print_gui.c:153
+msgid "All records in this category"
+msgstr "Alla poster i den här kategorin"
+
+#: print_gui.c:157
+msgid "Print all records"
+msgstr "Skriv ut alla poster"
+
+#: print_gui.c:177
+msgid "One record per page"
+msgstr "En post per sida"
+
+#: print_gui.c:191
+msgid " Blank lines between each record"
+msgstr " Blanka rader mellan varje post"
+
+#: print_gui.c:200
+msgid "Print Command (e.g. lpr, or cat > file.ps)"
+msgstr "Utskriftskomando (tex. lpr, eller cat > fil.ps)"
+
+#: search_gui.c:512
+msgid "No records found"
+msgstr "Inga poster funna"
+
+#: search_gui.c:583
+#, fuzzy
+msgid "Search"
+msgstr "Sök"
+
+#: search_gui.c:596
+msgid "Search for: "
+msgstr "Sök efter: "
+
+#: search_gui.c:603
+msgid "Case Sensitive"
+msgstr "Skilj gemener/versaler"
+
+#: sync.c:362
+msgid " Press the HotSync button now\n"
+msgstr "Tryck på HotSync-knappen nu\n"
+
+#: sync.c:381
+msgid "Check your serial port and settings\n"
+msgstr "Kontrollera din serieport och inställningarna\n"
+
+#: sync.c:487
+msgid "Doing a fast sync.\n"
+msgstr "En snabb synkronisering utförs\n"
+
+#: sync.c:494
+msgid "Doing a slow sync.\n"
+msgstr "En långsam synkronisering utförs\n"
+
+#: sync.c:542
+msgid "Thank you for using J-Pilot."
+msgstr "Tack för att du använder J-Pilot."
+
+#: sync.c:570
+msgid "Finished.\n"
+msgstr "Färdig\n"
+
+#: sync.c:842
+#, c-format
+msgid "Skipping %s\n"
+msgstr "Hoppar över %s\n"
+
+#: sync.c:917
+#, c-format
+msgid "%s is up to date, fetch skipped.\n"
+msgstr "%s är redan uppdaterad, hoppar över nerladdning\n"
+
+#: sync.c:921
+#, c-format
+msgid "Fetching '%s'... "
+msgstr "Laddar new '%s'... "
+
+#: sync.c:938 sync.c:1016
+msgid "OK\n"
+msgstr "OK\n"
+
+#: sync.c:973
+#, c-format
+msgid "Installing %s... "
+msgstr "Installerar %s... "
+
+#: sync.c:1003
+#, c-format
+msgid "Install %s failed"
+msgstr "Installering av %s misslyckad"
+
+#: sync.c:1012
+#, c-format
+msgid "Installed %s"
+msgstr "Har installerat %s"
+
+#: todo_gui.c:844
+msgid "Hide Completed ToDos"
+msgstr "Göm avklarade attgöra poster?"
+
+#: todo_gui.c:909
+msgid "Completed"
+msgstr "Avslutat"
+
+#: todo_gui.c:917
+msgid "Priority: "
+msgstr "Prioritet: "
+
+#: todo_gui.c:947
+msgid "No Due Date"
+msgstr "Inget Förfallodatum"
+
+#: todo_gui.c:960
+msgid "Date Due:"
+msgstr "Förfallodatum:"
+
+#: utils.c:74
+msgid "Today is %A, %x %X"
+msgstr "Idag är %A, %x %X"
+
+#: utils.c:76
+msgid "Today is %%A, %s %s"
+msgstr "Idag är det %%A, %s %s"
+
+#: utils.c:1671
+msgid "PC ID is 0.\n"
+msgstr "PC ID är 0.\n"
+
+#: utils.c:1672
+#, c-format
+msgid "I generated a new PC ID.  It is %d\n"
+msgstr "Ett nytt PC ID genererat.  Det är %d\n"
+
+#~ msgid "4th"
+#~ msgstr "fjärde"
+
+#~ msgid "Last"
+#~ msgstr "Sista"

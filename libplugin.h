@@ -16,11 +16,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include <gtk/gtk.h>
+#ifndef __LIBPLUGIN_H__
+#define __LIBPLUGIN_H__
+
+# include <gtk/gtk.h>
 
 /*
  * PLUGIN API for J-Pilot
  */
+#ifndef __UTILS_H__
 
 #define JPILOT_EOF -7
 
@@ -47,7 +51,8 @@
 #define LOG_GUI    1024 /*messages always go to the gui window */
 
 int jpilot_logf(int level, char *format, ...);
-int (*jp_logf)(int level, char *format, ...);
+/* int (*jp_logf)(int level, char *format, ...); */
+int jp_logf(int level, char *format, ...);
 /* void plugin_set_jpilot_logf(int (*Pjpilot_logf)(int level, char *format, ...));*/
 
 #define SPENT_PC_RECORD_BIT 256
@@ -60,6 +65,8 @@ typedef enum {
    DELETED_PC_REC =  SPENT_PC_RECORD_BIT + 104L,
    DELETED_DELETED_PALM_REC =  SPENT_PC_RECORD_BIT + 105L
 } PCRecType;
+
+#endif 
 
 typedef struct
 {
@@ -82,7 +89,7 @@ struct search_result
    struct search_result *next;
 };
 
-void free_buf_rec_list(GList **br_list);
+/* void free_buf_rec_list(GList **br_list); */
 
 int plugin_get_name(char *name, int len);
 int plugin_get_menu_name(char *name, int len);
@@ -129,3 +136,5 @@ int jp_free_DB_records(GList **records);
 int jp_pc_write(char *DB_name, buf_rec *br);
 
 const char *jp_strstr(const char *haystack, const char *needle, int case_sense);
+
+#endif

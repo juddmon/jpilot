@@ -9,11 +9,13 @@ These are some of the bugs that I know about:
 
 *Priority High:
 
+ - Categories are one-way sync from the palm to the desktop.  It is possible
+   to do things like add a record into a deleted category on the palm.
  - Palm databases aren't always detected as being changed and then aren't 
    brought into the desktop.
  - Sometimes you have to sync twice before the changes are synced into the 
    desktop.
- - Memory leaks when switching between apps.  I probably am not doing
+ - Small memory leaks when switching between apps.  I probably am not doing
    something right when destroying widgets.  I don't know what it is though.
  
 *Priority Medium:
@@ -21,6 +23,12 @@ These are some of the bugs that I know about:
 *Priority Low:
  - If a record is changed on the Palm and on the desktop, then the desktop 
    record will overwrite the one on the Palm.
+ - Binary data is written to files in ~./jpilot/ so if you have this directory
+   mounted on machines with different byte ordering then unknown things will
+   happen.
+ - If a home directory is mounted on different machines with different byte
+   ordering then data may get corrupted.  I haven't tested this, but I would
+   think it would be true.
 
 *Priority Who Cares?:
 
@@ -39,7 +47,52 @@ These are some of the bugs that I know about:
 
  - The Palm pilot will let you sync (add) an appointment that repeats weekly,
    but doesn't repeat on any day.  It won't show up in the calendar, but if
-   you search for it, it shows up.  When you click on it in find, Fatal
-   Exception and Pilot reboots.  This is a PalmOS bug if you ask me.
+   you search for it, it shows up.  When you click on it in find, a Fatal
+   Exception occurs and the Pilot reboots.  This is a PalmOS bug if you ask me.
 
  - Empty appointments crash palmos 2.0 (I don't allow them anymore)
+
+Syncing of categories:
+
+I have put off allowing categories to be added on the desktop because I read
+all the documentation I could find on how to sync categories and I couldn't
+see how it could possibly work.  I kept thinking I was not understanding
+something.
+
+So finally, I booted into WindowsNT, after not doing so for many, many
+months.  After 2 BSODs, and some hacking, I got it to boot (no joke).
+I ran some experiments to see how 3com handles syncing of categories.
+
+Just as I suspected, they don't always handle it right, just as the
+documentation would suggest.
+
+Here is just one example using memo:
+
+ (Category IDs are all unique)
+
+The first 2 categories I changed the name of on the handheld and on the
+desktop, the last 2 are new on both.
+
+rec-synced?   Palm cat | index | memo || Desktop cat | index | memo
+(    synced)  NewPalm    4       one     NewDesk       4       one
+(    synced)  NewPalm2   5       two     NewDesk2      5       two
+(not-synced)  NewPalm3   6       P NP3   NewDesk3      6       D ND3
+(not-synced)  NewDesk    7       P ND    NewPalm       7       D NP
+
+Now, I do a sync and end up with:
+
+ cat      | index | memo 
+ NewDesk    4       P ND 
+ NewDesk2   5        
+ NewDesk3   6       D ND3
+ NewPalm    7       one
+                    D NP
+ NewPalm2   8       two  
+ NewPalm3   9       P NP3
+
+On the palm things seem to have synced as expected.  On the desktop things
+have moved between categories.  Look at items "one" and "two".  They moved
+categories on the desktop.  If this were 50 items, all 50 would have moved
+and possibly merged with other items.
+
+I will duplicate this behavior.

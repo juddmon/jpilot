@@ -32,23 +32,16 @@
 #define PRINT_FILE_LINE printf("%s line %d\n", __FILE__, __LINE__)
 #define PN "J-Pilot"
 #define EPN "jpilot"
-#define VERSION "0.97"
+/* #define VERSION "0.98.1" */
 #define VERSION_STRING "\n"PN" version "VERSION"\n"\
 " Copyright (C) 1999 by Judd Montgomery\n"
-
-#define USAGE_STRING "\njpilot [ [-v] || [-h] || [-d]\n"\
-" -v displays version and exits.\n"\
-" -h displays help and exits.\n"\
-" -d displays debug info to stdout.\n"\
-" -p do not load plugins.\n"\
-" The PILOTPORT, and PILOTRATE env variables are used to specify which\n"\
-" port to sync on, and at what speed.\n"\
-" If PILOTPORT is not set then it defaults to /dev/pilot.\n"
 
 /*This is how often the clock updates in milliseconds */
 #define CLOCK_TICK 1000
 
-#define CATEGORY_ALL 100
+#define CATEGORY_ALL 300
+
+#define JPILOT_EOF -7
 
 #define SHADOW GTK_SHADOW_ETCHED_OUT
 
@@ -79,6 +72,7 @@
 #define NEW_FLAG 5
   
 #define DIALOG_SAID_1        454
+#define DIALOG_SAID_PRINT    454
 #define DIALOG_SAID_FOURTH   454
 #define DIALOG_SAID_CURRENT  454
 #define DIALOG_SAID_2        455
@@ -86,6 +80,16 @@
 #define DIALOG_SAID_ALL      455
 #define DIALOG_SAID_3        456
 #define DIALOG_SAID_CANCEL   456
+
+#define PIXMAP_NOTE          100
+#define PIXMAP_ALARM         101
+#define PIXMAP_BOX_CHECK     102
+#define PIXMAP_BOX_CHECKED   103
+#define PIXMAP_FLOAT_CHECK   104
+#define PIXMAP_FLOAT_CHECKED 105
+
+#define SORT_ASCENDING       100
+#define SORT_DESCENDING      101
 
 extern unsigned int glob_find_id;
 
@@ -157,7 +161,8 @@ typedef enum {
    DATEBOOK = 100L,
    ADDRESS,
    TODO,
-   MEMO
+   MEMO,
+   REDRAW
 } AppType;
 
 typedef struct {
@@ -221,38 +226,58 @@ struct search_record
 };
 
 gint timeout_date(gpointer data);
+
 int get_pixmaps(GtkWidget *widget,
-		GdkPixmap **out_note, GdkPixmap **out_alarm,
-		GdkPixmap **out_check, GdkPixmap **out_checked,
-		GdkBitmap **out_mask_note, GdkBitmap **out_mask_alarm,
-		GdkBitmap **out_mask_check, GdkBitmap **out_mask_checked);
+		int which_one,
+		GdkPixmap **out_pixmap,
+		GdkBitmap **out_mask);
+
 int check_hidden_dir();
+
 int read_gtkrc_file();
+
 int get_home_file_name(char *file, char *full_name, int max_size);
+
 FILE *open_file(char *filename, char *mode);
+
 int rename_file(char *old_filename, char *new_filename);
 
 int raw_header_to_header(RawDBHeader *rdbh, DBHeader *dbh);
+
 int find_next_offset(mem_rec_header *mem_rh, long fpos,
 		     unsigned int *next_offset,
 		     unsigned char *attrib, unsigned int *unique_id);
+
 int get_next_unique_pc_id(unsigned int *next_unique_id);
+
 /*The VP is a pointer to MyAddress, MyAppointment, etc. */
 int delete_pc_record(AppType app_type, void *VP, int flag);
 
 void get_month_info(int month, int day, int year, int *dow, int *ndim);
+
 void get_this_month_info(int *dow, int *ndim);
+
 time_t pilot_time_to_unix_time (unsigned long raw_time);
+
 unsigned long unix_time_to_pilot_time (time_t t);
+
 unsigned int bytes_to_bin(unsigned char *bytes, unsigned int num_bytes);
+
 void free_mem_rec_header(mem_rec_header **mem_rh);
+
 void print_string(char *str, int len);
+
 /* */
 /*Warning, this function will move the file pointer */
 /* */
 int get_app_info_size(FILE *in, int *size);
+
+int get_app_info(char *DB_name, unsigned char **buf, int *buf_size);
+
 int cleanup_pc_files();
+
 void cb_sync(GtkWidget *widget, unsigned int flags);
+
 /*Returns the number of the button that was pressed */
 int dialog_generic(GdkWindow *main_window,
 		   int w, int h,
@@ -263,9 +288,12 @@ int clist_find_id(GtkWidget *clist,
 		  unsigned int unique_id,
 		  int *found_at,
 		  int *total_count);
+
 int clist_count(GtkWidget *clist,
 		int *total_count);
+
 int move_scrolled_window(GtkWidget *sw, float percentage);
+
 void move_scrolled_window_hack(GtkWidget *sw, float percentage);
 
 int check_copy_DBs_to_home();
@@ -300,23 +328,32 @@ int memo_gui_cleanup();
 /*
  * Parse the string and replace CR and LFs with spaces
  */
-void remove_cf_lfs(char *str);
+void remove_cr_lfs(char *str);
+
 int add_days_to_date(struct tm *date, int n);
+
 int sub_days_from_date(struct tm *date, int n);
 
 /*from jpilot.c */
 void cb_app_button(GtkWidget *widget, gpointer data);
+
 void call_plugin_gui(int number, int unique_id);
+
 /*datebook_gui */
 int datebook_refresh(int first);
+
 /*address_gui */
 int address_refresh();
+
 /*todo_gui */
 int todo_refresh();
+
 /*memo_gui */
 int memo_refresh();
+
 /* monthview_gui */
 void monthview_gui(struct tm *date);
+
 /* weekview_gui */
 void weekview_gui(struct tm *date);
 

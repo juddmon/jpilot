@@ -16,6 +16,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#ifndef __ADDRESS_H__
+#define __ADDRESS_H__
+
 #include <pi-address.h>
 #include "utils.h"
 
@@ -23,4 +26,13 @@ int get_address_app_info(struct AddressAppInfo *aai);
 int pc_address_write(struct Address *a, PCRecType rt, unsigned char attrib,
 		     unsigned int *unqiue_id);
 void free_AddressList(AddressList **al);
-int get_addresses(AddressList **address_list);
+/* 
+ * sort_order: 0=descending,  1=ascending
+ */
+int get_addresses(AddressList **address_list, int sort_order);
+int get_addresses2(AddressList **address_list, int sort_order,
+		  int modified, int deleted, int category);
+
+int address_print();
+
+#endif

@@ -18,6 +18,7 @@
  */
 
 #include "config.h"
+#include "i18n.h"
 #include "utils.h"
 #include "log.h"
 #include "prefs.h"
@@ -40,6 +41,7 @@
 #include <pi-socket.h>
 #include <pi-dlp.h>
 #include <pi-file.h>
+
 
 /*Stuff for the dialog window */
 extern GtkWidget *glob_dialog;
@@ -67,10 +69,11 @@ gint timeout_date(gpointer data)
    /*Build a long date string */
    get_pref(PREF_LONGDATE, &ivalue, &svalue1);
    get_pref(PREF_TIME, &ivalue, &svalue2);
+
    if ((svalue1==NULL)||(svalue2==NULL)) {
-      strcpy(datef, "Today is %A, %x %X");
+      strcpy(datef, _("Today is %A, %x %X"));
    } else {
-      sprintf(datef, "Today is %%A, %s %s", svalue1, svalue2);
+      sprintf(datef, _("Today is %%A, %s %s"), svalue1, svalue2);
    }
    strftime(str, 100, datef, now);
    str[100]='\0';
@@ -152,9 +155,13 @@ int sub_days_from_date(struct tm *date, int n)
 /*
  * Parse the string and replace CR and LFs with spaces
  */
-void remove_cf_lfs(char *str)
+void remove_cr_lfs(char *str)
 {
    int i;
+   
+   if (!str) {
+      return;
+   }
    for (i=0; str[i]; i++) {
       if ((str[i]=='\r') || (str[i]=='\n')) {
 	 str[i]=' ';
@@ -320,107 +327,152 @@ int clist_count(GtkWidget *clist,
 }
 
 int get_pixmaps(GtkWidget *widget,
-		GdkPixmap **out_note, GdkPixmap **out_alarm,
-		GdkPixmap **out_check, GdkPixmap **out_checked,
-		GdkBitmap **out_mask_note, GdkBitmap **out_mask_alarm,
-		GdkBitmap **out_mask_check, GdkBitmap **out_mask_checked)
+		int which_one,
+		GdkPixmap **out_pixmap,
+		GdkBitmap **out_mask)
 {
 /*Note pixmap */
 char * xpm_note[] = {
-   "16 16 3 1",
-     "       c None",
-     ".      c #000000000000",
-/*     "X      c #FFFFFFFFFFFF", */
-     "X      c #cccccccccccc",
-     "                ",
-     "   ......       ",
-     "   .XXX.X.      ",
-     "   .XXX.XX.     ",
-     "   .XXX.XXX.    ",
-     "   .XXX.....    ",
-     "   .XXXXXXX.    ",
-     "   .XXXXXXX.    ",
-     "   .XXXXXXX.    ",
-     "   .XXXXXXX.    ",
-     "   .XXXXXXX.    ",
-     "   .XXXXXXX.    ",
-     "   .XXXXXXX.    ",
-     "   .........    ",
-     "                ",
-     "                "
+   "11 16 3 1",
+   "       c None",
+   ".      c #000000000000",
+   "X      c #cccccccccccc",
+   "           ",
+   " ......    ",
+   " .XXX.X.   ",
+   " .XXX.XX.  ",
+   " .XXX.XXX. ",
+   " .XXX..... ",
+   " .XXXXXXX. ",
+   " .XXXXXXX. ",
+   " .XXXXXXX. ",
+   " .XXXXXXX. ",
+   " .XXXXXXX. ",
+   " .XXXXXXX. ",
+   " .XXXXXXX. ",
+   " ......... ",
+   "           ",
+   "           "
 };
 
 /*Alarm pixmap */
 char * xpm_alarm[] = {
    "16 16 3 1",
-     "       c None",
-     ".      c #000000000000",
-/*     "X      c #FFFFFFFFFFFF", */
-     "X      c #cccccccccccc",
-     "                ",
-     "   .       .    ",
-     "  ...     ...   ",
-     "  ...........   ",
-     "   .XXXXXXXX.   ",
-     "  .XXXX.XXXXX.  ",
-     " .XXXXX.XXXXXX. ",
-     " .X.....XXXXXX. ",
-     " .XXXXXXXXXXX.  ",
-     "  .XXXXXXXXX.   ",
-     "   .XXXXXXX.    ",
-     "   .........    ",
-     "   .       .    ",
-     " ....     ....  ",
-     "                ",
-     "                "
+   "       c None",
+   ".      c #000000000000",
+   "X      c #cccccccccccc",
+   "                ",
+   "   .       .    ",
+   "  ...     ...   ",
+   "  ...........   ",
+   "   .XXXXXXXX.   ",
+   "  .XXXX.XXXXX.  ",
+   " .XXXXX.XXXXXX. ",
+   " .X.....XXXXXX. ",
+   " .XXXXXXXXXXX.  ",
+   "  .XXXXXXXXX.   ",
+   "   .XXXXXXX.    ",
+   "   .........    ",
+   "   .       .    ",
+   " ....     ....  ",
+   "                ",
+   "                "
 };
 
 char * xpm_check[] = {
-   "16 16 3 1",
-     "       c None",
-     ".      c #000000000000",
-/*     "X      c #FFFFFFFFFFFF", */
-     "X      c #cccccccccccc",
-     "                ",
-     "   .........    ",
-     "   .XXXXXXX.    ",
-     "   .X     X.    ",
-     "   .X     X.    ",
-     "   .X     X.    ",
-     "   .X     X.    ",
-     "   .X     X.    ",
-     "   .X     X.    ",
-     "   .X     X.    ",
-     "   .X     X.    ",
-     "   .X     X.    ",
-     "   .XXXXXXX.    ",
-     "   .........    ",
-     "                ",
-     "                "
+   "12 16 3 1",
+   "       c None",
+   ".      c #000000000000",
+   "X      c #cccccccccccc",
+   "                ",
+   " .........  ",
+   " .XXXXXXX.  ",
+   " .X     X.  ",
+   " .X     X.  ",
+   " .X     X.  ",
+   " .X     X.  ",
+   " .X     X.  ",
+   " .X     X.  ",
+   " .X     X.  ",
+   " .X     X.  ",
+   " .X     X.  ",
+   " .XXXXXXX.  ",
+   " .........  ",
+   "            ",
+   "            "
 };
 
 char * xpm_checked[] = {
-   "16 16 4 1",
-     "       c None",
-     ".      c #000000000000",
-     "X      c #cccccccccccc",
-     "R      c #FFFF00000000",
-     "                ",
-     "   .........    ",
-     "   .XXXXXXX.RR  ",
-     "   .X     XRR   ",
-     "   .X     RR    ",
-     "   .X    RR.    ",
-     "   .X    RR.    ",
-     "   .X   RRX.    ",
-     "   RR  RR X.    ",
-     "   .RR RR X.    ",
-     "   .X RR  X.    ",
-     "   .X  R  X.    ",
-     "   .XXXXXXX.    ",
-     "   .........    ",
-     "                ",
-     "                "
+   "12 16 4 1",
+   "       c None",
+   ".      c #000000000000",
+   "X      c #cccccccccccc",
+   "R      c #FFFF00000000",
+   "            ",
+   " .........  ",
+   " .XXXXXXX.RR",
+   " .X     XRR ",
+   " .X     RR  ",
+   " .X    RR.  ",
+   " .X    RR.  ",
+   " .X   RRX.  ",
+   " RR  RR X.  ",
+   " .RR RR X.  ",
+   " .X RR  X.  ",
+   " .X  R  X.  ",
+   " .XXXXXXX.  ",
+   " .........  ",
+   "            ",
+   "            "
+};
+
+char * xpm_float_check[] = {
+   "14 16 4 1",
+   "       c None",
+   ".      c #000000000000",
+   "X      c #CCCCCCCCCCCC",
+   "W      c #FFFFFFFFFFFF",
+   "              ",
+   "     ....     ",
+   "    ......    ",
+   "   ..XXXX..   ",
+   "  ..XWWWWX..  ",
+   " ..XWWWWWWX.. ",
+   " ..XWWWWWWX.. ",
+   " ..XWWWWWWX.. ",
+   " ..XWWWWWWX.. ",
+   " ..XWWWWWWX.. ",
+   "  ..XWWWWX..  ",
+   "   ..XXXX..   ",
+   "    ......    ",
+   "     ....     ",
+   "              ",
+   "              "
+};
+
+char * xpm_float_checked[] = {
+   "14 16 5 1",
+   "       c None",
+   ".      c #000000000000",
+   "X      c #cccccccccccc",
+   "R      c #FFFF00000000",
+   "W      c #FFFFFFFFFFFF",
+   "              ",
+   "     ....     ",
+   "    ...... RR ",
+   "   ..XXXX.RR  ",
+   "  ..XWWWWRR.  ",
+   " ..XWWWWRRX.. ",
+   " ..XWWWWRRX.. ",
+   " ..XWWWRRWX.. ",
+   " .RRWWRRWWX.. ",
+   " ..RRWRRWWX.. ",
+   "  ..XRRWWX..  ",
+   "   ..XRXX..   ",
+   "    ......    ",
+   "     ....     ",
+   "              ",
+   "              "
 };
 
    static int inited=0;
@@ -428,26 +480,24 @@ char * xpm_checked[] = {
    static GdkPixmap *pixmap_alarm;
    static GdkPixmap *pixmap_check;
    static GdkPixmap *pixmap_checked;
+   static GdkPixmap *pixmap_float_check;
+   static GdkPixmap *pixmap_float_checked;
    static GdkBitmap *mask_note;
    static GdkBitmap *mask_alarm;
    static GdkBitmap *mask_check;
    static GdkBitmap *mask_checked;
+   static GdkBitmap *mask_float_check;
+   static GdkBitmap *mask_float_checked;
    GtkWidget *pixmapwid_note;
    GtkWidget *pixmapwid_alarm;
    GtkWidget *pixmapwid_check;
    GtkWidget *pixmapwid_checked;
+   GtkWidget *pixmapwid_float_check;
+   GtkWidget *pixmapwid_float_checked;
    GtkStyle *style;
    
    if (inited) {
-      *out_note = pixmap_note;
-      *out_alarm = pixmap_alarm;
-      *out_check = pixmap_check;
-      *out_checked = pixmap_checked;
-      *out_mask_note = mask_note;
-      *out_mask_alarm = mask_alarm;
-      *out_mask_check = mask_check;
-      *out_mask_checked = mask_checked;
-      return 0;
+      goto assign;
    }
    
    inited=1;
@@ -482,14 +532,52 @@ char * xpm_checked[] = {
    pixmapwid_checked = gtk_pixmap_new(pixmap_checked, mask_checked);
    gtk_widget_show(pixmapwid_checked);
 
-   *out_note = pixmap_note;
-   *out_alarm = pixmap_alarm;
-   *out_check = pixmap_check;
-   *out_checked = pixmap_checked;
-   *out_mask_note = mask_note;
-   *out_mask_alarm = mask_alarm;
-   *out_mask_check = mask_check;
-   *out_mask_checked = mask_checked;
+   /*Make the float_checked pixmap */
+   pixmap_float_check = gdk_pixmap_create_from_xpm_d
+     (widget->window,  &mask_float_check,
+      &style->bg[GTK_STATE_NORMAL],
+      (gchar **)xpm_float_check);
+   pixmapwid_float_check = gtk_pixmap_new(pixmap_float_check, mask_float_check);
+   gtk_widget_show(pixmapwid_float_check);
+
+   /*Make the float_checked pixmap */
+   pixmap_float_checked = gdk_pixmap_create_from_xpm_d
+     (widget->window,  &mask_float_checked,
+      &style->bg[GTK_STATE_NORMAL],
+      (gchar **)xpm_float_checked);
+   pixmapwid_float_checked = gtk_pixmap_new(pixmap_float_checked, mask_float_checked);
+   gtk_widget_show(pixmapwid_float_checked);
+
+   assign:
+   switch (which_one) {
+    case PIXMAP_NOTE:
+      *out_pixmap = pixmap_note;
+      *out_mask = mask_note;
+      break;
+    case PIXMAP_ALARM:
+      *out_pixmap = pixmap_alarm;
+      *out_mask = mask_alarm;
+      break;
+    case PIXMAP_BOX_CHECK:
+      *out_pixmap = pixmap_check;
+      *out_mask = mask_check;
+      break;
+    case PIXMAP_BOX_CHECKED:
+      *out_pixmap = pixmap_checked;
+      *out_mask = mask_checked;
+      break;
+    case PIXMAP_FLOAT_CHECK:
+      *out_pixmap = pixmap_float_check;
+      *out_mask = mask_float_check;
+      break;
+    case PIXMAP_FLOAT_CHECKED:
+      *out_pixmap = pixmap_float_checked;
+      *out_mask = mask_float_checked;
+      break;
+    default:
+      *out_pixmap = NULL;
+      *out_mask = NULL;
+   }
    
    return 0;
 }
@@ -714,9 +802,11 @@ void get_month_info(int month, int day, int year, int *dow, int *ndim)
    mktime(&new_time);
    *dow = new_time.tm_wday;
    
-   /*I know this isn't 100% correct */
+   /* leap year */
    if (month == 1) {
-      if (year%4 == 0) {
+      if ((year%4 == 0) &&
+	  !(((year+1900)%100==0) && ((year+1900)%400!=0))
+	  ) {
 	 days_in_month[1]++;
       }
    }
@@ -770,10 +860,33 @@ int get_next_unique_pc_id(unsigned int *next_unique_id)
    /*rewind(pc_in_out); */
    /*todo - if > 16777216 then cleanup */
    if (fwrite(next_unique_id, sizeof(*next_unique_id), 1, pc_in_out) != 1) {
-      jpilot_logf(LOG_WARN, "Error writing pc header to file: next_id\n");
+      jpilot_logf(LOG_WARN, "Error writing to file: next_id\n");
    }
    fflush(pc_in_out);
    fclose(pc_in_out);
+   
+   return 0;
+}
+   
+int write_to_next_id(unsigned int unique_id)
+{
+   FILE *pc_out;
+
+   pc_out = open_file("next_id", "r+");
+   if (pc_out==NULL) {
+      jpilot_logf(LOG_WARN, "Error opening next_id\n");
+      return -1;
+   }
+
+   if (fseek(pc_out, 0, SEEK_SET)) {
+      jpilot_logf(LOG_WARN, "fseek failed\n");
+      fclose(pc_out);
+      return -1;
+   }
+   if (fwrite(&unique_id, sizeof(unique_id), 1, pc_out) != 1) {
+      jpilot_logf(LOG_WARN, "Error writing to file: next_id\n");
+   }
+   fclose(pc_out);
    
    return 0;
 }
@@ -1092,6 +1205,67 @@ int get_app_info_size(FILE *in, int *size)
    return 0;
 }
 
+int get_app_info(char *DB_name, unsigned char **buf, int *buf_size)
+{
+   FILE *in;
+   int num;
+   unsigned int rec_size;
+   RawDBHeader rdbh;
+   DBHeader dbh;
+   char PDB_name[256];
+
+   *buf_size=0;
+
+   g_snprintf(PDB_name, 255, "%s.pdb", DB_name);
+   in = open_file(PDB_name, "r");
+   if (!in) {
+      jpilot_logf(LOG_WARN, "Error opening %s\n", PDB_name);
+      return -1;
+   }
+   num = fread(&rdbh, sizeof(RawDBHeader), 1, in);
+   if (num != 1) {
+      if (ferror(in)) {
+	 jpilot_logf(LOG_WARN, "Error reading %s 1\n", PDB_name);
+	 fclose(in);
+	 return -1;
+      }
+      if (feof(in)) {
+	 fclose(in);
+	 return JPILOT_EOF;
+      }      
+   }
+   raw_header_to_header(&rdbh, &dbh);
+
+   num = get_app_info_size(in, &rec_size);
+   if (num) {
+      jpilot_logf(LOG_WARN, "2 Error reading %s\n", PDB_name);
+      fclose(in);
+      return -1;
+   }
+
+   fseek(in, dbh.app_info_offset, SEEK_SET);
+   *buf=malloc(rec_size);
+   if (!(*buf)) {
+      jpilot_logf(LOG_WARN, "Out of memory\n");
+      fclose(in);
+      return -1;
+   }
+   num = fread(*buf, rec_size, 1, in);
+   if (num != 1) {
+      if (ferror(in)) {
+	 fclose(in);
+	 free(*buf);
+	 jpilot_logf(LOG_WARN, "Error reading %s 3\n", PDB_name);
+	 return -1;
+      }
+   }
+   fclose(in);
+   
+   *buf_size=rec_size;
+
+   return 0;
+}
+
 /* */
 /*This deletes a record from the appropriate Datafile */
 /* */
@@ -1100,13 +1274,13 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 /*   int unique_id; */
    FILE *pc_in;
    PCRecordHeader header;
-   struct Appointment app;
+   struct Appointment *app;
    MyAppointment *mapp;
-   struct Address address;
+   struct Address *address;
    MyAddress *maddress;
-   struct ToDo todo;
+   struct ToDo *todo;
    MyToDo *mtodo;
-   struct Memo memo;
+   struct Memo *memo;
    MyMemo *mmemo;
    char filename[30];
    char record[65536];
@@ -1117,7 +1291,11 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       return -1;
    }
    
-   mapp=NULL;/*to keep the compiler happy */
+   /* to keep the compiler happy with -Wall*/
+   mapp=NULL;
+   maddress=NULL;
+   mtodo=NULL;
+   mmemo=NULL;
    switch (app_type) {
     case DATEBOOK:
       mapp = (MyAppointment *) VP;
@@ -1197,33 +1375,37 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       }
       switch (app_type) {
        case DATEBOOK:
-	 app=mapp->a;
+	 app=&mapp->a;
 	 /*memset(&app, 0, sizeof(app)); */
-	 header.rec_len = pack_Appointment(&app, record, 65535);
+	 header.rec_len = pack_Appointment(app, record, 65535);
 	 if (!header.rec_len) {
 	    PRINT_FILE_LINE;
 	    jpilot_logf(LOG_WARN, "pack_Appointment error\n");
 	 }
 	 break;
        case ADDRESS:
-	 memset(&address, 0, sizeof(address));
-	 header.rec_len = pack_Address(&address, record, 65535);
+	 address=&maddress->a;
+	 /* memset(&address, 0, sizeof(address)); */
+	 header.rec_len = pack_Address(address, record, 65535);
 	 if (!header.rec_len) {
 	    PRINT_FILE_LINE;
 	    jpilot_logf(LOG_WARN, "pack_Address error\n");
 	 }
 	 break;
        case TODO:
-	 memset(&todo, 0, sizeof(todo));
-	 header.rec_len = pack_ToDo(&todo, record, 65535);
+	 todo=&mtodo->todo;
+	 /* memset(&todo, 0, sizeof(todo)); */
+	 header.rec_len = pack_ToDo(todo, record, 65535);
 	 if (!header.rec_len) {
 	    PRINT_FILE_LINE;
 	    jpilot_logf(LOG_WARN, "pack_ToDo error\n");
 	 }
 	 break;
        case MEMO:
-	 memset(&memo, 0, sizeof(memo));
-	 header.rec_len = pack_Memo(&memo, record, 65535);
+	 memo=&mmemo->memo;
+	 /* memset(&memo, 0, sizeof(memo)); */
+	 header.rec_len = pack_Memo(memo, record, 65535);
+
 	 if (!header.rec_len) {
 	    PRINT_FILE_LINE;
 	    jpilot_logf(LOG_WARN, "pack_Memo error\n");
@@ -1250,35 +1432,135 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 }
 
 
-int cleanup_pc_file(char *DB_name)
+int cleanup_pc_file(char *DB_name, unsigned int *max_id)
 {
    PCRecordHeader header;
-   char pc_filename[256];   
+   char pc_filename[256];
+   char pc_filename2[256];
    FILE *pc_file;
+   FILE *pc_file2;
+   char *record;
    int r;
+   int ret;
+   int num;
+   int compact_it;
+   int next_id;
    
    r=0;
+   *max_id = 0;
+   next_id = 1;
+   record = NULL;
+   pc_file = pc_file2 = NULL;
 
    g_snprintf(pc_filename, 255, "%s.pc", DB_name);
+   g_snprintf(pc_filename2, 255, "%s.pc2", DB_name);
 
-   pc_file=open_file(pc_filename, "r");
+   pc_file = open_file(pc_filename , "r");
+   if (!pc_file) {
+      return -1;
+   }
+
+   compact_it = 0;
+   /* Scan through the file and see if it needs to be compacted */
    while(!feof(pc_file)) {
       fread(&header, sizeof(header), 1, pc_file);
       if (feof(pc_file)) {
 	 break;
       }
-      if (!(header.rt & SPENT_PC_RECORD_BIT)) {
-	 r++;
+      if (header.rt & SPENT_PC_RECORD_BIT) {
+	 compact_it=1;
+	 break;
+      }
+      if ((header.unique_id > *max_id)
+	  && (header.rt != PALM_REC)
+	  && (header.rt != MODIFIED_PALM_REC)
+	  && (header.rt != DELETED_PALM_REC) ){
+	 *max_id = header.unique_id;
       }
       if (fseek(pc_file, header.rec_len, SEEK_CUR)) {
 	 jpilot_logf(LOG_WARN, "fseek failed\n");
-	 return -1;
+      }
+   }
+   
+   if (!compact_it) {
+      jpilot_logf(LOG_DEBUG, "No compacting needed\n");
+      fclose(pc_file);
+      return 0;
+   }
+
+   fseek(pc_file, 0, SEEK_SET);
+
+   pc_file2=open_file(pc_filename2, "w");
+   if (!pc_file2) {
+      fclose(pc_file);
+      return -1;
+   }
+
+   while(!feof(pc_file)) {
+      fread(&header, sizeof(header), 1, pc_file);
+      if (feof(pc_file)) {
+	 break;
+      }
+      if (header.rt & SPENT_PC_RECORD_BIT) {
+	 r++;
+	 if (fseek(pc_file, header.rec_len, SEEK_CUR)) {
+	    jpilot_logf(LOG_WARN, "fseek failed\n");
+	    r = -1;
+	    break;
+	 }
+	 continue;
+      } else {
+	 if (header.rt == NEW_PC_REC) {
+	    header.unique_id = next_id++;
+	 }
+	 if ((header.unique_id > *max_id)
+	     && (header.rt != PALM_REC)
+	     && (header.rt != MODIFIED_PALM_REC)
+	     && (header.rt != DELETED_PALM_REC) ){
+	    *max_id = header.unique_id;
+	 }
+	 record = malloc(header.rec_len);
+	 if (!record) {
+	    jpilot_logf(LOG_WARN, "cleanup_pc_file: Out of memory\n");
+	    r = -1;
+	    break;
+	 }
+	 num = fread(record, header.rec_len, 1, pc_file);
+	 if (num != 1) {
+	    if (ferror(pc_file)) {
+	       r = -1;
+	       break;
+	    }
+	 }
+	 ret = fwrite(&header, sizeof(header), 1, pc_file2);
+	 if (ret != 1) {
+	    r = -1;
+	    break;
+	 }
+	 ret = fwrite(record, header.rec_len, 1, pc_file2);
+	 if (ret != 1) {
+	    r = -1;
+	    break;
+	 }
+	 free(record);
+	 record = NULL;
       }
    }
 
-   /*If there are no not-deleted records then remove the file */
-   if (r == 0) {
-      unlink_file(pc_filename);
+   if (record) {
+      free(record);
+   }
+   if (pc_file) {
+      fclose(pc_file);
+   }
+   if (pc_file2) {
+      fclose(pc_file2);
+   }
+   
+   if (r>=0) {
+      rename_file(pc_filename2, pc_filename);
+   } else {
+      unlink_file(pc_filename2);
    }
    
    return r;
@@ -1287,19 +1569,47 @@ int cleanup_pc_file(char *DB_name)
 int cleanup_pc_files()
 {
    int ret;
+   int fail_flag;
+   unsigned int max_id, max_max_id;
 #ifdef ENABLE_PLUGINS
    GList *plugin_list, *temp_list;
    struct plugin_s *plugin;
 #endif
    
+   fail_flag = 0;
+   max_id = max_max_id = 0;
    jpilot_logf(LOG_DEBUG, "cleanup_pc_file for DatebookDB\n");
-   ret = cleanup_pc_file("DatebookDB");
+   ret = cleanup_pc_file("DatebookDB", &max_id);
+   jpilot_logf(LOG_DEBUG, "max_id was %d\n", max_id);
+   if (ret<0) {
+      fail_flag=1;
+   } else if (max_id > max_max_id) {
+      max_max_id = max_id; 
+   }
    jpilot_logf(LOG_DEBUG, "cleanup_pc_file for AddressDB\n");
-   ret += cleanup_pc_file("AddressDB");
+   ret = cleanup_pc_file("AddressDB", &max_id);
+   jpilot_logf(LOG_DEBUG, "max_id was %d\n", max_id);
+   if (ret<0) {
+      fail_flag=1;
+   } else if (max_id > max_max_id) {
+      max_max_id = max_id; 
+   }
    jpilot_logf(LOG_DEBUG, "cleanup_pc_file for ToDoDB\n");
-   ret += cleanup_pc_file("ToDoDB");
+   ret = cleanup_pc_file("ToDoDB", &max_id);
+   jpilot_logf(LOG_DEBUG, "max_id was %d\n", max_id);
+   if (ret<0) {
+      fail_flag=1;
+   } else if (max_id > max_max_id) {
+      max_max_id = max_id; 
+   }
    jpilot_logf(LOG_DEBUG, "cleanup_pc_file for MemoDB\n");
-   ret += cleanup_pc_file("MemoDB");
+   ret += cleanup_pc_file("MemoDB", &max_id);
+   jpilot_logf(LOG_DEBUG, "max_id was %d\n", max_id);
+   if (ret<0) {
+      fail_flag=1;
+   } else if (max_id > max_max_id) {
+      max_max_id = max_id; 
+   }
 #ifdef ENABLE_PLUGINS
    plugin_list = get_plugin_list();
 
@@ -1307,13 +1617,20 @@ int cleanup_pc_files()
       plugin = (struct plugin_s *)temp_list->data;
       if (plugin->db_name) {
 	 jpilot_logf(LOG_DEBUG, "cleanup_pc_file for [%s]\n", plugin->db_name);
-	 ret += cleanup_pc_file(plugin->db_name);
+	 ret = cleanup_pc_file(plugin->db_name, &max_id);
+	 jpilot_logf(LOG_DEBUG, "max_id was %d\n", max_id);
+	 if (ret<0) {
+	    fail_flag=1;
+	 } else if (max_id > max_max_id) {
+	    max_max_id = max_id; 
+	 }
       }
    }
 #endif
-   if (ret == 0) {
-      unlink_file("next_id");
+   if (!fail_flag) {
+      write_to_next_id(max_max_id);
    }
+
    return 0;
 }
 
@@ -1347,6 +1664,15 @@ static void util_sync(unsigned int flags)
    jpilot_logf(LOG_DEBUG, "pref port=[%s]\n", port);
    jpilot_logf(LOG_DEBUG, "num_backups=%d\n", num_backups);
    
+   get_pref(PREF_PC_ID, &(sync_info.PC_ID), &svalue);
+   if (sync_info.PC_ID == 0) {
+      srandom(time(NULL));
+      sync_info.PC_ID = 1+(2000000000.0*random()/(RAND_MAX+1.0));
+      jpilot_logf(LOG_WARN, _("PC ID is 0.\n"));
+      jpilot_logf(LOG_WARN, _("I generated a new PC ID.  It is %d\n"), sync_info.PC_ID);
+      set_pref(PREF_PC_ID, sync_info.PC_ID);
+   }
+
    sync_info.sync_over_ride = 0;
    strncpy(sync_info.port, port, 128);
    sync_info.port[127]='\0';

@@ -18,6 +18,7 @@
  */
 
 #include "config.h"
+#include "i18n.h"
 #include <gtk/gtk.h>
 #include <time.h>
 #include <stdlib.h>
@@ -25,14 +26,16 @@
 #include "utils.h"
 #include "log.h"
 #include "prefs.h"
+#include "print.h"
 #include "memo.h"
+
 
 #define NUM_MEMO_CAT_ITEMS 16
 
 extern GtkTooltips *glob_tooltips;
 
 struct MemoAppInfo memo_app_info;
-int memo_category;
+int memo_category = CATEGORY_ALL;
 int clist_row_selected;
 GtkWidget *clist;
 GtkWidget *memo_text;
@@ -48,6 +51,41 @@ static void update_memo_screen();
 static int memo_clear_details();
 int memo_clist_redraw();
 
+
+int memo_print()
+{
+   long this_many;
+   MyMemo *mmemo;
+   MemoList *memo_list;
+   MemoList memo_list1;
+
+   get_pref(PREF_PRINT_THIS_MANY, &this_many, NULL);
+
+   memo_list=NULL;
+   if (this_many==1) {
+      mmemo = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
+      if (mmemo < (MyMemo *)CLIST_MIN_DATA) {
+	 return -1;
+      }
+      memcpy(&(memo_list1.mmemo), mmemo, sizeof(MyMemo));
+      memo_list1.next=NULL;
+      memo_list = &memo_list1;
+   }
+   if (this_many==2) {
+      get_memos2(&memo_list, SORT_ASCENDING, 2, 2, memo_category);
+   }
+   if (this_many==3) {
+      get_memos2(&memo_list, SORT_ASCENDING, 2, 2, CATEGORY_ALL);
+   }
+
+   print_memos(memo_list);
+
+   if ((this_many==2) || (this_many==3)) {
+      free_MemoList(&memo_list);
+   }
+
+   return 0;
+}
 
 void cb_delete_memo(GtkWidget *widget,
 		    gpointer   data)
@@ -182,7 +220,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 {
    struct Memo *memo;/*, new_a; */
    MyMemo *mmemo;
-   int i, count;
+   int i, index, count;
 #ifdef OLD_ENTRY
    struct Memo new_memo;
    unsigned char attrib;
@@ -215,15 +253,22 @@ static void cb_clist_selection(GtkWidget      *clist,
    }
    memo=&(mmemo->memo);
    
-   gtk_check_menu_item_set_active
-     (GTK_CHECK_MENU_ITEM(memo_cat_menu_item2[mmemo->attrib & 0x0F]), TRUE);
-   /* We need to count how many items down in the list this is */
-   for (i=mmemo->attrib & 0x0F, count=0; i>=0; i--) {
-      if (memo_cat_menu_item2[i]) {
-	 count++;
+   index = mmemo->attrib & 0x0F;
+   if (memo_cat_menu_item2[index]==NULL) {
+      /* Illegal category */
+      jpilot_logf(LOG_DEBUG, "Category is not legal\n");
+      index = count = 0;
+   } else {
+      /* We need to count how many items down in the list this is */
+      for (i=index, count=0; i>=0; i--) {
+	 if (memo_cat_menu_item2[i]) {
+	    count++;
+	 }
       }
+      count--;
    }
-   count--;
+   gtk_check_menu_item_set_active
+     (GTK_CHECK_MENU_ITEM(memo_cat_menu_item2[index]), TRUE);
    gtk_option_menu_set_history(GTK_OPTION_MENU(memo_cat_menu2), count);
 
    gtk_text_freeze(GTK_TEXT(memo_text));
@@ -242,8 +287,7 @@ static void update_memo_screen()
 #define MEMO_CLIST_CHAR_WIDTH 50
    int num_entries, entries_shown, precount;
    char *last;
-   long ivalue;
-   const char *svalue;
+   long modified, deleted;
    gchar *empty_line[] = { "" };
    GdkColor color;
    GdkColormap *colormap;
@@ -253,7 +297,7 @@ static void update_memo_screen()
 
    free_MemoList(&memo_list);
 
-   num_entries = get_memos(&memo_list);
+   num_entries = get_memos(&memo_list, SORT_DESCENDING);
    gtk_clist_clear(GTK_CLIST(clist));
    /*gtk_text_backward_delete(GTK_TEXT(memo_text1), */
 	/*		    gtk_text_get_length(GTK_TEXT(memo_text1))); */
@@ -268,7 +312,7 @@ static void update_memo_screen()
    /*gtk_text_get_length(GTK_TEXT(memo_text))); */
 
    if (memo_list==NULL) {
-      gtk_tooltips_set_tip(glob_tooltips, category_menu1, "0 records", NULL);   
+      gtk_tooltips_set_tip(glob_tooltips, category_menu1, _("0 records"), NULL);   
       return;
    }
 
@@ -280,20 +324,18 @@ static void update_memo_screen()
 	  memo_category != CATEGORY_ALL) {
 	 continue;
       }
+
+      get_pref(PREF_SHOW_MODIFIED, &modified, NULL);
+      get_pref(PREF_SHOW_DELETED, &deleted, NULL);
+
       if (temp_memo->mmemo.rt == MODIFIED_PALM_REC) {
-	 get_pref(PREF_SHOW_MODIFIED, &ivalue, &svalue);
-	 /*this will be in preferences as to whether you want to */
-	 /*see deleted records, or not. */
-	 if (!ivalue) {
+	 if (!modified) {
 	    num_entries--;
 	    continue;
 	 }
       }
       if (temp_memo->mmemo.rt == DELETED_PALM_REC) {
-	 get_pref(PREF_SHOW_DELETED, &ivalue, &svalue);
-	 /*this will be in preferences as to whether you want to */
-	 /*see deleted records, or not. */
-	 if (!ivalue) {
+	 if (!deleted) {
 	    num_entries--;
 	    continue;
 	 }
@@ -307,20 +349,18 @@ static void update_memo_screen()
 	  memo_category != CATEGORY_ALL) {
 	 continue;
       }
+
+      get_pref(PREF_SHOW_MODIFIED, &modified, NULL);
+      get_pref(PREF_SHOW_DELETED, &deleted, NULL);
+
       if (temp_memo->mmemo.rt == MODIFIED_PALM_REC) {
-	 get_pref(PREF_SHOW_MODIFIED, &ivalue, &svalue);
-	 /*this will be in preferences as to whether you want to */
-	 /*see deleted records, or not. */
-	 if (!ivalue) {
+	 if (!modified) {
 	    num_entries--;
 	    continue;
 	 }
       }
       if (temp_memo->mmemo.rt == DELETED_PALM_REC) {
-	 get_pref(PREF_SHOW_DELETED, &ivalue, &svalue);
-	 /*this will be in preferences as to whether you want to */
-	 /*see deleted records, or not. */
-	 if (!ivalue) {
+	 if (!deleted) {
 	    num_entries--;
 	    continue;
 	 }
@@ -381,7 +421,7 @@ static void update_memo_screen()
    
    gtk_clist_thaw(GTK_CLIST(clist));
 
-   sprintf(str, "%d of %d records", entries_shown, num_entries);
+   sprintf(str, _("%d of %d records"), entries_shown, num_entries);
    gtk_tooltips_set_tip(glob_tooltips, category_menu1, str, NULL);   
 }
 
@@ -397,7 +437,7 @@ static int make_category_menu1(GtkWidget **category_menu)
    menu = gtk_menu_new();
    group = NULL;
    
-   memo_cat_menu_item1[0] = gtk_radio_menu_item_new_with_label(group, "All");
+   memo_cat_menu_item1[0] = gtk_radio_menu_item_new_with_label(group, _("All"));
    gtk_signal_connect(GTK_OBJECT(memo_cat_menu_item1[0]), "activate",
 		      cb_memo_category, GINT_TO_POINTER(CATEGORY_ALL));
    group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(memo_cat_menu_item1[0]));
@@ -515,11 +555,20 @@ int memo_clist_redraw()
 
 int memo_refresh()
 {
-   memo_category = CATEGORY_ALL;
+   int index;
+ 
+   if (glob_find_id) {
+      memo_category = CATEGORY_ALL;
+   }
+   if (memo_category==CATEGORY_ALL) {
+      index=0;
+   } else {
+      index=memo_category+1;
+   }
    update_memo_screen();
-   gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), 0);
+   gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), index);
    gtk_check_menu_item_set_active
-     (GTK_CHECK_MENU_ITEM(memo_cat_menu_item1[0]), TRUE);
+     (GTK_CHECK_MENU_ITEM(memo_cat_menu_item1[index]), TRUE);
    memo_find();   
    return 0;
 }
@@ -548,6 +597,10 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    get_memo_app_info(&memo_app_info);
 
+   if (memo_app_info.category.name[memo_category][0]=='\0') {
+      memo_category=CATEGORY_ALL;
+   }
+
    pane = gtk_hpaned_new();
    get_pref(PREF_MEMO_PANE, &ivalue, &svalue);
    gtk_paned_set_position(GTK_PANED(pane), ivalue + 2);
@@ -561,10 +614,10 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_paned_pack2(GTK_PANED(pane), vbox2, TRUE, FALSE);
    gtk_widget_show(pane);
 
-   gtk_widget_set_usize(GTK_WIDGET(vbox1), 210, 0);
+   /* gtk_widget_set_usize(GTK_WIDGET(vbox1), 210, 0); */
 
-   /*Add buttons in left vbox */
-   button = gtk_button_new_with_label("Delete");
+   /* Add buttons in left vbox */
+   button = gtk_button_new_with_label(_("Delete"));
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_delete_memo),
 		      GINT_TO_POINTER(DELETE_FLAG));
@@ -631,21 +684,21 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    
    /*Add record modification buttons on right side */
-   button = gtk_button_new_with_label("Add It");
+   button = gtk_button_new_with_label(_("Add It"));
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record), 
 		      GINT_TO_POINTER(NEW_FLAG));
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, TRUE, TRUE, 0);
    gtk_widget_show(button);
    
-   button = gtk_button_new_with_label("Apply Changes");
+   button = gtk_button_new_with_label(_("Apply Changes"));
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record), 
 		      GINT_TO_POINTER(MODIFY_FLAG));
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, TRUE, TRUE, 0);
    gtk_widget_show(button);
    
-   button = gtk_button_new_with_label("New");
+   button = gtk_button_new_with_label(_("New"));
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record), 
 		      GINT_TO_POINTER(CLEAR_FLAG));

@@ -16,8 +16,20 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#ifndef __MEMO_H__
+#define __MEMO_H__
+
+#include <pi-memo.h>
+#include "utils.h"
+
 int get_memo_app_info(struct MemoAppInfo *ai);
 void free_MemoList(MemoList **memo);
-int get_memos(MemoList **memo_list);
+int get_memos(MemoList **memo_list, int sort_order);
+int get_memos2(MemoList **memo_list, int sort_order,
+ 	       int modified, int deleted, int category);
 int pc_memo_write(struct Memo *memo, PCRecType rt, unsigned char attrib,
 		  unsigned int *unique_id);
+
+int memo_print();
+
+#endif

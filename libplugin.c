@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <ctype.h>
 
 #include <glib.h>
 
@@ -96,15 +97,18 @@ typedef struct {
 static int get_next_unique_pc_id(unsigned int *next_unique_id);
 static FILE *open_file(char *filename, char *mode);  
 
+int jp_logf(int level, char *format, ...)
+{
+   jpilot_logf(level, format);
+   return 0;
+}
+
 /*
 int null_logf(int level, char *format, ...)
 {
    return 0;
 }
-*/
-int (*jp_logf)(int level, char *format, ...)=jpilot_logf;
 
-/*
 void plugin_set_jpilot_logf(int (*Pjpilot_logf)(int level, char *format, ...))
 {
    if (Pjpilot_logf==NULL) {
@@ -127,9 +131,9 @@ void jp_init()
    int major, minor;
    /* This just forces plugin_version to be linked into the shared library */
    plugin_version(&major, &minor);
-   jpilot_logf(0, "jp_init()\n");
+   jp_logf(0, "jp_init()\n");
 }
-
+   
 const char *jp_strstr(const char *haystack, const char *needle, int case_sense)
 {
    char *needle2;
@@ -212,7 +216,6 @@ int jp_pc_write(char *DB_name, buf_rec *br)
 }
 */
 
-
 /*creates the full path name of a file in the ~/.jpilot dir */
 int get_home_file_name(char *file, char *full_name, int max_size)
 {
@@ -236,7 +239,6 @@ int get_home_file_name(char *file, char *full_name, int max_size)
    return 0;
 }
 
-
 int rename_file(char *old_filename, char *new_filename)
 {
    char old_fullname[256];
@@ -247,7 +249,6 @@ int rename_file(char *old_filename, char *new_filename)
    
    return rename(old_fullname, new_fullname);
 }
-
 
 static FILE *open_file(char *filename, char *mode)
 {
@@ -275,14 +276,14 @@ int jp_install_remove_line(int deleted_line)
 
    in = open_file("jpilot_to_install", "r");
    if (!in) {
-      jpilot_logf(LOG_DEBUG, "failed opening install_file\n");
+      jp_logf(LOG_DEBUG, "failed opening install_file\n");
       return -1;
    }
    
    out = open_file("jpilot_to_install.tmp", "w");
    if (!out) {
       fclose(in);
-      jpilot_logf(LOG_DEBUG, "failed opening install_file.tmp\n");
+      jp_logf(LOG_DEBUG, "failed opening install_file.tmp\n");
       return -1;
    }
    
@@ -367,7 +368,9 @@ static void free_mem_rec_header(mem_rec_header **mem_rh)
    *mem_rh=NULL;
 }
 
-void free_buf_rec_list(GList **br_list)
+/* int jp_free_DB_records(GList **records) */
+/* void free_buf_rec_list(GList **br_list) */
+int jp_free_DB_records(GList **br_list)
 {
    GList *temp_list, *first;
    buf_rec *br;
@@ -776,11 +779,12 @@ int jp_read_DB_files(char *DB_name, GList **records)
    char *buf;
    GList *temp_list;
    int num_records, recs_returned, i, num, r;
-   unsigned int offset, next_offset, rec_size;
+   unsigned int offset, prev_offset, next_offset, rec_size;
+   int out_of_order;
    long fpos;  /*file position indicator */
    unsigned char attrib;
    unsigned int unique_id;
-   mem_rec_header *mem_rh, *temp_mem_rh;
+   mem_rec_header *mem_rh, *temp_mem_rh, *last_mem_rh;
    record_header rh;
    RawDBHeader rdbh;
    DBHeader dbh;
@@ -788,7 +792,7 @@ int jp_read_DB_files(char *DB_name, GList **records)
    char PDB_name[256];
    char PC_name[256];
 
-   mem_rh = NULL;
+   mem_rh = last_mem_rh = NULL;
    *records = NULL;
    recs_returned = 0;
 
@@ -822,6 +826,9 @@ int jp_read_DB_files(char *DB_name, GList **records)
 
    /*Read each record entry header */
    num_records = dbh.number_of_records;
+   out_of_order = 0;
+   prev_offset = 0;
+   
    for (i=1; i<num_records+1; i++) {
       num = fread(&rh, sizeof(record_header), 1, in);
       if (num != 1) {
@@ -835,6 +842,12 @@ int jp_read_DB_files(char *DB_name, GList **records)
       }
 
       offset = ((rh.Offset[0]*256+rh.Offset[1])*256+rh.Offset[2])*256+rh.Offset[3];
+
+      if (offset < prev_offset) {
+	 out_of_order = 1;
+      }
+      prev_offset = offset;
+
 #ifdef JPILOT_DEBUG
       jp_logf(LOG_DEBUG, "record header %u offset = %u\n",i, offset);
       jp_logf(LOG_DEBUG, "       attrib 0x%x\n",rh.attrib);
@@ -846,21 +859,48 @@ int jp_read_DB_files(char *DB_name, GList **records)
 	 jp_logf(LOG_WARN, "Out of memory\n");
 	 break;
       }
-      temp_mem_rh->next = mem_rh;
-      mem_rh = temp_mem_rh;
-      mem_rh->rec_num = i;
-      mem_rh->offset = offset;
-      mem_rh->attrib = rh.attrib;
-      mem_rh->unique_id = (rh.unique_ID[0]*256+rh.unique_ID[1])*256+rh.unique_ID[2];
+      temp_mem_rh->next = NULL;
+      temp_mem_rh->rec_num = i;
+      temp_mem_rh->offset = offset;
+      temp_mem_rh->attrib = rh.attrib;
+      temp_mem_rh->unique_id = (rh.unique_ID[0]*256+rh.unique_ID[1])*256+rh.unique_ID[2];
+      if (mem_rh == NULL) {
+	 mem_rh = temp_mem_rh;
+	 last_mem_rh = temp_mem_rh;
+      } else {
+	 last_mem_rh->next = temp_mem_rh;
+	 last_mem_rh = temp_mem_rh;
+      }
    }
 
+   temp_mem_rh = mem_rh;
+
    if (num_records) {
-      find_next_offset(mem_rh, 0, &next_offset, &attrib, &unique_id);
+      if (out_of_order) {
+	 find_next_offset(mem_rh, 0, &next_offset, &attrib, &unique_id);
+      } else {
+	 if (mem_rh) {
+	    next_offset = mem_rh->offset;
+	    attrib = mem_rh->attrib;
+	    unique_id = mem_rh->unique_id;
+	 }
+      }
       fseek(in, next_offset, SEEK_SET);
       while(!feof(in)) {
 	 fpos = ftell(in);
-	 find_next_offset(mem_rh, fpos, &next_offset, &attrib, &unique_id);
-	 /*next_offset += 223; */
+	 if (out_of_order) {
+	    find_next_offset(mem_rh, fpos, &next_offset, &attrib, &unique_id);
+	 } else {
+	    next_offset = 0xFFFFFF;
+	    if (temp_mem_rh) {
+	       attrib = temp_mem_rh->attrib;
+	       unique_id = temp_mem_rh->unique_id;
+	       if (temp_mem_rh->next) {
+		  temp_mem_rh = temp_mem_rh->next;
+		  next_offset = temp_mem_rh->offset;
+	       }
+	    }
+	 }
 	 rec_size = next_offset - fpos;
 #ifdef JPILOT_DEBUG
 	 jp_logf(LOG_DEBUG, "rec_size = %u\n",rec_size);

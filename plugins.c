@@ -47,7 +47,7 @@ int load_plugins()
    number = DATEBOOK + 100; /* I just made up this number */
    plugins = NULL;
    
-   g_snprintf(path, 250, "%s/%s/%s/%s/", BASE_DIR, "share", EPN, "plugins");
+   g_snprintf(path, 250, "%s/%s/%s/%s/", BASE_DIR, "lib", EPN, "plugins");
    jpilot_logf(LOG_DEBUG, "opening dir %s\n", path);
    dir = opendir(path);
    if (dir) {
@@ -128,7 +128,7 @@ static int get_plugin_info(struct plugin_s *p, char *path)
    char db_name[52];
    int version, major_version, minor_version;
    /* void (*plugin_set_jpilot_logf)(int (*Pjpilot_logf)(int level, char *format, ...));*/
-   void (*plugin_version)(int *major_version, int *minor_version);
+   void (*plugin_versionM)(int *major_version, int *minor_version);
    
    p->full_path = NULL;
    p->handle = NULL;
@@ -142,6 +142,7 @@ static int get_plugin_info(struct plugin_s *p, char *path)
    p->plugin_startup = NULL;
    p->plugin_gui = NULL;
    p->plugin_help = NULL;
+   p->plugin_print = NULL;
    p->plugin_gui_cleanup = NULL;
    p->plugin_pre_sync = NULL;
    p->plugin_sync = NULL;
@@ -169,9 +170,9 @@ static int get_plugin_info(struct plugin_s *p, char *path)
 
    p->full_path = strdup(path);
 
-   /* plugin_version */
-   plugin_version = dlsym(h, "plugin_version");
-   if (plugin_version==NULL)  {
+   /* plugin_versionM */
+   plugin_versionM = dlsym(h, "plugin_version");
+   if (plugin_versionM==NULL)  {
       err = dlerror();
       jpilot_logf(LOG_WARN, "plugin_version: [%s]\n", err);
       jpilot_logf(LOG_WARN, " plugin is invalid: [%s]\n", path);
@@ -179,12 +180,12 @@ static int get_plugin_info(struct plugin_s *p, char *path)
       p->handle=NULL;
       return -1;
    }
-   plugin_version(&major_version, &minor_version);
+   plugin_versionM(&major_version, &minor_version);
    version=major_version*1000+minor_version;
    if ((major_version < 0) && (minor_version < 95)) {
       jpilot_logf(LOG_WARN, "This plugin version (%d.%d) is too old.\n",
 		  major_version, minor_version);
-      jpilot_logf(LOG_WARN, " plugin is invalid: [%s]\n", path);
+      jpilot_logf(LOG_WARN, " plugin is has no version info: [%s]\n", path);
       dlclose(h);
       p->handle=NULL;
       return -1;
@@ -194,6 +195,7 @@ static int get_plugin_info(struct plugin_s *p, char *path)
 
 
    /* plugin_get_name */
+   jpilot_logf(LOG_DEBUG, "getting plugin_get_name\n");
    p->plugin_get_name = dlsym(h, "plugin_get_name");
    if (p->plugin_get_name==NULL)  {
       err = dlerror();
@@ -213,8 +215,8 @@ static int get_plugin_info(struct plugin_s *p, char *path)
    }
    
    
-   
    /* plugin_get_menu_name */
+   jpilot_logf(LOG_DEBUG, "getting plugin_get_menu_name\n");
    p->plugin_get_menu_name = dlsym(h, "plugin_get_menu_name");
    if (p->plugin_get_menu_name) {
       p->plugin_get_menu_name(name, 50);
@@ -226,6 +228,7 @@ static int get_plugin_info(struct plugin_s *p, char *path)
    
 
    /* plugin_get_help_name */
+   jpilot_logf(LOG_DEBUG, "getting plugin_get_help_name\n");
    p->plugin_get_help_name = dlsym(h, "plugin_get_help_name");
    if (p->plugin_get_help_name) {
       p->plugin_get_help_name(name, 50);
@@ -239,6 +242,7 @@ static int get_plugin_info(struct plugin_s *p, char *path)
 
 
    /* plugin_get_db_name */
+   jpilot_logf(LOG_DEBUG, "getting plugin_get_db_name\n");
    p->plugin_get_db_name = dlsym(h, "plugin_get_db_name");
 
    if (p->plugin_get_db_name) {
@@ -256,6 +260,9 @@ static int get_plugin_info(struct plugin_s *p, char *path)
 
    /* plugin_help */
    p->plugin_help = dlsym(h, "plugin_help");
+
+   /* plugin_help */
+   p->plugin_print = dlsym(h, "plugin_print");
 
    /* plugin_gui_cleanup */
    p->plugin_gui_cleanup = dlsym(h, "plugin_gui_cleanup");

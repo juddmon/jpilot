@@ -42,7 +42,7 @@ struct my_sync_info {
 
    unsigned long userID;
    unsigned long viewerID;
-   unsigned long lastSyncPC;
+   unsigned long PC_ID;
    char username[128];
 };
 

@@ -16,6 +16,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#include "config.h"
+#include "i18n.h"
 #include <gtk/gtk.h>
 #include <string.h>
 #include <ctype.h>
@@ -25,7 +27,6 @@
 #include "log.h"
 #include "datebook.h"
 #include <pi-datebook.h>
-#include "config.h"
 
 static GtkWidget *window=NULL;
 static GtkWidget *glob_week_texts[8];
@@ -104,15 +105,23 @@ int clear_weeks_appts(GtkWidget **day_texts)
  */
 int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
 {
-   char *days[]={"Sunday","Monday","Tuesday","Wednesday","Thurday",
-      "Friday","Saturday"};
+   char *days[]={
+      gettext_noop("Sunday"),
+      gettext_noop("Monday"),
+      gettext_noop("Tuesday"),
+      gettext_noop("Wednesday"),
+      gettext_noop("Thursday"),
+      gettext_noop("Friday"),
+      gettext_noop("Saturday")};
    AppointmentList *a_list;
    AppointmentList *temp_al;
    struct tm date;
    GtkWidget **text;
    char desc[256];
+   char datef[20];
    int n, i;
    long ivalue;
+   long modified, deleted;
    const char *svalue;
    char str[82];
    long fdow;
@@ -145,7 +154,7 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
    
    for (i=0; i<8; i++, add_days_to_date(&date, 1)) {
       strftime(short_date, 30, svalue, &date);
-      g_snprintf(str, 80, "%s %s\n", days[(i + fdow)%7], short_date);
+      g_snprintf(str, 80, "%s %s\n", _(days[(i + fdow)%7]), short_date);
       str[80]='\0';
       gtk_text_insert(GTK_TEXT(glob_week_texts[i]), NULL, NULL, &color, str, -1);
    }
@@ -156,19 +165,34 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
    /* iterate through eight days */
    memcpy(&date, date_in, sizeof(struct tm));
 
+   get_pref(PREF_SHOW_MODIFIED, &modified, NULL);
+   get_pref(PREF_SHOW_DELETED, &deleted, NULL);
+
    for (n=0; n<8; n++, add_days_to_date(&date, 1)) {
       for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
+	 if (temp_al->ma.rt == MODIFIED_PALM_REC) {
+	    if (!modified) {
+	       continue;
+	    }
+	 }
+	 if (temp_al->ma.rt == DELETED_PALM_REC) {
+	    if (!deleted) {
+	       continue;
+	    }
+	 }
 	 if (isApptOnDate(&(temp_al->ma.a), &date)) {
 	    if (temp_al->ma.a.event) {
 	       desc[0]='\0';
 	    } else {
-	       strftime(desc, 20, "%l:%M%P ", &(temp_al->ma.a.begin));
+	       get_pref_time_no_secs(datef);
+	       strftime(desc, 20, datef, &(temp_al->ma.a.begin));
 	    }
+	    strcat(desc, " ");
 	    if (temp_al->ma.a.description) {
 	       strncat(desc, temp_al->ma.a.description, 70);
 	       desc[62]='\0';
 	    }
-	    remove_cf_lfs(desc);
+	    remove_cr_lfs(desc);
 	    strcat(desc, "\n");
 	    gtk_text_insert(GTK_TEXT(text[n]),
 			    small_font, NULL, NULL, desc, -1);
@@ -192,7 +216,7 @@ void weekview_gui(struct tm *date_in)
    long fdow;
    int i;
    
-   if (GTK_IS_WIDGET(window)) {
+   if (window) {
       return;
    }
 

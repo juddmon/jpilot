@@ -18,6 +18,7 @@
  */
 
 #include "config.h"
+#include "i18n.h"
 #include <stdio.h>
 #include <pi-source.h>
 #include <pi-socket.h>
@@ -26,6 +27,7 @@
 #include "utils.h"
 #include "log.h"
 #include "todo.h"
+#include "prefs.h"
 
 #if defined(WITH_JAPANESE)
 #include "japanese.h"
@@ -158,7 +160,7 @@ int todo_compare(const void *v1, const void *v2)
    return 0;
 }
 
-int todo_sort(ToDoList **todol)
+int todo_sort(ToDoList **todol, int sort_order)
 {
    ToDoList *temp_todol;
    ToDoList **sort_todol;
@@ -182,7 +184,7 @@ int todo_sort(ToDoList **todol)
    /* Allocate an array to be qsorted */
    sort_todol = calloc(count, sizeof(ToDoList *));
    if (!sort_todol) {
-      jpilot_logf(LOG_WARN, "Out of Memory\n");
+      jpilot_logf(LOG_WARN, _("Out of Memory\n"));
       return 0;
    }
    
@@ -193,15 +195,23 @@ int todo_sort(ToDoList **todol)
 
    /* qsort them */
    qsort(sort_todol, count, sizeof(ToDoList *), todo_compare);
-
+   
    /* Put the linked list in the order of the array */
-   sort_todol[count-1]->next = NULL;
-   for (i=count-1; i; i--) {
-      sort_todol[i-1]->next=sort_todol[i];
+   if (sort_order==SORT_ASCENDING) {
+      for (i=count-1; i>0; i--) {
+	 sort_todol[i]->next=sort_todol[i-1];
+      }
+      sort_todol[0]->next = NULL;
+      *todol = sort_todol[count-1];
+   } else {
+      /* Descending order */
+      sort_todol[count-1]->next = NULL;
+      for (i=count-1; i; i--) {
+	 sort_todol[i-1]->next=sort_todol[i];
+      }
+      *todol = sort_todol[0];
    }
-
-   *todol = sort_todol[0];
-
+   
    free(sort_todol);
 
    return 0;
@@ -219,7 +229,7 @@ static int pc_todo_read_next_rec(FILE *in, MyToDo *mtodo)
    num = fread(&header, sizeof(header), 1, in);
    if (num != 1) {
       if (ferror(in)) {
-	 jpilot_logf(LOG_WARN, "Error reading ToDoDB.pc 1\n");
+	 jpilot_logf(LOG_WARN, _("Error reading %s\n"), "ToDoDB.pc 1");
 	 return TODO_EOF;
       }
       if (feof(in)) {
@@ -232,13 +242,13 @@ static int pc_todo_read_next_rec(FILE *in, MyToDo *mtodo)
    mtodo->unique_id = header.unique_id;
    record = malloc(rec_len);
    if (!record) {
-      jpilot_logf(LOG_WARN, "Out of memory\n");
+      jpilot_logf(LOG_WARN, _("Out of memory\n"));
       return TODO_EOF;
    }
    num = fread(record, rec_len, 1, in);
    if (num != 1) {
       if (ferror(in)) {
-	 jpilot_logf(LOG_WARN, "Error reading ToDoDB.pc 2\n");
+	 jpilot_logf(LOG_WARN, _("Error reading %s\n"), "ToDoDB.pc 2");
 	 free(record);
 	 return TODO_EOF;
       }
@@ -246,7 +256,7 @@ static int pc_todo_read_next_rec(FILE *in, MyToDo *mtodo)
    num = unpack_ToDo(&(mtodo->todo), record, rec_len);
    free(record);
    if (num<=0) {
-      jpilot_logf(LOG_DEBUG, "unpack_ToDo failed\n");
+      jpilot_logf(LOG_DEBUG, "unpack_ToDo %s\n", _("failed"));
       return TODO_EOF;
    }
    return 0;
@@ -270,12 +280,12 @@ int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib,
    
    out = open_file("ToDoDB.pc", "a");
    if (!out) {
-      jpilot_logf(LOG_WARN, "Error opening ToDoDB.pc\n");
+      jpilot_logf(LOG_WARN, _("Error opening %s\n"), "ToDoDB.pc");
       return -1;
    }
    rec_len = pack_ToDo(todo, record, 65535);
    if (rec_len<=0) {
-      jpilot_logf(LOG_WARN, "pack_ToDo failed\n");
+      jpilot_logf(LOG_WARN, "pack_ToDo %s\n", _("failed"));
       PRINT_FILE_LINE;
       return -1;
    }
@@ -312,16 +322,17 @@ int get_todo_app_info(struct ToDoAppInfo *ai)
    RawDBHeader rdbh;
    DBHeader dbh;
 
+   bzero(ai, sizeof(*ai));
    in = open_file("ToDoDB.pdb", "r");
    if (!in) {
-      jpilot_logf(LOG_WARN, "Error opening ToDoDB.pdb\n");
+      jpilot_logf(LOG_WARN, _("Error opening %s\n"), "ToDoDB.pdb");
       return -1;
    }
    num = fread(&rdbh, sizeof(RawDBHeader), 1, in);
    if (num != 1) {
       if (ferror(in)) {
 	 fclose(in);
-	 jpilot_logf(LOG_WARN, "Error reading ToDoDB.pdb 2\n");
+	 jpilot_logf(LOG_WARN, _("Error reading %s\n"), "ToDoDB.pdb 2");
 	 return -1;
       }
       if (feof(in)) {
@@ -340,7 +351,7 @@ int get_todo_app_info(struct ToDoAppInfo *ai)
    fseek(in, dbh.app_info_offset, SEEK_SET);
    buf=malloc(rec_size);
    if (!buf) {
-      jpilot_logf(LOG_WARN, "Out of memory\n");
+      jpilot_logf(LOG_WARN, _("Out of memory\n"));
       fclose(in);
       return -1;
    }
@@ -349,13 +360,13 @@ int get_todo_app_info(struct ToDoAppInfo *ai)
       if (ferror(in)) {
 	 fclose(in);
 	 free(buf);
-	 jpilot_logf(LOG_WARN, "Error reading ToDoDB.pdb 3\n");
+	 jpilot_logf(LOG_WARN, _("Error reading %s\n"), "ToDoDB.pdb 3");
 	 return -1;
       }
    }
    num = unpack_ToDoAppInfo(ai, buf, rec_size);
    if (num <= 0) {
-      jpilot_logf(LOG_WARN, "unpack_ToDoAppInfo failed\n");
+      jpilot_logf(LOG_WARN, "unpack_ToDoAppInfo %s\n", _("failed"));
       free(buf);
       fclose(in);
       return -1;
@@ -376,43 +387,60 @@ int get_todo_app_info(struct ToDoAppInfo *ai)
    return 0;
 }
 
-int get_todos(ToDoList **todo_list)
+
+int get_todos(ToDoList **todo_list, int sort_order)
+{
+   return get_todos2(todo_list, sort_order, 1, 1, CATEGORY_ALL);
+}
+/* 
+ * sort_order: 0=descending,  1=ascending
+ * modified and deleted, 0 for no, 1 for yes, 2 for use prefs
+ */
+int get_todos2(ToDoList **todo_list, int sort_order,
+	       int modified, int deleted, int category)
 {
    FILE *in, *pc_in;
-/*   char db_name[34]; */
-/*   char filler[100]; */
    char *buf;
-/*   unsigned char char_num_records[4]; */
-/*   unsigned char char_ai_offset[4]; //app info offset */
    int num_records, recs_returned, i, num, r;
-   unsigned int offset, next_offset, rec_size;
-/*   unsigned char c; */
+   unsigned int offset, prev_offset, next_offset, rec_size;
+   int out_of_order;
    long fpos;  /*file position indicator */
    unsigned char attrib;
    unsigned int unique_id;
-   mem_rec_header *mem_rh, *temp_mem_rh;
+   mem_rec_header *mem_rh, *temp_mem_rh, *last_mem_rh;
    record_header rh;
    RawDBHeader rdbh;
    DBHeader dbh;
    struct ToDo todo;
-   /*struct AddressAppInfo ai; */
    ToDoList *temp_todo_list;
+   ToDoList *tal, *next_al, *prev_al;
    MyToDo mtodo;
+   long keep_modified, keep_deleted;
 
-   mem_rh = NULL;
+   keep_modified = modified;
+   keep_deleted = deleted;
+
+   if (modified==2) {
+      get_pref(PREF_SHOW_MODIFIED, &keep_modified, NULL);
+   }
+   if (deleted==2) {
+      get_pref(PREF_SHOW_DELETED, &keep_deleted, NULL);
+   }
+
+   mem_rh = last_mem_rh = NULL;
    *todo_list=NULL;
    recs_returned = 0;
 
    in = open_file("ToDoDB.pdb", "r");
    if (!in) {
-      jpilot_logf(LOG_WARN, "Error opening ToDoDB.pdb\n");
+      jpilot_logf(LOG_WARN, _("Error opening %s\n"), "ToDoDB.pdb");
       return -1;
    }
    /*Read the database header */
    num = fread(&rdbh, sizeof(RawDBHeader), 1, in);
    if (num != 1) {
       if (ferror(in)) {
-	 jpilot_logf(LOG_WARN, "Error reading ToDoDB.pdb\n");
+	 jpilot_logf(LOG_WARN, _("Error reading %s\n"), "ToDoDB.pdb");
 	 fclose(in);
 	 return -1;
       }
@@ -427,13 +455,16 @@ int get_todos(ToDoList **todo_list)
    jpilot_logf(LOG_DEBUG, "app info offset = %d\n", dbh.app_info_offset);
 #endif
 
+   out_of_order = 0;
+   prev_offset = 0;
+
    /*Read each record entry header */
    num_records = dbh.number_of_records;
    for (i=1; i<num_records+1; i++) {
       num = fread(&rh, sizeof(record_header), 1, in);
       if (num != 1) {
 	 if (ferror(in)) {
-	    jpilot_logf(LOG_WARN, "Error reading ToDoDB.pdb 4\n");
+	    jpilot_logf(LOG_WARN, _("Error reading %s\n"), "ToDoDB.pdb 4");
 	    break;
 	 }
 	 if (feof(in)) {
@@ -442,6 +473,12 @@ int get_todos(ToDoList **todo_list)
       }
 
       offset = ((rh.Offset[0]*256+rh.Offset[1])*256+rh.Offset[2])*256+rh.Offset[3];
+
+      if (offset < prev_offset) {
+	 out_of_order = 1;
+      }
+      prev_offset = offset;
+
 #ifdef JPILOT_DEBUG
       jpilot_logf(LOG_DEBUG, "record header %u offset = %u\n",i, offset);
       jpilot_logf(LOG_DEBUG, "       attrib 0x%x\n",rh.attrib);
@@ -450,24 +487,51 @@ int get_todos(ToDoList **todo_list)
 #endif
       temp_mem_rh = (mem_rec_header *)malloc(sizeof(mem_rec_header));
       if (!temp_mem_rh) {
-	 jpilot_logf(LOG_WARN, "Out of memory\n");
+	 jpilot_logf(LOG_WARN, _("Out of memory\n"));
 	 break;
       }
-      temp_mem_rh->next = mem_rh;
-      mem_rh = temp_mem_rh;
-      mem_rh->rec_num = i;
-      mem_rh->offset = offset;
-      mem_rh->attrib = rh.attrib;
-      mem_rh->unique_id = (rh.unique_ID[0]*256+rh.unique_ID[1])*256+rh.unique_ID[2];
+      temp_mem_rh->next = NULL;
+      temp_mem_rh->rec_num = i;
+      temp_mem_rh->offset = offset;
+      temp_mem_rh->attrib = rh.attrib;
+      temp_mem_rh->unique_id = (rh.unique_ID[0]*256+rh.unique_ID[1])*256+rh.unique_ID[2];
+      if (mem_rh == NULL) {
+	 mem_rh = temp_mem_rh;
+	 last_mem_rh = temp_mem_rh;
+      } else {
+	 last_mem_rh->next = temp_mem_rh;
+	 last_mem_rh = temp_mem_rh;
+      }
    }
 
+   temp_mem_rh = mem_rh;
+
    if (num_records) {
-      find_next_offset(mem_rh, 0, &next_offset, &attrib, &unique_id);
+      if (out_of_order) {
+	 find_next_offset(mem_rh, 0, &next_offset, &attrib, &unique_id);
+      } else {
+	 if (mem_rh) {
+	    next_offset = mem_rh->offset;
+	    attrib = mem_rh->attrib;
+	    unique_id = mem_rh->unique_id;
+	 }
+      }
       fseek(in, next_offset, SEEK_SET);
       while(!feof(in)) {
 	 fpos = ftell(in);
-	 find_next_offset(mem_rh, fpos, &next_offset, &attrib, &unique_id);
-	 /*next_offset += 223; */
+	 if (out_of_order) {
+	    find_next_offset(mem_rh, fpos, &next_offset, &attrib, &unique_id);
+	 } else {
+	    next_offset = 0xFFFFFF;
+	    if (temp_mem_rh) {
+	       attrib = temp_mem_rh->attrib;
+	       unique_id = temp_mem_rh->unique_id;
+	       if (temp_mem_rh->next) {
+		  temp_mem_rh = temp_mem_rh->next;
+		  next_offset = temp_mem_rh->offset;
+	       }
+	    }
+	 }
 	 rec_size = next_offset - fpos;
 #ifdef JPILOT_DEBUG
 	 jpilot_logf(LOG_DEBUG, "rec_size = %u\n",rec_size);
@@ -479,16 +543,23 @@ int get_todos(ToDoList **todo_list)
 	 num = fread(buf, rec_size, 1, in);
 	 if ((num != 1)) {
 	    if (ferror(in)) {
-	       jpilot_logf(LOG_WARN, "Error reading ToDoDB.pdb 5\n");
+	       jpilot_logf(LOG_WARN, _("Error reading %s\n"), "ToDoDB.pdb 5");
 	       free(buf);
 	       break;
 	    }
 	 }
 
+	 /* check category */
+	 if ( ((attrib & 0x0F) != category) &&
+	     category != CATEGORY_ALL) {
+	    free(buf);
+	    continue;
+	 }
+
 	 num = unpack_ToDo(&todo, buf, rec_size);
 	 free(buf);
 	 if (num<=0) {
-	    jpilot_logf(LOG_DEBUG, "unpack_ToDo failed\n");
+	    jpilot_logf(LOG_DEBUG, "unpack_ToDo %s\n", _("failed"));
 	    continue;
 	 }
 #if defined(WITH_JAPANESE)
@@ -500,7 +571,7 @@ int get_todos(ToDoList **todo_list)
 #endif
 	 temp_todo_list = malloc(sizeof(ToDoList));
 	 if (!temp_todo_list) {
-	    jpilot_logf(LOG_WARN, "Out of memory\n");
+	    jpilot_logf(LOG_WARN, _("Out of memory\n"));
 	    break;
 	 }
 	 memcpy(&(temp_todo_list->mtodo.todo), &todo, sizeof(struct ToDo));
@@ -534,9 +605,14 @@ int get_todos(ToDoList **todo_list)
 	  &&(mtodo.rt!=DELETED_PALM_REC)
 	  &&(mtodo.rt!=MODIFIED_PALM_REC)
 	  &&(mtodo.rt!=DELETED_DELETED_PALM_REC)) {
+	 /* check category */
+	 if ( ((mtodo.attrib & 0x0F) != category) &&
+	     category != CATEGORY_ALL) {
+	    continue;
+	 }
 	 temp_todo_list = malloc(sizeof(ToDoList));
 	 if (!temp_todo_list) {
-	    jpilot_logf(LOG_WARN, "Out of memory\n");
+	    jpilot_logf(LOG_WARN, _("Out of memory\n"));
 	    break;
 	 }
 	 memcpy(&(temp_todo_list->mtodo), &mtodo, sizeof(MyToDo));
@@ -550,18 +626,38 @@ int get_todos(ToDoList **todo_list)
 	 /*this doesnt really free it, just the string pointers */
 	 free_ToDo(&(mtodo.todo));
       }
-      if ((mtodo.rt==DELETED_PALM_REC) || (mtodo.rt==MODIFIED_PALM_REC)) {
+      if ( ((mtodo.rt==DELETED_PALM_REC) && (keep_deleted)) || 
+ 	  ((mtodo.rt==MODIFIED_PALM_REC) && (keep_modified)) ) {
 	 for (temp_todo_list = *todo_list; temp_todo_list;
 	      temp_todo_list=temp_todo_list->next) {
 	    if (temp_todo_list->mtodo.unique_id == mtodo.unique_id) {
 	       temp_todo_list->mtodo.rt = mtodo.rt;
 	    }
 	 }
+      } else if ( ((mtodo.rt==DELETED_PALM_REC) && (!keep_deleted)) || 
+ 		 ((mtodo.rt==MODIFIED_PALM_REC) && (!keep_modified)) ) {
+ 	 for (prev_al=NULL, tal=*todo_list; tal; tal = next_al) {
+ 	    if (tal->mtodo.unique_id == mtodo.unique_id) {
+ 	       /* Remove it from this list */
+ 	       if (prev_al) {
+ 		  prev_al->next=tal->next;
+ 	       } else {
+ 		  *todo_list=tal->next;
+ 	       }
+ 	       next_al=tal->next;
+ 	       free_ToDo(&(tal->mtodo.todo));
+ 	       free(tal);
+ 	    } else {
+ 	       prev_al=tal;
+ 	       next_al=tal->next;
+ 	    }
+ 	 }
       }
    }
+
    fclose(pc_in);
 
-   todo_sort(todo_list);
+   todo_sort(todo_list, sort_order);
 
    jpilot_logf(LOG_DEBUG, "Leaving get_todos\n");
 

@@ -1,0 +1,468 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Free Software Foundation, Inc.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2000-01-30 09:47-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: ENCODING\n"
+
+#: address_gui.c:852 datebook_gui.c:2078 memo_gui.c:625 todo_gui.c:816
+msgid "Delete"
+msgstr "Effacer"
+
+#: address_gui.c:914
+msgid "Quick Find"
+msgstr "Recherche"
+
+#: address_gui.c:932
+msgid "Quick View"
+msgstr "Affichage"
+
+#: address_gui.c:943
+msgid "Add or Modify a Record"
+msgstr "Ajouter ou modifier"
+
+#: datebook_gui.c:311 install_gui.c:280 prefs_gui.c:389 search_gui.c:637
+msgid "Done"
+msgstr "Terminé"
+
+#: datebook_gui.c:317
+msgid "All"
+msgstr "Tout"
+
+#: datebook_gui.c:323 datebook_gui.c:2684
+msgid "None"
+msgstr "Aucun"
+
+#: datebook_gui.c:459 monthview_gui.c:242 monthview_gui.c:243
+#: weekview_gui.c:115
+msgid "Sunday"
+msgstr "Dimanche"
+
+#: datebook_gui.c:459 monthview_gui.c:242 weekview_gui.c:115
+msgid "Monday"
+msgstr "Lundi"
+
+#: datebook_gui.c:459 monthview_gui.c:242 weekview_gui.c:115
+msgid "Tuesday"
+msgstr "Mardi"
+
+#: datebook_gui.c:459 monthview_gui.c:242 weekview_gui.c:115
+msgid "Wednesday"
+msgstr "Mercredi"
+
+#: datebook_gui.c:459 monthview_gui.c:242 weekview_gui.c:115
+msgid "Thursday"
+msgstr "Jeudi"
+
+#: datebook_gui.c:460 monthview_gui.c:243 weekview_gui.c:116
+msgid "Friday"
+msgstr "Vendredi"
+
+#: datebook_gui.c:460 monthview_gui.c:243 weekview_gui.c:116
+msgid "Saturday"
+msgstr "Samedi"
+
+#: datebook_gui.c:464
+msgid "4th"
+msgstr "4ème"
+
+#: datebook_gui.c:464
+msgid "Last"
+msgstr "Dernier"
+
+#: datebook_gui.c:625
+msgid "none"
+msgstr "aucun"
+
+#: datebook_gui.c:625
+msgid "day"
+msgstr "jour"
+
+#: datebook_gui.c:625
+msgid "week"
+msgstr "semaine"
+
+#: datebook_gui.c:625
+msgid "month"
+msgstr "mois"
+
+#: datebook_gui.c:625
+msgid "year"
+msgstr "an"
+
+#: datebook_gui.c:2187 datebook_gui.c:2686
+msgid "Week"
+msgstr "Semaine"
+
+#: datebook_gui.c:2193 datebook_gui.c:2687
+msgid "Month"
+msgstr "Mois"
+
+#: datebook_gui.c:2204
+msgid "Cats"
+msgstr "Cats"
+
+#: datebook_gui.c:2219
+msgid "Daily Schedule"
+msgstr "Planning quotidien"
+
+#: datebook_gui.c:2306 memo_gui.c:692 todo_gui.c:889
+msgid "Add It"
+msgstr "Ajouter"
+
+#: datebook_gui.c:2313 memo_gui.c:699 todo_gui.c:895
+msgid "Apply Changes"
+msgstr "Valider modifs."
+
+#: datebook_gui.c:2320 memo_gui.c:706 todo_gui.c:901
+msgid "New"
+msgstr "Nouveau"
+
+#: datebook_gui.c:2330
+msgid "Details"
+msgstr "Détails"
+
+#: datebook_gui.c:2342
+msgid "Alarm"
+msgstr "Réveil"
+
+#: datebook_gui.c:2361
+msgid "Minutes"
+msgstr "Minutes"
+
+#: datebook_gui.c:2365
+msgid "Hours"
+msgstr "Heures"
+
+#: datebook_gui.c:2367
+msgid "Days"
+msgstr "Jours"
+
+#: datebook_gui.c:2387
+msgid "This Event has no particular time"
+msgstr "Heure non précisée pour cet évènement"
+
+#: datebook_gui.c:2406
+msgid ""
+"\n"
+"Begin:"
+msgstr ""
+"\n"
+"Début:"
+
+#: datebook_gui.c:2435 todo_gui.c:988
+msgid "Month:"
+msgstr "Mois:"
+
+#: datebook_gui.c:2449 todo_gui.c:990
+msgid "Day:"
+msgstr "Jour:"
+
+#: datebook_gui.c:2464 todo_gui.c:992
+msgid "Year:"
+msgstr "An:"
+
+#: datebook_gui.c:2482
+msgid "Hour:"
+msgstr "Heure:"
+
+#: datebook_gui.c:2500
+msgid "Min:"
+msgstr "Min:"
+
+#: datebook_gui.c:2517
+msgid "End: "
+msgstr "Fin: "
+
+#: datebook_gui.c:2685
+msgid "Day"
+msgstr "Jour"
+
+#: datebook_gui.c:2688
+msgid "Year"
+msgstr "An"
+
+#: datebook_gui.c:2695
+msgid "This event will not repeat"
+msgstr "Cet évènement ne se répètera pas"
+
+
+
+#: datebook_gui.c:2706 datebook_gui.4Yc:2794 datebook_gui.c:2909
+#: datebook_gui.4Yc:3018
+msgid "Frequency is Every"
+msgstr "Tous (toutes) les"
+
+#: datebook_gui.c:2714
+msgid "Day(s)"
+msgstr "Jour(s)"
+
+#: datebook_gui.c:2718 datebook_gui.c:2806 datebook_gui.c:2921
+#: datebook_gui.c:3030
+msgid "End on"
+msgstr "Fin "
+
+#: datebook_gui.c:2802
+msgid "Week(s)"
+msgstr "Semaine(s)"
+
+#: datebook_gui.c:2874
+msgid "Repeat on Days:"
+msgstr "Répéter les jours:"
+
+#: datebook_gui.c:2917
+msgid "Month(s)"
+msgstr "Mois"
+
+#: datebook_gui.c:2990
+msgid "Repeat by:"
+msgstr "Répéter tous les"
+
+#: datebook_gui.c:2995
+msgid "Day of week"
+msgstr "Jour de la semaine"
+
+#: datebook_gui.c:3005
+msgid "Date"
+msgstr "Date"
+
+#: datebook_gui.c:3026
+msgid "Year(s)"
+msgstr "An(s)"
+
+#: install_gui.c:217
+msgid "Files to be installed"
+msgstr "Fichiers à installer"
+
+#: install_gui.c:260
+msgid "To change to a hidden directory type it below and hit TAB"
+msgstr "Pour aller dans un répertoire caché, tapez son nom et appuyez sur TAB"
+
+#: install_gui.c:266
+msgid "Add"
+msgstr "Ajouter"
+
+#: install_gui.c:273
+msgid "Remove"
+msgstr "Supprimer"
+
+#: jpilot.c:230
+msgid "Help"
+msgstr "Aide"
+
+#: jpilot.c:293 print_gui.c:220
+msgid "Print"
+msgstr "Imprimer"
+
+#: jpilot.c:294
+msgid "There is no print support for this conduit."
+msgstr "Il n'y a pas d'impression pour ce conduit."
+
+#: jpilot.c:518
+msgid "Hide this window"
+msgstr "Cacher cette fenêtre"
+
+#: jpilot.c:633
+msgid "/_File"
+msgstr "/_Fichier"
+
+#: jpilot.c:634
+msgid "/_File/tear"
+msgstr "/_Fichier/tear"
+
+#: jpilot.c:635
+msgid "/File/_Search"
+msgstr "/Fichier/_Chercher"
+
+#: jpilot.c:636 jpilot.c:640
+msgid "/File/sep1"
+msgstr "/Fichier/sep1"
+
+#: jpilot.c:637
+msgid "/File/_Install"
+msgstr "/Fichier/_Installer"
+
+#: jpilot.c:638
+msgid "/File/Preferences"
+msgstr "/Fichier/Préférences"
+
+#: jpilot.c:639
+msgid "/File/Print"
+msgstr "/Fichier/Imprimer"
+
+#: jpilot.c:641
+msgid "/File/Quit"
+msgstr "/Fichier/Quitter"
+
+#: jpilot.c:642
+msgid "/_View"
+msgstr "/_Affichage"
+
+#: jpilot.c:643
+msgid "/View/Datebook"
+msgstr "/Affichage/Agenda"
+
+#: jpilot.c:644
+msgid "/View/Addresses"
+msgstr "/Affichage/Adresses"
+
+#: jpilot.c:645
+msgid "/View/Todos"
+msgstr "/Affichage/Tâches"
+
+#: jpilot.c:646
+msgid "/View/Memos"
+msgstr "/Affichage/Bloc notes"
+
+#: jpilot.c:647 jpilot.c:734
+msgid "/Plugins"
+msgstr "/Plugins"
+
+#: jpilot.c:648
+msgid "/_Help"
+msgstr "/_Aide"
+
+#: jpilot.c:649
+msgid "/_Help/About J-Pilot"
+msgstr "/_Aide/A propos"
+
+#: jpilot.c:700
+#, c-format
+msgid "/Plugins/%s"
+msgstr "/Plugins/%s"
+
+#: jpilot.c:711
+#, c-format
+msgid "/_Help/%s"
+msgstr "/_Aide/%s"
+
+#: jpilot.c:1098
+msgid "Quit!"
+msgstr "Quitter"
+
+#: prefs_gui.c:224
+msgid "Short date format "
+msgstr "Date format court "
+
+#: prefs_gui.c:237
+msgid "Long date format "
+msgstr "Date format long "
+
+#: prefs_gui.c:251
+msgid "Time format "
+msgstr "Heure format "
+
+#: prefs_gui.c:265
+msgid "The first day of the week is "
+msgstr "Le premier jour de la semaine est "
+
+#: prefs_gui.c:279
+msgid "My GTK colors file is "
+msgstr "Mon fichier de couleurs GTK est "
+
+#: prefs_gui.c:293
+msgid "Serial Port "
+msgstr "Port série "
+
+#: prefs_gui.c:308
+msgid "Serial Rate "
+msgstr "Vitesse port série "
+
+#: prefs_gui.c:321
+msgid "Number of backups to be archived"
+msgstr "Nombre de sauvegardes à archiver "
+
+#: prefs_gui.c:337
+msgid "Show deleted records (default NO)"
+msgstr "Montrer les enregistrements effacés (défaut: NON)"
+
+#: prefs_gui.c:350
+msgid "Show modified deleted records (default NO)"
+msgstr "Montrer les enregistrements modifiés (défaut NON)"
+
+#: prefs_gui.c:364
+msgid "Highlight calendar days with appointments"
+msgstr "Surligner les jours avec rendez-vous"
+
+#: prefs_gui.c:377
+msgid "Use DateBk3 note tags (not recommended)"
+msgstr "Utiliser étiquettes DateBk3 (non recommandé)"
+
+#: print_gui.c:151
+msgid "One record"
+msgstr "Un enregistrement"
+
+#: print_gui.c:155
+msgid "All records in this category"
+msgstr "Tous les enregistrements de cette catégorie"
+
+#: print_gui.c:159
+msgid "Print all records"
+msgstr "Imprimer tous les enregistrements"
+
+#: print_gui.c:179
+msgid "One record per page"
+msgstr "Un enregistrement par page"
+
+#: print_gui.c:197
+msgid " Blank lines between each record"
+msgstr " Lignes vides entre chaque enregistrement"
+
+#: print_gui.c:206
+msgid "Print Command (e.g. lpr, or cat > file.ps)"
+msgstr "Commande d'impression (lpr, cat > fichier.ps)"
+
+#: print_gui.c:226
+msgid "Cancel"
+msgstr "Annuler"
+
+#: search_gui.c:599
+msgid "Search for: "
+msgstr "Rechercher"
+
+#: search_gui.c:606
+msgid "Case Sensitive"
+
+msgstr "Dépendant de la case"
+
+#: todo_gui.c:849 jpilot
+
+msgid "Hide Completed ToDos"
+msgstr "Cacher les tâches terminées"
+
+#: todo_gui.c:914
+msgid "Completed"
+msgstr "Terminé"
+
+#: todo_gui.c:922
+msgid "Priority: "
+msgstr "Priorité"
+
+#: todo_gui.c:952
+msgid "No Due Date"
+msgstr "Pas de date de fin prévue"
+
+#: todo_gui.c:966
+msgid ""
+"\n"
+"Date Due:"
+msgstr ""
+"\n"
+"Date fin:"
+
+#: utils.c:78
+msgid "Today is %A, %x %X"
+msgstr "Aujourd'hui %A, %x %X"
+
+#: utils.c:80
+msgid "Today is %%A, %s %s"
+msgstr "Aujourd'hui %%A, %s %s"

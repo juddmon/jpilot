@@ -16,14 +16,20 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#ifndef __DATEBOOK_H__
+#define __DATEBOOK_H__
+
 #include <stdio.h>
 #include <pi-datebook.h>
 #include "utils.h"
 
-#define PATH ~/.jpilot/
+#ifdef USE_DB3
+#define DB3_FLOAT           1
+#define DB3_FLOAT_COMPLETE  2
+#define DB3_FLOAT_HAS_NOTE 16
+#endif
 
-
-int datebook_sync();
+int datebook_print();
 int datebook_cleanup();
 int pc_datebook_write(struct Appointment *a, PCRecType rt, unsigned char attrib);
 void free_AppointmentList(AppointmentList **al);
@@ -31,7 +37,10 @@ void free_AppointmentList(AppointmentList **al);
 /*If Null is passed in for date, then all appointments will be returned */
 /* */
 int get_days_appointments(AppointmentList **al_out, struct tm *date);
-/*int datebook_dup_appointment(struct Appointment *a1, struct Appointment **a2); */
+
+/* This funtion removes appointments from the list that obviously will not
+ * occur in this month */
+int weed_datebook_list(AppointmentList **al, int mon, int year);
 
 /* Year is years since 1900 */
 /* Mon is 0-11 */
@@ -42,8 +51,6 @@ int get_datebook_app_info(struct AppointmentAppInfo *ai);
 
 int datebook_copy_appointment(struct Appointment *a1,
 			     struct Appointment **a2);
-int datebook_create_bogus_record(char *record, int size, int *rec_len);
-
 /* returns a bit mask where bit 1 day one, etc. and it is set if an */
 /* appointment occurs on that day, 0 if not. */
 int appointment_on_day_list(int mon, int year, int *mask);
@@ -52,3 +59,16 @@ int appointment_on_day_list(int mon, int year, int *mask);
  * else returns 0
  */
 unsigned int isApptOnDate(struct Appointment *a, struct tm *date);
+
+#ifdef USE_DB3
+/* Returns a bitmask
+ * 0 if not a floating OR
+ * bitmask:
+ *  1 if float,
+ *  2 if completed float
+ *  16 if float has a note
+ */
+int db3_is_float(struct Appointment *a, int *category);
+#endif
+
+#endif

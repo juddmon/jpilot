@@ -16,8 +16,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#ifndef __TODO_H__
+#define __TODO_H__
+
+#include <pi-todo.h>
+#include "utils.h"
+
 void free_ToDoList(ToDoList **todo);
-int get_todos(ToDoList **todo_list);
+int get_todos(ToDoList **todo_list, int sort_order);
+int get_todos2(ToDoList **todo_list, int sort_order,
+	       int modified, int deleted, int category);
 int get_todo_app_info(struct ToDoAppInfo *ai);
 int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib,
 		  unsigned int *unique_id);
+int todo_print();
+
+#endif

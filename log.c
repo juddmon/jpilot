@@ -18,6 +18,7 @@
  */
 
 #include "config.h"
+#include "i18n.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -65,14 +66,14 @@ int jpilot_logf(int level, char *format, ...)
       return -1;
    }
    if ((!fp) && (err_count==10)) {
-      fprintf(stderr, "Cannot open log file, giving up.\n");
+      fprintf(stderr, _("Cannot open log file, giving up.\n"));
       err_count++;
       return -1;
    }
    if ((!fp) && (err_count<10)) {
       fp = open_file("jpilot.log", "w");
       if (!fp) {
-	 fprintf(stderr, "Cannot open log file\n");
+	 fprintf(stderr, _("Cannot open log file\n"));
 	 err_count++;
       }
    }

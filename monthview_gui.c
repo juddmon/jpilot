@@ -16,6 +16,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#include "config.h"
+#include "i18n.h"
 #include <gtk/gtk.h>
 #include <string.h>
 #include <ctype.h>
@@ -157,9 +159,11 @@ int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
 {
    AppointmentList *a_list;
    AppointmentList *temp_al;
+   long modified, deleted;
    struct tm date;
    GtkWidget **text;
    char desc[60];
+   char datef[20];
    int dow;
    int ndim;
    int n;
@@ -177,26 +181,44 @@ int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
 
    get_month_info(date.tm_mon, 1, date.tm_year, &dow, &ndim);
 
+   weed_datebook_list(&a_list, date.tm_mon, date.tm_year);
+
+   get_pref(PREF_SHOW_MODIFIED, &modified, NULL);
+   get_pref(PREF_SHOW_DELETED, &deleted, NULL);
+
    for (n=0, date.tm_mday=1; date.tm_mday<=ndim; date.tm_mday++, n++) {
       date.tm_sec=0;
       date.tm_min=0;
       date.tm_hour=11;
-      date.tm_isdst=0;
+      date.tm_isdst=-1;
       date.tm_wday=0;
       date.tm_yday=1;
       mktime(&date);
+
       for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
+	 if (temp_al->ma.rt == MODIFIED_PALM_REC) {
+	    if (!modified) {
+	       continue;
+	    }
+	 }
+	 if (temp_al->ma.rt == DELETED_PALM_REC) {
+	    if (!deleted) {
+	       continue;
+	    }
+	 }
 	 if (isApptOnDate(&(temp_al->ma.a), &date)) {
 	    if (temp_al->ma.a.event) {
 	       desc[0]='\0';
 	    } else {
-	       strftime(desc, 20, "%l:%M%P ", &(temp_al->ma.a.begin));
+	       get_pref_time_no_secs(datef);
+	       strftime(desc, 20, datef, &(temp_al->ma.a.begin));
 	    }
+	    strcat(desc, " ");
 	    if (temp_al->ma.a.description) {
 	       strncat(desc, temp_al->ma.a.description, 20);
 	       desc[16]='\0';
 	    }
-	    remove_cf_lfs(desc);
+	    remove_cr_lfs(desc);
 	    strcat(desc, "\n");
 	    gtk_text_insert(GTK_TEXT(text[n]),
 			    small_font, NULL, NULL, desc, -1);
@@ -211,8 +233,16 @@ int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
 
 void monthview_gui(struct tm *date_in)
 {
-   char *days[]={"Sunday","Monday","Tuesday","Wednesday","Thurday",
-      "Friday","Saturday", "Sunday"};
+   char *days[]={
+      gettext_noop("Sunday"),
+      gettext_noop("Monday"),
+      gettext_noop("Tuesday"),
+      gettext_noop("Wednesday"),
+      gettext_noop("Thursday"),
+      gettext_noop("Friday"),
+      gettext_noop("Saturday"),
+      gettext_noop("Sunday")};
+
    GtkWidget *label;
    GtkWidget *button;
    GtkWidget *arrow;
@@ -225,7 +255,7 @@ void monthview_gui(struct tm *date_in)
    long fdow;
    const char *str_fdow;
 
-   if (GTK_IS_WIDGET(window)) {
+   if (window) {
       return;
    }
    
@@ -286,7 +316,7 @@ void monthview_gui(struct tm *date_in)
    hbox = gtk_hbox_new(TRUE, 0);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 0);
    for (i=0; i<7; i++) {
-      label = gtk_label_new(days[i+fdow]);
+      label = gtk_label_new(_(days[i+fdow]));
       gtk_box_pack_start(GTK_BOX(hbox), label, TRUE, TRUE, 0);
    }
 

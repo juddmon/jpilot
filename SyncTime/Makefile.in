@@ -43,9 +43,11 @@ distclean: clean
 # ~/.jpilot/plugins
 #
 install:
-	./install-sh -d -m 755 $(prefix)/share/jpilot/plugins
+	./install-sh -d -m 755 $(prefix)/lib/jpilot; \
+	./install-sh -d -m 755 $(prefix)/lib/jpilot/plugins; \
+	./install-sh -d -m 755 $(prefix)/lib/jpilot/plugins
 	./install-sh -c -m 755 -g bin -o bin libsynctime.so \
-	$(prefix)/share/jpilot/plugins
+	$(prefix)/lib/jpilot/plugins
 
 uninstall:
-	rm $(prefix)/share/jpilot/plugins/libsynctime.so
+	rm $(prefix)/lib/jpilot/plugins/libsynctime.so
