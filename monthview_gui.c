@@ -16,6 +16,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
+/* gtk2 */
+#define GTK_ENABLE_BROKEN
+
 #include "config.h"
 #include "i18n.h"
 #include <gtk/gtk.h>

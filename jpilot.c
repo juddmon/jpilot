@@ -17,6 +17,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+/* gtk2 */
+#define GTK_ENABLE_BROKEN
+
 #include "config.h"
 #include <gtk/gtk.h>
 #include <time.h>
@@ -1212,11 +1215,15 @@ void get_main_menu(GtkWidget  *window,
    gtk_item_factory_create_items(item_factory, nmenu_items, menu_items2, NULL);
 
    /* Attach the new accelerator group to the window. */
+#ifndef ENABLE_GTK2
    gtk_accel_group_attach(accel_group, GTK_OBJECT (window));
+#endif
+   /* GTK2 FIXME figure the above out */
 
-   if (menubar)
-     /* Finally, return the actual menu bar created by the item factory. */
-     *menubar = gtk_item_factory_get_widget (item_factory, "<main>");
+   if (menubar) {
+      /* Finally, return the actual menu bar created by the item factory. */
+      *menubar = gtk_item_factory_get_widget (item_factory, "<main>");
+   }
 
    free(menu_items2);
 
@@ -1293,9 +1300,17 @@ void cb_output(GtkWidget *widget, gpointer data)
    flags=GPOINTER_TO_INT(data);
 
    if ((flags==OUTPUT_MINIMIZE) || (flags==OUTPUT_RESIZE)) {
+#ifdef ENABLE_GTK2
+      jp_logf(JP_LOG_DEBUG,"paned pos = %d\n", gtk_paned_get_position(GTK_PANED(output_pane)));
+#else
       jp_logf(JP_LOG_DEBUG,"paned pos = %d\n", GTK_PANED(output_pane)->handle_ypos);
+#endif
       gdk_window_get_size(window->window, &w, &h);
+#ifdef ENABLE_GTK2
+      output_height = h - gtk_paned_get_position(GTK_PANED(output_pane));
+#else
       output_height = h - GTK_PANED(output_pane)->handle_ypos;
+#endif
       set_pref(PREF_OUTPUT_HEIGHT, output_height, NULL, TRUE);
       if (flags==OUTPUT_MINIMIZE) {
 	 gtk_paned_set_position(GTK_PANED(output_pane), h + 2);
@@ -1696,8 +1711,21 @@ char *xpm_unlocked[] = {
    get_main_menu(window, &menubar, NULL);
 #endif
    gtk_box_pack_start(GTK_BOX(main_vbox), menubar, FALSE, FALSE, 0);
+#ifdef ENABLE_GTK2
+#else
    gtk_menu_bar_set_shadow_type(GTK_MENU_BAR(menubar), GTK_SHADOW_NONE);
-
+#endif
+   //undo figure out how to do this
+   /*undo
+   gtk_paint_shadow(menubar->style, menubar->window,
+		    GTK_STATE_NORMAL, GTK_SHADOW_NONE,
+		    NULL, menubar, "menubar",
+		    0, 0, 0, 0);*/
+//   gtk_widget_style_set(GTK_WIDGET(menubar),
+//			"shadow_type", GTK_SHADOW_NONE,
+//			NULL);
+//   gtk_viewport_set_shadow_type(menubar,GTK_SHADOW_NONE);
+   //menubar->style;
 
    gtk_box_pack_start(GTK_BOX(main_vbox), g_hbox, TRUE, TRUE, 3);
    gtk_container_set_border_width(GTK_CONTAINER(g_hbox), 10);

@@ -23,6 +23,8 @@
 #include <string.h>
 #include <time.h>
 
+/* gtk2 */
+#define GTK_ENABLE_BROKEN
 #include <gtk/gtk.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -521,10 +523,10 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
       return;
    }
 
-   kr.name = gtk_entry_get_text(GTK_ENTRY(entry_name));
-   kr.account = gtk_entry_get_text(GTK_ENTRY(entry_account));
-   kr.password = gtk_entry_get_text(GTK_ENTRY(entry_password));
-   kr.note = gtk_editable_get_chars(GTK_EDITABLE(text_note), 0, -1);
+   kr.name = (char *)gtk_entry_get_text(GTK_ENTRY(entry_name));
+   kr.account = (char *)gtk_entry_get_text(GTK_ENTRY(entry_account));
+   kr.password = (char *)gtk_entry_get_text(GTK_ENTRY(entry_password));
+   kr.note = (char *)gtk_editable_get_chars(GTK_EDITABLE(text_note), 0, -1);
 
    jp_charset_j2p((unsigned char *)kr.name, strlen(kr.name)+1);
    jp_charset_j2p((unsigned char *)kr.account, strlen(kr.account)+1);
@@ -972,7 +974,7 @@ static int make_menu(char *items[], int menu_index, GtkWidget **Poption_menu,
 	 item_num = i;
       }
       gtk_signal_connect(GTK_OBJECT(menu_item), "activate",
-			 cb_category, GINT_TO_POINTER(menu_index<<8 | item_num));
+			 GTK_SIGNAL_FUNC(cb_category), GINT_TO_POINTER(menu_index<<8 | item_num));
       group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(menu_item));
       gtk_menu_append(GTK_MENU(menu), menu_item);
       gtk_widget_show(menu_item);
@@ -1071,7 +1073,7 @@ static void cb_dialog_button(GtkWidget *widget,
 static gboolean cb_destroy_dialog(GtkWidget *widget)
 {
    struct dialog_data *Pdata;
-   char *entry;
+   const char *entry;
 
    Pdata = gtk_object_get_data(GTK_OBJECT(widget), "dialog_data");
    if (!Pdata) {

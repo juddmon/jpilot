@@ -33,7 +33,7 @@ case "${build_os}" in
   *) AC_MSG_WARN([Operating system ${build_os} not supported by
   jpilot-dialer]) ; dialer=no ;;
 esac
-#AM_CONDITIONAL(JPILOT_DIALER, test x$dialer = xyes)
+AM_CONDITIONAL(JPILOT_DIALER, test x$dialer = xyes)
 
 dnl Checks for programs.
 
@@ -346,9 +346,30 @@ AC_ARG_ENABLE(alarm-shell-danger,
    enable_alarm_shell_danger=no;
    )
 
+dnl ********************
+dnl * GTK 2
+dnl ********************
+AC_ARG_ENABLE(gtk2,
+   [  --enable-gtk2           Enable GTK-2 support],
+   AC_MSG_RESULT(GTK2 support enabled by configure options),
+   )
+
 dnl Checking for GTK version
-AM_PATH_GTK(1.2.0,,
-  AC_MSG_ERROR([*** GTK >= 1.2.0 not installed - please install first ***]))
+dnl Check for GTK2
+
+have_gtk2=no;
+if test "x$enable_gtk2" = "xyes"; then
+  AM_PATH_GTK_2_0(2.0.3, have_gtk2=yes,
+  AC_MSG_ERROR([*** GTK >= 2.0.3 not found ***]))
+fi
+if test "x$have_gtk2" = "xno"; then
+  AM_PATH_GTK(1.2.0,,
+    AC_MSG_ERROR([*** GTK >= 1.2.0 not found ***]))
+fi
+
+if test "x$have_gtk2" = "xyes"; then
+  AC_DEFINE(ENABLE_GTK2, 1, [ GTK-2 support ])
+fi
 
 dnl Checks for header files.
 AC_HEADER_STDC
@@ -414,6 +435,7 @@ echo "Compiling with Datebk support..........   $enable_datebk"
 echo "Compiling with plugin support..........   $enable_plugins"
 echo "Compiling with Mañana support..........   $enable_manana"
 echo "Compiling with Prometheon support......   $enable_prometheon"
+echo "GTK-2 support..........................   $have_gtk2"
 echo "Compiler Options.......................   $cflags $ccoptions"
 echo "Prefix directory.......................   $prefix"
 echo "pilot-link headers.....................   $pilot_incl"
@@ -427,3 +449,5 @@ cut -d " " -f 3`
 pl_minor=`grep PILOT_LINK_MINOR "$pilot_incl/pi-version.h" | \
 cut -d " " -f 3`
 echo "Pilot-link version found...............   $pl_version.$pl_major.$pl_minor"
+echo
+echo "Now type make to compile"

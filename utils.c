@@ -122,7 +122,7 @@ void get_compile_options(char *string, int len)
 #else
 	      _("no"),
 #endif
-	      _("Mañana support"),
+	      _("Manana support"),
 #ifdef ENABLE_MANANA
 	      _("yes"),
 #else
@@ -368,8 +368,9 @@ void base64_out(FILE *f, char *str)
    n = 0;
    val = 0;
    pad = 0;
-   for (p = str; *p || n; *p && p++) {
+   for (p = str; *p || n; p++) {
       if (*p == '\0' && pad == 0) {
+	 p--;
 	 pad = n;
       }
       val = (val << 8) + *p;
@@ -564,6 +565,32 @@ void remove_cr_lfs(char *str)
       if ((str[i]=='\r') || (str[i]=='\n')) {
 	 str[i]=' ';
       }
+   }
+}
+
+/*
+ * Parse the string and replace CR and LFs with spaces
+ * a null is written if len is reached
+ */
+void lstrncpy_remove_cr_lfs(char *dest, char *src, int len)
+{
+   int i;
+
+   if ((!src) || (!dest)) {
+      return;
+   }
+   dest[0]='\0';
+   for (i=0; src[i] && (i<len); i++) {
+      if ((src[i]=='\r') || (src[i]=='\n')) {
+	 dest[i]=' ';
+      } else {
+	 dest[i]=src[i];
+      }
+   }
+   if (i==len) {
+      dest[i-1]='\0';
+   } else {
+      dest[i]='\0';
    }
 }
 
@@ -974,7 +1001,7 @@ int cal_dialog(GtkWindow *main_window,
    glob_cal_day = *day;
    glob_cal_year = (*year) + 1900;
 
-   cal_window = gtk_window_new(GTK_WINDOW_DIALOG);
+   cal_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
    gtk_window_set_title(GTK_WINDOW(cal_window), title);
 
    gtk_window_set_position(GTK_WINDOW(cal_window), GTK_WIN_POS_MOUSE);
@@ -1003,7 +1030,7 @@ int cal_dialog(GtkWindow *main_window,
 				(monday_is_fdow ? GTK_CALENDAR_WEEK_START_MONDAY : 0));
 
    /* gtk_signal_connect(GTK_OBJECT(util_cal), "day_selected", cb_cal_sel, NULL); */
-   gtk_signal_connect(GTK_OBJECT(util_cal), "day_selected_double_click", cb_quit,
+   gtk_signal_connect(GTK_OBJECT(util_cal), "day_selected_double_click", GTK_SIGNAL_FUNC(cb_quit),
 		      GINT_TO_POINTER(CAL_DONE));
 
    /* gtk_calendar_mark_day(GTK_CALENDAR(util_cal), 23); */
@@ -1077,15 +1104,15 @@ int dialog_generic(GtkWindow *main_window,
    dialog_result=0;
    if (w && h) {
       glob_dialog = gtk_widget_new(GTK_TYPE_WINDOW,
-				   "type", GTK_WINDOW_DIALOG,
+				   "type", GTK_WINDOW_TOPLEVEL,
 				   "window_position", GTK_WIN_POS_MOUSE,
-				   "width", w, "height", h,
 				   "title", title,
 				   NULL);
+      gtk_window_set_default_size(GTK_WINDOW(glob_dialog), w, h);
    } else {
       glob_dialog = gtk_widget_new(GTK_TYPE_WINDOW,
 				   "window_position", GTK_WIN_POS_MOUSE,
-				   "type", GTK_WINDOW_DIALOG,
+				   "type", GTK_WINDOW_TOPLEVEL,
 				   "title", title,
 				   NULL);
    }
@@ -2358,7 +2385,7 @@ int make_category_menu(GtkWidget **category_menu,
       cat_menu_item[0] = gtk_radio_menu_item_new_with_label(group, _("All"));
       if (selection_callback) {
 	 gtk_signal_connect(GTK_OBJECT(cat_menu_item[0]), "activate",
-			    selection_callback, GINT_TO_POINTER(CATEGORY_ALL));
+			    GTK_SIGNAL_FUNC(selection_callback), GINT_TO_POINTER(CATEGORY_ALL));
       }
       group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(cat_menu_item[0]));
       gtk_menu_append(GTK_MENU(menu), cat_menu_item[0]);
@@ -2371,7 +2398,7 @@ int make_category_menu(GtkWidget **category_menu,
 	    group, sort_l[i].Pcat);
 	 if (selection_callback) {
 	    gtk_signal_connect(GTK_OBJECT(cat_menu_item[i+offset]), "activate",
-			       selection_callback, GINT_TO_POINTER(sort_l[i].cat_num));
+			       GTK_SIGNAL_FUNC(selection_callback), GINT_TO_POINTER(sort_l[i].cat_num));
 	 }
 	 group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(cat_menu_item[i+offset]));
 	 gtk_menu_append(GTK_MENU(menu), cat_menu_item[i+offset]);

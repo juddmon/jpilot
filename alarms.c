@@ -119,7 +119,7 @@ static void cb_dialog_button(GtkWidget *widget,
 static gboolean cb_destroy_dialog(GtkWidget *widget)
 {
    struct alarm_dialog_data *Pdata;
-   char *entry;
+   const char *entry;
    time_t ltime;
    time_t advance;
    time_t remind;

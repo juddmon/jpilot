@@ -288,13 +288,14 @@ void cb_search_gui(GtkWidget *widget, gpointer data);
 /*install_gui.c */
 int install_gui(int w, int h, int x, int y);
 /*install_gui.c */
-int install_append_line(char *line);
+//gtk1 int install_append_line(char *line);
+int install_append_line(const char *line);
 
 /*import_gui.c */
 void import_gui(GtkWidget *main_window, GtkWidget *main_pane,
 		char *type_desc[], int type_int[],
 		int (*import_callback)(GtkWidget *parent_window,
-				       char *file_path, int type));
+				       const char *file_path, int type));
 int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
 		      char *text, struct CategoryAppInfo *cai,
 		      char *old_cat_name,
@@ -363,6 +364,12 @@ int str_to_vcard_str(char *, int, char *);
  * Parse the string and replace CR and LFs with spaces
  */
 void remove_cr_lfs(char *str);
+
+/*
+ * Parse the string and replace CR and LFs with spaces
+ * a null is written if len is reached
+ */
+void lstrncpy_remove_cr_lfs(char *dest, char *src, int len);
 
 /*
  * Output LDIF format (RFC 2849) to file.

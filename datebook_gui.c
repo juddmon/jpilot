@@ -18,6 +18,8 @@
  */
 
 #define EASTER
+/* gtk2 */
+#define GTK_ENABLE_BROKEN
 
 #include "config.h"
 #include "i18n.h"
@@ -66,6 +68,8 @@ static int DB_APPT_COLUMN=3;
 #endif
 
 #define NUM_DATEBOOK_CAT_ITEMS 16
+
+#define DATEBOOK_MAX_COLUMN_LEN 80
 
 #define UPDATE_DATE_ENTRIES 0x01
 #define UPDATE_DATE_MENUS   0x02
@@ -306,7 +310,7 @@ int datebook_to_text(struct Appointment *a, char *text, int len)
 /*
  * Start Import Code
  */
-int datebook_import_callback(GtkWidget *parent_window, char *file_path, int type)
+int datebook_import_callback(GtkWidget *parent_window, const char *file_path, int type)
 {
    FILE *in;
    char text[65536];
@@ -1042,10 +1046,11 @@ static int datebook_export_gui(int x, int y)
    glob_export_type=EXPORT_TYPE_TEXT;
 
    export_window = gtk_widget_new(GTK_TYPE_WINDOW,
-				  "type", GTK_WINDOW_DIALOG,
-				  "x", x, "y", y,
+				  "type", GTK_WINDOW_TOPLEVEL,
 				  "title", _("Export"),
 				  NULL);
+
+   gtk_widget_set_uposition(export_window, x, y);
 
    gtk_container_set_border_width(GTK_CONTAINER(export_window), 5);
 
@@ -1799,7 +1804,7 @@ static int get_details(struct Appointment *a, unsigned char *attrib)
    long ivalue;
    char datef[32];
    const char *svalue1, *svalue2;
-   gchar *text1;
+   const gchar *text1;
 #ifdef ENABLE_DATEBK
    gchar *note_text=NULL;
    gchar *text2;
@@ -2144,6 +2149,7 @@ static int dayview_update_clist()
    GdkColor color;
    GdkColormap *colormap;
    int show_priv;
+   char str2[DATEBOOK_MAX_COLUMN_LEN];
 
    jp_logf(JP_LOG_DEBUG, "dayview_update_clist()\n");
 
@@ -2217,7 +2223,8 @@ static int dayview_update_clist()
 	 sprintf(a_time, "%s-%s", begin_time, end_time);
       }
       gtk_clist_set_text(GTK_CLIST(clist), i, DB_TIME_COLUMN, a_time);
-      gtk_clist_set_text(GTK_CLIST(clist), i, DB_APPT_COLUMN, temp_al->ma.a.description);
+      lstrncpy_remove_cr_lfs(str2, temp_al->ma.a.description, DATEBOOK_MAX_COLUMN_LEN);
+      gtk_clist_set_text(GTK_CLIST(clist), i, DB_APPT_COLUMN, str2);
       gtk_clist_set_row_data(GTK_CLIST(clist), i, &(temp_al->ma));
 
       switch (temp_al->ma.rt) {
@@ -3272,7 +3279,11 @@ int datebook_gui_cleanup()
       cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
    }
    connect_changed_signals(DISCONNECT_SIGNALS);
+#ifdef ENABLE_GTK2
+   set_pref(PREF_DATEBOOK_PANE, gtk_paned_get_position(GTK_PANED(pane)), NULL, TRUE);
+#else
    set_pref(PREF_DATEBOOK_PANE, GTK_PANED(pane)->handle_xpos, NULL, TRUE);
+#endif
 #ifdef ENABLE_DATEBK
    if (GTK_IS_WIDGET(window_date_cats)) {
       gtk_widget_destroy(window_date_cats);
@@ -3281,7 +3292,10 @@ int datebook_gui_cleanup()
    /* Remove the accelerators */
    for (widget=main_calendar; widget; widget=widget->parent) {
       if (GTK_IS_WINDOW(widget)) {
+#ifndef ENABLE_GTK2
 	 gtk_accel_group_detach(accel_group, GTK_OBJECT(widget));
+#endif
+	 /* GTK2 FIXME figure the above out */
 	 gtk_signal_disconnect_by_func(GTK_OBJECT(widget),
 				       GTK_SIGNAL_FUNC(cb_keyboard), NULL);
 	 break;
@@ -3517,7 +3531,8 @@ GtkWidget *create_time_menu(int flags)
       }
       item = gtk_menu_item_new_with_label(buf);
       gtk_signal_connect(GTK_OBJECT(item), "select",
-			 cb_menu_time, GINT_TO_POINTER(i*cb_factor | flags));
+			 GTK_SIGNAL_FUNC(cb_menu_time),
+			 GINT_TO_POINTER(i*cb_factor | flags));
       gtk_menu_append(GTK_MENU(menu), item);
    }
    gtk_option_menu_set_menu(GTK_OPTION_MENU(option), menu);
@@ -3651,7 +3666,10 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    for (widget=vbox; widget; widget=widget->parent) {
       if (GTK_IS_WINDOW(widget)) {
 	 accel_group = gtk_accel_group_new();
+#ifndef ENABLE_GTK2
 	 gtk_accel_group_attach(accel_group, GTK_OBJECT(widget));
+#endif
+	 /* GTK2 FIXME figure the above out */
 
 	 gtk_signal_connect(GTK_OBJECT(widget), "key_press_event",
 			    GTK_SIGNAL_FUNC(cb_keyboard), NULL);
@@ -4196,7 +4214,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    datebook_refresh(TRUE);
 
    gtk_signal_connect(GTK_OBJECT(main_calendar),
-		      "day_selected", cb_cal_changed,
+		      "day_selected", GTK_SIGNAL_FUNC(cb_cal_changed),
 		      GINT_TO_POINTER(CAL_DAY_SELECTED));
 
    set_date_labels();

@@ -63,7 +63,7 @@ static void cb_dialog_button(GtkWidget *widget, gpointer data)
 static gboolean cb_destroy_dialog(GtkWidget *widget)
 {
    struct dialog_data *Pdata;
-   char *txt;
+   const gchar *txt;
 
    Pdata = gtk_object_get_data(GTK_OBJECT(widget), "dialog_data");
    if (!Pdata) {
@@ -115,7 +115,7 @@ static void dialer(gpointer data, int phone_or_ext)
    struct dialog_data *Pdata;
    char str[80];
    char null_str[]="";
-   char *Pext;
+   const char *Pext;
    char command[1024];
    const char *pref_command;
    char c1, c2;

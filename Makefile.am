@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.6 2002/12/11 21:53:53 judd Exp $
+# $Id: Makefile.am,v 1.7 2002/12/25 06:44:21 judd Exp $
 
 SUBDIRS = po Expense SyncTime KeyRing docs intl m4 dialer
 
@@ -15,6 +15,7 @@ EXTRA_DIST = reconf autogen.sh ChangeLog docs empty icons \
 	m4/codeset.m4 \
 	m4/gettext.m4 \
 	m4/glibc21.m4 \
+	m4/gtk-2.0.m4 \
 	m4/iconv.m4 \
 	m4/isc-posix.m4 \
 	m4/lcmessage.m4 \

@@ -137,11 +137,12 @@ int restore_gui(int w, int h, int x, int y)
    jp_logf(JP_LOG_DEBUG, "restore_gui()\n");
 
    restore_window = gtk_widget_new(GTK_TYPE_WINDOW,
-				   "type", GTK_WINDOW_DIALOG,
-				   "x", x, "y", y,
-				   "width", w, "height", h,
+				   "type", GTK_WINDOW_TOPLEVEL,
 				   "title", _("Restore Handheld"),
 				   NULL);
+
+   gtk_window_set_default_size(GTK_WINDOW(restore_window), w, h);
+   gtk_widget_set_uposition(restore_window, x, y);
 
    gtk_container_set_border_width(GTK_CONTAINER(restore_window), 5);
 

@@ -17,6 +17,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+/* gtk2 */
+#define GTK_ENABLE_BROKEN
+
 #include "config.h"
 #include "i18n.h"
 #include <gtk/gtk.h>
@@ -37,6 +40,7 @@
 #include "print.h"
 #include "export.h"
 
+#define TODO_MAX_COLUMN_LEN 80
 
 #define NUM_TODO_PRIORITIES 5
 #define NUM_TODO_CAT_ITEMS 16
@@ -356,7 +360,7 @@ Description: %s\nNote: %s\n", due, todo->priority, complete,
 /*
  * Start Import Code
  */
-int todo_import_callback(GtkWidget *parent_window, char *file_path, int type)
+int todo_import_callback(GtkWidget *parent_window, const char *file_path, int type)
 {
    FILE *in;
    char text[65536];
@@ -814,7 +818,11 @@ int todo_export(GtkWidget *window)
    gdk_window_get_size(window->window, &w, &h);
    gdk_window_get_root_origin(window->window, &x, &y);
 
+#ifdef ENABLE_GTK2
+   w = gtk_paned_get_position(GTK_PANED(pane));
+#else
    w = GTK_PANED(pane)->handle_xpos;
+#endif
    x+=40;
 
    export_gui(w, h, x, y, 5, sort_l,
@@ -1313,6 +1321,7 @@ static void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    GdkColormap *colormap;
    ToDoList *temp_todo;
    char str[50];
+   char str2[TODO_MAX_COLUMN_LEN+2];
    long ivalue;
    const char *svalue;
    long hide_completed;
@@ -1373,7 +1382,8 @@ static void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       if (entries_shown+1>row_count) {
 	 gtk_clist_append(GTK_CLIST(clist), empty_line);
       }
-      gtk_clist_set_text(GTK_CLIST(clist), entries_shown, TODO_TEXT_COLUMN, temp_todo->mtodo.todo.description);
+      lstrncpy_remove_cr_lfs(str2, temp_todo->mtodo.todo.description, TODO_MAX_COLUMN_LEN);
+      gtk_clist_set_text(GTK_CLIST(clist), entries_shown, TODO_TEXT_COLUMN, str2);
       sprintf(str, "%d", temp_todo->mtodo.todo.priority);
       gtk_clist_set_text(GTK_CLIST(clist), entries_shown, TODO_PRIORITY_COLUMN, str);
 
@@ -1561,7 +1571,11 @@ int todo_gui_cleanup()
       cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
    }
    connect_changed_signals(DISCONNECT_SIGNALS);
+#ifdef ENABLE_GTK2
+   set_pref(PREF_TODO_PANE, gtk_paned_get_position(GTK_PANED(pane)), NULL, TRUE);
+#else
    set_pref(PREF_TODO_PANE, GTK_PANED(pane)->handle_xpos, NULL, TRUE);
+#endif
    return 0;
 }
 

@@ -16,6 +16,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
+/* gtk2 */
+#define GTK_ENABLE_BROKEN
+
 #include "config.h"
 #include "i18n.h"
 #include <gtk/gtk.h>
@@ -33,7 +37,7 @@ static int line_selected;
 static GtkWidget *filew=NULL;
 static GtkWidget *import_record_ask_window=NULL;
 static int glob_import_record_ask_button_pressed;
-int (*glob_import_callback)(GtkWidget *parent_window, char *file_path, int type);
+int (*glob_import_callback)(GtkWidget *parent_window, const char *file_path, int type);
 int glob_type_selected;
 
 
@@ -116,7 +120,7 @@ char *str_type(int type)
    return "?";
 }
 
-int guess_file_type(char *path)
+int guess_file_type(const char *path)
 {
    FILE *in;
    char text[256];
@@ -149,7 +153,7 @@ static void
 cb_quit(GtkWidget *widget,
 	gpointer   data)
 {
-   char *sel;
+   const char *sel;
    char dir[MAX_PREF_VALUE+2];
    int i;
 
@@ -186,7 +190,7 @@ static void
 cb_import(GtkWidget *widget,
 	  gpointer   filesel)
 {
-   char *sel;
+   const char *sel;
    struct stat statb;
 
    jp_logf(JP_LOG_DEBUG, "cb_import\n");
@@ -211,7 +215,7 @@ static void cb_import_select_row(GtkWidget *file_clist,
 				 GdkEventButton *bevent,
 				 gpointer data)
 {
-   char *sel;
+   const char *sel;
    struct stat statb;
    int guessed_type;
    int i;
@@ -244,7 +248,7 @@ static void cb_import_select_row(GtkWidget *file_clist,
 void import_gui(GtkWidget *main_window, GtkWidget *main_pane,
 		char *type_desc[], int type_int[],
 		int (*import_callback)(GtkWidget *parent_window,
-				       char *file_path, int type))
+				       const char *file_path, int type))
 {
    GtkWidget *button;
    GtkWidget *vbox, *hbox;
@@ -264,18 +268,23 @@ void import_gui(GtkWidget *main_window, GtkWidget *main_pane,
    gdk_window_get_size(main_window->window, &pw, &ph);
    gdk_window_get_root_origin(main_window->window, &px, &py);
 
+#ifdef ENABLE_GTK2
+   pw = gtk_paned_get_position(GTK_PANED(main_pane));
+#else
    pw = GTK_PANED(main_pane)->handle_xpos;
+#endif
    px+=40;
 
    g_snprintf(temp, 255, "%s %s", PN, _("Import"));
    temp[255]='\0';
 
    filew = gtk_widget_new(GTK_TYPE_FILE_SELECTION,
-			  "type", GTK_WINDOW_DIALOG,
-			  "x", px, "y", py,
-			  "width", pw, "height", ph,
+			  "type", GTK_WINDOW_TOPLEVEL,
 			  "title", temp,
 			  NULL);
+
+   gtk_window_set_default_size(GTK_WINDOW(filew), pw, ph);
+   gtk_widget_set_uposition(filew, px, py);
 
    get_pref(PREF_MEMO_IMPORT_PATH, NULL, &svalue);
    if (svalue && svalue[0]) {
@@ -399,15 +408,19 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
 
    gdk_window_get_root_origin(main_window->window, &px, &py);
 
+#ifdef ENABLE_GTK2
+   pw = gtk_paned_get_position(GTK_PANED(pane));
+#else
    pw = GTK_PANED(pane)->handle_xpos;
+#endif
    px+=40;
 
    import_record_ask_window = gtk_widget_new(GTK_TYPE_WINDOW,
-					     "type", GTK_WINDOW_DIALOG,
-					     "x", px, "y", py,
-					     "width", pw, "height", ph,
+					     "type", GTK_WINDOW_TOPLEVEL,
 					     "title", _("Import"),
 					     NULL);
+   gtk_window_set_default_size(GTK_WINDOW(import_record_ask_window), pw, ph);
+   gtk_widget_set_uposition(GTK_WIDGET(import_record_ask_window), px, py);
 
    gtk_container_set_border_width(GTK_CONTAINER(import_record_ask_window), 5);
 

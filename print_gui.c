@@ -45,8 +45,8 @@ int print_day_week_month;
 
 static gboolean cb_destroy(GtkWidget *widget)
 {
-   char *entry_text;
-   char *lines_text;
+   const char *entry_text;
+   const char *lines_text;
    int num_lines;
 
    jp_logf(JP_LOG_DEBUG, "Cleanup print_gui\n");

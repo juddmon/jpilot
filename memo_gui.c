@@ -17,6 +17,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+/* gtk2 */
+#define GTK_ENABLE_BROKEN
+
 #include "config.h"
 #include "i18n.h"
 #include <sys/stat.h>
@@ -34,6 +37,8 @@
 #include "memo.h"
 #include "export.h"
 
+
+#define MEMO_MAX_COLUMN_LEN 80
 
 #define NUM_MEMO_CAT_ITEMS 16
 
@@ -210,7 +215,7 @@ int memo_print()
 /*
  * Start Import Code
  */
-int memo_import_callback(GtkWidget *parent_window, char *file_path, int type)
+int memo_import_callback(GtkWidget *parent_window, const char *file_path, int type)
 {
    FILE *in;
    char line[256];
@@ -574,7 +579,11 @@ int memo_export(GtkWidget *window)
    gdk_window_get_size(window->window, &w, &h);
    gdk_window_get_root_origin(window->window, &x, &y);
 
+#ifdef ENABLE_GTK2
+   w = gtk_paned_get_position(GTK_PANED(pane));
+#else
    w = GTK_PANED(pane)->handle_xpos;
+#endif
    x+=40;
 
    export_gui(w, h, x, y, 1, sort_l,
@@ -961,6 +970,7 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    size_t copy_max_length;
    char *last;
    gchar *empty_line[] = { "" };
+   char str2[MEMO_MAX_COLUMN_LEN];
    GdkColor color;
    GdkColormap *colormap;
    MemoList *temp_memo;
@@ -1043,7 +1053,8 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       } else {
 	 str[copy_max_length + len1]='\0';
       }
-      gtk_clist_set_text(GTK_CLIST(clist), entries_shown, 0, str);
+      lstrncpy_remove_cr_lfs(str2, str, MEMO_MAX_COLUMN_LEN);
+      gtk_clist_set_text(GTK_CLIST(clist), entries_shown, 0, str2);
       gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_memo->mmemo));
 
       switch (temp_memo->mmemo.rt) {
@@ -1187,7 +1198,11 @@ int memo_gui_cleanup()
    }
    free_MemoList(&glob_memo_list);
    connect_changed_signals(DISCONNECT_SIGNALS);
+#ifdef ENABLE_GTK2
+   set_pref(PREF_MEMO_PANE, gtk_paned_get_position(GTK_PANED(pane)), NULL, TRUE);
+#else
    set_pref(PREF_MEMO_PANE, GTK_PANED(pane)->handle_xpos, NULL, TRUE);
+#endif
    return 0;
 }
 

@@ -16,6 +16,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
+/* gtk2 */
+#define GTK_ENABLE_BROKEN
+
 #include "config.h"
 #include "i18n.h"
 #include <sys/stat.h>
@@ -77,6 +81,7 @@ char *field_names_ja[]={"kana(Last)", "Last",  "kana(First)", "First",
 #define ADDRESS_PHONE_COLUMN 2
 
 #define ADDRESS_MAX_CLIST_NAME 24
+#define ADDRESS_MAX_COLUMN_LEN 80
 
 GtkWidget *clist;
 GtkWidget *address_text[22];
@@ -91,6 +96,7 @@ GtkWidget *address_cat_menu_item1[NUM_ADDRESS_CAT_ITEMS+1];
 GtkWidget *address_cat_menu_item2[NUM_ADDRESS_CAT_ITEMS];
 static GtkWidget *category_menu1;
 static GtkWidget *category_menu2;
+//undo VV shouldnt be global anymore
 static GtkWidget *scrolled_window;
 GtkWidget *address_quickfind_entry;
 static GtkWidget *notebook;
@@ -366,7 +372,7 @@ int address_to_text(struct Address *addr, char *text, int len)
 /*
  * Start Import Code
  */
-int address_import_callback(GtkWidget *parent_window, char *file_path, int type)
+int address_import_callback(GtkWidget *parent_window, const char *file_path, int type)
 {
    FILE *in;
    char text[65536];
@@ -987,7 +993,11 @@ int address_export(GtkWidget *window)
    gdk_window_get_size(window->window, &w, &h);
    gdk_window_get_root_origin(window->window, &x, &y);
 
+#ifdef ENABLE_GTK2
+   w = gtk_paned_get_position(GTK_PANED(pane));
+#else
    w = GTK_PANED(pane)->handle_xpos;
+#endif
    x+=40;
 
    export_gui(w, h, x, y, 3, sort_l,
@@ -1353,7 +1363,7 @@ void cb_dialer(GtkWidget *widget, gpointer data)
 void cb_address_quickfind(GtkWidget *widget,
 			  gpointer   data)
 {
-   char *entry_text;
+   const char *entry_text;
    int i, r, found, found_at, line_count;
    char *clist_text;
 
@@ -1474,7 +1484,8 @@ static void cb_clist_selection(GtkWidget      *clist,
    int i, i2;
    int keep, b;
    char *tmp_p;
-   char *clist_text, *entry_text;
+   char *clist_text;
+   const char *entry_text;
    long use_jos, char_set;
 
    if ((!event) && (clist_hack)) return;
@@ -1677,6 +1688,7 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    GdkColormap *colormap;
    AddressList *temp_al;
    char str[ADDRESS_MAX_CLIST_NAME+8];
+   char str2[ADDRESS_MAX_COLUMN_LEN+2];
    int by_company;
    int show_priv;
    long use_jos, char_set;
@@ -1803,8 +1815,10 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 	 if (entries_shown+1>row_count) {
 	    gtk_clist_append(GTK_CLIST(clist), empty_line);
 	 }
-	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_NAME_COLUMN, str);
-	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_PHONE_COLUMN, temp_al->ma.a.entry[temp_al->ma.a.showPhone+3]);
+	 lstrncpy_remove_cr_lfs(str2, str, ADDRESS_MAX_COLUMN_LEN);
+	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_NAME_COLUMN, str2);
+	 lstrncpy_remove_cr_lfs(str2, temp_al->ma.a.entry[temp_al->ma.a.showPhone+3], ADDRESS_MAX_COLUMN_LEN);
+	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_PHONE_COLUMN, str2);
 	 gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_al->ma));
 
 	 switch (temp_al->ma.rt) {
@@ -1918,8 +1932,10 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 	 if (entries_shown+1>row_count) {
 	    gtk_clist_append(GTK_CLIST(clist), empty_line);
 	 }
-	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_NAME_COLUMN, str);
-	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_PHONE_COLUMN, temp_al->ma.a.entry[temp_al->ma.a.showPhone+3]);
+	 lstrncpy_remove_cr_lfs(str2, str, ADDRESS_MAX_COLUMN_LEN);
+	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_NAME_COLUMN, str2);
+	 lstrncpy_remove_cr_lfs(str2, temp_al->ma.a.entry[temp_al->ma.a.showPhone+3], ADDRESS_MAX_COLUMN_LEN);
+	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_PHONE_COLUMN, str2);
 	 gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_al->ma));
 
 	 switch (temp_al->ma.rt) {
@@ -2012,7 +2028,8 @@ static int make_phone_menu(int default_set, unsigned int callback_id, int set)
 	 menu_item[set][i] = gtk_radio_menu_item_new_with_label(
 			group, address_app_info.phoneLabels[i]);
 	 gtk_signal_connect(GTK_OBJECT(menu_item[set][i]), "activate",
-			    cb_phone_menu, GINT_TO_POINTER(callback_id + i));
+			    GTK_SIGNAL_FUNC(cb_phone_menu),
+			    GINT_TO_POINTER(callback_id + i));
 	 group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(menu_item[set][i]));
 	 gtk_menu_append(GTK_MENU(menu), menu_item[set][i]);
 	 gtk_widget_show(menu_item[set][i]);
@@ -2209,7 +2226,11 @@ int address_gui_cleanup()
       cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
    }
    connect_changed_signals(DISCONNECT_SIGNALS);
+#ifdef ENABLE_GTK2
+   set_pref(PREF_ADDRESS_PANE, gtk_paned_get_position(GTK_PANED(pane)), NULL, TRUE);
+#else
    set_pref(PREF_ADDRESS_PANE, GTK_PANED(pane)->handle_xpos, NULL, TRUE);
+#endif
    return 0;
 }
 

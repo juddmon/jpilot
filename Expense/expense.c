@@ -23,6 +23,8 @@
 #include <string.h>
 #include <time.h>
 
+/* gtk2 */
+#define GTK_ENABLE_BROKEN
 #include <gtk/gtk.h>
 
 #include "libplugin.h"
@@ -517,7 +519,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
 {
    struct Expense ex;
    buf_rec br;
-   char *text;
+   const char *text;
    unsigned char buf[0xFFFF];
    int size;
    int flag;
@@ -549,18 +551,18 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    ex.currency= glob_detail_currency;
 /*   ex.currency=23; */
    text = gtk_entry_get_text(GTK_ENTRY(entry_amount));
-   ex.amount = text;
+   ex.amount = (char *)text;
    if (ex.amount[0]=='\0') {
       ex.amount=NULL;
    }
    /* gtk_entry_get_text *does not* allocate memory */
    text = gtk_entry_get_text(GTK_ENTRY(entry_vendor));
-   ex.vendor = text;
+   ex.vendor = (char *)text;
    if (ex.vendor[0]=='\0') {
       ex.vendor=NULL;
    }
    text = gtk_entry_get_text(GTK_ENTRY(entry_city));
-   ex.city = text;
+   ex.city = (char *)text;
    if (ex.city[0]=='\0') {
       ex.city=NULL;
    }
@@ -1064,7 +1066,7 @@ static int make_menu(char *items[], int menu_index, GtkWidget **Poption_menu,
 	 item_num = i;
       }
       gtk_signal_connect(GTK_OBJECT(menu_item), "activate",
-			 cb_category, GINT_TO_POINTER(menu_index<<8 | item_num));
+			 GTK_SIGNAL_FUNC(cb_category), GINT_TO_POINTER(menu_index<<8 | item_num));
       group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(menu_item));
       gtk_menu_append(GTK_MENU(menu), menu_item);
       gtk_widget_show(menu_item);
@@ -1260,7 +1262,6 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    GtkWidget *temp_vbox;
    GtkWidget *button;
    GtkWidget *label;
-   GtkWidget *vscrollbar;
    time_t ltime;
    struct tm *now;
    
@@ -1488,29 +1489,35 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_box_pack_start(GTK_BOX(vbox2), label, FALSE, FALSE, 0);
 
    /* Attendees textbox */
-   temp_hbox = gtk_hbox_new(FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(vbox2), temp_hbox, TRUE, TRUE, 0);
+   scrolled_window = gtk_scrolled_window_new(NULL, NULL);
+   /*gtk_widget_set_usize(GTK_WIDGET(scrolled_window), 150, 0); */
+   gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 0);
+   gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
+				  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+   gtk_box_pack_start(GTK_BOX(vbox2), scrolled_window, TRUE, TRUE, 0);
 
    text_attendees = gtk_text_new(NULL, NULL);
    gtk_text_set_editable(GTK_TEXT(text_attendees), TRUE);
    gtk_text_set_word_wrap(GTK_TEXT(text_attendees), TRUE);
-   vscrollbar = gtk_vscrollbar_new(GTK_TEXT(text_attendees)->vadj);
-   gtk_box_pack_start(GTK_BOX(temp_hbox), text_attendees, TRUE, TRUE, 0);
-   gtk_box_pack_start(GTK_BOX(temp_hbox), vscrollbar, FALSE, FALSE, 0);
+   gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(text_attendees));
 
    label = gtk_label_new(_("Note"));
    gtk_box_pack_start(GTK_BOX(vbox2), label, FALSE, FALSE, 0);
 
    /* Note textbox */
-   temp_hbox = gtk_hbox_new(FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(vbox2), temp_hbox, TRUE, TRUE, 0);
+
+   scrolled_window = gtk_scrolled_window_new(NULL, NULL);
+   /*gtk_widget_set_usize(GTK_WIDGET(scrolled_window), 150, 0); */
+   gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 0);
+   gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
+				  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+   gtk_box_pack_start(GTK_BOX(vbox2), scrolled_window, TRUE, TRUE, 0);
+
 
    text_note = gtk_text_new(NULL, NULL);
    gtk_text_set_editable(GTK_TEXT(text_note), TRUE);
    gtk_text_set_word_wrap(GTK_TEXT(text_note), TRUE);
-   vscrollbar = gtk_vscrollbar_new(GTK_TEXT(text_note)->vadj);
-   gtk_box_pack_start(GTK_BOX(temp_hbox), text_note, TRUE, TRUE, 0);
-   gtk_box_pack_start(GTK_BOX(temp_hbox), vscrollbar, FALSE, FALSE, 0);
+   gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(text_note));
 
    gtk_widget_show_all(hbox);
    gtk_widget_show_all(vbox);

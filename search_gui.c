@@ -39,19 +39,22 @@
 #endif
 
 
+#define SEARCH_MAX_COLUMN_LEN 80
+
 static struct search_record *search_rl = NULL;
 static GtkWidget *case_sense_checkbox;
 static GtkWidget *window = NULL;
 
 
 static int
-  search_datebook(char *needle, GtkWidget *clist)
+  search_datebook(const char *needle, GtkWidget *clist)
 {
    gchar *empty_line[] = { "","" };
    AppointmentList *a_list;
    AppointmentList *temp_al;
    int found, count;
    char str[202];
+   char str2[SEARCH_MAX_COLUMN_LEN+2];
    char date_str[52];
    char datef[52];
    const char *svalue1;
@@ -115,14 +118,16 @@ static int
 		       date_str,
 		       temp_al->ma.a.description);
 	    str[199] = '\0';
-	    gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str);
+	    lstrncpy_remove_cr_lfs(str2, str, SEARCH_MAX_COLUMN_LEN);
+	    gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str2);
 	 }
 	 if (found == 2) {
 	    g_snprintf(str, 200, "%s %s",
 		       date_str,
 		       temp_al->ma.a.note);
 	    str[199] = '\0';
-	    gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str);
+	    lstrncpy_remove_cr_lfs(str2, str, SEARCH_MAX_COLUMN_LEN);
+	    gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str2);
 	 }
       }
    }
@@ -133,9 +138,10 @@ static int
 }
 
 static int
-  search_address(char *needle, GtkWidget *clist)
+  search_address(const char *needle, GtkWidget *clist)
 {
    gchar *empty_line[] = { "","" };
+   char str2[SEARCH_MAX_COLUMN_LEN+2];
    AddressList *a_list;
    AddressList *temp_al;
    struct search_record *new_sr;
@@ -159,7 +165,8 @@ static int
 			       GTK_TOGGLE_BUTTON(case_sense_checkbox)->active) ) {
 	       gtk_clist_prepend(GTK_CLIST(clist), empty_line);
 	       gtk_clist_set_text(GTK_CLIST(clist), 0, 0, _("address"));
-	       gtk_clist_set_text(GTK_CLIST(clist), 0, 1, temp_al->ma.a.entry[i]);
+	       lstrncpy_remove_cr_lfs(str2, temp_al->ma.a.entry[i], SEARCH_MAX_COLUMN_LEN);
+	       gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str2);
 
 	       /*Add to the search list */
 	       new_sr = malloc(sizeof(struct search_record));
@@ -184,9 +191,10 @@ static int
 }
 
 static int
-  search_todo(char *needle, GtkWidget *clist)
+  search_todo(const char *needle, GtkWidget *clist)
 {
    gchar *empty_line[] = { "","" };
+   char str2[SEARCH_MAX_COLUMN_LEN+2];
    ToDoList *todo_list;
    ToDoList *temp_todo;
    struct search_record *new_sr;
@@ -235,12 +243,12 @@ static int
 	 count++;
 
 	 if (found == 1) {
-	    gtk_clist_set_text(GTK_CLIST(clist), 0, 1,
-			       temp_todo->mtodo.todo.description);
+	    lstrncpy_remove_cr_lfs(str2, temp_todo->mtodo.todo.description, SEARCH_MAX_COLUMN_LEN);
+	    gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str2);
 	 }
 	 if (found == 2) {
-	    gtk_clist_set_text(GTK_CLIST(clist), 0, 1,
-			       temp_todo->mtodo.todo.note);
+	    lstrncpy_remove_cr_lfs(str2, temp_todo->mtodo.todo.note, SEARCH_MAX_COLUMN_LEN);
+	    gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str2);
 	 }
       }
    }
@@ -251,9 +259,10 @@ static int
 }
 
 static int
-  search_memo(char *needle, GtkWidget *clist)
+  search_memo(const char *needle, GtkWidget *clist)
 {
    gchar *empty_line[] = { "","" };
+   char str2[SEARCH_MAX_COLUMN_LEN+2];
    MemoList *memo_list;
    MemoList *temp_memo;
    struct search_record *new_sr;
@@ -276,7 +285,8 @@ static int
 	 gtk_clist_prepend(GTK_CLIST(clist), empty_line);
 	 gtk_clist_set_text(GTK_CLIST(clist), 0, 0, _("memo"));
 	 if (temp_memo->mmemo.memo.text) {
-	    gtk_clist_set_text(GTK_CLIST(clist), 0, 1, temp_memo->mmemo.memo.text);
+	    lstrncpy_remove_cr_lfs(str2, temp_memo->mmemo.memo.text, SEARCH_MAX_COLUMN_LEN);
+	    gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str2);
 	 }
 
 	 /*Add to the search list */
@@ -303,6 +313,7 @@ static int
 {
    GList *plugin_list, *temp_list;
    gchar *empty_line[] = { "","" };
+   char str2[SEARCH_MAX_COLUMN_LEN+2];
    int found;
    int count;
    int case_sense;
@@ -331,7 +342,8 @@ static int
 		     gtk_clist_set_text(GTK_CLIST(clist), 0, 0, _("plugin ?"));
 		  }
 		  if (temp_sr->line) {
-		     gtk_clist_set_text(GTK_CLIST(clist), 0, 1, temp_sr->line);
+		     lstrncpy_remove_cr_lfs(str2, temp_sr->line, SEARCH_MAX_COLUMN_LEN);
+		     gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str2);
 		  }
 
 		  /*Add to the search list */
@@ -379,7 +391,7 @@ static void
 {
    gchar *empty_line[] = { "","" };
    GtkWidget *clist;
-   char *entry_text;
+   const char *entry_text;
    int count;
 
    jp_logf(JP_LOG_DEBUG, "enter cb_entry\n");

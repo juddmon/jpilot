@@ -79,7 +79,7 @@ int install_remove_line(int deleted_line)
    return 0;
 }
 
-int install_append_line(char *line)
+int install_append_line(const char *line)
 {
    FILE *out;
    int r;
@@ -121,7 +121,7 @@ static void
   cb_add(GtkWidget *widget,
 	 gpointer   data)
 {
-   char *sel;
+   const char *sel;
    struct stat statb;
 
    jp_logf(JP_LOG_DEBUG, "Add\n");
@@ -163,6 +163,7 @@ static int
    char *new_line[2];
    int kept_line_selected;
    int count;
+   int len;
 
    new_line[0]=line;
    new_line[1]=NULL;
@@ -178,11 +179,14 @@ static int
    gtk_clist_clear(GTK_CLIST(clist));
 
    for (count=0; (!feof(in)); count++) {
-       line[0]='\0';
-       Pc = fgets(line, 1000, in);
-       if (!Pc) {
-	    break;
-       }
+      line[0]='\0';
+      Pc = fgets(line, 1000, in);
+      if (!Pc) {
+	 break;
+      }
+      len=strlen(line);
+      if ((line[len-1]=='\n') || (line[len-1]=='\r')) line[len-1]='\0';
+      if ((line[len-2]=='\n') || (line[len-2]=='\r')) line[len-2]='\0';
       gtk_clist_append(GTK_CLIST(clist), new_line);
    }
    if (kept_line_selected > count -1) {
@@ -224,11 +228,12 @@ int install_gui(int w, int h, int x, int y)
    g_snprintf(temp, 255, "%s %s", PN, _("Install"));
    temp[255]='\0';
    filew = gtk_widget_new(GTK_TYPE_FILE_SELECTION,
-			  "type", GTK_WINDOW_DIALOG,
-			  "x", x, "y", y,
-			  "width", w, "height", h,
+			  "type", GTK_WINDOW_TOPLEVEL,
 			  "title", temp,
 			  NULL);
+
+   gtk_window_set_default_size(GTK_WINDOW(filew), w, h);
+   gtk_widget_set_uposition(filew, x, y);
 
    gtk_file_selection_hide_fileop_buttons((gpointer) filew);
 

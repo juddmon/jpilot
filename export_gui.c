@@ -68,7 +68,7 @@ static void
 cb_export_browse_ok(GtkWidget *widget,
 		    gpointer   data)
 {
-   char *sel;
+   const char *sel;
 
    glob_export_browse_pressed=BROWSE_OK;
    if (glob_pref_export) {
@@ -248,11 +248,12 @@ int export_gui(int w, int h, int x, int y,
    glob_pref_export=pref_export;
 
    export_window = gtk_widget_new(GTK_TYPE_WINDOW,
-				  "type", GTK_WINDOW_DIALOG,
-				  "x", x, "y", y,
-				  "width", w, "height", h,
+				  "type", GTK_WINDOW_TOPLEVEL,
 				  "title", _("Export"),
 				  NULL);
+
+   gtk_window_set_default_size(GTK_WINDOW(export_window), w, h);
+   gtk_widget_set_uposition(GTK_WIDGET(export_window), x, y);
 
    gtk_container_set_border_width(GTK_CONTAINER(export_window), 5);
 

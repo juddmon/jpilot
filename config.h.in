@@ -20,6 +20,9 @@
 /* DateBk3/4 support */
 #undef ENABLE_DATEBK
 
+/* GTK-2 support */
+#undef ENABLE_GTK2
+
 /* Manana support */
 #undef ENABLE_MANANA
 

@@ -142,7 +142,7 @@ int make_pref_menu(GtkWidget **pref_menu, int pref_num)
 	 gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_item), ivalue);
       }
 
-      gtk_signal_connect(GTK_OBJECT(menu_item), "activate", cb_pref_menu,
+      gtk_signal_connect(GTK_OBJECT(menu_item), "activate", GTK_SIGNAL_FUNC(cb_pref_menu),
 			 GINT_TO_POINTER(((pref_num*0x100) + (i & 0xFF))));
 
       gtk_widget_show(menu_item);
@@ -243,8 +243,8 @@ void cb_do_command(GtkWidget *widget,
 
 static gboolean cb_destroy(GtkWidget *widget)
 {
-   char *entry_text;
-   char *backups_text;
+   const char *entry_text;
+   const char *backups_text;
    int num_backups;
 
    jp_logf(JP_LOG_DEBUG, "Cleanup\n");

@@ -282,7 +282,7 @@ static void cb_dialog_button(GtkWidget *widget,
 static gboolean cb_destroy_dialog(GtkWidget *widget)
 {
    struct dialog_data *Pdata;
-   char *entry;
+   const char *entry;
 
    Pdata = gtk_object_get_data(GTK_OBJECT(widget), "dialog_data");
    if (!Pdata) {
