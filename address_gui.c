@@ -1850,6 +1850,7 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
       switch (temp_al->ma.rt) {
        case NEW_PC_REC:
+       case REPLACEMENT_PALM_REC:
 	 set_bg_rbg_clist(clist, entries_shown,
 			  CLIST_NEW_RED, CLIST_NEW_GREEN, CLIST_NEW_BLUE);
 	 break;
