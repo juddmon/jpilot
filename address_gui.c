@@ -1140,13 +1140,6 @@ static void cb_clist_selection(GtkWidget      *clist,
    int cat, count, sorted_position;
    int i, i2;
    int keep, b;
-   /* This is because the palm doesn't show the address entries in order */
-   int order[NUM_ADDRESS_ENTRIES]={
-      0,1,13,2,3,4,5,6,7,8,9,10,11,12,14,15,16,17,18
-   };
-   int order_ja[NUM_ADDRESS_ENTRIES + NUM_ADDRESS_EXT_ENTRIES]={
-      19,20,0,1,13,21,2,3,4,5,6,7,8,9,10,11,12,14,15,16,17,18
-   };
    char *tmp_p;
    char *clist_text, *entry_text;
    long use_jos, char_set;
