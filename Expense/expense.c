@@ -848,7 +848,7 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
    jp_get_home_file_name("ExpenseDB.pdb", full_name, 250);
 
    buf=NULL;
-   bzero(&ai, sizeof(ai));
+   memset(&ai, 0, sizeof(ai));
 
    pf = pi_file_open(full_name);
    r = pi_file_get_app_info(pf, &buf, &size);
@@ -935,6 +935,8 @@ static void cb_clist_selection(GtkWidget      *clist,
        (menu_item_expense_type[mex->ex.type]), TRUE);
    gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
        (menu_item_payment[mex->ex.payment]), TRUE);
+   if (mex->ex.currency > sizeof(menu_item_currency)/sizeof(menu_item_currency[0]))
+	   mex->ex.currency = 0;
    gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
        (menu_item_currency[mex->ex.currency]), TRUE);
    gtk_option_menu_set_history(GTK_OPTION_MENU(menu_category2), item_num);
@@ -1762,7 +1764,7 @@ int plugin_post_sync(void)
    jp_get_home_file_name("ExpenseDB.pdb", full_name, 250);
 
    buf=NULL;
-   bzero(&ai, sizeof(ai));
+   memset(&ai, 0, sizeof(ai));
 
    pf = pi_file_open(full_name);
    r = pi_file_get_app_info(pf, &buf, &size);
