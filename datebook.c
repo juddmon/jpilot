@@ -567,17 +567,17 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
       begin_days = dateToDays(&(a->begin));
       days = dateToDays(date);
 
-      /* get_pref(PREF_FDOW, &fdow, NULL); */
-      /* Note: Palm Bug?  I think the palm does this wrong.
-       * I prefer this way of doing it so that you can have appts repeating
-       * from Wed->Tue, for example.  The palms way prevents this */
-      /* ret = (((int)((days - begin_days - fdow)/7))%(a->repeatFrequency)==0);*/
-      /* But, here is the palm way */
-      /* ret = (((int)((days-begin_days+a->begin.tm_wday-fdow)/7))
-	     %(a->repeatFrequency)==0); */
-      /* The above seemed to be wrong for fdow=1 and dow=0 appointment */
-      ret = (((int)((days-begin_days+a->begin.tm_wday)/7))
-	     %(a->repeatFrequency)==0);
+      /* In repeatWeekly Palm treats the week as running Monday-Sunday [0-6]
+       * This contrasts with the C time structures which run Sunday-Sat[0-6]
+       * The date calculation requires switching between the two.
+       * Palm tm structure = C tm structure -1 with wraparound for Sunday */
+      if (a->begin.tm_wday == 0)
+      {
+	 ret = (days - begin_days) + 6;
+      } else {
+	 ret = (days - begin_days) + (a->begin.tm_wday - 1);
+      }
+      ret = ((((int)ret/7) % a->repeatFrequency) == 0);
       break;
     case repeatMonthlyByDay:
       /* See if we are in a month that is repeated in */
