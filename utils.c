@@ -100,7 +100,7 @@ void get_compile_options(char *string, int len)
 	      PILOT_LINK_MAJOR,
 	      PILOT_LINK_MINOR,
 	      _("USB support"),
-#ifdef ENABLE_USB
+#ifdef USB_PILOT_LINK
 	      _("yes"),
 #else
 	      _("no"),

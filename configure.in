@@ -272,6 +272,10 @@ int main()
 )
 fi
 
+if test "x$usb" = "xyes"; then
+   AC_DEFINE(USB_PILOT_LINK, 1, [ usb support ])
+fi
+
 CFLAGS="$save_CFLAGS"
 LIBS="$save_LIBS"
 

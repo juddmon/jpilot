@@ -261,6 +261,9 @@
 /* Define to 1 if your <sys/time.h> declares `struct tm'. */
 #undef TM_IN_SYS_TIME
 
+/* usb support */
+#undef USB_PILOT_LINK
+
 /* Using flock instead of fnctl */
 #undef USE_FLOCK
 
