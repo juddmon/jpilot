@@ -418,7 +418,7 @@ int get_field(FILE *in, struct field *f)
 
    fread(str_long, 4, 1, in);
    type = x86_long(str_long);
-   f->type=0;
+   f->type=type;
    f->str=NULL;
 
    switch(type) {
@@ -592,7 +592,7 @@ int dat_get_appointments(FILE *in, AppointmentList **alist, struct CategoryAppIn
    AppointmentList *last_alist;
    time_t t;
    struct tm *now;
-   /* Should be 1, 1, 1, 3, 3, 5, 1, 5, 6, 6, 1, 6, 1, 1, 8 */
+   /* Should be 1, 1, 1, 3, 1, 5, 1, 5, 6, 6, 1, 6, 1, 1, 8 */
    char schema[30]={
       DAT_TYPE_INTEGER,0,
 	DAT_TYPE_INTEGER,0,
@@ -669,7 +669,7 @@ int dat_get_appointments(FILE *in, AppointmentList **alist, struct CategoryAppIn
 	 printf("rec field %d %s: ", j, rec_fields[j]); print_field(&(fa[j]));
 #endif
 	 if (fa[j].type!=schema[j*2]) {
-	    jp_logf(JP_LOG_WARN, "%s:%d Invalid schema ID (%d) record %d, field %d\n", __FILE__, __LINE__, fa[j].type, i+1, j+3);
+	    jp_logf(JP_LOG_WARN, "%s:%d Record %d, field %d: Invalid type.  Expected %d, found %d\n", __FILE__, __LINE__, i+1, j+3, schema[j*2], fa[j].type);
 	    jp_logf(JP_LOG_WARN, _("read of file terminated\n"));
 	    free(temp_alist);
 	    return 0;
@@ -687,7 +687,7 @@ int dat_get_appointments(FILE *in, AppointmentList **alist, struct CategoryAppIn
 	 }
 #endif
 	 if (fa[j].type!=schema[j*2+6]) {
-	    jp_logf(JP_LOG_WARN, "%s:%d Invalid schema ID (%d) record %d, field %d\n", __FILE__, __LINE__, fa[j].type, i+1, j+3);
+	    jp_logf(JP_LOG_WARN, "%s:%d Record %d, field %d: Invalid type.  Expected %d, found %d\n", __FILE__, __LINE__, i+1, j+3, schema[j*2+6], fa[j].type);
 	    jp_logf(JP_LOG_WARN, _("read of file terminated\n"));
 	    free(temp_alist);
 	    return 0;
@@ -869,7 +869,7 @@ int dat_get_addresses(FILE *in, AddressList **addrlist, struct CategoryAppInfo *
 	 printf("rec field %d %s: ", j, rec_fields[j]); print_field(&(fa[j]));
 #endif
 	 if (fa[j].type!=schema[j*2]) {
-	    jp_logf(JP_LOG_WARN, "%s:%d Invalid schema ID (%d) record %d, field %d\n", __FILE__, __LINE__, fa[j].type, i+1, j+3);
+	    jp_logf(JP_LOG_WARN, "%s:%d Record %d, field %d: Invalid type.  Expected %d, found %d\n", __FILE__, __LINE__, i+1, j+3, schema[j*2], fa[j].type);
 	    jp_logf(JP_LOG_WARN, _("read of file terminated\n"));
 	    free(temp_addrlist);
 	    return 0;
@@ -882,7 +882,7 @@ int dat_get_addresses(FILE *in, AddressList **addrlist, struct CategoryAppInfo *
 	 printf("field %d %s: ", j, field_names[j]); print_field(&(fa[j]));
 #endif
 	 if (fa[j].type!=schema[j*2+6]) {
-	    jp_logf(JP_LOG_WARN, "%s:%d Invalid schema ID (%d) record %d, field %d\n", __FILE__, __LINE__, fa[j].type, i+1, j+3);
+	    jp_logf(JP_LOG_WARN, "%s:%d Record %d, field %d: Invalid type.  Expected %d, found %d\n", __FILE__, __LINE__, i+1, j+3, schema[j*2+6], fa[j].type);
 	    jp_logf(JP_LOG_WARN, _("read of file terminated\n"));
 	    free(temp_addrlist);
 	    return 0;
@@ -1005,7 +1005,7 @@ int dat_get_todos(FILE *in, ToDoList **todolist, struct CategoryAppInfo *ai)
 	 printf("rec field %d %s: ", j, rec_fields[j]); print_field(&(fa[j]));
 #endif
 	 if (fa[j].type!=schema[j*2]) {
-	    jp_logf(JP_LOG_WARN, "%s:%d Invalid schema ID (%d) record %d, field %d\n", __FILE__, __LINE__, fa[j].type, i+1, j+3);
+	    jp_logf(JP_LOG_WARN, "%s:%d Record %d, field %d: Invalid type.  Expected %d, found %d\n", __FILE__, __LINE__, i+1, j+3, schema[j*2], fa[j].type);
 	    jp_logf(JP_LOG_WARN, _("read of file terminated\n"));
 	    free(temp_todolist);
 	    return 0;
@@ -1018,7 +1018,7 @@ int dat_get_todos(FILE *in, ToDoList **todolist, struct CategoryAppInfo *ai)
 	 printf("field %d %s: ", j, field_names[j]); print_field(&(fa[j]));
 #endif
 	 if (fa[j].type!=schema[j*2+6]) {
-	    jp_logf(JP_LOG_WARN, "%s:%d Invalid schema ID (%d) record %d, field %d\n", __FILE__, __LINE__, fa[j].type, i+1, j+3);
+	    jp_logf(JP_LOG_WARN, "%s:%d Record %d, field %d: Invalid type.  Expected %d, found %d\n", __FILE__, __LINE__, i+1, j+3, schema[j*2+6], fa[j].type);
 	    jp_logf(JP_LOG_WARN, _("read of file terminated\n"));
 	    free(temp_todolist);
 	    return 0;
@@ -1142,7 +1142,7 @@ int dat_get_memos(FILE *in, MemoList **memolist, struct CategoryAppInfo *ai)
 	 printf("rec field %d %s: ", j, rec_fields[j]); print_field(&(fa[j]));
 #endif
 	 if (fa[j].type!=schema[j*2]) {
-	    jp_logf(JP_LOG_WARN, "%s:%d Invalid schema ID (%d) record %d, field %d\n", __FILE__, __LINE__, fa[j].type, i+1, j+3);
+	    jp_logf(JP_LOG_WARN, "%s:%d Record %d, field %d: Invalid type.  Expected %d, found %d\n", __FILE__, __LINE__, i+1, j+3, schema[j*2], fa[j].type);
 	    jp_logf(JP_LOG_WARN, _("read of file terminated\n"));
 	    free(temp_memolist);
 	    return 0;
@@ -1155,7 +1155,7 @@ int dat_get_memos(FILE *in, MemoList **memolist, struct CategoryAppInfo *ai)
 	 printf("field %d %s: ", j, field_names[j]); print_field(&(fa[j]));
 #endif
 	 if (fa[j].type!=schema[j*2+6]) {
-	    jp_logf(JP_LOG_WARN, "%s:%d Invalid schema ID (%d) record %d, field %d\n", __FILE__, __LINE__, fa[j].type, i+1, j+3);
+	    jp_logf(JP_LOG_WARN, "%s:%d Record %d, field %d: Invalid type.  Expected %d, found %d\n", __FILE__, __LINE__, i+1, j+3, schema[j*2+6], fa[j].type);
 	    jp_logf(JP_LOG_WARN, _("read of file terminated\n"));
 	    free(temp_memolist);
 	    return 0;
