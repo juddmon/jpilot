@@ -3088,6 +3088,8 @@ int datebook_refresh(int first)
    if (first) {
       gtk_calendar_select_day(GTK_CALENDAR(main_calendar), current_day);
    } else {
+      /* See other calls to select day as to why I set it to 1 first */
+      gtk_calendar_select_day(GTK_CALENDAR(main_calendar), 1);
       gtk_calendar_select_month(GTK_CALENDAR(main_calendar),
 				current_month, current_year+1900);
       gtk_calendar_select_day(GTK_CALENDAR(main_calendar), current_day);
@@ -3248,11 +3250,10 @@ static gboolean
 cb_keyboard(GtkWidget *widget, GdkEventKey *event, gpointer *p) 
 {
    struct tm day;
-   struct tm *now;
-   time_t ltime;
-   int up, down, home;
+   int up, down;
+   int b;
 
-   up = down = home = 0;
+   up = down = 0;
    switch (event->keyval) {
     case GDK_Page_Up:
     case GDK_KP_Page_Up:
@@ -3262,42 +3263,43 @@ cb_keyboard(GtkWidget *widget, GdkEventKey *event, gpointer *p)
     case GDK_KP_Page_Down:
       down=1;
       break;
-    case GDK_Home:
-    case GDK_KP_Home:
-      home=1;
-      time(&ltime);
-      now = localtime(&ltime);
-      current_day = now->tm_mday;
-      current_month = now->tm_mon;
-      current_year = now->tm_year;
-      break;
    }
    
-   if (up || down || home) {
+   if (up || down) {
       gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
 
-      if (up || down) {
-	 bzero(&day, sizeof(day));
-	 day.tm_year = current_year;
-	 day.tm_mon = current_month;
-	 day.tm_mday = current_day;
-	 day.tm_hour = 12;
-	 day.tm_min = 0;
+      b=dialog_save_changed_record(pane, record_changed);
+      if (b==DIALOG_SAID_1) {
+	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
+      }
+      set_new_button_to(CLEAR_FLAG);
 
-	 if (up) {
-	    sub_days_from_date(&day, 1);
-	 }
-	 if (down) {
-	    add_days_to_date(&day, 1);
-	 }
+      bzero(&day, sizeof(day));
+      day.tm_year = current_year;
+      day.tm_mon = current_month;
+      day.tm_mday = current_day;
+      day.tm_hour = 12;
+      day.tm_min = 0;
 
-	 current_year = day.tm_year;
-	 current_month = day.tm_mon;
-	 current_day = day.tm_mday;
+      if (up) {
+	 sub_days_from_date(&day, 1);
+      }
+      if (down) {
+	 add_days_to_date(&day, 1);
       }
 
-      gtk_calendar_select_month(GTK_CALENDAR(main_calendar), current_month, current_year+1900);
-      gtk_calendar_select_day(GTK_CALENDAR(main_calendar), current_day);
+      current_year = day.tm_year;
+      current_month = day.tm_mon;
+      current_day = day.tm_mday;
+
+      /* This next line prevents a Gtk error message from being printed.
+       * e.g.  If the day were 31 and the next month has <31 days then the
+       * select month call will cause an error message since the 31st isn't
+       * valid in that month.  So, I set it to 1 first.
+       */
+      gtk_calendar_select_day(GTK_CALENDAR(main_calendar), 1);
+      gtk_calendar_select_month(GTK_CALENDAR(main_calendar), day.tm_mon, day.tm_year+1900);
+      gtk_calendar_select_day(GTK_CALENDAR(main_calendar), day.tm_mday);
 
       return TRUE;
    }
