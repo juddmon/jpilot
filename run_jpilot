@@ -1,2 +1,0 @@
-#This is just a script to run jpilot from a button in a window manager
-rxvt -title "jpilot Console" -e jpilot
