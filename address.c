@@ -488,23 +488,19 @@ int get_addresses2(AddressList **address_list, int sort_order,
       if (char_set != CHAR_SET_LATIN1) {
 	 for (i = 0; i < 19; i++) {
 	    if ((a.entry[i] != NULL) && (a.entry[i][0] != '\0')) {
-/* JPA use new conversion routines
-	       if ((buf = (char *)realloc(buf, strlen(a.entry[i])*2+1)) != NULL) {
-		  strcpy(buf, a.entry[i]);
-		  charset_p2j((unsigned char *)buf, strlen(a.entry[i])*2+1, char_set);
-*/
                buf = charset_p2newj((unsigned char *)a.entry[i], strlen(a.entry[i])+1, char_set);
                if (buf) {
 		  if (strlen(buf) > strlen(a.entry[i])) {
 		     free(a.entry[i]);
 		     a.entry[i] = strdup(buf);
+		     free(buf);
 		  } else {
 		     multibyte_safe_strncpy(a.entry[i], buf, strlen(a.entry[i])+1);
+		     free(buf);
 		  }
 	       }
 	    }
 	 }
-	 free(buf);
       }
 
       temp_a_list = malloc(sizeof(AddressList));
