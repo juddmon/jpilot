@@ -58,6 +58,9 @@
 #include "restore.h"
 #include "password.h"
 #include "i18n.h"
+#ifdef ENABLE_GTK2
+#include "otherconv.h"
+#endif
 
 #include "icons/jpilot-icon4.xpm"
 
