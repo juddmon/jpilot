@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.52 2004/12/30 19:06:20 judd Exp $ */
+/* $Id: sync.c,v 1.53 2004/12/30 19:40:17 judd Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -2891,7 +2891,6 @@ int sync_categories(char *DB_name, int sd,
       }
    }
 #endif
-   dlp_CloseDB(sd, db);
 
    /* Do a memcmp first to see if common case, nothing has changed */
    if (!memcmp(&(local_cai), &(remote_cai),
