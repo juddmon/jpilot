@@ -613,7 +613,7 @@ void cb_delete_memo(GtkWidget *widget,
       return;
    }
    /* Do masking like Palm OS 3.5 */
-   show_priv = show_privates(GET_PRIVATES, NULL);
+   show_priv = show_privates(GET_PRIVATES);
    if ((show_priv != SHOW_PRIVATES) &&
        (mmemo->attrib & dlpRecAttrSecret)) {
       return;
@@ -742,7 +742,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    /* Do masking like Palm OS 3.5 */
    if ((GPOINTER_TO_INT(data)==COPY_FLAG) || 
        (GPOINTER_TO_INT(data)==MODIFY_FLAG)) {
-      show_priv = show_privates(GET_PRIVATES, NULL);
+      show_priv = show_privates(GET_PRIVATES);
       mmemo = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
       if (mmemo < (MyMemo *)CLIST_MIN_DATA) {
 	 return;
@@ -933,7 +933,7 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
    gtk_clist_freeze(GTK_CLIST(clist));
 
-   show_priv = show_privates(GET_PRIVATES, NULL);
+   show_priv = show_privates(GET_PRIVATES);
 
    for (temp_memo = memo_list; temp_memo; temp_memo=temp_memo->next) {
       if ( ((temp_memo->mmemo.attrib & 0x0F) != category) &&

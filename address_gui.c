@@ -720,7 +720,7 @@ void cb_delete_address(GtkWidget *widget,
       return;
    }
    /* Do masking like Palm OS 3.5 */
-   show_priv = show_privates(GET_PRIVATES, NULL);
+   show_priv = show_privates(GET_PRIVATES);
    if ((show_priv != SHOW_PRIVATES) &&
        (ma->attrib & dlpRecAttrSecret)) {
       return;
@@ -828,7 +828,7 @@ static void cb_add_new_record(GtkWidget *widget,
    /* Do masking like Palm OS 3.5 */
    if ((GPOINTER_TO_INT(data)==COPY_FLAG) || 
        (GPOINTER_TO_INT(data)==MODIFY_FLAG)) {
-      show_priv = show_privates(GET_PRIVATES, NULL);
+      show_priv = show_privates(GET_PRIVATES);
       ma = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
       if (ma < (MyAddress *)CLIST_MIN_DATA) {
 	 return;
@@ -1229,7 +1229,7 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
    entries_shown=0;
 
-   show_priv = show_privates(GET_PRIVATES, NULL);
+   show_priv = show_privates(GET_PRIVATES);
    for (temp_al = addr_list, i=0; temp_al; temp_al=temp_al->next) {
       if ( ((temp_al->ma.attrib & 0x0F) != category) &&
 	  category != CATEGORY_ALL) {

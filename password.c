@@ -165,6 +165,57 @@ void palm_encode_md5(unsigned char *ascii, unsigned char *encoded)
 
 #endif
 
+int verify_password(char *password)
+{
+   int i;
+#ifdef ENABLE_PRIVATE
+   unsigned char encoded[34];
+   char password_lower[PASSWD_LEN+2];
+   const char *pref_password;
+   unsigned char hex_str[68];
+   unsigned long ivalue;
+#endif
+
+#ifdef ENABLE_PRIVATE
+   if (!password) {
+      return FALSE;
+   }
+
+   /* It seems that Palm OS lower cases the password first */
+   /* Yes, I have found this documented on Palms site */
+   for (i=0; i < PASSWD_LEN; i++) {
+      password_lower[i] = tolower(password[i]);
+   }
+
+   /* Check to see that the password matches */
+   palm_encode_hash(password_lower, encoded);
+   bin_to_hex_str(encoded, hex_str, 32);
+   get_pref(PREF_PASSWORD, &ivalue, &pref_password);
+   if (!strcmp(hex_str, pref_password)) {
+      return TRUE;
+   }
+
+# ifdef USB_PILOT_LINK
+   /* We need a new pilot-link > 0.11 for this */
+   /* The Password didn't match.
+    * It could also be an MD5 password.
+    * Try that now.
+    */
+   palm_encode_md5(password, encoded);
+   bin_to_hex_str(encoded, hex_str, 32);
+   hex_str[32]='\0';
+   get_pref(PREF_PASSWORD, &ivalue, &pref_password);
+   if (!strcmp(hex_str, pref_password)) {
+      return TRUE;
+   }
+# endif /* USB_PILOT_LINK */
+   return FALSE;
+#else
+   /* Return TRUE without checking the password */
+   return TRUE;
+#endif
+}
+
 /*
  * hide passed HIDE_PRIVATES will set the hide flag.
  * hide passed SHOW_PRIVATES will unset the hide flag and also need a
@@ -174,24 +225,14 @@ void palm_encode_md5(unsigned char *ascii, unsigned char *encoded)
  * hide passed GET_PRIVATES will return the current hide flag.
  * hide flag is always returned, it is boolean.
  */
-int show_privates(int hide, char *password)
+int show_privates(int hide)
 {
-   int i;
 #ifdef ENABLE_PRIVATE
    static int hidden=HIDE_PRIVATES;
 #else
    static int hidden=SHOW_PRIVATES;
 #endif
    
-#ifdef ENABLE_PRIVATE
-   unsigned char encoded[34];
-   char password_lower[PASSWD_LEN+2];
-   const char *pref_password;
-   unsigned char hex_str[68];
-   unsigned long ivalue;
-   int matched;
-#endif
-
    if (hide==GET_PRIVATES) {
       return hidden;
    }
@@ -205,50 +246,8 @@ int show_privates(int hide, char *password)
    }
    if ( (hide==SHOW_PRIVATES) ||
        ((hide==MASK_PRIVATES) && (hidden!=SHOW_PRIVATES)) ) {
-      /* Need to have the proper password */
-      if (!password) {
-	 return HIDE_PRIVATES;
-      }
 
-#ifdef ENABLE_PRIVATE
-      /* It seems that Palm OS lower cases the password first */
-      /* Yes, I have found this documented on Palms site */
-      for (i=0; i < PASSWD_LEN; i++) {
-	 password_lower[i] = tolower(password[i]);
-      }
-
-      matched=0;
-
-      /* Check to see that the password matches */
-      palm_encode_hash(password_lower, encoded);
-      bin_to_hex_str(encoded, hex_str, 32);
-      get_pref(PREF_PASSWORD, &ivalue, &pref_password);
-      if (!strcmp(hex_str, pref_password)) {
-	 hidden=SHOW_PRIVATES;
-	 matched=1;
-      }
-
-#ifdef USB_PILOT_LINK
-      /* We need a new pilot-link > 0.11 for this */
-      if (!matched) {
-	 /* The Password didn't match.
-	  * It could also be an MD5 password.
-	  * Try that now.
-	  */
-	 palm_encode_md5(password, encoded);
-	 bin_to_hex_str(encoded, hex_str, 32);
-	 hex_str[32]='\0';
-	 get_pref(PREF_PASSWORD, &ivalue, &pref_password);
-	 if (!strcmp(hex_str, pref_password)) {
-	    hidden=SHOW_PRIVATES;
-	    matched=1;
-	 }
-      }
-#endif /* USB_PILOT_LINK */
-#else
-      /* Return show without checking the password */
       hidden=SHOW_PRIVATES;
-#endif
    }
 
    return hidden;
@@ -303,7 +302,7 @@ static gboolean cb_destroy_dialog(GtkWidget *widget)
 /*
  * returns 1 if OK was pressed, 2 if cancel was hit
  */
-int dialog_password(char *ascii_password)
+int dialog_password(char *ascii_password, int retry)
 {
    GtkWidget *button, *label;
    GtkWidget *hbox1, *vbox1;
@@ -342,7 +341,11 @@ int dialog_password(char *ascii_password)
    gtk_box_pack_start(GTK_BOX(vbox1), hbox1, FALSE, FALSE, 2);
 
    /* Label */
-   label = gtk_label_new(_("Enter PalmOS Password"));
+   if (retry) {
+      label = gtk_label_new(_("Incorrect, Reenter PalmOS Password"));
+   } else {
+      label = gtk_label_new(_("Enter PalmOS Password"));
+   }
    gtk_box_pack_start(GTK_BOX(hbox1), label, FALSE, FALSE, 2);
 
    entry = gtk_entry_new_with_max_length(32);

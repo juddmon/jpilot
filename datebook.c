@@ -927,7 +927,7 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
       keep_deleted = deleted;
    }
    if (privates==2) {
-      keep_priv = show_privates(GET_PRIVATES, NULL);
+      keep_priv = show_privates(GET_PRIVATES);
    } else {
       keep_priv = privates;
    }

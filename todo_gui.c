@@ -772,7 +772,7 @@ void cb_delete_todo(GtkWidget *widget,
       return;
    }
    /* Do masking like Palm OS 3.5 */
-   show_priv = show_privates(GET_PRIVATES, NULL);
+   show_priv = show_privates(GET_PRIVATES);
    if ((show_priv != SHOW_PRIVATES) &&
        (mtodo->attrib & dlpRecAttrSecret)) {
       return;
@@ -966,7 +966,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    /* Do masking like Palm OS 3.5 */
    if ((GPOINTER_TO_INT(data)==COPY_FLAG) || 
        (GPOINTER_TO_INT(data)==MODIFY_FLAG)) {
-      show_priv = show_privates(GET_PRIVATES, NULL);
+      show_priv = show_privates(GET_PRIVATES);
       mtodo = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
       if (mtodo < (MyToDo *)CLIST_MIN_DATA) {
 	 return;
@@ -1215,7 +1215,7 @@ static void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    gtk_clist_freeze(GTK_CLIST(clist));
 
    entries_shown=0;
-   show_priv = show_privates(GET_PRIVATES, NULL);
+   show_priv = show_privates(GET_PRIVATES);
    for (temp_todo = todo_list, i=0; temp_todo; temp_todo=temp_todo->next) {
       if ( ((temp_todo->mtodo.attrib & 0x0F) != category) &&
 	  category != CATEGORY_ALL) {

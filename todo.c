@@ -418,7 +418,7 @@ int get_todos2(ToDoList **todo_list, int sort_order,
       keep_deleted = deleted;
    }
    if (privates==2) {
-      keep_priv = show_privates(GET_PRIVATES, NULL);
+      keep_priv = show_privates(GET_PRIVATES);
    } else {
       keep_priv = privates;
    }

@@ -28,11 +28,12 @@
 
 /*
  * hide passed 1 will set the hide flag
- * hide passed 0 will unset the hide flag and also need a correct password
+ * hide passed 0 will unset the hide flag
  * hide passed -1 will return the current hide flag
  * hide flag is always returned
+ * The caller will have to ensure a password wsa entered before calling here
  */
-int show_privates(int hide, char *password);
+int show_privates(int hide);
 
 #ifdef ENABLE_PRIVATE
 void palm_encode_hash(unsigned char *ascii, unsigned char *encoded);
@@ -43,7 +44,9 @@ void palm_encode_md5(unsigned char *ascii, unsigned char *encoded);
 /* len is the length of the bin str, hex_str must be at least twice as long */
 void bin_to_hex_str(unsigned char *bin, char *hex_str, int len);
 
-int dialog_password(char *ascii_password);
+int dialog_password(char *ascii_password, int retry);
+
+int verify_password(char *password);
 
 #endif /* ENABLE_PRIVATE */
 

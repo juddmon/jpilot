@@ -1924,7 +1924,7 @@ static int dayview_update_clist()
 
    gtk_clist_clear(GTK_CLIST(clist));
 
-   show_priv = show_privates(GET_PRIVATES, NULL);
+   show_priv = show_privates(GET_PRIVATES);
 
    for (temp_al = glob_al, i=0; temp_al; temp_al=temp_al->next, i++) {
 #ifdef ENABLE_DATEBK
@@ -2166,7 +2166,7 @@ static void cb_add_new_record(GtkWidget *widget,
    /* Do masking like Palm OS 3.5 */
    if ((GPOINTER_TO_INT(data)==COPY_FLAG) || 
        (GPOINTER_TO_INT(data)==MODIFY_FLAG)) {
-      show_priv = show_privates(GET_PRIVATES, NULL);
+      show_priv = show_privates(GET_PRIVATES);
       ma = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
       if (ma < (MyAppointment *)CLIST_MIN_DATA) {
 	 return;
@@ -2294,7 +2294,7 @@ void cb_delete_appt(GtkWidget *widget, gpointer data)
       return;
    }
    /* Do masking like Palm OS 3.5 */
-   show_priv = show_privates(GET_PRIVATES, NULL);
+   show_priv = show_privates(GET_PRIVATES);
    if ((show_priv != SHOW_PRIVATES) &&
        (ma->attrib & dlpRecAttrSecret)) {
       return;

@@ -546,19 +546,20 @@ static void cb_private(GtkWidget *widget, gpointer data)
 {
    int privates, was_privates;
    char ascii_password[64];
-   int ret;
+   int r_pass, r_dialog;
+   int retry;
 
-   was_privates = privates = show_privates(GET_PRIVATES, NULL);
+   was_privates = privates = show_privates(GET_PRIVATES);
 
    switch (privates) {
     case SHOW_PRIVATES:
-      privates = show_privates(MASK_PRIVATES, NULL);
+      privates = show_privates(MASK_PRIVATES);
       gtk_widget_hide(box_locked);
       gtk_widget_show(box_locked_masked);
       gtk_widget_hide(box_unlocked);
       break;
     case MASK_PRIVATES:
-      privates = show_privates(HIDE_PRIVATES, NULL);
+      privates = show_privates(HIDE_PRIVATES);
       gtk_widget_show(box_locked);
       gtk_widget_hide(box_locked_masked);
       gtk_widget_hide(box_unlocked);
@@ -566,12 +567,19 @@ static void cb_private(GtkWidget *widget, gpointer data)
     case HIDE_PRIVATES:
       /* Ask for the password, or don't depending on configure option */
 #ifdef ENABLE_PRIVATE
-      ret = dialog_password(ascii_password);
+      if (privates==HIDE_PRIVATES) {
+	 retry=FALSE;
+	 do {
+	    r_dialog = dialog_password(ascii_password, retry);
+	    r_pass = verify_password(ascii_password);
+	    retry=TRUE;
+	 } while ((r_pass==FALSE) && (r_dialog==1));
+      }
 #else
-      ret = 1;
+      r_dialog = 1;
 #endif
-      if (ret==1) {
-	 privates = show_privates(SHOW_PRIVATES, ascii_password);
+      if (r_dialog==1) {
+	 privates = show_privates(SHOW_PRIVATES);
 	 if (privates==SHOW_PRIVATES) {
 	    gtk_widget_hide(box_locked);
 	    gtk_widget_hide(box_locked_masked);
