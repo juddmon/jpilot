@@ -2142,8 +2142,6 @@ static int dayview_update_clist()
    GdkBitmap *mask_float_checked;
 #endif
    struct tm new_time;
-   GdkColor color;
-   GdkColormap *colormap;
    int show_priv;
    char str2[DATEBOOK_MAX_COLUMN_LEN];
 
@@ -2226,37 +2224,21 @@ static int dayview_update_clist()
       switch (temp_al->ma.rt) {
        case NEW_PC_REC:
        case REPLACEMENT_PALM_REC:
-	 colormap = gtk_widget_get_colormap(clist);
-	 color.red=CLIST_NEW_RED;
-	 color.green=CLIST_NEW_GREEN;
-	 color.blue=CLIST_NEW_BLUE;
-	 gdk_color_alloc(colormap, &color);
-	 gtk_clist_set_background(GTK_CLIST(clist), i, &color);
+	 set_bg_rbg_clist(clist, i,
+			  CLIST_NEW_RED, CLIST_NEW_GREEN, CLIST_NEW_BLUE);
 	 break;
        case DELETED_PALM_REC:
-	 colormap = gtk_widget_get_colormap(clist);
-	 color.red=CLIST_DEL_RED;
-	 color.green=CLIST_DEL_GREEN;
-	 color.blue=CLIST_DEL_BLUE;
-	 gdk_color_alloc(colormap, &color);
-	 gtk_clist_set_background(GTK_CLIST(clist), i, &color);
+	 set_bg_rbg_clist(clist, i,
+			  CLIST_DEL_RED, CLIST_DEL_GREEN, CLIST_DEL_BLUE);
 	 break;
        case MODIFIED_PALM_REC:
-	 colormap = gtk_widget_get_colormap(clist);
-	 color.red=CLIST_MOD_RED;
-	 color.green=CLIST_MOD_GREEN;
-	 color.blue=CLIST_MOD_BLUE;
-	 gdk_color_alloc(colormap, &color);
-	 gtk_clist_set_background(GTK_CLIST(clist), i, &color);
+	 set_bg_rbg_clist(clist, i,
+			  CLIST_MOD_RED, CLIST_MOD_GREEN, CLIST_MOD_BLUE);
 	 break;
        default:
 	 if (temp_al->ma.attrib & dlpRecAttrSecret) {
-	    colormap = gtk_widget_get_colormap(clist);
-	    color.red=CLIST_PRIVATE_RED;
-	    color.green=CLIST_PRIVATE_GREEN;
-	    color.blue=CLIST_PRIVATE_BLUE;
-	    gdk_color_alloc(colormap, &color);
-	    gtk_clist_set_background(GTK_CLIST(clist), i, &color);
+	    set_bg_rbg_clist(clist, i, 
+			     CLIST_PRIVATE_RED, CLIST_PRIVATE_GREEN, CLIST_PRIVATE_BLUE);
 	 } else {
 	    gtk_clist_set_background(GTK_CLIST(clist), i, NULL);
 	 }

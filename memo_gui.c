@@ -970,8 +970,6 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    char *last;
    gchar *empty_line[] = { "" };
    char str2[MEMO_MAX_COLUMN_LEN];
-   GdkColor color;
-   GdkColormap *colormap;
    MemoList *temp_memo;
    char str[MEMO_CLIST_CHAR_WIDTH+10];
    int len, len1;
@@ -1059,37 +1057,21 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       switch (temp_memo->mmemo.rt) {
        case NEW_PC_REC:
        case REPLACEMENT_PALM_REC:
-	 colormap = gtk_widget_get_colormap(clist);
-	 color.red=CLIST_NEW_RED;
-	 color.green=CLIST_NEW_GREEN;
-	 color.blue=CLIST_NEW_BLUE;
-	 gdk_color_alloc(colormap, &color);
-	 gtk_clist_set_background(GTK_CLIST(clist), entries_shown, &color);
+	 set_bg_rbg_clist(clist, entries_shown,
+			  CLIST_NEW_RED, CLIST_NEW_GREEN, CLIST_NEW_BLUE);
 	 break;
        case DELETED_PALM_REC:
-	 colormap = gtk_widget_get_colormap(clist);
-	 color.red=CLIST_DEL_RED;
-	 color.green=CLIST_DEL_GREEN;
-	 color.blue=CLIST_DEL_BLUE;
-	 gdk_color_alloc(colormap, &color);
-	 gtk_clist_set_background(GTK_CLIST(clist), entries_shown, &color);
+	 set_bg_rbg_clist(clist, entries_shown,
+			  CLIST_DEL_RED, CLIST_DEL_GREEN, CLIST_DEL_BLUE);
 	 break;
        case MODIFIED_PALM_REC:
-	 colormap = gtk_widget_get_colormap(clist);
-	 color.red=CLIST_MOD_RED;
-	 color.green=CLIST_MOD_GREEN;
-	 color.blue=CLIST_MOD_BLUE;
-	 gdk_color_alloc(colormap, &color);
-	 gtk_clist_set_background(GTK_CLIST(clist), entries_shown, &color);
+	 set_bg_rbg_clist(clist, entries_shown,
+			  CLIST_MOD_RED, CLIST_MOD_GREEN, CLIST_MOD_BLUE);
 	 break;
        default:
 	 if (temp_memo->mmemo.attrib & dlpRecAttrSecret) {
-	    colormap = gtk_widget_get_colormap(clist);
-	    color.red=CLIST_PRIVATE_RED;
-	    color.green=CLIST_PRIVATE_GREEN;
-	    color.blue=CLIST_PRIVATE_BLUE;
-	    gdk_color_alloc(colormap, &color);
-	    gtk_clist_set_background(GTK_CLIST(clist), entries_shown, &color);
+	    set_bg_rbg_clist(clist, entries_shown, 
+			     CLIST_PRIVATE_RED, CLIST_PRIVATE_GREEN, CLIST_PRIVATE_BLUE);
 	 } else {
 	    gtk_clist_set_background(GTK_CLIST(clist), entries_shown, NULL);
 	 }
