@@ -1,10 +1,11 @@
-# $Id: Makefile.am,v 1.10 2003/01/14 00:29:48 judd Exp $
+# $Id: Makefile.am,v 1.11 2003/01/14 17:52:44 judd Exp $
 
 SUBDIRS = Expense SyncTime KeyRing docs dialer intl po
 
 EXTRA_DIST = reconf autogen.sh ChangeLog docs empty icons \
 	BUGS jpilot.spec jpilot-col.spec jpilot.kdelnk jpilot.rh7.spec \
 	ChangeLog UPGRADING \
+	jpilot.desktop \
 	jpilotrc.blue jpilotrc.default jpilotrc.green jpilotrc.purple \
 	jpilotrc.steel SlackBuild \
 	intltool-extract.in intltool-merge.in intltool-update.in \
@@ -144,6 +145,9 @@ libtool: $(LIBTOOL_DEPS)
 
 
 ACLOCAL_AMFLAGS = -I m4
+
+desktopdir = $(datadir)/gnome/apps/Applications
+desktop_DATA = jpilot.desktop
 
 ###
 # HTML documentation, etc.
