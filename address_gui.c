@@ -1122,6 +1122,7 @@ void cb_resort(GtkWidget *widget,
 	       gpointer   data)
 {
    int by_company;
+   MyAddress *ma;
 
    by_company=GPOINTER_TO_INT(data);
 
@@ -1132,13 +1133,24 @@ void cb_resort(GtkWidget *widget,
       by_company=!(by_company & 1);
    }
 
+   /* Return to this record after resorting */
+   ma = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
+   if (ma < (MyAddress *)CLIST_MIN_DATA) {
+      glob_find_id = 0;
+   }
+   else {
+      glob_find_id = ma->unique_id;
+   }
+
+   address_clist_redraw();
+   address_find();
+
+   /* Update labels after redrawing clist to work around GTK bug */
    if (by_company) {
       gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, _("Company/Name"));
    } else {
       gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, _("Name/Company"));
    }
-
-   address_clist_redraw();
 }
 
 
