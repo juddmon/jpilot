@@ -162,6 +162,7 @@ base[NORMAL] = { 0.4, 0.2, 0.6 } # bg for calendar
 
   widget_class "GtkWindow" style "window"
   widget_class "GtkDialog" style "window"
+  widget_class "GtkFontSel*" style "notebook"
   widget_class "GtkFileSelection" style "window"
 #  widget_class "*Gtk*Scale" style "scale"
   widget_class "*GtkNotebook" style "notebook"
