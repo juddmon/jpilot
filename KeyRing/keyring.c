@@ -182,8 +182,7 @@ static int pack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size,
    for (i=strlen(kr->name)+1; i<n; i=i+8) {
       /* des_encrypt3((DES_LONG *)&buf[i], s1, s2, s1); */
 #ifdef HEADER_NEW_DES_H
-      DES_ecb3_encrypt((const_des_cblock *)&buf[i], (des_cblock *)(&buf[i]), 
-		       &s1, &s2, &s1, DES_ENCRYPT);
+      DES_ecb3_encrypt(&buf[i], &buf[i], &s1, &s2, &s1, DES_ENCRYPT);
 #else
       des_ecb3_encrypt((const_des_cblock *)&buf[i], (des_cblock *)(&buf[i]),
 		       s1, s2, s1, DES_ENCRYPT);
@@ -281,8 +280,7 @@ static int unpack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size)
       /* des_decrypt3((DES_LONG *)chunk, s1, s2, s1); */
       /* memcpy(clear_text+i, chunk, 8); */
 #ifdef HEADER_NEW_DES_H
-      DES_ecb3_encrypt((const_des_cblock *)&P[i], (DES_cblock *)(clear_text+i),
-		       &s1, &s2, &s1, DES_DECRYPT);
+      DES_ecb3_encrypt(&P[i], clear_text+i, &s1, &s2, &s1, DES_DECRYPT);
 #else
       des_ecb3_encrypt((const_des_cblock *)&P[i], (des_cblock *)(clear_text+i),
 		       s1, s2, s1, DES_DECRYPT);
