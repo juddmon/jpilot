@@ -1128,7 +1128,9 @@ int dialog_generic(GtkWindow *main_window,
 
    gtk_window_set_modal(GTK_WINDOW(glob_dialog), TRUE);
 
-   gtk_window_set_transient_for(GTK_WINDOW(glob_dialog), GTK_WINDOW(main_window));
+   if (main_window) {
+      gtk_window_set_transient_for(GTK_WINDOW(glob_dialog), GTK_WINDOW(main_window));
+   }
    
    frame1 = gtk_frame_new(frame_text);
    gtk_frame_set_label_align(GTK_FRAME(frame1), 0.5, 0.0);
@@ -1179,6 +1181,25 @@ int dialog_generic(GtkWindow *main_window,
 
    return dialog_result;
 }
+
+int dialog_generic_ok(GtkWidget *widget,
+		      char *title, char *frame_text, char *text)
+{
+   GtkWidget *w;
+   int i;
+   char *button_text[] = { gettext_noop("OK") };
+
+   if (widget) {
+      for (w=widget, i=15; w && (i>0); w=w->parent, i--) {
+	 if (GTK_IS_WINDOW(w)) {
+	    return dialog_generic(GTK_WINDOW(w), 0, 0,
+				  title, frame_text, text, 1, button_text);
+	 }
+      }
+   }
+   return dialog_generic(NULL, 0, 0, title, frame_text, text, 1, button_text);
+}
+
 
 /*
  * Widget must be some widget used to get the main window from.

@@ -259,6 +259,14 @@ int dialog_generic(GtkWindow *main_window,
 /*
  * Widget must be some widget used to get the main window from.
  * The main window passed in would be fastest.
+ * This just calls dialog_generic with an OK button.
+ */
+int dialog_generic_ok(GtkWidget *widget,
+		      char *title, char *frame_text, char *text);
+
+/*
+ * Widget must be some widget used to get the main window from.
+ * The main window passed in would be fastest.
  * changed is MODIFY_FLAG, or NEW_FLAG
  */
 int dialog_save_changed_record(GtkWidget *widget, int changed);

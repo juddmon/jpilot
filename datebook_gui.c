@@ -526,7 +526,8 @@ int datebook_import_callback(GtkWidget *parent_window, const char *file_path, in
    if (type==IMPORT_TYPE_DAT) {
       jp_logf(JP_LOG_DEBUG, "Datebok import DAT [%s]\n", file_path);
       if (dat_check_if_dat_file(in)!=DAT_DATEBOOK_FILE) {
-	 jp_logf(JP_LOG_WARN, _("File doesn't appear to be datebook.dat format\n"));
+	 dialog_generic_ok(notebook, NULL, _("Error"),
+			   _("File doesn't appear to be datebook.dat format\n"));
 	 fclose(in);
 	 return 1;
       }
@@ -940,6 +941,7 @@ void appt_export_ok(int type, const char *filename)
 	 break;
        default:
 	 jp_logf(JP_LOG_WARN, "Unknown export type\n");
+	 dialog_generic_ok(notebook, NULL, _("Error"), "Unknown export type");
       }
    }
 
@@ -2067,17 +2069,22 @@ static int get_details(struct Appointment *a, unsigned char *attrib)
 
    /* We won't allow a repeat frequency of less than 1 */
    if ((page != PAGE_NONE) && (a->repeatFrequency < 1)) {
+      char str[200];
       jp_logf(JP_LOG_WARN,
-		  _("You cannot have an appointment that repeats every %d %s(s)\n"),
+	      _("You cannot have an appointment that repeats every %d %s(s)\n"),
+	      a->repeatFrequency, _(period[page]));
+      g_snprintf(str, 200, _("You cannot have an appointment that repeats every %d %s(s)\n"),
 		  a->repeatFrequency, _(period[page]));
+      str[199]='\0';
+      dialog_generic_ok(notebook, NULL, _("Error"), str);
       a->repeatFrequency = 1;
       return -1;
    }
 
    /* We won't allow a weekly repeating that doesn't repeat on any day */
    if ((page == PAGE_WEEK) && (total_repeat_days == 0)) {
-      jp_logf(JP_LOG_WARN,
-		  _("You can not have a weekly repeating appointment that doesn't repeat on any day of the week.\n"));
+      dialog_generic_ok(notebook, NULL, _("Error"),
+			_("You can not have a weekly repeating appointment that doesn't repeat on any day of the week."));
       return -1;
    }
 
