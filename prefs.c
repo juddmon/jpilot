@@ -1,4 +1,4 @@
-/* $Id: prefs.c,v 1.52 2004/12/07 06:51:08 rikster5 Exp $ */
+/* $Id: prefs.c,v 1.53 2004/12/10 02:45:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs.c
@@ -406,8 +406,8 @@ int get_pref_possibility(int which, int n, char *pref_str)
    };
 
    static char *days[] = {
-      gettext_noop("Sunday"),
-      gettext_noop("Monday")
+      N_("Sunday"),
+      N_("Monday")
    };
 
    static const char *rates[] = {

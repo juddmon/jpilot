@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.96 2004/12/10 02:12:13 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.97 2004/12/10 02:45:06 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -213,14 +213,14 @@ int datebook_to_text(struct Appointment *appt, char *text, int len)
 	"Repeat YearlyDay"
    };
    char *days[] = {
-      gettext_noop("Su"),
-      gettext_noop("Mo"),
-      gettext_noop("Tu"),
-      gettext_noop("We"),
-      gettext_noop("Th"),
-      gettext_noop("Fr"),
-      gettext_noop("Sa"),
-      gettext_noop("Su")
+      N_("Su"),
+      N_("Mo"),
+      N_("Tu"),
+      N_("We"),
+      N_("Th"),
+      N_("Fr"),
+      N_("Sa"),
+      N_("Su")
    };
 
    if ((appt->repeatWeekstart<0) ||(appt->repeatWeekstart>6)) {
@@ -660,8 +660,8 @@ void appt_export_ok(int type, const char *filename)
    FILE *out;
    struct stat statb;
    int i, r;
-   char *button_text[]={gettext_noop("OK")};
-   char *button_overwrite_text[]={gettext_noop("Yes"), gettext_noop("No")};
+   char *button_text[]={N_("OK")};
+   char *button_overwrite_text[]={N_("Yes"), N_("No")};
    char text[1024];
    char csv_text[65550];
    char *p;
@@ -1540,18 +1540,16 @@ static void init()
 int dialog_4_or_last(int dow)
 {
    char *days[]={
-      gettext_noop("Sunday"),
-      gettext_noop("Monday"),
-      gettext_noop("Tuesday"),
-      gettext_noop("Wednesday"),
-      gettext_noop("Thursday"),
-      gettext_noop("Friday"),
-      gettext_noop("Saturday")
+      N_("Sunday"),
+      N_("Monday"),
+      N_("Tuesday"),
+      N_("Wednesday"),
+      N_("Thursday"),
+      N_("Friday"),
+      N_("Saturday")
    };
    char text[255];
-   char *button_text[]={
-       gettext_noop("4th"), gettext_noop("Last")
-   };
+   char *button_text[]={N_("4th"), N_("Last")};
 
    sprintf(text,
 	   _("This appointment can either\n"
@@ -1569,16 +1567,13 @@ int dialog_4_or_last(int dow)
 int dialog_current_all_cancel()
 {
    char text[]=
-     /*--------------------------- */
-     gettext_noop("This is a repeating event.\n"
-		  "Do you want to apply these\n"
-		  "changes to just the CURRENT\n"
-		  "event, or ALL of the\n"
-		  "occurrences of this event?");
-   char *button_text[]={
-      gettext_noop("Current"),
-      gettext_noop("All"),
-      gettext_noop("Cancel")
+      /*--------------------------- */
+      N_("This is a repeating event.\n"
+ 	 "Do you want to apply these\n"
+	 "changes to just the CURRENT\n"
+	 "event, or ALL of the\n"
+	 "occurrences of this event?");
+   char *button_text[]={ N_("Current"), N_("All"), N_("Cancel")
    };
 
    return dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(scrolled_window)),
@@ -1819,11 +1814,11 @@ static int appt_get_details(struct Appointment *appt, unsigned char *attrib)
    char null_str[]="";
 #endif
    const char *period[] = {
-      gettext_noop("none"),
-      gettext_noop("day"),
-      gettext_noop("week"),
-      gettext_noop("month"),
-      gettext_noop("year")
+      N_("none"),
+      N_("day"),
+      N_("week"),
+      N_("month"),
+      N_("year")
    };
 
 #ifdef ENABLE_DATEBK
@@ -3973,14 +3968,14 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 #define MAX_STR 100
    char days2[12];
    char *days[] = {
-      gettext_noop("Su"),
-      gettext_noop("Mo"),
-      gettext_noop("Tu"),
-      gettext_noop("We"),
-      gettext_noop("Th"),
-      gettext_noop("Fr"),
-      gettext_noop("Sa"),
-      gettext_noop("Su")
+      N_("Su"),
+      N_("Mo"),
+      N_("Tu"),
+      N_("We"),
+      N_("Th"),
+      N_("Fr"),
+      N_("Sa"),
+      N_("Su")
    };
 
    init();

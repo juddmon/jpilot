@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.102 2004/12/07 06:51:08 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.103 2004/12/10 02:45:06 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -351,8 +351,7 @@ void call_plugin_help(int number)
 {
    struct plugin_s *plugin;
    GList *plugin_list, *temp_list;
-   char *button_text[]={gettext_noop("OK")
-   };
+   char *button_text[]={N_("OK")};
    char *text;
    int width, height;
 
@@ -398,7 +397,7 @@ void cb_print(GtkWidget *widget, gpointer data)
    struct plugin_s *plugin;
    GList *plugin_list, *temp_list;
 #endif
-   char *button_text[]={gettext_noop("OK")};
+   char *button_text[]={N_("OK")};
 
    switch(glob_app) {
     case DATEBOOK:
@@ -466,7 +465,7 @@ void cb_import(GtkWidget *widget, gpointer data)
    struct plugin_s *plugin;
    GList *plugin_list, *temp_list;
 #endif
-   char *button_text[]={gettext_noop("OK")};
+   char *button_text[]={N_("OK")};
 
    switch(glob_app) {
     case DATEBOOK:
@@ -510,7 +509,7 @@ void cb_export(GtkWidget *widget, gpointer data)
    struct plugin_s *plugin;
    GList *plugin_list, *temp_list;
 #endif
-   char *button_text[]={gettext_noop("OK")};
+   char *button_text[]={N_("OK")};
 
    switch(glob_app) {
     case DATEBOOK:
@@ -750,25 +749,21 @@ void cb_sync(GtkWidget *widget, unsigned int flags)
 int bad_sync_exit_status(int exit_status)
 {
    char text1[] =
-     /*-------------------------------------------*/
-     gettext_noop(
-     "This palm doesn't have the same user name\n"
-     "or user ID as the one that was synced the\n"
-     "last time.  Syncing could have unwanted effects."
-     "\n"
-     "Read the user manual if you are uncertain.");
+      /*-------------------------------------------*/
+      N_("This palm doesn't have the same user name\n"
+         "or user ID as the one that was synced the\n"
+         "last time.  Syncing could have unwanted effects."
+         "\n"
+         "Read the user manual if you are uncertain.");
    char text2[] =
-     /*-------------------------------------------*/
-     gettext_noop(
-     "This palm has a NULL user id.\n"
-     "Every palm must have a unique user id in order to sync properly.\n"
-     "If it has been hard reset, use restore from the menu to restore it,\n"
-     "or use pilot-xfer.\n"
-     "To add a user name and ID use install-user, i.e install-user \"name\" 12345.\n"
-     "Read the user manual if you are uncertain.");
-   char *button_text[]={
-      gettext_noop("Cancel Sync"),
-      gettext_noop("Sync Anyway")
+      /*-------------------------------------------*/
+      N_("This palm has a NULL user id.\n"
+         "Every palm must have a unique user id in order to sync properly.\n"
+         "If it has been hard reset, use restore from the menu to restore it,\n"
+         "or use pilot-xfer.\n"
+         "To add a user name and ID use install-user, i.e install-user \"name\" 12345.\n"
+         "Read the user manual if you are uncertain.");
+   char *button_text[]={N_("Cancel Sync"), N_("Sync Anyway")
    };
 
    if (!GTK_IS_WINDOW(window)) {
@@ -991,7 +986,7 @@ static void cb_read_pipe_from_child(gpointer data,
 
 void cb_about(GtkWidget *widget, gpointer data)
 {
-   char *button_text[]={gettext_noop("OK")};
+   char *button_text[]={N_("OK")};
    char about[256];
    char options[1024];
    int w, h;
@@ -2634,7 +2629,7 @@ char *xpm_unlocked[] = {
    {
       long utf_encoding;
       long char_set;
-      char *button_text[]={ gettext_noop("OK, I will do it"), gettext_noop("Don't tell me again!") };
+      char *button_text[]={N_("OK, I will do it"), N_("Don't tell me again!")};
 
       /* get charset to check if a UTF-8 one is used */
       get_pref(PREF_CHAR_SET, &char_set, NULL);

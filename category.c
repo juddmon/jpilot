@@ -1,4 +1,4 @@
-/* $Id: category.c,v 1.19 2004/12/07 06:51:08 rikster5 Exp $ */
+/* $Id: category.c,v 1.20 2004/12/10 02:45:06 rikster5 Exp $ */
 
 /*******************************************************************************
  * category.c
@@ -409,8 +409,8 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
    char currentname[HOSTCATLTH]; /* current category name */
    char previousname[HOSTCATLTH]; /* previous category name */
    char pilotentry[HOSTCATLTH /* yes! */]; /* entry text, in Pilot character set */
-   char *button_text[]={gettext_noop("OK")};
-   char *move_text[]={gettext_noop("Move"), gettext_noop("Delete"), gettext_noop("Cancel")};
+   char *button_text[]={N_("OK")};
+   char *move_text[]={N_("Move"), N_("Delete"), N_("Cancel")};
    char *text;
    const char *entry_text;
    char temp[256];

@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.80 2004/12/07 20:31:40 rikster5 Exp $ */
+/* $Id: utils.c,v 1.81 2004/12/10 02:45:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -1234,7 +1234,7 @@ int dialog_generic(GtkWindow *main_window,
 int dialog_generic_ok(GtkWidget *widget,
 		      char *title, char *frame_text, char *text)
 {
-   char *button_text[] = { gettext_noop("OK") };
+   char *button_text[] = {N_("OK")};
 
    if (widget) {
       return dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(widget))),
@@ -1252,7 +1252,7 @@ int dialog_generic_ok(GtkWidget *widget,
 int dialog_save_changed_record(GtkWidget *widget, int changed)
 {
    int b;
-   char *button_text[]={gettext_noop("Yes"), gettext_noop("No")};
+   char *button_text[] = {N_("Yes"), N_("No")};
 
    b=0;
 

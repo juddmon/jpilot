@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.87 2004/12/10 02:12:13 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.88 2004/12/10 02:45:06 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -683,8 +683,8 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
    char str1[256], str2[256];
    char pref_time[40];
    int i, r, n, len;
-   char *button_text[]={gettext_noop("OK")};
-   char *button_overwrite_text[]={gettext_noop("Yes"), gettext_noop("No")};
+   char *button_text[]={N_("OK")};
+   char *button_overwrite_text[]={N_("Yes"), N_("No")};
    char text[1024];
    char csv_text[65550];
    long char_set, use_jos;

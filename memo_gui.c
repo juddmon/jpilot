@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.69 2004/12/10 02:12:13 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.70 2004/12/10 02:45:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -513,8 +513,8 @@ void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
    const char *short_date;
    time_t ltime;
    struct tm *now;
-   char *button_text[]={gettext_noop("OK")};
-   char *button_overwrite_text[]={gettext_noop("Yes"), gettext_noop("No")};
+   char *button_text[]={N_("OK")};
+   char *button_overwrite_text[]={N_("Yes"), N_("No")};
    char text[1024];
    char str1[256], str2[256];
    char pref_time[40];
