@@ -78,6 +78,8 @@ static int DB_APPT_COLUMN=3;
 extern GtkTooltips *glob_tooltips;
 
 static GtkWidget *pane;
+static GtkWidget *todo_pane;
+static GtkWidget *todo_vbox;
 
 static void highlight_days();
 
@@ -99,7 +101,6 @@ static void connect_changed_signals(int con_or_dis);
 static GtkWidget *main_calendar;
 static GtkWidget *dow_label;
 static GtkWidget *clist;
-static GtkWidget *todo_clist;
 static GtkWidget *text_widget1, *text_widget2;
 static GtkWidget *private_checkbox;
 static GtkWidget *check_button_alarm;
@@ -141,7 +142,6 @@ static GtkWidget *datebk_entry;
 static GtkWidget *hbox_alarm1, *hbox_alarm2;
 
 static GtkWidget *scrolled_window;
-static GtkWidget *todo_scrolled_window;
 
 static struct tm begin_date, end_date;
 static GtkWidget *option1, *option2, *option3, *option4;
@@ -156,6 +156,11 @@ static GtkWidget *add_record_button;
 static GtkAccelGroup *accel_group;
 
 static AppointmentList *glob_al;
+
+/* For todo list */
+static GtkWidget *todo_clist;
+static GtkWidget *show_todos_button;
+static GtkWidget *todo_scrolled_window;
 static ToDoList *datebook_todo_list=NULL;
 
 int datebook_to_text(struct Appointment *a, char *text, int len)
@@ -3320,8 +3325,14 @@ int datebook_gui_cleanup()
    connect_changed_signals(DISCONNECT_SIGNALS);
 #ifdef ENABLE_GTK2
    set_pref(PREF_DATEBOOK_PANE, gtk_paned_get_position(GTK_PANED(pane)), NULL, TRUE);
+   if (GTK_TOGGLE_BUTTON(show_todos_button)->active) {
+      set_pref(PREF_DATEBOOK_TODO_PANE, gtk_paned_get_position(GTK_PANED(todo_pane)), NULL, TRUE);
+   }
 #else
    set_pref(PREF_DATEBOOK_PANE, GTK_PANED(pane)->handle_xpos, NULL, TRUE);
+   if (GTK_TOGGLE_BUTTON(show_todos_button)->active) {
+      set_pref(PREF_DATEBOOK_TODO_PANE, GTK_PANED(todo_pane)->handle_ypos, NULL, TRUE);
+   }
 #endif
 #ifdef ENABLE_DATEBK
    if (GTK_IS_WIDGET(window_date_cats)) {
@@ -3594,6 +3605,34 @@ static void cb_todo_clist_selection(GtkWidget      *clist,
    glob_find_id = mtodo->unique_id;
    cb_app_button(NULL, GINT_TO_POINTER(TODO));
 }
+
+void cb_todos_show(GtkWidget *widget, gpointer data)
+{
+   int w, h;
+   long ivalue;
+   const char *svalue;
+
+   set_pref(PREF_DATEBOOK_TODO_SHOW, GTK_TOGGLE_BUTTON(show_todos_button)->active, NULL, TRUE);
+
+   if (!(GTK_TOGGLE_BUTTON(show_todos_button)->active)) {
+#ifdef ENABLE_GTK2
+      set_pref(PREF_DATEBOOK_TODO_PANE, gtk_paned_get_position(GTK_PANED(todo_pane)), NULL, TRUE);
+#else
+      set_pref(PREF_DATEBOOK_TODO_PANE, GTK_PANED(todo_pane)->handle_ypos, NULL, TRUE);
+#endif
+   }
+   if (GTK_TOGGLE_BUTTON(widget)->active) {
+      get_pref(PREF_DATEBOOK_TODO_PANE, &ivalue, &svalue);
+      gtk_paned_set_position(GTK_PANED(todo_pane), ivalue + 2);
+      gtk_widget_show_all(GTK_WIDGET(todo_vbox));
+   } else {
+      gtk_widget_hide_all(GTK_WIDGET(todo_vbox));
+      /* This shouldn't need to be done in gtk2 */
+      gtk_widget_set_usize(todo_vbox, 1, 1);
+      gdk_window_get_size(gtk_widget_get_toplevel(widget)->window, &w, &h);
+      gtk_paned_set_position(GTK_PANED(todo_pane), h+2);
+   }
+}
 /*
  * End TODO code
  */
@@ -3669,20 +3708,24 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 #endif
 
    pane = gtk_hpaned_new();
+   todo_pane = gtk_vpaned_new();
    get_pref(PREF_DATEBOOK_PANE, &ivalue, &svalue);
    gtk_paned_set_position(GTK_PANED(pane), ivalue + 2);
 
-   gtk_box_pack_start(GTK_BOX(hbox), pane, TRUE, TRUE, 5);
+   get_pref(PREF_DATEBOOK_TODO_PANE, &ivalue, &svalue);
+   gtk_paned_set_position(GTK_PANED(todo_pane), ivalue + 2);
 
+   gtk_box_pack_start(GTK_BOX(hbox), pane, TRUE, TRUE, 5);
    hbox2 = gtk_hbox_new(FALSE, 0);
    vbox1 = gtk_vbox_new(FALSE, 0);
    vbox2 = gtk_vbox_new(FALSE, 0);
+   todo_vbox = gtk_vbox_new(FALSE, 0);
 
-   gtk_paned_pack1(GTK_PANED(pane), vbox1, TRUE, FALSE);
+   gtk_paned_pack1(GTK_PANED(todo_pane), vbox1, TRUE, FALSE);
+   gtk_paned_pack2(GTK_PANED(todo_pane), todo_vbox, TRUE, FALSE);
+
+   gtk_paned_pack1(GTK_PANED(pane), todo_pane, TRUE, FALSE);
    gtk_paned_pack2(GTK_PANED(pane), vbox2, TRUE, FALSE);
-
-   separator = gtk_hseparator_new();
-   gtk_box_pack_start(GTK_BOX(vbox1), separator, FALSE, FALSE, 5);
 
    /* Make the Today is: label */
    time(&ltime);
@@ -3698,7 +3741,6 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_box_pack_start(GTK_BOX(vbox1), separator, FALSE, FALSE, 5);
 
    gtk_box_pack_start(GTK_BOX(vbox1), hbox2, FALSE, FALSE, 3);
-
 
    /* Make the main calendar */
    hbox_temp = gtk_hbox_new(FALSE, 0);
@@ -3716,9 +3758,6 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 				GTK_CALENDAR_SHOW_DAY_NAMES |
 				GTK_CALENDAR_SHOW_WEEK_NUMBERS | fdow);
    gtk_box_pack_start(GTK_BOX(hbox_temp), main_calendar, FALSE, FALSE, 0);
-
-   /* The focus doesn't do any good on the application button */
-   gtk_widget_grab_focus(GTK_WIDGET(main_calendar));
 
    /* Make accelerators for some buttons window */
    accel_group = gtk_accel_group_new();
@@ -3838,13 +3877,20 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    
    /*
+    * Hide ToDo button
+    */
+   show_todos_button = gtk_check_button_new_with_label(_("Show ToDos"));
+   gtk_box_pack_start(GTK_BOX(vbox1), show_todos_button, FALSE, FALSE, 0);
+   gtk_signal_connect(GTK_OBJECT(show_todos_button), "clicked",
+		      GTK_SIGNAL_FUNC(cb_todos_show), NULL);
+   /*
     * Put up a ToDo clist
     */
    todo_scrolled_window = gtk_scrolled_window_new(NULL, NULL);
    gtk_container_set_border_width(GTK_CONTAINER(todo_scrolled_window), 0);
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(todo_scrolled_window),
 				  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-   gtk_box_pack_start(GTK_BOX(vbox1), todo_scrolled_window, TRUE, TRUE, 0);
+   gtk_box_pack_start(GTK_BOX(todo_vbox), todo_scrolled_window, TRUE, TRUE, 0);
 
    todo_clist = gtk_clist_new_with_titles(5, titles);
 
@@ -4310,6 +4356,14 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_widget_hide(add_record_button);
    gtk_widget_hide(apply_record_button);
 
+   get_pref(PREF_DATEBOOK_TODO_SHOW, &ivalue, &svalue);
+   if (!ivalue) {
+      gtk_widget_hide_all(todo_vbox);
+      gtk_paned_set_position(GTK_PANED(todo_pane), 100000);
+   } else {
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(show_todos_button), TRUE);
+   }
+   
    gtk_text_set_editable(GTK_TEXT(text_widget1), TRUE);
    gtk_text_set_editable(GTK_TEXT(text_widget2), TRUE);
 
@@ -4322,6 +4376,9 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 		      GINT_TO_POINTER(CAL_DAY_SELECTED));
 
    set_date_labels();
+
+   /* The focus doesn't do any good on the application button */
+   gtk_widget_grab_focus(GTK_WIDGET(main_calendar));
 
    return 0;
 }
