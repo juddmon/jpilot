@@ -66,7 +66,7 @@ static void cb_pref_menu(GtkWidget *widget,
    pref = GPOINTER_TO_INT(data);
    value = pref & 0xFF;
    pref = pref >> 8;
-   set_pref_possibility(pref, value);
+   set_pref_possibility(pref, value, TRUE);
    jpilot_logf(LOG_DEBUG, "pref %d, value %d\n", pref, value);
 #ifdef COLORS
    if (pref==PREF_RCFILE) {
@@ -137,47 +137,47 @@ int make_pref_menu(GtkWidget **pref_menu, int pref_num)
 void cb_show_deleted(GtkWidget *widget,
 		     gpointer data)
 {
-   set_pref(PREF_SHOW_DELETED, GTK_TOGGLE_BUTTON(widget)->active, NULL);
+   set_pref(PREF_SHOW_DELETED, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
 }
 void cb_show_modified(GtkWidget *widget,
 		      gpointer data)
 {
-   set_pref(PREF_SHOW_MODIFIED, GTK_TOGGLE_BUTTON(widget)->active, NULL);
+   set_pref(PREF_SHOW_MODIFIED, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
 }
 void cb_highlight(GtkWidget *widget,
 		  gpointer data)
 {
-   set_pref(PREF_HIGHLIGHT, GTK_TOGGLE_BUTTON(widget)->active, NULL);
+   set_pref(PREF_HIGHLIGHT, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
 }
 void cb_use_db3(GtkWidget *widget,
 		gpointer data)
 {
-   set_pref(PREF_USE_DB3, GTK_TOGGLE_BUTTON(widget)->active, NULL);
+   set_pref(PREF_USE_DB3, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
 }
 void cb_sync_datebook(GtkWidget *widget,
 		      gpointer data)
 {
-   set_pref(PREF_SYNC_DATEBOOK, GTK_TOGGLE_BUTTON(widget)->active, NULL);
+   set_pref(PREF_SYNC_DATEBOOK, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
 }
 void cb_sync_address(GtkWidget *widget,
 		     gpointer data)
 {
-   set_pref(PREF_SYNC_ADDRESS, GTK_TOGGLE_BUTTON(widget)->active, NULL);
+   set_pref(PREF_SYNC_ADDRESS, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
 }
 void cb_sync_todo(GtkWidget *widget,
 		  gpointer data)
 {
-   set_pref(PREF_SYNC_TODO, GTK_TOGGLE_BUTTON(widget)->active, NULL);
+   set_pref(PREF_SYNC_TODO, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
 }
 void cb_sync_memo(GtkWidget *widget,
 		  gpointer data)
 {
-   set_pref(PREF_SYNC_MEMO, GTK_TOGGLE_BUTTON(widget)->active, NULL);
+   set_pref(PREF_SYNC_MEMO, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
 }
 void cb_sync_memo32(GtkWidget *widget,
 		    gpointer data)
 {
-   set_pref(PREF_SYNC_MEMO32, GTK_TOGGLE_BUTTON(widget)->active, NULL);
+   set_pref(PREF_SYNC_MEMO32, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
 }
 #ifdef ENABLE_PLUGINS
 void cb_sync_plugin(GtkWidget *widget,
@@ -211,12 +211,12 @@ void cb_sync_plugin(GtkWidget *widget,
 void cb_open_alarm(GtkWidget *widget,
 		   gpointer data)
 {
-   set_pref(PREF_OPEN_ALARM_WINDOWS, GTK_TOGGLE_BUTTON(widget)->active, NULL);
+   set_pref(PREF_OPEN_ALARM_WINDOWS, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
 }
 void cb_do_command(GtkWidget *widget,
 		   gpointer data)
 {
-   set_pref(PREF_DO_ALARM_COMMAND, GTK_TOGGLE_BUTTON(widget)->active, NULL);
+   set_pref(PREF_DO_ALARM_COMMAND, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
 }
 
 
@@ -231,11 +231,11 @@ static gboolean cb_destroy(GtkWidget *widget)
 
    entry_text = gtk_entry_get_text(GTK_ENTRY(port_entry));
    jpilot_logf(LOG_DEBUG, "port_entry = [%s]\n", entry_text);
-   set_pref(PREF_PORT, 0, entry_text);
+   set_pref(PREF_PORT, 0, entry_text, FALSE);
 
    entry_text = gtk_entry_get_text(GTK_ENTRY(alarm_command_entry));
    jpilot_logf(LOG_DEBUG, "alarm_command_entry = [%s]\n", entry_text);
-   set_pref(PREF_ALARM_COMMAND, 0, entry_text);
+   set_pref(PREF_ALARM_COMMAND, 0, entry_text, FALSE);
 
    backups_text = gtk_entry_get_text(GTK_ENTRY(backups_entry));
    jpilot_logf(LOG_DEBUG, "backups_entry = [%s]\n", backups_text);
@@ -246,7 +246,7 @@ static gboolean cb_destroy(GtkWidget *widget)
    if (num_backups > 99) {
       num_backups = 99;
    }
-   set_pref(PREF_NUM_BACKUPS, num_backups, NULL);
+   set_pref(PREF_NUM_BACKUPS, num_backups, NULL, TRUE);
 
    pref_write_rc_file();
 

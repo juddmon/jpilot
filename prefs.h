@@ -96,10 +96,10 @@ void pref_init();
 int pref_read_rc_file();
 int pref_write_rc_file();
 int get_pref(int which, long *n, const char **ret);
-int set_pref(int which, long n, const char *string);
+int set_pref(int which, long n, const char *string, int save);
 
 /* Specialized functions */
-int set_pref_possibility(int which, long n);
+int set_pref_possibility(int which, long n, int save);
 int get_pref_possibility(int which, int n, char *ret);
 int get_pref_dmy_order();
 int get_pref_time_no_secs(char *datef);

@@ -55,15 +55,15 @@ static gboolean cb_destroy(GtkWidget *widget)
    if (radio_button_one) {
       if (GTK_TOGGLE_BUTTON(radio_button_one)->active) {
 	 jpilot_logf(LOG_DEBUG, "print one");
-	 set_pref(PREF_PRINT_THIS_MANY, 1, NULL);
+	 set_pref(PREF_PRINT_THIS_MANY, 1, NULL, FALSE);
       }
       if (GTK_TOGGLE_BUTTON(radio_button_shown)->active) {
 	 jpilot_logf(LOG_DEBUG, "print shown");
-	 set_pref(PREF_PRINT_THIS_MANY, 2, NULL);
+	 set_pref(PREF_PRINT_THIS_MANY, 2, NULL, FALSE);
       }
       if (GTK_TOGGLE_BUTTON(radio_button_all)->active) {
 	 jpilot_logf(LOG_DEBUG, "print all");
-	 set_pref(PREF_PRINT_THIS_MANY, 3, NULL);
+	 set_pref(PREF_PRINT_THIS_MANY, 3, NULL, FALSE);
       }
    }
 
@@ -87,9 +87,9 @@ static gboolean cb_destroy(GtkWidget *widget)
    if (one_record_checkbutton) {
       if (GTK_TOGGLE_BUTTON(one_record_checkbutton)->active) {
 	 jpilot_logf(LOG_DEBUG, "one record per page");
-	 set_pref(PREF_PRINT_ONE_PER_PAGE, 1, NULL);
+	 set_pref(PREF_PRINT_ONE_PER_PAGE, 1, NULL, FALSE);
       } else {
-	 set_pref(PREF_PRINT_ONE_PER_PAGE, 0, NULL);
+	 set_pref(PREF_PRINT_ONE_PER_PAGE, 0, NULL, FALSE);
       }
    }
 
@@ -105,13 +105,13 @@ static gboolean cb_destroy(GtkWidget *widget)
 	 num_lines = 99;
       }
 
-      set_pref(PREF_NUM_BLANK_LINES, num_lines, NULL);
+      set_pref(PREF_NUM_BLANK_LINES, num_lines, NULL, FALSE);
    }
 
    /* Get print command */
    entry_text = gtk_entry_get_text(GTK_ENTRY(print_command_entry));
    jpilot_logf(LOG_DEBUG, "print_command_entry = [%s]\n", entry_text);
-   set_pref(PREF_PRINT_COMMAND, 0, entry_text);
+   set_pref(PREF_PRINT_COMMAND, 0, entry_text, TRUE);
 
    window = NULL;
    gtk_main_quit();

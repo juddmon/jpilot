@@ -169,7 +169,7 @@ cb_quit(GtkWidget *widget,
       }
    }
 
-   set_pref(PREF_MEMO_IMPORT_PATH, 0, dir);
+   set_pref(PREF_MEMO_IMPORT_PATH, 0, dir, TRUE);
 
    filew = NULL;
    gtk_widget_destroy(data);

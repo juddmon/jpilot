@@ -818,7 +818,7 @@ static void cb_read_pipe_from_child(gpointer data,
 	    num = sscanf(Pstr1, "%ld", &user_id);
 	    if (num > 0) {
 	       jpilot_logf(LOG_DEBUG, "pipe_read: user id = %ld\n", user_id);
-	       set_pref(PREF_USER_ID, user_id, NULL);
+	       set_pref(PREF_USER_ID, user_id, NULL, TRUE);
 	    } else {
 	       jpilot_logf(LOG_DEBUG, "pipe_read: trouble reading user id\n");
 	    }
@@ -837,7 +837,7 @@ static void cb_read_pipe_from_child(gpointer data,
 		  strncpy(user, Pstr2, user_len);
 		  user[user_len] = '\0';
 		  jpilot_logf(LOG_DEBUG, "pipe_read: user = %s\n", user);
-		  set_pref(PREF_USER, 0, user);
+		  set_pref(PREF_USER, 0, user, TRUE);
 	       }
 	    }
 	    break;
@@ -855,7 +855,7 @@ static void cb_read_pipe_from_child(gpointer data,
 		  strncpy(password, Pstr2, password_len);
 		  password[password_len] = '\0';
 		  jpilot_logf(LOG_DEBUG, "pipe_read: password = %s\n", password);
-		  set_pref(PREF_PASSWORD, 0, password);
+		  set_pref(PREF_PASSWORD, 0, password, TRUE);
 	       }
 	    }
 	    break;
@@ -890,7 +890,7 @@ static void cb_read_pipe_from_child(gpointer data,
 		  sprintf(command_str, "%d:\n", PIPE_SYNC_CANCEL);
 	       }
 	       write(pipe_to_child, command_str, strlen(command_str));
-	       fdatasync(pipe_to_child);
+	       fsync(pipe_to_child);
 	    }
 	    break;
 	  case PIPE_FINISHED:
@@ -1226,10 +1226,9 @@ static void delete_event(GtkWidget *widget, GdkEvent *event, gpointer data)
    jpilot_logf(LOG_DEBUG, "x=%d, y=%d\n", x, y);
 
    gdk_window_get_size(window->window, &pw, &ph);
-   set_pref(PREF_WINDOW_WIDTH, pw, NULL);
-   set_pref(PREF_WINDOW_HEIGHT, ph, NULL);
-
-   set_pref(PREF_LAST_APP, glob_app, NULL);
+   set_pref(PREF_WINDOW_WIDTH, pw, NULL, FALSE);
+   set_pref(PREF_WINDOW_HEIGHT, ph, NULL, FALSE);
+   set_pref(PREF_LAST_APP, glob_app, NULL, TRUE);
 
    gui_cleanup();
 
@@ -1271,7 +1270,7 @@ void cb_output(GtkWidget *widget, gpointer data)
       jpilot_logf(LOG_DEBUG,"paned pos = %d\n", GTK_PANED(output_pane)->handle_ypos);
       gdk_window_get_size(window->window, &w, &h);
       output_height = h - GTK_PANED(output_pane)->handle_ypos;
-      set_pref(PREF_OUTPUT_HEIGHT, output_height, NULL);
+      set_pref(PREF_OUTPUT_HEIGHT, output_height, NULL, TRUE);
       if (flags==OUTPUT_MINIMIZE) {
 	 gtk_paned_set_position(GTK_PANED(output_pane), h + 2);
       }

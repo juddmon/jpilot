@@ -135,12 +135,12 @@ static gboolean cb_destroy_dialog(GtkWidget *widget)
    if (Pdata->button_hit==DIALOG_SAID_2) {
       remind = atoi(entry);
       jpilot_logf(LOG_DEBUG, "remind entry = [%s]\n", entry);
-      set_pref(PREF_REMIND_IN, 0, entry);
+      set_pref(PREF_REMIND_IN, 0, entry, TRUE);
       if (GTK_TOGGLE_BUTTON(Pdata->radio1)->active) {
-	 set_pref(PREF_REMIND_UNITS, 0, NULL);
+	 set_pref(PREF_REMIND_UNITS, 0, NULL, TRUE);
 	 remind *= 60;
       } else {
-	 set_pref(PREF_REMIND_UNITS, 1, NULL);
+	 set_pref(PREF_REMIND_UNITS, 1, NULL, TRUE);
 	 remind *= 3600;
       }
       time(&ltime);

@@ -73,7 +73,7 @@ cb_export_browse_ok(GtkWidget *widget,
    glob_export_browse_pressed=BROWSE_OK;
    if (glob_pref_export) {
       sel = gtk_file_selection_get_filename(GTK_FILE_SELECTION(data));
-      set_pref(glob_pref_export, 0, sel);
+      set_pref(glob_pref_export, 0, sel, TRUE);
    }
    gtk_widget_destroy(data);
 }
@@ -230,6 +230,7 @@ int export_gui(int w, int h, int x, int y,
    GtkWidget *scrolled_window;
    GtkWidget *label;
    GSList *group;
+   //undo fix this
    char *type_text[]={"Text", "CSV", NULL};
    int type_int[]={EXPORT_TYPE_TEXT, EXPORT_TYPE_CSV};
    int i;

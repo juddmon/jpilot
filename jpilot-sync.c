@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
 	    strncpy(port, argv[i], MAX_PREF_VALUE);
 	    port[MAX_PREF_VALUE-1]='\0';
 	    /* Prefs are not saved, so this is not persistent */
-	    set_pref(PREF_PORT, 0, port);
+	    set_pref(PREF_PORT, 0, port, FALSE);
 	 }
       }
    }

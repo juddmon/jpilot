@@ -569,17 +569,13 @@ int jp_set_pref(prefType prefs[], int which, long n, const char *string)
       pref_lstrncpy_realloc(&(prefs[which].svalue), Pstr,
 			    &(prefs[which].svalue_size), MAX_PREF_VALUE);
    }
-   /* #ifdef PROMETHEON */
-   /* Some people like to just kill the window manager */
-   /* Prometheon kills us, always be prepared for death */
-   pref_write_rc_file();
-   /* #endif */
    return 0;
 }
 
-int set_pref(int which, long n, const char *string)
+int set_pref(int which, long n, const char *string, int save)
 {
    const char *str;
+   int r;
 
    if (which > NUM_PREFS) {
       return -1;
@@ -590,16 +586,25 @@ int set_pref(int which, long n, const char *string)
        (which==PREF_LONGDATE) ||
        (which==PREF_TIME) ||
        (which==PREF_PAPER_SIZE)) {
-      set_pref_possibility(which, n);
+      set_pref_possibility(which, n, FALSE);
       str=glob_prefs[which].svalue;
    }
-   return jp_set_pref(glob_prefs, which, n, str);
+   r = jp_set_pref(glob_prefs, which, n, str);
+   /* #ifdef PROMETHEON */
+   /* Some people like to just kill the window manager */
+   /* Prometheon kills us, always be prepared for death */
+   if (save) {
+      pref_write_rc_file();
+   }
+   /* #endif */
+   return r;
 }
 
-int set_pref_possibility(int which, long n)
+int set_pref_possibility(int which, long n, int save)
 {
    char svalue[MAX_PREF_VALUE];
    char *str=NULL;
+   int r;
 
    if (which > NUM_PREFS) {
       return -1;
@@ -608,7 +613,15 @@ int set_pref_possibility(int which, long n)
       get_pref_possibility(which, n, svalue);
       str=svalue;
    }
-   return jp_set_pref(glob_prefs, which, n, str);
+   r = jp_set_pref(glob_prefs, which, n, str);
+   /* #ifdef PROMETHEON */
+   /* Some people like to just kill the window manager */
+   /* Prometheon kills us, always be prepared for death */
+   if (save) {
+      pref_write_rc_file();
+   }
+   /* #endif */
+   return r;
 }
 
 static int validate_glob_prefs()
