@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Id: Makefile.in,v 1.10 2002/12/20 20:06:52 judd Exp $
+# $Id: Makefile.in,v 1.11 2003/01/08 06:52:14 judd Exp $
 SHELL = @SHELL@
 
 srcdir = @srcdir@
@@ -111,14 +111,13 @@ INTL_LIBTOOL_SUFFIX_PREFIX = @INTL_LIBTOOL_SUFFIX_PREFIX@
 LIBICONV = @LIBICONV@
 LIBTOOL = @LIBTOOL@
 LN_S = @LN_S@
-MAKE_KEYRING = @MAKE_KEYRING@
 MKINSTALLDIRS = @MKINSTALLDIRS@
 MSGFMT = @MSGFMT@
 OBJDUMP = @OBJDUMP@
 PACKAGE = @PACKAGE@
 PILOT_FLAGS = @PILOT_FLAGS@
 PILOT_LIBS = @PILOT_LIBS@
-PLUGIN_SUPPORT = @PLUGIN_SUPPORT@
+PKG_CONFIG = @PKG_CONFIG@
 POFILES = @POFILES@
 POSUB = @POSUB@
 PROGNAME = @PROGNAME@
@@ -132,15 +131,16 @@ am__quote = @am__quote@
 ccoptions = @ccoptions@
 cflags = @cflags@
 install_sh = @install_sh@
-
-lib_LTLIBRARIES = libkeyring.la
-
-EXTRA_DIST = README.txt
-
-libkeyring_la_SOURCES = keyring.c
+plugin_support = @plugin_support@
 
 CFLAGS = -Wall @CFLAGS@ @ccoptions@ @PILOT_FLAGS@ @GTK_CFLAGS@ -I$(top_srcdir)
 LDFLAGS = -lcrypto
+
+EXTRA_DIST = README.txt
+
+@MAKE_KEYRING_TRUE@lib_LTLIBRARIES = libkeyring.la
+
+@MAKE_KEYRING_TRUE@libkeyring_la_SOURCES = keyring.c
 subdir = KeyRing
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
@@ -149,7 +149,7 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 
 libkeyring_la_LDFLAGS =
 libkeyring_la_LIBADD =
-am_libkeyring_la_OBJECTS = keyring.lo
+@MAKE_KEYRING_TRUE@am_libkeyring_la_OBJECTS = keyring.lo
 libkeyring_la_OBJECTS = $(am_libkeyring_la_OBJECTS)
 
 DEFS = @DEFS@

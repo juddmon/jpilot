@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Id: Makefile.in,v 1.14 2002/12/20 20:03:37 judd Exp $
+# $Id: Makefile.in,v 1.15 2003/01/08 06:52:14 judd Exp $
 SHELL = @SHELL@
 
 srcdir = @srcdir@
@@ -66,7 +66,6 @@ host_triplet = @host@
 EXEEXT = @EXEEXT@
 OBJEXT = @OBJEXT@
 PATH_SEPARATOR = @PATH_SEPARATOR@
-
 libdir = $(prefix)/lib/jpilot/plugins
 ABILIB = @ABILIB@
 AMTAR = @AMTAR@
@@ -112,14 +111,13 @@ INTL_LIBTOOL_SUFFIX_PREFIX = @INTL_LIBTOOL_SUFFIX_PREFIX@
 LIBICONV = @LIBICONV@
 LIBTOOL = @LIBTOOL@
 LN_S = @LN_S@
-MAKE_KEYRING = @MAKE_KEYRING@
 MKINSTALLDIRS = @MKINSTALLDIRS@
 MSGFMT = @MSGFMT@
 OBJDUMP = @OBJDUMP@
 PACKAGE = @PACKAGE@
 PILOT_FLAGS = @PILOT_FLAGS@
 PILOT_LIBS = @PILOT_LIBS@
-PLUGIN_SUPPORT = @PLUGIN_SUPPORT@
+PKG_CONFIG = @PKG_CONFIG@
 POFILES = @POFILES@
 POSUB = @POSUB@
 PROGNAME = @PROGNAME@
@@ -133,12 +131,13 @@ am__quote = @am__quote@
 ccoptions = @ccoptions@
 cflags = @cflags@
 install_sh = @install_sh@
-
-lib_LTLIBRARIES = libexpense.la
-
-libexpense_la_SOURCES = expense.c
+plugin_support = @plugin_support@
 
 CFLAGS = -Wall @CFLAGS@ @ccoptions@ @PILOT_FLAGS@ @GTK_CFLAGS@ -I$(top_srcdir)
+
+@MAKE_EXPENSE_TRUE@lib_LTLIBRARIES = libexpense.la
+
+@MAKE_EXPENSE_TRUE@libexpense_la_SOURCES = expense.c
 subdir = Expense
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
@@ -147,7 +146,7 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 
 libexpense_la_LDFLAGS =
 libexpense_la_LIBADD =
-am_libexpense_la_OBJECTS = expense.lo
+@MAKE_EXPENSE_TRUE@am_libexpense_la_OBJECTS = expense.lo
 libexpense_la_OBJECTS = $(am_libexpense_la_OBJECTS)
 
 DEFS = @DEFS@

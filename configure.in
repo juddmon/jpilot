@@ -27,6 +27,9 @@ else
    AC_DEFINE_UNQUOTED(BASE_DIR, "$prefix", [ BASE_DIR ])
 fi
 
+dnl ******************************
+dnl * dialer conditional
+dnl ******************************
 dnl check operating system for jpilot-dialer
 case "${build_os}" in
   linux-gnu)     dialer=yes ;;
@@ -52,7 +55,9 @@ AC_SUBST(ccoptions)
 cflags=$CFLAGS
 AC_SUBST(cflags)
 
-dnl start gettext
+dnl ******************************
+dnl * start gettext
+dnl ******************************
 AC_PROG_INTLTOOL
 
 dnl Set of available languages
@@ -76,8 +81,13 @@ AC_SUBST(GLIBC21)
 AC_SUBST(INTL_LIBTOOL_SUFFIX_PREFIX)
 AC_SUBST(INTLBISON)
 
-dnl end gettext
+dnl ******************************
+dnl * end gettext
+dnl ******************************
 
+dnl ******************************
+dnl * pilot-link libs
+dnl ******************************
 dnl Check for pilot-link libs
 pilot_prefix=""
 AC_ARG_WITH(pilot_prefix,
@@ -112,7 +122,8 @@ else
 fi
 
 
-dnl Maybe installed
+dnl pilot-link maybe installed at this point
+
 AC_MSG_CHECKING(for pilot library files)
 pilotlibs=${FORCE_PILOT_LIBS:-no}
 PILOT_LIBS="-lpisock"
@@ -180,9 +191,9 @@ if test "x$enable_pl_test" = "xyes"; then
       AC_SUBST(PILOT_LIBS)
    fi
 
-   dnl *************************
+   dnl ******************************
    dnl * Try to run a pilot-link program (tests dynamic linking)
-   dnl *************************
+   dnl ******************************
 
    AC_MSG_CHECKING(running a pilot-link program )
    AC_TRY_RUN([
@@ -264,14 +275,18 @@ fi
 CFLAGS="$save_CFLAGS"
 LIBS="$save_LIBS"
 
-#
-# Enable/Disable features
-#
+   dnl ******************************
+   dnl * End pilot-links tests
+   dnl ******************************
+
+dnl ******************************
+dnl * Enable/Disable features
+dnl ******************************
 
 AC_ARG_ENABLE(plugins, [  --disable-plugins       Do not compile plugin support],
 enable_plugins=no, enable_plugins=yes)
 
-PLUGIN_SUPPORT=0
+plugin_support=no
 
 if test "x$enable_plugins" = "xyes"; then
 #   dnl Check for shared library calls
@@ -293,8 +308,8 @@ if test "x$enable_plugins" = "xyes"; then
 
    if test "x$have_dlopen" = "xyes"; then
       AC_DEFINE(ENABLE_PLUGINS, 1, [ plugin support ])
-      PLUGIN_SUPPORT=1
-      AC_SUBST(PLUGIN_SUPPORT)
+      plugin_support="yes"
+      AC_SUBST(plugin_support)
    else
       AC_MSG_RESULT(Could not find dlopen - not using plugin support)
    fi
@@ -346,9 +361,9 @@ AC_ARG_ENABLE(alarm-shell-danger,
    enable_alarm_shell_danger=no;
    )
 
-dnl ********************
+dnl *************************
 dnl * GTK 2
-dnl ********************
+dnl *************************
 AC_ARG_ENABLE(gtk2,
    [  --enable-gtk2           Enable GTK-2 support],
    AC_MSG_RESULT(GTK2 support enabled by configure options),
@@ -394,12 +409,11 @@ AC_CHECK_HEADERS([openssl/md5.h], OPEN_SSL_MD5=1, OPEN_SSL_MD5=0)
 AC_CHECK_HEADERS([openssl/des.h], OPEN_SSL_DES=1, OPEN_SSL_DES=0)
 if test "$OPEN_SSL_MD5" = "1"; then
    if test "$OPEN_SSL_DES" = "1"; then
-      MAKE_KEYRING=1
-      AC_SUBST(MAKE_KEYRING)
+      make_keyring=yes
    fi
 fi
 
-if test "$MAKE_KEYRING" != "1"; then
+if test "x$make_keyring" != "xyes"; then
    AC_MSG_WARN([Open SSL headers not found, Keyring will not be built])
 fi
 
@@ -419,6 +433,17 @@ else
 fi
 AC_SUBST(ABILIB)
 
+dnl ******************************
+dnl * what plugins to make
+dnl ******************************
+      
+keyring_plugin=no;
+if test x$make_keyring = xyes -a x$plugin_support = xyes; then
+  keyring_plugin=yes;
+fi
+AM_CONDITIONAL(MAKE_KEYRING, test x$keyring_plugin = xyes)
+AM_CONDITIONAL(MAKE_EXPENSE, test x$plugin_support = xyes)
+AM_CONDITIONAL(MAKE_SYNCTIME, test x$plugin_support = xyes)
 
 AC_OUTPUT(Makefile docs/Makefile Expense/Makefile KeyRing/Makefile
 	m4/Makefile intl/Makefile dialer/Makefile po/Makefile.in
@@ -430,6 +455,9 @@ AC_OUTPUT(Makefile docs/Makefile Expense/Makefile KeyRing/Makefile
 AC_MSG_RESULT()
 AC_MSG_RESULT(This package is configured for the following features:)
 AC_MSG_RESULT(------------------------------------------------------)
+echo "Compiling Expense plugin...............   $plugin_support"
+echo "Compiling SyncTime plugin..............   $plugin_support"
+echo "Compiling KeyRing plugin...............   $keyring_plugin"
 echo "Compiling with private record support..   $enable_private"
 echo "Compiling with Datebk support..........   $enable_datebk"
 echo "Compiling with plugin support..........   $enable_plugins"
@@ -439,7 +467,7 @@ echo "GTK-2 support..........................   $have_gtk2"
 echo "Compiler Options.......................   $cflags $ccoptions"
 echo "Prefix directory.......................   $prefix"
 echo "pilot-link headers.....................   $pilot_incl"
-echo "NLS support (foriegn languages)........   $USE_NLS"
+echo "NLS support (foreign languages)........   $USE_NLS"
 echo "USB support enabled....................   $usb"
 echo "dialer support.........................   $dialer"
 pl_version=`grep PILOT_LINK_VERSION "$pilot_incl/pi-version.h" | \
