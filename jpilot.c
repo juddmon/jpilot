@@ -2156,22 +2156,14 @@ char *xpm_unlocked[] = {
    separator = gtk_hseparator_new();
    gtk_box_pack_start(GTK_BOX(g_vbox0), separator, FALSE, TRUE, 5);
 
-   /* Create "Quit" button */
-   button = gtk_button_new_with_label(_("Quit!"));
-   gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(delete_event), NULL);
-   gtk_box_pack_start(GTK_BOX(g_vbox0), button, FALSE, FALSE, 0);
-
    /* Create "Sync" button */
    button = gtk_button_new_with_label(_("Sync"));
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_sync),
 		      GINT_TO_POINTER(skip_plugins ? SYNC_NO_PLUGINS : 0));
-
    gtk_box_pack_start(GTK_BOX(g_vbox0), button, FALSE, FALSE, 0);
 
    gtk_tooltips_set_tip(glob_tooltips, button, _("Sync your palm to the desktop"), NULL);
-
 
 #ifdef FONT_TEST
    /* Create "Font" button */
