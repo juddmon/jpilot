@@ -706,17 +706,24 @@ void cb_app_button(GtkWidget *widget, gpointer data)
 
 void cb_sync(GtkWidget *widget, unsigned int flags)
 {
-   char file[FILENAME_MAX];
-   char home_dir[FILENAME_MAX];
-   struct stat buf;
+   long ivalue;
 
-   /* If there are files to be installed, ask the user right before sync */
-   get_home_file_name("", home_dir, sizeof(home_dir));
-   g_snprintf(file, sizeof(file), "%s/"EPN"_to_install", home_dir);
+   /* confirm file installatio? */
+   get_pref(PREF_CONFIRM_INSTALL, &ivalue, NULL);
+   if (ivalue)
+   {
+      char file[FILENAME_MAX];
+      char home_dir[FILENAME_MAX];
+      struct stat buf;
 
-   if (!stat(file, &buf)) {
-      if (buf.st_size > 0) {
-	 install_gui_and_size(window);
+      /* If there are files to be installed, ask the user right before sync */
+      get_home_file_name("", home_dir, sizeof(home_dir));
+      g_snprintf(file, sizeof(file), "%s/"EPN"_to_install", home_dir);
+
+      if (!stat(file, &buf)) {
+	 if (buf.st_size > 0) {
+	    install_gui_and_size(window);
+	 }
       }
    }
 

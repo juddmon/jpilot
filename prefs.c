@@ -116,6 +116,7 @@ static prefType glob_prefs[NUM_PREFS] = {
      {"mail_command", CHARTYPE, CHARTYPE, 0, NULL, 0},
      {"version", CHARTYPE, CHARTYPE, 0, NULL, 0},
      {"utf-encoding", INTTYPE, INTTYPE, 0, NULL, 0},
+     {"confirm-file-installation", INTTYPE, INTTYPE, 1, NULL, 0},
 };
 
 struct name_list {

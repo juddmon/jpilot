@@ -484,6 +484,19 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref),
 		      GINT_TO_POINTER(PREF_SHOW_MODIFIED));
 
+   /* Confirm file installation */
+   checkbutton = gtk_check_button_new_with_label
+     (_("Ask confirmation for files installation (J-Pilot -> PDA) (default YES)"));
+   gtk_box_pack_start(GTK_BOX(vbox_settings), checkbutton, FALSE, FALSE, 0);
+   gtk_widget_show(checkbutton);
+   get_pref(PREF_CONFIRM_INSTALL, &ivalue, &cstr);
+   if (ivalue) {
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
+   }
+   gtk_signal_connect(GTK_OBJECT(checkbutton), 
+		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref),
+		      GINT_TO_POINTER(PREF_CONFIRM_INSTALL));
+
    /**********************************************************************/
    /* Datebook preference tab */
 
