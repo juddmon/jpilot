@@ -151,73 +151,11 @@ int make_pref_menu(GtkWidget **pref_menu, int pref_num)
    return 0;
 }
 
-void cb_show_deleted(GtkWidget *widget, gpointer data)
+void cb_checkbox_set_pref(GtkWidget *widget, gpointer data)
 {
-   set_pref(PREF_SHOW_DELETED, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
+   set_pref(GPOINTER_TO_INT(data), GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
 }
-void cb_show_modified(GtkWidget *widget, gpointer data)
-{
-   set_pref(PREF_SHOW_MODIFIED, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
-}
-void cb_highlight(GtkWidget *widget, gpointer data)
-{
-   set_pref(PREF_HIGHLIGHT, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
-}
-void cb_use_db3(GtkWidget *widget, gpointer data)
-{
-   set_pref(PREF_USE_DB3, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
-}
-void cb_hide_completed(GtkWidget *widget, gpointer data)
-{
-   set_pref(PREF_HIDE_COMPLETED, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
-}
-void cb_hide_not_due(GtkWidget *widget, gpointer data)
-{
-   set_pref(PREF_HIDE_NOT_DUE, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
-}
-void cb_todo_completion_date(GtkWidget *widget, gpointer data)
-{
-   set_pref(PREF_TODO_COMPLETION_DATE, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
-}
-void cb_manana_mode(GtkWidget *widget, gpointer data)
-{
-   set_pref(PREF_MANANA_MODE, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
-}
-void cb_memo32_mode(GtkWidget *widget, gpointer data)
-{
-   set_pref(PREF_MEMO32_MODE, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
-}
-void cb_sync_datebook(GtkWidget *widget, gpointer data)
-{
-   set_pref(PREF_SYNC_DATEBOOK, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
-}
-void cb_sync_address(GtkWidget *widget, gpointer data)
-{
-   set_pref(PREF_SYNC_ADDRESS, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
-}
-void cb_sync_todo(GtkWidget *widget, gpointer data)
-{
-   set_pref(PREF_SYNC_TODO, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
-}
-void cb_sync_memo(GtkWidget *widget, gpointer data)
-{
-   set_pref(PREF_SYNC_MEMO, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
-}
-void cb_sync_memo32(GtkWidget *widget, gpointer data)
-{
-   set_pref(PREF_SYNC_MEMO32, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
-}
-#ifdef ENABLE_MANANA
-void cb_sync_manana(GtkWidget *widget, gpointer data)
-{
-   set_pref(PREF_SYNC_MANANA, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
-}
-#endif
-void cb_use_jos(GtkWidget *widget,
-		gpointer data)
-{
-   set_pref(PREF_USE_JOS, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
-}
+
 #ifdef ENABLE_PLUGINS
 void cb_sync_plugin(GtkWidget *widget,
 		    gpointer data)
@@ -247,16 +185,6 @@ void cb_sync_plugin(GtkWidget *widget,
    write_plugin_sync_file();
 }
 #endif
-void cb_open_alarm(GtkWidget *widget,
-		   gpointer data)
-{
-   set_pref(PREF_OPEN_ALARM_WINDOWS, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
-}
-void cb_do_command(GtkWidget *widget,
-		   gpointer data)
-{
-   set_pref(PREF_DO_ALARM_COMMAND, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
-}
 
 static gboolean cb_destroy(GtkWidget *widget)
 {
@@ -296,9 +224,7 @@ static gboolean cb_destroy(GtkWidget *widget)
    return FALSE;
 }
 
-static void
-  cb_quit(GtkWidget *widget,
-	   gpointer   data)
+static void cb_quit(GtkWidget *widget, gpointer data)
 {
    jp_logf(JP_LOG_DEBUG, "cb_quit\n");
    if (GTK_IS_WIDGET(data)) {
@@ -542,7 +468,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
    gtk_signal_connect(GTK_OBJECT(checkbutton),
-		      "clicked", GTK_SIGNAL_FUNC(cb_show_deleted),
+		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref),
 		      GINT_TO_POINTER(PREF_SHOW_DELETED));
 
    /* Show modified files check box */
@@ -555,7 +481,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
    gtk_signal_connect(GTK_OBJECT(checkbutton), 
-		      "clicked", GTK_SIGNAL_FUNC(cb_show_modified),
+		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref),
 		      GINT_TO_POINTER(PREF_SHOW_MODIFIED));
 
    /**********************************************************************/
@@ -571,7 +497,8 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
    gtk_signal_connect(GTK_OBJECT(checkbutton), 
-		      "clicked", GTK_SIGNAL_FUNC(cb_highlight), NULL);
+		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref), 
+		      GINT_TO_POINTER(PREF_HIGHLIGHT));
 
 #ifdef ENABLE_DATEBK
    /* Show use DateBk check box */
@@ -583,7 +510,8 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
    gtk_signal_connect(GTK_OBJECT(checkbutton), 
-		      "clicked", GTK_SIGNAL_FUNC(cb_use_db3), NULL);
+		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref), 
+		      GINT_TO_POINTER(PREF_USE_DB3));
 #else
    label = gtk_label_new(_("DateBk support disabled in this build"));
    gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
@@ -608,7 +536,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
    gtk_signal_connect(GTK_OBJECT(checkbutton),
-		      "clicked", GTK_SIGNAL_FUNC(cb_hide_completed),
+		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref),
 		      GINT_TO_POINTER(PREF_HIDE_COMPLETED));
 
    /* The hide todos not yet due check box */
@@ -620,7 +548,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
    gtk_signal_connect(GTK_OBJECT(checkbutton),
-		      "clicked", GTK_SIGNAL_FUNC(cb_hide_not_due),
+		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref),
 		      GINT_TO_POINTER(PREF_HIDE_NOT_DUE));
 
    /* The record todo completion date check box */
@@ -632,7 +560,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
    gtk_signal_connect(GTK_OBJECT(checkbutton),
-		      "clicked", GTK_SIGNAL_FUNC(cb_todo_completion_date),
+		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref),
 		      GINT_TO_POINTER(PREF_TODO_COMPLETION_DATE));
 
 #ifdef ENABLE_MANANA
@@ -645,7 +573,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
    gtk_signal_connect(GTK_OBJECT(checkbutton),
-		      "clicked", GTK_SIGNAL_FUNC(cb_manana_mode),
+		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref),
 		      GINT_TO_POINTER(PREF_MANANA_MODE));
 #endif
 
@@ -661,7 +589,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
    gtk_signal_connect(GTK_OBJECT(checkbutton),
-		      "clicked", GTK_SIGNAL_FUNC(cb_memo32_mode),
+		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref),
 		      GINT_TO_POINTER(PREF_MEMO32_MODE));
 
    /**********************************************************************/
@@ -677,7 +605,8 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
    gtk_signal_connect(GTK_OBJECT(checkbutton), 
-		      "clicked", GTK_SIGNAL_FUNC(cb_open_alarm), NULL);
+		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref), 
+		      GINT_TO_POINTER(PREF_OPEN_ALARM_WINDOWS));
 
    /* Show open alarm windows check box */
    checkbutton = gtk_check_button_new_with_label
@@ -689,7 +618,8 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
    gtk_signal_connect(GTK_OBJECT(checkbutton), 
-		      "clicked", GTK_SIGNAL_FUNC(cb_do_command), NULL);
+		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref), 
+		      GINT_TO_POINTER(PREF_DO_ALARM_COMMAND));
 
    /* Shell warning */
    label = gtk_label_new(_("WARNING: executing arbitrary shell commands can be dangerous!!!"));
@@ -748,7 +678,8 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
    gtk_signal_connect(GTK_OBJECT(checkbutton), 
-		      "clicked", GTK_SIGNAL_FUNC(cb_sync_datebook), NULL);
+		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref), 
+		      GINT_TO_POINTER(PREF_SYNC_DATEBOOK));
 
    /* Show sync address check box */
    checkbutton = gtk_check_button_new_with_label(_("Sync address"));
@@ -759,7 +690,8 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
    gtk_signal_connect(GTK_OBJECT(checkbutton), 
-		      "clicked", GTK_SIGNAL_FUNC(cb_sync_address), NULL);
+		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref), 
+		      GINT_TO_POINTER(PREF_SYNC_ADDRESS));
 
    /* Show sync todo check box */
    checkbutton = gtk_check_button_new_with_label(_("Sync todo"));
@@ -770,7 +702,8 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
    gtk_signal_connect(GTK_OBJECT(checkbutton), 
-		      "clicked", GTK_SIGNAL_FUNC(cb_sync_todo), NULL);
+		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref), 
+		      GINT_TO_POINTER(PREF_SYNC_TODO));
 
    /* Show sync memo check box */
    checkbutton = gtk_check_button_new_with_label(_("Sync memo"));
@@ -781,7 +714,8 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
    gtk_signal_connect(GTK_OBJECT(checkbutton), 
-		      "clicked", GTK_SIGNAL_FUNC(cb_sync_memo), NULL);
+		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref), 
+		      GINT_TO_POINTER(PREF_SYNC_MEMO));
 
    /* Show sync Memo32 check box */
    checkbutton = gtk_check_button_new_with_label
@@ -793,7 +727,8 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
    gtk_signal_connect(GTK_OBJECT(checkbutton), 
-		      "clicked", GTK_SIGNAL_FUNC(cb_sync_memo32), NULL);
+		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref), 
+		      GINT_TO_POINTER(PREF_SYNC_MEMO32));
 
 #ifdef ENABLE_MANANA
    /* Show sync Ma~nana check box */
@@ -805,7 +740,8 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
    gtk_signal_connect(GTK_OBJECT(checkbutton), 
-		      "clicked", GTK_SIGNAL_FUNC(cb_sync_manana), NULL);
+		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref), 
+		      GINT_TO_POINTER(PREF_SYNC_MANANA));
 #endif
    get_pref(PREF_CHAR_SET, &ivalue, &cstr);
    if (ivalue == CHAR_SET_JAPANESE) {
@@ -818,7 +754,8 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
       }
       gtk_signal_connect(GTK_OBJECT(checkbutton), 
-			 "clicked", GTK_SIGNAL_FUNC(cb_use_jos), NULL);	   
+			 "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref), 
+			 GINT_TO_POINTER(PREF_USE_JOS));	   
    }
    
 #ifdef  ENABLE_PLUGINS
