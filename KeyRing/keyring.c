@@ -34,6 +34,7 @@
 #include <openssl/des.h>
 
 #include "libplugin.h"
+#include "utils.h"
 
 #include <pi-appinfo.h>
 #include <pi-dlp.h>
@@ -49,8 +50,6 @@
 #define PASSWD_ENTER_NEW   2
 
 #define PASSWD_LEN 100
-
-#define CATEGORY_ALL 200
 
 #define CONNECT_SIGNALS 400
 #define DISCONNECT_SIGNALS 401
@@ -95,6 +94,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data);
 static int check_for_db();
 static int verify_pasword(char *ascii_password);
 static int dialog_password(GtkWindow *main_window, char *ascii_password, int reason);
+static int keyring_find(int unique_id);
 
 #ifdef HEADER_NEW_DES_H
 DES_cblock current_key1;
@@ -128,6 +128,11 @@ struct MyKeyRing {
    struct KeyRing kr;
    struct MyKeyRing *next;
 };
+
+time_t plugin_last_time = 0;
+/* re-ask password PLUGIN_MAX_INACTIVE_TIME seconds after deselecting the plugin */
+#define PLUGIN_MAX_INACTIVE_TIME 1
+gboolean plugin_active = FALSE;
 
 struct MyKeyRing *glob_keyring_list=NULL;
 
@@ -863,11 +868,11 @@ static void cb_clist_selection(GtkWidget      *clist,
    jp_logf(JP_LOG_DEBUG, "KeyRing: cb_clist_selection\n");
 
    if ((!event) && (clist_hack)) return;
+   if (event==0) return;
 
    if (row<0) {
       return;
    }
-
    /* HACK */
    if (clist_hack) {
       keep=record_changed;
@@ -1366,6 +1371,10 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    
    jp_logf(JP_LOG_DEBUG, "KeyRing: plugin gui started, unique_id=%d\n", unique_id);
 
+   if (unique_id) {
+      show_category = CATEGORY_ALL;
+   }
+
    if (check_for_db()) {
       return -1;
    }
@@ -1385,18 +1394,27 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
       free_mykeyring_list(&glob_keyring_list);
    }
 
-   password_not_correct=1;
-   retry=PASSWD_ENTER;
-   while (password_not_correct) {
-      r = dialog_password(w, ascii_password, retry);
-      retry=PASSWD_ENTER_RETRY;
-      if (r!=1) {
-	 memset(ascii_password, 0, PASSWD_LEN-1);
-	 return 0;
+   if (difftime(time(NULL), plugin_last_time) > PLUGIN_MAX_INACTIVE_TIME) {
+      /* reset last time we entered */
+      plugin_last_time = 0;
+
+      password_not_correct=1;
+      retry=PASSWD_ENTER;
+      while (password_not_correct) {
+         r = dialog_password(w, ascii_password, retry);
+         retry=PASSWD_ENTER_RETRY;
+         if (r!=1) {
+            memset(ascii_password, 0, PASSWD_LEN-1);
+	    return 0;
+         }
+         password_not_correct = (verify_pasword(ascii_password) > 0);
       }
-      password_not_correct = (verify_pasword(ascii_password) > 0);
+      memset(ascii_password, 0, PASSWD_LEN-1);
    }
-   memset(ascii_password, 0, PASSWD_LEN-1);
+
+   /* plug entered with correct password */
+   plugin_last_time = time(NULL);
+   plugin_active = TRUE;
 
    record_changed=CLEAR_FLAG;
    show_category = CATEGORY_ALL;
@@ -1555,7 +1573,11 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    display_records();
 
    jp_logf(JP_LOG_DEBUG, "KeyRing: after display_records\n");
-   
+
+   if (unique_id) {
+      keyring_find(unique_id);
+   }
+
    return 0;
 }
 
@@ -1579,6 +1601,13 @@ int plugin_gui_cleanup() {
    if (glob_keyring_list!=NULL) {
       free_mykeyring_list(&glob_keyring_list);
    }
+
+   /* if the password was correct */
+   if (plugin_last_time) {
+      plugin_last_time = time(NULL);
+   }
+   plugin_active = FALSE;
+
    return 0;
 }
 
@@ -1632,6 +1661,9 @@ int plugin_help(char **text, int *width, int *height)
 	   "Judd Montgomery (c) 2001.\n"
 	   "judd@jpilot.org\n"
 	   "http://jpilot.org\n"
+	   "KeyRing is a free PalmOS program for storing\n"
+	   "passwords and other information encrypted\n"
+	   "http://gnukeyring.sourceforge.net\n"
 	   );
    *height = 0;
    *width = 0;
@@ -1654,5 +1686,139 @@ int plugin_post_sync(void)
 int plugin_exit_cleanup(void)
 {
    jp_logf(JP_LOG_DEBUG, "KeyRing: plugin_exit_cleanup\n");
+   return 0;
+}
+
+static int add_search_result(const char *line, int unique_id, struct search_result **sr)
+{
+   struct search_result *temp_sr;
+
+   jp_logf(JP_LOG_DEBUG, "KeyRing: add_search_result for [%s]\n", line);
+   temp_sr=malloc(sizeof(struct search_result));
+   if (!temp_sr) {
+      return -1;
+   }
+   temp_sr->next=NULL;
+   temp_sr->unique_id=unique_id;
+   temp_sr->line=strdup(line);
+   if (!(*sr)) {
+      (*sr)=temp_sr;
+   } else {
+      (*sr)->next=temp_sr;
+   }
+
+   return 0;
+}
+
+/*
+ * This function is called when the user does a search.  It should return
+ * records which match the search string.
+ */
+int plugin_search(const char *search_string, int case_sense,
+		  struct search_result **sr)
+{
+   GList *records;
+   GList *temp_list;
+   buf_rec *br;
+   struct MyKeyRing mkr;
+   int num, count;
+   char *line;
+
+   records=NULL;
+
+   *sr=NULL;
+
+   jp_logf(JP_LOG_DEBUG, "KeyRing: plugin_search\n");
+
+   if (! plugin_active) {
+      return 0;
+   }
+
+   /* This function takes care of reading the Database for us */
+   num = jp_read_DB_files("Keys-Gtkr", &records);
+
+   /* Go to first entry in the list */
+   for (temp_list = records; temp_list; temp_list = temp_list->prev) {
+      records = temp_list;
+   }
+
+   count = 0;
+
+   for (temp_list = records; temp_list; temp_list = temp_list->next) {
+      if (temp_list->data) {
+	 br=temp_list->data;
+      } else {
+	 continue;
+      }
+
+      if (!br->buf) {
+	 continue;
+      }
+
+      /* Since deleted and modified records are also returned and we don't
+       * want to see those we skip over them. */
+      if ((br->rt == DELETED_PALM_REC) || (br->rt == MODIFIED_PALM_REC)) {
+	 continue;
+      }
+
+      memset(&mkr, 0, sizeof(mkr));
+      mkr.attrib = br->attrib;
+      mkr.unique_id = br->unique_id;
+      mkr.rt = br->rt;
+
+      /* We need to unpack the record blobs from the database.
+       * unpack_Expense is already written in pilot-link, but normally
+       * an unpack must be written for each type of application */
+      if (unpack_KeyRing(&mkr.kr, br->buf, br->size)!=0) {
+	 line = NULL;
+
+	 /* find in record name */
+	 if (jp_strstr(mkr.kr.name, search_string, case_sense))
+	    /* Add it to our result list */
+	    line = strdup(mkr.kr.name);
+
+	 /* find in record account */
+	 if (jp_strstr(mkr.kr.account, search_string, case_sense))
+	    /* Add it to our result list */
+	    line = strdup(mkr.kr.account);
+
+	 /* find in record password */
+	 if (jp_strstr(mkr.kr.password, search_string, case_sense))
+	    /* Add it to our result list */
+	    line = strdup(mkr.kr.password);
+
+	 /* find in record note */
+	 if (jp_strstr(mkr.kr.note, search_string, case_sense))
+	    line = strdup(mkr.kr.note);
+
+	 if (line) {
+	    /* Add it to our result list */
+	    jp_logf(JP_LOG_DEBUG, "KeyRing: calling add_search_result\n");
+	    add_search_result(line, br->unique_id, sr);
+	    jp_logf(JP_LOG_DEBUG, "KeyRing: back from add_search_result\n");
+	    count++;
+	 }
+      }
+   }
+
+   return count;
+}
+
+static int keyring_find(int unique_id)
+{
+   int r, found_at, total_count;
+   
+   jp_logf(JP_LOG_DEBUG, "KeyRing: keyring_find\n");
+
+   r = clist_find_id(clist,
+		     unique_id,
+		     &found_at,
+		     &total_count);
+   if (r) {
+      cb_clist_selection(clist, found_at, 0, (gpointer)455, NULL);
+      gtk_clist_select_row(GTK_CLIST(clist), found_at, 0);
+      gtk_clist_moveto(GTK_CLIST(clist), found_at, 0, 0.5, 0.0);
+   }
+
    return 0;
 }
