@@ -1267,6 +1267,7 @@ static void cb_add_new_record(GtkWidget *widget,
    struct Address a;
    MyAddress *ma;
    unsigned char attrib;
+   int flag;
    unsigned int unique_id;
    int show_priv;
    char *str0, *str1, *str2;
@@ -1277,12 +1278,12 @@ static void cb_add_new_record(GtkWidget *widget,
 #endif
 
    memset(&a, 0, sizeof(a));
+   flag=GPOINTER_TO_INT(data);
    unique_id=0;
    ma=NULL;
 
    /* Do masking like Palm OS 3.5 */
-   if ((GPOINTER_TO_INT(data)==COPY_FLAG) || 
-       (GPOINTER_TO_INT(data)==MODIFY_FLAG)) {
+   if ((flag==COPY_FLAG) || (flag==MODIFY_FLAG)) {
       show_priv = show_privates(GET_PRIVATES);
       ma = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
       if (ma < (MyAddress *)CLIST_MIN_DATA) {
@@ -1294,11 +1295,9 @@ static void cb_add_new_record(GtkWidget *widget,
       }
    }
    /* End Masking */
-   if ((GPOINTER_TO_INT(data)==NEW_FLAG) || 
-       (GPOINTER_TO_INT(data)==COPY_FLAG) ||
-       (GPOINTER_TO_INT(data)==MODIFY_FLAG)) {
+   if ((flag==NEW_FLAG) || (flag==COPY_FLAG) || (flag==MODIFY_FLAG)) {
       /*These rec_types are both the same for now */
-      if (GPOINTER_TO_INT(data)==MODIFY_FLAG) {
+      if (flag==MODIFY_FLAG) {
 	 ma = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
 	 unique_id=ma->unique_id;
 	 if (ma < (MyAddress *)CLIST_MIN_DATA) {
@@ -1374,7 +1373,7 @@ static void cb_add_new_record(GtkWidget *widget,
 
       set_new_button_to(CLEAR_FLAG);
 
-      if (GPOINTER_TO_INT(data) == MODIFY_FLAG) {
+      if (flag==MODIFY_FLAG) {
 	 cb_delete_address(NULL, data);
 	 if ((ma->rt==PALM_REC) || (ma->rt==REPLACEMENT_PALM_REC)) {
 	    pc_address_write(&a, REPLACEMENT_PALM_REC, attrib, &unique_id);

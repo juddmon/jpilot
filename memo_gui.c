@@ -860,8 +860,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    unique_id=0;
 
    /* Do masking like Palm OS 3.5 */
-   if ((GPOINTER_TO_INT(data)==COPY_FLAG) || 
-       (GPOINTER_TO_INT(data)==MODIFY_FLAG)) {
+   if ((flag==COPY_FLAG) || (flag==MODIFY_FLAG)) {
       show_priv = show_privates(GET_PRIVATES);
       mmemo = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
       if (mmemo < (MyMemo *)CLIST_MIN_DATA) {

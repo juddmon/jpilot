@@ -1195,8 +1195,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    mtodo=NULL;
 
    /* Do masking like Palm OS 3.5 */
-   if ((GPOINTER_TO_INT(data)==COPY_FLAG) || 
-       (GPOINTER_TO_INT(data)==MODIFY_FLAG)) {
+   if ((flag==COPY_FLAG) || (flag==MODIFY_FLAG)) {
       show_priv = show_privates(GET_PRIVATES);
       mtodo = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
       if (mtodo < (MyToDo *)CLIST_MIN_DATA) {
