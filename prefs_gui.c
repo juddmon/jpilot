@@ -156,7 +156,7 @@ void cb_checkbox_todo_days_till_due(GtkWidget *widget, gpointer data)
 {
    int num_days;
    const char *entry_text;
-printf("cb_checkbox_todo_days_due\n");
+
    entry_text = gtk_entry_get_text(GTK_ENTRY(todo_days_due_entry));
    
    sscanf(entry_text, "%d", &num_days);
