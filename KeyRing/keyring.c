@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.35 2005/03/04 20:29:03 rousseau Exp $ */
+/* $Id: keyring.c,v 1.36 2005/03/12 19:20:33 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -189,7 +189,7 @@ static int pack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size,
    for (i=strlen(kr->name)+1; i<n; i=i+8) {
       /* des_encrypt3((DES_LONG *)&buf[i], s1, s2, s1); */
 #ifdef HEADER_NEW_DES_H
-      DES_ecb3_encrypt((const_des_cblock *)&buf[i], (des_cblock *)(&buf[i]), 
+      DES_ecb3_encrypt(&buf[i], &buf[i], 
 		       &s1, &s2, &s1, DES_ENCRYPT);
 #else
       des_ecb3_encrypt((const_des_cblock *)&buf[i], (des_cblock *)(&buf[i]),
@@ -288,7 +288,7 @@ static int unpack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size)
       /* des_decrypt3((DES_LONG *)chunk, s1, s2, s1); */
       /* memcpy(clear_text+i, chunk, 8); */
 #ifdef HEADER_NEW_DES_H
-      DES_ecb3_encrypt((const_des_cblock *)&P[i], (DES_cblock *)(clear_text+i),
+      DES_ecb3_encrypt(&P[i], clear_text+i,
 		       &s1, &s2, &s1, DES_DECRYPT);
 #else
       des_ecb3_encrypt((const_des_cblock *)&P[i], (des_cblock *)(clear_text+i),
