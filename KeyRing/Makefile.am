@@ -1,7 +1,7 @@
-# $Id: Makefile.am,v 1.2 2003/01/08 06:50:26 judd Exp $
+# $Id: Makefile.am,v 1.3 2003/02/13 22:57:23 judd Exp $
 
 CFLAGS = -Wall @CFLAGS@ @ccoptions@ @PILOT_FLAGS@ @GTK_CFLAGS@ -I$(top_srcdir)
-LDFLAGS = -lcrypto
+LDFLAGS = @LDFLAGS@ -lcrypto
 libdir = $(prefix)/lib/jpilot/plugins
 
 EXTRA_DIST = README.txt
