@@ -1,4 +1,7 @@
-/* utils.c
+/* $Id: utils.c,v 1.71 2004/11/22 00:52:42 rikster5 Exp $ */
+
+/*******************************************************************************
+ * utils.c
  * A module of J-Pilot http://jpilot.org
  * 
  * Copyright (C) 1999-2002 by Judd Montgomery
@@ -15,7 +18,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
+ ******************************************************************************/
 
 #include "config.h"
 #include "i18n.h"

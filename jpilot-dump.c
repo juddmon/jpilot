@@ -1,4 +1,7 @@
-/* jpilot-dump.c
+/* $Id: jpilot-dump.c,v 1.15 2004/11/22 00:52:42 rikster5 Exp $ */
+
+/*******************************************************************************
+ * jpilot-dump.c
  * 
  * Paul Landes <landesp@acm.org>: 2/06/2004 added phone label tags
  * hvrietsc: 10/19/2000 added memo dump
@@ -21,7 +24,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
+ ******************************************************************************/
+
 #include "config.h"
 #include <stdlib.h>
 #include <string.h>

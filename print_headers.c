@@ -1,4 +1,7 @@
-/* print_headers.c
+/* $Id: print_headers.c,v 1.7 2004/11/22 00:52:42 rikster5 Exp $ */
+
+/*******************************************************************************
+ * print_headers.c
  * A module of J-Pilot http://jpilot.org
  *
  * Copyright (C) 2001 by Colin Brough
@@ -16,7 +19,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
+ ******************************************************************************/
 
 #include <stdio.h>
 #include <string.h>

@@ -1,4 +1,7 @@
-/* expense.c
+/* $Id: expense.c,v 1.30 2004/11/22 00:52:43 rikster5 Exp $ */
+
+/*******************************************************************************
+ * expense.c
  *
  * This is an example plugin for J-Pilot to demonstrate the plugin API.
  *
@@ -17,7 +20,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
+ ******************************************************************************/
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

@@ -1,4 +1,7 @@
-/* utils.h
+/* $Id: utils.h,v 1.42 2004/11/22 00:52:43 rikster5 Exp $ */
+
+/*******************************************************************************
+ * utils.h
  * A module of J-Pilot http://jpilot.org
  * 
  * Copyright (C) 1999-2002 by Judd Montgomery
@@ -15,7 +18,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
+ ******************************************************************************/
+
 #ifndef __UTILS_H__
 #define __UTILS_H__
 

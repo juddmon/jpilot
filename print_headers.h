@@ -1,4 +1,7 @@
-/* print_headers.h
+/* $Id: print_headers.h,v 1.2 2004/11/22 00:52:42 rikster5 Exp $ */
+
+/*******************************************************************************
+ * print_headers.h
  * A module of J-Pilot http://jpilot.org
  *
  * Copyright (C) 2001 by Colin Brough
@@ -16,7 +19,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
+ ******************************************************************************/
 
 void print_common_header(FILE *f);
 void print_week_header(FILE *f);

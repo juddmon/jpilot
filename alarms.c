@@ -1,4 +1,7 @@
-/* alarms.c
+/* $Id: alarms.c,v 1.24 2004/11/22 00:52:41 rikster5 Exp $ */
+
+/*******************************************************************************
+ * alarms.c
  * A module of J-Pilot http://jpilot.org
  * 
  * Copyright (C) 2000-2002 by Judd Montgomery
@@ -15,7 +18,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
+ ******************************************************************************/
 
 /*
  * The PalmOS datebook will alarm on private records even when they are hidden
