@@ -1,69 +1,105 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(jpilot.c)
 
+AC_CONFIG_HEADER(config.h)
+
 dnl Checks for programs.
 AC_PROG_CC
-
-dnl Check for pilot-link libs
-# pilot_prefix gives the prefix to the pilot-link directory
-# e.g., /usr/local if there's /usr/local/include/*pilot_stuff*
-pilot_prefix=""
-AC_ARG_WITH(pilot_prefix,
-[  --with-pilot-prefix=    Prefix to top level of pilot-link files
-                           (e.g., = /usr/local if the pilot-link includes
-			   are in /usr/local/include)])
-
-
-dnl Make sure that the pilot-link stuff actually exists
-AC_MSG_CHECKING(for pilot-link files)
-if test "x$with_pilot_prefix" != "x"; then
-   pilot_prefix=$with_pilot_prefix
-   # Is this a good heuristic? I dunno...works for now
-   if test -e "$pilot_prefix/include/pi-config.h" &&
-      test -e "$pilot_prefix/lib/libpisock.so"; then
-      AC_MSG_RESULT(ok)
-      AC_SUBST(pilot_prefix)
-   else 
-      AC_MSG_ERROR(Could not find proper pilot-link libs and headers)
-   fi
-else
-   pilot_prefix="/usr/"
-   if test -e "$pilot_prefix/include/pi-config.h" &&
-      test -e "$pilot_prefix/lib/libpisock.so"; then
-      AC_MSG_RESULT(ok)
-      AC_SUBST(pilot_prefix)
-   else
-      pilot_prefix="/usr/local"
-      if test -e "$pilot_prefix/include/pi-config.h" &&
-         test -e "$pilot_prefix/lib/libpisock.so"; then
-         AC_MSG_RESULT(ok)
-         AC_SUBST(pilot_prefix)
-      else 
-         pilot_prefix="/usr/extra/pilot"
-         if test -e "$pilot_prefix/include/pi-config.h" &&
-            test -e "$pilot_prefix/lib/libpisock.so"; then
-            AC_MSG_RESULT(ok)
-            AC_SUBST(pilot_prefix)
-         else
-            AC_MSG_ERROR(Could not find proper pilot-link libs and headers)
-         fi
-      fi
-   fi
-fi
-
-
 
 # Compile options
 ccoptions=""
 AC_ARG_WITH(ccoptions,
-[  --with-ccoptions=       Option to pass to your C compiler])
+[  --with-ccoptions=       Options to pass to your C compiler])
 
 if test "x$with_ccoptions" != "x"; then
    ccoptions=$with_ccoptions
-else
-   ccoptions="-O3"
+   CFLAGS=""
+   AC_MSG_CHECKING(for supplied cc options)
+   AC_MSG_RESULT(Using supplied cc options $ccoptions)
 fi
 AC_SUBST(ccoptions)
+cflags=$CFLAGS
+AC_SUBST(cflags)
+
+
+dnl Check for pilot-link libs
+pilot_prefix=""
+AC_ARG_WITH(pilot_prefix,
+ [  --with-pilot-prefix=    Prefix to top level of pilot-link files
+                            (e.g., = /usr/local if the pilot-link includes
+                             are in /usr/local/include
+                             and libs are in /usr/local/lib)])
+
+if test "x$with_pilot_prefix" != "x"; then
+   pilot_prefix=$with_pilot_prefix
+fi
+
+dnl Make sure that the pilot-link stuff actually exists
+AC_MSG_CHECKING(for pilot-link header files)
+pilotinclude=no
+for pilot_incl in $pilot_prefix/include /usr/include /usr/local/include \
+    /usr/extra/pilot/include /usr/include/libpisock; do
+   if test -r "$pilot_incl/pi-config.h" ; then
+      pilotinclude=yes
+      PILOT_FLAGS="$PILOT_FLAGS -I$pilot_incl"
+      break
+   fi
+done
+
+if test $pilotinclude = no ; then
+   AC_MSG_RESULT(no)
+   AC_MSG_ERROR(Could not find the pilot-link header files)
+else
+   AC_MSG_RESULT(found at $pilot_incl)
+fi
+
+
+
+dnl Maybe installed
+AC_MSG_CHECKING(for pilot library files)
+pilotlibs=no
+PILOT_LIBS="-lpisock"
+for pilot_libs in $pilot_prefix/lib /usr/lib /usr/local/lib/ \
+  /usr/extra/pilot/lib ; do
+   if test -r "$pilot_libs/libpisock.so" ; then
+      pilotlibs=yes
+      PILOT_LIBS="-L$pilot_libs $PILOT_LIBS"
+      break
+   fi
+done
+
+if test $pilotlibs = no ; then
+   AC_MSG_RESULT(no)
+   AC_MSG_ERROR(Could not find the pilot-link libraries)
+else
+   AC_MSG_RESULT(found at $pilot_libs)
+fi
+
+dnl Link a tiny program to make sure we have the environment right
+AC_MSG_CHECKING(to see if I can compile a pilot link program)
+ac_save_CFLAGS="$CFLAGS"
+CFLAGS="$CFLAGS $PILOT_FLAGS"
+ac_save_LIBS="$LIBS"
+LIBS="$LIBS $PILOT_LIBS"
+
+pilotcompile=no
+
+AC_TRY_LINK([#include "pi-config.h"
+#include "pi-socket.h"], [pi_close (0);] , pilotcompile=yes, , )
+
+
+if test $pilotcompile = no ; then
+   AC_MSG_RESULT(no)
+   AC_MSG_ERROR(Could not compile a test pilot-link program)
+else
+   AC_MSG_RESULT(ok)
+   AC_SUBST(PILOT_FLAGS)
+   AC_SUBST(PILOT_LIBS)
+fi
+
+CFLAGS="$save_CFLAGS"
+LIBS="$save_LIBS"
+
 
 dnl Checking for GTK version
 AM_PATH_GTK(1.2.0,,
@@ -83,15 +119,23 @@ dnl Checks for library functions.
 AC_TYPE_SIGNAL
 AC_FUNC_STRFTIME
 AC_FUNC_UTIME_NULL
-AC_CHECK_FUNCS(mkdir mktime select strdup strstr)
+#AC_CHECK_FUNCS(mkdir mktime select strdup strstr setenv)
+AC_CHECK_FUNCS(setenv)
 
 AC_ARG_WITH(japanese,
 [  --with-japanese         Use this for japanese support])
 japanese=""
 if test "x$with_japanese" != "x"; then
-   japanese="-DJapanese"
+   AC_DEFINE(WITH_JAPANESE)
    AC_MSG_RESULT(Japanese support $japanese)
 fi
 AC_SUBST(japanese)
+
+AC_ARG_WITH(with_flock,
+[  --with-flock            Substitute flock instead of fnctl (for NFS)])
+if test "x$with_flock" != "x"; then
+   AC_DEFINE(USE_FLOCK)
+   AC_MSG_RESULT(Using flock instead of fnctl)
+fi
 
 AC_OUTPUT(Makefile)

@@ -10,6 +10,15 @@ fg[NORMAL] = { 1.0, 1.0, 1.0 }
 bg[NORMAL] = { 0.0, 0.3, 0.6 }
 }
 
+style "label_box_cal"
+{
+fg[NORMAL] = { 0.0, 0.0, 1.0 }
+bg[NORMAL] = { 1.0, 1.0, 1.0 }
+bg[ACTIVE] = { 1.0, 1.0, 1.0 }
+bg[PRELIGHT] = { 1.0, 1.0, 1.0 }
+bg[INSENSITIVE] = { 1.0, 1.0, 1.0 }
+}
+
 style "frame"
 {
 fg[NORMAL] = { 1.0, 1.0, 1.0 }
@@ -174,3 +183,4 @@ widget_class "*Menu*" style "menu"
 widget "*.button_set" style "button_set"
 widget "*.button_dow" style "button_dow"
 widget "*.button_app" style "button_app"
+widget "*.label_box_cal" style "label_box_cal"

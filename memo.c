@@ -16,6 +16,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
+#include "config.h"
 #include <stdio.h>
 #include <pi-source.h>
 #include <pi-socket.h>
@@ -25,7 +27,7 @@
 #include "utils.h"
 #include "log.h"
 
-#if defined(Japanese)
+#if defined(WITH_JAPANESE)
 #include "japanese.h"
 #endif
 
@@ -81,9 +83,15 @@ static int pc_memo_read_next_rec(FILE *in, MyMemo *mmemo)
    if (feof(in)) {
       return MEMO_EOF;
    }
-   fread(&header, sizeof(header), 1, in);
-   if (feof(in)) {
-      return MEMO_EOF;
+   num = fread(&header, sizeof(header), 1, in);
+   if (num != 1) {
+      if (ferror(in)) {
+	 jpilot_logf(LOG_WARN, "Error reading MemoDB.pc\n");
+	 return MEMO_EOF;
+      }
+      if (feof(in)) {
+	 return MEMO_EOF;
+      }      
    }
    rec_len = header.rec_len;
    mmemo->rt = header.rt;
@@ -91,17 +99,23 @@ static int pc_memo_read_next_rec(FILE *in, MyMemo *mmemo)
    mmemo->unique_id = header.unique_id;
    record = malloc(rec_len);
    if (!record) {
+      jpilot_logf(LOG_DEBUG, "Out of memory\n");
       return MEMO_EOF;
    }
-   fread(record, rec_len, 1, in);
-   if (feof(in)) {
-      free(record);
-      return MEMO_EOF;
+   num = fread(record, rec_len, 1, in);
+   if (num != 1) {
+      if (ferror(in)) {
+	 free(record);
+	 jpilot_logf(LOG_WARN, "Error reading MemoDB.pc\n");
+	 return MEMO_EOF;
+      }
    }
+
    num = unpack_Memo(&(mmemo->memo), record, rec_len);
    free(record);
    if (num <= 0) {
-      return MEMO_EOF;
+      jpilot_logf(LOG_WARN, "unpack_Memo failed\n");
+      return -1;
    }
    return 0;
 }
@@ -132,30 +146,45 @@ int get_memo_app_info(struct MemoAppInfo *ai)
       jpilot_logf(LOG_WARN, "Error opening MemoDB.pdb\n");
       return -1;
    }
-   fread(&rdbh, sizeof(RawDBHeader), 1, in);
-   if (feof(in)) {
-      jpilot_logf(LOG_WARN, "Error reading MemoDB.pdb\n");
-      return -1;
+   num = fread(&rdbh, sizeof(RawDBHeader), 1, in);
+   if (num != 1) {
+      if (ferror(in)) {
+	 jpilot_logf(LOG_WARN, "Error reading MemoDB.pdb\n");
+	 return -1;
+      }
+      if (feof(in)) {
+	 return MEMO_EOF;
+      }      
    }
    raw_header_to_header(&rdbh, &dbh);
 
-   get_app_info_size(in, &rec_size);
+   num = get_app_info_size(in, &rec_size);
+   if (num) {
+      return -1;
+   }
 
    fseek(in, dbh.app_info_offset, SEEK_SET);
    buf=malloc(rec_size);
    if (!buf) {
+      jpilot_logf(LOG_WARN, "Out of memory\n");
       fclose(in);
       return -1;
    }
-   num = fread(buf, 1, rec_size, in);
-   if (feof(in)) {
-      fclose(in);
-      free(buf);
+   num = fread(buf, rec_size, 1, in);
+   if (num != 1) {
+      if (ferror(in)) {
+	 fclose(in);
+	 free(buf);
+	 jpilot_logf(LOG_WARN, "Error reading MemoDB.pdb\n");
+	 return -1;
+      }
+   }
+   num = unpack_MemoAppInfo(ai, buf, rec_size);
+   if (num <= 0) {
       jpilot_logf(LOG_WARN, "Error reading MemoDB.pdb\n");
       return -1;
    }
-   unpack_MemoAppInfo(ai, buf, rec_size);
-#if defined(Japanese)
+#if defined(WITH_JAPANESE)
    {
       int i;
       for (i = 0; i < 16; i++)
@@ -201,11 +230,22 @@ int get_memos(MemoList **memo_list)
       return -1;
    }
    //Read the database header
-   fread(&rdbh, sizeof(RawDBHeader), 1, in);
-   if (feof(in)) {
-      jpilot_logf(LOG_WARN, "Error opening MemoDB.pdb\n");
-      return -1;
+   num = fread(&rdbh, sizeof(RawDBHeader), 1, in);
+   if (num != 1) {	
+      if (ferror(in)) {
+	 jpilot_logf(LOG_WARN, "Error reading MemoDB.pdb\n");
+	 fclose(in);
+	 return -1;
+      }
+      if (feof(in)) {
+	 return MEMO_EOF;
+      }      
    }
+//   if (feof(in)) {
+//      jpilot_logf(LOG_WARN, "Error reading MemoDB.pdb\n");
+//      fclose(in);
+//      return -1;
+//   }
    raw_header_to_header(&rdbh, &dbh);
    
    jpilot_logf(LOG_DEBUG, "db_name = %s\n", dbh.db_name);
@@ -217,7 +257,17 @@ int get_memos(MemoList **memo_list)
    //Read each record entry header
    num_records = dbh.number_of_records;
    for (i=1; i<num_records+1; i++) {
-      fread(&rh, sizeof(record_header), 1, in);
+      num = fread(&rh, sizeof(record_header), 1, in);
+      if (num != 1) {	
+	 if (ferror(in)) {
+	    jpilot_logf(LOG_DEBUG, "Error reading MemoDB.pdb\n");
+	    fclose(in);
+	    break;
+	 }
+	 if (feof(in)) {
+	    return MEMO_EOF;
+	 }      
+      }
       offset = ((rh.Offset[0]*256+rh.Offset[1])*256+rh.Offset[2])*256+rh.Offset[3];
 #ifdef JPILOT_DEBUG
       jpilot_logf(LOG_DEBUG, "record header %u offset = %u\n",i, offset);
@@ -226,6 +276,10 @@ int get_memos(MemoList **memo_list)
       jpilot_logf(LOG_DEBUG, "%d\n",(rh.unique_ID[0]*256+rh.unique_ID[1])*256+rh.unique_ID[2]);
 #endif
       temp_mem_rh = (mem_rec_header *)malloc(sizeof(mem_rec_header));
+      if (!temp_mem_rh) {
+	 jpilot_logf(LOG_WARN, "Out of memory\n");
+	 break;
+      }
       temp_mem_rh->next = mem_rh;
       mem_rh = temp_mem_rh;
       mem_rh->rec_num = i;
@@ -248,13 +302,18 @@ int get_memos(MemoList **memo_list)
 	 jpilot_logf(LOG_DEBUG, "fpos,next_offset = %u %u\n",fpos,next_offset);
 	 jpilot_logf(LOG_DEBUG, "----------\n");
 #endif
-	 if (feof(in)) break;
 	 buf = malloc(rec_size);
-	 if (!buf) break;
-	 num = fread(buf, 1, rec_size, in);
-	 if (!num) {	
-	    free(buf);
+	 if (!buf) {
+	    jpilot_logf(LOG_WARN, "Out of memory\n");
 	    break;
+	 }
+	 num = fread(buf, rec_size, 1, in);
+	 if (num != 1) {	
+	    if (ferror(in)) {
+	       jpilot_logf(LOG_DEBUG, "Error reading MemoDB.pdb\n");
+	       free(buf);
+	       break;
+	    }
 	 }
 	 
 	 num = unpack_Memo(&memo, buf, rec_size);
@@ -262,10 +321,14 @@ int get_memos(MemoList **memo_list)
 	 if (num <= 0) {
 	    continue;
 	 }
-#if defined(Japanese)
+#if defined(WITH_JAPANESE)
          Sjis2Euc(memo.text, 65536);
 #endif
 	 temp_memo_list = malloc(sizeof(MemoList));
+	 if (!temp_memo_list) {
+	    jpilot_logf(LOG_WARN, "Out of memory\n");
+	    break;
+	 }
 	 memcpy(&(temp_memo_list->mmemo.memo), &memo, sizeof(struct Memo));
 	 temp_memo_list->app_type = MEMO;
 	 temp_memo_list->mmemo.rt = PALM_REC;
@@ -290,17 +353,21 @@ int get_memos(MemoList **memo_list)
    while(!feof(pc_in)) {
       r = pc_memo_read_next_rec(pc_in, &mmemo);
       if (r==MEMO_EOF) break;
+      if (r<0) break;
       if ((mmemo.rt!=DELETED_PC_REC)
 	  &&(mmemo.rt!=DELETED_PALM_REC)
 	  &&(mmemo.rt!=MODIFIED_PALM_REC)
 	  &&(mmemo.rt!=DELETED_DELETED_PALM_REC)) {
 	 temp_memo_list = malloc(sizeof(MemoList));
+	 if (!temp_memo_list) {
+	    jpilot_logf(LOG_WARN, "Out of memory\n");
+	    break;
+	 }
 	 memcpy(&(temp_memo_list->mmemo), &mmemo, sizeof(MyMemo));
 	 temp_memo_list->app_type = MEMO;
 	 temp_memo_list->next = *memo_list;
 	 *memo_list = temp_memo_list;
 	 recs_returned++;
-
 	 //temp_address_list->ma.attrib=0;
       } else {
 	 //this doesnt really free it, just the string pointers

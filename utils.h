@@ -32,7 +32,7 @@
 #define PRINT_FILE_LINE printf("%s line %d\n", __FILE__, __LINE__)
 #define PN "J-Pilot"
 #define EPN "jpilot"
-#define VERSION "0.93.1"
+#define VERSION "0.94"
 #define VERSION_STRING "\n"PN" version "VERSION"\n"\
 " Copyright (C) 1999 by Judd Montgomery\n"
 
@@ -239,6 +239,8 @@ int check_hidden_dir();
 int read_gtkrc_file();
 int get_home_file_name(char *file, char *full_name, int max_size);
 FILE *open_file(char *filename, char *mode);
+int rename_file(char *old_filename, char *new_filename);
+
 int raw_header_to_header(RawDBHeader *rdbh, DBHeader *dbh);
 int find_next_offset(mem_rec_header *mem_rh, long fpos,
 		     unsigned int *next_offset,
@@ -274,7 +276,17 @@ int clist_find_id(GtkWidget *clist,
 int move_scrolled_window(GtkWidget *sw, float percentage);
 void move_scrolled_window_hack(GtkWidget *sw, float percentage);
 
+//search_gui.c
 void cb_search_gui(GtkWidget *widget, gpointer data);
+
+//install_gui.c
+void cb_install_gui(GtkWidget *widget, gpointer data);
+
+//weekview_gui.c
+void cb_weekview_gui(GtkWidget *widget, gpointer data);
+
+//monthview_gui.c
+void cb_monthview_gui(GtkWidget *widget, gpointer data);
 
 void free_AnyRecordList(AnyRecordList **rl);
 

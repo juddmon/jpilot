@@ -16,6 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#include "config.h"
 #include <stdio.h>
 #include <pi-source.h>
 #include <pi-socket.h>
@@ -25,7 +26,7 @@
 #include "utils.h"
 #include "log.h"
 
-#if defined(Japanese)
+#if defined(WITH_JAPANESE)
 #include "japanese.h"
 #endif
 
@@ -144,12 +145,14 @@ static int pc_address_read_next_rec(FILE *in, MyAddress *ma)
       return ADDRESS_EOF;
    }
    num = fread(&header, sizeof(header), 1, in);
-   if (feof(in)) {
-      return ADDRESS_EOF;
-   }
    if (num != 1) {
-      jpilot_logf(LOG_WARN, "error on fread\n");
-      return ADDRESS_EOF;
+      if (ferror(in)) {
+	 jpilot_logf(LOG_WARN, "Error reading AddressDB.pc\n");
+	 return ADDRESS_EOF;
+      }
+      if (feof(in)) {
+	 return ADDRESS_EOF;
+      }
    }
    rec_len = header.rec_len;
    ma->rt = header.rt;
@@ -157,17 +160,18 @@ static int pc_address_read_next_rec(FILE *in, MyAddress *ma)
    ma->unique_id = header.unique_id;
    record = malloc(rec_len);
    if (!record) {
+      if (rec_len > 0) {
+	 jpilot_logf(LOG_WARN, "Out of memory 1\n");
+      }
       return ADDRESS_EOF;
    }
    num = fread(record, rec_len, 1, in);
-   if (feof(in)) {
-      free(record);
-      return ADDRESS_EOF;
-   }
    if (num != 1) {
-      jpilot_logf(LOG_WARN, "error on fread\n");
-      free(record);
-      return ADDRESS_EOF;
+      if (ferror(in)) {
+	 jpilot_logf(LOG_WARN, "Error reading AddressDB.pc\n");
+	 free(record);
+	 return ADDRESS_EOF;
+      }
    }
    num = unpack_Address(&(ma->a), record, rec_len);
    free(record);
@@ -200,6 +204,7 @@ int pc_address_write(struct Address *a, PCRecType rt, unsigned char attrib)
    if (!rec_len) {
       PRINT_FILE_LINE;
       jpilot_logf(LOG_WARN, "pack_Address error\n");
+      return -1;
    }
    header.rec_len=rec_len;
    header.rt=rt;
@@ -207,7 +212,6 @@ int pc_address_write(struct Address *a, PCRecType rt, unsigned char attrib)
    header.unique_id=next_unique_id;
    fwrite(&header, sizeof(header), 1, out);
    fwrite(record, rec_len, 1, out);
-   fflush(out);
    fclose(out);
    
    return 0;
@@ -239,31 +243,50 @@ int get_address_app_info(struct AddressAppInfo *ai)
       jpilot_logf(LOG_WARN, "Error opening AddressDB.pdb\n");
       return -1;
    }
-   fread(&rdbh, sizeof(RawDBHeader), 1, in);
-   if (feof(in)) {
-      jpilot_logf(LOG_WARN, "Error reading AddressDB.pdb\n");
-      fclose(in);
-      return -1;
+   num = fread(&rdbh, sizeof(RawDBHeader), 1, in);
+   if (num != 1) {
+      if (ferror(in)) {
+	 jpilot_logf(LOG_WARN, "Error reading AddressDB.pdb\n");
+	 fclose(in);
+	 return -1;
+      }
    }
+
    raw_header_to_header(&rdbh, &dbh);
 
-   get_app_info_size(in, &rec_size);
+   num = get_app_info_size(in, &rec_size);
+   if (num) {
+      return -1;
+   }
 
    fseek(in, dbh.app_info_offset, SEEK_SET);
    buf=malloc(rec_size);
    if (!buf) {
+      if (rec_size > 0) {
+	 jpilot_logf(LOG_WARN, "Out of memory 2\n");
+      }
       fclose(in);
       return -1;
    }
-   num = fread(buf, 1, rec_size, in);
-   if (feof(in)) {
-      fclose(in);
-      free(buf);
-      jpilot_logf(LOG_WARN, "Error reading AddressDB.pdb\n");
-      return -1;
+   num = fread(buf, rec_size, 1, in);
+   if (num != 1) {
+      if (ferror(in)) {
+	 fclose(in);
+	 free(buf);
+	 jpilot_logf(LOG_WARN, "Error reading AddressDB.pdb\n");
+	 return -1;
+      }
    }
-   unpack_AddressAppInfo(ai, buf, rec_size);
-#if defined(Japanese)
+   num = unpack_AddressAppInfo(ai, buf, rec_size);
+   if (num <= 0) {
+      if (ferror(in)) {
+	 fclose(in);
+	 free(buf);
+	 jpilot_logf(LOG_WARN, "Error in unpack_AddressAppInfo\n");
+	 return -1;
+      }
+   }
+#if defined(WITH_JAPANESE)
    // Converto to EUC Japanese Kanji code
    {
       int i;
@@ -311,11 +334,18 @@ int get_addresses(AddressList **address_list)
       return -1;
    }
    //Read the database header
-   fread(&rdbh, sizeof(RawDBHeader), 1, in);
-   if (feof(in)) {
-      jpilot_logf(LOG_WARN, "Error opening AddressDB.pdb\n");
-      return -1;
+   num = fread(&rdbh, sizeof(RawDBHeader), 1, in);
+   if (num != 1) {
+      if (ferror(in)) {
+	 fclose(in);
+	 jpilot_logf(LOG_WARN, "Error reading AddressDB.pdb\n");
+	 return -1;
+      }
+      if (feof(in)) {
+	 return ADDRESS_EOF;
+      }
    }
+
    raw_header_to_header(&rdbh, &dbh);
    
    jpilot_logf(LOG_DEBUG, "db_name = %s\n", dbh.db_name);
@@ -328,7 +358,17 @@ int get_addresses(AddressList **address_list)
    num_records = dbh.number_of_records;
    //jpilot_logf(LOG_DEBUG, "sizeof(record_header)=%d\n",sizeof(record_header));
    for (i=1; i<num_records+1; i++) {
-      fread(&rh, sizeof(record_header), 1, in);
+      num = fread(&rh, sizeof(record_header), 1, in);
+      if (num != 1) {
+	 if (ferror(in)) {
+	    fclose(in);
+	    jpilot_logf(LOG_WARN, "Error reading AddressDB.pdb\n");
+	    return -1;
+	 }
+	 if (feof(in)) {
+	    return ADDRESS_EOF;
+	 }      
+      }
       offset = ((rh.Offset[0]*256+rh.Offset[1])*256+rh.Offset[2])*256+rh.Offset[3];
 #ifdef JPILOT_DEBUG
       jpilot_logf(LOG_DEBUG, "record header %u offset = %u\n",i, offset);
@@ -357,13 +397,19 @@ int get_addresses(AddressList **address_list)
 	 jpilot_logf(LOG_DEBUG, "fpos,next_offset = %u %u\n",fpos,next_offset);
 	 jpilot_logf(LOG_DEBUG, "----------\n");
 #endif
-	 if (feof(in)) break;
 	 buf = malloc(rec_size);
-	 if (!buf) break;
-	 num = fread(buf, 1, rec_size, in);
-	 if (num<=0) {
-	    free(buf);
+	 if (!buf) {
+	    if (rec_size > 0) {
+	       jpilot_logf(LOG_WARN, "Out of memory 3\n");
+	    }
 	    break;
+	 }
+	 num = fread(buf, rec_size, 1, in);
+	 if (num != 1) {
+	    if (ferror(in)) {
+	       free(buf);
+	       break;
+	    }
 	 }
 
 	 num = unpack_Address(&a, buf, rec_size);
@@ -371,7 +417,7 @@ int get_addresses(AddressList **address_list)
 	    free(buf);
 	    continue;
 	 }
-#if defined(Japanese)
+#if defined(WITH_JAPANESE)
 	// Convert to EUC Japanese Kanji code
 	{
 	    int i;
@@ -400,23 +446,28 @@ int get_addresses(AddressList **address_list)
    //
    pc_in = open_file("AddressDB.pc", "r");
    if (pc_in==NULL) {
+      jpilot_logf(LOG_WARN, "Error opening AddressDB.pc\n");
       return -1;
    }
    //r = pc_datebook_read_file_header(pc_in);
    while(!feof(pc_in)) {
       r = pc_address_read_next_rec(pc_in, &ma);
       if (r==ADDRESS_EOF) break;
+      if (r<0) break;
       if ((ma.rt!=DELETED_PC_REC)
 	  &&(ma.rt!=DELETED_PALM_REC)
 	  &&(ma.rt!=MODIFIED_PALM_REC)
 	  &&(ma.rt!=DELETED_DELETED_PALM_REC)) {
 	 temp_address_list = malloc(sizeof(AddressList));
+	 if (!temp_address_list) {
+	    jpilot_logf(LOG_WARN, "Out of memory 4\n");
+	    break;
+	 }
 	 memcpy(&(temp_address_list->ma), &ma, sizeof(MyAddress));
 	 temp_address_list->app_type = ADDRESS;
 	 temp_address_list->next = *address_list;
 	 *address_list = temp_address_list;
 	 recs_returned++;
-
 	 //temp_address_list->ma.attrib=0;
       } else {
 	 //this doesnt really free it, just the string pointers

@@ -16,6 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#include "config.h"
 #include <gtk/gtk.h>
 #include <time.h>
 #include <string.h>
@@ -32,6 +33,7 @@
 #define NUM_MENU_ITEM1 8
 #define NUM_MENU_ITEM2 8
 #define NUM_ADDRESS_CAT_ITEMS 16
+#define NUM_ADDRESS_ENTRIES 19
 
 GtkWidget *clist;
 GtkWidget *address_text[22];
@@ -128,7 +130,7 @@ void cb_new_address_done(GtkWidget *widget,
       }
       found=0;
       a.showPhone=0;
-      for (i=0; i<19; i++) {
+      for (i=0; i<NUM_ADDRESS_ENTRIES; i++) {
 	 a.entry[i] = 
 	   gtk_editable_get_chars(GTK_EDITABLE(address_text[i]), 0, -1);
 	 if (i>2 && i<8 && !found) {
@@ -168,7 +170,7 @@ void clear_address_entries()
    int i;
    
    //Clear all the address entry texts
-   for (i=0; i<19; i++) {
+   for (i=0; i<NUM_ADDRESS_ENTRIES; i++) {
       gtk_text_set_point(GTK_TEXT(address_text[i]), 0);
       gtk_text_forward_delete(GTK_TEXT(address_text[i]),
 			      gtk_text_get_length(GTK_TEXT(address_text[i])));
@@ -266,7 +268,6 @@ void cb_address_clist_sel(GtkWidget      *clist,
       return;
    }
    a=&(ma->a);
-   //todo
    clist_text = NULL;
    gtk_clist_get_text(GTK_CLIST(clist), row, 0, &clist_text);
    entry_text = gtk_entry_get_text(GTK_ENTRY(address_quickfind_entry));
@@ -284,7 +285,7 @@ void cb_address_clist_sel(GtkWidget      *clist,
    gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL,
 		   address_app_info.category.name[ma->attrib & 0x0F], -1);
    gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL, "\n", -1);
-   for (i=0; i<19; i++) {
+   for (i=0; i<NUM_ADDRESS_ENTRIES; i++) {
       i2=order[i];
       if (a->entry[i2]) {
 	 if (i2>2 && i2<8) {
@@ -301,7 +302,6 @@ void cb_address_clist_sel(GtkWidget      *clist,
    }
    gtk_text_thaw(GTK_TEXT(text));
 
-   //todo - maybe only make this happen in new mode?
    //Update all the new entry text boxes with info
    if (GTK_IS_WIDGET(address_cat_menu_item2[ma->attrib & 0x0F])) {
       gtk_check_menu_item_set_active
@@ -310,7 +310,7 @@ void cb_address_clist_sel(GtkWidget      *clist,
 	(GTK_OPTION_MENU(address_cat_menu2), ma->attrib & 0x0F);
    }
 
-   for (i=0; i<19; i++) {
+   for (i=0; i<NUM_ADDRESS_ENTRIES; i++) {
       gtk_text_set_point(GTK_TEXT(address_text[i]), 0);
       gtk_text_forward_delete(GTK_TEXT(address_text[i]),
 			      gtk_text_get_length(GTK_TEXT(address_text[i])));
@@ -401,10 +401,6 @@ void update_address_screen()
 
    entries_shown=0;
    for (temp_al = address_list, i=0; temp_al; temp_al=temp_al->next, i++) {
-      if ( ((temp_al->ma.attrib & 0x0F) != address_category) &&
-	  address_category != CATEGORY_ALL) {
-	 continue;
-      }
       if (temp_al->ma.rt == MODIFIED_PALM_REC) {
 	 get_pref(PREF_SHOW_MODIFIED, &ivalue, &svalue);
 	 //this will be in preferences as to whether you want to
@@ -424,6 +420,10 @@ void update_address_screen()
 	    i--;
 	    continue;
 	 }
+      }
+      if ( ((temp_al->ma.attrib & 0x0F) != address_category) &&
+	  address_category != CATEGORY_ALL) {
+	 continue;
       }
       
       entries_shown++;
@@ -537,6 +537,7 @@ static int make_phone_menu(int default_set, unsigned int callback_id, int set)
    return 0;
 }
 
+//todo - I should combine these next 2 functions into 1
 static int make_category_menu1(GtkWidget **category_menu)
 {
    GtkWidget *menu;
@@ -608,6 +609,7 @@ static int address_find()
 			&found_at,
 			&total_count);
       if (r) {
+	 //avoid dividing by zero
 	 if (total_count == 0) {
 	    total_count = 1;
 	 }
@@ -722,13 +724,14 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_clist_set_column_width(GTK_CLIST(clist), 0, 140);
    gtk_clist_set_column_width(GTK_CLIST(clist), 1, 140);
    gtk_clist_set_column_width(GTK_CLIST(clist), 2, 16);
-   gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW
-					 (scrolled_window), clist);
+   // gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW
+   //					   (scrolled_window), clist);
+   gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
    //gtk_viewport_set_shadow_type(GTK_VIEWPORT(scrolled_window), GTK_SHADOW_NONE);
    //gtk_clist_set_sort_column (GTK_CLIST(clist1), 0);
    //gtk_clist_set_auto_sort(GTK_CLIST(clist1), TRUE);
    
-   hbox_temp = gtk_hbox_new (FALSE, 0);
+   hbox_temp = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox1), hbox_temp, FALSE, FALSE, 0);
    gtk_widget_show(hbox_temp);
 
@@ -872,7 +875,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_box_pack_start(GTK_BOX(vbox_temp3), table3, TRUE, TRUE, 0);
 
    label = NULL;
-   for (i=0; i<19; i++) {
+   for (i=0; i<NUM_ADDRESS_ENTRIES; i++) {
       i2=order[i];
       if (i2>2 && i2<8) {
 	 make_phone_menu(i2-3, (i2-3)<<4, i2-3);

@@ -16,6 +16,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
+#include "config.h"
 #include <stdio.h>
 #include <pi-source.h>
 #include <pi-socket.h>
@@ -26,7 +28,7 @@
 #include "log.h"
 #include "todo.h"
 
-#if defined(Japanese)
+#if defined(WITH_JAPANESE)
 #include "japanese.h"
 #endif
 
@@ -193,9 +195,15 @@ static int pc_todo_read_next_rec(FILE *in, MyToDo *mtodo)
    if (feof(in)) {
       return TODO_EOF;
    }
-   fread(&header, sizeof(header), 1, in);
-   if (feof(in)) {
-      return TODO_EOF;
+   num = fread(&header, sizeof(header), 1, in);
+   if (num != 1) {
+      if (ferror(in)) {
+	 jpilot_logf(LOG_WARN, "Error reading ToDoDB.pc 1\n");
+	 return TODO_EOF;
+      }
+      if (feof(in)) {
+	 return TODO_EOF;
+      }      
    }
    rec_len = header.rec_len;
    mtodo->rt = header.rt;
@@ -203,12 +211,16 @@ static int pc_todo_read_next_rec(FILE *in, MyToDo *mtodo)
    mtodo->unique_id = header.unique_id;
    record = malloc(rec_len);
    if (!record) {
+      jpilot_logf(LOG_WARN, "Out of memory\n");
       return TODO_EOF;
    }
-   fread(record, rec_len, 1, in);
-   if (feof(in)) {
-      free(record);
-      return TODO_EOF;
+   num = fread(record, rec_len, 1, in);
+   if (num != 1) {
+      if (ferror(in)) {
+	 jpilot_logf(LOG_WARN, "Error reading ToDoDB.pc 2\n");
+	 free(record);
+	 return TODO_EOF;
+      }
    }
    num = unpack_ToDo(&(mtodo->todo), record, rec_len);
    free(record);
@@ -238,9 +250,8 @@ int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib)
       jpilot_logf(LOG_WARN, "Error opening ToDoDB.pc\n");
       return -1;
    }
-   //todo check return code - if 0 then buffer was too small
    rec_len = pack_ToDo(todo, record, 65535);
-   if (!rec_len) {
+   if (rec_len<=0) {
       jpilot_logf(LOG_WARN, "pack_ToDo failed\n");
       PRINT_FILE_LINE;
       return -1;
@@ -283,31 +294,46 @@ int get_todo_app_info(struct ToDoAppInfo *ai)
       jpilot_logf(LOG_WARN, "Error opening ToDoDB.pdb\n");
       return -1;
    }
-   fread(&rdbh, sizeof(RawDBHeader), 1, in);
-   if (feof(in)) {
-      fclose(in);
-      jpilot_logf(LOG_WARN, "Error reading ToDoDB.pdb\n");
-      return -1;
+   num = fread(&rdbh, sizeof(RawDBHeader), 1, in);
+   if (num != 1) {
+      if (ferror(in)) {
+	 fclose(in);
+	 jpilot_logf(LOG_WARN, "Error reading ToDoDB.pdb 2\n");
+	 return -1;
+      }
+      if (feof(in)) {
+	 return TODO_EOF;
+      }      
    }
    raw_header_to_header(&rdbh, &dbh);
 
-   get_app_info_size(in, &rec_size);
+   num = get_app_info_size(in, &rec_size);
+   if (num) {
+      return -1;
+   }
 
    fseek(in, dbh.app_info_offset, SEEK_SET);
    buf=malloc(rec_size);
    if (!buf) {
+      jpilot_logf(LOG_WARN, "Out of memory\n");
       fclose(in);
       return -1;
    }
-   num = fread(buf, 1, rec_size, in);
-   if (feof(in)) {
-      fclose(in);
-      free(buf);
-      jpilot_logf(LOG_WARN, "Error reading ToDoDB.pdb\n");
+   num = fread(buf, rec_size, 1, in);
+   if (num != 1) {
+      if (ferror(in)) {
+	 fclose(in);
+	 free(buf);
+	 jpilot_logf(LOG_WARN, "Error reading ToDoDB.pdb 3\n");
+	 return -1;
+      }
+   }
+   num = unpack_ToDoAppInfo(ai, buf, rec_size);
+   if (num <= 0) {
+      jpilot_logf(LOG_WARN, "unpack_ToDoAppInfo failed\n");
       return -1;
    }
-   unpack_ToDoAppInfo(ai, buf, rec_size);
-#if defined(Japanese)
+#if defined(WITH_JAPANESE)
    // Convert 'Category name' to EUC Japanese Kanji code
    {
       int i;
@@ -354,10 +380,16 @@ int get_todos(ToDoList **todo_list)
       return -1;
    }
    //Read the database header
-   fread(&rdbh, sizeof(RawDBHeader), 1, in);
-   if (feof(in)) {
-      jpilot_logf(LOG_WARN, "Error opening ToDoDB.pdb\n");
-      return -1;
+   num = fread(&rdbh, sizeof(RawDBHeader), 1, in);
+   if (num != 1) {
+      if (ferror(in)) {
+	 jpilot_logf(LOG_WARN, "Error reading ToDoDB.pdb\n");
+	 fclose(in);
+	 return -1;
+      }
+      if (feof(in)) {
+	 return TODO_EOF;
+      }      
    }
    raw_header_to_header(&rdbh, &dbh);
 #ifdef JPILOT_DEBUG
@@ -369,7 +401,17 @@ int get_todos(ToDoList **todo_list)
    //Read each record entry header
    num_records = dbh.number_of_records;
    for (i=1; i<num_records+1; i++) {
-      fread(&rh, sizeof(record_header), 1, in);
+      num = fread(&rh, sizeof(record_header), 1, in);
+      if (num != 1) {
+	 if (ferror(in)) {
+	    jpilot_logf(LOG_WARN, "Error reading ToDoDB.pdb 4\n");
+	    break;
+	 }
+	 if (feof(in)) {
+	    return TODO_EOF;
+	 }      
+      }
+
       offset = ((rh.Offset[0]*256+rh.Offset[1])*256+rh.Offset[2])*256+rh.Offset[3];
 #ifdef JPILOT_DEBUG
       jpilot_logf(LOG_DEBUG, "record header %u offset = %u\n",i, offset);
@@ -378,6 +420,10 @@ int get_todos(ToDoList **todo_list)
       jpilot_logf(LOG_DEBUG, "%d\n",(rh.unique_ID[0]*256+rh.unique_ID[1])*256+rh.unique_ID[2]);
 #endif
       temp_mem_rh = (mem_rec_header *)malloc(sizeof(mem_rec_header));
+      if (!temp_mem_rh) {
+	 jpilot_logf(LOG_WARN, "Out of memory\n");
+	 break;
+      }
       temp_mem_rh->next = mem_rh;
       mem_rh = temp_mem_rh;
       mem_rh->rec_num = i;
@@ -399,13 +445,15 @@ int get_todos(ToDoList **todo_list)
 	 jpilot_logf(LOG_DEBUG, "fpos,next_offset = %u %u\n",fpos,next_offset);
 	 jpilot_logf(LOG_DEBUG, "----------\n");
 #endif
-	 if (feof(in)) break;
 	 buf = malloc(rec_size);
 	 if (!buf) break;
-	 num = fread(buf, 1, rec_size, in);
-	 if (feof(in) || (!num)) {
-	    free(buf);
-	    break;
+	 num = fread(buf, rec_size, 1, in);
+	 if ((num != 1)) {
+	    if (ferror(in)) {
+	       jpilot_logf(LOG_WARN, "Error reading ToDoDB.pdb 5\n");
+	       free(buf);
+	       break;
+	    }
 	 }
 
 	 num = unpack_ToDo(&todo, buf, rec_size);
@@ -414,7 +462,7 @@ int get_todos(ToDoList **todo_list)
 	    jpilot_logf(LOG_DEBUG, "unpack_ToDo failed\n");
 	    continue;
 	 }
-#if defined(Japanese)
+#if defined(WITH_JAPANESE)
       // Convert to EUC Japanese Kanji code
       if (todo.description != NULL)
          Sjis2Euc(todo.description, 65536);
@@ -422,6 +470,10 @@ int get_todos(ToDoList **todo_list)
          Sjis2Euc(todo.note, 65536);
 #endif
 	 temp_todo_list = malloc(sizeof(ToDoList));
+	 if (!temp_todo_list) {
+	    jpilot_logf(LOG_WARN, "Out of memory\n");
+	    break;
+	 }
 	 memcpy(&(temp_todo_list->mtodo.todo), &todo, sizeof(struct ToDo));
 	 //temp_address_list->ma.a = temp_a;
 	 temp_todo_list->app_type = TODO;
@@ -448,11 +500,16 @@ int get_todos(ToDoList **todo_list)
    while(!feof(pc_in)) {
       r = pc_todo_read_next_rec(pc_in, &mtodo);
       if (r==TODO_EOF) break;
+      if (r<0) break;
       if ((mtodo.rt!=DELETED_PC_REC)
 	  &&(mtodo.rt!=DELETED_PALM_REC)
 	  &&(mtodo.rt!=MODIFIED_PALM_REC)
 	  &&(mtodo.rt!=DELETED_DELETED_PALM_REC)) {
 	 temp_todo_list = malloc(sizeof(ToDoList));
+	 if (!temp_todo_list) {
+	    jpilot_logf(LOG_WARN, "Out of memory\n");
+	    break;
+	 }
 	 memcpy(&(temp_todo_list->mtodo), &mtodo, sizeof(MyToDo));
 	 temp_todo_list->app_type = TODO;
 	 temp_todo_list->next = *todo_list;

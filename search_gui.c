@@ -16,6 +16,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
+#include "config.h"
 #include <gtk/gtk.h>
 #include <string.h>
 #include <ctype.h>
@@ -34,6 +36,7 @@
 
 static AnyRecordList *search_rl = NULL;
 static GtkWidget *case_sense_checkbox;
+static GtkWidget *window = NULL;
 
 
 const char *jpilot_strstr(const char *haystack, const char *needle, int case_sense)
@@ -97,6 +100,7 @@ static int
    char date_str[50];
    char datef[50];
    const char *svalue1;
+   const char *svalue;
    int ivalue;
    AnyRecordList *new_arl;
    
@@ -111,10 +115,21 @@ static int
 
    count = 0;
    for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
-      if (temp_al->ma.rt == MODIFIED_PALM_REC) {
-	 //todo - this will be in preferences as to whether you want to 
+      if (temp_al->ma.rt == DELETED_PALM_REC) {
+	 get_pref(PREF_SHOW_DELETED, &ivalue, &svalue);
+	 //this will be in preferences as to whether you want to
 	 //see deleted records, or not.
-	 continue;
+	 if (!ivalue) {
+	    continue;
+	 }
+      }
+      if (temp_al->ma.rt == MODIFIED_PALM_REC) {
+	 get_pref(PREF_SHOW_MODIFIED, &ivalue, &svalue);
+	 //this will be in preferences as to whether you want to
+	 //see deleted records, or not.
+	 if (!ivalue) {
+	    continue;
+	 }
       }
       found = 0;
       if ( (temp_al->ma.a.description) &&
@@ -199,6 +214,8 @@ static int
    AddressList *a_list;
    AddressList *temp_al;
    AnyRecordList *new_arl;
+   const char *svalue;
+   int ivalue;
    int i, count;
    
    //Search Addresses
@@ -212,10 +229,21 @@ static int
 
    count = 0;
    for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
-      if (temp_al->ma.rt == MODIFIED_PALM_REC) {
-	 //todo - this will be in preferences as to whether you want to 
+      if (temp_al->ma.rt == DELETED_PALM_REC) {
+	 get_pref(PREF_SHOW_DELETED, &ivalue, &svalue);
+	 //this will be in preferences as to whether you want to
 	 //see deleted records, or not.
-	 continue;
+	 if (!ivalue) {
+	    continue;
+	 }
+      }
+      if (temp_al->ma.rt == MODIFIED_PALM_REC) {
+	 get_pref(PREF_SHOW_MODIFIED, &ivalue, &svalue);
+	 //this will be in preferences as to whether you want to
+	 //see deleted records, or not.
+	 if (!ivalue) {
+	    continue;
+	 }
       }
       for (i=0; i<19; i++) {
 	 if (temp_al->ma.a.entry[i]) {
@@ -256,6 +284,8 @@ static int
    ToDoList *temp_todo;
    AnyRecordList *new_arl;
    int found, count;
+   const char *svalue;
+   int ivalue;
    
    //Search Appointments
    todo_list = NULL;
@@ -268,11 +298,23 @@ static int
 
    count = 0;
    for (temp_todo = todo_list; temp_todo; temp_todo=temp_todo->next) {
-      if (temp_todo->mtodo.rt == MODIFIED_PALM_REC) {
-	 //todo - this will be in preferences as to whether you want to 
+      if (temp_todo->mtodo.rt == DELETED_PALM_REC) {
+	 get_pref(PREF_SHOW_DELETED, &ivalue, &svalue);
+	 //this will be in preferences as to whether you want to
 	 //see deleted records, or not.
-	 continue;
+	 if (!ivalue) {
+	    continue;
+	 }
       }
+      if (temp_todo->mtodo.rt == MODIFIED_PALM_REC) {
+	 get_pref(PREF_SHOW_MODIFIED, &ivalue, &svalue);
+	 //this will be in preferences as to whether you want to
+	 //see deleted records, or not.
+	 if (!ivalue) {
+	    continue;
+	 }
+      }
+
       found = 0;
       if ( (temp_todo->mtodo.todo.description) &&
 	  (temp_todo->mtodo.todo.description[0]) ) {
@@ -328,6 +370,8 @@ static int
    MemoList *temp_memo;
    AnyRecordList *new_arl;
    int count;
+   const char *svalue;
+   int ivalue;
    
    //Search Memos
    memo_list = NULL;
@@ -340,10 +384,21 @@ static int
 
    count = 0;
    for (temp_memo = memo_list; temp_memo; temp_memo=temp_memo->next) {
-      if (temp_memo->mmemo.rt == MODIFIED_PALM_REC) {
-	 //todo - this will be in preferences as to whether you want to 
+      if (temp_memo->mmemo.rt == DELETED_PALM_REC) {
+	 get_pref(PREF_SHOW_DELETED, &ivalue, &svalue);
+	 //this will be in preferences as to whether you want to
 	 //see deleted records, or not.
-	 continue;
+	 if (!ivalue) {
+	    continue;
+	 }
+      }
+      if (temp_memo->mmemo.rt == MODIFIED_PALM_REC) {
+	 get_pref(PREF_SHOW_MODIFIED, &ivalue, &svalue);
+	 //this will be in preferences as to whether you want to
+	 //see deleted records, or not.
+	 if (!ivalue) {
+	    continue;
+	 }
       }
       if (jpilot_strstr(temp_memo->mmemo.memo.text, needle,
 		 GTK_TOGGLE_BUTTON(case_sense_checkbox)->active) ) {
@@ -379,6 +434,7 @@ static gboolean cb_destroy(GtkWidget *widget)
       free_AnyRecordList(&search_rl);
       search_rl = NULL;
    }
+   window = NULL;
    return FALSE;
 }
 
@@ -464,7 +520,6 @@ static void
 
 void cb_search_gui(GtkWidget *widget, gpointer data)
 {
-   static GtkWidget *window;
    GtkWidget *entry;
    GtkWidget *scrolled_window;
    GtkWidget *clist;

@@ -52,3 +52,9 @@
  Added in Japanese support.
  Misc GUI improvements and code improvements.
  
+0.94 - 08/28/99
+ Fixed up the configure script for Solaris, and Debian users.
+ Minor GUI changes/improvements.
+ Added an Install screen.
+ 0.93 Didn't show the last todo in the DB file, fixed.
+ 

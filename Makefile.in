@@ -1,85 +1,95 @@
 
-#set PILOT_DIR to where you installed pilot-link
-PILOT_DIR=@pilot_prefix@
+#Pilot flags (include dir), and Libraries
+PILOT_FLAGS=@PILOT_FLAGS@
+PILOT_LIBS=@PILOT_LIBS@
 
 #set CC to your compiler
 CC = @CC@
 
 # CC options
 # japanese support
-JAPANESE       = @japanese@
+CCDEFINES = @DEFS@ -DBASE_DIR=\"@prefix@\"
+CFLAGS = @cflags@
 
 # CC options
-OPTIONS = @ccoptions@ -DBASE_DIR=\"@prefix@\" $(JAPANESE)
+OPTIONS = @ccoptions@ $(CCDEFINES) $(CFLAGS)
 
 # GTK+ flags
 GTKFLAGS = @GTK_CFLAGS@
 # GTK+ libs
 GTKLIBS = @GTK_LIBS@
 
-PILOT_LIB = -L$(PILOT_DIR)/lib -lpisock
-PILOT_INCLUDE = -I$(PILOT_DIR)/include
-
 all: jpilot
 
 jpilot: jpilot.o datebook.o address.o todo.o memo.o \
 	utils.o sync.o prefs.o log.o \
 	datebook_gui.o address_gui.o todo_gui.o memo_gui.o \
-	prefs_gui.o search_gui.o \
+	prefs_gui.o search_gui.o install_gui.o weekview_gui.o \
+	monthview_gui.o \
 	japanese.o
-	$(CC) $(OPTIONS) $(PILOT_LIB) $(GTKFLAGS) $(GTKLIBS) \
+	$(CC) $(OPTIONS) $(PILOT_LIBS) $(GTKFLAGS) $(GTKLIBS) \
 	jpilot.o datebook.o address.o todo.o memo.o \
 	utils.o sync.o prefs.o log.o \
 	datebook_gui.o address_gui.o todo_gui.o memo_gui.o \
-	prefs_gui.o search_gui.o \
+	prefs_gui.o search_gui.o install_gui.o weekview_gui.o \
+	monthview_gui.o \
 	japanese.o \
 	-o jpilot
 
 
 jpilot.o: jpilot.c utils.h
-	$(CC) $(OPTIONS) $(PILOT_INCLUDE) $(GTKFLAGS) -c jpilot.c
+	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c jpilot.c
 
 datebook.o: datebook.c datebook.h utils.h
-	$(CC) $(OPTIONS) $(PILOT_INCLUDE) $(GTKFLAGS) -c datebook.c
+	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c datebook.c
 
 address.o: address.c address.h utils.h
-	$(CC) $(OPTIONS) $(PILOT_INCLUDE) $(GTKFLAGS) -c address.c
+	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c address.c
 
 todo.o: todo.c todo.h utils.h
-	$(CC) $(OPTIONS) $(PILOT_INCLUDE) $(GTKFLAGS) -c todo.c
+	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c todo.c
 
 memo.o: memo.c memo.h utils.h
-	$(CC) $(OPTIONS) $(PILOT_INCLUDE) $(GTKFLAGS) -c memo.c
+	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c memo.c
 
 datebook_gui.o: datebook_gui.c utils.h
-	$(CC) $(OPTIONS) $(PILOT_INCLUDE) $(GTKFLAGS) -c datebook_gui.c
+	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c datebook_gui.c
 
-address_gui.o: address_gui.c address.o
-	$(CC) $(OPTIONS) $(PILOT_INCLUDE) $(GTKFLAGS) -c address_gui.c
+address_gui.o: address_gui.c utils.h
+	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c address_gui.c
 
-todo_gui.o: todo_gui.c todo.o utils.h
-	$(CC) $(OPTIONS) $(PILOT_INCLUDE) $(GTKFLAGS) -c todo_gui.c
+todo_gui.o: todo_gui.c utils.h
+	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c todo_gui.c
 
 memo_gui.o: memo_gui.c utils.h
-	$(CC) $(OPTIONS) $(PILOT_INCLUDE) $(GTKFLAGS) -c memo_gui.c
+	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c memo_gui.c
 
 search_gui.o: search_gui.c utils.h
-	$(CC) $(OPTIONS) $(PILOT_INCLUDE) $(GTKFLAGS) -c search_gui.c
+	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c search_gui.c
 
 prefs_gui.o: prefs_gui.c prefs.h utils.h
-	$(CC) $(OPTIONS) $(PILOT_INCLUDE) $(GTKFLAGS) -c prefs_gui.c
+	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c prefs_gui.c
+
+install_gui.o: install_gui.c utils.h
+	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c install_gui.c
+
+weekview_gui.o: weekview_gui.c utils.h
+	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c weekview_gui.c
+
+monthview_gui.o: monthview_gui.c utils.h
+	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c monthview_gui.c
 
 utils.o: utils.c utils.h
-	$(CC) $(OPTIONS) $(PILOT_INCLUDE) $(GTKFLAGS) -c utils.c
+	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c utils.c
 
 sync.o: sync.c sync.h
-	$(CC) $(OPTIONS) $(PILOT_INCLUDE) $(GTKFLAGS) -c sync.c
+	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c sync.c
 
 log.o: log.c log.h
-	$(CC) $(OPTIONS) $(PILOT_INCLUDE) $(GTKFLAGS) -c log.c
+	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c log.c
 
 prefs.o: prefs.c utils.h prefs.h
-	$(CC) $(OPTIONS) $(PILOT_INCLUDE) $(GTKFLAGS) -c prefs.c
+	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c prefs.c
 
 japanese.o: japanese.c japanese.h
 	$(CC) $(OPTIONS) -c japanese.c

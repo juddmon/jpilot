@@ -16,14 +16,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
+#include "config.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
 #include <sys/types.h>
-#include <fcntl.h>
-#include <sys/file.h>
 #include <sys/stat.h>
+#ifdef USE_FLOCK
+#include <sys/file.h>
+#else
+#include <fcntl.h>
+#endif
 #include <signal.h>
 #include <utime.h>
 #include "log.h"
@@ -46,7 +51,14 @@ int jpilot_logf(int level, char *format, ...)
    int			size;
    static FILE		*fp=NULL;
    static int		err_count=0;
-
+   
+   
+   if (!((level & glob_log_file_mask) ||
+       (level & glob_log_stdout_mask) ||
+       (level & glob_log_gui_mask))) {
+      return 0;
+   }
+   
    buf[0] = '\0';
 
    if ((!fp) && (err_count>10)) {

@@ -16,6 +16,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
+#include "config.h"
 #include <gtk/gtk.h>
 #include <time.h>
 #include <stdlib.h>
@@ -354,6 +356,7 @@ static void update_memo_screen()
    gtk_tooltips_set_tip(glob_tooltips, category_menu1, str, NULL);   
 }
 
+//todo combine these 2 functions
 static int make_category_menu1(GtkWidget **category_menu)
 {
    GtkWidget *menu;
@@ -427,7 +430,7 @@ static int memo_find()
 	 if (total_count == 0) {
 	    total_count = 1;
 	 }
-	 gtk_clist_select_row(GTK_CLIST(clist), found_at, 1);
+	 gtk_clist_select_row(GTK_CLIST(clist), found_at, 0);
 	 move_scrolled_window_hack(scrolled_window,
 				   (float)found_at/(float)total_count);
       }
@@ -522,8 +525,9 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_clist_set_column_width(GTK_CLIST(clist), 1, 8);
    gtk_clist_set_column_width(GTK_CLIST(clist), 2, 242);
    gtk_clist_set_column_width(GTK_CLIST(clist), 3, 14);
-   gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW
-					 (scrolled_window), clist);
+   //   gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW
+   //					 (scrolled_window), clist);
+   gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
    gtk_widget_show(clist);
    
    

@@ -16,6 +16,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
+#include "config.h"
 #include <gtk/gtk.h>
 #include <string.h>
 #include "utils.h"
@@ -122,11 +124,12 @@ static gboolean cb_destroy(GtkWidget *widget)
 {
    char *entry_text;
    
+   jpilot_logf(LOG_DEBUG, "Cleanup\n");
+
    entry_text = gtk_entry_get_text(GTK_ENTRY(port_entry));
    jpilot_logf(LOG_DEBUG, "port_entry = [%s]\n", entry_text);
    set_pref_char(PREF_PORT, entry_text);
    
-   jpilot_logf(LOG_DEBUG, "Cleanup\n");
    free_prefs();
    window = NULL;
    return FALSE;

@@ -16,16 +16,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
+#include "config.h"
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <fcntl.h>
-#include <sys/file.h>
 #include <sys/stat.h>
+#ifdef USE_FLOCK
+#include <sys/file.h>
+#else
+#include <fcntl.h>
+#endif
 #include <errno.h>
 #include <signal.h>
 #include <utime.h>
+#include <stdio.h>
 #include "utils.h"
 #include "sync.h"
 #include "log.h"
@@ -48,21 +54,26 @@ int sync_fetch(int sd, int full_backup);
 int jpilot_sync(const char *port, int full_backup);
 int sync_lock();
 int sync_unlock();
+#ifdef DATEBOOK_HACK
 static int hack_delete_record(int sd);
 static int hack_write_record(int sd);
+#endif
+static int sync_process_install_file(int sd);
 
+#ifdef DATEBOOK_HACK
 unsigned long hack_record_id;
+#endif
 int wrote_to_datebook;
 
 void sig_handler(int sig)
 {
    jpilot_logf(LOG_DEBUG, "caught signal SIGCHLD\n");
-   fflush(stdout);
    glob_child_pid = 0;
 
    //wait for any child processes
    waitpid(-1, NULL, WNOHANG);
-   
+
+   //refresh the screen after a sync
    cb_app_button(NULL, NULL);
    
    return;
@@ -87,6 +98,7 @@ static int writef(int fp, char *format, ...)
    return TRUE;
 }
 
+/*
 int sync_loop(const char *port, int full_backup)
 {
    int r, done, cons_errors;
@@ -118,6 +130,7 @@ int sync_loop(const char *port, int full_backup)
    
    return 0;
 }
+*/
 
 int sync_lock(int *fd)
 {
@@ -125,7 +138,9 @@ int sync_lock(int *fd)
    char lock_file[256];
    int r;
    char str[12];
+#ifndef USE_FLOCK
    struct flock lock;
+#endif
 
    get_home_file_name("sync_pid", lock_file, 255);
    *fd = open(lock_file, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
@@ -133,12 +148,15 @@ int sync_lock(int *fd)
       jpilot_logf(LOG_WARN, "open lock file failed\n");
       return -1;
    }
+#ifndef USE_FLOCK
    lock.l_type = F_WRLCK;
    lock.l_start = 0;
    lock.l_whence = SEEK_SET;
    lock.l_len = 0; //Lock to the end of file
-   //r = flock(*fd, LOCK_EX | LOCK_NB);
    r = fcntl(*fd, F_SETLK, &lock);
+#else
+   r = flock(*fd, LOCK_EX | LOCK_NB);
+#endif
    if (r == -1){
       jpilot_logf(LOG_WARN, "lock failed\n");
       read(*fd, str, 10);
@@ -161,17 +179,21 @@ int sync_unlock(int fd)
    char lock_file[256];
    int r;
    char str[12];
+#ifndef USE_FLOCK
    struct flock lock;
+#endif
 
    get_home_file_name("sync_pid", lock_file, 255);
 
+#ifndef USE_FLOCK
    lock.l_type = F_UNLCK;
    lock.l_start = 0;
    lock.l_whence = SEEK_SET;
    lock.l_len = 0;
-   //r = flock(fd, LOCK_UN | LOCK_NB);
    r = fcntl(fd, F_SETLK, &lock);
-
+#else
+   r = flock(fd, LOCK_UN | LOCK_NB);
+#endif
    if (r == -1) {
       jpilot_logf(LOG_WARN, "unlock failed\n");
       read(fd, str, 10);
@@ -309,29 +331,32 @@ int jpilot_sync(const char *port, int full_backup)
   
    if (dlp_OpenConduit(sd)<0) {
       writef(pipe_out, "Sync canceled\n");
-      //todo - I'm not sure what to do here
       return -1;
    }
+
+   sync_process_install_file(sd);
 
    sync_application(DATEBOOK, sd);
    sync_application(ADDRESS, sd);
    sync_application(TODO, sd);
    sync_application(MEMO, sd);
 
+#ifdef DATEBOOK_HACK
    hack_write_record(sd);
-   
+#endif   
    sync_fetch(sd, full_backup);
    
+#ifdef DATEBOOK_HACK
    hack_delete_record(sd);
-
+#endif
    // Tell the user who it is, with a different PC id.
    U.lastSyncPC = 0x00010000;
    U.successfulSyncDate = time(NULL);
    U.lastSyncDate = U.successfulSyncDate;
-   dlp_WriteUserInfo(sd,&U);
+   dlp_WriteUserInfo(sd, &U);
 
 
-   dlp_EndOfSync(sd,0);
+   dlp_EndOfSync(sd, 0);
    pi_close(sd);
 
    cleanup_pc_files();
@@ -354,8 +379,10 @@ int sync_application(AppType app_type, int sd)
    char pc_filename[50];
    char palm_dbname[50];
    char write_log_message[50];
-   char error_log_message[50];
+   char error_log_message_w[50];
+   char error_log_message_d[50];
    char delete_log_message[50];
+   char log_entry[256];
    
    switch (app_type) {
     case DATEBOOK:
@@ -364,7 +391,8 @@ int sync_application(AppType app_type, int sd)
       strcpy(pc_filename, "DatebookDB.pc");
       strcpy(palm_dbname, "DatebookDB");
       strcpy(write_log_message, "Wrote an Appointment to the Pilot.\n\r");
-      strcpy(error_log_message, "Writing an Appointment to the Pilot failed.\n\r");
+      strcpy(error_log_message_w, "Writing an Appointment to the Pilot failed.\n\r");
+      strcpy(error_log_message_d, "Deleting an Appointment to the Pilot failed.\n\r");
       strcpy(delete_log_message, "Deleted an Appointment from the Pilot.\n\r");
       break;
     case ADDRESS:
@@ -372,7 +400,8 @@ int sync_application(AppType app_type, int sd)
       strcpy(pc_filename, "AddressDB.pc");
       strcpy(palm_dbname, "AddressDB");
       strcpy(write_log_message, "Wrote an Addresss to the Pilot.\n\r");
-      strcpy(error_log_message, "Writing an Address to the Pilot failed.\n\r");
+      strcpy(error_log_message_w, "Writing an Address to the Pilot failed.\n\r");
+      strcpy(error_log_message_d, "Deleting an Address to the Pilot failed.\n\r");
       strcpy(delete_log_message, "Deleted an Address from the Pilot.\n\r");
       break;
     case TODO:
@@ -380,7 +409,8 @@ int sync_application(AppType app_type, int sd)
       strcpy(pc_filename, "ToDoDB.pc");
       strcpy(palm_dbname, "ToDoDB");
       strcpy(write_log_message, "Wrote a ToDo to the Pilot.\n\r");
-      strcpy(error_log_message, "Writing a ToDo to the Pilot failed.\n\r");
+      strcpy(error_log_message_w, "Writing a ToDo to the Pilot failed.\n\r");
+      strcpy(error_log_message_d, "Deleting a ToDo to the Pilot failed.\n\r");
       strcpy(delete_log_message, "Deleted a ToDo from the Pilot.\n\r");
       break;
     case MEMO:
@@ -388,7 +418,8 @@ int sync_application(AppType app_type, int sd)
       strcpy(pc_filename, "MemoDB.pc");
       strcpy(palm_dbname, "MemoDB");
       strcpy(write_log_message, "Wrote a Memo to the Pilot.\n\r");
-      strcpy(error_log_message, "Writing a Memo to the Pilot failed.\n\r");
+      strcpy(error_log_message_w, "Writing a Memo to the Pilot failed.\n\r");
+      strcpy(error_log_message_d, "Deleting a Memo to the Pilot failed.\n\r");
       strcpy(delete_log_message, "Deleted a Memo from the Pilot.\n\r");
       break;
     default:
@@ -402,9 +433,9 @@ int sync_application(AppType app_type, int sd)
    }
    // Open the applications database, store access handle in db
    if (dlp_OpenDB(sd, 0, dlpOpenReadWrite, palm_dbname, &db) < 0) {
-      dlp_AddSyncLogEntry(sd, "Unable to open ");
-      dlp_AddSyncLogEntry(sd, palm_dbname);
-      dlp_AddSyncLogEntry(sd, "\n.");
+      g_snprintf(log_entry, 255, "Unable to open %s\n\r", palm_dbname);
+      log_entry[255]='\0';
+      dlp_AddSyncLogEntry(sd, log_entry);
       pi_close(sd);
       return -1;
    }
@@ -414,8 +445,13 @@ int sync_application(AppType app_type, int sd)
 #endif
    while(!feof(pc_in)) {
       num = fread(&header, sizeof(header), 1, pc_in);
-      if (feof(pc_in) || (!num)) {
-	 break;
+      if (num!=1) {
+	 if (ferror(pc_in)) {
+	    break;
+	 }
+	 if (feof(pc_in)) {
+	    break;
+	 }
       }
       rec_len = header.rec_len;
       if (rec_len > 0x10000) {
@@ -425,12 +461,18 @@ int sync_application(AppType app_type, int sd)
       }
       if (header.rt==NEW_PC_REC) {
 	 record = malloc(rec_len);
-	 num = fread(record, rec_len, 1, pc_in);
-	 if (feof(pc_in) || (!num)) {
+	 if (!record) {
+	    writef(pipe_out, "Out of memory\n");
 	    break;
 	 }
+	 num = fread(record, rec_len, 1, pc_in);
+	 if (num != 1) {
+	    if (ferror(pc_in)) {
+	       break;
+	    }
+	 }
 
-#if defined(Japanese)
+#if defined(WITH_JAPANESE)
 	 // Convert to SJIS Japanese Kanji code (Palm use this code)
 	 //Write the record to the Palm Pilot
 	 switch (app_type) {
@@ -486,7 +528,7 @@ int sync_application(AppType app_type, int sd)
 
 	 if (ret < 0) {
 	    writef(pipe_out, "dlp_WriteRecord failed\n");
-	    dlp_AddSyncLogEntry(sd, error_log_message);	    
+	    dlp_AddSyncLogEntry(sd, error_log_message_w);	    
 	 } else {
 	    //hack2
 	    wrote_to_datebook = 1;
@@ -507,19 +549,20 @@ int sync_application(AppType app_type, int sd)
 	 ret = dlp_DeleteRecord(sd, db, 0, header.unique_id);
 	 
 	 if (ret < 0) {
-	    writef(pipe_out, "dlp_DeleteRecord failed\n");
-	    dlp_AddSyncLogEntry(sd, error_log_message);
+	    writef(pipe_out, "dlp_DeleteRecord failed\n"\
+            "This could be because the record was already deleted on the Palm");
+	    dlp_AddSyncLogEntry(sd, error_log_message_d);
 	 } else {
 	    dlp_AddSyncLogEntry(sd, delete_log_message);
-	    //Now mark the record as deleted
-	    if (fseek(pc_in, -sizeof(header), SEEK_CUR)) {
-	       writef(pipe_out, "fseek failed - fatal error\n");
-	       fclose(pc_in);
-	       return -1;
-	    }
-	    header.rt=DELETED_DELETED_PALM_REC;
-	    fwrite(&header, sizeof(header), 1, pc_in);
 	 }
+	 //Now mark the record as deleted
+	 if (fseek(pc_in, -sizeof(header), SEEK_CUR)) {
+	    writef(pipe_out, "fseek failed - fatal error\n");
+	    fclose(pc_in);
+	    return -1;
+	 }
+	 header.rt=DELETED_DELETED_PALM_REC;
+	 fwrite(&header, sizeof(header), 1, pc_in);
       }
 
       //skip this record now that we are done with it
@@ -573,10 +616,12 @@ int sync_fetch(int sd, int full_backup)
    
    while(dlp_ReadDBList(sd, cardno, dlpOpenRead, start, &info)>0) {
       start=info.index+1;
-      //writef(pipe_out, "dbname = %s\n",info.name);
-      //writef(pipe_out, "flag backup = %d\n",info.flags & dlpDBFlagBackup);
-      //writef(pipe_out, "type = %x\n",info.type);
-      //writef(pipe_out, "creator = %x\n",info.creator);
+#ifdef JPILOT_DEBUG
+      writef(pipe_out, "dbname = %s\n",info.name);
+      writef(pipe_out, "flag backup = %d\n",info.flags & dlpDBFlagBackup);
+      writef(pipe_out, "type = %x\n",info.type);
+      writef(pipe_out, "creator = %x\n",info.creator);
+#endif
       for(i=0, found=0; palm_dbname[i]; i++) {
 	 if ((found = !strcmp(info.name, palm_dbname[i])))
 	   break;
@@ -590,7 +635,7 @@ int sync_fetch(int sd, int full_backup)
 	    strcat(db_copy_name,".pdb");
 	 }
    
-	 get_home_file_name(db_copy_name, full_name, 256);
+	 get_home_file_name(db_copy_name, full_name, 255);
 	 if (stat(full_name, &statb) != 0) {
 	    statb.st_mtime = 0;
 	 }
@@ -606,7 +651,6 @@ int sync_fetch(int sd, int full_backup)
 	 }
 
 	 writef(pipe_out, "Fetching '%s'... ", info.name);
-	 fflush(stdout);
    
 	 info.flags &= 0xff;
    
@@ -631,6 +675,7 @@ int sync_fetch(int sd, int full_backup)
    return 0;
 }
 
+#ifdef DATEBOOK_HACK
 static int hack_write_record(int sd)
 {
    char record[65536];
@@ -644,9 +689,7 @@ static int hack_write_record(int sd)
    if (wrote_to_datebook) {
       // Open the applications database, store access handle in db
       if (dlp_OpenDB(sd, 0, dlpOpenWrite, "DatebookDB", &db) < 0) {
-	 dlp_AddSyncLogEntry(sd, "Unable to open ");
-	 dlp_AddSyncLogEntry(sd, "DatebookDB");
-	 dlp_AddSyncLogEntry(sd, "\n.");
+	 dlp_AddSyncLogEntry(sd, "Unable to open DatebookDB\n\r");
 	 return -1;
       }
       datebook_create_bogus_record(record, 65536, &rec_len);
@@ -663,7 +706,9 @@ static int hack_write_record(int sd)
    }
    return 0;
 }
+#endif
 
+#ifdef DATEBOOK_HACK
 static int hack_delete_record(int sd)
 {
    int db;
@@ -671,9 +716,7 @@ static int hack_delete_record(int sd)
    if (hack_record_id) {
       // Open the applications database, store access handle in db
       if (dlp_OpenDB(sd, 0, dlpOpenWrite, "DatebookDB", &db) < 0) {
-	 dlp_AddSyncLogEntry(sd, "Unable to open ");
-	 dlp_AddSyncLogEntry(sd, "DatebookDB");
-	 dlp_AddSyncLogEntry(sd, "\n.");
+	 dlp_AddSyncLogEntry(sd, "Unable to open DatebookDB\r\n");
 	 pi_close(sd);
       }
       
@@ -683,5 +726,91 @@ static int hack_delete_record(int sd)
       // Close the database
       dlp_CloseDB(sd, db);
    }
+   return 0;
+}
+#endif
+
+static int sync_install(char *filename, int sd)
+{
+   struct pi_file *f;
+   char *Pc;
+   char log_entry[256];
+   
+   Pc=rindex(filename, '/');
+   if (!Pc) {
+      Pc = filename;
+   } else {
+      Pc++;
+   }
+      
+   writef(pipe_out, "Installing %s... ", Pc);
+   f = pi_file_open(filename);
+   if (f==0) {
+      writef(pipe_out, "\nUnable to open '%s'!\n", filename);
+      return -1;
+   }
+   if (pi_file_install(f, sd, 0)<0) {
+      g_snprintf(log_entry, 255, "Install %s failed\n\r", Pc);
+      log_entry[255]='\0';
+      dlp_AddSyncLogEntry(sd, log_entry);
+      writef(pipe_out, "Failed.\n");
+      pi_file_close(f);
+      return -1;
+   }
+   else {
+      g_snprintf(log_entry, 255, "Installed %s\n\r", Pc);
+      log_entry[255]='\0';
+      dlp_AddSyncLogEntry(sd, log_entry);
+      writef(pipe_out, "OK\n");
+   }
+   pi_file_close(f);
+
+   return 0;
+}
+
+
+//file must not be open elsewhere when this is called
+//the first line is 0
+static int sync_process_install_file(int sd)
+{
+   FILE *in;
+   FILE *out;
+   char line[1002];
+   char *Pc;
+   int r, line_count;
+
+   in = open_file("jpilot_to_install", "r");
+   if (!in) {
+      writef(pipe_out, "Cannot open jpilot_to_install file\n");
+      return -1;
+   }
+
+   out = open_file("jpilot_to_install.tmp", "w");
+   if (!out) {
+      writef(pipe_out, "Cannot open jpilot_to_install.tmp file\n");
+      fclose(in);
+      return -1;
+   }
+   
+   for (line_count=0; (!feof(in)); line_count++) {
+      line[0]='\0';
+      Pc = fgets(line, 1000, in);
+      if (!Pc) {
+	 break;
+      }
+      if (line[strlen(line)-1]=='\n') {
+	 line[strlen(line)-1]='\0';
+      }
+      r = sync_install(line, sd);
+      if (r==0) {
+	 continue;
+      }
+      fprintf(out, "%s\n", line);
+   }
+   fclose(in);
+   fclose(out);
+   
+   rename_file("jpilot_to_install.tmp", "jpilot_to_install");
+   
    return 0;
 }

@@ -16,6 +16,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
+#include "config.h"
 #include <sys/types.h>
 #include <dirent.h>
 #include <stdio.h>
@@ -113,9 +115,11 @@ static int get_rcfile_name(int n, char *rc_copy)
 	    }
 	 }
       }
-      closedir(dir);
+      if (dir) {
+	 closedir(dir);
+      }
 
-      get_home_file_name("", full_name, 100);
+      get_home_file_name("", full_name, 255);
       jpilot_logf(LOG_DEBUG, "opening dir %s\n", full_name);
       dir = opendir(full_name);
       if (dir) {
@@ -136,7 +140,9 @@ static int get_rcfile_name(int n, char *rc_copy)
 	    }
 	 }
       }
-      closedir(dir);
+      if (dir) {
+	 closedir(dir);
+      }
    }
 
    found = 0;
@@ -187,7 +193,12 @@ int get_pref_possibility(int which, int n, char *pref_str)
       "%H:%M:%S",
       "%I.%M.%S %p",
       "%H.%M.%S",
-      "%H,%M,%S"
+      "%H,%M,%S",
+      "%I:%M %p",
+      "%H:%M",
+      "%I.%M %p",
+      "%H.%M",
+      "%H,%M"
    };
 
    static const char *days[] = {
@@ -258,7 +269,7 @@ int get_pref_possibility(int which, int n, char *pref_str)
     default:
       pref_str[0]='\0';
       jpilot_logf(LOG_DEBUG, "Unknown preference type\n");
-      return -1;//todo log
+      return -1;
    }
 
    return 0;
@@ -311,7 +322,7 @@ int set_pref_char(int which, char *string)
    return 0;
 }
 
-int validate_glob_prefs()
+static int validate_glob_prefs()
 {
    int i, r;
    char svalue[MAX_PREF_VALUE];
@@ -401,6 +412,7 @@ int read_rc_file()
 
    while (!feof(in)) {
       fgets(line, 255, in);
+      line[255] = '\0';
       field1 = (char *)strtok(line, " ");
       field2 = (char *)strtok(NULL, "\n");
       if ((field1 == NULL) || (field2 == NULL)) {

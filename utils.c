@@ -17,6 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "config.h"
 #include "utils.h"
 #include "log.h"
 #include "prefs.h"
@@ -524,7 +525,7 @@ int get_home_file_name(char *file, char *full_name, int max_size)
    if (!home) {//Not home;
       jpilot_logf(LOG_WARN, "Can't get HOME environment variable\n");
    }
-   if (strlen(home)>(max_size-strlen(file)-2)) {
+   if (strlen(home)>(max_size-strlen(file)-strlen("/.jpilot/")-2)) {
       jpilot_logf(LOG_WARN, "Your HOME environment variable is too long for me\n");
       home=default_path;
    }
@@ -561,7 +562,7 @@ int check_hidden_dir()
    //Is it a directory?
    if (!S_ISDIR(statb.st_mode)) {
       jpilot_logf(LOG_WARN, "%s doesn't appear to be a directory.\n"
-	     "I need it to be.\n", hidden_dir);
+		  "I need it to be.\n", hidden_dir);
       return 1;
    }
    //Can we write in it?
@@ -683,7 +684,7 @@ int read_gtkrc_file()
    } else {
      jpilot_logf(LOG_DEBUG, "rc file from prefs is NULL\n");
    }
-   
+
    strncpy(filename, svalue, 255);
    filename[255]='\0';
    
@@ -691,13 +692,15 @@ int read_gtkrc_file()
    get_home_file_name(filename, fullname, 255);
 
    if (stat(fullname, &buf)==0) {
+      jpilot_logf(LOG_DEBUG, "parsing %s\n", fullname);
       gtk_rc_parse(fullname);
       return 0;
    }
    
-   sprintf(fullname, "%s/%s/%s/%s", BASE_DIR, "share", EPN, filename);
-   jpilot_logf(LOG_DEBUG, "parsing %s\n", fullname);
+   g_snprintf(fullname, 255, "%s/%s/%s/%s", BASE_DIR, "share", EPN, filename);
+   fullname[255]='\0';
    if (stat(fullname, &buf)==0) {
+      jpilot_logf(LOG_DEBUG, "parsing %s\n", fullname);
       gtk_rc_parse(fullname);
       return 0;
    }
@@ -706,47 +709,41 @@ int read_gtkrc_file()
 
 FILE *open_file(char *filename, char *mode)
 {
-   char *home, default_path[]=".";
-   char file_name[256];
+   char fullname[256];
    FILE *pc_in;
 
-   home = getenv("HOME");
-   if (!home) {//Not home;
-      jpilot_logf(LOG_WARN, "Can't get HOME environment variable\n");
-   }
-   if (strlen(home) > 256-10-strlen(filename)) {
-      jpilot_logf(LOG_WARN, "Your HOME environment variable is too long for me\n");
-      home=default_path;
-   }
-   sprintf(file_name, "%s/.jpilot/%s", home, filename);
+   get_home_file_name(filename, fullname, 255);
    
-   pc_in = fopen(file_name, mode);
+   pc_in = fopen(fullname, mode);
    if (pc_in == NULL) {
-      pc_in = fopen(file_name, "w+");
+      pc_in = fopen(fullname, "w+");
       if (pc_in) {
 	 fclose(pc_in);
-	 pc_in = fopen(file_name, mode);
+	 pc_in = fopen(fullname, mode);
       }
    }
    return pc_in;
 }
 
+int rename_file(char *old_filename, char *new_filename)
+{
+   char old_fullname[256];
+   char new_fullname[256];
+
+   get_home_file_name(old_filename, old_fullname, 255);
+   get_home_file_name(new_filename, new_fullname, 255);
+   
+   return rename(old_fullname, new_fullname);
+}
+
+
 int unlink_file(char *filename)
 {
-   char *home, default_path[]=".";
-   char file_name[256];
+   char fullname[256];
 
-   home = getenv("HOME");
-   if (!home) {//Not home;
-      jpilot_logf(LOG_WARN, "Can't get HOME environment variable\n");
-   }
-   if (strlen(home) > 256-10-strlen(filename)) {
-      jpilot_logf(LOG_WARN, "Your HOME environment variable is too long for me\n");
-      home=default_path;
-   }
-   sprintf(file_name, "%s/.jpilot/%s", home, filename);
+   get_home_file_name(filename, fullname, 255);
    
-   return unlink(file_name);
+   return unlink(fullname);
 }
 
 //These next 2 functions were copied from pi-file.c in the pilot-link app
@@ -991,9 +988,6 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 	 
     case PALM_REC:
       jpilot_logf(LOG_DEBUG, "Deleteing Palm ID %d\n",unique_id);
-      
-      //todo
-      //find_palm_appt_by_ID(unique_id, &a);
       pc_in=open_file(filename, "a");
       if (pc_in==NULL) {
 	 jpilot_logf(LOG_WARN, "Couldn't open PC records file\n");
@@ -1043,12 +1037,13 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 	 fclose(pc_in);
 	 return 0;
       }
-      //todo check write
+      jpilot_logf(LOG_DEBUG, "writing header to pc file\n");
       fwrite(&header, sizeof(header), 1, pc_in);
       //todo write the real appointment from palm db
       //Right now I am just writing an empty record
       //This will be used for making sure that the palm record hasn't changed
       //before we delete it
+      jpilot_logf(LOG_DEBUG, "writing record to pc file, %d bytes\n", header.rec_len);
       fwrite(record, header.rec_len, 1, pc_in);
       jpilot_logf(LOG_DEBUG, "record deleted\n");
       fclose(pc_in);
@@ -1101,7 +1096,7 @@ int cleanup_pc_file(AppType app_type)
 	 return -1;
       }
    }
-   
+
    //If there are no not-deleted records then remove the file
    if (r == 0) {
       unlink_file(filename);
@@ -1124,35 +1119,42 @@ int cleanup_pc_files()
    return 0;
 }
 
-void cb_backup(GtkWidget *widget,
-	       gpointer   data)
-{
-   sync_once(NULL, TRUE);
-   return;
-}
-
-
-void cb_sync(GtkWidget *widget,
-	     gpointer  data)
+static void util_sync(int full_backup)
 {
    int ivalue;
    const char *svalue;
+#ifndef HAVE_SETENV
+   char str[80];
+#endif
    
    get_pref(PREF_RATE, &ivalue, &svalue);
    jpilot_logf(LOG_DEBUG, "setting PILOTRATE=[%s]\n", svalue);
    if (svalue) {
+#ifdef HAVE_SETENV
       setenv("PILOTRATE", svalue, TRUE);
+#else
+      sprintf(str, "PILOTRATE=%s", svalue);
+      putenv(str);
+#endif
    }
 
    get_pref(PREF_PORT, &ivalue, &svalue);
    jpilot_logf(LOG_DEBUG, "pref port=[%s]\n", svalue);
-   sync_once(svalue, FALSE);
+   sync_once(svalue, full_backup);
    
    return;
-   //datebook_cleanup();
-   //todo - force a refresh of whatever app is running
-   //Force a refresh of the calendar
-   //if (day_button[current_day-1]) {
-   //   gtk_signal_emit_by_name(GTK_OBJECT(day_button[current_day-1]), "clicked");
-   //}
+}
+
+void cb_sync(GtkWidget *widget,
+	     gpointer   data)
+{
+   util_sync(FALSE);
+   return;
+}
+
+void cb_backup(GtkWidget *widget,
+	       gpointer   data)
+{
+   util_sync(TRUE);
+   return;
 }

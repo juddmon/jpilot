@@ -16,6 +16,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
+#include "config.h"
 #include <gtk/gtk.h>
 #include <time.h>
 #include <sys/types.h>
@@ -294,6 +296,10 @@ void get_main_menu(GtkWidget  *window,
 	{ "/_File",         NULL,         NULL, 0, "<Branch>" },
 	{ "/_File/tear",         NULL,         NULL, 0, "<Tearoff>" },
 	{ "/File/_Search",    "<control>S", cb_search_gui, 0, NULL },
+	{ "/File/sep1",     NULL,         NULL, 0, "<Separator>" },
+      	{ "/File/_Install",    NULL, cb_install_gui, 0, NULL },
+      	//{ "/File/_WeekView",    "F5", cb_weekview_gui, 0, NULL },
+      	//{ "/File/_MonthView",    "F6", cb_monthview_gui, 0, NULL },
 	{ "/File/Preferences",    NULL, cb_prefs_gui, 0, NULL },
 	{ "/File/sep1",     NULL,         NULL, 0, "<Separator>" },
 	{ "/File/Quit",     "<control>Q", delete_event, 0, NULL },
@@ -309,7 +315,7 @@ void get_main_menu(GtkWidget  *window,
    GtkAccelGroup *accel_group;
    gint nmenu_items = sizeof (menu_items) / sizeof (menu_items[0]);
 
-   accel_group = gtk_accel_group_new ();
+   accel_group = gtk_accel_group_new();
 
    /* This function initializes the item factory.
     Param 1: The type of menu - can be GTK_TYPE_MENU_BAR, GTK_TYPE_MENU,
@@ -327,7 +333,7 @@ void get_main_menu(GtkWidget  *window,
    gtk_item_factory_create_items (item_factory, nmenu_items, menu_items, NULL);
    
    /* Attach the new accelerator group to the window. */
-   gtk_accel_group_attach (accel_group, GTK_OBJECT (window));
+   gtk_accel_group_attach(accel_group, GTK_OBJECT (window));
 
    if (menubar)
      /* Finally, return the actual menu bar created by the item factory. */
@@ -338,9 +344,7 @@ static void delete_event(GtkWidget *widget, GdkEvent *event, gpointer data)
 {
    if (glob_child_pid) {
       jpilot_logf(LOG_DEBUG, "killing %d\n", glob_child_pid);
-      if (glob_child_pid) {
 	 kill(glob_child_pid, SIGTERM);
-      }
    }
    write_rc_file();  //jpilot.rc
    gtk_main_quit();
@@ -410,7 +414,7 @@ int main(int   argc,
    pipe_out = filedesc[1];
    
    gtk_set_locale();
-#if defined(Japanese)
+#if defined(WITH_JAPANESE)
    gtk_rc_parse("gtkrc.ja");
 #endif
 
@@ -503,17 +507,17 @@ int main(int   argc,
    gtk_widget_show(separator);
    
    // Create "Quit" button
-   button = gtk_button_new_with_label ("Quit!");
+   button = gtk_button_new_with_label("Quit!");
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(delete_event), NULL);
    gtk_box_pack_start(GTK_BOX(g_vbox0), button, FALSE, FALSE, 0);
    gtk_widget_show(button);
 
    // Create "Sync" button
-   button = gtk_button_new_with_label ("Sync");
+   button = gtk_button_new_with_label("Sync");
    gtk_signal_connect (GTK_OBJECT(button), "clicked",
 		       GTK_SIGNAL_FUNC(cb_sync), NULL);
-   gtk_box_pack_start (GTK_BOX (g_vbox0), button, FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX (g_vbox0), button, FALSE, FALSE, 0);
    gtk_widget_show (button);
 
    // Create "Backup" button in left column

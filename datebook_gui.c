@@ -24,6 +24,7 @@
 //for now.
 #define EASTER
 
+#include "config.h"
 #include <gtk/gtk.h>
 #include <time.h>
 #include <stdio.h>
@@ -376,8 +377,8 @@ static int get_details(struct Appointment *a)
    time(&ltime);
    now = localtime(&ltime);
 
-   //todo week start
-   //I\'m not worried about it right now
+   //The first day of the week
+   //I always use 0, Sunday is always 0 in this code
    a->repeatWeekstart=0;
 
    a->exceptions = 0;
@@ -422,7 +423,7 @@ static int get_details(struct Appointment *a)
       a->alarm = 1;
       text = gtk_entry_get_text(GTK_ENTRY(units_entry));
       a->advance=atoi(text);
-      jpilot_logf(LOG_DEBUG, "alarm advance %s", text);
+      jpilot_logf(LOG_DEBUG, "alarm advance %d", a->advance);
       if (GTK_TOGGLE_BUTTON(radio_button_alarm_min)->active) {
 	 a->advanceUnits = advMinutes;
 	 jpilot_logf(LOG_DEBUG, "min\n");
@@ -455,7 +456,7 @@ static int get_details(struct Appointment *a)
       a->repeatType=repeatDaily;
       text = gtk_entry_get_text(GTK_ENTRY(repeat_day_entry));
       a->repeatFrequency = atoi(text);
-      jpilot_logf(LOG_DEBUG, "every %s day(s)\n", text);
+      jpilot_logf(LOG_DEBUG, "every %d day(s)\n", a->repeatFrequency);
       if (GTK_TOGGLE_BUTTON(check_button_day_endon)->active) {
 	 a->repeatForever=0;
 	 jpilot_logf(LOG_DEBUG, "end on day\n");
@@ -477,7 +478,7 @@ static int get_details(struct Appointment *a)
       a->repeatType=repeatWeekly;
       text = gtk_entry_get_text(GTK_ENTRY(repeat_week_entry));
       a->repeatFrequency = atoi(text);
-      jpilot_logf(LOG_DEBUG, "every %s week(s)\n", text);
+      jpilot_logf(LOG_DEBUG, "every %d week(s)\n", a->repeatFrequency);
       if (GTK_TOGGLE_BUTTON(check_button_week_endon)->active) {
 	 a->repeatForever=0;
 	 jpilot_logf(LOG_DEBUG, "end on week\n");
@@ -497,7 +498,7 @@ static int get_details(struct Appointment *a)
 	 if ((svalue1==NULL) || (svalue2==NULL)) {
 	    strcpy(datef, "%x %X");
 	 } else {
-	    sprintf("%s %s", svalue1, svalue2);
+	    sprintf(datef, "%s %s", svalue1, svalue2);
 	 }
 	 strftime(str, 30, datef, &a->repeatEnd);
 
@@ -515,7 +516,7 @@ static int get_details(struct Appointment *a)
     case PAGE_MONTH:
       text = gtk_entry_get_text(GTK_ENTRY(repeat_mon_entry));
       a->repeatFrequency = atoi(text);
-      jpilot_logf(LOG_DEBUG, "every %s month(s)\n", text);
+      jpilot_logf(LOG_DEBUG, "every %d month(s)\n", a->repeatFrequency);
       if (GTK_TOGGLE_BUTTON(check_button_mon_endon)->active) {
 	 a->repeatForever=0;
 	 jpilot_logf(LOG_DEBUG, "end on month\n");
@@ -535,7 +536,7 @@ static int get_details(struct Appointment *a)
 	 if ((svalue1==NULL) || (svalue2==NULL)) {
 	    strcpy(datef, "%x %X");
 	 } else {
-	    sprintf("%s %s", svalue1, svalue2);
+	    sprintf(datef, "%s %s", svalue1, svalue2);
 	 }
 	 strftime(str, 30, datef, &a->repeatEnd);
 
@@ -557,7 +558,7 @@ static int get_details(struct Appointment *a)
       a->repeatType=repeatYearly;
       text = gtk_entry_get_text(GTK_ENTRY(repeat_year_entry));
       a->repeatFrequency = atoi(text);
-      jpilot_logf(LOG_DEBUG, "every %s years(s)\n", text);
+      jpilot_logf(LOG_DEBUG, "every %s years(s)\n", a->repeatFrequency);
       if (GTK_TOGGLE_BUTTON(check_button_year_endon)->active) {
 	 a->repeatForever=0;
 	 jpilot_logf(LOG_DEBUG, "end on year\n");
@@ -577,8 +578,9 @@ static int get_details(struct Appointment *a)
 	 if ((svalue1==NULL) || (svalue2==NULL)) {
 	    strcpy(datef, "%x %X");
 	 } else {
-	    sprintf("%s %s", svalue1, svalue2);
+	    sprintf(datef, "%s %s", svalue1, svalue2);
 	 }
+	 str[0]='\0';
 	 strftime(str, 30, datef, &a->repeatEnd);
 
 	 jpilot_logf(LOG_DEBUG, "repeat_end time = %s\n",str);
@@ -589,12 +591,18 @@ static int get_details(struct Appointment *a)
    }
 
    a->description = gtk_editable_get_chars(GTK_EDITABLE(text1), 0, -1);
-   jpilot_logf(LOG_DEBUG, "text1=[%s]\n",a->description);
+   if (a->description[0]=='\0') {
+      a->description=NULL;
+   }
+   if (a->description) {
+      jpilot_logf(LOG_DEBUG, "text1=[%s]\n",a->description);
+   }
    
    a->note = gtk_editable_get_chars(GTK_EDITABLE(text2), 0, -1);
    if (a->note[0]=='\0') {
       a->note=NULL;
-   } else {
+   }
+   if (a->note) {
       jpilot_logf(LOG_DEBUG, "text2=[%s]\n",a->note);
    }
    
@@ -1364,8 +1372,10 @@ void paint_calendar(GtkWidget *widget, gpointer data)
 	    gtk_widget_set_name(GTK_WIDGET(day_button[i]), "button");
 	 }
       }
-      destroy_days=0;
-      draw_days=0;
+      if (prev_fdow == fdow) {
+	 destroy_days=0;
+	 draw_days=0;
+      }
    }
    
    if (destroy_dows) {
@@ -1711,8 +1721,9 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_widget_set_usize(GTK_WIDGET(scrolled_window1), 330, 200);
    //gtk_window_set_default_size(GTK_WINDOW(scrolled_window1), 330, 320);
    
-   gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW
-					  (scrolled_window1), clist1);
+   //   gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW
+   //					  (scrolled_window1), clist1);
+   gtk_container_add(GTK_CONTAINER(scrolled_window1), GTK_WIDGET(clist1));
    //gtk_clist_set_sort_column (GTK_CLIST(clist1), 0);
    //gtk_clist_set_auto_sort(GTK_CLIST(clist1), TRUE);
    gtk_widget_show(clist1);

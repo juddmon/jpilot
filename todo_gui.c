@@ -16,6 +16,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
+#include "config.h"
 #include <gtk/gtk.h>
 #include <time.h>
 #include <stdlib.h>
@@ -67,6 +69,7 @@ void cb_delete_todo(GtkWidget *widget,
    }
    flag = GPOINTER_TO_INT(data);
    if ((flag==MODIFY_FLAG) || (flag==DELETE_FLAG)) {
+      jpilot_logf(LOG_DEBUG, "calling delete_pc_record\n");
       delete_pc_record(TODO, mtodo, flag);
    }
 
@@ -155,9 +158,9 @@ int todo_get_details(struct ToDo *new_todo, unsigned char *attrib)
       }
    }
    new_todo->complete = (GTK_TOGGLE_BUTTON(todo_completed_checkbox)->active);
-   //todo - can there be an entry with no description?
-   //Yes, but the palm pilot gui doesn't allow it to be entered, 
-   //it will show it.
+   //Can there be an entry with no description?
+   //Yes, but the Palm Pilot gui doesn't allow it to be entered on the Palm,
+   //it will show it though.  I allow it.
    new_todo->description = gtk_editable_get_chars
      (GTK_EDITABLE(todo_text), 0, -1);
    new_todo->note = gtk_editable_get_chars
@@ -484,6 +487,7 @@ void update_todo_screen()
    gtk_tooltips_set_tip(glob_tooltips, category_menu1, str, NULL);   
 }
 
+//todo combine the next 2 functions
 static int make_category_menu1(GtkWidget **category_menu)
 {
    int i;
@@ -673,8 +677,9 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_clist_set_column_width(GTK_CLIST(clist), 1, 8);
    gtk_clist_set_column_width(GTK_CLIST(clist), 2, 240);
    gtk_clist_set_column_width(GTK_CLIST(clist), 3, 14);
-   gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW
-					 (scrolled_window), clist);
+   //   gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW
+   //					 (scrolled_window), clist);
+   gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
    
    //
    // The right hand part of the main window follows:

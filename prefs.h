@@ -33,7 +33,7 @@
 
 #define NUM_SHORTDATES  8
 #define NUM_LONGDATES  7
-#define NUM_TIMES  6
+#define NUM_TIMES  11
 #define NUM_RATES  11
 
 #define INTTYPE 0

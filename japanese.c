@@ -5,7 +5,9 @@
 		Unix : EUC
 */
 
-#if defined(Japanese)
+#include "config.h"
+
+#if defined(WITH_JAPANESE)
 
 #include <stdio.h>
 
