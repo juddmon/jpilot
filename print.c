@@ -297,8 +297,8 @@ int fill_in(struct tm *date, AppointmentList *a_list)
 	    }
 	 }
 	 if (temp_al->ma.a.description) {
-	    strncat(str, " ", sizeof(str));
-	    strncat(str, temp_al->ma.a.description, sizeof(str));
+	    strcat(str, " ");
+	    strncat(str, temp_al->ma.a.description, sizeof(str)-strlen(str)-2);
 	    str[128]='\0';
 	 }
 	 if (y > 1.0) {
@@ -522,7 +522,7 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
 	    }
 	    desc[0]='\0';
 	    if (temp_al->ma.a.description) {
-	       ps_strncat(desc, temp_al->ma.a.description, 39);
+	       ps_strncat(desc, temp_al->ma.a.description, 40);
 	       desc[40]='\0';
 	    }
 	    remove_cr_lfs(desc);
