@@ -1,5 +1,5 @@
-/*
- * utils.c
+/* utils.c
+ * 
  * Copyright (C) 1999 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,28 +16,44 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
+#include "utils.h"
+#include "log.h"
+#include "prefs.h"
+#include "sync.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include "utils.h"
-#include "log.h"
 #include <pi-datebook.h>
 #include <pi-address.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 //#include <unistd.h>
 #include <utime.h>
+#include <time.h>
 
 #include <pi-source.h>
 #include <pi-socket.h>
 #include <pi-dlp.h>
 #include <pi-file.h>
 
+//Stuff for the dialog window
+GtkWidget *dialog;
+int dialog_result;
+
+unsigned int glob_find_id;
+unsigned int glob_find_mon;
+unsigned int glob_find_day;
+unsigned int glob_find_year;
 
 gint timeout_date(gpointer data)
 {
    extern GtkWidget *glob_date_label;
    char str[50];
+   char datef[50];
+   const char *svalue1, *svalue2;
+   int ivalue;
    time_t ltime;
    struct tm *now;
 
@@ -46,10 +62,146 @@ gint timeout_date(gpointer data)
    }
    time(&ltime);
    now = localtime(&ltime);
-   strftime(str, 50, "Today is %A, %x %X", now);
+
+   
+   //Build a long date string
+   get_pref(PREF_LONGDATE, &ivalue, &svalue1);
+   get_pref(PREF_TIME, &ivalue, &svalue2);
+   if ((svalue1==NULL)||(svalue2==NULL)) {
+      strcpy(datef, "Today is %A, %x %X");
+   } else {
+      sprintf(datef, "Today is %%A, %s %s", svalue1, svalue2);
+   }
+   strftime(str, 50, datef, now);
    
    gtk_label_set_text(GTK_LABEL(glob_date_label), str);
    return TRUE;
+}
+
+
+void free_AnyRecordList(AnyRecordList **rl)
+{
+   AnyRecordList *temp_rl, *temp_rl_next;
+
+   for (temp_rl = *rl; temp_rl; temp_rl=temp_rl_next) {	   
+      switch (temp_rl->app_type) {
+       case DATEBOOK:
+	 free_Appointment(&(temp_rl->any.mappo.a));
+	 break;
+       case ADDRESS:
+	 free_Address(&(temp_rl->any.maddr.a));
+	 break;
+       case TODO:
+	 free_ToDo(&(temp_rl->any.mtodo.todo));
+	 break;
+       case MEMO:
+	 free_Memo(&(temp_rl->any.mmemo.memo));
+	 break;
+       default:
+	 break;
+      }
+      temp_rl_next = temp_rl->next;
+      free(temp_rl);
+   }
+   *rl = NULL;
+}
+
+
+gint cb_timer_move_scrolled_window(gpointer data);
+
+struct move_sw {
+   float percentage;
+   GtkWidget *sw;
+};
+
+//
+//This function needs to be called when the screen isn't finished
+//drawing yet.  Moving the scrollbar immediately would have no effect.
+//
+void move_scrolled_window_hack(GtkWidget *sw, float percentage)
+{
+   //This is so that the caller doesn't have to worry about making
+   //sure they use a static variable (required for callback)
+   static struct move_sw move_this;
+
+   move_this.percentage = percentage;
+   move_this.sw = sw;
+   
+   gtk_timeout_add(50, cb_timer_move_scrolled_window, &move_this);
+}
+
+gint cb_timer_move_scrolled_window(gpointer data)
+{
+   struct move_sw *move_this;
+   int r;
+   
+   move_this = data;
+   r = move_scrolled_window(move_this->sw, move_this->percentage);
+   //if we return TRUE then this function will get called again
+   //if we return FALSE then it will be taken out of timer
+   if (r) {
+      return TRUE;
+   } else {
+      return FALSE;
+   }
+}
+
+int move_scrolled_window(GtkWidget *sw, float percentage)
+{
+   GtkScrollbar *sb;
+   gfloat upper, lower, page_size, new_val;
+
+   if (!GTK_IS_SCROLLED_WINDOW(sw)) {
+      return 0;
+   }
+   sb = GTK_SCROLLBAR(GTK_SCROLLED_WINDOW(sw)->vscrollbar);
+   upper = GTK_ADJUSTMENT(sb->range.adjustment)->upper;
+   lower = GTK_ADJUSTMENT(sb->range.adjustment)->lower;
+   page_size = GTK_ADJUSTMENT(sb->range.adjustment)->page_size;
+   
+   //The screen isn't done drawing yet, so we have to leave.
+   if (page_size == 0) {
+      return 1;
+   }
+   new_val = (upper - lower) * percentage;
+   if (new_val > upper - page_size) {
+      new_val = upper - page_size;
+   }
+   gtk_adjustment_set_value(sb->range.adjustment, new_val);
+   gtk_signal_emit_by_name(GTK_OBJECT(sb->range.adjustment), "changed");
+
+   return 0;
+}
+
+//returns 0 if not found, 1 if found
+int clist_find_id(GtkWidget *clist,
+		  unsigned int unique_id,
+		  int *found_at,
+		  int *total_count)
+{
+   int i, found;
+   MyAddress *ma;
+   
+   *found_at = 0;
+   *total_count = 0;
+
+   //100000 is just to prevent ininite looping during a solar flare
+   for (found = i = 0; i<100000; i++) {
+      ma = gtk_clist_get_row_data(GTK_CLIST(clist), i);
+      if (ma < (MyAddress *)CLIST_MIN_DATA) {
+	 break;
+      }
+      if (found) {
+	 continue;
+      }
+      if (ma->unique_id==unique_id) {
+	 found = 1;
+	 *found_at = i;
+      }
+   }
+   *total_count = i;
+   
+   return found;
 }
 
 int get_pixmaps(GtkWidget *widget,
@@ -84,7 +236,7 @@ char * xpm_note[] = {
 };
 
 //Alarm pixmap
-const char * xpm_alarm[] = {
+char * xpm_alarm[] = {
    "16 16 3 1",
      "       c None",
      ".      c #000000000000",
@@ -108,7 +260,7 @@ const char * xpm_alarm[] = {
      "                "
 };
 
-const char * xpm_check[] = {
+char * xpm_check[] = {
    "16 16 3 1",
      "       c None",
      ".      c #000000000000",
@@ -132,7 +284,7 @@ const char * xpm_check[] = {
      "                "
 };
 
-const char * xpm_checked[] = {
+char * xpm_checked[] = {
    "16 16 4 1",
      "       c None",
      ".      c #000000000000",
@@ -180,7 +332,7 @@ const char * xpm_checked[] = {
       *out_mask_alarm = mask_alarm;
       *out_mask_check = mask_check;
       *out_mask_checked = mask_checked;
-      return;
+      return 0;
    }
    
    inited=1;
@@ -223,8 +375,145 @@ const char * xpm_checked[] = {
    *out_mask_alarm = mask_alarm;
    *out_mask_check = mask_check;
    *out_mask_checked = mask_checked;
+   
+   return 0;
 }
 
+
+//
+//Start of Dialog window code
+//
+gint cb_timer_raise_dialog(gpointer data)
+{
+   if (GTK_IS_WIDGET(dialog)) {
+      gdk_window_raise(dialog->window);
+   } else {
+      return FALSE;
+   }
+   return TRUE;
+}
+
+void cb_dialog_button_1(GtkWidget *widget,
+			gpointer   data)
+{
+   //dialog_result=GPOINTER_TO_INT(data);
+   dialog_result=DIALOG_SAID_1;
+
+   gtk_widget_destroy(dialog);
+}
+
+void cb_dialog_button_2(GtkWidget *widget,
+			gpointer   data)
+{
+   //dialog_result=GPOINTER_TO_INT(data);
+   dialog_result=DIALOG_SAID_2;
+
+   gtk_widget_destroy(dialog);
+}
+
+void cb_dialog_button_3(GtkWidget *widget,
+			gpointer   data)
+{
+   //dialog_result=GPOINTER_TO_INT(data);
+   dialog_result=DIALOG_SAID_3;
+
+   gtk_widget_destroy(dialog);
+}
+
+static gboolean cb_destroy_dialog(GtkWidget *widget)
+{
+   dialog = NULL;
+   gtk_main_quit();
+
+   return FALSE;
+}
+
+//nob = number of buttons (1-3)
+int dialog_generic(GdkWindow *main_window,
+		   int w, int h,
+		   char *title, char *frame_text,
+		   char *text, int nob, char *button_text[])
+{
+   GtkWidget *button, *label1;
+   gint px, py, pw, ph = 0;
+   gint x, y;
+   
+   GtkWidget *hbox1, *vbox1;
+   GtkWidget *frame1;
+
+   gdk_window_get_position(main_window, &px, &py);
+   gdk_window_get_size(main_window, &pw, &ph);
+
+   //Center the window in the main window
+   x=px+pw/2-w/2;
+   y=py+ph/2-h/2;
+   
+   //dialog=gtk_window_new(GTK_WINDOW_TOPLEVEL);
+   dialog = gtk_widget_new(GTK_TYPE_WINDOW,
+			   "type", GTK_WINDOW_DIALOG,
+			   "x", x, "y", y,
+			   "width", w, "height", h,
+			   "title", title,
+			   NULL);
+
+   //gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_MOUSE);
+   
+   gtk_signal_connect(GTK_OBJECT(dialog), "destroy",
+                      GTK_SIGNAL_FUNC(cb_destroy_dialog), dialog);
+
+   gtk_window_set_modal(GTK_WINDOW(dialog), TRUE);
+   
+   frame1 = gtk_frame_new(frame_text);
+   gtk_frame_set_label_align(GTK_FRAME(frame1), 0.5, 0.0);
+   vbox1 = gtk_vbox_new(TRUE, 5);
+   hbox1 = gtk_hbox_new(TRUE, 5);
+
+   gtk_container_set_border_width(GTK_CONTAINER(frame1), 5);
+   gtk_container_set_border_width(GTK_CONTAINER(vbox1), 5);
+   gtk_container_set_border_width(GTK_CONTAINER(hbox1), 5);
+   
+   gtk_container_add(GTK_CONTAINER(dialog), frame1);
+   gtk_container_add(GTK_CONTAINER(frame1), vbox1);
+
+   label1 = gtk_label_new(text);
+   //This doesn\'t seem to work...
+   //gtk_label_set_line_wrap(GTK_LABEL(label1), TRUE);
+
+   gtk_box_pack_start(GTK_BOX(vbox1), label1, FALSE, FALSE, 2);
+   gtk_box_pack_start(GTK_BOX(vbox1), hbox1, TRUE, TRUE, 2);
+
+   if (nob > 0) {
+      button = gtk_button_new_with_label(button_text[0]);
+      gtk_signal_connect_object(GTK_OBJECT(button), "clicked",
+				GTK_SIGNAL_FUNC(cb_dialog_button_1),
+				GINT_TO_POINTER(DIALOG_SAID_1));
+      gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
+   }
+
+   if (nob > 1) {
+      button = gtk_button_new_with_label(button_text[1]);
+      gtk_signal_connect_object(GTK_OBJECT(button), "clicked",
+				GTK_SIGNAL_FUNC(cb_dialog_button_2),
+				GINT_TO_POINTER(DIALOG_SAID_2));
+      gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
+   }
+
+   if (nob > 2) {
+      button = gtk_button_new_with_label(button_text[2]);
+      gtk_signal_connect_object(GTK_OBJECT(button), "clicked",
+				GTK_SIGNAL_FUNC(cb_dialog_button_3),
+				GINT_TO_POINTER(DIALOG_SAID_3));
+      gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
+   }
+
+   gtk_widget_show_all(dialog);
+
+   gtk_timeout_add(1000, cb_timer_raise_dialog, NULL);
+
+   gtk_main();
+   
+   return dialog_result;
+}
 
 //creates the full path name of a file in the ~/.jpilot dir
 int get_home_file_name(char *file, char *full_name, int max_size)
@@ -233,10 +522,10 @@ int get_home_file_name(char *file, char *full_name, int max_size)
 
    home = getenv("HOME");
    if (!home) {//Not home;
-      logf(LOG_WARN, "Can't get HOME environment variable\n");
+      jpilot_logf(LOG_WARN, "Can't get HOME environment variable\n");
    }
    if (strlen(home)>(max_size-strlen(file)-2)) {
-      logf(LOG_WARN, "Your HOME environment variable is too long for me\n");
+      jpilot_logf(LOG_WARN, "Your HOME environment variable is too long for me\n");
       home=default_path;
    }
    sprintf(full_name, "%s/.jpilot/%s", home, file);
@@ -261,17 +550,17 @@ int check_hidden_dir()
       //directory isn\'t there, create it
       if (mkdir(hidden_dir, 0777)) {
 	 //Can\'t create directory
-	 logf(LOG_WARN, "Can't create directory %s\n", hidden_dir);
+	 jpilot_logf(LOG_WARN, "Can't create directory %s\n", hidden_dir);
 	 return 1;
       }
       if (stat(hidden_dir, &statb)) {
-	 logf(LOG_WARN, "Can't create directory %s\n", hidden_dir);
+	 jpilot_logf(LOG_WARN, "Can't create directory %s\n", hidden_dir);
 	 return 1;
       }
    }
    //Is it a directory?
    if (!S_ISDIR(statb.st_mode)) {
-      logf(LOG_WARN, "%s doesn't appear to be a directory.\n"
+      jpilot_logf(LOG_WARN, "%s doesn't appear to be a directory.\n"
 	     "I need it to be.\n", hidden_dir);
       return 1;
    }
@@ -279,7 +568,7 @@ int check_hidden_dir()
    get_home_file_name("test", test_file, 256);
    out = fopen(test_file, "w+");
    if (!out) {
-      logf(LOG_WARN, "I can't write files in directory %s\n", hidden_dir);
+      jpilot_logf(LOG_WARN, "I can't write files in directory %s\n", hidden_dir);
    } else {
       fclose(out);
       unlink(test_file);
@@ -344,7 +633,7 @@ int get_next_unique_pc_id(unsigned int *next_unique_id)
 
    pc_in_out = open_file("next_id", "a+");
    if (pc_in_out==NULL) {
-      logf(LOG_WARN, "Error opening %s\n",file_name);
+      jpilot_logf(LOG_WARN, "Error opening %s\n",file_name);
       return -1;
    }
 
@@ -352,7 +641,7 @@ int get_next_unique_pc_id(unsigned int *next_unique_id)
       //We have to write out the file header
       *next_unique_id=1;
       if (fwrite(next_unique_id, sizeof(*next_unique_id), 1, pc_in_out) != 1) {
-	 logf(LOG_WARN, "Error writing pc header to file: next_id\n");
+	 jpilot_logf(LOG_WARN, "Error writing pc header to file: next_id\n");
 	 fclose(pc_in_out);
 	 return 0;
       }
@@ -361,39 +650,58 @@ int get_next_unique_pc_id(unsigned int *next_unique_id)
    fclose(pc_in_out);
    pc_in_out = open_file("next_id", "r+");
    if (pc_in_out==NULL) {
-      logf(LOG_WARN, "Error opening %s\n",file_name);
+      jpilot_logf(LOG_WARN, "Error opening %s\n",file_name);
       return -1;
    }
    fread(next_unique_id, sizeof(*next_unique_id), 1, pc_in_out);
    (*next_unique_id)++;
    if (fseek(pc_in_out, 0, SEEK_SET)) {
-      logf(LOG_WARN, "fseek failed\n");
+      jpilot_logf(LOG_WARN, "fseek failed\n");
    }
    //rewind(pc_in_out);
    //todo - if > 16777216 then cleanup (thats a lot of records!)
    if (fwrite(next_unique_id, sizeof(*next_unique_id), 1, pc_in_out) != 1) {
-      logf(LOG_WARN, "Error writing pc header to file: next_id\n");
+      jpilot_logf(LOG_WARN, "Error writing pc header to file: next_id\n");
    }
    fflush(pc_in_out);
    fclose(pc_in_out);
+   
+   return 0;
 }
    
-int read_rc_file()
+int read_gtkrc_file()
 {
-   char *home, default_path[]=".";
-   char file_name[256];
-
-   home = getenv("HOME");
-   if (!home) {//Not home;
-      logf(LOG_WARN, "Can't get HOME environment variable\n");
-   }
-   if (strlen(home) > 256-20) {
-      logf(LOG_WARN, "Your HOME environment variable is too long for me\n");
-      home=default_path;
-   }
-   sprintf(file_name, "%s/.jpilot/jpilotrc", home);
+   char filename[256];
+   char fullname[256];
+   struct stat buf;
+   int ivalue;
+   const char *svalue;
    
-   gtk_rc_parse(file_name);
+   get_pref(PREF_RCFILE, &ivalue, &svalue);
+   if (svalue) {
+     jpilot_logf(LOG_DEBUG, "rc file from prefs is %s\n", svalue);
+   } else {
+     jpilot_logf(LOG_DEBUG, "rc file from prefs is NULL\n");
+   }
+   
+   strncpy(filename, svalue, 255);
+   filename[255]='\0';
+   
+   //Try to read the file out of the home directory first
+   get_home_file_name(filename, fullname, 255);
+
+   if (stat(fullname, &buf)==0) {
+      gtk_rc_parse(fullname);
+      return 0;
+   }
+   
+   sprintf(fullname, "%s/%s/%s/%s", BASE_DIR, "share", EPN, filename);
+   jpilot_logf(LOG_DEBUG, "parsing %s\n", fullname);
+   if (stat(fullname, &buf)==0) {
+      gtk_rc_parse(fullname);
+      return 0;
+   }
+   return -1;
 }
 
 FILE *open_file(char *filename, char *mode)
@@ -404,10 +712,10 @@ FILE *open_file(char *filename, char *mode)
 
    home = getenv("HOME");
    if (!home) {//Not home;
-      logf(LOG_WARN, "Can't get HOME environment variable\n");
+      jpilot_logf(LOG_WARN, "Can't get HOME environment variable\n");
    }
    if (strlen(home) > 256-10-strlen(filename)) {
-      logf(LOG_WARN, "Your HOME environment variable is too long for me\n");
+      jpilot_logf(LOG_WARN, "Your HOME environment variable is too long for me\n");
       home=default_path;
    }
    sprintf(file_name, "%s/.jpilot/%s", home, filename);
@@ -428,10 +736,10 @@ int unlink_file(char *filename)
 
    home = getenv("HOME");
    if (!home) {//Not home;
-      logf(LOG_WARN, "Can't get HOME environment variable\n");
+      jpilot_logf(LOG_WARN, "Can't get HOME environment variable\n");
    }
    if (strlen(home) > 256-10-strlen(filename)) {
-      logf(LOG_WARN, "Your HOME environment variable is too long for me\n");
+      jpilot_logf(LOG_WARN, "Your HOME environment variable is too long for me\n");
       home=default_path;
    }
    sprintf(file_name, "%s/.jpilot/%s", home, filename);
@@ -490,6 +798,8 @@ int raw_header_to_header(RawDBHeader *rdbh, DBHeader *dbh)
    dbh->unique_id_seed[4] = '\0';
    dbh->next_record_list_id = bytes_to_bin(rdbh->next_record_list_id, 4);
    dbh->number_of_records = bytes_to_bin(rdbh->number_of_records, 2);
+   
+   return 0;
 }
 
 //returns 1 if found
@@ -539,11 +849,11 @@ void print_string(char *str, int len)
    for (i=0;i<len;i++) {
       c=str[i];
       if (c < ' ' || c >= 0x7f)
-	logf(LOG_STDOUT, "%x",c);
+	jpilot_logf(LOG_STDOUT, "%x",c);
       else
 	putchar(c);
    }
-   logf(LOG_STDOUT, "\n");
+   jpilot_logf(LOG_STDOUT, "\n");
 }
 
 //
@@ -560,7 +870,7 @@ int get_app_info_size(FILE *in, int *size)
    
    fread(&rdbh, sizeof(RawDBHeader), 1, in);
    if (feof(in)) {
-      logf(LOG_WARN, "Error reading file in get_app_info_size\n");
+      jpilot_logf(LOG_WARN, "Error reading file in get_app_info_size\n");
       return -1;
    }
    
@@ -583,6 +893,8 @@ int get_app_info_size(FILE *in, int *size)
    fread(&rh, sizeof(record_header), 1, in);
    offset = ((rh.Offset[0]*256+rh.Offset[1])*256+rh.Offset[2])*256+rh.Offset[3];
    *size=offset - dbh.app_info_offset;
+   
+   return 0;
 }
 
 //
@@ -607,7 +919,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
    unsigned int unique_id;
 
    if (VP==NULL) {
-      return;
+      return -1;
    }
    
    mapp=NULL;//to keep the compiler happy
@@ -637,11 +949,11 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       strcpy(filename, "MemoDB.pc");
       break;
     default:
-      return;
+      return 0;
    }
    
    if ((record_type==DELETED_PALM_REC) || (record_type==MODIFIED_PALM_REC)) {
-      logf(LOG_INFO, "This record is already deleted.\n"
+      jpilot_logf(LOG_INFO, "This record is already deleted.\n"
 	   "It is scheduled to be deleted from the Palm on the next sync.\n");
       return 0;
    }
@@ -649,40 +961,40 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
     case NEW_PC_REC:
       pc_in=open_file(filename, "r+");
       if (pc_in==NULL) {
-	 logf(LOG_WARN, "Couldn't open PC records file\n");
+	 jpilot_logf(LOG_WARN, "Couldn't open PC records file\n");
 	 return -1;
       }
       while(!feof(pc_in)) {
 	 fread(&header, sizeof(header), 1, pc_in);
 	 if (feof(pc_in)) {
-	    logf(LOG_WARN, "couldn't find record to delete\n");
+	    jpilot_logf(LOG_WARN, "couldn't find record to delete\n");
 	    return -1;
 	 }
 	 if (header.unique_id==unique_id) {
 	    if (fseek(pc_in, -sizeof(header), SEEK_CUR)) {
-	       logf(LOG_WARN, "fseek failed\n");
+	       jpilot_logf(LOG_WARN, "fseek failed\n");
 	    }
 	    header.rt=DELETED_PC_REC;
 	    fwrite(&header, sizeof(header), 1, pc_in);
-	    logf(LOG_DEBUG, "record deleted\n");
+	    jpilot_logf(LOG_DEBUG, "record deleted\n");
 	    fclose(pc_in);
 	    return 0;
 	 }
 	 if (fseek(pc_in, header.rec_len, SEEK_CUR)) {
-	    logf(LOG_WARN, "fseek failed\n");
+	    jpilot_logf(LOG_WARN, "fseek failed\n");
 	 }
       }
       fclose(pc_in);
       return -1;
 	 
     case PALM_REC:
-      logf(LOG_DEBUG, "Deleteing Palm ID %d\n",unique_id);
+      jpilot_logf(LOG_DEBUG, "Deleteing Palm ID %d\n",unique_id);
       
       //todo
       //find_palm_appt_by_ID(unique_id, &a);
       pc_in=open_file(filename, "a");
       if (pc_in==NULL) {
-	 logf(LOG_WARN, "Couldn't open PC records file\n");
+	 jpilot_logf(LOG_WARN, "Couldn't open PC records file\n");
 	 return -1;
       }
       header.unique_id=unique_id;
@@ -698,7 +1010,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 	 header.rec_len = pack_Appointment(&app, record, 65535);
 	 if (!header.rec_len) {
 	    PRINT_FILE_LINE;
-	    logf(LOG_WARN, "pack_Appointment error\n");
+	    jpilot_logf(LOG_WARN, "pack_Appointment error\n");
 	 }
 	 break;
        case ADDRESS:
@@ -706,7 +1018,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 	 header.rec_len = pack_Address(&address, record, 65535);
 	 if (!header.rec_len) {
 	    PRINT_FILE_LINE;
-	    logf(LOG_WARN, "pack_Address error\n");
+	    jpilot_logf(LOG_WARN, "pack_Address error\n");
 	 }
 	 break;
        case TODO:
@@ -714,7 +1026,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 	 header.rec_len = pack_ToDo(&todo, record, 65535);
 	 if (!header.rec_len) {
 	    PRINT_FILE_LINE;
-	    logf(LOG_WARN, "pack_ToDo error\n");
+	    jpilot_logf(LOG_WARN, "pack_ToDo error\n");
 	 }
 	 break;
        case MEMO:
@@ -722,12 +1034,12 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 	 header.rec_len = pack_Memo(&memo, record, 65535);
 	 if (!header.rec_len) {
 	    PRINT_FILE_LINE;
-	    logf(LOG_WARN, "pack_Memo error\n");
+	    jpilot_logf(LOG_WARN, "pack_Memo error\n");
 	 }
 	 break;
        default:
 	 fclose(pc_in);
-	 return;
+	 return 0;
       }
       //todo check write
       fwrite(&header, sizeof(header), 1, pc_in);
@@ -736,11 +1048,14 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       //This will be used for making sure that the palm record hasn't changed
       //before we delete it
       fwrite(record, header.rec_len, 1, pc_in);
-      logf(LOG_DEBUG, "record deleted\n");
+      jpilot_logf(LOG_DEBUG, "record deleted\n");
       fclose(pc_in);
       return 0;
       break;
+    default:
+      break;
    }
+   return 0;
 }
 
 
@@ -767,7 +1082,7 @@ int cleanup_pc_file(AppType app_type)
       strcpy(filename, "MemoDB.pc");
       break;
     default:
-      return;
+      return 0;
    }
 
    pc_file=open_file(filename, "r");
@@ -780,7 +1095,7 @@ int cleanup_pc_file(AppType app_type)
 	 r++;
       }
       if (fseek(pc_file, header.rec_len, SEEK_CUR)) {
-	 logf(LOG_WARN, "fseek failed\n");
+	 jpilot_logf(LOG_WARN, "fseek failed\n");
 	 return -1;
       }
    }
@@ -804,6 +1119,7 @@ int cleanup_pc_files()
    if (ret == 0) {
       unlink_file("next_id");
    }
+   return 0;
 }
 
 void cb_backup(GtkWidget *widget,
@@ -817,7 +1133,19 @@ void cb_backup(GtkWidget *widget,
 void cb_sync(GtkWidget *widget,
 	     gpointer  data)
 {
-   sync_once(NULL, FALSE);
+   int ivalue;
+   const char *svalue;
+   
+   get_pref(PREF_RATE, &ivalue, &svalue);
+   jpilot_logf(LOG_DEBUG, "setting PILOTRATE=[%s]\n", svalue);
+   if (svalue) {
+      setenv("PILOTRATE", svalue, TRUE);
+   }
+
+   get_pref(PREF_PORT, &ivalue, &svalue);
+   jpilot_logf(LOG_DEBUG, "pref port=[%s]\n", svalue);
+   sync_once(svalue, FALSE);
+   
    return;
    //datebook_cleanup();
    //todo - force a refresh of whatever app is running

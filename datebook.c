@@ -1,5 +1,5 @@
-/*
- * datebook.c
+/* datebook.c
+ *
  * Copyright (C) 1999 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
@@ -32,6 +32,10 @@
 #include "utils.h"
 #include "log.h"
 
+#if defined(Japanese)
+#include "japanese.h"
+#endif
+
 #ifndef FALSE
 #define FALSE 0
 #endif
@@ -41,7 +45,7 @@
 
 #define DATEBOOK_EOF 7
 
-int datebook_sort(AppointmentList **al)
+static int datebook_sort(AppointmentList **al)
 {
    AppointmentList *temp_al, *prev_al, *next;
    int found_one;
@@ -68,6 +72,7 @@ int datebook_sort(AppointmentList **al)
 	 }
       }
    }
+   return 0;
 }
 
 static int pc_datebook_read_next_rec(FILE *in, MyAppointment *ma)
@@ -85,7 +90,7 @@ static int pc_datebook_read_next_rec(FILE *in, MyAppointment *ma)
       return DATEBOOK_EOF;
    }
    if (num != 1) {
-      logf(LOG_DEBUG, "error on fread\n");
+      jpilot_logf(LOG_DEBUG, "error on fread\n");
       return DATEBOOK_EOF;
    }
    rec_len = header.rec_len;
@@ -94,16 +99,20 @@ static int pc_datebook_read_next_rec(FILE *in, MyAppointment *ma)
    ma->unique_id = header.unique_id;
    record = malloc(rec_len);
    if (!record) {
-      logf(LOG_WARN, "Out of memory\n");
-      return -1;
+      jpilot_logf(LOG_WARN, "Out of memory\n");
+      return DATEBOOK_EOF;
    }
-   fread(record, rec_len, 1, in);
-   if (feof(in)) {
+   num = fread(record, rec_len, 1, in);
+   if (feof(in) || (!num)) {
       free(record);
       return DATEBOOK_EOF;
    }
-   unpack_Appointment(&(ma->a), record, rec_len);
+   num = unpack_Appointment(&(ma->a), record, rec_len);
    free(record);
+
+   if (num<=0) {
+      return -1;
+   }
    return 0;
 }
 
@@ -113,11 +122,11 @@ int does_pc_appt_exist(int unique_id, PCRecType rt)
    PCRecordHeader header;
    int num;
    
-   logf(LOG_DEBUG, "looking for unique id = %d\n",unique_id);
-   logf(LOG_DEBUG, "looking for rt = %d\n",rt);
+   //jpilot_logf(LOG_DEBUG, "looking for unique id = %d\n",unique_id);
+   //jpilot_logf(LOG_DEBUG, "looking for rt = %d\n",rt);
    pc_in=open_file("DatebookDB.pc", "r");
    if (pc_in==NULL) {
-      logf(LOG_WARN, "Couldn't open PC records file\n");
+      jpilot_logf(LOG_WARN, "Couldn't open PC records file\n");
       return 0;
    }
    while(!feof(pc_in)) {
@@ -131,7 +140,7 @@ int does_pc_appt_exist(int unique_id, PCRecType rt)
 	 return 1;
       }
       if (fseek(pc_in, header.rec_len, SEEK_CUR)) {
-	 logf(LOG_WARN, "fseek failed\n");
+	 jpilot_logf(LOG_WARN, "fseek failed\n");
       }
    }
    fclose(pc_in);
@@ -148,18 +157,18 @@ int pc_datebook_write(struct Appointment *a, PCRecType rt, unsigned char attrib)
 
    get_next_unique_pc_id(&next_unique_id);
 #ifdef JPILOT_DEBUG
-   logf(LOG_DEBUG, "next unique id = %d\n",next_unique_id);
+   jpilot_logf(LOG_DEBUG, "next unique id = %d\n",next_unique_id);
 #endif
    
    out = open_file("DatebookDB.pc", "a");
    if (!out) {
-      logf(LOG_WARN, "Error opening DatebookDB.pc\n");
+      jpilot_logf(LOG_WARN, "Error opening DatebookDB.pc\n");
       return -1;
    }
    rec_len = pack_Appointment(a, record, 65535);
    if (!rec_len) {
       PRINT_FILE_LINE;
-      logf(LOG_WARN, "pack_Appointment error\n");
+      jpilot_logf(LOG_WARN, "pack_Appointment error\n");
       fclose(out);
       return -1;
    }
@@ -171,6 +180,8 @@ int pc_datebook_write(struct Appointment *a, PCRecType rt, unsigned char attrib)
    fwrite(record, rec_len, 1, out);
    fflush(out);
    fclose(out);
+   
+   return 0;
 }
 
 void free_AppointmentList(AppointmentList **al)
@@ -193,14 +204,14 @@ int datebook_copy_appointment(struct Appointment *a1,
 {
    *a2=malloc(sizeof(struct Appointment));
    if (!(*a2)) {
-      logf(LOG_WARN, "Out of memory\n");
+      jpilot_logf(LOG_WARN, "Out of memory\n");
       return -1;
    }
    memcpy(*a2, a1, sizeof(struct Appointment));
    
    (*a2)->exception = (struct tm *)malloc(a1->exceptions * sizeof(struct tm));
    if (!(*a2)->exception) {
-      logf(LOG_WARN, "Out of memory\n");
+      jpilot_logf(LOG_WARN, "Out of memory\n");
       return -1;
    }
    memcpy((*a2)->exception, a1->exception, a1->exceptions * sizeof(struct tm));
@@ -230,7 +241,7 @@ int datebook_add_exception(struct Appointment *a, int year, int mon, int day)
 
    new_exception = malloc((a->exceptions + 1) * sizeof(struct tm));
    if (!new_exception) {
-      logf(LOG_WARN, "Out of memory\n");
+      jpilot_logf(LOG_WARN, "Out of memory\n");
       return -1;
    }
    memcpy(new_exception, a->exception, (a->exceptions) * sizeof(struct tm));
@@ -298,13 +309,12 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
    //structure
    int days_in_month[]={31,28,31,30,31,30,31,31,30,31,30,31
    };
-   //time_t ltime;
-   //struct tm *now;
-
-   //time( &ltime );
-   //now = localtime( &ltime );
 
    ret = FALSE;
+   
+   if (!date) {
+      return FALSE;
+   }
 
    //Leap year
    if (date->tm_year%4==0) {
@@ -339,6 +349,15 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
     case repeatWeekly:
       get_month_info(date->tm_mon, date->tm_mday, date->tm_year, &dow, &ndim);
       //See if the appointment repeats on this day
+      /*
+      if (a->repeatWeekstart > 1) {
+	 a->repeatWeekstart = 1;
+      }
+      if (a->repeatWeekstart < 0) {
+	 a->repeatWeekstart = 0;
+      }
+      */
+      //if (!(a->repeatDays[dow + a->repeatWeekstart])) {
       if (!(a->repeatDays[dow])) {
 	 ret = FALSE;
 	 break;
@@ -411,7 +430,7 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
       }   
       break;
     default:
-      logf(LOG_WARN, "unknown repeatType (%d) found in DatebookDB\n",
+      jpilot_logf(LOG_WARN, "unknown repeatType (%d) found in DatebookDB\n",
 	   a->repeatType);
       ret = FALSE;
    }//switch
@@ -420,11 +439,11 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
       //Check for exceptions
       for (i=0; i<a->exceptions; i++) {
 #ifdef JPILOT_DEBUG
-	 logf(LOG_DEBUG, "exception %d mon %d\n", i, a->exception[i].tm_mon);
-	 logf(LOG_DEBUG, "exception %d day %d\n", i, a->exception[i].tm_mday);
-	 logf(LOG_DEBUG, "exception %d year %d\n", i, a->exception[i].tm_year);
-	 logf(LOG_DEBUG, "exception %d yday %d\n", i, a->exception[i].tm_yday);
-	 logf(LOG_DEBUG, "today is yday %d\n", date->tm_yday);
+	 jpilot_logf(LOG_DEBUG, "exception %d mon %d\n", i, a->exception[i].tm_mon);
+	 jpilot_logf(LOG_DEBUG, "exception %d day %d\n", i, a->exception[i].tm_mday);
+	 jpilot_logf(LOG_DEBUG, "exception %d year %d\n", i, a->exception[i].tm_year);
+	 jpilot_logf(LOG_DEBUG, "exception %d yday %d\n", i, a->exception[i].tm_yday);
+	 jpilot_logf(LOG_DEBUG, "today is yday %d\n", date->tm_yday);
 #endif
 	 begin_days = dateToDays(&(a->exception[i]));
 	 days = dateToDays(date);
@@ -438,149 +457,50 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
    return ret;
 }
 
-int get_days_appointments(AppointmentList **appointment_list, struct tm *now)
+int get_datebook_app_info(struct AppointmentAppInfo *ai)
 {
-   FILE *in, *pc_in;
-//   *appointment_list=NULL;
-//   char db_name[34];
-//   char filler[100];
+   FILE *in;
+   int num;
+   unsigned int rec_size;
    char *buf;
-//   unsigned char char_num_records[4];
-//   unsigned char char_ai_offset[4];//app info offset
-   int num_records, i, num, r;
-   unsigned int offset, next_offset, rec_size;
-//   unsigned char c;
-   long fpos;  //file position indicator
-   unsigned char attrib;
-   unsigned int unique_id;
-   mem_rec_header *mem_rh, *temp_mem_rh;
-   record_header rh;
    RawDBHeader rdbh;
    DBHeader dbh;
-   struct Appointment a;
-   //struct AppointmentAppInfo ai;
-   AppointmentList *temp_appointment_list;
-   MyAppointment ma;
-
-   mem_rh = NULL;
 
    in = open_file("DatebookDB.pdb", "r");
    if (!in) {
-      logf(LOG_WARN, "Error opening DatebookDB.pdb\n");
+      jpilot_logf(LOG_WARN, "Error opening DatebookDB.pdb\n");
       return -1;
    }
-   //Read the database header
    fread(&rdbh, sizeof(RawDBHeader), 1, in);
    if (feof(in)) {
-      logf(LOG_WARN, "Error reading DatebookDB.pdb\n");
+      jpilot_logf(LOG_WARN, "Error reading DatebookDB.pdb\n");
       fclose(in);
       return -1;
    }
    raw_header_to_header(&rdbh, &dbh);
-   
-   logf(LOG_DEBUG, "db_name = %s\n", dbh.db_name);
-   logf(LOG_DEBUG, "num records = %d\n", dbh.number_of_records);
-   logf(LOG_DEBUG, "app info offset = %d\n", dbh.app_info_offset);
 
-   //Read each record entry header
-   num_records = dbh.number_of_records;
-   for (i=1; i<num_records+1; i++) {
-      fread(&rh, sizeof(record_header), 1, in);
-      offset = ((rh.Offset[0]*256+rh.Offset[1])*256+rh.Offset[2])*256+rh.Offset[3];
-#ifdef JPILOT_DEBUG
-      logf(LOG_DEBUG, "record header %u offset = %u\n",i, offset);
-      logf(LOG_DEBUG, "       attrib 0x%x\n",rh.attrib);
-      logf(LOG_DEBUG, "    unique_ID %d %d %d = ",rh.unique_ID[0],rh.unique_ID[1],rh.unique_ID[2]);
-      logf(LOG_DEBUG, "%d\n",(rh.unique_ID[0]*256+rh.unique_ID[1])*256+rh.unique_ID[2]);
-#endif
-      temp_mem_rh = (mem_rec_header *)malloc(sizeof(mem_rec_header));
-      temp_mem_rh->next = mem_rh;
-      mem_rh = temp_mem_rh;
-      mem_rh->rec_num = i;
-      mem_rh->offset = offset;
-      mem_rh->attrib = rh.attrib;
-      mem_rh->unique_id = (rh.unique_ID[0]*256+rh.unique_ID[1])*256+rh.unique_ID[2];
+   get_app_info_size(in, &rec_size);
+
+   fseek(in, dbh.app_info_offset, SEEK_SET);
+   buf=malloc(rec_size);
+   if (!buf) {
+      fclose(in);
+      return -1;
    }
-
-   if (num_records) {
-      find_next_offset(mem_rh, 0, &next_offset, &attrib, &unique_id);
-      fseek(in, next_offset, SEEK_SET);
-      while(!feof(in)) {
-	 fpos = ftell(in);
-	 find_next_offset(mem_rh, fpos, &next_offset, &attrib, &unique_id);
-	 //next_offset += 223;
-	 rec_size = next_offset - fpos;
-#ifdef JPILOT_DEBUG
-	 logf(LOG_DEBUG, "rec_size = %u\n",rec_size);
-	 logf(LOG_DEBUG, "fpos,next_offset = %u %u\n",fpos,next_offset);
-	 logf(LOG_DEBUG, "----------\n");
-#endif
-	 if (feof(in)) break;
-	 buf = malloc(rec_size);
-	 if (!buf) {
-	    break;
-	 }
-	 num = fread(buf, 1, rec_size, in);
-	 if (feof(in) || (!num)) break;
-
-	 unpack_Appointment(&a, buf, rec_size);
-	 free(buf);
-	 if (isApptOnDate(&a, now)
-	     && (!does_pc_appt_exist(unique_id, PALM_REC))) {
-	    temp_appointment_list = malloc(sizeof(AppointmentList));
-	    memcpy(&(temp_appointment_list->ma.a), &a, sizeof(struct Appointment));
-	    //temp_appointment_list->ma.a = temp_a;
-	    temp_appointment_list->ma.rt = PALM_REC;
-	    temp_appointment_list->ma.attrib = attrib;
-	    temp_appointment_list->ma.unique_id = unique_id;
-	    temp_appointment_list->next = *appointment_list;
-	    *appointment_list = temp_appointment_list;
-	 }
-      }
+   num = fread(buf, 1, rec_size, in);
+   if (feof(in)) {
+      fclose(in);
+      free(buf);
+      jpilot_logf(LOG_WARN, "Error reading DatebookDB.pdb\n");
+      return -1;
    }
+   unpack_AppointmentAppInfo(ai, buf, rec_size);
+   free(buf);
+
    fclose(in);
-   free_mem_rec_header(&mem_rh);
 
-   //
-   //Get the appointments out of the PC database
-   //
-   pc_in = open_file("DatebookDB.pc", "r");
-   if (pc_in==NULL) {
-      return 0;
-   }
-   //r = pc_datebook_read_file_header(pc_in);
-   while(!feof(pc_in)) {
-      r = pc_datebook_read_next_rec(pc_in, &ma);
-      if (r==DATEBOOK_EOF) break;
-      if ((isApptOnDate(&(ma.a), now))
-	  &&(ma.rt!=DELETED_PC_REC)
-	  &&(ma.rt!=DELETED_PALM_REC)
-	  &&(ma.rt!=MODIFIED_PALM_REC)
-	  &&(ma.rt!=DELETED_DELETED_PALM_REC)) {
-	 temp_appointment_list = malloc(sizeof(AppointmentList));
-	 memcpy(&(temp_appointment_list->ma), &ma, sizeof(MyAppointment));
-	 temp_appointment_list->next = *appointment_list;
-	 *appointment_list = temp_appointment_list;
-
-	 //temp_appointment_list->ma.attrib=0;
-      } else {
-	 //this doesnt really free it, just the string pointers
-	 free_Appointment(&(ma.a));
-      }
-      if ((ma.rt==DELETED_PALM_REC) || (ma.rt==MODIFIED_PALM_REC)) {
-	 for (temp_appointment_list = *appointment_list; temp_appointment_list;
-	      temp_appointment_list=temp_appointment_list->next) {
-	    if (temp_appointment_list->ma.unique_id == ma.unique_id) {
-	       temp_appointment_list->ma.rt = ma.rt;
-	    }
-	 }
-      }
-   }
-   fclose(pc_in);
-
-   datebook_sort(appointment_list);
+   return 0;
 }
-
 
 int datebook_create_bogus_record(char *record, int size, int *rec_len)
 {
@@ -618,3 +538,170 @@ int datebook_create_bogus_record(char *record, int size, int *rec_len)
    return 0;
 }
 
+//
+//If Null is passed in for date, then all appointments will be returned
+//
+int get_days_appointments(AppointmentList **appointment_list, struct tm *now)
+{
+   FILE *in, *pc_in;
+//   *appointment_list=NULL;
+//   char db_name[34];
+//   char filler[100];
+   char *buf;
+//   unsigned char char_num_records[4];
+//   unsigned char char_ai_offset[4];//app info offset
+   int num_records, i, num, r;
+   unsigned int offset, next_offset, rec_size;
+//   unsigned char c;
+   long fpos;  //file position indicator
+   unsigned char attrib;
+   unsigned int unique_id;
+   mem_rec_header *mem_rh, *temp_mem_rh;
+   record_header rh;
+   RawDBHeader rdbh;
+   DBHeader dbh;
+   struct Appointment a;
+   //struct AppointmentAppInfo ai;
+   AppointmentList *temp_appointment_list;
+   MyAppointment ma;
+
+   mem_rh = NULL;
+
+   in = open_file("DatebookDB.pdb", "r");
+   if (!in) {
+      jpilot_logf(LOG_WARN, "Error opening DatebookDB.pdb\n");
+      return -1;
+   }
+   //Read the database header
+   fread(&rdbh, sizeof(RawDBHeader), 1, in);
+   if (feof(in)) {
+      jpilot_logf(LOG_WARN, "Error reading DatebookDB.pdb\n");
+      fclose(in);
+      return -1;
+   }
+   raw_header_to_header(&rdbh, &dbh);
+   
+   jpilot_logf(LOG_DEBUG, "db_name = %s\n", dbh.db_name);
+   jpilot_logf(LOG_DEBUG, "num records = %d\n", dbh.number_of_records);
+   jpilot_logf(LOG_DEBUG, "app info offset = %d\n", dbh.app_info_offset);
+
+   //Read each record entry header
+   num_records = dbh.number_of_records;
+   for (i=1; i<num_records+1; i++) {
+      fread(&rh, sizeof(record_header), 1, in);
+      offset = ((rh.Offset[0]*256+rh.Offset[1])*256+rh.Offset[2])*256+rh.Offset[3];
+#ifdef JPILOT_DEBUG
+      jpilot_logf(LOG_DEBUG, "record header %u offset = %u\n",i, offset);
+      jpilot_logf(LOG_DEBUG, "       attrib 0x%x\n",rh.attrib);
+      jpilot_logf(LOG_DEBUG, "    unique_ID %d %d %d = ",rh.unique_ID[0],rh.unique_ID[1],rh.unique_ID[2]);
+      jpilot_logf(LOG_DEBUG, "%d\n",(rh.unique_ID[0]*256+rh.unique_ID[1])*256+rh.unique_ID[2]);
+#endif
+      temp_mem_rh = (mem_rec_header *)malloc(sizeof(mem_rec_header));
+      temp_mem_rh->next = mem_rh;
+      mem_rh = temp_mem_rh;
+      mem_rh->rec_num = i;
+      mem_rh->offset = offset;
+      mem_rh->attrib = rh.attrib;
+      mem_rh->unique_id = (rh.unique_ID[0]*256+rh.unique_ID[1])*256+rh.unique_ID[2];
+   }
+
+   if (num_records) {
+      find_next_offset(mem_rh, 0, &next_offset, &attrib, &unique_id);
+      fseek(in, next_offset, SEEK_SET);
+      while(!feof(in)) {
+	 fpos = ftell(in);
+	 find_next_offset(mem_rh, fpos, &next_offset, &attrib, &unique_id);
+	 //next_offset += 223;
+	 rec_size = next_offset - fpos;
+#ifdef JPILOT_DEBUG
+	 jpilot_logf(LOG_DEBUG, "rec_size = %u\n",rec_size);
+	 jpilot_logf(LOG_DEBUG, "fpos,next_offset = %u %u\n",fpos,next_offset);
+	 jpilot_logf(LOG_DEBUG, "----------\n");
+#endif
+	 
+	 if (feof(in)) break;
+	 buf = malloc(rec_size);
+	 if (!buf) {
+	    break;
+	 }
+	 num = fread(buf, 1, rec_size, in);
+	 if (feof(in) || (!num)) {
+	    free(buf);
+	    break;
+	 }
+
+	 num = unpack_Appointment(&a, buf, rec_size);
+	 if (num<=0) {
+	    free(buf);	 
+	    //jpilot_logf(LOG_INFO, "unpack_Appointment failed\n");
+	    //jpilot_logf(LOG_INFO, "rec_size = %d\n", rec_size);
+	    continue;
+	 }
+#if defined(Japanese)
+	if (a.description != NULL)
+	    Sjis2Euc(a.description, 65536);
+	if (a.note != NULL)
+	    Sjis2Euc(a.note, 65536);
+#endif
+	 free(buf);
+	 if ( ((now==NULL) || isApptOnDate(&a, now))
+	     && (!does_pc_appt_exist(unique_id, PALM_REC))) {
+	    temp_appointment_list = malloc(sizeof(AppointmentList));
+	    memcpy(&(temp_appointment_list->ma.a), &a, sizeof(struct Appointment));
+	    //temp_appointment_list->ma.a = temp_a;
+	    temp_appointment_list->app_type = DATEBOOK;
+	    temp_appointment_list->ma.rt = PALM_REC;
+	    temp_appointment_list->ma.attrib = attrib;
+	    temp_appointment_list->ma.unique_id = unique_id;
+	    temp_appointment_list->next = *appointment_list;
+	    *appointment_list = temp_appointment_list;
+	 }
+      }
+   }
+   fclose(in);
+   free_mem_rec_header(&mem_rh);
+
+   //
+   //Get the appointments out of the PC database
+   //
+   pc_in = open_file("DatebookDB.pc", "r");
+   if (pc_in==NULL) {
+      return 0;
+   }
+   //r = pc_datebook_read_file_header(pc_in);
+   while(!feof(pc_in)) {
+      r = pc_datebook_read_next_rec(pc_in, &ma);
+      if (r==DATEBOOK_EOF) break;
+      if ( ((now==NULL) || isApptOnDate(&(ma.a), now))
+	  &&(ma.rt!=DELETED_PC_REC)
+	  &&(ma.rt!=DELETED_PALM_REC)
+	  &&(ma.rt!=MODIFIED_PALM_REC)
+	  &&(ma.rt!=DELETED_DELETED_PALM_REC)) {
+	 temp_appointment_list = malloc(sizeof(AppointmentList));
+	 memcpy(&(temp_appointment_list->ma), &ma, sizeof(MyAppointment));
+	 temp_appointment_list->app_type = DATEBOOK;
+	 temp_appointment_list->next = *appointment_list;
+	 *appointment_list = temp_appointment_list;
+
+	 //temp_appointment_list->ma.attrib=0;
+      } else {
+	 //this doesnt really free it, just the string pointers
+	 free_Appointment(&(ma.a));
+      }
+      if ((ma.rt==DELETED_PALM_REC) || (ma.rt==MODIFIED_PALM_REC)) {
+	 for (temp_appointment_list = *appointment_list; temp_appointment_list;
+	      temp_appointment_list=temp_appointment_list->next) {
+	    if (temp_appointment_list->ma.unique_id == ma.unique_id) {
+	       temp_appointment_list->ma.rt = ma.rt;
+	    }
+	 }
+      }
+   }
+   fclose(pc_in);
+
+   datebook_sort(appointment_list);
+   
+   jpilot_logf(LOG_DEBUG, "Leaving get_days_apppointments\n");
+
+   return 0;
+}

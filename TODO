@@ -1,15 +1,15 @@
 These are some of the things on my list todo, mostly, but not neccesarily
 in this order:
 
-* Add in search functions
+* Remember the last user, so that different Palms can't accidentally be synced
 * Printing
-* Make preferences and rc files to remember settings.
-* Use autoconf to generate a configure script since they are so cool.
-* Put in a menubar if needed.
 * Put up a graph showing the days schedual.
+* Better daily schedual.
+* Weekly schedual.
+* Monthly schedual.
 * Hide, or Show private records.
 * Do a fast sync, user choice of fast, or slow.
-  (A slow sync allows another PC to do the archiving)
 * Add in file locking, right now if you run 2 jpilots as the same user
   then you may have DB file problems. (who cares?)
-* fix return codes, and clean up the code, it is a little messy.
+* Make a way to install files to the pilot.
+* import/export files.

@@ -1,4 +1,4 @@
-/* address.h
+/* memo.h
  * 
  * Copyright (C) 1999 by Judd Montgomery
  *
@@ -16,10 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include <pi-address.h>
-#include "utils.h"
-
-int get_address_app_info(struct AddressAppInfo *aai);
-int pc_address_write(struct Address *a, PCRecType rt, unsigned char attrib);
-void free_AddressList(AddressList **al);
-int get_addresses(AddressList **address_list);
+int get_memo_app_info(struct MemoAppInfo *ai);
+void free_MemoList(MemoList **memo);
+int get_memos(MemoList **memo_list);
+int pc_memo_write(struct Memo *memo, PCRecType rt, unsigned char attrib);

@@ -1,0 +1,100 @@
+
+#set PILOT_DIR to where you installed pilot-link
+PILOT_DIR=@pilot_prefix@
+
+#set CC to your compiler
+CC = @CC@
+
+# CC options
+# japanese support
+JAPANESE       = @japanese@
+
+# CC options
+OPTIONS = @ccoptions@ -DBASE_DIR=\"@prefix@\" $(JAPANESE)
+
+# GTK+ flags
+GTKFLAGS = @GTK_CFLAGS@
+# GTK+ libs
+GTKLIBS = @GTK_LIBS@
+
+PILOT_LIB = -L$(PILOT_DIR)/lib -lpisock
+PILOT_INCLUDE = -I$(PILOT_DIR)/include
+
+all: jpilot
+
+jpilot: jpilot.o datebook.o address.o todo.o memo.o \
+	utils.o sync.o prefs.o log.o \
+	datebook_gui.o address_gui.o todo_gui.o memo_gui.o \
+	prefs_gui.o search_gui.o \
+	japanese.o
+	$(CC) $(OPTIONS) $(PILOT_LIB) $(GTKFLAGS) $(GTKLIBS) \
+	jpilot.o datebook.o address.o todo.o memo.o \
+	utils.o sync.o prefs.o log.o \
+	datebook_gui.o address_gui.o todo_gui.o memo_gui.o \
+	prefs_gui.o search_gui.o \
+	japanese.o \
+	-o jpilot
+
+
+jpilot.o: jpilot.c utils.h
+	$(CC) $(OPTIONS) $(PILOT_INCLUDE) $(GTKFLAGS) -c jpilot.c
+
+datebook.o: datebook.c datebook.h utils.h
+	$(CC) $(OPTIONS) $(PILOT_INCLUDE) $(GTKFLAGS) -c datebook.c
+
+address.o: address.c address.h utils.h
+	$(CC) $(OPTIONS) $(PILOT_INCLUDE) $(GTKFLAGS) -c address.c
+
+todo.o: todo.c todo.h utils.h
+	$(CC) $(OPTIONS) $(PILOT_INCLUDE) $(GTKFLAGS) -c todo.c
+
+memo.o: memo.c memo.h utils.h
+	$(CC) $(OPTIONS) $(PILOT_INCLUDE) $(GTKFLAGS) -c memo.c
+
+datebook_gui.o: datebook_gui.c utils.h
+	$(CC) $(OPTIONS) $(PILOT_INCLUDE) $(GTKFLAGS) -c datebook_gui.c
+
+address_gui.o: address_gui.c address.o
+	$(CC) $(OPTIONS) $(PILOT_INCLUDE) $(GTKFLAGS) -c address_gui.c
+
+todo_gui.o: todo_gui.c todo.o utils.h
+	$(CC) $(OPTIONS) $(PILOT_INCLUDE) $(GTKFLAGS) -c todo_gui.c
+
+memo_gui.o: memo_gui.c utils.h
+	$(CC) $(OPTIONS) $(PILOT_INCLUDE) $(GTKFLAGS) -c memo_gui.c
+
+search_gui.o: search_gui.c utils.h
+	$(CC) $(OPTIONS) $(PILOT_INCLUDE) $(GTKFLAGS) -c search_gui.c
+
+prefs_gui.o: prefs_gui.c prefs.h utils.h
+	$(CC) $(OPTIONS) $(PILOT_INCLUDE) $(GTKFLAGS) -c prefs_gui.c
+
+utils.o: utils.c utils.h
+	$(CC) $(OPTIONS) $(PILOT_INCLUDE) $(GTKFLAGS) -c utils.c
+
+sync.o: sync.c sync.h
+	$(CC) $(OPTIONS) $(PILOT_INCLUDE) $(GTKFLAGS) -c sync.c
+
+log.o: log.c log.h
+	$(CC) $(OPTIONS) $(PILOT_INCLUDE) $(GTKFLAGS) -c log.c
+
+prefs.o: prefs.c utils.h prefs.h
+	$(CC) $(OPTIONS) $(PILOT_INCLUDE) $(GTKFLAGS) -c prefs.c
+
+japanese.o: japanese.c japanese.h
+	$(CC) $(OPTIONS) -c japanese.c
+
+clean: 
+	rm -f *.o *~ config.cache
+
+install:
+#	./install-sh -d @prefix@/bin
+	./install-sh -s -c -m 555 -g bin -o bin jpilot @prefix@/bin
+	./install-sh -d -m 755 @prefix@/share/jpilot
+	./install-sh -c -m 755 -g bin -o bin jpilotrc.blue @prefix@/share/jpilot
+	./install-sh -c -m 755 -g bin -o bin jpilotrc.default @prefix@/share/jpilot
+	./install-sh -c -m 755 -g bin -o bin jpilotrc.green @prefix@/share/jpilot
+
+uninstall:
+	rm @prefix@/share/jpilot/*
+	rm @prefix@/bin/jpilot

@@ -1,5 +1,5 @@
-/*
- * utils.h
+/* log.h
+ * 
  * Copyright (C) 1999 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
@@ -32,6 +32,6 @@ extern int glob_log_file_mask;
 extern int glob_log_stdout_mask;
 extern int glob_log_gui_mask;
 
-int logf(int log_level, char *format, ...);
+int jpilot_logf(int log_level, char *format, ...);
 
 #endif

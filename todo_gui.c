@@ -1,5 +1,5 @@
-/*
- * todo_gui.c
+/* todo_gui.c
+ * 
  * Copyright (C) 1999 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,9 +18,13 @@
  */
 #include <gtk/gtk.h>
 #include <time.h>
+#include <stdlib.h>
 #include "utils.h"
 #include "todo.h"
 #include "log.h"
+#include "prefs.h"
+
+#define NUM_TODO_CAT_ITEMS 16
 
 extern GtkTooltips *glob_tooltips;
 
@@ -34,10 +38,13 @@ GtkWidget *todo_spinner_due_day;
 GtkWidget *todo_spinner_due_year;
 GtkAdjustment *todo_adj_due_mon, *todo_adj_due_day, *todo_adj_due_year;
 GtkWidget *todo_cat_menu2;
-GtkWidget *todo_cat_menu_item[16];
+//We need an extra one forthe ALL category
+GtkWidget *todo_cat_menu_item1[NUM_TODO_CAT_ITEMS+1];
+GtkWidget *todo_cat_menu_item2[NUM_TODO_CAT_ITEMS];
 GtkWidget *todo_hide_completed_checkbox;
 GtkWidget *todo_modify_button;
 GtkWidget *category_menu1;
+GtkWidget *scrolled_window;
 
 struct ToDoAppInfo todo_app_info;
 int todo_category;
@@ -70,7 +77,7 @@ void cb_todo_category(GtkWidget *item, int selection)
 {
    if ((GTK_CHECK_MENU_ITEM(item))->active) {
       todo_category = selection;
-      logf(LOG_DEBUG, "todo_category = %d\n",todo_category);
+      jpilot_logf(LOG_DEBUG, "todo_category = %d\n",todo_category);
       todo_clear_details();
       update_todo_screen();
    }
@@ -121,8 +128,10 @@ int todo_clear_details()
    gtk_text_thaw(GTK_TEXT(todo_text_note));
 
    gtk_check_menu_item_set_active
-     (GTK_CHECK_MENU_ITEM(todo_cat_menu_item[0]), TRUE);
+     (GTK_CHECK_MENU_ITEM(todo_cat_menu_item2[0]), TRUE);
    gtk_option_menu_set_history(GTK_OPTION_MENU(todo_cat_menu2), 0);
+   
+   return 0;
 }
 
 int todo_get_details(struct ToDo *new_todo, unsigned char *attrib)
@@ -158,9 +167,9 @@ int todo_get_details(struct ToDo *new_todo, unsigned char *attrib)
       new_todo->note=NULL;
    }
 
-   for (i=0; i<16; i++) {
-      if (GTK_IS_WIDGET(todo_cat_menu_item[i])) {
-	 if (GTK_CHECK_MENU_ITEM(todo_cat_menu_item[i])->active) {
+   for (i=0; i<NUM_TODO_CAT_ITEMS; i++) {
+      if (GTK_IS_WIDGET(todo_cat_menu_item2[i])) {
+	 if (GTK_CHECK_MENU_ITEM(todo_cat_menu_item2[i])->active) {
 	    *attrib = i;
 	    break;
 	 }
@@ -168,17 +177,19 @@ int todo_get_details(struct ToDo *new_todo, unsigned char *attrib)
    }
 
 #ifdef JPILOT_DEBUG
-   logf(LOG_DEBUG, "attrib = %d\n", *attrib);
-   logf(LOG_DEBUG, "indefinite=%d\n",new_todo->indefinite);
+   jpilot_logf(LOG_DEBUG, "attrib = %d\n", *attrib);
+   jpilot_logf(LOG_DEBUG, "indefinite=%d\n",new_todo->indefinite);
    if (!new_todo->indefinite)
-     logf(LOG_DEBUG, "due: %d/%d/%d\n",new_todo->due.tm_mon,
+     jpilot_logf(LOG_DEBUG, "due: %d/%d/%d\n",new_todo->due.tm_mon,
 	    new_todo->due.tm_mday, 
 	    new_todo->due.tm_year);
-   logf(LOG_DEBUG, "priority=%d\n",new_todo->priority);
-   logf(LOG_DEBUG, "complete=%d\n",new_todo->complete);
-   logf(LOG_DEBUG, "description=[%s]\n",new_todo->description);
-   logf(LOG_DEBUG, "note=[%s]\n",new_todo->note);
+   jpilot_logf(LOG_DEBUG, "priority=%d\n",new_todo->priority);
+   jpilot_logf(LOG_DEBUG, "complete=%d\n",new_todo->complete);
+   jpilot_logf(LOG_DEBUG, "description=[%s]\n",new_todo->description);
+   jpilot_logf(LOG_DEBUG, "note=[%s]\n",new_todo->note);
 #endif
+   
+   return 0;
 }
 
 static void cb_add_new_record(GtkWidget *widget,
@@ -205,7 +216,7 @@ static void cb_add_new_record(GtkWidget *widget,
 	 return;
       }
       if ((mtodo->rt==DELETED_PALM_REC) || (mtodo->rt==MODIFIED_PALM_REC)) {
-	 logf(LOG_INFO, "You can't modify a record that is deleted\n");
+	 jpilot_logf(LOG_INFO, "You can't modify a record that is deleted\n");
 	 return;
       }
    }
@@ -278,7 +289,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    //gtk_text_insert(GTK_TEXT(todo_text), NULL,NULL,NULL, "\n", -1);
 
    gtk_check_menu_item_set_active
-     (GTK_CHECK_MENU_ITEM(todo_cat_menu_item[mtodo->attrib & 0x0F]), TRUE);
+     (GTK_CHECK_MENU_ITEM(todo_cat_menu_item2[mtodo->attrib & 0x0F]), TRUE);
    gtk_option_menu_set_history
      (GTK_OPTION_MENU(todo_cat_menu2), mtodo->attrib & 0x0F);
 
@@ -290,7 +301,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    }
 
    if ( (todo->priority<1) || (todo->priority>5) ) {
-      logf(LOG_WARN, "Priority out of range\n");
+      jpilot_logf(LOG_WARN, "Priority out of range\n");
    } else {
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_todo[todo->priority-1]), TRUE);
    }
@@ -341,18 +352,20 @@ void update_todo_screen()
    ToDoList *temp_todo;
    static ToDoList *todo_list=NULL;
    char str[50];
+   int ivalue;
+   const char *svalue;
 
    free_ToDoList(&todo_list);
 
 #ifdef JPILOT_DEBUG
-    for (i=0;i<16;i++) {
-      logf(LOG_DEBUG, "renamed:[%02d]:\n",todo_app_info.category.renamed[i]);
-      logf(LOG_DEBUG, "category name:[%02d]:",i);
+    for (i=0;i<NUM_TODO_CAT_ITEMS;i++) {
+      jpilot_logf(LOG_DEBUG, "renamed:[%02d]:\n",todo_app_info.category.renamed[i]);
+      jpilot_logf(LOG_DEBUG, "category name:[%02d]:",i);
       print_string(todo_app_info.category.name[i],16);
-      logf(LOG_DEBUG, "category ID:%d\n", todo_app_info.category.ID[i]);
+      jpilot_logf(LOG_DEBUG, "category ID:%d\n", todo_app_info.category.ID[i]);
    }
-   logf(LOG_DEBUG, "dirty %d\n",todo_app_info.dirty);
-   logf(LOG_DEBUG, "sortByCompany %d\n",todo_app_info.sortByPriority);
+   jpilot_logf(LOG_DEBUG, "dirty %d\n",todo_app_info.dirty);
+   jpilot_logf(LOG_DEBUG, "sortByCompany %d\n",todo_app_info.sortByPriority);
 #endif
 
    num_entries = get_todos(&todo_list);
@@ -381,10 +394,24 @@ void update_todo_screen()
 	 continue;
       }
       if (temp_todo->mtodo.rt == MODIFIED_PALM_REC) {
-	 //todo - this will be in preferences as to whether you want to 
+	 get_pref(PREF_SHOW_MODIFIED, &ivalue, &svalue);
+	 //this will be in preferences as to whether you want to
 	 //see deleted records, or not.
-	 num_entries--;
-	 continue;
+	 if (!ivalue) {
+	    num_entries--;
+	    i--;
+	    continue;
+	 }
+      }
+      if (temp_todo->mtodo.rt == DELETED_PALM_REC) {
+	 get_pref(PREF_SHOW_DELETED, &ivalue, &svalue);
+	 //this will be in preferences as to whether you want to
+	 //see deleted records, or not.
+	 if (!ivalue) {
+	    num_entries--;
+	    i--;
+	    continue;
+	 }
       }
 
       entries_shown++;
@@ -437,7 +464,7 @@ void update_todo_screen()
       }
    }
 
-   logf(LOG_DEBUG, "entries_shown=%d\n",entries_shown);
+   jpilot_logf(LOG_DEBUG, "entries_shown=%d\n",entries_shown);
 #ifdef OLD_ENTRY
    gtk_clist_append(GTK_CLIST(clist), empty_line);
    gtk_clist_set_text(GTK_CLIST(clist), entries_shown, 2,
@@ -461,7 +488,6 @@ static int make_category_menu1(GtkWidget **category_menu)
 {
    int i;
    
-   GtkWidget *menu_item;
    GtkWidget *menu;
    GSList    *group;
 
@@ -470,24 +496,26 @@ static int make_category_menu1(GtkWidget **category_menu)
    menu = gtk_menu_new();
    group = NULL;
    
-   menu_item = gtk_radio_menu_item_new_with_label(group, "All");
-   gtk_signal_connect(GTK_OBJECT(menu_item), "activate",
+   todo_cat_menu_item1[0] = gtk_radio_menu_item_new_with_label(group, "All");
+   gtk_signal_connect(GTK_OBJECT(todo_cat_menu_item1[0]), "activate",
 		      cb_todo_category, GINT_TO_POINTER(CATEGORY_ALL));
-   group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(menu_item));
-   gtk_menu_append(GTK_MENU(menu), menu_item);
-   gtk_widget_show(menu_item);
-   for (i=0; i<16; i++) {
+   group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(todo_cat_menu_item1[0]));
+   gtk_menu_append(GTK_MENU(menu), todo_cat_menu_item1[0]);
+   gtk_widget_show(todo_cat_menu_item1[0]);
+   for (i=0; i<NUM_TODO_CAT_ITEMS; i++) {
       if (todo_app_info.category.name[i][0]) {
-	 menu_item = gtk_radio_menu_item_new_with_label(
+	 todo_cat_menu_item1[i+1] = gtk_radio_menu_item_new_with_label(
 		     group, todo_app_info.category.name[i]);
-	 gtk_signal_connect(GTK_OBJECT(menu_item), "activate",
+	 gtk_signal_connect(GTK_OBJECT(todo_cat_menu_item1[i+1]), "activate",
 			    cb_todo_category, GINT_TO_POINTER(i));
-	 group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(menu_item));
-	 gtk_menu_append(GTK_MENU(menu), menu_item);
-	 gtk_widget_show(menu_item);
+	 group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(todo_cat_menu_item1[i+1]));
+	 gtk_menu_append(GTK_MENU(menu), todo_cat_menu_item1[i+1]);
+	 gtk_widget_show(todo_cat_menu_item1[i+1]);
       }
    }
    gtk_option_menu_set_menu(GTK_OPTION_MENU(*category_menu), menu);
+   
+   return 0;
 }
 
 static int make_category_menu2()
@@ -502,17 +530,52 @@ static int make_category_menu2()
    menu = gtk_menu_new();
    group = NULL;
    
-   for (i=0; i<16; i++) {
+   for (i=0; i<NUM_TODO_CAT_ITEMS; i++) {
       if (todo_app_info.category.name[i][0]) {
-	 todo_cat_menu_item[i] = gtk_radio_menu_item_new_with_label
+	 todo_cat_menu_item2[i] = gtk_radio_menu_item_new_with_label
 	   (group, todo_app_info.category.name[i]);
 	 group = gtk_radio_menu_item_group
-	   (GTK_RADIO_MENU_ITEM(todo_cat_menu_item[i]));
-	 gtk_menu_append(GTK_MENU(menu), todo_cat_menu_item[i]);
-	 gtk_widget_show(todo_cat_menu_item[i]);
+	   (GTK_RADIO_MENU_ITEM(todo_cat_menu_item2[i]));
+	 gtk_menu_append(GTK_MENU(menu), todo_cat_menu_item2[i]);
+	 gtk_widget_show(todo_cat_menu_item2[i]);
       }
    }
    gtk_option_menu_set_menu(GTK_OPTION_MENU(todo_cat_menu2), menu);
+   
+   return 0;
+}
+
+static int todo_find()
+{
+   int r, found_at, total_count;
+   
+   if (glob_find_id) {
+      r = clist_find_id(clist,
+			glob_find_id,
+			&found_at,
+			&total_count);
+      if (r) {
+	 if (total_count == 0) {
+	    total_count = 1;
+	 }
+	 gtk_clist_select_row(GTK_CLIST(clist), found_at, 1);
+	 move_scrolled_window_hack(scrolled_window,
+				   (float)found_at/(float)total_count);
+      }
+      glob_find_id = 0;
+   }
+   return 0;
+}
+
+int todo_refresh()
+{
+   todo_category = CATEGORY_ALL;
+   update_todo_screen();
+   gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), 0);
+   gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(
+       todo_cat_menu_item1[0]), TRUE);
+   todo_find();
+   return 0;
 }
 
 int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
@@ -530,8 +593,8 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 #define MAX_STR 100
    char str[MAX_STR];
    int i;
-   GtkWidget *scrolled_window;
    GSList    *group;
+   int dmy_order;
    
    clist_row_selected=0;
 
@@ -541,6 +604,8 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    vbox2 = gtk_vbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(hbox), vbox1, TRUE, TRUE, 5);
    gtk_box_pack_start(GTK_BOX(hbox), vbox2, TRUE, TRUE, 5);
+
+   gtk_widget_set_usize(GTK_WIDGET(vbox1), 210, 0);
 
    //Add buttons in left vbox
    button = gtk_button_new_with_label("Delete");
@@ -555,14 +620,15 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_box_pack_start(GTK_BOX(vbox1), separator, FALSE, FALSE, 5);
    gtk_widget_show(separator);
 
-   //Make the Today is: label
    time(&ltime);
    now = localtime(&ltime);
-   strftime(str, MAX_STR, "Today is %A, %x %X", now);
-   glob_date_label = gtk_label_new(str);
+
+   //Make the Today is: label
+   glob_date_label = gtk_label_new(" ");
    gtk_box_pack_start(GTK_BOX(vbox1), glob_date_label, FALSE, FALSE, 0);
    gtk_widget_show(glob_date_label);
-   glob_date_timer_tag = gtk_timeout_add(1000, timeout_date, NULL);
+   timeout_date(NULL);
+   glob_date_timer_tag = gtk_timeout_add(CLOCK_TICK, timeout_date, NULL);
 
    //Separator
    separator = gtk_hseparator_new();
@@ -590,7 +656,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    
    //Put the todo list window up
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
-   gtk_widget_set_usize(GTK_WIDGET(scrolled_window), 200, 0);
+   //gtk_widget_set_usize(GTK_WIDGET(scrolled_window), 200, 0);
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 0);
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
 				  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
@@ -687,9 +753,25 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 0);
    gtk_widget_show(label);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(hbox_temp), vbox_temp1, FALSE, FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(hbox_temp), vbox_temp2, FALSE, FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(hbox_temp), vbox_temp3, FALSE, FALSE, 0);
+   //Put the date in the order of user preference
+   dmy_order = get_pref_dmy_order();
+   switch (dmy_order) {
+    case PREF_DMY:
+      gtk_box_pack_start(GTK_BOX(hbox_temp), vbox_temp2, FALSE, FALSE, 0);//day
+      gtk_box_pack_start(GTK_BOX(hbox_temp), vbox_temp1, FALSE, FALSE, 0);//mon
+      gtk_box_pack_start(GTK_BOX(hbox_temp), vbox_temp3, FALSE, FALSE, 0);//year
+      break;
+    case PREF_YMD:
+      gtk_box_pack_start(GTK_BOX(hbox_temp), vbox_temp3, FALSE, FALSE, 0);//year
+      gtk_box_pack_start(GTK_BOX(hbox_temp), vbox_temp1, FALSE, FALSE, 0);//mon
+      gtk_box_pack_start(GTK_BOX(hbox_temp), vbox_temp2, FALSE, FALSE, 0);//day
+      break;
+    default:
+      gtk_box_pack_start(GTK_BOX(hbox_temp), vbox_temp1, FALSE, FALSE, 0);//mon
+      gtk_box_pack_start(GTK_BOX(hbox_temp), vbox_temp2, FALSE, FALSE, 0);//day
+      gtk_box_pack_start(GTK_BOX(hbox_temp), vbox_temp3, FALSE, FALSE, 0);//year
+   }
+
    gtk_box_pack_start(GTK_BOX(hbox_temp), vbox_temp4, FALSE, FALSE, 5);
 
    //Labels
@@ -799,15 +881,14 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_widget_show(hbox_temp);
 
    
-   
-   
-   
    gtk_widget_show(clist);
    gtk_widget_show(vbox1);
    gtk_widget_show(vbox2);
    gtk_widget_show(vbox);
    gtk_widget_show(hbox);
    
-   todo_category = CATEGORY_ALL;
-   update_todo_screen();
+   todo_refresh();
+   todo_find();
+
+   return 0;
 }

@@ -1,5 +1,5 @@
-/*
- * sync.h
+/* sync.h
+ * 
  * Copyright (C) 1999 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
@@ -19,7 +19,7 @@
 #ifndef _SYNC_H__
 #define _SYNC_H__
 
-int sync_once(char *port, int full_backup);
-int sync_loop(char *port, int full_backup);
+int sync_once(const char *port, int full_backup);
+int sync_loop(const char *port, int full_backup);
 
 #endif

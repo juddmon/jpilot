@@ -1,5 +1,5 @@
-/*
- * sync.c
+/* sync.c
+ * 
  * Copyright (C) 1999 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
@@ -23,11 +23,14 @@
 #include <fcntl.h>
 #include <sys/file.h>
 #include <sys/stat.h>
+#include <errno.h>
 #include <signal.h>
 #include <utime.h>
 #include "utils.h"
 #include "sync.h"
 #include "log.h"
+#include "prefs.h"
+#include "datebook.h"
 
 //#include <pi-source.h>
 #include <pi-socket.h>
@@ -37,27 +40,30 @@
 #define SYNC_PI_ACCEPT -12
 
 int pipe_in, pipe_out;
-pid_t glob_child_pid;extern int pipe_in, pipe_out;
-pid_t glob_child_pid;
-
+extern int pipe_in, pipe_out;
+extern pid_t glob_child_pid;
 
 int sync_application(AppType app_type, int sd);
 int sync_fetch(int sd, int full_backup);
-int jpilot_sync(char *port, int full_backup);
+int jpilot_sync(const char *port, int full_backup);
 int sync_lock();
 int sync_unlock();
+static int hack_delete_record(int sd);
+static int hack_write_record(int sd);
 
 unsigned long hack_record_id;
 int wrote_to_datebook;
 
 void sig_handler(int sig)
 {
-   logf(LOG_DEBUG, "caught signal SIGCHLD\n");
+   jpilot_logf(LOG_DEBUG, "caught signal SIGCHLD\n");
    fflush(stdout);
    glob_child_pid = 0;
 
    //wait for any child processes
    waitpid(-1, NULL, WNOHANG);
+   
+   cb_app_button(NULL, NULL);
    
    return;
 }
@@ -71,8 +77,8 @@ static int writef(int fp, char *format, ...)
    buf[0] = '\0';
 
    va_start(val, format);
-   vsnprintf(buf, WRITE_MAX_BUF ,format, val);
-   //just in case vsnprintf reached the max
+   g_vsnprintf(buf, WRITE_MAX_BUF ,format, val);
+   //just in case g_vsnprintf reached the max
    buf[WRITE_MAX_BUF-1] = 0;
    va_end(val);
 
@@ -81,7 +87,7 @@ static int writef(int fp, char *format, ...)
    return TRUE;
 }
 
-int sync_loop(char *port, int full_backup)
+int sync_loop(const char *port, int full_backup)
 {
    int r, done, cons_errors;
    
@@ -109,80 +115,103 @@ int sync_loop(char *port, int full_backup)
       }
    }
    sync_unlock();
+   
+   return 0;
 }
 
-int sync_lock()
+int sync_lock(int *fd)
 {
    pid_t pid;
    char lock_file[256];
-   int fd, r;
+   int r;
    char str[12];
+   struct flock lock;
 
    get_home_file_name("sync_pid", lock_file, 255);
-   fd = open(lock_file, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
-   if (fd<0) {
-      logf(LOG_WARN, "open lock file failed\n");
+   *fd = open(lock_file, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+   if (*fd<0) {
+      jpilot_logf(LOG_WARN, "open lock file failed\n");
       return -1;
    }
-   r = flock(fd, LOCK_EX | LOCK_NB);
-   if (r) {
-      logf(LOG_WARN, "lock failed\n");
-      read(fd, str, 10);
+   lock.l_type = F_WRLCK;
+   lock.l_start = 0;
+   lock.l_whence = SEEK_SET;
+   lock.l_len = 0; //Lock to the end of file
+   //r = flock(*fd, LOCK_EX | LOCK_NB);
+   r = fcntl(*fd, F_SETLK, &lock);
+   if (r == -1){
+      jpilot_logf(LOG_WARN, "lock failed\n");
+      read(*fd, str, 10);
       pid = atoi(str);
-      logf(LOG_FATAL, "sync file is locked by pid %d\n", pid);
+      jpilot_logf(LOG_FATAL, "sync file is locked by pid %d\n", pid);
       return -1;
    } else {
-      logf(LOG_DEBUG, "lock succeeded\n");
+      jpilot_logf(LOG_DEBUG, "lock succeeded\n");
       pid=getpid();
       sprintf(str, "%d\n", pid);
-      write(fd, str, strlen(str)+1);
-      ftruncate(fd, strlen(str)+1);
+      write(*fd, str, strlen(str)+1);
+      ftruncate(*fd, strlen(str)+1);
    }
    return 0;
 }
 
-int sync_unlock()
+int sync_unlock(int fd)
 {
    pid_t pid;
    char lock_file[256];
-   int fd, r;
+   int r;
    char str[12];
+   struct flock lock;
 
    get_home_file_name("sync_pid", lock_file, 255);
-   fd = open(lock_file, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
-   if (fd<0) {
-      logf(LOG_WARN, "open lock file failed\n");
-      return -1;
-   }
-   r = flock(fd, LOCK_UN | LOCK_NB);
-   if (r) {
-      logf(LOG_WARN, "unlock failed\n");
+
+   lock.l_type = F_UNLCK;
+   lock.l_start = 0;
+   lock.l_whence = SEEK_SET;
+   lock.l_len = 0;
+   //r = flock(fd, LOCK_UN | LOCK_NB);
+   r = fcntl(fd, F_SETLK, &lock);
+
+   if (r == -1) {
+      jpilot_logf(LOG_WARN, "unlock failed\n");
       read(fd, str, 10);
       pid = atoi(str);
-      logf(LOG_FATAL, "sync is locked by pid %d\n", pid);
+      jpilot_logf(LOG_WARN, "sync is locked by pid %d\n", pid);
+      close(fd);
       return -1;
    } else {
-      logf(LOG_DEBUG, "unlock succeeded\n");
+      jpilot_logf(LOG_DEBUG, "unlock succeeded\n");
       ftruncate(fd, 0);
+      close(fd);
    }
    return 0;
 }
 
-int sync_once(char *port, int full_backup)
+
+int sync_once(const char *port, int full_backup)
 {
    int r;
+   int fd;
    
-   logf(LOG_DEBUG, "forking sync process\n");
+
+   if (glob_child_pid) {
+      jpilot_logf(LOG_WARN, PN": sync PID = %d\n", glob_child_pid);
+      jpilot_logf(LOG_WARN, PN": press the hotsync button on the cradle "
+	   "or \"kill %d\"\n", glob_child_pid);
+      return 0;
+   }
+
+   jpilot_logf(LOG_DEBUG, "forking sync process\n");
    switch ( glob_child_pid = fork() ){
     case -1:
       perror("fork");
-      return;
+      return 0;
     case 0:
       //close(pipe_in);
       break;
     default:
       signal(SIGCHLD, sig_handler);
-      return;
+      return 0;
    }
 #ifdef TEST_SYNC_OUT
    for (r=0; r<10; r++) {
@@ -190,33 +219,41 @@ int sync_once(char *port, int full_backup)
       writef(pipe_out, "testing %d on the write\n");
       sleep(1);
    }
-   logf(LOG_DEBUG, "sync child exiting\n");
+   jpilot_logf(LOG_DEBUG, "sync child exiting\n");
    _exit(0);
 #endif
-   r = sync_lock();
+   
+   r = sync_lock(&fd);
    if (r) {
-      logf(LOG_DEBUG, "sync child exiting\n");
+      jpilot_logf(LOG_DEBUG, "Child cannot lock file\n");
       _exit(0);
    }
+
    jpilot_sync(port, full_backup);
-   sync_unlock();
-      logf(LOG_DEBUG, "sync child exiting\n");
+   sync_unlock(fd);
+      jpilot_logf(LOG_DEBUG, "sync child exiting\n");
    _exit(0);
 }
 
-int jpilot_sync(char *port, int full_backup)
+int jpilot_sync(const char *port, int full_backup)
 {
    struct pi_sockaddr addr;
    int sd;
    struct PilotUser U;
    int ret;
-   char *device;
+   const char *device;
    char default_device[]="/dev/pilot";
+   int found = 0;
    
+   device = NULL;
    if (port) {
-      //A port was passed in to use
-      device=port;
-   } else {
+      if (port[0]) {
+	 //A port was passed in to use
+	 device=port;
+	 found = 1;
+      }
+   }
+   if (!found) {
       //No port was passed in, look in env
       device = getenv("PILOTPORT");
       if (device == NULL) {
@@ -231,33 +268,42 @@ int jpilot_sync(char *port, int full_backup)
    
    if (!(sd = pi_socket(PI_AF_SLP, PI_SOCK_STREAM, PI_PF_PADP))) {
       perror("pi_socket");
+      writef(pipe_out, "pi_socket %s\n", strerror(errno));
       return -1;
    }
     
    addr.pi_family = PI_AF_SLP;
-   strcpy(addr.pi_device,device);
+   strcpy(addr.pi_device, device);
   
    ret = pi_bind(sd, (struct sockaddr*)&addr, sizeof(addr));
    if(ret == -1) {
       perror("pi_bind");
+      writef(pipe_out, "pi_bind %s\n", strerror(errno));
+      writef(pipe_out, "Check your serial port and settings\n");
       return -1;
    }
 
    ret = pi_listen(sd,1);
    if(ret == -1) {
       perror("pi_listen");
+      writef(pipe_out, "pi_listen %s\n", strerror(errno));
       return -1;
    }
 
    sd = pi_accept(sd, 0, 0);
    if(sd == -1) {
       perror("pi_accept");
+      writef(pipe_out, "pi_accept %s\n", strerror(errno));
       return SYNC_PI_ACCEPT;
    }
 
    dlp_ReadUserInfo(sd, &U);
    
-   writef(pipe_out, "Username = [%s]\n", U.username);
+   //User name is read by the parent process and stored in the preferences
+   //So, this is more than just displaying it to the user
+   writef(pipe_out, "Username is \"%s\"\n", U.username);
+   jpilot_logf(LOG_DEBUG, "Username = [%s]\n", U.username);
+//   set_pref_char(PREF_USER, U.username);
    //writef(pipe_out, "passwordlen = [%d]\n", U.passwordLength);
    //writef(pipe_out, "password = [%s]\n", U.password);
   
@@ -317,45 +363,45 @@ int sync_application(AppType app_type, int sd)
       writef(pipe_out, "Syncing Datebook\n");
       strcpy(pc_filename, "DatebookDB.pc");
       strcpy(palm_dbname, "DatebookDB");
-      strcpy(write_log_message, "Wrote an Appointment to the Pilot.\n");
-      strcpy(error_log_message, "Writing an Appointment to the Pilot failed.\n");
-      strcpy(delete_log_message, "Deleted an Appointment from the Pilot.\n");
+      strcpy(write_log_message, "Wrote an Appointment to the Pilot.\n\r");
+      strcpy(error_log_message, "Writing an Appointment to the Pilot failed.\n\r");
+      strcpy(delete_log_message, "Deleted an Appointment from the Pilot.\n\r");
       break;
     case ADDRESS:
       writef(pipe_out, "Syncing Addressbook\n");
       strcpy(pc_filename, "AddressDB.pc");
       strcpy(palm_dbname, "AddressDB");
-      strcpy(write_log_message, "Wrote an Addresss to the Pilot.\n");
-      strcpy(error_log_message, "Writing an Address to the Pilot failed.\n");
-      strcpy(delete_log_message, "Deleted an Address from the Pilot.\n");
+      strcpy(write_log_message, "Wrote an Addresss to the Pilot.\n\r");
+      strcpy(error_log_message, "Writing an Address to the Pilot failed.\n\r");
+      strcpy(delete_log_message, "Deleted an Address from the Pilot.\n\r");
       break;
     case TODO:
       writef(pipe_out, "Syncing ToDo\n");
       strcpy(pc_filename, "ToDoDB.pc");
       strcpy(palm_dbname, "ToDoDB");
-      strcpy(write_log_message, "Wrote a ToDo to the Pilot.\n");
-      strcpy(error_log_message, "Writing a ToDo to the Pilot failed.\n");
-      strcpy(delete_log_message, "Deleted a ToDo from the Pilot.\n");
+      strcpy(write_log_message, "Wrote a ToDo to the Pilot.\n\r");
+      strcpy(error_log_message, "Writing a ToDo to the Pilot failed.\n\r");
+      strcpy(delete_log_message, "Deleted a ToDo from the Pilot.\n\r");
       break;
     case MEMO:
       writef(pipe_out, "Syncing Memo\n");
       strcpy(pc_filename, "MemoDB.pc");
       strcpy(palm_dbname, "MemoDB");
-      strcpy(write_log_message, "Wrote a Memo to the Pilot.\n");
-      strcpy(error_log_message, "Writing a Memo to the Pilot failed.\n");
-      strcpy(delete_log_message, "Deleted a Memo from the Pilot.\n");
+      strcpy(write_log_message, "Wrote a Memo to the Pilot.\n\r");
+      strcpy(error_log_message, "Writing a Memo to the Pilot failed.\n\r");
+      strcpy(delete_log_message, "Deleted a Memo from the Pilot.\n\r");
       break;
     default:
-      return;
+      return 0;
    }
 
    pc_in = open_file(pc_filename, "r+");
    if (pc_in==NULL) {
       writef(pipe_out, "Unable to open %s\n",pc_filename);
-      return;
+      return -1;
    }
    // Open the applications database, store access handle in db
-   if (dlp_OpenDB(sd, 0, dlpOpenWrite, palm_dbname, &db) < 0) {
+   if (dlp_OpenDB(sd, 0, dlpOpenReadWrite, palm_dbname, &db) < 0) {
       dlp_AddSyncLogEntry(sd, "Unable to open ");
       dlp_AddSyncLogEntry(sd, palm_dbname);
       dlp_AddSyncLogEntry(sd, "\n.");
@@ -375,7 +421,7 @@ int sync_application(AppType app_type, int sd)
       if (rec_len > 0x10000) {
 	 writef(pipe_out, "PC file corrupt?\n");
 	 fclose(pc_in);
-	 return;
+	 return -1;
       }
       if (header.rt==NEW_PC_REC) {
 	 record = malloc(rec_len);
@@ -384,7 +430,52 @@ int sync_application(AppType app_type, int sd)
 	    break;
 	 }
 
+#if defined(Japanese)
+	 // Convert to SJIS Japanese Kanji code (Palm use this code)
 	 //Write the record to the Palm Pilot
+	 switch (app_type) {
+	  case DATEBOOK: {
+	     struct Appointment a;
+	     unpack_Appointment(&a, record, rec_len);
+	     if (a.description != NULL)
+               Euc2Sjis(a.description, 65536);
+	     if (a.note != NULL)
+               Euc2Sjis(a.note, 65536);
+	     rec_len = pack_Appointment(&a, record, 65535);
+	     break;
+	  }
+	  case ADDRESS: {
+	     struct Address a;
+	     int i;
+	     unpack_Address(&a, record, rec_len);
+	     for (i = 0; i < 19; i++)
+	       if (a.entry[i] != NULL)
+		 Euc2Sjis(a.entry[i], 65536);
+	     rec_len = pack_Address(&a, record, 65535);
+	     break;
+	  }
+	  case TODO: {
+	     struct ToDo t;
+	     unpack_ToDo(&t, record, rec_len);
+	     if (t.description != NULL)
+	       Euc2Sjis(t.description, 65536);
+            if (t.note != NULL)
+	       Euc2Sjis(t.note, 65536);
+	     rec_len = pack_ToDo(&t, record, 65535);
+	     break;
+	  }
+	  case MEMO: {
+	     struct Memo m;
+	     unpack_Memo(&m, record, rec_len);
+	     if (m.text != NULL)
+	       Euc2Sjis(m.text, 65536);
+	     rec_len = pack_Memo(&m, record, 65535);
+	     break;
+	  }
+	  default:
+	    break;
+	 }
+#endif
 	 ret = dlp_WriteRecord(sd, db, 0, 0, header.attrib & 0x0F,
 			       record, rec_len, &new_id);
 	 
@@ -404,7 +495,7 @@ int sync_application(AppType app_type, int sd)
 	    if (fseek(pc_in, -(sizeof(header)+rec_len), SEEK_CUR)) {
 	       writef(pipe_out, "fseek failed - fatal error\n");
 	       fclose(pc_in);
-	       return;
+	       return -1;
 	    }
 	    header.rt=DELETED_PC_REC;
 	    fwrite(&header, sizeof(header), 1, pc_in);
@@ -424,7 +515,7 @@ int sync_application(AppType app_type, int sd)
 	    if (fseek(pc_in, -sizeof(header), SEEK_CUR)) {
 	       writef(pipe_out, "fseek failed - fatal error\n");
 	       fclose(pc_in);
-	       return;
+	       return -1;
 	    }
 	    header.rt=DELETED_DELETED_PALM_REC;
 	    fwrite(&header, sizeof(header), 1, pc_in);
@@ -435,7 +526,7 @@ int sync_application(AppType app_type, int sd)
       if (fseek(pc_in, rec_len, SEEK_CUR)) {
 	 writef(pipe_out, "fseek failed - fatal error\n");
 	 fclose(pc_in);
-	 return;
+	 return -1;
       }
    }
    fclose(pc_in);
@@ -447,9 +538,13 @@ int sync_application(AppType app_type, int sd)
    writef(pipe_out ,"number of records = %d\n", num);
 #endif
 
+   dlp_ResetSyncFlags(sd, db);
+   dlp_CleanUpDatabase(sd, db);
+
    // Close the database
    dlp_CloseDB(sd, db);
 
+   return 0;
 }
 
 //
@@ -479,10 +574,11 @@ int sync_fetch(int sd, int full_backup)
    while(dlp_ReadDBList(sd, cardno, dlpOpenRead, start, &info)>0) {
       start=info.index+1;
       //writef(pipe_out, "dbname = %s\n",info.name);
+      //writef(pipe_out, "flag backup = %d\n",info.flags & dlpDBFlagBackup);
       //writef(pipe_out, "type = %x\n",info.type);
       //writef(pipe_out, "creator = %x\n",info.creator);
       for(i=0, found=0; palm_dbname[i]; i++) {
-	 if (found = !strcmp(info.name, palm_dbname[i]))
+	 if ((found = !strcmp(info.name, palm_dbname[i])))
 	   break;
       }
       if (full_backup || found) {
@@ -532,9 +628,10 @@ int sync_fetch(int sd, int full_backup)
 	 utime(full_name, &times);
       }
    }
+   return 0;
 }
 
-int hack_write_record(int sd)
+static int hack_write_record(int sd)
 {
    char record[65536];
    int rec_len;
@@ -543,7 +640,7 @@ int hack_write_record(int sd)
    
    hack_record_id = 0;
    
-   logf(LOG_DEBUG, "Entering hack_write_record()\n");
+   jpilot_logf(LOG_DEBUG, "Entering hack_write_record()\n");
    if (wrote_to_datebook) {
       // Open the applications database, store access handle in db
       if (dlp_OpenDB(sd, 0, dlpOpenWrite, "DatebookDB", &db) < 0) {
@@ -555,18 +652,19 @@ int hack_write_record(int sd)
       datebook_create_bogus_record(record, 65536, &rec_len);
       
       //Write a bogus record to the Palm Pilot, to delete later.
-      logf(LOG_DEBUG, "writing bogus record\n");
+      jpilot_logf(LOG_DEBUG, "writing bogus record\n");
       ret = dlp_WriteRecord(sd, db, 0, 0, 0,
 		      record, rec_len, &hack_record_id);
       if (ret<0) {
-	 logf(LOG_WARN, "write bogus record failed\n");
+	 jpilot_logf(LOG_WARN, "write bogus record failed\n");
       }
       // Close the database
       dlp_CloseDB(sd, db);
    }
+   return 0;
 }
 
-int hack_delete_record(int sd)
+static int hack_delete_record(int sd)
 {
    int db;
 
@@ -579,10 +677,11 @@ int hack_delete_record(int sd)
 	 pi_close(sd);
       }
       
-      logf(LOG_DEBUG, "deleting bogus record\n");
+      jpilot_logf(LOG_DEBUG, "deleting bogus record\n");
       dlp_DeleteRecord(sd, db, 0, hack_record_id);
 
       // Close the database
       dlp_CloseDB(sd, db);
    }
+   return 0;
 }

@@ -1,5 +1,5 @@
-/*
- * todo.c
+/* todo.c
+ * 
  * Copyright (C) 1999 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
@@ -24,8 +24,14 @@
 #include "address.h"
 #include "utils.h"
 #include "log.h"
+#include "todo.h"
+
+#if defined(Japanese)
+#include "japanese.h"
+#endif
 
 #define TODO_EOF 7
+
 
 /*
  * sort by:
@@ -175,12 +181,13 @@ int todo_sort(ToDoList **al)
 	 }
       }
    }
+   return 0;
 }
 
 static int pc_todo_read_next_rec(FILE *in, MyToDo *mtodo)
 {
    PCRecordHeader header;
-   int rec_len;
+   int rec_len, num;
    char *record;
    
    if (feof(in)) {
@@ -203,8 +210,11 @@ static int pc_todo_read_next_rec(FILE *in, MyToDo *mtodo)
       free(record);
       return TODO_EOF;
    }
-   unpack_ToDo(&(mtodo->todo), record, rec_len);
+   num = unpack_ToDo(&(mtodo->todo), record, rec_len);
    free(record);
+   if (num<=0) {
+      return -1;
+   }
    return 0;
 }
 
@@ -219,18 +229,18 @@ int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib)
 
    get_next_unique_pc_id(&next_unique_id);
 #ifdef JPILOT_DEBUG
-   logf(LOG_DEBUG, "next unique id = %d\n",next_unique_id);
+   jpilot_logf(LOG_DEBUG, "next unique id = %d\n",next_unique_id);
 #endif
    
    out = open_file("ToDoDB.pc", "a");
    if (!out) {
-      logf(LOG_WARN, "Error opening ToDoDB.pc\n");
+      jpilot_logf(LOG_WARN, "Error opening ToDoDB.pc\n");
       return -1;
    }
    //todo check return code - if 0 then buffer was too small
    rec_len = pack_ToDo(todo, record, 65535);
    if (!rec_len) {
-      logf(LOG_WARN, "pack_ToDo failed\n");
+      jpilot_logf(LOG_WARN, "pack_ToDo failed\n");
       PRINT_FILE_LINE;
       return -1;
    }
@@ -269,13 +279,13 @@ int get_todo_app_info(struct ToDoAppInfo *ai)
 
    in = open_file("ToDoDB.pdb", "r");
    if (!in) {
-      logf(LOG_WARN, "Error opening ToDoDB.pdb\n");
+      jpilot_logf(LOG_WARN, "Error opening ToDoDB.pdb\n");
       return -1;
    }
    fread(&rdbh, sizeof(RawDBHeader), 1, in);
    if (feof(in)) {
       fclose(in);
-      logf(LOG_WARN, "Error reading ToDoDB.pdb\n");
+      jpilot_logf(LOG_WARN, "Error reading ToDoDB.pdb\n");
       return -1;
    }
    raw_header_to_header(&rdbh, &dbh);
@@ -291,10 +301,20 @@ int get_todo_app_info(struct ToDoAppInfo *ai)
    num = fread(buf, 1, rec_size, in);
    if (feof(in)) {
       fclose(in);
-      logf(LOG_WARN, "Error reading ToDoDB.pdb\n");
+      free(buf);
+      jpilot_logf(LOG_WARN, "Error reading ToDoDB.pdb\n");
       return -1;
    }
    unpack_ToDoAppInfo(ai, buf, rec_size);
+#if defined(Japanese)
+   // Convert 'Category name' to EUC Japanese Kanji code
+   {
+      int i;
+      for (i = 0; i < 16; i++)
+	 if (ai->category.name[i][0] != '\0')
+	    Sjis2Euc(ai->category.name[i], 16);
+   }
+#endif
    free(buf);
    
    return 0;
@@ -329,20 +349,20 @@ int get_todos(ToDoList **todo_list)
 
    in = open_file("ToDoDB.pdb", "r");
    if (!in) {
-      logf(LOG_WARN, "Error opening ToDoDB.pdb\n");
+      jpilot_logf(LOG_WARN, "Error opening ToDoDB.pdb\n");
       return -1;
    }
    //Read the database header
    fread(&rdbh, sizeof(RawDBHeader), 1, in);
    if (feof(in)) {
-      logf(LOG_WARN, "Error opening ToDoDB.pdb\n");
+      jpilot_logf(LOG_WARN, "Error opening ToDoDB.pdb\n");
       return -1;
    }
    raw_header_to_header(&rdbh, &dbh);
 #ifdef JPILOT_DEBUG
-   logf(LOG_DEBUG, "db_name = %s\n", dbh.db_name);
-   logf(LOG_DEBUG, "num records = %d\n", dbh.number_of_records);
-   logf(LOG_DEBUG, "app info offset = %d\n", dbh.app_info_offset);
+   jpilot_logf(LOG_DEBUG, "db_name = %s\n", dbh.db_name);
+   jpilot_logf(LOG_DEBUG, "num records = %d\n", dbh.number_of_records);
+   jpilot_logf(LOG_DEBUG, "app info offset = %d\n", dbh.app_info_offset);
 #endif
 
    //Read each record entry header
@@ -351,10 +371,10 @@ int get_todos(ToDoList **todo_list)
       fread(&rh, sizeof(record_header), 1, in);
       offset = ((rh.Offset[0]*256+rh.Offset[1])*256+rh.Offset[2])*256+rh.Offset[3];
 #ifdef JPILOT_DEBUG
-      logf(LOG_DEBUG, "record header %u offset = %u\n",i, offset);
-      logf(LOG_DEBUG, "       attrib 0x%x\n",rh.attrib);
-      logf(LOG_DEBUG, "    unique_ID %d %d %d = ",rh.unique_ID[0],rh.unique_ID[1],rh.unique_ID[2]);
-      logf(LOG_DEBUG, "%d\n",(rh.unique_ID[0]*256+rh.unique_ID[1])*256+rh.unique_ID[2]);
+      jpilot_logf(LOG_DEBUG, "record header %u offset = %u\n",i, offset);
+      jpilot_logf(LOG_DEBUG, "       attrib 0x%x\n",rh.attrib);
+      jpilot_logf(LOG_DEBUG, "    unique_ID %d %d %d = ",rh.unique_ID[0],rh.unique_ID[1],rh.unique_ID[2]);
+      jpilot_logf(LOG_DEBUG, "%d\n",(rh.unique_ID[0]*256+rh.unique_ID[1])*256+rh.unique_ID[2]);
 #endif
       temp_mem_rh = (mem_rec_header *)malloc(sizeof(mem_rec_header));
       temp_mem_rh->next = mem_rh;
@@ -374,20 +394,35 @@ int get_todos(ToDoList **todo_list)
 	 //next_offset += 223;
 	 rec_size = next_offset - fpos;
 #ifdef JPILOT_DEBUG
-	 logf(LOG_DEBUG, "rec_size = %u\n",rec_size);
-	 logf(LOG_DEBUG, "fpos,next_offset = %u %u\n",fpos,next_offset);
-	 logf(LOG_DEBUG, "----------\n");
+	 jpilot_logf(LOG_DEBUG, "rec_size = %u\n",rec_size);
+	 jpilot_logf(LOG_DEBUG, "fpos,next_offset = %u %u\n",fpos,next_offset);
+	 jpilot_logf(LOG_DEBUG, "----------\n");
 #endif
 	 if (feof(in)) break;
 	 buf = malloc(rec_size);
 	 if (!buf) break;
 	 num = fread(buf, 1, rec_size, in);
+	 if (feof(in) || (!num)) {
+	    free(buf);
+	    return TODO_EOF;
+	 }
 
-	 unpack_ToDo(&todo, buf, rec_size);
+	 num = unpack_ToDo(&todo, buf, rec_size);
 	 free(buf);
+	 if (num<=0) {
+	    continue;
+	 }
+#if defined(Japanese)
+      // Convert to EUC Japanese Kanji code
+      if (todo.description != NULL)
+         Sjis2Euc(todo.description, 65536);
+      if (todo.note != NULL)
+         Sjis2Euc(todo.note, 65536);
+#endif
 	 temp_todo_list = malloc(sizeof(ToDoList));
 	 memcpy(&(temp_todo_list->mtodo.todo), &todo, sizeof(struct ToDo));
 	 //temp_address_list->ma.a = temp_a;
+	 temp_todo_list->app_type = TODO;
 	 temp_todo_list->mtodo.rt = PALM_REC;
 	 temp_todo_list->mtodo.attrib = attrib;
 	 temp_todo_list->mtodo.unique_id = unique_id;
@@ -416,6 +451,7 @@ int get_todos(ToDoList **todo_list)
 	  &&(mtodo.rt!=DELETED_DELETED_PALM_REC)) {
 	 temp_todo_list = malloc(sizeof(ToDoList));
 	 memcpy(&(temp_todo_list->mtodo), &mtodo, sizeof(MyToDo));
+	 temp_todo_list->app_type = TODO;
 	 temp_todo_list->next = *todo_list;
 	 *todo_list = temp_todo_list;
 	 recs_returned++;
@@ -437,6 +473,8 @@ int get_todos(ToDoList **todo_list)
    fclose(pc_in);
 
    todo_sort(todo_list);
+
+   jpilot_logf(LOG_DEBUG, "Leaving get_todos\n");
 
    return recs_returned;
 }

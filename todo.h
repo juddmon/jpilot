@@ -1,5 +1,5 @@
-/*
- * todo.h
+/* todo.h
+ * 
  * Copyright (C) 1999 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
@@ -19,4 +19,4 @@
 void free_ToDoList(ToDoList **todo);
 int get_todos(ToDoList **todo_list);
 int get_todo_app_info(struct ToDoAppInfo *ai);
-
+int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib);

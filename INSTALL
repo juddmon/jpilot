@@ -1,26 +1,32 @@
-You need to have gtk1.2 or better.
-gtk requires glib.
-you can get these at http://www.gtk.org
+To compile J-Pilot you need to have GTK+1.2 or better.
+You can find out what version you have by running "gtk-config --version".
+GTK+ requires glib.  The glib version probably should match the gtk version.
+You can also do a "glib-config --version".
+You can get these at http://www.gtk.org
 
-pilot link must be installed and working.
+Pilot link must be installed and working.
 ftp://ryeham.ee.ryerson.ca/pub/PalmOS/
 RedHat users must also have the pilot-link-dev rpm installed for the header
- files.
+ files so that jpilot can compile.
 
-jpilot currently uses the PILOTPORT and PILOTRATE environment variables, as
-does pilot-link.
-
-
-edit the first few lines of Makefile if neccessary.
+To compile and install do the following:
+./configure
 make
-mkdir ~/.jpilot/
-cp jpilotrc ~/.jpilot/ (or you can do a cp jpilotrc.blue ~/.jpilot/jpilotrc
- if you like blue better)
-./jpilot
-Put the executable in /usr/local/bin, or somewhere.
+make install
+jpilot
+
+For Japanese support, use ./configure --with-japanese, ./configure --help
+will list all the options.
+
+make uninstall is an option also.
+
+I have included a spec file so if you want to create your own RPM all you
+have to do is "rpm -tb jpilot-0.93.tar.gz"
 
 
 Currently, you have to sync before the program will behave correctly.
+It won't do anything horrible, just file read errors.
+I'll fix this someday.
 JPilot was written in such a way that it should be very safe to sync.
 I have had no reports of data being corrupted, or lost.  There is always
 that possibility though.  As with anything else, backup your data if you

@@ -10,6 +10,12 @@ fg[NORMAL] = { 1.0, 1.0, 1.0 }
 bg[NORMAL] = { 0.0, 0.3, 0.6 }
 }
 
+style "frame"
+{
+fg[NORMAL] = { 1.0, 1.0, 1.0 }
+bg[NORMAL] = { 1.0, 1.0, 1.0 }
+}
+
 style "button"
 {
 # This shows all the possible states for a button.  The only one that
@@ -105,7 +111,7 @@ font = "-adobe-helvetica-medium-r-normal--*-80-*-*-*-*-*-*"
 
 style "menu"
 {
-bg[NORMAL] = { 0.0, 0.3, 0.6 }
+bg[NORMAL] = { 0.0, 0.30, 0.6 }
 fg[NORMAL] = { 1.0, 1.0, 1.0 }
 fg[PRELIGHT] = { 1.0, 1.0, 1.0 }
 bg[PRELIGHT] = { 0.0, 0.4, 0.7 }
@@ -154,6 +160,7 @@ widget_class "*Menu*" style "menu"
   widget_class "*GtkVScrollbar" style "text"
   widget_class "*GtkHScrollbar" style "text"
   widget_class "*GtkLabel" style "label"
+  widget_class "*GtkFrame" style "frame"
   widget_class "*GtkEntry" style "text"
   widget "*GtkButton*.button_set" style "button_set"
   widget "*GtkButton*.button_dow" style "button_dow"

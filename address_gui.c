@@ -1,5 +1,5 @@
-/*
- * address_gui.c
+/* address_gui.c
+ * 
  * Copyright (C) 1999 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,14 +18,20 @@
  */
 #include <gtk/gtk.h>
 #include <time.h>
+#include <string.h>
 #include "utils.h"
 #include "address.h"
 #include "log.h"
+#include "prefs.h"
 
 //#define SHADOW GTK_SHADOW_IN
 //#define SHADOW GTK_SHADOW_OUT
 //#define SHADOW GTK_SHADOW_ETCHED_IN
 #define SHADOW GTK_SHADOW_ETCHED_OUT
+
+#define NUM_MENU_ITEM1 8
+#define NUM_MENU_ITEM2 8
+#define NUM_ADDRESS_CAT_ITEMS 16
 
 GtkWidget *clist;
 GtkWidget *address_text[22];
@@ -34,10 +40,15 @@ GtkWidget *text;
 GtkWidget *vscrollbar;
 GtkWidget *phone_list_menu[5];
 GtkWidget *menu;
-GtkWidget *menu_item[8][8];
+GtkWidget *menu_item[NUM_MENU_ITEM1][NUM_MENU_ITEM2];
 GtkWidget *address_cat_menu2;
-GtkWidget *address_cat_menu_item[16];
+//We need an extra one for the ALL category
+GtkWidget *address_cat_menu_item1[NUM_ADDRESS_CAT_ITEMS+1];
+GtkWidget *address_cat_menu_item2[NUM_ADDRESS_CAT_ITEMS];
 GtkWidget *category_menu1;
+GtkWidget *scrolled_window;
+GtkWidget *address_quickfind_entry;
+
 struct AddressAppInfo address_app_info;
 int address_category;
 int address_phone_label_selected[5];
@@ -46,6 +57,19 @@ extern GtkTooltips *glob_tooltips;
 
 void update_address_screen();
 
+static void init()
+{
+   int i, j;
+   for (i=0; i<NUM_MENU_ITEM1; i++) {
+      for (j=0; j<NUM_MENU_ITEM2; j++) {
+	 menu_item[i][j] = NULL;
+      }
+   }
+   for (i=0; i<NUM_ADDRESS_CAT_ITEMS; i++) {
+      address_cat_menu_item2[NUM_ADDRESS_CAT_ITEMS] = NULL;
+   }
+}
+   
 void cb_delete_address(GtkWidget *widget,
 		       gpointer   data)
 {
@@ -69,8 +93,8 @@ void cb_phone_menu(GtkWidget *item, unsigned int value)
    if (!item)
      return;
    if ((GTK_CHECK_MENU_ITEM(item))->active) {
-      logf(LOG_DEBUG, "phone_menu = %d\n", (value & 0xF0) >> 4);
-      logf(LOG_DEBUG, "selection = %d\n", value & 0x0F);
+      jpilot_logf(LOG_DEBUG, "phone_menu = %d\n", (value & 0xF0) >> 4);
+      jpilot_logf(LOG_DEBUG, "selection = %d\n", value & 0x0F);
       address_phone_label_selected[(value & 0xF0) >> 4] = value & 0x0F;
    }
 }
@@ -98,7 +122,7 @@ void cb_new_address_done(GtkWidget *widget,
 	    return;
 	 }
 	 if ((ma->rt==DELETED_PALM_REC) || (ma->rt==MODIFIED_PALM_REC)) {
-	    logf(LOG_INFO, "You can't modify a record that is deleted\n");
+	    jpilot_logf(LOG_INFO, "You can't modify a record that is deleted\n");
 	    return;
 	 }
       }
@@ -120,9 +144,9 @@ void cb_new_address_done(GtkWidget *widget,
 
       //Get the category that is set from the menu
       attrib = 0;
-      for (i=0; i<16; i++) {
-	 if (GTK_IS_WIDGET(address_cat_menu_item[i])) {
-	    if (GTK_CHECK_MENU_ITEM(address_cat_menu_item[i])->active) {
+      for (i=0; i<NUM_ADDRESS_CAT_ITEMS; i++) {
+	 if (GTK_IS_WIDGET(address_cat_menu_item2[i])) {
+	    if (GTK_CHECK_MENU_ITEM(address_cat_menu_item2[i])->active) {
 	       attrib = i;
 	       break;
 	    }
@@ -172,6 +196,40 @@ void cb_new_address_mode(GtkWidget *widget,
    gtk_widget_show(vbox2_2);
 }
 
+void cb_address_quickfind(GtkWidget *widget,
+			  gpointer   data)
+{
+   char *entry_text;
+   int i, r, found, found_at, line_count;
+   char *clist_text;
+   
+   found_at = 0;
+   entry_text = gtk_entry_get_text(GTK_ENTRY(widget));
+   if (!strlen(entry_text)) {
+      return;
+   }
+   //100000 is just to prevent ininite looping during a solar flare
+   for (found = i = 0; i<100000; i++) {
+      r = gtk_clist_get_text(GTK_CLIST(clist), i, 0, &clist_text);
+      if (!r) {
+	 break;
+      }
+      if (found) {
+	 continue;
+      }
+      if (!strncasecmp(clist_text, entry_text, strlen(entry_text))) {
+	 found = 1;
+	 found_at = i;
+	 gtk_clist_select_row(GTK_CLIST(clist), i, 0);
+      }
+   }
+   line_count = i;
+	 
+   if (found) {
+      move_scrolled_window(scrolled_window,
+			   ((float)found_at)/((float)line_count));
+   }
+}
 
 void cb_address_category(GtkWidget *item, int selection)
 {
@@ -179,7 +237,7 @@ void cb_address_category(GtkWidget *item, int selection)
      return;
    if ((GTK_CHECK_MENU_ITEM(item))->active) {
       address_category = selection;
-      logf(LOG_DEBUG, "address_category = %d\n",address_category);
+      jpilot_logf(LOG_DEBUG, "address_category = %d\n",address_category);
       update_address_screen();
    }
 }
@@ -198,6 +256,7 @@ void cb_address_clist_sel(GtkWidget      *clist,
    //This is because the palm doesn\'t show the address entries in order
    int order[22]={0,1,13,2,3,4,5,6,7,8,9,10,11,12,14,15,16,17,18,19,20,21
    };
+   char *clist_text, *entry_text;
 
    clist_row_selected=row;
 
@@ -207,7 +266,14 @@ void cb_address_clist_sel(GtkWidget      *clist,
       return;
    }
    a=&(ma->a);
-   
+   //todo
+   clist_text = NULL;
+   gtk_clist_get_text(GTK_CLIST(clist), row, 0, &clist_text);
+   entry_text = gtk_entry_get_text(GTK_ENTRY(address_quickfind_entry));
+   if (strncasecmp(clist_text, entry_text, strlen(entry_text))) {
+      gtk_entry_set_text(GTK_ENTRY(address_quickfind_entry), "");
+   }
+
    gtk_text_freeze(GTK_TEXT(text));
 
    gtk_text_set_point(GTK_TEXT(text), 0);
@@ -237,9 +303,9 @@ void cb_address_clist_sel(GtkWidget      *clist,
 
    //todo - maybe only make this happen in new mode?
    //Update all the new entry text boxes with info
-   if (GTK_IS_WIDGET(address_cat_menu_item[ma->attrib & 0x0F])) {
+   if (GTK_IS_WIDGET(address_cat_menu_item2[ma->attrib & 0x0F])) {
       gtk_check_menu_item_set_active
-	(GTK_CHECK_MENU_ITEM(address_cat_menu_item[ma->attrib & 0x0F]), TRUE);
+	(GTK_CHECK_MENU_ITEM(address_cat_menu_item2[ma->attrib & 0x0F]), TRUE);
       gtk_option_menu_set_history
 	(GTK_OPTION_MENU(address_cat_menu2), ma->attrib & 0x0F);
    }
@@ -280,27 +346,29 @@ void update_address_screen()
    AddressList *temp_al;
    static AddressList *address_list=NULL;
    char str[50];
+   int ivalue;
+   const char *svalue;
 
    free_AddressList(&address_list);
 
 #ifdef JPILOT_DEBUG
-    for (i=0;i<16;i++) {
-      logf(LOG_DEBUG, "renamed:[%02d]:\n",address_app_info.category.renamed[i]);
-      logf(LOG_DEBUG, "category name:[%02d]:",i);
+    for (i=0;i<NUM_ADDRESS_CAT_ITEMS;i++) {
+      jpilot_logf(LOG_DEBUG, "renamed:[%02d]:\n",address_app_info.category.renamed[i]);
+      jpilot_logf(LOG_DEBUG, "category name:[%02d]:",i);
       print_string(address_app_info.category.name[i],16);
-      logf(LOG_DEBUG, "category ID:%d\n", address_app_info.category.ID[i]);
+      jpilot_logf(LOG_DEBUG, "category ID:%d\n", address_app_info.category.ID[i]);
    }
 
    for (i=0;i<22;i++) {
-      logf(LOG_DEBUG, "labels[%02d]:",i);
+      jpilot_logf(LOG_DEBUG, "labels[%02d]:",i);
       print_string(address_app_info.labels[i],16);
    }
    for (i=0;i<8;i++) {
-      logf(LOG_DEBUG, "phoneLabels[%d]:",i);
+      jpilot_logf(LOG_DEBUG, "phoneLabels[%d]:",i);
       print_string(address_app_info.phoneLabels[i],16);
    }
-   logf(LOG_DEBUG, "country %d\n",address_app_info.country);
-   logf(LOG_DEBUG, "sortByCompany %d\n",address_app_info.sortByCompany);
+   jpilot_logf(LOG_DEBUG, "country %d\n",address_app_info.country);
+   jpilot_logf(LOG_DEBUG, "sortByCompany %d\n",address_app_info.sortByCompany);
 #endif
 
    num_entries = get_addresses(&address_list);
@@ -338,17 +406,31 @@ void update_address_screen()
 	 continue;
       }
       if (temp_al->ma.rt == MODIFIED_PALM_REC) {
-	 //todo - this will be in preferences as to whether you want to 
+	 get_pref(PREF_SHOW_MODIFIED, &ivalue, &svalue);
+	 //this will be in preferences as to whether you want to
 	 //see deleted records, or not.
-	 num_entries--;
-	 continue;
+	 if (!ivalue) {
+	    num_entries--;
+	    i--;
+	    continue;
+	 }
+      }
+      if (temp_al->ma.rt == DELETED_PALM_REC) {
+	 get_pref(PREF_SHOW_DELETED, &ivalue, &svalue);
+	 //this will be in preferences as to whether you want to
+	 //see deleted records, or not.
+	 if (!ivalue) {
+	    num_entries--;
+	    i--;
+	    continue;
+	 }
       }
       
       entries_shown++;
       str[0]='\0';
       if (temp_al->ma.a.entry[show1] || temp_al->ma.a.entry[show2]) {
 	 if (temp_al->ma.a.entry[show1] && temp_al->ma.a.entry[show2]) {
-	    snprintf(str, 48, "%s, %s", temp_al->ma.a.entry[show1], temp_al->ma.a.entry[show2]);
+	    g_snprintf(str, 48, "%s, %s", temp_al->ma.a.entry[show1], temp_al->ma.a.entry[show2]);
 	 }
 	 if (temp_al->ma.a.entry[show1] && ! temp_al->ma.a.entry[show2]) {
 	    strncpy(str, temp_al->ma.a.entry[show1], 48);
@@ -409,7 +491,7 @@ void update_address_screen()
       gtk_clist_select_row(GTK_CLIST(clist), 0, 1);
       //cb_add_clist_sel(clist, 0, 0, (GdkEventButton *)455, "");
    }
-   
+
    gtk_clist_thaw(GTK_CLIST(clist));
    
    sprintf(str, "%d of %d records", entries_shown, num_entries);
@@ -418,7 +500,7 @@ void update_address_screen()
 
 //default set is which menu item is to be set on by default
 //set is which set in the menu_item array to use
-int make_phone_menu(int default_set, unsigned int callback_id, int set)
+static int make_phone_menu(int default_set, unsigned int callback_id, int set)
 {
    int i;
    GSList *group;
@@ -451,11 +533,12 @@ int make_phone_menu(int default_set, unsigned int callback_id, int set)
 			       default_set);
    
    gtk_widget_show(phone_list_menu[set]);
+   
+   return 0;
 }
 
 static int make_category_menu1(GtkWidget **category_menu)
 {
-   GtkWidget *menu_item;
    GtkWidget *menu;
    GSList    *group;
    int i;
@@ -465,25 +548,27 @@ static int make_category_menu1(GtkWidget **category_menu)
    menu = gtk_menu_new();
    group = NULL;
    
-   menu_item = gtk_radio_menu_item_new_with_label(group, "All");
-   gtk_signal_connect(GTK_OBJECT(menu_item), "activate",
+   address_cat_menu_item1[0] = gtk_radio_menu_item_new_with_label(group, "All");
+   gtk_signal_connect(GTK_OBJECT(address_cat_menu_item1[0]), "activate",
 		      cb_address_category, GINT_TO_POINTER(CATEGORY_ALL));
-   group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(menu_item));
-   gtk_menu_append(GTK_MENU(menu), menu_item);
-   gtk_widget_show(menu_item);
-   for (i=0; i<16; i++) {
+   group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(address_cat_menu_item1[0]));
+   gtk_menu_append(GTK_MENU(menu), address_cat_menu_item1[0]);
+   gtk_widget_show(address_cat_menu_item1[0]);
+   for (i=0; i<NUM_ADDRESS_CAT_ITEMS; i++) {
       if (address_app_info.category.name[i][0]) {
-	 menu_item = gtk_radio_menu_item_new_with_label(
+	 address_cat_menu_item1[i+1] = gtk_radio_menu_item_new_with_label(
 		     group, address_app_info.category.name[i]);
-	 gtk_signal_connect(GTK_OBJECT(menu_item), "activate",
+	 gtk_signal_connect(GTK_OBJECT(address_cat_menu_item1[i+1]), "activate",
 			    cb_address_category, GINT_TO_POINTER(i));
-	 group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(menu_item));
-	 gtk_menu_append(GTK_MENU(menu), menu_item);
-	 gtk_widget_show(menu_item);
+	 group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(address_cat_menu_item1[i+1]));
+	 gtk_menu_append(GTK_MENU(menu), address_cat_menu_item1[i+1]);
+	 gtk_widget_show(address_cat_menu_item1[i+1]);
       }
    }
 
    gtk_option_menu_set_menu(GTK_OPTION_MENU(*category_menu), menu);
+   
+   return 0;
 }
 
 static int make_category_menu2()
@@ -498,19 +583,53 @@ static int make_category_menu2()
    menu = gtk_menu_new();
    group = NULL;
    
-   for (i=0; i<16; i++) {
+   for (i=0; i<NUM_ADDRESS_CAT_ITEMS; i++) {
       if (address_app_info.category.name[i][0]) {
-	 address_cat_menu_item[i] = gtk_radio_menu_item_new_with_label
+	 address_cat_menu_item2[i] = gtk_radio_menu_item_new_with_label
 	   (group, address_app_info.category.name[i]);
 	 group = gtk_radio_menu_item_group
-	   (GTK_RADIO_MENU_ITEM(address_cat_menu_item[i]));
-	 gtk_menu_append(GTK_MENU(menu), address_cat_menu_item[i]);
-	 gtk_widget_show(address_cat_menu_item[i]);
+	   (GTK_RADIO_MENU_ITEM(address_cat_menu_item2[i]));
+	 gtk_menu_append(GTK_MENU(menu), address_cat_menu_item2[i]);
+	 gtk_widget_show(address_cat_menu_item2[i]);
       }
    }
    gtk_option_menu_set_menu(GTK_OPTION_MENU(address_cat_menu2), menu);
+   
+   return 0;
 }
 
+static int address_find()
+{
+   int r, found_at, total_count;
+   
+   if (glob_find_id) {
+      r = clist_find_id(clist,
+			glob_find_id,
+			&found_at,
+			&total_count);
+      if (r) {
+	 if (total_count == 0) {
+	    total_count = 1;
+	 }
+	 gtk_clist_select_row(GTK_CLIST(clist), found_at, 1);
+	 move_scrolled_window_hack(scrolled_window,
+				   (float)found_at/(float)total_count);
+      }
+      glob_find_id = 0;
+   }
+   return 0;
+}
+
+int address_refresh()
+{
+   address_category = CATEGORY_ALL;
+   update_address_screen();
+   gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), 0);
+   gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(
+       address_cat_menu_item1[0]), TRUE);
+   address_find();
+   return 0;
+}
 
 //
 //Main function
@@ -530,21 +649,19 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    GtkWidget *notebook;
    GtkWidget *table1, *table2, *table3;
 //   GtkWidget *calendar;
-   GtkWidget *scrolled_window;
    GtkWidget *notebook_tab;
    
-   time_t ltime;
-   struct tm *now;
-#define MAX_STR 100
-   char str[MAX_STR];
+
    int i, i2;
    int order[22]={0,1,13,2,3,4,5,6,7,8,9,10,11,12,14,15,16,17,18,19,20,21
    };
 
    clist_row_selected=0;
+   
+   init();
 
    if (get_address_app_info(&address_app_info)) {
-      for (i=0; i<16; i++) {
+      for (i=0; i<NUM_ADDRESS_CAT_ITEMS; i++) {
 	 address_app_info.category.name[i][0]='\0';
       }
    }
@@ -564,19 +681,18 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_box_pack_start(GTK_BOX(vbox), button, TRUE, TRUE, 0);
    gtk_widget_show(button);
    
+   gtk_widget_set_usize(GTK_WIDGET(vbox1), 210, 0);
    //Separator
    separator = gtk_hseparator_new();
    gtk_box_pack_start(GTK_BOX(vbox1), separator, FALSE, FALSE, 5);
    gtk_widget_show(separator);
 
    //Make the Today is: label
-   time(&ltime);
-   now = localtime(&ltime);
-   strftime(str, MAX_STR, "Today is %A, %x %X", now);
-   glob_date_label = gtk_label_new(str);
+   glob_date_label = gtk_label_new(" ");
    gtk_box_pack_start(GTK_BOX(vbox1), glob_date_label, FALSE, FALSE, 0);
    gtk_widget_show(glob_date_label);
-   glob_date_timer_tag = gtk_timeout_add(1000, timeout_date, NULL);
+   timeout_date(NULL);
+   glob_date_timer_tag = gtk_timeout_add(CLOCK_TICK, timeout_date, NULL);
 
    //Separator
    separator = gtk_hseparator_new();
@@ -590,7 +706,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    
    //Put the address list window up
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
-   gtk_widget_set_usize(GTK_WIDGET(scrolled_window), 234, 0);
+   //gtk_widget_set_usize(GTK_WIDGET(scrolled_window), 150, 0);
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 0);
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
 				  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
@@ -608,10 +724,24 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_clist_set_column_width(GTK_CLIST(clist), 2, 16);
    gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW
 					 (scrolled_window), clist);
+   //gtk_viewport_set_shadow_type(GTK_VIEWPORT(scrolled_window), GTK_SHADOW_NONE);
    //gtk_clist_set_sort_column (GTK_CLIST(clist1), 0);
    //gtk_clist_set_auto_sort(GTK_CLIST(clist1), TRUE);
    
-   
+   hbox_temp = gtk_hbox_new (FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox1), hbox_temp, FALSE, FALSE, 0);
+   gtk_widget_show(hbox_temp);
+
+   label = gtk_label_new("Quick Find");
+   gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 0);
+   gtk_widget_show(label);
+
+   address_quickfind_entry = gtk_entry_new();
+   gtk_signal_connect(GTK_OBJECT(address_quickfind_entry), "changed",
+		      GTK_SIGNAL_FUNC(cb_address_quickfind),
+		      NULL);
+   gtk_box_pack_start(GTK_BOX(hbox_temp), address_quickfind_entry, TRUE, TRUE, 0);
+   gtk_widget_show(address_quickfind_entry);
    
    //calendar = gtk_calendar_new();
    //gtk_box_pack_start(GTK_BOX(vbox2), calendar, TRUE, TRUE, 0);
@@ -749,6 +879,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
       } else {
  	 label = gtk_label_new(address_app_info.labels[i2]);
 	 //gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_LEFT);
+	 gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
       }
       address_text[i2] = gtk_text_new(NULL, NULL);
       gtk_text_set_editable(GTK_TEXT(address_text[i2]), TRUE);
@@ -804,7 +935,12 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_widget_show(vbox);
    gtk_widget_show(hbox);
 
-   address_category = CATEGORY_ALL;
-   update_address_screen();
+//   address_category = CATEGORY_ALL;
+//   update_address_screen();
 
+//   address_find();
+   
+   address_refresh();
+
+   return 0;
 }

@@ -1,0 +1,97 @@
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT(jpilot.c)
+
+dnl Checks for programs.
+AC_PROG_CC
+
+dnl Check for pilot-link libs
+# pilot_prefix gives the prefix to the pilot-link directory
+# e.g., /usr/local if there's /usr/local/include/*pilot_stuff*
+pilot_prefix=""
+AC_ARG_WITH(pilot_prefix,
+[  --with-pilot-prefix=    Prefix to top level of pilot-link files
+                           (e.g., = /usr/local if the pilot-link includes
+			   are in /usr/local/include)])
+
+
+dnl Make sure that the pilot-link stuff actually exists
+AC_MSG_CHECKING(for pilot-link files)
+if test "x$with_pilot_prefix" != "x"; then
+   pilot_prefix=$with_pilot_prefix
+   # Is this a good heuristic? I dunno...works for now
+   if test -e "$pilot_prefix/include/pi-config.h" &&
+      test -e "$pilot_prefix/lib/libpisock.so"; then
+      AC_MSG_RESULT(ok)
+      AC_SUBST(pilot_prefix)
+   else 
+      AC_MSG_ERROR(Could not find proper pilot-link libs and headers)
+   fi
+else
+   pilot_prefix="/usr/"
+   if test -e "$pilot_prefix/include/pi-config.h" &&
+      test -e "$pilot_prefix/lib/libpisock.so"; then
+      AC_MSG_RESULT(ok)
+      AC_SUBST(pilot_prefix)
+   else
+      pilot_prefix="/usr/local"
+      if test -e "$pilot_prefix/include/pi-config.h" &&
+         test -e "$pilot_prefix/lib/libpisock.so"; then
+         AC_MSG_RESULT(ok)
+         AC_SUBST(pilot_prefix)
+      else 
+         pilot_prefix="/usr/extra/pilot"
+         if test -e "$pilot_prefix/include/pi-config.h" &&
+            test -e "$pilot_prefix/lib/libpisock.so"; then
+            AC_MSG_RESULT(ok)
+            AC_SUBST(pilot_prefix)
+         else
+            AC_MSG_ERROR(Could not find proper pilot-link libs and headers)
+         fi
+      fi
+   fi
+fi
+
+
+
+# Compile options
+ccoptions=""
+AC_ARG_WITH(ccoptions,
+[  --with-ccoptions=       Option to pass to your C compiler])
+
+if test "x$with_ccoptions" != "x"; then
+   ccoptions=$with_ccoptions
+else
+   ccoptions="-O3"
+fi
+AC_SUBST(ccoptions)
+
+dnl Checking for GTK version
+AM_PATH_GTK(1.2.0,,
+  AC_MSG_ERROR([*** GTK >= 1.2.0 not installed - please install first ***]))
+
+dnl Checks for header files.
+AC_HEADER_STDC
+AC_HEADER_SYS_WAIT
+AC_CHECK_HEADERS(fcntl.h sys/file.h sys/time.h unistd.h)
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_TYPE_PID_T
+AC_HEADER_TIME
+AC_STRUCT_TM
+
+dnl Checks for library functions.
+AC_TYPE_SIGNAL
+AC_FUNC_STRFTIME
+AC_FUNC_UTIME_NULL
+AC_CHECK_FUNCS(mkdir mktime select strdup strstr)
+
+AC_ARG_WITH(japanese,
+[  --with-japanese         Use this for japanese support])
+japanese=""
+if test "x$with_japanese" != "x"; then
+   japanese="-DJapanese"
+   AC_MSG_RESULT(Japanese support $japanese)
+fi
+AC_SUBST(japanese)
+
+AC_OUTPUT(Makefile)

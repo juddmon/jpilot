@@ -1,5 +1,5 @@
-/*
- * memo_gui.c
+/* memo_gui.c
+ * 
  * Copyright (C) 1999 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,8 +18,14 @@
  */
 #include <gtk/gtk.h>
 #include <time.h>
+#include <stdlib.h>
+#include <string.h>
 #include "utils.h"
 #include "log.h"
+#include "prefs.h"
+#include "memo.h"
+
+#define NUM_MEMO_CAT_ITEMS 16
 
 extern GtkTooltips *glob_tooltips;
 
@@ -29,10 +35,14 @@ int clist_row_selected;
 GtkWidget *clist;
 GtkWidget *memo_text;
 GtkWidget *memo_cat_menu2;
-GtkWidget *memo_cat_menu_item[16];
+//Need one extra for the ALL category
+GtkWidget *memo_cat_menu_item1[NUM_MEMO_CAT_ITEMS+1];
+GtkWidget *memo_cat_menu_item2[NUM_MEMO_CAT_ITEMS];
 GtkWidget *category_menu1;
+GtkWidget *scrolled_window;
 
 static void update_memo_screen();
+static int memo_clear_details();
 
 
 void cb_delete_memo(GtkWidget *widget,
@@ -45,8 +55,8 @@ void cb_delete_memo(GtkWidget *widget,
    if (mmemo < (MyMemo *)CLIST_MIN_DATA) {
       return;
    }
-   logf(LOG_DEBUG, "mmemo->unique_id = %d\n",mmemo->unique_id);
-   logf(LOG_DEBUG, "mmemo->rt = %d\n",mmemo->rt);
+   jpilot_logf(LOG_DEBUG, "mmemo->unique_id = %d\n",mmemo->unique_id);
+   jpilot_logf(LOG_DEBUG, "mmemo->rt = %d\n",mmemo->rt);
    flag = GPOINTER_TO_INT(data);
    if ((flag==MODIFY_FLAG) || (flag==DELETE_FLAG)) {
       delete_pc_record(MEMO, mmemo, flag);
@@ -60,13 +70,13 @@ void cb_memo_category(GtkWidget *item, int selection)
 {
    if ((GTK_CHECK_MENU_ITEM(item))->active) {
       memo_category = selection;
-      logf(LOG_DEBUG, "memo_category = %d\n", memo_category);
+      jpilot_logf(LOG_DEBUG, "memo_category = %d\n", memo_category);
       memo_clear_details();
       update_memo_screen();
    }
 }
 
-int memo_clear_details()
+static int memo_clear_details()
 {
    gtk_text_freeze(GTK_TEXT(memo_text));
 
@@ -75,6 +85,7 @@ int memo_clear_details()
 			   gtk_text_get_length(GTK_TEXT(memo_text)));
 
    gtk_text_thaw(GTK_TEXT(memo_text));
+   return 0;
 }
 
 int memo_get_details(struct Memo *new_memo, unsigned char *attrib)
@@ -89,14 +100,15 @@ int memo_get_details(struct Memo *new_memo, unsigned char *attrib)
    }
 
    //Get the category that is set from the menu
-   for (i=0; i<16; i++) {
-      if (GTK_IS_WIDGET(memo_cat_menu_item[i])) {
-	 if (GTK_CHECK_MENU_ITEM(memo_cat_menu_item[i])->active) {
+   for (i=0; i<NUM_MEMO_CAT_ITEMS; i++) {
+      if (GTK_IS_WIDGET(memo_cat_menu_item2[i])) {
+	 if (GTK_CHECK_MENU_ITEM(memo_cat_menu_item2[i])->active) {
 	    *attrib = i;
 	    break;
 	 }
       }
    }
+   return 0;
 }
 
 static void cb_add_new_record(GtkWidget *widget,
@@ -123,7 +135,7 @@ static void cb_add_new_record(GtkWidget *widget,
 	 return;
       }
       if ((mmemo->rt==DELETED_PALM_REC) || (mmemo->rt==MODIFIED_PALM_REC)) {
-	 logf(LOG_INFO, "You can't modify a record that is deleted\n");
+	 jpilot_logf(LOG_INFO, "You can't modify a record that is deleted\n");
 	 return;
       }
    }
@@ -179,7 +191,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    memo=&(mmemo->memo);
    
    gtk_check_menu_item_set_active
-     (GTK_CHECK_MENU_ITEM(memo_cat_menu_item[mmemo->attrib & 0x0F]), TRUE);
+     (GTK_CHECK_MENU_ITEM(memo_cat_menu_item2[mmemo->attrib & 0x0F]), TRUE);
    gtk_option_menu_set_history
      (GTK_OPTION_MENU(memo_cat_menu2), mmemo->attrib & 0x0F);
 
@@ -199,6 +211,8 @@ static void update_memo_screen()
 #define MEMO_CLIST_CHAR_WIDTH 50
    int num_entries, entries_shown, precount;
    char *last;
+   int ivalue;
+   const char *svalue;
    gchar *empty_line[] = { "" };
    GdkColor color;
    GdkColormap *colormap;
@@ -236,11 +250,23 @@ static void update_memo_screen()
 	 continue;
       }
       if (temp_memo->mmemo.rt == MODIFIED_PALM_REC) {
-	 //todo - this will be in preferences as to whether you want to 
+	 get_pref(PREF_SHOW_MODIFIED, &ivalue, &svalue);
+	 //this will be in preferences as to whether you want to
 	 //see deleted records, or not.
-	 num_entries--;
-	 continue;
-      }      
+	 if (!ivalue) {
+	    num_entries--;
+	    continue;
+	 }
+      }
+      if (temp_memo->mmemo.rt == DELETED_PALM_REC) {
+	 get_pref(PREF_SHOW_DELETED, &ivalue, &svalue);
+	 //this will be in preferences as to whether you want to
+	 //see deleted records, or not.
+	 if (!ivalue) {
+	    num_entries--;
+	    continue;
+	 }
+      }
       precount++;
    }
 
@@ -251,10 +277,23 @@ static void update_memo_screen()
 	 continue;
       }
       if (temp_memo->mmemo.rt == MODIFIED_PALM_REC) {
-	 //todo - this will be in preferences as to whether you want to 
+	 get_pref(PREF_SHOW_MODIFIED, &ivalue, &svalue);
+	 //this will be in preferences as to whether you want to
 	 //see deleted records, or not.
-	 continue;
-      }      
+	 if (!ivalue) {
+	    num_entries--;
+	    continue;
+	 }
+      }
+      if (temp_memo->mmemo.rt == DELETED_PALM_REC) {
+	 get_pref(PREF_SHOW_DELETED, &ivalue, &svalue);
+	 //this will be in preferences as to whether you want to
+	 //see deleted records, or not.
+	 if (!ivalue) {
+	    num_entries--;
+	    continue;
+	 }
+      }
 
       entries_shown++;
       gtk_clist_prepend(GTK_CLIST(clist), empty_line);
@@ -295,7 +334,7 @@ static void update_memo_screen()
       }  
    }
 
-   logf(LOG_DEBUG, "entries_shown=%d\n",entries_shown);
+   jpilot_logf(LOG_DEBUG, "entries_shown=%d\n",entries_shown);
 #ifdef OLD_ENTRY
    gtk_clist_append(GTK_CLIST(clist), empty_line);
    gtk_clist_set_text(GTK_CLIST(clist), entries_shown, 0,
@@ -317,7 +356,6 @@ static void update_memo_screen()
 
 static int make_category_menu1(GtkWidget **category_menu)
 {
-   GtkWidget *menu_item;
    GtkWidget *menu;
    GSList    *group;
    int i;
@@ -327,25 +365,27 @@ static int make_category_menu1(GtkWidget **category_menu)
    menu = gtk_menu_new();
    group = NULL;
    
-   menu_item = gtk_radio_menu_item_new_with_label(group, "All");
-   gtk_signal_connect(GTK_OBJECT(menu_item), "activate",
+   memo_cat_menu_item1[0] = gtk_radio_menu_item_new_with_label(group, "All");
+   gtk_signal_connect(GTK_OBJECT(memo_cat_menu_item1[0]), "activate",
 		      cb_memo_category, GINT_TO_POINTER(CATEGORY_ALL));
-   group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(menu_item));
-   gtk_menu_append(GTK_MENU(menu), menu_item);
-   gtk_widget_show(menu_item);
-   for (i=0; i<16; i++) {
+   group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(memo_cat_menu_item1[0]));
+   gtk_menu_append(GTK_MENU(menu), memo_cat_menu_item1[0]);
+   gtk_widget_show(memo_cat_menu_item1[0]);
+   for (i=0; i<NUM_MEMO_CAT_ITEMS; i++) {
       if (memo_app_info.category.name[i][0]) {
-	 menu_item = gtk_radio_menu_item_new_with_label(
+	 memo_cat_menu_item1[i+1] = gtk_radio_menu_item_new_with_label(
 		     group, memo_app_info.category.name[i]);
-	 gtk_signal_connect(GTK_OBJECT(menu_item), "activate",
+	 gtk_signal_connect(GTK_OBJECT(memo_cat_menu_item1[i+1]), "activate",
 			    cb_memo_category, GINT_TO_POINTER(i));
-	 group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(menu_item));
-	 gtk_menu_append(GTK_MENU(menu), menu_item);
-	 gtk_widget_show(menu_item);
+	 group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(memo_cat_menu_item1[i+1]));
+	 gtk_menu_append(GTK_MENU(menu), memo_cat_menu_item1[i+1]);
+	 gtk_widget_show(memo_cat_menu_item1[i+1]);
       }
    }
 
    gtk_option_menu_set_menu(GTK_OPTION_MENU(*category_menu), menu);
+   
+   return 0;
 }
 
 static int make_category_menu2()
@@ -360,17 +400,51 @@ static int make_category_menu2()
    menu = gtk_menu_new();
    group = NULL;
    
-   for (i=0; i<16; i++) {
+   for (i=0; i<NUM_MEMO_CAT_ITEMS; i++) {
       if (memo_app_info.category.name[i][0]) {
-	 memo_cat_menu_item[i] = gtk_radio_menu_item_new_with_label
+	 memo_cat_menu_item2[i] = gtk_radio_menu_item_new_with_label
 	   (group, memo_app_info.category.name[i]);
 	 group = gtk_radio_menu_item_group
-	   (GTK_RADIO_MENU_ITEM(memo_cat_menu_item[i]));
-	 gtk_menu_append(GTK_MENU(menu), memo_cat_menu_item[i]);
-	 gtk_widget_show(memo_cat_menu_item[i]);
+	   (GTK_RADIO_MENU_ITEM(memo_cat_menu_item2[i]));
+	 gtk_menu_append(GTK_MENU(menu), memo_cat_menu_item2[i]);
+	 gtk_widget_show(memo_cat_menu_item2[i]);
       }
    }
    gtk_option_menu_set_menu(GTK_OPTION_MENU(memo_cat_menu2), menu);
+   return 0;
+}
+
+static int memo_find()
+{
+   int r, found_at, total_count;
+   
+   if (glob_find_id) {
+      r = clist_find_id(clist,
+			glob_find_id,
+			&found_at,
+			&total_count);
+      if (r) {
+	 if (total_count == 0) {
+	    total_count = 1;
+	 }
+	 gtk_clist_select_row(GTK_CLIST(clist), found_at, 1);
+	 move_scrolled_window_hack(scrolled_window,
+				   (float)found_at/(float)total_count);
+      }
+      glob_find_id = 0;
+   }
+   return 0;
+}
+
+int memo_refresh()
+{
+   memo_category = CATEGORY_ALL;
+   update_memo_screen();
+   gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), 0);
+   gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(
+       memo_cat_menu_item1[0]), TRUE);
+   memo_find();   
+   return 0;
 }
 
 //
@@ -383,13 +457,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    GtkWidget *vbox1, *vbox2, *hbox_temp;
    GtkWidget *separator;
    GtkWidget *button;
-   time_t ltime;
-   struct tm *now;
-#define MAX_STR 100
-   char str[MAX_STR];
-   GtkWidget *scrolled_window;
    GtkWidget *vscrollbar;
-   //GtkWidget *memo_list_menu;
    
    clist_row_selected=0;
 
@@ -399,6 +467,8 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    vbox2 = gtk_vbox_new (FALSE, 0);
    gtk_box_pack_start(GTK_BOX(hbox), vbox1, TRUE, TRUE, 5);
    gtk_box_pack_start(GTK_BOX(hbox), vbox2, TRUE, TRUE, 5);
+
+   gtk_widget_set_usize(GTK_WIDGET(vbox1), 210, 0);
 
    //Add buttons in left vbox
    button = gtk_button_new_with_label("Delete");
@@ -414,14 +484,12 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_widget_show(separator);
 
    //Make the Today is: label
-   time(&ltime);
-   now = localtime(&ltime);
-   strftime(str, MAX_STR, "Today is %A, %x %X", now);
-   glob_date_label = gtk_label_new(str);
+   glob_date_label = gtk_label_new(" ");
    gtk_box_pack_start(GTK_BOX(vbox1), glob_date_label, FALSE, FALSE, 0);
    gtk_widget_show(glob_date_label);
-   glob_date_timer_tag = gtk_timeout_add(1000, timeout_date, NULL);
-   
+   timeout_date(NULL);
+   glob_date_timer_tag = gtk_timeout_add(CLOCK_TICK, timeout_date, NULL);
+
 
    //Separator
    separator = gtk_hseparator_new();
@@ -437,7 +505,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    //Put the address list window up
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
-   //gtk_widget_set_usize(GTK_WIDGET(scrolled_window), 330, 200);
+   //gtk_widget_set_usize(GTK_WIDGET(scrolled_window), 330, 100);
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 0);
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
 				  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
@@ -522,14 +590,13 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_widget_show(vscrollbar);   
    gtk_widget_show(hbox_temp);
 
-   
-   memo_category = CATEGORY_ALL;
-   update_memo_screen();
-   
-   
-   
    gtk_widget_show(vbox1);
    gtk_widget_show(vbox2);
    gtk_widget_show(vbox);
    gtk_widget_show(hbox);
+
+   memo_refresh();
+   memo_find();
+
+   return 0;
 }

@@ -1,39 +1,63 @@
 
-jpilot is a palm pilot desktop for Linux written by:
+------------------------------------------------------------
+
+J-Pilot is a palm pilot desktop for Linux/Unix written by:
 Judd Montgomery, judd@engineer.com
 It is very useable, but still has many planned updates to make it better.
 
 If you like it feel to send me donations ;)
 I collect coins from anywhere, anytime also.
-At least send me an email and let me know you are using it.  I'd like to know
-how many people this is useful to.
+At least send me an email and let me know you are using it.
+I'd like to know how many people this is useful to.
 
 Judd Montgomery
 P.O. Box 665
 Sunbury, OH 43074
 
+------------------------------------------------------------
 
-jpilot reads the PILOTPORT environment variable to get the port to sync on.
-If this is not set, then it defaults to /dev/pilot.  It also reads PILOTRATE
-to get the serial port rate.
+SERIAL PORT SETUP:
 
-jpilot-syncd is a syncing daemon for jpilot.  It just sits and waits for the
-Sync button to be pressed on the Palm pilot and then it syncs it.  This is
-just an optional program.  It is not necessary.  I removed this in 0.92,
-I'll probably put it back.
+When syncing, jpilot uses the port and speed settings out of the preferences
+menu.  If the port is blank then jpilot will use the PILOTPORT environment
+variables, as does pilot-link.  If these are blank then jpilot will default
+to /dev/pilot.
+
+It is recommended, but not neccessay to make a link from /dev/pilot to the
+correct serial port.
+So, if your cradle is on COM1, this is /dev/ttyS0 under Linux.  You could
+execute the command "ln -s /dev/ttyS0 /dev/pilot".  COM2 is /dev/ttyS1, and
+so on.
+
+You must also give non-root users permisions to access the serial port.
+The command to do this is (as root) "chmod 666 /dev/ttyS0" for the first
+serial port, ttyS1, for the second, and so on.
 
 COLORS:
 
-You should copy the jpilotrc file to ~/.jpilot/ to get rid of the ugly grey
-screens.  If you create your own cool jpilotrc files feel free to send them
-back to me and if I like it, I'll include it in the release.  I'll probably
-make a few selectable with a pull-down menu.
+Make install will copy a few default color files to /usr/local/share/jpilot/
+(unless you told configure to use another prefix).
+These will be selectable from the preferences menu.  Also jpilot will look
+in $HOME/.jpilot/ for colors files.  They must start with "jpilotrc".
+If you want to add new ones, or modify the current ones, just put the files
+in one of these directories and they will show up in the preferences menu.
+
+If you create your own cool jpilotrc files feel free to send them
+back to me and if I like it, I'll include it in the release.
 
 HOME:
 
 jpilot uses the HOME environment variable to make it easy to allow multiple
-pilots to be synced under the same user.  Just set HOME to the directory
-you want jpilot to use.
+pilots to be synced under the same unix user.  Just set HOME to the directory
+you want jpilot to use.  For example, I have 2 palm pilots.  I can sync the
+one I use all the time into /home/judd.  The other one I can sync into
+/home/judd/palm2 by using this script:
+#!/bin/bash
+HOME=/home/judd/palm2
+jpilot
+
+This is also handy for syncing xcopilot into its own directory.
+Normally, you can just leave HOME alone.
 
 OOPS, REVERTING:
 
@@ -42,3 +66,19 @@ pilot was synced.  All you have to do is "rm ~/.jpilot/*.pc".
 Deleted records will come back, etc.  Nothing is permanent until the
 sync/backup.  You can do this if you make a mistake, or just to play around 
 with jpilot and then delete the changed records without syncing them.
+
+Also, from the preferences menu, you can choose to show deleted records
+and then click on the deleted record and use "Add" to get a copy of it back.
+
+BACKUP and SYNC:
+
+The Sync button will sync the 4 applications with the palm pilot.
+The Backup button will backup every program and database from the palm pilot.
+
+Useless statistic:
+
+I wrote about 600 lines of this code on my Palm Pilot using memo while I was
+away from my computer.
+I don't recomend this ;)
+
+

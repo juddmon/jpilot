@@ -1,5 +1,5 @@
-/*
- * address.c
+/* address.c
+ *
  * Copyright (C) 1999 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,10 @@
 #include "utils.h"
 #include "log.h"
 
+#if defined(Japanese)
+#include "japanese.h"
+#endif
+
 #define ADDRESS_EOF 7
 
 #ifdef JPILOT_DEBUG
@@ -34,7 +38,7 @@ int print_address_list(AddressList **al)
 
    for (prev_al=NULL, temp_al=*al; temp_al;
 	prev_al=temp_al, temp_al=temp_al->next) {
-      logf(LOG_FILE | LOG_STDOUT, "entry[0]=[%s]\n", temp_al->ma.a.entry[0]);
+      jpilot_logf(LOG_FILE | LOG_STDOUT, "entry[0]=[%s]\n", temp_al->ma.a.entry[0]);
    }
 }
 #endif
@@ -127,6 +131,7 @@ int address_sort(AddressList **al)
 	 }
       }
    }
+   return 0;
 }
 
 static int pc_address_read_next_rec(FILE *in, MyAddress *ma)
@@ -143,7 +148,7 @@ static int pc_address_read_next_rec(FILE *in, MyAddress *ma)
       return ADDRESS_EOF;
    }
    if (num != 1) {
-      logf(LOG_WARN, "error on fread\n");
+      jpilot_logf(LOG_WARN, "error on fread\n");
       return ADDRESS_EOF;
    }
    rec_len = header.rec_len;
@@ -154,13 +159,21 @@ static int pc_address_read_next_rec(FILE *in, MyAddress *ma)
    if (!record) {
       return ADDRESS_EOF;
    }
-   fread(record, rec_len, 1, in);
+   num = fread(record, rec_len, 1, in);
    if (feof(in)) {
       free(record);
       return ADDRESS_EOF;
    }
-   unpack_Address(&(ma->a), record, rec_len);
+   if (num != 1) {
+      jpilot_logf(LOG_WARN, "error on fread\n");
+      free(record);
+      return ADDRESS_EOF;
+   }
+   num = unpack_Address(&(ma->a), record, rec_len);
    free(record);
+   if (num<=0) {
+      return -1;
+   }
    return 0;
 }
 
@@ -175,18 +188,18 @@ int pc_address_write(struct Address *a, PCRecType rt, unsigned char attrib)
 
    get_next_unique_pc_id(&next_unique_id);
 #ifdef JPILOT_DEBUG
-   logf(LOG_DEBUG, "next unique id = %d\n",next_unique_id);
+   jpilot_logf(LOG_DEBUG, "next unique id = %d\n",next_unique_id);
 #endif
    
    out = open_file("AddressDB.pc", "a");
    if (!out) {
-      logf(LOG_WARN, "Error opening AddressDB.pc\n");
+      jpilot_logf(LOG_WARN, "Error opening AddressDB.pc\n");
       return -1;
    }
    rec_len = pack_Address(a, record, 65535);
    if (!rec_len) {
       PRINT_FILE_LINE;
-      logf(LOG_WARN, "pack_Address error\n");
+      jpilot_logf(LOG_WARN, "pack_Address error\n");
    }
    header.rec_len=rec_len;
    header.rt=rt;
@@ -196,12 +209,14 @@ int pc_address_write(struct Address *a, PCRecType rt, unsigned char attrib)
    fwrite(record, rec_len, 1, out);
    fflush(out);
    fclose(out);
+   
+   return 0;
 }
 
 void free_AddressList(AddressList **al)
 {
    AddressList *temp_al, *temp_al_next;
-   
+
    for (temp_al = *al; temp_al; temp_al=temp_al_next) {
       free_Address(&(temp_al->ma.a));
       temp_al_next = temp_al->next;
@@ -221,12 +236,12 @@ int get_address_app_info(struct AddressAppInfo *ai)
 
    in = open_file("AddressDB.pdb", "r");
    if (!in) {
-      logf(LOG_WARN, "Error opening AddressDB.pdb\n");
+      jpilot_logf(LOG_WARN, "Error opening AddressDB.pdb\n");
       return -1;
    }
    fread(&rdbh, sizeof(RawDBHeader), 1, in);
    if (feof(in)) {
-      logf(LOG_WARN, "Error reading AddressDB.pdb\n");
+      jpilot_logf(LOG_WARN, "Error reading AddressDB.pdb\n");
       fclose(in);
       return -1;
    }
@@ -243,10 +258,26 @@ int get_address_app_info(struct AddressAppInfo *ai)
    num = fread(buf, 1, rec_size, in);
    if (feof(in)) {
       fclose(in);
-      logf(LOG_WARN, "Error reading AddressDB.pdb\n");
+      free(buf);
+      jpilot_logf(LOG_WARN, "Error reading AddressDB.pdb\n");
       return -1;
    }
    unpack_AddressAppInfo(ai, buf, rec_size);
+#if defined(Japanese)
+   // Converto to EUC Japanese Kanji code
+   {
+      int i;
+      for (i = 0; i < 16; i++)
+	 if (ai->category.name[i][0] != '\0')
+            Sjis2Euc(ai->category.name[i], 16);
+      for (i = 0; i < 19 + 3; i++)
+         if (ai->labels[i][0] != '\0')
+            Sjis2Euc(ai->labels[i], 16);
+      for (i = 0; i < 8; i++)
+         if (ai->phoneLabels[i][0] != '\0')
+            Sjis2Euc(ai->phoneLabels[i], 16);
+   }
+#endif
    free(buf);
 
    fclose(in);
@@ -276,34 +307,34 @@ int get_addresses(AddressList **address_list)
 
    in = open_file("AddressDB.pdb", "r");
    if (!in) {
-      logf(LOG_WARN, "Error opening AddressDB.pdb\n");
+      jpilot_logf(LOG_WARN, "Error opening AddressDB.pdb\n");
       return -1;
    }
    //Read the database header
    fread(&rdbh, sizeof(RawDBHeader), 1, in);
    if (feof(in)) {
-      logf(LOG_WARN, "Error opening AddressDB.pdb\n");
+      jpilot_logf(LOG_WARN, "Error opening AddressDB.pdb\n");
       return -1;
    }
    raw_header_to_header(&rdbh, &dbh);
    
-   logf(LOG_DEBUG, "db_name = %s\n", dbh.db_name);
-   logf(LOG_DEBUG, "num records = %d\n", dbh.number_of_records);
-   logf(LOG_DEBUG, "app info offset = %d\n", dbh.app_info_offset);
+   jpilot_logf(LOG_DEBUG, "db_name = %s\n", dbh.db_name);
+   jpilot_logf(LOG_DEBUG, "num records = %d\n", dbh.number_of_records);
+   jpilot_logf(LOG_DEBUG, "app info offset = %d\n", dbh.app_info_offset);
 
    //fread(filler, 2, 1, in);
 
    //Read each record entry header
    num_records = dbh.number_of_records;
-   //logf(LOG_DEBUG, "sizeof(record_header)=%d\n",sizeof(record_header));
+   //jpilot_logf(LOG_DEBUG, "sizeof(record_header)=%d\n",sizeof(record_header));
    for (i=1; i<num_records+1; i++) {
       fread(&rh, sizeof(record_header), 1, in);
       offset = ((rh.Offset[0]*256+rh.Offset[1])*256+rh.Offset[2])*256+rh.Offset[3];
 #ifdef JPILOT_DEBUG
-      logf(LOG_DEBUG, "record header %u offset = %u\n",i, offset);
-      logf(LOG_DEBUG, "       attrib 0x%x\n",rh.attrib);
-      logf(LOG_DEBUG, "    unique_ID %d %d %d = ",rh.unique_ID[0],rh.unique_ID[1],rh.unique_ID[2]);
-      logf(LOG_DEBUG, "%d\n",(rh.unique_ID[0]*256+rh.unique_ID[1])*256+rh.unique_ID[2]);
+      jpilot_logf(LOG_DEBUG, "record header %u offset = %u\n",i, offset);
+      jpilot_logf(LOG_DEBUG, "       attrib 0x%x\n",rh.attrib);
+      jpilot_logf(LOG_DEBUG, "    unique_ID %d %d %d = ",rh.unique_ID[0],rh.unique_ID[1],rh.unique_ID[2]);
+      jpilot_logf(LOG_DEBUG, "%d\n",(rh.unique_ID[0]*256+rh.unique_ID[1])*256+rh.unique_ID[2]);
 #endif
       temp_mem_rh = (mem_rec_header *)malloc(sizeof(mem_rec_header));
       temp_mem_rh->next = mem_rh;
@@ -322,20 +353,37 @@ int get_addresses(AddressList **address_list)
 	 find_next_offset(mem_rh, fpos, &next_offset, &attrib, &unique_id);
 	 rec_size = next_offset - fpos;
 #ifdef JPILOT_DEBUG
-	 logf(LOG_DEBUG, "rec_size = %u\n",rec_size);
-	 logf(LOG_DEBUG, "fpos,next_offset = %u %u\n",fpos,next_offset);
-	 logf(LOG_DEBUG, "----------\n");
+	 jpilot_logf(LOG_DEBUG, "rec_size = %u\n",rec_size);
+	 jpilot_logf(LOG_DEBUG, "fpos,next_offset = %u %u\n",fpos,next_offset);
+	 jpilot_logf(LOG_DEBUG, "----------\n");
 #endif
 	 if (feof(in)) break;
 	 buf = malloc(rec_size);
 	 if (!buf) break;
 	 num = fread(buf, 1, rec_size, in);
+	 if (num<=0) {
+	    free(buf);
+	    return -1;
+	 }
 
-	 unpack_Address(&a, buf, rec_size);
-	 free(buf);
+	 num = unpack_Address(&a, buf, rec_size);
+	 if (num<=0) {
+	    free(buf);
+	    continue;
+	 }
+#if defined(Japanese)
+	// Convert to EUC Japanese Kanji code
+	{
+	    int i;
+	    for (i = 0; i < 19; i++)
+		if (a.entry[i] != NULL)
+		    Sjis2Euc(a.entry[i], 65536);
+	}
+#endif
 	 temp_address_list = malloc(sizeof(AddressList));
 	 memcpy(&(temp_address_list->ma.a), &a, sizeof(struct Address));
 	 //temp_address_list->ma.a = temp_a;
+	 temp_address_list->app_type = ADDRESS;
 	 temp_address_list->ma.rt = PALM_REC;
 	 temp_address_list->ma.attrib = attrib;
 	 temp_address_list->ma.unique_id = unique_id;
@@ -364,6 +412,7 @@ int get_addresses(AddressList **address_list)
 	  &&(ma.rt!=DELETED_DELETED_PALM_REC)) {
 	 temp_address_list = malloc(sizeof(AddressList));
 	 memcpy(&(temp_address_list->ma), &ma, sizeof(MyAddress));
+	 temp_address_list->app_type = ADDRESS;
 	 temp_address_list->next = *address_list;
 	 *address_list = temp_address_list;
 	 recs_returned++;
@@ -388,6 +437,8 @@ int get_addresses(AddressList **address_list)
    print_address_list(address_list);
 #endif
    address_sort(address_list);
+   
+   jpilot_logf(LOG_DEBUG, "Leaving get_addresses\n");
    
    return recs_returned;
 }

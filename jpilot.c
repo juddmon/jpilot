@@ -1,5 +1,5 @@
-/*
- * jpilot.c
+/* jpilot.c
+ * 
  * Copyright (C) 1999 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
@@ -22,13 +22,17 @@
 #include <sys/time.h>
 #include <stdio.h>
 #include <signal.h>
+#include <string.h>
 #include <unistd.h>
 
 #include <pi-datebook.h>
+#include <gdk/gdkkeysyms.h>
 
 //#include "datebook.h"
 #include "utils.h"
 #include "log.h"
+#include "prefs_gui.h"
+#include "prefs.h"
 
 #include "datebook.xpm"
 #include "address.xpm"
@@ -46,69 +50,102 @@ GtkWidget *g_hbox2, *g_vbox0_1;
 GtkWidget *glob_date_label;
 GtkTooltips *glob_tooltips;
 gint glob_date_timer_tag;
-pid_t glob_child_pid=0;
+pid_t glob_child_pid;
+int glob_app = 0;
 
 int pipe_in, pipe_out;
 
 GtkWidget *sync_window = NULL;
 
-void delete_event(GtkWidget *widget, GdkEvent *event, gpointer data);
+static void delete_event(GtkWidget *widget, GdkEvent *event, gpointer data);
 
 int create_main_boxes()
 {
-//todo   GtkWidget *button, *separator;
-   
    g_hbox2 = gtk_hbox_new(FALSE, 0);
    g_vbox0_1 = gtk_vbox_new(FALSE, 0);
 
    gtk_box_pack_start(GTK_BOX(g_hbox), g_hbox2, TRUE, TRUE, 0);
    gtk_box_pack_start(GTK_BOX(g_vbox0), g_vbox0_1, FALSE, FALSE, 0);
+   return 0;
 }
 
-void cb_datebook(GtkWidget *widget, gpointer data)
+void cb_app_button(GtkWidget *widget, gpointer data)
 {
-   gtk_widget_destroy(g_vbox0_1);
-   gtk_widget_destroy(g_hbox2);
-   create_main_boxes();
-   if (glob_date_timer_tag) {
-      gtk_timeout_remove(glob_date_timer_tag);
+   int app;
+   
+   app = GPOINTER_TO_INT(data);
+   
+   switch(app) {
+    case DATEBOOK:
+      if (glob_app == DATEBOOK) {
+	 //refresh screen
+	 datebook_refresh(FALSE);
+      } else {
+	 gtk_widget_destroy(g_vbox0_1);
+	 gtk_widget_destroy(g_hbox2);
+	 create_main_boxes();
+	 if (glob_date_timer_tag) {
+	    gtk_timeout_remove(glob_date_timer_tag);
+	 }
+	 glob_app = DATEBOOK;
+	 datebook_gui(g_vbox0_1, g_hbox2);
+      }
+      break;
+    case ADDRESS:
+      if (glob_app == ADDRESS) {
+	 //refresh screen
+	 address_refresh();
+      } else {
+	 gtk_widget_destroy(g_vbox0_1);
+	 gtk_widget_destroy(g_hbox2);
+	 create_main_boxes();
+	 if (glob_date_timer_tag) {
+	    gtk_timeout_remove(glob_date_timer_tag);
+	 }
+	 glob_app = ADDRESS;
+	 address_gui(g_vbox0_1, g_hbox2);
+      }
+      break;
+    case TODO:
+      if (glob_app == TODO) {
+	 //refresh screen
+	 todo_refresh();
+      } else {
+	 gtk_widget_destroy(g_vbox0_1);
+	 gtk_widget_destroy(g_hbox2);
+	 create_main_boxes();
+	 if (glob_date_timer_tag) {
+	    gtk_timeout_remove(glob_date_timer_tag);
+	 }
+	 glob_app = TODO;
+	 todo_gui(g_vbox0_1, g_hbox2);
+      }
+      break;
+    case MEMO:
+      if (glob_app == MEMO) {
+	 //refresh screen
+	 memo_refresh();
+      } else {
+	 gtk_widget_destroy(g_vbox0_1);
+	 gtk_widget_destroy(g_hbox2);
+	 create_main_boxes();
+	 if (glob_date_timer_tag) {
+	    gtk_timeout_remove(glob_date_timer_tag);
+	 }
+	 glob_app = MEMO;
+	 memo_gui(g_vbox0_1, g_hbox2);
+      }
+      break;
+    default:
+      //recursion
+      if ((glob_app==DATEBOOK) ||
+	  (glob_app==ADDRESS) ||
+	  (glob_app==TODO) ||
+	  (glob_app==MEMO) )
+	cb_app_button(NULL, GINT_TO_POINTER(glob_app));
+      break;
    }
-   datebook_gui(g_vbox0_1, g_hbox2);
 }
-
-void cb_address(GtkWidget *widget, gpointer data)
-{
-   gtk_widget_destroy(g_vbox0_1);
-   gtk_widget_destroy(g_hbox2);
-   create_main_boxes();
-   if (glob_date_timer_tag) {
-      gtk_timeout_remove(glob_date_timer_tag);
-   }
-   address_gui(g_vbox0_1, g_hbox2);
-}
-
-void cb_todo(GtkWidget *widget, gpointer data)
-{
-   gtk_widget_destroy(g_vbox0_1);
-   gtk_widget_destroy(g_hbox2);
-   create_main_boxes();
-   if (glob_date_timer_tag) {
-      gtk_timeout_remove(glob_date_timer_tag);
-   }
-   todo_gui(g_vbox0_1, g_hbox2);
-}
-
-void cb_memo(GtkWidget *widget, gpointer data)
-{
-   gtk_widget_destroy(g_vbox0_1);
-   gtk_widget_destroy(g_hbox2);
-   create_main_boxes();
-   if (glob_date_timer_tag) {
-      gtk_timeout_remove(glob_date_timer_tag);
-   }
-   memo_gui(g_vbox0_1, g_hbox2);
-}
-
 
 void cb_sync_hide(GtkWidget *widget, gpointer data)
 {
@@ -125,10 +162,13 @@ void cb_read_pipe(gpointer data,
 		  GdkInputCondition condition)
 {
    int num;
-   char buf[255];
+   char buf[1024];
    fd_set fds;
    struct timeval tv;
    int ret;
+   char *Pstr1, *Pstr2, *Pstr3;
+   int user_len;
+   char user[MAX_PREF_VALUE];
 
    GtkWidget *main_window, *button, *hbox1, *vbox1, *vscrollbar;
    static GtkWidget *text;
@@ -146,7 +186,7 @@ void cb_read_pipe(gpointer data,
       y=py+ph/2-h/2;
 
 #ifdef JPILOT_DEBUG
-      logf(LOG_DEBUG, "px=%d, py=%d, pw=%d, ph=%d\n", px, py, pw, ph);
+      jpilot_logf(LOG_DEBUG, "px=%d, py=%d, pw=%d, ph=%d\n", px, py, pw, ph);
 #endif
       sync_window = gtk_widget_new(GTK_TYPE_WINDOW,
 				   "type", GTK_WINDOW_DIALOG,
@@ -194,21 +234,115 @@ void cb_read_pipe(gpointer data,
       FD_SET(in, &fds);
       ret=select(in+1, &fds, NULL, NULL, &tv);
       if (!ret) break;
-      num = read(in, buf, 250);
+      num = read(in, buf, 1022);
+      if (num >= 1022) {
+	 buf[1022] = '\0';
+      }
       if (num>0) {
 	 gtk_text_insert(GTK_TEXT(text), NULL, NULL, NULL, buf, num);
+      }
+      //Look for the username
+      Pstr1 = strstr(buf, "sername");
+      if (Pstr1) {
+	 Pstr2 = strchr(Pstr1, '\"');
+	 if (Pstr2) {
+	    Pstr2++;
+	    Pstr3 = strchr(Pstr2, '\"');
+	    if (Pstr3) {
+	       user_len = Pstr3 - Pstr2;
+	       if (user_len > MAX_PREF_VALUE) {
+		  user_len = MAX_PREF_VALUE;
+	       }
+	       strncpy(user, Pstr2, user_len);
+	       user[user_len] = '\0';
+	       jpilot_logf(LOG_DEBUG, "pipe_read: user = %s\n", user);
+	       set_pref_char(PREF_USER, user);
+	    }
+	 }
       }
    }
 }
 
-void delete_event(GtkWidget *widget, GdkEvent *event, gpointer data)
+void cb_about(GtkWidget *widget, gpointer data)
+{
+   char text[255];
+   char *button_text[]={"I like free beer!"
+   };
+   GtkWidget *window;
+   
+   window = data;
+   sprintf(text,
+	   //-------------------------------
+	   PN" was written by\r\n"
+	   "Judd Montgomery (c) 1999.\r\n"
+	   "judd@engineer.com\r\n"
+	   "http://jpilot.linuxbox.com\r\n"
+	   "Please consider helping to fund his efforts.\r\n"
+	   );
+   if (GTK_IS_WINDOW(window)) {
+      dialog_generic(GTK_WIDGET(window)->window,
+		     300, 200,
+		     "About "PN, "oOo", text, 1, button_text);
+   }
+}
+	 
+void get_main_menu(GtkWidget  *window,
+		   GtkWidget **menubar)
+//This code was copied from the gtk_tut.txt file
+{
+   GtkItemFactoryEntry menu_items[] = {
+	{ "/_File",         NULL,         NULL, 0, "<Branch>" },
+	{ "/_File/tear",         NULL,         NULL, 0, "<Tearoff>" },
+	{ "/File/_Search",    "<control>S", cb_search_gui, 0, NULL },
+	{ "/File/Preferences",    NULL, cb_prefs_gui, 0, NULL },
+	{ "/File/sep1",     NULL,         NULL, 0, "<Separator>" },
+	{ "/File/Quit",     "<control>Q", delete_event, 0, NULL },
+	{ "/_View",      NULL,         NULL, 0, "<Branch>" },
+	{ "/View/Datebook",  "F1",         cb_app_button, DATEBOOK, NULL },
+	{ "/View/Addresses",  "F2",         cb_app_button, ADDRESS, NULL },
+	{ "/View/Todos",  "F3",         cb_app_button, TODO, NULL },
+	{ "/View/Memos",  "F4",         cb_app_button, MEMO, NULL },
+	{ "/_Help",         NULL,         NULL, 0, "<LastBranch>" },
+	{ "/_Help/About",   NULL,         cb_about, GPOINTER_TO_INT(window), NULL },
+   };
+   GtkItemFactory *item_factory;
+   GtkAccelGroup *accel_group;
+   gint nmenu_items = sizeof (menu_items) / sizeof (menu_items[0]);
+
+   accel_group = gtk_accel_group_new ();
+
+   /* This function initializes the item factory.
+    Param 1: The type of menu - can be GTK_TYPE_MENU_BAR, GTK_TYPE_MENU,
+    or GTK_TYPE_OPTION_MENU.
+    Param 2: The path of the menu.
+    Param 3: A pointer to a gtk_accel_group.  The item factory sets up
+    the accelerator table while generating menus.
+    */
+   item_factory = gtk_item_factory_new(GTK_TYPE_MENU_BAR, "<main>",
+				       accel_group);
+
+   /* This function generates the menu items. Pass the item factory,
+    the number of items in the array, the array itself, and any
+    callback data for the the menu items. */
+   gtk_item_factory_create_items (item_factory, nmenu_items, menu_items, NULL);
+   
+   /* Attach the new accelerator group to the window. */
+   gtk_accel_group_attach (accel_group, GTK_OBJECT (window));
+
+   if (menubar)
+     /* Finally, return the actual menu bar created by the item factory. */
+     *menubar = gtk_item_factory_get_widget (item_factory, "<main>");
+}
+
+static void delete_event(GtkWidget *widget, GdkEvent *event, gpointer data)
 {
    if (glob_child_pid) {
-      logf(LOG_DEBUG, "killing %d\n", glob_child_pid);
+      jpilot_logf(LOG_DEBUG, "killing %d\n", glob_child_pid);
       if (glob_child_pid) {
 	 kill(glob_child_pid, SIGTERM);
       }
    }
+   write_rc_file();  //jpilot.rc
    gtk_main_quit();
 }
 
@@ -216,6 +350,7 @@ int main(int   argc,
 	 char *argv[])
 {
    GtkWidget *window;
+   GtkWidget *main_vbox;
    GtkWidget *button_datebook,*button_address,*button_todo,*button_memo;
    GtkWidget *button;
    GtkWidget *separator;
@@ -223,16 +358,21 @@ int main(int   argc,
    GdkBitmap *mask;
    GtkWidget *pixmapwid;
    GdkPixmap *pixmap;
+   GtkWidget *menubar;
    int filedesc[2];
+   int ivalue;
+   const char *svalue;
    int sync_only;
    int i;
-
+   char title[MAX_PREF_VALUE+40];
+   
    sync_only=FALSE;
    //log all output to a file
    glob_log_file_mask = LOG_INFO | LOG_WARN | LOG_FATAL | LOG_STDOUT;
    glob_log_stdout_mask = LOG_INFO | LOG_WARN | LOG_FATAL | LOG_STDOUT;
    glob_log_gui_mask = LOG_FATAL | LOG_WARN | LOG_GUI;
-   
+   glob_find_id = 0;
+
    for (i=1; i<argc; i++) {
       if (!strncasecmp(argv[1], "-v", 2)) {
 	 printf("%s\n", VERSION_STRING);
@@ -245,81 +385,107 @@ int main(int   argc,
       if (!strncasecmp(argv[1], "-d", 2)) {
 	 glob_log_stdout_mask = 0xFFFF;
 	 glob_log_file_mask = 0xFFFF;
-	 logf(LOG_DEBUG, "Debug messages on.\n");
+	 jpilot_logf(LOG_DEBUG, "Debug messages on.\n");
       }
       if (!strncasecmp(argv[1], "-s", 2)) {
 	 sync_only=TRUE;
       }
    }
 
-
    //Check to see if ~/.jpilot is there, or create it
+   jpilot_logf(LOG_DEBUG, "calling check_hidden_dir\n");
    if (check_hidden_dir()) {
       exit(1);
    }
 
    glob_date_timer_tag=0;
+   glob_child_pid=0;
 
    //Create a pipe to send the sync output, etc.
    if (pipe(filedesc) <0) {
-      logf(LOG_FATAL, "Could not open pipe\n");
+      jpilot_logf(LOG_FATAL, "Could not open pipe\n");
       exit(-1);
    }
    pipe_in = filedesc[0];
    pipe_out = filedesc[1];
    
    gtk_set_locale();
+#if defined(Japanese)
+   gtk_rc_parse("gtkrc.ja");
+#endif
+
 
    gtk_init(&argc, &argv);
 
-   read_rc_file();
+   read_rc_file();  //jpilot.rc
+
+   read_gtkrc_file();
 
    window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
    //gtk_window_set_default_size(GTK_WINDOW(window), 770, 440);
    gtk_window_set_default_size(GTK_WINDOW(window), 770, 500);
 
-   gtk_window_set_title(GTK_WINDOW(window), "J-Pilot "VERSION);
+   get_pref(PREF_USER, &ivalue, &svalue);
+   
+   strcpy(title, PN" "VERSION);
+   if ((svalue) && (svalue[0])) {
+      strcat(title, " User: ");
+      strcat(title, svalue);
+   }
+   gtk_window_set_title(GTK_WINDOW(window), title);
 
    // Set a handler for delete_event that immediately
    // exits GTK.
    gtk_signal_connect(GTK_OBJECT(window), "delete_event",
 		      GTK_SIGNAL_FUNC(delete_event), NULL);
 
-   gtk_container_set_border_width(GTK_CONTAINER(window), 20);
+   gtk_container_set_border_width(GTK_CONTAINER(window), 0);
 
+   main_vbox = gtk_vbox_new(FALSE, 0);
    g_hbox = gtk_hbox_new(FALSE, 0);
    g_vbox0 = gtk_vbox_new(FALSE, 0);
 
-   gtk_container_add(GTK_CONTAINER(window), g_hbox);
+   gtk_container_add(GTK_CONTAINER(window), main_vbox);
+   gtk_widget_show(main_vbox);
 
+   //Create the Menu Bar at the top
+   get_main_menu(window, &menubar);
+   gtk_box_pack_start(GTK_BOX(main_vbox), menubar, FALSE, FALSE, 0);
+   gtk_menu_bar_set_shadow_type(GTK_MENU_BAR(menubar), GTK_SHADOW_NONE);
+   gtk_widget_show(menubar);
+
+   
+   gtk_box_pack_start(GTK_BOX(main_vbox), g_hbox, TRUE, TRUE, 3);
+   gtk_container_set_border_width(GTK_CONTAINER(g_hbox), 10);
    gtk_box_pack_start(GTK_BOX(g_hbox), g_vbox0, FALSE, FALSE, 3);
    
+
    // Create "Datebook" button
    button_datebook = gtk_button_new();
    gtk_signal_connect(GTK_OBJECT(button_datebook), "clicked",
-		      GTK_SIGNAL_FUNC(cb_datebook), NULL);
+		      GTK_SIGNAL_FUNC(cb_app_button), GINT_TO_POINTER(DATEBOOK));
    gtk_box_pack_start(GTK_BOX(g_vbox0), button_datebook, FALSE, FALSE, 0);
    gtk_widget_set_usize(button_datebook, 46, 46);
-
+   
    // Create "Address" button
    button_address = gtk_button_new();
    gtk_signal_connect(GTK_OBJECT(button_address), "clicked",
-		      GTK_SIGNAL_FUNC(cb_address), NULL);
+		      GTK_SIGNAL_FUNC(cb_app_button), GINT_TO_POINTER(ADDRESS));
    gtk_box_pack_start(GTK_BOX(g_vbox0), button_address, FALSE, FALSE, 0);
    gtk_widget_set_usize(button_address, 46, 46);
 
    // Create "Todo" button
    button_todo = gtk_button_new();
    gtk_signal_connect(GTK_OBJECT(button_todo), "clicked",
-		      GTK_SIGNAL_FUNC(cb_todo), NULL);
+		      GTK_SIGNAL_FUNC(cb_app_button), GINT_TO_POINTER(TODO));
    gtk_box_pack_start(GTK_BOX(g_vbox0), button_todo, FALSE, FALSE, 0);
    gtk_widget_set_usize(button_todo, 46, 46);
 
    // Create "memo" button
    button_memo = gtk_button_new();
    gtk_signal_connect(GTK_OBJECT(button_memo), "clicked",
-		      GTK_SIGNAL_FUNC(cb_memo), NULL);
+		      GTK_SIGNAL_FUNC(cb_app_button), GINT_TO_POINTER(MEMO));
    gtk_box_pack_start(GTK_BOX(g_vbox0), button_memo, FALSE, FALSE, 0);
    gtk_widget_set_usize(button_memo, 46, 46);
 
@@ -342,7 +508,7 @@ int main(int   argc,
 		      GTK_SIGNAL_FUNC(delete_event), NULL);
    gtk_box_pack_start(GTK_BOX(g_vbox0), button, FALSE, FALSE, 0);
    gtk_widget_show(button);
-   
+
    // Create "Sync" button
    button = gtk_button_new_with_label ("Sync");
    gtk_signal_connect (GTK_OBJECT(button), "clicked",
@@ -380,7 +546,7 @@ int main(int   argc,
 					 datebook_xpm);
    pixmapwid = gtk_pixmap_new(pixmap, mask);
    gtk_widget_show(pixmapwid);
-   gtk_container_add( GTK_CONTAINER(button_datebook), pixmapwid);
+   gtk_container_add(GTK_CONTAINER(button_datebook), pixmapwid);
 
    // Create "Address" pixmap
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
@@ -408,6 +574,14 @@ int main(int   argc,
 
    glob_tooltips = gtk_tooltips_new();
    
+   gtk_tooltips_set_tip(glob_tooltips, button_datebook, "Datebook/Go to Today", NULL);
+
+   gtk_tooltips_set_tip(glob_tooltips, button_address, "Address Book", NULL);
+
+   gtk_tooltips_set_tip(glob_tooltips, button_todo, "ToDo List", NULL);
+
+   gtk_tooltips_set_tip(glob_tooltips, button_memo, "Memo Pad", NULL);
+
    //Set a callback for our pipe from the sync child process
    gdk_input_add(pipe_in, GDK_INPUT_READ, cb_read_pipe, window);
 

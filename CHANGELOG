@@ -21,7 +21,7 @@
   The Palm Pilot will also ask this question.
  Fixed Mobile not being displayed in address app.
 
-0.92 - 00/00/99
+0.92 - 07/18/99
  Fixed problem reading palm db files with 0 records.
  Added option for viewing only uncompleted todos.
  Fixed a GUI problem when adding an address the phone menus didn't update
@@ -35,4 +35,20 @@
  When deleteing repeating appointments it will now ask if you intend to delete
   just one occurence, or all occurences.
  Added some tooltips to show how many records are in a DB.
+ 
+0.93 - 08/10/99
+ Changed vsnprintf and snprintf to g_vsnprintf and g_snprintf for portability.
+ Changed flock calls to fcntl for portability.
+ Changed logf to jpilot_logf because logf is a call in libm on some systems
+ (portability).
+ Added Menus.
+ Added a quickfind in the address app.
+ Put in a global search (find) window.
+ Put in a preferences window and rc file support.
+ Added support for different date formats (localization).
+ Added support for weeks beginning on Monday (localization).
+ Added support for choosing the colors file from the preferences window.
+ Added a configure script.
+ Added in Japanese support.
+ Misc GUI improvements and code improvements.
  

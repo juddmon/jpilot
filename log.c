@@ -1,5 +1,5 @@
-/*
- * log.c
+/* log.c
+ * 
  * Copyright (C) 1999 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,6 @@
 #include <stdarg.h>
 #include <string.h>
 #include <sys/types.h>
-#include <sys/wait.h>
 #include <fcntl.h>
 #include <sys/file.h>
 #include <sys/stat.h>
@@ -39,7 +38,7 @@ int glob_log_file_mask;
 int glob_log_stdout_mask;
 int glob_log_gui_mask;
 
-int logf(int level, char *format, ...)
+int jpilot_logf(int level, char *format, ...)
 {
 #define WRITE_MAX_BUF	4096
    va_list	       	val;
@@ -51,12 +50,12 @@ int logf(int level, char *format, ...)
    buf[0] = '\0';
 
    if ((!fp) && (err_count>10)) {
-      return;
+      return -1;
    }
    if ((!fp) && (err_count==10)) {
       fprintf(stderr, "Cannot open log file, giving up.\n");
       err_count++;
-      return;
+      return -1;
    }
    if ((!fp) && (err_count<10)) {
       fp = open_file("jpilot.log", "w");
@@ -67,8 +66,8 @@ int logf(int level, char *format, ...)
    }
 
    va_start(val, format);
-   size = vsnprintf(buf, WRITE_MAX_BUF ,format, val);
-   //just in case vsnprintf reached the max
+   size = g_vsnprintf(buf, WRITE_MAX_BUF ,format, val);
+   //just in case g_vsnprintf reached the max
    if (size == -1) {
       buf[WRITE_MAX_BUF-1] = '\0';
       size=WRITE_MAX_BUF-1;
