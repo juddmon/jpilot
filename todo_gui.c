@@ -1759,7 +1759,6 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 	 /*Put a check or checked pixmap up */
 	 gtk_clist_set_pixmap(GTK_CLIST(clist), entries_shown, TODO_CHECK_COLUMN, pixmap_checked, mask_checked);
       } else {
-	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, TODO_CHECK_COLUMN, "");
 	 gtk_clist_set_pixmap(GTK_CLIST(clist), entries_shown, TODO_CHECK_COLUMN, pixmap_check, mask_check);
       }
       entries_shown++;
