@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.89 2004/11/24 04:19:12 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.90 2004/11/24 06:04:24 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -1379,8 +1379,9 @@ void get_main_menu(GtkWidget  *window,
    }
 #endif
 
-   menu_hide_privates = gtk_item_factory_get_widget(item_factory,
-      _("/View/Hide Private Records"));
+   menu_hide_privates = GTK_CHECK_MENU_ITEM(gtk_item_factory_get_widget(
+                                            item_factory,
+                                            _("/View/Hide Private Records")));
 }
 
 static void cb_delete_event(GtkWidget *widget, GdkEvent *event, gpointer data)
