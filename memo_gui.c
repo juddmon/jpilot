@@ -1200,7 +1200,13 @@ int memo_clist_redraw()
 
 int memo_cycle_cat()
 {
+   int b;
    int i, new_cat;
+
+   b=dialog_save_changed_record(pane, record_changed);
+   if (b==DIALOG_SAID_1) {
+      cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
+   }
 
    if (memo_category == CATEGORY_ALL) {
       new_cat = -1;

@@ -915,7 +915,7 @@ static void cb_category(GtkWidget *item, int selection)
    b=dialog_save_changed_record(pane, record_changed);
    if (b==DIALOG_SAID_1) {
       cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
-   }   
+   }
    if ((GTK_CHECK_MENU_ITEM(item))->active) {
       todo_category = selection;
       jp_logf(JP_LOG_DEBUG, "todo_category = %d\n",todo_category);
@@ -1449,6 +1449,11 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
    row_count=(GTK_CLIST(clist))->rows;
 
+   /* Need to remove pointers to data we are about to delete */
+   for (i=0; i<row_count; i++) {
+      gtk_clist_set_row_data(GTK_CLIST(clist), i, NULL);
+   }
+
    free_ToDoList(&todo_list);
 
    /* Need to get all records including private ones for the tooltips calculation */
@@ -1677,7 +1682,13 @@ int todo_clist_redraw()
 
 int todo_cycle_cat()
 {
+   int b;
    int i, new_cat;
+
+   b=dialog_save_changed_record(pane, record_changed);
+   if (b==DIALOG_SAID_1) {
+      cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
+   }
 
    if (todo_category == CATEGORY_ALL) {
       new_cat = -1;
