@@ -1497,11 +1497,12 @@ static void cb_category(GtkWidget *item, int selection)
    int b;
 
    if (!item) return;
-   b=dialog_save_changed_record(pane, record_changed);
-   if (b==DIALOG_SAID_1) {
-      cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
-   }
    if ((GTK_CHECK_MENU_ITEM(item))->active) {
+      b=dialog_save_changed_record(pane, record_changed);
+      if (b==DIALOG_SAID_1) {
+	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
+      }
+
       address_category = selection;
       jp_logf(JP_LOG_DEBUG, "address_category = %d\n",address_category);
       address_update_clist(clist, category_menu1, glob_address_list,

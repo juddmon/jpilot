@@ -912,11 +912,12 @@ static void cb_category(GtkWidget *item, int selection)
 {
    int b;
 
-   b=dialog_save_changed_record(pane, record_changed);
-   if (b==DIALOG_SAID_1) {
-      cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
-   }
    if ((GTK_CHECK_MENU_ITEM(item))->active) {
+      b=dialog_save_changed_record(pane, record_changed);
+      if (b==DIALOG_SAID_1) {
+	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
+      }
+
       todo_category = selection;
       jp_logf(JP_LOG_DEBUG, "todo_category = %d\n",todo_category);
       todo_clear_details();

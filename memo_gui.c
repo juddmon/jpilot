@@ -689,6 +689,7 @@ static void cb_category(GtkWidget *item, int selection)
       if (b==DIALOG_SAID_1) {
 	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
       }
+
       memo_category = selection;
       jp_logf(JP_LOG_DEBUG, "cb_category() cat=%d\n", memo_category);
       memo_clear_details();

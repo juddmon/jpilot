@@ -3072,6 +3072,7 @@ void cb_cal_changed(GtkWidget *widget,
    if (b==DIALOG_SAID_1) {
       cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
    }
+   set_new_button_to(CLEAR_FLAG);
 
    gtk_calendar_get_date(GTK_CALENDAR(main_calendar),&y,&m,&d);
 
