@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.17 2003/05/02 04:41:51 judd Exp $
+# $Id: Makefile.am,v 1.18 2003/05/21 18:26:21 judd Exp $
 
 SUBDIRS = intl Expense SyncTime KeyRing docs dialer po
 
@@ -181,6 +181,7 @@ install-data-local:
 	$(INSTALL) -m 644 jpilotrc.green $(DESTDIR)/$(prefix)/share/$(PACKAGE)/
 	$(INSTALL) -m 644 jpilotrc.purple $(DESTDIR)/$(prefix)/share/$(PACKAGE)/
 	$(INSTALL) -m 644 jpilotrc.steel $(DESTDIR)/$(prefix)/share/$(PACKAGE)/
+	$(INSTALL) -m 644 empty/* $(DESTDIR)/$(prefix)/share/$(PACKAGE)/
 uninstall-local:
 	rm -f $(DESTDIR)/$(prefix)/share/$(PACKAGE)/jpilotrc.*
 	rm -f $(DESTDIR)/$(prefix)/share/$(PACKAGE)/empty/*
