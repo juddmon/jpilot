@@ -707,6 +707,117 @@ gint cb_timer_alarms(gpointer data)
    return TRUE;
 }
 
+/*
+ * forward_or_backward should be -1 for backward or 1 for forward.
+ * undo- comment
+ */
+int forward_backward_in_appt_time(const struct Appointment *a,
+				  struct tm *t,
+				  int fdom, int ndim,
+				  int forward_or_backward)
+{
+   int count, dow, freq;
+
+   freq = a->repeatFrequency;
+
+   /* Go forward in time */
+   if (forward_or_backward==1) {
+      switch (a->repeatType) {
+       case repeatNone:
+	 break;
+       case repeatDaily:
+	 break;
+       case repeatWeekly:
+	 for (count=0, dow=t->tm_wday; count<14; count++) {
+	    add_days_to_date(t, 1);
+#ifdef ALARMS_DEBUG      
+	    printf("fpn: weekly forward t.tm_wday=%d, freq=%d\n", t->tm_wday, freq);
+#endif
+	    dow++;
+	    if (dow==7) {
+#ifdef ALARMS_DEBUG      
+	       printf("fpn: dow==7\n");
+#endif
+	       add_days_to_date(t, (freq-1)*7);
+	       dow=0;
+	    }
+	    if (a->repeatDays[dow]) {
+#ifdef ALARMS_DEBUG      
+	       printf("fpn: repeatDay[dow] dow=%d\n", dow);
+#endif
+	       break;
+	    }
+	 }
+	 break;
+       case repeatMonthlyByDay:
+	 add_months_to_date(t, freq);
+	 get_month_info(t->tm_mon, 1, t->tm_year, &fdom, &ndim);
+	 t->tm_mday=((a->repeatDay+7-fdom)%7) - ((a->repeatDay)%7) + a->repeatDay + 1;
+	 if (t->tm_mday > ndim-1) {
+	    t->tm_mday -= 7;
+	 }
+	 break;
+       case repeatMonthlyByDate:
+	 t->tm_mday=a->begin.tm_mday;
+	 add_months_to_date(t, freq);
+	 break;
+       case repeatYearly:
+	 t->tm_mday=a->begin.tm_mday;
+	 add_years_to_date(t, freq);
+	 break;
+      }/*switch */
+      return 0;
+   }
+   /* Go back in time */
+   if (forward_or_backward==-1) {
+      switch (a->repeatType) {
+       case repeatNone:
+	 break;
+       case repeatDaily:
+	 break;
+       case repeatWeekly:
+	 for (count=0, dow=t->tm_wday; count<14; count++) {
+	    sub_days_from_date(t, 1);
+#ifdef ALARMS_DEBUG      
+	    printf("fpn: weekly backward t.tm_wday=%d, freq=%d\n", t->tm_wday, freq);
+#endif
+	    dow--;
+	    if (dow==-1) {
+#ifdef ALARMS_DEBUG      
+	       printf("fpn: dow==-1\n");
+#endif
+	       sub_days_from_date(t, (freq-1)*7);
+	       dow=6;
+	    }
+	    if (a->repeatDays[dow]) {
+#ifdef ALARMS_DEBUG      
+	       printf("fpn: repeatDay[dow] dow=%d\n", dow);
+#endif
+	       break;
+	    }
+	 }
+	 break;
+       case repeatMonthlyByDay:
+	 sub_months_from_date(t, freq);
+	 get_month_info(t->tm_mon, 1, t->tm_year, &fdom, &ndim);
+	 t->tm_mday=((a->repeatDay+7-fdom)%7) - ((a->repeatDay)%7) + a->repeatDay + 1;
+	 if (t->tm_mday > ndim-1) {
+	    t->tm_mday -= 7;
+	 }
+	 break;
+       case repeatMonthlyByDate:
+	 t->tm_mday=a->begin.tm_mday;
+	 sub_months_from_date(t, freq);
+	 break;
+       case repeatYearly:
+	 t->tm_mday=a->begin.tm_mday;
+	 sub_years_from_date(t, freq);
+	 break;
+      }/*switch */
+   }
+   return 0;
+}
+
 static int find_prev_next(struct Appointment *a,
 			  int adv,
 			  struct tm *date1,
@@ -730,12 +841,12 @@ static int find_prev_next(struct Appointment *a,
    int freq;
    int found;
    int count;
-   int dow;
    int i;
    int safety_counter;
    int fdom, ndim;
    long fdow;
    int days, begin_days;
+   int found_exception;
 
 #ifdef ALARMS_DEBUG
    printf("fpn: entered find_previous_next\n");
@@ -951,6 +1062,27 @@ static int find_prev_next(struct Appointment *a,
 	   printf("fpn: trying with=%s\n", str);
 	}
 #endif
+      /* Check for exceptions */
+      found_exception=0;
+      for (i=0; i<a->exceptions; i++) {
+	 if ((t.tm_mday==a->exception[i].tm_mday) &&
+	     (t.tm_mon==a->exception[i].tm_mon) &&
+	     (t.tm_year==a->exception[i].tm_year)
+	     ) {
+	    found_exception=1;
+	    break;
+	 }
+      }
+      if (found_exception) {
+	 if (forward) {
+	    forward_backward_in_appt_time(a, &t, fdom, ndim, 1);
+	    continue;
+	 }
+	 if (backward) {
+	    forward_backward_in_appt_time(a, &t, fdom, ndim, -1);
+	    continue;
+	 }
+      }
       /* See that we aren't before then begin date */
       t_begin = mktime(&(a->begin));
       if (t_temp < t_begin - adv) {
@@ -985,99 +1117,12 @@ static int find_prev_next(struct Appointment *a,
 	 printf("fpn: prev_found\n");
 #endif
       }
-      /* increment or decrement time */
       if (forward) {
-	 switch (a->repeatType) {
-	  case repeatNone:
-	    break;
-	  case repeatDaily:
-	    break;
-	  case repeatWeekly:
-	    for (count=0, dow=t.tm_wday; count<14; count++) {
-	       add_days_to_date(&t, 1);
-#ifdef ALARMS_DEBUG      
-	       printf("fpn: weekly forward t.tm_wday=%d, freq=%d\n", t.tm_wday, freq);
-#endif
-	       dow++;
-	       if (dow==7) {
-#ifdef ALARMS_DEBUG      
-		  printf("fpn: dow==7\n");
-#endif
-		  add_days_to_date(&t, (freq-1)*7);
-		  dow=0;
-	       }
-	       if (a->repeatDays[dow]) {
-#ifdef ALARMS_DEBUG      
-		  printf("fpn: repeatDay[dow] dow=%d\n", dow);
-#endif
-		  break;
-	       }
-	    }
-	    break;
-	  case repeatMonthlyByDay:
-	    add_months_to_date(&t, freq);
-	    get_month_info(t.tm_mon, 1, t.tm_year, &fdom, &ndim);
-	    t.tm_mday=((a->repeatDay+7-fdom)%7) - ((a->repeatDay)%7) + a->repeatDay + 1;
-	    if (t.tm_mday > ndim-1) {
-	       t.tm_mday -= 7;
-	    }
-	    break;
-	  case repeatMonthlyByDate:
-	    t.tm_mday=a->begin.tm_mday;
-	    add_months_to_date(&t, freq);
-	    break;
-	  case repeatYearly:
-	    t.tm_mday=a->begin.tm_mday;
-	    add_years_to_date(&t, freq);
-	    break;
-	 }/*switch */
+	 forward_backward_in_appt_time(a, &t, fdom, ndim, 1);
 	 continue;
       }
       if (backward) {
-	 switch (a->repeatType) {
-	  case repeatNone:
-	    break;
-	  case repeatDaily:
-	    break;
-	  case repeatWeekly:
-	    for (count=0, dow=t.tm_wday; count<14; count++) {
-	       sub_days_from_date(&t, 1);
-#ifdef ALARMS_DEBUG      
-	       printf("fpn: weekly backward t.tm_wday=%d, freq=%d\n", t.tm_wday, freq);
-#endif
-	       dow--;
-	       if (dow==-1) {
-#ifdef ALARMS_DEBUG      
-		  printf("fpn: dow==-1\n");
-#endif
-		  sub_days_from_date(&t, (freq-1)*7);
-		  dow=6;
-	       }
-	       if (a->repeatDays[dow]) {
-#ifdef ALARMS_DEBUG      
-		  printf("fpn: repeatDay[dow] dow=%d\n", dow);
-#endif
-		  break;
-	       }
-	    }
-	    break;
-	  case repeatMonthlyByDay:
-	    sub_months_from_date(&t, freq);
-	    get_month_info(t.tm_mon, 1, t.tm_year, &fdom, &ndim);
-	    t.tm_mday=((a->repeatDay+7-fdom)%7) - ((a->repeatDay)%7) + a->repeatDay + 1;
-	    if (t.tm_mday > ndim-1) {
-	       t.tm_mday -= 7;
-	    }
-	    break;
-	  case repeatMonthlyByDate:
-	    t.tm_mday=a->begin.tm_mday;
-	    sub_months_from_date(&t, freq);
-	    break;
-	  case repeatYearly:
-	    t.tm_mday=a->begin.tm_mday;
-	    sub_years_from_date(&t, freq);
-	    break;
-	 }/*switch */
+	 forward_backward_in_appt_time(a, &t, fdom, ndim, -1);
 	 continue;
       }
    }
