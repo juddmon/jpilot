@@ -1971,6 +1971,8 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       }
       lstrncpy_remove_cr_lfs(str2, str, ADDRESS_MAX_COLUMN_LEN);
       gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_NAME_COLUMN, str2);
+      /* Clear string so previous data won't be used inadvertently in next set_text */
+      str2[0] = '\0';
       lstrncpy_remove_cr_lfs(str2, temp_al->ma.a.entry[temp_al->ma.a.showPhone+3], ADDRESS_MAX_COLUMN_LEN);
       gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_PHONE_COLUMN, str2);
       gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_al->ma));
