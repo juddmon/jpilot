@@ -123,6 +123,7 @@ GtkWidget *sync_window = NULL;
 
 static void delete_event(GtkWidget *widget, GdkEvent *event, gpointer data);
 void install_gui_and_size(GtkWidget *main_window);
+void cb_payback(GtkWidget *widget, gpointer data);
 
 /*
  * Parses the -geometry command line parameter
@@ -1130,6 +1131,7 @@ void get_main_menu(GtkWidget  *window,
   { url_commands[KONQUEROR_NEW].desc,      NULL,         cb_web,         KONQUEROR_NEW,      NULL },
 #endif
   { _("/_Help"),                           NULL,         NULL,           0,                  "<LastBranch>" },
+  { _("/Help/PayBack program"),            NULL,         cb_payback,     0,                  NULL },
   { _("/Help/J-Pilot"),                    NULL,         cb_about,       0,                  NULL },
   { "END",                                 NULL,         NULL,           0,                  NULL }
  };
@@ -1274,8 +1276,6 @@ void get_main_menu(GtkWidget  *window,
    for (; strcmp(menu_items1[i1].path, "END"); i1++, i2++) {
       menu_items2[i2]=menu_items1[i1];
    }
-   g_snprintf(temp_str, sizeof(temp_str), _("/_Help/%s"), PN);
-   menu_items2[i2-1].path = strdup(temp_str);
 
 #ifdef ENABLE_PLUGINS
    if (help_count) {
@@ -1561,8 +1561,58 @@ void jp_window_iconify(GtkWidget *window)
 }
 #endif
 
-int main(int argc,
-	 char *argv[])
+void cb_payback(GtkWidget *widget, gpointer data)
+{
+   int w, h;
+   char *button_text[]={"Don't show this again"};
+   char *text=
+     "Buy a Palm Tungsten, or Palm Zire, register it on-line and "
+     "earn points for the J-Pilot project.\n\n"
+     "If you already own a Tungsten, or Zire Palm, consider registering it "
+     "on-line to help J-Pilot.  "
+     "Visit http://jpilot.org/payback.html for details.\n\n"
+     "This message will not be automatically displayed again and can be found later "
+     "in the help menu.\n\n\n"
+     "PALM, TUNGSTEN and ZIRE are among the trademarks of palmOne, Inc."
+     ;
+     
+   gdk_window_get_size(window->window, &w, &h);
+
+   if (GTK_IS_WINDOW(window)) {
+      dialog_generic_with_text(GTK_WINDOW(window), w/2, h*2/3,
+			       PN, "Register your Palm in the Payback Program",
+			       text, 1, button_text, 1);
+   }
+}
+
+gint cb_check_version(gpointer main_window)
+{
+   int major, minor, micro;
+   const char *Pver;
+   long lver;
+   char str_ver[8];
+     
+   jp_logf(JP_LOG_DEBUG, "cb_check_version\n");
+
+   get_pref(PREF_VERSION, NULL, &Pver);
+
+   memset(str_ver, 0, 8);
+   if (str_ver) strncpy(str_ver, Pver, 6);
+   lver=atol(str_ver);
+   major=lver/10000;
+   minor=(lver/100)%100;
+   micro=lver%100;
+
+   set_pref(PREF_VERSION, 0, "009907", 1);
+   
+   /* 2004 Oct 2 */
+   if ((time(NULL) < 1096675200) && (lver<9907)) {
+      cb_payback(0, 0);
+   }
+   return FALSE;
+}
+
+int main(int argc, char *argv[])
 {
    GtkWidget *main_vbox;
    GtkWidget *temp_hbox;
@@ -2264,6 +2314,8 @@ char *xpm_unlocked[] = {
    alarms_init(skip_past_alarms, skip_all_alarms);
 #endif
 
+   gtk_idle_add(cb_check_version, window);
+   
    gtk_main();
 
    return 0;

@@ -107,6 +107,7 @@ static prefType glob_prefs[NUM_PREFS] = {
      {"last_addr_category", INTTYPE, INTTYPE, CATEGORY_ALL, NULL, 0},
      {"last_todo_category", INTTYPE, INTTYPE, CATEGORY_ALL, NULL, 0},
      {"last_memo_category", INTTYPE, INTTYPE, CATEGORY_ALL, NULL, 0},
+     {"version", CHARTYPE, CHARTYPE, 0, NULL, 0},
 };
 
 struct name_list {
