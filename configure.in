@@ -27,6 +27,15 @@ else
    AC_DEFINE_UNQUOTED(BASE_DIR, "$prefix", [ BASE_DIR ])
 fi
 
+dnl check operating system for jpilot-dialer
+case "${build_os}" in
+  linux-gnu)     dialer=yes ;;
+  *) AC_MSG_WARN([Operating system ${build_os} not supported by
+  jpilot-dialer]) ; dialer=no ;;
+esac
+
+AM_CONDITIONAL(JPILOT_DIALER, test x$dialer = xyes)
+
 dnl Checks for programs.
 
 dnl Compile options
@@ -197,6 +206,7 @@ int main()
    dnl *************************
    dnl * Check pilot-link version for USB support in pilot-link >= 0.10.0
    dnl *************************
+usb=no;
 #Check pilot-link version
    AC_MSG_CHECKING(pilot-link version )
    AC_TRY_RUN([
@@ -381,7 +391,7 @@ AC_SUBST(ABILIB)
 
 
 AC_OUTPUT(Makefile docs/Makefile Expense/Makefile KeyRing/Makefile
-	m4/Makefile intl/Makefile po/Makefile.in
+	m4/Makefile intl/Makefile dialer/Makefile po/Makefile.in
 	SyncTime/Makefile po/Makefile.in jpilot.spec
 	SlackBuild)
 #
@@ -400,6 +410,7 @@ echo "Prefix directory.......................   $prefix"
 echo "pilot-link headers.....................   $pilot_incl"
 echo "NLS support (foriegn languages)........   $USE_NLS"
 echo "USB support enabled....................   $usb"
+echo "dialier support........................   $dialer"
 pl_version=`grep PILOT_LINK_VERSION "$pilot_incl/pi-version.h" | \
 cut -d " " -f 3`
 pl_major=`grep PILOT_LINK_MAJOR "$pilot_incl/pi-version.h" | \
