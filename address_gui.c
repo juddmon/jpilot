@@ -1688,7 +1688,6 @@ static void cb_clist_selection(GtkWidget      *clist,
    const char *entry_text;
    long use_jos, char_set;
 
-   if ((!event) && (column < 0)) return;
    if ((!event) && (clist_hack)) return;
 
    /* HACK, see clist hack explanation in memo_gui.c */
@@ -1971,7 +1970,6 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       addr_clear_details();
    }
 
-
    /*Clear the text box to make things look nice */
    if (main) {
 #ifdef ENABLE_GTK2
@@ -1985,6 +1983,8 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
    /* Freeze clist to prevent flicker during updating */
    gtk_clist_freeze(GTK_CLIST(clist));
+   gtk_signal_disconnect_by_func(GTK_OBJECT(clist),
+				 GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
    gtk_clist_clear(GTK_CLIST(clist));
 
    /* Collect preferences and pixmaps before loop */
@@ -2141,6 +2141,9 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
       entries_shown++;
    }
+
+   gtk_signal_connect(GTK_OBJECT(clist), "select_row",
+		      GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
 
    /* If there are items in the list, highlight the selected row */
    if ((main) && (entries_shown>0)) {
@@ -2563,8 +2566,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    hack_clist_set_column_title_pixmap(clist, ADDRESS_NOTE_COLUMN, pixmapwid);
 
    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
-		      GTK_SIGNAL_FUNC(cb_clist_selection),
-		      text);
+		      GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
    gtk_clist_set_shadow_type(GTK_CLIST(clist), SHADOW);
    gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
 
