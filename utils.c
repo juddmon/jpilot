@@ -2019,13 +2019,9 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 int undelete_pc_record(AppType app_type, void *VP, int flag)
 {
    PC3RecordHeader header;
-   struct Appointment *app;
    MyAppointment *mapp;
-   struct Address *address;
    MyAddress *maddress;
-   struct ToDo *todo;
    MyToDo *mtodo;
-   struct Memo *memo;
    MyMemo *mmemo;
    unsigned int unique_id;
    long ivalue;
