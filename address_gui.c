@@ -2851,7 +2851,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 				  GTK_SIGNAL_FUNC(cb_dial_or_mail),
 			          address_text[i2]);
 	       gtk_table_attach(GTK_TABLE(table1), GTK_WIDGET(dial_button[i2-3]),
-				0, 1, i, i+1, GTK_SHRINK, 0, 0, 0);
+				0, 1, i, i+1, GTK_FILL, 0, 0, 0);
 	    } else {
 	       gtk_table_attach(GTK_TABLE(table1), GTK_WIDGET(label),
 				2, 3, i, i+1, GTK_FILL, 0, 0, 0);
