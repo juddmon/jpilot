@@ -1,4 +1,6 @@
 /* jpilot-dump.c
+ * 
+ * Paul Landes <landesp@acm.org>: 2/06/2004 added phone label tags
  * hvrietsc: 10/19/2000 added memo dump
  * hvrietsc: 10/17/2000 added %p for priority of todo
  * hvrietsc: 7/18/2000 added %C in todo to print categories
@@ -762,6 +764,8 @@ int dumpaddress()
 
 #define PRIT if (tal->ma.a.entry[num] != NULL) { printf("%s",tal->ma.a.entry[num]); }
 
+#define PRITE if (tal->ma.a.entry[num + 3] != NULL) { printf("%d",tal->ma.a.phoneLabel[num]); }
+
     case 'l' : num=0; PRIT; i++; break;
     case 'f' : num=1; PRIT; i++; break;
     case 'c' : num=2; PRIT; i++; break;
@@ -775,6 +779,16 @@ int dumpaddress()
 	}
 	i++;
 	break;
+   case 'e' : num = 0;
+     switch (formatA[i+2]) {
+     case '1' : num=0; PRITE; i++; break;
+     case '2' : num=1; PRITE; i++; break;
+     case '3' : num=2; PRITE; i++; break;
+     case '4' : num=3; PRITE; i++; break;
+     case '5' : num=4; PRITE; i++; break;
+     }
+     i++;
+     break;
     case 'a' : num=8; PRIT; i++; break;
     case 'T' : num=9; PRIT; i++; break;
     case 's' : num=10; PRIT; i++; break;
@@ -873,9 +887,9 @@ int main(int   argc,
 		Nmonth= (argv[i][7]-'0')*10+(argv[i][8]-'0');
 		Nday  = (argv[i][10]-'0')*10+(argv[i][11]-'0');
 	}
-
-	 printf("year=%d,month=%d,day=%d\n",Nyear,Nmonth,Nday);
-
+/*
+printf("year=%d,month=%d,day=%d\n",Nyear,Nmonth,Nday);
+*/
       }
       if (!strncasecmp(argv[i], "-A", 2)) {
 	dumpA = TRUE;
@@ -931,6 +945,7 @@ int main(int   argc,
 	puts("%f first name");
 	puts("%c company");
 	puts("%p phone1, %p1 phone1, %p2 phone2, %p3 phone3, %p4 phone4 %p5 phone5");
+	puts("%e phone label1, %e1 phone label1, %e2 phone label2, %e3 phone label3, %e4 phone label4 %e5 phone label5");
 	puts("%a address");
 	puts("%T town/city");
 	puts("%s state");
