@@ -60,12 +60,13 @@ AC_SUBST(cflags)
 dnl ******************************
 dnl * start gettext
 dnl ******************************
-#AC_PROG_INTLTOOL
+AC_PROG_INTLTOOL
 
 dnl Set of available languages
 ALL_LINGUAS="ca cs da de es fr it ja nl no ru sv tr vi zh_CN zh_TW"
 
 AM_GNU_GETTEXT
+AM_GNU_GETTEXT_VERSION
 
 if test "x$MSGFMT" = "xno"; then
    if test "x$GMSGFMT" = "xno"; then
