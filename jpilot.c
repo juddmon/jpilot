@@ -94,7 +94,7 @@ gint glob_date_timer_tag;
 pid_t glob_child_pid;
 GtkWidget *g_output_text;
 #ifdef ENABLE_GTK2
-static GObject *g_output_text_buffer;
+static GtkTextBuffer *g_output_text_buffer;
 #endif
 GtkWidget *window;
 static GtkWidget *output_pane;
@@ -777,11 +777,11 @@ static void output_to_pane(const char *str)
       gchar *utf8_text;
       
       utf8_text = g_locale_to_utf8 (str, -1, NULL, NULL, NULL);
-      gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(g_output_text_buffer), utf8_text, -1);
+      gtk_text_buffer_insert_at_cursor(g_output_text_buffer, utf8_text, -1);
       g_free(utf8_text);
    } else
-      gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(g_output_text_buffer), str, -1);
-   gtk_text_view_scroll_mark_onscreen(GTK_TEXT_VIEW(g_output_text), gtk_text_buffer_get_insert(GTK_TEXT_BUFFER(g_output_text_buffer)));
+      gtk_text_buffer_insert_at_cursor(g_output_text_buffer, str, -1);
+   gtk_text_view_scroll_mark_onscreen(GTK_TEXT_VIEW(g_output_text), gtk_text_buffer_get_insert(g_output_text_buffer));
 #else
    gtk_text_insert(GTK_TEXT(g_output_text), NULL, NULL, NULL, str, -1);
 #endif
@@ -1423,7 +1423,7 @@ void cb_output(GtkWidget *widget, gpointer data)
    }
    if (flags==OUTPUT_CLEAR) {
 #ifdef ENABLE_GTK2
-      gtk_text_buffer_set_text(GTK_TEXT_BUFFER(g_output_text_buffer), "", -1);
+      gtk_text_buffer_set_text(g_output_text_buffer, "", -1);
 #else
       gtk_text_set_point(GTK_TEXT(g_output_text),
 			 gtk_text_get_length(GTK_TEXT(g_output_text)));
@@ -2033,7 +2033,7 @@ char *xpm_unlocked[] = {
 
 #ifdef ENABLE_GTK2
    g_output_text = gtk_text_view_new();
-   g_output_text_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(g_output_text)));
+   g_output_text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(g_output_text));
    gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(g_output_text), FALSE);
    gtk_text_view_set_editable(GTK_TEXT_VIEW(g_output_text), FALSE);
    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(g_output_text), GTK_WRAP_WORD);
