@@ -2176,6 +2176,7 @@ static int dayview_update_clist()
 #endif
    struct tm new_time;
    int show_priv;
+   char str[DATEBOOK_MAX_COLUMN_LEN+2];
    char str2[DATEBOOK_MAX_COLUMN_LEN];
 
    jp_logf(JP_LOG_DEBUG, "dayview_update_clist()\n");
@@ -2351,8 +2352,6 @@ static int dayview_update_clist()
    }
 
      {
-	extern GtkTooltips *glob_tooltips;
-	char str[82];
 	g_snprintf(str, sizeof(str), _("%d of %d records"), entries_shown, num_entries);
 	gtk_tooltips_set_tip(glob_tooltips, GTK_CLIST(clist)->column[DB_APPT_COLUMN].button, str, NULL);
      }
@@ -3913,6 +3912,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_label_set_pattern(GTK_LABEL(GTK_BIN(button)->child), "_");
    gtk_widget_add_accelerator(GTK_WIDGET(button), "clicked", accel_group, 'W',
 			      GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+   gtk_tooltips_set_tip(glob_tooltips, button, _("View appointments by week"), NULL);
 
    /* Make Monthview button */
    button = gtk_button_new_with_label(_("Month"));
@@ -3924,6 +3924,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_label_set_pattern(GTK_LABEL(GTK_BIN(button)->child), "_");
    gtk_widget_add_accelerator(GTK_WIDGET(button), "clicked", accel_group, 'M',
 			      GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+   gtk_tooltips_set_tip(glob_tooltips, button, _("View appointments by month"), NULL);
 
 #ifdef ENABLE_DATEBK
    if (use_db3_tags) {
