@@ -2,5 +2,5 @@
 .libs
 Makefile
 Makefile.in
-expense.lo
+libexpense_la-expense.lo
 libexpense.la
