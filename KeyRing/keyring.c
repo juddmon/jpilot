@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.33 2005/01/23 13:02:09 rousseau Exp $ */
+/* $Id: keyring.c,v 1.34 2005/03/04 19:06:23 rousseau Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -834,6 +834,9 @@ static void display_records()
 
    /* This function takes care of reading the Database for us */
    num = jp_read_DB_files("Keys-Gtkr", &records);
+   if (-1 == num)
+     return 0;
+
    /* Go to first entry in the list */
    for (temp_list = records; temp_list; temp_list = temp_list->prev) {
       records = temp_list;
@@ -1400,6 +1403,8 @@ int verify_pasword(char *ascii_password)
    /* This function takes care of reading the Database for us */
    records=NULL;
    num = jp_read_DB_files("Keys-Gtkr", &records);
+   if (-1 == num)
+     return 0;
 
    /* Go to first entry in the list */
    for (temp_list = records; temp_list; temp_list = temp_list->prev) {
@@ -1854,6 +1859,8 @@ int plugin_search(const char *search_string, int case_sense,
 
    /* This function takes care of reading the Database for us */
    num = jp_read_DB_files("Keys-Gtkr", &records);
+   if (-1 == num)
+     return 0;
 
    /* Go to first entry in the list */
    for (temp_list = records; temp_list; temp_list = temp_list->prev) {

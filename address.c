@@ -1,4 +1,4 @@
-/* $Id: address.c,v 1.34 2004/12/07 06:51:08 rikster5 Exp $ */
+/* $Id: address.c,v 1.35 2005/03/04 19:06:22 rousseau Exp $ */
 
 /*******************************************************************************
  * address.c
@@ -452,6 +452,9 @@ int get_addresses2(AddressList **address_list, int sort_order,
    recs_returned = 0;
 
    num = jp_read_DB_files("AddressDB", &records);
+   if (-1 == num)
+     return 0;
+
    /* Go to first entry in the list */
    for (temp_list = records; temp_list; temp_list = temp_list->prev) {
       records = temp_list;

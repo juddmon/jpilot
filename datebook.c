@@ -1,4 +1,4 @@
-/* $Id: datebook.c,v 1.43 2004/12/07 06:51:08 rikster5 Exp $ */
+/* $Id: datebook.c,v 1.44 2005/03/04 19:06:23 rousseau Exp $ */
 
 /*******************************************************************************
  * datebook.c
@@ -936,6 +936,9 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
    recs_returned = 0;
 
    num = jp_read_DB_files("DatebookDB", &records);
+   if (-1 == num)
+     return 0;
+
    if (total_records) *total_records = num;
    /* Go to first entry in the list */
    for (temp_list = records; temp_list; temp_list = temp_list->prev) {

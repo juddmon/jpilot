@@ -1,4 +1,4 @@
-/* $Id: expense.c,v 1.33 2004/12/10 01:58:08 rikster5 Exp $ */
+/* $Id: expense.c,v 1.34 2005/03/04 19:06:23 rousseau Exp $ */
 
 /*******************************************************************************
  * expense.c
@@ -967,6 +967,9 @@ static void display_records()
 
    /* This function takes care of reading the Database for us */
    num = jp_read_DB_files("ExpenseDB", &records);
+   if (-1 == num)
+     return 0;
+
    /* Go to first entry in the list */
    for (temp_list = records; temp_list; temp_list = temp_list->prev) {
       records = temp_list;
@@ -1971,6 +1974,8 @@ int plugin_search(const char *search_string, int case_sense, struct search_resul
 
    /* This function takes care of reading the Database for us */
    num = jp_read_DB_files("ExpenseDB", &records);
+   if (-1 == num)
+     return 0;
 
    /* Go to first entry in the list */
    for (temp_list = records; temp_list; temp_list = temp_list->prev) {

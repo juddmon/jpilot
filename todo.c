@@ -1,4 +1,4 @@
-/* $Id: todo.c,v 1.35 2004/12/07 06:51:08 rikster5 Exp $ */
+/* $Id: todo.c,v 1.36 2005/03/04 19:06:23 rousseau Exp $ */
 
 /*******************************************************************************
  * todo.c
@@ -428,11 +428,17 @@ int get_todos2(ToDoList **todo_list, int sort_order,
    get_pref(PREF_MANANA_MODE, &ivalue, NULL);
    if (ivalue) {
       num = jp_read_DB_files("MañanaDB", &records);
+      if (-1 == num)
+        return 0;
    } else {
       num = jp_read_DB_files("ToDoDB", &records);
+      if (-1 == num)
+        return 0;
    }
 #else
    num = jp_read_DB_files("ToDoDB", &records);
+   if (-1 == num)
+      return 0;
 #endif
    /* Go to first entry in the list */
    for (temp_list = records; temp_list; temp_list = temp_list->prev) {

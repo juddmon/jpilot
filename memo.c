@@ -1,4 +1,4 @@
-/* $Id: memo.c,v 1.31 2004/12/07 06:51:08 rikster5 Exp $ */
+/* $Id: memo.c,v 1.32 2005/03/04 19:06:23 rousseau Exp $ */
 
 /*******************************************************************************
  * memo.c
@@ -270,8 +270,12 @@ int get_memos2(MemoList **memo_list, int sort_order,
    get_pref(PREF_MEMO32_MODE, &ivalue, NULL);
    if (ivalue) {
       num = jp_read_DB_files("Memo32DB", &records);
+      if (-1 == num)
+        return 0;
    } else {
       num = jp_read_DB_files("MemoDB", &records);
+      if (-1 == num)
+        return 0;
    }
    /* Go to first entry in the list */
    for (temp_list = records; temp_list; temp_list = temp_list->prev) {
