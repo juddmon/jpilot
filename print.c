@@ -563,7 +563,7 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
    print_close(out);
 
 #ifdef HAVE_LOCALE_H
-   setlocale(LC_ALL, current_locale);
+   setlocale(LC_NUMERIC, current_locale);
 #endif
      return(0);
 }
