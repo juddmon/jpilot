@@ -17,9 +17,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* gtk2 */
-#define GTK_ENABLE_BROKEN
-
 #include "config.h"
 #include "i18n.h"
 #include <gtk/gtk.h>
@@ -391,8 +388,15 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
    GtkWidget *vbox;
    GtkWidget *temp_hbox;
    GtkWidget *textw;
+#ifdef ENABLE_GTK2
+   GObject   *textw_buffer;
+#endif
    GtkWidget *label;
+#ifdef ENABLE_GTK2
+   GtkWidget *scrolled_window;
+#else
    GtkWidget *vscrollbar;
+#endif
    int pw, ph;
    gint px, py;
    char str[100];
@@ -462,15 +466,34 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
    temp_hbox = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox), temp_hbox, TRUE, TRUE, 0);
 
+#ifdef ENABLE_GTK2
+   textw = gtk_text_view_new();
+   textw_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(textw)));
+   gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(textw), FALSE);
+   gtk_text_view_set_editable(GTK_TEXT_VIEW(textw), FALSE);
+   gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(textw), GTK_WRAP_WORD);
+
+   scrolled_window = gtk_scrolled_window_new(NULL, NULL);
+   gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
+				  GTK_POLICY_AUTOMATIC, GTK_POLICY_ALWAYS);
+   gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 1);
+   gtk_container_add(GTK_CONTAINER(scrolled_window), textw);
+   gtk_box_pack_start_defaults(GTK_BOX(temp_hbox), scrolled_window);
+#else
    textw = gtk_text_new(NULL, NULL);
    gtk_text_set_editable(GTK_TEXT(textw), FALSE);
    gtk_text_set_word_wrap(GTK_TEXT(textw), TRUE);
    vscrollbar = gtk_vscrollbar_new(GTK_TEXT(textw)->vadj);
    gtk_box_pack_start(GTK_BOX(temp_hbox), textw, TRUE, TRUE, 0);
    gtk_box_pack_start(GTK_BOX(temp_hbox), vscrollbar, FALSE, FALSE, 0);
+#endif
 
    if (text) {
+#ifdef ENABLE_GTK2
+      gtk_text_buffer_set_text(GTK_TEXT_BUFFER(textw_buffer), text, -1);
+#else
       gtk_text_insert(GTK_TEXT(textw), NULL, NULL, NULL, text, -1);
+#endif
    }
 
    /* Box for buttons  */

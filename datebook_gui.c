@@ -18,8 +18,6 @@
  */
 
 #define EASTER
-/* gtk2 */
-#define GTK_ENABLE_BROKEN
 
 #include "config.h"
 #include "i18n.h"
@@ -106,6 +104,9 @@ static GtkWidget *main_calendar;
 static GtkWidget *dow_label;
 static GtkWidget *clist;
 static GtkWidget *text_widget1, *text_widget2;
+#ifdef ENABLE_GTK2
+static GObject   *text_widget1_buffer,*text_widget2_buffer;
+#endif
 static GtkWidget *private_checkbox;
 static GtkWidget *check_button_alarm;
 static GtkWidget *check_button_day_endon;
@@ -1720,6 +1721,10 @@ static void clear_details()
 
    clear_begin_end_labels();
 
+#ifdef ENABLE_GTK2
+   gtk_text_buffer_set_text(GTK_TEXT_BUFFER(text_widget1_buffer), "", -1);
+   gtk_text_buffer_set_text(GTK_TEXT_BUFFER(text_widget2_buffer), "", -1);
+#else
    gtk_text_set_point(GTK_TEXT(text_widget1),
 		      gtk_text_get_length(GTK_TEXT(text_widget1)));
    gtk_text_set_point(GTK_TEXT(text_widget2),
@@ -1728,6 +1733,7 @@ static void clear_details()
 			    gtk_text_get_length(GTK_TEXT(text_widget1)));
    gtk_text_backward_delete(GTK_TEXT(text_widget2),
 			    gtk_text_get_length(GTK_TEXT(text_widget2)));
+#endif
 #ifdef ENABLE_DATEBK
    get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
    if (use_db3_tags) {
@@ -1788,6 +1794,10 @@ static int get_details(struct Appointment *a, unsigned char *attrib)
    char datef[32];
    const char *svalue1, *svalue2;
    const gchar *text1;
+#ifdef ENABLE_GTK2
+   GtkTextIter start_iter;
+   GtkTextIter end_iter;
+#endif
 #ifdef ENABLE_DATEBK
    gchar *note_text=NULL;
    gchar *text2;
@@ -2012,8 +2022,12 @@ static int get_details(struct Appointment *a, unsigned char *attrib)
       }
       break;
    }
-
+#ifdef ENABLE_GTK2
+   gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(text_widget1_buffer),&start_iter,&end_iter);
+   a->description = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(text_widget1_buffer),&start_iter,&end_iter,TRUE);
+#else
    a->description = gtk_editable_get_chars(GTK_EDITABLE(text_widget1), 0, -1);
+#endif
 
    /* Empty appointment descriptions crash PalmOS 2.0, but are fine in
     * later versions */
@@ -2031,7 +2045,12 @@ static int get_details(struct Appointment *a, unsigned char *attrib)
 #ifdef ENABLE_DATEBK
    if (use_db3_tags) {
       text1 = gtk_entry_get_text(GTK_ENTRY(datebk_entry));
+#ifdef ENABLE_GTK2
+      gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(text_widget2_buffer),&start_iter,&end_iter);
+      text2 = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(text_widget2_buffer),&start_iter,&end_iter,TRUE);
+#else
       text2 = gtk_editable_get_chars(GTK_EDITABLE(text_widget2), 0, -1);
+#endif
       if (!text1) text1=null_str;
       if (!text2) text2=null_str;
       /* 8 extra characters is just being paranoid */
@@ -2044,10 +2063,22 @@ static int get_details(struct Appointment *a, unsigned char *attrib)
       }
       strcat(note_text, text2);
    } else {
+#ifdef ENABLE_GTK2
+      gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(text_widget2_buffer),&start_iter,&end_iter);
+      a->note = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(text_widget2_buffer),&start_iter,&end_iter,TRUE);
+#else
       a->note = gtk_editable_get_chars(GTK_EDITABLE(text_widget2), 0, -1);
+#endif
    }
+/* This #else is for the Datebk #ifdef */
+#else
+#ifdef ENABLE_GTK2
+   gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(text_widget2_buffer),&start_iter,&end_iter);
+   a->note = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(text_widget2_buffer),&start_iter,&end_iter,TRUE);
 #else
    a->note = gtk_editable_get_chars(GTK_EDITABLE(text_widget2), 0, -1);
+#endif
+/* This #endif is for the Datebk #ifdef */
 #endif
    if (a->note[0]=='\0') {
       a->note=NULL;
@@ -2751,12 +2782,17 @@ static void cb_clist_selection(GtkWidget      *clist,
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_button_notime),
 				a->event);
 
+#ifdef ENABLE_GTK2
+   gtk_text_buffer_set_text(GTK_TEXT_BUFFER(text_widget1_buffer), "", -1);
+   gtk_text_buffer_set_text(GTK_TEXT_BUFFER(text_widget2_buffer), "", -1);
+#else
    gtk_text_set_point(GTK_TEXT(text_widget1), 0);
    gtk_text_forward_delete(GTK_TEXT(text_widget1),
 			    gtk_text_get_length(GTK_TEXT(text_widget1)));
    gtk_text_set_point(GTK_TEXT(text_widget2), 0);
    gtk_text_forward_delete(GTK_TEXT(text_widget2),
 			    gtk_text_get_length(GTK_TEXT(text_widget2)));
+#endif
 #ifdef ENABLE_DATEBK
    if (use_db3_tags) {
       gtk_entry_set_text(GTK_ENTRY(datebk_entry), "");
@@ -2804,7 +2840,11 @@ static void cb_clist_selection(GtkWidget      *clist,
       gtk_entry_set_text(GTK_ENTRY(units_entry), "0");
    }
    if (a->description) {
+#ifdef ENABLE_GTK2
+      gtk_text_buffer_set_text(GTK_TEXT_BUFFER(text_widget1_buffer), a->description, -1);
+#else
       gtk_text_insert(GTK_TEXT(text_widget1), NULL,NULL, NULL, a->description, -1);
+#endif
    }
 #ifdef ENABLE_DATEBK
    if (use_db3_tags) {
@@ -2819,21 +2859,37 @@ static void cb_clist_selection(GtkWidget      *clist,
 	    }
 	 }
 	 gtk_entry_set_text(GTK_ENTRY(datebk_entry), note);
+#ifdef ENABLE_GTK2
+	 gtk_text_buffer_set_text(GTK_TEXT_BUFFER(text_widget2_buffer), &(note[i+1]), -1);
+#else
 	 gtk_text_insert(GTK_TEXT(text_widget2), NULL,NULL, NULL, &(note[i+1]), -1);
+#endif
 	 free(note);
       } else {
 	 if (a->note) {
+#ifdef ENABLE_GTK2
+	    gtk_text_buffer_set_text(GTK_TEXT_BUFFER(text_widget2_buffer), a->note, -1);
+#else
 	    gtk_text_insert(GTK_TEXT(text_widget2), NULL,NULL, NULL, a->note, -1);
+#endif
 	 }
       }
    } else {
       if (a->note) {
+#ifdef ENABLE_GTK2
+	 gtk_text_buffer_set_text(GTK_TEXT_BUFFER(text_widget2_buffer), a->note, -1);
+#else
 	 gtk_text_insert(GTK_TEXT(text_widget2), NULL,NULL, NULL, a->note, -1);
+#endif
       }
    }
 #else
    if (a->note) {
+#ifdef ENABLE_GTK2
+      gtk_text_buffer_set_text(GTK_TEXT_BUFFER(text_widget2_buffer), a->note, -1);
+#else
       gtk_text_insert(GTK_TEXT(text_widget2), NULL,NULL, NULL, a->note, -1);
+#endif
    }
 #endif
 
@@ -3288,10 +3344,20 @@ static gboolean
 cb_key_pressed(GtkWidget *widget, GdkEventKey *event,
 	       gpointer next_widget) 
 {
+#ifdef ENABLE_GTK2
+      GtkTextIter    cursor_pos_iter;
+      GtkTextBuffer *text_buffer;
+#endif
 
    if (event->keyval == GDK_Tab) { 
+#ifdef ENABLE_GTK2
+      text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget));
+      gtk_text_buffer_get_iter_at_mark(text_buffer,&cursor_pos_iter,gtk_text_buffer_get_insert(text_buffer));
+      if (gtk_text_iter_is_end(&cursor_pos_iter)) {
+#else
       if (gtk_text_get_point(GTK_TEXT(widget)) ==
 	  gtk_text_get_length(GTK_TEXT(widget))) {
+#endif
 	 gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event"); 
 	 gtk_widget_grab_focus(GTK_WIDGET(next_widget));
 	 return TRUE;
@@ -3394,7 +3460,7 @@ int datebook_gui_cleanup()
 #ifndef ENABLE_GTK2
    gtk_accel_group_detach(accel_group, GTK_OBJECT(gtk_widget_get_toplevel(main_calendar)));
 #endif
-	 /* GTK2 FIXME figure the above out */
+   /* GTK2 FIXME figure the above out */
    gtk_signal_disconnect_by_func(GTK_OBJECT(gtk_widget_get_toplevel(main_calendar)),
 				 GTK_SIGNAL_FUNC(cb_keyboard), NULL);
 
@@ -3440,10 +3506,17 @@ static void connect_changed_signals(int con_or_dis)
       gtk_signal_connect(GTK_OBJECT(units_entry), "changed",
 			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
 
+#ifdef ENABLE_GTK2
+      g_signal_connect(text_widget1_buffer, "changed",
+		       GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+      g_signal_connect(text_widget2_buffer, "changed",
+		       GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+#else
       gtk_signal_connect(GTK_OBJECT(text_widget1), "changed",
 			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
       gtk_signal_connect(GTK_OBJECT(text_widget2), "changed",
 			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+#endif
 
 #ifdef ENABLE_DATEBK
       if (use_db3_tags) {
@@ -3524,10 +3597,17 @@ static void connect_changed_signals(int con_or_dis)
       gtk_signal_disconnect_by_func(GTK_OBJECT(units_entry),
 				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
 
+#ifdef ENABLE_GTK2
+      g_signal_handlers_disconnect_by_func(text_widget1_buffer,
+					   GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+      g_signal_handlers_disconnect_by_func(text_widget2_buffer,
+					   GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+#else
       gtk_signal_disconnect_by_func(GTK_OBJECT(text_widget1),
 				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
       gtk_signal_disconnect_by_func(GTK_OBJECT(text_widget2),
 				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+#endif
 #ifdef ENABLE_DATEBK
       if (use_db3_tags) {
 	 if (datebk_entry) {
@@ -3692,7 +3772,9 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    GtkWidget *separator;
    GtkWidget *label;
    GtkWidget *table;
+#ifndef ENABLE_GTK2
    GtkWidget *vscrollbar;
+#endif
    GtkWidget *vbox1, *vbox2;
    GtkWidget *hbox2;
    GtkWidget *hbox_temp;
@@ -4152,11 +4234,24 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    hbox_temp = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, TRUE, TRUE, 0);
 
+#ifdef ENABLE_GTK2
+   text_widget1 = gtk_text_view_new();
+   text_widget1_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_widget1)));
+   gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text_widget1), GTK_WRAP_WORD);
+
+   scrolled_window = gtk_scrolled_window_new(NULL, NULL);
+   gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
+				  GTK_POLICY_AUTOMATIC, GTK_POLICY_ALWAYS);
+   gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 1);
+   gtk_container_add(GTK_CONTAINER(scrolled_window), text_widget1);
+   gtk_box_pack_start_defaults(GTK_BOX(hbox_temp), scrolled_window);
+#else
    text_widget1 = gtk_text_new(NULL, NULL);
    gtk_text_set_word_wrap(GTK_TEXT(text_widget1), TRUE);
    vscrollbar = gtk_vscrollbar_new(GTK_TEXT(text_widget1)->vadj);
    gtk_box_pack_start(GTK_BOX(hbox_temp), text_widget1, TRUE, TRUE, 0);
    gtk_box_pack_start(GTK_BOX(hbox_temp), vscrollbar, FALSE, FALSE, 0);
+#endif
    /* gtk_widget_set_usize(GTK_WIDGET(text_widget1), 255, 50); */
    gtk_widget_set_usize(GTK_WIDGET(text_widget1), 10, 10);
 
@@ -4165,11 +4260,24 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, TRUE, TRUE, 0);
 
 
+#ifdef ENABLE_GTK2
+   text_widget2 = gtk_text_view_new();
+   text_widget2_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_widget2)));
+   gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text_widget2), GTK_WRAP_WORD);
+
+   scrolled_window = gtk_scrolled_window_new (NULL, NULL);
+   gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
+				  GTK_POLICY_AUTOMATIC, GTK_POLICY_ALWAYS);
+   gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 1);
+   gtk_container_add(GTK_CONTAINER(scrolled_window), text_widget2);
+   gtk_box_pack_start_defaults(GTK_BOX(hbox_temp), scrolled_window);
+#else
    text_widget2 = gtk_text_new(NULL, NULL);
    gtk_text_set_word_wrap(GTK_TEXT(text_widget2), TRUE);
    vscrollbar = gtk_vscrollbar_new(GTK_TEXT(text_widget2)->vadj);
    gtk_box_pack_start(GTK_BOX(hbox_temp), text_widget2, TRUE, TRUE, 0);
    gtk_box_pack_start(GTK_BOX(hbox_temp), vscrollbar, FALSE, FALSE, 0);
+#endif
    gtk_widget_set_usize(GTK_WIDGET(text_widget2), 10, 10);
 
    /* Datebk tags entry */
@@ -4408,8 +4516,13 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(show_todos_button), TRUE);
    }
    
+#ifdef ENABLE_GTK2
+   gtk_text_view_set_editable(GTK_TEXT_VIEW(text_widget1), TRUE);
+   gtk_text_view_set_editable(GTK_TEXT_VIEW(text_widget2), TRUE);
+#else
    gtk_text_set_editable(GTK_TEXT(text_widget1), TRUE);
    gtk_text_set_editable(GTK_TEXT(text_widget2), TRUE);
+#endif
 
    gtk_notebook_popup_enable(GTK_NOTEBOOK(notebook));
 

@@ -17,9 +17,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* gtk2 */
-#define GTK_ENABLE_BROKEN
-
 #include "config.h"
 #include "i18n.h"
 #include <sys/stat.h>
@@ -38,6 +35,14 @@
 #include "password.h"
 #include "export.h"
 #include <pi-dlp.h>
+/* There are a large number of calls to gtk_text_insert in the code.  To
+ * add ifdef/endif blocks around all of them would make the code unreadable.
+ * Instead, I use a macro substitution to convert old GTK 1.X calls to 
+ * GTK 2.X calls. */
+#ifdef ENABLE_GTK2
+#define GTK_TEXT(arg1) GTK_TEXT_BUFFER(gtk_txt_buf_ ## arg1)
+#define gtk_text_insert(buffer,arg2,arg3,arg4,string,length) gtk_text_buffer_insert_at_cursor(buffer,string,length)
+#endif
 
 
 /*#define SHADOW GTK_SHADOW_IN */
@@ -85,8 +90,16 @@ char *field_names_ja[]={"kana(Last)", "Last",  "kana(First)", "First",
 
 GtkWidget *clist;
 GtkWidget *address_text[NUM_ADDRESS_ENTRIES+NUM_ADDRESS_EXT_ENTRIES];
+#ifdef ENABLE_GTK2
+static GObject *gtk_txt_buf_address_text[NUM_ADDRESS_ENTRIES+NUM_ADDRESS_EXT_ENTRIES];
+#endif
 GtkWidget *text;
+#ifdef ENABLE_GTK2
+static GObject *gtk_txt_buf_text;
+#endif
+#ifndef ENABLE_GTK2
 GtkWidget *vscrollbar;
+#endif
 static GtkWidget *private_checkbox;
 GtkWidget *phone_list_menu[NUM_PHONE_ENTRIES];
 GtkWidget *menu;
@@ -254,13 +267,23 @@ static void connect_changed_signals(int con_or_dis)
       }
       if (!use_jos && (char_set == CHAR_SET_JAPANESE)) {
 	 for (i=0; i<(NUM_ADDRESS_ENTRIES+NUM_ADDRESS_EXT_ENTRIES); i++) {
+#ifdef ENABLE_GTK2
+	    g_signal_connect(gtk_txt_buf_address_text[i], "changed",
+			     GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+#else
 	    gtk_signal_connect(GTK_OBJECT(address_text[i]), "changed",
 			       GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+#endif
 	 }
       } else {
 	 for (i=0; i<NUM_ADDRESS_ENTRIES; i++) {
+#ifdef ENABLE_GTK2
+	    g_signal_connect(gtk_txt_buf_address_text[i], "changed",
+			     GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+#else
 	    gtk_signal_connect(GTK_OBJECT(address_text[i]), "changed",
 			       GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+#endif
 	 }
       }
       gtk_signal_connect(GTK_OBJECT(private_checkbox), "toggled",
@@ -292,13 +315,23 @@ static void connect_changed_signals(int con_or_dis)
       }
       if (!use_jos && (char_set == CHAR_SET_JAPANESE)) {
 	 for (i=0; i<(NUM_ADDRESS_ENTRIES+NUM_ADDRESS_EXT_ENTRIES); i++) {
+#ifdef ENABLE_GTK2
+            g_signal_handlers_disconnect_by_func(gtk_txt_buf_address_text[i],
+						 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+#else
 	    gtk_signal_disconnect_by_func(GTK_OBJECT(address_text[i]),
 					  GTK_SIGNAL_FUNC(cb_record_changed), NULL);     
+#endif
 	 }
       } else {
 	 for (i=0; i<NUM_ADDRESS_ENTRIES; i++) {
+#ifdef ENABLE_GTK2
+            g_signal_handlers_disconnect_by_func(gtk_txt_buf_address_text[i],
+						 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+#else
 	    gtk_signal_disconnect_by_func(GTK_OBJECT(address_text[i]),
 					  GTK_SIGNAL_FUNC(cb_record_changed), NULL);     
+#endif
 	 }
       }
       gtk_signal_disconnect_by_func(GTK_OBJECT(private_checkbox),
@@ -1167,6 +1200,10 @@ static void cb_add_new_record(GtkWidget *widget,
    int show_priv;
    char *str0, *str1, *str2;
    long use_jos, char_set;
+#ifdef ENABLE_GTK2
+   GtkTextIter start_iter;
+   GtkTextIter end_iter;
+#endif
 
    memset(&a, 0, sizeof(a));
    unique_id=0;
@@ -1212,8 +1249,15 @@ static void cb_add_new_record(GtkWidget *widget,
       if (!use_jos && (char_set == CHAR_SET_JAPANESE)) {
 	 i=0;
 	 while (i<NUM_ADDRESS_EXT_ENTRIES) {
+#ifdef ENABLE_GTK2
+	    gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(gtk_txt_buf_address_text[i]),&start_iter,&end_iter);
+	    str1 = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(gtk_txt_buf_address_text[i]),&start_iter,&end_iter,TRUE);
+	    gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(address_text[i+NUM_ADDRESS_ENTRIES]),&start_iter,&end_iter);
+	    str2 = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(address_text[i+NUM_ADDRESS_ENTRIES]),&start_iter,&end_iter,TRUE);
+#else
 	    str1 = gtk_editable_get_chars(GTK_EDITABLE(address_text[i]), 0, -1);
 	    str2 = gtk_editable_get_chars(GTK_EDITABLE(address_text[i+NUM_ADDRESS_ENTRIES]), 0, -1);
+#endif
 	    if ((str0 = (char *)malloc(strlen(str1)+strlen(str2)+2))!=NULL) {
 	       if (*str1 !='\0') {
 		  strcpy(str0, str1);strcat(str0,"\1");strcat(str0, str2);
@@ -1226,14 +1270,26 @@ static void cb_add_new_record(GtkWidget *widget,
 	    i++;
 	 } 
 	 while (i<NUM_ADDRESS_ENTRIES) {
+#ifdef ENABLE_GTK2
+	    gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(gtk_txt_buf_address_text[i]),&start_iter,&end_iter);
+	    a.entry[i] =
+	      gtk_text_buffer_get_text(GTK_TEXT_BUFFER(gtk_txt_buf_address_text[i]),&start_iter,&end_iter,TRUE);
+#else
 	    a.entry[i] =
 	      gtk_editable_get_chars(GTK_EDITABLE(address_text[i]), 0, -1);
+#endif
 	    i++;
 	 }
       } else {
 	 for (i=0; i<NUM_ADDRESS_ENTRIES; i++) {
-	    a.entry[i] = 
+#ifdef ENABLE_GTK2
+	    gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(gtk_txt_buf_address_text[i]),&start_iter,&end_iter);
+	    a.entry[i] =
+	      gtk_text_buffer_get_text(GTK_TEXT_BUFFER(gtk_txt_buf_address_text[i]),&start_iter,&end_iter,TRUE);
+#else
+	    a.entry[i] =
 	      gtk_editable_get_chars(GTK_EDITABLE(address_text[i]), 0, -1);
+#endif
 	 }
       }
       for (i=0; i<NUM_PHONE_ENTRIES; i++) {
@@ -1276,24 +1332,36 @@ void clear_details()
    connect_changed_signals(DISCONNECT_SIGNALS);
 
    /* Clear the quickview */
+#ifdef ENABLE_GTK2
+   gtk_text_buffer_set_text(GTK_TEXT_BUFFER(gtk_txt_buf_text), "", -1);
+#else
    gtk_text_set_point(GTK_TEXT(text), 0);
    gtk_text_forward_delete(GTK_TEXT(text),
 			   gtk_text_get_length(GTK_TEXT(text)));
+#endif
 
    /*Clear all the address entry texts */
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    get_pref(PREF_USE_JOS, &use_jos, NULL);
    if (!use_jos && (char_set == CHAR_SET_JAPANESE)) {
       for (i=0; i<(NUM_ADDRESS_ENTRIES+NUM_ADDRESS_EXT_ENTRIES); i++) {
+#ifdef ENABLE_GTK2
+	 gtk_text_buffer_set_text(GTK_TEXT_BUFFER(gtk_txt_buf_address_text[i]), "", -1);
+#else
 	 gtk_text_set_point(GTK_TEXT(address_text[i]), 0);
 	 gtk_text_forward_delete(GTK_TEXT(address_text[i]),
 				 gtk_text_get_length(GTK_TEXT(address_text[i])));
+#endif
       }
    } else {
       for (i=0; i<NUM_ADDRESS_ENTRIES; i++) {
+#ifdef ENABLE_GTK2
+	 gtk_text_buffer_set_text(GTK_TEXT_BUFFER(gtk_txt_buf_address_text[i]), "", -1);
+#else
 	 gtk_text_set_point(GTK_TEXT(address_text[i]), 0);
 	 gtk_text_forward_delete(GTK_TEXT(address_text[i]),
 				 gtk_text_get_length(GTK_TEXT(address_text[i])));
+#endif
       }
    }
    for (i=0; i<NUM_PHONE_ENTRIES; i++) {
@@ -1362,7 +1430,17 @@ void cb_dialer(GtkWidget *widget, gpointer data)
 
    number[0]=ext[0]='\0';
    text=data;
+#ifdef ENABLE_GTK2
+   GtkTextIter    start_iter;
+   GtkTextIter    end_iter;
+   GtkTextBuffer *text_buffer;
+
+   text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text));
+   gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(text),&start_iter,&end_iter);
+   str = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(text),&start_iter,&end_iter,TRUE);
+#else
    str=gtk_editable_get_chars(GTK_EDITABLE(text), 0, -1);
+#endif
    if (!str) return;
    printf("[%s]\n", str);
 
@@ -1542,11 +1620,17 @@ static void cb_clist_selection(GtkWidget      *clist,
       gtk_entry_set_text(GTK_ENTRY(address_quickfind_entry), "");
    }
 
+#ifdef ENABLE_GTK2
+   gtk_widget_freeze_child_notify(text);
+
+   gtk_text_buffer_set_text(GTK_TEXT_BUFFER(gtk_txt_buf_text), "", -1);
+#else
    gtk_text_freeze(GTK_TEXT(text));
 
    gtk_text_set_point(GTK_TEXT(text), 0);
    gtk_text_forward_delete(GTK_TEXT(text),
 			   gtk_text_get_length(GTK_TEXT(text)));
+#endif
 
    gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL, _("Category: "), -1);
    gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL,
@@ -1607,7 +1691,11 @@ static void cb_clist_selection(GtkWidget      *clist,
 	 }
       }
    }
+#ifdef ENABLE_GTK2
+   gtk_widget_thaw_child_notify(text);
+#else
    gtk_text_thaw(GTK_TEXT(text));
+#endif
 
    cat = ma->attrib & 0x0F;
    sorted_position = find_sorted_cat(cat);
@@ -1639,9 +1727,13 @@ static void cb_clist_selection(GtkWidget      *clist,
    get_pref(PREF_USE_JOS, &use_jos, NULL);
    if (!use_jos && (char_set == CHAR_SET_JAPANESE)) {
       for (i=0; i<(NUM_ADDRESS_ENTRIES+NUM_ADDRESS_EXT_ENTRIES); i++) {
+#ifdef ENABLE_GTK2
+	 gtk_text_buffer_set_text(GTK_TEXT_BUFFER(gtk_txt_buf_address_text[i]), "", -1);
+#else
 	 gtk_text_set_point(GTK_TEXT(address_text[i]), 0); 
 	 gtk_text_forward_delete(GTK_TEXT(address_text[i]),
 				 gtk_text_get_length(GTK_TEXT(address_text[i])));
+#endif
 	 if (i<NUM_ADDRESS_EXT_ENTRIES){
 	    if (a->entry[i]) {
 	       if ((tmp_p = strchr(a->entry[i],'\1'))) {
@@ -1666,9 +1758,13 @@ static void cb_clist_selection(GtkWidget      *clist,
       }
    } else {
       for (i=0; i<NUM_ADDRESS_ENTRIES; i++) {
-	 gtk_text_set_point(GTK_TEXT(address_text[i]), 0);
+#ifdef ENABLE_GTK2
+	 gtk_text_buffer_set_text(GTK_TEXT_BUFFER(gtk_txt_buf_address_text[i]), "", -1);
+#else
+	 gtk_text_set_point(GTK_TEXT(address_text[i]), 0); 
 	 gtk_text_forward_delete(GTK_TEXT(address_text[i]),
 				 gtk_text_get_length(GTK_TEXT(address_text[i])));
+#endif
 	 if (a->entry[i]) {
 	    gtk_text_insert(GTK_TEXT(address_text[i]), NULL,NULL,NULL, a->entry[i], -1);
 	 }
@@ -1749,9 +1845,13 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
    /*Clear the text box to make things look nice */
    if (main) {
+#ifdef ENABLE_GTK2
+      gtk_text_buffer_set_text(GTK_TEXT_BUFFER(gtk_txt_buf_text), "", -1);
+#else
       gtk_text_set_point(GTK_TEXT(text), 0);
       gtk_text_forward_delete(GTK_TEXT(text),
 			      gtk_text_get_length(GTK_TEXT(text)));
+#endif
    }
 
    gtk_clist_freeze(GTK_CLIST(clist));
@@ -2119,12 +2219,22 @@ static gboolean
    };
    int i;
    long use_jos, char_set;
+#ifdef ENABLE_GTK2
+   GtkTextIter    cursor_pos_iter;
+   GtkTextBuffer *text_buffer;
+#endif
 
    if ((event->keyval == GDK_Tab) ||
        (event->keyval == GDK_ISO_Left_Tab)) {
       /* See if they are at the end of the text */
+#ifdef ENABLE_GTK2
+      text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget));
+      gtk_text_buffer_get_iter_at_mark(text_buffer,&cursor_pos_iter,gtk_text_buffer_get_insert(text_buffer));
+      if (gtk_text_iter_is_end(&cursor_pos_iter)) {
+#else
       if (gtk_text_get_point(GTK_TEXT(widget)) ==
 	  gtk_text_get_length(GTK_TEXT(widget))) {
+#endif
 	 gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event"); 
 	 /* Find the next/prev widget */
 	 get_pref(PREF_CHAR_SET, &char_set, NULL);
@@ -2462,10 +2572,18 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	    label = gtk_label_new(tmp_buf); 
 	    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
 	 }
+#ifdef ENABLE_GTK2
+	 address_text[i2] = gtk_text_view_new();
+	 gtk_txt_buf_address_text[i2] = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(address_text[i2])));
+	 gtk_text_view_set_editable(GTK_TEXT_VIEW(address_text[i2]), TRUE);
+	 gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(address_text[i2]), GTK_WRAP_WORD);
+	 gtk_container_set_border_width(GTK_CONTAINER(address_text[i2]), 1);
+#else
 	 address_text[i2] = gtk_text_new(NULL, NULL);
 
 	 gtk_text_set_editable(GTK_TEXT(address_text[i2]), TRUE);
 	 gtk_text_set_word_wrap(GTK_TEXT(address_text[i2]), TRUE);
+#endif
 	 gtk_widget_set_usize(GTK_WIDGET(address_text[i2]), 0, 25);
 	 /*gtk_box_pack_start(GTK_BOX(hbox_temp), address_text[i2], TRUE, TRUE, 0); */
 	 /*hbox_temp = gtk_hbox_new(FALSE, 0); */
@@ -2481,14 +2599,24 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 				      3, 4, i, i+1);
 	 }
 	 if (i>(8+3) && i<(14+3)) {
+#ifdef ENABLE_GTK2
+	    gtk_table_attach(GTK_TABLE(table2), GTK_WIDGET(label),
+				      0, 1, i-9-3, i-8-3,GTK_FILL, 0, 2, 0);
+#else
 	    gtk_table_attach_defaults(GTK_TABLE(table2), GTK_WIDGET(label),
 				      0, 1, i-9-3, i-8-3);
+#endif
 	    gtk_table_attach_defaults(GTK_TABLE(table2), GTK_WIDGET(address_text[i2]),
 				      1, 2, i-9-3, i-8-3);
  	   }
 	 if (i>(13+3) && i<100) {
+#ifdef ENABLE_GTK2
+	    gtk_table_attach(GTK_TABLE(table3), GTK_WIDGET(label),
+				      0, 1, i-14-3, i-13-3,GTK_FILL, 0, 2, 0);
+#else
 	    gtk_table_attach_defaults(GTK_TABLE(table3), GTK_WIDGET(label),
 				      0, 1, i-14-3, i-13-3);
+#endif
 	    gtk_table_attach_defaults(GTK_TABLE(table3), GTK_WIDGET(address_text[i2]),
 				      1, 2, i-14-3, i-13-3);
 	 }
@@ -2522,10 +2650,18 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	    label = gtk_label_new(address_app_info.labels[i2]); 
 	    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
 	 }
+#ifdef ENABLE_GTK2
+	 address_text[i2] = gtk_text_view_new();
+	 gtk_txt_buf_address_text[i2] = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(address_text[i2])));
+	 gtk_text_view_set_editable(GTK_TEXT_VIEW(address_text[i2]), TRUE);
+	 gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(address_text[i2]), GTK_WRAP_WORD);
+	 gtk_container_set_border_width(GTK_CONTAINER(address_text[i2]), 1);
+#else
 	 address_text[i2] = gtk_text_new(NULL, NULL);
 
 	 gtk_text_set_editable(GTK_TEXT(address_text[i2]), TRUE);
 	 gtk_text_set_word_wrap(GTK_TEXT(address_text[i2]), TRUE);
+#endif
 	 gtk_widget_set_usize(GTK_WIDGET(address_text[i2]), 0, 25);
 	 if (i<9) {
 	    if (i2>2 && i2<8) {
@@ -2545,14 +2681,24 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 				      3, 4, i, i+1);
 	 }
 	 if (i>8 && i<14) {
+#ifdef ENABLE_GTK2
+	    gtk_table_attach(GTK_TABLE(table2), GTK_WIDGET(label),
+			     0, 1, i-9, i-8,GTK_FILL, 0, 2, 0);
+#else
 	    gtk_table_attach_defaults(GTK_TABLE(table2), GTK_WIDGET(label),
 				      0, 1, i-9, i-8);
+#endif
 	    gtk_table_attach_defaults(GTK_TABLE(table2), GTK_WIDGET(address_text[i2]),
 				      1, 2, i-9, i-8);
 	 }
 	 if (i>13 && i<100) {
+#ifdef ENABLE_GTK2
+	    gtk_table_attach(GTK_TABLE(table3), GTK_WIDGET(label),
+			     0, 1, i-14, i-13,GTK_FILL, 0, 2, 0);
+#else
 	    gtk_table_attach_defaults(GTK_TABLE(table3), GTK_WIDGET(label),
 				      0, 1, i-14, i-13);
+#endif
 	    gtk_table_attach_defaults(GTK_TABLE(table3), GTK_WIDGET(address_text[i2]),
 				      1, 2, i-14, i-13);
 	 }
@@ -2587,13 +2733,27 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_container_set_border_width(GTK_CONTAINER(frame), 5);
    gtk_container_add(GTK_CONTAINER(frame), hbox_temp);
 
+#ifdef ENABLE_GTK2
+   text = gtk_text_view_new();
+   gtk_txt_buf_text = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)));
+   gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(text), FALSE);
+   gtk_text_view_set_editable(GTK_TEXT_VIEW(text), FALSE);
+   gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text), GTK_WRAP_WORD);
+
+   scrolled_window = gtk_scrolled_window_new (NULL, NULL);
+   gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
+				  GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
+   gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 1);
+   gtk_container_add(GTK_CONTAINER(scrolled_window), text);
+   gtk_box_pack_start(GTK_BOX(hbox_temp), scrolled_window, TRUE, TRUE, 0);
+#else
    text = gtk_text_new(NULL, NULL);
    gtk_text_set_editable(GTK_TEXT(text), FALSE);
    gtk_text_set_word_wrap(GTK_TEXT(text), TRUE);
    vscrollbar = gtk_vscrollbar_new(GTK_TEXT(text)->vadj);
    gtk_box_pack_start(GTK_BOX(hbox_temp), text, TRUE, TRUE, 0);
    gtk_box_pack_start(GTK_BOX(hbox_temp), vscrollbar, FALSE, FALSE, 0);
-
+#endif
 
    gtk_widget_show_all(vbox);
    gtk_widget_show_all(hbox);

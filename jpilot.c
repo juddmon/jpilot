@@ -17,9 +17,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* gtk2 */
-#define GTK_ENABLE_BROKEN
-
 #include "config.h"
 #include <gtk/gtk.h>
 #include <time.h>
@@ -106,6 +103,9 @@ GtkTooltips *glob_tooltips;
 gint glob_date_timer_tag;
 pid_t glob_child_pid;
 GtkWidget *g_output_text;
+#ifdef ENABLE_GTK2
+static GObject *g_output_text_buffer;
+#endif
 GtkWidget *window;
 static GtkWidget *output_pane;
 int glob_app = 0;
@@ -779,7 +779,12 @@ static void output_to_pane(const char *str)
    int w, h, new_y;
    long ivalue;
 
+#ifdef ENABLE_GTK2
+   gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(g_output_text_buffer), str, -1);
+   gtk_text_view_scroll_mark_onscreen(GTK_TEXT_VIEW(g_output_text), gtk_text_buffer_get_insert(GTK_TEXT_BUFFER(g_output_text_buffer)));
+#else
    gtk_text_insert(GTK_TEXT(g_output_text), NULL, NULL, NULL, str, -1);
+#endif
    get_pref(PREF_OUTPUT_HEIGHT, &ivalue, NULL);
    /* Make them look at least something if output happens */
    if (ivalue < 60) ivalue=60;
@@ -1384,7 +1389,7 @@ void get_main_menu(GtkWidget  *window,
 
    /* Attach the new accelerator group to the window. */
 #ifndef ENABLE_GTK2
-   gtk_accel_group_attach(accel_group, GTK_OBJECT (window));
+   gtk_accel_group_attach(accel_group, GTK_OBJECT(window));
 #endif
    /* GTK2 FIXME figure the above out */
 
@@ -1492,10 +1497,14 @@ void cb_output(GtkWidget *widget, gpointer data)
       jp_logf(JP_LOG_DEBUG, "setting output_pane to %d\n", pane_y);
    }
    if (flags==OUTPUT_CLEAR) {
+#ifdef ENABLE_GTK2
+      gtk_text_buffer_set_text(GTK_TEXT_BUFFER(g_output_text_buffer), "", -1);
+#else
       gtk_text_set_point(GTK_TEXT(g_output_text),
 			 gtk_text_get_length(GTK_TEXT(g_output_text)));
       gtk_text_backward_delete(GTK_TEXT(g_output_text),
 			       gtk_text_get_length(GTK_TEXT(g_output_text)));
+#endif
    }
 }
 
@@ -1623,7 +1632,11 @@ int main(int argc,
    GtkWidget *pixmapwid;
    GdkPixmap *pixmap;
    GtkWidget *menubar;
+#ifdef ENABLE_GTK2
+   GtkWidget *scrolled_window;
+#else
    GtkWidget *vscrollbar;
+#endif
    unsigned char skip_past_alarms;
    unsigned char skip_all_alarms;
    int filedesc[2];
@@ -2007,12 +2020,27 @@ char *xpm_unlocked[] = {
    temp_vbox = gtk_vbox_new(FALSE, 0);
    gtk_box_pack_end(GTK_BOX(temp_hbox), temp_vbox, FALSE, FALSE, 0);
 
+#ifdef ENABLE_GTK2
+   g_output_text = gtk_text_view_new();
+   g_output_text_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(g_output_text)));
+   gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(g_output_text), FALSE);
+   gtk_text_view_set_editable(GTK_TEXT_VIEW(g_output_text), FALSE);
+   gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(g_output_text), GTK_WRAP_WORD);
+
+   scrolled_window = gtk_scrolled_window_new(NULL, NULL);
+   gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
+				  GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
+
+   gtk_container_add(GTK_CONTAINER(scrolled_window), g_output_text);
+   gtk_box_pack_start_defaults(GTK_BOX(temp_hbox), scrolled_window);
+#else
    g_output_text = gtk_text_new(NULL, NULL);
    gtk_text_set_editable(GTK_TEXT(g_output_text), FALSE);
    gtk_text_set_word_wrap(GTK_TEXT(g_output_text), TRUE);
    vscrollbar = gtk_vscrollbar_new(GTK_TEXT(g_output_text)->vadj);
    gtk_box_pack_start(GTK_BOX(temp_hbox), g_output_text, TRUE, TRUE, 0);
    gtk_box_pack_start(GTK_BOX(temp_hbox), vscrollbar, FALSE, FALSE, 0);
+#endif
 
    /* button = gtk_button_new_with_label(_("Minimize")); */
    button = gtk_button_new();

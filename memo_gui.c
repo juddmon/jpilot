@@ -17,9 +17,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* gtk2 */
-#define GTK_ENABLE_BROKEN
-
 #include "config.h"
 #include "i18n.h"
 #include <sys/stat.h>
@@ -52,6 +49,9 @@ static int memo_category = CATEGORY_ALL;
 static int clist_row_selected;
 static GtkWidget *clist;
 static GtkWidget *memo_text;
+#ifdef ENABLE_GTK2
+static GObject   *memo_text_buffer;
+#endif
 static GtkWidget *private_checkbox;
 static GtkWidget *memo32_checkbox;
 /*Need one extra for the ALL category */
@@ -165,8 +165,14 @@ static void connect_changed_signals(int con_or_dis)
 			       GTK_SIGNAL_FUNC(cb_record_changed), NULL);
 	 }
       }
+#ifdef ENABLE_GTK2
+      g_signal_connect(memo_text_buffer, "changed",
+		       GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+#else
       gtk_signal_connect(GTK_OBJECT(memo_text), "changed",
 			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+#endif
+
       gtk_signal_connect(GTK_OBJECT(private_checkbox), "toggled",
 			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
    }
@@ -181,8 +187,13 @@ static void connect_changed_signals(int con_or_dis)
 					  GTK_SIGNAL_FUNC(cb_record_changed), NULL);     
 	 }
       }
+#ifdef ENABLE_GTK2
+      g_signal_handlers_disconnect_by_func(memo_text_buffer,
+					   GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+#else
       gtk_signal_disconnect_by_func(GTK_OBJECT(memo_text),
 				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+#endif
       gtk_signal_disconnect_by_func(GTK_OBJECT(private_checkbox),
 				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
    }
@@ -695,6 +706,9 @@ static int memo_clear_details()
    set_new_button_to(NEW_FLAG);
    connect_changed_signals(DISCONNECT_SIGNALS);
 
+#ifdef ENABLE_GTK2
+   gtk_text_buffer_set_text(GTK_TEXT_BUFFER(memo_text_buffer), "", -1);
+#else
    gtk_text_freeze(GTK_TEXT(memo_text));
 
    gtk_text_set_point(GTK_TEXT(memo_text), 0);
@@ -702,6 +716,7 @@ static int memo_clear_details()
 			   gtk_text_get_length(GTK_TEXT(memo_text)));
 
    gtk_text_thaw(GTK_TEXT(memo_text));
+#endif
 
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(private_checkbox), FALSE);
 
@@ -727,9 +742,16 @@ static int memo_clear_details()
 int memo_get_details(struct Memo *new_memo, unsigned char *attrib)
 {
    int i;
+#ifdef ENABLE_GTK2
+   GtkTextIter start_iter;
+   GtkTextIter end_iter;
 
+   gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(memo_text_buffer),&start_iter,&end_iter);
+   new_memo->text = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(memo_text_buffer),&start_iter,&end_iter,TRUE);
+#else
    new_memo->text = gtk_editable_get_chars
      (GTK_EDITABLE(memo_text), 0, -1);
+#endif
    if (new_memo->text[0]=='\0') {
       free(new_memo->text);
       new_memo->text=NULL;
@@ -964,6 +986,9 @@ static void cb_clist_selection(GtkWidget      *clist,
    }
    gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu2), count);
 
+#ifdef ENABLE_GTK2
+   gtk_text_buffer_set_text(GTK_TEXT_BUFFER(memo_text_buffer), memo->text, -1);
+#else
    gtk_text_freeze(GTK_TEXT(memo_text));
 
    gtk_text_set_point(GTK_TEXT(memo_text), 0);
@@ -973,6 +998,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    gtk_text_insert(GTK_TEXT(memo_text), NULL,NULL,NULL, memo->text, -1);
 
    gtk_text_thaw(GTK_TEXT(memo_text));
+#endif
 
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(private_checkbox),
 				mmemo->attrib & dlpRecAttrSecret);
@@ -1242,7 +1268,9 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    GtkWidget *vbox1, *vbox2, *hbox_temp;
    GtkWidget *separator;
    GtkWidget *button;
+#ifndef ENABLE_GTK2
    GtkWidget *vscrollbar;
+#endif
    long ivalue;
    const char *svalue;
 
@@ -1429,12 +1457,26 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    hbox_temp = gtk_hbox_new (FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, TRUE, TRUE, 0);
 
+#ifdef ENABLE_GTK2
+   memo_text = gtk_text_view_new();
+   memo_text_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(memo_text)));
+   gtk_text_view_set_editable(GTK_TEXT_VIEW(memo_text), TRUE);
+   gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(memo_text), GTK_WRAP_WORD);
+
+   scrolled_window = gtk_scrolled_window_new(NULL, NULL);
+   gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
+				  GTK_POLICY_AUTOMATIC, GTK_POLICY_ALWAYS);
+   gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 1);
+   gtk_container_add(GTK_CONTAINER(scrolled_window), memo_text);
+   gtk_box_pack_start_defaults(GTK_BOX(hbox_temp), scrolled_window);
+#else
    memo_text = gtk_text_new(NULL, NULL);
    gtk_text_set_editable(GTK_TEXT(memo_text), TRUE);
    gtk_text_set_word_wrap(GTK_TEXT(memo_text), TRUE);
    vscrollbar = gtk_vscrollbar_new(GTK_TEXT(memo_text)->vadj);
    gtk_box_pack_start(GTK_BOX(hbox_temp), memo_text, TRUE, TRUE, 0);
    gtk_box_pack_start(GTK_BOX(hbox_temp), vscrollbar, FALSE, FALSE, 0);
+#endif
 
    gtk_widget_show_all(vbox);
    gtk_widget_show_all(hbox);
