@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.87 2005/03/02 01:34:32 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.88 2005/03/19 23:01:09 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -2013,6 +2013,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    char *titles[]={"","","","",""};
    GtkAccelGroup *accel_group;
    long char_set;
+   char *cat_name;
 
    init();
 
@@ -2024,7 +2025,9 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    get_todo_app_info(&todo_app_info);
    for (i=0; i<NUM_TODO_CAT_ITEMS; i++) {
-      sort_l[i].Pcat = charset_p2newj(todo_app_info.category.name[i], 31, char_set);
+      cat_name = charset_p2newj(todo_app_info.category.name[i], 31, char_set);
+      strcpy(sort_l[i].Pcat, cat_name);
+      free(cat_name);
       sort_l[i].cat_num = i;
    }
    qsort(sort_l, NUM_TODO_CAT_ITEMS, sizeof(struct sorted_cats), cat_compare);

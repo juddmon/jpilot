@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.78 2005/03/02 01:34:32 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.79 2005/03/19 23:01:09 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -1402,6 +1402,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    long ivalue;
    GtkAccelGroup *accel_group;
    long char_set;
+   char *cat_name;
 
    clist_row_selected=0;
    record_changed=CLEAR_FLAG;
@@ -1415,7 +1416,9 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    for (i=0; i<NUM_MEMO_CAT_ITEMS; i++) {
-      sort_l[i].Pcat = charset_p2newj(memo_app_info.category.name[i], 31, char_set);
+      cat_name = charset_p2newj(memo_app_info.category.name[i], 31, char_set);
+      strcpy(sort_l[i].Pcat, cat_name);
+      free(cat_name);
       sort_l[i].cat_num = i;
    }
    qsort(sort_l, NUM_MEMO_CAT_ITEMS, sizeof(struct sorted_cats), cat_compare);

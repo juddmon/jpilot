@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.99 2005/03/06 19:09:22 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.100 2005/03/19 23:01:09 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -2536,6 +2536,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
       19,20,0,1,13,21,2,3,4,5,6,7,8,9,10,11,12,14,15,16,17,18,0
    };
    long use_jos, char_set;
+   char *cat_name;
 
    clist_row_selected=0;
 
@@ -2545,7 +2546,9 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    for (i=0; i<NUM_ADDRESS_CAT_ITEMS; i++) {
-      sort_l[i].Pcat=charset_p2newj(address_app_info.category.name[i], 31, char_set);
+      cat_name = charset_p2newj(address_app_info.category.name[i], 31, char_set);
+      strcpy(sort_l[i].Pcat, cat_name);
+      free(cat_name);
       sort_l[i].cat_num=i;
    }
    qsort(sort_l, NUM_ADDRESS_CAT_ITEMS, sizeof(struct sorted_cats), cat_compare);

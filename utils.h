@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.47 2005/01/27 22:15:17 rikster5 Exp $ */
+/* $Id: utils.h,v 1.48 2005/03/19 23:01:09 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -206,7 +206,7 @@ struct search_record
 
 struct sorted_cats
 {
-   char *Pcat;
+   char Pcat[32];
    int cat_num;
 };
 
