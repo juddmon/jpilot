@@ -300,7 +300,7 @@ int pc_datebook_write(struct Appointment *a, PCRecType rt,
    long char_set;
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
-   if (char_set != CHAR_SET_ENGLISH) {
+   if (char_set != CHAR_SET_LATIN1) {
       if (a->description) charset_j2p(a->description, strlen(a->description)+1, char_set);
       if (a->note) charset_j2p(a->note, strlen(a->note)+1, char_set);
    }
@@ -682,7 +682,7 @@ int get_datebook_app_info(struct AppointmentAppInfo *ai)
       return -1;
    }
    get_pref(PREF_CHAR_SET, &char_set, NULL);
-   if (char_set != CHAR_SET_ENGLISH) {
+   if (char_set != CHAR_SET_LATIN1) {
       for (i = 0; i < 16; i++) {
 	 if (ai->category.name[i][0] != '\0') charset_p2j(ai->category.name[i], 16, char_set);
       }

@@ -144,7 +144,7 @@ int pc_memo_write(struct Memo *memo, PCRecType rt, unsigned char attrib,
    long char_set;
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
-   if (char_set != CHAR_SET_ENGLISH) {
+   if (char_set != CHAR_SET_LATIN1) {
       if (memo->text) charset_j2p(memo->text, strlen(memo->text)+1, char_set);
    }
    rec_len = pack_Memo(memo, record, 65535);
@@ -215,7 +215,7 @@ int get_memo_app_info(struct MemoAppInfo *ai)
    }
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
-   if (char_set != CHAR_SET_ENGLISH) {
+   if (char_set != CHAR_SET_LATIN1) {
       for (i = 0; i < 16; i++) {
 	 if (ai->category.name[i][0] != '\0') {
 	    charset_p2j(ai->category.name[i], 16, char_set);

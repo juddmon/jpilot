@@ -81,7 +81,7 @@
 #define PREF_DMY 1
 #define PREF_YMD 2
 
-#define CHAR_SET_ENGLISH  0
+#define CHAR_SET_LATIN1   0 /* English, European, Latin based languages */
 #define CHAR_SET_JAPANESE 1
 #define CHAR_SET_1250     2 /* Czech */
 #define CHAR_SET_1251     3 /* Russian; palm koi8-r, host win1251 */

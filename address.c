@@ -227,7 +227,7 @@ int pc_address_write(struct Address *a, PCRecType rt, unsigned char attrib,
    long char_set;
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
-   if (char_set != CHAR_SET_ENGLISH) {
+   if (char_set != CHAR_SET_LATIN1) {
       for (i = 0; i < 19; i++) {
 	 if (a->entry[i]) charset_j2p(a->entry[i], strlen(a->entry[i])+1, char_set);
       }
@@ -290,7 +290,7 @@ int get_address_app_info(struct AddressAppInfo *ai)
    }
 
    get_pref(PREF_CHAR_SET, &char_set, NULL); 
-   if (char_set != CHAR_SET_ENGLISH) {
+   if (char_set != CHAR_SET_LATIN1) {
       /* Convert to character set */
       int i;
       for (i = 0; i < 16; i++)
@@ -386,7 +386,7 @@ int get_addresses2(AddressList **address_list, int sort_order,
       }
 
       get_pref(PREF_CHAR_SET, &char_set, NULL);
-      if (char_set != CHAR_SET_ENGLISH) {
+      if (char_set != CHAR_SET_LATIN1) {
 	 for (i = 0; i < 19; i++) {
 	    if ((a.entry[i] != NULL) && (a.entry[i][0] != '\0')) {
 	       charset_p2j(a.entry[i], strlen(a.entry[i])+1, char_set);

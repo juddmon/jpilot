@@ -58,7 +58,7 @@ static prefType glob_prefs[NUM_PREFS] = {
      {"print_one_per_page", INTTYPE, INTTYPE, 0, NULL ,0},
      {"print_blank_lines", INTTYPE, INTTYPE, 1, NULL, 0},
      {"print_command", CHARTYPE, CHARTYPE, 0, NULL, 0},
-     {"char_set", INTTYPE, INTTYPE, CHAR_SET_ENGLISH, NULL, 0},
+     {"char_set", INTTYPE, INTTYPE, CHAR_SET_LATIN1, NULL, 0},
      {"sync_datebook", INTTYPE, INTTYPE, 1, NULL, 0},
      {"sync_address", INTTYPE, INTTYPE, 1, NULL, 0},
      {"sync_todo", INTTYPE, INTTYPE, 1, NULL, 0},
@@ -376,7 +376,7 @@ int get_pref_possibility(int which, int n, char *pref_str)
    };
 
    static const char *char_sets[] = {
-      "English",
+      "Latin1",
       "Japanese",
       "Windows1250 (EE)", 
       "Host Windows1251 <-> Palm KOI8-R",

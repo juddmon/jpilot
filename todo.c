@@ -264,7 +264,7 @@ int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib,
    long char_set;
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
-   if (char_set != CHAR_SET_ENGLISH) {
+   if (char_set != CHAR_SET_LATIN1) {
       if (todo->description) charset_j2p(todo->description, strlen(todo->description)+1, char_set);
       if (todo->note) charset_j2p(todo->note, strlen(todo->note)+1, char_set);
    }
@@ -327,7 +327,7 @@ int get_todo_app_info(struct ToDoAppInfo *ai)
    }
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
-   if (char_set != CHAR_SET_ENGLISH) {
+   if (char_set != CHAR_SET_LATIN1) {
       for (i = 0; i < 16; i++) {
 	 if (ai->category.name[i][0] != '\0') {
 	    charset_p2j(ai->category.name[i], 16, char_set);
