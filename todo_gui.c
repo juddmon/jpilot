@@ -417,7 +417,6 @@ int todo_import_callback(GtkWidget *parent_window, const char *file_path, int ty
 	 old_cat_name[16]='\0';
 	 attrib=0;
 	 /* Figure out what the best category number is */
-	 index=temp_todolist->mtodo.unique_id-1;
 	 suggested_cat_num=0;
 	 for (i=0; i<NUM_TODO_CAT_ITEMS; i++) {
 	    if (todo_app_info.category.name[i][0]=='\0') continue;

@@ -369,7 +369,6 @@ int datebook_import_callback(GtkWidget *parent_window, const char *file_path, in
 	 old_cat_name[16]='\0';
 	 attrib=0;
 	 /* Figure out what the best category number is */
-	 index=temp_alist->ma.unique_id-1;
 	 suggested_cat_num=0;
 	 for (i=0; i<NUM_DATEBOOK_CAT_ITEMS; i++) {
 	    if (ai.category.name[i][0]=='\0') continue;
