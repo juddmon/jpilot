@@ -1187,6 +1187,9 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       /* Select the existing requested row, or row 0 if that is impossible */
       if (clist_row_selected <= entries_shown) {
 	 gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
+	 if (!gtk_clist_row_is_visible(GTK_CLIST(clist), clist_row_selected)) {
+	    gtk_clist_moveto(GTK_CLIST(clist), clist_row_selected, 0, 0.5, 0.0);
+	 }
       }
       else
       {

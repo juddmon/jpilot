@@ -1738,6 +1738,9 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       if (clist_row_selected <= entries_shown)
       {
 	 gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, TODO_PRIORITY_COLUMN);
+	 if (!gtk_clist_row_is_visible(GTK_CLIST(clist), clist_row_selected)) {
+	    gtk_clist_moveto(GTK_CLIST(clist), clist_row_selected, 0, 0.5, 0.0);
+	 }
       }
       else
       {
