@@ -9,6 +9,7 @@ dialer.c
 export_gui.c
 import_gui.c
 install_gui.c
+jpilot-dump.c
 jpilot-sync.c
 jpilot.c
 libplugin.c
