@@ -859,13 +859,13 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
    pf = pi_file_open(full_name);
    r = pi_file_get_app_info(pf, &buf, &size);
 
+   pi_file_close(pf);
+
    num = unpack_MemoAppInfo(&ai, buf, size);
    if (num <= 0) {
       jp_logf(JP_LOG_WARN, _("Error reading %s\n"), pdb_name);
       return;
    }
-
-   pi_file_close(pf);
 
    edit_cats(widget, db_name, &(ai.category));
 
