@@ -88,6 +88,7 @@ void get_compile_options(char *string, int len)
 	      " %s - %s\n"
 	      " %s - %s\n"
 	      " %s - %s\n"
+	      " %s - %s\n"
 	      " %s - %s\n",
 	      _("Date compiled"), __DATE__, __TIME__,
 	      _("Compiled with these options:"),
@@ -128,8 +129,14 @@ void get_compile_options(char *string, int len)
 #else
 	      _("no"),
 #endif
-	      ("NLS support (foriegn languages)"),
+	      _("NLS support (foriegn languages)"),
 #ifdef ENABLE_NLS
+	      _("yes"),
+#else
+	      _("no"),
+#endif
+	      _("GTK2 support"),
+#ifdef ENABLE_GTK2
 	      _("yes")
 #else
 	      _("no")
@@ -368,9 +375,8 @@ void base64_out(FILE *f, char *str)
    n = 0;
    val = 0;
    pad = 0;
-   for (p = str; *p || n; p++) {
+   for (p = str; *p || n; *p ? p++ : 0) {
       if (*p == '\0' && pad == 0) {
-	 p--;
 	 pad = n;
       }
       val = (val << 8) + *p;
