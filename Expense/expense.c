@@ -1026,6 +1026,7 @@ static void cb_category(GtkWidget *item, unsigned int value)
       glob_detail_payment=sel;
       break;
     case EXPENSE_CURRENCY:
+      cb_record_changed(NULL, NULL);
       glob_detail_currency=sel; 
       break;
    }
