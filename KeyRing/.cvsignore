@@ -2,5 +2,5 @@
 .libs
 Makefile
 Makefile.in
-keyring.lo
+libkeyring_la-keyring.lo
 libkeyring.la
