@@ -41,6 +41,9 @@ make
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT%{_mandir}/man1
 install docs/jpilot*.1 $RPM_BUILD_ROOT%{_mandir}/man1
+install -d $RPM_BUILD_ROOT%{_datadir}/jpilot/
+install jpilotrc.* $RPM_BUILD_ROOT%{_datadir}/jpilot/
+install empty/*.pdb $RPM_BUILD_ROOT%{_datadir}/jpilot/
 strip jpilot
 install -d $RPM_BUILD_ROOT%{_bindir}
 make DESTDIR=$RPM_BUILD_ROOT install 
@@ -104,6 +107,8 @@ rm -rf $RPM_BUILD_ROOT
 %{prefix}/share/pixmaps/*
 
 %changelog
+* Sat Feb 22 2003 Judd Montgomery <judd@jpilot.org>
+- fixed jpilotrc.* and empty/* files not being included
 * Sat Feb 22 2003 Vladimir Bormotov <bor@insight.donbass.com>
 - call autogen.sh if no configure found
 - installation improvements
