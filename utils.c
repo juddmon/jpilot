@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.75 2004/11/27 06:50:35 rikster5 Exp $ */
+/* $Id: utils.c,v 1.76 2004/11/27 11:47:41 rousseau Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -2390,7 +2390,7 @@ int setup_sync(unsigned int flags)
    get_pref(PREF_USER, NULL, &svalue);
    strncpy(sync_info.username, svalue, sizeof(sync_info.username));
    sync_info.username[sizeof(sync_info.username)-1]='\0';
-   get_pref(PREF_USER_ID, (long*) &(sync_info.userID), NULL);
+   get_pref(PREF_USER_ID, &(sync_info.userID), NULL);
 
    get_pref(PREF_PC_ID, (long*) &(sync_info.PC_ID), NULL);
    if (sync_info.PC_ID == 0) {
