@@ -98,6 +98,8 @@ fg[INSENSITIVE] = { 1.0, 1.0, 0.0 }
 bg[INSENSITIVE] = { 0.0, 0.0, 0.0 }
 text[NORMAL]    = { 0.0, 0.0, 1.0 }
 base[NORMAL]    = { 0.85, 0.9, 1.0 }
+text[ACTIVE]    = { 0.0, 0.0, 1.0 }  #fg of selected text after focus has left(GTK 2.x)
+base[ACTIVE]    = { 0.85, 0.9, 1.0 } #bg of selected text after focus has left(GTK 2.x)
 }
 
 style "menu"
