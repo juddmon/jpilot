@@ -1329,7 +1329,7 @@ msgstr "\" et changez le \""
 
 #: jpilot.c:2423 prefs_gui.c:364
 msgid "Character Set "
-msgstr "Jeu de caractères"
+msgstr "Jeu de caractères "
 
 #: jpilot.c:2424
 msgid "\"."
@@ -1520,11 +1520,11 @@ msgstr "Conduits"
 
 #: prefs_gui.c:377
 msgid "Short date format "
-msgstr "Date format court"
+msgstr "Date format court "
 
 #: prefs_gui.c:390
 msgid "Long date format "
-msgstr "Date format long"
+msgstr "Date format long "
 
 #: prefs_gui.c:403
 msgid "Time format "
