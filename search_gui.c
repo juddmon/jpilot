@@ -44,7 +44,7 @@
 static struct search_record *search_rl = NULL;
 static GtkWidget *case_sense_checkbox;
 static GtkWidget *window = NULL;
-
+static GtkWidget *entry = NULL;
 
 static int
   search_datebook(const char *needle, GtkWidget *clist)
@@ -421,6 +421,13 @@ static void
 }
 
 static void
+  cb_search(GtkWidget *widget,
+	   gpointer   data)
+{
+	cb_entry(entry, data);
+}
+
+static void
   cb_clist_select(GtkWidget      *clist,
 		  gint           row,
 		  gint           column,
@@ -465,7 +472,6 @@ static void
 
 void cb_search_gui(GtkWidget *widget, gpointer data)
 {
-   GtkWidget *entry;
    GtkWidget *scrolled_window;
    GtkWidget *clist;
    GtkWidget *label;
@@ -536,11 +542,20 @@ void cb_search_gui(GtkWidget *widget, gpointer data)
 		      GTK_SIGNAL_FUNC(cb_entry),
 		      clist);
 
+   hbox = gtk_hbox_new(FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
+
+   /* Create a "Search" button */
+   button = gtk_button_new_with_label(_("Search"));
+   gtk_signal_connect(GTK_OBJECT(button), "clicked",
+		      GTK_SIGNAL_FUNC(cb_search), clist);
+   gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
+
    /* Create a "Done" button */
    button = gtk_button_new_with_label(_("Done"));
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_quit), window);
-   gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
 
    gtk_widget_show_all(window);
 }
