@@ -1,4 +1,4 @@
-0.99.5 = 02/20/03
+0.99.5 = 02/21/03
  Fixed serious bug resulting in overwriting appointments on the palm (Serious bug)
  Restore now restores latest files instead of ones from last backup (Critical bug)
  Added -export-dynamic to Makefile to resolve jp_logf unresolved errors
