@@ -154,6 +154,24 @@ int make_pref_menu(GtkWidget **pref_menu, int pref_num)
    return 0;
 }
 
+void cb_backups_entry(GtkWidget *widget, gpointer data)
+{
+   const char *entry_text;
+   int num_backups;
+
+   entry_text = gtk_entry_get_text(GTK_ENTRY(backups_entry));
+   sscanf(entry_text, "%d", &num_backups);
+
+   if (num_backups < 1) {
+      num_backups = 1;
+   }
+   if (num_backups > 99) {
+      num_backups = 99;
+   }
+
+   set_pref(PREF_NUM_BACKUPS, num_backups, NULL, FALSE);
+}
+
 void cb_checkbox_todo_days_till_due(GtkWidget *widget, gpointer data)
 {
    int num_days;
@@ -174,6 +192,14 @@ void cb_checkbox_show_tooltips(GtkWidget *widget, gpointer data)
       gtk_tooltips_disable(glob_tooltips);   
 
    set_pref(PREF_SHOW_TOOLTIPS, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
+}
+
+void cb_text_entry(GtkWidget *widget, gpointer data)
+{
+   const char *entry_text;
+
+   entry_text = gtk_entry_get_text(GTK_ENTRY(widget));
+   set_pref(GPOINTER_TO_INT(data), 0, entry_text, FALSE);
 }
 
 void cb_checkbox_set_pref(GtkWidget *widget, gpointer data)
@@ -218,29 +244,6 @@ static gboolean cb_destroy(GtkWidget *widget)
    int num_backups;
 
    jp_logf(JP_LOG_DEBUG, "Cleanup\n");
-
-   entry_text = gtk_entry_get_text(GTK_ENTRY(port_entry));
-   jp_logf(JP_LOG_DEBUG, "port_entry = [%s]\n", entry_text);
-   set_pref(PREF_PORT, 0, entry_text, FALSE);
-
-   entry_text = gtk_entry_get_text(GTK_ENTRY(alarm_command_entry));
-   jp_logf(JP_LOG_DEBUG, "alarm_command_entry = [%s]\n", entry_text);
-   set_pref(PREF_ALARM_COMMAND, 0, entry_text, FALSE);
-
-   entry_text = gtk_entry_get_text(GTK_ENTRY(mail_command_entry));
-   jp_logf(JP_LOG_DEBUG, "mail_command_entry = [%s]\n", entry_text);
-   set_pref(PREF_MAIL_COMMAND, 0, entry_text, FALSE);
-
-   backups_text = gtk_entry_get_text(GTK_ENTRY(backups_entry));
-   jp_logf(JP_LOG_DEBUG, "backups_entry = [%s]\n", backups_text);
-   num_backups = atoi(backups_text);
-   if (num_backups < 1) {
-      num_backups = 1;
-   }
-   if (num_backups > 99) {
-      num_backups = 99;
-   }
-   set_pref(PREF_NUM_BACKUPS, num_backups, NULL, FALSE);
 
    pref_write_rc_file();
 
@@ -461,6 +464,9 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    if (cstr) {
       gtk_entry_set_text(GTK_ENTRY(port_entry), cstr);
    }
+   gtk_signal_connect(GTK_OBJECT(port_entry),
+		      "changed", GTK_SIGNAL_FUNC(cb_text_entry),
+		      GINT_TO_POINTER(PREF_PORT));
 
    /* Rate */
    label = gtk_label_new(_("Serial Rate (Does not affect USB)"));
@@ -488,6 +494,9 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    get_pref(PREF_NUM_BACKUPS, &ivalue, &cstr);
    sprintf(temp_str, "%ld", ivalue);
    gtk_entry_set_text(GTK_ENTRY(backups_entry), temp_str);
+   gtk_signal_connect(GTK_OBJECT(backups_entry),
+		      "changed", GTK_SIGNAL_FUNC(cb_backups_entry),
+		      NULL);
 
    /* Show deleted files check box */
    checkbutton = gtk_check_button_new_with_label
@@ -591,6 +600,9 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    if (cstr) {
       gtk_entry_set_text(GTK_ENTRY(mail_command_entry), cstr);
    }
+   gtk_signal_connect(GTK_OBJECT(mail_command_entry),
+		      "changed", GTK_SIGNAL_FUNC(cb_text_entry),
+		      GINT_TO_POINTER(PREF_MAIL_COMMAND));
    gtk_box_pack_start(GTK_BOX(hbox_temp), mail_command_entry, TRUE, TRUE, 1);
 
    label = gtk_label_new(_("%s is replaced by the e-mail address"));
@@ -738,6 +750,9 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    if (cstr) {
       gtk_entry_set_text(GTK_ENTRY(alarm_command_entry), cstr);
    }
+   gtk_signal_connect(GTK_OBJECT(alarm_command_entry),
+		      "changed", GTK_SIGNAL_FUNC(cb_text_entry),
+		      GINT_TO_POINTER(PREF_ALARM_COMMAND));
    gtk_box_pack_start(GTK_BOX(hbox_temp), alarm_command_entry, FALSE, FALSE, 0);
 
    label = gtk_label_new(_("%t is replaced with the alarm time"));
