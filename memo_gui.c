@@ -309,6 +309,13 @@ int memo_import_callback(GtkWidget *parent_window, const char *file_path, int ty
 	 text_len+=len;
 	 strcat(text, line);
       }
+
+#ifdef ENABLE_GTK2
+      /* convert to valid UTF-8 and recalculate the length */
+      jp_charset_p2j(text, sizeof(text));
+      text_len = strlen(text);
+#endif
+
 #ifdef JPILOT_DEBUG
       printf("text=[%s]\n", text);
       printf("text_len=%d\n", text_len);

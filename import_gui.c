@@ -497,14 +497,7 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
 
    if (text) {
 #ifdef ENABLE_GTK2
-      gchar *utf8_text;
-      long char_set;
-
-      get_pref(PREF_CHAR_SET, &char_set, NULL);
-
-      utf8_text = charset_p2newj(text, strlen(text), char_set);
-      gtk_text_buffer_set_text(GTK_TEXT_BUFFER(textw_buffer), utf8_text, -1);
-      free(utf8_text);
+      gtk_text_buffer_set_text(GTK_TEXT_BUFFER(textw_buffer), text, -1);
 #else
       gtk_text_insert(GTK_TEXT(textw), NULL, NULL, NULL, text, -1);
 #endif
