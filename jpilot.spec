@@ -42,11 +42,6 @@ make \
  localedir=$RPM_BUILD_ROOT%{prefix}/share/locale\
  mandir=$RPM_BUILD_ROOT%{_mandir}\
  install
-# AM_MAKEFLAGS=\
-#"DESTDIR="$RPM_BUILD_ROOT%\
-#
-#make AM_MAKEFLAGS="prefix=$RPM_BUILD_ROOT"%{prefix} DESTDIR=$RPM_BUILD_ROOT" \
-#prefix=$RPM_BUILD_ROOT%{prefix} mandir=$RPM_BUILD_ROOT%{_mandir} install
 
 mkdir -p $RPM_BUILD_ROOT%{prefix}/share/pixmaps
 install -m644 icons/*.xpm $RPM_BUILD_ROOT%{prefix}/share/pixmaps
