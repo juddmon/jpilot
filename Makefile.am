@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.14 2003/02/21 00:12:32 judd Exp $
+# $Id: Makefile.am,v 1.15 2003/02/22 15:13:47 judd Exp $
 
 SUBDIRS = intl Expense SyncTime KeyRing docs dialer po
 
@@ -13,7 +13,8 @@ EXTRA_DIST = reconf autogen.sh ChangeLog docs empty icons \
 	m4/gtk-2.0.m4 \
 	dialer/Makefile.unix \
 	dialer/README \
-	dialer/jpilot-dial.c
+	dialer/jpilot-dial.c \
+	po/POTFILES
 
 bin_PROGRAMS = jpilot jpilot-dump jpilot-sync
 jpilot_SOURCES = \

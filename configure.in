@@ -5,7 +5,7 @@ AC_INIT(jpilot.c)
 AC_CANONICAL_HOST
 
 dnl Every other copy of the package version number gets its value from here
-AM_INIT_AUTOMAKE(jpilot, 0.99.4)
+AM_INIT_AUTOMAKE(jpilot, 0.99.5)
 
 dnl create a config.h file (Automake will add -DHAVE_CONFIG_H)
 AM_CONFIG_HEADER(config.h)
@@ -469,6 +469,8 @@ AM_CONDITIONAL(MAKE_EXPENSE, test x$plugin_support = xyes)
 AM_CONDITIONAL(MAKE_SYNCTIME, test x$plugin_support = xyes)
 
 AC_OUTPUT(Makefile docs/Makefile Expense/Makefile KeyRing/Makefile intl/Makefile dialer/Makefile po/Makefile.in SyncTime/Makefile jpilot.spec SlackBuild)
+
+chmod +x SlackBuild
 
 #
 # Configuration messages
