@@ -51,7 +51,29 @@ int glob_log_gui_mask;
 
 int jpilot_logf(int level, char *format, ...)
 {
-   va_list	       	val;
+   va_list val;
+   int rval;
+   static int warned=0;
+
+   if (!((level & glob_log_file_mask) ||
+       (level & glob_log_stdout_mask) ||
+       (level & glob_log_gui_mask))) {
+      return 0;
+   }
+
+   if (!warned) {
+      fprintf(stderr, EPN": jpilot_logf deprecated, use jp_logf instead.\n");
+      warned=1;
+   }
+   va_start(val, format);
+   rval = jp_vlogf(level, format, val);
+   va_end(val);
+   return rval;
+}
+
+int jp_logf(int level, char *format, ...)
+{
+   va_list val;
    int rval;
 
    if (!((level & glob_log_file_mask) ||
@@ -61,12 +83,12 @@ int jpilot_logf(int level, char *format, ...)
    }
 
    va_start(val, format);
-   rval = jpilot_vlogf(level, format, val);
+   rval = jp_vlogf(level, format, val);
    va_end(val);
    return rval;
 }
 
-int jpilot_vlogf (int level, char *format, va_list val) {
+int jp_vlogf (int level, char *format, va_list val) {
 #define WRITE_MAX_BUF	4096
    char       		buf[WRITE_MAX_BUF];
    int			size;
@@ -92,7 +114,7 @@ int jpilot_vlogf (int level, char *format, va_list val) {
       return -1;
    }
    if ((!fp) && (err_count<10)) {
-      fp = jp_open_home_file("jpilot.log", "w");
+      fp = jp_open_home_file(EPN".log", "w");
       if (!fp) {
 	 fprintf(stderr, _("Cannot open log file\n"));
 	 err_count++;

@@ -114,7 +114,7 @@ static int pack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size)
    int i;
    char empty[]="";
    
-   jpilot_logf(LOG_DEBUG, "KeyRing: pack_KeyRing()\n");
+   jp_logf(LOG_DEBUG, "KeyRing: pack_KeyRing()\n");
    
    if (!(kr->name)) kr->name=empty;
    if (!(kr->account)) kr->account=empty;
@@ -129,10 +129,10 @@ static int pack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size)
    }
    /* Now we can add in the unencrypted part */
    n=n+strlen(kr->name)+1;
-   jpilot_logf(LOG_DEBUG, "pack n=%d\n", n);
+   jp_logf(LOG_DEBUG, "pack n=%d\n", n);
    
    if (n+2>buf_size) {
-      jpilot_logf(LOG_WARN, "KeyRing: pack_KeyRing(): buf_size too small\n");
+      jp_logf(LOG_WARN, "KeyRing: pack_KeyRing(): buf_size too small\n");
       return 0;
    }
 
@@ -210,9 +210,9 @@ static int unpack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size)
    unsigned char *safety[]={"","",""
    };
    
-   jpilot_logf(LOG_DEBUG, "KeyRing: unpack_KeyRing\n");
+   jp_logf(LOG_DEBUG, "KeyRing: unpack_KeyRing\n");
    if (!memchr(buf, '\0', buf_size)) {
-      jpilot_logf(LOG_DEBUG, "KeyRing: unpack_KeyRing(): No null terminater found in buf\n");
+      jp_logf(LOG_DEBUG, "KeyRing: unpack_KeyRing(): No null terminater found in buf\n");
       return 0;
    }
    n=strlen(buf)+1;
@@ -221,15 +221,15 @@ static int unpack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size)
    if (rem>0xFFFF) {
       /* This can be cause by a bug in libplugin.c from jpilot 0.99.1 
        * and before.  It occurs on the last record */
-      jpilot_logf(LOG_DEBUG, "KeyRing: unpack_KeyRing(): buffer too big n=%d, buf_size=%d\n", n, buf_size);
-      jpilot_logf(LOG_DEBUG, "KeyRing: unpack_KeyRing(): truncating\n");
+      jp_logf(LOG_DEBUG, "KeyRing: unpack_KeyRing(): buffer too big n=%d, buf_size=%d\n", n, buf_size);
+      jp_logf(LOG_DEBUG, "KeyRing: unpack_KeyRing(): truncating\n");
       rem=0xFFFF-n;
       rem=rem-(rem%8);
    }
    clear_text=malloc(rem+2);
 
-   jpilot_logf(LOG_DEBUG, "KeyRing: unpack_KeyRing(): rem (should be multiple of 8)=%d\n", rem);
-   jpilot_logf(LOG_DEBUG, "KeyRing: unpack_KeyRing(): rem%%8=%d\n", rem%8);
+   jp_logf(LOG_DEBUG, "KeyRing: unpack_KeyRing(): rem (should be multiple of 8)=%d\n", rem);
+   jp_logf(LOG_DEBUG, "KeyRing: unpack_KeyRing(): rem%%8=%d\n", rem%8);
    
    P=&buf[n];
    for (i=0; i<rem; i+=8) {
@@ -272,7 +272,7 @@ static int unpack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size)
 static void
 set_new_button_to(int new_state)
 {
-   jpilot_logf(LOG_DEBUG, "set_new_button_to new %d old %d\n", new_state, record_changed);
+   jp_logf(LOG_DEBUG, "set_new_button_to new %d old %d\n", new_state, record_changed);
    if (record_changed==new_state) {
       return;
    }
@@ -318,7 +318,7 @@ static void
 cb_record_changed(GtkWidget *widget,
 		  gpointer   data)
 {
-   jpilot_logf(LOG_DEBUG, "cb_record_changed\n");
+   jp_logf(LOG_DEBUG, "cb_record_changed\n");
    if (record_changed==CLEAR_FLAG) {
       connect_changed_signals(DISCONNECT_SIGNALS);
       if ((GTK_CLIST(clist)->rows > 0)) {
@@ -1177,12 +1177,12 @@ static int check_for_db()
    if (!home) { /* Not home; */
       home = getenv("HOME");
       if (!home) {
-	 jpilot_logf(LOG_WARN, "Can't get HOME environment variable\n");
+	 jp_logf(LOG_WARN, "Can't get HOME environment variable\n");
 	 return -1;
       }
    }
    if (strlen(home)>(max_size-strlen(file)-strlen("/.jpilot/")-2)) {
-      jpilot_logf(LOG_WARN, "Your HOME environment variable is too long for me\n");
+      jp_logf(LOG_WARN, "Your HOME environment variable is too long for me\n");
       return -1;
    }
    sprintf(full_name, "%s/.jpilot/%s", home, file);

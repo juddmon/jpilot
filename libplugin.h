@@ -19,12 +19,25 @@
 #ifndef __LIBPLUGIN_H__
 #define __LIBPLUGIN_H__
 
+#include "config.h"
 #include <gtk/gtk.h>
 #include <time.h>
 
 /*
  * PLUGIN API for J-Pilot
  */
+
+#ifdef ENABLE_PROMETHEON
+#define PN "CoPilot"
+#else
+#define PN "J-Pilot"
+#endif
+
+#ifdef ENABLE_PROMETHEON
+#define EPN "copilot"
+#else
+#define EPN "jpilot"
+#endif
 
 /*
  * For versioning of files
@@ -134,11 +147,7 @@ int get_next_unique_pc_id(unsigned int *next_unique_id);
 
 #define JPILOT_EOF -7
 
-extern int jpilot_logf(int level, char *format, ...);
-/* FIXME: Need a policy.  Should all symbols avaliable to 
- * plugins start with jp or jpilot?
- */
-#define jp_logf jpilot_logf
+extern int jp_logf(int level, char *format, ...);
 
 /* This bit means that this record is of no importance anymore */
 #define SPENT_PC_RECORD_BIT 256

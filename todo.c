@@ -200,7 +200,7 @@ int todo_sort(ToDoList **todol, int sort_order)
    /* Allocate an array to be qsorted */
    sort_todol = calloc(count, sizeof(ToDoList *));
    if (!sort_todol) {
-      jpilot_logf(LOG_WARN, "todo_sort(): Out of Memory\n");
+      jp_logf(LOG_WARN, "todo_sort(): Out of Memory\n");
       return 0;
    }
 
@@ -241,15 +241,15 @@ void pc_todo_validate_correct(struct ToDo *todo)
 {
    if (todo->description) {
       if ((strlen(todo->description)+1 > MAX_TODO_DESC_LEN)) {
-	 jpilot_logf(LOG_WARN, "%s\n", todo->description);
-	 jpilot_logf(LOG_WARN, _("Warning ToDo description too long, truncating to %d\n"), MAX_TODO_DESC_LEN-1);
+	 jp_logf(LOG_WARN, "%s\n", todo->description);
+	 jp_logf(LOG_WARN, _("Warning ToDo description too long, truncating to %d\n"), MAX_TODO_DESC_LEN-1);
 	 todo->description[MAX_TODO_DESC_LEN-1]='\0';
       }
    }
    if (todo->note) {
       if ((strlen(todo->note)+1 > MAX_TODO_NOTE_LEN)) {
-	 jpilot_logf(LOG_WARN, "%s\n", todo->note);
-	 jpilot_logf(LOG_WARN, _("Warning ToDo note too long, truncating to %d\n"), MAX_TODO_NOTE_LEN-1);
+	 jp_logf(LOG_WARN, "%s\n", todo->note);
+	 jp_logf(LOG_WARN, _("Warning ToDo note too long, truncating to %d\n"), MAX_TODO_NOTE_LEN-1);
 	 todo->note[MAX_TODO_NOTE_LEN-1]='\0';
       }
    }
@@ -276,7 +276,7 @@ int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib,
    rec_len = pack_ToDo(todo, record, 65535);
    if (!rec_len) {
       PRINT_FILE_LINE;
-      jpilot_logf(LOG_WARN, "pack_ToDo %s\n", _("error"));
+      jp_logf(LOG_WARN, "pack_ToDo %s\n", _("error"));
       return -1;
    }
    br.rt=rt;
@@ -358,12 +358,12 @@ int get_todo_app_info(struct ToDoAppInfo *ai)
    if (num <= 0) {
 #ifdef ENABLE_MANANA
       if (ivalue) {
-	 jpilot_logf(LOG_WARN, _("Error reading %s\n"), "MañanaDB.pdb");
+	 jp_logf(LOG_WARN, _("Error reading %s\n"), "MañanaDB.pdb");
       } else {
-	 jpilot_logf(LOG_WARN, _("Error reading %s\n"), "ToDoDB.pdb");
+	 jp_logf(LOG_WARN, _("Error reading %s\n"), "ToDoDB.pdb");
       }
 #else
-      jpilot_logf(LOG_WARN, _("Error reading %s\n"), "ToDoDB.pdb");
+      jp_logf(LOG_WARN, _("Error reading %s\n"), "ToDoDB.pdb");
 #endif
       return -1;
    }
@@ -407,7 +407,7 @@ int get_todos2(ToDoList **todo_list, int sort_order,
    long ivalue;
 #endif
 
-   jpilot_logf(LOG_DEBUG, "get_todos2()\n");
+   jp_logf(LOG_DEBUG, "get_todos2()\n");
    if (modified==2) {
       get_pref(PREF_SHOW_MODIFIED, &keep_modified, NULL);
    } else {
@@ -498,7 +498,7 @@ int get_todos2(ToDoList **todo_list, int sort_order,
       }
       temp_todo_list = malloc(sizeof(ToDoList));
       if (!temp_todo_list) {
-	 jpilot_logf(LOG_WARN, "get_todos2(): Out of memory\n");
+	 jp_logf(LOG_WARN, "get_todos2(): Out of memory\n");
 	 break;
       }
       memcpy(&(temp_todo_list->mtodo.todo), &todo, sizeof(struct ToDo));
@@ -515,7 +515,7 @@ int get_todos2(ToDoList **todo_list, int sort_order,
 
    todo_sort(todo_list, sort_order);
 
-   jpilot_logf(LOG_DEBUG, "Leaving get_todos2()\n");
+   jp_logf(LOG_DEBUG, "Leaving get_todos2()\n");
 
    return recs_returned;
 }

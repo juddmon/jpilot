@@ -43,8 +43,8 @@ extern int glob_log_file_mask;
 extern int glob_log_stdout_mask;
 extern int glob_log_gui_mask;
 
-int jpilot_logf(int log_level, char *format, ...);
-int jpilot_vlogf (int level, char *format, va_list val);
+int jp_logf(int log_level, char *format, ...);
+int jp_vlogf (int level, char *format, va_list val);
 int write_to_parent(int command, char *format, ...);
 
 #endif

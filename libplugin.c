@@ -42,7 +42,6 @@ const char *jp_strstr(const char *haystack, const char *needle, int case_sense)
    register const char *Ps1;
    char *r;
 
-   if ((!haystack) || (!needle)) return NULL;
    if (!haystack) {
       return NULL;
    }
@@ -248,13 +247,13 @@ int jp_install_remove_line(int deleted_line)
    char *Pc;
    int r, line_count;
 
-   in = jp_open_home_file("jpilot_to_install", "r");
+   in = jp_open_home_file(EPN"_to_install", "r");
    if (!in) {
       jp_logf(LOG_DEBUG, "failed opening install_file\n");
       return -1;
    }
 
-   out = jp_open_home_file("jpilot_to_install.tmp", "w");
+   out = jp_open_home_file(EPN"_to_install.tmp", "w");
    if (!out) {
       fclose(in);
       jp_logf(LOG_DEBUG, "failed opening install_file.tmp\n");
@@ -278,7 +277,7 @@ int jp_install_remove_line(int deleted_line)
    fclose(in);
    fclose(out);
 
-   rename_file("jpilot_to_install.tmp", "jpilot_to_install");
+   rename_file(EPN"_to_install.tmp", EPN"_to_install");
 
    return 0;
 }
@@ -288,7 +287,7 @@ int jp_install_append_line(char *line)
    FILE *out;
    int r;
 
-   out = jp_open_home_file("jpilot_to_install", "a");
+   out = jp_open_home_file(EPN"_to_install", "a");
    if (!out) {
       return -1;
    }

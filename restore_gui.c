@@ -56,13 +56,13 @@ cb_restore_ok(GtkWidget *widget,
    get_home_file_name("", home_dir, 255);
 
    /* Remove anything that was supposed to be installed */
-   g_snprintf(file, 298, "%s/jpilot_to_install", home_dir);
+   g_snprintf(file, 298, "%s/"EPN"_to_install", home_dir);
    unlink(file);
 
    printf("---------- Restore ----------\n");
    for (temp_list=list; temp_list; temp_list = temp_list->next) {
       gtk_clist_get_text(GTK_CLIST(restore_clist), (int)temp_list->data, 0, &text);
-      jpilot_logf(LOG_DEBUG, "row %ld [%s]\n", (long) temp_list->data, text);
+      jp_logf(LOG_DEBUG, "row %ld [%s]\n", (long) temp_list->data, text);
       g_snprintf(file, 298, "%s/backup/%s", home_dir, text);
       install_append_line(file);
    }
@@ -90,22 +90,22 @@ static int populate_clist()
    get_home_file_name("backup", path, 255);
 
    cleanup_path(path);
-   jpilot_logf(LOG_DEBUG, "opening dir %s\n", path);
+   jp_logf(LOG_DEBUG, "opening dir %s\n", path);
    dir = opendir(path);
    num = 0;
    if (!dir) {
-      jpilot_logf(LOG_DEBUG, "opening dir failed\n");
+      jp_logf(LOG_DEBUG, "opening dir failed\n");
    } else {
       for (i=0; (dirent = readdir(dir)); i++) {
 	 if (i>1000) {
-	    jpilot_logf(LOG_WARN, "load_plugins_sub1(): infinite loop\n");
+	    jp_logf(LOG_WARN, "load_plugins_sub1(): infinite loop\n");
 	    return -1;
 	 }
 	 if (dirent->d_name[0]=='.') {
 	    continue;
 	 }
 	 if (!strncmp(dirent->d_name, "Unsaved Preferences", 17)) {
-	    jpilot_logf(LOG_DEBUG, "skipping %s\n", dirent->d_name);
+	    jp_logf(LOG_DEBUG, "skipping %s\n", dirent->d_name);
 	    continue;
 	 }
 	 row_text[0]=dirent->d_name;
@@ -134,7 +134,7 @@ int restore_gui(int w, int h, int x, int y)
    long ivalue;
    char str_int[10];
 
-   jpilot_logf(LOG_DEBUG, "restore_gui()\n");
+   jp_logf(LOG_DEBUG, "restore_gui()\n");
 
    restore_window = gtk_widget_new(GTK_TYPE_WINDOW,
 				   "type", GTK_WINDOW_DIALOG,

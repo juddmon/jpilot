@@ -153,7 +153,7 @@ cb_quit(GtkWidget *widget,
    char dir[MAX_PREF_VALUE+2];
    int i;
 
-   jpilot_logf(LOG_DEBUG, "Quit\n");
+   jp_logf(LOG_DEBUG, "Quit\n");
 
    sel = gtk_file_selection_get_filename(GTK_FILE_SELECTION(filew));
    strncpy(dir, sel, MAX_PREF_VALUE);
@@ -189,17 +189,17 @@ cb_import(GtkWidget *widget,
    char *sel;
    struct stat statb;
 
-   jpilot_logf(LOG_DEBUG, "cb_import\n");
+   jp_logf(LOG_DEBUG, "cb_import\n");
    sel = gtk_file_selection_get_filename(GTK_FILE_SELECTION(filesel));
-   jpilot_logf(LOG_DEBUG, "file selected [%s]\n", sel);
+   jp_logf(LOG_DEBUG, "file selected [%s]\n", sel);
 
    /*Check to see if its a regular file */
    if (stat(sel, &statb)) {
-      jpilot_logf(LOG_DEBUG, "File selected was not stat-able\n");
+      jp_logf(LOG_DEBUG, "File selected was not stat-able\n");
       return;
    }
    if (!S_ISREG(statb.st_mode)) {
-      jpilot_logf(LOG_DEBUG, "File selected was not a regular file\n");
+      jp_logf(LOG_DEBUG, "File selected was not a regular file\n");
       return;
    }
    glob_import_callback(filesel, sel, glob_type_selected);
@@ -216,16 +216,16 @@ static void cb_import_select_row(GtkWidget *file_clist,
    int guessed_type;
    int i;
 
-   jpilot_logf(LOG_DEBUG, "cb_import_select_row\n");
+   jp_logf(LOG_DEBUG, "cb_import_select_row\n");
    sel = gtk_file_selection_get_filename(GTK_FILE_SELECTION(filew));
 
    /*Check to see if its a regular file */
    if (stat(sel, &statb)) {
-      jpilot_logf(LOG_DEBUG, "File selected was not stat-able\n");
+      jp_logf(LOG_DEBUG, "File selected was not stat-able\n");
       return;
    }
    if (!S_ISREG(statb.st_mode)) {
-      jpilot_logf(LOG_DEBUG, "File selected was not a regular file\n");
+      jp_logf(LOG_DEBUG, "File selected was not a regular file\n");
       return;
    }
 

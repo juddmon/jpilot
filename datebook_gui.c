@@ -330,12 +330,12 @@ int datebook_import_callback(GtkWidget *parent_window, char *file_path, int type
 
    in=fopen(file_path, "r");
    if (!in) {
-      jpilot_logf(LOG_WARN, _("Could not open file %s\n"), file_path);
+      jp_logf(LOG_WARN, _("Could not open file %s\n"), file_path);
       return -1;
    }
    /* CSV */
    if (type==IMPORT_TYPE_CSV) {
-      jpilot_logf(LOG_DEBUG, "Datebook import CSV [%s]\n", file_path);
+      jp_logf(LOG_DEBUG, "Datebook import CSV [%s]\n", file_path);
       /* The first line is format, so we don't need it */
       fgets(text, 2000, in);
       import_all=FALSE;
@@ -520,9 +520,9 @@ int datebook_import_callback(GtkWidget *parent_window, char *file_path, int type
    }
    /* Palm Desktop DAT format */
    if (type==IMPORT_TYPE_DAT) {
-      jpilot_logf(LOG_DEBUG, "Datebok import DAT [%s]\n", file_path);
+      jp_logf(LOG_DEBUG, "Datebok import DAT [%s]\n", file_path);
       if (dat_check_if_dat_file(in)!=DAT_DATEBOOK_FILE) {
-	 jpilot_logf(LOG_WARN, _("File doesn't appear to be datebook.dat format\n"));
+	 jp_logf(LOG_WARN, _("File doesn't appear to be datebook.dat format\n"));
 	 fclose(in);
 	 return 1;
       }
@@ -739,7 +739,7 @@ void appt_export_ok(int type, const char *filename)
 	 fprintf(out, "\"\n");
 	 break;
        default:
-	 jpilot_logf(LOG_WARN, "Unknown export type\n");
+	 jp_logf(LOG_WARN, "Unknown export type\n");
       }
    }
 
@@ -841,7 +841,7 @@ static int datebook_export_gui(int x, int y)
    int i;
    const char *svalue;
 
-   jpilot_logf(LOG_DEBUG, "datebook_export_gui()\n");
+   jp_logf(LOG_DEBUG, "datebook_export_gui()\n");
 
    glob_export_type=EXPORT_TYPE_TEXT;
 
@@ -938,7 +938,7 @@ static void
 cb_quit_date_cats(GtkWidget *widget,
 		   gpointer   data)
 {
-   jpilot_logf(LOG_DEBUG, "cb_quit_date_cats\n");
+   jp_logf(LOG_DEBUG, "cb_quit_date_cats\n");
    if (GTK_IS_WIDGET(data)) {
       gtk_widget_destroy(data);
    }
@@ -950,7 +950,7 @@ static void cb_category(GtkWidget *widget, gpointer data)
    int b;
    int flag;
 
-   jpilot_logf(LOG_DEBUG, "cb_category\n");
+   jp_logf(LOG_DEBUG, "cb_category\n");
 
    flag=GPOINTER_TO_INT(data);
    b=dialog_save_changed_record(pane, record_changed);
@@ -1020,10 +1020,10 @@ void cb_date_cats(GtkWidget *widget, gpointer data)
    GtkWidget *vbox, *hbox;
    GtkWidget *w, *window;
 
-   jpilot_logf(LOG_DEBUG, "cb_date_cats\n");
+   jp_logf(LOG_DEBUG, "cb_date_cats\n");
    if (GTK_IS_WINDOW(window_date_cats)) {
       gdk_window_raise(window_date_cats->window);
-      jpilot_logf(LOG_DEBUG, "date_cats window is already up\n");
+      jp_logf(LOG_DEBUG, "date_cats window is already up\n");
       return;
    }
 
@@ -1116,11 +1116,11 @@ int datebook_print(int type)
 
    switch(type) {
     case DAILY:
-      jpilot_logf(LOG_DEBUG, "datebook_print daily\n");
+      jp_logf(LOG_DEBUG, "datebook_print daily\n");
       print_days_appts(&date);
       break;
     case WEEKLY:
-      jpilot_logf(LOG_DEBUG, "datebook_print weekly\n");
+      jp_logf(LOG_DEBUG, "datebook_print weekly\n");
       get_pref(PREF_FDOW, &fdow, NULL);
       /* Get the first day of the week */
       sub_days_from_date(&date, (7 - fdow + date.tm_wday)%7);
@@ -1133,7 +1133,7 @@ int datebook_print(int type)
       }
       break;
     case MONTHLY:
-      jpilot_logf(LOG_DEBUG, "datebook_print monthy\n");
+      jp_logf(LOG_DEBUG, "datebook_print monthy\n");
       get_pref(PREF_PAPER_SIZE, &paper_size, NULL);
       if (paper_size==1) {
          print_months_appts(&date, PAPER_A4);
@@ -1198,7 +1198,7 @@ static void cb_cal_dialog(GtkWidget *widget,
     default:
       Pcheck_button = NULL;
       Pbutton = NULL;
-      jpilot_logf(LOG_DEBUG, "default hit in cb_cal_dialog()\n");
+      jp_logf(LOG_DEBUG, "default hit in cb_cal_dialog()\n");
       return;
    }
 
@@ -1286,7 +1286,7 @@ static void init()
    memcpy(&glob_endon_year_tm, now, sizeof(glob_endon_year_tm));
 
    if (glob_find_id) {
-      jpilot_logf(LOG_DEBUG, "init() glob_find_id = %d\n", glob_find_id);
+      jp_logf(LOG_DEBUG, "init() glob_find_id = %d\n", glob_find_id);
       /* Search Appointments for this id to get its date */
       a_list = NULL;
 
@@ -1294,7 +1294,7 @@ static void init()
 
       for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
 	 if (temp_al->ma.unique_id == glob_find_id) {
-	    jpilot_logf(LOG_DEBUG, "init() found glob_find_id\n");
+	    jp_logf(LOG_DEBUG, "init() found glob_find_id\n");
 	    current_month = temp_al->ma.a.begin.tm_mon;
 	    current_day = temp_al->ma.a.begin.tm_mday;
 	    current_year = temp_al->ma.a.begin.tm_year;
@@ -1681,18 +1681,18 @@ static int get_details(struct Appointment *a, unsigned char *attrib)
       a->alarm = 1;
       text1 = gtk_entry_get_text(GTK_ENTRY(units_entry));
       a->advance=atoi(text1);
-      jpilot_logf(LOG_DEBUG, "alarm advance %d", a->advance);
+      jp_logf(LOG_DEBUG, "alarm advance %d", a->advance);
       if (GTK_TOGGLE_BUTTON(radio_button_alarm_min)->active) {
 	 a->advanceUnits = advMinutes;
-	 jpilot_logf(LOG_DEBUG, "min\n");
+	 jp_logf(LOG_DEBUG, "min\n");
       }
       if (GTK_TOGGLE_BUTTON(radio_button_alarm_hour)->active) {
 	 a->advanceUnits = advHours;
-	 jpilot_logf(LOG_DEBUG, "hour\n");
+	 jp_logf(LOG_DEBUG, "hour\n");
       }
       if (GTK_TOGGLE_BUTTON(radio_button_alarm_day)->active) {
 	 a->advanceUnits = advDays;
-	 jpilot_logf(LOG_DEBUG, "day\n");
+	 jp_logf(LOG_DEBUG, "day\n");
       }
    } else {
       a->alarm = 0;
@@ -1708,16 +1708,16 @@ static int get_details(struct Appointment *a, unsigned char *attrib)
    switch (page) {
     case PAGE_NONE:
       a->repeatType=repeatNone;
-      jpilot_logf(LOG_DEBUG, "no repeat\n");
+      jp_logf(LOG_DEBUG, "no repeat\n");
       break;
     case PAGE_DAY:
       a->repeatType=repeatDaily;
       text1 = gtk_entry_get_text(GTK_ENTRY(repeat_day_entry));
       a->repeatFrequency = atoi(text1);
-      jpilot_logf(LOG_DEBUG, "every %d day(s)\n", a->repeatFrequency);
+      jp_logf(LOG_DEBUG, "every %d day(s)\n", a->repeatFrequency);
       if (GTK_TOGGLE_BUTTON(check_button_day_endon)->active) {
 	 a->repeatForever=0;
-	 jpilot_logf(LOG_DEBUG, "end on day\n");
+	 jp_logf(LOG_DEBUG, "end on day\n");
 	 a->repeatEnd.tm_mon = glob_endon_day_tm.tm_mon;
 	 a->repeatEnd.tm_mday = glob_endon_day_tm.tm_mday;
 	 a->repeatEnd.tm_year = glob_endon_day_tm.tm_year;
@@ -1730,10 +1730,10 @@ static int get_details(struct Appointment *a, unsigned char *attrib)
       a->repeatType=repeatWeekly;
       text1 = gtk_entry_get_text(GTK_ENTRY(repeat_week_entry));
       a->repeatFrequency = atoi(text1);
-      jpilot_logf(LOG_DEBUG, "every %d week(s)\n", a->repeatFrequency);
+      jp_logf(LOG_DEBUG, "every %d week(s)\n", a->repeatFrequency);
       if (GTK_TOGGLE_BUTTON(check_button_week_endon)->active) {
 	 a->repeatForever=0;
-	 jpilot_logf(LOG_DEBUG, "end on week\n");
+	 jp_logf(LOG_DEBUG, "end on week\n");
 	 a->repeatEnd.tm_mon = glob_endon_week_tm.tm_mon;
 	 a->repeatEnd.tm_mday = glob_endon_week_tm.tm_mday;
 	 a->repeatEnd.tm_year = glob_endon_week_tm.tm_year;
@@ -1748,25 +1748,25 @@ static int get_details(struct Appointment *a, unsigned char *attrib)
 	 }
 	 strftime(str, 30, datef, &a->repeatEnd);
 
-	 jpilot_logf(LOG_DEBUG, "repeat_end time = %s\n",str);
+	 jp_logf(LOG_DEBUG, "repeat_end time = %s\n",str);
       } else {
 	 a->repeatForever=1;
       }
-      jpilot_logf(LOG_DEBUG, "Repeat Days:");
+      jp_logf(LOG_DEBUG, "Repeat Days:");
       a->repeatWeekstart = 0;  /*We are going to always use 0 */
       for (i=0; i<7; i++) {
 	 a->repeatDays[i]=(GTK_TOGGLE_BUTTON(toggle_button_repeat_days[i])->active);
 	 total_repeat_days += a->repeatDays[i];
       }
-      jpilot_logf(LOG_DEBUG, "\n");
+      jp_logf(LOG_DEBUG, "\n");
       break;
     case PAGE_MONTH:
       text1 = gtk_entry_get_text(GTK_ENTRY(repeat_mon_entry));
       a->repeatFrequency = atoi(text1);
-      jpilot_logf(LOG_DEBUG, "every %d month(s)\n", a->repeatFrequency);
+      jp_logf(LOG_DEBUG, "every %d month(s)\n", a->repeatFrequency);
       if (GTK_TOGGLE_BUTTON(check_button_mon_endon)->active) {
 	 a->repeatForever=0;
-	 jpilot_logf(LOG_DEBUG, "end on month\n");
+	 jp_logf(LOG_DEBUG, "end on month\n");
 	 a->repeatEnd.tm_mon = glob_endon_mon_tm.tm_mon;
 	 a->repeatEnd.tm_mday = glob_endon_mon_tm.tm_mday;
 	 a->repeatEnd.tm_year = glob_endon_mon_tm.tm_year;
@@ -1781,28 +1781,28 @@ static int get_details(struct Appointment *a, unsigned char *attrib)
 	 }
 	 strftime(str, 30, datef, &a->repeatEnd);
 
-	 jpilot_logf(LOG_DEBUG, "repeat_end time = %s\n",str);
+	 jp_logf(LOG_DEBUG, "repeat_end time = %s\n",str);
       } else {
 	 a->repeatForever=1;
       }
       if (GTK_TOGGLE_BUTTON(toggle_button_repeat_mon_byday)->active) {
 	 a->repeatType=repeatMonthlyByDay;
 	 a->repeatDay = get_dom_type(a->begin.tm_mon, a->begin.tm_mday, a->begin.tm_year, a->begin.tm_wday);
-	 jpilot_logf(LOG_DEBUG, "***by day\n");
+	 jp_logf(LOG_DEBUG, "***by day\n");
       }
       if (GTK_TOGGLE_BUTTON(toggle_button_repeat_mon_bydate)->active) {
 	 a->repeatType=repeatMonthlyByDate;
-	 jpilot_logf(LOG_DEBUG, "***by date\n");
+	 jp_logf(LOG_DEBUG, "***by date\n");
       }
       break;
     case PAGE_YEAR:
       a->repeatType=repeatYearly;
       text1 = gtk_entry_get_text(GTK_ENTRY(repeat_year_entry));
       a->repeatFrequency = atoi(text1);
-      jpilot_logf(LOG_DEBUG, "every %s year(s)\n", a->repeatFrequency);
+      jp_logf(LOG_DEBUG, "every %s year(s)\n", a->repeatFrequency);
       if (GTK_TOGGLE_BUTTON(check_button_year_endon)->active) {
 	 a->repeatForever=0;
-	 jpilot_logf(LOG_DEBUG, "end on year\n");
+	 jp_logf(LOG_DEBUG, "end on year\n");
 	 a->repeatEnd.tm_mon = glob_endon_year_tm.tm_mon;
 	 a->repeatEnd.tm_mday = glob_endon_year_tm.tm_mday;
 	 a->repeatEnd.tm_year = glob_endon_year_tm.tm_year;
@@ -1818,7 +1818,7 @@ static int get_details(struct Appointment *a, unsigned char *attrib)
 	 str[0]='\0';
 	 strftime(str, 30, datef, &a->repeatEnd);
 
-	 jpilot_logf(LOG_DEBUG, "repeat_end time = %s\n",str);
+	 jp_logf(LOG_DEBUG, "repeat_end time = %s\n",str);
       } else {
 	 a->repeatForever=1;
       }
@@ -1833,7 +1833,7 @@ static int get_details(struct Appointment *a, unsigned char *attrib)
       a->description=strdup(" ");
    }
    if (a->description) {
-      jpilot_logf(LOG_DEBUG, "description=[%s]\n",a->description);
+      jp_logf(LOG_DEBUG, "description=[%s]\n",a->description);
    }
 
 #ifdef ENABLE_DATEBK
@@ -1861,12 +1861,12 @@ static int get_details(struct Appointment *a, unsigned char *attrib)
       a->note=NULL;
    }
    if (a->note) {
-      jpilot_logf(LOG_DEBUG, "text note=[%s]\n",a->note);
+      jp_logf(LOG_DEBUG, "text note=[%s]\n",a->note);
    }
 
    /* We won't allow a repeat frequency of less than 1 */
    if ((page != PAGE_NONE) && (a->repeatFrequency < 1)) {
-      jpilot_logf(LOG_WARN,
+      jp_logf(LOG_WARN,
 		  _("You cannot have an appointment that repeats every %d %s(s)\n"),
 		  a->repeatFrequency, _(period[page]));
       a->repeatFrequency = 1;
@@ -1875,7 +1875,7 @@ static int get_details(struct Appointment *a, unsigned char *attrib)
 
    /* We won't allow a weekly repeating that doesn't repeat on any day */
    if ((page == PAGE_WEEK) && (total_repeat_days == 0)) {
-      jpilot_logf(LOG_WARN,
+      jp_logf(LOG_WARN,
 		  _("You can not have a weekly repeating appointment that doesn't repeat on any day of the week.\n"));
       return -1;
    }
@@ -1949,7 +1949,7 @@ static int dayview_update_clist()
    GdkColormap *colormap;
    int show_priv;
 
-   jpilot_logf(LOG_DEBUG, "dayview_update_clist()\n");
+   jp_logf(LOG_DEBUG, "dayview_update_clist()\n");
 
 #ifdef ENABLE_DATEBK
    get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
@@ -1968,9 +1968,9 @@ static int dayview_update_clist()
 
    num_entries = get_days_appointments2(&glob_al, &new_time, 2, 2, 1);
 
-   jpilot_logf(LOG_DEBUG, "get_days_appointments==>%d\n", num_entries);
+   jp_logf(LOG_DEBUG, "get_days_appointments==>%d\n", num_entries);
 #ifdef ENABLE_DATEBK
-   jpilot_logf(LOG_DEBUG, "datebook_category = 0x%x\n", datebook_category);
+   jp_logf(LOG_DEBUG, "datebook_category = 0x%x\n", datebook_category);
 #endif
 
    gtk_clist_clear(GTK_CLIST(clist));
@@ -1982,11 +1982,11 @@ static int dayview_update_clist()
       ret=0;
       if (use_db3_tags) {
 	 ret = db3_parse_tag(temp_al->ma.a.note, &db3_type, &db4);
-	 jpilot_logf(LOG_DEBUG, "category = 0x%x\n", db4.category);
+	 jp_logf(LOG_DEBUG, "category = 0x%x\n", db4.category);
 	 cat_bit=1<<db4.category;
 	 if (!(cat_bit & datebook_category)) {
 	    i--;
-	    jpilot_logf(LOG_DEBUG, "skipping rec not in this category\n");
+	    jp_logf(LOG_DEBUG, "skipping rec not in this category\n");
 	    continue;
 	 }
       }
@@ -2138,7 +2138,7 @@ static int dayview_update_clist()
 static void
 set_new_button_to(int new_state)
 {
-   jpilot_logf(LOG_DEBUG, "set_new_button_to new %d old %d\n", new_state, record_changed);
+   jp_logf(LOG_DEBUG, "set_new_button_to new %d old %d\n", new_state, record_changed);
 
    if (record_changed==new_state) {
       return;
@@ -2185,7 +2185,7 @@ static void
 cb_record_changed(GtkWidget *widget,
 		  gpointer   data)
 {
-   jpilot_logf(LOG_DEBUG, "cb_record_changed\n");
+   jp_logf(LOG_DEBUG, "cb_record_changed\n");
    if (record_changed==CLEAR_FLAG) {
       connect_changed_signals(DISCONNECT_SIGNALS);
       if (((GtkCList *)clist)->rows > 0) {
@@ -2210,7 +2210,7 @@ static void cb_add_new_record(GtkWidget *widget,
    int show_priv;
    unsigned int unique_id;
 
-   jpilot_logf(LOG_DEBUG, "cb_add_new_record\n");
+   jp_logf(LOG_DEBUG, "cb_add_new_record\n");
 
    unique_id=0;
 
@@ -2251,7 +2251,7 @@ static void cb_add_new_record(GtkWidget *widget,
 	 return;
       }
       if ((ma->rt==DELETED_PALM_REC) || (ma->rt==MODIFIED_PALM_REC)) {
-	 jpilot_logf(LOG_INFO, "You can't modify a record that is deleted\n");
+	 jp_logf(LOG_INFO, "You can't modify a record that is deleted\n");
 	 return;
       }
    } else {
@@ -2530,7 +2530,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 				      (radio_button_alarm_day), TRUE);
 	 break;
        default:
-	 jpilot_logf(LOG_WARN, "Error in DateBookDB advanceUnits = %d\n",a->advanceUnits);
+	 jp_logf(LOG_WARN, "Error in DateBookDB advanceUnits = %d\n",a->advanceUnits);
       }
       sprintf(temp, "%d", a->advance);
       gtk_entry_set_text(GTK_ENTRY(units_entry), temp);
@@ -2636,7 +2636,7 @@ static void cb_clist_selection(GtkWidget      *clist,
       break;
     case repeatMonthlyByDate:
     case repeatMonthlyByDay:
-      jpilot_logf(LOG_DEBUG, "repeat day=%d\n",a->repeatDay);
+      jp_logf(LOG_DEBUG, "repeat day=%d\n",a->repeatDay);
       if ((a->repeatForever)) {
 	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
 				      (check_button_mon_endon), FALSE);
@@ -2681,7 +2681,7 @@ static void cb_clist_selection(GtkWidget      *clist,
       gtk_notebook_set_page(GTK_NOTEBOOK(notebook), PAGE_YEAR);
       break;
     default:
-      jpilot_logf(LOG_WARN, "unknown repeatType found in DatebookDB\n");
+      jp_logf(LOG_WARN, "unknown repeatType found in DatebookDB\n");
    }
 
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(private_checkbox),
@@ -2764,7 +2764,7 @@ void cb_cal_changed(GtkWidget *widget,
    }
    current_day=d;
 
-   jpilot_logf(LOG_DEBUG, "cb_cal_changed, %02d/%02d/%02d\n", m,d,y);
+   jp_logf(LOG_DEBUG, "cb_cal_changed, %02d/%02d/%02d\n", m,d,y);
 
    set_date_labels();
    /* */
@@ -2820,7 +2820,7 @@ static int datebook_find()
 {
    int r, found_at, total_count;
 
-   jpilot_logf(LOG_DEBUG, "datebook_find(), glob_find_id = %d\n", glob_find_id);
+   jp_logf(LOG_DEBUG, "datebook_find(), glob_find_id = %d\n", glob_find_id);
    if (glob_find_id) {
       r = clist_find_id(clist,
 			glob_find_id,
@@ -2834,7 +2834,7 @@ static int datebook_find()
 	    move_scrolled_window_hack(scrolled_window,
 				      (float)found_at/(float)total_count);
 	 }
-	 jpilot_logf(LOG_DEBUG, "datebook_find(), selecting row %d\n", found_at);
+	 jp_logf(LOG_DEBUG, "datebook_find(), selecting row %d\n", found_at);
 	 gtk_clist_select_row(GTK_CLIST(clist), found_at, 1);
 	 cb_clist_selection(clist, found_at, 1, (GdkEventButton *)455, "");
       }
@@ -2960,7 +2960,7 @@ cb_entry_key_pressed(GtkWidget *widget, GdkEventKey *event,
 {
    int digit=-1;
 
-   jpilot_logf(LOG_DEBUG, "cb_entry_key_pressed key = %d\n", event->keyval);
+   jp_logf(LOG_DEBUG, "cb_entry_key_pressed key = %d\n", event->keyval);
 
    gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event"); 
 

@@ -42,7 +42,11 @@
 #define PN "J-Pilot"
 #endif
 
+#ifdef ENABLE_PROMETHEON
+#define EPN "copilot"
+#else
 #define EPN "jpilot"
+#endif
 #define VERSION_STRING "\n"PN" version "VERSION"\n"\
 " Copyright (C) 1999-2001 by Judd Montgomery\n"
 
@@ -275,7 +279,7 @@ void move_scrolled_window_hack(GtkWidget *sw, float percentage);
 
 int check_copy_DBs_to_home();
 
-int jpilot_copy_file(char *src, char *dest);
+int jp_copy_file(char *src, char *dest);
 
 /*search_gui.c */
 void cb_search_gui(GtkWidget *widget, gpointer data);
@@ -382,6 +386,9 @@ void monthview_gui(struct tm *date);
 
 /* weekview_gui */
 void weekview_gui(struct tm *date_in);
+
+/* dialer.c */
+int dialog_dial(GtkWindow *main_window, char *string, char *ext);
 
 int make_category_menu(GtkWidget **category_menu,
 		       GtkWidget **cat_menu_item,

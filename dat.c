@@ -173,7 +173,7 @@ int get_repeat(FILE *in, struct Appointment *a)
       if (s>0) {
 	 a->exception=malloc(sizeof(struct tm) * s);
 	 if (!(a->exceptions)) {
-	    jpilot_logf(LOG_WARN, "get_repeat(): Out of Memory\n");
+	    jp_logf(LOG_WARN, "get_repeat(): Out of Memory\n");
 	 }
       }
    }
@@ -448,7 +448,7 @@ int get_field(FILE *in, struct field *f)
       /* get_repeat(in, NULL); */
       break;
     default:
-      jpilot_logf(LOG_WARN, "get_field(): unknown type = %ld\n", type);
+      jp_logf(LOG_WARN, "get_field(): unknown type = %ld\n", type);
       break;
    }
 
@@ -464,7 +464,7 @@ int dat_check_if_dat_file(FILE *in)
    /* Version */
    fread(version, 4, 1, in);
    fseek(in, 0, SEEK_SET);
-   jpilot_logf(LOG_DEBUG, "dat_check_if_dat_file(): version = [%c%c%d%d]\n", version[3],version[2],version[1],version[0]);
+   jp_logf(LOG_DEBUG, "dat_check_if_dat_file(): version = [%c%c%d%d]\n", version[3],version[2],version[1],version[0]);
    if ((version[3]=='D') && (version[2]=='B') &&
        (version[1]==1) && (version[0]==0)) {
       return DAT_DATEBOOK_FILE;
@@ -500,16 +500,16 @@ int dat_read_header(FILE *in,
 
    /* Version */
    fread(version, 4, 1, in);
-   jpilot_logf(LOG_DEBUG, "version = [%c%c%d%d]\n", version[3],version[2],version[1],version[0]);
+   jp_logf(LOG_DEBUG, "version = [%c%c%d%d]\n", version[3],version[2],version[1],version[0]);
 
    /* Full file path name */
    get_CString(in, &PStr);
-   jpilot_logf(LOG_DEBUG, "path:[%s]\n",PStr);
+   jp_logf(LOG_DEBUG, "path:[%s]\n",PStr);
    free(PStr);
 
    /* Show Header */
    get_CString(in, &PStr);
-   jpilot_logf(LOG_DEBUG, "show header:[%s]\n",PStr);
+   jp_logf(LOG_DEBUG, "show header:[%s]\n",PStr);
    free(PStr);
 
    /* Next free category ID */
@@ -529,7 +529,7 @@ int dat_read_header(FILE *in,
    fread(filler, 4, 1, in);
    *field_count=x86_long(filler);
    if (*field_count != expected_field_count) {
-      jpilot_logf(LOG_WARN, "fields per row count != %d, unknown format\n",
+      jp_logf(LOG_WARN, "fields per row count != %d, unknown format\n",
 		  expected_field_count);
       return -1;
    }
@@ -543,7 +543,7 @@ int dat_read_header(FILE *in,
    fread(filler, 2, 1, in);
    *field_count = x86_short(filler);
    if (*field_count != expected_field_count) {
-      jpilot_logf(LOG_WARN, "field count != %d, unknown format\n",
+      jp_logf(LOG_WARN, "field count != %d, unknown format\n",
 		  expected_field_count);
       return -1;
    }
@@ -551,17 +551,17 @@ int dat_read_header(FILE *in,
    /* Schema fields */
    fread(filler, (*field_count)*2, 1, in);
    if (memcmp(filler, schema, (*field_count)*2)) {
-      jpilot_logf(LOG_WARN, "unknown format, file has wrong schema\n");
-      jpilot_logf(LOG_WARN, "File schema is:");
+      jp_logf(LOG_WARN, "unknown format, file has wrong schema\n");
+      jp_logf(LOG_WARN, "File schema is:");
       for (i=0; i<(*field_count)*2; i++) {
-	 jpilot_logf(LOG_WARN, " %02d", (char)filler[i]);
+	 jp_logf(LOG_WARN, " %02d", (char)filler[i]);
       }
-      jpilot_logf(LOG_WARN, "\n");
-      jpilot_logf(LOG_WARN, "It should be:  ");
+      jp_logf(LOG_WARN, "\n");
+      jp_logf(LOG_WARN, "It should be:  ");
       for (i=0; i<(*field_count)*2; i++) {
-	 jpilot_logf(LOG_WARN, " %02d", (char)schema[i]);
+	 jp_logf(LOG_WARN, " %02d", (char)schema[i]);
       }
-      jpilot_logf(LOG_WARN, "\n");
+      jp_logf(LOG_WARN, "\n");
       return -1;
    }
 
@@ -630,7 +630,7 @@ int dat_get_appointments(FILE *in, AppointmentList **alist, struct CategoryAppIn
    };
 #endif
 
-   jpilot_logf(LOG_DEBUG, "dat_get_appointments\n");
+   jp_logf(LOG_DEBUG, "dat_get_appointments\n");
 
    if (!alist) return 0;
    *alist=NULL;
@@ -648,7 +648,7 @@ int dat_get_appointments(FILE *in, AppointmentList **alist, struct CategoryAppIn
    for (i=0; i<rec_count; i++) {
       temp_alist = malloc(sizeof(AppointmentList));
       if (!temp_alist) {
-	 jpilot_logf(LOG_WARN, "dat_get_appointments(): Out of memory\n");
+	 jp_logf(LOG_WARN, "dat_get_appointments(): Out of memory\n");
 	 return i;
       }
       if (last_alist) {
@@ -674,7 +674,7 @@ int dat_get_appointments(FILE *in, AppointmentList **alist, struct CategoryAppIn
 	 printf("rec field %d %s: ", j, rec_fields[j]); print_field(&(fa[j]));
 #endif
 	 if (fa[j].type!=schema[j*2]) {
-	    jpilot_logf(LOG_WARN, "Invalid schema ID record %d, field %d\n", i+1, j+3);
+	    jp_logf(LOG_WARN, "Invalid schema ID record %d, field %d\n", i+1, j+3);
 	    return 0;
 	 }
       }
@@ -690,7 +690,7 @@ int dat_get_appointments(FILE *in, AppointmentList **alist, struct CategoryAppIn
 	 }
 #endif
 	 if (fa[j].type!=schema[j*2+6]) {
-	    jpilot_logf(LOG_WARN, "Invalid schema ID record %d, field %d\n", i+1, j+3);
+	    jp_logf(LOG_WARN, "Invalid schema ID record %d, field %d\n", i+1, j+3);
 	    return 0;
 	 }
 	 if (fa[j].type==DAT_TYPE_REPEAT) {
@@ -826,7 +826,7 @@ int dat_get_addresses(FILE *in, AddressList **addrlist, struct CategoryAppInfo *
    };
 #endif
 
-   jpilot_logf(LOG_DEBUG, "dat_get_addresses\n");
+   jp_logf(LOG_DEBUG, "dat_get_addresses\n");
 
    if (!addrlist) return 0;
    *addrlist=NULL;
@@ -844,7 +844,7 @@ int dat_get_addresses(FILE *in, AddressList **addrlist, struct CategoryAppInfo *
    for (i=0; i<rec_count; i++) {
       temp_addrlist = malloc(sizeof(AddressList));
       if (!temp_addrlist) {
-	 jpilot_logf(LOG_WARN, "dat_get_addresses(): Out of memory\n");
+	 jp_logf(LOG_WARN, "dat_get_addresses(): Out of memory\n");
 	 return i;
       }
       if (last_addrlist) {
@@ -868,7 +868,7 @@ int dat_get_addresses(FILE *in, AddressList **addrlist, struct CategoryAppInfo *
 	 printf("rec field %d %s: ", j, rec_fields[j]); print_field(&(fa[j]));
 #endif
 	 if (fa[j].type!=schema[j*2]) {
-	    jpilot_logf(LOG_WARN, "Invalid schema ID record %d, field %d\n", i+1, j+3);
+	    jp_logf(LOG_WARN, "Invalid schema ID record %d, field %d\n", i+1, j+3);
 	    return 0;
 	 }
       }
@@ -879,7 +879,7 @@ int dat_get_addresses(FILE *in, AddressList **addrlist, struct CategoryAppInfo *
 	 printf("field %d %s: ", j, field_names[j]); print_field(&(fa[j]));
 #endif
 	 if (fa[j].type!=schema[j*2+6]) {
-	    jpilot_logf(LOG_WARN, "Invalid schema ID record %d, field %d\n", i+1, j+3);
+	    jp_logf(LOG_WARN, "Invalid schema ID record %d, field %d\n", i+1, j+3);
 	    return 0;
 	 }
       }
@@ -955,7 +955,7 @@ int dat_get_todos(FILE *in, ToDoList **todolist, struct CategoryAppInfo *ai)
    };
 #endif
 
-   jpilot_logf(LOG_DEBUG, "dat_get_todos\n");
+   jp_logf(LOG_DEBUG, "dat_get_todos\n");
 
    if (!todolist) return 0;
    *todolist=NULL;
@@ -973,7 +973,7 @@ int dat_get_todos(FILE *in, ToDoList **todolist, struct CategoryAppInfo *ai)
    for (i=0; i<rec_count; i++) {
       temp_todolist = malloc(sizeof(ToDoList));
       if (!temp_todolist) {
-	 jpilot_logf(LOG_WARN, "dat_get_todos(): Out of memory\n");
+	 jp_logf(LOG_WARN, "dat_get_todos(): Out of memory\n");
 	 return i;
       }
       if (last_todolist) {
@@ -997,7 +997,7 @@ int dat_get_todos(FILE *in, ToDoList **todolist, struct CategoryAppInfo *ai)
 	 printf("rec field %d %s: ", j, rec_fields[j]); print_field(&(fa[j]));
 #endif
 	 if (fa[j].type!=schema[j*2]) {
-	    jpilot_logf(LOG_WARN, "Invalid schema ID record %d, field %d\n", i+1, j+3);
+	    jp_logf(LOG_WARN, "Invalid schema ID record %d, field %d\n", i+1, j+3);
 	    return 0;
 	 }
       }
@@ -1008,7 +1008,7 @@ int dat_get_todos(FILE *in, ToDoList **todolist, struct CategoryAppInfo *ai)
 	 printf("field %d %s: ", j, field_names[j]); print_field(&(fa[j]));
 #endif
 	 if (fa[j].type!=schema[j*2+6]) {
-	    jpilot_logf(LOG_WARN, "Invalid schema ID record %d, field %d\n", i+1, j+3);
+	    jp_logf(LOG_WARN, "Invalid schema ID record %d, field %d\n", i+1, j+3);
 	    return 0;
 	 }
       }
@@ -1087,7 +1087,7 @@ int dat_get_memos(FILE *in, MemoList **memolist, struct CategoryAppInfo *ai)
    };
 #endif
 
-   jpilot_logf(LOG_DEBUG, "dat_get_memos\n");
+   jp_logf(LOG_DEBUG, "dat_get_memos\n");
 
    if (!memolist) return 0;
    *memolist=NULL;
@@ -1105,7 +1105,7 @@ int dat_get_memos(FILE *in, MemoList **memolist, struct CategoryAppInfo *ai)
    for (i=0; i<rec_count; i++) {
       temp_memolist = malloc(sizeof(MemoList));
       if (!temp_memolist) {
-	 jpilot_logf(LOG_WARN, "dat_get_memos(): Out of memory\n");
+	 jp_logf(LOG_WARN, "dat_get_memos(): Out of memory\n");
 	 return i;
       }
       if (last_memolist) {
@@ -1129,7 +1129,7 @@ int dat_get_memos(FILE *in, MemoList **memolist, struct CategoryAppInfo *ai)
 	 printf("rec field %d %s: ", j, rec_fields[j]); print_field(&(fa[j]));
 #endif
 	 if (fa[j].type!=schema[j*2]) {
-	    jpilot_logf(LOG_WARN, "Invalid schema ID record %d, field %d\n", i+1, j+3);
+	    jp_logf(LOG_WARN, "Invalid schema ID record %d, field %d\n", i+1, j+3);
 	    return 0;
 	 }
       }
@@ -1140,7 +1140,7 @@ int dat_get_memos(FILE *in, MemoList **memolist, struct CategoryAppInfo *ai)
 	 printf("field %d %s: ", j, field_names[j]); print_field(&(fa[j]));
 #endif
 	 if (fa[j].type!=schema[j*2+6]) {
-	    jpilot_logf(LOG_WARN, "Invalid schema ID record %d, field %d\n", i+1, j+3);
+	    jp_logf(LOG_WARN, "Invalid schema ID record %d, field %d\n", i+1, j+3);
 	    return 0;
 	 }
       }

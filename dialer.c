@@ -165,7 +165,7 @@ static void dialer(gpointer data, int phone_or_ext)
    }
    command[1022]='\0';
 
-   jpilot_logf(LOG_STDOUT|LOG_FILE, "executing command = [%s]\n", command);
+   jp_logf(LOG_STDOUT|LOG_FILE, "executing command = [%s]\n", command);
    system(command);
 }
 
@@ -180,7 +180,7 @@ static void cb_dial_phone(GtkWidget *widget, gpointer data)
 }
 
 /*
- * returns 1 if OK was pressed, 2 if cancel was hit
+ * Dialog window for calling external dialing program
  */
 int dialog_dial(GtkWindow *main_window, char *string, char *ext)
 {

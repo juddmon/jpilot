@@ -44,7 +44,7 @@ void write_plugin_sync_file()
    GList *temp_list;
    struct plugin_s *Pplugin;
 
-   out=jp_open_home_file("jpilot.plugins", "w");
+   out=jp_open_home_file(EPN".plugins", "w");
    if (!out) {
       return;
    }
@@ -81,7 +81,7 @@ int load_plugins_sub1(DIR *dir, char *path, int *number, unsigned char user_only
    count = 0;
    for (i=0; (dirent = readdir(dir)); i++) {
       if (i>1000) {
-	 jpilot_logf(LOG_WARN, "load_plugins_sub1(): infinite loop\n");
+	 jp_logf(LOG_WARN, "load_plugins_sub1(): infinite loop\n");
 	 return 0;
       }
       /* If the filename has either of these extensions then plug it in */
@@ -89,7 +89,7 @@ int load_plugins_sub1(DIR *dir, char *path, int *number, unsigned char user_only
 	  (strcmp(&(dirent->d_name[strlen(dirent->d_name)-3]), ".sl"))) {
 	 continue;
       } else {
-	 jpilot_logf(LOG_DEBUG, "found plugin %s\n", dirent->d_name);
+	 jp_logf(LOG_DEBUG, "found plugin %s\n", dirent->d_name);
 	 /* We know path has a trailing slash after it */
 	 g_snprintf(full_name, 250, "%s%s", path, dirent->d_name);
 	 r = get_plugin_info(&temp_plugin, full_name);
@@ -97,11 +97,11 @@ int load_plugins_sub1(DIR *dir, char *path, int *number, unsigned char user_only
 	 temp_plugin.user_only = user_only;
 	 if (r==0) {
 	    if (temp_plugin.name) {
-	       jpilot_logf(LOG_DEBUG, "plugin name is [%s]\n", temp_plugin.name);
+	       jp_logf(LOG_DEBUG, "plugin name is [%s]\n", temp_plugin.name);
 	    }
 	    new_plugin = malloc(sizeof(struct plugin_s));
 	    if (!new_plugin) {
-	       jpilot_logf(LOG_DEBUG, "load plugins(): Out of memory\n");
+	       jp_logf(LOG_DEBUG, "load plugins(): Out of memory\n");
 	       return count;
 	    }
 	    memcpy(new_plugin, &temp_plugin, sizeof(struct plugin_s));
@@ -135,7 +135,7 @@ int load_plugins()
 
    /* ABILIB is for Irix, should normally be "lib" */
    g_snprintf(path, 250, "%s/%s/%s/%s/", BASE_DIR, ABILIB, EPN, "plugins");
-   jpilot_logf(LOG_DEBUG, "opening dir %s\n", path);
+   jp_logf(LOG_DEBUG, "opening dir %s\n", path);
    cleanup_path(path);
    dir = opendir(path);
    if (dir) {
@@ -145,7 +145,7 @@ int load_plugins()
 
    get_home_file_name("plugins/", path, 240);
    cleanup_path(path);
-   jpilot_logf(LOG_DEBUG, "opening dir %s\n", path);
+   jp_logf(LOG_DEBUG, "opening dir %s\n", path);
    dir = opendir(path);
    if (dir) {
       count += load_plugins_sub1(dir, path, &number, 1);
@@ -174,13 +174,13 @@ static int get_plugin_sync_bits()
    char *Pc;
    FILE *in;
 
-   in=jp_open_home_file("jpilot.plugins", "r");
+   in=jp_open_home_file(EPN".plugins", "r");
    if (!in) {
       return 0;
    }
    for (i=0; (!feof(in)); i++) {   
       if (i>1000) {
-	 jpilot_logf(LOG_WARN, "load_plugins(): infinite loop\n");
+	 jp_logf(LOG_WARN, "load_plugins(): infinite loop\n");
 	 fclose(in);
 	 return 0;
       }
@@ -193,9 +193,9 @@ static int get_plugin_sync_bits()
 	 line[strlen(line)-1]='\0';
       }
       if ((!strncmp(line, "Version", 7)) && (strcmp(line, "Version 1"))) {
-	 jpilot_logf(LOG_WARN, "While reading jpilot.plugins line 1:[%s]\n", line);
-	 jpilot_logf(LOG_WARN, "Wrong Version\n");
-	 jpilot_logf(LOG_WARN, "Check preferences->conduits\n");
+	 jp_logf(LOG_WARN, "While reading "EPN".plugins line 1:[%s]\n", line);
+	 jp_logf(LOG_WARN, "Wrong Version\n");
+	 jp_logf(LOG_WARN, "Check preferences->conduits\n");
 	 fclose(in);
 	 return 0;
       }
@@ -248,11 +248,11 @@ static int get_plugin_info(struct plugin_s *p, char *path)
 
    h = dlopen(path, RTLD_LAZY);
    if (!h) {
-      jpilot_logf(LOG_WARN, "open failed on plugin [%s]\n error [%s]\n", path,
+      jp_logf(LOG_WARN, "open failed on plugin [%s]\n error [%s]\n", path,
 		  dlerror());
       return -1;
    }
-   jpilot_logf(LOG_DEBUG, "opened plugin [%s]\n", path);
+   jp_logf(LOG_DEBUG, "opened plugin [%s]\n", path);
    p->handle=h;
 
    p->full_path = strdup(path);
@@ -264,8 +264,8 @@ static int get_plugin_info(struct plugin_s *p, char *path)
    plugin_versionM = dlsym(h, "plugin_version");
    if (plugin_versionM==NULL)  {
       err = dlerror();
-      jpilot_logf(LOG_WARN, "plugin_version: [%s]\n", err);
-      jpilot_logf(LOG_WARN, " plugin is invalid: [%s]\n", path);
+      jp_logf(LOG_WARN, "plugin_version: [%s]\n", err);
+      jp_logf(LOG_WARN, " plugin is invalid: [%s]\n", path);
       dlclose(h);
       p->handle=NULL;
       return -1;
@@ -273,25 +273,25 @@ static int get_plugin_info(struct plugin_s *p, char *path)
    plugin_versionM(&major_version, &minor_version);
    version=major_version*1000+minor_version;
    if ((major_version <= 0) && (minor_version < 99)) {
-      jpilot_logf(LOG_WARN, "Plugin:[%s]\n", path);
-      jpilot_logf(LOG_WARN, "This plugin is version (%d.%d).\n",
+      jp_logf(LOG_WARN, "Plugin:[%s]\n", path);
+      jp_logf(LOG_WARN, "This plugin is version (%d.%d).\n",
 		  major_version, minor_version);
-      jpilot_logf(LOG_WARN, "It is too old to work with this version of J-Pilot.\n");
+      jp_logf(LOG_WARN, "It is too old to work with this version of J-Pilot.\n");
       dlclose(h);
       p->handle=NULL;
       return -1;
    }
-   jpilot_logf(LOG_DEBUG, "This plugin is version (%d.%d).\n",
+   jp_logf(LOG_DEBUG, "This plugin is version (%d.%d).\n",
 	       major_version, minor_version);
 
 
    /* plugin_get_name */
-   jpilot_logf(LOG_DEBUG, "getting plugin_get_name\n");
+   jp_logf(LOG_DEBUG, "getting plugin_get_name\n");
    p->plugin_get_name = dlsym(h, "plugin_get_name");
    if (p->plugin_get_name==NULL)  {
       err = dlerror();
-      jpilot_logf(LOG_WARN, "plugin_get_name: [%s]\n", err);
-      jpilot_logf(LOG_WARN, " plugin is invalid: [%s]\n", path);
+      jp_logf(LOG_WARN, "plugin_get_name: [%s]\n", err);
+      jp_logf(LOG_WARN, " plugin is invalid: [%s]\n", path);
       dlclose(h);
       p->handle=NULL;
       return -1;
@@ -307,7 +307,7 @@ static int get_plugin_info(struct plugin_s *p, char *path)
 
 
    /* plugin_get_menu_name */
-   jpilot_logf(LOG_DEBUG, "getting plugin_get_menu_name\n");
+   jp_logf(LOG_DEBUG, "getting plugin_get_menu_name\n");
    p->plugin_get_menu_name = dlsym(h, "plugin_get_menu_name");
    if (p->plugin_get_menu_name) {
       p->plugin_get_menu_name(name, 50);
@@ -319,7 +319,7 @@ static int get_plugin_info(struct plugin_s *p, char *path)
 
 
    /* plugin_get_help_name */
-   jpilot_logf(LOG_DEBUG, "getting plugin_get_help_name\n");
+   jp_logf(LOG_DEBUG, "getting plugin_get_help_name\n");
    p->plugin_get_help_name = dlsym(h, "plugin_get_help_name");
    if (p->plugin_get_help_name) {
       p->plugin_get_help_name(name, 50);
@@ -330,7 +330,7 @@ static int get_plugin_info(struct plugin_s *p, char *path)
    }
 
    /* plugin_get_db_name */
-   jpilot_logf(LOG_DEBUG, "getting plugin_get_db_name\n");
+   jp_logf(LOG_DEBUG, "getting plugin_get_db_name\n");
    p->plugin_get_db_name = dlsym(h, "plugin_get_db_name");
 
    if (p->plugin_get_db_name) {

@@ -78,7 +78,7 @@ extern pid_t glob_child_pid;
 int slow_sync_application(char *DB_name, int sd);
 int fast_sync_application(char *DB_name, int sd);
 int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync);
-int jpilot_sync(struct my_sync_info *sync_info);
+int jp_sync(struct my_sync_info *sync_info);
 int sync_lock();
 int sync_unlock();
 static int sync_process_install_file(int sd);
@@ -94,7 +94,7 @@ int pdb_file_delete_record_by_id(char *DB_name, pi_uid_t uid_in);
 
 void sig_handler(int sig)
 {
-   jpilot_logf(LOG_DEBUG, "caught signal SIGCHLD\n");
+   jp_logf(LOG_DEBUG, "caught signal SIGCHLD\n");
    glob_child_pid = 0;
 
    /*wait for any child processes */
@@ -120,7 +120,7 @@ int sync_lock(int *fd)
    get_home_file_name("sync_pid", lock_file, 255);
    *fd = open(lock_file, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
    if (*fd<0) {
-      jpilot_logf(LOG_WARN, "open lock file failed\n");
+      jp_logf(LOG_WARN, "open lock file failed\n");
       return -1;
    }
 #ifndef USE_FLOCK
@@ -133,13 +133,13 @@ int sync_lock(int *fd)
    r = flock(*fd, LOCK_EX | LOCK_NB);
 #endif
    if (r == -1){
-      jpilot_logf(LOG_WARN, "lock failed\n");
+      jp_logf(LOG_WARN, "lock failed\n");
       read(*fd, str, 10);
       pid = atoi(str);
-      jpilot_logf(LOG_FATAL, "sync file is locked by pid %d\n", pid);
+      jp_logf(LOG_FATAL, "sync file is locked by pid %d\n", pid);
       return -1;
    } else {
-      jpilot_logf(LOG_DEBUG, "lock succeeded\n");
+      jp_logf(LOG_DEBUG, "lock succeeded\n");
       pid=getpid();
       sprintf(str, "%d\n", pid);
       write(*fd, str, strlen(str)+1);
@@ -170,14 +170,14 @@ int sync_unlock(int fd)
    r = flock(fd, LOCK_UN | LOCK_NB);
 #endif
    if (r == -1) {
-      jpilot_logf(LOG_WARN, "unlock failed\n");
+      jp_logf(LOG_WARN, "unlock failed\n");
       read(fd, str, 10);
       pid = atoi(str);
-      jpilot_logf(LOG_WARN, "sync is locked by pid %d\n", pid);
+      jp_logf(LOG_WARN, "sync is locked by pid %d\n", pid);
       close(fd);
       return -1;
    } else {
-      jpilot_logf(LOG_DEBUG, "unlock succeeded\n");
+      jp_logf(LOG_DEBUG, "unlock succeeded\n");
       ftruncate(fd, 0);
       close(fd);
    }
@@ -222,8 +222,8 @@ int sync_once(struct my_sync_info *sync_info)
    struct my_sync_info *sync_info_copy;
 
    if (glob_child_pid) {
-      jpilot_logf(LOG_WARN, PN": sync PID = %d\n", glob_child_pid);
-      jpilot_logf(LOG_WARN, PN": press the hotsync button on the cradle "
+      jp_logf(LOG_WARN, PN": sync PID = %d\n", glob_child_pid);
+      jp_logf(LOG_WARN, PN": press the hotsync button on the cradle "
 	   "or \"kill %d\"\n", glob_child_pid);
       return 0;
    }
@@ -231,13 +231,13 @@ int sync_once(struct my_sync_info *sync_info)
    /* Make a copy of the sync info for the forked process */
    sync_info_copy = malloc(sizeof(struct my_sync_info));
    if (!sync_info_copy) {
-      jpilot_logf(LOG_WARN, PN":sync_once(): Out of memory\n");
+      jp_logf(LOG_WARN, PN":sync_once(): Out of memory\n");
       return 0;
    }
    memcpy(sync_info_copy, sync_info, sizeof(struct my_sync_info));
 
    if (!(sync_info->flags & SYNC_NO_FORK)) {
-      jpilot_logf(LOG_DEBUG, "forking sync process\n");
+      jp_logf(LOG_DEBUG, "forking sync process\n");
       switch ( glob_child_pid = fork() ){
        case -1:
 	 perror("fork");
@@ -261,13 +261,13 @@ int sync_once(struct my_sync_info *sync_info)
 #ifdef USE_LOCKING
    r = sync_lock(&fd);
    if (r) {
-      jpilot_logf(LOG_DEBUG, "Child cannot lock file\n");
+      jp_logf(LOG_DEBUG, "Child cannot lock file\n");
       free(sync_info_copy);
       _exit(0);
    }
 #endif
 
-   r = jpilot_sync(sync_info_copy);
+   r = jp_sync(sync_info_copy);
    if (r) {
       write_to_parent(PIPE_PRINT, _("Exiting with status %s\n"), get_error_str(r));
       write_to_parent(PIPE_PRINT, _("Finished\n"));
@@ -275,7 +275,7 @@ int sync_once(struct my_sync_info *sync_info)
 #ifdef USE_LOCKING
    sync_unlock(fd);
 #endif
-   jpilot_logf(LOG_DEBUG, "sync child exiting\n");
+   jp_logf(LOG_DEBUG, "sync child exiting\n");
    free(sync_info_copy);
    if (!(sync_info->flags & SYNC_NO_FORK)) {
       _exit(0);
@@ -390,7 +390,7 @@ static int wait_for_response(int sd)
    return command;
 }
 
-int jpilot_sync(struct my_sync_info *sync_info)
+int jp_sync(struct my_sync_info *sync_info)
 {
    struct pi_sockaddr addr;
    int sd;
@@ -570,7 +570,7 @@ int jpilot_sync(struct my_sync_info *sync_info)
    /* Plugins should call pi_watchdog(); if they are going to be a while */
 #ifdef ENABLE_PLUGINS
    if (!(sync_info->flags & SYNC_NO_PLUGINS)) {
-      jpilot_logf(LOG_DEBUG, "sync:calling load_plugins\n");
+      jp_logf(LOG_DEBUG, "sync:calling load_plugins\n");
       load_plugins();
    }
 
@@ -584,7 +584,7 @@ int jpilot_sync(struct my_sync_info *sync_info)
       if (plugin) {
 	 if (plugin->sync_on) {
 	    if (plugin->plugin_pre_sync) {
-	       jpilot_logf(LOG_DEBUG, "sync:calling plugin_pre_sync for [%s]\n", plugin->name);
+	       jp_logf(LOG_DEBUG, "sync:calling plugin_pre_sync for [%s]\n", plugin->name);
 	       plugin->plugin_pre_sync();
 	    }
 	 }
@@ -672,11 +672,11 @@ int jpilot_sync(struct my_sync_info *sync_info)
    }
    write_to_parent(PIPE_PRINT, _("lastSyncPC = %d\n"), U.lastSyncPC);
    write_to_parent(PIPE_PRINT, _("This PC = %lu\n"), sync_info->PC_ID);
-   jpilot_logf(LOG_DEBUG, _("Last Username = [%s]\n"), sync_info->username);
-   jpilot_logf(LOG_DEBUG, _("Last UserID = %d\n"), sync_info->userID);
-   jpilot_logf(LOG_DEBUG, _("Username = [%s]\n"), U.username);
-   jpilot_logf(LOG_DEBUG, _("userID = %d\n"), U.userID);
-   jpilot_logf(LOG_DEBUG, _("lastSyncPC = %d\n"), U.lastSyncPC);
+   jp_logf(LOG_DEBUG, _("Last Username = [%s]\n"), sync_info->username);
+   jp_logf(LOG_DEBUG, _("Last UserID = %d\n"), sync_info->userID);
+   jp_logf(LOG_DEBUG, _("Username = [%s]\n"), U.username);
+   jp_logf(LOG_DEBUG, _("userID = %d\n"), U.userID);
+   jp_logf(LOG_DEBUG, _("lastSyncPC = %d\n"), U.lastSyncPC);
 
 #ifdef ENABLE_PRIVATE
    if (U.passwordLength > 0) {
@@ -686,8 +686,8 @@ int jpilot_sync(struct my_sync_info *sync_info)
    } else {
       strcpy(hex_password, "09021345070413440c08135a3215135dd217ead3b5df556322e9a14a994b0f88");
    }
-   jpilot_logf(LOG_DEBUG, "passwordLength = %d\n", U.passwordLength);
-   jpilot_logf(LOG_DEBUG, "userPassword = [%s]\n", hex_password);
+   jp_logf(LOG_DEBUG, "passwordLength = %d\n", U.passwordLength);
+   jp_logf(LOG_DEBUG, "userPassword = [%s]\n", hex_password);
    write_to_parent(PIPE_PASSWORD, "\"%s\"\n", hex_password);
 #endif
 
@@ -787,12 +787,12 @@ int jpilot_sync(struct my_sync_info *sync_info)
 
    for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
       plugin = (struct plugin_s *)temp_list->data;
-      jpilot_logf(LOG_DEBUG, "syncing plugin name: [%s]\n", plugin->name);
+      jp_logf(LOG_DEBUG, "syncing plugin name: [%s]\n", plugin->name);
       if ((plugin->db_name==NULL) || (plugin->db_name[0]=='\0')) {
-	 jpilot_logf(LOG_DEBUG, "not syncing plugin DB: [%s]\n", plugin->db_name);
+	 jp_logf(LOG_DEBUG, "not syncing plugin DB: [%s]\n", plugin->db_name);
 	 continue;
       }
-      jpilot_logf(LOG_DEBUG, "syncing plugin DB: [%s]\n", plugin->db_name);
+      jp_logf(LOG_DEBUG, "syncing plugin DB: [%s]\n", plugin->db_name);
       if (fast_sync) {
 	 if (plugin->sync_on) {
 	    fast_sync_application(plugin->db_name, sd);
@@ -816,7 +816,7 @@ int jpilot_sync(struct my_sync_info *sync_info)
       if (plugin) {
 	 if (plugin->sync_on) {
 	    if (plugin->plugin_sync) {
-	       jpilot_logf(LOG_DEBUG, "calling plugin_sync for [%s]\n", plugin->name);
+	       jp_logf(LOG_DEBUG, "calling plugin_sync for [%s]\n", plugin->name);
 	       plugin->plugin_sync(sd);
 	    }
 	 }
@@ -832,7 +832,7 @@ int jpilot_sync(struct my_sync_info *sync_info)
    U.lastSyncDate = U.successfulSyncDate;
    dlp_WriteUserInfo(sd, &U);
    if (strncpy(buf,_("Thank you for using J-Pilot."),1024) == NULL) {
-      jpilot_logf(LOG_DEBUG, "memory allocation internal error\n");
+      jp_logf(LOG_DEBUG, "memory allocation internal error\n");
       dlp_EndOfSync(sd, 0);
       pi_close(sd);
 #ifdef ENABLE_PLUGINS
@@ -862,14 +862,14 @@ int jpilot_sync(struct my_sync_info *sync_info)
       if (plugin) {
 	 if (plugin->sync_on) {
 	    if (plugin->plugin_post_sync) {
-	       jpilot_logf(LOG_DEBUG, "calling plugin_post_sync for [%s]\n", plugin->name);
+	       jp_logf(LOG_DEBUG, "calling plugin_post_sync for [%s]\n", plugin->name);
 	       plugin->plugin_post_sync();
 	    }
 	 }
       }
    }
 
-   jpilot_logf(LOG_DEBUG, "freeing plugin list\n");
+   jp_logf(LOG_DEBUG, "freeing plugin list\n");
    free_plugin_list(&plugin_list);
 #endif
 
@@ -1031,10 +1031,10 @@ int slow_sync_application(char *DB_name, int sd)
 	 ret = dlp_ReadRecordById(sd, db, header.unique_id, buffer,
 				  &index, &size, &attr, &category);
 	 if (rec_len == size) {
-	    jpilot_logf(LOG_DEBUG, "sizes match!\n");
+	    jp_logf(LOG_DEBUG, "sizes match!\n");
 #ifdef JPILOT_DEBUG
 	    if (memcmp(record, buffer, size)==0) {
-	       jpilot_logf(LOG_DEBUG, "Binary is the same!\n");
+	       jp_logf(LOG_DEBUG, "Binary is the same!\n");
 	    }
 	    /* FIXME What should happen here is that if the records are the same
 	     * then go ahead and delete, otherwise make a copy of the record
@@ -1121,7 +1121,7 @@ int fetch_extra_DBs(int sd, char *palm_dbname[])
       for (i=0; palm_dbname[i]; i++) {
 	 if (palm_dbname[i]==NULL) break;
 	 if (!strcmp(info.name, palm_dbname[i])) {
-	    jpilot_logf(LOG_DEBUG, "Found extra DB\n");
+	    jp_logf(LOG_DEBUG, "Found extra DB\n");
 	    found=1;
 	    break;
 	 }
@@ -1240,11 +1240,11 @@ void move_removed_apps(GList *file_list)
 
 
    g_snprintf(full_backup_path, 298, "%s/backup/", home_dir);
-   jpilot_logf(LOG_DEBUG, "opening [%s]\n", full_backup_path);
+   jp_logf(LOG_DEBUG, "opening [%s]\n", full_backup_path);
    dir = opendir(full_backup_path);
    if (dir) {
       while ((dirent = readdir(dir))) {
-	 jpilot_logf(LOG_DEBUG, "dirent->d_name = [%s]\n", dirent->d_name);
+	 jp_logf(LOG_DEBUG, "dirent->d_name = [%s]\n", dirent->d_name);
 	 found=FALSE;
 	 if (!strcmp(dirent->d_name, ".")) continue;
 	 if (!strcmp(dirent->d_name, "..")) continue;
@@ -1259,8 +1259,8 @@ void move_removed_apps(GList *file_list)
 	 if (!found) {
 	    g_snprintf(full_backup_file, 298, "%s/backup/%s", home_dir, dirent->d_name);
 	    g_snprintf(full_remove_file, 298, "%s/backup_removed/%s", home_dir, dirent->d_name);
-	    jpilot_logf(LOG_DEBUG, "[%s] not found\n", dirent->d_name);
-	    jpilot_logf(LOG_DEBUG, "  moving [%s]\n  to [%s]\n", full_backup_file, full_remove_file);
+	    jp_logf(LOG_DEBUG, "[%s] not found\n", dirent->d_name);
+	    jp_logf(LOG_DEBUG, "  moving [%s]\n  to [%s]\n", full_backup_file, full_remove_file);
 	    rename(full_backup_file, full_remove_file);
 	 }
       }
@@ -1337,7 +1337,7 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
     * 2. fast sync                  return
     * 3. fast sync && full backup   fetch DBs in backup dir
     */
-   jpilot_logf(LOG_DEBUG, "sync_fetch flags=0x%x, num_backups=%d, fast=%d\n",
+   jp_logf(LOG_DEBUG, "sync_fetch flags=0x%x, num_backups=%d, fast=%d\n",
 	       flags, num_backups, fast_sync);
 
    end_of_list=NULL;
@@ -1350,7 +1350,7 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
    }
 
    if ((flags & SYNC_FULL_BACKUP)) {
-      jpilot_logf(LOG_DEBUG, "Full Backup\n");
+      jp_logf(LOG_DEBUG, "Full Backup\n");
       pi_watchdog(sd,10); /* prevent from timing out on long copy times */
       sync_rotate_backups(num_backups);
       pi_watchdog(sd,0);  /* back to normal behavior */
@@ -1367,11 +1367,11 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
       creator[3] = (info.creator & 0x000000FF);
       creator[4] = '\0';
 #ifdef JPILOT_DEBUG
-      jpilot_logf(LOG_DEBUG, "dbname = %s\n",info.name);
-      jpilot_logf(LOG_DEBUG, "exclude from sync = %d\n",info.miscFlags & dlpDBMiscFlagExcludeFromSync);
-      jpilot_logf(LOG_DEBUG, "flag backup = %d\n",info.flags & dlpDBFlagBackup);
+      jp_logf(LOG_DEBUG, "dbname = %s\n",info.name);
+      jp_logf(LOG_DEBUG, "exclude from sync = %d\n",info.miscFlags & dlpDBMiscFlagExcludeFromSync);
+      jp_logf(LOG_DEBUG, "flag backup = %d\n",info.flags & dlpDBFlagBackup);
       /*write_to_parent(PIPE_PRINT, "type = %x\n",info.type);*/
-      jpilot_logf(LOG_DEBUG, "Creator ID = [%s]\n", creator);
+      jp_logf(LOG_DEBUG, "Creator ID = [%s]\n", creator);
 #endif
       if (flags & SYNC_FULL_BACKUP) {
 	 /* Look at the skip list */
@@ -1421,7 +1421,7 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
       main_app=0;
       for (i=0; palm_dbname[i]; i++) {
 	 if (!strcmp(info.name, palm_dbname[i])) {
-	    jpilot_logf(LOG_DEBUG, "Found main app\n");
+	    jp_logf(LOG_DEBUG, "Found main app\n");
 	    main_app = 1;
 	    break;
 	 }
@@ -1433,7 +1433,7 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
 	 for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
 	    plugin = (struct plugin_s *)temp_list->data;
 	    if (!strcmp(info.name, plugin->db_name)) {
-	       jpilot_logf(LOG_DEBUG, "Found plugin\n");
+	       jp_logf(LOG_DEBUG, "Found plugin\n");
 	       main_app = 1;
 	       break;
 	    }
@@ -1461,7 +1461,7 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
       strcat(full_backup_name, db_copy_name);
 
       /* Add this to our file name list if not manually skipped */
-      jpilot_logf(LOG_DEBUG, "appending [%s]\n", db_copy_name);
+      jp_logf(LOG_DEBUG, "appending [%s]\n", db_copy_name);
       if (file_list==NULL) {
 	 file_list = g_list_append(file_list, strdup(db_copy_name));
 	 end_of_list=file_list;
@@ -1477,7 +1477,7 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
       }
 #ifdef JPILOT_DEBUG
       if (main_app) {
-	 jpilot_logf(LOG_DEBUG, "main_app is set\n");
+	 jp_logf(LOG_DEBUG, "main_app is set\n");
       }
 #endif
 
@@ -1526,16 +1526,16 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
 
       /* This call preserves the file times */
       if ((main_app) && (mode==1)) {
-	 jpilot_copy_file(full_name, full_backup_name);
+	 jp_copy_file(full_name, full_backup_name);
       }
    }
    /* I'm not sure why pilot-link-0.11 is returning dlpErrNoneOpen */
    if ( ! ((r==dlpErrNotFound) || (r==dlpErrNoneOpen)) ) {
-      jpilot_logf(LOG_WARN, "ReadDBList returned = %d\n", r);
+      jp_logf(LOG_WARN, "ReadDBList returned = %d\n", r);
    } else {
-      jpilot_logf(LOG_DEBUG, "Good return code (dlpErrNotFound)\n");
+      jp_logf(LOG_DEBUG, "Good return code (dlpErrNotFound)\n");
       if ((mode==1) || (mode==3)) {
-	 jpilot_logf(LOG_DEBUG, "Removing apps not found on the palm\n");
+	 jp_logf(LOG_DEBUG, "Removing apps not found on the palm\n");
 	 move_removed_apps(file_list);
       }
    }
@@ -1652,15 +1652,15 @@ static int sync_process_install_file(int sd)
    char *Pc;
    int r, line_count;
 
-   in = jp_open_home_file("jpilot_to_install", "r");
+   in = jp_open_home_file(EPN"_to_install", "r");
    if (!in) {
-      write_to_parent(PIPE_PRINT, _("Cannot open jpilot_to_install file\n"));
+      write_to_parent(PIPE_PRINT, _("Cannot open "EPN"_to_install file\n"));
       return -1;
    }
 
-   out = jp_open_home_file("jpilot_to_install.tmp", "w");
+   out = jp_open_home_file(EPN"_to_install.tmp", "w");
    if (!out) {
-      write_to_parent(PIPE_PRINT, _("Cannot open jpilot_to_install.tmp file\n"));
+      write_to_parent(PIPE_PRINT, _("Cannot open "EPN"_to_install.tmp file\n"));
       fclose(in);
       return -1;
    }
@@ -1683,7 +1683,7 @@ static int sync_process_install_file(int sd)
    fclose(in);
    fclose(out);
 
-   rename_file("jpilot_to_install.tmp", "jpilot_to_install");
+   rename_file(EPN"_to_install.tmp", EPN"_to_install");
 
    return 0;
 }
@@ -1776,7 +1776,7 @@ static int get_oldest_newest_dir(char *oldest, char *newest, int *count)
    int r;
 
    get_home_file_name("", home_dir, 255);
-   jpilot_logf(LOG_DEBUG, "rotate_backups: opening dir %s\n", home_dir);
+   jp_logf(LOG_DEBUG, "rotate_backups: opening dir %s\n", home_dir);
    *count = 0;
    oldest[0]='\0';
    newest[0]='\0';
@@ -1787,25 +1787,25 @@ static int get_oldest_newest_dir(char *oldest, char *newest, int *count)
    *count = 0;
    while((dirent = readdir(dir))) {
       if (is_backup_dir(dirent->d_name)) {
-	 jpilot_logf(LOG_DEBUG, "backup dir [%s]\n", dirent->d_name);
+	 jp_logf(LOG_DEBUG, "backup dir [%s]\n", dirent->d_name);
 	 (*count)++;
 	 if (oldest[0]=='\0') {
 	    strcpy(oldest, dirent->d_name);
-	    /* jpilot_logf(LOG_DEBUG, "oldest is now %s\n", oldest);*/
+	    /* jp_logf(LOG_DEBUG, "oldest is now %s\n", oldest);*/
 	 }
 	 if (newest[0]=='\0') {
 	    strcpy(newest, dirent->d_name);
-	    /*jpilot_logf(LOG_DEBUG, "newest is now %s\n", newest);*/
+	    /*jp_logf(LOG_DEBUG, "newest is now %s\n", newest);*/
 	 }
 	 r = compare_back_dates(oldest, dirent->d_name);
 	 if (r==1) {
 	    strcpy(oldest, dirent->d_name);
-	    /*jpilot_logf(LOG_DEBUG, "oldest is now %s\n", oldest);*/
+	    /*jp_logf(LOG_DEBUG, "oldest is now %s\n", oldest);*/
 	 }
 	 r = compare_back_dates(newest, dirent->d_name);
 	 if (r==2) {
 	    strcpy(newest, dirent->d_name);
-	    /*jpilot_logf(LOG_DEBUG, "newest is now %s\n", newest);*/
+	    /*jp_logf(LOG_DEBUG, "newest is now %s\n", newest);*/
 	 }
       }
    }
@@ -1839,13 +1839,13 @@ static int sync_rotate_backups(const int num_backups)
    for (safety=100; safety>0; safety--) {
       r = get_oldest_newest_dir(oldest, newest, &count);
       if (r<0) {
-	 jpilot_logf(LOG_WARN, "unable to read home dir\n");
+	 jp_logf(LOG_WARN, "unable to read home dir\n");
 	 break;
       }
       if (count > num_backups) {
 	 sprintf(full_oldest, "%s/%s", home_dir, oldest);
-	 jpilot_logf(LOG_DEBUG, "count=%d, num_backups=%d\n", count, num_backups);
-	 jpilot_logf(LOG_DEBUG, "removing dir [%s]\n", full_oldest);
+	 jp_logf(LOG_DEBUG, "count=%d, num_backups=%d\n", count, num_backups);
+	 jp_logf(LOG_DEBUG, "removing dir [%s]\n", full_oldest);
 	 sync_remove_r(full_oldest);
       } else {
 	 break;
@@ -1875,7 +1875,7 @@ static int sync_rotate_backups(const int num_backups)
 	 while ((dirent = readdir(dir))) {
 	    sprintf(full_src, "%s/%s", full_backup, dirent->d_name);
 	    sprintf(full_dest, "%s/%s", full_newdir, dirent->d_name);
-	    jpilot_copy_file(full_src, full_dest);
+	    jp_copy_file(full_src, full_dest);
 	 }
 	 closedir(dir);
       }
@@ -1885,7 +1885,7 @@ static int sync_rotate_backups(const int num_backups)
    if (count > num_backups) {
       if ( (oldest[0]!='\0') && (strcmp(newdir, oldest)) ) {
 	 sprintf(full_oldest, "%s/%s", home_dir, oldest);
-	 jpilot_logf(LOG_DEBUG, "removing dir [%s]\n", full_oldest);
+	 jp_logf(LOG_DEBUG, "removing dir [%s]\n", full_oldest);
 	 sync_remove_r(full_oldest);
       }
    }
@@ -1918,7 +1918,7 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
    int index, size, attr, category;
    long char_set;
 
-   jpilot_logf(LOG_DEBUG, "fast_sync_local_recs\n");
+   jp_logf(LOG_DEBUG, "fast_sync_local_recs\n");
    get_pref(PREF_CHAR_SET, &char_set, NULL);
 
    if ((DB_name==NULL) || (strlen(DB_name) > 250)) {
@@ -1969,7 +1969,7 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
       }
       /* Case 5: */
       if ((header.rt==NEW_PC_REC) || (header.rt==REPLACEMENT_PALM_REC)) {
-	 jpilot_logf(LOG_DEBUG, "new pc record\n");
+	 jp_logf(LOG_DEBUG, "new pc record\n");
 	 record = malloc(rec_len);
 	 if (!record) {
 	    write_to_parent(PIPE_PRINT, _("fast_sync_local_recs(): Out of memory\n"));
@@ -1982,7 +1982,7 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
 	    }
 	 }
 
-	 jpilot_logf(LOG_DEBUG, "Writing PC record to palm\n");
+	 jp_logf(LOG_DEBUG, "Writing PC record to palm\n");
 
 	 old_unique_id=header.unique_id;
 	 if (header.rt==REPLACEMENT_PALM_REC) {
@@ -1995,7 +1995,7 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
 				  record, rec_len, &header.unique_id);
 	 }
 
-	 jpilot_logf(LOG_DEBUG, "Writing PC record to local\n");
+	 jp_logf(LOG_DEBUG, "Writing PC record to local\n");
 	 if (ret >=0) {
 	    if ((header.rt==REPLACEMENT_PALM_REC) &&
 		(old_unique_id != header.unique_id)) {
@@ -2042,7 +2042,7 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
        * not affect the record.
        */
       if ((header.rt==DELETED_PALM_REC) || (header.rt==MODIFIED_PALM_REC)) {
-	 jpilot_logf(LOG_DEBUG, "deleted or modified pc record\n");
+	 jp_logf(LOG_DEBUG, "deleted or modified pc record\n");
 	 rec_len = header.rec_len;
 	 record = malloc(rec_len);
 	 num = fread(record, rec_len, 1, pc_in);
@@ -2070,9 +2070,9 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
 	 }
 #endif
 	 if ((rec_len == size) && (header.unique_id != 0)) {
-	    jpilot_logf(LOG_DEBUG, "sizes match!\n");
+	    jp_logf(LOG_DEBUG, "sizes match!\n");
 	    /* if (memcmp(record, Pbuf, size)==0)
-	    jpilot_logf(LOG_DEBUG,"Binary is the same!\n"); */
+	    jp_logf(LOG_DEBUG,"Binary is the same!\n"); */
 	    /* write_to_parent(PIPE_PRINT, "Deleting Palm id=%d,\n",header.unique_id);*/
 	    ret = dlp_DeleteRecord(sd, db, 0, header.unique_id);
 	    if (ret < 0) {
@@ -2128,7 +2128,7 @@ int pdb_file_delete_record_by_id(char *DB_name, pi_uid_t uid_in)
    int cat;
    pi_uid_t uid;
 
-   jpilot_logf(LOG_DEBUG, "pdb_file_delete_record_by_id\n");
+   jp_logf(LOG_DEBUG, "pdb_file_delete_record_by_id\n");
 
    g_snprintf(local_pdb_file, 250, "%s.pdb", DB_name);
    get_home_file_name(local_pdb_file, full_local_pdb_file, 250);
@@ -2137,13 +2137,13 @@ int pdb_file_delete_record_by_id(char *DB_name, pi_uid_t uid_in)
 
    pf1 = pi_file_open(full_local_pdb_file);
    if (pf1<=0) {
-      jpilot_logf(LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file);
+      jp_logf(LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file);
       return -1;
    }
    pi_file_get_info(pf1, &infop);
    pf2 = pi_file_create(full_local_pdb_file2, &infop);
    if (pf2<=0) {
-      jpilot_logf(LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file2);
+      jp_logf(LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file2);
       return -1;
    }
 
@@ -2164,7 +2164,7 @@ int pdb_file_delete_record_by_id(char *DB_name, pi_uid_t uid_in)
    pi_file_close(pf2);
 
    if (rename(full_local_pdb_file2, full_local_pdb_file) < 0) {
-      jpilot_logf(LOG_WARN, "delete: rename failed\n");
+      jp_logf(LOG_WARN, "delete: rename failed\n");
    }
 
    return 0;
@@ -2193,7 +2193,7 @@ int pdb_file_modify_record(char *DB_name, void *record_in, int size_in,
    int found;
    pi_uid_t uid;
 
-   jpilot_logf(LOG_DEBUG, "pi_file_modify_record\n");
+   jp_logf(LOG_DEBUG, "pi_file_modify_record\n");
 
    g_snprintf(local_pdb_file, 250, "%s.pdb", DB_name);
    get_home_file_name(local_pdb_file, full_local_pdb_file, 250);
@@ -2202,13 +2202,13 @@ int pdb_file_modify_record(char *DB_name, void *record_in, int size_in,
 
    pf1 = pi_file_open(full_local_pdb_file);
    if (pf1<=0) {
-      jpilot_logf(LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file);
+      jp_logf(LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file);
       return -1;
    }
    pi_file_get_info(pf1, &infop);
    pf2 = pi_file_create(full_local_pdb_file2, &infop);
    if (pf2<=0) {
-      jpilot_logf(LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file2);
+      jp_logf(LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file2);
       return -1;
    }
 
@@ -2238,7 +2238,7 @@ int pdb_file_modify_record(char *DB_name, void *record_in, int size_in,
    pi_file_close(pf2);
 
    if (rename(full_local_pdb_file2, full_local_pdb_file) < 0) {
-      jpilot_logf(LOG_WARN, "modify: rename failed\n");
+      jp_logf(LOG_WARN, "modify: rename failed\n");
    }
 
    return 0;
@@ -2254,14 +2254,14 @@ int pdb_file_read_record_by_id(char *DB_name,
    struct pi_file *pf1;
    int r;
 
-   jpilot_logf(LOG_DEBUG, "pdb_file_read_record_by_id\n");
+   jp_logf(LOG_DEBUG, "pdb_file_read_record_by_id\n");
 
    g_snprintf(local_pdb_file, 250, "%s.pdb", DB_name);
    get_home_file_name(local_pdb_file, full_local_pdb_file, 250);
 
    pf1 = pi_file_open(full_local_pdb_file);
    if (pf1<=0) {
-      jpilot_logf(LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file);
+      jp_logf(LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file);
       return -1;
    }
 
@@ -2278,7 +2278,7 @@ int pdb_file_count_recs(char *DB_name, int *num)
    char full_local_pdb_file[256];
    struct pi_file *pf;
 
-   jpilot_logf(LOG_DEBUG, "pdb_file_count_recs\n");
+   jp_logf(LOG_DEBUG, "pdb_file_count_recs\n");
 
    *num = 0;
 
@@ -2287,7 +2287,7 @@ int pdb_file_count_recs(char *DB_name, int *num)
 
    pf = pi_file_open(full_local_pdb_file);
    if (pf<=0) {
-      jpilot_logf(LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file);
+      jp_logf(LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file);
       return -1;
    }
 
@@ -2315,7 +2315,7 @@ int pdb_file_write_app_block(char *DB_name, void *bufp, int size_in)
    int cat;
    pi_uid_t uid;
 
-   jpilot_logf(LOG_DEBUG, "pi_file_write_app_block\n");
+   jp_logf(LOG_DEBUG, "pi_file_write_app_block\n");
 
    g_snprintf(local_pdb_file, 250, "%s.pdb", DB_name);
    get_home_file_name(local_pdb_file, full_local_pdb_file, 250);
@@ -2324,13 +2324,13 @@ int pdb_file_write_app_block(char *DB_name, void *bufp, int size_in)
 
    pf1 = pi_file_open(full_local_pdb_file);
    if (pf1<=0) {
-      jpilot_logf(LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file);
+      jp_logf(LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file);
       return -1;
    }
    pi_file_get_info(pf1, &infop);
    pf2 = pi_file_create(full_local_pdb_file2, &infop);
    if (pf2<=0) {
-      jpilot_logf(LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file2);
+      jp_logf(LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file2);
       return -1;
    }
 
@@ -2350,7 +2350,7 @@ int pdb_file_write_app_block(char *DB_name, void *bufp, int size_in)
    pi_file_close(pf2);
 
    if (rename(full_local_pdb_file2, full_local_pdb_file) < 0) {
-      jpilot_logf(LOG_WARN, "write_app_block: rename failed\n");
+      jp_logf(LOG_WARN, "write_app_block: rename failed\n");
    }
 
    return 0;
@@ -2396,7 +2396,7 @@ int fast_sync_application(char *DB_name, int sd)
    char *extra_dbname[2];
    long char_set;
 
-   jpilot_logf(LOG_DEBUG, "fast_sync_application %s\n", DB_name);
+   jp_logf(LOG_DEBUG, "fast_sync_application %s\n", DB_name);
    get_pref(PREF_CHAR_SET, &char_set, NULL);
 
    if ((DB_name==NULL) || (strlen(DB_name) == 0) || (strlen(DB_name) > 250)) {
@@ -2439,7 +2439,7 @@ int fast_sync_application(char *DB_name, int sd)
 
    /* I can't get the appinfodirty flag to work, so I do this for now */
    ret = dlp_ReadAppBlock(sd, db, 0, buffer, 65535);
-   jpilot_logf(LOG_DEBUG, "readappblock ret=%d\n", ret);
+   jp_logf(LOG_DEBUG, "readappblock ret=%d\n", ret);
    if (ret>0) {
       pdb_file_write_app_block(DB_name, buffer, ret);
    }
@@ -2448,21 +2448,21 @@ int fast_sync_application(char *DB_name, int sd)
       ret = dlp_ReadNextModifiedRec(sd, db, buffer,
 				    &id, &index, &size, &attr, &category);
       if (ret>=0 ) {
-	 jpilot_logf(LOG_DEBUG, "read next record for %s returned %d\n", DB_name, ret);
-	 jpilot_logf(LOG_DEBUG, "id %ld, index %d, size %d, attr 0x%x, category %d\n",id, index, size, attr, category);
+	 jp_logf(LOG_DEBUG, "read next record for %s returned %d\n", DB_name, ret);
+	 jp_logf(LOG_DEBUG, "id %ld, index %d, size %d, attr 0x%x, category %d\n",id, index, size, attr, category);
       } else {
 	 break;
       }
       /* Case 1: */
       if ((attr &  dlpRecAttrDeleted) || (attr & dlpRecAttrArchived)) {
-	 jpilot_logf(LOG_DEBUG, "found a deleted record on palm\n");
+	 jp_logf(LOG_DEBUG, "found a deleted record on palm\n");
 	 pdb_file_delete_record_by_id(DB_name, id);
 	 continue;
       }
       /* Case 2: */
       /* Note that if deleted we don't want to deal with it (taken care of above) */
       if (attr & dlpRecAttrDirty) {
-	 jpilot_logf(LOG_DEBUG, "found a deleted record on palm\n");
+	 jp_logf(LOG_DEBUG, "found a deleted record on palm\n");
 	 pdb_file_modify_record(DB_name, buffer, size, attr, category, id);
       }
    }
@@ -2481,9 +2481,9 @@ int fast_sync_application(char *DB_name, int sd)
    if (local_num != palm_num) {
       extra_dbname[0] = DB_name;
       extra_dbname[1] = NULL;
-      jpilot_logf(LOG_DEBUG, "fetch_extra_DBs() [%s]\n", extra_dbname[0]);
-      jpilot_logf(LOG_DEBUG ,_("palm: number of records = %d\n"), palm_num);
-      jpilot_logf(LOG_DEBUG ,_("disk: number of records = %d\n"), local_num);
+      jp_logf(LOG_DEBUG, "fetch_extra_DBs() [%s]\n", extra_dbname[0]);
+      jp_logf(LOG_DEBUG ,_("palm: number of records = %d\n"), palm_num);
+      jp_logf(LOG_DEBUG ,_("disk: number of records = %d\n"), local_num);
       fetch_extra_DBs(sd, extra_dbname);
    }
 

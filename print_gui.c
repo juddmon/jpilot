@@ -49,20 +49,20 @@ static gboolean cb_destroy(GtkWidget *widget)
    char *lines_text;
    int num_lines;
 
-   jpilot_logf(LOG_DEBUG, "Cleanup print_gui\n");
+   jp_logf(LOG_DEBUG, "Cleanup print_gui\n");
 
    /* Get radio button prefs */
    if (radio_button_one) {
       if (GTK_TOGGLE_BUTTON(radio_button_one)->active) {
-	 jpilot_logf(LOG_DEBUG, "print one");
+	 jp_logf(LOG_DEBUG, "print one");
 	 set_pref(PREF_PRINT_THIS_MANY, 1, NULL, FALSE);
       }
       if (GTK_TOGGLE_BUTTON(radio_button_shown)->active) {
-	 jpilot_logf(LOG_DEBUG, "print shown");
+	 jp_logf(LOG_DEBUG, "print shown");
 	 set_pref(PREF_PRINT_THIS_MANY, 2, NULL, FALSE);
       }
       if (GTK_TOGGLE_BUTTON(radio_button_all)->active) {
-	 jpilot_logf(LOG_DEBUG, "print all");
+	 jp_logf(LOG_DEBUG, "print all");
 	 set_pref(PREF_PRINT_THIS_MANY, 3, NULL, FALSE);
       }
    }
@@ -70,15 +70,15 @@ static gboolean cb_destroy(GtkWidget *widget)
    /* Get radio button prefs */
    if (radio_button_daily) {
       if (GTK_TOGGLE_BUTTON(radio_button_daily)->active) {
-	 jpilot_logf(LOG_DEBUG, "print daily");
+	 jp_logf(LOG_DEBUG, "print daily");
 	 print_day_week_month=1;
       }
       if (GTK_TOGGLE_BUTTON(radio_button_weekly)->active) {
-	 jpilot_logf(LOG_DEBUG, "print weekly");
+	 jp_logf(LOG_DEBUG, "print weekly");
 	 print_day_week_month=2;
       }
       if (GTK_TOGGLE_BUTTON(radio_button_monthly)->active) {
-	 jpilot_logf(LOG_DEBUG, "print monthly");
+	 jp_logf(LOG_DEBUG, "print monthly");
 	 print_day_week_month=3;
       }
    }
@@ -86,7 +86,7 @@ static gboolean cb_destroy(GtkWidget *widget)
    /* Get one record per page pref */
    if (one_record_checkbutton) {
       if (GTK_TOGGLE_BUTTON(one_record_checkbutton)->active) {
-	 jpilot_logf(LOG_DEBUG, "one record per page");
+	 jp_logf(LOG_DEBUG, "one record per page");
 	 set_pref(PREF_PRINT_ONE_PER_PAGE, 1, NULL, FALSE);
       } else {
 	 set_pref(PREF_PRINT_ONE_PER_PAGE, 0, NULL, FALSE);
@@ -96,7 +96,7 @@ static gboolean cb_destroy(GtkWidget *widget)
    /* Get number of blank lines */
    if (lines_entry) {
       lines_text = gtk_entry_get_text(GTK_ENTRY(lines_entry));
-      jpilot_logf(LOG_DEBUG, "lines_entry = [%s]\n", lines_text);
+      jp_logf(LOG_DEBUG, "lines_entry = [%s]\n", lines_text);
       num_lines = atoi(lines_text);
       if (num_lines < 0) {
 	 num_lines = 0;
@@ -110,7 +110,7 @@ static gboolean cb_destroy(GtkWidget *widget)
 
    /* Get print command */
    entry_text = gtk_entry_get_text(GTK_ENTRY(print_command_entry));
-   jpilot_logf(LOG_DEBUG, "print_command_entry = [%s]\n", entry_text);
+   jp_logf(LOG_DEBUG, "print_command_entry = [%s]\n", entry_text);
    set_pref(PREF_PRINT_COMMAND, 0, entry_text, TRUE);
 
    window = NULL;
@@ -120,7 +120,7 @@ static gboolean cb_destroy(GtkWidget *widget)
 
 static void cb_print(GtkWidget *widget, gpointer data)
 {
-   jpilot_logf(LOG_DEBUG, "cb_print\n");
+   jp_logf(LOG_DEBUG, "cb_print\n");
    if (GTK_IS_WIDGET(data)) {
       gtk_widget_destroy(data);
    }
@@ -129,7 +129,7 @@ static void cb_print(GtkWidget *widget, gpointer data)
 
 static void cb_cancel(GtkWidget *widget, gpointer data)
 {
-   jpilot_logf(LOG_DEBUG, "cb_cancel\n");
+   jp_logf(LOG_DEBUG, "cb_cancel\n");
    if (GTK_IS_WIDGET(data)) {
       gtk_widget_destroy(data);
    }
@@ -155,9 +155,9 @@ int print_gui(GtkWidget *main_window, int app, int date_button, int mon_week_day
    const char *svalue;
    GSList *group;   
 
-   jpilot_logf(LOG_DEBUG, "print_gui\n");
+   jp_logf(LOG_DEBUG, "print_gui\n");
    if (GTK_IS_WINDOW(window)) {
-      jpilot_logf(LOG_DEBUG, "print_gui window is already up\n");
+      jp_logf(LOG_DEBUG, "print_gui window is already up\n");
       gdk_window_raise(window->window);
       return 0;
    }

@@ -182,7 +182,7 @@ static int move_scrolled_window(GtkWidget *sw, float percentage)
 static void
 set_new_button_to(int new_state)
 {
-   jpilot_logf(LOG_DEBUG, "set_new_button_to new %d old %d\n", new_state, record_changed);
+   jp_logf(LOG_DEBUG, "set_new_button_to new %d old %d\n", new_state, record_changed);
    if (record_changed==new_state) {
       return;
    }
@@ -228,7 +228,7 @@ static void
 cb_record_changed(GtkWidget *widget,
 		  gpointer   data)
 {
-   jpilot_logf(LOG_DEBUG, "cb_record_changed\n");
+   jp_logf(LOG_DEBUG, "cb_record_changed\n");
    if (record_changed==CLEAR_FLAG) {
       connect_changed_signals(DISCONNECT_SIGNALS);
       if (((GtkCList *)clist)->rows > 0) {

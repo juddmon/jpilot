@@ -44,55 +44,6 @@ static GtkWidget *case_sense_checkbox;
 static GtkWidget *window = NULL;
 
 
-const char *jpilot_strstr(const char *haystack, const char *needle, int case_sense)
-{
-   char *needle2;
-   char *haystack2;
-   register char *Ps2;
-   register const char *Ps1;
-   char *r;
-
-   if (case_sense) {
-      return strstr(haystack, needle);
-   } else {
-      if (!haystack) {
-	 return NULL;
-      }
-      if (!needle) {
-	 return haystack;
-      }
-      needle2 = malloc(strlen(needle)+2);
-      haystack2 = malloc(strlen(haystack)+2);
-
-      Ps1 = needle;
-      Ps2 = needle2;
-      while (Ps1[0]) {
-	 Ps2[0] = tolower(Ps1[0]);
-	 Ps1++;
-	 Ps2++;
-      }
-      Ps2[0]='\0';
-
-      Ps1 = haystack;
-      Ps2 = haystack2;
-      while (Ps1[0]) {
-	 Ps2[0] = tolower(Ps1[0]);
-	 Ps1++;
-	 Ps2++;
-      }
-      Ps2[0]='\0';
-
-      r = strstr(haystack2, needle2);
-      if (r) {
-	 r = (char *)((r-haystack2)+haystack);
-      }
-      free(needle2);
-      free(haystack2);
-      return r;
-   }
-}
-
-
 static int
   search_datebook(char *needle, GtkWidget *clist)
 {
@@ -122,14 +73,14 @@ static int
       found = 0;
       if ( (temp_al->ma.a.description) &&
 	  (temp_al->ma.a.description[0]) ) {
-	 if ( jpilot_strstr(temp_al->ma.a.description, needle,
+	 if ( jp_strstr(temp_al->ma.a.description, needle,
 	      GTK_TOGGLE_BUTTON(case_sense_checkbox)->active) ) {
 	    found = 1;
 	 }
       }
       if ( (temp_al->ma.a.note) &&
 	  (temp_al->ma.a.note[0]) ) {
-	 if ( jpilot_strstr(temp_al->ma.a.note, needle,
+	 if ( jp_strstr(temp_al->ma.a.note, needle,
 	      GTK_TOGGLE_BUTTON(case_sense_checkbox)->active) ) {
 	    found = 2;
 	 }
@@ -175,7 +126,7 @@ static int
 	 }
       }
    }
-   jpilot_logf(LOG_DEBUG, "calling free_AppointmentList\n");
+   jp_logf(LOG_DEBUG, "calling free_AppointmentList\n");
    free_AppointmentList(&a_list);
    a_list = NULL;
    return count;
@@ -204,7 +155,7 @@ static int
    for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
       for (i=0; i<19; i++) {
 	 if (temp_al->ma.a.entry[i]) {
-	    if ( jpilot_strstr(temp_al->ma.a.entry[i], needle,
+	    if ( jp_strstr(temp_al->ma.a.entry[i], needle,
 			       GTK_TOGGLE_BUTTON(case_sense_checkbox)->active) ) {
 	       gtk_clist_prepend(GTK_CLIST(clist), empty_line);
 	       gtk_clist_set_text(GTK_CLIST(clist), 0, 0, "address");
@@ -226,7 +177,7 @@ static int
 	 }
       }
    }
-   jpilot_logf(LOG_DEBUG, "calling free_AddressList\n");
+   jp_logf(LOG_DEBUG, "calling free_AddressList\n");
    free_AddressList(&a_list);
    a_list = NULL;
    return count;
@@ -256,14 +207,14 @@ static int
       found = 0;
       if ( (temp_todo->mtodo.todo.description) &&
 	  (temp_todo->mtodo.todo.description[0]) ) {
-	 if ( jpilot_strstr(temp_todo->mtodo.todo.description, needle,
+	 if ( jp_strstr(temp_todo->mtodo.todo.description, needle,
 			    GTK_TOGGLE_BUTTON(case_sense_checkbox)->active) ) {
 	    found = 1;
 	 }
       }
       if ( (temp_todo->mtodo.todo.note) &&
 	  (temp_todo->mtodo.todo.note[0]) ) {
-	 if ( jpilot_strstr(temp_todo->mtodo.todo.note, needle,
+	 if ( jp_strstr(temp_todo->mtodo.todo.note, needle,
 			    GTK_TOGGLE_BUTTON(case_sense_checkbox)->active) ) {
 	    found = 2;
 	 }
@@ -293,7 +244,7 @@ static int
 	 }
       }
    }
-   jpilot_logf(LOG_DEBUG, "calling free_ToDoList\n");
+   jp_logf(LOG_DEBUG, "calling free_ToDoList\n");
    free_ToDoList(&todo_list);
    todo_list = NULL;
    return count;
@@ -320,7 +271,7 @@ static int
    count = 0;
 
    for (temp_memo = memo_list; temp_memo; temp_memo=temp_memo->next) {
-      if (jpilot_strstr(temp_memo->mmemo.memo.text, needle,
+      if (jp_strstr(temp_memo->mmemo.memo.text, needle,
 		 GTK_TOGGLE_BUTTON(case_sense_checkbox)->active) ) {
 	 gtk_clist_prepend(GTK_CLIST(clist), empty_line);
 	 gtk_clist_set_text(GTK_CLIST(clist), 0, 0, "memo");
@@ -340,7 +291,7 @@ static int
 	 count++;
       }
    }
-   jpilot_logf(LOG_DEBUG, "calling free_MemoList\n");
+   jp_logf(LOG_DEBUG, "calling free_MemoList\n");
    free_MemoList(&memo_list);
    memo_list = NULL;
    return count;
@@ -431,7 +382,7 @@ static void
    char *entry_text;
    int count;
 
-   jpilot_logf(LOG_DEBUG, "enter cb_entry\n");
+   jp_logf(LOG_DEBUG, "enter cb_entry\n");
 
    clist = data;
    entry_text = gtk_entry_get_text(GTK_ENTRY(widget));
@@ -439,7 +390,7 @@ static void
       return;
    }
 
-   jpilot_logf(LOG_DEBUG, "entry text = %s\n", entry_text);
+   jp_logf(LOG_DEBUG, "entry text = %s\n", entry_text);
 
    gtk_clist_clear(GTK_CLIST(clist));
 
@@ -495,7 +446,7 @@ static void
     default:
 #ifdef ENABLE_PLUGINS
       /* We didn't find it so it must be a plugin */
-      jpilot_logf(LOG_DEBUG, "choosing search result from plugin %d\n", sr->app_type);
+      jp_logf(LOG_DEBUG, "choosing search result from plugin %d\n", sr->app_type);
       call_plugin_gui(sr->app_type, sr->unique_id);
 #endif
       break;

@@ -31,7 +31,7 @@
 /*These are the default settings */
 /*name, usertype, filetype, ivalue, char *svalue, svalue_size; */
 static prefType glob_prefs[NUM_PREFS] = {
-     {"jpilotrc", CHARTYPE, CHARTYPE, 0, NULL, 0},
+     {EPN"rc", CHARTYPE, CHARTYPE, 0, NULL, 0},
      {"time", CHARTYPE, INTTYPE, 0, NULL, 0},
      {"sdate", CHARTYPE, INTTYPE, 0, NULL, 0},
      {"ldate", CHARTYPE, INTTYPE, 0, NULL, 0},
@@ -110,7 +110,7 @@ void pref_init()
    for (i=0; i<NUM_PREFS; i++) {
       switch (i) {
        case PREF_RCFILE:
-	 glob_prefs[i].svalue=strdup("jpilotrc.default");
+	 glob_prefs[i].svalue=strdup(EPN"rc.default");
 	 glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
 	 break;
        case PREF_PRINT_COMMAND:
@@ -264,7 +264,7 @@ static int get_rcfile_name(int n, char *rc_copy)
    if (dir_list == NULL) {
       i = found = count = 0;
       sprintf(filename, "%s/%s/%s/", BASE_DIR, "share", EPN);
-      jpilot_logf(LOG_DEBUG, "opening dir %s\n", filename);
+      jp_logf(LOG_DEBUG, "opening dir %s\n", filename);
       dir = opendir(filename);
       if (dir) {
 	 for(i=0; (dirent = readdir(dir)); i++) {
@@ -272,10 +272,10 @@ static int get_rcfile_name(int n, char *rc_copy)
 	    if (strncmp(filename, dirent->d_name, strlen(filename))) {
 	       continue;
 	    } else {
-	       jpilot_logf(LOG_DEBUG, "found %s\n", dirent->d_name);
+	       jp_logf(LOG_DEBUG, "found %s\n", dirent->d_name);
 	       new_entry = malloc(sizeof(struct name_list));
 	       if (!new_entry) {
-		  jpilot_logf(LOG_FATAL, "get_rcfile_name(): Out of memory\n");
+		  jp_logf(LOG_FATAL, "get_rcfile_name(): Out of memory\n");
 		  return -1;
 	       }  
 	       new_entry->name = strdup(dirent->d_name);
@@ -289,7 +289,7 @@ static int get_rcfile_name(int n, char *rc_copy)
       }
 
       get_home_file_name("", full_name, 255);
-      jpilot_logf(LOG_DEBUG, "opening dir %s\n", full_name);
+      jp_logf(LOG_DEBUG, "opening dir %s\n", full_name);
       dir = opendir(full_name);
       if (dir) {
 	 for(; (dirent = readdir(dir)); i++) {
@@ -297,10 +297,10 @@ static int get_rcfile_name(int n, char *rc_copy)
 	    if (strncmp(filename, dirent->d_name, strlen(filename))) {
 	       continue;
 	    } else {
-	       jpilot_logf(LOG_DEBUG, "found %s\n", dirent->d_name);
+	       jp_logf(LOG_DEBUG, "found %s\n", dirent->d_name);
 	       new_entry = malloc(sizeof(struct name_list));
 	       if (!new_entry) {
-		  jpilot_logf(LOG_FATAL, "get_rcfile_name(): Out of memory 2\n");
+		  jp_logf(LOG_FATAL, "get_rcfile_name(): Out of memory 2\n");
 		  return -1;
 	       }  
 	       new_entry->name = strdup(dirent->d_name);
@@ -471,7 +471,7 @@ int get_pref_possibility(int which, int n, char *pref_str)
 
     default:
       pref_str[0]='\0';
-      jpilot_logf(LOG_DEBUG, "Unknown preference type\n");
+      jp_logf(LOG_DEBUG, "Unknown preference type\n");
       return -1;
    }
 
@@ -798,7 +798,7 @@ int jp_pref_read_rc_file(char *filename, prefType prefs[], int num_prefs)
 	       if (pref_lstrncpy_realloc(&(prefs[i].svalue), field2,
 					&(prefs[i].svalue_size),
 					MAX_PREF_VALUE)==NULL) {
-		  jpilot_logf(LOG_WARN, "Out of memory: read_rc_file()\n");
+		  jp_logf(LOG_WARN, "Out of memory: read_rc_file()\n");
 		  continue;
 	       }
 	    }
@@ -814,7 +814,7 @@ int pref_read_rc_file()
 {
    int r;
 
-   r=jp_pref_read_rc_file("jpilot.rc", glob_prefs, NUM_PREFS);
+   r=jp_pref_read_rc_file(EPN".rc", glob_prefs, NUM_PREFS);
 
    validate_glob_prefs();
 
@@ -826,7 +826,7 @@ int jp_pref_write_rc_file(char *filename, prefType prefs[], int num_prefs)
    int i;
    FILE *out;
 
-   jpilot_logf(LOG_DEBUG, "jp_pref_write_rc_file()\n");
+   jp_logf(LOG_DEBUG, "jp_pref_write_rc_file()\n");
 
    out=jp_open_home_file(filename,"w" );
    if (!out) {
@@ -850,5 +850,5 @@ int jp_pref_write_rc_file(char *filename, prefType prefs[], int num_prefs)
 
 int pref_write_rc_file()
 {
-   return jp_pref_write_rc_file("jpilot.rc", glob_prefs, NUM_PREFS);
+   return jp_pref_write_rc_file(EPN".rc", glob_prefs, NUM_PREFS);
 }

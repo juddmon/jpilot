@@ -44,16 +44,16 @@ int install_remove_line(int deleted_line)
    char *Pc;
    int r, line_count;
 
-   in = jp_open_home_file("jpilot_to_install", "r");
+   in = jp_open_home_file(EPN"_to_install", "r");
    if (!in) {
-      jpilot_logf(LOG_DEBUG, "failed opening install_file\n");
+      jp_logf(LOG_DEBUG, "failed opening install_file\n");
       return -1;
    }
 
-   out = jp_open_home_file("jpilot_to_install.tmp", "w");
+   out = jp_open_home_file(EPN"_to_install.tmp", "w");
    if (!out) {
       fclose(in);
-      jpilot_logf(LOG_DEBUG, "failed opening install_file.tmp\n");
+      jp_logf(LOG_DEBUG, "failed opening install_file.tmp\n");
       return -1;
    }
 
@@ -74,7 +74,7 @@ int install_remove_line(int deleted_line)
    fclose(in);
    fclose(out);
 
-   rename_file("jpilot_to_install.tmp", "jpilot_to_install");
+   rename_file(EPN"_to_install.tmp", EPN"_to_install");
 
    return 0;
 }
@@ -84,7 +84,7 @@ int install_append_line(char *line)
    FILE *out;
    int r;
 
-   out = jp_open_home_file("jpilot_to_install", "a");
+   out = jp_open_home_file(EPN"_to_install", "a");
    if (!out) {
       return -1;
    }
@@ -112,7 +112,7 @@ static void
   cb_quit(GtkWidget *widget,
 	   gpointer   data)
 {
-   jpilot_logf(LOG_DEBUG, "Quit\n");
+   jp_logf(LOG_DEBUG, "Quit\n");
    filew = NULL;
    gtk_widget_destroy(data);
 }
@@ -124,17 +124,17 @@ static void
    char *sel;
    struct stat statb;
 
-   jpilot_logf(LOG_DEBUG, "Add\n");
+   jp_logf(LOG_DEBUG, "Add\n");
    sel = gtk_file_selection_get_filename(GTK_FILE_SELECTION(data));
-   jpilot_logf(LOG_DEBUG, "file selected [%s]\n", sel);
+   jp_logf(LOG_DEBUG, "file selected [%s]\n", sel);
 
    /*Check to see if its a regular file */
    if (stat(sel, &statb)) {
-      jpilot_logf(LOG_DEBUG, "File selected was not stat-able\n");
+      jp_logf(LOG_DEBUG, "File selected was not stat-able\n");
       return;
    }
    if (!S_ISREG(statb.st_mode)) {
-      jpilot_logf(LOG_DEBUG, "File selected was not a regular file\n");
+      jp_logf(LOG_DEBUG, "File selected was not a regular file\n");
       return;
    }
 
@@ -149,7 +149,7 @@ static void
    if (line_selected < 0) {
       return;
    }
-   jpilot_logf(LOG_DEBUG, "Remove line %d\n", line_selected);
+   jp_logf(LOG_DEBUG, "Remove line %d\n", line_selected);
    install_remove_line(line_selected);
    update_clist();
 }
@@ -169,7 +169,7 @@ static int
 
    kept_line_selected = line_selected;
 
-   in = jp_open_home_file("jpilot_to_install", "r");
+   in = jp_open_home_file(EPN"_to_install", "r");
    if (!in) {
       return -1;
    }

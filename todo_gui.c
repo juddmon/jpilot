@@ -202,7 +202,7 @@ int todo_print()
 static void
 set_new_button_to(int new_state)
 {
-   jpilot_logf(LOG_DEBUG, "set_new_button_to new %d old %d\n", new_state, record_changed);
+   jp_logf(LOG_DEBUG, "set_new_button_to new %d old %d\n", new_state, record_changed);
 
    if (record_changed==new_state) {
       return;
@@ -249,7 +249,7 @@ static void
 cb_record_changed(GtkWidget *widget,
 		  gpointer   data)
 {
-   jpilot_logf(LOG_DEBUG, "cb_record_changed\n");
+   jp_logf(LOG_DEBUG, "cb_record_changed\n");
    if (record_changed==CLEAR_FLAG) {
       connect_changed_signals(DISCONNECT_SIGNALS);
       if (((GtkCList *)clist)->rows > 0) {
@@ -380,13 +380,13 @@ int todo_import_callback(GtkWidget *parent_window, char *file_path, int type)
 
    in=fopen(file_path, "r");
    if (!in) {
-      jpilot_logf(LOG_WARN, _("Could not open file %s\n"), file_path);
+      jp_logf(LOG_WARN, _("Could not open file %s\n"), file_path);
       return -1;
    }
 
    /* CSV */
    if (type==IMPORT_TYPE_CSV) {
-      jpilot_logf(LOG_DEBUG, "Todo import CSV [%s]\n", file_path);
+      jp_logf(LOG_DEBUG, "Todo import CSV [%s]\n", file_path);
       /* The first line is format, so we don't need it */
       fgets(text, 1000, in);
       import_all=FALSE;
@@ -495,9 +495,9 @@ int todo_import_callback(GtkWidget *parent_window, char *file_path, int type)
 
    /* Palm Desktop DAT format */
    if (type==IMPORT_TYPE_DAT) {
-      jpilot_logf(LOG_DEBUG, "Todo import DAT [%s]\n", file_path);
+      jp_logf(LOG_DEBUG, "Todo import DAT [%s]\n", file_path);
       if (dat_check_if_dat_file(in)!=DAT_TODO_FILE) {
-	 jpilot_logf(LOG_WARN, _("File doesn't appear to be todo.dat format\n"));
+	 jp_logf(LOG_WARN, _("File doesn't appear to be todo.dat format\n"));
 	 fclose(in);
 	 return 1;
       }
@@ -636,7 +636,7 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
       mtodo = gtk_clist_get_row_data(GTK_CLIST(clist), (int) temp_list->data);
       if (!mtodo) {
 	 continue;
-	 jpilot_logf(LOG_WARN, "Can't export todo %d\n", (long) temp_list->data + 1);
+	 jp_logf(LOG_WARN, "Can't export todo %d\n", (long) temp_list->data + 1);
       }
       switch (type) {
        case EXPORT_TYPE_CSV:
@@ -651,7 +651,7 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 csv_text=malloc(len);
 	 if (!csv_text) {
 	    continue;
-	    jpilot_logf(LOG_WARN, "Can't export todo %d\n", (long) temp_list->data + 1);
+	    jp_logf(LOG_WARN, "Can't export todo %d\n", (long) temp_list->data + 1);
 	 }
 	 str_to_csv_str(csv_text, todo_app_info.category.name[mtodo->attrib & 0x0F]);
 	 fprintf(out, "\"%s\",", csv_text);
@@ -710,7 +710,7 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 }
 	 break;
        default:
-	 jpilot_logf(LOG_WARN, "Unknown export type\n");
+	 jp_logf(LOG_WARN, "Unknown export type\n");
       }
    }
 
@@ -793,7 +793,7 @@ void cb_delete_todo(GtkWidget *widget,
    /* End Masking */
    flag = GPOINTER_TO_INT(data);
    if ((flag==MODIFY_FLAG) || (flag==DELETE_FLAG)) {
-      jpilot_logf(LOG_DEBUG, "calling delete_pc_record\n");
+      jp_logf(LOG_DEBUG, "calling delete_pc_record\n");
       delete_pc_record(TODO, mtodo, flag);
       if (flag==DELETE_FLAG) {
 	 /* when we redraw we want to go to the line above the deleted one */
@@ -815,7 +815,7 @@ static void cb_category(GtkWidget *item, int selection)
    }   
    if ((GTK_CHECK_MENU_ITEM(item))->active) {
       todo_category = selection;
-      jpilot_logf(LOG_DEBUG, "todo_category = %d\n",todo_category);
+      jp_logf(LOG_DEBUG, "todo_category = %d\n",todo_category);
       todo_clear_details();
       todo_update_clist(clist, category_menu1, glob_todo_list, todo_category, TRUE);
    }
@@ -886,7 +886,7 @@ int todo_clear_details()
    }
    sorted_position = find_sorted_cat(new_cat);
    if (sorted_position<0) {
-      jpilot_logf(LOG_WARN, "Category is not legal\n");
+      jp_logf(LOG_WARN, "Category is not legal\n");
    } else {
       gtk_check_menu_item_set_active
 	(GTK_CHECK_MENU_ITEM(todo_cat_menu_item2[sorted_position]), TRUE);
@@ -940,16 +940,16 @@ int todo_get_details(struct ToDo *new_todo, unsigned char *attrib)
    }
 
 #ifdef JPILOT_DEBUG
-   jpilot_logf(LOG_DEBUG, "attrib = %d\n", *attrib);
-   jpilot_logf(LOG_DEBUG, "indefinite=%d\n",new_todo->indefinite);
+   jp_logf(LOG_DEBUG, "attrib = %d\n", *attrib);
+   jp_logf(LOG_DEBUG, "indefinite=%d\n",new_todo->indefinite);
    if (!new_todo->indefinite)
-     jpilot_logf(LOG_DEBUG, "due: %d/%d/%d\n",new_todo->due.tm_mon,
+     jp_logf(LOG_DEBUG, "due: %d/%d/%d\n",new_todo->due.tm_mon,
 	    new_todo->due.tm_mday, 
 	    new_todo->due.tm_year);
-   jpilot_logf(LOG_DEBUG, "priority=%d\n",new_todo->priority);
-   jpilot_logf(LOG_DEBUG, "complete=%d\n",new_todo->complete);
-   jpilot_logf(LOG_DEBUG, "description=[%s]\n",new_todo->description);
-   jpilot_logf(LOG_DEBUG, "note=[%s]\n",new_todo->note);
+   jp_logf(LOG_DEBUG, "priority=%d\n",new_todo->priority);
+   jp_logf(LOG_DEBUG, "complete=%d\n",new_todo->complete);
+   jp_logf(LOG_DEBUG, "description=[%s]\n",new_todo->description);
+   jp_logf(LOG_DEBUG, "note=[%s]\n",new_todo->note);
 #endif
 
    return 0;
@@ -1008,7 +1008,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
 	 return;
       }
       if ((mtodo->rt==DELETED_PALM_REC) || (mtodo->rt==MODIFIED_PALM_REC)) {
-	 jpilot_logf(LOG_INFO, "You can't modify a record that is deleted\n");
+	 jp_logf(LOG_INFO, "You can't modify a record that is deleted\n");
 	 return;
       }
    }
@@ -1118,7 +1118,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    sorted_position = find_sorted_cat(index);
    if (todo_cat_menu_item2[sorted_position]==NULL) {
       /* Illegal category */
-      jpilot_logf(LOG_DEBUG, "Category is not legal\n");
+      jp_logf(LOG_DEBUG, "Category is not legal\n");
       index = sorted_position = 0;
       sorted_position = find_sorted_cat(index);
    }
@@ -1131,7 +1131,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    count--;
 
    if (sorted_position<0) {
-      jpilot_logf(LOG_WARN, "Category is not legal\n");
+      jp_logf(LOG_WARN, "Category is not legal\n");
    } else {
       gtk_check_menu_item_set_active
 	(GTK_CHECK_MENU_ITEM(todo_cat_menu_item2[sorted_position]), TRUE);
@@ -1151,7 +1151,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    }
 
    if ( (todo->priority<1) || (todo->priority>5) ) {
-      jpilot_logf(LOG_WARN, "Priority out of range\n");
+      jp_logf(LOG_WARN, "Priority out of range\n");
    } else {
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_todo[todo->priority-1]), TRUE);
    }
@@ -1338,7 +1338,7 @@ static void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       entries_shown++;
    }
 
-   jpilot_logf(LOG_DEBUG, "entries_shown=%d\n",entries_shown);
+   jp_logf(LOG_DEBUG, "entries_shown=%d\n",entries_shown);
 
    /*If there is an item in the list, select the first one */
    if ((main) && (entries_shown>0)) {
@@ -1433,7 +1433,7 @@ int todo_refresh()
    }
    todo_update_clist(clist, category_menu1, glob_todo_list, todo_category, TRUE);
    if (index<0) {   
-      jpilot_logf(LOG_WARN, "Category not legal\n");
+      jp_logf(LOG_WARN, "Category not legal\n");
    } else {
       gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), index);
       gtk_check_menu_item_set_active
