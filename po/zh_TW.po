@@ -1,19 +1,23 @@
+# translation of zh_TW.po to Traditional Chinese
+# translation of jpilot-0.99.8-pre3.po to Traditional Chinese
 # Chinese (traditional) translation for jpilot.
 # Copyright (C) 2002  Judd Montgomery <judd@jpilot.org>
 # This file is distributed under the same license as the jpilot package.
 # Anthony Fok <anthony@thizlinux.com>, 2002.
+# Jouston Huang <jouston@jouston.no-ip.com>, 2004.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: jpilot 0.99.3\n"
+"Project-Id-Version: jpilot 0.99.8-pre3\n"
 "Report-Msgid-Bugs-To: jpilot-devel@jpilot.org\n"
 "POT-Creation-Date: 2004-11-21 23:25+0100\n"
-"PO-Revision-Date: 2002-10-17 10:00+0800\n"
-"Last-Translator: Anthony Fok <anthony@thizlinux.com>\n"
-"Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
+"PO-Revision-Date: 2004-12-24 16:02+0800\n"
+"Last-Translator: Jouston Huang <jouston@jouston.no-ip.com>\n"
+"Language-Team: Traditional Chinese <zh-l10n@i18n.linux.org.tw>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=big5\n"
+"Content-Type: text/plain; charset=BIG5\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 1.9.1\n"
 
 #: address.c:284 address.c:509 alarms.c:349 dat.c:177 dat.c:651 dat.c:853
 #: dat.c:987 dat.c:1126 datebook.c:92 datebook.c:375 datebook.c:382
@@ -22,7 +26,7 @@ msgstr ""
 #: memo.c:322 plugins.c:105 prefs.c:328 prefs.c:353 prefs.c:867 sync.c:246
 #: sync.c:1073 sync.c:2191 todo.c:203 todo.c:509 utils.c:2270
 msgid "Out of memory"
-msgstr ""
+msgstr "記憶體不足"
 
 #: address.c:335 datebook.c:334 libplugin.c:203 memo.c:155 todo.c:283
 #: utils.c:1975 utils.c:1984 utils.c:1993 utils.c:2003
@@ -32,24 +36,24 @@ msgstr "錯誤"
 #: address.c:386 address_gui.c:1662 datebook.c:690 libplugin.c:728
 #: libplugin.c:752 memo.c:220 memo_gui.c:973 todo_gui.c:1296
 #: Expense/expense.c:998 Expense/expense.c:1946
-#, fuzzy, c-format
 msgid "Error reading file: %s\n"
-msgstr "%s 讀入錯誤\n"
+msgstr "讀取檔案錯誤: %s\n"
 
 #: address_gui.c:247 datebook_gui.c:2485 memo_gui.c:171 todo_gui.c:293
 msgid ""
 "This record is deleted.\n"
 "Undelete it or copy it to make changes.\n"
 msgstr ""
+"這筆紀錄已經刪除.\n"
+"反刪除或是複製一份之後才能修改.\n"
 
 #: address_gui.c:455 category.c:150 category.c:156 category.c:204
 #: category.c:261 datebook_gui.c:364 memo_gui.c:288 sync.c:1038 sync.c:1044
 #: sync.c:2166 sync.c:2382 sync.c:2388 sync.c:2505 sync.c:2752 todo_gui.c:433
 #: utils.c:2684 utils.c:2729 utils.c:2735 utils.c:2804 utils.c:2810
 #: utils.c:2866 utils.c:2921 utils.c:2927 utils.c:2986 utils.c:2993
-#, fuzzy, c-format
 msgid "Unable to open file: %s\n"
-msgstr "無法開啟 %s\n"
+msgstr "無法開啟檔案: %s\n"
 
 #: address_gui.c:534
 msgid "File doesn't appear to be address.dat format\n"
@@ -79,7 +83,6 @@ msgid "No"
 msgstr "否"
 
 #: address_gui.c:708 datebook_gui.c:689 memo_gui.c:524 todo_gui.c:676
-#, c-format
 msgid "%s is a directory"
 msgstr "%s 是目錄"
 
@@ -89,46 +92,40 @@ msgid "Error Opening File"
 msgstr "開啟檔案時發生錯誤"
 
 #: address_gui.c:711 datebook_gui.c:692 memo_gui.c:527 todo_gui.c:679
-#, fuzzy
 msgid "Directory"
-msgstr "%s 是目錄"
+msgstr "目錄"
 
 #: address_gui.c:714 datebook_gui.c:695 memo_gui.c:530 todo_gui.c:682
-#, c-format
 msgid "Do you want to overwrite file %s?"
-msgstr "您要覆寫檔案 %s 嗎？"
+msgstr "您要覆寫檔案 %s 嗎?"
 
 #: address_gui.c:716 datebook_gui.c:697 memo_gui.c:532 todo_gui.c:684
 msgid "Overwrite File?"
-msgstr "覆寫檔案？"
+msgstr "覆寫檔案?"
 
 #: address_gui.c:717 datebook_gui.c:698 memo_gui.c:533 todo_gui.c:685
 msgid "Overwrite File"
 msgstr "覆寫檔案"
 
 #: address_gui.c:725 datebook_gui.c:706 memo_gui.c:541 todo_gui.c:693
-#, fuzzy, c-format
 msgid "Error opening file: %s"
-msgstr "開啟檔案時發生錯誤"
+msgstr "開啟檔案時發生錯誤: %s"
 
 #: address_gui.c:728 datebook_gui.c:709 memo_gui.c:544 todo_gui.c:696
-#, fuzzy
 msgid "Filename"
-msgstr "名字："
+msgstr "檔名"
 
 #: address_gui.c:736
-#, c-format
 msgid "Can't export address %d\n"
-msgstr ""
+msgstr "無法匯出地址 %d\n"
 
 #: address_gui.c:801 address_gui.c:809 address_gui.c:826
-#, fuzzy
 msgid "Field"
-msgstr "失敗。\n"
+msgstr "類型"
 
 #: address_gui.c:1025 datebook_gui.c:977 memo_gui.c:599 todo_gui.c:832
 msgid "Unknown export type\n"
-msgstr ""
+msgstr "未知匯出類別\n"
 
 #: address_gui.c:1209 address_gui.c:2562
 msgid "Company/Name"
@@ -140,54 +137,53 @@ msgstr "姓名/公司"
 
 #: address_gui.c:1309 datebook_gui.c:2563 memo_gui.c:894 todo_gui.c:1228
 msgid "You can't modify a record that is deleted\n"
-msgstr ""
+msgstr "無法修改已刪除紀錄\n"
 
 #: address_gui.c:1452 address_gui.c:1833 address_gui.c:2304 memo_gui.c:802
 #: memo_gui.c:1056 memo_gui.c:1308 todo_gui.c:1094 todo_gui.c:1454
 #: todo_gui.c:1467 todo_gui.c:1875
 msgid "Category is not legal\n"
-msgstr ""
+msgstr "類別不正確\n"
 
 #: address_gui.c:1751 Expense/expense.c:1462 Expense/expense.c:1541
 #: KeyRing/keyring.c:1520 KeyRing/keyring.c:1596
 msgid "Category: "
-msgstr "種類："
+msgstr "類別: "
 
 #: address_gui.c:1783 address_gui.c:2746
 msgid "kana("
-msgstr ""
+msgstr "假名("
 
 #: address_gui.c:1895 address_gui.c:2847
 msgid "E-mail"
-msgstr ""
+msgstr "電子郵件"
 
 #: address_gui.c:1897 address_gui.c:1900 address_gui.c:2848
 msgid "Mail"
-msgstr ""
+msgstr "郵件"
 
 #: address_gui.c:1905 address_gui.c:1908 address_gui.c:2851 dialer.c:305
 #: dialer.c:330
 msgid "Dial"
-msgstr ""
+msgstr "撥號"
 
 #: address_gui.c:2076 address_gui.c:2100
 msgid "-Unnamed-"
-msgstr ""
+msgstr "-未命名-"
 
 #: address_gui.c:2173 memo_gui.c:1217 todo_gui.c:1763
 msgid "0 records"
 msgstr "0 筆紀錄"
 
 #: address_gui.c:2176 datebook_gui.c:2395 memo_gui.c:1220 todo_gui.c:1766
-#, c-format
 msgid "%d of %d records"
-msgstr "%2$d 筆紀錄（共 %1$d 筆）"
+msgstr "第 %d 筆 共 %d 筆紀錄"
 
 #: address_gui.c:2542 category.c:439 category.c:453 category.c:460
 #: category.c:478 category.c:485 category.c:503 category.c:583 category.c:778
 #: memo_gui.c:1434 todo_gui.c:2003 Expense/expense.c:1469
 msgid "Edit Categories"
-msgstr ""
+msgstr "編輯類別"
 
 #: address_gui.c:2569
 msgid "Phone"
@@ -205,21 +201,20 @@ msgstr "刪除"
 
 #: address_gui.c:2614 datebook_gui.c:4268 memo_gui.c:1486 todo_gui.c:2065
 msgid "Delete the selected record   Ctrl+D"
-msgstr ""
+msgstr "刪除選擇的紀錄   Ctrl+D"
 
 #: address_gui.c:2616 datebook_gui.c:4271 memo_gui.c:1488 todo_gui.c:2067
-#, fuzzy
 msgid "Undelete"
-msgstr "刪除"
+msgstr "反刪除"
 
 #: address_gui.c:2623 datebook_gui.c:4278 memo_gui.c:1494 todo_gui.c:2073
 #: Expense/expense.c:1509 KeyRing/keyring.c:1561
 msgid "Copy"
-msgstr "複制"
+msgstr "複製"
 
 #: address_gui.c:2630 datebook_gui.c:4285 memo_gui.c:1501 todo_gui.c:2080
 msgid "Copy the record   Ctrl+O"
-msgstr ""
+msgstr "複製這筆紀錄   Ctrl+O"
 
 #: address_gui.c:2633 datebook_gui.c:4288 memo_gui.c:1503 todo_gui.c:2082
 #: Expense/expense.c:1515 KeyRing/keyring.c:1567
@@ -228,7 +223,7 @@ msgstr "新增紀錄"
 
 #: address_gui.c:2639 datebook_gui.c:4295 memo_gui.c:1510 todo_gui.c:2089
 msgid "Add a new record   Ctrl+N"
-msgstr ""
+msgstr "加入一個新紀錄   Ctrl+N"
 
 #: address_gui.c:2642 datebook_gui.c:4298 memo_gui.c:1512 todo_gui.c:2091
 #: Expense/expense.c:1521 KeyRing/keyring.c:1573
@@ -237,7 +232,7 @@ msgstr "加入紀錄"
 
 #: address_gui.c:2651 datebook_gui.c:4307 memo_gui.c:1521 todo_gui.c:2100
 msgid "Add the new record   Ctrl+R"
-msgstr ""
+msgstr "加入這個新紀錄   Ctrl+R"
 
 #: address_gui.c:2654 datebook_gui.c:4310 memo_gui.c:1523 todo_gui.c:2102
 #: Expense/expense.c:1529 KeyRing/keyring.c:1581
@@ -246,11 +241,11 @@ msgstr "套用變更"
 
 #: address_gui.c:2663 datebook_gui.c:4319 memo_gui.c:1532 todo_gui.c:2111
 msgid "Commit the modifications   Ctrl+Enter"
-msgstr ""
+msgstr "套用修改   Ctrl+Enter"
 
 #: address_gui.c:2673 datebook_gui.c:4364 memo_gui.c:1543 todo_gui.c:2168
 msgid "Private"
-msgstr "私有的"
+msgstr "私人"
 
 #: address_gui.c:2693 KeyRing/keyring.c:1447
 msgid "Name"
@@ -273,7 +268,7 @@ msgid ""
 "Show\n"
 "In List"
 msgstr ""
-"在清單\n"
+"在清單中\n"
 "顯示"
 
 #: address_gui.c:2911
@@ -293,9 +288,8 @@ msgid "Hours"
 msgstr "小時"
 
 #: alarms.c:436
-#, fuzzy, c-format
 msgid "Unable to open %s%s file\n"
-msgstr "無法開啟 %s\n"
+msgstr "無法開啟 %s%s 檔案\n"
 
 #: alarms.c:522
 msgid "Appointment Reminder"
@@ -314,32 +308,29 @@ msgid "Appointment"
 msgstr "約會"
 
 #: alarms.c:605 dialer.c:162
-#, fuzzy, c-format
 msgid "executing command = [%s]\n"
-msgstr "執行此命令"
+msgstr "執行命令 = [%s]\n"
 
 #: alarms.c:612
 msgid "J-Pilot Alarm"
-msgstr ""
+msgstr "J-Pilot 鬧鈴"
 
 #: alarms.c:1129
 msgid "infinite loop, breaking\n"
-msgstr ""
+msgstr "無限重複, 暫停\n"
 
 #: alarms.c:1497
-#, fuzzy, c-format
 msgid "Unable to open %s.alarms file\n"
-msgstr "無法開啟 %s\n"
+msgstr "無法開啟 %s 鬧鈴檔案\n"
 
 #: category.c:183 sync.c:2419 utils.c:2756 utils.c:2840 utils.c:2947
 #: utils.c:3013
-#, fuzzy
 msgid "rename failed"
-msgstr "安裝 %s 失敗"
+msgstr "修改名稱失敗"
 
 #: category.c:220 category.c:277 sync.c:1066 sync.c:2182
 msgid "PC file corrupt?\n"
-msgstr "PC 檔案損壞了？\n"
+msgstr "PC 檔案損壞了?\n"
 
 #: category.c:227 category.c:237 category.c:284 category.c:295 category.c:305
 #: sync.c:1109 sync.c:1127 sync.c:1175 sync.c:1185 sync.c:2244 sync.c:2271
@@ -348,9 +339,8 @@ msgid "fseek failed - fatal error\n"
 msgstr "fseek 失敗 - 嚴重錯誤\n"
 
 #: category.c:410
-#, fuzzy
 msgid "Move"
-msgstr "一"
+msgstr "移動"
 
 #: category.c:410 category.c:866 category.c:906 datebook_gui.c:1146
 #: datebook_gui.c:1579 export_gui.c:341 password.c:352 print_gui.c:335
@@ -360,110 +350,101 @@ msgstr "取消"
 
 #: category.c:440
 msgid "The maximum number of categories (16) are already used"
-msgstr ""
+msgstr "最多只能使用16個類別, 已達上限"
 
 #: category.c:443
 msgid "Enter New Category"
-msgstr ""
+msgstr "輸入新類別"
 
 #: category.c:454
 msgid "You must select a category to rename"
-msgstr ""
+msgstr "你必須要先選擇一個類別才能改名"
 
 #: category.c:458
-#, c-format
 msgid "You can't edit category %s.\n"
-msgstr ""
+msgstr "無法編輯類別 %s \n"
 
 #: category.c:465
 msgid "Enter New Category Name"
-msgstr ""
+msgstr "請輸入新類別的名稱"
 
 #: category.c:479
 msgid "You must select a category to delete"
-msgstr ""
+msgstr "你必須先選擇一個類別才能刪除"
 
 #: category.c:483
-#, c-format
 msgid "You can't delete category %s.\n"
-msgstr ""
+msgstr "無法刪除類別 %s \n"
 
 #: category.c:499
-#, c-format
 msgid ""
 "There are %d records in %s.\n"
 "Do you want to move them to %s, or delete them?"
 msgstr ""
+"總共有 %d 筆資料在 %s.中.\n"
+"確定要移至 %s 或是刪除?"
 
 #: category.c:558
-#, c-format
 msgid "invalid state file %s line %d\n"
-msgstr ""
+msgstr "無效陳述檔案 %s 第 %d 行\n"
 
 #: category.c:581
-#, c-format
 msgid "The category %s can't be used more than once"
-msgstr ""
+msgstr "類別 %s 只能有一個"
 
 #: category.c:803
-#, fuzzy
 msgid "category name"
-msgstr "種類："
+msgstr "類別名稱"
 
 #: category.c:821
 msgid "New"
-msgstr ""
+msgstr "新增"
 
 #: category.c:827
-#, fuzzy
 msgid "Rename"
-msgstr "名字："
+msgstr "改名"
 
 #: category.c:913
 msgid "debug"
-msgstr ""
+msgstr "除錯"
 
 #: dat.c:451
 msgid "unknown type ="
-msgstr ""
+msgstr "未知類型 ="
 
 #: dat.c:532
-#, c-format
 msgid "fields per row count != %d, unknown format\n"
-msgstr ""
+msgstr "fields per row count != %d, 未知格式\n"
 
 #: dat.c:546
-#, c-format
 msgid "field count != %d, unknown format\n"
-msgstr ""
+msgstr "field count != %d, 未知格式\n"
 
 #: dat.c:554
 msgid "Unknown format, file has wrong schema\n"
-msgstr ""
+msgstr "未知格式, file has wrong schema\n"
 
 #: dat.c:555
 msgid "File schema is:"
-msgstr ""
+msgstr "檔案的schema是:"
 
 #: dat.c:560
 msgid "It should be:  "
-msgstr ""
+msgstr "它應該是:  "
 
 #: dat.c:670 dat.c:688 dat.c:870 dat.c:883 dat.c:1006 dat.c:1019 dat.c:1143
 #: dat.c:1156
-#, c-format
 msgid "%s:%d Record %d, field %d: Invalid type.  Expected %d, found %d\n"
-msgstr ""
+msgstr "%s:%d Record %d, field %d: 無效類型.  預期 %d 卻找到 %d\n"
 
 #: dat.c:671 dat.c:689 dat.c:871 dat.c:884 dat.c:988 dat.c:1007 dat.c:1020
 #: dat.c:1144 dat.c:1157
 msgid "read of file terminated\n"
-msgstr ""
+msgstr "讀取檔案中斷\n"
 
 #: datebook.c:646
-#, c-format
 msgid "Unknown repeatType (%d) found in DatebookDB\n"
-msgstr ""
+msgstr "在DatebookDB中有未知 repeatType (%d)\n"
 
 #: datebook_gui.c:214 datebook_gui.c:221 datebook_gui.c:3986
 #: datebook_gui.c:3993
@@ -495,13 +476,11 @@ msgid "Sa"
 msgstr "六"
 
 #: datebook_gui.c:553 datebook_gui.c:2054
-#, fuzzy, c-format
 msgid "Appointment description text > %d, truncating to %d\n"
-msgstr "警告：待辦工作的描述太長，截斷為 %d\n"
+msgstr "約會描述文字 > %d, 截斷為 %d\n"
 
 #: datebook_gui.c:563 datebook_gui.c:978 datebook_gui.c:2115
 #: datebook_gui.c:2122
-#, fuzzy
 msgid "Error"
 msgstr "錯誤"
 
@@ -511,7 +490,7 @@ msgstr "檔案似乎不是 datebook.dat 格式\n"
 
 #: datebook_gui.c:978
 msgid "Unknown export type"
-msgstr ""
+msgstr "未知匯出類型"
 
 #: datebook_gui.c:1087 export_gui.c:255 jpilot.c:545
 msgid "Export"
@@ -523,16 +502,15 @@ msgstr "匯出全部 Datebook 紀錄"
 
 #: datebook_gui.c:1123 export_gui.c:317
 msgid "Save as"
-msgstr "存為"
+msgstr "另存為"
 
 #: datebook_gui.c:1133 export_gui.c:328
 msgid "Browse"
 msgstr "瀏覽"
 
 #: datebook_gui.c:1283
-#, fuzzy
 msgid "Datebook Categories"
-msgstr "DateBk 標記"
+msgstr "行事曆類別"
 
 #: datebook_gui.c:1318 import_gui.c:325 prefs_gui.c:898
 msgid "Done"
@@ -587,7 +565,6 @@ msgid "Last"
 msgstr "月尾週"
 
 #: datebook_gui.c:1555
-#, c-format
 msgid ""
 "This appointment can either\n"
 "repeat on the 4th %s\n"
@@ -595,14 +572,18 @@ msgid ""
 "%s of the month.\n"
 "Which do you want?"
 msgstr ""
+"這個約會可以在本月的\n"
+"第四週 %s 或是 \n"
+"最後一週 %s重複\n"
+"請問如何選擇?"
 
 #: datebook_gui.c:1563 datebook_gui.c:1584
 msgid "Question?"
-msgstr ""
+msgstr "疑問?"
 
 #: datebook_gui.c:1563 datebook_gui.c:1584
 msgid "Answer: "
-msgstr ""
+msgstr "答覆: "
 
 #: datebook_gui.c:1571
 msgid ""
@@ -612,9 +593,10 @@ msgid ""
 "event, or ALL of the\n"
 "occurrences of this event?"
 msgstr ""
-"這是一個重複發生的事生。\n"
-"您剛做的修改，是僅適用於“目前”事件，\n"
-"抑或是這事件“每次發生”時都適用？"
+"這是一個重複發生的事件.\n"
+"您剛做的修改, 是僅適用於\n"
+"『目前』事件抑或是這事件\n"
+"『每次發生』時都適用?"
 
 #: datebook_gui.c:1577
 msgid "Current"
@@ -641,31 +623,30 @@ msgid "year"
 msgstr "年"
 
 #: datebook_gui.c:2110 datebook_gui.c:2113
-#, c-format
 msgid "You cannot have an appointment that repeats every %d %s(s)\n"
-msgstr "您加入的約會不可以每 %d %s重複一次。\n"
+msgstr "您加入的約會無法每 %d %s重複一次.\n"
 
 #: datebook_gui.c:2123
-#, fuzzy
 msgid ""
 "You can not have a weekly repeating appointment that doesn't repeat on any "
 "day of the week."
-msgstr "您加入了一個每週重複的約會，但未定在每週的哪一天重複。\n"
+msgstr "您設定了一個每週重複的約會, 但您未定在任何一天重複."
 
 #: datebook_gui.c:2277
 msgid "No Time"
 msgstr "未定時間"
 
 #: datebook_gui.c:2579
-#, fuzzy
 msgid "Invalid Appointment"
-msgstr "過往約會"
+msgstr "無效約會"
 
 #: datebook_gui.c:2580
 msgid ""
 "The End Date of this appointment\n"
 "is before the start date."
 msgstr ""
+"這個約會的結束日期\n"
+"比開始日期還早."
 
 #: datebook_gui.c:2835 datebook_gui.c:4563 datebook_gui.c:4593
 #: datebook_gui.c:4649 datebook_gui.c:4698 todo_gui.c:127 todo_gui.c:2159
@@ -673,43 +654,40 @@ msgid "No Date"
 msgstr "無限期"
 
 #: datebook_gui.c:2949
-#, c-format
 msgid "Error in DateBookDB advanceUnits = %d\n"
-msgstr ""
+msgstr "DateBookDB 中有錯誤advanceUnits = %d\n"
 
 #: datebook_gui.c:3120
 msgid "Unknown repeatType found in DatebookDB\n"
-msgstr ""
+msgstr "DatebookDB 中有未知重複模式\n"
 
 #: datebook_gui.c:4074 datebook_gui.c:4531
 msgid "Week"
 msgstr "週"
 
 #: datebook_gui.c:4080
-#, fuzzy
 msgid "W"
-msgstr "三"
+msgstr "周"
 
 #: datebook_gui.c:4082
 msgid "View appointments by week"
-msgstr ""
+msgstr "週檢視"
 
 #: datebook_gui.c:4085 datebook_gui.c:4532
 msgid "Month"
 msgstr "月"
 
 #: datebook_gui.c:4092
-#, fuzzy
 msgid "M"
-msgstr "一"
+msgstr "月"
 
 #: datebook_gui.c:4094
 msgid "View appointments by month"
-msgstr ""
+msgstr "月檢視"
 
 #: datebook_gui.c:4099
 msgid "Cats"
-msgstr "種類"
+msgstr "類別"
 
 #: datebook_gui.c:4168
 msgid "Time"
@@ -717,11 +695,11 @@ msgstr "時間"
 
 #: datebook_gui.c:4205
 msgid "Show ToDos"
-msgstr ""
+msgstr "顯示待辦事項"
 
 #: datebook_gui.c:4220 todo_gui.c:2018
 msgid "Task"
-msgstr "任務"
+msgstr "工作"
 
 #: datebook_gui.c:4221 todo_gui.c:2019
 msgid "Due"
@@ -741,17 +719,15 @@ msgstr "此事件無特定時間"
 
 #: datebook_gui.c:4383
 msgid "Starts on"
-msgstr "開始日期："
+msgstr "開始於"
 
 #: datebook_gui.c:4397
-#, fuzzy
 msgid "Start Time"
-msgstr "開始日期："
+msgstr "開始時間"
 
 #: datebook_gui.c:4415
-#, fuzzy
 msgid "End Time"
-msgstr "時間"
+msgstr "結束時間"
 
 #: datebook_gui.c:4513
 msgid "DateBk Tags"
@@ -781,7 +757,7 @@ msgstr "天"
 #: datebook_gui.c:4555 datebook_gui.c:4587 datebook_gui.c:4643
 #: datebook_gui.c:4690
 msgid "End on"
-msgstr "結束日期："
+msgstr "結束於"
 
 #: datebook_gui.c:4584
 msgid "Week(s)"
@@ -789,7 +765,7 @@ msgstr "週"
 
 #: datebook_gui.c:4600
 msgid "Repeat on Days:"
-msgstr "哪天重複："
+msgstr "重複於:"
 
 #: datebook_gui.c:4640
 msgid "Month(s)"
@@ -797,11 +773,11 @@ msgstr "月"
 
 #: datebook_gui.c:4657
 msgid "Repeat by:"
-msgstr "重複方式："
+msgstr "重複方式:"
 
 #: datebook_gui.c:4661
 msgid "Day of week"
-msgstr "第幾週第幾天"
+msgstr "每週重複"
 
 #: datebook_gui.c:4670
 msgid "Date"
@@ -809,41 +785,39 @@ msgstr "該月的第幾天"
 
 #: datebook_gui.c:4687
 msgid "Year(s)"
-msgstr "年"
+msgstr "每年"
 
 #: dialer.c:193
 msgid "Phone Dialer"
-msgstr ""
+msgstr "電話撥號員"
 
 #: dialer.c:228
 msgid "Prefix 1"
-msgstr ""
+msgstr "前置碼 1"
 
 #: dialer.c:250
 msgid "Prefix 2"
-msgstr ""
+msgstr "前置碼 2"
 
 #: dialer.c:272
 msgid "Prefix 3"
-msgstr ""
+msgstr "前置碼 3"
 
 #: dialer.c:287
 msgid "Phone number:"
-msgstr ""
+msgstr "電話號碼:"
 
 #: dialer.c:318
-#, fuzzy
 msgid "Extension"
-msgstr "開支"
+msgstr "分機號碼"
 
 #: dialer.c:341
-#, fuzzy
 msgid "Dial Command"
-msgstr "鬧鈴命令"
+msgstr "撥號命令"
 
 #: dialer.c:362
 msgid "Dismiss"
-msgstr ""
+msgstr "結束"
 
 #: export_gui.c:113
 msgid "File Browser"
@@ -864,7 +838,7 @@ msgstr "匯入"
 
 #: import_gui.c:312 install_gui.c:307
 msgid "To change to a hidden directory type it below and hit TAB"
-msgstr "若要切換到隱藏目錄，請在下面輸入後按 TAB 鍵"
+msgstr "若要切換到隱藏目錄, 請在下面輸入後按 TAB 鍵"
 
 #: import_gui.c:338
 msgid "Import File Type"
@@ -872,21 +846,19 @@ msgstr "匯入檔案類型"
 
 #: import_gui.c:450
 msgid "Record was marked as private"
-msgstr "紀錄已標記為私人的"
+msgstr "紀錄已標記為\"私人\""
 
 #: import_gui.c:452
 msgid "Record was not marked as private"
-msgstr "紀錄未標記為私人的"
+msgstr "紀錄未標記為\"私人\""
 
 #: import_gui.c:459
-#, c-format
 msgid "Category before import was: [%s]"
-msgstr ""
+msgstr "匯入前的類別為: [%s]"
 
 #: import_gui.c:465
-#, c-format
 msgid "Record will be put in category [%s]"
-msgstr ""
+msgstr "紀錄將放置於類別 [%s]"
 
 #: import_gui.c:518
 msgid "Import All"
@@ -906,7 +878,7 @@ msgstr "安裝"
 
 #: install_gui.c:284
 msgid "Files to be installed"
-msgstr "要安裝的檔案"
+msgstr "將安裝的檔案"
 
 #: install_gui.c:313
 msgid "Add"
@@ -922,83 +894,79 @@ msgstr "關閉"
 
 #: jpilot-dump.c:57
 msgid " +B +M +A +T format like date +format (use -? for more info).\n"
-msgstr ""
+msgstr " +B +M +A +T 格式相近於 date +格式 (請使用 -? 了解更多詳細資訊).\n"
 
 #: jpilot-dump.c:58
 msgid " -v displays version and exits.\n"
-msgstr ""
+msgstr " -v 將顯示jpilot版本並離開\n"
 
 #: jpilot-dump.c:59 utils.c:74
 msgid " -h displays help and exits.\n"
-msgstr ""
+msgstr " -h 將顯示求助並離開.\n"
 
 #: jpilot-dump.c:60
 msgid " -B dump dateBook.\n"
-msgstr ""
+msgstr " -B 傾印行事曆.\n"
 
 #: jpilot-dump.c:61
 msgid " -NYYYY/MM/DD dump apps on YYYY/MM/DD in dateBook.\n"
-msgstr ""
+msgstr " -NYYYY/MM/DD 將會用 YYYY/MM/DD 格式傾印行事曆的資料.\n"
 
 #: jpilot-dump.c:62
 msgid " -N dump apps on today in dateBook.\n"
-msgstr ""
+msgstr " -N 傾印行事曆的今日資料.\n"
 
 #: jpilot-dump.c:63
 msgid " -M dump Memos.\n"
-msgstr ""
+msgstr " -M 傾印備忘錄.\n"
 
 #: jpilot-dump.c:64
-#, fuzzy
 msgid " -A dump Address book.\n"
-msgstr "地址簿"
+msgstr " -A 傾印地址簿.\n"
 
 #: jpilot-dump.c:65
 msgid " -T dump Todo list as CSV.\n"
-msgstr ""
+msgstr " -T 將待辦事項用CSV格式傾印出來.\n"
 
 #: jpilot-sync.c:53
-msgid ""
-" J-Pilot preferences are read to get port, rate, number of backups, etc.\n"
-msgstr ""
+msgid " J-Pilot preferences are read to get port, rate, number of backups, etc.\n"
+msgstr " J-Pilot 的偏好設定中將指定使用那個連接埠, 其連接速率或是要保留幾個備份等等.\n"
 
 #: jpilot-sync.c:54
 msgid " -v = version\n"
-msgstr ""
+msgstr " -v = 版本\n"
 
 #: jpilot-sync.c:55
 msgid " -h = help\n"
-msgstr ""
+msgstr " -h = 求助\n"
 
 #: jpilot-sync.c:56
 msgid " -d = run in debug mode\n"
-msgstr ""
+msgstr " -d = 以除錯模式執行\n"
 
 #: jpilot-sync.c:57
 msgid " -P = do not load plugins.\n"
-msgstr ""
+msgstr " -P = 不載入外掛程式.\n"
 
 #: jpilot-sync.c:58
 msgid " -b = Do a sync and then a backup, otherwise just do a sync.\n"
-msgstr ""
+msgstr " -b = 同步並且備份, 否則將只同步.\n"
 
 #: jpilot-sync.c:59
 msgid " -l = loop, otherwise sync once and exit.\n"
-msgstr ""
+msgstr " -l = 不停重複, 否則將只同步一次並且離開.\n"
 
 #: jpilot-sync.c:60
-msgid ""
-" -p {port} = Use this port to sync with instead of getting preferences.\n"
-msgstr ""
+msgid " -p {port} = Use this port to sync with instead of getting preferences.\n"
+msgstr " -p {port} = 使用這個連接埠同步而不使用偏好設定中所指定的連接埠.\n"
 
 #: jpilot.c:132
-#, c-format
 msgid "Invalid geometry specification: \"%s\"\n"
-msgstr ""
+msgstr "不合理的視窗位置及視窗大小設定: \"%s\"\n"
 
 #: jpilot.c:377
 msgid "Help"
-msgstr "說明"
+msgstr "求助"
 
 #: jpilot.c:441 monthview_gui.c:492 print_gui.c:329 weekview_gui.c:318
 msgid "Print"
@@ -1006,15 +974,15 @@ msgstr "列印"
 
 #: jpilot.c:442
 msgid "There is no print support for this conduit."
-msgstr "這個管道不支援列印。"
+msgstr "這個同步通道不支援列印."
 
 #: jpilot.c:502
 msgid "There is no import support for this conduit."
-msgstr "這個管道不支援匯入"
+msgstr "這個同步通道不支援匯入."
 
 #: jpilot.c:546
 msgid "There is no export support for this conduit."
-msgstr "這個管道不支援匯出"
+msgstr "這個同步通道不支援匯出."
 
 #: jpilot.c:754
 msgid ""
@@ -1023,6 +991,10 @@ msgid ""
 "last time.  Syncing could have unwanted effects.\n"
 "Read the user manual if you are uncertain."
 msgstr ""
+"這個Palm PDA和J-Pilot上的使用者名稱不同,\n"
+"或是使用者ID並不是最後一次同步的那一個,\n"
+"如果同步將可能造成你無法彌補的損失.\n"
+"如果不確定的話請詳細閱讀使用者手冊."
 
 #: jpilot.c:762
 msgid ""
@@ -1034,6 +1006,15 @@ msgid ""
 "12345.\n"
 "Read the user manual if you are uncertain."
 msgstr ""
+"這個 Palm PDA 中的使用者 ID 是\"空的\"\n"
+"每一個 Palm 都必需具備一個獨一無二的\n"
+"使用者ID才可以正常的同步. 如果這個Palm\n"
+"之前曾經作過 hard reset, 請使用選單中的\n"
+"\"復原\"來回復之前的軟體設定, 或是您也可以使用\n"
+" pilot-xfer 的工具程式 install-user. 來增加一個\n"
+"使用者名稱和 ID, \n"
+"例如 install-user \"名稱\" 12345.\n"
+"如果不確定的話請詳細閱讀使用者手冊."
 
 #: jpilot.c:769
 msgid "Cancel Sync"
@@ -1041,12 +1022,11 @@ msgstr "取消同步"
 
 #: jpilot.c:770
 msgid "Sync Anyway"
-msgstr "忽略問題，照樣同步"
+msgstr "忽略問題, 照樣同步"
 
 #: jpilot.c:780 jpilot.c:785
-#, fuzzy
 msgid "Sync Problem"
-msgstr "同步備忘錄"
+msgstr "同步問題"
 
 #: jpilot.c:780 jpilot.c:785 jpilot.c:2222
 msgid "Sync"
@@ -1054,17 +1034,15 @@ msgstr "同步"
 
 #: jpilot.c:984
 msgid "Unknown command from sync process\n"
-msgstr ""
+msgstr "同步的過程中使用了未知的命令\n"
 
 #: jpilot.c:1005 Expense/expense.c:412 KeyRing/keyring.c:499
-#, c-format
 msgid "About %s"
 msgstr "關於 %s"
 
 #: jpilot.c:1114
-#, fuzzy
 msgid "/_File"
-msgstr "/檔案(_F)"
+msgstr "/檔案(F)"
 
 #: jpilot.c:1115
 msgid "/File/tear"
@@ -1072,7 +1050,7 @@ msgstr "/檔案(F)/tear"
 
 #: jpilot.c:1116
 msgid "/File/_Find"
-msgstr "檔案(F)/尋找(_F)"
+msgstr "/檔案(F)/尋找(F)"
 
 #: jpilot.c:1117 jpilot.c:1123 jpilot.c:1125
 msgid "/File/sep1"
@@ -1080,7 +1058,7 @@ msgstr "/檔案(F)/sep1"
 
 #: jpilot.c:1118
 msgid "/File/_Install"
-msgstr "/檔案(F)/安裝(_I)"
+msgstr "/檔案(F)/安裝(I)"
 
 #: jpilot.c:1119
 msgid "/File/Import"
@@ -1092,41 +1070,37 @@ msgstr "/檔案(F)/匯出"
 
 #: jpilot.c:1121 jpilot.c:2421
 msgid "/File/Preferences"
-msgstr "/檔案(F)/喜好設定"
+msgstr "/檔案(F)/偏好設定"
 
 #: jpilot.c:1122
 msgid "/File/_Print"
-msgstr "/檔案(F)/列印(_P)"
+msgstr "/檔案(F)/列印(P)"
 
 #: jpilot.c:1124
 msgid "/File/Restore Handheld"
-msgstr "/檔案(F)/復原手持電腦"
+msgstr "/檔案(F)/復原PDA"
 
 #: jpilot.c:1126
 msgid "/File/_Quit"
-msgstr "/檔案(F)/離開"
+msgstr "/檔案(F)/離開(Q)"
 
 #: jpilot.c:1127
 msgid "/_View"
-msgstr "/檢視(_V)"
+msgstr "/檢視(V)"
 
 #: jpilot.c:1128 jpilot.c:1129 jpilot.c:1130 jpilot.c:1383
-#, fuzzy
 msgid "/View/Hide Private Records"
-msgstr "/檢視(V)/穩藏或顯示私人紀錄"
+msgstr "/檢視(V)/隱藏, 顯示或遮罩私人紀錄"
 
 #: jpilot.c:1129
-#, fuzzy
 msgid "/View/Show Private Records"
-msgstr "/檢視(V)/穩藏或顯示私人紀錄"
+msgstr "/檢視(V)/隱藏, 顯示或遮罩私人紀錄"
 
 #: jpilot.c:1130
-#, fuzzy
 msgid "/View/Mask Private Records"
-msgstr "/檢視(V)/穩藏、顯示或遮罩私人紀錄"
+msgstr "/檢視(V)/遮罩私人紀錄"
 
 #: jpilot.c:1131
-#, fuzzy
 msgid "/View/sep1"
 msgstr "/檔案(F)/sep1"
 
@@ -1140,138 +1114,127 @@ msgstr "/檢視(V)/地址簿"
 
 #: jpilot.c:1134
 msgid "/View/Todos"
-msgstr "/檢視(V)/待辦工作"
+msgstr "/檢視(V)/待辦事項"
 
 #: jpilot.c:1135
 msgid "/View/Memos"
-msgstr "/檢視(_V)/備忘錄"
+msgstr "/檢視(V)/備忘錄"
 
 #: jpilot.c:1136 jpilot.c:1270
-#, fuzzy
 msgid "/_Plugins"
-msgstr "/插件"
+msgstr "/外掛程式(P)"
 
 #: jpilot.c:1138
-#, fuzzy
 msgid "/_Web"
-msgstr "三"
+msgstr "/Web(W)"
 
 #: jpilot.c:1139
 msgid "/Web/Netscape"
-msgstr ""
+msgstr "/Web(W)/Netscape"
 
 #: jpilot.c:1143
 msgid "/Web/Mozilla"
-msgstr ""
+msgstr "/Web(W)/Mozilla"
 
 #: jpilot.c:1148
 msgid "/Web/Galeon"
-msgstr ""
+msgstr "/Web(W)/Galeon"
 
 #: jpilot.c:1153
 msgid "/Web/Opera"
-msgstr ""
+msgstr "/Web(W)/Opera"
 
 #: jpilot.c:1157
 msgid "/Web/GnomeUrl"
-msgstr ""
+msgstr "/Web(W)/GnomeUrl"
 
 #: jpilot.c:1159
 msgid "/Web/Lynx"
-msgstr ""
+msgstr "/Web(W)/Lynx"
 
 #: jpilot.c:1161
 msgid "/Web/Links"
-msgstr ""
+msgstr "/Web(W)/Links"
 
 #: jpilot.c:1163
 msgid "/Web/W3M"
-msgstr ""
+msgstr "/Web(W)/W3M"
 
 #: jpilot.c:1165
 msgid "/Web/Konqueror"
-msgstr ""
+msgstr "/Web(W)/Konqueror"
 
 #: jpilot.c:1168
 msgid "/_Help"
-msgstr "/說明(_H)"
+msgstr "/說明(H)"
 
 #: jpilot.c:1169
 msgid "/Help/PayBack program"
-msgstr ""
+msgstr "/說明(H)/PayBack program"
 
 #: jpilot.c:1170
 msgid "/Help/J-Pilot"
-msgstr ""
+msgstr "/說明(H)/J-Pilot"
 
 #: jpilot.c:1237
-#, fuzzy, c-format
 msgid "/_Plugins/%s"
-msgstr "/外掛模組/%s"
+msgstr "/外掛程式(P)/%s"
 
 #: jpilot.c:1248
-#, c-format
 msgid "/_Help/%s"
-msgstr "/說明(_H)/%s"
+msgstr "/說明(H)/%s"
 
 #: jpilot.c:1552
 msgid "Font Selection Dialog"
-msgstr ""
+msgstr "字型選擇對話框"
 
 #: jpilot.c:1809
 msgid "calendar:week_start:0"
-msgstr ""
+msgstr "行事曆:每週的開始:0"
 
 #: jpilot.c:1855
 msgid "Not loading plugins.\n"
-msgstr ""
+msgstr "未載入外掛程式.\n"
 
 #: jpilot.c:1859
 msgid "Ignoring all alarms.\n"
-msgstr ""
+msgstr "忽略所有的鬧鈴設定.\n"
 
 #: jpilot.c:1863
 msgid "Ignoring past alarms.\n"
-msgstr ""
+msgstr "忽略過往鬧鈴設定.\n"
 
 #: jpilot.c:1933 jpilot.c:1941
-#, fuzzy
 msgid "Unable to open pipe\n"
-msgstr "無法開啟 %s\n"
+msgstr "無法開啟管線\n"
 
 #: jpilot.c:1990
-#, fuzzy
 msgid " User: "
-msgstr "使用者 ID"
+msgstr " 使用者: "
 
 #: jpilot.c:2137
 msgid "Clear"
 msgstr "清除"
 
 #: jpilot.c:2207
-#, fuzzy
 msgid "Show private records   Ctrl-Z"
-msgstr "/檢視(V)/穩藏或顯示私人紀錄"
+msgstr "顯示私人紀錄   Ctrl-Z"
 
 #: jpilot.c:2212
-#, fuzzy
 msgid "Hide private records   Ctrl-Z"
-msgstr "/檢視(V)/穩藏或顯示私人紀錄"
+msgstr "隱藏私人紀錄   Ctrl-Z"
 
 #: jpilot.c:2217
-#, fuzzy
 msgid "Mask private records   Ctrl-Z"
-msgstr "列印全部紀錄"
+msgstr "遮罩私人紀錄   Ctrl-Z"
 
 #: jpilot.c:2228
-#, fuzzy
 msgid "Sync your palm to the desktop   Ctrl-Y"
-msgstr "把您的 Palm 與桌面同步"
+msgstr "讓 Palm 與 J-Pilot 同步   Ctrl-Y"
 
 #: jpilot.c:2234
-#, fuzzy
 msgid "Font"
-msgstr "月"
+msgstr "字型"
 
 #: jpilot.c:2241
 msgid "Backup"
@@ -1282,12 +1245,12 @@ msgid ""
 "Sync your palm to the desktop\n"
 "and then do a backup"
 msgstr ""
-"把您的 Palm 與桌面同步\n"
+"同步 Palm 與 J-Pilot \n"
 "並作備份"
 
 #: jpilot.c:2347
 msgid "Datebook/Go to Today"
-msgstr "行事曆/跳到今天"
+msgstr "行事曆/跳到\"今天\""
 
 #: jpilot.c:2349
 msgid "Address Book"
@@ -1295,7 +1258,7 @@ msgstr "地址簿"
 
 #: jpilot.c:2351
 msgid "ToDo List"
-msgstr "待辦工作"
+msgstr "待辦事項"
 
 #: jpilot.c:2353
 msgid "Memo Pad"
@@ -1303,11 +1266,11 @@ msgstr "備忘錄"
 
 #: jpilot.c:2404
 msgid "OK, I will do it"
-msgstr ""
+msgstr "確定, 我真的確定"
 
 #: jpilot.c:2404
 msgid "Don't tell me again!"
-msgstr ""
+msgstr "別再煩我, 我已經知道了!"
 
 #: jpilot.c:2417
 msgid ""
@@ -1317,14 +1280,18 @@ msgid ""
 "(accents for example).\n"
 "\n"
 msgstr ""
+"目前的 J-Pilot 使用 GTK2 graphical toolkit. 這個版本的 GTK2 使用 UTF-8 作為預"
+"設編碼.\n"
+"你必須選擇一個 UTF-8 字元集才能看到非ASCII的字元 (例如音調).\n"
+"\n"
 
 #: jpilot.c:2420
 msgid "Go to the menu \""
-msgstr ""
+msgstr "至選單 \""
 
 #: jpilot.c:2422
 msgid "\" and change the \""
-msgstr ""
+msgstr "\" 並且改變 \""
 
 #: jpilot.c:2423 prefs_gui.c:364
 msgid "Character Set "
@@ -1332,100 +1299,87 @@ msgstr "字元集 "
 
 #: jpilot.c:2424
 msgid "\"."
-msgstr ""
+msgstr "\"."
 
 #: jpilot.c:2426
 msgid "Select an UTF-8 encoding"
-msgstr ""
+msgstr "選擇一個 UTF-8 字元集"
 
 #: libplugin.c:165
-#, c-format
 msgid "Unknown PC header version = %d\n"
-msgstr ""
+msgstr "未知 PC 檔頭版本 = %d\n"
 
 #: libplugin.c:463
-#, fuzzy, c-format
 msgid "%s:%d Error opening file: %s\n"
-msgstr "%s 讀入錯誤\n"
+msgstr "%s:%d 開啟檔案時發生錯誤: %s\n"
 
 #: libplugin.c:469 libplugin.c:498 sync.c:2728 todo.c:366
-#, fuzzy, c-format
 msgid "%s:%d Error reading file: %s\n"
-msgstr "%s 讀入錯誤\n"
+msgstr "%s:%d 讀入檔案錯誤: %s\n"
 
 #: libplugin.c:525 utils.c:1913
 msgid ""
 "This record is already deleted.\n"
 "It is scheduled to be deleted from the Palm on the next sync.\n"
 msgstr ""
+"這個紀錄已經被刪除.\n"
+"它之前被設定排程將在下一次同步時從Palm刪除.\n"
 
 #: libplugin.c:534 utils.c:1922 utils.c:1959
-#, fuzzy
 msgid "Unable to open PC records file\n"
-msgstr "無法開啟 %s\n"
+msgstr "無法開啟 PC 上的紀錄檔案\n"
 
 #: libplugin.c:540 utils.c:1928
-#, fuzzy
 msgid "Couldn't find record to delete\n"
-msgstr "找不到空的 DB 檔案。\n"
+msgstr "找不到要刪除的紀錄\n"
 
 #: libplugin.c:559 utils.c:1946
-#, c-format
 msgid "Unknown header version %d\n"
-msgstr ""
+msgstr "未知檔頭版本 %d\n"
 
 #: libplugin.c:572
-#, fuzzy
 msgid "Couldn't open PC records file\n"
-msgstr "無法開啟檔案 %s\n"
+msgstr "無法開啟 PC 的紀錄檔\n"
 
 #: libplugin.c:629 libplugin.c:721 utils.c:1476 utils.c:1488
-#, fuzzy, c-format
 msgid "Error opening file: %s\n"
-msgstr "開啟檔案時發生錯誤"
+msgstr "開啟檔案時發生錯誤: %s\n"
 
 #: libplugin.c:658
-#, fuzzy
 msgid "Error reading PC file 1\n"
-msgstr "%s 讀入錯誤\n"
+msgstr "讀入 PC 檔案錯誤 1\n"
 
 #: libplugin.c:674
-#, fuzzy
 msgid "Error reading PC file 2\n"
-msgstr "%s 讀入錯誤\n"
+msgstr "讀入 PC 檔案錯誤 2\n"
 
 #: libplugin.c:846
-#, fuzzy, c-format
 msgid "Error reading %s 5\n"
-msgstr "%s 讀入錯誤\n"
+msgstr "讀入檔案錯誤 %s 5\n"
 
 #: log.c:112
-#, fuzzy, c-format
 msgid "Unable to open log file, giving up.\n"
-msgstr "無法開啟日誌檔，放棄操作。\n"
+msgstr "無法開啟日誌檔, 放棄操作.\n"
 
 #: log.c:119
-#, fuzzy, c-format
 msgid "Unable to open log file\n"
-msgstr "無法開啟 %s\n"
+msgstr "無法開啟日誌檔\n"
 
 #: memo_gui.c:305
 msgid "Memo text > 65535, truncating\n"
-msgstr ""
+msgstr "備忘錄文字大於 65535 字元, 截斷中\n"
 
 #: memo_gui.c:335
-#, c-format
 msgid "Imported Memo %s\n"
-msgstr ""
+msgstr "已匯入備忘錄 %s\n"
 
 #: memo_gui.c:406
 msgid "File doesn't appear to be memopad.dat format\n"
 msgstr "檔案似乎不是 memopad.dat 格式\n"
 
 #: memo_gui.c:555 memo_gui.c:570
-#, c-format
 msgid "Can't export memo %d\n"
-msgstr ""
+msgstr "無法匯出備忘錄 %d\n"
 
 #: monthview_gui.c:450
 msgid "Monthly View"
@@ -1437,7 +1391,7 @@ msgstr "Palm 密碼"
 
 #: password.c:326
 msgid "Incorrect, Reenter PalmOS Password"
-msgstr "不正確，請重新輸入 PalmOS 密碼"
+msgstr "不正確, 請重新輸入 PalmOS 密碼"
 
 #: password.c:328
 msgid "Enter PalmOS Password"
@@ -1445,73 +1399,67 @@ msgstr "請輸入 PalmOS 密碼"
 
 #: plugins.c:85 plugins.c:197 restore_gui.c:130
 msgid "infinite loop"
-msgstr ""
+msgstr "無限重複"
 
 #: plugins.c:210
-#, c-format
 msgid "While reading %s%s line 1:[%s]\n"
-msgstr ""
+msgstr "當讀取 %s%s 第一行時:[%s]\n"
 
 #: plugins.c:211
 msgid "Wrong Version\n"
-msgstr ""
+msgstr "錯誤版本\n"
 
 #: plugins.c:212
 msgid "Check preferences->conduits\n"
-msgstr ""
+msgstr "檢查 偏好設定->同步通道\n"
 
 #: plugins.c:268
-#, c-format
 msgid ""
 "Open failed on plugin [%s]\n"
 " error [%s]\n"
 msgstr ""
+"開啟外掛程式 [%s] 時\n"
+"發生錯誤 [%s]\n"
 
 #: plugins.c:285 plugins.c:311
-#, c-format
 msgid " plugin is invalid: [%s]\n"
-msgstr ""
+msgstr " 此外掛程式無效: [%s]\n"
 
 #: plugins.c:293
-#, fuzzy, c-format
 msgid "Plugin:[%s]\n"
-msgstr "/外掛模組/%s"
+msgstr "外掛程式:[%s]\n"
 
 #: plugins.c:294
-#, c-format
 msgid "This plugin is version (%d.%d).\n"
-msgstr ""
+msgstr "此外掛程式版本為 (%d.%d).\n"
 
 #: plugins.c:296
 msgid "It is too old to work with this version of J-Pilot.\n"
-msgstr ""
+msgstr "它對於這個版本的 J-Pilot 來說實在太老舊了.\n"
 
 #: prefs_gui.c:308
 msgid "Preferences"
-msgstr "喜好設定"
+msgstr "偏好設定"
 
 #: prefs_gui.c:338
 msgid "Locale"
-msgstr "區域設定"
+msgstr "語系設定"
 
 #: prefs_gui.c:340
 msgid "Settings"
 msgstr "設定"
 
 #: prefs_gui.c:342
-#, fuzzy
 msgid "Datebook"
-msgstr "同步行事曆"
+msgstr "行事曆"
 
 #: prefs_gui.c:346
-#, fuzzy
 msgid "ToDo"
-msgstr "待辦工作"
+msgstr "待辦事項"
 
 #: prefs_gui.c:348
-#, fuzzy
 msgid "Memo"
-msgstr "同步備忘錄"
+msgstr "備忘錄"
 
 #: prefs_gui.c:350
 msgid "Alarms"
@@ -1519,7 +1467,7 @@ msgstr "警告"
 
 #: prefs_gui.c:352
 msgid "Conduits"
-msgstr "管道"
+msgstr "同步通道"
 
 #: prefs_gui.c:377
 msgid "Short date format "
@@ -1547,63 +1495,59 @@ msgstr "序列埠 (/dev/ttyS0, /dev/pilot)"
 
 #: prefs_gui.c:468
 msgid "Serial Rate (Does not affect USB)"
-msgstr ""
+msgstr "序列埠速率 (不影響 USB 介面)"
 
 #: prefs_gui.c:481
 msgid "Number of backups to be archived"
-msgstr "要歸檔的備份數目"
+msgstr "保留幾份備份"
 
 #: prefs_gui.c:499
 msgid "Show deleted records (default NO)"
-msgstr "顯示已刪除的紀錄（預設不顯示）"
+msgstr "顯示已刪除的紀錄 (預設 否)"
 
 #: prefs_gui.c:512
 msgid "Show modified deleted records (default NO)"
-msgstr "顯示已修改的已刪除紀錄（預設不顯示）"
+msgstr "顯示已刪除紀錄 (預設 否)"
 
 #: prefs_gui.c:525
 msgid "Ask confirmation for file installation (J-Pilot -> PDA) (default YES)"
-msgstr ""
+msgstr "在安裝程式時確認 (J-Pilot -> PDA) (預設 是)"
 
 #: prefs_gui.c:538
 msgid "Show popup tooltips (default YES)"
-msgstr ""
+msgstr "顯示彈出式密技提示 (預設 是)"
 
 #: prefs_gui.c:554
 msgid "Highlight calendar days with appointments"
-msgstr "日曆上突出顯示有約會的日子"
+msgstr "在行事曆上高亮度顯示有約會的日子"
 
 #: prefs_gui.c:567
-#, fuzzy
 msgid "Use DateBk note tags"
-msgstr "使用 DateBk 記事標記"
+msgstr "使用 DateBk 註釋標記"
 
 #: prefs_gui.c:578
-#, fuzzy
 msgid "DateBk support disabled in this build"
 msgstr "此版本沒有啟用 DateBk 支援"
 
 #: prefs_gui.c:590
-#, fuzzy
 msgid "Mail Command"
-msgstr "鬧鈴命令"
+msgstr "發信命令"
 
 #: prefs_gui.c:604
-#, fuzzy, c-format
 msgid "%s is replaced by the e-mail address"
-msgstr "%t 代表鬧鈴時間"
+msgstr "%s 已經被電子郵件位址取代"
 
 #: prefs_gui.c:612
 msgid "Hide Completed ToDos"
-msgstr "隱藏已完成的工作"
+msgstr "隱藏已完成的待辦事項"
 
 #: prefs_gui.c:624
 msgid "Hide ToDos not yet due"
-msgstr ""
+msgstr "隱藏未到期的待辦事項"
 
 #: prefs_gui.c:636
 msgid "Record Completion Date"
-msgstr ""
+msgstr "紀錄完成日期"
 
 #: prefs_gui.c:649
 msgid "Use Manana database"
@@ -1611,7 +1555,7 @@ msgstr "使用 Manana 資料庫"
 
 #: prefs_gui.c:665
 msgid "Use default number of days due"
-msgstr ""
+msgstr "預設的到期日為"
 
 #: prefs_gui.c:692
 msgid "Use Memo32 (pedit32)"
@@ -1619,7 +1563,7 @@ msgstr "使用 Memo32 (pedit32)"
 
 #: prefs_gui.c:708
 msgid "Open alarm windows for appointment reminders"
-msgstr "約會提醒時開啟鬧鈴窗口"
+msgstr "約會提醒時開啟鬧鈴視窗"
 
 #: prefs_gui.c:721
 msgid "Execute this command"
@@ -1627,7 +1571,7 @@ msgstr "執行此命令"
 
 #: prefs_gui.c:733
 msgid "WARNING: executing arbitrary shell commands can be dangerous!!!"
-msgstr "警告：任意執行 shell 命令有相當的危險性!!!"
+msgstr "警告: 任意執行系統殼命令有相當的危險性!!!"
 
 #: prefs_gui.c:741
 msgid "Alarm Command"
@@ -1635,20 +1579,19 @@ msgstr "鬧鈴命令"
 
 #: prefs_gui.c:754
 msgid "%t is replaced with the alarm time"
-msgstr "%t 代表鬧鈴時間"
+msgstr "%t 已經被鬧鈴時間取代"
 
 #: prefs_gui.c:758
-#, c-format
 msgid "%d is replaced with the alarm date"
-msgstr "%d 代表鬧鈴日期"
+msgstr "%d 已經被鬧鈴日期取代"
 
 #: prefs_gui.c:763
 msgid "%D is replaced with the alarm description"
-msgstr "%D 代表鬧鈴描述"
+msgstr "%D 已經被鬧鈴描述取代"
 
 #: prefs_gui.c:767
 msgid "%N is replaced with the alarm note"
-msgstr "%N 代表鬧鈴記事"
+msgstr "%N 已經被鬧鈴註釋取代"
 
 #: prefs_gui.c:771
 msgid "%D (description substitution) is disabled in this build"
@@ -1656,7 +1599,7 @@ msgstr "此版本沒有啟用 %D (描述替代符) 功能"
 
 #: prefs_gui.c:775
 msgid "%N (note substitution) is disabled in this build"
-msgstr "此版本沒有啟用 %N (記事替代符) 功能"
+msgstr "此版本沒有啟用 %N (註釋替代符) 功能"
 
 #: prefs_gui.c:784
 msgid "Sync datebook"
@@ -1668,7 +1611,7 @@ msgstr "同步地址"
 
 #: prefs_gui.c:808
 msgid "Sync todo"
-msgstr "同步待辦工作"
+msgstr "同步待辦事項"
 
 #: prefs_gui.c:820
 msgid "Sync memo"
@@ -1684,12 +1627,11 @@ msgstr "同步 Manana"
 
 #: prefs_gui.c:860
 msgid "Use J-OS (Not Japanese PalmOS:WorkPad/CLIE)"
-msgstr ""
+msgstr "使用 J-OS (非日文 PalmOS: WorkPad/CLIE)"
 
 #: prefs_gui.c:881
-#, fuzzy, c-format
 msgid "Sync %s (%s)"
-msgstr "正在同步 %s\n"
+msgstr "同步 %s (%s)"
 
 #: print_gui.c:175
 msgid "Print Options"
@@ -1701,15 +1643,15 @@ msgstr "紙張大小"
 
 #: print_gui.c:206
 msgid "Daily Printout"
-msgstr "一天報告"
+msgstr "每日報表"
 
 #: print_gui.c:212
 msgid "Weekly Printout"
-msgstr "一週報告"
+msgstr "每週報表"
 
 #: print_gui.c:218
 msgid "Monthly Printout"
-msgstr "月份報告"
+msgstr "每月報表"
 
 #: print_gui.c:258
 msgid "One record"
@@ -1717,11 +1659,8 @@ msgstr "一筆紀錄"
 
 #: print_gui.c:262
 msgid "All records in this category"
-msgstr ""
+msgstr "該類別的全部紀錄"
 
-# msgid "All records in this category"
-# this translation fails with gettext 0.11.5
-# msgstr "該種類裏的全部紀錄"
 #: print_gui.c:266
 msgid "Print all records"
 msgstr "列印全部紀錄"
@@ -1740,28 +1679,27 @@ msgstr "列印命令 (例如 lpr, 或 cat > file.ps)"
 
 #: restore_gui.c:65 restore_gui.c:226
 msgid "Restore Handheld"
-msgstr "復原手持電腦"
+msgstr "復原PDA"
 
 #: restore_gui.c:246
 msgid "To restore your handheld:"
-msgstr "如何復原您的手持電腦："
+msgstr "如何復原您的PDA:"
 
 #: restore_gui.c:249
-msgid ""
-"1. Choose all the applications you wish to restore.  The default is all."
-msgstr "1. 選擇所有您要復原的應用程式。預設是全部。"
+msgid "1. Choose all the applications you wish to restore.  The default is all."
+msgstr "1. 選擇所有您要復原的應用程式.  預設是全部."
 
 #: restore_gui.c:252
 msgid "2. Enter the User Name and User ID."
-msgstr "2. 輸入使用者名稱和使用者 ID。"
+msgstr "2. 輸入使用者名稱和使用者 ID."
 
 #: restore_gui.c:255
 msgid "3. Press the OK button."
-msgstr "3. 點按“確定”按鈕。"
+msgstr "3. 點擊“確定”按鈕."
 
 #: restore_gui.c:258
 msgid "This will overwrite data that is currently on the handheld."
-msgstr "此項操作會覆寫目前在手持電腦上的所有資料。"
+msgstr "此項操作會覆寫目前在PDA上的所有資料."
 
 #: restore_gui.c:279
 msgid "User Name"
@@ -1772,29 +1710,24 @@ msgid "User ID"
 msgstr "使用者 ID"
 
 #: search_gui.c:116
-#, fuzzy
 msgid "datebook"
-msgstr "同步行事曆"
+msgstr "行事曆"
 
 #: search_gui.c:197
-#, fuzzy
 msgid "address"
-msgstr "地址"
+msgstr "地址簿"
 
 #: search_gui.c:263
-#, fuzzy
 msgid "todo"
-msgstr "同步待辦工作"
+msgstr "待辦事項"
 
 #: search_gui.c:317
-#, fuzzy
 msgid "memo"
-msgstr "同步備忘錄"
+msgstr "備忘錄"
 
 #: search_gui.c:373
-#, fuzzy
 msgid "plugin ?"
-msgstr "/插件"
+msgstr "外掛程式 ?"
 
 #: search_gui.c:445
 msgid "No records found"
@@ -1806,45 +1739,39 @@ msgstr "搜尋"
 
 #: search_gui.c:539
 msgid "Search for: "
-msgstr "搜尋："
+msgstr "搜尋: "
 
 #: search_gui.c:546
 msgid "Case Sensitive"
 msgstr "區分大小寫"
 
 #: sync.c:134
-#, fuzzy
 msgid "open lock file failed\n"
-msgstr "無法開啟日誌檔。\n"
+msgstr "鎖定檔案失敗.\n"
 
 #: sync.c:147
-#, fuzzy
 msgid "lock failed\n"
-msgstr "失敗。\n"
+msgstr "失敗.\n"
 
 #: sync.c:150
-#, c-format
 msgid "sync file is locked by pid %d\n"
-msgstr ""
+msgstr "同步檔案已經由 pid %d 鎖定\n"
 
 #: sync.c:184
 msgid "unlock failed\n"
-msgstr ""
+msgstr "解除鎖定失敗\n"
 
 #: sync.c:187
-#, c-format
 msgid "sync is locked by pid %d\n"
-msgstr ""
+msgstr "同步已經由 pid %d 鎖定\n"
 
 #: sync.c:238
-#, fuzzy, c-format
 msgid "%s: press the hotsync button on the cradle or \"kill %d\"\n"
-msgstr " 現在請按 HotSync 鍵\n"
+msgstr "%s: 按下同步座上的 Hotsync 按鈕或是執行命令 \"kill %d\"\n"
 
 #: sync.c:288
-#, c-format
 msgid "Exiting with status %s\n"
-msgstr "離開中，狀態號是 %s\n"
+msgstr "離開中, 狀態 %s\n"
 
 #: sync.c:289
 msgid "Finished\n"
@@ -1855,7 +1782,6 @@ msgid "Check your serial port and settings\n"
 msgstr "檢查您的序列埠和設定\n"
 
 #: sync.c:592
-#, c-format
 msgid " Syncing on device %s\n"
 msgstr " 正在與裝置 %s 同步\n"
 
@@ -1864,62 +1790,50 @@ msgid " Press the HotSync button now\n"
 msgstr " 現在請按 HotSync 鍵\n"
 
 #: sync.c:646 sync.c:668 sync.c:690
-#, c-format
 msgid "Last Synced Username-->\"%s\"\n"
 msgstr "上次同步的使用者名稱-->\"%s\"\n"
 
 #: sync.c:647 sync.c:669 sync.c:691
-#, c-format
 msgid "Last Synced UserID-->\"%d\"\n"
 msgstr "上次同步的使用者 ID->\"%d\"\n"
 
 #: sync.c:648 sync.c:670 sync.c:692
-#, c-format
 msgid " This Username-->\"%s\"\n"
 msgstr " 此使用者名稱-->\"%s\"\n"
 
 #: sync.c:649 sync.c:671 sync.c:693
-#, c-format
 msgid " This User ID-->%d\n"
 msgstr " 此使用者 ID-->%d\n"
 
 #: sync.c:714
-#, c-format
 msgid "Username is \"%s\"\n"
 msgstr "使用者名稱是 \"%s\"\n"
 
 #: sync.c:715
-#, c-format
 msgid "User ID is %d\n"
 msgstr "使用者 ID 是 %d\n"
 
 #: sync.c:717 sync.c:723
-#, c-format
 msgid "lastSyncPC = %d\n"
 msgstr "上次同步的PC = %d\n"
 
 #: sync.c:718
-#, c-format
 msgid "This PC = %lu\n"
 msgstr "這部 PC = %lu\n"
 
 #: sync.c:719
-#, c-format
 msgid "Last Username = [%s]\n"
-msgstr "上一個使用者名稱 = [%s]\n"
+msgstr "上次同步的使用者名稱 = [%s]\n"
 
 #: sync.c:720
-#, c-format
 msgid "Last UserID = %d\n"
-msgstr "上一個使用者 ID = %d\n"
+msgstr "上次同步的使用者 ID = %d\n"
 
 #: sync.c:721
-#, c-format
 msgid "Username = [%s]\n"
 msgstr "使用者名稱 = [%s]\n"
 
 #: sync.c:722
-#, c-format
 msgid "userID = %d\n"
 msgstr "使用者 ID = %d\n"
 
@@ -1929,75 +1843,65 @@ msgstr "同步已取消\n"
 
 #: sync.c:762
 msgid "Finished restoring handheld.\n"
-msgstr "復原手持電腦完畢。\n"
+msgstr "復原PDA完畢.\n"
 
 #: sync.c:763
 msgid "You may need to sync to update J-Pilot.\n"
-msgstr "您可能需要“同步”以更新 J-Pilot。\n"
+msgstr "您可能需要\"同步\"以更新 J-Pilot.\n"
 
 #: sync.c:794
 msgid "Doing a fast sync.\n"
-msgstr "正在進行快速同步。\n"
+msgstr "正在進行快速同步.\n"
 
 #: sync.c:833
 msgid "Doing a slow sync.\n"
-msgstr "正在進行慢速同步。\n"
+msgstr "正在進行慢速同步.\n"
 
 #: sync.c:934
 msgid "Thank you for using J-Pilot."
-msgstr "感謝您使用 J-Pilot。"
+msgstr "感謝您使用 J-Pilot."
 
 #: sync.c:976
 msgid "Finished.\n"
-msgstr "完成。\n"
+msgstr "完成.\n"
 
 #: sync.c:1012 sync.c:2479
-#, c-format
 msgid "Syncing %s\n"
 msgstr "正在同步 %s\n"
 
 #: sync.c:1018 sync.c:2147 sync.c:2485
-#, c-format
 msgid "Wrote an %s record."
-msgstr "寫了一筆 %s 紀錄。"
+msgstr "寫了一筆 %s 紀錄."
 
 #: sync.c:1020 sync.c:2149 sync.c:2487
-#, c-format
 msgid "Writing an %s record failed."
-msgstr "寫入一筆 %s 紀錄失敗。"
+msgstr "寫入一筆 %s 紀錄失敗."
 
 #: sync.c:1022 sync.c:2151 sync.c:2489
-#, c-format
 msgid "Deleting an %s record failed."
-msgstr "刪除一筆 %s 紀錄失敗。"
+msgstr "刪除一筆 %s 紀錄失敗."
 
 #: sync.c:1024 sync.c:2153 sync.c:2491
-#, c-format
 msgid "Deleted an %s record."
-msgstr "刪除了一筆 %s 紀錄。"
+msgstr "刪除了一筆 %s 紀錄."
 
 #: sync.c:1027 sync.c:2156 sync.c:2494
-#, c-format
 msgid "Wrote a %s record."
-msgstr "寫了一筆 %s 紀錄。"
+msgstr "寫了一筆 %s 紀錄."
 
 #: sync.c:1029 sync.c:2158 sync.c:2496
-#, c-format
 msgid "Writing a %s record failed."
-msgstr "寫入一筆 %s 紀錄失敗。"
+msgstr "寫入一筆 %s 紀錄失敗."
 
 #: sync.c:1031 sync.c:2160 sync.c:2498
-#, c-format
 msgid "Deleting a %s record failed."
-msgstr "刪除一筆 %s 紀錄失敗。"
+msgstr "刪除一筆 %s 紀錄失敗."
 
 #: sync.c:1033 sync.c:2162 sync.c:2500
-#, c-format
 msgid "Deleted a %s record."
-msgstr "刪除了一筆 %s 紀錄。"
+msgstr "刪除了一筆 %s 紀錄."
 
 #: sync.c:1052
-#, c-format
 msgid "number of records = %d\n"
 msgstr "紀錄數目 = %d\n"
 
@@ -2010,146 +1914,124 @@ msgstr ""
 "可能是因為這筆紀錄已經在 Palm 上刪除了\n"
 
 #: sync.c:1281 sync.c:1661
-#, c-format
 msgid "%s (Creator ID '%s') is up to date, fetch skipped.\n"
-msgstr "%s (建立者 ID '%s') 已經是最新的了，跳過擷取。\n"
+msgstr "%s (建立者 ID '%s') 已經是最新的了, 跳過擷取.\n"
 
 #: sync.c:1285 sync.c:1665
-#, c-format
 msgid "Fetching '%s' (Creator ID '%s')... "
 msgstr "正在擷取 '%s' (建立者 ID '%s')... "
 
 #: sync.c:1292 sync.c:1671
-#, c-format
 msgid "Failed, unable to create file %s\n"
-msgstr "作業失敗，無法建立檔案 %s\n"
+msgstr "作業失敗, 無法建立檔案 %s\n"
 
 #: sync.c:1303 sync.c:1680
-#, fuzzy, c-format
 msgid "Failed, unable to back up database %s\n"
-msgstr "作業失敗，無法備份資料庫\n"
+msgstr "作業失敗, 無法備份資料庫 %s\n"
 
 #: sync.c:1307 sync.c:1684 sync.c:1851
 msgid "OK\n"
 msgstr "確定\n"
 
 #: sync.c:1577
-#, c-format
 msgid "Skipping %s (Creator ID '%s')\n"
 msgstr "跳過 %s (建立者 ID '%s')\n"
 
 #: sync.c:1737
-#, c-format
 msgid "Installing %s "
 msgstr "正在安裝 %s "
 
 #: sync.c:1743
-#, fuzzy, c-format
 msgid ""
 "\n"
 "Unable to open file: '%s': %s!\n"
 msgstr ""
 "\n"
-"無法開啟 '%s'!\n"
+"無法開啟 '%s': %s!\n"
 
 #: sync.c:1747
-#, fuzzy, c-format
 msgid ""
 "\n"
 "Unable to sync file: '%s': file corrupted?\n"
 msgstr ""
 "\n"
-"無法開啟 '%s'!\n"
+"無法同步檔案: '%s': 檔案毀損?\n"
 
 #: sync.c:1759
-#, c-format
 msgid "(Creator ID is '%s')..."
 msgstr "(建立者 ID 是 '%s')..."
 
 #: sync.c:1779 sync.c:1792 sync.c:1807 sync.c:1820
-#, fuzzy, c-format
 msgid ""
 "\n"
 "Unable to open file: %s\n"
-msgstr "無法開啟 %s\n"
+msgstr ""
+"\n"
+"無法開啟檔案: %s\n"
 
 #: sync.c:1836
-#, c-format
 msgid "Install %s failed"
 msgstr "安裝 %s 失敗"
 
 #: sync.c:1840
 msgid "Failed.\n"
-msgstr "失敗。\n"
+msgstr "失敗.\n"
 
 #: sync.c:1847
-#, c-format
 msgid "Installed %s "
 msgstr "已安裝 %s "
 
 #: sync.c:1871 sync.c:1877
-#, fuzzy, c-format
 msgid "Unable to open file: %s%s\n"
-msgstr "無法開啟 %s\n"
+msgstr "無法開啟檔案 %s%s\n"
 
 #: sync.c:2057
-#, fuzzy
 msgid "Unable to read home dir\n"
-msgstr "無法開啟 %s\n"
+msgstr "無法讀取家目錄\n"
 
 #: sync.c:2563
-#, c-format
 msgid "palm: number of records = %d\n"
-msgstr "Palm：紀錄數目 = %d\n"
+msgstr "Palm: 紀錄數目 = %d\n"
 
 #: sync.c:2564
-#, c-format
 msgid "disk: number of records = %d\n"
-msgstr "磁盤：紀錄數目 = %d\n"
+msgstr "硬碟: 紀錄數目 = %d\n"
 
 #: sync.c:2737
-#, fuzzy, c-format
 msgid "%s:%d Error getting app info %s\n"
-msgstr "%s 讀入錯誤\n"
+msgstr "%s:%d 取得應用程式資料 %s 錯誤\n"
 
 #: sync.c:2743 sync.c:2770
-#, fuzzy, c-format
 msgid "%s:%d Error unpacking app info %s\n"
-msgstr "%s 讀入錯誤\n"
+msgstr "%s:%d 解壓縮應用程式資料 %s 錯誤\n"
 
 #: sync.c:2762
-#, fuzzy, c-format
 msgid "Error reading appinfo block for %s\n"
-msgstr "%s 讀入錯誤\n"
+msgstr "讀取應用程式資料區塊 %s 錯誤\n"
 
 #: sync.c:2909 sync.c:2913
-#, c-format
 msgid "Could not add category %s to remote.\n"
-msgstr ""
+msgstr "無法加入類別 %s 到遠端.\n"
 
 #: sync.c:2910 sync.c:2916
 msgid "Too many categories on remote.\n"
-msgstr ""
+msgstr "遠端有太多類別.\n"
 
 #: sync.c:2911 sync.c:2919
-#, c-format
 msgid "All records on desktop in %s will be moved to %s.\n"
-msgstr ""
+msgstr "全部在J-Pilot %s 中的紀錄將移至 %s.\n"
 
 #: todo.c:245
-#, fuzzy, c-format
 msgid "ToDo description text > %d, truncating to %d\n"
-msgstr "警告：待辦工作的描述太長，截斷為 %d\n"
+msgstr "待辦事項的描述大於 %d, 截斷為 %d\n"
 
 #: todo.c:252
-#, fuzzy, c-format
 msgid "ToDo note text > %d, truncating to %d\n"
-msgstr "警告：待辦工作的記事太長，截斷為 %d\n"
+msgstr "待辦事項的註釋大於 %d, 截斷為 %d\n"
 
 #: todo.c:355
-#, fuzzy, c-format
 msgid "%s:%d Error reading category info %s\n"
-msgstr "%s 讀入錯誤\n"
+msgstr "%s: %d 讀入類別資訊 %s 錯誤\n"
 
 #: todo_gui.c:146
 msgid "Due Date"
@@ -2160,16 +2042,14 @@ msgid "File doesn't appear to be todo.dat format\n"
 msgstr "檔案似乎不是 todo.dat 格式\n"
 
 #: todo_gui.c:708 todo_gui.c:723
-#, c-format
 msgid "Can't export todo %d\n"
-msgstr ""
+msgstr "無法匯出待辦事項 %d\n"
 
 #: todo_gui.c:1495
 msgid "Priority out of range\n"
-msgstr ""
+msgstr "優先值超過容許範圍\n"
 
 #: todo_gui.c:1685
-#, c-format
 msgid "No date"
 msgstr "無限期"
 
@@ -2179,11 +2059,11 @@ msgstr "已完成"
 
 #: todo_gui.c:2128
 msgid "Priority: "
-msgstr "優先值："
+msgstr "優先值: "
 
 #: todo_gui.c:2148
 msgid "Date Due:"
-msgstr "到期日："
+msgstr "到期日:"
 
 #: todo_gui.c:2210 Expense/expense.c:1672 KeyRing/keyring.c:1629
 msgid "Note"
@@ -2191,110 +2071,101 @@ msgstr "註釋"
 
 #: utils.c:73
 msgid " -v displays version and compile options and exits.\n"
-msgstr ""
+msgstr " -v 顯示版本以及編譯選項後跳出.\n"
 
 #: utils.c:75
 msgid " -d displays debug info to stdout.\n"
-msgstr ""
+msgstr " -d 將除錯資訊導至標準輸出.\n"
 
 #: utils.c:76
 msgid " -p do not load plugins.\n"
-msgstr ""
+msgstr " -p 不載入外掛程式.\n"
 
 #: utils.c:77
 msgid " -a ignore missed alarms since the last time this program was run.\n"
-msgstr ""
+msgstr " -a 忽略上次J-Pilot執行到現在的已錯過鬧鈴.\n"
 
 #: utils.c:78
 msgid " -A ignore all alarms)); past and future.\n"
-msgstr ""
+msgstr " -A 忽略所有鬧鈴設定)); 包括過去以及未來.\n"
 
 #: utils.c:79
 msgid " -i makes jpilot iconify itself upon launch\n"
-msgstr ""
+msgstr " -i J-Pilot啟動時最小化\n"
 
 #: utils.c:80
 msgid " The PILOTPORT, and PILOTRATE env variables are used to specify\n"
-msgstr ""
+msgstr " PILOTPORT, 以及 PILOTRATE 環境變數已經設定\n"
 
 #: utils.c:81
 msgid " which port to sync on, and at what speed.\n"
-msgstr ""
+msgstr " 使用那個埠同步, 以及使用多快的速率.\n"
 
 #: utils.c:82
 msgid " If PILOTPORT is not set then it defaults to /dev/pilot.\n"
-msgstr ""
+msgstr " 如果 PILOTPORT 未設定, 則使用預設值 /dev/pilot.\n"
 
 #: utils.c:107
 msgid "Date compiled"
-msgstr ""
+msgstr "編譯日期"
 
 #: utils.c:108
 msgid "Compiled with these options:"
-msgstr ""
+msgstr "使用以下選項編譯:"
 
 #: utils.c:110
-#, fuzzy
 msgid "Installed Path"
-msgstr "已安裝 %s "
+msgstr "安裝路徑"
 
 #: utils.c:112
 msgid "pilot-link version"
-msgstr ""
+msgstr "pilot-link 版本"
 
 #: utils.c:116
 msgid "USB support"
-msgstr ""
+msgstr "USB 支援"
 
 #: utils.c:118 utils.c:124 utils.c:130 utils.c:136 utils.c:142 utils.c:148
 #: utils.c:154
-#, fuzzy
 msgid "yes"
 msgstr "是"
 
 #: utils.c:120 utils.c:126 utils.c:132 utils.c:138 utils.c:144 utils.c:150
 #: utils.c:156
-#, fuzzy
 msgid "no"
-msgstr "無"
+msgstr "否"
 
 #: utils.c:122
-#, fuzzy
 msgid "Private record support"
-msgstr "列印全部紀錄"
+msgstr "私人紀錄支援"
 
 #: utils.c:128
 msgid "Datebk support"
-msgstr ""
+msgstr "Datebk 支援"
 
 #: utils.c:134
-#, fuzzy
 msgid "Plugin support"
-msgstr "/插件"
+msgstr "外掛程式支援"
 
 #: utils.c:140
-#, fuzzy
 msgid "Manana support"
-msgstr "/插件"
+msgstr "Manana 支援"
 
 #: utils.c:146
 msgid "NLS support (foreign languages)"
-msgstr ""
+msgstr "NLS 支援 (本地語言支援)"
 
 #: utils.c:152
-#, fuzzy
 msgid "GTK2 support"
-msgstr "/插件"
+msgstr "GTK2 支援"
 
 #: utils.c:196
-#, fuzzy, c-format
 msgid "Today is %A, %x %X"
-msgstr "今天是%Y年%b%e日(%A) %X"
+msgstr "今天是 %A, %x %X"
 
 #: utils.c:198
-#, c-format
 msgid "Today is %%A, %s %s"
-msgstr "今天是%s(%%A) %s"
+msgstr "今天是 %%A, %s %s"
 
 #: utils.c:1105
 msgid "Today"
@@ -2302,81 +2173,75 @@ msgstr "今天"
 
 #: utils.c:1289
 msgid "Save Changed Record?"
-msgstr "儲存紀錄修改？"
+msgstr "儲存紀錄修改?"
 
 #: utils.c:1290
 msgid "Do you want to save the changes to this record?"
-msgstr "您要儲存對於此筆紀錄的修改嗎？"
+msgstr "您要儲存對於此筆紀錄的修改嗎?"
 
 #: utils.c:1295
 msgid "Save New Record?"
-msgstr "儲存新紀錄？"
+msgstr "儲存新紀錄?"
 
 #: utils.c:1296
 msgid "Do you want to save this new record?"
-msgstr "您要儲存此筆新增的紀錄嗎？"
+msgstr "您要儲存此筆新增的紀錄嗎?"
 
 #: utils.c:1316 KeyRing/keyring.c:1352
 msgid "Can't get HOME environment variable\n"
-msgstr ""
+msgstr "無法取得 HOME 環境變數\n"
 
 #: utils.c:1323 KeyRing/keyring.c:1357
 msgid "Your HOME environment variable is too long for me\n"
-msgstr ""
+msgstr "您的 HOME 環境變數對 J-Pilot 來說太長\n"
 
 #: utils.c:1348 utils.c:1352
-#, c-format
 msgid "Can't create directory %s\n"
-msgstr ""
+msgstr "無法新增目錄 %s\n"
 
 #: utils.c:1358
-#, fuzzy, c-format
 msgid ""
 "%s doesn't appear to be a directory.\n"
 "I need it to be.\n"
-msgstr "檔案似乎不是 address.dat 格式\n"
+msgstr ""
+"%s 似乎不是目錄.\n"
+"我要求它是個目錄.\n"
 
 #: utils.c:1366
-#, c-format
 msgid "I can't write files in directory %s\n"
-msgstr ""
+msgstr "我無法寫入檔案至目錄 %s\n"
 
 #: utils.c:1435 utils.c:1444
 msgid "Error writing PC header to file: next_id\n"
-msgstr ""
+msgstr "寫入 PC 檔頭至檔案: next_id\n"
 
 #: utils.c:1440
 msgid "Error writing next id to file: next_id\n"
-msgstr ""
+msgstr "寫入下一個 id 至檔案錯誤: next_id\n"
 
 #: utils.c:1457
-#, fuzzy
 msgid "Error opening file: next_id\n"
-msgstr "開啟檔案時發生錯誤"
+msgstr "開啟檔案時發生錯誤: next_id\n"
 
 #: utils.c:1626
-#, fuzzy, c-format
 msgid "Couldn't find empty DB file %s: %s\n"
-msgstr "找不到空的 DB 檔案。\n"
+msgstr "找不到空的 DB 檔案%s: %s\n"
 
 #: utils.c:1629
-#, fuzzy
 msgid " may not be installed.\n"
-msgstr "可能未安裝 jpilot。\n"
+msgstr " 可能未安裝正確.\n"
 
 #: utils.c:1812
-#, fuzzy
 msgid "Error reading file"
-msgstr "%s 讀入錯誤\n"
+msgstr "讀入檔案錯誤"
 
 #: utils.c:2438
 msgid "PC ID is 0.\n"
-msgstr "PC ID 是 0。\n"
+msgstr "PC ID 是 0.\n"
 
 #: utils.c:2439
-#, c-format
 msgid "I generated a new PC ID.  It is %lu\n"
-msgstr "我產生了一個新的 PC ID，是 %lu\n"
+msgstr "我產生了一個新的 PC ID, 它是 %lu\n"
 
 #: weekview_gui.c:278
 msgid "Weekly View"
@@ -2384,146 +2249,139 @@ msgstr "每週檢視"
 
 #: Expense/expense.c:77
 msgid "Australia"
-msgstr ""
+msgstr "澳洲"
 
 #: Expense/expense.c:78
 msgid "Austria"
-msgstr ""
+msgstr "奧地利"
 
 #: Expense/expense.c:79
 msgid "Belgium"
-msgstr ""
+msgstr "比利時"
 
 #: Expense/expense.c:80
 msgid "Brazil"
-msgstr ""
+msgstr "巴西"
 
 #: Expense/expense.c:81
 msgid "Canada"
-msgstr ""
+msgstr "加拿大"
 
 #: Expense/expense.c:82
 msgid "Denmark"
-msgstr ""
+msgstr "丹麥"
 
 #: Expense/expense.c:83
 msgid "EU (Euro)"
-msgstr ""
+msgstr "歐盟 (Euro)"
 
 #: Expense/expense.c:84
 msgid "Finland"
-msgstr ""
+msgstr "芬蘭"
 
 #: Expense/expense.c:85
-#, fuzzy
 msgid "France"
-msgstr "取消"
+msgstr "法國"
 
 #: Expense/expense.c:86
 msgid "Germany"
-msgstr ""
+msgstr "德國"
 
 #: Expense/expense.c:87
 msgid "Hong Kong"
-msgstr ""
+msgstr "香港"
 
 #: Expense/expense.c:88
 msgid "Iceland"
-msgstr ""
+msgstr "冰島"
 
 #: Expense/expense.c:89
 msgid "India"
-msgstr ""
+msgstr "印度"
 
 #: Expense/expense.c:90
-#, fuzzy
 msgid "Indonesia"
-msgstr "無"
+msgstr "印尼"
 
 #: Expense/expense.c:91
 msgid "Ireland"
-msgstr ""
+msgstr "愛爾蘭"
 
 #: Expense/expense.c:92
-#, fuzzy
 msgid "Italy"
-msgstr "安裝"
+msgstr "義大利"
 
 #: Expense/expense.c:93
 msgid "Japan"
-msgstr ""
+msgstr "日本"
 
 #: Expense/expense.c:94
 msgid "Korea"
-msgstr ""
+msgstr "韓國"
 
 #: Expense/expense.c:95
 msgid "Luxembourg"
-msgstr ""
+msgstr "盧森堡"
 
 #: Expense/expense.c:96
 msgid "Malaysia"
-msgstr ""
+msgstr "馬來西亞"
 
 #: Expense/expense.c:97
 msgid "Mexico"
-msgstr ""
+msgstr "墨西哥"
 
 #: Expense/expense.c:98
 msgid "Netherlands"
-msgstr ""
+msgstr "尼德蘭 (荷蘭)"
 
 #: Expense/expense.c:99
 msgid "New Zealand"
-msgstr ""
+msgstr "紐西蘭"
 
 #: Expense/expense.c:100
 msgid "Norway"
-msgstr ""
+msgstr "挪威"
 
 #: Expense/expense.c:101
 msgid "P.R.C."
-msgstr ""
+msgstr "中華人民共和國"
 
 #: Expense/expense.c:102
 msgid "Philippines"
-msgstr ""
+msgstr "菲律賓"
 
 #: Expense/expense.c:103
 msgid "Singapore"
-msgstr ""
+msgstr "新加坡"
 
 #: Expense/expense.c:104
-#, fuzzy
 msgid "Spain"
-msgstr "火車"
+msgstr "西班牙"
 
 #: Expense/expense.c:105
-#, fuzzy
 msgid "Sweden"
-msgstr "週"
+msgstr "瑞典"
 
 #: Expense/expense.c:106
 msgid "Switzerland"
-msgstr ""
+msgstr "瑞士"
 
 #: Expense/expense.c:107
-#, fuzzy
 msgid "Taiwan"
-msgstr "火車"
+msgstr "台灣"
 
 #: Expense/expense.c:108
-#, fuzzy
 msgid "Thailand"
-msgstr "火車"
+msgstr "泰國"
 
 #: Expense/expense.c:109
 msgid "United Kingdom"
-msgstr ""
+msgstr "英國"
 
 #: Expense/expense.c:110
 msgid "United States"
-msgstr ""
+msgstr "美國"
 
 #: Expense/expense.c:401 Expense/expense.c:412
 msgid "Expense"
@@ -2543,7 +2401,7 @@ msgstr "公共汽車"
 
 #: Expense/expense.c:439 Expense/expense.c:1285
 msgid "BusinessMeals"
-msgstr "商務客飯"
+msgstr "商務餐會"
 
 #: Expense/expense.c:441 Expense/expense.c:1286
 msgid "CarRental"
@@ -2571,11 +2429,11 @@ msgstr "禮品"
 
 #: Expense/expense.c:453 Expense/expense.c:1292
 msgid "Hotel"
-msgstr "酒店"
+msgstr "飯店"
 
 #: Expense/expense.c:455 Expense/expense.c:1293
 msgid "Incidentals"
-msgstr "附帶開支"
+msgstr "雜費"
 
 #: Expense/expense.c:457 Expense/expense.c:1294
 msgid "Laundry"
@@ -2599,7 +2457,7 @@ msgstr "里程"
 
 #: Expense/expense.c:469 Expense/expense.c:1300
 msgid "Parking"
-msgstr "泊車"
+msgstr "停車費"
 
 #: Expense/expense.c:471 Expense/expense.c:1301
 msgid "Postage"
@@ -2607,15 +2465,15 @@ msgstr "郵費"
 
 #: Expense/expense.c:473 Expense/expense.c:1302
 msgid "Snack"
-msgstr "小食"
+msgstr "零嘴"
 
 #: Expense/expense.c:475 Expense/expense.c:1303
 msgid "Subway"
-msgstr "地下鐵路"
+msgstr "地下鐵"
 
 #: Expense/expense.c:477 Expense/expense.c:1304
 msgid "Supplies"
-msgstr "用品"
+msgstr "生活用品"
 
 #: Expense/expense.c:479 Expense/expense.c:1305
 msgid "Taxi"
@@ -2623,11 +2481,11 @@ msgstr "計程車"
 
 #: Expense/expense.c:481 Expense/expense.c:1306
 msgid "Telephone"
-msgstr "電話"
+msgstr "電話費"
 
 #: Expense/expense.c:483 Expense/expense.c:1307
 msgid "Tips"
-msgstr "小帳"
+msgstr "小費"
 
 #: Expense/expense.c:485 Expense/expense.c:1308
 msgid "Tolls"
@@ -2659,7 +2517,7 @@ msgstr "萬事達卡 (MasterCard)"
 
 #: Expense/expense.c:511 Expense/expense.c:1276
 msgid "Prepaid"
-msgstr "已先支付"
+msgstr "預付"
 
 #: Expense/expense.c:513 Expense/expense.c:1277
 msgid "VISA"
@@ -2667,15 +2525,15 @@ msgstr "VISA 卡"
 
 #: Expense/expense.c:1077
 msgid "Expense: Unknown category\n"
-msgstr ""
+msgstr "開支: 未知類別\n"
 
 #: Expense/expense.c:1083
 msgid "Expense: Unknown expense type\n"
-msgstr ""
+msgstr "開支: 未知開支類型\n"
 
 #: Expense/expense.c:1089
 msgid "Expense: Unknown payment type\n"
-msgstr ""
+msgstr "開支: 未知付款方式\n"
 
 #: Expense/expense.c:1271
 msgid "American Express"
@@ -2691,201 +2549,192 @@ msgstr "萬事達卡 (MasterCard)"
 
 #: Expense/expense.c:1551
 msgid "Type: "
-msgstr "類型："
+msgstr "類型: "
 
 #: Expense/expense.c:1560
 msgid "Payment: "
-msgstr "付款："
+msgstr "付款方式: "
 
 #: Expense/expense.c:1569
-#, fuzzy
 msgid "Currency: "
-msgstr "目前事件"
+msgstr "匯率: "
 
 #: Expense/expense.c:1581
 msgid "Month:"
-msgstr "月："
+msgstr "月:"
 
 #: Expense/expense.c:1595
 msgid "Day:"
-msgstr "日："
+msgstr "日:"
 
 #: Expense/expense.c:1609
 msgid "Year:"
-msgstr "年："
+msgstr "年:"
 
 #: Expense/expense.c:1626
 msgid "Amount: "
-msgstr "金額："
+msgstr "金額: "
 
 #: Expense/expense.c:1635
 msgid "Vendor: "
-msgstr "商戶："
+msgstr "廠商: "
 
 #: Expense/expense.c:1644
 msgid "City: "
-msgstr "城市："
+msgstr "城市: "
 
 #: Expense/expense.c:1649
 msgid "Attendees"
-msgstr "參加者"
+msgstr "出席者"
 
 #: KeyRing/keyring.c:169
 msgid "KeyRing: pack_KeyRing(): buf_size too small\n"
-msgstr ""
+msgstr "鑰匙圈: pack_鑰匙圈(): buf_size 太小\n"
 
 #: KeyRing/keyring.c:488 KeyRing/keyring.c:499
 msgid "KeyRing"
-msgstr ""
+msgstr "鑰匙圈"
 
 #: KeyRing/keyring.c:1272
 msgid "Incorrect, Reenter KeyRing Password"
-msgstr "不正確，請重新輸入 KeyRing 密碼"
+msgstr "不正確, 請重新輸入鑰匙圈密碼"
 
 #: KeyRing/keyring.c:1274
-#, fuzzy
 msgid "Enter a NEW KeyRing Password"
-msgstr "輸入 KeyRing 密碼"
+msgstr "請輸入新的鑰匙圈密碼"
 
 #: KeyRing/keyring.c:1276
 msgid "Enter KeyRing Password"
-msgstr "輸入 KeyRing 密碼"
+msgstr "輸入鑰匙圈密碼"
 
 #: KeyRing/keyring.c:1362
-#, c-format
 msgid "KeyRing: file %s not found.\n"
-msgstr ""
+msgstr "鑰匙圈: 檔案 %s 找不到.\n"
 
 #: KeyRing/keyring.c:1363
 msgid "KeyRing: Try Syncing.\n"
-msgstr ""
+msgstr "鑰匙圈: 請嚐試同步.\n"
 
 #: KeyRing/keyring.c:1447
 msgid "Account"
 msgstr "帳號"
 
 #: KeyRing/keyring.c:1464
-#, fuzzy
 msgid ""
 "Change\n"
 "KeyRing\n"
 "Password"
-msgstr "輸入 KeyRing 密碼"
+msgstr ""
+"改變\n"
+"鑰匙圈\n"
+"密碼"
 
 #: KeyRing/keyring.c:1602
 msgid "name: "
-msgstr "名字："
+msgstr "名字: "
 
 #: KeyRing/keyring.c:1609
 msgid "account: "
-msgstr "帳號："
+msgstr "帳號: "
 
 #: KeyRing/keyring.c:1616
 msgid "password: "
-msgstr "密碼："
+msgstr "密碼: "
 
 #: KeyRing/keyring.c:1622
-#, fuzzy
 msgid "Generate Password"
-msgstr "請輸入 PalmOS 密碼"
+msgstr "自動產生密碼"
 
-#~ msgid "Quit!"
-#~ msgstr " 離開!"
+msgid "Quit!"
+msgstr "離開!"
 
-#, fuzzy
-#~ msgid "Show Preferences"
-#~ msgstr "喜好設定"
+msgid "Show Preferences"
+msgstr "顯示偏好設定"
 
-#~ msgid "About Expense"
-#~ msgstr "關於開支"
+msgid "About Expense"
+msgstr "關於開支"
 
-#, fuzzy
-#~ msgid "About KeyRing"
-#~ msgstr "關於開支"
+msgid "About KeyRing"
+msgstr "關於鑰匙圈"
 
-#, fuzzy
-#~ msgid ""
-#~ " [-v] || [-h] || [-d] || [-a] || [-A] || [-i]\n"
-#~ " -v displays version and compile options and exits.\n"
-#~ " -h displays help and exits.\n"
-#~ " -d displays debug info to stdout.\n"
-#~ " -p do not load plugins.\n"
-#~ " -a ignore missed alarms since the last time this program was run.\n"
-#~ " -A ignore all alarms, past and future.\n"
-#~ " -i makes jpilot iconify itself upon launch\n"
-#~ " The PILOTPORT, and PILOTRATE env variables are used to specify\n"
-#~ " which port to sync on, and at what speed.\n"
-#~ " If PILOTPORT is not set then it defaults to /dev/pilot.\n"
-#~ msgstr ""
-#~ "\n"
-#~ "jpilot [ [-v] || [-h] || [-d] || [-a] || [-A]\n"
-#~ " -v 顯示版本資訊後離開。\n"
-#~ " -h 顯示說明後離開。\n"
-#~ " -d 顯示除錯訊息至標準輸出 (stdout)。\n"
-#~ " -p 不載入外掛模組。\n"
-#~ " -a 忽略自從上次執行此程式後所錯過的鬧鈴。\n"
-#~ " -A 忽略所有過去和將來的鬧鈴。\n"
-#~ " PILOTPORT 和 PILOTRATE 這兩個環境變數是用來指定同步的連接埠和速率。\n"
-#~ " 如果未設定 PILOTPORT，其預設值為 /dev/pilot。\n"
+msgid ""
+" [-v] || [-h] || [-d] || [-a] || [-A] || [-i]\n"
+" -v displays version and compile options and exits.\n"
+" -h displays help and exits.\n"
+" -d displays debug info to stdout.\n"
+" -p do not load plugins.\n"
+" -a ignore missed alarms since the last time this program was run.\n"
+" -A ignore all alarms, past and future.\n"
+" -i makes jpilot iconify itself upon launch\n"
+" The PILOTPORT, and PILOTRATE env variables are used to specify\n"
+" which port to sync on, and at what speed.\n"
+" If PILOTPORT is not set then it defaults to /dev/pilot.\n"
+msgstr ""
+" [ [-v] || [-h] || [-d] || [-a] || [-A] || [-i]\n"
+" -v 顯示版本資訊後離開.\n"
+" -h 顯示說明後離開.\n"
+" -d 顯示除錯訊息至標準輸出 (stdout).\n"
+" -p 不載入外掛模組.\n"
+" -a 忽略自從上次執行此程式後所錯過的鬧鈴.\n"
+" -A 忽略所有過去和將來的鬧鈴.\n"
+" -i 使 J-Pilot 執行時最小化.\n"
+" PILOTPORT 和 PILOTRATE 這兩個環境變數是用來指定同步的連接埠和速率.\n"
+" 如果未設定 PILOTPORT, 其預設值為 /dev/pilot.\n"
 
-#~ msgid "slow_sync_application(): Out of memory\n"
-#~ msgstr "slow_sync_application(): 內存不足\n"
+msgid "slow_sync_application(): Out of memory\n"
+msgstr "slow_sync_application(): 記憶體不足\n"
 
-#~ msgid "dlp_WriteRecord failed\n"
-#~ msgstr "dlp_WriteRecord 失敗\n"
+msgid "dlp_WriteRecord failed\n"
+msgstr "dlp_WriteRecord 失敗\n"
 
-#~ msgid ""
-#~ "\n"
-#~ "Unable to open '%s'!\n"
-#~ msgstr ""
-#~ "\n"
-#~ "無法開啟 '%s'!\n"
+msgid ""
+"\n"
+"Unable to open '%s'!\n"
+msgstr ""
+"\n"
+"無法開啟 '%s'!\n"
 
-#, fuzzy
-#~ msgid "Cannot open %s_to_install file\n"
-#~ msgstr "無法開啟日誌檔。\n"
+msgid "Cannot open %s_to_install file\n"
+msgstr "無法開啟 %s_to_install 檔案\n"
 
-#, fuzzy
-#~ msgid "Cannot open %s_to_install.tmp file\n"
-#~ msgstr "無法開啟 jpilot_to_install.tmp 檔案\n"
+msgid "Cannot open %s_to_install.tmp file\n"
+msgstr "無法開啟 %s_to_install.tmp 檔案\n"
 
-#~ msgid "fast_sync_local_recs(): Out of memory\n"
-#~ msgstr "fast_sync_local_recs(): 記憶體不足\n"
+msgid "fast_sync_local_recs(): Out of memory\n"
+msgstr "fast_sync_local_recs(): 記憶體不足\n"
 
-#, fuzzy
-#~ msgid "Error reading at %s : %s %d\n"
-#~ msgstr "%s 讀入錯誤\n"
+msgid "Error reading at %s : %s %d\n"
+msgstr "讀入檔案錯誤發生於 %s: %s %d\n"
 
-#~ msgid "Warning ToDo description too long, truncating to %d\n"
-#~ msgstr "警告：待辦工作的描述太長，截斷為 %d\n"
+msgid "Warning ToDo description too long, truncating to %d\n"
+msgstr "待辦事項的描述太多, 截斷為 %d\n"
 
-#~ msgid "Serial Rate "
-#~ msgstr "序列埠速率 "
+msgid "Serial Rate "
+msgstr "序列埠速率 "
 
-#, fuzzy
-#~ msgid "Cannot open "
-#~ msgstr "無法開啟日誌檔。\n"
+msgid "Cannot open "
+msgstr "無法開啟 "
 
-#, fuzzy
-#~ msgid "_to_install file\n"
-#~ msgstr "無法開啟 jpilot_to_install 檔案\n"
+msgid "_to_install file\n"
+msgstr "_to_install 檔案\n"
 
-#~ msgid "Time:"
-#~ msgstr "時間："
+msgid "Time:"
+msgstr "時間:"
 
-#~ msgid "RTh"
-#~ msgstr "四"
+msgid "RTh"
+msgstr "RTh"
 
-#~ msgid ""
-#~ "%s %s was written by\n"
-#~ "Judd Montgomery (Copyright) 1999-2002.\n"
-#~ "judd@jpilot.org\n"
-#~ "http://jpilot.org\n"
-#~ msgstr ""
-#~ "%s %s 的作者是\n"
-#~ "Judd Montgomery (版權所有) 1999-2002.\n"
-#~ "judd@jpilot.org\n"
-#~ "http://jpilot.org\n"
+msgid ""
+"%s %s was written by\n"
+"Judd Montgomery (Copyright) 1999-2002.\n"
+"judd@jpilot.org\n"
+"http://jpilot.org\n"
+msgstr ""
+"%s %s 的作者是\n"
+"Judd Montgomery (版權所有) 1999-2002.\n"
+"judd@jpilot.org\n"
+"http://jpilot.org\n"
 
-#~ msgid "Last Syned UserID-->\"%d\"\n"
-#~ msgstr "上次同步的使用者 ID->\"%d\"\n"
+msgid "Last Syned UserID-->\"%d\"\n"
+msgstr "上次同步的使用者 ID -->\"%d\"\n"
+
