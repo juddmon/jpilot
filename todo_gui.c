@@ -902,6 +902,14 @@ void cb_hide_completed(GtkWidget *widget,
    todo_clist_redraw();
 }
 
+void cb_hide_not_due(GtkWidget *widget,
+		     gpointer   data)
+{
+   set_pref(PREF_HIDE_NOT_DUE, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
+   todo_clear_details();
+   todo_clist_redraw();
+}
+
 int todo_clear_details()
 {
    time_t ltime;
@@ -1309,6 +1317,7 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    long ivalue;
    const char *svalue;
    long hide_completed;
+   long hide_not_due;
    int show_priv;
 
    row_count=((GtkCList *)clist)->rows;
@@ -1319,6 +1328,7 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    num_entries = get_todos2(&todo_list, SORT_ASCENDING, 2, 2, 1, 1, CATEGORY_ALL);
 
    get_pref(PREF_HIDE_COMPLETED, &hide_completed, NULL);
+   get_pref(PREF_HIDE_NOT_DUE, &hide_not_due, NULL);
 
    if (todo_list==NULL) {
       if (tooltip_widget) {
@@ -1356,6 +1366,21 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       /*Hide the completed records if need be */
       if (hide_completed && temp_todo->mtodo.todo.complete) {
 	 continue;
+      }
+
+      /*Hide the not due yet records if need be */
+      if ((hide_not_due) && (!(temp_todo->mtodo.todo.indefinite))) {
+	 time_t ltime;
+	 struct tm *now, *due;
+	 int comp_now, comp_due;
+	 time(&ltime);
+	 now = localtime(&ltime);
+	 comp_now=now->tm_year*380+now->tm_mon*31+now->tm_mday-1;
+	 due = &(temp_todo->mtodo.todo.due);
+	 comp_due=due->tm_year*380+due->tm_mon*31+due->tm_mday-1;
+	 if (comp_due > comp_now) {
+	    continue;
+	 }
       }
 
       if ((show_priv != SHOW_PRIVATES) && 
@@ -1608,6 +1633,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    int i;
    GSList    *group;
    long hide_completed;
+   long hide_not_due;
    long ivalue;
    const char *svalue;
    char *titles[]={"","","","",""};
@@ -1685,6 +1711,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    
    get_pref(PREF_HIDE_COMPLETED, &hide_completed, &svalue);
+   get_pref(PREF_HIDE_NOT_DUE, &hide_not_due, &svalue);
 
 #ifdef ENABLE_MANANA
    /* Ma~nana check box */
@@ -1702,6 +1729,13 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbox), hide_completed);
    gtk_signal_connect(GTK_OBJECT(checkbox), "clicked",
 		      GTK_SIGNAL_FUNC(cb_hide_completed), NULL);
+
+   /*The show only due items check box */
+   checkbox = gtk_check_button_new_with_label(_("Hide ToDos not yet due"));
+   gtk_box_pack_start(GTK_BOX(vbox1), checkbox, FALSE, FALSE, 0);
+   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbox), hide_not_due);
+   gtk_signal_connect(GTK_OBJECT(checkbox), "clicked",
+		      GTK_SIGNAL_FUNC(cb_hide_not_due), NULL);
 
    /*Put the todo list window up */
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
