@@ -1846,8 +1846,10 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    /* Need to get all records including private ones for the tooltips calculation */
    num_entries = get_addresses2(addr_list, SORT_ASCENDING, 2, 2, 1, CATEGORY_ALL);
 
-   /* Start by clearing existing entry */
-   addr_clear_details();
+   /* Start by clearing existing entry if in main window */
+   if (main) {
+      addr_clear_details();
+   }
 
    if (addr_list==NULL) {
       /* Remove row 1 if the last item has just been deleted */

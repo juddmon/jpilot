@@ -1036,8 +1036,10 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    /* Need to get all records including private ones for the tooltips calculation */
    num_entries = get_memos2(memo_list, SORT_ASCENDING, 2, 2, 1, CATEGORY_ALL);
 
-   /* Start by clearing existing entry */
-   memo_clear_details();
+   /* Start by clearing existing entry if in main window */
+   if (main) {
+      memo_clear_details();
+   }
 
    if (memo_list==NULL) {
       /* Remove row 1 if the last item has just been deleted */
