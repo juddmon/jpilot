@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Id: Makefile.in,v 1.7 2002/10/03 15:57:08 judd Exp $
+# $Id: Makefile.in,v 1.8 2002/10/09 02:07:30 judd Exp $
 SHELL = @SHELL@
 
 srcdir = @srcdir@
@@ -175,7 +175,7 @@ all: all-am
 .SUFFIXES: .c .lo .o .obj
 $(srcdir)/Makefile.in:  Makefile.am  $(top_srcdir)/configure.in $(ACLOCAL_M4)
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  KeyRing/Makefile
+	  $(AUTOMAKE) --foreign  KeyRing/Makefile
 Makefile:  $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)
 libLTLIBRARIES_INSTALL = $(INSTALL)
