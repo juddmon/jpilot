@@ -143,6 +143,8 @@ static GtkWidget *scrolled_window;
 static GtkWidget *new_record_button;
 static GtkWidget *apply_record_button;
 static GtkWidget *add_record_button;
+static GtkWidget *delete_record_button;
+static GtkWidget *copy_record_button;
 static GtkWidget *left_menu_box;
 static GtkWidget *right_menu_box;
 
@@ -230,6 +232,8 @@ set_new_button_to(int new_state)
       /* The line selected on the clist becomes unhighlighted, so we do this */
       gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
       gtk_widget_show(apply_record_button);
+      gtk_widget_hide(copy_record_button);
+      gtk_widget_hide(delete_record_button);
       break;
     case NEW_FLAG:
       gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_SINGLE);
@@ -237,11 +241,15 @@ set_new_button_to(int new_state)
       /* The line selected on the clist becomes unhighlighted, so we do this */
       gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
       gtk_widget_show(add_record_button);
+      gtk_widget_hide(copy_record_button);
+      gtk_widget_hide(delete_record_button);
       break;
     case CLEAR_FLAG:
       gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
       clist_hack=FALSE;
       gtk_widget_show(new_record_button);
+      gtk_widget_show(copy_record_button);
+      gtk_widget_show(delete_record_button);
       break;
     default:
       return;
@@ -249,12 +257,18 @@ set_new_button_to(int new_state)
    switch (record_changed) {
     case MODIFY_FLAG:
       gtk_widget_hide(apply_record_button);
+      gtk_widget_show(copy_record_button);
+      gtk_widget_show(delete_record_button);
       break;
     case NEW_FLAG:
       gtk_widget_hide(add_record_button);
+      gtk_widget_show(copy_record_button);
+      gtk_widget_show(delete_record_button);
       break;
     case CLEAR_FLAG:
       gtk_widget_hide(new_record_button);
+      gtk_widget_hide(copy_record_button);
+      gtk_widget_hide(delete_record_button);
       break;
    }
    record_changed=new_state;
@@ -1407,16 +1421,16 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    temp_hbox = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), temp_hbox, FALSE, FALSE, 0);
 
-   /* Add record button */
-   button = gtk_button_new_with_label(_("Delete"));
-   gtk_signal_connect(GTK_OBJECT(button), "clicked",
+   /* Delete, Copy, New, etc record buttons */
+   delete_record_button = gtk_button_new_with_label(_("Delete"));
+   gtk_signal_connect(GTK_OBJECT(delete_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_delete),
 		      GINT_TO_POINTER(DELETE_FLAG));
-   gtk_box_pack_start(GTK_BOX(temp_hbox), button, TRUE, TRUE, 0);
+   gtk_box_pack_start(GTK_BOX(temp_hbox), delete_record_button, TRUE, TRUE, 0);
    
-   button = gtk_button_new_with_label(_("Copy"));
+   copy_record_button = gtk_button_new_with_label(_("Copy"));
    gtk_box_pack_start(GTK_BOX(temp_hbox), button, TRUE, TRUE, 0);
-   gtk_signal_connect(GTK_OBJECT(button), "clicked",
+   gtk_signal_connect(GTK_OBJECT(copy_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record), 
 		      GINT_TO_POINTER(COPY_FLAG));
 
