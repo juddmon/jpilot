@@ -18,7 +18,9 @@
  */
 #include "config.h"
 #include "i18n.h"
+#include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <pi-source.h>
 #include <pi-socket.h>
 #include <pi-datebook.h>
@@ -50,13 +52,13 @@ int datebook_compare(const void *v1, const void *v2)
 {
    AppointmentList **al1, **al2;
    struct Appointment *a1, *a2;
-   
+
    al1=(AppointmentList **)v1;
    al2=(AppointmentList **)v2;
-   
+
    a1=&((*al1)->ma.a);
    a2=&((*al2)->ma.a);
-   
+
    /* Jim Rees pointed out my sorting error */
    /* return ((a1->begin.tm_hour*60 + a1->begin.tm_min) > */
    return ((a1->begin.tm_hour*60 + a1->begin.tm_min) -
@@ -78,14 +80,14 @@ static int datebook_sort(AppointmentList **al)
       /* We don't have to sort less than 2 items */
       return 0;
    }
-   
+
    /* Allocate an array to be qsorted */
    sort_al = calloc(count, sizeof(AppointmentList *));
    if (!sort_al) {
       jpilot_logf(LOG_WARN, "datebook_sort(): Out of Memory\n");
       return 0;
    }
-   
+
    /* Set our array to be a list of pointers to the nodes in the linked list */
    for (i=0, temp_al=*al; temp_al; temp_al=temp_al->next, i++) {
       sort_al[i] = temp_al;
@@ -168,7 +170,7 @@ int db3_hack_date(struct Appointment *a, struct tm *today)
 int db3_is_float(struct Appointment *a, int *category)
 {
    int len, mask=0;
-   
+
    *category=0;
    if (!a->note) {
       return 0;
@@ -215,21 +217,20 @@ int pc_datebook_write(struct Appointment *a, PCRecType rt, unsigned char attrib)
       jpilot_logf(LOG_WARN, "pack_Appointment %s\n", _("error"));
       return -1;
    }
-      br.rt=rt;
+   br.rt=rt;
    br.attrib = attrib;
    br.buf = record;
    br.size = rec_len;
-   
+
    jp_pc_write("DatebookDB", &br);
    /* *unique_id = br.unique_id;*/
-   
+
    return 0;
 }
 
 void free_AppointmentList(AppointmentList **al)
 {
    AppointmentList *temp_al, *temp_al_next;
-   
    for (temp_al = *al; temp_al; temp_al=temp_al_next) {
       free_Appointment(&(temp_al->ma.a));
       temp_al_next = temp_al->next;
@@ -250,7 +251,7 @@ int datebook_copy_appointment(struct Appointment *a1,
       return -1;
    }
    memcpy(*a2, a1, sizeof(struct Appointment));
-   
+
    (*a2)->exception = (struct tm *)malloc(a1->exceptions * sizeof(struct tm));
    if (!(*a2)->exception) {
       jpilot_logf(LOG_WARN, "datebook_copy_appointment(): Out of memory 2\n");
@@ -276,7 +277,7 @@ int datebook_copy_appointment(struct Appointment *a1,
 int datebook_add_exception(struct Appointment *a, int year, int mon, int day)
 {
    struct tm *new_exception, *Ptm;
-   
+
    if (a->exceptions==0) {
       a->exception=NULL;
    }
@@ -308,7 +309,7 @@ int dateToSecs(struct tm *tm1)
    struct tm *gmt;
    struct tm tm2;
    static time_t adj = -1;
-   
+
    memcpy(&tm2, tm1, sizeof(struct tm));
    tm2.tm_isdst = 0;
    tm2.tm_hour=0;
@@ -326,7 +327,7 @@ int dateToDays(struct tm *tm1)
    struct tm *gmt;
    struct tm tm2;
    static time_t adj = -1;
-   
+
    memcpy(&tm2, tm1, sizeof(struct tm));
    tm2.tm_isdst = 0;
    tm2.tm_hour=12;
@@ -359,7 +360,7 @@ int compareTimesToSec(struct tm *tm1, struct tm *tm2)
 int compareTimesToDay(struct tm *tm1, struct tm *tm2)
 {
    unsigned int t1, t2;
-   
+
    t1 = tm1->tm_year*366+tm1->tm_yday;
    t2 = tm2->tm_year*366+tm2->tm_yday;
    if (t1 > t2 ) return 1;
@@ -369,7 +370,7 @@ int compareTimesToDay(struct tm *tm1, struct tm *tm2)
 
 unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
 {
-   long fdow;
+/*   long fdow; */
    unsigned int ret;
    unsigned int r;
    int week1, week2;
@@ -385,7 +386,7 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
    /* jpilot_logf(LOG_DEBUG, "isApptOnDate\n"); */
 
    ret = FALSE;
-   
+
    if (!date) {
       return FALSE;
    }
@@ -403,7 +404,7 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
        ) {
       days_in_month[1]++;
    }
-   
+
    /* See if the appointment starts after date */
    r = compareTimesToDay(&(a->begin), date);
    if (r == 1) {
@@ -456,13 +457,16 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
       if (!days) {
 	 days = dateToDays(date);
       }
-      get_pref(PREF_FDOW, &fdow, NULL);
+      /* get_pref(PREF_FDOW, &fdow, NULL); */
       /* Note: Palm Bug?  I think the palm does this wrong.
        * I prefer this way of doing it so that you can have appts repeating
        * from Wed->Tue, for example.  The palms way prevents this */
       /* ret = (((int)((days - begin_days - fdow)/7))%(a->repeatFrequency)==0);*/
       /* But, here is the palm way */
-      ret = (((int)((days-begin_days+a->begin.tm_wday-fdow)/7))
+      /* ret = (((int)((days-begin_days+a->begin.tm_wday-fdow)/7))
+	     %(a->repeatFrequency)==0); */
+      /* The above seemed to be wrong for fdow=1 and dow=0 appointment */
+      ret = (((int)((days-begin_days+a->begin.tm_wday)/7))
 	     %(a->repeatFrequency)==0);
       break;
     case repeatMonthlyByDay:
@@ -553,7 +557,7 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
 	 }
       }
    }
-   
+
    return ret;
 }
 
@@ -601,7 +605,7 @@ int weed_datebook_list(AppointmentList **al, int mon, int year, int *mask)
    tm_fdom.tm_mday=1;
    tm_fdom.tm_mon=mon;
    tm_fdom.tm_year=year;
-   
+
    get_month_info(mon, 1, year, &fdow, &ndim);
 
    memcpy(&tm_ldom, &tm_fdom, sizeof(tm_fdom));
@@ -768,7 +772,7 @@ int appointment_on_day_list(int mon, int year, int *mask)
       }
    }
    free_AppointmentList(&al);
-   
+
    return 0;
 }
 
@@ -805,7 +809,7 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
    memcpy(&today, Ptoday, sizeof(struct tm));
    get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
 #endif
-  
+
    jpilot_logf(LOG_DEBUG, "get_days_appointments()\n");
 
    if (modified==2) {

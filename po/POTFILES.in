@@ -1,9 +1,12 @@
 address.c
 address_gui.c
+alarms.c
+dat.c
 datebook.c
 datebook_gui.c
+export_gui.c
+import_gui.c
 install_gui.c
-japanese.c
 jpilot.c
 libplugin.c
 log.c
@@ -16,9 +19,13 @@ prefs.c
 prefs_gui.c
 print.c
 print_gui.c
+print_headers.c
+restore_gui.c
 search_gui.c
 sync.c
 todo.c
 todo_gui.c
 utils.c
 weekview_gui.c
+Expense/expense.c
+KeyRing/keyring.c

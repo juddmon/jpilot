@@ -1,8 +1,9 @@
-
-------------------------------------------------------------
+==============================================================================
+Last updated: 30 Jan 2002 by jbm
+==============================================================================
 
 J-Pilot is a palm pilot desktop for Linux/Unix written by:
-Judd Montgomery, judd@engineer.com
+Judd Montgomery, judd@jpilot.org
 It is very useable, but still has many planned updates to make it better.
 
 If you like it feel to send me donations ;)
@@ -14,8 +15,37 @@ Judd Montgomery
 P.O. Box 665
 Sunbury, OH 43074
 
-------------------------------------------------------------
 
+==============================================================================
+Information about being a translator can be found at:
+http://www.iro.umontreal.ca/contrib/po/HTML/
+==============================================================================
+
+
+==============================================================================
+USB and Palm OS 4.x devices
+
+To use USB devices you must have the appropriate usb modules loaded or
+compiled into the kernel.  These are usually either uhci, or ohci, uhci
+being the more common.  The visor driver is also needed.
+
+I would recommend a fairly new kernel >= 2.4.17 if you are using a USB palm
+other than a visor.
+
+To Sync USB devices other than visors you will need to download pilot-link
+0.10.0 or greater.  As of this release you can only get this from the
+pilot-link CVS website.  http://www.pilot-link.org.
+
+
+If you are using Palm OS > 4.0 and see this message:
+"The desktop HotSync software does not support the password on this handheld.
+You must upgrade your desktop software or remove the password from the
+handheld."
+
+You will currently have to remove the password from the handheld.  This will
+be supported later.  Blame the stupid US laws (DMCA) on holding this up.
+
+==============================================================================
 SERIAL PORT SETUP:
 
 When syncing, jpilot uses the port and speed settings out of the preferences
@@ -33,21 +63,33 @@ You must also give non-root users permisions to access the serial port.
 The command to do this is (as root) "chmod 666 /dev/ttyS0" for the first
 serial port, ttyS1, for the second, and so on.
 
-COLORS:
+USB devices usually use /dev/ttyUSB0, or /dev/ttyS1
+
+If you are using the new devfs serial ports will be:
+ first  serial port is /dev/tts/0
+ second serial port is /dev/tts/1
+
+ first  USB port is /dev/usb/tts/0
+ second USB port is /dev/usb/tts/1
+==============================================================================
+
+==============================================================================
+COLOR FILES:
 
 Make install will copy a few default color files to /usr/local/share/jpilot/
 (unless you told configure to use another prefix).
 These will be selectable from the preferences menu.  Also jpilot will look
-in $HOME/.jpilot/ for colors files.  They must start with "jpilotrc".
+in $JPILOT_HOME/.jpilot/ for colors files.  They must start with "jpilotrc".
 If you want to add new ones, or modify the current ones, just put the files
 in one of these directories and they will show up in the preferences menu.
 
 If you create your own cool jpilotrc files feel free to send them
 back to me and if I like it, I'll include it in the release.
 
-HOME, JPILOT_HOME:
+==============================================================================
+ENVIRONMENT VARIABLES
 
-jpilot uses the JPILOT_HOME environment variable to make it easy to allow
+J-Pilot uses the JPILOT_HOME environment variable to make it easy to allow
 multiple pilots to be synced under the same unix user.  Just set JPILOT_HOME
 to the directory you want jpilot to use.  For example, I have 2 palm pilots.
 I can sync the one I use all the time into /home/judd.  The other one I can
@@ -61,11 +103,15 @@ This is also handy for syncing xcopilot into its own directory.
 You don't have to set JPILOT_HOME.  If its not set then jpilot will use the
 HOME env variable.
 
+Future version of J-Pilot will probably sync multiple palms into a
+subdirectory under the JPILOT_HOME/.jpilot directory.
+==============================================================================
 
+==============================================================================
 OOPS, REVERTING:
 
 You can always make the databases revert back to the last time that the
-pilot was synced.  All you have to do is "rm ~/.jpilot/*.pc".
+pilot was synced.  All you have to do is "rm ~/.jpilot/*.pc3".
 Deleted records will come back, etc.  Nothing is permanent until the
 sync/backup.  You can do this if you make a mistake, or just to play around 
 with jpilot and then delete the changed records without syncing them.
@@ -73,9 +119,12 @@ with jpilot and then delete the changed records without syncing them.
 Also, from the preferences menu, you can choose to show deleted records
 and then click on the deleted record and use "Add" to get a copy of it back.
 
+==============================================================================
 BACKUP and SYNC:
 
-The Sync button will sync the 4 applications with the palm pilot.
+The Sync button will sync the 4 applications with the palm pilot and any
+plugins that are installed.
+
 The Backup button will backup every program and database from the palm
 pilot, except for AvantGo files (these are usually big and change daily).
 
@@ -90,11 +139,3 @@ I don't know why, but the scrollbars flicker when the clock updates.  On some
 systems it is bad, others not at all.  To get rid of this, just go into
 preferences and choose a time without seconds.  Then the clock will only
 update every minute.
-
-USELESS STATISTIC:
-
-I wrote about 600 lines of this code on my Palm Pilot using memo while I was
-away from my computer.
-I don't recomend this ;)
-
-

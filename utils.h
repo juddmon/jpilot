@@ -36,7 +36,7 @@
 
 #define PRINT_FILE_LINE printf("%s line %d\n", __FILE__, __LINE__)
 
-#ifdef WITH_SYMPHONET
+#ifdef WITH_PROMETHEON
 #define PN "CoPilot"
 #else
 #define PN "J-Pilot"
@@ -290,7 +290,7 @@ void import_gui(GtkWidget *main_window, GtkWidget *main_pane,
 		int (*import_callback)(GtkWidget *parent_window,
 				       char *file_path, int type));
 int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
-		      struct Memo *memo, struct CategoryAppInfo *cai,
+		      char *text, struct CategoryAppInfo *cai,
 		      char *old_cat_name,
 		      int priv, int suggested_cat_num, int *new_cat_num);
 
@@ -303,6 +303,9 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
 
 /* Returns a dat type, or 0 */
 int dat_check_if_dat_file(FILE *in);
+int dat_get_appointments(FILE *in, AppointmentList **alist, struct CategoryAppInfo *ai);
+int dat_get_addresses(FILE *in, AddressList **addrlist, struct CategoryAppInfo *ai);
+int dat_get_todos(FILE *in, ToDoList **todolist, struct CategoryAppInfo *ai);
 int dat_get_memos(FILE *in, MemoList **memolist, struct CategoryAppInfo *ai);
 
 /*weekview_gui.c */
@@ -379,7 +382,12 @@ void monthview_gui(struct tm *date);
 /* weekview_gui */
 void weekview_gui(struct tm *date_in);
 
-#endif
+int make_category_menu(GtkWidget **category_menu,
+		       GtkWidget **cat_menu_item,
+		       struct sorted_cats *sort_l,
+		       void (*selection_callback)
+		       (GtkWidget *item, int selection),
+		       int add_an_all_item);
 
 void multibyte_safe_strncpy(char *dst, char *src, size_t max_len);
 char *multibyte_safe_memccpy(char *dst, const char *src, int c, size_t len);
@@ -398,3 +406,7 @@ char *multibyte_safe_memccpy(char *dst, const char *src, int c, size_t len);
         if (char_set == CHAR_SET_1251) win1251_to_koi8(buf, max_len);\
         if (char_set == CHAR_SET_1251_B) koi8_to_win1251(buf, max_len);}
 
+void jp_charset_p2j(unsigned char *buf, int max_len);
+void jp_charset_j2p(unsigned char *buf, int max_len);
+
+#endif

@@ -62,10 +62,16 @@ static void
 
 static void cb_week_print(GtkWidget *widget, gpointer data)
 {
+   long paper_size;
+
    jpilot_logf(LOG_DEBUG, "cb_week_print called\n");
-   if (print_gui(window, DATEBOOK, 2) == DIALOG_SAID_PRINT) {
-      /*FIXME   print_weeks_appts(&glob_week_date, PAPER_A4); */
-      print_weeks_appts(&glob_week_date, PAPER_Letter);
+   if (print_gui(window, DATEBOOK, 2, 0x02) == DIALOG_SAID_PRINT) {
+      get_pref(PREF_PAPER_SIZE, &paper_size, NULL);
+      if (paper_size==1) {
+	 print_weeks_appts(&glob_week_date, PAPER_A4);
+      } else {
+	 print_weeks_appts(&glob_week_date, PAPER_Letter);
+      }
    }
 }
 
@@ -74,7 +80,7 @@ static void cb_week_print(GtkWidget *widget, gpointer data)
 void freeze_weeks_appts()
 {
    int i;
-   
+
    for (i=0; i<8; i++) {
       gtk_text_freeze(GTK_TEXT(glob_week_texts[i]));
    }
@@ -83,7 +89,7 @@ void freeze_weeks_appts()
 void thaw_weeks_appts()
 {
    int i;
-   
+
    for (i=0; i<8; i++) {
       gtk_text_thaw(GTK_TEXT(glob_week_texts[i]));
    }
@@ -108,7 +114,7 @@ cb_week_move(GtkWidget *widget,
 int clear_weeks_appts(GtkWidget **day_texts)
 {
    int i;
-   
+
    for (i=0; i<8; i++) {
       gtk_text_set_point(GTK_TEXT(day_texts[i]), 0);
       gtk_text_forward_delete(GTK_TEXT(day_texts[i]),
@@ -183,7 +189,7 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
    if (svalue==NULL) {
       svalue = default_date;
    }
-   
+
    for (i=0; i<8; i++, add_days_to_date(&date, 1)) {
       strftime(short_date, 30, svalue, &date);
       g_snprintf(str, 80, "%s %s\n", _(days[(i + fdow)%7]), short_date);
@@ -234,7 +240,7 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
       }
    }
    free_AppointmentList(&a_list);
-   
+
    return 0;
 }
 
@@ -250,7 +256,7 @@ void weekview_gui(struct tm *date_in)
    long fdow;
    int i;
    char title[200];
-   
+
    if (window) {
       return;
    }

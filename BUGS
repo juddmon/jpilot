@@ -3,14 +3,11 @@ If you wish to report a bug, and the bug is reproduceable it may be helpful to
 me if you run jpilot -d to run in debug mode, reproduce the error and then
 send me the log file from ~/.jpilot/jpilot.log
 
-----------------------------------------------------------------------
-
-Alarms may not work 100% right.  They should be 99% right.  Report any 
-bugs, and don't blame me if you miss your own wedding, or graduation ;)
+==============================================================================
 
 These are some of the bugs that I know about:
 
-*Priority High:
+* Priority High:
 
  - Categories are one-way sync from the palm to the desktop.  It is possible
    to do things like add a record into a deleted category on the palm.
@@ -19,16 +16,19 @@ These are some of the bugs that I know about:
  - Small memory leaks when switching between apps.  I probably am not doing
    something right when destroying widgets.  I don't know what it is though.
  
-*Priority Medium:
+* Priority Medium:
 
-*Priority Low:
+* Priority Low:
 
-Kyocera QCP 6035 phone/palm combos don't close the address database, so it
-can't be sync'ed.  It is a Kyocera problem, and there is no known solution.
+ - Kyocera QCP 6035 phone/palm combos don't close the address database, so it
+   can't be sync'ed.  It is a Kyocera problem, and there is no known solution.
 
-*Priority Who Cares?:
+ - Setting the time on Palm OS 3.3 in a conduit will crash the handheld.
+   SyncTime will detect OS 3.3 and do nothing.  The fix is to upgrade Palm OS.
 
-*Quirks (not really bugs):
+* Priority Who Cares?:
+
+* Quirks (not really bugs):
 
  - jpilot lets you enter in blank todo's, etc.  The palm pilot will not allow
    this.
@@ -50,7 +50,7 @@ can't be sync'ed.  It is a Kyocera problem, and there is no known solution.
    you search for it, it shows up.  When you click on it in find, a Fatal
    Exception occurs and the Pilot reboots.  This is a PalmOS bug if you ask me.
 
- - Empty appointments crash palmos 2.0 (I don't allow them anymore)
+ - Empty appointments crash Palm OS 2.0 (I don't allow them anymore)
 
 Syncing of categories:
 
@@ -59,7 +59,7 @@ all the documentation I could find on how to sync categories and I couldn't
 see how it could possibly work.  I kept thinking I was not understanding
 something.
 
-So finally, I booted into WindowsNT, after not doing so for many, many
+So finally, I booted into Windows NT, after not doing so for many, many
 months.  After 2 BSODs, and some hacking, I got it to boot (no joke).
 I ran some experiments to see how 3com handles syncing of categories.
 

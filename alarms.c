@@ -68,7 +68,7 @@ struct jp_alarms {
    time_t alarm_advance;
    struct jp_alarms *next;
 };
- 
+
 struct alarm_dialog_data {
    unsigned int unique_id;
    time_t remind_time;
@@ -77,7 +77,7 @@ struct alarm_dialog_data {
    GtkWidget *radio2;
    int button_hit;
 };
- 
+
 static struct jp_alarms *alarm_list=NULL;
 static struct jp_alarms *Plast_alarm_list=NULL;
 static struct jp_alarms *next_alarm=NULL;
@@ -190,7 +190,7 @@ int dialog_alarm(char *title, char *frame_text,
    gtk_signal_connect(GTK_OBJECT(alarm_dialog), "destroy",
                       GTK_SIGNAL_FUNC(cb_destroy_dialog), alarm_dialog);
 
-   
+
    frame = gtk_frame_new(frame_text);
    gtk_frame_set_label_align(GTK_FRAME(frame), 0.5, 0.0);
    vbox1 = gtk_vbox_new(FALSE, 2);
@@ -199,7 +199,7 @@ int dialog_alarm(char *title, char *frame_text,
    gtk_container_set_border_width(GTK_CONTAINER(frame), 5);
    gtk_container_set_border_width(GTK_CONTAINER(vbox1), 5);
    gtk_container_set_border_width(GTK_CONTAINER(hbox1), 5);
-   
+
    gtk_container_add(GTK_CONTAINER(alarm_dialog), frame);
    gtk_container_add(GTK_CONTAINER(frame), vbox1);
 
@@ -275,7 +275,7 @@ int dialog_alarm(char *title, char *frame_text,
    gtk_box_pack_start(GTK_BOX(hbox1), vbox_temp, TRUE, TRUE, 1);
    gtk_box_pack_start(GTK_BOX(vbox_temp), radio1, TRUE, TRUE, 1);
    gtk_box_pack_start(GTK_BOX(vbox_temp), radio2, TRUE, TRUE, 1);
-   
+
    gtk_widget_show_all(alarm_dialog);
 
    return 0;
@@ -327,7 +327,7 @@ void alarms_add_to_list(unsigned int unique_id,
 			time_t alarm_advance)
 {
    struct jp_alarms *temp_alarm;
-   
+
 #ifdef ALARMS_DEBUG
    printf("alarms_add_to_list()\n");
 #endif
@@ -388,7 +388,7 @@ void alarms_remove_from_to_list(unsigned int unique_id)
 void free_alarms_list(int mask)
 {
    struct jp_alarms *ta, *ta_next;
-   
+
    if (mask&PREV_ALARM_MASK) {
       for (ta=alarm_list; ta; ta=ta_next) {
 	 ta_next=ta->next;
@@ -413,12 +413,12 @@ void alarms_write_file(void)
    int fail, n;
    time_t ltime;
    struct tm *now;
-   
+
    jpilot_logf(LOG_DEBUG, "alarms_write_file()\n");
 
    time(&ltime);
    now = localtime(&ltime);
-   
+
    out=jp_open_home_file("jpilot.alarms.tmp", "w");
    if (!out) {
       jpilot_logf(LOG_WARN, "Could not open jpilot.alarms.tmp file\n");
@@ -448,7 +448,7 @@ void alarms_write_file(void)
    if (n<1) fail=1;
 
    fclose(out);
-   
+
    if (fail) {
       unlink_file("jpilot.alarms.tmp");
    } else {
@@ -463,7 +463,7 @@ void make_command_safe(char *command)
 {
    int i, len;
    char c;
-   
+
    len = strlen(command);
    for (i=0; i<len; i++) {
       c=command[i];
@@ -500,7 +500,7 @@ int alarms_do_one(struct Appointment *a,
    const char *pref_command;
    char c1, c2;
    int i, len;
-   
+
    alarms_write_file();
 
    switch (type) {
@@ -541,8 +541,9 @@ int alarms_do_one(struct Appointment *a,
    get_pref(PREF_ALARM_COMMAND, &ivalue, &pref_command);
    get_pref(PREF_DO_ALARM_COMMAND, &do_command, NULL);
 #ifdef ALARMS_DEBUG
-   printf("pref_command = %s\n", pref_command);
-#endif   
+   printf("pref_command = [%s]\n", pref_command);
+#endif
+   bzero(command, 1024);
    if (do_command) {
       command[0]='\0';
       for (i=0; i<MAX_PREF_VALUE-1; i++) {
@@ -550,33 +551,38 @@ int alarms_do_one(struct Appointment *a,
 	 c2 = pref_command[i+1];
 	 len = strlen(command);
 	 /* expand '%t' */
-	 if ((c1=='%') && (c2=='t')) {
-	    i++;
-	    strncat(command, time1_str, 1022-len);
-	    continue;
-	 }
-	 /* expand '%d' */
-	 if ((c1=='%') && (c2=='d')) {
-	    i++;
-	    strncat(command, date_str, 1022-len);
-	    continue;
-	 }
+	 if (c1=='%') {
+	    if (c2=='t') {
+	       i++;
+	       strncat(command, time1_str, 1022-len);
+	       continue;
+	    }
+	    /* expand '%d' */
+	    if (c2=='d') {
+	       i++;
+	       strncat(command, date_str, 1022-len);
+	       continue;
+	    }
 #ifdef ALARM_SHELL_DESC_NOTE
-	 /* expand '%D' */
-	 if ((c1=='%') && (c2=='D')) {
-	    i++;
-	    strncat(command, desc_str, 1022-len);
-	    continue;
-	 }
-	 if ((c1=='%') && (c2=='N')) {
-	    i++;
-	    strncat(command, note_str, 1022-len);
-	    continue;
-	 }
+	    /* expand '%D' */
+	    if (c2=='D') {
+	       i++;
+	       strncat(command, desc_str, 1022-len);
+	       continue;
+	    }
+	    if (c2=='N') {
+	       i++;
+	       strncat(command, note_str, 1022-len);
+	       continue;
+	    }
 #endif
+	 }
 	 if (len<1020) {
 	    command[len++]=c1;
-	    command[len]='\0';;
+	    command[len]='\0';
+	 }
+	 if (c1=='\0') {
+	    break;
 	 }
       }
       command[1022]='\0';
@@ -612,7 +618,7 @@ gint cb_timer_alarms(gpointer data)
    time_t t_alarm_time;
    struct tm *Ptm;
    struct tm copy_tm;
-   
+
    a_list=NULL;
 
    if (!first) {
@@ -735,7 +741,7 @@ static int find_prev_next(struct Appointment *a,
 #endif
    *prev_found=*next_found=0;
    forward=backward=1;
-   
+
    t1=mktime(date1);
    t2=mktime(date2);
 
@@ -1077,7 +1083,7 @@ static int find_prev_next(struct Appointment *a,
    return 0;
 }
 
-	     
+
 /*
  * Find the next appointment alarm
  *  if soonest_only then return the next alarm, else return all alarms
@@ -1154,13 +1160,13 @@ int alarms_find_next(struct tm *date1_in, struct tm *date2_in, int soonest_only)
 	printf("^date1=%s\n", str);
      }
 #endif
-   
+
    if (!soonest_only) {
       free_alarms_list(PREV_ALARM_MASK | NEXT_ALARM_MASK);
    } else {
       free_alarms_list(NEXT_ALARM_MASK);
    }
-   
+
    a_list=NULL;
    get_days_appointments2(&a_list, NULL, 0, 0, 1);
 
@@ -1230,10 +1236,10 @@ int alarms_find_next(struct tm *date1_in, struct tm *date2_in, int soonest_only)
 #ifdef ALARMS_DEBUG      
       printf("adv=%ld\n", adv);
 #endif
-      
+
       t_prev=t_future=t_interval=0;
       prev_found=next_found=0;
-      
+
       find_prev_next(&(temp_al->ma.a),
 		     adv,
 		     &date1,
@@ -1253,7 +1259,7 @@ int alarms_find_next(struct tm *date1_in, struct tm *date2_in, int soonest_only)
        */
 
       if (prev_found) {
-	 if (t_prev < t1) {
+	 if (t_prev - adv < t1) {
 #ifdef ALARMS_DEBUG      
 	    printf("failed prev is before t1\n");
 #endif
@@ -1343,11 +1349,11 @@ int alarms_init(unsigned char skip_past_alarms,
    int year, mon, day, hour, min, n;
 
    jpilot_logf(LOG_DEBUG, "alarms_init()\n");
-   
+
    alarm_list=NULL;
    Plast_alarm_list=NULL;
    next_alarm=NULL;
-   
+
    total_alarm_windows = 0;
    glob_skip_all_alarms = skip_all_alarms;
 
@@ -1365,7 +1371,7 @@ int alarms_init(unsigned char skip_past_alarms,
       jpilot_logf(LOG_WARN, "Could not open jpilot.alarms file\n");
       return -1;
    }
-   
+
    while (!feof(in)) {
       line[0]='\0';
       fgets(line, 255, in);
@@ -1409,7 +1415,7 @@ int alarms_init(unsigned char skip_past_alarms,
    tm1.tm_isdst=-1;
 
    mktime(&tm1);
-   
+
    alarms_find_next(&tm1, &now, FALSE);
 
    gtk_timeout_add(ALARM_INTERVAL*1000, cb_timer_alarms, NULL);

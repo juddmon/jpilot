@@ -781,7 +781,7 @@ void print_todo_header(FILE *f)
         "                grestore\n"
         "        } if\n"
         "} def\n";
-    
+
     fputs(todo_header, f);
 }
 

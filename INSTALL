@@ -1,81 +1,101 @@
+==============================================================================
+Last updated: 30 Jan 2002 by jbm
+==============================================================================
 
-If you have unsynced changes sync before installing a newer version of
-J-Pilot.
 
+=== Web ======================================================================
+For the latest news, versions, documents, plugins, etc.
+http://jpilot.org
+==============================================================================
+
+
+=== Documents ================================================================
 Be sure to read the docs in the doc directory, or if installed from the RPM
-in /usr/doc/jpilot-0.97/.
+in /usr/doc/jpilot-0.99.2/.
+==============================================================================
 
-To compile J-Pilot you need to have GTK+1.2 or better.
+
+=== Upgrading ================================================================
+Before upgrading versions of J-Pilot always sync your palm and back up your
+data just to be on the safe side.
+==============================================================================
+
+
+=== Requirements =============================================================
+To compile J-Pilot you need to have GTK+ 1.2 or higher installed.
 You can find out what version you have by running "gtk-config --version".
 GTK+ requires glib.  The glib version probably should match the gtk version.
 You can also do a "glib-config --version".
 You can get these at http://www.gtk.org
 
 Pilot link must be installed and working.
-ftp://ryeham.ee.ryerson.ca/pub/PalmOS/
+http://www.pilot-link.org
 RedHat users must also have the pilot-link-dev rpm installed for the header
  files so that jpilot can compile.  You don't need these if you install the
-RPM.
+jpilot RPM.
 
 If you want i18n support you should have gettext installed.  Preferably GNU
 gettext.  If you don't have or want it use "configure --disable-nls"
+==============================================================================
 
+
+=== Compiling ================================================================
 To compile and install do the following:
-./configure
+./configure --prefix=/usr  (configure --help will list all the options.)
 make
 make install
 jpilot
 
-For Japanese support, use ./configure --with-japanese, ./configure --help
-will list all the options.
-
-See below for compiling plugins.
-
 make uninstall is an option also.
-
-I have included a spec file so if you want to create your own RPM all you
-have to do is "rpm -tb jpilot-0.99.tar.gz"
-
-
-JPilot was written in such a way that it should be very safe to sync.
-There is always the possibility of something going wrong though.  As with
-anything else, backup your data if you cannot afford to lose it.  Just make
-sure your backup software destroy it first ;)
+To make an rpm just do rpm -tb jpilot-{version}.tar.gz
+==============================================================================
 
 
-I have added a couple of example plugins Expense, and SyncTime.  To use them
-change to the directory (Expense, SyncTime, etc.) and do
-./configure
-make
-make install (installs the plugin system wide)
-If you want to install the plugin for just 1 user you can copy the shared
-library to ~/.jpilot/plugins/
+=== Plugins =================================================================
+I have added an example plugin Expense to match the palm Expense application.
+I have included 2 other plugins:
+SyncTime - This sets the time on the pilot from the desktop clock.
+KeyRing - KeyRing is a GNU licensed palm application to keep encrypted
+ passwords and other data.
 
+configure --disable-plugins can be used if plugins aren't desired.
+==============================================================================
+
+
+=== Irix =====================================================================
 Irix uses different lib directories for shared libraries.
 Plugins have to be installed in different directories for this reason.
 Before compiling you can use:
 for ELF 64-bit: "export ABILIB=lib64"
 for ELF N32:    "export ABILIB=lib32"
 for ELF 32-bit: "export ABILIB=lib"
+==============================================================================
 
---- Error Messages ---
 
+=== Compile Errors ===========================================================
 Message:
-bash$ jpilot
-jpilot: error in loading shared libraries: libpisock.so.3: cannot open 
-shared object file: No such file or directory
-bash$
+  bash$ jpilot
+  jpilot: error in loading shared libraries: libpisock.so.4: cannot open
+  shared object file: No such file or directory
+  bash$
 
 Solution:
-libpisock.so is the pilot-link shared library.
-J-Pilot uses this library to talk over the serial port to the palm.
-You can find it by doing a "locate libpisock".
-Shared libraries are loaded at runtime, not compile time.
-This error is caused by ld.so not being able to find libpisock.so
-You can fix this by either adding the path to libpisock.so to the environment
-variable LD_LIBRARY_PATH.  Do this by
-LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/libpath in bash, some other shells have
-different syntax.  This can be put in your .bashrc, or profile, etc.
-The other way to fix it is to add the path to libpisock in /etc/ld.so.conf
-and then run ldconfig.  You need root to do this.
+  libpisock.so is the pilot-link shared library.
+  J-Pilot uses this library to talk over the serial port to the palm.
+  You can find it by doing a "locate libpisock".
+  Shared libraries are loaded at runtime, not compile time.
+  This error is caused by ld.so not being able to find libpisock.so
+  You can fix this by either adding the path to libpisock.so to the environment
+  variable LD_LIBRARY_PATH.  Do this by
+  LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/libpath in bash, some other shells have
+  different syntax.  This can be put in your .bashrc, or profile, etc.
+  The other way to fix it is to add the path to libpisock in /etc/ld.so.conf
+  and then run ldconfig.  You need root to do this.
+==============================================================================
 
+
+=== Disclaimer ===============================================================
+J-Pilot was written in such a way that it should be very safe to sync.
+There is always the possibility of something going wrong though.  As with
+anything else, backup your data if you cannot afford to lose it.
+==============================================================================

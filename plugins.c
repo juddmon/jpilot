@@ -77,7 +77,7 @@ int load_plugins_sub1(DIR *dir, char *path, int *number, unsigned char user_only
    struct dirent *dirent;
    char full_name[256];
    struct plugin_s temp_plugin, *new_plugin;
-   
+
    count = 0;
    for (i=0; (dirent = readdir(dir)); i++) {
       if (i>1000) {
@@ -121,18 +121,18 @@ int load_plugins_sub1(DIR *dir, char *path, int *number, unsigned char user_only
    }
    return count;
 }
-      
+
 int load_plugins()
 {
    DIR *dir;
    char path[256];
    int count, number;
    GList *temp_list;
-   
+
    count = 0;
    number = DATEBOOK + 100; /* I just made up this number */
    plugins = NULL;
-   
+
    /* ABILIB is for Irix, should normally be "lib" */
    g_snprintf(path, 250, "%s/%s/%s/%s/", BASE_DIR, ABILIB, EPN, "plugins");
    jpilot_logf(LOG_DEBUG, "opening dir %s\n", path);
@@ -142,7 +142,7 @@ int load_plugins()
       count += load_plugins_sub1(dir, path, &number, 0);
       closedir(dir);
    }
-   
+
    get_home_file_name("plugins/", path, 240);
    cleanup_path(path);
    jpilot_logf(LOG_DEBUG, "opening dir %s\n", path);
@@ -155,7 +155,7 @@ int load_plugins()
    for (temp_list = plugins; temp_list; temp_list = temp_list->prev) {
       plugins = temp_list;
    }
-         
+
    get_plugin_sync_bits();
 
    return count;
@@ -223,7 +223,7 @@ static int get_plugin_info(struct plugin_s *p, char *path)
    char db_name[52];
    int version, major_version, minor_version;
    void (*plugin_versionM)(int *major_version, int *minor_version);
-   
+
    p->full_path = NULL;
    p->handle = NULL;
    p->sync_on = 1;
@@ -245,8 +245,8 @@ static int get_plugin_info(struct plugin_s *p, char *path)
    p->plugin_sync = NULL;
    p->plugin_post_sync = NULL;
    p->plugin_exit_cleanup = NULL;
-   
-   h = dlopen(path, RTLD_NOW);
+
+   h = dlopen(path, RTLD_LAZY);
    if (!h) {
       jpilot_logf(LOG_WARN, "open failed on plugin [%s]\n error [%s]\n", path,
 		  dlerror());
@@ -254,7 +254,7 @@ static int get_plugin_info(struct plugin_s *p, char *path)
    }
    jpilot_logf(LOG_DEBUG, "opened plugin [%s]\n", path);
    p->handle=h;
-   
+
    p->full_path = strdup(path);
 
    /* plugin_versionM */
@@ -304,8 +304,8 @@ static int get_plugin_info(struct plugin_s *p, char *path)
    } else {
       p->name = NULL;
    }
-   
-   
+
+
    /* plugin_get_menu_name */
    jpilot_logf(LOG_DEBUG, "getting plugin_get_menu_name\n");
    p->plugin_get_menu_name = dlsym(h, "plugin_get_menu_name");
@@ -316,7 +316,7 @@ static int get_plugin_info(struct plugin_s *p, char *path)
    } else {
       p->menu_name = NULL;
    }
-   
+
 
    /* plugin_get_help_name */
    jpilot_logf(LOG_DEBUG, "getting plugin_get_help_name\n");
@@ -339,10 +339,10 @@ static int get_plugin_info(struct plugin_s *p, char *path)
    } else {
       db_name[0]='\0';
    }
-  
+
    p->db_name = strdup(db_name);
 
-   
+
    /* plugin_gui */
    p->plugin_gui = dlsym(h, "plugin_gui");
 
@@ -392,7 +392,7 @@ void free_plugin_list(GList **plugin_list)
 {
    GList *temp_list;
    struct plugin_s *p;
-   
+
    /* Go to first entry in the list */
    for (temp_list = *plugin_list; temp_list; temp_list = temp_list->prev) {
       *plugin_list = temp_list;

@@ -26,6 +26,7 @@
 #include <gtk/gtk.h>
 
 #include "libplugin.h"
+#include "../i18n.h"
 
 #include <pi-expense.h>
 #include <pi-dlp.h>
@@ -261,7 +262,7 @@ static void connect_changed_signals(int con_or_dis)
       gtk_signal_connect(GTK_OBJECT(entry_city), "changed",
 			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
    }
-   
+
    /* DISCONNECT */
    if ((con_or_dis==DISCONNECT_SIGNALS) && (connected)) {
       jp_logf(LOG_DEBUG, "Expense: disconnect_changed_signals\n");
@@ -323,7 +324,7 @@ int plugin_get_name(char *name, int len)
  */
 int plugin_get_menu_name(char *name, int len)
 {
-   strncpy(name, "Expense", len);
+   strncpy(name, _("Expense"), len);
    return 0;
 }
 
@@ -334,7 +335,7 @@ int plugin_get_menu_name(char *name, int len)
  */
 int plugin_get_help_name(char *name, int len)
 {
-   strncpy(name, "About Expense", len);
+   strncpy(name, _("About Expense"), len);
    return 0;
 }
 
@@ -355,61 +356,61 @@ static char *get_entry_type(enum ExpenseType type)
 {
    switch(type) {
     case etAirfare:
-      return "Airfare";
+      return _("Airfare");
     case etBreakfast:
-      return "Breakfast";
+      return _("Breakfast");
     case etBus:
-      return "Bus";
+      return _("Bus");
     case etBusinessMeals:
-      return "BusinessMeals";
+      return _("BusinessMeals");
     case etCarRental:
-      return "CarRental";
+      return _("CarRental");
     case etDinner:
-      return "Dinner";
+      return _("Dinner");
     case etEntertainment:
-      return "Entertainment";
+      return _("Entertainment");
     case etFax:
-      return "Fax";
+      return _("Fax");
     case etGas:
-      return "Gas";
+      return _("Gas");
     case etGifts:
-      return "Gifts";
+      return _("Gifts");
     case etHotel:
-      return "Hotel";
+      return _("Hotel");
     case etIncidentals:
-      return "Incidentals";
+      return _("Incidentals");
     case etLaundry:
-      return "Laundry";
+      return _("Laundry");
     case etLimo:
-      return "Limo";
+      return _("Limo");
     case etLodging:
-      return "Lodging";
+      return _("Lodging");
     case etLunch:
-      return "Lunch";
+      return _("Lunch");
     case etMileage:
-      return "Mileage";
+      return _("Mileage");
     case etOther:
-      return "Other";
+      return _("Other");
     case etParking:
-      return "Parking";
+      return _("Parking");
     case etPostage:
-      return "Postage";
+      return _("Postage");
     case etSnack:
-      return "Snack";
+      return _("Snack");
     case etSubway:
-      return "Subway";
+      return _("Subway");
     case etSupplies:
-      return "Supplies";
+      return _("Supplies");
     case etTaxi:
-      return "Taxi";
+      return _("Taxi");
     case etTelephone:
-      return "Telephone";
+      return _("Telephone");
     case etTips:
-      return "Tips";
+      return _("Tips");
     case etTolls:
-      return "Tolls";
+      return _("Tolls");
     case etTrain:
-      return "Train";
+      return _("Train");
     default:
       return NULL;
    }
@@ -423,21 +424,21 @@ static char *get_pay_type(enum ExpensePayment type)
 {
    switch (type) {
     case epAmEx:
-      return "AmEx";
+      return _("AmEx");
     case epCash:
-      return "Cash";
+      return _("Cash");
     case epCheck:
-      return "Check";
+      return _("Check");
     case epCreditCard:
-      return "CreditCard";
+      return _("CreditCard");
     case epMasterCard:
-      return "MasterCard";
+      return _("MasterCard");
     case epPrepaid:
-      return "Prepaid";
+      return _("Prepaid");
     case epVISA:
-      return "VISA";
+      return _("VISA");
     case epUnfiled:
-      return "Unfiled";
+      return _("Unfiled");
     default:
       return NULL;
    }
@@ -809,7 +810,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    
    jp_logf(LOG_DEBUG, "Expense: cb_clist_selection\n");
 
-   if (!event) return;
+   if ((!event) && (clist_hack)) return;
 
    if (row<0) {
       return;
@@ -838,9 +839,9 @@ static void cb_clist_selection(GtkWidget      *clist,
       return;
    }
 
+   set_new_button_to(CLEAR_FLAG);
    /* Need to disconnect these signals first */
    connect_changed_signals(DISCONNECT_SIGNALS);
-   set_new_button_to(NEW_FLAG);
    
    category = mex->attrib & 0x0F;
    item_num=0;
@@ -971,7 +972,7 @@ static int make_menu(char *items[], int menu_index, GtkWidget **Poption_menu,
    group = NULL;
    
    for (i=0; items[i]; i++) {
-      menu_item = gtk_radio_menu_item_new_with_label(group, items[i]);
+      menu_item = gtk_radio_menu_item_new_with_label(group, gettext(items[i]));
       menu_items[i] = menu_item;
       if (menu_index==EXPENSE_CAT1) {
 	 if (i==0) {
@@ -1012,45 +1013,45 @@ static void make_menus()
    char *categories[18];
 
    char *payment[]={
-      "American Express",
-	"Cash",
-	"Check",
-	"Credit Card",
-	"Master Card",
-	"Prepaid",
-	"VISA",
-	"Unfiled",
+      N_("American Express"),
+	N_("Cash"),
+	N_("Check"),
+	N_("Credit Card"),
+	N_("Master Card"),
+	N_("Prepaid"),
+	N_("VISA"),
+	N_("Unfiled"),
 	NULL
    };
    char *expense_type[]={
-      "Airfare",
-	"Breakfast",
-	"Bus",
-	"BusinessMeals",
-	"CarRental",
-	"Dinner",
-	"Entertainment",
-	"Fax",
-	"Gas",
-	"Gifts",
-	"Hotel", 
-	"Incidentals",
-	"Laundry",
-	"Limo",
-	"Lodging",
-	"Lunch",
-	"Mileage",
-	"Other",
-	"Parking",
-	"Postage",
-	"Snack",
-	"Subway",
-	"Supplies",
-	"Taxi",
-	"Telephone",
-	"Tips",
-	"Tolls",
-	"Train",
+        N_("Airfare"),
+	N_("Breakfast"),
+	N_("Bus"),
+	N_("BusinessMeals"),
+	N_("CarRental"),
+	N_("Dinner"),
+	N_("Entertainment"),
+	N_("Fax"),
+	N_("Gas"),
+	N_("Gifts"),
+	N_("Hotel"), 
+	N_("Incidentals"),
+	N_("Laundry"),
+	N_("Limo"),
+	N_("Lodging"),
+	N_("Lunch"),
+	N_("Mileage"),
+	N_("Other"),
+	N_("Parking"),
+	N_("Postage"),
+	N_("Snack"),
+	N_("Subway"),
+	N_("Supplies"),
+	N_("Taxi"),
+	N_("Telephone"),
+	N_("Tips"),
+	N_("Tolls"),
+	N_("Train"),
 	NULL
    };
      
@@ -1069,6 +1070,7 @@ static void make_menus()
 	 continue;
       }
       categories[count+1]=eai.category.name[i];
+      jp_charset_p2j(categories[count+1], strlen(categories[count+1])+1);
       glob_category_number_from_menu_item[count++]=i;
    }
    categories[count+1]=NULL;
@@ -1185,7 +1187,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    temp_hbox = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox1), temp_hbox, FALSE, FALSE, 0);
    
-   label = gtk_label_new("Category: ");
+   label = gtk_label_new(_("Category: "));
    gtk_box_pack_start(GTK_BOX(temp_hbox), label, FALSE, FALSE, 0);
    gtk_box_pack_start(GTK_BOX(temp_hbox), menu_category1, TRUE, TRUE, 0);
 
@@ -1218,25 +1220,25 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_box_pack_start(GTK_BOX(vbox2), temp_hbox, FALSE, FALSE, 0);
 
    /* Add record button */
-   button = gtk_button_new_with_label("Delete");
+   button = gtk_button_new_with_label(_("Delete"));
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_delete),
 		      GINT_TO_POINTER(DELETE_FLAG));
    gtk_box_pack_start(GTK_BOX(temp_hbox), button, TRUE, TRUE, 0);
    
-   button = gtk_button_new_with_label("Copy");
+   button = gtk_button_new_with_label(_("Copy"));
    gtk_box_pack_start(GTK_BOX(temp_hbox), button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record), 
 		      GINT_TO_POINTER(COPY_FLAG));
 
-   new_record_button = gtk_button_new_with_label("New Record");
+   new_record_button = gtk_button_new_with_label(_("New Record"));
    gtk_box_pack_start(GTK_BOX(temp_hbox), new_record_button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(new_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record),
 		      GINT_TO_POINTER(CLEAR_FLAG));
 
-   add_record_button = gtk_button_new_with_label("Add Record");
+   add_record_button = gtk_button_new_with_label(_("Add Record"));
    gtk_box_pack_start(GTK_BOX(temp_hbox), add_record_button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(add_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record),
@@ -1244,7 +1246,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(GTK_BIN(add_record_button)->child)),
 		       "label_high");
 
-   apply_record_button = gtk_button_new_with_label("Apply Changes");
+   apply_record_button = gtk_button_new_with_label(_("Apply Changes"));
    gtk_box_pack_start(GTK_BOX(temp_hbox), apply_record_button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(apply_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record),
@@ -1256,7 +1258,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    temp_hbox = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), temp_hbox, FALSE, FALSE, 0);
    
-   label = gtk_label_new("Category: ");
+   label = gtk_label_new(_("Category: "));
    gtk_box_pack_start(GTK_BOX(temp_hbox), label, FALSE, FALSE, 0);
    gtk_box_pack_start(GTK_BOX(temp_hbox), menu_category2, TRUE, TRUE, 0);
 
@@ -1265,7 +1267,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    temp_hbox = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), temp_hbox, FALSE, FALSE, 0);
    
-   label = gtk_label_new("Type: ");
+   label = gtk_label_new(_("Type: "));
    gtk_box_pack_start(GTK_BOX(temp_hbox), label, FALSE, FALSE, 0);
    gtk_box_pack_start(GTK_BOX(temp_hbox), menu_expense_type, TRUE, TRUE, 0);
 
@@ -1274,7 +1276,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    temp_hbox = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), temp_hbox, FALSE, FALSE, 0);
    
-   label = gtk_label_new("Payment: ");
+   label = gtk_label_new(_("Payment: "));
    gtk_box_pack_start(GTK_BOX(temp_hbox), label, FALSE, FALSE, 0);
    gtk_box_pack_start(GTK_BOX(temp_hbox), menu_payment, TRUE, TRUE, 0);
 
@@ -1286,7 +1288,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    /* Month spinner */
    temp_vbox = gtk_vbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(temp_hbox), temp_vbox, FALSE, FALSE, 0);
-   label = gtk_label_new("Month:");
+   label = gtk_label_new(_("Month:"));
    gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
    gtk_box_pack_start(GTK_BOX(temp_vbox), label, FALSE, TRUE, 0);
 
@@ -1300,7 +1302,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    /* Day spinner */
    temp_vbox = gtk_vbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(temp_hbox), temp_vbox, FALSE, FALSE, 0);
-   label = gtk_label_new("Day:");
+   label = gtk_label_new(_("Day:"));
    gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
    gtk_box_pack_start(GTK_BOX(temp_vbox), label, FALSE, TRUE, 0);
 
@@ -1314,7 +1316,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    /* Year spinner */
    temp_vbox = gtk_vbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(temp_hbox), temp_vbox, FALSE, FALSE, 0);
-   label = gtk_label_new("Year:");
+   label = gtk_label_new(_("Year:"));
    gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
    gtk_box_pack_start(GTK_BOX(temp_vbox), label, FALSE, TRUE, 0);
 
@@ -1331,7 +1333,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    temp_hbox = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), temp_hbox, FALSE, FALSE, 0);
 
-   label = gtk_label_new("Amount: ");
+   label = gtk_label_new(_("Amount: "));
    gtk_box_pack_start(GTK_BOX(temp_hbox), label, FALSE, FALSE, 0);
    entry_amount = gtk_entry_new();
    gtk_box_pack_start(GTK_BOX(temp_hbox), entry_amount, TRUE, TRUE, 0);
@@ -1340,7 +1342,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    temp_hbox = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), temp_hbox, FALSE, FALSE, 0);
 
-   label = gtk_label_new("Vendor: ");
+   label = gtk_label_new(_("Vendor: "));
    gtk_box_pack_start(GTK_BOX(temp_hbox), label, FALSE, FALSE, 0);
    entry_vendor = gtk_entry_new();
    gtk_box_pack_start(GTK_BOX(temp_hbox), entry_vendor, TRUE, TRUE, 0);
@@ -1349,13 +1351,13 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    temp_hbox = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), temp_hbox, FALSE, FALSE, 0);
 
-   label = gtk_label_new("City: ");
+   label = gtk_label_new(_("City: "));
    gtk_box_pack_start(GTK_BOX(temp_hbox), label, FALSE, FALSE, 0);
    entry_city = gtk_entry_new();
    gtk_box_pack_start(GTK_BOX(temp_hbox), entry_city, TRUE, TRUE, 0);
 
    
-   label = gtk_label_new("Attendees");
+   label = gtk_label_new(_("Attendees"));
    gtk_box_pack_start(GTK_BOX(vbox2), label, FALSE, FALSE, 0);
 
    /* Attendees textbox */
@@ -1369,7 +1371,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_box_pack_start(GTK_BOX(temp_hbox), text_attendees, TRUE, TRUE, 0);
    gtk_box_pack_start(GTK_BOX(temp_hbox), vscrollbar, FALSE, FALSE, 0);
 
-   label = gtk_label_new("Note");
+   label = gtk_label_new(_("Note"));
    gtk_box_pack_start(GTK_BOX(vbox2), label, FALSE, FALSE, 0);
 
    /* Note textbox */

@@ -32,6 +32,7 @@
 #include "password.h"
 #include "print.h"
 #include "memo.h"
+#include "export.h"
 
 
 #define NUM_MEMO_CAT_ITEMS 16
@@ -43,10 +44,8 @@ extern GtkTooltips *glob_tooltips;
 
 struct MemoAppInfo memo_app_info;
 static int memo_category = CATEGORY_ALL;
-static int export_category = CATEGORY_ALL;
 static int clist_row_selected;
 static GtkWidget *clist;
-static GtkWidget *export_clist;
 static GtkWidget *memo_text;
 static GtkWidget *private_checkbox;
 static GtkWidget *memo32_checkbox;
@@ -72,12 +71,8 @@ int memo_clist_redraw();
 static void connect_changed_signals(int con_or_dis);
 static int memo_find();
 int memo_get_details(struct Memo *new_memo, unsigned char *attrib);
-static int make_category_menu(GtkWidget **category_menu,
-			      GtkWidget **memo_cat_menu_item,
-			      void (*selection_callback)
-			      (GtkWidget *item, int selection),
-			      int add_an_all_item);
-static void update_memo_screen(GtkWidget *clist, MemoList *memo_list, int category);
+static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
+			      MemoList *memo_list, int category, int main);
 static void cb_add_new_record(GtkWidget *widget, gpointer data);
 
 static void
@@ -87,7 +82,7 @@ set_new_button_to(int new_state)
    if (record_changed==new_state) {
       return;
    }
-   
+
    switch (new_state) {
     case MODIFY_FLAG:
       gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_SINGLE);
@@ -147,7 +142,7 @@ static void connect_changed_signals(int con_or_dis)
    /* CONNECT */
    if ((con_or_dis==CONNECT_SIGNALS) && (!connected)) {
       connected=1;
-      
+
       for (i=0; i<NUM_MEMO_CAT_ITEMS; i++) {
 	 if (memo_cat_menu_item2[i]) {
 	    gtk_signal_connect(GTK_OBJECT(memo_cat_menu_item2[i]), "toggled",
@@ -159,11 +154,11 @@ static void connect_changed_signals(int con_or_dis)
       gtk_signal_connect(GTK_OBJECT(private_checkbox), "toggled",
 			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
    }
-   
+
    /* DISCONNECT */
    if ((con_or_dis==DISCONNECT_SIGNALS) && (connected)) {
       connected=0;
-      
+
       for (i=0; i<NUM_MEMO_CAT_ITEMS; i++) {
 	 if (memo_cat_menu_item2[i]) {
 	    gtk_signal_disconnect_by_func(GTK_OBJECT(memo_cat_menu_item2[i]),
@@ -213,58 +208,8 @@ int memo_print()
 }
 
 /*
- * This function reads until it finds a non separator character,
- * then reads a string.  Spaces, commas, etc. can be inside quotes.
- * Escaped quotes (double quotes) are converted to single.
- * Return value is size of text.
- *  -1 for EOL
+ * Start Import Code
  */
-int read_csv_field(FILE *in, char *text, int size)
-{
-   int n, c;
-   char sep[]=",\t \r\n";
-   int quoted;
-
-   n=0;
-   quoted=0;
-   text[0]='\0';
-   /* Read until a non separator character is found */
-   while (1) {
-      c=fgetc(in);
-      if (c==EOF) return 0;
-      if (!strchr(sep, c)) {
-	 ungetc(c, in);
-	 break;
-      }
-   }
-   /* Read the field */
-   while (1) {
-      c=fgetc(in);
-      if (c==EOF) break;
-      /* Look for quote */
-      if (c=='"') {
-	 c=fgetc(in);
-	 if (c=='"') {
-	    /* Found double quotes, convert to single */
-	 } else {
-	    quoted=(quoted&1)^1;
-	    ungetc(c, in);
-	    continue;
-	 }
-      }
-      /* Look for separators */
-      if (strchr(sep, c)) {
-	 if (!quoted) {
-	    text[n++]='\0';
-	    break;
-	 }
-      }
-      text[n++]=c;
-      if (n+1>size) return n;
-   }
-   return n;
-}
-
 int memo_import_callback(GtkWidget *parent_window, char *file_path, int type)
 {
    FILE *in;
@@ -289,7 +234,7 @@ int memo_import_callback(GtkWidget *parent_window, char *file_path, int type)
    if (new_memo.text) {
       free_Memo(&new_memo);
    }
-   
+
    in=fopen(file_path, "r");
    if (!in) {
       jpilot_logf(LOG_WARN, _("Could not open file %s\n"), file_path);
@@ -324,7 +269,7 @@ int memo_import_callback(GtkWidget *parent_window, char *file_path, int type)
 
       new_memo.text=text;
       ret=import_record_ask(parent_window, pane,
-			    &new_memo,
+			    new_memo.text,
 			    &(memo_app_info.category),
 			    "Unfiled",
 			    0,
@@ -352,7 +297,7 @@ int memo_import_callback(GtkWidget *parent_window, char *file_path, int type)
 	 strncpy(old_cat_name, text, 16);
 	 old_cat_name[16]='\0';
 	 attrib=0;
-	 /* Figure out what the bext category number is */
+	 /* Figure out what the best category number is */
 	 index=temp_memolist->mmemo.unique_id-1;
 	 suggested_cat_num=0;
 	 for (i=0; i<NUM_MEMO_CAT_ITEMS; i++) {
@@ -363,14 +308,14 @@ int memo_import_callback(GtkWidget *parent_window, char *file_path, int type)
 	       break;
 	    }
 	 }
-	 
+
 	 /* Read the private field */
 	 ret = read_csv_field(in, text, 65535);
 #ifdef JPILOT_DEBUG
 	 printf("private is [%s]\n", text);
 #endif
 	 sscanf(text, "%d", &priv);
-	 
+
 	 ret = read_csv_field(in, text, 65535);
 #ifdef JPILOT_DEBUG
 	 printf("memo text is [%s]\n", text);
@@ -378,7 +323,7 @@ int memo_import_callback(GtkWidget *parent_window, char *file_path, int type)
 	 new_memo.text=text;
 	 if (!import_all) {
 	    ret=import_record_ask(parent_window, pane,
-				  &new_memo,
+				  new_memo.text,
 				  &(memo_app_info.category),
 				  old_cat_name,
 				  priv,
@@ -442,11 +387,11 @@ int memo_import_callback(GtkWidget *parent_window, char *file_path, int type)
 	       }
 	    }
 	 }
-	 
+
 	 ret=0;
 	 if (!import_all) {
 	    ret=import_record_ask(parent_window, pane,
-				  &new_memo,
+				  new_memo.text,
 				  &(memo_app_info.category),
 				  old_cat_name,
 				  (temp_memolist->mmemo.attrib & 0x10),
@@ -468,7 +413,7 @@ int memo_import_callback(GtkWidget *parent_window, char *file_path, int type)
       }
       free_MemoList(&memolist);
    }
-   
+
    memo_refresh();
    fclose(in);
    return 0;
@@ -478,7 +423,7 @@ int memo_import(GtkWidget *window)
 {
    char *type_desc[] = {
       "Text",
-      "CSV (Comma Separated Values",
+      "CSV (Comma Separated Values)",
       "DAT/MPA (Palm Archive Formats)",
       NULL
    };
@@ -492,120 +437,22 @@ int memo_import(GtkWidget *window)
    import_gui(window, pane, type_desc, type_int, memo_import_callback);
    return 0;
 }
-
 /*
- * Export Browse
+ * End Import Code
  */
-
-#define BROWSE_OK     1
-#define BROWSE_CANCEL 2
-
-static int glob_export_browse_pressed;
-
-static gboolean cb_export_browse_destroy(GtkWidget *widget)
-{
-   gtk_main_quit();
-   return FALSE;
-}
-
-static void
-cb_export_browse_cancel(GtkWidget *widget,
-			gpointer   data)
-{
-   glob_export_browse_pressed=BROWSE_CANCEL;
-   gtk_widget_destroy(data);
-}
-
-static void
-cb_export_browse_ok(GtkWidget *widget,
-		    gpointer   data)
-{
-   char *sel;
-   
-   glob_export_browse_pressed=BROWSE_OK;
-   sel = gtk_file_selection_get_filename(GTK_FILE_SELECTION(data));
-   set_pref(PREF_MEMO_EXPORT_FILENAME, 0, sel);
-   gtk_widget_destroy(data);
-}
-
-static int
-export_browse()
-{
-   GtkWidget *filesel;
-   const char *svalue;
-   char dir[MAX_PREF_VALUE+2];
-   int i;
-
-   glob_export_browse_pressed = 0;
-
-   get_pref(PREF_MEMO_EXPORT_FILENAME, NULL, &svalue);
-   strncpy(dir, svalue, MAX_PREF_VALUE);
-   dir[MAX_PREF_VALUE]='\0';
-   i=strlen(dir)-1;
-   if (i<0) i=0;
-   if (dir[i]!='/') {
-      for (i=strlen(dir); i>=0; i--) {
-	 if (dir[i]=='/') {
-	    dir[i+1]='\0';
-	    break;
-	 }
-      }
-   }
-
-   chdir(dir);
-   filesel = gtk_file_selection_new(_("File Browser"));
-
-   gtk_signal_connect(GTK_OBJECT(filesel), "destroy",
-		      GTK_SIGNAL_FUNC(cb_export_browse_destroy), filesel);
-
-   gtk_signal_connect(GTK_OBJECT(GTK_FILE_SELECTION(filesel)->ok_button),
-		      "clicked", GTK_SIGNAL_FUNC(cb_export_browse_ok), filesel);
-   gtk_signal_connect(GTK_OBJECT(GTK_FILE_SELECTION(filesel)->cancel_button),
-		      "clicked", GTK_SIGNAL_FUNC(cb_export_browse_cancel), filesel);
-
-   gtk_widget_show(filesel);
-   
-   gtk_window_set_modal(GTK_WINDOW(filesel), TRUE);
-   
-   gtk_main();
-   
-   return glob_export_browse_pressed;
-}
-
-/* End Export Browse */
 
 /*
  * Start Export code
  */
 
-static GtkWidget *save_as_entry;
-static GtkWidget *export_radio_type[3];
-static int glob_export_type;
-
-static gboolean cb_export_destroy(GtkWidget *widget)
-{
-   char *filename;
-
-   free_MemoList(&export_memo_list);
-   
-   filename = gtk_entry_get_text(GTK_ENTRY(save_as_entry));
-   set_pref(PREF_MEMO_EXPORT_FILENAME, 0, filename);
-
-   gtk_main_quit();
-   return FALSE;
-}
-
-static void
-cb_export_ok(GtkWidget *widget,
-	     gpointer   data)
+void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
+		       int type, const char *filename)
 {
    MyMemo *mmemo;
    GList *list, *temp_list;
    FILE *out;
    struct stat statb;
-   const char *filename;
    int i, r, num, len;
-   int type;
    const char *short_date;
    time_t ltime;
    struct tm *now;
@@ -615,38 +462,31 @@ cb_export_ok(GtkWidget *widget,
    char str1[256], str2[256];
    char pref_time[40];
    char *csv_text;
-   
-   list=GTK_CLIST(export_clist)->selection;
-   
-   for (i=0; export_radio_type[i]; i++) {
-      if (GTK_TOGGLE_BUTTON(export_radio_type[i])->active) {
-	 type=i;
-	 jpilot_logf(LOG_DEBUG, "type = %d\n", i);
-	 break;
-      }
-   }
 
-   filename = gtk_entry_get_text(GTK_ENTRY(save_as_entry));
-   
+   list=GTK_CLIST(clist)->selection;
+
    if (!stat(filename, &statb)) {
       if (S_ISDIR(statb.st_mode)) {
 	 g_snprintf(text, 1024, _("%s is a directory"), filename);
-	 dialog_generic(NULL, 0, 0, _("Error Opening File"),
+	 dialog_generic(GTK_WIDGET(export_window)->window,
+			0, 0, _("Error Opening File"),
 			"Directory", text, 1, button_text);
 	 return;
       }
       g_snprintf(text, 1024, _("Do you want to overwrite file %s?"), filename);
-      r = dialog_generic(data, 0, 0, _("Overwrite File?"),
+      r = dialog_generic(GTK_WIDGET(export_window)->window,
+			 0, 0, _("Overwrite File?"),
 			 _("Overwrite File"), text, 2, button_overwrite_text);
       if (r!=DIALOG_SAID_1) {
 	 return;
       }
    }
-     
+
    out = fopen(filename, "w");
    if (!out) {
       g_snprintf(text, 1024, "Error Opening File: %s", filename);
-      dialog_generic(data, 0, 0, _("Error Opening File"),
+      dialog_generic(GTK_WIDGET(export_window)->window,
+		     0, 0, _("Error Opening File"),
 		     "Filename", text, 1, button_text);
       return;
    }
@@ -655,12 +495,12 @@ cb_export_ok(GtkWidget *widget,
    for (num=0, temp_list=list; temp_list; temp_list = temp_list->next, num++);
 
    for (i=0, temp_list=list; temp_list; temp_list = temp_list->next, i++) {
-      mmemo = gtk_clist_get_row_data(GTK_CLIST(export_clist), (int) temp_list->data);
+      mmemo = gtk_clist_get_row_data(GTK_CLIST(clist), (int) temp_list->data);
       if (!mmemo) {
 	 continue;
 	 jpilot_logf(LOG_WARN, "Can't export memo %d\n", (long) temp_list->data + 1);
       }
-      switch (glob_export_type) {
+      switch (type) {
        case EXPORT_TYPE_CSV:
 	 if (i==0) {
 	    fprintf(out, "CSV memo: Category, Private, Memo Text\n");
@@ -706,172 +546,50 @@ cb_export_ok(GtkWidget *widget,
 	 jpilot_logf(LOG_WARN, "Unknown export type\n");
       }
    }
-   
+
    if (out) {
       fclose(out);
    }
-   
-   gtk_widget_destroy(data);
 }
 
-static void
-cb_export_browse(GtkWidget *widget,
-		 gpointer   data)
+
+static void cb_memo_update_clist(GtkWidget *clist, int category)
 {
-   int r;
-   const char *svalue;
-   
-   r = export_browse();
-   if (r==BROWSE_OK) {
-      get_pref(PREF_MEMO_EXPORT_FILENAME, NULL, &svalue);
-      gtk_entry_set_text(GTK_ENTRY(save_as_entry), svalue);
-   }
+   memo_update_clist(clist, NULL, export_memo_list, category, FALSE);
 }
 
-static void
-cb_export_quit(GtkWidget *widget,
-	       gpointer   data)
-{
-   gtk_widget_destroy(data);
-}
 
-static void
-cb_export_type(GtkWidget *widget,
-	       gpointer   data)
+static void cb_memo_export_done(GtkWidget *widget, const char *filename)
 {
-   glob_export_type=GPOINTER_TO_INT(data);
-}
+   free_MemoList(&export_memo_list);
 
-void cb_export_category(GtkWidget *item, int selection)
-{
-   if ((GTK_CHECK_MENU_ITEM(item))->active) {
-      export_category = selection;
-      jpilot_logf(LOG_DEBUG, "cb_export_category() cat=%d\n", export_category);
-      update_memo_screen(export_clist, export_memo_list, export_category);
-      jpilot_logf(LOG_DEBUG, "Leaving cb_export_category()\n");
-   }
+   set_pref(PREF_MEMO_EXPORT_FILENAME, 0, filename);
 }
 
 int memo_export(GtkWidget *window)
 {
-   GtkWidget *export_window;
-   GtkWidget *button;
-   GtkWidget *vbox;
-   GtkWidget *hbox;
-   GtkWidget *category_menu;
-   GtkWidget *memo_cat_menu_item[NUM_MEMO_CAT_ITEMS+1];
-   GtkWidget *scrolled_window;
-   GtkWidget *label;
-   GSList *group;
-   char *type_text[]={"Text", "CSV", NULL};
-   int type_int[]={EXPORT_TYPE_TEXT, EXPORT_TYPE_CSV};
-   int pw, ph, i;
-   gint px, py;
-   const char *svalue;
-   
-   jpilot_logf(LOG_DEBUG, "memo_export()\n");
+   int w, h, x, y;
 
-   gdk_window_get_size(window->window, &pw, &ph);
-   gdk_window_get_root_origin(window->window, &px, &py);
+   gdk_window_get_size(window->window, &w, &h);
+   gdk_window_get_root_origin(window->window, &x, &y);
 
-   pw = GTK_PANED(pane)->handle_xpos;
-   px+=40;
+   w = GTK_PANED(pane)->handle_xpos;
+   x+=40;
 
-   export_window = gtk_widget_new(GTK_TYPE_WINDOW,
-				  "type", GTK_WINDOW_DIALOG,
-				  "x", px, "y", py,
-				  "width", pw, "height", ph,
-				  "title", "Export Memos",
-				  NULL);
-   
-   gtk_container_set_border_width(GTK_CONTAINER(export_window), 5);
-   
-   gtk_signal_connect(GTK_OBJECT(export_window), "destroy",
-		      GTK_SIGNAL_FUNC(cb_export_destroy), export_window);
-
-   vbox = gtk_vbox_new(FALSE, 0);
-   gtk_container_add(GTK_CONTAINER(export_window), vbox);
-   
-   /* Label for instructions */
-   label = gtk_label_new(_("Select memos to be exported"));
-   gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
-   label = gtk_label_new(_("Use Ctrl and Shift Keys"));
-   gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
-
-   /* Put the export category menu up */
-   make_category_menu(&category_menu, memo_cat_menu_item, cb_export_category,
-		      TRUE);
-   gtk_box_pack_start(GTK_BOX(vbox), category_menu, FALSE, FALSE, 0);
-
-   /* Put the memo list window up */
-   scrolled_window = gtk_scrolled_window_new(NULL, NULL);
-   gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 0);
-   gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
-				  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-   gtk_box_pack_start(GTK_BOX(vbox), scrolled_window, TRUE, TRUE, 0);
-
-   export_clist = gtk_clist_new(1);
-
-   gtk_clist_set_shadow_type(GTK_CLIST(export_clist), SHADOW);
-   gtk_clist_set_selection_mode(GTK_CLIST(export_clist), GTK_SELECTION_EXTENDED);
-   gtk_clist_set_column_width(GTK_CLIST(export_clist), 0, 50);
-
-   gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(export_clist));
-   
-   
-   /* Import Type Buttons */
-   group = NULL;
-   for (i=0; i<100; i++) {
-      if (type_text[i]==NULL) break;
-      export_radio_type[i] = gtk_radio_button_new_with_label(group, type_text[i]);
-      group = gtk_radio_button_group(GTK_RADIO_BUTTON(export_radio_type[i]));
-      gtk_box_pack_start(GTK_BOX(vbox), export_radio_type[i], FALSE, FALSE, 0);
-      gtk_signal_connect(GTK_OBJECT(export_radio_type[i]), "clicked",
-			 GTK_SIGNAL_FUNC(cb_export_type),
-			 GINT_TO_POINTER(type_int[i]));
-   }
-   export_radio_type[i] = NULL;
-
-   /* Save As entry */
-   hbox = gtk_hbox_new(FALSE, 5);
-   gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
-   label = gtk_label_new(_("Save as"));
-   gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
-   save_as_entry = gtk_entry_new_with_max_length(250);
-   get_pref(PREF_MEMO_EXPORT_FILENAME, NULL, &svalue);
-   if (svalue) {
-      gtk_entry_set_text(GTK_ENTRY(save_as_entry), svalue);
-   }
-   gtk_box_pack_start(GTK_BOX(hbox), save_as_entry, TRUE, TRUE, 0);
-   button = gtk_button_new_with_label(_("Browse"));
-   gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 0);
-   gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_export_browse), export_window);
-   
-   hbox = gtk_hbox_new(FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
-
-   button = gtk_button_new_with_label(_("OK"));
-   gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
-   gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_export_ok), export_window);
-   
-   button = gtk_button_new_with_label(_("Cancel"));
-   gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
-   gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_export_quit), export_window);
-   
-   update_memo_screen(export_clist, glob_memo_list, memo_category);
-
-   gtk_widget_show_all(export_window);
-   
-   gtk_main();
+   export_gui(w, h, x, y, 1, sort_l,
+	      PREF_MEMO_EXPORT_FILENAME,
+	      cb_memo_update_clist,
+	      cb_memo_export_done,
+	      cb_memo_export_ok
+	      );
 
    return 0;
 }
+
 /*
- * End Export code
+ * End Export Code
  */
+
 
 static int find_sorted_cat(int cat)
 {
@@ -890,7 +608,7 @@ void cb_delete_memo(GtkWidget *widget,
    MyMemo *mmemo;
    int flag;
    int show_priv;
-   
+
    mmemo = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
    if (mmemo < (MyMemo *)CLIST_MIN_DATA) {
       return;
@@ -922,7 +640,7 @@ void cb_delete_memo(GtkWidget *widget,
 static void cb_category(GtkWidget *item, int selection)
 {
    int b;
-   
+
    if ((GTK_CHECK_MENU_ITEM(item))->active) {
       b=dialog_save_changed_record(pane, record_changed);
       if (b==DIALOG_SAID_1) {
@@ -931,7 +649,7 @@ static void cb_category(GtkWidget *item, int selection)
       memo_category = selection;
       jpilot_logf(LOG_DEBUG, "cb_category() cat=%d\n", memo_category);
       memo_clear_details();
-      update_memo_screen(clist, glob_memo_list, memo_category);
+      memo_update_clist(clist, category_menu1, glob_memo_list, memo_category, TRUE);
       jpilot_logf(LOG_DEBUG, "Leaving cb_category()\n");
    }
 }
@@ -945,7 +663,7 @@ static int memo_clear_details()
    /* Need to disconnect these signals first */
    set_new_button_to(NEW_FLAG);
    connect_changed_signals(DISCONNECT_SIGNALS);
-   
+
    gtk_text_freeze(GTK_TEXT(memo_text));
 
    gtk_text_set_point(GTK_TEXT(memo_text), 0);
@@ -953,7 +671,7 @@ static int memo_clear_details()
 			   gtk_text_get_length(GTK_TEXT(memo_text)));
 
    gtk_text_thaw(GTK_TEXT(memo_text));
-   
+
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(private_checkbox), FALSE);
 
    if (memo_category==CATEGORY_ALL) {
@@ -978,7 +696,7 @@ static int memo_clear_details()
 int memo_get_details(struct Memo *new_memo, unsigned char *attrib)
 {
    int i;
-   
+
    new_memo->text = gtk_editable_get_chars
      (GTK_EDITABLE(memo_text), 0, -1);
    if (new_memo->text[0]=='\0') {
@@ -1016,9 +734,9 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    int flag;
    unsigned int unique_id;
    int show_priv;
-   
+
    flag=GPOINTER_TO_INT(data);
-   
+
    /* Do masking like Palm OS 3.5 */
    if ((GPOINTER_TO_INT(data)==COPY_FLAG) || 
        (GPOINTER_TO_INT(data)==MODIFY_FLAG)) {
@@ -1057,7 +775,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    memo_get_details(&new_memo, &attrib);
 
    set_new_button_to(CLEAR_FLAG);
-   
+
    pc_memo_write(&new_memo, NEW_PC_REC, attrib, &unique_id);
    free_Memo(&new_memo);
    if (flag==MODIFY_FLAG) {
@@ -1067,7 +785,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    }
    glob_find_id = unique_id;
    memo_find();
-   
+
    return;
 }
 
@@ -1085,7 +803,7 @@ static void clear_mymemo(MyMemo *mmemo)
 }
 /* End Masking */
 
-   
+
 static void cb_clist_selection(GtkWidget      *clist,
 			       gint           row,
 			       gint           column,
@@ -1097,9 +815,9 @@ static void cb_clist_selection(GtkWidget      *clist,
    int i, index, count, b;
    int sorted_position;
    int keep;
-   
-   if (!event) return;
-   
+
+   if ((!event) && (clist_hack)) return;
+
    /* HACK */
    if (clist_hack) {
       keep=record_changed;
@@ -1115,7 +833,7 @@ static void cb_clist_selection(GtkWidget      *clist,
       cb_clist_selection(clist, row, column, GINT_TO_POINTER(1), NULL);
       return;
    }
-   
+
    clist_row_selected=row;
 
    mmemo = gtk_clist_get_row_data(GTK_CLIST(clist), row);
@@ -1124,11 +842,11 @@ static void cb_clist_selection(GtkWidget      *clist,
    }
 
    set_new_button_to(CLEAR_FLAG);
-   
+
    connect_changed_signals(DISCONNECT_SIGNALS);
-   
+
    memo=&(mmemo->memo);
-   
+
    index = mmemo->attrib & 0x0F;
    sorted_position = find_sorted_cat(index);
    if (memo_cat_menu_item2[sorted_position]==NULL) {
@@ -1164,11 +882,12 @@ static void cb_clist_selection(GtkWidget      *clist,
 
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(private_checkbox),
 				mmemo->attrib & dlpRecAttrSecret);
-     
+
    connect_changed_signals(CONNECT_SIGNALS);
 }
 
-static void update_memo_screen(GtkWidget *clist, MemoList *memo_list, int category)
+static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
+			      MemoList *memo_list, int category, int main)
 {
 #define MEMO_CLIST_CHAR_WIDTH 50
    int num_entries, entries_shown, i;
@@ -1183,16 +902,19 @@ static void update_memo_screen(GtkWidget *clist, MemoList *memo_list, int catego
    int len, len1;
    int show_priv;
 
-   jpilot_logf(LOG_DEBUG, "update_memo_screen()\n");
+   jpilot_logf(LOG_DEBUG, "memo_update_clist()\n");
 
    row_count=((GtkCList *)clist)->rows;
-   
+
    free_MemoList(&memo_list);
 
+   /* Need to get the private ones back for the hints calculation */
    num_entries = get_memos2(&memo_list, SORT_ASCENDING, 2, 2, 1, CATEGORY_ALL);
 
    if (memo_list==NULL) {
-      gtk_tooltips_set_tip(glob_tooltips, category_menu1, _("0 records"), NULL);
+      if (tooltip_widget) {
+	 gtk_tooltips_set_tip(glob_tooltips, tooltip_widget, _("0 records"), NULL);
+      }
       return;
    }
 
@@ -1306,72 +1028,29 @@ static void update_memo_screen(GtkWidget *clist, MemoList *memo_list, int catego
    }
 
    /*If there is an item in the list, select the first one */
-   if (entries_shown>0) {
+   if ((main) && (entries_shown>0)) {
       gtk_clist_select_row(GTK_CLIST(clist), 0, 0);
       cb_clist_selection(clist, 0, 0, (gpointer)455, NULL);
    }
-   
+
    gtk_clist_thaw(GTK_CLIST(clist));
 
    sprintf(str, _("%d of %d records"), entries_shown, num_entries);
-   gtk_tooltips_set_tip(glob_tooltips, category_menu1, str, NULL);   
-
-   connect_changed_signals(CONNECT_SIGNALS);
-
-   jpilot_logf(LOG_DEBUG, "Leaving update_memo_screen()\n");
-}
-
-static int make_category_menu(GtkWidget **category_menu,
-			      GtkWidget **memo_cat_menu_item,
-			      void (*selection_callback)
-			      (GtkWidget *item, int selection),
-			      int add_an_all_item)
-{
-   GtkWidget *menu;
-   GSList    *group;
-   int i;
-   int offset;
-   
-   *category_menu = gtk_option_menu_new();
-   
-   menu = gtk_menu_new();
-   group = NULL;
-   
-   offset=0;
-   if (add_an_all_item) {
-      memo_cat_menu_item[0] = gtk_radio_menu_item_new_with_label(group, _("All"));
-      if (selection_callback) {
-	 gtk_signal_connect(GTK_OBJECT(memo_cat_menu_item[0]), "activate",
-			    selection_callback, GINT_TO_POINTER(CATEGORY_ALL));
-      }
-      group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(memo_cat_menu_item[0]));
-      gtk_menu_append(GTK_MENU(menu), memo_cat_menu_item[0]);
-      gtk_widget_show(memo_cat_menu_item[0]);
-      offset=1;
-   }
-   for (i=0; i<NUM_MEMO_CAT_ITEMS; i++) {
-      if (sort_l[i].Pcat[0]) {
-	 memo_cat_menu_item[i+offset] = gtk_radio_menu_item_new_with_label(
-	    group, sort_l[i].Pcat);
-	 if (selection_callback) {
-	    gtk_signal_connect(GTK_OBJECT(memo_cat_menu_item[i+offset]), "activate",
-			       selection_callback, GINT_TO_POINTER(sort_l[i].cat_num));
-	 }
-	 group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(memo_cat_menu_item[i+offset]));
-	 gtk_menu_append(GTK_MENU(menu), memo_cat_menu_item[i+offset]);
-	 gtk_widget_show(memo_cat_menu_item[i+offset]);
-      }
+   if (tooltip_widget) {
+      gtk_tooltips_set_tip(glob_tooltips, tooltip_widget, str, NULL);
    }
 
-   gtk_option_menu_set_menu(GTK_OPTION_MENU(*category_menu), menu);
-   
-   return 0;
+   if (main) {
+      connect_changed_signals(CONNECT_SIGNALS);
+   }
+
+   jpilot_logf(LOG_DEBUG, "Leaving memo_update_clist()\n");
 }
 
 static int memo_find()
 {
    int r, found_at, total_count;
-   
+
    if (glob_find_id) {
       r = clist_find_id(clist,
 			glob_find_id,
@@ -1397,10 +1076,10 @@ static int memo_find()
 int memo_clist_redraw()
 {
    int line_num;
-   
+
    line_num = clist_row_selected;
 
-   update_memo_screen(clist, glob_memo_list, memo_category);
+   memo_update_clist(clist, category_menu1, glob_memo_list, memo_category, TRUE);
 
    gtk_clist_select_row(GTK_CLIST(clist), line_num, 0);
    cb_clist_selection(clist, line_num, 0, (gpointer)455, NULL);
@@ -1411,7 +1090,7 @@ int memo_clist_redraw()
 int memo_refresh()
 {
    int index;
- 
+
    if (glob_find_id) {
       memo_category = CATEGORY_ALL;
    }
@@ -1420,7 +1099,7 @@ int memo_refresh()
    } else {
       index=find_sorted_cat(memo_category)+1;
    }
-   update_memo_screen(clist, glob_memo_list, memo_category);
+   memo_update_clist(clist, category_menu1, glob_memo_list, memo_category, TRUE);
    if (index<0) {
       jpilot_logf(LOG_WARN, "Category not legal\n");
    } else {	 
@@ -1435,7 +1114,7 @@ int memo_refresh()
 int memo_gui_cleanup()
 {
    int b;
-   
+
    b=dialog_save_changed_record(pane, record_changed);
    if (b==DIALOG_SAID_1) {
       cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
@@ -1460,7 +1139,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    GtkWidget *vscrollbar;
    long ivalue;
    const char *svalue;
-   
+
    clist_row_selected=0;
    record_changed=CLEAR_FLAG;
 
@@ -1519,7 +1198,8 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
 
    /* Put the left-hand category menu up */
-   make_category_menu(&category_menu1, memo_cat_menu_item1, cb_category, TRUE);
+   make_category_menu(&category_menu1, memo_cat_menu_item1,
+		      sort_l, cb_category, TRUE);
    gtk_box_pack_start(GTK_BOX(vbox1), category_menu1, FALSE, FALSE, 0);
 
 
@@ -1550,27 +1230,27 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_clist_set_column_width(GTK_CLIST(clist), 0, 50);
 
    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
-   
+
    /*
     * The right hand part of the main window follows:
     */
    hbox_temp = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
-   
+
    /* Add record modification buttons on right side */
    button = gtk_button_new_with_label(_("Delete"));
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_delete_memo),
 		      GINT_TO_POINTER(DELETE_FLAG));
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, TRUE, TRUE, 0);
-   
+
    button = gtk_button_new_with_label(_("Copy"));
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record), 
 		      GINT_TO_POINTER(COPY_FLAG));
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, TRUE, TRUE, 0);
-   
+
    new_record_button = gtk_button_new_with_label(_("New Record"));
    gtk_signal_connect(GTK_OBJECT(new_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record), 
@@ -1592,7 +1272,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_box_pack_start(GTK_BOX(hbox_temp), apply_record_button, TRUE, TRUE, 0);
    gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(GTK_BIN(apply_record_button)->child)),
 		       "label_high");
-   
+
 
    /*Separator */
    separator = gtk_hseparator_new();
@@ -1616,10 +1296,11 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
 
    /*Put the right-hand category menu up */
-   make_category_menu(&category_menu2, memo_cat_menu_item2, NULL, FALSE);
+   make_category_menu(&category_menu2, memo_cat_menu_item2,
+		      sort_l, NULL, FALSE);
    gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu2, TRUE, TRUE, 0);
-   
-   
+
+
    /*The Description text box on the right side */
    hbox_temp = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);

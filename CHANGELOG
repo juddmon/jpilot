@@ -1,8 +1,25 @@
-0.99.1 - 02/07/01
+0.99.2 - 02/06/02
+ Made changes to support pilot-link 0.10.1 and USB (palm m series and clies)
+ Export for Datebook, Address, Todo, and Memo
+ Import for Datebook, Address, Todo, and Memo
+ Can now enter begin/end times into datebook by GUI, or keyboard.
+ Put icons in clist title buttons.
+ Prompts to Save a changed/new record instead of letting it get away.
+ Drastically improved local database read speeds caused by bugs intro'd in 0.99
+ Fixed misc bugs in alarms.
+ Support for pedit (pedit is a memo editor for the palm).
+ Added Preferences to choose conduits.
+ Adding in better printing support.
+ Adding in record masking support.
+ Wrote a KeyRing plugin (KeyRing is a palm encryption app).
+ Added Restore Functionality.
+ Added plugin_startup & plugin_cleanup funcs to jpilot-sync.
  Added man pages.
  Added plugin_startup and plugin_cleanup to jpilot-sync.
  Added a default pdb file for Expenses.
  Added an icon when iconized.
+
+0.99.1 - Skipped this version to avoid confusion.
 
 0.99 - 02/06/01
  Alphabetized 4 main app categories and expense categories.

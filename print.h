@@ -51,9 +51,15 @@ typedef enum {
  *  DIALOG_SAID_CANCEL
  *  <0 on error
  */
-int print_gui(GtkWidget *main_window, int app, int date_button);
+/* year_mon_day is a binary flag to choose which radio buttons appear for
+ * datebook printing.
+ * 1 = daily
+ * 2 = weekly
+ * 4 = monthly
+ */
+int print_gui(GtkWidget *main_window, int app, int date_button, int mon_week_day);
 
-int print_days_appts(struct tm *date, AppointmentList *a_list);
+int print_days_appts(struct tm *date);
 int print_months_appts(struct tm *date_in, PaperSize paper_size);
 int print_weeks_appts(struct tm *date_in, PaperSize paper_size);
 

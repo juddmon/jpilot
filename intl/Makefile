@@ -16,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 PACKAGE = jpilot
-VERSION = 0.99.1r
+VERSION = 0.99.2
 
 SHELL = /bin/sh
 
@@ -25,7 +25,7 @@ top_srcdir = ..
 top_builddir = ..
 
 
-prefix = /usr
+prefix = /usr/local
 exec_prefix = ${prefix}
 transform = s,x,x,
 libdir = $(exec_prefix)/lib

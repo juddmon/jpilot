@@ -64,7 +64,7 @@ FILE *print_open()
 {
    long ivalue;
    const char *command;
-   
+
    get_pref(PREF_PRINT_COMMAND, &ivalue, &command);
    if (command) {
       return popen(command, "w");
@@ -103,7 +103,7 @@ int puttext(float x, float y, char *text)
 {
    int len;
    char *buf;
-   
+
    len = strlen(text);
    buf = (char *) malloc(2 * len + 1);
    bzero(buf, 2 * len + 1);
@@ -116,7 +116,7 @@ int puttext(float x, float y, char *text)
 int header()
 {
    time_t ltime;
-   
+
    time(&ltime);
    fprintf(out,
 	   "%%!PS-Adobe-2.0\n"
@@ -207,9 +207,9 @@ int print_dayview(struct tm *date, AppointmentList *a_list)
    print_logo(out, 40, 90, 0.35);
 
    fill_in(date, a_list);
-   
+
    fprintf(out, "showpage\n");
-   
+
    fprintf(out,
 	   "%%%%PageTrailer\n"
 	   "%%%%Trailer\n"
@@ -243,7 +243,7 @@ int fill_in(struct tm *date, AppointmentList *a_list)
    for (i=0; i<24; i++) {
       hours[i]=0;
    }
-   
+
    /* We have to go through them twice, once for AM, and once for PM
     * This is because of the clipping */
    for (i=0; i<2; i++) {
@@ -309,22 +309,29 @@ int fill_in(struct tm *date, AppointmentList *a_list)
       }
       fprintf(out, "grestore\n");
    }
-   free_AppointmentList(&a_list);
 
    return 0;
 }
 
-int print_days_appts(struct tm *date, AppointmentList *a_list)
+int print_days_appts(struct tm *date)
 {   
+   AppointmentList *a_list;
+
    out = print_open();
    if (!out) {
       return -1;
    }
 
+   a_list = NULL;
+
+   get_days_appointments2(&a_list, date, 2, 2, 2);
+
    print_dayview(date, a_list);
 
    print_close(out);
-   
+
+   free_AppointmentList(&a_list);
+
    return 0;
 }
 
@@ -364,7 +371,11 @@ void ps_strncat(char *dest, char *src, int n)
    int i = 0, j = 0;
    char *dest2;
    dest2 = strchr(dest, '\0');
-   while ((j < n) && (src[i] != '\0')) {
+   while (j < n) {
+      if (src[i] == '\0') {
+	 dest2[j]='\0';
+	 break;
+      }
       if (strchr("()", src[i]) != NULL) {
 	 dest2[j] = '\\';
 	 j++;
@@ -383,7 +394,7 @@ void ps_strncat(char *dest, char *src, int n)
 int days_in_mon(struct tm *date)
 {
     int days_in_month[]={ 31,28,31,30,31,30,31,31,30,31,30,31 };
-    
+
     if ((date->tm_year%4 == 0) &&
         !(((date->tm_year+1900)%100==0) && ((date->tm_year+1900)%400!=0))) {
         days_in_month[1]++;
@@ -425,11 +436,10 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
     * Set up the PostScript output file, and print the header to it.
     *------------------------------------------------------------------*/
    mask=0;
-   
+
    time(&ltime);
 
    if (! (out = print_open())) return(-1);
-
    fprintf(out, "%%!PS-Adobe-2.0\n\n"
 	   "/PageSize (%s) def\n\n", PaperSizes[paper_size]);
    print_month_header(out);
@@ -476,12 +486,12 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
       fprintf(out, "%%--------------------------------------------------\n"
 	      "%%Stuff for day %2d being printed\n", date.tm_mday);
       fprintf(out, "NextDay\n");
-        
+
       for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
 #ifdef USE_DB3
 	 if (use_db3_tags) {
 	    ret = db3_is_float(&(temp_al->ma.a), &category);
-	    jpilot_logf(LOG_DEBUG, "category = 0x%x\n", category);
+	    /* jpilot_logf(LOG_DEBUG, "category = 0x%x\n", category); */
 	    cat_bit=1<<category;
 	    if (!(cat_bit & datebook_category)) {
 	       jpilot_logf(LOG_DEBUG, "skipping rec not in this "
@@ -491,20 +501,21 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
 	 }
 #endif
 	 if (isApptOnDate(&(temp_al->ma.a), &date)) {
-	    char tmp[12];
+	    char tmp[20];
 	    char datef1[20];
 	    char datef2[20];
-	    bzero(tmp, 10);
-	    bzero(desc, 100);
+	    tmp[0]='\0';
 	    if ( ! temp_al->ma.a.event) {
 	       get_pref_time_no_secs(datef1);
 	       g_snprintf(datef2, 19, "(%s )", datef1);
 	       datef2[19]='\0';
-	       strcat(datef2, " ");
-	       strftime(tmp, 11, datef2, &(temp_al->ma.a.begin));
+	       strftime(tmp, 19, datef2, &(temp_al->ma.a.begin));
+	       tmp[19]='\0';
 	    }
+	    desc[0]='\0';
 	    if (temp_al->ma.a.description) {
 	       ps_strncat(desc, temp_al->ma.a.description, 40);
+	       desc[40]='\0';
 	    }
 	    remove_cr_lfs(desc);
 	    fprintf(out, "%s (%s) %simedItem\n", tmp, desc,
@@ -522,18 +533,18 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
    fprintf(out, "\n\n%%----------------------------------------\n"
            "%% Now generate the small months\n\n"
            "%s %d ", desc, days_in_mon(&date));
-   
+
    memcpy(&date, date_in, sizeof(struct tm));
    add_months_to_date(&date, 1);
    date.tm_mday = 1;	/* Go to the first of the month */
    mktime(&date);
    strftime(desc, 50, "(%B %Y) %w ", &date);
    fprintf(out, "%s %d SmallMonths\n", desc, days_in_mon(&date));
-   
+
    /*------------------------------------------------------------------*/
 
    free_AppointmentList(&a_list);
-   
+
    fprintf(out, "grestore\n");
    print_logo(out, 20, 30, 0.35);
    fprintf(out, "\nshowpage\n");
@@ -570,7 +581,7 @@ void check_first_last(AppointmentList *al)
       first_hour = ApptTime->tm_hour;
       first_min  = ApptTime->tm_min;
    }
-    
+
    ApptTime = &(al->ma.a.end);
    if (ApptTime->tm_hour == last_hour) {
       if (ApptTime->tm_min > last_min) last_min = ApptTime->tm_min;
@@ -579,7 +590,7 @@ void check_first_last(AppointmentList *al)
       last_min  = ApptTime->tm_min;
    }
 }
- 
+
 /*----------------------------------------------------------------------
  * print_weeks_appts	Function to print a weeks appointments onto a
  *			weekly plan. We assume that date_in is the chosen
@@ -600,13 +611,13 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
 
    get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
 #endif
-    
+
    /*------------------------------------------------------------------
     * Set up the PostScript output file, and print the header to it.
     *------------------------------------------------------------------*/
    time(&ltime);
    today_date = localtime(&ltime);
-    
+
    if (! (out = print_open())) return(-1);
    /*------------------------------------------------------------------
     * These are preferences for page size (passed in), first and last
@@ -649,7 +660,7 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
     * Now put in the finishing touches to the header, and kick-start
     * the printing process
     *------------------------------------------------------------------*/
-    
+
    fprintf(out,
 	   "%%------------------------------------------------------------\n"
 	   "%% This is today's date, the date of printing, plus the hour\n"
@@ -668,14 +679,14 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
 
    /* Get all of the appointments */
    get_days_appointments2(&a_list, NULL, 2, 2, 2);
-    
+
    /* iterate through seven days */
    memcpy(&date, date_in, sizeof(struct tm));
-    
+
    for (n = 0; n < 7; n++, add_days_to_date(&date, 1)) {
       strftime(short_date, 30, "%a, %d %b, %Y", &date);
       fprintf(out, "%d startday\n(%s) dateline\n", n, short_date);
-      
+
       for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
 #ifdef USE_DB3
 	 if (use_db3_tags) {
@@ -691,7 +702,7 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
 	 if (isApptOnDate(&(temp_al->ma.a), &date)) {
 	    bzero(desc, 256);
 	    bzero(short_date, 32);
-	    
+
 	    if ( ! temp_al->ma.a.event)
 	      {
 		 char t1[21], t2[21];
@@ -712,7 +723,7 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
    free_AppointmentList(&a_list);
    fprintf(out, "\nfinishprinting\n");
    print_close(out);
-   
+
    return(0);
 }
 
@@ -729,13 +740,13 @@ int print_address_header()
    long ivalue;
    const char *svalue;
    char str[256];
-   
+
    time(&ltime);
    date = localtime(&ltime);
-   
+
    get_pref(PREF_SHORTDATE, &ivalue, &svalue);
    strftime(str, 250, svalue, date);
-   
+
    fprintf(out,
 	   "%%!PS-Adobe-2.0\n"
 	   "%%%%Creator: J-Pilot\n"
@@ -938,7 +949,7 @@ int print_address_header()
 	   );
    return 0;
 }
-   
+
 int print_addresses(AddressList *address_list)
 {
    long one_rec_per_page;
@@ -953,7 +964,7 @@ int print_addresses(AddressList *address_list)
    int order[22]={0,1,13,2,3,4,5,6,7,8,9,10,11,12,14,15,16,17,18,19,20,21
    };
    char str[100];
-      
+
    out = print_open();
    if (!out) {
       return -1;
@@ -966,7 +977,7 @@ int print_addresses(AddressList *address_list)
    get_address_app_info(&address_app_info);
 
    print_address_header();
-   
+
    if (address_app_info.sortByCompany) {
       show1=2; /*company */
       show2=0; /*last name */
@@ -984,7 +995,7 @@ int print_addresses(AddressList *address_list)
    for (temp_al = address_list; temp_al; temp_al=temp_al->next) {
 
       fprintf(out, "%cHLINE\n", FLAG_CHAR);
-      
+
       str[0]='\0';
       if (temp_al->ma.a.entry[show1] || temp_al->ma.a.entry[show2]) {
 	 if (temp_al->ma.a.entry[show1] && temp_al->ma.a.entry[show2]) {
@@ -1001,7 +1012,7 @@ int print_addresses(AddressList *address_list)
       } else {
 	    strcpy(str, "-Unnamed-");
       }
-      
+
       courier_bold_12();
       fprintf(out, "%s\n", str);
       courier_12();
@@ -1034,7 +1045,7 @@ int print_addresses(AddressList *address_list)
    }
 
    print_close(out);
-   
+
 #ifdef HAVE_LOCALE_H
    setlocale(LC_ALL,"");
 #endif
@@ -1074,7 +1085,7 @@ int print_todos(ToDoList *todo_list, char *category_name)
    print_common_header(out);
    fprintf(out, "/CategoryName (%s) def\n", category_name);
    print_todo_header(out);
-   
+
    get_pref(PREF_PRINT_ONE_PER_PAGE, &one_rec_per_page, NULL);
    get_pref(PREF_NUM_BLANK_LINES, &lines_between_recs, NULL);
 
@@ -1087,7 +1098,7 @@ int print_todos(ToDoList *todo_list, char *category_name)
       todo = &(temp_l->mtodo.todo);
 
       fprintf(out, todo->complete ? "true  " : "false ");
-      
+
       fprintf(out, "%d ", todo->priority);
 
       if (todo->indefinite) {
@@ -1110,7 +1121,7 @@ int print_todos(ToDoList *todo_list, char *category_name)
          fprintf(out, "()");
       }
       fprintf(out, " Todo\n");
-      
+
       if (one_rec_per_page) {	
 	 fprintf(out, "NewPage\n");	
       }	
@@ -1118,7 +1129,7 @@ int print_todos(ToDoList *todo_list, char *category_name)
    fprintf(out, "showpage\n");
 
    print_close(out);
-   
+
 #ifdef HAVE_LOCALE_H
    setlocale(LC_ALL,"");
 #endif
@@ -1148,7 +1159,7 @@ int print_memos(MemoList *memo_list)
 #endif
 
    print_address_header();
-   
+
    get_pref(PREF_PRINT_ONE_PER_PAGE, &one_rec_per_page, NULL);
    get_pref(PREF_NUM_BLANK_LINES, &lines_between_recs, NULL);
 
@@ -1162,7 +1173,7 @@ int print_memos(MemoList *memo_list)
 	 f_indent_print(out, 0, memo->text);
 	 fprintf(out, "\n");
       }
-      
+
       if (one_rec_per_page) {
 	 fprintf(out, "%cLINEFEED\n", FLAG_CHAR);
       } else {
@@ -1177,6 +1188,6 @@ int print_memos(MemoList *memo_list)
 #endif
 
    print_close(out);
-   
+
    return 0;
 }

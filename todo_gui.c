@@ -24,6 +24,9 @@
 #include <gdk/gdk.h>
 #include <time.h>
 #include <stdlib.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <dirent.h>
 #include <string.h>
 #include <pi-dlp.h>
 #include "utils.h"
@@ -32,6 +35,7 @@
 #include "prefs.h"
 #include "password.h"
 #include "print.h"
+#include "export.h"
 
 
 #define NUM_TODO_PRIORITIES 5
@@ -65,7 +69,9 @@ static GtkWidget *category_menu1;
 static GtkWidget *category_menu2;
 static GtkWidget *scrolled_window;
 static GtkWidget *pane;
+
 static ToDoList *glob_todo_list=NULL;
+static ToDoList *export_todo_list=NULL;
 
 static struct sorted_cats sort_l[NUM_TODO_CAT_ITEMS];
 
@@ -75,12 +81,14 @@ static int clist_row_selected;
 static int record_changed;
 static int clist_hack;
 
-void update_todo_screen();
+static void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
+			      ToDoList *todo_list, int category, int main);
 int todo_clear_details();
 int todo_clist_redraw();
 static void connect_changed_signals(int con_or_dis);
 static int todo_find();
 static void cb_add_new_record(GtkWidget *widget, gpointer data);
+int todo_get_details(struct ToDo *new_todo, unsigned char *attrib);
 
 
 static void init()
@@ -274,7 +282,7 @@ static void connect_changed_signals(int con_or_dis)
       gtk_signal_connect(GTK_OBJECT(due_date_button), "pressed",
 			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
    }
-   
+
    /* DISCONNECT */
    if ((con_or_dis==DISCONNECT_SIGNALS) && (connected)) {
       connected=0;
@@ -305,6 +313,440 @@ static void connect_changed_signals(int con_or_dis)
 }
 
 
+static int todo_to_text(struct ToDo *todo, char *text, int len)
+{
+   char yes[]="Yes";
+   char no[]="No";
+   char empty[]="";
+   char *complete;
+   char *description;
+   char *note;
+   char due[20];
+   const char *short_date;
+
+   if (todo->indefinite) {
+      strcpy(due, "Never");
+   } else {
+      get_pref(PREF_SHORTDATE, NULL, &short_date);
+      strftime(due, 20, short_date, &(todo->due));
+   }
+   complete=todo->complete ? yes : no;
+   description=todo->description ? todo->description : empty;
+   note=todo->note ? todo->note : empty;
+
+   g_snprintf(text, len, "Due: %s\nPriority: %d\nComplete: %s\n\
+Description: %s\nNote: %s\n", due, todo->priority, complete,
+	      description, note);
+   text[len-1]='\0';
+   return 0;
+}
+
+/*
+ * Start Import Code
+ */
+int todo_import_callback(GtkWidget *parent_window, char *file_path, int type)
+{
+   FILE *in;
+   char text[65536];
+   char description[65536];
+   char note[65536];
+   struct ToDo new_todo;
+   unsigned char attrib;
+   unsigned int unique_id;
+   int i, ret, index;
+   int import_all;
+   ToDoList *todolist;
+   ToDoList *temp_todolist;
+   struct CategoryAppInfo cai;
+   char old_cat_name[32];
+   int suggested_cat_num;
+   int new_cat_num;
+   int priv, indefinite, priority, completed;
+   int year, month, day;
+
+   todo_get_details(&new_todo, &attrib);
+   free_ToDo(&new_todo);
+
+   in=fopen(file_path, "r");
+   if (!in) {
+      jpilot_logf(LOG_WARN, _("Could not open file %s\n"), file_path);
+      return -1;
+   }
+
+   /* CSV */
+   if (type==IMPORT_TYPE_CSV) {
+      jpilot_logf(LOG_DEBUG, "Todo import CSV [%s]\n", file_path);
+      /* The first line is format, so we don't need it */
+      fgets(text, 1000, in);
+      import_all=FALSE;
+      while (1) {
+	 /* Read the category field */
+	 ret = read_csv_field(in, text, 65535);
+	 if (feof(in)) break;
+#ifdef JPILOT_DEBUG
+	 printf("category is [%s]\n", text);
+#endif
+	 strncpy(old_cat_name, text, 16);
+	 old_cat_name[16]='\0';
+	 attrib=0;
+	 /* Figure out what the best category number is */
+	 index=temp_todolist->mtodo.unique_id-1;
+	 suggested_cat_num=0;
+	 for (i=0; i<NUM_TODO_CAT_ITEMS; i++) {
+	    if (todo_app_info.category.name[i][0]=='\0') continue;
+	    if (!strcmp(todo_app_info.category.name[i], old_cat_name)) {
+	       suggested_cat_num=i;
+	       i=1000;
+	       break;
+	    }
+	 }
+
+	 /* Read the private field */
+	 ret = read_csv_field(in, text, 65535);
+#ifdef JPILOT_DEBUG
+	 printf("private is [%s]\n", text);
+#endif
+	 sscanf(text, "%d", &priv);
+
+	 /* Read the indefinite field */
+	 ret = read_csv_field(in, text, 65535);
+#ifdef JPILOT_DEBUG
+	 printf("indefinite is [%s]\n", text);
+#endif
+	 sscanf(text, "%d", &indefinite);
+
+	 /* Read the Due Date field */
+	 ret = read_csv_field(in, text, 65535);
+#ifdef JPILOT_DEBUG
+	 printf("due date is [%s]\n", text);
+#endif
+	 sscanf(text, "%d %d %d", &year, &month, &day);
+
+	 /* Read the Priority field */
+	 ret = read_csv_field(in, text, 65535);
+#ifdef JPILOT_DEBUG
+	 printf("priority is [%s]\n", text);
+#endif
+	 sscanf(text, "%d", &priority);
+
+	 /* Read the Completed field */
+	 ret = read_csv_field(in, text, 65535);
+#ifdef JPILOT_DEBUG
+	 printf("completed is [%s]\n", text);
+#endif
+	 sscanf(text, "%d", &completed);
+
+	 /* Read the Description field */
+	 ret = read_csv_field(in, description, 65535);
+#ifdef JPILOT_DEBUG
+	 printf("todo description [%s]\n", description);
+#endif
+
+	 /* Read the Note field */
+	 ret = read_csv_field(in, note, 65535);
+#ifdef JPILOT_DEBUG
+	 printf("todo note [%s]\n", note);
+#endif
+
+	 new_todo.indefinite=indefinite;
+	 bzero(&(new_todo.due), sizeof(new_todo.due));
+	 new_todo.due.tm_year=year-1900;
+	 new_todo.due.tm_mon=month-1;
+	 new_todo.due.tm_mday=day;
+	 new_todo.priority=priority;
+	 new_todo.description=description;
+	 new_todo.note=note;
+
+	 todo_to_text(&new_todo, text, 65535);
+	 if (!import_all) {
+	    ret=import_record_ask(parent_window, pane,
+				  text,
+				  &(todo_app_info.category),
+				  old_cat_name,
+				  priv,
+				  suggested_cat_num,
+				  &new_cat_num);
+	 } else {
+	    new_cat_num=suggested_cat_num;
+	 }
+	 if (ret==DIALOG_SAID_IMPORT_QUIT) break;
+	 if (ret==DIALOG_SAID_IMPORT_SKIP) continue;
+	 if (ret==DIALOG_SAID_IMPORT_ALL) {
+	    import_all=TRUE;
+	 }
+	 attrib = (new_cat_num & 0x0F) |
+	   (priv ? dlpRecAttrSecret : 0);
+	 if ((ret==DIALOG_SAID_IMPORT_YES) || (import_all)) {
+	    pc_todo_write(&new_todo, NEW_PC_REC, attrib, &unique_id);
+	 }
+      }
+   }
+
+   /* Palm Desktop DAT format */
+   if (type==IMPORT_TYPE_DAT) {
+      jpilot_logf(LOG_DEBUG, "Todo import DAT [%s]\n", file_path);
+      if (dat_check_if_dat_file(in)!=DAT_TODO_FILE) {
+	 jpilot_logf(LOG_WARN, _("File doesn't appear to be todo.dat format\n"));
+	 fclose(in);
+	 return 1;
+      }
+      todolist=NULL;
+      dat_get_todos(in, &todolist, &cai);
+      import_all=FALSE;
+      for (temp_todolist=todolist; temp_todolist; temp_todolist=temp_todolist->next) {
+	 index=temp_todolist->mtodo.unique_id-1;
+	 if (index<0) {
+	    strncpy(old_cat_name, _("Unfiled"), 16);
+	    old_cat_name[16]='\0';
+	    index=0;
+	 } else {
+	    strncpy(old_cat_name, cai.name[index], 16);
+	    old_cat_name[16]='\0';
+	 }
+	 attrib=0;
+	 /* Figure out what category it was in the dat file */
+	 index=temp_todolist->mtodo.unique_id-1;
+	 suggested_cat_num=0;
+	 if (index>-1) {
+	    for (i=0; i<NUM_TODO_CAT_ITEMS; i++) {
+	       if (todo_app_info.category.name[i][0]=='\0') continue;
+	       if (!strcmp(todo_app_info.category.name[i], old_cat_name)) {
+		  suggested_cat_num=i;
+		  i=1000;
+		  break;
+	       }
+	    }
+	 }
+
+	 ret=0;
+	 todo_to_text(&(temp_todolist->mtodo.todo), text, 65535);
+	 if (!import_all) {
+	    ret=import_record_ask(parent_window, pane,
+				  text,
+				  &(todo_app_info.category),
+				  old_cat_name,
+				  (temp_todolist->mtodo.attrib & 0x10),
+				  suggested_cat_num,
+				  &new_cat_num);
+	 } else {
+	    new_cat_num=suggested_cat_num;
+	 }
+	 if (ret==DIALOG_SAID_IMPORT_QUIT) break;
+	 if (ret==DIALOG_SAID_IMPORT_SKIP) continue;
+	 if (ret==DIALOG_SAID_IMPORT_ALL) {
+	    import_all=TRUE;
+	 }
+	 attrib = (new_cat_num & 0x0F) |
+	   ((temp_todolist->mtodo.attrib & 0x10) ? dlpRecAttrSecret : 0);
+	 if ((ret==DIALOG_SAID_IMPORT_YES) || (import_all)) {
+	    pc_todo_write(&(temp_todolist->mtodo.todo), NEW_PC_REC,
+			  attrib, &unique_id);
+	 }
+      }
+      free_ToDoList(&todolist);
+   }
+
+   todo_refresh();
+   fclose(in);
+   return 0;
+}
+
+int todo_import(GtkWidget *window)
+{
+   char *type_desc[] = {
+      "CSV (Comma Separated Values)",
+      "DAT/TDA (Palm Archive Formats)",
+      NULL
+   };
+   int type_int[] = {
+      IMPORT_TYPE_CSV,
+      IMPORT_TYPE_DAT,
+      0
+   };
+
+   import_gui(window, pane, type_desc, type_int, todo_import_callback);
+   return 0;
+}
+/*
+ * End Import Code
+ */
+
+/*
+ * Start Export code
+ */
+
+void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
+		       int type, const char *filename)
+{
+   MyToDo *mtodo;
+   GList *list, *temp_list;
+   FILE *out;
+   struct stat statb;
+   int i, r, len;
+   const char *short_date;
+   time_t ltime;
+   struct tm *now;
+   char *button_text[]={gettext_noop("OK")};
+   char *button_overwrite_text[]={gettext_noop("Yes"), gettext_noop("No")};
+   char text[1024];
+   char str1[256], str2[256];
+   char pref_time[40];
+   char *csv_text;
+
+   list=GTK_CLIST(clist)->selection;
+
+   if (!stat(filename, &statb)) {
+      if (S_ISDIR(statb.st_mode)) {
+	 g_snprintf(text, 1024, _("%s is a directory"), filename);
+	 dialog_generic(GTK_WIDGET(export_window)->window,
+			0, 0, _("Error Opening File"),
+			"Directory", text, 1, button_text);
+	 return;
+      }
+      g_snprintf(text, 1024, _("Do you want to overwrite file %s?"), filename);
+      r = dialog_generic(GTK_WIDGET(export_window)->window,
+			 0, 0, _("Overwrite File?"),
+			 _("Overwrite File"), text, 2, button_overwrite_text);
+      if (r!=DIALOG_SAID_1) {
+	 return;
+      }
+   }
+
+   out = fopen(filename, "w");
+   if (!out) {
+      g_snprintf(text, 1024, "Error Opening File: %s", filename);
+      dialog_generic(GTK_WIDGET(export_window)->window,
+		     0, 0, _("Error Opening File"),
+		     "Filename", text, 1, button_text);
+      return;
+   }
+
+   for (i=0, temp_list=list; temp_list; temp_list = temp_list->next, i++) {
+      mtodo = gtk_clist_get_row_data(GTK_CLIST(clist), (int) temp_list->data);
+      if (!mtodo) {
+	 continue;
+	 jpilot_logf(LOG_WARN, "Can't export todo %d\n", (long) temp_list->data + 1);
+      }
+      switch (type) {
+       case EXPORT_TYPE_CSV:
+	 if (i==0) {
+	    fprintf(out, "CSV todo: Category, Private, Indefinite, Due Date, Priority, Completed, ToDo Text, Note\n");
+	 }
+	 len=0;
+	 if (mtodo->todo.description) {
+	    len=strlen(mtodo->todo.description) * 2 + 4;
+	 }
+	 if (len<256) len=256;
+	 csv_text=malloc(len);
+	 if (!csv_text) {
+	    continue;
+	    jpilot_logf(LOG_WARN, "Can't export todo %d\n", (long) temp_list->data + 1);
+	 }
+	 str_to_csv_str(csv_text, todo_app_info.category.name[mtodo->attrib & 0x0F]);
+	 fprintf(out, "\"%s\", ", csv_text);
+	 fprintf(out, "\"%s\", ", (mtodo->attrib & dlpRecAttrSecret) ? "1":"0");
+	 fprintf(out, "\"%s\", ", mtodo->todo.indefinite ? "1":"0");
+	 if (mtodo->todo.indefinite) {
+	    csv_text[0]='\0';
+	 } else {
+	    strftime(csv_text, len, "%Y %02m %02d", &(mtodo->todo.due));
+	 }
+	 fprintf(out, "\"%s\", ", csv_text);
+	 fprintf(out, "\"%d\", ", mtodo->todo.priority);
+	 fprintf(out, "\"%s\", ", mtodo->todo.complete ? "1":"0");
+	 if (mtodo->todo.description) {
+	    str_to_csv_str(csv_text, mtodo->todo.description);
+	    fprintf(out, "\"%s\", ", csv_text);
+	 } else {
+	    fprintf(out, "\"\", ");
+	 }
+	 if (mtodo->todo.note) {
+	    str_to_csv_str(csv_text, mtodo->todo.note);
+	    fprintf(out, "\"%s\"\n", csv_text);
+	 } else {
+	    fprintf(out, "\"\", ");
+	 }
+	 free(csv_text);
+	 break;
+       case EXPORT_TYPE_TEXT:
+	 get_pref(PREF_SHORTDATE, NULL, &short_date);
+	 get_pref_time_no_secs(pref_time);
+	 time(&ltime);
+	 now = localtime(&ltime);
+	 strftime(str1, 50, short_date, now);
+	 strftime(str2, 50, pref_time, now);
+	 g_snprintf(text, 100, "%s %s", str1, str2);
+	 text[100]='\0';
+
+	 /* Todo Should I translate these? */
+	 fprintf(out, "ToDo: exported from %s on %s\n", PN, text);
+	 fprintf(out, "Category: %s\n", todo_app_info.category.name[mtodo->attrib & 0x0F]);
+	 fprintf(out, "Private: %s\n",
+		 (mtodo->attrib & dlpRecAttrSecret) ? "Yes":"No");
+	 if (mtodo->todo.indefinite) {
+	    fprintf(out, "Due Date: Indefinite\n");
+	 } else {
+	    strftime(text, 20, "%Y %02m %02d", &(mtodo->todo.due));
+	    fprintf(out, "Due Date: %s\n", text);
+	 }
+	 fprintf(out, "Priority: %d\n", mtodo->todo.priority);
+	 fprintf(out, "Completed: %s\n", mtodo->todo.complete ? "Yes":"No");
+	 if (mtodo->todo.description) {
+	    fprintf(out, "Description: %s\n", mtodo->todo.description);
+	 }
+	 if (mtodo->todo.note) {
+	    fprintf(out, "Note: %s\n", mtodo->todo.note);
+	 }
+	 break;
+       default:
+	 jpilot_logf(LOG_WARN, "Unknown export type\n");
+      }
+   }
+
+   if (out) {
+      fclose(out);
+   }
+}
+
+
+static void cb_todo_update_clist(GtkWidget *clist, int category)
+{
+   todo_update_clist(clist, NULL, export_todo_list, category, FALSE);
+}
+
+
+static void cb_todo_export_done(GtkWidget *widget, const char *filename)
+{
+   free_ToDoList(&export_todo_list);
+
+   set_pref(PREF_TODO_EXPORT_FILENAME, 0, filename);
+}
+
+int todo_export(GtkWidget *window)
+{
+   int w, h, x, y;
+
+   gdk_window_get_size(window->window, &w, &h);
+   gdk_window_get_root_origin(window->window, &x, &y);
+
+   w = GTK_PANED(pane)->handle_xpos;
+   x+=40;
+
+   export_gui(w, h, x, y, 5, sort_l,
+	      PREF_TODO_EXPORT_FILENAME,
+	      cb_todo_update_clist,
+	      cb_todo_export_done,
+	      cb_todo_export_ok
+	      );
+
+   return 0;
+}
+
+/*
+ * End Export Code
+ */
+
+
 static int find_sorted_cat(int cat)
 {
    int i;
@@ -322,7 +764,7 @@ void cb_delete_todo(GtkWidget *widget,
    MyToDo *mtodo;
    int flag;
    int show_priv;
-   
+
    mtodo = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
    if (mtodo < (MyToDo *)CLIST_MIN_DATA) {
       return;
@@ -351,7 +793,7 @@ void cb_delete_todo(GtkWidget *widget,
 static void cb_category(GtkWidget *item, int selection)
 {
    int b;
-   
+
    b=dialog_save_changed_record(pane, record_changed);
    if (b==DIALOG_SAID_1) {
       cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
@@ -360,7 +802,7 @@ static void cb_category(GtkWidget *item, int selection)
       todo_category = selection;
       jpilot_logf(LOG_DEBUG, "todo_category = %d\n",todo_category);
       todo_clear_details();
-      update_todo_screen();
+      todo_update_clist(clist, category_menu1, glob_todo_list, todo_category, TRUE);
    }
 }
 
@@ -387,14 +829,14 @@ int todo_clear_details()
    struct tm *now;
    int new_cat;
    int sorted_position;
-   
+
    time(&ltime);
    now = localtime(&ltime);
 
    /* Need to disconnect these signals first */
    set_new_button_to(NEW_FLAG);
    connect_changed_signals(DISCONNECT_SIGNALS);
-   
+
    update_due_button(due_date_button, NULL);
 
    gtk_text_freeze(GTK_TEXT(todo_text));
@@ -435,7 +877,7 @@ int todo_clear_details()
 	(GTK_CHECK_MENU_ITEM(todo_cat_menu_item2[sorted_position]), TRUE);
       gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu2), sorted_position);
    }
-   
+
    set_new_button_to(CLEAR_FLAG);
    return 0;
 }
@@ -443,7 +885,7 @@ int todo_clear_details()
 int todo_get_details(struct ToDo *new_todo, unsigned char *attrib)
 {
    int i;
-   
+
    new_todo->indefinite = (GTK_TOGGLE_BUTTON(todo_no_due_date_checkbox)->active);
    if (!new_todo->indefinite) {
       new_todo->due.tm_mon = due_date.tm_mon;
@@ -481,7 +923,7 @@ int todo_get_details(struct ToDo *new_todo, unsigned char *attrib)
    if (GTK_TOGGLE_BUTTON(private_checkbox)->active) {
       *attrib |= dlpRecAttrSecret;
    }
-     
+
 #ifdef JPILOT_DEBUG
    jpilot_logf(LOG_DEBUG, "attrib = %d\n", *attrib);
    jpilot_logf(LOG_DEBUG, "indefinite=%d\n",new_todo->indefinite);
@@ -494,7 +936,7 @@ int todo_get_details(struct ToDo *new_todo, unsigned char *attrib)
    jpilot_logf(LOG_DEBUG, "description=[%s]\n",new_todo->description);
    jpilot_logf(LOG_DEBUG, "note=[%s]\n",new_todo->note);
 #endif
-   
+
    return 0;
 }
 
@@ -506,9 +948,9 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    int flag;
    int show_priv;
    unsigned int unique_id;
-   
+
    flag=GPOINTER_TO_INT(data);
-   
+
    /* Do masking like Palm OS 3.5 */
    if ((GPOINTER_TO_INT(data)==COPY_FLAG) || 
        (GPOINTER_TO_INT(data)==MODIFY_FLAG)) {
@@ -593,8 +1035,8 @@ static void cb_clist_selection(GtkWidget      *clist,
 
    time_t ltime;
    struct tm *now;
-   
-   if (!event) return;
+
+   if ((!event) && (clist_hack)) return;
 
    /* HACK */
    if (clist_hack) {
@@ -611,7 +1053,7 @@ static void cb_clist_selection(GtkWidget      *clist,
       cb_clist_selection(clist, row, column, GINT_TO_POINTER(1), NULL);
       return;
    }
-   
+
    time(&ltime);
    now = localtime(&ltime);
 
@@ -620,14 +1062,14 @@ static void cb_clist_selection(GtkWidget      *clist,
    mtodo = gtk_clist_get_row_data(GTK_CLIST(clist), row);
 
    set_new_button_to(CLEAR_FLAG);
-   
+
    connect_changed_signals(DISCONNECT_SIGNALS);
-   
+
    if (mtodo==NULL) {
       return;
    }
    todo=&(mtodo->todo);
-   
+
    gtk_text_freeze(GTK_TEXT(todo_text));
    gtk_text_freeze(GTK_TEXT(todo_text_note));
 
@@ -654,7 +1096,7 @@ static void cb_clist_selection(GtkWidget      *clist,
       }
    }
    count--;
-   
+
    if (sorted_position<0) {
       jpilot_logf(LOG_WARN, "Category is not legal\n");
    } else {
@@ -662,7 +1104,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 	(GTK_CHECK_MENU_ITEM(todo_cat_menu_item2[sorted_position]), TRUE);
    }
    gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu2), count);
-   
+
    if (todo->description) {
       if (todo->description[0]) {
 	 gtk_text_insert(GTK_TEXT(todo_text), NULL,NULL,NULL, todo->description, -1);
@@ -685,7 +1127,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(private_checkbox),
 				mtodo->attrib & dlpRecAttrSecret);
-     
+
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(todo_no_due_date_checkbox),
 				todo->indefinite);
    if (!todo->indefinite) {
@@ -713,7 +1155,8 @@ static void cb_clist_selection(GtkWidget      *clist,
 }
 
 
-void update_todo_screen()
+static void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
+			      ToDoList *todo_list, int category, int main)
 {
    int num_entries, entries_shown, i;
    int row_count;
@@ -732,34 +1175,20 @@ void update_todo_screen()
    const char *svalue;
    long hide_completed;
    int show_priv;
-   
+
    row_count=((GtkCList *)clist)->rows;
-   
-   free_ToDoList(&glob_todo_list);
+
+   free_ToDoList(&todo_list);
+
+   /* Need to get the private ones back for the hints calculation */
+   num_entries = get_todos2(&todo_list, SORT_ASCENDING, 2, 2, 1, 1, CATEGORY_ALL);
 
    get_pref(PREF_HIDE_COMPLETED, &hide_completed, NULL);
 
-#ifdef JPILOT_DEBUG
-    for (i=0;i<NUM_TODO_CAT_ITEMS;i++) {
-      jpilot_logf(LOG_DEBUG, "renamed:[%02d]:\n",todo_app_info.category.renamed[i]);
-      jpilot_logf(LOG_DEBUG, "category name:[%02d]:",i);
-      print_string(todo_app_info.category.name[i],16);
-      jpilot_logf(LOG_DEBUG, "category ID:%d\n", todo_app_info.category.ID[i]);
-   }
-   jpilot_logf(LOG_DEBUG, "dirty %d\n",todo_app_info.dirty);
-   jpilot_logf(LOG_DEBUG, "sortByCompany %d\n",todo_app_info.sortByPriority);
-#endif
-
-   /* Need to get the private ones back for the hints calculation */
-   num_entries = get_todos2(&glob_todo_list, SORT_ASCENDING, 2, 2, 1, 1, CATEGORY_ALL);
-
-   /*Clear the text box to make things look nice */
-   gtk_text_set_point(GTK_TEXT(todo_text), 0);
-   gtk_text_forward_delete(GTK_TEXT(todo_text),
-			   gtk_text_get_length(GTK_TEXT(todo_text)));
-
-   if (glob_todo_list==NULL) {
-      gtk_tooltips_set_tip(glob_tooltips, category_menu1, _("0 records"), NULL);   
+   if (todo_list==NULL) {
+      if (tooltip_widget) {
+	 gtk_tooltips_set_tip(glob_tooltips, tooltip_widget, _("0 records"), NULL);
+      }
       return;
    }
 
@@ -767,7 +1196,7 @@ void update_todo_screen()
 
    entries_shown=0;
    show_priv = show_privates(GET_PRIVATES, NULL);
-   for (temp_todo = glob_todo_list, i=0; temp_todo; temp_todo=temp_todo->next) {
+   for (temp_todo = todo_list, i=0; temp_todo; temp_todo=temp_todo->next) {
       if ( ((temp_todo->mtodo.attrib & 0x0F) != todo_category) &&
 	  todo_category != CATEGORY_ALL) {
 	 continue;
@@ -855,11 +1284,11 @@ void update_todo_screen()
 	    gtk_clist_set_background(GTK_CLIST(clist), entries_shown, NULL);
 	 }
       }
-      
+
       get_pixmaps(clist, PIXMAP_NOTE, &pixmap_note, &mask_note);
       get_pixmaps(clist, PIXMAP_BOX_CHECK, &pixmap_check, &mask_check);
       get_pixmaps(clist, PIXMAP_BOX_CHECKED, &pixmap_checked,&mask_checked);
-      
+
       if (temp_todo->mtodo.todo.note[0]) {
 	 /*Put a note pixmap up */
 	 gtk_clist_set_pixmap(GTK_CLIST(clist), entries_shown, TODO_NOTE_COLUMN, pixmap_note, mask_note);
@@ -878,7 +1307,7 @@ void update_todo_screen()
    jpilot_logf(LOG_DEBUG, "entries_shown=%d\n",entries_shown);
 
    /*If there is an item in the list, select the first one */
-   if (entries_shown>0) {
+   if ((main) && (entries_shown>0)) {
       gtk_clist_select_row(GTK_CLIST(clist), 0, TODO_PRIORITY_COLUMN);
       cb_clist_selection(clist, 0, TODO_PRIORITY_COLUMN, (GdkEventButton *)455, "");
    }
@@ -890,64 +1319,19 @@ void update_todo_screen()
    gtk_clist_thaw(GTK_CLIST(clist));
 
    sprintf(str, _("%d of %d records"), entries_shown, num_entries);
-   gtk_tooltips_set_tip(glob_tooltips, category_menu1, str, NULL);   
-
-   set_new_button_to(CLEAR_FLAG);
-}
-
-/*todo combine the next 2 functions */
-static int make_category_menu(GtkWidget **category_menu,
-			      int include_all)
-{
-   GtkWidget *menu;
-   GSList    *group;
-   int i;
-   int offset;
-   GtkWidget **todo_cat_menu_item;
-
-   if (include_all) {
-      todo_cat_menu_item = todo_cat_menu_item1;
-   } else {
-      todo_cat_menu_item = todo_cat_menu_item2;
+   if (tooltip_widget) {
+      gtk_tooltips_set_tip(glob_tooltips, tooltip_widget, str, NULL);
    }
-   
-   *category_menu = gtk_option_menu_new();
-   
-   menu = gtk_menu_new();
-   group = NULL;
-   
-   offset=0;
-   if (include_all) {
-      todo_cat_menu_item[0] = gtk_radio_menu_item_new_with_label(group, _("All"));
-      gtk_signal_connect(GTK_OBJECT(todo_cat_menu_item[0]), "activate",
-			 cb_category, GINT_TO_POINTER(CATEGORY_ALL));
-      group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(todo_cat_menu_item[0]));
-      gtk_menu_append(GTK_MENU(menu), todo_cat_menu_item[0]);
-      gtk_widget_show(todo_cat_menu_item[0]);
-      offset=1;
+
+   if (main) {
+      set_new_button_to(CLEAR_FLAG);
    }
-   for (i=0; i<NUM_TODO_CAT_ITEMS; i++) {
-      if (sort_l[i].Pcat[0]) {
-	 todo_cat_menu_item[i+offset] = gtk_radio_menu_item_new_with_label(
-	    group, sort_l[i].Pcat);
-	 if (include_all) {
-	    gtk_signal_connect(GTK_OBJECT(todo_cat_menu_item[i+offset]), "activate",
-	       cb_category, GINT_TO_POINTER(sort_l[i].cat_num));
-	 }
-	 group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(todo_cat_menu_item[i+offset]));
-	 gtk_menu_append(GTK_MENU(menu), todo_cat_menu_item[i+offset]);
-	 gtk_widget_show(todo_cat_menu_item[i+offset]);
-      }
-   }
-   gtk_option_menu_set_menu(GTK_OPTION_MENU(*category_menu), menu);
-   
-   return 0;
 }
 
 static int todo_find()
 {
    int r, found_at, total_count;
-   
+
    if (glob_find_id) {
       r = clist_find_id(clist,
 			glob_find_id,
@@ -992,19 +1376,19 @@ int todo_clist_redraw()
 
    line_num = clist_row_selected;
 
-   update_todo_screen();
-   
+   todo_update_clist(clist, category_menu1, glob_todo_list, todo_category, TRUE);
+
    /* Don't select the checkbox column, it will get (un)checked */
    gtk_clist_select_row(GTK_CLIST(clist), line_num, TODO_PRIORITY_COLUMN);
    cb_clist_selection(clist, line_num, TODO_PRIORITY_COLUMN, (GdkEventButton *)455, "");
-   
+
    return 0;
 }
 
 int todo_refresh()
 {
    int index;
- 
+
    if (glob_find_id) {
       todo_category = CATEGORY_ALL;
    }
@@ -1013,7 +1397,7 @@ int todo_refresh()
    } else {
       index=find_sorted_cat(todo_category)+1;
    }
-   update_todo_screen();
+   todo_update_clist(clist, category_menu1, glob_todo_list, todo_category, TRUE);
    if (index<0) {   
       jpilot_logf(LOG_WARN, "Category not legal\n");
    } else {
@@ -1028,7 +1412,7 @@ int todo_refresh()
 int todo_gui_cleanup()
 {
    int b;
-   
+
    free_ToDoList(&glob_todo_list);
    b=dialog_save_changed_record(pane, record_changed);
    if (b==DIALOG_SAID_1) {
@@ -1070,7 +1454,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    for (i=0; i<NUM_TODO_CAT_ITEMS; i++) {
       todo_cat_menu_item2[i] = NULL;
    }
-   
+
    get_todo_app_info(&todo_app_info);
 
    for (i=0; i<NUM_TODO_CAT_ITEMS; i++) {
@@ -1121,13 +1505,14 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    separator = gtk_hseparator_new();
    gtk_box_pack_start(GTK_BOX(vbox1), separator, FALSE, FALSE, 5);
 
-   
+
    /*Put the left-hand category menu up */
-   make_category_menu(&category_menu1, TRUE);
+   make_category_menu(&category_menu1, todo_cat_menu_item1,
+		      sort_l, cb_category, TRUE);
 
    gtk_box_pack_start(GTK_BOX(vbox1), category_menu1, FALSE, FALSE, 0);
-   
-   
+
+
    get_pref(PREF_HIDE_COMPLETED, &hide_completed, &svalue);
 
    /*The hide completed check box */
@@ -1137,7 +1522,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_signal_connect(GTK_OBJECT(checkbox), "clicked",
 		      GTK_SIGNAL_FUNC(cb_hide_completed), NULL);
 
-   
+
    /*Put the todo list window up */
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
    /*gtk_widget_set_usize(GTK_WIDGET(scrolled_window), 200, 0); */
@@ -1173,14 +1558,14 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), TODO_TEXT_COLUMN, FALSE);
 
    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
-   
+
    /* */
    /* The right hand part of the main window follows: */
    /* */
    hbox_temp = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
-   
+
    /* Add record modification buttons on right side */
    /* Delete button */
    button = gtk_button_new_with_label(_("Delete"));
@@ -1188,13 +1573,13 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 		      GTK_SIGNAL_FUNC(cb_delete_todo),
 		      GINT_TO_POINTER(DELETE_FLAG));
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, TRUE, TRUE, 0);
-   
+
    button = gtk_button_new_with_label(_("Copy"));
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record), 
 		      GINT_TO_POINTER(COPY_FLAG));
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, TRUE, TRUE, 0);
-   
+
    new_record_button = gtk_button_new_with_label(_("New Record"));
    gtk_signal_connect(GTK_OBJECT(new_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record), 
@@ -1208,7 +1593,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_box_pack_start(GTK_BOX(hbox_temp), add_record_button, TRUE, TRUE, 0);
    gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(GTK_BIN(add_record_button)->child)),
 		       "label_high");
-   
+
    apply_record_button = gtk_button_new_with_label(_("Apply Changes"));
    gtk_signal_connect(GTK_OBJECT(apply_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record),
@@ -1216,7 +1601,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_box_pack_start(GTK_BOX(hbox_temp), apply_record_button, TRUE, TRUE, 0);
    gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(GTK_BIN(apply_record_button)->child)),
 		       "label_high");
-   
+
 
    /*Separator */
    separator = gtk_hseparator_new();
@@ -1247,7 +1632,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    }
    gtk_widget_set_usize(hbox_temp, 10, 0);
 
-   
+
    /* Due date stuff */
    hbox_temp = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
@@ -1267,8 +1652,8 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_signal_connect(GTK_OBJECT(todo_no_due_date_checkbox), "clicked",
 		      GTK_SIGNAL_FUNC(cb_check_button_no_due_date), NULL);
    gtk_box_pack_start(GTK_BOX(hbox_temp), todo_no_due_date_checkbox, FALSE, FALSE, 0);
-   
-   
+
+
    /*Private check box */
    hbox_temp = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
@@ -1276,10 +1661,11 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_box_pack_end(GTK_BOX(hbox_temp), private_checkbox, FALSE, FALSE, 0);
 
    /*Put the right-hand category menu up */
-   make_category_menu(&category_menu2, FALSE);
+   make_category_menu(&category_menu2, todo_cat_menu_item2,
+		      sort_l, NULL, FALSE);
 
    gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu2, TRUE, TRUE, 0);
-   
+
 
    /*The Description text box on the right side */
    hbox_temp = gtk_hbox_new (FALSE, 0);
@@ -1295,7 +1681,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_box_pack_start(GTK_BOX(hbox_temp), todo_text, TRUE, TRUE, 0);
    gtk_box_pack_start(GTK_BOX(hbox_temp), vscrollbar, FALSE, FALSE, 0);
 
-   
+
    /*The Note text box on the right side */
    hbox_temp = gtk_hbox_new (FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
@@ -1316,13 +1702,13 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    /* Capture the TAB key to change focus with it */
    gtk_signal_connect(GTK_OBJECT(todo_text), "key_press_event",
 		      GTK_SIGNAL_FUNC(cb_key_pressed), todo_text_note);
-   
+
    gtk_widget_set_usize(GTK_WIDGET(todo_text), 10, 10);
    gtk_widget_set_usize(GTK_WIDGET(todo_text_note), 10, 10);
-   
+
    gtk_widget_show_all(vbox);
    gtk_widget_show_all(hbox);
-   
+
    gtk_widget_hide(add_record_button);
    gtk_widget_hide(apply_record_button);
 

@@ -50,15 +50,15 @@ cb_restore_ok(GtkWidget *widget,
    char *text;
    char file[300];
    char home_dir[300];
-   
+
    list=GTK_CLIST(restore_clist)->selection;
-   
+
    get_home_file_name("", home_dir, 255);
 
    /* Remove anything that was supposed to be installed */
    g_snprintf(file, 298, "%s/jpilot_to_install", home_dir);
    unlink(file);
-   
+
    printf("---------- Restore ----------\n");
    for (temp_list=list; temp_list; temp_list = temp_list->next) {
       gtk_clist_get_text(GTK_CLIST(restore_clist), (int)temp_list->data, 0, &text);
@@ -66,7 +66,7 @@ cb_restore_ok(GtkWidget *widget,
       g_snprintf(file, 298, "%s/backup/%s", home_dir, text);
       install_append_line(file);
    }
-   
+
    setup_sync(SYNC_NO_PLUGINS|SYNC_OVERRIDE_USER|SYNC_RESTORE);
 
    gtk_widget_destroy(data);
@@ -86,9 +86,9 @@ static int populate_clist()
    struct dirent *dirent;
    char path[256];
    int i, num;
-   
+
    get_home_file_name("backup", path, 255);
-   
+
    cleanup_path(path);
    jpilot_logf(LOG_DEBUG, "opening dir %s\n", path);
    dir = opendir(path);
@@ -117,7 +117,7 @@ static int populate_clist()
    for (i=0; i<num; i++) {
       gtk_clist_select_row(GTK_CLIST(restore_clist), i, 0);
    }
-   
+
    return 0;
 }
 
@@ -133,9 +133,9 @@ int restore_gui(int w, int h, int x, int y)
    const char *svalue;
    long ivalue;
    char str_int[10];
-   
+
    jpilot_logf(LOG_DEBUG, "restore_gui()\n");
-   
+
    restore_window = gtk_widget_new(GTK_TYPE_WINDOW,
 				   "type", GTK_WINDOW_DIALOG,
 				   "x", x, "y", y,
@@ -146,15 +146,15 @@ int restore_gui(int w, int h, int x, int y)
    gtk_container_set_border_width(GTK_CONTAINER(restore_window), 5);
 
    gtk_window_set_default_size(GTK_WINDOW(restore_window), w, h);
-   
+
    gtk_window_set_modal(GTK_WINDOW(restore_window), TRUE);
-   
+
    gtk_signal_connect(GTK_OBJECT(restore_window), "destroy",
 		      GTK_SIGNAL_FUNC(cb_restore_destroy), restore_window);
 
    vbox = gtk_vbox_new(FALSE, 0);
    gtk_container_add(GTK_CONTAINER(restore_window), vbox);
-   
+
    /* Label for instructions */
    label = gtk_label_new(_("To restore your handheld:"));
    gtk_misc_set_alignment(GTK_MISC(label), 0, 0);   
@@ -185,7 +185,7 @@ int restore_gui(int w, int h, int x, int y)
    gtk_clist_set_selection_mode(GTK_CLIST(restore_clist), GTK_SELECTION_EXTENDED);
 
    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(restore_clist));
-   
+
    /* User entry */
    hbox = gtk_hbox_new(FALSE, 5);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
@@ -218,16 +218,16 @@ int restore_gui(int w, int h, int x, int y)
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_restore_ok), restore_window);
-   
+
    button = gtk_button_new_with_label(_("Cancel"));
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_restore_quit), restore_window);
-   
+
    populate_clist();
 
    gtk_widget_show_all(restore_window);
-   
+
    gtk_main();
 
    return 0;

@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
    GList *plugin_list, *temp_list;
    jp_startup_info info;
 #endif
-   
+
    done=cons_errors=0;
    port[0]='\0';
    glob_child_pid=0;
@@ -79,10 +79,10 @@ int main(int argc, char *argv[])
 
    pref_init();
    pref_read_rc_file();
-   
+
    pipe_in=STDIN_FILENO;
    pipe_out=STDOUT_FILENO;
-   
+
    for (i=1; i<argc; i++) {
       if (!strncasecmp(argv[i], "-v", 2)) {
 	 printf("%s\n", VERSION_STRING);
@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
 	 }
       }
    }
-   
+
 #ifdef ENABLE_PLUGINS
    if (!skip_plugins) {
       load_plugins();

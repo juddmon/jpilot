@@ -53,13 +53,13 @@ int jpilot_logf(int level, char *format, ...)
 {
    va_list	       	val;
    int rval;
-   
+
    if (!((level & glob_log_file_mask) ||
        (level & glob_log_stdout_mask) ||
        (level & glob_log_gui_mask))) {
       return 0;
    }
-   
+
    va_start(val, format);
    rval = jpilot_vlogf(level, format, val);
    va_end(val);

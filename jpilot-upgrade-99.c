@@ -72,7 +72,7 @@ int convert_pc_file(char *DB_name)
    int num;
    int max_id;
    int next_id;
-   
+
    r=0;
    max_id = 0;
    next_id = 1;
@@ -169,7 +169,7 @@ int convert_pc_file(char *DB_name)
       unlink_file(pc_filename);
    }
 #endif
-   
+
    return r;
 }
 
@@ -193,19 +193,19 @@ int main()
    printf(" then you can delete them and you don't need this program.\n");
    printf("If everything goes well and you are happy with the results\n");
    printf(" then you can delete the .pc files.\n");
-   
+
    printf("\nThis conversion will overwrite current .pc3 files.\n");
    printf("Do you want to go ahead with the conversion? (y/n) >");
 
    c = getchar();
-   
+
    if ((c!='y') && (c!='Y')) {
       printf("Program aborted\n");
       exit(0);
    }
-   
+
    printf("\n");
-   
+
    get_home_file_name("", home_dir, 255);
    printf("Upgrading files in %s\n", home_dir);
 

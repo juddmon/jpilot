@@ -35,5 +35,8 @@
 #ifndef gettext_noop
 #define	gettext_noop(str) str
 #endif
+#ifndef N_
+#define N_(str) str
+#endif
 
 #endif

@@ -49,14 +49,14 @@ int install_remove_line(int deleted_line)
       jpilot_logf(LOG_DEBUG, "failed opening install_file\n");
       return -1;
    }
-   
+
    out = jp_open_home_file("jpilot_to_install.tmp", "w");
    if (!out) {
       fclose(in);
       jpilot_logf(LOG_DEBUG, "failed opening install_file.tmp\n");
       return -1;
    }
-   
+
    for (line_count=0; (!feof(in)); line_count++) {
       line[0]='\0';
       Pc = fgets(line, 1000, in);
@@ -73,7 +73,7 @@ int install_remove_line(int deleted_line)
    }
    fclose(in);
    fclose(out);
-   
+
    rename_file("jpilot_to_install.tmp", "jpilot_to_install");
 
    return 0;
@@ -83,7 +83,7 @@ int install_append_line(char *line)
 {
    FILE *out;
    int r;
-   
+
    out = jp_open_home_file("jpilot_to_install", "a");
    if (!out) {
       return -1;
@@ -123,7 +123,7 @@ static void
 {
    char *sel;
    struct stat statb;
-   
+
    jpilot_logf(LOG_DEBUG, "Add\n");
    sel = gtk_file_selection_get_filename(GTK_FILE_SELECTION(data));
    jpilot_logf(LOG_DEBUG, "file selected [%s]\n", sel);
@@ -163,20 +163,20 @@ static int
    char *new_line[2];
    int kept_line_selected;
    int count;
-   
+
    new_line[0]=line;
    new_line[1]=NULL;
-   
+
    kept_line_selected = line_selected;
 
    in = jp_open_home_file("jpilot_to_install", "r");
    if (!in) {
       return -1;
    }
-   
+
    gtk_clist_freeze(GTK_CLIST(clist));
    gtk_clist_clear(GTK_CLIST(clist));
-   
+
    for (count=0; (!feof(in)); count++) {
        line[0]='\0';
        Pc = fgets(line, 1000, in);
@@ -205,7 +205,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    line_selected = row;
    return;
 }
-  
+
 int install_gui(int w, int h, int x, int y)
 {
    GtkWidget *scrolled_window;
@@ -214,11 +214,11 @@ int install_gui(int w, int h, int x, int y)
    char temp[256];
    gchar *titles[] = {"Files to be installed"
    };
-   
+
    if (filew) {
       return 0;
    }
-   
+
    line_selected = -1;
 
    g_snprintf(temp, 255, "%s %s", PN, _("Install"));
@@ -235,7 +235,7 @@ int install_gui(int w, int h, int x, int y)
    gtk_widget_hide((GTK_FILE_SELECTION(filew)->cancel_button));
    gtk_signal_connect(GTK_OBJECT(filew), "destroy",
                       GTK_SIGNAL_FUNC(cb_destroy), filew);
-   
+
    /*Even though I hide the ok button I still want to connect its signal */
    /*because a double click on the file name also calls this callback */
    gtk_widget_hide(GTK_WIDGET(GTK_FILE_SELECTION(filew)->ok_button));   
@@ -259,13 +259,13 @@ int install_gui(int w, int h, int x, int y)
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 5);
    gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->action_area),
 		      scrolled_window, TRUE, TRUE, 0);
-   
+
    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
 		      GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
    gtk_widget_show(clist);
    gtk_widget_show(scrolled_window);
 
-   
+
    label = gtk_label_new(_("To change to a hidden directory type it below and hit TAB"));
    gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->main_vbox),
 		      label, FALSE, FALSE, 0);
@@ -296,6 +296,6 @@ int install_gui(int w, int h, int x, int y)
    gtk_widget_show(filew);
 
    update_clist();
-   
+
    return 0;
 }

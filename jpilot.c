@@ -57,7 +57,7 @@
 
 #include "icons/jpilot-icon4.xpm"
 
-#ifndef WITH_SYMPHONET
+#ifndef WITH_PROMETHEON
 #include "datebook.xpm"
 #include "address.xpm"
 #include "todo.xpm"
@@ -112,7 +112,7 @@ int glob_focus = 1;
 GtkWidget *glob_dialog=NULL;
 unsigned char skip_plugins;
 static GtkWidget *box_locked, *box_locked_masked, *box_unlocked;
-				       
+
 int pipe_in, pipe_out;
 
 GtkWidget *sync_window = NULL;
@@ -226,7 +226,7 @@ gboolean parse_geometry(const char *str,
 static void cb_focus(GtkWidget *widget, GdkEvent *event, gpointer data)
 {
    int i;
-   
+
    i = GPOINTER_TO_INT(data);
    if (i==0) {
       glob_focus=0;
@@ -255,7 +255,7 @@ int gui_cleanup()
    struct plugin_s *plugin;
    GList *plugin_list, *temp_list;
 #endif
-   
+
 #ifdef ENABLE_PLUGINS
    plugin_list = NULL;
    plugin_list = get_plugin_list();
@@ -273,7 +273,7 @@ int gui_cleanup()
       }
    }
 #endif   
-   
+
    switch(glob_app) {
     case DATEBOOK:
       datebook_gui_cleanup();
@@ -298,11 +298,11 @@ void call_plugin_gui(int number, int unique_id)
 {
    struct plugin_s *plugin;
    GList *plugin_list, *temp_list;
-   
+
    if (!number) {
       return;
    }
-   
+
    gui_cleanup();
 
    plugin_list = NULL;
@@ -336,7 +336,7 @@ void cb_plugin_gui(GtkWidget *widget, int number)
 {
    call_plugin_gui(number, 0);
 }
-      
+
 #endif
 
 #ifdef ENABLE_PLUGINS
@@ -352,7 +352,7 @@ void call_plugin_help(int number)
    if (!number) {
       return;
    }
-   
+
    plugin_list = NULL;
    plugin_list = get_plugin_list();
 
@@ -390,25 +390,25 @@ void cb_print(GtkWidget *widget, gpointer data)
    struct plugin_s *plugin;
    GList *plugin_list, *temp_list;
    char *button_text[]={gettext_noop("OK")};
-   
+
    switch(glob_app) {
     case DATEBOOK:
-      if (print_gui(window, DATEBOOK, 1) == DIALOG_SAID_PRINT) {
+      if (print_gui(window, DATEBOOK, 1, 0x07) == DIALOG_SAID_PRINT) {
 	 datebook_print(print_day_week_month);
       }
       return;
     case ADDRESS:
-      if (print_gui(window, ADDRESS, 0) == DIALOG_SAID_PRINT) {
+      if (print_gui(window, ADDRESS, 0, 0x00) == DIALOG_SAID_PRINT) {
 	 address_print();
       }
       return;
     case TODO:
-      if (print_gui(window, TODO, 0) == DIALOG_SAID_PRINT) {
+      if (print_gui(window, TODO, 0, 0x00) == DIALOG_SAID_PRINT) {
 	 todo_print();
       }
       return;
     case MEMO:
-      if (print_gui(window, MEMO, 0) == DIALOG_SAID_PRINT) {
+      if (print_gui(window, MEMO, 0, 0x00) == DIALOG_SAID_PRINT) {
 	 memo_print();
       }
       return;
@@ -439,7 +439,7 @@ void cb_restore(GtkWidget *widget, gpointer data)
 {
    int r;
    int w, h, x, y;
-   
+
    jpilot_logf(LOG_DEBUG, "cb_restore()\n");
 
    gdk_window_get_size(window->window, &w, &h);
@@ -456,9 +456,8 @@ void cb_import(GtkWidget *widget, gpointer data)
    struct plugin_s *plugin;
    GList *plugin_list, *temp_list;
    char *button_text[]={gettext_noop("OK")};
-   
+
    switch(glob_app) {
-/* FIXME
     case DATEBOOK:
       datebook_import(window);
       return;
@@ -468,7 +467,6 @@ void cb_import(GtkWidget *widget, gpointer data)
     case TODO:
       todo_import(window);
       return;
- */
     case MEMO:
       memo_import(window);
       return;
@@ -500,9 +498,8 @@ void cb_export(GtkWidget *widget, gpointer data)
    struct plugin_s *plugin;
    GList *plugin_list, *temp_list;
    char *button_text[]={gettext_noop("OK")};
-   
+
    switch(glob_app) {
-/* FIXME
     case DATEBOOK:
       datebook_export(window);
       return;
@@ -512,7 +509,6 @@ void cb_export(GtkWidget *widget, gpointer data)
     case TODO:
       todo_export(window);
       return;
- */
     case MEMO:
       memo_export(window);
       return;
@@ -572,18 +568,18 @@ static void cb_private(GtkWidget *widget, gpointer data)
       }
       break;
    }
-      
+
    if (was_privates!=privates) {
       cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
    }
 }
-   
+
 void cb_app_button(GtkWidget *widget, gpointer data)
 {
    int app;
-   
+
    app = GPOINTER_TO_INT(data);
-   
+
    if (app==REDRAW) {
       gui_cleanup();
       if (glob_date_timer_tag) {
@@ -595,7 +591,7 @@ void cb_app_button(GtkWidget *widget, gpointer data)
       app = glob_app;
       glob_app = 0;
    }
-   
+
    switch(app) {
     case DATEBOOK:
       if (glob_app == DATEBOOK) {
@@ -701,21 +697,20 @@ void bad_sync_exit_status(int exit_status)
      /*-------------------------------------------*/
      "This palm doesn't have the same user name\n"
      "or user ID as the one that was synced the\n"
-     "last time.  Syncing could have unwanted\n"
-     "effects.\n"
+     "last time.  Syncing could have unwanted effects."
+     "\n"
      "Read the user manual if you are uncertain.";
    char text2[] =
      /*-------------------------------------------*/
      "This palm has a NULL user id.\n"
-     "It may have been hard reset.\n"
-     "J-Pilot will not restore a palm yet.\n"
-     "Use pilot-xfer to restore the palm and\n"
-     "install-user to add a username and user ID\n"
-     "to the palm.\n"
+     "Every palm must have a unique user id in order to sync properly.\n"
+     "If it has been hard reset, use restore from the menu to restore it,\n"
+     "or use pilot-xfer.\n"
+     "To add a user name and ID use install-user, i.e install-user \"name\" 12345.\n"
      "Read the user manual if you are uncertain.";
    char *button_text[]={gettext_noop("OK"), gettext_noop("Sync Anyway")
    };
-   
+
    if (!GTK_IS_WINDOW(window)) {
       return;
    }
@@ -890,7 +885,7 @@ void cb_about(GtkWidget *widget, gpointer data)
 void cb_install_gui(GtkWidget *widget, gpointer data)
 {
    int w, h, x, y;
-   
+
    jpilot_logf(LOG_DEBUG, "cb_install_gui()\n");
 
    gdk_window_get_size(window->window, &w, &h);
@@ -906,7 +901,7 @@ void get_main_menu(GtkWidget  *window,
 		   GtkWidget **menubar,
 		   GList *plugin_list)
 /* Some of this code was copied from the gtk_tut.txt file */
-#ifndef WITH_SYMPHONET
+#ifndef WITH_PROMETHEON
 #define NUM_FACTORY_ITEMS 23
 #else
 #define NUM_FACTORY_ITEMS 23
@@ -924,7 +919,7 @@ void get_main_menu(GtkWidget  *window,
   { NULL, "<control>P", cb_print,       0,        NULL },
   { NULL, NULL,         NULL,           0,        "<Separator>" },
   { NULL, NULL,         cb_restore,     0,        NULL },
-/* #ifndef WITH_SYMPHONET */
+/* #ifndef WITH_PROMETHEON */
   { NULL, NULL,         NULL,           0,        "<Separator>" },
   { NULL, "<control>Q", delete_event,   0,        NULL },
 /* #endif */
@@ -992,12 +987,12 @@ void get_main_menu(GtkWidget  *window,
    g_snprintf(temp_str, 100, _("/_Help/%s"), PN);
    temp_str[100]='\0';
    menu_items1[i++].path=strdup(temp_str);
-   
+
 #ifdef ENABLE_PLUGINS
    /* Go to first entry in the list */
    for (temp_list = plugin_list; temp_list; temp_list = temp_list->prev)
       plugin_list = temp_list;
-   
+
    /* Count the plugin/ entries */
    for (count=0, temp_list = plugin_list;
 	temp_list; temp_list = temp_list->next) {
@@ -1006,7 +1001,7 @@ void get_main_menu(GtkWidget  *window,
 	 count++;
       }
    }
-   
+
    /* Count the help/ entries */
    for (help_count=0, temp_list = plugin_list;
 	temp_list; temp_list = temp_list->next) {
@@ -1015,7 +1010,7 @@ void get_main_menu(GtkWidget  *window,
 	 help_count++;
       }
    }
-   
+
    plugin_menu_strings = plugin_help_strings = NULL;
    if (count != 0) {
      plugin_menu_strings = malloc(count * sizeof(char *));
@@ -1023,7 +1018,7 @@ void get_main_menu(GtkWidget  *window,
    if (help_count != 0) {
       plugin_help_strings = malloc(help_count * sizeof(char *));
    }
-   
+
    /* Create plugin menu strings */
    str_i = 0;
    for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
@@ -1054,7 +1049,7 @@ void get_main_menu(GtkWidget  *window,
    }
    nmenu_items = nmenu_items + help_count;
 #endif
-   
+
 
    menu_items2=malloc(nmenu_items * sizeof(GtkItemFactoryEntry));
    if (!menu_items2) {
@@ -1103,7 +1098,7 @@ void get_main_menu(GtkWidget  *window,
    /* Skip the /Plugins entry */
    i1++;
 #endif
-   
+
    /* Copy the last part of the array until END */
    for (; ; i1++, i2++) {
       if (!strcmp(menu_items1[i1].path, "END")) {
@@ -1149,14 +1144,14 @@ void get_main_menu(GtkWidget  *window,
     the number of items in the array, the array itself, and any
     callback data for the the menu items. */
    gtk_item_factory_create_items(item_factory, nmenu_items, menu_items2, NULL);
-   
+
    /* Attach the new accelerator group to the window. */
    gtk_accel_group_attach(accel_group, GTK_OBJECT (window));
 
    if (menubar)
      /* Finally, return the actual menu bar created by the item factory. */
      *menubar = gtk_item_factory_get_widget (item_factory, "<main>");
-   
+
    free(menu_items2);
 
    /* NUM_FACTORY_ITEMS is just a safety, the loop stops at END */
@@ -1189,13 +1184,13 @@ static void delete_event(GtkWidget *widget, GdkEvent *event, gpointer data)
    /* gdk_window_get_deskrelative_origin(window->window, &x, &y); */
    gdk_window_get_origin(window->window, &x, &y);
    jpilot_logf(LOG_DEBUG, "x=%d, y=%d\n", x, y);
-   
+
    gdk_window_get_size(window->window, &pw, &ph);
    set_pref(PREF_WINDOW_WIDTH, pw, NULL);
    set_pref(PREF_WINDOW_HEIGHT, ph, NULL);
-   
+
    set_pref(PREF_LAST_APP, glob_app, NULL);
-   
+
    gui_cleanup();
 
 #ifdef ENABLE_PLUGINS
@@ -1211,7 +1206,7 @@ static void delete_event(GtkWidget *widget, GdkEvent *event, gpointer data)
       }
    }
 #endif
-   
+
    if (glob_child_pid) {
       jpilot_logf(LOG_DEBUG, "killing %d\n", glob_child_pid);
 	 kill(glob_child_pid, SIGTERM);
@@ -1229,7 +1224,7 @@ void cb_output(GtkWidget *widget, gpointer data)
    int flags;
    int w, h, output_height, pane_y;
    long ivalue;
-   
+
    flags=GPOINTER_TO_INT(data);
 
    if ((flags==OUTPUT_MINIMIZE) || (flags==OUTPUT_RESIZE)) {
@@ -1277,7 +1272,7 @@ void SetFontRecursively(GtkWidget *widget, gpointer data)
 {
    GtkStyle *style;
    GdkFont *f;
-   
+
    f = (GdkFont *)data;
 
    style = gtk_widget_get_style(widget);
@@ -1484,7 +1479,7 @@ char *xpm_unlocked[] = {
       jpilot_logf(LOG_DEBUG, "plugin: [%s] was loaded\n", plugin->name);
    }
 
-   
+
    for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
       plugin = (struct plugin_s *)temp_list->data;
       if (plugin) {
@@ -1510,7 +1505,7 @@ char *xpm_unlocked[] = {
    }
    pipe_in = filedesc[0];
    pipe_out = filedesc[1];
-   
+
    gtk_set_locale();
 
 #if defined(ENABLE_NLS)
@@ -1554,13 +1549,13 @@ char *xpm_unlocked[] = {
    gtk_init(&argc, &argv);
 
    read_gtkrc_file();
-   
+
    /* gtk_init must already have been called, or will seg fault */
    parse_geometry(geometry_str, pref_width, pref_height,
 		  &w, &h, &x, &y, &bit_mask);
 
    get_pref(PREF_USER, &ivalue, &svalue);
-   
+
    strcpy(title, PN" "VERSION);
    if ((svalue) && (svalue[0])) {
       strcat(title, " User: ");
@@ -1625,11 +1620,11 @@ char *xpm_unlocked[] = {
    gtk_box_pack_start(GTK_BOX(main_vbox), menubar, FALSE, FALSE, 0);
    gtk_menu_bar_set_shadow_type(GTK_MENU_BAR(menubar), GTK_SHADOW_NONE);
 
-   
+
    gtk_box_pack_start(GTK_BOX(main_vbox), g_hbox, TRUE, TRUE, 3);
    gtk_container_set_border_width(GTK_CONTAINER(g_hbox), 10);
    gtk_box_pack_start(GTK_BOX(g_hbox), g_vbox0, FALSE, FALSE, 3);
-   
+
 
    /* Make the output text window */
    temp_hbox = gtk_hbox_new(FALSE, 0);
@@ -1671,7 +1666,7 @@ char *xpm_unlocked[] = {
    gtk_widget_set_usize(button_datebook, 46, 46);
    gtk_box_pack_start(GTK_BOX(g_vbox0), temp_hbox, FALSE, FALSE, 0);
    gtk_box_pack_start(GTK_BOX(temp_hbox), button_datebook, FALSE, FALSE, 0);
-   
+
    /* Create "Address" button */
    temp_hbox = gtk_hbox_new(FALSE, 0);
    button_address = gtk_button_new();
@@ -1709,7 +1704,7 @@ char *xpm_unlocked[] = {
 
    /* Create tooltips */
    glob_tooltips = gtk_tooltips_new();
-   
+
    /* Create Lock/Unlock boxes */
    temp_hbox = gtk_hbox_new(FALSE, 0);
    box_locked = gtk_hbox_new(FALSE, 0);
@@ -1757,11 +1752,11 @@ char *xpm_unlocked[] = {
    create_main_boxes();
 
    gtk_widget_show_all(window);
-   
+
    gtk_widget_show(window);
-   
+
    style = gtk_widget_get_style(window);
-   
+
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask, NULL, jpilot_icon4_xpm);
    gdk_window_set_icon(window->window, NULL, pixmap, mask);
    gdk_window_set_icon_name(window->window, PN);  
@@ -1826,7 +1821,7 @@ char *xpm_unlocked[] = {
    pixmapwid = gtk_pixmap_new(pixmap, mask);
    gtk_widget_show(pixmapwid);
    gtk_container_add(GTK_CONTAINER(box_unlocked), pixmapwid);
-   
+
    gtk_tooltips_set_tip(glob_tooltips, button_datebook, _("Datebook/Go to Today"), NULL);
 
    gtk_tooltips_set_tip(glob_tooltips, button_address, _("Address Book"), NULL);
@@ -1849,7 +1844,7 @@ char *xpm_unlocked[] = {
        (ivalue==MEMO)) {
       cb_app_button(NULL, GINT_TO_POINTER(ivalue));
    }
-   
+
    /* Set the pane size */
    gdk_window_get_size(window->window, &w, &h);
    gtk_paned_set_position(GTK_PANED(output_pane), h + 2);

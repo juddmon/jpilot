@@ -1,10 +1,8 @@
 These are some of the things on my list todo, mostly, but not neccesarily
 in this order:
 
-* Restore of palm
-* printing of daily/weekly schedules
-* import/export files (most likely in XML, ldif, and CSV).
-* selective database backup
+* Import/export files in XML, ldif, and maybe other formats
+* Selective database backup
 * Edit categories on the desktop
 * Better daily schedule
 * Archiving archived records from the palm

@@ -86,4 +86,7 @@ int compareTimesToDay(struct tm *tm1, struct tm *tm2);
 int db3_is_float(struct Appointment *a, int *category);
 #endif
 
+int datebook_import(GtkWidget *window);
+int datebook_export(GtkWidget *window);
+
 #endif

@@ -37,6 +37,68 @@ int (*glob_import_callback)(GtkWidget *parent_window, char *file_path, int type)
 int glob_type_selected;
 
 
+/*
+ * This function reads until it finds a non separator character,
+ * then reads a string.  Spaces, commas, etc. can be inside quotes.
+ * Escaped quotes (double quotes) are converted to single.
+ * Return value is size of text.
+ *  -1 for EOL
+ */
+int read_csv_field(FILE *in, char *text, int size, int new_line)
+{
+   int n, c;
+   char sep[]=",\t \r\n";
+   int quoted;
+
+   n=0;
+   quoted=0;
+   text[0]='\0';
+   /* Read until a non separator character is found */
+   while (1) {
+      c=getc(in);
+      if (feof(in)) {
+	 return 0;
+	 text[++n]='\0';
+      }
+      if (!strchr(sep, c)) {
+	 ungetc(c, in);
+	 break;
+      }
+   }
+   /* Read the field */
+   while (1) {
+      c=fgetc(in);
+      if (feof(in)) break;
+      /* Look for quote */
+      if (c=='"') {
+	 if (quoted) {
+	    c=fgetc(in);
+	    if (c=='"') {
+	       /* Found double quotes, convert to single */
+	    } else {
+	       quoted=(quoted&1)^1;
+	       ungetc(c, in);
+	       continue;
+	    }
+	 } else {
+	    quoted=1;
+	    continue;
+	 }
+      }
+      /* Look for separators */
+      if (strchr(sep, c)) {
+	 if (!quoted) {
+	    text[n++]='\0';
+	    break;
+	 }
+      }
+      text[n++]=c;
+      if (n+1>size) return n;
+   }
+   text[n++]='\0';
+   return n;
+}
+
 char *str_type(int type)
 {
    switch (type) {
@@ -58,7 +120,7 @@ int guess_file_type(char *path)
 {
    FILE *in;
    char text[256];
-   
+
    if (!path) return IMPORT_TYPE_UNKNOWN;
    in=fopen(path, "r");
    if (!in) return IMPORT_TYPE_UNKNOWN;
@@ -126,11 +188,11 @@ cb_import(GtkWidget *widget,
 {
    char *sel;
    struct stat statb;
-   
+
    jpilot_logf(LOG_DEBUG, "cb_import\n");
    sel = gtk_file_selection_get_filename(GTK_FILE_SELECTION(filesel));
    jpilot_logf(LOG_DEBUG, "file selected [%s]\n", sel);
-   
+
    /*Check to see if its a regular file */
    if (stat(sel, &statb)) {
       jpilot_logf(LOG_DEBUG, "File selected was not stat-able\n");
@@ -166,7 +228,7 @@ static void cb_import_select_row(GtkWidget *file_clist,
       jpilot_logf(LOG_DEBUG, "File selected was not a regular file\n");
       return;
    }
-   
+
    guessed_type=guess_file_type(sel);
    for (i=0; i<MAX_IMPORT_TYPES; i++) {
       if (radio_types[i]==NULL) break;
@@ -192,11 +254,11 @@ void import_gui(GtkWidget *main_window, GtkWidget *main_pane,
    GSList *group;
    int i;
    int pw, ph, px, py;
-   
+
    if (filew) {
       return;
    }
-   
+
    line_selected = -1;
 
    gdk_window_get_size(main_window->window, &pw, &ph);
@@ -219,21 +281,22 @@ void import_gui(GtkWidget *main_window, GtkWidget *main_pane,
    if (svalue && svalue[0]) {
       gtk_file_selection_set_filename(GTK_FILE_SELECTION(filew), svalue);
    }
-      
+
    glob_import_callback=import_callback;
 
-   glob_type_selected=IMPORT_TYPE_TEXT;
+   /* Set the type to match the first button, which will be set */
+   glob_type_selected=type_int[0];
 
    gtk_widget_hide((GTK_FILE_SELECTION(filew)->cancel_button));
    gtk_signal_connect(GTK_OBJECT(filew), "destroy",
                       GTK_SIGNAL_FUNC(cb_destroy), filew);
-   
+
    /*Even though I hide the ok button I still want to connect its signal */
    /*because a double click on the file name also calls this callback */
    gtk_widget_hide(GTK_WIDGET(GTK_FILE_SELECTION(filew)->ok_button));   
    gtk_signal_connect(GTK_OBJECT(GTK_FILE_SELECTION(filew)->ok_button),
 		      "clicked", GTK_SIGNAL_FUNC(cb_import), filew);
-   
+
    label = gtk_label_new(_("To change to a hidden directory type it below and hit TAB"));
    gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->main_vbox),
 		      label, FALSE, FALSE, 0);
@@ -308,7 +371,7 @@ cb_import_record_ask_quit(GtkWidget *widget,
 }
 
 int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
-		      struct Memo *memo, struct CategoryAppInfo *cai,
+		      char *text, struct CategoryAppInfo *cai,
 		      char *old_cat_name,
 		      int priv, int suggested_cat_num, int *new_cat_num)
 {
@@ -321,7 +384,7 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
    int pw, ph;
    gint px, py;
    char str[100];
-   
+
    if (import_record_ask_window) {
       return 0;
    }
@@ -347,14 +410,14 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
 					     NULL);
 
    gtk_container_set_border_width(GTK_CONTAINER(import_record_ask_window), 5);
-   
+
    gtk_signal_connect(GTK_OBJECT(import_record_ask_window), "destroy",
                       GTK_SIGNAL_FUNC(cb_import_record_ask_destroy),
 		      import_record_ask_window);
-   
+
    vbox=gtk_vbox_new(FALSE, 0);
    gtk_container_add(GTK_CONTAINER(import_record_ask_window), vbox);
-   
+
    /* Private */
    if (priv) {
       g_snprintf(str, 50, _("Record was marked as private"));
@@ -364,13 +427,13 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
    label = gtk_label_new(str);
    gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
    gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
-   
+
 
    g_snprintf(str, 60, "Category before import was: [%s]", old_cat_name);
    label = gtk_label_new(str);
    gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
    gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
-   
+
 
    g_snprintf(str, 60, "Record will be put in category [%s]",
 	      cai->name[suggested_cat_num]);
@@ -390,7 +453,9 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
    gtk_box_pack_start(GTK_BOX(temp_hbox), textw, TRUE, TRUE, 0);
    gtk_box_pack_start(GTK_BOX(temp_hbox), vscrollbar, FALSE, FALSE, 0);
 
-   gtk_text_insert(GTK_TEXT(textw), NULL, NULL, NULL, memo->text, -1);
+   if (text) {
+      gtk_text_insert(GTK_TEXT(textw), NULL, NULL, NULL, text, -1);
+   }
 
    /* Box for buttons  */
    temp_hbox = gtk_hbox_new(FALSE, 0);
@@ -425,9 +490,9 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
 		      GINT_TO_POINTER(DIALOG_SAID_IMPORT_QUIT));
 
    gtk_widget_show_all(import_record_ask_window);
-   
+
    gtk_window_set_modal(GTK_WINDOW(import_record_ask_window), TRUE);
-   
+
    gtk_main();
 
    return glob_import_record_ask_button_pressed;

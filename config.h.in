@@ -85,8 +85,8 @@
 /* For Irix shared libraries */
 #undef ABILIB
 
-/* This is for Symphonet use only */
-#undef WITH_SYMPHONET
+/* This is for Prometheon use only */
+#undef WITH_PROMETHEON
 
 /*
  * Shell commands can be executed when an alarm goes off, substitution can be

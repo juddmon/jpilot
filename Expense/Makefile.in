@@ -24,9 +24,9 @@ GTKFLAGS = @GTK_CFLAGS@
 GTKLIBS = @GTK_LIBS@
 
 # Targets
-all: libplugin.h expense.o libexpense.so
+all: libplugin.h expense.o libexpense.la
 
-libexpense.so: expense.o
+libexpense.la: expense.o
 	$(LIBTOOL) --mode=link \
 	$(CC) $(OPTIONS) -o libexpense.la \
 	expense.lo \
@@ -43,7 +43,7 @@ libplugin.h: ../libplugin.h
 
 clean: 
 	rm -f *.o *~ config.cache .libs/* *.so *.so.? *.so.?.? *.lo *.la
-	rm -f .libs/*
+	rm -rf .libs/
 
 distclean: clean
 	rm -f config.status config.log *.so Makefile
@@ -55,13 +55,13 @@ distclean: clean
 install:
 	$(INSTALL) -d -m 755 $(prefix)/lib/jpilot; \
 	$(INSTALL) -d -m 755 $(prefix)/lib/jpilot/plugins; \
-	$(LIBTOOL) --mode=install -c $(INSTALL) \
+	$(LIBTOOL) --mode=install $(INSTALL) \
 	libexpense.la $(prefix)/lib/jpilot/plugins
 
 local_install:
 	$(INSTALL) -d -m 755 $(HOME)/.jpilot; \
 	$(INSTALL) -d -m 755 $(HOME)/.jpilot/plugins; \
-	$(LIBTOOL) --mode=install -c $(INSTALL) \
+	$(LIBTOOL) --mode=install $(INSTALL) \
 	libexpense.la $(HOME)/.jpilot/plugins
 
 uninstall:

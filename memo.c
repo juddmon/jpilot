@@ -19,7 +19,9 @@
 
 #include "config.h"
 #include "i18n.h"
+#include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <ctype.h>
 #include <pi-source.h>
 #include <pi-socket.h>
@@ -43,7 +45,7 @@ int memo_compare(const void *v1, const void *v2)
 
    memol1=(MemoList **)v1;
    memol2=(MemoList **)v2;
-   
+
    m1=&((*memol1)->mmemo.memo);
    m2=&((*memol2)->mmemo.memo);
 
@@ -73,7 +75,7 @@ int memo_sort(MemoList **memol, int sort_order)
    if (sort_order==SORT_DESCENDING) {
       return 0;
    }
-   
+
    /* Count the entries in the list */
    for (count=0, temp_memol=*memol; temp_memol; temp_memol=temp_memol->next, count++) {
       ;
@@ -83,14 +85,14 @@ int memo_sort(MemoList **memol, int sort_order)
       /* We don't have to sort less than 2 items */
       return 0;
    }
-   
+
    /* Allocate an array to be qsorted */
    sort_memol = calloc(count, sizeof(MemoList *));
    if (!sort_memol) {
       jpilot_logf(LOG_WARN, "memo_sort(): Out of Memory\n");
       return 0;
    }
-   
+
    /* Set our array to be a list of pointers to the nodes in the linked list */
    for (i=0, temp_memol=*memol; temp_memol; temp_memol=temp_memol->next, i++) {
       sort_memol[i] = temp_memol;
@@ -117,7 +119,7 @@ int memo_sort(MemoList **memol, int sort_order)
       }
       *memol = sort_memol[0];
    }
-   
+
    free(sort_memol);
 
    return 0;
@@ -147,7 +149,7 @@ int pc_memo_write(struct Memo *memo, PCRecType rt, unsigned char attrib,
    br.attrib = attrib;
    br.buf = record;
    br.size = rec_len;
-   
+
    get_pref(PREF_MEMO32_MODE, &ivalue, NULL);
    if (ivalue) {
       jp_pc_write("Memo32DB", &br);
@@ -155,14 +157,14 @@ int pc_memo_write(struct Memo *memo, PCRecType rt, unsigned char attrib,
       jp_pc_write("MemoDB", &br);
    }
    *unique_id = br.unique_id;
-   
+
    return 0;
 }
 
 void free_MemoList(MemoList **memo)
 {
    MemoList *temp_memo, *temp_memo_next;
-   
+
    for (temp_memo = *memo; temp_memo; temp_memo=temp_memo_next) {
       free_Memo(&(temp_memo->mmemo.memo));
       temp_memo_next = temp_memo->next;
@@ -195,7 +197,7 @@ int get_memo_app_info(struct MemoAppInfo *ai)
       jpilot_logf(LOG_WARN, _("Error reading"), "MemoDB.pdb");
       return -1;
    }
-	 
+
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    if (char_set != CHAR_SET_ENGLISH) {
       for (i = 0; i < 16; i++) {
@@ -229,7 +231,7 @@ int get_memos2(MemoList **memo_list, int sort_order,
    long char_set;
    long ivalue;
    buf_rec *br;
-  
+
    jpilot_logf(LOG_DEBUG, "get_memos2()\n");
    if (modified==2) {
       get_pref(PREF_SHOW_MODIFIED, &keep_modified, NULL);

@@ -21,14 +21,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include "config.h"
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <unistd.h>
+#include <utime.h>
 #include <pi-source.h>
 #include <pi-socket.h>
 #include <pi-datebook.h>
 #include <pi-dlp.h>
 #include <pi-file.h>
-#include <time.h>
-#include <unistd.h>
-#include <utime.h>
 #include "utils.h"
 #include "log.h"
 #include "prefs.h"
@@ -61,7 +63,7 @@
 void takeoutfunnies(char *str)
 {
    int i;
-   
+
    if (!str) {
       return;
    }

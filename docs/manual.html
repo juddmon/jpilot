@@ -12,7 +12,7 @@
 <h2>
 <b>J-Pilot User Manual</b></h2>
 <img SRC="jpilot-toplogo.jpg" 
-ALT="J-Pilot Logo: Download full documents with images at http://jpilot.org" 
+ALT="J-Pilot Logo: http://jpilot.org" 
 NOSAVE height=68 width=202>
 </center>
 
@@ -26,18 +26,30 @@ Linux</li>
 <li>
 Solaris</li>
 <li>
+HP-UX</li>
+<li>
 Irix</li>
 <li>
 FreeBSD</li>
 <li>
 PowerPC</li>
 </ul>
+HP-UX</li>
+</ul>
 J-Pilot should work with Palm Pilot models 1000, 5000, Personal, Professional,
 all III models, IIIc, V, VII, All Visors, Sonys, pretty much any Palm OS
 device.
+<br><br>
+01 Feb 2002:<br>
+Palm OS versions greater than 4.0 cannot have the password set on the
+handheld.&nbsp; This will be fixed in a later version.&nbsp;
+<br><br>USB Palms (m series) and Sony Clies will work, but require
+pilot-link 0.10.1 or greater, which is still unreleased at the time of this
+writing.&nbsp;  J-Pilot will autodetect the newer version of pilot-link and
+build appropriately.&nbsp;
 <h3>
 Updates</h3>
-This document was last updated 19 March 2001, for J-Pilot-0.99.&nbsp;
+This document was last updated 03 Feb 2002, for J-Pilot-0.99.2.&nbsp;
 <h3>
 Purpose of this document</h3>
 Many things in this document are pretty much self explanatory, like a lot
@@ -49,12 +61,6 @@ some things with "<u><font color="#FF0000">*Hint*</font></u>"<font color="#00000
 that I think may not be right away obvious to a new user.&nbsp; If you
 are in a hurry, just read these.</font>
 <h3>
-Images</h3>
-I include this document in the J-Pilot tarball and RPM, however, I have omitted
-the graphics from these versions to save on download time.&nbsp;  If you
-want the graphics then go to http://jpilot.org on the documents section and
-download the full manuals.
-<h3>
 Installation</h3>
 
 <h4>
@@ -62,9 +68,10 @@ Prerequisites</h4>
 
 <li>
 GTK+, and glib (installed by default on most Linux distributions)</li>
-
 <li>
 pilot-link (comes with many distributions)</li>
+<li>
+pilot-link > 0.10.1 for Palm OS 4.x USB and Sony USB handhelds.
 
 <br>
 <p>To compile J-Pilot you need to have GTK+1.2 or later installed.&nbsp;
@@ -74,17 +81,20 @@ version.&nbsp; You can also do a "glib-config --version".&nbsp; You can
 get these at <a href="http://www.gtk.org">http://www.gtk.org</a>
 <p>Pilot link must be installed and working.&nbsp; What I mean by working
 is that you can use pilot-xfer, memos, or some other pilot-link program.
-<p>David Silber has some pretty good documentation for using Palm Pilots
-with Linux at <a href="http://www.orbits.com/Palm/">http://www.orbits.com/Palm/</a>.
-<p>The pilot-link code can be found at 
-<a href="http://www.gnu-designs.com/pilot-link/">http://www.gnu-designs.com/pilot-link/</a>
+<p>Here is a visor USB howto I found: 
+<a
+href="http://www.linuxlookup.com/html/guides/visor-jpilot.html">
+Handspring Visor and J-Pilot guide</a><br>
+The HOWTO is also relevant for the clie devices.
+<p>The pilot-link code and other helpful info can be found at 
+<a href="http://www.pilot-link.org/">http://www.pilot-link.org/</a>
 <p>If you are installing pilot-link from RPMs make sure that you also have
 the pilot-link-dev rpm installed for the header files so that J-Pilot can
 compile.
 <h4>
 Compiling</h4>
 To compile and install do the following:
-<br>./configure
+<br>./configure --prefix=/usr
 <br>make
 <br>make install
 <br>jpilot
@@ -92,7 +102,7 @@ To compile and install do the following:
 <p>make uninstall is also an option, however I do not recommend using this
 ;)
 <p>I have included a spec file so if you want to create your own RPM all
-you have to do is "rpm -tb jpilot-0.99.tar.gz"
+you have to do is "rpm -tb jpilot-0.99.2.tar.gz"
 <p>J-Pilot was written in such a way that it should be very safe to sync.&nbsp;
 There is always the possibility of something going wrong though.&nbsp;
 As with anything else, backup your data if you cannot afford to lose it.&nbsp;
@@ -103,11 +113,14 @@ When syncing, J-Pilot uses the port and speed settings out of the J-Pilot
 preferences screen.&nbsp; If the port is blank then J-Pilot will use the
 PILOTPORT environment variables, as does pilot-link.&nbsp; If these are
 blank also then J-Pilot will default to /dev/pilot.
+
 <p>It is recommended, but not necessary to make a link from /dev/pilot
 to the correct serial port.&nbsp; So, if your cradle is on COM1, this is
 /dev/ttyS0 under Linux.&nbsp; You could execute the command "ln -s /dev/ttyS0
 /dev/pilot".&nbsp; COM2 is /dev/ttyS1, and so on.&nbsp; The Linux serial
-ports cua[n] are going away.&nbsp; You should use the ttyS[n] ports instead.
+ports cua[n] are going away.&nbsp; You should use the ttyS[n] ports
+instead.&nbsp; USB ports are usually /dev/ttyUSB1, or /dev/usb/tts/1 (for
+devfs), but some devices use /dev/ttyUSB0, or /dev/usb/tts/0.&nbsp;
 <p>You must also give non-root users permissions to access the serial port.&nbsp;
 The command to do this is (as root) "chmod 666 /dev/ttyS0" for the first
 serial port, ttyS1, for the second, and so on.
@@ -151,9 +164,9 @@ Using J-Pilot</h2>
 
 <h3>
 Datebook Application</h3>
-<img SRC="jpilot-datebook.jpg" 
-ALT="Datebook Screenshot: Download full documents with images at http://jpilot.org" 
-NOSAVE height=537 width=785>
+<img SRC="jpilot-datebook.png" 
+ALT="Datebook Screenshot: Download full documents with images at http://jpilot.org"
+NOSAVE height=571 width=790>
 <h4>
 Viewing Records</h4>
 You can browse through days on the calendar for the current month by pressing
@@ -181,9 +194,9 @@ To modify a record click on the record in the daily schedule, change the
 details of the record, and then press the "Apply Changes" button.
 <h3>
 Address Application</h3>
-<img SRC="jpilot-address.jpg"
+<img SRC="jpilot-address.png"
 ALT="Address Screenshot: Download full documents with images at http://jpilot.org" 
-NOSAVE height=537 width=785>
+NOSAVE height=571 width=790>
 <h4>
 Viewing Records</h4>
 On the left side of the screen there is a list of addresses.&nbsp; These
@@ -212,9 +225,9 @@ To modify a record, change the details of the
 address and then press the "Apply Changes" button.
 <h3>
 ToDo Application</h3>
-<img SRC="jpilot-todo.jpg"
+<img SRC="jpilot-todo.png"
 ALT="ToDo Screenshot: Download full documents with images at http://jpilot.org" 
-NOSAVE height=537 width=785>
+NOSAVE height=571 width=790>
 <h4>
 Viewing Records</h4>
 On the left side of the screen there is a list of todos.&nbsp; These can
@@ -243,9 +256,9 @@ then press the "Apply Changes" button.
 box.
 <h3>
 Memo Application</h3>
-<img SRC="jpilot-memo.jpg"
+<img SRC="jpilot-memo.png"
 ALT="Memo Screenshot: Download full documents with images at http://jpilot.org" 
-NOSAVE height=537 width=785>
+NOSAVE height=571 width=790>
 <h4>
 Viewing Records</h4>
 On the left side of the screen there is a list of memos.&nbsp; These can
@@ -268,9 +281,9 @@ To modify a record select the record, change the details of the memo and
 then press the "Apply Changes" button.
 <h3>
 Expense Application Plugin</h3>
-<img SRC="jpilot-expense.jpg"
+<img SRC="jpilot-expense.png"
 ALT="Expense Screenshot: Download full documents with images at http://jpilot.org" 
-NOSAVE height=537 width=785>
+NOSAVE height=571 width=790>
 <h4>
 This is an example plugin application</h4>
 I've written the expense application mostly for an example of a plugin and a 
@@ -291,9 +304,9 @@ do anything during a sync to Palm OS 3.3, so it should not hurt anything to
 have it enabled.&nbsp;
 <h3>
 Searching</h3>
-<img SRC="jpilot-search.jpg"
+<img SRC="jpilot-search.png"
 ALT="Search Screenshot: Download full documents with images at http://jpilot.org" 
-NOSAVE height=300 width=500>
+NOSAVE height=330 width=500>
 <p>Search allows you to search for strings that may appear in records.&nbsp;
 Just type the search string into the "Search for" entry and hit enter.&nbsp;
 The "Case Sensitive" checkbox can be clicked for a case sensitive search.&nbsp;
@@ -302,9 +315,9 @@ on these records and the J-Pilot main window will go to the application
 and the record that matches the one that was selected.
 <h3>
 Installing files to the Palm Pilot</h3>
-<img SRC="jpilot-install.jpg"
+<img SRC="jpilot-install.png"
 ALT="Install Screenshot: Download full documents with images at http://jpilot.org" 
-NOSAVE height=593 width=441>
+NOSAVE height=571 width=395>
 <p>The files entered here will be installed during the next sync.&nbsp;
 J-Pilot just keeps a pointer to the file, not a copy, so you shouldn't
 move the file, or delete it until after a sync.&nbsp; Just browse through
@@ -316,9 +329,9 @@ them and pressing the "Remove" button.&nbsp; When you are done press the
 "Done" button.
 <h3>
 Preferences screen</h3>
-<img SRC="jpilot-prefs.jpg"
+<img SRC="jpilot-prefs.png"
 ALT="Preferences Screenshot: Download full documents with images at http://jpilot.org" 
-NOSAVE height=574 width=912>
+NOSAVE height=645 width=920>
 <h4>
 Locale Tab</h4>
 <li>

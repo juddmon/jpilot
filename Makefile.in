@@ -2,18 +2,120 @@
 
 PACKAGE = @PACKAGE@
 VERSION = @VERSION@
-PACKAGE_VERSION = @PACKAGE_VERSION@
 
-distdir = $(PACKAGE)-$(PACKAGE_VERSION)
+distdir = $(PACKAGE)-$(VERSION)
 
 top_srcdir = @top_srcdir@
 top_builddir = @top_srcdir@
 
-SUBDIRS = intl po Expense SyncTime
+SUBDIRS = intl po Expense SyncTime KeyRing docs empty m4 icons
+
+JPILOT_SRC = address.c \
+	address_gui.c \
+	alarms.c \
+	datebook.c \
+	cp1250.c \
+	dat.c \
+	datebook_gui.c \
+	export_gui.c \
+	import_gui.c \
+	install_gui.c \
+	japanese.c \
+	jpilot.c \
+	jpilot-sync.c \
+	jpilot-upgrade-99.c \
+	jpilot-dump.c \
+	log.c \
+	libplugin.c \
+	memo_gui.c \
+	monthview_gui.c \
+	password.c \
+	memo.c \
+	plugins.c \
+	prefs.c \
+	print.c \
+	print_gui.c \
+	print_headers.c \
+	print_logo.c \
+	prefs_gui.c \
+	restore_gui.c \
+	russian.c \
+	search_gui.c \
+	sync.c \
+	todo.c \
+	todo_gui.c \
+	utils.c \
+	weekview_gui.c
+
+JPILOT_SRC_HDRS = address.h \
+	alarms.h \
+	cp1250.h \
+	datebook.h \
+	export.h \
+	i18n.h \
+	japanese.h \
+	log.h \
+	libplugin.h \
+	memo.h \
+	password.h \
+	plugins.h \
+	prefs.h \
+	print.h \
+	print_headers.h \
+	print_logo.h \
+	prefs_gui.h \
+	restore.h \
+	russian.h \
+	sync.h \
+	todo.h \
+	utils.h
+
+JPILOT_IMAGES = address.xpm \
+	address_ncc.xpm \
+	datebook.xpm \
+	datebook_ncc.xpm \
+	memo.xpm \
+	memo_ncc.xpm \
+	todo.xpm \
+	todo_ncc.xpm 
+
+JPILOT_MISC = ABOUT-NLS \
+	BUGS \
+	CHANGELOG \
+	CREDITS \
+	COPYING \
+	Makefile.in \
+	TODO \
+	INSTALL \
+	README \
+	SlackBuild.in \
+	UPGRADING \
+	aclocal.m4 \
+	config.h.in \
+	configure \
+	configure.in \
+	install-sh \
+	jpilot.kdelnk \
+	jpilot.spec \
+	jpilot.spec.in \
+	jpilot.rh7.spec \
+	jpilot-col.spec \
+	jpilotrc.blue \
+	jpilotrc.default \
+	jpilotrc.green \
+	jpilotrc.purple \
+	jpilotrc.steel \
+	config.sub \
+	config.guess \
+	ltconfig \
+	ltmain.sh \
+	mkinstalldirs
+
+SRC = $(JPILOT_SRC) $(JPILOT_SRC_HDRS) $(JPILOT_IMAGES) $(JPILOT_MISC) $(SUBDIRS)
 
 # Install variables
 prefix=@prefix@
-mandir=$(prefix)/man
+mandir=@mandir@
 
 datadir = $(prefix)/@DATADIRNAME@
 localedir = $(datadir)/locale
@@ -47,26 +149,30 @@ GTKLIBS = @GTK_LIBS@
 INTLLIBS = @INTLLIBS@
 
 PLUGIN_SUPPORT = @PLUGIN_SUPPORT@
+MAKE_KEYRING = @MAKE_KEYRING@
 
 plugins_0 =
 plugins_1 = plugins
+keyring_0 =
+keyring_1 = keyring
 
 # Targets
-all: po_dir intl_dir jpilot jpilot-sync jpilot-dump $(plugins_$(PLUGIN_SUPPORT))
+all: po_dir intl_dir jpilot jpilot-sync jpilot-dump $(plugins_$(PLUGIN_SUPPORT)) \
+	$(keyring_$(MAKE_KEYRING))
 
 jpilot: address.o address_gui.o alarms.o cp1250.o dat.o datebook.o \
-	datebook_gui.o import_gui.o install_gui.o japanese.o jpilot.o \
-	libplugin.o log.o memo.o memo_gui.o monthview_gui.o password.o \
-	plugins.o prefs.o prefs_gui.o print.o print_gui.o print_headers.o \
-	print_logo.o restore_gui.o russian.o search_gui.o sync.o todo.o \
-	todo_gui.o utils.o weekview_gui.o
+	datebook_gui.o export_gui.o import_gui.o install_gui.o japanese.o \
+	jpilot.o libplugin.o log.o memo.o memo_gui.o monthview_gui.o \
+	password.o plugins.o prefs.o prefs_gui.o print.o print_gui.o \
+	print_headers.o print_logo.o restore_gui.o russian.o search_gui.o \
+	sync.o todo.o todo_gui.o utils.o weekview_gui.o
 	$(LIBTOOL) --mode=link $(CC) -export-dynamic $(OPTIONS) $(GTKFLAGS) \
 	address.o address_gui.o alarms.o cp1250.o dat.o datebook.o \
-	datebook_gui.o import_gui.o install_gui.o japanese.o jpilot.o \
-	libplugin.o log.o memo.o memo_gui.o monthview_gui.o password.o \
-	plugins.o prefs.o prefs_gui.o print.o print_gui.o print_headers.o \
-	print_logo.o restore_gui.o russian.o search_gui.o sync.o todo.o \
-	todo_gui.o utils.o weekview_gui.o \
+	datebook_gui.o export_gui.o import_gui.o install_gui.o japanese.o \
+	jpilot.o libplugin.o log.o memo.o memo_gui.o monthview_gui.o \
+	password.o plugins.o prefs.o prefs_gui.o print.o print_gui.o \
+	print_headers.o print_logo.o restore_gui.o russian.o search_gui.o \
+	sync.o todo.o todo_gui.o utils.o weekview_gui.o \
 	$(PILOT_LIBS) $(GTKLIBS) $(INTLLIBS) \
 	-o jpilot
 
@@ -104,6 +210,9 @@ datebook_gui.o: datebook_gui.c datebook.h config.h i18n.h utils.h log.h \
 	print.h prefs.h utils.h
 	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c datebook_gui.c
 
+export_gui.o: export_gui.c export.h config.h i18n.h utils.h log.h
+	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c export_gui.c
+
 import_gui.o: import_gui.c config.h i18n.h utils.h log.h
 	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c import_gui.c
 
@@ -120,11 +229,11 @@ memo.o: memo.c memo.h config.h i18n.h utils.h log.h libplugin.h \
 	prefs.h japanese.h cp1250.h russian.h
 	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c memo.c
 
-memo_gui.o: memo_gui.c memo.h config.h i18n.h utils.h log.h \
+memo_gui.o: memo_gui.c export.h memo.h config.h i18n.h utils.h log.h \
 	prefs.h print.h
 	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c memo_gui.c
 
-monthview_gui.o: monthview_gui.c config.h i18n.h utils.h prefs.h log.h \
+monthview_gui.o: monthview_gui.c config.h i18n.h utils.h prefs.h log.h print.h \
 	datebook.h
 	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c monthview_gui.c
 
@@ -179,7 +288,7 @@ todo_gui.o: todo_gui.c todo.h config.h i18n.h utils.h log.h \
 utils.o: utils.c utils.h config.h i18n.h log.h prefs.h sync.h plugins.h
 	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c utils.c
 
-weekview_gui.o: weekview_gui.c config.h i18n.h utils.h prefs.h log.h \
+weekview_gui.o: weekview_gui.c config.h i18n.h utils.h prefs.h log.h print.h \
 	datebook.h
 	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c weekview_gui.c
 #
@@ -243,25 +352,32 @@ intl_dir:
 plugins:
 	cd SyncTime; $(MAKE)
 	cd Expense; $(MAKE)
-#	cd KeyRing; $(MAKE)
+keyring:
+	cd KeyRing; $(MAKE)
 
 plugins_clean_0 =
 plugins_clean_1 = clean_plugins
+keyring_clean_0 =
+keyring_clean_1 = clean_keyring
 
-clean: $(plugins_clean_$(PLUGIN_SUPPORT))
-	rm -f *.o *~ config.cache
+clean: $(plugins_clean_$(PLUGIN_SUPPORT)) $(keyring_clean_$(MAKE_KEYRING))
+	rm -f *.o *~ config.cache $(PACKAGE)-$(VERSION).tar.gz
 	cd intl; $(MAKE) clean
 	cd po; $(MAKE) clean
 
 clean_plugins:
 	cd SyncTime; $(MAKE) clean
 	cd Expense; $(MAKE) clean
-#	cd KeyRing; $(MAKE) clean
+clean_keyring:
+	cd KeyRing; $(MAKE) clean
 
 plugins_distclean_0 =
 plugins_distclean_1 = distclean_plugins
+keyring_distclean_0 =
+keyring_distclean_1 = distclean_keyring
 
 distclean: $(plugins_distclean_$(PLUGIN_SUPPORT))
+	rm -f *.o *~ config.cache $(PACKAGE)-$(VERSION).tar.gz
 	cd intl; $(MAKE) distclean
 	cd po; $(MAKE) distclean
 	rm -f config.status config.h config.log libtool Makefile \
@@ -270,12 +386,15 @@ distclean: $(plugins_distclean_$(PLUGIN_SUPPORT))
 distclean_plugins:
 	cd SyncTime; $(MAKE) distclean
 	cd Expense; $(MAKE) distclean
-#	cd KeyRing; $(MAKE) distclean
+distclean_keyring:
+	cd KeyRing; $(MAKE) distclean
 
 install_plugins_0 =
 install_plugins_1 = install_plugins
+install_keyring_0 =
+install_keyring_1 = install_keyring
 
-install: all $(install_plugins_$(PLUGIN_SUPPORT))
+install: all $(install_plugins_$(PLUGIN_SUPPORT)) $(install_keyring_$(MAKE_KEYRING))
 	if test -d "$(prefix)/bin" ; then \
 	  $(INSTALL) -s -m 555 jpilot $(prefix)/bin/jpilot ; \
 	else \
@@ -296,36 +415,48 @@ install: all $(install_plugins_$(PLUGIN_SUPPORT))
 	else \
 	  $(INSTALL) -s -m 555 jpilot-dump $(prefix)/jpilot-upgrade-99 ; \
 	fi
-	$(INSTALL) -d -m 755 $(prefix)/share/jpilot
-	$(INSTALL) -m 755 jpilotrc.blue $(prefix)/share/jpilot
-	$(INSTALL) -m 755 jpilotrc.default $(prefix)/share/jpilot/
-	$(INSTALL) -m 755 jpilotrc.green $(prefix)/share/jpilot/
-	$(INSTALL) -m 755 jpilotrc.purple $(prefix)/share/jpilot/
-	$(INSTALL) -m 755 jpilotrc.steel $(prefix)/share/jpilot/
-	$(INSTALL) -m 755 empty/DatebookDB.pdb $(prefix)/share/jpilot/
-	$(INSTALL) -m 755 empty/AddressDB.pdb $(prefix)/share/jpilot/
-	$(INSTALL) -m 755 empty/ToDoDB.pdb $(prefix)/share/jpilot/
-	$(INSTALL) -m 755 empty/MemoDB.pdb $(prefix)/share/jpilot/
-	$(INSTALL) -m 755 empty/Memo32DB.pdb $(prefix)/share/jpilot/
-	$(INSTALL) -m 755 empty/ExpenseDB.pdb $(prefix)/share/jpilot/
-	$(INSTALL) -d -m 755 $(prefix)/doc/jpilot-0.99
-	$(INSTALL) -m 755 docs/manual.html $(prefix)/doc/jpilot-0.99/manual.html
-	$(INSTALL) -m 755 docs/plugin.html $(prefix)/doc/jpilot-0.99/
-	$(INSTALL) -d -m 755 $(prefix)/doc/jpilot-0.99/icons
-	$(INSTALL) -m 755 icons/README $(prefix)/doc/jpilot-0.99/icons/README
-	$(INSTALL) -m 755 icons/jpilot-icon1.xpm $(prefix)/doc/jpilot-0.99/icons/
-	$(INSTALL) -m 755 icons/jpilot-icon2.xpm $(prefix)/doc/jpilot-0.99/icons/
-	$(INSTALL) -m 755 icons/jpilot-icon3.xpm $(prefix)/doc/jpilot-0.99/icons/
-	$(INSTALL) -m 755 BUGS $(prefix)/doc/jpilot-0.99/
-	$(INSTALL) -m 755 CHANGELOG $(prefix)/doc/jpilot-0.99/
-	$(INSTALL) -m 755 COPYING $(prefix)/doc/jpilot-0.99/
-	$(INSTALL) -m 755 CREDITS $(prefix)/doc/jpilot-0.99/
-	$(INSTALL) -m 755 INSTALL $(prefix)/doc/jpilot-0.99/
-	$(INSTALL) -m 755 README $(prefix)/doc/jpilot-0.99/
-	$(INSTALL) -m 755 TODO $(prefix)/doc/jpilot-0.99/
-	$(INSTALL) -m 755 UPGRADING $(prefix)/doc/jpilot-0.99/
+	$(INSTALL) -d -m 755 $(prefix)/share/$(PACKAGE)
+	$(INSTALL) -m 644 jpilotrc.blue $(prefix)/share/$(PACKAGE)
+	$(INSTALL) -m 644 jpilotrc.default $(prefix)/share/$(PACKAGE)/
+	$(INSTALL) -m 644 jpilotrc.green $(prefix)/share/$(PACKAGE)/
+	$(INSTALL) -m 644 jpilotrc.purple $(prefix)/share/$(PACKAGE)/
+	$(INSTALL) -m 644 jpilotrc.steel $(prefix)/share/$(PACKAGE)/
+	$(INSTALL) -m 644 empty/DatebookDB.pdb $(prefix)/share/$(PACKAGE)/
+	$(INSTALL) -m 644 empty/AddressDB.pdb $(prefix)/share/$(PACKAGE)/
+	$(INSTALL) -m 644 empty/ToDoDB.pdb $(prefix)/share/$(PACKAGE)/
+	$(INSTALL) -m 644 empty/MemoDB.pdb $(prefix)/share/$(PACKAGE)/
+	$(INSTALL) -m 644 empty/Memo32DB.pdb $(prefix)/share/$(PACKAGE)/
+	$(INSTALL) -m 644 empty/ExpenseDB.pdb $(prefix)/share/$(PACKAGE)/
+	$(INSTALL) -d -m 755 $(prefix)/doc/$(PACKAGE)-$(VERSION)
+	$(INSTALL) -m 644 docs/manual.html $(prefix)/doc/$(PACKAGE)-$(VERSION)/manual.html
+	$(INSTALL) -m 644 docs/plugin.html $(prefix)/doc/$(PACKAGE)-$(VERSION)
+	$(INSTALL) -m 644 docs/jpilot-address.png $(prefix)/doc/$(PACKAGE)-$(VERSION)
+	$(INSTALL) -m 644 docs/jpilot-datebook.png $(prefix)/doc/$(PACKAGE)-$(VERSION)
+	$(INSTALL) -m 644 docs/jpilot-expense.png $(prefix)/doc/$(PACKAGE)-$(VERSION)
+	$(INSTALL) -m 644 docs/jpilot-install.png $(prefix)/doc/$(PACKAGE)-$(VERSION)
+	$(INSTALL) -m 644 docs/jpilot-memo.png $(prefix)/doc/$(PACKAGE)-$(VERSION)
+	$(INSTALL) -m 644 docs/jpilot-prefs.png $(prefix)/doc/$(PACKAGE)-$(VERSION)
+	$(INSTALL) -m 644 docs/jpilot-print.png $(prefix)/doc/$(PACKAGE)-$(VERSION)
+	$(INSTALL) -m 644 docs/jpilot-search.png $(prefix)/doc/$(PACKAGE)-$(VERSION)
+	$(INSTALL) -m 644 docs/jpilot-todo.png $(prefix)/doc/$(PACKAGE)-$(VERSION)
+	$(INSTALL) -m 644 docs/jpilot-toplogo.jpg $(prefix)/doc/$(PACKAGE)-$(VERSION)
+	$(INSTALL) -d -m 755 $(prefix)/doc/$(PACKAGE)-$(VERSION)/icons
+	$(INSTALL) -m 644 icons/README $(prefix)/doc/$(PACKAGE)-$(VERSION)/icons/README
+	$(INSTALL) -m 644 icons/jpilot-icon1.xpm $(prefix)/doc/$(PACKAGE)-$(VERSION)/icons/
+	$(INSTALL) -m 644 icons/jpilot-icon2.xpm $(prefix)/doc/$(PACKAGE)-$(VERSION)/icons/
+	$(INSTALL) -m 644 icons/jpilot-icon3.xpm $(prefix)/doc/$(PACKAGE)-$(VERSION)/icons/
+	$(INSTALL) -m 644 icons/jpilot-icon4.xpm $(prefix)/doc/$(PACKAGE)-$(VERSION)/icons/
+	$(INSTALL) -m 644 BUGS $(prefix)/doc/$(PACKAGE)-$(VERSION)/
+	$(INSTALL) -m 644 CHANGELOG $(prefix)/doc/$(PACKAGE)-$(VERSION)/
+	$(INSTALL) -m 644 COPYING $(prefix)/doc/$(PACKAGE)-$(VERSION)/
+	$(INSTALL) -m 644 CREDITS $(prefix)/doc/$(PACKAGE)-$(VERSION)/
+	$(INSTALL) -m 644 INSTALL $(prefix)/doc/$(PACKAGE)-$(VERSION)/
+	$(INSTALL) -m 644 README $(prefix)/doc/$(PACKAGE)-$(VERSION)/
+	$(INSTALL) -m 644 TODO $(prefix)/doc/$(PACKAGE)-$(VERSION)/
+	$(INSTALL) -m 644 UPGRADING $(prefix)/doc/$(PACKAGE)-$(VERSION)/
 	cd intl; $(MAKE) install
 	cd po; $(MAKE) install
+	$(INSTALL) -d -m 755 $(mandir)/man1/
 	cat docs/jpilot.1 | gzip -9c > $(mandir)/man1/jpilot.1.gz
 	cat docs/jpilot-sync.1 | gzip -9c > $(mandir)/man1/jpilot-sync.1.gz
 	cat docs/jpilot-upgrade-99.1 | gzip -9c > $(mandir)/man1/jpilot-upgrade-99.1.gz
@@ -333,20 +464,48 @@ install: all $(install_plugins_$(PLUGIN_SUPPORT))
 install_plugins:
 	cd SyncTime; $(MAKE) install
 	cd Expense; $(MAKE) install
-#	cd KeyRing; $(MAKE) install
+install_keyring:
+	cd KeyRing; $(MAKE) install
 
 uninstall:
-	rm -f $(prefix)/share/jpilot/*
+	rm -f $(prefix)/share/$(PACKAGE)/*
 	rm -f $(prefix)/bin/jpilot
 	rm -f $(prefix)/bin/jpilot-sync
 	rm -f $(prefix)/bin/jpilot-dump
 	rm -f $(prefix)/jpilot
-	rm -rf $(prefix)/doc/jpilot-0.99/
+	rm -rf $(prefix)/doc/$(PACKAGE)-$(VERSION)/
 	cd intl; $(MAKE) uninstall
 	cd po; $(MAKE) uninstall
 	cd SyncTime; $(MAKE) uninstall
 	cd Expense; $(MAKE) uninstall
 	cd KeyRing; $(MAKE) uninstall
 
-dist:
-	make_tarball
+dist: clean
+	@echo
+	@echo "->Copying all release files to the directory " $(PACKAGE)-$(VERSION)
+	@echo
+	/bin/rm -f $(PACKAGE)-$(VERSION).tar.gz
+	-mkdir $(PACKAGE)-$(VERSION)
+	tar cf - $(SRC) | (cd $(PACKAGE)-$(VERSION); tar xf -)
+	/bin/rm -rf $(PACKAGE)-$(VERSION)/intl/CVS/
+	/bin/rm -rf $(PACKAGE)-$(VERSION)/po/CVS/
+	/bin/rm -rf $(PACKAGE)-$(VERSION)/Expense/CVS/
+	/bin/rm -rf $(PACKAGE)-$(VERSION)/KeyRing/CVS/
+	/bin/rm -rf $(PACKAGE)-$(VERSION)/SyncTime/CVS/
+	/bin/rm -rf $(PACKAGE)-$(VERSION)/docs/CVS/
+	/bin/rm -rf $(PACKAGE)-$(VERSION)/empty/CVS/
+	/bin/rm -rf $(PACKAGE)-$(VERSION)/m4/CVS/
+	/bin/rm -rf $(PACKAGE)-$(VERSION)/icons/CVS/
+	@echo
+	@echo "->Making the compressed tar file " $(PACKAGE)-$(VERSION).tar.gz
+	@echo
+	tar cf - $(PACKAGE)-$(VERSION) | gzip > $(PACKAGE)-$(VERSION).tar.gz
+	@echo
+	@echo "->Removing the temporary directory " $(PACKAGE)-$(VERSION)
+	/bin/rm -rf $(PACKAGE)-$(VERSION)
+		
+rpm: dist
+	rpm -tb $(PACKAGE)-$(VERSION).tar.gz
+
+srpm: dist
+	rpm -ts $(PACKAGE)-$(VERSION).tar.gz

@@ -51,7 +51,7 @@ const char *jpilot_strstr(const char *haystack, const char *needle, int case_sen
    register char *Ps2;
    register const char *Ps1;
    char *r;
-   
+
    if (case_sense) {
       return strstr(haystack, needle);
    } else {
@@ -63,7 +63,7 @@ const char *jpilot_strstr(const char *haystack, const char *needle, int case_sen
       }
       needle2 = malloc(strlen(needle)+2);
       haystack2 = malloc(strlen(haystack)+2);
-      
+
       Ps1 = needle;
       Ps2 = needle2;
       while (Ps1[0]) {
@@ -72,7 +72,7 @@ const char *jpilot_strstr(const char *haystack, const char *needle, int case_sen
 	 Ps2++;
       }
       Ps2[0]='\0';
-      
+
       Ps1 = haystack;
       Ps2 = haystack2;
       while (Ps1[0]) {
@@ -92,7 +92,7 @@ const char *jpilot_strstr(const char *haystack, const char *needle, int case_sen
    }
 }
 
-      
+
 static int
   search_datebook(char *needle, GtkWidget *clist)
 {
@@ -106,10 +106,10 @@ static int
    const char *svalue1;
    long ivalue;
    struct search_record *new_sr;
-   
+
    /*Search Appointments */
    a_list = NULL;
-   
+
    get_days_appointments2(&a_list, NULL, 2, 2, 2);
 
    if (a_list==NULL) {
@@ -158,7 +158,7 @@ static int
 	 }
 	 strftime(date_str, 50, datef, &temp_al->ma.a.begin);
 	 date_str[49]='\0';
-	    
+
 	 if (found == 1) {
 	    g_snprintf(str, 200, "%s  %s",
 		       date_str,
@@ -189,7 +189,7 @@ static int
    AddressList *temp_al;
    struct search_record *new_sr;
    int i, count;
-   
+
    /*Search Addresses */
    a_list = NULL;
 
@@ -217,7 +217,7 @@ static int
 	       new_sr->unique_id = temp_al->ma.unique_id;
 	       new_sr->next = search_rl;
 	       search_rl = new_sr;
-	       
+
 	       gtk_clist_set_row_data(GTK_CLIST(clist), 0, new_sr);
 	       count++;
 
@@ -240,10 +240,10 @@ static int
    ToDoList *temp_todo;
    struct search_record *new_sr;
    int found, count;
-   
+
    /*Search Appointments */
    todo_list = NULL;
-   
+
    get_todos2(&todo_list, SORT_DESCENDING, 2, 2, 2, 1, CATEGORY_ALL);
 
    if (todo_list==NULL) {
@@ -271,7 +271,7 @@ static int
       if (found) {
 	 gtk_clist_prepend(GTK_CLIST(clist), empty_line);
 	 gtk_clist_set_text(GTK_CLIST(clist), 0, 0, "ToDo");
-	 
+
 	 /*Add to the search list */
 	 new_sr = malloc(sizeof(struct search_record));
 	 new_sr->app_type = TODO;
@@ -307,7 +307,7 @@ static int
    MemoList *temp_memo;
    struct search_record *new_sr;
    int count;
-   
+
    /*Search Memos */
    memo_list = NULL;
 
@@ -391,7 +391,7 @@ static int
 	       new_sr->unique_id = temp_sr->unique_id;
 	       new_sr->next = search_rl;
 	       search_rl = new_sr;
-      
+
 	       gtk_clist_set_row_data(GTK_CLIST(clist), 0, new_sr);
 	       count++;
 	    }
@@ -430,9 +430,9 @@ static void
    GtkWidget *clist;
    char *entry_text;
    int count;
-   
+
    jpilot_logf(LOG_DEBUG, "enter cb_entry\n");
-   
+
    clist = data;
    entry_text = gtk_entry_get_text(GTK_ENTRY(widget));
    if (!entry_text || !strlen(entry_text)) {
@@ -455,7 +455,7 @@ static void
       gtk_clist_prepend(GTK_CLIST(clist), empty_line);
       gtk_clist_set_text(GTK_CLIST(clist), 0, 1, _("No records found"));
    }
-   
+
    return;
 }
 
@@ -511,7 +511,7 @@ void cb_search_gui(GtkWidget *widget, gpointer data)
    GtkWidget *button;
    GtkWidget *vbox, *hbox;
    char temp[256];
-   
+
    if (GTK_IS_WIDGET(window)) {
       return;
    }
@@ -543,7 +543,7 @@ void cb_search_gui(GtkWidget *widget, gpointer data)
    entry = gtk_entry_new();
    gtk_box_pack_start(GTK_BOX(hbox), entry, TRUE, TRUE, 0);
    gtk_widget_grab_focus(GTK_WIDGET(entry));
-   
+
    case_sense_checkbox = gtk_check_button_new_with_label(_("Case Sensitive"));
    gtk_box_pack_start(GTK_BOX(hbox), case_sense_checkbox, FALSE, FALSE, 0);
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(case_sense_checkbox),

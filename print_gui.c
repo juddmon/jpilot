@@ -48,7 +48,7 @@ static gboolean cb_destroy(GtkWidget *widget)
    char *entry_text;
    char *lines_text;
    int num_lines;
-   
+
    jpilot_logf(LOG_DEBUG, "Cleanup print_gui\n");
 
    /* Get radio button prefs */
@@ -107,12 +107,12 @@ static gboolean cb_destroy(GtkWidget *widget)
 
       set_pref(PREF_NUM_BLANK_LINES, num_lines, NULL);
    }
-   
+
    /* Get print command */
    entry_text = gtk_entry_get_text(GTK_ENTRY(print_command_entry));
    jpilot_logf(LOG_DEBUG, "print_command_entry = [%s]\n", entry_text);
    set_pref(PREF_PRINT_COMMAND, 0, entry_text);
-   
+
    window = NULL;
    gtk_main_quit();
    return FALSE;
@@ -136,12 +136,19 @@ static void cb_cancel(GtkWidget *widget, gpointer data)
    print_dialog=DIALOG_SAID_CANCEL;
 }
 
-int print_gui(GtkWidget *main_window, int app, int date_button)
+/* year_mon_day is a binary flag to choose which radio buttons appear for
+ * datebook printing.
+ * 1 = daily
+ * 2 = weekly
+ * 4 = monthly
+ */
+int print_gui(GtkWidget *main_window, int app, int date_button, int mon_week_day)
 {
    GtkWidget *label;
    GtkWidget *button;
    GtkWidget *vbox;
    GtkWidget *hbox;
+   GtkWidget *pref_menu;
    long ivalue;
    char temp_str[10];
    char temp[256];
@@ -162,7 +169,7 @@ int print_gui(GtkWidget *main_window, int app, int date_button)
 
    window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
    gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_MOUSE);
-   
+
 
    gtk_container_set_border_width(GTK_CONTAINER(window), 10);
    g_snprintf(temp, 255, "%s %s", PN, _("Print Options"));
@@ -176,40 +183,74 @@ int print_gui(GtkWidget *main_window, int app, int date_button)
    gtk_container_add(GTK_CONTAINER(window), vbox);
 
 
+   /* Paper Size */
+   hbox = gtk_hbox_new(FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
+
+   label = gtk_label_new(_("Paper Size"));
+   gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
+
+   make_pref_menu(&pref_menu, PREF_PAPER_SIZE);
+   gtk_box_pack_start(GTK_BOX(hbox), pref_menu, FALSE, FALSE, 0);
+
+   get_pref(PREF_PAPER_SIZE, &ivalue, NULL);
+   gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
+   /* End paper size */
+
    radio_button_daily=radio_button_weekly=radio_button_monthly=NULL;
    /* Radio buttons for Datebook */
    if (app==DATEBOOK) {
       group = NULL;
 
-      radio_button_daily = gtk_radio_button_new_with_label
-	(group, _("Daily Printout"));
+      if (mon_week_day & 0x01) {
+	 radio_button_daily = gtk_radio_button_new_with_label
+	   (group, _("Daily Printout"));
+	 group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_daily));
+      }
 
-      group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_daily));
-      radio_button_weekly = gtk_radio_button_new_with_label
-	(group, _("Weekly Printout"));
+      if (mon_week_day & 0x02) {
+	 radio_button_weekly = gtk_radio_button_new_with_label
+	   (group, _("Weekly Printout"));
+	 group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_weekly));
+      }
 
-      group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_weekly));
-      radio_button_monthly = gtk_radio_button_new_with_label
-	(group, _("Monthly Printout"));
+      if (mon_week_day & 0x04) {
+	 radio_button_monthly = gtk_radio_button_new_with_label
+	   (group, _("Monthly Printout"));
+      }
 
       switch (date_button) {
        case 1:
-	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_daily), TRUE);
+	 if (mon_week_day & 0x01) {
+	    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_daily), TRUE);
+	 }
 	 break;
        case 2:
-	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_weekly), TRUE);
+	 if (mon_week_day & 0x02) {
+	    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_weekly), TRUE);
+	 }
 	 break;
        case 3:
-	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_monthly), TRUE);
+	 if (mon_week_day & 0x04) {
+	    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_monthly), TRUE);
+	 }
 	 break;
        default:
-	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_daily), TRUE);
+	 if (mon_week_day & 0x01) {
+	    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_daily), TRUE);
+	 }
       }
-      gtk_box_pack_start(GTK_BOX(vbox), radio_button_daily, FALSE, FALSE, 0);
-      gtk_box_pack_start(GTK_BOX(vbox), radio_button_weekly, FALSE, FALSE, 0);
-      gtk_box_pack_start(GTK_BOX(vbox), radio_button_monthly, FALSE, FALSE, 0);
+      if (mon_week_day & 0x01) {
+	 gtk_box_pack_start(GTK_BOX(vbox), radio_button_daily, FALSE, FALSE, 0);
+      }
+      if (mon_week_day & 0x02) {
+	 gtk_box_pack_start(GTK_BOX(vbox), radio_button_weekly, FALSE, FALSE, 0);
+      }
+      if (mon_week_day & 0x04) {
+	 gtk_box_pack_start(GTK_BOX(vbox), radio_button_monthly, FALSE, FALSE, 0);
+      }
    }
-   
+
    if (app!=DATEBOOK) {
       /* Radio buttons for number of records to print */
       group = NULL;
@@ -224,7 +265,7 @@ int print_gui(GtkWidget *main_window, int app, int date_button)
       group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_shown));
       radio_button_all = gtk_radio_button_new_with_label
 	(group, _("Print all records"));
-   
+
       get_pref(PREF_PRINT_THIS_MANY, &ivalue, NULL);
       switch (ivalue) {
        case 1:
@@ -300,8 +341,8 @@ int print_gui(GtkWidget *main_window, int app, int date_button)
    gtk_widget_show_all(window);
 
    gtk_window_set_modal(GTK_WINDOW(window), TRUE);
-   
+
    gtk_main();
-   
+
    return print_dialog;
 }

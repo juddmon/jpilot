@@ -168,7 +168,7 @@ int show_privates(int hide, char *password)
 	 hidden=SHOW_PRIVATES;
       }
    }
-   
+
    return hidden;
 }
 #endif
@@ -207,7 +207,7 @@ static gboolean cb_destroy_dialog(GtkWidget *widget)
       return TRUE;
    }
    entry = gtk_entry_get_text(GTK_ENTRY(Pdata->entry));
-   
+
    if (entry) {
       strncpy(Pdata->text, entry, PASSWD_LEN);
       Pdata->text[PASSWD_LEN]='\0';
@@ -235,24 +235,24 @@ int dialog_password(char *ascii_password)
    }
    ascii_password[0]='\0';
    ret = 2; 
-  
+
    dialog = gtk_widget_new(GTK_TYPE_WINDOW,
 			   "type", GTK_WINDOW_TOPLEVEL,
 			   "title", _("Palm Password"),
 			   NULL);
-   
+
    gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_MOUSE);
 
-   
+
    gtk_signal_connect(GTK_OBJECT(dialog), "destroy",
                       GTK_SIGNAL_FUNC(cb_destroy_dialog), dialog);
 
    gtk_window_set_modal(GTK_WINDOW(dialog), TRUE);
-      
+
    vbox1 = gtk_vbox_new(FALSE, 2);
 
    gtk_container_set_border_width(GTK_CONTAINER(vbox1), 5);
-   
+
    gtk_container_add(GTK_CONTAINER(dialog), vbox1);
 
    hbox1 = gtk_hbox_new(TRUE, 2);
@@ -300,11 +300,11 @@ int dialog_password(char *ascii_password)
    gtk_object_set_data(GTK_OBJECT(dialog), "dialog_data", Pdata);                    
 
    gtk_widget_grab_focus(GTK_WIDGET(entry));
-     
+
    gtk_widget_show_all(dialog);
 
    gtk_main();
-   
+
    if (Pdata->button_hit==DIALOG_SAID_1) {
       ret = 1;
    }

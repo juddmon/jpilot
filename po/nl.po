@@ -1,12 +1,12 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR Free Software Foundation, Inc.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: JPilot\n"
-"POT-Creation-Date: 2001-06-20 10:41-0400\n"
+"POT-Creation-Date: 2002-01-30 22:58-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Arjan van de Ven <arjan@fenrus.demon.nl>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,85 +17,139 @@ msgstr ""
 # ../address.c:202 ../datebook.c:212 ../memo.c:140 ../todo.c:248
 # address.c:227 datebook.c:212 memo.c:139 todo.c:249
 # ../address.c:233 ../datebook.c:212 ../memo.c:140 ../todo.c:248
-#: ../address.c:236 ../datebook.c:214 ../memo.c:142 ../todo.c:250
+#: address.c:239 datebook.c:217 memo.c:145 todo.c:253
 msgid "error"
 msgstr ""
 
 # ../address.c:243 ../datebook.c:550 ../memo.c:181 ../todo.c:289
 # address.c:268 datebook.c:550 memo.c:180 todo.c:290
 # ../address.c:274 ../datebook.c:550 ../memo.c:181 ../todo.c:289
-#: ../address.c:277 ../datebook.c:553 ../memo.c:194 ../todo.c:291
+#: address.c:280 datebook.c:576 memo.c:197 todo.c:294
 msgid "Error reading"
+msgstr ""
+
+#: address_gui.c:361 datebook_gui.c:331 memo_gui.c:240 todo_gui.c:372
+#, c-format
+msgid "Could not open file %s\n"
+msgstr ""
+
+#: address_gui.c:444
+msgid "File doesn't appear to be address.dat format\n"
+msgstr ""
+
+#: Expense/expense.c:441 Expense/expense.c:1023 address_gui.c:454
+#: datebook_gui.c:529 memo_gui.c:369 todo_gui.c:499
+msgid "Unfiled"
+msgstr ""
+
+# ../alarms.c:212 ../jpilot.c:368 ../jpilot.c:436 ../jpilot.c:770
+# ../password.c:265 ../utils.c:816
+# jpilot.c:367 jpilot.c:393 jpilot.c:435 jpilot.c:602 jpilot.c:770
+# utils.c:816
+# ../alarms.c:220 ../jpilot.c:367 ../jpilot.c:393 ../jpilot.c:434
+# ../jpilot.c:770 ../password.c:265 ../utils.c:808
+#. Buttons
+#: KeyRing/keyring.c:1097 address_gui.c:545 alarms.c:227 datebook_gui.c:613
+#: datebook_gui.c:892 export_gui.c:327 jpilot.c:347 jpilot.c:392 jpilot.c:458
+#: jpilot.c:500 jpilot.c:711 jpilot.c:866 memo_gui.c:459 password.c:280
+#: restore_gui.c:217 todo_gui.c:589 utils.c:859
+msgid "OK"
+msgstr ""
+
+# datebook_gui.c:2692
+# ../datebook_gui.c:2588
+# datebook_gui.c:2668
+# ../datebook_gui.c:2669
+#: address_gui.c:546 datebook_gui.c:614 memo_gui.c:460 todo_gui.c:590
+#: utils.c:1000
+#, fuzzy
+msgid "Yes"
+msgstr "Jaar"
+
+# datebook_gui.c:2356
+# ../datebook_gui.c:300 ../datebook_gui.c:2430
+# datebook_gui.c:304 datebook_gui.c:2510
+# ../datebook_gui.c:305 ../datebook_gui.c:2511
+#: address_gui.c:546 datebook_gui.c:614 memo_gui.c:460 todo_gui.c:590
+#: utils.c:1000
+#, fuzzy
+msgid "No"
+msgstr "Geen"
+
+#: address_gui.c:562 datebook_gui.c:622 memo_gui.c:470 todo_gui.c:600
+#, c-format
+msgid "%s is a directory"
+msgstr ""
+
+#: address_gui.c:564 address_gui.c:581 datebook_gui.c:624 datebook_gui.c:641
+#: memo_gui.c:472 memo_gui.c:489 todo_gui.c:602 todo_gui.c:619
+msgid "Error Opening File"
+msgstr ""
+
+#: address_gui.c:568 datebook_gui.c:628 memo_gui.c:476 todo_gui.c:606
+#, c-format
+msgid "Do you want to overwrite file %s?"
+msgstr ""
+
+#: address_gui.c:570 datebook_gui.c:630 memo_gui.c:478 todo_gui.c:608
+msgid "Overwrite File?"
+msgstr ""
+
+#: address_gui.c:571 datebook_gui.c:631 memo_gui.c:479 todo_gui.c:609
+msgid "Overwrite File"
 msgstr ""
 
 # ../address_gui.c:303 ../address_gui.c:1060
 # address_gui.c:303 address_gui.c:1067
 # ../address_gui.c:303 ../address_gui.c:1067
-#: ../address_gui.c:319 ../address_gui.c:1143
+#: address_gui.c:759 address_gui.c:1637
 msgid "Company/Name"
 msgstr ""
 
 # ../address_gui.c:305 ../address_gui.c:1062
 # address_gui.c:305 address_gui.c:1069
 # ../address_gui.c:305 ../address_gui.c:1069
-#: ../address_gui.c:321 ../address_gui.c:1145
+#: address_gui.c:761 address_gui.c:1639
 msgid "Name/Company"
 msgstr ""
 
 # ../address_gui.c:543
 # address_gui.c:550
 # ../address_gui.c:550
-#: ../address_gui.c:606
+#. Category Menu
+#: Expense/expense.c:1190 Expense/expense.c:1261 KeyRing/keyring.c:1273
+#: KeyRing/keyring.c:1349 address_gui.c:1077
 msgid "Category: "
 msgstr ""
 
 # ../address_gui.c:660 ../memo_gui.c:433 ../todo_gui.c:675
 # address_gui.c:667 memo_gui.c:433 todo_gui.c:676
 # ../address_gui.c:667 ../memo_gui.c:435 ../todo_gui.c:676
-#: ../address_gui.c:723 ../memo_gui.c:1045 ../todo_gui.c:722
+#: address_gui.c:1193 memo_gui.c:916 todo_gui.c:1190
 msgid "0 records"
 msgstr ""
 
 # ../address_gui.c:774 ../memo_gui.c:524 ../todo_gui.c:779
 # address_gui.c:781 memo_gui.c:527 todo_gui.c:780
 # ../address_gui.c:781 ../memo_gui.c:529 ../todo_gui.c:780
-#: ../address_gui.c:853 ../memo_gui.c:1157 ../todo_gui.c:843
+#: address_gui.c:1334 memo_gui.c:1038 todo_gui.c:1321
 #, c-format
 msgid "%d of %d records"
-msgstr ""
-
-# ../address_gui.c:841 ../address_gui.c:1187 ../datebook_gui.c:294
-# ../memo_gui.c:555 ../todo_gui.c:808
-# address_gui.c:848 address_gui.c:1194 datebook_gui.c:298 memo_gui.c:558
-# todo_gui.c:809
-# ../address_gui.c:848 ../address_gui.c:1194 ../datebook_gui.c:299
-# ../memo_gui.c:560 ../todo_gui.c:809
-#: ../address_gui.c:920 ../address_gui.c:1270 ../datebook_gui.c:280
-#: ../memo_gui.c:1181 ../todo_gui.c:872
-msgid "All"
 msgstr ""
 
 # install_gui.c:278 prefs_gui.c:363 search_gui.c:647
 # ../address_gui.c:1067
 # address_gui.c:1074
 # ../address_gui.c:1074
-#: ../address_gui.c:1150
+#: address_gui.c:1644
 msgid "Phone"
 msgstr "Einde"
-
-# datebook_gui.c:2356
-# ../address_gui.c:1068
-# address_gui.c:1075
-# ../address_gui.c:1075
-#: ../address_gui.c:1151
-msgid "Note"
-msgstr "Geen"
 
 # address_gui.c:869
 # ../address_gui.c:1084
 # address_gui.c:1091
 # ../address_gui.c:1091
-#: ../address_gui.c:1167
+#: address_gui.c:1666
 msgid "Quick Find"
 msgstr "Kort zoeken"
 
@@ -105,8 +159,9 @@ msgstr "Kort zoeken"
 # address_gui.c:1107 datebook_gui.c:2340 memo_gui.c:760 todo_gui.c:1051
 # ../address_gui.c:1107 ../datebook_gui.c:2341 ../memo_gui.c:763
 # ../todo_gui.c:1051
-#: ../address_gui.c:1183 ../datebook_gui.c:2402 ../memo_gui.c:1393
-#: ../todo_gui.c:1117
+#. Delete Button
+#: Expense/expense.c:1223 KeyRing/keyring.c:1308 address_gui.c:1683
+#: datebook_gui.c:3370 memo_gui.c:1242 todo_gui.c:1571
 msgid "Delete"
 msgstr "Verwijderen"
 
@@ -115,8 +170,9 @@ msgstr "Verwijderen"
 # address_gui.c:1114 datebook_gui.c:2347 memo_gui.c:766 todo_gui.c:1057
 # ../address_gui.c:1114 ../datebook_gui.c:2348 ../memo_gui.c:769
 # ../todo_gui.c:1057
-#: ../address_gui.c:1190 ../datebook_gui.c:2409 ../memo_gui.c:1399
-#: ../todo_gui.c:1123
+#. Create "Copy" button
+#: Expense/expense.c:1229 KeyRing/keyring.c:1314 address_gui.c:1690
+#: datebook_gui.c:3377 memo_gui.c:1248 todo_gui.c:1577
 msgid "Copy"
 msgstr ""
 
@@ -125,8 +181,9 @@ msgstr ""
 # address_gui.c:1121 datebook_gui.c:2354 memo_gui.c:772 todo_gui.c:1063
 # ../address_gui.c:1121 ../datebook_gui.c:2355 ../memo_gui.c:775
 # ../todo_gui.c:1063
-#: ../address_gui.c:1197 ../datebook_gui.c:2416 ../memo_gui.c:1405
-#: ../todo_gui.c:1129
+#. Create "New" button
+#: Expense/expense.c:1235 KeyRing/keyring.c:1320 address_gui.c:1697
+#: datebook_gui.c:3384 memo_gui.c:1254 todo_gui.c:1583
 msgid "New Record"
 msgstr ""
 
@@ -136,8 +193,9 @@ msgstr ""
 # address_gui.c:1127 datebook_gui.c:2361 memo_gui.c:778 todo_gui.c:1069
 # ../address_gui.c:1127 ../datebook_gui.c:2362 ../memo_gui.c:781
 # ../todo_gui.c:1069
-#: ../address_gui.c:1203 ../datebook_gui.c:2423 ../memo_gui.c:1411
-#: ../todo_gui.c:1135
+#. Create "Add Record" button
+#: Expense/expense.c:1241 KeyRing/keyring.c:1326 address_gui.c:1703
+#: datebook_gui.c:3391 memo_gui.c:1260 todo_gui.c:1589
 msgid "Add Record"
 msgstr "Invoeren of wijzigen van een adres"
 
@@ -147,8 +205,9 @@ msgstr "Invoeren of wijzigen van een adres"
 # address_gui.c:1136 datebook_gui.c:2370 memo_gui.c:786 todo_gui.c:1077
 # ../address_gui.c:1136 ../datebook_gui.c:2371 ../memo_gui.c:789
 # ../todo_gui.c:1077
-#: ../address_gui.c:1212 ../datebook_gui.c:2432 ../memo_gui.c:1419
-#: ../todo_gui.c:1143
+#. Create "apply changes" button
+#: Expense/expense.c:1249 KeyRing/keyring.c:1334 address_gui.c:1712
+#: datebook_gui.c:3400 memo_gui.c:1268 todo_gui.c:1597
 msgid "Apply Changes"
 msgstr "Wijzigingen doorvoeren"
 
@@ -157,15 +216,16 @@ msgstr "Wijzigingen doorvoeren"
 # address_gui.c:1152 datebook_gui.c:2463 memo_gui.c:803 todo_gui.c:1140
 # ../address_gui.c:1152 ../datebook_gui.c:2464 ../memo_gui.c:806
 # ../todo_gui.c:1140
-#: ../address_gui.c:1228 ../datebook_gui.c:2525 ../memo_gui.c:1445
-#: ../todo_gui.c:1206
+#. Private check box
+#: address_gui.c:1728 datebook_gui.c:3451 memo_gui.c:1294 todo_gui.c:1660
 msgid "Private"
 msgstr ""
 
 # ../address_gui.c:1163
 # address_gui.c:1170
 # ../address_gui.c:1170
-#: ../address_gui.c:1246
+#. Page 1
+#: KeyRing/keyring.c:1198 address_gui.c:1748
 msgid "Name"
 msgstr ""
 
@@ -173,40 +233,46 @@ msgstr ""
 # ../address_gui.c:1171
 # address_gui.c:1178
 # ../address_gui.c:1178
-#: ../address_gui.c:1254
+#. Page 2
+#: address_gui.c:1756
 msgid "Address"
 msgstr "/Weergave/Adressen"
 
 # ../address_gui.c:1179
 # address_gui.c:1186
 # ../address_gui.c:1186
-#: ../address_gui.c:1262
+#. Page 3
+#: Expense/expense.c:393 Expense/expense.c:1044 address_gui.c:1764
 msgid "Other"
+msgstr ""
+
+# ../address_gui.c:841 ../address_gui.c:1187 ../datebook_gui.c:294
+# ../memo_gui.c:555 ../todo_gui.c:808
+# address_gui.c:848 address_gui.c:1194 datebook_gui.c:298 memo_gui.c:558
+# todo_gui.c:809
+# ../address_gui.c:848 ../address_gui.c:1194 ../datebook_gui.c:299
+# ../memo_gui.c:560 ../todo_gui.c:809
+#. Page 3
+#: address_gui.c:1772 datebook_gui.c:1067 datebook_gui.c:1324 utils.c:2175
+msgid "All"
+msgstr ""
+
+#: address_gui.c:1842
+msgid ""
+"Show\n"
+"In List"
 msgstr ""
 
 # address_gui.c:887
 # ../address_gui.c:1266
 # address_gui.c:1273
 # ../address_gui.c:1273
-#: ../address_gui.c:1348
+#. The Quickview page
+#: address_gui.c:1850
 msgid "Quick View"
 msgstr "Overzicht"
 
-# ../alarms.c:212 ../jpilot.c:368 ../jpilot.c:436 ../jpilot.c:770
-# ../password.c:265 ../utils.c:816
-# jpilot.c:367 jpilot.c:393 jpilot.c:435 jpilot.c:602 jpilot.c:770
-# utils.c:816
-# ../alarms.c:220 ../jpilot.c:367 ../jpilot.c:393 ../jpilot.c:434
-# ../jpilot.c:770 ../password.c:265 ../utils.c:808
-#: ../alarms.c:219 ../jpilot.c:369 ../jpilot.c:395 ../jpilot.c:436
-#: ../jpilot.c:461 ../jpilot.c:496 ../jpilot.c:509 ../jpilot.c:544
-#: ../jpilot.c:896 ../memo_gui.c:728 ../password.c:279 ../restore_gui.c:215
-#: ../utils.c:810
-msgid "OK"
-msgstr ""
-
-# ../alarms.c:226
-#: ../alarms.c:225
+#: alarms.c:233
 msgid "Remind me"
 msgstr ""
 
@@ -214,7 +280,7 @@ msgstr ""
 # ../alarms.c:228 ../datebook_gui.c:2323
 # datebook_gui.c:2403
 # ../alarms.c:236 ../datebook_gui.c:2404
-#: ../alarms.c:235 ../datebook_gui.c:2465
+#: alarms.c:243 datebook_gui.c:3433
 msgid "Minutes"
 msgstr "Minuten"
 
@@ -222,30 +288,116 @@ msgstr "Minuten"
 # ../alarms.c:230 ../datebook_gui.c:2327
 # datebook_gui.c:2407
 # ../alarms.c:238 ../datebook_gui.c:2408
-#: ../alarms.c:237 ../datebook_gui.c:2469
+#: alarms.c:245 datebook_gui.c:3437
 msgid "Hours"
 msgstr "Uren"
 
-# ../alarms.c:503
-#: ../alarms.c:502
+#: alarms.c:510
 msgid "Appointment Reminder"
 msgstr ""
 
-# ../alarms.c:506
-#: ../alarms.c:505
+#: alarms.c:513
 msgid "Past Appointment"
 msgstr ""
 
-# ../alarms.c:509
-#: ../alarms.c:508
+#: alarms.c:516
 msgid "Postponed Appointment"
 msgstr ""
 
 # ../alarms.c:500 ../datebook_gui.c:2230
 # datebook_gui.c:2310
 # ../alarms.c:512 ../datebook_gui.c:2311
-#: ../alarms.c:511 ../datebook_gui.c:2372
+#: alarms.c:519 datebook_gui.c:3332
 msgid "Appointment"
+msgstr ""
+
+# These days of the week are put in the buttons above the calendar and
+# the little buttons in the repeat weekly window.
+# They should be one letter if possible.  The English ones get truncated to
+# one letter.
+# datebook_gui.c:1545
+# ../datebook_gui.c:2090 ../datebook_gui.c:2097
+# datebook_gui.c:2149 datebook_gui.c:2156
+# ../datebook_gui.c:2150 ../datebook_gui.c:2157
+#: datebook_gui.c:179 datebook_gui.c:186 datebook_gui.c:3174
+#: datebook_gui.c:3181
+msgid "Su"
+msgstr "Zo"
+
+# datebook_gui.c:1545
+# ../datebook_gui.c:2091
+# datebook_gui.c:2150
+# ../datebook_gui.c:2151
+#: datebook_gui.c:180 datebook_gui.c:3175
+msgid "Mo"
+msgstr "Ma"
+
+# datebook_gui.c:1545
+# ../datebook_gui.c:2092
+# datebook_gui.c:2151
+# ../datebook_gui.c:2152
+#: datebook_gui.c:181 datebook_gui.c:3176
+msgid "Tu"
+msgstr "Di"
+
+# datebook_gui.c:1545
+# ../datebook_gui.c:2093
+# datebook_gui.c:2152
+# ../datebook_gui.c:2153
+#: datebook_gui.c:182 datebook_gui.c:3177
+msgid "We"
+msgstr "Wo"
+
+# datebook_gui.c:1545
+# ../datebook_gui.c:2094
+# datebook_gui.c:2153
+# ../datebook_gui.c:2154
+#: datebook_gui.c:183
+#, fuzzy
+msgid "Th"
+msgstr "Do"
+
+# datebook_gui.c:1545
+# ../datebook_gui.c:2095
+# datebook_gui.c:2154
+# ../datebook_gui.c:2155
+#: datebook_gui.c:184 datebook_gui.c:3179
+msgid "Fr"
+msgstr "Vr"
+
+# datebook_gui.c:1545
+# ../datebook_gui.c:2096
+# datebook_gui.c:2155
+# ../datebook_gui.c:2156
+#: datebook_gui.c:185 datebook_gui.c:3180
+msgid "Sa"
+msgstr "Za"
+
+#: datebook_gui.c:519
+msgid "File doesn't appear to be datebook.dat format\n"
+msgstr ""
+
+#. Label for instructions
+#: datebook_gui.c:855
+msgid "Export All Datebook Records"
+msgstr ""
+
+#: datebook_gui.c:874 export_gui.c:308
+msgid "Save as"
+msgstr ""
+
+#: datebook_gui.c:884 export_gui.c:319
+msgid "Browse"
+msgstr ""
+
+# ../password.c:271 ../print_gui.c:220 ../utils.c:826
+# print_gui.c:220 utils.c:826
+# ../password.c:271 ../print_gui.c:220 ../utils.c:818
+#. Create a "Quit" button
+#: KeyRing/keyring.c:1103 datebook_gui.c:897 datebook_gui.c:1325
+#: export_gui.c:332 password.c:286 print_gui.c:336 restore_gui.c:222
+#: utils.c:869
+msgid "Cancel"
 msgstr ""
 
 # install_gui.c:278 prefs_gui.c:363 search_gui.c:647
@@ -254,8 +406,9 @@ msgstr ""
 # datebook_gui.c:292 install_gui.c:283 prefs_gui.c:598 search_gui.c:575
 # ../datebook_gui.c:293 ../install_gui.c:283 ../prefs_gui.c:661
 # ../search_gui.c:575
-#: ../datebook_gui.c:274 ../import_gui.c:128 ../install_gui.c:282
-#: ../prefs_gui.c:677 ../search_gui.c:574
+#. Create a "Quit" button
+#: datebook_gui.c:1061 import_gui.c:313 install_gui.c:289 prefs_gui.c:682
+#: search_gui.c:575
 msgid "Done"
 msgstr "Einde"
 
@@ -263,14 +416,19 @@ msgstr "Einde"
 # ../datebook_gui.c:300 ../datebook_gui.c:2430
 # datebook_gui.c:304 datebook_gui.c:2510
 # ../datebook_gui.c:305 ../datebook_gui.c:2511
-#: ../datebook_gui.c:286 ../datebook_gui.c:2572
+#. Create a "None" button
+#: datebook_gui.c:1073 datebook_gui.c:3561
 msgid "None"
 msgstr "Geen"
+
+#: datebook_gui.c:1185
+msgid "Begin On Date"
+msgstr ""
 
 # ../datebook_gui.c:389
 # datebook_gui.c:393
 # ../datebook_gui.c:394
-#: ../datebook_gui.c:395
+#: datebook_gui.c:1190
 msgid "End On Date"
 msgstr ""
 
@@ -282,8 +440,8 @@ msgstr ""
 # weekview_gui.c:113
 # ../datebook_gui.c:479 ../monthview_gui.c:323 ../monthview_gui.c:330
 # ../prefs.c:309 ../weekview_gui.c:113
-#: ../datebook_gui.c:480 ../monthview_gui.c:338 ../monthview_gui.c:345
-#: ../prefs.c:311 ../weekview_gui.c:128
+#: datebook_gui.c:1284 monthview_gui.c:346 monthview_gui.c:353 prefs.c:393
+#: weekview_gui.c:135
 msgid "Sunday"
 msgstr "Zondag"
 
@@ -293,8 +451,7 @@ msgstr "Zondag"
 # datebook_gui.c:479 monthview_gui.c:324 prefs.c:308 weekview_gui.c:114
 # ../datebook_gui.c:480 ../monthview_gui.c:324 ../prefs.c:310
 # ../weekview_gui.c:114
-#: ../datebook_gui.c:481 ../monthview_gui.c:339 ../prefs.c:312
-#: ../weekview_gui.c:129
+#: datebook_gui.c:1285 monthview_gui.c:347 prefs.c:394 weekview_gui.c:136
 msgid "Monday"
 msgstr "Maandag"
 
@@ -302,7 +459,7 @@ msgstr "Maandag"
 # ../datebook_gui.c:476 ../monthview_gui.c:325 ../weekview_gui.c:115
 # datebook_gui.c:480 monthview_gui.c:325 weekview_gui.c:115
 # ../datebook_gui.c:481 ../monthview_gui.c:325 ../weekview_gui.c:115
-#: ../datebook_gui.c:482 ../monthview_gui.c:340 ../weekview_gui.c:130
+#: datebook_gui.c:1286 monthview_gui.c:348 weekview_gui.c:137
 msgid "Tuesday"
 msgstr "Dinsdag"
 
@@ -310,7 +467,7 @@ msgstr "Dinsdag"
 # ../datebook_gui.c:477 ../monthview_gui.c:326 ../weekview_gui.c:116
 # datebook_gui.c:481 monthview_gui.c:326 weekview_gui.c:116
 # ../datebook_gui.c:482 ../monthview_gui.c:326 ../weekview_gui.c:116
-#: ../datebook_gui.c:483 ../monthview_gui.c:341 ../weekview_gui.c:131
+#: datebook_gui.c:1287 monthview_gui.c:349 weekview_gui.c:138
 msgid "Wednesday"
 msgstr "Woensdag"
 
@@ -318,7 +475,7 @@ msgstr "Woensdag"
 # ../datebook_gui.c:478 ../monthview_gui.c:327 ../weekview_gui.c:117
 # datebook_gui.c:482 monthview_gui.c:327 weekview_gui.c:117
 # ../datebook_gui.c:483 ../monthview_gui.c:327 ../weekview_gui.c:117
-#: ../datebook_gui.c:484 ../monthview_gui.c:342 ../weekview_gui.c:132
+#: datebook_gui.c:1288 monthview_gui.c:350 weekview_gui.c:139
 msgid "Thursday"
 msgstr "Donderdag"
 
@@ -326,7 +483,7 @@ msgstr "Donderdag"
 # ../datebook_gui.c:479 ../monthview_gui.c:328 ../weekview_gui.c:118
 # datebook_gui.c:483 monthview_gui.c:328 weekview_gui.c:118
 # ../datebook_gui.c:484 ../monthview_gui.c:328 ../weekview_gui.c:118
-#: ../datebook_gui.c:485 ../monthview_gui.c:343 ../weekview_gui.c:133
+#: datebook_gui.c:1289 monthview_gui.c:351 weekview_gui.c:140
 msgid "Friday"
 msgstr "Vrijdag"
 
@@ -334,15 +491,39 @@ msgstr "Vrijdag"
 # ../datebook_gui.c:480 ../monthview_gui.c:329 ../weekview_gui.c:119
 # datebook_gui.c:484 monthview_gui.c:329 weekview_gui.c:119
 # ../datebook_gui.c:485 ../monthview_gui.c:329 ../weekview_gui.c:119
-#: ../datebook_gui.c:486 ../monthview_gui.c:344 ../weekview_gui.c:134
+#: datebook_gui.c:1290 monthview_gui.c:352 weekview_gui.c:141
 msgid "Saturday"
 msgstr "Zaterdag"
+
+# datebook_gui.c:271
+#: datebook_gui.c:1295
+msgid "4th"
+msgstr "vierde"
+
+# datebook_gui.c:271
+#: datebook_gui.c:1295
+msgid "Last"
+msgstr "Laatste"
+
+#. ---------------------------
+#: datebook_gui.c:1317
+msgid ""
+"This is a repeating event.\n"
+"Do you want to apply these\n"
+"changes to just the CURRENT\n"
+"event, or ALL of the\n"
+"occurrences of this event?"
+msgstr ""
+
+#: datebook_gui.c:1323
+msgid "Current"
+msgstr ""
 
 # datebook_gui.c:432
 # ../datebook_gui.c:716
 # datebook_gui.c:720
 # ../datebook_gui.c:721
-#: ../datebook_gui.c:722
+#: datebook_gui.c:1540
 msgid "none"
 msgstr "geen"
 
@@ -350,7 +531,7 @@ msgstr "geen"
 # ../datebook_gui.c:717
 # datebook_gui.c:721
 # ../datebook_gui.c:722
-#: ../datebook_gui.c:723
+#: datebook_gui.c:1541
 msgid "day"
 msgstr "dag"
 
@@ -358,7 +539,7 @@ msgstr "dag"
 # ../datebook_gui.c:718
 # datebook_gui.c:722
 # ../datebook_gui.c:723
-#: ../datebook_gui.c:724
+#: datebook_gui.c:1542
 msgid "week"
 msgstr "week"
 
@@ -366,7 +547,7 @@ msgstr "week"
 # ../datebook_gui.c:719
 # datebook_gui.c:723
 # ../datebook_gui.c:724
-#: ../datebook_gui.c:725
+#: datebook_gui.c:1543
 msgid "month"
 msgstr "maand"
 
@@ -374,14 +555,14 @@ msgstr "maand"
 # ../datebook_gui.c:720
 # datebook_gui.c:724
 # ../datebook_gui.c:725
-#: ../datebook_gui.c:726
+#: datebook_gui.c:1544
 msgid "year"
 msgstr "jaar"
 
 # ../datebook_gui.c:947
 # datebook_gui.c:951
 # ../datebook_gui.c:952
-#: ../datebook_gui.c:953
+#: datebook_gui.c:1771
 #, c-format
 msgid "You cannot have an appointment that repeats every %d %s(s)\n"
 msgstr ""
@@ -389,7 +570,7 @@ msgstr ""
 # ../datebook_gui.c:956
 # datebook_gui.c:960
 # ../datebook_gui.c:961
-#: ../datebook_gui.c:962
+#: datebook_gui.c:1780
 msgid ""
 "You can not have a weekly repeating appointment that doesn't repeat on any "
 "day of the week.\n"
@@ -398,7 +579,8 @@ msgstr ""
 # ../datebook_gui.c:1059
 # datebook_gui.c:1063
 # ../datebook_gui.c:1064
-#: ../datebook_gui.c:1095
+#. This is a timeless event
+#: datebook_gui.c:1912
 msgid "No Time"
 msgstr ""
 
@@ -411,77 +593,26 @@ msgstr ""
 # ../datebook_gui.c:1402 ../datebook_gui.c:2545 ../datebook_gui.c:2575
 # ../datebook_gui.c:2631 ../datebook_gui.c:2680 ../todo_gui.c:102
 # ../todo_gui.c:1131
-#: ../datebook_gui.c:1461 ../datebook_gui.c:2606 ../datebook_gui.c:2636
-#: ../datebook_gui.c:2692 ../datebook_gui.c:2741 ../todo_gui.c:102
-#: ../todo_gui.c:1197
+#. The No due date check box
+#: datebook_gui.c:2299 datebook_gui.c:3595 datebook_gui.c:3625
+#: datebook_gui.c:3681 datebook_gui.c:3730 todo_gui.c:120 todo_gui.c:1651
 msgid "No Date"
 msgstr "Geen einddatum"
-
-# These days of the week are put in the buttons above the calendar and
-# the little buttons in the repeat weekly window.
-# They should be one letter if possible.  The English ones get truncated to
-# one letter.
-# datebook_gui.c:1545
-# ../datebook_gui.c:2090 ../datebook_gui.c:2097
-# datebook_gui.c:2149 datebook_gui.c:2156
-# ../datebook_gui.c:2150 ../datebook_gui.c:2157
-#: ../datebook_gui.c:2209 ../datebook_gui.c:2216
-msgid "Su"
-msgstr "Zo"
-
-# datebook_gui.c:1545
-# ../datebook_gui.c:2091
-# datebook_gui.c:2150
-# ../datebook_gui.c:2151
-#: ../datebook_gui.c:2210
-msgid "Mo"
-msgstr "Ma"
-
-# datebook_gui.c:1545
-# ../datebook_gui.c:2092
-# datebook_gui.c:2151
-# ../datebook_gui.c:2152
-#: ../datebook_gui.c:2211
-msgid "Tu"
-msgstr "Di"
-
-# datebook_gui.c:1545
-# ../datebook_gui.c:2093
-# datebook_gui.c:2152
-# ../datebook_gui.c:2153
-#: ../datebook_gui.c:2212
-msgid "We"
-msgstr "Wo"
 
 # datebook_gui.c:1545
 # ../datebook_gui.c:2094
 # datebook_gui.c:2153
 # ../datebook_gui.c:2154
-#: ../datebook_gui.c:2213
+#: datebook_gui.c:3178
 msgid "RTh"
 msgstr "Do"
-
-# datebook_gui.c:1545
-# ../datebook_gui.c:2095
-# datebook_gui.c:2154
-# ../datebook_gui.c:2155
-#: ../datebook_gui.c:2214
-msgid "Fr"
-msgstr "Vr"
-
-# datebook_gui.c:1545
-# ../datebook_gui.c:2096
-# datebook_gui.c:2155
-# ../datebook_gui.c:2156
-#: ../datebook_gui.c:2215
-msgid "Sa"
-msgstr "Za"
 
 # datebook_gui.c:1896
 # ../datebook_gui.c:2156 ../datebook_gui.c:2432
 # datebook_gui.c:2228 datebook_gui.c:2512
 # ../datebook_gui.c:2229 ../datebook_gui.c:2513
-#: ../datebook_gui.c:2288 ../datebook_gui.c:2574
+#. Make Weekview button
+#: datebook_gui.c:3250 datebook_gui.c:3563
 msgid "Week"
 msgstr "Per week"
 
@@ -489,20 +620,22 @@ msgstr "Per week"
 # ../datebook_gui.c:2163 ../datebook_gui.c:2433
 # datebook_gui.c:2239 datebook_gui.c:2513
 # ../datebook_gui.c:2240 ../datebook_gui.c:2514
-#: ../datebook_gui.c:2299 ../datebook_gui.c:2575
+#. Make Monthview button
+#: datebook_gui.c:3261 datebook_gui.c:3564
 msgid "Month"
 msgstr "Per maand"
 
 # datebook_gui.c:2254
 # ../datebook_gui.c:2255
-#: ../datebook_gui.c:2314
+#. Make Category button
+#: datebook_gui.c:3276
 msgid "Cats"
 msgstr ""
 
 # ../datebook_gui.c:2229
 # datebook_gui.c:2309
 # ../datebook_gui.c:2310
-#: ../datebook_gui.c:2371
+#: datebook_gui.c:3331
 msgid "Time"
 msgstr ""
 
@@ -510,7 +643,7 @@ msgstr ""
 # ../datebook_gui.c:2308
 # datebook_gui.c:2388
 # ../datebook_gui.c:2389
-#: ../datebook_gui.c:2450
+#: datebook_gui.c:3418
 msgid "Alarm"
 msgstr "Alarm"
 
@@ -518,7 +651,7 @@ msgstr "Alarm"
 # ../datebook_gui.c:2329
 # datebook_gui.c:2409
 # ../datebook_gui.c:2410
-#: ../datebook_gui.c:2471
+#: datebook_gui.c:3439
 msgid "Days"
 msgstr "Dagen"
 
@@ -526,7 +659,7 @@ msgstr "Dagen"
 # ../datebook_gui.c:2348
 # datebook_gui.c:2428
 # ../datebook_gui.c:2429
-#: ../datebook_gui.c:2490
+#: datebook_gui.c:3462
 msgid "This Event has no particular time"
 msgstr "Deze gebeurtenis heeft geen starttijd"
 
@@ -534,14 +667,14 @@ msgstr "Deze gebeurtenis heeft geen starttijd"
 # ../datebook_gui.c:2356
 # datebook_gui.c:2436
 # ../datebook_gui.c:2437
-#: ../datebook_gui.c:2498
+#: datebook_gui.c:3470
 msgid "Starts on: "
 msgstr "Zoeken naar: "
 
 # ../datebook_gui.c:2368
 # datebook_gui.c:2448
 # ../datebook_gui.c:2449
-#: ../datebook_gui.c:2510
+#: datebook_gui.c:3482
 msgid "Time:"
 msgstr ""
 
@@ -549,7 +682,7 @@ msgstr ""
 # ../datebook_gui.c:2431
 # datebook_gui.c:2511
 # ../datebook_gui.c:2512
-#: ../datebook_gui.c:2573
+#: datebook_gui.c:3562
 msgid "Day"
 msgstr "Dag"
 
@@ -563,7 +696,7 @@ msgstr "Dag"
 # ../datebook_gui.c:2434
 # datebook_gui.c:2514
 # ../datebook_gui.c:2515
-#: ../datebook_gui.c:2576
+#: datebook_gui.c:3565
 msgid "Year"
 msgstr "Jaar"
 
@@ -571,7 +704,8 @@ msgstr "Jaar"
 # ../datebook_gui.c:2438
 # datebook_gui.c:2518
 # ../datebook_gui.c:2519
-#: ../datebook_gui.c:2580
+#. no repeat page for notebook
+#: datebook_gui.c:3569
 msgid "This event will not repeat"
 msgstr "Eenmalige afspraak"
 
@@ -583,8 +717,8 @@ msgstr "Eenmalige afspraak"
 # datebook_gui.c:2663
 # ../datebook_gui.c:2529 ../datebook_gui.c:2561 ../datebook_gui.c:2617
 # ../datebook_gui.c:2664
-#: ../datebook_gui.c:2590 ../datebook_gui.c:2622 ../datebook_gui.c:2678
-#: ../datebook_gui.c:2725
+#: datebook_gui.c:3579 datebook_gui.c:3611 datebook_gui.c:3667
+#: datebook_gui.c:3714
 msgid "Frequency is Every"
 msgstr "Herhalen per "
 
@@ -592,7 +726,7 @@ msgstr "Herhalen per "
 # ../datebook_gui.c:2453
 # datebook_gui.c:2533
 # ../datebook_gui.c:2534
-#: ../datebook_gui.c:2595
+#: datebook_gui.c:3584
 msgid "Day(s)"
 msgstr "Dag(en)"
 
@@ -604,8 +738,9 @@ msgstr "Dag(en)"
 # datebook_gui.c:2671
 # ../datebook_gui.c:2537 ../datebook_gui.c:2569 ../datebook_gui.c:2625
 # ../datebook_gui.c:2672
-#: ../datebook_gui.c:2598 ../datebook_gui.c:2630 ../datebook_gui.c:2686
-#: ../datebook_gui.c:2733
+#. checkbutton
+#: datebook_gui.c:3587 datebook_gui.c:3619 datebook_gui.c:3675
+#: datebook_gui.c:3722
 msgid "End on"
 msgstr "Eindigd op"
 
@@ -613,7 +748,7 @@ msgstr "Eindigd op"
 # ../datebook_gui.c:2485
 # datebook_gui.c:2565
 # ../datebook_gui.c:2566
-#: ../datebook_gui.c:2627
+#: datebook_gui.c:3616
 msgid "Week(s)"
 msgstr "Weken"
 
@@ -621,7 +756,7 @@ msgstr "Weken"
 # ../datebook_gui.c:2501
 # datebook_gui.c:2581
 # ../datebook_gui.c:2582
-#: ../datebook_gui.c:2643
+#: datebook_gui.c:3632
 msgid "Repeat on Days:"
 msgstr "Herhalen op de weekdagen:"
 
@@ -629,7 +764,7 @@ msgstr "Herhalen op de weekdagen:"
 # ../datebook_gui.c:2541
 # datebook_gui.c:2621
 # ../datebook_gui.c:2622
-#: ../datebook_gui.c:2683
+#: datebook_gui.c:3672
 msgid "Month(s)"
 msgstr "Maand(en)"
 
@@ -637,7 +772,7 @@ msgstr "Maand(en)"
 # ../datebook_gui.c:2558
 # datebook_gui.c:2638
 # ../datebook_gui.c:2639
-#: ../datebook_gui.c:2700
+#: datebook_gui.c:3689
 msgid "Repeat by:"
 msgstr "Herhalen per:"
 
@@ -645,7 +780,7 @@ msgstr "Herhalen per:"
 # ../datebook_gui.c:2562
 # datebook_gui.c:2642
 # ../datebook_gui.c:2643
-#: ../datebook_gui.c:2704
+#: datebook_gui.c:3693
 msgid "Day of week"
 msgstr "Dag van de week"
 
@@ -653,7 +788,7 @@ msgstr "Dag van de week"
 # ../datebook_gui.c:2571
 # datebook_gui.c:2651
 # ../datebook_gui.c:2652
-#: ../datebook_gui.c:2713
+#: datebook_gui.c:3702
 msgid "Date"
 msgstr "Datum"
 
@@ -661,11 +796,26 @@ msgstr "Datum"
 # ../datebook_gui.c:2588
 # datebook_gui.c:2668
 # ../datebook_gui.c:2669
-#: ../datebook_gui.c:2730
+#: datebook_gui.c:3719
 msgid "Year(s)"
 msgstr "Jaar"
 
-#: ../import_gui.c:100 ../import_gui.c:121 ../jpilot.c:500
+#: export_gui.c:113
+msgid "File Browser"
+msgstr ""
+
+#. Label for instructions
+#: export_gui.c:264
+msgid "Select records to be exported"
+msgstr ""
+
+#: export_gui.c:266
+msgid "Use Ctrl and Shift Keys"
+msgstr ""
+
+#. Import button
+#: import_gui.c:270 import_gui.c:306 import_gui.c:409 import_gui.c:465
+#: jpilot.c:491
 msgid "Import"
 msgstr ""
 
@@ -673,21 +823,49 @@ msgstr ""
 # ../install_gui.c:263
 # install_gui.c:263
 # ../install_gui.c:263
-#: ../import_gui.c:115 ../install_gui.c:262
+#: import_gui.c:300 install_gui.c:269
 msgid "To change to a hidden directory type it below and hit TAB"
 msgstr ""
 "Om naar een verborgen folder te gaan dient U de naam gevold door TAB te "
 "typen."
 
-#: ../import_gui.c:141
+#: import_gui.c:326
 msgid "Import File Type"
 msgstr ""
+
+#: import_gui.c:423
+msgid "Record was marked as private"
+msgstr ""
+
+#: import_gui.c:425
+msgid "Record was not marked as private"
+msgstr ""
+
+#. Import All button
+#: import_gui.c:472
+msgid "Import All"
+msgstr ""
+
+#. Skip button
+#: import_gui.c:479
+msgid "Skip"
+msgstr ""
+
+# jpilot.c:1017
+# ../jpilot.c:1450
+# jpilot.c:1464
+# ../jpilot.c:1493
+#. Quit button
+#: import_gui.c:486
+#, fuzzy
+msgid "Quit"
+msgstr "Einde!"
 
 # jpilot.c:567
 # ../install_gui.c:224
 # install_gui.c:224
 # ../install_gui.c:224
-#: ../install_gui.c:223
+#: install_gui.c:224
 msgid "Install"
 msgstr "/Bestand/_Installeren"
 
@@ -695,7 +873,7 @@ msgstr "/Bestand/_Installeren"
 # ../install_gui.c:240
 # install_gui.c:240
 # ../install_gui.c:240
-#: ../install_gui.c:239
+#: install_gui.c:246
 msgid "Files to be installed"
 msgstr "Bestanden die geinstalleerd worden"
 
@@ -703,7 +881,7 @@ msgstr "Bestanden die geinstalleerd worden"
 # ../install_gui.c:269
 # install_gui.c:269
 # ../install_gui.c:269
-#: ../install_gui.c:268
+#: install_gui.c:275
 msgid "Add"
 msgstr "Toevoegen"
 
@@ -711,52 +889,70 @@ msgstr "Toevoegen"
 # ../install_gui.c:276
 # install_gui.c:276
 # ../install_gui.c:276
-#: ../install_gui.c:275
+#: install_gui.c:282
 msgid "Remove"
 msgstr "Verwijderen"
+
+#: jpilot.c:88
+msgid ""
+"\n"
+"jpilot [ [-v] || [-h] || [-d] || [-a] || [-A]\n"
+" -v displays version and exits.\n"
+" -h displays help and exits.\n"
+" -d displays debug info to stdout.\n"
+" -p do not load plugins.\n"
+" -a ignore missed alarms since the last time this program was run.\n"
+" -A ignore all alarms, past and future.\n"
+" The PILOTPORT, and PILOTRATE env variables are used to specify which\n"
+" port to sync on, and at what speed.\n"
+" If PILOTPORT is not set then it defaults to /dev/pilot.\n"
+msgstr ""
 
 # jpilot.c:224
 # ../jpilot.c:373
 # jpilot.c:372
 # ../jpilot.c:372
-#: ../jpilot.c:374
+#: jpilot.c:371
 msgid "Help"
 msgstr "Help"
 
 # ../jpilot.c:440 ../print_gui.c:214
 # jpilot.c:439 print_gui.c:214
 # ../jpilot.c:438 ../print_gui.c:214
-#: ../jpilot.c:440 ../monthview_gui.c:409 ../print_gui.c:288
-#: ../weekview_gui.c:296
+#. Create a "Print" button
+#: jpilot.c:433 monthview_gui.c:417 print_gui.c:330 weekview_gui.c:303
 msgid "Print"
 msgstr ""
 
 # ../jpilot.c:441
 # jpilot.c:440
 # ../jpilot.c:439
-#: ../jpilot.c:441
+#: jpilot.c:434
 msgid "There is no print support for this conduit."
 msgstr ""
 
-#: ../jpilot.c:501
+#: jpilot.c:492
 msgid "There is no import support for this conduit."
 msgstr ""
 
-#: ../jpilot.c:548
+#: jpilot.c:533
 msgid "Export"
 msgstr ""
 
-#: ../jpilot.c:549
+#: jpilot.c:534
 msgid "There is no export support for this conduit."
 msgstr ""
 
-# jpilot.c:763
-# ../jpilot.c:762
-#: ../jpilot.c:888
+#: jpilot.c:711
+msgid "Sync Anyway"
+msgstr ""
+
+#. -------------------------------------------
+#: jpilot.c:871
 #, c-format
 msgid ""
 "%s was written by\n"
-"Judd Montgomery (c) 1999-2000.\n"
+"Judd Montgomery (c) 1999-2001.\n"
 "judd@jpilot.org\n"
 "http://jpilot.org\n"
 msgstr ""
@@ -765,7 +961,7 @@ msgstr ""
 # ../jpilot.c:849
 # jpilot.c:768
 # ../jpilot.c:767
-#: ../jpilot.c:893
+#: jpilot.c:876
 #, c-format
 msgid "About %s"
 msgstr "Over %s"
@@ -774,7 +970,7 @@ msgstr "Over %s"
 # ../jpilot.c:830
 # jpilot.c:833
 # ../jpilot.c:832
-#: ../jpilot.c:962
+#: jpilot.c:966
 msgid "/File"
 msgstr "/_Bestand"
 
@@ -782,7 +978,7 @@ msgstr "/_Bestand"
 # ../jpilot.c:831
 # jpilot.c:834
 # ../jpilot.c:833
-#: ../jpilot.c:963
+#: jpilot.c:967
 msgid "/File/tear"
 msgstr "/_Bestand/tear"
 
@@ -790,7 +986,7 @@ msgstr "/_Bestand/tear"
 # ../jpilot.c:832
 # jpilot.c:835
 # ../jpilot.c:834
-#: ../jpilot.c:964
+#: jpilot.c:968
 msgid "/File/_Find"
 msgstr "/Bestand/_Zoeken"
 
@@ -798,7 +994,7 @@ msgstr "/Bestand/_Zoeken"
 # ../jpilot.c:833 ../jpilot.c:838
 # jpilot.c:836 jpilot.c:841
 # ../jpilot.c:835 ../jpilot.c:840
-#: ../jpilot.c:965 ../jpilot.c:971 ../jpilot.c:973
+#: jpilot.c:969 jpilot.c:975 jpilot.c:977
 msgid "/File/sep1"
 msgstr "/Bestand/sep1"
 
@@ -806,7 +1002,7 @@ msgstr "/Bestand/sep1"
 # ../jpilot.c:834
 # jpilot.c:837
 # ../jpilot.c:836
-#: ../jpilot.c:966
+#: jpilot.c:970
 msgid "/File/_Install"
 msgstr "/Bestand/_Installeren"
 
@@ -814,7 +1010,7 @@ msgstr "/Bestand/_Installeren"
 # ../jpilot.c:836
 # jpilot.c:839
 # ../jpilot.c:838
-#: ../jpilot.c:967
+#: jpilot.c:971
 #, fuzzy
 msgid "/File/Import"
 msgstr "/Bestand/Einde"
@@ -823,7 +1019,7 @@ msgstr "/Bestand/Einde"
 # ../jpilot.c:836
 # jpilot.c:839
 # ../jpilot.c:838
-#: ../jpilot.c:968
+#: jpilot.c:972
 #, fuzzy
 msgid "/File/Export"
 msgstr "/Bestand/Einde"
@@ -832,7 +1028,7 @@ msgstr "/Bestand/Einde"
 # ../jpilot.c:835
 # jpilot.c:838
 # ../jpilot.c:837
-#: ../jpilot.c:969
+#: jpilot.c:973
 msgid "/File/Preferences"
 msgstr "/Bestand/Instellingen"
 
@@ -840,11 +1036,11 @@ msgstr "/Bestand/Instellingen"
 # ../jpilot.c:836
 # jpilot.c:839
 # ../jpilot.c:838
-#: ../jpilot.c:970
+#: jpilot.c:974
 msgid "/File/_Print"
 msgstr "/Bestand/Einde"
 
-#: ../jpilot.c:972
+#: jpilot.c:976
 msgid "/File/Restore Handheld"
 msgstr ""
 
@@ -852,7 +1048,7 @@ msgstr ""
 # ../jpilot.c:839
 # jpilot.c:842
 # ../jpilot.c:841
-#: ../jpilot.c:974
+#: jpilot.c:978
 msgid "/File/Quit"
 msgstr "/Bestand/Einde"
 
@@ -860,14 +1056,14 @@ msgstr "/Bestand/Einde"
 # ../jpilot.c:841
 # jpilot.c:844
 # ../jpilot.c:843
-#: ../jpilot.c:975
+#: jpilot.c:979
 msgid "/_View"
 msgstr "/_Weergave"
 
 # ../jpilot.c:842
 # jpilot.c:845
 # ../jpilot.c:844
-#: ../jpilot.c:976
+#: jpilot.c:980
 msgid "/View/Hide-Show Private Records"
 msgstr ""
 
@@ -875,7 +1071,7 @@ msgstr ""
 # ../jpilot.c:843
 # jpilot.c:846
 # ../jpilot.c:845
-#: ../jpilot.c:977
+#: jpilot.c:981
 msgid "/View/Datebook"
 msgstr "/Weergave/Agenda"
 
@@ -883,7 +1079,7 @@ msgstr "/Weergave/Agenda"
 # ../jpilot.c:844
 # jpilot.c:847
 # ../jpilot.c:846
-#: ../jpilot.c:978
+#: jpilot.c:982
 msgid "/View/Addresses"
 msgstr "/Weergave/Adressen"
 
@@ -891,7 +1087,7 @@ msgstr "/Weergave/Adressen"
 # ../jpilot.c:845
 # jpilot.c:848
 # ../jpilot.c:847
-#: ../jpilot.c:979
+#: jpilot.c:983
 msgid "/View/Todos"
 msgstr "/Weergave/Takenlijst"
 
@@ -899,7 +1095,7 @@ msgstr "/Weergave/Takenlijst"
 # ../jpilot.c:846
 # jpilot.c:849
 # ../jpilot.c:848
-#: ../jpilot.c:980
+#: jpilot.c:984
 msgid "/View/Memos"
 msgstr "/Weergave/Memos"
 
@@ -907,7 +1103,7 @@ msgstr "/Weergave/Memos"
 # ../jpilot.c:847 ../jpilot.c:916
 # jpilot.c:850 jpilot.c:922
 # ../jpilot.c:849 ../jpilot.c:925
-#: ../jpilot.c:981 ../jpilot.c:1057
+#: jpilot.c:985 jpilot.c:1061
 msgid "/Plugins"
 msgstr "/Plugins"
 
@@ -915,7 +1111,7 @@ msgstr "/Plugins"
 # ../jpilot.c:848
 # jpilot.c:851
 # ../jpilot.c:850
-#: ../jpilot.c:982
+#: jpilot.c:986
 msgid "/_Help"
 msgstr "/_Help"
 
@@ -923,7 +1119,7 @@ msgstr "/_Help"
 # ../jpilot.c:893
 # jpilot.c:899
 # ../jpilot.c:851 ../jpilot.c:902
-#: ../jpilot.c:983 ../jpilot.c:1034
+#: jpilot.c:987 jpilot.c:1038
 #, c-format
 msgid "/_Help/%s"
 msgstr "/_Help/%s"
@@ -932,7 +1128,7 @@ msgstr "/_Help/%s"
 # ../jpilot.c:882
 # jpilot.c:888
 # ../jpilot.c:891
-#: ../jpilot.c:1023
+#: jpilot.c:1027
 #, c-format
 msgid "/Plugins/%s"
 msgstr "/Plugins/%s"
@@ -941,7 +1137,7 @@ msgstr "/Plugins/%s"
 # ../jpilot.c:1394
 # jpilot.c:1408
 # ../jpilot.c:1437
-#: ../jpilot.c:1647
+#: jpilot.c:1654
 msgid "Clear"
 msgstr "jaar"
 
@@ -949,35 +1145,38 @@ msgstr "jaar"
 # ../jpilot.c:1450
 # jpilot.c:1464
 # ../jpilot.c:1493
-#: ../jpilot.c:1712
+#. Create "Quit" button
+#: jpilot.c:1719
 msgid "Quit!"
 msgstr "Einde!"
 
 # ../jpilot.c:1457
 # jpilot.c:612 jpilot.c:620 jpilot.c:1471
 # ../jpilot.c:1500
-#: ../jpilot.c:1718
+#. Create "Sync" button
+#: jpilot.c:1725
 msgid "Sync"
 msgstr ""
 
 # ../jpilot.c:1464
 # jpilot.c:1478
 # ../jpilot.c:1507
-#: ../jpilot.c:1725
+#: jpilot.c:1732
 msgid "Sync your palm to the desktop"
 msgstr ""
 
 # ../jpilot.c:1468
 # jpilot.c:1482
 # ../jpilot.c:1511
-#: ../jpilot.c:1729
+#. Create "Backup" button in left column
+#: jpilot.c:1736
 msgid "Backup"
 msgstr ""
 
 # ../jpilot.c:1476
 # jpilot.c:1490
 # ../jpilot.c:1519
-#: ../jpilot.c:1737
+#: jpilot.c:1744
 msgid ""
 "Sync your palm to the desktop\n"
 "and then do a backup"
@@ -986,116 +1185,77 @@ msgstr ""
 # ../jpilot.c:1524
 # jpilot.c:1538
 # ../jpilot.c:1567
-#: ../jpilot.c:1818
+#: jpilot.c:1825
 msgid "Datebook/Go to Today"
 msgstr ""
 
 # ../jpilot.c:1526
 # jpilot.c:1540
 # ../jpilot.c:1569
-#: ../jpilot.c:1820
+#: jpilot.c:1827
 msgid "Address Book"
 msgstr ""
 
 # ../jpilot.c:1528
 # jpilot.c:1542
 # ../jpilot.c:1571
-#: ../jpilot.c:1822
+#: jpilot.c:1829
 msgid "ToDo List"
 msgstr ""
 
 # ../jpilot.c:1530
 # jpilot.c:1544
 # ../jpilot.c:1573
-#: ../jpilot.c:1824
+#: jpilot.c:1831
 msgid "Memo Pad"
 msgstr ""
 
 # ../log.c:89
 # log.c:89
 # ../log.c:89
-#: ../log.c:88
+#: log.c:89
 msgid "Cannot open log file, giving up.\n"
 msgstr ""
 
 # ../log.c:96
 # log.c:96
 # ../log.c:96
-#: ../log.c:95
+#: log.c:96
 msgid "Cannot open log file\n"
 msgstr ""
 
-#: ../memo_gui.c:454
-msgid "File Browser"
+#: memo_gui.c:352
+msgid "File doesn't appear to be memopad.dat format\n"
 msgstr ""
 
-#: ../memo_gui.c:539
-#, c-format
-msgid "%s is a directory"
-msgstr ""
-
-#: ../memo_gui.c:540 ../memo_gui.c:555
-msgid "Error Opening File"
-msgstr ""
-
-#: ../memo_gui.c:544
-#, c-format
-msgid "Do you want to overwrite file %s?"
-msgstr ""
-
-#: ../memo_gui.c:545
-msgid "Overwrite File?"
-msgstr ""
-
-#: ../memo_gui.c:546
-msgid "Overwrite File"
-msgstr ""
-
-#: ../memo_gui.c:674
-msgid "Select memos to be exported"
-msgstr ""
-
-#: ../memo_gui.c:712
-msgid "Save as"
-msgstr ""
-
-#: ../memo_gui.c:720
-msgid "Browse"
-msgstr ""
-
-# ../password.c:271 ../print_gui.c:220 ../utils.c:826
-# print_gui.c:220 utils.c:826
-# ../password.c:271 ../print_gui.c:220 ../utils.c:818
-#: ../memo_gui.c:733 ../password.c:285 ../print_gui.c:294 ../restore_gui.c:220
-#: ../utils.c:820
-msgid "Cancel"
-msgstr ""
-
-#: ../memo_gui.c:1434
+#. Memo32 check box
+#: memo_gui.c:1283
 msgid "Use Memo32 (pedit32)"
 msgstr ""
 
 # ../monthview_gui.c:359
 # monthview_gui.c:359
 # ../monthview_gui.c:359
-#: ../monthview_gui.c:374
+#: monthview_gui.c:382
 msgid "Monthly View"
 msgstr ""
 
 # ../monthview_gui.c:388 ../weekview_gui.c:275
 # monthview_gui.c:388 weekview_gui.c:275
 # ../monthview_gui.c:388 ../weekview_gui.c:275
-#: ../monthview_gui.c:403 ../weekview_gui.c:290
+#. Create a "Quit" button
+#: monthview_gui.c:411 weekview_gui.c:297
 msgid "Close"
 msgstr ""
 
 # ../password.c:226
-#: ../password.c:240
+#: password.c:241
 msgid "Palm Password"
 msgstr ""
 
 # ../password.c:248
-#: ../password.c:262
+#. Label
+#: password.c:263
 msgid "Enter PalmOS Password"
 msgstr ""
 
@@ -1103,21 +1263,21 @@ msgstr ""
 # ../prefs_gui.c:262
 # prefs_gui.c:262
 # ../prefs_gui.c:297
-#: ../prefs_gui.c:301
+#: prefs_gui.c:306
 msgid "Preferences"
 msgstr "/Bestand/Instellingen"
 
 # ../prefs_gui.c:285
 # prefs_gui.c:285
 # ../prefs_gui.c:320
-#: ../prefs_gui.c:324
+#: prefs_gui.c:329
 msgid "Locale"
 msgstr ""
 
 # ../prefs_gui.c:287
 # prefs_gui.c:287
 # ../prefs_gui.c:322
-#: ../prefs_gui.c:326
+#: prefs_gui.c:331
 msgid "Settings"
 msgstr ""
 
@@ -1125,21 +1285,22 @@ msgstr ""
 # ../prefs_gui.c:289
 # prefs_gui.c:289
 # ../prefs_gui.c:324
-#: ../prefs_gui.c:328
+#: prefs_gui.c:333
 msgid "Alarms"
 msgstr "Alarm"
 
 # ../prefs_gui.c:291
 # prefs_gui.c:291
 # ../prefs_gui.c:326
-#: ../prefs_gui.c:330
+#: prefs_gui.c:335
 msgid "Conduits"
 msgstr ""
 
 # ../prefs_gui.c:302
 # prefs_gui.c:302
 # ../prefs_gui.c:337
-#: ../prefs_gui.c:341
+#. Character Set
+#: prefs_gui.c:346
 msgid "Character Set "
 msgstr ""
 
@@ -1147,7 +1308,8 @@ msgstr ""
 # ../prefs_gui.c:315
 # prefs_gui.c:315
 # ../prefs_gui.c:350
-#: ../prefs_gui.c:354
+#. Shortdate
+#: prefs_gui.c:359
 msgid "Short date format "
 msgstr "Verkort datumformaat"
 
@@ -1155,7 +1317,8 @@ msgstr "Verkort datumformaat"
 # ../prefs_gui.c:328
 # prefs_gui.c:328
 # ../prefs_gui.c:363
-#: ../prefs_gui.c:367
+#. Longdate
+#: prefs_gui.c:372
 msgid "Long date format "
 msgstr "Volledig datumformaat"
 
@@ -1163,7 +1326,8 @@ msgstr "Volledig datumformaat"
 # ../prefs_gui.c:342
 # prefs_gui.c:342
 # ../prefs_gui.c:377
-#: ../prefs_gui.c:381
+#. Time
+#: prefs_gui.c:386
 msgid "Time format "
 msgstr "Tijdformaat"
 
@@ -1171,7 +1335,8 @@ msgstr "Tijdformaat"
 # ../prefs_gui.c:356
 # prefs_gui.c:356
 # ../prefs_gui.c:391
-#: ../prefs_gui.c:395
+#. FDOW
+#: prefs_gui.c:400
 msgid "The first day of the week is "
 msgstr "De week begint met "
 
@@ -1179,14 +1344,16 @@ msgstr "De week begint met "
 # ../prefs_gui.c:376
 # prefs_gui.c:376
 # ../prefs_gui.c:411
-#: ../prefs_gui.c:415
+#. GTK colors file
+#: prefs_gui.c:420
 msgid "My GTK colors file is "
 msgstr "Des GTK-kleurinformatie staat in"
 
 # ../prefs_gui.c:390
 # prefs_gui.c:390
 # ../prefs_gui.c:425
-#: ../prefs_gui.c:429
+#. Port
+#: prefs_gui.c:434
 msgid "Serial Port (/dev/ttyS0, /dev/pilot)"
 msgstr ""
 
@@ -1194,7 +1361,8 @@ msgstr ""
 # ../prefs_gui.c:405
 # prefs_gui.c:405
 # ../prefs_gui.c:440
-#: ../prefs_gui.c:444
+#. Rate
+#: prefs_gui.c:449
 msgid "Serial Rate "
 msgstr "Seriele snelheid"
 
@@ -1202,7 +1370,8 @@ msgstr "Seriele snelheid"
 # ../prefs_gui.c:418
 # prefs_gui.c:418
 # ../prefs_gui.c:453
-#: ../prefs_gui.c:457
+#. Number of backups
+#: prefs_gui.c:462
 msgid "Number of backups to be archived"
 msgstr "Hoeveel reservekopien moeten er gemaakt worden?"
 
@@ -1210,7 +1379,7 @@ msgstr "Hoeveel reservekopien moeten er gemaakt worden?"
 # ../prefs_gui.c:434
 # prefs_gui.c:434
 # ../prefs_gui.c:469
-#: ../prefs_gui.c:473
+#: prefs_gui.c:478
 msgid "Show deleted records (default NO)"
 msgstr "Gewiste informatie laten zien (Standaard: NO)"
 
@@ -1218,7 +1387,7 @@ msgstr "Gewiste informatie laten zien (Standaard: NO)"
 # ../prefs_gui.c:447
 # prefs_gui.c:447
 # ../prefs_gui.c:482
-#: ../prefs_gui.c:486
+#: prefs_gui.c:491
 msgid "Show modified deleted records (default NO)"
 msgstr "Veranderde informatie markeren? (Standaard: NO)"
 
@@ -1226,88 +1395,89 @@ msgstr "Veranderde informatie markeren? (Standaard: NO)"
 # ../prefs_gui.c:461
 # prefs_gui.c:461
 # ../prefs_gui.c:496
-#: ../prefs_gui.c:500
+#: prefs_gui.c:505
 msgid "Highlight calendar days with appointments"
 msgstr "Dagen met afspraken markeren?"
 
 # ../prefs_gui.c:474
 # prefs_gui.c:474
 # ../prefs_gui.c:509
-#: ../prefs_gui.c:513
+#: prefs_gui.c:518
 msgid "Use DateBk3/4 note tags"
 msgstr ""
 
 # ../prefs_gui.c:488
 # prefs_gui.c:488
 # ../prefs_gui.c:523
-#: ../prefs_gui.c:527
+#: prefs_gui.c:532
 msgid "Sync datebook"
 msgstr ""
 
 # ../prefs_gui.c:500
 # prefs_gui.c:500
 # ../prefs_gui.c:535
-#: ../prefs_gui.c:539
+#: prefs_gui.c:544
 msgid "Sync address"
 msgstr ""
 
 # ../prefs_gui.c:512
 # prefs_gui.c:512
 # ../prefs_gui.c:547
-#: ../prefs_gui.c:551
+#: prefs_gui.c:556
 msgid "Sync todo"
 msgstr ""
 
 # ../prefs_gui.c:524
 # prefs_gui.c:524
 # ../prefs_gui.c:559
-#: ../prefs_gui.c:563
+#: prefs_gui.c:568
 msgid "Sync memo"
 msgstr ""
 
-#: ../prefs_gui.c:575
+#: prefs_gui.c:580
 msgid "Sync memo32 (pedit32)"
 msgstr ""
 
 # ../prefs_gui.c:538
 # prefs_gui.c:538
 # ../prefs_gui.c:601
-#: ../prefs_gui.c:617
+#: prefs_gui.c:622
 msgid "Open alarm windows for appointment reminders"
 msgstr ""
 
 # ../prefs_gui.c:550
 # prefs_gui.c:550
 # ../prefs_gui.c:613
-#: ../prefs_gui.c:629
+#: prefs_gui.c:634
 msgid "Execute this command"
 msgstr ""
 
 # ../prefs_gui.c:561
 # prefs_gui.c:561
 # ../prefs_gui.c:624
-#: ../prefs_gui.c:640
+#. Shell warning
+#: prefs_gui.c:645
 msgid "WARNING: executing arbitrary shell commands can be dangerous!!!"
 msgstr ""
 
 # ../prefs_gui.c:569
 # prefs_gui.c:569
 # ../prefs_gui.c:632
-#: ../prefs_gui.c:648
+#: prefs_gui.c:653
 msgid "Alarm Command"
 msgstr ""
 
 # ../prefs_gui.c:579
 # prefs_gui.c:579
 # ../prefs_gui.c:642
-#: ../prefs_gui.c:658
+#: prefs_gui.c:663
 msgid "%t is replaced with the alarm time"
 msgstr ""
 
 # ../prefs_gui.c:583
 # prefs_gui.c:583
 # ../prefs_gui.c:646
-#: ../prefs_gui.c:662
+#: prefs_gui.c:667
 #, c-format
 msgid "%d is replaced with the alarm date"
 msgstr ""
@@ -1315,111 +1485,121 @@ msgstr ""
 # ../prefs_gui.c:588
 # prefs_gui.c:588
 # ../prefs_gui.c:651
-#: ../prefs_gui.c:667
+#: prefs_gui.c:672
 msgid "%D is replaced with the alarm description"
 msgstr ""
 
 # ../prefs_gui.c:592
 # prefs_gui.c:592
 # ../prefs_gui.c:655
-#: ../prefs_gui.c:671
+#: prefs_gui.c:676
 msgid "%N is replaced with the alarm note"
 msgstr ""
 
 # ../print_gui.c:135
 # print_gui.c:135
 # ../print_gui.c:135
-#: ../print_gui.c:167
+#: print_gui.c:175
 msgid "Print Options"
 msgstr ""
 
-#: ../print_gui.c:184
+#: print_gui.c:190
+msgid "Paper Size"
+msgstr ""
+
+#: print_gui.c:207
 msgid "Daily Printout"
 msgstr ""
 
-#: ../print_gui.c:188
+#: print_gui.c:213
 msgid "Weekly Printout"
 msgstr ""
 
-#: ../print_gui.c:192
+#: print_gui.c:219
 msgid "Monthly Printout"
 msgstr ""
 
 # ../print_gui.c:149
 # print_gui.c:149
 # ../print_gui.c:149
-#: ../print_gui.c:217
+#: print_gui.c:259
 msgid "One record"
 msgstr ""
 
 # ../print_gui.c:153
 # print_gui.c:153
 # ../print_gui.c:153
-#: ../print_gui.c:221
+#: print_gui.c:263
 msgid "All records in this category"
 msgstr ""
 
 # ../print_gui.c:157
 # print_gui.c:157
 # ../print_gui.c:157
-#: ../print_gui.c:225
+#: print_gui.c:267
 msgid "Print all records"
 msgstr ""
 
 # ../print_gui.c:177
 # print_gui.c:177
 # ../print_gui.c:177
-#: ../print_gui.c:248
+#: print_gui.c:290
 msgid "One record per page"
 msgstr ""
 
 # ../print_gui.c:191
 # print_gui.c:191
 # ../print_gui.c:191
-#: ../print_gui.c:264
+#: print_gui.c:306
 msgid " Blank lines between each record"
 msgstr ""
 
 # ../print_gui.c:200
 # print_gui.c:200
 # ../print_gui.c:200
-#: ../print_gui.c:274
+#. Print Command
+#: print_gui.c:316
 msgid "Print Command (e.g. lpr, or cat > file.ps)"
 msgstr ""
 
-#: ../restore_gui.c:156
+#: restore_gui.c:143
+msgid "Restore Handheld"
+msgstr ""
+
+#. Label for instructions
+#: restore_gui.c:159
 msgid "To restore your handheld:"
 msgstr ""
 
-#: ../restore_gui.c:159
+#: restore_gui.c:162
 msgid ""
 "1. Choose all the applications you wish to restore.  The default is all."
 msgstr ""
 
-#: ../restore_gui.c:162
+#: restore_gui.c:165
 msgid "2. Enter the User Name and User ID."
 msgstr ""
 
-#: ../restore_gui.c:165
+#: restore_gui.c:168
 msgid "3. Press the OK button."
 msgstr ""
 
-#: ../restore_gui.c:168
+#: restore_gui.c:171
 msgid "This will overwrite data that is currently on the handheld."
 msgstr ""
 
-#: ../restore_gui.c:190
+#: restore_gui.c:192
 msgid "User Name"
 msgstr ""
 
-#: ../restore_gui.c:203
+#: restore_gui.c:205
 msgid "User ID"
 msgstr ""
 
 # ../search_gui.c:456
 # search_gui.c:456
 # ../search_gui.c:456
-#: ../search_gui.c:455
+#: search_gui.c:456
 msgid "No records found"
 msgstr ""
 
@@ -1427,7 +1607,7 @@ msgstr ""
 # ../search_gui.c:527
 # search_gui.c:527
 # ../search_gui.c:527
-#: ../search_gui.c:526
+#: search_gui.c:527
 msgid "Search"
 msgstr "Zoeken naar: "
 
@@ -1435,7 +1615,7 @@ msgstr "Zoeken naar: "
 # ../search_gui.c:540
 # search_gui.c:540
 # ../search_gui.c:540
-#: ../search_gui.c:539
+#: search_gui.c:540
 msgid "Search for: "
 msgstr "Zoeken naar: "
 
@@ -1443,11 +1623,11 @@ msgstr "Zoeken naar: "
 # ../search_gui.c:547
 # search_gui.c:547
 # ../search_gui.c:547
-#: ../search_gui.c:546
+#: search_gui.c:547
 msgid "Case Sensitive"
 msgstr "Hoofd/Kleine letters"
 
-#: ../sync.c:358
+#: sync.c:338
 #, c-format
 msgid " Syncing on device %s\n"
 msgstr ""
@@ -1455,154 +1635,156 @@ msgstr ""
 # ../sync.c:357
 # sync.c:359
 # ../sync.c:364
-#: ../sync.c:359
+#: sync.c:339
 msgid " Press the HotSync button now\n"
 msgstr ""
 
 # ../sync.c:376
 # sync.c:378
 # ../sync.c:435
-#: ../sync.c:430
+#: sync.c:425
 msgid "Check your serial port and settings\n"
 msgstr ""
 
-#: ../sync.c:464 ../sync.c:478 ../sync.c:490
+#. These are carefully worded so as not to be read by
+#. * the parent program and interpreted
+#: sync.c:459 sync.c:473 sync.c:485
 #, c-format
 msgid "Last Username-->\"%s\"\n"
 msgstr ""
 
-#: ../sync.c:465 ../sync.c:479 ../sync.c:491
+#: sync.c:460 sync.c:474 sync.c:486
 #, c-format
 msgid "Last UserID-->\"%d\"\n"
 msgstr ""
 
-#: ../sync.c:466 ../sync.c:480 ../sync.c:492
+#: sync.c:461 sync.c:475 sync.c:487
 #, c-format
 msgid "Username-->\"%s\"\n"
 msgstr ""
 
-#: ../sync.c:467 ../sync.c:481 ../sync.c:493
+#: sync.c:462 sync.c:476 sync.c:488
 #, c-format
 msgid "User ID-->%d\n"
 msgstr ""
 
-#: ../sync.c:506
+#: sync.c:501
 #, c-format
 msgid "lastSyncPC = %d\n"
 msgstr ""
 
-#: ../sync.c:507
+#: sync.c:502
 #, c-format
 msgid "This PC = %lu\n"
 msgstr ""
 
-#: ../sync.c:526
+#: sync.c:521
 msgid "Sync canceled\n"
 msgstr ""
 
-#: ../sync.c:550
+#: sync.c:545
 msgid "You may need to sync to update J-Pilot.\n"
 msgstr ""
 
 # ../sync.c:490
 # sync.c:492
 # ../sync.c:549
-#: ../sync.c:567
+#: sync.c:562
 msgid "Doing a fast sync.\n"
 msgstr ""
 
 # ../sync.c:505
 # sync.c:507
 # ../sync.c:564
-#: ../sync.c:585
+#: sync.c:580
 msgid "Doing a slow sync.\n"
 msgstr ""
 
 # ../sync.c:561
 # sync.c:562
 # ../sync.c:625
-#: ../sync.c:649
+#: sync.c:644
 msgid "Thank you for using J-Pilot."
 msgstr ""
 
-#: ../sync.c:723 ../sync.c:2168
+#: sync.c:718 sync.c:2178
 #, c-format
 msgid "Syncing %s\n"
 msgstr ""
 
-#: ../sync.c:730 ../sync.c:1715 ../sync.c:2175
+#: sync.c:725 sync.c:1725 sync.c:2185
 #, c-format
 msgid "Wrote an %s record."
 msgstr ""
 
-#: ../sync.c:732 ../sync.c:1717 ../sync.c:2177
+#: sync.c:727 sync.c:1727 sync.c:2187
 #, c-format
 msgid "Writing an %s record failed."
 msgstr ""
 
-#: ../sync.c:734 ../sync.c:1719 ../sync.c:2179
+#: sync.c:729 sync.c:1729 sync.c:2189
 #, c-format
 msgid "Deleting an %s record failed."
 msgstr ""
 
-#: ../sync.c:736 ../sync.c:1721 ../sync.c:2181
+#: sync.c:731 sync.c:1731 sync.c:2191
 #, c-format
 msgid "Deleted an %s record."
 msgstr ""
 
-#: ../sync.c:739 ../sync.c:1724 ../sync.c:2184
+#: sync.c:734 sync.c:1734 sync.c:2194
 #, c-format
 msgid "Wrote a %s record."
 msgstr ""
 
-#: ../sync.c:741 ../sync.c:1726 ../sync.c:2186
+#: sync.c:736 sync.c:1736 sync.c:2196
 #, c-format
 msgid "Writing a %s record failed."
 msgstr ""
 
-#: ../sync.c:743 ../sync.c:1728 ../sync.c:2188
+#: sync.c:738 sync.c:1738 sync.c:2198
 #, c-format
 msgid "Deleting a %s record failed."
 msgstr ""
 
-#: ../sync.c:745 ../sync.c:1730 ../sync.c:2190
+#: sync.c:740 sync.c:1740 sync.c:2200
 #, c-format
 msgid "Deleted a %s record."
 msgstr ""
 
-#: ../sync.c:750 ../sync.c:755 ../sync.c:1734 ../sync.c:2194
+#: sync.c:745 sync.c:750 sync.c:1744 sync.c:2204
 #, c-format
 msgid "Unable to open %s\n"
 msgstr ""
 
-#: ../sync.c:765
+#: sync.c:760
 #, c-format
 msgid "number of records = %d\n"
 msgstr ""
 
-#: ../sync.c:779 ../sync.c:1750
+#: sync.c:774 sync.c:1760
 msgid "PC file corrupt?\n"
 msgstr ""
 
-#: ../sync.c:786
+#: sync.c:781
 msgid "slow_sync_application(): Out of memory\n"
 msgstr ""
 
-#: ../sync.c:806 ../sync.c:1788
+#: sync.c:801 sync.c:1798
 msgid "dlp_WriteRecord failed\n"
 msgstr ""
 
-#: ../sync.c:816 ../sync.c:871 ../sync.c:881 ../sync.c:1798 ../sync.c:1818
-#: ../sync.c:1857 ../sync.c:1867
+#: sync.c:811 sync.c:866 sync.c:876 sync.c:1808 sync.c:1828 sync.c:1867
+#: sync.c:1877
 msgid "fseek failed - fatal error\n"
 msgstr ""
 
-#: ../sync.c:961 ../sync.c:1287
+#: sync.c:956 sync.c:1294
 #, c-format
 msgid "%s (Creator ID '%s') is up to date, fetch skipped.\n"
 msgstr ""
 
-#: ../sync.c:965 ../sync.c:1291
+#: sync.c:960 sync.c:1298
 #, c-format
 msgid "Fetching '%s' (Creator ID '%s')... "
 msgstr ""
@@ -1610,11 +1792,11 @@ msgstr ""
 # ../sync.c:862 ../sync.c:1058 ../sync.c:1136
 # sync.c:877 sync.c:1073 sync.c:1151
 # ../sync.c:942 ../sync.c:1138 ../sync.c:1217
-#: ../sync.c:980 ../sync.c:1306 ../sync.c:1421
+#: sync.c:975 sync.c:1313 sync.c:1431
 msgid "OK\n"
 msgstr ""
 
-#: ../sync.c:1212
+#: sync.c:1211
 #, c-format
 msgid "Skipping %s (Creator ID '%s')\n"
 msgstr ""
@@ -1623,19 +1805,19 @@ msgstr ""
 # ../install_gui.c:224
 # install_gui.c:224
 # ../install_gui.c:224
-#: ../sync.c:1353
+#: sync.c:1361
 #, fuzzy, c-format
 msgid "Installing %s "
 msgstr "/Bestand/_Installeren"
 
-#: ../sync.c:1356
+#: sync.c:1364
 #, c-format
 msgid ""
 "\n"
 "Unable to open '%s'!\n"
 msgstr ""
 
-#: ../sync.c:1364
+#: sync.c:1374
 #, c-format
 msgid "(Creator ID is '%s')..."
 msgstr ""
@@ -1643,7 +1825,7 @@ msgstr ""
 # ../sync.c:1123
 # sync.c:1138
 # ../sync.c:1203
-#: ../sync.c:1405
+#: sync.c:1415
 #, c-format
 msgid "Install %s failed"
 msgstr ""
@@ -1652,7 +1834,7 @@ msgstr ""
 # ../jpilot.c:830
 # jpilot.c:833
 # ../jpilot.c:832
-#: ../sync.c:1410
+#: sync.c:1420
 #, fuzzy
 msgid "Failed.\n"
 msgstr "/_Bestand"
@@ -1660,35 +1842,36 @@ msgstr "/_Bestand"
 # ../sync.c:1132
 # sync.c:1147
 # ../sync.c:1213
-#: ../sync.c:1416
+#. the space after the %s is a hack, the last char gets cut off
+#: sync.c:1426
 #, c-format
 msgid "Installed %s "
 msgstr ""
 
-#: ../sync.c:1441
+#: sync.c:1451
 msgid "Cannot open jpilot_to_install file\n"
 msgstr ""
 
-#: ../sync.c:1447
+#: sync.c:1457
 msgid "Cannot open jpilot_to_install.tmp file\n"
 msgstr ""
 
-#: ../sync.c:1759
+#: sync.c:1769
 msgid "fast_sync_local_recs(): Out of memory\n"
 msgstr ""
 
-#: ../sync.c:1842
+#: sync.c:1852
 msgid ""
 "dlp_DeleteRecord failed\n"
 "This could be because the record was already deleted on the Palm\n"
 msgstr ""
 
-#: ../sync.c:2241
+#: sync.c:2257
 #, c-format
 msgid "palm: number of records = %d\n"
 msgstr ""
 
-#: ../sync.c:2242
+#: sync.c:2258
 #, c-format
 msgid "disk: number of records = %d\n"
 msgstr ""
@@ -1697,9 +1880,13 @@ msgstr ""
 # ../todo_gui.c:121
 # todo_gui.c:121
 # ../todo_gui.c:121
-#: ../todo_gui.c:121
+#: todo_gui.c:139
 msgid "Due Date"
 msgstr "Geen einddatum"
+
+#: todo_gui.c:489
+msgid "File doesn't appear to be todo.dat format\n"
+msgstr ""
 
 # todo_gui.c:963
 # ../datebook_gui.c:1396 ../datebook_gui.c:2464 ../datebook_gui.c:2494
@@ -1707,7 +1894,7 @@ msgstr "Geen einddatum"
 # ../todo_gui.c:1130
 # todo_gui.c:712
 # ../todo_gui.c:712
-#: ../todo_gui.c:775
+#: todo_gui.c:1244
 msgid "No date"
 msgstr "Geen einddatum"
 
@@ -1715,21 +1902,22 @@ msgstr "Geen einddatum"
 # ../todo_gui.c:1009
 # todo_gui.c:1010
 # ../todo_gui.c:1010
-#: ../todo_gui.c:1075
+#. The hide completed check box
+#: todo_gui.c:1519
 msgid "Hide Completed ToDos"
 msgstr "Voltooide taken verbergen?"
 
 # ../todo_gui.c:1025
 # todo_gui.c:1026
 # ../todo_gui.c:1026
-#: ../todo_gui.c:1091
+#: todo_gui.c:1536
 msgid "Task"
 msgstr ""
 
 # ../todo_gui.c:1026
 # todo_gui.c:1027
 # ../todo_gui.c:1027
-#: ../todo_gui.c:1092
+#: todo_gui.c:1537
 msgid "Due"
 msgstr ""
 
@@ -1737,7 +1925,8 @@ msgstr ""
 # ../todo_gui.c:1091
 # todo_gui.c:1092
 # ../todo_gui.c:1092
-#: ../todo_gui.c:1158
+#. The completed check box
+#: todo_gui.c:1612
 msgid "Completed"
 msgstr "Voltooid"
 
@@ -1745,7 +1934,7 @@ msgstr "Voltooid"
 # ../todo_gui.c:1099
 # todo_gui.c:1100
 # ../todo_gui.c:1100
-#: ../todo_gui.c:1166
+#: todo_gui.c:1620
 msgid "Priority: "
 msgstr "Prioriteit:"
 
@@ -1753,7 +1942,7 @@ msgstr "Prioriteit:"
 # ../todo_gui.c:1119
 # todo_gui.c:1120
 # ../todo_gui.c:1120
-#: ../todo_gui.c:1186
+#: todo_gui.c:1640
 msgid "Date Due:"
 msgstr "Einddatum:"
 
@@ -1761,7 +1950,7 @@ msgstr "Einddatum:"
 # ../utils.c:102
 # utils.c:102
 # ../utils.c:102
-#: ../utils.c:104
+#: utils.c:105
 msgid "Today is %A, %x %X"
 msgstr "Vandaag is  het %A, %x %X"
 
@@ -1769,7 +1958,8 @@ msgstr "Vandaag is  het %A, %x %X"
 # ../utils.c:104
 # utils.c:104
 # ../utils.c:104
-#: ../utils.c:106
+#: utils.c:107
+#, c-format
 msgid "Today is %%A, %s %s"
 msgstr "Vandaag is het %%A, %s %s"
 
@@ -1777,18 +1967,47 @@ msgstr "Vandaag is het %%A, %s %s"
 # ../utils.c:821
 # utils.c:821
 # ../utils.c:813
-#: ../utils.c:815
+#: utils.c:864
 msgid "Today"
 msgstr "dag"
+
+#: utils.c:1012
+msgid "Save Changed Record?"
+msgstr ""
+
+#: utils.c:1013
+msgid "Do you want to save the changes to this record?"
+msgstr ""
+
+#: utils.c:1018
+msgid "Save New Record?"
+msgstr ""
+
+#: utils.c:1019
+msgid "Do you want to save this new record?"
+msgstr ""
+
+#: utils.c:1347
+msgid "Couldn't find empty DB file.\n"
+msgstr ""
+
+# install_gui.c:215
+# ../install_gui.c:240
+# install_gui.c:240
+# ../install_gui.c:240
+#: utils.c:1348
+#, fuzzy
+msgid "jpilot may not be installed.\n"
+msgstr "Bestanden die geinstalleerd worden"
 
 # ../utils.c:1949
 # utils.c:1949
 # ../utils.c:1941
-#: ../utils.c:1949
+#: utils.c:2043
 msgid "PC ID is 0.\n"
 msgstr ""
 
-#: ../utils.c:1950
+#: utils.c:2044
 #, c-format
 msgid "I generated a new PC ID.  It is %lu\n"
 msgstr ""
@@ -1796,8 +2015,281 @@ msgstr ""
 # ../weekview_gui.c:247
 # weekview_gui.c:247
 # ../weekview_gui.c:247
-#: ../weekview_gui.c:262
+#: weekview_gui.c:269
 msgid "Weekly View"
+msgstr ""
+
+#: Expense/expense.c:327
+msgid "Expense"
+msgstr ""
+
+# jpilot.c:578
+# ../jpilot.c:849
+# jpilot.c:768
+# ../jpilot.c:767
+#: Expense/expense.c:338
+#, fuzzy
+msgid "About Expense"
+msgstr "Over %s"
+
+#: Expense/expense.c:359 Expense/expense.c:1027
+msgid "Airfare"
+msgstr ""
+
+#: Expense/expense.c:361 Expense/expense.c:1028
+msgid "Breakfast"
+msgstr ""
+
+#: Expense/expense.c:363 Expense/expense.c:1029
+msgid "Bus"
+msgstr ""
+
+#: Expense/expense.c:365 Expense/expense.c:1030
+msgid "BusinessMeals"
+msgstr ""
+
+#: Expense/expense.c:367 Expense/expense.c:1031
+msgid "CarRental"
+msgstr ""
+
+# datebook_gui.c:432
+# ../datebook_gui.c:716
+# datebook_gui.c:720
+# ../datebook_gui.c:721
+#: Expense/expense.c:369 Expense/expense.c:1032
+#, fuzzy
+msgid "Dinner"
+msgstr "geen"
+
+#: Expense/expense.c:371 Expense/expense.c:1033
+msgid "Entertainment"
+msgstr ""
+
+#: Expense/expense.c:373 Expense/expense.c:1034
+msgid "Fax"
+msgstr ""
+
+#: Expense/expense.c:375 Expense/expense.c:1035
+msgid "Gas"
+msgstr ""
+
+#: Expense/expense.c:377 Expense/expense.c:1036
+msgid "Gifts"
+msgstr ""
+
+# datebook_gui.c:2356
+# ../address_gui.c:1068
+# address_gui.c:1075
+# ../address_gui.c:1075
+#: Expense/expense.c:379 Expense/expense.c:1037
+#, fuzzy
+msgid "Hotel"
+msgstr "Geen"
+
+#: Expense/expense.c:381 Expense/expense.c:1038
+msgid "Incidentals"
+msgstr ""
+
+# datebook_gui.c:266 monthview_gui.c:224 monthview_gui.c:225
+# weekview_gui.c:113
+# ../datebook_gui.c:474 ../monthview_gui.c:323 ../monthview_gui.c:330
+# ../prefs.c:307 ../weekview_gui.c:113
+# datebook_gui.c:478 monthview_gui.c:323 monthview_gui.c:330 prefs.c:307
+# weekview_gui.c:113
+# ../datebook_gui.c:479 ../monthview_gui.c:323 ../monthview_gui.c:330
+# ../prefs.c:309 ../weekview_gui.c:113
+#: Expense/expense.c:383 Expense/expense.c:1039
+#, fuzzy
+msgid "Laundry"
+msgstr "Zondag"
+
+#: Expense/expense.c:385 Expense/expense.c:1040
+msgid "Limo"
+msgstr ""
+
+#: Expense/expense.c:387 Expense/expense.c:1041
+msgid "Lodging"
+msgstr ""
+
+#: Expense/expense.c:389 Expense/expense.c:1042
+msgid "Lunch"
+msgstr ""
+
+#: Expense/expense.c:391 Expense/expense.c:1043
+msgid "Mileage"
+msgstr ""
+
+#: Expense/expense.c:395 Expense/expense.c:1045
+msgid "Parking"
+msgstr ""
+
+#: Expense/expense.c:397 Expense/expense.c:1046
+msgid "Postage"
+msgstr ""
+
+#: Expense/expense.c:399 Expense/expense.c:1047
+msgid "Snack"
+msgstr ""
+
+# datebook_gui.c:266 monthview_gui.c:224 monthview_gui.c:225
+# weekview_gui.c:113
+# ../datebook_gui.c:474 ../monthview_gui.c:323 ../monthview_gui.c:330
+# ../prefs.c:307 ../weekview_gui.c:113
+# datebook_gui.c:478 monthview_gui.c:323 monthview_gui.c:330 prefs.c:307
+# weekview_gui.c:113
+# ../datebook_gui.c:479 ../monthview_gui.c:323 ../monthview_gui.c:330
+# ../prefs.c:309 ../weekview_gui.c:113
+#: Expense/expense.c:401 Expense/expense.c:1048
+#, fuzzy
+msgid "Subway"
+msgstr "Zondag"
+
+#: Expense/expense.c:403 Expense/expense.c:1049
+msgid "Supplies"
+msgstr ""
+
+#: Expense/expense.c:405 Expense/expense.c:1050
+msgid "Taxi"
+msgstr ""
+
+#: Expense/expense.c:407 Expense/expense.c:1051
+msgid "Telephone"
+msgstr ""
+
+#: Expense/expense.c:409 Expense/expense.c:1052
+msgid "Tips"
+msgstr ""
+
+#: Expense/expense.c:411 Expense/expense.c:1053
+msgid "Tolls"
+msgstr ""
+
+#: Expense/expense.c:413 Expense/expense.c:1054
+msgid "Train"
+msgstr ""
+
+#: Expense/expense.c:427
+msgid "AmEx"
+msgstr ""
+
+#: Expense/expense.c:429 Expense/expense.c:1017
+msgid "Cash"
+msgstr ""
+
+#: Expense/expense.c:431 Expense/expense.c:1018
+msgid "Check"
+msgstr ""
+
+#: Expense/expense.c:433
+msgid "CreditCard"
+msgstr ""
+
+#: Expense/expense.c:435
+msgid "MasterCard"
+msgstr ""
+
+#: Expense/expense.c:437 Expense/expense.c:1021
+msgid "Prepaid"
+msgstr ""
+
+#: Expense/expense.c:439 Expense/expense.c:1022
+msgid "VISA"
+msgstr ""
+
+#: Expense/expense.c:1016
+msgid "American Express"
+msgstr ""
+
+#: Expense/expense.c:1019
+msgid "Credit Card"
+msgstr ""
+
+#: Expense/expense.c:1020
+msgid "Master Card"
+msgstr ""
+
+#: Expense/expense.c:1270
+msgid "Type: "
+msgstr ""
+
+#: Expense/expense.c:1279
+msgid "Payment: "
+msgstr ""
+
+# datebook_gui.c:2109 todo_gui.c:920
+#: Expense/expense.c:1291
+msgid "Month:"
+msgstr "Maand:"
+
+# datebook_gui.c:2123 todo_gui.c:923
+#: Expense/expense.c:1305
+msgid "Day:"
+msgstr "Dag:"
+
+# datebook_gui.c:2138 todo_gui.c:926
+#: Expense/expense.c:1319
+msgid "Year:"
+msgstr "Jaar:"
+
+# jpilot.c:578
+# ../jpilot.c:849
+# jpilot.c:768
+# ../jpilot.c:767
+#: Expense/expense.c:1336
+#, fuzzy
+msgid "Amount: "
+msgstr "Over %s"
+
+# datebook_gui.c:2191
+#: Expense/expense.c:1345
+#, fuzzy
+msgid "Vendor: "
+msgstr "Einde:"
+
+# todo_gui.c:868
+# ../todo_gui.c:1099
+# todo_gui.c:1100
+# ../todo_gui.c:1100
+#: Expense/expense.c:1354
+#, fuzzy
+msgid "City: "
+msgstr "Prioriteit:"
+
+#: Expense/expense.c:1360
+msgid "Attendees"
+msgstr ""
+
+# datebook_gui.c:2356
+# ../address_gui.c:1068
+# address_gui.c:1075
+# ../address_gui.c:1075
+#. Note textbox
+#: Expense/expense.c:1374 KeyRing/keyring.c:1377
+msgid "Note"
+msgstr "Geen"
+
+#. Label
+#: KeyRing/keyring.c:1080
+msgid "Enter KeyRing Password"
+msgstr ""
+
+#: KeyRing/keyring.c:1198
+msgid "Account"
+msgstr ""
+
+#. name Entry
+#: KeyRing/keyring.c:1355
+msgid "name: "
+msgstr ""
+
+#. account Entry
+#: KeyRing/keyring.c:1362
+msgid "account: "
+msgstr ""
+
+#. password
+#: KeyRing/keyring.c:1369
+msgid "password: "
 msgstr ""
 
 # jpilot.c:578
@@ -1822,14 +2314,6 @@ msgstr ""
 #~ msgid "Serial Port "
 #~ msgstr "Seriele poort"
 
-# datebook_gui.c:271
-#~ msgid "4th"
-#~ msgstr "vierde"
-
-# datebook_gui.c:271
-#~ msgid "Last"
-#~ msgstr "Laatste"
-
 # datebook_gui.c:1980 memo_gui.c:639 todo_gui.c:830
 #~ msgid "Add It"
 #~ msgstr "Toevoegen"
@@ -1842,18 +2326,6 @@ msgstr ""
 #~ msgid "Begin:"
 #~ msgstr "Begin:"
 
-# datebook_gui.c:2109 todo_gui.c:920
-#~ msgid "Month:"
-#~ msgstr "Maand:"
-
-# datebook_gui.c:2123 todo_gui.c:923
-#~ msgid "Day:"
-#~ msgstr "Dag:"
-
-# datebook_gui.c:2138 todo_gui.c:926
-#~ msgid "Year:"
-#~ msgstr "Jaar:"
-
 # datebook_gui.c:2156
 #~ msgid "Hour:"
 #~ msgstr "Uur:"
@@ -1861,10 +2333,6 @@ msgstr ""
 # datebook_gui.c:2174
 #~ msgid "Min:"
 #~ msgstr "Min.:"
-
-# datebook_gui.c:2191
-#~ msgid "End: "
-#~ msgstr "Einde:"
 
 # jpilot.c:448
 #~ msgid "Hide this window"

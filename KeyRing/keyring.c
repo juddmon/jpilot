@@ -36,6 +36,8 @@
 #include <pi-appinfo.h>
 #include <pi-dlp.h>
 
+#include "../i18n.h"
+
 #define KEYRING_CAT1 1
 #define KEYRING_CAT2 2
 
@@ -523,6 +525,11 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    kr.password = gtk_entry_get_text(GTK_ENTRY(entry_password));
    kr.note = gtk_editable_get_chars(GTK_EDITABLE(text_note), 0, -1);
 
+   jp_charset_j2p(kr.name, strlen(kr.name)+1);
+   jp_charset_j2p(kr.account, strlen(kr.account)+1);
+   jp_charset_j2p(kr.password, strlen(kr.account)+1);
+   jp_charset_j2p(kr.note, strlen(kr.note)+1);
+
    size = pack_KeyRing(&kr, buf, 0xFFFF);
 
    /* This is a new record from the PC, and not yet on the palm */
@@ -563,6 +570,7 @@ static int display_record(struct MyKeyRing *mkr, int at_row)
    GdkColor color;
    GdkColormap *colormap;
    char temp[8];
+   char *temp_str;
 
    /* jp_logf(LOG_DEBUG, "KeyRing: display_record\n");*/
 
@@ -600,13 +608,19 @@ static int display_record(struct MyKeyRing *mkr, int at_row)
       sprintf(temp, "#%03d", at_row);
       gtk_clist_set_text(GTK_CLIST(clist), at_row, 0, temp);
    } else {
-      gtk_clist_set_text(GTK_CLIST(clist), at_row, 0, mkr->kr.name);
+      temp_str = strdup(mkr->kr.name);
+      jp_charset_p2j(temp_str, strlen(mkr->kr.name)+1);
+      gtk_clist_set_text(GTK_CLIST(clist), at_row, 0, temp_str);
+      free(temp_str);
    }
 
    if ( (!(mkr->kr.account)) || (mkr->kr.account[0]=='\0') ) {
       gtk_clist_set_text(GTK_CLIST(clist), at_row, 1, "");
    } else {
-      gtk_clist_set_text(GTK_CLIST(clist), at_row, 1, mkr->kr.account);
+      temp_str = strdup(mkr->kr.account);
+      jp_charset_p2j(temp_str, strlen(mkr->kr.account)+1);
+      gtk_clist_set_text(GTK_CLIST(clist), at_row, 1, temp_str);
+      free(temp_str);
    }
 
    return 0;
@@ -634,6 +648,12 @@ static void display_records()
 
    connect_changed_signals(DISCONNECT_SIGNALS);
    set_new_button_to(CLEAR_FLAG);
+/*
+   jp_charset_j2p(mkr->kr.note, strlen(mkr->kr.note)+1);
+   jp_charset_j2p(mkr->kr.account, strlen(mkr->kr.account)+1);
+   jp_charset_j2p(mkr->kr.password, strlen(mkr->kr.password)+1); 
+   jp_charset_j2p(mkr->kr.note, strlen(mkr->kr.note)+1);
+*/
 
    if (glob_keyring_list!=NULL) {
       free_mykeyring_list(&glob_keyring_list);
@@ -734,10 +754,11 @@ static void cb_clist_selection(GtkWidget      *clist,
    struct MyKeyRing *mkr;
    int i, item_num, category;
    int keep, b;
+   char *temp_str;
    
    jp_logf(LOG_DEBUG, "KeyRing: cb_clist_selection\n");
 
-   if (!event) return;
+   if ((!event) && (clist_hack)) return;
 
    if (row<0) {
       return;
@@ -784,19 +805,28 @@ static void cb_clist_selection(GtkWidget      *clist,
    gtk_option_menu_set_history(GTK_OPTION_MENU(menu_category2), item_num);
 
    if (mkr->kr.name) {
-      gtk_entry_set_text(GTK_ENTRY(entry_name), mkr->kr.name);
+      temp_str = strdup(mkr->kr.name);
+      jp_charset_p2j(temp_str, strlen(mkr->kr.name)+1); 
+      gtk_entry_set_text(GTK_ENTRY(entry_name), temp_str);
+      free(temp_str);
    } else {
       gtk_entry_set_text(GTK_ENTRY(entry_name), "");
    }
 
    if (mkr->kr.account) {
-      gtk_entry_set_text(GTK_ENTRY(entry_account), mkr->kr.account);
+      temp_str = strdup(mkr->kr.account);
+      jp_charset_p2j(temp_str, strlen(mkr->kr.account)+1); 
+      gtk_entry_set_text(GTK_ENTRY(entry_account), temp_str); 
+      free(temp_str);
    } else {
       gtk_entry_set_text(GTK_ENTRY(entry_account), "");
    }
 
    if (mkr->kr.password) {
-      gtk_entry_set_text(GTK_ENTRY(entry_password), mkr->kr.password);
+      temp_str = strdup(mkr->kr.password);
+      jp_charset_p2j(temp_str, strlen(mkr->kr.password)+1);
+      gtk_entry_set_text(GTK_ENTRY(entry_password), temp_str); 
+      free(temp_str);
    } else {
       gtk_entry_set_text(GTK_ENTRY(entry_password), "");
    }
@@ -805,7 +835,10 @@ static void cb_clist_selection(GtkWidget      *clist,
    gtk_text_forward_delete(GTK_TEXT(text_note),
 			   gtk_text_get_length(GTK_TEXT(text_note)));
    if (mkr->kr.note) {
-      gtk_text_insert(GTK_TEXT(text_note), NULL,NULL,NULL, mkr->kr.note, -1);
+      temp_str = strdup(mkr->kr.note);
+      jp_charset_p2j(temp_str, strlen(mkr->kr.note)+1);
+      gtk_text_insert(GTK_TEXT(text_note), NULL,NULL,NULL, temp_str, -1);
+      free(temp_str);
    }
    set_new_button_to(CLEAR_FLAG);
    connect_changed_signals(CONNECT_SIGNALS);
@@ -933,6 +966,7 @@ static void make_menus()
       if (ai.name[i][0]=='\0') {
 	 continue;
       }
+      jp_charset_p2j(ai.name[i], 16);
       categories[count+1]=ai.name[i];
       glob_category_number_from_menu_item[count++]=i;
    }
@@ -1043,7 +1077,7 @@ static int dialog_password(char *ascii_password)
    gtk_box_pack_start(GTK_BOX(vbox1), hbox1, FALSE, FALSE, 2);
 
    /* Label */
-   label = gtk_label_new("Enter KeyRing Password");
+   label = gtk_label_new(_("Enter KeyRing Password"));
    gtk_box_pack_start(GTK_BOX(hbox1), label, FALSE, FALSE, 2);
 
    entry = gtk_entry_new_with_max_length(32);
@@ -1060,13 +1094,13 @@ static int dialog_password(char *ascii_password)
    gtk_box_pack_start(GTK_BOX(vbox1), hbox1, FALSE, FALSE, 2);
 
    /* Buttons */
-   button = gtk_button_new_with_label("OK");
+   button = gtk_button_new_with_label(_("OK"));
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_dialog_button),
 		      GINT_TO_POINTER(DIALOG_SAID_1));
    gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
 
-   button = gtk_button_new_with_label("Cancel");
+   button = gtk_button_new_with_label(_("Cancel"));
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_dialog_button),
 		      GINT_TO_POINTER(DIALOG_SAID_2));
@@ -1159,7 +1193,9 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    GList *records;
    GList *temp_list;
    buf_rec *br;
-   char *titles[]={"Name", "Account"};
+   char *titles[2];
+
+   titles[0] = _("Name"); titles[1] = _("Account");
    
    jp_logf(LOG_DEBUG, "KeyRing: plugin gui started, unique_id=%d\n", unique_id);
 
@@ -1234,7 +1270,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    temp_hbox = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox1), temp_hbox, FALSE, FALSE, 0);
    
-   label = gtk_label_new("Category: ");
+   label = gtk_label_new(_("Category: "));
    gtk_box_pack_start(GTK_BOX(temp_hbox), label, FALSE, FALSE, 0);
    gtk_box_pack_start(GTK_BOX(temp_hbox), menu_category1, TRUE, TRUE, 0);
 
@@ -1269,25 +1305,25 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_box_pack_start(GTK_BOX(vbox2), temp_hbox, FALSE, FALSE, 0);
 
    /* Add record button */
-   button = gtk_button_new_with_label("Delete");
+   button = gtk_button_new_with_label(_("Delete"));
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_delete),
 		      GINT_TO_POINTER(DELETE_FLAG));
    gtk_box_pack_start(GTK_BOX(temp_hbox), button, TRUE, TRUE, 0);
    
-   button = gtk_button_new_with_label("Copy");
+   button = gtk_button_new_with_label(_("Copy"));
    gtk_box_pack_start(GTK_BOX(temp_hbox), button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record),
 		      GINT_TO_POINTER(COPY_FLAG));
 
-   new_record_button = gtk_button_new_with_label("New Record");
+   new_record_button = gtk_button_new_with_label(_("New Record"));
    gtk_box_pack_start(GTK_BOX(temp_hbox), new_record_button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(new_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record),
 		      GINT_TO_POINTER(CLEAR_FLAG));
 
-   add_record_button = gtk_button_new_with_label("Add Record");
+   add_record_button = gtk_button_new_with_label(_("Add Record"));
    gtk_box_pack_start(GTK_BOX(temp_hbox), add_record_button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(add_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record),
@@ -1295,7 +1331,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(GTK_BIN(add_record_button)->child)),
 		       "label_high");
 
-   apply_record_button = gtk_button_new_with_label("Apply Changes");
+   apply_record_button = gtk_button_new_with_label(_("Apply Changes"));
    gtk_box_pack_start(GTK_BOX(temp_hbox), apply_record_button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(apply_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record),
@@ -1310,27 +1346,27 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_box_pack_start(GTK_BOX(vbox2), table, FALSE, FALSE, 0);
    
    /* Category Menu */
-   label = gtk_label_new("Category: ");
+   label = gtk_label_new(_("Category: "));
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label), 0, 1, 0, 1);
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(menu_category2), 1, 10, 0, 1);
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
 
    /* name Entry */
-   label = gtk_label_new("name: ");
+   label = gtk_label_new(_("name: "));
    entry_name = gtk_entry_new();
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label), 0, 1, 1, 2);
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(entry_name), 1, 10, 1, 2);
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
 
    /* account Entry */
-   label = gtk_label_new("account: ");
+   label = gtk_label_new(_("account: "));
    entry_account = gtk_entry_new();
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label), 0, 1, 2, 3);
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(entry_account), 1, 10, 2, 3);
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
 
    /* password */
-   label = gtk_label_new("password: ");
+   label = gtk_label_new(_("password: "));
    entry_password = gtk_entry_new();
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label), 0, 1, 3, 4);
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(entry_password), 1, 10, 3, 4);
@@ -1338,7 +1374,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
 
    
    /* Note textbox */
-   label = gtk_label_new("Note");
+   label = gtk_label_new(_("Note"));
    gtk_box_pack_start(GTK_BOX(vbox2), label, FALSE, FALSE, 0);
 
    temp_hbox = gtk_hbox_new(FALSE, 0);

@@ -74,6 +74,13 @@ static prefType glob_prefs[NUM_PREFS] = {
    /* This is actually the password, but I wanted to name it something more discreet */
      {"session_id", CHARTYPE, CHARTYPE, 0, NULL, 0},
      {"memo32_mode", INTTYPE, INTTYPE, 0, NULL, 0},
+     {"paper_size", INTTYPE, INTTYPE, 0, NULL, 0},
+     {"datebook_export_filename", CHARTYPE, CHARTYPE, 0, NULL, 0},
+     {"datebook_import_path", CHARTYPE, CHARTYPE, 0, NULL, 0},
+     {"address_export_filename", CHARTYPE, CHARTYPE, 0, NULL, 0},
+     {"address_import_path", CHARTYPE, CHARTYPE, 0, NULL, 0},
+     {"todo_export_filename", CHARTYPE, CHARTYPE, 0, NULL, 0},
+     {"todo_import_path", CHARTYPE, CHARTYPE, 0, NULL, 0},
      {"memo_export_filename", CHARTYPE, CHARTYPE, 0, NULL, 0},
      {"memo_import_path", CHARTYPE, CHARTYPE, 0, NULL, 0}
 };
@@ -154,7 +161,7 @@ int get_pref_time_no_secs(char *datef)
    long ivalue;
    const char *svalue;
    int i1, i2;
-   
+
    get_pref(PREF_TIME, &ivalue, &svalue);
    if (!svalue) {
       return -1;
@@ -180,7 +187,7 @@ int get_pref_time_no_secs_no_ampm(char *datef)
 {
    long ivalue;
    const char *svalue;
-   
+
    get_pref(PREF_TIME, &ivalue, &svalue);
    if (!svalue) {
       return -1;
@@ -198,7 +205,7 @@ int get_pref_time_no_secs_no_ampm(char *datef)
 int get_pref_dmy_order()
 {
    long n;
-   
+
    get_pref(PREF_SHORTDATE, &n, NULL);
    if (n<1) {
       return PREF_MDY;
@@ -218,7 +225,7 @@ int get_pref_dmy_order()
 void free_name_list(struct name_list **Plist)
 {
    struct name_list *temp_list, *next_list;
-   
+
    for (temp_list=*Plist; temp_list; temp_list=next_list) {
       next_list=temp_list->next;
       if (temp_list->name) {
@@ -238,7 +245,7 @@ static int get_rcfile_name(int n, char *rc_copy)
    char filename[256];
    int found, count;
    struct name_list *temp_list, *new_entry;
-  
+
 
    if (dir_list == NULL) {
       i = found = count = 0;
@@ -302,7 +309,7 @@ static int get_rcfile_name(int n, char *rc_copy)
 	 break;
       }
    }
-   
+
    if (found) {
       return 0;
    } else {
@@ -310,6 +317,12 @@ static int get_rcfile_name(int n, char *rc_copy)
       return -1;
    }
 }
+
+#define NUM_SHORTDATES 7
+#define NUM_LONGDATES 6
+#define NUM_TIMES 10
+#define NUM_RATES 11
+#define NUM_PAPER_SIZES 2
 
 /*if n is out of range then this function will fail */
 int get_pref_possibility(int which, int n, char *pref_str)
@@ -372,6 +385,11 @@ int get_pref_possibility(int which, int n, char *pref_str)
       "Korean"
    };
 
+   static const char *paper_sizes[] = {
+      "US Letter",
+      "A4"
+   };
+
    days[0] = _("Sunday");
    days[1] = _("Monday");
 
@@ -396,7 +414,7 @@ int get_pref_possibility(int which, int n, char *pref_str)
       }
       strcpy(pref_str, short_date_formats[n]);
       break;
-      
+
     case PREF_LONGDATE:
       if ((n >= NUM_LONGDATES) || (n<0)) {
 	 pref_str[0]='\0';
@@ -427,6 +445,14 @@ int get_pref_possibility(int which, int n, char *pref_str)
 	 return -1;
       }
       strcpy(pref_str, char_sets[n]);
+      break;
+
+    case PREF_PAPER_SIZE:
+      if ((n >= NUM_PAPER_SIZES) || (n<0)) {
+	 pref_str[0]='\0';
+	 return -1;
+      }
+      strcpy(pref_str, paper_sizes[n]);
       break;
 
     default:
@@ -507,9 +533,13 @@ char *pref_lstrncpy_realloc(char **dest, const char *src, int *size, int max_siz
       new_size=len;
    }
    if (new_size > max_size) new_size=max_size;
-   
+
    if (new_size > *size) {
-      *dest=realloc(*dest, new_size);
+      if (*size == 0) {
+	 *dest=malloc(new_size);
+      } else {
+	 *dest=realloc(*dest, new_size);
+      }
       if (!(*dest)) {
 	 return 0;
       }
@@ -539,9 +569,9 @@ int jp_set_pref(prefType prefs[], int which, long n, const char *string)
       pref_lstrncpy_realloc(&(prefs[which].svalue), Pstr,
 			    &(prefs[which].svalue_size), MAX_PREF_VALUE);
    }
-   /* #ifdef SYMPHONET */
+   /* #ifdef PROMETHEON */
    /* Some people like to just kill the window manager */
-   /* Symphonet kills us, always be prepared for death */
+   /* Prometheon kills us, always be prepared for death */
    pref_write_rc_file();
    /* #endif */
    return 0;
@@ -549,10 +579,21 @@ int jp_set_pref(prefType prefs[], int which, long n, const char *string)
 
 int set_pref(int which, long n, const char *string)
 {
+   const char *str;
+
    if (which > NUM_PREFS) {
       return -1;
    }
-   return jp_set_pref(glob_prefs, which, n, string);
+   str=string;
+   if ((which==PREF_RCFILE) ||
+       (which==PREF_SHORTDATE) ||
+       (which==PREF_LONGDATE) ||
+       (which==PREF_TIME) ||
+       (which==PREF_PAPER_SIZE)) {
+      set_pref_possibility(which, n);
+      str=glob_prefs[which].svalue;
+   }
+   return jp_set_pref(glob_prefs, which, n, str);
 }
 
 int set_pref_possibility(int which, long n)
@@ -645,6 +686,13 @@ static int validate_glob_prefs()
       glob_prefs[PREF_CHAR_SET].ivalue = 0;
    }
 
+   if (glob_prefs[PREF_PAPER_SIZE].ivalue >= NUM_PAPER_SIZES) {
+      glob_prefs[PREF_PAPER_SIZE].ivalue = NUM_PAPER_SIZES - 1;
+   }
+   if (glob_prefs[PREF_PAPER_SIZE].ivalue < 0) {
+      glob_prefs[PREF_PAPER_SIZE].ivalue = 0;
+   }
+
    if (glob_prefs[PREF_NUM_BACKUPS].ivalue >= MAX_PREF_NUM_BACKUPS) {
       glob_prefs[PREF_NUM_BACKUPS].ivalue = MAX_PREF_NUM_BACKUPS;
    }
@@ -668,11 +716,15 @@ static int validate_glob_prefs()
    get_pref_possibility(PREF_FDOW, glob_prefs[PREF_FDOW].ivalue, svalue);
    pref_lstrncpy_realloc(&(glob_prefs[PREF_FDOW].svalue), svalue,
 			 &(glob_prefs[PREF_FDOW].svalue_size), MAX_PREF_VALUE);
-   
+
    get_pref_possibility(PREF_RATE, glob_prefs[PREF_RATE].ivalue, svalue);
    pref_lstrncpy_realloc(&(glob_prefs[PREF_RATE].svalue), svalue,
 			 &(glob_prefs[PREF_RATE].svalue_size), MAX_PREF_VALUE);
-   
+
+   get_pref_possibility(PREF_PAPER_SIZE, glob_prefs[PREF_PAPER_SIZE].ivalue, svalue);
+   pref_lstrncpy_realloc(&(glob_prefs[PREF_PAPER_SIZE].svalue), svalue,
+			 &(glob_prefs[PREF_PAPER_SIZE].svalue_size), MAX_PREF_VALUE);
+
    for (i=0; i<1000; i++) {
       r = get_pref_possibility(PREF_RCFILE, i, svalue);
       if (r) break;
@@ -738,7 +790,7 @@ int pref_read_rc_file()
    r=jp_pref_read_rc_file("jpilot.rc", glob_prefs, NUM_PREFS);
 
    validate_glob_prefs();
-   
+
    return r;
 }
 
@@ -765,7 +817,7 @@ int jp_pref_write_rc_file(char *filename, prefType prefs[], int num_prefs)
       }
    }
    fclose(out);
-   
+
    return 0;
 }
 

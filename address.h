@@ -43,5 +43,6 @@ int get_addresses2(AddressList **address_list, int sort_order,
 
 int address_print();
 int address_import(GtkWidget *window);
+int address_export(GtkWidget *window);
 
 #endif

@@ -37,7 +37,9 @@ static GtkWidget *alarm_command_entry;
 extern int glob_app;
 
 #ifdef COLORS
-/* This doesn't work quite right.  I don't know why. */
+
+/* This doesn't work quite right.  There is supposedly no way to do it in GTK. */
+
 void set_colors()
 {
    read_gtkrc_file();
@@ -48,12 +50,13 @@ void set_colors()
    gtk_widget_queue_draw(main_window);
 }
 #endif
+
 static void cb_pref_menu(GtkWidget *widget,
 			 gpointer   data)
 {
    int pref;
    int value;
-   
+
    if (!widget)
      return;
    if (!(GTK_CHECK_MENU_ITEM(widget))->active) {
@@ -63,11 +66,7 @@ static void cb_pref_menu(GtkWidget *widget,
    pref = GPOINTER_TO_INT(data);
    value = pref & 0xFF;
    pref = pref >> 8;
-   if (pref==PREF_RCFILE) {
-      set_pref_possibility(pref, value);
-   } else {
-      set_pref(pref, value, NULL);
-   }
+   set_pref(pref, value, NULL);
    jpilot_logf(LOG_DEBUG, "pref %d, value %d\n", pref, value);
 #ifdef COLORS
    if (pref==PREF_RCFILE) {
@@ -76,9 +75,9 @@ static void cb_pref_menu(GtkWidget *widget,
 #endif
    return;
 }
-   
 
-static int make_pref_menu(GtkWidget **pref_menu, int pref_num)
+
+int make_pref_menu(GtkWidget **pref_menu, int pref_num)
 {
    GtkWidget *menu_item;
    GtkWidget *menu;
@@ -90,17 +89,17 @@ static int make_pref_menu(GtkWidget **pref_menu, int pref_num)
    char human_text[MAX_PREF_VALUE];
    time_t ltime;
    struct tm *now;
-      
+
    time(&ltime);
    now = localtime(&ltime);
 
    *pref_menu = gtk_option_menu_new();
-   
+
    menu = gtk_menu_new();
    group = NULL;
-   
+
    get_pref(pref_num, &ivalue, &svalue);
-	    
+
    for (i=0; i<1000; i++) {
       r = get_pref_possibility(pref_num, i, format_text);
       if (r) {
@@ -118,19 +117,20 @@ static int make_pref_menu(GtkWidget **pref_menu, int pref_num)
       }
       menu_item = gtk_radio_menu_item_new_with_label(
 		     group, human_text);
-      gtk_signal_connect(GTK_OBJECT(menu_item), "activate", cb_pref_menu,
-			 GINT_TO_POINTER(((pref_num*0x100) + (i & 0xFF))));
       group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(menu_item));
       gtk_menu_append(GTK_MENU(menu), menu_item);
-      
+
       if (ivalue == i) {
 	 gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_item), ivalue);
       }
 
+      gtk_signal_connect(GTK_OBJECT(menu_item), "activate", cb_pref_menu,
+			 GINT_TO_POINTER(((pref_num*0x100) + (i & 0xFF))));
+
       gtk_widget_show(menu_item);
    }
    gtk_option_menu_set_menu(GTK_OPTION_MENU(*pref_menu), menu);
-   
+
    return 0;
 }
 
@@ -186,13 +186,13 @@ void cb_sync_plugin(GtkWidget *widget,
    GList *plugin_list, *temp_list;
    struct plugin_s *Pplugin;
    int number;
-   
+
    number = GPOINTER_TO_INT(data);
-   
+
    plugin_list=NULL;
-   
+
    plugin_list = get_plugin_list();
-   
+
    for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
       Pplugin = (struct plugin_s *)temp_list->data;
       if (Pplugin) {
@@ -226,17 +226,17 @@ static gboolean cb_destroy(GtkWidget *widget)
    char *entry_text;
    char *backups_text;
    int num_backups;
-   
+
    jpilot_logf(LOG_DEBUG, "Cleanup\n");
 
    entry_text = gtk_entry_get_text(GTK_ENTRY(port_entry));
    jpilot_logf(LOG_DEBUG, "port_entry = [%s]\n", entry_text);
    set_pref(PREF_PORT, 0, entry_text);
-   
+
    entry_text = gtk_entry_get_text(GTK_ENTRY(alarm_command_entry));
    jpilot_logf(LOG_DEBUG, "alarm_command_entry = [%s]\n", entry_text);
    set_pref(PREF_ALARM_COMMAND, 0, entry_text);
-   
+
    backups_text = gtk_entry_get_text(GTK_ENTRY(backups_entry));
    jpilot_logf(LOG_DEBUG, "backups_entry = [%s]\n", backups_text);
    num_backups = atoi(backups_text);
@@ -247,7 +247,7 @@ static gboolean cb_destroy(GtkWidget *widget)
       num_backups = 99;
    }
    set_pref(PREF_NUM_BACKUPS, num_backups, NULL);
-   
+
    pref_write_rc_file();
 
    window = NULL;
@@ -290,7 +290,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    struct plugin_s *Pplugin;
    extern unsigned char skip_plugins;
 #endif
-   
+
    jpilot_logf(LOG_DEBUG, "cb_prefs_gui\n");
    if (window) {
       jpilot_logf(LOG_DEBUG, "pref_window is already up\n");
@@ -425,7 +425,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    make_pref_menu(&pref_menu, PREF_RCFILE);
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(pref_menu),
 			     1, 2, 0, 1);
-   
+
    get_pref(PREF_RCFILE, &ivalue, &cstr);
    gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
 
@@ -589,7 +589,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 
 #ifdef  ENABLE_PLUGINS
    if (!skip_plugins) {
-     
+
       plugin_list=NULL;
 
       plugin_list = get_plugin_list();

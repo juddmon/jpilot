@@ -26,9 +26,9 @@ GTKFLAGS = @GTK_CFLAGS@
 GTKLIBS = @GTK_LIBS@
 
 # Targets
-all: libplugin.h libsynctime.so
+all: libplugin.h libsynctime.la
 
-libsynctime.so: synctime.o
+libsynctime.la: synctime.o
 	$(LIBTOOL) --mode=link \
 	$(CC) $(OPTIONS) -o libsynctime.la \
 	synctime.lo \
@@ -45,7 +45,7 @@ libplugin.h: ../libplugin.h
 
 clean: 
 	rm -f *.o *~ config.cache .libs/* *.so *.so.? *.so.?.? *.lo *.la
-	rm -f .libs/*
+	rm -rf .libs/
 
 distclean: clean
 	rm -f config.status config.log *.so Makefile
@@ -55,15 +55,15 @@ distclean: clean
 # ~/.jpilot/plugins
 #
 install:
-	$(INSTALL)-d -m 755 $(prefix)/lib/jpilot; \
+	$(INSTALL) -d -m 755 $(prefix)/lib/jpilot; \
 	$(INSTALL) -d -m 755 $(prefix)/lib/jpilot/plugins; \
-	$(LIBTOOL) --mode=install -c $(INSTALL) \
+	$(LIBTOOL) --mode=install $(INSTALL) \
 	libsynctime.la $(prefix)/lib/jpilot/plugins
 
 local_install:
 	$(INSTALL) -d -m 755 $(HOME)/.jpilot; \
 	$(INSTALL) -d -m 755 $(HOME)/.jpilot/plugins; \
-	$(LIBTOOL) --mode=install -c $(INSTALL) \
+	$(LIBTOOL) --mode=install $(INSTALL) \
 	libsynctime.la $(HOME)/.jpilot/plugins
 
 uninstall:

@@ -32,5 +32,6 @@ int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib,
 		  unsigned int *unique_id);
 int todo_print();
 int todo_import(GtkWidget *window);
+int todo_export(GtkWidget *window);
 
 #endif

@@ -1,4 +1,4 @@
-%define version @PACKAGE_VERSION@
+%define version @VERSION@
 
 Summary:   palm pilot desktop for Linux
 Name:      jpilot
@@ -9,11 +9,9 @@ Group:     Applications/Productivity
 Source:    http://jpilot.org/jpilot-%{version}.tar.gz
 URL:       http://jpilot.org
 Packager:  Judd Montgomery <judd@jpilot.org>
-# Patch0:    dst_0.98.patch
-# Patch1:    jpilot.makefile.patch
 Prefix:    /usr
 DocDir:    %{prefix}/share/doc
-# BuildRoot: %{_tmppath}/jpilot-root
+BuildRoot: %{_tmppath}/%{name}-%{version}-root
 
 %description
 J-Pilot is a desktop organizer application for the palm pilot that runs
@@ -24,30 +22,11 @@ not found in the 3Com desktop.
 %prep
 
 %setup -q
-# This seems to have already been applied
-# %patch0 -p0 -b .dst_0.98
-# %patch1 -p0 -b .makefile
 
 %build
-#
-./configure --prefix=%{prefix}
-#
+%configure --prefix=%{prefix} --mandir=%{_mandir}
 gzip -9f docs/*.1
-#
 make
-#
-make jpilot-dump
-# Now do the plugin stuff
-# make libplugin
-# Expense
-#cd Expense
-#./configure --prefix=%{prefix}
-#make
-
-# SyncTime
-#cd ../SyncTime
-#./configure --prefix=%{prefix}
-#make
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -55,8 +34,11 @@ install -d $RPM_BUILD_ROOT%{_mandir}/man1
 install docs/jpilot*.1.gz $RPM_BUILD_ROOT%{_mandir}/man1
 strip jpilot
 install -d $RPM_BUILD_ROOT%{_bindir}
-make prefix=$RPM_BUILD_ROOT%{_prefix} install
+make prefix=$RPM_BUILD_ROOT%{prefix} install
 make DEST=$RPM_BUILD_ROOT install
+
+mkdir -p $RPM_BUILD_ROOT%{prefix}/share/pixmaps
+install -m644 icons/*.xpm $RPM_BUILD_ROOT%{prefix}/share/pixmaps
 
 %post
 #if [ -x `which libtool` ]; then
@@ -70,6 +52,16 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 %doc BUGS CHANGELOG COPYING CREDITS INSTALL README TODO UPGRADING
 %doc icons docs/plugin.html docs/manual.html
+%doc docs/jpilot-address.png
+%doc docs/jpilot-datebook.png
+%doc docs/jpilot-expense.png
+%doc docs/jpilot-install.png
+%doc docs/jpilot-memo.png
+%doc docs/jpilot-prefs.png
+%doc docs/jpilot-print.png
+%doc docs/jpilot-search.png
+%doc docs/jpilot-todo.png
+%doc docs/jpilot-toplogo.jpg
 %{_bindir}/jpilot
 %{_bindir}/jpilot-dump
 %{_bindir}/jpilot-sync
@@ -86,17 +78,20 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/jpilot/Memo32DB.pdb
 %{_datadir}/jpilot/ExpenseDB.pdb
 %{_libdir}/jpilot/plugins/libexpense.so
-%{_libdir}/jpilot/plugins/libexpense.so.1
-%{_libdir}/jpilot/plugins/libexpense.so.1.0.1
+#%{_libdir}/jpilot/plugins/libexpense.so.1
+#%{_libdir}/jpilot/plugins/libexpense.so.1.0.1
 %{_libdir}/jpilot/plugins/libexpense.la
 %{_libdir}/jpilot/plugins/libsynctime.so
-%{_libdir}/jpilot/plugins/libsynctime.so.1
-%{_libdir}/jpilot/plugins/libsynctime.so.1.0.1
+#%{_libdir}/jpilot/plugins/libsynctime.so.1
+#%{_libdir}/jpilot/plugins/libsynctime.so.1.0.1
 %{_libdir}/jpilot/plugins/libsynctime.la
+%{_libdir}/jpilot/plugins/libkeyring.so
+%{_libdir}/jpilot/plugins/libkeyring.la
 %{_datadir}/locale/*/LC_MESSAGES/jpilot.mo
 %{_mandir}/man1/jpilot.1.gz
 %{_mandir}/man1/jpilot-sync.1.gz
 %{_mandir}/man1/jpilot-upgrade-99.1.gz
+%{prefix}/share/pixmaps/*
 
 %changelog
 * Tue Jun  5 2001 Christian W. Zuckschwerdt <zany@triq.net>

@@ -36,6 +36,8 @@
 #include "log.h"
 #include "utils.h"
 
+#define JPILOT_DEBUGno
+
 #define DAT_STATUS_ADD     0x01
 #define DAT_STATUS_UPDATE  0x02
 #define DAT_STATUS_DELETE  0x04
@@ -80,7 +82,7 @@ static int get_CString(FILE *in, char **PStr)
    unsigned char size1;
    unsigned char size2[2];
    int size;
-   
+
    fread(&size1, 1, 1, in);
    if (size1==0) {
       *PStr = NULL;
@@ -113,14 +115,14 @@ static int get_categories(FILE *in, struct CategoryAppInfo *ai)
    /* Get the category count */
    fread(str_long, 4, 1, in);
    count = x86_long(str_long);
-   
+
    for (i=0; i<16; i++) {
       ai->renamed[i]=0;
       ai->name[i][0]=0;
       ai->ID[i]=0;
    }
    ai->lastUniqueID=0;
-   
+
    for (i=0; i<count; i++) {
       /* This is the category index */
       fread(str_long, 4, 1, in);
@@ -144,77 +146,53 @@ static int get_categories(FILE *in, struct CategoryAppInfo *ai)
    }
    return count;
 }
-   
-static int get_custom_field(FILE *in, char *field)
+
+int get_repeat(FILE *in, struct Appointment *a)
 {
-   int i;
-   int c;
-   
-   for (i=0; i<16; i++) {
-      c=fgetc(in);
-      if (c==0x0A) {
-	 field[i]='\0';
-	 break;
-      } else {
-	 field[i]=c;
-      }
-   }
-   field[15]='\0';
-
-   return 0;
-}
-
-int get_custom_names(FILE *in)
-{
-   char custom[256];
-   
-   /* I'm not sure what this character is for */
-   fread(custom, 1, 1, in);
-
-   get_custom_field(in, custom);
-#ifdef JPILOT_DEBUG
-   printf("custom: [%s]\n", custom);
-#endif
-   get_custom_field(in, custom);
-#ifdef JPILOT_DEBUG
-   printf("custom: [%s]\n", custom);
-#endif
-   get_custom_field(in, custom);
-#ifdef JPILOT_DEBUG
-   printf("custom: [%s]\n", custom);
-#endif
-   get_custom_field(in, custom);
-#ifdef JPILOT_DEBUG
-   printf("custom: [%s]\n", custom);
-#endif
-   return 0;
-}
-
-int get_repeat(FILE *in)
-{
+   time_t t;
+   struct tm *now;
    unsigned char str_long[4];
    unsigned char str_short[2];
-   int l, s, i;
+   int l, s, i, bit;
    char *PStr;
    int repeat_type;
-   
+
    fread(str_short, 2, 1, in);
    s = x86_short(str_short);
 #ifdef JPILOT_DEBUG
    printf("  repeat entry follows:\n");
    printf("%d exceptions\n", s);
 #endif
+   if (a) {
+      a->exception=NULL;
+      bzero(&(a->repeatEnd), sizeof(struct tm));
+   }
+
+   if (a) {
+      a->exceptions=s;
+      if (s>0) {
+	 a->exception=malloc(sizeof(struct tm) * s);
+	 if (!(a->exceptions)) {
+	    jpilot_logf(LOG_WARN, "get_repeat(): Out of Memory\n");
+	 }
+      }
+   }
 
    l=0;
    for (i=0; i<s; i++) {
       fread(str_long, 4, 1, in);
       l = x86_long(str_long);
+      if (a) {
+	 t = l;
+	 now = localtime(&t);
+	 memcpy(&(a->exception[i]), now, sizeof(struct tm));
+      }
 #ifdef JPILOT_DEBUG
       printf("date_exception_entry: ");
       print_date(l);
 #endif
    }
-   
+
    fread(str_short, 2, 1, in);
    s = x86_short(str_short);
 #ifdef JPILOT_DEBUG
@@ -222,9 +200,12 @@ int get_repeat(FILE *in)
 #endif
 
    if (s==0x0000) {
+      if (a) {
+	 a->repeatType=repeatNone;
+      }
       return 0;
    }
-   
+
    if (s==0xFFFF) {
       /* We have a Class entry here */
       fread(str_short, 2, 1, in);
@@ -237,7 +218,7 @@ int get_repeat(FILE *in)
 #ifdef JPILOT_DEBUG
       printf("class name length = %d\n", s);
 #endif
-      
+
       PStr = malloc(s+1);
       fread(PStr, s, 1, in);
       PStr[s]='\0';
@@ -246,11 +227,14 @@ int get_repeat(FILE *in)
 #endif
       free(PStr);
    }
-   
-   
+
    fread(str_long, 4, 1, in);
    repeat_type = x86_long(str_long);
+   if (a) {
+      a->repeatType=repeat_type;
+   }
 #ifdef JPILOT_DEBUG
+   printf("repeatType=%d ", repeat_type);
    switch(repeat_type) {
     case DAILY:
       printf("Daily\n");
@@ -280,14 +264,30 @@ int get_repeat(FILE *in)
 #ifdef JPILOT_DEBUG
    printf("Interval = %d\n", l);
 #endif
+   if (a) {
+      a->repeatFrequency=l;
+   }
 
    fread(str_long, 4, 1, in);
    l = x86_long(str_long);
+   if (a) {
+      t = l;
+      now = localtime(&t);
+      memcpy(&(a->repeatEnd), now, sizeof(struct tm));
+   }
+   if (t==0x749e77bf) {
+      a->repeatForever=TRUE;
+   } else {
+      a->repeatForever=FALSE;
+   }
 #ifdef JPILOT_DEBUG
-   print_date(l);
+   printf("repeatEnd: 0x%x -> ", l); print_date(l);
 #endif
    fread(str_long, 4, 1, in);
    l = x86_long(str_long);
+   if (a) {
+      a->repeatWeekstart=l;
+   }
 #ifdef JPILOT_DEBUG
    printf("First Day of Week = %d\n", l);
 #endif
@@ -308,8 +308,11 @@ int get_repeat(FILE *in)
 #endif
 
       fread(str_long, 1, 1, in);
+      for (i=0, bit=1; i<7; i++, bit=bit<<1) {
+	 a->repeatDays[i]=( str_long[0] & bit );
+      }
 #ifdef JPILOT_DEBUG
-      printf("Days Mask = %d\n", str_long[0]);
+      printf("Days Mask = %x\n", str_long[0]);
 #endif
       break;
     case MONTHLY_BY_DAY:
@@ -351,7 +354,7 @@ int get_repeat(FILE *in)
       printf("unknown repeat type2 %d\n", l);
 #endif
    }
-   
+
    return 0;
 }
 
@@ -362,12 +365,12 @@ static int print_date(int palm_date)
    time_t t;
    struct tm *now;
    char text[256];
-   
+
    t = palm_date;/* - 20828448800; */
    now = localtime(&t);
    strftime(text, 255, "%02m/%02d/%Y %02H:%02M:%02S", now);
    printf("%s\n", text);
-   
+
    return 0;
 }
 #endif
@@ -394,12 +397,13 @@ int print_field(struct field *f)
       print_date(f->date);
       break;
     case DAT_TYPE_REPEAT:
+      printf("Repeat Type\n");
       break;
     default:
       printf("print_field: unknown type = %d\n", f->type);
       break;
    }
-   
+
    return 0;
 }
 #endif
@@ -409,7 +413,7 @@ int get_field(FILE *in, struct field *f)
    char str_long[4];
    long type;
    char *PStr;
-   
+
    fread(str_long, 4, 1, in);
    type = x86_long(str_long);
    f->type=0;
@@ -440,298 +444,13 @@ int get_field(FILE *in, struct field *f)
       break;
     case DAT_TYPE_REPEAT:
       f->type=type;
-      get_repeat(in);
+      /* The calling function needs to call this */
+      /* get_repeat(in, NULL); */
       break;
     default:
       jpilot_logf(LOG_WARN, "get_field(): unknown type = %ld\n", type);
       break;
    }
-   
-   return 0;
-}
-
-int get_records(FILE *in, int field_count)
-{
-   long count;
-   char str_long[4];
-   int i, j;
-   struct field f;
-   
-   /* We skiped some steps like reading in the field count, which should be 30 */
-   /* Get the record count, which is field count / fields/rec */
-   fread(str_long, 4, 1, in);
-   count = x86_long(str_long) / field_count;
-#ifdef JPILOT_DEBUG
-   printf("Record Count = %ld\n", count);   
-   printf("---------- Records ----------\n");
-#endif
-   for (i=0; i<count; i++) {
-#ifdef JPILOT_DEBUG
-      printf("----- record %d -----\n", i+1);
-#endif
-      for (j=0; j<field_count; j++) {
-	 get_field(in, &f);
-#ifdef JPILOT_DEBUG
-	 print_field(&f);
-#endif
-	 if (f.type==DAT_TYPE_CSTRING) {
-	    if (f.str) free(f.str);
-	 }
-#ifdef JPILOT_DEBUG
-	 printf("\n");
-#endif
-      }
-   }
-
-   return 0;
-}
-   
-int dump_datebook()
-{
-   FILE *in;
-   char filler[100];
-   char version[4];
-   char *PStr;
-   short num_fields;
-   struct CategoryAppInfo ai;
-   
-   in=fopen("datebook.dat", "r");
-
-   fread(version, 4, 1, in);
-#ifdef JPILOT_DEBUG
-   printf("version = [%c%c%d%d]\n", version[3],version[2],version[1],version[0]);
-#endif
-
-   /* Get the full file path name */
-   get_CString(in, &PStr);
-#ifdef JPILOT_DEBUG
-   printf("PStr = [%s]\n", PStr);
-#endif
-   free(PStr);
-   
-   /* Show Header */
-   get_CString(in, &PStr);
-   free(PStr);
-
-   /* Next free category ID */
-   fread(filler, 4, 1, in);
-
-   get_categories(in, &ai);
-
-   /* Schema resource ID */
-   fread(filler, 4, 1, in);
-
-   /* Schema fields per row (15) */
-   fread(filler, 4, 1, in);
-
-   /* Schema record ID position */
-   fread(filler, 4, 1, in);
-
-   /* Schema record status position */
-   fread(filler, 4, 1, in);
-
-   /* Schema placement position */
-   fread(filler, 4, 1, in);
-
-   /* Schema field count */
-   fread(filler, 2, 1, in);
-   num_fields = x86_short(filler);
-#ifdef JPILOT_DEBUG
-   printf("num_fields=%d\n", num_fields);
-#endif
-   if (num_fields>30) num_fields=15;
-   fread(filler, num_fields*2, 1, in);
-
-   get_records(in, num_fields);
-   
-   fclose(in);
-
-   return 0;
-}
-
-int dump_address()
-{
-   FILE *in;
-   char filler[100];
-   char version[4];
-   char *PStr;
-   long num_fields;
-   struct CategoryAppInfo ai;
-   
-   in=fopen("address.dat", "r");
-   
-   /* Version */
-   fread(version, 4, 1, in);
-#ifdef JPILOT_DEBUG
-   printf("version = [%c%c%d%d]\n", version[3],version[2],version[1],version[0]);
-#endif
-   /* Get the full file path name */
-   get_CString(in, &PStr);
-#ifdef JPILOT_DEBUG
-   printf("PStr = [%s]\n", PStr);
-#endif
-   free(PStr);
-   
-   /* Custom Names and Show Header*/
-   get_CString(in, &PStr);
-#ifdef JPILOT_DEBUG
-   printf("Custom Names and Show header\n");
-   printf("PStr = [%s]\n", PStr);
-#endif
-   free(PStr);
-
-   /* Next free category ID */
-   fread(filler, 4, 1, in);
-
-   get_categories(in, &ai);
-
-   /* Schema resource ID */
-   fread(filler, 4, 1, in);
-
-   /* Schema fields per row (30) */
-   fread(filler, 4, 1, in);
-
-   /* Schema record ID position */
-   fread(filler, 4, 1, in);
-
-   /* Schema record status position */
-   fread(filler, 4, 1, in);
-
-   /* Schema placement position */
-   fread(filler, 4, 1, in);
-
-   /* Schema fields count (30) */
-   fread(filler, 2, 1, in);
-   num_fields = x86_short(filler);
-   if (num_fields>40) num_fields=30;
-   fread(filler, num_fields*2, 1, in);
-
-#ifdef JPILOT_DEBUG
-   printf("get_records\n");
-#endif
-   get_records(in, num_fields);
-
-   fclose(in);
-
-   return 0;
-}
-
-int dump_memo()
-{
-   FILE *in;
-   char filler[100];
-   char version[4];
-   char *PStr;
-   long num_fields;
-   struct CategoryAppInfo ai;
-   
-   in=fopen("memopad.dat", "r");
-   
-   /* Version */
-   fread(version, 4, 1, in);
-#ifdef JPILOT_DEBUG
-   printf("version = [%c%c%d%d]\n", version[3],version[2],version[1],version[0]);
-#endif
-   /* Get the full file path name */
-   get_CString(in, &PStr);
-#ifdef JPILOT_DEBUG
-   printf("PStr = [%s]\n", PStr);
-#endif
-   free(PStr);
-   
-   /* Show Header */
-   get_CString(in, &PStr);
-   free(PStr);
-   
-   /* Next free category ID */
-   fread(filler, 4, 1, in);
-
-   get_categories(in, &ai);
-
-   /* Schema resource ID */
-   fread(filler, 4, 1, in);
-   /* Schema fields per row (6) */
-   fread(filler, 4, 1, in);
-   /* Schema record ID position */
-   fread(filler, 4, 1, in);
-   /* Schema record status position */
-   fread(filler, 4, 1, in);
-   /* Schema placement position */
-   fread(filler, 4, 1, in);
-   /* Schema fields count (6) */
-   fread(filler, 2, 1, in);
-   num_fields = x86_short(filler);
-
-   if (num_fields>20) num_fields=6;
-   /* Schema fields */
-   fread(filler, num_fields*2, 1, in);
-
-   get_records(in, num_fields);
-
-   fclose(in);
-
-   return 0;
-}
-
-int dump_todo()
-{
-   FILE *in;
-   char filler[100];
-   char version[4];
-   char *PStr;
-   int num_fields;
-   struct CategoryAppInfo ai;
-   
-   in=fopen("todo.dat", "r");
-   
-   /* Version */
-   fread(version, 4, 1, in);
-#ifdef JPILOT_DEBUG
-   printf("version = [%c%c%d%d]\n", version[3],version[2],version[1],version[0]);
-#endif
-   /* Get the full file path name */
-   get_CString(in, &PStr);
-#ifdef JPILOT_DEBUG
-   printf("PStr = [%s]\n", PStr);
-#endif
-   free(PStr);
-   
-   /* Show Header */
-   get_CString(in, &PStr);
-#ifdef JPILOT_DEBUG
-   printf("Show Header\n");
-   printf("PStr = [%s]\n", PStr);
-#endif
-   free(PStr);
-   
-   /* Next free category ID */
-   fread(filler, 4, 1, in);
-
-   get_categories(in, &ai);
-
-   /* Schema resource ID */
-   fread(filler, 4, 1, in);
-   /* Schema fields per row (6) */
-   fread(filler, 4, 1, in);
-   /* Schema record ID position */
-   fread(filler, 4, 1, in);
-   /* Schema record status position */
-   fread(filler, 4, 1, in);
-   /* Schema placement position */
-   fread(filler, 4, 1, in);
-   /* Schema fields count (6) */
-   fread(filler, 2, 1, in);
-   num_fields = x86_short(filler);
-#ifdef JPILOT_DEBUG
-   printf("schema count=%d\n", num_fields);
-#endif
-   if (num_fields>20) num_fields=6;
-   /* Schema fields */
-   fread(filler, num_fields*2, 1, in);
-
-   get_records(in, num_fields);
-
-   fclose(in);
 
    return 0;
 }
@@ -765,16 +484,586 @@ int dat_check_if_dat_file(FILE *in)
    return 0;
 }
 
-int dat_get_memos(FILE *in, MemoList **memolist, struct CategoryAppInfo *ai)
+int dat_read_header(FILE *in,
+		    int expected_field_count,
+		    char *schema,
+		    struct CategoryAppInfo *ai,
+		    int *schema_count, int *field_count, long *rec_count)
 {
+   int i;
    char filler[100];
    char version[4];
    char *PStr;
-   long num_fields;
-   long count;
    char str_long[4];
-   int i;
-   struct field f;
+
+   fseek(in, 0, SEEK_SET);
+
+   /* Version */
+   fread(version, 4, 1, in);
+   jpilot_logf(LOG_DEBUG, "version = [%c%c%d%d]\n", version[3],version[2],version[1],version[0]);
+
+   /* Full file path name */
+   get_CString(in, &PStr);
+   jpilot_logf(LOG_DEBUG, "path:[%s]\n",PStr);
+   free(PStr);
+
+   /* Show Header */
+   get_CString(in, &PStr);
+   jpilot_logf(LOG_DEBUG, "show header:[%s]\n",PStr);
+   free(PStr);
+
+   /* Next free category ID */
+   fread(filler, 4, 1, in);
+
+   /* Categories */
+   get_categories(in, ai);
+#ifdef JPILOT_DEBUG
+   for (i=0; i<16; i++) {
+      printf("%d [%s]\n", ai->ID[i], ai->name[i]);
+   }
+#endif
+
+   /* Schema resource ID */
+   fread(filler, 4, 1, in);
+   /* Schema fields per row */
+   fread(filler, 4, 1, in);
+   *field_count=x86_long(filler);
+   if (*field_count != expected_field_count) {
+      jpilot_logf(LOG_WARN, "fields per row count != %d, unknown format\n",
+		  expected_field_count);
+      return -1;
+   }
+   /* Schema record ID position */
+   fread(filler, 4, 1, in);
+   /* Schema record status position */
+   fread(filler, 4, 1, in);
+   /* Schema placement position */
+   fread(filler, 4, 1, in);
+   /* Schema fields count */
+   fread(filler, 2, 1, in);
+   *field_count = x86_short(filler);
+   if (*field_count != expected_field_count) {
+      jpilot_logf(LOG_WARN, "field count != %d, unknown format\n",
+		  expected_field_count);
+      return -1;
+   }
+
+   /* Schema fields */
+   fread(filler, (*field_count)*2, 1, in);
+   if (memcmp(filler, schema, (*field_count)*2)) {
+      jpilot_logf(LOG_WARN, "unknown format, file has wrong schema\n");
+      jpilot_logf(LOG_WARN, "File schema is:");
+      for (i=0; i<(*field_count)*2; i++) {
+	 jpilot_logf(LOG_WARN, " %02d", (char)filler[i]);
+      }
+      jpilot_logf(LOG_WARN, "\n");
+      jpilot_logf(LOG_WARN, "It should be:  ");
+      for (i=0; i<(*field_count)*2; i++) {
+	 jpilot_logf(LOG_WARN, " %02d", (char)schema[i]);
+      }
+      jpilot_logf(LOG_WARN, "\n");
+      return -1;
+   }
+
+   /* Get record count */
+   fread(str_long, 4, 1, in);
+   if ((*field_count)) {
+      *rec_count = x86_long(str_long) / (*field_count);
+   }
+#ifdef JPILOT_DEBUG
+   printf("Record Count = %ld\n", *rec_count);
+#endif
+   return 0;
+}
+
+
+int dat_get_appointments(FILE *in, AppointmentList **alist, struct CategoryAppInfo *ai)
+{
+#ifdef JPILOT_DEBUG
+   struct field hack_f;
+#endif
+   int ret, i, j;
+   struct field fa[28];
+   int schema_count, field_count;
+   long rec_count;
+   AppointmentList *temp_alist;
+   AppointmentList *last_alist;
+   time_t t;
+   struct tm *now;
+   /* Should be 1, 1, 1, 3, 3, 5, 1, 5, 6, 6, 1, 6, 1, 1, 8 */
+   char schema[30]={
+      DAT_TYPE_INTEGER,0,
+	DAT_TYPE_INTEGER,0,
+	DAT_TYPE_INTEGER,0,
+	DAT_TYPE_DATE,0,
+	DAT_TYPE_INTEGER,0,
+	DAT_TYPE_CSTRING,0,
+	DAT_TYPE_INTEGER,0,
+	DAT_TYPE_CSTRING,0,
+	DAT_TYPE_BOOLEAN,0,
+	DAT_TYPE_BOOLEAN,0,
+	DAT_TYPE_INTEGER,0,
+	DAT_TYPE_BOOLEAN,0,
+	DAT_TYPE_INTEGER,0,
+	DAT_TYPE_INTEGER,0,
+	DAT_TYPE_REPEAT,0
+   };
+#ifdef JPILOT_DEBUG
+   char *rec_fields[]={
+      "Record ID",
+	"Status field",
+	"Position"
+   };
+   char *field_names[]={
+      "Start Time",
+	"End Time",
+	"Description",
+	"Duration",
+	"Note",
+	"Untimed",
+	"Private",
+	"Category",
+	"Alarm Set",
+	"Alarm Advance Units",
+	"Alarm Advance Type",
+	"Repeat Event"
+   };
+#endif
+
+   jpilot_logf(LOG_DEBUG, "dat_get_appointments\n");
+
+   if (!alist) return 0;
+   *alist=NULL;
+
+   ret = dat_read_header(in, 15, schema, ai,
+			 &schema_count, &field_count, &rec_count);
+
+   if (ret<0) return ret;
+
+   /* Get records */
+   last_alist=*alist;
+#ifdef JPILOT_DEBUG
+   printf("---------- Records ----------\n");
+#endif
+   for (i=0; i<rec_count; i++) {
+      temp_alist = malloc(sizeof(AppointmentList));
+      if (!temp_alist) {
+	 jpilot_logf(LOG_WARN, "dat_get_appointments(): Out of memory\n");
+	 return i;
+      }
+      if (last_alist) {
+	 last_alist->next=temp_alist;
+	 last_alist=temp_alist;
+      } else {
+	 last_alist=temp_alist;
+	 *alist=last_alist;
+      }
+      last_alist->next=NULL;
+      last_alist->app_type=DATEBOOK;
+#ifdef JPILOT_DEBUG
+      printf("----- record %d -----\n", i+1);
+#endif
+      bzero(&(last_alist->ma.a), sizeof(struct Appointment));
+
+      /* Record ID */
+      /* Status Field */
+      /* Position */
+      for (j=0; j<3; j++) {
+	 get_field(in, &(fa[j]));
+#ifdef JPILOT_DEBUG
+	 printf("rec field %d %s: ", j, rec_fields[j]); print_field(&(fa[j]));
+#endif
+	 if (fa[j].type!=schema[j*2]) {
+	    jpilot_logf(LOG_WARN, "Invalid schema ID record %d, field %d\n", i+1, j+3);
+	    return 0;
+	 }
+      }
+      /* Get Fields */
+      for (j=0; j<12; j++) {
+	 get_field(in, &(fa[j]));
+#ifdef JPILOT_DEBUG
+	 printf("field %d %s: ", j, field_names[j]); print_field(&(fa[j]));
+	 if (j==1) {
+	    hack_f.type=DAT_TYPE_DATE;
+	    hack_f.date=fa[j].i;
+	    printf("        "); print_field(&hack_f);
+	 }
+#endif
+	 if (fa[j].type!=schema[j*2+6]) {
+	    jpilot_logf(LOG_WARN, "Invalid schema ID record %d, field %d\n", i+1, j+3);
+	    return 0;
+	 }
+	 if (fa[j].type==DAT_TYPE_REPEAT) {
+	    get_repeat(in, &(last_alist->ma.a));
+	 }
+      }
+      /* Start Time */
+      t = fa[0].date;
+      now = localtime(&t);
+      memcpy(&(last_alist->ma.a.begin), now, sizeof(struct tm));
+      /* End Time */
+      t = fa[1].i;
+      now = localtime(&t);
+      memcpy(&(last_alist->ma.a.end), now, sizeof(struct tm));
+      /* Description */
+      if (fa[2].str) {
+	 last_alist->ma.a.description=fa[2].str;
+      } else {
+	 last_alist->ma.a.description=strdup("");
+      }
+      /* Duration */
+      /* what is duration? (repeatForever?) */
+      /* Note */
+      if (fa[4].str) {
+	 last_alist->ma.a.note=fa[4].str;
+      } else {
+	 last_alist->ma.a.note=strdup("");
+      }
+      /* Untimed */
+      last_alist->ma.a.event=fa[5].i;
+      /* Private */
+      last_alist->ma.attrib = 0;
+      if (fa[6].i) {
+	 last_alist->ma.attrib |= DAT_STATUS_PRIVATE;
+      }
+      /* Category */
+      last_alist->ma.unique_id = fa[7].i;
+      if (last_alist->ma.unique_id > 15) {
+	 last_alist->ma.unique_id = 15;
+      }
+      if (last_alist->ma.unique_id < 0) {
+	 last_alist->ma.unique_id = 0;
+      }	 
+      /* Alarm Set */
+      last_alist->ma.a.alarm=fa[8].i;
+      /* Alarm Advance Units */
+      last_alist->ma.a.advance=fa[9].i;
+      /* Alarm Advance Type */
+      last_alist->ma.a.advanceUnits=fa[10].i;
+   }
+   return 0;
+}
+
+int dat_get_addresses(FILE *in, AddressList **addrlist, struct CategoryAppInfo *ai)
+{
+   int ret, i, j, k;
+   struct field fa[28];
+   int schema_count, field_count;
+   long rec_count;
+   AddressList *temp_addrlist;
+   AddressList *last_addrlist;
+   int dat_order[19]={
+      0,1,3,5,7,9,11,13,14,15,16,17,18,2,22,23,24,25,19
+   };
+   /* Should be 1, 1, 1, 5, 5, 5, 5, 1, 5, 1, 5, 1, 5, 1, 5, 1, 5,
+      5, 5, 5, 5, 5, 5, 6, 1, 5, 5, 5, 5, 1 */
+   char schema[60]={
+      DAT_TYPE_INTEGER,0,
+      DAT_TYPE_INTEGER,0,
+      DAT_TYPE_INTEGER,0,
+      DAT_TYPE_CSTRING,0,
+      DAT_TYPE_CSTRING,0,
+      DAT_TYPE_CSTRING,0,
+      DAT_TYPE_CSTRING,0,
+      DAT_TYPE_INTEGER,0,
+      DAT_TYPE_CSTRING,0,
+      DAT_TYPE_INTEGER,0,
+      DAT_TYPE_CSTRING,0,
+      DAT_TYPE_INTEGER,0,
+      DAT_TYPE_CSTRING,0,
+      DAT_TYPE_INTEGER,0,
+      DAT_TYPE_CSTRING,0,
+      DAT_TYPE_INTEGER,0,
+      DAT_TYPE_CSTRING,0,
+      DAT_TYPE_CSTRING,0,
+      DAT_TYPE_CSTRING,0,
+      DAT_TYPE_CSTRING,0,
+      DAT_TYPE_CSTRING,0,
+      DAT_TYPE_CSTRING,0,
+      DAT_TYPE_CSTRING,0,
+      DAT_TYPE_BOOLEAN,0,
+      DAT_TYPE_INTEGER,0,
+      DAT_TYPE_CSTRING,0,
+      DAT_TYPE_CSTRING,0,
+      DAT_TYPE_CSTRING,0,
+      DAT_TYPE_CSTRING,0,
+      DAT_TYPE_INTEGER,0
+   };
+#ifdef JPILOT_DEBUG
+   char *rec_fields[]={
+      "Record ID",
+	"Status field",
+	"Position"
+   };
+   char *field_names[]={
+      "Last Name",
+	"First Name",
+	"Title",
+	"Company",
+	"Phone1 Label",
+	"Phone1",
+	"Phone2 Label",
+	"Phone2",
+	"Phone3 Label",
+	"Phone3",
+	"Phone4 Label",
+	"Phone4",
+	"Phone5 Label",
+	"Phone5",
+	"Address",
+	"City",
+	"State",
+	"Zip",
+	"Country",
+	"Note",
+	"Private",
+	"Category",
+	"Custom1",
+	"Custom2",
+	"Custom3",
+	"Custom4",
+	"Display Phone"
+   };
+#endif
+
+   jpilot_logf(LOG_DEBUG, "dat_get_addresses\n");
+
+   if (!addrlist) return 0;
+   *addrlist=NULL;
+
+   ret = dat_read_header(in, 30, schema, ai,
+			 &schema_count, &field_count, &rec_count);
+
+   if (ret<0) return ret;
+
+   /* Get records */
+   last_addrlist=*addrlist;
+#ifdef JPILOT_DEBUG
+   printf("---------- Records ----------\n");
+#endif
+   for (i=0; i<rec_count; i++) {
+      temp_addrlist = malloc(sizeof(AddressList));
+      if (!temp_addrlist) {
+	 jpilot_logf(LOG_WARN, "dat_get_addresses(): Out of memory\n");
+	 return i;
+      }
+      if (last_addrlist) {
+	 last_addrlist->next=temp_addrlist;
+	 last_addrlist=temp_addrlist;
+      } else {
+	 last_addrlist=temp_addrlist;
+	 *addrlist=last_addrlist;
+      }
+      last_addrlist->next=NULL;
+      last_addrlist->app_type=ADDRESS;
+#ifdef JPILOT_DEBUG
+      printf("----- record %d -----\n", i+1);
+#endif
+      /* Record ID */
+      /* Status Field */
+      /* Position */
+      for (j=0; j<3; j++) {
+	 get_field(in, &(fa[j]));
+#ifdef JPILOT_DEBUG
+	 printf("rec field %d %s: ", j, rec_fields[j]); print_field(&(fa[j]));
+#endif
+	 if (fa[j].type!=schema[j*2]) {
+	    jpilot_logf(LOG_WARN, "Invalid schema ID record %d, field %d\n", i+1, j+3);
+	    return 0;
+	 }
+      }
+      /* Get Fields */
+      for (j=0; j<27; j++) {
+	 get_field(in, &(fa[j]));
+#ifdef JPILOT_DEBUG
+	 printf("field %d %s: ", j, field_names[j]); print_field(&(fa[j]));
+#endif
+	 if (fa[j].type!=schema[j*2+6]) {
+	    jpilot_logf(LOG_WARN, "Invalid schema ID record %d, field %d\n", i+1, j+3);
+	    return 0;
+	 }
+      }
+      for (k=0; k<19; k++) {
+	 last_addrlist->ma.a.entry[k]=fa[dat_order[k]].str;
+      }
+      last_addrlist->ma.a.phoneLabel[0] = fa[4].i;
+      last_addrlist->ma.a.phoneLabel[1] = fa[6].i;
+      last_addrlist->ma.a.phoneLabel[2] = fa[8].i;
+      last_addrlist->ma.a.phoneLabel[3] = fa[10].i;
+      last_addrlist->ma.a.phoneLabel[4] = fa[12].i;
+      /* Private */
+      last_addrlist->ma.attrib = 0;
+      if (fa[20].i) {
+	 last_addrlist->ma.attrib |= DAT_STATUS_PRIVATE;
+      }
+      /* Category */
+      last_addrlist->ma.unique_id = fa[21].i;
+      if (last_addrlist->ma.unique_id > 15) {
+	 last_addrlist->ma.unique_id = 15;
+      }
+      if (last_addrlist->ma.unique_id < 0) {
+	 last_addrlist->ma.unique_id = 0;
+      }	 
+      /* Show phone in list */
+      last_addrlist->ma.a.showPhone = fa[26].i - 1;
+      for (k=0; k<19; k++) {
+	 if (last_addrlist->ma.a.entry[k]==NULL) {
+	    last_addrlist->ma.a.entry[k]=strdup("");
+	 }
+      }
+   }
+   return 0;
+}
+
+int dat_get_todos(FILE *in, ToDoList **todolist, struct CategoryAppInfo *ai)
+{
+   int ret, i, j;
+   struct field fa[10];
+   int schema_count, field_count;
+   long rec_count;
+   time_t t;
+   struct tm *now;
+   ToDoList *temp_todolist;
+   ToDoList *last_todolist;
+   /* Should be 1, 1, 1, 5, 3, 6, 1, 6, 1, 5 */
+   char schema[20]={
+      DAT_TYPE_INTEGER,0,
+      DAT_TYPE_INTEGER,0,
+      DAT_TYPE_INTEGER,0,
+      DAT_TYPE_CSTRING,0,
+      DAT_TYPE_DATE,0,
+      DAT_TYPE_BOOLEAN,0,
+      DAT_TYPE_INTEGER,0,
+      DAT_TYPE_BOOLEAN,0,
+      DAT_TYPE_INTEGER,0,
+      DAT_TYPE_CSTRING,0
+   };
+#ifdef JPILOT_DEBUG
+   char *rec_fields[]={
+      "Record ID",
+	"Status field",
+	"Position"
+   };
+   char *field_names[]={
+      "Description",
+	"Due Date",
+	"Completed",
+	"Priority",
+	"Private",
+	"Category",
+	"Note"
+   };
+#endif
+
+   jpilot_logf(LOG_DEBUG, "dat_get_todos\n");
+
+   if (!todolist) return 0;
+   *todolist=NULL;
+
+   ret = dat_read_header(in, 10, schema, ai,
+			 &schema_count, &field_count, &rec_count);
+
+   if (ret<0) return ret;
+
+   /* Get records */
+   last_todolist=*todolist;
+#ifdef JPILOT_DEBUG
+   printf("---------- Records ----------\n");
+#endif
+   for (i=0; i<rec_count; i++) {
+      temp_todolist = malloc(sizeof(ToDoList));
+      if (!temp_todolist) {
+	 jpilot_logf(LOG_WARN, "dat_get_todos(): Out of memory\n");
+	 return i;
+      }
+      if (last_todolist) {
+	 last_todolist->next=temp_todolist;
+	 last_todolist=temp_todolist;
+      } else {
+	 last_todolist=temp_todolist;
+	 *todolist=last_todolist;
+      }
+      last_todolist->next=NULL;
+      last_todolist->app_type=TODO;
+#ifdef JPILOT_DEBUG
+      printf("----- record %d -----\n", i+1);
+#endif
+      /* Record ID */
+      /* Status Field */
+      /* Position */
+      for (j=0; j<3; j++) {
+	 get_field(in, &(fa[j]));
+#ifdef JPILOT_DEBUG
+	 printf("rec field %d %s: ", j, rec_fields[j]); print_field(&(fa[j]));
+#endif
+	 if (fa[j].type!=schema[j*2]) {
+	    jpilot_logf(LOG_WARN, "Invalid schema ID record %d, field %d\n", i+1, j+3);
+	    return 0;
+	 }
+      }
+      /* Get Fields */
+      for (j=0; j<7; j++) {
+	 get_field(in, &(fa[j]));
+#ifdef JPILOT_DEBUG
+	 printf("field %d %s: ", j, field_names[j]); print_field(&(fa[j]));
+#endif
+	 if (fa[j].type!=schema[j*2+6]) {
+	    jpilot_logf(LOG_WARN, "Invalid schema ID record %d, field %d\n", i+1, j+3);
+	    return 0;
+	 }
+      }
+      /* Description */
+      if (fa[0].str) {
+	 last_todolist->mtodo.todo.description=fa[0].str;
+      } else {
+	 last_todolist->mtodo.todo.description=strdup("");
+      }
+      /* Due Date */
+      if (fa[1].date==0x749E77BF) {
+	 last_todolist->mtodo.todo.indefinite=1;
+	 bzero(&(last_todolist->mtodo.todo.due), sizeof(struct tm));
+      } else {
+	 t = fa[1].date;
+	 now = localtime(&t);
+	 memcpy(&(last_todolist->mtodo.todo.due), now, sizeof(struct tm));
+	 last_todolist->mtodo.todo.indefinite=0;
+      }
+      /* Completed */
+      last_todolist->mtodo.todo.complete = (fa[2].i==0) ? 0 : 1;
+      /* Priority */
+      if (fa[3].i < 0) fa[3].i=0;
+      if (fa[3].i > 5) fa[3].i=5;
+      last_todolist->mtodo.todo.priority = fa[3].i;
+      /* Private */
+      last_todolist->mtodo.attrib = 0;
+      if (fa[4].i) {
+	 last_todolist->mtodo.attrib |= DAT_STATUS_PRIVATE;
+      }
+      /* Category */
+      /* Normally the category would go into 4 bits of the attrib.
+       * They jumbled the attrib bits, so to make things easy I'll put it
+       * here.
+       */
+      if (fa[5].i < 0) fa[5].i=0;
+      if (fa[5].i > 15) fa[5].i=15;
+      last_todolist->mtodo.unique_id = fa[5].i;
+      /* Note */
+      if (fa[6].str) {
+	 last_todolist->mtodo.todo.note=fa[6].str;
+      } else {
+	 last_todolist->mtodo.todo.note=strdup("");
+      }
+   }
+
+   return 0;
+}
+
+int dat_get_memos(FILE *in, MemoList **memolist, struct CategoryAppInfo *ai)
+{
+   int ret, i, j;
+   struct field fa[10];
+   int schema_count, field_count;
+   long rec_count;
    MemoList *temp_memolist;
    MemoList *last_memolist;
    char schema[12]={
@@ -785,94 +1074,39 @@ int dat_get_memos(FILE *in, MemoList **memolist, struct CategoryAppInfo *ai)
       DAT_TYPE_BOOLEAN,0,
       DAT_TYPE_INTEGER,0
    };
-   
+#ifdef JPILOT_DEBUG
+   char *rec_fields[]={
+      "Record ID",
+	"Status field",
+	"Position"
+   };
+   char *field_names[]={
+      "Memo",
+	"Private",
+	"Category"
+   };
+#endif
+
    jpilot_logf(LOG_DEBUG, "dat_get_memos\n");
 
    if (!memolist) return 0;
    *memolist=NULL;
 
-   fseek(in, 0, SEEK_SET);
-   
-   /* Version */
-   fread(version, 4, 1, in);
-   jpilot_logf(LOG_DEBUG, "version = [%c%c%d%d]\n", version[3],version[2],version[1],version[0]);
+   ret = dat_read_header(in, 6, schema, ai,
+			 &schema_count, &field_count, &rec_count);
 
-   /* Full file path name */
-   get_CString(in, &PStr);
-   jpilot_logf(LOG_DEBUG, "path:[%s]\n",PStr);
-   free(PStr);
-   
-   /* Show Header */
-   get_CString(in, &PStr);
-   jpilot_logf(LOG_DEBUG, "show header:[%s]\n",PStr);
-   free(PStr);
-   
-   /* Next free category ID */
-   fread(filler, 4, 1, in);
+   if (ret<0) return ret;
 
-   get_categories(in, ai);
-#ifdef JPILOT_DEBUG
-   for (i=0; i<16; i++) {
-      printf("%d [%s]\n", ai->ID[i], ai->name[i]);
-   }
-#endif
-
-   /* Schema resource ID */
-   fread(filler, 4, 1, in);
-   /* Schema fields per row (6) */
-   fread(filler, 4, 1, in);
-   if (x86_long(filler) != 6) {
-      jpilot_logf(LOG_WARN, "fields per row count != 6, unknown format\n");
-      return 0;
-   }
-   /* Schema record ID position */
-   fread(filler, 4, 1, in);
-   /* Schema record status position */
-   fread(filler, 4, 1, in);
-   /* Schema placement position */
-   fread(filler, 4, 1, in);
-   /* Schema fields count (6) */
-   fread(filler, 2, 1, in);
-   num_fields = x86_short(filler);
-   if (num_fields != 6) {
-      jpilot_logf(LOG_WARN, "unknown format, field count != 6\n");
-      return 0;
-   }
-
-   /* Schema fields */
-   /* Should be 1, 1, 1, 5, 6, 1 */
-   fread(filler, num_fields*2, 1, in);
-   if (memcmp(filler, schema, 12)) {
-      jpilot_logf(LOG_WARN, "unknown format, file has wrong schema\n");
-      jpilot_logf(LOG_WARN, "File schema is:");
-      for (i=0; i<12; i++) {
-	 jpilot_logf(LOG_WARN, " %02d", (char)filler[i]);
-      }
-      jpilot_logf(LOG_WARN, "\n");
-      jpilot_logf(LOG_WARN, "It should be:  ");
-      for (i=0; i<12; i++) {
-	 jpilot_logf(LOG_WARN, " %02d", (char)filler[i]);
-      }
-      jpilot_logf(LOG_WARN, "\n");
-      return 0;
-   }
-
-   /* Get record count */
-   fread(str_long, 4, 1, in);
-   count = x86_long(str_long) / num_fields;
-#ifdef JPILOT_DEBUG
-   printf("Record Count = %ld\n", count);
-#endif   
    /* Get records */
    last_memolist=*memolist;
 #ifdef JPILOT_DEBUG
    printf("---------- Records ----------\n");
 #endif
-   for (i=0; i<count; i++) {
+   for (i=0; i<rec_count; i++) {
       temp_memolist = malloc(sizeof(MemoList));
       if (!temp_memolist) {
 	 jpilot_logf(LOG_WARN, "dat_get_memos(): Out of memory\n");
-	 return count;
+	 return i;
       }
       if (last_memolist) {
 	 last_memolist->next=temp_memolist;
@@ -887,70 +1121,45 @@ int dat_get_memos(FILE *in, MemoList **memolist, struct CategoryAppInfo *ai)
       printf("----- record %d -----\n", i+1);
 #endif
       /* Record ID */
-      get_field(in, &f);
+      /* Status Field */
+      /* Position */
+      for (j=0; j<3; j++) {
+	 get_field(in, &(fa[j]));
 #ifdef JPILOT_DEBUG
-      print_field(&f);
+	 printf("rec field %d %s: ", j, rec_fields[j]); print_field(&(fa[j]));
 #endif
-      if (f.type!=schema[0]) {
-	 jpilot_logf(LOG_WARN, "Invalid schema ID record %d, field 1\n", i+1);
-	 return 0;
+	 if (fa[j].type!=schema[j*2]) {
+	    jpilot_logf(LOG_WARN, "Invalid schema ID record %d, field %d\n", i+1, j+3);
+	    return 0;
+	 }
       }
-      /* status field */
-      get_field(in, &f);
+      /* Get Fields */
+      for (j=0; j<3; j++) {
+	 get_field(in, &(fa[j]));
 #ifdef JPILOT_DEBUG
-      print_field(&f);
+	 printf("field %d %s: ", j, field_names[j]); print_field(&(fa[j]));
 #endif
-      if (f.type!=schema[2]) {
-	 jpilot_logf(LOG_WARN, "Invalid schema ID record %d, field 2\n", i+1);
-	 return 0;
+	 if (fa[j].type!=schema[j*2+6]) {
+	    jpilot_logf(LOG_WARN, "Invalid schema ID record %d, field %d\n", i+1, j+3);
+	    return 0;
+	 }
       }
-      last_memolist->mmemo.attrib=f.i;
-      /* position */
-      get_field(in, &f);
-#ifdef JPILOT_DEBUG
-      print_field(&f);
-#endif
-      if (f.type!=schema[4]) {
-	 jpilot_logf(LOG_WARN, "Invalid schema ID record %d, field 3\n", i+1);
-	 return 0;
-      }
-      /* memo */
-      get_field(in, &f);
-#ifdef JPILOT_DEBUG
-      print_field(&f);
-#endif
-      if (f.type!=schema[6]) {
-	 jpilot_logf(LOG_WARN, "Invalid schema ID record %d, field 4\n", i+1);
-	 return 0;
-      }
-      last_memolist->mmemo.memo.text=f.str;
-      /* private */
-      get_field(in, &f);
-#ifdef JPILOT_DEBUG
-      print_field(&f);
-#endif
-      if (f.type!=schema[8]) {
-	 jpilot_logf(LOG_WARN, "Invalid schema ID record %d, field 5\n", i+1);
-	 return 0;
-      }
-      if (f.i) {
+      /* Memo */
+      last_memolist->mmemo.memo.text=fa[0].str;
+      /* Private */
+      last_memolist->mmemo.attrib = 0;
+      if (fa[1].i) {
 	 last_memolist->mmemo.attrib |= DAT_STATUS_PRIVATE;
       }
-      /* category */
-      get_field(in, &f);
-#ifdef JPILOT_DEBUG
-      print_field(&f);
-#endif
+      /* Category */
       /* Normally the category would go into 4 bits of the attrib.
        * They jumbled the attrib bits, so to make things easy I'll put it
        * here.
        */
-      last_memolist->mmemo.unique_id = f.i;
-      if (f.type!=schema[10]) {
-	 jpilot_logf(LOG_WARN, "Invalid schema ID record %d, field 6\n", i+1);
-	 return 0;
-      }
+      if (fa[2].i < 0) fa[2].i=0;
+      if (fa[2].i > 15) fa[2].i=15;
+      last_memolist->mmemo.unique_id = fa[2].i;
    }
-   
+
    return 0;
 }

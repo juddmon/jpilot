@@ -28,7 +28,7 @@
   translations.
 
 * "Hiroshi MIURA" <miura@da-cha.org> for i18n help on 0.99 and multibyte
-  character patches.
+  character patches.  i18n of Expense and Keyring.
 
 * If you are not in this list and you should be then let me know.
   I want everyone to get a piece of the pie when I have the big jpilot IPO :)
@@ -41,3 +41,19 @@
 * Chuck Mead for donating and hosting the jpilot.org domain at moongroup.com
 
 * Peter Valchev for OpenBSD patches
+
+* Translation last done by (sorry if I left someone out):
+  ca.po:"Last-Translator: Leopold Palomo <lepalom@wol.es>"
+  cs.po:"Last-Translator: Jiri Rubes <jr@slad.cz>"
+  da.po:"Last-Translator: Keld Simonsen <keld@dkuug.dk>"
+  de.po:"Last-Translator: Henrik Becker <HenrikBecker@web.de>"
+  es.po:"Last-Translator: Juan Diego <diego@linuxcolombia.com.co>"
+  fr.po:"Last-Translator: Regis Rampnoux <regisr@regix.com>"
+  it.po:"Last-Translator: Michele Mazzucchi <mijio@mac.com>"
+  ja.po:"Last-Translator: Hiroshi Miura <miura@da-cha.org>"
+  nl.po:"Last-Translator: Arjan van de Ven <arjan@fenrus.demon.nl>"
+  no.po:"Last-Translator: Ragnar Wisl√∏ff <ragnar@wisloff.no>"
+  sv.po:"Last-Translator: Erik BÂgfors <erik@bagfors.nu>"
+
+Information about being a translator can be found at:
+http://www.iro.umontreal.ca/contrib/po/HTML/

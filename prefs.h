@@ -63,15 +63,17 @@
 #define PREF_REMIND_UNITS 39
 #define PREF_PASSWORD 40
 #define PREF_MEMO32_MODE 41
-#define PREF_MEMO_EXPORT_FILENAME 42
-#define PREF_MEMO_IMPORT_PATH 43
+#define PREF_PAPER_SIZE 42
+#define PREF_DATEBOOK_EXPORT_FILENAME 43
+#define PREF_DATEBOOK_IMPORT_PATH 44
+#define PREF_ADDRESS_EXPORT_FILENAME 45
+#define PREF_ADDRESS_IMPORT_PATH 46
+#define PREF_TODO_EXPORT_FILENAME 47
+#define PREF_TODO_IMPORT_PATH 48
+#define PREF_MEMO_EXPORT_FILENAME 49
+#define PREF_MEMO_IMPORT_PATH 50
 
-#define NUM_PREFS 44
-
-#define NUM_SHORTDATES  7
-#define NUM_LONGDATES  6
-#define NUM_TIMES  10
-#define NUM_RATES  11
+#define NUM_PREFS 51
 
 #define MAX_PREF_NUM_BACKUPS 99
 
@@ -108,5 +110,7 @@ int get_pref_time_no_secs_no_ampm(char *datef);
  * specified default.
  */
 long get_pref_int_default(int which, long defval);
+
+int make_pref_menu(GtkWidget **pref_menu, int pref_num);
 
 #endif

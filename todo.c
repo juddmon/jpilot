@@ -19,7 +19,9 @@
 
 #include "config.h"
 #include "i18n.h"
+#include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <pi-source.h>
 #include <pi-socket.h>
 #include <pi-todo.h>
@@ -60,7 +62,7 @@ int todo_compare(const void *v1, const void *v2)
 
    cat1 = (*todol1)->mtodo.attrib & 0x0F;
    cat2 = (*todol2)->mtodo.attrib & 0x0F;
-   
+
    if (sort_by_priority == 0) {
       /* due date, priority */
       if ( !(todo1->indefinite) && (todo2->indefinite) ) {
@@ -190,7 +192,7 @@ int todo_sort(ToDoList **todol, int sort_order)
       /* We don't have to sort less than 2 items */
       return 0;
    }
-   
+
    get_todo_app_info(&ai);
 
    glob_Ptodo_app_info = &ai;
@@ -201,7 +203,7 @@ int todo_sort(ToDoList **todol, int sort_order)
       jpilot_logf(LOG_WARN, "todo_sort(): Out of Memory\n");
       return 0;
    }
-   
+
    /* Set our array to be a list of pointers to the nodes in the linked list */
    for (i=0, temp_todol=*todol; temp_todol; temp_todol=temp_todol->next, i++) {
       sort_todol[i] = temp_todol;
@@ -209,7 +211,7 @@ int todo_sort(ToDoList **todol, int sort_order)
 
    /* qsort them */
    qsort(sort_todol, count, sizeof(ToDoList *), todo_compare);
-   
+
    /* Put the linked list in the order of the array */
    if (sort_order==SORT_ASCENDING) {
       for (i=count-1; i>0; i--) {
@@ -225,7 +227,7 @@ int todo_sort(ToDoList **todol, int sort_order)
       }
       *todol = sort_todol[0];
    }
-   
+
    free(sort_todol);
 
    return 0;
@@ -255,17 +257,17 @@ int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib,
    br.attrib = attrib;
    br.buf = record;
    br.size = rec_len;
-   
+
    jp_pc_write("ToDoDB", &br);
    *unique_id = br.unique_id;
-   
+
    return 0;
 }
 
 void free_ToDoList(ToDoList **todo)
 {
    ToDoList *temp_todo, *temp_todo_next;
-   
+
    for (temp_todo = *todo; temp_todo; temp_todo=temp_todo_next) {
       free_ToDo(&(temp_todo->mtodo.todo));
       temp_todo_next = temp_todo->next;
@@ -292,7 +294,7 @@ int get_todo_app_info(struct ToDoAppInfo *ai)
       jpilot_logf(LOG_WARN, _("Error reading"), "ToDoDB.pdb");
       return -1;
    }
-	 
+
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    if (char_set != CHAR_SET_ENGLISH) {
       for (i = 0; i < 16; i++) {

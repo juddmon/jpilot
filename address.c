@@ -18,6 +18,8 @@
  */
 #include "config.h"
 #include "i18n.h"
+#include <stdlib.h>
+#include <string.h>
 #include <stdio.h>
 #include <ctype.h>
 #include <pi-source.h>
@@ -58,7 +60,7 @@ int address_compare(const void *v1, const void *v2)
 
    al1=(AddressList **)v1;
    al2=(AddressList **)v2;
-   
+
    a1=&((*al1)->ma.a);
    a2=&((*al2)->ma.a);
 
@@ -74,9 +76,9 @@ int address_compare(const void *v1, const void *v2)
    /*sort_by_company: */
    /*0 last, first or */
    /*1 company, last */
-   
+
    str1=str2=NULL;
-   
+
    if (a1->entry[sort1] || a1->entry[sort2]) {
       if (a1->entry[sort1] && a1->entry[sort2]) {
 	 if ((str1 = (char *)malloc(strlen(a1->entry[sort1])+strlen(a1->entry[sort2])+1)) == NULL) {
@@ -186,7 +188,7 @@ int address_sort(AddressList **al, int sort_order)
       jpilot_logf(LOG_WARN, "address_sort(): Out of Memory\n");
       return 0;
    }
-   
+
    /* Set our array to be a list of pointers to the nodes in the linked list */
    for (i=0, temp_al=*al; temp_al; temp_al=temp_al->next, i++) {
       sort_al[i] = temp_al;
@@ -241,10 +243,10 @@ int pc_address_write(struct Address *a, PCRecType rt, unsigned char attrib,
    br.attrib = attrib;
    br.buf = record;
    br.size = rec_len;
-   
+
    jp_pc_write("AddressDB", &br);
    *unique_id = br.unique_id;
-   
+
    return 0;
 }
 
@@ -278,7 +280,7 @@ int get_address_app_info(struct AddressAppInfo *ai)
       jpilot_logf(LOG_WARN, _("Error reading"), "AddressDB.pdb");
       return -1;
    }
-	 
+
    get_pref(PREF_CHAR_SET, &char_set, NULL); 
    if (char_set != CHAR_SET_ENGLISH) {
       /* Convert to character set */
@@ -320,7 +322,7 @@ int get_addresses2(AddressList **address_list, int sort_order,
    int keep_priv;
    long char_set;
    buf_rec *br;
-  
+
    jpilot_logf(LOG_DEBUG, "get_addresses2()\n");
    if (modified==2) {
       get_pref(PREF_SHOW_MODIFIED, &keep_modified, NULL);
