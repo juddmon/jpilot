@@ -1654,6 +1654,8 @@ int main(int argc, char *argv[])
    GtkWidget *menubar;
 #ifdef ENABLE_GTK2
    GtkWidget *scrolled_window;
+   char *week_start;
+   int   pref_fdow = 0;
 #else
    GtkWidget *vscrollbar;
 #endif
@@ -1786,9 +1788,6 @@ char *xpm_unlocked[] = {
    /* Extract first day of week preference from locale in GTK2 */
 #ifdef ENABLE_GTK2
 #  if defined(ENABLE_NLS)
-      char *week_start;
-      int   pref_fdow = 0;
-
       textdomain("gtk20");
 
       week_start = _("calendar:week_start:0");
