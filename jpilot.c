@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.98 2004/11/28 16:20:04 rousseau Exp $ */
+/* $Id: jpilot.c,v 1.99 2004/12/03 16:57:24 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -1457,13 +1457,6 @@ void cb_output(GtkWidget *widget, gpointer data)
       }
       jp_logf(JP_LOG_DEBUG,"output height = %d\n", output_height);
    }
-   if (flags==OUTPUT_SETSIZE) {
-      get_pref(PREF_OUTPUT_HEIGHT, &ivalue, NULL);
-      gdk_window_get_size(window->window, &w, &h);
-      pane_y = h - ivalue;
-      gtk_paned_set_position(GTK_PANED(output_pane), pane_y + 2);
-      jp_logf(JP_LOG_DEBUG, "setting output_pane to %d\n", pane_y);
-   }
    if (flags==OUTPUT_CLEAR) {
 #ifdef ENABLE_GTK2
       gtk_text_buffer_set_text(g_output_text_buffer, "", -1);
@@ -1806,9 +1799,7 @@ char *xpm_unlocked[] = {
    /* Extract first day of week preference from locale in GTK2 */
 #ifdef ENABLE_GTK2
 #  if defined(ENABLE_NLS)
-      textdomain("gtk20");
-
-      week_start = _("calendar:week_start:0");
+      week_start = dgettext("gtk20", "calendar:week_start:0");
       if (strncmp(week_start, "calendar:week_start:", 20) == 0)
 	 pref_fdow = *(week_start + 20) - '0';
 
@@ -1816,9 +1807,8 @@ char *xpm_unlocked[] = {
 	 pref_fdow = 1;
       if (pref_fdow < 0)
 	 pref_fdow = 0;
-      set_pref_possibility(PREF_FDOW, pref_fdow, TRUE);
 
-      textdomain(EPN);
+      set_pref_possibility(PREF_FDOW, pref_fdow, TRUE);
 #  endif
 #endif
 
