@@ -1,25 +1,58 @@
+################################################################################
+# Syntax guide for GTK color resource file
+#
+# style <name> [= <name>]
+# {
+#   <option>
+# }
+#
+# widget <widget_set> style <style_name>
+# widget_class <widget_class_set> style <style_name>
+
+# Here is a list of all the possible states.  Note that some do not apply to
+# certain widgets.
+#
+# NORMAL - The normal state of a widget, without the mouse over top of
+# it, and not being pressed etc.
+#
+# PRELIGHT - When the mouse is over top of the widget, colors defined
+# using this state will be in effect.
+#
+# ACTIVE - When the widget is pressed or clicked it will be active, and
+# the attributes assigned by this tag will be in effect.
+#
+# INSENSITIVE - When a widget is set insensitive, and cannot be
+# activated, it will take these attributes.
+#
+# SELECTED - When an object is selected, it takes these attributes.
+#
+# Given these states, we can set the attributes of the widgets in each of
+# these states using the following directives.
+#
+# fg - Sets the foreground color of a widget.
+# fg - Sets the background color of a widget.
+# bg_pixmap - Sets the background of a widget to a tiled pixmap.
+# font - Sets the font to be used with the given widget.
+#
+################################################################################
 # I only added the things I needed to get the functionality
-
-style "button"
-{
-bg[ACTIVE] = { 0.917, 0.917, 0.917 }
-}
-  
-style "button_set" = "button"
-{
-bg[NORMAL] = { 0.6, 0.6, 0.6 }
-}
-  
-style "button_today" = "button"
-{
-bg[NORMAL] = { 0.68, 0.68, 0.68 }
-}
-
 style "label_high"
 {
 fg[NORMAL] = { 0.0, 0.0, 0.9 }
 }
 
-widget "*.button_set" style "button_set"
-widget "*.button_today" style "button_today"
+style "calendar"
+{
+text[SELECTED] = { 1.0, 1.0, 1.0 }    # selected and week numbers for GTK2.x
+base[SELECTED] = { 0.19, 0.19, 0.61 } # selected and week numbers for GTK2.x
+text[ACTIVE]   = { 1.0, 1.0, 1.0 }    # week numbers when focus is not on widget for GTK2.x
+base[ACTIVE]   = { 0.19, 0.19, 0.61 } # week numbers when focus is not on widget for GTK2.x
+}
+################################################################################
+# These set the widget types to use the styles defined above.
+widget_class "*GtkCalendar" style "calendar"
+
+############################################################
+# These set the widget types for named gtk widgets in the C code
 widget "*.label_high" style "label_high"
+

@@ -4,6 +4,12 @@ fg[NORMAL] = { 1.0, 1.0, 1.0 }
 bg[NORMAL] = { 0.4, 0.4, 0.6 }
 }
 
+style "frame"
+{
+fg[NORMAL] = { 1.0, 1.0, 1.0 }
+bg[NORMAL] = { 1.0, 1.0, 1.0 }
+}
+
 style "label"
 {
 fg[NORMAL] = { 1.0, 1.0, 1.0 }
@@ -15,53 +21,26 @@ style "label_high"
 fg[NORMAL] = { 0.0, 0.0, 0.8 }
 }
 
-style "label_box_cal"
+style "tooltips"
 {
-fg[NORMAL] = { 0.0, 0.0, 1.0 }
-bg[NORMAL] = { 1.0, 1.0, 1.0 }
-bg[ACTIVE] = { 1.0, 1.0, 1.0 }
-bg[PRELIGHT] = { 1.0, 1.0, 1.0 }
-bg[INSENSITIVE] = { 1.0, 1.0, 1.0 }
-}
-
-style "frame"
-{
-fg[NORMAL] = { 1.0, 1.0, 1.0 }
-bg[NORMAL] = { 1.0, 1.0, 1.0 }
+fg[NORMAL] = { 0.0, 0.0, 0.0 }
+bg[NORMAL] = { 1.0, 0.98, .84 }
 }
 
 style "button"
 {
 # This shows all the possible states for a button.  The only one that
 # doesn't apply is the SELECTED state.
-fg[PRELIGHT] = { 1.0, 1.0, 1.0 }
-bg[PRELIGHT] = { 0.5, 0.5, 0.7 }
-bg[ACTIVE] = { 0.4, 0.4, 0.6 }
-fg[ACTIVE] = { 1.0, 1.0, 1.0 }
-bg[NORMAL] = { 0.4, 0.4, 0.6 }
-#fg[NORMAL] = { 0.9, 1.0, 1.0 }
+fg[PRELIGHT]    = { 1.0, 1.0, 1.0 }
+bg[PRELIGHT]    = { 0.5, 0.5, 0.7 }
+fg[ACTIVE]      = { 1.0, 1.0, 1.0 }
+bg[ACTIVE]      = { 0.4, 0.4, 0.6 }
+#fg[NORMAL]     = { 0.9, 1.0, 1.0 }
+bg[NORMAL]      = { 0.4, 0.4, 0.6 }
 fg[INSENSITIVE] = { 0.0, 0.0, 0.0 }
 bg[INSENSITIVE] = { .475, .490, .757}
 }
   
-style "button_set" = "button"
-{
-bg[NORMAL] = { 0.6, 0.6, 0.8 }
-}
-  
-style "button_today" = "button"
-{
-bg[NORMAL] = { 0.5, 0.5, 0.7 }
-}
-
-style "button_dow" = "button"
-{
-fg[PRELIGHT] = { 0.0, 0.0, 0.0 }
-bg[PRELIGHT] = { 0.4, 0.4, 0.6 }
-bg[ACTIVE] = { 0.4, 0.4, 0.6 }
-fg[ACTIVE] = { 0.0, 0.0, 0.0 }
-}
-
 style "button_app"
 {
 fg[PRELIGHT] = { 1.0, 1.0, 1.0 }
@@ -70,33 +49,31 @@ bg[PRELIGHT] = { 0.6, 0.6, 0.8 }
 
 style "toggle_button" = "button"
 {
-#fg[NORMAL] = { 1.0, 1.0, 1.0 }
-#bg[NORMAL] = { 0, 0.3, 0.6 }
-#fg[ACTIVE] = { 1.0, 1.0, 1.0 }
-#bg[ACTIVE] = { 0.0, 0.4, 0.7 }
+#fg[NORMAL]   = { 1.0, 1.0, 1.0 }
+#bg[NORMAL]   = { 0, 0.3, 0.6 }
+#fg[ACTIVE]   = { 1.0, 1.0, 1.0 }
+#bg[ACTIVE]   = { 0.0, 0.4, 0.7 }
 #bg[PRELIGHT] = { 0.0, 0.3, 0.6 }
 #fg[PRELIGHT] = { 1.0, 1.0, 1.0 }
 }
 
 style "radio_button"
 {
-fg[NORMAL] = { 1.0, 1.0, 0.0 }
-bg[NORMAL] = { 0.4, 0.4, 0.6 }
-fg[ACTIVE] = { 1.0, 1.0, 1.0 }
-bg[ACTIVE] = { 1.0, 1.0, 0.0 }
-bg[PRELIGHT] = { 0.4, 0.4, 0.6 }
 fg[PRELIGHT] = { 1.0, 1.0, 1.0 }
+bg[PRELIGHT] = { 0.4, 0.4, 0.6 }
+fg[ACTIVE]   = { 1.0, 1.0, 1.0 }
+bg[ACTIVE]   = { 1.0, 1.0, 0.0 }
+fg[NORMAL]   = { 1.0, 1.0, 0.0 }
+bg[NORMAL]   = { 0.4, 0.4, 0.6 }
 }
 
-style "spinner"
+style "spin_button"
 {
-fg[NORMAL] = { 0.0, 0.0, 0.0 }
-bg[NORMAL] = { 0.4, 0.4, 0.6 }
-fg[INSENSITIVE] = { 0.0, 0.0, 0.0 }
-bg[INSENSITIVE] = { 0.4, 0.4, 0.6 }
-bg[PRELIGHT] = { 1.0, 1.0, 0.0 }
-#fg[PRELIGHT] = { 1.0, 1.0, 1.0 }
-base[NORMAL] = { 0.85, 0.9, 1.0 }
+#fg[PRELIGHT]   = { 0.0, 0.0, 0.0 }
+bg[PRELIGHT]    = { 1.0, 1.0, 0.0 }
+fg[NORMAL]      = { 0.0, 0.0, 0.0 }
+bg[NORMAL]      = { 0.4, 0.4, 0.6 }
+base[NORMAL]    = { 0.85, 0.9, 1.0 }  #bg for text portion of spin button
 }
 
 style "text"
@@ -105,39 +82,34 @@ style "text"
 #font = "-adobe-courier-medium-o-normal--8-80-75-75-m-50-iso8859-1"
 #This is how to use a different font under GTK 2.x
 #font_name = "Sans 12"
-bg[NORMAL] = { 0.4, 0.4, 0.6 }
-fg[NORMAL] = { 0.0, 0.0, 0.0 }
-fg[PRELIGHT] = { 0.0, 0.0, 0.0 }
-bg[PRELIGHT] = { 0.5, 0.5, 0.7 }
-#fg[SELECTED] = { 0.0, 0.0, 0.0 }
-#bg[SELECTED] = { 0.9, 0.8, 1.0 }
-fg[ACTIVE] = { 0.0, 0.0, 0.0 }
-bg[ACTIVE] = { 0.4, 0.4, 0.6 } #bg of scrollbars
+fg[NORMAL]      = { 0.0, 0.0, 0.0 }
+bg[NORMAL]      = { 0.4, 0.4, 0.6 }
+fg[PRELIGHT]    = { 0.0, 0.0, 0.0 }
+bg[PRELIGHT]    = { 0.5, 0.5, 0.7 }
+#fg[SELECTED]   = { 0.0, 0.0, 0.0 }
+#bg[SELECTED]   = { 0.9, 0.8, 1.0 }
+fg[ACTIVE]      = { 0.0, 0.0, 0.0 }
+bg[ACTIVE]      = { 0.4, 0.4, 0.6 } #bg of scrollbars
 fg[INSENSITIVE] = { 1.0, 1.0, 0.0 }
 bg[INSENSITIVE] = { 0.0, 0.0, 0.0 }
-text[NORMAL] = { 0.0, 0.0, 1.0 }
-base[NORMAL] = { 0.85, 0.9, 1.0 }
+text[NORMAL]    = { 0.0, 0.0, 1.0 }
+base[NORMAL]    = { 0.85, 0.9, 1.0 }
 }
 
 style "menu"
 {
-bg[NORMAL] = { 0.4, 0.4, 0.6 }
-fg[NORMAL] = { 1.0, 1.0, 1.0 }
+fg[NORMAL]   = { 1.0, 1.0, 1.0 }
+bg[NORMAL]   = { 0.4, 0.4, 0.6 }
 fg[PRELIGHT] = { 1.0, 1.0, 1.0 }
 bg[PRELIGHT] = { 0.5, 0.5, 0.7 }
-fg[ACTIVE] = { 0.0, 1.0, 0.0 }
-bg[ACTIVE] = { 0.4, 0.4, 0.6 }
+fg[ACTIVE]   = { 0.0, 1.0, 0.0 }
+bg[ACTIVE]   = { 0.4, 0.4, 0.6 }
 fg[SELECTED] = { 1.0, 0.0, 0.0 }
 bg[SELECTED] = { 1.0, 0.0, 0.5 }
 }
 
 style "notebook"
 {
-# This shows all the possible states for a button.  The only one that
-# doesn't apply is the SELECTED state.
-
-bg[ACTIVE] = { 0.4, 0.4, 0.6 }
-fg[ACTIVE] = { 0.9, 0.9, 0.9 }
 bg[NORMAL] = { 0.4, 0.4, 0.6 }
 fg[NORMAL] = { 0.9, 0.9, 0.9 }
 bg[ACTIVE] = { 0.3, 0.3, 0.5 }
@@ -146,48 +118,47 @@ fg[ACTIVE] = { 1.0, 1.0, 1.0 }
 
 style "calendar"
 {
-fg[NORMAL] = { 1.0, 1.0, 1.0 } #normal days text and month/year text
-bg[NORMAL] = { 0.5, 0.5, 0.7 } #top header part and off month days
-fg[SELECTED] = { 1.0, 1.0, 1.0 } # selected and week numbers
-bg[SELECTED] = { 0.5, 0.5, 0.7 } # selected and week numbers
-fg[PRELIGHT] = { 1.0, 1.0, 0.0 } # prelights for arrows
-bg[PRELIGHT] = { 0.4, 0.4, 0.6 } # prelights for arrows
-base[NORMAL] = { 0.4, 0.4, 0.6 } # bg for calendar
+fg[NORMAL]     = { 1.0, 1.0, 1.0 } #normal days text and month/year text
+bg[NORMAL]     = { 0.5, 0.5, 0.7 } #top header part and off month days
+fg[SELECTED]   = { 1.0, 1.0, 1.0 } # selected and week numbers for GTK1.x
+bg[SELECTED]   = { 0.5, 0.5, 0.7 } # selected and week numbers for GTK1.x
+text[SELECTED] = { 1.0, 1.0, 1.0 } # selected and week numbers for GTK2.x
+base[SELECTED] = { 0.5, 0.5, 0.7 } # selected and week numbers for GTK2.x
+text[ACTIVE]   = { 1.0, 1.0, 1.0 } # week numbers when focus is not on widget for GTK2.x
+base[ACTIVE]   = { 0.5, 0.5, 0.7 } # week numbers when focus is not on widget for GTK2.x
+fg[PRELIGHT]   = { 1.0, 1.0, 0.0 } # prelights for arrows
+bg[PRELIGHT]   = { 0.4, 0.4, 0.6 } # prelights for arrows
+base[NORMAL]   = { 0.4, 0.4, 0.6 } # bg for calendar
 }
 
 ################################################################################
 # These set the widget types to use the styles defined above.
-
 widget_class "GtkWindow" style "window"
 widget_class "GtkDialog" style "window"
 widget_class "GtkMessageDialog" style "window"
 widget_class "GtkFileSelection" style "window"
 widget_class "GtkFontSel*" style "notebook"
 widget_class "*GtkNotebook" style "notebook"
+widget_class "*GtkButton*" style "button"
 widget_class "*GtkCheckButton*" style "radio_button"
 widget_class "*GtkRadioButton*" style "radio_button"
-widget_class "*GtkButton*" style "button"
-widget_class "*GtkSpinButton" style "spinner"
 widget_class "*GtkToggleButton*" style "toggle_button"
-widget_class "*GtkMenu" style "menu"
+widget_class "*GtkSpinButton" style "spin_button"
 widget_class "*Menu*" style "menu"
-widget_class "*GtkOptionMenu" style "menu"
-widget_class "*GtkRadioMenuItem" style "menu"
 widget_class "*GtkText" style "text"
 widget_class "*GtkTextView" style "text"
+widget_class "*GtkEntry" style "text"
 widget_class "*GtkCList" style "text"
+widget_class "*Menu*" style "menu"
 widget_class "*GtkVScrollbar" style "text"
 widget_class "*GtkHScrollbar" style "text"
 widget_class "*GtkLabel" style "label"
 widget_class "*GtkEventBox" style "label"
 widget_class "*GtkFrame" style "frame"
-widget_class "*GtkEntry" style "text"
 widget_class "*GtkCalendar" style "calendar"
 ############################################################
-widget "*.button_set" style "button_set"
-widget "*.button_dow" style "button_dow"
-widget "*.button_today" style "button_today"
+# These set the widget types for named gtk widgets in the C code
 widget "*.button_app" style "button_app"
-widget "*.label_box_cal" style "label_box_cal"
 widget "*.label_high" style "label_high"
+widget "gtk-tooltips*" style "tooltips"
 
