@@ -170,6 +170,7 @@ void db3_fill_struct(char *note, int type, struct db4_struct *db4)
    /* jp_logf(JP_LOG_WARN, "db3_fill_struct()\n"); */
    switch (note[2]) {
     case 'c':
+    case 'C':
       db4->floating_event=DB3_FLOAT_COMPLETE;
       break;
     case 'd':
@@ -229,7 +230,7 @@ int db3_parse_tag(char *note, int *type, struct db4_struct *db4)
    /* NULL means any character is allowed */
    char *allowed[]={
       "#", "#", /* First 2 characters are # */
-	"@Ffcd", /* f or F floating, c completed, d done */
+	"@FfCcd", /* F or f floating, C or c completed, d done */
 	"@blL", /* b bold, l large, L large bold */
 	"@ABCDEFGHIJKLMNO", /* Category */
 	"@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrst", /* icon */
