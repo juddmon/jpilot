@@ -1820,14 +1820,7 @@ char *xpm_unlocked[] = {
    /* Not all terminals(xterm, rxvt, etc.) are UTF8 compliant */
 #if defined(ENABLE_NLS)
 # ifdef ENABLE_GTK2
-
-   /* If locale exists but does not specify an encoding, enforce UTF8 */
-   if (current_locale && !strstr(current_locale, ".")) {
-      snprintf(utf8_locale, sizeof(utf8_locale), "%s.UTF-8", current_locale); 
-      setlocale(LC_ALL, utf8_locale);
-      /* disable implicit call to setlocale(LC_ALL,"") in gtk_init() */
-      gtk_disable_setlocale();  
-   }
+   /* generate UTF-8 strings from gettext() & _() */
    bind_textdomain_codeset(EPN, "UTF-8");
 # endif
 #endif
