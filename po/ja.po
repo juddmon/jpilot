@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jpilot 0.99.6pre 09Jun03\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-02-22 14:22-0500\n"
+"POT-Creation-Date: 2004-02-29 02:00-0500\n"
 "PO-Revision-Date: 2003-06-09 19:53+0900\n"
 "Last-Translator: Hiroshi Miura <miura@da-cha.org>\n"
 "Language-Team: Japanese Palm-UNIX ML <palm-unix-j@list.daionet.gr.jp>\n"
@@ -19,162 +19,162 @@ msgstr ""
 msgid "error"
 msgstr "エラー"
 
-#: address.c:386 address_gui.c:1557 datebook.c:703 memo.c:220 memo_gui.c:909
+#: address.c:386 address_gui.c:1554 datebook.c:703 memo.c:220 memo_gui.c:909
 #: todo_gui.c:1246 Expense/expense.c:988 Expense/expense.c:1929
 #, c-format
 msgid "Error reading %s\n"
 msgstr "%sの読み込みエラー\n"
 
-#: address_gui.c:438 datebook_gui.c:351 memo_gui.c:267 todo_gui.c:399
+#: address_gui.c:436 datebook_gui.c:351 memo_gui.c:267 todo_gui.c:399
 #, c-format
 msgid "Could not open file %s\n"
 msgstr "ファイル%sを開けません\n"
 
-#: address_gui.c:517
+#: address_gui.c:515
 msgid "File doesn't appear to be address.dat format\n"
 msgstr "ファイルはaddress.datフォーマットでは無いようです\n"
 
-#: address_gui.c:527 datebook_gui.c:561 memo_gui.c:395 todo_gui.c:525
+#: address_gui.c:525 datebook_gui.c:561 memo_gui.c:395 todo_gui.c:525
 #: Expense/expense.c:512 Expense/expense.c:1268
 msgid "Unfiled"
 msgstr "分類無し"
 
-#: address_gui.c:666 alarms.c:223 category.c:404 category.c:851 category.c:891
-#: datebook_gui.c:648 datebook_gui.c:1128 export_gui.c:336 jpilot.c:354
-#: jpilot.c:401 jpilot.c:469 jpilot.c:513 jpilot.c:969 memo_gui.c:485
+#: address_gui.c:664 alarms.c:223 category.c:404 category.c:851 category.c:891
+#: datebook_gui.c:648 datebook_gui.c:1128 export_gui.c:336 jpilot.c:355
+#: jpilot.c:402 jpilot.c:470 jpilot.c:514 jpilot.c:970 memo_gui.c:485
 #: password.c:364 restore_gui.c:292 todo_gui.c:615 utils.c:1073 utils.c:1225
 #: KeyRing/keyring.c:1270
 msgid "OK"
 msgstr "OK"
 
-#: address_gui.c:667 datebook_gui.c:649 memo_gui.c:486 todo_gui.c:616
+#: address_gui.c:665 datebook_gui.c:649 memo_gui.c:486 todo_gui.c:616
 #: utils.c:1243
 msgid "Yes"
 msgstr "はい"
 
-#: address_gui.c:667 datebook_gui.c:649 memo_gui.c:486 todo_gui.c:616
+#: address_gui.c:665 datebook_gui.c:649 memo_gui.c:486 todo_gui.c:616
 #: utils.c:1243
 msgid "No"
 msgstr "いいえ"
 
-#: address_gui.c:691 datebook_gui.c:676 memo_gui.c:496 todo_gui.c:642
+#: address_gui.c:689 datebook_gui.c:676 memo_gui.c:496 todo_gui.c:642
 #, c-format
 msgid "%s is a directory"
 msgstr "%sはディレクトリです"
 
-#: address_gui.c:693 address_gui.c:710 datebook_gui.c:678 datebook_gui.c:695
+#: address_gui.c:691 address_gui.c:708 datebook_gui.c:678 datebook_gui.c:695
 #: memo_gui.c:498 memo_gui.c:515 todo_gui.c:644 todo_gui.c:661
 msgid "Error Opening File"
 msgstr "ファイルを開くときのエラー"
 
-#: address_gui.c:697 datebook_gui.c:682 memo_gui.c:502 todo_gui.c:648
+#: address_gui.c:695 datebook_gui.c:682 memo_gui.c:502 todo_gui.c:648
 #, c-format
 msgid "Do you want to overwrite file %s?"
 msgstr "ファイル %s を上書きしますか？"
 
-#: address_gui.c:699 datebook_gui.c:684 memo_gui.c:504 todo_gui.c:650
+#: address_gui.c:697 datebook_gui.c:684 memo_gui.c:504 todo_gui.c:650
 msgid "Overwrite File?"
 msgstr "ファイルを上書きしますか？"
 
-#: address_gui.c:700 datebook_gui.c:685 memo_gui.c:505 todo_gui.c:651
+#: address_gui.c:698 datebook_gui.c:685 memo_gui.c:505 todo_gui.c:651
 msgid "Overwrite File"
 msgstr "ファイルを上書きしました"
 
-#: address_gui.c:1136 address_gui.c:2435
+#: address_gui.c:1134 address_gui.c:2431
 msgid "Company/Name"
 msgstr "会社名/名前"
 
-#: address_gui.c:1138 address_gui.c:2437
+#: address_gui.c:1136 address_gui.c:2433
 msgid "Name/Company"
 msgstr "名前/会社名"
 
-#: address_gui.c:1638 Expense/expense.c:1445 Expense/expense.c:1524
+#: address_gui.c:1635 Expense/expense.c:1445 Expense/expense.c:1524
 #: KeyRing/keyring.c:1496 KeyRing/keyring.c:1572
 msgid "Category: "
 msgstr "カテゴリー"
 
-#: address_gui.c:1670 address_gui.c:2599
+#: address_gui.c:1667 address_gui.c:2595
 msgid "kana("
 msgstr "読み("
 
-#: address_gui.c:1858 memo_gui.c:1048 todo_gui.c:1478
+#: address_gui.c:1855 memo_gui.c:1048 todo_gui.c:1478
 msgid "0 records"
 msgstr "0レコード"
 
-#: address_gui.c:1956
+#: address_gui.c:1953
 msgid "-Unnamed-"
 msgstr "未設定"
 
-#: address_gui.c:2044 datebook_gui.c:2361 memo_gui.c:1157 todo_gui.c:1631
+#: address_gui.c:2041 datebook_gui.c:2361 memo_gui.c:1157 todo_gui.c:1631
 #, c-format
 msgid "%d of %d records"
 msgstr "%d/%dレコード"
 
-#: address_gui.c:2415 category.c:434 category.c:448 category.c:455
+#: address_gui.c:2411 category.c:434 category.c:448 category.c:455
 #: category.c:473 category.c:480 category.c:498 category.c:578 category.c:773
 #: memo_gui.c:1369 todo_gui.c:1880 Expense/expense.c:1452
 msgid "Edit Categories"
 msgstr "カテゴリ編集"
 
-#: address_gui.c:2442
+#: address_gui.c:2438
 msgid "Phone"
 msgstr "電話番号"
 
-#: address_gui.c:2464
+#: address_gui.c:2460
 msgid "Quick Find"
 msgstr "簡易検索"
 
-#: address_gui.c:2481 category.c:405 category.c:824 datebook_gui.c:4086
+#: address_gui.c:2477 category.c:405 category.c:824 datebook_gui.c:4084
 #: memo_gui.c:1424 todo_gui.c:1992 Expense/expense.c:1486
 #: KeyRing/keyring.c:1531
 msgid "Delete"
 msgstr "削除"
 
-#: address_gui.c:2488 datebook_gui.c:4093 memo_gui.c:1430 todo_gui.c:1998
+#: address_gui.c:2484 datebook_gui.c:4091 memo_gui.c:1430 todo_gui.c:1998
 #: Expense/expense.c:1492 KeyRing/keyring.c:1537
 msgid "Copy"
 msgstr "複製"
 
-#: address_gui.c:2495 datebook_gui.c:4100 memo_gui.c:1436 todo_gui.c:2004
+#: address_gui.c:2491 datebook_gui.c:4098 memo_gui.c:1436 todo_gui.c:2004
 #: Expense/expense.c:1498 KeyRing/keyring.c:1543
 msgid "New Record"
 msgstr "新規レコード"
 
-#: address_gui.c:2501 datebook_gui.c:4107 memo_gui.c:1442 todo_gui.c:2010
+#: address_gui.c:2497 datebook_gui.c:4105 memo_gui.c:1442 todo_gui.c:2010
 #: Expense/expense.c:1504 KeyRing/keyring.c:1549
 msgid "Add Record"
 msgstr "レコードの追加"
 
-#: address_gui.c:2510 datebook_gui.c:4116 memo_gui.c:1450 todo_gui.c:2018
+#: address_gui.c:2506 datebook_gui.c:4114 memo_gui.c:1450 todo_gui.c:2018
 #: Expense/expense.c:1512 KeyRing/keyring.c:1557
 msgid "Apply Changes"
 msgstr "変更"
 
-#: address_gui.c:2526 datebook_gui.c:4167 memo_gui.c:1467 todo_gui.c:2081
+#: address_gui.c:2522 datebook_gui.c:4165 memo_gui.c:1467 todo_gui.c:2081
 msgid "Private"
 msgstr "プライベート"
 
-#: address_gui.c:2546 KeyRing/keyring.c:1423
+#: address_gui.c:2542 KeyRing/keyring.c:1423
 msgid "Name"
 msgstr "名前"
 
-#: address_gui.c:2554
+#: address_gui.c:2550
 msgid "Address"
 msgstr "アドレス帳"
 
-#: address_gui.c:2562 Expense/expense.c:464 Expense/expense.c:1289
+#: address_gui.c:2558 Expense/expense.c:464 Expense/expense.c:1289
 msgid "Other"
 msgstr "その他"
 
-#: address_gui.c:2570 datebook_gui.c:1309 datebook_gui.c:1566 utils.c:2471
+#: address_gui.c:2566 datebook_gui.c:1309 datebook_gui.c:1566 utils.c:2471
 msgid "All"
 msgstr "全て"
 
-#: address_gui.c:2700 dialer.c:305 dialer.c:330
+#: address_gui.c:2696 dialer.c:305 dialer.c:330
 msgid "Dial"
 msgstr "ダイアル"
 
-#: address_gui.c:2750
+#: address_gui.c:2746
 msgid ""
 "Show\n"
 "In List"
@@ -182,7 +182,7 @@ msgstr ""
 "リストで\n"
 "表示"
 
-#: address_gui.c:2758
+#: address_gui.c:2754
 msgid "Quick View"
 msgstr "内容"
 
@@ -190,11 +190,11 @@ msgstr "内容"
 msgid "Remind me"
 msgstr "アラーム"
 
-#: alarms.c:239 datebook_gui.c:4149
+#: alarms.c:239 datebook_gui.c:4147
 msgid "Minutes"
 msgstr "分"
 
-#: alarms.c:241 datebook_gui.c:4153
+#: alarms.c:241 datebook_gui.c:4151
 msgid "Hours"
 msgstr "時"
 
@@ -210,7 +210,7 @@ msgstr "終わった予定"
 msgid "Postponed Appointment"
 msgstr "保留された予定"
 
-#: alarms.c:531 datebook_gui.c:3999
+#: alarms.c:531 datebook_gui.c:3997
 msgid "Appointment"
 msgstr "予定"
 
@@ -301,32 +301,32 @@ msgstr "デバック"
 msgid "read of file terminated\n"
 msgstr ""
 
-#: datebook_gui.c:201 datebook_gui.c:208 datebook_gui.c:3837
-#: datebook_gui.c:3844
+#: datebook_gui.c:201 datebook_gui.c:208 datebook_gui.c:3835
+#: datebook_gui.c:3842
 msgid "Su"
 msgstr "日"
 
-#: datebook_gui.c:202 datebook_gui.c:3838
+#: datebook_gui.c:202 datebook_gui.c:3836
 msgid "Mo"
 msgstr "月"
 
-#: datebook_gui.c:203 datebook_gui.c:3839
+#: datebook_gui.c:203 datebook_gui.c:3837
 msgid "Tu"
 msgstr "火"
 
-#: datebook_gui.c:204 datebook_gui.c:3840
+#: datebook_gui.c:204 datebook_gui.c:3838
 msgid "We"
 msgstr "水"
 
-#: datebook_gui.c:205 datebook_gui.c:3841
+#: datebook_gui.c:205 datebook_gui.c:3839
 msgid "Th"
 msgstr "木"
 
-#: datebook_gui.c:206 datebook_gui.c:3842
+#: datebook_gui.c:206 datebook_gui.c:3840
 msgid "Fr"
 msgstr "金"
 
-#: datebook_gui.c:207 datebook_gui.c:3843
+#: datebook_gui.c:207 datebook_gui.c:3841
 msgid "Sa"
 msgstr "土"
 
@@ -344,7 +344,7 @@ msgstr "エラー"
 msgid "File doesn't appear to be datebook.dat format\n"
 msgstr "ファイルはdatebook.datフォーマットでは無いようです\n"
 
-#: datebook_gui.c:1074 export_gui.c:255 jpilot.c:546
+#: datebook_gui.c:1074 export_gui.c:255 jpilot.c:547
 msgid "Export"
 msgstr "エキスポート"
 
@@ -365,7 +365,7 @@ msgstr "ファイル一覧"
 msgid "Done"
 msgstr "完了"
 
-#: datebook_gui.c:1315 datebook_gui.c:4327
+#: datebook_gui.c:1315 datebook_gui.c:4325
 msgid "None"
 msgstr "なし"
 
@@ -377,11 +377,11 @@ msgstr "1日の開始"
 msgid "End On Date"
 msgstr "1日の終了"
 
-#: datebook_gui.c:1526 prefs.c:439
+#: datebook_gui.c:1526 prefs.c:440
 msgid "Sunday"
 msgstr "日曜日"
 
-#: datebook_gui.c:1527 prefs.c:440
+#: datebook_gui.c:1527 prefs.c:441
 msgid "Monday"
 msgstr "月曜日"
 
@@ -466,11 +466,11 @@ msgstr ""
 msgid "No Time"
 msgstr "時刻なし"
 
-#: datebook_gui.c:2530
+#: datebook_gui.c:2528
 msgid "Invalid Appointment"
 msgstr "不正な予定"
 
-#: datebook_gui.c:2531
+#: datebook_gui.c:2529
 msgid ""
 "The End Date of this appointment\n"
 "is before the start date."
@@ -478,126 +478,126 @@ msgstr ""
 "この予定の終了日は、開始日\n"
 "以前でなけばなりません。"
 
-#: datebook_gui.c:2735 datebook_gui.c:4361 datebook_gui.c:4391
-#: datebook_gui.c:4447 datebook_gui.c:4496 todo_gui.c:123 todo_gui.c:2072
+#: datebook_gui.c:2733 datebook_gui.c:4359 datebook_gui.c:4389
+#: datebook_gui.c:4445 datebook_gui.c:4494 todo_gui.c:123 todo_gui.c:2072
 msgid "No Date"
 msgstr "日付設定なし"
 
-#: datebook_gui.c:3918 datebook_gui.c:4329
+#: datebook_gui.c:3916 datebook_gui.c:4327
 msgid "Week"
 msgstr "週"
 
-#: datebook_gui.c:3927
+#: datebook_gui.c:3925
 msgid "View appointments by week"
 msgstr ""
 
-#: datebook_gui.c:3930 datebook_gui.c:4330
+#: datebook_gui.c:3928 datebook_gui.c:4328
 msgid "Month"
 msgstr "月"
 
-#: datebook_gui.c:3939
+#: datebook_gui.c:3937
 msgid "View appointments by month"
 msgstr ""
 
-#: datebook_gui.c:3944
+#: datebook_gui.c:3942
 msgid "Cats"
 msgstr "カテゴリ"
 
-#: datebook_gui.c:3998
+#: datebook_gui.c:3996
 msgid "Time"
 msgstr "時刻"
 
-#: datebook_gui.c:4030
+#: datebook_gui.c:4028
 msgid "Show ToDos"
 msgstr "ToDoの表示"
 
-#: datebook_gui.c:4045 todo_gui.c:1954
+#: datebook_gui.c:4043 todo_gui.c:1954
 msgid "Task"
 msgstr "タスク"
 
-#: datebook_gui.c:4046 todo_gui.c:1955
+#: datebook_gui.c:4044 todo_gui.c:1955
 msgid "Due"
 msgstr "締切"
 
-#: datebook_gui.c:4134
+#: datebook_gui.c:4132
 msgid "Alarm"
 msgstr "アラーム"
 
-#: datebook_gui.c:4155
+#: datebook_gui.c:4153
 msgid "Days"
 msgstr "日"
 
-#: datebook_gui.c:4178
+#: datebook_gui.c:4176
 msgid "This Event has no particular time"
 msgstr "時刻指定なし"
 
-#: datebook_gui.c:4186
+#: datebook_gui.c:4184
 msgid "Starts on"
 msgstr "開始日"
 
-#: datebook_gui.c:4200
+#: datebook_gui.c:4198
 msgid "Start Time"
 msgstr "開始時刻"
 
-#: datebook_gui.c:4218
+#: datebook_gui.c:4216
 msgid "End Time"
 msgstr "終了時刻"
 
-#: datebook_gui.c:4311
+#: datebook_gui.c:4309
 msgid "DateBk Tags"
 msgstr "DateBkタグ"
 
-#: datebook_gui.c:4328
+#: datebook_gui.c:4326
 msgid "Day"
 msgstr "日"
 
-#: datebook_gui.c:4331
+#: datebook_gui.c:4329
 msgid "Year"
 msgstr "年"
 
-#: datebook_gui.c:4335
+#: datebook_gui.c:4333
 msgid "This event will not repeat"
 msgstr "繰り返しなし"
 
-#: datebook_gui.c:4345 datebook_gui.c:4377 datebook_gui.c:4433
-#: datebook_gui.c:4480
+#: datebook_gui.c:4343 datebook_gui.c:4375 datebook_gui.c:4431
+#: datebook_gui.c:4478
 msgid "Frequency is Every"
 msgstr "繰り返し周期"
 
-#: datebook_gui.c:4350
+#: datebook_gui.c:4348
 msgid "Day(s)"
 msgstr "日毎"
 
-#: datebook_gui.c:4353 datebook_gui.c:4385 datebook_gui.c:4441
-#: datebook_gui.c:4488
+#: datebook_gui.c:4351 datebook_gui.c:4383 datebook_gui.c:4439
+#: datebook_gui.c:4486
 msgid "End on"
 msgstr "終わりは"
 
-#: datebook_gui.c:4382
+#: datebook_gui.c:4380
 msgid "Week(s)"
 msgstr "週毎"
 
-#: datebook_gui.c:4398
+#: datebook_gui.c:4396
 msgid "Repeat on Days:"
 msgstr "繰り返し曜日:"
 
-#: datebook_gui.c:4438
+#: datebook_gui.c:4436
 msgid "Month(s)"
 msgstr "月毎"
 
-#: datebook_gui.c:4455
+#: datebook_gui.c:4453
 msgid "Repeat by:"
 msgstr "繰り返し設定:"
 
-#: datebook_gui.c:4459
+#: datebook_gui.c:4457
 msgid "Day of week"
 msgstr "曜日"
 
-#: datebook_gui.c:4468
+#: datebook_gui.c:4466
 msgid "Date"
 msgstr "日付"
 
-#: datebook_gui.c:4485
+#: datebook_gui.c:4483
 msgid "Year(s)"
 msgstr "年毎"
 
@@ -646,7 +646,7 @@ msgid "Use Ctrl and Shift Keys"
 msgstr "コントロールとシフトキーを使う"
 
 #: import_gui.c:279 import_gui.c:318 import_gui.c:431 import_gui.c:511
-#: jpilot.c:502
+#: jpilot.c:503
 msgid "Import"
 msgstr "インポート"
 
@@ -724,211 +724,215 @@ msgstr ""
 "で同期するかを指定します。もしPILOTPORT が設定されていなけ\n"
 "れば、既定値の /dev/pilot が使われます。\n"
 
-#: jpilot.c:378
+#: jpilot.c:379
 msgid "Help"
 msgstr "ヘルプ"
 
-#: jpilot.c:442 monthview_gui.c:492 print_gui.c:329 weekview_gui.c:318
+#: jpilot.c:443 monthview_gui.c:492 print_gui.c:329 weekview_gui.c:318
 msgid "Print"
 msgstr "印刷"
 
-#: jpilot.c:443
+#: jpilot.c:444
 msgid "There is no print support for this conduit."
 msgstr "このコンジットでは印刷はサポートされていません。"
 
-#: jpilot.c:503
+#: jpilot.c:504
 msgid "There is no import support for this conduit."
 msgstr "このコンジットではインポートはサポートされていません。"
 
-#: jpilot.c:547
+#: jpilot.c:548
 msgid "There is no export support for this conduit."
 msgstr "このコンジットではエキスポートはサポートされていません。"
 
-#: jpilot.c:758
+#: jpilot.c:759
 msgid "Cancel Sync"
 msgstr "同期のキャンセル"
 
-#: jpilot.c:759
+#: jpilot.c:760
 msgid "Sync Anyway"
 msgstr "何とかして同期する"
 
-#: jpilot.c:978
+#: jpilot.c:979
 #, c-format
 msgid "About %s"
 msgstr "About %s"
 
-#: jpilot.c:1081
+#: jpilot.c:1082
 #, fuzzy
 msgid "/_File"
 msgstr "/ファイル"
 
-#: jpilot.c:1082
+#: jpilot.c:1083
 msgid "/File/tear"
 msgstr "/ファイル/tear"
 
-#: jpilot.c:1083
+#: jpilot.c:1084
 msgid "/File/_Find"
 msgstr "/ファイル/検索"
 
-#: jpilot.c:1084 jpilot.c:1090 jpilot.c:1092
+#: jpilot.c:1085 jpilot.c:1091 jpilot.c:1093
 msgid "/File/sep1"
 msgstr "/ファイル/sep1"
 
-#: jpilot.c:1085
+#: jpilot.c:1086
 msgid "/File/_Install"
 msgstr "/ファイル/インストール"
 
-#: jpilot.c:1086
+#: jpilot.c:1087
 msgid "/File/Import"
 msgstr "/ファイル/インポート"
 
-#: jpilot.c:1087
+#: jpilot.c:1088
 msgid "/File/Export"
 msgstr "/ファイル/エキスポート"
 
-#: jpilot.c:1088
+#: jpilot.c:1089
 msgid "/File/Preferences"
 msgstr "/ファイル/プリファレンス"
 
-#: jpilot.c:1089
+#: jpilot.c:1090
 msgid "/File/_Print"
 msgstr "/ファイル/印刷"
 
-#: jpilot.c:1091
+#: jpilot.c:1092
 msgid "/File/Restore Handheld"
 msgstr "/ファイル/リストア"
 
-#: jpilot.c:1093
+#: jpilot.c:1094
 msgid "/File/Quit"
 msgstr "/ファイル/終了"
 
-#: jpilot.c:1094
+#: jpilot.c:1095
 msgid "/_View"
 msgstr "/表示"
 
-#: jpilot.c:1095
+#: jpilot.c:1096
 #, fuzzy
 msgid "/View/Hide-Show-Mask Private Records"
 msgstr "/表示/プライベートレコードの隠蔽・表示"
 
-#: jpilot.c:1096
+#: jpilot.c:1097
 msgid "/View/Datebook"
 msgstr "/表示/予定表"
 
-#: jpilot.c:1097
+#: jpilot.c:1098
 msgid "/View/Addresses"
 msgstr "/表示/アドレス帳"
 
-#: jpilot.c:1098
+#: jpilot.c:1099
 msgid "/View/Todos"
 msgstr "/表示/Todoリスト"
 
-#: jpilot.c:1099
+#: jpilot.c:1100
 msgid "/View/Memos"
 msgstr "/表示/メモ帳"
 
-#: jpilot.c:1100 jpilot.c:1233
+#: jpilot.c:1101 jpilot.c:1235
 #, fuzzy
 msgid "/_Plugins"
 msgstr "/プラグイン"
 
-#: jpilot.c:1102
+#: jpilot.c:1103
 msgid "/_Web"
 msgstr ""
 
-#: jpilot.c:1103
+#: jpilot.c:1104
 msgid "/Web/Netscape"
 msgstr ""
 
-#: jpilot.c:1107
+#: jpilot.c:1108
 msgid "/Web/Mozilla"
 msgstr ""
 
-#: jpilot.c:1112
+#: jpilot.c:1113
 msgid "/Web/Galeon"
 msgstr ""
 
-#: jpilot.c:1117
+#: jpilot.c:1118
 msgid "/Web/Opera"
 msgstr ""
 
-#: jpilot.c:1121
+#: jpilot.c:1122
 msgid "/Web/GnomeUrl"
 msgstr ""
 
-#: jpilot.c:1123
+#: jpilot.c:1124
 msgid "/Web/Lynx"
 msgstr ""
 
-#: jpilot.c:1125
+#: jpilot.c:1126
 msgid "/Web/Links"
 msgstr ""
 
-#: jpilot.c:1127
+#: jpilot.c:1128
 msgid "/Web/W3M"
 msgstr ""
 
-#: jpilot.c:1129
+#: jpilot.c:1130
 msgid "/Web/Konqueror"
 msgstr ""
 
-#: jpilot.c:1132
+#: jpilot.c:1133
 msgid "/_Help"
 msgstr "/ヘルプ"
 
-#: jpilot.c:1133
+#: jpilot.c:1134
+msgid "/Help/PayBack program"
+msgstr ""
+
+#: jpilot.c:1135
 msgid "/Help/J-Pilot"
 msgstr ""
 
-#: jpilot.c:1200
+#: jpilot.c:1202
 #, fuzzy, c-format
 msgid "/_Plugins/%s"
 msgstr "/プラグイン/%s"
 
-#: jpilot.c:1211 jpilot.c:1277
+#: jpilot.c:1213
 #, c-format
 msgid "/_Help/%s"
 msgstr "/ヘルプ/%s"
 
-#: jpilot.c:2011
+#: jpilot.c:2060
 msgid "Clear"
 msgstr "消去"
 
-#: jpilot.c:2080
+#: jpilot.c:2129
 msgid "Show private records"
 msgstr "/表示/プライベートレコードの表示"
 
-#: jpilot.c:2082
+#: jpilot.c:2131
 msgid "Hide private records"
 msgstr "/表示/プライベートレコードの隠蔽"
 
 # jpilot.c: old version
-#: jpilot.c:2084
+#: jpilot.c:2133
 msgid "Mask private records"
 msgstr "/表示/プライベートレコードのマスク"
 
-#: jpilot.c:2091
+#: jpilot.c:2140
 msgid "Quit!"
 msgstr "終了"
 
-#: jpilot.c:2097
+#: jpilot.c:2146
 msgid "Sync"
 msgstr "同期"
 
-#: jpilot.c:2104
+#: jpilot.c:2153
 msgid "Sync your palm to the desktop"
 msgstr "デスクトップにPalmを同期させる"
 
-#: jpilot.c:2109
+#: jpilot.c:2158
 #, fuzzy
 msgid "Font"
 msgstr "月"
 
-#: jpilot.c:2116
+#: jpilot.c:2165
 msgid "Backup"
 msgstr "バックアップ"
 
-#: jpilot.c:2124
+#: jpilot.c:2173
 msgid ""
 "Sync your palm to the desktop\n"
 "and then do a backup"
@@ -936,19 +940,19 @@ msgstr ""
 "デスクトップにPalmを同期させた後に\n"
 "バックアップする"
 
-#: jpilot.c:2222
+#: jpilot.c:2271
 msgid "Datebook/Go to Today"
 msgstr "予定表/今日を表示"
 
-#: jpilot.c:2224
+#: jpilot.c:2273
 msgid "Address Book"
 msgstr "アドレス帳"
 
-#: jpilot.c:2226
+#: jpilot.c:2275
 msgid "ToDo List"
 msgstr "Todoリスト"
 
-#: jpilot.c:2228
+#: jpilot.c:2277
 msgid "Memo Pad"
 msgstr "メモ帳"
 
@@ -1555,16 +1559,16 @@ msgstr "%s:%d アプリケーション情報 %s 取り出しエラー\n"
 msgid "Error reading appinfo block for %s\n"
 msgstr "%s のアプリケーション情報ブロック読み込みエラー\n"
 
-#: sync.c:2779 sync.c:2783
+#: sync.c:2778 sync.c:2782
 #, c-format
 msgid "Could not add category %s to remote.\n"
 msgstr "リモートのカテゴリ %s を追加できませんでした。\n"
 
-#: sync.c:2780 sync.c:2786
+#: sync.c:2779 sync.c:2785
 msgid "Too many categories on remote.\n"
 msgstr "リモートにはカテゴリが多すぎます。\n"
 
-#: sync.c:2781 sync.c:2789
+#: sync.c:2780 sync.c:2788
 #, c-format
 msgid "All records on desktop in %s will be moved to %s.\n"
 msgstr "%s のデスクトップの全てのレコードは、 %s へ移動します。\n"

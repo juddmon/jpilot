@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jpilot 0.99.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-02-22 14:22-0500\n"
+"POT-Creation-Date: 2004-02-29 02:00-0500\n"
 "PO-Revision-Date: 2003-03-19 12:10GMT\n"
 "Last-Translator: Eyüp Hakan Duran <hakan_duran@hotmail.com>\n"
 "Language-Team: Turkish <gnu-tr-u12a@lists.sourceforge.net>\n"
@@ -21,162 +21,162 @@ msgstr ""
 msgid "error"
 msgstr "hata"
 
-#: address.c:386 address_gui.c:1557 datebook.c:703 memo.c:220 memo_gui.c:909
+#: address.c:386 address_gui.c:1554 datebook.c:703 memo.c:220 memo_gui.c:909
 #: todo_gui.c:1246 Expense/expense.c:988 Expense/expense.c:1929
 #, c-format
 msgid "Error reading %s\n"
 msgstr "%s'i okuma sýrasýnda hata\n"
 
-#: address_gui.c:438 datebook_gui.c:351 memo_gui.c:267 todo_gui.c:399
+#: address_gui.c:436 datebook_gui.c:351 memo_gui.c:267 todo_gui.c:399
 #, c-format
 msgid "Could not open file %s\n"
 msgstr "Açýlamayan dosya %s\n"
 
-#: address_gui.c:517
+#: address_gui.c:515
 msgid "File doesn't appear to be address.dat format\n"
 msgstr "Dosya adres.dat biçeminde gözükmüyor\n"
 
-#: address_gui.c:527 datebook_gui.c:561 memo_gui.c:395 todo_gui.c:525
+#: address_gui.c:525 datebook_gui.c:561 memo_gui.c:395 todo_gui.c:525
 #: Expense/expense.c:512 Expense/expense.c:1268
 msgid "Unfiled"
 msgstr "Dosyalanmamýþ"
 
-#: address_gui.c:666 alarms.c:223 category.c:404 category.c:851 category.c:891
-#: datebook_gui.c:648 datebook_gui.c:1128 export_gui.c:336 jpilot.c:354
-#: jpilot.c:401 jpilot.c:469 jpilot.c:513 jpilot.c:969 memo_gui.c:485
+#: address_gui.c:664 alarms.c:223 category.c:404 category.c:851 category.c:891
+#: datebook_gui.c:648 datebook_gui.c:1128 export_gui.c:336 jpilot.c:355
+#: jpilot.c:402 jpilot.c:470 jpilot.c:514 jpilot.c:970 memo_gui.c:485
 #: password.c:364 restore_gui.c:292 todo_gui.c:615 utils.c:1073 utils.c:1225
 #: KeyRing/keyring.c:1270
 msgid "OK"
 msgstr "Tamam"
 
-#: address_gui.c:667 datebook_gui.c:649 memo_gui.c:486 todo_gui.c:616
+#: address_gui.c:665 datebook_gui.c:649 memo_gui.c:486 todo_gui.c:616
 #: utils.c:1243
 msgid "Yes"
 msgstr "Evet"
 
-#: address_gui.c:667 datebook_gui.c:649 memo_gui.c:486 todo_gui.c:616
+#: address_gui.c:665 datebook_gui.c:649 memo_gui.c:486 todo_gui.c:616
 #: utils.c:1243
 msgid "No"
 msgstr "Hayýr"
 
-#: address_gui.c:691 datebook_gui.c:676 memo_gui.c:496 todo_gui.c:642
+#: address_gui.c:689 datebook_gui.c:676 memo_gui.c:496 todo_gui.c:642
 #, c-format
 msgid "%s is a directory"
 msgstr "%s bir dizin..."
 
-#: address_gui.c:693 address_gui.c:710 datebook_gui.c:678 datebook_gui.c:695
+#: address_gui.c:691 address_gui.c:708 datebook_gui.c:678 datebook_gui.c:695
 #: memo_gui.c:498 memo_gui.c:515 todo_gui.c:644 todo_gui.c:661
 msgid "Error Opening File"
 msgstr "Dosya Açmada Hata"
 
-#: address_gui.c:697 datebook_gui.c:682 memo_gui.c:502 todo_gui.c:648
+#: address_gui.c:695 datebook_gui.c:682 memo_gui.c:502 todo_gui.c:648
 #, c-format
 msgid "Do you want to overwrite file %s?"
 msgstr "%s dosyasýnýn üstüne kaydetmek istiyor musunuz?"
 
-#: address_gui.c:699 datebook_gui.c:684 memo_gui.c:504 todo_gui.c:650
+#: address_gui.c:697 datebook_gui.c:684 memo_gui.c:504 todo_gui.c:650
 msgid "Overwrite File?"
 msgstr "Dosya Üstüne Yazýlsýn mý?"
 
-#: address_gui.c:700 datebook_gui.c:685 memo_gui.c:505 todo_gui.c:651
+#: address_gui.c:698 datebook_gui.c:685 memo_gui.c:505 todo_gui.c:651
 msgid "Overwrite File"
 msgstr "Üstüne yaz"
 
-#: address_gui.c:1136 address_gui.c:2435
+#: address_gui.c:1134 address_gui.c:2431
 msgid "Company/Name"
 msgstr "Þirket/Ýsim"
 
-#: address_gui.c:1138 address_gui.c:2437
+#: address_gui.c:1136 address_gui.c:2433
 msgid "Name/Company"
 msgstr "Ýsim/Þirket"
 
-#: address_gui.c:1638 Expense/expense.c:1445 Expense/expense.c:1524
+#: address_gui.c:1635 Expense/expense.c:1445 Expense/expense.c:1524
 #: KeyRing/keyring.c:1496 KeyRing/keyring.c:1572
 msgid "Category: "
 msgstr "Sýnýf "
 
-#: address_gui.c:1670 address_gui.c:2599
+#: address_gui.c:1667 address_gui.c:2595
 msgid "kana("
 msgstr "kana("
 
-#: address_gui.c:1858 memo_gui.c:1048 todo_gui.c:1478
+#: address_gui.c:1855 memo_gui.c:1048 todo_gui.c:1478
 msgid "0 records"
 msgstr "0 kayýt"
 
-#: address_gui.c:1956
+#: address_gui.c:1953
 msgid "-Unnamed-"
 msgstr "-Adsýz-"
 
-#: address_gui.c:2044 datebook_gui.c:2361 memo_gui.c:1157 todo_gui.c:1631
+#: address_gui.c:2041 datebook_gui.c:2361 memo_gui.c:1157 todo_gui.c:1631
 #, c-format
 msgid "%d of %d records"
 msgstr "%2$d kaydýn %1$d tanesi"
 
-#: address_gui.c:2415 category.c:434 category.c:448 category.c:455
+#: address_gui.c:2411 category.c:434 category.c:448 category.c:455
 #: category.c:473 category.c:480 category.c:498 category.c:578 category.c:773
 #: memo_gui.c:1369 todo_gui.c:1880 Expense/expense.c:1452
 msgid "Edit Categories"
 msgstr "Kategorileri Düzenle"
 
-#: address_gui.c:2442
+#: address_gui.c:2438
 msgid "Phone"
 msgstr "Telefon"
 
-#: address_gui.c:2464
+#: address_gui.c:2460
 msgid "Quick Find"
 msgstr "Çabuk Bul"
 
-#: address_gui.c:2481 category.c:405 category.c:824 datebook_gui.c:4086
+#: address_gui.c:2477 category.c:405 category.c:824 datebook_gui.c:4084
 #: memo_gui.c:1424 todo_gui.c:1992 Expense/expense.c:1486
 #: KeyRing/keyring.c:1531
 msgid "Delete"
 msgstr "Sil"
 
-#: address_gui.c:2488 datebook_gui.c:4093 memo_gui.c:1430 todo_gui.c:1998
+#: address_gui.c:2484 datebook_gui.c:4091 memo_gui.c:1430 todo_gui.c:1998
 #: Expense/expense.c:1492 KeyRing/keyring.c:1537
 msgid "Copy"
 msgstr "Kopyala"
 
-#: address_gui.c:2495 datebook_gui.c:4100 memo_gui.c:1436 todo_gui.c:2004
+#: address_gui.c:2491 datebook_gui.c:4098 memo_gui.c:1436 todo_gui.c:2004
 #: Expense/expense.c:1498 KeyRing/keyring.c:1543
 msgid "New Record"
 msgstr "Yeni Kayýt"
 
-#: address_gui.c:2501 datebook_gui.c:4107 memo_gui.c:1442 todo_gui.c:2010
+#: address_gui.c:2497 datebook_gui.c:4105 memo_gui.c:1442 todo_gui.c:2010
 #: Expense/expense.c:1504 KeyRing/keyring.c:1549
 msgid "Add Record"
 msgstr "Kayýt Ekle"
 
-#: address_gui.c:2510 datebook_gui.c:4116 memo_gui.c:1450 todo_gui.c:2018
+#: address_gui.c:2506 datebook_gui.c:4114 memo_gui.c:1450 todo_gui.c:2018
 #: Expense/expense.c:1512 KeyRing/keyring.c:1557
 msgid "Apply Changes"
 msgstr "Deðiþiklikleri Uygula"
 
-#: address_gui.c:2526 datebook_gui.c:4167 memo_gui.c:1467 todo_gui.c:2081
+#: address_gui.c:2522 datebook_gui.c:4165 memo_gui.c:1467 todo_gui.c:2081
 msgid "Private"
 msgstr "Özel"
 
-#: address_gui.c:2546 KeyRing/keyring.c:1423
+#: address_gui.c:2542 KeyRing/keyring.c:1423
 msgid "Name"
 msgstr "Ýsim"
 
-#: address_gui.c:2554
+#: address_gui.c:2550
 msgid "Address"
 msgstr "Adres"
 
-#: address_gui.c:2562 Expense/expense.c:464 Expense/expense.c:1289
+#: address_gui.c:2558 Expense/expense.c:464 Expense/expense.c:1289
 msgid "Other"
 msgstr "Diðer"
 
-#: address_gui.c:2570 datebook_gui.c:1309 datebook_gui.c:1566 utils.c:2471
+#: address_gui.c:2566 datebook_gui.c:1309 datebook_gui.c:1566 utils.c:2471
 msgid "All"
 msgstr "Tümü"
 
-#: address_gui.c:2700 dialer.c:305 dialer.c:330
+#: address_gui.c:2696 dialer.c:305 dialer.c:330
 msgid "Dial"
 msgstr "Çevir"
 
-#: address_gui.c:2750
+#: address_gui.c:2746
 msgid ""
 "Show\n"
 "In List"
@@ -184,7 +184,7 @@ msgstr ""
 "Listede\n"
 "Göster"
 
-#: address_gui.c:2758
+#: address_gui.c:2754
 msgid "Quick View"
 msgstr "Hýzlý Görünüm"
 
@@ -192,11 +192,11 @@ msgstr "Hýzlý Görünüm"
 msgid "Remind me"
 msgstr "Anýmsat"
 
-#: alarms.c:239 datebook_gui.c:4149
+#: alarms.c:239 datebook_gui.c:4147
 msgid "Minutes"
 msgstr "Dakika"
 
-#: alarms.c:241 datebook_gui.c:4153
+#: alarms.c:241 datebook_gui.c:4151
 msgid "Hours"
 msgstr "Saat"
 
@@ -212,7 +212,7 @@ msgstr "Geçmiþ Randevu"
 msgid "Postponed Appointment"
 msgstr "Ertelenmiþ Randevu"
 
-#: alarms.c:531 datebook_gui.c:3999
+#: alarms.c:531 datebook_gui.c:3997
 msgid "Appointment"
 msgstr "Randevu"
 
@@ -306,32 +306,32 @@ msgstr ""
 msgid "read of file terminated\n"
 msgstr ""
 
-#: datebook_gui.c:201 datebook_gui.c:208 datebook_gui.c:3837
-#: datebook_gui.c:3844
+#: datebook_gui.c:201 datebook_gui.c:208 datebook_gui.c:3835
+#: datebook_gui.c:3842
 msgid "Su"
 msgstr "P"
 
-#: datebook_gui.c:202 datebook_gui.c:3838
+#: datebook_gui.c:202 datebook_gui.c:3836
 msgid "Mo"
 msgstr "Pzt"
 
-#: datebook_gui.c:203 datebook_gui.c:3839
+#: datebook_gui.c:203 datebook_gui.c:3837
 msgid "Tu"
 msgstr "S"
 
-#: datebook_gui.c:204 datebook_gui.c:3840
+#: datebook_gui.c:204 datebook_gui.c:3838
 msgid "We"
 msgstr "Çar"
 
-#: datebook_gui.c:205 datebook_gui.c:3841
+#: datebook_gui.c:205 datebook_gui.c:3839
 msgid "Th"
 msgstr "."
 
-#: datebook_gui.c:206 datebook_gui.c:3842
+#: datebook_gui.c:206 datebook_gui.c:3840
 msgid "Fr"
 msgstr "C"
 
-#: datebook_gui.c:207 datebook_gui.c:3843
+#: datebook_gui.c:207 datebook_gui.c:3841
 msgid "Sa"
 msgstr "Cts"
 
@@ -349,7 +349,7 @@ msgstr "Hata"
 msgid "File doesn't appear to be datebook.dat format\n"
 msgstr "Dosya randevudefteri.dat biçeminde gözükmüyor\n"
 
-#: datebook_gui.c:1074 export_gui.c:255 jpilot.c:546
+#: datebook_gui.c:1074 export_gui.c:255 jpilot.c:547
 msgid "Export"
 msgstr "Ýhraç et"
 
@@ -370,7 +370,7 @@ msgstr "Gözat"
 msgid "Done"
 msgstr "Bitti"
 
-#: datebook_gui.c:1315 datebook_gui.c:4327
+#: datebook_gui.c:1315 datebook_gui.c:4325
 msgid "None"
 msgstr "Hiçbiri"
 
@@ -382,11 +382,11 @@ msgstr "Baþlangýç Tarihi"
 msgid "End On Date"
 msgstr "Bitiþ Tarihi"
 
-#: datebook_gui.c:1526 prefs.c:439
+#: datebook_gui.c:1526 prefs.c:440
 msgid "Sunday"
 msgstr "Pazar"
 
-#: datebook_gui.c:1527 prefs.c:440
+#: datebook_gui.c:1527 prefs.c:441
 msgid "Monday"
 msgstr "Pazartesi"
 
@@ -471,11 +471,11 @@ msgstr "Haftanýn herhangi bir gününde yinelenmeyen haftalýk randevunuz olamaz."
 msgid "No Time"
 msgstr "Zaman Yok"
 
-#: datebook_gui.c:2530
+#: datebook_gui.c:2528
 msgid "Invalid Appointment"
 msgstr "Geçersiz Randevu"
 
-#: datebook_gui.c:2531
+#: datebook_gui.c:2529
 msgid ""
 "The End Date of this appointment\n"
 "is before the start date."
@@ -483,127 +483,127 @@ msgstr ""
 "Bu randevunun Bitiþ Tarihi\n"
 "baþlangýç tarihinden önce."
 
-#: datebook_gui.c:2735 datebook_gui.c:4361 datebook_gui.c:4391
-#: datebook_gui.c:4447 datebook_gui.c:4496 todo_gui.c:123 todo_gui.c:2072
+#: datebook_gui.c:2733 datebook_gui.c:4359 datebook_gui.c:4389
+#: datebook_gui.c:4445 datebook_gui.c:4494 todo_gui.c:123 todo_gui.c:2072
 msgid "No Date"
 msgstr "Tarih Yok"
 
-#: datebook_gui.c:3918 datebook_gui.c:4329
+#: datebook_gui.c:3916 datebook_gui.c:4327
 msgid "Week"
 msgstr "Hafta"
 
-#: datebook_gui.c:3927
+#: datebook_gui.c:3925
 msgid "View appointments by week"
 msgstr ""
 
-#: datebook_gui.c:3930 datebook_gui.c:4330
+#: datebook_gui.c:3928 datebook_gui.c:4328
 msgid "Month"
 msgstr "Ay"
 
-#: datebook_gui.c:3939
+#: datebook_gui.c:3937
 msgid "View appointments by month"
 msgstr ""
 
-#: datebook_gui.c:3944
+#: datebook_gui.c:3942
 msgid "Cats"
 msgstr "Sýnýflar"
 
-#: datebook_gui.c:3998
+#: datebook_gui.c:3996
 msgid "Time"
 msgstr "Zaman"
 
-#: datebook_gui.c:4030
+#: datebook_gui.c:4028
 msgid "Show ToDos"
 msgstr ""
 
-#: datebook_gui.c:4045 todo_gui.c:1954
+#: datebook_gui.c:4043 todo_gui.c:1954
 msgid "Task"
 msgstr "Görev"
 
-#: datebook_gui.c:4046 todo_gui.c:1955
+#: datebook_gui.c:4044 todo_gui.c:1955
 msgid "Due"
 msgstr "Sonlanma"
 
-#: datebook_gui.c:4134
+#: datebook_gui.c:4132
 msgid "Alarm"
 msgstr "Alarm"
 
-#: datebook_gui.c:4155
+#: datebook_gui.c:4153
 msgid "Days"
 msgstr "Gün"
 
-#: datebook_gui.c:4178
+#: datebook_gui.c:4176
 msgid "This Event has no particular time"
 msgstr "Bu olayýn belirli bir zamaný yok"
 
-#: datebook_gui.c:4186
+#: datebook_gui.c:4184
 msgid "Starts on"
 msgstr "Baþlangýç: "
 
-#: datebook_gui.c:4200
+#: datebook_gui.c:4198
 msgid "Start Time"
 msgstr "Baþlama Zamaný"
 
-#: datebook_gui.c:4218
+#: datebook_gui.c:4216
 #, fuzzy
 msgid "End Time"
 msgstr "Zaman"
 
-#: datebook_gui.c:4311
+#: datebook_gui.c:4309
 msgid "DateBk Tags"
 msgstr "RandevuDf Etiketleri"
 
-#: datebook_gui.c:4328
+#: datebook_gui.c:4326
 msgid "Day"
 msgstr "Gün"
 
-#: datebook_gui.c:4331
+#: datebook_gui.c:4329
 msgid "Year"
 msgstr "Yýl"
 
-#: datebook_gui.c:4335
+#: datebook_gui.c:4333
 msgid "This event will not repeat"
 msgstr "Bu olay yinelenmeyecek"
 
-#: datebook_gui.c:4345 datebook_gui.c:4377 datebook_gui.c:4433
-#: datebook_gui.c:4480
+#: datebook_gui.c:4343 datebook_gui.c:4375 datebook_gui.c:4431
+#: datebook_gui.c:4478
 msgid "Frequency is Every"
 msgstr "Yineleme Her"
 
-#: datebook_gui.c:4350
+#: datebook_gui.c:4348
 msgid "Day(s)"
 msgstr "Gün"
 
-#: datebook_gui.c:4353 datebook_gui.c:4385 datebook_gui.c:4441
-#: datebook_gui.c:4488
+#: datebook_gui.c:4351 datebook_gui.c:4383 datebook_gui.c:4439
+#: datebook_gui.c:4486
 msgid "End on"
 msgstr "Bitiþ"
 
-#: datebook_gui.c:4382
+#: datebook_gui.c:4380
 msgid "Week(s)"
 msgstr "Hafta"
 
-#: datebook_gui.c:4398
+#: datebook_gui.c:4396
 msgid "Repeat on Days:"
 msgstr "Yineleme Günü"
 
-#: datebook_gui.c:4438
+#: datebook_gui.c:4436
 msgid "Month(s)"
 msgstr "Ay"
 
-#: datebook_gui.c:4455
+#: datebook_gui.c:4453
 msgid "Repeat by:"
 msgstr "Yinele:"
 
-#: datebook_gui.c:4459
+#: datebook_gui.c:4457
 msgid "Day of week"
 msgstr "Haftanýn günü"
 
-#: datebook_gui.c:4468
+#: datebook_gui.c:4466
 msgid "Date"
 msgstr "Tarih"
 
-#: datebook_gui.c:4485
+#: datebook_gui.c:4483
 msgid "Year(s)"
 msgstr "Yýl"
 
@@ -652,7 +652,7 @@ msgid "Use Ctrl and Shift Keys"
 msgstr "Ctrl ve Shift tuþlarýný kullanýnýz"
 
 #: import_gui.c:279 import_gui.c:318 import_gui.c:431 import_gui.c:511
-#: jpilot.c:502
+#: jpilot.c:503
 msgid "Import"
 msgstr "Ýthal et"
 
@@ -731,211 +731,215 @@ msgstr ""
 " belirlemek için kullanýlýr.\n"
 " Eðer PILOTPORT atanmamýþsa, /dev/pilot'a öntanýmlanýr.\n"
 
-#: jpilot.c:378
+#: jpilot.c:379
 msgid "Help"
 msgstr "Yardým"
 
-#: jpilot.c:442 monthview_gui.c:492 print_gui.c:329 weekview_gui.c:318
+#: jpilot.c:443 monthview_gui.c:492 print_gui.c:329 weekview_gui.c:318
 msgid "Print"
 msgstr "Yazdýr"
 
-#: jpilot.c:443
+#: jpilot.c:444
 msgid "There is no print support for this conduit."
 msgstr "Bu arabirim için yazdýrma desteði bulunmamakta..."
 
-#: jpilot.c:503
+#: jpilot.c:504
 msgid "There is no import support for this conduit."
 msgstr "Bu arabirim için ithal etme desteði bulunmamakta..."
 
-#: jpilot.c:547
+#: jpilot.c:548
 msgid "There is no export support for this conduit."
 msgstr "Bu arabirim için ihraç etme desteði bulunmamakta..."
 
-#: jpilot.c:758
+#: jpilot.c:759
 msgid "Cancel Sync"
 msgstr "Eþzamanlamayý iptal et"
 
-#: jpilot.c:759
+#: jpilot.c:760
 msgid "Sync Anyway"
 msgstr "Her halukarda eþzamanla"
 
-#: jpilot.c:978
+#: jpilot.c:979
 #, c-format
 msgid "About %s"
 msgstr "%s Hakkýnda"
 
-#: jpilot.c:1081
+#: jpilot.c:1082
 #, fuzzy
 msgid "/_File"
 msgstr "/Dosya"
 
-#: jpilot.c:1082
+#: jpilot.c:1083
 msgid "/File/tear"
 msgstr "/Dosya/yýrt"
 
-#: jpilot.c:1083
+#: jpilot.c:1084
 msgid "/File/_Find"
 msgstr "/Dosya/_Bul"
 
-#: jpilot.c:1084 jpilot.c:1090 jpilot.c:1092
+#: jpilot.c:1085 jpilot.c:1091 jpilot.c:1093
 msgid "/File/sep1"
 msgstr "/Dosya/ayraç1"
 
-#: jpilot.c:1085
+#: jpilot.c:1086
 msgid "/File/_Install"
 msgstr "/Dosya/_Yükle"
 
-#: jpilot.c:1086
+#: jpilot.c:1087
 msgid "/File/Import"
 msgstr "/Dosya/Ýthal et"
 
-#: jpilot.c:1087
+#: jpilot.c:1088
 msgid "/File/Export"
 msgstr "/Dosya/Ýhraç et"
 
-#: jpilot.c:1088
+#: jpilot.c:1089
 msgid "/File/Preferences"
 msgstr "/Dosya/Tercihler"
 
-#: jpilot.c:1089
+#: jpilot.c:1090
 msgid "/File/_Print"
 msgstr "/Dosya/_Yazdýr"
 
-#: jpilot.c:1091
+#: jpilot.c:1092
 msgid "/File/Restore Handheld"
 msgstr "/Dosya/Avuçiçini Geri Yükle"
 
-#: jpilot.c:1093
+#: jpilot.c:1094
 msgid "/File/Quit"
 msgstr "/Dosya/Çýk"
 
-#: jpilot.c:1094
+#: jpilot.c:1095
 msgid "/_View"
 msgstr "/_Görünüm"
 
-#: jpilot.c:1095
+#: jpilot.c:1096
 #, fuzzy
 msgid "/View/Hide-Show-Mask Private Records"
 msgstr "/Görünüm/Özel Kayýtlarý Gizle-Göster "
 
-#: jpilot.c:1096
+#: jpilot.c:1097
 msgid "/View/Datebook"
 msgstr "/Görünüm/Randevular"
 
-#: jpilot.c:1097
+#: jpilot.c:1098
 msgid "/View/Addresses"
 msgstr "/Görünüm/Adresler"
 
-#: jpilot.c:1098
+#: jpilot.c:1099
 msgid "/View/Todos"
 msgstr "/Görünüm/Ýþ listesi"
 
-#: jpilot.c:1099
+#: jpilot.c:1100
 msgid "/View/Memos"
 msgstr "/Görünüm/Notlar"
 
-#: jpilot.c:1100 jpilot.c:1233
+#: jpilot.c:1101 jpilot.c:1235
 #, fuzzy
 msgid "/_Plugins"
 msgstr "/Eklentiler"
 
-#: jpilot.c:1102
+#: jpilot.c:1103
 #, fuzzy
 msgid "/_Web"
 msgstr "/Web"
 
-#: jpilot.c:1103
+#: jpilot.c:1104
 msgid "/Web/Netscape"
 msgstr "/Web/Netscape"
 
-#: jpilot.c:1107
+#: jpilot.c:1108
 msgid "/Web/Mozilla"
 msgstr "/Web/Mozilla"
 
-#: jpilot.c:1112
+#: jpilot.c:1113
 msgid "/Web/Galeon"
 msgstr "/Web/Galeon"
 
-#: jpilot.c:1117
+#: jpilot.c:1118
 msgid "/Web/Opera"
 msgstr "/Web/Opera"
 
-#: jpilot.c:1121
+#: jpilot.c:1122
 msgid "/Web/GnomeUrl"
 msgstr "/Web/GnomeUrl"
 
-#: jpilot.c:1123
+#: jpilot.c:1124
 msgid "/Web/Lynx"
 msgstr "/Web/Lynx"
 
-#: jpilot.c:1125
+#: jpilot.c:1126
 msgid "/Web/Links"
 msgstr "/Web/Links"
 
-#: jpilot.c:1127
+#: jpilot.c:1128
 msgid "/Web/W3M"
 msgstr "/Web/W3M"
 
-#: jpilot.c:1129
+#: jpilot.c:1130
 msgid "/Web/Konqueror"
 msgstr "/Web/Konqueror"
 
-#: jpilot.c:1132
+#: jpilot.c:1133
 msgid "/_Help"
 msgstr "/_Yardým"
 
-#: jpilot.c:1133
+#: jpilot.c:1134
+msgid "/Help/PayBack program"
+msgstr ""
+
+#: jpilot.c:1135
 msgid "/Help/J-Pilot"
 msgstr ""
 
-#: jpilot.c:1200
+#: jpilot.c:1202
 #, fuzzy, c-format
 msgid "/_Plugins/%s"
 msgstr "/Eklentiler/%s"
 
-#: jpilot.c:1211 jpilot.c:1277
+#: jpilot.c:1213
 #, c-format
 msgid "/_Help/%s"
 msgstr "/_Yardým/%s"
 
-#: jpilot.c:2011
+#: jpilot.c:2060
 msgid "Clear"
 msgstr "Temizle"
 
-#: jpilot.c:2080
+#: jpilot.c:2129
 msgid "Show private records"
 msgstr "Özel kayýtlarý göster"
 
-#: jpilot.c:2082
+#: jpilot.c:2131
 msgid "Hide private records"
 msgstr "Özel kayýtlarý gizle"
 
-#: jpilot.c:2084
+#: jpilot.c:2133
 msgid "Mask private records"
 msgstr "Özel kayýtlarý maskele"
 
-#: jpilot.c:2091
+#: jpilot.c:2140
 msgid "Quit!"
 msgstr "Çýk!"
 
-#: jpilot.c:2097
+#: jpilot.c:2146
 msgid "Sync"
 msgstr "Eþzamanla"
 
-#: jpilot.c:2104
+#: jpilot.c:2153
 msgid "Sync your palm to the desktop"
 msgstr "Avuçiçini masaüstüyle eþzamanlayýn"
 
-#: jpilot.c:2109
+#: jpilot.c:2158
 #, fuzzy
 msgid "Font"
 msgstr "Ay"
 
-#: jpilot.c:2116
+#: jpilot.c:2165
 msgid "Backup"
 msgstr "Yedekle"
 
-#: jpilot.c:2124
+#: jpilot.c:2173
 msgid ""
 "Sync your palm to the desktop\n"
 "and then do a backup"
@@ -943,19 +947,19 @@ msgstr ""
 "Avuçiçini masaüstüyle eþzamanlayýn\n"
 "ve sonrasýnda yedekleyin"
 
-#: jpilot.c:2222
+#: jpilot.c:2271
 msgid "Datebook/Go to Today"
 msgstr "Randevular/Bugüne Git"
 
-#: jpilot.c:2224
+#: jpilot.c:2273
 msgid "Address Book"
 msgstr "Adres Defteri"
 
-#: jpilot.c:2226
+#: jpilot.c:2275
 msgid "ToDo List"
 msgstr "Ýþ Listesi"
 
-#: jpilot.c:2228
+#: jpilot.c:2277
 msgid "Memo Pad"
 msgstr "Not defteri"
 
@@ -1558,16 +1562,16 @@ msgstr "%s:%d uyg bilgisi paketini açmada hata %s\n"
 msgid "Error reading appinfo block for %s\n"
 msgstr "appinfo bloðu %s için okuma sýrasýnda hata\n"
 
-#: sync.c:2779 sync.c:2783
+#: sync.c:2778 sync.c:2782
 #, c-format
 msgid "Could not add category %s to remote.\n"
 msgstr "Uzak'a (remote) %s kategorisi eklenemedi.\n"
 
-#: sync.c:2780 sync.c:2786
+#: sync.c:2779 sync.c:2785
 msgid "Too many categories on remote.\n"
 msgstr "Uzak'ta (remote) çok sayýda kategori.\n"
 
-#: sync.c:2781 sync.c:2789
+#: sync.c:2780 sync.c:2788
 #, c-format
 msgid "All records on desktop in %s will be moved to %s.\n"
 msgstr "%1$s'in masa üstündeki tüm kayýtlar %2$s'e taþýnacak.\n"

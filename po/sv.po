@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jpilot 0.99.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-02-22 15:41-0500\n"
+"POT-Creation-Date: 2004-02-29 02:00-0500\n"
 "PO-Revision-Date: 2002-10-04 17:01+0100\n"
 "Last-Translator: Johan Hilding <cooljon@telia.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -41,8 +41,8 @@ msgid "Unfiled"
 msgstr "Oarkiverad"
 
 #: address_gui.c:664 alarms.c:223 category.c:404 category.c:851 category.c:891
-#: datebook_gui.c:648 datebook_gui.c:1128 export_gui.c:336 jpilot.c:354
-#: jpilot.c:401 jpilot.c:469 jpilot.c:513 jpilot.c:969 memo_gui.c:485
+#: datebook_gui.c:648 datebook_gui.c:1128 export_gui.c:336 jpilot.c:355
+#: jpilot.c:402 jpilot.c:470 jpilot.c:514 jpilot.c:970 memo_gui.c:485
 #: password.c:364 restore_gui.c:292 todo_gui.c:615 utils.c:1073 utils.c:1225
 #: KeyRing/keyring.c:1270
 msgid "OK"
@@ -350,7 +350,7 @@ msgstr "fel"
 msgid "File doesn't appear to be datebook.dat format\n"
 msgstr "Filen verkar inte vara i datebook.dat-format\n"
 
-#: datebook_gui.c:1074 export_gui.c:255 jpilot.c:546
+#: datebook_gui.c:1074 export_gui.c:255 jpilot.c:547
 msgid "Export"
 msgstr "Exportera"
 
@@ -383,11 +383,11 @@ msgstr "Startdatum"
 msgid "End On Date"
 msgstr "Slutdatum"
 
-#: datebook_gui.c:1526 prefs.c:439
+#: datebook_gui.c:1526 prefs.c:440
 msgid "Sunday"
 msgstr "Söndag"
 
-#: datebook_gui.c:1527 prefs.c:440
+#: datebook_gui.c:1527 prefs.c:441
 msgid "Monday"
 msgstr "Måndag"
 
@@ -660,7 +660,7 @@ msgid "Use Ctrl and Shift Keys"
 msgstr "Använd Ctrl- och Skift-knapparna"
 
 #: import_gui.c:279 import_gui.c:318 import_gui.c:431 import_gui.c:511
-#: jpilot.c:502
+#: jpilot.c:503
 msgid "Import"
 msgstr "Importera"
 
@@ -739,215 +739,219 @@ msgstr ""
 " port som synkronisering skall ske över och med vilken hastighet.\n"
 " Om PILOTPORT inte är satt så är standardvärdet /dev/pilot.\n"
 
-#: jpilot.c:378
+#: jpilot.c:379
 msgid "Help"
 msgstr "Hjälp"
 
-#: jpilot.c:442 monthview_gui.c:492 print_gui.c:329 weekview_gui.c:318
+#: jpilot.c:443 monthview_gui.c:492 print_gui.c:329 weekview_gui.c:318
 msgid "Print"
 msgstr "Skriv ut"
 
-#: jpilot.c:443
+#: jpilot.c:444
 msgid "There is no print support for this conduit."
 msgstr "Det finns inget utskriftsstöd för detta tillägg."
 
-#: jpilot.c:503
+#: jpilot.c:504
 msgid "There is no import support for this conduit."
 msgstr "Det finns inget importstöd för detta tillägg."
 
-#: jpilot.c:547
+#: jpilot.c:548
 msgid "There is no export support for this conduit."
 msgstr "Det finns inget exportstöd för detta tillägg."
 
-#: jpilot.c:758
+#: jpilot.c:759
 #, fuzzy
 msgid "Cancel Sync"
 msgstr "Avbryt"
 
-#: jpilot.c:759
+#: jpilot.c:760
 msgid "Sync Anyway"
 msgstr "Synka ändå"
 
-#: jpilot.c:978
+#: jpilot.c:979
 #, c-format
 msgid "About %s"
 msgstr "Om %s"
 
-#: jpilot.c:1081
+#: jpilot.c:1082
 #, fuzzy
 msgid "/_File"
 msgstr "/_Arkiv"
 
-#: jpilot.c:1082
+#: jpilot.c:1083
 msgid "/File/tear"
 msgstr "/Arkiv/Riv av"
 
-#: jpilot.c:1083
+#: jpilot.c:1084
 msgid "/File/_Find"
 msgstr "/Arkiv/_Sök"
 
-#: jpilot.c:1084 jpilot.c:1090 jpilot.c:1092
+#: jpilot.c:1085 jpilot.c:1091 jpilot.c:1093
 msgid "/File/sep1"
 msgstr "/Arkiv/sep1"
 
-#: jpilot.c:1085
+#: jpilot.c:1086
 msgid "/File/_Install"
 msgstr "/Arkiv/_Installera"
 
-#: jpilot.c:1086
+#: jpilot.c:1087
 msgid "/File/Import"
 msgstr "/Arkiv/Importera"
 
-#: jpilot.c:1087
+#: jpilot.c:1088
 msgid "/File/Export"
 msgstr "/Arkiv/Exportera"
 
-#: jpilot.c:1088
+#: jpilot.c:1089
 msgid "/File/Preferences"
 msgstr "/Arkiv/Inställningar"
 
-#: jpilot.c:1089
+#: jpilot.c:1090
 msgid "/File/_Print"
 msgstr "/Arkiv/Skriv ut"
 
-#: jpilot.c:1091
+#: jpilot.c:1092
 msgid "/File/Restore Handheld"
 msgstr "/Arkiv/Återställ handdatorn"
 
-#: jpilot.c:1093
+#: jpilot.c:1094
 msgid "/File/Quit"
 msgstr "/Arkiv/Avsluta"
 
-#: jpilot.c:1094
+#: jpilot.c:1095
 msgid "/_View"
 msgstr "/_Visa"
 
-#: jpilot.c:1095
+#: jpilot.c:1096
 #, fuzzy
 msgid "/View/Hide-Show-Mask Private Records"
 msgstr "/Visa/Dölj-Visa privata poster"
 
-#: jpilot.c:1096
+#: jpilot.c:1097
 msgid "/View/Datebook"
 msgstr "/Visa/Kalender"
 
-#: jpilot.c:1097
+#: jpilot.c:1098
 msgid "/View/Addresses"
 msgstr "/Visa/Adresser"
 
-#: jpilot.c:1098
+#: jpilot.c:1099
 msgid "/View/Todos"
 msgstr "/Visa/Att göra-lista"
 
-#: jpilot.c:1099
+#: jpilot.c:1100
 msgid "/View/Memos"
 msgstr "/Visa/Minnesanteckningar"
 
-#: jpilot.c:1100 jpilot.c:1233
+#: jpilot.c:1101 jpilot.c:1235
 #, fuzzy
 msgid "/_Plugins"
 msgstr "/Insticksmoduler"
 
-#: jpilot.c:1102
+#: jpilot.c:1103
 #, fuzzy
 msgid "/_Web"
 msgstr "On"
 
-#: jpilot.c:1103
+#: jpilot.c:1104
 msgid "/Web/Netscape"
 msgstr ""
 
-#: jpilot.c:1107
+#: jpilot.c:1108
 msgid "/Web/Mozilla"
 msgstr ""
 
-#: jpilot.c:1112
+#: jpilot.c:1113
 msgid "/Web/Galeon"
 msgstr ""
 
-#: jpilot.c:1117
+#: jpilot.c:1118
 msgid "/Web/Opera"
 msgstr ""
 
-#: jpilot.c:1121
+#: jpilot.c:1122
 msgid "/Web/GnomeUrl"
 msgstr ""
 
-#: jpilot.c:1123
+#: jpilot.c:1124
 msgid "/Web/Lynx"
 msgstr ""
 
-#: jpilot.c:1125
+#: jpilot.c:1126
 msgid "/Web/Links"
 msgstr ""
 
-#: jpilot.c:1127
+#: jpilot.c:1128
 msgid "/Web/W3M"
 msgstr ""
 
-#: jpilot.c:1129
+#: jpilot.c:1130
 msgid "/Web/Konqueror"
 msgstr ""
 
-#: jpilot.c:1132
+#: jpilot.c:1133
 msgid "/_Help"
 msgstr "/_Hjälp"
 
-#: jpilot.c:1133
+#: jpilot.c:1134
+msgid "/Help/PayBack program"
+msgstr ""
+
+#: jpilot.c:1135
 msgid "/Help/J-Pilot"
 msgstr ""
 
-#: jpilot.c:1200
+#: jpilot.c:1202
 #, fuzzy, c-format
 msgid "/_Plugins/%s"
 msgstr "/Insticksmoduler/%s"
 
-#: jpilot.c:1211 jpilot.c:1277
+#: jpilot.c:1213
 #, c-format
 msgid "/_Help/%s"
 msgstr "/_Hjälp/%s"
 
-#: jpilot.c:2010
+#: jpilot.c:2060
 msgid "Clear"
 msgstr "Töm"
 
-#: jpilot.c:2079
+#: jpilot.c:2129
 #, fuzzy
 msgid "Show private records"
 msgstr "/Visa/Dölj-Visa privata poster"
 
-#: jpilot.c:2081
+#: jpilot.c:2131
 #, fuzzy
 msgid "Hide private records"
 msgstr "/Visa/Dölj-Visa privata poster"
 
-#: jpilot.c:2083
+#: jpilot.c:2133
 #, fuzzy
 msgid "Mask private records"
 msgstr "Skriv ut alla poster"
 
-#: jpilot.c:2090
+#: jpilot.c:2140
 msgid "Quit!"
 msgstr "Avsluta!"
 
-#: jpilot.c:2096
+#: jpilot.c:2146
 msgid "Sync"
 msgstr "Synka"
 
-#: jpilot.c:2103
+#: jpilot.c:2153
 msgid "Sync your palm to the desktop"
 msgstr "Synkronisera din palm med datorn"
 
-#: jpilot.c:2108
+#: jpilot.c:2158
 #, fuzzy
 msgid "Font"
 msgstr "Månad"
 
-#: jpilot.c:2115
+#: jpilot.c:2165
 msgid "Backup"
 msgstr "Säkerhetskopiera"
 
-#: jpilot.c:2123
+#: jpilot.c:2173
 msgid ""
 "Sync your palm to the desktop\n"
 "and then do a backup"
@@ -955,19 +959,19 @@ msgstr ""
 "Synkronisera din palm med datorn\n"
 "och gör sedan en säkerhetskopia"
 
-#: jpilot.c:2221
+#: jpilot.c:2271
 msgid "Datebook/Go to Today"
 msgstr "Kalender/Gå till idag"
 
-#: jpilot.c:2223
+#: jpilot.c:2273
 msgid "Address Book"
 msgstr "Adressbok"
 
-#: jpilot.c:2225
+#: jpilot.c:2275
 msgid "ToDo List"
 msgstr "Att göra-lista"
 
-#: jpilot.c:2227
+#: jpilot.c:2277
 msgid "Memo Pad"
 msgstr "Anteckningsblock"
 
