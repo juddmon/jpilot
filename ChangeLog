@@ -1,3 +1,13 @@
+0.99.8-pre4 - 24/11/04 (Ludovic Rousseau)
+ Some more bugs fixed
+ Improved search sorting
+ Improved convertion to UTF-8 in case of errors
+ Use GBK instead of GB2312 charset encoding for Chinese
+ Use a radio item menu for Hide/Show/Mask records so that the state is
+  clearly indicated
+ Fix sort order for appts in datebook
+ Complete Japanese translation
+
 0.99.8-pre3 - 14/11/04 (Ludovic Rousseau)
  Some more bugs fixed
  The right-hand side of jpilot were not updated on a cursor movement.
