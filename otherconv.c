@@ -85,8 +85,8 @@ char *char_set_to_text(int char_set)
 	 sprintf(text_char_set, "CP1251");
 	 break;
 
-      case CHAR_SET_GB2312_UTF:
-	 sprintf(text_char_set, "GB2312");
+      case CHAR_SET_GBK_UTF:
+	 sprintf(text_char_set, "GBK");
 	 break;
 
       case CHAR_SET_SJIS_UTF:
