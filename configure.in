@@ -10,6 +10,8 @@ AM_INIT_AUTOMAKE(jpilot, 0.99.4)
 dnl create a config.h file (Automake will add -DHAVE_CONFIG_H)
 AM_CONFIG_HEADER(config.h)
 
+AM_MAINTAINER_MODE
+
 AC_SUBST(VERSION)
 
 AC_PROG_CC
@@ -63,9 +65,7 @@ AC_PROG_INTLTOOL
 dnl Set of available languages
 ALL_LINGUAS="ca cs da de es fr it ja nl no ru sv tr zh_CN zh_TW"
 
-dnl ud_GNU_GETTEXT
-dnl AM_WITH_NLS
-AM_GNU_GETTEXT()
+AM_GNU_GETTEXT
 
 if test "x$MSGFMT" = "xno"; then
    if test "x$GMSGFMT" = "xno"; then
@@ -468,10 +468,8 @@ AM_CONDITIONAL(MAKE_KEYRING, test x$keyring_plugin = xyes)
 AM_CONDITIONAL(MAKE_EXPENSE, test x$plugin_support = xyes)
 AM_CONDITIONAL(MAKE_SYNCTIME, test x$plugin_support = xyes)
 
-AC_OUTPUT(Makefile docs/Makefile Expense/Makefile KeyRing/Makefile
-	intl/Makefile dialer/Makefile po/Makefile.in
-	SyncTime/Makefile jpilot.spec
-	SlackBuild)
+AC_OUTPUT(Makefile docs/Makefile Expense/Makefile KeyRing/Makefile intl/Makefile dialer/Makefile po/Makefile.in SyncTime/Makefile jpilot.spec SlackBuild)
+
 #
 # Configuration messages
 #

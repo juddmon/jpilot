@@ -44,8 +44,6 @@
 
 * Chuck Mead for donating and hosting the jpilot.org domain at moongroup.com
 
-* Chuck Mead for donating and hosting the jpilot.org domain at moongroup.com
-
 * "David A. Desrosiers" <hacker@gnu-designs.com> for hosting the jpilot.org
   domain at gnu-designs.com
 
@@ -54,6 +52,9 @@
 * Ludovic Rousseau <ludovic.rousseau@free.fr> for printing and misc patches
 
 * Bill Fenner <fenner@research.att.com> vCard and iCalendar export code
+
+* Wojciech Ziembla <wziembla@iName.com>, Poland
+  Palm : CP 1250, Unix : UTF-8 conversion
 
 * Translation last done by (sorry if I left someone out):
   ca.po:"Last-Translator: Leopold Palomo <lepalom@wol.es>"

@@ -1,10 +1,12 @@
-# $Id: autogen.sh,v 1.5 2002/12/25 06:47:55 judd Exp $
+# $Id: autogen.sh,v 1.6 2003/02/11 07:29:50 judd Exp $
+
+set -x
 
 rm -f configure Makefile.in Makefile config.h.in
-aclocal
+aclocal -I m4
 
 echo "Running intltoolize"
-gettextize --force
+#gettextize --force --intl
 intltoolize --force --copy --automake
 
 autoheader
