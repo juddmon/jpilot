@@ -23,6 +23,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <utime.h>
 #include <unistd.h>
 #include <pi-file.h>
 #include "utils.h"
@@ -123,6 +125,8 @@ int pdb_file_change_indexes(char *DB_name, int old_index, int new_index)
    int cat, new_cat;
    int count;
    pi_uid_t uid;
+   struct stat statb;
+   struct utimbuf times;
 
    jp_logf(JP_LOG_DEBUG, "pi_file_change_indexes\n");
 
@@ -130,6 +134,12 @@ int pdb_file_change_indexes(char *DB_name, int old_index, int new_index)
    get_home_file_name(local_pdb_file, full_local_pdb_file, 250);
    strcpy(full_local_pdb_file2, full_local_pdb_file);
    strcat(full_local_pdb_file2, "2");
+
+   /* After we are finished, set the create and modify times of new file
+      to the same as the old */
+   stat(full_local_pdb_file, &statb);
+   times.actime = statb.st_atime;
+   times.modtime = statb.st_mtime;
 
    pf1 = pi_file_open(full_local_pdb_file);
    if (!pf1) {
@@ -168,6 +178,8 @@ int pdb_file_change_indexes(char *DB_name, int old_index, int new_index)
    if (rename(full_local_pdb_file2, full_local_pdb_file) < 0) {
       jp_logf(JP_LOG_WARN, "change_indexes: rename failed\n");
    }
+
+   utime(full_local_pdb_file, &times);
 
    return 0;
 }
@@ -446,6 +458,13 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 	    dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)), 0, 0,
 			   _("Edit Categories"), NULL,
 			   _("You must select a category to delete"), 1, button_text);
+	    return;
+	 }
+	 if (Pdata->selected==0) {
+	    sprintf(temp, _("You can't delete category %s.\n"), Pdata->cai1.name[0]);
+	    dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)), 0, 0,
+			   _("Edit Categories"), NULL,
+			   temp, 1, button_text);
 	    return;
 	 }
 	 /* See if category is not-empty */
