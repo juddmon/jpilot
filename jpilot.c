@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.96 2004/11/27 13:25:24 rousseau Exp $ */
+/* $Id: jpilot.c,v 1.97 2004/11/27 13:27:42 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -98,6 +98,7 @@ GtkWidget *glob_date_label;
 GtkTooltips *glob_tooltips;
 gint glob_date_timer_tag;
 pid_t glob_child_pid;
+pid_t jpilot_master_pid;
 #ifdef ENABLE_GTK2
 GtkTextView *g_output_text;
 static GtkTextBuffer *g_output_text_buffer;
@@ -1975,6 +1976,8 @@ char *xpm_unlocked[] = {
       break;
       /* do nothing */
    }
+
+   jpilot_master_pid = getpid();
 
    gtk_init(&argc, &argv);
 
