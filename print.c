@@ -199,7 +199,7 @@ int print_dayview(struct tm *date, AppointmentList *a_list)
    time(&ltime);
    now = localtime(&ltime);
    get_pref(PREF_SHORTDATE, &ivalue, &svalue);
-   g_snprintf(datef, sizeof(date), "%s %s", "Printed on: ", svalue);
+   g_snprintf(datef, sizeof(datef), "%s %s", "Printed on: ", svalue);
    strftime(str, sizeof(str), datef, now);
    puttext(0.5, 0.9, str);
    puttext(7.5, 0.9, "J-Pilot");
