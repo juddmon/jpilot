@@ -1,17 +1,6 @@
-# $Id: autogen.sh,v 1.9 2004/09/29 18:31:08 rousseau Exp $
+# $Id: autogen.sh,v 1.10 2004/10/02 07:45:52 rousseau Exp $
 
 set -x
-
-if test -f Makefile
-then
-	make distclean
-fi
-rm -rf *.cache *.m4 config.guess config.log \
-config.status config.sub depcomp ltmain.sh
-(cat m4/*.m4 > acinclude.m4 2> /dev/null)
-autoreconf --verbose --install
-
-exit
 
 #Use these when updating libtool
 #libtoolize --force --copy
