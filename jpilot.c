@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.104 2004/12/10 05:06:43 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.105 2004/12/10 06:26:56 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -1064,10 +1064,10 @@ void get_main_menu(GtkWidget  *window,
 {
 #ifdef ENABLE_GTK2
 #define ICON(icon) "<StockItem>", icon
-#define ICOM_XPM(icon, size) "<ImageItem>", get_inline_pixbuf_data(icon, size)
+#define ICON_XPM(icon, size) "<ImageItem>", get_inline_pixbuf_data(icon, size)
 #else
 #define ICON(icon) NULL
-#define ICOM_XPM(icon, size) NULL
+#define ICON_XPM(icon, size) NULL
 #endif
 
 #ifdef ENABLE_GTK2
@@ -1327,9 +1327,9 @@ guint8 *get_inline_pixbuf_data(const char **xpm_icon_data, gint icon_size)
   { _("/View/Show Private Records"),       NULL,         cb_private,     SHOW_PRIVATES,      _("/View/Hide Private Records") },
   { _("/View/Mask Private Records"),       NULL,         cb_private,     MASK_PRIVATES,      _("/View/Hide Private Records") },
   { _("/View/sep1"),                       NULL,         NULL,           0,                  "<Separator>" },
-  { _("/View/Datebook"),                   "F1",         cb_app_button,  DATEBOOK,           ICOM_XPM(date_menu_icon, 16) },
-  { _("/View/Addresses"),                  "F2",         cb_app_button,  ADDRESS,            ICOM_XPM(addr_menu_icon, 16) },
-  { _("/View/Todos"),                      "F3",         cb_app_button,  TODO,               ICOM_XPM(todo_menu_icon, 14) },
+  { _("/View/Datebook"),                   "F1",         cb_app_button,  DATEBOOK,           ICON_XPM(date_menu_icon, 16) },
+  { _("/View/Addresses"),                  "F2",         cb_app_button,  ADDRESS,            ICON_XPM(addr_menu_icon, 16) },
+  { _("/View/Todos"),                      "F3",         cb_app_button,  TODO,               ICON_XPM(todo_menu_icon, 14) },
   { _("/View/Memos"),                      "F4",         cb_app_button,  MEMO,               ICON(GTK_STOCK_JUSTIFY_LEFT) },
   { _("/_Plugins"),                        NULL,         NULL,           0,                  "<Branch>" },
 #ifdef WEBMENU
