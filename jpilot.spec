@@ -4,7 +4,7 @@ Summary:   palm pilot desktop for Linux
 Name:      jpilot
 Version:   %{version}
 Release:   1
-Copyright: GPL
+License:   GPL
 Group:     Applications/Productivity
 Source:    http://jpilot.org/jpilot-%{version}.tar.gz
 URL:       http://jpilot.org
@@ -24,7 +24,11 @@ not found in the 3Com desktop.
 %setup -q
 
 %build
-%configure --prefix=%{prefix} --mandir=%{_mandir}
+if [ ! -f ./configure ]; then
+  ./autogen.sh --prefix=%{prefix} --mandir=%{_mandir}
+else
+  %configure --prefix=%{prefix} --mandir=%{_mandir}
+fi
 #gzip -9f docs/*.1
 make
 
@@ -34,14 +38,7 @@ install -d $RPM_BUILD_ROOT%{_mandir}/man1
 install docs/jpilot*.1 $RPM_BUILD_ROOT%{_mandir}/man1
 strip jpilot
 install -d $RPM_BUILD_ROOT%{_bindir}
-make \
- AM_MAKEFLAGS="libdir="$RPM_BUILD_ROOT%{prefix}/lib/jpilot/plugins\
- prefix=$RPM_BUILD_ROOT%{prefix}\
- bindir=$RPM_BUILD_ROOT%{prefix}/bin\
- exec_prefix=$RPM_BUILD_ROOT%{prefix}/bin\
- localedir=$RPM_BUILD_ROOT%{prefix}/share/locale\
- mandir=$RPM_BUILD_ROOT%{_mandir}\
- install
+make DESTDIR=$RPM_BUILD_ROOT install 
 
 mkdir -p $RPM_BUILD_ROOT%{prefix}/share/pixmaps
 install -m644 icons/*.xpm $RPM_BUILD_ROOT%{prefix}/share/pixmaps
@@ -101,6 +98,11 @@ rm -rf $RPM_BUILD_ROOT
 %{prefix}/share/pixmaps/*
 
 %changelog
+* Sat Feb 22 2003 Vladimir Bormotov <bor@insight.donbass.com>
+- call autogen.sh if no configure found
+- installation improvements
+- Oct 8, 2002 <judd@jpilot.org>
+  updated for automake build
 * Tue Jun  5 2001 Christian W. Zuckschwerdt <zany@triq.net>
 - moved jpilot.spec to jpilot.spec.in and autoconf'ed it.
 - fixed this spec file so we don't need superuser privileges.
@@ -114,4 +116,3 @@ rm -rf $RPM_BUILD_ROOT
 - Added the %post section
 - Added the %clean section
 - Changed the description
-- Oct 8, 2002 <judd@jpilot.org> updated for automake build
