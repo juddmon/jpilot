@@ -172,7 +172,7 @@ int print_dayview(struct tm *date, AppointmentList *a_list)
    long ivalue;
 
 #ifdef HAVE_LOCALE_H
-   setlocale(LC_ALL,"C");
+   setlocale(LC_NUMERIC,"C");
 #endif
 
    header();
@@ -444,6 +444,9 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
    get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
 #endif
 
+#ifdef HAVE_LOCALE_H
+   setlocale(LC_NUMERIC, "C");
+#endif
    if (! (out = print_open())) return(-1);
    fprintf(out, "%%!PS-Adobe-2.0\n\n"
 	   "/PageSize (%s) def\n\n", PaperSizes[paper_size]);
@@ -555,7 +558,10 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
 
    print_close(out);
 
-   return(0);
+#ifdef HAVE_LOCALE_H
+   setlocale(LC_ALL, "");
+#endif
+     return(0);
 }
 
 /*----------------------------------------------------------------------
@@ -626,7 +632,10 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
 #ifdef ENABLE_DATEBK
    get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
 #endif
-
+#ifdef HAVE_LOCALE_H
+   setlocale(LC_NUMERIC, "C");
+#endif
+     
    if (! (out = print_open())) return(-1);
    /*------------------------------------------------------------------
     * These are preferences for page size (passed in), first and last
@@ -733,7 +742,10 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
    fprintf(out, "\nfinishprinting\n");
    print_close(out);
 
-   return(0);
+#ifdef HAVE_LOCALE_H
+   setlocale(LC_ALL, "");
+#endif
+     return(0);
 }
 
 /*----------------------------------------------------------------------
@@ -980,7 +992,7 @@ int print_addresses(AddressList *address_list)
    }
 
 #ifdef HAVE_LOCALE_H
-   setlocale(LC_ALL,"C");
+   setlocale(LC_NUMERIC,"C");
 #endif
 
    get_address_app_info(&address_app_info);
@@ -1086,7 +1098,7 @@ int print_todos(ToDoList *todo_list, char *category_name)
    }
 
 #ifdef HAVE_LOCALE_H
-   setlocale(LC_ALL,"C");
+   setlocale(LC_NUMERIC,"C");
 #endif
 
    fprintf(out, "%%!PS-Adobe-2.0\n\n"
@@ -1164,7 +1176,7 @@ int print_memos(MemoList *memo_list)
    }
 
 #ifdef HAVE_LOCALE_H
-   setlocale(LC_ALL,"C");
+   setlocale(LC_NUMERIC,"C");
 #endif
 
    print_address_header();
