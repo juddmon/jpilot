@@ -1228,7 +1228,7 @@ int fetch_extra_DBs(int sd, char *palm_dbname[])
 	 continue;
       }
       if (pi_file_retrieve(pi_fp, sd, 0)<0) {
-	 jp_logf(JP_LOG_WARN, _("Failed, unable to back up database\n"));
+	 jp_logf(JP_LOG_WARN, _("Failed, unable to back up database %s\n"), info.name);
 	 times.actime = 0;
 	 times.modtime = 0;
       } else {
@@ -1384,6 +1384,15 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
    skip_db_t skip_db[] = {
 	{ 0, dlpDBFlagResource, "AvGo", NULL },
 	{ 0, dlpDBFlagResource, "psys", "Unsaved Preferences" },
+	{ 0, 0, "a68k", NULL},
+	{ 0, 0, "appl", NULL},
+	{ 0, 0, "boot", NULL},
+	{ 0, 0, "Fntl", NULL},
+	{ 0, 0, "modm", NULL},
+	{ 0, 0, "PMHa", NULL},
+	{ 0, 0, "PMNe", NULL},
+	{ 0, 0, "ppp_", NULL},
+	{ 0, 0, "u8EZ", NULL},
 	{ 0, 0, NULL, NULL} 
    };
 
@@ -1569,7 +1578,7 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
 	 continue;
       }
       if (pi_file_retrieve(pi_fp, sd, 0)<0) {
-	 jp_logf(JP_LOG_WARN, "Failed, unable to back up database\n");
+	 jp_logf(JP_LOG_WARN, "Failed, unable to back up database %s\n", info.name);
 	 times.actime = 0;
 	 times.modtime = 0;
       } else {
