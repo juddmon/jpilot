@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: jpilot 0.99.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2004-02-22 14:22-0500\n"
-"PO-Revision-Date: 2003-07-08 13:48+0200\n"
+"PO-Revision-Date: 2004-02-25 21:46+0100\n"
 "Last-Translator: Regis Rampnoux <regisr@regix.com>\n"
 "Language-Team:  French <traduc@traduc.org>\n"
 "MIME-Version: 1.0\n"
@@ -298,7 +298,7 @@ msgstr "debug"
 #: dat.c:671 dat.c:689 dat.c:871 dat.c:884 dat.c:988 dat.c:1007 dat.c:1020
 #: dat.c:1144 dat.c:1157
 msgid "read of file terminated\n"
-msgstr ""
+msgstr "lecture du fichier terminé\n"
 
 #: datebook_gui.c:201 datebook_gui.c:208 datebook_gui.c:3837
 #: datebook_gui.c:3844
@@ -422,7 +422,7 @@ msgid ""
 msgstr ""
 "C'est un évènement répété.\n"
 "Voulez vous modifier uniquement\n"
-"l'événement COURANT ou toutes\n"
+"l'événement COURANT ou TOUTES\n"
 "les apparitions de cet\n"
 "évènement?"
 
@@ -482,7 +482,7 @@ msgstr ""
 #: datebook_gui.c:2735 datebook_gui.c:4361 datebook_gui.c:4391
 #: datebook_gui.c:4447 datebook_gui.c:4496 todo_gui.c:123 todo_gui.c:2072
 msgid "No Date"
-msgstr "Pas de jour"
+msgstr "Pas de date"
 
 #: datebook_gui.c:3918 datebook_gui.c:4329
 msgid "Week"
@@ -490,7 +490,7 @@ msgstr "Semaine"
 
 #: datebook_gui.c:3927
 msgid "View appointments by week"
-msgstr ""
+msgstr "Voir les rendez-vous par semaine"
 
 #: datebook_gui.c:3930 datebook_gui.c:4330
 msgid "Month"
@@ -498,7 +498,7 @@ msgstr "Mois"
 
 #: datebook_gui.c:3939
 msgid "View appointments by month"
-msgstr ""
+msgstr "Voir les rendez-vous par mois"
 
 #: datebook_gui.c:3944
 msgid "Cats"
@@ -700,7 +700,6 @@ msgid "\n"
 msgstr "\n"
 
 #: jpilot.c:87
-#, fuzzy
 msgid ""
 " [-v] || [-h] || [-d] || [-a] || [-A] || [-i]\n"
 " -v displays version and compile options and exits.\n"
@@ -876,9 +875,8 @@ msgid "/_Help"
 msgstr "/_Aide"
 
 #: jpilot.c:1133
-#, fuzzy
 msgid "/Help/J-Pilot"
-msgstr "/Aide/xxPilot"
+msgstr "/Aide/J-Pilot"
 
 #: jpilot.c:1200
 #, c-format
@@ -1038,7 +1036,7 @@ msgstr "port série (/dev/ttyS0 /dev/pilot /dev/cuaa0)"
 
 #: prefs_gui.c:473
 msgid "Serial Rate (Does not affect USB)"
-msgstr ""
+msgstr "Vitesse port série (sans effet pour USB)"
 
 #: prefs_gui.c:486
 msgid "Number of backups to be archived"
@@ -1102,7 +1100,7 @@ msgstr "Exécuter la commande"
 
 #: prefs_gui.c:694
 msgid "WARNING: executing arbitrary shell commands can be dangerous!!!"
-msgstr "Attention: exécuter des commandes shell peut être dangereux!!!"
+msgstr "ATTENTION: exécuter des commandes shell peut être dangereux!!!"
 
 #: prefs_gui.c:702
 msgid "Alarm Command"
@@ -1188,7 +1186,8 @@ msgstr "Restaurer le PDA"
 #: restore_gui.c:237
 msgid ""
 "1. Choose all the applications you wish to restore.  The default is all."
-msgstr "1. Choisir toutes les applications à restaurer (toutes par défaut)."
+msgstr ""
+"1. Choisir toutes les applications à restaurer (toutes par défaut)."
 
 #: restore_gui.c:240
 msgid "2. Enter the User Name and User ID."
@@ -1430,9 +1429,9 @@ msgid "Failed, unable to create file %s\n"
 msgstr "Echoué, ne peut créer le fichier %s\n"
 
 #: sync.c:1231
-#, fuzzy, c-format
+#, c-format
 msgid "Failed, unable to back up database %s\n"
-msgstr "Echoué, ne peut sauvegarder la base de données\n"
+msgstr "Echoué, ne peut sauvegarder la base de données %s\n"
 
 #: sync.c:1235 sync.c:1585 sync.c:1740
 msgid "OK\n"
@@ -1757,7 +1756,7 @@ msgstr "Danemark"
 
 #: Expense/expense.c:80
 msgid "EU (Euro)"
-msgstr ""
+msgstr "EU (Euro)"
 
 #: Expense/expense.c:81
 msgid "Finland"
@@ -1781,7 +1780,7 @@ msgstr "Islande"
 
 #: Expense/expense.c:86
 msgid "India"
-msgstr ""
+msgstr "Inde"
 
 #: Expense/expense.c:87
 msgid "Indonesia"
@@ -1801,7 +1800,7 @@ msgstr "Japon"
 
 #: Expense/expense.c:91
 msgid "Korea"
-msgstr ""
+msgstr "Corée"
 
 #: Expense/expense.c:92
 msgid "Luxembourg"
@@ -1809,7 +1808,7 @@ msgstr "Luxembourg"
 
 #: Expense/expense.c:93
 msgid "Malaysia"
-msgstr ""
+msgstr "Malaysie"
 
 #: Expense/expense.c:94
 msgid "Mexico"
@@ -1829,15 +1828,15 @@ msgstr "Norvège"
 
 #: Expense/expense.c:98
 msgid "P.R.C."
-msgstr ""
+msgstr "Chine"
 
 #: Expense/expense.c:99
 msgid "Philippines"
-msgstr ""
+msgstr "Philippines"
 
 #: Expense/expense.c:100
 msgid "Singapore"
-msgstr ""
+msgstr "Singapour"
 
 #: Expense/expense.c:101
 msgid "Spain"
@@ -1861,11 +1860,11 @@ msgstr "Thailand"
 
 #: Expense/expense.c:106
 msgid "United Kingdom"
-msgstr ""
+msgstr "Royaume Uni"
 
 #: Expense/expense.c:107
 msgid "United States"
-msgstr ""
+msgstr "USA"
 
 #: Expense/expense.c:398
 msgid "Expense"
