@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.3 2002/10/25 01:04:35 judd Exp $
+# $Id: Makefile.am,v 1.4 2002/11/14 02:31:59 judd Exp $
 
 SUBDIRS = po Expense SyncTime KeyRing docs intl m4
 
@@ -20,13 +20,14 @@ EXTRA_DIST = reconf autogen.sh ChangeLog docs empty icons \
 	m4/lcmessage.m4 \
 	m4/progtest.m4
 
-bin_PROGRAMS = jpilot jpilot-dump jpilot-sync jpilot-upgrade-99
+bin_PROGRAMS = jpilot jpilot-dump jpilot-sync
 jpilot_SOURCES = \
 	address.c \
 	address.h \
 	address_gui.c \
 	alarms.c \
 	alarms.h \
+	category.c \
 	cp1250.c \
 	cp1250.h \
 	dat.c \
@@ -89,6 +90,7 @@ jpilot_SOURCES = \
 
 jpilot_dump_SOURCES = \
 	address.c \
+	category.c \
 	cp1250.c \
 	datebook.c \
 	japanese.c \
@@ -108,6 +110,7 @@ jpilot-dump.o: jpilot-dump.c config.h utils.h log.h prefs.h \
 
 jpilot_sync_SOURCES = \
 	cp1250.c \
+	category.c \
 	jpilot-sync.c \
 	japanese.c \
 	libplugin.c \
@@ -122,18 +125,6 @@ jpilot_sync_SOURCES = \
 jpilot-sync.o: jpilot-sync.c config.h utils.h log.h prefs.h sync.h \
 	libplugin.h password.h
 
-jpilot_upgrade_99_SOURCES = \
-	cp1250.c \
-	jpilot-upgrade-99.c \
-	libplugin.c \
-	japanese.c \
-	log.c \
-	prefs.c \
-	russian.c \
-	utils.c
-
-jpilot-upgrade-99.o: jpilot-upgrade-99.c config.h utils.h
-
 localedir = $(datadir)/locale
 gnulocaledir = $(prefix)/share/locale
 I18NDEFS = -DLOCALEDIR=\"$(localedir)\" -DGNULOCALEDIR=\"$(gnulocaledir)\"
@@ -143,7 +134,6 @@ CFLAGS= -Wall @CFLAGS@ @ccoptions@ @PILOT_FLAGS@ @GTK_CFLAGS@ ${I18NDEFS}
 jpilot_LDADD=@LIBS@ @PILOT_LIBS@ @GTK_LIBS@
 jpilot_dump_LDADD=@LIBS@ @PILOT_LIBS@ @GTK_LIBS@
 jpilot_sync_LDADD=@LIBS@ @PILOT_LIBS@ @GTK_LIBS@
-jpilot_upgrade_99_LDADD=@LIBS@ @PILOT_LIBS@ @GTK_LIBS@
 
 # Automatically update the libtool script if it becomes out-of-date.
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
