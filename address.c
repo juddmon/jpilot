@@ -325,7 +325,7 @@ int pc_address_write(struct Address *addr, PCRecType rt, unsigned char attrib,
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    if (char_set != CHAR_SET_LATIN1) {
       for (i = 0; i < 19; i++) {
-	 if (addr->entry[i]) charset_j2p((unsigned char *)addr->entry[i], strlen(addr->entry[i])+1, char_set);
+	 if (addr->entry[i]) charset_j2p(addr->entry[i], strlen(addr->entry[i])+1, char_set);
       }
    }
 
@@ -393,15 +393,15 @@ int get_address_app_info(struct AddressAppInfo *ai)
       int i;
       for (i = 0; i < CATCOUNT; i++)
 	if (ai->category.name[i][0] != '\0') {
-	   charset_p2j((unsigned char *)ai->category.name[i], HOSTCATLTH, char_set);
+	   charset_p2j(ai->category.name[i], HOSTCATLTH, char_set);
 	}
       for (i = 0; i < 19 + 3; i++)
 	if (ai->labels[i][0] != '\0') {
-	   charset_p2j((unsigned char *)ai->labels[i],16, char_set);
+	   charset_p2j(ai->labels[i],16, char_set);
 	}
       for (i = 0; i < 8; i++)
 	if (ai->phoneLabels[i][0] != '\0') {
-	   charset_p2j((unsigned char *)ai->phoneLabels[i],16, char_set);
+	   charset_p2j(ai->phoneLabels[i],16, char_set);
 	}
    }
 
@@ -489,7 +489,7 @@ int get_addresses2(AddressList **address_list, int sort_order,
       if (char_set != CHAR_SET_LATIN1) {
 	 for (i = 0; i < 19; i++) {
 	    if ((addr.entry[i] != NULL) && (addr.entry[i][0] != '\0')) {
-               buf = charset_p2newj((unsigned char *)addr.entry[i], strlen(addr.entry[i])+1, char_set);
+               buf = charset_p2newj(addr.entry[i], strlen(addr.entry[i])+1, char_set);
                if (buf) {
 		  if (strlen(buf) > strlen(addr.entry[i])) {
 		     free(addr.entry[i]);

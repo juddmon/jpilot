@@ -37,8 +37,8 @@ static GIConv glob_frompda = NULL;
  * To avoid messing with conflicting declarations, I just implement my own version.
  * (this is easy & portable might not be very efficient) -- Amit Aronovitch
  */
-G_INLINE_FUNC size_t oc_strnlen(const unsigned char *s, size_t maxlen) {
-  const unsigned char *p,*endp;
+G_INLINE_FUNC size_t oc_strnlen(const char *s, size_t maxlen) {
+  const char *p,*endp;
 
   endp = s+maxlen;
   for (p=s;p<endp;++p) if (! *p) break;
@@ -147,7 +147,7 @@ void otherconv_free() {
  *           Conversion to UTF using g_convert_with_iconv
  *     A new buffer is now allocated and the old one remains unchanged
  */
-unsigned char *other_to_UTF(const unsigned char *buf, int buf_len)
+char *other_to_UTF(const char *buf, int buf_len)
 {
   size_t rc;
   char *outbuf;
@@ -191,7 +191,7 @@ unsigned char *other_to_UTF(const unsigned char *buf, int buf_len)
  *  Note: this should work only as long as output is guarenteed to be shorter
  *  than input - otherwise iconv might do unexpected stuff.
  */
-void UTF_to_other(unsigned char *const buf, int buf_len)
+void UTF_to_other(char *const buf, int buf_len)
 {
   gsize inleft,outleft;
   gchar *inptr, *outptr;
@@ -223,7 +223,7 @@ void UTF_to_other(unsigned char *const buf, int buf_len)
     default:
       errstr = "iconv: unexpected error at place %d\n";
     }
-    jp_logf(JP_LOG_WARN, errstr, ((unsigned char *)inptr)-buf);
+    jp_logf(JP_LOG_WARN, errstr, inptr - buf);
   }
 
   jp_logf(JP_LOG_DEBUG, "%s:%s converted to [%s]\n", __FILE__, __FUNCTION__,
@@ -232,12 +232,12 @@ void UTF_to_other(unsigned char *const buf, int buf_len)
 
 #else
 
-unsigned char *other_to_UTF(const unsigned char *buf, int buf_len)
+unsigned char *other_to_UTF(const char *buf, int buf_len)
 {
-	return (unsigned char*)strdup(buf);
+	return strdup(buf);
 }
 
-void UTF_to_other(unsigned char *const buf, int buf_len)
+void UTF_to_other(char *const buf, int buf_len)
 {
 }
 

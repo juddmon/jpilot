@@ -2688,11 +2688,9 @@ void cb_delete_appt(GtkWidget *widget, gpointer data)
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    if (char_set != CHAR_SET_LATIN1) {
       if (mappt->appt.description)
-	charset_j2p((unsigned char *)mappt->appt.description,
-		    strlen(mappt->appt.description)+1, char_set);
+	charset_j2p(mappt->appt.description, strlen(mappt->appt.description)+1, char_set);
       if (mappt->appt.note)
-	charset_j2p((unsigned char *)mappt->appt.note,
-		    strlen(mappt->appt.note)+1, char_set);
+	charset_j2p(mappt->appt.note, strlen(mappt->appt.note)+1, char_set);
    }
 
    /* Do masking like Palm OS 3.5 */

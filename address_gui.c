@@ -1108,7 +1108,7 @@ void cb_delete_address(GtkWidget *widget,
    if (char_set != CHAR_SET_LATIN1) {
       for (i=0; i<19; i++) {
 	 if (maddr->addr.entry[i]) {
-	    charset_j2p((unsigned char *)maddr->addr.entry[i],
+	    charset_j2p(maddr->addr.entry[i],
 			strlen(maddr->addr.entry[i])+1, char_set);
 	 }
       }

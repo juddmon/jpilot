@@ -46,15 +46,15 @@ static unsigned int SjisToEuc(unsigned char hi, unsigned char lo)
    Length include null termination.  
    return the pointer of nul termination code.
  */
-unsigned char *Sjis2EucCpy(unsigned char *dest, unsigned char *src, int max_len)
+char *Sjis2EucCpy(char *dest, char *src, int max_len)
 {
     unsigned char *p, *q;
     unsigned char hi, lo;
     unsigned int w;
     int n = 0;
 
-    p = src;
-    q = dest;
+    p = (unsigned char *)src;
+    q = (unsigned char *)dest;
     while ((*p) && (n < max_len-2)) {
         if (isSjis1stByte(*p)) {
   	    hi = *p++;
@@ -81,7 +81,7 @@ unsigned char *Sjis2EucCpy(unsigned char *dest, unsigned char *src, int max_len)
     } else {
 	    *q = '\0';
     }
-    return q;
+    return (char *)q;
 }
 
 /* 
@@ -91,12 +91,12 @@ unsigned char *Sjis2EucCpy(unsigned char *dest, unsigned char *src, int max_len)
 
 */
 
-void Sjis2Euc(unsigned char *buf, int max_len)
+void Sjis2Euc(char *buf, int max_len)
 {
-	unsigned char *dst;
+	char *dst;
 
 	if (buf == NULL) return;
-	if ((dst = (unsigned char *)malloc(max_len)) != NULL) { 
+	if ((dst = (char *)malloc(max_len)) != NULL) { 
                             /* assign buffer for destination. */
 		if (Sjis2EucCpy(dst, buf, max_len) != NULL) { 
 			multibyte_safe_strncpy(buf, dst, max_len);
@@ -113,13 +113,13 @@ void Sjis2Euc(unsigned char *buf, int max_len)
 
 */
 
-void Sjis2Euc_x(unsigned char *buf, int max_len)
+void Sjis2Euc_x(char *buf, int max_len)
 {
-    unsigned char *dst;
-    unsigned char *p;
+    char *dst;
+    char *p;
     
     if (buf == NULL) return;
-    if ((dst = (unsigned char *)malloc(max_len*2)) == NULL) return; /* assign buffer for destination. */
+    if ((dst = (char *)malloc(max_len*2)) == NULL) return; /* assign buffer for destination. */
     if ((p = Sjis2EucCpy(dst, buf, max_len*2)) != NULL) { 
 	if (strlen(dst) > strlen(buf)) {
 	    free(buf);
@@ -152,15 +152,15 @@ static unsigned int EucToSjis(unsigned char hi, unsigned char lo)
    Theoritically, strlen(EUC) >= strlen(SJIS), 
     then it is ok that dest == src.
  */
-unsigned char *Euc2SjisCpy(unsigned char *dest, unsigned char *src, int max_len)
+char *Euc2SjisCpy(char *dest, char *src, int max_len)
 {
     unsigned char *p, *q; 
     unsigned char hi, lo;
     unsigned int w;
     int n = 0;
 
-    p = src;   
-    q = dest;
+    p = (unsigned char *)src;
+    q = (unsigned char *)dest;
     while ((*p) && (n < max_len-2)) {
 	if (isEucKana(*p)) {      /* euc kana(2byte) -> sjis(1byte) */
 	    p++;
@@ -193,7 +193,7 @@ unsigned char *Euc2SjisCpy(unsigned char *dest, unsigned char *src, int max_len)
   this function exists for symmetry.
  */
 
-void Euc2Sjis(unsigned char *buf, int max_len)
+void Euc2Sjis(char *buf, int max_len)
 {
 	if (buf == NULL) return;
 	if (max_len <= 0) return;
@@ -207,9 +207,9 @@ void Euc2Sjis(unsigned char *buf, int max_len)
 
 */
 
-void jp_Sjis2Euc(unsigned char *buf, int max_len)
+void jp_Sjis2Euc(char *buf, int max_len)
 {
-	unsigned char dst[65536];
+	char dst[65536];
 
 	if (buf == NULL) return;
 	if (max_len > 0xFFFF) max_len = 0xFFFF;

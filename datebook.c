@@ -324,8 +324,8 @@ int pc_datebook_write(struct Appointment *appt, PCRecType rt,
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    if (char_set != CHAR_SET_LATIN1) {
-      if (appt->description) charset_j2p((unsigned char *)appt->description, strlen(appt->description)+1, char_set);
-      if (appt->note) charset_j2p((unsigned char *)appt->note, strlen(appt->note)+1, char_set);
+      if (appt->description) charset_j2p(appt->description, strlen(appt->description)+1, char_set);
+      if (appt->note) charset_j2p(appt->note, strlen(appt->note)+1, char_set);
    }
 
    rec_len = pack_Appointment(appt, record, 65535);
@@ -694,7 +694,7 @@ int get_datebook_app_info(struct AppointmentAppInfo *ai)
    if (char_set != CHAR_SET_LATIN1) {
       for (i = 0; i < 16; i++) {
 	 if (ai->category.name[i][0] != '\0') {
-	    charset_p2j((unsigned char *)ai->category.name[i], 16, char_set);
+	    charset_p2j(ai->category.name[i], 16, char_set);
 	 }
       }
    }
@@ -1010,7 +1010,7 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
       if (appt.description) {
 	 if ((buf = (char *)malloc((len = strlen(appt.description)*2+1))) != NULL) {
 	    multibyte_safe_strncpy(buf, appt.description, len);
-	    charset_p2j((unsigned char *)buf, len, char_set);
+	    charset_p2j(buf, len, char_set);
 	    if (strlen(buf) > strlen(appt.description)) {
 	       free(appt.description);
 	       appt.description = strdup(buf);
@@ -1023,7 +1023,7 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
       if (appt.note) {
 	 if ((buf = (char *) malloc((len = strlen(appt.note)*2+1))) != NULL) {
 	    multibyte_safe_strncpy(buf, appt.note, len);
-	    charset_p2j((unsigned char *)buf, len, char_set);
+	    charset_p2j(buf, len, char_set);
 	    if (strlen(buf) > strlen(appt.note)) {
 	       free(appt.note);
 	       appt.note = strdup(buf);

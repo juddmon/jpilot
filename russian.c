@@ -78,27 +78,27 @@ const unsigned char w2k[256] = {
    0xdc,0xdb,0xc7,0xd8,0xdd,0xd9,0xd7,0xda
 };
 
-void win1251_to_koi8(unsigned char *const buf, int buf_len)
+void win1251_to_koi8(char *const buf, int buf_len)
 {
    unsigned char *p;
    int i;
 
    if (buf == NULL) return;
 
-   for (i=0, p = buf; *p && i < buf_len; p++, i++) {
+   for (i=0, p = (unsigned char *)buf; *p && i < buf_len; p++, i++) {
       *p = w2k[(*p)]; 
    }
 }
 
 
-void koi8_to_win1251(unsigned char *const buf, int buf_len)
+void koi8_to_win1251(char *const buf, int buf_len)
 {
    unsigned char *p;
    int i;
 
    if (buf == NULL) return;
 
-   for (i=0, p = buf; *p && i < buf_len; p++, i++) {
+   for (i=0, p = (unsigned char *)buf; *p && i < buf_len; p++, i++) {
         *p = k2w[(*p)];
    }
 }

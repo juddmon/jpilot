@@ -5,5 +5,5 @@
 		Unix : Win1251
 */
 
-void koi8_to_win1251(unsigned char *const buf, int buf_len);
-void win1251_to_koi8(unsigned char *const buf, int buf_len);
+void koi8_to_win1251(char *const buf, int buf_len);
+void win1251_to_koi8(char *const buf, int buf_len);

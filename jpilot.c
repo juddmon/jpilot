@@ -1978,9 +1978,9 @@ char *xpm_unlocked[] = {
       /* JPA convert user name so that it can be displayed in window title */
       /* we assume user name is coded in jpilot.rc as it is the Palm Pilot */
 	{
-	   unsigned char *newvalue;
+	   char *newvalue;
 
-	   newvalue = charset_p2newj((const unsigned char*)svalue, strlen(svalue)+1, char_set);
+	   newvalue = charset_p2newj(svalue, strlen(svalue)+1, char_set);
 	   strcat(title, newvalue);
 	   free(newvalue);
 	}

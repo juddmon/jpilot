@@ -146,7 +146,7 @@ int pc_memo_write(struct Memo *memo, PCRecType rt, unsigned char attrib,
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    if (char_set != CHAR_SET_LATIN1) {
       if (memo->text) {
-	 charset_j2p((unsigned char *)memo->text, strlen(memo->text)+1, char_set);
+	 charset_j2p(memo->text, strlen(memo->text)+1, char_set);
       }
    }
    rec_len = pack_Memo(memo, record, 65535);
@@ -310,11 +310,11 @@ int get_memos2(MemoList **memo_list, int sort_order,
       if (memo.text) {
 	 /* JPA character set conversion may require a longer buffer */
 
-         unsigned char *newtext; /* new buffer */
+         char *newtext; /* new buffer */
 
-         newtext = charset_p2newj((const unsigned char *)memo.text, strlen(memo.text)+1, char_set);
+         newtext = charset_p2newj(memo.text, strlen(memo.text)+1, char_set);
          free(memo.text);
-         memo.text = (char*)newtext;
+         memo.text = newtext;
       }
 
       temp_memo_list = malloc(sizeof(MemoList));

@@ -2529,7 +2529,7 @@ char *multibyte_safe_memccpy(char *dst, const char *src, int c, size_t len)
      return memccpy(dst, src, c, len);
 }
 
-void charset_j2p(unsigned char *buf, int max_len, long char_set)
+void charset_j2p(char *buf, int max_len, long char_set)
 {
    switch (char_set) {
     case CHAR_SET_JAPANESE: Euc2Sjis(buf, max_len); break;
@@ -2542,7 +2542,7 @@ void charset_j2p(unsigned char *buf, int max_len, long char_set)
    }
 }
 
-void jp_charset_j2p(unsigned char *const buf, int max_len)
+void jp_charset_j2p(char *const buf, int max_len)
 {
    long char_set;
 
@@ -2550,7 +2550,7 @@ void jp_charset_j2p(unsigned char *const buf, int max_len)
    charset_j2p(buf, max_len, char_set);
 }
 
-void jp_charset_p2j(unsigned char *const buf, int max_len)
+void jp_charset_p2j(char *const buf, int max_len)
 {
    long char_set;
 
@@ -2570,9 +2570,9 @@ void jp_charset_p2j(unsigned char *const buf, int max_len)
  *             conversion to host character set
  */
 
-void charset_p2j(unsigned char *const buf, int max_len, int char_set)
+void charset_p2j(char *const buf, int max_len, int char_set)
 {
-   unsigned char *newbuf;
+   char *newbuf;
 
    newbuf = charset_p2newj(buf, max_len, char_set);
 
@@ -2589,20 +2589,20 @@ void charset_p2j(unsigned char *const buf, int max_len, int char_set)
  *             equivalent without overwriting
  */
 
-unsigned char *charset_p2newj(const unsigned char *buf, int max_len, int char_set)
+char *charset_p2newj(const char *buf, int max_len, int char_set)
 {
-   unsigned char *newbuf = NULL;
+   char *newbuf = NULL;
 
    /* allocate a longer buffer if not done in conversion routine */
    if (char_set < CHAR_SET_UTF) {
-      newbuf = (unsigned char*)malloc(2*max_len - 1);
+      newbuf = (char*)malloc(2*max_len - 1);
       if (newbuf) {
 	 /* be safe, though string should fit into buf */
 	 strncpy(newbuf, buf, max_len);
 	 newbuf[max_len - 1] = '\0';
       }
    } else {
-      newbuf = (unsigned char*)NULL; /* keep compiler happy */
+      newbuf = (char*)NULL; /* keep compiler happy */
    }
    switch (char_set) {
     case CHAR_SET_JAPANESE : Sjis2Euc(newbuf, max_len); break;

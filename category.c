@@ -403,9 +403,9 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
    int id;
    int button;
    int catnum; /* JPA */
-   unsigned char currentname[HOSTCATLTH]; /* current category name */
-   unsigned char previousname[HOSTCATLTH]; /* previous category name */
-   unsigned char pilotentry[HOSTCATLTH /* yes! */]; /* entry text, in Pilot character set */
+   char currentname[HOSTCATLTH]; /* current category name */
+   char previousname[HOSTCATLTH]; /* previous category name */
+   char pilotentry[HOSTCATLTH /* yes! */]; /* entry text, in Pilot character set */
    char *button_text[]={gettext_noop("OK")};
    char *move_text[]={gettext_noop("Move"), gettext_noop("Delete"), gettext_noop("Cancel")};
    char *text;
@@ -600,7 +600,7 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 	    /* JPA assuming gtk makes a copy */
 	    gtk_clist_set_text(GTK_CLIST(Pdata->clist), i, 0, entry_text);
 	    /* JPA enter new category name in Palm Pilot character set */
-	    charset_j2p((unsigned char*)entry_text, HOSTCATLTH, char_set);
+	    charset_j2p(entry_text, HOSTCATLTH, char_set);
 	    strncpy(Pdata->cai2.name[catnum], entry_text, PILOTCATLTH);
 	    Pdata->cai2.name[catnum][PILOTCATLTH-1]='\0';
 	 }
@@ -739,7 +739,7 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
    int i;
    int j;
    long char_set;
-   unsigned char *catname; /* JPA category names in host character set */
+   char *catname; /* JPA category names in host character set */
    char *titles[2];
    gchar *empty_line[] = {""};
 
@@ -885,7 +885,7 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
       }
       if (j < CATCOUNT) {
 	 /* gtk_clist_set_text(GTK_CLIST(clist), i, 0, cai->name[i]); JPA */
-          catname = charset_p2newj((unsigned char*)cai->name[j], PILOTCATLTH, char_set);
+          catname = charset_p2newj(cai->name[j], PILOTCATLTH, char_set);
 	  gtk_clist_set_text(GTK_CLIST(clist), i, 0, catname); /* JPA */
           free(catname);
       }

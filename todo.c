@@ -269,10 +269,10 @@ int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib,
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    if (char_set != CHAR_SET_LATIN1) {
       if (todo->description) {
-	 charset_j2p((unsigned char *)todo->description, strlen(todo->description)+1, char_set);
+	 charset_j2p(todo->description, strlen(todo->description)+1, char_set);
       }
       if (todo->note) {
-	 charset_j2p((unsigned char *)todo->note, strlen(todo->note)+1, char_set);
+	 charset_j2p(todo->note, strlen(todo->note)+1, char_set);
       }
    }
 
@@ -371,7 +371,7 @@ int get_todo_app_info(struct ToDoAppInfo *ai)
    if (char_set != CHAR_SET_LATIN1) {
       for (i = 0; i < 16; i++) {
 	 if (ai->category.name[i][0] != '\0') {
-	    charset_p2j((unsigned char *)ai->category.name[i], 16, char_set);
+	    charset_p2j(ai->category.name[i], 16, char_set);
 	 }
       }
    }
@@ -481,7 +481,7 @@ int get_todos2(ToDoList **todo_list, int sort_order,
 
       get_pref(PREF_CHAR_SET, &char_set, NULL);
       if (todo.description) {
-         buf = charset_p2newj((unsigned char *)todo.description, strlen(todo.description)+1, char_set);
+         buf = charset_p2newj(todo.description, strlen(todo.description)+1, char_set);
          if (buf) {
 	    /* JPA use new conversion routines
 	     if ((buf = (char *)malloc(strlen(todo.description)*2+1)) != NULL) {
@@ -493,7 +493,7 @@ int get_todos2(ToDoList **todo_list, int sort_order,
 	 }
       }
       if (todo.note) {
-	 buf = charset_p2newj((unsigned char *)todo.note, strlen(todo.note)+1, char_set);
+	 buf = charset_p2newj(todo.note, strlen(todo.note)+1, char_set);
          if (buf) {
 	    /* JPA use new conversion routines
 	     if ((buf = (char *)malloc(strlen(todo.note)*2+1)) != NULL) {

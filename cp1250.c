@@ -52,28 +52,28 @@ const unsigned char l2w[128] = {
 
 #define isCZ(c) ((c) & 0x80)
 
-void Win2Lat(unsigned char *const buf, int buf_len)
+void Win2Lat(char *const buf, int buf_len)
 {
    unsigned char *p;
    int i;
 
    if (buf == NULL) return;
 
-   for (i=0, p = buf; *p && i < buf_len; p++, i++) {
+   for (i=0, p = (unsigned char *)buf; *p && i < buf_len; p++, i++) {
       if (isCZ(*p)) {
 	 *p = w2l[(*p) & 0x7f];
       }
    }
 }
 
-void Lat2Win(unsigned char *const buf, int buf_len)
+void Lat2Win(char *const buf, int buf_len)
 {
    unsigned char *p;
    int i;
 
    if (buf == NULL) return;
 
-   for (i=0, p = buf; *p && i < buf_len; p++, i++) {
+   for (i=0, p = (unsigned char *)buf; *p && i < buf_len; p++, i++) {
       if (isCZ(*p)) {
 	 *p = l2w[(*p) & 0x7f];
       }

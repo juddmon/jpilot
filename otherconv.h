@@ -11,9 +11,9 @@
  * Returns 0 if OK, -1 if iconv could not be initialized
  *  (probably because of bad charset string)
  */
-int otherconv_init();
+int otherconv_init(void);
 /* otherconv_free: Call this when done */ 
-void otherconv_free(); 
+void otherconv_free(void); 
 
-unsigned char *other_to_UTF(const unsigned char *buf, int buf_len);
-void UTF_to_other(unsigned char *const buf, int buf_len);
+char *other_to_UTF(const char *buf, int buf_len);
+void UTF_to_other(char *const buf, int buf_len);

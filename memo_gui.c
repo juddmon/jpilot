@@ -680,8 +680,7 @@ void cb_delete_memo(GtkWidget *widget,
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    if (char_set != CHAR_SET_LATIN1) {
       if (mmemo->memo.text)
-	charset_j2p((unsigned char *)mmemo->memo.text,
-		    strlen(mmemo->memo.text)+1, char_set);
+	charset_j2p(mmemo->memo.text, strlen(mmemo->memo.text)+1, char_set);
    }
 
    /* Do masking like Palm OS 3.5 */

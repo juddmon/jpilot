@@ -11,8 +11,8 @@
  * Unix : UTF-8
  */
 
-void Win2Lat(unsigned char *const buf, int buf_len);
-void Lat2Win(unsigned char *const buf, int buf_len);
+void Win2Lat(char *const buf, int buf_len);
+void Lat2Win(char *const buf, int buf_len);
 
 int Win2UTFsz(const unsigned char *buf, int buf_len); /* JPA */
 /* void Win2UTF(unsigned char *const buf, int buf_len); JPA */

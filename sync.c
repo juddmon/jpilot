@@ -941,7 +941,7 @@ int jp_sync(struct my_sync_info *sync_info)
       return 0;
    }
    get_pref(PREF_CHAR_SET, &char_set, NULL);
-   charset_j2p((unsigned char *)buf,1023,char_set);
+   charset_j2p(buf,1023,char_set);
 
    dlp_AddSyncLogEntry(sd, buf);
    dlp_AddSyncLogEntry(sd, "\n");
@@ -1042,7 +1042,7 @@ int slow_sync_application(char *DB_name, int sd)
    ret = dlp_OpenDB(sd, 0, dlpOpenReadWrite, DB_name, &db);
    if (ret < 0) {
       g_snprintf(log_entry, sizeof(log_entry), _("Unable to open file: %s\n"), DB_name);
-      charset_j2p((unsigned char *)log_entry, sizeof(log_entry), char_set);
+      charset_j2p(log_entry, sizeof(log_entry), char_set);
       dlp_AddSyncLogEntry(sd, log_entry);
       return -1;
    }
@@ -1097,11 +1097,11 @@ int slow_sync_application(char *DB_name, int sd)
 
 	 if (ret < 0) {
 	    jp_logf(JP_LOG_WARN, "dlp_WriteRecord failed\n");
-	    charset_j2p((unsigned char *)error_log_message_w,255,char_set);
+	    charset_j2p(error_log_message_w,255,char_set);
 	    dlp_AddSyncLogEntry(sd, error_log_message_w);
 	    dlp_AddSyncLogEntry(sd, "\n");
 	 } else {
-	    charset_j2p((unsigned char *)write_log_message,255,char_set);
+	    charset_j2p(write_log_message,255,char_set);
 	    dlp_AddSyncLogEntry(sd, write_log_message);
 	    dlp_AddSyncLogEntry(sd, "\n");
 	    /*Now mark the record as deleted in the pc file */
@@ -1162,11 +1162,11 @@ int slow_sync_application(char *DB_name, int sd)
 	 if (ret < 0) {
 	    jp_logf(JP_LOG_WARN, _("dlp_DeleteRecord failed\n"\
             "This could be because the record was already deleted on the Palm\n"));
-	    charset_j2p((unsigned char *)error_log_message_d,255,char_set);
+	    charset_j2p(error_log_message_d,255,char_set);
 	    dlp_AddSyncLogEntry(sd, error_log_message_d);
 	    dlp_AddSyncLogEntry(sd, "\n");
 	 } else {
-	    charset_j2p((unsigned char *)delete_log_message,255,char_set);
+	    charset_j2p(delete_log_message,255,char_set);
 	    dlp_AddSyncLogEntry(sd, delete_log_message);
 	    dlp_AddSyncLogEntry(sd, "\n");
 	 }
@@ -1834,7 +1834,7 @@ static int sync_install(char *filename, int sd)
 
    if (r<0) {
       g_snprintf(log_entry, sizeof(log_entry), _("Install %s failed"), Pc);
-      charset_j2p((unsigned char *)log_entry, sizeof(log_entry), char_set);
+      charset_j2p(log_entry, sizeof(log_entry), char_set);
       dlp_AddSyncLogEntry(sd, log_entry);
       dlp_AddSyncLogEntry(sd, "\n");;
       jp_logf(JP_LOG_GUI, _("Failed.\n"));
@@ -1845,7 +1845,7 @@ static int sync_install(char *filename, int sd)
    else {
       /* the space after the %s is a hack, the last char gets cut off */
       g_snprintf(log_entry, sizeof(log_entry), _("Installed %s "), Pc);
-      charset_j2p((unsigned char *)log_entry, sizeof(log_entry), char_set);
+      charset_j2p(log_entry, sizeof(log_entry), char_set);
       dlp_AddSyncLogEntry(sd, log_entry);
       dlp_AddSyncLogEntry(sd, "\n");;
       jp_logf(JP_LOG_GUI, _("OK\n"));
@@ -2232,11 +2232,11 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
 
 	 if (ret < 0) {
 	    jp_logf(JP_LOG_WARN, "dlp_WriteRecord failed\n");
-	    charset_j2p((unsigned char *)error_log_message_w,255,char_set);
+	    charset_j2p(error_log_message_w,255,char_set);
 	    dlp_AddSyncLogEntry(sd, error_log_message_w);
 	    dlp_AddSyncLogEntry(sd, "\n");
 	 } else {
-	    charset_j2p((unsigned char *)write_log_message,255,char_set);
+	    charset_j2p(write_log_message,255,char_set);
 	    dlp_AddSyncLogEntry(sd, write_log_message);
 	    dlp_AddSyncLogEntry(sd, "\n");
 	    /* Now mark the record as deleted in the pc file */
@@ -2306,11 +2306,11 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
 	       if (ret < 0) {
 		  jp_logf(JP_LOG_WARN, _("dlp_DeleteRecord failed\n"
 					 "This could be because the record was already deleted on the Palm\n"));
-		  charset_j2p((unsigned char *)error_log_message_d,255,char_set);
+		  charset_j2p(error_log_message_d,255,char_set);
 		  dlp_AddSyncLogEntry(sd, error_log_message_d);
 		  dlp_AddSyncLogEntry(sd, "\n");
 	       } else {
-		  charset_j2p((unsigned char *)delete_log_message,255,char_set);
+		  charset_j2p(delete_log_message,255,char_set);
 		  dlp_AddSyncLogEntry(sd, delete_log_message);
 		  dlp_AddSyncLogEntry(sd, "\n");
 		  pdb_file_delete_record_by_id(DB_name, header.unique_id);
@@ -2503,7 +2503,7 @@ int fast_sync_application(char *DB_name, int sd)
    ret = dlp_OpenDB(sd, 0, dlpOpenReadWrite|dlpOpenSecret, DB_name, &db);
    if (ret < 0) {
       g_snprintf(log_entry, sizeof(log_entry), _("Unable to open file: %s\n"), DB_name);
-      charset_j2p((unsigned char *)log_entry, sizeof(log_entry), char_set);
+      charset_j2p(log_entry, sizeof(log_entry), char_set);
       dlp_AddSyncLogEntry(sd, log_entry);
       return -1;
    }
@@ -2750,7 +2750,7 @@ int sync_categories(char *DB_name, int sd,
    r = dlp_OpenDB(sd, 0, dlpOpenReadWrite, DB_name, &db);
    if (r < 0) {
       g_snprintf(log_entry, sizeof(log_entry), _("Unable to open file: %s\n"), DB_name);
-      charset_j2p((unsigned char *)log_entry, sizeof(log_entry), char_set);
+      charset_j2p(log_entry, sizeof(log_entry), char_set);
       dlp_AddSyncLogEntry(sd, log_entry);
       return -1;
    }
@@ -2911,13 +2911,13 @@ int sync_categories(char *DB_name, int sd,
 	       jp_logf(JP_LOG_WARN, _("All records on desktop in %s will be moved to %s.\n"), local_cai.name[Li], local_cai.name[0]);
 	       /* Fix - need a func for this logging */
 	       g_snprintf(log_entry, sizeof(log_entry), _("Could not add category %s to remote.\n"), local_cai.name[Li]);
-	       charset_j2p((unsigned char *)log_entry, 255, char_set);
+	       charset_j2p(log_entry, 255, char_set);
 	       dlp_AddSyncLogEntry(sd, log_entry);
 	       g_snprintf(log_entry, sizeof(log_entry), _("Too many categories on remote.\n"));
-	       charset_j2p((unsigned char *)log_entry, sizeof(log_entry), char_set);
+	       charset_j2p(log_entry, sizeof(log_entry), char_set);
 	       dlp_AddSyncLogEntry(sd, log_entry);
 	       g_snprintf(log_entry, sizeof(log_entry), _("All records on desktop in %s will be moved to %s.\n"), local_cai.name[Li], local_cai.name[0]);
-	       charset_j2p((unsigned char *)log_entry, sizeof(log_entry), char_set);
+	       charset_j2p(log_entry, sizeof(log_entry), char_set);
 	       dlp_AddSyncLogEntry(sd, log_entry);
 	       jp_logf(JP_LOG_DEBUG, "Moving local recs category %d to unfiled...", Li);
 	       edit_cats_change_cats_pc3(DB_name, Li, 0);

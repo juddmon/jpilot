@@ -914,11 +914,9 @@ void cb_delete_todo(GtkWidget *widget,
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    if (char_set != CHAR_SET_LATIN1) {
       if (mtodo->todo.description)
-	charset_j2p((unsigned char *)mtodo->todo.description,
-		    strlen(mtodo->todo.description)+1, char_set);
+	charset_j2p(mtodo->todo.description, strlen(mtodo->todo.description)+1, char_set);
       if (mtodo->todo.note)
-	charset_j2p((unsigned char *)mtodo->todo.note,
-		    strlen(mtodo->todo.note)+1, char_set);
+	charset_j2p(mtodo->todo.note, strlen(mtodo->todo.note)+1, char_set);
    }
 
    /* Do masking like Palm OS 3.5 */
