@@ -2319,9 +2319,44 @@ char *xpm_unlocked[] = {
    alarms_init(skip_past_alarms, skip_all_alarms);
 #endif
 
+#ifdef ENABLE_GTK2
+   {
+      long utf_encoding;
+      long char_set;
+      char *button_text[]={ gettext_noop("OK, I will do it"), gettext_noop("Don't tell me again!") };
+
+      /* get charset to check if a UTF-8 one is used */
+      get_pref(PREF_CHAR_SET, &char_set, NULL);
+      if (char_set >= CHAR_SET_1250UTF)
+ 	 set_pref(PREF_UTF_ENCODING, 1, NULL, 1);
+
+      get_pref(PREF_UTF_ENCODING, &utf_encoding, NULL);
+      if (0 == utf_encoding)
+      { /* user does not switched to UTF */
+  	 int ret;
+	 char text[1000];
+
+	 g_strlcpy(text, _("J-Pilot is using the GTK2 graphical toolkit. "
+		"This version of the toolkit uses UTF-8 to encode characters.\n"
+		"You should select a UTF-8 charset so you can see the non-ASCII characters (accents for example).\n\n"), sizeof(text));
+	 g_strlcat(text, _("Go to the menu \""), sizeof(text));
+	 g_strlcat(text, _("/File/Preferences"), sizeof(text));
+	 g_strlcat(text, _("\" and change the \""), sizeof(text));
+	 g_strlcat(text, _("Character Set "), sizeof(text));
+	 g_strlcat(text, _("\"."), sizeof(text));
+         ret = dialog_generic(GTK_WINDOW(window), 0, 0,
+	    _("Select an UTF-8 encoding"), NULL, text, 2, button_text);
+
+	if (DIALOG_SAID_2 == ret)
+ 	   set_pref(PREF_UTF_ENCODING, 1, NULL, 1);
+      }
+   }
+#endif
+
    gtk_idle_add(cb_check_version, window);
    
    gtk_main();
 
    return 0;
 }
+
