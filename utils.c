@@ -1,7 +1,7 @@
 /* utils.c
  * A module of J-Pilot http://jpilot.org
  * 
- * Copyright (C) 1999-2001 by Judd Montgomery
+ * Copyright (C) 1999-2002 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -376,73 +376,6 @@ void free_search_record_list(struct search_record **sr)
       free(temp_sr);
    }
    *sr = NULL;
-}
-
-
-gint cb_timer_move_scrolled_window(gpointer data);
-
-struct move_sw {
-   float percentage;
-   GtkWidget *sw;
-};
-
-/* */
-/*This function needs to be called when the screen isn't finished */
-/*drawing yet.  Moving the scrollbar immediately would have no effect. */
-/* */
-void move_scrolled_window_hack(GtkWidget *sw, float percentage)
-{
-   /*This is so that the caller doesn't have to worry about making */
-   /*sure they use a static variable (required for callback) */
-   static struct move_sw move_this;
-
-   move_this.percentage = percentage;
-   move_this.sw = sw;
-
-   gtk_timeout_add(50, cb_timer_move_scrolled_window, &move_this);
-}
-
-gint cb_timer_move_scrolled_window(gpointer data)
-{
-   struct move_sw *move_this;
-   int r;
-
-   move_this = data;
-   r = move_scrolled_window(move_this->sw, move_this->percentage);
-   /*if we return TRUE then this function will get called again */
-   /*if we return FALSE then it will be taken out of timer */
-   if (r) {
-      return TRUE;
-   } else {
-      return FALSE;
-   }
-}
-
-int move_scrolled_window(GtkWidget *sw, float percentage)
-{
-   GtkScrollbar *sb;
-   gfloat upper, lower, page_size, new_val;
-
-   if (!GTK_IS_SCROLLED_WINDOW(sw)) {
-      return 0;
-   }
-   sb = GTK_SCROLLBAR(GTK_SCROLLED_WINDOW(sw)->vscrollbar);
-   upper = GTK_ADJUSTMENT(sb->range.adjustment)->upper;
-   lower = GTK_ADJUSTMENT(sb->range.adjustment)->lower;
-   page_size = GTK_ADJUSTMENT(sb->range.adjustment)->page_size;
-
-   /*The screen isn't done drawing yet, so we have to leave. */
-   if (page_size == 0) {
-      return 1;
-   }
-   new_val = (upper - lower) * percentage;
-   if (new_val > upper - page_size) {
-      new_val = upper - page_size;
-   }
-   gtk_adjustment_set_value(sb->range.adjustment, new_val);
-   gtk_signal_emit_by_name(GTK_OBJECT(sb->range.adjustment), "changed");
-
-   return 0;
 }
 
 /*returns 0 if not found, 1 if found */
@@ -1015,13 +948,13 @@ int dialog_save_changed_record(GtkWidget *widget, int changed)
       if (GTK_IS_WINDOW(w)) {
 	 if (changed==MODIFY_FLAG) {
 	    b=dialog_generic(GTK_WINDOW(w), 0, 0,
-			     _("Save Changed Record?"), "",
+			     _("Save Changed Record?"), NULL,
 			     _("Do you want to save the changes to this record?"),
 			     2, button_text);
 	 }
 	 if (changed==NEW_FLAG) {
 	    b=dialog_generic(GTK_WINDOW(w), 0, 0,
-			     _("Save New Record?"), "",
+			     _("Save New Record?"), NULL,
 			     _("Do you want to save this new record?"),
 			     2, button_text);
 	 }
@@ -2227,6 +2160,255 @@ int make_category_menu(GtkWidget **category_menu,
    }
 
    gtk_option_menu_set_menu(GTK_OPTION_MENU(*category_menu), menu);
+
+   return 0;
+}
+
+int pdb_file_count_recs(char *DB_name, int *num)
+{
+   char local_pdb_file[256];
+   char full_local_pdb_file[256];
+   struct pi_file *pf;
+
+   jp_logf(LOG_DEBUG, "pdb_file_count_recs\n");
+
+   *num = 0;
+
+   g_snprintf(local_pdb_file, 250, "%s.pdb", DB_name);
+   get_home_file_name(local_pdb_file, full_local_pdb_file, 250);
+
+   pf = pi_file_open(full_local_pdb_file);
+   if (pf<=0) {
+      jp_logf(LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file);
+      return -1;
+   }
+
+   pi_file_get_entries(pf, num);
+
+   pi_file_close(pf);
+
+   return 0;
+}
+
+int pdb_file_delete_record_by_id(char *DB_name, pi_uid_t uid_in)
+{
+   char local_pdb_file[256];
+   char full_local_pdb_file[256];
+   char full_local_pdb_file2[256];
+   struct pi_file *pf1, *pf2;
+   struct DBInfo infop;
+   void *app_info;
+   void *sort_info;
+   void *record;
+   int r;
+   int idx;
+   int size;
+   int attr;
+   int cat;
+   pi_uid_t uid;
+
+   jp_logf(LOG_DEBUG, "pdb_file_delete_record_by_id\n");
+
+   g_snprintf(local_pdb_file, 250, "%s.pdb", DB_name);
+   get_home_file_name(local_pdb_file, full_local_pdb_file, 250);
+   strcpy(full_local_pdb_file2, full_local_pdb_file);
+   strcat(full_local_pdb_file2, "2");
+
+   pf1 = pi_file_open(full_local_pdb_file);
+   if (pf1<=0) {
+      jp_logf(LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file);
+      return -1;
+   }
+   pi_file_get_info(pf1, &infop);
+   pf2 = pi_file_create(full_local_pdb_file2, &infop);
+   if (pf2<=0) {
+      jp_logf(LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file2);
+      return -1;
+   }
+
+   pi_file_get_app_info(pf1, &app_info, &size);
+   pi_file_set_app_info(pf2, app_info, size);
+
+   pi_file_get_sort_info(pf1, &sort_info, &size);  
+   pi_file_set_sort_info(pf2, sort_info, size);
+
+   for(idx=0;;idx++) {
+      r = pi_file_read_record(pf1, idx, &record, &size, &attr, &cat, &uid);
+      if (r<0) break;
+      if (uid==uid_in) continue;
+      pi_file_append_record(pf2, record, size, attr, cat, uid);
+   }
+
+   pi_file_close(pf1);
+   pi_file_close(pf2);
+
+   if (rename(full_local_pdb_file2, full_local_pdb_file) < 0) {
+      jp_logf(LOG_WARN, "delete: rename failed\n");
+   }
+
+   return 0;
+}
+
+/*
+ * Original ID is in the case of a modification
+ * new ID is used in the case of an add record
+ */
+int pdb_file_modify_record(char *DB_name, void *record_in, int size_in,
+			   int attr_in, int cat_in, pi_uid_t uid_in)
+{
+   char local_pdb_file[256];
+   char full_local_pdb_file[256];
+   char full_local_pdb_file2[256];
+   struct pi_file *pf1, *pf2;
+   struct DBInfo infop;
+   void *app_info;
+   void *sort_info;
+   void *record;
+   int r;
+   int idx;
+   int size;
+   int attr;
+   int cat;
+   int found;
+   pi_uid_t uid;
+
+   jp_logf(LOG_DEBUG, "pi_file_modify_record\n");
+
+   g_snprintf(local_pdb_file, 250, "%s.pdb", DB_name);
+   get_home_file_name(local_pdb_file, full_local_pdb_file, 250);
+   strcpy(full_local_pdb_file2, full_local_pdb_file);
+   strcat(full_local_pdb_file2, "2");
+
+   pf1 = pi_file_open(full_local_pdb_file);
+   if (pf1<=0) {
+      jp_logf(LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file);
+      return -1;
+   }
+   pi_file_get_info(pf1, &infop);
+   pf2 = pi_file_create(full_local_pdb_file2, &infop);
+   if (pf2<=0) {
+      jp_logf(LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file2);
+      return -1;
+   }
+
+   pi_file_get_app_info(pf1, &app_info, &size);
+   pi_file_set_app_info(pf2, app_info, size);
+
+   pi_file_get_sort_info(pf1, &sort_info, &size);  
+   pi_file_set_sort_info(pf2, sort_info, size);
+
+   found = 0;
+
+   for(idx=0;;idx++) {
+      r = pi_file_read_record(pf1, idx, &record, &size, &attr, &cat, &uid);
+      if (r<0) break;
+      if (uid==uid_in) {
+	 pi_file_append_record(pf2, record_in, size_in, attr_in, cat_in, uid_in);
+	 found=1;
+      } else {
+	 pi_file_append_record(pf2, record, size, attr, cat, uid);
+      }
+   }
+   if (!found) {
+      pi_file_append_record(pf2, record_in, size_in, attr_in, cat_in, uid_in);
+   }
+
+   pi_file_close(pf1);
+   pi_file_close(pf2);
+
+   if (rename(full_local_pdb_file2, full_local_pdb_file) < 0) {
+      jp_logf(LOG_WARN, "modify: rename failed\n");
+   }
+
+   return 0;
+}
+
+int pdb_file_read_record_by_id(char *DB_name, 
+			       pi_uid_t uid,
+			       void **bufp, int *sizep, int *idxp,
+			       int *attrp, int *catp)
+{
+   char local_pdb_file[256];
+   char full_local_pdb_file[256];
+   struct pi_file *pf1;
+   void *temp_buf;
+   int r;
+
+   jp_logf(LOG_DEBUG, "pdb_file_read_record_by_id\n");
+
+   g_snprintf(local_pdb_file, 250, "%s.pdb", DB_name);
+   get_home_file_name(local_pdb_file, full_local_pdb_file, 250);
+
+   pf1 = pi_file_open(full_local_pdb_file);
+   if (pf1<=0) {
+      jp_logf(LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file);
+      return -1;
+   }
+
+   r = pi_file_read_record_by_id(pf1, uid, &temp_buf, sizep, idxp, attrp, catp);
+   /* during the close bufp will be freed, so we copy it */
+   *bufp=malloc(*sizep);
+   memcpy(*bufp, temp_buf, *sizep);
+
+   pi_file_close(pf1);
+
+   return r;
+}
+
+int pdb_file_write_app_block(char *DB_name, void *bufp, int size_in)
+{
+   char local_pdb_file[256];
+   char full_local_pdb_file[256];
+   char full_local_pdb_file2[256];
+   struct pi_file *pf1, *pf2;
+   struct DBInfo infop;
+   void *app_info;
+   void *sort_info;
+   void *record;
+   int r;
+   int idx;
+   int size;
+   int attr;
+   int cat;
+   pi_uid_t uid;
+
+   jp_logf(LOG_DEBUG, "pdb_file_write_app_block\n");
+
+   g_snprintf(local_pdb_file, 250, "%s.pdb", DB_name);
+   get_home_file_name(local_pdb_file, full_local_pdb_file, 250);
+   strcpy(full_local_pdb_file2, full_local_pdb_file);
+   strcat(full_local_pdb_file2, "2");
+
+   pf1 = pi_file_open(full_local_pdb_file);
+   if (pf1<=0) {
+      jp_logf(LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file);
+      return -1;
+   }
+   pi_file_get_info(pf1, &infop);
+   pf2 = pi_file_create(full_local_pdb_file2, &infop);
+   if (pf2<=0) {
+      jp_logf(LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file2);
+      return -1;
+   }
+
+   pi_file_get_app_info(pf1, &app_info, &size);
+   pi_file_set_app_info(pf2, bufp, size_in);
+
+   pi_file_get_sort_info(pf1, &sort_info, &size);  
+   pi_file_set_sort_info(pf2, sort_info, size);
+
+   for(idx=0;;idx++) {
+      r = pi_file_read_record(pf1, idx, &record, &size, &attr, &cat, &uid);
+      if (r<0) break;
+      pi_file_append_record(pf2, record, size, attr, cat, uid);
+   }
+
+   pi_file_close(pf1);
+   pi_file_close(pf2);
+
+   if (rename(full_local_pdb_file2, full_local_pdb_file) < 0) {
+      jp_logf(LOG_WARN, "write_app_block: rename failed\n");
+   }
 
    return 0;
 }

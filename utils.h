@@ -1,7 +1,7 @@
 /* utils.h
  * A module of J-Pilot http://jpilot.org
  * 
- * Copyright (C) 1999-2001 by Judd Montgomery
+ * Copyright (C) 1999-2002 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@
 #include <pi-address.h>
 #include <pi-todo.h>
 #include <pi-memo.h>
+#include <pi-file.h>
 #include <gtk/gtk.h>
 
 #include "libplugin.h"
@@ -273,10 +274,6 @@ int clist_find_id(GtkWidget *clist,
 		  int *found_at,
 		  int *total_count);
 
-int move_scrolled_window(GtkWidget *sw, float percentage);
-
-void move_scrolled_window_hack(GtkWidget *sw, float percentage);
-
 int check_copy_DBs_to_home();
 
 int jp_copy_file(char *src, char *dest);
@@ -390,6 +387,55 @@ void weekview_gui(struct tm *date_in);
 /* dialer.c */
 int dialog_dial(GtkWindow *main_window, char *string, char *ext);
 
+/* These are in utils.c for now */
+/*
+ * DB_name should be without filename ext, e.g. MemoDB
+ * num is the number of records counted returned.
+ */
+int pdb_file_count_recs(char *DB_name, int *num);
+/*
+ * DB_name should be without filename ext, e.g. MemoDB
+ * uid_in the the unique ID to remove from the pdb file
+ */
+int pdb_file_delete_record_by_id(char *DB_name, pi_uid_t uid_in);
+/*
+ * DB_name should be without filename ext, e.g. MemoDB
+ * uid_in the the unique ID to modify from the pdb file
+ * the other parameters are set in the pdb file for this record.
+ */
+int pdb_file_modify_record(char *DB_name, void *record_in, int size_in,
+			   int attr_in, int cat_in, pi_uid_t uid_in);
+/*
+ * DB_name should be without filename ext, e.g. MemoDB
+ * uid is unique id in
+ * bufp is a copy of the raw record (unpacked) and should be freed by caller
+ * sizep is size of bufp returned
+ * idxp is the index in the file rec was found
+ * attrp is the attributes
+ * catp is the category (index)
+ */
+int pdb_file_read_record_by_id(char *DB_name, 
+			       pi_uid_t uid,
+			       void **bufp, int *sizep, int *idxp,
+			       int *attrp, int * catp);
+/*
+ * DB_name should be without filename ext, e.g. MemoDB
+ * bufp is the packed app info block
+ * size_in is the size of bufp
+ */
+int pdb_file_write_app_block(char *DB_name, void *bufp, int size_in);
+
+
+/* category.c */
+/*
+ * widget is a widget inside the main window used to get main window handle
+ * db_name should be without filename ext, e.g. MemoDB
+ * cai is the category app info.  This should be unpacked by the user since
+ * category unpack functions are database specific.
+ */
+int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai);
+
+  
 int make_category_menu(GtkWidget **category_menu,
 		       GtkWidget **cat_menu_item,
 		       struct sorted_cats *sort_l,
