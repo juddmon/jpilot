@@ -921,6 +921,9 @@ int print_address_header()
 	   "hline\n"
 	   "pop pop pop ( )\n"
 	   "} if\n"
+	   "("Q_FLAG_CHAR"END) search { %%if\n"
+	   "   stop\n"
+	   "} if\n"
 	   "("Q_FLAG_CHAR"C12) search {\n"
 	   "/Courier-ISOLatin1 12 selectfont\n"
 	   "currentpoint 14 add moveto\n"
@@ -1212,6 +1215,8 @@ int print_memos(MemoList *memo_list)
 	 }
       }
    }
+
+   fprintf(out, "%cEND\n", FLAG_CHAR);
 
 #ifdef HAVE_LOCALE_H
    setlocale(LC_ALL,"");
