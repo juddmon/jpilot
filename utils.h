@@ -450,6 +450,16 @@ int pdb_file_write_app_block(char *DB_name, void *bufp, int size_in);
  * category unpack functions are database specific.
  */
 int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai);
+/*
+ * This changes every record with index old_index and changes it to new_index
+ * returns the number of record's categories changed.
+ */
+int pdb_file_change_indexes(char *DB_name, int old_index, int new_index);
+int edit_cats_change_cats_pc3(char *DB_name, int old_cat,
+			      int new_cat);
+int edit_cats_swap_cats_pc3(char *DB_name, int old_cat,
+			    int new_cat);
+int edit_cats_change_cats_pdb(char *DB_name, int old_cat, int new_cat);
 
   
 int make_category_menu(GtkWidget **category_menu,

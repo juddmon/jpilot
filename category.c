@@ -102,6 +102,76 @@ int jp_count_records_in_cat(char *db_name, int cat_index)
    return count;
 }
 
+/*
+ * This changes every record with index old_index and changes it to new_index
+ * returns the number of record's categories changed.
+ */
+int pdb_file_change_indexes(char *DB_name, int old_index, int new_index)
+{
+   char local_pdb_file[256];
+   char full_local_pdb_file[256];
+   char full_local_pdb_file2[256];
+   struct pi_file *pf1, *pf2;
+   struct DBInfo infop;
+   void *app_info;
+   void *sort_info;
+   void *record;
+   int r;
+   int idx;
+   int size;
+   int attr;
+   int cat, new_cat;
+   int count;
+   pi_uid_t uid;
+
+   jp_logf(JP_LOG_DEBUG, "pi_file_change_indexes\n");
+
+   g_snprintf(local_pdb_file, 250, "%s.pdb", DB_name);
+   get_home_file_name(local_pdb_file, full_local_pdb_file, 250);
+   strcpy(full_local_pdb_file2, full_local_pdb_file);
+   strcat(full_local_pdb_file2, "2");
+
+   pf1 = pi_file_open(full_local_pdb_file);
+   if (!pf1) {
+      jp_logf(JP_LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file);
+      return -1;
+   }
+   pi_file_get_info(pf1, &infop);
+   pf2 = pi_file_create(full_local_pdb_file2, &infop);
+   if (!pf2) {
+      jp_logf(JP_LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file2);
+      return -1;
+   }
+
+   pi_file_get_app_info(pf1, &app_info, &size);
+   pi_file_set_app_info(pf2, app_info, size);
+
+   pi_file_get_sort_info(pf1, &sort_info, &size);  
+   pi_file_set_sort_info(pf2, sort_info, size);
+
+   count = 0;
+
+   for(idx=0;;idx++) {
+      r = pi_file_read_record(pf1, idx, &record, &size, &attr, &cat, &uid);
+      if (r<0) break;
+      new_cat=cat;
+      if (cat==old_index) {
+	 cat=new_index;
+	 count++;
+      }
+      pi_file_append_record(pf2, record, size, attr, cat, uid);
+   }
+
+   pi_file_close(pf1);
+   pi_file_close(pf2);
+
+   if (rename(full_local_pdb_file2, full_local_pdb_file) < 0) {
+      jp_logf(JP_LOG_WARN, "change_indexes: rename failed\n");
+   }
+
+   return 0;
+}
+
 int edit_cats_delete_cats_pc3(char *DB_name, int cat)
 {
    char local_pc_file[256];
@@ -115,7 +185,6 @@ int edit_cats_delete_cats_pc3(char *DB_name, int cat)
 
    pc_in = jp_open_home_file(local_pc_file, "r+");
    if (pc_in==NULL) {
-      /* undo check to see if can create before warning. */
       jp_logf(JP_LOG_WARN, _("Unable to open %s\n"), local_pc_file);
       return -1;
    }
@@ -159,51 +228,6 @@ int edit_cats_delete_cats_pc3(char *DB_name, int cat)
    return count;
 }
 
-/*
- * This routine changes records from old_cat to new_cat.
- *  It does not modify a local pdb file.
- *  It does this by writing a modified record to the pc3 file.
- */
-int edit_cats_delete_cats_pdb(char *DB_name, int cat)
-{
-   int i, r, count;
-   GList *records;
-   GList *temp_list;
-   buf_rec *br;
-
-   jp_logf(JP_LOG_DEBUG, "edit_cats_delete_cats_pdb\n");
-
-   count=0;
-   r = jp_read_DB_files(DB_name, &records);
-
-   /* Go to first entry in the list */
-   for (temp_list = records; temp_list; temp_list = temp_list->prev) {
-      records = temp_list;
-   }
-   for (i=0, temp_list = records; temp_list; temp_list = temp_list->next, i++) {
-      if (temp_list->data) {
-	 br=temp_list->data;
-      } else {
-	 continue;
-      }
-      if (!br->buf) {
-	 continue;
-      }
-      if ( (br->rt==DELETED_PALM_REC) || (br->rt==MODIFIED_PALM_REC) ) {
-	 continue;
-      }
-      if ( (br->attrib & 0x0F) == cat) {
-	 /* write a deleted rec */
-	 jp_delete_record(DB_name, br, DELETE_FLAG);
-	 count++;
-      }
-   }
-
-   jp_free_DB_records(&records);
-
-   return count;
-}
-
 int _edit_cats_change_cats_pc3(char *DB_name, int old_cat,
 			       int new_cat, int swap)
 {
@@ -218,7 +242,6 @@ int _edit_cats_change_cats_pc3(char *DB_name, int old_cat,
 
    pc_in = jp_open_home_file(local_pc_file, "r+");
    if (pc_in==NULL) {
-      /* undo check to see if can create before warning. */
       jp_logf(JP_LOG_WARN, _("Unable to open %s\n"), local_pc_file);
       return -1;
    }
@@ -286,8 +309,6 @@ int edit_cats_swap_cats_pc3(char *DB_name, int old_cat,
 }
 
 
-/* undo make this routine delete by pasing -1 as last parameter,
-   then I can remove a function */
 /*
  * This routine changes records from old_cat to new_cat.
  *  It does not modify a local pdb file.
@@ -325,18 +346,36 @@ int edit_cats_change_cats_pdb(char *DB_name, int old_cat, int new_cat)
 	 continue;
       }
       if ( (br->attrib & 0x0F) == old_cat) {
-	 /* write a deleted rec */
-	 br->attrib=(br->attrib&0xFFFFFFF0) | (new_cat&0x0F);
-	 jp_delete_record(DB_name, br, MODIFY_FLAG);
-	 br->rt=REPLACEMENT_PALM_REC;
-	 jp_pc_write(DB_name, br);
-	 count++;
+	 if (new_cat==-1) {
+	    /* write a deleted rec */
+	    jp_delete_record(DB_name, br, DELETE_FLAG);
+	    count++;
+	 } else {
+	    /* write a deleted rec */
+	    br->attrib=(br->attrib&0xFFFFFFF0) | (new_cat&0x0F);
+	    jp_delete_record(DB_name, br, MODIFY_FLAG);
+	    br->rt=REPLACEMENT_PALM_REC;
+	    jp_pc_write(DB_name, br);
+	    count++;
+	 }
       }
    }
 
    jp_free_DB_records(&records);
 
    return count;
+}
+
+/*
+ * This routine changes deletes records in category cat.
+ *  It does not modify a local pdb file.
+ *  It does this by writing a modified record to the pc3 file.
+ */
+int edit_cats_delete_cats_pdb(char *DB_name, int cat)
+{
+   jp_logf(JP_LOG_DEBUG, "edit_cats_delete_cats_pdb\n");
+
+   return edit_cats_change_cats_pdb(DB_name, cat, -1);
 }
 
 static void cb_edit_button(GtkWidget *widget, gpointer data)
@@ -633,7 +672,6 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
 
    jp_logf(JP_LOG_DEBUG, "edit_cats\n");
 
-   /* undo do some some parameter checking */
    Pdata.selected=-1;
    Pdata.state=EDIT_CAT_START;
    strncpy(Pdata.db_name, db_name, 16);
@@ -822,7 +860,6 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
    }
 #endif
 
-   /* Copy returned results to this category? better way undo */
    memcpy(cai, &(Pdata.cai2), sizeof(struct CategoryAppInfo));
 
    return 0;

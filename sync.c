@@ -2231,77 +2231,6 @@ int pdb_file_swap_indexes(char *DB_name, int index1, int index2)
    return 0;
 }
 
-// undo move this into edit_cats
-/*
- * This changes every record with index old_index and changes it to new_index
- * returns the number of record's categories changed.
- */
-int pdb_file_change_indexes(char *DB_name, int old_index, int new_index)
-{
-   char local_pdb_file[256];
-   char full_local_pdb_file[256];
-   char full_local_pdb_file2[256];
-   struct pi_file *pf1, *pf2;
-   struct DBInfo infop;
-   void *app_info;
-   void *sort_info;
-   void *record;
-   int r;
-   int idx;
-   int size;
-   int attr;
-   int cat, new_cat;
-   int count;
-   pi_uid_t uid;
-
-   jp_logf(JP_LOG_DEBUG, "pi_file_change_indexes\n");
-
-   g_snprintf(local_pdb_file, 250, "%s.pdb", DB_name);
-   get_home_file_name(local_pdb_file, full_local_pdb_file, 250);
-   strcpy(full_local_pdb_file2, full_local_pdb_file);
-   strcat(full_local_pdb_file2, "2");
-
-   pf1 = pi_file_open(full_local_pdb_file);
-   if (!pf1) {
-      jp_logf(JP_LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file);
-      return -1;
-   }
-   pi_file_get_info(pf1, &infop);
-   pf2 = pi_file_create(full_local_pdb_file2, &infop);
-   if (!pf2) {
-      jp_logf(JP_LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file2);
-      return -1;
-   }
-
-   pi_file_get_app_info(pf1, &app_info, &size);
-   pi_file_set_app_info(pf2, app_info, size);
-
-   pi_file_get_sort_info(pf1, &sort_info, &size);  
-   pi_file_set_sort_info(pf2, sort_info, size);
-
-   count = 0;
-
-   for(idx=0;;idx++) {
-      r = pi_file_read_record(pf1, idx, &record, &size, &attr, &cat, &uid);
-      if (r<0) break;
-      new_cat=cat;
-      if (cat==old_index) {
-	 cat=new_index;
-	 count++;
-      }
-      pi_file_append_record(pf2, record, size, attr, cat, uid);
-   }
-
-   pi_file_close(pf1);
-   pi_file_close(pf2);
-
-   if (rename(full_local_pdb_file2, full_local_pdb_file) < 0) {
-      jp_logf(JP_LOG_WARN, "change_indexes: rename failed\n");
-   }
-
-   return 0;
-}
-
 /*
  * This code does not do archiving.
  *
@@ -2662,9 +2591,9 @@ int sync_categories(char *DB_name, int sd,
 	       remote_cai.name[Ri][0]='\0';
 	       /* This category was deleted.
 		Move the records to unfiled */
-	       printf("Moving category %d to unfiled...", Ri);//undo
+	       jp_logf(JP_LOG_DEBUG, "Moving category %d to unfiled...", Ri);
 	       r = dlp_MoveCategory(sd, db, Ri, 0);
-	       printf("returned %d\n", r);//undo
+	       jp_logf(JP_LOG_DEBUG, "dlp_MoveCategory returned %d\n", r);
 	    }
 	 }
 	 continue;
@@ -2700,7 +2629,7 @@ int sync_categories(char *DB_name, int sd,
 	    printf("cat index %d case 2\n", Li);
 #endif
 	    r = pdb_file_swap_indexes(DB_name, Li, found_name_at);
-	    edit_cats_swap_cats_pc3(DB_name, Li, Ri);/* undo this, or i? */
+	    edit_cats_swap_cats_pc3(DB_name, Li, Ri);
 	    strncpy(tmp_name, local_cai.name[found_ID_at], 16);
 	    tmp_name[15]='\0';
 	    strncpy(local_cai.name[found_ID_at],
@@ -2770,7 +2699,7 @@ int sync_categories(char *DB_name, int sd,
 	       log_entry[255]='\0';
 	       charset_j2p((unsigned char *)log_entry, 255, char_set);
 	       dlp_AddSyncLogEntry(sd, log_entry);
-	       printf("\nMoving categories on local\n");//undo
+	       jp_logf(JP_LOG_DEBUG, "Moving local recs category %d to unfiled...", Li);
 	       edit_cats_change_cats_pc3(DB_name, Li, 0);
 	       edit_cats_change_cats_pdb(DB_name, Li, 0);
 	    }
