@@ -1,6 +1,6 @@
-# $Id: Makefile.am,v 1.7 2002/12/25 06:44:21 judd Exp $
+# $Id: Makefile.am,v 1.8 2003/01/08 06:47:32 judd Exp $
 
-SUBDIRS = po Expense SyncTime KeyRing docs intl m4 dialer
+SUBDIRS = Expense SyncTime KeyRing docs m4 dialer intl po
 
 EXTRA_DIST = reconf autogen.sh ChangeLog docs empty icons \
 	BUGS jpilot.spec jpilot-col.spec jpilot.kdelnk jpilot.rh7.spec \
