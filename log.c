@@ -1,4 +1,4 @@
-/* $Id: log.c,v 1.20 2004/11/22 06:58:09 rikster5 Exp $ */
+/* $Id: log.c,v 1.21 2004/11/27 11:41:47 rousseau Exp $ */
 
 /*******************************************************************************
  * log.c
@@ -156,8 +156,6 @@ int jp_vlogf (int level, char *format, va_list val) {
  * This function writes data to the parent process.
  * A line feed, or a null must be the last character written.
  */
-extern int pipe_to_parent, pipe_from_parent;
-
 int write_to_parent(int command, char *format, ...)
 {
 #define WRITE_MAX_BUF 4096
