@@ -10,7 +10,7 @@ Source:    http://jpilot.org/jpilot-%{version}.tar.gz
 URL:       http://jpilot.org
 Packager:  Judd Montgomery <judd@jpilot.org>
 Prefix:    /usr
-DocDir:    %{prefix}/share/doc
+DocDir:    %{prefix}/doc
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 
 %description
@@ -53,6 +53,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root)
+%docdir /usr/doc
 %doc BUGS ChangeLog COPYING AUTHORS INSTALL README TODO UPGRADING
 %doc icons/README
 %doc icons/jpilot-icon1.xpm icons/jpilot-icon2.xpm
@@ -84,10 +85,16 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/jpilot/Memo32DB.pdb
 %{_datadir}/jpilot/ExpenseDB.pdb
 %{_libdir}/jpilot/plugins/libexpense.so
+%{_libdir}/jpilot/plugins/libexpense.so.0
+%{_libdir}/jpilot/plugins/libexpense.so.0.0.0
 %{_libdir}/jpilot/plugins/libexpense.la
 %{_libdir}/jpilot/plugins/libsynctime.so
+%{_libdir}/jpilot/plugins/libsynctime.so.0
+%{_libdir}/jpilot/plugins/libsynctime.so.0.0.0
 %{_libdir}/jpilot/plugins/libsynctime.la
 %{_libdir}/jpilot/plugins/libkeyring.so
+%{_libdir}/jpilot/plugins/libkeyring.so.0
+%{_libdir}/jpilot/plugins/libkeyring.so.0.0.0
 %{_libdir}/jpilot/plugins/libkeyring.la
 %{_datadir}/locale/*/LC_MESSAGES/jpilot.mo
 %{_mandir}/man1/jpilot.1.gz
