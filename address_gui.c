@@ -930,6 +930,8 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	    ldif_out(out, "sn", "%s", last);
 	    if (first)
 	      ldif_out(out, "givenName", "%s", first);
+	    if (ma->a.entry[2])
+	      ldif_out(out, "o", "%s", ma->a.entry[2]);
 	    for (n = 3; n < 8; n++) {
 	       if (ma->a.entry[n]) {
 		  ldif_out(out, ldifMapType(ma->a.phoneLabel[n - 3]), "%s", ma->a.entry[n]);
@@ -945,6 +947,8 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	      ldif_out(out, "postalCode", "%s", ma->a.entry[11]);
 	    if (ma->a.entry[12])
 	      ldif_out(out, "c", "%s", ma->a.entry[12]);
+	    if (ma->a.entry[13])
+	      ldif_out(out, "title", "%s", ma->a.entry[13]);
 	    if (ma->a.entry[14])
 	      ldif_out(out, "custom1", "%s", ma->a.entry[14]);
 	    if (ma->a.entry[15])
@@ -955,6 +959,8 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	      ldif_out(out, "custom4", "%s", ma->a.entry[17]);
 	    if (ma->a.entry[18])
 	      ldif_out(out, "description", "%s", ma->a.entry[18]);
+	    if (ma->a.entry[19])
+	      ldif_out(out, "seeAlso", "%s", ma->a.entry[19]);
 	    fprintf(out, "\n");
 	    break;
 	 }
