@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.12 2003/02/11 07:29:35 judd Exp $
+# $Id: Makefile.am,v 1.13 2003/02/20 23:13:07 judd Exp $
 
 SUBDIRS = intl Expense SyncTime KeyRing docs dialer po
 
@@ -130,6 +130,7 @@ I18NDEFS = -DLOCALEDIR=\"$(localedir)\" -DGNULOCALEDIR=\"$(gnulocaledir)\"
 
 CFLAGS= -Wall @CFLAGS@ @ccoptions@ @PILOT_FLAGS@ @GTK_CFLAGS@ ${I18NDEFS}
 
+jpilot_LDFLAGS = -export-dynamic
 jpilot_LDADD=@LIBS@ @PILOT_LIBS@ @GTK_LIBS@
 jpilot_dump_LDADD=@LIBS@ @PILOT_LIBS@ @GTK_LIBS@
 jpilot_sync_LDADD=@LIBS@ @PILOT_LIBS@ @GTK_LIBS@
