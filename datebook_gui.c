@@ -2559,8 +2559,6 @@ void cb_delete_appt(GtkWidget *widget, gpointer data)
       return;
    }
 
-   delete_pc_record(DATEBOOK, ma, flag);
-
    /* */
    /*We need to take care of the 2 options allowed when modifying */
    /*repeating appointments */
@@ -2583,6 +2581,8 @@ void cb_delete_appt(GtkWidget *widget, gpointer data)
 	 flag=MODIFY_FLAG;
       }
    }
+
+   delete_pc_record(DATEBOOK, ma, flag);
 
    /* Force the calendar redraw and re-read of appointments */
    gtk_signal_emit_by_name(GTK_OBJECT(main_calendar), "day_selected");
