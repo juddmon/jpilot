@@ -1,12 +1,12 @@
 /*
- Czech, Polish (and other CP 1250 languages) library
- Convert Palm  <-> Unix:
- Palm : CP 1250
- Unix : ISO-8859-2
- and
- Palm : CP 1250
- Unix : UTF-8
-*/
+ * Czech, Polish (and other CP 1250 languages) library
+ * Convert Palm  <-> Unix:
+ * Palm : CP 1250
+ * Unix : ISO-8859-2
+ *   and
+ * Palm : CP 1250
+ * Unix : UTF-8
+ */
 
 #include "config.h"
 #include <stdio.h>
