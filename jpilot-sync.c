@@ -73,6 +73,17 @@ int main(int argc, char *argv[])
    jp_startup_info info;
 #endif
 
+   /* enable internationalization(i18n) before printing any output */
+#if defined(ENABLE_NLS)
+#  ifdef HAVE_LOCALE_H
+      char *current_locale;
+      current_locale = setlocale(LC_ALL, "");
+#  endif
+   bindtextdomain(EPN, LOCALEDIR);
+   textdomain(EPN);
+#endif
+
+
    done=cons_errors=0;
    port[0]='\0';
    glob_child_pid=0;
