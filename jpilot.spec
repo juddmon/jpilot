@@ -107,6 +107,8 @@ rm -rf $RPM_BUILD_ROOT
 %{prefix}/share/pixmaps/*
 
 %changelog
+* Sat Feb 22 2003 Judd Montgomery <judd@jpilot.org>
+- fixed jpilotrc.* and empty/* files not being included
 * Sat Feb 22 2003 Vladimir Bormotov <bor@insight.donbass.com>
 - call autogen.sh if no configure found
 - installation improvements
