@@ -2775,7 +2775,7 @@ msgstr "KeyRing : fichier %s non trouvé.\n"
 
 #: KeyRing/keyring.c:1374
 msgid "KeyRing: Try Syncing.\n"
-msgstr "KeyRing : essai de synchronisation.\n"
+msgstr "KeyRing : Essayez de synchroniser.\n"
 
 #: KeyRing/keyring.c:1459
 msgid "Account"
