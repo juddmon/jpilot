@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=J-Pilot
+Comment=Desktop organizer application for the Palm Pilot
+TryExec=jpilot
+Exec=jpilot
+Icon=gnome-palm.png
+Terminal=0
+Type=Application;Office
