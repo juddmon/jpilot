@@ -1356,7 +1356,7 @@ static void make_menus()
 }
 
 /*returns 0 if not found, 1 if found */
-static int clist_find_id(GtkWidget *clist,
+static int expense_clist_find_id(GtkWidget *clist,
 			 unsigned int unique_id,
 			 int *found_at,
 			 int *total_count)
@@ -1367,7 +1367,7 @@ static int clist_find_id(GtkWidget *clist,
    *found_at = 0;
    *total_count = 0;
 
-   jp_logf(JP_LOG_DEBUG, "Expense: clist_find_id\n");
+   jp_logf(JP_LOG_DEBUG, "Expense: expense_clist_find_id\n");
 
    /*100000 is just to prevent ininite looping during a solar flare */
    for (found = i = 0; i<100000; i++) {
@@ -1395,7 +1395,7 @@ static int expense_find(int unique_id)
    
    jp_logf(JP_LOG_DEBUG, "Expense: expense_find\n");
 
-   r = clist_find_id(clist,
+   r = expense_clist_find_id(clist,
 		     unique_id,
 		     &found_at,
 		     &total_count);
