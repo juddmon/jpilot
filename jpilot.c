@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.100 2004/12/03 20:00:08 rousseau Exp $ */
+/* $Id: jpilot.c,v 1.101 2004/12/05 20:58:47 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -1107,8 +1107,248 @@ void get_main_menu(GtkWidget  *window,
 {
 #ifdef ENABLE_GTK2
 #define ICON(icon) "<StockItem>", icon
+#define ICOM_XPM(icon, size) "<ImageItem>", get_inline_pixbuf_data(icon, size)
 #else
 #define ICON(icon) NULL
+#define ICOM_XPM(icon, size) NULL
+#endif
+
+#ifdef ENABLE_GTK2
+#include <gdk-pixbuf/gdk-pixdata.h>
+
+const char *todo_menu_icon[]={
+   "14 14 38 1",
+   "# c None",
+   ". c #000000",
+   "a c #ffffff",
+   "b c #f7f3f7",
+   "c c #636563",
+   "d c #adaaad",
+   "e c #e7e3e7",
+   "f c #c6c7c6",
+   "g c #737573",
+   "h c #b5b6b5",
+   "i c #d6cfce",
+   "j c #5a5d5a",
+   "k c #5a595a",
+   "l c #525552",
+   "m c #c67d7b",
+   "n c #ad7173",
+   "o c #ad7d7b",
+   "p c #9c9a9c",
+   "q c #bd5d5a",
+   "r c #9c0000",
+   "s c #ad4142",
+   "t c #a51c18",
+   "u c #b54d4a",
+   "v c #efd7d6",
+   "w c #b53c39",
+   "x c #ad3431",
+   "y c #d69294",
+   "z c #a52021",
+   "A c #dea6a5",
+   "B c #9c0808",
+   "C c #b54542",
+   "D c #bd5552",
+   "E c #a51410",
+   "F c #ad2421",
+   "G c #ad2c29",
+   "H c #ad2829",
+   "I c #bdbebd",
+   "J c #b5b2b5",
+   "...........###",
+   ".aaaaaaabcd.##",
+   ".aaaaaaafgah.#",
+   ".aaaaaaaijkl.#",
+   ".aaaaaaamnop.#",
+   ".aaaaaaqrsah.#",
+   ".atuaavrwaah.#",
+   ".axryazraaah.#",
+   ".aABryrwaaah.#",
+   ".aaCrDraaaah.#",
+   ".aaAErFaaaah.#",
+   ".aaaGHaaaaah.#",
+   ".aIhhhhhhhhJ.#",
+   ".............#"};
+
+const char *addr_menu_icon[] = {
+   "16 16 43 1",
+   " 	c None",
+   ".	c #000000",
+   "+	c #BDBEBD",
+   "@	c #FFFFFF",
+   "#	c #A5A2A5",
+   "$	c #FFFBFF",
+   "%	c #CEB69C",
+   "&	c #8C7152",
+   "*	c #846D52",
+   "=	c #BDB2A5",
+   "-	c #EFEBE7",
+   ";	c #F7F3F7",
+   ">	c #AD8E6B",
+   ",	c #DED3BD",
+   "'	c #5A4129",
+   ")	c #7B6D5A",
+   "!	c #313031",
+   "~	c #525552",
+   "{	c #EFDFCE",
+   "]	c #F7EFE7",
+   "^	c #735D42",
+   "/	c #736152",
+   "(	c #7392AD",
+   "_	c #C6655A",
+   ":	c #425973",
+   "<	c #D6D7D6",
+   "[	c #ADAEAD",
+   "}	c #9C9A9C",
+   "|	c #4A6984",
+   "1	c #9CBAD6",
+   "2	c #4A6584",
+   "3	c #314D6B",
+   "4	c #63798C",
+   "5	c #5A7D94",
+   "6	c #5A7994",
+   "7	c #39556B",
+   "8	c #314963",
+   "9	c #EFEFEF",
+   "0	c #C6C7C6",
+   "a	c #5A5D5A",
+   "b	c #7B797B",
+   "c	c #E7DFD6",
+   "d	c #948E84",
+   " .............. ",
+   ".+@@@@@@@@@@@@#.",
+   ".@$%&*=@@@$@@@-.",
+   ".@;>,')@!~@~@@-.",
+   ".@;{]^/@@@@@@@-.",
+   ".@$(_:<@[@}[@@-.",
+   ".@|1234@@@@@@@-.",
+   ".@56|78@}}90@@-.",
+   ".@@@@@@@@@@@@@-.",
+   ".@@a@a@b@}@0@@c.",
+   ".#-----------cd.",
+   " .............. ",
+   "                ",
+   "                ",
+   "                ",
+   "                "};
+
+const char *date_menu_icon[] = {
+   "16 16 68 1",
+   " 	c None",
+   ".	c #000000",
+   "+	c #FFFFFF",
+   "@	c #E7E3E7",
+   "#	c #C6C3C6",
+   "$	c #F7F3F7",
+   "%	c #FFFBFF",
+   "&	c #ADAAAD",
+   "*	c #525152",
+   "=	c #101410",
+   "-	c #101010",
+   ";	c #393839",
+   ">	c #6B6D6B",
+   ",	c #ADAEAD",
+   "'	c #737173",
+   ")	c #5A5D5A",
+   "!	c #424142",
+   "~	c #BD8E31",
+   "{	c #EFB239",
+   "]	c #423010",
+   "^	c #E7E7E7",
+   "/	c #B5B6B5",
+   "(	c #636163",
+   "_	c #DEDBDE",
+   ":	c #737573",
+   "<	c #4A494A",
+   "[	c #EFB639",
+   "}	c #F7D794",
+   "|	c #F7BA42",
+   "1	c #946D21",
+   "2	c #A5A2A5",
+   "3	c #949294",
+   "4	c #FFE7BD",
+   "5	c #FFD784",
+   "6	c #FFC342",
+   "7	c #CECFCE",
+   "8	c #080808",
+   "9	c #BDBABD",
+   "0	c #BD8A31",
+   "a	c #FFE3B5",
+   "b	c #FFD78C",
+   "c	c #D6D3D6",
+   "d	c #313431",
+   "e	c #8C8A8C",
+   "f	c #313029",
+   "g	c #CECFBD",
+   "h	c #E7AE39",
+   "i	c #FFDFA5",
+   "j	c #FFCB5A",
+   "k	c #D69E31",
+   "l	c #F7F7F7",
+   "m	c #392808",
+   "n	c #8C6D21",
+   "o	c #292008",
+   "p	c #8C8E8C",
+   "q	c #C6C3AD",
+   "r	c #DEDFDE",
+   "s	c #CECBCE",
+   "t	c #C6C7C6",
+   "u	c #393C31",
+   "v	c #ADAE9C",
+   "w	c #D6D7D6",
+   "x	c #BDBEBD",
+   "y	c #B5B2B5",
+   "z	c #424542",
+   "A	c #A5A6A5",
+   "B	c #9C9A9C",
+   "C	c #9C9E9C",
+   "    .........   ",
+   "   .+++++++@#.  ",
+   "   .+$$$$$$#%&. ",
+   "   .*=.-;>$,')!.",
+   "  ..~{]^/.(_:<=.",
+   " ..[}|1%$^.(/23.",
+   " .[4566+789.2^3.",
+   ".0ab666cde$&fg3.",
+   ".hij66kde+l_-^3.",
+   ".mn666o>++pd.q3.",
+   ".r$+++cd&+$s-^3.",
+   ".&@l+++c<%t2uv3.",
+   " .7wl%+%l79.2^3.",
+   " ..x9s:s,y.)t^3.",
+   "  ..2,zAB.<C292.",
+   "   ............l"};
+
+guint8 *get_inline_pixbuf_data(const char **xpm_icon_data, gint icon_size)
+{
+   GdkPixbuf  *pixbuf;
+   GdkPixdata *pixdata;
+   GdkPixbuf  *scaled_pb;
+   guint8     *data;
+   guint       len;
+
+   pixbuf = gdk_pixbuf_new_from_xpm_data(xpm_icon_data);
+   if (!pixbuf)
+      return NULL;
+
+   if (gdk_pixbuf_get_width(pixbuf)  != icon_size ||
+       gdk_pixbuf_get_height(pixbuf) != icon_size) {
+      scaled_pb = gdk_pixbuf_scale_simple(pixbuf, icon_size, icon_size,
+	 GDK_INTERP_BILINEAR);
+      g_object_unref(G_OBJECT(pixbuf));
+      pixbuf = scaled_pb;
+   }
+
+   pixdata = (GdkPixdata*)g_malloc(sizeof(GdkPixdata));
+   gdk_pixdata_from_pixbuf(pixdata, pixbuf, FALSE);
+   data = gdk_pixdata_serialize(pixdata, &len);
+
+   g_free(pixbuf);
+   g_free(pixdata);
+
+   return data;
+}
 #endif
 
   GtkItemFactoryEntry menu_items1[]={
@@ -1130,10 +1370,10 @@ void get_main_menu(GtkWidget  *window,
   { _("/View/Show Private Records"),       NULL,         cb_private,     SHOW_PRIVATES,      _("/View/Hide Private Records") },
   { _("/View/Mask Private Records"),       NULL,         cb_private,     MASK_PRIVATES,      _("/View/Hide Private Records") },
   { _("/View/sep1"),                       NULL,         NULL,           0,                  "<Separator>" },
-  { _("/View/Datebook"),                   "F1",         cb_app_button,  DATEBOOK,           NULL },
-  { _("/View/Addresses"),                  "F2",         cb_app_button,  ADDRESS,            NULL },
-  { _("/View/Todos"),                      "F3",         cb_app_button,  TODO,               NULL },
-  { _("/View/Memos"),                      "F4",         cb_app_button,  MEMO,               NULL },
+  { _("/View/Datebook"),                   "F1",         cb_app_button,  DATEBOOK,           ICOM_XPM(date_menu_icon, 16) },
+  { _("/View/Addresses"),                  "F2",         cb_app_button,  ADDRESS,            ICOM_XPM(addr_menu_icon, 16) },
+  { _("/View/Todos"),                      "F3",         cb_app_button,  TODO,               ICOM_XPM(todo_menu_icon, 14) },
+  { _("/View/Memos"),                      "F4",         cb_app_button,  MEMO,               ICON(GTK_STOCK_JUSTIFY_LEFT) },
   { _("/_Plugins"),                        NULL,         NULL,           0,                  "<Branch>" },
 #ifdef WEBMENU
   { _("/_Web"),                            NULL,         NULL,           0,                  "<Branch>" },/* web */
