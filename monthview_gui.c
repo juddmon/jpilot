@@ -391,12 +391,12 @@ int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
 	    }
 	    num_shown++;
 	    if (temp_al->ma.a.event) {
-	       desc[0]='\0';
+	       strcpy(desc, "*");
 	    } else {
 	       get_pref_time_no_secs(datef);
 	       strftime(desc, sizeof(desc), datef, &(temp_al->ma.a.begin));
+	       strcat(desc, " ");
 	    }
-	    strcat(desc, " ");
 	    g_string_append(gstr, desc);
 	    g_string_append(gstr, temp_al->ma.a.description);
 	    if (temp_al->ma.a.description) {

@@ -226,12 +226,12 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
 #endif
 	 if (isApptOnDate(&(temp_al->ma.a), &date)) {
 	    if (temp_al->ma.a.event) {
-	       desc[0]='\0';
+	       strcpy(desc, "*");
 	    } else {
 	       get_pref_time_no_secs(datef);
 	       strftime(desc, sizeof(desc), datef, &(temp_al->ma.a.begin));
+	       strcat(desc, " ");
 	    }
-	    strcat(desc, " ");
 	    if (temp_al->ma.a.description) {
 	       strncat(desc, temp_al->ma.a.description, 70);
 	       desc[62]='\0';
