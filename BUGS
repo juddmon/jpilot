@@ -9,10 +9,6 @@ These are some of the bugs that I know about:
 
 * Priority High:
 
- - Categories are one-way sync from the palm to the desktop.  It is possible
-   to do things like add a record into a deleted category on the palm.
- - Palm databases aren't always detected as being changed and then aren't 
-   brought into the desktop, this affects backup.
  - Small memory leaks when switching between apps.  I probably am not doing
    something right when destroying widgets.  I don't know what it is though.
  
@@ -95,4 +91,5 @@ have moved between categories.  Look at items "one" and "two".  They moved
 categories on the desktop.  If this were 50 items, all 50 would have moved
 and possibly merged with other items.
 
-I will duplicate this behavior.
+I have followed the documention I found on the web.  I have not tested to see
+if this exact behavior is duplicated.
