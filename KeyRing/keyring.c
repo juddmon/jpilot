@@ -609,7 +609,7 @@ static void cb_gen_password(GtkWidget *widget, gpointer data)
    passwd[length] = '\0';
    fprintf(stderr, "%s\n", passwd);
 
-   gtk_entry_append_text(GTK_ENTRY(entry), passwd);
+   gtk_entry_set_text(GTK_ENTRY(entry), passwd);
 
    return;
 }
