@@ -47,12 +47,6 @@
 #define CONNECT_SIGNALS 400
 #define DISCONNECT_SIGNALS 401
 
-#define TODO_CHECK_COLUMN     0
-#define TODO_PRIORITY_COLUMN  1
-#define TODO_NOTE_COLUMN      2
-#define TODO_DATE_COLUMN      3
-#define TODO_TEXT_COLUMN      4
-
 extern GtkTooltips *glob_tooltips;
 
 static GtkWidget *clist;
@@ -87,8 +81,8 @@ static int clist_row_selected;
 static int record_changed;
 static int clist_hack;
 
-static void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
-			      ToDoList *todo_list, int category, int main);
+void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
+		       ToDoList *todo_list, int category, int main);
 int todo_clear_details();
 int todo_clist_redraw();
 static void connect_changed_signals(int con_or_dis);
@@ -1295,8 +1289,8 @@ static void cb_clist_selection(GtkWidget      *clist,
 }
 
 
-static void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
-			      ToDoList *todo_list, int category, int main)
+void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
+		       ToDoList *todo_list, int category, int main)
 {
    int num_entries, entries_shown, i;
    int row_count;

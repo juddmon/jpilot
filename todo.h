@@ -25,6 +25,12 @@
 #define MAX_TODO_DESC_LEN	256
 #define MAX_TODO_NOTE_LEN	4000
 
+#define TODO_CHECK_COLUMN     0
+#define TODO_PRIORITY_COLUMN  1
+#define TODO_NOTE_COLUMN      2
+#define TODO_DATE_COLUMN      3
+#define TODO_TEXT_COLUMN      4
+
 void free_ToDoList(ToDoList **todo);
 int get_todos(ToDoList **todo_list, int sort_order);
 int get_todos2(ToDoList **todo_list, int sort_order,
@@ -36,5 +42,9 @@ int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib,
 int todo_print();
 int todo_import(GtkWidget *window);
 int todo_export(GtkWidget *window);
+
+/* I only export this for datebook, don't use this */
+void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
+		       ToDoList *todo_list, int category, int main);
 
 #endif

@@ -35,6 +35,7 @@
 #include <pi-datebook.h>
 
 #include "datebook.h"
+#include "todo.h"
 #include "log.h"
 #include "prefs.h"
 #include "utils.h"
@@ -98,6 +99,7 @@ static void connect_changed_signals(int con_or_dis);
 static GtkWidget *main_calendar;
 static GtkWidget *dow_label;
 static GtkWidget *clist;
+static GtkWidget *todo_clist;
 static GtkWidget *text_widget1, *text_widget2;
 static GtkWidget *private_checkbox;
 static GtkWidget *check_button_alarm;
@@ -139,6 +141,7 @@ static GtkWidget *datebk_entry;
 static GtkWidget *hbox_alarm1, *hbox_alarm2;
 
 static GtkWidget *scrolled_window;
+static GtkWidget *todo_scrolled_window;
 
 static struct tm begin_date, end_date;
 static GtkWidget *option1, *option2, *option3, *option4;
@@ -153,6 +156,7 @@ static GtkWidget *add_record_button;
 static GtkAccelGroup *accel_group;
 
 static AppointmentList *glob_al;
+static ToDoList *datebook_todo_list=NULL;
 
 int datebook_to_text(struct Appointment *a, char *text, int len)
 {
@@ -3305,6 +3309,7 @@ int datebook_gui_cleanup()
    int b;
 
    free_AppointmentList(&glob_al);
+   free_ToDoList(&datebook_todo_list);
 
    b=dialog_save_changed_record(pane, record_changed);
    if (b==DIALOG_SAID_1) {
@@ -3567,7 +3572,30 @@ GtkWidget *create_time_menu(int flags)
    return option;
 }
 
+/*
+ * TODO code
+ */
+static void cb_todo_clist_selection(GtkWidget      *clist,
+				    gint           row,
+				    gint           column,
+				    GdkEventButton *event,
+				    gpointer       data)
+{
+   MyToDo *mtodo;
 
+   if (!event) return;
+
+   mtodo = gtk_clist_get_row_data(GTK_CLIST(clist), row);
+   if (mtodo == NULL) {
+      return;
+   }
+   glob_find_id = mtodo->unique_id;
+   cb_app_button(NULL, GINT_TO_POINTER(TODO));
+}
+/*
+ * End TODO code
+ */
+  
 int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 {
    extern GtkWidget *glob_date_label;
@@ -3805,6 +3833,48 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
    /*gtk_clist_set_sort_column (GTK_CLIST(clist), 0); */
    /*gtk_clist_set_auto_sort(GTK_CLIST(clist), TRUE); */
+
+   
+   /*
+    * Put up a ToDo clist
+    */
+   todo_scrolled_window = gtk_scrolled_window_new(NULL, NULL);
+   gtk_container_set_border_width(GTK_CONTAINER(todo_scrolled_window), 0);
+   gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(todo_scrolled_window),
+				  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+   gtk_box_pack_start(GTK_BOX(vbox1), todo_scrolled_window, TRUE, TRUE, 0);
+
+   todo_clist = gtk_clist_new_with_titles(5, titles);
+
+   gtk_clist_set_column_title(GTK_CLIST(todo_clist), TODO_TEXT_COLUMN, _("Task"));
+   gtk_clist_set_column_title(GTK_CLIST(todo_clist), TODO_DATE_COLUMN, _("Due"));
+   /* Put pretty pictures in the clist column headings */
+   get_pixmaps(vbox, PIXMAP_NOTE, &pixmap, &mask);
+   pixmapwid = gtk_pixmap_new(pixmap, mask);
+   hack_clist_set_column_title_pixmap(todo_clist, TODO_NOTE_COLUMN, pixmapwid);
+
+   get_pixmaps(vbox, PIXMAP_BOX_CHECKED, &pixmap, &mask);
+   pixmapwid = gtk_pixmap_new(pixmap, mask);
+   hack_clist_set_column_title_pixmap(todo_clist, TODO_CHECK_COLUMN, pixmapwid);
+
+   gtk_clist_column_titles_passive(GTK_CLIST(todo_clist));
+   gtk_signal_connect(GTK_OBJECT(todo_clist), "select_row",
+		      GTK_SIGNAL_FUNC(cb_todo_clist_selection), NULL);
+   gtk_clist_set_shadow_type(GTK_CLIST(todo_clist), SHADOW);
+   gtk_clist_set_selection_mode(GTK_CLIST(todo_clist), GTK_SELECTION_BROWSE);
+
+   gtk_clist_set_column_auto_resize(GTK_CLIST(todo_clist), TODO_CHECK_COLUMN, TRUE);
+   gtk_clist_set_column_auto_resize(GTK_CLIST(todo_clist), TODO_PRIORITY_COLUMN, TRUE);
+   gtk_clist_set_column_auto_resize(GTK_CLIST(todo_clist), TODO_NOTE_COLUMN, TRUE);
+   gtk_clist_set_column_auto_resize(GTK_CLIST(todo_clist), TODO_DATE_COLUMN, TRUE);
+   gtk_clist_set_column_auto_resize(GTK_CLIST(todo_clist), TODO_TEXT_COLUMN, FALSE);
+
+   gtk_container_add(GTK_CONTAINER(todo_scrolled_window), GTK_WIDGET(todo_clist));
+
+   todo_update_clist(todo_clist, NULL, datebook_todo_list, CATEGORY_ALL, FALSE);
+   /*
+    * End ToDo clist code
+    */
 
    /*
     * The right hand part of the main window follows:
