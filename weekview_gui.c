@@ -264,7 +264,7 @@ void weekview_gui(struct tm *date_in)
    long fdow;
    int i;
    char title[200];
-   unsigned long w, h;
+   long w, h;
 
    if (window) {
       return;

@@ -2678,7 +2678,7 @@ void cb_delete_appt(GtkWidget *widget, gpointer data)
    int flag;
    int result = 0;
    int show_priv;
-   unsigned long char_set;
+   long char_set;
 
    mappt = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
    if (mappt < (MyAppointment *)CLIST_MIN_DATA) {

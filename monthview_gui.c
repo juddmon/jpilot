@@ -434,7 +434,7 @@ void monthview_gui(struct tm *date_in)
    long fdow;
    const char *str_fdow;
    char title[200];
-   unsigned long w, h;
+   long w, h;
 
    if (window) {
       return;
