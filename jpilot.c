@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.90 2004/11/24 06:04:24 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.91 2004/11/25 18:34:00 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -2421,10 +2421,10 @@ char *xpm_unlocked[] = {
 	 g_strlcat(text, _("Go to the menu \""), sizeof(text));
 	 g_strlcat(text, _("/File/Preferences"), sizeof(text));
 	 g_strlcat(text, _("\" and change the \""), sizeof(text));
-	 g_strlcat(text, _("Character Set "), sizeof(text));
+	 g_strlcat(text, _("Character Set"), sizeof(text));
 	 g_strlcat(text, _("\"."), sizeof(text));
          ret = dialog_generic(GTK_WINDOW(window), 0, 0,
-	    _("Select an UTF-8 encoding"), NULL, text, 2, button_text);
+	    _("Select a UTF-8 encoding"), NULL, text, 2, button_text);
 
 	if (DIALOG_SAID_2 == ret)
  	   set_pref(PREF_UTF_ENCODING, 1, NULL, 1);
