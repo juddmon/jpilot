@@ -2018,8 +2018,8 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    entries_shown=0;
 
    for (temp_al = *addr_list, i=0; temp_al; temp_al=temp_al->next) {
-      if ( ((temp_al->ma.attrib & 0x0F) != address_category) &&
-	   address_category != CATEGORY_ALL) {
+      if ( ((temp_al->ma.attrib & 0x0F) != category) &&
+	   category != CATEGORY_ALL) {
 	 continue;
       }
       /* Do masking like Palm OS 3.5 */
