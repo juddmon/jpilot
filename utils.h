@@ -245,6 +245,7 @@ int find_next_offset(mem_rec_header *mem_rh, long fpos,
 
 /*The VP is a pointer to MyAddress, MyAppointment, etc. */
 int delete_pc_record(AppType app_type, void *VP, int flag);
+int undelete_pc_record(AppType app_type, void *VP, int flag);
 
 void get_month_info(int month, int day, int year, int *dow, int *ndim);
 
