@@ -1068,7 +1068,8 @@ void parse_phone_str(char *dest, char *src, int max_len)
 	  ) {
 	 dest[i2]=src[i1];
 	 i2++;
-      } else if (((src[i1] =='\n') || (src[i1] =='\r')) && i2) {
+      } else if (((src[i1] =='\n') || (src[i1] =='\r') ||
+		  (src[i1] =='x')) && i2) {
 	 break;
       }
    }
