@@ -75,15 +75,21 @@ int pc_datebook_write(struct Appointment *a, PCRecType rt,
 void free_AppointmentList(AppointmentList **al);
 
 /*
- * If Null is passed in for date, then all appointments will be returned
+ * If Null is passed in for date, then all appointments will be returned.
+ * total_records returns total records in database (can pass in NULL).
+ * returns number of records in list.
  */
-int get_days_appointments(AppointmentList **al_out, struct tm *date);
+int get_days_appointments(AppointmentList **al_out, struct tm *date,
+			  int *total_records);
 /*
  * If Null is passed in for date, then all appointments will be returned
- * modified, deleted and private, 0 for no, 1 for yes, 2 for use prefs
+ * modified, deleted and private, 0 for no, 1 for yes, 2 for use prefs.
+ * total_records returns total records in database (can pass in NULL).
+ * returns number of records in list.
  */
 int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
-			   int modified, int deleted, int privates);
+			   int modified, int deleted, int privates,
+			   int *total_records);
 
 /* This funtion removes appointments from the list that obviously will not
  * occur in this month */

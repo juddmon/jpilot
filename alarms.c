@@ -653,7 +653,7 @@ gint cb_timer_alarms(gpointer data)
 	 }
       }
       if (a_list==NULL) {
-	 get_days_appointments2(&a_list, NULL, 0, 0, 1);
+	 get_days_appointments2(&a_list, NULL, 0, 0, 1, NULL);
       }
 #ifdef ALARMS_DEBUG
       printf("unique_id=%d\n", temp_alarm->unique_id);
@@ -682,7 +682,7 @@ gint cb_timer_alarms(gpointer data)
       diff = next_alarm->event_time - t - next_alarm->alarm_advance;
       if (diff <= ALARM_INTERVAL/2) {
 	 if (a_list==NULL) {
-	    get_days_appointments2(&a_list, NULL, 0, 0, 1);
+	    get_days_appointments2(&a_list, NULL, 0, 0, 1, NULL);
 	 }
 	 for (temp_alarm=next_alarm; temp_alarm; temp_alarm=ta_next) {
 	    for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
@@ -1296,7 +1296,7 @@ int alarms_find_next(struct tm *date1_in, struct tm *date2_in, int soonest_only)
    }
 
    a_list=NULL;
-   get_days_appointments2(&a_list, NULL, 0, 0, 1);
+   get_days_appointments2(&a_list, NULL, 0, 0, 1, NULL);
 
    t_soonest=0;
 

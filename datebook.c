@@ -876,7 +876,7 @@ int appointment_on_day_list(int mon, int year, int *mask)
    tm_dom.tm_year=year;
 
    al = NULL;
-   num = get_days_appointments2(&al, NULL, 2, 2, 2);
+   num = get_days_appointments2(&al, NULL, 2, 2, 2, NULL);
 
    get_month_info(mon, 1, year, &dow, &ndim);
 
@@ -902,16 +902,18 @@ int appointment_on_day_list(int mon, int year, int *mask)
    return 0;
 }
 
-int get_days_appointments(AppointmentList **appointment_list, struct tm *now)
+int get_days_appointments(AppointmentList **appointment_list, struct tm *now,
+			  int *total_records)
 {
-   return get_days_appointments2(appointment_list, now, 1, 1, 1);
+   return get_days_appointments2(appointment_list, now, 1, 1, 1, total_records);
 }
 /*
  * If Null is passed in for date, then all appointments will be returned
  * modified, deleted and private, 0 for no, 1 for yes, 2 for use prefs
  */
 int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
-			   int modified, int deleted, int privates)
+			   int modified, int deleted, int privates,
+			   int *total_records)
 {
    GList *records;
    GList *temp_list;
@@ -960,6 +962,7 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
    recs_returned = 0;
 
    num = jp_read_DB_files("DatebookDB", &records);
+   if (total_records) *total_records = num;
    /* Go to first entry in the list */
    for (temp_list = records; temp_list; temp_list = temp_list->prev) {
       records = temp_list;

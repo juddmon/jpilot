@@ -64,7 +64,7 @@ static int
    /*Search Appointments */
    a_list = NULL;
 
-   get_days_appointments2(&a_list, NULL, 2, 2, 2);
+   get_days_appointments2(&a_list, NULL, 2, 2, 2, NULL);
 
    if (a_list==NULL) {
       return 0;

@@ -201,7 +201,7 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
    }
 
    /* Get all of the appointments */
-   get_days_appointments2(&a_list, NULL, 2, 2, 2);
+   get_days_appointments2(&a_list, NULL, 2, 2, 2, NULL);
 
    /* iterate through eight days */
    memcpy(&date, date_in, sizeof(struct tm));

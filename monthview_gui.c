@@ -134,7 +134,7 @@ cb_enter_notify(GtkWidget *widget, GdkEvent *event, gpointer data)
    mktime(&date);
 
    /* Get all of the appointments */
-   get_days_appointments2(&a_list, &date, 2, 2, 2);
+   get_days_appointments2(&a_list, &date, 2, 2, 2, NULL);
 
    gtk_text_set_point(GTK_TEXT(big_text),
 		      gtk_text_get_length(GTK_TEXT(big_text)));
@@ -291,7 +291,7 @@ int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
    memcpy(&date, date_in, sizeof(struct tm));
 
    /* Get all of the appointments */
-   get_days_appointments2(&a_list, NULL, 2, 2, 2);
+   get_days_appointments2(&a_list, NULL, 2, 2, 2, NULL);
 
    get_month_info(date.tm_mon, 1, date.tm_year, &dow, &ndim);
 

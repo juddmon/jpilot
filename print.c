@@ -325,7 +325,7 @@ int print_days_appts(struct tm *date)
 
    a_list = NULL;
 
-   get_days_appointments2(&a_list, date, 2, 2, 2);
+   get_days_appointments2(&a_list, date, 2, 2, 2, NULL);
 
    print_dayview(date, a_list);
 
@@ -460,7 +460,7 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
    memcpy(&date, date_in, sizeof(struct tm));
    /* Get all of the appointments */
 
-   get_days_appointments2(&a_list, NULL, 2, 2, 2);
+   get_days_appointments2(&a_list, NULL, 2, 2, 2, NULL);
    get_month_info(date.tm_mon, 1, date.tm_year, &dow, &ndim);
    weed_datebook_list(&a_list, date.tm_mon, date.tm_year, &mask);
 
@@ -655,7 +655,7 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
     * Run through the appointments, looking for earliest and latest
     *------------------------------------------------------------------*/
    a_list = NULL;
-   get_days_appointments2(&a_list, NULL, 2, 2, 2);
+   get_days_appointments2(&a_list, NULL, 2, 2, 2, NULL);
    reset_first_last();
 
    memcpy(&date, date_in, sizeof(struct tm));
@@ -697,7 +697,7 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
    a_list = NULL;
 
    /* Get all of the appointments */
-   get_days_appointments2(&a_list, NULL, 2, 2, 2);
+   get_days_appointments2(&a_list, NULL, 2, 2, 2, NULL);
 
    /* iterate through seven days */
    memcpy(&date, date_in, sizeof(struct tm));

@@ -697,7 +697,7 @@ void appt_export_ok(int type, const char *filename)
       return;
    }
 
-   get_days_appointments2(&al, NULL, 2, 2, 2);
+   get_days_appointments2(&al, NULL, 2, 2, 2, NULL);
 
    time(&ltime);
    now = gmtime(&ltime);
@@ -1499,7 +1499,7 @@ static void init()
       /* Search Appointments for this id to get its date */
       a_list = NULL;
 
-      get_days_appointments2(&a_list, NULL, 1, 1, 1);
+      get_days_appointments2(&a_list, NULL, 1, 1, 1, NULL);
 
       for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
 	 if (temp_al->ma.unique_id == glob_find_id) {
@@ -2118,7 +2118,7 @@ static void clear_myappointment(MyAppointment *ma)
 
 static int dayview_update_clist()
 {
-   int num_entries, i;
+   int num_entries, entries_shown, num, i;
    AppointmentList *temp_al;
    gchar *empty_line[] = { "","","","",""};
    char a_time[32];
@@ -2162,9 +2162,10 @@ static int dayview_update_clist()
 
    free_AppointmentList(&glob_al);
 
-   num_entries = get_days_appointments2(&glob_al, &new_time, 2, 2, 1);
+   num = get_days_appointments2(&glob_al, &new_time, 2, 2, 1,
+					&num_entries);
 
-   jp_logf(JP_LOG_DEBUG, "get_days_appointments==>%d\n", num_entries);
+   jp_logf(JP_LOG_DEBUG, "get_days_appointments==>%d\n", num);
 #ifdef ENABLE_DATEBK
    jp_logf(JP_LOG_DEBUG, "datebook_category = 0x%x\n", datebook_category);
 #endif
@@ -2173,6 +2174,7 @@ static int dayview_update_clist()
 
    show_priv = show_privates(GET_PRIVATES);
 
+   entries_shown=0;
    for (temp_al = glob_al, i=0; temp_al; temp_al=temp_al->next, i++) {
 #ifdef ENABLE_DATEBK
       ret=0;
@@ -2196,6 +2198,7 @@ static int dayview_update_clist()
 	 clear_myappointment(&temp_al->ma);
 	 gtk_clist_set_row_data(GTK_CLIST(clist), i, &(temp_al->ma));
 	 gtk_clist_set_background(GTK_CLIST(clist), i, NULL);
+	 entries_shown++;
 	 continue;
       }
       /* End Masking */
@@ -2206,6 +2209,7 @@ static int dayview_update_clist()
       }
 
       gtk_clist_append(GTK_CLIST(clist), empty_line);
+      entries_shown++;
       if (temp_al->ma.a.event) {
 	 /*This is a timeless event */
 	 strcpy(a_time, _("No Time"));
@@ -2312,6 +2316,14 @@ static int dayview_update_clist()
       set_new_button_to(CLEAR_FLAG);
       clear_details();
    }
+
+     {
+	extern GtkTooltips *glob_tooltips;
+	char str[82];
+	g_snprintf(str, 80, _("%d of %d records"), entries_shown, num_entries);
+	str[80]='\0';
+	gtk_tooltips_set_tip(glob_tooltips, GTK_CLIST(clist)->column[DB_APPT_COLUMN].button, str, NULL);
+     }
 
    return 0;
 }
@@ -4382,6 +4394,6 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    /* The focus doesn't do any good on the application button */
    gtk_widget_grab_focus(GTK_WIDGET(main_calendar));
-
+   
    return 0;
 }

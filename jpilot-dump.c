@@ -118,7 +118,7 @@ int dumpbook()
    struct tm tm_dom;
 
    al = NULL;
-   num = get_days_appointments(&al, NULL);
+   num = get_days_appointments(&al, NULL, NULL);
    if (num == 0) return (num);
 
 /* get date */
