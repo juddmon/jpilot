@@ -1,4 +1,4 @@
-0.99.4 - 12/25/02
+0.99.4 - 01/13/03
  Ported code to GTK-2 (I used GTK-2.2)
  Added random password generation to KeyRing
  Added a dialer program and GUI launcher
