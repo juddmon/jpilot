@@ -311,9 +311,13 @@ AC_ARG_ENABLE(prometheon,
    enable_prometheon=yes;
    AC_DEFINE(ENABLE_PROMETHEON, 1, [ Prometheon support ])
    AC_MSG_RESULT(Prometheon support enabled)
+   AC_DEFINE_UNQUOTED(PROGNAME, "copilot", [ program name ])
    ,
    enable_prometheon=no;
+   AC_DEFINE_UNQUOTED(PROGNAME, "jpilot", [ program name ])
    )
+
+AC_SUBST(PROGNAME)
 
 AC_ARG_ENABLE(alarm-shell-danger,
    [  --enable-alarm-shell-danger Allow alarm descriptions and notes to be used in alarm shell commands],
