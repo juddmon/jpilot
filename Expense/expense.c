@@ -27,6 +27,7 @@
 
 #include "libplugin.h"
 #include "../i18n.h"
+#include "utils.h"
 
 #include <pi-expense.h>
 #include <pi-dlp.h>
@@ -44,6 +45,8 @@
 #define MAX_EXPENSE_TYPES 28
 #define MAX_CURRENCYS     34
 
+/* this is alredy defined in utils.h with a different value */
+#undef CATEGORY_ALL
 #define CATEGORY_ALL 200
 
 #define CONNECT_SIGNALS 400
@@ -943,12 +946,17 @@ static void redraw_cat_menus(struct CategoryAppInfo *cai)
 
    categories[0]=all;
    for (i=0, count=0; i<16; i++) {
+      int len;
+      char *temp_str;
       glob_category_number_from_menu_item[i]=0;
       if (cai->name[i][0]=='\0') {
 	 continue;
       }
       categories[count+1]=cai->name[i];
-      jp_charset_p2j((unsigned char *)categories[count+1], strlen(categories[count+1])+1);
+      temp_str = malloc((len = strlen(categories[count+1])*2+1));
+      multibyte_safe_strncpy(temp_str, categories[count+1], len);
+      jp_charset_p2j(temp_str, len);
+      categories[count+1]=temp_str;
       glob_category_number_from_menu_item[count++]=i;
    }
    categories[count+1]=NULL;
@@ -959,6 +967,8 @@ static void redraw_cat_menus(struct CategoryAppInfo *cai)
    gtk_box_pack_start(GTK_BOX(left_menu_box), menu_category1, TRUE, TRUE, 0);
    /* Skip the ALL for this menu */
    make_menu(&categories[1], EXPENSE_CAT2, &menu_category2, menu_item_category2);
+   for (i=1; categories[i]; i++)
+       free(categories[i]);
    gtk_box_pack_start(GTK_BOX(right_menu_box), menu_category2, TRUE, TRUE, 0);
 }
 
@@ -1318,12 +1328,17 @@ static void make_menus()
 
    categories[0]=all;
    for (i=0, count=0; i<16; i++) {
+      int len;
+      char *temp_str;
       glob_category_number_from_menu_item[i]=0;
       if (eai.category.name[i][0]=='\0') {
 	 continue;
       }
       categories[count+1]=eai.category.name[i];
-      jp_charset_p2j((unsigned char *)categories[count+1], strlen(categories[count+1])+1);
+      temp_str = malloc((len = strlen(categories[count+1])*2+1));
+      multibyte_safe_strncpy(temp_str, categories[count+1], len);
+      jp_charset_p2j(temp_str, len);
+      categories[count+1] = temp_str;
       glob_category_number_from_menu_item[count++]=i;
    }
    categories[count+1]=NULL;
@@ -1336,6 +1351,8 @@ static void make_menus()
    make_menu(payment, EXPENSE_PAYMENT, &menu_payment, menu_item_payment);
    make_menu(expense_type, EXPENSE_TYPE, &menu_expense_type, menu_item_expense_type);
    make_menu(currency, EXPENSE_CURRENCY, &menu_currency, menu_item_currency);
+   for (i=1; categories[i]; i++)
+       free(categories[i]);
 }
 
 /*returns 0 if not found, 1 if found */
