@@ -755,8 +755,11 @@ static int display_record(struct MyKeyRing *mkr, int at_row)
       sprintf(temp, "#%03d", at_row);
       gtk_clist_set_text(GTK_CLIST(clist), at_row, 0, temp);
    } else {
-      temp_str = strdup(mkr->kr.name);
-      jp_charset_p2j((unsigned char *)temp_str, strlen(mkr->kr.name)+1);
+	  int len;
+
+	  temp_str = malloc((len = strlen(mkr->kr.name)*2+1));
+	  multibyte_safe_strncpy(temp_str, mkr->kr.name, len);
+	  jp_charset_p2j(temp_str, len);
       gtk_clist_set_text(GTK_CLIST(clist), at_row, 0, temp_str);
       free(temp_str);
    }
@@ -764,8 +767,11 @@ static int display_record(struct MyKeyRing *mkr, int at_row)
    if ( (!(mkr->kr.account)) || (mkr->kr.account[0]=='\0') ) {
       gtk_clist_set_text(GTK_CLIST(clist), at_row, 1, "");
    } else {
-      temp_str = strdup(mkr->kr.account);
-      jp_charset_p2j((unsigned char *)temp_str, strlen(mkr->kr.account)+1);
+	  int len;
+
+	  temp_str = malloc((len = strlen(mkr->kr.account)*2+1));
+	  multibyte_safe_strncpy(temp_str, mkr->kr.account, len);
+	  jp_charset_p2j(temp_str, len);
       gtk_clist_set_text(GTK_CLIST(clist), at_row, 1, temp_str);
       free(temp_str);
    }
@@ -957,8 +963,11 @@ static void cb_clist_selection(GtkWidget      *clist,
    gtk_option_menu_set_history(GTK_OPTION_MENU(menu_category2), item_num);
 
    if (mkr->kr.name) {
-      temp_str = strdup(mkr->kr.name);
-      jp_charset_p2j((unsigned char *)temp_str, strlen(mkr->kr.name)+1); 
+	  int len;
+
+	  temp_str = malloc((len = strlen(mkr->kr.name)*2+1));
+	  multibyte_safe_strncpy(temp_str, mkr->kr.name, len);
+      jp_charset_p2j((unsigned char *)temp_str, len);
       gtk_entry_set_text(GTK_ENTRY(entry_name), temp_str);
       free(temp_str);
    } else {
@@ -966,8 +975,11 @@ static void cb_clist_selection(GtkWidget      *clist,
    }
 
    if (mkr->kr.account) {
-      temp_str = strdup(mkr->kr.account);
-      jp_charset_p2j((unsigned char *)temp_str, strlen(mkr->kr.account)+1); 
+	  int len;
+
+	  temp_str = malloc((len = strlen(mkr->kr.account)*2+1));
+	  multibyte_safe_strncpy(temp_str, mkr->kr.account, len);
+      jp_charset_p2j((unsigned char *)temp_str, len);
       gtk_entry_set_text(GTK_ENTRY(entry_account), temp_str); 
       free(temp_str);
    } else {
@@ -975,8 +987,11 @@ static void cb_clist_selection(GtkWidget      *clist,
    }
 
    if (mkr->kr.password) {
-      temp_str = strdup(mkr->kr.password);
-      jp_charset_p2j((unsigned char *)temp_str, strlen(mkr->kr.password)+1);
+	  int len;
+
+	  temp_str = malloc((len = strlen(mkr->kr.password)*2+1));
+	  multibyte_safe_strncpy(temp_str, mkr->kr.password, len);
+      jp_charset_p2j((unsigned char *)temp_str, len);
       gtk_entry_set_text(GTK_ENTRY(entry_password), temp_str); 
       free(temp_str);
    } else {
@@ -991,8 +1006,11 @@ static void cb_clist_selection(GtkWidget      *clist,
 			   gtk_text_get_length(GTK_TEXT(text_note)));
 #endif
    if (mkr->kr.note) {
-      temp_str = strdup(mkr->kr.note);
-      jp_charset_p2j((unsigned char *)temp_str, strlen(mkr->kr.note)+1);
+	  int len;
+
+	  temp_str = malloc((len = strlen(mkr->kr.note)*2+1));
+	  multibyte_safe_strncpy(temp_str, mkr->kr.note, len);
+      jp_charset_p2j((unsigned char *)temp_str, len);
 #ifdef ENABLE_GTK2
       gtk_text_buffer_set_text(GTK_TEXT_BUFFER(text_note_buffer), temp_str, -1);
 #else
