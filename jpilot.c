@@ -1668,7 +1668,7 @@ int main(int argc, char *argv[])
    int i, x, y, h, w;
    int bit_mask;
    char title[MAX_PREF_VALUE+256];
-   long pref_width, pref_height;
+   long pref_width, pref_height, pref_show_tooltips;
    long char_set;
    char *geometry_str=NULL;
    int iconify = 0;
@@ -2334,6 +2334,13 @@ char *xpm_unlocked[] = {
    gtk_tooltips_set_tip(glob_tooltips, button_todo, _("ToDo List"), NULL);
 
    gtk_tooltips_set_tip(glob_tooltips, button_memo, _("Memo Pad"), NULL);
+
+   /* Enable tooltips if preference is set */ 
+   get_pref(PREF_SHOW_TOOLTIPS, &pref_show_tooltips, NULL);
+   if (pref_show_tooltips)
+      gtk_tooltips_enable(glob_tooltips);   
+   else
+      gtk_tooltips_disable(glob_tooltips);   
 
    /*Set a callback for our pipe from the sync child process */
    gdk_input_add(pipe_from_child, GDK_INPUT_READ, cb_read_pipe_from_child, window);
