@@ -972,9 +972,10 @@ void appt_export_ok(int type, const char *filename)
 #define BROWSE_CANCEL 2
 
 #define NUM_CAT_ITEMS 16
+#define NUM_EXPORT_TYPES 3
 
 static GtkWidget *save_as_entry;
-static GtkWidget *export_radio_type[3];
+static GtkWidget *export_radio_type[NUM_EXPORT_TYPES+1];
 static int glob_export_type;
 
 static int datebook_export_gui(int x, int y);
@@ -1081,7 +1082,7 @@ static int datebook_export_gui(int x, int y)
 
    /* Export Type Buttons */
    group = NULL;
-   for (i=0; i<100; i++) {
+   for (i=0; i<NUM_EXPORT_TYPES; i++) {
       if (type_text[i]==NULL) break;
       export_radio_type[i] = gtk_radio_button_new_with_label(group, type_text[i]);
       group = gtk_radio_button_group(GTK_RADIO_BUTTON(export_radio_type[i]));
