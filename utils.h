@@ -51,6 +51,8 @@
 #define VERSION_STRING "\n"PN" version "VERSION"\n"\
 " Copyright (C) 1999-2001 by Judd Montgomery\n"
 
+#define	FPI_STRING	"-//Judd Montgomery//NONSGML "PN" "VERSION"//EN"
+
 /*This is how often the clock updates in milliseconds */
 #define CLOCK_TICK 1000
 
@@ -101,11 +103,13 @@
 #define IMPORT_TYPE_XML     103
 
 /* Export defines */
-#define EXPORT_TYPE_UNKNOWN  99
-#define EXPORT_TYPE_TEXT    100
-#define EXPORT_TYPE_DAT     101
-#define EXPORT_TYPE_CSV     102
-#define EXPORT_TYPE_XML     103
+#define EXPORT_TYPE_UNKNOWN    99
+#define EXPORT_TYPE_TEXT      100
+#define EXPORT_TYPE_DAT       101
+#define EXPORT_TYPE_CSV       102
+#define EXPORT_TYPE_XML       103
+#define EXPORT_TYPE_VCARD     104
+#define EXPORT_TYPE_ICALENDAR 105
 
 /* Dat file types */
 #define DAT_DATEBOOK_FILE    10
@@ -341,6 +345,19 @@ int str_to_csv_str(char *dest, char *src);
  * Return value is the number of chars written to dest.
  */
 int csv_str_to_str(char *dest, char *src);
+
+/*
+ * Copy src string into dest while escaping carraige returns,
+ * backslashes, commas and semicolons.  Also do line wrapping.
+ * dest could be as long as strlen(src) * 2 + strlen(src) / 30.
+ * Return value is the number of chars written to dest.
+ */
+int str_to_ical_str(char *, int, char *);
+
+/*
+ * Same as str_to_ical_str() except doesn't escape semicolons.
+ */
+int str_to_vcard_str(char *, int, char *);
 
 /*
  * Parse the string and replace CR and LFs with spaces

@@ -178,14 +178,14 @@ int datebook_to_text(struct Appointment *a, char *text, int len)
 	"Repeat YearlyDay"
    };
    char *days[] = {
-      _("Su"),
-      _("Mo"),
-      _("Tu"),
-      _("We"),
-      _("Th"),
-      _("Fr"),
-      _("Sa"),
-      _("Su")
+      gettext_noop("Su"),
+      gettext_noop("Mo"),
+      gettext_noop("Tu"),
+      gettext_noop("We"),
+      gettext_noop("Th"),
+      gettext_noop("Fr"),
+      gettext_noop("Sa"),
+      gettext_noop("Su")
    };
 
    if ((a->repeatWeekstart<0) ||(a->repeatWeekstart>6)) {
@@ -253,7 +253,7 @@ int datebook_to_text(struct Appointment *a, char *text, int len)
       for (i=0; i<7; i++) {
 	 if (a->repeatDays[i]) {
 	    strcat(text_repeat_days, " ");
-	    strcat(text_repeat_days, days[i]);
+	    strcat(text_repeat_days, _(days[i]));
 	 }
       }
       strcat(text_repeat_days, "\n");
@@ -292,7 +292,7 @@ int datebook_to_text(struct Appointment *a, char *text, int len)
 	      text_repeat_type,
 	      text_repeat_freq,
 	      text_end_date,
-	      days[a->repeatWeekstart],
+	      _(days[a->repeatWeekstart]),
 	      text_repeat_day,
 	      text_repeat_days,
 	      text_exceptions
@@ -623,8 +623,27 @@ void appt_export_ok(int type, const char *filename)
    char *button_overwrite_text[]={gettext_noop("Yes"), gettext_noop("No")};
    char text[1024];
    char csv_text[65550];
+   char *p;
+   time_t ltime;
+   struct tm *now;
+   char username[256];
+   char hostname[256];
+   const char *svalue;
+   long userid;
 
    al=NULL;
+
+   /* this stuff is for ical only. */
+   /* todo: create a pre-export switch */
+   get_pref(PREF_USER, &userid, &svalue);
+   strncpy(text, svalue, 127);
+   text[127]='\0';
+   str_to_ical_str(username, sizeof(username), text);
+   get_pref(PREF_USER_ID, &userid, &svalue);
+   gethostname(text, 127);
+   text[127]='\0';
+   str_to_ical_str(hostname, sizeof(hostname), text);
+
 
    if (!stat(filename, &statb)) {
       if (S_ISDIR(statb.st_mode)) {
@@ -654,6 +673,8 @@ void appt_export_ok(int type, const char *filename)
 
    get_days_appointments2(&al, NULL, 2, 2, 2);
 
+   time(&ltime);
+   now = gmtime(&ltime);
    ma=NULL;
    for (i=0, temp_list=al; temp_list; temp_list = temp_list->next, i++) {
       ma = &(temp_list->ma);
@@ -737,6 +758,181 @@ void appt_export_ok(int type, const char *filename)
 	    }
 	 }
 	 fprintf(out, "\"\n");
+	 break;
+       case EXPORT_TYPE_ICALENDAR:
+	 /* RFC 2445: Internet Calendaring and Scheduling Core
+	  *           Object Specification */
+	 if (i == 0) {
+	    fprintf(out, "BEGIN:VCALENDAR\nVERSION:2.0\n");
+	    fprintf(out, "PRODID:%s\n", FPI_STRING);
+	 }
+	 fprintf(out, "BEGIN:VEVENT\n");
+	 /* XXX maybe if it's secret export a VFREEBUSY busy instead? */
+	 if (ma->attrib & dlpRecAttrSecret) {
+	    fprintf(out, "CLASS:PRIVATE\n");
+	 }
+	 fprintf(out, "UID:palm-datebook-%08x-%08lx-%s@%s\n",
+		 ma->unique_id, userid, username, hostname);
+	 fprintf(out, "DTSTAMP:%04d%02d%02dT%02d%02d%02dZ\n",
+		 now->tm_year+1900,
+		 now->tm_mon+1,
+		 now->tm_mday,
+		 now->tm_hour,
+		 now->tm_min,
+		 now->tm_sec);
+	 strncpy(text, ma->a.description, 50);
+	 text[50] = '\0';
+	 if ((p = strchr(text, '\n'))) {
+	    *p = '\0';
+	 }
+	 str_to_ical_str(csv_text, sizeof(csv_text), text);
+	 fprintf(out, "SUMMARY:%s%s\n", csv_text,
+		 strlen(text) > 49 ? "..." : "");
+	 str_to_ical_str(csv_text, sizeof(csv_text), ma->a.description);
+	 fprintf(out, "DESCRIPTION:%s", csv_text);
+	 if (ma->a.note && ma->a.note[0]) {
+	    str_to_ical_str(csv_text, sizeof(csv_text), ma->a.note);
+	    fprintf(out, "\\n\n %s\n", csv_text);
+	 } else {
+	    fprintf(out, "\n");
+	 }
+	 if (ma->a.event) {
+	    fprintf(out, "DTSTART;VALUE=DATE:%04d%02d%02d\n",
+		    ma->a.begin.tm_year+1900,
+		    ma->a.begin.tm_mon+1,
+		    ma->a.begin.tm_mday);
+	    /* XXX unclear: can "event" span multiple days? */
+	    /* since DTEND is "noninclusive", should this be the next day? */
+	    if (ma->a.end.tm_year != ma->a.begin.tm_year ||
+		ma->a.end.tm_mon != ma->a.begin.tm_mon ||
+		ma->a.end.tm_mday != ma->a.begin.tm_mday) {
+	       fprintf(out, "DTEND;VALUE=DATE:%04d%02d%02d\n",
+		       ma->a.end.tm_year+1900,
+		       ma->a.end.tm_mon+1,
+		       ma->a.end.tm_mday);
+	    }
+	 } else {
+	    /*
+	     * These are "local" times, so will be treated as being in
+	     * the other person's timezone when they are imported.  This
+	     * may or may not be what is desired.  (DateBk calls this
+	     * "all time zones").
+	     *
+	     * DateBk timezones could help us decide what to do here.
+	     *
+	     * When using DateBk timezones, we could write them out
+	     * as iCalendar timezones.
+	     *
+	     * Maybe the default should be to write an absolute (UTC) time,
+	     * and only write a "local" time when using DateBk and it says to.
+	     * It'd be interesting to see if repeated events get translated
+	     * properly when doing this, or if they become not eligible for
+	     * daylight savings.  This probably depends on the importing
+	     * application.
+	     */
+	    fprintf(out, "DTSTART:%04d%02d%02dT%02d%02d00\n",
+		    ma->a.begin.tm_year+1900,
+		    ma->a.begin.tm_mon+1,
+		    ma->a.begin.tm_mday,
+		    ma->a.begin.tm_hour,
+		    ma->a.begin.tm_min);
+	    fprintf(out, "DTEND:%04d%02d%02dT%02d%02d00\n",
+		    ma->a.end.tm_year+1900,
+		    ma->a.end.tm_mon+1,
+		    ma->a.end.tm_mday,
+		    ma->a.end.tm_hour,
+		    ma->a.end.tm_min);
+	 }
+	 if (ma->a.repeatType != repeatNone) {
+	    int wcomma, rptday;
+	    char *wday[] = {"SU","MO","TU","WE","TH","FR","SA"};
+	    fprintf(out, "RRULE:FREQ=");
+	    switch(ma->a.repeatType) {
+	     case repeatNone:
+	       /* can't happen, just here to quiet gcc down. */
+	       break;
+	     case repeatDaily:
+	       fprintf(out, "DAILY");
+	       break;
+	     case repeatWeekly:
+	       fprintf(out, "WEEKLY;BYDAY=");
+	       wcomma=0;
+	       for (i=0; i<7; i++) {
+		  if (ma->a.repeatDays[i]) {
+		     if (wcomma) {
+			fprintf(out, ",");
+		     }
+		     wcomma = 1;
+		     fprintf(out, wday[i]);
+		  }
+	       }
+	       break;
+	     case repeatMonthlyByDay:
+	       rptday = (ma->a.repeatDay / 7) + 1;
+	       fprintf(out, "MONTHLY;BYDAY=%d%s", rptday == 5 ? -1 : rptday,
+		       wday[ma->a.repeatDay % 7]);
+	       break;
+	     case repeatMonthlyByDate:
+	       fprintf(out, "MONTHLY;BYMONTHDAY=%d", ma->a.begin.tm_mday);
+	       break;
+	     case repeatYearly:
+	       fprintf(out, "YEARLY");
+	       break;
+	    }
+	    if (ma->a.repeatFrequency != 1) {
+	       if (ma->a.repeatType == repeatWeekly &&
+		   ma->a.repeatWeekstart >= 0 && ma->a.repeatWeekstart < 7) {
+		  fprintf(out, ";WKST=%s", wday[ma->a.repeatWeekstart]);
+	       }
+	       fprintf(out, ";INTERVAL=%d", ma->a.repeatFrequency);
+	    }
+	    if (!ma->a.repeatForever) {
+	       fprintf(out, ";UNTIL=%04d%02d%02d",
+		       ma->a.repeatEnd.tm_year+1900,
+		       ma->a.repeatEnd.tm_mon+1,
+		       ma->a.repeatEnd.tm_mday);
+	    }
+	    fprintf(out, "\n");
+	    if (ma->a.exceptions > 0) {
+	       fprintf(out, "EXDATE;VALUE=DATE:");
+	       for (i=0; i<ma->a.exceptions; i++) {
+		  if (i>0) {
+		     fprintf(out, ",");
+		  }
+		  fprintf(out, "%04d%02d%02d",
+			  ma->a.exception[i].tm_year+1900,
+			  ma->a.exception[i].tm_mon+1,
+			  ma->a.exception[i].tm_mday);
+	       }
+	       fprintf(out, "\n");
+	    }
+	 }
+	 if (ma->a.alarm) {
+	    char *units;
+	    fprintf(out, "BEGIN:VALARM\nACTION:DISPLAY\n");
+	    str_to_ical_str(csv_text, sizeof(csv_text), ma->a.description);
+	    fprintf(out, "DESCRIPTION:%s\n", csv_text);
+	    switch (ma->a.advanceUnits) {
+	     case advMinutes:
+	       units = "M";
+	       break;
+	     case advHours:
+	       units = "H";
+	       break;
+	     case advDays:
+	       units = "D";
+	       break;
+	     default: /* XXX */
+	       units = "?";
+	       break;
+	    }
+	    fprintf(out, "TRIGGER:-PT%d%s\n", ma->a.advance, units);
+	    fprintf(out, "END:VALARM\n");
+	 }
+	 fprintf(out, "END:VEVENT\n");
+	 if (temp_list->next == NULL) {
+	    fprintf(out, "END:VCALENDAR\n");
+	 }
 	 break;
        default:
 	 jp_logf(JP_LOG_WARN, "Unknown export type\n");
@@ -836,8 +1032,8 @@ static int datebook_export_gui(int x, int y)
    GtkWidget *hbox;
    GtkWidget *label;
    GSList *group;
-   char *type_text[]={"Text", "CSV", NULL};
-   int type_int[]={EXPORT_TYPE_TEXT, EXPORT_TYPE_CSV};
+   char *type_text[]={"Text", "CSV", "iCalendar", NULL};
+   int type_int[]={EXPORT_TYPE_TEXT, EXPORT_TYPE_CSV, EXPORT_TYPE_ICALENDAR};
    int i;
    const char *svalue;
 
@@ -2448,7 +2644,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    int type;
    char *note;
    int len;
-   unsigned long use_db3_tags;
+   long use_db3_tags;
 #endif
 
    if (!event) return;
@@ -2728,7 +2924,7 @@ void cb_cal_changed(GtkWidget *widget,
 		    gpointer   data)
 {
    int num;
-   int y,m,d;
+   unsigned int y,m,d;
    int mon_changed;
 #ifdef EASTER
    static int Easter=0;
@@ -3100,7 +3296,7 @@ static void connect_changed_signals(int con_or_dis)
    int i;
    static int connected=0;
 #ifdef ENABLE_DATEBK
-   unsigned long use_db3_tags;
+   long use_db3_tags;
 #endif
 
 #ifdef ENABLE_DATEBK

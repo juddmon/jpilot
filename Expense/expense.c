@@ -816,7 +816,7 @@ static void redraw_cat_menus(struct CategoryAppInfo *cai)
 	 continue;
       }
       categories[count+1]=cai->name[i];
-      jp_charset_p2j(categories[count+1], strlen(categories[count+1])+1);
+      jp_charset_p2j((unsigned char *)categories[count+1], strlen(categories[count+1])+1);
       glob_category_number_from_menu_item[count++]=i;
    }
    categories[count+1]=NULL;
@@ -861,7 +861,7 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
 
    jp_edit_cats(widget, "ExpenseDB", &(ai.category));
 
-   size = pack_ExpenseAppInfo(&ai, buffer, 65535);
+   size = pack_ExpenseAppInfo(&ai, (unsigned char *)buffer, 65535);
 
    jp_pdb_file_write_app_block("ExpenseDB", buffer, size);
    
@@ -1176,7 +1176,7 @@ static void make_menus()
 	 continue;
       }
       categories[count+1]=eai.category.name[i];
-      jp_charset_p2j(categories[count+1], strlen(categories[count+1])+1);
+      jp_charset_p2j((unsigned char *)categories[count+1], strlen(categories[count+1])+1);
       glob_category_number_from_menu_item[count++]=i;
    }
    categories[count+1]=NULL;

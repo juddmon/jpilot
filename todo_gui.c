@@ -603,6 +603,22 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
    char str1[256], str2[256];
    char pref_time[40];
    char *csv_text;
+   char *p;
+   char username[256];
+   char hostname[256];
+   const char *svalue;
+   long userid;
+
+   /* this stuff is for ical only. */
+   /* todo: create a pre-export switch */
+   get_pref(PREF_USER, &userid, &svalue);
+   strncpy(text, svalue, 127);
+   text[127]='\0';
+   str_to_ical_str(username, sizeof(username), text);
+   get_pref(PREF_USER_ID, &userid, &svalue);
+   gethostname(text, 127);
+   text[127]='\0';
+   str_to_ical_str(hostname, sizeof(hostname), text);
 
    list=GTK_CLIST(clist)->selection;
 
@@ -631,6 +647,10 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 		     "Filename", text, 1, button_text);
       return;
    }
+
+   time(&ltime);
+   now = gmtime(&ltime);
+   /* XXX ical wants gmtime, text wants localtime */
 
    for (i=0, temp_list=list; temp_list; temp_list = temp_list->next, i++) {
       mtodo = gtk_clist_get_row_data(GTK_CLIST(clist), (int) temp_list->data);
@@ -709,6 +729,58 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	    fprintf(out, "Note: %s\n", mtodo->todo.note);
 	 }
 	 break;
+       case EXPORT_TYPE_ICALENDAR:
+	 /* RFC 2445: Internet Calendaring and Scheduling Core
+	  *           Object Specification */
+	 if (i == 0) {
+	    fprintf(out, "BEGIN:VCALENDAR\nVERSION:2.0\n");
+	    fprintf(out, "PRODID:%s\n", FPI_STRING);
+	 }
+	 fprintf(out, "BEGIN:VTODO\n");
+	 if (mtodo->attrib & dlpRecAttrSecret) {
+	    fprintf(out, "CLASS:PRIVATE\n");
+	 }
+	 fprintf(out, "UID:palm-todo-%08x-%08lx-%s@%s\n",
+		 mtodo->unique_id, userid, username, hostname);
+	 fprintf(out, "DTSTAMP:%04d%02d%02dT%02d%02d%02dZ\n",
+		 now->tm_year+1900,
+		 now->tm_mon+1,
+		 now->tm_mday,
+		 now->tm_hour,
+		 now->tm_min,
+		 now->tm_sec);
+	 str_to_ical_str(text, sizeof(text), 
+			 todo_app_info.category.name[mtodo->attrib & 0x0F]);
+	 fprintf(out, "CATEGORIES:%s\n", text);
+	 strncpy(str1, mtodo->todo.description, 50);
+	 str1[50] = '\0';
+	 if ((p = strchr(str1, '\n'))) {
+	    *p = '\0';
+	 }
+	 str_to_ical_str(text, sizeof(text), str1);
+	 fprintf(out, "SUMMARY:%s%s\n", text,
+		 strlen(str1) > 49 ? "..." : "");
+	 str_to_ical_str(text, sizeof(text), mtodo->todo.description);
+	 fprintf(out, "DESCRIPTION:%s", text);
+	 if (mtodo->todo.note && mtodo->todo.note[0]) {
+	    str_to_ical_str(text, sizeof(text), mtodo->todo.note);
+	    fprintf(out, "\\n\n %s\n", text);
+	 } else {
+	    fprintf(out, "\n");
+	 }
+	 fprintf(out, "STATUS:%s\n", mtodo->todo.complete ? "COMPLETED" : "NEEDS-ACTION");
+	 fprintf(out, "PRIORITY:%d\n", mtodo->todo.priority);
+	 if (!mtodo->todo.indefinite) {
+	    fprintf(out, "DUE;VALUE=DATE:%04d%02d%02d\n",
+		    mtodo->todo.due.tm_year+1900,
+		    mtodo->todo.due.tm_mon+1,
+		    mtodo->todo.due.tm_mday);
+	 }
+	 fprintf(out, "END:VTODO\n");
+	 if (temp_list->next == NULL) {
+	    fprintf(out, "END:VCALENDAR\n");
+	 }
+	 break;
        default:
 	 jp_logf(JP_LOG_WARN, "Unknown export type\n");
       }
@@ -736,8 +808,8 @@ static void cb_todo_export_done(GtkWidget *widget, const char *filename)
 int todo_export(GtkWidget *window)
 {
    int w, h, x, y;
-   char *type_text[]={"Text", "CSV", NULL};
-   int type_int[]={EXPORT_TYPE_TEXT, EXPORT_TYPE_CSV};
+   char *type_text[]={"Text", "CSV", "iCalendar", NULL};
+   int type_int[]={EXPORT_TYPE_TEXT, EXPORT_TYPE_CSV, EXPORT_TYPE_ICALENDAR};
 
    gdk_window_get_size(window->window, &w, &h);
    gdk_window_get_root_origin(window->window, &x, &y);
@@ -1058,7 +1130,7 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
 {
    struct ToDoAppInfo ai;
    char full_name[256];
-   char buffer[65536];
+   unsigned char buffer[65536];
    int num, r;
    int size;
    void *buf;

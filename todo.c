@@ -258,7 +258,7 @@ void pc_todo_validate_correct(struct ToDo *todo)
 int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib,
 		  unsigned int *unique_id)
 {
-   char record[65536];
+   unsigned char record[65536];
    int rec_len;
    buf_rec br;
    long char_set;
@@ -268,8 +268,12 @@ int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib,
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    if (char_set != CHAR_SET_LATIN1) {
-      if (todo->description) charset_j2p(todo->description, strlen(todo->description)+1, char_set);
-      if (todo->note) charset_j2p(todo->note, strlen(todo->note)+1, char_set);
+      if (todo->description) {
+	 charset_j2p((unsigned char *)todo->description, strlen(todo->description)+1, char_set);
+      }
+      if (todo->note) {
+	 charset_j2p((unsigned char *)todo->note, strlen(todo->note)+1, char_set);
+      }
    }
 
    pc_todo_validate_correct(todo);
@@ -323,7 +327,7 @@ void free_ToDoList(ToDoList **todo)
 int get_todo_app_info(struct ToDoAppInfo *ai)
 {
    int num, i, r;
-   unsigned int rec_size;
+   int rec_size;
    unsigned char *buf;
    long char_set;
 #ifdef ENABLE_MANANA
@@ -372,7 +376,7 @@ int get_todo_app_info(struct ToDoAppInfo *ai)
    if (char_set != CHAR_SET_LATIN1) {
       for (i = 0; i < 16; i++) {
 	 if (ai->category.name[i][0] != '\0') {
-	    charset_p2j(ai->category.name[i], 16, char_set);
+	    charset_p2j((unsigned char *)ai->category.name[i], 16, char_set);
 	 }
       }
    }
@@ -483,7 +487,7 @@ int get_todos2(ToDoList **todo_list, int sort_order,
       if (todo.description) {
 	 if ((buf = (char *)malloc(strlen(todo.description)*2+1)) != NULL) {
 	    strcpy(buf, todo.description);
-	    charset_p2j(buf, strlen(todo.description)*2+1, char_set);
+	    charset_p2j((unsigned char *)buf, strlen(todo.description)*2+1, char_set);
 	    free(todo.description);
 	    todo.description = buf;
 	 }
@@ -491,7 +495,7 @@ int get_todos2(ToDoList **todo_list, int sort_order,
       if (todo.note) {
 	 if ((buf = (char *)malloc(strlen(todo.note)*2+1)) != NULL) {
 	    strcpy(buf, todo.note);
-	    charset_p2j(buf, strlen(todo.note)*2+1, char_set);
+	    charset_p2j((unsigned char *)buf, strlen(todo.note)*2+1, char_set);
 	    free(todo.note);
 	    todo.note = buf;
 	 }

@@ -8,8 +8,13 @@
  * 10/15/2002
  * Added forking code and volume settings (--lv, --rv).
  */
-#include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#include <unistd.h>
+#include <wait.h>
+#include <termio.h>
 #include <fcntl.h>
 #include <malloc.h>
 #include <sys/types.h>

@@ -285,6 +285,67 @@ int sub_years_from_date(struct tm *date, int n)
 }
 
 /*
+ * Quote for iCalendar (RFC 2445) or vCard (RFC 2426).
+ * The only difference is that iCalendar also quotes semicolons.
+ * Wrap at 60-ish characters.
+ */
+static int str_to_iv_str(char *dest, int destsz, char *src, int isical)
+{
+   int c;
+   char *destend, *odest;
+
+   if ((!src) || (!dest)) {
+      return 0;
+   }
+   odest = dest;
+   destend = dest + destsz - 4;	/* max 4 chars into dest per loop iteration */
+   c=0;
+   while (*src) {
+      if (dest >= destend) {
+	 break;
+      }
+      if (c>60) {
+	 *dest++='\n';
+	 *dest++=' ';
+	 c=0;
+      }
+      if (*src=='\n') {
+	 *dest++='\\';
+	 *dest++='n';
+	 c+=2;
+	 src++;
+	 continue;
+      }
+      if (*src=='\\' || (isical && *src == ';') || *src == ',') {
+	 *dest++='\\';
+	 c++;
+      }
+      *dest++=*src++;
+      c++;
+   }
+   *dest++='\0';
+   return dest - odest;
+}
+
+/*
+ * Quote a TEXT format string as specified by RFC 2445.
+ * Wrap it at 60-ish characters.
+ */
+int str_to_ical_str(char *dest, int destsz, char *src)
+{
+   return str_to_iv_str(dest, destsz, src, 1);
+}
+
+/*
+ * Quote a *TEXT-LIST-CHAR format string as specified by RFC 2426.
+ * Wrap it at 60-ish characters.
+ */
+int str_to_vcard_str(char *dest, int destsz, char *src)
+{
+   return str_to_iv_str(dest, destsz, src, 0);
+}
+
+/*
  * Copy src string into dest while escaping quotes with double quotes.
  * dest could be as long as strlen(src)*2.
  * Return value is the number of chars written to dest.
@@ -723,7 +784,7 @@ static void
 cb_quit(GtkWidget *widget,
 	gpointer   data)
 {
-   int y,m,d;
+   unsigned int y,m,d;
 
    glob_cal_return_code = GPOINTER_TO_INT(data);
 
@@ -1499,7 +1560,7 @@ int get_app_info(char *DB_name, unsigned char **buf, int *buf_size)
 {
    FILE *in;
    int num;
-   unsigned int rec_size;
+   int rec_size;
    RawDBHeader rdbh;
    DBHeader dbh;
    char PDB_name[256];
@@ -1572,7 +1633,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
    struct Memo *memo;
    MyMemo *mmemo;
    char filename[30];
-   char record[65536];
+   unsigned char record[65536];
    PCRecType record_type;
    unsigned int unique_id;
    long ivalue;
@@ -1988,11 +2049,11 @@ int setup_sync(unsigned int flags)
    get_pref(PREF_USER, &ivalue, &svalue);
    strncpy(sync_info.username, svalue, 127);
    sync_info.username[127]='\0';
-   get_pref(PREF_USER_ID, &(sync_info.userID), &svalue);
+   get_pref(PREF_USER_ID, (long*) &(sync_info.userID), &svalue);
    jp_logf(JP_LOG_DEBUG, "pref port=[%s]\n", port);
    jp_logf(JP_LOG_DEBUG, "num_backups=%d\n", num_backups);
 
-   get_pref(PREF_PC_ID, &(sync_info.PC_ID), &svalue);
+   get_pref(PREF_PC_ID, (long*) &(sync_info.PC_ID), &svalue);
    if (sync_info.PC_ID == 0) {
       srandom(time(NULL));
       /* RAND_MAX is 32768 on Solaris machines for some reason.
@@ -2178,7 +2239,7 @@ int pdb_file_count_recs(char *DB_name, int *num)
    get_home_file_name(local_pdb_file, full_local_pdb_file, 250);
 
    pf = pi_file_open(full_local_pdb_file);
-   if (pf<=0) {
+   if (!pf) {
       jp_logf(JP_LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file);
       return -1;
    }
@@ -2215,13 +2276,13 @@ int pdb_file_delete_record_by_id(char *DB_name, pi_uid_t uid_in)
    strcat(full_local_pdb_file2, "2");
 
    pf1 = pi_file_open(full_local_pdb_file);
-   if (pf1<=0) {
+   if (!pf1) {
       jp_logf(JP_LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file);
       return -1;
    }
    pi_file_get_info(pf1, &infop);
    pf2 = pi_file_create(full_local_pdb_file2, &infop);
-   if (pf2<=0) {
+   if (!pf2) {
       jp_logf(JP_LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file2);
       return -1;
    }
@@ -2280,13 +2341,13 @@ int pdb_file_modify_record(char *DB_name, void *record_in, int size_in,
    strcat(full_local_pdb_file2, "2");
 
    pf1 = pi_file_open(full_local_pdb_file);
-   if (pf1<=0) {
+   if (!pf1) {
       jp_logf(JP_LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file);
       return -1;
    }
    pi_file_get_info(pf1, &infop);
    pf2 = pi_file_create(full_local_pdb_file2, &infop);
-   if (pf2<=0) {
+   if (!pf2) {
       jp_logf(JP_LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file2);
       return -1;
    }
@@ -2340,7 +2401,7 @@ int pdb_file_read_record_by_id(char *DB_name,
    get_home_file_name(local_pdb_file, full_local_pdb_file, 250);
 
    pf1 = pi_file_open(full_local_pdb_file);
-   if (pf1<=0) {
+   if (!pf1) {
       jp_logf(JP_LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file);
       return -1;
    }
@@ -2380,13 +2441,13 @@ int pdb_file_write_app_block(char *DB_name, void *bufp, int size_in)
    strcat(full_local_pdb_file2, "2");
 
    pf1 = pi_file_open(full_local_pdb_file);
-   if (pf1<=0) {
+   if (!pf1) {
       jp_logf(JP_LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file);
       return -1;
    }
    pi_file_get_info(pf1, &infop);
    pf2 = pi_file_create(full_local_pdb_file2, &infop);
-   if (pf2<=0) {
+   if (!pf2) {
       jp_logf(JP_LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file2);
       return -1;
    }

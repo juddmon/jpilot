@@ -557,6 +557,30 @@ int address_import(GtkWidget *window)
  * Start Export code
  */
 
+static char *vCardMapType(int label)
+{
+   switch(label) {
+    case 0:
+      return "work";
+    case 1:
+      return "home";
+    case 2:
+      return "fax";
+    case 3:
+      return "x-other";
+    case 4:
+      return "email";
+    case 5:
+      return "x-main";
+    case 6:
+      return "pager";
+    case 7:
+      return "cell";
+    default:
+      return "x-unknown";
+   }
+}
+
 void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 		       int type, const char *filename)
 {
@@ -575,6 +599,21 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
    char text[1024];
    char csv_text[65550];
    long char_set, use_jos;
+   char username[256];
+   char hostname[256];
+   const char *svalue;
+   long userid;
+
+   /* this stuff is for vcard only. */
+   /* todo: create a pre-export switch */
+   get_pref(PREF_USER, &userid, &svalue);
+   strncpy(text, svalue, 127);
+   text[127]='\0';
+   str_to_ical_str(username, sizeof(username), text);
+   get_pref(PREF_USER_ID, &userid, &svalue);
+   gethostname(text, 127);
+   text[127]='\0';
+   str_to_ical_str(hostname, sizeof(hostname), text);
 
    list=GTK_CLIST(clist)->selection;
 
@@ -713,6 +752,111 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 fprintf(out, "\"%d\"", ma->a.showPhone);
 	 fprintf(out, "\n");
 	 break;
+
+       case EXPORT_TYPE_VCARD:
+	 /* RFC 2426: vCard MIME Directory Profile */
+	 fprintf(out, "BEGIN:VCARD\nVERSION:3.0\n");
+	 fprintf(out, "PRODID:%s\n", FPI_STRING);
+	 if (ma->attrib & dlpRecAttrSecret) {
+	    fprintf(out, "CLASS:PRIVATE\n");
+	 }
+	 fprintf(out, "UID:palm-addressbook-%08x-%08lx-%s@%s\n",
+		 ma->unique_id, userid, username, hostname);
+	 str_to_vcard_str(csv_text, sizeof(csv_text), 
+			  address_app_info.category.name[ma->attrib & 0x0F]);
+	 fprintf(out, "CATEGORIES:%s\n", csv_text);
+	 if (ma->a.entry[0] || ma->a.entry[1]) {
+	    char *last = ma->a.entry[0];
+	    char *first = ma->a.entry[1];
+	    fprintf(out, "FN:");
+	    if (first) {
+	       str_to_vcard_str(csv_text, sizeof(csv_text), first);
+	       fprintf(out, "%s", csv_text);
+	    }
+	    if (first && last) {
+	       fprintf(out, " ");
+	    }
+	    if (last) {
+	       str_to_vcard_str(csv_text, sizeof(csv_text), last);
+	       fprintf(out, "%s", csv_text);
+	    }
+	    fprintf(out, "\n");
+	    fprintf(out, "N:");
+	    if (last) {
+	       str_to_vcard_str(csv_text, sizeof(csv_text), last);
+	       fprintf(out, "%s", csv_text);
+	    }
+	    fprintf(out, ";");
+	    /* split up first into first + middle and do first;middle,middle*/
+	    if (first) {
+	       str_to_vcard_str(csv_text, sizeof(csv_text), first);
+	       fprintf(out, "%s", csv_text);
+	    }
+	    fprintf(out, "\n");
+	 } else if (ma->a.entry[2]) {
+	    str_to_vcard_str(csv_text, sizeof(csv_text), ma->a.entry[2]);
+	    fprintf(out, "FN:%s\nN:%s\n", csv_text, csv_text);
+	 } else {
+	    fprintf(out, "FN:-Unknown-\nN:known-;-Un\n");
+	 }
+	 if (ma->a.entry[13]) {
+	    str_to_vcard_str(csv_text, sizeof(csv_text), ma->a.entry[13]);
+	    fprintf(out, "TITLE:%s\n", csv_text);
+	 }
+	 if (ma->a.entry[2]) {
+	    str_to_vcard_str(csv_text, sizeof(csv_text), ma->a.entry[2]);
+	    fprintf(out, "ORG:%s\n", csv_text);
+	 }
+	 for (n = 3; n < 8; n++) {
+	    if (ma->a.entry[n]) {
+	       str_to_vcard_str(csv_text, sizeof(csv_text), ma->a.entry[n]);
+	       if (ma->a.phoneLabel[n - 3] == 4) {
+		  fprintf(out, "EMAIL:%s\n", csv_text);
+	       } else {
+		  fprintf(out, "TEL;TYPE=%s", vCardMapType(ma->a.phoneLabel[n - 3]));
+		  if (ma->a.showPhone == n - 3) {
+		     fprintf(out, ",pref");
+		  }
+		  fprintf(out, ":%s\n", csv_text);
+	       }
+	    }
+	 }
+	 if (ma->a.entry[8] || ma->a.entry[9] || ma->a.entry[10] || ma->a.entry[11] || ma->a.entry[12]) {
+	    /* XXX wrap this line. */
+	    fprintf(out, "ADR:;;");
+	    for (n = 8; n < 13; n++) {
+	       if (ma->a.entry[n]) {
+		  str_to_vcard_str(csv_text, sizeof(csv_text), ma->a.entry[n]);
+		  fprintf(out, "%s", csv_text);
+	       }
+	       if (n < 12) {
+		  fprintf(out, ";");
+	       }
+	    }
+	    fprintf(out, "\n");
+	 }
+	 if (ma->a.entry[14] || ma->a.entry[15] || ma->a.entry[16] ||
+	     ma->a.entry[17] || ma->a.entry[18]) {
+	    char *labels[]={"Custom1","Custom2","Custom3","Custom4","Note"};
+	    int firstnote=1;
+	    fprintf(out, "NOTE:");
+	    for (n=14;n<=18;n++) {
+	       if (ma->a.entry[n]) {
+		  str_to_vcard_str(csv_text, sizeof(csv_text), ma->a.entry[n]);
+		  if (firstnote == 0) {
+		     fprintf(out, " ");
+		  }
+		  if (n==18 && firstnote) {
+		     fprintf(out, "%s\\n\n", csv_text);
+		  } else {
+		     fprintf(out, "%s:\\n\n %s\\n\n", labels[n-14], csv_text);
+		  }
+		  firstnote=0;
+	       }
+	    }
+	 }
+	 fprintf(out, "END:VCARD\n");
+	 break;
        default:
 	 jp_logf(JP_LOG_WARN, "Unknown export type\n");
       }
@@ -740,8 +884,8 @@ static void cb_addr_export_done(GtkWidget *widget, const char *filename)
 int address_export(GtkWidget *window)
 {
    int w, h, x, y;
-   char *type_text[]={"Text", "CSV", NULL};
-   int type_int[]={EXPORT_TYPE_TEXT, EXPORT_TYPE_CSV};
+   char *type_text[]={"Text", "CSV", "vCard", NULL};
+   int type_int[]={EXPORT_TYPE_TEXT, EXPORT_TYPE_CSV, EXPORT_TYPE_VCARD};
 
    gdk_window_get_size(window->window, &w, &h);
    gdk_window_get_root_origin(window->window, &x, &y);
@@ -1213,7 +1357,7 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
 
    edit_cats(widget, "AddressDB", &(ai.category));
 
-   size = pack_AddressAppInfo(&ai, buffer, 65535);
+   size = pack_AddressAppInfo(&ai, (unsigned char*)buffer, 65535);
 
    pdb_file_write_app_block("AddressDB", buffer, size);
 
