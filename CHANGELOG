@@ -1,3 +1,19 @@
+0.96 - 11/10/99
+ Plugin (conduit) support added.
+ Patch for reversed todo sorting.
+ Timesheet plugin (not yet fully working)
+ Wrote an Expense plugin for an example plugin.
+ Wrote a SyncTime plugin.
+ Created a User Manual.
+ Created plugin programmer documentation.
+ Datebook problem with GMT and repeating appts fixed (were off 1 day
+  in certain cases).
+ I made TAB cycle through the text boxes during data entry.
+ I added validation checks to repeating appts so that invalid appointments
+  can't be entered into the palm.
+ I Made clists bahave more intuitively.  They stay put when changing data now.
+ Week of the year numbers added on the calendar.
+
 0.95 - 09/09/99 (This is a key Y2K date, it'll probably blow up)
  Made fixes to configure for Solaris (-lsocket).
  Removed file locking code.

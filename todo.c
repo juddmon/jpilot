@@ -53,6 +53,32 @@ int todo_compare(struct ToDo *todo1, struct ToDo *todo2,
    sort_by_priority = ai->sortByPriority;
    
    if (sort_by_priority == 0) {
+      /* due date, priority */
+      if ( !(todo1->indefinite) && (todo2->indefinite) ) {
+	 return -1;
+      }
+      if ( (todo1->indefinite) && !(todo2->indefinite) ) {
+	 return 1;
+      }
+      if ( !(todo1->indefinite) && !(todo2->indefinite) ) {
+	 t1 = mktime(&(todo1->due));
+	 t2 = mktime(&(todo2->due));
+	 if ( t1 < t2 ) {
+	    return -1;
+	 }
+	 if ( t1 > t2 ) {
+	    return 1;
+	 }
+      }
+      if ( (todo1->priority) < (todo2->priority) ) {
+	 return -1;
+      }
+      if ( (todo1->priority) > (todo2->priority) ) {
+	 return 1;
+      }
+   }
+      
+   if (sort_by_priority == 1) {
       /* priority, due date */
       if ( (todo1->priority) < (todo2->priority) ) {
 	 return -1;
@@ -75,32 +101,6 @@ int todo_compare(struct ToDo *todo1, struct ToDo *todo2,
 	 return -1;
       }
       if ( t1 > t2 ) {
-	 return 1;
-      }
-   }
-      
-   if (sort_by_priority == 1) {
-      /* due date, priority */
-      if ( !(todo1->indefinite) && (todo2->indefinite) ) {
-	 return -1;
-      }
-      if ( (todo1->indefinite) && !(todo2->indefinite) ) {
-	 return 1;
-      }
-      if ( !(todo1->indefinite) && !(todo2->indefinite) ) {
-	 t1 = mktime(&(todo1->due));
-	 t2 = mktime(&(todo2->due));
-	 if ( t1 < t2 ) {
-	    return -1;
-	 }
-	 if ( t1 > t2 ) {
-	    return 1;
-	 }
-      }
-      if ( (todo1->priority) < (todo2->priority) ) {
-	 return -1;
-      }
-      if ( (todo1->priority) > (todo2->priority) ) {
 	 return 1;
       }
    }
@@ -231,7 +231,8 @@ static int pc_todo_read_next_rec(FILE *in, MyToDo *mtodo)
    return 0;
 }
 
-int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib)
+int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib,
+		  unsigned int *unique_id)
 {
    PCRecordHeader header;
    /*PCFileHeader   file_header; */
@@ -241,6 +242,7 @@ int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib)
    unsigned int next_unique_id;
 
    get_next_unique_pc_id(&next_unique_id);
+   *unique_id = next_unique_id;
 #ifdef JPILOT_DEBUG
    jpilot_logf(LOG_DEBUG, "next unique id = %d\n",next_unique_id);
 #endif
@@ -302,6 +304,7 @@ int get_todo_app_info(struct ToDoAppInfo *ai)
 	 return -1;
       }
       if (feof(in)) {
+	 fclose(in);
 	 return TODO_EOF;
       }      
    }
@@ -309,6 +312,7 @@ int get_todo_app_info(struct ToDoAppInfo *ai)
 
    num = get_app_info_size(in, &rec_size);
    if (num) {
+      fclose(in);
       return -1;
    }
 
@@ -331,6 +335,8 @@ int get_todo_app_info(struct ToDoAppInfo *ai)
    num = unpack_ToDoAppInfo(ai, buf, rec_size);
    if (num <= 0) {
       jpilot_logf(LOG_WARN, "unpack_ToDoAppInfo failed\n");
+      free(buf);
+      fclose(in);
       return -1;
    }
 #if defined(WITH_JAPANESE)
@@ -344,6 +350,8 @@ int get_todo_app_info(struct ToDoAppInfo *ai)
 #endif
    free(buf);
    
+   fclose(in);
+
    return 0;
 }
 

@@ -33,8 +33,12 @@
 #include <pi-address.h>
 #include <pi-todo.h>
 #include <pi-memo.h>
+#ifdef ENABLE_PLUGINS
+#include "plugins.h"
+#endif
 
-static AnyRecordList *search_rl = NULL;
+
+static struct search_record *search_rl = NULL;
 static GtkWidget *case_sense_checkbox;
 static GtkWidget *window = NULL;
 
@@ -101,7 +105,7 @@ static int
    const char *svalue1;
    const char *svalue;
    int ivalue;
-   AnyRecordList *new_arl;
+   struct search_record *new_sr;
    
    /*Search Appointments */
    a_list = NULL;
@@ -150,15 +154,14 @@ static int
 	 gtk_clist_set_text(GTK_CLIST(clist), 0, 0, "datebook");
 
 	 /*Add to the search list */
-	 new_arl = malloc(sizeof(AnyRecordList));
-	 new_arl->app_type = DATEBOOK;
-	 memcpy(&(new_arl->any.mappo), &temp_al->ma, sizeof(MyAppointment));
-	 /*This is to prevent appointment from being freed later */
-	 memset(&(temp_al->ma.a), 0, sizeof(struct Appointment));
-	 new_arl->next = search_rl;
-	 search_rl = new_arl;
+	 new_sr = malloc(sizeof(struct search_record));
+	 new_sr->app_type = DATEBOOK;
+	 new_sr->plugin_flag = 0;
+	 new_sr->unique_id = temp_al->ma.unique_id;
+	 new_sr->next = search_rl;
+	 search_rl = new_sr;
 
-	 gtk_clist_set_row_data(GTK_CLIST(clist), 0, new_arl);
+	 gtk_clist_set_row_data(GTK_CLIST(clist), 0, new_sr);
 	 count++;
 
 	 /*get the date */
@@ -168,20 +171,20 @@ static int
 	 } else {
 	    strncpy(datef, svalue1, 50);
 	 }
-	 strftime(date_str, 50, datef, &new_arl->any.mappo.a.begin);
+	 strftime(date_str, 50, datef, &temp_al->ma.a.begin);
 	 date_str[49]='\0';
 	    
 	 if (found == 1) {
 	    g_snprintf(str, 200, "%s  %s",
 		       date_str,
-		       new_arl->any.mappo.a.description);
+		       temp_al->ma.a.description);
 	    str[199] = '\0';
 	    gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str);
 	 }
 	 if (found == 2) {
 	    g_snprintf(str, 200, "%s %s",
 		       date_str,
-		       new_arl->any.mappo.a.note);
+		       temp_al->ma.a.note);
 	    str[199] = '\0';
 	    gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str);
 	 }
@@ -199,7 +202,7 @@ static int
    gchar *empty_line[] = { "","" };
    AddressList *a_list;
    AddressList *temp_al;
-   AnyRecordList *new_arl;
+   struct search_record *new_sr;
    const char *svalue;
    int ivalue;
    int i, count;
@@ -240,15 +243,14 @@ static int
 	       gtk_clist_set_text(GTK_CLIST(clist), 0, 1, temp_al->ma.a.entry[i]);
 
 	       /*Add to the search list */
-	       new_arl = malloc(sizeof(AnyRecordList));
-	       new_arl->app_type = ADDRESS;
-	       memcpy(&(new_arl->any.maddr), &temp_al->ma, sizeof(MyAddress));
-	       /*This is to prevent appointment from being freed later */
-	       memset(&(temp_al->ma.a), 0, sizeof(struct Address));
-	       new_arl->next = search_rl;
-	       search_rl = new_arl;
+	       new_sr = malloc(sizeof(struct search_record));
+	       new_sr->app_type = ADDRESS;
+	       new_sr->plugin_flag = 0;
+	       new_sr->unique_id = temp_al->ma.unique_id;
+	       new_sr->next = search_rl;
+	       search_rl = new_sr;
 	       
-	       gtk_clist_set_row_data(GTK_CLIST(clist), 0, new_arl);
+	       gtk_clist_set_row_data(GTK_CLIST(clist), 0, new_sr);
 	       count++;
 
 	       break;
@@ -268,7 +270,7 @@ static int
    gchar *empty_line[] = { "","" };
    ToDoList *todo_list;
    ToDoList *temp_todo;
-   AnyRecordList *new_arl;
+   struct search_record *new_sr;
    int found, count;
    const char *svalue;
    int ivalue;
@@ -321,24 +323,23 @@ static int
 	 gtk_clist_set_text(GTK_CLIST(clist), 0, 0, "ToDo");
 	 
 	 /*Add to the search list */
-	 new_arl = malloc(sizeof(AnyRecordList));
-	 new_arl->app_type = TODO;
-	 memcpy(&(new_arl->any.mtodo), &temp_todo->mtodo, sizeof(MyToDo));
-	 /*This is to prevent appointment from being freed later */
-	 memset(&(temp_todo->mtodo.todo), 0, sizeof(struct ToDo));
-	 new_arl->next = search_rl;
-	 search_rl = new_arl;
+	 new_sr = malloc(sizeof(struct search_record));
+	 new_sr->app_type = TODO;
+	 new_sr->plugin_flag = 0;
+	 new_sr->unique_id = temp_todo->mtodo.unique_id;
+	 new_sr->next = search_rl;
+	 search_rl = new_sr;
 
-	 gtk_clist_set_row_data(GTK_CLIST(clist), 0, new_arl);
+	 gtk_clist_set_row_data(GTK_CLIST(clist), 0, new_sr);
 	 count++;
 
 	 if (found == 1) {
 	    gtk_clist_set_text(GTK_CLIST(clist), 0, 1,
-			       new_arl->any.mtodo.todo.description);
+			       temp_todo->mtodo.todo.description);
 	 }
 	 if (found == 2) {
 	    gtk_clist_set_text(GTK_CLIST(clist), 0, 1,
-			       new_arl->any.mtodo.todo.note);
+			       temp_todo->mtodo.todo.note);
 	 }
       }
    }
@@ -354,7 +355,7 @@ static int
    gchar *empty_line[] = { "","" };
    MemoList *memo_list;
    MemoList *temp_memo;
-   AnyRecordList *new_arl;
+   struct search_record *new_sr;
    int count;
    const char *svalue;
    int ivalue;
@@ -395,15 +396,14 @@ static int
 	 }
 
 	 /*Add to the search list */
-	 new_arl = malloc(sizeof(AnyRecordList));
-	 new_arl->app_type = MEMO;
-	 memcpy(&(new_arl->any.mmemo), &(temp_memo->mmemo), sizeof(MyMemo));
-	 /*This is to prevent appointment from being freed later */
-	 memset(&(temp_memo->mmemo.memo), 0, sizeof(struct Memo));
-	 new_arl->next = search_rl;
-	 search_rl = new_arl;
+	 new_sr = malloc(sizeof(struct search_record));
+	 new_sr->app_type = MEMO;
+	 new_sr->plugin_flag = 0;
+	 new_sr->unique_id = temp_memo->mmemo.unique_id;
+	 new_sr->next = search_rl;
+	 search_rl = new_sr;
 
-	 gtk_clist_set_row_data(GTK_CLIST(clist), 0, new_arl);
+	 gtk_clist_set_row_data(GTK_CLIST(clist), 0, new_sr);
 	 count++;
       }
    }
@@ -413,11 +413,69 @@ static int
    return count;
 }
 
+#ifdef ENABLE_PLUGINS
+static int
+  search_plugins(char *needle, GtkWidget *clist)
+{
+   GList *plugin_list, *temp_list;
+   gchar *empty_line[] = { "","" };
+   int found;
+   int count;
+   int case_sense;
+   struct search_result *sr, *temp_sr;
+   struct plugin_s *plugin;
+   struct search_record *new_sr;
+
+
+   plugin_list = NULL;
+   plugin_list = get_plugin_list();
+
+   found = 0;
+   case_sense = GTK_TOGGLE_BUTTON(case_sense_checkbox)->active;
+
+   count = 0;
+   for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
+      plugin = (struct plugin_s *)temp_list->data;
+      if (plugin) {
+	 if (plugin->plugin_search) {
+	    plugin->plugin_search(needle, case_sense, &sr);
+
+	    for (temp_sr=sr; temp_sr; temp_sr=temp_sr->next) {
+	       gtk_clist_prepend(GTK_CLIST(clist), empty_line);
+	       if (plugin->menu_name) {
+		  gtk_clist_set_text(GTK_CLIST(clist), 0, 0, plugin->menu_name);
+	       } else {
+		  gtk_clist_set_text(GTK_CLIST(clist), 0, 0, "plugin ?");
+	       }
+	       if (temp_sr->line) {
+		  gtk_clist_set_text(GTK_CLIST(clist), 0, 1, temp_sr->line);
+	       }
+
+	       /*Add to the search list */
+	       new_sr = malloc(sizeof(struct search_record));
+	       new_sr->app_type = plugin->number;
+	       new_sr->plugin_flag = 1;
+	       new_sr->unique_id = temp_sr->unique_id;
+	       new_sr->next = search_rl;
+	       search_rl = new_sr;
+      
+	       gtk_clist_set_row_data(GTK_CLIST(clist), 0, new_sr);
+	       count++;
+	    }
+	    free_search_result(&sr);
+	 }
+      }
+   }
+
+   return count;
+}
+#endif
+
 
 static gboolean cb_destroy(GtkWidget *widget)
 {
    if (search_rl) {
-      free_AnyRecordList(&search_rl);
+      free_search_record_list(&search_rl);
       search_rl = NULL;
    }
    window = NULL;
@@ -456,6 +514,9 @@ static void
    count += search_address(entry_text, clist);
    count += search_todo(entry_text, clist);
    count += search_memo(entry_text, clist);
+#ifdef ENABLE_PLUGINS
+   count += search_plugins(entry_text, clist);
+#endif
 
    if (count == 0) {
       gtk_clist_prepend(GTK_CLIST(clist), empty_line);
@@ -473,33 +534,37 @@ static void
 		  gpointer       data)
 {
 
-   AnyRecordList *arl;
+   struct search_record *sr;
 
    if (!event) return;
 
-   arl = gtk_clist_get_row_data(GTK_CLIST(clist), row);
-   if (arl == NULL) {
+   sr = gtk_clist_get_row_data(GTK_CLIST(clist), row);
+   if (sr == NULL) {
       return;
    }
-   switch (arl->app_type) {
+   switch (sr->app_type) {
     case DATEBOOK:
-      glob_find_id = arl->any.mappo.unique_id;
-      glob_find_mon = arl->any.mappo.a.begin.tm_mon;
-      glob_find_day = arl->any.mappo.a.begin.tm_mday;
-      glob_find_year = arl->any.mappo.a.begin.tm_year;
+      glob_find_id = sr->unique_id;
       cb_app_button(NULL, GINT_TO_POINTER(DATEBOOK));
       break;
     case ADDRESS:
-      glob_find_id = arl->any.maddr.unique_id;
+      glob_find_id = sr->unique_id;
       cb_app_button(NULL, GINT_TO_POINTER(ADDRESS));
       break;
     case TODO:
-      glob_find_id = arl->any.mtodo.unique_id;
+      glob_find_id = sr->unique_id;
       cb_app_button(NULL, GINT_TO_POINTER(TODO));
       break;
     case MEMO:
-      glob_find_id = arl->any.mmemo.unique_id;
+      glob_find_id = sr->unique_id;
       cb_app_button(NULL, GINT_TO_POINTER(MEMO));
+      break;
+    default:
+#ifdef ENABLE_PLUGINS
+      /* We didn't find it so it must be a plugin */
+      jpilot_logf(LOG_DEBUG, "choosing search result from plugin %d\n", sr->app_type);
+      call_plugin_gui(sr->app_type, sr->unique_id);
+#endif
       break;
    }
 }
@@ -518,7 +583,7 @@ void cb_search_gui(GtkWidget *widget, gpointer data)
    }
 
    if (search_rl) {
-      free_AnyRecordList(&search_rl);
+      free_search_record_list(&search_rl);
       search_rl = NULL;
    }
 

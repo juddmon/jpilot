@@ -21,8 +21,6 @@ These are some of the bugs that I know about:
 *Priority Low:
  - If a record is changed on the Palm and on the desktop, then the desktop 
    record will overwrite the one on the Palm.
- - Things don't work quite right if you've never synced before.  This should
-   be fixed now as long as make install was ran.
 
 *Priority Who Cares?:
 
@@ -34,5 +32,12 @@ These are some of the bugs that I know about:
  - The palm pilot will only let you make appointments on 5 minute intervals.
    jpilot will allow 1 minute intervals.
 
+*Palm OS bugs that I have found while creating J-Pilot
+
  - If you try to sync with a pilotrate of 0, then the palm pilot with get a
    fatal exception and reboot.  This is a PalmOS bug.
+
+ - The Palm pilot will let you sync (add) an appointment that repeats weekly,
+   but doesn't repeat on any day.  It won't show up in the calendar, but if
+   you search for it, it shows up.  When you click on it in find, Fatal
+   Exception and Pilot reboots.  This is a PalmOS bug if you ask me.

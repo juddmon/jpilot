@@ -19,4 +19,5 @@
 int get_memo_app_info(struct MemoAppInfo *ai);
 void free_MemoList(MemoList **memo);
 int get_memos(MemoList **memo_list);
-int pc_memo_write(struct Memo *memo, PCRecType rt, unsigned char attrib);
+int pc_memo_write(struct Memo *memo, PCRecType rt, unsigned char attrib,
+		  unsigned int *unique_id);

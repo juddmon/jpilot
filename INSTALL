@@ -1,3 +1,6 @@
+If you have unsynced changes sync before installing a newer version of
+J-Pilot.
+
 To compile J-Pilot you need to have GTK+1.2 or better.
 You can find out what version you have by running "gtk-config --version".
 GTK+ requires glib.  The glib version probably should match the gtk version.
@@ -7,7 +10,8 @@ You can get these at http://www.gtk.org
 Pilot link must be installed and working.
 ftp://ryeham.ee.ryerson.ca/pub/PalmOS/
 RedHat users must also have the pilot-link-dev rpm installed for the header
- files so that jpilot can compile.
+ files so that jpilot can compile.  You don't need these if you install the
+RPM.
 
 To compile and install do the following:
 ./configure
@@ -21,10 +25,19 @@ will list all the options.
 make uninstall is an option also.
 
 I have included a spec file so if you want to create your own RPM all you
-have to do is "rpm -tb jpilot-0.95.tar.gz"
+have to do is "rpm -tb jpilot-0.96.tar.gz"
 
 
 JPilot was written in such a way that it should be very safe to sync.
 There is always the possibility of something going wrong though.  As with
 anything else, backup your data if you cannot afford to lose it.  Just make
 sure your backup software destroy it first ;)
+
+
+I have added a couple of example plugins Expense, and SyncTime.  To use them
+change to the directory and do 
+./configure
+make
+make install (installs the plugin system wide)
+If you want to install the plugin for just 1 user you can copy the shared
+library to ~/.jpilot/plugins/

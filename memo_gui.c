@@ -45,6 +45,7 @@ GtkWidget *scrolled_window;
 
 static void update_memo_screen();
 static int memo_clear_details();
+int memo_clist_redraw();
 
 
 void cb_delete_memo(GtkWidget *widget,
@@ -62,9 +63,15 @@ void cb_delete_memo(GtkWidget *widget,
    flag = GPOINTER_TO_INT(data);
    if ((flag==MODIFY_FLAG) || (flag==DELETE_FLAG)) {
       delete_pc_record(MEMO, mmemo, flag);
+      if (flag==DELETE_FLAG) {
+	 /* when we redraw we want to go to the line above the deleted one */
+	 if (clist_row_selected>0) {
+	    clist_row_selected--;
+	 }
+      }
    }
 
-   update_memo_screen();
+   memo_clist_redraw();
 }
 
 
@@ -120,6 +127,7 @@ static void cb_add_new_record(GtkWidget *widget,
    struct Memo new_memo;
    unsigned char attrib;
    int flag;
+   unsigned int unique_id;
    
    flag=GPOINTER_TO_INT(data);
    
@@ -142,13 +150,13 @@ static void cb_add_new_record(GtkWidget *widget,
       }
    }
    memo_get_details(&new_memo, &attrib);
-   pc_memo_write(&new_memo, NEW_PC_REC, attrib);
+   pc_memo_write(&new_memo, NEW_PC_REC, attrib, &unique_id);
    free_Memo(&new_memo);
    if (flag==MODIFY_FLAG) {
       cb_delete_memo(NULL, data);
-   } else {
-      update_memo_screen();
    }
+   glob_find_id = unique_id;
+   memo_clist_redraw();
    return;
 }
 
@@ -439,13 +447,77 @@ static int memo_find()
    return 0;
 }
 
+static int memo_goto_line(int line_num, gfloat percentage)
+{
+   int total_count;
+
+   clist_count(clist, &total_count);
+
+   /*avoid dividing by zero */
+   if (total_count == 0) {
+      total_count = 1;
+   }
+   gtk_clist_select_row(GTK_CLIST(clist), line_num, 0);
+   move_scrolled_window_hack(scrolled_window, percentage);
+
+   return 0;
+}
+
+/* This redraws the clist and goes back to the same line number
+ * or it will go to glob_find_id if it is set.
+ * If glob_find_id cannot be found, then it will set the category
+ * back to ALL, and redraw the clist again
+ */
+int memo_clist_redraw()
+{
+   int line_num;
+   int save_id;
+   int r;
+   GtkScrollbar *sb;
+   gfloat upper, lower, value, step, percentage;
+   
+   line_num = clist_row_selected;
+
+   if (glob_find_id) {
+      save_id = glob_find_id;
+      update_memo_screen();
+      r = memo_find();
+      if (r==0) {
+	 memo_category = CATEGORY_ALL;
+	 gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), 0);
+	 gtk_check_menu_item_set_active
+	   (GTK_CHECK_MENU_ITEM(memo_cat_menu_item1[0]), TRUE);
+	 update_memo_screen();
+	 glob_find_id = save_id;
+	 memo_find();
+      }
+   } else {
+      sb = GTK_SCROLLBAR(GTK_SCROLLED_WINDOW(scrolled_window)->vscrollbar);
+      upper = GTK_ADJUSTMENT(sb->range.adjustment)->upper;
+      lower = GTK_ADJUSTMENT(sb->range.adjustment)->lower;
+      value = GTK_ADJUSTMENT(sb->range.adjustment)->value;
+      step = GTK_ADJUSTMENT(sb->range.adjustment)->step_increment;
+      if (upper - lower + step) {
+	 percentage = value/(upper - lower + step);
+      } else {
+	 percentage = 0;
+      }
+
+      update_memo_screen();
+
+      memo_goto_line(line_num, percentage);
+   }
+
+   return 0;
+}
+
 int memo_refresh()
 {
    memo_category = CATEGORY_ALL;
    update_memo_screen();
    gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), 0);
-   gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(
-       memo_cat_menu_item1[0]), TRUE);
+   gtk_check_menu_item_set_active
+     (GTK_CHECK_MENU_ITEM(memo_cat_menu_item1[0]), TRUE);
    memo_find();   
    return 0;
 }
@@ -506,7 +578,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_widget_show(category_menu1);
 
 
-   /*Put the address list window up */
+   /*Put the memo list window up */
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
    /*gtk_widget_set_usize(GTK_WIDGET(scrolled_window), 330, 100); */
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 0);

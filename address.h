@@ -20,6 +20,7 @@
 #include "utils.h"
 
 int get_address_app_info(struct AddressAppInfo *aai);
-int pc_address_write(struct Address *a, PCRecType rt, unsigned char attrib);
+int pc_address_write(struct Address *a, PCRecType rt, unsigned char attrib,
+		     unsigned int *unqiue_id);
 void free_AddressList(AddressList **al);
 int get_addresses(AddressList **address_list);

@@ -18,6 +18,8 @@
  */
 #include "config.h"
 #include <gtk/gtk.h>
+#include <gdk/gdkkeysyms.h>
+#include <gdk/gdk.h>
 #include <time.h>
 #include <string.h>
 #include "utils.h"
@@ -50,6 +52,7 @@ GtkWidget *address_cat_menu_item2[NUM_ADDRESS_CAT_ITEMS];
 GtkWidget *category_menu1;
 GtkWidget *scrolled_window;
 GtkWidget *address_quickfind_entry;
+GtkWidget *notebook;
 
 struct AddressAppInfo address_app_info;
 int address_category;
@@ -58,6 +61,7 @@ int clist_row_selected;
 extern GtkTooltips *glob_tooltips;
 
 void update_address_screen();
+int address_clist_redraw();
 
 static void init()
 {
@@ -85,9 +89,15 @@ void cb_delete_address(GtkWidget *widget,
    flag = GPOINTER_TO_INT(data);
    if ((flag==MODIFY_FLAG) || (flag==DELETE_FLAG)) {
       delete_pc_record(ADDRESS, ma, flag);
+      if (flag==DELETE_FLAG) {
+	 /* when we redraw we want to go to the line above the deleted one */
+	 if (clist_row_selected>0) {
+	    clist_row_selected--;
+	 }
+      }
    }
-
-   update_address_screen();
+   
+   address_clist_redraw();
 }
 
 void cb_phone_menu(GtkWidget *item, unsigned int value)
@@ -108,6 +118,7 @@ void cb_new_address_done(GtkWidget *widget,
    struct Address a;
    MyAddress *ma;
    unsigned char attrib;
+   unsigned int unique_id;
    
    gtk_widget_hide(vbox2_2);
    gtk_widget_show(vbox2_1);
@@ -155,13 +166,13 @@ void cb_new_address_done(GtkWidget *widget,
 	 }
       }
 
-      pc_address_write(&a, NEW_PC_REC, attrib);
+      pc_address_write(&a, NEW_PC_REC, attrib, &unique_id);
       free_Address(&a);
       if (GPOINTER_TO_INT(data) == MODIFY_FLAG) {
 	 cb_delete_address(NULL, data);
-      } else {
-	 update_address_screen();
       }
+      glob_find_id = unique_id;
+      address_clist_redraw();
    }
 }
 
@@ -486,10 +497,9 @@ void update_address_screen()
    /*gtk_clist_set_text(GTK_CLIST(clist), entries_shown, 0, "New"); */
    /*gtk_clist_set_text(GTK_CLIST(clist), entries_shown, 1, "Select to add an entry"); */
    
-   /*If there is an item in the list, select the first one */
+   /* If there is an item in the list, select the first one */
    if (entries_shown>0) {
       gtk_clist_select_row(GTK_CLIST(clist), 0, 1);
-      /*cb_add_clist_sel(clist, 0, 0, (GdkEventButton *)455, ""); */
    }
 
    gtk_clist_thaw(GTK_CLIST(clist));
@@ -598,11 +608,12 @@ static int make_category_menu2()
    
    return 0;
 }
-
+/* returns 1 if found, 0 if not */
 static int address_find()
 {
    int r, found_at, total_count;
-   
+
+   r = 0;
    if (glob_find_id) {
       r = clist_find_id(clist,
 			glob_find_id,
@@ -619,6 +630,70 @@ static int address_find()
       }
       glob_find_id = 0;
    }
+   return r;
+}
+
+static int address_goto_line(int line_num, gfloat percentage)
+{
+   int total_count;
+
+   clist_count(clist, &total_count);
+
+   /*avoid dividing by zero */
+   if (total_count == 0) {
+      total_count = 1;
+   }
+   gtk_clist_select_row(GTK_CLIST(clist), line_num, 1);
+   move_scrolled_window_hack(scrolled_window, percentage);
+
+   return 0;
+}
+
+/* This redraws the clist and goes back to the same line number
+ * or it will go to glob_find_id if it is set.
+ * If glob_find_id cannot be found, then it will set the category
+ * back to ALL, and redraw the clist again
+ */
+int address_clist_redraw()
+{
+   int line_num;
+   int save_id;
+   int r;
+   GtkScrollbar *sb;
+   gfloat upper, lower, value, step, percentage;
+   
+   line_num = clist_row_selected;
+
+   if (glob_find_id) {
+      save_id = glob_find_id;
+      update_address_screen();
+      r = address_find();
+      if (r==0) {
+	 address_category = CATEGORY_ALL;
+	 gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), 0);
+	 gtk_check_menu_item_set_active
+	   (GTK_CHECK_MENU_ITEM(address_cat_menu_item1[0]), TRUE);
+	 update_address_screen();
+	 glob_find_id = save_id;
+	 address_find();
+      }
+   } else {
+      sb = GTK_SCROLLBAR(GTK_SCROLLED_WINDOW(scrolled_window)->vscrollbar);
+      upper = GTK_ADJUSTMENT(sb->range.adjustment)->upper;
+      lower = GTK_ADJUSTMENT(sb->range.adjustment)->lower;
+      value = GTK_ADJUSTMENT(sb->range.adjustment)->value;
+      step = GTK_ADJUSTMENT(sb->range.adjustment)->step_increment;
+      if (upper - lower + step) {
+	 percentage = value/(upper - lower + step);
+      } else {
+	 percentage = 0;
+      }
+
+      update_address_screen();
+      
+      address_goto_line(line_num, percentage);
+   }
+   
    return 0;
 }
 
@@ -631,6 +706,36 @@ int address_refresh()
        address_cat_menu_item1[0]), TRUE);
    address_find();
    return 0;
+}
+
+static gboolean
+  cb_key_pressed(GtkWidget *widget, GdkEventKey *event,
+		 gpointer next_widget) 
+{
+   /* This is needed because the text boxes aren't shown on the 
+    * screen in the same order as the array.  I show them in the
+    * same order that the palm does */
+   int page[22]={0,0,0,0,0,0,0,1,1,1,1,1,2,0,2,2,2,2,2,2,2,2
+   };
+   int i;
+
+   if (event->keyval == GDK_Tab) {
+      /* See if they are at the end of the text */
+      if (gtk_text_get_point(GTK_TEXT(widget)) ==
+	  gtk_text_get_length(GTK_TEXT(widget))) {
+	 gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event"); 
+	 gtk_widget_grab_focus(GTK_WIDGET(next_widget));
+	 /* Change the notebook page */
+	 for (i=0; i<22; i++) {
+	    if (address_text[i] == widget) {
+	       gtk_notebook_set_page(GTK_NOTEBOOK(notebook), page[i]);
+	       break;
+	    }
+	 }
+	 return TRUE;
+      }
+   }
+   return FALSE; 
 }
 
 /* */
@@ -648,13 +753,12 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    GtkWidget *button;
    GtkWidget *frame;
 /*   GtkWidget *clist; */
-   GtkWidget *notebook;
    GtkWidget *table1, *table2, *table3;
 /*   GtkWidget *calendar; */
    GtkWidget *notebook_tab;
    
 
-   int i, i2;
+   int i, i1, i2;
    int order[22]={0,1,13,2,3,4,5,6,7,8,9,10,11,12,14,15,16,17,18,19,20,21
    };
 
@@ -730,6 +834,8 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    /*gtk_viewport_set_shadow_type(GTK_VIEWPORT(scrolled_window), GTK_SHADOW_NONE); */
    /*gtk_clist_set_sort_column (GTK_CLIST(clist1), 0); */
    /*gtk_clist_set_auto_sort(GTK_CLIST(clist1), TRUE); */
+   /* */
+   /*gtk_clist_set_column_justification(GTK_CLIST(clist), 1, GTK_JUSTIFY_RIGHT); */
    
    hbox_temp = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox1), hbox_temp, FALSE, FALSE, 0);
@@ -885,6 +991,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	 gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
       }
       address_text[i2] = gtk_text_new(NULL, NULL);
+   
       gtk_text_set_editable(GTK_TEXT(address_text[i2]), TRUE);
       gtk_text_set_word_wrap(GTK_TEXT(address_text[i2]), TRUE);
       gtk_widget_set_usize(GTK_WIDGET(address_text[i2]), 0, 25);
@@ -921,6 +1028,15 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
       gtk_widget_show(label);
 
       gtk_widget_show(address_text[i2]);
+   }
+   /* Capture the TAB key to change focus with it */
+   for (i=0; i<NUM_ADDRESS_ENTRIES; i++) {
+      i1=order[i];
+      i2=order[i+1];
+      if (i2<NUM_ADDRESS_ENTRIES) {
+	 gtk_signal_connect(GTK_OBJECT(address_text[i1]), "key_press_event",
+			    GTK_SIGNAL_FUNC(cb_key_pressed), address_text[i2]);
+      }
    }
    gtk_widget_set_usize(GTK_WIDGET(table1), 200, 0);
    gtk_widget_set_usize(GTK_WIDGET(table2), 200, 0);

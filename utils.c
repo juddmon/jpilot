@@ -34,6 +34,7 @@
 #include <utime.h>
 #include <time.h>
 #include <errno.h>
+#include "plugins.h"
 
 #include <pi-source.h>
 #include <pi-socket.h>
@@ -45,9 +46,6 @@ GtkWidget *dialog;
 int dialog_result;
 
 unsigned int glob_find_id;
-unsigned int glob_find_mon;
-unsigned int glob_find_day;
-unsigned int glob_find_year;
 
 gint timeout_date(gpointer data)
 {
@@ -82,7 +80,7 @@ gint timeout_date(gpointer data)
 }
 
 
-void free_AnyRecordList(AnyRecordList **rl)
+/*void free_AnyRecordList(AnyRecordList **rl)
 {
    AnyRecordList *temp_rl, *temp_rl_next;
 
@@ -107,6 +105,18 @@ void free_AnyRecordList(AnyRecordList **rl)
       free(temp_rl);
    }
    *rl = NULL;
+}
+*/
+
+void free_search_record_list(struct search_record **sr)
+{
+   struct search_record *temp_sr, *temp_sr_next;
+
+   for (temp_sr = *sr; temp_sr; temp_sr=temp_sr_next) {
+      temp_sr_next = temp_sr->next;
+      free(temp_sr);
+   }
+   *sr = NULL;
 }
 
 
@@ -205,6 +215,26 @@ int clist_find_id(GtkWidget *clist,
    *total_count = i;
    
    return found;
+}
+
+/* //todo There should be a much easier way to do this */
+int clist_count(GtkWidget *clist,
+		int *total_count)
+{
+   int i;
+   void *Pv;
+   
+   *total_count = 0;
+
+   for (i = 0; i<100000; i++) {
+      Pv = gtk_clist_get_row_data(GTK_CLIST(clist), i);
+      if (Pv < GINT_TO_POINTER(1)) {
+	 break;
+      }
+   }
+   *total_count = i;
+   
+   return 0;
 }
 
 int get_pixmaps(GtkWidget *widget,
@@ -459,6 +489,7 @@ int dialog_generic(GdkWindow *main_window,
 			   "title", title,
 			   NULL);
 
+   /*gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER); */
    /*gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_MOUSE); */
    
    gtk_signal_connect(GTK_OBJECT(dialog), "destroy",
@@ -588,14 +619,14 @@ int check_hidden_dir()
 /* */
 void get_month_info(int month, int day, int year, int *dow, int *ndim)
 {
-   time_t ltime, t;
+   time_t ltime;
    struct tm *now;
    struct tm new_time;
    int days_in_month[]={31,28,31,30,31,30,31,31,30,31,30,31
    };
    
-   time( &ltime );
-   now = localtime( &ltime );
+   time(&ltime);
+   now = localtime(&ltime);
    
    new_time.tm_sec=0;
    new_time.tm_min=0;
@@ -605,7 +636,7 @@ void get_month_info(int month, int day, int year, int *dow, int *ndim)
    new_time.tm_year=year;
    new_time.tm_isdst=now->tm_isdst;
    
-   t = mktime(&new_time);
+   mktime(&new_time);
    *dow = new_time.tm_wday;
    
    /*I know this isn't 100% correct */
@@ -662,7 +693,7 @@ int get_next_unique_pc_id(unsigned int *next_unique_id)
       jpilot_logf(LOG_WARN, "fseek failed\n");
    }
    /*rewind(pc_in_out); */
-   /*todo - if > 16777216 then cleanup (thats a lot of records!) */
+   /*todo - if > 16777216 then cleanup */
    if (fwrite(next_unique_id, sizeof(*next_unique_id), 1, pc_in_out) != 1) {
       jpilot_logf(LOG_WARN, "Error writing pc header to file: next_id\n");
    }
@@ -901,9 +932,9 @@ void print_string(char *str, int len)
    for (i=0;i<len;i++) {
       c=str[i];
       if (c < ' ' || c >= 0x7f)
-	jpilot_logf(LOG_STDOUT, "%x",c);
+	jpilot_logf(LOG_STDOUT, "%x", c);
       else
-	putchar(c);
+	jpilot_logf(LOG_STDOUT, "%c", c);
    }
    jpilot_logf(LOG_STDOUT, "\n");
 }
@@ -1109,33 +1140,18 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 }
 
 
-int cleanup_pc_file(AppType app_type)
+int cleanup_pc_file(char *DB_name)
 {
    PCRecordHeader header;
-   char filename[30];
+   char pc_filename[256];   
    FILE *pc_file;
    int r;
    
    r=0;
 
-   switch (app_type) {
-    case DATEBOOK:
-      strcpy(filename, "DatebookDB.pc");
-      break;
-    case ADDRESS:
-      strcpy(filename, "AddressDB.pc");
-      break;
-    case TODO:
-      strcpy(filename, "ToDoDB.pc");
-      break;
-    case MEMO:
-      strcpy(filename, "MemoDB.pc");
-      break;
-    default:
-      return 0;
-   }
+   g_snprintf(pc_filename, 255, "%s.pc", DB_name);
 
-   pc_file=open_file(filename, "r");
+   pc_file=open_file(pc_filename, "r");
    while(!feof(pc_file)) {
       fread(&header, sizeof(header), 1, pc_file);
       if (feof(pc_file)) {
@@ -1152,7 +1168,7 @@ int cleanup_pc_file(AppType app_type)
 
    /*If there are no not-deleted records then remove the file */
    if (r == 0) {
-      unlink_file(filename);
+      unlink_file(pc_filename);
    }
    
    return r;
@@ -1161,18 +1177,37 @@ int cleanup_pc_file(AppType app_type)
 int cleanup_pc_files()
 {
    int ret;
+#ifdef ENABLE_PLUGINS
+   GList *plugin_list, *temp_list;
+   struct plugin_s *plugin;
+#endif
    
-   ret = cleanup_pc_file(DATEBOOK);
-   ret += cleanup_pc_file(ADDRESS);
-   ret += cleanup_pc_file(TODO);
-   ret += cleanup_pc_file(MEMO);
+   jpilot_logf(LOG_DEBUG, "cleanup_pc_file for DatebookDB\n");
+   ret = cleanup_pc_file("DatebookDB");
+   jpilot_logf(LOG_DEBUG, "cleanup_pc_file for AddressDB\n");
+   ret += cleanup_pc_file("AddressDB");
+   jpilot_logf(LOG_DEBUG, "cleanup_pc_file for ToDoDB\n");
+   ret += cleanup_pc_file("ToDoDB");
+   jpilot_logf(LOG_DEBUG, "cleanup_pc_file for MemoDB\n");
+   ret += cleanup_pc_file("MemoDB");
+#ifdef ENABLE_PLUGINS
+   plugin_list = get_plugin_list();
+
+   for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
+      plugin = (struct plugin_s *)temp_list->data;
+      if (plugin->db_name) {
+	 jpilot_logf(LOG_DEBUG, "cleanup_pc_file for [%s]\n", plugin->db_name);
+	 ret += cleanup_pc_file(plugin->db_name);
+      }
+   }
+#endif
    if (ret == 0) {
       unlink_file("next_id");
    }
    return 0;
 }
 
-static void util_sync(int full_backup)
+static void util_sync(unsigned int flags)
 {
    int ivalue;
    const char *svalue;
@@ -1193,21 +1228,13 @@ static void util_sync(int full_backup)
 
    get_pref(PREF_PORT, &ivalue, &svalue);
    jpilot_logf(LOG_DEBUG, "pref port=[%s]\n", svalue);
-   sync_once(svalue, full_backup);
+   sync_once(svalue, flags);
    
    return;
 }
 
-void cb_sync(GtkWidget *widget,
-	     gpointer   data)
+void cb_sync(GtkWidget *widget, unsigned int flags)
 {
-   util_sync(FALSE);
-   return;
-}
-
-void cb_backup(GtkWidget *widget,
-	       gpointer   data)
-{
-   util_sync(TRUE);
+   util_sync(flags);
    return;
 }

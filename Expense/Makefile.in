@@ -1,0 +1,48 @@
+# Install variables
+prefix=@prefix@
+
+#Pilot flags (include dir), and Libraries
+PILOT_FLAGS=@PILOT_FLAGS@
+PILOT_LIBS=@PILOT_LIBS@
+
+#set CC to your compiler
+CC = @CC@
+
+# CC options
+CCDEFINES = @DEFS@
+CFLAGS = @cflags@
+
+# CC options
+OPTIONS = @ccoptions@ $(CFLAGS)
+
+# GTK+ flags
+GTKFLAGS = @GTK_CFLAGS@
+# GTK+ libs
+GTKLIBS = @GTK_LIBS@
+
+# Targets
+all: libexpense.so
+
+libexpense.so: expense.o libplugin.a
+	ld -shared -ldl -o libexpense.so expense.o -L. -lplugin
+
+expense.o: expense.c libplugin.h
+	$(CC) $(OPTIONS) $(GTKFLAGS) $(PILOT_FLAGS) -c expense.c
+
+clean: 
+	rm -f *.o *~ config.cache 
+
+distclean: clean
+	rm -f config.status config.log *.so Makefile
+
+#
+# This is a global install.  You can also install per user in
+# ~/.jpilot/plugins
+#
+install:
+	./install-sh -d -m 755 $(prefix)/share/jpilot/plugins
+	./install-sh -c -m 755 -g bin -o bin libexpense.so \
+	$(prefix)/share/jpilot/plugins
+
+uninstall:
+	rm $(prefix)/share/jpilot/plugins/libexpense.so

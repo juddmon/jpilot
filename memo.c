@@ -35,7 +35,8 @@
 
 
 
-int pc_memo_write(struct Memo *memo, PCRecType rt, unsigned char attrib)
+int pc_memo_write(struct Memo *memo, PCRecType rt, unsigned char attrib,
+		  unsigned int *unique_id)
 {
    PCRecordHeader header;
    /*PCFileHeader   file_header; */
@@ -45,6 +46,7 @@ int pc_memo_write(struct Memo *memo, PCRecType rt, unsigned char attrib)
    unsigned int next_unique_id;
 
    get_next_unique_pc_id(&next_unique_id);
+   *unique_id = next_unique_id;
 #ifdef JPILOT_DEBUG
    jpilot_logf(LOG_DEBUG, "next unique id = %d\n",next_unique_id);
 #endif
@@ -150,9 +152,11 @@ int get_memo_app_info(struct MemoAppInfo *ai)
    if (num != 1) {
       if (ferror(in)) {
 	 jpilot_logf(LOG_WARN, "Error reading MemoDB.pdb\n");
+	 fclose(in);
 	 return -1;
       }
       if (feof(in)) {
+	 fclose(in);
 	 return MEMO_EOF;
       }      
    }
@@ -160,6 +164,7 @@ int get_memo_app_info(struct MemoAppInfo *ai)
 
    num = get_app_info_size(in, &rec_size);
    if (num) {
+      fclose(in);
       return -1;
    }
 
@@ -182,6 +187,8 @@ int get_memo_app_info(struct MemoAppInfo *ai)
    num = unpack_MemoAppInfo(ai, buf, rec_size);
    if (num <= 0) {
       jpilot_logf(LOG_WARN, "Error reading MemoDB.pdb\n");
+      free(buf);
+      fclose(in);
       return -1;
    }
 #if defined(WITH_JAPANESE)
@@ -193,6 +200,8 @@ int get_memo_app_info(struct MemoAppInfo *ai)
    }
 #endif
    free(buf);
+   
+   fclose(in);
    
    return 0;
 }

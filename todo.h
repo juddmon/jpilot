@@ -19,4 +19,5 @@
 void free_ToDoList(ToDoList **todo);
 int get_todos(ToDoList **todo_list);
 int get_todo_app_info(struct ToDoAppInfo *ai);
-int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib);
+int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib,
+		  unsigned int *unique_id);

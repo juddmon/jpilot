@@ -3,6 +3,9 @@
 /* Define for Japanese character support */
 #undef WITH_JAPANESE
 
+/* Define for plugin character support */
+#undef ENABLE_PLUGINS
+
 /* Define if you want to use flock instead of fnctl for file locking
    Useful for some NFS implementations */
 #undef USE_FLOCK

@@ -181,7 +181,8 @@ static int pc_address_read_next_rec(FILE *in, MyAddress *ma)
    return 0;
 }
 
-int pc_address_write(struct Address *a, PCRecType rt, unsigned char attrib)
+int pc_address_write(struct Address *a, PCRecType rt, unsigned char attrib,
+		     unsigned int *unique_id)
 {
    PCRecordHeader header;
    /*PCFileHeader   file_header; */
@@ -191,6 +192,7 @@ int pc_address_write(struct Address *a, PCRecType rt, unsigned char attrib)
    unsigned int next_unique_id;
 
    get_next_unique_pc_id(&next_unique_id);
+   *unique_id = next_unique_id;
 #ifdef JPILOT_DEBUG
    jpilot_logf(LOG_DEBUG, "next unique id = %d\n",next_unique_id);
 #endif
@@ -256,6 +258,7 @@ int get_address_app_info(struct AddressAppInfo *ai)
 
    num = get_app_info_size(in, &rec_size);
    if (num) {
+      fclose(in);
       return -1;
    }
 

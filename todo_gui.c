@@ -19,6 +19,8 @@
 
 #include "config.h"
 #include <gtk/gtk.h>
+#include <gdk/gdkkeysyms.h>
+#include <gdk/gdk.h>
 #include <time.h>
 #include <stdlib.h>
 #include "utils.h"
@@ -54,6 +56,7 @@ int clist_row_selected;
 
 void update_todo_screen();
 int todo_clear_details();
+int todo_clist_redraw();
 
 void cb_delete_todo(GtkWidget *widget,
 		    gpointer   data)
@@ -69,9 +72,14 @@ void cb_delete_todo(GtkWidget *widget,
    if ((flag==MODIFY_FLAG) || (flag==DELETE_FLAG)) {
       jpilot_logf(LOG_DEBUG, "calling delete_pc_record\n");
       delete_pc_record(TODO, mtodo, flag);
+      if (flag==DELETE_FLAG) {
+	 /* when we redraw we want to go to the line above the deleted one */
+	 if (clist_row_selected>0) {
+	    clist_row_selected--;
+	 }
+      }
    }
-
-   update_todo_screen();
+   todo_clist_redraw();
 }
 
 void cb_todo_category(GtkWidget *item, int selection)
@@ -201,6 +209,7 @@ static void cb_add_new_record(GtkWidget *widget,
    struct ToDo new_todo;
    unsigned char attrib;
    int flag;
+   unsigned int unique_id;
    
    flag=GPOINTER_TO_INT(data);
    
@@ -223,13 +232,14 @@ static void cb_add_new_record(GtkWidget *widget,
       }
    }
    todo_get_details(&new_todo, &attrib);
-   pc_todo_write(&new_todo, NEW_PC_REC, attrib);
+   pc_todo_write(&new_todo, NEW_PC_REC, attrib, &unique_id);
    free_ToDo(&new_todo);
    if (flag==MODIFY_FLAG) {
       cb_delete_todo(NULL, data);
-   } else {
-      update_todo_screen();
    }
+   glob_find_id = unique_id;
+   todo_clist_redraw();
+
    return;
 }
 
@@ -296,10 +306,16 @@ static void cb_clist_selection(GtkWidget      *clist,
      (GTK_OPTION_MENU(todo_cat_menu2), mtodo->attrib & 0x0F);
 
    
-   gtk_text_insert(GTK_TEXT(todo_text), NULL,NULL,NULL, todo->description, -1);
+   if (todo->description) {
+      if (todo->description[0]) {
+	 gtk_text_insert(GTK_TEXT(todo_text), NULL,NULL,NULL, todo->description, -1);
+      }
+   }
 
-   if (todo->note[0]) {
-      gtk_text_insert(GTK_TEXT(todo_text_note), NULL,NULL,NULL, todo->note, -1);
+   if (todo->note) {
+      if (todo->note[0]) {
+	 gtk_text_insert(GTK_TEXT(todo_text_note), NULL,NULL,NULL, todo->note, -1);
+      }
    }
 
    if ( (todo->priority<1) || (todo->priority>5) ) {
@@ -340,7 +356,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 void update_todo_screen()
 {
    int num_entries, entries_shown, i;
-   gchar *empty_line[] = { "","","","" };
+   gchar *empty_line[] = { "","","","","" };
    GdkPixmap *pixmap_note;
    GdkPixmap *pixmap_alarm;
    GdkPixmap *pixmap_check;
@@ -583,6 +599,86 @@ static int todo_find()
    return 0;
 }
 
+static gboolean
+  cb_key_pressed(GtkWidget *widget, GdkEventKey *event,
+		 gpointer next_widget) 
+{
+   if (event->keyval == GDK_Tab) {
+      /* See if they are at the end of the text */
+      if (gtk_text_get_point(GTK_TEXT(widget)) ==
+	  gtk_text_get_length(GTK_TEXT(widget))) {
+	 gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event"); 
+	 gtk_widget_grab_focus(GTK_WIDGET(next_widget));
+	 return TRUE;
+      }
+   }
+   return FALSE; 
+}
+
+static int todo_goto_line(int line_num, gfloat percentage)
+{
+   int total_count;
+
+   clist_count(clist, &total_count);
+
+   /*avoid dividing by zero */
+   if (total_count == 0) {
+      total_count = 1;
+   }
+   gtk_clist_select_row(GTK_CLIST(clist), line_num, 1);
+   move_scrolled_window_hack(scrolled_window, percentage);
+
+   return 0;
+}
+
+/* This redraws the clist and goes back to the same line number
+ * or it will go to glob_find_id if it is set.
+ * If glob_find_id cannot be found, then it will set the category
+ * back to ALL, and redraw the clist again
+ */
+int todo_clist_redraw()
+{
+   int line_num;
+   int save_id;
+   int r;
+   GtkScrollbar *sb;
+   gfloat upper, lower, value, step, percentage;
+   
+   line_num = clist_row_selected;
+
+   if (glob_find_id) {
+      save_id = glob_find_id;
+      update_todo_screen();
+      r = todo_find();
+      if (r==0) {
+	 todo_category = CATEGORY_ALL;
+	 gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), 0);
+	 gtk_check_menu_item_set_active
+	   (GTK_CHECK_MENU_ITEM(todo_cat_menu_item1[0]), TRUE);
+	 update_todo_screen();
+	 glob_find_id = save_id;
+	 todo_find();
+      }
+   } else {
+      sb = GTK_SCROLLBAR(GTK_SCROLLED_WINDOW(scrolled_window)->vscrollbar);
+      upper = GTK_ADJUSTMENT(sb->range.adjustment)->upper;
+      lower = GTK_ADJUSTMENT(sb->range.adjustment)->lower;
+      value = GTK_ADJUSTMENT(sb->range.adjustment)->value;
+      step = GTK_ADJUSTMENT(sb->range.adjustment)->step_increment;
+      if (upper - lower + step) {
+	 percentage = value/(upper - lower + step);
+      } else {
+	 percentage = 0;
+      }
+
+      update_todo_screen();
+      
+      todo_goto_line(line_num, percentage);
+   }
+   
+   return 0;
+}
+
 int todo_refresh()
 {
    todo_category = CATEGORY_ALL;
@@ -617,6 +713,11 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    
    clist_row_selected=0;
 
+   /* Do some initialization */
+   for (i=0; i<NUM_TODO_CAT_ITEMS; i++) {
+      todo_cat_menu_item2[i] = NULL;
+   }
+   
    get_todo_app_info(&todo_app_info);
 
    vbox1 = gtk_vbox_new(FALSE, 0);
@@ -717,7 +818,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    
    todo_modify_button = gtk_button_new_with_label("Apply Changes");
    gtk_signal_connect(GTK_OBJECT(todo_modify_button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_add_new_record), 
+		      GTK_SIGNAL_FUNC(cb_add_new_record),
 		      GINT_TO_POINTER(MODIFY_FLAG));
    gtk_box_pack_start(GTK_BOX(hbox_temp), todo_modify_button, TRUE, TRUE, 0);
    gtk_widget_show(todo_modify_button);
@@ -903,6 +1004,9 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_widget_show(vscrollbar);   
    gtk_widget_show(hbox_temp);
 
+   /* Capture the TAB key to change focus with it */
+   gtk_signal_connect(GTK_OBJECT(todo_text), "key_press_event",
+		      GTK_SIGNAL_FUNC(cb_key_pressed), todo_text_note);
    
    gtk_widget_show(clist);
    gtk_widget_show(vbox1);

@@ -19,7 +19,11 @@
 #ifndef _SYNC_H__
 #define _SYNC_H__
 
-int sync_once(const char *port, int full_backup);
-int sync_loop(const char *port, int full_backup);
+/* Bitmasks for backup */
+#define SYNC_FULL_BACKUP 1
+#define SYNC_NO_PLUGINS  2
+
+int sync_once(const char *port, unsigned int flags);
+int sync_loop(const char *port, unsigned int flags);
 
 #endif

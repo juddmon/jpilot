@@ -1,3 +1,5 @@
+# Install variables
+prefix=@prefix@
 
 #Pilot flags (include dir), and Libraries
 PILOT_FLAGS=@PILOT_FLAGS@
@@ -19,21 +21,23 @@ GTKFLAGS = @GTK_CFLAGS@
 # GTK+ libs
 GTKLIBS = @GTK_LIBS@
 
+# Targets
 all: jpilot
 
 jpilot: jpilot.o datebook.o address.o todo.o memo.o \
-	utils.o sync.o prefs.o log.o \
+	utils.o sync.o prefs.o log.o plugins.o \
 	datebook_gui.o address_gui.o todo_gui.o memo_gui.o \
 	prefs_gui.o search_gui.o install_gui.o weekview_gui.o \
 	monthview_gui.o \
 	japanese.o
-	$(CC) $(OPTIONS) $(PILOT_LIBS) $(GTKFLAGS) $(GTKLIBS) \
+	$(CC) $(OPTIONS) $(GTKFLAGS) \
 	jpilot.o datebook.o address.o todo.o memo.o \
-	utils.o sync.o prefs.o log.o \
+	utils.o sync.o prefs.o log.o plugins.o \
 	datebook_gui.o address_gui.o todo_gui.o memo_gui.o \
 	prefs_gui.o search_gui.o install_gui.o weekview_gui.o \
 	monthview_gui.o \
 	japanese.o \
+	$(PILOT_LIBS) $(GTKLIBS) \
 	-o jpilot
 
 
@@ -88,32 +92,43 @@ sync.o: sync.c sync.h
 log.o: log.c log.h
 	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c log.c
 
+plugins.o: plugins.c plugins.h config.h
+	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c plugins.c
+
 prefs.o: prefs.c utils.h prefs.h
 	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c prefs.c
 
 japanese.o: japanese.c japanese.h
 	$(CC) $(OPTIONS) -c japanese.c
 
-clean: 
-	rm -f *.o *~ config.cache
+#libplugin is only needed for compiling plugins
+#
+libplugin: libplugin.c libplugin.h
+	$(CC) $(OPTIONS) $(GTKFLAGS) -c libplugin.c
+	rm -f libplugin.a
+	ar cur libplugin.a libplugin.o
+	ranlib libplugin.a
 
-distclean: 
-	rm -f *.o *~ config.cache config.status jpilot
+clean: 
+	rm -f *.o *~ config.cache 
+
+distclean: clean
+	rm -f config.status config.h config.log jpilot Makefile
 
 install:
-#	./install-sh -d @prefix@/bin
-	./install-sh -s -c -m 555 -g bin -o bin jpilot @prefix@/bin
-	./install-sh -d -m 755 @prefix@/share/jpilot
-	./install-sh -c -m 755 -g bin -o bin jpilotrc.blue @prefix@/share/jpilot
-	./install-sh -c -m 755 -g bin -o bin jpilotrc.default @prefix@/share/jpilot
-	./install-sh -c -m 755 -g bin -o bin jpilotrc.green @prefix@/share/jpilot
-	./install-sh -c -m 755 -g bin -o bin jpilotrc.purple @prefix@/share/jpilot
-	./install-sh -c -m 755 -g bin -o bin jpilotrc.steel @prefix@/share/jpilot
-	./install-sh -c -m 755 -g bin -o bin empty/DatebookDB.pdb @prefix@/share/jpilot
-	./install-sh -c -m 755 -g bin -o bin empty/AddressDB.pdb @prefix@/share/jpilot
-	./install-sh -c -m 755 -g bin -o bin empty/ToDoDB.pdb @prefix@/share/jpilot
-	./install-sh -c -m 755 -g bin -o bin empty/MemoDB.pdb @prefix@/share/jpilot
+#	./install-sh -d $(prefix)/bin
+	./install-sh -s -c -m 555 -g bin -o bin jpilot $(prefix)/bin
+	./install-sh -d -m 755 $(prefix)/share/jpilot
+	./install-sh -c -m 755 -g bin -o bin jpilotrc.blue $(prefix)/share/jpilot
+	./install-sh -c -m 755 -g bin -o bin jpilotrc.default $(prefix)/share/jpilot
+	./install-sh -c -m 755 -g bin -o bin jpilotrc.green $(prefix)/share/jpilot
+	./install-sh -c -m 755 -g bin -o bin jpilotrc.purple $(prefix)/share/jpilot
+	./install-sh -c -m 755 -g bin -o bin jpilotrc.steel $(prefix)/share/jpilot
+	./install-sh -c -m 755 -g bin -o bin empty/DatebookDB.pdb $(prefix)/share/jpilot
+	./install-sh -c -m 755 -g bin -o bin empty/AddressDB.pdb $(prefix)/share/jpilot
+	./install-sh -c -m 755 -g bin -o bin empty/ToDoDB.pdb $(prefix)/share/jpilot
+	./install-sh -c -m 755 -g bin -o bin empty/MemoDB.pdb $(prefix)/share/jpilot
 
 uninstall:
-	rm @prefix@/share/jpilot/*
-	rm @prefix@/bin/jpilot
+	rm $(prefix)/share/jpilot/*
+	rm $(prefix)/bin/jpilot

@@ -32,11 +32,14 @@
 #include <signal.h>
 #include <utime.h>
 #include <stdio.h>
+#include <ctype.h>
 #include "utils.h"
 #include "sync.h"
+#include "japanese.h"
 #include "log.h"
 #include "prefs.h"
 #include "datebook.h"
+#include "plugins.h"
 
 /*#include <pi-source.h> */
 #include <pi-socket.h>
@@ -49,9 +52,9 @@ int pipe_in, pipe_out;
 extern int pipe_in, pipe_out;
 extern pid_t glob_child_pid;
 
-int sync_application(AppType app_type, int sd);
-int sync_fetch(int sd, int full_backup);
-int jpilot_sync(const char *port, int full_backup);
+int sync_application(char *DB_name, int sd);
+int sync_fetch(int sd, unsigned int flags);
+int jpilot_sync(const char *port, unsigned int flags);
 int sync_lock();
 int sync_unlock();
 #ifdef DATEBOOK_HACK
@@ -206,7 +209,7 @@ int sync_unlock(int fd)
 }
 #endif
 
-int sync_once(const char *port, int full_backup)
+int sync_once(const char *port, unsigned int flags)
 {
 #ifdef USE_LOCKING
    int r;
@@ -250,7 +253,7 @@ int sync_once(const char *port, int full_backup)
    }
 #endif
 
-   jpilot_sync(port, full_backup);
+   jpilot_sync(port, flags);
 #ifdef USE_LOCKING
    sync_unlock(fd);
 #endif
@@ -258,7 +261,7 @@ int sync_once(const char *port, int full_backup)
    _exit(0);
 }
 
-int jpilot_sync(const char *port, int full_backup)
+int jpilot_sync(const char *port, unsigned int flags)
 {
    struct pi_sockaddr addr;
    int sd;
@@ -267,6 +270,10 @@ int jpilot_sync(const char *port, int full_backup)
    const char *device;
    char default_device[]="/dev/pilot";
    int found = 0;
+#ifdef ENABLE_PLUGINS
+   GList *plugin_list, *temp_list;
+   struct plugin_s *plugin;
+#endif
    
    device = NULL;
    if (port) {
@@ -284,6 +291,28 @@ int jpilot_sync(const char *port, int full_backup)
       }
    }
 
+#ifdef ENABLE_PLUGINS
+   if (!(flags & SYNC_NO_PLUGINS)) {
+      jpilot_logf(LOG_DEBUG, "sync:calling load_plugins\n");
+      load_plugins();
+   }
+     
+   /* Do the pre_sync plugin calls */
+   plugin_list=NULL;
+
+   plugin_list = get_plugin_list();
+
+   for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
+      plugin = (struct plugin_s *)temp_list->data;
+      if (plugin) {
+	 if (plugin->plugin_pre_sync) {
+	    jpilot_logf(LOG_DEBUG, "sync:calling plugin_pre_sync for [%s]\n", plugin->name);
+	    plugin->plugin_pre_sync();
+	 }
+      }
+   }
+#endif
+   
    writef(pipe_out, "****************************************\n");
    writef(pipe_out, "Syncing on device %s\n", device);
    writef(pipe_out, "Press the HotSync button now\n");
@@ -292,6 +321,9 @@ int jpilot_sync(const char *port, int full_backup)
    if (!(sd = pi_socket(PI_AF_SLP, PI_SOCK_STREAM, PI_PF_PADP))) {
       perror("pi_socket");
       writef(pipe_out, "pi_socket %s\n", strerror(errno));
+#ifdef ENABLE_PLUGINS
+      free_plugin_list(&plugin_list);
+#endif
       return -1;
    }
     
@@ -303,6 +335,9 @@ int jpilot_sync(const char *port, int full_backup)
       perror("pi_bind");
       writef(pipe_out, "pi_bind %s\n", strerror(errno));
       writef(pipe_out, "Check your serial port and settings\n");
+#ifdef ENABLE_PLUGINS
+      free_plugin_list(&plugin_list);
+#endif
       return -1;
    }
 
@@ -310,6 +345,9 @@ int jpilot_sync(const char *port, int full_backup)
    if(ret == -1) {
       perror("pi_listen");
       writef(pipe_out, "pi_listen %s\n", strerror(errno));
+#ifdef ENABLE_PLUGINS
+      free_plugin_list(&plugin_list);
+#endif
       return -1;
    }
 
@@ -317,6 +355,9 @@ int jpilot_sync(const char *port, int full_backup)
    if(sd == -1) {
       perror("pi_accept");
       writef(pipe_out, "pi_accept %s\n", strerror(errno));
+#ifdef ENABLE_PLUGINS
+      free_plugin_list(&plugin_list);
+#endif
       return SYNC_PI_ACCEPT;
    }
 
@@ -326,26 +367,60 @@ int jpilot_sync(const char *port, int full_backup)
    /*So, this is more than just displaying it to the user */
    writef(pipe_out, "Username is \"%s\"\n", U.username);
    jpilot_logf(LOG_DEBUG, "Username = [%s]\n", U.username);
+   jpilot_logf(LOG_DEBUG, "userID = %d\n", U.userID);
+   jpilot_logf(LOG_DEBUG, "lastSyncPC = %d\n", U.lastSyncPC);
 /*   set_pref_char(PREF_USER, U.username); */
    /*writef(pipe_out, "passwordlen = [%d]\n", U.passwordLength); */
    /*writef(pipe_out, "password = [%s]\n", U.password); */
   
    if (dlp_OpenConduit(sd)<0) {
       writef(pipe_out, "Sync canceled\n");
+#ifdef ENABLE_PLUGINS
+      free_plugin_list(&plugin_list);
+#endif
       return -1;
    }
 
    sync_process_install_file(sd);
 
-   sync_application(DATEBOOK, sd);
-   sync_application(ADDRESS, sd);
-   sync_application(TODO, sd);
-   sync_application(MEMO, sd);
+   sync_application("DatebookDB", sd);
+   sync_application("AddressDB", sd);
+   sync_application("ToDoDB", sd);
+   sync_application("MemoDB", sd);
+   
+   
+#ifdef ENABLE_PLUGINS
+   plugin_list = get_plugin_list();
 
+   for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
+      plugin = (struct plugin_s *)temp_list->data;
+      jpilot_logf(LOG_DEBUG, "syncing plugin name: [%s]\n", plugin->name);
+      jpilot_logf(LOG_DEBUG, "syncing plugin DB:   [%s]\n", plugin->db_name);
+      sync_application(plugin->db_name, sd);
+   }
+#endif
+
+#ifdef ENABLE_PLUGINS
+   /* Do the sync plugin calls */
+   plugin_list=NULL;
+
+   plugin_list = get_plugin_list();
+
+   for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
+      plugin = (struct plugin_s *)temp_list->data;
+      if (plugin) {
+	 if (plugin->plugin_sync) {
+	    jpilot_logf(LOG_DEBUG, "calling plugin_sync for [%s]\n", plugin->name);
+	    plugin->plugin_sync(sd);
+	 }
+      }
+   }
+#endif
+   
 #ifdef DATEBOOK_HACK
    hack_write_record(sd);
-#endif   
-   sync_fetch(sd, full_backup);
+#endif
+   sync_fetch(sd, flags);
    
 #ifdef DATEBOOK_HACK
    hack_delete_record(sd);
@@ -362,12 +437,32 @@ int jpilot_sync(const char *port, int full_backup)
 
    cleanup_pc_files();
 
+#ifdef ENABLE_PLUGINS
+   /* Do the sync plugin calls */
+   plugin_list=NULL;
+
+   plugin_list = get_plugin_list();
+
+   for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
+      plugin = (struct plugin_s *)temp_list->data;
+      if (plugin) {
+	 if (plugin->plugin_post_sync) {
+	    jpilot_logf(LOG_DEBUG, "calling plugin_post_sync for [%s]\n", plugin->name);
+	    plugin->plugin_post_sync();
+	 }
+      }
+   }
+
+   jpilot_logf(LOG_DEBUG, "freeing plugin list\n");
+   free_plugin_list(&plugin_list);
+#endif
+   
    writef(pipe_out, "Finished.\n");
 
    return 0;
 }
 
-int sync_application(AppType app_type, int sd)
+int sync_application(char *DB_name, int sd)
 {
    unsigned long new_id;
    int db;
@@ -376,56 +471,41 @@ int sync_application(AppType app_type, int sd)
    FILE *pc_in;
    PCRecordHeader header;
    char *record;
+   char pronoun[10];
    int rec_len;
-   char pc_filename[50];
-   char palm_dbname[50];
-   char write_log_message[50];
-   char error_log_message_w[50];
-   char error_log_message_d[50];
-   char delete_log_message[50];
+   char pc_filename[256];
+   char write_log_message[256];
+   char error_log_message_w[256];
+   char error_log_message_d[256];
+   char delete_log_message[256];
    char log_entry[256];
-   
-   switch (app_type) {
-    case DATEBOOK:
-      wrote_to_datebook = 0;
-      writef(pipe_out, "Syncing Datebook\n");
-      strcpy(pc_filename, "DatebookDB.pc");
-      strcpy(palm_dbname, "DatebookDB");
-      strcpy(write_log_message, "Wrote an Appointment to the Pilot.\n\r");
-      strcpy(error_log_message_w, "Writing an Appointment to the Pilot failed.\n\r");
-      strcpy(error_log_message_d, "Deleting an Appointment to the Pilot failed.\n\r");
-      strcpy(delete_log_message, "Deleted an Appointment from the Pilot.\n\r");
-      break;
-    case ADDRESS:
-      writef(pipe_out, "Syncing Addressbook\n");
-      strcpy(pc_filename, "AddressDB.pc");
-      strcpy(palm_dbname, "AddressDB");
-      strcpy(write_log_message, "Wrote an Addresss to the Pilot.\n\r");
-      strcpy(error_log_message_w, "Writing an Address to the Pilot failed.\n\r");
-      strcpy(error_log_message_d, "Deleting an Address to the Pilot failed.\n\r");
-      strcpy(delete_log_message, "Deleted an Address from the Pilot.\n\r");
-      break;
-    case TODO:
-      writef(pipe_out, "Syncing ToDo\n");
-      strcpy(pc_filename, "ToDoDB.pc");
-      strcpy(palm_dbname, "ToDoDB");
-      strcpy(write_log_message, "Wrote a ToDo to the Pilot.\n\r");
-      strcpy(error_log_message_w, "Writing a ToDo to the Pilot failed.\n\r");
-      strcpy(error_log_message_d, "Deleting a ToDo to the Pilot failed.\n\r");
-      strcpy(delete_log_message, "Deleted a ToDo from the Pilot.\n\r");
-      break;
-    case MEMO:
-      writef(pipe_out, "Syncing Memo\n");
-      strcpy(pc_filename, "MemoDB.pc");
-      strcpy(palm_dbname, "MemoDB");
-      strcpy(write_log_message, "Wrote a Memo to the Pilot.\n\r");
-      strcpy(error_log_message_w, "Writing a Memo to the Pilot failed.\n\r");
-      strcpy(error_log_message_d, "Deleting a Memo to the Pilot failed.\n\r");
-      strcpy(delete_log_message, "Deleted a Memo from the Pilot.\n\r");
-      break;
-    default:
-      return 0;
+/*redo
+   recordid_t id;
+   int r, index, size, attr, category;
+   char buffer[65536];
+end redo*/
+   if ((DB_name==NULL) || (strlen(DB_name) > 250)) {
+      return -1;
    }
+   wrote_to_datebook = 0;
+   g_snprintf(log_entry, 255, "Syncing %s\n", DB_name);
+   log_entry[255]='\0';
+   writef(pipe_out, log_entry);
+   g_snprintf(pc_filename, 255, "%s.pc", DB_name);
+   /* This is an attempt to use the proper pronoun most of the time */
+   if (strchr("aeiou", tolower(DB_name[0]))) {
+      strcpy(pronoun, "an");
+   } else {
+      strcpy(pronoun, "a");
+   }
+   g_snprintf(write_log_message, 255,
+	      "Wrote %s %s record to the Pilot.\n\r", pronoun, DB_name);
+   g_snprintf(error_log_message_w, 255,
+	      "Writing %s %s record to the Pilot failed.\n\r", pronoun, DB_name);
+   g_snprintf(error_log_message_d, 255,
+	      "Deleting %s %s record from the Pilot failed.\n\r", pronoun, DB_name);
+   g_snprintf(delete_log_message, 256,
+	      "Deleted %s %s record from the Pilot.\n\r", pronoun, DB_name);
 
    pc_in = open_file(pc_filename, "r+");
    if (pc_in==NULL) {
@@ -433,13 +513,21 @@ int sync_application(AppType app_type, int sd)
       return -1;
    }
    /* Open the applications database, store access handle in db */
-   if (dlp_OpenDB(sd, 0, dlpOpenReadWrite, palm_dbname, &db) < 0) {
-      g_snprintf(log_entry, 255, "Unable to open %s\n\r", palm_dbname);
+   if (dlp_OpenDB(sd, 0, dlpOpenReadWrite, DB_name, &db) < 0) {
+      g_snprintf(log_entry, 255, "Unable to open %s\n\r", DB_name);
       log_entry[255]='\0';
       dlp_AddSyncLogEntry(sd, log_entry);
-      pi_close(sd);
       return -1;
    }
+/*redo
+   r = dlp_ReadNextModifiedRec(sd, db, buffer,
+			   &id, &index, &size, &attr, &category);
+   printf("read next record for %s returned %d\n", DB_name, r);
+   if (r>=0 ) {
+      printf("id %d, index %d, size %d, attr 0x%x, category %d\n",id, index, size, attr, category);
+   }
+ end redo
+*/
 #ifdef JPILOT_DEBUG
    dlp_ReadOpenDBInfo(sd, db, &num);
    writef(pipe_out ,"number of records = %d\n", num);
@@ -473,49 +561,46 @@ int sync_application(AppType app_type, int sd)
 	    }
 	 }
 
+/*todo move this to before the record is written out.*/
 #if defined(WITH_JAPANESE)
 	 /* Convert to SJIS Japanese Kanji code (Palm use this code) */
 	 /*Write the record to the Palm Pilot */
-	 switch (app_type) {
-	  case DATEBOOK: {
-	     struct Appointment a;
-	     unpack_Appointment(&a, record, rec_len);
-	     if (a.description != NULL)
-               Euc2Sjis(a.description, 65536);
-	     if (a.note != NULL)
-               Euc2Sjis(a.note, 65536);
-	     rec_len = pack_Appointment(&a, record, 65535);
-	     break;
-	  }
-	  case ADDRESS: {
-	     struct Address a;
-	     int i;
-	     unpack_Address(&a, record, rec_len);
-	     for (i = 0; i < 19; i++)
-	       if (a.entry[i] != NULL)
-		 Euc2Sjis(a.entry[i], 65536);
-	     rec_len = pack_Address(&a, record, 65535);
-	     break;
-	  }
-	  case TODO: {
-	     struct ToDo t;
-	     unpack_ToDo(&t, record, rec_len);
-	     if (t.description != NULL)
-	       Euc2Sjis(t.description, 65536);
+	 if (!strcmp(DB_name, "DatebookDB")) {
+	    struct Appointment a;
+	    unpack_Appointment(&a, record, rec_len);
+	    if (a.description != NULL)
+	      Euc2Sjis(a.description, 65536);
+	    if (a.note != NULL)
+	      Euc2Sjis(a.note, 65536);
+	    rec_len = pack_Appointment(&a, record, 65535);
+	    break;
+	 }
+	 if (!strcmp(DB_name, "AddressDB")) {
+	    struct Address a;
+	    int i;
+	    unpack_Address(&a, record, rec_len);
+	    for (i = 0; i < 19; i++)
+	      if (a.entry[i] != NULL)
+		Euc2Sjis(a.entry[i], 65536);
+	    rec_len = pack_Address(&a, record, 65535);
+	    break;
+	 }
+	 if (!strcmp(DB_name, "ToDoDB")) {
+	    struct ToDo t;
+	    unpack_ToDo(&t, record, rec_len);
+	    if (t.description != NULL)
+	      Euc2Sjis(t.description, 65536);
             if (t.note != NULL)
-	       Euc2Sjis(t.note, 65536);
-	     rec_len = pack_ToDo(&t, record, 65535);
-	     break;
-	  }
-	  case MEMO: {
-	     struct Memo m;
-	     unpack_Memo(&m, record, rec_len);
-	     if (m.text != NULL)
-	       Euc2Sjis(m.text, 65536);
-	     rec_len = pack_Memo(&m, record, 65535);
-	     break;
-	  }
-	  default:
+	      Euc2Sjis(t.note, 65536);
+	    rec_len = pack_ToDo(&t, record, 65535);
+	    break;
+	 }
+	 if (!strcmp(DB_name, "MemoDB")) {
+	    struct Memo m;
+	    unpack_Memo(&m, record, rec_len);
+	    if (m.text != NULL)
+	      Euc2Sjis(m.text, 65536);
+	    rec_len = pack_Memo(&m, record, 65535);
 	    break;
 	 }
 #endif
@@ -592,10 +677,10 @@ int sync_application(AppType app_type, int sd)
    return 0;
 }
 
-/* */
-/* Fetch the databases from the palm if modified */
-/* */
-int sync_fetch(int sd, int full_backup)
+/*
+ * Fetch the databases from the palm if modified
+ */
+int sync_fetch(int sd, unsigned int flags)
 {
 #define MAX_DBNAME 50
    struct pi_file *pi_fp;
@@ -613,8 +698,13 @@ int sync_fetch(int sd, int full_backup)
 	"MemoDB",
 	NULL
    };
-      
-   start=cardno=0;
+#ifdef ENABLE_PLUGINS
+   GList *plugin_list, *temp_list;
+   struct plugin_s *plugin;
+#endif
+   
+   
+   found=start=cardno=0;
    
    while(dlp_ReadDBList(sd, cardno, dlpOpenRead, start, &info)>0) {
       start=info.index+1;
@@ -624,11 +714,27 @@ int sync_fetch(int sd, int full_backup)
       writef(pipe_out, "type = %x\n",info.type);
       writef(pipe_out, "creator = %x\n",info.creator);
 #endif
-      for(i=0, found=0; palm_dbname[i]; i++) {
-	 if ((found = !strcmp(info.name, palm_dbname[i])))
-	   break;
+      if (!(flags & SYNC_FULL_BACKUP)) {
+	 for(i=0, found=0; palm_dbname[i]; i++) {
+	    if ((found = !strcmp(info.name, palm_dbname[i])))
+	      break;
+	 }
       }
-      if (full_backup || found) {
+#ifdef ENABLE_PLUGINS
+      plugin_list = get_plugin_list();
+
+      if ((!found) && (!(flags & SYNC_FULL_BACKUP))) {
+	 for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
+	    plugin = (struct plugin_s *)temp_list->data;
+	    if (!strcmp(info.name, plugin->db_name)) {
+	       found=1;
+	       break;
+	    }
+	 }
+      }
+#endif
+
+      if ((flags & SYNC_FULL_BACKUP) || found) {
 	 strncpy(db_copy_name, info.name, MAX_DBNAME-5);
 	 db_copy_name[MAX_DBNAME-5]='\0';
 	 if (info.flags & dlpDBFlagResource) {
@@ -719,7 +825,7 @@ static int hack_delete_record(int sd)
       /* Open the applications database, store access handle in db */
       if (dlp_OpenDB(sd, 0, dlpOpenWrite, "DatebookDB", &db) < 0) {
 	 dlp_AddSyncLogEntry(sd, "Unable to open DatebookDB\r\n");
-	 pi_close(sd);
+	 return -1;
       }
       
       jpilot_logf(LOG_DEBUG, "deleting bogus record\n");

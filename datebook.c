@@ -273,30 +273,35 @@ int datebook_add_exception(struct Appointment *a, int year, int mon, int day)
    return 0;
 }
 
-
-
 int dateToDays(struct tm *tm1)
 {
    time_t t1;
-
+   struct tm *gmt;
+   static time_t adj = -1;
+   
    t1 = mktime(tm1);
-   return t1/86400;/*There are 86400 secs in a day */
+   if (-1 == adj) {
+      gmt = gmtime(&t1);
+      adj = t1 - mktime(gmt);
+   }
+   return (t1+adj)/86400; /*There are 86400 secs in a day */
 }
 
 /*returns 0 if times equal */
 /*returns 1 if time1 is greater (later) */
 /*returns 2 if time2 is greater (later) */
+/*
 int compareTimesToSec(struct tm *tm1, struct tm *tm2)
 {
    time_t t1, t2;
 
-   t1 =  mktime(tm1);
-   t2 =  mktime(tm2);
-   if (t1 > t2 ) return 1;
-   if (t1 < t2 ) return 2;
+   t1 = mktime(tm1);
+   t2 = mktime(tm2);
+   if (t1 > t2) return 1;
+   if (t1 < t2) return 2;
    return 0;
 }
-
+*/
 /*returns 0 if times equal */
 /*returns 1 if time1 is greater (later) */
 /*returns 2 if time2 is greater (later) */
@@ -492,6 +497,7 @@ int get_datebook_app_info(struct AppointmentAppInfo *ai)
 	 return -1;
       }
       if (feof(in)) {
+	 fclose(in);
 	 return -1;
       }      
    }
@@ -499,6 +505,7 @@ int get_datebook_app_info(struct AppointmentAppInfo *ai)
 
    num = get_app_info_size(in, &rec_size);
    if (num) {
+      fclose(in);
       return -1;
    }
 

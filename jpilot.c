@@ -23,6 +23,7 @@
 #include <sys/types.h>
 #include <sys/time.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <signal.h>
 #include <string.h>
 #include <unistd.h>
@@ -32,9 +33,11 @@
 
 /*#include "datebook.h" */
 #include "utils.h"
+#include "sync.h"
 #include "log.h"
 #include "prefs_gui.h"
 #include "prefs.h"
+#include "plugins.h"
 
 #include "datebook.xpm"
 #include "address.xpm"
@@ -46,6 +49,7 @@
 /*#define SHADOW GTK_SHADOW_ETCHED_IN */
 #define SHADOW GTK_SHADOW_ETCHED_OUT
 
+
 GtkWidget *g_hbox, *g_vbox0;
 GtkWidget *g_hbox2, *g_vbox0_1;
 
@@ -53,6 +57,7 @@ GtkWidget *glob_date_label;
 GtkTooltips *glob_tooltips;
 gint glob_date_timer_tag;
 pid_t glob_child_pid;
+GtkWidget *window;
 int glob_app = 0;
 
 int pipe_in, pipe_out;
@@ -70,6 +75,112 @@ int create_main_boxes()
    gtk_box_pack_start(GTK_BOX(g_vbox0), g_vbox0_1, FALSE, FALSE, 0);
    return 0;
 }
+
+#ifdef ENABLE_PLUGINS
+void call_plugin_gui(int number, int unique_id)
+{
+   struct plugin_s *plugin;
+   GList *plugin_list, *temp_list;
+   
+   if (!number) {
+      return;
+   }
+   
+   plugin_list = NULL;
+   plugin_list = get_plugin_list();
+
+
+   /* Find out which plugin to call a gui_cleanup on */
+   for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
+      plugin = (struct plugin_s *)temp_list->data;
+      if (plugin) {
+	 if (plugin->number == glob_app) {
+	    if (plugin->plugin_gui_cleanup) {
+	       plugin->plugin_gui_cleanup();
+	    }
+	    break;
+	 }
+      }
+   }
+
+
+   /* destroy main boxes and recreate them */
+   gtk_widget_destroy(g_vbox0_1);
+   gtk_widget_destroy(g_hbox2);
+   create_main_boxes();
+   if (glob_date_timer_tag) {
+      gtk_timeout_remove(glob_date_timer_tag);
+   }
+
+   /* Find out which plugin we are calling */
+
+   for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
+      plugin = (struct plugin_s *)temp_list->data;
+      if (plugin) {
+	 if (plugin->number == number) {
+	    glob_app = plugin->number;
+	    if (plugin->plugin_gui) {
+	       plugin->plugin_gui(g_vbox0_1, g_hbox2, unique_id);
+	    }
+	    break;
+	 }
+      }
+   }
+}
+
+void cb_plugin_gui(GtkWidget *widget, int number)
+{
+   call_plugin_gui(number, 0);
+}
+      
+#endif
+
+#ifdef ENABLE_PLUGINS
+void call_plugin_help(int number)
+{
+   struct plugin_s *plugin;
+   GList *plugin_list, *temp_list;
+   char *button_text[]={"OK"
+   };
+   char *text;
+   int width, height;
+
+   if (!number) {
+      return;
+   }
+   
+   plugin_list = NULL;
+   plugin_list = get_plugin_list();
+
+   /* Find out which plugin we are calling */
+
+   for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
+      plugin = (struct plugin_s *)temp_list->data;
+      if (plugin) {
+	 if (plugin->number == number) {
+	    glob_app = plugin->number;
+	    if (plugin->plugin_help) {
+	       text = NULL;
+	       plugin->plugin_help(&text, &width, &height);
+	       if (text) {
+		  dialog_generic(GTK_WIDGET(window)->window,
+				width, height,
+				 "Help", plugin->name, text, 1, button_text);
+		  free(text);
+	       }
+	    }
+	    break;
+	 }
+      }
+   }
+}
+
+void cb_plugin_help(GtkWidget *widget, int number)
+{
+   call_plugin_help(number);
+}
+
+#endif
 
 void cb_app_button(GtkWidget *widget, gpointer data)
 {
@@ -286,7 +397,7 @@ void cb_about(GtkWidget *widget, gpointer data)
    
    window = data;
    sprintf(text,
-	   /*------------------------------- */
+	   /*-------------------------------------------*/
 	   PN" was written by\r\n"
 	   "Judd Montgomery (c) 1999.\r\n"
 	   "judd@engineer.com\r\n"
@@ -299,33 +410,181 @@ void cb_about(GtkWidget *widget, gpointer data)
 		     "About "PN, "oOo", text, 1, button_text);
    }
 }
-	 
+
 void get_main_menu(GtkWidget  *window,
-		   GtkWidget **menubar)
-/*This code was copied from the gtk_tut.txt file */
+		   GtkWidget **menubar,
+		   GList *plugin_list)
+/*Some of this code was copied from the gtk_tut.txt file */
 {
-   GtkItemFactoryEntry menu_items[] = {
-	{ "/_File",         NULL,         NULL, 0, "<Branch>" },
-	{ "/_File/tear",         NULL,         NULL, 0, "<Tearoff>" },
-	{ "/File/_Search",    "<control>S", cb_search_gui, 0, NULL },
-	{ "/File/sep1",     NULL,         NULL, 0, "<Separator>" },
-      	{ "/File/_Install",    NULL, cb_install_gui, 0, NULL },
-      	/*{ "/File/_WeekView",    "F5", cb_weekview_gui, 0, NULL }, */
-      	/*{ "/File/_MonthView",    "F6", cb_monthview_gui, 0, NULL }, */
-	{ "/File/Preferences",    NULL, cb_prefs_gui, 0, NULL },
-	{ "/File/sep1",     NULL,         NULL, 0, "<Separator>" },
-	{ "/File/Quit",     "<control>Q", delete_event, 0, NULL },
-	{ "/_View",      NULL,         NULL, 0, "<Branch>" },
-	{ "/View/Datebook",  "F1",         cb_app_button, DATEBOOK, NULL },
-	{ "/View/Addresses",  "F2",         cb_app_button, ADDRESS, NULL },
-	{ "/View/Todos",  "F3",         cb_app_button, TODO, NULL },
-	{ "/View/Memos",  "F4",         cb_app_button, MEMO, NULL },
-	{ "/_Help",         NULL,         NULL, 0, "<LastBranch>" },
-	{ "/_Help/About",   NULL,         cb_about, GPOINTER_TO_INT(window), NULL },
+   GtkItemFactoryEntry menu_items1[]={
+	{ "/_File",            NULL,    NULL,           0,        "<Branch>" },
+	{ "/_File/tear",       NULL,    NULL,           0,        "<Tearoff>" },
+	{ "/File/_Search","<control>S", cb_search_gui,  0,        NULL },
+	{ "/File/sep1",        NULL,    NULL,           0,        "<Separator>" },
+      	{ "/File/_Install",    NULL,    cb_install_gui, 0,        NULL },
+      	/*{ "/File/_WeekView",   "F5",cb_weekview_gui,    0,        NULL }, */
+      	/*{ "/File/_MonthView",  "F6",cb_monthview_gui,   0,        NULL }, */
+	{ "/File/Preferences", NULL,    cb_prefs_gui,   0,        NULL },
+	{ "/File/sep1",        NULL,    NULL,           0,        "<Separator>" },
+	{ "/File/Quit","<control>Q",    delete_event,   0,        NULL },
+	{ "/_View",            NULL,    NULL,           0,        "<Branch>" },
+	{ "/View/Datebook",    "F1",    cb_app_button,  DATEBOOK, NULL },
+	{ "/View/Addresses",   "F2",    cb_app_button,  ADDRESS,  NULL },
+	{ "/View/Todos",       "F3",    cb_app_button,  TODO,     NULL },
+	{ "/View/Memos",       "F4",    cb_app_button,  MEMO,     NULL },
+
+	{ "/Plugins",          NULL,    NULL,           0,        "<Branch>" },
+
+        { "/_Help",            NULL,    NULL,           0,        "<LastBranch>" },
+	{ "/_Help/About J-Pilot", NULL, cb_about,       GPOINTER_TO_INT(window), NULL },
+
+   	{ "END",               NULL,    NULL,           0,        NULL }
    };
    GtkItemFactory *item_factory;
    GtkAccelGroup *accel_group;
-   gint nmenu_items = sizeof (menu_items) / sizeof (menu_items[0]);
+   gint nmenu_items;
+   GtkItemFactoryEntry *menu_items2;
+   int i1, i2;
+     
+#ifdef ENABLE_PLUGINS
+   int count, help_count;
+   struct plugin_s *p;
+   int str_i;
+   char **plugin_menu_strings;
+   char **plugin_help_strings;
+   GList *temp_list;
+   char temp_str[60];
+#endif
+
+#ifdef ENABLE_PLUGINS
+   /* Go to first entry in the list */
+   for (temp_list = plugin_list; temp_list; temp_list = temp_list->prev)
+      plugin_list = temp_list;
+   
+   /* Count the plugin/ entries */
+   for (count=0, temp_list = plugin_list;
+	temp_list; temp_list = temp_list->next) {
+      p = (struct plugin_s *)temp_list->data;
+      if (p->menu_name) {
+	 count++;
+      }
+   }
+   
+   /* Count the help/ entries */
+   for (help_count=0, temp_list = plugin_list;
+	temp_list; temp_list = temp_list->next) {
+      p = (struct plugin_s *)temp_list->data;
+      if (p->help_name) {
+	 help_count++;
+      }
+   }
+   
+   plugin_menu_strings = malloc(count * sizeof(char *));
+   plugin_help_strings = malloc(help_count * sizeof(char *));
+   
+   /* Create plugin menu strings */
+   str_i = 0;
+   for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
+      p = (struct plugin_s *)temp_list->data;
+      if (p->menu_name) {
+	 g_snprintf(temp_str, 60, "/Plugins/%s", p->menu_name);
+	 plugin_menu_strings[str_i++]=strdup(temp_str);
+      }
+   }
+
+
+   /* Create help menu strings */
+   str_i = 0;
+   for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
+      p = (struct plugin_s *)temp_list->data;
+      if (p->help_name) {
+	 g_snprintf(temp_str, 60, "/_Help/%s", p->help_name);
+	 plugin_help_strings[str_i++]=strdup(temp_str);
+      }
+   }
+#endif
+
+   nmenu_items = (sizeof (menu_items1) / sizeof (menu_items1[0])) - 2;
+
+#ifdef ENABLE_PLUGINS
+   if (count) {
+      nmenu_items = nmenu_items + count + 1;
+   }
+   nmenu_items = nmenu_items + help_count;
+#endif
+   
+
+   menu_items2=malloc(nmenu_items * sizeof(GtkItemFactoryEntry));
+   if (!menu_items2) {
+      jpilot_logf(LOG_WARN, "get_main_menu(): Out of memory\n");
+      return;
+   }
+   /* Copy the first part of the array until Plugins */
+   for (i1=i2=0; ; i1++, i2++) {
+      if (!strcmp(menu_items1[i1].path, "/Plugins")) {
+	 break;
+      }
+      menu_items2[i2]=menu_items1[i1];
+   }
+
+#ifdef ENABLE_PLUGINS
+   if (count) {
+      /* This is the /Plugins entry */
+      menu_items2[i2]=menu_items1[i1];
+      i1++; i2++;
+      str_i=0;
+      for (temp_list = plugin_list;
+	   temp_list;
+	   temp_list = temp_list->next) {
+	 p = (struct plugin_s *)temp_list->data;
+	 if (!p->menu_name) {
+	    continue;
+	 }
+	 menu_items2[i2].path=plugin_menu_strings[str_i];
+	 menu_items2[i2].accelerator=NULL;
+	 menu_items2[i2].callback=cb_plugin_gui;
+	 menu_items2[i2].callback_action=p->number;
+	 menu_items2[i2].item_type=0;
+	 str_i++;
+	 i2++;
+      }
+   } else {
+      /* Skip the /Plugins entry */
+      i1++;
+   }
+#else
+   /* Skip the /Plugins entry */
+   i1++;
+#endif
+   
+   /* Copy the last part of the array until END */
+   for (; ; i1++, i2++) {
+      if (!strcmp(menu_items1[i1].path, "END")) {
+	 break;
+      }
+      menu_items2[i2]=menu_items1[i1];
+   }
+
+#ifdef ENABLE_PLUGINS
+   if (help_count) {
+      str_i=0;
+      for (temp_list = plugin_list;
+	   temp_list;
+	   temp_list = temp_list->next) {
+	 p = (struct plugin_s *)temp_list->data;
+	 if (!p->help_name) {
+	    continue;
+	 }
+	 menu_items2[i2].path=plugin_help_strings[str_i];
+	 menu_items2[i2].accelerator=NULL;
+	 menu_items2[i2].callback=cb_plugin_help;
+	 menu_items2[i2].callback_action=p->number;
+	 menu_items2[i2].item_type=0;
+	 str_i++;
+	 i2++;
+      }
+   }
+#endif
 
    accel_group = gtk_accel_group_new();
 
@@ -342,7 +601,7 @@ void get_main_menu(GtkWidget  *window,
    /* This function generates the menu items. Pass the item factory,
     the number of items in the array, the array itself, and any
     callback data for the the menu items. */
-   gtk_item_factory_create_items (item_factory, nmenu_items, menu_items, NULL);
+   gtk_item_factory_create_items(item_factory, nmenu_items, menu_items2, NULL);
    
    /* Attach the new accelerator group to the window. */
    gtk_accel_group_attach(accel_group, GTK_OBJECT (window));
@@ -350,10 +609,37 @@ void get_main_menu(GtkWidget  *window,
    if (menubar)
      /* Finally, return the actual menu bar created by the item factory. */
      *menubar = gtk_item_factory_get_widget (item_factory, "<main>");
+   
+   free(menu_items2);
+#ifdef ENABLE_PLUGINS
+   if (count) {
+      for (str_i=0; str_i < count; str_i++) {
+	 free(plugin_menu_strings[str_i]);
+      }
+      free(plugin_menu_strings);
+   }
+#endif
 }
 
 static void delete_event(GtkWidget *widget, GdkEvent *event, gpointer data)
 {
+#ifdef ENABLE_PLUGINS
+   struct plugin_s *plugin;
+   GList *plugin_list, *temp_list;
+   
+   plugin_list = get_plugin_list();
+
+   for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
+      plugin = (struct plugin_s *)temp_list->data;
+      if (plugin) {
+	 if (plugin->plugin_exit_cleanup) {
+	    jpilot_logf(LOG_DEBUG, "calling plugin_exit_cleanup\n");
+	    plugin->plugin_exit_cleanup();
+	 }
+      }
+   }
+#endif
+   
    if (glob_child_pid) {
       jpilot_logf(LOG_DEBUG, "killing %d\n", glob_child_pid);
 	 kill(glob_child_pid, SIGTERM);
@@ -365,7 +651,6 @@ static void delete_event(GtkWidget *widget, GdkEvent *event, gpointer data)
 int main(int   argc,
 	 char *argv[])
 {
-   GtkWidget *window;
    GtkWidget *main_vbox;
    GtkWidget *button_datebook,*button_address,*button_todo,*button_memo;
    GtkWidget *button;
@@ -381,8 +666,16 @@ int main(int   argc,
    int sync_only;
    int i;
    char title[MAX_PREF_VALUE+40];
+   int skip_plugins;
+#ifdef ENABLE_PLUGINS
+   GList *plugin_list;
+   GList *temp_list;
+   struct plugin_s *plugin;
+   jp_startup_info info;
+#endif
    
    sync_only=FALSE;
+   skip_plugins=FALSE;
    /*log all output to a file */
    glob_log_file_mask = LOG_INFO | LOG_WARN | LOG_FATAL | LOG_STDOUT;
    glob_log_stdout_mask = LOG_INFO | LOG_WARN | LOG_FATAL | LOG_STDOUT;
@@ -390,20 +683,24 @@ int main(int   argc,
    glob_find_id = 0;
 
    for (i=1; i<argc; i++) {
-      if (!strncasecmp(argv[1], "-v", 2)) {
+      if (!strncasecmp(argv[i], "-v", 2)) {
 	 printf("%s\n", VERSION_STRING);
 	 exit(0);
       }
-      if (!strncasecmp(argv[1], "-h", 2)) {
+      if (!strncasecmp(argv[i], "-h", 2)) {
 	 printf("%s\n", USAGE_STRING);
 	 exit(0);
       }
-      if (!strncasecmp(argv[1], "-d", 2)) {
+      if (!strncasecmp(argv[i], "-d", 2)) {
 	 glob_log_stdout_mask = 0xFFFF;
 	 glob_log_file_mask = 0xFFFF;
 	 jpilot_logf(LOG_DEBUG, "Debug messages on.\n");
       }
-      if (!strncasecmp(argv[1], "-s", 2)) {
+      if (!strncasecmp(argv[i], "-p", 2)) {
+	 skip_plugins = 1;
+	 jpilot_logf(LOG_INFO, "Not loading plugins.\n");
+      }
+      if (!strncasecmp(argv[i], "-s", 2)) {
 	 sync_only=TRUE;
       }
    }
@@ -417,7 +714,35 @@ int main(int   argc,
    /*Check to see if DB files are there */
    /*If not copy some empty ones over */
    check_copy_DBs_to_home();
+
+#ifdef ENABLE_PLUGINS
+   plugin_list=NULL;
+   if (!skip_plugins) {
+      load_plugins();
+   }
+   plugin_list = get_plugin_list();
+
+   for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
+      plugin = (struct plugin_s *)temp_list->data;
+      jpilot_logf(LOG_DEBUG, "plugin: [%s] was loaded\n", plugin->name);
+   }
+
    
+   for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
+      plugin = (struct plugin_s *)temp_list->data;
+      if (plugin) {
+	 if (plugin->plugin_startup) {
+	    info.base_dir = strdup(BASE_DIR);
+	    jpilot_logf(LOG_DEBUG, "calling plugin_startup for [%s]\n", plugin->name);
+	    plugin->plugin_startup(&info);
+	    if (info.base_dir) {
+	       free(info.base_dir);
+	    }
+	 }
+      }
+   }
+#endif
+
    glob_date_timer_tag=0;
    glob_child_pid=0;
 
@@ -469,8 +794,12 @@ int main(int   argc,
    gtk_container_add(GTK_CONTAINER(window), main_vbox);
    gtk_widget_show(main_vbox);
 
-   /*Create the Menu Bar at the top */
-   get_main_menu(window, &menubar);
+   /* Create the Menu Bar at the top */
+#ifdef ENABLE_PLUGINS
+   get_main_menu(window, &menubar, plugin_list);
+#else
+   get_main_menu(window, &menubar, NULL);
+#endif
    gtk_box_pack_start(GTK_BOX(main_vbox), menubar, FALSE, FALSE, 0);
    gtk_menu_bar_set_shadow_type(GTK_MENU_BAR(menubar), GTK_SHADOW_NONE);
    gtk_widget_show(menubar);
@@ -532,14 +861,19 @@ int main(int   argc,
    /* Create "Sync" button */
    button = gtk_button_new_with_label("Sync");
    gtk_signal_connect (GTK_OBJECT(button), "clicked",
-		       GTK_SIGNAL_FUNC(cb_sync), NULL);
+		       GTK_SIGNAL_FUNC(cb_sync),
+		       GINT_TO_POINTER(skip_plugins ? SYNC_NO_PLUGINS : 0));
+
    gtk_box_pack_start(GTK_BOX (g_vbox0), button, FALSE, FALSE, 0);
    gtk_widget_show (button);
 
    /* Create "Backup" button in left column */
    button = gtk_button_new_with_label("Backup");
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_backup), NULL);
+		      GTK_SIGNAL_FUNC(cb_sync),
+		      GINT_TO_POINTER
+		      (skip_plugins ? SYNC_NO_PLUGINS | SYNC_FULL_BACKUP
+		      : SYNC_FULL_BACKUP));
    gtk_box_pack_start(GTK_BOX(g_vbox0), button, FALSE, FALSE, 0);
    gtk_widget_show(button);
 

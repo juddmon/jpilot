@@ -32,7 +32,7 @@
 #define PRINT_FILE_LINE printf("%s line %d\n", __FILE__, __LINE__)
 #define PN "J-Pilot"
 #define EPN "jpilot"
-#define VERSION "0.95"
+#define VERSION "0.96"
 #define VERSION_STRING "\n"PN" version "VERSION"\n"\
 " Copyright (C) 1999 by Judd Montgomery\n"
 
@@ -40,6 +40,7 @@
 " -v displays version and exits.\n"\
 " -h displays help and exits.\n"\
 " -d displays debug info to stdout.\n"\
+" -p do not load plugins.\n"\
 " The PILOTPORT, and PILOTRATE env variables are used to specify which\n"\
 " port to sync on, and at what speed.\n"\
 " If PILOTPORT is not set then it defaults to /dev/pilot.\n"
@@ -87,9 +88,6 @@
 #define DIALOG_SAID_CANCEL   456
 
 extern unsigned int glob_find_id;
-extern unsigned int glob_find_mon;
-extern unsigned int glob_find_day;
-extern unsigned int glob_find_year;
 
 typedef enum {
    PALM_REC = 100L,
@@ -214,20 +212,13 @@ typedef struct MemoList_s {
    MyMemo mmemo;
 } MemoList;
 
-
-union AnyRecord {
-   MyAppointment mappo;
-   MyAddress maddr;
-   MyToDo mtodo;
-   MyMemo mmemo;
-};
-
-typedef struct AnyRecordList_s {
+struct search_record
+{
    AppType app_type;
-   struct AnyRecordList_s *next;
-   union AnyRecord any;
-} AnyRecordList;
-
+   int plugin_flag;
+   unsigned int unique_id;
+   struct search_record *next;
+};
 
 gint timeout_date(gpointer data);
 int get_pixmaps(GtkWidget *widget,
@@ -261,8 +252,7 @@ void print_string(char *str, int len);
 /* */
 int get_app_info_size(FILE *in, int *size);
 int cleanup_pc_files();
-void cb_backup(GtkWidget *widget, gpointer data);
-void cb_sync(GtkWidget *widget, gpointer data);
+void cb_sync(GtkWidget *widget, unsigned int flags);
 /*Returns the number of the button that was pressed */
 int dialog_generic(GdkWindow *main_window,
 		   int w, int h,
@@ -273,6 +263,8 @@ int clist_find_id(GtkWidget *clist,
 		  unsigned int unique_id,
 		  int *found_at,
 		  int *total_count);
+int clist_count(GtkWidget *clist,
+		int *total_count);
 int move_scrolled_window(GtkWidget *sw, float percentage);
 void move_scrolled_window_hack(GtkWidget *sw, float percentage);
 
@@ -290,7 +282,7 @@ void cb_weekview_gui(GtkWidget *widget, gpointer data);
 /*monthview_gui.c */
 void cb_monthview_gui(GtkWidget *widget, gpointer data);
 
-void free_AnyRecordList(AnyRecordList **rl);
+void free_search_record_list(struct search_record **sr);
 
 
 int datebook_gui(GtkWidget *vbox, GtkWidget *hbox);
@@ -300,6 +292,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox);
 
 /*from jpilot.c */
 void cb_app_button(GtkWidget *widget, gpointer data);
+void call_plugin_gui(int number, int unique_id);
 /*datebook_gui */
 int datebook_refresh(int first);
 /*address_gui */

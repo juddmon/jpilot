@@ -6,4 +6,5 @@
 * Japanesation patches were provided by Hiroshi Kawashima <kei@arch.sony.co.jp>
 
 * Alex Varju <alex@varju.bc.ca> sent me a patch for displaying due dates in
-  todos
+  todos, and also a fix for a small bug where I didn't sort them correctly.
+  I had priority/date and date/priority reversed.
