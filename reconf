@@ -11,6 +11,8 @@ rm -f config.log config.status
 #rm -f config.guess config.sub depcomp ltmain.sh
 #(cat m4/*.m4 > acinclude.m4 2> /dev/null)
 cp INSTALL INSTALL.bak
+cp ABOUT-NLS ABOUT-NLS.bak
 autoreconf --verbose --install --force $@
 mv INSTALL.bak INSTALL
+mv ABOUT-NLS.bak ABOUT-NLS
 #./configure
