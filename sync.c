@@ -644,7 +644,7 @@ int jpilot_sync(struct my_sync_info *sync_info)
        (!(sync_info->flags & SYNC_OVERRIDE_USER)) &&
        (!(sync_info->flags & SYNC_RESTORE))) {
       write_to_parent(PIPE_PRINT, _("Last Synced Username-->\"%s\"\n"), sync_info->username);
-      write_to_parent(PIPE_PRINT, _("Last Syned UserID-->\"%d\"\n"), sync_info->userID);
+      write_to_parent(PIPE_PRINT, _("Last Synced UserID-->\"%d\"\n"), sync_info->userID);
       write_to_parent(PIPE_PRINT, _(" This Username-->\"%s\"\n"), U.username);
       write_to_parent(PIPE_PRINT, _(" This User ID-->%d\n"), U.userID);
       write_to_parent(PIPE_WAITING_ON_USER, "%d:\n", SYNC_ERROR_NOT_SAME_USER);
