@@ -346,7 +346,7 @@ void alarms_add_to_list(unsigned int unique_id,
 
    temp_alarm = malloc(sizeof(struct jp_alarms));
    if (!temp_alarm) {
-      jp_logf(JP_LOG_WARN, "alarms_add_to_list: Out of memory\n");
+      jp_logf(JP_LOG_WARN, "alarms_add_to_list: %s\n", _("Out of memory"));
       return;
    }
    temp_alarm->unique_id = unique_id;
@@ -433,7 +433,7 @@ void alarms_write_file(void)
 
    out=jp_open_home_file(EPN".alarms.tmp", "w");
    if (!out) {
-      jp_logf(JP_LOG_WARN, "Could not open "EPN".alarms.tmp file\n");
+      jp_logf(JP_LOG_WARN, _("Unable to open %s%s file\n"), EPN, ".alarms.tmp");
       return;
    }
    fail=0;
@@ -602,14 +602,14 @@ int alarms_do_one(struct Appointment *a,
       command[sizeof(command)-2]='\0';
 
       make_command_safe(command);
-      jp_logf(JP_LOG_STDOUT|JP_LOG_FILE, "executing command = [%s]\n", command);
+      jp_logf(JP_LOG_STDOUT|JP_LOG_FILE, _("executing command = [%s]\n"), command);
       system(command);
    }
 
    get_pref(PREF_OPEN_ALARM_WINDOWS, &wants_windows, NULL);
 
    if (wants_windows) {
-      return dialog_alarm("J-Pilot Alarm", reason,
+      return dialog_alarm(_("J-Pilot Alarm"), reason,
 			  time_str, desc_str, note_str,
 			  unique_id,
 			  t_alarm);
@@ -1126,7 +1126,7 @@ static int find_prev_next(struct Appointment *a,
    while(forward || backward) {
       safety_counter++;
       if (safety_counter > 3000) {
-	 jp_logf(JP_LOG_STDOUT|JP_LOG_FILE, "find_prev_next():infinite loop, breaking\n");
+	 jp_logf(JP_LOG_STDOUT|JP_LOG_FILE, "find_prev_next(): %s\n", _("infinite loop, breaking\n"));
 	 if (a->description) {
 	    jp_logf(JP_LOG_STDOUT|JP_LOG_FILE, "desc=[%s]\n", a->description);
 	 }
@@ -1494,7 +1494,7 @@ int alarms_init(unsigned char skip_past_alarms,
    found_uptodate=0;
    in=jp_open_home_file(EPN".alarms", "r");
    if (!in) {
-      jp_logf(JP_LOG_WARN, "Could not open "EPN".alarms file\n");
+      jp_logf(JP_LOG_WARN, _("Unable to open %s.alarms file\n"), EPN);
       return -1;
    }
 

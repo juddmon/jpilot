@@ -433,7 +433,7 @@ int address_import_callback(GtkWidget *parent_window, const char *file_path, int
 
    in=fopen(file_path, "r");
    if (!in) {
-      jp_logf(JP_LOG_WARN, _("Could not open file %s\n"), file_path);
+      jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), file_path);
       return -1;
    }
 
@@ -689,7 +689,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 g_snprintf(text, sizeof(text), _("%s is a directory"), filename);
 	 dialog_generic(GTK_WINDOW(export_window),
 			0, 0, _("Error Opening File"),
-			"Directory", text, 1, button_text);
+			_("Directory"), text, 1, button_text);
 	 return;
       }
       g_snprintf(text, sizeof(text), _("Do you want to overwrite file %s?"), filename);
@@ -703,10 +703,10 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 
    out = fopen(filename, "w");
    if (!out) {
-      g_snprintf(text, sizeof(text), "Error Opening File: %s", filename);
+      g_snprintf(text, sizeof(text), _("Error opening file: %s"), filename);
       dialog_generic(GTK_WINDOW(export_window),
 		     0, 0, _("Error Opening File"),
-		     "Filename", text, 1, button_text);
+		     _("Filename"), text, 1, button_text);
       return;
    }
 
@@ -714,7 +714,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
       ma = gtk_clist_get_row_data(GTK_CLIST(clist), (int) temp_list->data);
       if (!ma) {
 	 continue;
-	 jp_logf(JP_LOG_WARN, "Can't export address %d\n", (long) temp_list->data + 1);
+	 jp_logf(JP_LOG_WARN, _("Can't export address %d\n"), (long) temp_list->data + 1);
       }
       switch (type) {
        case EXPORT_TYPE_TEXT:
@@ -779,7 +779,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	       if ((order_ja[n] < NUM_ADDRESS_EXT_ENTRIES)
 		   && (tmp_p = strchr(ma->a.entry[order_ja[n]],'\1'))) {
 		  if (strlen(ma->a.entry[order_ja[n]]) > 65535) {
-		     jp_logf(JP_LOG_WARN, "Field > 65535\n");
+		     jp_logf(JP_LOG_WARN, "%s > 65535\n", _("Field"));
 		  } else {
 		     *(tmp_p) = '\0';
 		     str_to_csv_str(csv_text, ma->a.entry[order_ja[n]]);
@@ -787,7 +787,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 		  }
 	       } else if (order_ja[n] < NUM_ADDRESS_ENTRIES) {
 		  if (strlen(ma->a.entry[i]) > 65535) {
-		     jp_logf(JP_LOG_WARN, "Field > 65535\n");
+		     jp_logf(JP_LOG_WARN, "%s > 65535\n", _("Field"));
 		  } else {
 		     str_to_csv_str(csv_text, ma->a.entry[order_ja[n]]);
 		  }
@@ -804,7 +804,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	       csv_text[0]='\0';
 	       if (ma->a.entry[order[n]]) {
 		  if (strlen(ma->a.entry[order[n]])>65535) {
-		     jp_logf(JP_LOG_WARN, "Field > 65535\n");
+		     jp_logf(JP_LOG_WARN, "%s > 65535\n", _("Field"));
 		  } else {
 		     str_to_csv_str(csv_text, ma->a.entry[order[n]]);
 		  }
@@ -1003,7 +1003,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	    break;
 	 }
        default:
-	 jp_logf(JP_LOG_WARN, "Unknown export type\n");
+	 jp_logf(JP_LOG_WARN, _("Unknown export type\n"));
       }
    }
 
@@ -1232,7 +1232,7 @@ static void cb_add_new_record(GtkWidget *widget,
 	    return;
 	 }
 	 if ((ma->rt==DELETED_PALM_REC) || (ma->rt==MODIFIED_PALM_REC)) {
-	    jp_logf(JP_LOG_INFO, "You can't modify a record that is deleted\n");
+	    jp_logf(JP_LOG_INFO, _("You can't modify a record that is deleted\n"));
 	    return;
 	 }
       }
@@ -1375,7 +1375,7 @@ void addr_clear_details()
    }
    sorted_position = find_sorted_cat(new_cat);
    if (sorted_position<0) {
-      jp_logf(JP_LOG_WARN, "Category is not legal\n");
+      jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
    } else {
       gtk_check_menu_item_set_active
 	(GTK_CHECK_MENU_ITEM(address_cat_menu_item2[sorted_position]), TRUE);
@@ -1554,7 +1554,7 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
 
    num = unpack_AddressAppInfo(&ai, buf, size);
    if (num <= 0) {
-      jp_logf(JP_LOG_WARN, _("Error reading %s\n"), "AddressDB.pdb");
+      jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), "AddressDB.pdb");
       return;
    }
 
@@ -1717,7 +1717,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    count--;
 
    if (sorted_position<0) {
-      jp_logf(JP_LOG_WARN, "Category is not legal\n");
+      jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
    } else {
       if (address_cat_menu_item2[sorted_position]) {
 	 gtk_check_menu_item_set_active
@@ -1981,7 +1981,7 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 	 }
 	 g_snprintf(str, ADDRESS_MAX_CLIST_NAME, "%s%s%s%s%s",
 		    field1, tmp_delim1, field2, tmp_delim2, field3);
-	 if (strlen(str)<1) strcpy(str, "-Unnamed-");
+	 if (strlen(str)<1) strcpy(str, _("-Unnamed-"));
 	 str[ADDRESS_MAX_CLIST_NAME]='\0';
 
 	 if (entries_shown+1>row_count) {
@@ -2179,7 +2179,7 @@ int address_refresh()
    address_update_clist(clist, category_menu1, &glob_address_list,
 			address_category, TRUE);
    if (index<0) {
-      jp_logf(JP_LOG_WARN, "Category not legal\n");
+      jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
    } else {
       gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), index);
       gtk_check_menu_item_set_active
