@@ -1,6 +1,7 @@
      ../address.c \
      ../address_gui.c \
      ../alarms.c \
+     ../category.c \
      ../dat.c \
      ../datebook.c \
      ../datebook_gui.c \
