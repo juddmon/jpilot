@@ -1,7 +1,7 @@
 /* sync.c
  * A module of J-Pilot http://jpilot.org
  * 
- * Copyright (C) 1999-2001 by Judd Montgomery
+ * Copyright (C) 1999-2002 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,6 +71,7 @@
 #endif
 
 /* #define JPILOT_DEBUG */
+/* #define SYNC_CAT_DEBUG */
 
 extern int pipe_to_parent, pipe_from_parent;
 extern pid_t glob_child_pid;
@@ -83,16 +84,19 @@ int sync_lock();
 int sync_unlock();
 static int sync_process_install_file(int sd);
 static int sync_rotate_backups(const int num_backups);
-int pdb_file_modify_record(char *DB_name, void *record_in, int size_in,
-			   int attr_in, int cat_in, pi_uid_t uid_in);
-int pdb_file_read_record_by_id(char *DB_name, 
-			       pi_uid_t uid,
-			       void **bufp, int *sizep, int *idxp,
-			       int *attrp, int * catp);
 
-int pdb_file_delete_record_by_id(char *DB_name, pi_uid_t uid_in);
+int sync_categories(char *DB_name, int sd,
+		    int (*unpack_cai_from_ai)(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len),
+		    int (*pack_cai_into_ai)(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len));
 
-void sig_handler(int sig)
+int unpack_address_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len);
+int pack_address_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len);
+int unpack_todo_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len);
+int pack_todo_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len);
+int unpack_memo_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len);
+int pack_memo_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len);
+
+  void sig_handler(int sig)
 {
    jp_logf(LOG_DEBUG, "caught signal SIGCHLD\n");
    glob_child_pid = 0;
@@ -737,22 +741,38 @@ int jp_sync(struct my_sync_info *sync_info)
       fast_sync=1;
       write_to_parent(PIPE_PRINT, _("Doing a fast sync.\n"));
       if (get_pref_int_default(PREF_SYNC_DATEBOOK, 1)) {
+	 /* sync_categories("DatebookDB", sd); */
 	 fast_sync_application("DatebookDB", sd);
       }
       if (get_pref_int_default(PREF_SYNC_ADDRESS, 1)) {
+	 sync_categories("AddressDB", sd,
+			 unpack_address_cai_from_ai,
+			 pack_address_cai_into_ai);
 	 fast_sync_application("AddressDB", sd);
       }
       if (get_pref_int_default(PREF_SYNC_TODO, 1)) {
+	 sync_categories("ToDoDB", sd,
+			 unpack_todo_cai_from_ai,
+			 pack_todo_cai_into_ai);
 	 fast_sync_application("ToDoDB", sd);
       }
       if (get_pref_int_default(PREF_SYNC_MEMO, 1)) {
+	 sync_categories("MemoDB", sd, 
+			 unpack_memo_cai_from_ai,
+			 pack_memo_cai_into_ai);
 	 fast_sync_application("MemoDB", sd);
       }
       if (get_pref_int_default(PREF_SYNC_MEMO32, 1)) {
+	 sync_categories("Memo32DB", sd,
+			 unpack_memo_cai_from_ai,
+			 pack_memo_cai_into_ai);
 	 fast_sync_application("Memo32DB", sd);
       }
 #ifdef ENABLE_MANANA
       if (get_pref_int_default(PREF_SYNC_MANANA, 1)) {
+	 sync_categories("MañanaDB", sd,
+			 unpack_todo_cai_from_ai,
+			 pack_todo_cai_into_ai);
 	 fast_sync_application("MañanaDB", sd);
       }
 #endif
@@ -760,22 +780,38 @@ int jp_sync(struct my_sync_info *sync_info)
       fast_sync=0;
       write_to_parent(PIPE_PRINT, _("Doing a slow sync.\n"));
       if (get_pref_int_default(PREF_SYNC_DATEBOOK, 1)) {
+	 /* sync_categories("DatebookDB", sd); */
 	 slow_sync_application("DatebookDB", sd);
       }
       if (get_pref_int_default(PREF_SYNC_ADDRESS, 1)) {
+	 sync_categories("AddressDB", sd,
+			 unpack_address_cai_from_ai,
+			 pack_address_cai_into_ai);
 	 slow_sync_application("AddressDB", sd);
       }
       if (get_pref_int_default(PREF_SYNC_TODO, 1)) {
+	 sync_categories("ToDoDB", sd,
+			 unpack_todo_cai_from_ai,
+			 pack_todo_cai_into_ai);
 	 slow_sync_application("ToDoDB", sd);
       }
       if (get_pref_int_default(PREF_SYNC_MEMO, 1)) {
+	 sync_categories("Memo32DB", sd,
+			 unpack_memo_cai_from_ai,
+			 pack_memo_cai_into_ai);
 	 slow_sync_application("MemoDB", sd);
       }
       if (get_pref_int_default(PREF_SYNC_MEMO32, 1)) {
+	 sync_categories("Memo32DB", sd,
+			 unpack_memo_cai_from_ai,
+			 pack_memo_cai_into_ai);
 	 slow_sync_application("Memo32DB", sd);
       }
 #ifdef ENABLE_MANANA
       if (get_pref_int_default(PREF_SYNC_MANANA, 1)) {
+	 sync_categories("ToDoDB", sd,
+			 unpack_todo_cai_from_ai,
+			 pack_todo_cai_into_ai);
 	 slow_sync_application("MañanaDB", sd);
       }
 #endif
@@ -795,10 +831,22 @@ int jp_sync(struct my_sync_info *sync_info)
       jp_logf(LOG_DEBUG, "syncing plugin DB: [%s]\n", plugin->db_name);
       if (fast_sync) {
 	 if (plugin->sync_on) {
+	    if (plugin->plugin_unpack_cai_from_ai &&
+		plugin->plugin_pack_cai_into_ai) {
+	       sync_categories(plugin->db_name, sd,
+			       plugin->plugin_unpack_cai_from_ai,
+			       plugin->plugin_pack_cai_into_ai);
+	    }
 	    fast_sync_application(plugin->db_name, sd);
 	 }
       } else {
 	 if (plugin->sync_on) {
+	    if (plugin->plugin_unpack_cai_from_ai &&
+		plugin->plugin_pack_cai_into_ai) {
+	       sync_categories(plugin->db_name, sd,
+			       plugin->plugin_unpack_cai_from_ai,
+			       plugin->plugin_pack_cai_into_ai);
+	    }
 	    slow_sync_application(plugin->db_name, sd);
 	 }
       }
@@ -844,7 +892,7 @@ int jp_sync(struct my_sync_info *sync_info)
    charset_j2p(buf,1023,char_set);
 
    dlp_AddSyncLogEntry(sd, buf);
-   dlp_AddSyncLogEntry(sd, "\n\r");
+   dlp_AddSyncLogEntry(sd, "\n");
 
    dlp_EndOfSync(sd, 0);
    pi_close(sd);
@@ -1171,6 +1219,7 @@ int fetch_extra_DBs(int sd, char *palm_dbname[])
       }
       if (pi_file_retrieve(pi_fp, sd, 0)<0) {
 	 write_to_parent(PIPE_PRINT, _("Failed, unable to back up database\n"));
+	 write_to_parent(PIPE_PRINT, "1\n");//undo
 	 times.actime = 0;
 	 times.modtime = 0;
       } else {
@@ -1512,6 +1561,7 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
       }
       if (pi_file_retrieve(pi_fp, sd, 0)<0) {
 	 write_to_parent(PIPE_PRINT, "Failed, unable to back up database\n");
+	 write_to_parent(PIPE_PRINT, "2\n");//undo
 	 times.actime = 0;
 	 times.modtime = 0;
       } else {
@@ -2062,6 +2112,7 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
 					  &attr, &category);
 	 /* ret = dlp_ReadRecordById(sd, db, header.unique_id, buffer,
 				  &index, &size, &attr, &category); */
+	 if (Pbuf) free (Pbuf);
 #ifdef JPILOT_DEBUG
 	 if (ret>=0 ) {
 	    printf("read record by id %s returned %d\n", DB_name, ret);
@@ -2071,6 +2122,9 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
 #endif
 	 if ((rec_len == size) && (header.unique_id != 0)) {
 	    jp_logf(LOG_DEBUG, "sizes match!\n");
+	    /* FIXME This code never worked right.  It could be because
+	     * Pbuf was freed in pi_file_close before here
+	     * I have not tested it since I fixed it */
 	    /* if (memcmp(record, Pbuf, size)==0)
 	    jp_logf(LOG_DEBUG,"Binary is the same!\n"); */
 	    /* write_to_parent(PIPE_PRINT, "Deleting Palm id=%d,\n",header.unique_id);*/
@@ -2111,71 +2165,11 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
    return 0;
 }
 
-int pdb_file_delete_record_by_id(char *DB_name, pi_uid_t uid_in)
-{
-   char local_pdb_file[256];
-   char full_local_pdb_file[256];
-   char full_local_pdb_file2[256];
-   struct pi_file *pf1, *pf2;
-   struct DBInfo infop;
-   void *app_info;
-   void *sort_info;
-   void *record;
-   int r;
-   int idx;
-   int size;
-   int attr;
-   int cat;
-   pi_uid_t uid;
-
-   jp_logf(LOG_DEBUG, "pdb_file_delete_record_by_id\n");
-
-   g_snprintf(local_pdb_file, 250, "%s.pdb", DB_name);
-   get_home_file_name(local_pdb_file, full_local_pdb_file, 250);
-   strcpy(full_local_pdb_file2, full_local_pdb_file);
-   strcat(full_local_pdb_file2, "2");
-
-   pf1 = pi_file_open(full_local_pdb_file);
-   if (pf1<=0) {
-      jp_logf(LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file);
-      return -1;
-   }
-   pi_file_get_info(pf1, &infop);
-   pf2 = pi_file_create(full_local_pdb_file2, &infop);
-   if (pf2<=0) {
-      jp_logf(LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file2);
-      return -1;
-   }
-
-   pi_file_get_app_info(pf1, &app_info, &size);
-   pi_file_set_app_info(pf2, app_info, size);
-
-   pi_file_get_sort_info(pf1, &sort_info, &size);  
-   pi_file_set_sort_info(pf2, sort_info, size);
-
-   for(idx=0;;idx++) {
-      r = pi_file_read_record(pf1, idx, &record, &size, &attr, &cat, &uid);
-      if (r<0) break;
-      if (uid==uid_in) continue;
-      pi_file_append_record(pf2, record, size, attr, cat, uid);
-   }
-
-   pi_file_close(pf1);
-   pi_file_close(pf2);
-
-   if (rename(full_local_pdb_file2, full_local_pdb_file) < 0) {
-      jp_logf(LOG_WARN, "delete: rename failed\n");
-   }
-
-   return 0;
-}
-
 /*
- * Original ID is in the case of a modification
- * new ID is used in the case of an add record
+ * This takes 2 category indexes and swaps them in every record.
+ * returns the number of record's categories swapped.
  */
-int pdb_file_modify_record(char *DB_name, void *record_in, int size_in,
-			   int attr_in, int cat_in, pi_uid_t uid_in)
+int pdb_file_swap_indexes(char *DB_name, int index1, int index2)
 {
    char local_pdb_file[256];
    char full_local_pdb_file[256];
@@ -2189,11 +2183,11 @@ int pdb_file_modify_record(char *DB_name, void *record_in, int size_in,
    int idx;
    int size;
    int attr;
-   int cat;
-   int found;
+   int cat, new_cat;
+   int count;
    pi_uid_t uid;
 
-   jp_logf(LOG_DEBUG, "pi_file_modify_record\n");
+   jp_logf(LOG_DEBUG, "pi_file_swap_indexes\n");
 
    g_snprintf(local_pdb_file, 250, "%s.pdb", DB_name);
    get_home_file_name(local_pdb_file, full_local_pdb_file, 250);
@@ -2218,87 +2212,39 @@ int pdb_file_modify_record(char *DB_name, void *record_in, int size_in,
    pi_file_get_sort_info(pf1, &sort_info, &size);  
    pi_file_set_sort_info(pf2, sort_info, size);
 
-   found = 0;
+   count = 0;
 
    for(idx=0;;idx++) {
       r = pi_file_read_record(pf1, idx, &record, &size, &attr, &cat, &uid);
       if (r<0) break;
-      if (uid==uid_in) {
-	 pi_file_append_record(pf2, record_in, size_in, attr_in, cat_in, uid_in);
-	 found=1;
-      } else {
-	 pi_file_append_record(pf2, record, size, attr, cat, uid);
+      new_cat=cat;
+      if (cat==index1) {
+	 new_cat=index2;
+	 count++;
       }
-   }
-   if (!found) {
-      pi_file_append_record(pf2, record_in, size_in, attr_in, cat_in, uid_in);
+      if (cat==index2) {
+	 new_cat=index1;
+	 count++;
+      }
+      pi_file_append_record(pf2, record, size, attr, new_cat, uid);
    }
 
    pi_file_close(pf1);
    pi_file_close(pf2);
 
    if (rename(full_local_pdb_file2, full_local_pdb_file) < 0) {
-      jp_logf(LOG_WARN, "modify: rename failed\n");
+      jp_logf(LOG_WARN, "swap_indexes: rename failed\n");
    }
 
    return 0;
 }
 
-int pdb_file_read_record_by_id(char *DB_name, 
-			       pi_uid_t uid,
-			       void **bufp, int *sizep, int *idxp,
-			       int *attrp, int * catp)
-{
-   char local_pdb_file[256];
-   char full_local_pdb_file[256];
-   struct pi_file *pf1;
-   int r;
-
-   jp_logf(LOG_DEBUG, "pdb_file_read_record_by_id\n");
-
-   g_snprintf(local_pdb_file, 250, "%s.pdb", DB_name);
-   get_home_file_name(local_pdb_file, full_local_pdb_file, 250);
-
-   pf1 = pi_file_open(full_local_pdb_file);
-   if (pf1<=0) {
-      jp_logf(LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file);
-      return -1;
-   }
-
-   r = pi_file_read_record_by_id(pf1, uid, bufp, sizep, idxp, attrp, catp);
-
-   pi_file_close(pf1);
-
-   return r;
-}
-
-int pdb_file_count_recs(char *DB_name, int *num)
-{
-   char local_pdb_file[256];
-   char full_local_pdb_file[256];
-   struct pi_file *pf;
-
-   jp_logf(LOG_DEBUG, "pdb_file_count_recs\n");
-
-   *num = 0;
-
-   g_snprintf(local_pdb_file, 250, "%s.pdb", DB_name);
-   get_home_file_name(local_pdb_file, full_local_pdb_file, 250);
-
-   pf = pi_file_open(full_local_pdb_file);
-   if (pf<=0) {
-      jp_logf(LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file);
-      return -1;
-   }
-
-   pi_file_get_entries(pf, num);
-
-   pi_file_close(pf);
-
-   return 0;
-}
-
-int pdb_file_write_app_block(char *DB_name, void *bufp, int size_in)
+// undo move this into edit_cats
+/*
+ * This changes every record with index old_index and changes it to new_index
+ * returns the number of record's categories changed.
+ */
+int pdb_file_change_indexes(char *DB_name, int old_index, int new_index)
 {
    char local_pdb_file[256];
    char full_local_pdb_file[256];
@@ -2312,10 +2258,11 @@ int pdb_file_write_app_block(char *DB_name, void *bufp, int size_in)
    int idx;
    int size;
    int attr;
-   int cat;
+   int cat, new_cat;
+   int count;
    pi_uid_t uid;
 
-   jp_logf(LOG_DEBUG, "pi_file_write_app_block\n");
+   jp_logf(LOG_DEBUG, "pi_file_change_indexes\n");
 
    g_snprintf(local_pdb_file, 250, "%s.pdb", DB_name);
    get_home_file_name(local_pdb_file, full_local_pdb_file, 250);
@@ -2335,14 +2282,21 @@ int pdb_file_write_app_block(char *DB_name, void *bufp, int size_in)
    }
 
    pi_file_get_app_info(pf1, &app_info, &size);
-   pi_file_set_app_info(pf2, bufp, size_in);
+   pi_file_set_app_info(pf2, app_info, size);
 
    pi_file_get_sort_info(pf1, &sort_info, &size);  
    pi_file_set_sort_info(pf2, sort_info, size);
 
+   count = 0;
+
    for(idx=0;;idx++) {
       r = pi_file_read_record(pf1, idx, &record, &size, &attr, &cat, &uid);
       if (r<0) break;
+      new_cat=cat;
+      if (cat==old_index) {
+	 cat=new_index;
+	 count++;
+      }
       pi_file_append_record(pf2, record, size, attr, cat, uid);
    }
 
@@ -2350,11 +2304,12 @@ int pdb_file_write_app_block(char *DB_name, void *bufp, int size_in)
    pi_file_close(pf2);
 
    if (rename(full_local_pdb_file2, full_local_pdb_file) < 0) {
-      jp_logf(LOG_WARN, "write_app_block: rename failed\n");
+      jp_logf(LOG_WARN, "change_indexes: rename failed\n");
    }
 
    return 0;
 }
+
 /*
  * This code does not do archiving.
  *
@@ -2438,11 +2393,11 @@ int fast_sync_application(char *DB_name, int sd)
    }
 
    /* I can't get the appinfodirty flag to work, so I do this for now */
-   ret = dlp_ReadAppBlock(sd, db, 0, buffer, 65535);
+   /*ret = dlp_ReadAppBlock(sd, db, 0, buffer, 65535);
    jp_logf(LOG_DEBUG, "readappblock ret=%d\n", ret);
    if (ret>0) {
       pdb_file_write_app_block(DB_name, buffer, ret);
-   }
+   }*/
 
    while(1) {
       ret = dlp_ReadNextModifiedRec(sd, db, buffer,
@@ -2486,6 +2441,344 @@ int fast_sync_application(char *DB_name, int sd)
       jp_logf(LOG_DEBUG ,_("disk: number of records = %d\n"), local_num);
       fetch_extra_DBs(sd, extra_dbname);
    }
+
+   return 0;
+}
+
+
+int unpack_address_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
+{
+   struct AddressAppInfo ai;
+   int r;
+   
+   jp_logf(LOG_DEBUG, "unpack_address_cai_from_ai\n");
+
+   r = unpack_AddressAppInfo(&ai, ai_raw, len);
+   if (r <= 0) {
+      jp_logf(LOG_DEBUG, "unpack_AddressAppInfo failed %s %d\n", __FILE__, __LINE__);
+      return -1;
+   }
+   memcpy(cai, &(ai.category), sizeof(struct CategoryAppInfo));
+	  
+   return 0;
+}
+
+int pack_address_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
+{
+   struct AddressAppInfo ai;
+   int r;
+
+   jp_logf(LOG_DEBUG, "pack_address_cai_into_ai\n");
+
+   r = unpack_AddressAppInfo(&ai, ai_raw, len);
+   if (r <= 0) {
+      jp_logf(LOG_DEBUG, "unpack_AddressAppInfo failed %s %d\n", __FILE__, __LINE__);
+      return -1;
+   }
+   memcpy(&(ai.category), cai, sizeof(struct CategoryAppInfo));
+
+   r = pack_AddressAppInfo(&ai, ai_raw, len);
+   if (r <= 0) {
+      jp_logf(LOG_DEBUG, "pack_AddressAppInfo failed %s %d\n", __FILE__, __LINE__);
+      return -1;
+   }
+   
+   return 0;
+}
+
+int unpack_todo_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
+{
+   struct ToDoAppInfo ai;
+   int r;
+   
+   jp_logf(LOG_DEBUG, "unpack_todo_cai_from_ai\n");
+
+   r = unpack_ToDoAppInfo(&ai, ai_raw, len);
+   if (r <= 0) {
+      jp_logf(LOG_DEBUG, "unpack_ToDoAppInfo failed %s %d\n", __FILE__, __LINE__);
+      return -1;
+   }
+   memcpy(cai, &(ai.category), sizeof(struct CategoryAppInfo));
+	  
+   return 0;
+}
+
+int pack_todo_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
+{
+   struct ToDoAppInfo ai;
+   int r;
+
+   jp_logf(LOG_DEBUG, "pack_todo_cai_into_ai\n");
+
+   r = unpack_ToDoAppInfo(&ai, ai_raw, len);
+   if (r <= 0) {
+      jp_logf(LOG_DEBUG, "unpack_ToDoAppInfo failed %s %d\n", __FILE__, __LINE__);
+      return -1;
+   }
+   memcpy(&(ai.category), cai, sizeof(struct CategoryAppInfo));
+
+   r = pack_ToDoAppInfo(&ai, ai_raw, len);
+   if (r <= 0) {
+      jp_logf(LOG_DEBUG, "pack_ToDooAppInfo failed %s %d\n", __FILE__, __LINE__);
+      return -1;
+   }
+   
+   return 0;
+}
+
+int unpack_memo_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
+{
+   struct MemoAppInfo ai;
+   int r;
+   
+   jp_logf(LOG_DEBUG, "unpack_memo_cai_from_ai\n");
+
+   r = unpack_MemoAppInfo(&ai, ai_raw, len);
+   if (r <= 0) {
+      jp_logf(LOG_DEBUG, "unpack_MemoAppInfo failed %s %d\n", __FILE__, __LINE__);
+      return -1;
+   }
+   memcpy(cai, &(ai.category), sizeof(struct CategoryAppInfo));
+	  
+   return 0;
+}
+
+int pack_memo_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
+{
+   struct MemoAppInfo ai;
+   int r;
+
+   jp_logf(LOG_DEBUG, "pack_memo_cai_into_ai\n");
+
+   r = unpack_MemoAppInfo(&ai, ai_raw, len);
+   if (r <= 0) {
+      jp_logf(LOG_DEBUG, "unpack_MemoAppInfo failed %s %d\n", __FILE__, __LINE__);
+      return -1;
+   }
+   memcpy(&(ai.category), cai, sizeof(struct CategoryAppInfo));
+
+   r = pack_MemoAppInfo(&ai, ai_raw, len);
+   if (r <= 0) {
+      jp_logf(LOG_DEBUG, "pack_MemoAppInfo failed %s %d\n", __FILE__, __LINE__);
+      return -1;
+   }
+   
+   return 0;
+}
+
+int sync_categories(char *DB_name, int sd,
+		    int (*unpack_cai_from_ai)(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len),
+		    int (*pack_cai_into_ai)(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
+)
+{
+   struct CategoryAppInfo local_cai, remote_cai;
+   char full_name[256];
+   char pdb_name[256];
+   char log_entry[256];
+   char buf[65536];
+   char tmp_name[18];
+   int i, r, Li, Ri;
+   int size;
+   int size_Papp_info;
+   void *Papp_info;
+   struct pi_file *pf;
+   int db;
+   int found_name, found_ID;
+   int found_name_at, found_ID_at;
+   int found_a_hole;
+   int loop;
+   long char_set;
+
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
+
+   jp_logf(LOG_DEBUG, "sync_categories for %s\n", DB_name);
+
+   sprintf(pdb_name, "%s%s", DB_name, ".pdb");
+   get_home_file_name(pdb_name, full_name, 250);
+
+   Papp_info=NULL;
+   bzero(&local_cai, sizeof(local_cai));
+   bzero(&remote_cai, sizeof(remote_cai));
+
+   pf = pi_file_open(full_name);
+   if (!pf) {
+      jp_logf(LOG_WARN, _("Error reading at %s : %s %d\n"), full_name, __FILE__, __LINE__);
+      return -1;
+   }
+   r = pi_file_get_app_info(pf, &Papp_info, &size_Papp_info);
+
+   unpack_cai_from_ai(&local_cai, Papp_info, size_Papp_info);
+
+   pi_file_close(pf);
+
+   /* Open the applications database, store access handle in db */
+   r = dlp_OpenDB(sd, 0, dlpOpenReadWrite, DB_name, &db);
+   if (r < 0) {
+      g_snprintf(log_entry, 255, _("Unable to open %s\n"), DB_name);
+      log_entry[255]='\0';
+      charset_j2p(log_entry, 255, char_set);
+      dlp_AddSyncLogEntry(sd, log_entry);
+      return -1;
+   }
+
+   size = dlp_ReadAppBlock(sd, db, 0, buf, 65535);
+   jp_logf(LOG_DEBUG, "readappblock r=%d\n", size);
+   if (size<=0) {
+      jp_logf(LOG_WARN, _("Error reading appinfo block for %s\n"), DB_name);
+      dlp_CloseDB(sd, db);
+      return -1;
+   }
+
+   unpack_cai_from_ai(&remote_cai, buf, size);
+
+#if SYNC_CAT_DEBUG
+   printf("DB_name [%s]\n", DB_name);
+   for (i = 0; i < 16; i++) {
+      if (local_cai.name[i][0] != '\0') {
+	 printf("local: cat %d [%s] ID %d renamed %d\n", i,
+		local_cai.name[i],
+		local_cai.ID[i], local_cai.renamed[i]);
+      }
+   }
+   for (i = 0; i < 16; i++) {
+      if (remote_cai.name[i][0] != '\0') {
+	 printf("remote: cat %d [%s] ID %d renamed %d\n", i,
+		remote_cai.name[i],
+		remote_cai.ID[i], remote_cai.renamed[i]);
+      }
+   }
+#endif
+
+   /* Do a memcmp first to see if common case, nothing has changed */
+   if (!memcmp(&(local_cai), &(remote_cai),
+	       sizeof(struct CategoryAppInfo))) {
+      jp_logf(LOG_DEBUG, "Category app info match, nothing to do %s\n", DB_name);
+      dlp_CloseDB(sd, db);
+      return 0;
+   }
+   
+   /* Go through the categories and try to sync them */
+   for (Li = loop = 0; ((Li < 16) && (loop<256)); Li++, loop++) {
+      found_name=found_ID=FALSE;
+      found_name_at=found_ID_at=0;
+      /* Did a cat get deleted locally? */
+      if ((local_cai.name[Li][0]==0) && (local_cai.ID[Li]!=0)) {
+	 for (Ri = 0; Ri < 16; Ri++) {
+	    if (remote_cai.ID[Ri]==local_cai.ID[Li]) {
+	       remote_cai.renamed[Ri]=0;
+	       remote_cai.name[Ri][0]='\0';
+	       //undo need to move these records to unfiled on handheld
+	    }
+	 }
+	 continue;
+      }
+      if (local_cai.name[Li][0]==0) {
+	 continue;
+      }
+      /* Search for the local category name on the remote */
+      for (Ri = 0; Ri < 16; Ri++) {
+	 if (! strncmp(local_cai.name[Li], remote_cai.name[Ri], 16)) {
+	    found_name=TRUE;
+	    found_name_at=Ri;
+	 }
+	 if (local_cai.ID[Li] == remote_cai.ID[Ri]) {
+	    found_ID=TRUE;
+	    found_ID_at=Ri;
+	 }
+      }
+      if (found_name) {
+	 if (Li==found_name_at) {
+	    /* 1: OK */
+#if SYNC_CAT_DEBUG
+	    printf("cat index %d ok\n", Li);
+#endif
+	 } else {
+	    /* 2: change all local recs to use remote recs ID */
+	    /* This is where there is a bit of trouble, since we have a pdb
+	     * file on the local side we don't store the ID and there is no way
+	     * to do this.
+	     * So, we will swap indexes on the local records.
+	     */
+#if SYNC_CAT_DEBUG
+	    printf("cat index %d case 2\n", Li);
+#endif
+	    r = pdb_file_swap_indexes(DB_name, Li, found_name_at);
+	    edit_cats_swap_cats_pc3(DB_name, Li, i);
+	    strncpy(tmp_name, local_cai.name[found_ID_at], 16);
+	    tmp_name[15]='\0';
+	    strncpy(local_cai.name[found_ID_at],
+		    local_cai.name[Li], 16);
+	    strncpy(local_cai.name[Li], tmp_name, 16);
+	    Li--;
+	    continue;
+	 }
+      }
+      if ((!found_name) && (local_cai.renamed[Li])) {
+	 if (found_ID) {
+	    /* 3: Change remote category name to match local at index Li */
+#if SYNC_CAT_DEBUG
+	    printf("cat index %d case 3\n", Li);
+#endif
+	    strncpy(remote_cai.name[found_ID_at],
+		    local_cai.name[Li], 16);
+	    remote_cai.name[found_ID_at][15]='\0';
+	 }
+      }
+      if ((!found_name) && (!found_ID)) {
+	 if (remote_cai.name[Li][0]=='\0') {
+	    /* 4: Add local category to remote */
+#if SYNC_CAT_DEBUG
+	    printf("cat index %d case 4\n", Li);
+#endif
+	    strncpy(remote_cai.name[Li],
+		    local_cai.name[Li], 16);
+	    remote_cai.name[Li][15]='\0';
+	    remote_cai.renamed[Li]=0;
+	    remote_cai.ID[Li]=remote_cai.ID[Li];
+	    continue;
+	 } else {
+	    /* 5: Add local category to remote in the next available slot.
+	     local records are changed to use this index. */
+#if SYNC_CAT_DEBUG
+ 	    printf("cat index %d case 5\n", Li);
+#endif
+	    found_a_hole=FALSE;
+	    for (i=1; i<16; i++) {
+	       if (remote_cai.name[i][0]=='\0') {
+		  strncpy(remote_cai.name[i],
+			  local_cai.name[Li], 16);
+		  remote_cai.name[i][15]='\0';
+		  remote_cai.renamed[i]=0;
+		  remote_cai.ID[i]=remote_cai.ID[Li];
+		  r = pdb_file_change_indexes(DB_name, Li, i);
+		  edit_cats_change_cats_pc3(DB_name, Li, i);
+		  found_a_hole=TRUE;
+		  break;
+	       }
+	    }
+	    if (!found_a_hole) {
+	       jp_logf(LOG_WARN, _("Could not add category %s to remote."), local_cai.name[Li]);
+	       jp_logf(LOG_WARN, _("Too many categories on remote."));
+	       //undo should move all of these records in unfiled and log it.
+	    }
+	 }
+      }
+#if SYNC_CAT_DEBUG
+      printf("cat index %d case (none)\n", Li);
+#endif
+   }
+      
+   for (i = 0; i < 16; i++) {
+      remote_cai.renamed[i]=0;
+   }
+
+   pack_cai_into_ai(&remote_cai, buf, size_Papp_info);
+
+   dlp_WriteAppBlock(sd, db, buf, size_Papp_info);
+
+   pdb_file_write_app_block(DB_name, buf, size_Papp_info);
+
+   dlp_CloseDB(sd, db);
 
    return 0;
 }
