@@ -3119,10 +3119,12 @@ int datebook_refresh(int first)
       copy_current_month = current_month;
       copy_current_year = current_year;
       /* See other calls to select day as to why I set it to 1 first */
+      gtk_calendar_freeze(GTK_CALENDAR(main_calendar));
       gtk_calendar_select_day(GTK_CALENDAR(main_calendar), 1);
       gtk_calendar_select_month(GTK_CALENDAR(main_calendar),
 				copy_current_month, copy_current_year+1900);
       gtk_calendar_select_day(GTK_CALENDAR(main_calendar), copy_current_day);
+      gtk_calendar_thaw(GTK_CALENDAR(main_calendar));
    }
 
    dayview_update_clist();
@@ -3329,9 +3331,11 @@ cb_keyboard(GtkWidget *widget, GdkEventKey *event, gpointer *p)
        * select month call will cause an error message since the 31st isn't
        * valid in that month.  So, I set it to 1 first.
        */
+      gtk_calendar_freeze(GTK_CALENDAR(main_calendar));
       gtk_calendar_select_day(GTK_CALENDAR(main_calendar), 1);
       gtk_calendar_select_month(GTK_CALENDAR(main_calendar), day.tm_mon, day.tm_year+1900);
       gtk_calendar_select_day(GTK_CALENDAR(main_calendar), day.tm_mday);
+      gtk_calendar_thaw(GTK_CALENDAR(main_calendar));
 
       return TRUE;
    }
