@@ -92,9 +92,11 @@ GtkWidget *glob_date_label;
 GtkTooltips *glob_tooltips;
 gint glob_date_timer_tag;
 pid_t glob_child_pid;
-GtkWidget *g_output_text;
 #ifdef ENABLE_GTK2
+GtkTextView *g_output_text;
 static GtkTextBuffer *g_output_text_buffer;
+#else
+GtkText *g_output_text;
 #endif
 GtkWidget *window;
 static GtkWidget *output_pane;
@@ -781,9 +783,9 @@ static void output_to_pane(const char *str)
       g_free(utf8_text);
    } else
       gtk_text_buffer_insert_at_cursor(g_output_text_buffer, str, -1);
-   gtk_text_view_scroll_mark_onscreen(GTK_TEXT_VIEW(g_output_text), gtk_text_buffer_get_insert(g_output_text_buffer));
+   gtk_text_view_scroll_mark_onscreen(g_output_text, gtk_text_buffer_get_insert(g_output_text_buffer));
 #else
-   gtk_text_insert(GTK_TEXT(g_output_text), NULL, NULL, NULL, str, -1);
+   gtk_text_insert(g_output_text, NULL, NULL, NULL, str, -1);
 #endif
    get_pref(PREF_OUTPUT_HEIGHT, &ivalue, NULL);
    /* Make them look at least something if output happens */
@@ -1425,10 +1427,10 @@ void cb_output(GtkWidget *widget, gpointer data)
 #ifdef ENABLE_GTK2
       gtk_text_buffer_set_text(g_output_text_buffer, "", -1);
 #else
-      gtk_text_set_point(GTK_TEXT(g_output_text),
-			 gtk_text_get_length(GTK_TEXT(g_output_text)));
-      gtk_text_backward_delete(GTK_TEXT(g_output_text),
-			       gtk_text_get_length(GTK_TEXT(g_output_text)));
+      gtk_text_set_point(g_output_text,
+			 gtk_text_get_length(g_output_text));
+      gtk_text_backward_delete(g_output_text,
+			       gtk_text_get_length(g_output_text));
 #endif
    }
 }
@@ -2032,23 +2034,23 @@ char *xpm_unlocked[] = {
    gtk_box_pack_end(GTK_BOX(temp_hbox), temp_vbox, FALSE, FALSE, 0);
 
 #ifdef ENABLE_GTK2
-   g_output_text = gtk_text_view_new();
-   g_output_text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(g_output_text));
-   gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(g_output_text), FALSE);
-   gtk_text_view_set_editable(GTK_TEXT_VIEW(g_output_text), FALSE);
-   gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(g_output_text), GTK_WRAP_WORD);
+   g_output_text = GTK_TEXT_VIEW(gtk_text_view_new());
+   g_output_text_buffer = gtk_text_view_get_buffer(g_output_text);
+   gtk_text_view_set_cursor_visible(g_output_text, FALSE);
+   gtk_text_view_set_editable(g_output_text, FALSE);
+   gtk_text_view_set_wrap_mode(g_output_text, GTK_WRAP_WORD);
 
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
 				  GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
 
-   gtk_container_add(GTK_CONTAINER(scrolled_window), g_output_text);
+   gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(g_output_text));
    gtk_box_pack_start_defaults(GTK_BOX(temp_hbox), scrolled_window);
 #else
    g_output_text = gtk_text_new(NULL, NULL);
-   gtk_text_set_editable(GTK_TEXT(g_output_text), FALSE);
-   gtk_text_set_word_wrap(GTK_TEXT(g_output_text), TRUE);
-   vscrollbar = gtk_vscrollbar_new(GTK_TEXT(g_output_text)->vadj);
+   gtk_text_set_editable(g_output_text, FALSE);
+   gtk_text_set_word_wrap(g_output_text, TRUE);
+   vscrollbar = gtk_vscrollbar_new(g_output_text->vadj);
    gtk_box_pack_start(GTK_BOX(temp_hbox), g_output_text, TRUE, TRUE, 0);
    gtk_box_pack_start(GTK_BOX(temp_hbox), vscrollbar, FALSE, FALSE, 0);
 #endif
