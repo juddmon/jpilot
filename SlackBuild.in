@@ -17,9 +17,8 @@ tar czvf $PACKAGE-$VERSION.tgz \
 /usr/lib/jpilot/plugins/libkeyring.so \
 /usr/lib/jpilot/plugins/libkeyring.so.0 \
 /usr/lib/jpilot/plugins/libkeyring.so.0.0.0 \
-/usr/man/man1/jpilot-sync.1.gz \
-/usr/man/man1/jpilot-upgrade-99.1.gz \
-/usr/man/man1/jpilot.1.gz \
+/usr/man/man1/jpilot-sync.1 \
+/usr/man/man1/jpilot.1 \
 /usr/doc/$PACKAGE-$VERSION/AUTHORS \
 /usr/doc/$PACKAGE-$VERSION/BUGS \
 /usr/doc/$PACKAGE-$VERSION/COPYING \

@@ -450,7 +450,7 @@ AM_CONDITIONAL(MAKE_EXPENSE, test x$plugin_support = xyes)
 AM_CONDITIONAL(MAKE_SYNCTIME, test x$plugin_support = xyes)
 
 AC_OUTPUT(Makefile docs/Makefile Expense/Makefile KeyRing/Makefile
-	m4/Makefile intl/Makefile dialer/Makefile po/Makefile.in
+	intl/Makefile dialer/Makefile po/Makefile.in
 	SyncTime/Makefile jpilot.spec
 	SlackBuild)
 #

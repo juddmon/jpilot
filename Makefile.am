@@ -1,6 +1,6 @@
-# $Id: Makefile.am,v 1.9 2003/01/11 02:02:06 judd Exp $
+# $Id: Makefile.am,v 1.10 2003/01/14 00:29:48 judd Exp $
 
-SUBDIRS = Expense SyncTime KeyRing docs m4 dialer intl po
+SUBDIRS = Expense SyncTime KeyRing docs dialer intl po
 
 EXTRA_DIST = reconf autogen.sh ChangeLog docs empty icons \
 	BUGS jpilot.spec jpilot-col.spec jpilot.kdelnk jpilot.rh7.spec \
@@ -9,9 +9,6 @@ EXTRA_DIST = reconf autogen.sh ChangeLog docs empty icons \
 	jpilotrc.steel SlackBuild \
 	intltool-extract.in intltool-merge.in intltool-update.in \
 	m4/ChangeLog \
-	m4/Makefile \
-	m4/Makefile.am \
-	m4/Makefile.in \
 	m4/codeset.m4 \
 	m4/gettext.m4 \
 	m4/glibc21.m4 \
