@@ -434,6 +434,9 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
    long use_db3_tags;
    struct db4_struct db4;
 #endif
+#ifdef HAVE_LOCALE_H
+   char *current_locale;
+#endif
 
    /*------------------------------------------------------------------
     * Set up the PostScript output file, and print the header to it.
@@ -447,7 +450,6 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
 #endif
 
 #ifdef HAVE_LOCALE_H
-   char *current_locale;
    current_locale = setlocale(LC_NUMERIC,"C");
 #endif
    if (! (out = print_open())) return(-1);
