@@ -2512,9 +2512,9 @@ char *multibyte_safe_memccpy(char *dst, const char *src, int c, size_t len)
 	 } else {
 	    *q++ = *p++;
 	    n++;
-	    if (*(p-1) == (char)(c & 0xff))
-	       return q;
 	 }
+	 if (*(p-1) == (char)(c & 0xff))
+	    return q;
       }
       if (!(*p & 0x80) && (n < len-1)) 
 	*q++ = *p++;
