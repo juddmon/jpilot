@@ -1072,7 +1072,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 			      MemoList **memo_list, int category, int main)
 {
-   int num_entries, entries_shown, i;
+   int num_entries, entries_shown;
    size_t copy_max_length;
    char *last;
    gchar *empty_line[] = { "" };
