@@ -82,6 +82,10 @@ static int DB_APPT_COLUMN=3;
 #define UPDATE_DATE_ENTRIES 0x01
 #define UPDATE_DATE_MENUS   0x02
 
+#define START_TIME_FLAG 0x00
+#define END_TIME_FLAG   0x80
+#define HOURS_FLAG      0x40
+
 extern GtkTooltips *glob_tooltips;
 
 static GtkWidget *pane;
@@ -2706,8 +2710,8 @@ void cb_check_button_alarm(GtkWidget *widget, gpointer data)
 
 void cb_check_button_notime(GtkWidget *widget, gpointer data)
 {
-   set_begin_end_labels(&begin_date, &end_date, UPDATE_DATE_ENTRIES |
-			UPDATE_DATE_MENUS);
+   set_begin_end_labels(&begin_date, &end_date, UPDATE_DATE_ENTRIES | 
+                                                UPDATE_DATE_MENUS);
 }
 
 void cb_check_button_endon(GtkWidget *widget, gpointer data)
@@ -3236,14 +3240,12 @@ void cb_menu_time(GtkWidget *item,
 {
    struct tm *Ptm;
 
-   if (data&0x80) {
-      /* End time flag */
+   if (data&END_TIME_FLAG) {
       Ptm=&end_date;
    } else {
       Ptm=&begin_date;
    }
-   if (data&0x40) {
-      /* Hours flag */
+   if (data&HOURS_FLAG) {
       Ptm->tm_hour = data&0x3F;
    } else {
       Ptm->tm_min = data&0x3F;
@@ -3251,6 +3253,14 @@ void cb_menu_time(GtkWidget *item,
 
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_button_notime), 0);
    set_begin_end_labels(&begin_date, &end_date, UPDATE_DATE_ENTRIES);
+}
+
+static gboolean
+cb_hide_menu_time(GtkWidget *widget, gpointer data)
+{
+   set_begin_end_labels(&begin_date, &end_date, UPDATE_DATE_MENUS);
+
+   return FALSE;
 }
 
 #define PRESSED_P            100
@@ -3686,9 +3696,6 @@ static void connect_changed_signals(int con_or_dis)
    }
 }
 
-/* 0x80 flag for end time
- * 0x40 flag for hours menu
- */
 GtkWidget *create_time_menu(int flags)
 {
    GtkWidget *option;
@@ -3703,12 +3710,15 @@ GtkWidget *create_time_menu(int flags)
    option = gtk_option_menu_new();
    menu = gtk_menu_new();
 
+   /* GTK1 doesn't handle size properly so it must be set explicitly */
+#ifndef ENABLE_GTK2
    gtk_widget_set_usize(option, 60, 10);
+#endif
 
    memset(&t, 0, sizeof(t));
 
    /* Hours menu */
-   if (flags&0x40) {
+   if (flags&HOURS_FLAG) {
       i_stop=24;
       cb_factor=1;
       get_pref_hour_ampm(str);
@@ -3717,7 +3727,7 @@ GtkWidget *create_time_menu(int flags)
       cb_factor=5;
    }
    for (i = 0; i < i_stop; i++) {
-      if (flags&0x40) {
+      if (flags&HOURS_FLAG) {
 	 t.tm_hour=i;
 	 strftime(buf, sizeof(buf), str, &t);
       } else {
@@ -3729,7 +3739,10 @@ GtkWidget *create_time_menu(int flags)
 			 GINT_TO_POINTER(i*cb_factor | flags));
       gtk_menu_append(GTK_MENU(menu), item);
    }
+
    gtk_option_menu_set_menu(GTK_OPTION_MENU(option), menu);
+   gtk_signal_connect(GTK_OBJECT(menu), "hide", 
+                      GTK_SIGNAL_FUNC(cb_hide_menu_time), NULL);
 
    return option;
 }
@@ -4252,11 +4265,11 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 		    1, 2, 0, 1, GTK_SHRINK, GTK_SHRINK, 0, 0);
 
    /* Menu time choosers */
-   option1=create_time_menu(0x40);
+   option1=create_time_menu(START_TIME_FLAG | HOURS_FLAG);
    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(option1),
 		    2, 3, 0, 1, GTK_SHRINK, GTK_FILL, 0, 0);
 
-   option2=create_time_menu(0x00);
+   option2=create_time_menu(START_TIME_FLAG);
    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(option2),
 		    3, 4, 0, 1, GTK_SHRINK, GTK_FILL, 0, 0);
 
@@ -4272,11 +4285,11 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_widget_set_usize(GTK_WIDGET(begin_time_entry), 70, 0);
    gtk_widget_set_usize(GTK_WIDGET(end_time_entry), 70, 0);
 
-   option3=create_time_menu(0x40 | 0x80);
+   option3=create_time_menu(END_TIME_FLAG | HOURS_FLAG );
    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(option3),
 		    2, 3, 1, 2, GTK_SHRINK, GTK_FILL, 0, 0);
 
-   option4=create_time_menu(0x80);
+   option4=create_time_menu(END_TIME_FLAG);
    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(option4),
 		    3, 4, 1, 2, GTK_SHRINK, GTK_FILL, 0, 0);
 
