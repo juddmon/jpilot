@@ -415,12 +415,15 @@ int datebook_refresh(int first);
 
 /*address_gui */
 int address_refresh();
-
+int address_cycle_cat();
+ 
 /*todo_gui */
 int todo_refresh();
+int todo_cycle_cat();
 
 /*memo_gui */
 int memo_refresh();
+int memo_cycle_cat();
 
 /* monthview_gui */
 void monthview_gui(struct tm *date);

@@ -2084,6 +2084,29 @@ int address_clist_redraw()
    return 0;
 }
 
+int address_cycle_cat()
+{
+   int i, new_cat;
+
+   if (address_category == CATEGORY_ALL) {
+      new_cat = -1;
+   } else {
+      new_cat = find_sorted_cat(address_category);
+   }
+   for (i=0; i<NUM_ADDRESS_CAT_ITEMS; i++) {
+      new_cat++;
+      if (new_cat > NUM_ADDRESS_CAT_ITEMS) {
+	 address_category = CATEGORY_ALL;
+	 break;
+      }
+      if ((sort_l[new_cat].Pcat) && (sort_l[new_cat].Pcat[0])) {
+	 address_category = sort_l[new_cat].cat_num;
+	 break;
+      }
+   }
+   return 0;
+}
+
 int address_refresh()
 {
    int index;

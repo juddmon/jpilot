@@ -1163,6 +1163,29 @@ int memo_clist_redraw()
    return 0;
 }
 
+int memo_cycle_cat()
+{
+   int i, new_cat;
+
+   if (memo_category == CATEGORY_ALL) {
+      new_cat = -1;
+   } else {
+      new_cat = find_sorted_cat(memo_category);
+   }
+   for (i=0; i<NUM_MEMO_CAT_ITEMS; i++) {
+      new_cat++;
+      if (new_cat > NUM_MEMO_CAT_ITEMS) {
+	 memo_category = CATEGORY_ALL;
+	 break;
+      }
+      if ((sort_l[new_cat].Pcat) && (sort_l[new_cat].Pcat[0])) {
+	 memo_category = sort_l[new_cat].cat_num;
+	 break;
+      }
+   }
+   return 0;
+}
+
 int memo_refresh()
 {
    int index;

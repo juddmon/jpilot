@@ -621,7 +621,7 @@ void cb_app_button(GtkWidget *widget, gpointer data)
    switch(app) {
     case DATEBOOK:
       if (glob_app == DATEBOOK) {
-	 /*refresh screen */
+	 /* Refresh screen */
 	 datebook_refresh(FALSE);
       } else {
 /*	 gtk_container_remove(GTK_CONTAINER(g_vbox0_1->parent), */
@@ -641,7 +641,8 @@ void cb_app_button(GtkWidget *widget, gpointer data)
       break;
     case ADDRESS:
       if (glob_app == ADDRESS) {
-	 /*refresh screen */
+	 /* Refresh screen */
+	 address_cycle_cat();
 	 address_refresh();
       } else {
 /*	 gtk_container_remove(GTK_CONTAINER(g_vbox0_1->parent), */
@@ -661,7 +662,8 @@ void cb_app_button(GtkWidget *widget, gpointer data)
       break;
     case TODO:
       if (glob_app == TODO) {
-	 /*refresh screen */
+	 /* Refresh screen */
+	 todo_cycle_cat();
 	 todo_refresh();
       } else {
 	 gui_cleanup();
@@ -678,6 +680,7 @@ void cb_app_button(GtkWidget *widget, gpointer data)
     case MEMO:
       if (glob_app == MEMO) {
 	 /*refresh screen */
+	 memo_cycle_cat();
 	 memo_refresh();
       } else {
 /*	 gtk_container_remove(GTK_CONTAINER(g_vbox0_1->parent), */
