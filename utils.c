@@ -2031,7 +2031,7 @@ int undelete_pc_record(AppType app_type, void *VP, int flag)
    FILE *pc_file2 = NULL;
    char *record;
    int found;
-   int ret;
+   int ret = -1;
    int num;
 
    if (VP==NULL) {
