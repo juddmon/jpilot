@@ -715,7 +715,6 @@ int jp_sync(struct my_sync_info *sync_info)
       dlp_EndOfSync(sd, 0);
       pi_close(sd);
 
-      /* Do not translate this text */
       jp_logf(JP_LOG_GUI, _("Finished restoring handheld.\n"));
       jp_logf(JP_LOG_GUI, _("You may need to sync to update J-Pilot.\n"));
       write_to_parent(PIPE_FINISHED, "\n");
@@ -917,7 +916,6 @@ int jp_sync(struct my_sync_info *sync_info)
    free_plugin_list(&plugin_list);
 #endif
 
-   /* Do not translate this text */
    jp_logf(JP_LOG_GUI, _("Finished.\n"));
    write_to_parent(PIPE_FINISHED, "\n");
 
@@ -1697,13 +1695,13 @@ static int sync_process_install_file(int sd)
 
    in = jp_open_home_file(EPN"_to_install", "r");
    if (!in) {
-      jp_logf(JP_LOG_WARN, _("Cannot open "EPN"_to_install file\n"));
+      jp_logf(JP_LOG_WARN, _("Cannot open %s_to_install file\n"), EPN);
       return -1;
    }
 
    out = jp_open_home_file(EPN"_to_install.tmp", "w");
    if (!out) {
-      jp_logf(JP_LOG_WARN, _("Cannot open "EPN"_to_install.tmp file\n"));
+      jp_logf(JP_LOG_WARN, _("Cannot open %s_to_install.tmp file\n"), EPN);
       fclose(in);
       return -1;
    }
