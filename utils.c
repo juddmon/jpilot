@@ -1219,6 +1219,12 @@ int dialog_generic_with_text(GtkWindow *main_window,
 			 GTK_SIGNAL_FUNC(cb_dialog_button),
 			 GINT_TO_POINTER(DIALOG_SAID_1 + i));
       gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
+      GTK_WIDGET_SET_FLAGS(button, GTK_CAN_DEFAULT);
+      if (0 == i)
+      {
+	 GTK_WIDGET_SET_FLAGS(button, GTK_HAS_FOCUS);
+	 gtk_widget_grab_default(button);
+      }
    }
 
    gtk_widget_show_all(glob_dialog);
