@@ -663,6 +663,7 @@ static int display_record(struct MyExpense *mex, int at_row)
       color.blue=CLIST_NEW_BLUE;
       gdk_color_alloc(colormap, &color);
       gtk_clist_set_background(GTK_CLIST(clist), at_row, &color);
+      break;
     case DELETED_PALM_REC:
       colormap = gtk_widget_get_colormap(clist);
       color.red=CLIST_DEL_RED;
