@@ -196,7 +196,7 @@ gint timeout_date(gpointer data)
    } else {
       sprintf(datef, _("Today is %%A, %s %s"), svalue1, svalue2);
    }
-   strftime(str, 100, datef, now);
+   jp_strftime(str, 100, datef, now);
    str[100]='\0';
 
    gtk_label_set_text(GTK_LABEL(glob_date_label), str);
