@@ -198,6 +198,7 @@ int get_memo_app_info(struct MemoAppInfo *ai)
    unsigned char *buf;
    long char_set;
    long ivalue;
+   char DBname[32];
 
    bzero(ai, sizeof(*ai));
    /* Put at least one entry in there */
@@ -205,16 +206,17 @@ int get_memo_app_info(struct MemoAppInfo *ai)
 
    get_pref(PREF_MEMO32_MODE, &ivalue, NULL);
    if (ivalue) {
-      jp_get_app_info("Memo32DB", &buf, (int*)&rec_size);
+      strcpy(DBname, "Memo32DB");
    } else {
-      jp_get_app_info("MemoDB", &buf, (int*)&rec_size);
+      strcpy(DBname, "MemoDB");
    }
+   jp_get_app_info(DBname, &buf, (int*)&rec_size);
    num = unpack_MemoAppInfo(ai, buf, rec_size);
    if (buf) {
       free(buf);
    }
-   if (num <= 0) {
-      jp_logf(JP_LOG_WARN, _("Error reading %s\n"), "MemoDB.pdb");
+   if ((num<0) || (rec_size<=0)) {
+      jp_logf(JP_LOG_WARN, _("Error reading %s\n"), DBname);
       return -1;
    }
 

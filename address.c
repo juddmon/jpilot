@@ -382,7 +382,7 @@ int get_address_app_info(struct AddressAppInfo *ai)
    if (buf) {
       free(buf);
    }
-   if (num <= 0) {
+   if ((num<0) || (rec_size<=0)) {
       jp_logf(JP_LOG_WARN, _("Error reading %s\n"), "AddressDB.pdb");
       return -1;
    }

@@ -699,7 +699,7 @@ int get_datebook_app_info(struct AppointmentAppInfo *ai)
    if (buf) {
       free(buf);
    }
-   if (num <= 0) {
+   if ((num<0) || (rec_size<=0)) {
       jp_logf(JP_LOG_WARN, _("Error reading %s\n"), "DatebookDB.pdb");
       return -1;
    }
