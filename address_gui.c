@@ -882,13 +882,11 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	       if (ma->a.phoneLabel[n - 3] == 4) {
 		  fprintf(out, "EMAIL:%s\n", csv_text);
 	       } else {
-		  /* fprintf(out, "TEL;TYPE=%s", vCardMapType(ma->a.phoneLabel[n - 3]));*/
+		  fprintf(out, "TEL;TYPE=%s", vCardMapType(ma->a.phoneLabel[n - 3]));
 		  if (ma->a.showPhone == n - 3) {
-		     fprintf(out, "TEL;PREF;");
-		  } else {
-		     fprintf(out, "TEL;");
+		     fprintf(out, ",pref");
 		  }
-		  fprintf(out, "%s:%s\n", vCardMapType(ma->a.phoneLabel[n - 3]), csv_text);
+		  fprintf(out, ":%s\n", csv_text);
 	       }
 	    }
 	 }
