@@ -8,5 +8,5 @@ fi
 rm -rf *.cache *.m4 config.guess config.log \
 config.status config.sub depcomp ltmain.sh
 (cat m4/*.m4 > acinclude.m4 2> /dev/null)
-autoreconf --verbose --foreign
+autoreconf --verbose --install
 #./configure
