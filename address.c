@@ -281,7 +281,7 @@ int address_sort(AddressList **al, int sort_order)
    /* Allocate an array to be qsorted */
    sort_al = calloc(count, sizeof(AddressList *));
    if (!sort_al) {
-      jp_logf(JP_LOG_WARN, "address_sort(): Out of Memory\n");
+      jp_logf(JP_LOG_WARN, "address_sort(): %s\n", _("Out of memory"));
       return 0;
    }
 
@@ -383,7 +383,7 @@ int get_address_app_info(struct AddressAppInfo *ai)
       free(buf);
    }
    if ((num<0) || (rec_size<=0)) {
-      jp_logf(JP_LOG_WARN, _("Error reading %s\n"), "AddressDB.pdb");
+      jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), "AddressDB.pdb");
       return -1;
    }
 
@@ -505,7 +505,7 @@ int get_addresses2(AddressList **address_list, int sort_order,
 
       temp_a_list = malloc(sizeof(AddressList));
       if (!temp_a_list) {
-	 jp_logf(JP_LOG_WARN, "get_addresses2(): Out of memory\n");
+	 jp_logf(JP_LOG_WARN, "get_addresses2(): %s\n", _("Out of memory"));
 	 break;
       }
       memcpy(&(temp_a_list->ma.a), &a, sizeof(struct Address));
