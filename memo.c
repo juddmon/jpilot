@@ -39,7 +39,6 @@ static int pc_memo_read_next_rec(FILE *in, MyMemo *mmemo)
 //     printf("Error: File header not read\n");
 //      return MEMO_EOF;
 //   }
-   //todo check return codes
    fread(&header, sizeof(header), 1, in);
    if (feof(in)) {
       return MEMO_EOF;
@@ -50,6 +49,9 @@ static int pc_memo_read_next_rec(FILE *in, MyMemo *mmemo)
    //printf("read attrib = %d\n", mmemo->attrib);
    mmemo->unique_id = header.unique_id;
    record = malloc(rec_len);
+   if (!record) {
+      return MEMO_EOF;
+   }
    fread(record, rec_len, 1, in);
    if (feof(in)) {
       free(record);
@@ -96,6 +98,10 @@ int get_memo_app_info(struct MemoAppInfo *ai)
    fseek(in, dbh.app_info_offset, SEEK_SET);
    rec_size = 393;
    buf=malloc(rec_size);
+   if (!buf) {
+      fclose(in);
+      return -1;
+   }
    num = fread(buf, 1, rec_size, in);
    if (feof(in)) {
       fclose(in);
@@ -223,6 +229,7 @@ int get_memos(MemoList **memo_list)
       //printf("----------\n");
       if (feof(in)) break;
       buf = malloc(rec_size);
+      if (!buf) break;
       num = fread(buf, 1, rec_size, in);
 
       unpack_Memo(&memo, buf, rec_size);
@@ -294,8 +301,12 @@ int pc_memo_write(struct Memo *memo, PCRecType rt, unsigned char attrib)
       printf("Error opening MemoDB.pc\n");
       return -1;
    }
-   //todo check return code - if 0 then buffer was too small
    rec_len = pack_Memo(memo, record, 65535);
+   if (!rec_len) {
+      PRINT_FILE_LINE;
+      printf("pack_Memo error\n");
+      return -1;
+   }
    header.rec_len=rec_len;
    header.rt=rt;
    header.attrib=attrib;

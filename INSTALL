@@ -5,6 +5,10 @@ you can get these at http://www.gtk.org
 pilot link must be installed and working.
 ftp://ryeham.ee.ryerson.ca/pub/PalmOS/
 
+jpilot currently uses the PILOTPORT and PILOTRATE environment variables, as
+does pilot-link.
+
+
 edit the first few lines of Makefile
 make
 mkdir ~/.jpilot/

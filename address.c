@@ -146,7 +146,7 @@ static int pc_address_read_next_rec(FILE *in, MyAddress *ma)
    if (feof(in)) {
       return ADDRESS_EOF;
    }
-   if (num != sizeof(header)) {
+   if (num != 1) {
       printf("error on fread\n");
       return ADDRESS_EOF;
    }
@@ -156,6 +156,9 @@ static int pc_address_read_next_rec(FILE *in, MyAddress *ma)
    //printf("read attrib = %d\n", ma->attrib);
    ma->unique_id = header.unique_id;
    record = malloc(rec_len);
+   if (!record) {
+      return ADDRESS_EOF;
+   }
    fread(record, rec_len, 1, in);
    if (feof(in)) {
       free(record);
@@ -223,12 +226,13 @@ int get_address_app_info(struct AddressAppInfo *ai)
 
    in = open_file("AddressDB.pdb", "r");
    if (!in) {
-      printf("Error opening DatebookDB.pdb\n");
+      printf("Error opening AddressDB.pdb\n");
       return -1;
    }
    fread(&rdbh, sizeof(RawDBHeader), 1, in);
    if (feof(in)) {
       printf("Error reading AddressDB.pdb\n");
+      fclose(in);
       return -1;
    }
    raw_header_to_header(&rdbh, &dbh);
@@ -236,6 +240,10 @@ int get_address_app_info(struct AddressAppInfo *ai)
    fseek(in, dbh.app_info_offset, SEEK_SET);
    rec_size = 865;
    buf=malloc(rec_size);
+   if (!buf) {
+      fclose(in);
+      return -1;
+   }
    num = fread(buf, 1, rec_size, in);
    if (feof(in)) {
       fclose(in);
@@ -365,6 +373,7 @@ int get_addresses(AddressList **address_list)
       //printf("----------\n");
       if (feof(in)) break;
       buf = malloc(rec_size);
+      if (!buf) break;
       num = fread(buf, 1, rec_size, in);
 
       unpack_Address(&a, buf, rec_size);

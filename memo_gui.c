@@ -20,9 +20,6 @@
 #include <time.h>
 #include "utils.h"
 
-//todo - put this in utils.h
-#define SHADOW GTK_SHADOW_ETCHED_OUT
-
 struct MemoAppInfo memo_app_info;
 int memo_category;
 int clist_row_selected;
@@ -282,7 +279,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    //Make the Today is: label
    time(&ltime);
    now = localtime(&ltime);
-   strftime(str, MAX_STR, "%A, %x %X", now);
+   strftime(str, MAX_STR, "Today is %A, %x %X", now);
    glob_date_label = gtk_label_new(str);
    gtk_box_pack_start(GTK_BOX(vbox1), glob_date_label, FALSE, FALSE, 0);
    gtk_widget_show(glob_date_label);

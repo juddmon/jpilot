@@ -28,8 +28,11 @@
 #include <gtk/gtk.h>
 
 #define PRINT_FILE_LINE printf("%s line %d\n", __FILE__, __LINE__)
-#define VERSION_STRING "JPilot version 0.90a"
+#define VERSION_STRING "\nJPilot version 0.91\n"\
+" Copyright (C) 1999 by Judd Montgomery\n"
 #define CATEGORY_ALL 100
+
+#define SHADOW GTK_SHADOW_ETCHED_OUT
 
 //Used to mark the entry in the clist to add a record
 #define CLIST_NEW_ENTRY_DATA 100
@@ -172,7 +175,9 @@ int get_pixmaps(GtkWidget *widget,
 		GdkPixmap **out_check, GdkPixmap **out_checked,
 		GdkBitmap **out_mask_note, GdkBitmap **out_mask_alarm,
 		GdkBitmap **out_mask_check, GdkBitmap **out_mask_checked);
+int check_hidden_dir();
 int read_rc_file();
+int get_home_file_name(char *file, char *full_name, int max_size);
 FILE *open_file(char *filename, char *mode);
 int raw_header_to_header(RawDBHeader *rdbh, DBHeader *dbh);
 int find_next_offset(mem_rec_header *mem_rh, long fpos,
@@ -190,5 +195,7 @@ unsigned int bytes_to_bin(unsigned char *bytes, unsigned int num_bytes);
 void free_mem_rec_header(mem_rec_header **mem_rh);
 void print_string(char *str, int len);
 int cleanup_pc_files();
+void cb_sync(GtkWidget *widget,
+	     gpointer  data);
 
 #endif

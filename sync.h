@@ -1,5 +1,5 @@
 /*
- * datebook.h
+ * sync.h
  * Copyright (C) 1999 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,15 +16,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include <stdio.h>
-#include <pi-datebook.h>
-#include "utils.h"
+#ifndef _SYNC_H__
+#define _SYNC_H__
 
-#define PATH ~/.jpilot/
+int jpilot_sync(char *port);
 
-
-int datebook_sync();
-int datebook_cleanup();
-int pc_datebook_write(struct Appointment *a, PCRecType rt, unsigned char attrib);
-void free_AppointmentList(AppointmentList **al);
-int get_days_appointments(AppointmentList **al_out, struct tm *now);
+#endif

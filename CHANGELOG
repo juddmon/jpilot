@@ -1,0 +1,20 @@
+0.90a - 06/23/99
+ Initial release.
+0.91 - 
+ Fixed some feof() problem that caused datebook to not work on RedHat 6.0
+ I rewrote the entire datebook.c file
+ Put in code to create and test for writability of ~/.jpilot/
+ Put it gtk_set_locale() for other language support on Solaris.
+ Moved syncing code from datebook.c to sync.c
+ Created a jpilot-syncd, a daemon syncing program.
+ Made Feb 29th (Leap Day) yearly appointments repeat on the 28th of non-Leap
+   years, just as on the palm pilot.
+ Also fixed monthly repeating appointments that occur past the last day in the
+  current month. These didn't use to appear in jpilot.
+ Fixed a few bugs in creating new repeat monthly appointments.
+ Fixed a few bugs in displaying monthly repeating appointments.
+ When creating a monthly appointment that repeats "By Day":
+  Added in a dialog box to ask if an appointment is intended to repeat in the
+  4th occurence of that day in the a month, or the last occurence of that day
+  in the month.  This is only asked when it cannot be deduced.
+  The Palm Pilot will also ask this question.

@@ -1,5 +1,27 @@
-Priority High:
-Priority Medium:
-Priority Low:
- Things don't work quite right if you've never synced before
-Priority Who Cares?:
+*Priority High:
+
+*Priority Medium:
+
+*Priority Low:
+
+ - Things don't work quite right if you've never synced before.
+
+ - It seems like the sync doesn't always work with xcopilot.
+ If xcopilot hasn't been run in a while and you don't set the date on it, it
+ seems to not update the datebase modification times correctly.  On every sync
+ it would not bring back the palm database because the modification time
+ hadn't changed.  pilot-xfer behaves the same way.
+ I set the time on xcopilot and then could not reproduce this problem again.
+
+*Priority Who Cares?:
+ - If you click really fast on the buttons to scroll through the months, then
+ it will segmentation fault.
+ I think I have fixed this though.
+
+*Quirks (not really bugs):
+
+ - jpilot lets you enter in blank todo's, etc.  The palm pilot will not allow
+ this.
+
+ - The palm pilot will only let you make appointments on 5 minute intervals.
+ jpilot will allow 1 minute intervals.

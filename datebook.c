@@ -40,14 +40,6 @@
 
 #define DATEBOOK_EOF 7
 
-
-static int pc_datebook_read_next_rec(FILE *in, MyAppointment *ma);
-
-//todo
-int datebook_cleanup()
-{
-}
-
 int datebook_sort(AppointmentList **al)
 {
    AppointmentList *temp_al, *prev_al, *next;
@@ -79,310 +71,49 @@ int datebook_sort(AppointmentList **al)
    }
 }
 
-//creates the full path name of a file in the ~/.jpilot dir
-int get_home_file_name(char *file, char *full_name, int max_size)
+static int pc_datebook_read_next_rec(FILE *in, MyAppointment *ma)
 {
-   char *home, default_path[]=".";
-
-   home = getenv("HOME");
-   if (!home) {//Not home;
-      printf("Can't get HOME environment variable\n");
-   }
-   if (strlen(home)>(max_size-strlen(file)-2)) {
-      printf("Your HOME environment variable is too long for me\n");
-      home=default_path;
-   }
-   sprintf(full_name, "%s/.jpilot/%s", home, file);
-   return 0;
-}
-
-
-int application_sync(AppType app_type, int sd);
-
-int jpilot_sync()
-{
-   struct pi_sockaddr addr;
-   int sd;
-   int i;
-   int Appointment_size;
-   unsigned char Appointment_buf[0xffff];
-   struct Appointment appointment;
-   FILE *f;
-   struct PilotUser U;
-   int ret;
-   int filelen;
-   char *cPtr;
-   char *device;
-   char default_device[]="/dev/pilot";
-   char *file_text;
-   char *fields[4];
-   int fieldno;
-//   struct DBInfo info;
-//   struct stat statb;
-//   struct utimbuf times;
-   //char name[256];
-   
-   device = getenv("PILOTPORT");
-   if (device == NULL) {
-      device = default_device;
-   }
-
-   printf("Syncing on device %s\n", device);
-   printf("Press the HotSync button\n");
-   
-   if (!(sd = pi_socket(PI_AF_SLP, PI_SOCK_STREAM, PI_PF_PADP))) {
-      perror("pi_socket");
-      return -1;
-   }
-    
-   addr.pi_family = PI_AF_SLP;
-   strcpy(addr.pi_device,device);
-  
-   ret = pi_bind(sd, (struct sockaddr*)&addr, sizeof(addr));
-   if(ret == -1) {
-      perror("pi_bind");
-      return -1;
-   }
-
-   ret = pi_listen(sd,1);
-   if(ret == -1) {
-      perror("pi_listen");
-      return -1;
-   }
-
-   sd = pi_accept(sd, 0, 0);
-   if(sd == -1) {
-      perror("pi_accept");
-      return -1;
-   }
-
-   dlp_ReadUserInfo(sd,&U);
-   
-   printf("username = [%s]\n", U.username);
-   printf("passwordlen = [%d]\n", U.passwordLength);
-   //printf("password = [%s]\n", U.password);
-  
-   dlp_OpenConduit(sd);
-  
-
-   application_sync(DATEBOOK, sd);
-   application_sync(ADDRESS, sd);
-   application_sync(TODO, sd);
-   application_sync(MEMO, sd);
-   
-   
-   // Tell the user who it is, with a different PC id.
-   U.lastSyncPC = 0x00010000;
-   U.successfulSyncDate = time(NULL);
-   U.lastSyncDate = U.successfulSyncDate;
-   dlp_WriteUserInfo(sd,&U);
-
-   //dlp_AddSyncLogEntry(sd, "Wrote Appointment to Pilot.\n");
-  
-   // All of the following code is now unnecessary, but harmless
-  
-   dlp_EndOfSync(sd,0);
-   pi_close(sd);
-
-   cleanup_pc_files();
-
-   printf("Finished.\n");
-
-   return 0;
-}
-
-//todo pass dbinfo in here
-int application_sync(AppType app_type, int sd)
-{
-   struct pi_file *pi_fp;
-   char full_name[256];
-   unsigned long new_id;
-   int db;
-   int ret;
-   time_t start, end;
-   FILE *pc_in;
    PCRecordHeader header;
+   int rec_len, num;
    char *record;
-   int rec_len;
-   struct DBInfo info;
-   struct stat statb;
-   struct utimbuf times;
-   char pc_filename[50];
-   char palm_dbname[50];
-   char db_copy_name[50];
-   char write_log_message[50];
-   char delete_log_message[50];
+   //DatebookRecType rt;
    
-   switch (app_type) {
-    case DATEBOOK:
-      printf("Syncing Datebook\n");
-      strcpy(pc_filename, "DatebookDB.pc");
-      strcpy(palm_dbname, "DatebookDB");
-      strcpy(db_copy_name,"DatebookDB.pdb");
-      strcpy(write_log_message, "Wrote an Appointment to the Pilot.\n");
-      strcpy(delete_log_message, "Deleted an Appointment from the Pilot.\n");
-      break;
-    case ADDRESS:
-      printf("Syncing Addressbook\n");
-      strcpy(pc_filename, "AddressDB.pc");
-      strcpy(palm_dbname, "AddressDB");
-      strcpy(db_copy_name,"AddressDB.pdb");
-      strcpy(write_log_message, "Wrote an Addresss to the Pilot.\n");
-      strcpy(delete_log_message, "Deleted an Address from the Pilot.\n");
-      break;
-    case TODO:
-      printf("Syncing ToDo\n");
-      strcpy(pc_filename, "ToDoDB.pc");
-      strcpy(palm_dbname, "ToDoDB");
-      strcpy(db_copy_name,"ToDoDB.pdb");
-      strcpy(write_log_message, "Wrote a ToDo to the Pilot.\n");
-      strcpy(delete_log_message, "Deleted a ToDo from the Pilot.\n");
-      break;
-    case MEMO:
-      printf("Syncing Memo\n");
-      strcpy(pc_filename, "MemoDB.pc");
-      strcpy(palm_dbname, "MemoDB");
-      strcpy(db_copy_name,"MemoDB.pdb");
-      strcpy(write_log_message, "Wrote a Memo to the Pilot.\n");
-      strcpy(delete_log_message, "Deleted a Memo from the Pilot.\n");
-      break;
-    default:
-      return;
+   if (feof(in)) {
+      return DATEBOOK_EOF;
    }
-
-   pc_in = open_file(pc_filename, "r+");
-   if (pc_in==NULL) {
-      printf("Unable to open %s\n",pc_filename);
-      return;
+//  if (ftell(in)==0) {
+//     printf("Error: File header not read\n");
+//      return DATEBOOK_EOF;
+//   }
+   num = fread(&header, sizeof(header), 1, in);
+   if (feof(in)) {
+      return DATEBOOK_EOF;
    }
-   // Open the applications database, store access handle in db
-   if (dlp_OpenDB(sd, 0, 0x80|0x40, palm_dbname, &db) < 0) {
-      dlp_AddSyncLogEntry(sd, "Unable to open ");
-      dlp_AddSyncLogEntry(sd, palm_dbname);
-      dlp_AddSyncLogEntry(sd, "\n.");
-      pi_close(sd);
-      return -1;
+   if (num != 1) {
+      printf("error on fread\n");
+      return DATEBOOK_EOF;
    }
-   time(&start);
-   time(&end);
-   end+=3600;
-
-   while(!feof(pc_in)) {
-      fread(&header, sizeof(header), 1, pc_in);
-      if (feof(pc_in)) {
-	 break;
-      }
-      rec_len = header.rec_len;
-      if (rec_len > 0x10000) {
-	 printf("PC file corrupt?\n");
-	 fclose(pc_in);
-	 return;
-      }
-      if (header.rt==NEW_PC_REC) {
-	 record = malloc(rec_len);
-	 fread(record, rec_len, 1, pc_in);
-	 //Write the record to the Palm Pilot
-	 //todo return code?
-      	 dlp_WriteRecord(sd, db, 0, 0, header.attrib & 0x0F,
-			 record, rec_len, &new_id);
-	 free(record);
-	 dlp_AddSyncLogEntry(sd, write_log_message);
-	 //printf("New ID=%d\n", new_id);
-	 //Now mark the record as deleted
-	 if (fseek(pc_in, -(sizeof(header)+rec_len), SEEK_CUR)) {
-	    printf("fseek failed - fatal error\n");
-	    fclose(pc_in);
-	    return;
-	 }
-	 header.rt=DELETED_PC_REC;
-	 fwrite(&header, sizeof(header), 1, pc_in);
-	 //printf("Record deleted from PC file\n");
-      }
-      if (header.rt==DELETED_PALM_REC) {
-	 printf("Deleteing Palm id=%d,\n",header.unique_id);
-	 ret = dlp_DeleteRecord(sd, db, 0, header.unique_id);
-	 printf("dlp_DeleteRecord returned %d\n",ret);
-	 dlp_AddSyncLogEntry(sd, delete_log_message);
-	 //Now mark the record as deleted
-	 if (fseek(pc_in, -sizeof(header), SEEK_CUR)) {
-	    printf("fseek failed - fatal error\n");
-	    fclose(pc_in);
-	    return;
-	 }
-	 header.rt=DELETED_DELETED_PALM_REC;
-	 fwrite(&header, sizeof(header), 1, pc_in);
-	 //printf("pc record deleted\n");
-      }
-      //skip this record
-      if (fseek(pc_in, rec_len, SEEK_CUR)) {
-	 printf("fseek failed - fatal error\n");
-	 fclose(pc_in);
-	 return;
-      }
+   rec_len = header.rec_len;
+   ma->rt = header.rt;
+   ma->attrib = header.attrib;
+   //printf("read attrib = %d\n", ma->attrib);
+   ma->unique_id = header.unique_id;
+   record = malloc(rec_len);
+   fread(record, rec_len, 1, in);
+   if (feof(in)) {
+      free(record);
+      return DATEBOOK_EOF;
    }
-   fclose(pc_in);
-
-   //fields[fieldno++] = cPtr;
-
-   // Close the database
-   dlp_CloseDB(sd, db);
-
-   //
-   // Fetch the database from the palm if modified
-   //
-   
-   get_home_file_name(db_copy_name, full_name, 256);
-
-   //Get the db info for this database
-   if (dlp_FindDBInfo(sd, 0, 0, palm_dbname, 0, 0, &info) < 0) {
-      printf("Unable to find %s on the palm, fetch skipped.\n", palm_dbname);
-      return;
-   }
-   
-   if (stat(full_name, &statb) != 0) {
-      statb.st_mtime = 0;
-   }
-
-   //If modification times are the same then we don't need to fetch it
-   if (info.modifyDate == statb.st_mtime) {
-      printf("%s is up to date, fetch skipped.\n", palm_dbname);
-      return;
-   }
-
-   //protect_name(name, dbname);
-   //if (info.flags & dlpDBFlagResource)
-   //  strcat(name,".prc");
-   //else
-   //  strcat(name,".pdb");
-   
-   printf("Fetching '%s'... ", palm_dbname);
-   fflush(stdout);
-   
-   info.flags &= 0xff;
-   
-   pi_fp = pi_file_create(full_name, &info);
-   if (pi_fp==0) {
-      printf("Failed, unable to create file %s\n", full_name);
-      return;
-   }
-   if(pi_file_retrieve(pi_fp, sd, 0)<0) {
-      printf("Failed, unable to back up database\n");
-   } else {
-      printf("OK\n");
-   }
-   pi_file_close(pi_fp);
-   
-   //Set the create and modify times of local file to same as on palm
-   times.actime = info.createDate;
-   times.modtime = info.modifyDate;
-   utime(full_name, &times);
+   unpack_Appointment(&(ma->a), record, rec_len);
+   free(record);
+   return 0;
 }
-
 
 int does_pc_appt_exist(int unique_id, PCRecType rt)
 {
    FILE *pc_in;
    PCRecordHeader header;
+   int num;
    
    //printf("looking for unique id = %d\n",unique_id);
    //printf("looking for rt = %d\n",rt);
@@ -392,8 +123,10 @@ int does_pc_appt_exist(int unique_id, PCRecType rt)
       return 0;
    }
    while(!feof(pc_in)) {
-      fread(&header, sizeof(header), 1, pc_in);
-      if (feof(pc_in)) break;
+      num = fread(&header, sizeof(header), 1, pc_in);
+      if (feof(pc_in) || (!num)) {
+	 break;
+      }
       //printf("read unique id = %d\n",header.unique_id);
       //printf("read rt = %d\n",header.rt);
       if ((header.unique_id==unique_id)
@@ -410,28 +143,34 @@ int does_pc_appt_exist(int unique_id, PCRecType rt)
    return 0;
 }
 
-
-int pc_datebook_write(struct Appointment *a, PCRecType rt)
+int pc_datebook_write(struct Appointment *a, PCRecType rt, unsigned char attrib)
 {
    PCRecordHeader header;
    //PCFileHeader   file_header;
    FILE *out;
-   char record[65535];
+   char record[65536];
    int rec_len;
    unsigned int next_unique_id;
 
    get_next_unique_pc_id(&next_unique_id);
-   //printf("next unique id = %d\n",next_unique_id);
-
+#ifdef JPILOT_DEBUG
+   printf("next unique id = %d\n",next_unique_id);
+#endif
+   
    out = open_file("DatebookDB.pc", "a");
    if (!out) {
       printf("Error opening DatebookDB.pc\n");
       return -1;
    }
-   //todo check return code - if 0 then buffer was too small
    rec_len = pack_Appointment(a, record, 65535);
+   if (!rec_len) {
+      PRINT_FILE_LINE;
+      printf("pack_Appointment error\n");
+      return -1;
+   }
    header.rec_len=rec_len;
    header.rt=rt;
+   header.attrib=attrib;
    header.unique_id=next_unique_id;
    fwrite(&header, sizeof(header), 1, out);
    fwrite(record, rec_len, 1, out);
@@ -439,48 +178,16 @@ int pc_datebook_write(struct Appointment *a, PCRecType rt)
    fclose(out);
 }
 
-/*
- static int pc_datebook_read_file_header(FILE *in)
+void free_AppointmentList(AppointmentList **al)
 {
-   PCFileHeader   file_header;
-
-   if (ftell(in)!=0) {
-      printf("Error: datebook_read_file_header(): Not at BOF\n");
-      return -1;
-   }
-   fread(&file_header, sizeof(file_header), 1, in);
-}
- */  
-static int pc_datebook_read_next_rec(FILE *in, MyAppointment *ma)
-{
-   PCRecordHeader header;
-   int rec_len;
-   char *record;
-   //DatebookRecType rt;
+   AppointmentList *temp_al, *temp_al_next;
    
-   if (feof(in)) {
-      return DATEBOOK_EOF;
+   for (temp_al = *al; temp_al; temp_al=temp_al_next) {
+      free_Appointment(&(temp_al->ma.a));
+      temp_al_next = temp_al->next;
+      free(temp_al);
    }
-//  if (ftell(in)==0) {
-//     printf("Error: File header not read\n");
-//      return DATEBOOK_EOF;
-//   }
-   //todo check return codes
-   fread(&header, sizeof(header), 1, in);
-   if (feof(in)) {
-      return DATEBOOK_EOF;
-   }
-   rec_len = header.rec_len;
-   ma->rt = header.rt;
-   ma->unique_id = header.unique_id;
-   record = malloc(rec_len);
-   fread(record, rec_len, 1, in);
-   if (feof(in)) {
-      free(record);
-      return DATEBOOK_EOF;
-   }
-   unpack_Appointment(&(ma->a), record, rec_len);
-   free(record);
+   *al = NULL;
 }
 
 int dateToDays(struct tm *tm1)
@@ -526,6 +233,8 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
    int begin_days, days, week1, week2;
    int dow, ndim;
    int i;
+   //days_in_month is adjusted for leap year with the date
+   //structure
    int days_in_month[]={31,28,31,30,31,30,31,31,30,31,30,31
    };
    //time_t ltime;
@@ -536,6 +245,11 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
 
    ret = FALSE;
 
+   //Leap year
+   if (date->tm_year%4==0) {
+      days_in_month[1]++;
+   }
+   
    //See if the appointment starts after date
    r = compareTimesToDay(&(a->begin), date);
    if (r == 1) {
@@ -581,32 +295,37 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
       if (!ret) {
 	 break;
       }
-      //If the days of the month match - good
-      //e.g. the 1st Monday in the month, or last Thur
-      if (a->begin.tm_mday != date->tm_mday) {
+      //If the days of the week match - good
+      //e.g. Monday or Thur, etc.
+      if (a->repeatDay%7 != date->tm_wday) {
 	 ret = FALSE;
 	 break;
       }
-      week1 = a->begin.tm_mday/7;
-      week2 = date->tm_mday/7;
+      //Are they both in the same week in the month
+      //e.g. The 3rd Mon, or the 2nd Fri, etc.
+      week1 = a->repeatDay/7;
+      week2 = (date->tm_mday - 1)/7;
       if (week1 != week2) {
 	 ret = FALSE;
-	 break;
       }
-      //See if they are both the last date/day in the month
-      ret = (((date->tm_mday + 7) > days_in_month[date->tm_mon]) &&
-	     (date->tm_wday == a->repeatDay % 7));
+      //See if the appointment repeats on the last week of the month
+      //and this is the 4th, and last.
+      if (week1 > 3) {
+	 if ((date->tm_mday + 7) > days_in_month[date->tm_mon]) {
+	    ret = TRUE;
+	 }
+      }
       break;
     case repeatMonthlyByDate:
-      //See if this is the date that the appt repeats on
-      if (date->tm_mday != a->begin.tm_mday) {
-	 ret = FALSE;
-	 break;
-      }
       //See if we are in a repeating month
       ret = (((date->tm_year - a->begin.tm_year)*12 +
        (date->tm_mon - a->begin.tm_mon))%(a->repeatFrequency) == 0);
-      if (ret) {
+      if (!ret) {
+	 break;
+      }
+      //See if this is the date that the appt repeats on
+      if (date->tm_mday == a->begin.tm_mday) {
+	 ret = TRUE;
 	 break;
       }
       //If appt occurs after the last day of the month and this date
@@ -624,16 +343,18 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
 	 ret = TRUE;
 	 break;
       }
-      //Take care of Feb 29th
+      //Take care of Feb 29th (Leap Day)
       if ((a->begin.tm_mon == 1) && (a->begin.tm_mday == 29) &&
-	(a->begin.tm_mon == 1) && (a->begin.tm_mday == 28)) {
+	(date->tm_mon == 1) && (date->tm_mday == 28)) {
 	 ret = TRUE;
 	 break;
       }   
       break;
     default:
-	 g_print("unknown repeatType found in DatebookDB\n");
-	 ret = FALSE;
+      g_print("unknown repeatType (%d) found in DatebookDB\n",
+	      a->repeatType);
+      printf("repeatMonthlyByDate = %d\n", repeatMonthlyByDate);
+      ret = FALSE;
    }//switch
 
    if (ret) {
@@ -656,73 +377,62 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
    return ret;
 }
 
-void free_AppointmentList(AppointmentList *al)
-{
-   AppointmentList *temp_al, *temp_al_next;
-
-   for (temp_al = al; temp_al; temp_al=temp_al_next) {
-      free_Appointment(&(temp_al->ma.a));
-      temp_al_next = temp_al->next;
-      free(temp_al);
-   }
-   //al = NULL;
-}
-
-//todo returns how many
-//al_out will be a NULL terminated linked list
-int get_days_appointments(AppointmentList **al_out, struct tm *now)
+int get_days_appointments(AppointmentList **appointment_list, struct tm *now)
 {
    FILE *in, *pc_in;
-   char db_name[34];
-   char filler[100];
-   char buf[65536];
-   unsigned char char_num_records[4];
+//   *appointment_list=NULL;
+//   char db_name[34];
+//   char filler[100];
+   char *buf;
+//   unsigned char char_num_records[4];
+//   unsigned char char_ai_offset[4];//app info offset
    int num_records, i, num, r;
    unsigned int offset, next_offset, rec_size;
-   unsigned char attrib;
-   unsigned char c;
+//   unsigned char c;
    long fpos;  //file position indicator
-   record_header rh;
-   struct Appointment *temp_a, a;
-   MyAppointment ma;
-   AppointmentList *temp_al;
-   PCRecType rt;
-   char *pc_record;
-   int pc_rec_len;
-   mem_rec_header *mem_rh;
-   mem_rec_header *temp_mem_rh;
+   unsigned char attrib;
    unsigned int unique_id;
+   mem_rec_header *mem_rh, *temp_mem_rh;
+   record_header rh;
+   RawDBHeader rdbh;
+   DBHeader dbh;
+   struct Appointment a;
+   //struct AppointmentAppInfo ai;
+   AppointmentList *temp_appointment_list;
+   MyAppointment ma;
 
    mem_rh = NULL;
-   *al_out = NULL;
-   
+
    in = open_file("DatebookDB.pdb", "r");
    if (!in) {
       printf("Error opening DatebookDB.pdb\n");
       return -1;
    }
    //Read the database header
-   fread(db_name, 32, 1, in);
-   fread(filler, 44, 1, in);
-   fread(char_num_records, 2, 1, in);
+   fread(&rdbh, sizeof(RawDBHeader), 1, in);
    if (feof(in)) {
-      printf("Error opening DatebookDB.pdb\n");
+      printf("Error reading DatebookDB.pdb\n");
+      fclose(in);
       return -1;
    }
-   //g_print("db_name = %s\n", db_name);
-   //g_print("char_num_records = %d %d\n", char_num_records[0], char_num_records[1]);
+   raw_header_to_header(&rdbh, &dbh);
+   
+   //printf("db_name = %s\n", dbh.db_name);
+   //printf("num records = %d\n", dbh.number_of_records);
+   //printf("app info offset = %d\n", dbh.app_info_offset);
+
+   //fread(filler, 2, 1, in);
+
    //Read each record entry header
-   num_records = char_num_records[0]*256 + char_num_records[1];
-   //g_print("num_records = %d\n", num_records);
-   //g_print("sizeof(record_header)=%d\n",sizeof(record_header));
+   num_records = dbh.number_of_records;
+   //printf("sizeof(record_header)=%d\n",sizeof(record_header));
    for (i=1; i<num_records+1; i++) {
       fread(&rh, sizeof(record_header), 1, in);
-//      printf("atrib=%d\n",rh.attrib);
-//      printf("uniqueID=%d %d %d\n",rh.unique_ID[0],rh.unique_ID[1],rh.unique_ID[2]);
       offset = ((rh.Offset[0]*256+rh.Offset[1])*256+rh.Offset[2])*256+rh.Offset[3];
-//      printf("record header %u offset = %u\n",i, offset);
-//      printf("       attrib %d\n",rh.attrib);
-//      printf("    unique_ID %d %d %d\n",rh.unique_ID[0],rh.unique_ID[1],rh.unique_ID[2]);
+      //printf("record header %u offset = %u\n",i, offset);
+      //printf("       attrib 0x%x\n",rh.attrib);
+      //printf("    unique_ID %d %d %d = ",rh.unique_ID[0],rh.unique_ID[1],rh.unique_ID[2]);
+      //printf("%d\n",(rh.unique_ID[0]*256+rh.unique_ID[1])*256+rh.unique_ID[2]);
       temp_mem_rh = (mem_rec_header *)malloc(sizeof(mem_rec_header));
       temp_mem_rh->next = mem_rh;
       mem_rh = temp_mem_rh;
@@ -731,39 +441,38 @@ int get_days_appointments(AppointmentList **al_out, struct tm *now)
       mem_rh->attrib = rh.attrib;
       mem_rh->unique_id = (rh.unique_ID[0]*256+rh.unique_ID[1])*256+rh.unique_ID[2];
    }
-//   fpos = ftell(in);
-//   fpos += 223;
-   //fsetpos(in, &fpos);
-   //Find the first offset and go there
+
    find_next_offset(mem_rh, 0, &next_offset, &attrib, &unique_id);
    fseek(in, next_offset, SEEK_SET);
+   
    while(!feof(in)) {
       fpos = ftell(in);
       find_next_offset(mem_rh, fpos, &next_offset, &attrib, &unique_id);
-//      next_offset += 223;
+      //next_offset += 223;
       rec_size = next_offset - fpos;
-//      printf("rec_size = %u\n",rec_size);
-//      printf("fpos,next_offset = %u %u\n",fpos,next_offset);
-//      printf("----------\n");
+      //printf("rec_size = %u\n",rec_size);
+      //printf("fpos,next_offset = %u %u\n",fpos,next_offset);
+      //printf("----------\n");
       if (feof(in)) break;
+      buf = malloc(rec_size);
+      if (!buf) {
+	 break;
+      }
       num = fread(buf, 1, rec_size, in);
-      unpack_Appointment(&a, buf, rec_size);
+      if (feof(in) || (!num)) break;
 
+      unpack_Appointment(&a, buf, rec_size);
+      free(buf);
       if (isApptOnDate(&a, now)
 	  && (!does_pc_appt_exist(unique_id, PALM_REC))) {
-	//if ((a.begin.tm_yday==now->tm_yday) && 
-	//  (a.begin.tm_year==now->tm_year)) 
-	 temp_al = malloc(sizeof(AppointmentList));
-	 memcpy(&(temp_al->ma.a), &a, sizeof(struct Appointment));
-	 //temp_al->ma.a = temp_a;
-	 temp_al->ma.rt = PALM_REC;
-	 temp_al->ma.attrib = attrib;
-	 temp_al->ma.unique_id = unique_id;
-	 temp_al->next = *al_out;
-	 *al_out = temp_al;
-      } else {
-	 //this doesnt really free it, just the string pointers
-	 free_Appointment(&a);
+	 temp_appointment_list = malloc(sizeof(AppointmentList));
+	 memcpy(&(temp_appointment_list->ma.a), &a, sizeof(struct Appointment));
+	 //temp_appointment_list->ma.a = temp_a;
+	 temp_appointment_list->ma.rt = PALM_REC;
+	 temp_appointment_list->ma.attrib = attrib;
+	 temp_appointment_list->ma.unique_id = unique_id;
+	 temp_appointment_list->next = *appointment_list;
+	 *appointment_list = temp_appointment_list;
       }
    }
    fclose(in);
@@ -784,24 +493,26 @@ int get_days_appointments(AppointmentList **al_out, struct tm *now)
 	  &&(ma.rt!=DELETED_PC_REC)
 	  &&(ma.rt!=DELETED_PALM_REC)
 	  &&(ma.rt!=DELETED_DELETED_PALM_REC)) {
-	 temp_al = malloc(sizeof(AppointmentList));
-	 memcpy(&(temp_al->ma), &ma, sizeof(MyAppointment));
-	 temp_al->next = *al_out;
-	 *al_out = temp_al;
+	 temp_appointment_list = malloc(sizeof(AppointmentList));
+	 memcpy(&(temp_appointment_list->ma), &ma, sizeof(MyAppointment));
+	 temp_appointment_list->next = *appointment_list;
+	 *appointment_list = temp_appointment_list;
+
+	 //temp_appointment_list->ma.attrib=0;
       } else {
 	 //this doesnt really free it, just the string pointers
 	 free_Appointment(&(ma.a));
       }
       if (ma.rt==DELETED_PALM_REC) {
-	 for (temp_al = *al_out; temp_al; temp_al=temp_al->next) {
-	    if (temp_al->ma.unique_id == ma.unique_id) {
-	       temp_al->ma.rt = ma.rt;
+	 for (temp_appointment_list = *appointment_list; temp_appointment_list;
+	      temp_appointment_list=temp_appointment_list->next) {
+	    if (temp_appointment_list->ma.unique_id == ma.unique_id) {
+	       temp_appointment_list->ma.rt = ma.rt;
 	    }
 	 }
       }
    }
-   
-   datebook_sort(al_out);
-   
    fclose(pc_in);
+
+   datebook_sort(appointment_list);
 }

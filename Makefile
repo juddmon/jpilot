@@ -6,13 +6,13 @@ CC = gcc
 PILOT_LIB = -L$(PILOT_DIR)/lib -lpisock
 PILOT_INCLUDE = -I$(PILOT_DIR)/include
 
-all: jpilot
+all: jpilot jpilot-syncd
 
 jpilot: jpilot.o datebook.o address.o todo.o memo.o \
 	datebook_gui.o address_gui.o todo_gui.o memo_gui.o \
-	utils.o
+	utils.o sync.o
 	$(CC) $(PILOT_LIB) `gtk-config --cflags` `gtk-config --libs` \
-	jpilot.o datebook.o address.o todo.o memo.o utils.o \
+	jpilot.o datebook.o address.o todo.o memo.o utils.o sync.o \
 	datebook_gui.o address_gui.o todo_gui.o memo_gui.o -o jpilot
 
 jpilot.o: jpilot.c datebook.h utils.h utils.o
@@ -43,12 +43,25 @@ memo_gui.o: memo_gui.c utils.h
 	$(CC) $(PILOT_INCLUDE) `gtk-config --cflags` -c memo_gui.c
 
 utils.o: utils.c utils.h
-	$(CC) $(PILOT_INCLUDE) \
-	`gtk-config --cflags` \
-	-c utils.c
+	$(CC) $(PILOT_INCLUDE) `gtk-config --cflags` -c utils.c
+
+sync.o: sync.c sync.h
+	$(CC) $(PILOT_INCLUDE) `gtk-config --cflags` -c sync.c
 
 clean: 
 	rm -f *.o *~
+
+#
+# jpilot-syncd is a daemon utility to allow syncing from the command line
+# without bringing up the application.  Also, just the button on the Palm
+# Pilot needs to be pressed.
+#
+jpilot-syncd: jpilot-syncd.o sync.o
+	$(CC) $(PILOT_LIB) `gtk-config --cflags` `gtk-config --libs` \
+	jpilot-syncd.o sync.o utils.o -o jpilot-syncd
+
+jpilot-syncd.o: jpilot-syncd.c utils.h utils.o
+	$(CC) $(PILOT_INCLUDE) `gtk-config --cflags` -c jpilot-syncd.c
 
 #
 #Some other stuff

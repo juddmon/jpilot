@@ -1,3 +1,4 @@
+
 jpilot is a palm pilot desktop for Linux written by:
 Judd Montgomery, judd@engineer.com
 It is very useable, but still has many planned updates to make it better.
@@ -9,7 +10,24 @@ email me and I'll send you my address.
 If you use this program send me an email and let me know.  I'd like to know
 how many people this is useful to.
 
+jpilot reads the PILOTPORT environment variable to get the port to sync on.
+If this is not set, then it defaults to /dev/pilot.
+
+jpilot-syncd is a syncing daemon for jpilot.  It just sits and waits for the
+Sync button to be pressed on the Palm pilot and then it syncs it.  This is
+just an optional program.  It is not necessary.
+
+COLORS:
+
 You should copy the jpilotrc file to ~/.jpilot/ to get rid of the ugly grey
 screens.  If you create your own cool jpilotrc files feel free to send them
-back to me and if I like it, I'll include them in the release.  I'll
-probably make a few selectable with a pull-down menu.
+back to me and if I like it, I'll include it in the release.  I'll probably
+make a few selectable with a pull-down menu.
+
+MODIFYING RECORDS:
+
+Even though you can't modify records at the moment, the GUI is set up to
+make it easy to do.  Just click the add line in the left screen, then select
+the record that you would like to modify, and it will come up.  Make the
+changes and add it.  Then you can delete the old one.  This is what modify
+will eventually do for you.

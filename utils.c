@@ -17,9 +17,19 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include <stdlib.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include "utils.h"
 #include <pi-datebook.h>
 #include <pi-address.h>
+//#include <sys/types.h>
+//#include <unistd.h>
+#include <utime.h>
+
+#include <pi-source.h>
+#include <pi-socket.h>
+#include <pi-dlp.h>
+#include <pi-file.h>
 
 
 gint timeout_date(gpointer data)
@@ -34,7 +44,7 @@ gint timeout_date(gpointer data)
    }
    time(&ltime);
    now = localtime(&ltime);
-   strftime(str, 50, "%A, %x %X", now);
+   strftime(str, 50, "Today is %A, %x %X", now);
    
    gtk_label_set_text(GTK_LABEL(glob_date_label), str);
    return TRUE;
@@ -213,10 +223,75 @@ const char * xpm_checked[] = {
    *out_mask_checked = mask_checked;
 }
 
+
+//creates the full path name of a file in the ~/.jpilot dir
+int get_home_file_name(char *file, char *full_name, int max_size)
+{
+   char *home, default_path[]=".";
+
+   home = getenv("HOME");
+   if (!home) {//Not home;
+      printf("Can't get HOME environment variable\n");
+   }
+   if (strlen(home)>(max_size-strlen(file)-2)) {
+      printf("Your HOME environment variable is too long for me\n");
+      home=default_path;
+   }
+   sprintf(full_name, "%s/.jpilot/%s", home, file);
+   return 0;
+}
+
+
+//
+//Returns 0 if ok
+//
+int check_hidden_dir()
+{
+   struct stat statb;
+   char hidden_dir[260];
+   char test_file[260];
+   FILE *out;
+   
+   get_home_file_name("", hidden_dir, 256);
+   hidden_dir[strlen(hidden_dir)-1]='\0';
+   //printf("home name = %s\n", hidden_dir);
+
+   if (stat(hidden_dir, &statb)) {
+      //directory isn\'t there, create it
+      if (mkdir(hidden_dir, 0777)) {
+	 //Can\'t create directory
+	 printf("Can't create directory %s\n", hidden_dir);
+	 return 1;
+      }
+      if (stat(hidden_dir, &statb)) {
+	 printf("Can't create directory %s\n", hidden_dir);
+	 return 1;
+      }
+   }
+   //Is it a directory?
+   if (!S_ISDIR(statb.st_mode)) {
+      printf("%s doesn't appear to be a directory.\n"
+	     "I need it to be.\n", hidden_dir);
+      return 1;
+   }
+   //Can we write in it?
+   get_home_file_name("test", test_file, 256);
+   out = fopen(test_file, "w+");
+   if (!out) {
+      printf("I can't write files in directory %s\n", hidden_dir);
+   } else {
+      fclose(out);
+      unlink(test_file);
+   }
+   
+   return 0;
+}
+
 //
 // month = 0-11
+// day = day of month 1-31
 // dow = day of week for first day of the month 0-6
-// ndim = number of days in month 0-31
+// ndim = number of days in month 28-31
 //
 void get_month_info(int month, int day, int year, int *dow, int *ndim)
 {
@@ -241,12 +316,12 @@ void get_month_info(int month, int day, int year, int *dow, int *ndim)
    *dow = new_time.tm_wday;
    
    //I know this isn't 100% correct
-   *ndim = days_in_month[month];
    if (month == 1) {
       if (year%4 == 0) {
-	 *ndim++;
+	 days_in_month[1]++;
       }
    }
+   *ndim = days_in_month[month];
 }
 
 void get_this_month_info(int *dow, int *ndim)
@@ -613,6 +688,8 @@ int delete_pc_record(AppType app_type, void *VP)
       fwrite(&header, sizeof(header), 1, pc_in);
       //todo write the real appointment from palm db
       //Right now I am just writing an empty record
+      //This will be used for making sure that the palm record hasn't changed
+      //before we delete it
       fwrite(record, header.rec_len, 1, pc_in);
       //printf("record deleted\n");
       fclose(pc_in);
@@ -682,4 +759,16 @@ int cleanup_pc_files()
    if (ret == 0) {
       unlink_file("next_id");
    }
+}
+
+void cb_sync(GtkWidget *widget,
+	     gpointer  data)
+{
+   jpilot_sync(NULL);
+   //datebook_cleanup();
+   //todo - force a refresh of whatever app is running
+   //Force a refresh of the calendar
+   //if (day_button[current_day-1]) {
+   //   gtk_signal_emit_by_name(GTK_OBJECT(day_button[current_day-1]), "clicked");
+   //}
 }

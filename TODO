@@ -1,10 +1,11 @@
 These are some of the things on my list todo, not neccesarily in this order:
 
-* fix category label in todo, adress, and memo apps
 
+* fix category label in todo, adress, and memo apps
+* fix return codes, they are a mess.
 * Use autoconf to generate a configure script since they are so cool.
 * Add in file locking, right now if you run 2 jpilots as the same user
-  then you may have DB file problems.
+  then you may have DB file problems. (who cares?)
 * Put up a graph showing the days schedual.
 * Make the datebook ask if an event is supposed to be in the 4th week,
   or if last week of the month.
@@ -12,7 +13,11 @@ These are some of the things on my list todo, not neccesarily in this order:
 * Let records be modified instead of just removed, or added.
 * Do a fast sync, user choice of fast, or slow.
   (A slow sync allows another PC to do the archiving)
+* Make the slow sync faster.
 * Archive "to be archived" records?
+* allow multiple pilots to sync in separate directories??
 * Add in search functions
-* Need to test how an appointment entered on 2/29 would repeat yearly on the
-palm.
+* Printing
+* Make the output go into a window instead of stdout.
+* Put in gtk hints.
+* Put in a menubar if needed.

@@ -189,7 +189,6 @@ static int pc_todo_read_next_rec(FILE *in, MyToDo *mtodo)
 //     printf("Error: File header not read\n");
 //      return TODO_EOF;
 //   }
-   //todo check return codes
    fread(&header, sizeof(header), 1, in);
    if (feof(in)) {
       return TODO_EOF;
@@ -200,6 +199,9 @@ static int pc_todo_read_next_rec(FILE *in, MyToDo *mtodo)
    //printf("read attrib = %d\n", mtodo->attrib);
    mtodo->unique_id = header.unique_id;
    record = malloc(rec_len);
+   if (!record) {
+      return TODO_EOF;
+   }
    fread(record, rec_len, 1, in);
    if (feof(in)) {
       free(record);
@@ -231,6 +233,11 @@ int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib)
    }
    //todo check return code - if 0 then buffer was too small
    rec_len = pack_ToDo(todo, record, 65535);
+   if (!rec_len) {
+      printf("pack_ToDo failed\n");
+      PRINT_FILE_LINE;
+      return -1;
+   }
    header.rec_len=rec_len;
    header.rt=rt;
    header.attrib=attrib;
@@ -239,6 +246,8 @@ int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib)
    fwrite(record, rec_len, 1, out);
    fflush(out);
    fclose(out);
+   
+   return 0;
 }
 
 void free_ToDoList(ToDoList **todo)
@@ -269,6 +278,7 @@ int get_todo_app_info(struct ToDoAppInfo *ai)
    }
    fread(&rdbh, sizeof(RawDBHeader), 1, in);
    if (feof(in)) {
+      fclose(in);
       printf("Error reading ToDoDB.pdb\n");
       return -1;
    }
@@ -277,6 +287,10 @@ int get_todo_app_info(struct ToDoAppInfo *ai)
    fseek(in, dbh.app_info_offset, SEEK_SET);
    rec_size = 300;
    buf=malloc(rec_size);
+   if (!buf) {
+      fclose(in);
+      return -1;
+   }
    num = fread(buf, 1, rec_size, in);
    if (feof(in)) {
       fclose(in);
@@ -367,6 +381,7 @@ int get_todos(ToDoList **todo_list)
       //printf("----------\n");
       if (feof(in)) break;
       buf = malloc(rec_size);
+      if (!buf) break;
       num = fread(buf, 1, rec_size, in);
 
       unpack_ToDo(&todo, buf, rec_size);

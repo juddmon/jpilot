@@ -31,7 +31,7 @@ GtkWidget *address_text[22];
 GtkWidget *vbox2_1, *vbox2_2;
 GtkWidget *text;
 GtkWidget *vscrollbar;
-GtkWidget *menu_item[8][8];
+GtkWidget *menu_item[9][8];
 struct AddressAppInfo address_app_info;
 int address_category;
 int address_phone_label_selected[5];
@@ -360,7 +360,7 @@ int make_phone_menu(GtkWidget **phone_list_menu, int default_set,
    //gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_item), TRUE);
    //gtk_check_menu_item_select(GTK_CHECK_MENU_ITEM(menu_item));
    //gtk_check_menu_item_activate(GTK_CHECK_MENU_ITEM(menu_item));
-   for (i=0; i<8; i++) {
+   for (i=0; i<9; i++) {
       if (i==0) {
 	 i2=default_set;
       } else {
@@ -452,7 +452,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    //Make the Today is: label
    time(&ltime);
    now = localtime(&ltime);
-   strftime(str, MAX_STR, "%A, %x %X", now);
+   strftime(str, MAX_STR, "Today is %A, %x %X", now);
    glob_date_label = gtk_label_new(str);
    gtk_box_pack_start(GTK_BOX(vbox1), glob_date_label, FALSE, FALSE, 0);
    gtk_widget_show(glob_date_label);

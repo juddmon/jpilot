@@ -116,7 +116,7 @@ void cb_memo(GtkWidget *widget, gpointer data)
 
 void delete_event(GtkWidget *widget, GdkEvent *event, gpointer data)
 {
-   gtk_main_quit ();
+   gtk_main_quit();
 }
 
 int main(int   argc,
@@ -130,14 +130,21 @@ int main(int   argc,
    GtkWidget *pixmapwid;
    GdkPixmap *pixmap;
 
-   gtk_init(&argc, &argv);
-   
    if (argc > 1) {
       if (!strncasecmp(argv[1], "-v", 2)) {
 	 printf("%s\n", VERSION_STRING);
 	 exit(0);
       }
    }
+
+   //Check to see if ~/.jpilot is there, or create it
+   if (check_hidden_dir()) {
+      exit(1);
+   }
+
+   gtk_set_locale();
+
+   gtk_init(&argc, &argv);
 
    read_rc_file();
 
@@ -248,7 +255,7 @@ int main(int   argc,
    gtk_widget_show(pixmapwid);
    gtk_container_add(GTK_CONTAINER(button_memo), pixmapwid);
 
-   gtk_main ();
+   gtk_main();
 
    return 0;
 }
