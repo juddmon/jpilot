@@ -505,6 +505,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    unsigned char buf[0xFFFF];
    int size;
    int flag;
+   struct MyKeyRing *mkr;
 
    jp_logf(LOG_DEBUG, "KeyRing: cb_add_new_record\n");
 
@@ -535,28 +536,40 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    /* This is a new record from the PC, and not yet on the palm */
    br.rt = NEW_PC_REC;
    
-   /* jp_pc_write will give us a temporary PC unique ID. */
-   /* The palm will give us an "official" unique ID during the sync */
-   
-   br.unique_id = 0;
    /* Any attributes go here.  Usually just the category */
 
    br.attrib = glob_category_number_from_menu_item[glob_detail_category];
    jp_logf(LOG_DEBUG, "category is %d\n", br.attrib);
    br.buf = buf;
    br.size = size;
-
-   /* Write out the record.  It goes to the .pc file until it gets synced */
-   jp_pc_write("Keys-Gtkr", &br);
+   br.unique_id = 0;
 
    connect_changed_signals(CONNECT_SIGNALS);
    set_new_button_to(CLEAR_FLAG);
    
    if (flag==MODIFY_FLAG) {
+      mkr = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
+      if (!mkr) {
+	 return;
+      }
+      /* printf("mkr->rt=%d\n", mex->rt); */
+      /* printf("mex->unique_id=%d\n", mex->unique_id); */
+      if ((mkr->rt==PALM_REC) || (mkr->rt==REPLACEMENT_PALM_REC)) {
+	 /* This code is to keep the unique ID intact */
+	 br.unique_id = mkr->unique_id;
+	 br.rt = REPLACEMENT_PALM_REC;
+	 /* printf("setting br.rt\n"); */
+      }
       cb_delete(NULL, GINT_TO_POINTER(MODIFY_FLAG));
-   } else {
-      display_records();
    }
+
+   /* mkr will no longer point to valid memory after this cb_delete */
+   mkr=NULL;
+
+   /* Write out the record.  It goes to the .pc3 file until it gets synced */
+   jp_pc_write("Keys-Gtkr", &br);
+
+   display_records();
 
    return;
 }
@@ -576,12 +589,14 @@ static int display_record(struct MyKeyRing *mkr, int at_row)
 
    switch (mkr->rt) {
     case NEW_PC_REC:
+    case REPLACEMENT_PALM_REC:
       colormap = gtk_widget_get_colormap(GTK_WIDGET(clist));
       color.red=CLIST_NEW_RED;
       color.green=CLIST_NEW_GREEN;
       color.blue=CLIST_NEW_BLUE;
       gdk_color_alloc(colormap, &color);
       gtk_clist_set_background(GTK_CLIST(clist), at_row, &color);
+      break;
     case DELETED_PALM_REC:
       colormap = gtk_widget_get_colormap(GTK_WIDGET(clist));
       color.red=CLIST_DEL_RED;
@@ -1038,7 +1053,7 @@ static gboolean cb_destroy_dialog(GtkWidget *widget)
 /*
  * returns 1 if OK was pressed, 2 if cancel was hit
  */
-static int dialog_password(char *ascii_password)
+static int dialog_password(char *ascii_password, int retry)
 {
    GtkWidget *button, *label;
    GtkWidget *hbox1, *vbox1;
@@ -1077,7 +1092,11 @@ static int dialog_password(char *ascii_password)
    gtk_box_pack_start(GTK_BOX(vbox1), hbox1, FALSE, FALSE, 2);
 
    /* Label */
-   label = gtk_label_new(_("Enter KeyRing Password"));
+   if (retry) {
+      label = gtk_label_new(_("Incorrect, Reenter KeyRing Password"));
+   } else {
+      label = gtk_label_new(_("Enter KeyRing Password"));
+   }
    gtk_box_pack_start(GTK_BOX(hbox1), label, FALSE, FALSE, 2);
 
    entry = gtk_entry_new_with_max_length(32);
@@ -1194,6 +1213,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    GList *temp_list;
    buf_rec *br;
    char *titles[2];
+   int retry;
 
    titles[0] = _("Name"); titles[1] = _("Account");
    
@@ -1204,8 +1224,10 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    }
    
    password_not_correct=1;
+   retry=FALSE;
    while (password_not_correct) {
-      r = dialog_password(ascii_password);
+      r = dialog_password(ascii_password, retry);
+      retry=TRUE;
       if (r!=1) {
 	 memset(ascii_password, 0, PASSWD_LEN-1);
 	 return 0;
