@@ -134,7 +134,7 @@ static int clist_hack;
 
 static void connect_changed_signals(int con_or_dis);
 static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
-				 AddressList *addr_list, int category, int main);
+				 AddressList **addr_list, int category, int main);
 int address_clist_redraw();
 static int address_find();
 static void get_address_attrib(unsigned char *attrib);
@@ -1015,7 +1015,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 
 static void cb_addr_update_clist(GtkWidget *clist, int category)
 {
-   address_update_clist(clist, NULL, export_address_list, category, FALSE);
+   address_update_clist(clist, NULL, &export_address_list, category, FALSE);
 }
 
 
@@ -1505,7 +1505,7 @@ static void cb_category(GtkWidget *item, int selection)
 
       address_category = selection;
       jp_logf(JP_LOG_DEBUG, "address_category = %d\n",address_category);
-      address_update_clist(clist, category_menu1, glob_address_list,
+      address_update_clist(clist, category_menu1, &glob_address_list,
 			   address_category, TRUE);
    }
 }
@@ -1792,7 +1792,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 }
 
 static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
-				 AddressList *addr_list, int category, int main)
+				 AddressList **addr_list, int category, int main)
 {
    int num_entries, entries_shown, i;
    int row_count;
@@ -1821,7 +1821,7 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       gtk_clist_set_row_data(GTK_CLIST(clist), i, NULL);
    }
 
-   free_AddressList(&addr_list);
+   free_AddressList(addr_list);
 
 #ifdef JPILOT_DEBUG
     for (i=0;i<NUM_ADDRESS_CAT_ITEMS;i++) {
@@ -1844,7 +1844,7 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 #endif
 
    /* Need to get all records including private ones for the tooltips calculation */
-   num_entries = get_addresses2(&addr_list, SORT_ASCENDING, 2, 2, 1, CATEGORY_ALL);
+   num_entries = get_addresses2(addr_list, SORT_ASCENDING, 2, 2, 1, CATEGORY_ALL);
 
    /* Start by clearing existing entry */
    addr_clear_details();
@@ -1897,7 +1897,7 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    entries_shown=0;
 
    show_priv = show_privates(GET_PRIVATES);
-   for (temp_al = addr_list, i=0; temp_al; temp_al=temp_al->next) {
+   for (temp_al = *addr_list, i=0; temp_al; temp_al=temp_al->next) {
       if ( ((temp_al->ma.attrib & 0x0F) != address_category) &&
 	   address_category != CATEGORY_ALL) {
 	 continue;
@@ -2124,7 +2124,7 @@ int address_clist_redraw()
 
    line_num = clist_row_selected;
 
-   address_update_clist(clist, category_menu1, glob_address_list,
+   address_update_clist(clist, category_menu1, &glob_address_list,
 			address_category, TRUE);
 
    gtk_clist_select_row(GTK_CLIST(clist), line_num, ADDRESS_NAME_COLUMN);
@@ -2174,7 +2174,7 @@ int address_refresh()
    } else {
       index=find_sorted_cat(address_category)+1;
    }
-   address_update_clist(clist, category_menu1, glob_address_list,
+   address_update_clist(clist, category_menu1, &glob_address_list,
 			address_category, TRUE);
    if (index<0) {
       jp_logf(JP_LOG_WARN, "Category not legal\n");

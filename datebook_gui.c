@@ -2269,15 +2269,15 @@ static int dayview_update_clist()
        case NEW_PC_REC:
        case REPLACEMENT_PALM_REC:
 	 set_bg_rgb_clist_row(clist, i,
-			  CLIST_NEW_RED, CLIST_NEW_GREEN, CLIST_NEW_BLUE);
+			      CLIST_NEW_RED, CLIST_NEW_GREEN, CLIST_NEW_BLUE);
 	 break;
        case DELETED_PALM_REC:
 	 set_bg_rgb_clist_row(clist, i,
-			  CLIST_DEL_RED, CLIST_DEL_GREEN, CLIST_DEL_BLUE);
+			      CLIST_DEL_RED, CLIST_DEL_GREEN, CLIST_DEL_BLUE);
 	 break;
        case MODIFIED_PALM_REC:
 	 set_bg_rgb_clist_row(clist, i,
-			  CLIST_MOD_RED, CLIST_MOD_GREEN, CLIST_MOD_BLUE);
+			      CLIST_MOD_RED, CLIST_MOD_GREEN, CLIST_MOD_BLUE);
 	 break;
        default:
 	 if (temp_al->ma.attrib & dlpRecAttrSecret) {
@@ -4065,7 +4065,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    gtk_container_add(GTK_CONTAINER(todo_scrolled_window), GTK_WIDGET(todo_clist));
 
-   todo_update_clist(todo_clist, NULL, datebook_todo_list, CATEGORY_ALL, FALSE);
+   todo_update_clist(todo_clist, NULL, &datebook_todo_list, CATEGORY_ALL, FALSE);
    /*
     * End ToDo clist code
     */

@@ -79,7 +79,7 @@ static void connect_changed_signals(int con_or_dis);
 static int memo_find();
 int memo_get_details(struct Memo *new_memo, unsigned char *attrib);
 static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
-			      MemoList *memo_list, int category, int main);
+			      MemoList **memo_list, int category, int main);
 static void cb_add_new_record(GtkWidget *widget, gpointer data);
 
 static void
@@ -580,7 +580,7 @@ void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 
 static void cb_memo_update_clist(GtkWidget *clist, int category)
 {
-   memo_update_clist(clist, NULL, export_memo_list, category, FALSE);
+   memo_update_clist(clist, NULL, &export_memo_list, category, FALSE);
 }
 
 
@@ -693,7 +693,7 @@ static void cb_category(GtkWidget *item, int selection)
       memo_category = selection;
       jp_logf(JP_LOG_DEBUG, "cb_category() cat=%d\n", memo_category);
       memo_clear_details();
-      memo_update_clist(clist, category_menu1, glob_memo_list, memo_category, TRUE);
+      memo_update_clist(clist, category_menu1, &glob_memo_list, memo_category, TRUE);
       jp_logf(JP_LOG_DEBUG, "Leaving cb_category()\n");
    }
 }
@@ -1009,7 +1009,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 }
 
 static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
-			      MemoList *memo_list, int category, int main)
+			      MemoList **memo_list, int category, int main)
 {
    int num_entries, entries_shown, i;
    int row_count;
@@ -1031,10 +1031,10 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       gtk_clist_set_row_data(GTK_CLIST(clist), i, NULL);
    }
 
-   free_MemoList(&memo_list);
+   free_MemoList(memo_list);
 
    /* Need to get all records including private ones for the tooltips calculation */
-   num_entries = get_memos2(&memo_list, SORT_ASCENDING, 2, 2, 1, CATEGORY_ALL);
+   num_entries = get_memos2(memo_list, SORT_ASCENDING, 2, 2, 1, CATEGORY_ALL);
 
    /* Start by clearing existing entry */
    memo_clear_details();
@@ -1054,7 +1054,7 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
    show_priv = show_privates(GET_PRIVATES);
 
-   for (temp_memo = memo_list; temp_memo; temp_memo=temp_memo->next) {
+   for (temp_memo = *memo_list; temp_memo; temp_memo=temp_memo->next) {
       if ( ((temp_memo->mmemo.attrib & 0x0F) != category) &&
 	  category != CATEGORY_ALL) {
 	 continue;
@@ -1067,7 +1067,7 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    }
 
    entries_shown=0;
-   for (temp_memo = memo_list; temp_memo; temp_memo=temp_memo->next) {
+   for (temp_memo = *memo_list; temp_memo; temp_memo=temp_memo->next) {
       if ( ((temp_memo->mmemo.attrib & 0x0F) != category) &&
 	  category != CATEGORY_ALL) {
 	 continue;
@@ -1196,7 +1196,7 @@ int memo_clist_redraw()
 
    line_num = clist_row_selected;
 
-   memo_update_clist(clist, category_menu1, glob_memo_list, memo_category, TRUE);
+   memo_update_clist(clist, category_menu1, &glob_memo_list, memo_category, TRUE);
 
    gtk_clist_select_row(GTK_CLIST(clist), line_num, 0);
    cb_clist_selection(clist, line_num, 0, (gpointer)455, NULL);
@@ -1245,7 +1245,7 @@ int memo_refresh()
    } else {
       index=find_sorted_cat(memo_category)+1;
    }
-   memo_update_clist(clist, category_menu1, glob_memo_list, memo_category, TRUE);
+   memo_update_clist(clist, category_menu1, &glob_memo_list, memo_category, TRUE);
    if (index<0) {
       jp_logf(JP_LOG_WARN, "Category not legal\n");
    } else {	 

@@ -45,6 +45,6 @@ int todo_export(GtkWidget *window);
 
 /* I only export this for datebook, don't use this */
 void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
-		       ToDoList *todo_list, int category, int main);
+		       ToDoList **todo_list, int category, int main);
 
 #endif

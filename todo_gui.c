@@ -85,7 +85,7 @@ static int record_changed;
 static int clist_hack;
 
 void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
-		       ToDoList *todo_list, int category, int main);
+		       ToDoList **todo_list, int category, int main);
 int todo_clear_details();
 int todo_clist_redraw();
 static void connect_changed_signals(int con_or_dis);
@@ -807,7 +807,7 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 
 static void cb_todo_update_clist(GtkWidget *clist, int category)
 {
-   todo_update_clist(clist, NULL, export_todo_list, category, FALSE);
+   todo_update_clist(clist, NULL, &export_todo_list, category, FALSE);
 }
 
 
@@ -921,7 +921,7 @@ static void cb_category(GtkWidget *item, int selection)
       todo_category = selection;
       jp_logf(JP_LOG_DEBUG, "todo_category = %d\n",todo_category);
       todo_clear_details();
-      todo_update_clist(clist, category_menu1, glob_todo_list, todo_category, TRUE);
+      todo_update_clist(clist, category_menu1, &glob_todo_list, todo_category, TRUE);
    }
 }
 
@@ -1430,7 +1430,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 
 
 void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
-		       ToDoList *todo_list, int category, int main)
+		       ToDoList **todo_list, int category, int main)
 {
    int num_entries, entries_shown, i;
    int row_count;
@@ -1460,10 +1460,10 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       gtk_clist_set_row_data(GTK_CLIST(clist), i, NULL);
    }
 
-   free_ToDoList(&todo_list);
+   free_ToDoList(todo_list);
 
    /* Need to get all records including private ones for the tooltips calculation */
-   num_entries = get_todos2(&todo_list, SORT_ASCENDING, 2, 2, 1, 1, CATEGORY_ALL);
+   num_entries = get_todos2(todo_list, SORT_ASCENDING, 2, 2, 1, 1, CATEGORY_ALL);
 
    /* Start by clearing existing entry if in main window */
    if (main) {
@@ -1487,7 +1487,7 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
    entries_shown=0;
    show_priv = show_privates(GET_PRIVATES);
-   for (temp_todo = todo_list, i=0; temp_todo; temp_todo=temp_todo->next) {
+   for (temp_todo = *todo_list, i=0; temp_todo; temp_todo=temp_todo->next) {
       if ( ((temp_todo->mtodo.attrib & 0x0F) != category) &&
 	  category != CATEGORY_ALL) {
 	 continue;
@@ -1694,7 +1694,7 @@ int todo_clist_redraw()
 
    line_num = clist_row_selected;
 
-   todo_update_clist(clist, category_menu1, glob_todo_list, todo_category, TRUE);
+   todo_update_clist(clist, category_menu1, &glob_todo_list, todo_category, TRUE);
 
    /* Don't select the checkbox column, it will get (un)checked */
    gtk_clist_select_row(GTK_CLIST(clist), line_num, TODO_PRIORITY_COLUMN);
@@ -1744,7 +1744,7 @@ int todo_refresh()
    } else {
       index=find_sorted_cat(todo_category)+1;
    }
-   todo_update_clist(clist, category_menu1, glob_todo_list, todo_category, TRUE);
+   todo_update_clist(clist, category_menu1, &glob_todo_list, todo_category, TRUE);
    if (index<0) {   
       jp_logf(JP_LOG_WARN, "Category not legal\n");
    } else {
