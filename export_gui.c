@@ -136,7 +136,7 @@ int export_browse(int pref_export)
  */
 
 static GtkWidget *save_as_entry;
-static GtkWidget *export_radio_type[3];
+static GtkWidget *export_radio_type[10];
 static int glob_export_type;
 
 static gboolean cb_export_destroy(GtkWidget *widget)
@@ -239,8 +239,9 @@ int export_gui(int w, int h, int x, int y,
    jp_logf(JP_LOG_DEBUG, "export_gui()\n");
 
    export_category = CATEGORY_ALL;
-   glob_export_type=EXPORT_TYPE_TEXT;
 
+   /* Set the export type to the first type available */
+   glob_export_type = type_int[0];
    glob_cb_export_menu = cb_export_menu;
    glob_cb_export_done = cb_export_done;
    glob_cb_export_ok = cb_export_ok;
