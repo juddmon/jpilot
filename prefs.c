@@ -96,7 +96,8 @@ static prefType glob_prefs[NUM_PREFS] = {
      {"datebook_todo_pane", INTTYPE, INTTYPE, 350, NULL, 0},
      {"datebook_todo_show", INTTYPE, INTTYPE, 0, NULL, 0},
      {"todo_hide_not_due", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"todo_completion_date", INTTYPE, INTTYPE, 0, NULL, 0}
+     {"todo_completion_date", INTTYPE, INTTYPE, 0, NULL, 0},
+     {"install_path", CHARTYPE, CHARTYPE, 0, NULL, 0},
 };
 
 struct name_list {

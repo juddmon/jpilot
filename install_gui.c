@@ -24,6 +24,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include "utils.h"
+#include "prefs.h"
 #include "log.h"
 
 
@@ -115,8 +116,30 @@ static void
   cb_quit(GtkWidget *widget,
 	   gpointer   data)
 {
+   const char *sel;
+   char dir[MAX_PREF_VALUE+2];
+   int i;
+
    jp_logf(JP_LOG_DEBUG, "Quit\n");
+
+   sel = gtk_file_selection_get_filename(GTK_FILE_SELECTION(data));
+   strncpy(dir, sel, MAX_PREF_VALUE);
+   dir[MAX_PREF_VALUE]='\0';
+   i=strlen(dir)-1;
+   if (i<0) i=0;
+   if (dir[i]!='/') {
+      for (i=strlen(dir); i>=0; i--) {
+	 if (dir[i]=='/') {
+	    dir[i+1]='\0';
+	    break;
+	 }
+      }
+   }
+
+   set_pref(PREF_INSTALL_PATH, 0, dir, TRUE);
+
    filew = NULL;
+
    gtk_widget_destroy(data);
 }
 
@@ -219,6 +242,7 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y)
    GtkWidget *button;
    GtkWidget *label;
    char temp[256];
+   const char *svalue;
    gchar *titles[] = {"Files to be installed"
    };
 
@@ -237,6 +261,11 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y)
 
    gtk_window_set_default_size(GTK_WINDOW(filew), w, h);
    gtk_widget_set_uposition(filew, x, y);
+
+   get_pref(PREF_INSTALL_PATH, NULL, &svalue);
+   if (svalue && svalue[0]) {
+      gtk_file_selection_set_filename(GTK_FILE_SELECTION(filew), svalue);
+   }
 
    gtk_window_set_modal(GTK_WINDOW(filew), TRUE);
    gtk_window_set_transient_for(GTK_WINDOW(filew), GTK_WINDOW(main_window));
