@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.31 2004/12/20 15:58:55 rousseau Exp $ */
+/* $Id: keyring.c,v 1.32 2005/01/02 16:49:42 rousseau Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -1058,6 +1058,12 @@ static void cb_category(GtkWidget *item, unsigned int value)
 
    switch (menu) {
     case KEYRING_CAT1:
+      // remember the previously used category
+      for (old_category=0; old_category<NUM_KEYRING_CAT_ITEMS; old_category++) {
+	 if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menu_item_category1[old_category])))
+	    break;
+      }
+
       b=dialog_save_changed_record(clist, record_changed);
       if (b==DIALOG_SAID_1) {
 	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
@@ -1717,10 +1723,6 @@ int plugin_gui_cleanup() {
       plugin_last_time = time(NULL);
    }
    plugin_active = FALSE;
-   for (old_category=0; old_category<NUM_KEYRING_CAT_ITEMS; old_category++) {
-      if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menu_item_category1[old_category])))
-	 break;
-   }
 
    return EXIT_SUCCESS;
 }
