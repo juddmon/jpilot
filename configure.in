@@ -62,7 +62,7 @@ AC_SUBST(ccoptions)
 dnl ******************************
 dnl * start gettext
 dnl ******************************
-AC_PROG_INTLTOOL
+AC_PROG_INTLTOOL()
 
 dnl Set of available languages
 ALL_LINGUAS="ca cs da de es fr it ja nl no ru sv tr vi zh_CN zh_TW"
@@ -222,36 +222,16 @@ int main()
 fi
 
 dnl *************************
-dnl * Check pilot-link version for USB support, etc.
+dnl * Check pilot-link pi-version.h
 dnl *************************
-dnl FIXME - There has to be a better way to do this
-usb=no;
+
+AC_MSG_CHECKING(pilot-link version )
 
 dnl ** save CFLAGS
 save_CFLAGS="$CFLAGS"
 CFLAGS="$CFLAGS $PILOT_FLAGS"
 save_LIBS="$LIBS"
 LIBS="$LIBS $PILOT_LIBS"
-
-AC_MSG_CHECKING(pilot-link version )
-
-AC_TRY_COMPILE([#include <pi-version.h>], [
-#if PILOT_LINK_VERSION==0
-# if PILOT_LINK_MAJOR==11
-#  if PILOT_LINK_MINOR==0
-#   error 0.11.0 is not compatible with J-Pilot
-#  endif
-#  if PILOT_LINK_MINOR==1
-#   error 0.11.1 is not compatible with J-Pilot
-#  endif
-#  if PILOT_LINK_MINOR==2
-#   error 0.11.2 is not compatible with J-Pilot
-#  endif
-# endif
-#endif
-], ,
- AC_MSG_ERROR([pilot-link versions 0.11.0 - 0.11.2 are not compatible with J-Pilot])
-)
 
 dnl *** check for pi-version.h
 AC_TRY_COMPILE([#include <pi-version.h>], [
@@ -260,43 +240,95 @@ AC_TRY_COMPILE([#include <pi-version.h>], [
  AC_MSG_ERROR([pilot-link header pi-version.h not found])
 )
 
-AC_TRY_COMPILE([#include <pi-version.h>], [
-#if PILOT_LINK_VERSION==0
-# if PILOT_LINK_MAJOR < 10
-#  error no usb, ok for serial or visor use
-# endif
-#endif
-], try_again=yes,
-   AC_MSG_RESULT([older than 0.10.0 ... USB will NOT be enabled])
-)
 
-if test "x$try_again" = "xyes"; then
-AC_TRY_COMPILE([#include <pi-version.h>], [
-int main()
-{
-#if PILOT_LINK_VERSION==0
-# if PILOT_LINK_MAJOR > 9
-#  error good pilot-link version
-# endif
-#endif
-}
-], AC_MSG_RESULT([Uncertain ... USB will be enabled]);
-   usb=yes
- , AC_MSG_RESULT([0.10.0 or newer... USB will be enabled]);
-   usb=yes
-)
+dnl *****
+dnl * Pilot-link version variations, USB support, 12.0, etc.
+dnl *****
+
+usb=no;
+pl12=no;
+pl_version_check_done=no;
+
+pl_version=`grep PILOT_LINK_VERSION "$pilot_incl/pi-version.h" | \
+cut -d " " -f 3`
+pl_major=`grep PILOT_LINK_MAJOR "$pilot_incl/pi-version.h" | \
+cut -d " " -f 3`
+pl_minor=`grep PILOT_LINK_MINOR "$pilot_incl/pi-version.h" | \
+cut -d " " -f 3`
+AC_MSG_RESULT([pi-version indicates $pl_version.$pl_major.$pl_minor])
+
+dnl *** check for pilot-link 0.12 and up
+if test $pl_version -eq 0 ; then
+   if test $pl_major -ge 12 ; then
+      pl12=yes
+      usb=yes
+      pl_version_check_done=yes;
+      AC_MSG_RESULT([pilot-link has USB])
+      AC_MSG_RESULT([pilot-link has card support (>12.0)])
+   fi
 fi
+
+dnl *** check for pilot-link 0.11
+dnl *** check for broken pilot-link versions
+if test "x$pl_version_check_done" = "xno"; then
+   if test $pl_version -eq 0 ; then
+      if test $pl_major -eq 11 ; then
+         if test $pl_minor -eq 0 ; then
+            AC_MSG_ERROR([pilot-link versions 0.11.0 - 0.11.2 are not compatible with J-Pilot])
+         fi
+         if test $pl_minor -eq 1 ; then
+            AC_MSG_ERROR([pilot-link versions 0.11.0 - 0.11.2 are not compatible with J-Pilot])
+         fi
+         if test $pl_minor -eq 2 ; then
+            AC_MSG_ERROR([pilot-link versions 0.11.0 - 0.11.2 are not compatible with J-Pilot])
+         fi
+         usb=yes
+         pl_version_check_done=yes;
+         AC_MSG_RESULT([pilot-link has USB])
+      fi
+   fi
+fi
+
+dnl *** check for pilot-link 0.10
+dnl *** check for broken pilot-link versions
+if test "x$pl_version_check_done" = "xno"; then
+   if test $pl_version -eq 0 ; then
+      if test $pl_major -eq 10 ; then
+         usb=yes
+         pl_version_check_done=yes;
+         AC_MSG_RESULT([pilot-link has USB])
+         AC_MSG_RESULT([pilot-link 0.10.x is not recommended])
+      fi
+   fi
+fi
+
+dnl *** Check for pilot-link 0.9.0 or older
+if test "x$pl_version_check_done" = "xno"; then
+   if test $pl_version -eq 0 ; then
+      if test $pl_major -lt 10 ; then
+         AC_MSG_RESULT([older than 0.10.0 ... USB will NOT be enabled])
+         AC_MSG_RESULT([This should be ok for old USB visors])
+         pl_version_check_done=yes;
+      fi
+   fi
+fi
+
 
 if test "x$usb" = "xyes"; then
    AC_DEFINE(USB_PILOT_LINK, 1, [ usb support ])
 fi
 
+if test "x$pl12" = "xyes"; then
+   AC_DEFINE(PILOT_LINK_0_12, 1, [ pl-0.12 support ])
+fi
+
 CFLAGS="$save_CFLAGS"
 LIBS="$save_LIBS"
 
-   dnl ******************************
-   dnl * End pilot-links tests
-   dnl ******************************
+dnl ******************************
+dnl * End pilot-links tests
+dnl ******************************
+
 
 dnl ******************************
 dnl * Enable/Disable features
@@ -504,12 +536,7 @@ echo "pilot-link headers.....................   $pilot_incl"
 echo "NLS support (foreign languages)........   $USE_NLS"
 echo "USB support enabled....................   $usb"
 echo "dialer support.........................   $dialer"
-pl_version=`grep PILOT_LINK_VERSION "$pilot_incl/pi-version.h" | \
-cut -d " " -f 3`
-pl_major=`grep PILOT_LINK_MAJOR "$pilot_incl/pi-version.h" | \
-cut -d " " -f 3`
-pl_minor=`grep PILOT_LINK_MINOR "$pilot_incl/pi-version.h" | \
-cut -d " " -f 3`
+echo "pilot-link 0.12 support................   $pl12"
 echo "Pilot-link version found...............   $pl_version.$pl_major.$pl_minor"
 echo
 echo "Now type make to compile"
