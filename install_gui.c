@@ -105,7 +105,10 @@ int install_append_line(const char *line)
 static gboolean cb_destroy(GtkWidget *widget)
 {
    filew = NULL;
-   return FALSE;
+
+   gtk_main_quit();
+
+   return TRUE;
 }
 
 static void
@@ -210,7 +213,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    return;
 }
 
-int install_gui(int w, int h, int x, int y)
+int install_gui(GtkWidget *main_window, int w, int h, int x, int y)
 {
    GtkWidget *scrolled_window;
    GtkWidget *button;
@@ -234,6 +237,9 @@ int install_gui(int w, int h, int x, int y)
 
    gtk_window_set_default_size(GTK_WINDOW(filew), w, h);
    gtk_widget_set_uposition(filew, x, y);
+
+   gtk_window_set_modal(GTK_WINDOW(filew), TRUE);
+   gtk_window_set_transient_for(GTK_WINDOW(filew), GTK_WINDOW(main_window));
 
    gtk_file_selection_hide_fileop_buttons((gpointer) filew);
 
@@ -301,6 +307,8 @@ int install_gui(int w, int h, int x, int y)
    gtk_widget_show(filew);
 
    update_clist();
+
+   gtk_main();
 
    return 0;
 }

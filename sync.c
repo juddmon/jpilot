@@ -1312,8 +1312,7 @@ void move_removed_apps(GList *file_list)
 
 /*
  * Fetch the databases from the palm if modified
- */
-/*
+ *
  * Be sure to call free_file_name_list(&file_list); before returning from
  * anywhere in this function.
  */
@@ -1796,7 +1795,8 @@ int sync_remove_r(char *full_path)
 	 if (len < 4) {
 	    continue;
 	 }
-	 strcpy(last4, dirent->d_name+len-4);
+	 strncpy(last4, dirent->d_name+len-4, 4);
+	 last4[4]='\0';
 	 if ((strcmp(last4, ".pdb")==0) || 
 	     (strcmp(last4, ".prc")==0) ||
 	     (strcmp(last4, ".pqa")==0)) {
@@ -2527,7 +2527,7 @@ int sync_categories(char *DB_name, int sd,
       return -1;
    }
    r = pi_file_get_app_info(pf, &Papp_info, &size_Papp_info);
-   if (size_Papp_info >= 0) {
+   if (size_Papp_info <= 0) {
       jp_logf(JP_LOG_WARN, _("%s:%d Error getting app info %s\n"), __FILE__, __LINE__, full_name);
       return -1;
    }

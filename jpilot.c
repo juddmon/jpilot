@@ -35,6 +35,7 @@
 #ifdef HAVE_LOCALE_H
 #include <locale.h>
 #endif
+#include <sys/stat.h>
 
 #include <pi-version.h>
 #include <pi-datebook.h>
@@ -119,6 +120,7 @@ int pipe_from_parent, pipe_to_child;
 GtkWidget *sync_window = NULL;
 
 static void delete_event(GtkWidget *widget, GdkEvent *event, gpointer data);
+void install_gui_and_size(GtkWidget *main_window);
 
 /*
  * Parses the -geometry command line parameter
@@ -711,6 +713,20 @@ void cb_app_button(GtkWidget *widget, gpointer data)
 
 void cb_sync(GtkWidget *widget, unsigned int flags)
 {
+   char file[300];
+   char home_dir[300];
+   struct stat buf;
+
+   /* If there are files to be installed, ask the user right before sync */
+   get_home_file_name("", home_dir, 298);
+   g_snprintf(file, 298, "%s/"EPN"_to_install", home_dir);
+
+   if (!stat(file, &buf)) {
+      if (buf.st_size > 0) {
+	 install_gui_and_size(window);
+      }
+   }
+
    setup_sync(flags);
    return;
 }
@@ -958,11 +974,9 @@ void cb_about(GtkWidget *widget, gpointer data)
    }
 }
 
-void cb_install_gui(GtkWidget *widget, gpointer data)
+void install_gui_and_size(GtkWidget *main_window)
 {
    int w, h, x, y;
-
-   jp_logf(JP_LOG_DEBUG, "cb_install_gui()\n");
 
    gdk_window_get_size(window->window, &w, &h);
    gdk_window_get_root_origin(window->window, &x, &y);
@@ -970,7 +984,14 @@ void cb_install_gui(GtkWidget *widget, gpointer data)
    w = w/2;
    x+=40;
 
-   install_gui(w, h, x, y);
+   install_gui(main_window, w, h, x, y);
+}
+
+void cb_install_gui(GtkWidget *widget, gpointer data)
+{
+   jp_logf(JP_LOG_DEBUG, "cb_install_gui()\n");
+   
+   install_gui_and_size(window);
 }
 
 void get_main_menu(GtkWidget  *window,

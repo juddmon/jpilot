@@ -294,9 +294,8 @@ int jp_copy_file(char *src, char *dest);
 void cb_search_gui(GtkWidget *widget, gpointer data);
 
 /*install_gui.c */
-int install_gui(int w, int h, int x, int y);
+int install_gui(GtkWidget *main_window, int w, int h, int x, int y);
 /*install_gui.c */
-//gtk1 int install_append_line(char *line);
 int install_append_line(const char *line);
 
 /*import_gui.c */

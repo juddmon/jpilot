@@ -23,6 +23,8 @@
 #include <dirent.h>
 #include <stdio.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 
 #include "utils.h"
@@ -43,14 +45,15 @@ static gboolean cb_restore_destroy(GtkWidget *widget)
 }
 
 static void
-cb_restore_ok(GtkWidget *widget,
-	     gpointer   data)
+cb_restore_ok(GtkWidget *widget, gpointer data)
 {
    GList *list, *temp_list;
    char *text;
-   char file[300];
+   char file[300], backup_file[300];
    char home_dir[300];
-
+   struct stat buf, backup_buf;
+   int r1, r2;
+   
    list=GTK_CLIST(restore_clist)->selection;
 
    get_home_file_name("", home_dir, 255);
@@ -63,10 +66,33 @@ cb_restore_ok(GtkWidget *widget,
    for (temp_list=list; temp_list; temp_list = temp_list->next) {
       gtk_clist_get_text(GTK_CLIST(restore_clist), (int)temp_list->data, 0, &text);
       jp_logf(JP_LOG_DEBUG, "row %ld [%s]\n", (long) temp_list->data, text);
-      g_snprintf(file, 298, "%s/backup/%s", home_dir, text);
-      install_append_line(file);
+      /* Look for the file in the JPILOT_HOME and JPILOT_HOME/backup.
+       * Restore the newest modified date one, or the only one.
+       */
+      g_snprintf(file, 298, "%s/%s", home_dir, text);
+      g_snprintf(backup_file, 298, "%s/backup/%s", home_dir, text);
+      r1 = stat(file, &buf);
+      r2 = stat(backup_file, &backup_buf);
+      if ((!r1) && (!r2)) {
+	 /* found in JPILOT_HOME and JPILOT_HOME/backup */
+	 if (buf.st_mtime > backup_buf.st_mtime) {
+	    jp_logf(JP_LOG_DEBUG, "Restore: home and backup using home file %s\n", text);
+	    install_append_line(file);
+	 } else {
+	    jp_logf(JP_LOG_DEBUG, "Restore: home and backup using home/backup file %s\n", text);
+	    install_append_line(backup_file);
+	 }
+      } else if (!r1) {
+	 /* only found in JPILOT_HOME */
+	 install_append_line(file);
+	 jp_logf(JP_LOG_DEBUG, "Restore: using home file %s\n", text);
+      } else if (!r2) {
+	 /* only found in JPILOT_HOME/backup */
+	 jp_logf(JP_LOG_DEBUG, "Restore: using home/backup file %s\n", text);
+	 install_append_line(backup_file);
+      }
    }
-
+   
    setup_sync(SYNC_NO_PLUGINS|SYNC_OVERRIDE_USER|SYNC_RESTORE);
 
    gtk_widget_destroy(data);
@@ -79,17 +105,20 @@ cb_restore_quit(GtkWidget *widget,
    gtk_widget_destroy(data);
 }
 
-static int populate_clist()
+/*
+ * path is the dir to open
+ * check_for_dups will check the clist and not add if its a duplicate
+ * check_exts will not add if its not a pdb, prc, or pqa.
+ */
+static int populate_clist_sub(char *path, int check_for_dups, int check_exts)
 {
    char *row_text[1];
    DIR *dir;
    struct dirent *dirent;
-   char path[256];
-   int i, num;
+   char last4[8];
+   char *text;
+   int i, num, len, found;
 
-   get_home_file_name("backup", path, 255);
-
-   cleanup_path(path);
    jp_logf(JP_LOG_DEBUG, "opening dir %s\n", path);
    dir = opendir(path);
    num = 0;
@@ -98,7 +127,8 @@ static int populate_clist()
    } else {
       for (i=0; (dirent = readdir(dir)); i++) {
 	 if (i>1000) {
-	    jp_logf(JP_LOG_WARN, "load_plugins_sub1(): infinite loop\n");
+	    jp_logf(JP_LOG_WARN, "populate_clist_sub(): infinite loop\n");
+	    closedir(dir);
 	    return -1;
 	 }
 	 if (dirent->d_name[0]=='.') {
@@ -108,16 +138,59 @@ static int populate_clist()
 	    jp_logf(JP_LOG_DEBUG, "skipping %s\n", dirent->d_name);
 	    continue;
 	 }
+	 if (check_exts) {
+	    len = strlen(dirent->d_name);
+	    if (len < 4) {
+	       continue;
+	    }
+	    strncpy(last4, dirent->d_name+len-4, 4);
+	    last4[4]='\0';
+	    if (strcmp(last4, ".pdb") &&
+		strcmp(last4, ".prc") &&
+		strcmp(last4, ".pqa")) {
+	       continue;
+	    }
+	 }
+
+	 if (check_for_dups) {
+	    found=0;
+	    for (i=0; i<GTK_CLIST(restore_clist)->rows; i++) {
+	       gtk_clist_get_text(GTK_CLIST(restore_clist), i, 0, &text);
+	       if (!(strcmp(dirent->d_name, text))) {
+		  found=1;
+		  break;
+	       }
+	    }
+	    if (found) continue;
+	 }
 	 row_text[0]=dirent->d_name;
 	 gtk_clist_append(GTK_CLIST(restore_clist), row_text);
+	 num++;
       }
-      num = i;
       closedir(dir);
    }
-   for (i=0; i<num; i++) {
+
+   return num;
+}
+
+
+static int populate_clist()
+{
+   char path[256];
+   int i;
+
+   get_home_file_name("backup", path, 255);
+   cleanup_path(path);
+   populate_clist_sub(path, 0, 0);
+
+   get_home_file_name("", path, 255);
+   cleanup_path(path);
+   populate_clist_sub(path, 1, 1);
+
+   for (i=0; i<GTK_CLIST(restore_clist)->rows; i++) {
       gtk_clist_select_row(GTK_CLIST(restore_clist), i, 0);
    }
-
+   
    return 0;
 }
 
