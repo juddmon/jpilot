@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: jpilot-1.99pre\n"
-"POT-Creation-Date: 2002-10-07 20:50-0400\n"
+"POT-Creation-Date: 2002-10-13 23:35-0400\n"
 "PO-Revision-Date: 2001-02-06 09:10+0200\n"
 "Last-Translator: Jiri Rubes <jr@slad.cz>\n"
 "Language-Team: CS <cs@li.org>\n"
@@ -231,7 +231,7 @@ msgstr "Hledat"
 # datebook_gui.c:3370 memo_gui.c:1242 todo_gui.c:1571
 #. Delete Button
 #: Expense/expense.c:1240 KeyRing/keyring.c:1347 address_gui.c:1697
-#: datebook_gui.c:3559 memo_gui.c:1269 todo_gui.c:1611
+#: datebook_gui.c:3584 memo_gui.c:1269 todo_gui.c:1611
 msgid "Delete"
 msgstr "Smazat"
 
@@ -245,7 +245,7 @@ msgstr "Smazat"
 # datebook_gui.c:3377 memo_gui.c:1248 todo_gui.c:1577
 #. Create "Copy" button
 #: Expense/expense.c:1246 KeyRing/keyring.c:1353 address_gui.c:1704
-#: datebook_gui.c:3566 memo_gui.c:1275 todo_gui.c:1617
+#: datebook_gui.c:3591 memo_gui.c:1275 todo_gui.c:1617
 msgid "Copy"
 msgstr "Kopírovat"
 
@@ -259,7 +259,7 @@ msgstr "Kopírovat"
 # datebook_gui.c:3384 memo_gui.c:1254 todo_gui.c:1583
 #. Create "New" button
 #: Expense/expense.c:1252 KeyRing/keyring.c:1359 address_gui.c:1711
-#: datebook_gui.c:3573 memo_gui.c:1281 todo_gui.c:1623
+#: datebook_gui.c:3598 memo_gui.c:1281 todo_gui.c:1623
 msgid "New Record"
 msgstr "Nový záznam"
 
@@ -273,7 +273,7 @@ msgstr "Nový záznam"
 # datebook_gui.c:3391 memo_gui.c:1260 todo_gui.c:1589
 #. Create "Add Record" button
 #: Expense/expense.c:1258 KeyRing/keyring.c:1365 address_gui.c:1717
-#: datebook_gui.c:3580 memo_gui.c:1287 todo_gui.c:1629
+#: datebook_gui.c:3605 memo_gui.c:1287 todo_gui.c:1629
 msgid "Add Record"
 msgstr "Pøidat záznam"
 
@@ -287,7 +287,7 @@ msgstr "Pøidat záznam"
 # datebook_gui.c:3400 memo_gui.c:1268 todo_gui.c:1597
 #. Create "apply changes" button
 #: Expense/expense.c:1266 KeyRing/keyring.c:1373 address_gui.c:1726
-#: datebook_gui.c:3589 memo_gui.c:1295 todo_gui.c:1637
+#: datebook_gui.c:3614 memo_gui.c:1295 todo_gui.c:1637
 msgid "Apply Changes"
 msgstr "Provést zmìny"
 
@@ -297,7 +297,7 @@ msgstr "Provést zmìny"
 # address_gui.c:1728 datebook_gui.c:3451 memo_gui.c:1294 todo_gui.c:1660
 # address_gui.c:1728 datebook_gui.c:3451 memo_gui.c:1294 todo_gui.c:1660
 #. Private check box
-#: address_gui.c:1742 datebook_gui.c:3640 memo_gui.c:1312 todo_gui.c:1700
+#: address_gui.c:1742 datebook_gui.c:3665 memo_gui.c:1312 todo_gui.c:1700
 msgid "Private"
 msgstr "Privátní"
 
@@ -339,7 +339,7 @@ msgstr "Jiné"
 # address_gui.c:1772 datebook_gui.c:1067 datebook_gui.c:1324 utils.c:2175
 # address_gui.c:1772 datebook_gui.c:1067 datebook_gui.c:1324 utils.c:2175
 #. Page 3
-#: address_gui.c:1786 datebook_gui.c:1088 datebook_gui.c:1354 utils.c:2200
+#: address_gui.c:1786 datebook_gui.c:1088 datebook_gui.c:1365 utils.c:2200
 msgid "All"
 msgstr "V¹e"
 
@@ -373,7 +373,7 @@ msgstr ""
 # datebook_gui.c:3433
 # datebook_gui.c:3433
 # datebook_gui.c:3433
-#: alarms.c:244 datebook_gui.c:3622
+#: alarms.c:244 datebook_gui.c:3647
 msgid "Minutes"
 msgstr "Minut"
 
@@ -382,7 +382,7 @@ msgstr "Minut"
 # datebook_gui.c:3437
 # datebook_gui.c:3437
 # datebook_gui.c:3437
-#: alarms.c:246 datebook_gui.c:3626
+#: alarms.c:246 datebook_gui.c:3651
 msgid "Hours"
 msgstr "Hodin"
 
@@ -421,7 +421,7 @@ msgstr "Naplánováno"
 # datebook_gui.c:3332
 # datebook_gui.c:3332
 # datebook_gui.c:3332
-#: alarms.c:520 datebook_gui.c:3521
+#: alarms.c:520 datebook_gui.c:3546
 msgid "Appointment"
 msgstr "Naplánováno"
 
@@ -433,8 +433,8 @@ msgstr "Naplánováno"
 # datebook_gui.c:3181
 # datebook_gui.c:179 datebook_gui.c:186 datebook_gui.c:3174
 # datebook_gui.c:3181
-#: datebook_gui.c:181 datebook_gui.c:188 datebook_gui.c:3361
-#: datebook_gui.c:3368
+#: datebook_gui.c:181 datebook_gui.c:188 datebook_gui.c:3386
+#: datebook_gui.c:3393
 msgid "Su"
 msgstr "Ne"
 
@@ -443,7 +443,7 @@ msgstr "Ne"
 # datebook_gui.c:180 datebook_gui.c:3175
 # datebook_gui.c:180 datebook_gui.c:3175
 # datebook_gui.c:180 datebook_gui.c:3175
-#: datebook_gui.c:182 datebook_gui.c:3362
+#: datebook_gui.c:182 datebook_gui.c:3387
 msgid "Mo"
 msgstr "Po"
 
@@ -452,7 +452,7 @@ msgstr "Po"
 # datebook_gui.c:181 datebook_gui.c:3176
 # datebook_gui.c:181 datebook_gui.c:3176
 # datebook_gui.c:181 datebook_gui.c:3176
-#: datebook_gui.c:183 datebook_gui.c:3363
+#: datebook_gui.c:183 datebook_gui.c:3388
 msgid "Tu"
 msgstr "Út"
 
@@ -461,7 +461,7 @@ msgstr "Út"
 # datebook_gui.c:182 datebook_gui.c:3177
 # datebook_gui.c:182 datebook_gui.c:3177
 # datebook_gui.c:182 datebook_gui.c:3177
-#: datebook_gui.c:184 datebook_gui.c:3364
+#: datebook_gui.c:184 datebook_gui.c:3389
 msgid "We"
 msgstr "St"
 
@@ -479,7 +479,7 @@ msgstr "Èt"
 # datebook_gui.c:184 datebook_gui.c:3179
 # datebook_gui.c:184 datebook_gui.c:3179
 # datebook_gui.c:184 datebook_gui.c:3179
-#: datebook_gui.c:186 datebook_gui.c:3366
+#: datebook_gui.c:186 datebook_gui.c:3391
 msgid "Fr"
 msgstr "Pá"
 
@@ -488,7 +488,7 @@ msgstr "Pá"
 # datebook_gui.c:185 datebook_gui.c:3180
 # datebook_gui.c:185 datebook_gui.c:3180
 # datebook_gui.c:185 datebook_gui.c:3180
-#: datebook_gui.c:187 datebook_gui.c:3367
+#: datebook_gui.c:187 datebook_gui.c:3392
 msgid "Sa"
 msgstr "So"
 
@@ -530,7 +530,7 @@ msgstr "Procházet"
 # KeyRing/keyring.c:1105 datebook_gui.c:897 datebook_gui.c:1325
 # password.c:286 print_gui.c:336 utils.c:869
 #. Create a "Quit" button
-#: KeyRing/keyring.c:1128 datebook_gui.c:905 datebook_gui.c:1355
+#: KeyRing/keyring.c:1128 datebook_gui.c:905 datebook_gui.c:1366
 #: export_gui.c:334 password.c:374 print_gui.c:336 restore_gui.c:222
 #: utils.c:873
 msgid "Cancel"
@@ -553,7 +553,7 @@ msgstr "Hotovo"
 # datebook_gui.c:1073 datebook_gui.c:3561
 # datebook_gui.c:1073 datebook_gui.c:3561
 #. Create a "None" button
-#: datebook_gui.c:1094 datebook_gui.c:3764
+#: datebook_gui.c:1094 datebook_gui.c:3789
 msgid "None"
 msgstr "Nic"
 
@@ -585,7 +585,7 @@ msgstr "Konec dne"
 # weekview_gui.c:135
 # datebook_gui.c:1284 monthview_gui.c:346 monthview_gui.c:353 prefs.c:393
 # weekview_gui.c:135
-#: datebook_gui.c:1314 monthview_gui.c:348 monthview_gui.c:355 prefs.c:395
+#: datebook_gui.c:1316 monthview_gui.c:348 monthview_gui.c:355 prefs.c:395
 #: weekview_gui.c:135
 msgid "Sunday"
 msgstr "Nedìle"
@@ -595,7 +595,7 @@ msgstr "Nedìle"
 # datebook_gui.c:1285 monthview_gui.c:347 prefs.c:394 weekview_gui.c:136
 # datebook_gui.c:1285 monthview_gui.c:347 prefs.c:394 weekview_gui.c:136
 # datebook_gui.c:1285 monthview_gui.c:347 prefs.c:394 weekview_gui.c:136
-#: datebook_gui.c:1315 monthview_gui.c:349 prefs.c:396 weekview_gui.c:136
+#: datebook_gui.c:1317 monthview_gui.c:349 prefs.c:396 weekview_gui.c:136
 msgid "Monday"
 msgstr "Pondìlí"
 
@@ -604,7 +604,7 @@ msgstr "Pondìlí"
 # datebook_gui.c:1286 monthview_gui.c:348 weekview_gui.c:137
 # datebook_gui.c:1286 monthview_gui.c:348 weekview_gui.c:137
 # datebook_gui.c:1286 monthview_gui.c:348 weekview_gui.c:137
-#: datebook_gui.c:1316 monthview_gui.c:350 weekview_gui.c:137
+#: datebook_gui.c:1318 monthview_gui.c:350 weekview_gui.c:137
 msgid "Tuesday"
 msgstr "Úterý"
 
@@ -613,7 +613,7 @@ msgstr "Úterý"
 # datebook_gui.c:1287 monthview_gui.c:349 weekview_gui.c:138
 # datebook_gui.c:1287 monthview_gui.c:349 weekview_gui.c:138
 # datebook_gui.c:1287 monthview_gui.c:349 weekview_gui.c:138
-#: datebook_gui.c:1317 monthview_gui.c:351 weekview_gui.c:138
+#: datebook_gui.c:1319 monthview_gui.c:351 weekview_gui.c:138
 msgid "Wednesday"
 msgstr "Støeda"
 
@@ -622,7 +622,7 @@ msgstr "Støeda"
 # datebook_gui.c:1288 monthview_gui.c:350 weekview_gui.c:139
 # datebook_gui.c:1288 monthview_gui.c:350 weekview_gui.c:139
 # datebook_gui.c:1288 monthview_gui.c:350 weekview_gui.c:139
-#: datebook_gui.c:1318 monthview_gui.c:352 weekview_gui.c:139
+#: datebook_gui.c:1320 monthview_gui.c:352 weekview_gui.c:139
 msgid "Thursday"
 msgstr "Ètvrtek"
 
@@ -631,7 +631,7 @@ msgstr "Ètvrtek"
 # datebook_gui.c:1289 monthview_gui.c:351 weekview_gui.c:140
 # datebook_gui.c:1289 monthview_gui.c:351 weekview_gui.c:140
 # datebook_gui.c:1289 monthview_gui.c:351 weekview_gui.c:140
-#: datebook_gui.c:1319 monthview_gui.c:353 weekview_gui.c:140
+#: datebook_gui.c:1321 monthview_gui.c:353 weekview_gui.c:140
 msgid "Friday"
 msgstr "Pátek"
 
@@ -640,21 +640,21 @@ msgstr "Pátek"
 # datebook_gui.c:1290 monthview_gui.c:352 weekview_gui.c:141
 # datebook_gui.c:1290 monthview_gui.c:352 weekview_gui.c:141
 # datebook_gui.c:1290 monthview_gui.c:352 weekview_gui.c:141
-#: datebook_gui.c:1320 monthview_gui.c:354 weekview_gui.c:141
+#: datebook_gui.c:1322 monthview_gui.c:354 weekview_gui.c:141
 msgid "Saturday"
 msgstr "Sobota"
 
 # datebook_gui.c:1295
 # datebook_gui.c:1295
 # datebook_gui.c:1295
-#: datebook_gui.c:1325
+#: datebook_gui.c:1327
 msgid "4th"
 msgstr "4."
 
 # datebook_gui.c:1295
 # datebook_gui.c:1295
 # datebook_gui.c:1295
-#: datebook_gui.c:1325
+#: datebook_gui.c:1327
 msgid "Last"
 msgstr "Poslední"
 
@@ -662,7 +662,7 @@ msgstr "Poslední"
 # datebook_gui.c:1317
 # datebook_gui.c:1317
 #. ---------------------------
-#: datebook_gui.c:1347
+#: datebook_gui.c:1358
 msgid ""
 "This is a repeating event.\n"
 "Do you want to apply these\n"
@@ -678,7 +678,7 @@ msgstr ""
 # datebook_gui.c:1323
 # datebook_gui.c:1323
 # datebook_gui.c:1323
-#: datebook_gui.c:1353
+#: datebook_gui.c:1364
 msgid "Current"
 msgstr "Aktuální"
 
@@ -687,7 +687,7 @@ msgstr "Aktuální"
 # datebook_gui.c:1540
 # datebook_gui.c:1540
 # datebook_gui.c:1540
-#: datebook_gui.c:1589
+#: datebook_gui.c:1614
 msgid "none"
 msgstr "nic"
 
@@ -696,7 +696,7 @@ msgstr "nic"
 # datebook_gui.c:1541
 # datebook_gui.c:1541
 # datebook_gui.c:1541
-#: datebook_gui.c:1590
+#: datebook_gui.c:1615
 msgid "day"
 msgstr "den"
 
@@ -705,7 +705,7 @@ msgstr "den"
 # datebook_gui.c:1542
 # datebook_gui.c:1542
 # datebook_gui.c:1542
-#: datebook_gui.c:1591
+#: datebook_gui.c:1616
 msgid "week"
 msgstr "týden"
 
@@ -714,7 +714,7 @@ msgstr "týden"
 # datebook_gui.c:1543
 # datebook_gui.c:1543
 # datebook_gui.c:1543
-#: datebook_gui.c:1592
+#: datebook_gui.c:1617
 msgid "month"
 msgstr "mìsíc"
 
@@ -723,7 +723,7 @@ msgstr "mìsíc"
 # datebook_gui.c:1544
 # datebook_gui.c:1544
 # datebook_gui.c:1544
-#: datebook_gui.c:1593
+#: datebook_gui.c:1618
 msgid "year"
 msgstr "rok"
 
@@ -732,7 +732,7 @@ msgstr "rok"
 # datebook_gui.c:1771
 # datebook_gui.c:1771
 # datebook_gui.c:1771
-#: datebook_gui.c:1845
+#: datebook_gui.c:1870
 #, c-format
 msgid "You cannot have an appointment that repeats every %d %s(s)\n"
 msgstr "Nemù¾ete vlo¾it akci, která se opakuje ka¾dý %d. %s\n"
@@ -742,7 +742,7 @@ msgstr "Nemù¾ete vlo¾it akci, která se opakuje ka¾dý %d. %s\n"
 # datebook_gui.c:1780
 # datebook_gui.c:1780
 # datebook_gui.c:1780
-#: datebook_gui.c:1854
+#: datebook_gui.c:1879
 msgid ""
 "You can not have a weekly repeating appointment that doesn't repeat on any "
 "day of the week.\n"
@@ -756,7 +756,7 @@ msgstr ""
 # datebook_gui.c:1912
 # datebook_gui.c:1912
 #. This is a timeless event
-#: datebook_gui.c:1990
+#: datebook_gui.c:2015
 msgid "No Time"
 msgstr "Bez èasu"
 
@@ -771,8 +771,8 @@ msgstr "Bez èasu"
 # datebook_gui.c:2299 datebook_gui.c:3595 datebook_gui.c:3625
 # datebook_gui.c:3681 datebook_gui.c:3730 todo_gui.c:120 todo_gui.c:1651
 #. The No due date check box
-#: datebook_gui.c:2408 datebook_gui.c:3798 datebook_gui.c:3828
-#: datebook_gui.c:3884 datebook_gui.c:3933 todo_gui.c:123 todo_gui.c:1691
+#: datebook_gui.c:2433 datebook_gui.c:3823 datebook_gui.c:3853
+#: datebook_gui.c:3909 datebook_gui.c:3958 todo_gui.c:123 todo_gui.c:1691
 msgid "No Date"
 msgstr "Neurèen"
 
@@ -781,7 +781,7 @@ msgstr "Neurèen"
 # datebook_gui.c:3178
 # datebook_gui.c:3178
 # datebook_gui.c:3178
-#: datebook_gui.c:3365
+#: datebook_gui.c:3390
 msgid "RTh"
 msgstr "Èt"
 
@@ -791,7 +791,7 @@ msgstr "Èt"
 # datebook_gui.c:3250 datebook_gui.c:3563
 # datebook_gui.c:3250 datebook_gui.c:3563
 #. Make Weekview button
-#: datebook_gui.c:3442 datebook_gui.c:3766
+#: datebook_gui.c:3467 datebook_gui.c:3791
 msgid "Week"
 msgstr "Týden"
 
@@ -801,7 +801,7 @@ msgstr "Týden"
 # datebook_gui.c:3261 datebook_gui.c:3564
 # datebook_gui.c:3261 datebook_gui.c:3564
 #. Make Monthview button
-#: datebook_gui.c:3453 datebook_gui.c:3767
+#: datebook_gui.c:3478 datebook_gui.c:3792
 msgid "Month"
 msgstr "Mìsíc"
 
@@ -810,7 +810,7 @@ msgstr "Mìsíc"
 # datebook_gui.c:3276
 # datebook_gui.c:3276
 #. Make Category button
-#: datebook_gui.c:3466
+#: datebook_gui.c:3491
 msgid "Cats"
 msgstr "Kat."
 
@@ -819,7 +819,7 @@ msgstr "Kat."
 # datebook_gui.c:3331
 # datebook_gui.c:3331
 # datebook_gui.c:3331
-#: datebook_gui.c:3520
+#: datebook_gui.c:3545
 msgid "Time"
 msgstr "Èas"
 
@@ -828,7 +828,7 @@ msgstr "Èas"
 # datebook_gui.c:3418
 # datebook_gui.c:3418
 # datebook_gui.c:3418
-#: datebook_gui.c:3607
+#: datebook_gui.c:3632
 msgid "Alarm"
 msgstr "Budík"
 
@@ -837,7 +837,7 @@ msgstr "Budík"
 # datebook_gui.c:3439
 # datebook_gui.c:3439
 # datebook_gui.c:3439
-#: datebook_gui.c:3628
+#: datebook_gui.c:3653
 msgid "Days"
 msgstr "Dnù"
 
@@ -846,7 +846,7 @@ msgstr "Dnù"
 # datebook_gui.c:3462
 # datebook_gui.c:3462
 # datebook_gui.c:3462
-#: datebook_gui.c:3651
+#: datebook_gui.c:3676
 msgid "This Event has no particular time"
 msgstr "Tato akce nemá pøiøazen èas."
 
@@ -855,7 +855,7 @@ msgstr "Tato akce nemá pøiøazen èas."
 # datebook_gui.c:3470
 # datebook_gui.c:3470
 # datebook_gui.c:3470
-#: datebook_gui.c:3659
+#: datebook_gui.c:3684
 msgid "Starts on: "
 msgstr "Zaèátek: "
 
@@ -864,11 +864,11 @@ msgstr "Zaèátek: "
 # datebook_gui.c:3482
 # datebook_gui.c:3482
 # datebook_gui.c:3482
-#: datebook_gui.c:3671
+#: datebook_gui.c:3696
 msgid "Time:"
 msgstr "Èas: "
 
-#: datebook_gui.c:3748
+#: datebook_gui.c:3773
 msgid "DateBk Tags"
 msgstr ""
 
@@ -877,7 +877,7 @@ msgstr ""
 # datebook_gui.c:3562
 # datebook_gui.c:3562
 # datebook_gui.c:3562
-#: datebook_gui.c:3765
+#: datebook_gui.c:3790
 msgid "Day"
 msgstr "Den"
 
@@ -886,7 +886,7 @@ msgstr "Den"
 # datebook_gui.c:3565
 # datebook_gui.c:3565
 # datebook_gui.c:3565
-#: datebook_gui.c:3768
+#: datebook_gui.c:3793
 msgid "Year"
 msgstr "Rok"
 
@@ -896,7 +896,7 @@ msgstr "Rok"
 # datebook_gui.c:3569
 # datebook_gui.c:3569
 #. no repeat page for notebook
-#: datebook_gui.c:3772
+#: datebook_gui.c:3797
 msgid "This event will not repeat"
 msgstr "Tato akce se neopakuje"
 
@@ -910,8 +910,8 @@ msgstr "Tato akce se neopakuje"
 # datebook_gui.c:3714
 # datebook_gui.c:3579 datebook_gui.c:3611 datebook_gui.c:3667
 # datebook_gui.c:3714
-#: datebook_gui.c:3782 datebook_gui.c:3814 datebook_gui.c:3870
-#: datebook_gui.c:3917
+#: datebook_gui.c:3807 datebook_gui.c:3839 datebook_gui.c:3895
+#: datebook_gui.c:3942
 msgid "Frequency is Every"
 msgstr "Opakovat ka¾dý"
 
@@ -920,7 +920,7 @@ msgstr "Opakovat ka¾dý"
 # datebook_gui.c:3584
 # datebook_gui.c:3584
 # datebook_gui.c:3584
-#: datebook_gui.c:3787
+#: datebook_gui.c:3812
 msgid "Day(s)"
 msgstr "Den"
 
@@ -935,8 +935,8 @@ msgstr "Den"
 # datebook_gui.c:3587 datebook_gui.c:3619 datebook_gui.c:3675
 # datebook_gui.c:3722
 #. checkbutton
-#: datebook_gui.c:3790 datebook_gui.c:3822 datebook_gui.c:3878
-#: datebook_gui.c:3925
+#: datebook_gui.c:3815 datebook_gui.c:3847 datebook_gui.c:3903
+#: datebook_gui.c:3950
 msgid "End on"
 msgstr "Konec"
 
@@ -945,7 +945,7 @@ msgstr "Konec"
 # datebook_gui.c:3616
 # datebook_gui.c:3616
 # datebook_gui.c:3616
-#: datebook_gui.c:3819
+#: datebook_gui.c:3844
 msgid "Week(s)"
 msgstr "Týden"
 
@@ -954,7 +954,7 @@ msgstr "Týden"
 # datebook_gui.c:3632
 # datebook_gui.c:3632
 # datebook_gui.c:3632
-#: datebook_gui.c:3835
+#: datebook_gui.c:3860
 msgid "Repeat on Days:"
 msgstr "Opakovat ve dnech:"
 
@@ -963,7 +963,7 @@ msgstr "Opakovat ve dnech:"
 # datebook_gui.c:3672
 # datebook_gui.c:3672
 # datebook_gui.c:3672
-#: datebook_gui.c:3875
+#: datebook_gui.c:3900
 msgid "Month(s)"
 msgstr "Mìsíc"
 
@@ -972,7 +972,7 @@ msgstr "Mìsíc"
 # datebook_gui.c:3689
 # datebook_gui.c:3689
 # datebook_gui.c:3689
-#: datebook_gui.c:3892
+#: datebook_gui.c:3917
 msgid "Repeat by:"
 msgstr "Opakovat podle:"
 
@@ -981,7 +981,7 @@ msgstr "Opakovat podle:"
 # datebook_gui.c:3693
 # datebook_gui.c:3693
 # datebook_gui.c:3693
-#: datebook_gui.c:3896
+#: datebook_gui.c:3921
 msgid "Day of week"
 msgstr "Dne v týdnu"
 
@@ -990,7 +990,7 @@ msgstr "Dne v týdnu"
 # datebook_gui.c:3702
 # datebook_gui.c:3702
 # datebook_gui.c:3702
-#: datebook_gui.c:3905
+#: datebook_gui.c:3930
 msgid "Date"
 msgstr "Data"
 
@@ -999,7 +999,7 @@ msgstr "Data"
 # datebook_gui.c:3719
 # datebook_gui.c:3719
 # datebook_gui.c:3719
-#: datebook_gui.c:3922
+#: datebook_gui.c:3947
 msgid "Year(s)"
 msgstr "Rok"
 
@@ -1827,10 +1827,12 @@ msgstr "Synchronizovat memo32 (pedit32)"
 # jpilot.c:711
 # jpilot.c:711
 # jpilot.c:711
-#. Show sync Mañana check box
+#. TRANSLATOR: If your charset allows write "Ma~nana" (= n with tilde) in
+#. the translation
+#. Show sync Ma~nana check box
 #: prefs_gui.c:590
 #, fuzzy
-msgid "Sync Mañana"
+msgid "Sync Manana"
 msgstr "Pokraèovat"
 
 # prefs_gui.c:538
@@ -2616,9 +2618,11 @@ msgstr "Soubor není ve formátu todo.dat\n"
 msgid "No date"
 msgstr "Neurèen"
 
-#. Mañana check box
+#. TRANSLATOR: If your charset allows write "Ma~nana" (= n with tilde) in
+#. the translation
+#. Ma~nana check box
 #: todo_gui.c:1551
-msgid "Use Mañana database"
+msgid "Use Manana database"
 msgstr ""
 
 # todo_gui.c:1009

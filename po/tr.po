@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: jpilot 0.99.2\n"
-"POT-Creation-Date: 2002-10-07 20:50-0400\n"
+"POT-Creation-Date: 2002-10-13 23:35-0400\n"
 "PO-Revision-Date: 2002-04-03 17:10GMT\n"
 "Last-Translator: Eyüp Hakan Duran <hakan_duran@hotmail.com>\n"
 "Language-Team: Turkish <gnu-tr-u12a@lists.sourceforge.net>\n"
@@ -113,36 +113,36 @@ msgstr "Çabuk Bul"
 
 #. Delete Button
 #: Expense/expense.c:1240 KeyRing/keyring.c:1347 address_gui.c:1697
-#: datebook_gui.c:3559 memo_gui.c:1269 todo_gui.c:1611
+#: datebook_gui.c:3584 memo_gui.c:1269 todo_gui.c:1611
 msgid "Delete"
 msgstr "Sil"
 
 #. Create "Copy" button
 #: Expense/expense.c:1246 KeyRing/keyring.c:1353 address_gui.c:1704
-#: datebook_gui.c:3566 memo_gui.c:1275 todo_gui.c:1617
+#: datebook_gui.c:3591 memo_gui.c:1275 todo_gui.c:1617
 msgid "Copy"
 msgstr "Kopyala"
 
 #. Create "New" button
 #: Expense/expense.c:1252 KeyRing/keyring.c:1359 address_gui.c:1711
-#: datebook_gui.c:3573 memo_gui.c:1281 todo_gui.c:1623
+#: datebook_gui.c:3598 memo_gui.c:1281 todo_gui.c:1623
 msgid "New Record"
 msgstr "Yeni Kayýt"
 
 #. Create "Add Record" button
 #: Expense/expense.c:1258 KeyRing/keyring.c:1365 address_gui.c:1717
-#: datebook_gui.c:3580 memo_gui.c:1287 todo_gui.c:1629
+#: datebook_gui.c:3605 memo_gui.c:1287 todo_gui.c:1629
 msgid "Add Record"
 msgstr "Kayýt Ekle"
 
 #. Create "apply changes" button
 #: Expense/expense.c:1266 KeyRing/keyring.c:1373 address_gui.c:1726
-#: datebook_gui.c:3589 memo_gui.c:1295 todo_gui.c:1637
+#: datebook_gui.c:3614 memo_gui.c:1295 todo_gui.c:1637
 msgid "Apply Changes"
 msgstr "Deðiþiklikleri Uygula"
 
 #. Private check box
-#: address_gui.c:1742 datebook_gui.c:3640 memo_gui.c:1312 todo_gui.c:1700
+#: address_gui.c:1742 datebook_gui.c:3665 memo_gui.c:1312 todo_gui.c:1700
 msgid "Private"
 msgstr "Özel"
 
@@ -162,7 +162,7 @@ msgid "Other"
 msgstr "Diðer"
 
 #. Page 3
-#: address_gui.c:1786 datebook_gui.c:1088 datebook_gui.c:1354 utils.c:2200
+#: address_gui.c:1786 datebook_gui.c:1088 datebook_gui.c:1365 utils.c:2200
 msgid "All"
 msgstr "Tümü"
 
@@ -181,11 +181,11 @@ msgstr "Hýzlý Görünüm"
 msgid "Remind me"
 msgstr "Anýmsat"
 
-#: alarms.c:244 datebook_gui.c:3622
+#: alarms.c:244 datebook_gui.c:3647
 msgid "Minutes"
 msgstr "Dakika"
 
-#: alarms.c:246 datebook_gui.c:3626
+#: alarms.c:246 datebook_gui.c:3651
 msgid "Hours"
 msgstr "Saat"
 
@@ -201,24 +201,24 @@ msgstr "Geçmiþ Randevu"
 msgid "Postponed Appointment"
 msgstr "Ertelenmiþ Randevu"
 
-#: alarms.c:520 datebook_gui.c:3521
+#: alarms.c:520 datebook_gui.c:3546
 msgid "Appointment"
 msgstr "Randevu"
 
-#: datebook_gui.c:181 datebook_gui.c:188 datebook_gui.c:3361
-#: datebook_gui.c:3368
+#: datebook_gui.c:181 datebook_gui.c:188 datebook_gui.c:3386
+#: datebook_gui.c:3393
 msgid "Su"
 msgstr "P"
 
-#: datebook_gui.c:182 datebook_gui.c:3362
+#: datebook_gui.c:182 datebook_gui.c:3387
 msgid "Mo"
 msgstr "Pzt"
 
-#: datebook_gui.c:183 datebook_gui.c:3363
+#: datebook_gui.c:183 datebook_gui.c:3388
 msgid "Tu"
 msgstr "S"
 
-#: datebook_gui.c:184 datebook_gui.c:3364
+#: datebook_gui.c:184 datebook_gui.c:3389
 msgid "We"
 msgstr "Çar"
 
@@ -227,11 +227,11 @@ msgstr "Çar"
 msgid "Th"
 msgstr "Per"
 
-#: datebook_gui.c:186 datebook_gui.c:3366
+#: datebook_gui.c:186 datebook_gui.c:3391
 msgid "Fr"
 msgstr "C"
 
-#: datebook_gui.c:187 datebook_gui.c:3367
+#: datebook_gui.c:187 datebook_gui.c:3392
 msgid "Sa"
 msgstr "Cts"
 
@@ -253,7 +253,7 @@ msgid "Browse"
 msgstr "Gözat"
 
 #. Create a "Quit" button
-#: KeyRing/keyring.c:1128 datebook_gui.c:905 datebook_gui.c:1355
+#: KeyRing/keyring.c:1128 datebook_gui.c:905 datebook_gui.c:1366
 #: export_gui.c:334 password.c:374 print_gui.c:336 restore_gui.c:222
 #: utils.c:873
 msgid "Cancel"
@@ -266,7 +266,7 @@ msgid "Done"
 msgstr "Bitti"
 
 #. Create a "None" button
-#: datebook_gui.c:1094 datebook_gui.c:3764
+#: datebook_gui.c:1094 datebook_gui.c:3789
 msgid "None"
 msgstr "Hiçbiri"
 
@@ -279,45 +279,45 @@ msgstr "Bitiþ Tarihi"
 msgid "End On Date"
 msgstr "Bitiþ Tarihi"
 
-#: datebook_gui.c:1314 monthview_gui.c:348 monthview_gui.c:355 prefs.c:395
+#: datebook_gui.c:1316 monthview_gui.c:348 monthview_gui.c:355 prefs.c:395
 #: weekview_gui.c:135
 msgid "Sunday"
 msgstr "Pazar"
 
-#: datebook_gui.c:1315 monthview_gui.c:349 prefs.c:396 weekview_gui.c:136
+#: datebook_gui.c:1317 monthview_gui.c:349 prefs.c:396 weekview_gui.c:136
 msgid "Monday"
 msgstr "Pazartesi"
 
-#: datebook_gui.c:1316 monthview_gui.c:350 weekview_gui.c:137
+#: datebook_gui.c:1318 monthview_gui.c:350 weekview_gui.c:137
 msgid "Tuesday"
 msgstr "Salý"
 
-#: datebook_gui.c:1317 monthview_gui.c:351 weekview_gui.c:138
+#: datebook_gui.c:1319 monthview_gui.c:351 weekview_gui.c:138
 msgid "Wednesday"
 msgstr "Çarþamba"
 
-#: datebook_gui.c:1318 monthview_gui.c:352 weekview_gui.c:139
+#: datebook_gui.c:1320 monthview_gui.c:352 weekview_gui.c:139
 msgid "Thursday"
 msgstr "Perþembe"
 
-#: datebook_gui.c:1319 monthview_gui.c:353 weekview_gui.c:140
+#: datebook_gui.c:1321 monthview_gui.c:353 weekview_gui.c:140
 msgid "Friday"
 msgstr "Cuma"
 
-#: datebook_gui.c:1320 monthview_gui.c:354 weekview_gui.c:141
+#: datebook_gui.c:1322 monthview_gui.c:354 weekview_gui.c:141
 msgid "Saturday"
 msgstr "Cumartesi"
 
-#: datebook_gui.c:1325
+#: datebook_gui.c:1327
 msgid "4th"
 msgstr ""
 
-#: datebook_gui.c:1325
+#: datebook_gui.c:1327
 msgid "Last"
 msgstr ""
 
 #. ---------------------------
-#: datebook_gui.c:1347
+#: datebook_gui.c:1358
 msgid ""
 "This is a repeating event.\n"
 "Do you want to apply these\n"
@@ -326,36 +326,36 @@ msgid ""
 "occurrences of this event?"
 msgstr ""
 
-#: datebook_gui.c:1353
+#: datebook_gui.c:1364
 msgid "Current"
 msgstr ""
 
-#: datebook_gui.c:1589
+#: datebook_gui.c:1614
 msgid "none"
 msgstr "hiçbiri/yok"
 
-#: datebook_gui.c:1590
+#: datebook_gui.c:1615
 msgid "day"
 msgstr "gün"
 
-#: datebook_gui.c:1591
+#: datebook_gui.c:1616
 msgid "week"
 msgstr "hafta"
 
-#: datebook_gui.c:1592
+#: datebook_gui.c:1617
 msgid "month"
 msgstr "ay"
 
-#: datebook_gui.c:1593
+#: datebook_gui.c:1618
 msgid "year"
 msgstr "yýl"
 
-#: datebook_gui.c:1845
+#: datebook_gui.c:1870
 #, c-format
 msgid "You cannot have an appointment that repeats every %d %s(s)\n"
 msgstr "Her %d %s'de yinelenen randevunuz olamaz\n"
 
-#: datebook_gui.c:1854
+#: datebook_gui.c:1879
 msgid ""
 "You can not have a weekly repeating appointment that doesn't repeat on any "
 "day of the week.\n"
@@ -363,116 +363,116 @@ msgstr ""
 "Haftanýn herhangi bir gününde yinelenmeyen haftalýk randevunuz olamaz.\n"
 
 #. This is a timeless event
-#: datebook_gui.c:1990
+#: datebook_gui.c:2015
 msgid "No Time"
 msgstr "Zaman Yok"
 
 #. The No due date check box
-#: datebook_gui.c:2408 datebook_gui.c:3798 datebook_gui.c:3828
-#: datebook_gui.c:3884 datebook_gui.c:3933 todo_gui.c:123 todo_gui.c:1691
+#: datebook_gui.c:2433 datebook_gui.c:3823 datebook_gui.c:3853
+#: datebook_gui.c:3909 datebook_gui.c:3958 todo_gui.c:123 todo_gui.c:1691
 msgid "No Date"
 msgstr "Tarih Yok"
 
-#: datebook_gui.c:3365
+#: datebook_gui.c:3390
 msgid "RTh"
 msgstr "Per"
 
 #. Make Weekview button
-#: datebook_gui.c:3442 datebook_gui.c:3766
+#: datebook_gui.c:3467 datebook_gui.c:3791
 msgid "Week"
 msgstr "Hafta"
 
 #. Make Monthview button
-#: datebook_gui.c:3453 datebook_gui.c:3767
+#: datebook_gui.c:3478 datebook_gui.c:3792
 msgid "Month"
 msgstr "Ay"
 
 #. Make Category button
-#: datebook_gui.c:3466
+#: datebook_gui.c:3491
 msgid "Cats"
 msgstr "Sýnýflar"
 
-#: datebook_gui.c:3520
+#: datebook_gui.c:3545
 msgid "Time"
 msgstr "Zaman"
 
-#: datebook_gui.c:3607
+#: datebook_gui.c:3632
 msgid "Alarm"
 msgstr "Alarm"
 
-#: datebook_gui.c:3628
+#: datebook_gui.c:3653
 msgid "Days"
 msgstr "Gün"
 
-#: datebook_gui.c:3651
+#: datebook_gui.c:3676
 msgid "This Event has no particular time"
 msgstr "Bu olayýn belirli bir zamaný yok"
 
-#: datebook_gui.c:3659
+#: datebook_gui.c:3684
 msgid "Starts on: "
 msgstr "Baþlangýç: "
 
-#: datebook_gui.c:3671
+#: datebook_gui.c:3696
 msgid "Time:"
 msgstr "Saat:"
 
-#: datebook_gui.c:3748
+#: datebook_gui.c:3773
 msgid "DateBk Tags"
 msgstr ""
 
-#: datebook_gui.c:3765
+#: datebook_gui.c:3790
 msgid "Day"
 msgstr "Gün"
 
-#: datebook_gui.c:3768
+#: datebook_gui.c:3793
 msgid "Year"
 msgstr "Yýl"
 
 #. no repeat page for notebook
-#: datebook_gui.c:3772
+#: datebook_gui.c:3797
 msgid "This event will not repeat"
 msgstr "Bu olay yinelenmeyecek"
 
-#: datebook_gui.c:3782 datebook_gui.c:3814 datebook_gui.c:3870
-#: datebook_gui.c:3917
+#: datebook_gui.c:3807 datebook_gui.c:3839 datebook_gui.c:3895
+#: datebook_gui.c:3942
 msgid "Frequency is Every"
 msgstr "Yineleme Her"
 
-#: datebook_gui.c:3787
+#: datebook_gui.c:3812
 msgid "Day(s)"
 msgstr "Gün"
 
 #. checkbutton
-#: datebook_gui.c:3790 datebook_gui.c:3822 datebook_gui.c:3878
-#: datebook_gui.c:3925
+#: datebook_gui.c:3815 datebook_gui.c:3847 datebook_gui.c:3903
+#: datebook_gui.c:3950
 msgid "End on"
 msgstr "Bitiþ"
 
-#: datebook_gui.c:3819
+#: datebook_gui.c:3844
 msgid "Week(s)"
 msgstr "Hafta"
 
-#: datebook_gui.c:3835
+#: datebook_gui.c:3860
 msgid "Repeat on Days:"
 msgstr "Yineleme Günü"
 
-#: datebook_gui.c:3875
+#: datebook_gui.c:3900
 msgid "Month(s)"
 msgstr "Ay"
 
-#: datebook_gui.c:3892
+#: datebook_gui.c:3917
 msgid "Repeat by:"
 msgstr "Yinele:"
 
-#: datebook_gui.c:3896
+#: datebook_gui.c:3921
 msgid "Day of week"
 msgstr "Haftanýn günü"
 
-#: datebook_gui.c:3905
+#: datebook_gui.c:3930
 msgid "Date"
 msgstr "Tarih"
 
-#: datebook_gui.c:3922
+#: datebook_gui.c:3947
 msgid "Year(s)"
 msgstr "Yýl"
 
@@ -895,9 +895,11 @@ msgstr "Notlarý eþzamanla"
 msgid "Sync memo32 (pedit32)"
 msgstr "Memo32'yi eþzamanla (pedit32)"
 
-#. Show sync Mañana check box
+#. TRANSLATOR: If your charset allows write "Ma~nana" (= n with tilde) in
+#. the translation
+#. Show sync Ma~nana check box
 #: prefs_gui.c:590
-msgid "Sync Mañana"
+msgid "Sync Manana"
 msgstr ""
 
 #: prefs_gui.c:633
@@ -1344,9 +1346,11 @@ msgstr ""
 msgid "No date"
 msgstr "Tarih yok"
 
-#. Mañana check box
+#. TRANSLATOR: If your charset allows write "Ma~nana" (= n with tilde) in
+#. the translation
+#. Ma~nana check box
 #: todo_gui.c:1551
-msgid "Use Mañana database"
+msgid "Use Manana database"
 msgstr ""
 
 #. The hide completed check box

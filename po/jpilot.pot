@@ -879,7 +879,9 @@ msgstr ""
 msgid "Sync memo32 (pedit32)"
 msgstr ""
 
-#. Show sync Mañana check box
+#. TRANSLATOR: If your charset allows write "Ma~nana" (= n with tilde) in
+#. the translation
+#. Show sync Ma~nana check box
 #: prefs_gui.c:590
 msgid "Sync Manana"
 msgstr ""
@@ -1320,7 +1322,9 @@ msgstr ""
 msgid "No date"
 msgstr ""
 
-#. Mañana check box
+#. TRANSLATOR: If your charset allows write "Ma~nana" (= n with tilde) in
+#. the translation
+#. Ma~nana check box
 #: todo_gui.c:1551
 msgid "Use Manana database"
 msgstr ""
