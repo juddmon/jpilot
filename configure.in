@@ -57,7 +57,7 @@ dnl start gettext
 AC_PROG_INTLTOOL
 
 dnl Set of available languages
-ALL_LINGUAS="ca cs da de es fr it ja nl no sv tr zh_CN zh_TW"
+ALL_LINGUAS="ca cs da de es fr it ja nl no ru sv tr zh_CN zh_TW"
 
 dnl ud_GNU_GETTEXT
 dnl AM_WITH_NLS
@@ -241,13 +241,13 @@ use 0.11.3 or newer, or 0.95 and before for non-USB.])
    if test "$ac_status" = "100"; then
       AC_MSG_RESULT([0.10.0 or newer... USB will be enabled])
       usb=yes;
+      AC_DEFINE(ENABLE_USB, 1, [ USB support ])
    fi
    if test "$ac_status" = "95"; then
       AC_MSG_RESULT(0.9.x or older)
       AC_MSG_RESULT([*** Upgrade pilot-link to >0.10.0 and reconfigure/compile to use USB devices])
       usb=no;
    fi
-
 
 CFLAGS="$save_CFLAGS"
 LIBS="$save_LIBS"
@@ -405,12 +405,12 @@ echo "Compiling with Datebk support..........   $enable_datebk"
 echo "Compiling with plugin support..........   $enable_plugins"
 echo "Compiling with Mañana support..........   $enable_manana"
 echo "Compiling with Prometheon support......   $enable_prometheon"
-echo "Compiler Options.......................   $with_ccoptions"
+echo "Compiler Options.......................   $CFLAGS"
 echo "Prefix directory.......................   $prefix"
 echo "pilot-link headers.....................   $pilot_incl"
 echo "NLS support (foriegn languages)........   $USE_NLS"
 echo "USB support enabled....................   $usb"
-echo "dialier support........................   $dialer"
+echo "dialer support.........................   $dialer"
 pl_version=`grep PILOT_LINK_VERSION "$pilot_incl/pi-version.h" | \
 cut -d " " -f 3`
 pl_major=`grep PILOT_LINK_MAJOR "$pilot_incl/pi-version.h" | \
