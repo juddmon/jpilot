@@ -298,6 +298,8 @@ int cal_dialog(GtkWindow *main_window,
 
 void set_bg_rbg_clist(GtkWidget *clist, int row, int r, int g, int b);
 
+void set_fg_rgb_clist_cell(GtkWidget *clist, int row, int col, int r, int g, int b);
+
 int clist_find_id(GtkWidget *clist,
 		  unsigned int unique_id,
 		  int *found_at,

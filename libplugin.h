@@ -127,6 +127,9 @@ int get_next_unique_pc_id(unsigned int *next_unique_id);
 #define CLIST_PRIVATE_RED 60000
 #define CLIST_PRIVATE_GREEN 55000
 #define CLIST_PRIVATE_BLUE 55000
+#define CLIST_OVERDUE_RED 0xD900
+#define CLIST_OVERDUE_GREEN 0x0000
+#define CLIST_OVERDUE_BLUE 0x0000
 
 #define DIALOG_SAID_1        454
 #define DIALOG_SAID_PRINT    454

@@ -634,15 +634,43 @@ void free_search_record_list(struct search_record **sr)
 
 void set_bg_rbg_clist(GtkWidget *clist, int row, int r, int g, int b)
 {
+   GtkStyle *old_style, *new_style;
    GdkColor color;
-   GdkColormap *colormap;
 
-   colormap = gtk_widget_get_colormap(clist);
+   if ((old_style = gtk_clist_get_row_style(GTK_CLIST(clist), row)) ||
+       (old_style = gtk_widget_get_style(clist))) {
+      new_style = gtk_style_copy(old_style);
+   }
+   else {
+      new_style = gtk_style_new();
+   }
+   
    color.red=r;
    color.green=g;
    color.blue=b;
-   gdk_color_alloc(colormap, &color);
-   gtk_clist_set_background(GTK_CLIST(clist), row, &color);
+  
+   new_style->base[GTK_STATE_NORMAL] = color;
+   gtk_clist_set_row_style(GTK_CLIST(clist), row, new_style);
+}
+
+void set_fg_rgb_clist_cell(GtkWidget *clist, int row, int col, int r, int g, int b)
+{
+   GtkStyle *old_style, *new_style;
+   GdkColor color;
+   
+   if ((old_style = gtk_clist_get_row_style(GTK_CLIST(clist), row)) ||
+       (old_style = gtk_widget_get_style(clist))) {
+      new_style = gtk_style_copy(old_style);
+   } else {
+      new_style = gtk_style_new();
+   }
+
+   color.red=r;
+   color.green=g;
+   color.blue=b;
+   new_style->fg[GTK_STATE_NORMAL]   = color;
+   new_style->fg[GTK_STATE_SELECTED] = color;
+   gtk_clist_set_cell_style(GTK_CLIST(clist), row, col, new_style);
 }
 
 /*returns 0 if not found, 1 if found */

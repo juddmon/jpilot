@@ -1449,6 +1449,9 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    long hide_completed;
    long hide_not_due;
    int show_priv;
+   time_t ltime;
+   struct tm *now, *due;
+   int comp_now, comp_due;
 
    row_count=(GTK_CLIST(clist))->rows;
 
@@ -1489,6 +1492,10 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 	  category != CATEGORY_ALL) {
 	 continue;
       }
+
+      /* Clear any existing overdue highlighting */
+      gtk_clist_set_cell_style(GTK_CLIST(clist), entries_shown, TODO_DATE_COLUMN, NULL);
+
       /* Do masking like Palm OS 3.5 */
       if ((show_priv == MASK_PRIVATES) && 
 	  (temp_todo->mtodo.attrib & dlpRecAttrSecret)) {
@@ -1513,9 +1520,6 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
       /*Hide the not due yet records if need be */
       if ((hide_not_due) && (!(temp_todo->mtodo.todo.indefinite))) {
-	 time_t ltime;
-	 struct tm *now, *due;
-	 int comp_now, comp_due;
 	 time(&ltime);
 	 now = localtime(&ltime);
 	 comp_now=now->tm_year*380+now->tm_mon*31+now->tm_mday-1;
@@ -1570,7 +1574,20 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 	    set_bg_rbg_clist(clist, entries_shown, 
 			     CLIST_PRIVATE_RED, CLIST_PRIVATE_GREEN, CLIST_PRIVATE_BLUE);
 	 } else {
-	    gtk_clist_set_background(GTK_CLIST(clist), entries_shown, NULL);
+	    gtk_clist_set_row_style(GTK_CLIST(clist), entries_shown, NULL);
+	 }
+      }
+
+      /* Highlight dates of overdue todo items */
+      if (!(temp_todo->mtodo.todo.indefinite)) {
+	 time(&ltime);
+	 now = localtime(&ltime);
+	 comp_now=now->tm_year*380+now->tm_mon*31+now->tm_mday-1;
+	 due = &(temp_todo->mtodo.todo.due);
+	 comp_due=due->tm_year*380+due->tm_mon*31+due->tm_mday-1;
+
+	 if (comp_due < comp_now) {
+	    set_fg_rgb_clist_cell(clist, entries_shown, TODO_DATE_COLUMN, CLIST_OVERDUE_RED, CLIST_OVERDUE_GREEN, CLIST_OVERDUE_BLUE);
 	 }
       }
 
