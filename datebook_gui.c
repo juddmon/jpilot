@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.97 2004/12/10 02:45:06 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.98 2004/12/12 22:08:37 judd Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -3576,7 +3576,7 @@ int datebook_gui_cleanup()
       set_pref(PREF_DATEBOOK_TODO_PANE, gtk_paned_get_position(GTK_PANED(todo_pane)), NULL, TRUE);
    }
 #else
-   set_pref(PREF_DATEBOOK_PANE, GTK_PANED(pane)->handle_ypos, NULL, TRUE);
+   set_pref(PREF_DATEBOOK_PANE, GTK_PANED(pane)->handle_xpos, NULL, TRUE);
    set_pref(PREF_DATEBOOK_NOTE_PANE, GTK_PANED(note_pane)->handle_ypos, NULL, TRUE);
    if (GTK_TOGGLE_BUTTON(show_todos_button)->active) {
       set_pref(PREF_DATEBOOK_TODO_PANE, GTK_PANED(todo_pane)->handle_ypos, NULL, TRUE);
