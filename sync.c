@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.54 2005/02/27 11:31:15 rousseau Exp $ */
+/* $Id: sync.c,v 1.55 2005/03/19 17:25:43 judd Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -1265,7 +1265,7 @@ int slow_sync_application(char *DB_name, int sd)
 /*
  * Fetch the databases from the palm if modified
  */
-void fetch_extra_DBs2(int sd, char *palm_dbname[])
+void fetch_extra_DBs2(int sd, struct DBInfo info, char *palm_dbname[])
 {
 #define MAX_DBNAME 50
    struct pi_file *pi_fp;
@@ -1274,7 +1274,6 @@ void fetch_extra_DBs2(int sd, char *palm_dbname[])
    struct utimbuf times;
    int i;
    int found;
-   struct DBInfo info;
    char db_copy_name[MAX_DBNAME];
    char creator[5];
 
@@ -1378,7 +1377,7 @@ int fetch_extra_DBs(int sd, char *palm_dbname[])
       for (dbIndex=0; dbIndex < (buffer->used / sizeof(struct DBInfo)); dbIndex++) {
 	 memcpy(&info, buffer->data + (dbIndex * sizeof(struct DBInfo)), sizeof(struct DBInfo));
 	 start=info.index+1;
-	 fetch_extra_DBs2(sd, palm_dbname);
+	 fetch_extra_DBs2(sd, info, palm_dbname);
       }
    }
    pi_buffer_free(buffer);
@@ -1387,7 +1386,7 @@ int fetch_extra_DBs(int sd, char *palm_dbname[])
    /* Pilot-link < 0.12 */
    while(dlp_ReadDBList(sd, cardno, dlpOpenRead, start, &info)>0) {
       start=info.index+1;
-      fetch_extra_DBs2(sd, palm_dbname);
+      fetch_extra_DBs2(sd, info, palm_dbname);
    }
 #endif
 
