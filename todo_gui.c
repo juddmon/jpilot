@@ -1538,22 +1538,14 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    separator = gtk_hseparator_new();
    gtk_box_pack_start(GTK_BOX(vbox1), separator, FALSE, FALSE, 5);
 
-
    /*Put the left-hand category menu up */
    make_category_menu(&category_menu1, todo_cat_menu_item1,
 		      sort_l, cb_category, TRUE);
 
    gtk_box_pack_start(GTK_BOX(vbox1), category_menu1, FALSE, FALSE, 0);
 
-
    get_pref(PREF_HIDE_COMPLETED, &hide_completed, &svalue);
 
-   /*The hide completed check box */
-   checkbox = gtk_check_button_new_with_label(_("Hide Completed ToDos"));
-   gtk_box_pack_start(GTK_BOX(vbox1), checkbox, FALSE, FALSE, 0);
-   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbox), hide_completed);
-   gtk_signal_connect(GTK_OBJECT(checkbox), "clicked",
-		      GTK_SIGNAL_FUNC(cb_hide_completed), NULL);
 #ifdef ENABLE_MANANA
    /* Mañana check box */
    manana_checkbox = gtk_check_button_new_with_label(_("Use Mañana database"));
@@ -1563,6 +1555,13 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_signal_connect(GTK_OBJECT(manana_checkbox), "clicked",
 		      GTK_SIGNAL_FUNC(cb_use_manana), NULL);
 #endif
+
+   /*The hide completed check box */
+   checkbox = gtk_check_button_new_with_label(_("Hide Completed ToDos"));
+   gtk_box_pack_start(GTK_BOX(vbox1), checkbox, FALSE, FALSE, 0);
+   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbox), hide_completed);
+   gtk_signal_connect(GTK_OBJECT(checkbox), "clicked",
+		      GTK_SIGNAL_FUNC(cb_hide_completed), NULL);
 
    /*Put the todo list window up */
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
