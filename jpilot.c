@@ -1068,7 +1068,7 @@ void get_main_menu(GtkWidget  *window,
   { NULL, "<control>F", cb_search_gui,  0,        NULL },
   { NULL, NULL,         NULL,           0,        "<Separator>" },
   { NULL, "<control>I", cb_install_gui, 0,        NULL },
-  { NULL, NULL, cb_import,              0,        NULL },
+  { NULL, NULL,         cb_import,      0,        NULL },
   { NULL, "<control>A", cb_export,      0,        NULL },
   { NULL, "<control>E", cb_prefs_gui,   0,        NULL },
   { NULL, "<control>P", cb_print,       0,        NULL },
@@ -1166,9 +1166,9 @@ void get_main_menu(GtkWidget  *window,
    menu_items1[i++].path=strdup(_("/View/Addresses"));
    menu_items1[i++].path=strdup(_("/View/Todos"));
    menu_items1[i++].path=strdup(_("/View/Memos"));
-   menu_items1[i++].path=strdup(_("/Plugins"));
+   menu_items1[i++].path=strdup(_("/_Plugins"));
 #ifdef WEBMENU
-   menu_items1[i++].path=strdup(_("/Web"));
+   menu_items1[i++].path=strdup(_("/_Web"));
    menu_items1[i++].path=strdup(_("/Web/Netscape"));
    g_snprintf(temp_str, sizeof(temp_str), _("/Web/Netscape/%s"), url_commands[NETSCAPE_EXISTING].desc);
    menu_items1[i++].path=strdup(temp_str);
@@ -1266,7 +1266,7 @@ void get_main_menu(GtkWidget  *window,
    for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
       p = (struct plugin_s *)temp_list->data;
       if (p->menu_name) {
-	 g_snprintf(temp_str, sizeof(temp_str), _("/Plugins/%s"), p->menu_name);
+	 g_snprintf(temp_str, sizeof(temp_str), _("/_Plugins/%s"), p->menu_name);
 	 plugin_menu_strings[str_i++]=strdup(temp_str);
       }
    }
@@ -1300,7 +1300,7 @@ void get_main_menu(GtkWidget  *window,
    }
    /* Copy the first part of the array until Plugins */
    for (i1=i2=0; ; i1++, i2++) {
-      if (!strcmp(menu_items1[i1].path, _("/Plugins"))) {
+      if (!strcmp(menu_items1[i1].path, _("/_Plugins"))) {
 	 break;
       }
       menu_items2[i2]=menu_items1[i1];
@@ -1308,7 +1308,7 @@ void get_main_menu(GtkWidget  *window,
 
 #ifdef ENABLE_PLUGINS
    if (count) {
-      /* This is the /Plugins entry */
+      /* This is the /_Plugins entry */
       menu_items2[i2]=menu_items1[i1];
       i1++; i2++;
       str_i=0;
@@ -1333,11 +1333,11 @@ void get_main_menu(GtkWidget  *window,
 	 i2++;
       }
    } else {
-      /* Skip the /Plugins entry */
+      /* Skip the /_Plugins entry */
       i1++;
    }
 #else
-   /* Skip the /Plugins entry */
+   /* Skip the /_Plugins entry */
    i1++;
 #endif
 
