@@ -1,4 +1,4 @@
-/* $Id: prefs.c,v 1.50 2004/11/28 16:20:04 rousseau Exp $ */
+/* $Id: prefs.c,v 1.51 2004/12/03 17:23:59 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs.c
@@ -405,7 +405,10 @@ int get_pref_possibility(int which, int n, char *pref_str)
       "%H,%M"
    };
 
-   static char *days[2];
+   static char *days[] = {
+      gettext_noop("Sunday"),
+      gettext_noop("Monday")
+   };
 
    static const char *rates[] = {
       "300",
@@ -445,9 +448,6 @@ int get_pref_possibility(int which, int n, char *pref_str)
       "A4"
    };
 
-   days[0] = _("Sunday");
-   days[1] = _("Monday");
-
    switch(which) {
 
     case PREF_RCFILE:
@@ -483,7 +483,7 @@ int get_pref_possibility(int which, int n, char *pref_str)
 	 pref_str[0]='\0';
 	 return -1;
       }
-      strcpy(pref_str, days[n]);
+      strcpy(pref_str, _(days[n]));
       break;
 
     case PREF_RATE:
