@@ -852,6 +852,16 @@ int main(int   argc,
    dumpM = FALSE;
    dumpT = FALSE;
 
+   /* enable internationalization(i18n) before printing any output */
+#if defined(ENABLE_NLS)
+#  ifdef HAVE_LOCALE_H
+      char *current_locale;
+      current_locale = setlocale(LC_ALL, "");
+#  endif
+   bindtextdomain(EPN, LOCALEDIR);
+   textdomain(EPN);
+#endif
+
    for (i=1; i<argc; i++) {
       if (!strncasecmp(argv[i], "+B", 2)) {
 	 formatB=argv[i];
