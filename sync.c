@@ -2186,7 +2186,8 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
 	     * I have not tested it since I fixed it */
             /* JPA this is indeed the case, moreover there was a */
             /* bad condition in pdb_file_read_record_by_id() */
-            if (same) { /* JPA */
+            //if (same) { /* JPA */
+	    if (1) { /* reports of above line causing deletes to fail */
 	       /* if (memcmp(record, Pbuf, size)==0)
 		jp_logf(JP_LOG_DEBUG,"Binary is the same!\n"); */
 	       /* jp_logf(JP_LOG_GUI, "Deleting Palm id=%d,\n",header.unique_id);*/
@@ -2644,7 +2645,7 @@ int sync_categories(char *DB_name, int sd,
       return -1;
    }
 
-#if SYNC_CAT_DEBUG
+#ifdef SYNC_CAT_DEBUG
    printf("DB_name [%s]\n", DB_name);
    for (i = 0; i < CATCOUNT; i++) {
       if (local_cai.name[i][0] != '\0') {
@@ -2707,7 +2708,7 @@ int sync_categories(char *DB_name, int sd,
       if (found_name) {
 	 if (Li==found_name_at) {
 	    /* 1: OK */
-#if SYNC_CAT_DEBUG
+#ifdef SYNC_CAT_DEBUG
 	    printf("cat index %d ok\n", Li);
 #endif
 	 } else {
@@ -2717,7 +2718,7 @@ int sync_categories(char *DB_name, int sd,
 	     * to do this.
 	     * So, we will swap indexes on the local records.
 	     */
-#if SYNC_CAT_DEBUG
+#ifdef SYNC_CAT_DEBUG
 	    printf("cat index %d case 2\n", Li);
 #endif
 	    r = pdb_file_swap_indexes(DB_name, Li, found_name_at);
@@ -2734,7 +2735,7 @@ int sync_categories(char *DB_name, int sd,
       if ((!found_name) && (local_cai.renamed[Li])) {
 	 if (found_ID) {
 	    /* 3: Change remote category name to match local at index Li */
-#if SYNC_CAT_DEBUG
+#ifdef SYNC_CAT_DEBUG
 	    printf("cat index %d case 3\n", Li);
 #endif
 	    strncpy(remote_cai.name[found_ID_at],
@@ -2745,7 +2746,7 @@ int sync_categories(char *DB_name, int sd,
       if ((!found_name) && (!found_ID)) {
 	 if (remote_cai.name[Li][0]=='\0') {
 	    /* 4: Add local category to remote */
-#if SYNC_CAT_DEBUG
+#ifdef SYNC_CAT_DEBUG
 	    printf("cat index %d case 4\n", Li);
 #endif
 	    strncpy(remote_cai.name[Li],
@@ -2757,7 +2758,7 @@ int sync_categories(char *DB_name, int sd,
 	 } else {
 	    /* 5: Add local category to remote in the next available slot.
 	     local records are changed to use this index. */
-#if SYNC_CAT_DEBUG
+#ifdef SYNC_CAT_DEBUG
  	    printf("cat index %d case 5\n", Li);
 #endif
 	    found_a_hole=FALSE;
@@ -2794,7 +2795,7 @@ int sync_categories(char *DB_name, int sd,
 	    }
 	 }
       }
-#if SYNC_CAT_DEBUG
+#ifdef SYNC_CAT_DEBUG
       printf("cat index %d case (none)\n", Li);
 #endif
    }
