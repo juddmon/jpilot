@@ -552,10 +552,11 @@ void cb_search_gui(GtkWidget *widget, gpointer data)
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
 
    /* Create a "Done" button */
-   button = gtk_button_new_with_label(_("Done"));
+   button = gtk_button_new_with_label(_("Close"));
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_quit), window);
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
 
    gtk_widget_show_all(window);
 }
+
