@@ -1779,6 +1779,12 @@ char *xpm_unlocked[] = {
    pref_init();
    /* read jpilot.rc file for preferences */
    pref_read_rc_file();
+#ifdef ENABLE_GTK2
+   if (otherconv_init()) {
+      printf("Error: could not set encoding\n");
+      return 1;
+   }
+#endif
 
    w = h = x = y = bit_mask = 0;
 
@@ -2350,7 +2356,7 @@ char *xpm_unlocked[] = {
 
       /* get charset to check if a UTF-8 one is used */
       get_pref(PREF_CHAR_SET, &char_set, NULL);
-      if (char_set >= CHAR_SET_1250UTF)
+      if (char_set >= CHAR_SET_UTF)
  	 set_pref(PREF_UTF_ENCODING, 1, NULL, 1);
 
       get_pref(PREF_UTF_ENCODING, &utf_encoding, NULL);
@@ -2379,6 +2385,10 @@ char *xpm_unlocked[] = {
    gtk_idle_add(cb_check_version, window);
    
    gtk_main();
+
+#ifdef ENABLE_GTK2
+   otherconv_free();
+#endif
 
    return 0;
 }

@@ -40,6 +40,7 @@
 #include <gdk/gdk.h>
 #include "plugins.h"
 #include "libplugin.h"
+#include "otherconv.h"
 
 #include <pi-source.h>
 #include <pi-socket.h>
@@ -2449,10 +2450,7 @@ void multibyte_safe_strncpy(char *dst, char *src, size_t len)
 
    if (char_set == CHAR_SET_JAPANESE ||
        char_set == CHAR_SET_TRADITIONAL_CHINESE ||
-       char_set == CHAR_SET_KOREAN || 
-       char_set == CHAR_SET_1250UTF ||
-       char_set == CHAR_SET_1253UTF ||
-       char_set == CHAR_SET_1252UTF /* JPA */
+       char_set == CHAR_SET_KOREAN
        ) {
       char *p, *q;
       int n = 0;
@@ -2491,10 +2489,7 @@ char *multibyte_safe_memccpy(char *dst, const char *src, int c, size_t len)
 
    if (char_set == CHAR_SET_JAPANESE ||
        char_set == CHAR_SET_TRADITIONAL_CHINESE ||
-       char_set == CHAR_SET_KOREAN || 
-       char_set == CHAR_SET_1250UTF ||
-       char_set == CHAR_SET_1253UTF ||
-       char_set == CHAR_SET_1252UTF /* JPA */
+       char_set == CHAR_SET_KOREAN
        ) {  /* Multibyte Charactors */
       char *p, *q;
       int n = 0;
@@ -2532,9 +2527,15 @@ void charset_j2p(unsigned char *buf, int max_len, long char_set)
     case CHAR_SET_1250: Lat2Win(buf,max_len); break;
     case CHAR_SET_1251: koi8_to_win1251(buf, max_len); break;
     case CHAR_SET_1251_B: win1251_to_koi8(buf, max_len); break;
-    case CHAR_SET_1250UTF: UTF2Win(buf,max_len); break;
-    case CHAR_SET_1253UTF: UTF_to_win1253(buf,max_len); break;
-    case CHAR_SET_1252UTF: UTF2Lat(buf,max_len); break;
+    case CHAR_SET_1250_UTF:
+    case CHAR_SET_1252_UTF:
+    case CHAR_SET_1253_UTF:
+    case CHAR_SET_ISO8859_2_UTF:
+    case CHAR_SET_KOI8_R_UTF:
+    case CHAR_SET_GB2312_UTF:
+    case CHAR_SET_SJIS_UTF:
+      UTF_to_other(buf, max_len);
+      break;
    }
 }
 
@@ -2587,12 +2588,10 @@ void charset_p2j(unsigned char *const buf, int max_len, int char_set)
 
 unsigned char *charset_p2newj(const unsigned char *buf, int max_len, int char_set)
 {
-   unsigned char *newbuf;
+   unsigned char *newbuf = NULL;
 
    /* allocate a longer buffer if not done in conversion routine */
-   if ((char_set != CHAR_SET_1250UTF)
-       && (char_set != CHAR_SET_1252UTF)
-	   && (char_set != CHAR_SET_1253UTF)) {
+   if (char_set < CHAR_SET_UTF) {
       newbuf = (unsigned char*)malloc(2*max_len - 1);
       if (newbuf) {
 	 /* be safe, though string should fit into buf */
@@ -2607,9 +2606,15 @@ unsigned char *charset_p2newj(const unsigned char *buf, int max_len, int char_se
     case CHAR_SET_1250 : Win2Lat(newbuf,max_len); break;
     case CHAR_SET_1251 : win1251_to_koi8(newbuf, max_len); break;
     case CHAR_SET_1251_B : koi8_to_win1251(newbuf, max_len); break;
-    case CHAR_SET_1250UTF : newbuf = Win2UTF(buf, max_len); break;
-    case CHAR_SET_1253UTF : newbuf = win1253_to_UTF(buf, max_len); break;
-    case CHAR_SET_1252UTF : newbuf = Lat2UTF(buf, max_len); break;
+    case CHAR_SET_1250_UTF:
+    case CHAR_SET_1252_UTF:
+    case CHAR_SET_1253_UTF:
+    case CHAR_SET_ISO8859_2_UTF:
+    case CHAR_SET_KOI8_R_UTF:
+    case CHAR_SET_GB2312_UTF:
+    case CHAR_SET_SJIS_UTF:
+      newbuf = other_to_UTF(buf, max_len);
+      break;
     default : break;
    }
    return (newbuf);

@@ -118,10 +118,15 @@
 #define CHAR_SET_1251_B   4 /* Russian; palm win1251, host koi8-r */
 #define CHAR_SET_TRADITIONAL_CHINESE  5 /* Taiwan Chinese */
 #define CHAR_SET_KOREAN   6 /* Korean Hangul */
-#define CHAR_SET_1250UTF  7 /* Czech, Polish (Unix: UTF-8) */
-#define CHAR_SET_1252UTF  8 /* JPA : Latin European (Unix: UTF-8) */
-#define CHAR_SET_1253UTF  9 /* Modern Greek (Palm: Windows 1253, Host: UTF-8) */
-#define NUM_CHAR_SETS    10
+#define CHAR_SET_UTF      7
+#define CHAR_SET_1250_UTF  7 /* Czech, Polish (latin2, CP1250) */
+#define CHAR_SET_1252_UTF  8 /* Latin European (latin1, CP1252) */
+#define CHAR_SET_1253_UTF  9 /* Modern Greek (CP1253) */
+#define CHAR_SET_ISO8859_2_UTF 10 /* Czech, Polish (latin2, ISO8859-2) */
+#define CHAR_SET_KOI8_R_UTF 11 /* Cyrillic (KOI8-R) */
+#define CHAR_SET_GB2312_UTF 12 /* Chinese (GB2312) */
+#define CHAR_SET_SJIS_UTF 13 /* Japanese (SJIS) */
+#define NUM_CHAR_SETS    14
 
 #define MAX_PREF_VALUE 200
 

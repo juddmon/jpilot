@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.34 2004/10/20 04:34:53 rikster5 Exp $
+# $Id: Makefile.am,v 1.35 2004/10/29 20:20:56 rousseau Exp $
 
 SUBDIRS = Expense SyncTime KeyRing docs dialer po m4 empty icons
 
@@ -58,6 +58,8 @@ jpilot_SOURCES = \
 	memo_gui.c \
 	memo.h \
 	monthview_gui.c \
+	otherconv.c \
+	otherconv.h \
 	password.c \
 	password.h \
 	plugins.c \
@@ -102,6 +104,7 @@ jpilot_dump_SOURCES = \
 	libplugin.c \
 	log.c \
 	memo.c \
+	otherconv.c \
 	password.c \
 	plugins.c \
 	prefs.c \
@@ -120,6 +123,7 @@ jpilot_sync_SOURCES = \
 	japanese.c \
 	libplugin.c \
 	log.c \
+	otherconv.c \
 	password.c \
 	plugins.c \
 	prefs.c \

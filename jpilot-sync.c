@@ -94,6 +94,12 @@ int main(int argc, char *argv[])
 
    pref_init();
    pref_read_rc_file();
+#ifdef ENABLE_GTK2
+   if (otherconv_init()) {
+      printf("Error: could not set encoding\n");
+      return 1;
+   }
+#endif
 
    pipe_from_parent=STDIN_FILENO;
    pipe_to_parent=STDOUT_FILENO;
@@ -225,6 +231,10 @@ int main(int argc, char *argv[])
       }
       sleep(1);
    } while(loop);
+
+#ifdef ENABLE_GTK2
+   otherconv_free();
+#endif
 
    return 0;
 }

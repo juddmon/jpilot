@@ -60,7 +60,7 @@ static prefType glob_prefs[NUM_PREFS] = {
      {"print_command", CHARTYPE, CHARTYPE, 0, NULL, 0},
      {"char_set", INTTYPE, INTTYPE,
 #ifdef ENABLE_GTK2
-     CHAR_SET_1252UTF
+     CHAR_SET_1252_UTF
 #else
      CHAR_SET_LATIN1
 #endif
@@ -442,9 +442,13 @@ int get_pref_possibility(int which, int n, char *pref_str)
       "Host KOI8-R <-> Palm Windows-1251",
       "Chinese(Big5)",
       "Korean",
-      "Host UTF-8 <-> Palm Windows1250 (EE)",
-      "Host UTF-8 <-> Palm Windows1252", /* JPA */
-      "Host UTF-8 <-> Palm Windows1253 (Greek)"
+      "UTF: Latin 2, Estern Europe (CP1250)",
+      "UTF: Latin 1, Western Europe (CP1252)",
+      "UTF: Greek (CP1253)",
+      "UTF: Latin 2, Estern Europe (ISO8859-2)",
+      "UTF: Cyrillic (KOI8-R)",
+      "UTF: Chinese (GB2312)",
+      "UTF: Japanese (SJIS)",
    };
 
    static const char *paper_sizes[] = {
@@ -683,6 +687,13 @@ int set_pref_possibility(int which, long n, int save)
       pref_write_rc_file();
    }
    /* #endif */
+
+#ifdef ENABLE_GTK2
+   if (PREF_CHAR_SET == which)
+      if (otherconv_init())
+	 printf("Error: could not set encoding\n");
+#endif
+
    return r;
 }
 
