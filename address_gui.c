@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.91 2005/01/10 06:20:54 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.92 2005/01/16 03:46:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -2661,9 +2661,13 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_box_pack_start(GTK_BOX(hbox_temp), add_record_button, TRUE, TRUE, 0);
    gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(GTK_BIN(add_record_button)->child)),
 		       "label_high");
+#ifdef ENABLE_GTK2
    gtk_widget_add_accelerator(add_record_button, "clicked", accel_group,
-      GDK_r, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-   gtk_tooltips_set_tip(glob_tooltips, add_record_button, _("Add the new record   Ctrl+R"), NULL);
+      GDK_Return, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+   gtk_tooltips_set_tip(glob_tooltips, add_record_button, _("Add the new record   Ctrl+Enter"), NULL);
+#else
+   gtk_tooltips_set_tip(glob_tooltips, add_record_button, _("Add the new record"), NULL);
+#endif
 
    /* Create "apply changes" button */
    apply_record_button = gtk_button_new_with_label(_("Apply Changes"));
@@ -2673,9 +2677,13 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_box_pack_start(GTK_BOX(hbox_temp), apply_record_button, TRUE, TRUE, 0);
    gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(GTK_BIN(apply_record_button)->child)),
 		       "label_high");
+#ifdef ENABLE_GTK2
    gtk_widget_add_accelerator(apply_record_button, "clicked", accel_group,
       GDK_Return, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
    gtk_tooltips_set_tip(glob_tooltips, apply_record_button, _("Commit the modifications   Ctrl+Enter"), NULL);
+#else
+   gtk_tooltips_set_tip(glob_tooltips, apply_record_button, _("Commit the modifications"), NULL);
+#endif
 
    /*Separator */
    separator = gtk_hseparator_new();

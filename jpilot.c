@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.108 2005/01/15 16:21:04 rousseau Exp $ */
+/* $Id: jpilot.c,v 1.109 2005/01/16 03:46:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -2472,20 +2472,35 @@ char * xpm_backup[] = {
    gtk_box_pack_start(GTK_BOX(g_vbox0), button_locked_masked, FALSE, FALSE, 20);
    gtk_box_pack_start(GTK_BOX(g_vbox0), button_unlocked, FALSE, FALSE, 20);
 
+#ifdef ENABLE_GTK2
    gtk_tooltips_set_tip(glob_tooltips, button_locked,
 			_("Show private records   Ctrl-Z"), NULL);
    gtk_widget_add_accelerator(button_locked, "clicked", accel_group,
       GDK_z, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+#else
+   gtk_tooltips_set_tip(glob_tooltips, button_locked,
+			_("Show private records"), NULL);
+#endif
 
+#ifdef ENABLE_GTK2
    gtk_tooltips_set_tip(glob_tooltips, button_locked_masked,
 			_("Hide private records   Ctrl-Z"), NULL);
    gtk_widget_add_accelerator(button_locked_masked, "clicked", accel_group,
       GDK_z, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+#else
+   gtk_tooltips_set_tip(glob_tooltips, button_locked_masked,
+			_("Hide private records"), NULL);
+#endif
 
+#ifdef ENABLE_GTK2
    gtk_tooltips_set_tip(glob_tooltips, button_unlocked,
 			_("Mask private records   Ctrl-Z"), NULL);
    gtk_widget_add_accelerator(button_unlocked, "clicked", accel_group,
       GDK_z, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+#else
+   gtk_tooltips_set_tip(glob_tooltips, button_unlocked,
+			_("Mask private records"), NULL);
+#endif
 
    /* Create "Sync" button */
    button_sync = gtk_button_new();
