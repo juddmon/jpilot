@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.93 2004/11/26 01:01:55 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.94 2004/11/26 08:09:49 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -550,7 +550,7 @@ void cb_export(GtkWidget *widget, gpointer data)
 static void cb_private(GtkWidget *widget, gpointer data)
 {
    int privates, was_privates;
-   int r_dialog;
+   int r_dialog = 0;
 #ifdef ENABLE_PRIVATE
    char ascii_password[64];
    int r_pass;
