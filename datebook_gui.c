@@ -1,4 +1,5 @@
 /* datebook_gui.c
+ *
  * A module of J-Pilot http://jpilot.org
  * 
  * Copyright (C) 1999-2002 by Judd Montgomery
