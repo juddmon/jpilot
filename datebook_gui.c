@@ -42,6 +42,11 @@
 #include "print.h"
 #include "alarms.h"
 #include "japanese.h"
+//#define DAY_VIEW
+//undo
+#ifdef DAY_VIEW
+#include "dayview.h"
+#endif
 
 
 #define PAGE_NONE  0
@@ -2593,13 +2598,16 @@ static void cb_add_new_record(GtkWidget *widget,
       }
    } else {
       unique_id=0; /* Has to be zero */
-      pc_datebook_write(&new_a, NEW_PC_REC, attrib, NULL);
+      pc_datebook_write(&new_a, NEW_PC_REC, attrib, &unique_id);
+      /* Fixme - what should happen here is that the calendar should be 
+         positioned on the or the next future occurrence */
       gtk_calendar_freeze(GTK_CALENDAR(main_calendar));
       gtk_calendar_select_day(GTK_CALENDAR(main_calendar), 1);
       gtk_calendar_select_month(GTK_CALENDAR(main_calendar),
 				new_a.begin.tm_mon, new_a.begin.tm_year+1900);
       gtk_calendar_select_day(GTK_CALENDAR(main_calendar), new_a.begin.tm_mday);
       gtk_calendar_thaw(GTK_CALENDAR(main_calendar));
+
       glob_find_id=unique_id;
    }
    free_Appointment(&new_a);
@@ -3366,15 +3374,16 @@ cb_key_pressed(GtkWidget *widget, GdkEventKey *event,
 #ifdef ENABLE_GTK2
       text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget));
       gtk_text_buffer_get_iter_at_mark(text_buffer,&cursor_pos_iter,gtk_text_buffer_get_insert(text_buffer));
-      if (gtk_text_iter_is_end(&cursor_pos_iter)) {
+      if (gtk_text_iter_is_end(&cursor_pos_iter))
 #else
       if (gtk_text_get_point(GTK_TEXT(widget)) ==
-	  gtk_text_get_length(GTK_TEXT(widget))) {
+	  gtk_text_get_length(GTK_TEXT(widget)))
 #endif
-	 gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event"); 
-	 gtk_widget_grab_focus(GTK_WIDGET(next_widget));
-	 return TRUE;
-      }
+	  {
+	     gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event"); 
+	     gtk_widget_grab_focus(GTK_WIDGET(next_widget));
+	     return TRUE;
+	  }
    }
    return FALSE; 
 }
@@ -3773,10 +3782,25 @@ void cb_todos_show(GtkWidget *widget, gpointer data)
       gtk_paned_set_position(GTK_PANED(todo_pane), h+2);
    }
 }
+
 /*
  * End TODO code
  */
-  
+
+#ifdef DAY_VIEW
+static void cb_resize(GtkWidget *widget, gpointer data)
+{
+   printf("resize\n");//undo
+}
+static gint cb_datebook_idle(gpointer data)
+{
+   update_daily_view_undo(NULL);
+   gtk_signal_connect(GTK_OBJECT(scrolled_window), "configure_event",
+		      GTK_SIGNAL_FUNC(cb_resize), NULL);
+   return FALSE; /* Cause this function not to be called again */
+}
+#endif
+
 int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 {
    extern GtkWidget *glob_date_label;
@@ -3794,6 +3818,10 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    GtkWidget *vbox1, *vbox2;
    GtkWidget *hbox2;
    GtkWidget *hbox_temp;
+#ifdef DAY_VIEW
+   GtkWidget *vbox_no_time_appts;
+   GtkWidget *scrolled_window2;
+#endif
    GtkWidget *vbox_repeat_day;
    GtkWidget *hbox_repeat_day1;
    GtkWidget *hbox_repeat_day2;
@@ -3951,6 +3979,21 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    dow_label = gtk_label_new("");
    gtk_box_pack_start(GTK_BOX(vbox1), dow_label, FALSE, FALSE, 0);
 
+#ifdef DAY_VIEW
+   /* create a new scrolled window. */
+   scrolled_window2 = gtk_scrolled_window_new(NULL, NULL);
+   gtk_container_set_border_width(GTK_CONTAINER(scrolled_window2), 0);
+   gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window2),
+				  GTK_POLICY_NEVER, GTK_POLICY_NEVER);
+   /* Create the "No Time" appointment box */
+   vbox_no_time_appts = gtk_vbox_new(FALSE, 0);
+   //gtk_container_add(GTK_CONTAINER(scrolled_window2), GTK_WIDGET(vbox_no_time_appts));
+   gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(scrolled_window2),
+					 GTK_WIDGET(vbox_no_time_appts));
+   gtk_box_pack_start(GTK_BOX(vbox1), scrolled_window2, FALSE, FALSE, 0);
+   //gtk_box_pack_start(GTK_BOX(vbox1), vbox_no_time_appts, FALSE, FALSE, 0);
+#endif
+   
    /* create a new scrolled window. */
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
 
@@ -3963,7 +4006,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
     * the vertical. */
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
 				  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-   /* The dialog window is created with a vbox packed into it. */
+
    gtk_box_pack_start(GTK_BOX(vbox1), scrolled_window, TRUE, TRUE, 0);
 
 #ifdef ENABLE_DATEBK
@@ -4017,9 +4060,14 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_widget_set_usize(GTK_WIDGET(clist), 10, 10);
    gtk_widget_set_usize(GTK_WIDGET(scrolled_window), 10, 10);
 
+#ifdef DAY_VIEW
+   create_daily_view(scrolled_window, vbox_no_time_appts);
+   gtk_idle_add(cb_datebook_idle, NULL); //undo fix this to be in dayview
+#else
    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
    /*gtk_clist_set_sort_column (GTK_CLIST(clist), 0); */
    /*gtk_clist_set_auto_sort(GTK_CLIST(clist), TRUE); */
+#endif   
 
    
    /*
