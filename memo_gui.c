@@ -676,7 +676,9 @@ void cb_delete_memo(GtkWidget *widget,
       }
    }
 
-   memo_clist_redraw();
+   if (flag == DELETE_FLAG) {
+      memo_clist_redraw();
+   }
 }
 
 
@@ -691,6 +693,7 @@ static void cb_category(GtkWidget *item, int selection)
       }
 
       memo_category = selection;
+      clist_row_selected = 0;
       jp_logf(JP_LOG_DEBUG, "cb_category() cat=%d\n", memo_category);
       memo_clear_details();
       memo_update_clist(clist, category_menu1, &glob_memo_list, memo_category, TRUE);
@@ -1147,10 +1150,18 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       gtk_clist_remove(GTK_CLIST(clist), i);
    }
 
-   /*If there is an item in the list, select the first one */
+   /* If there are items in the list, highlight the selected row */
    if ((main) && (entries_shown>0)) {
-      gtk_clist_select_row(GTK_CLIST(clist), 0, 0);
-      cb_clist_selection(clist, 0, 0, (GdkEventButton *)455, NULL);
+      /* Select the existing requested row, or row 0 if that is impossible */
+      if (clist_row_selected <= entries_shown) {
+	 gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
+	 cb_clist_selection(clist, clist_row_selected, 0, (GdkEventButton *)455, NULL);
+      }
+      else
+      {
+	 gtk_clist_select_row(GTK_CLIST(clist), 0, 0);
+	 cb_clist_selection(clist, 0, 0, (GdkEventButton *)455, NULL);
+      }
    }
 
    gtk_clist_thaw(GTK_CLIST(clist));
@@ -1191,17 +1202,10 @@ static int memo_find()
    return 0;
 }
 
-/* This redraws the clist and goes back to the same line number */
+/* This redraws the clist */
 int memo_clist_redraw()
 {
-   int line_num;
-
-   line_num = clist_row_selected;
-
    memo_update_clist(clist, category_menu1, &glob_memo_list, memo_category, TRUE);
-
-   gtk_clist_select_row(GTK_CLIST(clist), line_num, 0);
-   cb_clist_selection(clist, line_num, 0, (gpointer)455, NULL);
 
    return 0;
 }
@@ -1232,6 +1236,8 @@ int memo_cycle_cat()
 	 break;
       }
    }
+   clist_row_selected = 0;
+
    return 0;
 }
 

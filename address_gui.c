@@ -1113,7 +1113,9 @@ void cb_delete_address(GtkWidget *widget,
       }
    }
 
-   address_clist_redraw();
+   if (flag == DELETE_FLAG) {
+      address_clist_redraw();
+   }
 }
 
 void cb_resort(GtkWidget *widget,
@@ -1504,6 +1506,7 @@ static void cb_category(GtkWidget *item, int selection)
       }
 
       address_category = selection;
+      clist_row_selected = 0;
       jp_logf(JP_LOG_DEBUG, "address_category = %d\n",address_category);
       address_update_clist(clist, category_menu1, &glob_address_list,
 			   address_category, TRUE);
@@ -2030,10 +2033,19 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       entries_shown++;
    }
 
-   /* If there is an item in the list, select the first one */
+   /* If there are items in the list, highlight the selected row */
    if ((main) && (entries_shown>0)) {
-      gtk_clist_select_row(GTK_CLIST(clist), 0, ADDRESS_PHONE_COLUMN);
-      cb_clist_selection(clist, 0, ADDRESS_PHONE_COLUMN, (GdkEventButton *)455, NULL);
+      /* Select the existing requested row, or row 0 if that is impossible */
+      if (clist_row_selected <= entries_shown)
+      {
+	 gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, ADDRESS_PHONE_COLUMN);
+	 cb_clist_selection(clist, clist_row_selected, ADDRESS_PHONE_COLUMN, (GdkEventButton *)455, NULL);
+      }
+      else
+      {
+	 gtk_clist_select_row(GTK_CLIST(clist), 0, ADDRESS_PHONE_COLUMN);
+	 cb_clist_selection(clist, 0, ADDRESS_PHONE_COLUMN, (GdkEventButton *)455, NULL);
+      }
    }
 
    for (i=row_count-1; i>=entries_shown; i--) {
@@ -2119,18 +2131,11 @@ static int address_find()
    return r;
 }
 
-/* This redraws the clist and goes back to the same line number */
+/* This redraws the clist */
 int address_clist_redraw()
 {
-   int line_num;
-
-   line_num = clist_row_selected;
-
    address_update_clist(clist, category_menu1, &glob_address_list,
 			address_category, TRUE);
-
-   gtk_clist_select_row(GTK_CLIST(clist), line_num, ADDRESS_NAME_COLUMN);
-   cb_clist_selection(clist, line_num, ADDRESS_NAME_COLUMN, (gpointer)455, NULL);
 
    return 0;
 }
@@ -2161,6 +2166,8 @@ int address_cycle_cat()
 	 break;
       }
    }
+   clist_row_selected = 0;
+
    return 0;
 }
 

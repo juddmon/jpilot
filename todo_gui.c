@@ -905,7 +905,10 @@ void cb_delete_todo(GtkWidget *widget,
 	 }
       }
    }
-   todo_clist_redraw();
+
+   if (flag == DELETE_FLAG) {
+      todo_clist_redraw();
+   }
 }
 
 static void cb_category(GtkWidget *item, int selection)
@@ -919,6 +922,7 @@ static void cb_category(GtkWidget *item, int selection)
       }
 
       todo_category = selection;
+      clist_row_selected = 0;
       jp_logf(JP_LOG_DEBUG, "todo_category = %d\n",todo_category);
       todo_clear_details();
       todo_update_clist(clist, category_menu1, &glob_todo_list, todo_category, TRUE);
@@ -1615,10 +1619,19 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
    jp_logf(JP_LOG_DEBUG, "entries_shown=%d\n",entries_shown);
 
-   /*If there is an item in the list, select the first one */
+   /* If there are items in the list, highlight the selected row */
    if ((main) && (entries_shown>0)) {
-      gtk_clist_select_row(GTK_CLIST(clist), 0, TODO_PRIORITY_COLUMN);
-      cb_clist_selection(clist, 0, TODO_PRIORITY_COLUMN, (GdkEventButton *)455, "");
+      /* Select the existing requested row, or row 0 if that is impossible */
+      if (clist_row_selected <= entries_shown)
+      {
+	 gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, TODO_PRIORITY_COLUMN);
+	 cb_clist_selection(clist, clist_row_selected, TODO_PRIORITY_COLUMN, (GdkEventButton *)455, "");
+      }
+      else
+      {
+	 gtk_clist_select_row(GTK_CLIST(clist), 0, TODO_PRIORITY_COLUMN);
+	 cb_clist_selection(clist, 0, TODO_PRIORITY_COLUMN, (GdkEventButton *)455, "");
+      }
    }
 
    for (i=row_count-1; i>=entries_shown; i--) {
@@ -1690,15 +1703,7 @@ static gboolean
 /* This redraws the clist and goes back to the same line number */
 int todo_clist_redraw()
 {
-   int line_num;
-
-   line_num = clist_row_selected;
-
    todo_update_clist(clist, category_menu1, &glob_todo_list, todo_category, TRUE);
-
-   /* Don't select the checkbox column, it will get (un)checked */
-   gtk_clist_select_row(GTK_CLIST(clist), line_num, TODO_PRIORITY_COLUMN);
-   cb_clist_selection(clist, line_num, TODO_PRIORITY_COLUMN, (GdkEventButton *)455, "");
 
    return 0;
 }
@@ -1729,6 +1734,8 @@ int todo_cycle_cat()
 	 break;
       }
    }
+   clist_row_selected = 0;
+
    return 0;
 }
 

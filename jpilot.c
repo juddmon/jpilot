@@ -615,7 +615,7 @@ void cb_app_button(GtkWidget *widget, gpointer data)
     case DATEBOOK:
       if (glob_app == DATEBOOK) {
 	 /* Refresh screen */
-	 datebook_refresh(FALSE);
+	 datebook_refresh(TRUE);
       } else {
 /*	 gtk_container_remove(GTK_CONTAINER(g_vbox0_1->parent), */
 /*			      GTK_WIDGET(g_vbox0_1)); */

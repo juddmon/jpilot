@@ -3211,6 +3211,12 @@ int datebook_refresh(int first)
    }
 #endif
 
+   /* Need to disconnect signal before using gtk_calendar_select_day 
+      or callback will be activated inadvertently. */
+   gtk_signal_disconnect_by_func(GTK_OBJECT(main_calendar),
+				 GTK_SIGNAL_FUNC(cb_cal_changed), 
+				 GINT_TO_POINTER(CAL_DAY_SELECTED));
+
    if (first) {
       gtk_calendar_select_month(GTK_CALENDAR(main_calendar),
 				current_month, current_year+1900);
@@ -3227,6 +3233,9 @@ int datebook_refresh(int first)
       gtk_calendar_select_day(GTK_CALENDAR(main_calendar), copy_current_day);
       gtk_calendar_thaw(GTK_CALENDAR(main_calendar));
    }
+   gtk_signal_connect(GTK_OBJECT(main_calendar),
+		      "day_selected", GTK_SIGNAL_FUNC(cb_cal_changed),
+		      GINT_TO_POINTER(CAL_DAY_SELECTED));
 
    dayview_update_clist();
    highlight_days();
@@ -3941,6 +3950,9 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 				GTK_CALENDAR_SHOW_DAY_NAMES |
 				GTK_CALENDAR_SHOW_WEEK_NUMBERS | fdow);
    gtk_box_pack_start(GTK_BOX(hbox_temp), main_calendar, FALSE, FALSE, 0);
+   gtk_signal_connect(GTK_OBJECT(main_calendar),
+		      "day_selected", GTK_SIGNAL_FUNC(cb_cal_changed),
+		      GINT_TO_POINTER(CAL_DAY_SELECTED));
 
    /* Make accelerators for some buttons window */
    accel_group = gtk_accel_group_new();
@@ -4607,10 +4619,6 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_notebook_popup_enable(GTK_NOTEBOOK(notebook));
 
    datebook_refresh(TRUE);
-
-   gtk_signal_connect(GTK_OBJECT(main_calendar),
-		      "day_selected", GTK_SIGNAL_FUNC(cb_cal_changed),
-		      GINT_TO_POINTER(CAL_DAY_SELECTED));
 
    set_date_labels();
 
