@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.47 2004/11/22 00:52:42 rikster5 Exp $ */
+/* $Id: sync.c,v 1.48 2004/11/27 11:54:58 rousseau Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -787,7 +787,6 @@ int jp_sync(struct my_sync_info *sync_info)
 	 printf("appinfo dirty for %s\n", info.name);
       }
    }
-   pi_buffer_free(buffer);
 # endif
 #endif
 
