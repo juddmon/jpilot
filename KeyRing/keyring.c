@@ -452,7 +452,7 @@ static void cb_delete(GtkWidget *widget, gpointer data)
     * so that it can be deleted at sync time.  We need the original record
     * so that if it has changed on the pilot we can warn the user that
     * the record has changed on the pilot. */
-   size = pack_KeyRing(&(mkr->kr), buf, 0xFFFF);
+   size = pack_KeyRing(&(mkr->kr), (unsigned char *)buf, 0xFFFF);
    
    br.rt = mkr->rt;
    br.unique_id = mkr->unique_id;
@@ -526,10 +526,10 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    kr.password = gtk_entry_get_text(GTK_ENTRY(entry_password));
    kr.note = gtk_editable_get_chars(GTK_EDITABLE(text_note), 0, -1);
 
-   jp_charset_j2p(kr.name, strlen(kr.name)+1);
-   jp_charset_j2p(kr.account, strlen(kr.account)+1);
-   jp_charset_j2p(kr.password, strlen(kr.account)+1);
-   jp_charset_j2p(kr.note, strlen(kr.note)+1);
+   jp_charset_j2p((unsigned char *)kr.name, strlen(kr.name)+1);
+   jp_charset_j2p((unsigned char *)kr.account, strlen(kr.account)+1);
+   jp_charset_j2p((unsigned char *)kr.password, strlen(kr.account)+1);
+   jp_charset_j2p((unsigned char *)kr.note, strlen(kr.note)+1);
 
    size = pack_KeyRing(&kr, buf, 0xFFFF);
 
@@ -570,6 +570,46 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    jp_pc_write("Keys-Gtkr", &br);
 
    display_records();
+
+   return;
+}
+
+/* First pass at password generating code */
+static void cb_gen_password(GtkWidget *widget, gpointer data)
+{
+#define MIN_KR_PASS (20)	/* Minimum length */
+#define MAX_KR_PASS (25)	/* Maximum length */
+   GtkWidget *entry;
+   int 	i,
+     length,
+     alpha_size,
+     numer_size;
+   char alpha[] = "abcdfghjklmnpqrstvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+   char numer[] = "1234567890";
+   char passwd[MAX_KR_PASS + 1];
+
+   jp_logf(JP_LOG_DEBUG, "KeyRing: cb_gen_password\n");
+
+   entry=data;
+
+   srand(time(NULL) * getpid());
+   alpha_size = strlen(alpha);
+   numer_size = strlen(numer);
+
+   length = rand() % (MAX_KR_PASS - MIN_KR_PASS) + MIN_KR_PASS;
+
+   for (i = 0; i < length; i++) {
+      if ((i % 2) == 0) {
+	 passwd[i] = alpha[rand() % alpha_size];
+      } else {
+	 passwd[i] = numer[rand() % numer_size];
+      }
+   }
+
+   passwd[length] = '\0';
+   fprintf(stderr, "%s\n", passwd);
+
+   gtk_entry_append_text(GTK_ENTRY(entry), passwd);
 
    return;
 }
@@ -624,7 +664,7 @@ static int display_record(struct MyKeyRing *mkr, int at_row)
       gtk_clist_set_text(GTK_CLIST(clist), at_row, 0, temp);
    } else {
       temp_str = strdup(mkr->kr.name);
-      jp_charset_p2j(temp_str, strlen(mkr->kr.name)+1);
+      jp_charset_p2j((unsigned char *)temp_str, strlen(mkr->kr.name)+1);
       gtk_clist_set_text(GTK_CLIST(clist), at_row, 0, temp_str);
       free(temp_str);
    }
@@ -633,7 +673,7 @@ static int display_record(struct MyKeyRing *mkr, int at_row)
       gtk_clist_set_text(GTK_CLIST(clist), at_row, 1, "");
    } else {
       temp_str = strdup(mkr->kr.account);
-      jp_charset_p2j(temp_str, strlen(mkr->kr.account)+1);
+      jp_charset_p2j((unsigned char *)temp_str, strlen(mkr->kr.account)+1);
       gtk_clist_set_text(GTK_CLIST(clist), at_row, 1, temp_str);
       free(temp_str);
    }
@@ -821,7 +861,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 
    if (mkr->kr.name) {
       temp_str = strdup(mkr->kr.name);
-      jp_charset_p2j(temp_str, strlen(mkr->kr.name)+1); 
+      jp_charset_p2j((unsigned char *)temp_str, strlen(mkr->kr.name)+1); 
       gtk_entry_set_text(GTK_ENTRY(entry_name), temp_str);
       free(temp_str);
    } else {
@@ -830,7 +870,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 
    if (mkr->kr.account) {
       temp_str = strdup(mkr->kr.account);
-      jp_charset_p2j(temp_str, strlen(mkr->kr.account)+1); 
+      jp_charset_p2j((unsigned char *)temp_str, strlen(mkr->kr.account)+1); 
       gtk_entry_set_text(GTK_ENTRY(entry_account), temp_str); 
       free(temp_str);
    } else {
@@ -839,7 +879,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 
    if (mkr->kr.password) {
       temp_str = strdup(mkr->kr.password);
-      jp_charset_p2j(temp_str, strlen(mkr->kr.password)+1);
+      jp_charset_p2j((unsigned char *)temp_str, strlen(mkr->kr.password)+1);
       gtk_entry_set_text(GTK_ENTRY(entry_password), temp_str); 
       free(temp_str);
    } else {
@@ -851,7 +891,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 			   gtk_text_get_length(GTK_TEXT(text_note)));
    if (mkr->kr.note) {
       temp_str = strdup(mkr->kr.note);
-      jp_charset_p2j(temp_str, strlen(mkr->kr.note)+1);
+      jp_charset_p2j((unsigned char *)temp_str, strlen(mkr->kr.note)+1);
       gtk_text_insert(GTK_TEXT(text_note), NULL,NULL,NULL, temp_str, -1);
       free(temp_str);
    }
@@ -969,7 +1009,7 @@ static void make_menus()
 
    /* This call should work, but the appinfo is too small, so we do it */
    /* Keyring is not using a legal category app info structure */
-   //unpack_CategoryAppInfo(&ai, buf, buf_size+4);
+   /* unpack_CategoryAppInfo(&ai, buf, buf_size+4); */
    
    /* I'm going to be lazy and only get the names, since thats all I use */
    for (i=0; i<16; i++) {
@@ -982,7 +1022,7 @@ static void make_menus()
       if (ai.name[i][0]=='\0') {
 	 continue;
       }
-      jp_charset_p2j(ai.name[i], 16);
+      jp_charset_p2j((unsigned char *)ai.name[i], 16);
       categories[count+1]=ai.name[i];
       glob_category_number_from_menu_item[count++]=i;
    }
@@ -1409,8 +1449,13 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    label = gtk_label_new(_("password: "));
    entry_password = gtk_entry_new();
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label), 0, 1, 3, 4);
-   gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(entry_password), 1, 10, 3, 4);
+   gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(entry_password), 1, 9, 3, 4);
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
+   /* Button for random password */
+   button = gtk_button_new_with_label(_("Generate Password"));
+   gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(button), 9, 10, 3, 4);
+   gtk_signal_connect(GTK_OBJECT(button), "clicked",
+		      GTK_SIGNAL_FUNC(cb_gen_password), entry_password);
 
    
    /* Note textbox */
