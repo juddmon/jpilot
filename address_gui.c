@@ -34,6 +34,7 @@
 #include "print.h"
 #include "password.h"
 #include "export.h"
+#include "mailer.h"
 #include <pi-dlp.h>
 /* There are a large number of calls to gtk_text_insert in the code.  To
  * add ifdef/endif blocks around all of them would make the code unreadable.
