@@ -131,6 +131,7 @@ int jp_vlogf (int level, char *format, va_list val) {
    size=strlen(buf);
 
    local_buf = buf;
+#ifdef ENABLE_GTK2
    /* UTF-8 text so transform in local encoding */
    if (g_utf8_validate(buf, -1, NULL))
    {
@@ -138,6 +139,7 @@ int jp_vlogf (int level, char *format, va_list val) {
       if (NULL == local_buf)
          local_buf = buf;
    }
+#endif
 
    if ((fp) && (level & glob_log_file_mask)) {
       fwrite(local_buf, size, 1, fp);
