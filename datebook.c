@@ -291,7 +291,8 @@ int db3_parse_tag(char *note, int *type, struct db4_struct *db4)
 }
 #endif
 
-int pc_datebook_write(struct Appointment *a, PCRecType rt, unsigned char attrib)
+int pc_datebook_write(struct Appointment *a, PCRecType rt,
+		      unsigned char attrib, unsigned int *unique_id)
 {
    char record[65536];
    int rec_len;
@@ -314,9 +315,17 @@ int pc_datebook_write(struct Appointment *a, PCRecType rt, unsigned char attrib)
    br.attrib = attrib;
    br.buf = record;
    br.size = rec_len;
+   /* Keep unique ID intact */
+   if (unique_id) {
+      br.unique_id = *unique_id;
+   } else {
+      br.unique_id = 0;
+   }
 
    jp_pc_write("DatebookDB", &br);
-   /* *unique_id = br.unique_id;*/
+   if (unique_id) {
+      *unique_id = br.unique_id;
+   }
 
    return 0;
 }

@@ -125,6 +125,15 @@ int memo_sort(MemoList **memol, int sort_order)
    return 0;
 }
 
+/*
+ * This function writes to the MemoDB.pc3 file
+ * 
+ * memo - input - a memo to be written
+ * rt - input - type of record to be written
+ * attrib - input - attributes of record
+ * unique_id - input/output - If unique_id==0 then the palm assigns an ID,
+ *  else the unique_id passed in is used.
+ */
 int pc_memo_write(struct Memo *memo, PCRecType rt, unsigned char attrib,
 		  unsigned int *unique_id)
 {
@@ -138,7 +147,6 @@ int pc_memo_write(struct Memo *memo, PCRecType rt, unsigned char attrib,
    if (char_set != CHAR_SET_ENGLISH) {
       if (memo->text) charset_j2p(memo->text, strlen(memo->text)+1, char_set);
    }
-
    rec_len = pack_Memo(memo, record, 65535);
    if (!rec_len) {
       PRINT_FILE_LINE;
@@ -149,6 +157,12 @@ int pc_memo_write(struct Memo *memo, PCRecType rt, unsigned char attrib,
    br.attrib = attrib;
    br.buf = record;
    br.size = rec_len;
+   /* Keep unique ID intact */
+   if (unique_id) {
+      br.unique_id = *unique_id;
+   } else {
+      br.unique_id = 0;
+   }
 
    get_pref(PREF_MEMO32_MODE, &ivalue, NULL);
    if (ivalue) {
@@ -156,7 +170,9 @@ int pc_memo_write(struct Memo *memo, PCRecType rt, unsigned char attrib,
    } else {
       jp_pc_write("MemoDB", &br);
    }
-   *unique_id = br.unique_id;
+   if (unique_id) {
+      *unique_id = br.unique_id;
+   }
 
    return 0;
 }

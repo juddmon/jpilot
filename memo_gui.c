@@ -217,7 +217,6 @@ int memo_import_callback(GtkWidget *parent_window, char *file_path, int type)
    char text[65536];
    struct Memo new_memo;
    unsigned char attrib;
-   unsigned int unique_id;
    unsigned int len;
    unsigned int text_len;
    int i, ret, index;
@@ -276,7 +275,7 @@ int memo_import_callback(GtkWidget *parent_window, char *file_path, int type)
 			    attrib & 0x0F,
 			    &new_cat_num);
       if ((ret==DIALOG_SAID_IMPORT_ALL) || (ret==DIALOG_SAID_IMPORT_YES)) {
-	 pc_memo_write(&new_memo, NEW_PC_REC, attrib, &unique_id);
+	 pc_memo_write(&new_memo, NEW_PC_REC, attrib, NULL);
 	 jpilot_logf(LOG_WARN, "Imported Memo %s\n", file_path);
       }
    }
@@ -340,7 +339,7 @@ int memo_import_callback(GtkWidget *parent_window, char *file_path, int type)
 	 attrib = (new_cat_num & 0x0F) |
 	   (priv ? dlpRecAttrSecret : 0);
 	 if ((ret==DIALOG_SAID_IMPORT_YES) || (import_all)) {
-	    pc_memo_write(&new_memo, NEW_PC_REC, attrib, &unique_id);
+	    pc_memo_write(&new_memo, NEW_PC_REC, attrib, NULL);
 	 }
       }
    }
@@ -408,7 +407,7 @@ int memo_import_callback(GtkWidget *parent_window, char *file_path, int type)
 	 attrib = (new_cat_num & 0x0F) |
 	   ((temp_memolist->mmemo.attrib & 0x10) ? dlpRecAttrSecret : 0);
 	 if ((ret==DIALOG_SAID_IMPORT_YES) || (import_all)) {
-	    pc_memo_write(&new_memo, NEW_PC_REC, attrib, &unique_id);
+	    pc_memo_write(&new_memo, NEW_PC_REC, attrib, NULL);
 	 }
       }
       free_MemoList(&memolist);
@@ -563,7 +562,7 @@ static void cb_memo_export_done(GtkWidget *widget, const char *filename)
 {
    free_MemoList(&export_memo_list);
 
-   set_pref(PREF_MEMO_EXPORT_FILENAME, 0, filename);
+   set_pref(PREF_MEMO_EXPORT_FILENAME, 0, filename, TRUE);
 }
 
 int memo_export(GtkWidget *window)
@@ -722,7 +721,7 @@ int memo_get_details(struct Memo *new_memo, unsigned char *attrib)
 static void cb_use_memo32(GtkWidget *widget,
 			  gpointer   data)
 {
-   set_pref(PREF_MEMO32_MODE, GTK_TOGGLE_BUTTON(memo32_checkbox)->active, NULL);
+   set_pref(PREF_MEMO32_MODE, GTK_TOGGLE_BUTTON(memo32_checkbox)->active, NULL, TRUE);
    cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
 }
 
@@ -736,6 +735,9 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    int show_priv;
 
    flag=GPOINTER_TO_INT(data);
+
+   mmemo=NULL;
+   unique_id=0;
 
    /* Do masking like Palm OS 3.5 */
    if ((GPOINTER_TO_INT(data)==COPY_FLAG) || 
@@ -764,6 +766,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    }
    if (flag==MODIFY_FLAG) {
       mmemo = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
+      unique_id = mmemo->unique_id;
       if (mmemo < (MyMemo *)CLIST_MIN_DATA) {
 	 return;
       }
@@ -776,13 +779,23 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
 
    set_new_button_to(CLEAR_FLAG);
 
-   pc_memo_write(&new_memo, NEW_PC_REC, attrib, &unique_id);
-   free_Memo(&new_memo);
+   /* Keep unique ID intact */
    if (flag==MODIFY_FLAG) {
       cb_delete_memo(NULL, data);
+      if ((mmemo->rt==PALM_REC) || (mmemo->rt==REPLACEMENT_PALM_REC)) {
+	 pc_memo_write(&new_memo, REPLACEMENT_PALM_REC, attrib, &unique_id);
+      } else {
+	 unique_id=0;
+	 pc_memo_write(&new_memo, NEW_PC_REC, attrib, &unique_id);
+      }
    } else {
-      memo_clist_redraw();
+      unique_id=0;
+      pc_memo_write(&new_memo, NEW_PC_REC, attrib, &unique_id);
    }
+
+   free_Memo(&new_memo);
+   memo_clist_redraw();
+
    glob_find_id = unique_id;
    memo_find();
 
@@ -982,6 +995,7 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
       switch (temp_memo->mmemo.rt) {
        case NEW_PC_REC:
+       case REPLACEMENT_PALM_REC:
 	 colormap = gtk_widget_get_colormap(clist);
 	 color.red=CLIST_NEW_RED;
 	 color.green=CLIST_NEW_GREEN;
@@ -1121,7 +1135,7 @@ int memo_gui_cleanup()
    }
    free_MemoList(&glob_memo_list);
    connect_changed_signals(DISCONNECT_SIGNALS);
-   set_pref(PREF_MEMO_PANE, GTK_PANED(pane)->handle_xpos, NULL);
+   set_pref(PREF_MEMO_PANE, GTK_PANED(pane)->handle_xpos, NULL, TRUE);
    return 0;
 }
 

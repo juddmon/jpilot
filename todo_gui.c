@@ -352,7 +352,6 @@ int todo_import_callback(GtkWidget *parent_window, char *file_path, int type)
    char note[65536];
    struct ToDo new_todo;
    unsigned char attrib;
-   unsigned int unique_id;
    int i, ret, index;
    int import_all;
    ToDoList *todolist;
@@ -477,7 +476,7 @@ int todo_import_callback(GtkWidget *parent_window, char *file_path, int type)
 	 attrib = (new_cat_num & 0x0F) |
 	   (priv ? dlpRecAttrSecret : 0);
 	 if ((ret==DIALOG_SAID_IMPORT_YES) || (import_all)) {
-	    pc_todo_write(&new_todo, NEW_PC_REC, attrib, &unique_id);
+	    pc_todo_write(&new_todo, NEW_PC_REC, attrib, NULL);
 	 }
       }
    }
@@ -540,7 +539,7 @@ int todo_import_callback(GtkWidget *parent_window, char *file_path, int type)
 	   ((temp_todolist->mtodo.attrib & 0x10) ? dlpRecAttrSecret : 0);
 	 if ((ret==DIALOG_SAID_IMPORT_YES) || (import_all)) {
 	    pc_todo_write(&(temp_todolist->mtodo.todo), NEW_PC_REC,
-			  attrib, &unique_id);
+			  attrib, NULL);
 	 }
       }
       free_ToDoList(&todolist);
@@ -719,7 +718,7 @@ static void cb_todo_export_done(GtkWidget *widget, const char *filename)
 {
    free_ToDoList(&export_todo_list);
 
-   set_pref(PREF_TODO_EXPORT_FILENAME, 0, filename);
+   set_pref(PREF_TODO_EXPORT_FILENAME, 0, filename, TRUE);
 }
 
 int todo_export(GtkWidget *window)
@@ -818,7 +817,7 @@ void cb_check_button_no_due_date(GtkWidget *widget, gpointer data)
 void cb_hide_completed(GtkWidget *widget,
 		       gpointer   data)
 {
-   set_pref(PREF_HIDE_COMPLETED, GTK_TOGGLE_BUTTON(widget)->active, NULL);
+   set_pref(PREF_HIDE_COMPLETED, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
    todo_clear_details();
    todo_clist_redraw();
 }
@@ -950,6 +949,8 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    unsigned int unique_id;
 
    flag=GPOINTER_TO_INT(data);
+   unique_id = 0;
+   mtodo=NULL;
 
    /* Do masking like Palm OS 3.5 */
    if ((GPOINTER_TO_INT(data)==COPY_FLAG) || 
@@ -978,6 +979,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    }
    if (flag==MODIFY_FLAG) {
       mtodo = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
+      unique_id=mtodo->unique_id;
       if (mtodo < (MyToDo *)CLIST_MIN_DATA) {
 	 return;
       }
@@ -990,13 +992,20 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
 
    set_new_button_to(CLEAR_FLAG);
 
-   pc_todo_write(&new_todo, NEW_PC_REC, attrib, &unique_id);
-   free_ToDo(&new_todo);
    if (flag==MODIFY_FLAG) {
       cb_delete_todo(NULL, data);
+      if ((mtodo->rt==PALM_REC) || (mtodo->rt==REPLACEMENT_PALM_REC)) {
+	 pc_todo_write(&new_todo, REPLACEMENT_PALM_REC, attrib, &unique_id);
+      } else {
+	 unique_id=0;
+	 pc_todo_write(&new_todo, NEW_PC_REC, attrib, &unique_id);
+      }
    } else {
-      todo_clist_redraw();
+      unique_id=0;
+      pc_todo_write(&new_todo, NEW_PC_REC, attrib, &unique_id);
    }
+   todo_clist_redraw();
+   free_ToDo(&new_todo);
    glob_find_id = unique_id;
    todo_find();
 
@@ -1249,6 +1258,7 @@ static void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
       switch (temp_todo->mtodo.rt) {
        case NEW_PC_REC:
+       case REPLACEMENT_PALM_REC:
 	 colormap = gtk_widget_get_colormap(clist);
 	 color.red=CLIST_NEW_RED;
 	 color.green=CLIST_NEW_GREEN;
@@ -1419,7 +1429,7 @@ int todo_gui_cleanup()
       cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
    }
    connect_changed_signals(DISCONNECT_SIGNALS);
-   set_pref(PREF_TODO_PANE, GTK_PANED(pane)->handle_xpos, NULL);
+   set_pref(PREF_TODO_PANE, GTK_PANED(pane)->handle_xpos, NULL, TRUE);
    return 0;
 }
 

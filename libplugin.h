@@ -140,6 +140,7 @@ extern int jpilot_logf(int level, char *format, ...);
  */
 #define jp_logf jpilot_logf
 
+/* This bit means that this record is of no importance anymore */
 #define SPENT_PC_RECORD_BIT 256
 
 typedef enum {
@@ -147,8 +148,9 @@ typedef enum {
    MODIFIED_PALM_REC = 101L,
    DELETED_PALM_REC = 102L,
    NEW_PC_REC = 103L,
-   DELETED_PC_REC =  SPENT_PC_RECORD_BIT + 104L,
-   DELETED_DELETED_PALM_REC =  SPENT_PC_RECORD_BIT + 105L
+   DELETED_PC_REC =  SPENT_PC_RECORD_BIT | 104L,
+   DELETED_DELETED_PALM_REC =  SPENT_PC_RECORD_BIT | 105L,
+   REPLACEMENT_PALM_REC = 106L
 } PCRecType;
 
 typedef struct

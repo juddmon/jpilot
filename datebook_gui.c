@@ -514,7 +514,7 @@ int datebook_import_callback(GtkWidget *parent_window, char *file_path, int type
 	 attrib = (new_cat_num & 0x0F) |
 	   (priv ? dlpRecAttrSecret : 0);
 	 if ((ret==DIALOG_SAID_IMPORT_YES) || (import_all)) {
-	    pc_datebook_write(&new_a, NEW_PC_REC, attrib);
+	    pc_datebook_write(&new_a, NEW_PC_REC, attrib, NULL);
 	 }
       }
    }
@@ -575,7 +575,7 @@ int datebook_import_callback(GtkWidget *parent_window, char *file_path, int type
 	 attrib = (new_cat_num & 0x0F) |
 	   ((temp_alist->ma.attrib & 0x10) ? dlpRecAttrSecret : 0);
 	 if ((ret==DIALOG_SAID_IMPORT_YES) || (import_all)) {
-	    pc_datebook_write(&(temp_alist->ma.a), NEW_PC_REC, attrib);
+	    pc_datebook_write(&(temp_alist->ma.a), NEW_PC_REC, attrib, NULL);
 	 }
       }
       free_AppointmentList(&alist);
@@ -779,7 +779,7 @@ static gboolean cb_export_destroy(GtkWidget *widget)
    const char *filename;
 
    filename = gtk_entry_get_text(GTK_ENTRY(save_as_entry));
-   set_pref(PREF_DATEBOOK_EXPORT_FILENAME, 0, filename);
+   set_pref(PREF_DATEBOOK_EXPORT_FILENAME, 0, filename, TRUE);
 
    gtk_main_quit();
 
@@ -1975,6 +1975,7 @@ static int dayview_update_clist()
 
       switch (temp_al->ma.rt) {
        case NEW_PC_REC:
+       case REPLACEMENT_PALM_REC:
 	 colormap = gtk_widget_get_colormap(clist);
 	 color.red=CLIST_NEW_RED;
 	 color.green=CLIST_NEW_GREEN;
@@ -2156,8 +2157,11 @@ static void cb_add_new_record(GtkWidget *widget,
    int r;
    unsigned char attrib;
    int show_priv;
+   unsigned int unique_id;
 
    jpilot_logf(LOG_DEBUG, "cb_add_new_record\n");
+
+   unique_id=0;
 
    /* Do masking like Palm OS 3.5 */
    if ((GPOINTER_TO_INT(data)==COPY_FLAG) || 
@@ -2191,6 +2195,7 @@ static void cb_add_new_record(GtkWidget *widget,
    }
    if (flag==MODIFY_FLAG) {
       ma = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
+      unique_id = ma->unique_id;
       if (ma < (MyAppointment *)CLIST_MIN_DATA) {
 	 return;
       }
@@ -2237,22 +2242,32 @@ static void cb_add_new_record(GtkWidget *widget,
 
    set_new_button_to(CLEAR_FLAG);
 
-   pc_datebook_write(&new_a, NEW_PC_REC, attrib);
-   free_Appointment(&new_a);
    if (flag==MODIFY_FLAG) {
       /*
        * We need to take care of the 2 options allowed when modifying
        * repeating appointments
        */
+      delete_pc_record(DATEBOOK, ma, flag);
+
       if (create_exception) {
 	 datebook_copy_appointment(&(ma->a), &a);
 	 datebook_add_exception(a, current_year, current_month, current_day);
-	 pc_datebook_write(a, NEW_PC_REC, attrib);
+	 if ((ma->rt==PALM_REC) || (ma->rt==REPLACEMENT_PALM_REC)) {
+	    /* The original record gets the same ID, this exception gets a new one. */
+	    pc_datebook_write(a, REPLACEMENT_PALM_REC, attrib, &unique_id);
+	 } else {
+	    pc_datebook_write(a, NEW_PC_REC, attrib, NULL);
+	 }
+	 pc_datebook_write(&new_a, NEW_PC_REC, attrib, NULL);
 	 free_Appointment(a);
 	 free(a);
+      } else {
+	 pc_datebook_write(&new_a, REPLACEMENT_PALM_REC, attrib, &unique_id);
       }
-      delete_pc_record(DATEBOOK, ma, flag);
+   } else {
+      pc_datebook_write(&new_a, NEW_PC_REC, attrib, NULL);
    }
+   free_Appointment(&new_a);
    /*dayview_update_clist(); */
    /* Force the calendar redraw and re-read of appointments */
    gtk_signal_emit_by_name(GTK_OBJECT(main_calendar), "day_selected");
@@ -2290,6 +2305,8 @@ void cb_delete_appt(GtkWidget *widget, gpointer data)
       return;
    }
 
+   delete_pc_record(DATEBOOK, ma, flag);
+
    /* */
    /*We need to take care of the 2 options allowed when modifying */
    /*repeating appointments */
@@ -2305,15 +2322,13 @@ void cb_delete_appt(GtkWidget *widget, gpointer data)
  	 /*Create an exception in the appointment */
 	 datebook_copy_appointment(&(ma->a), &a);
 	 datebook_add_exception(a, current_year, current_month, current_day);
-	 pc_datebook_write(a, NEW_PC_REC, ma->attrib);
+	 pc_datebook_write(a, REPLACEMENT_PALM_REC, ma->attrib, &(ma->unique_id));
 	 free_Appointment(a);
 	 free(a);
 	 /*Since this was really a modify, and not a delete */
 	 flag=MODIFY_FLAG;
       }
    }
-
-   delete_pc_record(DATEBOOK, ma, flag);
 
    /* Force the calendar redraw and re-read of appointments */
    gtk_signal_emit_by_name(GTK_OBJECT(main_calendar), "day_selected");
@@ -3010,7 +3025,7 @@ int datebook_gui_cleanup()
       cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
    }
    connect_changed_signals(DISCONNECT_SIGNALS);
-   set_pref(PREF_DATEBOOK_PANE, GTK_PANED(pane)->handle_xpos, NULL);
+   set_pref(PREF_DATEBOOK_PANE, GTK_PANED(pane)->handle_xpos, NULL, TRUE);
 #ifdef USE_DB3
    if (GTK_IS_WIDGET(window_date_cats)) {
       gtk_widget_destroy(window_date_cats);

@@ -340,7 +340,6 @@ int address_import_callback(GtkWidget *parent_window, char *file_path, int type)
    char text[65536];
    struct Address new_addr;
    unsigned char attrib;
-   unsigned int unique_id;
    int i, ret, index;
    int import_all;
    AddressList *addrlist;
@@ -432,7 +431,7 @@ int address_import_callback(GtkWidget *parent_window, char *file_path, int type)
 	 attrib = (new_cat_num & 0x0F) |
 	   (priv ? dlpRecAttrSecret : 0);
 	 if ((ret==DIALOG_SAID_IMPORT_YES) || (import_all)) {
-	    pc_address_write(&new_addr, NEW_PC_REC, attrib, &unique_id);
+	    pc_address_write(&new_addr, NEW_PC_REC, attrib, NULL);
 	 }
       }
    }
@@ -494,7 +493,7 @@ int address_import_callback(GtkWidget *parent_window, char *file_path, int type)
 	 attrib = (new_cat_num & 0x0F) |
 	   ((temp_addrlist->ma.attrib & 0x10) ? dlpRecAttrSecret : 0);
 	 if ((ret==DIALOG_SAID_IMPORT_YES) || (import_all)) {
-	    pc_address_write(&(temp_addrlist->ma.a), NEW_PC_REC, attrib, &unique_id);
+	    pc_address_write(&(temp_addrlist->ma.a), NEW_PC_REC, attrib, NULL);
 	 }
       }
       free_AddressList(&addrlist);
@@ -670,7 +669,7 @@ static void cb_addr_export_done(GtkWidget *widget, const char *filename)
 {
    free_AddressList(&export_address_list);
 
-   set_pref(PREF_ADDRESS_EXPORT_FILENAME, 0, filename);
+   set_pref(PREF_ADDRESS_EXPORT_FILENAME, 0, filename, TRUE);
 }
 
 int address_export(GtkWidget *window)
@@ -790,7 +789,7 @@ void cb_notebook_changed(GtkWidget *widget,
       return;
    }
    jpilot_logf(LOG_DEBUG, "cb_notebook_changed(), prev_page=%d, page=%d\n", prev_page, page);
-   set_pref(PREF_ADDRESS_NOTEBOOK_PAGE, page, NULL);
+   set_pref(PREF_ADDRESS_NOTEBOOK_PAGE, page, NULL, TRUE);
 }
 
 static void get_address_attrib(unsigned char *attrib)
@@ -823,6 +822,8 @@ static void cb_add_new_record(GtkWidget *widget,
    int show_priv;
 
    bzero(&a, sizeof(a));
+   unique_id=0;
+   ma=NULL;
 
    /* Do masking like Palm OS 3.5 */
    if ((GPOINTER_TO_INT(data)==COPY_FLAG) || 
@@ -844,6 +845,7 @@ static void cb_add_new_record(GtkWidget *widget,
       /*These rec_types are both the same for now */
       if (GPOINTER_TO_INT(data)==MODIFY_FLAG) {
 	 ma = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
+	 unique_id=ma->unique_id;
 	 if (ma < (MyAddress *)CLIST_MIN_DATA) {
 	    return;
 	 }
@@ -871,13 +873,20 @@ static void cb_add_new_record(GtkWidget *widget,
 
       set_new_button_to(CLEAR_FLAG);
 
-      pc_address_write(&a, NEW_PC_REC, attrib, &unique_id);
-      free_Address(&a);
       if (GPOINTER_TO_INT(data) == MODIFY_FLAG) {
 	 cb_delete_address(NULL, data);
+	 if ((ma->rt==PALM_REC) || (ma->rt==REPLACEMENT_PALM_REC)) {
+	    pc_address_write(&a, REPLACEMENT_PALM_REC, attrib, &unique_id);
+	 } else {
+	    unique_id=0;
+	    pc_address_write(&a, NEW_PC_REC, attrib, &unique_id);
+	 }
       } else {
-	 address_clist_redraw();
+	 unique_id=0;
+	 pc_address_write(&a, NEW_PC_REC, attrib, &unique_id);
       }
+      address_clist_redraw();
+      free_Address(&a);
       glob_find_id = unique_id;
       address_find();
    }
@@ -1272,6 +1281,7 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
       switch (temp_al->ma.rt) {
        case NEW_PC_REC:
+       case REPLACEMENT_PALM_REC:
 	 colormap = gtk_widget_get_colormap(clist);
 	 color.red=CLIST_NEW_RED;
 	 color.green=CLIST_NEW_GREEN;
@@ -1535,7 +1545,7 @@ int address_gui_cleanup()
       cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
    }
    connect_changed_signals(DISCONNECT_SIGNALS);
-   set_pref(PREF_ADDRESS_PANE, GTK_PANED(pane)->handle_xpos, NULL);
+   set_pref(PREF_ADDRESS_PANE, GTK_PANED(pane)->handle_xpos, NULL, TRUE);
    return 0;
 }
 

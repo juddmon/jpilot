@@ -510,6 +510,7 @@ int jp_delete_record(char *DB_name, buf_rec *br, int flag)
    }
    switch (br->rt) {
     case NEW_PC_REC:
+    case REPLACEMENT_PALM_REC:
       pc_in=jp_open_home_file(PC_name, "r+");
       if (pc_in==NULL) {
 	 jp_logf(LOG_WARN, "Couldn't open PC records file\n");
@@ -523,7 +524,10 @@ int jp_delete_record(char *DB_name, buf_rec *br, int flag)
 	    return -1;
 	 }
 	 if (header.header_version==2) {
-	    if (header.unique_id==br->unique_id) {
+	    /* Keep unique ID intact */
+	    if ((header.unique_id==br->unique_id) && 
+		((header.rt==NEW_PC_REC) || (header.rt==REPLACEMENT_PALM_REC))
+		) {
 	       if (fseek(pc_in, -header.header_len, SEEK_CUR)) {
 		  jp_logf(LOG_WARN, "fseek failed\n");
 	       }
@@ -577,6 +581,10 @@ int jp_delete_record(char *DB_name, buf_rec *br, int flag)
    return 0;
 }
 
+/*
+ * if buf_rec->unique_id==0 then the palm assigns an ID, else
+ *  use buf_rec->unique_id.
+ */
 int jp_pc_write(char *DB_name, buf_rec *br)
 {
    PC3RecordHeader header;
@@ -588,10 +596,15 @@ int jp_pc_write(char *DB_name, buf_rec *br)
 
    g_snprintf(PC_name, 255, "%s.pc3", DB_name);
    PC_name[255]='\0';
-
-   get_next_unique_pc_id(&next_unique_id);
+   if (br->unique_id==0) {
+      get_next_unique_pc_id(&next_unique_id);
+      header.unique_id=next_unique_id;
+      br->unique_id=next_unique_id;
+   } else {
+      header.unique_id=br->unique_id;
+   }
 #ifdef JPILOT_DEBUG
-   jp_logf(LOG_DEBUG, "next unique id = %d\n",next_unique_id);
+   jp_logf(LOG_DEBUG, "br->unique id = %d\n",br->unique_id);
 #endif
 
    out = jp_open_home_file(PC_name, "a");
@@ -603,8 +616,6 @@ int jp_pc_write(char *DB_name, buf_rec *br)
    header.rec_len=br->size;
    header.rt=br->rt;
    header.attrib=br->attrib;
-   header.unique_id=next_unique_id;
-   br->unique_id=next_unique_id;
 
    len = pack_header(&header, packed_header);
    write_header(out, &header);
@@ -901,7 +912,9 @@ int jp_read_DB_files(char *DB_name, GList **records)
 	 }
 	 for (; temp_list; temp_list=temp_list->next) {
 	    if (((buf_rec *)temp_list->data)->unique_id == temp_br->unique_id) {
-	       ((buf_rec *)temp_list->data)->rt = temp_br->rt;
+	       if (((buf_rec *)temp_list->data)->rt == PALM_REC) {
+		  ((buf_rec *)temp_list->data)->rt = temp_br->rt;
+	       }
 	    }
 	 }
       }

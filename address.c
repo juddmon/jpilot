@@ -243,9 +243,17 @@ int pc_address_write(struct Address *a, PCRecType rt, unsigned char attrib,
    br.attrib = attrib;
    br.buf = record;
    br.size = rec_len;
+   /* Keep unique ID intact */
+   if (unique_id) {
+      br.unique_id = *unique_id;
+   } else {
+      br.unique_id = 0;
+   }
 
    jp_pc_write("AddressDB", &br);
-   *unique_id = br.unique_id;
+   if (unique_id) {
+      *unique_id = br.unique_id;
+   }
 
    return 0;
 }

@@ -429,7 +429,7 @@ int jpilot_sync(struct my_sync_info *sync_info)
       /*No port was passed in, look in env */
       device = getenv("PILOTPORT");
       if (device == NULL) {
-	 device = default_device;
+		 device = default_device;
       }
    }
 
@@ -952,7 +952,7 @@ int slow_sync_application(char *DB_name, int sd)
 	 fclose(pc_in);
 	 return -1;
       }
-      if (header.rt==NEW_PC_REC) {
+      if ((header.rt==NEW_PC_REC) || (header.rt==REPLACEMENT_PALM_REC)) {
 	 record = malloc(rec_len);
 	 if (!record) {
 	    write_to_parent(PIPE_PRINT, _("slow_sync_application(): Out of memory\n"));
@@ -965,9 +965,15 @@ int slow_sync_application(char *DB_name, int sd)
 	    }
 	 }
 
-	 ret = dlp_WriteRecord(sd, db, header.attrib & dlpRecAttrSecret,
-			       0, header.attrib & 0x0F,
-			       record, rec_len, &new_id);
+	 if (header.rt==REPLACEMENT_PALM_REC) {
+	    ret = dlp_WriteRecord(sd, db, header.attrib & dlpRecAttrSecret,
+				  header.unique_id, header.attrib & 0x0F,
+				  record, rec_len, &new_id);
+	 } else {
+	    ret = dlp_WriteRecord(sd, db, header.attrib & dlpRecAttrSecret,
+				  0, header.attrib & 0x0F,
+				  record, rec_len, &new_id);
+	 }
 
 	 if (record) {
 	    free(record);
@@ -993,7 +999,6 @@ int slow_sync_application(char *DB_name, int sd)
 	    write_header(pc_in, &header);
 	 }
       }
-
       if ((header.rt==DELETED_PALM_REC) || (header.rt==MODIFIED_PALM_REC)) {
 	 rec_len = header.rec_len;
 	 record = malloc(rec_len);
@@ -1010,14 +1015,19 @@ int slow_sync_application(char *DB_name, int sd)
 	 }
 	 ret = dlp_ReadRecordById(sd, db, header.unique_id, buffer,
 				  &index, &size, &attr, &category);
-	 /* printf("read record by id %s returned %d\n", DB_name, ret); */
-	 /* printf("rec_len = %d size = %d\n", rec_len, size); */
 	 if (rec_len == size) {
 	    jpilot_logf(LOG_DEBUG, "sizes match!\n");
 #ifdef JPILOT_DEBUG
 	    if (memcmp(record, buffer, size)==0) {
 	       jpilot_logf(LOG_DEBUG, "Binary is the same!\n");
 	    }
+	    /* FIXME What should happen here is that if the records are the same
+	     * then go ahead and delete, otherwise make a copy of the record
+	     * so that there is no data loss.
+	     * memcmp doesn't seem to work for datebook, probably because
+	     * some of the struct tm fields and things can be different and
+	     * not affect the record.
+	     */
 #endif
 	 }
 	 /* if (ret>=0 ) {
@@ -1874,11 +1884,11 @@ static int sync_rotate_backups(const int num_backups)
 
 int fast_sync_local_recs(char *DB_name, int sd, int db)
 {
-   unsigned long new_id;
    int ret;
    int num;
    FILE *pc_in;
    PC3RecordHeader header;
+   unsigned int old_unique_id;
    char *record;
    void *Pbuf;
    int rec_len;
@@ -1940,7 +1950,7 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
 	 return -1;
       }
       /* Case 5: */
-      if (header.rt==NEW_PC_REC) {
+      if ((header.rt==NEW_PC_REC) || (header.rt==REPLACEMENT_PALM_REC)) {
 	 jpilot_logf(LOG_DEBUG, "new pc record\n");
 	 record = malloc(rec_len);
 	 if (!record) {
@@ -1956,15 +1966,29 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
 
 	 jpilot_logf(LOG_DEBUG, "Writing PC record to palm\n");
 
-	 ret = dlp_WriteRecord(sd, db, header.attrib & dlpRecAttrSecret,
-			       0, header.attrib & 0x0F,
-			       record, rec_len, &new_id);
+	 old_unique_id=header.unique_id;
+	 if (header.rt==REPLACEMENT_PALM_REC) {
+	    ret = dlp_WriteRecord(sd, db, header.attrib & dlpRecAttrSecret,
+				  header.unique_id, header.attrib & 0x0F,
+				  record, rec_len, &header.unique_id);
+	 } else {
+	    ret = dlp_WriteRecord(sd, db, header.attrib & dlpRecAttrSecret,
+				  0, header.attrib & 0x0F,
+				  record, rec_len, &header.unique_id);
+	 }
 
 	 jpilot_logf(LOG_DEBUG, "Writing PC record to local\n");
 	 if (ret >=0) {
+	    if ((header.rt==REPLACEMENT_PALM_REC) &&
+		(old_unique_id != header.unique_id)) {
+	       /* There is a possibility that the palm handed back a unique ID
+		* other than the one we requested
+		*/
+	       pdb_file_delete_record_by_id(DB_name, old_unique_id);
+	    }
 	    pdb_file_modify_record(DB_name, record, rec_len,
 				   header.attrib & dlpRecAttrSecret,
-				   header.attrib & 0x0F, new_id);
+				   header.attrib & 0x0F, header.unique_id);
 	 }
 
 	 if (record) {
@@ -1992,6 +2016,13 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
 	 }
       }
       /* Case 3: */
+      /* FIXME What should happen here is that if the records are the same
+       * then go ahead and delete, otherwise make a copy of the record
+       * so that there is no data loss.
+       * memcmp doesn't seem to work for datebook, probably because
+       * some of the struct tm fields and things can be different and
+       * not affect the record.
+       */
       if ((header.rt==DELETED_PALM_REC) || (header.rt==MODIFIED_PALM_REC)) {
 	 jpilot_logf(LOG_DEBUG, "deleted or modified pc record\n");
 	 rec_len = header.rec_len;
