@@ -294,7 +294,9 @@ int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib,
       br.unique_id = 0;
    }
 
-   *unique_id = br.unique_id;
+   if (unique_id) {
+      *unique_id = br.unique_id;
+   }
 #ifdef ENABLE_MANANA
    get_pref(PREF_MANANA_MODE, &ivalue, NULL);
    if (ivalue) {
