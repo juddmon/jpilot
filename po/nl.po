@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jpilot 0.99.2\n"
 "Report-Msgid-Bugs-To: jpilot-devel@jpilot.org\n"
-"POT-Creation-Date: 2005-01-08 11:39+0100\n"
+"POT-Creation-Date: 2005-02-19 16:06+0100\n"
 "PO-Revision-Date: 2001-12-30 12:48GMT\n"
 "Last-Translator: ?? <??@??>\n"
 "Language-Team: NL <nl@li.org>\n"
@@ -17,9 +17,9 @@ msgstr ""
 
 #: address.c:288 address.c:510 alarms.c:352 dat.c:181 dat.c:655 dat.c:857
 #: dat.c:991 dat.c:1130 datebook.c:96 datebook.c:379 datebook.c:386
-#: datebook.c:416 datebook.c:1016 jpilot.c:1463 libplugin.c:493
+#: datebook.c:416 datebook.c:1016 jpilot.c:1467 libplugin.c:493
 #: libplugin.c:672 libplugin.c:779 libplugin.c:858 libplugin.c:899 memo.c:95
-#: memo.c:323 plugins.c:108 prefs.c:310 prefs.c:335 prefs.c:849 sync.c:251
+#: memo.c:323 plugins.c:108 prefs.c:312 prefs.c:337 prefs.c:852 sync.c:251
 #: sync.c:1124 sync.c:2274 todo.c:206 todo.c:502 utils.c:2241
 msgid "Out of memory"
 msgstr ""
@@ -29,247 +29,270 @@ msgstr ""
 msgid "error"
 msgstr "fout"
 
-#: address.c:390 address_gui.c:1664 datebook.c:675 libplugin.c:732
-#: libplugin.c:756 memo.c:221 memo_gui.c:976 todo_gui.c:1298
+#: address.c:390 address_gui.c:1679 datebook.c:675 libplugin.c:732
+#: libplugin.c:756 memo.c:221 memo_gui.c:990 todo_gui.c:1312
 #: Expense/expense.c:1125 Expense/expense.c:2101
 #, fuzzy, c-format
 msgid "Error reading file: %s\n"
 msgstr "Fout bij lezen van %s\n"
 
-#: address_gui.c:250 datebook_gui.c:2479 memo_gui.c:174 todo_gui.c:295
+#: address_gui.c:258 datebook_gui.c:2491 memo_gui.c:182 todo_gui.c:303
 msgid ""
 "This record is deleted.\n"
 "Undelete it or copy it to make changes.\n"
 msgstr ""
 
-#: address_gui.c:458 category.c:153 category.c:159 category.c:207
-#: category.c:264 datebook_gui.c:366 memo_gui.c:291 sync.c:1087 sync.c:1093
-#: sync.c:2249 sync.c:2465 sync.c:2471 sync.c:2588 sync.c:2839 todo_gui.c:435
+#: address_gui.c:466 category.c:153 category.c:159 category.c:207
+#: category.c:264 datebook_gui.c:370 memo_gui.c:299 sync.c:1087 sync.c:1093
+#: sync.c:2249 sync.c:2465 sync.c:2471 sync.c:2588 sync.c:2839 todo_gui.c:443
 #: utils.c:2655 utils.c:2700 utils.c:2706 utils.c:2775 utils.c:2781
 #: utils.c:2837 utils.c:2892 utils.c:2898 utils.c:2957 utils.c:2964
 #, fuzzy, c-format
 msgid "Unable to open file: %s\n"
 msgstr "Kon %s niet openen\n"
 
-#: address_gui.c:537
+#: address_gui.c:545
 msgid "File doesn't appear to be address.dat format\n"
 msgstr "Bestand lijkt geen address.dat formaat te hebben\n"
 
-#: address_gui.c:547 datebook_gui.c:576 memo_gui.c:426 todo_gui.c:561
+#: address_gui.c:555 datebook_gui.c:580 memo_gui.c:434 todo_gui.c:569
 #: Expense/expense.c:613 Expense/expense.c:1393
 msgid "Unfiled"
 msgstr "Onbekend"
 
-#: address_gui.c:686 alarms.c:226 category.c:412 category.c:863 category.c:903
-#: datebook_gui.c:663 datebook_gui.c:1143 export_gui.c:339 jpilot.c:354
-#: jpilot.c:400 jpilot.c:468 jpilot.c:512 jpilot.c:951 memo_gui.c:516
-#: password.c:349 restore_gui.c:307 todo_gui.c:651 utils.c:1084 utils.c:1245
+#: address_gui.c:694 alarms.c:226 category.c:412 category.c:863 category.c:903
+#: datebook_gui.c:667 datebook_gui.c:1147 export_gui.c:339 jpilot.c:357
+#: jpilot.c:403 jpilot.c:471 jpilot.c:515 jpilot.c:955 memo_gui.c:524
+#: password.c:349 restore_gui.c:307 todo_gui.c:659 utils.c:1084 utils.c:1245
 #: KeyRing/keyring.c:1305
 msgid "OK"
 msgstr "OK"
 
-#: address_gui.c:687 datebook_gui.c:664 memo_gui.c:517 todo_gui.c:652
+#: address_gui.c:695 datebook_gui.c:668 memo_gui.c:525 todo_gui.c:660
 #: utils.c:1263
 msgid "Yes"
 msgstr "Ja"
 
-#: address_gui.c:687 datebook_gui.c:664 memo_gui.c:517 todo_gui.c:652
+#: address_gui.c:695 datebook_gui.c:668 memo_gui.c:525 todo_gui.c:660
 #: utils.c:1263
 msgid "No"
 msgstr "Nee"
 
-#: address_gui.c:711 datebook_gui.c:691 memo_gui.c:527 todo_gui.c:678
+#: address_gui.c:719 datebook_gui.c:695 memo_gui.c:535 todo_gui.c:686
 #, c-format
 msgid "%s is a directory"
 msgstr "%s is een map"
 
-#: address_gui.c:713 address_gui.c:730 datebook_gui.c:693 datebook_gui.c:710
-#: memo_gui.c:529 memo_gui.c:546 todo_gui.c:680 todo_gui.c:697
+#: address_gui.c:721 address_gui.c:738 datebook_gui.c:697 datebook_gui.c:714
+#: memo_gui.c:537 memo_gui.c:554 todo_gui.c:688 todo_gui.c:705
 msgid "Error Opening File"
 msgstr "Fout bij openen bestand"
 
-#: address_gui.c:714 datebook_gui.c:694 memo_gui.c:530 todo_gui.c:681
+#: address_gui.c:722 datebook_gui.c:698 memo_gui.c:538 todo_gui.c:689
 #, fuzzy
 msgid "Directory"
 msgstr "%s is een map"
 
-#: address_gui.c:717 datebook_gui.c:697 memo_gui.c:533 todo_gui.c:684
+#: address_gui.c:725 datebook_gui.c:701 memo_gui.c:541 todo_gui.c:692
 #, c-format
 msgid "Do you want to overwrite file %s?"
 msgstr "Wil je het bestand %s overschrijven?"
 
-#: address_gui.c:719 datebook_gui.c:699 memo_gui.c:535 todo_gui.c:686
+#: address_gui.c:727 datebook_gui.c:703 memo_gui.c:543 todo_gui.c:694
 msgid "Overwrite File?"
 msgstr "Bestand overschrijven?"
 
-#: address_gui.c:720 datebook_gui.c:700 memo_gui.c:536 todo_gui.c:687
+#: address_gui.c:728 datebook_gui.c:704 memo_gui.c:544 todo_gui.c:695
 msgid "Overwrite File"
 msgstr "Bestand overschrijven"
 
-#: address_gui.c:728 datebook_gui.c:708 memo_gui.c:544 todo_gui.c:695
+#: address_gui.c:736 datebook_gui.c:712 memo_gui.c:552 todo_gui.c:703
 #, fuzzy, c-format
 msgid "Error opening file: %s"
 msgstr "Fout bij openen bestand"
 
-#: address_gui.c:731 datebook_gui.c:711 memo_gui.c:547 todo_gui.c:698
+#: address_gui.c:739 datebook_gui.c:715 memo_gui.c:555 todo_gui.c:706
 #, fuzzy
 msgid "Filename"
 msgstr "naam: "
 
-#: address_gui.c:739
+#: address_gui.c:747
 #, c-format
 msgid "Can't export address %d\n"
 msgstr ""
 
-#: address_gui.c:804 address_gui.c:812 address_gui.c:829
+#: address_gui.c:812 address_gui.c:820 address_gui.c:837
 #, fuzzy
 msgid "Field"
 msgstr "Finland"
 
-#: address_gui.c:1028 datebook_gui.c:979 memo_gui.c:602 todo_gui.c:834
+#: address_gui.c:1036 datebook_gui.c:983 memo_gui.c:610 todo_gui.c:842
 msgid "Unknown export type\n"
 msgstr ""
 
-#: address_gui.c:1212 address_gui.c:2559
+#: address_gui.c:1227 address_gui.c:2589
 msgid "Company/Name"
 msgstr "Bedrijf/Naam"
 
-#: address_gui.c:1214 address_gui.c:2561
+#: address_gui.c:1229 address_gui.c:2591
 msgid "Name/Company"
 msgstr "Naam/Bedrijf"
 
-#: address_gui.c:1312 datebook_gui.c:2557 memo_gui.c:897 todo_gui.c:1230
+#: address_gui.c:1327 datebook_gui.c:2569 memo_gui.c:911 todo_gui.c:1244
 msgid "You can't modify a record that is deleted\n"
 msgstr ""
 
-#: address_gui.c:1455 address_gui.c:1835 address_gui.c:2301 memo_gui.c:805
-#: memo_gui.c:1059 memo_gui.c:1307 todo_gui.c:1096 todo_gui.c:1495
-#: todo_gui.c:1508 todo_gui.c:1910
+#: address_gui.c:1470 address_gui.c:1850 address_gui.c:2316 memo_gui.c:819
+#: memo_gui.c:1073 memo_gui.c:1321 todo_gui.c:1110 todo_gui.c:1509
+#: todo_gui.c:1522 todo_gui.c:1924
 msgid "Category is not legal\n"
 msgstr ""
 
-#: address_gui.c:1753 Expense/expense.c:1572 KeyRing/keyring.c:1533
-#: KeyRing/keyring.c:1609
+#: address_gui.c:1768 Expense/expense.c:1572 KeyRing/keyring.c:1535
+#: KeyRing/keyring.c:1611
 msgid "Category: "
 msgstr "Categorie: "
 
-#: address_gui.c:1785 address_gui.c:2742
+#: address_gui.c:1800 address_gui.c:2790
 msgid "kana("
 msgstr "kana("
 
-#: address_gui.c:1897 address_gui.c:2843
+#: address_gui.c:1912 address_gui.c:2891
 msgid "E-mail"
 msgstr ""
 
-#: address_gui.c:1899 address_gui.c:1902 address_gui.c:2844
+#: address_gui.c:1914 address_gui.c:1917 address_gui.c:2892
 #, fuzzy
 msgid "Mail"
 msgstr "Brazilie"
 
-#: address_gui.c:1907 address_gui.c:1910 address_gui.c:2847 dialer.c:308
+#: address_gui.c:1922 address_gui.c:1925 address_gui.c:2895 dialer.c:308
 #: dialer.c:333
 msgid "Dial"
 msgstr "Bel"
 
-#: address_gui.c:2078 address_gui.c:2102
+#: address_gui.c:2093 address_gui.c:2117
 msgid "-Unnamed-"
 msgstr "-Naamloos-"
 
-#: address_gui.c:2175 memo_gui.c:1220 todo_gui.c:1802
+#: address_gui.c:2190 memo_gui.c:1234 todo_gui.c:1816
 msgid "0 records"
 msgstr "0 items"
 
-#: address_gui.c:2178 datebook_gui.c:2389 memo_gui.c:1223 todo_gui.c:1805
+#: address_gui.c:2193 datebook_gui.c:2397 memo_gui.c:1237 todo_gui.c:1819
 #, c-format
 msgid "%d of %d records"
 msgstr "%d van de %d items"
 
-#: address_gui.c:2539 category.c:442 category.c:456 category.c:463
+#: address_gui.c:2569 category.c:442 category.c:456 category.c:463
 #: category.c:481 category.c:488 category.c:506 category.c:586 category.c:781
-#: memo_gui.c:1432 todo_gui.c:2040 Expense/expense.c:1578
+#: memo_gui.c:1461 todo_gui.c:2069 Expense/expense.c:1578
 msgid "Edit Categories"
 msgstr "Bewerk categorien"
 
-#: address_gui.c:2566
+#: address_gui.c:2596
 msgid "Phone"
 msgstr "Telefoonnummer"
 
-#: address_gui.c:2587
+#: address_gui.c:2617
 msgid "Quick Find"
 msgstr "Snelzoeken"
 
-#: address_gui.c:2604 category.c:413 category.c:836 datebook_gui.c:4246
-#: memo_gui.c:1477 todo_gui.c:2095 Expense/expense.c:1615
-#: KeyRing/keyring.c:1568
+#: address_gui.c:2634 category.c:413 category.c:869 category.c:909
+#: datebook_gui.c:1152 datebook_gui.c:1580 datebook_gui.c:4317
+#: export_gui.c:344 memo_gui.c:1508 password.c:355 print_gui.c:338
+#: restore_gui.c:312 todo_gui.c:2125 utils.c:1094 KeyRing/keyring.c:1311
+msgid "Cancel"
+msgstr "Annuleren"
+
+#: address_gui.c:2641 datebook_gui.c:4324 memo_gui.c:1515 todo_gui.c:2132
+#, fuzzy
+msgid "Cancel the modifications   ESC"
+msgstr "Gecompileerd met deze opties:"
+
+#: address_gui.c:2644 category.c:413 category.c:836 datebook_gui.c:4327
+#: memo_gui.c:1517 todo_gui.c:2135 Expense/expense.c:1615
+#: KeyRing/keyring.c:1570
 msgid "Delete"
 msgstr "Verwijderen"
 
-#: address_gui.c:2611 datebook_gui.c:4253 memo_gui.c:1484 todo_gui.c:2102
+#: address_gui.c:2651 datebook_gui.c:4334 memo_gui.c:1524 todo_gui.c:2142
 msgid "Delete the selected record   Ctrl+D"
 msgstr ""
 
-#: address_gui.c:2613 datebook_gui.c:4256 memo_gui.c:1486 todo_gui.c:2104
+#: address_gui.c:2653 datebook_gui.c:4337 memo_gui.c:1526 todo_gui.c:2144
 #, fuzzy
 msgid "Undelete"
 msgstr "Verwijderen"
 
-#: address_gui.c:2620 datebook_gui.c:4263 memo_gui.c:1492 todo_gui.c:2110
-#: Expense/expense.c:1621 KeyRing/keyring.c:1574
+#: address_gui.c:2660 datebook_gui.c:4344 memo_gui.c:1532 todo_gui.c:2150
+#: Expense/expense.c:1621 KeyRing/keyring.c:1576
 msgid "Copy"
 msgstr "Kopieren"
 
-#: address_gui.c:2627 datebook_gui.c:4270 memo_gui.c:1499 todo_gui.c:2117
+#: address_gui.c:2667 datebook_gui.c:4351 memo_gui.c:1539 todo_gui.c:2157
 msgid "Copy the record   Ctrl+O"
 msgstr ""
 
-#: address_gui.c:2630 datebook_gui.c:4273 memo_gui.c:1501 todo_gui.c:2119
-#: Expense/expense.c:1627 KeyRing/keyring.c:1580
+#: address_gui.c:2670 datebook_gui.c:4354 memo_gui.c:1541 todo_gui.c:2159
+#: Expense/expense.c:1627 KeyRing/keyring.c:1582
 msgid "New Record"
 msgstr "Nieuw item"
 
-#: address_gui.c:2636 datebook_gui.c:4280 memo_gui.c:1508 todo_gui.c:2126
+#: address_gui.c:2676 datebook_gui.c:4361 memo_gui.c:1548 todo_gui.c:2166
 msgid "Add a new record   Ctrl+N"
 msgstr ""
 
-#: address_gui.c:2639 datebook_gui.c:4283 memo_gui.c:1510 todo_gui.c:2128
-#: Expense/expense.c:1633 KeyRing/keyring.c:1586
+#: address_gui.c:2679 datebook_gui.c:4364 memo_gui.c:1550 todo_gui.c:2168
+#: Expense/expense.c:1633 KeyRing/keyring.c:1588
 msgid "Add Record"
 msgstr "Item toevoegen"
 
-#: address_gui.c:2648 datebook_gui.c:4292 memo_gui.c:1519 todo_gui.c:2137
-msgid "Add the new record   Ctrl+R"
-msgstr ""
+#: address_gui.c:2689 datebook_gui.c:4374 memo_gui.c:1560 todo_gui.c:2178
+#, fuzzy
+msgid "Add the new record   Ctrl+Enter"
+msgstr "Prive-items verbergen"
 
-#: address_gui.c:2651 datebook_gui.c:4295 memo_gui.c:1521 todo_gui.c:2139
-#: Expense/expense.c:1641 KeyRing/keyring.c:1594
+#: address_gui.c:2691 datebook_gui.c:4376 memo_gui.c:1562 todo_gui.c:2180
+#, fuzzy
+msgid "Add the new record"
+msgstr "Item toevoegen"
+
+#: address_gui.c:2695 datebook_gui.c:4380 memo_gui.c:1565 todo_gui.c:2183
+#: Expense/expense.c:1641 KeyRing/keyring.c:1596
 msgid "Apply Changes"
 msgstr "Wijzigingen toepassen"
 
-#: address_gui.c:2660 datebook_gui.c:4304 memo_gui.c:1530 todo_gui.c:2148
+#: address_gui.c:2705 datebook_gui.c:4390 memo_gui.c:1575 todo_gui.c:2193
 msgid "Commit the modifications   Ctrl+Enter"
 msgstr ""
 
-#: address_gui.c:2670 datebook_gui.c:4349 memo_gui.c:1541 todo_gui.c:2205
+#: address_gui.c:2707 datebook_gui.c:4392 memo_gui.c:1577 todo_gui.c:2195
+#, fuzzy
+msgid "Commit the modifications"
+msgstr "Gecompileerd met deze opties:"
+
+#: address_gui.c:2718 datebook_gui.c:4437 memo_gui.c:1589 todo_gui.c:2252
 msgid "Private"
 msgstr "Prive"
 
-#: address_gui.c:2690 KeyRing/keyring.c:1459
+#: address_gui.c:2738 KeyRing/keyring.c:1459
 msgid "Name"
 msgstr "Naam"
 
-#: address_gui.c:2698 prefs_gui.c:347
+#: address_gui.c:2746 prefs_gui.c:368
 msgid "Address"
 msgstr "Adres"
 
-#: address_gui.c:2706 Expense/expense.c:565 Expense/expense.c:1414
+#: address_gui.c:2754 Expense/expense.c:565 Expense/expense.c:1414
 msgid "Other"
 msgstr "Diversen"
 
-#: address_gui.c:2714 datebook_gui.c:1326 datebook_gui.c:1576 utils.c:2611
+#: address_gui.c:2762 datebook_gui.c:1330 datebook_gui.c:1580 utils.c:2611
 msgid "All"
 msgstr "Alles"
 
-#: address_gui.c:2899
+#: address_gui.c:2947
 msgid ""
 "Show\n"
 "In List"
@@ -277,7 +300,7 @@ msgstr ""
 "Laat in\n"
 "lijst zien"
 
-#: address_gui.c:2907
+#: address_gui.c:2955
 msgid "Quick View"
 msgstr "Overzicht"
 
@@ -285,11 +308,11 @@ msgstr "Overzicht"
 msgid "Remind me"
 msgstr "Herinner me"
 
-#: alarms.c:242 datebook_gui.c:4331
+#: alarms.c:242 datebook_gui.c:4419
 msgid "Minutes"
 msgstr "minuten"
 
-#: alarms.c:244 datebook_gui.c:4335
+#: alarms.c:244 datebook_gui.c:4423
 msgid "Hours"
 msgstr "uren"
 
@@ -310,7 +333,7 @@ msgstr "Gemiste herinnering"
 msgid "Postponed Appointment"
 msgstr "Uitgestelde afspraak"
 
-#: alarms.c:533 datebook_gui.c:4154
+#: alarms.c:533 datebook_gui.c:4225
 msgid "Appointment"
 msgstr "Afspraak"
 
@@ -352,12 +375,6 @@ msgstr "fseek mislukt - ernstige fout\n"
 #, fuzzy
 msgid "Move"
 msgstr "Ma"
-
-#: category.c:413 category.c:869 category.c:909 datebook_gui.c:1148
-#: datebook_gui.c:1576 export_gui.c:344 password.c:355 print_gui.c:338
-#: restore_gui.c:312 utils.c:1094 KeyRing/keyring.c:1311
-msgid "Cancel"
-msgstr "Annuleren"
 
 #: category.c:443
 msgid "The maximum number of categories (16) are already used"
@@ -469,127 +486,127 @@ msgstr ""
 msgid "Unknown repeatType (%d) found in DatebookDB\n"
 msgstr ""
 
-#: datebook_gui.c:216 datebook_gui.c:223 datebook_gui.c:3971
-#: datebook_gui.c:3978
+#: datebook_gui.c:220 datebook_gui.c:227 datebook_gui.c:4030
+#: datebook_gui.c:4037
 msgid "Su"
 msgstr "Zo"
 
-#: datebook_gui.c:217 datebook_gui.c:3972
+#: datebook_gui.c:221 datebook_gui.c:4031
 msgid "Mo"
 msgstr "Ma"
 
-#: datebook_gui.c:218 datebook_gui.c:3973
+#: datebook_gui.c:222 datebook_gui.c:4032
 msgid "Tu"
 msgstr "Di"
 
-#: datebook_gui.c:219 datebook_gui.c:3974
+#: datebook_gui.c:223 datebook_gui.c:4033
 msgid "We"
 msgstr "Wo"
 
-#: datebook_gui.c:220 datebook_gui.c:3975
+#: datebook_gui.c:224 datebook_gui.c:4034
 msgid "Th"
 msgstr "Do"
 
-#: datebook_gui.c:221 datebook_gui.c:3976
+#: datebook_gui.c:225 datebook_gui.c:4035
 msgid "Fr"
 msgstr "Vr"
 
-#: datebook_gui.c:222 datebook_gui.c:3977
+#: datebook_gui.c:226 datebook_gui.c:4036
 msgid "Sa"
 msgstr "Za"
 
-#: datebook_gui.c:555 datebook_gui.c:2049
+#: datebook_gui.c:559 datebook_gui.c:2053
 #, fuzzy, c-format
 msgid "Appointment description text > %d, truncating to %d\n"
 msgstr "Waarschuwing: ToDo beschrijving te lang, inkorten naar %d\n"
 
-#: datebook_gui.c:565 datebook_gui.c:980 datebook_gui.c:2110
-#: datebook_gui.c:2117
+#: datebook_gui.c:569 datebook_gui.c:984 datebook_gui.c:2114
+#: datebook_gui.c:2121
 msgid "Error"
 msgstr "Fout"
 
-#: datebook_gui.c:566
+#: datebook_gui.c:570
 msgid "File doesn't appear to be datebook.dat format\n"
 msgstr "Bestand lijkt geen datebook.dat formaat te hebben\n"
 
-#: datebook_gui.c:980
+#: datebook_gui.c:984
 msgid "Unknown export type"
 msgstr ""
 
-#: datebook_gui.c:1089 export_gui.c:258 jpilot.c:545
+#: datebook_gui.c:1093 export_gui.c:258 jpilot.c:548
 msgid "Export"
 msgstr "Exporteren..."
 
-#: datebook_gui.c:1106
+#: datebook_gui.c:1110
 msgid "Export All Datebook Records"
 msgstr "Exporteer alle agenda-items"
 
-#: datebook_gui.c:1125 export_gui.c:320
+#: datebook_gui.c:1129 export_gui.c:320
 msgid "Save as"
 msgstr "Opslaan als..."
 
-#: datebook_gui.c:1135 export_gui.c:331
+#: datebook_gui.c:1139 export_gui.c:331
 msgid "Browse"
 msgstr "Bladeren..."
 
-#: datebook_gui.c:1285
+#: datebook_gui.c:1289
 #, fuzzy
 msgid "Datebook Categories"
 msgstr "Bewerk categorien"
 
-#: datebook_gui.c:1320 import_gui.c:311 prefs_gui.c:901
+#: datebook_gui.c:1324 import_gui.c:311 prefs_gui.c:761
 msgid "Done"
 msgstr "Klaar"
 
-#: datebook_gui.c:1332 datebook_gui.c:4514
+#: datebook_gui.c:1336 datebook_gui.c:4602
 msgid "None"
 msgstr "Geen"
 
-#: datebook_gui.c:1444
+#: datebook_gui.c:1448
 msgid "Begin On Date"
 msgstr "Begint op datum"
 
-#: datebook_gui.c:1449
+#: datebook_gui.c:1453
 msgid "End On Date"
 msgstr "Eindigt op datum "
 
-#: datebook_gui.c:1543 prefs.c:409
+#: datebook_gui.c:1547 prefs.c:411
 msgid "Sunday"
 msgstr "Zondag"
 
-#: datebook_gui.c:1544 prefs.c:410
+#: datebook_gui.c:1548 prefs.c:412
 msgid "Monday"
 msgstr "Maandag"
 
-#: datebook_gui.c:1545
+#: datebook_gui.c:1549
 msgid "Tuesday"
 msgstr "Dinsdag"
 
-#: datebook_gui.c:1546
+#: datebook_gui.c:1550
 msgid "Wednesday"
 msgstr "Woensdag"
 
-#: datebook_gui.c:1547
+#: datebook_gui.c:1551
 msgid "Thursday"
 msgstr "Donderdag"
 
-#: datebook_gui.c:1548
+#: datebook_gui.c:1552
 msgid "Friday"
 msgstr "Vrijdag"
 
-#: datebook_gui.c:1549
+#: datebook_gui.c:1553
 msgid "Saturday"
 msgstr "Zaterdag"
 
-#: datebook_gui.c:1552
+#: datebook_gui.c:1556
 msgid "4th"
 msgstr "4de"
 
-#: datebook_gui.c:1552
+#: datebook_gui.c:1556
 msgid "Last"
 msgstr "Vorige"
 
-#: datebook_gui.c:1555
+#: datebook_gui.c:1559
 #, c-format
 msgid ""
 "This appointment can either\n"
@@ -599,15 +616,15 @@ msgid ""
 "Which do you want?"
 msgstr ""
 
-#: datebook_gui.c:1563 datebook_gui.c:1581
+#: datebook_gui.c:1567 datebook_gui.c:1585
 msgid "Question?"
 msgstr ""
 
-#: datebook_gui.c:1563 datebook_gui.c:1581
+#: datebook_gui.c:1567 datebook_gui.c:1585
 msgid "Answer: "
 msgstr ""
 
-#: datebook_gui.c:1571
+#: datebook_gui.c:1575
 msgid ""
 "This is a repeating event.\n"
 "Do you want to apply these\n"
@@ -620,36 +637,36 @@ msgstr ""
 "toepassen op het huidige\n"
 "item of op allemaal?"
 
-#: datebook_gui.c:1576
+#: datebook_gui.c:1580
 msgid "Current"
 msgstr "Huidige"
 
-#: datebook_gui.c:1817
+#: datebook_gui.c:1821
 msgid "none"
 msgstr "geen"
 
-#: datebook_gui.c:1818
+#: datebook_gui.c:1822
 msgid "day"
 msgstr "dag"
 
-#: datebook_gui.c:1819
+#: datebook_gui.c:1823
 msgid "week"
 msgstr "week"
 
-#: datebook_gui.c:1820
+#: datebook_gui.c:1824
 msgid "month"
 msgstr "maand"
 
-#: datebook_gui.c:1821
+#: datebook_gui.c:1825
 msgid "year"
 msgstr "jaar"
 
-#: datebook_gui.c:2105 datebook_gui.c:2108
+#: datebook_gui.c:2109 datebook_gui.c:2112
 #, c-format
 msgid "You cannot have an appointment that repeats every %d %s(s)\n"
 msgstr "Je kan geen afspraak maken dat iedere zich elke %d %s(s) herhaalt\n"
 
-#: datebook_gui.c:2118
+#: datebook_gui.c:2122
 msgid ""
 "You can not have a weekly repeating appointment that doesn't repeat on any "
 "day of the week."
@@ -657,15 +674,15 @@ msgstr ""
 "Je kan geen wekelijks herhalende afspraak maken dat zich herhaalt opiedere "
 "dag van de week."
 
-#: datebook_gui.c:2271
+#: datebook_gui.c:2275
 msgid "No Time"
 msgstr "Geen tijd"
 
-#: datebook_gui.c:2573
+#: datebook_gui.c:2585
 msgid "Invalid Appointment"
 msgstr "Ongeldige afspraak"
 
-#: datebook_gui.c:2574
+#: datebook_gui.c:2586
 msgid ""
 "The End Date of this appointment\n"
 "is before the start date."
@@ -673,146 +690,150 @@ msgstr ""
 "The einddatum van deze afspraak\n"
 "is voor de begindatum."
 
-#: datebook_gui.c:2829 datebook_gui.c:4548 datebook_gui.c:4578
-#: datebook_gui.c:4634 datebook_gui.c:4683 todo_gui.c:129 todo_gui.c:2196
+#: datebook_gui.c:2841 datebook_gui.c:4636 datebook_gui.c:4666
+#: datebook_gui.c:4722 datebook_gui.c:4771 todo_gui.c:133 todo_gui.c:2243
 msgid "No Date"
 msgstr "Geen datum"
 
-#: datebook_gui.c:2943
+#: datebook_gui.c:2955
 #, c-format
 msgid "Error in DateBookDB advanceUnits = %d\n"
 msgstr ""
 
-#: datebook_gui.c:3114
+#: datebook_gui.c:3126
 msgid "Unknown repeatType found in DatebookDB\n"
 msgstr ""
 
-#: datebook_gui.c:4059 datebook_gui.c:4516
+#: datebook_gui.c:3164 monthview_gui.c:210 weekview_gui.c:204
+msgid " (TODAY)"
+msgstr ""
+
+#: datebook_gui.c:4130 datebook_gui.c:4604
 msgid "Week"
 msgstr "Week"
 
-#: datebook_gui.c:4065
+#: datebook_gui.c:4136
 #, fuzzy
 msgid "W"
 msgstr "Wo"
 
-#: datebook_gui.c:4067
+#: datebook_gui.c:4138
 msgid "View appointments by week"
 msgstr ""
 
-#: datebook_gui.c:4070 datebook_gui.c:4517
+#: datebook_gui.c:4141 datebook_gui.c:4605
 msgid "Month"
 msgstr "Maand"
 
-#: datebook_gui.c:4077
+#: datebook_gui.c:4148
 #, fuzzy
 msgid "M"
 msgstr "Ma"
 
-#: datebook_gui.c:4079
+#: datebook_gui.c:4150
 msgid "View appointments by month"
 msgstr ""
 
-#: datebook_gui.c:4084
+#: datebook_gui.c:4155
 msgid "Cats"
 msgstr "Categorien"
 
-#: datebook_gui.c:4153
+#: datebook_gui.c:4224
 msgid "Time"
 msgstr "Tijd"
 
-#: datebook_gui.c:4190
+#: datebook_gui.c:4261
 msgid "Show ToDos"
 msgstr ""
 
-#: datebook_gui.c:4205 todo_gui.c:2055
+#: datebook_gui.c:4276 todo_gui.c:2084
 msgid "Task"
 msgstr "Taak"
 
-#: datebook_gui.c:4206 todo_gui.c:2056
+#: datebook_gui.c:4277 todo_gui.c:2085
 msgid "Due"
 msgstr "Datum"
 
-#: datebook_gui.c:4316
+#: datebook_gui.c:4404
 msgid "Alarm"
 msgstr "Alarm"
 
-#: datebook_gui.c:4337
+#: datebook_gui.c:4425
 msgid "Days"
 msgstr "dagen"
 
-#: datebook_gui.c:4360
+#: datebook_gui.c:4448
 msgid "This Event has no particular time"
 msgstr "Deze gebeurtenis heeft geen bepaalde tijd"
 
-#: datebook_gui.c:4368
+#: datebook_gui.c:4456
 msgid "Starts on"
 msgstr "Begint op"
 
-#: datebook_gui.c:4382
+#: datebook_gui.c:4470
 msgid "Start Time"
 msgstr "Begintijd"
 
-#: datebook_gui.c:4400
+#: datebook_gui.c:4488
 #, fuzzy
 msgid "End Time"
 msgstr "Tijd"
 
-#: datebook_gui.c:4498
+#: datebook_gui.c:4586
 msgid "DateBk Tags"
 msgstr "DateBk Tags"
 
-#: datebook_gui.c:4515
+#: datebook_gui.c:4603
 msgid "Day"
 msgstr "Dag"
 
-#: datebook_gui.c:4518
+#: datebook_gui.c:4606
 msgid "Year"
 msgstr "Jaar"
 
-#: datebook_gui.c:4522
+#: datebook_gui.c:4610
 msgid "This event will not repeat"
 msgstr "Deze gebeurtenis herhaalt zich niet"
 
-#: datebook_gui.c:4532 datebook_gui.c:4564 datebook_gui.c:4620
-#: datebook_gui.c:4667
+#: datebook_gui.c:4620 datebook_gui.c:4652 datebook_gui.c:4708
+#: datebook_gui.c:4755
 msgid "Frequency is Every"
 msgstr "Frequentie is iedere"
 
-#: datebook_gui.c:4537
+#: datebook_gui.c:4625
 msgid "Day(s)"
 msgstr "dag(en)"
 
-#: datebook_gui.c:4540 datebook_gui.c:4572 datebook_gui.c:4628
-#: datebook_gui.c:4675
+#: datebook_gui.c:4628 datebook_gui.c:4660 datebook_gui.c:4716
+#: datebook_gui.c:4763
 msgid "End on"
 msgstr "Eindigt op"
 
-#: datebook_gui.c:4569
+#: datebook_gui.c:4657
 msgid "Week(s)"
 msgstr "week/weken"
 
-#: datebook_gui.c:4585
+#: datebook_gui.c:4673
 msgid "Repeat on Days:"
 msgstr "Herhaal op dagen:"
 
-#: datebook_gui.c:4625
+#: datebook_gui.c:4713
 msgid "Month(s)"
 msgstr "maand(en)"
 
-#: datebook_gui.c:4642
+#: datebook_gui.c:4730
 msgid "Repeat by:"
 msgstr "Herhaal elke"
 
-#: datebook_gui.c:4646
+#: datebook_gui.c:4734
 msgid "Day of week"
 msgstr "Dag van de week"
 
-#: datebook_gui.c:4655
+#: datebook_gui.c:4743
 msgid "Date"
 msgstr "Datum"
 
-#: datebook_gui.c:4672
+#: datebook_gui.c:4760
 msgid "Year(s)"
 msgstr "jaar/jaren"
 
@@ -861,7 +882,7 @@ msgid "Use Ctrl and Shift Keys"
 msgstr "Gebruik Ctrl en Shift"
 
 #: import_gui.c:265 import_gui.c:304 import_gui.c:417 import_gui.c:497
-#: jpilot.c:501
+#: jpilot.c:504
 msgid "Import"
 msgstr "Importeren..."
 
@@ -919,7 +940,7 @@ msgstr "Toevoegen"
 msgid "Remove"
 msgstr "Verwijderen"
 
-#: install_gui.c:331 monthview_gui.c:493 search_gui.c:585 weekview_gui.c:316
+#: install_gui.c:331 monthview_gui.c:511 search_gui.c:585 weekview_gui.c:337
 msgid "Close"
 msgstr "Sluiten"
 
@@ -994,32 +1015,32 @@ msgid ""
 " -p {port} = Use this port to sync with instead of getting preferences.\n"
 msgstr ""
 
-#: jpilot.c:133
+#: jpilot.c:136
 #, c-format
 msgid "Invalid geometry specification: \"%s\"\n"
 msgstr ""
 
-#: jpilot.c:377
+#: jpilot.c:380
 msgid "Help"
 msgstr "Help"
 
-#: jpilot.c:441 monthview_gui.c:499 print_gui.c:332 weekview_gui.c:322
+#: jpilot.c:444 monthview_gui.c:517 print_gui.c:332 weekview_gui.c:343
 msgid "Print"
 msgstr "Afdrukken"
 
-#: jpilot.c:442
+#: jpilot.c:445
 msgid "There is no print support for this conduit."
 msgstr "Er is geen printondersteuning voor dit onderdeel."
 
-#: jpilot.c:502
+#: jpilot.c:505
 msgid "There is no import support for this conduit."
 msgstr "Er is geen import-ondersteuning voor dit onderdeel."
 
-#: jpilot.c:546
+#: jpilot.c:549
 msgid "There is no export support for this conduit."
 msgstr "Er is geen export-ondersteuning voor dit onderdeel."
 
-#: jpilot.c:715
+#: jpilot.c:719
 msgid ""
 "This palm doesn't have the same user name\n"
 "or user ID as the one that was synced the\n"
@@ -1027,7 +1048,7 @@ msgid ""
 "Read the user manual if you are uncertain."
 msgstr ""
 
-#: jpilot.c:722
+#: jpilot.c:726
 msgid ""
 "This palm has a NULL user id.\n"
 "Every palm must have a unique user id in order to sync properly.\n"
@@ -1038,249 +1059,260 @@ msgid ""
 "Read the user manual if you are uncertain."
 msgstr ""
 
-#: jpilot.c:728
+#: jpilot.c:732
 msgid "Cancel Sync"
 msgstr "synchroniseren annuleren"
 
-#: jpilot.c:728
+#: jpilot.c:732
 msgid "Sync Anyway"
 msgstr "Synchroniseer toch"
 
-#: jpilot.c:738 jpilot.c:743
+#: jpilot.c:742 jpilot.c:747
 #, fuzzy
 msgid "Sync Problem"
 msgstr "Synchroniseer memoblok"
 
-#: jpilot.c:738 jpilot.c:743 jpilot.c:2412
+#: jpilot.c:742 jpilot.c:747
 msgid "Sync"
 msgstr "Sync"
 
-#: jpilot.c:942
+#: jpilot.c:946
 msgid "Unknown command from sync process\n"
 msgstr ""
 
-#: jpilot.c:963 Expense/expense.c:510 KeyRing/keyring.c:506
+#: jpilot.c:967 Expense/expense.c:510 KeyRing/keyring.c:506
 #, c-format
 msgid "About %s"
 msgstr "Over %s"
 
-#: jpilot.c:1312
+#: jpilot.c:1316
 #, fuzzy
 msgid "/_File"
 msgstr "/_Bestand"
 
-#: jpilot.c:1313
+#: jpilot.c:1317
 msgid "/File/tear"
 msgstr "/Bestand/tear"
 
-#: jpilot.c:1314
+#: jpilot.c:1318
 msgid "/File/_Find"
 msgstr "/Bestand/_Zoeken"
 
-#: jpilot.c:1315 jpilot.c:1321 jpilot.c:1323
+#: jpilot.c:1319 jpilot.c:1325 jpilot.c:1327
 msgid "/File/sep1"
 msgstr "/Bestand/sep1"
 
-#: jpilot.c:1316
+#: jpilot.c:1320
 msgid "/File/_Install"
 msgstr "/Bestand/_Installeren"
 
-#: jpilot.c:1317
+#: jpilot.c:1321
 msgid "/File/Import"
 msgstr "/Bestand/Importeren"
 
-#: jpilot.c:1318
+#: jpilot.c:1322
 msgid "/File/Export"
 msgstr "/Bestand/Exporteren"
 
-#: jpilot.c:1319 jpilot.c:2613
+#: jpilot.c:1323 jpilot.c:2724
 msgid "/File/Preferences"
 msgstr "/Bestand/Voorkeuren..."
 
-#: jpilot.c:1320
+#: jpilot.c:1324
 msgid "/File/_Print"
 msgstr "/Bestand/_Afdrukken"
 
-#: jpilot.c:1322
+#: jpilot.c:1326
 msgid "/File/Restore Handheld"
 msgstr "/Bestand/Handheld herstellen"
 
-#: jpilot.c:1324
+#: jpilot.c:1328
 msgid "/File/_Quit"
 msgstr "/Bestand/Afsluiten"
 
-#: jpilot.c:1325
+#: jpilot.c:1329
 msgid "/_View"
 msgstr "/B_eeld"
 
-#: jpilot.c:1326 jpilot.c:1327 jpilot.c:1328 jpilot.c:1582
+#: jpilot.c:1330 jpilot.c:1331 jpilot.c:1332 jpilot.c:1586
 #, fuzzy
 msgid "/View/Hide Private Records"
 msgstr "/Beeld/Verberg-maak prive-items zichtbaar"
 
-#: jpilot.c:1327
+#: jpilot.c:1331
 #, fuzzy
 msgid "/View/Show Private Records"
 msgstr "/Beeld/Verberg-maak prive-items zichtbaar"
 
-#: jpilot.c:1328
+#: jpilot.c:1332
 #, fuzzy
 msgid "/View/Mask Private Records"
 msgstr "/Beeld/Verberg-maak prive-items zichtbaar"
 
-#: jpilot.c:1329
+#: jpilot.c:1333
 #, fuzzy
 msgid "/View/sep1"
 msgstr "/Bestand/sep1"
 
-#: jpilot.c:1330
+#: jpilot.c:1334
 msgid "/View/Datebook"
 msgstr "/Beeld/Agenda"
 
-#: jpilot.c:1331
+#: jpilot.c:1335
 msgid "/View/Addresses"
 msgstr "/Beeld/Adresboek"
 
-#: jpilot.c:1332
+#: jpilot.c:1336
 msgid "/View/Todos"
 msgstr "/Beeld/Takenlijst"
 
-#: jpilot.c:1333
+#: jpilot.c:1337
 msgid "/View/Memos"
 msgstr "/Beeld/Memo's"
 
-#: jpilot.c:1334 jpilot.c:1468
+#: jpilot.c:1338 jpilot.c:1472
 #, fuzzy
 msgid "/_Plugins"
 msgstr "/_Plugins"
 
-#: jpilot.c:1336
+#: jpilot.c:1340
 #, fuzzy
 msgid "/_Web"
 msgstr "/_Web"
 
-#: jpilot.c:1337
+#: jpilot.c:1341
 msgid "/Web/Netscape"
 msgstr "/Web/Netscape"
 
-#: jpilot.c:1341
+#: jpilot.c:1345
 msgid "/Web/Mozilla"
 msgstr "/Web/Mozilla"
 
-#: jpilot.c:1346
+#: jpilot.c:1350
 msgid "/Web/Galeon"
 msgstr "/Web/Galeon"
 
-#: jpilot.c:1351
+#: jpilot.c:1355
 msgid "/Web/Opera"
 msgstr "/Web/Opera"
 
-#: jpilot.c:1355
+#: jpilot.c:1359
 msgid "/Web/GnomeUrl"
 msgstr "/Web/GnomeUrl"
 
-#: jpilot.c:1357
+#: jpilot.c:1361
 msgid "/Web/Lynx"
 msgstr "/Web/Lynx"
 
-#: jpilot.c:1359
+#: jpilot.c:1363
 msgid "/Web/Links"
 msgstr "/Web/Links"
 
-#: jpilot.c:1361
+#: jpilot.c:1365
 msgid "/Web/W3M"
 msgstr "/Web/W3M"
 
-#: jpilot.c:1363
+#: jpilot.c:1367
 msgid "/Web/Konqueror"
 msgstr "/Web/Konequeror"
 
-#: jpilot.c:1366
+#: jpilot.c:1370
 msgid "/_Help"
 msgstr "/_Help"
 
-#: jpilot.c:1367
+#: jpilot.c:1371
 msgid "/Help/PayBack program"
 msgstr ""
 
-#: jpilot.c:1368
+#: jpilot.c:1372
 msgid "/Help/J-Pilot"
 msgstr ""
 
-#: jpilot.c:1435
+#: jpilot.c:1439
 #, fuzzy, c-format
 msgid "/_Plugins/%s"
 msgstr "/Plugins/%s"
 
-#: jpilot.c:1446
+#: jpilot.c:1450
 #, c-format
 msgid "/_Help/%s"
 msgstr "/_Help/%s"
 
-#: jpilot.c:1743
+#: jpilot.c:1747
 msgid "Font Selection Dialog"
 msgstr ""
 
-#: jpilot.c:1998
+#: jpilot.c:2078
 msgid "calendar:week_start:0"
 msgstr ""
 
-#: jpilot.c:2043
+#: jpilot.c:2123
 msgid "Not loading plugins.\n"
 msgstr ""
 
-#: jpilot.c:2047
+#: jpilot.c:2127
 msgid "Ignoring all alarms.\n"
 msgstr ""
 
-#: jpilot.c:2051
+#: jpilot.c:2131
 msgid "Ignoring past alarms.\n"
 msgstr ""
 
-#: jpilot.c:2121 jpilot.c:2129
+#: jpilot.c:2201 jpilot.c:2209
 #, fuzzy
 msgid "Unable to open pipe\n"
 msgstr "Kon %s niet openen\n"
 
-#: jpilot.c:2180
+#: jpilot.c:2260
 #, fuzzy
 msgid " User: "
 msgstr "Gebruikers ID"
 
-#: jpilot.c:2327
+#: jpilot.c:2407
 msgid "Clear"
 msgstr "Wissen"
 
-#: jpilot.c:2397
+#: jpilot.c:2478
 #, fuzzy
 msgid "Show private records   Ctrl-Z"
 msgstr "Laat prive-items zien"
 
-#: jpilot.c:2402
+#: jpilot.c:2483
+#, fuzzy
+msgid "Show private records"
+msgstr "Laat prive-items zien"
+
+#: jpilot.c:2488
 #, fuzzy
 msgid "Hide private records   Ctrl-Z"
 msgstr "Prive-items verbergen"
 
-#: jpilot.c:2407
+#: jpilot.c:2493
+#, fuzzy
+msgid "Hide private records"
+msgstr "Prive-items verbergen"
+
+#: jpilot.c:2498
 #, fuzzy
 msgid "Mask private records   Ctrl-Z"
 msgstr "Prive-items bedekken"
 
-#: jpilot.c:2418
+#: jpilot.c:2503
+#, fuzzy
+msgid "Mask private records"
+msgstr "Prive-items bedekken"
+
+#: jpilot.c:2513
 #, fuzzy
 msgid "Sync your palm to the desktop   Ctrl-Y"
 msgstr "Synchroniseer je Palm met je computer"
 
-#: jpilot.c:2424
+#: jpilot.c:2519
 #, fuzzy
 msgid "Font"
 msgstr "Maand"
 
-#: jpilot.c:2431
-msgid "Backup"
-msgstr "Backup"
-
-#: jpilot.c:2439
+#: jpilot.c:2534
 msgid ""
 "Sync your palm to the desktop\n"
 "and then do a backup"
@@ -1288,36 +1320,36 @@ msgstr ""
 "Synchroniseer je Palm met je computer\n"
 "en maak dan een backup"
 
-#: jpilot.c:2537
+#: jpilot.c:2648
 msgid "Datebook/Go to Today"
 msgstr "Agenda / Ga naar vandaag"
 
-#: jpilot.c:2539
+#: jpilot.c:2650
 msgid "Address Book"
 msgstr "Adresboek"
 
-#: jpilot.c:2541
+#: jpilot.c:2652
 msgid "ToDo List"
 msgstr "Takenlijst"
 
-#: jpilot.c:2543
+#: jpilot.c:2654
 msgid "Memo Pad"
 msgstr "Memoblok"
 
-#: jpilot.c:2595
+#: jpilot.c:2706
 msgid "Do it now"
 msgstr ""
 
-#: jpilot.c:2595
+#: jpilot.c:2706
 #, fuzzy
 msgid "Remind me later"
 msgstr "Herinner me"
 
-#: jpilot.c:2595
+#: jpilot.c:2706
 msgid "Don't tell me again!"
 msgstr ""
 
-#: jpilot.c:2609
+#: jpilot.c:2720
 msgid ""
 "J-Pilot is using the GTK2 graphical toolkit. This version of the toolkit "
 "uses UTF-8 to encode characters.\n"
@@ -1326,23 +1358,23 @@ msgid ""
 "\n"
 msgstr ""
 
-#: jpilot.c:2612
+#: jpilot.c:2723
 msgid "Go to the menu \""
 msgstr ""
 
-#: jpilot.c:2614
+#: jpilot.c:2725
 msgid "\" and change the \""
 msgstr ""
 
-#: jpilot.c:2615 prefs_gui.c:367
+#: jpilot.c:2726 prefs_gui.c:388
 msgid "Character Set "
 msgstr "Tekenset "
 
-#: jpilot.c:2616
+#: jpilot.c:2727
 msgid "\"."
 msgstr ""
 
-#: jpilot.c:2618
+#: jpilot.c:2729
 msgid "Select a UTF-8 encoding"
 msgstr ""
 
@@ -1417,25 +1449,25 @@ msgstr "Kan logbestand niet openen, ik geef op.\n"
 msgid "Unable to open log file\n"
 msgstr "Kon %s niet openen\n"
 
-#: memo_gui.c:308
+#: memo_gui.c:316
 msgid "Memo text > 65535, truncating\n"
 msgstr ""
 
-#: memo_gui.c:338
+#: memo_gui.c:346
 #, c-format
 msgid "Imported Memo %s\n"
 msgstr ""
 
-#: memo_gui.c:409
+#: memo_gui.c:417
 msgid "File doesn't appear to be memopad.dat format\n"
 msgstr "Bestand lijkt geen memopad.dat formaat te hebben\n"
 
-#: memo_gui.c:558 memo_gui.c:573
+#: memo_gui.c:566 memo_gui.c:581
 #, c-format
 msgid "Can't export memo %d\n"
 msgstr ""
 
-#: monthview_gui.c:457
+#: monthview_gui.c:475
 msgid "Monthly View"
 msgstr "Maandoverzicht"
 
@@ -1494,208 +1526,123 @@ msgstr ""
 msgid "It is too old to work with this version of J-Pilot.\n"
 msgstr ""
 
-#: prefs_gui.c:311
+#: prefs_gui.c:332
 msgid "Preferences"
 msgstr "Voorkeuren"
 
-#: prefs_gui.c:341
+#: prefs_gui.c:362
 msgid "Locale"
 msgstr "Lokaal"
 
-#: prefs_gui.c:343
+#: prefs_gui.c:364
 msgid "Settings"
 msgstr "Instellingen"
 
-#: prefs_gui.c:345
+#: prefs_gui.c:366
 #, fuzzy
 msgid "Datebook"
 msgstr "Agenda"
 
-#: prefs_gui.c:349
+#: prefs_gui.c:370
 msgid "ToDo"
 msgstr "Takenlijst"
 
-#: prefs_gui.c:351
+#: prefs_gui.c:372
 #, fuzzy
 msgid "Memo"
 msgstr "Memo"
 
-#: prefs_gui.c:353
+#: prefs_gui.c:374
 msgid "Alarms"
 msgstr "Herinneringen"
 
-#: prefs_gui.c:355
+#: prefs_gui.c:376
 msgid "Conduits"
 msgstr "Onderdelen"
 
-#: prefs_gui.c:380
+#: prefs_gui.c:401
 msgid "Short date format "
 msgstr "Kort datumformaat "
 
-#: prefs_gui.c:393
+#: prefs_gui.c:414
 msgid "Long date format "
 msgstr "Lang datumformaat "
 
-#: prefs_gui.c:406
+#: prefs_gui.c:427
 msgid "Time format "
 msgstr "Tijdformaat "
 
-#: prefs_gui.c:420
+#: prefs_gui.c:441
 msgid "The first day of the week is "
 msgstr "De eerste dag van de week is "
 
-#: prefs_gui.c:441
+#: prefs_gui.c:462
 msgid "My GTK colors file is "
 msgstr "Mijn GTK kleurenbestand is "
 
-#: prefs_gui.c:454
+#: prefs_gui.c:475
 msgid "Serial Port (/dev/ttyS0, /dev/pilot)"
 msgstr "Seriele poort (/dev/ttyS0, /dev/pilot)"
 
-#: prefs_gui.c:471
+#: prefs_gui.c:492
 msgid "Serial Rate (Does not affect USB)"
 msgstr ""
 
-#: prefs_gui.c:484
+#: prefs_gui.c:505
 msgid "Number of backups to be archived"
 msgstr "Aantal backups archiveren"
 
-#: prefs_gui.c:502
-msgid "Show deleted records (default NO)"
-msgstr "Laat verwijderde items zien (Standaard: Nee)"
-
-#: prefs_gui.c:515
-msgid "Show modified deleted records (default NO)"
-msgstr "Laat veranderde verwijderde items zien (standaard: Nee)"
-
-#: prefs_gui.c:528
-msgid "Ask confirmation for file installation (J-Pilot -> PDA) (default YES)"
-msgstr ""
-
-#: prefs_gui.c:541
-msgid "Show popup tooltips (default YES)"
-msgstr ""
-
-#: prefs_gui.c:557
-msgid "Highlight calendar days with appointments"
-msgstr "Laat afspraken zien op kalender"
-
-#: prefs_gui.c:570
-#, fuzzy
-msgid "Use DateBk note tags"
-msgstr "Gebruik DateBk notitie-opties"
-
-#: prefs_gui.c:581
+#: prefs_gui.c:552
 #, fuzzy
 msgid "DateBk support disabled in this build"
 msgstr "Geen DateBk ondersteuning in deze build"
 
-#: prefs_gui.c:593
+#: prefs_gui.c:575
 #, fuzzy
 msgid "Mail Command"
 msgstr "Kiescommando"
 
-#: prefs_gui.c:607
+#: prefs_gui.c:589
 #, fuzzy, c-format
 msgid "%s is replaced by the e-mail address"
 msgstr "%t wordt vervangen door de alarmtijd"
 
-#: prefs_gui.c:615
-msgid "Hide Completed ToDos"
-msgstr "Verberg voltooide taken"
-
-#: prefs_gui.c:627
-msgid "Hide ToDos not yet due"
-msgstr ""
-
-#: prefs_gui.c:639
-msgid "Record Completion Date"
-msgstr ""
-
-#: prefs_gui.c:652
-msgid "Use Manana database"
-msgstr "Gebruik Manana database"
-
-#: prefs_gui.c:668
-msgid "Use default number of days due"
-msgstr ""
-
-#: prefs_gui.c:695
-msgid "Use Memo32 (pedit32)"
-msgstr "Gebruik Memo32 (pedit32)"
-
-#: prefs_gui.c:711
-msgid "Open alarm windows for appointment reminders"
-msgstr "Open vensters voor afspraakherinneringen"
-
-#: prefs_gui.c:724
-msgid "Execute this command"
-msgstr "Voer dit commando uit"
-
-#: prefs_gui.c:736
+#: prefs_gui.c:653
 msgid "WARNING: executing arbitrary shell commands can be dangerous!!!"
 msgstr ""
 "WAARSCHUWING: willekeurige shell-commando's invoeren kunnen gevaarlijk "
 "zijn!!!"
 
-#: prefs_gui.c:744
+#: prefs_gui.c:661
 msgid "Alarm Command"
 msgstr "Alarm commando"
 
-#: prefs_gui.c:757
+#: prefs_gui.c:674
 msgid "%t is replaced with the alarm time"
 msgstr "%t wordt vervangen door de alarmtijd"
 
-#: prefs_gui.c:761
+#: prefs_gui.c:678
 #, c-format
 msgid "%d is replaced with the alarm date"
 msgstr "%d wordt vervangen door de alarmdatum"
 
-#: prefs_gui.c:766
+#: prefs_gui.c:683
 msgid "%D is replaced with the alarm description"
 msgstr "%D wordt vervangen door de alarmbeschrijving"
 
-#: prefs_gui.c:770
+#: prefs_gui.c:687
 msgid "%N is replaced with the alarm note"
 msgstr "%N wordt vervangen door de alarmnotitie"
 
-#: prefs_gui.c:774
+#: prefs_gui.c:691
 msgid "%D (description substitution) is disabled in this build"
 msgstr "%D (vervangende omschrijving) is uitgeschakeld in deze build"
 
-#: prefs_gui.c:778
+#: prefs_gui.c:695
 msgid "%N (note substitution) is disabled in this build"
 msgstr "%N (vervangende notitie) is uitgeschakeld in deze build"
 
-#: prefs_gui.c:787
-msgid "Sync datebook"
-msgstr "Synchroniseer agenda"
-
-#: prefs_gui.c:799
-msgid "Sync address"
-msgstr "Synchroniseer adresboek"
-
-#: prefs_gui.c:811
-msgid "Sync todo"
-msgstr "Synchroniseer takenlijst"
-
-#: prefs_gui.c:823
-msgid "Sync memo"
-msgstr "Synchroniseer memoblok"
-
-#: prefs_gui.c:836
-msgid "Sync memo32 (pedit32)"
-msgstr "Synchroniseer memo32 (pedit32)"
-
-#: prefs_gui.c:849
-msgid "Sync Manana"
-msgstr "Synchroniseer Manana"
-
-#: prefs_gui.c:863
-msgid "Use J-OS (Not Japanese PalmOS:WorkPad/CLIE)"
-msgstr "Gebruik J-OS (Niet-Japanse PalmOS: Workpad/CLIE)"
-
-#: prefs_gui.c:884
+#: prefs_gui.c:744
 #, fuzzy, c-format
 msgid "Sync %s (%s)"
 msgstr "Synchronisatie van %s\n"
@@ -2154,41 +2101,41 @@ msgstr "Waarschuwing: ToDo notitie te lang, inkorten naar %d\n"
 msgid "%s:%d Error reading category info %s\n"
 msgstr "%s:%d Fout bij het lezen van category informatie %s\n"
 
-#: todo_gui.c:148
+#: todo_gui.c:152
 msgid "Due Date"
 msgstr "Einddatum"
 
-#: todo_gui.c:551
+#: todo_gui.c:559
 msgid "File doesn't appear to be todo.dat format\n"
 msgstr "Bestand lijkt geen todo.dat formaat te hebben\n"
 
-#: todo_gui.c:710 todo_gui.c:725
+#: todo_gui.c:718 todo_gui.c:733
 #, c-format
 msgid "Can't export todo %d\n"
 msgstr ""
 
-#: todo_gui.c:1536
+#: todo_gui.c:1550
 msgid "Priority out of range\n"
 msgstr ""
 
-#: todo_gui.c:1724
+#: todo_gui.c:1738
 #, c-format
 msgid "No date"
 msgstr "Geen datum"
 
-#: todo_gui.c:2157
+#: todo_gui.c:2204
 msgid "Completed"
 msgstr "Voltooid"
 
-#: todo_gui.c:2165
+#: todo_gui.c:2212
 msgid "Priority: "
 msgstr "Prioriteit"
 
-#: todo_gui.c:2185
+#: todo_gui.c:2232
 msgid "Date Due:"
 msgstr "Einddatum"
 
-#: todo_gui.c:2247 Expense/expense.c:1828 KeyRing/keyring.c:1642
+#: todo_gui.c:2294 Expense/expense.c:1828 KeyRing/keyring.c:1644
 msgid "Note"
 msgstr "Notitie"
 
@@ -2373,7 +2320,7 @@ msgstr "PC ID is 0.\n"
 msgid "I generated a new PC ID.  It is %lu\n"
 msgstr "Ik heb een nieuwe PC ID aangemaakt. Het is %lu\n"
 
-#: weekview_gui.c:282
+#: weekview_gui.c:303
 msgid "Weekly View"
 msgstr "Weekoverzicht"
 
@@ -2772,7 +2719,7 @@ msgstr ""
 msgid "Account"
 msgstr "Account"
 
-#: KeyRing/keyring.c:1476
+#: KeyRing/keyring.c:1472
 #, fuzzy
 msgid ""
 "Change\n"
@@ -2780,21 +2727,73 @@ msgid ""
 "Password"
 msgstr "Voer KeyRing wachtwoord in"
 
-#: KeyRing/keyring.c:1615
+#: KeyRing/keyring.c:1617
 msgid "name: "
 msgstr "naam: "
 
-#: KeyRing/keyring.c:1622
+#: KeyRing/keyring.c:1624
 msgid "account: "
 msgstr "account: "
 
-#: KeyRing/keyring.c:1629
+#: KeyRing/keyring.c:1631
 msgid "password: "
 msgstr "wachtwoord: "
 
-#: KeyRing/keyring.c:1635
+#: KeyRing/keyring.c:1637
 msgid "Generate Password"
 msgstr "Paswoord aanmaken"
+
+#~ msgid "Show deleted records (default NO)"
+#~ msgstr "Laat verwijderde items zien (Standaard: Nee)"
+
+#~ msgid "Show modified deleted records (default NO)"
+#~ msgstr "Laat veranderde verwijderde items zien (standaard: Nee)"
+
+#~ msgid "Highlight calendar days with appointments"
+#~ msgstr "Laat afspraken zien op kalender"
+
+#, fuzzy
+#~ msgid "Use DateBk note tags"
+#~ msgstr "Gebruik DateBk notitie-opties"
+
+#~ msgid "Hide Completed ToDos"
+#~ msgstr "Verberg voltooide taken"
+
+#~ msgid "Use Manana database"
+#~ msgstr "Gebruik Manana database"
+
+#~ msgid "Use Memo32 (pedit32)"
+#~ msgstr "Gebruik Memo32 (pedit32)"
+
+#~ msgid "Open alarm windows for appointment reminders"
+#~ msgstr "Open vensters voor afspraakherinneringen"
+
+#~ msgid "Execute this command"
+#~ msgstr "Voer dit commando uit"
+
+#~ msgid "Sync datebook"
+#~ msgstr "Synchroniseer agenda"
+
+#~ msgid "Sync address"
+#~ msgstr "Synchroniseer adresboek"
+
+#~ msgid "Sync todo"
+#~ msgstr "Synchroniseer takenlijst"
+
+#~ msgid "Sync memo"
+#~ msgstr "Synchroniseer memoblok"
+
+#~ msgid "Sync memo32 (pedit32)"
+#~ msgstr "Synchroniseer memo32 (pedit32)"
+
+#~ msgid "Sync Manana"
+#~ msgstr "Synchroniseer Manana"
+
+#~ msgid "Use J-OS (Not Japanese PalmOS:WorkPad/CLIE)"
+#~ msgstr "Gebruik J-OS (Niet-Japanse PalmOS: Workpad/CLIE)"
+
+#~ msgid "Backup"
+#~ msgstr "Backup"
 
 #~ msgid "Quit!"
 #~ msgstr "Afsluiten"
