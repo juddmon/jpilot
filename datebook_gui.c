@@ -3071,6 +3071,9 @@ static int datebook_find()
 int datebook_refresh(int first)
 {
    int b;
+   int copy_current_day;
+   int copy_current_month;
+   int copy_current_year;
 
    b=dialog_save_changed_record(pane, record_changed);
    if (b==DIALOG_SAID_1) {
@@ -3093,11 +3096,14 @@ int datebook_refresh(int first)
    if (first) {
       gtk_calendar_select_day(GTK_CALENDAR(main_calendar), current_day);
    } else {
+      copy_current_day = current_day;
+      copy_current_month = current_month;
+      copy_current_year = current_year;
       /* See other calls to select day as to why I set it to 1 first */
       gtk_calendar_select_day(GTK_CALENDAR(main_calendar), 1);
       gtk_calendar_select_month(GTK_CALENDAR(main_calendar),
-				current_month, current_year+1900);
-      gtk_calendar_select_day(GTK_CALENDAR(main_calendar), current_day);
+				copy_current_month, copy_current_year+1900);
+      gtk_calendar_select_day(GTK_CALENDAR(main_calendar), copy_current_day);
    }
 
    dayview_update_clist();
