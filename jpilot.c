@@ -108,6 +108,7 @@ int glob_focus = 1;
 GtkWidget *glob_dialog=NULL;
 unsigned char skip_plugins;
 static GtkWidget *button_locked, *button_locked_masked, *button_unlocked;
+GtkCheckMenuItem *menu_hide_privates;
 
 int pipe_from_child, pipe_to_parent;
 int pipe_from_parent, pipe_to_child;
@@ -553,25 +554,28 @@ static void cb_private(GtkWidget *widget, gpointer data)
    int retry;
 #endif
 
-   was_privates = privates = show_privates(GET_PRIVATES);
+   was_privates = show_privates(GET_PRIVATES);
+   privates = show_privates(GPOINTER_TO_INT(data));
+
+   /* no changes */
+   if (was_privates == privates)
+      return;
 
    switch (privates) {
-    case SHOW_PRIVATES:
-      privates = show_privates(MASK_PRIVATES);
+    case MASK_PRIVATES:
       gtk_widget_hide(button_locked);
       gtk_widget_show(button_locked_masked);
       gtk_widget_hide(button_unlocked);
       break;
-    case MASK_PRIVATES:
-      privates = show_privates(HIDE_PRIVATES);
+    case HIDE_PRIVATES:
       gtk_widget_show(button_locked);
       gtk_widget_hide(button_locked_masked);
       gtk_widget_hide(button_unlocked);
       break;
-    case HIDE_PRIVATES:
+    case SHOW_PRIVATES:
       /* Ask for the password, or don't depending on configure option */
 #ifdef ENABLE_PRIVATE
-      if (privates==HIDE_PRIVATES) {
+      if (was_privates != SHOW_PRIVATES) {
 	 retry=FALSE;
 	 do {
 	    r_dialog = dialog_password(GTK_WINDOW(window),
@@ -584,19 +588,19 @@ static void cb_private(GtkWidget *widget, gpointer data)
       r_dialog = 1;
 #endif
       if (r_dialog==1) {
-	 privates = show_privates(SHOW_PRIVATES);
-	 if (privates==SHOW_PRIVATES) {
-	    gtk_widget_hide(button_locked);
-	    gtk_widget_hide(button_locked_masked);
-	    gtk_widget_show(button_unlocked);
-	 }
+	 gtk_widget_hide(button_locked);
+	 gtk_widget_hide(button_locked_masked);
+	 gtk_widget_show(button_unlocked);
+      }
+      else {
+	 /* wrong password, hide the entries */
+	 gtk_check_menu_item_set_active(menu_hide_privates, TRUE);
       }
       break;
    }
 
-   if (was_privates!=privates) {
+   if (was_privates != privates)
       cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
-   }
 }
 
 void cb_app_button(GtkWidget *widget, gpointer data)
@@ -1118,7 +1122,10 @@ void get_main_menu(GtkWidget  *window,
   { _("/File/sep1"),                       NULL,         NULL,           0,                  "<Separator>" },
   { _("/File/_Quit"),                      "<control>Q", cb_delete_event,0,                  ICON(GTK_STOCK_QUIT) },
   { _("/_View"),                           NULL,         NULL,           0,                  "<Branch>" },
-  { _("/View/Hide-Show-Mask Private Records"),"<control>Z",cb_private,   0,                  NULL },
+  { _("/View/Hide Private Records"),       NULL,         cb_private,     HIDE_PRIVATES,      "<RadioItem>" },
+  { _("/View/Show Private Records"),       NULL,         cb_private,     SHOW_PRIVATES,      _("/View/Hide Private Records") },
+  { _("/View/Mask Private Records"),       NULL,         cb_private,     MASK_PRIVATES,      _("/View/Hide Private Records") },
+  { _("/View/sep1"),                       NULL,         NULL,           0,                  "<Separator>" },
   { _("/View/Datebook"),                   "F1",         cb_app_button,  DATEBOOK,           NULL },
   { _("/View/Addresses"),                  "F2",         cb_app_button,  ADDRESS,            NULL },
   { _("/View/Todos"),                      "F3",         cb_app_button,  TODO,               NULL },
@@ -1368,6 +1375,9 @@ void get_main_menu(GtkWidget  *window,
       free(plugin_help_strings);
    }
 #endif
+
+   menu_hide_privates = gtk_item_factory_get_widget(item_factory,
+      _("/View/Hide Private Records"));
 }
 
 static void cb_delete_event(GtkWidget *widget, GdkEvent *event, gpointer data)
@@ -2184,21 +2194,29 @@ char *xpm_unlocked[] = {
    button_locked_masked = gtk_button_new();
    button_unlocked = gtk_button_new();
    gtk_signal_connect(GTK_OBJECT(button_locked), "clicked",
-		      GTK_SIGNAL_FUNC(cb_private), NULL);
+       GTK_SIGNAL_FUNC(cb_private), GINT_TO_POINTER(SHOW_PRIVATES));
    gtk_signal_connect(GTK_OBJECT(button_locked_masked), "clicked",
-		      GTK_SIGNAL_FUNC(cb_private), NULL);
+       GTK_SIGNAL_FUNC(cb_private), GINT_TO_POINTER(HIDE_PRIVATES));
    gtk_signal_connect(GTK_OBJECT(button_unlocked), "clicked",
-		      GTK_SIGNAL_FUNC(cb_private), NULL);
+       GTK_SIGNAL_FUNC(cb_private), GINT_TO_POINTER(MASK_PRIVATES));
    gtk_box_pack_start(GTK_BOX(g_vbox0), button_locked, FALSE, FALSE, 0);
    gtk_box_pack_start(GTK_BOX(g_vbox0), button_locked_masked, FALSE, FALSE, 0);
    gtk_box_pack_start(GTK_BOX(g_vbox0), button_unlocked, FALSE, FALSE, 0);
 
    gtk_tooltips_set_tip(glob_tooltips, button_locked,
-			_("Show private records"), NULL);
+			_("Show private records   Ctrl-Z"), NULL);
+   gtk_widget_add_accelerator(button_locked, "clicked", accel_group,
+      GDK_z, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+
    gtk_tooltips_set_tip(glob_tooltips, button_locked_masked,
-			_("Hide private records"), NULL);
+			_("Hide private records   Ctrl-Z"), NULL);
+   gtk_widget_add_accelerator(button_locked_masked, "clicked", accel_group,
+      GDK_z, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+
    gtk_tooltips_set_tip(glob_tooltips, button_unlocked,
-			_("Mask private records"), NULL);
+			_("Mask private records   Ctrl-Z"), NULL);
+   gtk_widget_add_accelerator(button_unlocked, "clicked", accel_group,
+      GDK_z, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
    /*Separator */
    separator = gtk_hseparator_new();
