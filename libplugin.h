@@ -1,7 +1,7 @@
 /* libplugin.h
  * A module of J-Pilot http://jpilot.org
  *
- * Copyright (C) 1999-2001 by Judd Montgomery
+ * Copyright (C) 1999-2002 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 #include "config.h"
 #include <gtk/gtk.h>
 #include <time.h>
+#include <pi-appinfo.h>
 
 /*
  * PLUGIN API for J-Pilot
@@ -199,10 +200,35 @@ int plugin_sync(int sd);
 int plugin_search(const char *search_string, int case_sense, struct search_result **sr);
 int plugin_post_sync(void);
 int plugin_exit_cleanup(void);
+int plugin_unpack_cai_from_ai(struct CategoryAppInfo *cai,
+			      unsigned char *ai_raw, int len);
+int plugin_pack_cai_into_ai(struct CategoryAppInfo *cai,
+			    unsigned char *ai_raw, int len);
 /* callbacks are needed for print */
 
 void jp_init();
 extern FILE *jp_open_home_file(char *filename, char *mode);
+
+/* This takes the value of $JPILOT_HOME and appends /.jpilot/ and {file}
+ * onto it and puts it into full_name.  max_size is the size if the
+ * supplied buffer full_name
+ */
+int jp_get_home_file_name(char *file, char *full_name, int max_size);
+
+/*
+ * DB_name should be without filename ext, e.g. MemoDB
+ * bufp is the packed app info block
+ * size_in is the size of bufp
+ */
+int jp_pdb_file_write_app_block(char *DB_name, void *bufp, int size_in);
+
+/*
+ * widget is a widget inside the main window used to get main window handle
+ * db_name should be without filename ext, e.g. MemoDB
+ * cai is the category app info.  This should be unpacked by the user since
+ * category unpack functions are database specific.
+ */
+int jp_edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai);
 
 /*************************************
  * convert char code

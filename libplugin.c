@@ -1,7 +1,7 @@
 /* libplugin.c
  * A module of J-Pilot http://jpilot.org
  *
- * Copyright (C) 1999-2001 by Judd Montgomery
+ * Copyright (C) 1999-2002 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -233,6 +233,24 @@ int write_header(FILE *pc_out, PC3RecordHeader *header)
    }
 
    return len;
+}
+
+int get_home_file_name(char *file, char *full_name, int max_size);
+int jp_get_home_file_name(char *file, char *full_name, int max_size)
+{
+   return get_home_file_name(file, full_name, max_size);
+}
+
+int pdb_file_write_app_block(char *DB_name, void *bufp, int size_in);
+int jp_pdb_file_write_app_block(char *DB_name, void *bufp, int size_in)
+{
+   return pdb_file_write_app_block(DB_name, bufp, size_in);
+}
+
+int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai);
+int jp_edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
+{
+   return edit_cats(widget, db_name, cai);
 }
 
 /*

@@ -1,7 +1,7 @@
 /* plugins.h
  * A module of J-Pilot http://jpilot.org
  * 
- * Copyright (C) 1999-2001 by Judd Montgomery
+ * Copyright (C) 1999-2002 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,6 +56,10 @@ struct plugin_s
    int (*plugin_search)(const char *search_string, int case_sense, struct search_result **sr);
    int (*plugin_post_sync)(void);
    int (*plugin_exit_cleanup)(void);
+   int (*plugin_unpack_cai_from_ai)(struct CategoryAppInfo *cai,
+				    unsigned char *ai_raw, int len);
+   int (*plugin_pack_cai_into_ai)(struct CategoryAppInfo *cai,
+				  unsigned char *ai_raw, int len);
 };
 
 int load_plugins();

@@ -1,7 +1,7 @@
 /* plugins.c
  * A module of J-Pilot http://jpilot.org
  *
- * Copyright (C) 1999-2001 by Judd Montgomery
+ * Copyright (C) 1999-2002 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -245,6 +245,8 @@ static int get_plugin_info(struct plugin_s *p, char *path)
    p->plugin_sync = NULL;
    p->plugin_post_sync = NULL;
    p->plugin_exit_cleanup = NULL;
+   p->plugin_unpack_cai_from_ai = NULL;
+   p->plugin_pack_cai_into_ai = NULL;
 
    h = dlopen(path, RTLD_LAZY);
    if (!h) {
@@ -378,6 +380,9 @@ static int get_plugin_info(struct plugin_s *p, char *path)
 
    /* plugin_exit_cleanup */
    p->plugin_exit_cleanup = dlsym(h, "plugin_exit_cleanup");
+
+   p->plugin_unpack_cai_from_ai = dlsym(h, "plugin_unpack_cai_from_ai");
+   p->plugin_pack_cai_into_ai = dlsym(h, "plugin_pack_cai_into_ai");
 
    return 0;
 }
