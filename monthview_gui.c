@@ -110,7 +110,7 @@ cb_enter_notify(GtkWidget *widget, GdkEvent *event, gpointer data)
    char desc[400];
    char datef[20];
    static int prev_day=-1;
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
    int ret;
    int cat_bit;
    long use_db3_tags;
@@ -138,7 +138,7 @@ cb_enter_notify(GtkWidget *widget, GdkEvent *event, gpointer data)
 			    gtk_text_get_length(GTK_TEXT(big_text)));
 
    for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
       get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
       if (use_db3_tags) {
 	 ret = db3_parse_tag(temp_al->ma.a.note, &db3_type, &db4);
@@ -265,7 +265,7 @@ int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
    int ndim;
    int n;
    int mask;
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
    int ret;
    int cat_bit;
    int db3_type;
@@ -303,7 +303,7 @@ int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
       mktime(&date);
 
       for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
 	 get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
 	 if (use_db3_tags) {
 	    ret = db3_parse_tag(temp_al->ma.a.note, &db3_type, &db4);

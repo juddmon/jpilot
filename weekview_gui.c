@@ -156,7 +156,7 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
    GdkColor color;
    GdkColormap *colormap;
    /* long char_set;*/
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
    int ret;
    int cat_bit;
    int db3_type;
@@ -207,7 +207,7 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
 
    for (n=0; n<8; n++, add_days_to_date(&date, 1)) {
       for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
 	 get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
 	 if (use_db3_tags) {
 	    ret = db3_parse_tag(temp_al->ma.a.note, &db3_type, &db4);

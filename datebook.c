@@ -109,7 +109,7 @@ static int datebook_sort(AppointmentList **al)
    return 0;
 }
 
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
 int db3_hack_date(struct Appointment *a, struct tm *today)
 {
    int t1, t2;
@@ -671,6 +671,8 @@ int get_datebook_app_info(struct AppointmentAppInfo *ai)
    long char_set;
 
    bzero(ai, sizeof(*ai));
+   /* Put at least one entry in there */
+   strcpy(ai->category.name[0], "Unfiled");
 
    jp_get_app_info("DatebookDB", &buf, &rec_size);
    num = unpack_AppointmentAppInfo(ai, buf, rec_size);
@@ -678,7 +680,7 @@ int get_datebook_app_info(struct AppointmentAppInfo *ai)
       free(buf);
    }
    if (num <= 0) {
-      jpilot_logf(LOG_WARN, _("Error reading"), "DatebookDB.pdb");
+      jpilot_logf(LOG_WARN, _("Error reading %s\n"), "DatebookDB.pdb");
       return -1;
    }
    get_pref(PREF_CHAR_SET, &char_set, NULL);
@@ -898,13 +900,13 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
    int keep_priv;
    buf_rec *br;
    long char_set;
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
    long use_db3_tags;
    time_t ltime;
    struct tm *Ptoday, today;
 #endif
 
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
    time(&ltime);
    Ptoday = localtime(&ltime);
    /* Copy into stable memory */
@@ -966,7 +968,7 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
 	 continue;
       }
 
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
       if (use_db3_tags) {
 	 db3_hack_date(&a, &today);
       }

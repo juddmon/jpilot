@@ -23,7 +23,7 @@
 #include <pi-datebook.h>
 #include "utils.h"
 
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
 
 /* These defines depend on the defaults being zero so that the structure
    being zeroed out sets the defaults (0) */
@@ -112,7 +112,7 @@ int dateToDays(struct tm *tm1);
 
 int compareTimesToDay(struct tm *tm1, struct tm *tm2);
 
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
 /* Returns a bitmask
  * 0 if not a floating OR
  * bitmask:

@@ -58,7 +58,7 @@
 #define DB_TIME_COLUMN  0
 #define DB_NOTE_COLUMN  1
 #define DB_ALARM_COLUMN 2
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
 #define DB_FLOAT_COLUMN 3
 static int DB_APPT_COLUMN=4;
 #else
@@ -128,7 +128,7 @@ static int clist_row_selected;
 static int record_changed;
 static int clist_hack;
 int datebook_category=0xFFFF; /* This is a bitmask */
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
 static GtkWidget *datebk_entry;
 #endif
 
@@ -921,7 +921,7 @@ static int datebook_export_gui(int x, int y)
 /*
  * Start Datebk3/4 code
  */
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
 static GtkWidget *window_date_cats = NULL;
 static GtkWidget *toggle_button[16];
 static void cb_toggle(GtkWidget *button, int category);
@@ -1238,11 +1238,11 @@ static void init()
    struct tm *now;
    AppointmentList *a_list;
    AppointmentList *temp_al;
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
    long use_db3_tags;
 #endif
 
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
    get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
    if (use_db3_tags) {
       DB_APPT_COLUMN=4;
@@ -1480,7 +1480,7 @@ static void clear_details()
 {
    int i;
    struct tm today;
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
    long use_db3_tags;
 #endif
 
@@ -1496,7 +1496,7 @@ static void clear_details()
 			    gtk_text_get_length(GTK_TEXT(text_widget1)));
    gtk_text_backward_delete(GTK_TEXT(text_widget2),
 			    gtk_text_get_length(GTK_TEXT(text_widget2)));
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
    get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
    if (use_db3_tags) {
       gtk_entry_set_text(GTK_ENTRY(datebk_entry), "");
@@ -1553,7 +1553,7 @@ static int get_details(struct Appointment *a, unsigned char *attrib)
    char datef[32];
    const char *svalue1, *svalue2;
    gchar *text1;
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
    gchar *note_text=NULL;
    gchar *text2;
    long use_db3_tags;
@@ -1567,7 +1567,7 @@ static int get_details(struct Appointment *a, unsigned char *attrib)
       gettext_noop("year")
    };
 
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
    get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
 #endif
 
@@ -1785,7 +1785,7 @@ static int get_details(struct Appointment *a, unsigned char *attrib)
       jpilot_logf(LOG_DEBUG, "description=[%s]\n",a->description);
    }
 
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
    if (use_db3_tags) {
       text1 = gtk_entry_get_text(GTK_ENTRY(datebk_entry));
       text2 = gtk_editable_get_chars(GTK_EDITABLE(text_widget2), 0, -1);
@@ -1882,7 +1882,7 @@ static int dayview_update_clist()
    GdkBitmap *mask_note;
    GdkBitmap *mask_alarm;
    int has_note;
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
    int ret;
    int cat_bit;
    int db3_type;
@@ -1900,7 +1900,7 @@ static int dayview_update_clist()
 
    jpilot_logf(LOG_DEBUG, "dayview_update_clist()\n");
 
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
    get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
 #endif
 
@@ -1918,7 +1918,7 @@ static int dayview_update_clist()
    num_entries = get_days_appointments2(&glob_al, &new_time, 2, 2, 1);
 
    jpilot_logf(LOG_DEBUG, "get_days_appointments==>%d\n", num_entries);
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
    jpilot_logf(LOG_DEBUG, "datebook_category = 0x%x\n", datebook_category);
 #endif
 
@@ -1927,7 +1927,7 @@ static int dayview_update_clist()
    show_priv = show_privates(GET_PRIVATES, NULL);
 
    for (temp_al = glob_al, i=0; temp_al; temp_al=temp_al->next, i++) {
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
       ret=0;
       if (use_db3_tags) {
 	 ret = db3_parse_tag(temp_al->ma.a.note, &db3_type, &db4);
@@ -2012,7 +2012,7 @@ static int dayview_update_clist()
 	 }
       }
 
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
       if (use_db3_tags) {
 	 if (db4.floating_event==DB3_FLOAT) {
 	    get_pixmaps(scrolled_window, PIXMAP_FLOAT_CHECK, 
@@ -2030,7 +2030,7 @@ static int dayview_update_clist()
 #endif
 
       has_note=0;
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
       if (use_db3_tags) {
 	 if (db3_type!=DB3_TAG_TYPE_NONE) {
 	    if (db4.note) {
@@ -2393,7 +2393,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    MyAppointment *ma;
    char temp[20];
    int i, b, keep;
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
    int type;
    char *note;
    int len;
@@ -2402,7 +2402,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 
    if (!event) return;
 
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
    get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
 #endif
 
@@ -2443,7 +2443,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    gtk_text_set_point(GTK_TEXT(text_widget2), 0);
    gtk_text_forward_delete(GTK_TEXT(text_widget2),
 			    gtk_text_get_length(GTK_TEXT(text_widget2)));
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
    if (use_db3_tags) {
       gtk_entry_set_text(GTK_ENTRY(datebk_entry), "");
    }
@@ -2492,7 +2492,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    if (a->description) {
       gtk_text_insert(GTK_TEXT(text_widget1), NULL,NULL, NULL, a->description, -1);
    }
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
    if (use_db3_tags) {
       if (db3_parse_tag(a->note, &type, NULL) > 0) {
 	 /* There is a datebk tag.  Need to separate it from the note */
@@ -2804,7 +2804,7 @@ int datebook_refresh(int first)
 
    init();
 
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
    if (glob_find_id) {
       if (GTK_IS_WINDOW(window_date_cats)) {
 	 cb_category(NULL, GINT_TO_POINTER(1));
@@ -3026,7 +3026,7 @@ int datebook_gui_cleanup()
    }
    connect_changed_signals(DISCONNECT_SIGNALS);
    set_pref(PREF_DATEBOOK_PANE, GTK_PANED(pane)->handle_xpos, NULL, TRUE);
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
    if (GTK_IS_WIDGET(window_date_cats)) {
       gtk_widget_destroy(window_date_cats);
    }
@@ -3048,11 +3048,11 @@ static void connect_changed_signals(int con_or_dis)
 {
    int i;
    static int connected=0;
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
    unsigned long use_db3_tags;
 #endif
 
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
    get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
 #endif
 
@@ -3088,7 +3088,7 @@ static void connect_changed_signals(int con_or_dis)
       gtk_signal_connect(GTK_OBJECT(text_widget2), "changed",
 			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
 
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
       if (use_db3_tags) {
 	 if (datebk_entry) {
 	    gtk_signal_connect(GTK_OBJECT(datebk_entry), "changed",
@@ -3171,7 +3171,7 @@ static void connect_changed_signals(int con_or_dis)
 				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
       gtk_signal_disconnect_by_func(GTK_OBJECT(text_widget2),
 				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
       if (use_db3_tags) {
 	 if (datebk_entry) {
 	    gtk_signal_disconnect_by_func(GTK_OBJECT(datebk_entry),
@@ -3320,7 +3320,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    long fdow;
    const char *str_fdow;
    long ivalue;
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
    long use_db3_tags;
 #endif
    const char *svalue;
@@ -3344,7 +3344,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    init();
 
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
    datebk_entry = NULL;
    get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
 #endif
@@ -3434,7 +3434,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_widget_add_accelerator(GTK_WIDGET(button), "clicked", accel_group, 'M',
 			      GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
    if (use_db3_tags) {
       /* Make Category button */
       button = gtk_button_new_with_label(_("Cats"));
@@ -3464,7 +3464,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    /* The dialog window is created with a vbox packed into it. */
    gtk_box_pack_start(GTK_BOX(vbox1), scrolled_window, TRUE, TRUE, 0);
 
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
    if (use_db3_tags) {
       clist = gtk_clist_new_with_titles(5, titles);
    } else {
@@ -3488,7 +3488,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), DB_APPT_COLUMN, FALSE);
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), DB_NOTE_COLUMN, TRUE);
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), DB_ALARM_COLUMN, TRUE);
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), DB_FLOAT_COLUMN, TRUE);
 #endif
    gtk_clist_set_column_title(GTK_CLIST(clist), DB_TIME_COLUMN, _("Time"));
@@ -3503,7 +3503,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    pixmapwid = gtk_pixmap_new(pixmap, mask);
    hack_clist_set_column_title_pixmap(clist, DB_ALARM_COLUMN, pixmapwid);
 
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
    if (use_db3_tags) {
       get_pixmaps(vbox, PIXMAP_FLOAT_CHECKED, &pixmap, &mask);
       pixmapwid = gtk_pixmap_new(pixmap, mask);
@@ -3714,7 +3714,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_widget_set_usize(GTK_WIDGET(text_widget2), 10, 10);
 
    /* Datebk tags entry */
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
    if (use_db3_tags) {
       hbox_temp = gtk_hbox_new(FALSE, 0);
       gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 2);

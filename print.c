@@ -425,7 +425,7 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
    const char *svalue;
    long fdow;
    int mask;
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
    int ret;
    int cat_bit;
    int db3_type;
@@ -440,7 +440,7 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
 
    time(&ltime);
 
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
    get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
 #endif
 
@@ -493,7 +493,7 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
       fprintf(out, "NextDay\n");
 
       for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
 	 if (use_db3_tags) {
 	    ret = db3_parse_tag(temp_al->ma.a.note, &db3_type, &db4);
 	    /* jpilot_logf(LOG_DEBUG, "category = 0x%x\n", db4.category); */
@@ -609,7 +609,7 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
    char desc[256], short_date[32];
    int n;
    time_t ltime;
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
    int ret;
    int cat_bit;
    int db3_type;
@@ -623,7 +623,7 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
    time(&ltime);
    today_date = localtime(&ltime);
 
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
    get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
 #endif
 
@@ -651,7 +651,7 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
    memcpy(&date, date_in, sizeof(struct tm));
    for (n = 0; n < 7; n++, add_days_to_date(&date, 1)) {
       for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
 	 if (use_db3_tags) {
 	    ret = db3_parse_tag(temp_al->ma.a.note, &db3_type, &db4);
 	    cat_bit=1<<db4.category;
@@ -697,7 +697,7 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
       fprintf(out, "%d startday\n(%s) dateline\n", n, short_date);
 
       for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
 	 if (use_db3_tags) {
 	    ret = db3_parse_tag(temp_al->ma.a.note, &db3_type, &db4);
 	    jpilot_logf(LOG_DEBUG, "category = 0x%x\n", db4.category);
