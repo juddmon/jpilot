@@ -409,7 +409,7 @@ int plugin_get_menu_name(char *name, int len)
  */
 int plugin_get_help_name(char *name, int len)
 {
-   strncpy(name, _("About Expense"), len);
+   g_snprintf(name, len, _("About %s"), _("Expense"));
    return 0;
 }
 

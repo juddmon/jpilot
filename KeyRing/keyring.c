@@ -496,7 +496,7 @@ int plugin_get_menu_name(char *name, int len)
  */
 int plugin_get_help_name(char *name, int len)
 {
-   strncpy(name, _("About KeyRing"), len);
+   g_snprintf(name, len, _("About %s"), _("KeyRing"));
    return 0;
 }
 

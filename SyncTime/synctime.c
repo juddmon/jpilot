@@ -25,6 +25,8 @@
 #include <pi-source.h>
 #include "libplugin.h"
 
+#include "../i18n.h"
+
 void plugin_version(int *major_version, int *minor_version)
 {
    *major_version=0;
@@ -39,7 +41,7 @@ int plugin_get_name(char *name, int len)
 
 int plugin_get_help_name(char *name, int len)
 {
-   strncpy(name, "About SyncTime", len);
+   g_snprintf(name, len, _("About %s"), _("SyncTime"));
    return 0;
 }
 
