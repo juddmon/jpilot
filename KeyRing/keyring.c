@@ -37,11 +37,16 @@
 
 #include <pi-appinfo.h>
 #include <pi-dlp.h>
+#include <pi-file.h>
 
 #include "../i18n.h"
 
 #define KEYRING_CAT1 1
 #define KEYRING_CAT2 2
+
+#define PASSWD_ENTER       0
+#define PASSWD_ENTER_RETRY 1
+#define PASSWD_ENTER_NEW   2
 
 #define PASSWD_LEN 100
 
@@ -87,8 +92,24 @@ static void cb_clist_selection(GtkWidget      *clist,
 
 static void cb_add_new_record(GtkWidget *widget, gpointer data);
 
-static des_key_schedule s1, s2;
+static int check_for_db();
+static int verify_pasword(char *ascii_password);
+static int dialog_password(GtkWindow *main_window, char *ascii_password, int reason);
 
+#ifdef HEADER_NEW_DES_H
+DES_cblock current_key1;
+DES_cblock current_key2;
+DES_cblock new_key1;
+DES_cblock new_key2;
+static DES_key_schedule s1, s2;
+#else
+des_cblock current_key1;
+des_cblock current_key2;
+des_cblock new_key1;
+des_cblock new_key2;
+static des_key_schedule s1, s2;
+#endif
+  
 struct KeyRing {
    char *name; /* Unencrypted */
    char *account; /* Encrypted */
@@ -110,20 +131,23 @@ struct MyKeyRing {
 
 struct MyKeyRing *glob_keyring_list=NULL;
 
-static int pack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size)
+static int pack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size,
+			int *wrote_size)
 {
    int n;
    int i;
    char empty[]="";
-   
+
    jp_logf(JP_LOG_DEBUG, "KeyRing: pack_KeyRing()\n");
-   
+
+   *wrote_size=0;
+
    if (!(kr->name)) kr->name=empty;
    if (!(kr->account)) kr->account=empty;
    if (!(kr->password)) kr->password=empty;
    if (!(kr->note)) kr->note=empty;
 
-   /* 3 accounts for NULLs */
+   /* 3 chars accounts for NULL string terminators */
    n=strlen(kr->account) + strlen(kr->password) + strlen(kr->note) + 3;
    /* The encrypted portion must be a multiple of 8 */
    if ((n%8)) {
@@ -132,13 +156,14 @@ static int pack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size)
    /* Now we can add in the unencrypted part */
    n=n+strlen(kr->name)+1;
    jp_logf(JP_LOG_DEBUG, "pack n=%d\n", n);
-   
+
    if (n+2>buf_size) {
       jp_logf(JP_LOG_WARN, "KeyRing: pack_KeyRing(): buf_size too small\n");
       return 0;
    }
 
    memset(buf, 0, n+1);
+   *wrote_size = n;
    strcpy(buf, kr->name);
    i = strlen(kr->name)+1;
    strcpy(&buf[i], kr->account);
@@ -148,8 +173,13 @@ static int pack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size)
    strcpy(&buf[i], kr->note);
    for (i=strlen(kr->name)+1; i<n; i=i+8) {
       /* des_encrypt3((DES_LONG *)&buf[i], s1, s2, s1); */
-      des_ecb3_encrypt((const_des_cblock *)&buf[i], (des_cblock *)(&buf[i]), 
+#ifdef HEADER_NEW_DES_H
+      DES_ecb3_encrypt((const_des_cblock *)&buf[i], (des_cblock *)(&buf[i]), 
+		       &s1, &s2, &s1, DES_ENCRYPT);
+#else
+      des_ecb3_encrypt((const_des_cblock *)&buf[i], (des_cblock *)(&buf[i]),
 		       s1, s2, s1, DES_ENCRYPT);
+#endif
    }
 #ifdef JPILOT_DEBUG
    for (i=0;i<n; i++) {
@@ -171,18 +201,16 @@ static int pack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size)
 static int set_password_hash(unsigned char *buf, int buf_size, char *passwd)
 {
    unsigned char buffer[MESSAGE_BUF_SIZE];
-   des_cblock key1;
-   des_cblock key2;
    unsigned char md[MD5_HASH_SIZE];
    
    /* Must wipe passwd out of memory after using it */
    
-   if (buf_size < (MD5_HASH_SIZE)) {
+   if (buf_size < MD5_HASH_SIZE) {
       return -1;
    }
    memset(buffer, 0, MESSAGE_BUF_SIZE);
    memcpy(buffer, buf, SALT_SIZE);
-   strncpy(buffer+SALT_SIZE, passwd, MESSAGE_BUF_SIZE - 5);
+   strncpy(buffer+SALT_SIZE, passwd, MESSAGE_BUF_SIZE - SALT_SIZE - 1);
    MD5(buffer, MESSAGE_BUF_SIZE, md);
 
    /* wipe password traces out */
@@ -193,11 +221,16 @@ static int set_password_hash(unsigned char *buf, int buf_size, char *passwd)
    }
 
    MD5(passwd, strlen(passwd), md);
-   memcpy(key1, md, 8);
-   memcpy(key2, md+8, 8);
-   des_set_key(&key1, s1);
-   des_set_key(&key2, s2);
-   
+   memcpy(current_key1, md, 8);
+   memcpy(current_key2, md+8, 8);
+#ifdef HEADER_NEW_DES_H
+   DES_set_key(&current_key1, &s1);
+   DES_set_key(&current_key2, &s2);
+#else
+   des_set_key(&current_key1, s1);
+   des_set_key(&current_key2, s2);
+#endif
+
    return 0;
 }
 
@@ -211,7 +244,7 @@ static int unpack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size)
    unsigned char *Pstr[3];
    unsigned char *safety[]={"","",""
    };
-   
+
    jp_logf(JP_LOG_DEBUG, "KeyRing: unpack_KeyRing\n");
    if (!memchr(buf, '\0', buf_size)) {
       jp_logf(JP_LOG_DEBUG, "KeyRing: unpack_KeyRing(): No null terminater found in buf\n");
@@ -228,32 +261,38 @@ static int unpack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size)
       rem=0xFFFF-n;
       rem=rem-(rem%8);
    }
-   clear_text=malloc(rem+2);
+   clear_text=malloc(rem+8); /* Allow for some safety NULLs */
+   bzero(clear_text, rem+8);
 
    jp_logf(JP_LOG_DEBUG, "KeyRing: unpack_KeyRing(): rem (should be multiple of 8)=%d\n", rem);
    jp_logf(JP_LOG_DEBUG, "KeyRing: unpack_KeyRing(): rem%%8=%d\n", rem%8);
-   
+
    P=&buf[n];
    for (i=0; i<rem; i+=8) {
       /* memcpy(chunk, &P[i], 8); */
       /* des_decrypt3((DES_LONG *)chunk, s1, s2, s1); */
       /* memcpy(clear_text+i, chunk, 8); */
+#ifdef HEADER_NEW_DES_H
+      DES_ecb3_encrypt((const_des_cblock *)&P[i], (DES_cblock *)(clear_text+i),
+		       &s1, &s2, &s1, DES_DECRYPT);
+#else
       des_ecb3_encrypt((const_des_cblock *)&P[i], (des_cblock *)(clear_text+i),
 		       s1, s2, s1, DES_DECRYPT);
+#endif
 		       
    }
-   
+
    Pstr[0]=clear_text;
    Pstr[1]=safety[1];
    Pstr[2]=safety[2];
-   
+
    for (i=0, j=1; (i<rem) && (j<3); i++) {
       if (!clear_text[i]) {
 	 Pstr[j]=&clear_text[i+1];
 	 j++;
       }
    }
-   
+
 #ifdef DEBUG
    printf("name  [%s]\n", buf);
    printf("Pstr0 [%s]\n", Pstr[0]);
@@ -264,12 +303,21 @@ static int unpack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size)
    kr->account=strdup(Pstr[0]);
    kr->password=strdup(Pstr[1]);
    kr->note=strdup(Pstr[2]);
-   
+
    free(clear_text);
-   
+
    return 1;
 }
 
+/*
+ * Start password change code
+ */
+/* Code for this is written, just need to add another jpilot API for
+ * cancelling a sync if the passwords don't match.
+ */
+/*
+ * End password change code
+ */
 
 static void
 set_new_button_to(int new_state)
@@ -436,7 +484,7 @@ int plugin_get_db_name(char *name, int len)
 static void cb_delete(GtkWidget *widget, gpointer data)
 {
    struct MyKeyRing *mkr;
-   int size;
+   int new_size;
    char buf[0xFFFF];
    buf_rec br;
 
@@ -454,13 +502,13 @@ static void cb_delete(GtkWidget *widget, gpointer data)
     * so that it can be deleted at sync time.  We need the original record
     * so that if it has changed on the pilot we can warn the user that
     * the record has changed on the pilot. */
-   size = pack_KeyRing(&(mkr->kr), (unsigned char *)buf, 0xFFFF);
+   pack_KeyRing(&(mkr->kr), (unsigned char *)buf, 0xFFFF, &new_size);
    
    br.rt = mkr->rt;
    br.unique_id = mkr->unique_id;
    br.attrib = mkr->attrib;
    br.buf = buf;
-   br.size = size;
+   br.size = new_size;
 
    jp_delete_record("Keys-Gtkr", &br, DELETE_FLAG);
 
@@ -504,8 +552,8 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
 {
    struct KeyRing kr;
    buf_rec br;
-   unsigned char buf[0xFFFF];
-   int size;
+   unsigned char buf[0x10000];
+   int new_size;
    int flag;
    struct MyKeyRing *mkr;
 
@@ -533,7 +581,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    jp_charset_j2p((unsigned char *)kr.password, strlen(kr.account)+1);
    jp_charset_j2p((unsigned char *)kr.note, strlen(kr.note)+1);
 
-   size = pack_KeyRing(&kr, buf, 0xFFFF);
+   pack_KeyRing(&kr, buf, 0xFFFF, &new_size);
 
    /* This is a new record from the PC, and not yet on the palm */
    br.rt = NEW_PC_REC;
@@ -543,7 +591,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    br.attrib = glob_category_number_from_menu_item[glob_detail_category];
    jp_logf(JP_LOG_DEBUG, "category is %d\n", br.attrib);
    br.buf = buf;
-   br.size = size;
+   br.size = new_size;
    br.unique_id = 0;
 
    connect_changed_signals(CONNECT_SIGNALS);
@@ -1056,16 +1104,16 @@ static void cb_dialog_button(GtkWidget *widget,
 {
    struct dialog_data *Pdata;
    GtkWidget *w;
-   int i;
 
-   for (w=widget, i=10; w && (i>0); w=w->parent, i--) {
-      if (GTK_IS_WINDOW(w)) {
-	 Pdata = gtk_object_get_data(GTK_OBJECT(w), "dialog_data");
-	 if (Pdata) {
-	    Pdata->button_hit = GPOINTER_TO_INT(data);
-	 }
-	 gtk_widget_destroy(GTK_WIDGET(w));
+   /* Find the main window from some widget */
+   w = GTK_WIDGET(gtk_widget_get_toplevel(widget));
+   
+   if (GTK_IS_WINDOW(w)) {
+      Pdata = gtk_object_get_data(GTK_OBJECT(w), "dialog_data");
+      if (Pdata) {
+	 Pdata->button_hit = GPOINTER_TO_INT(data);
       }
+      gtk_widget_destroy(GTK_WIDGET(w));
    }
 }
 
@@ -1095,7 +1143,7 @@ static gboolean cb_destroy_dialog(GtkWidget *widget)
 /*
  * returns 1 if OK was pressed, 2 if cancel was hit
  */
-static int dialog_password(GtkWidget *main_window, char *ascii_password, int retry)
+static int dialog_password(GtkWindow *main_window, char *ascii_password, int reason)
 {
    GtkWidget *button, *label;
    GtkWidget *hbox1, *vbox1;
@@ -1140,8 +1188,10 @@ static int dialog_password(GtkWidget *main_window, char *ascii_password, int ret
    gtk_box_pack_start(GTK_BOX(vbox1), hbox1, FALSE, FALSE, 2);
 
    /* Label */
-   if (retry) {
+   if (reason==PASSWD_ENTER_RETRY) {
       label = gtk_label_new(_("Incorrect, Reenter KeyRing Password"));
+   } else if (reason==PASSWD_ENTER_NEW) {
+      label = gtk_label_new(_("Enter a NEW KeyRing Password"));
    } else {
       label = gtk_label_new(_("Enter KeyRing Password"));
    }
@@ -1238,6 +1288,58 @@ static int check_for_db()
 }
 
 /*
+ * returns 0 on password correct, >1 not correct, <0 error
+ */
+int verify_pasword(char *ascii_password)
+{
+   int num;
+   GList *records;
+   GList *temp_list;
+   buf_rec *br;
+   int password_not_correct;
+
+   jp_logf(JP_LOG_DEBUG, "KeyRing: verify_pasword\n");
+
+   if (check_for_db()) {
+      return -1;
+   }
+
+   password_not_correct = 1;
+   /* TODO - Maybe keep records in memory for performance */
+   /* This function takes care of reading the Database for us */
+   records=NULL;
+   num = jp_read_DB_files("Keys-Gtkr", &records);
+
+   /* Go to first entry in the list */
+   for (temp_list = records; temp_list; temp_list = temp_list->prev) {
+      records = temp_list;
+   }
+   for (temp_list = records; temp_list; temp_list = temp_list->next) {
+      if (temp_list->data) {
+	 br=temp_list->data;
+      } else {
+	 continue;
+      }
+      if (!br->buf) {
+	 continue;
+      }
+
+      if ((br->rt == DELETED_PALM_REC) || (br->rt == MODIFIED_PALM_REC)) {
+	 continue;
+      }
+      /* This record should be record 0 and is the hash-key record */
+      if (br->attrib & dlpRecAttrSecret) {
+	 password_not_correct = 
+	   set_password_hash(br->buf, br->size, ascii_password);
+	 break;
+      }
+   }
+   jp_free_DB_records(&records);
+   if (password_not_correct) return 1;
+   return 0;
+}
+
+/*
  * This function is called by J-Pilot when the user selects this plugin
  * from the plugin menu, or from the search window when a search result
  * record is chosen.  In the latter case, unique ID will be set.  This
@@ -1251,16 +1353,12 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    GtkWidget *label;
    GtkWidget *vscrollbar;
    GtkWidget *table;
-   GtkWidget *w;
+   GtkWindow *w;
    time_t ltime;
    struct tm *now;
    char ascii_password[PASSWD_LEN];
-   int i, r;
+   int r;
    int password_not_correct;
-   int num;
-   GList *records;
-   GList *temp_list;
-   buf_rec *br;
    char *titles[2];
    int retry;
 
@@ -1273,57 +1371,30 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    }
    
    /* Find the main window from some widget */
-   for (w=hbox, i=10; w && (i>0); w=w->parent, i--) {
-      if (GTK_IS_WINDOW(w)) {
-	 break;
-      }
-   }
-   if (!GTK_IS_WINDOW(w)) {
-      w=NULL;
+   w = GTK_WINDOW(gtk_widget_get_toplevel(hbox));
+
+#if 0
+   /* Change Password button */
+   button = gtk_button_new_with_label(_("Change\nKeyRing\nPassword"));
+   gtk_signal_connect(GTK_OBJECT(button), "clicked",
+		      GTK_SIGNAL_FUNC(cb_change_password), NULL);
+   gtk_box_pack_start(GTK_BOX(vbox), button, TRUE, TRUE, 0);
+#endif
+
+   if (glob_keyring_list!=NULL) {
+      free_mykeyring_list(&glob_keyring_list);
    }
 
    password_not_correct=1;
-   retry=FALSE;
+   retry=PASSWD_ENTER;
    while (password_not_correct) {
       r = dialog_password(w, ascii_password, retry);
-      retry=TRUE;
+      retry=PASSWD_ENTER_RETRY;
       if (r!=1) {
 	 memset(ascii_password, 0, PASSWD_LEN-1);
 	 return 0;
       }
-   
-      records=NULL;
-   
-      if (glob_keyring_list!=NULL) {
-	 free_mykeyring_list(&glob_keyring_list);
-      }
-
-      /* This function takes care of reading the Database for us */
-      num = jp_read_DB_files("Keys-Gtkr", &records);
-      /* Go to first entry in the list */
-      for (temp_list = records; temp_list; temp_list = temp_list->prev) {
-	 records = temp_list;
-      }
-      for (temp_list = records; temp_list; temp_list = temp_list->next) {
-	 if (temp_list->data) {
-	    br=temp_list->data;
-	 } else {
-	    continue;
-	 }
-	 if (!br->buf) {
-	    continue;
-	 }
-
-	 if ((br->rt == DELETED_PALM_REC) || (br->rt == MODIFIED_PALM_REC)) {
-	    continue;
-	 }
-	 /* This record should be record 0 and is the hash-key record */
-	 if (br->attrib & dlpRecAttrSecret) {
-	    password_not_correct = 
-	      set_password_hash(br->buf, br->size, ascii_password);
-	    break;
-	 }
-      }
+      password_not_correct = (verify_pasword(ascii_password) > 0);
    }
    memset(ascii_password, 0, PASSWD_LEN-1);
 
@@ -1391,7 +1462,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
 		      GTK_SIGNAL_FUNC(cb_delete),
 		      GINT_TO_POINTER(DELETE_FLAG));
    gtk_box_pack_start(GTK_BOX(temp_hbox), button, TRUE, TRUE, 0);
-   
+
    button = gtk_button_new_with_label(_("Copy"));
    gtk_box_pack_start(GTK_BOX(temp_hbox), button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
