@@ -44,7 +44,7 @@
 #define MAX_CATEGORY1     17
 #define MAX_CATEGORY2     16
 #define MAX_EXPENSE_TYPES 28
-#define MAX_CURRENCYS     24
+#define MAX_CURRENCYS     34
 
 #define CATEGORY_ALL 200
 
@@ -66,7 +66,49 @@ struct Expense {
  };
 */
 
+struct currency_s {
+   char *country;
+   int currency;
+};
+
 /* Global vars */
+struct currency_s glob_currency[MAX_CURRENCYS]={
+     {N_("Australia"),         0},
+     {N_("Austria"),           1},
+     {N_("Belgium"),           2},
+     {N_("Brazil"),            3},
+     {N_("Canada"),            4},
+     {N_("Denmark"),           5},
+     {N_("EU (Euro)"),       133},
+     {N_("Finland"),           6},
+     {N_("France"),            7},
+     {N_("Germany"),           8},
+     {N_("Hong Kong"),         9},
+     {N_("Iceland"),          10},
+     {N_("India"),            24},
+     {N_("Indonesia"),        25},
+     {N_("Ireland"),          11},
+     {N_("Italy"),            12},
+     {N_("Japan"),            13},
+     {N_("Korea"),            26},
+     {N_("Luxembourg"),       14},
+     {N_("Malaysia"),         27},
+     {N_("Mexico"),           15},
+     {N_("Netherlands"),      16},
+     {N_("New Zealand"),      17},
+     {N_("Norway"),           18},
+     {N_("P.R.C."),           28},
+     {N_("Philippines"),      29},
+     {N_("Singapore"),        30},
+     {N_("Spain"),            19},
+     {N_("Sweden"),           20},
+     {N_("Switzerland"),      21},
+     {N_("Taiwan"),           32},
+     {N_("Thailand"),         31},
+     {N_("United Kingdom"),   22},
+     {N_("United States"),    23}
+};
+
 /* This is the category that is currently being displayed */
 static int show_category;
 static int glob_category_number_from_menu_item[MAX_CATEGORY2];
@@ -110,7 +152,7 @@ static int clist_hack;
 static int glob_detail_category;
 static int glob_detail_type;
 static int glob_detail_payment;
-static int glob_detail_currency;
+static int glob_detail_currency_pos;
 static int clist_row_selected;
 
 static void display_records();
@@ -516,6 +558,31 @@ static void clear_details()
    connect_changed_signals(CONNECT_SIGNALS);
 }
 
+/* returns position, position starts at zero */
+int currency_id_to_position(int currency)
+{
+   int i;
+   int found=0;
+   
+   for (i=0; i<MAX_CURRENCYS; i++) {
+      if (glob_currency[i].currency==currency) {
+	 found=i;
+	 break;
+      }
+   }
+   return found;
+}
+
+/* returns currency id, position starts at zero */
+int position_to_currency_id(int position)
+{
+   if (position<MAX_CURRENCYS) {
+      return glob_currency[position].currency;
+   } else {
+      return 0;
+   }
+}
+
 /*
  * This function is called when the user presses the "Add" button.
  * We collect all of the data from the GUI and pack it into an expense
@@ -554,8 +621,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
 
    ex.type = glob_detail_type;
    ex.payment = glob_detail_payment;
-   ex.currency= glob_detail_currency;
-/*   ex.currency=23; */
+   ex.currency= position_to_currency_id(glob_detail_currency_pos);
    text = gtk_entry_get_text(GTK_ENTRY(entry_amount));
    ex.amount = (char *)text;
    if (ex.amount[0]=='\0') {
@@ -890,6 +956,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    struct MyExpense *mex;
    int i, item_num, category;
    int keep, b;
+   int currency_position;
 
    jp_logf(JP_LOG_DEBUG, "Expense: cb_clist_selection\n");
 
@@ -953,14 +1020,15 @@ static void cb_clist_selection(GtkWidget      *clist,
    } else {
       jp_logf(JP_LOG_WARN, "Expense: Unknown payment type\n");
    }
-   if (mex->ex.currency > sizeof(menu_item_currency)/sizeof(menu_item_currency[0]))
-	   mex->ex.currency = 0;
+   /* printf("mex->ex.currency = %d\n", mex->ex.currency); */
+   currency_position = currency_id_to_position(mex->ex.currency);
+
    gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
-       (menu_item_currency[mex->ex.currency]), TRUE);
+       (menu_item_currency[currency_position]), TRUE);
    gtk_option_menu_set_history(GTK_OPTION_MENU(menu_category2), item_num);
    gtk_option_menu_set_history(GTK_OPTION_MENU(menu_expense_type), mex->ex.type);
    gtk_option_menu_set_history(GTK_OPTION_MENU(menu_payment), mex->ex.payment);
-   gtk_option_menu_set_history(GTK_OPTION_MENU(menu_currency), mex->ex.currency);
+   gtk_option_menu_set_history(GTK_OPTION_MENU(menu_currency), currency_position);
    
    gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinner_mon), mex->ex.date.tm_mon+1);
    gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinner_day), mex->ex.date.tm_mday);
@@ -1047,7 +1115,7 @@ static void cb_category(GtkWidget *item, unsigned int value)
       break;
     case EXPENSE_CURRENCY:
       cb_record_changed(NULL, NULL);
-      glob_detail_currency=sel; 
+      glob_detail_currency_pos=sel; 
       break;
    }
 }
@@ -1156,35 +1224,16 @@ static void make_menus()
       N_("Train"),
       NULL
    };
-   char *currency[]={
-      N_("Australia"),
-      N_("Austria"),
-      N_("Belgium"),
-      N_("Brazil"),
-      N_("Canada"),
-      N_("Denmark"),
-      N_("Finland"),
-      N_("France"),
-      N_("Germany"),
-      N_("Hong Kong."),
-      N_("Iceland"), 
-      N_("Ireland"),
-      N_("Italy"),
-      N_("Japan"),
-      N_("Luxembourg"),
-      N_("Mexico"),
-      N_("Holland"),
-      N_("New Zealand"),
-      N_("Norway"),
-      N_("Spain"),
-      N_("Sweden"),
-      N_("Switzerland"),
-      N_("U.K."),
-      N_("U.S.A."),
-      NULL
-   };
+
+   char *currency[MAX_CURRENCYS+1];
 
    jp_logf(JP_LOG_DEBUG, "Expense: make_menus\n");
+
+   /* Point the currency array to the country names and  NULL terminated it*/
+   for (i=0; i<MAX_CURRENCYS; i++) {
+      currency[i]=glob_currency[i].country;
+   }
+   currency[i]=NULL;
 
    /* This gets the application specific data out of the database for us.
     * We still need to write a function to unpack it from its blob form. */
