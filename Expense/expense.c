@@ -30,6 +30,7 @@
 
 #include <pi-expense.h>
 #include <pi-dlp.h>
+#include <pi-file.h>
 
 #define EXPENSE_CAT1 1
 #define EXPENSE_CAT2 2
@@ -67,6 +68,8 @@ static void cb_clist_selection(GtkWidget      *clist,
 			       GdkEventButton *event,
 			       gpointer       data);
 static void cb_add_new_record(GtkWidget *widget, gpointer data);
+static int make_menu(char *items[], int menu_index, GtkWidget **Poption_menu,
+		     GtkWidget *menu_items[]);
 
 static GtkWidget *clist;
 static GtkWidget *entry_amount;
@@ -78,6 +81,7 @@ static GtkWidget *menu_payment;
 static GtkWidget *menu_item_payment[8];
 static GtkWidget *menu_category1;
 static GtkWidget *menu_category2;
+static GtkWidget *menu_item_category1[17];
 static GtkWidget *menu_item_category2[16];
 static GtkWidget *menu_expense_type;
 static GtkWidget *menu_item_expense_type[28];
@@ -89,6 +93,8 @@ static GtkWidget *scrolled_window;
 static GtkWidget *new_record_button;
 static GtkWidget *apply_record_button;
 static GtkWidget *add_record_button;
+static GtkWidget *left_menu_box;
+static GtkWidget *right_menu_box;
 
 static int record_changed;
 static int clist_hack;
@@ -116,65 +122,45 @@ struct MyExpense {
 
 struct MyExpense *glob_myexpense_list=NULL;
 
-static int move_scrolled_window(GtkWidget *sw, float percentage);
-
-struct move_sw {
-   float percentage;
-   GtkWidget *sw;
-};
-
-static gint cb_timer_move_scrolled_window(gpointer data)
+int plugin_unpack_cai_from_ai(struct CategoryAppInfo *cai,
+			      unsigned char *ai_raw, int len)
 {
-   struct move_sw *move_this;
+   struct ExpenseAppInfo ai;
    int r;
    
-   move_this = data;
-   r = move_scrolled_window(move_this->sw, move_this->percentage);
-   /*if we return TRUE then this function will get called again */
-   /*if we return FALSE then it will be taken out of timer */
-   if (r) {
-      return TRUE;
-   } else {
-      return FALSE;
+   jp_logf(LOG_DEBUG, "unpack_expense_cai_from_ai\n");
+
+   r = unpack_ExpenseAppInfo(&ai, ai_raw, len);
+   if (r <= 0) {
+      jp_logf(LOG_DEBUG, "unpack_ExpenseAppInfo failed %s %d\n", __FILE__, __LINE__);
+      return -1;
    }
+   memcpy(cai, &(ai.category), sizeof(struct CategoryAppInfo));
+	  
+   return 0;
 }
 
-static void move_scrolled_window_hack(GtkWidget *sw, float percentage)
+int plugin_pack_cai_into_ai(struct CategoryAppInfo *cai,
+			    unsigned char *ai_raw, int len)
 {
-   /*This is so that the caller doesn't have to worry about making */
-   /*sure they use a static variable (required for callback) */
-   static struct move_sw move_this;
+   struct ExpenseAppInfo ai;
+   int r;
 
-   move_this.percentage = percentage;
-   move_this.sw = sw;
+   jp_logf(LOG_DEBUG, "pack_expense_cai_into_ai\n");
+
+   r = unpack_ExpenseAppInfo(&ai, ai_raw, len);
+   if (r <= 0) {
+      jp_logf(LOG_DEBUG, "unpack_ExpenseAppInfo failed %s %d\n", __FILE__, __LINE__);
+      return -1;
+   }
+   memcpy(&(ai.category), cai, sizeof(struct CategoryAppInfo));
+
+   r = pack_ExpenseAppInfo(&ai, ai_raw, len);
+   if (r <= 0) {
+      jp_logf(LOG_DEBUG, "pack_ExpenseAppInfo failed %s %d\n", __FILE__, __LINE__);
+      return -1;
+   }
    
-   gtk_timeout_add(50, cb_timer_move_scrolled_window, &move_this);
-}
-
-static int move_scrolled_window(GtkWidget *sw, float percentage)
-{
-   GtkScrollbar *sb;
-   gfloat upper, lower, page_size, new_val;
-
-   if (!GTK_IS_SCROLLED_WINDOW(sw)) {
-      return 0;
-   }
-   sb = GTK_SCROLLBAR(GTK_SCROLLED_WINDOW(sw)->vscrollbar);
-   upper = GTK_ADJUSTMENT(sb->range.adjustment)->upper;
-   lower = GTK_ADJUSTMENT(sb->range.adjustment)->lower;
-   page_size = GTK_ADJUSTMENT(sb->range.adjustment)->page_size;
-   
-   /*The screen isn't done drawing yet, so we have to leave. */
-   if (page_size == 0) {
-      return 1;
-   }
-   new_val = (upper - lower) * percentage;
-   if (new_val > upper - page_size) {
-      new_val = upper - page_size;
-   }
-   gtk_adjustment_set_value(sb->range.adjustment, new_val);
-   gtk_signal_emit_by_name(GTK_OBJECT(sb->range.adjustment), "changed");
-
    return 0;
 }
 
@@ -816,6 +802,73 @@ static void display_records()
    jp_logf(LOG_DEBUG, "Expense: leave display_records\n");
 }
 
+
+static void redraw_cat_menus(struct CategoryAppInfo *cai)
+{
+   char *categories[18];
+   int count, i;
+   char all[]="All";
+
+   categories[0]=all;
+   for (i=0, count=0; i<16; i++) {
+      glob_category_number_from_menu_item[i]=0;
+      if (cai->name[i][0]=='\0') {
+	 continue;
+      }
+      categories[count+1]=cai->name[i];
+      jp_charset_p2j(categories[count+1], strlen(categories[count+1])+1);
+      glob_category_number_from_menu_item[count++]=i;
+   }
+   categories[count+1]=NULL;
+
+   gtk_widget_destroy(menu_category1);
+   gtk_widget_destroy(menu_category2);
+   make_menu(categories, EXPENSE_CAT1, &menu_category1, menu_item_category1);
+   gtk_box_pack_start(GTK_BOX(left_menu_box), menu_category1, TRUE, TRUE, 0);
+   /* Skip the ALL for this menu */
+   make_menu(&categories[1], EXPENSE_CAT2, &menu_category2, menu_item_category2);
+   gtk_box_pack_start(GTK_BOX(right_menu_box), menu_category2, TRUE, TRUE, 0);
+}
+
+
+static void cb_edit_cats(GtkWidget *widget, gpointer data)
+{
+   struct ExpenseAppInfo ai;
+   char full_name[256];
+   char buffer[65536];
+   int num, r;
+   int size;
+   void *buf;
+   struct pi_file *pf;
+
+   jp_logf(LOG_DEBUG, "cb_edit_cats\n");
+
+   jp_get_home_file_name("ExpenseDB.pdb", full_name, 250);
+
+   buf=NULL;
+   bzero(&ai, sizeof(ai));
+
+   pf = pi_file_open(full_name);
+   r = pi_file_get_app_info(pf, &buf, &size);
+
+   num = unpack_ExpenseAppInfo(&ai, buf, size);
+   if (num <= 0) {
+      jp_logf(LOG_WARN, _("Error reading %s\n"), "ExpenseDB.pdb");
+      return;
+   }
+
+   pi_file_close(pf);
+
+   jp_edit_cats(widget, "ExpenseDB", &(ai.category));
+
+   size = pack_ExpenseAppInfo(&ai, buffer, 65535);
+
+   jp_pdb_file_write_app_block("ExpenseDB", buffer, size);
+   
+   /* We have to redraw the category menus now */
+   redraw_cat_menus(&ai.category);
+}
+
 /*
  * This function just displays a record on the right hand side of the screen
  * (the details)
@@ -1036,7 +1089,6 @@ static void make_menus()
    int buf_size;
    int i, count;
    char all[]="All";
-   GtkWidget *menu_item_category1[17];
    char *categories[18];
 
    char *payment[]={
@@ -1189,8 +1241,7 @@ static int expense_find(int unique_id)
       }
       gtk_clist_select_row(GTK_CLIST(clist), found_at, 0);
       cb_clist_selection(clist, found_at, 0, (gpointer)455, NULL);
-      move_scrolled_window_hack(scrolled_window,
-				(float)found_at/(float)total_count);
+      gtk_clist_moveto(GTK_CLIST(clist), found_at, 0, 0.5, 0.0);
    }
 
    return 0;
@@ -1237,13 +1288,25 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_widget_set_usize(GTK_WIDGET(vbox1), 0, 230);
    gtk_widget_set_usize(GTK_WIDGET(vbox2), 0, 230);
 
+   /* Make 2 menu boxes for the category menus */
+   left_menu_box = gtk_hbox_new(FALSE, 0);
+   right_menu_box = gtk_hbox_new(FALSE, 0);
+
    /* Make a temporary hbox */
    temp_hbox = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox1), temp_hbox, FALSE, FALSE, 0);
    
    label = gtk_label_new(_("Category: "));
    gtk_box_pack_start(GTK_BOX(temp_hbox), label, FALSE, FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(temp_hbox), menu_category1, TRUE, TRUE, 0);
+   gtk_box_pack_start(GTK_BOX(temp_hbox), left_menu_box, TRUE, TRUE, 0);
+   gtk_box_pack_start(GTK_BOX(left_menu_box), menu_category1, TRUE, TRUE, 0);
+
+
+   /* Edit category button */
+   button = gtk_button_new_with_label(_("Edit Categories"));
+   gtk_signal_connect(GTK_OBJECT(button), "clicked",
+		      GTK_SIGNAL_FUNC(cb_edit_cats), NULL);
+   gtk_box_pack_start(GTK_BOX(temp_hbox), button, FALSE, FALSE, 0);
 
    
    /* Scrolled Window */
@@ -1314,7 +1377,8 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    
    label = gtk_label_new(_("Category: "));
    gtk_box_pack_start(GTK_BOX(temp_hbox), label, FALSE, FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(temp_hbox), menu_category2, TRUE, TRUE, 0);
+   gtk_box_pack_start(GTK_BOX(temp_hbox), right_menu_box, TRUE, TRUE, 0);
+   gtk_box_pack_start(GTK_BOX(right_menu_box), menu_category2, TRUE, TRUE, 0);
 
 
    /* Type Menu */
@@ -1673,7 +1737,39 @@ int plugin_help(char **text, int *width, int *height)
  */
 int plugin_post_sync(void)
 {
+#if 0
+   struct ExpenseAppInfo ai;
+   char full_name[256];
+   int num, r;
+   int size;
+   void *buf;
+   struct pi_file *pf;
+#endif
+   /* This redraw code is not necessay because the screen is cleared after
+    * a sync with a plugin on the screen anyway.
+    * If that changes, here is the code */
+
    jp_logf(LOG_DEBUG, "Expense: plugin_post_sync\n");
+#if 0
+   jp_get_home_file_name("ExpenseDB.pdb", full_name, 250);
+
+   buf=NULL;
+   bzero(&ai, sizeof(ai));
+
+   pf = pi_file_open(full_name);
+   r = pi_file_get_app_info(pf, &buf, &size);
+
+   num = unpack_ExpenseAppInfo(&ai, buf, size);
+   if (num <= 0) {
+      jp_logf(LOG_WARN, _("Error reading %s\n"), "ExpenseDB.pdb");
+      return -1;
+   }
+
+   pi_file_close(pf);
+
+   /* We have to redraw the category menus now */
+   redraw_cat_menus(&(ai.category));
+#endif
    return 0;
 }
 
