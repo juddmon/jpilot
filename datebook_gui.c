@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.107 2005/03/02 01:34:32 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.108 2005/04/03 18:57:42 judd Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -3453,7 +3453,8 @@ cb_hide_menu_time(GtkWidget *widget, gpointer data)
 
 #define PRESSED_P            100
 #define PRESSED_A            101
-#define PRESSED_TAB_OR_MINUS 102
+#define PRESSED_TAB          102
+#define PRESSED_MINUS        103
 
 static void entry_key_pressed(int next_digit, int begin_or_end)
 {
@@ -3528,17 +3529,26 @@ cb_entry_key_pressed(GtkWidget *widget, GdkEventKey *event,
    if ((event->keyval == GDK_A) || (event->keyval == GDK_a)) {
       digit = PRESSED_A;
    }
-   if ((event->keyval == GDK_KP_Subtract) || (event->keyval == GDK_minus)
-       || (event->keyval == GDK_Tab)) {
-      digit = PRESSED_TAB_OR_MINUS;
+   if (event->keyval == GDK_Tab) {
+      digit = PRESSED_TAB;
+   }
+   if ((event->keyval == GDK_KP_Subtract) || (event->keyval == GDK_minus)) {
+      digit = PRESSED_MINUS;
    }
 
-   if (digit==PRESSED_TAB_OR_MINUS) {
+   /* time entry widgets are cycled focus by pressing "-"
+    * Tab will go to the next text widget */
+   if ((digit==PRESSED_TAB) || (digit==PRESSED_MINUS)) {
       if (widget==begin_time_entry) {
 	 gtk_widget_grab_focus(GTK_WIDGET(end_time_entry));
       }
       if (widget==end_time_entry) {
-	 gtk_widget_grab_focus(GTK_WIDGET(begin_time_entry));
+	 if (digit==PRESSED_MINUS) {
+	    gtk_widget_grab_focus(GTK_WIDGET(begin_time_entry));
+	 }
+	 if (digit==PRESSED_TAB) {
+	    gtk_widget_grab_focus(GTK_WIDGET(text_widget1));
+	 }
       }
    }
 
