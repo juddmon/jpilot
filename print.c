@@ -1,7 +1,7 @@
 /* print.c
  * A module of J-Pilot http://jpilot.org
  *
- * Copyright (C) 2000-2001 by Judd Montgomery
+ * Copyright (C) 2000-2002 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -297,7 +297,8 @@ int fill_in(struct tm *date, AppointmentList *a_list)
 	    }
 	 }
 	 if (temp_al->ma.a.description) {
-	    strncat(str, temp_al->ma.a.description, 150);
+	    strncat(str, " ", sizeof(str));
+	    strncat(str, temp_al->ma.a.description, sizeof(str));
 	    str[128]='\0';
 	 }
 	 if (y > 1.0) {
@@ -521,7 +522,7 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
 	    }
 	    desc[0]='\0';
 	    if (temp_al->ma.a.description) {
-	       ps_strncat(desc, temp_al->ma.a.description, 40);
+	       ps_strncat(desc, temp_al->ma.a.description, 39);
 	       desc[40]='\0';
 	    }
 	    remove_cr_lfs(desc);
@@ -723,11 +724,19 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
 
 	    if ( ! temp_al->ma.a.event)
 	      {
-		 char t1[21], t2[21];
-		 int j;
-		 strftime(t1, 10, "%I:%M%p", &(temp_al->ma.a.begin));
-		 strftime(t2, 10, "%I:%M%p", &(temp_al->ma.a.end));
-		 sprintf(short_date, "(%s to %s) ", t1, t2);
+		 char t1[6], t2[6], ht[3], mt[3];
+		 int j, m;
+
+		 strftime(ht, sizeof(ht), "%H", &(temp_al->ma.a.begin));
+		 strftime(mt, sizeof(mt), "%M", &(temp_al->ma.a.begin));
+		 m = atoi(mt);
+		 snprintf(t1, sizeof(t1), "%s.%d", ht, (int)((m * 100.)/60));
+
+		 strftime(ht, sizeof(ht), "%H", &(temp_al->ma.a.end));
+		 strftime(mt, sizeof(mt), "%M", &(temp_al->ma.a.end));
+		 m = atoi(mt);
+		 snprintf(t2, sizeof(t2), "%s.%d", ht, (int)((m * 100.)/60));
+		 sprintf(short_date, "%s %s ", t1, t2);
 		 for (j=0; j<30;j++) short_date[j] =tolower(short_date[j]);
 	      }
 	    if (temp_al->ma.a.description) {
