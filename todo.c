@@ -1,4 +1,4 @@
-/* $Id: todo.c,v 1.32 2004/11/22 00:52:42 rikster5 Exp $ */
+/* $Id: todo.c,v 1.33 2004/11/25 20:57:05 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo.c
@@ -426,7 +426,7 @@ int get_todos2(ToDoList **todo_list, int sort_order,
       keep_priv = privates;
    }
    if (completed==2) {
-      get_pref(PREF_HIDE_COMPLETED, &hide_completed, NULL);
+      get_pref(PREF_TODO_HIDE_COMPLETED, &hide_completed, NULL);
    } else {
       hide_completed = !completed;
    }

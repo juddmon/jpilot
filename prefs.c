@@ -1,4 +1,4 @@
-/* $Id: prefs.c,v 1.47 2004/11/22 06:58:09 rikster5 Exp $ */
+/* $Id: prefs.c,v 1.48 2004/11/25 20:57:05 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs.c
@@ -37,15 +37,15 @@
 /*These are the default settings */
 /*name, usertype, filetype, ivalue, char *svalue, svalue_size; */
 static prefType glob_prefs[NUM_PREFS] = {
-     {EPN"rc", CHARTYPE, CHARTYPE, 0, NULL, 0},
+     {"rcfile", CHARTYPE, CHARTYPE, 0, NULL, 0},
      {"time", CHARTYPE, INTTYPE, 0, NULL, 0},
      {"sdate", CHARTYPE, INTTYPE, 0, NULL, 0},
      {"ldate", CHARTYPE, INTTYPE, 0, NULL, 0},
      {"fdow", CHARTYPE, INTTYPE, 0, NULL, 0},
      {"show_deleted", INTTYPE, INTTYPE, 0, NULL, 0},
      {"show_modified", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"hide_completed", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"highlight_days", INTTYPE, INTTYPE, 1, NULL, 0},
+     {"todo_hide_completed", INTTYPE, INTTYPE, 0, NULL, 0},
+     {"datebook_highlight_days", INTTYPE, INTTYPE, 1, NULL, 0},
      {"port", CHARTYPE, CHARTYPE, 0, NULL, 0},
      {"rate", CHARTYPE, INTTYPE, 4, NULL, 0},
      {"user", CHARTYPE, CHARTYPE, 0, NULL, 0},
@@ -76,8 +76,8 @@ static prefType glob_prefs[NUM_PREFS] = {
      {"sync_todo", INTTYPE, INTTYPE, 1, NULL, 0},
      {"sync_memo", INTTYPE, INTTYPE, 1, NULL, 0},
      {"sync_memo32", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"address_page", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"output_height", INTTYPE, INTTYPE, 40, NULL, 0},
+     {"address_notebook_page", INTTYPE, INTTYPE, 0, NULL, 0},
+     {"output_height", INTTYPE, INTTYPE, 60, NULL, 0},
      {"open_alarm_windows", INTTYPE, INTTYPE, 1, NULL, 0},
      {"do_alarm_command", INTTYPE, INTTYPE, 0, NULL, 0},
      {"alarm_command", CHARTYPE, CHARTYPE, 0, NULL, 0},
@@ -110,7 +110,6 @@ static prefType glob_prefs[NUM_PREFS] = {
      {"todo_hide_not_due", INTTYPE, INTTYPE, 0, NULL, 0},
      {"todo_completion_date", INTTYPE, INTTYPE, 0, NULL, 0},
      {"install_path", CHARTYPE, CHARTYPE, 0, NULL, 0},
-     {"memo_show_prefs", INTTYPE, INTTYPE, 1, NULL, 0},
      {"monthview_width", INTTYPE, INTTYPE, 640, NULL, 0},
      {"monthview_height", INTTYPE, INTTYPE, 480, NULL, 0},
      {"weekview_width", INTTYPE, INTTYPE, 640, NULL, 0},
@@ -121,8 +120,8 @@ static prefType glob_prefs[NUM_PREFS] = {
      {"last_memo_category", INTTYPE, INTTYPE, CATEGORY_ALL, NULL, 0},
      {"mail_command", CHARTYPE, CHARTYPE, 0, NULL, 0},
      {"version", CHARTYPE, CHARTYPE, 0, NULL, 0},
-     {"utf-encoding", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"confirm-file-installation", INTTYPE, INTTYPE, 1, NULL, 0},
+     {"utf_encoding", INTTYPE, INTTYPE, 0, NULL, 0},
+     {"confirm_file_install", INTTYPE, INTTYPE, 1, NULL, 0},
      {"todo_days_due", INTTYPE, INTTYPE, 0, NULL, 0},
      {"todo_days_till_due", INTTYPE, INTTYPE, 7, NULL, 0},
      {"show_tooltips", INTTYPE, INTTYPE, 1, NULL, 0},
@@ -736,18 +735,18 @@ static int validate_glob_prefs()
       glob_prefs[PREF_SHOW_MODIFIED].ivalue = 0;
    }
 
-   if (glob_prefs[PREF_HIDE_COMPLETED].ivalue > 1) {
-      glob_prefs[PREF_HIDE_COMPLETED].ivalue = 1;
+   if (glob_prefs[PREF_TODO_HIDE_COMPLETED].ivalue > 1) {
+      glob_prefs[PREF_TODO_HIDE_COMPLETED].ivalue = 1;
    }
-   if (glob_prefs[PREF_HIDE_COMPLETED].ivalue < 0) {
-      glob_prefs[PREF_HIDE_COMPLETED].ivalue = 0;
+   if (glob_prefs[PREF_TODO_HIDE_COMPLETED].ivalue < 0) {
+      glob_prefs[PREF_TODO_HIDE_COMPLETED].ivalue = 0;
    }
 
-   if (glob_prefs[PREF_HIGHLIGHT].ivalue > 1) {
-      glob_prefs[PREF_HIGHLIGHT].ivalue = 1;
+   if (glob_prefs[PREF_DATEBOOK_HIGHLIGHT_DAYS].ivalue > 1) {
+      glob_prefs[PREF_DATEBOOK_HIGHLIGHT_DAYS].ivalue = 1;
    }
-   if (glob_prefs[PREF_HIGHLIGHT].ivalue < 0) {
-      glob_prefs[PREF_HIGHLIGHT].ivalue = 0;
+   if (glob_prefs[PREF_DATEBOOK_HIGHLIGHT_DAYS].ivalue < 0) {
+      glob_prefs[PREF_DATEBOOK_HIGHLIGHT_DAYS].ivalue = 0;
    }
 
    if (glob_prefs[PREF_RATE].ivalue >= NUM_RATES) {

@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.90 2004/11/25 19:20:14 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.91 2004/11/25 20:57:05 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -3241,7 +3241,7 @@ static void highlight_days()
    const char *svalue;
    long ivalue;
 
-   get_pref(PREF_HIGHLIGHT, &ivalue, &svalue);
+   get_pref(PREF_DATEBOOK_HIGHLIGHT_DAYS, &ivalue, &svalue);
    if (!ivalue) {
       return;
    }
@@ -4004,7 +4004,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    pane = gtk_hpaned_new();
    todo_pane = gtk_vpaned_new();
-   get_pref(PREF_DATEBOOK_PANE, &ivalue, &svalue);
+   get_pref(PREF_DATEBOOK_PANE, &ivalue, NULL);
    gtk_paned_set_position(GTK_PANED(pane), ivalue + 2);
 
    get_pref(PREF_DATEBOOK_TODO_PANE, &ivalue, &svalue);

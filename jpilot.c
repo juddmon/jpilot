@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.91 2004/11/25 18:34:00 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.92 2004/11/25 20:57:05 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -719,8 +719,8 @@ void cb_sync(GtkWidget *widget, unsigned int flags)
 {
    long ivalue;
 
-   /* confirm file installatio? */
-   get_pref(PREF_CONFIRM_INSTALL, &ivalue, NULL);
+   /* confirm file installation */
+   get_pref(PREF_CONFIRM_FILE_INSTALL, &ivalue, NULL);
    if (ivalue)
    {
       char file[FILENAME_MAX];

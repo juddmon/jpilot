@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.70 2004/11/22 00:52:42 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.71 2004/11/25 20:57:05 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -1595,8 +1595,8 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    gtk_clist_clear(GTK_CLIST(clist));
 
    /* Collect preferences and constant pixmaps for loop */
-   get_pref(PREF_HIDE_COMPLETED, &hide_completed, NULL);
-   get_pref(PREF_HIDE_NOT_DUE, &hide_not_due, NULL);
+   get_pref(PREF_TODO_HIDE_COMPLETED, &hide_completed, NULL);
+   get_pref(PREF_TODO_HIDE_NOT_DUE, &hide_not_due, NULL);
    show_priv = show_privates(GET_PRIVATES);
    get_pixmaps(clist, PIXMAP_NOTE, &pixmap_note, &mask_note);
    get_pixmaps(clist, PIXMAP_BOX_CHECK, &pixmap_check, &mask_check);

@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.38 2004/11/24 20:42:26 rousseau Exp $ */
+/* $Id: prefs_gui.c,v 1.39 2004/11/25 20:57:05 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -528,13 +528,13 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
      (_("Ask confirmation for file installation (J-Pilot -> PDA) (default YES)"));
    gtk_box_pack_start(GTK_BOX(vbox_settings), checkbutton, FALSE, FALSE, 0);
    gtk_widget_show(checkbutton);
-   get_pref(PREF_CONFIRM_INSTALL, &ivalue, &cstr);
+   get_pref(PREF_CONFIRM_FILE_INSTALL, &ivalue, &cstr);
    if (ivalue) {
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
    gtk_signal_connect(GTK_OBJECT(checkbutton), 
 		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref),
-		      GINT_TO_POINTER(PREF_CONFIRM_INSTALL));
+		      GINT_TO_POINTER(PREF_CONFIRM_FILE_INSTALL));
 
    /* Show tooltips check box */
    checkbutton = gtk_check_button_new_with_label
@@ -557,13 +557,13 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
      (_("Highlight calendar days with appointments"));
    gtk_box_pack_start(GTK_BOX(vbox_datebook), checkbutton, FALSE, FALSE, 0);
    gtk_widget_show(checkbutton);
-   get_pref(PREF_HIGHLIGHT, &ivalue, &cstr);
+   get_pref(PREF_DATEBOOK_HIGHLIGHT_DAYS, &ivalue, &cstr);
    if (ivalue) {
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
    gtk_signal_connect(GTK_OBJECT(checkbutton), 
 		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref), 
-		      GINT_TO_POINTER(PREF_HIGHLIGHT));
+		      GINT_TO_POINTER(PREF_DATEBOOK_HIGHLIGHT_DAYS));
 
 #ifdef ENABLE_DATEBK
    /* Show use DateBk check box */
@@ -615,25 +615,25 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    checkbutton = gtk_check_button_new_with_label(_("Hide Completed ToDos"));
    gtk_box_pack_start(GTK_BOX(vbox_todo), checkbutton, FALSE, FALSE, 0);
    gtk_widget_show(checkbutton);
-   get_pref(PREF_HIDE_COMPLETED, &ivalue, &cstr);
+   get_pref(PREF_TODO_HIDE_COMPLETED, &ivalue, &cstr);
    if (ivalue) {
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
    gtk_signal_connect(GTK_OBJECT(checkbutton),
 		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref),
-		      GINT_TO_POINTER(PREF_HIDE_COMPLETED));
+		      GINT_TO_POINTER(PREF_TODO_HIDE_COMPLETED));
 
    /* The hide todos not yet due check box */
    checkbutton = gtk_check_button_new_with_label(_("Hide ToDos not yet due"));;
    gtk_box_pack_start(GTK_BOX(vbox_todo), checkbutton, FALSE, FALSE, 0);
    gtk_widget_show(checkbutton);
-   get_pref(PREF_HIDE_NOT_DUE, &ivalue, &cstr);
+   get_pref(PREF_TODO_HIDE_NOT_DUE, &ivalue, &cstr);
    if (ivalue) {
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
    gtk_signal_connect(GTK_OBJECT(checkbutton),
 		      "clicked", GTK_SIGNAL_FUNC(cb_checkbox_set_pref),
-		      GINT_TO_POINTER(PREF_HIDE_NOT_DUE));
+		      GINT_TO_POINTER(PREF_TODO_HIDE_NOT_DUE));
 
    /* The record todo completion date check box */
    checkbutton = gtk_check_button_new_with_label(_("Record Completion Date"));;
