@@ -617,6 +617,16 @@ void lstrncpy_remove_cr_lfs(char *dest, char *src, int len)
    } else {
       dest[i]='\0';
    }
+
+#ifdef ENABLE_GTK2
+   {
+      gchar* end;
+
+      /* truncate the string on an UTF-8 character boundary */
+      if (!g_utf8_validate(dest, -1, (const gchar **)&end))
+	 *end = 0;
+   }
+#endif
 }
 
 /*
