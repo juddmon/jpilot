@@ -84,7 +84,8 @@ static prefType glob_prefs[NUM_PREFS] = {
      {"memo_export_filename", CHARTYPE, CHARTYPE, 0, NULL, 0},
      {"memo_import_path", CHARTYPE, CHARTYPE, 0, NULL, 0},
      {"manana_mode", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"sync_manana", INTTYPE, INTTYPE, 0, NULL, 0}
+     {"sync_manana", INTTYPE, INTTYPE, 0, NULL, 0},
+     {"use_jos", INTTYPE, INTTYPE, 0, ""}
 };
 
 struct name_list {

@@ -10,6 +10,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 /* In utils.c, also a prototype in utils.h */
 void multibyte_safe_strncpy(char *dst, char *src, size_t max_len);
@@ -103,6 +104,32 @@ void Sjis2Euc(unsigned char *buf, int max_len)
 		}
 		free(dst);
 	}
+}
+
+/*
+   convert strings from Sjis to EUC with buffer extension.
+   max_len includes null termiantion.
+   size of buf must be more than max_len.
+
+*/
+
+void Sjis2Euc_x(unsigned char *buf, int max_len)
+{
+    unsigned char *dst;
+    unsigned char *p;
+    
+    if (buf == NULL) return;
+    if ((dst = (unsigned char *)malloc(max_len*2)) == NULL) return; /* assign buffer for destination. */
+    if ((p = Sjis2EucCpy(dst, buf, max_len*2)) != NULL) { 
+	if (strlen(dst) > strlen(buf)) {
+	    free(buf);
+	    buf = strdup(dst);
+	} else {
+	    multibyte_safe_strncpy(buf, dst, max_len);
+	    buf[max_len-1] = '\0';  /* i am a paranoire B-) */
+	}
+    }
+    free(dst);
 }
 
 /*

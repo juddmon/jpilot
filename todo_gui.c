@@ -1547,8 +1547,8 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    get_pref(PREF_HIDE_COMPLETED, &hide_completed, &svalue);
 
 #ifdef ENABLE_MANANA
-   /* Mañana check box */
-   manana_checkbox = gtk_check_button_new_with_label(_("Use Mañana database"));
+   /* Ma~nana check box */
+   manana_checkbox = gtk_check_button_new_with_label(_("Use Manana database"));
    gtk_box_pack_start(GTK_BOX(vbox1), manana_checkbox, FALSE, FALSE, 0);
    get_pref(PREF_MANANA_MODE, &ivalue, NULL);
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(manana_checkbox), ivalue);

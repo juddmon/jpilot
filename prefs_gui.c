@@ -176,7 +176,11 @@ void cb_sync_manana(GtkWidget *widget, gpointer data)
    set_pref(PREF_SYNC_MANANA, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
 }
 #endif
-
+void cb_use_jos(GtkWidget *widget,
+		gpointer data)
+{
+   set_pref(PREF_USE_JOS, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
+}
 #ifdef ENABLE_PLUGINS
 void cb_sync_plugin(GtkWidget *widget,
 		    gpointer data)
@@ -586,8 +590,8 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 		      "clicked", GTK_SIGNAL_FUNC(cb_sync_memo32), NULL);
 
 #ifdef ENABLE_MANANA
-   /* Show sync Mañana check box */
-   checkbutton = gtk_check_button_new_with_label(_("Sync Mañana"));
+   /* Show sync Ma~nana check box */
+   checkbutton = gtk_check_button_new_with_label(_("Sync Manana"));
    gtk_box_pack_start(GTK_BOX(vbox_conduits), checkbutton, FALSE, FALSE, 0);
    get_pref(PREF_SYNC_MANANA, &ivalue, &cstr);
    gtk_widget_show(checkbutton);
@@ -597,6 +601,19 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_signal_connect(GTK_OBJECT(checkbutton), 
 		      "clicked", GTK_SIGNAL_FUNC(cb_sync_manana), NULL);
 #endif
+   get_pref(PREF_CHAR_SET, &ivalue, &cstr);
+   if (ivalue == CHAR_SET_JAPANESE) {
+      /*Show use Japanese Kana extention check box */
+      checkbutton = gtk_check_button_new_with_label(_("Use J-OS (Not Japanese PalmOS:WorkPad/CLIE)"));
+      gtk_box_pack_start(GTK_BOX(vbox_settings), checkbutton, FALSE, FALSE, 0);
+      get_pref(PREF_USE_JOS, &ivalue, &cstr);
+      gtk_widget_show(checkbutton);
+      if (ivalue) {
+	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
+      }
+      gtk_signal_connect(GTK_OBJECT(checkbutton), 
+			 "clicked", GTK_SIGNAL_FUNC(cb_use_jos), NULL);	   
+   }
    
 #ifdef  ENABLE_PLUGINS
    if (!skip_plugins) {

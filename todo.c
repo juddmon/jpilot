@@ -402,6 +402,7 @@ int get_todos2(ToDoList **todo_list, int sort_order,
    int keep_priv;
    buf_rec *br;
    long char_set;
+   char *buf;
 #ifdef ENABLE_MANANA
    long ivalue;
 #endif
@@ -479,9 +480,22 @@ int get_todos2(ToDoList **todo_list, int sort_order,
       }
 
       get_pref(PREF_CHAR_SET, &char_set, NULL);
-      if (todo.description) charset_p2j(todo.description, strlen(todo.description)+1, char_set);
-      if (todo.note) charset_p2j(todo.note, strlen(todo.note)+1, char_set);
-
+      if (todo.description) {
+	 if ((buf = (char *)malloc(strlen(todo.description)*2+1)) != NULL) {
+	    strcpy(buf, todo.description);
+	    charset_p2j(buf, strlen(todo.description)*2+1, char_set);
+	    free(todo.description);
+	    todo.description = buf;
+	 }
+      }
+      if (todo.note) {
+	 if ((buf = (char *)malloc(strlen(todo.note)*2+1)) != NULL) {
+	    strcpy(buf, todo.note);
+	    charset_p2j(buf, strlen(todo.note)*2+1, char_set);
+	    free(todo.note);
+	    todo.note = buf;
+	 }
+      }
       temp_todo_list = malloc(sizeof(ToDoList));
       if (!temp_todo_list) {
 	 jpilot_logf(LOG_WARN, "get_todos2(): Out of memory\n");

@@ -390,7 +390,7 @@ int make_category_menu(GtkWidget **category_menu,
 		       (GtkWidget *item, int selection),
 		       int add_an_all_item);
 
-void multibyte_safe_strncpy(char *dst, char *src, size_t max_len);
+void multibyte_safe_strncpy(char *dst, char *src, size_t len);
 char *multibyte_safe_memccpy(char *dst, const char *src, int c, size_t len);
 
 /*************************************

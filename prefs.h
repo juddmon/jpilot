@@ -74,8 +74,9 @@
 #define PREF_MEMO_IMPORT_PATH 50
 #define PREF_MANANA_MODE 51
 #define PREF_SYNC_MANANA 52
+#define PREF_USE_JOS 53
 
-#define NUM_PREFS 53
+#define NUM_PREFS 54
 
 #define MAX_PREF_NUM_BACKUPS 99
 

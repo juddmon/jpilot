@@ -1310,6 +1310,8 @@ static void init()
 
 int dialog_4_or_last(int dow)
 {
+   GtkWidget *w, *window;
+   int i;
    char *days[]={
       gettext_noop("Sunday"),
       gettext_noop("Monday"),
@@ -1325,6 +1327,13 @@ int dialog_4_or_last(int dow)
        gettext_noop("4th"), gettext_noop("Last")
    };
 
+   for (w=scrolled_window, window=NULL, i=15; w && (i>0); w=w->parent, i--) {
+      if (GTK_IS_WINDOW(w)) {
+	 window=w;
+	 break;
+      }
+   }
+
    /* needs tagged */
    sprintf(text,
 	   "This appointment can either\n"
@@ -1333,7 +1342,7 @@ int dialog_4_or_last(int dow)
 	   "%s of the month.\n"
 	   "Which do you want?",
 	   _(days[dow]), _(days[dow]));
-   return dialog_generic(GTK_WINDOW(scrolled_window->parent),
+   return dialog_generic(GTK_WINDOW(window),
 			 200, 200,
 			 "Question?", "Answer: ",
 			 text, 2, button_text);
@@ -1341,6 +1350,8 @@ int dialog_4_or_last(int dow)
 
 int dialog_current_all_cancel()
 {
+   GtkWidget *w, *window;
+   int i;
    /* needs tagged */
    char text[]=
      /*--------------------------- */
@@ -1355,7 +1366,13 @@ int dialog_current_all_cancel()
       gettext_noop("Cancel")
    };
 
-   return dialog_generic(GTK_WINDOW(scrolled_window->parent),
+   for (w=scrolled_window, window=NULL, i=15; w && (i>0); w=w->parent, i--) {
+      if (GTK_IS_WINDOW(w)) {
+	 window=w;
+	 break;
+      }
+   }
+   return dialog_generic(GTK_WINDOW(window),
 			 200, 200, 
 			 "Question?", "Answer: ",
 			 _(text), 3, button_text);
@@ -1364,6 +1381,8 @@ int dialog_current_all_cancel()
 #ifdef EASTER
 int dialog_easter(int mday)
 {
+   GtkWidget *w, *window;
+   int i;
    char text[255];
    char who[50];
    char *button_text[]={"I'll send a present!!!"
@@ -1380,7 +1399,13 @@ int dialog_easter(int mday)
 	   "%s\'s\n"
 	   "Birthday!\n", who);
 
-   return dialog_generic(GTK_WINDOW(scrolled_window->parent),
+   for (w=scrolled_window, window=NULL, i=15; w && (i>0); w=w->parent, i--) {
+      if (GTK_IS_WINDOW(w)) {
+	 window=w;
+	 break;
+      }
+   }
+   return dialog_generic(GTK_WINDOW(window),
 			 200, 200, 
 			 "Happy Birthday to Me!", "(iiiii)",
 			 text, 1, button_text);

@@ -900,6 +900,8 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
    int keep_priv;
    buf_rec *br;
    long char_set;
+   char *buf;
+   size_t len;
 #ifdef ENABLE_DATEBK
    long use_db3_tags;
    time_t ltime;
@@ -981,8 +983,33 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
       }
 
       get_pref(PREF_CHAR_SET, &char_set, NULL);
-      if (a.description) charset_p2j(a.description, strlen(a.description)+1, char_set);
-      if (a.note) charset_p2j(a.note, strlen(a.note)+1, char_set);
+
+      if (a.description) {
+	 if ((buf = (char *)malloc((len = strlen(a.description)*2+1))) != NULL) {
+	    multibyte_safe_strncpy(buf, a.description, len);
+	    charset_p2j(buf, len, char_set);
+	    if (strlen(buf) > strlen(a.description)) {
+	       free(a.description);
+	       a.description = strdup(buf);
+	    } else {
+	       multibyte_safe_strncpy(a.description, buf, strlen(a.description)+1);
+	    }
+	    free(buf);
+	 }
+      }
+      if (a.note) {
+	 if ((buf = (char *) malloc((len = strlen(a.note)*2+1))) != NULL) {
+	    multibyte_safe_strncpy(buf, a.note, len);
+	    charset_p2j(buf, len, char_set);
+	    if (strlen(buf) > strlen(a.note)) {
+	       free(a.note);
+	       a.note = strdup(buf);
+	    } else {
+	       multibyte_safe_strncpy(a.note, buf, strlen(a.note)+1);
+	    }
+	    free(buf);
+	 }
+      }
 
       temp_a_list = malloc(sizeof(AppointmentList));
       if (!temp_a_list) {

@@ -35,7 +35,10 @@
 
 #define ADDRESS_EOF 7
 
-static int glob_sort_by_company;
+static int glob_sort_rule;
+#define SORT_BY_COMPANY 1
+#define SORT_JAPANESE 2
+#define SORT_JOS 4
 int sort_override=0;
 
 #ifdef JPILOT_DEBUG
@@ -64,7 +67,7 @@ int address_compare(const void *v1, const void *v2)
    a1=&((*al1)->ma.a);
    a2=&((*al2)->ma.a);
 
-   if (glob_sort_by_company) {
+   if (glob_sort_rule & SORT_BY_COMPANY) {
       sort1=2; /*company */
       sort2=0; /*last name */
       sort3=1; /*first name */
@@ -73,69 +76,149 @@ int address_compare(const void *v1, const void *v2)
       sort2=1; /*first name */
       sort3=2; /*company */
    }
-   /*sort_by_company: */
+   /* sort_rule: */
+     /* SORT_BY_COMPANY */
    /*0 last, first or */
    /*1 company, last */
+     /* SORT_JAPANESE */
+        /* 0 no use */
+        /* 2 use japanese */
+     /* SORT_JOS */
+        /* 0 no use */
+        /* 4 using J-OS */
 
    str1=str2=NULL;
 
-   if (a1->entry[sort1] || a1->entry[sort2]) {
-      if (a1->entry[sort1] && a1->entry[sort2]) {
-	 if ((str1 = (char *)malloc(strlen(a1->entry[sort1])+strlen(a1->entry[sort2])+1)) == NULL) {
-	    return 0;
-	 }	      
-	 strcpy(str1, a1->entry[sort1]);
-	 strcat(str1, a1->entry[sort2]);
-      }
-      if (a1->entry[sort1] && (!a1->entry[sort2])) {
-	 if ((str1 = (char *)malloc(strlen(a1->entry[sort1])+1)) == NULL) {
-	    return 0;
-	 }
-	 strcpy(str1, a1->entry[sort1]);
-      }
-      if ((!a1->entry[sort1]) && a1->entry[sort2]) {
-	 if ((str1 = (char *)malloc(strlen(a1->entry[sort2])+1)) == NULL) {
-	    return 0;
-	 }
-	 strcpy(str1, a1->entry[sort2]);
-      }
-   } else if (a1->entry[sort3]) {
-      if ((str1 = (char *)malloc(strlen(a1->entry[sort3])+1)) == NULL) {
-	 return 0;
-      }
-      strcpy(str1, a1->entry[sort3]);
-   } else {
-      return -1;
-   }
 
-   if (a2->entry[sort1] || a2->entry[sort2]) {
-      if (a2->entry[sort1] && a2->entry[sort2]) {
-	 if ((str2 = (char *)malloc(strlen(a2->entry[sort1])+strlen(a2->entry[sort2])+1)) == NULL) {
+   if (!(glob_sort_rule & SORT_JAPANESE) | (glob_sort_rule & SORT_JOS)) { /* normal */
+      if (a1->entry[sort1] || a1->entry[sort2]) {
+	 if (a1->entry[sort1] && a1->entry[sort2]) {
+	    if ((str1 = (char *)malloc(strlen(a1->entry[sort1])+strlen(a1->entry[sort2])+1)) == NULL) {
+	       return 0;
+	    }	      
+	    strcpy(str1, a1->entry[sort1]);
+	    strcat(str1, a1->entry[sort2]);
+	 }
+	 if (a1->entry[sort1] && (!a1->entry[sort2])) {
+	    if ((str1 = (char *)malloc(strlen(a1->entry[sort1])+1)) == NULL) {
+	       return 0;
+	    }
+	    strcpy(str1, a1->entry[sort1]);
+	 }
+	 if ((!a1->entry[sort1]) && a1->entry[sort2]) {
+	    if ((str1 = (char *)malloc(strlen(a1->entry[sort2])+1)) == NULL) {
+	       return 0;
+	    }
+	    strcpy(str1, a1->entry[sort2]);
+	 }
+      } else if (a1->entry[sort3]) {
+	 if ((str1 = (char *)malloc(strlen(a1->entry[sort3])+1)) == NULL) {
 	    return 0;
-	 }	      
-	 strcpy(str2, a2->entry[sort1]);
-	 strcat(str2, a2->entry[sort2]);
+	 }
+	 strcpy(str1, a1->entry[sort3]);
+      } else {
+	 return -1;
       }
-      if (a2->entry[sort1] && (!a2->entry[sort2])) {
-	 if ((str2 = (char *)malloc(strlen(a2->entry[sort1])+1)) == NULL) {
+
+      if (a2->entry[sort1] || a2->entry[sort2]) {
+	 if (a2->entry[sort1] && a2->entry[sort2]) {
+	    if ((str2 = (char *)malloc(strlen(a2->entry[sort1])+strlen(a2->entry[sort2])+1)) == NULL) {
+	       return 0;
+	    }
+	    strcpy(str2, a2->entry[sort1]);
+	    strcat(str2, a2->entry[sort2]);
+	 }
+	 if (a2->entry[sort1] && (!a2->entry[sort2])) {
+	    if ((str2 = (char *)malloc(strlen(a2->entry[sort1])+1)) == NULL) {
+	       return 0;
+	    }
+	    strcpy(str2, a2->entry[sort1]);
+	 }
+	 if ((!a2->entry[sort1]) && a2->entry[sort2]) {
+	    if ((str2 = (char *)malloc(strlen(a2->entry[sort2])+1)) == NULL) {
+	       return 0;
+	    }	      
+	    strcpy(str2, a2->entry[sort2]);
+	 }
+      } else if (a2->entry[sort3]) {
+	 if ((str2 = (char *)malloc(strlen(a2->entry[sort3])+1)) == NULL) {
 	    return 0;
-	 }	      
-	 strcpy(str2, a2->entry[sort1]);
+	 }
+	 strcpy(str2, a2->entry[sort3]);
+      } else {
+	 free(str1);
+	 return 1;
       }
-      if ((!a2->entry[sort1]) && a2->entry[sort2]) {
-	 if ((str2 = (char *)malloc(strlen(a2->entry[sort2])+1)) == NULL) {
+   } else if ((glob_sort_rule & SORT_JAPANESE) && !(glob_sort_rule & SORT_JOS)){
+      char *tmp_p1, *tmp_p2, *tmp_p3;
+      if (a1->entry[sort1] || a1->entry[sort2]) {
+	 if (a1->entry[sort1] && a1->entry[sort2]) {
+	    if (!(tmp_p1 = strchr(a1->entry[sort1],'\1'))) tmp_p1=a1->entry[sort1]+1;
+	    if (!(tmp_p2 = strchr(a1->entry[sort2],'\1'))) tmp_p2=a1->entry[sort2]+1;
+	    if ((str1 = (char *)malloc(strlen(tmp_p1)+strlen(tmp_p2)+1)) == NULL) {
+	       return 0;
+	    }
+	    strcpy(str1, tmp_p1);
+	    strcat(str1, tmp_p2);
+	 }
+	 if (a1->entry[sort1] && (!a1->entry[sort2])) {
+	    if (!(tmp_p1 = strchr(a1->entry[sort1],'\1'))) tmp_p1=a1->entry[sort1]+1;
+	    if ((str1 = (char *)malloc(strlen(tmp_p1)+1)) == NULL) {
+	       return 0;
+	    }
+	    strcpy(str1, tmp_p1);
+	 }
+	 if ((!a1->entry[sort1]) && a1->entry[sort2]) {
+	    if (!(tmp_p2 = strchr(a1->entry[sort2],'\1'))) tmp_p2=a1->entry[sort2]+1;
+	    if ((str1 = (char *)malloc(strlen(tmp_p2)+1)) == NULL) {
+	       return 0;
+	    }
+	    strcpy(str1, tmp_p2);
+	 }
+      } else if (a1->entry[sort3]) {
+	 if (!(tmp_p3 = strchr(a1->entry[sort3],'\1'))) tmp_p3=a1->entry[sort3]+1;
+	 if ((str1 = (char *)malloc(strlen(tmp_p3)+1)) == NULL) {
 	    return 0;
-	 }	      
-	 strcpy(str2, a2->entry[sort2]);
+	 }
+	 strcpy(str1, tmp_p3);
+      } else {
+	 return -1;
       }
-   } else if (a2->entry[sort3]) {
-      if ((str2 = (char *)malloc(strlen(a2->entry[sort3])+1)) == NULL) {
-	 return 0;
-      }	      
-      strcpy(str2, a2->entry[sort3]);
-   } else {
-      free(str1);
-      return 1;
+
+      if (a2->entry[sort1] || a2->entry[sort2]) {
+	 if (a2->entry[sort1] && a2->entry[sort2]) {
+	    if (!(tmp_p1 = strchr(a2->entry[sort1],'\1'))) tmp_p1=a2->entry[sort1]+1;
+	    if (!(tmp_p2 = strchr(a2->entry[sort2],'\1'))) tmp_p2=a2->entry[sort2]+1;
+	    if ((str2 = (char *)malloc(strlen(tmp_p1)+strlen(tmp_p2)+1)) == NULL) {
+	       return 0;
+	    }
+	    strcpy(str2, tmp_p1);
+	    strcat(str2, tmp_p2);
+	 }
+	 if (a2->entry[sort1] && (!a2->entry[sort2])) {
+	    if (!(tmp_p1 = strchr(a2->entry[sort1],'\1'))) tmp_p1=a2->entry[sort1]+1;
+	    if ((str2 = (char *)malloc(strlen(tmp_p1)+1)) == NULL) {
+	       return 0;
+	    }
+	    strcpy(str2, tmp_p1);
+	 }
+	 if ((!a2->entry[sort1]) && a2->entry[sort2]) {
+	    if (!(tmp_p2 = strchr(a2->entry[sort2],'\1'))) tmp_p2=a2->entry[sort2]+1;
+	    if ((str2 = (char *)malloc(strlen(tmp_p2)+1)) == NULL) {
+	       return 0;
+	    }
+	    strcpy(str2, tmp_p2);
+	 }
+      } else if (a2->entry[sort3]) {
+	 if (!(tmp_p3 = strchr(a2->entry[sort3],'\1'))) tmp_p3=a2->entry[sort3]+1;
+	 if ((str2 = (char *)malloc(strlen(tmp_p3)+1)) == NULL) {
+	    return 0;
+	 }
+	 strcpy(str2, tmp_p3);
+      } else {
+	 free(str1);
+	 return 1;
+      }
    }
 
    /* lower case the strings for a better compare */
@@ -165,6 +248,7 @@ int address_sort(AddressList **al, int sort_order)
    AddressList **sort_al;
    struct AddressAppInfo ai;
    int count, i;
+   long use_jos, char_set;
 
    /* Count the entries in the list */
    for (count=0, temp_al=*al; temp_al; temp_al=temp_al->next, count++) {
@@ -177,9 +261,21 @@ int address_sort(AddressList **al, int sort_order)
    }
 
    get_address_app_info(&ai);
-   glob_sort_by_company = ai.sortByCompany;
+   glob_sort_rule = ai.sortByCompany;
    if (sort_override) {
-      glob_sort_by_company = !(ai.sortByCompany & 1);
+      glob_sort_rule = !(ai.sortByCompany & SORT_BY_COMPANY);
+   }
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
+   if (char_set == CHAR_SET_JAPANESE) {
+      glob_sort_rule = glob_sort_rule | SORT_JAPANESE;
+   } else {
+      glob_sort_rule = glob_sort_rule & (SORT_JAPANESE-1);
+   }
+   get_pref(PREF_USE_JOS, &use_jos, NULL);
+   if (use_jos) {
+      glob_sort_rule = glob_sort_rule | SORT_JOS;
+   } else {
+      glob_sort_rule = glob_sort_rule & (SORT_JOS-1);
    }
 
    /* Allocate an array to be qsorted */
@@ -332,6 +428,7 @@ int get_addresses2(AddressList **address_list, int sort_order,
    int keep_priv;
    long char_set;
    buf_rec *br;
+   char *buf;
 
    jpilot_logf(LOG_DEBUG, "get_addresses2()\n");
    if (modified==2) {
@@ -386,14 +483,24 @@ int get_addresses2(AddressList **address_list, int sort_order,
       if ( ((br->attrib & 0x0F) != category) && category != CATEGORY_ALL) {
 	 continue;
       }
-
+      buf = NULL;
       get_pref(PREF_CHAR_SET, &char_set, NULL);
       if (char_set != CHAR_SET_LATIN1) {
 	 for (i = 0; i < 19; i++) {
 	    if ((a.entry[i] != NULL) && (a.entry[i][0] != '\0')) {
-	       charset_p2j(a.entry[i], strlen(a.entry[i])+1, char_set);
+	       if ((buf = (char *)realloc(buf, strlen(a.entry[i])*2+1)) != NULL) {
+		  strcpy(buf, a.entry[i]);
+		  charset_p2j(buf, strlen(a.entry[i])*2+1, char_set);
+		  if (strlen(buf) > strlen(a.entry[i])) {
+		     free(a.entry[i]);
+		     a.entry[i] = strdup(buf);
+		  } else {
+		     multibyte_safe_strncpy(a.entry[i], buf, strlen(a.entry[i])+1);
+		  }
+	       }
 	    }
 	 }
+	 free(buf);
       }
 
       temp_a_list = malloc(sizeof(AddressList));

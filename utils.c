@@ -1011,7 +1011,7 @@ int dialog_save_changed_record(GtkWidget *widget, int changed)
       return 0;
    }
    /* Find the main window from some global widget and do a dialog */
-   for (w=widget, i=10; w && (i>0); w=w->parent, i--) {
+   for (w=widget, i=15; w && (i>0); w=w->parent, i--) {
       if (GTK_IS_WINDOW(w)) {
 	 if (changed==MODIFY_FLAG) {
 	    b=dialog_generic(GTK_WINDOW(w), 0, 0,
@@ -2081,7 +2081,7 @@ int setup_sync(unsigned int flags)
    return r;
 }
 
-void multibyte_safe_strncpy(char *dst, char *src, size_t max_len)
+void multibyte_safe_strncpy(char *dst, char *src, size_t len)
 {
    long char_set;
 
@@ -2094,7 +2094,7 @@ void multibyte_safe_strncpy(char *dst, char *src, size_t max_len)
       char *p, *q;
       int n = 0;
       p = src; q = dst;
-      while ((*p) && n < (max_len-2)) {
+      while ((*p) && n < (len-2)) {
 	 if ((*p) & 0x80) {
 	    *q++ = *p++;
 	    n++;
@@ -2107,12 +2107,12 @@ void multibyte_safe_strncpy(char *dst, char *src, size_t max_len)
 	    n++;
 	 }
       }
-      if (!(*p & 0x80 ) && (n < max_len-1))
+      if (!(*p & 0x80 ) && (n < len-1))
 	*q++ = *p++;
 
       *q = '\0';
    } else {
-      strncpy(dst, src, max_len);
+      strncpy(dst, src, len);
    }
 }
 
