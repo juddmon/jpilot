@@ -563,7 +563,7 @@ int alarms_do_one(struct Appointment *a,
 	       strncat(command, date_str, 1022-len);
 	       continue;
 	    }
-#ifdef ALARM_SHELL_DESC_NOTE
+#ifdef ENABLE_ALARM_SHELL_DANGER
 	    /* expand '%D' */
 	    if (c2=='D') {
 	       i++;
