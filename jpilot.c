@@ -1,7 +1,7 @@
 /* jpilot.c
  * A module of J-Pilot http://jpilot.org
  * 
- * Copyright (C) 1999-2002 by Judd Montgomery
+ * Copyright (C) 1999-2003 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -970,8 +970,66 @@ void cb_about(GtkWidget *widget, gpointer data)
    if (GTK_IS_WINDOW(window)) {
       dialog_generic(GTK_WINDOW(window),
  		     0, 0,
-		     about, "oOo", options, 1, button_text);
+		     about, PN" "VERSION, options, 1, button_text);
    }
+}
+
+#define NETSCAPE_EXISTING   0
+#define NETSCAPE_NEW_WINDOW 1
+#define NETSCAPE_NEW        2
+#define MOZILLA_EXISTING    3
+#define MOZILLA_NEW_WINDOW  4
+#define MOZILLA_NEW_TAB     5
+#define MOZILLA_NEW         6
+#define GALEON_EXISTING     7
+#define GALEON_NEW_WINDOW   8
+#define GALEON_NEW_TAB      9
+#define GALEON_NEW          10
+#define OPERA_EXISTING      11
+#define OPERA_NEW_WINDOW    12
+#define OPERA_NEW           13
+#define GNOME_URL           14
+#define LYNX_NEW            15
+#define LINKS_NEW           16
+#define W3M_NEW             17
+#define KONQUEROR_NEW       18
+
+struct url_command {
+   int id;
+   char *desc;
+   char *command;
+};
+
+/* These strings were taken from xchat 2.0.0 */
+struct url_command url_commands[]={
+     {NETSCAPE_EXISTING, "Open jpilot.org in existing", "netscape -remote 'openURL(http://jpilot.org)'"},
+     {NETSCAPE_NEW_WINDOW, "Open jpilot.org in new window", "netscape -remote 'openURL(http://jpilot.org,new-window)'"},
+     {NETSCAPE_NEW, "Open jpilot.org in new Netscape", "netscape http://jpilot.org"},
+     {MOZILLA_EXISTING, "Open jpilot.org in existing", "mozilla -remote 'openURL(http://jpilot.org)'"},
+     {MOZILLA_NEW_WINDOW, "Open jpilot.org in new window", "mozilla -remote 'openURL(http://jpilot.org,new-window)'"},
+     {MOZILLA_NEW_TAB, "Open jpilot.org in new tab", "mozilla -remote 'openURL(http://jpilot.org,new-tab)'"},
+     {MOZILLA_NEW, "Open jpilot.org in new Mozilla", "mozilla http://jpilot.org"},
+     {GALEON_EXISTING, "Open jpilot.org in existing", "galeon -x 'http://jpilot.org'"},
+     {GALEON_NEW_WINDOW, "Open jpilot.org in new window", "galeon -w 'http://jpilot.org'"},
+     {GALEON_NEW_TAB, "Open jpilot.org in new tab", "galeon -n 'http://jpilot.org'"},
+     {GALEON_NEW, "Open jpilot.org in new Galeon", "galeon 'http://jpilot.org'"},
+     {OPERA_EXISTING, "Open jpilot.org in existing", "opera -remote 'openURL(http://jpilot.org)' &"},
+     {OPERA_NEW_WINDOW, "Open jpilot.org in new window", "opera -remote 'openURL(http://jpilot.org,new-window)' &"},
+     {OPERA_NEW, "Open jpilot.org in new Opera", "opera http://jpilot.org &"},
+     {GNOME_URL, "Gnome URL Handler for jpilot.org", "gnome-moz-remote http://jpilot.org"},
+     {LYNX_NEW, "Lynx jpilot.org", "xterm -e lynx http://jpilot.org &"},
+     {LINKS_NEW, "Links jpilot.org", "xterm -e links http://jpilot.org &"},
+     {W3M_NEW, "w3m jpilot.org", "xterm -e w3m http://jpilot.org &"},
+     {KONQUEROR_NEW, "Konqueror jpilot.org", "konqueror http://jpilot.org"}
+};
+
+void cb_web(GtkWidget *widget, gpointer data)
+{
+   int sel;
+   
+   sel=GPOINTER_TO_INT(data);
+   jp_logf(JP_LOG_INFO, PN": executing %s\n", url_commands[sel].command);
+   system(url_commands[sel].command);
 }
 
 void install_gui_and_size(GtkWidget *main_window)
@@ -998,7 +1056,7 @@ void get_main_menu(GtkWidget  *window,
 		   GtkWidget **menubar,
 		   GList *plugin_list)
 /* Some of this code was copied from the gtk_tut.txt file */
-#define NUM_FACTORY_ITEMS 23
+#define NUM_FACTORY_ITEMS 52
 {
   GtkItemFactoryEntry menu_items1[NUM_FACTORY_ITEMS]={
   { NULL, NULL,         NULL,           0,        "<Branch>" },
@@ -1021,6 +1079,35 @@ void get_main_menu(GtkWidget  *window,
   { NULL, "F3",         cb_app_button,  TODO,     NULL },
   { NULL, "F4",         cb_app_button,  MEMO,     NULL },
   { NULL, NULL,         NULL,           0,        "<Branch>" },
+  { NULL, NULL,         NULL,           0,        "<Branch>" },/* web */
+  { NULL, NULL,         NULL,           0,        "<Branch>" },
+  { NULL, NULL,         cb_web,         NETSCAPE_EXISTING, NULL },
+  { NULL, NULL,         cb_web,         NETSCAPE_NEW_WINDOW, NULL },
+  { NULL, NULL,         cb_web,         NETSCAPE_NEW, NULL },
+  { NULL, NULL,         NULL,           0,        "<Branch>" },
+  { NULL, NULL,         cb_web,         MOZILLA_EXISTING,  NULL },
+  { NULL, NULL,         cb_web,         MOZILLA_NEW_WINDOW,  NULL },
+  { NULL, NULL,         cb_web,         MOZILLA_NEW_TAB,  NULL },
+  { NULL, NULL,         cb_web,         MOZILLA_NEW,  NULL },
+  { NULL, NULL,         NULL,           0,        "<Branch>" },
+  { NULL, NULL,         cb_web,         GALEON_EXISTING,  NULL },
+  { NULL, NULL,         cb_web,         GALEON_NEW_WINDOW,  NULL },
+  { NULL, NULL,         cb_web,         GALEON_NEW_TAB,  NULL },
+  { NULL, NULL,         cb_web,         GALEON_NEW,  NULL },
+  { NULL, NULL,         NULL,           0,        "<Branch>" },
+  { NULL, NULL,         cb_web,         OPERA_EXISTING,    NULL },
+  { NULL, NULL,         cb_web,         OPERA_NEW_WINDOW,    NULL },
+  { NULL, NULL,         cb_web,         OPERA_NEW,    NULL },
+  { NULL, NULL,         NULL,           0,        "<Branch>" },
+  { NULL, NULL,         cb_web,         GNOME_URL,    NULL },
+  { NULL, NULL,         NULL,           0,        "<Branch>" },
+  { NULL, NULL,         cb_web,         LYNX_NEW,    NULL },
+  { NULL, NULL,         NULL,           0,        "<Branch>" },
+  { NULL, NULL,         cb_web,         LINKS_NEW,    NULL },
+  { NULL, NULL,         NULL,           0,        "<Branch>" },
+  { NULL, NULL,         cb_web,         W3M_NEW,    NULL },
+  { NULL, NULL,         NULL,           0,        "<Branch>" },
+  { NULL, NULL,         cb_web,         KONQUEROR_NEW,    NULL },
   { NULL, NULL,         NULL,           0,        "<LastBranch>" },
   { NULL, NULL,         cb_about,       0,        NULL },
   { "END",NULL,         NULL,           0,        NULL }
@@ -1074,6 +1161,63 @@ void get_main_menu(GtkWidget  *window,
    menu_items1[i++].path=strdup(_("/View/Todos"));
    menu_items1[i++].path=strdup(_("/View/Memos"));
    menu_items1[i++].path=strdup(_("/Plugins"));
+   menu_items1[i++].path=strdup(_("/Web"));
+   menu_items1[i++].path=strdup(_("/Web/Netscape"));
+   g_snprintf(temp_str, 100, _("/Web/Netscape/%s"), url_commands[NETSCAPE_EXISTING].desc);
+   menu_items1[i++].path=strdup(temp_str);
+   g_snprintf(temp_str, 100, _("/Web/Netscape/%s"), url_commands[NETSCAPE_NEW_WINDOW].desc);
+   menu_items1[i++].path=strdup(temp_str);
+   g_snprintf(temp_str, 100, _("/Web/Netscape/%s"), url_commands[NETSCAPE_NEW].desc);
+   menu_items1[i++].path=strdup(temp_str);
+   menu_items1[i++].path=strdup(_("/Web/Mozilla"));
+
+   g_snprintf(temp_str, 100, _("/Web/Mozilla/%s"), url_commands[MOZILLA_EXISTING].desc);
+   menu_items1[i++].path=strdup(temp_str);
+   g_snprintf(temp_str, 100, _("/Web/Mozilla/%s"), url_commands[MOZILLA_NEW_WINDOW].desc);
+   menu_items1[i++].path=strdup(temp_str);
+   g_snprintf(temp_str, 100, _("/Web/Mozilla/%s"), url_commands[MOZILLA_NEW_TAB].desc);
+   menu_items1[i++].path=strdup(temp_str);
+   g_snprintf(temp_str, 100, _("/Web/Mozilla/%s"), url_commands[MOZILLA_NEW].desc);
+   menu_items1[i++].path=strdup(temp_str);
+
+   menu_items1[i++].path=strdup(_("/Web/Galeon"));
+   g_snprintf(temp_str, 100, _("/Web/Galeon/%s"), url_commands[GALEON_EXISTING].desc);
+   menu_items1[i++].path=strdup(temp_str);
+   g_snprintf(temp_str, 100, _("/Web/Galeon/%s"), url_commands[GALEON_NEW_WINDOW].desc);
+   menu_items1[i++].path=strdup(temp_str);
+   g_snprintf(temp_str, 100, _("/Web/Galeon/%s"), url_commands[GALEON_NEW_TAB].desc);
+   menu_items1[i++].path=strdup(temp_str);
+   g_snprintf(temp_str, 100, _("/Web/Galeon/%s"), url_commands[GALEON_NEW].desc);
+   menu_items1[i++].path=strdup(temp_str);
+
+   menu_items1[i++].path=strdup(_("/Web/Opera"));
+   g_snprintf(temp_str, 100, _("/Web/Opera/%s"), url_commands[OPERA_EXISTING].desc);
+   menu_items1[i++].path=strdup(temp_str);
+   g_snprintf(temp_str, 100, _("/Web/Opera/%s"), url_commands[OPERA_NEW_WINDOW].desc);
+   menu_items1[i++].path=strdup(temp_str);
+   g_snprintf(temp_str, 100, _("/Web/Opera/%s"), url_commands[OPERA_NEW].desc);
+   menu_items1[i++].path=strdup(temp_str);
+
+   menu_items1[i++].path=strdup(_("/Web/GnomeUrl"));
+   g_snprintf(temp_str, 100, _("/Web/GnomeUrl/%s"), url_commands[GNOME_URL].desc);
+   menu_items1[i++].path=strdup(temp_str);
+
+   menu_items1[i++].path=strdup(_("/Web/Lynx"));
+   g_snprintf(temp_str, 100, _("/Web/Lynx/%s"), url_commands[LYNX_NEW].desc);
+   menu_items1[i++].path=strdup(temp_str);
+
+   menu_items1[i++].path=strdup(_("/Web/Links"));
+   g_snprintf(temp_str, 100, _("/Web/Links/%s"), url_commands[LINKS_NEW].desc);
+   menu_items1[i++].path=strdup(temp_str);
+
+   menu_items1[i++].path=strdup(_("/Web/W3M"));
+   g_snprintf(temp_str, 100, _("/Web/W3M/%s"), url_commands[W3M_NEW].desc);
+   menu_items1[i++].path=strdup(temp_str);
+
+   menu_items1[i++].path=strdup(_("/Web/Konqueror"));
+   g_snprintf(temp_str, 100, _("/Web/Konqueror/%s"), url_commands[KONQUEROR_NEW].desc);
+   menu_items1[i++].path=strdup(temp_str);
+
    menu_items1[i++].path=strdup(_("/_Help"));
    g_snprintf(temp_str, 100, _("/_Help/%s"), PN);
    temp_str[100]='\0';
