@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.42 2004/11/22 00:52:43 rikster5 Exp $ */
+/* $Id: utils.h,v 1.43 2004/11/22 02:39:11 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -37,7 +37,6 @@
 #include "libplugin.h"
 #include "japanese.h"
 #include "cp1250.h"
-#include "cp1253.h"
 #include "russian.h"
 
 #define PRINT_FILE_LINE printf("%s line %d\n", __FILE__, __LINE__)
