@@ -707,11 +707,11 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 #else
    label = gtk_label_new(_("%D (description substitution) is disabled in this build"));
    gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
-   gtk_box_pack_start(GTK_BOX(vbox_settings), label, FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox_alarms), label, FALSE, FALSE, 0);
 
    label = gtk_label_new(_("%N (note substitution) is disabled in this build"));
    gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
-   gtk_box_pack_start(GTK_BOX(vbox_settings), label, FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox_alarms), label, FALSE, FALSE, 0);
 #endif
 
    /* Create a "Done" button */
