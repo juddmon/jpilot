@@ -969,15 +969,20 @@ void cb_about(GtkWidget *widget, gpointer data)
    char *button_text[]={gettext_noop("OK")};
    char about[256];
    char options[1024];
+   int w, h;
+
+   gdk_window_get_size(window->window, &w, &h);
+
+   w = w/2;
 
    g_snprintf(about, sizeof(about), _("About %s"), PN);
 
    get_compile_options(options, sizeof(options));
 
    if (GTK_IS_WINDOW(window)) {
-      dialog_generic(GTK_WINDOW(window),
- 		     0, 0,
-		     about, PN" "VERSION, options, 1, button_text);
+      dialog_generic_with_text(GTK_WINDOW(window),
+			       w, h,
+			       about, PN" "VERSION, options, 1, button_text, 1);
    }
 }
 
@@ -1702,7 +1707,7 @@ char *xpm_unlocked[] = {
       if (!strncasecmp(argv[i], "-v", 2)) {
 	 char options[1024];
 	 get_compile_options(options, sizeof(options));
-	 printf("%s\n", options);
+	 printf("\n%s\n", options);
 	 exit(0);
       }
       if ( (!strncasecmp(argv[i], "-h", 2)) || 
