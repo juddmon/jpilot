@@ -1,3 +1,6 @@
+Starting with J-Pilot-0.99.4 I removed jpilot-upgrade-99 
+because anyone should have already updated after over 2 years.
+
 Upgrading to 0.99 from a pre 0.99 release:
 
 I changed the .pc file format.
