@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.30 2004/10/17 11:57:28 rousseau Exp $
+# $Id: Makefile.am,v 1.31 2004/10/17 12:00:39 rousseau Exp $
 
 SUBDIRS = Expense SyncTime KeyRing docs dialer po m4 empty icons
 
@@ -8,7 +8,7 @@ color_DATA = \
 	jpilotrc.blue jpilotrc.default jpilotrc.green jpilotrc.purple \
 	jpilotrc.steel
 
-EXTRA_DIST = config.rpath reconf autogen.sh ChangeLog \
+EXTRA_DIST = config.rpath reconf autogen.sh ChangeLog ChangeLog.cvs \
 	description-pak \
 	mkinstalldirs \
 	jpilot.spec jpilot.kdelnk jpilot.rh7.spec \
