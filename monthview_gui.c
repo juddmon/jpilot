@@ -142,13 +142,19 @@ cb_enter_notify(GtkWidget *widget, GdkEvent *event, gpointer data)
    gstr = gtk_object_get_data(GTK_OBJECT(widget), "gstr");
 
 #ifdef ENABLE_GTK2
-   gtk_text_buffer_set_text(GTK_TEXT_BUFFER(big_text_buffer), gstr->str, -1);
+   if (gstr) {
+      gtk_text_buffer_set_text(GTK_TEXT_BUFFER(big_text_buffer), gstr->str, -1);
+   } else {
+      gtk_text_buffer_set_text(GTK_TEXT_BUFFER(big_text_buffer), "", -1);
+   }
 #else
    gtk_text_set_point(GTK_TEXT(big_text),
 		      gtk_text_get_length(GTK_TEXT(big_text)));
    gtk_text_backward_delete(GTK_TEXT(big_text),
 			    gtk_text_get_length(GTK_TEXT(big_text)));
-   gtk_text_insert(GTK_TEXT(big_text), NULL, NULL, NULL, gstr->str, -1);
+   if (gstr) {
+      gtk_text_insert(GTK_TEXT(big_text), NULL, NULL, NULL, gstr->str, -1);
+   }
 #endif
 }
 
