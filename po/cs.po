@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: jpilot-1.99pre\n"
-"POT-Creation-Date: 2002-11-15 23:46-0500\n"
+"POT-Creation-Date: 2002-12-15 23:09-0500\n"
 "PO-Revision-Date: 2001-02-06 09:10+0200\n"
 "Last-Translator: Jiri Rubes <jr@slad.cz>\n"
 "Language-Team: CS <cs@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 # address.c:239 datebook.c:217 memo.c:145 todo.c:253
 # address.c:239 datebook.c:217 memo.c:145 todo.c:253
 # address.c:239 datebook.c:217 memo.c:145 todo.c:253
-#: address.c:335 datebook.c:331 memo.c:153 todo.c:279
+#: address.c:335 datebook.c:331 memo.c:155 todo.c:283
 msgid "error"
 msgstr "chyba"
 
@@ -28,8 +28,8 @@ msgstr "chyba"
 # address.c:280 datebook.c:576 memo.c:197 todo.c:294
 # address.c:280 datebook.c:576 memo.c:197 todo.c:294
 #: Expense/expense.c:856 Expense/expense.c:1764 address.c:386
-#: address_gui.c:1208 datebook.c:703 memo.c:215 memo_gui.c:857 todo.c:361
-#: todo.c:363 todo.c:366 todo_gui.c:1079
+#: address_gui.c:1352 datebook.c:703 memo.c:217 memo_gui.c:857 todo.c:365
+#: todo.c:367 todo.c:370 todo_gui.c:1151
 #, fuzzy, c-format
 msgid "Error reading %s\n"
 msgstr "Chyba pøi ètení"
@@ -78,10 +78,10 @@ msgstr "Nezaøazeno"
 # jpilot.c:711 jpilot.c:866 memo_gui.c:459 password.c:280 todo_gui.c:589
 # utils.c:859
 #. Buttons
-#: KeyRing/keyring.c:1123 address_gui.c:573 alarms.c:228 datebook_gui.c:622
-#: datebook_gui.c:900 export_gui.c:329 jpilot.c:351 jpilot.c:398 jpilot.c:466
-#: jpilot.c:510 jpilot.c:942 memo_gui.c:458 password.c:368 restore_gui.c:217
-#: todo_gui.c:600 utils.c:796
+#: KeyRing/keyring.c:1163 address_gui.c:597 alarms.c:228 datebook_gui.c:622
+#: datebook_gui.c:1096 export_gui.c:329 jpilot.c:352 jpilot.c:399 jpilot.c:467
+#: jpilot.c:511 jpilot.c:942 memo_gui.c:458 password.c:368 restore_gui.c:217
+#: todo_gui.c:600 utils.c:926
 msgid "OK"
 msgstr "OK"
 
@@ -93,8 +93,8 @@ msgstr "OK"
 # utils.c:1000
 # address_gui.c:546 datebook_gui.c:614 memo_gui.c:460 todo_gui.c:590
 # utils.c:1000
-#: address_gui.c:574 datebook_gui.c:623 memo_gui.c:459 todo_gui.c:601
-#: utils.c:939
+#: address_gui.c:598 datebook_gui.c:623 memo_gui.c:459 todo_gui.c:601
+#: utils.c:1069
 msgid "Yes"
 msgstr "Ano"
 
@@ -106,15 +106,15 @@ msgstr "Ano"
 # utils.c:1000
 # address_gui.c:546 datebook_gui.c:614 memo_gui.c:460 todo_gui.c:590
 # utils.c:1000
-#: address_gui.c:574 datebook_gui.c:623 memo_gui.c:459 todo_gui.c:601
-#: utils.c:939
+#: address_gui.c:598 datebook_gui.c:623 memo_gui.c:459 todo_gui.c:601
+#: utils.c:1069
 msgid "No"
 msgstr "Ne"
 
 # address_gui.c:562 datebook_gui.c:622 memo_gui.c:470 todo_gui.c:600
 # address_gui.c:562 datebook_gui.c:622 memo_gui.c:470 todo_gui.c:600
 # address_gui.c:562 datebook_gui.c:622 memo_gui.c:470 todo_gui.c:600
-#: address_gui.c:583 datebook_gui.c:631 memo_gui.c:469 todo_gui.c:611
+#: address_gui.c:622 datebook_gui.c:650 memo_gui.c:469 todo_gui.c:627
 #, c-format
 msgid "%s is a directory"
 msgstr "%s je adresáø"
@@ -127,15 +127,15 @@ msgstr "%s je adresáø"
 # memo_gui.c:472 memo_gui.c:489 todo_gui.c:602 todo_gui.c:619
 # address_gui.c:564 address_gui.c:581 datebook_gui.c:624 datebook_gui.c:641
 # memo_gui.c:472 memo_gui.c:489 todo_gui.c:602 todo_gui.c:619
-#: address_gui.c:585 address_gui.c:602 datebook_gui.c:633 datebook_gui.c:650
-#: memo_gui.c:471 memo_gui.c:488 todo_gui.c:613 todo_gui.c:630
+#: address_gui.c:624 address_gui.c:641 datebook_gui.c:652 datebook_gui.c:669
+#: memo_gui.c:471 memo_gui.c:488 todo_gui.c:629 todo_gui.c:646
 msgid "Error Opening File"
 msgstr "Chyba pøi otevírání souboru"
 
 # address_gui.c:568 datebook_gui.c:628 memo_gui.c:476 todo_gui.c:606
 # address_gui.c:568 datebook_gui.c:628 memo_gui.c:476 todo_gui.c:606
 # address_gui.c:568 datebook_gui.c:628 memo_gui.c:476 todo_gui.c:606
-#: address_gui.c:589 datebook_gui.c:637 memo_gui.c:475 todo_gui.c:617
+#: address_gui.c:628 datebook_gui.c:656 memo_gui.c:475 todo_gui.c:633
 #, c-format
 msgid "Do you want to overwrite file %s?"
 msgstr "Chcete pøepsat soubor %s?"
@@ -143,14 +143,14 @@ msgstr "Chcete pøepsat soubor %s?"
 # address_gui.c:570 datebook_gui.c:630 memo_gui.c:478 todo_gui.c:608
 # address_gui.c:570 datebook_gui.c:630 memo_gui.c:478 todo_gui.c:608
 # address_gui.c:570 datebook_gui.c:630 memo_gui.c:478 todo_gui.c:608
-#: address_gui.c:591 datebook_gui.c:639 memo_gui.c:477 todo_gui.c:619
+#: address_gui.c:630 datebook_gui.c:658 memo_gui.c:477 todo_gui.c:635
 msgid "Overwrite File?"
 msgstr "Pøepsat soubor?"
 
 # address_gui.c:571 datebook_gui.c:631 memo_gui.c:479 todo_gui.c:609
 # address_gui.c:571 datebook_gui.c:631 memo_gui.c:479 todo_gui.c:609
 # address_gui.c:571 datebook_gui.c:631 memo_gui.c:479 todo_gui.c:609
-#: address_gui.c:592 datebook_gui.c:640 memo_gui.c:478 todo_gui.c:620
+#: address_gui.c:631 datebook_gui.c:659 memo_gui.c:478 todo_gui.c:636
 msgid "Overwrite File"
 msgstr "Pøepsat soubor"
 
@@ -159,7 +159,7 @@ msgstr "Pøepsat soubor"
 # address_gui.c:759 address_gui.c:1637
 # address_gui.c:759 address_gui.c:1637
 # address_gui.c:759 address_gui.c:1637
-#: address_gui.c:827 address_gui.c:2085
+#: address_gui.c:971 address_gui.c:2229
 msgid "Company/Name"
 msgstr "Firma/Jméno"
 
@@ -168,7 +168,7 @@ msgstr "Firma/Jméno"
 # address_gui.c:761 address_gui.c:1639
 # address_gui.c:761 address_gui.c:1639
 # address_gui.c:761 address_gui.c:1639
-#: address_gui.c:829 address_gui.c:2087
+#: address_gui.c:973 address_gui.c:2231
 msgid "Name/Company"
 msgstr "Jméno/Firma"
 
@@ -181,12 +181,12 @@ msgstr "Jméno/Firma"
 # Expense/expense.c:1190 Expense/expense.c:1261 KeyRing/keyring.c:1275
 # KeyRing/keyring.c:1351 address_gui.c:1077
 #. Category Menu
-#: Expense/expense.c:1299 Expense/expense.c:1378 KeyRing/keyring.c:1313
-#: KeyRing/keyring.c:1389 address_gui.c:1282
+#: Expense/expense.c:1299 Expense/expense.c:1378 KeyRing/keyring.c:1353
+#: KeyRing/keyring.c:1429 address_gui.c:1426
 msgid "Category: "
 msgstr "Kategorie: "
 
-#: address_gui.c:1314 address_gui.c:2249
+#: address_gui.c:1458 address_gui.c:2393
 msgid "kana("
 msgstr ""
 
@@ -195,11 +195,11 @@ msgstr ""
 # address_gui.c:1193 memo_gui.c:916 todo_gui.c:1190
 # address_gui.c:1193 memo_gui.c:916 todo_gui.c:1190
 # address_gui.c:1193 memo_gui.c:916 todo_gui.c:1190
-#: address_gui.c:1471 memo_gui.c:982 todo_gui.c:1260
+#: address_gui.c:1615 memo_gui.c:982 todo_gui.c:1332
 msgid "0 records"
 msgstr "0 záznamù"
 
-#: address_gui.c:1560
+#: address_gui.c:1704
 msgid "-Unnamed-"
 msgstr ""
 
@@ -208,13 +208,13 @@ msgstr ""
 # address_gui.c:1334 memo_gui.c:1038 todo_gui.c:1321
 # address_gui.c:1334 memo_gui.c:1038 todo_gui.c:1321
 # address_gui.c:1334 memo_gui.c:1038 todo_gui.c:1321
-#: address_gui.c:1747 memo_gui.c:1105 todo_gui.c:1392
+#: address_gui.c:1891 memo_gui.c:1105 todo_gui.c:1464
 #, c-format
 msgid "%d of %d records"
 msgstr "%d z %d záznamù"
 
 #. Edit category button
-#: Expense/expense.c:1306 address_gui.c:2065 memo_gui.c:1277 todo_gui.c:1587
+#: Expense/expense.c:1306 address_gui.c:2209 memo_gui.c:1277 todo_gui.c:1659
 msgid "Edit Categories"
 msgstr ""
 
@@ -223,7 +223,7 @@ msgstr ""
 # address_gui.c:1644
 # address_gui.c:1644
 # address_gui.c:1644
-#: address_gui.c:2092
+#: address_gui.c:2236
 msgid "Phone"
 msgstr "Telefon"
 
@@ -232,7 +232,7 @@ msgstr "Telefon"
 # address_gui.c:1666
 # address_gui.c:1666
 # address_gui.c:1666
-#: address_gui.c:2114
+#: address_gui.c:2258
 msgid "Quick Find"
 msgstr "Hledat"
 
@@ -245,8 +245,8 @@ msgstr "Hledat"
 # Expense/expense.c:1223 KeyRing/keyring.c:1310 address_gui.c:1683
 # datebook_gui.c:3370 memo_gui.c:1242 todo_gui.c:1571
 #. Delete Button
-#: Expense/expense.c:1340 KeyRing/keyring.c:1348 address_gui.c:2131
-#: datebook_gui.c:3583 memo_gui.c:1328 todo_gui.c:1657
+#: Expense/expense.c:1340 KeyRing/keyring.c:1388 address_gui.c:2275
+#: datebook_gui.c:3780 memo_gui.c:1328 todo_gui.c:1729
 msgid "Delete"
 msgstr "Smazat"
 
@@ -259,8 +259,8 @@ msgstr "Smazat"
 # Expense/expense.c:1229 KeyRing/keyring.c:1316 address_gui.c:1690
 # datebook_gui.c:3377 memo_gui.c:1248 todo_gui.c:1577
 #. Create "Copy" button
-#: Expense/expense.c:1346 KeyRing/keyring.c:1354 address_gui.c:2138
-#: datebook_gui.c:3590 memo_gui.c:1334 todo_gui.c:1663
+#: Expense/expense.c:1346 KeyRing/keyring.c:1394 address_gui.c:2282
+#: datebook_gui.c:3787 memo_gui.c:1334 todo_gui.c:1735
 msgid "Copy"
 msgstr "Kopírovat"
 
@@ -273,8 +273,8 @@ msgstr "Kopírovat"
 # Expense/expense.c:1235 KeyRing/keyring.c:1322 address_gui.c:1697
 # datebook_gui.c:3384 memo_gui.c:1254 todo_gui.c:1583
 #. Create "New" button
-#: Expense/expense.c:1352 KeyRing/keyring.c:1360 address_gui.c:2145
-#: datebook_gui.c:3597 memo_gui.c:1340 todo_gui.c:1669
+#: Expense/expense.c:1352 KeyRing/keyring.c:1400 address_gui.c:2289
+#: datebook_gui.c:3794 memo_gui.c:1340 todo_gui.c:1741
 msgid "New Record"
 msgstr "Nový záznam"
 
@@ -287,8 +287,8 @@ msgstr "Nový záznam"
 # Expense/expense.c:1241 KeyRing/keyring.c:1328 address_gui.c:1703
 # datebook_gui.c:3391 memo_gui.c:1260 todo_gui.c:1589
 #. Create "Add Record" button
-#: Expense/expense.c:1358 KeyRing/keyring.c:1366 address_gui.c:2151
-#: datebook_gui.c:3604 memo_gui.c:1346 todo_gui.c:1675
+#: Expense/expense.c:1358 KeyRing/keyring.c:1406 address_gui.c:2295
+#: datebook_gui.c:3801 memo_gui.c:1346 todo_gui.c:1747
 msgid "Add Record"
 msgstr "Pøidat záznam"
 
@@ -301,8 +301,8 @@ msgstr "Pøidat záznam"
 # Expense/expense.c:1249 KeyRing/keyring.c:1336 address_gui.c:1712
 # datebook_gui.c:3400 memo_gui.c:1268 todo_gui.c:1597
 #. Create "apply changes" button
-#: Expense/expense.c:1366 KeyRing/keyring.c:1374 address_gui.c:2160
-#: datebook_gui.c:3613 memo_gui.c:1354 todo_gui.c:1683
+#: Expense/expense.c:1366 KeyRing/keyring.c:1414 address_gui.c:2304
+#: datebook_gui.c:3810 memo_gui.c:1354 todo_gui.c:1755
 msgid "Apply Changes"
 msgstr "Provést zmìny"
 
@@ -312,7 +312,7 @@ msgstr "Provést zmìny"
 # address_gui.c:1728 datebook_gui.c:3451 memo_gui.c:1294 todo_gui.c:1660
 # address_gui.c:1728 datebook_gui.c:3451 memo_gui.c:1294 todo_gui.c:1660
 #. Private check box
-#: address_gui.c:2176 datebook_gui.c:3664 memo_gui.c:1371 todo_gui.c:1746
+#: address_gui.c:2320 datebook_gui.c:3861 memo_gui.c:1371 todo_gui.c:1818
 msgid "Private"
 msgstr "Privátní"
 
@@ -322,7 +322,7 @@ msgstr "Privátní"
 # KeyRing/keyring.c:1200 address_gui.c:1748
 # KeyRing/keyring.c:1200 address_gui.c:1748
 #. Page 1
-#: KeyRing/keyring.c:1226 address_gui.c:2196
+#: KeyRing/keyring.c:1266 address_gui.c:2340
 msgid "Name"
 msgstr "Jméno"
 
@@ -332,7 +332,7 @@ msgstr "Jméno"
 # address_gui.c:1756
 # address_gui.c:1756
 #. Page 2
-#: address_gui.c:2204
+#: address_gui.c:2348
 msgid "Address"
 msgstr "Adresa"
 
@@ -342,7 +342,7 @@ msgstr "Adresa"
 # Expense/expense.c:393 Expense/expense.c:1044 address_gui.c:1764
 # Expense/expense.c:393 Expense/expense.c:1044 address_gui.c:1764
 #. Page 3
-#: Expense/expense.c:382 Expense/expense.c:1123 address_gui.c:2212
+#: Expense/expense.c:382 Expense/expense.c:1123 address_gui.c:2356
 msgid "Other"
 msgstr "Jiné"
 
@@ -354,18 +354,18 @@ msgstr "Jiné"
 # address_gui.c:1772 datebook_gui.c:1067 datebook_gui.c:1324 utils.c:2175
 # address_gui.c:1772 datebook_gui.c:1067 datebook_gui.c:1324 utils.c:2175
 #. Page 4
-#: address_gui.c:2220 datebook_gui.c:1088 datebook_gui.c:1365 utils.c:2138
+#: address_gui.c:2364 datebook_gui.c:1284 datebook_gui.c:1561 utils.c:2268
 msgid "All"
 msgstr "V¹e"
 
-#: address_gui.c:2324
+#: address_gui.c:2468
 msgid "Dial"
 msgstr ""
 
 # address_gui.c:1842
 # address_gui.c:1842
 # address_gui.c:1842
-#: address_gui.c:2364
+#: address_gui.c:2508
 msgid ""
 "Show\n"
 "In List"
@@ -379,7 +379,7 @@ msgstr ""
 # address_gui.c:1850
 # address_gui.c:1850
 #. The Quickview page
-#: address_gui.c:2372
+#: address_gui.c:2516
 msgid "Quick View"
 msgstr "Náhled"
 
@@ -392,7 +392,7 @@ msgstr ""
 # datebook_gui.c:3433
 # datebook_gui.c:3433
 # datebook_gui.c:3433
-#: alarms.c:244 datebook_gui.c:3646
+#: alarms.c:244 datebook_gui.c:3843
 msgid "Minutes"
 msgstr "Minut"
 
@@ -401,7 +401,7 @@ msgstr "Minut"
 # datebook_gui.c:3437
 # datebook_gui.c:3437
 # datebook_gui.c:3437
-#: alarms.c:246 datebook_gui.c:3650
+#: alarms.c:246 datebook_gui.c:3847
 msgid "Hours"
 msgstr "Hodin"
 
@@ -440,7 +440,7 @@ msgstr "Naplánováno"
 # datebook_gui.c:3332
 # datebook_gui.c:3332
 # datebook_gui.c:3332
-#: alarms.c:520 datebook_gui.c:3545
+#: alarms.c:520 datebook_gui.c:3742
 msgid "Appointment"
 msgstr "Naplánováno"
 
@@ -452,8 +452,8 @@ msgstr "Naplánováno"
 # datebook_gui.c:3181
 # datebook_gui.c:179 datebook_gui.c:186 datebook_gui.c:3174
 # datebook_gui.c:3181
-#: datebook_gui.c:181 datebook_gui.c:188 datebook_gui.c:3385
-#: datebook_gui.c:3392
+#: datebook_gui.c:181 datebook_gui.c:188 datebook_gui.c:3582
+#: datebook_gui.c:3589
 msgid "Su"
 msgstr "Ne"
 
@@ -462,7 +462,7 @@ msgstr "Ne"
 # datebook_gui.c:180 datebook_gui.c:3175
 # datebook_gui.c:180 datebook_gui.c:3175
 # datebook_gui.c:180 datebook_gui.c:3175
-#: datebook_gui.c:182 datebook_gui.c:3386
+#: datebook_gui.c:182 datebook_gui.c:3583
 msgid "Mo"
 msgstr "Po"
 
@@ -471,7 +471,7 @@ msgstr "Po"
 # datebook_gui.c:181 datebook_gui.c:3176
 # datebook_gui.c:181 datebook_gui.c:3176
 # datebook_gui.c:181 datebook_gui.c:3176
-#: datebook_gui.c:183 datebook_gui.c:3387
+#: datebook_gui.c:183 datebook_gui.c:3584
 msgid "Tu"
 msgstr "Út"
 
@@ -480,7 +480,7 @@ msgstr "Út"
 # datebook_gui.c:182 datebook_gui.c:3177
 # datebook_gui.c:182 datebook_gui.c:3177
 # datebook_gui.c:182 datebook_gui.c:3177
-#: datebook_gui.c:184 datebook_gui.c:3388
+#: datebook_gui.c:184 datebook_gui.c:3585
 msgid "We"
 msgstr "St"
 
@@ -489,7 +489,7 @@ msgstr "St"
 # datebook_gui.c:183
 # datebook_gui.c:183
 # datebook_gui.c:183
-#: datebook_gui.c:185
+#: datebook_gui.c:185 datebook_gui.c:3586
 msgid "Th"
 msgstr "Èt"
 
@@ -498,7 +498,7 @@ msgstr "Èt"
 # datebook_gui.c:184 datebook_gui.c:3179
 # datebook_gui.c:184 datebook_gui.c:3179
 # datebook_gui.c:184 datebook_gui.c:3179
-#: datebook_gui.c:186 datebook_gui.c:3390
+#: datebook_gui.c:186 datebook_gui.c:3587
 msgid "Fr"
 msgstr "Pá"
 
@@ -507,7 +507,7 @@ msgstr "Pá"
 # datebook_gui.c:185 datebook_gui.c:3180
 # datebook_gui.c:185 datebook_gui.c:3180
 # datebook_gui.c:185 datebook_gui.c:3180
-#: datebook_gui.c:187 datebook_gui.c:3391
+#: datebook_gui.c:187 datebook_gui.c:3588
 msgid "Sa"
 msgstr "So"
 
@@ -518,25 +518,32 @@ msgstr "So"
 msgid "File doesn't appear to be datebook.dat format\n"
 msgstr "Soubor není ve formátu datebook.dat\n"
 
+# jpilot.c:533
+# jpilot.c:533
+# jpilot.c:533
+#: datebook_gui.c:1047 export_gui.c:254 jpilot.c:544
+msgid "Export"
+msgstr ""
+
 # datebook_gui.c:855
 # datebook_gui.c:855
 # datebook_gui.c:855
 #. Label for instructions
-#: datebook_gui.c:863
+#: datebook_gui.c:1059
 msgid "Export All Datebook Records"
 msgstr "Exportovat v¹echny záznamy diáøe"
 
 # datebook_gui.c:874
 # datebook_gui.c:874
 # datebook_gui.c:874
-#: datebook_gui.c:882 export_gui.c:310
+#: datebook_gui.c:1078 export_gui.c:310
 msgid "Save as"
 msgstr "Ulo¾it jako"
 
 # datebook_gui.c:884
 # datebook_gui.c:884
 # datebook_gui.c:884
-#: datebook_gui.c:892 export_gui.c:321
+#: datebook_gui.c:1088 export_gui.c:321
 msgid "Browse"
 msgstr "Procházet"
 
@@ -549,9 +556,9 @@ msgstr "Procházet"
 # KeyRing/keyring.c:1105 datebook_gui.c:897 datebook_gui.c:1325
 # password.c:286 print_gui.c:336 utils.c:869
 #. Create a "Quit" button
-#: KeyRing/keyring.c:1129 datebook_gui.c:905 datebook_gui.c:1366
+#: KeyRing/keyring.c:1169 datebook_gui.c:1101 datebook_gui.c:1562
 #: export_gui.c:334 password.c:374 print_gui.c:336 restore_gui.c:222
-#: utils.c:806
+#: utils.c:936
 msgid "Cancel"
 msgstr "Zru¹it"
 
@@ -561,7 +568,7 @@ msgstr "Zru¹it"
 # datebook_gui.c:1061 install_gui.c:289 prefs_gui.c:682 search_gui.c:575
 # datebook_gui.c:1061 install_gui.c:289 prefs_gui.c:682 search_gui.c:575
 #. Create a "Quit" button
-#: datebook_gui.c:1082 import_gui.c:313 install_gui.c:289 prefs_gui.c:718
+#: datebook_gui.c:1278 import_gui.c:313 install_gui.c:289 prefs_gui.c:736
 #: search_gui.c:526
 msgid "Done"
 msgstr "Hotovo"
@@ -572,7 +579,7 @@ msgstr "Hotovo"
 # datebook_gui.c:1073 datebook_gui.c:3561
 # datebook_gui.c:1073 datebook_gui.c:3561
 #. Create a "None" button
-#: datebook_gui.c:1094 datebook_gui.c:3788
+#: datebook_gui.c:1290 datebook_gui.c:3985
 msgid "None"
 msgstr "Nic"
 
@@ -581,7 +588,7 @@ msgstr "Nic"
 # datebook_gui.c:1185
 # datebook_gui.c:1185
 # datebook_gui.c:1185
-#: datebook_gui.c:1215
+#: datebook_gui.c:1411
 msgid "Begin On Date"
 msgstr "Zaène dne"
 
@@ -590,7 +597,7 @@ msgstr "Zaène dne"
 # datebook_gui.c:1190
 # datebook_gui.c:1190
 # datebook_gui.c:1190
-#: datebook_gui.c:1220
+#: datebook_gui.c:1416
 msgid "End On Date"
 msgstr "Konec dne"
 
@@ -604,7 +611,7 @@ msgstr "Konec dne"
 # weekview_gui.c:135
 # datebook_gui.c:1284 monthview_gui.c:346 monthview_gui.c:353 prefs.c:393
 # weekview_gui.c:135
-#: datebook_gui.c:1316 monthview_gui.c:348 monthview_gui.c:355 prefs.c:407
+#: datebook_gui.c:1512 monthview_gui.c:348 monthview_gui.c:355 prefs.c:407
 #: weekview_gui.c:135
 msgid "Sunday"
 msgstr "Nedìle"
@@ -614,7 +621,7 @@ msgstr "Nedìle"
 # datebook_gui.c:1285 monthview_gui.c:347 prefs.c:394 weekview_gui.c:136
 # datebook_gui.c:1285 monthview_gui.c:347 prefs.c:394 weekview_gui.c:136
 # datebook_gui.c:1285 monthview_gui.c:347 prefs.c:394 weekview_gui.c:136
-#: datebook_gui.c:1317 monthview_gui.c:349 prefs.c:408 weekview_gui.c:136
+#: datebook_gui.c:1513 monthview_gui.c:349 prefs.c:408 weekview_gui.c:136
 msgid "Monday"
 msgstr "Pondìlí"
 
@@ -623,7 +630,7 @@ msgstr "Pondìlí"
 # datebook_gui.c:1286 monthview_gui.c:348 weekview_gui.c:137
 # datebook_gui.c:1286 monthview_gui.c:348 weekview_gui.c:137
 # datebook_gui.c:1286 monthview_gui.c:348 weekview_gui.c:137
-#: datebook_gui.c:1318 monthview_gui.c:350 weekview_gui.c:137
+#: datebook_gui.c:1514 monthview_gui.c:350 weekview_gui.c:137
 msgid "Tuesday"
 msgstr "Úterý"
 
@@ -632,7 +639,7 @@ msgstr "Úterý"
 # datebook_gui.c:1287 monthview_gui.c:349 weekview_gui.c:138
 # datebook_gui.c:1287 monthview_gui.c:349 weekview_gui.c:138
 # datebook_gui.c:1287 monthview_gui.c:349 weekview_gui.c:138
-#: datebook_gui.c:1319 monthview_gui.c:351 weekview_gui.c:138
+#: datebook_gui.c:1515 monthview_gui.c:351 weekview_gui.c:138
 msgid "Wednesday"
 msgstr "Støeda"
 
@@ -641,7 +648,7 @@ msgstr "Støeda"
 # datebook_gui.c:1288 monthview_gui.c:350 weekview_gui.c:139
 # datebook_gui.c:1288 monthview_gui.c:350 weekview_gui.c:139
 # datebook_gui.c:1288 monthview_gui.c:350 weekview_gui.c:139
-#: datebook_gui.c:1320 monthview_gui.c:352 weekview_gui.c:139
+#: datebook_gui.c:1516 monthview_gui.c:352 weekview_gui.c:139
 msgid "Thursday"
 msgstr "Ètvrtek"
 
@@ -650,7 +657,7 @@ msgstr "Ètvrtek"
 # datebook_gui.c:1289 monthview_gui.c:351 weekview_gui.c:140
 # datebook_gui.c:1289 monthview_gui.c:351 weekview_gui.c:140
 # datebook_gui.c:1289 monthview_gui.c:351 weekview_gui.c:140
-#: datebook_gui.c:1321 monthview_gui.c:353 weekview_gui.c:140
+#: datebook_gui.c:1517 monthview_gui.c:353 weekview_gui.c:140
 msgid "Friday"
 msgstr "Pátek"
 
@@ -659,21 +666,21 @@ msgstr "Pátek"
 # datebook_gui.c:1290 monthview_gui.c:352 weekview_gui.c:141
 # datebook_gui.c:1290 monthview_gui.c:352 weekview_gui.c:141
 # datebook_gui.c:1290 monthview_gui.c:352 weekview_gui.c:141
-#: datebook_gui.c:1322 monthview_gui.c:354 weekview_gui.c:141
+#: datebook_gui.c:1518 monthview_gui.c:354 weekview_gui.c:141
 msgid "Saturday"
 msgstr "Sobota"
 
 # datebook_gui.c:1295
 # datebook_gui.c:1295
 # datebook_gui.c:1295
-#: datebook_gui.c:1327
+#: datebook_gui.c:1523
 msgid "4th"
 msgstr "4."
 
 # datebook_gui.c:1295
 # datebook_gui.c:1295
 # datebook_gui.c:1295
-#: datebook_gui.c:1327
+#: datebook_gui.c:1523
 msgid "Last"
 msgstr "Poslední"
 
@@ -681,7 +688,7 @@ msgstr "Poslední"
 # datebook_gui.c:1317
 # datebook_gui.c:1317
 #. ---------------------------
-#: datebook_gui.c:1358
+#: datebook_gui.c:1554
 msgid ""
 "This is a repeating event.\n"
 "Do you want to apply these\n"
@@ -697,7 +704,7 @@ msgstr ""
 # datebook_gui.c:1323
 # datebook_gui.c:1323
 # datebook_gui.c:1323
-#: datebook_gui.c:1364
+#: datebook_gui.c:1560
 msgid "Current"
 msgstr "Aktuální"
 
@@ -706,7 +713,7 @@ msgstr "Aktuální"
 # datebook_gui.c:1540
 # datebook_gui.c:1540
 # datebook_gui.c:1540
-#: datebook_gui.c:1614
+#: datebook_gui.c:1810
 msgid "none"
 msgstr "nic"
 
@@ -715,7 +722,7 @@ msgstr "nic"
 # datebook_gui.c:1541
 # datebook_gui.c:1541
 # datebook_gui.c:1541
-#: datebook_gui.c:1615
+#: datebook_gui.c:1811
 msgid "day"
 msgstr "den"
 
@@ -724,7 +731,7 @@ msgstr "den"
 # datebook_gui.c:1542
 # datebook_gui.c:1542
 # datebook_gui.c:1542
-#: datebook_gui.c:1616
+#: datebook_gui.c:1812
 msgid "week"
 msgstr "týden"
 
@@ -733,7 +740,7 @@ msgstr "týden"
 # datebook_gui.c:1543
 # datebook_gui.c:1543
 # datebook_gui.c:1543
-#: datebook_gui.c:1617
+#: datebook_gui.c:1813
 msgid "month"
 msgstr "mìsíc"
 
@@ -742,7 +749,7 @@ msgstr "mìsíc"
 # datebook_gui.c:1544
 # datebook_gui.c:1544
 # datebook_gui.c:1544
-#: datebook_gui.c:1618
+#: datebook_gui.c:1814
 msgid "year"
 msgstr "rok"
 
@@ -751,7 +758,7 @@ msgstr "rok"
 # datebook_gui.c:1771
 # datebook_gui.c:1771
 # datebook_gui.c:1771
-#: datebook_gui.c:1870
+#: datebook_gui.c:2066
 #, c-format
 msgid "You cannot have an appointment that repeats every %d %s(s)\n"
 msgstr "Nemù¾ete vlo¾it akci, která se opakuje ka¾dý %d. %s\n"
@@ -761,7 +768,7 @@ msgstr "Nemù¾ete vlo¾it akci, která se opakuje ka¾dý %d. %s\n"
 # datebook_gui.c:1780
 # datebook_gui.c:1780
 # datebook_gui.c:1780
-#: datebook_gui.c:1879
+#: datebook_gui.c:2075
 msgid ""
 "You can not have a weekly repeating appointment that doesn't repeat on any "
 "day of the week.\n"
@@ -775,7 +782,7 @@ msgstr ""
 # datebook_gui.c:1912
 # datebook_gui.c:1912
 #. This is a timeless event
-#: datebook_gui.c:2015
+#: datebook_gui.c:2211
 msgid "No Time"
 msgstr "Bez èasu"
 
@@ -790,19 +797,10 @@ msgstr "Bez èasu"
 # datebook_gui.c:2299 datebook_gui.c:3595 datebook_gui.c:3625
 # datebook_gui.c:3681 datebook_gui.c:3730 todo_gui.c:120 todo_gui.c:1651
 #. The No due date check box
-#: datebook_gui.c:2433 datebook_gui.c:3822 datebook_gui.c:3852
-#: datebook_gui.c:3908 datebook_gui.c:3957 todo_gui.c:123 todo_gui.c:1737
+#: datebook_gui.c:2629 datebook_gui.c:4019 datebook_gui.c:4049
+#: datebook_gui.c:4105 datebook_gui.c:4154 todo_gui.c:123 todo_gui.c:1809
 msgid "No Date"
 msgstr "Neurèen"
-
-# datebook_gui.c:2094
-# datebook_gui.c:2153
-# datebook_gui.c:3178
-# datebook_gui.c:3178
-# datebook_gui.c:3178
-#: datebook_gui.c:3389
-msgid "RTh"
-msgstr "Èt"
 
 # datebook_gui.c:2156 datebook_gui.c:2432
 # datebook_gui.c:2228 datebook_gui.c:2512
@@ -810,7 +808,7 @@ msgstr "Èt"
 # datebook_gui.c:3250 datebook_gui.c:3563
 # datebook_gui.c:3250 datebook_gui.c:3563
 #. Make Weekview button
-#: datebook_gui.c:3466 datebook_gui.c:3790
+#: datebook_gui.c:3663 datebook_gui.c:3987
 msgid "Week"
 msgstr "Týden"
 
@@ -820,7 +818,7 @@ msgstr "Týden"
 # datebook_gui.c:3261 datebook_gui.c:3564
 # datebook_gui.c:3261 datebook_gui.c:3564
 #. Make Monthview button
-#: datebook_gui.c:3477 datebook_gui.c:3791
+#: datebook_gui.c:3674 datebook_gui.c:3988
 msgid "Month"
 msgstr "Mìsíc"
 
@@ -829,7 +827,7 @@ msgstr "Mìsíc"
 # datebook_gui.c:3276
 # datebook_gui.c:3276
 #. Make Category button
-#: datebook_gui.c:3490
+#: datebook_gui.c:3687
 msgid "Cats"
 msgstr "Kat."
 
@@ -838,7 +836,7 @@ msgstr "Kat."
 # datebook_gui.c:3331
 # datebook_gui.c:3331
 # datebook_gui.c:3331
-#: datebook_gui.c:3544
+#: datebook_gui.c:3741
 msgid "Time"
 msgstr "Èas"
 
@@ -847,7 +845,7 @@ msgstr "Èas"
 # datebook_gui.c:3418
 # datebook_gui.c:3418
 # datebook_gui.c:3418
-#: datebook_gui.c:3631
+#: datebook_gui.c:3828
 msgid "Alarm"
 msgstr "Budík"
 
@@ -856,7 +854,7 @@ msgstr "Budík"
 # datebook_gui.c:3439
 # datebook_gui.c:3439
 # datebook_gui.c:3439
-#: datebook_gui.c:3652
+#: datebook_gui.c:3849
 msgid "Days"
 msgstr "Dnù"
 
@@ -865,7 +863,7 @@ msgstr "Dnù"
 # datebook_gui.c:3462
 # datebook_gui.c:3462
 # datebook_gui.c:3462
-#: datebook_gui.c:3675
+#: datebook_gui.c:3872
 msgid "This Event has no particular time"
 msgstr "Tato akce nemá pøiøazen èas."
 
@@ -874,7 +872,7 @@ msgstr "Tato akce nemá pøiøazen èas."
 # datebook_gui.c:3470
 # datebook_gui.c:3470
 # datebook_gui.c:3470
-#: datebook_gui.c:3683
+#: datebook_gui.c:3880
 msgid "Starts on: "
 msgstr "Zaèátek: "
 
@@ -883,11 +881,11 @@ msgstr "Zaèátek: "
 # datebook_gui.c:3482
 # datebook_gui.c:3482
 # datebook_gui.c:3482
-#: datebook_gui.c:3695
+#: datebook_gui.c:3892
 msgid "Time:"
 msgstr "Èas: "
 
-#: datebook_gui.c:3772
+#: datebook_gui.c:3969
 msgid "DateBk Tags"
 msgstr ""
 
@@ -896,7 +894,7 @@ msgstr ""
 # datebook_gui.c:3562
 # datebook_gui.c:3562
 # datebook_gui.c:3562
-#: datebook_gui.c:3789
+#: datebook_gui.c:3986
 msgid "Day"
 msgstr "Den"
 
@@ -905,7 +903,7 @@ msgstr "Den"
 # datebook_gui.c:3565
 # datebook_gui.c:3565
 # datebook_gui.c:3565
-#: datebook_gui.c:3792
+#: datebook_gui.c:3989
 msgid "Year"
 msgstr "Rok"
 
@@ -915,7 +913,7 @@ msgstr "Rok"
 # datebook_gui.c:3569
 # datebook_gui.c:3569
 #. no repeat page for notebook
-#: datebook_gui.c:3796
+#: datebook_gui.c:3993
 msgid "This event will not repeat"
 msgstr "Tato akce se neopakuje"
 
@@ -929,8 +927,8 @@ msgstr "Tato akce se neopakuje"
 # datebook_gui.c:3714
 # datebook_gui.c:3579 datebook_gui.c:3611 datebook_gui.c:3667
 # datebook_gui.c:3714
-#: datebook_gui.c:3806 datebook_gui.c:3838 datebook_gui.c:3894
-#: datebook_gui.c:3941
+#: datebook_gui.c:4003 datebook_gui.c:4035 datebook_gui.c:4091
+#: datebook_gui.c:4138
 msgid "Frequency is Every"
 msgstr "Opakovat ka¾dý"
 
@@ -939,7 +937,7 @@ msgstr "Opakovat ka¾dý"
 # datebook_gui.c:3584
 # datebook_gui.c:3584
 # datebook_gui.c:3584
-#: datebook_gui.c:3811
+#: datebook_gui.c:4008
 msgid "Day(s)"
 msgstr "Den"
 
@@ -954,8 +952,8 @@ msgstr "Den"
 # datebook_gui.c:3587 datebook_gui.c:3619 datebook_gui.c:3675
 # datebook_gui.c:3722
 #. checkbutton
-#: datebook_gui.c:3814 datebook_gui.c:3846 datebook_gui.c:3902
-#: datebook_gui.c:3949
+#: datebook_gui.c:4011 datebook_gui.c:4043 datebook_gui.c:4099
+#: datebook_gui.c:4146
 msgid "End on"
 msgstr "Konec"
 
@@ -964,7 +962,7 @@ msgstr "Konec"
 # datebook_gui.c:3616
 # datebook_gui.c:3616
 # datebook_gui.c:3616
-#: datebook_gui.c:3843
+#: datebook_gui.c:4040
 msgid "Week(s)"
 msgstr "Týden"
 
@@ -973,7 +971,7 @@ msgstr "Týden"
 # datebook_gui.c:3632
 # datebook_gui.c:3632
 # datebook_gui.c:3632
-#: datebook_gui.c:3859
+#: datebook_gui.c:4056
 msgid "Repeat on Days:"
 msgstr "Opakovat ve dnech:"
 
@@ -982,7 +980,7 @@ msgstr "Opakovat ve dnech:"
 # datebook_gui.c:3672
 # datebook_gui.c:3672
 # datebook_gui.c:3672
-#: datebook_gui.c:3899
+#: datebook_gui.c:4096
 msgid "Month(s)"
 msgstr "Mìsíc"
 
@@ -991,7 +989,7 @@ msgstr "Mìsíc"
 # datebook_gui.c:3689
 # datebook_gui.c:3689
 # datebook_gui.c:3689
-#: datebook_gui.c:3916
+#: datebook_gui.c:4113
 msgid "Repeat by:"
 msgstr "Opakovat podle:"
 
@@ -1000,7 +998,7 @@ msgstr "Opakovat podle:"
 # datebook_gui.c:3693
 # datebook_gui.c:3693
 # datebook_gui.c:3693
-#: datebook_gui.c:3920
+#: datebook_gui.c:4117
 msgid "Day of week"
 msgstr "Dne v týdnu"
 
@@ -1009,7 +1007,7 @@ msgstr "Dne v týdnu"
 # datebook_gui.c:3702
 # datebook_gui.c:3702
 # datebook_gui.c:3702
-#: datebook_gui.c:3929
+#: datebook_gui.c:4126
 msgid "Date"
 msgstr "Data"
 
@@ -1018,7 +1016,7 @@ msgstr "Data"
 # datebook_gui.c:3719
 # datebook_gui.c:3719
 # datebook_gui.c:3719
-#: datebook_gui.c:3946
+#: datebook_gui.c:4143
 msgid "Year(s)"
 msgstr "Rok"
 
@@ -1044,7 +1042,7 @@ msgstr ""
 # jpilot.c:491
 #. Import button
 #: import_gui.c:270 import_gui.c:306 import_gui.c:409 import_gui.c:465
-#: jpilot.c:499
+#: jpilot.c:500
 msgid "Import"
 msgstr ""
 
@@ -1126,18 +1124,18 @@ msgstr "Pøidat"
 msgid "Remove"
 msgstr "Odstranit"
 
-#: jpilot.c:89
+#: jpilot.c:90
 msgid "\n"
 msgstr ""
 
 # jpilot.c:88
 # jpilot.c:88
 # jpilot.c:88
-#: jpilot.c:89
+#: jpilot.c:90
 #, fuzzy
 msgid ""
 " [ [-v] || [-h] || [-d] || [-a] || [-A]\n"
-" -v displays version and exits.\n"
+" -v displays version and compile options and exits.\n"
 " -h displays help and exits.\n"
 " -d displays debug info to stdout.\n"
 " -p do not load plugins.\n"
@@ -1164,7 +1162,7 @@ msgstr ""
 # jpilot.c:371
 # jpilot.c:371
 # jpilot.c:371
-#: jpilot.c:375
+#: jpilot.c:376
 msgid "Help"
 msgstr "Nápovìda"
 
@@ -1174,7 +1172,7 @@ msgstr "Nápovìda"
 # jpilot.c:433 monthview_gui.c:417 print_gui.c:330 weekview_gui.c:303
 # jpilot.c:433 monthview_gui.c:417 print_gui.c:330 weekview_gui.c:303
 #. Create a "Print" button
-#: jpilot.c:439 monthview_gui.c:419 print_gui.c:330 weekview_gui.c:304
+#: jpilot.c:440 monthview_gui.c:419 print_gui.c:330 weekview_gui.c:304
 msgid "Print"
 msgstr "Tisk"
 
@@ -1183,7 +1181,7 @@ msgstr "Tisk"
 # jpilot.c:434
 # jpilot.c:434
 # jpilot.c:434
-#: jpilot.c:440
+#: jpilot.c:441
 msgid "There is no print support for this conduit."
 msgstr "Tento modul nepodporuje tisk."
 
@@ -1192,23 +1190,16 @@ msgstr "Tento modul nepodporuje tisk."
 # jpilot.c:492
 # jpilot.c:492
 # jpilot.c:492
-#: jpilot.c:500
+#: jpilot.c:501
 msgid "There is no import support for this conduit."
 msgstr "Tento modul nepodporuje import."
 
-# jpilot.c:533
-# jpilot.c:533
-# jpilot.c:533
-#: jpilot.c:543
-msgid "Export"
-msgstr ""
-
 # jpilot.c:440
 # jpilot.c:440
 # jpilot.c:534
 # jpilot.c:534
 # jpilot.c:534
-#: jpilot.c:544
+#: jpilot.c:545
 msgid "There is no export support for this conduit."
 msgstr "Tento modul nepodporuje export."
 
@@ -1220,7 +1211,7 @@ msgstr "Tento modul nepodporuje export."
 # password.c:286 print_gui.c:336 utils.c:869
 # KeyRing/keyring.c:1105 datebook_gui.c:897 datebook_gui.c:1325
 # password.c:286 print_gui.c:336 utils.c:869
-#: jpilot.c:735
+#: jpilot.c:736
 #, fuzzy
 msgid "Cancel Sync"
 msgstr "Zru¹it"
@@ -1229,34 +1220,16 @@ msgstr "Zru¹it"
 # jpilot.c:711
 # jpilot.c:711
 # jpilot.c:711
-#: jpilot.c:736
+#: jpilot.c:737
 msgid "Sync Anyway"
 msgstr "Pokraèovat"
-
-# jpilot.c:763
-# jpilot.c:871
-# jpilot.c:871
-# jpilot.c:871
-#. -------------------------------------------
-#: jpilot.c:947
-#, fuzzy, c-format
-msgid ""
-"%s %s was written by\n"
-"Judd Montgomery (Copyright) 1999-2002.\n"
-"judd@jpilot.org\n"
-"http://jpilot.org\n"
-msgstr ""
-"%s naprogramoval\n"
-"Judd Montgomery (c) 1999-2002.\n"
-"judd@jpilot.org\n"
-"http://jpilot.org\n"
 
 # jpilot.c:848
 # jpilot.c:768
 # jpilot.c:876
 # jpilot.c:876
 # jpilot.c:876
-#: jpilot.c:952
+#: jpilot.c:946
 #, c-format
 msgid "About %s"
 msgstr "/_Nápovìda/O programu %s"
@@ -1266,7 +1239,7 @@ msgstr "/_Nápovìda/O programu %s"
 # jpilot.c:966
 # jpilot.c:966
 # jpilot.c:966
-#: jpilot.c:1036
+#: jpilot.c:1032
 msgid "/File"
 msgstr "/Soubor"
 
@@ -1275,7 +1248,7 @@ msgstr "/Soubor"
 # jpilot.c:967
 # jpilot.c:967
 # jpilot.c:967
-#: jpilot.c:1037
+#: jpilot.c:1033
 msgid "/File/tear"
 msgstr "/Soubor/tear"
 
@@ -1284,7 +1257,7 @@ msgstr "/Soubor/tear"
 # jpilot.c:968
 # jpilot.c:968
 # jpilot.c:968
-#: jpilot.c:1038
+#: jpilot.c:1034
 msgid "/File/_Find"
 msgstr "/Soubor/_Hledat"
 
@@ -1293,7 +1266,7 @@ msgstr "/Soubor/_Hledat"
 # jpilot.c:969 jpilot.c:975 jpilot.c:977
 # jpilot.c:969 jpilot.c:975 jpilot.c:977
 # jpilot.c:969 jpilot.c:975 jpilot.c:977
-#: jpilot.c:1039 jpilot.c:1045 jpilot.c:1047
+#: jpilot.c:1035 jpilot.c:1041 jpilot.c:1043
 msgid "/File/sep1"
 msgstr "/Soubor/sep1"
 
@@ -1302,7 +1275,7 @@ msgstr "/Soubor/sep1"
 # jpilot.c:970
 # jpilot.c:970
 # jpilot.c:970
-#: jpilot.c:1040
+#: jpilot.c:1036
 msgid "/File/_Install"
 msgstr "/Soubor/_Instalovat"
 
@@ -1311,7 +1284,7 @@ msgstr "/Soubor/_Instalovat"
 # jpilot.c:971
 # jpilot.c:971
 # jpilot.c:971
-#: jpilot.c:1041
+#: jpilot.c:1037
 msgid "/File/Import"
 msgstr "/Soubor/Import"
 
@@ -1320,7 +1293,7 @@ msgstr "/Soubor/Import"
 # jpilot.c:972
 # jpilot.c:972
 # jpilot.c:972
-#: jpilot.c:1042
+#: jpilot.c:1038
 msgid "/File/Export"
 msgstr "/Soubor/Export"
 
@@ -1329,7 +1302,7 @@ msgstr "/Soubor/Export"
 # jpilot.c:973
 # jpilot.c:973
 # jpilot.c:973
-#: jpilot.c:1043
+#: jpilot.c:1039
 msgid "/File/Preferences"
 msgstr "/Soubor/_Nastavení"
 
@@ -1338,14 +1311,14 @@ msgstr "/Soubor/_Nastavení"
 # jpilot.c:974
 # jpilot.c:974
 # jpilot.c:974
-#: jpilot.c:1044
+#: jpilot.c:1040
 msgid "/File/_Print"
 msgstr "/Soubor/_Tisk"
 
 # jpilot.c:976
 # jpilot.c:976
 # jpilot.c:976
-#: jpilot.c:1046
+#: jpilot.c:1042
 msgid "/File/Restore Handheld"
 msgstr "/Soubor/Obnovit Handheld"
 
@@ -1354,7 +1327,7 @@ msgstr "/Soubor/Obnovit Handheld"
 # jpilot.c:978
 # jpilot.c:978
 # jpilot.c:978
-#: jpilot.c:1048
+#: jpilot.c:1044
 msgid "/File/Quit"
 msgstr "/Soubor/Konec"
 
@@ -1363,7 +1336,7 @@ msgstr "/Soubor/Konec"
 # jpilot.c:979
 # jpilot.c:979
 # jpilot.c:979
-#: jpilot.c:1049
+#: jpilot.c:1045
 msgid "/_View"
 msgstr "/_Zobrazit"
 
@@ -1372,7 +1345,7 @@ msgstr "/_Zobrazit"
 # jpilot.c:980
 # jpilot.c:980
 # jpilot.c:980
-#: jpilot.c:1050
+#: jpilot.c:1046
 msgid "/View/Hide-Show Private Records"
 msgstr "/Zobrazit/Skrýt-Ukázat privátní záznamy"
 
@@ -1381,7 +1354,7 @@ msgstr "/Zobrazit/Skrýt-Ukázat privátní záznamy"
 # jpilot.c:981
 # jpilot.c:981
 # jpilot.c:981
-#: jpilot.c:1051
+#: jpilot.c:1047
 msgid "/View/Datebook"
 msgstr "/Zobrazit/Diáø"
 
@@ -1390,7 +1363,7 @@ msgstr "/Zobrazit/Diáø"
 # jpilot.c:982
 # jpilot.c:982
 # jpilot.c:982
-#: jpilot.c:1052
+#: jpilot.c:1048
 msgid "/View/Addresses"
 msgstr "/Zobrazit/Kontakty"
 
@@ -1399,7 +1372,7 @@ msgstr "/Zobrazit/Kontakty"
 # jpilot.c:983
 # jpilot.c:983
 # jpilot.c:983
-#: jpilot.c:1053
+#: jpilot.c:1049
 msgid "/View/Todos"
 msgstr "/Zobrazit/Úkoly"
 
@@ -1408,7 +1381,7 @@ msgstr "/Zobrazit/Úkoly"
 # jpilot.c:984
 # jpilot.c:984
 # jpilot.c:984
-#: jpilot.c:1054
+#: jpilot.c:1050
 msgid "/View/Memos"
 msgstr "/Zobrazit/Poznámky"
 
@@ -1417,7 +1390,7 @@ msgstr "/Zobrazit/Poznámky"
 # jpilot.c:985 jpilot.c:1061
 # jpilot.c:985 jpilot.c:1061
 # jpilot.c:985 jpilot.c:1061
-#: jpilot.c:1055 jpilot.c:1131
+#: jpilot.c:1051 jpilot.c:1127
 msgid "/Plugins"
 msgstr "/Moduly"
 
@@ -1426,7 +1399,7 @@ msgstr "/Moduly"
 # jpilot.c:986
 # jpilot.c:986
 # jpilot.c:986
-#: jpilot.c:1056
+#: jpilot.c:1052
 msgid "/_Help"
 msgstr "/_Nápovìda"
 
@@ -1435,7 +1408,7 @@ msgstr "/_Nápovìda"
 # jpilot.c:987 jpilot.c:1038
 # jpilot.c:987 jpilot.c:1038
 # jpilot.c:987 jpilot.c:1038
-#: jpilot.c:1057 jpilot.c:1108
+#: jpilot.c:1053 jpilot.c:1104
 #, c-format
 msgid "/_Help/%s"
 msgstr "/_Nápovìda/%s"
@@ -1445,7 +1418,7 @@ msgstr "/_Nápovìda/%s"
 # jpilot.c:1027
 # jpilot.c:1027
 # jpilot.c:1027
-#: jpilot.c:1097
+#: jpilot.c:1093
 #, c-format
 msgid "/Plugins/%s"
 msgstr "/Moduly/%s"
@@ -1455,7 +1428,7 @@ msgstr "/Moduly/%s"
 # jpilot.c:1654
 # jpilot.c:1654
 # jpilot.c:1654
-#: jpilot.c:1733
+#: jpilot.c:1732
 msgid "Clear"
 msgstr "Smazat"
 
@@ -1465,7 +1438,7 @@ msgstr "Smazat"
 # jpilot.c:1719
 # jpilot.c:1719
 #. Create "Quit" button
-#: jpilot.c:1798
+#: jpilot.c:1797
 msgid "Quit!"
 msgstr "Konec!"
 
@@ -1475,7 +1448,7 @@ msgstr "Konec!"
 # jpilot.c:1725
 # jpilot.c:1725
 #. Create "Sync" button
-#: jpilot.c:1804
+#: jpilot.c:1803
 msgid "Sync"
 msgstr ""
 
@@ -1484,7 +1457,7 @@ msgstr ""
 # jpilot.c:1732
 # jpilot.c:1732
 # jpilot.c:1732
-#: jpilot.c:1811
+#: jpilot.c:1810
 msgid "Sync your palm to the desktop"
 msgstr "Synchronizovat PALM s desktopem"
 
@@ -1494,7 +1467,7 @@ msgstr "Synchronizovat PALM s desktopem"
 # jpilot.c:1736
 # jpilot.c:1736
 #. Create "Backup" button in left column
-#: jpilot.c:1815
+#: jpilot.c:1814
 msgid "Backup"
 msgstr "Zálohovat"
 
@@ -1503,7 +1476,7 @@ msgstr "Zálohovat"
 # jpilot.c:1744
 # jpilot.c:1744
 # jpilot.c:1744
-#: jpilot.c:1823
+#: jpilot.c:1822
 msgid ""
 "Sync your palm to the desktop\n"
 "and then do a backup"
@@ -1516,7 +1489,7 @@ msgstr ""
 # jpilot.c:1825
 # jpilot.c:1825
 # jpilot.c:1825
-#: jpilot.c:1910
+#: jpilot.c:1909
 msgid "Datebook/Go to Today"
 msgstr "Diáø/Dnes"
 
@@ -1525,7 +1498,7 @@ msgstr "Diáø/Dnes"
 # jpilot.c:1827
 # jpilot.c:1827
 # jpilot.c:1827
-#: jpilot.c:1912
+#: jpilot.c:1911
 msgid "Address Book"
 msgstr "Kontakty"
 
@@ -1534,7 +1507,7 @@ msgstr "Kontakty"
 # jpilot.c:1829
 # jpilot.c:1829
 # jpilot.c:1829
-#: jpilot.c:1914
+#: jpilot.c:1913
 msgid "ToDo List"
 msgstr "Úkoly"
 
@@ -1543,7 +1516,7 @@ msgstr "Úkoly"
 # jpilot.c:1831
 # jpilot.c:1831
 # jpilot.c:1831
-#: jpilot.c:1916
+#: jpilot.c:1915
 msgid "Memo Pad"
 msgstr "Poznámky"
 
@@ -1626,7 +1599,7 @@ msgstr "Vlo¾te heslo z PalmOS"
 # prefs_gui.c:306
 # prefs_gui.c:306
 # prefs_gui.c:306
-#: prefs_gui.c:308
+#: prefs_gui.c:326
 msgid "Preferences"
 msgstr "Nastavení"
 
@@ -1635,7 +1608,7 @@ msgstr "Nastavení"
 # prefs_gui.c:329
 # prefs_gui.c:329
 # prefs_gui.c:329
-#: prefs_gui.c:331
+#: prefs_gui.c:349
 msgid "Locale"
 msgstr "Lokalizace"
 
@@ -1644,7 +1617,7 @@ msgstr "Lokalizace"
 # prefs_gui.c:331
 # prefs_gui.c:331
 # prefs_gui.c:331
-#: prefs_gui.c:333
+#: prefs_gui.c:351
 msgid "Settings"
 msgstr "Nastavení"
 
@@ -1653,7 +1626,7 @@ msgstr "Nastavení"
 # prefs_gui.c:333
 # prefs_gui.c:333
 # prefs_gui.c:333
-#: prefs_gui.c:335
+#: prefs_gui.c:353
 msgid "Alarms"
 msgstr "Budík"
 
@@ -1662,7 +1635,7 @@ msgstr "Budík"
 # prefs_gui.c:335
 # prefs_gui.c:335
 # prefs_gui.c:335
-#: prefs_gui.c:337
+#: prefs_gui.c:355
 msgid "Conduits"
 msgstr "Moduly"
 
@@ -1672,7 +1645,7 @@ msgstr "Moduly"
 # prefs_gui.c:346
 # prefs_gui.c:346
 #. Character Set
-#: prefs_gui.c:348
+#: prefs_gui.c:366
 msgid "Character Set "
 msgstr "Znaková sada "
 
@@ -1682,7 +1655,7 @@ msgstr "Znaková sada "
 # prefs_gui.c:359
 # prefs_gui.c:359
 #. Shortdate
-#: prefs_gui.c:361
+#: prefs_gui.c:379
 msgid "Short date format "
 msgstr "Formát krátkého data "
 
@@ -1692,7 +1665,7 @@ msgstr "Formát krátkého data "
 # prefs_gui.c:372
 # prefs_gui.c:372
 #. Longdate
-#: prefs_gui.c:374
+#: prefs_gui.c:392
 msgid "Long date format "
 msgstr "Formát dlouhého data "
 
@@ -1702,7 +1675,7 @@ msgstr "Formát dlouhého data "
 # prefs_gui.c:386
 # prefs_gui.c:386
 #. Time
-#: prefs_gui.c:388
+#: prefs_gui.c:406
 msgid "Time format "
 msgstr "Formát èasu "
 
@@ -1712,7 +1685,7 @@ msgstr "Formát èasu "
 # prefs_gui.c:400
 # prefs_gui.c:400
 #. FDOW
-#: prefs_gui.c:402
+#: prefs_gui.c:420
 msgid "The first day of the week is "
 msgstr "Prvním dnem týdne je "
 
@@ -1722,7 +1695,7 @@ msgstr "Prvním dnem týdne je "
 # prefs_gui.c:420
 # prefs_gui.c:420
 #. GTK colors file
-#: prefs_gui.c:422
+#: prefs_gui.c:440
 msgid "My GTK colors file is "
 msgstr "Soubor obsahující GTK barvy "
 
@@ -1732,7 +1705,7 @@ msgstr "Soubor obsahující GTK barvy "
 # prefs_gui.c:434
 # prefs_gui.c:434
 #. Port
-#: prefs_gui.c:436
+#: prefs_gui.c:454
 msgid "Serial Port (/dev/ttyS0, /dev/pilot)"
 msgstr "Sériový port (/dev/ttyS0, /dev/pilot)"
 
@@ -1742,7 +1715,7 @@ msgstr "Sériový port (/dev/ttyS0, /dev/pilot)"
 # prefs_gui.c:449
 # prefs_gui.c:449
 #. Rate
-#: prefs_gui.c:451
+#: prefs_gui.c:469
 msgid "Serial Rate "
 msgstr "Pøenosová rychlost "
 
@@ -1752,7 +1725,7 @@ msgstr "Pøenosová rychlost "
 # prefs_gui.c:462
 # prefs_gui.c:462
 #. Number of backups
-#: prefs_gui.c:464
+#: prefs_gui.c:482
 msgid "Number of backups to be archived"
 msgstr "Poèet uchovaných záloh "
 
@@ -1761,7 +1734,7 @@ msgstr "Poèet uchovaných záloh "
 # prefs_gui.c:478
 # prefs_gui.c:478
 # prefs_gui.c:478
-#: prefs_gui.c:480
+#: prefs_gui.c:498
 msgid "Show deleted records (default NO)"
 msgstr "Zobrazovat smazané záznamy (standardnì NE)"
 
@@ -1770,7 +1743,7 @@ msgstr "Zobrazovat smazané záznamy (standardnì NE)"
 # prefs_gui.c:491
 # prefs_gui.c:491
 # prefs_gui.c:491
-#: prefs_gui.c:493
+#: prefs_gui.c:511
 msgid "Show modified deleted records (default NO)"
 msgstr "Zobrazovat modifikované smazané vìty (standardnì NE)"
 
@@ -1779,7 +1752,7 @@ msgstr "Zobrazovat modifikované smazané vìty (standardnì NE)"
 # prefs_gui.c:505
 # prefs_gui.c:505
 # prefs_gui.c:505
-#: prefs_gui.c:507
+#: prefs_gui.c:525
 msgid "Highlight calendar days with appointments"
 msgstr "Zvýrazòovat v kalendáøi dny s akcí"
 
@@ -1789,11 +1762,11 @@ msgstr "Zvýrazòovat v kalendáøi dny s akcí"
 # prefs_gui.c:518
 # prefs_gui.c:518
 #. Show use DateBk3/4 check box
-#: prefs_gui.c:520
+#: prefs_gui.c:538
 msgid "Use DateBk3/4 note tags"
 msgstr "Pou¾ívat DateBK3/4 znaèky"
 
-#: prefs_gui.c:530
+#: prefs_gui.c:548
 msgid "DateBk3/4 support disabled in this build"
 msgstr ""
 
@@ -1803,7 +1776,7 @@ msgstr ""
 # prefs_gui.c:532
 # prefs_gui.c:532
 #. Show sync datebook check box
-#: prefs_gui.c:537
+#: prefs_gui.c:555
 msgid "Sync datebook"
 msgstr "Synchronizovat diáø"
 
@@ -1813,7 +1786,7 @@ msgstr "Synchronizovat diáø"
 # prefs_gui.c:544
 # prefs_gui.c:544
 #. Show sync address check box
-#: prefs_gui.c:548
+#: prefs_gui.c:566
 msgid "Sync address"
 msgstr "Synchronizovat kontakty"
 
@@ -1823,7 +1796,7 @@ msgstr "Synchronizovat kontakty"
 # prefs_gui.c:556
 # prefs_gui.c:556
 #. Show sync todo check box
-#: prefs_gui.c:559
+#: prefs_gui.c:577
 msgid "Sync todo"
 msgstr "Synchronizovat úkoly"
 
@@ -1833,7 +1806,7 @@ msgstr "Synchronizovat úkoly"
 # prefs_gui.c:568
 # prefs_gui.c:568
 #. Show sync memo check box
-#: prefs_gui.c:570
+#: prefs_gui.c:588
 msgid "Sync memo"
 msgstr "Synchronizovat poznámky"
 
@@ -1842,7 +1815,7 @@ msgstr "Synchronizovat poznámky"
 # prefs_gui.c:580
 # prefs_gui.c:580
 # prefs_gui.c:580
-#: prefs_gui.c:582
+#: prefs_gui.c:600
 msgid "Sync memo32 (pedit32)"
 msgstr "Synchronizovat memo32 (pedit32)"
 
@@ -1851,13 +1824,13 @@ msgstr "Synchronizovat memo32 (pedit32)"
 # jpilot.c:711
 # jpilot.c:711
 #. Show sync Ma~nana check box
-#: prefs_gui.c:594
+#: prefs_gui.c:612
 #, fuzzy
 msgid "Sync Manana"
 msgstr "Pokraèovat"
 
 #. Show use Japanese Kana extention check box
-#: prefs_gui.c:607
+#: prefs_gui.c:625
 msgid "Use J-OS (Not Japanese PalmOS:WorkPad/CLIE)"
 msgstr ""
 
@@ -1866,7 +1839,7 @@ msgstr ""
 # prefs_gui.c:622
 # prefs_gui.c:622
 # prefs_gui.c:622
-#: prefs_gui.c:650
+#: prefs_gui.c:668
 msgid "Open alarm windows for appointment reminders"
 msgstr "Otevøít okno s upozornìním na zadané akce"
 
@@ -1875,7 +1848,7 @@ msgstr "Otevøít okno s upozornìním na zadané akce"
 # prefs_gui.c:634
 # prefs_gui.c:634
 # prefs_gui.c:634
-#: prefs_gui.c:662
+#: prefs_gui.c:680
 msgid "Execute this command"
 msgstr "Provést následující pøíkaz"
 
@@ -1885,7 +1858,7 @@ msgstr "Provést následující pøíkaz"
 # prefs_gui.c:645
 # prefs_gui.c:645
 #. Shell warning
-#: prefs_gui.c:673
+#: prefs_gui.c:691
 msgid "WARNING: executing arbitrary shell commands can be dangerous!!!"
 msgstr "POZOR: provádìní nìkterých pøíkazù shellu mù¾e být nebezpeèné!!!"
 
@@ -1894,7 +1867,7 @@ msgstr "POZOR: provádìní nìkterých pøíkazù shellu mù¾e být nebezpeèné!!!"
 # prefs_gui.c:653
 # prefs_gui.c:653
 # prefs_gui.c:653
-#: prefs_gui.c:681
+#: prefs_gui.c:699
 msgid "Alarm Command"
 msgstr "Pøíkaz pro upozornìní"
 
@@ -1903,7 +1876,7 @@ msgstr "Pøíkaz pro upozornìní"
 # prefs_gui.c:663
 # prefs_gui.c:663
 # prefs_gui.c:663
-#: prefs_gui.c:691
+#: prefs_gui.c:709
 msgid "%t is replaced with the alarm time"
 msgstr "%t je nahrazeno èasem pøipomenutí"
 
@@ -1912,7 +1885,7 @@ msgstr "%t je nahrazeno èasem pøipomenutí"
 # prefs_gui.c:667
 # prefs_gui.c:667
 # prefs_gui.c:667
-#: prefs_gui.c:695
+#: prefs_gui.c:713
 #, c-format
 msgid "%d is replaced with the alarm date"
 msgstr "%d je nahrazeno datem pøipomenutí"
@@ -1922,7 +1895,7 @@ msgstr "%d je nahrazeno datem pøipomenutí"
 # prefs_gui.c:672
 # prefs_gui.c:672
 # prefs_gui.c:672
-#: prefs_gui.c:700
+#: prefs_gui.c:718
 msgid "%D is replaced with the alarm description"
 msgstr "%D je nahrazeno popisem pøipomenutí"
 
@@ -1931,15 +1904,15 @@ msgstr "%D je nahrazeno popisem pøipomenutí"
 # prefs_gui.c:676
 # prefs_gui.c:676
 # prefs_gui.c:676
-#: prefs_gui.c:704
+#: prefs_gui.c:722
 msgid "%N is replaced with the alarm note"
 msgstr "%N je nahrazeno poznámkou pøipomenutí"
 
-#: prefs_gui.c:708
+#: prefs_gui.c:726
 msgid "%D (description substitution) is disabled in this build"
 msgstr ""
 
-#: prefs_gui.c:712
+#: prefs_gui.c:730
 msgid "%N (note substitution) is disabled in this build"
 msgstr ""
 
@@ -2089,6 +2062,56 @@ msgstr "Jméno"
 msgid "User ID"
 msgstr ""
 
+# prefs_gui.c:488
+# prefs_gui.c:488
+# prefs_gui.c:532
+# prefs_gui.c:532
+# prefs_gui.c:532
+#: search_gui.c:90
+#, fuzzy
+msgid "datebook"
+msgstr "Synchronizovat diáø"
+
+# address_gui.c:1171
+# address_gui.c:1178
+# address_gui.c:1756
+# address_gui.c:1756
+# address_gui.c:1756
+#: search_gui.c:161
+#, fuzzy
+msgid "address"
+msgstr "Adresa"
+
+# jpilot.c:1527
+# jpilot.c:1542
+# jpilot.c:1829
+# jpilot.c:1829
+# jpilot.c:1829
+#: search_gui.c:224
+#, fuzzy
+msgid "ToDo"
+msgstr "Úkoly"
+
+# prefs_gui.c:524
+# prefs_gui.c:524
+# prefs_gui.c:568
+# prefs_gui.c:568
+# prefs_gui.c:568
+#: search_gui.c:277
+#, fuzzy
+msgid "memo"
+msgstr "Synchronizovat poznámky"
+
+# jpilot.c:846 jpilot.c:915
+# jpilot.c:850 jpilot.c:922
+# jpilot.c:985 jpilot.c:1061
+# jpilot.c:985 jpilot.c:1061
+# jpilot.c:985 jpilot.c:1061
+#: search_gui.c:331
+#, fuzzy
+msgid "plugin ?"
+msgstr "/Moduly"
+
 # search_gui.c:456
 # search_gui.c:456
 # search_gui.c:456
@@ -2125,19 +2148,19 @@ msgstr "Hledat: "
 msgid "Case Sensitive"
 msgstr "Rozli¹ovat velikost"
 
-#: sync.c:276
+#: sync.c:281
 #, c-format
 msgid "Exiting with status %s\n"
 msgstr ""
 
-#: sync.c:277
+#: sync.c:282
 msgid "Finished\n"
 msgstr ""
 
 # sync.c:329
 # sync.c:329
 # sync.c:329
-#: sync.c:441
+#: sync.c:446
 #, c-format
 msgid " Syncing on device %s\n"
 msgstr " Synchronizace se zaøízením %s\n"
@@ -2147,7 +2170,7 @@ msgstr " Synchronizace se zaøízením %s\n"
 # sync.c:330
 # sync.c:330
 # sync.c:330
-#: sync.c:442
+#: sync.c:447
 msgid " Press the HotSync button now\n"
 msgstr " Stisknìte tlaèítko HotSync\n"
 
@@ -2156,14 +2179,14 @@ msgstr " Stisknìte tlaèítko HotSync\n"
 # sync.c:415
 # sync.c:415
 # sync.c:415
-#: sync.c:538
+#: sync.c:540
 msgid "Check your serial port and settings\n"
 msgstr "Zkontrolujte sériový port a nastavení\n"
 
 # sync.c:449 sync.c:463 sync.c:475
 # sync.c:449 sync.c:463 sync.c:475
 # sync.c:449 sync.c:463 sync.c:475
-#: sync.c:607 sync.c:629 sync.c:651
+#: sync.c:600 sync.c:622 sync.c:644
 #, fuzzy, c-format
 msgid "Last Synced Username-->\"%s\"\n"
 msgstr "Poslední u¾ivatel-->\"%s\"\n"
@@ -2171,7 +2194,7 @@ msgstr "Poslední u¾ivatel-->\"%s\"\n"
 # sync.c:450 sync.c:464 sync.c:476
 # sync.c:450 sync.c:464 sync.c:476
 # sync.c:450 sync.c:464 sync.c:476
-#: sync.c:608 sync.c:630 sync.c:652
+#: sync.c:601 sync.c:623 sync.c:645
 #, fuzzy, c-format
 msgid "Last Synced UserID-->\"%d\"\n"
 msgstr "Poslední UserID-->\"%d\"\n"
@@ -2179,7 +2202,7 @@ msgstr "Poslední UserID-->\"%d\"\n"
 # sync.c:451 sync.c:465 sync.c:477
 # sync.c:451 sync.c:465 sync.c:477
 # sync.c:451 sync.c:465 sync.c:477
-#: sync.c:609 sync.c:631 sync.c:653
+#: sync.c:602 sync.c:624 sync.c:646
 #, fuzzy, c-format
 msgid " This Username-->\"%s\"\n"
 msgstr "U¾ivatel-->\"%s\"\n"
@@ -2187,7 +2210,7 @@ msgstr "U¾ivatel-->\"%s\"\n"
 # sync.c:450 sync.c:464 sync.c:476
 # sync.c:450 sync.c:464 sync.c:476
 # sync.c:450 sync.c:464 sync.c:476
-#: sync.c:610 sync.c:632 sync.c:654
+#: sync.c:603 sync.c:625 sync.c:647
 #, fuzzy, c-format
 msgid " This User ID-->%d\n"
 msgstr "Poslední UserID-->\"%d\"\n"
@@ -2195,7 +2218,7 @@ msgstr "Poslední UserID-->\"%d\"\n"
 # sync.c:451 sync.c:465 sync.c:477
 # sync.c:451 sync.c:465 sync.c:477
 # sync.c:451 sync.c:465 sync.c:477
-#: sync.c:675
+#: sync.c:668
 #, fuzzy, c-format
 msgid "Username is \"%s\"\n"
 msgstr "U¾ivatel-->\"%s\"\n"
@@ -2205,7 +2228,7 @@ msgstr "U¾ivatel-->\"%s\"\n"
 # utils.c:2043
 # utils.c:2043
 # utils.c:2043
-#: sync.c:676
+#: sync.c:669
 #, fuzzy, c-format
 msgid "User ID is %d\n"
 msgstr "PC ID je 0\n"
@@ -2213,7 +2236,7 @@ msgstr "PC ID je 0\n"
 # sync.c:491
 # sync.c:491
 # sync.c:491
-#: sync.c:678 sync.c:684
+#: sync.c:671 sync.c:677
 #, c-format
 msgid "lastSyncPC = %d\n"
 msgstr ""
@@ -2221,7 +2244,7 @@ msgstr ""
 # sync.c:492
 # sync.c:492
 # sync.c:492
-#: sync.c:679
+#: sync.c:672
 #, c-format
 msgid "This PC = %lu\n"
 msgstr "Toto PC = %lu\n"
@@ -2229,7 +2252,7 @@ msgstr "Toto PC = %lu\n"
 # sync.c:449 sync.c:463 sync.c:475
 # sync.c:449 sync.c:463 sync.c:475
 # sync.c:449 sync.c:463 sync.c:475
-#: sync.c:680
+#: sync.c:673
 #, fuzzy, c-format
 msgid "Last Username = [%s]\n"
 msgstr "Poslední u¾ivatel-->\"%s\"\n"
@@ -2237,17 +2260,17 @@ msgstr "Poslední u¾ivatel-->\"%s\"\n"
 # sync.c:450 sync.c:464 sync.c:476
 # sync.c:450 sync.c:464 sync.c:476
 # sync.c:450 sync.c:464 sync.c:476
-#: sync.c:681
+#: sync.c:674
 #, fuzzy, c-format
 msgid "Last UserID = %d\n"
 msgstr "Poslední UserID-->\"%d\"\n"
 
-#: sync.c:682
+#: sync.c:675
 #, c-format
 msgid "Username = [%s]\n"
 msgstr ""
 
-#: sync.c:683
+#: sync.c:676
 #, c-format
 msgid "userID = %d\n"
 msgstr ""
@@ -2255,7 +2278,7 @@ msgstr ""
 # sync.c:511
 # sync.c:511
 # sync.c:511
-#: sync.c:700
+#: sync.c:693
 msgid "Sync canceled\n"
 msgstr "Synchronizace pøeru¹ena\n"
 
@@ -2263,7 +2286,7 @@ msgstr "Synchronizace pøeru¹ena\n"
 # jpilot.c:976
 # jpilot.c:976
 #. Do not translate this text
-#: sync.c:724
+#: sync.c:717
 #, fuzzy
 msgid "Finished restoring handheld.\n"
 msgstr "/Soubor/Obnovit Handheld"
@@ -2271,7 +2294,7 @@ msgstr "/Soubor/Obnovit Handheld"
 # sync.c:535
 # sync.c:535
 # sync.c:535
-#: sync.c:725
+#: sync.c:718
 msgid "You may need to sync to update J-Pilot.\n"
 msgstr ""
 "Mo¾ná budete muset synchronizovat, aby do¹lo k aktualizaci databází J-"
@@ -2282,7 +2305,7 @@ msgstr ""
 # sync.c:552
 # sync.c:552
 # sync.c:552
-#: sync.c:743
+#: sync.c:736
 msgid "Doing a fast sync.\n"
 msgstr "Probíhá rychlá synchronizace.\n"
 
@@ -2291,7 +2314,7 @@ msgstr "Probíhá rychlá synchronizace.\n"
 # sync.c:570
 # sync.c:570
 # sync.c:570
-#: sync.c:782
+#: sync.c:775
 msgid "Doing a slow sync.\n"
 msgstr "Probíhá pomalá synchronizace.\n"
 
@@ -2300,7 +2323,7 @@ msgstr "Probíhá pomalá synchronizace.\n"
 # sync.c:634
 # sync.c:634
 # sync.c:634
-#: sync.c:883
+#: sync.c:876
 msgid "Thank you for using J-Pilot."
 msgstr "Dìkujeme za pou¾ití J-Pilot."
 
@@ -2310,7 +2333,7 @@ msgstr "Dìkujeme za pou¾ití J-Pilot."
 # sync.c:1410
 # sync.c:1410
 #. Do not translate this text
-#: sync.c:926
+#: sync.c:919
 #, fuzzy
 msgid "Finished.\n"
 msgstr "Chyba.\n"
@@ -2320,7 +2343,7 @@ msgstr "Chyba.\n"
 # sync.c:708 sync.c:2168
 # sync.c:708 sync.c:2168
 # sync.c:708 sync.c:2168
-#: sync.c:958 sync.c:2359
+#: sync.c:951 sync.c:2282
 #, c-format
 msgid "Syncing %s\n"
 msgstr "Synchronizuji %s\n"
@@ -2330,7 +2353,7 @@ msgstr "Synchronizuji %s\n"
 # sync.c:715 sync.c:1715 sync.c:2175
 # sync.c:715 sync.c:1715 sync.c:2175
 # sync.c:715 sync.c:1715 sync.c:2175
-#: sync.c:965 sync.c:1980 sync.c:2366
+#: sync.c:958 sync.c:1973 sync.c:2289
 #, c-format
 msgid "Wrote an %s record."
 msgstr "Zapisuji %s. záznam."
@@ -2338,7 +2361,7 @@ msgstr "Zapisuji %s. záznam."
 # sync.c:717 sync.c:1717 sync.c:2177
 # sync.c:717 sync.c:1717 sync.c:2177
 # sync.c:717 sync.c:1717 sync.c:2177
-#: sync.c:967 sync.c:1982 sync.c:2368
+#: sync.c:960 sync.c:1975 sync.c:2291
 #, c-format
 msgid "Writing an %s record failed."
 msgstr "Zápis %s. záznamu selhal."
@@ -2346,7 +2369,7 @@ msgstr "Zápis %s. záznamu selhal."
 # sync.c:719 sync.c:1719 sync.c:2179
 # sync.c:719 sync.c:1719 sync.c:2179
 # sync.c:719 sync.c:1719 sync.c:2179
-#: sync.c:969 sync.c:1984 sync.c:2370
+#: sync.c:962 sync.c:1977 sync.c:2293
 #, c-format
 msgid "Deleting an %s record failed."
 msgstr "Mazání %s. záznamu selhalo."
@@ -2354,7 +2377,7 @@ msgstr "Mazání %s. záznamu selhalo."
 # sync.c:721 sync.c:1721 sync.c:2181
 # sync.c:721 sync.c:1721 sync.c:2181
 # sync.c:721 sync.c:1721 sync.c:2181
-#: sync.c:971 sync.c:1986 sync.c:2372
+#: sync.c:964 sync.c:1979 sync.c:2295
 #, c-format
 msgid "Deleted an %s record."
 msgstr "Smazán %s. záznam."
@@ -2364,7 +2387,7 @@ msgstr "Smazán %s. záznam."
 # sync.c:724 sync.c:1724 sync.c:2184
 # sync.c:724 sync.c:1724 sync.c:2184
 # sync.c:724 sync.c:1724 sync.c:2184
-#: sync.c:974 sync.c:1989 sync.c:2375
+#: sync.c:967 sync.c:1982 sync.c:2298
 #, c-format
 msgid "Wrote a %s record."
 msgstr "Zapisuji %s. záznam."
@@ -2372,7 +2395,7 @@ msgstr "Zapisuji %s. záznam."
 # sync.c:726 sync.c:1726 sync.c:2186
 # sync.c:726 sync.c:1726 sync.c:2186
 # sync.c:726 sync.c:1726 sync.c:2186
-#: sync.c:976 sync.c:1991 sync.c:2377
+#: sync.c:969 sync.c:1984 sync.c:2300
 #, c-format
 msgid "Writing a %s record failed."
 msgstr "Zápis %s. záznamu selhal."
@@ -2380,7 +2403,7 @@ msgstr "Zápis %s. záznamu selhal."
 # sync.c:728 sync.c:1728 sync.c:2188
 # sync.c:728 sync.c:1728 sync.c:2188
 # sync.c:728 sync.c:1728 sync.c:2188
-#: sync.c:978 sync.c:1993 sync.c:2379
+#: sync.c:971 sync.c:1986 sync.c:2302
 #, c-format
 msgid "Deleting a %s record failed."
 msgstr "Mazání %s. záznamu selhalo."
@@ -2390,7 +2413,7 @@ msgstr "Mazání %s. záznamu selhalo."
 # sync.c:730 sync.c:1730 sync.c:2190
 # sync.c:730 sync.c:1730 sync.c:2190
 # sync.c:730 sync.c:1730 sync.c:2190
-#: sync.c:980 sync.c:1995 sync.c:2381
+#: sync.c:973 sync.c:1988 sync.c:2304
 #, c-format
 msgid "Deleted a %s record."
 msgstr "Smazán %s. záznam."
@@ -2398,7 +2421,7 @@ msgstr "Smazán %s. záznam."
 # sync.c:735 sync.c:740 sync.c:1734 sync.c:2194
 # sync.c:735 sync.c:740 sync.c:1734 sync.c:2194
 # sync.c:735 sync.c:740 sync.c:1734 sync.c:2194
-#: sync.c:985 sync.c:991 sync.c:1999 sync.c:2386 sync.c:2615
+#: sync.c:978 sync.c:984 sync.c:1992 sync.c:2309 sync.c:2538
 #, c-format
 msgid "Unable to open %s\n"
 msgstr "Nelze otevøít %s\n"
@@ -2406,7 +2429,7 @@ msgstr "Nelze otevøít %s\n"
 # sync.c:750
 # sync.c:750
 # sync.c:750
-#: sync.c:1000
+#: sync.c:993
 #, c-format
 msgid "number of records = %d\n"
 msgstr "poèet záznamù = %d\n"
@@ -2414,21 +2437,21 @@ msgstr "poèet záznamù = %d\n"
 # sync.c:764 sync.c:1750
 # sync.c:764 sync.c:1750
 # sync.c:764 sync.c:1750
-#: sync.c:1014 sync.c:2015
+#: sync.c:1007 sync.c:2008
 msgid "PC file corrupt?\n"
 msgstr "Po¹kozený soubor na PC?\n"
 
 # sync.c:771
 # sync.c:771
 # sync.c:771
-#: sync.c:1021
+#: sync.c:1014
 msgid "slow_sync_application(): Out of memory\n"
 msgstr ""
 
 # sync.c:791 sync.c:1788
 # sync.c:791 sync.c:1788
 # sync.c:791 sync.c:1788
-#: sync.c:1047 sync.c:2067
+#: sync.c:1040 sync.c:2060
 msgid "dlp_WriteRecord failed\n"
 msgstr ""
 
@@ -2438,8 +2461,8 @@ msgstr ""
 # sync.c:1867
 # sync.c:801 sync.c:856 sync.c:866 sync.c:1798 sync.c:1818 sync.c:1857
 # sync.c:1867
-#: sync.c:1057 sync.c:1075 sync.c:1116 sync.c:1126 sync.c:2077 sync.c:2104
-#: sync.c:2147 sync.c:2157
+#: sync.c:1050 sync.c:1068 sync.c:1109 sync.c:1119 sync.c:2070 sync.c:2097
+#: sync.c:2140 sync.c:2150
 msgid "fseek failed - fatal error\n"
 msgstr ""
 
@@ -2448,7 +2471,7 @@ msgstr ""
 # sync.c:946 sync.c:1284
 # sync.c:946 sync.c:1284
 # sync.c:946 sync.c:1284
-#: sync.c:1206 sync.c:1547
+#: sync.c:1199 sync.c:1540
 #, c-format
 msgid "%s (Creator ID '%s') is up to date, fetch skipped.\n"
 msgstr "%s (Creator ID '%s') je nezmìnìn, nestahuje se.\n"
@@ -2458,17 +2481,17 @@ msgstr "%s (Creator ID '%s') je nezmìnìn, nestahuje se.\n"
 # sync.c:950 sync.c:1288
 # sync.c:950 sync.c:1288
 # sync.c:950 sync.c:1288
-#: sync.c:1210 sync.c:1551
+#: sync.c:1203 sync.c:1544
 #, c-format
 msgid "Fetching '%s' (Creator ID '%s')... "
 msgstr "Pøená¹ím '%s' (Creator ID '%s')... "
 
-#: sync.c:1217
+#: sync.c:1210
 #, c-format
 msgid "Failed, unable to create file %s\n"
 msgstr ""
 
-#: sync.c:1221
+#: sync.c:1214
 msgid "Failed, unable to back up database\n"
 msgstr ""
 
@@ -2477,14 +2500,14 @@ msgstr ""
 # sync.c:965 sync.c:1303 sync.c:1421
 # sync.c:965 sync.c:1303 sync.c:1421
 # sync.c:965 sync.c:1303 sync.c:1421
-#: sync.c:1225 sync.c:1566 sync.c:1686
+#: sync.c:1218 sync.c:1559 sync.c:1679
 msgid "OK\n"
 msgstr "OK\n"
 
 # sync.c:1201
 # sync.c:1201
 # sync.c:1201
-#: sync.c:1464
+#: sync.c:1457
 #, c-format
 msgid "Skipping %s (Creator ID '%s')\n"
 msgstr "Vynechávám %s (Creator ID '%s')\n"
@@ -2494,7 +2517,7 @@ msgstr "Vynechávám %s (Creator ID '%s')\n"
 # sync.c:1351
 # sync.c:1351
 # sync.c:1351
-#: sync.c:1615
+#: sync.c:1608
 #, c-format
 msgid "Installing %s "
 msgstr "Instaluji %s... "
@@ -2502,7 +2525,7 @@ msgstr "Instaluji %s... "
 # sync.c:1354
 # sync.c:1354
 # sync.c:1354
-#: sync.c:1618
+#: sync.c:1611
 #, c-format
 msgid ""
 "\n"
@@ -2514,7 +2537,7 @@ msgstr ""
 # sync.c:1364
 # sync.c:1364
 # sync.c:1364
-#: sync.c:1628
+#: sync.c:1621
 #, c-format
 msgid "(Creator ID is '%s')..."
 msgstr "(Creator ID je '%s')..."
@@ -2524,7 +2547,7 @@ msgstr "(Creator ID je '%s')..."
 # sync.c:1405
 # sync.c:1405
 # sync.c:1405
-#: sync.c:1669
+#: sync.c:1662
 #, c-format
 msgid "Install %s failed"
 msgstr "Chyba instalace %s"
@@ -2534,7 +2557,7 @@ msgstr "Chyba instalace %s"
 # sync.c:1410
 # sync.c:1410
 # sync.c:1410
-#: sync.c:1674
+#: sync.c:1667
 msgid "Failed.\n"
 msgstr "Chyba.\n"
 
@@ -2544,7 +2567,7 @@ msgstr "Chyba.\n"
 # sync.c:1416
 # sync.c:1416
 #. the space after the %s is a hack, the last char gets cut off
-#: sync.c:1681
+#: sync.c:1674
 #, c-format
 msgid "Installed %s "
 msgstr "Nainstalován %s "
@@ -2554,7 +2577,7 @@ msgstr "Nainstalován %s "
 # log.c:96
 # log.c:96
 # log.c:96
-#: sync.c:1706 sync.c:1712
+#: sync.c:1699 sync.c:1705
 #, fuzzy
 msgid "Cannot open "
 msgstr "Nelze otevøít log soubor\n"
@@ -2564,7 +2587,7 @@ msgstr "Nelze otevøít log soubor\n"
 # sync.c:1441
 # sync.c:1441
 # sync.c:1441
-#: sync.c:1706
+#: sync.c:1699
 #, fuzzy
 msgid "_to_install file\n"
 msgstr "Nelze otevøít soubor jpilot_to_install\n"
@@ -2574,7 +2597,7 @@ msgstr "Nelze otevøít soubor jpilot_to_install\n"
 # sync.c:1447
 # sync.c:1447
 # sync.c:1447
-#: sync.c:1712
+#: sync.c:1705
 #, fuzzy
 msgid "_to_install.tmp file\n"
 msgstr "Nelze otevøít soubor jpilot_to_install.tmp\n"
@@ -2582,14 +2605,14 @@ msgstr "Nelze otevøít soubor jpilot_to_install.tmp\n"
 # sync.c:1759
 # sync.c:1759
 # sync.c:1759
-#: sync.c:2024
+#: sync.c:2017
 msgid "fast_sync_local_recs(): Out of memory\n"
 msgstr ""
 
 # sync.c:1842
 # sync.c:1842
 # sync.c:1842
-#: sync.c:2132
+#: sync.c:2125
 msgid ""
 "dlp_DeleteRecord failed\n"
 "This could be because the record was already deleted on the Palm\n"
@@ -2600,7 +2623,7 @@ msgstr ""
 # sync.c:2247
 # sync.c:2247
 # sync.c:2247
-#: sync.c:2438
+#: sync.c:2361
 #, c-format
 msgid "palm: number of records = %d\n"
 msgstr "palm: poèet záznamù = %d\n"
@@ -2608,7 +2631,7 @@ msgstr "palm: poèet záznamù = %d\n"
 # sync.c:2248
 # sync.c:2248
 # sync.c:2248
-#: sync.c:2439
+#: sync.c:2362
 #, c-format
 msgid "disk: number of records = %d\n"
 msgstr "disk: poèet záznamù = %d\n"
@@ -2618,7 +2641,7 @@ msgstr "disk: poèet záznamù = %d\n"
 # address.c:280 datebook.c:576 memo.c:197 todo.c:294
 # address.c:280 datebook.c:576 memo.c:197 todo.c:294
 # address.c:280 datebook.c:576 memo.c:197 todo.c:294
-#: sync.c:2603
+#: sync.c:2526
 #, fuzzy, c-format
 msgid "Error reading at %s : %s %d\n"
 msgstr "Chyba pøi ètení"
@@ -2628,18 +2651,24 @@ msgstr "Chyba pøi ètení"
 # address.c:280 datebook.c:576 memo.c:197 todo.c:294
 # address.c:280 datebook.c:576 memo.c:197 todo.c:294
 # address.c:280 datebook.c:576 memo.c:197 todo.c:294
-#: sync.c:2625
+#: sync.c:2548
 #, fuzzy, c-format
 msgid "Error reading appinfo block for %s\n"
 msgstr "Chyba pøi ètení"
 
-#: sync.c:2758
+#. Fix - need a func for this logging
+#: sync.c:2686 sync.c:2690
 #, c-format
-msgid "Could not add category %s to remote."
+msgid "Could not add category %s to remote.\n"
 msgstr ""
 
-#: sync.c:2759
-msgid "Too many categories on remote."
+#: sync.c:2687 sync.c:2694
+msgid "Too many categories on remote.\n"
+msgstr ""
+
+#: sync.c:2688 sync.c:2698
+#, c-format
+msgid "All records on desktop in %s will be moved to %s.\n"
 msgstr ""
 
 #: todo.c:245
@@ -2673,12 +2702,12 @@ msgstr "Soubor není ve formátu todo.dat\n"
 # todo_gui.c:1244
 # todo_gui.c:1244
 # todo_gui.c:1244
-#: todo_gui.c:1314
+#: todo_gui.c:1386
 msgid "No date"
 msgstr "Neurèen"
 
 #. Ma~nana check box
-#: todo_gui.c:1597
+#: todo_gui.c:1669
 msgid "Use Manana database"
 msgstr ""
 
@@ -2688,7 +2717,7 @@ msgstr ""
 # todo_gui.c:1519
 # todo_gui.c:1519
 #. The hide completed check box
-#: todo_gui.c:1606
+#: todo_gui.c:1678
 msgid "Hide Completed ToDos"
 msgstr "Skrýt splnìné úkoly"
 
@@ -2697,7 +2726,7 @@ msgstr "Skrýt splnìné úkoly"
 # todo_gui.c:1536
 # todo_gui.c:1536
 # todo_gui.c:1536
-#: todo_gui.c:1622
+#: todo_gui.c:1694
 msgid "Task"
 msgstr "Úkol"
 
@@ -2706,7 +2735,7 @@ msgstr "Úkol"
 # todo_gui.c:1537
 # todo_gui.c:1537
 # todo_gui.c:1537
-#: todo_gui.c:1623
+#: todo_gui.c:1695
 msgid "Due"
 msgstr "Termín"
 
@@ -2716,7 +2745,7 @@ msgstr "Termín"
 # todo_gui.c:1612
 # todo_gui.c:1612
 #. The completed check box
-#: todo_gui.c:1698
+#: todo_gui.c:1770
 msgid "Completed"
 msgstr "Splnìno"
 
@@ -2725,7 +2754,7 @@ msgstr "Splnìno"
 # todo_gui.c:1620
 # todo_gui.c:1620
 # todo_gui.c:1620
-#: todo_gui.c:1706
+#: todo_gui.c:1778
 msgid "Priority: "
 msgstr "Priorita: "
 
@@ -2734,16 +2763,93 @@ msgstr "Priorita: "
 # todo_gui.c:1640
 # todo_gui.c:1640
 # todo_gui.c:1640
-#: todo_gui.c:1726
+#: todo_gui.c:1798
 msgid "Date Due:"
 msgstr "Termín:"
+
+#: utils.c:92
+msgid "Date compiled"
+msgstr ""
+
+#: utils.c:93
+msgid "Compiled with these options:"
+msgstr ""
+
+# sync.c:1132
+# sync.c:1147
+# sync.c:1416
+# sync.c:1416
+# sync.c:1416
+#: utils.c:95
+#, fuzzy
+msgid "Installed Path"
+msgstr "Nainstalován %s "
+
+#: utils.c:97
+msgid "pilot-link version"
+msgstr ""
+
+#: utils.c:101
+msgid "USB support"
+msgstr ""
+
+# datebook_gui.c:2588
+# datebook_gui.c:2668
+# address_gui.c:546 datebook_gui.c:614 memo_gui.c:460 todo_gui.c:590
+# utils.c:1000
+# address_gui.c:546 datebook_gui.c:614 memo_gui.c:460 todo_gui.c:590
+# utils.c:1000
+# address_gui.c:546 datebook_gui.c:614 memo_gui.c:460 todo_gui.c:590
+# utils.c:1000
+#: utils.c:103 utils.c:109 utils.c:115 utils.c:121 utils.c:127 utils.c:133
+#, fuzzy
+msgid "yes"
+msgstr "Ano"
+
+# datebook_gui.c:716
+# datebook_gui.c:720
+# datebook_gui.c:1540
+# datebook_gui.c:1540
+# datebook_gui.c:1540
+#: utils.c:105 utils.c:111 utils.c:117 utils.c:123 utils.c:129 utils.c:135
+#, fuzzy
+msgid "no"
+msgstr "nic"
+
+# print_gui.c:157
+# print_gui.c:157
+# print_gui.c:267
+# print_gui.c:267
+# print_gui.c:267
+#: utils.c:107
+#, fuzzy
+msgid "Private record support"
+msgstr "Tisknout v¹e"
+
+#: utils.c:113
+msgid "Datebk support"
+msgstr ""
+
+# jpilot.c:846 jpilot.c:915
+# jpilot.c:850 jpilot.c:922
+# jpilot.c:985 jpilot.c:1061
+# jpilot.c:985 jpilot.c:1061
+# jpilot.c:985 jpilot.c:1061
+#: utils.c:119
+#, fuzzy
+msgid "Plugin support"
+msgstr "/Moduly"
+
+#: utils.c:125
+msgid "Mañana support"
+msgstr ""
 
 # utils.c:102
 # utils.c:102
 # utils.c:105
 # utils.c:105
 # utils.c:105
-#: utils.c:106
+#: utils.c:175
 msgid "Today is %A, %x %X"
 msgstr "Dnes je %A, %x %X"
 
@@ -2752,7 +2858,7 @@ msgstr "Dnes je %A, %x %X"
 # utils.c:107
 # utils.c:107
 # utils.c:107
-#: utils.c:108
+#: utils.c:177
 #, c-format
 msgid "Today is %%A, %s %s"
 msgstr "Dnes je %%A, %s %s"
@@ -2762,21 +2868,21 @@ msgstr "Dnes je %%A, %s %s"
 # utils.c:864
 # utils.c:864
 # utils.c:864
-#: utils.c:801
+#: utils.c:931
 msgid "Today"
 msgstr "Dne¹ek"
 
 # utils.c:1012
 # utils.c:1012
 # utils.c:1012
-#: utils.c:951
+#: utils.c:1081
 msgid "Save Changed Record?"
 msgstr "Ulo¾it zmìnìný záznam?"
 
 # utils.c:1013
 # utils.c:1013
 # utils.c:1013
-#: utils.c:952
+#: utils.c:1082
 msgid "Do you want to save the changes to this record?"
 msgstr "Chcete ulo¾it zmìny do databáze?"
 
@@ -2785,21 +2891,21 @@ msgstr "Chcete ulo¾it zmìny do databáze?"
 # utils.c:1018
 # utils.c:1018
 # utils.c:1018
-#: utils.c:957
+#: utils.c:1087
 msgid "Save New Record?"
 msgstr "Ulo¾it nový záznam?"
 
 # utils.c:1019
 # utils.c:1019
 # utils.c:1019
-#: utils.c:958
+#: utils.c:1088
 msgid "Do you want to save this new record?"
 msgstr "Chcete tento nový záznam ulo¾it?"
 
 # utils.c:1347
 # utils.c:1347
 # utils.c:1347
-#: utils.c:1290
+#: utils.c:1420
 msgid "Couldn't find empty DB file.\n"
 msgstr "Nemohu najít prázdný DB soubor. \n"
 
@@ -2809,7 +2915,7 @@ msgstr "Nemohu najít prázdný DB soubor. \n"
 # utils.c:1348
 # utils.c:1348
 #. EPN is jpilot, or copilot depending on configure
-#: utils.c:1292
+#: utils.c:1422
 #, fuzzy
 msgid " may not be installed.\n"
 msgstr "jpilot není správnì nainstalován.\n"
@@ -2819,7 +2925,7 @@ msgstr "jpilot není správnì nainstalován.\n"
 # utils.c:2043
 # utils.c:2043
 # utils.c:2043
-#: utils.c:2006
+#: utils.c:2136
 msgid "PC ID is 0.\n"
 msgstr "PC ID je 0\n"
 
@@ -2828,7 +2934,7 @@ msgstr "PC ID je 0\n"
 # utils.c:2044
 # utils.c:2044
 # utils.c:2044
-#: utils.c:2007
+#: utils.c:2137
 #, c-format
 msgid "I generated a new PC ID.  It is %lu\n"
 msgstr "Vygeneroval jsem nové PC ID - %lu\n"
@@ -3344,14 +3450,14 @@ msgstr "Úèastníci"
 # Expense/expense.c:1374 KeyRing/keyring.c:1379
 # Expense/expense.c:1374 KeyRing/keyring.c:1379
 #. Note textbox
-#: Expense/expense.c:1501 KeyRing/keyring.c:1417
+#: Expense/expense.c:1501 KeyRing/keyring.c:1462
 msgid "Note"
 msgstr "Poznámka"
 
 # KeyRing/keyring.c:1082
 # KeyRing/keyring.c:1082
 # KeyRing/keyring.c:1082
-#: KeyRing/keyring.c:1103
+#: KeyRing/keyring.c:1143
 #, fuzzy
 msgid "Incorrect, Reenter KeyRing Password"
 msgstr "Vlo¾te va¹e KeyRing heslo"
@@ -3359,14 +3465,14 @@ msgstr "Vlo¾te va¹e KeyRing heslo"
 # KeyRing/keyring.c:1082
 # KeyRing/keyring.c:1082
 # KeyRing/keyring.c:1082
-#: KeyRing/keyring.c:1105
+#: KeyRing/keyring.c:1145
 msgid "Enter KeyRing Password"
 msgstr "Vlo¾te va¹e KeyRing heslo"
 
 # KeyRing/keyring.c:1200
 # KeyRing/keyring.c:1200
 # KeyRing/keyring.c:1200
-#: KeyRing/keyring.c:1226
+#: KeyRing/keyring.c:1266
 msgid "Account"
 msgstr "Úèet"
 
@@ -3376,7 +3482,7 @@ msgstr "Úèet"
 # KeyRing/keyring.c:1357
 # KeyRing/keyring.c:1357
 #. name Entry
-#: KeyRing/keyring.c:1395
+#: KeyRing/keyring.c:1435
 msgid "name: "
 msgstr "jméno: "
 
@@ -3384,7 +3490,7 @@ msgstr "jméno: "
 # KeyRing/keyring.c:1364
 # KeyRing/keyring.c:1364
 #. account Entry
-#: KeyRing/keyring.c:1402
+#: KeyRing/keyring.c:1442
 msgid "account: "
 msgstr "úèet: "
 
@@ -3392,9 +3498,42 @@ msgstr "úèet: "
 # KeyRing/keyring.c:1371
 # KeyRing/keyring.c:1371
 #. password
-#: KeyRing/keyring.c:1409
+#: KeyRing/keyring.c:1449
 msgid "password: "
 msgstr "heslo: "
+
+# password.c:263
+# password.c:263
+# password.c:263
+#. Button for random password
+#: KeyRing/keyring.c:1455
+#, fuzzy
+msgid "Generate Password"
+msgstr "Vlo¾te heslo z PalmOS"
+
+# datebook_gui.c:2094
+# datebook_gui.c:2153
+# datebook_gui.c:3178
+# datebook_gui.c:3178
+# datebook_gui.c:3178
+#~ msgid "RTh"
+#~ msgstr "Èt"
+
+# jpilot.c:763
+# jpilot.c:871
+# jpilot.c:871
+# jpilot.c:871
+#, fuzzy
+#~ msgid ""
+#~ "%s %s was written by\n"
+#~ "Judd Montgomery (Copyright) 1999-2002.\n"
+#~ "judd@jpilot.org\n"
+#~ "http://jpilot.org\n"
+#~ msgstr ""
+#~ "%s naprogramoval\n"
+#~ "Judd Montgomery (c) 1999-2002.\n"
+#~ "judd@jpilot.org\n"
+#~ "http://jpilot.org\n"
 
 # sync.c:450 sync.c:464 sync.c:476
 # sync.c:450 sync.c:464 sync.c:476
