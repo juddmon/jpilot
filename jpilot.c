@@ -110,6 +110,7 @@ int pipe_from_child, pipe_to_parent;
 int pipe_from_parent, pipe_to_child;
 
 GtkWidget *sync_window = NULL;
+static GtkAccelGroup *accel_group = NULL;
 
 static void delete_event(GtkWidget *widget, GdkEvent *event, gpointer data);
 void install_gui_and_size(GtkWidget *main_window);
@@ -2137,6 +2138,10 @@ char *xpm_unlocked[] = {
    /* Create tooltips */
    glob_tooltips = gtk_tooltips_new();
 
+   /* Create accelerator */
+   accel_group = gtk_accel_group_new();
+   gtk_window_add_accel_group(GTK_WINDOW(window), accel_group);
+
    /* Create Lock/Unlock buttons */
    button_locked = gtk_button_new();
    button_locked_masked = gtk_button_new();
@@ -2169,7 +2174,9 @@ char *xpm_unlocked[] = {
 		      GINT_TO_POINTER(skip_plugins ? SYNC_NO_PLUGINS : 0));
    gtk_box_pack_start(GTK_BOX(g_vbox0), button, FALSE, FALSE, 0);
 
-   gtk_tooltips_set_tip(glob_tooltips, button, _("Sync your palm to the desktop"), NULL);
+   gtk_tooltips_set_tip(glob_tooltips, button, _("Sync your palm to the desktop   Ctrl-Y"), NULL);
+   gtk_widget_add_accelerator(button, "clicked", accel_group, GDK_y,
+	   GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
 #ifdef FONT_TEST
    /* Create "Font" button */
