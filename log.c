@@ -140,6 +140,8 @@ int jp_vlogf (int level, char *format, va_list val) {
       sprintf(cmd, "%d:", PIPE_PRINT);
       write(pipe_to_parent, cmd, strlen(cmd));
       write(pipe_to_parent, buf, size);
+      write(pipe_to_parent, "\0\n", 2);
+      fsync(pipe_to_parent);
    }
 
    return 0;
@@ -178,14 +180,9 @@ int write_to_parent(int command, char *format, ...)
 
    write(pipe_to_parent, cmd, strlen(cmd));
    write(pipe_to_parent, buf, strlen(buf));
-   if (buf[strlen(buf)-1]!='\n') {
-      if (pipe_to_parent!=STDOUT_FILENO) {
-	 write(pipe_to_parent, "\0", 1);
-      }
-   }
-   /* fixme - need code to force output to be read.
-    fdatasync(pipe_to_parent);
-    */
+   /* The pipe doesn't flush unless a CR is written for some reason */
+   /* This is our key to the parent for a record separator */
+   write(pipe_to_parent, "\0\n", 2);
    fsync(pipe_to_parent);
 
    return TRUE;

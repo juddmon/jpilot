@@ -28,6 +28,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <unistd.h>
+#include <fcntl.h>
 #ifdef HAVE_LOCALE_H
 #include <locale.h>
 #endif
@@ -766,16 +767,18 @@ static void output_to_pane(const char *str)
    gtk_paned_set_position(GTK_PANED(output_pane), new_y + 2);
 }
 
+/* #define PIPE_DEBUG */
 static void cb_read_pipe_from_child(gpointer data,
 				    gint in,
 				    GdkInputCondition condition)
 {
    int num;
-   char buf[1024];
+   char buf_space[1026];
+   char *buf;
    int buf_len;
    fd_set fds;
    struct timeval tv;
-   int ret;
+   int ret, done;
    char *Pstr1, *Pstr2, *Pstr3;
    int user_len;
    char password[MAX_PREF_VALUE];
@@ -786,44 +789,54 @@ static void cb_read_pipe_from_child(gpointer data,
    char user[MAX_PREF_VALUE];
    char command_str[80];
 
-   while(1) {
-      /* Linux modifies tv in the select call */
-      tv.tv_sec=0;
-      tv.tv_usec=0;
-      FD_ZERO(&fds);
-      FD_SET(in, &fds);
-      ret=select(in+1, &fds, NULL, NULL, &tv);
-      if (ret<1) break;
-      if (!FD_ISSET(in, &fds)) break;
+   /* This is so we can always look at the previous char in buf */
+   buf = &buf_space[1];
+   buf[-1]='A'; /* that looks wierd */
+
+   done=0;
+   while (!done) {
       buf[0]='\0';
-      //buf_len = read(in, buf, 1022);
-      /* Read until newline, null, or end */
       buf_len=0;
+      /* Read until "\0\n", or buffer full */
       for (i=0; i<1022; i++) {
+	 buf[i]='\0';
+	 /* Linux modifies tv in the select call */
+	 tv.tv_sec=0;
+	 tv.tv_usec=0;
+	 FD_ZERO(&fds);
+	 FD_SET(in, &fds);
+	 ret=select(in+1, &fds, NULL, NULL, &tv);
+	 if ((ret<1) || (!FD_ISSET(in, &fds))) {
+	    done=1; break;
+	 }
 	 ret = read(in, &(buf[i]), 1);
-	 if (!ret) break;
+	 if (ret <= 0) {
+	    done=1; break;
+	 }
+	 if ((buf[i-1]=='\0')&&(buf[i]=='\n')) {
+	    buf_len=buf_len-1;
+	    break;
+	 }
 	 buf_len++;
-	 if ((buf[i]=='\n')||(buf[i]=='\0')) break;
-      }
-      if (buf_len >= 1022) {
-	 buf[1022] = '\0';
-      } else {
-	 if (buf_len > 0) {
+	 if (buf_len >= 1022) {
 	    buf[buf_len]='\0';
+	    break;
 	 }
       }
+      
+      if (buf_len < 1) break;
 
       /* Look for the command */
       command=0;
       sscanf(buf, "%d:", &command);
-#ifdef PIPE_DEBUG
-      printf("command=%d\n", command);
-#endif
 
       Pstr1 = strstr(buf, ":");
       if (Pstr1>0) {
 	 Pstr1++;
       }
+#ifdef PIPE_DEBUG
+      printf("command=%d [%s]\n", command, Pstr1);
+#endif
       if (Pstr1) {
 	 switch (command) {
 	  case PIPE_PRINT:
