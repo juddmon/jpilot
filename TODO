@@ -4,8 +4,6 @@ in this order:
 cryptopad splicer http://www.kybs.de/boris/software.shtml
 
 * Import/export files in XML, ldif, and maybe other formats
-* Selective database backup
-* Edit categories on the desktop
 * Better daily schedule
 * Archiving archived records from the palm
 
