@@ -1,4 +1,4 @@
-/* $Id: weekview_gui.c,v 1.24 2004/11/26 01:14:38 rikster5 Exp $ */
+/* $Id: weekview_gui.c,v 1.25 2004/11/26 08:06:04 rousseau Exp $ */
 
 /*******************************************************************************
  * weekview_gui.c
@@ -170,11 +170,9 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
    char desc[256];
    char datef[20];
    int n, i;
-   long ivalue;
    const char *svalue;
    char str[82];
    char str_dow[32];
-   long fdow;
    char short_date[32];
    char default_date[]="%x";
 #ifdef ENABLE_DATEBK
