@@ -58,7 +58,13 @@ static prefType glob_prefs[NUM_PREFS] = {
      {"print_one_per_page", INTTYPE, INTTYPE, 0, NULL ,0},
      {"print_blank_lines", INTTYPE, INTTYPE, 1, NULL, 0},
      {"print_command", CHARTYPE, CHARTYPE, 0, NULL, 0},
-     {"char_set", INTTYPE, INTTYPE, CHAR_SET_LATIN1, NULL, 0},
+     {"char_set", INTTYPE, INTTYPE,
+#ifdef ENABLE_GTK2
+     CHAR_SET_LATINUTF
+#else
+     CHAR_SET_LATIN1
+#endif
+	, NULL, 0},
      {"sync_datebook", INTTYPE, INTTYPE, 1, NULL, 0},
      {"sync_address", INTTYPE, INTTYPE, 1, NULL, 0},
      {"sync_todo", INTTYPE, INTTYPE, 1, NULL, 0},
