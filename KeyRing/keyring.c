@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.32 2005/01/02 16:49:42 rousseau Exp $ */
+/* $Id: keyring.c,v 1.33 2005/01/23 13:02:09 rousseau Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -1460,10 +1460,6 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    
    jp_logf(JP_LOG_DEBUG, "KeyRing: plugin gui started, unique_id=%d\n", unique_id);
 
-   if (unique_id) {
-      show_category = CATEGORY_ALL;
-   }
-
    if (check_for_db()) {
       return EXIT_FAILURE;
    }
@@ -1502,6 +1498,12 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    }
    else
       cycle_category = TRUE;
+
+   /* called to display the result of a search */
+   if (unique_id) {
+      show_category = CATEGORY_ALL;
+      cycle_category = FALSE;
+   }
 
    /* plug entered with correct password */
    plugin_last_time = time(NULL);
