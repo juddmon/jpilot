@@ -829,8 +829,6 @@ int weed_datebook_list(AppointmentList **al, int mon, int year,
 	    mktime(&tm_test);
 	    if (isApptOnDate(&(tal->ma.a), &tm_test)) {
 	       *mask = *mask | (1 << ((tal->ma.a.begin.tm_mday)-1));
-	       trash_it=1;
-	       goto trash;
 	    }
 	 }
       }
@@ -842,8 +840,6 @@ int weed_datebook_list(AppointmentList **al, int mon, int year,
 	    mktime(&tm_test);
 	    if (isApptOnDate(&(tal->ma.a), &tm_test)) {
 	       *mask = *mask | (1 << ((tal->ma.a.begin.tm_mday)-1));
-	       /* trash_it=1; */
-	       /* goto trash; */
 	    }
 	 } else {
 	    trash_it=1;
