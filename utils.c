@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.71 2004/11/22 00:52:42 rikster5 Exp $ */
+/* $Id: utils.c,v 1.72 2004/11/22 06:58:09 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -550,28 +550,6 @@ int str_to_csv_str(char *dest, char *src)
    while (src[s]) {
       if (src[s]=='\"') {
 	 dest[d++]='\"';
-      }
-      dest[d++]=src[s++];
-   }
-   dest[d++]='\0';
-   return d;
-}
-
-/*
- * Do the opposite of str_to_csv_str, unescaping double quotes.
- * Return value is the number of chars written to dest.
- */
-int csv_str_to_str(char *dest, char *src)
-{
-   int s, d;
-
-   if ((!src) || (!dest)) {
-      return 0;
-   }
-   s=d=0;
-   while (src[s]) {
-      if ((src[s]=='\"') && (src[s+1]=='\"')) {
-	 s++;
       }
       dest[d++]=src[s++];
    }
@@ -1412,17 +1390,6 @@ void get_month_info(int month, int day, int year, int *dow, int *ndim)
       }
    }
    *ndim = days_in_month[month];
-}
-
-void get_this_month_info(int *dow, int *ndim)
-{
-   time_t ltime;
-   struct tm *now;
-
-   time( &ltime );
-   now = localtime( &ltime );
-
-   get_month_info(now->tm_mon, now->tm_mday, now->tm_year, dow, ndim);
 }
 
 int write_to_next_id_open(FILE *pc_out, unsigned int unique_id)
@@ -2543,14 +2510,6 @@ void charset_j2p(char *buf, int max_len, long char_set)
       UTF_to_other(buf, max_len);
       break;
    }
-}
-
-void jp_charset_j2p(char *const buf, int max_len)
-{
-   long char_set;
-
-   get_pref(PREF_CHAR_SET, &char_set, NULL);
-   charset_j2p(buf, max_len, char_set);
 }
 
 void jp_charset_p2j(char *const buf, int max_len)

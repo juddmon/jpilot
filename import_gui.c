@@ -1,4 +1,4 @@
-/* $Id: import_gui.c,v 1.15 2004/11/22 00:52:42 rikster5 Exp $ */
+/* $Id: import_gui.c,v 1.16 2004/11/22 06:58:09 rikster5 Exp $ */
 
 /*******************************************************************************
  * import_gui.c
@@ -105,23 +105,6 @@ int read_csv_field(FILE *in, char *text, int size, int new_line)
    }
    text[n++]='\0';
    return n;
-}
-
-char *str_type(int type)
-{
-   switch (type) {
-    case IMPORT_TYPE_UNKNOWN:
-      return "IMPORT_TYPE_UNKNOWN";
-    case IMPORT_TYPE_TEXT:
-      return "IMPORT_TYPE_TEXT";
-    case IMPORT_TYPE_DAT:
-      return "IMPORT_TYPE_DAT";
-    case IMPORT_TYPE_CSV:
-      return "IMPORT_TYPE_CSV";
-    case IMPORT_TYPE_XML:
-      return "IMPORT_TYPE_XML";
-   }
-   return "?";
 }
 
 int guess_file_type(const char *path)

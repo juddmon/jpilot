@@ -1,4 +1,4 @@
-/* $Id: datebook.h,v 1.19 2004/11/22 00:52:42 rikster5 Exp $ */
+/* $Id: datebook.h,v 1.20 2004/11/22 06:58:09 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook.h
@@ -123,8 +123,6 @@ int appointment_on_day_list(int mon, int year, int *mask);
  * else returns 0
  */
 unsigned int isApptOnDate(struct Appointment *a, struct tm *date);
-
-int dateToSecs(struct tm *tm1);
 
 int dateToDays(struct tm *tm1);
 

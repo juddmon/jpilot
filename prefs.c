@@ -1,4 +1,4 @@
-/* $Id: prefs.c,v 1.46 2004/11/22 00:52:42 rikster5 Exp $ */
+/* $Id: prefs.c,v 1.47 2004/11/22 06:58:09 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs.c
@@ -268,24 +268,6 @@ int get_pref_time_no_secs_no_ampm(char *datef)
 
    return 0;
 }
-
-int get_pref_dmy_order()
-{
-   long n;
-
-   get_pref(PREF_SHORTDATE, &n, NULL);
-   if (n<1) {
-      return PREF_MDY;
-   }
-   if ((n>0) && (n<4)) {
-      return PREF_DMY;
-   }
-   if ((n>3)) {
-      return PREF_YMD;
-   }
-   return 0;
-}
-
 
 /*This function is used internally to free up any memory that prefs is using */
 /* I'm not using this function right now.

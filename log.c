@@ -1,4 +1,4 @@
-/* $Id: log.c,v 1.19 2004/11/22 00:52:42 rikster5 Exp $ */
+/* $Id: log.c,v 1.20 2004/11/22 06:58:09 rikster5 Exp $ */
 
 /*******************************************************************************
  * log.c
@@ -51,28 +51,6 @@ int glob_log_file_mask;
 int glob_log_stdout_mask;
 int glob_log_gui_mask;
 
-
-int jpilot_logf(int level, char *format, ...)
-{
-   va_list val;
-   int rval;
-   static int warned=0;
-
-   if (!((level & glob_log_file_mask) ||
-       (level & glob_log_stdout_mask) ||
-       (level & glob_log_gui_mask))) {
-      return 0;
-   }
-
-   if (!warned) {
-      fprintf(stderr, EPN": jpilot_logf deprecated, use jp_logf instead.\n");
-      warned=1;
-   }
-   va_start(val, format);
-   rval = jp_vlogf(level, format, val);
-   va_end(val);
-   return rval;
-}
 
 int jp_logf(int level, char *format, ...)
 {

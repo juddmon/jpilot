@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.43 2004/11/22 02:39:11 rikster5 Exp $ */
+/* $Id: utils.h,v 1.44 2004/11/22 06:58:09 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -252,8 +252,6 @@ int undelete_pc_record(AppType app_type, void *VP, int flag);
 
 void get_month_info(int month, int day, int year, int *dow, int *ndim);
 
-void get_this_month_info(int *dow, int *ndim);
-
 time_t pilot_time_to_unix_time (unsigned long raw_time);
 
 unsigned long unix_time_to_pilot_time (time_t t);
@@ -376,12 +374,6 @@ int memo_gui_cleanup();
  * Return value is the number of chars written to dest.
  */
 int str_to_csv_str(char *dest, char *src);
-
-/*
- * Do the opposite of str_to_csv_str, unescaping double quotes.
- * Return value is the number of chars written to dest.
- */
-int csv_str_to_str(char *dest, char *src);
 
 /*
  * Copy src string into dest while escaping carraige returns,
@@ -547,7 +539,6 @@ void charset_p2j(char *buf, int max_len, int char_set);
 char *charset_p2newj(const char *buf, int max_len, int char_set);
 
 void jp_charset_p2j(char *buf, int max_len);
-void jp_charset_j2p(char *buf, int max_len);
 size_t jp_strftime(char *s, size_t max, const char *format, const struct tm *tm);
 
 #endif

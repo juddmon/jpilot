@@ -1,4 +1,4 @@
-/* $Id: prefs.h,v 1.36 2004/11/22 00:52:42 rikster5 Exp $ */
+/* $Id: prefs.h,v 1.37 2004/11/22 06:58:09 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs.h
@@ -112,10 +112,6 @@
 #define NUM_PREFS 83
 
 #define MAX_PREF_NUM_BACKUPS 99
-
-#define PREF_MDY 0
-#define PREF_DMY 1
-#define PREF_YMD 2
 
 #define CHAR_SET_LATIN1   0 /* English, European, Latin based languages */
 #define CHAR_SET_JAPANESE 1

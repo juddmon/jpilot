@@ -1,4 +1,4 @@
-/* $Id: libplugin.h,v 1.18 2004/11/22 00:52:42 rikster5 Exp $ */
+/* $Id: libplugin.h,v 1.19 2004/11/22 06:58:09 rikster5 Exp $ */
 
 /*******************************************************************************
  * libplugin.h
@@ -194,8 +194,6 @@ struct search_result
    unsigned int unique_id;
    struct search_result *next;
 };
-
-/* void free_buf_rec_list(GList **br_list); */
 
 int plugin_get_name(char *name, int len);
 int plugin_get_menu_name(char *name, int len);

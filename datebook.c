@@ -1,4 +1,4 @@
-/* $Id: datebook.c,v 1.40 2004/11/22 00:52:42 rikster5 Exp $ */
+/* $Id: datebook.c,v 1.41 2004/11/22 06:58:09 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook.c
@@ -430,24 +430,6 @@ int datebook_add_exception(struct Appointment *appt, int year, int mon, int day)
    Ptm->tm_isdst = -1;
    mktime(Ptm);
    return 0;
-}
-
-int dateToSecs(struct tm *tm1)
-{
-   time_t t1;
-   struct tm *gmt;
-   struct tm tm2;
-   static time_t adj = -1;
-
-   memcpy(&tm2, tm1, sizeof(struct tm));
-   tm2.tm_isdst = 0;
-   tm2.tm_hour=0;
-   t1 = mktime(&tm2);
-   if (-1 == adj) {
-      gmt = gmtime(&t1);
-      adj = t1 - mktime(gmt);
-   }
-   return (t1+adj);
 }
 
 int dateToDays(struct tm *tm1)
