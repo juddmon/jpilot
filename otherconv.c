@@ -13,6 +13,7 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <glib.h>
+#include <string.h>
 /* To speed up compilation use these instead of glib.h
 #include <glib/gmacros.h>
 #include <glib/gconvert.h>
