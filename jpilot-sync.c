@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
 
    pipe_from_parent=STDIN_FILENO;
    pipe_to_parent=STDOUT_FILENO;
-   glob_log_stdout_mask = LOG_INFO | LOG_WARN | LOG_FATAL | LOG_STDOUT;
+   glob_log_stdout_mask = JP_LOG_INFO | JP_LOG_WARN | JP_LOG_FATAL | JP_LOG_STDOUT;
 
    for (i=1; i<argc; i++) {
       if (!strncasecmp(argv[i], "-v", 2)) {
@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
       if (!strncasecmp(argv[i], "-d", 2)) {
 	 glob_log_stdout_mask = 0xFFFF;
 	 glob_log_file_mask = 0xFFFF;
-	 jp_logf(LOG_DEBUG, "Debug messages on.\n");
+	 jp_logf(JP_LOG_DEBUG, "Debug messages on.\n");
       }
       if (!strncmp(argv[i], "-b", 2)) {
 	 flags |= SYNC_FULL_BACKUP;
@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
       if (!strncmp(argv[i], "-P", 2)) {
 	 skip_plugins = 1;
 	 flags |= SYNC_NO_PLUGINS;
-	 jp_logf(LOG_INFO, "Not loading plugins.\n");
+	 jp_logf(JP_LOG_INFO, "Not loading plugins.\n");
       }
       if (!strncmp(argv[i], "-p", 2)) {
 	 i++;
@@ -131,7 +131,7 @@ int main(int argc, char *argv[])
 
    for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
       plugin = (struct plugin_s *)temp_list->data;
-      jp_logf(LOG_DEBUG, "plugin: [%s] was loaded\n", plugin->name);
+      jp_logf(JP_LOG_DEBUG, "plugin: [%s] was loaded\n", plugin->name);
    }
 
    for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
@@ -139,7 +139,7 @@ int main(int argc, char *argv[])
       if (plugin) {
 	 if (plugin->plugin_startup) {
 	    info.base_dir = strdup(BASE_DIR);
-	    jp_logf(LOG_DEBUG, "calling plugin_startup for [%s]\n", plugin->name);
+	    jp_logf(JP_LOG_DEBUG, "calling plugin_startup for [%s]\n", plugin->name);
 	    plugin->plugin_startup(&info);
 	    if (info.base_dir) {
 	       free(info.base_dir);
@@ -218,7 +218,7 @@ static void sig_handler(int sig)
    GList *plugin_list, *temp_list;
 #endif
 
-   jp_logf(LOG_DEBUG, "caught signal %d\n", sig);
+   jp_logf(JP_LOG_DEBUG, "caught signal %d\n", sig);
 
 #ifdef ENABLE_PLUGINS
    plugin_list = get_plugin_list();
@@ -227,7 +227,7 @@ static void sig_handler(int sig)
       plugin = (struct plugin_s *)temp_list->data;
       if (plugin) {
 	 if (plugin->plugin_exit_cleanup) {
-	    jp_logf(LOG_DEBUG, "calling plugin_exit_cleanup\n");
+	    jp_logf(JP_LOG_DEBUG, "calling plugin_exit_cleanup\n");
 	    plugin->plugin_exit_cleanup();
 	 }
       }

@@ -135,7 +135,7 @@ static gboolean cb_destroy_dialog(GtkWidget *widget)
    entry = gtk_entry_get_text(GTK_ENTRY(Pdata->remind_entry));
    if (Pdata->button_hit==DIALOG_SAID_2) {
       remind = atoi(entry);
-      jp_logf(LOG_DEBUG, "remind entry = [%s]\n", entry);
+      jp_logf(JP_LOG_DEBUG, "remind entry = [%s]\n", entry);
       set_pref(PREF_REMIND_IN, 0, entry, TRUE);
       if (GTK_TOGGLE_BUTTON(Pdata->radio1)->active) {
 	 set_pref(PREF_REMIND_UNITS, 0, NULL, TRUE);
@@ -335,7 +335,7 @@ void alarms_add_to_list(unsigned int unique_id,
 
    temp_alarm = malloc(sizeof(struct jp_alarms));
    if (!temp_alarm) {
-      jp_logf(LOG_WARN, "alarms_add_to_list: Out of memory\n");
+      jp_logf(JP_LOG_WARN, "alarms_add_to_list: Out of memory\n");
       return;
    }
    temp_alarm->unique_id = unique_id;
@@ -415,14 +415,14 @@ void alarms_write_file(void)
    time_t ltime;
    struct tm *now;
 
-   jp_logf(LOG_DEBUG, "alarms_write_file()\n");
+   jp_logf(JP_LOG_DEBUG, "alarms_write_file()\n");
 
    time(&ltime);
    now = localtime(&ltime);
 
    out=jp_open_home_file(EPN".alarms.tmp", "w");
    if (!out) {
-      jp_logf(LOG_WARN, "Could not open "EPN".alarms.tmp file\n");
+      jp_logf(JP_LOG_WARN, "Could not open "EPN".alarms.tmp file\n");
       return;
    }
    fail=0;
@@ -589,7 +589,7 @@ int alarms_do_one(struct Appointment *a,
       command[1022]='\0';
 
       make_command_safe(command);
-      jp_logf(LOG_STDOUT|LOG_FILE, "executing command = [%s]\n", command);
+      jp_logf(JP_LOG_STDOUT|JP_LOG_FILE, "executing command = [%s]\n", command);
       system(command);
    }
 
@@ -1055,9 +1055,9 @@ static int find_prev_next(struct Appointment *a,
    while(forward || backward) {
       safety_counter++;
       if (safety_counter > 20) {
-	 jp_logf(LOG_STDOUT|LOG_FILE, "find_prev_next():infinite loop, breaking\n");
+	 jp_logf(JP_LOG_STDOUT|JP_LOG_FILE, "find_prev_next():infinite loop, breaking\n");
 	 if (a->description) {
-	    jp_logf(LOG_STDOUT|LOG_FILE, "desc=[%s]\n", a->description);
+	    jp_logf(JP_LOG_STDOUT|JP_LOG_FILE, "desc=[%s]\n", a->description);
 	 }
 	 break;
       }
@@ -1163,7 +1163,7 @@ int alarms_find_next(struct tm *date1_in, struct tm *date2_in, int soonest_only)
    int prev_found, next_found;
    int add_a_next;
 
-   jp_logf(LOG_DEBUG, "alarms_find_next()\n");
+   jp_logf(JP_LOG_DEBUG, "alarms_find_next()\n");
 
    if (glob_skip_all_alarms) return 0;
 
@@ -1401,7 +1401,7 @@ int alarms_init(unsigned char skip_past_alarms,
    int found_uptodate;
    int year, mon, day, hour, min, n;
 
-   jp_logf(LOG_DEBUG, "alarms_init()\n");
+   jp_logf(JP_LOG_DEBUG, "alarms_init()\n");
 
    alarm_list=NULL;
    Plast_alarm_list=NULL;
@@ -1421,7 +1421,7 @@ int alarms_init(unsigned char skip_past_alarms,
    found_uptodate=0;
    in=jp_open_home_file(EPN".alarms", "r");
    if (!in) {
-      jp_logf(LOG_WARN, "Could not open "EPN".alarms file\n");
+      jp_logf(JP_LOG_WARN, "Could not open "EPN".alarms file\n");
       return -1;
    }
 
@@ -1435,7 +1435,7 @@ int alarms_init(unsigned char skip_past_alarms,
 	 if (n==5) {
 	    found_uptodate=1;
 	 }
-	 jp_logf(LOG_DEBUG, "UPTODATE %d %d %d %d %d\n", year, mon, day, hour, min);
+	 jp_logf(JP_LOG_DEBUG, "UPTODATE %d %d %d %d %d\n", year, mon, day, hour, min);
       }
    }
 

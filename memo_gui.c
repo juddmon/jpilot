@@ -78,7 +78,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data);
 static void
 set_new_button_to(int new_state)
 {
-   jp_logf(LOG_DEBUG, "set_new_button_to new %d old %d\n", new_state, record_changed);
+   jp_logf(JP_LOG_DEBUG, "set_new_button_to new %d old %d\n", new_state, record_changed);
    if (record_changed==new_state) {
       return;
    }
@@ -124,7 +124,7 @@ static void
 cb_record_changed(GtkWidget *widget,
 		  gpointer   data)
 {
-   jp_logf(LOG_DEBUG, "cb_record_changed\n");
+   jp_logf(JP_LOG_DEBUG, "cb_record_changed\n");
    if (record_changed==CLEAR_FLAG) {
       connect_changed_signals(DISCONNECT_SIGNALS);
       if (((GtkCList *)clist)->rows > 0) {
@@ -236,13 +236,13 @@ int memo_import_callback(GtkWidget *parent_window, char *file_path, int type)
 
    in=fopen(file_path, "r");
    if (!in) {
-      jp_logf(LOG_WARN, _("Could not open file %s\n"), file_path);
+      jp_logf(JP_LOG_WARN, _("Could not open file %s\n"), file_path);
       return -1;
    }
 
    /* TEXT */
    if (type==IMPORT_TYPE_TEXT) {
-      jp_logf(LOG_DEBUG, "Memo import text [%s]\n", file_path);
+      jp_logf(JP_LOG_DEBUG, "Memo import text [%s]\n", file_path);
       text_len=0;
       text[0]='\0';
       while (!feof(in)) {
@@ -253,7 +253,7 @@ int memo_import_callback(GtkWidget *parent_window, char *file_path, int type)
 	 if (text_len+len>65534) {
 	    len=65534-text_len;
 	    line[len]='\0';
-	    jp_logf(LOG_WARN, "Memo text > 65535, truncating\n");
+	    jp_logf(JP_LOG_WARN, "Memo text > 65535, truncating\n");
 	    strcat(text, line);
 	    break;
 	 }
@@ -276,13 +276,13 @@ int memo_import_callback(GtkWidget *parent_window, char *file_path, int type)
 			    &new_cat_num);
       if ((ret==DIALOG_SAID_IMPORT_ALL) || (ret==DIALOG_SAID_IMPORT_YES)) {
 	 pc_memo_write(&new_memo, NEW_PC_REC, attrib, NULL);
-	 jp_logf(LOG_WARN, "Imported Memo %s\n", file_path);
+	 jp_logf(JP_LOG_WARN, "Imported Memo %s\n", file_path);
       }
    }
 
    /* CSV */
    if (type==IMPORT_TYPE_CSV) {
-      jp_logf(LOG_DEBUG, "Memo import CSV [%s]\n", file_path);
+      jp_logf(JP_LOG_DEBUG, "Memo import CSV [%s]\n", file_path);
       /* The first line is format, so we don't need it */
       fgets(text, 1000, in);
       import_all=FALSE;
@@ -346,9 +346,9 @@ int memo_import_callback(GtkWidget *parent_window, char *file_path, int type)
 
    /* Palm Desktop DAT format */
    if (type==IMPORT_TYPE_DAT) {
-      jp_logf(LOG_DEBUG, "Memo import DAT [%s]\n", file_path);
+      jp_logf(JP_LOG_DEBUG, "Memo import DAT [%s]\n", file_path);
       if (dat_check_if_dat_file(in)!=DAT_MEMO_FILE) {
-	 jp_logf(LOG_WARN, _("File doesn't appear to be memopad.dat format\n"));
+	 jp_logf(JP_LOG_WARN, _("File doesn't appear to be memopad.dat format\n"));
 	 fclose(in);
 	 return 1;
       }
@@ -497,7 +497,7 @@ void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
       mmemo = gtk_clist_get_row_data(GTK_CLIST(clist), (int) temp_list->data);
       if (!mmemo) {
 	 continue;
-	 jp_logf(LOG_WARN, "Can't export memo %d\n", (long) temp_list->data + 1);
+	 jp_logf(JP_LOG_WARN, "Can't export memo %d\n", (long) temp_list->data + 1);
       }
       switch (type) {
        case EXPORT_TYPE_CSV:
@@ -512,7 +512,7 @@ void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 csv_text=malloc(len);
 	 if (!csv_text) {
 	    continue;
-	    jp_logf(LOG_WARN, "Can't export memo %d\n", (long) temp_list->data + 1);
+	    jp_logf(JP_LOG_WARN, "Can't export memo %d\n", (long) temp_list->data + 1);
 	 }
 	 str_to_csv_str(csv_text, memo_app_info.category.name[mmemo->attrib & 0x0F]);
 	 fprintf(out, "\"%s\",", csv_text);
@@ -542,7 +542,7 @@ void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 fprintf(out, "\n----- End of Memo -----\n\n");
 	 break;
        default:
-	 jp_logf(LOG_WARN, "Unknown export type\n");
+	 jp_logf(JP_LOG_WARN, "Unknown export type\n");
       }
    }
 
@@ -623,8 +623,8 @@ void cb_delete_memo(GtkWidget *widget,
       return;
    }
    /* End Masking */
-   jp_logf(LOG_DEBUG, "mmemo->unique_id = %d\n",mmemo->unique_id);
-   jp_logf(LOG_DEBUG, "mmemo->rt = %d\n",mmemo->rt);
+   jp_logf(JP_LOG_DEBUG, "mmemo->unique_id = %d\n",mmemo->unique_id);
+   jp_logf(JP_LOG_DEBUG, "mmemo->rt = %d\n",mmemo->rt);
    flag = GPOINTER_TO_INT(data);
    if ((flag==MODIFY_FLAG) || (flag==DELETE_FLAG)) {
       delete_pc_record(MEMO, mmemo, flag);
@@ -650,10 +650,10 @@ static void cb_category(GtkWidget *item, int selection)
 	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
       }
       memo_category = selection;
-      jp_logf(LOG_DEBUG, "cb_category() cat=%d\n", memo_category);
+      jp_logf(JP_LOG_DEBUG, "cb_category() cat=%d\n", memo_category);
       memo_clear_details();
       memo_update_clist(clist, category_menu1, glob_memo_list, memo_category, TRUE);
-      jp_logf(LOG_DEBUG, "Leaving cb_category()\n");
+      jp_logf(JP_LOG_DEBUG, "Leaving cb_category()\n");
    }
 }
 
@@ -662,7 +662,7 @@ static int memo_clear_details()
    int new_cat;
    int sorted_position;
 
-   jp_logf(LOG_DEBUG, "memo_clear_details()\n");
+   jp_logf(JP_LOG_DEBUG, "memo_clear_details()\n");
    /* Need to disconnect these signals first */
    set_new_button_to(NEW_FLAG);
    connect_changed_signals(DISCONNECT_SIGNALS);
@@ -684,7 +684,7 @@ static int memo_clear_details()
    }
    sorted_position = find_sorted_cat(new_cat);
    if (sorted_position<0) {
-      jp_logf(LOG_WARN, "Category is not legal\n");
+      jp_logf(JP_LOG_WARN, "Category is not legal\n");
    } else {
       gtk_check_menu_item_set_active
 	(GTK_CHECK_MENU_ITEM(memo_cat_menu_item2[sorted_position]), TRUE);
@@ -692,7 +692,7 @@ static int memo_clear_details()
    }
 
    set_new_button_to(CLEAR_FLAG);
-   jp_logf(LOG_DEBUG, "Leaving memo_clear_details()\n");
+   jp_logf(JP_LOG_DEBUG, "Leaving memo_clear_details()\n");
    return 0;
 }
 
@@ -775,7 +775,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
 	 return;
       }
       if ((mmemo->rt==DELETED_PALM_REC) || (mmemo->rt==MODIFIED_PALM_REC)) {
-	 jp_logf(LOG_INFO, "You can't modify a record that is deleted\n");
+	 jp_logf(JP_LOG_INFO, "You can't modify a record that is deleted\n");
 	 return;
       }
    }
@@ -834,7 +834,7 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
    long ivalue;
    struct pi_file *pf;
 
-   jp_logf(LOG_DEBUG, "cb_edit_cats\n");
+   jp_logf(JP_LOG_DEBUG, "cb_edit_cats\n");
 
    get_pref(PREF_MEMO32_MODE, &ivalue, NULL);
    if (ivalue) {
@@ -854,7 +854,7 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
 
    num = unpack_MemoAppInfo(&ai, buf, size);
    if (num <= 0) {
-      jp_logf(LOG_WARN, _("Error reading %s\n"), pdb_name);
+      jp_logf(JP_LOG_WARN, _("Error reading %s\n"), pdb_name);
       return;
    }
 
@@ -917,7 +917,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    sorted_position = find_sorted_cat(index);
    if (memo_cat_menu_item2[sorted_position]==NULL) {
       /* Illegal category */
-      jp_logf(LOG_DEBUG, "Category is not legal\n");
+      jp_logf(JP_LOG_DEBUG, "Category is not legal\n");
       index = sorted_position = 0;
    }
    /* We need to count how many items down in the list this is */
@@ -929,7 +929,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    count--;
 
    if (sorted_position<0) {
-      jp_logf(LOG_WARN, "Category is not legal\n");
+      jp_logf(JP_LOG_WARN, "Category is not legal\n");
    } else {
       gtk_check_menu_item_set_active
 	(GTK_CHECK_MENU_ITEM(memo_cat_menu_item2[sorted_position]), TRUE);
@@ -968,7 +968,7 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    int len, len1;
    int show_priv;
 
-   jp_logf(LOG_DEBUG, "memo_update_clist()\n");
+   jp_logf(JP_LOG_DEBUG, "memo_update_clist()\n");
 
    row_count=((GtkCList *)clist)->rows;
 
@@ -1087,7 +1087,7 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       entries_shown++;
    }
 
-   jp_logf(LOG_DEBUG, "entries_shown=%d\n", entries_shown);
+   jp_logf(JP_LOG_DEBUG, "entries_shown=%d\n", entries_shown);
 
    for (i=row_count-1; i>=entries_shown; i--) {
       gtk_clist_set_row_data(GTK_CLIST(clist), i, NULL);
@@ -1111,7 +1111,7 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       connect_changed_signals(CONNECT_SIGNALS);
    }
 
-   jp_logf(LOG_DEBUG, "Leaving memo_update_clist()\n");
+   jp_logf(JP_LOG_DEBUG, "Leaving memo_update_clist()\n");
 }
 
 static int memo_find()
@@ -1167,7 +1167,7 @@ int memo_refresh()
    }
    memo_update_clist(clist, category_menu1, glob_memo_list, memo_category, TRUE);
    if (index<0) {
-      jp_logf(LOG_WARN, "Category not legal\n");
+      jp_logf(JP_LOG_WARN, "Category not legal\n");
    } else {	 
       gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), index);
       gtk_check_menu_item_set_active

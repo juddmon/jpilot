@@ -305,7 +305,7 @@ int fill_in(struct tm *date, AppointmentList *a_list)
 	    puttext(x, y, str);
 	    /* printf("[%s]\n", str);*/
 	 } else {
-	    jp_logf(LOG_WARN, "Too many appointments, dropping one\n");
+	    jp_logf(JP_LOG_WARN, "Too many appointments, dropping one\n");
 	 }
       }
       fprintf(out, "grestore\n");
@@ -500,10 +500,10 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
 #ifdef ENABLE_DATEBK
 	 if (use_db3_tags) {
 	    ret = db3_parse_tag(temp_al->ma.a.note, &db3_type, &db4);
-	    /* jp_logf(LOG_DEBUG, "category = 0x%x\n", db4.category); */
+	    /* jp_logf(JP_LOG_DEBUG, "category = 0x%x\n", db4.category); */
 	    cat_bit=1<<db4.category;
 	    if (!(cat_bit & datebook_category)) {
-	       jp_logf(LOG_DEBUG, "skipping rec not in this category\n");
+	       jp_logf(JP_LOG_DEBUG, "skipping rec not in this category\n");
 	       continue;
 	    }
 	 }
@@ -710,10 +710,10 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
 #ifdef ENABLE_DATEBK
 	 if (use_db3_tags) {
 	    ret = db3_parse_tag(temp_al->ma.a.note, &db3_type, &db4);
-	    jp_logf(LOG_DEBUG, "category = 0x%x\n", db4.category);
+	    jp_logf(JP_LOG_DEBUG, "category = 0x%x\n", db4.category);
 	    cat_bit=1<<db4.category;
 	    if (!(cat_bit & datebook_category)) {
-	       jp_logf(LOG_DEBUG, "skip rec not in this category\n");
+	       jp_logf(JP_LOG_DEBUG, "skip rec not in this category\n");
 	       continue;
 	    }
 	 }

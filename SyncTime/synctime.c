@@ -67,29 +67,29 @@ int plugin_sync(int sd)
 
    jp_init();
    
-   jp_logf(LOG_DEBUG, "SyncTime: plugin_sync\n");
+   jp_logf(JP_LOG_DEBUG, "SyncTime: plugin_sync\n");
 
    dlp_ReadFeature(sd, makelong("psys"), 1, &ROMversion);
    
    majorVersion = (((ROMversion >> 28) & 0xf) * 10)+ ((ROMversion >> 24) & 0xf);
    minorVersion = (((ROMversion >> 20) & 0xf) * 10)+ ((ROMversion >> 16) & 0xf);
 
-   jp_logf(LOG_GUI, "synctime: Palm OS version %d.%d\n", majorVersion, minorVersion);
+   jp_logf(JP_LOG_GUI, "synctime: Palm OS version %d.%d\n", majorVersion, minorVersion);
 
    if (majorVersion==3) {
       if ((minorVersion==30) || (minorVersion==25)) {
-	 jp_logf(LOG_GUI, "synctime: Palm OS Version 3.25 and 3.30 do not support SyncTime\n");
-	 jp_logf(LOG_GUI, "synctime: NOT setting the time on the pilot\n");
+	 jp_logf(JP_LOG_GUI, "synctime: Palm OS Version 3.25 and 3.30 do not support SyncTime\n");
+	 jp_logf(JP_LOG_GUI, "synctime: NOT setting the time on the pilot\n");
 	 return 1;
       }
    }
 
-   jp_logf(LOG_GUI, "synctime: Setting the time on the pilot... ");
+   jp_logf(JP_LOG_GUI, "synctime: Setting the time on the pilot... ");
    
    time(&ltime);
    r = dlp_SetSysDateTime(sd, ltime);
    
-   jp_logf(LOG_GUI, "Done\n");
+   jp_logf(JP_LOG_GUI, "Done\n");
 
    return 0;
 }

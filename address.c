@@ -48,7 +48,7 @@ int print_address_list(AddressList **al)
 
    for (prev_al=NULL, temp_al=*al; temp_al;
 	prev_al=temp_al, temp_al=temp_al->next) {
-      jp_logf(LOG_FILE | LOG_STDOUT, "entry[0]=[%s]\n", temp_al->ma.a.entry[0]);
+      jp_logf(JP_LOG_FILE | JP_LOG_STDOUT, "entry[0]=[%s]\n", temp_al->ma.a.entry[0]);
    }
 }
 #endif
@@ -281,7 +281,7 @@ int address_sort(AddressList **al, int sort_order)
    /* Allocate an array to be qsorted */
    sort_al = calloc(count, sizeof(AddressList *));
    if (!sort_al) {
-      jp_logf(LOG_WARN, "address_sort(): Out of Memory\n");
+      jp_logf(JP_LOG_WARN, "address_sort(): Out of Memory\n");
       return 0;
    }
 
@@ -332,7 +332,7 @@ int pc_address_write(struct Address *a, PCRecType rt, unsigned char attrib,
    rec_len = pack_Address(a, record, 65535);
    if (!rec_len) {
       PRINT_FILE_LINE;
-      jp_logf(LOG_WARN, "pack_Address %s\n", _("error"));
+      jp_logf(JP_LOG_WARN, "pack_Address %s\n", _("error"));
       return -1;
    }
    br.rt=rt;
@@ -383,7 +383,7 @@ int get_address_app_info(struct AddressAppInfo *ai)
       free(buf);
    }
    if (num <= 0) {
-      jp_logf(LOG_WARN, _("Error reading %s\n"), "AddressDB.pdb");
+      jp_logf(JP_LOG_WARN, _("Error reading %s\n"), "AddressDB.pdb");
       return -1;
    }
 
@@ -430,7 +430,7 @@ int get_addresses2(AddressList **address_list, int sort_order,
    buf_rec *br;
    char *buf;
 
-   jp_logf(LOG_DEBUG, "get_addresses2()\n");
+   jp_logf(JP_LOG_DEBUG, "get_addresses2()\n");
    if (modified==2) {
       get_pref(PREF_SHOW_MODIFIED, &keep_modified, NULL);
    } else {
@@ -505,7 +505,7 @@ int get_addresses2(AddressList **address_list, int sort_order,
 
       temp_a_list = malloc(sizeof(AddressList));
       if (!temp_a_list) {
-	 jp_logf(LOG_WARN, "get_addresses2(): Out of memory\n");
+	 jp_logf(JP_LOG_WARN, "get_addresses2(): Out of memory\n");
 	 break;
       }
       memcpy(&(temp_a_list->ma.a), &a, sizeof(struct Address));
@@ -525,7 +525,7 @@ int get_addresses2(AddressList **address_list, int sort_order,
 #endif
    address_sort(address_list, sort_order);
 
-   jp_logf(LOG_DEBUG, "Leaving get_addresses2()\n");
+   jp_logf(JP_LOG_DEBUG, "Leaving get_addresses2()\n");
 
    return recs_returned;
 }

@@ -67,7 +67,7 @@ static void cb_pref_menu(GtkWidget *widget,
    value = pref & 0xFF;
    pref = pref >> 8;
    set_pref_possibility(pref, value, TRUE);
-   jp_logf(LOG_DEBUG, "pref %d, value %d\n", pref, value);
+   jp_logf(JP_LOG_DEBUG, "pref %d, value %d\n", pref, value);
 #ifdef COLORS
    if (pref==PREF_RCFILE) {
       set_colors();
@@ -229,18 +229,18 @@ static gboolean cb_destroy(GtkWidget *widget)
    char *backups_text;
    int num_backups;
 
-   jp_logf(LOG_DEBUG, "Cleanup\n");
+   jp_logf(JP_LOG_DEBUG, "Cleanup\n");
 
    entry_text = gtk_entry_get_text(GTK_ENTRY(port_entry));
-   jp_logf(LOG_DEBUG, "port_entry = [%s]\n", entry_text);
+   jp_logf(JP_LOG_DEBUG, "port_entry = [%s]\n", entry_text);
    set_pref(PREF_PORT, 0, entry_text, FALSE);
 
    entry_text = gtk_entry_get_text(GTK_ENTRY(alarm_command_entry));
-   jp_logf(LOG_DEBUG, "alarm_command_entry = [%s]\n", entry_text);
+   jp_logf(JP_LOG_DEBUG, "alarm_command_entry = [%s]\n", entry_text);
    set_pref(PREF_ALARM_COMMAND, 0, entry_text, FALSE);
 
    backups_text = gtk_entry_get_text(GTK_ENTRY(backups_entry));
-   jp_logf(LOG_DEBUG, "backups_entry = [%s]\n", backups_text);
+   jp_logf(JP_LOG_DEBUG, "backups_entry = [%s]\n", backups_text);
    num_backups = atoi(backups_text);
    if (num_backups < 1) {
       num_backups = 1;
@@ -263,7 +263,7 @@ static void
   cb_quit(GtkWidget *widget,
 	   gpointer   data)
 {
-   jp_logf(LOG_DEBUG, "cb_quit\n");
+   jp_logf(JP_LOG_DEBUG, "cb_quit\n");
    if (GTK_IS_WIDGET(data)) {
       gtk_widget_destroy(data);
    }
@@ -293,9 +293,9 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    extern unsigned char skip_plugins;
 #endif
 
-   jp_logf(LOG_DEBUG, "cb_prefs_gui\n");
+   jp_logf(JP_LOG_DEBUG, "cb_prefs_gui\n");
    if (window) {
-      jp_logf(LOG_DEBUG, "pref_window is already up\n");
+      jp_logf(JP_LOG_DEBUG, "pref_window is already up\n");
       return;
    }
 

@@ -126,7 +126,7 @@ static int
 	 }
       }
    }
-   jp_logf(LOG_DEBUG, "calling free_AppointmentList\n");
+   jp_logf(JP_LOG_DEBUG, "calling free_AppointmentList\n");
    free_AppointmentList(&a_list);
    a_list = NULL;
    return count;
@@ -177,7 +177,7 @@ static int
 	 }
       }
    }
-   jp_logf(LOG_DEBUG, "calling free_AddressList\n");
+   jp_logf(JP_LOG_DEBUG, "calling free_AddressList\n");
    free_AddressList(&a_list);
    a_list = NULL;
    return count;
@@ -244,7 +244,7 @@ static int
 	 }
       }
    }
-   jp_logf(LOG_DEBUG, "calling free_ToDoList\n");
+   jp_logf(JP_LOG_DEBUG, "calling free_ToDoList\n");
    free_ToDoList(&todo_list);
    todo_list = NULL;
    return count;
@@ -291,7 +291,7 @@ static int
 	 count++;
       }
    }
-   jp_logf(LOG_DEBUG, "calling free_MemoList\n");
+   jp_logf(JP_LOG_DEBUG, "calling free_MemoList\n");
    free_MemoList(&memo_list);
    memo_list = NULL;
    return count;
@@ -382,7 +382,7 @@ static void
    char *entry_text;
    int count;
 
-   jp_logf(LOG_DEBUG, "enter cb_entry\n");
+   jp_logf(JP_LOG_DEBUG, "enter cb_entry\n");
 
    clist = data;
    entry_text = gtk_entry_get_text(GTK_ENTRY(widget));
@@ -390,7 +390,7 @@ static void
       return;
    }
 
-   jp_logf(LOG_DEBUG, "entry text = %s\n", entry_text);
+   jp_logf(JP_LOG_DEBUG, "entry text = %s\n", entry_text);
 
    gtk_clist_clear(GTK_CLIST(clist));
 
@@ -446,7 +446,7 @@ static void
     default:
 #ifdef ENABLE_PLUGINS
       /* We didn't find it so it must be a plugin */
-      jp_logf(LOG_DEBUG, "choosing search result from plugin %d\n", sr->app_type);
+      jp_logf(JP_LOG_DEBUG, "choosing search result from plugin %d\n", sr->app_type);
       call_plugin_gui(sr->app_type, sr->unique_id);
 #endif
       break;

@@ -200,12 +200,12 @@ void cb_export_category(GtkWidget *item, int selection)
 {
    if ((GTK_CHECK_MENU_ITEM(item))->active) {
       export_category = selection;
-      jp_logf(LOG_DEBUG, "cb_export_category() cat=%d\n", export_category);
+      jp_logf(JP_LOG_DEBUG, "cb_export_category() cat=%d\n", export_category);
       if (glob_cb_export_menu) {
 	 glob_cb_export_menu(export_clist, export_category);
       }
       gtk_clist_select_all(GTK_CLIST(export_clist));
-      jp_logf(LOG_DEBUG, "Leaving cb_export_category()\n");
+      jp_logf(JP_LOG_DEBUG, "Leaving cb_export_category()\n");
    }
 }
 
@@ -236,7 +236,7 @@ int export_gui(int w, int h, int x, int y,
    int i;
    const char *svalue;
 
-   jp_logf(LOG_DEBUG, "export_gui()\n");
+   jp_logf(JP_LOG_DEBUG, "export_gui()\n");
 
    export_category = CATEGORY_ALL;
    glob_export_type=EXPORT_TYPE_TEXT;

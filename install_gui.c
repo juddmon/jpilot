@@ -46,14 +46,14 @@ int install_remove_line(int deleted_line)
 
    in = jp_open_home_file(EPN"_to_install", "r");
    if (!in) {
-      jp_logf(LOG_DEBUG, "failed opening install_file\n");
+      jp_logf(JP_LOG_DEBUG, "failed opening install_file\n");
       return -1;
    }
 
    out = jp_open_home_file(EPN"_to_install.tmp", "w");
    if (!out) {
       fclose(in);
-      jp_logf(LOG_DEBUG, "failed opening install_file.tmp\n");
+      jp_logf(JP_LOG_DEBUG, "failed opening install_file.tmp\n");
       return -1;
    }
 
@@ -112,7 +112,7 @@ static void
   cb_quit(GtkWidget *widget,
 	   gpointer   data)
 {
-   jp_logf(LOG_DEBUG, "Quit\n");
+   jp_logf(JP_LOG_DEBUG, "Quit\n");
    filew = NULL;
    gtk_widget_destroy(data);
 }
@@ -124,17 +124,17 @@ static void
    char *sel;
    struct stat statb;
 
-   jp_logf(LOG_DEBUG, "Add\n");
+   jp_logf(JP_LOG_DEBUG, "Add\n");
    sel = gtk_file_selection_get_filename(GTK_FILE_SELECTION(data));
-   jp_logf(LOG_DEBUG, "file selected [%s]\n", sel);
+   jp_logf(JP_LOG_DEBUG, "file selected [%s]\n", sel);
 
    /*Check to see if its a regular file */
    if (stat(sel, &statb)) {
-      jp_logf(LOG_DEBUG, "File selected was not stat-able\n");
+      jp_logf(JP_LOG_DEBUG, "File selected was not stat-able\n");
       return;
    }
    if (!S_ISREG(statb.st_mode)) {
-      jp_logf(LOG_DEBUG, "File selected was not a regular file\n");
+      jp_logf(JP_LOG_DEBUG, "File selected was not a regular file\n");
       return;
    }
 
@@ -149,7 +149,7 @@ static void
    if (line_selected < 0) {
       return;
    }
-   jp_logf(LOG_DEBUG, "Remove line %d\n", line_selected);
+   jp_logf(JP_LOG_DEBUG, "Remove line %d\n", line_selected);
    install_remove_line(line_selected);
    update_clist();
 }

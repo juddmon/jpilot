@@ -264,7 +264,7 @@ static int get_rcfile_name(int n, char *rc_copy)
    if (dir_list == NULL) {
       i = found = count = 0;
       sprintf(filename, "%s/%s/%s/", BASE_DIR, "share", EPN);
-      jp_logf(LOG_DEBUG, "opening dir %s\n", filename);
+      jp_logf(JP_LOG_DEBUG, "opening dir %s\n", filename);
       dir = opendir(filename);
       if (dir) {
 	 for(i=0; (dirent = readdir(dir)); i++) {
@@ -272,10 +272,10 @@ static int get_rcfile_name(int n, char *rc_copy)
 	    if (strncmp(filename, dirent->d_name, strlen(filename))) {
 	       continue;
 	    } else {
-	       jp_logf(LOG_DEBUG, "found %s\n", dirent->d_name);
+	       jp_logf(JP_LOG_DEBUG, "found %s\n", dirent->d_name);
 	       new_entry = malloc(sizeof(struct name_list));
 	       if (!new_entry) {
-		  jp_logf(LOG_FATAL, "get_rcfile_name(): Out of memory\n");
+		  jp_logf(JP_LOG_FATAL, "get_rcfile_name(): Out of memory\n");
 		  return -1;
 	       }  
 	       new_entry->name = strdup(dirent->d_name);
@@ -289,7 +289,7 @@ static int get_rcfile_name(int n, char *rc_copy)
       }
 
       get_home_file_name("", full_name, 255);
-      jp_logf(LOG_DEBUG, "opening dir %s\n", full_name);
+      jp_logf(JP_LOG_DEBUG, "opening dir %s\n", full_name);
       dir = opendir(full_name);
       if (dir) {
 	 for(; (dirent = readdir(dir)); i++) {
@@ -297,10 +297,10 @@ static int get_rcfile_name(int n, char *rc_copy)
 	    if (strncmp(filename, dirent->d_name, strlen(filename))) {
 	       continue;
 	    } else {
-	       jp_logf(LOG_DEBUG, "found %s\n", dirent->d_name);
+	       jp_logf(JP_LOG_DEBUG, "found %s\n", dirent->d_name);
 	       new_entry = malloc(sizeof(struct name_list));
 	       if (!new_entry) {
-		  jp_logf(LOG_FATAL, "get_rcfile_name(): Out of memory 2\n");
+		  jp_logf(JP_LOG_FATAL, "get_rcfile_name(): Out of memory 2\n");
 		  return -1;
 	       }  
 	       new_entry->name = strdup(dirent->d_name);
@@ -471,7 +471,7 @@ int get_pref_possibility(int which, int n, char *pref_str)
 
     default:
       pref_str[0]='\0';
-      jp_logf(LOG_DEBUG, "Unknown preference type\n");
+      jp_logf(JP_LOG_DEBUG, "Unknown preference type\n");
       return -1;
    }
 
@@ -798,7 +798,7 @@ int jp_pref_read_rc_file(char *filename, prefType prefs[], int num_prefs)
 	       if (pref_lstrncpy_realloc(&(prefs[i].svalue), field2,
 					&(prefs[i].svalue_size),
 					MAX_PREF_VALUE)==NULL) {
-		  jp_logf(LOG_WARN, "Out of memory: read_rc_file()\n");
+		  jp_logf(JP_LOG_WARN, "Out of memory: read_rc_file()\n");
 		  continue;
 	       }
 	    }
@@ -826,7 +826,7 @@ int jp_pref_write_rc_file(char *filename, prefType prefs[], int num_prefs)
    int i;
    FILE *out;
 
-   jp_logf(LOG_DEBUG, "jp_pref_write_rc_file()\n");
+   jp_logf(JP_LOG_DEBUG, "jp_pref_write_rc_file()\n");
 
    out=jp_open_home_file(filename,"w" );
    if (!out) {

@@ -138,13 +138,13 @@ int get_next_unique_pc_id(unsigned int *next_unique_id);
 #define DIALOG_SAID_3        456
 #define DIALOG_SAID_CANCEL   456
 
-#define LOG_DEBUG  1    /*debugging info for programers, and bug reports */
-#define LOG_INFO   2    /*info, and misc messages */
-#define LOG_WARN   4    /*worse messages */
-#define LOG_FATAL  8    /*even worse messages */
-#define LOG_STDOUT 256  /*messages always go to stdout */
-#define LOG_FILE   512  /*messages always go to the log file */
-#define LOG_GUI    1024 /*messages always go to the gui window */
+#define JP_LOG_DEBUG  1    /*debugging info for programers, and bug reports */
+#define JP_LOG_INFO   2    /*info, and misc messages */
+#define JP_LOG_WARN   4    /*worse messages */
+#define JP_LOG_FATAL  8    /*even worse messages */
+#define JP_LOG_STDOUT 256  /*messages always go to stdout */
+#define JP_LOG_FILE   512  /*messages always go to the log file */
+#define JP_LOG_GUI    1024 /*messages always go to the gui window */
 
 #define JPILOT_EOF -7
 

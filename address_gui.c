@@ -142,7 +142,7 @@ static void init()
 static void
 set_new_button_to(int new_state)
 {
-   jp_logf(LOG_DEBUG, "set_new_button_to new %d old %d\n", new_state, record_changed);
+   jp_logf(JP_LOG_DEBUG, "set_new_button_to new %d old %d\n", new_state, record_changed);
 
    if (record_changed==new_state) {
       return;
@@ -189,7 +189,7 @@ static void
 cb_record_changed(GtkWidget *widget,
 		  gpointer   data)
 {
-   jp_logf(LOG_DEBUG, "cb_record_changed\n");
+   jp_logf(JP_LOG_DEBUG, "cb_record_changed\n");
    if (record_changed==CLEAR_FLAG) {
       connect_changed_signals(DISCONNECT_SIGNALS);
       if (((GtkCList *)clist)->rows > 0) {
@@ -386,13 +386,13 @@ int address_import_callback(GtkWidget *parent_window, char *file_path, int type)
 
    in=fopen(file_path, "r");
    if (!in) {
-      jp_logf(LOG_WARN, _("Could not open file %s\n"), file_path);
+      jp_logf(JP_LOG_WARN, _("Could not open file %s\n"), file_path);
       return -1;
    }
 
    /* CSV */
    if (type==IMPORT_TYPE_CSV) {
-      jp_logf(LOG_DEBUG, "Address import CSV [%s]\n", file_path);
+      jp_logf(JP_LOG_DEBUG, "Address import CSV [%s]\n", file_path);
       /* The first line is format, so we don't need it */
       fgets(text, 1000, in);
       import_all=FALSE;
@@ -467,9 +467,9 @@ int address_import_callback(GtkWidget *parent_window, char *file_path, int type)
 
    /* Palm Desktop DAT format */
    if (type==IMPORT_TYPE_DAT) {
-      jp_logf(LOG_DEBUG, "Address import DAT [%s]\n", file_path);
+      jp_logf(JP_LOG_DEBUG, "Address import DAT [%s]\n", file_path);
       if (dat_check_if_dat_file(in)!=DAT_ADDRESS_FILE) {
-	 jp_logf(LOG_WARN, _("File doesn't appear to be address.dat format\n"));
+	 jp_logf(JP_LOG_WARN, _("File doesn't appear to be address.dat format\n"));
 	 fclose(in);
 	 return 1;
       }
@@ -608,7 +608,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
       ma = gtk_clist_get_row_data(GTK_CLIST(clist), (int) temp_list->data);
       if (!ma) {
 	 continue;
-	 jp_logf(LOG_WARN, "Can't export address %d\n", (long) temp_list->data + 1);
+	 jp_logf(JP_LOG_WARN, "Can't export address %d\n", (long) temp_list->data + 1);
       }
       switch (type) {
        case EXPORT_TYPE_TEXT:
@@ -674,7 +674,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	       if ((order_ja[n] < NUM_ADDRESS_EXT_ENTRIES)
 		   && (tmp_p = strchr(ma->a.entry[order_ja[n]],'\1'))) {
 		  if (strlen(ma->a.entry[order_ja[n]]) > 65535) {
-		     jp_logf(LOG_WARN, "Field > 65535\n");
+		     jp_logf(JP_LOG_WARN, "Field > 65535\n");
 		  } else {
 		     *(tmp_p) = '\0';
 		     str_to_csv_str(csv_text, ma->a.entry[order_ja[n]]);
@@ -682,7 +682,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 		  }
 	       } else if (order_ja[n] < NUM_ADDRESS_ENTRIES) {
 		  if (strlen(ma->a.entry[i]) > 65535) {
-		     jp_logf(LOG_WARN, "Field > 65535\n");
+		     jp_logf(JP_LOG_WARN, "Field > 65535\n");
 		  } else {
 		     str_to_csv_str(csv_text, ma->a.entry[order_ja[n]]);
 		  }
@@ -699,7 +699,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	       csv_text[0]='\0';
 	       if (ma->a.entry[order[n]]) {
 		  if (strlen(ma->a.entry[order[n]])>65535) {
-		     jp_logf(LOG_WARN, "Field > 65535\n");
+		     jp_logf(JP_LOG_WARN, "Field > 65535\n");
 		  } else {
 		     str_to_csv_str(csv_text, ma->a.entry[order[n]]);
 		  }
@@ -714,7 +714,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 fprintf(out, "\n");
 	 break;
        default:
-	 jp_logf(LOG_WARN, "Unknown export type\n");
+	 jp_logf(JP_LOG_WARN, "Unknown export type\n");
       }
    }
 
@@ -838,8 +838,8 @@ void cb_phone_menu(GtkWidget *item, unsigned int value)
    if (!item)
      return;
    if ((GTK_CHECK_MENU_ITEM(item))->active) {
-      jp_logf(LOG_DEBUG, "phone_menu = %d\n", (value & 0xF0) >> 4);
-      jp_logf(LOG_DEBUG, "selection = %d\n", value & 0x0F);
+      jp_logf(JP_LOG_DEBUG, "phone_menu = %d\n", (value & 0xF0) >> 4);
+      jp_logf(JP_LOG_DEBUG, "selection = %d\n", value & 0x0F);
       address_phone_label_selected[(value & 0xF0) >> 4] = value & 0x0F;
    }
 }
@@ -857,7 +857,7 @@ void cb_notebook_changed(GtkWidget *widget,
    if (prev_page<0) {
       return;
    }
-   jp_logf(LOG_DEBUG, "cb_notebook_changed(), prev_page=%d, page=%d\n", prev_page, page);
+   jp_logf(JP_LOG_DEBUG, "cb_notebook_changed(), prev_page=%d, page=%d\n", prev_page, page);
    set_pref(PREF_ADDRESS_NOTEBOOK_PAGE, page, NULL, TRUE);
 }
 
@@ -921,7 +921,7 @@ static void cb_add_new_record(GtkWidget *widget,
 	    return;
 	 }
 	 if ((ma->rt==DELETED_PALM_REC) || (ma->rt==MODIFIED_PALM_REC)) {
-	    jp_logf(LOG_INFO, "You can't modify a record that is deleted\n");
+	    jp_logf(JP_LOG_INFO, "You can't modify a record that is deleted\n");
 	    return;
 	 }
       }
@@ -1034,7 +1034,7 @@ void clear_details()
    }
    sorted_position = find_sorted_cat(new_cat);
    if (sorted_position<0) {
-      jp_logf(LOG_WARN, "Category is not legal\n");
+      jp_logf(JP_LOG_WARN, "Category is not legal\n");
    } else {
       gtk_check_menu_item_set_active
 	(GTK_CHECK_MENU_ITEM(address_cat_menu_item2[sorted_position]), TRUE);
@@ -1155,7 +1155,7 @@ static void cb_category(GtkWidget *item, int selection)
    }
    if ((GTK_CHECK_MENU_ITEM(item))->active) {
       address_category = selection;
-      jp_logf(LOG_DEBUG, "address_category = %d\n",address_category);
+      jp_logf(JP_LOG_DEBUG, "address_category = %d\n",address_category);
       address_update_clist(clist, category_menu1, glob_address_list,
 			   address_category, TRUE);
    }
@@ -1193,7 +1193,7 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
    void *buf;
    struct pi_file *pf;
 
-   jp_logf(LOG_DEBUG, "cb_edit_cats\n");
+   jp_logf(JP_LOG_DEBUG, "cb_edit_cats\n");
 
    get_home_file_name("AddressDB.pdb", full_name, 250);
 
@@ -1205,7 +1205,7 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
 
    num = unpack_AddressAppInfo(&ai, buf, size);
    if (num <= 0) {
-      jp_logf(LOG_WARN, _("Error reading %s\n"), "AddressDB.pdb");
+      jp_logf(JP_LOG_WARN, _("Error reading %s\n"), "AddressDB.pdb");
       return;
    }
 
@@ -1344,7 +1344,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    sorted_position = find_sorted_cat(cat);
    if (address_cat_menu_item2[sorted_position]==NULL) {
       /* Illegal category, Assume that category 0 is Unfiled and valid*/
-      jp_logf(LOG_DEBUG, "Category is not legal\n");
+      jp_logf(JP_LOG_DEBUG, "Category is not legal\n");
       cat = sorted_position = 0;
       sorted_position = find_sorted_cat(cat);
    }
@@ -1357,7 +1357,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    count--;
 
    if (sorted_position<0) {
-      jp_logf(LOG_WARN, "Category is not legal\n");
+      jp_logf(JP_LOG_WARN, "Category is not legal\n");
    } else {
       if (address_cat_menu_item2[sorted_position]) {
 	 gtk_check_menu_item_set_active
@@ -1446,22 +1446,22 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    free_AddressList(&addr_list);
 #ifdef JPILOT_DEBUG
     for (i=0;i<NUM_ADDRESS_CAT_ITEMS;i++) {
-      jp_logf(LOG_DEBUG, "renamed:[%02d]:\n",address_app_info.category.renamed[i]);
-      jp_logf(LOG_DEBUG, "category name:[%02d]:",i);
+      jp_logf(JP_LOG_DEBUG, "renamed:[%02d]:\n",address_app_info.category.renamed[i]);
+      jp_logf(JP_LOG_DEBUG, "category name:[%02d]:",i);
       print_string(address_app_info.category.name[i],16);
-      jp_logf(LOG_DEBUG, "category ID:%d\n", address_app_info.category.ID[i]);
+      jp_logf(JP_LOG_DEBUG, "category ID:%d\n", address_app_info.category.ID[i]);
    }
 
    for (i=0;i<NUM_ADDRESS_LABELS;i++) {
-      jp_logf(LOG_DEBUG, "labels[%02d]:",i);
+      jp_logf(JP_LOG_DEBUG, "labels[%02d]:",i);
       print_string(address_app_info.labels[i],16);
    }
    for (i=0;i<8;i++) {
-      jp_logf(LOG_DEBUG, "phoneLabels[%d]:",i);
+      jp_logf(JP_LOG_DEBUG, "phoneLabels[%d]:",i);
       print_string(address_app_info.phoneLabels[i],16);
    }
-   jp_logf(LOG_DEBUG, "country %d\n",address_app_info.country);
-   jp_logf(LOG_DEBUG, "sortByCompany %d\n",address_app_info.sortByCompany);
+   jp_logf(JP_LOG_DEBUG, "country %d\n",address_app_info.country);
+   jp_logf(JP_LOG_DEBUG, "sortByCompany %d\n",address_app_info.sortByCompany);
 #endif
 
    num_entries = get_addresses2(&addr_list, SORT_ASCENDING, 2, 2, 1, CATEGORY_ALL);
@@ -1851,7 +1851,7 @@ int address_refresh()
    address_update_clist(clist, category_menu1, glob_address_list,
 			address_category, TRUE);
    if (index<0) {
-      jp_logf(LOG_WARN, "Category not legal\n");
+      jp_logf(JP_LOG_WARN, "Category not legal\n");
    } else {
       gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), index);
       gtk_check_menu_item_set_active

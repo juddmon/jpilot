@@ -64,7 +64,7 @@ static void cb_week_print(GtkWidget *widget, gpointer data)
 {
    long paper_size;
 
-   jp_logf(LOG_DEBUG, "cb_week_print called\n");
+   jp_logf(JP_LOG_DEBUG, "cb_week_print called\n");
    if (print_gui(window, DATEBOOK, 2, 0x02) == DIALOG_SAID_PRINT) {
       get_pref(PREF_PAPER_SIZE, &paper_size, NULL);
       if (paper_size==1) {
@@ -211,10 +211,10 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
 	 get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
 	 if (use_db3_tags) {
 	    ret = db3_parse_tag(temp_al->ma.a.note, &db3_type, &db4);
-	    jp_logf(LOG_DEBUG, "category = 0x%x\n", db4.category);
+	    jp_logf(JP_LOG_DEBUG, "category = 0x%x\n", db4.category);
 	    cat_bit=1<<db4.category;
 	    if (!(cat_bit & datebook_category)) {
-	       jp_logf(LOG_DEBUG, "skipping rec not in this category\n");
+	       jp_logf(JP_LOG_DEBUG, "skipping rec not in this category\n");
 	       continue;
 	    }
 	 }

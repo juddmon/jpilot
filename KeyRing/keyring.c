@@ -114,7 +114,7 @@ static int pack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size)
    int i;
    char empty[]="";
    
-   jp_logf(LOG_DEBUG, "KeyRing: pack_KeyRing()\n");
+   jp_logf(JP_LOG_DEBUG, "KeyRing: pack_KeyRing()\n");
    
    if (!(kr->name)) kr->name=empty;
    if (!(kr->account)) kr->account=empty;
@@ -129,10 +129,10 @@ static int pack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size)
    }
    /* Now we can add in the unencrypted part */
    n=n+strlen(kr->name)+1;
-   jp_logf(LOG_DEBUG, "pack n=%d\n", n);
+   jp_logf(JP_LOG_DEBUG, "pack n=%d\n", n);
    
    if (n+2>buf_size) {
-      jp_logf(LOG_WARN, "KeyRing: pack_KeyRing(): buf_size too small\n");
+      jp_logf(JP_LOG_WARN, "KeyRing: pack_KeyRing(): buf_size too small\n");
       return 0;
    }
 
@@ -210,9 +210,9 @@ static int unpack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size)
    unsigned char *safety[]={"","",""
    };
    
-   jp_logf(LOG_DEBUG, "KeyRing: unpack_KeyRing\n");
+   jp_logf(JP_LOG_DEBUG, "KeyRing: unpack_KeyRing\n");
    if (!memchr(buf, '\0', buf_size)) {
-      jp_logf(LOG_DEBUG, "KeyRing: unpack_KeyRing(): No null terminater found in buf\n");
+      jp_logf(JP_LOG_DEBUG, "KeyRing: unpack_KeyRing(): No null terminater found in buf\n");
       return 0;
    }
    n=strlen(buf)+1;
@@ -221,15 +221,15 @@ static int unpack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size)
    if (rem>0xFFFF) {
       /* This can be cause by a bug in libplugin.c from jpilot 0.99.1 
        * and before.  It occurs on the last record */
-      jp_logf(LOG_DEBUG, "KeyRing: unpack_KeyRing(): buffer too big n=%d, buf_size=%d\n", n, buf_size);
-      jp_logf(LOG_DEBUG, "KeyRing: unpack_KeyRing(): truncating\n");
+      jp_logf(JP_LOG_DEBUG, "KeyRing: unpack_KeyRing(): buffer too big n=%d, buf_size=%d\n", n, buf_size);
+      jp_logf(JP_LOG_DEBUG, "KeyRing: unpack_KeyRing(): truncating\n");
       rem=0xFFFF-n;
       rem=rem-(rem%8);
    }
    clear_text=malloc(rem+2);
 
-   jp_logf(LOG_DEBUG, "KeyRing: unpack_KeyRing(): rem (should be multiple of 8)=%d\n", rem);
-   jp_logf(LOG_DEBUG, "KeyRing: unpack_KeyRing(): rem%%8=%d\n", rem%8);
+   jp_logf(JP_LOG_DEBUG, "KeyRing: unpack_KeyRing(): rem (should be multiple of 8)=%d\n", rem);
+   jp_logf(JP_LOG_DEBUG, "KeyRing: unpack_KeyRing(): rem%%8=%d\n", rem%8);
    
    P=&buf[n];
    for (i=0; i<rem; i+=8) {
@@ -272,7 +272,7 @@ static int unpack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size)
 static void
 set_new_button_to(int new_state)
 {
-   jp_logf(LOG_DEBUG, "set_new_button_to new %d old %d\n", new_state, record_changed);
+   jp_logf(JP_LOG_DEBUG, "set_new_button_to new %d old %d\n", new_state, record_changed);
    if (record_changed==new_state) {
       return;
    }
@@ -318,7 +318,7 @@ static void
 cb_record_changed(GtkWidget *widget,
 		  gpointer   data)
 {
-   jp_logf(LOG_DEBUG, "cb_record_changed\n");
+   jp_logf(JP_LOG_DEBUG, "cb_record_changed\n");
    if (record_changed==CLEAR_FLAG) {
       connect_changed_signals(DISCONNECT_SIGNALS);
       if ((GTK_CLIST(clist)->rows > 0)) {
@@ -335,7 +335,7 @@ static void connect_changed_signals(int con_or_dis)
 
    /* CONNECT */
    if ((con_or_dis==CONNECT_SIGNALS) && (!connected)) {
-      jp_logf(LOG_DEBUG, "KeyRing: connect_changed_signals\n");
+      jp_logf(JP_LOG_DEBUG, "KeyRing: connect_changed_signals\n");
       connected=1;
 
       gtk_signal_connect(GTK_OBJECT(text_note), "changed",
@@ -350,7 +350,7 @@ static void connect_changed_signals(int con_or_dis)
    
    /* DISCONNECT */
    if ((con_or_dis==DISCONNECT_SIGNALS) && (connected)) {
-      jp_logf(LOG_DEBUG, "KeyRing: disconnect_changed_signals\n");
+      jp_logf(JP_LOG_DEBUG, "KeyRing: disconnect_changed_signals\n");
       connected=0;
 
       gtk_signal_disconnect_by_func(GTK_OBJECT(text_note),
@@ -368,7 +368,7 @@ static void free_mykeyring_list(struct MyKeyRing **PPkr)
 {
    struct MyKeyRing *kr, *next_kr;
 
-   jp_logf(LOG_DEBUG, "KeyRing: free_mykeyring_list\n");
+   jp_logf(JP_LOG_DEBUG, "KeyRing: free_mykeyring_list\n");
    for (kr = *PPkr; kr; kr=next_kr) {
       next_kr = kr->next;
       if (kr->kr.name) free(kr->kr.name);
@@ -394,7 +394,7 @@ void plugin_version(int *major_version, int *minor_version)
  */
 int plugin_get_name(char *name, int len)
 {
-   jp_logf(LOG_DEBUG, "KeyRing: plugin_get_name\n");
+   jp_logf(JP_LOG_DEBUG, "KeyRing: plugin_get_name\n");
    strncpy(name, "KeyRing 0.01", len);
    return 0;
 }
@@ -438,7 +438,7 @@ static void cb_delete(GtkWidget *widget, gpointer data)
    char buf[0xFFFF];
    buf_rec br;
 
-   jp_logf(LOG_DEBUG, "KeyRing: cb_delete\n");
+   jp_logf(JP_LOG_DEBUG, "KeyRing: cb_delete\n");
 
    mkr = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
    if (!mkr) {
@@ -479,7 +479,7 @@ static void clear_details()
    time(&ltime);
    now = localtime(&ltime);
    
-   jp_logf(LOG_DEBUG, "KeyRing: cb_clear\n");
+   jp_logf(JP_LOG_DEBUG, "KeyRing: cb_clear\n");
 
    connect_changed_signals(DISCONNECT_SIGNALS);
    set_new_button_to(NEW_FLAG);
@@ -507,7 +507,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    int flag;
    struct MyKeyRing *mkr;
 
-   jp_logf(LOG_DEBUG, "KeyRing: cb_add_new_record\n");
+   jp_logf(JP_LOG_DEBUG, "KeyRing: cb_add_new_record\n");
 
    flag=GPOINTER_TO_INT(data);
 
@@ -539,7 +539,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    /* Any attributes go here.  Usually just the category */
 
    br.attrib = glob_category_number_from_menu_item[glob_detail_category];
-   jp_logf(LOG_DEBUG, "category is %d\n", br.attrib);
+   jp_logf(JP_LOG_DEBUG, "category is %d\n", br.attrib);
    br.buf = buf;
    br.size = size;
    br.unique_id = 0;
@@ -585,7 +585,7 @@ static int display_record(struct MyKeyRing *mkr, int at_row)
    char temp[8];
    char *temp_str;
 
-   /* jp_logf(LOG_DEBUG, "KeyRing: display_record\n");*/
+   /* jp_logf(JP_LOG_DEBUG, "KeyRing: display_record\n");*/
 
    switch (mkr->rt) {
     case NEW_PC_REC:
@@ -657,7 +657,7 @@ static void display_records()
    
    records=NULL;
    
-   jp_logf(LOG_DEBUG, "KeyRing: display_records\n");
+   jp_logf(JP_LOG_DEBUG, "KeyRing: display_records\n");
 
    row_count=((GtkCList *)clist)->rows;
 
@@ -753,7 +753,7 @@ static void display_records()
 
    connect_changed_signals(CONNECT_SIGNALS);
 
-   jp_logf(LOG_DEBUG, "KeyRing: leave display_records\n");
+   jp_logf(JP_LOG_DEBUG, "KeyRing: leave display_records\n");
 }
 
 /*
@@ -771,7 +771,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    int keep, b;
    char *temp_str;
    
-   jp_logf(LOG_DEBUG, "KeyRing: cb_clist_selection\n");
+   jp_logf(JP_LOG_DEBUG, "KeyRing: cb_clist_selection\n");
 
    if ((!event) && (clist_hack)) return;
 
@@ -858,7 +858,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    set_new_button_to(CLEAR_FLAG);
    connect_changed_signals(CONNECT_SIGNALS);
 
-   jp_logf(LOG_DEBUG, "KeyRing: leaving cb_clist_selection\n");
+   jp_logf(JP_LOG_DEBUG, "KeyRing: leaving cb_clist_selection\n");
 }
 
 /*
@@ -870,7 +870,7 @@ static void cb_category(GtkWidget *item, unsigned int value)
    int menu, sel;
    int b;
    
-   jp_logf(LOG_DEBUG, "KeyRing: cb_category\n");
+   jp_logf(JP_LOG_DEBUG, "KeyRing: cb_category\n");
    if (!item) {
       return;
    }
@@ -911,7 +911,7 @@ static int make_menu(char *items[], int menu_index, GtkWidget **Poption_menu,
    GtkWidget *menu_item;
    GtkWidget *menu;
    
-   jp_logf(LOG_DEBUG, "KeyRing: make_menu\n");
+   jp_logf(JP_LOG_DEBUG, "KeyRing: make_menu\n");
 
    *Poption_menu = option_menu = gtk_option_menu_new();
    
@@ -960,7 +960,7 @@ static void make_menus()
    GtkWidget *menu_item_category1[17];
    char *categories[18];
      
-   jp_logf(LOG_DEBUG, "KeyRing: make_menus\n");
+   jp_logf(JP_LOG_DEBUG, "KeyRing: make_menus\n");
 
    /* This gets the application specific data out of the database for us.
     * We still need to write a function to unpack it from its blob form. */
@@ -1178,18 +1178,18 @@ static int check_for_db()
    if (!home) { /* Not home; */
       home = getenv("HOME");
       if (!home) {
-	 jp_logf(LOG_WARN, "Can't get HOME environment variable\n");
+	 jp_logf(JP_LOG_WARN, "Can't get HOME environment variable\n");
 	 return -1;
       }
    }
    if (strlen(home)>(max_size-strlen(file)-strlen("/.jpilot/")-2)) {
-      jp_logf(LOG_WARN, "Your HOME environment variable is too long for me\n");
+      jp_logf(JP_LOG_WARN, "Your HOME environment variable is too long for me\n");
       return -1;
    }
    sprintf(full_name, "%s/.jpilot/%s", home, file);
    if (stat(full_name, &buf)) {
-      jp_logf(LOG_FATAL, "KeyRing: file %s not found.\n", full_name);
-      jp_logf(LOG_FATAL, "KeyRing: Try Syncing.\n", full_name);
+      jp_logf(JP_LOG_FATAL, "KeyRing: file %s not found.\n", full_name);
+      jp_logf(JP_LOG_FATAL, "KeyRing: Try Syncing.\n", full_name);
       return -1;
    }
 		 
@@ -1225,7 +1225,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
 
    titles[0] = _("Name"); titles[1] = _("Account");
    
-   jp_logf(LOG_DEBUG, "KeyRing: plugin gui started, unique_id=%d\n", unique_id);
+   jp_logf(JP_LOG_DEBUG, "KeyRing: plugin gui started, unique_id=%d\n", unique_id);
 
    if (check_for_db()) {
       return -1;
@@ -1294,7 +1294,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    now = localtime(&ltime);
 
    /* Make the menus */
-   jp_logf(LOG_DEBUG, "KeyRing: calling make_menus\n");
+   jp_logf(JP_LOG_DEBUG, "KeyRing: calling make_menus\n");
    make_menus();
    
    /* left and right main boxes */
@@ -1433,11 +1433,11 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_widget_hide(add_record_button);
    gtk_widget_hide(apply_record_button);
 
-   jp_logf(LOG_DEBUG, "KeyRing: calling display_records\n");
+   jp_logf(JP_LOG_DEBUG, "KeyRing: calling display_records\n");
 
    display_records();
 
-   jp_logf(LOG_DEBUG, "KeyRing: after display_records\n");
+   jp_logf(JP_LOG_DEBUG, "KeyRing: after display_records\n");
    
    return 0;
 }
@@ -1458,7 +1458,7 @@ int plugin_gui_cleanup() {
 
    connect_changed_signals(DISCONNECT_SIGNALS);
 
-   jp_logf(LOG_DEBUG, "KeyRing: plugin_gui_cleanup\n");
+   jp_logf(JP_LOG_DEBUG, "KeyRing: plugin_gui_cleanup\n");
    if (glob_keyring_list!=NULL) {
       free_mykeyring_list(&glob_keyring_list);
    }
@@ -1473,10 +1473,10 @@ int plugin_startup(jp_startup_info *info)
 {
    jp_init();
 
-   jp_logf(LOG_DEBUG, "KeyRing: plugin_startup\n");
+   jp_logf(JP_LOG_DEBUG, "KeyRing: plugin_startup\n");
    if (info) {
       if (info->base_dir) {
-	 jp_logf(LOG_DEBUG, "KeyRing: base_dir = [%s]\n", info->base_dir);
+	 jp_logf(JP_LOG_DEBUG, "KeyRing: base_dir = [%s]\n", info->base_dir);
       }
    }
    return 0;
@@ -1488,7 +1488,7 @@ int plugin_startup(jp_startup_info *info)
  */
 int plugin_pre_sync(void)
 {
-   jp_logf(LOG_DEBUG, "KeyRing: plugin_pre_sync\n");
+   jp_logf(JP_LOG_DEBUG, "KeyRing: plugin_pre_sync\n");
    return 0;
 }
 
@@ -1500,7 +1500,7 @@ int plugin_pre_sync(void)
  */
 int plugin_sync(int sd)
 {
-   jp_logf(LOG_DEBUG, "KeyRing: plugin_sync\n");
+   jp_logf(JP_LOG_DEBUG, "KeyRing: plugin_sync\n");
    return 0;
 }
 
@@ -1527,7 +1527,7 @@ int plugin_help(char **text, int *width, int *height)
  */
 int plugin_post_sync(void)
 {
-   jp_logf(LOG_DEBUG, "KeyRing: plugin_post_sync\n");
+   jp_logf(JP_LOG_DEBUG, "KeyRing: plugin_post_sync\n");
    return 0;
 }
 
@@ -1536,6 +1536,6 @@ int plugin_post_sync(void)
  */
 int plugin_exit_cleanup(void)
 {
-   jp_logf(LOG_DEBUG, "KeyRing: plugin_exit_cleanup\n");
+   jp_logf(JP_LOG_DEBUG, "KeyRing: plugin_exit_cleanup\n");
    return 0;
 }

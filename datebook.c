@@ -88,7 +88,7 @@ static int datebook_sort(AppointmentList **al)
    /* Allocate an array to be qsorted */
    sort_al = calloc(count, sizeof(AppointmentList *));
    if (!sort_al) {
-      jp_logf(LOG_WARN, "datebook_sort(): Out of Memory\n");
+      jp_logf(JP_LOG_WARN, "datebook_sort(): Out of Memory\n");
       return 0;
    }
 
@@ -167,7 +167,7 @@ int db3_hack_date(struct Appointment *a, struct tm *today)
 /* Note should be pretty much validated by now */
 void db3_fill_struct(char *note, int type, struct db4_struct *db4)
 {
-   /* jp_logf(LOG_WARN, "db3_fill_struct()\n"); */
+   /* jp_logf(JP_LOG_WARN, "db3_fill_struct()\n"); */
    switch (note[2]) {
     case 'c':
       db4->floating_event=DB3_FLOAT_COMPLETE;
@@ -328,7 +328,7 @@ int pc_datebook_write(struct Appointment *a, PCRecType rt,
    rec_len = pack_Appointment(a, record, 65535);
    if (!rec_len) {
       PRINT_FILE_LINE;
-      jp_logf(LOG_WARN, "pack_Appointment %s\n", _("error"));
+      jp_logf(JP_LOG_WARN, "pack_Appointment %s\n", _("error"));
       return -1;
    }
    br.rt=rt;
@@ -369,14 +369,14 @@ int datebook_copy_appointment(struct Appointment *a1,
 {
    *a2=malloc(sizeof(struct Appointment));
    if (!(*a2)) {
-      jp_logf(LOG_WARN, "datebook_copy_appointment(): Out of memory\n");
+      jp_logf(JP_LOG_WARN, "datebook_copy_appointment(): Out of memory\n");
       return -1;
    }
    memcpy(*a2, a1, sizeof(struct Appointment));
 
    (*a2)->exception = (struct tm *)malloc(a1->exceptions * sizeof(struct tm));
    if (!(*a2)->exception) {
-      jp_logf(LOG_WARN, "datebook_copy_appointment(): Out of memory 2\n");
+      jp_logf(JP_LOG_WARN, "datebook_copy_appointment(): Out of memory 2\n");
       return -1;
    }
    memcpy((*a2)->exception, a1->exception, a1->exceptions * sizeof(struct tm));
@@ -406,7 +406,7 @@ int datebook_add_exception(struct Appointment *a, int year, int mon, int day)
 
    new_exception = malloc((a->exceptions + 1) * sizeof(struct tm));
    if (!new_exception) {
-      jp_logf(LOG_WARN, "datebook_add_exception(): Out of memory\n");
+      jp_logf(JP_LOG_WARN, "datebook_add_exception(): Out of memory\n");
       return -1;
    }
    memcpy(new_exception, a->exception, (a->exceptions) * sizeof(struct tm));
@@ -505,7 +505,7 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
    static int days, begin_days;
    static struct tm cached_date;
 
-   /* jp_logf(LOG_DEBUG, "isApptOnDate\n"); */
+   /* jp_logf(JP_LOG_DEBUG, "isApptOnDate\n"); */
 
    ret = FALSE;
 
@@ -654,7 +654,7 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
       }   
       break;
     default:
-      jp_logf(LOG_WARN, "unknown repeatType (%d) found in DatebookDB\n",
+      jp_logf(JP_LOG_WARN, "unknown repeatType (%d) found in DatebookDB\n",
 	   a->repeatType);
       ret = FALSE;
    }/*switch */
@@ -663,11 +663,11 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
       /* Check for exceptions */
       for (i=0; i<a->exceptions; i++) {
 #ifdef JPILOT_DEBUG
-	 jp_logf(LOG_DEBUG, "exception %d mon %d\n", i, a->exception[i].tm_mon);
-	 jp_logf(LOG_DEBUG, "exception %d day %d\n", i, a->exception[i].tm_mday);
-	 jp_logf(LOG_DEBUG, "exception %d year %d\n", i, a->exception[i].tm_year);
-	 jp_logf(LOG_DEBUG, "exception %d yday %d\n", i, a->exception[i].tm_yday);
-	 jp_logf(LOG_DEBUG, "today is yday %d\n", date->tm_yday);
+	 jp_logf(JP_LOG_DEBUG, "exception %d mon %d\n", i, a->exception[i].tm_mon);
+	 jp_logf(JP_LOG_DEBUG, "exception %d day %d\n", i, a->exception[i].tm_mday);
+	 jp_logf(JP_LOG_DEBUG, "exception %d year %d\n", i, a->exception[i].tm_year);
+	 jp_logf(JP_LOG_DEBUG, "exception %d yday %d\n", i, a->exception[i].tm_yday);
+	 jp_logf(JP_LOG_DEBUG, "today is yday %d\n", date->tm_yday);
 #endif
 	 exception_days = dateToDays(&(a->exception[i]));
 	 if (!days) {
@@ -700,7 +700,7 @@ int get_datebook_app_info(struct AppointmentAppInfo *ai)
       free(buf);
    }
    if (num <= 0) {
-      jp_logf(LOG_WARN, _("Error reading %s\n"), "DatebookDB.pdb");
+      jp_logf(JP_LOG_WARN, _("Error reading %s\n"), "DatebookDB.pdb");
       return -1;
    }
    get_pref(PREF_CHAR_SET, &char_set, NULL);
@@ -936,7 +936,7 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
    get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
 #endif
 
-   jp_logf(LOG_DEBUG, "get_days_appointments()\n");
+   jp_logf(JP_LOG_DEBUG, "get_days_appointments()\n");
 
    if (modified==2) {
       get_pref(PREF_SHOW_MODIFIED, &keep_modified, NULL);
@@ -1033,7 +1033,7 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
 
       temp_a_list = malloc(sizeof(AppointmentList));
       if (!temp_a_list) {
-	 jp_logf(LOG_WARN, "get_days_appointments(): Out of memory\n");
+	 jp_logf(JP_LOG_WARN, "get_days_appointments(): Out of memory\n");
 	 free_Appointment(&a);
 	 break;
       }
@@ -1051,7 +1051,7 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
 
    datebook_sort(appointment_list);
 
-   jp_logf(LOG_DEBUG, "Leaving get_days_appointments()\n");
+   jp_logf(JP_LOG_DEBUG, "Leaving get_days_appointments()\n");
 
    return recs_returned;
 }

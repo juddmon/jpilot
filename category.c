@@ -65,7 +65,7 @@ int jp_count_records_in_cat(char *db_name, int cat_index)
    int count, i, num;
    buf_rec *br;
 
-   jp_logf(LOG_DEBUG, "jp_count_records_in_cat\n");
+   jp_logf(JP_LOG_DEBUG, "jp_count_records_in_cat\n");
 
    count = 0;
 
@@ -97,7 +97,7 @@ int jp_count_records_in_cat(char *db_name, int cat_index)
 
    jp_free_DB_records(&records);
 
-   jp_logf(LOG_DEBUG, "Leaving jp_count_records_in_cat()\n");
+   jp_logf(JP_LOG_DEBUG, "Leaving jp_count_records_in_cat()\n");
 
    return count;
 }
@@ -116,7 +116,7 @@ int edit_cats_delete_cats_pc3(char *DB_name, int cat)
    pc_in = jp_open_home_file(local_pc_file, "r+");
    if (pc_in==NULL) {
       //undo check to see if can create before warning.
-      jp_logf(LOG_WARN, _("Unable to open %s\n"), local_pc_file);
+      jp_logf(JP_LOG_WARN, _("Unable to open %s\n"), local_pc_file);
       return -1;
    }
 
@@ -132,14 +132,14 @@ int edit_cats_delete_cats_pc3(char *DB_name, int cat)
       }
       rec_len = header.rec_len;
       if (rec_len > 0x10000) {
-	 jp_logf(LOG_WARN, _("PC file corrupt?\n"));
+	 jp_logf(JP_LOG_WARN, _("PC file corrupt?\n"));
 	 fclose(pc_in);
 	 return -1;
       }
       if (((header.rt==NEW_PC_REC) || (header.rt==REPLACEMENT_PALM_REC)) &&
 	  ((header.attrib&0x0F)==cat)) {
 	 if (fseek(pc_in, -(header.header_len), SEEK_CUR)) {
-	    jp_logf(LOG_WARN, _("fseek failed - fatal error\n"));
+	    jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
 	    fclose(pc_in);
 	    return -1;
 	 }
@@ -149,7 +149,7 @@ int edit_cats_delete_cats_pc3(char *DB_name, int cat)
       }
       /*skip this record now that we are done with it */
       if (fseek(pc_in, rec_len, SEEK_CUR)) {
-	 jp_logf(LOG_WARN, _("fseek failed - fatal error\n"));
+	 jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
 	 fclose(pc_in);
 	 return -1;
       }
@@ -171,7 +171,7 @@ int edit_cats_delete_cats_pdb(char *DB_name, int cat)
    GList *temp_list;
    buf_rec *br;
 
-   jp_logf(LOG_DEBUG, "edit_cats_delete_cats_pdb\n");
+   jp_logf(JP_LOG_DEBUG, "edit_cats_delete_cats_pdb\n");
 
    count=0;
    r = jp_read_DB_files(DB_name, &records);
@@ -219,7 +219,7 @@ int _edit_cats_change_cats_pc3(char *DB_name, int old_cat,
    pc_in = jp_open_home_file(local_pc_file, "r+");
    if (pc_in==NULL) {
       //undo check to see if can create before warning.
-      jp_logf(LOG_WARN, _("Unable to open %s\n"), local_pc_file);
+      jp_logf(JP_LOG_WARN, _("Unable to open %s\n"), local_pc_file);
       return -1;
    }
 
@@ -235,14 +235,14 @@ int _edit_cats_change_cats_pc3(char *DB_name, int old_cat,
       }
       rec_len = header.rec_len;
       if (rec_len > 0x10000) {
-	 jp_logf(LOG_WARN, _("PC file corrupt?\n"));
+	 jp_logf(JP_LOG_WARN, _("PC file corrupt?\n"));
 	 fclose(pc_in);
 	 return -1;
       }
       /* No matter what the record type we will change the cat if needed */
       if ((header.attrib&0x0F)==old_cat) {
 	 if (fseek(pc_in, -(header.header_len), SEEK_CUR)) {
-	    jp_logf(LOG_WARN, _("fseek failed - fatal error\n"));
+	    jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
 	    fclose(pc_in);
 	    return -1;
 	 }
@@ -253,7 +253,7 @@ int _edit_cats_change_cats_pc3(char *DB_name, int old_cat,
       /* No matter what the record type we will change the cat if needed */
       if ((swap) && ((header.attrib&0x0F)==new_cat)) {
 	 if (fseek(pc_in, -(header.header_len), SEEK_CUR)) {
-	    jp_logf(LOG_WARN, _("fseek failed - fatal error\n"));
+	    jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
 	    fclose(pc_in);
 	    return -1;
 	 }
@@ -263,7 +263,7 @@ int _edit_cats_change_cats_pc3(char *DB_name, int old_cat,
       }
       /*skip this record now that we are done with it */
       if (fseek(pc_in, rec_len, SEEK_CUR)) {
-	 jp_logf(LOG_WARN, _("fseek failed - fatal error\n"));
+	 jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
 	 fclose(pc_in);
 	 return -1;
       }
@@ -300,7 +300,7 @@ int edit_cats_change_cats_pdb(char *DB_name, int old_cat, int new_cat)
    GList *records;
    GList *temp_list;
 
-   jp_logf(LOG_DEBUG, "edit_cats_change_cats_pdb\n");
+   jp_logf(JP_LOG_DEBUG, "edit_cats_change_cats_pdb\n");
 #ifdef EDIT_CATS_DEBUG 
   printf("edit_cats_change_cats_pdb\n");
 #endif
@@ -477,7 +477,7 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 	 break;
        case EDIT_CAT_ENTRY_OK:
 	 if ((Pdata->state!=EDIT_CAT_RENAME) && (Pdata->state!=EDIT_CAT_NEW)) {
-	    jp_logf(LOG_WARN, "invalid state file %s line %d\n", __FILE__, __LINE__);
+	    jp_logf(JP_LOG_WARN, "invalid state file %s line %d\n", __FILE__, __LINE__);
 	    return;
 	 }
 	 /* Can't make an empty category, could do a dialog telling user */
@@ -545,7 +545,7 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 	 Pdata->state=EDIT_CAT_START;
 	 break;
        default:
-	 jp_logf(LOG_WARN, "cb_edit_button: unknown button\n");
+	 jp_logf(JP_LOG_WARN, "cb_edit_button: unknown button\n");
       }
    }
 }
@@ -631,7 +631,7 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
    char *titles[]={"category name"};
    gchar *empty_line[] = {""};
 
-   jp_logf(LOG_DEBUG, "edit_cats\n");
+   jp_logf(JP_LOG_DEBUG, "edit_cats\n");
 
    //undo do some some parameter checking
    Pdata.selected=-1;

@@ -89,7 +89,7 @@ int memo_sort(MemoList **memol, int sort_order)
    /* Allocate an array to be qsorted */
    sort_memol = calloc(count, sizeof(MemoList *));
    if (!sort_memol) {
-      jp_logf(LOG_WARN, "memo_sort(): Out of Memory\n");
+      jp_logf(JP_LOG_WARN, "memo_sort(): Out of Memory\n");
       return 0;
    }
 
@@ -150,7 +150,7 @@ int pc_memo_write(struct Memo *memo, PCRecType rt, unsigned char attrib,
    rec_len = pack_Memo(memo, record, 65535);
    if (!rec_len) {
       PRINT_FILE_LINE;
-      jp_logf(LOG_WARN, "pack_Memo %s\n", _("error"));
+      jp_logf(JP_LOG_WARN, "pack_Memo %s\n", _("error"));
       return -1;
    }
    br.rt=rt;
@@ -212,7 +212,7 @@ int get_memo_app_info(struct MemoAppInfo *ai)
       free(buf);
    }
    if (num <= 0) {
-      jp_logf(LOG_WARN, _("Error reading %s\n"), "MemoDB.pdb");
+      jp_logf(JP_LOG_WARN, _("Error reading %s\n"), "MemoDB.pdb");
       return -1;
    }
 
@@ -250,7 +250,7 @@ int get_memos2(MemoList **memo_list, int sort_order,
    long ivalue;
    buf_rec *br;
 
-   jp_logf(LOG_DEBUG, "get_memos2()\n");
+   jp_logf(JP_LOG_DEBUG, "get_memos2()\n");
    if (modified==2) {
       get_pref(PREF_SHOW_MODIFIED, &keep_modified, NULL);
    } else {
@@ -313,7 +313,7 @@ int get_memos2(MemoList **memo_list, int sort_order,
 
       temp_memo_list = malloc(sizeof(MemoList));
       if (!temp_memo_list) {
-	 jp_logf(LOG_WARN, "get_memos2(): Out of memory\n");
+	 jp_logf(JP_LOG_WARN, "get_memos2(): Out of memory\n");
 	 break;
       }
       memcpy(&(temp_memo_list->mmemo.memo), &memo, sizeof(struct Memo));
@@ -330,7 +330,7 @@ int get_memos2(MemoList **memo_list, int sort_order,
 
    memo_sort(memo_list, sort_order);
 
-   jp_logf(LOG_DEBUG, "Leaving get_memos2()\n");
+   jp_logf(JP_LOG_DEBUG, "Leaving get_memos2()\n");
 
    return recs_returned;
 }

@@ -127,7 +127,7 @@ static void delete_event(GtkWidget *widget, GdkEvent *event, gpointer data);
 void geometry_error(const char *str)
 {
    /* The log window hasn't been created yet */
-   jp_logf(LOG_STDOUT, "invalid geometry specification: \"%s\"\n", str);
+   jp_logf(JP_LOG_STDOUT, "invalid geometry specification: \"%s\"\n", str);
 }
 
 /* gtk_init must already have been called, or will seg fault */
@@ -143,7 +143,7 @@ gboolean parse_geometry(const char *str,
    int max_value;
    int sub_value;
 
-   jp_logf(LOG_DEBUG, "parse_geometry()\n");
+   jp_logf(JP_LOG_DEBUG, "parse_geometry()\n");
 
    if (!(x && y && w && h && str && mask)) {
       return FALSE;
@@ -220,7 +220,7 @@ gboolean parse_geometry(const char *str,
 	 }
       }
    }
-   jp_logf(LOG_DEBUG, "w=%d, h=%d, x=%d, y=%d, mask=0x%x\n",
+   jp_logf(JP_LOG_DEBUG, "w=%d, h=%d, x=%d, y=%d, mask=0x%x\n",
 	       *w, *h, *x, *y, *mask);
    return TRUE;
 }
@@ -446,7 +446,7 @@ void cb_restore(GtkWidget *widget, gpointer data)
    int r;
    int w, h, x, y;
 
-   jp_logf(LOG_DEBUG, "cb_restore()\n");
+   jp_logf(JP_LOG_DEBUG, "cb_restore()\n");
 
    gdk_window_get_size(window->window, &w, &h);
    gdk_window_get_root_origin(window->window, &x, &y);
@@ -847,10 +847,10 @@ static void cb_read_pipe_from_child(gpointer data,
 	    /* Look for the user ID */
 	    num = sscanf(Pstr1, "%ld", &user_id);
 	    if (num > 0) {
-	       jp_logf(LOG_DEBUG, "pipe_read: user id = %ld\n", user_id);
+	       jp_logf(JP_LOG_DEBUG, "pipe_read: user id = %ld\n", user_id);
 	       set_pref(PREF_USER_ID, user_id, NULL, TRUE);
 	    } else {
-	       jp_logf(LOG_DEBUG, "pipe_read: trouble reading user id\n");
+	       jp_logf(JP_LOG_DEBUG, "pipe_read: trouble reading user id\n");
 	    }
 	    break;
 	  case PIPE_USERNAME:
@@ -866,7 +866,7 @@ static void cb_read_pipe_from_child(gpointer data,
 		  }
 		  strncpy(user, Pstr2, user_len);
 		  user[user_len] = '\0';
-		  jp_logf(LOG_DEBUG, "pipe_read: user = %s\n", user);
+		  jp_logf(JP_LOG_DEBUG, "pipe_read: user = %s\n", user);
 		  set_pref(PREF_USER, 0, user, TRUE);
 	       }
 	    }
@@ -884,7 +884,7 @@ static void cb_read_pipe_from_child(gpointer data,
 		  }
 		  strncpy(password, Pstr2, password_len);
 		  password[password_len] = '\0';
-		  jp_logf(LOG_DEBUG, "pipe_read: password = %s\n", password);
+		  jp_logf(JP_LOG_DEBUG, "pipe_read: password = %s\n", password);
 		  set_pref(PREF_PASSWORD, 0, password, TRUE);
 	       }
 	    }
@@ -899,9 +899,9 @@ static void cb_read_pipe_from_child(gpointer data,
 	    printf("reason %d\n", reason);
 #endif
 	    if (num > 0) {
-	       jp_logf(LOG_DEBUG, "pipe_read: reason = %d\n", reason);
+	       jp_logf(JP_LOG_DEBUG, "pipe_read: reason = %d\n", reason);
 	    } else {
-	       jp_logf(LOG_DEBUG, "pipe_read: trouble reading reason\n");
+	       jp_logf(JP_LOG_DEBUG, "pipe_read: trouble reading reason\n");
 	    }
 	    if ((reason == SYNC_ERROR_NOT_SAME_USERID) ||
 		(reason == SYNC_ERROR_NOT_SAME_USER) ||
@@ -929,8 +929,8 @@ static void cb_read_pipe_from_child(gpointer data,
 	    }
 	    break;
 	  default:
-	    jp_logf(LOG_WARN, "unknown command from sync process\n");
-	    jp_logf(LOG_WARN, "buf=[%s]\n", buf);
+	    jp_logf(JP_LOG_WARN, "unknown command from sync process\n");
+	    jp_logf(JP_LOG_WARN, "buf=[%s]\n", buf);
 	 }
       }
    }
@@ -962,7 +962,7 @@ void cb_install_gui(GtkWidget *widget, gpointer data)
 {
    int w, h, x, y;
 
-   jp_logf(LOG_DEBUG, "cb_install_gui()\n");
+   jp_logf(JP_LOG_DEBUG, "cb_install_gui()\n");
 
    gdk_window_get_size(window->window, &w, &h);
    gdk_window_get_root_origin(window->window, &x, &y);
@@ -1123,7 +1123,7 @@ void get_main_menu(GtkWidget  *window,
 
    menu_items2=malloc(nmenu_items * sizeof(GtkItemFactoryEntry));
    if (!menu_items2) {
-      jp_logf(LOG_WARN, "get_main_menu(): Out of memory\n");
+      jp_logf(JP_LOG_WARN, "get_main_menu(): Out of memory\n");
       return;
    }
    /* Copy the first part of the array until Plugins */
@@ -1253,7 +1253,7 @@ static void delete_event(GtkWidget *widget, GdkEvent *event, gpointer data)
 
    /* gdk_window_get_deskrelative_origin(window->window, &x, &y); */
    gdk_window_get_origin(window->window, &x, &y);
-   jp_logf(LOG_DEBUG, "x=%d, y=%d\n", x, y);
+   jp_logf(JP_LOG_DEBUG, "x=%d, y=%d\n", x, y);
 
    gdk_window_get_size(window->window, &pw, &ph);
    set_pref(PREF_WINDOW_WIDTH, pw, NULL, FALSE);
@@ -1269,7 +1269,7 @@ static void delete_event(GtkWidget *widget, GdkEvent *event, gpointer data)
       plugin = (struct plugin_s *)temp_list->data;
       if (plugin) {
 	 if (plugin->plugin_exit_cleanup) {
-	    jp_logf(LOG_DEBUG, "calling plugin_exit_cleanup\n");
+	    jp_logf(JP_LOG_DEBUG, "calling plugin_exit_cleanup\n");
 	    plugin->plugin_exit_cleanup();
 	 }
       }
@@ -1277,7 +1277,7 @@ static void delete_event(GtkWidget *widget, GdkEvent *event, gpointer data)
 #endif
 
    if (glob_child_pid) {
-      jp_logf(LOG_DEBUG, "killing %d\n", glob_child_pid);
+      jp_logf(JP_LOG_DEBUG, "killing %d\n", glob_child_pid);
 	 kill(glob_child_pid, SIGTERM);
    }
    /* Write the jpilot.rc file from preferences */
@@ -1297,21 +1297,21 @@ void cb_output(GtkWidget *widget, gpointer data)
    flags=GPOINTER_TO_INT(data);
 
    if ((flags==OUTPUT_MINIMIZE) || (flags==OUTPUT_RESIZE)) {
-      jp_logf(LOG_DEBUG,"paned pos = %d\n", GTK_PANED(output_pane)->handle_ypos);
+      jp_logf(JP_LOG_DEBUG,"paned pos = %d\n", GTK_PANED(output_pane)->handle_ypos);
       gdk_window_get_size(window->window, &w, &h);
       output_height = h - GTK_PANED(output_pane)->handle_ypos;
       set_pref(PREF_OUTPUT_HEIGHT, output_height, NULL, TRUE);
       if (flags==OUTPUT_MINIMIZE) {
 	 gtk_paned_set_position(GTK_PANED(output_pane), h + 2);
       }
-      jp_logf(LOG_DEBUG,"output height = %d\n", output_height);
+      jp_logf(JP_LOG_DEBUG,"output height = %d\n", output_height);
    }
    if (flags==OUTPUT_SETSIZE) {
       get_pref(PREF_OUTPUT_HEIGHT, &ivalue, NULL);
       gdk_window_get_size(window->window, &w, &h);
       pane_y = h - ivalue;
       gtk_paned_set_position(GTK_PANED(output_pane), pane_y + 2);
-      jp_logf(LOG_DEBUG, "setting output_pane to %d\n", pane_y);
+      jp_logf(JP_LOG_DEBUG, "setting output_pane to %d\n", pane_y);
    }
    if (flags==OUTPUT_CLEAR) {
       gtk_text_set_point(GTK_TEXT(g_output_text),
@@ -1473,9 +1473,9 @@ char *xpm_unlocked[] = {
    skip_past_alarms=FALSE;
    skip_all_alarms=FALSE;
    /*log all output to a file */
-   glob_log_file_mask = LOG_INFO | LOG_WARN | LOG_FATAL | LOG_STDOUT;
-   glob_log_stdout_mask = LOG_INFO | LOG_WARN | LOG_FATAL | LOG_STDOUT;
-   glob_log_gui_mask = LOG_FATAL | LOG_WARN | LOG_GUI;
+   glob_log_file_mask = JP_LOG_INFO | JP_LOG_WARN | JP_LOG_FATAL | JP_LOG_STDOUT;
+   glob_log_stdout_mask = JP_LOG_INFO | JP_LOG_WARN | JP_LOG_FATAL | JP_LOG_STDOUT;
+   glob_log_gui_mask = JP_LOG_FATAL | JP_LOG_WARN | JP_LOG_GUI;
    glob_find_id = 0;
 
    pref_init();
@@ -1500,19 +1500,19 @@ char *xpm_unlocked[] = {
       if (!strncasecmp(argv[i], "-d", 2)) {
 	 glob_log_stdout_mask = 0xFFFF;
 	 glob_log_file_mask = 0xFFFF;
-	 jp_logf(LOG_DEBUG, "Debug messages on.\n");
+	 jp_logf(JP_LOG_DEBUG, "Debug messages on.\n");
       }
       if (!strncasecmp(argv[i], "-p", 2)) {
 	 skip_plugins = TRUE;
-	 jp_logf(LOG_INFO, "Not loading plugins.\n");
+	 jp_logf(JP_LOG_INFO, "Not loading plugins.\n");
       }
       if (!strncmp(argv[i], "-A", 2)) {
 	 skip_all_alarms = TRUE;
-	 jp_logf(LOG_INFO, "Ignoring all alarms.\n");
+	 jp_logf(JP_LOG_INFO, "Ignoring all alarms.\n");
       }
       if (!strncmp(argv[i], "-a", 2)) {
 	 skip_past_alarms = TRUE;
-	 jp_logf(LOG_INFO, "Ignoring past alarms.\n");
+	 jp_logf(JP_LOG_INFO, "Ignoring past alarms.\n");
       }
       if (!strncasecmp(argv[i], "-geometry", 9)) {
 	 /* The '=' isn't specified in `man X`, but we will be nice */
@@ -1527,7 +1527,7 @@ char *xpm_unlocked[] = {
    }
 
    /*Check to see if ~/.jpilot is there, or create it */
-   jp_logf(LOG_DEBUG, "calling check_hidden_dir\n");
+   jp_logf(JP_LOG_DEBUG, "calling check_hidden_dir\n");
    if (check_hidden_dir()) {
       exit(1);
    }
@@ -1545,7 +1545,7 @@ char *xpm_unlocked[] = {
 
    for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
       plugin = (struct plugin_s *)temp_list->data;
-      jp_logf(LOG_DEBUG, "plugin: [%s] was loaded\n", plugin->name);
+      jp_logf(JP_LOG_DEBUG, "plugin: [%s] was loaded\n", plugin->name);
    }
 
 
@@ -1554,7 +1554,7 @@ char *xpm_unlocked[] = {
       if (plugin) {
 	 if (plugin->plugin_startup) {
 	    info.base_dir = strdup(BASE_DIR);
-	    jp_logf(LOG_DEBUG, "calling plugin_startup for [%s]\n", plugin->name);
+	    jp_logf(JP_LOG_DEBUG, "calling plugin_startup for [%s]\n", plugin->name);
 	    plugin->plugin_startup(&info);
 	    if (info.base_dir) {
 	       free(info.base_dir);
@@ -1569,7 +1569,7 @@ char *xpm_unlocked[] = {
 
    /* Create a pipe to send data from sync child to parent */
    if (pipe(filedesc) < 0) {
-      jp_logf(LOG_FATAL, "Could not open pipe\n");
+      jp_logf(JP_LOG_FATAL, "Could not open pipe\n");
       exit(-1);
    }
    pipe_from_child = filedesc[0];
@@ -1577,7 +1577,7 @@ char *xpm_unlocked[] = {
 
    /* Create a pipe to send data from parent to sync child */
    if (pipe(filedesc) < 0) {
-      jp_logf(LOG_FATAL, "Could not open pipe\n");
+      jp_logf(JP_LOG_FATAL, "Could not open pipe\n");
       exit(-1);
    }
    pipe_from_parent = filedesc[0];
@@ -1937,10 +1937,10 @@ char *xpm_unlocked[] = {
    /* ToDo this is broken, it doesn't take into account the window
     * decorations.  I can't find a GDK call that does */
    gdk_window_get_origin(window->window, &x, &y);
-   jp_logf(LOG_DEBUG, "x=%d, y=%d\n", x, y);
+   jp_logf(JP_LOG_DEBUG, "x=%d, y=%d\n", x, y);
 
    gdk_window_get_size(window->window, &w, &h);
-   jp_logf(LOG_DEBUG, "w=%d, h=%d\n", w, h);
+   jp_logf(JP_LOG_DEBUG, "w=%d, h=%d\n", w, h);
 
 #ifdef FONT_TEST
    f=gdk_fontset_load("-adobe-utopia-medium-r-normal-*-*-200-*-*-p-*-iso8859-1");

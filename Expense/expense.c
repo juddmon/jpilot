@@ -128,11 +128,11 @@ int plugin_unpack_cai_from_ai(struct CategoryAppInfo *cai,
    struct ExpenseAppInfo ai;
    int r;
    
-   jp_logf(LOG_DEBUG, "unpack_expense_cai_from_ai\n");
+   jp_logf(JP_LOG_DEBUG, "unpack_expense_cai_from_ai\n");
 
    r = unpack_ExpenseAppInfo(&ai, ai_raw, len);
    if (r <= 0) {
-      jp_logf(LOG_DEBUG, "unpack_ExpenseAppInfo failed %s %d\n", __FILE__, __LINE__);
+      jp_logf(JP_LOG_DEBUG, "unpack_ExpenseAppInfo failed %s %d\n", __FILE__, __LINE__);
       return -1;
    }
    memcpy(cai, &(ai.category), sizeof(struct CategoryAppInfo));
@@ -146,18 +146,18 @@ int plugin_pack_cai_into_ai(struct CategoryAppInfo *cai,
    struct ExpenseAppInfo ai;
    int r;
 
-   jp_logf(LOG_DEBUG, "pack_expense_cai_into_ai\n");
+   jp_logf(JP_LOG_DEBUG, "pack_expense_cai_into_ai\n");
 
    r = unpack_ExpenseAppInfo(&ai, ai_raw, len);
    if (r <= 0) {
-      jp_logf(LOG_DEBUG, "unpack_ExpenseAppInfo failed %s %d\n", __FILE__, __LINE__);
+      jp_logf(JP_LOG_DEBUG, "unpack_ExpenseAppInfo failed %s %d\n", __FILE__, __LINE__);
       return -1;
    }
    memcpy(&(ai.category), cai, sizeof(struct CategoryAppInfo));
 
    r = pack_ExpenseAppInfo(&ai, ai_raw, len);
    if (r <= 0) {
-      jp_logf(LOG_DEBUG, "pack_ExpenseAppInfo failed %s %d\n", __FILE__, __LINE__);
+      jp_logf(JP_LOG_DEBUG, "pack_ExpenseAppInfo failed %s %d\n", __FILE__, __LINE__);
       return -1;
    }
    
@@ -168,7 +168,7 @@ int plugin_pack_cai_into_ai(struct CategoryAppInfo *cai,
 static void
 set_new_button_to(int new_state)
 {
-   jp_logf(LOG_DEBUG, "set_new_button_to new %d old %d\n", new_state, record_changed);
+   jp_logf(JP_LOG_DEBUG, "set_new_button_to new %d old %d\n", new_state, record_changed);
    if (record_changed==new_state) {
       return;
    }
@@ -214,7 +214,7 @@ static void
 cb_record_changed(GtkWidget *widget,
 		  gpointer   data)
 {
-   jp_logf(LOG_DEBUG, "cb_record_changed\n");
+   jp_logf(JP_LOG_DEBUG, "cb_record_changed\n");
    if (record_changed==CLEAR_FLAG) {
       connect_changed_signals(DISCONNECT_SIGNALS);
       if (((GtkCList *)clist)->rows > 0) {
@@ -231,7 +231,7 @@ static void connect_changed_signals(int con_or_dis)
 
    /* CONNECT */
    if ((con_or_dis==CONNECT_SIGNALS) && (!connected)) {
-      jp_logf(LOG_DEBUG, "Expense: connect_changed_signals\n");
+      jp_logf(JP_LOG_DEBUG, "Expense: connect_changed_signals\n");
       connected=1;
 
       gtk_signal_connect(GTK_OBJECT(spinner_mon), "changed",
@@ -254,7 +254,7 @@ static void connect_changed_signals(int con_or_dis)
 
    /* DISCONNECT */
    if ((con_or_dis==DISCONNECT_SIGNALS) && (connected)) {
-      jp_logf(LOG_DEBUG, "Expense: disconnect_changed_signals\n");
+      jp_logf(JP_LOG_DEBUG, "Expense: disconnect_changed_signals\n");
       connected=0;
 
       gtk_signal_disconnect_by_func(GTK_OBJECT(spinner_mon),
@@ -280,7 +280,7 @@ static void free_myexpense_list(struct MyExpense **PPme)
 {
    struct MyExpense *me, *next_me;
 
-   jp_logf(LOG_DEBUG, "Expense: free_myexpense_list\n");
+   jp_logf(JP_LOG_DEBUG, "Expense: free_myexpense_list\n");
    for (me = *PPme; me; me=next_me) {
       next_me = me->next;
       free(me);
@@ -302,7 +302,7 @@ void plugin_version(int *major_version, int *minor_version)
  */
 int plugin_get_name(char *name, int len)
 {
-   jp_logf(LOG_DEBUG, "Expense: plugin_get_name\n");
+   jp_logf(JP_LOG_DEBUG, "Expense: plugin_get_name\n");
    strncpy(name, "Expense 0.99", len);
    return 0;
 }
@@ -443,7 +443,7 @@ static void cb_delete(GtkWidget *widget, int data)
    buf_rec br;
    int flag;
 
-   jp_logf(LOG_DEBUG, "Expense: cb_delete\n");
+   jp_logf(JP_LOG_DEBUG, "Expense: cb_delete\n");
 
    flag=GPOINTER_TO_INT(data);
 
@@ -488,7 +488,7 @@ static void clear_details()
    time(&ltime);
    now = localtime(&ltime);
    
-   jp_logf(LOG_DEBUG, "Expense: cb_clear\n");
+   jp_logf(JP_LOG_DEBUG, "Expense: cb_clear\n");
 
    connect_changed_signals(DISCONNECT_SIGNALS);
    set_new_button_to(NEW_FLAG);
@@ -523,7 +523,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    int flag;
    struct MyExpense *mex;
 
-   jp_logf(LOG_DEBUG, "Expense: cb_add_new_record\n");
+   jp_logf(JP_LOG_DEBUG, "Expense: cb_add_new_record\n");
 
    flag=GPOINTER_TO_INT(data);
    
@@ -596,7 +596,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    /* Any attributes go here.  Usually just the category */
 
    br.attrib = glob_category_number_from_menu_item[glob_detail_category];
-   jp_logf(LOG_DEBUG, "category is %d\n", br.attrib);
+   jp_logf(JP_LOG_DEBUG, "category is %d\n", br.attrib);
    br.buf = buf;
    br.size = size;
    br.unique_id = 0;
@@ -642,7 +642,7 @@ static int display_record(struct MyExpense *mex, int at_row)
    GdkColor color;
    GdkColormap *colormap;
 
-   /* jp_logf(LOG_DEBUG, "Expense: display_record\n");*/
+   /* jp_logf(JP_LOG_DEBUG, "Expense: display_record\n");*/
 
    switch (mex->rt) {
     case NEW_PC_REC:
@@ -714,7 +714,7 @@ static void display_records()
    
    records=NULL;
    
-   jp_logf(LOG_DEBUG, "Expense: display_records\n");
+   jp_logf(JP_LOG_DEBUG, "Expense: display_records\n");
    
    row_count=((GtkCList *)clist)->rows;
 
@@ -799,7 +799,7 @@ static void display_records()
       cb_clist_selection(clist, clist_row_selected, 0, (gpointer)455, NULL);
    }
 
-   jp_logf(LOG_DEBUG, "Expense: leave display_records\n");
+   jp_logf(JP_LOG_DEBUG, "Expense: leave display_records\n");
 }
 
 
@@ -841,7 +841,7 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
    void *buf;
    struct pi_file *pf;
 
-   jp_logf(LOG_DEBUG, "cb_edit_cats\n");
+   jp_logf(JP_LOG_DEBUG, "cb_edit_cats\n");
 
    jp_get_home_file_name("ExpenseDB.pdb", full_name, 250);
 
@@ -853,7 +853,7 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
 
    num = unpack_ExpenseAppInfo(&ai, buf, size);
    if (num <= 0) {
-      jp_logf(LOG_WARN, _("Error reading %s\n"), "ExpenseDB.pdb");
+      jp_logf(JP_LOG_WARN, _("Error reading %s\n"), "ExpenseDB.pdb");
       return;
    }
 
@@ -883,7 +883,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    int i, item_num, category;
    int keep, b;
    
-   jp_logf(LOG_DEBUG, "Expense: cb_clist_selection\n");
+   jp_logf(JP_LOG_DEBUG, "Expense: cb_clist_selection\n");
 
    if ((!event) && (clist_hack)) return;
 
@@ -978,7 +978,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    set_new_button_to(CLEAR_FLAG);
    connect_changed_signals(CONNECT_SIGNALS);
 
-   jp_logf(LOG_DEBUG, "Expense: leaving cb_clist_selection\n");
+   jp_logf(JP_LOG_DEBUG, "Expense: leaving cb_clist_selection\n");
 }
 
 /*
@@ -990,7 +990,7 @@ static void cb_category(GtkWidget *item, unsigned int value)
    int menu, sel;
    int b;
    
-   jp_logf(LOG_DEBUG, "Expense: cb_category\n");
+   jp_logf(JP_LOG_DEBUG, "Expense: cb_category\n");
    if (!item) {
       return;
    }
@@ -1043,7 +1043,7 @@ static int make_menu(char *items[], int menu_index, GtkWidget **Poption_menu,
    GtkWidget *menu_item;
    GtkWidget *menu;
    
-   jp_logf(LOG_DEBUG, "Expense: make_menu\n");
+   jp_logf(JP_LOG_DEBUG, "Expense: make_menu\n");
 
    *Poption_menu = option_menu = gtk_option_menu_new();
    
@@ -1161,7 +1161,7 @@ static void make_menus()
       NULL
    };
 
-   jp_logf(LOG_DEBUG, "Expense: make_menus\n");
+   jp_logf(JP_LOG_DEBUG, "Expense: make_menus\n");
 
    /* This gets the application specific data out of the database for us.
     * We still need to write a function to unpack it from its blob form. */
@@ -1203,7 +1203,7 @@ static int clist_find_id(GtkWidget *clist,
    *found_at = 0;
    *total_count = 0;
 
-   jp_logf(LOG_DEBUG, "Expense: clist_find_id\n");
+   jp_logf(JP_LOG_DEBUG, "Expense: clist_find_id\n");
 
    /*100000 is just to prevent ininite looping during a solar flare */
    for (found = i = 0; i<100000; i++) {
@@ -1229,7 +1229,7 @@ static int expense_find(int unique_id)
 {
    int r, found_at, total_count;
    
-   jp_logf(LOG_DEBUG, "Expense: expense_find\n");
+   jp_logf(JP_LOG_DEBUG, "Expense: expense_find\n");
 
    r = clist_find_id(clist,
 		     unique_id,
@@ -1264,7 +1264,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    time_t ltime;
    struct tm *now;
    
-   jp_logf(LOG_DEBUG, "Expense: plugin gui started, unique_id=%d\n", unique_id);
+   jp_logf(JP_LOG_DEBUG, "Expense: plugin gui started, unique_id=%d\n", unique_id);
 
    record_changed=CLEAR_FLAG;
    show_category = CATEGORY_ALL;
@@ -1274,7 +1274,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    now = localtime(&ltime);
 
    /* Make the menus */
-   jp_logf(LOG_DEBUG, "Expense: calling make_menus\n");
+   jp_logf(JP_LOG_DEBUG, "Expense: calling make_menus\n");
    make_menus();
 
    /* Add buttons in left vbox */
@@ -1518,11 +1518,11 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_widget_hide(add_record_button);
    gtk_widget_hide(apply_record_button);
 
-   jp_logf(LOG_DEBUG, "Expense: calling display_records\n");
+   jp_logf(JP_LOG_DEBUG, "Expense: calling display_records\n");
 
    display_records();
 
-   jp_logf(LOG_DEBUG, "Expense: after display_records\n");
+   jp_logf(JP_LOG_DEBUG, "Expense: after display_records\n");
    
    if (unique_id) {
       expense_find(unique_id);
@@ -1547,7 +1547,7 @@ int plugin_gui_cleanup() {
 
    connect_changed_signals(DISCONNECT_SIGNALS);
 
-   jp_logf(LOG_DEBUG, "Expense: plugin_gui_cleanup\n");
+   jp_logf(JP_LOG_DEBUG, "Expense: plugin_gui_cleanup\n");
    if (glob_myexpense_list!=NULL) {
       free_myexpense_list(&glob_myexpense_list);
    }
@@ -1562,10 +1562,10 @@ int plugin_startup(jp_startup_info *info)
 {
    jp_init();
 
-   jp_logf(LOG_DEBUG, "Expense: plugin_startup\n");
+   jp_logf(JP_LOG_DEBUG, "Expense: plugin_startup\n");
    if (info) {
       if (info->base_dir) {
-	 jp_logf(LOG_DEBUG, "Expense: base_dir = [%s]\n", info->base_dir);
+	 jp_logf(JP_LOG_DEBUG, "Expense: base_dir = [%s]\n", info->base_dir);
       }
    }
    return 0;
@@ -1577,7 +1577,7 @@ int plugin_startup(jp_startup_info *info)
  */
 int plugin_pre_sync(void)
 {
-   jp_logf(LOG_DEBUG, "Expense: plugin_pre_sync\n");
+   jp_logf(JP_LOG_DEBUG, "Expense: plugin_pre_sync\n");
    return 0;
 }
 
@@ -1589,7 +1589,7 @@ int plugin_pre_sync(void)
  */
 int plugin_sync(int sd)
 {
-   jp_logf(LOG_DEBUG, "Expense: plugin_sync\n");
+   jp_logf(JP_LOG_DEBUG, "Expense: plugin_sync\n");
    return 0;
 }
 
@@ -1598,7 +1598,7 @@ static int add_search_result(const char *line, int unique_id, struct search_resu
 {
    struct search_result *temp_sr;
 
-   jp_logf(LOG_DEBUG, "Expense: add_search_result for [%s]\n", line);
+   jp_logf(JP_LOG_DEBUG, "Expense: add_search_result for [%s]\n", line);
    temp_sr=malloc(sizeof(struct search_result));
    if (!temp_sr) {
       return -1;
@@ -1632,7 +1632,7 @@ int plugin_search(const char *search_string, int case_sense, struct search_resul
    
    *sr=NULL;
 
-   jp_logf(LOG_DEBUG, "Expense: plugin_search\n");
+   jp_logf(JP_LOG_DEBUG, "Expense: plugin_search\n");
 
    /* This function takes care of reading the Database for us */
    num = jp_read_DB_files("ExpenseDB", &records);
@@ -1670,41 +1670,41 @@ int plugin_search(const char *search_string, int case_sense, struct search_resul
 	 if (jp_strstr(mex.ex.amount, search_string, case_sense)) {
 	    /* Add it to our result list */
 	    line = strdup(mex.ex.amount);
-	    jp_logf(LOG_DEBUG, "Expense: calling add_search_result\n");
+	    jp_logf(JP_LOG_DEBUG, "Expense: calling add_search_result\n");
 	    add_search_result(line, br->unique_id, sr);
-	    jp_logf(LOG_DEBUG, "Expense: back from add_search_result\n");
+	    jp_logf(JP_LOG_DEBUG, "Expense: back from add_search_result\n");
 	    count++;
 	 }
 	 if (jp_strstr(mex.ex.vendor, search_string, case_sense)) {
 	    /* Add it to our result list */
 	    line = strdup(mex.ex.vendor);
-	    jp_logf(LOG_DEBUG, "Expense: calling add_search_result\n");
+	    jp_logf(JP_LOG_DEBUG, "Expense: calling add_search_result\n");
 	    add_search_result(line, br->unique_id, sr);
-	    jp_logf(LOG_DEBUG, "Expense: back from add_search_result\n");
+	    jp_logf(JP_LOG_DEBUG, "Expense: back from add_search_result\n");
 	    count++;
 	 }
 	 if (jp_strstr(mex.ex.city, search_string, case_sense)) {
 	    /* Add it to our result list */
 	    line = strdup(mex.ex.city);
-	    jp_logf(LOG_DEBUG, "Expense: calling add_search_result\n");
+	    jp_logf(JP_LOG_DEBUG, "Expense: calling add_search_result\n");
 	    add_search_result(line, br->unique_id, sr);
-	    jp_logf(LOG_DEBUG, "Expense: back from add_search_result\n");
+	    jp_logf(JP_LOG_DEBUG, "Expense: back from add_search_result\n");
 	    count++;
 	 }
 	 if (jp_strstr(mex.ex.attendees, search_string, case_sense)) {
 	    /* Add it to our result list */
 	    line = strdup(mex.ex.attendees);
-	    jp_logf(LOG_DEBUG, "Expense: calling add_search_result\n");
+	    jp_logf(JP_LOG_DEBUG, "Expense: calling add_search_result\n");
 	    add_search_result(line, br->unique_id, sr);
-	    jp_logf(LOG_DEBUG, "Expense: back from add_search_result\n");
+	    jp_logf(JP_LOG_DEBUG, "Expense: back from add_search_result\n");
 	    count++;
 	 }
 	 if (jp_strstr(mex.ex.note, search_string, case_sense)) {
 	    /* Add it to our result list */
 	    line = strdup(mex.ex.note);
-	    jp_logf(LOG_DEBUG, "Expense: calling add_search_result\n");
+	    jp_logf(JP_LOG_DEBUG, "Expense: calling add_search_result\n");
 	    add_search_result(line, br->unique_id, sr);
-	    jp_logf(LOG_DEBUG, "Expense: back from add_search_result\n");
+	    jp_logf(JP_LOG_DEBUG, "Expense: back from add_search_result\n");
 	    count++;
 	 }
 	 free_Expense(&(mex.ex));
@@ -1749,7 +1749,7 @@ int plugin_post_sync(void)
     * a sync with a plugin on the screen anyway.
     * If that changes, here is the code */
 
-   jp_logf(LOG_DEBUG, "Expense: plugin_post_sync\n");
+   jp_logf(JP_LOG_DEBUG, "Expense: plugin_post_sync\n");
 #if 0
    jp_get_home_file_name("ExpenseDB.pdb", full_name, 250);
 
@@ -1761,7 +1761,7 @@ int plugin_post_sync(void)
 
    num = unpack_ExpenseAppInfo(&ai, buf, size);
    if (num <= 0) {
-      jp_logf(LOG_WARN, _("Error reading %s\n"), "ExpenseDB.pdb");
+      jp_logf(JP_LOG_WARN, _("Error reading %s\n"), "ExpenseDB.pdb");
       return -1;
    }
 
@@ -1778,6 +1778,6 @@ int plugin_post_sync(void)
  */
 int plugin_exit_cleanup(void)
 {
-   jp_logf(LOG_DEBUG, "Expense: plugin_exit_cleanup\n");
+   jp_logf(JP_LOG_DEBUG, "Expense: plugin_exit_cleanup\n");
    return 0;
 }
