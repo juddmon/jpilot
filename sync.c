@@ -98,14 +98,16 @@ int pack_todo_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, in
 int unpack_memo_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len);
 int pack_memo_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len);
 
-  void sig_handler(int sig)
+void sig_handler(int sig)
 {
+   int status;
+
    jp_logf(JP_LOG_DEBUG, "caught signal SIGCHLD\n");
    glob_child_pid = 0;
 
    /*wait for any child processes */
-   waitpid(-1, NULL, WNOHANG);
-
+   waitpid(-1, &status, WNOHANG);
+     
    /*refresh the screen after a sync */
    /*cb_app_button(NULL, GINT_TO_POINTER(REDRAW));*/
 
@@ -224,7 +226,6 @@ int sync_once(struct my_sync_info *sync_info)
    int fd;
 #endif
    int r;
-   int i;
    struct my_sync_info *sync_info_copy;
 
    if (glob_child_pid) {
@@ -259,10 +260,12 @@ int sync_once(struct my_sync_info *sync_info)
        * the one to talk to/from the parent.
        * This prevents the child from corrupting the X file descriptor.
        */
+      /* Cannot close the debug file output descriptor */
+      /*
       for (i = 0; i < 255; i++) {
 	 if (i != 1 && i != 2 && i != pipe_to_parent && i != pipe_from_parent)
 	   close(i);
-      }
+      }*/
    }
 #ifdef USE_LOCKING
    r = sync_lock(&fd);
@@ -1376,7 +1379,7 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
     * 3. fast sync && full backup   fetch DBs in backup dir
     */
    jp_logf(JP_LOG_DEBUG, "sync_fetch flags=0x%x, num_backups=%d, fast=%d\n",
-	       flags, num_backups, fast_sync);
+	   flags, num_backups, fast_sync);
 
    end_of_list=NULL;
 
@@ -2340,12 +2343,13 @@ int fast_sync_application(char *DB_name, int sd)
    char *extra_dbname[2];
    long char_set;
 
-   jp_logf(JP_LOG_DEBUG, "fast_sync_application %s\n", DB_name);
-   get_pref(PREF_CHAR_SET, &char_set, NULL);
-
    if ((DB_name==NULL) || (strlen(DB_name) == 0) || (strlen(DB_name) > 250)) {
       return -1;
    }
+
+   jp_logf(JP_LOG_DEBUG, "fast_sync_application %s\n", DB_name);
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
+
    g_snprintf(log_entry, 255, _("Syncing %s\n"), DB_name);
    log_entry[255]='\0';
    jp_logf(JP_LOG_GUI, log_entry);
