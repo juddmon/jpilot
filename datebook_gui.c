@@ -402,6 +402,7 @@ int datebook_import_callback(GtkWidget *parent_window, const char *file_path, in
 	 new_a.begin.tm_mday=day;
 	 new_a.begin.tm_hour=hour;
 	 new_a.begin.tm_min=minute;
+	 new_a.begin.tm_isdst=-1;
 	 mktime(&(new_a.begin));
 
 	 /* End */
@@ -414,6 +415,7 @@ int datebook_import_callback(GtkWidget *parent_window, const char *file_path, in
 	 new_a.end.tm_mday=day;
 	 new_a.end.tm_hour=hour;
 	 new_a.end.tm_min=minute;
+	 new_a.end.tm_isdst=-1;
 	 mktime(&(new_a.end));
 
 	 /* Alarm */
@@ -450,6 +452,7 @@ int datebook_import_callback(GtkWidget *parent_window, const char *file_path, in
 	 new_a.repeatEnd.tm_year=year-1900;
 	 new_a.repeatEnd.tm_mon=month-1;
 	 new_a.repeatEnd.tm_mday=day;
+	 new_a.repeatEnd.tm_isdst=-1;
 	 mktime(&(new_a.repeatEnd));
 
 	 /* Repeat Frequency */
@@ -489,6 +492,7 @@ int datebook_import_callback(GtkWidget *parent_window, const char *file_path, in
 	    new_a.exception[i].tm_year=year-1900;
 	    new_a.exception[i].tm_mon=month-1;
 	    new_a.exception[i].tm_mday=day;
+	    new_a.exception[i].tm_isdst=-1;	 
 	    mktime(&(new_a.exception[i]));
 	    for (; (str_i<65535) && (text[str_i]); str_i++) {
 	       if (text[str_i]==',') {
@@ -1883,6 +1887,7 @@ static int get_details(struct Appointment *a, unsigned char *attrib)
 	 a->repeatEnd.tm_mon = glob_endon_day_tm.tm_mon;
 	 a->repeatEnd.tm_mday = glob_endon_day_tm.tm_mday;
 	 a->repeatEnd.tm_year = glob_endon_day_tm.tm_year;
+	 a->repeatEnd.tm_dst = -1;
 	 mktime(&a->repeatEnd);
       } else {
 	 a->repeatForever=1;
@@ -1899,6 +1904,7 @@ static int get_details(struct Appointment *a, unsigned char *attrib)
 	 a->repeatEnd.tm_mon = glob_endon_week_tm.tm_mon;
 	 a->repeatEnd.tm_mday = glob_endon_week_tm.tm_mday;
 	 a->repeatEnd.tm_year = glob_endon_week_tm.tm_year;
+	 a->repeatEnd.tm_dst = -1;
 	 mktime(&a->repeatEnd);
 
 	 get_pref(PREF_SHORTDATE, &ivalue, &svalue1);
@@ -1932,6 +1938,7 @@ static int get_details(struct Appointment *a, unsigned char *attrib)
 	 a->repeatEnd.tm_mon = glob_endon_mon_tm.tm_mon;
 	 a->repeatEnd.tm_mday = glob_endon_mon_tm.tm_mday;
 	 a->repeatEnd.tm_year = glob_endon_mon_tm.tm_year;
+	 a->repeatEnd.tm_dst = -1;
 	 mktime(&a->repeatEnd);
 
 	 get_pref(PREF_SHORTDATE, &ivalue, &svalue1);
@@ -1968,6 +1975,7 @@ static int get_details(struct Appointment *a, unsigned char *attrib)
 	 a->repeatEnd.tm_mon = glob_endon_year_tm.tm_mon;
 	 a->repeatEnd.tm_mday = glob_endon_year_tm.tm_mday;
 	 a->repeatEnd.tm_year = glob_endon_year_tm.tm_year;
+	 a->repeatEnd.tm_dst = -1;
 	 mktime(&a->repeatEnd);
 
 	 get_pref(PREF_SHORTDATE, &ivalue, &svalue1);
