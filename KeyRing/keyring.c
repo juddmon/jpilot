@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.34 2005/03/04 19:06:23 rousseau Exp $ */
+/* $Id: keyring.c,v 1.35 2005/03/04 20:29:03 rousseau Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -835,7 +835,7 @@ static void display_records()
    /* This function takes care of reading the Database for us */
    num = jp_read_DB_files("Keys-Gtkr", &records);
    if (-1 == num)
-     return 0;
+     return;
 
    /* Go to first entry in the list */
    for (temp_list = records; temp_list; temp_list = temp_list->prev) {
