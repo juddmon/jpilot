@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: jpilot 0.99.7\n"
+"Project-Id-Version: jpilot 0.99.8-pre7\n"
 "Report-Msgid-Bugs-To: jpilot-devel@jpilot.org\n"
 "POT-Creation-Date: 2005-01-08 11:39+0100\n"
 "PO-Revision-Date: 2004-10-01 23:05+0100\n"
@@ -1300,12 +1300,11 @@ msgstr "Bloc notes"
 
 #: jpilot.c:2595
 msgid "Do it now"
-msgstr ""
+msgstr "Le faire maintenant"
 
 #: jpilot.c:2595
-#, fuzzy
 msgid "Remind me later"
-msgstr "Rappel"
+msgstr "Me le rappeler plus tard"
 
 #: jpilot.c:2595
 msgid "Don't tell me again!"
@@ -1341,7 +1340,6 @@ msgid "\"."
 msgstr "\"."
 
 #: jpilot.c:2618
-#, fuzzy
 msgid "Select a UTF-8 encoding"
 msgstr "Selectionnez un encodage UTF-8"
 
@@ -2668,29 +2666,24 @@ msgid "Master Card"
 msgstr "MasterCard/Eurocard"
 
 #: Expense/expense.c:1653
-#, fuzzy
 msgid "Category:"
-msgstr "Catégorie : "
+msgstr "Catégorie :"
 
 #: Expense/expense.c:1666
-#, fuzzy
 msgid "Type:"
-msgstr "Type : "
+msgstr "Type :"
 
 #: Expense/expense.c:1679
-#, fuzzy
 msgid "Payment:"
-msgstr "Paiment : "
+msgstr "Paiement :"
 
 #: Expense/expense.c:1692
-#, fuzzy
 msgid "Currency:"
-msgstr "Monnaie : "
+msgstr "Monnaie :"
 
 #: Expense/expense.c:1705
-#, fuzzy
 msgid "Date:"
-msgstr "Date"
+msgstr "Date :"
 
 #: Expense/expense.c:1722
 msgid "Month:"
@@ -2705,19 +2698,16 @@ msgid "Year:"
 msgstr "Année :"
 
 #: Expense/expense.c:1763
-#, fuzzy
 msgid "Amount:"
-msgstr "Montant : "
+msgstr "Montant :"
 
 #: Expense/expense.c:1777
-#, fuzzy
 msgid "Vendor:"
-msgstr "Vendeur : "
+msgstr "Vendeur :"
 
 #: Expense/expense.c:1791
-#, fuzzy
 msgid "City:"
-msgstr "Ville : "
+msgstr "Ville :"
 
 #: Expense/expense.c:1805
 msgid "Attendees"
@@ -2782,5 +2772,3 @@ msgstr "Mot de passe : "
 msgid "Generate Password"
 msgstr "Génération d'un mot de passe"
 
-#~ msgid "OK, I will do it"
-#~ msgstr "Ok, je vais le faire"
