@@ -213,6 +213,8 @@ int export_gui(int w, int h, int x, int y,
 	       int columns,
 	       struct sorted_cats *sort_l,
 	       int pref_export,
+	       char *type_text[],
+	       int type_int[],
 	       void (*cb_export_menu)(GtkWidget *clist, int category),
 	       void (*cb_export_done)(GtkWidget *widget,
 				      const char *filename),
@@ -231,9 +233,6 @@ int export_gui(int w, int h, int x, int y,
    GtkWidget *scrolled_window;
    GtkWidget *label;
    GSList *group;
-   //undo fix this
-   char *type_text[]={"Text", "CSV", NULL};
-   int type_int[]={EXPORT_TYPE_TEXT, EXPORT_TYPE_CSV};
    int i;
    const char *svalue;
 

@@ -736,6 +736,8 @@ static void cb_todo_export_done(GtkWidget *widget, const char *filename)
 int todo_export(GtkWidget *window)
 {
    int w, h, x, y;
+   char *type_text[]={"Text", "CSV", NULL};
+   int type_int[]={EXPORT_TYPE_TEXT, EXPORT_TYPE_CSV};
 
    gdk_window_get_size(window->window, &w, &h);
    gdk_window_get_root_origin(window->window, &x, &y);
@@ -745,6 +747,8 @@ int todo_export(GtkWidget *window)
 
    export_gui(w, h, x, y, 5, sort_l,
 	      PREF_TODO_EXPORT_FILENAME,
+	      type_text,
+	      type_int,
 	      cb_todo_update_clist,
 	      cb_todo_export_done,
 	      cb_todo_export_ok
