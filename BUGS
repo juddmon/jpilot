@@ -9,9 +9,6 @@ These are some of the bugs that I know about:
 
 * Priority High:
 
- - Small memory leaks when switching between apps.  I probably am not doing
-   something right when destroying widgets.  I don't know what it is though.
- 
 * Priority Medium:
 
 * Priority Low:
