@@ -796,10 +796,11 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
 
    clist = gtk_clist_new_with_titles(1, titles);
 
+   gtk_clist_column_titles_passive(GTK_CLIST(clist));
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), 0, TRUE);
 
    Pdata.clist = clist;
-   gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_SINGLE);
+   gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
 		      GTK_SIGNAL_FUNC(cb_clist_edit_cats), &Pdata);
    gtk_box_pack_start(GTK_BOX(vbox1), clist, TRUE, TRUE, 1);
