@@ -1,8 +1,8 @@
-# $Id: Makefile.am,v 1.19 2003/06/02 01:24:04 judd Exp $
+# $Id: Makefile.am,v 1.20 2003/06/05 04:30:59 judd Exp $
 
-SUBDIRS = intl Expense SyncTime KeyRing docs dialer po
+SUBDIRS = intl Expense SyncTime KeyRing docs dialer po m4 empty icons
 
-EXTRA_DIST = reconf autogen.sh ChangeLog docs empty icons \
+EXTRA_DIST = reconf autogen.sh ChangeLog \
 	config.rpath mkinstalldirs \
 	BUGS jpilot.spec jpilot-col.spec jpilot.kdelnk jpilot.rh7.spec \
 	ChangeLog UPGRADING \
@@ -15,9 +15,6 @@ EXTRA_DIST = reconf autogen.sh ChangeLog docs empty icons \
 	dialer/README \
 	dialer/jpilot-dial.c \
 	po/POTFILES
-
-dist-hook:
-	  rm -rf `find $(distdir)/ -name CVS`
 
 bin_PROGRAMS = jpilot jpilot-dump jpilot-sync
 jpilot_SOURCES = \
@@ -147,45 +144,3 @@ ACLOCAL_AMFLAGS = -I m4
 desktopdir = $(datadir)/gnome/apps/Applications
 desktop_DATA = jpilot.desktop
 
-###
-# HTML documentation, etc.
-###
-install-data-local:
-	$(INSTALL) -d -m 755 $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)
-	$(INSTALL) -m 644 docs/manual.html $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)/
-	$(INSTALL) -m 644 docs/plugin.html $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)
-	$(INSTALL) -m 644 docs/jpilot-address.png $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)
-	$(INSTALL) -m 644 docs/jpilot-datebook.png $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)
-	$(INSTALL) -m 644 docs/jpilot-expense.png $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)
-	$(INSTALL) -m 644 docs/jpilot-install.png $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)
-	$(INSTALL) -m 644 docs/jpilot-memo.png $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)
-	$(INSTALL) -m 644 docs/jpilot-prefs.png $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)
-	$(INSTALL) -m 644 docs/jpilot-print.png $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)
-	$(INSTALL) -m 644 docs/jpilot-search.png $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)
-	$(INSTALL) -m 644 docs/jpilot-todo.png $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)
-	$(INSTALL) -m 644 docs/jpilot-toplogo.jpg $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)
-	$(INSTALL) -d -m 755 $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)/icons
-	$(INSTALL) -m 644 icons/README $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)/icons/README
-	$(INSTALL) -m 644 icons/jpilot-icon1.xpm $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)/icons/
-	$(INSTALL) -m 644 icons/jpilot-icon2.xpm $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)/icons/
-	$(INSTALL) -m 644 icons/jpilot-icon3.xpm $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)/icons/
-	$(INSTALL) -m 644 icons/jpilot-icon4.xpm $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)/icons/
-	$(INSTALL) -m 644 BUGS $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)/
-	$(INSTALL) -m 644 ChangeLog $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)/
-	$(INSTALL) -m 644 COPYING $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)/
-	$(INSTALL) -m 644 AUTHORS $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)/
-	$(INSTALL) -m 644 INSTALL $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)/
-	$(INSTALL) -m 644 README $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)/
-	$(INSTALL) -m 644 TODO $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)/
-	$(INSTALL) -m 644 UPGRADING $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)/
-	$(INSTALL) -d -m 755 $(DESTDIR)/$(prefix)/share/$(PACKAGE)
-	$(INSTALL) -m 644 jpilotrc.blue $(DESTDIR)/$(prefix)/share/$(PACKAGE)/
-	$(INSTALL) -m 644 jpilotrc.default $(DESTDIR)/$(prefix)/share/$(PACKAGE)/
-	$(INSTALL) -m 644 jpilotrc.green $(DESTDIR)/$(prefix)/share/$(PACKAGE)/
-	$(INSTALL) -m 644 jpilotrc.purple $(DESTDIR)/$(prefix)/share/$(PACKAGE)/
-	$(INSTALL) -m 644 jpilotrc.steel $(DESTDIR)/$(prefix)/share/$(PACKAGE)/
-	$(INSTALL) -m 644 empty/* $(DESTDIR)/$(prefix)/share/$(PACKAGE)/
-uninstall-local:
-	rm -f $(DESTDIR)/$(prefix)/share/$(PACKAGE)/jpilotrc.*
-	rm -f $(DESTDIR)/$(prefix)/share/$(PACKAGE)/empty/*
-	rm -f $(DESTDIR)/$(prefix)/doc/$(PACKAGE)-$(VERSION)/
