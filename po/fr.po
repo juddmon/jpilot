@@ -92,11 +92,11 @@ msgstr "Voulez vous écraser le fichier %s?"
 
 #: address_gui.c:713 datebook_gui.c:696 memo_gui.c:519 todo_gui.c:670
 msgid "Overwrite File?"
-msgstr "Ecraser le fichier?"
+msgstr "Écraser le fichier?"
 
 #: address_gui.c:714 datebook_gui.c:697 memo_gui.c:520 todo_gui.c:671
 msgid "Overwrite File"
-msgstr "Ecrase le fichier"
+msgstr "Écrase le fichier"
 
 #: address_gui.c:722 datebook_gui.c:705 memo_gui.c:528 todo_gui.c:679
 #, c-format
@@ -1220,7 +1220,7 @@ msgstr "Impossible d'ouvrir le pipe\n"
 
 #: jpilot.c:1940
 msgid " User: "
-msgstr "Utilisateur : "
+msgstr " Utilisateur : "
 
 #: jpilot.c:2087
 msgid "Clear"
@@ -1440,7 +1440,7 @@ msgid ""
 "Open failed on plugin [%s]\n"
 " error [%s]\n"
 msgstr ""
-"Echec d'ouverture du greffon [%s]\n"
+"Échec d'ouverture du greffon [%s]\n"
 " erreur [%s]\n"
 
 #: plugins.c:285 plugins.c:311
@@ -1764,7 +1764,7 @@ msgstr "Tiens compte de MAJ/min"
 
 #: sync.c:134
 msgid "open lock file failed\n"
-msgstr "Echec à l'ouverture du fichier verrou\n"
+msgstr "Échec à l'ouverture du fichier verrou\n"
 
 #: sync.c:147
 msgid "lock failed\n"
@@ -1927,7 +1927,7 @@ msgstr "Supprime un enregistrement %s."
 #: sync.c:1028 sync.c:2157 sync.c:2495
 #, c-format
 msgid "Wrote a %s record."
-msgstr "Ecrit un enregistrement %s."
+msgstr "Écrit un enregistrement %s."
 
 #: sync.c:1030 sync.c:2159 sync.c:2497
 #, c-format
@@ -1970,12 +1970,12 @@ msgstr "Récupère '%s' (Creator ID '%s')... "
 #: sync.c:1293 sync.c:1672
 #, c-format
 msgid "Failed, unable to create file %s\n"
-msgstr "Echoué, ne peut créer le fichier %s\n"
+msgstr "Échoué, ne peut créer le fichier %s\n"
 
 #: sync.c:1304 sync.c:1681
 #, c-format
 msgid "Failed, unable to back up database %s\n"
-msgstr "Echoué, ne peut sauvegarder la base de données %s\n"
+msgstr "Échoué, ne peut sauvegarder la base de données %s\n"
 
 #: sync.c:1308 sync.c:1685 sync.c:1852
 msgid "OK\n"
@@ -2030,7 +2030,7 @@ msgstr "Installation de %s echouée"
 
 #: sync.c:1841
 msgid "Failed.\n"
-msgstr "Echoué.\n"
+msgstr "Échoué.\n"
 
 #: sync.c:1848
 #, c-format
