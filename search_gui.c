@@ -417,6 +417,9 @@ static void
       gtk_clist_set_text(GTK_CLIST(clist), 0, 1, _("No records found"));
    }
 
+   /* Size columns to fit displayed text */
+   gtk_clist_columns_autosize(GTK_CLIST(clist));
+
    return;
 }
 
@@ -533,8 +536,6 @@ void cb_search_gui(GtkWidget *widget, gpointer data)
 		      NULL);
    gtk_clist_set_shadow_type(GTK_CLIST(clist), SHADOW);
    gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
-   gtk_clist_set_column_width(GTK_CLIST(clist), 0, 54);
-   gtk_clist_set_column_width(GTK_CLIST(clist), 1, 300);
 
    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
 
