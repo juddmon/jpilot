@@ -505,7 +505,6 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
    };
    int exception_days;
    static int days, begin_days;
-   static struct tm cached_date;
 
    /* jp_logf(JP_LOG_DEBUG, "isApptOnDate\n"); */
 
@@ -515,13 +514,6 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
       return FALSE;
    }
 
-   /* To try to speed things up */
-   if (memcmp(date, &cached_date, sizeof(struct tm))) {
-      memcpy(&cached_date, date, sizeof(struct tm));
-   } else {
-      days=0;
-      begin_days=0;
-   }
    /* Leap year */
    if ((date->tm_year%4 == 0) &&
        !(((date->tm_year+1900)%100==0) && ((date->tm_year+1900)%400!=0))
@@ -550,12 +542,9 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
       break;
     case repeatDaily:
       /* See if this appt repeats on this day */
-      if (!begin_days) {
-	 begin_days = dateToDays(&(a->begin));
-      }
-      if (!days) {
-	 days = dateToDays(date);
-      }
+      begin_days = dateToDays(&(a->begin));
+      days = dateToDays(date);
+
       ret = (((days - begin_days)%(a->repeatFrequency))==0);
       break;
     case repeatWeekly:
@@ -575,12 +564,9 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
 	 break;
       }
       /*See if we are in a week that is repeated in */
-      if (!begin_days) {
-	 begin_days = dateToDays(&(a->begin));
-      }
-      if (!days) {
-	 days = dateToDays(date);
-      }
+      begin_days = dateToDays(&(a->begin));
+      days = dateToDays(date);
+
       /* get_pref(PREF_FDOW, &fdow, NULL); */
       /* Note: Palm Bug?  I think the palm does this wrong.
        * I prefer this way of doing it so that you can have appts repeating
