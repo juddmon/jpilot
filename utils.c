@@ -1145,7 +1145,11 @@ int dialog_generic_with_text(GtkWindow *main_window,
 			     int with_text)
 {
    GtkWidget *button, *label1;
-   GtkWidget *text_widget;
+#ifdef ENABLE_GTK2
+   GtkTextView *text_widget;
+#else
+   GtkText *text_widget;
+#endif
 
    GtkWidget *hbox1, *vbox1;
    GtkWidget *frame1;
@@ -1185,19 +1189,19 @@ int dialog_generic_with_text(GtkWindow *main_window,
 
    if (with_text) {
 #ifndef ENABLE_GTK2
-      text_widget = gtk_text_new(NULL, NULL);
-      gtk_text_set_editable(GTK_TEXT(text_widget), FALSE);
-      gtk_text_set_word_wrap(GTK_TEXT(text_widget), TRUE);
-      gtk_box_pack_start(GTK_BOX(vbox1), text_widget, TRUE, TRUE, 0);
-      gtk_text_insert(GTK_TEXT(text_widget), NULL, NULL, NULL, text, -1);
+      text_widget = GTK_TEXT(gtk_text_new(NULL, NULL));
+      gtk_text_set_editable(text_widget, FALSE);
+      gtk_text_set_word_wrap(text_widget, TRUE);
+      gtk_box_pack_start(GTK_BOX(vbox1), GTK_WIDGET(text_widget), TRUE, TRUE, 0);
+      gtk_text_insert(text_widget, NULL, NULL, NULL, text, -1);
 #else
-      text_widget = gtk_text_view_new();
+      text_widget = GTK_TEXT_VIEW(gtk_text_view_new());
       gtk_text_buffer_set_text(
-	 gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_widget)), text, -1);
-      gtk_text_view_set_editable(GTK_TEXT_VIEW(text_widget), FALSE);
-      gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(text_widget), FALSE);
-      gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text_widget), GTK_WRAP_WORD);
-      gtk_box_pack_start(GTK_BOX(vbox1), text_widget, TRUE, TRUE, 0);
+	 gtk_text_view_get_buffer(text_widget), text, -1);
+      gtk_text_view_set_editable(text_widget, FALSE);
+      gtk_text_view_set_cursor_visible(text_widget, FALSE);
+      gtk_text_view_set_wrap_mode(text_widget, GTK_WRAP_WORD);
+      gtk_box_pack_start(GTK_BOX(vbox1), GTK_WIDGET(text_widget), TRUE, TRUE, 0);
 #endif
    } else {
       label1 = gtk_label_new(text);
