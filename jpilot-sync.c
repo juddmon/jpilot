@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
       if (!strncasecmp(argv[i], "-v", 2)) {
 	 char options[1024];
 	 get_compile_options(options, sizeof(options));
-	 printf("%s\n", options);
+	 printf("\n%s\n", options);
 	 exit(0);
       }
       if ( (!strncmp(argv[i], "-h", 2)) || (!strncasecmp(argv[1], "-?", 2))

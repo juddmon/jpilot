@@ -8,10 +8,11 @@ License:   GPL
 Group:     Applications/Productivity
 Source:    http://jpilot.org/jpilot-%{version}.tar.gz
 URL:       http://jpilot.org
-Packager:  Judd Montgomery <judd@jpilot.org>
+Packager:  Paul Gear <paul@gear.dyndns.org>
 Prefix:    /usr
-DocDir:    %{prefix}/doc
+DocDir:    %{prefix}/share/doc
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
+Requires:  pilot-link > 0.11.2
 
 %description
 J-Pilot is a desktop organizer application for the palm pilot that runs
@@ -20,7 +21,7 @@ functionality to the one that 3Com distributes and has many features
 not found in the 3Com desktop.
 
 %define _prefix %{prefix}
-%define _mandir %{prefix}/man
+%define _mandir %{prefix}/share/man
 %define _infodir %{prefix}/share/info
 %define _datadir %{prefix}/share
 
@@ -76,6 +77,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc docs/jpilot-toplogo.jpg
 %{_bindir}/jpilot
 %{_bindir}/jpilot-dump
+%{_bindir}/jpilot-dial
 %{_bindir}/jpilot-sync
 %{_datadir}/jpilot/jpilotrc.blue
 %{_datadir}/jpilot/jpilotrc.default
@@ -105,6 +107,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man1/jpilot-dial.1.gz
 %{_mandir}/man1/jpilot-sync.1.gz
 %{prefix}/share/pixmaps/*
+%{_datadir}/gnome/apps/Applications/jpilot.desktop
 
 %changelog
 * Sat Feb 22 2003 Judd Montgomery <judd@jpilot.org>
@@ -119,11 +122,11 @@ rm -rf $RPM_BUILD_ROOT
 - fixed this spec file so we don't need superuser privileges.
 - changed the hardcoded path into rpm macros
 * Wed Nov 22 2000 Matthew Vanecek <linux4us@home.com>
-- deleted the calls to 'install' in the %install section since
+- deleted the calls to 'install' in the % install section since
   this is already done in the Makefile.
 - Deleted the %attr tags from the %files list and made the default
   attribute to -,root,root.
-- changed the /usr/ to %{prefix}/
-- Added the %post section
-- Added the %clean section
+- changed the /usr/ to % {prefix}/
+- Added the % post section
+- Added the % clean section
 - Changed the description
