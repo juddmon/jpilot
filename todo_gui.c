@@ -1041,6 +1041,8 @@ int todo_clear_details()
    }
 
    set_new_button_to(CLEAR_FLAG);
+   connect_changed_signals(CONNECT_SIGNALS);
+
    return 0;
 }
 
