@@ -40,6 +40,9 @@
 #include "datebook.h"
 #include "todo.h"
 #include "i18n.h"
+#ifdef ENABLE_GTK2
+#include "otherconv.h"
+#endif
 
 #ifndef FALSE
 #define FALSE 0
@@ -979,6 +982,13 @@ printf("year=%d,month=%d,day=%d\n",Nyear,Nmonth,Nday);
       }/*fi*/
    }/*for*/
 
+#ifdef ENABLE_GTK2
+   if (otherconv_init()) {
+      printf("Error: could not set encoding\n");
+      return 1;
+   }
+#endif
+
    if (dumpB) {
 	dumpbook();
    }/*end dumpB*/
@@ -995,6 +1005,9 @@ printf("year=%d,month=%d,day=%d\n",Nyear,Nmonth,Nday);
 	dumptodo();
    }/*end dumpT*/
 
+#ifdef ENABLE_GTK2
+   otherconv_free();
+#endif
 
  /* clean up */
 
