@@ -2342,7 +2342,7 @@ set_new_button_to(int new_state)
       /* The line selected on the clist becomes unhighlighted, so we do this */
       gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
       gtk_widget_show(apply_record_button);
-      gtk_widget_hide(copy_record_button);
+      //gtk_widget_hide(copy_record_button);
       gtk_widget_hide(delete_record_button);
       break;
     case NEW_FLAG:
@@ -2377,7 +2377,7 @@ set_new_button_to(int new_state)
       break;
     case CLEAR_FLAG:
       gtk_widget_hide(new_record_button);
-      gtk_widget_hide(copy_record_button);
+      //gtk_widget_hide(copy_record_button);
       gtk_widget_hide(delete_record_button);
       break;
    }
@@ -2555,10 +2555,18 @@ static void cb_add_new_record(GtkWidget *widget,
 	 }
       }
    } else {
+      unique_id=0; /* Has to be zero */
       pc_datebook_write(&new_a, NEW_PC_REC, attrib, NULL);
+      gtk_calendar_freeze(GTK_CALENDAR(main_calendar));
+      gtk_calendar_select_day(GTK_CALENDAR(main_calendar), 1);
+      gtk_calendar_select_month(GTK_CALENDAR(main_calendar),
+				new_a.begin.tm_mon, new_a.begin.tm_year+1900);
+      gtk_calendar_select_day(GTK_CALENDAR(main_calendar), new_a.begin.tm_mday);
+      gtk_calendar_thaw(GTK_CALENDAR(main_calendar));
+      glob_find_id=unique_id;//jbm
    }
    free_Appointment(&new_a);
-   /*dayview_update_clist(); */
+   /*update_clist(); */
    /* Force the calendar redraw and re-read of appointments */
    gtk_signal_emit_by_name(GTK_OBJECT(main_calendar), "day_selected");
 
@@ -2578,11 +2586,23 @@ void cb_delete_appt(GtkWidget *widget, gpointer data)
    int flag;
    int result;
    int show_priv;
+   unsigned long char_set;
 
    ma = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
    if (ma < (MyAppointment *)CLIST_MIN_DATA) {
       return;
    }
+   /* JPA convert to Palm character set */
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
+   if (char_set != CHAR_SET_LATIN1) {
+      if (ma->a.description)
+	charset_j2p((unsigned char *)ma->a.description,
+		    strlen(ma->a.description)+1, char_set);
+      if (ma->a.note)
+	charset_j2p((unsigned char *)ma->a.note,
+		    strlen(ma->a.note)+1, char_set);
+   }
+
    /* Do masking like Palm OS 3.5 */
    show_priv = show_privates(GET_PRIVATES);
    if ((show_priv != SHOW_PRIVATES) &&
@@ -3574,7 +3594,6 @@ GtkWidget *create_time_menu(int flags)
    int i, i_stop;
    int cb_factor;
    struct tm t;
-   const char *svalue;
 
    option = gtk_option_menu_new();
    menu = gtk_menu_new();
@@ -3587,13 +3606,7 @@ GtkWidget *create_time_menu(int flags)
    if (flags&0x40) {
       i_stop=24;
       cb_factor=1;
-      get_pref(PREF_TIME, NULL, &svalue);
-      strncpy(str, svalue, 2);
-      str[2]='\0';
-      if (!strncasecmp(&(svalue[strlen(svalue)-2]), "%p", 2)) {
-	 strncpy(&(str[2]), &(svalue[strlen(svalue)-2]), 2);
-	 str[4]='\0';
-      }
+      get_pref_hour_ampm(str);
    } else {
       i_stop=12;
       cb_factor=5;
