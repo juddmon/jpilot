@@ -241,6 +241,7 @@ static int get_plugin_info(struct plugin_s *p, char *path)
    p->plugin_import = NULL;
    p->plugin_export = NULL;
    p->plugin_gui_cleanup = NULL;
+   p->plugin_pre_sync_pre_connect = NULL;
    p->plugin_pre_sync = NULL;
    p->plugin_sync = NULL;
    p->plugin_post_sync = NULL;
@@ -368,6 +369,9 @@ static int get_plugin_info(struct plugin_s *p, char *path)
 
    /* plugin_pre_sync */
    p->plugin_pre_sync = dlsym(h, "plugin_pre_sync");
+
+   /* plugin_pre_sync_pre_connect */
+   p->plugin_pre_sync_pre_connect = dlsym(h, "plugin_pre_sync_pre_connect");
 
    /* plugin_sync */
    p->plugin_sync = dlsym(h, "plugin_sync");

@@ -195,6 +195,7 @@ int plugin_startup(jp_startup_info *info);
 int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id);
 int plugin_help(char **text, int *width, int *height);
 int plugin_gui_cleanup(void);
+int plugin_pre_sync_pre_connect(void);
 int plugin_pre_sync(void);
 int plugin_sync(int sd);
 int plugin_search(const char *search_string, int case_sense, struct search_result **sr);

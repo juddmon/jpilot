@@ -208,9 +208,15 @@ Most widgets will be destroyed when their parents are destroyed, so this
 function normally is not needed.
 <p>
 <hr WIDTH="100%">
-<p><b><tt>int plugin_pre_sync(void);</tt></b>
+<p><b><tt>int plugin_pre_sync_pre_connect(void);</tt></b>
 <p>This function is called after the j-pilot sync button is pressed and
-before the sync with the pilot is started.
+before the sync connection with the pilot is established.
+<p>
+<hr WIDTH="100%">
+<p><b><tt>int plugin_pre_sync(void);</tt></b>
+<p>This function is called after the j-pilot sync button is pressed, 
+after the sync connection with the pilot is established, but before any 
+syncing is done by jpilot.
 <p>
 <hr WIDTH="100%">
 <p><b><tt>int plugin_sync(int sd);</tt></b>

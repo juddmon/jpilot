@@ -427,7 +427,33 @@ int jp_sync(struct my_sync_info *sync_info)
    char buf[1024];
    long char_set;
    struct  SysInfo sys_info;
-   
+
+   /* Load the plugins since this is a forked process */
+#ifdef ENABLE_PLUGINS
+   if (!(sync_info->flags & SYNC_NO_PLUGINS)) {
+      jp_logf(JP_LOG_DEBUG, "sync:calling load_plugins\n");
+      load_plugins();
+   }
+#endif
+#ifdef ENABLE_PLUGINS
+   /* Do the plugin_pre_sync_pre_connect calls */
+   plugin_list=NULL;
+
+   plugin_list = get_plugin_list();
+
+   for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
+      plugin = (struct plugin_s *)temp_list->data;
+      if (plugin) {
+	 if (plugin->sync_on) {
+	    if (plugin->plugin_pre_sync_pre_connect) {
+	       jp_logf(JP_LOG_DEBUG, "sync:calling plugin_pre_sync_pre_connect for [%s]\n", plugin->name);
+	       plugin->plugin_pre_sync_pre_connect();
+	    }
+	 }
+      }
+   }
+#endif
+
    device = NULL;
    if (sync_info->port) {
       if (sync_info->port[0]) {
@@ -568,11 +594,6 @@ int jp_sync(struct my_sync_info *sync_info)
    /* The connection has been established here */
    /* Plugins should call pi_watchdog(); if they are going to be a while */
 #ifdef ENABLE_PLUGINS
-   if (!(sync_info->flags & SYNC_NO_PLUGINS)) {
-      jp_logf(JP_LOG_DEBUG, "sync:calling load_plugins\n");
-      load_plugins();
-   }
-
    /* Do the pre_sync plugin calls */
    plugin_list=NULL;
 

@@ -51,6 +51,7 @@ struct plugin_s
    int (*plugin_import)(GtkWidget *window);
    int (*plugin_export)(GtkWidget *window);
    int (*plugin_gui_cleanup)(void);
+   int (*plugin_pre_sync_pre_connect)(void);
    int (*plugin_pre_sync)(void);
    int (*plugin_sync)(int sd);
    int (*plugin_search)(const char *search_string, int case_sense, struct search_result **sr);
