@@ -336,7 +336,7 @@ int pc_datebook_write(struct Appointment *a, PCRecType rt,
    br.buf = record;
    br.size = rec_len;
    /* Keep unique ID intact */
-   if (unique_id) {
+   if ((unique_id) && (*unique_id!=0)) {
       br.unique_id = *unique_id;
    } else {
       br.unique_id = 0;
@@ -752,7 +752,10 @@ int weed_datebook_list(AppointmentList **al, int mon, int year,
     * search though it ~30 times.
     */
    for (prev_al=NULL, tal=*al; tal; tal = next_al) {
-      if (skip_privates && (tal->ma.attrib & dlpRecAttrSecret)) continue;
+      if (skip_privates && (tal->ma.attrib & dlpRecAttrSecret)) {
+	 next_al=tal->next;
+	 continue;
+      }
       trash_it=0;
       /* See if the appointment starts after the last day of the month */
       r = compareTimesToDay(&(tal->ma.a.begin), &tm_ldom);
