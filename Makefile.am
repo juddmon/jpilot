@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.29 2004/10/02 20:13:29 rousseau Exp $
+# $Id: Makefile.am,v 1.30 2004/10/17 11:57:28 rousseau Exp $
 
 SUBDIRS = Expense SyncTime KeyRing docs dialer po m4 empty icons
 
@@ -150,10 +150,10 @@ better-world:
 peace:
 	echo "make peace: not war"
 
-#ChangeLog:
-#	rcs2log > $@
-#
-#.PHONY: ChangeLog
+ChangeLog.cvs:
+	rcs2log | perl -pe 's/rousseau /Ludovic Rousseau /; \
+	s/judd /Judd Montgomery /; s/desrod /David A. Desrosiers /; \
+	s/rikster5 /Rik Wehbring /' > $@
 
 
 ACLOCAL_AMFLAGS = -I m4
