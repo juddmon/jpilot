@@ -353,8 +353,13 @@ void import_gui(GtkWidget *main_window, GtkWidget *main_pane,
 
    /* This callback is for a file guess algorithm and to pre-push
     * the type buttons */
+#ifdef ENABLE_GTK2
+   gtk_signal_connect(GTK_OBJECT(GTK_FILE_SELECTION(filew)->file_list),
+		      "cursor_changed", GTK_SIGNAL_FUNC(cb_import_select_row), NULL);
+#else
    gtk_signal_connect(GTK_OBJECT(GTK_CLIST(GTK_FILE_SELECTION(filew)->file_list)),
 		      "select_row", GTK_SIGNAL_FUNC(cb_import_select_row), NULL);
+#endif
 
    gtk_widget_show_all(vbox);
 
