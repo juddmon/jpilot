@@ -249,11 +249,11 @@ usb=no;
 pl12=no;
 pl_version_check_done=no;
 
-pl_version=`grep PILOT_LINK_VERSION "$pilot_incl/pi-version.h" | \
+pl_version=`grep "define PILOT_LINK_VERSION" "$pilot_incl/pi-version.h" | \
 cut -d " " -f 3`
-pl_major=`grep PILOT_LINK_MAJOR "$pilot_incl/pi-version.h" | \
+pl_major=`grep "define PILOT_LINK_MAJOR" "$pilot_incl/pi-version.h" | \
 cut -d " " -f 3`
-pl_minor=`grep PILOT_LINK_MINOR "$pilot_incl/pi-version.h" | \
+pl_minor=`grep "define PILOT_LINK_MINOR" "$pilot_incl/pi-version.h" | \
 cut -d " " -f 3`
 AC_MSG_RESULT([pi-version indicates $pl_version.$pl_major.$pl_minor])
 
