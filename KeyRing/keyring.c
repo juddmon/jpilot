@@ -619,9 +619,15 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    kr.note = (char *)gtk_editable_get_chars(GTK_EDITABLE(text_note), 0, -1);
 #endif
 
+   kr.name = strdup(kr.name);
    jp_charset_j2p((unsigned char *)kr.name, strlen(kr.name)+1);
+
+   kr.account = strdup(kr.account);
    jp_charset_j2p((unsigned char *)kr.account, strlen(kr.account)+1);
+   
+   kr.password = strdup(kr.password);
    jp_charset_j2p((unsigned char *)kr.password, strlen(kr.password)+1);
+   
    jp_charset_j2p((unsigned char *)kr.note, strlen(kr.note)+1);
 
    pack_KeyRing(&kr, buf, 0xFFFF, &new_size);
