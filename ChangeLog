@@ -1,3 +1,11 @@
+0.99.4 - 12/15/02
+ Added a dialer program and GUI launcher
+ Added Syncronization of categories and editing categories on desktop
+ Added Export of iCalendar format from ToDo and Datebook
+ Added Export of vCard format from Address book
+ Added Russian Language Support
+ Removed jpilot-upgrade-99
+
 0.99.3 - 11/01/02
  Added Simplified Chinese translation
  Added Traditional Chinese translation
