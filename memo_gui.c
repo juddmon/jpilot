@@ -1354,6 +1354,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    long ivalue;
    const char *svalue;
    GtkAccelGroup *accel_group;
+   long char_set;
 
    clist_row_selected=0;
    record_changed=CLEAR_FLAG;
@@ -1365,8 +1366,9 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    get_memo_app_info(&memo_app_info);
 
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
    for (i=0; i<NUM_MEMO_CAT_ITEMS; i++) {
-      sort_l[i].Pcat = memo_app_info.category.name[i];
+      sort_l[i].Pcat = charset_p2newj(memo_app_info.category.name[i], 31, char_set);
       sort_l[i].cat_num = i;
    }
    qsort(sort_l, NUM_MEMO_CAT_ITEMS, sizeof(struct sorted_cats), cat_compare);

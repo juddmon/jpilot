@@ -221,15 +221,6 @@ int get_memo_app_info(struct MemoAppInfo *ai)
       return -1;
    }
 
-   get_pref(PREF_CHAR_SET, &char_set, NULL);
-   if (char_set != CHAR_SET_LATIN1) {
-      for (i = 0; i < 16; i++) {
-	 if (ai->category.name[i][0] != '\0') {
-	    charset_p2j((unsigned char *)ai->category.name[i], 16, char_set);
-	 }
-      }
-   }
-
    return 0;
 }
 
