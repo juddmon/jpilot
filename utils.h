@@ -265,6 +265,12 @@ int setup_sync(unsigned int flags);
 void cb_sync(GtkWidget *widget, unsigned int flags);
 void get_compile_options(char *string, int len);
 
+int dialog_generic_with_text(GtkWindow *main_window,
+			     int w, int h,
+			     char *title, char *frame_text,
+			     char *text, int nob, char *button_text[],
+			     int with_text);
+
 /* Returns the number of the button that was pressed */
 int dialog_generic(GtkWindow *main_window,
 		   int w, int h,

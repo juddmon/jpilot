@@ -67,8 +67,8 @@ static int glob_cal_mon, glob_cal_day, glob_cal_year;
 void get_compile_options(char *string, int len)
 {
    g_snprintf(string, len,
-	      "\n"PN" version "VERSION"\n"
-	      " Copyright (C) 1999-2003 by Judd Montgomery\n"
+	      PN" version "VERSION"\n"
+	      " Copyright (C) 1999-2004 by Judd Montgomery\n"
 	      " judd@jpilot.org, http://jpilot.org\n"
 	      PN" comes with ABSOLUTELY NO WARRANTY; for details see the file\n"
 	      "COPYING included with the source code, or in /usr/docs/jpilot/.\n\n"
@@ -1120,31 +1120,28 @@ static gboolean cb_destroy_dialog(GtkWidget *widget)
    return FALSE;
 }
 
-/*nob = number of buttons (1-3) */
-int dialog_generic(GtkWindow *main_window,
-		   int w, int h,
-		   char *title, char *frame_text,
-		   char *text, int nob, char *button_text[])
+/* nob = number of buttons */
+int dialog_generic_with_text(GtkWindow *main_window,
+			     int w, int h,
+			     char *title, char *frame_text,
+			     char *text, int nob, char *button_text[],
+			     int with_text)
 {
    GtkWidget *button, *label1;
+   GtkWidget *text_widget;
 
    GtkWidget *hbox1, *vbox1;
    GtkWidget *frame1;
+   int i;
 
    dialog_result=0;
+   glob_dialog = gtk_widget_new(GTK_TYPE_WINDOW,
+				"type", GTK_WINDOW_TOPLEVEL,
+				"window_position", GTK_WIN_POS_MOUSE,
+				"title", title,
+				NULL);
    if (w && h) {
-      glob_dialog = gtk_widget_new(GTK_TYPE_WINDOW,
-				   "type", GTK_WINDOW_TOPLEVEL,
-				   "window_position", GTK_WIN_POS_MOUSE,
-				   "title", title,
-				   NULL);
       gtk_window_set_default_size(GTK_WINDOW(glob_dialog), w, h);
-   } else {
-      glob_dialog = gtk_widget_new(GTK_TYPE_WINDOW,
-				   "window_position", GTK_WIN_POS_MOUSE,
-				   "type", GTK_WINDOW_TOPLEVEL,
-				   "title", title,
-				   NULL);
    }
 
    gtk_signal_connect(GTK_OBJECT(glob_dialog), "destroy",
@@ -1168,34 +1165,38 @@ int dialog_generic(GtkWindow *main_window,
    gtk_container_add(GTK_CONTAINER(glob_dialog), frame1);
    gtk_container_add(GTK_CONTAINER(frame1), vbox1);
 
-   label1 = gtk_label_new(text);
-#ifdef ENABLE_GTK2
-   gtk_label_set_selectable(GTK_LABEL(label1), TRUE);
+
+   if (with_text) {
+#ifndef ENABLE_GTK2
+      text_widget = gtk_text_new(NULL, NULL);
+      gtk_text_set_editable(GTK_TEXT(text_widget), FALSE);
+      gtk_text_set_word_wrap(GTK_TEXT(text_widget), TRUE);
+      gtk_box_pack_start(GTK_BOX(vbox1), text_widget, TRUE, TRUE, 0);
+      gtk_text_insert(GTK_TEXT(text_widget), NULL, NULL, NULL, text, -1);
+#else
+      text_widget = gtk_text_view_new();
+      gtk_text_buffer_set_text(GTK_TEXT_BUFFER(
+	 G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_widget)))
+	 ), text, -1);
+      gtk_text_view_set_editable(GTK_TEXT_VIEW(text_widget), FALSE);
+      gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text_widget), GTK_WRAP_WORD);
+      gtk_box_pack_start(GTK_BOX(vbox1), text_widget, TRUE, TRUE, 0);
 #endif
-   gtk_box_pack_start(GTK_BOX(vbox1), label1, FALSE, FALSE, 2);
-   gtk_box_pack_start(GTK_BOX(vbox1), hbox1, TRUE, TRUE, 2);
-
-   if (nob > 0) {
-      button = gtk_button_new_with_label(gettext(button_text[0]));
-      gtk_signal_connect(GTK_OBJECT(button), "clicked",
-			 GTK_SIGNAL_FUNC(cb_dialog_button),
-			 GINT_TO_POINTER(DIALOG_SAID_1));
-      gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
+   } else {
+      label1 = gtk_label_new(text);
+      gtk_box_pack_start(GTK_BOX(vbox1), label1, FALSE, FALSE, 2);
+#ifdef ENABLE_GTK2
+      gtk_label_set_selectable(GTK_LABEL(label1), TRUE);
+#endif
    }
 
-   if (nob > 1) {
-      button = gtk_button_new_with_label(gettext(button_text[1]));
-      gtk_signal_connect(GTK_OBJECT(button), "clicked",
-			 GTK_SIGNAL_FUNC(cb_dialog_button),
-			 GINT_TO_POINTER(DIALOG_SAID_2));
-      gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
-   }
+   gtk_box_pack_start(GTK_BOX(vbox1), hbox1, FALSE, FALSE, 2);
 
-   if (nob > 2) {
-      button = gtk_button_new_with_label(gettext(button_text[2]));
+   for (i=0; i < nob; i++) {
+      button = gtk_button_new_with_label(gettext(button_text[i]));
       gtk_signal_connect(GTK_OBJECT(button), "clicked",
 			 GTK_SIGNAL_FUNC(cb_dialog_button),
-			 GINT_TO_POINTER(DIALOG_SAID_3));
+			 GINT_TO_POINTER(DIALOG_SAID_1 + i));
       gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
    }
 
@@ -1204,6 +1205,18 @@ int dialog_generic(GtkWindow *main_window,
    gtk_main();
 
    return dialog_result;
+}
+
+int dialog_generic(GtkWindow *main_window,
+		   int w, int h,
+		   char *title, char *frame_text,
+		   char *text, int nob, char *button_text[])
+{
+   return dialog_generic_with_text(main_window,
+				   w, h,
+				   title, frame_text,
+				   text, nob, button_text,
+				   0);
 }
 
 int dialog_generic_ok(GtkWidget *widget,
