@@ -1403,6 +1403,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    time_t ltime;
    struct tm *now;
 
+   if ((!event) && (column < 0)) return;
    if ((!event) && (clist_hack)) return;
 
    /* HACK, see clist hack explanation in memo_gui.c */
@@ -1414,10 +1415,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
       }
       set_new_button_to(CLEAR_FLAG);
-      /* This doesn't cause an event to occur, it does highlight
-       * the line, so we do the next call also */
       gtk_clist_select_row(GTK_CLIST(clist), row, column);
-      cb_clist_selection(clist, row, column, GINT_TO_POINTER(1), NULL);
       return;
    }
 
@@ -1577,7 +1575,6 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 		       ToDoList **todo_list, int category, int main)
 {
    int num_entries, entries_shown, i;
-   int row_count;
    gchar *empty_line[] = { "","","","","" };
    GdkPixmap *pixmap_note;
    GdkPixmap *pixmap_check;
@@ -1597,13 +1594,6 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    struct tm *now, *due;
    int comp_now, comp_due;
 
-   row_count=(GTK_CLIST(clist))->rows;
-
-   /* Need to remove pointers to data we are about to delete */
-   for (i=0; i<row_count; i++) {
-      gtk_clist_set_row_data(GTK_CLIST(clist), i, NULL);
-   }
-
    free_ToDoList(todo_list);
 
    /* Need to get all records including private ones for the tooltips calculation */
@@ -1613,21 +1603,18 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    if (main) {
       todo_clear_details();
    }
-   if (todo_list==NULL) {
-      /* Remove row 1 if the last item has just been deleted */
-      if (row_count == 1) {
-         gtk_clist_remove(GTK_CLIST(clist),0);
-      }
-      if (tooltip_widget) {
-	 gtk_tooltips_set_tip(glob_tooltips, tooltip_widget, _("0 records"), NULL);
-      }
-      return;
-   }
 
+   /* Freeze clist to prevent flicker during updating */
    gtk_clist_freeze(GTK_CLIST(clist));
+   gtk_clist_clear(GTK_CLIST(clist));
 
+   /* Collect preferences and constant pixmaps for loop */
    get_pref(PREF_HIDE_COMPLETED, &hide_completed, NULL);
    get_pref(PREF_HIDE_NOT_DUE, &hide_not_due, NULL);
+   show_priv = show_privates(GET_PRIVATES);
+   get_pixmaps(clist, PIXMAP_NOTE, &pixmap_note, &mask_note);
+   get_pixmaps(clist, PIXMAP_BOX_CHECK, &pixmap_check, &mask_check);
+   get_pixmaps(clist, PIXMAP_BOX_CHECKED, &pixmap_checked,&mask_checked);
 
    entries_shown=0;
    show_priv = show_privates(GET_PRIVATES);
@@ -1637,15 +1624,10 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 	 continue;
       }
 
-      /* Clear any existing overdue highlighting */
-      gtk_clist_set_cell_style(GTK_CLIST(clist), entries_shown, TODO_DATE_COLUMN,NULL);
-
       /* Do masking like Palm OS 3.5 */
       if ((show_priv == MASK_PRIVATES) && 
 	  (temp_todo->mtodo.attrib & dlpRecAttrSecret)) {
-	 if (entries_shown+1>row_count) {
-	    gtk_clist_append(GTK_CLIST(clist), empty_line);
-	 }
+	 gtk_clist_append(GTK_CLIST(clist), empty_line);
 	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, TODO_CHECK_COLUMN, "---");
 	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, TODO_PRIORITY_COLUMN, "---");
 	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, TODO_TEXT_COLUMN, "--------------------");
@@ -1683,19 +1665,34 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 	 }
       }
 
+      /* Hide the private records if need be */
       if ((show_priv != SHOW_PRIVATES) && 
 	  (temp_todo->mtodo.attrib & dlpRecAttrSecret)) {
 	 continue;
       }
 
-      if (entries_shown+1>row_count) {
-	 gtk_clist_append(GTK_CLIST(clist), empty_line);
+      /* Add entry to clist */
+      gtk_clist_append(GTK_CLIST(clist), empty_line);
+
+      /* Put a checkbox or checked checkbox pixmap up */
+      if (temp_todo->mtodo.todo.complete) {
+	 gtk_clist_set_pixmap(GTK_CLIST(clist), entries_shown, TODO_CHECK_COLUMN, pixmap_checked, mask_checked);
+      } else {
+	 gtk_clist_set_pixmap(GTK_CLIST(clist), entries_shown, TODO_CHECK_COLUMN, pixmap_check, mask_check);
       }
-      lstrncpy_remove_cr_lfs(str2, temp_todo->mtodo.todo.description, TODO_MAX_COLUMN_LEN);
-      gtk_clist_set_text(GTK_CLIST(clist), entries_shown, TODO_TEXT_COLUMN, str2);
+
+      /* Print the priority number */
       sprintf(str, "%d", temp_todo->mtodo.todo.priority);
       gtk_clist_set_text(GTK_CLIST(clist), entries_shown, TODO_PRIORITY_COLUMN, str);
 
+      /* Put a note pixmap up */
+      if (temp_todo->mtodo.todo.note[0]) {
+	 gtk_clist_set_pixmap(GTK_CLIST(clist), entries_shown, TODO_NOTE_COLUMN, pixmap_note, mask_note);
+      } else {
+	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, TODO_NOTE_COLUMN, "");
+      }
+
+      /* Print the due date */
       if (!temp_todo->mtodo.todo.indefinite) {
 	  get_pref(PREF_SHORTDATE, &ivalue, &svalue);
 	  get_pref_possibility(PREF_SHORTDATE,ivalue,str);
@@ -1705,9 +1702,13 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 	  sprintf(str, _("No date"));
       }
       gtk_clist_set_text(GTK_CLIST(clist), entries_shown, TODO_DATE_COLUMN, str);
+      /* Print the todo text */
+      lstrncpy_remove_cr_lfs(str2, temp_todo->mtodo.todo.description, TODO_MAX_COLUMN_LEN);
+      gtk_clist_set_text(GTK_CLIST(clist), entries_shown, TODO_TEXT_COLUMN, str2);
 
       gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_todo->mtodo));
 
+      /* Highlight row background depending on status */
       switch (temp_todo->mtodo.rt) {
        case NEW_PC_REC:
        case REPLACEMENT_PALM_REC:
@@ -1745,22 +1746,6 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 	 }
       }
 
-      get_pixmaps(clist, PIXMAP_NOTE, &pixmap_note, &mask_note);
-      get_pixmaps(clist, PIXMAP_BOX_CHECK, &pixmap_check, &mask_check);
-      get_pixmaps(clist, PIXMAP_BOX_CHECKED, &pixmap_checked,&mask_checked);
-
-      if (temp_todo->mtodo.todo.note[0]) {
-	 /*Put a note pixmap up */
-	 gtk_clist_set_pixmap(GTK_CLIST(clist), entries_shown, TODO_NOTE_COLUMN, pixmap_note, mask_note);
-      } else {
-	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, TODO_NOTE_COLUMN, "");
-      }
-      if (temp_todo->mtodo.todo.complete) {
-	 /*Put a check or checked pixmap up */
-	 gtk_clist_set_pixmap(GTK_CLIST(clist), entries_shown, TODO_CHECK_COLUMN, pixmap_checked, mask_checked);
-      } else {
-	 gtk_clist_set_pixmap(GTK_CLIST(clist), entries_shown, TODO_CHECK_COLUMN, pixmap_check, mask_check);
-      }
       entries_shown++;
    }
 
@@ -1772,24 +1757,24 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       if (clist_row_selected <= entries_shown)
       {
 	 gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, TODO_PRIORITY_COLUMN);
-	 cb_clist_selection(clist, clist_row_selected, TODO_PRIORITY_COLUMN, (GdkEventButton *)455, "");
       }
       else
       {
 	 gtk_clist_select_row(GTK_CLIST(clist), 0, TODO_PRIORITY_COLUMN);
-	 cb_clist_selection(clist, 0, TODO_PRIORITY_COLUMN, (GdkEventButton *)455, "");
       }
    }
 
-   for (i=row_count-1; i>=entries_shown; i--) {
-      gtk_clist_remove(GTK_CLIST(clist), i);
-   }
-
+   /* Unfreeze clist after all changes */
    gtk_clist_thaw(GTK_CLIST(clist));
 
    if (tooltip_widget) {
-      sprintf(str, _("%d of %d records"), entries_shown, num_entries);
-      gtk_tooltips_set_tip(glob_tooltips, tooltip_widget, str, NULL);
+      if (todo_list==NULL) {
+	 gtk_tooltips_set_tip(glob_tooltips, tooltip_widget, _("0 records"), NULL);
+      }
+      else {
+	 sprintf(str, _("%d of %d records"), entries_shown, num_entries);
+	 gtk_tooltips_set_tip(glob_tooltips, tooltip_widget, str, NULL);
+      }
    }
 
 }
@@ -1808,7 +1793,6 @@ static int todo_find()
 	    total_count = 1;
 	 }
 	 gtk_clist_select_row(GTK_CLIST(clist), found_at, TODO_PRIORITY_COLUMN);
-	 cb_clist_selection(clist, found_at, TODO_PRIORITY_COLUMN, (GdkEventButton *)455, "");
 	 if (!gtk_clist_row_is_visible(GTK_CLIST(clist), found_at)) {
 	    gtk_clist_moveto(GTK_CLIST(clist), found_at, 0, 0.5, 0.0);
 	 }

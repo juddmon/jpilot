@@ -1570,7 +1570,6 @@ void cb_address_quickfind(GtkWidget *widget,
 	 found = 1;
 	 found_at = i;
 	 gtk_clist_select_row(GTK_CLIST(clist), i, ADDRESS_NAME_COLUMN);
-	 cb_clist_selection(clist, i, ADDRESS_NAME_COLUMN, (GdkEventButton *)455, NULL);
       }
    }
    line_count = i;
@@ -1675,7 +1674,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    const char *entry_text;
    long use_jos, char_set;
 
-
+   if ((!event) && (column < 0)) return;
    if ((!event) && (clist_hack)) return;
 
    /* HACK, see clist hack explanation in memo_gui.c */
@@ -1687,10 +1686,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
       }
       set_new_button_to(CLEAR_FLAG);
-      /* This doesn't cause an event to occur, it does highlight
-       * the line, so we do the next call also */
       gtk_clist_select_row(GTK_CLIST(clist), row, column);
-      cb_clist_selection(clist, row, column, GINT_TO_POINTER(1), NULL);
       return;
    }
 
@@ -1912,7 +1908,6 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 				 AddressList **addr_list, int category, int main)
 {
    int num_entries, entries_shown, i;
-   int row_count;
    int show1, show2, show3;
    gchar *empty_line[] = { "","","" };
    GdkPixmap *pixmap_note;
@@ -1930,13 +1925,6 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    char *field1, *field2, *field3;
    char *delim1, *delim2;
    char *tmp_delim1, *tmp_delim2;
-
-   row_count=(GTK_CLIST(clist))->rows;
-
-   /* Need to remove pointers to data we are about to delete */
-   for (i=0; i<row_count; i++) {
-      gtk_clist_set_row_data(GTK_CLIST(clist), i, NULL);
-   }
 
    free_AddressList(addr_list);
 
@@ -1968,16 +1956,6 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       addr_clear_details();
    }
 
-   if (addr_list==NULL) {
-      /* Remove row 1 if the last item has just been deleted */
-      if (row_count == 1) {
-         gtk_clist_remove(GTK_CLIST(clist),0);
-      }
-      if (tooltip_widget) {
-	 gtk_tooltips_set_tip(glob_tooltips, category_menu1, _("0 records"), NULL);
-      }
-      return;
-   }
 
    /*Clear the text box to make things look nice */
    if (main) {
@@ -1990,10 +1968,15 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 #endif
    }
 
+   /* Freeze clist to prevent flicker during updating */
    gtk_clist_freeze(GTK_CLIST(clist));
+   gtk_clist_clear(GTK_CLIST(clist));
 
+   /* Collect preferences and pixmaps before loop */
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    get_pref(PREF_USE_JOS, &use_jos, NULL);
+   show_priv = show_privates(GET_PRIVATES);
+   get_pixmaps(clist, PIXMAP_NOTE, &pixmap_note, &mask_note);
 
    by_company = address_app_info.sortByCompany;
    if (sort_override) {
@@ -2015,7 +1998,6 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
    entries_shown=0;
 
-   show_priv = show_privates(GET_PRIVATES);
    for (temp_al = *addr_list, i=0; temp_al; temp_al=temp_al->next) {
       if ( ((temp_al->ma.attrib & 0x0F) != address_category) &&
 	   address_category != CATEGORY_ALL) {
@@ -2024,9 +2006,7 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       /* Do masking like Palm OS 3.5 */
       if ((show_priv == MASK_PRIVATES) && 
 	  (temp_al->ma.attrib & dlpRecAttrSecret)) {
-	 if (entries_shown+1>row_count) {
-	    gtk_clist_append(GTK_CLIST(clist), empty_line);
-	 }
+	 gtk_clist_append(GTK_CLIST(clist), empty_line);
 	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_NAME_COLUMN, "---------------");
 	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_PHONE_COLUMN, "---------------");
 	 clear_myaddress(&temp_al->ma);
@@ -2036,6 +2016,8 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 	 continue;
       }
       /* End Masking */
+
+      /* Hide the private records if need be */
       if ((show_priv != SHOW_PRIVATES) && 
 	  (temp_al->ma.attrib & dlpRecAttrSecret)) {
 	 continue;
@@ -2074,9 +2056,7 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 	 } else {
 	    strcpy(str, _("-Unnamed-"));
 	 }
-	 if (entries_shown+1>row_count) {
-	    gtk_clist_append(GTK_CLIST(clist), empty_line);
-	 }
+	 gtk_clist_append(GTK_CLIST(clist), empty_line);
       } else {
 	 str[0]='\0';
 	 field1=field2=field3=blank;
@@ -2101,10 +2081,9 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 	 if (strlen(str)<1) strcpy(str, _("-Unnamed-"));
 	 str[ADDRESS_MAX_CLIST_NAME]='\0';
 
-	 if (entries_shown+1>row_count) {
-	    gtk_clist_append(GTK_CLIST(clist), empty_line);
-	 }
+	 gtk_clist_append(GTK_CLIST(clist), empty_line);
       }
+
       lstrncpy_remove_cr_lfs(str2, str, ADDRESS_MAX_COLUMN_LEN);
       gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_NAME_COLUMN, str2);
       /* Clear string so previous data won't be used inadvertently in next set_text */
@@ -2113,6 +2092,7 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_PHONE_COLUMN, str2);
       gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_al->ma));
 
+      /* Highlight row background depending on status */
       switch (temp_al->ma.rt) {
        case NEW_PC_REC:
        case REPLACEMENT_PALM_REC:
@@ -2137,9 +2117,8 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 	 }
       }
 
+      /* Put a note pixmap up */
       if (temp_al->ma.a.entry[18]) {
-	 /*Put a note pixmap up */
-	 get_pixmaps(clist, PIXMAP_NOTE, &pixmap_note, &mask_note);
 	 gtk_clist_set_pixmap(GTK_CLIST(clist), entries_shown, ADDRESS_NOTE_COLUMN, pixmap_note, mask_note);
       } else {
 	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_NOTE_COLUMN, "");
@@ -2154,24 +2133,24 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       if (clist_row_selected <= entries_shown)
       {
 	 gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, ADDRESS_PHONE_COLUMN);
-	 cb_clist_selection(clist, clist_row_selected, ADDRESS_PHONE_COLUMN, (GdkEventButton *)455, NULL);
       }
       else
       {
 	 gtk_clist_select_row(GTK_CLIST(clist), 0, ADDRESS_PHONE_COLUMN);
-	 cb_clist_selection(clist, 0, ADDRESS_PHONE_COLUMN, (GdkEventButton *)455, NULL);
       }
    }
 
-   for (i=row_count-1; i>=entries_shown; i--) {
-      gtk_clist_remove(GTK_CLIST(clist), i);
-   }
-
+   /* Unfreeze clist after all changes */
    gtk_clist_thaw(GTK_CLIST(clist));
 
    if (tooltip_widget) {
-      sprintf(str, _("%d of %d records"), entries_shown, num_entries);
-      gtk_tooltips_set_tip(glob_tooltips, category_menu1, str, NULL);
+      if (addr_list==NULL) {
+	 gtk_tooltips_set_tip(glob_tooltips, category_menu1, _("0 records"), NULL);
+      }
+      else {
+	 sprintf(str, _("%d of %d records"), entries_shown, num_entries);
+	 gtk_tooltips_set_tip(glob_tooltips, category_menu1, str, NULL);
+      }
    }
 
 }
@@ -2233,7 +2212,6 @@ static int address_find()
 	    total_count = 1;
 	 }
 	 gtk_clist_select_row(GTK_CLIST(clist), found_at, ADDRESS_PHONE_COLUMN);
-	 cb_clist_selection(clist, found_at, ADDRESS_PHONE_COLUMN, (GdkEventButton *)455, NULL);
 	 if (!gtk_clist_row_is_visible(GTK_CLIST(clist), found_at)) {
 	    gtk_clist_moveto(GTK_CLIST(clist), found_at, 0, 0.5, 0.0);
 	 }
@@ -2337,7 +2315,6 @@ cb_key_pressed_quickfind(GtkWidget *widget, GdkEventKey *event, gpointer data)
       select_row=row_count-1;
    }
    gtk_clist_select_row(GTK_CLIST(clist), select_row, ADDRESS_NAME_COLUMN);
-   cb_clist_selection(clist, select_row, ADDRESS_PHONE_COLUMN, (GdkEventButton *)455, NULL);
    if (!gtk_clist_row_is_visible(GTK_CLIST(clist), select_row)) {
       gtk_clist_moveto(GTK_CLIST(clist), select_row, 0, 0.5, 0.0);
    }

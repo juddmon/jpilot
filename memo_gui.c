@@ -994,6 +994,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    int sorted_position;
    int keep;
 
+   if ((!event) && (column < 0)) return;
    if ((!event) && (clist_hack)) return;
 
    /* HACK, see clist hack explanation in memo_gui.c */
@@ -1005,10 +1006,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
       }
       set_new_button_to(CLEAR_FLAG);
-      /* This doesn't cause an event to occur, it does highlight
-       * the line, so we do the next call also */
       gtk_clist_select_row(GTK_CLIST(clist), row, column);
-      cb_clist_selection(clist, row, column, GINT_TO_POINTER(1), NULL);
       return;
    }
 
@@ -1083,7 +1081,6 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 			      MemoList **memo_list, int category, int main)
 {
    int num_entries, entries_shown, i;
-   int row_count;
    size_t copy_max_length;
    char *last;
    gchar *empty_line[] = { "" };
@@ -1095,12 +1092,6 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
    jp_logf(JP_LOG_DEBUG, "memo_update_clist()\n");
 
-   row_count=(GTK_CLIST(clist))->rows;
-
-   /* Need to remove pointers to data we are about to delete */
-   for (i=0; i<row_count; i++) {
-      gtk_clist_set_row_data(GTK_CLIST(clist), i, NULL);
-   }
 
    free_MemoList(memo_list);
 
@@ -1112,32 +1103,11 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       memo_clear_details();
    }
 
-   if (memo_list==NULL) {
-      /* Remove row 1 if the last item has just been deleted */
-      if (row_count == 1) {
-         gtk_clist_remove(GTK_CLIST(clist),0);
-      }
-      if (tooltip_widget) {
-	 gtk_tooltips_set_tip(glob_tooltips, tooltip_widget, _("0 records"), NULL);
-      }
-      return;
-   }
-
+   /* Freeze clist to prevent flicker during updating */
    gtk_clist_freeze(GTK_CLIST(clist));
+   gtk_clist_clear(GTK_CLIST(clist));
 
    show_priv = show_privates(GET_PRIVATES);
-
-   for (temp_memo = *memo_list; temp_memo; temp_memo=temp_memo->next) {
-      if ( ((temp_memo->mmemo.attrib & 0x0F) != category) &&
-	  category != CATEGORY_ALL) {
-	 continue;
-      }
-
-      if ((show_priv != SHOW_PRIVATES) && 
-	  (temp_memo->mmemo.attrib & dlpRecAttrSecret)) {
-	 continue;
-      }
-   }
 
    entries_shown=0;
    for (temp_memo = *memo_list; temp_memo; temp_memo=temp_memo->next) {
@@ -1149,9 +1119,7 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       /* Do masking like Palm OS 3.5 */
       if ((show_priv == MASK_PRIVATES) && 
 	  (temp_memo->mmemo.attrib & dlpRecAttrSecret)) {
-	 if (entries_shown+1>row_count) {
-	    gtk_clist_append(GTK_CLIST(clist), empty_line);
-	 }
+	 gtk_clist_append(GTK_CLIST(clist), empty_line);
 	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, 0, "----------------------------------------");
 	 clear_mymemo(&temp_memo->mmemo);
 	 gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_memo->mmemo));
@@ -1160,14 +1128,16 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 	 continue;
       }
       /* End Masking */
+
+      /* Hide the private records if need be */
       if ((show_priv != SHOW_PRIVATES) && 
 	  (temp_memo->mmemo.attrib & dlpRecAttrSecret)) {
 	 continue;
       }
 
-      if (entries_shown+1>row_count) {
-	 gtk_clist_append(GTK_CLIST(clist), empty_line);
-      }
+      /* Add entry to clist */
+      gtk_clist_append(GTK_CLIST(clist), empty_line);
+      
       sprintf(str, "%d. ", entries_shown + 1);
 
       len1 = strlen(str);
@@ -1186,6 +1156,7 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       gtk_clist_set_text(GTK_CLIST(clist), entries_shown, 0, str2);
       gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_memo->mmemo));
 
+      /* Highlight row background depending on status */
       switch (temp_memo->mmemo.rt) {
        case NEW_PC_REC:
        case REPLACEMENT_PALM_REC:
@@ -1219,25 +1190,24 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       /* Select the existing requested row, or row 0 if that is impossible */
       if (clist_row_selected <= entries_shown) {
 	 gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
-	 cb_clist_selection(clist, clist_row_selected, 0, (GdkEventButton *)455, NULL);
       }
       else
       {
 	 gtk_clist_select_row(GTK_CLIST(clist), 0, 0);
-	 cb_clist_selection(clist, 0, 0, (GdkEventButton *)455, NULL);
       }
    }
 
-   for (i=row_count-1; i>=entries_shown; i--) {
-      gtk_clist_set_row_data(GTK_CLIST(clist), i, NULL);
-      gtk_clist_remove(GTK_CLIST(clist), i);
-   }
-
+   /* Unfreeze clist after all changes */
    gtk_clist_thaw(GTK_CLIST(clist));
 
    if (tooltip_widget) {
-      sprintf(str, _("%d of %d records"), entries_shown, num_entries);
-      gtk_tooltips_set_tip(glob_tooltips, tooltip_widget, str, NULL);
+      if (memo_list==NULL) {
+	    gtk_tooltips_set_tip(glob_tooltips, tooltip_widget, _("0 records"), NULL);
+      } 
+      else {
+	 sprintf(str, _("%d of %d records"), entries_shown, num_entries);
+	 gtk_tooltips_set_tip(glob_tooltips, tooltip_widget, str, NULL);
+      }
    }
 
    if (main) {
@@ -1261,7 +1231,6 @@ static int memo_find()
 	    total_count = 1;
 	 }
 	 gtk_clist_select_row(GTK_CLIST(clist), found_at, 0);
-	 cb_clist_selection(clist, found_at, 0, (gpointer)455, NULL);
 	 if (!gtk_clist_row_is_visible(GTK_CLIST(clist), found_at)) {
 	    gtk_clist_moveto(GTK_CLIST(clist), found_at, 0, 0.5, 0.0);
 	 }

@@ -2165,7 +2165,6 @@ static void clear_myappointment(MyAppointment *ma)
 static int dayview_update_clist()
 {
    int num_entries, entries_shown, num, i;
-   int row_count;
    AppointmentList *temp_al;
    gchar *empty_line[] = { "","","","",""};
    char begin_time[32];
@@ -2195,9 +2194,7 @@ static int dayview_update_clist()
 
    jp_logf(JP_LOG_DEBUG, "dayview_update_clist()\n");
 
-#ifdef ENABLE_DATEBK
-   get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
-#endif
+   free_AppointmentList(&glob_al);
 
    memset(&new_time, 0, sizeof(new_time));
    new_time.tm_hour=11;
@@ -2205,16 +2202,7 @@ static int dayview_update_clist()
    new_time.tm_mon=current_month;
    new_time.tm_year=current_year;
    new_time.tm_isdst=-1;
-
    mktime(&new_time);
-
-   row_count=(GTK_CLIST(clist))->rows;
-
-   /* Need to remove pointers to data we are about to delete */
-   for (i=0; i<row_count; i++) {
-      gtk_clist_set_row_data(GTK_CLIST(clist), i, NULL);
-   }
-   free_AppointmentList(&glob_al);
 
    num = get_days_appointments2(&glob_al, &new_time, 2, 2, 1,
 					&num_entries);
@@ -2224,10 +2212,21 @@ static int dayview_update_clist()
    jp_logf(JP_LOG_DEBUG, "datebook_category = 0x%x\n", datebook_category);
 #endif
 
+   /* Freeze clist to prevent flicker during updating */
    gtk_clist_freeze(GTK_CLIST(clist));
    gtk_clist_clear(GTK_CLIST(clist));
 
+   /* Collect preferences and constant pixmaps for loop */
    show_priv = show_privates(GET_PRIVATES);
+   get_pixmaps(scrolled_window, PIXMAP_NOTE, &pixmap_note, &mask_note);
+   get_pixmaps(scrolled_window, PIXMAP_ALARM,&pixmap_alarm, &mask_alarm);
+#  ifdef ENABLE_DATEBK
+   get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
+   get_pixmaps(scrolled_window, PIXMAP_FLOAT_CHECK, 
+	       &pixmap_float_check, &mask_float_check);
+   get_pixmaps(scrolled_window, PIXMAP_FLOAT_CHECKED, 
+	       &pixmap_float_checked, &mask_float_checked);
+#  endif
 
    entries_shown=0;
    for (temp_al = glob_al, i=0; temp_al; temp_al=temp_al->next, i++) {
@@ -2257,14 +2256,19 @@ static int dayview_update_clist()
 	 continue;
       }
       /* End Masking */
+
+      /* Hide the private records if need be */
       if ((show_priv != SHOW_PRIVATES) && 
 	  (temp_al->ma.attrib & dlpRecAttrSecret)) {
 	 i--;
 	 continue;
       }
 
+      /* Add entry to clist */
       gtk_clist_append(GTK_CLIST(clist), empty_line);
       entries_shown++;
+
+      /* Print the event time */
       if (temp_al->ma.a.event) {
 	 /*This is a timeless event */
 	 strcpy(a_time, _("No Time"));
@@ -2276,45 +2280,14 @@ static int dayview_update_clist()
 	 g_snprintf(a_time, sizeof(a_time), "%s-%s", begin_time, end_time);
       }
       gtk_clist_set_text(GTK_CLIST(clist), i, DB_TIME_COLUMN, a_time);
-      lstrncpy_remove_cr_lfs(str2, temp_al->ma.a.description, DATEBOOK_MAX_COLUMN_LEN);
-      gtk_clist_set_text(GTK_CLIST(clist), i, DB_APPT_COLUMN, str2);
-      gtk_clist_set_row_data(GTK_CLIST(clist), i, &(temp_al->ma));
-
-      switch (temp_al->ma.rt) {
-       case NEW_PC_REC:
-       case REPLACEMENT_PALM_REC:
-	 set_bg_rgb_clist_row(clist, i,
-			      CLIST_NEW_RED, CLIST_NEW_GREEN, CLIST_NEW_BLUE);
-	 break;
-       case DELETED_PALM_REC:
-       case DELETED_PC_REC:
-	 set_bg_rgb_clist_row(clist, i,
-			      CLIST_DEL_RED, CLIST_DEL_GREEN, CLIST_DEL_BLUE);
-	 break;
-       case MODIFIED_PALM_REC:
-	 set_bg_rgb_clist_row(clist, i,
-			      CLIST_MOD_RED, CLIST_MOD_GREEN, CLIST_MOD_BLUE);
-	 break;
-       default:
-	 if (temp_al->ma.attrib & dlpRecAttrSecret) {
-	    set_bg_rgb_clist_row(clist, i, 
-			     CLIST_PRIVATE_RED, CLIST_PRIVATE_GREEN, CLIST_PRIVATE_BLUE);
-	 } else {
-	    gtk_clist_set_row_style(GTK_CLIST(clist), i, NULL);
-	 }
-      }
 
 #ifdef ENABLE_DATEBK
       if (use_db3_tags) {
 	 if (db4.floating_event==DB3_FLOAT) {
-	    get_pixmaps(scrolled_window, PIXMAP_FLOAT_CHECK, 
-			&pixmap_float_check, &mask_float_check);
 	    gtk_clist_set_pixmap(GTK_CLIST(clist), i, DB_FLOAT_COLUMN, pixmap_float_check, 
 				 mask_float_check);
 	 }
 	 if (db4.floating_event==DB3_FLOAT_COMPLETE) {
-	    get_pixmaps(scrolled_window, PIXMAP_FLOAT_CHECKED, 
-			&pixmap_float_checked, &mask_float_checked);
 	    gtk_clist_set_pixmap(GTK_CLIST(clist), i, DB_FLOAT_COLUMN, pixmap_float_checked, 
 				 mask_float_checked);
 	 }
@@ -2351,17 +2324,46 @@ static int dayview_update_clist()
 	 }
       }
 #endif
+      /* Put a note pixmap up */
       if (has_note) {
-	 /*Put a note pixmap up */
-	 get_pixmaps(scrolled_window, PIXMAP_NOTE, &pixmap_note, &mask_note);
 	 gtk_clist_set_pixmap(GTK_CLIST(clist), i, DB_NOTE_COLUMN, pixmap_note, mask_note);
       }
 
+      /* Put an alarm pixmap up */
       if (temp_al->ma.a.alarm) {
-	 /*Put an alarm pixmap up */
-	 get_pixmaps(scrolled_window, PIXMAP_ALARM,&pixmap_alarm, &mask_alarm);
 	 gtk_clist_set_pixmap(GTK_CLIST(clist), i, DB_ALARM_COLUMN, pixmap_alarm, mask_alarm);
       }
+
+      /* Print the appointment description */
+      lstrncpy_remove_cr_lfs(str2, temp_al->ma.a.description, DATEBOOK_MAX_COLUMN_LEN);
+      gtk_clist_set_text(GTK_CLIST(clist), i, DB_APPT_COLUMN, str2);
+      gtk_clist_set_row_data(GTK_CLIST(clist), i, &(temp_al->ma));
+
+      /* Highlight row background depending on status */
+      switch (temp_al->ma.rt) {
+       case NEW_PC_REC:
+       case REPLACEMENT_PALM_REC:
+	 set_bg_rgb_clist_row(clist, i,
+			      CLIST_NEW_RED, CLIST_NEW_GREEN, CLIST_NEW_BLUE);
+	 break;
+       case DELETED_PALM_REC:
+       case DELETED_PC_REC:
+	 set_bg_rgb_clist_row(clist, i,
+			      CLIST_DEL_RED, CLIST_DEL_GREEN, CLIST_DEL_BLUE);
+	 break;
+       case MODIFIED_PALM_REC:
+	 set_bg_rgb_clist_row(clist, i,
+			      CLIST_MOD_RED, CLIST_MOD_GREEN, CLIST_MOD_BLUE);
+	 break;
+       default:
+	 if (temp_al->ma.attrib & dlpRecAttrSecret) {
+	    set_bg_rgb_clist_row(clist, i, 
+			     CLIST_PRIVATE_RED, CLIST_PRIVATE_GREEN, CLIST_PRIVATE_BLUE);
+	 } else {
+	    gtk_clist_set_row_style(GTK_CLIST(clist), i, NULL);
+	 }
+      }
+
    }
 
    /* If there are items in the list, highlight the selected row */
@@ -2369,12 +2371,10 @@ static int dayview_update_clist()
       /* Select the existing requested row, or row 0 if that is impossible */
       if (clist_row_selected <= entries_shown) {
 	 gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, 1);
-	 cb_clist_selection(clist, clist_row_selected, 1, (GdkEventButton *)455, NULL);
       }
       else
       {
 	 gtk_clist_select_row(GTK_CLIST(clist), 0, 1);
-	 cb_clist_selection(clist, 0, 1, (GdkEventButton *)455, NULL);
       }
    } else {
       set_new_button_to(CLEAR_FLAG);
@@ -2618,14 +2618,16 @@ static void cb_add_new_record(GtkWidget *widget,
 	 } else {
 	    pc_datebook_write(a, NEW_PC_REC, attrib, NULL);
 	 }
-	 pc_datebook_write(&new_a, NEW_PC_REC, attrib, NULL);
+	 unique_id = 0;
+	 pc_datebook_write(&new_a, NEW_PC_REC, attrib, &unique_id);
 	 free_Appointment(a);
 	 free(a);
       } else {
 	 if ((ma->rt==PALM_REC) || (ma->rt==REPLACEMENT_PALM_REC)) {
 	    pc_datebook_write(&new_a, REPLACEMENT_PALM_REC, attrib, &unique_id);
 	 } else {
-	    pc_datebook_write(&new_a, NEW_PC_REC, attrib, NULL);
+	    unique_id=0;
+	    pc_datebook_write(&new_a, NEW_PC_REC, attrib, &unique_id);
 	 }
       }
    } else {
@@ -2639,16 +2641,15 @@ static void cb_add_new_record(GtkWidget *widget,
 				new_a.begin.tm_mon, new_a.begin.tm_year+1900);
       gtk_calendar_select_day(GTK_CALENDAR(main_calendar), new_a.begin.tm_mday);
       gtk_calendar_thaw(GTK_CALENDAR(main_calendar));
-
-      glob_find_id=unique_id;
    }
-   free_Appointment(&new_a);
-   /* update_clist(); */
-   /* Force the calendar redraw and re-read of appointments */
-   gtk_signal_emit_by_name(GTK_OBJECT(main_calendar), "day_selected");
 
-   datebook_find();
+   free_Appointment(&new_a);
+
+   dayview_update_clist();
    highlight_days();
+
+   glob_find_id = unique_id;
+   datebook_find();
 
    /* Make sure that the next alarm will go off */
    alarms_find_next(NULL, NULL, TRUE);
@@ -2729,8 +2730,7 @@ void cb_delete_appt(GtkWidget *widget, gpointer data)
    }
 
    if (flag == DELETE_FLAG) {
-      /* Force the calendar redraw and re-read of appointments */
-      gtk_signal_emit_by_name(GTK_OBJECT(main_calendar), "day_selected");
+      dayview_update_clist();
       highlight_days();
    }
 }
@@ -2773,9 +2773,7 @@ void cb_undelete_appt(GtkWidget *widget,
       */
    }
 
-   /* Force the calendar redraw and re-read of appointments */
-   gtk_signal_emit_by_name(GTK_OBJECT(main_calendar), "day_selected");
-
+   dayview_update_clist();
    highlight_days();
 }
 
@@ -2843,7 +2841,8 @@ static void cb_clist_selection(GtkWidget      *clist,
    long use_db3_tags;
 #endif
 
-   if (!event) return;
+   if ((!event) && (column < 0)) return;
+   if ((!event) && (clist_hack)) return;
 
 #ifdef ENABLE_DATEBK
    get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
@@ -2858,21 +2857,15 @@ static void cb_clist_selection(GtkWidget      *clist,
 	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
       }
       set_new_button_to(CLEAR_FLAG);
-      /* This doesn't cause an event to occur, it does highlight
-       * the line, so we do the next call also */
       gtk_clist_select_row(GTK_CLIST(clist), row, column);
-      cb_clist_selection(clist, row, column, GINT_TO_POINTER(1), NULL);
       return;
    }
 
    clist_row_selected=row;
 
-   connect_changed_signals(DISCONNECT_SIGNALS);
-
-   a=NULL;
    ma = gtk_clist_get_row_data(GTK_CLIST(clist), row);
-   if (ma) {
-      a=&(ma->a);
+   if (ma==NULL) {
+      return;
    }
 
    if (ma->rt == DELETED_PALM_REC ||
@@ -2887,6 +2880,10 @@ static void cb_clist_selection(GtkWidget      *clist,
    {
       set_new_button_to(CLEAR_FLAG);
    }
+
+   connect_changed_signals(DISCONNECT_SIGNALS);
+
+   a=&(ma->a);
 
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_button_notime),
 				a->event);
@@ -3220,6 +3217,7 @@ void cb_cal_changed(GtkWidget *widget,
    if (mon_changed) {
       highlight_days();
    }
+   clist_row_selected = 0;
    dayview_update_clist();
 }
 
@@ -3270,7 +3268,6 @@ static int datebook_find()
 	 }
 	 jp_logf(JP_LOG_DEBUG, "datebook_find(), selecting row %d\n", found_at);
 	 gtk_clist_select_row(GTK_CLIST(clist), found_at, 1);
-	 cb_clist_selection(clist, found_at, 1, (GdkEventButton *)455, "");
       }
       glob_find_id = 0;
    }
