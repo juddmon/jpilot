@@ -1,4 +1,4 @@
-/* $Id: log.c,v 1.24 2004/12/07 06:51:08 rikster5 Exp $ */
+/* $Id: log.c,v 1.25 2005/01/21 08:56:49 rousseau Exp $ */
 
 /*******************************************************************************
  * log.c
@@ -154,7 +154,6 @@ int jp_vlogf (int level, char *format, va_list val) {
 	 r = write(pipe_to_parent, buf, size);
 	 if (r<0)
 	    fprintf(stderr, "write returned error %s %d\n", __FILE__, __LINE__);
-	 fsync(pipe_to_parent);
       }
    }
 
