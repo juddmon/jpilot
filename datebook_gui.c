@@ -90,6 +90,7 @@ static GtkWidget *todo_vbox;
 
 static void highlight_days();
 
+static int datebook_find();
 static int dayview_update_clist();
 static void update_endon_button(GtkWidget *button, struct tm *t);
 static void set_begin_end_labels(struct tm *begin, struct tm *end, int flags);
@@ -2476,10 +2477,12 @@ static void cb_add_new_record(GtkWidget *widget,
    jp_logf(JP_LOG_DEBUG, "cb_add_new_record\n");
 
    unique_id=0;
+   attrib = 0;
+
+   flag=GPOINTER_TO_INT(data);
 
    /* Do masking like Palm OS 3.5 */
-   if ((GPOINTER_TO_INT(data)==COPY_FLAG) || 
-       (GPOINTER_TO_INT(data)==MODIFY_FLAG)) {
+   if ((flag==COPY_FLAG) || (flag==MODIFY_FLAG)) {
       show_priv = show_privates(GET_PRIVATES);
       ma = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
       if (ma < (MyAppointment *)CLIST_MIN_DATA) {
@@ -2491,10 +2494,6 @@ static void cb_add_new_record(GtkWidget *widget,
       }
    }
    /* End Masking */
-
-   attrib = 0;
-
-   flag=GPOINTER_TO_INT(data);
 
    if (flag==CLEAR_FLAG) {
       /*Clear button was hit */
@@ -2615,6 +2614,7 @@ static void cb_add_new_record(GtkWidget *widget,
    /* Force the calendar redraw and re-read of appointments */
    gtk_signal_emit_by_name(GTK_OBJECT(main_calendar), "day_selected");
 
+   datebook_find();
    highlight_days();
 
    /* Make sure that the next alarm will go off */
