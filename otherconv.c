@@ -243,7 +243,7 @@ void UTF_to_other(unsigned char *const buf, int buf_len)
 
 unsigned char *other_to_UTF(const unsigned char *buf, int buf_len)
 {
-	return strdup(buf);
+	return (unsigned char*)strdup(buf);
 }
 
 void UTF_to_other(unsigned char *const buf, int buf_len)
