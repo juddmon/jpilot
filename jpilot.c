@@ -1390,10 +1390,11 @@ void get_main_menu(GtkWidget  *window,
    gtk_item_factory_create_items(item_factory, nmenu_items, menu_items2, NULL);
 
    /* Attach the new accelerator group to the window. */
-#ifndef ENABLE_GTK2
+#ifdef ENABLE_GTK2
+   gtk_window_add_accel_group(window, accel_group);
+#else
    gtk_accel_group_attach(accel_group, GTK_OBJECT(window));
 #endif
-   /* GTK2 FIXME figure the above out */
 
    if (menubar) {
       /* Finally, return the actual menu bar created by the item factory. */
