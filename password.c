@@ -105,8 +105,8 @@ void palm_encode_hash(unsigned char *ascii, unsigned char *encoded)
 
    encoded[0]='\0';
    end=0;
-   if (strlen(ascii)<5) {
-      si = (ascii[0] + strlen(ascii)) % PASSWD_LEN;
+   if (strlen((char *)ascii)<5) {
+      si = (ascii[0] + strlen((char*)ascii)) % PASSWD_LEN;
       for (ai=ei=0; ei<32; ai++, ei++, si++) {
 	 if (ascii[ai]=='\0') {
 	    end=1;
@@ -122,7 +122,7 @@ void palm_encode_hash(unsigned char *ascii, unsigned char *encoded)
 
    strncpy(encoded, ascii, PASSWD_LEN);
    encoded[PASSWD_LEN-1]='\0';
-   len = strlen(encoded);
+   len = strlen((char *)encoded);
    for (ai=len; ai < PASSWD_LEN; ai++) {
       encoded[ai] = encoded[ai-len] + len;
    }
@@ -153,10 +153,10 @@ void palm_encode_hash(unsigned char *ascii, unsigned char *encoded)
 void palm_encode_md5(unsigned char *ascii, unsigned char *encoded)
 {
    struct MD5Context m;
-   char digest[20];
+   unsigned char digest[20];
    
    MD5Init(&m);
-   MD5Update(&m, ascii, strlen(ascii));
+   MD5Update(&m, ascii, strlen((char *)ascii));
    MD5Final(digest, &m);
    
    memcpy(encoded, digest, 16);   
@@ -170,10 +170,10 @@ int verify_password(char *password)
    int i;
 #ifdef ENABLE_PRIVATE
    unsigned char encoded[34];
-   char password_lower[PASSWD_LEN+2];
+   unsigned char password_lower[PASSWD_LEN+2];
    const char *pref_password;
-   unsigned char hex_str[68];
-   unsigned long ivalue;
+   char hex_str[68];
+   long ivalue;
 #endif
 
 #ifdef ENABLE_PRIVATE
@@ -201,7 +201,7 @@ int verify_password(char *password)
     * It could also be an MD5 password.
     * Try that now.
     */
-   palm_encode_md5(password, encoded);
+   palm_encode_md5((unsigned char *)password, encoded);
    bin_to_hex_str(encoded, hex_str, 32);
    hex_str[32]='\0';
    get_pref(PREF_PASSWORD, &ivalue, &pref_password);

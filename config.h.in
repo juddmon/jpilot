@@ -36,6 +36,9 @@
 /* Prometheon support */
 #undef ENABLE_PROMETHEON
 
+/* USB support */
+#undef ENABLE_USB
+
 /* Define to 1 if you have `alloca', as a function or macro. */
 #undef HAVE_ALLOCA
 

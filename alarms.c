@@ -1048,8 +1048,7 @@ static int find_prev_next(struct Appointment *a,
 	 sub_years_from_date(&t, offset);
       }
       break;
-    default:
-   }/*switch */
+   }
 
    safety_counter=0;
    while(forward || backward) {

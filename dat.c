@@ -107,7 +107,7 @@ static int get_CString(FILE *in, char **PStr)
 
 static int get_categories(FILE *in, struct CategoryAppInfo *ai)
 {
-   char str_long[4];
+   unsigned char str_long[4];
    char *PStr;
    long count;
    int i;
@@ -353,6 +353,7 @@ int get_repeat(FILE *in, struct Appointment *a)
 #ifdef JPILOT_DEBUG
       printf("unknown repeat type2 %d\n", l);
 #endif
+      break;
    }
 
    return 0;
@@ -410,7 +411,7 @@ int print_field(struct field *f)
 
 int get_field(FILE *in, struct field *f)
 {
-   char str_long[4];
+   unsigned char str_long[4];
    long type;
    char *PStr;
 
@@ -491,10 +492,10 @@ int dat_read_header(FILE *in,
 		    int *schema_count, int *field_count, long *rec_count)
 {
    int i;
-   char filler[100];
+   unsigned char filler[100];
    char version[4];
    char *PStr;
-   char str_long[4];
+   unsigned char str_long[4];
 
    fseek(in, 0, SEEK_SET);
 

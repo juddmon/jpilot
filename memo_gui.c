@@ -827,7 +827,7 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
    char db_name[256];
    char pdb_name[256];
    char full_name[256];
-   char buffer[65536];
+   unsigned char buffer[65536];
    int num, r;
    int size;
    void *buf;

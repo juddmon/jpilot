@@ -45,7 +45,7 @@ AC_ARG_WITH(ccoptions,
 
 if test "x$with_ccoptions" != "x"; then
    ccoptions=$with_ccoptions
-   CFLAGS=""
+#   CFLAGS=""
    AC_MSG_CHECKING(for supplied cc options)
    AC_MSG_RESULT(Using supplied cc options $ccoptions)
 fi
@@ -405,7 +405,7 @@ echo "Compiling with Datebk support..........   $enable_datebk"
 echo "Compiling with plugin support..........   $enable_plugins"
 echo "Compiling with Mañana support..........   $enable_manana"
 echo "Compiling with Prometheon support......   $enable_prometheon"
-echo "Compiler Options.......................   $CFLAGS"
+echo "Compiler Options.......................   $cflags $ccoptions"
 echo "Prefix directory.......................   $prefix"
 echo "pilot-link headers.....................   $pilot_incl"
 echo "NLS support (foriegn languages)........   $USE_NLS"

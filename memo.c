@@ -137,7 +137,7 @@ int memo_sort(MemoList **memol, int sort_order)
 int pc_memo_write(struct Memo *memo, PCRecType rt, unsigned char attrib,
 		  unsigned int *unique_id)
 {
-   char record[65536];
+   unsigned char record[65536];
    int rec_len;
    buf_rec br;
    long ivalue;
@@ -145,7 +145,9 @@ int pc_memo_write(struct Memo *memo, PCRecType rt, unsigned char attrib,
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    if (char_set != CHAR_SET_LATIN1) {
-      if (memo->text) charset_j2p(memo->text, strlen(memo->text)+1, char_set);
+      if (memo->text) {
+	 charset_j2p((unsigned char *)memo->text, strlen(memo->text)+1, char_set);
+      }
    }
    rec_len = pack_Memo(memo, record, 65535);
    if (!rec_len) {
@@ -203,9 +205,9 @@ int get_memo_app_info(struct MemoAppInfo *ai)
 
    get_pref(PREF_MEMO32_MODE, &ivalue, NULL);
    if (ivalue) {
-      jp_get_app_info("Memo32DB", &buf, &rec_size);
+      jp_get_app_info("Memo32DB", &buf, (int*)&rec_size);
    } else {
-      jp_get_app_info("MemoDB", &buf, &rec_size);
+      jp_get_app_info("MemoDB", &buf, (int*)&rec_size);
    }
    num = unpack_MemoAppInfo(ai, buf, rec_size);
    if (buf) {
@@ -220,7 +222,7 @@ int get_memo_app_info(struct MemoAppInfo *ai)
    if (char_set != CHAR_SET_LATIN1) {
       for (i = 0; i < 16; i++) {
 	 if (ai->category.name[i][0] != '\0') {
-	    charset_p2j(ai->category.name[i], 16, char_set);
+	    charset_p2j((unsigned char *)ai->category.name[i], 16, char_set);
 	 }
       }
    }
@@ -309,7 +311,9 @@ int get_memos2(MemoList **memo_list, int sort_order,
 	 continue;
       }
       get_pref(PREF_CHAR_SET, &char_set, NULL);
-      if (memo.text) charset_p2j(memo.text, strlen(memo.text)+1, char_set);
+      if (memo.text) {
+	 charset_p2j((unsigned char *)memo.text, strlen(memo.text)+1, char_set);
+      }
 
       temp_memo_list = malloc(sizeof(MemoList));
       if (!temp_memo_list) {

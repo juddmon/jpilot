@@ -82,7 +82,7 @@ const char *jp_strstr(const char *haystack, const char *needle, int case_sense)
    }
 }
 
-static int pack_header(PC3RecordHeader *header, char *packed_header)
+static int pack_header(PC3RecordHeader *header, unsigned char *packed_header)
 {
    unsigned char *p;
    unsigned long l;
@@ -445,7 +445,7 @@ int jp_get_app_info(char *DB_name, unsigned char **buf, int *buf_size)
 {
    FILE *in;
    int num;
-   unsigned int rec_size;
+   int rec_size;
    RawDBHeader rdbh;
    DBHeader dbh;
    char PDB_name[256];
@@ -607,7 +607,7 @@ int jp_pc_write(char *DB_name, buf_rec *br)
    PC3RecordHeader header;
    FILE *out;
    unsigned int next_unique_id;
-   char packed_header[256];
+   unsigned char packed_header[256];
    int len;
    char PC_name[256];
 

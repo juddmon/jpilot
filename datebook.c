@@ -314,15 +314,15 @@ int db3_parse_tag(char *note, int *type, struct db4_struct *db4)
 int pc_datebook_write(struct Appointment *a, PCRecType rt,
 		      unsigned char attrib, unsigned int *unique_id)
 {
-   char record[65536];
+   unsigned char record[65536];
    int rec_len;
    buf_rec br;
    long char_set;
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    if (char_set != CHAR_SET_LATIN1) {
-      if (a->description) charset_j2p(a->description, strlen(a->description)+1, char_set);
-      if (a->note) charset_j2p(a->note, strlen(a->note)+1, char_set);
+      if (a->description) charset_j2p((unsigned char *)a->description, strlen(a->description)+1, char_set);
+      if (a->note) charset_j2p((unsigned char *)a->note, strlen(a->note)+1, char_set);
    }
 
    rec_len = pack_Appointment(a, record, 65535);
@@ -686,7 +686,7 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
 int get_datebook_app_info(struct AppointmentAppInfo *ai)
 {
    int num,i;
-   unsigned int rec_size;
+   int rec_size;
    unsigned char *buf;
    long char_set;
 
@@ -706,7 +706,9 @@ int get_datebook_app_info(struct AppointmentAppInfo *ai)
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    if (char_set != CHAR_SET_LATIN1) {
       for (i = 0; i < 16; i++) {
-	 if (ai->category.name[i][0] != '\0') charset_p2j(ai->category.name[i], 16, char_set);
+	 if (ai->category.name[i][0] != '\0') {
+	    charset_p2j((unsigned char *)ai->category.name[i], 16, char_set);
+	 }
       }
    }
 
@@ -1007,7 +1009,7 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
       if (a.description) {
 	 if ((buf = (char *)malloc((len = strlen(a.description)*2+1))) != NULL) {
 	    multibyte_safe_strncpy(buf, a.description, len);
-	    charset_p2j(buf, len, char_set);
+	    charset_p2j((unsigned char *)buf, len, char_set);
 	    if (strlen(buf) > strlen(a.description)) {
 	       free(a.description);
 	       a.description = strdup(buf);
@@ -1020,7 +1022,7 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
       if (a.note) {
 	 if ((buf = (char *) malloc((len = strlen(a.note)*2+1))) != NULL) {
 	    multibyte_safe_strncpy(buf, a.note, len);
-	    charset_p2j(buf, len, char_set);
+	    charset_p2j((unsigned char *)buf, len, char_set);
 	    if (strlen(buf) > strlen(a.note)) {
 	       free(a.note);
 	       a.note = strdup(buf);

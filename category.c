@@ -115,7 +115,7 @@ int edit_cats_delete_cats_pc3(char *DB_name, int cat)
 
    pc_in = jp_open_home_file(local_pc_file, "r+");
    if (pc_in==NULL) {
-      //undo check to see if can create before warning.
+      /* undo check to see if can create before warning. */
       jp_logf(JP_LOG_WARN, _("Unable to open %s\n"), local_pc_file);
       return -1;
    }
@@ -218,7 +218,7 @@ int _edit_cats_change_cats_pc3(char *DB_name, int old_cat,
 
    pc_in = jp_open_home_file(local_pc_file, "r+");
    if (pc_in==NULL) {
-      //undo check to see if can create before warning.
+      /* undo check to see if can create before warning. */
       jp_logf(JP_LOG_WARN, _("Unable to open %s\n"), local_pc_file);
       return -1;
    }
@@ -286,8 +286,8 @@ int edit_cats_swap_cats_pc3(char *DB_name, int old_cat,
 }
 
 
-//undo make this routine delete by pasing -1 as last parameter,
-//then I can remove a function
+/* undo make this routine delete by pasing -1 as last parameter,
+   then I can remove a function */
 /*
  * This routine changes records from old_cat to new_cat.
  *  It does not modify a local pdb file.
@@ -633,7 +633,7 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
 
    jp_logf(JP_LOG_DEBUG, "edit_cats\n");
 
-   //undo do some some parameter checking
+   /* undo do some some parameter checking */
    Pdata.selected=-1;
    Pdata.state=EDIT_CAT_START;
    strncpy(Pdata.db_name, db_name, 16);
@@ -650,7 +650,7 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
    if (char_set != CHAR_SET_LATIN1) {
       for (i = 0; i < 16; i++) {
 	 if (cai->name[i][0] != '\0') {
-	    charset_p2j(cai->name[i], 16, char_set);
+	    charset_p2j((unsigned char*)cai->name[i], 16, char_set);
 	 }
       }
    }

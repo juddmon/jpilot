@@ -675,7 +675,7 @@ int jp_sync(struct my_sync_info *sync_info)
 
 #ifdef ENABLE_PRIVATE
    if (U.passwordLength > 0) {
-      bin_to_hex_str(U.password, hex_password, 
+      bin_to_hex_str((unsigned char *)U.password, hex_password, 
 		     ((U.passwordLength > 0)&&(U.passwordLength < PASSWD_LEN))
 		     ? U.passwordLength : PASSWD_LEN);
    } else {
@@ -880,7 +880,7 @@ int jp_sync(struct my_sync_info *sync_info)
       return 0;
    }
    get_pref(PREF_CHAR_SET, &char_set, NULL);
-   charset_j2p(buf,1023,char_set);
+   charset_j2p((unsigned char *)buf,1023,char_set);
 
    dlp_AddSyncLogEntry(sd, buf);
    dlp_AddSyncLogEntry(sd, "\n");
@@ -980,7 +980,7 @@ int slow_sync_application(char *DB_name, int sd)
    if (ret < 0) {
       g_snprintf(log_entry, 255, _("Unable to open %s\n"), DB_name);
       log_entry[255]='\0';
-      charset_j2p(log_entry, 255, char_set);
+      charset_j2p((unsigned char *)log_entry, 255, char_set);
       dlp_AddSyncLogEntry(sd, log_entry);
       return -1;
    }
@@ -1035,11 +1035,11 @@ int slow_sync_application(char *DB_name, int sd)
 
 	 if (ret < 0) {
 	    jp_logf(JP_LOG_WARN, _("dlp_WriteRecord failed\n"));
-	    charset_j2p(error_log_message_w,255,char_set);
+	    charset_j2p((unsigned char *)error_log_message_w,255,char_set);
 	    dlp_AddSyncLogEntry(sd, error_log_message_w);
 	    dlp_AddSyncLogEntry(sd, "\n");
 	 } else {
-	    charset_j2p(write_log_message,255,char_set);
+	    charset_j2p((unsigned char *)write_log_message,255,char_set);
 	    dlp_AddSyncLogEntry(sd, write_log_message);
 	    dlp_AddSyncLogEntry(sd, "\n");
 	    /*Now mark the record as deleted in the pc file */
@@ -1093,11 +1093,11 @@ int slow_sync_application(char *DB_name, int sd)
 	 if (ret < 0) {
 	    jp_logf(JP_LOG_WARN, "dlp_DeleteRecord failed\n"\
             "This could be because the record was already deleted on the Palm\n");
-	    charset_j2p(error_log_message_d,255,char_set);
+	    charset_j2p((unsigned char *)error_log_message_d,255,char_set);
 	    dlp_AddSyncLogEntry(sd, error_log_message_d);
 	    dlp_AddSyncLogEntry(sd, "\n");
 	 } else {
-	    charset_j2p(delete_log_message,255,char_set);
+	    charset_j2p((unsigned char *)delete_log_message,255,char_set);
 	    dlp_AddSyncLogEntry(sd, delete_log_message);
 	    dlp_AddSyncLogEntry(sd, "\n");
 	 }
@@ -1658,7 +1658,7 @@ static int sync_install(char *filename, int sd)
    if (r<0) {
       g_snprintf(log_entry, 255, _("Install %s failed"), Pc);
       log_entry[255]='\0';
-      charset_j2p(log_entry, 255, char_set);
+      charset_j2p((unsigned char *)log_entry, 255, char_set);
       dlp_AddSyncLogEntry(sd, log_entry);
       dlp_AddSyncLogEntry(sd, "\n");;
       jp_logf(JP_LOG_GUI, _("Failed.\n"));
@@ -1670,7 +1670,7 @@ static int sync_install(char *filename, int sd)
       /* the space after the %s is a hack, the last char gets cut off */
       g_snprintf(log_entry, 255, _("Installed %s "), Pc);
       log_entry[255]='\0';
-      charset_j2p(log_entry, 255, char_set);
+      charset_j2p((unsigned char *)log_entry, 255, char_set);
       dlp_AddSyncLogEntry(sd, log_entry);
       dlp_AddSyncLogEntry(sd, "\n");;
       jp_logf(JP_LOG_GUI, _("OK\n"));
@@ -2055,11 +2055,11 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
 
 	 if (ret < 0) {
 	    jp_logf(JP_LOG_WARN, _("dlp_WriteRecord failed\n"));
-	    charset_j2p(error_log_message_w,255,char_set);
+	    charset_j2p((unsigned char *)error_log_message_w,255,char_set);
 	    dlp_AddSyncLogEntry(sd, error_log_message_w);
 	    dlp_AddSyncLogEntry(sd, "\n");
 	 } else {
-	    charset_j2p(write_log_message,255,char_set);
+	    charset_j2p((unsigned char *)write_log_message,255,char_set);
 	    dlp_AddSyncLogEntry(sd, write_log_message);
 	    dlp_AddSyncLogEntry(sd, "\n");
 	    /* Now mark the record as deleted in the pc file */
@@ -2121,11 +2121,11 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
 	    if (ret < 0) {
 	       jp_logf(JP_LOG_WARN, _("dlp_DeleteRecord failed\n"
 		      "This could be because the record was already deleted on the Palm\n"));
-	       charset_j2p(error_log_message_d,255,char_set);
+	       charset_j2p((unsigned char *)error_log_message_d,255,char_set);
 	       dlp_AddSyncLogEntry(sd, error_log_message_d);
 	       dlp_AddSyncLogEntry(sd, "\n");
 	    } else {
-	       charset_j2p(delete_log_message,255,char_set);
+	       charset_j2p((unsigned char *)delete_log_message,255,char_set);
 	       dlp_AddSyncLogEntry(sd, delete_log_message);
 	       dlp_AddSyncLogEntry(sd, "\n");
 	       pdb_file_delete_record_by_id(DB_name, header.unique_id);
@@ -2184,13 +2184,13 @@ int pdb_file_swap_indexes(char *DB_name, int index1, int index2)
    strcat(full_local_pdb_file2, "2");
 
    pf1 = pi_file_open(full_local_pdb_file);
-   if (pf1<=0) {
+   if (!pf1) {
       jp_logf(JP_LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file);
       return -1;
    }
    pi_file_get_info(pf1, &infop);
    pf2 = pi_file_create(full_local_pdb_file2, &infop);
-   if (pf2<=0) {
+   if (!pf2) {
       jp_logf(JP_LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file2);
       return -1;
    }
@@ -2259,13 +2259,13 @@ int pdb_file_change_indexes(char *DB_name, int old_index, int new_index)
    strcat(full_local_pdb_file2, "2");
 
    pf1 = pi_file_open(full_local_pdb_file);
-   if (pf1<=0) {
+   if (!pf1) {
       jp_logf(JP_LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file);
       return -1;
    }
    pi_file_get_info(pf1, &infop);
    pf2 = pi_file_create(full_local_pdb_file2, &infop);
-   if (pf2<=0) {
+   if (!pf2) {
       jp_logf(JP_LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file2);
       return -1;
    }
@@ -2375,7 +2375,7 @@ int fast_sync_application(char *DB_name, int sd)
    if (ret < 0) {
       g_snprintf(log_entry, 255, _("Unable to open %s\n"), DB_name);
       log_entry[255]='\0';
-      charset_j2p(log_entry, 255, char_set);
+      charset_j2p((unsigned char *)log_entry, 255, char_set);
       dlp_AddSyncLogEntry(sd, log_entry);
       return -1;
    }
@@ -2563,7 +2563,7 @@ int sync_categories(char *DB_name, int sd,
    char full_name[256];
    char pdb_name[256];
    char log_entry[256];
-   char buf[65536];
+   unsigned char buf[65536];
    char tmp_name[18];
    int i, r, Li, Ri;
    int size;
@@ -2604,7 +2604,7 @@ int sync_categories(char *DB_name, int sd,
    if (r < 0) {
       g_snprintf(log_entry, 255, _("Unable to open %s\n"), DB_name);
       log_entry[255]='\0';
-      charset_j2p(log_entry, 255, char_set);
+      charset_j2p((unsigned char *)log_entry, 255, char_set);
       dlp_AddSyncLogEntry(sd, log_entry);
       return -1;
    }
@@ -2691,7 +2691,7 @@ int sync_categories(char *DB_name, int sd,
 	    printf("cat index %d case 2\n", Li);
 #endif
 	    r = pdb_file_swap_indexes(DB_name, Li, found_name_at);
-	    edit_cats_swap_cats_pc3(DB_name, Li, i);
+	    edit_cats_swap_cats_pc3(DB_name, Li, Ri);/* undo this, or i? */
 	    strncpy(tmp_name, local_cai.name[found_ID_at], 16);
 	    tmp_name[15]='\0';
 	    strncpy(local_cai.name[found_ID_at],

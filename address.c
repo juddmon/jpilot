@@ -325,11 +325,11 @@ int pc_address_write(struct Address *a, PCRecType rt, unsigned char attrib,
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    if (char_set != CHAR_SET_LATIN1) {
       for (i = 0; i < 19; i++) {
-	 if (a->entry[i]) charset_j2p(a->entry[i], strlen(a->entry[i])+1, char_set);
+	 if (a->entry[i]) charset_j2p((unsigned char *)a->entry[i], strlen(a->entry[i])+1, char_set);
       }
    }
 
-   rec_len = pack_Address(a, record, 65535);
+   rec_len = pack_Address(a, (unsigned char *)record, 65535);
    if (!rec_len) {
       PRINT_FILE_LINE;
       jp_logf(JP_LOG_WARN, "pack_Address %s\n", _("error"));
@@ -369,7 +369,7 @@ void free_AddressList(AddressList **al)
 int get_address_app_info(struct AddressAppInfo *ai)
 {
    int num;
-   unsigned int rec_size;
+   int rec_size;
    unsigned char *buf;
    long char_set;
 
@@ -393,15 +393,15 @@ int get_address_app_info(struct AddressAppInfo *ai)
       int i;
       for (i = 0; i < 16; i++)
 	if (ai->category.name[i][0] != '\0') {
-	   charset_p2j(ai->category.name[i], 16, char_set);
+	   charset_p2j((unsigned char *)ai->category.name[i], 16, char_set);
 	}
       for (i = 0; i < 19 + 3; i++)
 	if (ai->labels[i][0] != '\0') {
-	   charset_p2j(ai->labels[i],16, char_set);
+	   charset_p2j((unsigned char *)ai->labels[i],16, char_set);
 	}
       for (i = 0; i < 8; i++)
 	if (ai->phoneLabels[i][0] != '\0') {
-	   charset_p2j(ai->phoneLabels[i],16, char_set);
+	   charset_p2j((unsigned char *)ai->phoneLabels[i],16, char_set);
 	}
    }
 
@@ -490,7 +490,7 @@ int get_addresses2(AddressList **address_list, int sort_order,
 	    if ((a.entry[i] != NULL) && (a.entry[i][0] != '\0')) {
 	       if ((buf = (char *)realloc(buf, strlen(a.entry[i])*2+1)) != NULL) {
 		  strcpy(buf, a.entry[i]);
-		  charset_p2j(buf, strlen(a.entry[i])*2+1, char_set);
+		  charset_p2j((unsigned char *)buf, strlen(a.entry[i])*2+1, char_set);
 		  if (strlen(buf) > strlen(a.entry[i])) {
 		     free(a.entry[i]);
 		     a.entry[i] = strdup(buf);
