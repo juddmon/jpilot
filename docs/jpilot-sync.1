@@ -2,23 +2,35 @@
 .SH NAME
 jpilot-sync \- A command line tool for syncing jpilot databases to a Palm OS
 device.
-jpilot \- A palm pilot desktop for Linux/Unix
 .SH SYNOPSIS
 .B jpilot-sync
+[ options ]
 .SH "DESCRIPTION"
-jpilot-syncd [ options ]
 J-Pilot preferences are read to get port, rate, number of backups, etc.
-They are read from the directory $JPILOT_HOME/.jpilot/jpilot.rc
+They are read from the directory
+.I $JPILOT_HOME/.jpilot/jpilot.rc
 .SH OPTIONS
--v Print out the version and exit.
-
--h Print out help and exit.
-
--b Do a sync and then a backup, otherwise just do a sync.
-
--l Stay in a loop, otherwise sync once and exit.
-
--p {port} - Use this port to sync with instead of using preferences or the
+.TP
+.B \-v
+Print out the version and exit.
+.TP
+.B \-h
+Print out help and exit.
+.TP
+.B \-d
+run in debug mode.
+.TP
+.B \-P
+do not load plugins.
+.TP
+.B \-b
+Do a sync and then a backup, otherwise just do a sync.
+.TP
+.B \-l
+Stay in a loop, otherwise sync once and exit.
+.TP
+.BI "\-p " port
+Use this port to sync with instead of using preferences or the
 default of /dev/jpilot.
 .SH BUGS
 See /usr/share/doc/jpilot/BUGS

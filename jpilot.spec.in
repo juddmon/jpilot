@@ -34,21 +34,17 @@ install -d $RPM_BUILD_ROOT%{_mandir}/man1
 install docs/jpilot*.1.gz $RPM_BUILD_ROOT%{_mandir}/man1
 strip jpilot
 install -d $RPM_BUILD_ROOT%{_bindir}
-make prefix=$RPM_BUILD_ROOT%{prefix} install
-make DEST=$RPM_BUILD_ROOT install
+make prefix=$RPM_BUILD_ROOT%{prefix} mandir=$RPM_BUILD_ROOT%{_mandir} install
 
 mkdir -p $RPM_BUILD_ROOT%{prefix}/share/pixmaps
 install -m644 icons/*.xpm $RPM_BUILD_ROOT%{prefix}/share/pixmaps
 
 %post
-#if [ -x `which libtool` ]; then
-#    libtool --finish %{prefix}/lib/jpilot/plugins
-#fi
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%files
+%files -f rpmfiles.txt
 %defattr(-,root,root)
 %doc BUGS CHANGELOG COPYING CREDITS INSTALL README TODO UPGRADING
 %doc icons docs/plugin.html docs/manual.html

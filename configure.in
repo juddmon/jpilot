@@ -2,11 +2,18 @@ dnl Process this file with autoconf to produce a configure script.
 
 AC_INIT(jpilot.c)
 
-AC_CONFIG_HEADER(config.h)
+AC_CANONICAL_HOST
 
-AC_ISC_POSIX
+dnl Every other copy of the package version number gets its value from here
+AM_INIT_AUTOMAKE(jpilot, 0.99.2)
+
+dnl create a config.h file (Automake will add -DHAVE_CONFIG_H)
+AM_CONFIG_HEADER(config.h)
+
+AC_SUBST(VERSION)
 
 AC_PROG_CC
+AC_ISC_POSIX
 
 AC_DISABLE_STATIC
 AC_LIBTOOL_DLOPEN
@@ -14,27 +21,15 @@ AM_PROG_LIBTOOL
 
 AC_PROG_INSTALL
 
+if test "x$prefix" = "xNONE"; then
+   AC_DEFINE_UNQUOTED(BASE_DIR, "$ac_default_prefix", [ BASE_DIR ])
+else
+   AC_DEFINE_UNQUOTED(BASE_DIR, "$prefix", [ BASE_DIR ])
+fi
+
 dnl Checks for programs.
 
-PACKAGE=jpilot
-VERSION="0.99.2"
-
-if test "x$prefix" = "xNONE"; then
-   AC_DEFINE_UNQUOTED(BASE_DIR, "$ac_default_prefix")
-else
-   AC_DEFINE_UNQUOTED(BASE_DIR, "$prefix")
-fi
-#
-# This is for ncc
-#
-AC_ARG_WITH(for_NCC,
-[  --with-prometheon        For use with Prometheon: http://www.prometheon.net/])
-if test "x$with_prometheon" != "x"; then
-   AC_DEFINE(WITH_PROMETHEON)
-   AC_MSG_RESULT(Compiling for Prometheon)
-fi
-
-# Compile options
+dnl Compile options
 ccoptions=""
 AC_ARG_WITH(ccoptions,
 [  --with-ccoptions=       Options to pass to your C compiler])
@@ -50,17 +45,14 @@ cflags=$CFLAGS
 AC_SUBST(cflags)
 
 dnl start gettext
+AC_PROG_INTLTOOL
 
-AC_DEFINE_UNQUOTED(PACKAGE, "$PACKAGE")
-AC_DEFINE_UNQUOTED(VERSION, "$VERSION")
-AC_SUBST(PACKAGE)
-AC_SUBST(VERSION)
-
-ALL_LINGUAS="ja de fr da sv es nl ca cs no it"
+dnl Set of available languages
+ALL_LINGUAS="ca cs da de es fr it ja nl no sv tr"
 
 dnl ud_GNU_GETTEXT
-dnl AM_WITH_NLS()
-AM_GNU_GETTEXT
+dnl AM_WITH_NLS
+AM_GNU_GETTEXT()
 
 if test "x$MSGFMT" = "xno"; then
    if test "x$GMSGFMT" = "xno"; then
@@ -69,7 +61,12 @@ if test "x$MSGFMT" = "xno"; then
    fi
 fi
 
-dnl AC_LINK_FILES($nls_cv_header_libgt, $nls_cv_header_intl)
+AC_SUBST(BUILD_INCLUDED_LIBINTL)
+AC_SUBST(USE_INCLUDED_LIBINTL)
+AC_SUBST(INTLOBJS)
+AC_SUBST(GLIBC21)
+AC_SUBST(INTL_LIBTOOL_SUFFIX_PREFIX)
+AC_SUBST(INTLBISON)
 
 dnl end gettext
 
@@ -194,7 +191,7 @@ int main()
 * Make sure libpisock can be found by ld
 * Check /etc/ld.so.conf and run ldconfig
 * This test can be disabled by the --disable-pl-test option])
-   , )
+   , [ error ])
 
 
    dnl *************************
@@ -213,7 +210,7 @@ int main()
       return 100;
    }
 }
-], , , )
+], , , [ error ] )
    if test "$ac_status" = "100"; then
       AC_MSG_RESULT([0.10.0 or newer... good])
    fi
@@ -253,7 +250,7 @@ if test "x$enable_plugins" = "xyes"; then
    fi
 
    if test "x$have_dlopen" = "xyes"; then
-      AC_DEFINE(ENABLE_PLUGINS)
+      AC_DEFINE(ENABLE_PLUGINS, 1, [ plugin support ])
       PLUGIN_SUPPORT=1
       AC_SUBST(PLUGIN_SUPPORT)
    else
@@ -268,7 +265,7 @@ AC_ARG_ENABLE(private, [  --disable-private       Do not use private records fea
  enable_private=no, enable_private=yes)
 
 if test "x$enable_private" = "xyes"; then
-   AC_DEFINE(ENABLE_PRIVATE)
+   AC_DEFINE(ENABLE_PRIVATE, 1, [ Private record support ])
 else
    AC_MSG_RESULT(Private record support disabled by configure options)
 fi
@@ -281,7 +278,7 @@ AM_PATH_GTK(1.2.0,,
 dnl Checks for header files.
 AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
-AC_CHECK_HEADERS(fcntl.h sys/file.h sys/time.h unistd.h string.h locale.h)
+AC_HAVE_HEADERS(fcntl.h sys/file.h sys/time.h unistd.h string.h locale.h)
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_PID_T
@@ -307,26 +304,54 @@ if test "$OPEN_SSL_MD5" = "1"; then
 fi
 
 if test "$MAKE_KEYRING" != "1"; then
-   AC_MSG_NOTICE([Open SSL headers not found, Keyring will not be built])
+   AC_MSG_WARN([Open SSL headers not found, Keyring will not be built])
 fi
 
 AC_ARG_WITH(with_flock,
 [  --with-flock            Substitute flock instead of fnctl (for NFS)])
 if test "x$with_flock" != "x"; then
-   AC_DEFINE(USE_FLOCK)
+   AC_DEFINE(USE_FLOCK, 1, [ Using flock instead of fnctl ])
    AC_MSG_RESULT(Using flock instead of fnctl)
 fi
 
 dnl For Irix
 abilib=$ABILIB
 if test "x$abilib" = "x"; then
-   AC_DEFINE_UNQUOTED(ABILIB, "lib")
+   AC_DEFINE_UNQUOTED(ABILIB, "lib", [ ABILIB ])
 else
-   AC_DEFINE_UNQUOTED(ABILIB, "$abilib")
+   AC_DEFINE_UNQUOTED(ABILIB, "$abilib", [ ABILIB ])
 fi
 AC_SUBST(ABILIB)
 
-AC_OUTPUT([Makefile jpilot.spec \
- SyncTime/Makefile Expense/Makefile KeyRing/Makefile \
- intl/Makefile po/Makefile.in SlackBuild],
- [sed -e "/POTFILES =/r po/POTFILES" po/Makefile.in > po/Makefile])
+#
+# This is for Prometheon (CoPilot)
+#
+MAKE_PROMETHEON="NO"
+AC_ARG_WITH(for_NCC,
+[  --with-prometheon       For use with Prometheon: http://www.prometheon.net/])
+if test "x$with_prometheon" != "x"; then
+   AC_DEFINE(WITH_PROMETHEON, 1, [ Compiling for Prometheon ])
+   AC_MSG_WARN([*** Compiling for Prometheon])
+   MAKE_PROMETHEON="YES"
+fi
+#
+# We can use an environment variable so we can create RPMs like this.
+#
+if test "x$WITH_PROMETHEON" = "xYES"; then
+   AC_DEFINE(WITH_PROMETHEON, 1, [ Compiling for Prometheon ])
+   AC_MSG_WARN([*** Compiling for Prometheon])
+   MAKE_PROMETHEON="YES"
+fi
+AC_SUBST(MAKE_PROMETHEON)
+
+# DB3
+AC_ARG_WITH(with_db3,
+[  --with-db3              Compile DateBook3/4 support])
+if test "x$with_db3" != "x"; then
+   AC_DEFINE(USE_DB3, 1, [ DateBook3/4 support ])
+fi
+
+AC_OUTPUT(Makefile docs/Makefile Expense/Makefile KeyRing/Makefile
+	m4/Makefile intl/Makefile po/Makefile.in
+	SyncTime/Makefile po/Makefile.in jpilot.spec
+	SlackBuild)

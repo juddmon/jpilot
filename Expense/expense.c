@@ -1492,7 +1492,7 @@ static int add_search_result(const char *line, int unique_id, struct search_resu
  * This function is called when the user does a search.  It should return
  * records which match the search string.
  */
-int plugin_search(char *search_string, int case_sense, struct search_result **sr)
+int plugin_search(const char *search_string, int case_sense, struct search_result **sr)
 {
    GList *records;
    GList *temp_list;
@@ -1599,8 +1599,8 @@ int plugin_help(char **text, int *width, int *height)
 	   "judd@jpilot.org\n"
 	   "http://jpilot.org\n"
 	   );
-   *height = 200;
-   *width = 300;
+   *height = 0;
+   *width = 0;
    
    return 0;
 }

@@ -348,7 +348,7 @@ static int
 
 #ifdef ENABLE_PLUGINS
 static int
-  search_plugins(char *needle, GtkWidget *clist)
+  search_plugins(const char *needle, const GtkWidget *clist)
 {
    GList *plugin_list, *temp_list;
    gchar *empty_line[] = { "","" };
@@ -358,7 +358,6 @@ static int
    struct search_result *sr, *temp_sr;
    struct plugin_s *plugin;
    struct search_record *new_sr;
-
 
    plugin_list = NULL;
    plugin_list = get_plugin_list();
@@ -370,32 +369,33 @@ static int
    for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
       plugin = (struct plugin_s *)temp_list->data;
       if (plugin) {
+	 sr = NULL;
 	 if (plugin->plugin_search) {
-	    plugin->plugin_search(needle, case_sense, &sr);
+	    if (plugin->plugin_search(needle, case_sense, &sr) > 0) {
+	       for (temp_sr=sr; temp_sr; temp_sr=temp_sr->next) {
+		  gtk_clist_prepend(GTK_CLIST(clist), empty_line);
+		  if (plugin->menu_name) {
+		     gtk_clist_set_text(GTK_CLIST(clist), 0, 0, plugin->menu_name);
+		  } else {
+		     gtk_clist_set_text(GTK_CLIST(clist), 0, 0, "plugin ?");
+		  }
+		  if (temp_sr->line) {
+		     gtk_clist_set_text(GTK_CLIST(clist), 0, 1, temp_sr->line);
+		  }
 
-	    for (temp_sr=sr; temp_sr; temp_sr=temp_sr->next) {
-	       gtk_clist_prepend(GTK_CLIST(clist), empty_line);
-	       if (plugin->menu_name) {
-		  gtk_clist_set_text(GTK_CLIST(clist), 0, 0, plugin->menu_name);
-	       } else {
-		  gtk_clist_set_text(GTK_CLIST(clist), 0, 0, "plugin ?");
+		  /*Add to the search list */
+		  new_sr = malloc(sizeof(struct search_record));
+		  new_sr->app_type = plugin->number;
+		  new_sr->plugin_flag = 1;
+		  new_sr->unique_id = temp_sr->unique_id;
+		  new_sr->next = search_rl;
+		  search_rl = new_sr;
+
+		  gtk_clist_set_row_data(GTK_CLIST(clist), 0, new_sr);
+		  count++;
 	       }
-	       if (temp_sr->line) {
-		  gtk_clist_set_text(GTK_CLIST(clist), 0, 1, temp_sr->line);
-	       }
-
-	       /*Add to the search list */
-	       new_sr = malloc(sizeof(struct search_record));
-	       new_sr->app_type = plugin->number;
-	       new_sr->plugin_flag = 1;
-	       new_sr->unique_id = temp_sr->unique_id;
-	       new_sr->next = search_rl;
-	       search_rl = new_sr;
-
-	       gtk_clist_set_row_data(GTK_CLIST(clist), 0, new_sr);
-	       count++;
+	       free_search_result(&sr);
 	    }
-	    free_search_result(&sr);
 	 }
       }
    }

@@ -1979,15 +1979,17 @@ int cleanup_pc_files()
 
    for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
       plugin = (struct plugin_s *)temp_list->data;
-      if (plugin->db_name) {
-	 jpilot_logf(LOG_DEBUG, "cleanup_pc_file for [%s]\n", plugin->db_name);
-	 ret = cleanup_pc_file(plugin->db_name, &max_id);
-	 jpilot_logf(LOG_DEBUG, "max_id was %d\n", max_id);
-	 if (ret<0) {
-	    fail_flag=1;
-	 } else if (max_id > max_max_id) {
-	    max_max_id = max_id; 
-	 }
+      if ((plugin->db_name==NULL) || (plugin->db_name[0]=='\0')) {
+	 jpilot_logf(LOG_DEBUG, "not calling cleanup_pc_file for: [%s]\n", plugin->db_name);
+	 continue;
+      }
+      jpilot_logf(LOG_DEBUG, "cleanup_pc_file for [%s]\n", plugin->db_name);
+      ret = cleanup_pc_file(plugin->db_name, &max_id);
+      jpilot_logf(LOG_DEBUG, "max_id was %d\n", max_id);
+      if (ret<0) {
+	 fail_flag=1;
+      } else if (max_id > max_max_id) {
+	 max_max_id = max_id; 
       }
    }
 #endif

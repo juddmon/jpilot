@@ -19,16 +19,13 @@
 #ifndef __PASSWORD_H__
 #define __PASSWORD_H__
 
-#ifdef ENABLE_PRIVATE
-
-#define MASK_PRIVATES 2
 #define SHOW_PRIVATES 1
+#define MASK_PRIVATES 2
 #define HIDE_PRIVATES 0
 #define GET_PRIVATES -1
 
 #define PASSWD_LEN 32
 
-void palm_encode(unsigned char *ascii, unsigned char *encoded);
 /*
  * hide passed 1 will set the hide flag
  * hide passed 0 will unset the hide flag and also need a correct password
@@ -37,11 +34,17 @@ void palm_encode(unsigned char *ascii, unsigned char *encoded);
  */
 int show_privates(int hide, char *password);
 
+#ifdef ENABLE_PRIVATE
+void palm_encode_hash(unsigned char *ascii, unsigned char *encoded);
+#ifdef USB_PILOT_LINK
+void palm_encode_md5(unsigned char *ascii, unsigned char *encoded);
+#endif
+
 /* len is the length of the bin str, hex_str must be at least twice as long */
 void bin_to_hex_str(unsigned char *bin, char *hex_str, int len);
 
-#endif
-
 int dialog_password(char *ascii_password);
+
+#endif /* ENABLE_PRIVATE */
 
 #endif

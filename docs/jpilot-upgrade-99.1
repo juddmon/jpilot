@@ -6,6 +6,7 @@ jpilot version 0.99 databases
 jpilot is a palm pilot desktop for Linux/Unix
 .SH SYNOPSIS
 .B jpilot-upgrade-99
+[ options ]
 .SH "DESCRIPTION"
 Upgrading to 0.99 from a pre 0.99 release:
 
@@ -22,6 +23,31 @@ this change had to be made before version 1.0.
 You should sync before upgrading to 0.99 from an earlier version.
 However if you can't or forgot, then you should sync and then run
 jpilot-upgrade-99 and it will convert the .pc files to .pc3 files.
+.SH OPTIONS
+.TP
+.B \-v
+displays version and exits.
+.TP
+.B \-h
+displays help and exits.
+.TP
+.B \-B
+dump dateBook.
+.TP
+.BI \-N YYY/MM/DD
+dump apps on YYYY/MM/DD in dateBook.
+.TP
+.B \-N
+dump apps on today in dateBook.
+.TP
+.B \-M
+dump Memos.
+.TP
+.B \-A
+dump Address book
+.TP
+.B \-T
+dump Todo list as CSV.
 .SH BUGS
 See /usr/share/doc/jpilot/BUGS
 .SH SEE ALSO

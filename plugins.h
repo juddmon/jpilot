@@ -53,7 +53,7 @@ struct plugin_s
    int (*plugin_gui_cleanup)(void);
    int (*plugin_pre_sync)(void);
    int (*plugin_sync)(int sd);
-   int (*plugin_search)(char *search_string, int case_sense, struct search_result **sr);
+   int (*plugin_search)(const char *search_string, int case_sense, struct search_result **sr);
    int (*plugin_post_sync)(void);
    int (*plugin_exit_cleanup)(void);
 };

@@ -3,10 +3,32 @@
 jpilot \- A palm pilot desktop for Linux/Unix
 .SH SYNOPSIS
 .B jpilot
+[ options ]
 .SH "DESCRIPTION"
 J-Pilot is a desktop organizer application for the palm pilot and other
 Palm OS devices.  It is similar in functionality to the one that
-3Com distributes.
+3Com/Palm distributes.
+.SH OPTIONS
+.TP
+.B \-v
+displays version and exits.
+.TP
+.B \-h
+displays help and exits.
+.TP
+.B \-d
+displays debug info to stdout.
+.TP
+.B \-a
+ignore missed alarms since the last time this program was run.
+.TP
+.B \-A
+ignore all alarms, past and future.
+.SH ENVIRONMENT
+The PILOTPORT, and PILOTRATE env variables are used to specify which
+port to sync on, and at what speed.
+
+If PILOTPORT is not set then it defaults to /dev/pilot.
 .SH BUGS
 See /usr/share/doc/jpilot/BUGS
 .SH SEE ALSO

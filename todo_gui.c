@@ -643,28 +643,28 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	    jpilot_logf(LOG_WARN, "Can't export todo %d\n", (long) temp_list->data + 1);
 	 }
 	 str_to_csv_str(csv_text, todo_app_info.category.name[mtodo->attrib & 0x0F]);
-	 fprintf(out, "\"%s\", ", csv_text);
-	 fprintf(out, "\"%s\", ", (mtodo->attrib & dlpRecAttrSecret) ? "1":"0");
-	 fprintf(out, "\"%s\", ", mtodo->todo.indefinite ? "1":"0");
+	 fprintf(out, "\"%s\",", csv_text);
+	 fprintf(out, "\"%s\",", (mtodo->attrib & dlpRecAttrSecret) ? "1":"0");
+	 fprintf(out, "\"%s\",", mtodo->todo.indefinite ? "1":"0");
 	 if (mtodo->todo.indefinite) {
 	    csv_text[0]='\0';
 	 } else {
 	    strftime(csv_text, len, "%Y %02m %02d", &(mtodo->todo.due));
 	 }
-	 fprintf(out, "\"%s\", ", csv_text);
-	 fprintf(out, "\"%d\", ", mtodo->todo.priority);
-	 fprintf(out, "\"%s\", ", mtodo->todo.complete ? "1":"0");
+	 fprintf(out, "\"%s\",", csv_text);
+	 fprintf(out, "\"%d\",", mtodo->todo.priority);
+	 fprintf(out, "\"%s\",", mtodo->todo.complete ? "1":"0");
 	 if (mtodo->todo.description) {
 	    str_to_csv_str(csv_text, mtodo->todo.description);
-	    fprintf(out, "\"%s\", ", csv_text);
+	    fprintf(out, "\"%s\",", csv_text);
 	 } else {
-	    fprintf(out, "\"\", ");
+	    fprintf(out, "\"\",");
 	 }
 	 if (mtodo->todo.note) {
 	    str_to_csv_str(csv_text, mtodo->todo.note);
 	    fprintf(out, "\"%s\"\n", csv_text);
 	 } else {
-	    fprintf(out, "\"\", ");
+	    fprintf(out, "\"\",");
 	 }
 	 free(csv_text);
 	 break;
@@ -1197,8 +1197,8 @@ static void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    entries_shown=0;
    show_priv = show_privates(GET_PRIVATES, NULL);
    for (temp_todo = todo_list, i=0; temp_todo; temp_todo=temp_todo->next) {
-      if ( ((temp_todo->mtodo.attrib & 0x0F) != todo_category) &&
-	  todo_category != CATEGORY_ALL) {
+      if ( ((temp_todo->mtodo.attrib & 0x0F) != category) &&
+	  category != CATEGORY_ALL) {
 	 continue;
       }
       /* Do masking like Palm OS 3.5 */

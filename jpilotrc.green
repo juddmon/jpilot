@@ -14,10 +14,10 @@
   # Here is a list of all the possible states.  Note that some do not apply to
   # certain widgets.
   #
-  # NORMAL - The normal state of a widget, without the judd over top of
+  # NORMAL - The normal state of a widget, without the mouse over top of
   # it, and not being pressed etc.
   #
-  # PRELIGHT - When the judd is over top of the widget, colors defined
+  # PRELIGHT - When the mouse is over top of the widget, colors defined
   # using this state will be in effect.
   #
   # ACTIVE - When the widget is pressed or clicked it will be active, and

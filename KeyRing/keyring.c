@@ -1476,8 +1476,8 @@ int plugin_help(char **text, int *width, int *height)
 	   "judd@jpilot.org\n"
 	   "http://jpilot.org\n"
 	   );
-   *height = 200;
-   *width = 300;
+   *height = 0;
+   *width = 0;
    
    return 0;
 }

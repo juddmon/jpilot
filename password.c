@@ -26,6 +26,27 @@
 #include "prefs.h"
 #include "i18n.h"
 
+#include <pi-version.h>
+
+/* Try to determine if version of pilot-link > 0.9.x */
+#ifdef USB_PILOT_LINK
+# undef USB_PILOT_LINK
+#endif
+
+#if PILOT_LINK_VERSION > 0
+# define USB_PILOT_LINK
+#else
+# if PILOT_LINK_MAJOR > 9
+#  define USB_PILOT_LINK
+# endif
+#endif
+
+#ifdef USB_PILOT_LINK
+#include <pi-md5.h>
+#endif
+
+#ifdef ENABLE_PRIVATE
+
 struct dialog_data {
    GtkWidget *entry;
    int button_hit;
@@ -35,7 +56,6 @@ struct dialog_data {
 #define DIALOG_SAID_1  454
 #define DIALOG_SAID_2  455
 
-#ifdef ENABLE_PRIVATE
 unsigned char short_salt[]=
 {
    0x09, 0x02, 0x13, 0x45, 0x07, 0x04, 0x13, 0x44, 
@@ -67,8 +87,11 @@ void bin_to_hex_str(unsigned char *bin, char *hex_str, int len)
 
 /*
  * encoded is a pre-allocated buffer at least 34 bytes long
+ * 
+ * This is the hashing algorithm used in palm OS < 4.0.
+ * It is not very secure and is reversible.
  */
-void palm_encode(unsigned char *ascii, unsigned char *encoded)
+void palm_encode_hash(unsigned char *ascii, unsigned char *encoded)
 {
    unsigned char index, shift;
    unsigned short temp;
@@ -79,13 +102,6 @@ void palm_encode(unsigned char *ascii, unsigned char *encoded)
    };
    int mi;
    int m;
-
-   /* It seems that Palm OS lower cases the password first */
-   /* Yes, I have found this documented on Palms site */
-   len = strlen(encoded);
-   for (ai=0; ai < PASSWD_LEN; ai++) {
-      ascii[ai] = tolower(ascii[ai]);
-   }
 
    encoded[0]='\0';
    end=0;
@@ -127,6 +143,28 @@ void palm_encode(unsigned char *ascii, unsigned char *encoded)
    }  
 }
 
+#ifdef USB_PILOT_LINK
+/*
+ * encoded is a pre-allocated buffer at least 16 bytes long
+ * 
+ * This is the hashing algorithm used in palm OS >= 4.0.
+ * Its just a plain ole' MD5.
+ */
+void palm_encode_md5(unsigned char *ascii, unsigned char *encoded)
+{
+   struct MD5Context m;
+   char digest[20];
+   
+   MD5Init(&m);
+   MD5Update(&m, ascii, strlen(ascii));
+   MD5Final(digest, &m);
+   
+   memcpy(encoded, digest, 16);   
+}
+#endif /* USB_PILOT_LINK */
+
+#endif
+
 /*
  * hide passed HIDE_PRIVATES will set the hide flag.
  * hide passed SHOW_PRIVATES will unset the hide flag and also need a
@@ -138,11 +176,21 @@ void palm_encode(unsigned char *ascii, unsigned char *encoded)
  */
 int show_privates(int hide, char *password)
 {
+   int i;
+#ifdef ENABLE_PRIVATE
    static int hidden=HIDE_PRIVATES;
+#else
+   static int hidden=SHOW_PRIVATES;
+#endif
+   
+#ifdef ENABLE_PRIVATE
    unsigned char encoded[34];
+   char password_lower[PASSWD_LEN+2];
+   const char *pref_password;
    unsigned char hex_str[68];
    unsigned long ivalue;
-   const char *pref_password;
+   int matched;
+#endif
 
    if (hide==GET_PRIVATES) {
       return hidden;
@@ -161,18 +209,52 @@ int show_privates(int hide, char *password)
       if (!password) {
 	 return HIDE_PRIVATES;
       }
-      palm_encode(password, encoded);
+
+      /* It seems that Palm OS lower cases the password first */
+      /* Yes, I have found this documented on Palms site */
+      for (i=0; i < PASSWD_LEN; i++) {
+	 password_lower[i] = tolower(password[i]);
+      }
+
+#ifdef ENABLE_PRIVATE
+      matched=0;
+
+      /* Check to see that the password matches */
+      palm_encode_hash(password_lower, encoded);
       bin_to_hex_str(encoded, hex_str, 32);
       get_pref(PREF_PASSWORD, &ivalue, &pref_password);
       if (!strcmp(hex_str, pref_password)) {
 	 hidden=SHOW_PRIVATES;
+	 matched=1;
       }
+
+#ifdef USB_PILOT_LINK
+      /* We need a new pilot-link > 0.11 for this */
+      if (!matched) {
+	 /* The Password didn't match.
+	  * It could also be an MD5 password.
+	  * Try that now.
+	  */
+	 palm_encode_md5(password, encoded);
+	 bin_to_hex_str(encoded, hex_str, 32);
+	 hex_str[32]='\0';
+	 get_pref(PREF_PASSWORD, &ivalue, &pref_password);
+	 if (!strcmp(hex_str, pref_password)) {
+	    hidden=SHOW_PRIVATES;
+	    matched=1;
+	 }
+      }
+#endif /* USB_PILOT_LINK */
+#else
+      /* Return show without checking the password */
+      hidden=SHOW_PRIVATES;
+#endif
    }
 
    return hidden;
 }
-#endif
 
+#ifdef ENABLE_PRIVATE
 /*
  * PASSWORD GUI
  */
@@ -317,3 +399,4 @@ int dialog_password(char *ascii_password)
 
    return ret;
 }
+#endif

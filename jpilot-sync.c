@@ -30,7 +30,7 @@
 
 /* this is a hack for now until I clean up the code */
 int *glob_date_label;
-int pipe_in, pipe_out;
+int pipe_to_parent, pipe_from_parent;
 pid_t glob_child_pid;
 GtkWidget *glob_dialog;
 pid_t glob_child_pid;
@@ -80,8 +80,8 @@ int main(int argc, char *argv[])
    pref_init();
    pref_read_rc_file();
 
-   pipe_in=STDIN_FILENO;
-   pipe_out=STDOUT_FILENO;
+   pipe_from_parent=STDIN_FILENO;
+   pipe_to_parent=STDOUT_FILENO;
 
    for (i=1; i<argc; i++) {
       if (!strncasecmp(argv[i], "-v", 2)) {
@@ -160,33 +160,41 @@ int main(int argc, char *argv[])
        case 0:
 	 break;
        case SYNC_ERROR_BIND:
+	 printf("\n");
 	 printf("Error: connecting to serial port\n");
 	 break;
        case SYNC_ERROR_LISTEN:
+	 printf("\n");
 	 printf("Error: pi_listen\n");
 	 break;
        case SYNC_ERROR_OPEN_CONDUIT:
+	 printf("\n");
 	 printf("Error: opening conduit to Palm\n");
 	 break;
        case SYNC_ERROR_PI_ACCEPT:
+	 printf("\n");
 	 printf("Error: pi_accept\n");
 	 break;
        case SYNC_ERROR_NOT_SAME_USER:
+	 printf("\n");
 	 printf("Error: this palm has a different User Name than the last sync.\n");
 	 printf(" Syncing with different palms into the same directory could cross data.\n");
-	 printf(" Use JPILOT_HOME to sync different palms under the same unix user.\n");
+	 printf(" JPILOT_HOME can be used to sync different palms under the same unix user.\n");
 	 break;
        case SYNC_ERROR_NOT_SAME_USERID:
+	 printf("\n");
 	 printf("Error: this palm has a different ID Name than the last sync.\n");
 	 printf(" Syncing with different palms into the same directory could cross data.\n");
-	 printf(" Use JPILOT_HOME to sync different palms under the same unix user.\n");
+	 printf(" JPILOT_HOME can be used to sync different palms under the same unix user.\n");
 	 break;
        case SYNC_ERROR_NULL_USERID:
+	 printf("\n");
 	 printf("Error: this palm has a NULL user ID.\n");
 	 printf(" use \"install-user /dev/pilot name numeric_id\"\n");
 	 break;
        default:
-	 printf("sync returned error %d\n", r);
+	 printf("\n");
+	 printf("Error: sync returned error %d\n", r);
       }
       sleep(1);
    } while(loop);

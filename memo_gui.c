@@ -516,8 +516,8 @@ void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	    jpilot_logf(LOG_WARN, "Can't export memo %d\n", (long) temp_list->data + 1);
 	 }
 	 str_to_csv_str(csv_text, memo_app_info.category.name[mmemo->attrib & 0x0F]);
-	 fprintf(out, "\"%s\", ", csv_text);
-	 fprintf(out, "\"%s\", ", (mmemo->attrib & dlpRecAttrSecret) ? "1":"0");
+	 fprintf(out, "\"%s\",", csv_text);
+	 fprintf(out, "\"%s\",", (mmemo->attrib & dlpRecAttrSecret) ? "1":"0");
 	 str_to_csv_str(csv_text, mmemo->memo.text);
 	 fprintf(out, "\"%s\"\n", csv_text);
 	 free(csv_text);
@@ -975,7 +975,7 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       if (last) {
 	 *(last-1)='\0';
       } else {
-	 str[copy_max_length]='\0';
+	 str[copy_max_length + len1]='\0';
       }
       gtk_clist_set_text(GTK_CLIST(clist), entries_shown, 0, str);
       gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_memo->mmemo));

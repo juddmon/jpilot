@@ -42,15 +42,16 @@ const char *jp_strstr(const char *haystack, const char *needle, int case_sense)
    register const char *Ps1;
    char *r;
 
+   if ((!haystack) || (!needle)) return NULL;
+   if (!haystack) {
+      return NULL;
+   }
+   if (!needle) {
+      return haystack;
+   }
    if (case_sense) {
       return strstr(haystack, needle);
    } else {
-      if (!haystack) {
-	 return NULL;
-      }
-      if (!needle) {
-	 return haystack;
-      }
       needle2 = malloc(strlen(needle)+2);
       haystack2 = malloc(strlen(haystack)+2);
 

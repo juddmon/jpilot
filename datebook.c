@@ -160,41 +160,134 @@ int db3_hack_date(struct Appointment *a, struct tm *today)
    return 0;
 }
 
-/* Returns a bitmask
- * 0 if not a floating OR
- * bitmask:
- *  1 if float,
- *  2 if completed float
- *  16 if float has a note
- */
-int db3_is_float(struct Appointment *a, int *category)
+/* Note should be pretty much validated by now */
+void db3_fill_struct(char *note, int type, struct db4_struct *db4)
 {
-   int len, mask=0;
+   /* jpilot_logf(LOG_WARN, "db3_fill_struct()\n"); */
+   switch (note[2]) {
+    case 'c':
+      db4->floating_event=DB3_FLOAT_COMPLETE;
+      break;
+    case 'd':
+      db4->floating_event=DB3_FLOAT_DONE;
+      break;
+    case 'f':
+      db4->floating_event=DB3_FLOAT;
+      break;
+   }
+   switch (note[3]) {
+    case 'b':
+      db4->custom_font=DB3_FONT_BOLD;
+      break;
+    case 'l':
+      db4->custom_font=DB3_FONT_LARGE;
+      break;
+    case 'L':
+      db4->custom_font=DB3_FONT_LARGE_BOLD;
+      break;
+   }
+   db4->category = (note[4] - '@') & 0x0F;
+   db4->icon = (note[5] - '@');
+   if (note[6] == 's') {
+      db4->spans_midnight = DB3_SPAN_MID_YES;
+   }
+   /* bytes 8,9 I don't understand yet */
+   if (type==DB3_TAG_TYPE_DB3) {
+      return;
+   }
+   if (note[9] == 'l') {
+      db4->link = DB3_LINK_YES;
+   }
+   /* bytes 11-14 I don't understand yet */
+   /* bytes 15-18 lower 6 bits make 24 bit numer (not sure of byte order) */
+   db4->custom_alarm_sound = ((note[14] & 0x3F) << 18) +
+     ((note[15] & 0x3F) << 12) +
+     ((note[16] & 0x3F) << 6) +
+     ((note[17] & 0x3F) << 0);
+   db4->color = (note[18] - '@') & 0x0F;
+   /* Byte 19 is a carriage return */
+}
 
-   *category=0;
-   if (!a->note) {
+/*
+ * Parses the note tag and looks for db3 or db4 tags.
+ * returns -1: error, 0: false, 1: true
+ * for true: will in db4
+ * 
+ * db4 can be passed in NULL for just checking for datebk tags.
+ */
+int db3_parse_tag(char *note, int *type, struct db4_struct *db4)
+{
+   /* Characters allowed to exist in each character of a db3/4 tag */
+   /* NULL means any character is allowed */
+   char *allowed[]={
+      "#", "#", /* First 2 characters are # */
+	"@fcd", /* f floating, c completed, d done */
+	"@blL", /* b bold, l large, L large bold */
+	"@ABCDEFGHIJKLMNO", /* Category */
+	"@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrst", /* icon */
+	"@s", /* Spans midnight */ 
+	NULL, /* Lower 2 digits of next 2 chars are time zone */
+	NULL,
+	"@l\n", /* l link, EOL for datebk3 tags */
+	NULL, /* Lower 6 bits of next 4 chars make a 24 bit number (advance) */
+	NULL, /* I don't understand this yet and have not coded it */
+	NULL,
+	NULL,
+	NULL, /* Lower 6 bits of next 4 chars make a 24 bit number */
+	NULL, /*  which is the custom sound */
+	NULL,
+	NULL,
+	"@ABCDEFGHIJKLMNO", /* Color */
+	"\n", /* EOL for datebk4 tags */
+   };
+   int len, i;
+
+   /* We need to guarantee these to be set upon return */
+   if (db4) {
+      bzero(db4, sizeof(struct db4_struct));
+   }
+   *type=DB3_TAG_TYPE_NONE;
+
+   if (!note) {
       return 0;
    }
-   len = strlen(a->note);
-   if (len > 8) {
-      if ((a->note[0]=='#') && (a->note[1]=='#')) {
-	 *category = a->note[4] - '@';
-	 if (len > 10) {
-	    mask=mask | DB3_FLOAT_HAS_NOTE;
+
+   len = strlen(note);
+
+   for (i=0; i<20; i++) {
+      if (i+1>len) {
+	 return 0;
+      }
+      if ((i==9) && (note[i]=='\n')) {
+	 /* If we made it this far and CR then its a db3 tag */
+	 *type=DB3_TAG_TYPE_DB3;
+	 if (note[i+1]) {
+	    if (db4) {
+	       db4->note=&(note[i+1]);
+	    }
 	 }
-	 if (a->note[2]=='f') {
-	    mask=mask | DB3_FLOAT;
-	    return mask;
+	 if (db4) {
+	    db3_fill_struct(note, DB3_TAG_TYPE_DB3, db4);
 	 }
-	 if (a->note[2]=='c') {
-	    mask=mask | DB3_FLOAT_COMPLETE;
-	    return mask;
-	 }
-      } else if (a->note[0] != '\0') {
-	 mask=mask | DB3_FLOAT_HAS_NOTE;
+	 return 1;
+      }
+      if (allowed[i]==NULL) continue;
+      if (!strchr(allowed[i], note[i])) {
+	 return 0;	 
       }
    }
-   return mask;
+   
+   /* If we made it this far then its a db4 tag */
+   *type=DB3_TAG_TYPE_DB4;
+   if (note[i]) {
+      if (db4) {
+	 db4->note=&(note[i]);
+      }
+   }
+   if (db4) {
+      db3_fill_struct(note, DB3_TAG_TYPE_DB4, db4);
+   }
+   return 1;
 }
 #endif
 

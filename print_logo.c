@@ -17,8 +17,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "config.h"
 #include <stdio.h>
-
+#ifdef HAVE_LOCALE_H
+# include <locale.h>
+#endif
 /*----------------------------------------------------------------------*/
 
 void print_logo_data(FILE *f)
@@ -427,6 +430,9 @@ void print_logo_data(FILE *f)
 
 void print_logo(FILE *f, int x, int y, float size)
 {
+#ifdef HAVE_LOCALE_H
+   setlocale(LC_ALL,"C");
+#endif
     fprintf(f,
 	    "%%----------------------------------------\n"
 	    "%% Now the jpilot penguin logo; this is data\n"
@@ -446,4 +452,7 @@ void print_logo(FILE *f, int x, int y, float size)
 	  "%%----------------------------------------\n"
 	  "%% End of logo\n"
 	  "%%----------------------------------------\n", f);
+#ifdef HAVE_LOCALE_H
+   setlocale(LC_ALL,"");
+#endif
 }

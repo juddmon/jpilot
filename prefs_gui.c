@@ -66,7 +66,7 @@ static void cb_pref_menu(GtkWidget *widget,
    pref = GPOINTER_TO_INT(data);
    value = pref & 0xFF;
    pref = pref >> 8;
-   set_pref(pref, value, NULL);
+   set_pref_possibility(pref, value);
    jpilot_logf(LOG_DEBUG, "pref %d, value %d\n", pref, value);
 #ifdef COLORS
    if (pref==PREF_RCFILE) {
@@ -473,7 +473,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_entry_set_text(GTK_ENTRY(backups_entry), temp_str);
 
 
-   /*Show deleted files check box */
+   /* Show deleted files check box */
    checkbutton = gtk_check_button_new_with_label
      (_("Show deleted records (default NO)"));
    gtk_box_pack_start(GTK_BOX(vbox_settings), checkbutton, FALSE, FALSE, 0);
@@ -486,7 +486,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 		      "clicked", GTK_SIGNAL_FUNC(cb_show_deleted),
 		      GINT_TO_POINTER(PREF_SHOW_DELETED));
 
-   /*Show modified files check box */
+   /* Show modified files check box */
    checkbutton = gtk_check_button_new_with_label
      (_("Show modified deleted records (default NO)"));
    gtk_box_pack_start(GTK_BOX(vbox_settings), checkbutton, FALSE, FALSE, 0);
@@ -500,7 +500,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 		      GINT_TO_POINTER(PREF_SHOW_MODIFIED));
 
 
-   /*Show highlight days check box */
+   /* Show highlight days check box */
    checkbutton = gtk_check_button_new_with_label
      (_("Highlight calendar days with appointments"));
    gtk_box_pack_start(GTK_BOX(vbox_settings), checkbutton, FALSE, FALSE, 0);
@@ -513,9 +513,9 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 		      "clicked", GTK_SIGNAL_FUNC(cb_highlight), NULL);
 
 
-   /*Show use DateBk3/4 check box */
-   checkbutton = gtk_check_button_new_with_label
-     (_("Use DateBk3/4 note tags"));
+#ifdef USE_DB3
+   /* Show use DateBk3/4 check box */
+   checkbutton = gtk_check_button_new_with_label(_("Use DateBk3/4 note tags"));
    gtk_box_pack_start(GTK_BOX(vbox_settings), checkbutton, FALSE, FALSE, 0);
    get_pref(PREF_USE_DB3, &ivalue, &cstr);
    gtk_widget_show(checkbutton);
@@ -524,12 +524,15 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    }
    gtk_signal_connect(GTK_OBJECT(checkbutton), 
 		      "clicked", GTK_SIGNAL_FUNC(cb_use_db3), NULL);
+#else
+   label = gtk_label_new(_("DateBk3/4 support disabled in this build"));
+   gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
+   gtk_box_pack_start(GTK_BOX(vbox_settings), label, FALSE, FALSE, 0);
+#endif
 
 
-
-   /*Show sync datebook check box */
-   checkbutton = gtk_check_button_new_with_label
-     (_("Sync datebook"));
+   /* Show sync datebook check box */
+   checkbutton = gtk_check_button_new_with_label(_("Sync datebook"));
    gtk_box_pack_start(GTK_BOX(vbox_conduits), checkbutton, FALSE, FALSE, 0);
    get_pref(PREF_SYNC_DATEBOOK, &ivalue, &cstr);
    gtk_widget_show(checkbutton);
@@ -539,9 +542,8 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_signal_connect(GTK_OBJECT(checkbutton), 
 		      "clicked", GTK_SIGNAL_FUNC(cb_sync_datebook), NULL);
 
-   /*Show sync address check box */
-   checkbutton = gtk_check_button_new_with_label
-     (_("Sync address"));
+   /* Show sync address check box */
+   checkbutton = gtk_check_button_new_with_label(_("Sync address"));
    gtk_box_pack_start(GTK_BOX(vbox_conduits), checkbutton, FALSE, FALSE, 0);
    get_pref(PREF_SYNC_ADDRESS, &ivalue, &cstr);
    gtk_widget_show(checkbutton);
@@ -551,9 +553,8 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_signal_connect(GTK_OBJECT(checkbutton), 
 		      "clicked", GTK_SIGNAL_FUNC(cb_sync_address), NULL);
 
-   /*Show sync todo check box */
-   checkbutton = gtk_check_button_new_with_label
-     (_("Sync todo"));
+   /* Show sync todo check box */
+   checkbutton = gtk_check_button_new_with_label(_("Sync todo"));
    gtk_box_pack_start(GTK_BOX(vbox_conduits), checkbutton, FALSE, FALSE, 0);
    get_pref(PREF_SYNC_TODO, &ivalue, &cstr);
    gtk_widget_show(checkbutton);
@@ -563,9 +564,8 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_signal_connect(GTK_OBJECT(checkbutton), 
 		      "clicked", GTK_SIGNAL_FUNC(cb_sync_todo), NULL);
 
-   /*Show sync memo check box */
-   checkbutton = gtk_check_button_new_with_label
-     (_("Sync memo"));
+   /* Show sync memo check box */
+   checkbutton = gtk_check_button_new_with_label(_("Sync memo"));
    gtk_box_pack_start(GTK_BOX(vbox_conduits), checkbutton, FALSE, FALSE, 0);
    get_pref(PREF_SYNC_MEMO, &ivalue, &cstr);
    gtk_widget_show(checkbutton);
@@ -575,7 +575,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_signal_connect(GTK_OBJECT(checkbutton), 
 		      "clicked", GTK_SIGNAL_FUNC(cb_sync_memo), NULL);
 
-   /*Show sync Memo32 check box */
+   /* Show sync Memo32 check box */
    checkbutton = gtk_check_button_new_with_label
      (_("Sync memo32 (pedit32)"));
    gtk_box_pack_start(GTK_BOX(vbox_conduits), checkbutton, FALSE, FALSE, 0);

@@ -54,8 +54,8 @@ int plugin_help(char **text, int *width, int *height)
 	   "http://jpilot.org\n"
 	   "SyncTime WILL NOT work with PalmOS 3.3!\n"
 	   );
-   *height = 200;
-   *width = 300;
+   *height = 0;
+   *width = 0;
    return 0;
 }
 
@@ -67,6 +67,8 @@ int plugin_sync(int sd)
 
    jp_init();
    
+   jp_logf(LOG_DEBUG, "SyncTime: plugin_sync\n");
+
    dlp_ReadFeature(sd, makelong("psys"), 1, &ROMversion);
    
    majorVersion = (((ROMversion >> 28) & 0xf) * 10)+ ((ROMversion >> 24) & 0xf);
@@ -74,13 +76,15 @@ int plugin_sync(int sd)
 
    jp_logf(LOG_GUI, "synctime: Palm OS version %d.%d\n", majorVersion, minorVersion);
 
-   if ((majorVersion==3) && (minorVersion==30)) {
-      jp_logf(LOG_GUI, "synctime: Palm OS Version 3.30 does not support SyncTime\n");
-      jp_logf(LOG_GUI, "synctime: NOT setting the time on the pilot\n");
-      return 1;
+   if (majorVersion==3) {
+      if ((minorVersion==30) || (minorVersion==25)) {
+	 jp_logf(LOG_GUI, "synctime: Palm OS Version 3.25 and 3.30 do not support SyncTime\n");
+	 jp_logf(LOG_GUI, "synctime: NOT setting the time on the pilot\n");
+	 return 1;
+      }
    }
 
-   jp_logf(LOG_GUI, "synctime: setting the time on the pilot\n");
+   jp_logf(LOG_GUI, "synctime: Setting the time on the pilot\n");
    
    time(&ltime);
    r = dlp_SetSysDateTime(sd, ltime);

@@ -216,7 +216,7 @@ int print_dayview(struct tm *date, AppointmentList *a_list)
 	   "%%%%EOF\n");
 
 #ifdef HAVE_LOCALE_H
-   setlocale(LC_ALL,"C");
+   setlocale(LC_ALL,"");
 #endif
 
    return 0;
@@ -427,17 +427,22 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
    int mask;
 #ifdef USE_DB3
    int ret;
-   int category;
    int cat_bit;
+   int db3_type;
    long use_db3_tags;
-   get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
+   struct db4_struct db4;
 #endif
+
    /*------------------------------------------------------------------
     * Set up the PostScript output file, and print the header to it.
     *------------------------------------------------------------------*/
    mask=0;
 
    time(&ltime);
+
+#ifdef USE_DB3
+   get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
+#endif
 
    if (! (out = print_open())) return(-1);
    fprintf(out, "%%!PS-Adobe-2.0\n\n"
@@ -490,12 +495,11 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
       for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
 #ifdef USE_DB3
 	 if (use_db3_tags) {
-	    ret = db3_is_float(&(temp_al->ma.a), &category);
-	    /* jpilot_logf(LOG_DEBUG, "category = 0x%x\n", category); */
-	    cat_bit=1<<category;
+	    ret = db3_parse_tag(temp_al->ma.a.note, &db3_type, &db4);
+	    /* jpilot_logf(LOG_DEBUG, "category = 0x%x\n", db4.category); */
+	    cat_bit=1<<db4.category;
 	    if (!(cat_bit & datebook_category)) {
-	       jpilot_logf(LOG_DEBUG, "skipping rec not in this "
-			   "category\n");
+	       jpilot_logf(LOG_DEBUG, "skipping rec not in this category\n");
 	       continue;
 	    }
 	 }
@@ -606,10 +610,11 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
    int n;
    time_t ltime;
 #ifdef USE_DB3
-   int ret, category, cat_bit;
+   int ret;
+   int cat_bit;
+   int db3_type;
    long use_db3_tags;
-
-   get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
+   struct db4_struct db4;
 #endif
 
    /*------------------------------------------------------------------
@@ -617,6 +622,10 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
     *------------------------------------------------------------------*/
    time(&ltime);
    today_date = localtime(&ltime);
+
+#ifdef USE_DB3
+   get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
+#endif
 
    if (! (out = print_open())) return(-1);
    /*------------------------------------------------------------------
@@ -644,8 +653,8 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
       for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
 #ifdef USE_DB3
 	 if (use_db3_tags) {
-	    ret = db3_is_float(&(temp_al->ma.a), &category);
-	    cat_bit=1<<category;
+	    ret = db3_parse_tag(temp_al->ma.a.note, &db3_type, &db4);
+	    cat_bit=1<<db4.category;
 	    if (!(cat_bit & datebook_category)) continue;
 	 }
 #endif
@@ -690,9 +699,9 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
       for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
 #ifdef USE_DB3
 	 if (use_db3_tags) {
-	    ret = db3_is_float(&(temp_al->ma.a), &category);
-	    jpilot_logf(LOG_DEBUG, "category = 0x%x\n", category);
-	    cat_bit=1<<category;
+	    ret = db3_parse_tag(temp_al->ma.a.note, &db3_type, &db4);
+	    jpilot_logf(LOG_DEBUG, "category = 0x%x\n", db4.category);
+	    cat_bit=1<<db4.category;
 	    if (!(cat_bit & datebook_category)) {
 	       jpilot_logf(LOG_DEBUG, "skip rec not in this category\n");
 	       continue;

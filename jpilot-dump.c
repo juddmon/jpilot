@@ -88,7 +88,7 @@ int dumpaddress();
 /* hack */
 GtkWidget *glob_dialog;
 GtkWidget *glob_date_label;
-int pipe_out;
+int pipe_to_parent;
 
 int sync_once(void *sync_info)
 {
@@ -119,7 +119,7 @@ int dumpbook()
 
    al = NULL;
    num = get_days_appointments(&al, NULL);
-   if (num != 0) return (num);
+   if (num == 0) return (num);
 
 /* get date */
    LIMIT(Nday,1,31);

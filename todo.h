@@ -22,6 +22,9 @@
 #include <pi-todo.h>
 #include "utils.h"
 
+#define MAX_TODO_DESC_LEN	256
+#define MAX_TODO_NOTE_LEN	4000
+
 void free_ToDoList(ToDoList **todo);
 int get_todos(ToDoList **todo_list, int sort_order);
 int get_todos2(ToDoList **todo_list, int sort_order,

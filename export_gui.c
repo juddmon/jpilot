@@ -36,7 +36,7 @@
 #define NUM_CAT_ITEMS 16
 
 static GtkWidget *export_clist;
-static int export_category = CATEGORY_ALL;
+int export_category;
 
 static int glob_export_browse_pressed;
 static int glob_pref_export;
@@ -237,6 +237,7 @@ int export_gui(int w, int h, int x, int y,
 
    jpilot_logf(LOG_DEBUG, "export_gui()\n");
 
+   export_category = CATEGORY_ALL;
    glob_export_type=EXPORT_TYPE_TEXT;
 
    glob_cb_export_menu = cb_export_menu;
@@ -339,6 +340,8 @@ int export_gui(int w, int h, int x, int y,
    }
 
    gtk_widget_show_all(export_window);
+
+   gtk_clist_select_all(GTK_CLIST(export_clist));
 
    gtk_main();
 

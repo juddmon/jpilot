@@ -1196,6 +1196,13 @@ int alarms_find_next(struct tm *date1_in, struct tm *date2_in, int soonest_only)
 	 }
       }
 
+      /* See if appt - advance is after t1 (in the future) */
+      t_begin = mktime(&(temp_al->ma.a.begin));
+      adv = temp_al->ma.a.advance*60;
+      if (t_begin - adv > t1) {
+	 continue;
+      }
+
       /* If the appointment has an end date, see that we are not past it */
       if (!(temp_al->ma.a.repeatForever)) {
 	 t_end = mktime(&(temp_al->ma.a.repeatEnd));

@@ -24,9 +24,45 @@
 #include "utils.h"
 
 #ifdef USE_DB3
-#define DB3_FLOAT           1
-#define DB3_FLOAT_COMPLETE  2
-#define DB3_FLOAT_HAS_NOTE 16
+
+/* These defines depend on the defaults being zero so that the structure
+   being zeroed out sets the defaults (0) */
+# define DB3_TAG_TYPE_NONE   0
+# define DB3_TAG_TYPE_DB3    3
+# define DB3_TAG_TYPE_DB4    4
+
+# define DB3_REGULAR         0
+# define DB3_FLOAT           1
+# define DB3_FLOAT_COMPLETE  2
+# define DB3_FLOAT_DONE      3
+
+# define DB3_FONT_NONE       0
+# define DB3_FONT_BOLD       1
+# define DB3_FONT_LARGE      2
+# define DB3_FONT_LARGE_BOLD 3
+
+# define DB3_SPAN_MID_NO     0
+# define DB3_SPAN_MID_YES    1
+
+# define DB3_LINK_NO         0
+# define DB3_LINK_YES        1
+
+struct db4_struct {
+   int floating_event;
+   int custom_font;
+   int category;
+   int icon;
+   int spans_midnight;
+   int time_zone;
+   /* The following are db4 only tags */
+   int link;
+   int advance; /* I don't understand this and next field yet */
+   int last_date; /* This may need to be a struct tm (not sure yet) */
+   int custom_alarm_sound;
+   int color;
+   /* This isn't datebk specific */
+   char *note; /* points to where the note starts after the tag (or null) */
+};
 #endif
 
 int datebook_print(int type);
@@ -83,7 +119,9 @@ int compareTimesToDay(struct tm *tm1, struct tm *tm2);
  *  2 if completed float
  *  16 if float has a note
  */
-int db3_is_float(struct Appointment *a, int *category);
+int db3_parse_tag(char *note, int *type, struct db4_struct *db4);
+int db3_has_tags(struct Appointment *a);
+int db3_which_icon(struct  Appointment *a);
 #endif
 
 int datebook_import(GtkWidget *window);

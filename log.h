@@ -29,11 +29,23 @@
 #define LOG_FILE   512  /*messages always go to the log file */
 #define LOG_GUI    1024 /*messages always go to the gui window */
 
+/* pipe communication commands */
+//undo where?
+#define PIPE_PRINT           100
+#define PIPE_USERID          101
+#define PIPE_USERNAME        102
+#define PIPE_PASSWORD        103
+#define PIPE_WAITING_ON_USER 104
+#define PIPE_FINISHED        105
+#define PIPE_SYNC_CONTINUE   200
+#define PIPE_SYNC_CANCEL     201
+
 extern int glob_log_file_mask;
 extern int glob_log_stdout_mask;
 extern int glob_log_gui_mask;
 
 int jpilot_logf(int log_level, char *format, ...);
 int jpilot_vlogf (int level, char *format, va_list val);
+int write_to_parent(int command, char *format, ...);
 
 #endif

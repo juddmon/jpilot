@@ -112,9 +112,10 @@ cb_enter_notify(GtkWidget *widget, GdkEvent *event, gpointer data)
    static int prev_day=-1;
 #ifdef USE_DB3
    int ret;
-   int category;
    int cat_bit;
    long use_db3_tags;
+   int db3_type;
+   struct db4_struct db4;
 #endif
 
    if (prev_day==GPOINTER_TO_INT(data)+1) {
@@ -140,9 +141,9 @@ cb_enter_notify(GtkWidget *widget, GdkEvent *event, gpointer data)
 #ifdef USE_DB3
       get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
       if (use_db3_tags) {
-	 ret = db3_is_float(&(temp_al->ma.a), &category);
-	 jpilot_logf(LOG_DEBUG, "category = 0x%x\n", category);
-	 cat_bit=1<<category;
+	 ret = db3_parse_tag(temp_al->ma.a.note, &db3_type, &db4);
+	 jpilot_logf(LOG_DEBUG, "category = 0x%x\n", db4.category);
+	 cat_bit=1<<db4.category;
 	 if (!(cat_bit & datebook_category)) {
 	    jpilot_logf(LOG_DEBUG, "skipping rec not in this category\n");
 	    continue;
@@ -266,9 +267,10 @@ int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
    int mask;
 #ifdef USE_DB3
    int ret;
-   int category;
    int cat_bit;
+   int db3_type;
    long use_db3_tags;
+   struct db4_struct db4;
 #endif
 
    a_list = NULL;
@@ -304,9 +306,9 @@ int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
 #ifdef USE_DB3
 	 get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
 	 if (use_db3_tags) {
-	    ret = db3_is_float(&(temp_al->ma.a), &category);
-	    jpilot_logf(LOG_DEBUG, "category = 0x%x\n", category);
-	    cat_bit=1<<category;
+	    ret = db3_parse_tag(temp_al->ma.a.note, &db3_type, &db4);
+	    jpilot_logf(LOG_DEBUG, "category = 0x%x\n", db4.category);
+	    cat_bit=1<<db4.category;
 	    if (!(cat_bit & datebook_category)) {
 	       jpilot_logf(LOG_DEBUG, "skipping rec not in this category\n");
 	       continue;

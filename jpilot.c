@@ -113,7 +113,8 @@ GtkWidget *glob_dialog=NULL;
 unsigned char skip_plugins;
 static GtkWidget *box_locked, *box_locked_masked, *box_unlocked;
 
-int pipe_in, pipe_out;
+int pipe_from_child, pipe_to_parent;
+int pipe_from_parent, pipe_to_child;
 
 GtkWidget *sync_window = NULL;
 
@@ -557,7 +558,12 @@ static void cb_private(GtkWidget *widget, gpointer data)
       gtk_widget_hide(box_unlocked);
       break;
     case HIDE_PRIVATES:
+      /* Ask for the password, or don't depending on configure option */
+#ifdef ENABLE_PRIVATE
       ret = dialog_password(ascii_password);
+#else
+      ret = 1;
+#endif
       if (ret==1) {
 	 privates = show_privates(SHOW_PRIVATES, ascii_password);
 	 if (privates==SHOW_PRIVATES) {
@@ -690,9 +696,8 @@ void cb_sync(GtkWidget *widget, unsigned int flags)
  * This is called when the user name from the palm doesn't match
  * or the user ID from the palm is 0
  */
-void bad_sync_exit_status(int exit_status)
+int bad_sync_exit_status(int exit_status)
 {
-   int result;
    char text1[] =
      /*-------------------------------------------*/
      "This palm doesn't have the same user name\n"
@@ -708,32 +713,45 @@ void bad_sync_exit_status(int exit_status)
      "or use pilot-xfer.\n"
      "To add a user name and ID use install-user, i.e install-user \"name\" 12345.\n"
      "Read the user manual if you are uncertain.";
-   char *button_text[]={gettext_noop("OK"), gettext_noop("Sync Anyway")
+   char *button_text[]={
+      gettext_noop("Cancel Sync"),
+      gettext_noop("Sync Anyway")
    };
 
    if (!GTK_IS_WINDOW(window)) {
-      return;
+      return -1;
    }
    if ((exit_status == SYNC_ERROR_NOT_SAME_USERID) ||
        (exit_status == SYNC_ERROR_NOT_SAME_USER)) {
-      result = dialog_generic(GTK_WIDGET(window)->window,
+      return dialog_generic(GTK_WIDGET(window)->window,
 			      0, 0,
 			      "Sync Problem", "Sync", text1, 2, button_text);
-      if (result == DIALOG_SAID_2) {
-	 cb_sync(NULL, SYNC_OVERRIDE_USER | (skip_plugins ? SYNC_NO_PLUGINS : 0));
-      }
    }
    if (exit_status == SYNC_ERROR_NULL_USERID) {
-      dialog_generic(GTK_WIDGET(window)->window,
-		     0, 0,
-		     "Sync Problem", "Sync", text2, 1, button_text);
+      return dialog_generic(GTK_WIDGET(window)->window,
+			    0, 0,
+			    "Sync Problem", "Sync", text2, 1, button_text);
    }
+   return -1;
 }
 
+static void output_to_pane(const char *str)
+{
+   int w, h, new_y;
+   unsigned long ivalue;
 
-void cb_read_pipe(gpointer data,
-		  gint in,
-		  GdkInputCondition condition)
+   gtk_text_insert(GTK_TEXT(g_output_text), NULL, NULL, NULL, str, -1);
+   get_pref(PREF_OUTPUT_HEIGHT, &ivalue, NULL);
+   /* Make them look at least something if output happens */
+   if (ivalue < 60) ivalue=60;
+   gdk_window_get_size(window->window, &w, &h);
+   new_y = h - ivalue;
+   gtk_paned_set_position(GTK_PANED(output_pane), new_y + 2);
+}
+
+static void cb_read_pipe_from_child(gpointer data,
+				    gint in,
+				    GdkInputCondition condition)
 {
    int num;
    char buf[1024];
@@ -743,16 +761,16 @@ void cb_read_pipe(gpointer data,
    int ret;
    char *Pstr1, *Pstr2, *Pstr3;
    int user_len;
+   char password[MAX_PREF_VALUE];
    int password_len;
    unsigned long user_id;
-   unsigned long ivalue;
-   int w, h, new_y;
-   int exit_status;
+   int i, reason;
+   int command;
    char user[MAX_PREF_VALUE];
-   char password[MAX_PREF_VALUE];
+   char command_str[80];
 
    while(1) {
-      /*Linux modifies tv in the select call */
+      /* Linux modifies tv in the select call */
       tv.tv_sec=0;
       tv.tv_usec=0;
       FD_ZERO(&fds);
@@ -761,7 +779,15 @@ void cb_read_pipe(gpointer data,
       if (ret<1) break;
       if (!FD_ISSET(in, &fds)) break;
       buf[0]='\0';
-      buf_len = read(in, buf, 1022);
+      //buf_len = read(in, buf, 1022);
+      /* Read until newline, null, or end */
+      buf_len=0;
+      for (i=0; i<1022; i++) {
+	 ret = read(in, &(buf[i]), 1);
+	 if (!ret) break;
+	 buf_len++;
+	 if ((buf[i]=='\n')||(buf[i]=='\0')) break;
+      }
       if (buf_len >= 1022) {
 	 buf[1022] = '\0';
       } else {
@@ -769,93 +795,113 @@ void cb_read_pipe(gpointer data,
 	    buf[buf_len]='\0';
 	 }
       }
-      /*Look for the username */
-      Pstr1 = strstr(buf, "sername is");
-      if (Pstr1) {
-	 Pstr2 = strchr(Pstr1, '\"');
-	 if (Pstr2) {
-	    Pstr2++;
-	    Pstr3 = strchr(Pstr2, '\"');
-	    if (Pstr3) {
-	       user_len = Pstr3 - Pstr2;
-	       if (user_len > MAX_PREF_VALUE) {
-		  user_len = MAX_PREF_VALUE;
-	       }
-	       strncpy(user, Pstr2, user_len);
-	       user[user_len] = '\0';
-	       jpilot_logf(LOG_DEBUG, "pipe_read: user = %s\n", user);
-	       set_pref(PREF_USER, 0, user);
-	    }
-	 }
-      }
-#ifdef ENABLE_PRIVATE
-      /*Look for the Password */
-      Pstr1 = strstr(buf, "User Password is");
-      if (Pstr1) {
-	 Pstr2 = strchr(Pstr1, '\"');
-	 if (Pstr2) {
-	    Pstr2++;
-	    Pstr3 = strchr(Pstr2, '\"');
-	    if (Pstr3) {
-	       password_len = Pstr3 - Pstr2;
-	       if (password_len > MAX_PREF_VALUE) {
-		  password_len = MAX_PREF_VALUE;
-	       }
-	       strncpy(password, Pstr2, password_len);
-	       /* Remove this line from the output */
-	       buf_len = buf_len - (Pstr3 - Pstr1) - 1;
-	       memmove(Pstr1, Pstr3+1, buf_len);
-	       password[password_len] = '\0';
-	       jpilot_logf(LOG_DEBUG, "pipe_read: password = %s\n", password);
-	       set_pref(PREF_PASSWORD, 0, password);
-	    }
-	 }
-      }
+
+      /* Look for the command */
+      command=0;
+      sscanf(buf, "%d:", &command);
+#ifdef PIPE_DEBUG
+      printf("command=%d\n", command);
 #endif
-      /*Look for the user ID */
-      Pstr1 = strstr(buf, "ser ID is");
-      if (Pstr1) {
-	 Pstr2 = Pstr1 + 9;
-	 num = sscanf(Pstr2, "%ld", &user_id);
-	 if (num > 0) {
-	    jpilot_logf(LOG_DEBUG, "pipe_read: user id = %ld\n", user_id);
-	    set_pref(PREF_USER_ID, user_id, NULL);
-	 } else {
-	    jpilot_logf(LOG_DEBUG, "pipe_read: trouble reading user id\n");
-	 }
+
+      Pstr1 = strstr(buf, ":");
+      if (Pstr1>0) {
+	 Pstr1++;
       }
-      /*Look for the exit status */
-      Pstr1 = strstr(buf, "exiting with status");
       if (Pstr1) {
-	 Pstr2 = Pstr1 + 19;
-	 num = sscanf(Pstr2, "%d", &exit_status);
-	 if (num > 0) {
-	    jpilot_logf(LOG_DEBUG, "pipe_read: exit status = %d\n", exit_status);
-	 } else {
-	    jpilot_logf(LOG_DEBUG, "pipe_read: trouble reading exit status\n");
+	 switch (command) {
+	  case PIPE_PRINT:
+	    /* Output the text to the Sync window */
+	    output_to_pane(Pstr1);
+	    break;
+	  case PIPE_USERID:
+	    /* Look for the user ID */
+	    num = sscanf(Pstr1, "%ld", &user_id);
+	    if (num > 0) {
+	       jpilot_logf(LOG_DEBUG, "pipe_read: user id = %ld\n", user_id);
+	       set_pref(PREF_USER_ID, user_id, NULL);
+	    } else {
+	       jpilot_logf(LOG_DEBUG, "pipe_read: trouble reading user id\n");
+	    }
+	    break;
+	  case PIPE_USERNAME:
+	    /* Look for the username */
+	    Pstr2 = strchr(Pstr1, '\"');
+	    if (Pstr2) {
+	       Pstr2++;
+	       Pstr3 = strchr(Pstr2, '\"');
+	       if (Pstr3) {
+		  user_len = Pstr3 - Pstr2;
+		  if (user_len > MAX_PREF_VALUE) {
+		     user_len = MAX_PREF_VALUE;
+		  }
+		  strncpy(user, Pstr2, user_len);
+		  user[user_len] = '\0';
+		  jpilot_logf(LOG_DEBUG, "pipe_read: user = %s\n", user);
+		  set_pref(PREF_USER, 0, user);
+	       }
+	    }
+	    break;
+	  case PIPE_PASSWORD:
+	    /* Look for the Password */
+	    Pstr2 = strchr(Pstr1, '\"');
+	    if (Pstr2) {
+	       Pstr2++;
+	       Pstr3 = strchr(Pstr2, '\"');
+	       if (Pstr3) {
+		  password_len = Pstr3 - Pstr2;
+		  if (password_len > MAX_PREF_VALUE) {
+		     password_len = MAX_PREF_VALUE;
+		  }
+		  strncpy(password, Pstr2, password_len);
+		  password[password_len] = '\0';
+		  jpilot_logf(LOG_DEBUG, "pipe_read: password = %s\n", password);
+		  set_pref(PREF_PASSWORD, 0, password);
+	       }
+	    }
+	    break;
+	  case PIPE_WAITING_ON_USER:
+#ifdef PIPE_DEBUG
+	    printf("waiting on user\n");
+#endif
+	    /* Look for the reason */
+	    num = sscanf(Pstr1, "%d", &reason);
+#ifdef PIPE_DEBUG
+	    printf("reason %d\n", reason);
+#endif
+	    if (num > 0) {
+	       jpilot_logf(LOG_DEBUG, "pipe_read: reason = %d\n", reason);
+	    } else {
+	       jpilot_logf(LOG_DEBUG, "pipe_read: trouble reading reason\n");
+	    }
+	    if ((reason == SYNC_ERROR_NOT_SAME_USERID) ||
+		(reason == SYNC_ERROR_NOT_SAME_USER) ||
+		(reason == SYNC_ERROR_NULL_USERID)) {
+	       /* Future code */
+	       /* This is where to add an option for the user to add user a
+		user id to possible ids to sync with. */
+	       ret = bad_sync_exit_status(reason);
+#ifdef PIPE_DEBUG
+	       printf("ret=%d\n", ret);
+#endif
+	       if (ret == DIALOG_SAID_2) {
+		  sprintf(command_str, "%d:\n", PIPE_SYNC_CONTINUE);
+		  //cb_sync(NULL, SYNC_OVERRIDE_USER | (skip_plugins ? SYNC_NO_PLUGINS : 0));
+	       } else {
+		  sprintf(command_str, "%d:\n", PIPE_SYNC_CANCEL);
+	       }
+	       write(pipe_to_child, command_str, strlen(command_str));
+	       fdatasync(pipe_to_child);
+	    }
+	    break;
+	  case PIPE_FINISHED:
+	    if (Pstr1) {
+	       cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
+	    }
+	    break;
+	  default:
+	    jpilot_logf(LOG_WARN, "unknown command from sync process\n");
+	    jpilot_logf(LOG_WARN, "buf=[%s]\n", buf);
 	 }
-	 if ((exit_status == SYNC_ERROR_NOT_SAME_USERID) ||
-	     (exit_status == SYNC_ERROR_NOT_SAME_USER)) {
-	    bad_sync_exit_status(exit_status);
-	 }
-	 if (exit_status == SYNC_ERROR_NULL_USERID) {
-	    bad_sync_exit_status(exit_status);
-	 }
-      }
-      /* Output the text to the Sync window */
-      if (buf_len>0) {
-	 gtk_text_insert(GTK_TEXT(g_output_text), NULL, NULL, NULL, buf, buf_len);
-	 get_pref(PREF_OUTPUT_HEIGHT, &ivalue, NULL);
-	 /* Make them look at least something if output happens */
-	 if (ivalue < 60) ivalue=60;
-	 gdk_window_get_size(window->window, &w, &h);
-	 new_y = h - ivalue;
-	 gtk_paned_set_position(GTK_PANED(output_pane), new_y + 2);
-      }
-      /*Look for finish message */
-      Pstr1 = strstr(buf, "Finished");
-      if (Pstr1) {
-        cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
       }
    }
 }
@@ -868,11 +914,11 @@ void cb_about(GtkWidget *widget, gpointer data)
 
    sprintf(text,
 	   /*-------------------------------------------*/
-	   _("%s was written by\n"
+	   _("%s %s was written by\n"
 	     "Judd Montgomery (c) 1999-2001.\n"
 	     "judd@jpilot.org\n"
 	     "http://jpilot.org\n"),   
-	   PN);
+	   PN, VERSION);
    g_snprintf(about, 250, _("About %s"), PN);
 
    if (GTK_IS_WINDOW(window)) {
@@ -901,11 +947,7 @@ void get_main_menu(GtkWidget  *window,
 		   GtkWidget **menubar,
 		   GList *plugin_list)
 /* Some of this code was copied from the gtk_tut.txt file */
-#ifndef WITH_PROMETHEON
 #define NUM_FACTORY_ITEMS 23
-#else
-#define NUM_FACTORY_ITEMS 23
-#endif
 {
   GtkItemFactoryEntry menu_items1[NUM_FACTORY_ITEMS]={
   { NULL, NULL,         NULL,           0,        "<Branch>" },
@@ -919,10 +961,8 @@ void get_main_menu(GtkWidget  *window,
   { NULL, "<control>P", cb_print,       0,        NULL },
   { NULL, NULL,         NULL,           0,        "<Separator>" },
   { NULL, NULL,         cb_restore,     0,        NULL },
-/* #ifndef WITH_PROMETHEON */
   { NULL, NULL,         NULL,           0,        "<Separator>" },
   { NULL, "<control>Q", delete_event,   0,        NULL },
-/* #endif */
   { NULL, NULL,         NULL,           0,        "<Branch>" },
   { NULL, "<control>Z", cb_private,     0,        NULL },
   { NULL, "F1",         cb_app_button,  DATEBOOK, NULL },
@@ -1498,13 +1538,21 @@ char *xpm_unlocked[] = {
    glob_date_timer_tag=0;
    glob_child_pid=0;
 
-   /*Create a pipe to send the sync output, etc. */
-   if (pipe(filedesc) <0) {
+   /* Create a pipe to send data from sync child to parent */
+   if (pipe(filedesc) < 0) {
       jpilot_logf(LOG_FATAL, "Could not open pipe\n");
       exit(-1);
    }
-   pipe_in = filedesc[0];
-   pipe_out = filedesc[1];
+   pipe_from_child = filedesc[0];
+   pipe_to_parent = filedesc[1];
+
+   /* Create a pipe to send data from parent to sync child */
+   if (pipe(filedesc) < 0) {
+      jpilot_logf(LOG_FATAL, "Could not open pipe\n");
+      exit(-1);
+   }
+   pipe_from_parent = filedesc[0];
+   pipe_to_child = filedesc[1];
 
    gtk_set_locale();
 
@@ -1794,9 +1842,15 @@ char *xpm_unlocked[] = {
    gtk_container_add(GTK_CONTAINER(button_memo), pixmapwid);
 
    /* Show locked box */
+#ifdef ENABLE_PRIVATE
    gtk_widget_show(box_locked);
    gtk_widget_hide(box_locked_masked);
    gtk_widget_hide(box_unlocked);
+#else
+   gtk_widget_hide(box_locked);
+   gtk_widget_hide(box_locked_masked);
+   gtk_widget_show(box_unlocked);
+#endif
 
    /* Create "locked" pixmap */
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
@@ -1831,7 +1885,7 @@ char *xpm_unlocked[] = {
    gtk_tooltips_set_tip(glob_tooltips, button_memo, _("Memo Pad"), NULL);
 
    /*Set a callback for our pipe from the sync child process */
-   gdk_input_add(pipe_in, GDK_INPUT_READ, cb_read_pipe, window);
+   gdk_input_add(pipe_from_child, GDK_INPUT_READ, cb_read_pipe_from_child, window);
 
    get_pref(PREF_LAST_APP, &ivalue, NULL);
    /* We don't want to start up to a plugin because the plugin might

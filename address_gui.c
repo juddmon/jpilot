@@ -630,8 +630,8 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 len=0;
 	 str_to_csv_str(csv_text,
 			address_app_info.category.name[ma->attrib & 0x0F]);
-	 fprintf(out, "\"%s\", ", csv_text);
-	 fprintf(out, "\"%s\", ", (ma->attrib & dlpRecAttrSecret) ? "1":"0");
+	 fprintf(out, "\"%s\",", csv_text);
+	 fprintf(out, "\"%s\",", (ma->attrib & dlpRecAttrSecret) ? "1":"0");
 	 for (n=0; n<19; n++) {
 	    csv_text[0]='\0';
 	    if (ma->a.entry[order[n]]) {
@@ -641,10 +641,10 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 		  str_to_csv_str(csv_text, ma->a.entry[order[n]]);
 	       }
 	    }
-	    fprintf(out, "\"%s\", ", csv_text);
+	    fprintf(out, "\"%s\",", csv_text);
 	 }
 	 for (n=0; n<5; n++) {
-	    fprintf(out, "\"%d\", ", ma->a.phoneLabel[n]);
+	    fprintf(out, "\"%d\",", ma->a.phoneLabel[n]);
 	 }
 	 fprintf(out, "\"%d\"", ma->a.showPhone);
 	 fprintf(out, "\n");
@@ -1222,8 +1222,8 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
    show_priv = show_privates(GET_PRIVATES, NULL);
    for (temp_al = addr_list, i=0; temp_al; temp_al=temp_al->next) {
-      if ( ((temp_al->ma.attrib & 0x0F) != address_category) &&
-	  address_category != CATEGORY_ALL) {
+      if ( ((temp_al->ma.attrib & 0x0F) != category) &&
+	  category != CATEGORY_ALL) {
 	 continue;
       }
       /* Do masking like Palm OS 3.5 */
@@ -1802,11 +1802,11 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
       /*hbox_temp = gtk_hbox_new(FALSE, 0); */
       if (i<9) {
 	 if (i2>2 && i2<8) {
-	    gtk_table_attach_defaults(GTK_TABLE(table1), GTK_WIDGET(phone_list_menu[i2-3]),
-				      1, 2, i, i+1);
+	    gtk_table_attach(GTK_TABLE(table1), GTK_WIDGET(phone_list_menu[i2-3]),
+			     1, 2, i, i+1, GTK_SHRINK, 0, 0, 0);
 	 } else {
-	    gtk_table_attach_defaults(GTK_TABLE(table1), GTK_WIDGET(label),
-				      1, 2, i, i+1);
+	    gtk_table_attach(GTK_TABLE(table1), GTK_WIDGET(label),
+			     1, 2, i, i+1, GTK_FILL, 0, 0, 0);
 	 }
 	 gtk_table_attach_defaults(GTK_TABLE(table1), GTK_WIDGET(address_text[i2]),
 				   2, 3, i, i+1);
@@ -1841,9 +1841,9 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    for (i=0; i<NUM_PHONE_ENTRIES; i++) {
       radio_button[i] = gtk_radio_button_new_with_label(group, _("Show\nIn List"));
       group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button[i]));
-      gtk_widget_set_usize(GTK_WIDGET(radio_button[i]), 5, 0);
-      gtk_table_attach_defaults(GTK_TABLE(table1), GTK_WIDGET(radio_button[i]),
-				0, 1, i+4, i+5);
+      /* gtk_widget_set_usize(GTK_WIDGET(radio_button[i]), 5, 0); */
+      gtk_table_attach(GTK_TABLE(table1), GTK_WIDGET(radio_button[i]),
+		       0, 1, i+4, i+5, GTK_SHRINK, 0, 0, 0);
    }
 
    /*The Quickview page */
@@ -1878,4 +1878,5 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    address_refresh();
 
    return 0;
+
 }

@@ -14,13 +14,13 @@
 
 
 
-# $Id: Makefile,v 1.2 2002/08/28 16:40:07 judd Exp $
+# $Id: Makefile,v 1.3 2002/08/28 16:43:43 judd Exp $
 SHELL = /bin/sh
 
 srcdir = .
 top_srcdir = ..
 
-prefix = /usr/local/
+prefix = /usr/local
 exec_prefix = ${prefix}
 
 bindir = ${exec_prefix}/bin
@@ -39,10 +39,10 @@ pkglibdir = $(libdir)/jpilot
 pkgincludedir = $(includedir)/jpilot
 top_builddir = ..
 
-ACLOCAL = ${SHELL} /home/mouse/TRIP/jpilot.new/missing --run aclocal-1.6
-AUTOCONF = ${SHELL} /home/mouse/TRIP/jpilot.new/missing --run autoconf
-AUTOMAKE = ${SHELL} /home/mouse/TRIP/jpilot.new/missing --run automake-1.6
-AUTOHEADER = ${SHELL} /home/mouse/TRIP/jpilot.new/missing --run autoheader
+ACLOCAL = ${SHELL} /home/mouse/jpilot/missing --run aclocal-1.6
+AUTOCONF = ${SHELL} /home/mouse/jpilot/missing --run autoconf
+AUTOMAKE = ${SHELL} /home/mouse/jpilot/missing --run automake-1.6
+AUTOHEADER = ${SHELL} /home/mouse/jpilot/missing --run autoheader
 
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
 INSTALL = /usr/bin/ginstall -c
@@ -69,7 +69,7 @@ PATH_SEPARATOR = :
 
 libdir = $(prefix)/lib/jpilot/plugins
 ABILIB = 
-AMTAR = ${SHELL} /home/mouse/TRIP/jpilot.new/missing --run tar
+AMTAR = ${SHELL} /home/mouse/jpilot/missing --run tar
 AS = @AS@
 AWK = gawk
 BUILD_INCLUDED_LIBINTL = no
@@ -132,7 +132,7 @@ am__include = include
 am__quote = 
 ccoptions = 
 cflags = -g -O2
-install_sh = /home/mouse/TRIP/jpilot.new/install-sh
+install_sh = /home/mouse/jpilot/install-sh
 
 lib_LTLIBRARIES = libexpense.la
 

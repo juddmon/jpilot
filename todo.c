@@ -233,6 +233,28 @@ int todo_sort(ToDoList **todol, int sort_order)
    return 0;
 }
 
+/*
+ * This function just checks some todo fields to make sure they are valid.
+ * It truncates the description and note fields if necessary.
+ */
+void pc_todo_validate_correct(struct ToDo *todo)
+{
+   if (todo->description) {
+      if ((strlen(todo->description)+1 > MAX_TODO_DESC_LEN)) {
+	 jpilot_logf(LOG_WARN, "%s\n", todo->description);
+	 jpilot_logf(LOG_WARN, _("Warning ToDo description too long, truncating to %d\n"), MAX_TODO_DESC_LEN-1);
+	 todo->description[MAX_TODO_DESC_LEN-1]='\0';
+      }
+   }
+   if (todo->note) {
+      if ((strlen(todo->note)+1 > MAX_TODO_NOTE_LEN)) {
+	 jpilot_logf(LOG_WARN, "%s\n", todo->note);
+	 jpilot_logf(LOG_WARN, _("Warning ToDo note too long, truncating to %d\n"), MAX_TODO_NOTE_LEN-1);
+	 todo->note[MAX_TODO_NOTE_LEN-1]='\0';
+      }
+   }
+}
+
 int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib,
 		  unsigned int *unique_id)
 {
@@ -247,6 +269,7 @@ int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib,
       if (todo->note) charset_j2p(todo->note, strlen(todo->note)+1, char_set);
    }
 
+   pc_todo_validate_correct(todo);
    rec_len = pack_ToDo(todo, record, 65535);
    if (!rec_len) {
       PRINT_FILE_LINE;
