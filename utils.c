@@ -2280,7 +2280,8 @@ void multibyte_safe_strncpy(char *dst, char *src, size_t len)
 
    if (char_set == CHAR_SET_JAPANESE ||
        char_set == CHAR_SET_TRADITIONAL_CHINESE ||
-       char_set == CHAR_SET_KOREAN
+       char_set == CHAR_SET_KOREAN || 
+       char_set == CHAR_SET_1250UTF
        ) {
       char *p, *q;
       int n = 0;
@@ -2319,7 +2320,8 @@ char *multibyte_safe_memccpy(char *dst, const char *src, int c, size_t len)
 
    if (char_set == CHAR_SET_JAPANESE ||
        char_set == CHAR_SET_TRADITIONAL_CHINESE ||
-       char_set == CHAR_SET_KOREAN
+       char_set == CHAR_SET_KOREAN || 
+       char_set == CHAR_SET_1250UTF
        ) {                              /* Multibyte Charactors */
       char *p, *q;
       int n = 0;
@@ -2365,6 +2367,7 @@ void jp_charset_p2j(unsigned char *const buf, int max_len)
    if (char_set == CHAR_SET_1250) Win2Lat(buf,max_len);
    if (char_set == CHAR_SET_1251) win1251_to_koi8(buf, max_len);
    if (char_set == CHAR_SET_1251_B) koi8_to_win1251(buf, max_len);
+   if (char_set == CHAR_SET_1250UTF) Win2UTF(buf, max_len);
 }
 
 #define NUM_CAT_ITEMS 16

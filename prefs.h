@@ -93,12 +93,13 @@
 
 #define CHAR_SET_LATIN1   0 /* English, European, Latin based languages */
 #define CHAR_SET_JAPANESE 1
-#define CHAR_SET_1250     2 /* Czech */
+#define CHAR_SET_1250     2 /* Czech, Polish (Unix: ISO-8859-2) */
 #define CHAR_SET_1251     3 /* Russian; palm koi8-r, host win1251 */
 #define CHAR_SET_1251_B   4 /* Russian; palm win1251, host koi8-r */
 #define CHAR_SET_TRADITIONAL_CHINESE  5 /* Taiwan Chinese */
 #define CHAR_SET_KOREAN   6 /* Korean Hangul */
-#define NUM_CHAR_SETS     7
+#define CHAR_SET_1250UTF  7 /* Czech, Polish (Unix: UTF-8) */
+#define NUM_CHAR_SETS     8
 
 #define MAX_PREF_VALUE 200
 

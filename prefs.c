@@ -392,11 +392,12 @@ int get_pref_possibility(int which, int n, char *pref_str)
    static const char *char_sets[] = {
       "Latin1",
       "Japanese",
-      "Windows1250 (EE)", 
+      "Host ISO-8859-2 <-> Palm Windows1250 (EE)", 
       "Host Windows1251 <-> Palm KOI8-R",
       "Host KOI8-R <-> Palm Windows-1251",
       "Chinese(Big5)",
-      "Korean"
+      "Korean",
+      "Host UTF-8 <-> Palm Windows1250 (EE)"
    };
 
    static const char *paper_sizes[] = {
