@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: jpilot 0.99.3\n"
-"POT-Creation-Date: 2003-06-29 22:48-0400\n"
+"POT-Creation-Date: 2003-07-12 17:15-0400\n"
 "PO-Revision-Date: 2002-10-19 10:10+0800\n"
 "Last-Translator: Anthony Fok <anthony@thizlinux.com>\n"
 "Language-Team: Chinese (simplified) <i18n-translation@lists.linux.net.cn>\n"
@@ -43,7 +43,7 @@ msgstr "未归档"
 #: datebook_gui.c:648 datebook_gui.c:1125 export_gui.c:331 jpilot.c:352
 #: jpilot.c:399 jpilot.c:467 jpilot.c:511 jpilot.c:962 memo_gui.c:462
 #: password.c:364 restore_gui.c:291 todo_gui.c:588 utils.c:1067 utils.c:1206
-#: KeyRing/keyring.c:1374
+#: KeyRing/keyring.c:1214
 msgid "OK"
 msgstr "确定"
 
@@ -90,7 +90,7 @@ msgstr "姓名/公司"
 
 #. Category Menu
 #: address_gui.c:1530 Expense/expense.c:1301 Expense/expense.c:1380
-#: KeyRing/keyring.c:1584 KeyRing/keyring.c:1660
+#: KeyRing/keyring.c:1425 KeyRing/keyring.c:1501
 msgid "Category: "
 msgstr "种类："
 
@@ -129,31 +129,31 @@ msgstr "快速查找"
 #. Delete Button
 #: address_gui.c:2315 category.c:400 category.c:753 datebook_gui.c:3953
 #: memo_gui.c:1351 todo_gui.c:1805 Expense/expense.c:1342
-#: KeyRing/keyring.c:1619
+#: KeyRing/keyring.c:1460
 msgid "Delete"
 msgstr "删除"
 
 #. Create "Copy" button
 #: address_gui.c:2322 datebook_gui.c:3960 memo_gui.c:1357 todo_gui.c:1811
-#: Expense/expense.c:1348 KeyRing/keyring.c:1625
+#: Expense/expense.c:1348 KeyRing/keyring.c:1466
 msgid "Copy"
 msgstr "复制"
 
 #. Create "New" button
 #: address_gui.c:2329 datebook_gui.c:3967 memo_gui.c:1363 todo_gui.c:1817
-#: Expense/expense.c:1354 KeyRing/keyring.c:1631
+#: Expense/expense.c:1354 KeyRing/keyring.c:1472
 msgid "New Record"
 msgstr "新建纪录"
 
 #. Create "Add Record" button
 #: address_gui.c:2335 datebook_gui.c:3974 memo_gui.c:1369 todo_gui.c:1823
-#: Expense/expense.c:1360 KeyRing/keyring.c:1637
+#: Expense/expense.c:1360 KeyRing/keyring.c:1478
 msgid "Add Record"
 msgstr "添加纪录"
 
 #. Create "apply changes" button
 #: address_gui.c:2344 datebook_gui.c:3983 memo_gui.c:1377 todo_gui.c:1831
-#: Expense/expense.c:1368 KeyRing/keyring.c:1645
+#: Expense/expense.c:1368 KeyRing/keyring.c:1486
 msgid "Apply Changes"
 msgstr "应用改动"
 
@@ -163,7 +163,7 @@ msgid "Private"
 msgstr "私有的"
 
 #. Page 1
-#: address_gui.c:2380 KeyRing/keyring.c:1525
+#: address_gui.c:2380 KeyRing/keyring.c:1365
 msgid "Name"
 msgstr "姓名"
 
@@ -228,19 +228,19 @@ msgstr "延迟约会"
 msgid "Appointment"
 msgstr "约会"
 
-#: category.c:200 category.c:257 sync.c:999 sync.c:1005 sync.c:2015
-#: sync.c:2342 sync.c:2579
+#: category.c:200 category.c:257 sync.c:999 sync.c:1005 sync.c:2043
+#: sync.c:2370 sync.c:2607
 #, c-format
 msgid "Unable to open %s\n"
 msgstr "无法打开 %s\n"
 
-#: category.c:216 category.c:273 sync.c:1028 sync.c:2031
+#: category.c:216 category.c:273 sync.c:1028 sync.c:2059
 msgid "PC file corrupt?\n"
 msgstr "PC 文件损坏了？\n"
 
 #: category.c:223 category.c:233 category.c:280 category.c:291 category.c:301
-#: sync.c:1071 sync.c:1089 sync.c:1130 sync.c:1140 sync.c:2093 sync.c:2120
-#: sync.c:2163 sync.c:2173
+#: sync.c:1071 sync.c:1089 sync.c:1130 sync.c:1140 sync.c:2121 sync.c:2148
+#: sync.c:2191 sync.c:2201
 msgid "fseek failed - fatal error\n"
 msgstr "fseek 失败 - 严重错误\n"
 
@@ -252,7 +252,7 @@ msgstr "一"
 #. Create a "Quit" button
 #: category.c:400 category.c:786 category.c:815 datebook_gui.c:1130
 #: datebook_gui.c:1564 export_gui.c:336 password.c:370 print_gui.c:336
-#: restore_gui.c:296 utils.c:1077 KeyRing/keyring.c:1380
+#: restore_gui.c:296 utils.c:1077 KeyRing/keyring.c:1220
 msgid "Cancel"
 msgstr "取消"
 
@@ -785,223 +785,223 @@ msgstr "忽略问题，照样同步"
 msgid "About %s"
 msgstr "关于 %s"
 
-#: jpilot.c:1144
+#: jpilot.c:1145
 msgid "/File"
 msgstr "/文件(_F)"
 
-#: jpilot.c:1145
+#: jpilot.c:1146
 msgid "/File/tear"
 msgstr "/文件(F)/tear"
 
-#: jpilot.c:1146
+#: jpilot.c:1147
 msgid "/File/_Find"
 msgstr "文件(F)/查找(_F)"
 
-#: jpilot.c:1147 jpilot.c:1153 jpilot.c:1155
+#: jpilot.c:1148 jpilot.c:1154 jpilot.c:1156
 msgid "/File/sep1"
 msgstr "/文件(F)/sep1"
 
-#: jpilot.c:1148
+#: jpilot.c:1149
 msgid "/File/_Install"
 msgstr "/文件(F)/安装(_I)"
 
-#: jpilot.c:1149
+#: jpilot.c:1150
 msgid "/File/Import"
 msgstr "/文件(F)/导入"
 
-#: jpilot.c:1150
+#: jpilot.c:1151
 msgid "/File/Export"
 msgstr "/文件(F)/导出"
 
-#: jpilot.c:1151
+#: jpilot.c:1152
 msgid "/File/Preferences"
 msgstr "/文件(F)/首选项"
 
-#: jpilot.c:1152
+#: jpilot.c:1153
 msgid "/File/_Print"
 msgstr "/文件(F)/打印(_P)"
 
-#: jpilot.c:1154
+#: jpilot.c:1155
 msgid "/File/Restore Handheld"
 msgstr "/文件(F)/恢复手持电脑"
 
-#: jpilot.c:1156
+#: jpilot.c:1157
 msgid "/File/Quit"
 msgstr "/文件(F)/退出"
 
-#: jpilot.c:1157
+#: jpilot.c:1158
 msgid "/_View"
 msgstr "/查看(_V)"
 
-#: jpilot.c:1158
-msgid "/View/Hide-Show Private Records"
-msgstr "/查看(V)/稳藏或显示私人纪录"
-
 #: jpilot.c:1159
+msgid "/View/Hide-Show-Mask Private Records"
+msgstr "/查看(V)/稳藏、显示或屏蔽私人纪录"
+
+#: jpilot.c:1160
 msgid "/View/Datebook"
 msgstr "/查看(V)/行事历"
 
-#: jpilot.c:1160
+#: jpilot.c:1161
 msgid "/View/Addresses"
 msgstr "/查看(V)/地址簿"
 
-#: jpilot.c:1161
+#: jpilot.c:1162
 msgid "/View/Todos"
 msgstr "/查看(V)/待办工作"
 
-#: jpilot.c:1162
+#: jpilot.c:1163
 msgid "/View/Memos"
 msgstr "/查看(V)/备忘录"
 
-#: jpilot.c:1163 jpilot.c:1296
+#: jpilot.c:1164 jpilot.c:1299
 msgid "/Plugins"
 msgstr "/插件"
 
-#: jpilot.c:1164
+#: jpilot.c:1166
 #, fuzzy
 msgid "/Web"
 msgstr "三"
 
-#: jpilot.c:1165
+#: jpilot.c:1167
 msgid "/Web/Netscape"
 msgstr ""
 
-#: jpilot.c:1166 jpilot.c:1168 jpilot.c:1170
+#: jpilot.c:1168 jpilot.c:1170 jpilot.c:1172
 #, c-format
 msgid "/Web/Netscape/%s"
 msgstr ""
 
-#: jpilot.c:1172
+#: jpilot.c:1174
 msgid "/Web/Mozilla"
 msgstr ""
 
-#: jpilot.c:1174 jpilot.c:1176 jpilot.c:1178 jpilot.c:1180
+#: jpilot.c:1176 jpilot.c:1178 jpilot.c:1180 jpilot.c:1182
 #, c-format
 msgid "/Web/Mozilla/%s"
 msgstr ""
 
-#: jpilot.c:1183
+#: jpilot.c:1185
 msgid "/Web/Galeon"
 msgstr ""
 
-#: jpilot.c:1184 jpilot.c:1186 jpilot.c:1188 jpilot.c:1190
+#: jpilot.c:1186 jpilot.c:1188 jpilot.c:1190 jpilot.c:1192
 #, c-format
 msgid "/Web/Galeon/%s"
 msgstr ""
 
-#: jpilot.c:1193
+#: jpilot.c:1195
 msgid "/Web/Opera"
 msgstr ""
 
-#: jpilot.c:1194 jpilot.c:1196 jpilot.c:1198
+#: jpilot.c:1196 jpilot.c:1198 jpilot.c:1200
 #, c-format
 msgid "/Web/Opera/%s"
 msgstr ""
 
-#: jpilot.c:1201
+#: jpilot.c:1203
 msgid "/Web/GnomeUrl"
 msgstr ""
 
-#: jpilot.c:1202
+#: jpilot.c:1204
 #, c-format
 msgid "/Web/GnomeUrl/%s"
 msgstr ""
 
-#: jpilot.c:1205
+#: jpilot.c:1207
 msgid "/Web/Lynx"
 msgstr ""
 
-#: jpilot.c:1206
+#: jpilot.c:1208
 #, c-format
 msgid "/Web/Lynx/%s"
 msgstr ""
 
-#: jpilot.c:1209
+#: jpilot.c:1211
 msgid "/Web/Links"
 msgstr ""
 
-#: jpilot.c:1210
+#: jpilot.c:1212
 #, c-format
 msgid "/Web/Links/%s"
 msgstr ""
 
-#: jpilot.c:1213
+#: jpilot.c:1215
 msgid "/Web/W3M"
 msgstr ""
 
-#: jpilot.c:1214
+#: jpilot.c:1216
 #, c-format
 msgid "/Web/W3M/%s"
 msgstr ""
 
-#: jpilot.c:1217
+#: jpilot.c:1219
 msgid "/Web/Konqueror"
 msgstr ""
 
-#: jpilot.c:1218
+#: jpilot.c:1220
 #, c-format
 msgid "/Web/Konqueror/%s"
 msgstr ""
 
-#: jpilot.c:1221
+#: jpilot.c:1224
 msgid "/_Help"
 msgstr "/帮助(_H)"
 
-#: jpilot.c:1222 jpilot.c:1273
+#: jpilot.c:1225 jpilot.c:1276
 #, c-format
 msgid "/_Help/%s"
 msgstr "/帮助(_H)/%s"
 
-#: jpilot.c:1262
+#: jpilot.c:1265
 #, c-format
 msgid "/Plugins/%s"
 msgstr "/插件/%s"
 
-#: jpilot.c:2017
+#: jpilot.c:2019
 msgid "Clear"
 msgstr "清除"
 
-#: jpilot.c:2086
+#: jpilot.c:2088
 #, fuzzy
 msgid "Show private records"
 msgstr "/查看(V)/稳藏或显示私人纪录"
 
-#: jpilot.c:2088
+#: jpilot.c:2090
 #, fuzzy
 msgid "Hide private records"
 msgstr "/查看(V)/稳藏或显示私人纪录"
 
-#: jpilot.c:2090
+#: jpilot.c:2092
 #, fuzzy
 msgid "Mask private records"
 msgstr "打印全部纪录"
 
 #. Create "Quit" button
-#: jpilot.c:2097
+#: jpilot.c:2099
 msgid "Quit!"
 msgstr " 退出!"
 
 #. Create "Sync" button
-#: jpilot.c:2103
+#: jpilot.c:2105
 msgid "Sync"
 msgstr "同步"
 
-#: jpilot.c:2110
+#: jpilot.c:2112
 msgid "Sync your palm to the desktop"
 msgstr "把您的 Palm 与桌面同步"
 
 #. Create "Font" button
-#: jpilot.c:2115
+#: jpilot.c:2117
 #, fuzzy
 msgid "Font"
 msgstr "月"
 
 #. Create "Backup" button in left column
-#: jpilot.c:2122
+#: jpilot.c:2124
 msgid "Backup"
 msgstr "备份"
 
-#: jpilot.c:2130
+#: jpilot.c:2132
 msgid ""
 "Sync your palm to the desktop\n"
 "and then do a backup"
@@ -1009,19 +1009,19 @@ msgstr ""
 "把您的 Palm 与桌面同步\n"
 "并作备份"
 
-#: jpilot.c:2221
+#: jpilot.c:2223
 msgid "Datebook/Go to Today"
 msgstr "行事历/跳到今天"
 
-#: jpilot.c:2223
+#: jpilot.c:2225
 msgid "Address Book"
 msgstr "地址簿"
 
-#: jpilot.c:2225
+#: jpilot.c:2227
 msgid "ToDo List"
 msgstr "待办工作"
 
-#: jpilot.c:2227
+#: jpilot.c:2229
 msgid "Memo Pad"
 msgstr "备忘录"
 
@@ -1455,47 +1455,47 @@ msgstr "感谢您使用 J-Pilot。"
 msgid "Finished.\n"
 msgstr "完成。\n"
 
-#: sync.c:972 sync.c:2315
+#: sync.c:972 sync.c:2343
 #, c-format
 msgid "Syncing %s\n"
 msgstr "正在同步 %s\n"
 
-#: sync.c:979 sync.c:1996 sync.c:2322
+#: sync.c:979 sync.c:2024 sync.c:2350
 #, c-format
 msgid "Wrote an %s record."
 msgstr "写了一项 %s 纪录。"
 
-#: sync.c:981 sync.c:1998 sync.c:2324
+#: sync.c:981 sync.c:2026 sync.c:2352
 #, c-format
 msgid "Writing an %s record failed."
 msgstr "写入一项 %s 纪录失败。"
 
-#: sync.c:983 sync.c:2000 sync.c:2326
+#: sync.c:983 sync.c:2028 sync.c:2354
 #, c-format
 msgid "Deleting an %s record failed."
 msgstr "删除一项 %s 纪录失败。"
 
-#: sync.c:985 sync.c:2002 sync.c:2328
+#: sync.c:985 sync.c:2030 sync.c:2356
 #, c-format
 msgid "Deleted an %s record."
 msgstr "删除了一项 %s 纪录。"
 
-#: sync.c:988 sync.c:2005 sync.c:2331
+#: sync.c:988 sync.c:2033 sync.c:2359
 #, c-format
 msgid "Wrote a %s record."
 msgstr "写了一项 %s 纪录。"
 
-#: sync.c:990 sync.c:2007 sync.c:2333
+#: sync.c:990 sync.c:2035 sync.c:2361
 #, c-format
 msgid "Writing a %s record failed."
 msgstr "写入一项 %s 纪录失败。"
 
-#: sync.c:992 sync.c:2009 sync.c:2335
+#: sync.c:992 sync.c:2037 sync.c:2363
 #, c-format
 msgid "Deleting a %s record failed."
 msgstr "删除一项 %s 纪录失败。"
 
-#: sync.c:994 sync.c:2011 sync.c:2337
+#: sync.c:994 sync.c:2039 sync.c:2365
 #, c-format
 msgid "Deleted a %s record."
 msgstr "删除了一项 %s 纪录。"
@@ -1509,7 +1509,7 @@ msgstr "纪录数目 = %d\n"
 msgid "slow_sync_application(): Out of memory\n"
 msgstr "slow_sync_application(): 内存不足\n"
 
-#: sync.c:1061 sync.c:2083
+#: sync.c:1061 sync.c:2111
 msgid "dlp_WriteRecord failed\n"
 msgstr "dlp_WriteRecord 失败\n"
 
@@ -1532,7 +1532,7 @@ msgstr "操作失败，无法创建文件 %s\n"
 msgid "Failed, unable to back up database\n"
 msgstr "操作失败，无法备份数据库\n"
 
-#: sync.c:1240 sync.c:1581 sync.c:1701
+#: sync.c:1240 sync.c:1581 sync.c:1729
 msgid "OK\n"
 msgstr "确定\n"
 
@@ -1546,7 +1546,7 @@ msgstr "跳过 %s (创建者 ID '%s')\n"
 msgid "Installing %s "
 msgstr "正在安装 %s "
 
-#: sync.c:1633
+#: sync.c:1633 sync.c:1659 sync.c:1672 sync.c:1687 sync.c:1700
 #, c-format
 msgid ""
 "\n"
@@ -1560,36 +1560,36 @@ msgstr ""
 msgid "(Creator ID is '%s')..."
 msgstr "(创建者 ID 是 '%s')..."
 
-#: sync.c:1684
+#: sync.c:1712
 #, c-format
 msgid "Install %s failed"
 msgstr "安装 %s 失败"
 
-#: sync.c:1689
+#: sync.c:1717
 msgid "Failed.\n"
 msgstr "失败。\n"
 
 #. the space after the %s is a hack, the last char gets cut off
-#: sync.c:1696
+#: sync.c:1724
 #, c-format
 msgid "Installed %s "
 msgstr "已安装 %s "
 
-#: sync.c:1721
+#: sync.c:1749
 #, fuzzy, c-format
 msgid "Cannot open %s_to_install file\n"
 msgstr "无法打开日志文件。\n"
 
-#: sync.c:1727
+#: sync.c:1755
 #, fuzzy, c-format
 msgid "Cannot open %s_to_install.tmp file\n"
 msgstr "无法打开 jpilot_to_install.tmp 文件\n"
 
-#: sync.c:2040
+#: sync.c:2068
 msgid "fast_sync_local_recs(): Out of memory\n"
 msgstr "fast_sync_local_recs(): 内存不足\n"
 
-#: sync.c:2148
+#: sync.c:2176
 msgid ""
 "dlp_DeleteRecord failed\n"
 "This could be because the record was already deleted on the Palm\n"
@@ -1597,47 +1597,47 @@ msgstr ""
 "dlp_DeleteRecord 失败\n"
 "可能是因为这项纪录已经在 Palm 上删除了\n"
 
-#: sync.c:2394
+#: sync.c:2422
 #, c-format
 msgid "palm: number of records = %d\n"
 msgstr "Palm：纪录数目 = %d\n"
 
-#: sync.c:2395
+#: sync.c:2423
 #, c-format
 msgid "disk: number of records = %d\n"
 msgstr "磁盘：纪录数目 = %d\n"
 
-#: sync.c:2559
+#: sync.c:2587
 #, fuzzy, c-format
 msgid "Error reading at %s : %s %d\n"
 msgstr "%s 读入错误\n"
 
-#: sync.c:2564
+#: sync.c:2592
 #, fuzzy, c-format
 msgid "%s:%d Error getting app info %s\n"
 msgstr "%s 读入错误\n"
 
-#: sync.c:2570 sync.c:2597
+#: sync.c:2598 sync.c:2625
 #, fuzzy, c-format
 msgid "%s:%d Error unpacking app info %s\n"
 msgstr "%s 读入错误\n"
 
-#: sync.c:2589
+#: sync.c:2617
 #, fuzzy, c-format
 msgid "Error reading appinfo block for %s\n"
 msgstr "%s 读入错误\n"
 
 #. Fix - need a func for this logging
-#: sync.c:2732 sync.c:2736
+#: sync.c:2760 sync.c:2764
 #, c-format
 msgid "Could not add category %s to remote.\n"
 msgstr ""
 
-#: sync.c:2733 sync.c:2740
+#: sync.c:2761 sync.c:2768
 msgid "Too many categories on remote.\n"
 msgstr ""
 
-#: sync.c:2734 sync.c:2744
+#: sync.c:2762 sync.c:2772
 #, c-format
 msgid "All records on desktop in %s will be moved to %s.\n"
 msgstr ""
@@ -2119,29 +2119,29 @@ msgid "Attendees"
 msgstr "参加者"
 
 #. Note textbox
-#: Expense/expense.c:1505 KeyRing/keyring.c:1693
+#: Expense/expense.c:1505 KeyRing/keyring.c:1534
 msgid "Note"
 msgstr "注释"
 
-#: KeyRing/keyring.c:1352
+#: KeyRing/keyring.c:1192
 msgid "Incorrect, Reenter KeyRing Password"
 msgstr "不正确，请重新输入 KeyRing 口令"
 
-#: KeyRing/keyring.c:1354
+#: KeyRing/keyring.c:1194
 #, fuzzy
 msgid "Enter a NEW KeyRing Password"
 msgstr "输入 KeyRing 口令"
 
-#: KeyRing/keyring.c:1356
+#: KeyRing/keyring.c:1196
 msgid "Enter KeyRing Password"
 msgstr "输入 KeyRing 口令"
 
-#: KeyRing/keyring.c:1525
+#: KeyRing/keyring.c:1365
 msgid "Account"
 msgstr "帐号"
 
 #. Change Password button
-#: KeyRing/keyring.c:1537
+#: KeyRing/keyring.c:1378
 #, fuzzy
 msgid ""
 "Change\n"
@@ -2150,25 +2150,28 @@ msgid ""
 msgstr "输入 KeyRing 口令"
 
 #. name Entry
-#: KeyRing/keyring.c:1666
+#: KeyRing/keyring.c:1507
 msgid "name: "
 msgstr "名字："
 
 #. account Entry
-#: KeyRing/keyring.c:1673
+#: KeyRing/keyring.c:1514
 msgid "account: "
 msgstr "帐号："
 
 #. password
-#: KeyRing/keyring.c:1680
+#: KeyRing/keyring.c:1521
 msgid "password: "
 msgstr "口令："
 
 #. Button for random password
-#: KeyRing/keyring.c:1686
+#: KeyRing/keyring.c:1527
 #, fuzzy
 msgid "Generate Password"
 msgstr "请输入 PalmOS 口令"
+
+#~ msgid "/View/Hide-Show Private Records"
+#~ msgstr "/查看(V)/稳藏或显示私人纪录"
 
 #, fuzzy
 #~ msgid "Cannot open "
@@ -2195,14 +2198,5 @@ msgstr "请输入 PalmOS 口令"
 #~ "judd@jpilot.org\n"
 #~ "http://jpilot.org\n"
 
-#~ msgid "Sync Ma馻na"
-#~ msgstr "同步 Manana"
-
 #~ msgid "Last Syned UserID-->\"%d\"\n"
 #~ msgstr "上次同步的用户 ID->\"%d\"\n"
-
-#~ msgid "Use Ma馻na database"
-#~ msgstr "使用 Manana 数据库"
-
-#~ msgid "/View/Hide-Show-Mask Private Records"
-#~ msgstr "/查看(V)/稳藏、显示或屏蔽私人纪录"
