@@ -1517,23 +1517,29 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 	 continue;
       }
       /* End Masking */
-      /*Hide the completed records if need be */
-      if (hide_completed && temp_todo->mtodo.todo.complete) {
-	 continue;
-      }
-
-      /*Hide the not due yet records if need be */
-      if ((hide_not_due) && (!(temp_todo->mtodo.todo.indefinite))) {
-	 time_t ltime;
-	 struct tm *now, *due;
-	 int comp_now, comp_due;
-	 time(&ltime);
-	 now = localtime(&ltime);
-	 comp_now=now->tm_year*380+now->tm_mon*31+now->tm_mday-1;
-	 due = &(temp_todo->mtodo.todo.due);
-	 comp_due=due->tm_year*380+due->tm_mon*31+due->tm_mday-1;
-	 if (comp_due > comp_now) {
+      
+      /* Allow a record found through search window to temporarily be 
+         displayed even if it would normally be hidden by option settings */
+      if (!glob_find_id || (glob_find_id != temp_todo->mtodo.unique_id))
+      {
+	 /*Hide the completed records if need be */
+	 if (hide_completed && temp_todo->mtodo.todo.complete) {
 	    continue;
+	 }
+
+	 /*Hide the not due yet records if need be */
+	 if ((hide_not_due) && (!(temp_todo->mtodo.todo.indefinite))) {
+	    time_t ltime;
+	    struct tm *now, *due;
+	    int comp_now, comp_due;
+	    time(&ltime);
+	    now = localtime(&ltime);
+	    comp_now=now->tm_year*380+now->tm_mon*31+now->tm_mday-1;
+	    due = &(temp_todo->mtodo.todo.due);
+	    comp_due=due->tm_year*380+due->tm_mon*31+due->tm_mday-1;
+	    if (comp_due > comp_now) {
+	       continue;
+	    }
 	 }
       }
 
