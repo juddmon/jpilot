@@ -1530,6 +1530,7 @@ void cb_dial_or_mail(GtkWidget *widget, gpointer data)
 {
    GtkWidget *text;
    gchar *str;
+   int is_mail;
 #ifdef ENABLE_GTK2
    GtkTextIter    start_iter;
    GtkTextIter    end_iter;
@@ -1547,11 +1548,11 @@ void cb_dial_or_mail(GtkWidget *widget, gpointer data)
 
    if (!str) return;
    printf("[%s]\n", str);
-
-   if (strstr(str,"@")) {
+   
+   is_mail = GPOINTER_TO_INT(gtk_object_get_data(GTK_OBJECT(widget), "mail"));
+   if (is_mail) {
       email_contact(widget, str);
-   }
-   else {
+   } else {
       dial_contact(widget, str);
    }
 
@@ -1889,20 +1890,21 @@ static void cb_clist_selection(GtkWidget      *clist,
 					(menu_item[i][a->phoneLabel[i]]), TRUE);
 	 gtk_option_menu_set_history(GTK_OPTION_MENU(phone_list_menu[i]),
 				     a->phoneLabel[i]);
-	 if (!strcmp(address_app_info.labels[a->phoneLabel[i]+3],_("E-mail")))
-	 {
+	 if (!strcmp(address_app_info.labels[a->phoneLabel[i]+3],_("E-mail"))) {
 #ifdef ENABLE_GTK2
 	    gtk_button_set_label(GTK_BUTTON(dial_button[i]),_("Mail"));
+	    gtk_object_set_data(GTK_OBJECT(dial_button[i]), "mail", GINT_TO_POINTER(1));
 #else
 	    gtk_object_set(GTK_OBJECT(dial_button[i]), "label", _("Mail"), NULL);
+	    gtk_object_set_data(GTK_OBJECT(dial_button[i]), "mail", GINT_TO_POINTER(1));
 #endif
-	 }
-	 else
-	 {
+	 } else {
 #ifdef ENABLE_GTK2
 	    gtk_button_set_label(GTK_BUTTON(dial_button[i]),_("Dial"));
+	    gtk_object_set_data(GTK_OBJECT(dial_button[i]), "mail", 0);
 #else
 	    gtk_object_set(GTK_OBJECT(dial_button[i]), "label", _("Dial"), NULL);
+	    gtk_object_set_data(GTK_OBJECT(dial_button[i]), "mail", 0);
 #endif
 	 }
       }
@@ -2833,13 +2835,12 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	    if (i2>2 && i2<8) {
 	       gtk_table_attach(GTK_TABLE(table1), GTK_WIDGET(phone_list_menu[i2-3]),
 				2, 3, i, i+1, GTK_SHRINK, 0, 0, 0);
-	       if (!strcmp(address_app_info.labels[i2], _("E-mail")))
-	       {
+	       if (!strcmp(address_app_info.labels[i2], _("E-mail"))) {
 		  dial_button[i2-3] = gtk_button_new_with_label(_("Mail"));
-	       }
-	       else
-	       {
+		  gtk_object_set_data(GTK_OBJECT(dial_button[i2-3]), "mail", GINT_TO_POINTER(1));
+	       } else {
 		  dial_button[i2-3] = gtk_button_new_with_label(_("Dial"));
+		  gtk_object_set_data(GTK_OBJECT(dial_button[i2-3]), "mail", 0);
 	       }
 	       gtk_signal_connect(GTK_OBJECT(dial_button[i2-3]), "clicked",
 				  GTK_SIGNAL_FUNC(cb_dial_or_mail),
