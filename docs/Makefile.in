@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Id: Makefile.in,v 1.6 2002/10/09 01:55:05 judd Exp $
+# $Id: Makefile.in,v 1.8 2002/12/20 20:03:38 judd Exp $
 SHELL = @SHELL@
 
 srcdir = @srcdir@
@@ -121,6 +121,7 @@ PILOT_LIBS = @PILOT_LIBS@
 PLUGIN_SUPPORT = @PLUGIN_SUPPORT@
 POFILES = @POFILES@
 POSUB = @POSUB@
+PROGNAME = @PROGNAME@
 RANLIB = @RANLIB@
 STRIP = @STRIP@
 USE_INCLUDED_LIBINTL = @USE_INCLUDED_LIBINTL@
@@ -385,6 +386,7 @@ uninstall-local:
 	rm -f $(prefix)/doc/$(PACKAGE)-$(VERSION)/TODO
 	rm -f $(prefix)/doc/$(PACKAGE)-$(VERSION)/UPGRADING
 	rmdir $(prefix)/doc/$(PACKAGE)-$(VERSION)/icons
+	rmdir $(prefix)/doc/$(PACKAGE)-$(VERSION)
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
