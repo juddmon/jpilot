@@ -1,3 +1,25 @@
+0.99.8-pre3 - 14/11/04 (Ludovic Rousseau)
+ Some more bugs fixed
+ The right-hand side of jpilot were not updated on a cursor movement.
+ Fixed unpredictable bug in repeating events caused by unitialized variable
+ Use iconv to convert from the Palm charset to UTF-8. Thanks to Amit Aronovitch
+  we now support many new charsets when used with GTK2:
+  - Hebrew (CP1255),
+  - Cyrillic (CP1251),
+  - Cyrillic (KOI8-R),
+  - Latin 2, Estern Europe (ISO8859-2),
+  - Japanese (SJIS),
+  - Chinese (GB2312)
+ Complete Chinese translation. Thanks to lei Yu
+ The category selection was not working from the Export window for Addresses
+ Give a more explicit error message when pi_bind() fails. We now have
+  "permission denied" or "file not found" instead of "Illegal seek".
+  Also display the device name we are trying to use.
+  Thanks to Edgar Bonet for the patch
+ New preference to show or hide popup tooltips
+ Entries returned from datebook app during search were in random order
+ Get first day of week from locale in GTK2, no preference setting
+
 0.99.8-pre2 - 20/10/04 (Ludovic Rousseau)
  some bugs fixed
  add the same keyboards accelerators for the 4 applications:
