@@ -1683,6 +1683,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
    }
    switch (record_type) {
     case NEW_PC_REC:
+    case REPLACEMENT_PALM_REC:
       pc_in=jp_open_home_file(filename, "r+");
       if (pc_in==NULL) {
 	 jpilot_logf(LOG_WARN, "Couldn't open PC records file\n");
@@ -1695,8 +1696,10 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 	    fclose(pc_in);
 	    return -1;
 	 }
+	 /* Keep unique ID intact */
 	 if (header.header_version==2) {
-	    if (header.unique_id==unique_id) {
+	    if ((header.unique_id==unique_id) && 
+		((header.rt==NEW_PC_REC)||(header.rt==REPLACEMENT_PALM_REC))) {
 	       if (fseek(pc_in, -header.header_len, SEEK_CUR)) {
 		  jpilot_logf(LOG_WARN, "fseek failed\n");
 	       }
@@ -1869,10 +1872,12 @@ int cleanup_pc_file(char *DB_name, unsigned int *max_id)
 	 if (header.rt == NEW_PC_REC) {
 	    header.unique_id = next_id++;
 	 }
-	 if ((header.unique_id > *max_id)
+	 if ((header.unique_id > *max_id) 
 	     && (header.rt != PALM_REC)
 	     && (header.rt != MODIFIED_PALM_REC)
-	     && (header.rt != DELETED_PALM_REC) ){
+	     && (header.rt != DELETED_PALM_REC)
+	     && (header.rt != REPLACEMENT_PALM_REC)
+	     ){
 	    *max_id = header.unique_id;
 	 }
 	 record = malloc(header.rec_len);
@@ -2011,15 +2016,18 @@ int setup_sync(unsigned int flags)
 #endif
    struct my_sync_info sync_info;
 
-   get_pref(PREF_RATE, &ivalue, &svalue);
-   jpilot_logf(LOG_DEBUG, "setting PILOTRATE=[%s]\n", svalue);
-   if (svalue) {
+   /* look in env for PILOTRATE first */
+   if (!(getenv("PILOTRATE"))) {
+      get_pref(PREF_RATE, &ivalue, &svalue);
+      jpilot_logf(LOG_DEBUG, "setting PILOTRATE=[%s]\n", svalue);
+      if (svalue) {
 #ifdef HAVE_SETENV
-      setenv("PILOTRATE", svalue, TRUE);
+	 setenv("PILOTRATE", svalue, TRUE);
 #else
-      sprintf(str, "PILOTRATE=%s", svalue);
-      putenv(str);
+	 sprintf(str, "PILOTRATE=%s", svalue);
+	 putenv(str);
 #endif
+      }
    }
 
    get_pref(PREF_PORT, &ivalue, &port);
@@ -2044,7 +2052,7 @@ int setup_sync(unsigned int flags)
       }
       jpilot_logf(LOG_WARN, _("PC ID is 0.\n"));
       jpilot_logf(LOG_WARN, _("I generated a new PC ID.  It is %lu\n"), sync_info.PC_ID);
-      set_pref(PREF_PC_ID, sync_info.PC_ID, NULL);
+      set_pref(PREF_PC_ID, sync_info.PC_ID, NULL, TRUE);
    }
 
    sync_info.sync_over_ride = 0;
