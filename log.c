@@ -94,19 +94,16 @@ int jp_vlogf (int level, char *format, va_list val) {
    char			*buf;
    int			size;
    int			len;
+   int			r;
    static FILE		*fp=NULL;
    static int		err_count=0;
    char			cmd[16];
-
 
    if (!((level & glob_log_file_mask) ||
 	 (level & glob_log_stdout_mask) ||
 	 (level & glob_log_gui_mask))) {
       return 0;
    }
-
-   buf=&(real_buf[16]);
-   buf[0] = '\0';
 
    if ((!fp) && (err_count>10)) {
       return -1;
@@ -124,6 +121,9 @@ int jp_vlogf (int level, char *format, va_list val) {
       }
    }
 
+   buf=&(real_buf[16]);
+   buf[0] = '\0';
+
    size = g_vsnprintf(buf, WRITE_MAX_BUF, format, val);
    /* glibc >2.1 can return size > WRITE_MAX_BUF */
    /* just in case g_vsnprintf reached the max */
@@ -132,6 +132,7 @@ int jp_vlogf (int level, char *format, va_list val) {
 
    if ((fp) && (level & glob_log_file_mask)) {
       fwrite(buf, size, 1, fp);
+      fflush(fp);
    }
 
    if (level & glob_log_stdout_mask) {
@@ -148,7 +149,8 @@ int jp_vlogf (int level, char *format, va_list val) {
       buf[size+1]='\n';
       size += 2;
       //write(pipe_to_parent, cmd, strlen(cmd));
-      write(pipe_to_parent, buf, size);
+      r = write(pipe_to_parent, buf, size);
+      if (r<0) fprintf(stderr, "write returned error %s %d\n", __FILE__, __LINE__);
       //write(pipe_to_parent, "\0\n", 2);
       fsync(pipe_to_parent);
    }
