@@ -29,6 +29,7 @@
 #include <sys/wait.h>
 #include <sys/stat.h>
 #include <sys/time.h>
+#include <sys/socket.h>
 #ifdef USE_FLOCK
 #include <sys/file.h>
 #else
@@ -129,7 +130,7 @@ int sync_lock(int *fd)
    get_home_file_name("sync_pid", lock_file, sizeof(lock_file));
    *fd = open(lock_file, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
    if (*fd<0) {
-      jp_logf(JP_LOG_WARN, "open lock file failed\n");
+      jp_logf(JP_LOG_WARN, _("open lock file failed\n"));
       return -1;
    }
 #ifndef USE_FLOCK
@@ -142,10 +143,10 @@ int sync_lock(int *fd)
    r = flock(*fd, LOCK_EX | LOCK_NB);
 #endif
    if (r == -1){
-      jp_logf(JP_LOG_WARN, "lock failed\n");
+      jp_logf(JP_LOG_WARN, _("lock failed\n"));
       read(*fd, str, 10);
       pid = atoi(str);
-      jp_logf(JP_LOG_FATAL, "sync file is locked by pid %d\n", pid);
+      jp_logf(JP_LOG_FATAL, _("sync file is locked by pid %d\n"), pid);
       return -1;
    } else {
       jp_logf(JP_LOG_DEBUG, "lock succeeded\n");
@@ -179,10 +180,10 @@ int sync_unlock(int fd)
    r = flock(fd, LOCK_UN | LOCK_NB);
 #endif
    if (r == -1) {
-      jp_logf(JP_LOG_WARN, "unlock failed\n");
+      jp_logf(JP_LOG_WARN, _("unlock failed\n"));
       read(fd, str, 10);
       pid = atoi(str);
-      jp_logf(JP_LOG_WARN, "sync is locked by pid %d\n", pid);
+      jp_logf(JP_LOG_WARN, _("sync is locked by pid %d\n"), pid);
       close(fd);
       return -1;
    } else {
@@ -231,15 +232,15 @@ int sync_once(struct my_sync_info *sync_info)
 
    if (glob_child_pid) {
       jp_logf(JP_LOG_WARN, PN": sync PID = %d\n", glob_child_pid);
-      jp_logf(JP_LOG_WARN, PN": press the hotsync button on the cradle "
-	   "or \"kill %d\"\n", glob_child_pid);
+      jp_logf(JP_LOG_WARN, _("%s: press the hotsync button on the cradle "
+	   "or \"kill %d\"\n"), PN, glob_child_pid);
       return 0;
    }
 
    /* Make a copy of the sync info for the forked process */
    sync_info_copy = malloc(sizeof(struct my_sync_info));
    if (!sync_info_copy) {
-      jp_logf(JP_LOG_WARN, PN":sync_once(): Out of memory\n");
+      jp_logf(JP_LOG_WARN, PN":sync_once(): %s\n", _("Out of memory"));
       return 0;
    }
    memcpy(sync_info_copy, sync_info, sizeof(struct my_sync_info));
@@ -710,8 +711,8 @@ int jp_sync(struct my_sync_info *sync_info)
 #endif
 
    if (dlp_OpenConduit(sd)<0) {
-      jp_logf(JP_LOG_WARN, _("Sync canceled\n"));
       jp_logf(JP_LOG_WARN, "dlp_OpenConduit() failed\n");
+      jp_logf(JP_LOG_WARN, _("Sync canceled\n"));
 #ifdef ENABLE_PLUGINS
       free_plugin_list(&plugin_list);
 #endif
@@ -992,13 +993,13 @@ int slow_sync_application(char *DB_name, int sd)
 
    pc_in = jp_open_home_file(pc_filename, "r+");
    if (pc_in==NULL) {
-      jp_logf(JP_LOG_WARN, _("Unable to open %s\n"), pc_filename);
+      jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), pc_filename);
       return -1;
    }
    /* Open the applications database, store access handle in db */
    ret = dlp_OpenDB(sd, 0, dlpOpenReadWrite, DB_name, &db);
    if (ret < 0) {
-      g_snprintf(log_entry, sizeof(log_entry), _("Unable to open %s\n"), DB_name);
+      g_snprintf(log_entry, sizeof(log_entry), _("Unable to open file: %s\n"), DB_name);
       charset_j2p((unsigned char *)log_entry, sizeof(log_entry), char_set);
       dlp_AddSyncLogEntry(sd, log_entry);
       return -1;
@@ -1027,7 +1028,7 @@ int slow_sync_application(char *DB_name, int sd)
       if ((header.rt==NEW_PC_REC) || (header.rt==REPLACEMENT_PALM_REC)) {
 	 record = malloc(rec_len);
 	 if (!record) {
-	    jp_logf(JP_LOG_WARN, _("slow_sync_application(): Out of memory\n"));
+	    jp_logf(JP_LOG_WARN, "slow_sync_application(): %s\n", _("Out of memory"));
 	    break;
 	 }
 	 num = fread(record, rec_len, 1, pc_in);
@@ -1053,7 +1054,7 @@ int slow_sync_application(char *DB_name, int sd)
 	 }
 
 	 if (ret < 0) {
-	    jp_logf(JP_LOG_WARN, _("dlp_WriteRecord failed\n"));
+	    jp_logf(JP_LOG_WARN, "dlp_WriteRecord failed\n");
 	    charset_j2p((unsigned char *)error_log_message_w,255,char_set);
 	    dlp_AddSyncLogEntry(sd, error_log_message_w);
 	    dlp_AddSyncLogEntry(sd, "\n");
@@ -1110,8 +1111,8 @@ int slow_sync_application(char *DB_name, int sd)
 	 ret = dlp_DeleteRecord(sd, db, 0, header.unique_id);
 
 	 if (ret < 0) {
-	    jp_logf(JP_LOG_WARN, "dlp_DeleteRecord failed\n"\
-            "This could be because the record was already deleted on the Palm\n");
+	    jp_logf(JP_LOG_WARN, _("dlp_DeleteRecord failed\n"\
+            "This could be because the record was already deleted on the Palm\n"));
 	    charset_j2p((unsigned char *)error_log_message_d,255,char_set);
 	    dlp_AddSyncLogEntry(sd, error_log_message_d);
 	    dlp_AddSyncLogEntry(sd, "\n");
@@ -1573,12 +1574,12 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
 
       pi_fp = pi_file_create(file_name, &info);
       if (pi_fp==0) {
-	 jp_logf(JP_LOG_WARN, "Failed, unable to create file %s\n",
+	 jp_logf(JP_LOG_WARN, _("Failed, unable to create file %s\n"),
 		main_app ? full_name : full_backup_name);
 	 continue;
       }
       if (pi_file_retrieve(pi_fp, sd, 0)<0) {
-	 jp_logf(JP_LOG_WARN, "Failed, unable to back up database %s\n", info.name);
+	 jp_logf(JP_LOG_WARN, _("Failed, unable to back up database %s\n"), info.name);
 	 times.actime = 0;
 	 times.modtime = 0;
       } else {
@@ -1637,11 +1638,11 @@ static int sync_install(char *filename, int sd)
       int fd;
 
       if ((fd = open(filename, O_RDONLY)) < 0) {
-	jp_logf(JP_LOG_WARN, _("\nUnable to open '%s': %s!\n"), filename,
+	jp_logf(JP_LOG_WARN, _("\nUnable to open file: '%s': %s!\n"), filename,
 		strerror(errno));
       } else {
          close(fd);
-         jp_logf(JP_LOG_WARN, _("\nUnable to sync '%s': file corrupted?\n"),
+         jp_logf(JP_LOG_WARN, _("\nUnable to sync file: '%s': file corrupted?\n"),
 		 filename);
       }
       return -1;
@@ -1669,7 +1670,7 @@ static int sync_install(char *filename, int sd)
 	 pdb_file_write_dbinfo(filename, &info);
 	 f = pi_file_open(filename);
 	 if (f==0) {
-	    jp_logf(JP_LOG_WARN, _("\nUnable to open '%s'!\n"), filename);
+	    jp_logf(JP_LOG_WARN, _("\nUnable to open file: %s\n"), filename);
 	    return -1;
 	 }
 	 try_again = 1;
@@ -1682,7 +1683,7 @@ static int sync_install(char *filename, int sd)
 	 pdb_file_write_dbinfo(filename, &info);
 	 f = pi_file_open(filename);
 	 if (f==0) {
-	    jp_logf(JP_LOG_WARN, _("\nUnable to open '%s'!\n"), filename);
+	    jp_logf(JP_LOG_WARN, _("\nUnable to open file: %s\n"), filename);
 	    return -1;
 	 }
 	 try_again = 1;
@@ -1697,7 +1698,7 @@ static int sync_install(char *filename, int sd)
 	 pdb_file_write_dbinfo(filename, &info);
 	 f = pi_file_open(filename);
 	 if (f==0) {
-	    jp_logf(JP_LOG_WARN, _("\nUnable to open '%s'!\n"), filename);
+	    jp_logf(JP_LOG_WARN, _("\nUnable to open file: %s\n"), filename);
 	    return -1;
 	 }
 	 try_again = 1;
@@ -1710,7 +1711,7 @@ static int sync_install(char *filename, int sd)
 	 pdb_file_write_dbinfo(filename, &info);
 	 f = pi_file_open(filename);
 	 if (f==0) {
-	    jp_logf(JP_LOG_WARN, _("\nUnable to open '%s'!\n"), filename);
+	    jp_logf(JP_LOG_WARN, _("\nUnable to open file: %s\n"), filename);
 	    return -1;
 	 }
 	 try_again = 1;
@@ -1757,13 +1758,13 @@ static int sync_process_install_file(int sd)
 
    in = jp_open_home_file(EPN"_to_install", "r");
    if (!in) {
-      jp_logf(JP_LOG_WARN, _("Cannot open %s_to_install file\n"), EPN);
+      jp_logf(JP_LOG_WARN, _("Unable to open file: %s%s\n"), EPN, "_to_install");
       return -1;
    }
 
    out = jp_open_home_file(EPN"_to_install.tmp", "w");
    if (!out) {
-      jp_logf(JP_LOG_WARN, _("Cannot open %s_to_install.tmp file\n"), EPN);
+      jp_logf(JP_LOG_WARN, _("Unable to open file: %s%s\n"), EPN, "_to_install.tmp");
       fclose(in);
       return -1;
    }
@@ -1943,7 +1944,7 @@ static int sync_rotate_backups(const int num_backups)
    for (safety=100; safety>0; safety--) {
       r = get_oldest_newest_dir(oldest, newest, &count);
       if (r<0) {
-	 jp_logf(JP_LOG_WARN, "unable to read home dir\n");
+	 jp_logf(JP_LOG_WARN, _("Unable to read home dir\n"));
 	 break;
       }
       if (count > num_backups) {
@@ -2052,7 +2053,7 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
    }
    pc_in = jp_open_home_file(pc_filename, "r+");
    if (pc_in==NULL) {
-      jp_logf(JP_LOG_WARN, _("Unable to open %s\n"), pc_filename);
+      jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), pc_filename);
       return -1;
    }
 
@@ -2077,7 +2078,7 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
 	 jp_logf(JP_LOG_DEBUG, "new pc record\n");
 	 record = malloc(rec_len);
 	 if (!record) {
-	    jp_logf(JP_LOG_WARN, _("fast_sync_local_recs(): Out of memory\n"));
+	    jp_logf(JP_LOG_WARN, "fast_sync_local_recs(): %s\n", _("Out of memory"));
 	    break;
 	 }
 	 num = fread(record, rec_len, 1, pc_in);
@@ -2120,7 +2121,7 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
 	 }
 
 	 if (ret < 0) {
-	    jp_logf(JP_LOG_WARN, _("dlp_WriteRecord failed\n"));
+	    jp_logf(JP_LOG_WARN, "dlp_WriteRecord failed\n");
 	    charset_j2p((unsigned char *)error_log_message_w,255,char_set);
 	    dlp_AddSyncLogEntry(sd, error_log_message_w);
 	    dlp_AddSyncLogEntry(sd, "\n");
@@ -2268,13 +2269,13 @@ int pdb_file_swap_indexes(char *DB_name, int index1, int index2)
 
    pf1 = pi_file_open(full_local_pdb_file);
    if (!pf1) {
-      jp_logf(JP_LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file);
+      jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), full_local_pdb_file);
       return -1;
    }
    pi_file_get_info(pf1, &infop);
    pf2 = pi_file_create(full_local_pdb_file2, &infop);
    if (!pf2) {
-      jp_logf(JP_LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file2);
+      jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), full_local_pdb_file2);
       return -1;
    }
 
@@ -2305,7 +2306,7 @@ int pdb_file_swap_indexes(char *DB_name, int index1, int index2)
    pi_file_close(pf2);
 
    if (rename(full_local_pdb_file2, full_local_pdb_file) < 0) {
-      jp_logf(JP_LOG_WARN, "swap_indexes: rename failed\n");
+      jp_logf(JP_LOG_WARN, "pdb_file_swap_indexes(): %s\n,", _("rename failed"));
    }
 
    utime(full_local_pdb_file, &times);
@@ -2387,7 +2388,7 @@ int fast_sync_application(char *DB_name, int sd)
    /* Open the applications database, store access handle in db */
    ret = dlp_OpenDB(sd, 0, dlpOpenReadWrite|dlpOpenSecret, DB_name, &db);
    if (ret < 0) {
-      g_snprintf(log_entry, sizeof(log_entry), _("Unable to open %s\n"), DB_name);
+      g_snprintf(log_entry, sizeof(log_entry), _("Unable to open file: %s\n"), DB_name);
       charset_j2p((unsigned char *)log_entry, sizeof(log_entry), char_set);
       dlp_AddSyncLogEntry(sd, log_entry);
       return -1;
@@ -2603,7 +2604,7 @@ int sync_categories(char *DB_name, int sd,
 
    pf = pi_file_open(full_name);
    if (!pf) {
-      jp_logf(JP_LOG_WARN, _("Error reading at %s : %s %d\n"), full_name, __FILE__, __LINE__);
+      jp_logf(JP_LOG_WARN, _("%s:%d Error reading file: %s\n"), __FILE__, __LINE__, full_name);
       return -1;
    }
    r = pi_file_get_app_info(pf, &Papp_info, &size_Papp_info);
@@ -2623,7 +2624,7 @@ int sync_categories(char *DB_name, int sd,
    /* Open the applications database, store access handle in db */
    r = dlp_OpenDB(sd, 0, dlpOpenReadWrite, DB_name, &db);
    if (r < 0) {
-      g_snprintf(log_entry, sizeof(log_entry), _("Unable to open %s\n"), DB_name);
+      g_snprintf(log_entry, sizeof(log_entry), _("Unable to open file: %s\n"), DB_name);
       charset_j2p((unsigned char *)log_entry, sizeof(log_entry), char_set);
       dlp_AddSyncLogEntry(sd, log_entry);
       return -1;

@@ -62,7 +62,7 @@ cb_restore_ok(GtkWidget *widget, gpointer data)
    g_snprintf(file, sizeof(file), "%s/"EPN"_to_install", home_dir);
    unlink(file);
 
-   jp_logf(JP_LOG_WARN, "-----===== Restore Handheld ======-----\n");
+   jp_logf(JP_LOG_WARN, "%s%s%s\n", "-----===== ", _("Restore Handheld"), " ======-----");
    for (temp_list=list; temp_list; temp_list = temp_list->next) {
       gtk_clist_get_text(GTK_CLIST(restore_clist), (int)temp_list->data, 0, &text);
       jp_logf(JP_LOG_DEBUG, "row %ld [%s]\n", (long) temp_list->data, text);
@@ -127,7 +127,7 @@ static int populate_clist_sub(char *path, int check_for_dups, int check_exts)
    } else {
       for (i=0; (dirent = readdir(dir)); i++) {
 	 if (i>1000) {
-	    jp_logf(JP_LOG_WARN, "populate_clist_sub(): infinite loop\n");
+	    jp_logf(JP_LOG_WARN, "populate_clist_sub(): %s\n", _("infinite loop"));
 	    closedir(dir);
 	    return -1;
 	 }

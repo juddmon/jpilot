@@ -305,7 +305,7 @@ static int get_rcfile_name(int n, char *rc_copy)
 	       jp_logf(JP_LOG_DEBUG, "found %s\n", dirent->d_name);
 	       new_entry = malloc(sizeof(struct name_list));
 	       if (!new_entry) {
-		  jp_logf(JP_LOG_FATAL, "get_rcfile_name(): Out of memory\n");
+		  jp_logf(JP_LOG_FATAL, "get_rcfile_name(): %s\n", _("Out of memory"));
 		  return -1;
 	       }  
 	       new_entry->name = strdup(dirent->d_name);
@@ -330,7 +330,7 @@ static int get_rcfile_name(int n, char *rc_copy)
 	       jp_logf(JP_LOG_DEBUG, "found %s\n", dirent->d_name);
 	       new_entry = malloc(sizeof(struct name_list));
 	       if (!new_entry) {
-		  jp_logf(JP_LOG_FATAL, "get_rcfile_name(): Out of memory 2\n");
+		  jp_logf(JP_LOG_FATAL, "get_rcfile_name(): %s 2\n", _("Out of memory"));
 		  return -1;
 	       }  
 	       new_entry->name = strdup(dirent->d_name);
@@ -831,7 +831,7 @@ int jp_pref_read_rc_file(char *filename, prefType prefs[], int num_prefs)
 	       if (pref_lstrncpy_realloc(&(prefs[i].svalue), field2,
 					&(prefs[i].svalue_size),
 					MAX_PREF_VALUE)==NULL) {
-		  jp_logf(JP_LOG_WARN, "Out of memory: read_rc_file()\n");
+		  jp_logf(JP_LOG_WARN, "read_rc_file(): %s\n", _("Out of memory"));
 		  continue;
 	       }
 	    }

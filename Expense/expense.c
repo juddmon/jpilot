@@ -985,7 +985,7 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
 
    num = unpack_ExpenseAppInfo(&ai, buf, size);
    if (num <= 0) {
-      jp_logf(JP_LOG_WARN, _("Error reading %s\n"), "ExpenseDB.pdb");
+      jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), "ExpenseDB.pdb");
       return;
    }
 
@@ -1064,19 +1064,19 @@ static void cb_clist_selection(GtkWidget      *clist,
       gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
 				     (menu_item_category2[item_num]), TRUE);
    } else {
-      jp_logf(JP_LOG_WARN, "Expense: Unknown category\n");
+      jp_logf(JP_LOG_WARN, _("Expense: Unknown category\n"));
    }
    if (mex->ex.type < MAX_EXPENSE_TYPES) {
       gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
 				     (menu_item_expense_type[mex->ex.type]), TRUE);
    } else {
-      jp_logf(JP_LOG_WARN, "Expense: Unknown expense type\n");
+      jp_logf(JP_LOG_WARN, _("Expense: Unknown expense type\n"));
    }
    if (mex->ex.payment < MAX_PAYMENTS) {
       gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
 				     (menu_item_payment[mex->ex.payment]), TRUE);
    } else {
-      jp_logf(JP_LOG_WARN, "Expense: Unknown payment type\n");
+      jp_logf(JP_LOG_WARN, _("Expense: Unknown payment type\n"));
    }
    /* printf("mex->ex.currency = %d\n", mex->ex.currency); */
    currency_position = currency_id_to_position(mex->ex.currency);
@@ -1926,7 +1926,7 @@ int plugin_post_sync(void)
 
    num = unpack_ExpenseAppInfo(&ai, buf, size);
    if (num <= 0) {
-      jp_logf(JP_LOG_WARN, _("Error reading %s\n"), "ExpenseDB.pdb");
+      jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), "ExpenseDB.pdb");
       return -1;
    }
 

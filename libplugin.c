@@ -28,6 +28,7 @@
 #include <glib.h>
 
 #include "libplugin.h"
+#include "i18n.h"
 
 void jp_init()
 {
@@ -161,7 +162,7 @@ static int unpack_header(PC3RecordHeader *header, unsigned char *packed_header)
    p+=sizeof(l);
 
    if (header->header_version > 2) {
-      jp_logf(JP_LOG_WARN, "Unknown PC header version = %d\n", header->header_version);
+      jp_logf(JP_LOG_WARN, _("Unknown PC header version = %d\n"), header->header_version);
    }
 
    memcpy(&l, p, sizeof(l));
@@ -199,7 +200,7 @@ int read_header(FILE *pc_in, PC3RecordHeader *header)
    memcpy(packed_header, &l, sizeof(l));
    len=ntohl(l);
    if (len > sizeof(packed_header)-1) {
-      jp_logf(JP_LOG_WARN, "read_header() error\n");
+      jp_logf(JP_LOG_WARN, "read_header() %s\n", _("error"));
       return -1;
    }
    num = fread(packed_header+sizeof(l), len-sizeof(l), 1, pc_in);
@@ -459,13 +460,13 @@ int jp_get_app_info(char *DB_name, unsigned char **buf, int *buf_size)
    g_snprintf(PDB_name, sizeof(PDB_name), "%s.pdb", DB_name);
    in = jp_open_home_file(PDB_name, "r");
    if (!in) {
-      jp_logf(JP_LOG_WARN, "%s:%d Error opening %s\n", __FILE__, __LINE__, PDB_name);
+      jp_logf(JP_LOG_WARN, _("%s:%d Error opening file: %s\n"), __FILE__, __LINE__, PDB_name);
       return -1;
    }
    num = fread(&rdbh, sizeof(RawDBHeader), 1, in);
    if (num != 1) {
       if (ferror(in)) {
-	 jp_logf(JP_LOG_WARN, "%s:%d Error reading %s\n", __FILE__, __LINE__, PDB_name);
+	 jp_logf(JP_LOG_WARN, _("%s:%d Error reading file: %s\n"), __FILE__, __LINE__, PDB_name);
 	 fclose(in);
 	 return -1;
       }
@@ -485,7 +486,7 @@ int jp_get_app_info(char *DB_name, unsigned char **buf, int *buf_size)
    fseek(in, dbh.app_info_offset, SEEK_SET);
    *buf=malloc(rec_size);
    if (!(*buf)) {
-      jp_logf(JP_LOG_WARN, "jp_get_app_info(): Out of memory\n");
+      jp_logf(JP_LOG_WARN, "jp_get_app_info(): %s\n", _("Out of memory"));
       fclose(in);
       return -1;
    }
@@ -494,7 +495,7 @@ int jp_get_app_info(char *DB_name, unsigned char **buf, int *buf_size)
       if (ferror(in)) {
 	 fclose(in);
 	 free(*buf);
-	 jp_logf(JP_LOG_WARN, "%s:%d Error reading %s\n", __FILE__, __LINE__, PDB_name);
+	 jp_logf(JP_LOG_WARN, _("%s:%d Error reading file: %s\n"), __FILE__, __LINE__, PDB_name);
 	 return -1;
       }
    }
@@ -521,8 +522,8 @@ int jp_delete_record(char *DB_name, buf_rec *br, int flag)
    g_snprintf(PC_name, sizeof(PC_name), "%s.pc3", DB_name);
 
    if ((br->rt==DELETED_PALM_REC) || (br->rt==MODIFIED_PALM_REC)) {
-      jp_logf(JP_LOG_INFO, "This record is already deleted.\n"
-		  "It is scheduled to be deleted from the Palm on the next sync.\n");
+      jp_logf(JP_LOG_INFO, _("This record is already deleted.\n"
+		  "It is scheduled to be deleted from the Palm on the next sync.\n"));
       return 0;
    }
    switch (br->rt) {
@@ -530,13 +531,13 @@ int jp_delete_record(char *DB_name, buf_rec *br, int flag)
     case REPLACEMENT_PALM_REC:
       pc_in=jp_open_home_file(PC_name, "r+");
       if (pc_in==NULL) {
-	 jp_logf(JP_LOG_WARN, "Couldn't open PC records file\n");
+	 jp_logf(JP_LOG_WARN, _("Unable to open PC records file\n"));
 	 return -1;
       }
       while(!feof(pc_in)) {
 	 read_header(pc_in, &header);
 	 if (feof(pc_in)) {
-	    jp_logf(JP_LOG_WARN, "couldn't find record to delete\n");
+	    jp_logf(JP_LOG_WARN, _("Couldn't find record to delete\n"));
 	    fclose(pc_in);
 	    return -1;
 	 }
@@ -555,7 +556,7 @@ int jp_delete_record(char *DB_name, buf_rec *br, int flag)
 	       return 0;
 	    }
 	 } else {
-	    jp_logf(JP_LOG_WARN, "unknown header version %d\n", header.header_version);
+	    jp_logf(JP_LOG_WARN, _("Unknown header version %d\n"), header.header_version);
 	 }
 	 if (fseek(pc_in, header.rec_len, SEEK_CUR)) {
 	    jp_logf(JP_LOG_WARN, "fseek failed\n");
@@ -568,7 +569,7 @@ int jp_delete_record(char *DB_name, buf_rec *br, int flag)
       jp_logf(JP_LOG_DEBUG, "Deleteing Palm ID %d\n", br->unique_id);
       pc_in=jp_open_home_file(PC_name, "a");
       if (pc_in==NULL) {
-	 jp_logf(JP_LOG_WARN, "Couldn't open PC records file\n");
+	 jp_logf(JP_LOG_WARN, _("Couldn't open PC records file\n"));
 	 return -1;
       }
       header.unique_id=br->unique_id;
@@ -625,7 +626,7 @@ int jp_pc_write(char *DB_name, buf_rec *br)
 
    out = jp_open_home_file(PC_name, "a");
    if (!out) {
-      jp_logf(JP_LOG_WARN, "Error opening %s\n", PC_name);
+      jp_logf(JP_LOG_WARN, _("Error opening file: %s\n"), PC_name);
       return -1;
    }
 
@@ -654,7 +655,7 @@ static int pc_read_next_rec(FILE *in, buf_rec *br)
    num = read_header(in, &header);
    if (num < 1) {
       if (ferror(in)) {
-	 jp_logf(JP_LOG_WARN, "Error reading pc file 1\n");
+	 jp_logf(JP_LOG_WARN, _("Error reading PC file 1\n"));
 	 return JPILOT_EOF;
       }
       if (feof(in)) {
@@ -664,13 +665,13 @@ static int pc_read_next_rec(FILE *in, buf_rec *br)
    rec_len = header.rec_len;
    record = malloc(rec_len);
    if (!record) {
-      jp_logf(JP_LOG_WARN, "pc_read_next_rec(): Out of memory\n");
+      jp_logf(JP_LOG_WARN, "pc_read_next_rec(): %s\n", _("Out of memory"));
       return JPILOT_EOF;
    }
    num = fread(record, rec_len, 1, in);
    if (num != 1) {
       if (ferror(in)) {
-	 jp_logf(JP_LOG_WARN, "Error reading pc file 2\n");
+	 jp_logf(JP_LOG_WARN, _("Error reading PC file 2\n"));
 	 free(record);
 	 return JPILOT_EOF;
       }
@@ -717,14 +718,14 @@ int jp_read_DB_files(char *DB_name, GList **records)
    g_snprintf(PC_name, sizeof(PC_name), "%s.pc3", DB_name);
    in = jp_open_home_file(PDB_name, "r");
    if (!in) {
-      jp_logf(JP_LOG_WARN, "Error opening %s\n", PDB_name);
+      jp_logf(JP_LOG_WARN, _("Error opening file: %s\n"), PDB_name);
       return -1;
    }
    /*Read the database header */
    num = fread(&rdbh, sizeof(RawDBHeader), 1, in);
    if (num != 1) {
       if (ferror(in)) {
-	 jp_logf(JP_LOG_WARN, "Error reading %s\n", PDB_name);
+	 jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), PDB_name);
 	 fclose(in);
 	 return -1;
       }
@@ -748,7 +749,7 @@ int jp_read_DB_files(char *DB_name, GList **records)
       num = fread(&rh, sizeof(record_header), 1, in);
       if (num != 1) {
 	 if (ferror(in)) {
-	    jp_logf(JP_LOG_WARN, "Error reading %s\n", PDB_name);
+	    jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), PDB_name);
 	    break;
 	 }
 	 if (feof(in)) {
@@ -771,7 +772,7 @@ int jp_read_DB_files(char *DB_name, GList **records)
 #endif
       temp_mem_rh = (mem_rec_header *)malloc(sizeof(mem_rec_header));
       if (!temp_mem_rh) {
-	 jp_logf(JP_LOG_WARN, "jp_read_DB_files(): Out of memory 1\n");
+	 jp_logf(JP_LOG_WARN, "jp_read_DB_files(): %s 1\n", _("Out of memory"));
 	 break;
       }
       temp_mem_rh->next = NULL;
@@ -842,7 +843,7 @@ int jp_read_DB_files(char *DB_name, GList **records)
 	 }
 	 if ((num < 1)) {
 	    if (ferror(in)) {
-	       jp_logf(JP_LOG_WARN, "Error reading %s 5\n", PDB_name);
+	       jp_logf(JP_LOG_WARN, _("Error reading %s 5\n"), PDB_name);
 	       free(buf);
 	       break;
 	    }
@@ -850,7 +851,7 @@ int jp_read_DB_files(char *DB_name, GList **records)
 
 	 temp_br = malloc(sizeof(buf_rec));
 	 if (!temp_br) {
-	    jp_logf(JP_LOG_WARN, "jp_read_DB_files(): Out of memory 2\n");
+	    jp_logf(JP_LOG_WARN, "jp_read_DB_files(): %s 2\n", _("Out of memory"));
 	    break;
 	 }
 	 temp_br->rt = PALM_REC;
@@ -891,7 +892,7 @@ int jp_read_DB_files(char *DB_name, GList **records)
       temp_br_used = 0;
       temp_br = malloc(sizeof(buf_rec));
       if (!temp_br) {
-	 jp_logf(JP_LOG_WARN, "jp_read_DB_files(): Out of memory 3\n");
+	 jp_logf(JP_LOG_WARN, "jp_read_DB_files(): %s 3\n", _("Out of memory"));
 	 break;
       }
       r = pc_read_next_rec(pc_in, temp_br);

@@ -89,7 +89,7 @@ int memo_sort(MemoList **memol, int sort_order)
    /* Allocate an array to be qsorted */
    sort_memol = calloc(count, sizeof(MemoList *));
    if (!sort_memol) {
-      jp_logf(JP_LOG_WARN, "memo_sort(): Out of Memory\n");
+      jp_logf(JP_LOG_WARN, "memo_sort(): %s\n", _("Out of memory"));
       return 0;
    }
 
@@ -217,7 +217,7 @@ int get_memo_app_info(struct MemoAppInfo *ai)
       free(buf);
    }
    if ((num<0) || (rec_size<=0)) {
-      jp_logf(JP_LOG_WARN, _("Error reading %s\n"), DBname);
+      jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), DBname);
       return -1;
    }
 
@@ -327,7 +327,7 @@ int get_memos2(MemoList **memo_list, int sort_order,
 
       temp_memo_list = malloc(sizeof(MemoList));
       if (!temp_memo_list) {
-	 jp_logf(JP_LOG_WARN, "get_memos2(): Out of memory\n");
+	 jp_logf(JP_LOG_WARN, "get_memos2(): %s\n", _("Out of memory"));
 	 break;
       }
       memcpy(&(temp_memo_list->mmemo.memo), &memo, sizeof(struct Memo));

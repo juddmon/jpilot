@@ -84,7 +84,7 @@
 
 #define APP_BUTTON_SIZE 44
 
-#define USAGE_STRING _("\n"EPN" [-v] || [-h] || [-d] || [-a] || [-A] || [-i]\n"\
+#define USAGE_STRING "\n", EPN, "[-v] || [-h] || [-d] || [-a] || [-A] || [-i]\n"\
 " -v displays version and compile options and exits.\n"\
 " -h displays help and exits.\n"\
 " -d displays debug info to stdout.\n"\
@@ -94,7 +94,7 @@
 " -i makes jpilot iconify itself upon launch\n"\
 " The PILOTPORT, and PILOTRATE env variables are used to specify\n"\
 " which port to sync on, and at what speed.\n"\
-" If PILOTPORT is not set then it defaults to /dev/pilot.\n")
+" If PILOTPORT is not set then it defaults to /dev/pilot.\n");
 
 
 GtkWidget *g_hbox, *g_vbox0;
@@ -131,7 +131,7 @@ void cb_payback(GtkWidget *widget, gpointer data);
 void geometry_error(const char *str)
 {
    /* The log window hasn't been created yet */
-   jp_logf(JP_LOG_STDOUT, "invalid geometry specification: \"%s\"\n", str);
+   jp_logf(JP_LOG_STDOUT, _("Invalid geometry specification: \"%s\"\n"), str);
 }
 
 /* gtk_init must already have been called, or will seg fault */
@@ -742,19 +742,21 @@ int bad_sync_exit_status(int exit_status)
 {
    char text1[] =
      /*-------------------------------------------*/
+     gettext_noop(
      "This palm doesn't have the same user name\n"
      "or user ID as the one that was synced the\n"
      "last time.  Syncing could have unwanted effects."
      "\n"
-     "Read the user manual if you are uncertain.";
+     "Read the user manual if you are uncertain.");
    char text2[] =
      /*-------------------------------------------*/
+     gettext_noop(
      "This palm has a NULL user id.\n"
      "Every palm must have a unique user id in order to sync properly.\n"
      "If it has been hard reset, use restore from the menu to restore it,\n"
      "or use pilot-xfer.\n"
      "To add a user name and ID use install-user, i.e install-user \"name\" 12345.\n"
-     "Read the user manual if you are uncertain.";
+     "Read the user manual if you are uncertain.");
    char *button_text[]={
       gettext_noop("Cancel Sync"),
       gettext_noop("Sync Anyway")
@@ -767,12 +769,12 @@ int bad_sync_exit_status(int exit_status)
        (exit_status == SYNC_ERROR_NOT_SAME_USER)) {
       return dialog_generic(GTK_WINDOW(window),
 			      0, 0,
-			      "Sync Problem", "Sync", text1, 2, button_text);
+			      _("Sync Problem"), _("Sync"), text1, 2, button_text);
    }
    if (exit_status == SYNC_ERROR_NULL_USERID) {
       return dialog_generic(GTK_WINDOW(window),
 			    0, 0,
-			    "Sync Problem", "Sync", text2, 1, button_text);
+			    _("Sync Problem"), _("Sync"), text2, 1, button_text);
    }
    return -1;
 }
@@ -975,7 +977,7 @@ static void cb_read_pipe_from_child(gpointer data,
 	    }
 	    break;
 	  default:
-	    jp_logf(JP_LOG_WARN, "unknown command from sync process\n");
+	    jp_logf(JP_LOG_WARN, _("Unknown command from sync process\n"));
 	    jp_logf(JP_LOG_WARN, "buf=[%s]\n", buf);
 	 }
       }
@@ -1244,7 +1246,7 @@ void get_main_menu(GtkWidget  *window,
 
    menu_items2=malloc(nmenu_items * sizeof(GtkItemFactoryEntry));
    if (!menu_items2) {
-      jp_logf(JP_LOG_WARN, "get_main_menu(): Out of memory\n");
+      jp_logf(JP_LOG_WARN, "get_main_menu(): %s\n", _("Out of memory"));
       return;
    }
    /* Copy the first part of the array until Plugins */
@@ -1528,7 +1530,7 @@ void font_sel_dialog()
    static GtkWidget *fontsel = NULL;
 
    if (!fontsel) {
-      fontsel = gtk_font_selection_dialog_new("Font Selection Dialog");
+      fontsel = gtk_font_selection_dialog_new(_("Font Selection Dialog"));
       gtk_window_set_position(GTK_WINDOW(fontsel), GTK_WIN_POS_MOUSE);
 
       gtk_signal_connect(GTK_OBJECT(fontsel), "destroy",
@@ -1760,6 +1762,16 @@ char *xpm_unlocked[] = {
    glob_log_gui_mask = JP_LOG_FATAL | JP_LOG_WARN | JP_LOG_GUI;
    glob_find_id = 0;
 
+   /* enable internationalization(i18n) before printing any output */
+#if defined(ENABLE_NLS)
+#  ifdef HAVE_LOCALE_H
+      char *current_locale;
+      current_locale = setlocale(LC_ALL, "");
+#  endif
+   bindtextdomain(EPN, LOCALEDIR);
+   textdomain(EPN);
+#endif
+
    pref_init();
    /* read jpilot.rc file for preferences */
    pref_read_rc_file();
@@ -1769,6 +1781,7 @@ char *xpm_unlocked[] = {
    get_pref(PREF_WINDOW_WIDTH, &pref_width, NULL);
    get_pref(PREF_WINDOW_HEIGHT, &pref_height, NULL);
 
+   /* parse command line options */
    for (i=1; i<argc; i++) {
       if (!strncasecmp(argv[i], "-v", 2)) {
 	 char options[1024];
@@ -1778,7 +1791,7 @@ char *xpm_unlocked[] = {
       }
       if ( (!strncasecmp(argv[i], "-h", 2)) || 
 	  (!strncasecmp(argv[i], "-?", 2)) ) {
-	 printf("%s\n", USAGE_STRING);
+	 printf(USAGE_STRING);
 	 exit(0);
       }
       if (!strncasecmp(argv[i], "-d", 2)) {
@@ -1788,15 +1801,15 @@ char *xpm_unlocked[] = {
       }
       if (!strncasecmp(argv[i], "-p", 2)) {
 	 skip_plugins = TRUE;
-	 jp_logf(JP_LOG_INFO, "Not loading plugins.\n");
+	 jp_logf(JP_LOG_INFO, _("Not loading plugins.\n"));
       }
       if (!strncmp(argv[i], "-A", 2)) {
 	 skip_all_alarms = TRUE;
-	 jp_logf(JP_LOG_INFO, "Ignoring all alarms.\n");
+	 jp_logf(JP_LOG_INFO, _("Ignoring all alarms.\n"));
       }
       if (!strncmp(argv[i], "-a", 2)) {
 	 skip_past_alarms = TRUE;
-	 jp_logf(JP_LOG_INFO, "Ignoring past alarms.\n");
+	 jp_logf(JP_LOG_INFO, _("Ignoring past alarms.\n"));
       }
       if ( (!strncasecmp(argv[i], "-i", 2)) ||
            (!strncasecmp(argv[i], "--iconic", 8))){
@@ -1813,6 +1826,24 @@ char *xpm_unlocked[] = {
 	 }
       }
    }
+
+   /* Enable UTF8 *AFTER* potential printf to stdout for -h or -v */
+   /* Not all terminals(xterm, rxvt, etc.) are UTF8 compliant */
+#if defined(ENABLE_NLS)
+#   ifdef ENABLE_GTK2
+       char utf8_locale[50];  
+
+       /* If locale exists but does not specify an encoding, enforce utf8 */
+       if (current_locale && !strstr(current_locale, "."))
+       {
+          snprintf(utf8_locale, sizeof(utf8_locale), "%s.utf8", current_locale); 
+          setlocale(LC_ALL, utf8_locale);
+	  /* disable implicit call to setlocale(LC_ALL,"") in gtk_init() */
+	  gtk_disable_setlocale();  
+       }
+       bind_textdomain_codeset(EPN, "UTF-8");
+#   endif
+#endif
 
    /*Check to see if ~/.jpilot is there, or create it */
    jp_logf(JP_LOG_DEBUG, "calling check_hidden_dir\n");
@@ -1857,7 +1888,7 @@ char *xpm_unlocked[] = {
 
    /* Create a pipe to send data from sync child to parent */
    if (pipe(filedesc) < 0) {
-      jp_logf(JP_LOG_FATAL, "Could not open pipe\n");
+      jp_logf(JP_LOG_FATAL, _("Unable to open pipe\n"));
       exit(-1);
    }
    pipe_from_child = filedesc[0];
@@ -1865,24 +1896,11 @@ char *xpm_unlocked[] = {
 
    /* Create a pipe to send data from parent to sync child */
    if (pipe(filedesc) < 0) {
-      jp_logf(JP_LOG_FATAL, "Could not open pipe\n");
+      jp_logf(JP_LOG_FATAL, _("Unable to open pipe\n"));
       exit(-1);
    }
    pipe_from_parent = filedesc[0];
    pipe_to_child = filedesc[1];
-
-   gtk_set_locale();
-
-#if defined(ENABLE_NLS)
-#ifdef HAVE_LOCALE_H
-   setlocale(LC_ALL, "");
-#endif
-   bindtextdomain(EPN, LOCALEDIR);
-#ifdef ENABLE_GTK2
-   bind_textdomain_codeset(EPN, "UTF-8");
-#endif
-   textdomain(EPN);
-#endif
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    switch (char_set) {
@@ -1927,7 +1945,7 @@ char *xpm_unlocked[] = {
 
    strcpy(title, PN" "VERSION);
    if ((svalue) && (svalue[0])) {
-      strcat(title, " User: ");
+      strcat(title, _(" User: "));
       /* JPA convert user name so that it can be displayed in window title */
       /* we assume user name is coded in jpilot.rc as it is the Palm Pilot */
 	{

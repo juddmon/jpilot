@@ -28,6 +28,7 @@
 #include "log.h"
 #include "plugins.h"
 #include <dlfcn.h>
+#include "i18n.h"
 
 GList *plugins = NULL;
 
@@ -81,7 +82,7 @@ int load_plugins_sub1(DIR *dir, char *path, int *number, unsigned char user_only
    count = 0;
    for (i=0; (dirent = readdir(dir)); i++) {
       if (i>1000) {
-	 jp_logf(JP_LOG_WARN, "load_plugins_sub1(): infinite loop\n");
+	 jp_logf(JP_LOG_WARN, "load_plugins_sub1(): %s\n", _("infinite loop"));
 	 return 0;
       }
       /* If the filename has either of these extensions then plug it in */
@@ -101,7 +102,7 @@ int load_plugins_sub1(DIR *dir, char *path, int *number, unsigned char user_only
 	    }
 	    new_plugin = malloc(sizeof(struct plugin_s));
 	    if (!new_plugin) {
-	       jp_logf(JP_LOG_DEBUG, "load plugins(): Out of memory\n");
+	       jp_logf(JP_LOG_WARN, "load plugins(): %s\n", _("Out of memory"));
 	       return count;
 	    }
 	    memcpy(new_plugin, &temp_plugin, sizeof(struct plugin_s));
@@ -193,7 +194,7 @@ static int get_plugin_sync_bits()
    }
    for (i=0; (!feof(in)); i++) {   
       if (i>1000) {
-	 jp_logf(JP_LOG_WARN, "load_plugins(): infinite loop\n");
+	 jp_logf(JP_LOG_WARN, "load_plugins(): %s\n", _("infinite loop"));
 	 fclose(in);
 	 return 0;
       }
@@ -206,9 +207,9 @@ static int get_plugin_sync_bits()
 	 line[strlen(line)-1]='\0';
       }
       if ((!strncmp(line, "Version", 7)) && (strcmp(line, "Version 1"))) {
-	 jp_logf(JP_LOG_WARN, "While reading "EPN".plugins line 1:[%s]\n", line);
-	 jp_logf(JP_LOG_WARN, "Wrong Version\n");
-	 jp_logf(JP_LOG_WARN, "Check preferences->conduits\n");
+	 jp_logf(JP_LOG_WARN, _("While reading %s%s line 1:[%s]\n"), EPN, ".plugins", line);
+	 jp_logf(JP_LOG_WARN, _("Wrong Version\n"));
+	 jp_logf(JP_LOG_WARN, _("Check preferences->conduits\n"));
 	 fclose(in);
 	 return 0;
       }
@@ -264,7 +265,7 @@ static int get_plugin_info(struct plugin_s *p, char *path)
 
    h = dlopen(path, RTLD_LAZY);
    if (!h) {
-      jp_logf(JP_LOG_WARN, "open failed on plugin [%s]\n error [%s]\n", path,
+      jp_logf(JP_LOG_WARN, _("Open failed on plugin [%s]\n error [%s]\n"), path,
 		  dlerror());
       return -1;
    }
@@ -281,7 +282,7 @@ static int get_plugin_info(struct plugin_s *p, char *path)
    if (plugin_versionM==NULL)  {
       err = dlerror();
       jp_logf(JP_LOG_WARN, "plugin_version: [%s]\n", err);
-      jp_logf(JP_LOG_WARN, " plugin is invalid: [%s]\n", path);
+      jp_logf(JP_LOG_WARN, _(" plugin is invalid: [%s]\n"), path);
       dlclose(h);
       p->handle=NULL;
       return -1;
@@ -289,10 +290,10 @@ static int get_plugin_info(struct plugin_s *p, char *path)
    plugin_versionM(&major_version, &minor_version);
    version=major_version*1000+minor_version;
    if ((major_version <= 0) && (minor_version < 99)) {
-      jp_logf(JP_LOG_WARN, "Plugin:[%s]\n", path);
-      jp_logf(JP_LOG_WARN, "This plugin is version (%d.%d).\n",
+      jp_logf(JP_LOG_WARN, _("Plugin:[%s]\n"), path);
+      jp_logf(JP_LOG_WARN, _("This plugin is version (%d.%d).\n"),
 		  major_version, minor_version);
-      jp_logf(JP_LOG_WARN, "It is too old to work with this version of J-Pilot.\n");
+      jp_logf(JP_LOG_WARN, _("It is too old to work with this version of J-Pilot.\n"));
       dlclose(h);
       p->handle=NULL;
       return -1;
@@ -307,7 +308,7 @@ static int get_plugin_info(struct plugin_s *p, char *path)
    if (p->plugin_get_name==NULL)  {
       err = dlerror();
       jp_logf(JP_LOG_WARN, "plugin_get_name: [%s]\n", err);
-      jp_logf(JP_LOG_WARN, " plugin is invalid: [%s]\n", path);
+      jp_logf(JP_LOG_WARN, _(" plugin is invalid: [%s]\n"), path);
       dlclose(h);
       p->handle=NULL;
       return -1;

@@ -109,14 +109,14 @@ int jp_vlogf (int level, char *format, va_list val) {
       return -1;
    }
    if ((!fp) && (err_count==10)) {
-      fprintf(stderr, _("Cannot open log file, giving up.\n"));
+      fprintf(stderr, _("Unable to open log file, giving up.\n"));
       err_count++;
       return -1;
    }
    if ((!fp) && (err_count<10)) {
       fp = jp_open_home_file(EPN".log", "w");
       if (!fp) {
-	 fprintf(stderr, _("Cannot open log file\n"));
+	 fprintf(stderr, _("Unable to open log file\n"));
 	 err_count++;
       }
    }

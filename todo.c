@@ -200,7 +200,7 @@ int todo_sort(ToDoList **todol, int sort_order)
    /* Allocate an array to be qsorted */
    sort_todol = calloc(count, sizeof(ToDoList *));
    if (!sort_todol) {
-      jp_logf(JP_LOG_WARN, "todo_sort(): Out of Memory\n");
+      jp_logf(JP_LOG_WARN, "todo_sort(): %s\n", _("Out of memory"));
       return 0;
    }
 
@@ -242,14 +242,14 @@ void pc_todo_validate_correct(struct ToDo *todo)
    if (todo->description) {
       if ((strlen(todo->description)+1 > MAX_TODO_DESC_LEN)) {
 	 jp_logf(JP_LOG_WARN, "%s\n", todo->description);
-	 jp_logf(JP_LOG_WARN, _("Warning ToDo description too long, truncating to %d\n"), MAX_TODO_DESC_LEN-1);
+	 jp_logf(JP_LOG_WARN, _("ToDo description text > %d, truncating to %d\n"), MAX_TODO_DESC_LEN, MAX_TODO_DESC_LEN-1);
 	 todo->description[MAX_TODO_DESC_LEN-1]='\0';
       }
    }
    if (todo->note) {
       if ((strlen(todo->note)+1 > MAX_TODO_NOTE_LEN)) {
 	 jp_logf(JP_LOG_WARN, "%s\n", todo->note);
-	 jp_logf(JP_LOG_WARN, _("Warning ToDo note too long, truncating to %d\n"), MAX_TODO_NOTE_LEN-1);
+	 jp_logf(JP_LOG_WARN, _("ToDo note text > %d, truncating to %d\n"), MAX_TODO_NOTE_LEN, MAX_TODO_NOTE_LEN-1);
 	 todo->note[MAX_TODO_NOTE_LEN-1]='\0';
       }
    }
@@ -363,7 +363,7 @@ int get_todo_app_info(struct ToDoAppInfo *ai)
       free(buf);
    }
    if (num <= 0) {
-      jp_logf(JP_LOG_WARN, _("%s:%d Error reading %s\n"), __FILE__, __LINE__, DBname);
+      jp_logf(JP_LOG_WARN, _("%s:%d Error reading file: %s\n"), __FILE__, __LINE__, DBname);
       return -1;
    }
 
@@ -505,7 +505,7 @@ int get_todos2(ToDoList **todo_list, int sort_order,
       }
       temp_todo_list = malloc(sizeof(ToDoList));
       if (!temp_todo_list) {
-	 jp_logf(JP_LOG_WARN, "get_todos2(): Out of memory\n");
+	 jp_logf(JP_LOG_WARN, "get_todos2(): %s\n", _("Out of memory"));
 	 break;
       }
       memcpy(&(temp_todo_list->mtodo.todo), &todo, sizeof(struct ToDo));

@@ -264,7 +264,7 @@ int memo_import_callback(GtkWidget *parent_window, const char *file_path, int ty
 
    in=fopen(file_path, "r");
    if (!in) {
-      jp_logf(JP_LOG_WARN, _("Could not open file %s\n"), file_path);
+      jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), file_path);
       return -1;
    }
 
@@ -281,7 +281,7 @@ int memo_import_callback(GtkWidget *parent_window, const char *file_path, int ty
 	 if (text_len+len>65534) {
 	    len=65534-text_len;
 	    line[len]='\0';
-	    jp_logf(JP_LOG_WARN, "Memo text > 65535, truncating\n");
+	    jp_logf(JP_LOG_WARN, _("Memo text > 65535, truncating\n"));
 	    strcat(text, line);
 	    break;
 	 }
@@ -304,7 +304,7 @@ int memo_import_callback(GtkWidget *parent_window, const char *file_path, int ty
 			    &new_cat_num);
       if ((ret==DIALOG_SAID_IMPORT_ALL) || (ret==DIALOG_SAID_IMPORT_YES)) {
 	 pc_memo_write(&new_memo, NEW_PC_REC, attrib, NULL);
-	 jp_logf(JP_LOG_WARN, "Imported Memo %s\n", file_path);
+	 jp_logf(JP_LOG_WARN, _("Imported Memo %s\n"), file_path);
       }
    }
 
@@ -496,7 +496,7 @@ void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 g_snprintf(text, sizeof(text), _("%s is a directory"), filename);
 	 dialog_generic(GTK_WINDOW(export_window),
 			0, 0, _("Error Opening File"),
-			"Directory", text, 1, button_text);
+			_("Directory"), text, 1, button_text);
 	 return;
       }
       g_snprintf(text,sizeof(text), _("Do you want to overwrite file %s?"), filename);
@@ -510,10 +510,10 @@ void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 
    out = fopen(filename, "w");
    if (!out) {
-      g_snprintf(text,sizeof(text), "Error Opening File: %s", filename);
+      g_snprintf(text,sizeof(text), _("Error opening file: %s"), filename);
       dialog_generic(GTK_WINDOW(export_window),
 		     0, 0, _("Error Opening File"),
-		     "Filename", text, 1, button_text);
+		     _("Filename"), text, 1, button_text);
       return;
    }
 
@@ -524,7 +524,7 @@ void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
       mmemo = gtk_clist_get_row_data(GTK_CLIST(clist), (int) temp_list->data);
       if (!mmemo) {
 	 continue;
-	 jp_logf(JP_LOG_WARN, "Can't export memo %d\n", (long) temp_list->data + 1);
+	 jp_logf(JP_LOG_WARN, _("Can't export memo %d\n"), (long) temp_list->data + 1);
       }
       switch (type) {
        case EXPORT_TYPE_CSV:
@@ -539,7 +539,7 @@ void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 csv_text=malloc(len);
 	 if (!csv_text) {
 	    continue;
-	    jp_logf(JP_LOG_WARN, "Can't export memo %d\n", (long) temp_list->data + 1);
+	    jp_logf(JP_LOG_WARN, _("Can't export memo %d\n"), (long) temp_list->data + 1);
 	 }
 	 str_to_csv_str(csv_text, memo_app_info.category.name[mmemo->attrib & 0x0F]);
 	 fprintf(out, "\"%s\",", csv_text);
@@ -568,7 +568,7 @@ void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 fprintf(out, "\n----- End of Memo -----\n\n");
 	 break;
        default:
-	 jp_logf(JP_LOG_WARN, "Unknown export type\n");
+	 jp_logf(JP_LOG_WARN, _("Unknown export type\n"));
       }
    }
 
@@ -729,7 +729,7 @@ static int memo_clear_details()
    }
    sorted_position = find_sorted_cat(new_cat);
    if (sorted_position<0) {
-      jp_logf(JP_LOG_WARN, "Category is not legal\n");
+      jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
    } else {
       gtk_check_menu_item_set_active
 	(GTK_CHECK_MENU_ITEM(memo_cat_menu_item2[sorted_position]), TRUE);
@@ -827,7 +827,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
 	 return;
       }
       if ((mmemo->rt==DELETED_PALM_REC) || (mmemo->rt==MODIFIED_PALM_REC)) {
-	 jp_logf(JP_LOG_INFO, "You can't modify a record that is deleted\n");
+	 jp_logf(JP_LOG_INFO, _("You can't modify a record that is deleted\n"));
 	 return;
       }
    }
@@ -906,7 +906,7 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
 
    num = unpack_MemoAppInfo(&ai, buf, size);
    if (num <= 0) {
-      jp_logf(JP_LOG_WARN, _("Error reading %s\n"), pdb_name);
+      jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), pdb_name);
       return;
    }
 
@@ -981,7 +981,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    count--;
 
    if (sorted_position<0) {
-      jp_logf(JP_LOG_WARN, "Category is not legal\n");
+      jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
    } else {
       gtk_check_menu_item_set_active
 	(GTK_CHECK_MENU_ITEM(memo_cat_menu_item2[sorted_position]), TRUE);
@@ -1249,7 +1249,7 @@ int memo_refresh()
    }
    memo_update_clist(clist, category_menu1, &glob_memo_list, memo_category, TRUE);
    if (index<0) {
-      jp_logf(JP_LOG_WARN, "Category not legal\n");
+      jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
    } else {	 
       gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), index);
       gtk_check_menu_item_set_active

@@ -648,7 +648,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 	 Pplugin = (struct plugin_s *)temp_list->data;
 	 if (Pplugin) {
 	    /* Make a checkbox for each plugin */
-	    g_snprintf(temp, sizeof(temp), "Sync %s (%s)", Pplugin->name, Pplugin->full_path);
+	    g_snprintf(temp, sizeof(temp), _("Sync %s (%s)"), Pplugin->name, Pplugin->full_path);
 	    checkbutton = gtk_check_button_new_with_label(temp);
 	    gtk_box_pack_start(GTK_BOX(vbox_conduits), checkbutton, FALSE, FALSE, 0);
 	    gtk_widget_show(checkbutton);

@@ -166,7 +166,7 @@ static int pack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size,
    jp_logf(JP_LOG_DEBUG, "pack n=%d\n", n);
 
    if (n+2>buf_size) {
-      jp_logf(JP_LOG_WARN, "KeyRing: pack_KeyRing(): buf_size too small\n");
+      jp_logf(JP_LOG_WARN, _("KeyRing: pack_KeyRing(): buf_size too small\n"));
       return 0;
    }
 
@@ -485,7 +485,7 @@ int plugin_get_name(char *name, int len)
  */
 int plugin_get_menu_name(char *name, int len)
 {
-   strncpy(name, "KeyRing", len);
+   strncpy(name, _("KeyRing"), len);
    return 0;
 }
 
@@ -496,7 +496,7 @@ int plugin_get_menu_name(char *name, int len)
  */
 int plugin_get_help_name(char *name, int len)
 {
-   strncpy(name, "About KeyRing", len);
+   strncpy(name, _("About KeyRing"), len);
    return 0;
 }
 
@@ -1343,18 +1343,18 @@ static int check_for_db()
    if (!home) { /* Not home; */
       home = getenv("HOME");
       if (!home) {
-	 jp_logf(JP_LOG_WARN, "Can't get HOME environment variable\n");
+	 jp_logf(JP_LOG_WARN, _("Can't get HOME environment variable\n"));
 	 return -1;
       }
    }
    if (strlen(home)>(max_size-strlen(file)-strlen("/.jpilot/")-2)) {
-      jp_logf(JP_LOG_WARN, "Your HOME environment variable is too long for me\n");
+      jp_logf(JP_LOG_WARN, _("Your HOME environment variable is too long for me\n"));
       return -1;
    }
    sprintf(full_name, "%s/.jpilot/%s", home, file);
    if (stat(full_name, &buf)) {
-      jp_logf(JP_LOG_FATAL, "KeyRing: file %s not found.\n", full_name);
-      jp_logf(JP_LOG_FATAL, "KeyRing: Try Syncing.\n", full_name);
+      jp_logf(JP_LOG_FATAL, _("KeyRing: file %s not found.\n"), full_name);
+      jp_logf(JP_LOG_FATAL, _("KeyRing: Try Syncing.\n"), full_name);
       return -1;
    }
 		 
