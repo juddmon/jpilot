@@ -1,4 +1,4 @@
-/* $Id: monthview_gui.c,v 1.27 2004/11/26 01:01:55 rikster5 Exp $ */
+/* $Id: monthview_gui.c,v 1.28 2004/11/26 01:14:38 rikster5 Exp $ */
 
 /*******************************************************************************
  * monthview_gui.c
@@ -439,6 +439,11 @@ void monthview_gui(struct tm *date_in)
    long w, h;
 
    if (window) {
+#ifdef ENABLE_GTK2
+      /* Shift focus to existing window if called again 
+         and window is still alive. */
+      gtk_window_present(GTK_WINDOW(window));
+#endif
       return;
    }
 
