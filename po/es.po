@@ -1097,7 +1097,6 @@ msgid "/File/Restore Handheld"
 msgstr "/Fichero/Restaurar Dispositivo Portátil"
 
 #: jpilot.c:1110
-#, fuzzy
 msgid "/File/_Quit"
 msgstr "/Fichero/Salir"
 

@@ -1105,7 +1105,6 @@ msgid "/File/Restore Handheld"
 msgstr "/Datei/Pilot _wiederherstellen"
 
 #: jpilot.c:1110
-#, fuzzy
 msgid "/File/_Quit"
 msgstr "/Datei/_Beenden"
 

@@ -1089,7 +1089,6 @@ msgid "/File/Restore Handheld"
 msgstr "/Tệp/Khôi phục thiết bị cầm tay"
 
 #: jpilot.c:1110
-#, fuzzy
 msgid "/File/_Quit"
 msgstr "/Tệp/Thoát"
 
