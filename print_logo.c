@@ -450,4 +450,3 @@ void print_logo(FILE *f, int x, int y, float size)
 	  "%% End of logo\n"
 	  "%%----------------------------------------\n", f);
 }
-
