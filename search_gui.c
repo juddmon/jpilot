@@ -167,8 +167,7 @@ static int search_datebook(const char *needle, GtkWidget *clist)
    return count;
 }
 
-static int
-  search_address(const char *needle, GtkWidget *clist)
+static int search_address(const char *needle, GtkWidget *clist)
 {
    gchar *empty_line[] = { "","" };
    char str2[SEARCH_MAX_COLUMN_LEN+2];
@@ -220,8 +219,7 @@ static int
    return count;
 }
 
-static int
-  search_todo(const char *needle, GtkWidget *clist)
+static int search_todo(const char *needle, GtkWidget *clist)
 {
    gchar *empty_line[] = { "","" };
    char str2[SEARCH_MAX_COLUMN_LEN+2];
@@ -288,8 +286,7 @@ static int
    return count;
 }
 
-static int
-  search_memo(const char *needle, GtkWidget *clist)
+static int search_memo(const char *needle, GtkWidget *clist)
 {
    gchar *empty_line[] = { "","" };
    char str2[SEARCH_MAX_COLUMN_LEN+2];
@@ -338,8 +335,7 @@ static int
 }
 
 #ifdef ENABLE_PLUGINS
-static int
-  search_plugins(const char *needle, const GtkWidget *clist)
+static int search_plugins(const char *needle, const GtkWidget *clist)
 {
    GList *plugin_list, *temp_list;
    gchar *empty_line[] = { "","" };
@@ -397,7 +393,6 @@ static int
 }
 #endif
 
-
 static gboolean cb_destroy(GtkWidget *widget)
 {
    if (search_rl) {
@@ -408,16 +403,12 @@ static gboolean cb_destroy(GtkWidget *widget)
    return FALSE;
 }
 
-static void
-  cb_quit(GtkWidget *widget,
-	   gpointer   data)
+static void cb_quit(GtkWidget *widget, gpointer data)
 {
    gtk_widget_destroy(data);
 }
 
-static void
-  cb_entry(GtkWidget *widget,
-	   gpointer   data)
+static void cb_entry(GtkWidget *widget, gpointer data)
 {
    gchar *empty_line[] = { "","" };
    GtkWidget *clist;
@@ -452,19 +443,16 @@ static void
    return;
 }
 
-static void
-  cb_search(GtkWidget *widget,
-	   gpointer   data)
+static void cb_search(GtkWidget *widget, gpointer data)
 {
 	cb_entry(entry, data);
 }
 
-static void
-  cb_clist_select(GtkWidget      *clist,
-		  gint           row,
-		  gint           column,
-		  GdkEventButton *event,
-		  gpointer       data)
+static void cb_clist_select(GtkWidget      *clist,
+		            gint           row,
+		            gint           column,
+		            GdkEventButton *event,
+		            gpointer       data)
 {
 
    struct search_record *sr;
