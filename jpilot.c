@@ -435,7 +435,7 @@ void cb_print(GtkWidget *widget, gpointer data)
    }
 #endif
    dialog_generic(GTK_WINDOW(window), 0, 0,
-		  _("Print"), "", 
+		  _("Print"), NULL,
 		  _("There is no print support for this conduit."),
 		  1, button_text);
 }
@@ -495,7 +495,7 @@ void cb_import(GtkWidget *widget, gpointer data)
    }
 #endif
    dialog_generic(GTK_WINDOW(window), 0, 0,
-		  _("Import"), "", 
+		  _("Import"), NULL,
 		  _("There is no import support for this conduit."),
 		  1, button_text);
 }
@@ -539,7 +539,7 @@ void cb_export(GtkWidget *widget, gpointer data)
    }
 #endif
    dialog_generic(GTK_WINDOW(window), 0, 0,
-		  _("Export"), "", 
+		  _("Export"), NULL, 
 		  _("There is no export support for this conduit."),
 		  1, button_text);
 }
