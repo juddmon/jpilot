@@ -392,7 +392,7 @@ AC_SUBST(ABILIB)
 
 AC_OUTPUT(Makefile docs/Makefile Expense/Makefile KeyRing/Makefile
 	m4/Makefile intl/Makefile dialer/Makefile po/Makefile.in
-	SyncTime/Makefile po/Makefile.in jpilot.spec
+	SyncTime/Makefile jpilot.spec
 	SlackBuild)
 #
 # Configuration messages
