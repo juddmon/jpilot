@@ -546,7 +546,7 @@ int datebook_import_callback(GtkWidget *parent_window, const char *file_path, in
    }
    /* Palm Desktop DAT format */
    if (type==IMPORT_TYPE_DAT) {
-      jp_logf(JP_LOG_DEBUG, "Datebok import DAT [%s]\n", file_path);
+      jp_logf(JP_LOG_DEBUG, "Datebook import DAT [%s]\n", file_path);
       if (dat_check_if_dat_file(in)!=DAT_DATEBOOK_FILE) {
 	 dialog_generic_ok(notebook, NULL, _("Error"),
 			   _("File doesn't appear to be datebook.dat format\n"));
@@ -3465,10 +3465,12 @@ int datebook_gui_cleanup()
    }
 #endif
    /* Remove the accelerators */
-#ifndef ENABLE_GTK2
+#ifdef ENABLE_GTK2
+   gtk_window_remove_accel_group(GTK_WINDOW(gtk_widget_get_toplevel(main_calendar)), accel_group);
+#else
    gtk_accel_group_detach(accel_group, GTK_OBJECT(gtk_widget_get_toplevel(main_calendar)));
 #endif
-   /* GTK2 FIXME figure the above out */
+
    gtk_signal_disconnect_by_func(GTK_OBJECT(gtk_widget_get_toplevel(main_calendar)),
 				 GTK_SIGNAL_FUNC(cb_keyboard), NULL);
 
@@ -3895,10 +3897,12 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    /* Make accelerators for some buttons window */
    accel_group = gtk_accel_group_new();
-#ifndef ENABLE_GTK2
+#ifdef ENABLE_GTK2
+   gtk_window_add_accel_group(GTK_WINDOW(gtk_widget_get_toplevel(vbox)), accel_group);
+#else
    gtk_accel_group_attach(accel_group, GTK_OBJECT(gtk_widget_get_toplevel(vbox)));
 #endif
-   /* GTK2 FIXME figure the above out */
+
    gtk_signal_connect(GTK_OBJECT(gtk_widget_get_toplevel(vbox)), "key_press_event",
 		      GTK_SIGNAL_FUNC(cb_keyboard), NULL);
 
