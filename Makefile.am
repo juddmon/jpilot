@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.8 2003/01/08 06:47:32 judd Exp $
+# $Id: Makefile.am,v 1.9 2003/01/11 02:02:06 judd Exp $
 
 SUBDIRS = Expense SyncTime KeyRing docs m4 dialer intl po
 
@@ -83,13 +83,9 @@ jpilot_SOURCES = \
 	utils.c \
 	utils.h \
 	weekview_gui.c \
-	address_ncc.xpm \
 	address.xpm \
-	datebook_ncc.xpm \
 	datebook.xpm \
-	memo_ncc.xpm \
 	memo.xpm \
-	todo_ncc.xpm \
 	todo.xpm
 
 jpilot_dump_SOURCES = \
