@@ -314,6 +314,11 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    jp_logf(JP_LOG_DEBUG, "cb_prefs_gui\n");
    if (window) {
       jp_logf(JP_LOG_DEBUG, "pref_window is already up\n");
+#ifdef ENABLE_GTK2
+      /* Shift focus to existing window if called again 
+         and window is still alive. */
+      gtk_window_present(GTK_WINDOW(window));
+#endif
       return;
    }
 

@@ -22,7 +22,8 @@
 #include <gtk/gtk.h>
 #include <pi-appinfo.h>
 
-int export_gui(int w, int h, int x, int y,
+int export_gui(GtkWidget *main_window,
+               int w, int h, int x, int y,
 	       int columns,
 	       struct sorted_cats *sort_l,
 	       int pref_export,
@@ -44,6 +45,6 @@ int export_gui(int w, int h, int x, int y,
  */
 int read_csv_field(FILE *in, char *text, int size);
 
-int export_browse(int pref_export);
+int export_browse(GtkWidget *main_window, int pref_export);
 
 #endif

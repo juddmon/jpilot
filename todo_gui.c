@@ -835,7 +835,8 @@ int todo_export(GtkWidget *window)
 #endif
    x+=40;
 
-   export_gui(w, h, x, y, 5, sort_l,
+   export_gui(window,
+              w, h, x, y, 5, sort_l,
 	      PREF_TODO_EXPORT_FILENAME,
 	      type_text,
 	      type_int,

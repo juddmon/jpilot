@@ -474,6 +474,11 @@ void cb_search_gui(GtkWidget *widget, gpointer data)
    char temp[256];
 
    if (GTK_IS_WIDGET(window)) {
+#ifdef ENABLE_GTK2
+      /* Shift focus to existing window if called again 
+         and window is still alive. */
+      gtk_window_present(GTK_WINDOW(window));
+#endif
       return;
    }
 

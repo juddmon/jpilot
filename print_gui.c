@@ -340,6 +340,7 @@ int print_gui(GtkWidget *main_window, int app, int date_button, int mon_week_day
    gtk_widget_show_all(window);
 
    gtk_window_set_modal(GTK_WINDOW(window), TRUE);
+   gtk_window_set_transient_for(GTK_WINDOW(window), GTK_WINDOW(main_window));
 
    gtk_main();
 

@@ -195,7 +195,7 @@ static int populate_clist()
 }
 
 
-int restore_gui(int w, int h, int x, int y)
+int restore_gui(GtkWidget *main_window, int w, int h, int x, int y)
 {
    GtkWidget *restore_window;
    GtkWidget *button;
@@ -222,6 +222,7 @@ int restore_gui(int w, int h, int x, int y)
    gtk_window_set_default_size(GTK_WINDOW(restore_window), w, h);
 
    gtk_window_set_modal(GTK_WINDOW(restore_window), TRUE);
+   gtk_window_set_transient_for(GTK_WINDOW(restore_window), GTK_WINDOW(main_window));
 
    gtk_signal_connect(GTK_OBJECT(restore_window), "destroy",
 		      GTK_SIGNAL_FUNC(cb_restore_destroy), restore_window);

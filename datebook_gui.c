@@ -987,7 +987,7 @@ static GtkWidget *save_as_entry;
 static GtkWidget *export_radio_type[NUM_EXPORT_TYPES+1];
 static int glob_export_type;
 
-static int datebook_export_gui(int x, int y);
+static int datebook_export_gui(GtkWidget *main_window, int x, int y);
 
 int datebook_export(GtkWidget *window)
 {
@@ -997,7 +997,7 @@ int datebook_export(GtkWidget *window)
 
    x+=40;
 
-   datebook_export_gui(x, y);
+   datebook_export_gui(window, x, y);
 
    return 0;
 }
@@ -1033,7 +1033,7 @@ cb_export_browse(GtkWidget *widget,
    int r;
    const char *svalue;
 
-   r = export_browse(PREF_DATEBOOK_EXPORT_FILENAME);
+   r = export_browse(GTK_WIDGET(data), PREF_DATEBOOK_EXPORT_FILENAME);
    if (r==BROWSE_OK) {
       get_pref(PREF_DATEBOOK_EXPORT_FILENAME, NULL, &svalue);
       gtk_entry_set_text(GTK_ENTRY(save_as_entry), svalue);
@@ -1054,7 +1054,7 @@ cb_export_type(GtkWidget *widget,
    glob_export_type=GPOINTER_TO_INT(data);
 }
 
-static int datebook_export_gui(int x, int y)
+static int datebook_export_gui(GtkWidget *main_window, int x, int y)
 {
    GtkWidget *button;
    GtkWidget *vbox;
@@ -1076,6 +1076,9 @@ static int datebook_export_gui(int x, int y)
 				  NULL);
 
    gtk_widget_set_uposition(export_window, x, y);
+
+   gtk_window_set_modal(GTK_WINDOW(export_window), TRUE);
+   gtk_window_set_transient_for(GTK_WINDOW(export_window), GTK_WINDOW(main_window));
 
    gtk_container_set_border_width(GTK_CONTAINER(export_window), 5);
 

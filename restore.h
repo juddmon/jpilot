@@ -19,6 +19,6 @@
 #ifndef _RESTORE_GUI_H__
 #define _RESTORE_GUI_H__
 
-int restore_gui(int w, int h, int x, int y);
+int restore_gui(GtkWidget *main_window, int w, int h, int x, int y);
 
 #endif

@@ -286,6 +286,9 @@ void import_gui(GtkWidget *main_window, GtkWidget *main_pane,
    gtk_window_set_default_size(GTK_WINDOW(filew), pw, ph);
    gtk_widget_set_uposition(filew, px, py);
 
+   gtk_window_set_modal(GTK_WINDOW(filew), TRUE);
+   gtk_window_set_transient_for(GTK_WINDOW(filew), GTK_WINDOW(main_window));
+
    get_pref(PREF_MEMO_IMPORT_PATH, NULL, &svalue);
    if (svalue && svalue[0]) {
       gtk_file_selection_set_filename(GTK_FILE_SELECTION(filew), svalue);
@@ -401,10 +404,6 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
    gint px, py;
    char str[100];
 
-   if (import_record_ask_window) {
-      return 0;
-   }
-
    /* There is no support yet for changing the suggested category */
    /* Like a menu for selecting cat to be imported into, etc. */
    *new_cat_num = suggested_cat_num;
@@ -428,6 +427,9 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
 					     NULL);
    gtk_window_set_default_size(GTK_WINDOW(import_record_ask_window), pw, ph);
    gtk_widget_set_uposition(GTK_WIDGET(import_record_ask_window), px, py);
+
+   gtk_window_set_modal(GTK_WINDOW(import_record_ask_window), TRUE);
+   gtk_window_set_transient_for(GTK_WINDOW(import_record_ask_window), GTK_WINDOW(main_window));
 
    gtk_container_set_border_width(GTK_CONTAINER(import_record_ask_window), 5);
 
@@ -529,8 +531,6 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
 		      GINT_TO_POINTER(DIALOG_SAID_IMPORT_QUIT));
 
    gtk_widget_show_all(import_record_ask_window);
-
-   gtk_window_set_modal(GTK_WINDOW(import_record_ask_window), TRUE);
 
    gtk_main();
 

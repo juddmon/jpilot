@@ -455,7 +455,7 @@ void cb_restore(GtkWidget *widget, gpointer data)
    w = w/2;
    x+=40;
 
-   r = restore_gui(w, h, x, y);
+   r = restore_gui(window, w, h, x, y);
 }
 
 void cb_import(GtkWidget *widget, gpointer data)

@@ -261,13 +261,13 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y)
    gtk_window_set_default_size(GTK_WINDOW(filew), w, h);
    gtk_widget_set_uposition(filew, x, y);
 
+   gtk_window_set_modal(GTK_WINDOW(filew), TRUE);
+   gtk_window_set_transient_for(GTK_WINDOW(filew), GTK_WINDOW(main_window));
+
    get_pref(PREF_INSTALL_PATH, NULL, &svalue);
    if (svalue && svalue[0]) {
       gtk_file_selection_set_filename(GTK_FILE_SELECTION(filew), svalue);
    }
-
-   gtk_window_set_modal(GTK_WINDOW(filew), TRUE);
-   gtk_window_set_transient_for(GTK_WINDOW(filew), GTK_WINDOW(main_window));
 
    gtk_file_selection_hide_fileop_buttons((gpointer) filew);
 

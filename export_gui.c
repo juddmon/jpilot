@@ -78,7 +78,7 @@ cb_export_browse_ok(GtkWidget *widget,
    gtk_widget_destroy(data);
 }
 
-int export_browse(int pref_export)
+int export_browse(GtkWidget *main_window, int pref_export)
 {
    GtkWidget *filesel;
    const char *svalue;
@@ -112,6 +112,9 @@ int export_browse(int pref_export)
    }
    filesel = gtk_file_selection_new(_("File Browser"));
 
+   gtk_window_set_modal(GTK_WINDOW(filesel), TRUE);
+   gtk_window_set_transient_for(GTK_WINDOW(filesel), GTK_WINDOW(main_window));
+
    gtk_signal_connect(GTK_OBJECT(filesel), "destroy",
 		      GTK_SIGNAL_FUNC(cb_export_browse_destroy), filesel);
 
@@ -121,8 +124,6 @@ int export_browse(int pref_export)
 		      "clicked", GTK_SIGNAL_FUNC(cb_export_browse_cancel), filesel);
 
    gtk_widget_show(filesel);
-
-   gtk_window_set_modal(GTK_WINDOW(filesel), TRUE);
 
    gtk_main();
 
@@ -173,7 +174,7 @@ cb_export_browse(GtkWidget *widget,
    int r;
    const char *svalue;
 
-   r = export_browse(glob_pref_export);
+   r = export_browse(GTK_WIDGET(data), glob_pref_export);
    if (r==BROWSE_OK) {
       if (glob_pref_export) {
 	 get_pref(glob_pref_export, NULL, &svalue);
@@ -209,7 +210,8 @@ void cb_export_category(GtkWidget *item, int selection)
    }
 }
 
-int export_gui(int w, int h, int x, int y,
+int export_gui(GtkWidget *main_window,
+               int w, int h, int x, int y,
 	       int columns,
 	       struct sorted_cats *sort_l,
 	       int pref_export,
@@ -255,6 +257,9 @@ int export_gui(int w, int h, int x, int y,
 
    gtk_window_set_default_size(GTK_WINDOW(export_window), w, h);
    gtk_widget_set_uposition(GTK_WIDGET(export_window), x, y);
+
+   gtk_window_set_modal(GTK_WINDOW(export_window), TRUE);
+   gtk_window_set_transient_for(GTK_WINDOW(export_window), GTK_WINDOW(main_window));
 
    gtk_container_set_border_width(GTK_CONTAINER(export_window), 5);
 
@@ -345,6 +350,7 @@ int export_gui(int w, int h, int x, int y,
    gtk_widget_show_all(export_window);
 
    gtk_clist_select_all(GTK_CLIST(export_clist));
+
 
    gtk_main();
 
