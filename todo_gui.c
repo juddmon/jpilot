@@ -1876,18 +1876,11 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    GtkWidget *vscrollbar;
 #endif
    GtkWidget *button;
-   GtkWidget *checkbox;
-   GtkWidget *prefs_checkboxes[5];
-   GtkWidget *prefs_checkbox;
    time_t ltime;
    struct tm *now;
    char str[MAX_RADIO_BUTTON_LEN];
    int i;
-   int n;
    GSList    *group;
-   long hide_completed;
-   long hide_not_due;
-   long todo_completion_date;
    long ivalue;
    const char *svalue;
    char *titles[]={"","","","",""};
