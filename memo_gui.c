@@ -1214,11 +1214,6 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
    jp_logf(JP_LOG_DEBUG, "entries_shown=%d\n", entries_shown);
 
-   for (i=row_count-1; i>=entries_shown; i--) {
-      gtk_clist_set_row_data(GTK_CLIST(clist), i, NULL);
-      gtk_clist_remove(GTK_CLIST(clist), i);
-   }
-
    /* If there are items in the list, highlight the selected row */
    if ((main) && (entries_shown>0)) {
       /* Select the existing requested row, or row 0 if that is impossible */
@@ -1231,6 +1226,11 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 	 gtk_clist_select_row(GTK_CLIST(clist), 0, 0);
 	 cb_clist_selection(clist, 0, 0, (GdkEventButton *)455, NULL);
       }
+   }
+
+   for (i=row_count-1; i>=entries_shown; i--) {
+      gtk_clist_set_row_data(GTK_CLIST(clist), i, NULL);
+      gtk_clist_remove(GTK_CLIST(clist), i);
    }
 
    gtk_clist_thaw(GTK_CLIST(clist));
