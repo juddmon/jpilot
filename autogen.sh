@@ -1,6 +1,13 @@
-# $Id: autogen.sh,v 1.6 2003/02/11 07:29:50 judd Exp $
+# $Id: autogen.sh,v 1.7 2003/07/05 23:15:14 judd Exp $
 
 set -x
+
+#Use these when updating libtool
+#libtoolize --force --copy
+#aclocal
+#autoheader
+#automake
+#autoconf
 
 rm -f configure Makefile.in Makefile config.h.in
 aclocal -I m4
