@@ -1,4 +1,4 @@
-/* $Id: log.c,v 1.21 2004/11/27 11:41:47 rousseau Exp $ */
+/* $Id: log.c,v 1.22 2004/11/27 12:05:00 rousseau Exp $ */
 
 /*******************************************************************************
  * log.c
@@ -51,6 +51,8 @@ int glob_log_file_mask;
 int glob_log_stdout_mask;
 int glob_log_gui_mask;
 
+extern void output_to_pane(const char *str);
+extern pid_t jpilot_master_pid;
 
 int jp_logf(int level, char *format, ...)
 {
@@ -136,17 +138,24 @@ int jp_vlogf (int level, char *format, va_list val) {
        g_free(local_buf);
 
    if ((pipe_to_parent) && (level & glob_log_gui_mask)) {
-      sprintf(cmd, "%d:", PIPE_PRINT);
-      len = strlen(cmd);
-      buf = buf-len;
-      strncpy(buf, cmd, len);
-      size += len;
-      buf[size]='\0';
-      buf[size+1]='\n';
-      size += 2;
-      r = write(pipe_to_parent, buf, size);
-      if (r<0) fprintf(stderr, "write returned error %s %d\n", __FILE__, __LINE__);
-      fsync(pipe_to_parent);
+      /* do not use a pipe for intra-process log
+       * otherwise we may have a dead lock (jpilot freezes) */
+      if (getpid() == jpilot_master_pid)
+	 output_to_pane(buf);
+      else {
+	 sprintf(cmd, "%d:", PIPE_PRINT);
+	 len = strlen(cmd);
+	 buf = buf-len;
+	 strncpy(buf, cmd, len);
+	 size += len;
+	 buf[size]='\0';
+	 buf[size+1]='\n';
+	 size += 2;
+	 r = write(pipe_to_parent, buf, size);
+	 if (r<0)
+	    fprintf(stderr, "write returned error %s %d\n", __FILE__, __LINE__);
+	 fsync(pipe_to_parent);
+      }
    }
 
    return 0;
