@@ -198,7 +198,7 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
 
    for (i=0; i<8; i++, add_days_to_date(&date, 1)) {
       strftime(short_date, sizeof(short_date), svalue, &date);
-      strftime(str_dow, sizeof(str_dow), "%A", &date);
+      jp_strftime(str_dow, sizeof(str_dow), "%A", &date);
       g_snprintf(str, sizeof(str), "%s %s", str_dow, short_date);
       gtk_label_set_text(GTK_LABEL(glob_dow_labels[i]), str);
    }
