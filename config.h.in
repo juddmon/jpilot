@@ -14,6 +14,15 @@
 /* Define to 1 if using `alloca.c'. */
 #undef C_ALLOCA
 
+/* Datebook description and note allowed in shell commands */
+#undef ENABLE_ALARM_SHELL_DANGER
+
+/* DateBk3/4 support */
+#undef ENABLE_DATEBK
+
+/* Manana support */
+#undef ENABLE_MANANA
+
 /* Define to 1 if translation of program messages to the user's native
    language is requested. */
 #undef ENABLE_NLS
@@ -23,6 +32,9 @@
 
 /* Private record support */
 #undef ENABLE_PRIVATE
+
+/* Prometheon support */
+#undef ENABLE_PROMETHEON
 
 /* Define to 1 if you have `alloca', as a function or macro. */
 #undef HAVE_ALLOCA
@@ -243,17 +255,11 @@
 /* Define to 1 if your <sys/time.h> declares `struct tm'. */
 #undef TM_IN_SYS_TIME
 
-/* DateBook3/4 support */
-#undef USE_DB3
-
 /* Using flock instead of fnctl */
 #undef USE_FLOCK
 
 /* Version number of package */
 #undef VERSION
-
-/* Compiling for Prometheon */
-#undef WITH_PROMETHEON
 
 /* Define to empty if `const' does not conform to ANSI C. */
 #undef const

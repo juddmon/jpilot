@@ -230,10 +230,12 @@ use 0.11.3 or newer, or 0.95 and before for non-USB.])
    fi
    if test "$ac_status" = "100"; then
       AC_MSG_RESULT([0.10.0 or newer... USB will be enabled])
+      usb=yes;
    fi
    if test "$ac_status" = "95"; then
       AC_MSG_RESULT(0.9.x or older)
       AC_MSG_RESULT([*** Upgrade pilot-link to >0.10.0 and reconfigure/compile to use USB devices])
+      usb=no;
    fi
 
 
@@ -242,6 +244,10 @@ LIBS="$save_LIBS"
 
 fi
 
+
+#
+# Enable/Disable features
+#
 
 AC_ARG_ENABLE(plugins, [  --disable-plugins       Do not compile plugin support],
 enable_plugins=no, enable_plugins=yes)
@@ -277,16 +283,45 @@ else
    AC_MSG_RESULT(Plugin support disabled by configure options)
 fi
 
+AC_ARG_ENABLE(private,
+   [  --disable-private       Do not use private records feature],
+   enable_private=no;
+   AC_MSG_RESULT(Private record support disabled by configure options),
+   enable_private=yes;
+   AC_DEFINE(ENABLE_PRIVATE, 1, [ Private record support ]))
 
-AC_ARG_ENABLE(private, [  --disable-private       Do not use private records feature],
- enable_private=no, enable_private=yes)
+AC_ARG_ENABLE(datebk,
+   [  --disable-datebk        Disable Datebk support],
+   enable_datebk=no;
+   AC_MSG_RESULT(Datebk support disabled by configure options),
+   enable_datebk=yes;
+   AC_DEFINE(ENABLE_DATEBK, 1, [ DateBk3/4 support ])
+   )
 
-if test "x$enable_private" = "xyes"; then
-   AC_DEFINE(ENABLE_PRIVATE, 1, [ Private record support ])
-else
-   AC_MSG_RESULT(Private record support disabled by configure options)
-fi
+AC_ARG_ENABLE(manana,
+   [  --disable-manana        Disable Mañana support],
+   enable_manana=no;
+   AC_MSG_RESULT(Mañana support disabled by configure options),
+   enable_manana=yes;
+   AC_DEFINE(ENABLE_MANANA, 1, [ Manana support ])
+   )
 
+AC_ARG_ENABLE(prometheon,
+   [  --enable-prometheon     For use with Prometheon: http://www.prometheon.net],
+   enable_prometheon=yes;
+   AC_DEFINE(ENABLE_PROMETHEON, 1, [ Prometheon support ])
+   AC_MSG_RESULT(Prometheon support enabled)
+   ,
+   enable_prometheon=no;
+   )
+
+AC_ARG_ENABLE(alarm-shell-danger,
+   [  --enable-alarm-shell-danger Allow alarm descriptions and notes to be used in alarm shell commands],
+   enable_alarm_shell_danger=yes;
+   AC_DEFINE(ENABLE_ALARM_SHELL_DANGER, 1, [ Datebook description and note allowed  in shell commands ])
+   ,
+   enable_alarm_shell_danger=no;
+   )
 
 dnl Checking for GTK version
 AM_PATH_GTK(1.2.0,,
@@ -340,35 +375,31 @@ else
 fi
 AC_SUBST(ABILIB)
 
-#
-# This is for Prometheon (CoPilot)
-#
-MAKE_PROMETHEON="NO"
-AC_ARG_WITH(for_NCC,
-[  --with-prometheon       For use with Prometheon: http://www.prometheon.net/])
-if test "x$with_prometheon" != "x"; then
-   AC_DEFINE(WITH_PROMETHEON, 1, [ Compiling for Prometheon ])
-   AC_MSG_WARN([*** Compiling for Prometheon])
-   MAKE_PROMETHEON="YES"
-fi
-#
-# We can use an environment variable so we can create RPMs like this.
-#
-if test "x$WITH_PROMETHEON" = "xYES"; then
-   AC_DEFINE(WITH_PROMETHEON, 1, [ Compiling for Prometheon ])
-   AC_MSG_WARN([*** Compiling for Prometheon])
-   MAKE_PROMETHEON="YES"
-fi
-AC_SUBST(MAKE_PROMETHEON)
-
-# DB3
-AC_ARG_WITH(with_db3,
-[  --with-db3              Compile DateBook3/4 support])
-if test "x$with_db3" != "x"; then
-   AC_DEFINE(USE_DB3, 1, [ DateBook3/4 support ])
-fi
 
 AC_OUTPUT(Makefile docs/Makefile Expense/Makefile KeyRing/Makefile
 	m4/Makefile intl/Makefile po/Makefile.in
 	SyncTime/Makefile po/Makefile.in jpilot.spec
 	SlackBuild)
+#
+# Configuration messages
+#
+AC_MSG_RESULT()
+AC_MSG_RESULT(This package is configured for the following features:)
+AC_MSG_RESULT(------------------------------------------------------)
+echo "Compiling with private record support..   $enable_private"
+echo "Compiling with Datebk support..........   $enable_datebk"
+echo "Compiling with plugin support..........   $enable_plugins"
+echo "Compiling with Mañana support..........   $enable_manana"
+echo "Compiling with Prometheon support......   $enable_prometheon"
+echo "Compiler Options.......................   $with_ccoptions"
+echo "Prefix directory.......................   $prefix"
+echo "pilot-link headers.....................   $pilot_incl"
+echo "NLS support (foriegn languages)........   $USE_NLS"
+echo "USB support enabled....................   $usb"
+pl_version=`grep PILOT_LINK_VERSION "$pilot_incl/pi-version.h" | \
+cut -d " " -f 3`
+pl_major=`grep PILOT_LINK_MAJOR "$pilot_incl/pi-version.h" | \
+cut -d " " -f 3`
+pl_minor=`grep PILOT_LINK_MINOR "$pilot_incl/pi-version.h" | \
+cut -d " " -f 3`
+echo "Pilot-link version found...............   $pl_version.$pl_major.$pl_minor"

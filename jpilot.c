@@ -57,7 +57,7 @@
 
 #include "icons/jpilot-icon4.xpm"
 
-#ifndef WITH_PROMETHEON
+#ifndef ENABLE_PROMETHEON
 #include "datebook.xpm"
 #include "address.xpm"
 #include "todo.xpm"
@@ -388,8 +388,10 @@ void cb_plugin_help(GtkWidget *widget, int number)
 
 void cb_print(GtkWidget *widget, gpointer data)
 {
+#ifdef ENABLE_PLUGINS
    struct plugin_s *plugin;
    GList *plugin_list, *temp_list;
+#endif
    char *button_text[]={gettext_noop("OK")};
 
    switch(glob_app) {
@@ -454,8 +456,10 @@ void cb_restore(GtkWidget *widget, gpointer data)
 
 void cb_import(GtkWidget *widget, gpointer data)
 {
+#ifdef ENABLE_PLUGINS
    struct plugin_s *plugin;
    GList *plugin_list, *temp_list;
+#endif
    char *button_text[]={gettext_noop("OK")};
 
    switch(glob_app) {
@@ -496,8 +500,10 @@ void cb_import(GtkWidget *widget, gpointer data)
 
 void cb_export(GtkWidget *widget, gpointer data)
 {
+#ifdef ENABLE_PLUGINS
    struct plugin_s *plugin;
    GList *plugin_list, *temp_list;
+#endif
    char *button_text[]={gettext_noop("OK")};
 
    switch(glob_app) {
