@@ -126,7 +126,7 @@ int db3_hack_date(struct Appointment *a, struct tm *today)
    }
    if (strlen(a->note) > 8) {
       if ((a->note[0]=='#') && (a->note[1]=='#')) {
-	 if (a->note[2]=='f') {
+	 if (a->note[2]=='f' || a->note[2]=='F') {
 	    /* Check to see if its in the future */
 	    t1 = a->begin.tm_mday + a->begin.tm_mon*31 + a->begin.tm_year*372;
 	    t2 = today->tm_mday + today->tm_mon*31 + today->tm_year*372;
@@ -176,6 +176,7 @@ void db3_fill_struct(char *note, int type, struct db4_struct *db4)
       db4->floating_event=DB3_FLOAT_DONE;
       break;
     case 'f':
+    case 'F':
       db4->floating_event=DB3_FLOAT;
       break;
    }
@@ -228,7 +229,7 @@ int db3_parse_tag(char *note, int *type, struct db4_struct *db4)
    /* NULL means any character is allowed */
    char *allowed[]={
       "#", "#", /* First 2 characters are # */
-	"@fcd", /* f floating, c completed, d done */
+	"@Ffcd", /* f or F floating, c completed, d done */
 	"@blL", /* b bold, l large, L large bold */
 	"@ABCDEFGHIJKLMNO", /* Category */
 	"@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrst", /* icon */
