@@ -115,14 +115,22 @@ static int
 	 date_str[sizeof(date_str)-1]='\0';
 
 	 if (found == 1) {
+#ifdef ENABLE_GTK2    
+	    g_snprintf(str, sizeof(str), "%s\t%s",
+#else
 	    g_snprintf(str, sizeof(str), "%s  %s",
+#endif
 		       date_str,
 		       temp_al->mappt.appt.description);
 	    lstrncpy_remove_cr_lfs(str2, str, SEARCH_MAX_COLUMN_LEN);
 	    gtk_clist_set_text(GTK_CLIST(clist), count, 1, str2);
 	 }
 	 if (found == 2) {
-	    g_snprintf(str, sizeof(str), "%s %s",
+#ifdef ENABLE_GTK2    
+	    g_snprintf(str, sizeof(str), "%s\t%s",
+#else
+	    g_snprintf(str, sizeof(str), "%s  %s",
+#endif
 		       date_str,
 		       temp_al->mappt.appt.note);
 	    lstrncpy_remove_cr_lfs(str2, str, SEARCH_MAX_COLUMN_LEN);
