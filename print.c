@@ -523,8 +523,8 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
 	    }
 	    desc[0]='\0';
 	    if (temp_al->ma.a.description) {
-	       ps_strncat(desc, temp_al->ma.a.description, 40);
-	       desc[40]='\0';
+	       ps_strncat(desc, temp_al->ma.a.description, 100);
+	       desc[100]='\0';
 	    }
 	    remove_cr_lfs(desc);
 	    fprintf(out, "%s (%s) %simedItem\n", tmp, desc,
