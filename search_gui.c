@@ -56,7 +56,6 @@ const char *jpilot_strstr(const char *haystack, const char *needle, int case_sen
       if (!needle) {
 	 return haystack;
       }
-      //I'm going to take the whimpy way out of this one for now
       needle2 = malloc(strlen(needle)+2);
       haystack2 = malloc(strlen(haystack)+2);
       
@@ -96,15 +95,15 @@ static int
    AppointmentList *a_list;
    AppointmentList *temp_al;
    int found, count;
-   char str[200];
-   char date_str[50];
-   char datef[50];
+   char str[202];
+   char date_str[52];
+   char datef[52];
    const char *svalue1;
    const char *svalue;
    int ivalue;
    AnyRecordList *new_arl;
    
-   //Search Appointments
+   /*Search Appointments */
    a_list = NULL;
    
    get_days_appointments(&a_list, NULL);
@@ -117,16 +116,16 @@ static int
    for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
       if (temp_al->ma.rt == DELETED_PALM_REC) {
 	 get_pref(PREF_SHOW_DELETED, &ivalue, &svalue);
-	 //this will be in preferences as to whether you want to
-	 //see deleted records, or not.
+	 /*this will be in preferences as to whether you want to */
+	 /*see deleted records, or not. */
 	 if (!ivalue) {
 	    continue;
 	 }
       }
       if (temp_al->ma.rt == MODIFIED_PALM_REC) {
 	 get_pref(PREF_SHOW_MODIFIED, &ivalue, &svalue);
-	 //this will be in preferences as to whether you want to
-	 //see deleted records, or not.
+	 /*this will be in preferences as to whether you want to */
+	 /*see deleted records, or not. */
 	 if (!ivalue) {
 	    continue;
 	 }
@@ -150,40 +149,30 @@ static int
 	 gtk_clist_prepend(GTK_CLIST(clist), empty_line);
 	 gtk_clist_set_text(GTK_CLIST(clist), 0, 0, "datebook");
 
-	 //Add to the search list
+	 /*Add to the search list */
 	 new_arl = malloc(sizeof(AnyRecordList));
 	 new_arl->app_type = DATEBOOK;
 	 memcpy(&(new_arl->any.mappo), &temp_al->ma, sizeof(MyAppointment));
-	 //This is to prevent appointment from being freed later
+	 /*This is to prevent appointment from being freed later */
 	 memset(&(temp_al->ma.a), 0, sizeof(struct Appointment));
 	 new_arl->next = search_rl;
 	 search_rl = new_arl;
-/*
- //Add to the search list
-	 new_al = (AppointmentList *)malloc(sizeof(AppointmentList));
-	 memcpy(new_al, temp_al, sizeof(AppointmentList));
-	 //This is to prevent appointment from being freed later
-	 memset(&(temp_al->ma.a), 0, sizeof(struct Appointment));
-	 new_al->next = (AppointmentList *)search_rl;
-	 search_rl = (AnyRecordList *)new_al;
-*/	 
+
 	 gtk_clist_set_row_data(GTK_CLIST(clist), 0, new_arl);
 	 count++;
 
-	 //get the date
+	 /*get the date */
 	 get_pref(PREF_SHORTDATE, &ivalue, &svalue1);
 	 if (svalue1 == NULL) {
 	    strcpy(datef, "%x");
 	 } else {
 	    strncpy(datef, svalue1, 50);
 	 }
-	 strftime(date_str, 30, datef, &new_arl->any.mappo.a.begin);
+	 strftime(date_str, 50, datef, &new_arl->any.mappo.a.begin);
+	 date_str[49]='\0';
 	    
 	 if (found == 1) {
 	    g_snprintf(str, 200, "%s  %s",
-//		       new_arl->any.mappo.a.begin.tm_mon + 1,
-//		       new_arl->any.mappo.a.begin.tm_mday,
-//		       new_arl->any.mappo.a.begin.tm_year + 1900,
 		       date_str,
 		       new_arl->any.mappo.a.description);
 	    str[199] = '\0';
@@ -191,9 +180,6 @@ static int
 	 }
 	 if (found == 2) {
 	    g_snprintf(str, 200, "%s %s",
-//		       new_arl->any.mappo.a.begin.tm_mon + 1,
-//		       new_arl->any.mappo.a.begin.tm_mday,
-//		       new_arl->any.mappo.a.begin.tm_year + 1900,
 		       date_str,
 		       new_arl->any.mappo.a.note);
 	    str[199] = '\0';
@@ -218,7 +204,7 @@ static int
    int ivalue;
    int i, count;
    
-   //Search Addresses
+   /*Search Addresses */
    a_list = NULL;
 
    get_addresses(&a_list);
@@ -231,16 +217,16 @@ static int
    for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
       if (temp_al->ma.rt == DELETED_PALM_REC) {
 	 get_pref(PREF_SHOW_DELETED, &ivalue, &svalue);
-	 //this will be in preferences as to whether you want to
-	 //see deleted records, or not.
+	 /*this will be in preferences as to whether you want to */
+	 /*see deleted records, or not. */
 	 if (!ivalue) {
 	    continue;
 	 }
       }
       if (temp_al->ma.rt == MODIFIED_PALM_REC) {
 	 get_pref(PREF_SHOW_MODIFIED, &ivalue, &svalue);
-	 //this will be in preferences as to whether you want to
-	 //see deleted records, or not.
+	 /*this will be in preferences as to whether you want to */
+	 /*see deleted records, or not. */
 	 if (!ivalue) {
 	    continue;
 	 }
@@ -253,11 +239,11 @@ static int
 	       gtk_clist_set_text(GTK_CLIST(clist), 0, 0, "address");
 	       gtk_clist_set_text(GTK_CLIST(clist), 0, 1, temp_al->ma.a.entry[i]);
 
-	       //Add to the search list
+	       /*Add to the search list */
 	       new_arl = malloc(sizeof(AnyRecordList));
 	       new_arl->app_type = ADDRESS;
 	       memcpy(&(new_arl->any.maddr), &temp_al->ma, sizeof(MyAddress));
-	       //This is to prevent appointment from being freed later
+	       /*This is to prevent appointment from being freed later */
 	       memset(&(temp_al->ma.a), 0, sizeof(struct Address));
 	       new_arl->next = search_rl;
 	       search_rl = new_arl;
@@ -287,7 +273,7 @@ static int
    const char *svalue;
    int ivalue;
    
-   //Search Appointments
+   /*Search Appointments */
    todo_list = NULL;
    
    get_todos(&todo_list);
@@ -300,16 +286,16 @@ static int
    for (temp_todo = todo_list; temp_todo; temp_todo=temp_todo->next) {
       if (temp_todo->mtodo.rt == DELETED_PALM_REC) {
 	 get_pref(PREF_SHOW_DELETED, &ivalue, &svalue);
-	 //this will be in preferences as to whether you want to
-	 //see deleted records, or not.
+	 /*this will be in preferences as to whether you want to */
+	 /*see deleted records, or not. */
 	 if (!ivalue) {
 	    continue;
 	 }
       }
       if (temp_todo->mtodo.rt == MODIFIED_PALM_REC) {
 	 get_pref(PREF_SHOW_MODIFIED, &ivalue, &svalue);
-	 //this will be in preferences as to whether you want to
-	 //see deleted records, or not.
+	 /*this will be in preferences as to whether you want to */
+	 /*see deleted records, or not. */
 	 if (!ivalue) {
 	    continue;
 	 }
@@ -334,11 +320,11 @@ static int
 	 gtk_clist_prepend(GTK_CLIST(clist), empty_line);
 	 gtk_clist_set_text(GTK_CLIST(clist), 0, 0, "ToDo");
 	 
-	 //Add to the search list
+	 /*Add to the search list */
 	 new_arl = malloc(sizeof(AnyRecordList));
 	 new_arl->app_type = TODO;
 	 memcpy(&(new_arl->any.mtodo), &temp_todo->mtodo, sizeof(MyToDo));
-	 //This is to prevent appointment from being freed later
+	 /*This is to prevent appointment from being freed later */
 	 memset(&(temp_todo->mtodo.todo), 0, sizeof(struct ToDo));
 	 new_arl->next = search_rl;
 	 search_rl = new_arl;
@@ -373,7 +359,7 @@ static int
    const char *svalue;
    int ivalue;
    
-   //Search Memos
+   /*Search Memos */
    memo_list = NULL;
 
    get_memos(&memo_list);
@@ -386,16 +372,16 @@ static int
    for (temp_memo = memo_list; temp_memo; temp_memo=temp_memo->next) {
       if (temp_memo->mmemo.rt == DELETED_PALM_REC) {
 	 get_pref(PREF_SHOW_DELETED, &ivalue, &svalue);
-	 //this will be in preferences as to whether you want to
-	 //see deleted records, or not.
+	 /*this will be in preferences as to whether you want to */
+	 /*see deleted records, or not. */
 	 if (!ivalue) {
 	    continue;
 	 }
       }
       if (temp_memo->mmemo.rt == MODIFIED_PALM_REC) {
 	 get_pref(PREF_SHOW_MODIFIED, &ivalue, &svalue);
-	 //this will be in preferences as to whether you want to
-	 //see deleted records, or not.
+	 /*this will be in preferences as to whether you want to */
+	 /*see deleted records, or not. */
 	 if (!ivalue) {
 	    continue;
 	 }
@@ -408,11 +394,11 @@ static int
 	    gtk_clist_set_text(GTK_CLIST(clist), 0, 1, temp_memo->mmemo.memo.text);
 	 }
 
-	 //Add to the search list
+	 /*Add to the search list */
 	 new_arl = malloc(sizeof(AnyRecordList));
 	 new_arl->app_type = MEMO;
 	 memcpy(&(new_arl->any.mmemo), &(temp_memo->mmemo), sizeof(MyMemo));
-	 //This is to prevent appointment from being freed later
+	 /*This is to prevent appointment from being freed later */
 	 memset(&(temp_memo->mmemo.memo), 0, sizeof(struct Memo));
 	 new_arl->next = search_rl;
 	 search_rl = new_arl;
@@ -561,11 +547,11 @@ void cb_search_gui(GtkWidget *widget, gpointer data)
    gtk_box_pack_start(GTK_BOX(hbox), case_sense_checkbox, FALSE, FALSE, 0);
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(case_sense_checkbox),
 				FALSE);
-   //gtk_signal_connect_object(GTK_OBJECT(todo_hide_completed_checkbox), 
-//			     "clicked", GTK_SIGNAL_FUNC(cb_hide_completed),
-//			     NULL);
+   /*gtk_signal_connect_object(GTK_OBJECT(todo_hide_completed_checkbox),  */
+/*			     "clicked", GTK_SIGNAL_FUNC(cb_hide_completed), */
+/*			     NULL); */
 
-   //Put the scrolled window up
+   /*Put the scrolled window up */
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 0);
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
@@ -579,7 +565,7 @@ void cb_search_gui(GtkWidget *widget, gpointer data)
    gtk_clist_set_shadow_type(GTK_CLIST(clist), SHADOW);
    gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
    gtk_clist_set_column_width(GTK_CLIST(clist), 0, 50);
-   //gtk_clist_set_column_width(GTK_CLIST(clist), 1, 300);
+   /*gtk_clist_set_column_width(GTK_CLIST(clist), 1, 300); */
    gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW
 					 (scrolled_window), clist);
 
@@ -587,7 +573,7 @@ void cb_search_gui(GtkWidget *widget, gpointer data)
 		      GTK_SIGNAL_FUNC(cb_entry),
 		      clist);
 
-   // Create a "Quit" button
+   /* Create a "Quit" button */
    button = gtk_button_new_with_label("Done");
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_quit), window);

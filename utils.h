@@ -32,7 +32,7 @@
 #define PRINT_FILE_LINE printf("%s line %d\n", __FILE__, __LINE__)
 #define PN "J-Pilot"
 #define EPN "jpilot"
-#define VERSION "0.94"
+#define VERSION "0.95"
 #define VERSION_STRING "\n"PN" version "VERSION"\n"\
 " Copyright (C) 1999 by Judd Montgomery\n"
 
@@ -44,21 +44,21 @@
 " port to sync on, and at what speed.\n"\
 " If PILOTPORT is not set then it defaults to /dev/pilot.\n"
 
-//This is how often the clock updates in milliseconds
+/*This is how often the clock updates in milliseconds */
 #define CLOCK_TICK 1000
 
 #define CATEGORY_ALL 100
 
 #define SHADOW GTK_SHADOW_ETCHED_OUT
 
-//Used to mark the entry in the clist to add a record
+/*Used to mark the entry in the clist to add a record */
 #define CLIST_NEW_ENTRY_DATA 100
 #define CLIST_ADDING_ENTRY_DATA 101
 #define CLIST_MIN_DATA 199
 
-//#define CLIST_DEL_RED 65535;
-//#define CLIST_DEL_GREEN 55000;
-//#define CLIST_DEL_BLUE 55000;
+/*#define CLIST_DEL_RED 65535; */
+/*#define CLIST_DEL_GREEN 55000; */
+/*#define CLIST_DEL_BLUE 55000; */
 #define CLIST_DEL_RED 0xCCCC;
 #define CLIST_DEL_GREEN 0xCCCC;
 #define CLIST_DEL_BLUE 0xCCCC;
@@ -117,8 +117,8 @@ typedef struct {
    unsigned char modification_number[4];
    unsigned char app_info_offset[4];
    unsigned char sort_info_offset[4];
-   unsigned char type[4];//Database ID
-   unsigned char creator_id[4];//Application ID
+   unsigned char type[4];/*Database ID */
+   unsigned char creator_id[4];/*Application ID */
    unsigned char unique_id_seed[4];
    unsigned char next_record_list_id[4];
    unsigned char number_of_records[2];
@@ -134,15 +134,15 @@ typedef struct {
    unsigned int modification_number;
    unsigned int app_info_offset;
    unsigned int sort_info_offset;
-   char type[5];//Database ID
-   char creator_id[5];//Application ID
+   char type[5];/*Database ID */
+   char creator_id[5];/*Application ID */
    char unique_id_seed[5];
    unsigned int next_record_list_id;
    unsigned int number_of_records;
 } DBHeader;
 
 typedef struct {
-  unsigned char Offset[4];  //4 bytes offset from BOF to record
+  unsigned char Offset[4];  /*4 bytes offset from BOF to record */
   unsigned char attrib;
   unsigned char unique_ID[3];
 } record_header;
@@ -246,7 +246,7 @@ int find_next_offset(mem_rec_header *mem_rh, long fpos,
 		     unsigned int *next_offset,
 		     unsigned char *attrib, unsigned int *unique_id);
 int get_next_unique_pc_id(unsigned int *next_unique_id);
-//The VP is a pointer to MyAddress, MyAppointment, etc.
+/*The VP is a pointer to MyAddress, MyAppointment, etc. */
 int delete_pc_record(AppType app_type, void *VP, int flag);
 
 void get_month_info(int month, int day, int year, int *dow, int *ndim);
@@ -256,14 +256,14 @@ unsigned long unix_time_to_pilot_time (time_t t);
 unsigned int bytes_to_bin(unsigned char *bytes, unsigned int num_bytes);
 void free_mem_rec_header(mem_rec_header **mem_rh);
 void print_string(char *str, int len);
-//
-//Warning, this function will move the file pointer
-//
+/* */
+/*Warning, this function will move the file pointer */
+/* */
 int get_app_info_size(FILE *in, int *size);
 int cleanup_pc_files();
 void cb_backup(GtkWidget *widget, gpointer data);
 void cb_sync(GtkWidget *widget, gpointer data);
-//Returns the number of the button that was pressed
+/*Returns the number of the button that was pressed */
 int dialog_generic(GdkWindow *main_window,
 		   int w, int h,
 		   char *title, char *frame_text,
@@ -276,16 +276,18 @@ int clist_find_id(GtkWidget *clist,
 int move_scrolled_window(GtkWidget *sw, float percentage);
 void move_scrolled_window_hack(GtkWidget *sw, float percentage);
 
-//search_gui.c
+int check_copy_DBs_to_home();
+
+/*search_gui.c */
 void cb_search_gui(GtkWidget *widget, gpointer data);
 
-//install_gui.c
+/*install_gui.c */
 void cb_install_gui(GtkWidget *widget, gpointer data);
 
-//weekview_gui.c
+/*weekview_gui.c */
 void cb_weekview_gui(GtkWidget *widget, gpointer data);
 
-//monthview_gui.c
+/*monthview_gui.c */
 void cb_monthview_gui(GtkWidget *widget, gpointer data);
 
 void free_AnyRecordList(AnyRecordList **rl);
@@ -296,15 +298,15 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox);
 int todo_gui(GtkWidget *vbox, GtkWidget *hbox);
 int memo_gui(GtkWidget *vbox, GtkWidget *hbox);
 
-//from jpilot.c
+/*from jpilot.c */
 void cb_app_button(GtkWidget *widget, gpointer data);
-//datebook_gui
+/*datebook_gui */
 int datebook_refresh(int first);
-//address_gui
+/*address_gui */
 int address_refresh();
-//todo_gui
+/*todo_gui */
 int todo_refresh();
-//memo_gui
+/*memo_gui */
 int memo_refresh();
 
 #endif

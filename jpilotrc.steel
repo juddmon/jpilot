@@ -1,18 +1,18 @@
 style "window"
 {
 fg[NORMAL] = { 1.0, 1.0, 1.0 }
-bg[NORMAL] = { 0.0, 0.3, 0.6 }
+bg[NORMAL] = { 0.4, 0.4, 0.6 }
 }
 
 style "label"
 {
 fg[NORMAL] = { 1.0, 1.0, 1.0 }
-bg[NORMAL] = { 0.0, 0.3, 0.6 }
+bg[NORMAL] = { 0.4, 0.4, 0.6 }
 }
 
 style "label_high"
 {
-fg[NORMAL] = { 0.9, 0.9, 0.5 }
+fg[NORMAL] = { 0.0, 0.0, 0.8 }
 }
 
 style "label_box_cal"
@@ -35,37 +35,37 @@ style "button"
 # This shows all the possible states for a button.  The only one that
 # doesn't apply is the SELECTED state.
 fg[PRELIGHT] = { 1.0, 1.0, 1.0 }
-bg[PRELIGHT] = { 0, 0.4, 0.6 }
-bg[ACTIVE] = { 0, 0.4, 0.6 }
+bg[PRELIGHT] = { 0.5, 0.5, 0.7 }
+bg[ACTIVE] = { 0.4, 0.4, 0.6 }
 fg[ACTIVE] = { 1.0, 1.0, 1.0 }
-bg[NORMAL] = { 0.0, 0.3, 0.6 }
-fg[NORMAL] = { 0.5, 1.0, 1.0 }
+bg[NORMAL] = { 0.4, 0.4, 0.6 }
+#fg[NORMAL] = { 0.9, 1.0, 1.0 }
 bg[INSENSITIVE] = { 1.0, 1.0, 1.0 }
 fg[INSENSITIVE] = { 1.0, 0, 1.0 }
 }
   
 style "button_set" = "button"
 {
-bg[NORMAL] = { 0.0, 0.5, 0.7 }
+bg[NORMAL] = { 0.6, 0.6, 0.8 }
 }
   
 style "button_today" = "button"
 {
-bg[NORMAL] = { 0.0, 0.4, 0.6 }
+bg[NORMAL] = { 0.5, 0.5, 0.7 }
 }
 
 style "button_dow" = "button"
 {
 fg[PRELIGHT] = { 0.0, 0.0, 0.0 }
-bg[PRELIGHT] = { 0.0, 0.3, 0.6 }
-bg[ACTIVE] = { 0.0, 0.3, 0.6 }
+bg[PRELIGHT] = { 0.4, 0.4, 0.6 }
+bg[ACTIVE] = { 0.4, 0.4, 0.6 }
 fg[ACTIVE] = { 0.0, 0.0, 0.0 }
 }
 
 style "button_app"
 {
 fg[PRELIGHT] = { 1.0, 1.0, 1.0 }
-bg[PRELIGHT] = { 0.0, 0.5, 0.7 }
+bg[PRELIGHT] = { 0.6, 0.6, 0.8 }
 }
 
 style "main_button" = "button"
@@ -87,17 +87,17 @@ style "toggle_button" = "button"
 style "radio_button"
 {
 fg[NORMAL] = { 1.0, 1.0, 0.0 }
-bg[NORMAL] = { 0, 0.3, 0.6 }
+bg[NORMAL] = { 0.4, 0.4, 0.6 }
 fg[ACTIVE] = { 1.0, 1.0, 1.0 }
 bg[ACTIVE] = { 1.0, 1.0, 0.0 }
-bg[PRELIGHT] = { 0.0, 0.3, 0.6 }
+bg[PRELIGHT] = { 0.4, 0.4, 0.6 }
 fg[PRELIGHT] = { 1.0, 1.0, 1.0 }
 }
 
 style "spinner" = "spinner"
 {
 fg[NORMAL] = { 0.0, 0.0, 0.0 }
-bg[NORMAL] = { 0.0, 0.3, 0.6 }
+bg[NORMAL] = { 0.4, 0.4, 0.6 }
 bg[PRELIGHT] = { 1.0, 1.0, 0.0 }
 fg[PRELIGHT] = { 1.0, 1.0, 1.0 }
 base[NORMAL] = { 0.85, 0.9, 1.0 }
@@ -105,14 +105,14 @@ base[NORMAL] = { 0.85, 0.9, 1.0 }
 
 style "text"
 {
-bg[NORMAL] = { 0, 0.4, 0.7 }
+bg[NORMAL] = { 0.4, 0.4, 0.6 }
 fg[NORMAL] = { 0.0, 0.0, 0.0 }
 fg[PRELIGHT] = { 0.0, 0.0, 0.0 }
-bg[PRELIGHT] = { 0.0, 0.5, 0.7 }
+bg[PRELIGHT] = { 0.5, 0.5, 0.7 }
 #fg[SELECTED] = { 0.0, 0.0, 0.0 }
 #bg[SELECTED] = { 0.9, 0.8, 1.0 }
 fg[ACTIVE] = { 0.0, 0.0, 0.0 }
-bg[ACTIVE] = { 0.0, 0.3, 0.6 } #bg of scrollbars
+bg[ACTIVE] = { 0.4, 0.4, 0.6 } #bg of scrollbars
 fg[INSENSITIVE] = { 1.0, 1.0, 0.0 }
 bg[INSENSITIVE] = { 0.0, 0.0, 0.0 }
 text[NORMAL] = { 0.0, 0.0, 1.0 }
@@ -126,14 +126,14 @@ font = "-adobe-helvetica-medium-r-normal--*-80-*-*-*-*-*-*"
 
 style "menu"
 {
-bg[NORMAL] = { 0.0, 0.30, 0.6 }
+bg[NORMAL] = { 0.4, 0.4, 0.6 }
 fg[NORMAL] = { 1.0, 1.0, 1.0 }
 fg[PRELIGHT] = { 1.0, 1.0, 1.0 }
-bg[PRELIGHT] = { 0.0, 0.4, 0.7 }
+bg[PRELIGHT] = { 0.5, 0.5, 0.7 }
 fg[ACTIVE] = { 0.0, 1.0, 0.0 }
-bg[ACTIVE] = { 0, 0.3, 0.6 }
+bg[ACTIVE] = { 0.4, 0.4, 0.6 }
 fg[SELECTED] = { 1.0, 0.0, 0.0 }
-bg[SELECTED] = { 0, 0.5, 0.5 }
+bg[SELECTED] = { 1.0, 0.0, 0.5 }
 }
 
 style "notebook"
@@ -141,11 +141,11 @@ style "notebook"
 # This shows all the possible states for a button.  The only one that
 # doesn't apply is the SELECTED state.
 
-bg[ACTIVE] = { 0.0, 0.3, 0.6 }
+bg[ACTIVE] = { 0.4, 0.4, 0.6 }
 fg[ACTIVE] = { 0.9, 0.9, 0.9 }
-bg[NORMAL] = { 0.0, 0.3, 0.6 }
+bg[NORMAL] = { 0.4, 0.4, 0.6 }
 fg[NORMAL] = { 0.9, 0.9, 0.9 }
-bg[ACTIVE] = { 0.0, 0.25, 0.55 }
+bg[ACTIVE] = { 0.3, 0.3, 0.5 }
 fg[ACTIVE] = { 1.0, 1.0, 1.0 }
 }
 

@@ -21,16 +21,16 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include "utils.h"
-//#include "prefs.h"
+/*#include "prefs.h" */
 #include "log.h"
 #include "datebook.h"
-//#include "address.h"
-//#include "todo.h"
-//#include "memo.h"
+/*#include "address.h" */
+/*#include "todo.h" */
+/*#include "memo.h" */
 #include <pi-datebook.h>
-//#include <pi-address.h>
-//#include <pi-todo.h>
-//#include <pi-memo.h>
+/*#include <pi-address.h> */
+/*#include <pi-todo.h> */
+/*#include <pi-memo.h> */
 
 static gboolean cb_destroy(GtkWidget *widget)
 {
@@ -68,7 +68,7 @@ void cb_weekview_gui(GtkWidget *widget, gpointer data)
    hbox = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
-   // Create a "Quit" button
+   /* Create a "Quit" button */
    button = gtk_button_new_with_label("Close");
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_quit), window);

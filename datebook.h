@@ -27,19 +27,23 @@ int datebook_sync();
 int datebook_cleanup();
 int pc_datebook_write(struct Appointment *a, PCRecType rt, unsigned char attrib);
 void free_AppointmentList(AppointmentList **al);
-//
-//If Null is passed in for date, then all appointments will be returned
-//
+/* */
+/*If Null is passed in for date, then all appointments will be returned */
+/* */
 int get_days_appointments(AppointmentList **al_out, struct tm *date);
-//int datebook_dup_appointment(struct Appointment *a1, struct Appointment **a2);
+/*int datebook_dup_appointment(struct Appointment *a1, struct Appointment **a2); */
 
-//// Year is years since 1900
-// Mon is 0-11
-// Day is 1-31
-//
+/* Year is years since 1900 */
+/* Mon is 0-11 */
+/* Day is 1-31 */
+/* */
 int datebook_add_exception(struct Appointment *a, int year, int mon, int day);
 int get_datebook_app_info(struct AppointmentAppInfo *ai);
 
 int datebook_copy_appointment(struct Appointment *a1,
 			     struct Appointment **a2);
 int datebook_create_bogus_record(char *record, int size, int *rec_len);
+
+/* returns a bit mask where bit 1 day one, etc. and it is set if an */
+/* appointment occurs on that day, 0 if not. */
+int appointment_on_day_list(int mon, int year, int *mask);

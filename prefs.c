@@ -27,8 +27,8 @@
 #include "prefs.h"
 #include "log.h"
 
-//These are the default settings
-//name, usertype, filetype, ivalue, char svalue[MAX_PREF_VALUE+2];
+/*These are the default settings */
+/*name, usertype, filetype, ivalue, char svalue[MAX_PREF_VALUE+2]; */
 static prefType glob_prefs[NUM_PREFS] = {
    {"jpilotrc", CHARTYPE, CHARTYPE, 0, "jpilotrc.default"},
      {"time", CHARTYPE, INTTYPE, 0, ""},
@@ -37,6 +37,8 @@ static prefType glob_prefs[NUM_PREFS] = {
      {"fdow", CHARTYPE, INTTYPE, 0, ""},
      {"show_deleted", INTTYPE, INTTYPE, 0, ""},
      {"show_modified", INTTYPE, INTTYPE, 0, ""},
+     {"hide_completed", INTTYPE, INTTYPE, 0, ""},
+     {"highlight_days", INTTYPE, INTTYPE, 1, ""},
      {"port", CHARTYPE, CHARTYPE, 0, ""},
      {"rate", CHARTYPE, INTTYPE, 4, ""},
      {"user", CHARTYPE, CHARTYPE, 0, ""}
@@ -67,7 +69,7 @@ int get_pref_dmy_order()
    return 0;
 }
 
-//This function is used externally to free up any memory that prefs is using
+/*This function is used externally to free up any memory that prefs is using */
 void free_prefs()
 {
    struct jlist *temp_list, *next_list;
@@ -163,7 +165,7 @@ static int get_rcfile_name(int n, char *rc_copy)
    }
 }
 
-//if n is out of range then this function will fail
+/*if n is out of range then this function will fail */
 int get_pref_possibility(int which, int n, char *pref_str)
 {
    const char *short_date_formats[] = {
@@ -275,7 +277,7 @@ int get_pref_possibility(int which, int n, char *pref_str)
    return 0;
 }
 
-//if n is out of range then this function will fail
+/*if n is out of range then this function will fail */
 int get_pref(int which, int *n, const char **ret)
 {
    if ((which < 0) || (which > NUM_PREFS)) {
@@ -367,6 +369,20 @@ static int validate_glob_prefs()
    }
    if (glob_prefs[PREF_SHOW_MODIFIED].ivalue < 0) {
       glob_prefs[PREF_SHOW_MODIFIED].ivalue = 0;
+   }
+
+   if (glob_prefs[PREF_HIDE_COMPLETED].ivalue > 1) {
+      glob_prefs[PREF_HIDE_COMPLETED].ivalue = 1;
+   }
+   if (glob_prefs[PREF_HIDE_COMPLETED].ivalue < 0) {
+      glob_prefs[PREF_HIDE_COMPLETED].ivalue = 0;
+   }
+
+   if (glob_prefs[PREF_HIGHLIGHT].ivalue > 1) {
+      glob_prefs[PREF_HIGHLIGHT].ivalue = 1;
+   }
+   if (glob_prefs[PREF_HIGHLIGHT].ivalue < 0) {
+      glob_prefs[PREF_HIGHLIGHT].ivalue = 0;
    }
 
    if (glob_prefs[PREF_RATE].ivalue >= NUM_RATES) {

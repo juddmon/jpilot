@@ -37,7 +37,7 @@ int clist_row_selected;
 GtkWidget *clist;
 GtkWidget *memo_text;
 GtkWidget *memo_cat_menu2;
-//Need one extra for the ALL category
+/*Need one extra for the ALL category */
 GtkWidget *memo_cat_menu_item1[NUM_MEMO_CAT_ITEMS+1];
 GtkWidget *memo_cat_menu_item2[NUM_MEMO_CAT_ITEMS];
 GtkWidget *category_menu1;
@@ -101,7 +101,7 @@ int memo_get_details(struct Memo *new_memo, unsigned char *attrib)
       new_memo->text=NULL;
    }
 
-   //Get the category that is set from the menu
+   /*Get the category that is set from the menu */
    for (i=0; i<NUM_MEMO_CAT_ITEMS; i++) {
       if (GTK_IS_WIDGET(memo_cat_menu_item2[i])) {
 	 if (GTK_CHECK_MENU_ITEM(memo_cat_menu_item2[i])->active) {
@@ -124,7 +124,7 @@ static void cb_add_new_record(GtkWidget *widget,
    flag=GPOINTER_TO_INT(data);
    
    if (flag==CLEAR_FLAG) {
-      //Clear button was hit
+      /*Clear button was hit */
       memo_clear_details();
       return;
    }
@@ -158,7 +158,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 			       GdkEventButton *event,
 			       gpointer       data)
 {
-   struct Memo *memo;//, new_a;
+   struct Memo *memo;/*, new_a; */
    MyMemo *mmemo;
 #ifdef OLD_ENTRY
    struct Memo new_memo;
@@ -226,17 +226,17 @@ static void update_memo_screen()
 
    num_entries = get_memos(&memo_list);
    gtk_clist_clear(GTK_CLIST(clist));
-   //gtk_text_backward_delete(GTK_TEXT(memo_text1),
-	//		    gtk_text_get_length(GTK_TEXT(memo_text1)));
+   /*gtk_text_backward_delete(GTK_TEXT(memo_text1), */
+	/*		    gtk_text_get_length(GTK_TEXT(memo_text1))); */
    
-   //if (memo_list==NULL) {
-   //   return;
-   //}
+   /*if (memo_list==NULL) { */
+   /*   return; */
+   /*} */
 
-   //Clear the text box to make things look nice
-   //gtk_text_set_point(GTK_TEXT(memo_text), 0);
-   //gtk_text_forward_delete(GTK_TEXT(memo_text),
-   //gtk_text_get_length(GTK_TEXT(memo_text)));
+   /*Clear the text box to make things look nice */
+   /*gtk_text_set_point(GTK_TEXT(memo_text), 0); */
+   /*gtk_text_forward_delete(GTK_TEXT(memo_text), */
+   /*gtk_text_get_length(GTK_TEXT(memo_text))); */
 
    if (memo_list==NULL) {
       gtk_tooltips_set_tip(glob_tooltips, category_menu1, "0 records", NULL);   
@@ -253,8 +253,8 @@ static void update_memo_screen()
       }
       if (temp_memo->mmemo.rt == MODIFIED_PALM_REC) {
 	 get_pref(PREF_SHOW_MODIFIED, &ivalue, &svalue);
-	 //this will be in preferences as to whether you want to
-	 //see deleted records, or not.
+	 /*this will be in preferences as to whether you want to */
+	 /*see deleted records, or not. */
 	 if (!ivalue) {
 	    num_entries--;
 	    continue;
@@ -262,8 +262,8 @@ static void update_memo_screen()
       }
       if (temp_memo->mmemo.rt == DELETED_PALM_REC) {
 	 get_pref(PREF_SHOW_DELETED, &ivalue, &svalue);
-	 //this will be in preferences as to whether you want to
-	 //see deleted records, or not.
+	 /*this will be in preferences as to whether you want to */
+	 /*see deleted records, or not. */
 	 if (!ivalue) {
 	    num_entries--;
 	    continue;
@@ -280,8 +280,8 @@ static void update_memo_screen()
       }
       if (temp_memo->mmemo.rt == MODIFIED_PALM_REC) {
 	 get_pref(PREF_SHOW_MODIFIED, &ivalue, &svalue);
-	 //this will be in preferences as to whether you want to
-	 //see deleted records, or not.
+	 /*this will be in preferences as to whether you want to */
+	 /*see deleted records, or not. */
 	 if (!ivalue) {
 	    num_entries--;
 	    continue;
@@ -289,8 +289,8 @@ static void update_memo_screen()
       }
       if (temp_memo->mmemo.rt == DELETED_PALM_REC) {
 	 get_pref(PREF_SHOW_DELETED, &ivalue, &svalue);
-	 //this will be in preferences as to whether you want to
-	 //see deleted records, or not.
+	 /*this will be in preferences as to whether you want to */
+	 /*see deleted records, or not. */
 	 if (!ivalue) {
 	    num_entries--;
 	    continue;
@@ -344,10 +344,10 @@ static void update_memo_screen()
    gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown,
 			  GINT_TO_POINTER(CLIST_NEW_ENTRY_DATA));
 #endif
-   //If there is an item in the list, select the first one
+   /*If there is an item in the list, select the first one */
    if (entries_shown>0) {
       gtk_clist_select_row(GTK_CLIST(clist), 0, 0);
-      //cb_clist_selection(clist, 0, 0, (GdkEventButton *)455, "");
+      /*cb_clist_selection(clist, 0, 0, (GdkEventButton *)455, ""); */
    }
    
    gtk_clist_thaw(GTK_CLIST(clist));
@@ -356,7 +356,7 @@ static void update_memo_screen()
    gtk_tooltips_set_tip(glob_tooltips, category_menu1, str, NULL);   
 }
 
-//todo combine these 2 functions
+/*todo combine these 2 functions */
 static int make_category_menu1(GtkWidget **category_menu)
 {
    GtkWidget *menu;
@@ -450,9 +450,9 @@ int memo_refresh()
    return 0;
 }
 
-//
-//Main function
-//
+/* */
+/*Main function */
+/* */
 int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
 {
    extern GtkWidget *glob_date_label;
@@ -473,7 +473,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    gtk_widget_set_usize(GTK_WIDGET(vbox1), 210, 0);
 
-   //Add buttons in left vbox
+   /*Add buttons in left vbox */
    button = gtk_button_new_with_label("Delete");
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_delete_memo),
@@ -481,12 +481,12 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_box_pack_start(GTK_BOX(vbox), button, TRUE, TRUE, 0);
    gtk_widget_show(button);
    
-   //Separator
+   /*Separator */
    separator = gtk_hseparator_new();
    gtk_box_pack_start(GTK_BOX(vbox1), separator, FALSE, FALSE, 5);
    gtk_widget_show(separator);
 
-   //Make the Today is: label
+   /*Make the Today is: label */
    glob_date_label = gtk_label_new(" ");
    gtk_box_pack_start(GTK_BOX(vbox1), glob_date_label, FALSE, FALSE, 0);
    gtk_widget_show(glob_date_label);
@@ -494,21 +494,21 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    glob_date_timer_tag = gtk_timeout_add(CLOCK_TICK, timeout_date, NULL);
 
 
-   //Separator
+   /*Separator */
    separator = gtk_hseparator_new();
    gtk_box_pack_start(GTK_BOX(vbox1), separator, FALSE, FALSE, 5);
    gtk_widget_show(separator);
 
 
-   //Put the left-hand category menu up
+   /*Put the left-hand category menu up */
    make_category_menu1(&category_menu1);   
    gtk_box_pack_start(GTK_BOX(vbox1), category_menu1, FALSE, FALSE, 0);
    gtk_widget_show(category_menu1);
 
 
-   //Put the address list window up
+   /*Put the address list window up */
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
-   //gtk_widget_set_usize(GTK_WIDGET(scrolled_window), 330, 100);
+   /*gtk_widget_set_usize(GTK_WIDGET(scrolled_window), 330, 100); */
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 0);
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
 				  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
@@ -525,22 +525,22 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_clist_set_column_width(GTK_CLIST(clist), 1, 8);
    gtk_clist_set_column_width(GTK_CLIST(clist), 2, 242);
    gtk_clist_set_column_width(GTK_CLIST(clist), 3, 14);
-   //   gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW
-   //					 (scrolled_window), clist);
+   /*   gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW */
+   /*					 (scrolled_window), clist); */
    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
    gtk_widget_show(clist);
    
    
    
-   //
-   // The right hand part of the main window follows:
-   //
+   /* */
+   /* The right hand part of the main window follows: */
+   /* */
    hbox_temp = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
    gtk_widget_show(hbox_temp);
 
    
-   //Add record modification buttons on right side
+   /*Add record modification buttons on right side */
    button = gtk_button_new_with_label("Add It");
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record), 
@@ -563,19 +563,19 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_widget_show(button);
 
 
-   //Separator
+   /*Separator */
    separator = gtk_hseparator_new();
    gtk_box_pack_start(GTK_BOX(vbox2), separator, FALSE, FALSE, 5);
    gtk_widget_show(separator);
 
 
-   //Put the right-hand category menu up
+   /*Put the right-hand category menu up */
    make_category_menu2();   
    gtk_box_pack_start(GTK_BOX (vbox2), memo_cat_menu2, FALSE, FALSE, 0);
    gtk_widget_show(memo_cat_menu2);
    
    
-   //The Description text box on the right side
+   /*The Description text box on the right side */
    hbox_temp = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
    gtk_widget_show(hbox_temp);

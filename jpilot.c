@@ -30,7 +30,7 @@
 #include <pi-datebook.h>
 #include <gdk/gdkkeysyms.h>
 
-//#include "datebook.h"
+/*#include "datebook.h" */
 #include "utils.h"
 #include "log.h"
 #include "prefs_gui.h"
@@ -41,9 +41,9 @@
 #include "todo.xpm"
 #include "memo.xpm"
 
-//#define SHADOW GTK_SHADOW_IN
-//#define SHADOW GTK_SHADOW_OUT
-//#define SHADOW GTK_SHADOW_ETCHED_IN
+/*#define SHADOW GTK_SHADOW_IN */
+/*#define SHADOW GTK_SHADOW_OUT */
+/*#define SHADOW GTK_SHADOW_ETCHED_IN */
 #define SHADOW GTK_SHADOW_ETCHED_OUT
 
 GtkWidget *g_hbox, *g_vbox0;
@@ -80,9 +80,13 @@ void cb_app_button(GtkWidget *widget, gpointer data)
    switch(app) {
     case DATEBOOK:
       if (glob_app == DATEBOOK) {
-	 //refresh screen
+	 /*refresh screen */
 	 datebook_refresh(FALSE);
       } else {
+/*	 gtk_container_remove(GTK_CONTAINER(g_vbox0_1->parent), */
+/*			      GTK_WIDGET(g_vbox0_1)); */
+/*	 gtk_container_remove(GTK_CONTAINER(g_hbox2->parent), */
+/*			      GTK_WIDGET(g_hbox2)); */
 	 gtk_widget_destroy(g_vbox0_1);
 	 gtk_widget_destroy(g_hbox2);
 	 create_main_boxes();
@@ -95,9 +99,13 @@ void cb_app_button(GtkWidget *widget, gpointer data)
       break;
     case ADDRESS:
       if (glob_app == ADDRESS) {
-	 //refresh screen
+	 /*refresh screen */
 	 address_refresh();
       } else {
+/*	 gtk_container_remove(GTK_CONTAINER(g_vbox0_1->parent), */
+/*			      GTK_WIDGET(g_vbox0_1)); */
+/*	 gtk_container_remove(GTK_CONTAINER(g_hbox2->parent), */
+/*			      GTK_WIDGET(g_hbox2)); */
 	 gtk_widget_destroy(g_vbox0_1);
 	 gtk_widget_destroy(g_hbox2);
 	 create_main_boxes();
@@ -110,7 +118,7 @@ void cb_app_button(GtkWidget *widget, gpointer data)
       break;
     case TODO:
       if (glob_app == TODO) {
-	 //refresh screen
+	 /*refresh screen */
 	 todo_refresh();
       } else {
 	 gtk_widget_destroy(g_vbox0_1);
@@ -125,9 +133,13 @@ void cb_app_button(GtkWidget *widget, gpointer data)
       break;
     case MEMO:
       if (glob_app == MEMO) {
-	 //refresh screen
+	 /*refresh screen */
 	 memo_refresh();
       } else {
+/*	 gtk_container_remove(GTK_CONTAINER(g_vbox0_1->parent), */
+/*			      GTK_WIDGET(g_vbox0_1)); */
+/*	 gtk_container_remove(GTK_CONTAINER(g_hbox2->parent), */
+/*			      GTK_WIDGET(g_hbox2)); */
 	 gtk_widget_destroy(g_vbox0_1);
 	 gtk_widget_destroy(g_hbox2);
 	 create_main_boxes();
@@ -139,7 +151,7 @@ void cb_app_button(GtkWidget *widget, gpointer data)
       }
       break;
     default:
-      //recursion
+      /*recursion */
       if ((glob_app==DATEBOOK) ||
 	  (glob_app==ADDRESS) ||
 	  (glob_app==TODO) ||
@@ -205,7 +217,7 @@ void cb_read_pipe(gpointer data,
        
       gtk_box_pack_start(GTK_BOX(vbox1), hbox1, TRUE, TRUE, 0);
 
-      //text box
+      /*text box */
       text = gtk_text_new(NULL, NULL);
       gtk_text_set_editable(GTK_TEXT(text), FALSE);
       gtk_text_set_word_wrap(GTK_TEXT(text), TRUE);
@@ -213,14 +225,14 @@ void cb_read_pipe(gpointer data,
       gtk_box_pack_start(GTK_BOX(hbox1), text, TRUE, TRUE, 0);
       gtk_box_pack_start(GTK_BOX(hbox1), vscrollbar, FALSE, FALSE, 0);
 
-      //Button
+      /*Button */
       button = gtk_button_new_with_label ("Hide this window");
       gtk_signal_connect(GTK_OBJECT(button), "clicked",
 			 GTK_SIGNAL_FUNC(cb_sync_hide),
 			 sync_window);
       gtk_box_pack_start(GTK_BOX(vbox1), button, FALSE, FALSE, 0);
 
-      //show it
+      /*show it */
       gtk_widget_show_all(GTK_WIDGET(sync_window));
    }
 
@@ -229,7 +241,7 @@ void cb_read_pipe(gpointer data,
    }
    
    while(1) {
-      //Linux modifies tv in the select call
+      /*Linux modifies tv in the select call */
       tv.tv_sec=0;
       tv.tv_usec=0;
       FD_ZERO(&fds);
@@ -243,7 +255,7 @@ void cb_read_pipe(gpointer data,
       if (num>0) {
 	 gtk_text_insert(GTK_TEXT(text), NULL, NULL, NULL, buf, num);
       }
-      //Look for the username
+      /*Look for the username */
       Pstr1 = strstr(buf, "sername");
       if (Pstr1) {
 	 Pstr2 = strchr(Pstr1, '\"');
@@ -268,13 +280,13 @@ void cb_read_pipe(gpointer data,
 void cb_about(GtkWidget *widget, gpointer data)
 {
    char text[255];
-   char *button_text[]={"I like free beer!"
+   char *button_text[]={"OK!"
    };
    GtkWidget *window;
    
    window = data;
    sprintf(text,
-	   //-------------------------------
+	   /*------------------------------- */
 	   PN" was written by\r\n"
 	   "Judd Montgomery (c) 1999.\r\n"
 	   "judd@engineer.com\r\n"
@@ -290,7 +302,7 @@ void cb_about(GtkWidget *widget, gpointer data)
 	 
 void get_main_menu(GtkWidget  *window,
 		   GtkWidget **menubar)
-//This code was copied from the gtk_tut.txt file
+/*This code was copied from the gtk_tut.txt file */
 {
    GtkItemFactoryEntry menu_items[] = {
 	{ "/_File",         NULL,         NULL, 0, "<Branch>" },
@@ -298,8 +310,8 @@ void get_main_menu(GtkWidget  *window,
 	{ "/File/_Search",    "<control>S", cb_search_gui, 0, NULL },
 	{ "/File/sep1",     NULL,         NULL, 0, "<Separator>" },
       	{ "/File/_Install",    NULL, cb_install_gui, 0, NULL },
-      	//{ "/File/_WeekView",    "F5", cb_weekview_gui, 0, NULL },
-      	//{ "/File/_MonthView",    "F6", cb_monthview_gui, 0, NULL },
+      	/*{ "/File/_WeekView",    "F5", cb_weekview_gui, 0, NULL }, */
+      	/*{ "/File/_MonthView",    "F6", cb_monthview_gui, 0, NULL }, */
 	{ "/File/Preferences",    NULL, cb_prefs_gui, 0, NULL },
 	{ "/File/sep1",     NULL,         NULL, 0, "<Separator>" },
 	{ "/File/Quit",     "<control>Q", delete_event, 0, NULL },
@@ -346,7 +358,7 @@ static void delete_event(GtkWidget *widget, GdkEvent *event, gpointer data)
       jpilot_logf(LOG_DEBUG, "killing %d\n", glob_child_pid);
 	 kill(glob_child_pid, SIGTERM);
    }
-   write_rc_file();  //jpilot.rc
+   write_rc_file();  /*jpilot.rc */
    gtk_main_quit();
 }
 
@@ -371,7 +383,7 @@ int main(int   argc,
    char title[MAX_PREF_VALUE+40];
    
    sync_only=FALSE;
-   //log all output to a file
+   /*log all output to a file */
    glob_log_file_mask = LOG_INFO | LOG_WARN | LOG_FATAL | LOG_STDOUT;
    glob_log_stdout_mask = LOG_INFO | LOG_WARN | LOG_FATAL | LOG_STDOUT;
    glob_log_gui_mask = LOG_FATAL | LOG_WARN | LOG_GUI;
@@ -396,16 +408,20 @@ int main(int   argc,
       }
    }
 
-   //Check to see if ~/.jpilot is there, or create it
+   /*Check to see if ~/.jpilot is there, or create it */
    jpilot_logf(LOG_DEBUG, "calling check_hidden_dir\n");
    if (check_hidden_dir()) {
       exit(1);
    }
 
+   /*Check to see if DB files are there */
+   /*If not copy some empty ones over */
+   check_copy_DBs_to_home();
+   
    glob_date_timer_tag=0;
    glob_child_pid=0;
 
-   //Create a pipe to send the sync output, etc.
+   /*Create a pipe to send the sync output, etc. */
    if (pipe(filedesc) <0) {
       jpilot_logf(LOG_FATAL, "Could not open pipe\n");
       exit(-1);
@@ -421,13 +437,13 @@ int main(int   argc,
 
    gtk_init(&argc, &argv);
 
-   read_rc_file();  //jpilot.rc
+   read_rc_file();  /*jpilot.rc */
 
    read_gtkrc_file();
 
    window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
-   //gtk_window_set_default_size(GTK_WINDOW(window), 770, 440);
+   /*gtk_window_set_default_size(GTK_WINDOW(window), 770, 440); */
    gtk_window_set_default_size(GTK_WINDOW(window), 770, 500);
 
    get_pref(PREF_USER, &ivalue, &svalue);
@@ -439,8 +455,8 @@ int main(int   argc,
    }
    gtk_window_set_title(GTK_WINDOW(window), title);
 
-   // Set a handler for delete_event that immediately
-   // exits GTK.
+   /* Set a handler for delete_event that immediately */
+   /* exits GTK. */
    gtk_signal_connect(GTK_OBJECT(window), "delete_event",
 		      GTK_SIGNAL_FUNC(delete_event), NULL);
 
@@ -453,7 +469,7 @@ int main(int   argc,
    gtk_container_add(GTK_CONTAINER(window), main_vbox);
    gtk_widget_show(main_vbox);
 
-   //Create the Menu Bar at the top
+   /*Create the Menu Bar at the top */
    get_main_menu(window, &menubar);
    gtk_box_pack_start(GTK_BOX(main_vbox), menubar, FALSE, FALSE, 0);
    gtk_menu_bar_set_shadow_type(GTK_MENU_BAR(menubar), GTK_SHADOW_NONE);
@@ -465,28 +481,28 @@ int main(int   argc,
    gtk_box_pack_start(GTK_BOX(g_hbox), g_vbox0, FALSE, FALSE, 3);
    
 
-   // Create "Datebook" button
+   /* Create "Datebook" button */
    button_datebook = gtk_button_new();
    gtk_signal_connect(GTK_OBJECT(button_datebook), "clicked",
 		      GTK_SIGNAL_FUNC(cb_app_button), GINT_TO_POINTER(DATEBOOK));
    gtk_box_pack_start(GTK_BOX(g_vbox0), button_datebook, FALSE, FALSE, 0);
    gtk_widget_set_usize(button_datebook, 46, 46);
    
-   // Create "Address" button
+   /* Create "Address" button */
    button_address = gtk_button_new();
    gtk_signal_connect(GTK_OBJECT(button_address), "clicked",
 		      GTK_SIGNAL_FUNC(cb_app_button), GINT_TO_POINTER(ADDRESS));
    gtk_box_pack_start(GTK_BOX(g_vbox0), button_address, FALSE, FALSE, 0);
    gtk_widget_set_usize(button_address, 46, 46);
 
-   // Create "Todo" button
+   /* Create "Todo" button */
    button_todo = gtk_button_new();
    gtk_signal_connect(GTK_OBJECT(button_todo), "clicked",
 		      GTK_SIGNAL_FUNC(cb_app_button), GINT_TO_POINTER(TODO));
    gtk_box_pack_start(GTK_BOX(g_vbox0), button_todo, FALSE, FALSE, 0);
    gtk_widget_set_usize(button_todo, 46, 46);
 
-   // Create "memo" button
+   /* Create "memo" button */
    button_memo = gtk_button_new();
    gtk_signal_connect(GTK_OBJECT(button_memo), "clicked",
 		      GTK_SIGNAL_FUNC(cb_app_button), GINT_TO_POINTER(MEMO));
@@ -506,33 +522,33 @@ int main(int   argc,
    gtk_box_pack_start(GTK_BOX(g_vbox0), separator, FALSE, TRUE, 5);
    gtk_widget_show(separator);
    
-   // Create "Quit" button
+   /* Create "Quit" button */
    button = gtk_button_new_with_label("Quit!");
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(delete_event), NULL);
    gtk_box_pack_start(GTK_BOX(g_vbox0), button, FALSE, FALSE, 0);
    gtk_widget_show(button);
 
-   // Create "Sync" button
+   /* Create "Sync" button */
    button = gtk_button_new_with_label("Sync");
    gtk_signal_connect (GTK_OBJECT(button), "clicked",
 		       GTK_SIGNAL_FUNC(cb_sync), NULL);
    gtk_box_pack_start(GTK_BOX (g_vbox0), button, FALSE, FALSE, 0);
    gtk_widget_show (button);
 
-   // Create "Backup" button in left column
+   /* Create "Backup" button in left column */
    button = gtk_button_new_with_label("Backup");
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_backup), NULL);
    gtk_box_pack_start(GTK_BOX(g_vbox0), button, FALSE, FALSE, 0);
    gtk_widget_show(button);
 
-   //Separator
+   /*Separator */
    separator = gtk_hseparator_new();
    gtk_box_pack_start(GTK_BOX(g_vbox0), separator, FALSE, TRUE, 5);
    gtk_widget_show(separator);
 
-   //This creates the 2 main boxes that are changeable
+   /*This creates the 2 main boxes that are changeable */
    create_main_boxes();
 
    gtk_widget_show(g_hbox);
@@ -544,7 +560,7 @@ int main(int   argc,
 
    style = gtk_widget_get_style(window);
 
-   // Create "Datebook" pixmap
+   /* Create "Datebook" pixmap */
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
 					 &style->bg[GTK_STATE_NORMAL],
 					 datebook_xpm);
@@ -552,7 +568,7 @@ int main(int   argc,
    gtk_widget_show(pixmapwid);
    gtk_container_add(GTK_CONTAINER(button_datebook), pixmapwid);
 
-   // Create "Address" pixmap
+   /* Create "Address" pixmap */
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
 					 &style->bg[GTK_STATE_NORMAL],
 					 address_xpm);
@@ -560,7 +576,7 @@ int main(int   argc,
    gtk_widget_show(pixmapwid);
    gtk_container_add(GTK_CONTAINER(button_address), pixmapwid);
 
-   // Create "Todo" pixmap
+   /* Create "Todo" pixmap */
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
 					 &style->bg[GTK_STATE_NORMAL],
 					 todo_xpm);
@@ -568,7 +584,7 @@ int main(int   argc,
    gtk_widget_show(pixmapwid);
    gtk_container_add(GTK_CONTAINER(button_todo), pixmapwid);
 
-   // Create "memo" pixmap
+   /* Create "memo" pixmap */
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
 					 &style->bg[GTK_STATE_NORMAL],
 					 memo_xpm);
@@ -586,7 +602,7 @@ int main(int   argc,
 
    gtk_tooltips_set_tip(glob_tooltips, button_memo, "Memo Pad", NULL);
 
-   //Set a callback for our pipe from the sync child process
+   /*Set a callback for our pipe from the sync child process */
    gdk_input_add(pipe_in, GDK_INPUT_READ, cb_read_pipe, window);
 
    gtk_main();

@@ -1,4 +1,3 @@
-#define JPILOT_DEBUG
 /* datebook.c
  *
  * Copyright (C) 1999 by Judd Montgomery
@@ -25,14 +24,15 @@
 #include <pi-dlp.h>
 #include <pi-file.h>
 #include <time.h>
-//#include <sys/stat.h>
-//#include <sys/types.h>
+/*#include <sys/stat.h> */
+/*#include <sys/types.h> */
 #include <unistd.h>
 #include <utime.h>
 
 #include "datebook.h"
 #include "utils.h"
 #include "log.h"
+#include "prefs.h"
 
 #if defined(WITH_JAPANESE)
 #include "japanese.h"
@@ -82,7 +82,7 @@ static int pc_datebook_read_next_rec(FILE *in, MyAppointment *ma)
    PCRecordHeader header;
    int rec_len, num;
    char *record;
-   //DatebookRecType rt;
+   /*DatebookRecType rt; */
    
    if (feof(in)) {
       return DATEBOOK_EOF;
@@ -129,8 +129,8 @@ int does_pc_appt_exist(int unique_id, PCRecType rt)
    PCRecordHeader header;
    int num;
    
-   //jpilot_logf(LOG_DEBUG, "looking for unique id = %d\n",unique_id);
-   //jpilot_logf(LOG_DEBUG, "looking for rt = %d\n",rt);
+   /*jpilot_logf(LOG_DEBUG, "looking for unique id = %d\n",unique_id); */
+   /*jpilot_logf(LOG_DEBUG, "looking for rt = %d\n",rt); */
    pc_in=open_file("DatebookDB.pc", "r");
    if (pc_in==NULL) {
       jpilot_logf(LOG_WARN, "Couldn't open PC records file\n");
@@ -209,9 +209,9 @@ void free_AppointmentList(AppointmentList **al)
    *al = NULL;
 }
 
-//
-//If a copy is made, then it should be freed through free_Appointment
-//
+/* */
+/*If a copy is made, then it should be freed through free_Appointment */
+/* */
 int datebook_copy_appointment(struct Appointment *a1,
 			     struct Appointment **a2)
 {
@@ -240,10 +240,10 @@ int datebook_copy_appointment(struct Appointment *a1,
 }
 
 
-// Year is years since 1900
-// Mon is 0-11
-// Day is 1-31
-//
+/* Year is years since 1900 */
+/* Mon is 0-11 */
+/* Day is 1-31 */
+/* */
 int datebook_add_exception(struct Appointment *a, int year, int mon, int day)
 {
    struct tm *new_exception, *Ptm;
@@ -280,12 +280,12 @@ int dateToDays(struct tm *tm1)
    time_t t1;
 
    t1 = mktime(tm1);
-   return t1/86400;//There are 86400 secs in a day
+   return t1/86400;/*There are 86400 secs in a day */
 }
 
-//returns 0 if times equal
-//returns 1 if time1 is greater (later)
-//returns 2 if time2 is greater (later)
+/*returns 0 if times equal */
+/*returns 1 if time1 is greater (later) */
+/*returns 2 if time2 is greater (later) */
 int compareTimesToSec(struct tm *tm1, struct tm *tm2)
 {
    time_t t1, t2;
@@ -297,9 +297,9 @@ int compareTimesToSec(struct tm *tm1, struct tm *tm2)
    return 0;
 }
 
-//returns 0 if times equal
-//returns 1 if time1 is greater (later)
-//returns 2 if time2 is greater (later)
+/*returns 0 if times equal */
+/*returns 1 if time1 is greater (later) */
+/*returns 2 if time2 is greater (later) */
 int compareTimesToDay(struct tm *tm1, struct tm *tm2)
 {
    unsigned int t1, t2;
@@ -318,8 +318,8 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
    int begin_days, days, week1, week2;
    int dow, ndim;
    int i;
-   //days_in_month is adjusted for leap year with the date
-   //structure
+   /*days_in_month is adjusted for leap year with the date */
+   /*structure */
    int days_in_month[]={31,28,31,30,31,30,31,31,30,31,30,31
    };
 
@@ -329,12 +329,12 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
       return FALSE;
    }
 
-   //Leap year
+   /*Leap year */
    if (date->tm_year%4==0) {
       days_in_month[1]++;
    }
    
-   //See if the appointment starts after date
+   /*See if the appointment starts after date */
    r = compareTimesToDay(&(a->begin), date);
    if (r == 1) {
       return FALSE;
@@ -342,7 +342,7 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
    if (r == 0) {
       ret = TRUE;
    }
-   //If the appointment has an end date, see that we are not past it
+   /*If the appointment has an end date, see that we are not past it */
    if (!(a->repeatForever)) {
       r = compareTimesToDay(&(a->repeatEnd), date);
       if (r == 2) {
@@ -354,14 +354,14 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
     case repeatNone:
       break;
     case repeatDaily:
-      //See if this appt repeats on this day
+      /*See if this appt repeats on this day */
       begin_days = dateToDays(&(a->begin));
       days = dateToDays(date);
       ret = (((days - begin_days)%(a->repeatFrequency))==0);
       break;
     case repeatWeekly:
       get_month_info(date->tm_mon, date->tm_mday, date->tm_year, &dow, &ndim);
-      //See if the appointment repeats on this day
+      /*See if the appointment repeats on this day */
       /*
       if (a->repeatWeekstart > 1) {
 	 a->repeatWeekstart = 1;
@@ -370,38 +370,38 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
 	 a->repeatWeekstart = 0;
       }
       */
-      //if (!(a->repeatDays[dow + a->repeatWeekstart])) {
+      /*if (!(a->repeatDays[dow + a->repeatWeekstart])) { */
       if (!(a->repeatDays[dow])) {
 	 ret = FALSE;
 	 break;
       }
-      //See if we are in a week that is repeated in
+      /*See if we are in a week that is repeated in */
       begin_days = dateToDays(&(a->begin));
       days = dateToDays(date);
       ret = (((days - begin_days)/7)%(a->repeatFrequency)==0);
       break;
     case repeatMonthlyByDay:
-      //See if we are in a month that is repeated in
+      /*See if we are in a month that is repeated in */
       ret = (((date->tm_year - a->begin.tm_year)*12 +
        (date->tm_mon - a->begin.tm_mon))%(a->repeatFrequency)==0);
       if (!ret) {
 	 break;
       }
-      //If the days of the week match - good
-      //e.g. Monday or Thur, etc.
+      /*If the days of the week match - good */
+      /*e.g. Monday or Thur, etc. */
       if (a->repeatDay%7 != date->tm_wday) {
 	 ret = FALSE;
 	 break;
       }
-      //Are they both in the same week in the month
-      //e.g. The 3rd Mon, or the 2nd Fri, etc.
+      /*Are they both in the same week in the month */
+      /*e.g. The 3rd Mon, or the 2nd Fri, etc. */
       week1 = a->repeatDay/7;
       week2 = (date->tm_mday - 1)/7;
       if (week1 != week2) {
 	 ret = FALSE;
       }
-      //See if the appointment repeats on the last week of the month
-      //and this is the 4th, and last.
+      /*See if the appointment repeats on the last week of the month */
+      /*and this is the 4th, and last. */
       if (week1 > 3) {
 	 if ((date->tm_mday + 7) > days_in_month[date->tm_mon]) {
 	    ret = TRUE;
@@ -409,19 +409,19 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
       }
       break;
     case repeatMonthlyByDate:
-      //See if we are in a repeating month
+      /*See if we are in a repeating month */
       ret = (((date->tm_year - a->begin.tm_year)*12 +
        (date->tm_mon - a->begin.tm_mon))%(a->repeatFrequency) == 0);
       if (!ret) {
 	 break;
       }
-      //See if this is the date that the appt repeats on
+      /*See if this is the date that the appt repeats on */
       if (date->tm_mday == a->begin.tm_mday) {
 	 ret = TRUE;
 	 break;
       }
-      //If appt occurs after the last day of the month and this date
-      //is the last day of the month then it occurs today
+      /*If appt occurs after the last day of the month and this date */
+      /*is the last day of the month then it occurs today */
       ret = ((a->begin.tm_mday > days_in_month[date->tm_mon]) &&
 	     (date->tm_mday == days_in_month[date->tm_mon]));
       break;
@@ -435,7 +435,7 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
 	 ret = TRUE;
 	 break;
       }
-      //Take care of Feb 29th (Leap Day)
+      /*Take care of Feb 29th (Leap Day) */
       if ((a->begin.tm_mon == 1) && (a->begin.tm_mday == 29) &&
 	(date->tm_mon == 1) && (date->tm_mday == 28)) {
 	 ret = TRUE;
@@ -446,10 +446,10 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
       jpilot_logf(LOG_WARN, "unknown repeatType (%d) found in DatebookDB\n",
 	   a->repeatType);
       ret = FALSE;
-   }//switch
+   }/*switch */
 
    if (ret) {
-      //Check for exceptions
+      /*Check for exceptions */
       for (i=0; i<a->exceptions; i++) {
 #ifdef JPILOT_DEBUG
 	 jpilot_logf(LOG_DEBUG, "exception %d mon %d\n", i, a->exception[i].tm_mon);
@@ -565,22 +565,77 @@ int datebook_create_bogus_record(char *record, int size, int *rec_len)
    return 0;
 }
 
-//
-//If Null is passed in for date, then all appointments will be returned
-//
+
+int appointment_on_day_list(int mon, int year, int *mask)
+{
+   struct tm now;
+   AppointmentList *tal, *al;
+   int ivalue;
+   const char *svalue;
+   int i, dow, ndim, num;
+   int bit;
+
+   now.tm_sec=0;
+   now.tm_min=0;
+   now.tm_hour=11;
+   now.tm_mday=1;
+   now.tm_mon=mon;
+   now.tm_year=year;
+   now.tm_isdst=-1;
+   
+   al = NULL;
+   num = get_days_appointments(&al, NULL);
+
+   get_month_info(mon, 1, year, &dow, &ndim);
+
+   *mask = 0;
+   
+   for (i=0, bit=1; i<ndim; i++, bit=bit<<1) {
+      now.tm_mday = i+1;
+      mktime(&now);
+
+      for (tal=al; tal; tal = tal->next) {
+	 if (tal->ma.rt == MODIFIED_PALM_REC) {
+	    get_pref(PREF_SHOW_MODIFIED, &ivalue, &svalue);
+	    if (!ivalue) {
+	       continue;
+	    }
+	 }
+	 if (tal->ma.rt == DELETED_PALM_REC) {
+	    get_pref(PREF_SHOW_DELETED, &ivalue, &svalue);
+	    if (!ivalue) {
+	       continue;
+	    }
+	 }
+	 if (isApptOnDate(&(tal->ma.a), &now)) {
+	    *mask = *mask | bit;
+	    break;
+	 }
+      }
+   }
+
+   free_AppointmentList(&al);
+   
+   return 0;
+}
+
+
+/* */
+/*If Null is passed in for date, then all appointments will be returned */
+/* */
 int get_days_appointments(AppointmentList **appointment_list, struct tm *now)
 {
    FILE *in, *pc_in;
-//   *appointment_list=NULL;
-//   char db_name[34];
-//   char filler[100];
+/*   *appointment_list=NULL; */
+/*   char db_name[34]; */
+/*   char filler[100]; */
    char *buf;
-//   unsigned char char_num_records[4];
-//   unsigned char char_ai_offset[4];//app info offset
+/*   unsigned char char_num_records[4]; */
+/*   unsigned char char_ai_offset[4]; //app info offset */
    int num_records, i, num, r;
    unsigned int offset, next_offset, rec_size;
-//   unsigned char c;
-   long fpos;  //file position indicator
+/*   unsigned char c; */
+   long fpos;  /*file position indicator */
    unsigned char attrib;
    unsigned int unique_id;
    mem_rec_header *mem_rh, *temp_mem_rh;
@@ -588,7 +643,7 @@ int get_days_appointments(AppointmentList **appointment_list, struct tm *now)
    RawDBHeader rdbh;
    DBHeader dbh;
    struct Appointment a;
-   //struct AppointmentAppInfo ai;
+   /*struct AppointmentAppInfo ai; */
    AppointmentList *temp_appointment_list;
    MyAppointment ma;
 
@@ -599,7 +654,7 @@ int get_days_appointments(AppointmentList **appointment_list, struct tm *now)
       jpilot_logf(LOG_WARN, "Error opening DatebookDB.pdb\n");
       return -1;
    }
-   //Read the database header
+   /*Read the database header */
    num = fread(&rdbh, sizeof(RawDBHeader), 1, in);
    if (num != 1) {
       if (ferror(in)) {
@@ -617,7 +672,7 @@ int get_days_appointments(AppointmentList **appointment_list, struct tm *now)
    jpilot_logf(LOG_DEBUG, "num records = %d\n", dbh.number_of_records);
    jpilot_logf(LOG_DEBUG, "app info offset = %d\n", dbh.app_info_offset);
 
-   //Read each record entry header
+   /*Read each record entry header */
    num_records = dbh.number_of_records;
    
    for (i=1; i<num_records+1; i++) {
@@ -653,7 +708,7 @@ int get_days_appointments(AppointmentList **appointment_list, struct tm *now)
       while(!feof(in)) {
 	 fpos = ftell(in);
 	 find_next_offset(mem_rh, fpos, &next_offset, &attrib, &unique_id);
-	 //next_offset += 223;
+	 /*next_offset += 223; */
 	 rec_size = next_offset - fpos;
 #ifdef JPILOT_DEBUG
 	 jpilot_logf(LOG_DEBUG, "rec_size = %u\n",rec_size);
@@ -676,8 +731,8 @@ int get_days_appointments(AppointmentList **appointment_list, struct tm *now)
 	 num = unpack_Appointment(&a, buf, rec_size);
 	 if (num<=0) {
 	    free(buf);	 
-	    //jpilot_logf(LOG_INFO, "unpack_Appointment failed\n");
-	    //jpilot_logf(LOG_INFO, "rec_size = %d\n", rec_size);
+	    /*jpilot_logf(LOG_INFO, "unpack_Appointment failed\n"); */
+	    /*jpilot_logf(LOG_INFO, "rec_size = %d\n", rec_size); */
 	    continue;
 	 }
 #if defined(WITH_JAPANESE)
@@ -695,7 +750,7 @@ int get_days_appointments(AppointmentList **appointment_list, struct tm *now)
 	       break;
 	    }
 	    memcpy(&(temp_appointment_list->ma.a), &a, sizeof(struct Appointment));
-	    //temp_appointment_list->ma.a = temp_a;
+	    /*temp_appointment_list->ma.a = temp_a; */
 	    temp_appointment_list->app_type = DATEBOOK;
 	    temp_appointment_list->ma.rt = PALM_REC;
 	    temp_appointment_list->ma.attrib = attrib;
@@ -708,15 +763,15 @@ int get_days_appointments(AppointmentList **appointment_list, struct tm *now)
    fclose(in);
    free_mem_rec_header(&mem_rh);
 
-   //
-   //Get the appointments out of the PC database
-   //
+   /* */
+   /*Get the appointments out of the PC database */
+   /* */
    pc_in = open_file("DatebookDB.pc", "r");
    if (pc_in==NULL) {
       jpilot_logf(LOG_WARN, "Error opening DatebookDB.pc\n");
       return 0;
    }
-   //r = pc_datebook_read_file_header(pc_in);
+   /*r = pc_datebook_read_file_header(pc_in); */
    while(!feof(pc_in)) {
       r = pc_datebook_read_next_rec(pc_in, &ma);
       if (r==DATEBOOK_EOF) break;
@@ -735,9 +790,9 @@ int get_days_appointments(AppointmentList **appointment_list, struct tm *now)
 	 temp_appointment_list->app_type = DATEBOOK;
 	 temp_appointment_list->next = *appointment_list;
 	 *appointment_list = temp_appointment_list;
-	 //temp_appointment_list->ma.attrib=0;
+	 /*temp_appointment_list->ma.attrib=0; */
       } else {
-	 //this doesnt really free it, just the string pointers
+	 /*this doesnt really free it, just the string pointers */
 	 free_Appointment(&(ma.a));
       }
       if ((ma.rt==DELETED_PALM_REC) || (ma.rt==MODIFIED_PALM_REC)) {

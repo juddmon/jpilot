@@ -97,6 +97,9 @@ japanese.o: japanese.c japanese.h
 clean: 
 	rm -f *.o *~ config.cache
 
+distclean: 
+	rm -f *.o *~ config.cache config.status jpilot
+
 install:
 #	./install-sh -d @prefix@/bin
 	./install-sh -s -c -m 555 -g bin -o bin jpilot @prefix@/bin
@@ -104,6 +107,12 @@ install:
 	./install-sh -c -m 755 -g bin -o bin jpilotrc.blue @prefix@/share/jpilot
 	./install-sh -c -m 755 -g bin -o bin jpilotrc.default @prefix@/share/jpilot
 	./install-sh -c -m 755 -g bin -o bin jpilotrc.green @prefix@/share/jpilot
+	./install-sh -c -m 755 -g bin -o bin jpilotrc.purple @prefix@/share/jpilot
+	./install-sh -c -m 755 -g bin -o bin jpilotrc.steel @prefix@/share/jpilot
+	./install-sh -c -m 755 -g bin -o bin empty/DatebookDB.pdb @prefix@/share/jpilot
+	./install-sh -c -m 755 -g bin -o bin empty/AddressDB.pdb @prefix@/share/jpilot
+	./install-sh -c -m 755 -g bin -o bin empty/ToDoDB.pdb @prefix@/share/jpilot
+	./install-sh -c -m 755 -g bin -o bin empty/MemoDB.pdb @prefix@/share/jpilot
 
 uninstall:
 	rm @prefix@/share/jpilot/*

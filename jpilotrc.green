@@ -60,11 +60,15 @@
     bg_pixmap[NORMAL] = "<parent>"
   }
 
-  style "button"
+style "label_high"
+{
+fg[NORMAL] = { 0.0, 0.0, 0.8 }
+}
+
+style "button"
   {
     # This shows all the possible states for a button.  The only one that
     # doesn't apply is the SELECTED state.
-
     fg[PRELIGHT] = { 1.0, 1.0, 1.0 }
     bg[PRELIGHT] = { 0, 0.5, 0.5 }
     bg[ACTIVE] = { 0, 0.6, 0.6 }
@@ -78,11 +82,16 @@
   style "button_set" = "button"
   {
     fg[NORMAL] = { 0.0, 0.0, 0.0 }
-    bg[NORMAL] = { 0.0, 0.6, 0.6 }
+    bg[NORMAL] = { 0.0, 0.7, 0.7 }
 #    bg[PRELIGHT] = { 0, 0, 1.0 } 
 #    bg[ACTIVE] = { 0, 0, 1.0 }
 #    bg[INSENSITIVE] = { 0, 0, 1.0 }
   }
+
+style "button_today" = "button"
+{
+bg[NORMAL] = { 0.0, 0.6, 0.6 }
+}
 
   style "button_dow" = "button"
   {
@@ -189,6 +198,7 @@ style "notebook"
   widget_class "*GtkHScrollbar" style "text"
   widget "*GtkButton*.button_set" style "button_set"
   widget "*GtkButton*.button_dow" style "button_dow"
+  widget "*GtkButton*.button_today" style "button_today"
   widget "*GtkButton*.button_app" style "button_app"
 
   # This sets all the buttons that are children of the "main window" to
@@ -198,4 +208,6 @@ style "notebook"
 #works->widget "*GtkTable.*GtkButton*" style "button_set"
 widget "*.button_set" style "button_set"
 widget "*.button_dow" style "button_dow"
+widget "*.button_today" style "button_today"
 widget "*.button_app" style "button_app"
+widget "*.label_high" style "label_high"

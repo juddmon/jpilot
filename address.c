@@ -50,17 +50,17 @@ int address_compare(struct Address *a1, struct Address *a2, int sort_by_company)
    int sort1, sort2, sort3;
    
    if (sort_by_company) {
-      sort1=2; //company
-      sort2=0; //last name
-      sort3=1; //first name
+      sort1=2; /*company */
+      sort2=0; /*last name */
+      sort3=1; /*first name */
    } else {
-      sort1=0; //last name
-      sort2=1; //first name
-      sort3=2; //company
+      sort1=0; /*last name */
+      sort2=1; /*first name */
+      sort3=2; /*company */
    }
-   //sort_by_company:
-   //0 last, first or
-   //1 company, last
+   /*sort_by_company: */
+   /*0 last, first or */
+   /*1 company, last */
    
    
    str1[0]='\0';
@@ -184,7 +184,7 @@ static int pc_address_read_next_rec(FILE *in, MyAddress *ma)
 int pc_address_write(struct Address *a, PCRecType rt, unsigned char attrib)
 {
    PCRecordHeader header;
-   //PCFileHeader   file_header;
+   /*PCFileHeader   file_header; */
    FILE *out;
    char record[65536];
    int rec_len;
@@ -287,7 +287,7 @@ int get_address_app_info(struct AddressAppInfo *ai)
       }
    }
 #if defined(WITH_JAPANESE)
-   // Converto to EUC Japanese Kanji code
+   /* Converto to EUC Japanese Kanji code */
    {
       int i;
       for (i = 0; i < 16; i++)
@@ -314,7 +314,7 @@ int get_addresses(AddressList **address_list)
    char *buf;
    int num_records, recs_returned, i, num, r;
    unsigned int offset, next_offset, rec_size;
-   long fpos;  //file position indicator
+   long fpos;  /*file position indicator */
    unsigned char attrib;
    unsigned int unique_id;
    mem_rec_header *mem_rh, *temp_mem_rh;
@@ -333,7 +333,7 @@ int get_addresses(AddressList **address_list)
       jpilot_logf(LOG_WARN, "Error opening AddressDB.pdb\n");
       return -1;
    }
-   //Read the database header
+   /*Read the database header */
    num = fread(&rdbh, sizeof(RawDBHeader), 1, in);
    if (num != 1) {
       if (ferror(in)) {
@@ -352,11 +352,11 @@ int get_addresses(AddressList **address_list)
    jpilot_logf(LOG_DEBUG, "num records = %d\n", dbh.number_of_records);
    jpilot_logf(LOG_DEBUG, "app info offset = %d\n", dbh.app_info_offset);
 
-   //fread(filler, 2, 1, in);
+   /*fread(filler, 2, 1, in); */
 
-   //Read each record entry header
+   /*Read each record entry header */
    num_records = dbh.number_of_records;
-   //jpilot_logf(LOG_DEBUG, "sizeof(record_header)=%d\n",sizeof(record_header));
+   /*jpilot_logf(LOG_DEBUG, "sizeof(record_header)=%d\n",sizeof(record_header)); */
    for (i=1; i<num_records+1; i++) {
       num = fread(&rh, sizeof(record_header), 1, in);
       if (num != 1) {
@@ -413,12 +413,12 @@ int get_addresses(AddressList **address_list)
 	 }
 
 	 num = unpack_Address(&a, buf, rec_size);
+	 free(buf);
 	 if (num<=0) {
-	    free(buf);
 	    continue;
 	 }
 #if defined(WITH_JAPANESE)
-	// Convert to EUC Japanese Kanji code
+	/* Convert to EUC Japanese Kanji code */
 	{
 	    int i;
 	    for (i = 0; i < 19; i++)
@@ -428,7 +428,7 @@ int get_addresses(AddressList **address_list)
 #endif
 	 temp_address_list = malloc(sizeof(AddressList));
 	 memcpy(&(temp_address_list->ma.a), &a, sizeof(struct Address));
-	 //temp_address_list->ma.a = temp_a;
+	 /*temp_address_list->ma.a = temp_a; */
 	 temp_address_list->app_type = ADDRESS;
 	 temp_address_list->ma.rt = PALM_REC;
 	 temp_address_list->ma.attrib = attrib;
@@ -441,15 +441,15 @@ int get_addresses(AddressList **address_list)
    fclose(in);
    free_mem_rec_header(&mem_rh);
 
-   //
-   //Get the appointments out of the PC database
-   //
+   /* */
+   /*Get the appointments out of the PC database */
+   /* */
    pc_in = open_file("AddressDB.pc", "r");
    if (pc_in==NULL) {
       jpilot_logf(LOG_WARN, "Error opening AddressDB.pc\n");
       return -1;
    }
-   //r = pc_datebook_read_file_header(pc_in);
+   /*r = pc_datebook_read_file_header(pc_in); */
    while(!feof(pc_in)) {
       r = pc_address_read_next_rec(pc_in, &ma);
       if (r==ADDRESS_EOF) break;
@@ -468,9 +468,9 @@ int get_addresses(AddressList **address_list)
 	 temp_address_list->next = *address_list;
 	 *address_list = temp_address_list;
 	 recs_returned++;
-	 //temp_address_list->ma.attrib=0;
+	 /*temp_address_list->ma.attrib=0; */
       } else {
-	 //this doesnt really free it, just the string pointers
+	 /*this doesnt really free it, just the string pointers */
 	 free_Address(&(ma.a));
       }
       if ((ma.rt==DELETED_PALM_REC) || (ma.rt==MODIFIED_PALM_REC)) {

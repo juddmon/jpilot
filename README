@@ -75,7 +75,14 @@ BACKUP and SYNC:
 The Sync button will sync the 4 applications with the palm pilot.
 The Backup button will backup every program and database from the palm pilot.
 
-Useless statistic:
+CLOCK UPDATE and flickers:
+
+I don't know why, but the scrollbars flicker when the clock updates.  On some
+systems it is bad, others not at all.  To get rid of this, just go into
+preferences and choose a time without seconds.  Then the clock will only
+update every minute.
+
+USELESS STATISTIC:
 
 I wrote about 600 lines of this code on my Palm Pilot using memo while I was
 away from my computer.

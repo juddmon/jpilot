@@ -21,7 +21,6 @@ AC_SUBST(ccoptions)
 cflags=$CFLAGS
 AC_SUBST(cflags)
 
-
 dnl Check for pilot-link libs
 pilot_prefix=""
 AC_ARG_WITH(pilot_prefix,
@@ -55,10 +54,14 @@ fi
 
 
 
+dnl Solaris needs the socket library
+AC_CHECK_LIB(socket, main, PILOT_LIBS=$PILOT_LIBS" -lsocket", , )
+
 dnl Maybe installed
 AC_MSG_CHECKING(for pilot library files)
 pilotlibs=no
 PILOT_LIBS="-lpisock"
+
 for pilot_libs in $pilot_prefix/lib /usr/lib /usr/local/lib/ \
   /usr/extra/pilot/lib ; do
    if test -r "$pilot_libs/libpisock.so" ; then
@@ -75,30 +78,36 @@ else
    AC_MSG_RESULT(found at $pilot_libs)
 fi
 
-dnl Link a tiny program to make sure we have the environment right
-AC_MSG_CHECKING(to see if I can compile a pilot link program)
-ac_save_CFLAGS="$CFLAGS"
-CFLAGS="$CFLAGS $PILOT_FLAGS"
-ac_save_LIBS="$LIBS"
-LIBS="$LIBS $PILOT_LIBS"
+AC_ARG_ENABLE(pl-test, [  --disable-pl-test       Do not try to compile \
+a test pilot-link program], enable_pl_test=no, enable_pl_test=yes)
 
-pilotcompile=no
+if test "x$enable_pl_test" = "xyes"; then
+   dnl Link a tiny program to make sure we have the environment right
+   AC_MSG_CHECKING(to see if I can compile a pilot link program)
+   ac_save_CFLAGS="$CFLAGS"
+   CFLAGS="$CFLAGS $PILOT_FLAGS"
+   ac_save_LIBS="$LIBS"
+   LIBS="$LIBS $PILOT_LIBS"
 
-AC_TRY_LINK([#include "pi-config.h"
-#include "pi-socket.h"], [pi_close (0);] , pilotcompile=yes, , )
+   pilotcompile=no
+
+   AC_TRY_LINK([#include "pi-config.h"
+   #include "pi-socket.h"], [pi_close (0);] , pilotcompile=yes, , )
 
 
-if test $pilotcompile = no ; then
-   AC_MSG_RESULT(no)
-   AC_MSG_ERROR(Could not compile a test pilot-link program)
-else
-   AC_MSG_RESULT(ok)
-   AC_SUBST(PILOT_FLAGS)
-   AC_SUBST(PILOT_LIBS)
-fi
+   if test $pilotcompile = no ; then
+      AC_MSG_RESULT(no)
+      AC_MSG_ERROR(Could not compile a test pilot-link program)
+   else
+      AC_MSG_RESULT(ok)
+      AC_SUBST(PILOT_FLAGS)
+      AC_SUBST(PILOT_LIBS)
+   fi
 
 CFLAGS="$save_CFLAGS"
 LIBS="$save_LIBS"
+
+fi
 
 
 dnl Checking for GTK version

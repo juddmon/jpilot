@@ -21,16 +21,16 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include "utils.h"
-//#include "prefs.h"
+/*#include "prefs.h" */
 #include "log.h"
 #include "datebook.h"
-//#include "address.h"
-//#include "todo.h"
-//#include "memo.h"
+/*#include "address.h" */
+/*#include "todo.h" */
+/*#include "memo.h" */
 #include <pi-datebook.h>
-//#include <pi-address.h>
-//#include <pi-todo.h>
-//#include <pi-memo.h>
+/*#include <pi-address.h> */
+/*#include <pi-todo.h> */
+/*#include <pi-memo.h> */
 
 static gboolean cb_destroy(GtkWidget *widget)
 {
@@ -69,17 +69,17 @@ void cb_monthview_gui(GtkWidget *widget, gpointer data)
    vbox = gtk_vbox_new(FALSE, 0);
    gtk_container_add(GTK_CONTAINER(window), vbox);
 
-//   hbox = gtk_hbox_new(FALSE, 0);
- //  gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
+/*   hbox = gtk_hbox_new(FALSE, 0); */
+ /*  gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0); */
 
    table = gtk_table_new(7, 6, TRUE);
    gtk_box_pack_start(GTK_BOX(vbox), table, FALSE, FALSE, 0);
    
    for (w=0; w<5; w++) {
       for (d=0; d<7; d++) {
-//	 label = gtk_label_new("1");
-//	 gtk_widget_set_name(GTK_WIDGET(label), "label_box_cal");
-//	 gtk_table_attach_defaults(GTK_TABLE(table), label, d, d+1, w, w+1);
+/*	 label = gtk_label_new("1"); */
+/*	 gtk_widget_set_name(GTK_WIDGET(label), "label_box_cal"); */
+/*	 gtk_table_attach_defaults(GTK_TABLE(table), label, d, d+1, w, w+1); */
 	 text = gtk_text_new(NULL, NULL);
 	 gtk_widget_set_usize(GTK_WIDGET(text), 60, 90);
 	 sprintf(str, "%d", w*7 + d + 1);
@@ -88,7 +88,7 @@ void cb_monthview_gui(GtkWidget *widget, gpointer data)
       }
    }
 
-   // Create a "Quit" button
+   /* Create a "Quit" button */
    button = gtk_button_new_with_label("Close");
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_quit), window);

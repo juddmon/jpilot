@@ -19,17 +19,20 @@
 #ifndef __PREFS_H__
 #define __PREFS_H__
 
-#define NUM_PREFS 10
 #define PREF_RCFILE 0
 #define PREF_TIME 1
 #define PREF_SHORTDATE 2
 #define PREF_LONGDATE 3
-#define PREF_FDOW 4 //First Day Of the Week
+#define PREF_FDOW 4 /*First Day Of the Week */
 #define PREF_SHOW_DELETED 5
 #define PREF_SHOW_MODIFIED 6
-#define PREF_PORT 7
-#define PREF_RATE 8
-#define PREF_USER 9
+#define PREF_HIDE_COMPLETED 7
+#define PREF_HIGHLIGHT 8
+#define PREF_PORT 9
+#define PREF_RATE 10
+#define PREF_USER 11
+
+#define NUM_PREFS 12
 
 #define NUM_SHORTDATES  8
 #define NUM_LONGDATES  7
@@ -53,7 +56,7 @@ typedef struct {
    char svalue[MAX_PREF_VALUE+2];
 } prefType;
 
-//extern prefType glob_prefs[NUM_PREFS];
+/*extern prefType glob_prefs[NUM_PREFS]; */
 
 int read_rc_file();
 int write_rc_file();
@@ -62,7 +65,7 @@ int get_pref(int which, int *n, const char **ret);
 int get_pref_dmy_order();
 int set_pref(int which, int n);
 int set_pref_char(int which, char *string);
-//This function is used externally to free up any memory that prefs is using
+/*This function is used externally to free up any memory that prefs is using */
 void free_prefs();
 
 #endif

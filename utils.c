@@ -30,16 +30,17 @@
 #include <pi-address.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-//#include <unistd.h>
+/*#include <unistd.h> */
 #include <utime.h>
 #include <time.h>
+#include <errno.h>
 
 #include <pi-source.h>
 #include <pi-socket.h>
 #include <pi-dlp.h>
 #include <pi-file.h>
 
-//Stuff for the dialog window
+/*Stuff for the dialog window */
 GtkWidget *dialog;
 int dialog_result;
 
@@ -51,8 +52,8 @@ unsigned int glob_find_year;
 gint timeout_date(gpointer data)
 {
    extern GtkWidget *glob_date_label;
-   char str[50];
-   char datef[50];
+   char str[102];
+   char datef[102];
    const char *svalue1, *svalue2;
    int ivalue;
    time_t ltime;
@@ -65,7 +66,7 @@ gint timeout_date(gpointer data)
    now = localtime(&ltime);
 
    
-   //Build a long date string
+   /*Build a long date string */
    get_pref(PREF_LONGDATE, &ivalue, &svalue1);
    get_pref(PREF_TIME, &ivalue, &svalue2);
    if ((svalue1==NULL)||(svalue2==NULL)) {
@@ -73,7 +74,8 @@ gint timeout_date(gpointer data)
    } else {
       sprintf(datef, "Today is %%A, %s %s", svalue1, svalue2);
    }
-   strftime(str, 50, datef, now);
+   strftime(str, 100, datef, now);
+   str[100]='\0';
    
    gtk_label_set_text(GTK_LABEL(glob_date_label), str);
    return TRUE;
@@ -115,14 +117,14 @@ struct move_sw {
    GtkWidget *sw;
 };
 
-//
-//This function needs to be called when the screen isn't finished
-//drawing yet.  Moving the scrollbar immediately would have no effect.
-//
+/* */
+/*This function needs to be called when the screen isn't finished */
+/*drawing yet.  Moving the scrollbar immediately would have no effect. */
+/* */
 void move_scrolled_window_hack(GtkWidget *sw, float percentage)
 {
-   //This is so that the caller doesn't have to worry about making
-   //sure they use a static variable (required for callback)
+   /*This is so that the caller doesn't have to worry about making */
+   /*sure they use a static variable (required for callback) */
    static struct move_sw move_this;
 
    move_this.percentage = percentage;
@@ -138,8 +140,8 @@ gint cb_timer_move_scrolled_window(gpointer data)
    
    move_this = data;
    r = move_scrolled_window(move_this->sw, move_this->percentage);
-   //if we return TRUE then this function will get called again
-   //if we return FALSE then it will be taken out of timer
+   /*if we return TRUE then this function will get called again */
+   /*if we return FALSE then it will be taken out of timer */
    if (r) {
       return TRUE;
    } else {
@@ -160,7 +162,7 @@ int move_scrolled_window(GtkWidget *sw, float percentage)
    lower = GTK_ADJUSTMENT(sb->range.adjustment)->lower;
    page_size = GTK_ADJUSTMENT(sb->range.adjustment)->page_size;
    
-   //The screen isn't done drawing yet, so we have to leave.
+   /*The screen isn't done drawing yet, so we have to leave. */
    if (page_size == 0) {
       return 1;
    }
@@ -174,7 +176,7 @@ int move_scrolled_window(GtkWidget *sw, float percentage)
    return 0;
 }
 
-//returns 0 if not found, 1 if found
+/*returns 0 if not found, 1 if found */
 int clist_find_id(GtkWidget *clist,
 		  unsigned int unique_id,
 		  int *found_at,
@@ -186,7 +188,7 @@ int clist_find_id(GtkWidget *clist,
    *found_at = 0;
    *total_count = 0;
 
-   //100000 is just to prevent ininite looping during a solar flare
+   /*100000 is just to prevent ininite looping during a solar flare */
    for (found = i = 0; i<100000; i++) {
       ma = gtk_clist_get_row_data(GTK_CLIST(clist), i);
       if (ma < (MyAddress *)CLIST_MIN_DATA) {
@@ -211,12 +213,12 @@ int get_pixmaps(GtkWidget *widget,
 		GdkBitmap **out_mask_note, GdkBitmap **out_mask_alarm,
 		GdkBitmap **out_mask_check, GdkBitmap **out_mask_checked)
 {
-//Note pixmap
+/*Note pixmap */
 char * xpm_note[] = {
    "16 16 3 1",
      "       c None",
      ".      c #000000000000",
-//     "X      c #FFFFFFFFFFFF",
+/*     "X      c #FFFFFFFFFFFF", */
      "X      c #cccccccccccc",
      "                ",
      "   ......       ",
@@ -236,12 +238,12 @@ char * xpm_note[] = {
      "                "
 };
 
-//Alarm pixmap
+/*Alarm pixmap */
 char * xpm_alarm[] = {
    "16 16 3 1",
      "       c None",
      ".      c #000000000000",
-//     "X      c #FFFFFFFFFFFF",
+/*     "X      c #FFFFFFFFFFFF", */
      "X      c #cccccccccccc",
      "                ",
      "   .       .    ",
@@ -265,7 +267,7 @@ char * xpm_check[] = {
    "16 16 3 1",
      "       c None",
      ".      c #000000000000",
-//     "X      c #FFFFFFFFFFFF",
+/*     "X      c #FFFFFFFFFFFF", */
      "X      c #cccccccccccc",
      "                ",
      "   .........    ",
@@ -338,8 +340,8 @@ char * xpm_checked[] = {
    
    inited=1;
 
-   //Make the note pixmap
-   //style = gtk_widget_get_style(window);
+   /*Make the note pixmap */
+   /*style = gtk_widget_get_style(window); */
    style = gtk_widget_get_style(widget);
    pixmap_note = gdk_pixmap_create_from_xpm_d(widget->window,  &mask_note,
 					      &style->bg[GTK_STATE_NORMAL],
@@ -347,21 +349,21 @@ char * xpm_checked[] = {
    pixmapwid_note = gtk_pixmap_new(pixmap_note, mask_note);
    gtk_widget_show(pixmapwid_note);
 
-   //Make the alarm pixmap
+   /*Make the alarm pixmap */
    pixmap_alarm = gdk_pixmap_create_from_xpm_d(widget->window,  &mask_alarm,
 					       &style->bg[GTK_STATE_NORMAL],
 					       (gchar **)xpm_alarm);
    pixmapwid_alarm = gtk_pixmap_new(pixmap_alarm, mask_alarm);
    gtk_widget_show(pixmapwid_alarm);
 
-   //Make the check pixmap
+   /*Make the check pixmap */
    pixmap_check = gdk_pixmap_create_from_xpm_d(widget->window,  &mask_check,
 					       &style->bg[GTK_STATE_NORMAL],
 					       (gchar **)xpm_check);
    pixmapwid_check = gtk_pixmap_new(pixmap_check, mask_check);
    gtk_widget_show(pixmapwid_check);
 
-   //Make the checked pixmap
+   /*Make the checked pixmap */
    pixmap_checked = gdk_pixmap_create_from_xpm_d(widget->window,  &mask_checked,
 					       &style->bg[GTK_STATE_NORMAL],
 					       (gchar **)xpm_checked);
@@ -381,9 +383,9 @@ char * xpm_checked[] = {
 }
 
 
-//
-//Start of Dialog window code
-//
+/* */
+/*Start of Dialog window code */
+/* */
 gint cb_timer_raise_dialog(gpointer data)
 {
    if (GTK_IS_WIDGET(dialog)) {
@@ -397,7 +399,7 @@ gint cb_timer_raise_dialog(gpointer data)
 void cb_dialog_button_1(GtkWidget *widget,
 			gpointer   data)
 {
-   //dialog_result=GPOINTER_TO_INT(data);
+   /*dialog_result=GPOINTER_TO_INT(data); */
    dialog_result=DIALOG_SAID_1;
 
    gtk_widget_destroy(dialog);
@@ -406,7 +408,7 @@ void cb_dialog_button_1(GtkWidget *widget,
 void cb_dialog_button_2(GtkWidget *widget,
 			gpointer   data)
 {
-   //dialog_result=GPOINTER_TO_INT(data);
+   /*dialog_result=GPOINTER_TO_INT(data); */
    dialog_result=DIALOG_SAID_2;
 
    gtk_widget_destroy(dialog);
@@ -415,7 +417,7 @@ void cb_dialog_button_2(GtkWidget *widget,
 void cb_dialog_button_3(GtkWidget *widget,
 			gpointer   data)
 {
-   //dialog_result=GPOINTER_TO_INT(data);
+   /*dialog_result=GPOINTER_TO_INT(data); */
    dialog_result=DIALOG_SAID_3;
 
    gtk_widget_destroy(dialog);
@@ -429,7 +431,7 @@ static gboolean cb_destroy_dialog(GtkWidget *widget)
    return FALSE;
 }
 
-//nob = number of buttons (1-3)
+/*nob = number of buttons (1-3) */
 int dialog_generic(GdkWindow *main_window,
 		   int w, int h,
 		   char *title, char *frame_text,
@@ -445,11 +447,11 @@ int dialog_generic(GdkWindow *main_window,
    gdk_window_get_position(main_window, &px, &py);
    gdk_window_get_size(main_window, &pw, &ph);
 
-   //Center the window in the main window
+   /*Center the window in the main window */
    x=px+pw/2-w/2;
    y=py+ph/2-h/2;
    
-   //dialog=gtk_window_new(GTK_WINDOW_TOPLEVEL);
+   /*dialog=gtk_window_new(GTK_WINDOW_TOPLEVEL); */
    dialog = gtk_widget_new(GTK_TYPE_WINDOW,
 			   "type", GTK_WINDOW_DIALOG,
 			   "x", x, "y", y,
@@ -457,7 +459,7 @@ int dialog_generic(GdkWindow *main_window,
 			   "title", title,
 			   NULL);
 
-   //gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_MOUSE);
+   /*gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_MOUSE); */
    
    gtk_signal_connect(GTK_OBJECT(dialog), "destroy",
                       GTK_SIGNAL_FUNC(cb_destroy_dialog), dialog);
@@ -477,8 +479,8 @@ int dialog_generic(GdkWindow *main_window,
    gtk_container_add(GTK_CONTAINER(frame1), vbox1);
 
    label1 = gtk_label_new(text);
-   //This doesn\'t seem to work...
-   //gtk_label_set_line_wrap(GTK_LABEL(label1), TRUE);
+   /*This doesn\'t seem to work... */
+   /*gtk_label_set_line_wrap(GTK_LABEL(label1), TRUE); */
 
    gtk_box_pack_start(GTK_BOX(vbox1), label1, FALSE, FALSE, 2);
    gtk_box_pack_start(GTK_BOX(vbox1), hbox1, TRUE, TRUE, 2);
@@ -516,13 +518,13 @@ int dialog_generic(GdkWindow *main_window,
    return dialog_result;
 }
 
-//creates the full path name of a file in the ~/.jpilot dir
+/*creates the full path name of a file in the ~/.jpilot dir */
 int get_home_file_name(char *file, char *full_name, int max_size)
 {
    char *home, default_path[]=".";
 
    home = getenv("HOME");
-   if (!home) {//Not home;
+   if (!home) {/*Not home; */
       jpilot_logf(LOG_WARN, "Can't get HOME environment variable\n");
    }
    if (strlen(home)>(max_size-strlen(file)-strlen("/.jpilot/")-2)) {
@@ -534,9 +536,9 @@ int get_home_file_name(char *file, char *full_name, int max_size)
 }
 
 
-//
-//Returns 0 if ok
-//
+/* */
+/*Returns 0 if ok */
+/* */
 int check_hidden_dir()
 {
    struct stat statb;
@@ -548,9 +550,9 @@ int check_hidden_dir()
    hidden_dir[strlen(hidden_dir)-1]='\0';
 
    if (stat(hidden_dir, &statb)) {
-      //directory isn\'t there, create it
+      /*directory isn\'t there, create it */
       if (mkdir(hidden_dir, 0777)) {
-	 //Can\'t create directory
+	 /*Can\'t create directory */
 	 jpilot_logf(LOG_WARN, "Can't create directory %s\n", hidden_dir);
 	 return 1;
       }
@@ -559,13 +561,13 @@ int check_hidden_dir()
 	 return 1;
       }
    }
-   //Is it a directory?
+   /*Is it a directory? */
    if (!S_ISDIR(statb.st_mode)) {
       jpilot_logf(LOG_WARN, "%s doesn't appear to be a directory.\n"
 		  "I need it to be.\n", hidden_dir);
       return 1;
    }
-   //Can we write in it?
+   /*Can we write in it? */
    get_home_file_name("test", test_file, 256);
    out = fopen(test_file, "w+");
    if (!out) {
@@ -578,12 +580,12 @@ int check_hidden_dir()
    return 0;
 }
 
-//
-// month = 0-11
-// day = day of month 1-31
-// dow = day of week for first day of the month 0-6
-// ndim = number of days in month 28-31
-//
+/* */
+/* month = 0-11 */
+/* day = day of month 1-31 */
+/* dow = day of week for first day of the month 0-6 */
+/* ndim = number of days in month 28-31 */
+/* */
 void get_month_info(int month, int day, int year, int *dow, int *ndim)
 {
    time_t ltime, t;
@@ -598,7 +600,7 @@ void get_month_info(int month, int day, int year, int *dow, int *ndim)
    new_time.tm_sec=0;
    new_time.tm_min=0;
    new_time.tm_hour=11;
-   new_time.tm_mday=day; //day of month 1-31
+   new_time.tm_mday=day; /*day of month 1-31 */
    new_time.tm_mon=month;
    new_time.tm_year=year;
    new_time.tm_isdst=now->tm_isdst;
@@ -606,7 +608,7 @@ void get_month_info(int month, int day, int year, int *dow, int *ndim)
    t = mktime(&new_time);
    *dow = new_time.tm_wday;
    
-   //I know this isn't 100% correct
+   /*I know this isn't 100% correct */
    if (month == 1) {
       if (year%4 == 0) {
 	 days_in_month[1]++;
@@ -628,7 +630,7 @@ void get_this_month_info(int *dow, int *ndim)
 
 int get_next_unique_pc_id(unsigned int *next_unique_id)
 {
-   //PCFileHeader   file_header;
+   /*PCFileHeader   file_header; */
    FILE *pc_in_out;
    char file_name[256];
 
@@ -639,7 +641,7 @@ int get_next_unique_pc_id(unsigned int *next_unique_id)
    }
 
    if (ftell(pc_in_out)==0) {
-      //We have to write out the file header
+      /*We have to write out the file header */
       *next_unique_id=1;
       if (fwrite(next_unique_id, sizeof(*next_unique_id), 1, pc_in_out) != 1) {
 	 jpilot_logf(LOG_WARN, "Error writing pc header to file: next_id\n");
@@ -659,8 +661,8 @@ int get_next_unique_pc_id(unsigned int *next_unique_id)
    if (fseek(pc_in_out, 0, SEEK_SET)) {
       jpilot_logf(LOG_WARN, "fseek failed\n");
    }
-   //rewind(pc_in_out);
-   //todo - if > 16777216 then cleanup (thats a lot of records!)
+   /*rewind(pc_in_out); */
+   /*todo - if > 16777216 then cleanup (thats a lot of records!) */
    if (fwrite(next_unique_id, sizeof(*next_unique_id), 1, pc_in_out) != 1) {
       jpilot_logf(LOG_WARN, "Error writing pc header to file: next_id\n");
    }
@@ -688,7 +690,7 @@ int read_gtkrc_file()
    strncpy(filename, svalue, 255);
    filename[255]='\0';
    
-   //Try to read the file out of the home directory first
+   /*Try to read the file out of the home directory first */
    get_home_file_name(filename, fullname, 255);
 
    if (stat(fullname, &buf)==0) {
@@ -746,8 +748,59 @@ int unlink_file(char *filename)
    return unlink(fullname);
 }
 
-//These next 2 functions were copied from pi-file.c in the pilot-link app
-// Exact value of "Jan 1, 1970 0:00:00 GMT" - "Jan 1, 1904 0:00:00 GMT"
+/* This function will copy an empty DB file */
+/* from the share directory to the users HOME directory */
+/* if it doesn't exist already and its length is > 0 */
+int check_copy_DBs_to_home()
+{
+   FILE *in, *out;
+   struct stat sbuf;
+   int i, c, r;
+   char destname[1024];
+   char srcname[1024];
+   char *dbname[]={
+      "DatebookDB.pdb",
+	"AddressDB.pdb",
+	"ToDoDB.pdb",
+	"MemoDB.pdb",
+	NULL
+   };
+
+   for (i=0; dbname[i]!=NULL; i++) {
+      get_home_file_name(dbname[i], destname, 1000);
+      r = stat(destname, &sbuf);
+      if (((r)&&(errno==ENOENT)) || (sbuf.st_size==0)) {
+	 /*The file doesn't exist or is zero in size, copy an empty DB file */
+	 if ((strlen(BASE_DIR) + strlen(EPN) + strlen(dbname[i])) > 1000) {
+	    jpilot_logf(LOG_DEBUG, "copy_DB_to_home filename too long\n");
+	    return -1;
+	 }
+	 sprintf(srcname, "%s/%s/%s/%s", BASE_DIR, "share", EPN, dbname[i]);
+	 in = fopen(srcname, "r");
+	 out = fopen(destname, "w");
+	 if (!in) {
+	    jpilot_logf(LOG_WARN, "Couldn't find empty DB file.\n");
+	    jpilot_logf(LOG_WARN, "jpilot may not be installed.\n");
+	    return -1;
+	 }
+	 if (!out) {
+	    fclose(in);
+	    return -1;
+	 }
+	 while (!feof(in)) {
+	    c = fgetc(in);
+	    fputc(c, out);
+	 }
+	 fclose(in);
+	 fclose(out);
+      }
+   }
+   return 0;
+}
+
+
+/*These next 2 functions were copied from pi-file.c in the pilot-link app */
+/* Exact value of "Jan 1, 1970 0:00:00 GMT" - "Jan 1, 1904 0:00:00 GMT" */
 #define PILOT_TIME_DELTA (unsigned)(2082844800)
  
 time_t
@@ -801,8 +854,8 @@ int raw_header_to_header(RawDBHeader *rdbh, DBHeader *dbh)
    return 0;
 }
 
-//returns 1 if found
-//        0 if eof
+/*returns 1 if found */
+/*        0 if eof */
 int find_next_offset(mem_rec_header *mem_rh, long fpos,
 		     unsigned int *next_offset,
 		     unsigned char *attrib, unsigned int *unique_id)
@@ -815,8 +868,8 @@ int find_next_offset(mem_rec_header *mem_rh, long fpos,
    for (temp_mem_rh=mem_rh; temp_mem_rh; temp_mem_rh = temp_mem_rh->next) {
       if ((temp_mem_rh->offset > fpos) && (temp_mem_rh->offset < found_at)) {
 	 found_at = temp_mem_rh->offset;
-	 // *attrib = temp_mem_rh->attrib;
-	 // *unique_id = temp_mem_rh->unique_id;
+	 /* *attrib = temp_mem_rh->attrib; */
+	 /* *unique_id = temp_mem_rh->unique_id; */
       }
       if ((temp_mem_rh->offset == fpos)) {
 	 found = 1;
@@ -855,9 +908,9 @@ void print_string(char *str, int len)
    jpilot_logf(LOG_STDOUT, "\n");
 }
 
-//
-//Warning, this function will move the file pointer
-//
+/* */
+/*Warning, this function will move the file pointer */
+/* */
 int get_app_info_size(FILE *in, int *size)
 {
    RawDBHeader rdbh;
@@ -896,12 +949,12 @@ int get_app_info_size(FILE *in, int *size)
    return 0;
 }
 
-//
-//This deletes a record from the appropriate Datafile
-//
+/* */
+/*This deletes a record from the appropriate Datafile */
+/* */
 int delete_pc_record(AppType app_type, void *VP, int flag)
 {
-//   int unique_id;
+/*   int unique_id; */
    FILE *pc_in;
    PCRecordHeader header;
    struct Appointment app;
@@ -921,7 +974,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       return -1;
    }
    
-   mapp=NULL;//to keep the compiler happy
+   mapp=NULL;/*to keep the compiler happy */
    switch (app_type) {
     case DATEBOOK:
       mapp = (MyAppointment *) VP;
@@ -1002,7 +1055,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       switch (app_type) {
        case DATEBOOK:
 	 app=mapp->a;
-	 //memset(&app, 0, sizeof(app));
+	 /*memset(&app, 0, sizeof(app)); */
 	 header.rec_len = pack_Appointment(&app, record, 65535);
 	 if (!header.rec_len) {
 	    PRINT_FILE_LINE;
@@ -1039,10 +1092,10 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       }
       jpilot_logf(LOG_DEBUG, "writing header to pc file\n");
       fwrite(&header, sizeof(header), 1, pc_in);
-      //todo write the real appointment from palm db
-      //Right now I am just writing an empty record
-      //This will be used for making sure that the palm record hasn't changed
-      //before we delete it
+      /*todo write the real appointment from palm db */
+      /*Right now I am just writing an empty record */
+      /*This will be used for making sure that the palm record hasn't changed */
+      /*before we delete it */
       jpilot_logf(LOG_DEBUG, "writing record to pc file, %d bytes\n", header.rec_len);
       fwrite(record, header.rec_len, 1, pc_in);
       jpilot_logf(LOG_DEBUG, "record deleted\n");
@@ -1097,7 +1150,7 @@ int cleanup_pc_file(AppType app_type)
       }
    }
 
-   //If there are no not-deleted records then remove the file
+   /*If there are no not-deleted records then remove the file */
    if (r == 0) {
       unlink_file(filename);
    }

@@ -1,1 +1,25 @@
-# This file is just a placeholder to make it show up in the preferences window
+# I only added the things I needed to get the functionality
+
+style "button"
+{
+bg[ACTIVE] = { 0.917, 0.917, 0.917 }
+}
+  
+style "button_set" = "button"
+{
+bg[NORMAL] = { 0.6, 0.6, 0.6 }
+}
+  
+style "button_today" = "button"
+{
+bg[NORMAL] = { 0.68, 0.68, 0.68 }
+}
+
+style "label_high"
+{
+fg[NORMAL] = { 0.0, 0.0, 0.9 }
+}
+
+widget "*.button_set" style "button_set"
+widget "*.button_today" style "button_today"
+widget "*.label_high" style "label_high"

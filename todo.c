@@ -53,7 +53,7 @@ int todo_compare(struct ToDo *todo1, struct ToDo *todo2,
    sort_by_priority = ai->sortByPriority;
    
    if (sort_by_priority == 0) {
-      // priority, due date
+      /* priority, due date */
       if ( (todo1->priority) < (todo2->priority) ) {
 	 return -1;
       }
@@ -70,7 +70,7 @@ int todo_compare(struct ToDo *todo1, struct ToDo *todo2,
 	 return 1;
       }
       t1 = mktime(&(todo1->due));
-      t2 = mktime(&(todo1->due));
+      t2 = mktime(&(todo2->due));
       if ( t1 < t2 ) {
 	 return -1;
       }
@@ -80,7 +80,7 @@ int todo_compare(struct ToDo *todo1, struct ToDo *todo2,
    }
       
    if (sort_by_priority == 1) {
-      // due date, priority
+      /* due date, priority */
       if ( !(todo1->indefinite) && (todo2->indefinite) ) {
 	 return -1;
       }
@@ -89,7 +89,7 @@ int todo_compare(struct ToDo *todo1, struct ToDo *todo2,
       }
       if ( !(todo1->indefinite) && !(todo2->indefinite) ) {
 	 t1 = mktime(&(todo1->due));
-	 t2 = mktime(&(todo1->due));
+	 t2 = mktime(&(todo2->due));
 	 if ( t1 < t2 ) {
 	    return -1;
 	 }
@@ -106,7 +106,7 @@ int todo_compare(struct ToDo *todo1, struct ToDo *todo2,
    }
 
    if (sort_by_priority == 2) {
-      // category, priority
+      /* category, priority */
       r = strcmp(ai->category.name[cat1],
 		 ai->category.name[cat2]);
       if (r) {
@@ -121,7 +121,7 @@ int todo_compare(struct ToDo *todo1, struct ToDo *todo2,
    }
 
    if (sort_by_priority == 3) {
-      // category, due date
+      /* category, due date */
       r = strcmp(ai->category.name[cat1],
 		 ai->category.name[cat2]);
       if (r) {
@@ -137,7 +137,7 @@ int todo_compare(struct ToDo *todo1, struct ToDo *todo2,
 	 return 1;
       }
       t1 = mktime(&(todo1->due));
-      t2 = mktime(&(todo1->due));
+      t2 = mktime(&(todo2->due));
       if ( t1 < t2 ) {
 	 return -1;
       }
@@ -234,7 +234,7 @@ static int pc_todo_read_next_rec(FILE *in, MyToDo *mtodo)
 int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib)
 {
    PCRecordHeader header;
-   //PCFileHeader   file_header;
+   /*PCFileHeader   file_header; */
    FILE *out;
    char record[65536];
    int rec_len;
@@ -334,7 +334,7 @@ int get_todo_app_info(struct ToDoAppInfo *ai)
       return -1;
    }
 #if defined(WITH_JAPANESE)
-   // Convert 'Category name' to EUC Japanese Kanji code
+   /* Convert 'Category name' to EUC Japanese Kanji code */
    {
       int i;
       for (i = 0; i < 16; i++)
@@ -350,15 +350,15 @@ int get_todo_app_info(struct ToDoAppInfo *ai)
 int get_todos(ToDoList **todo_list)
 {
    FILE *in, *pc_in;
-//   char db_name[34];
-//   char filler[100];
+/*   char db_name[34]; */
+/*   char filler[100]; */
    char *buf;
-//   unsigned char char_num_records[4];
-//   unsigned char char_ai_offset[4];//app info offset
+/*   unsigned char char_num_records[4]; */
+/*   unsigned char char_ai_offset[4]; //app info offset */
    int num_records, recs_returned, i, num, r;
    unsigned int offset, next_offset, rec_size;
-//   unsigned char c;
-   long fpos;  //file position indicator
+/*   unsigned char c; */
+   long fpos;  /*file position indicator */
    unsigned char attrib;
    unsigned int unique_id;
    mem_rec_header *mem_rh, *temp_mem_rh;
@@ -366,7 +366,7 @@ int get_todos(ToDoList **todo_list)
    RawDBHeader rdbh;
    DBHeader dbh;
    struct ToDo todo;
-   //struct AddressAppInfo ai;
+   /*struct AddressAppInfo ai; */
    ToDoList *temp_todo_list;
    MyToDo mtodo;
 
@@ -379,7 +379,7 @@ int get_todos(ToDoList **todo_list)
       jpilot_logf(LOG_WARN, "Error opening ToDoDB.pdb\n");
       return -1;
    }
-   //Read the database header
+   /*Read the database header */
    num = fread(&rdbh, sizeof(RawDBHeader), 1, in);
    if (num != 1) {
       if (ferror(in)) {
@@ -398,7 +398,7 @@ int get_todos(ToDoList **todo_list)
    jpilot_logf(LOG_DEBUG, "app info offset = %d\n", dbh.app_info_offset);
 #endif
 
-   //Read each record entry header
+   /*Read each record entry header */
    num_records = dbh.number_of_records;
    for (i=1; i<num_records+1; i++) {
       num = fread(&rh, sizeof(record_header), 1, in);
@@ -438,7 +438,7 @@ int get_todos(ToDoList **todo_list)
       while(!feof(in)) {
 	 fpos = ftell(in);
 	 find_next_offset(mem_rh, fpos, &next_offset, &attrib, &unique_id);
-	 //next_offset += 223;
+	 /*next_offset += 223; */
 	 rec_size = next_offset - fpos;
 #ifdef JPILOT_DEBUG
 	 jpilot_logf(LOG_DEBUG, "rec_size = %u\n",rec_size);
@@ -463,7 +463,7 @@ int get_todos(ToDoList **todo_list)
 	    continue;
 	 }
 #if defined(WITH_JAPANESE)
-      // Convert to EUC Japanese Kanji code
+      /* Convert to EUC Japanese Kanji code */
       if (todo.description != NULL)
          Sjis2Euc(todo.description, 65536);
       if (todo.note != NULL)
@@ -475,7 +475,7 @@ int get_todos(ToDoList **todo_list)
 	    break;
 	 }
 	 memcpy(&(temp_todo_list->mtodo.todo), &todo, sizeof(struct ToDo));
-	 //temp_address_list->ma.a = temp_a;
+	 /*temp_address_list->ma.a = temp_a; */
 	 temp_todo_list->app_type = TODO;
 	 temp_todo_list->mtodo.rt = PALM_REC;
 	 temp_todo_list->mtodo.attrib = attrib;
@@ -488,15 +488,15 @@ int get_todos(ToDoList **todo_list)
    fclose(in);
    free_mem_rec_header(&mem_rh);
 
-   //
-   //Get the appointments out of the PC database
-   //
+   /* */
+   /*Get the appointments out of the PC database */
+   /* */
    pc_in = open_file("ToDoDB.pc", "r");
    if (pc_in==NULL) {
       jpilot_logf(LOG_DEBUG, "open_file failed\n");
       return 0;
    }
-   //r = pc_datebook_read_file_header(pc_in);
+   /*r = pc_datebook_read_file_header(pc_in); */
    while(!feof(pc_in)) {
       r = pc_todo_read_next_rec(pc_in, &mtodo);
       if (r==TODO_EOF) break;
@@ -516,9 +516,9 @@ int get_todos(ToDoList **todo_list)
 	 *todo_list = temp_todo_list;
 	 recs_returned++;
 
-	 //temp_address_list->ma.attrib=0;
+	 /*temp_address_list->ma.attrib=0; */
       } else {
-	 //this doesnt really free it, just the string pointers
+	 /*this doesnt really free it, just the string pointers */
 	 free_ToDo(&(mtodo.todo));
       }
       if ((mtodo.rt==DELETED_PALM_REC) || (mtodo.rt==MODIFIED_PALM_REC)) {

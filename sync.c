@@ -38,7 +38,7 @@
 #include "prefs.h"
 #include "datebook.h"
 
-//#include <pi-source.h>
+/*#include <pi-source.h> */
 #include <pi-socket.h>
 #include <pi-dlp.h>
 #include <pi-file.h>
@@ -70,10 +70,10 @@ void sig_handler(int sig)
    jpilot_logf(LOG_DEBUG, "caught signal SIGCHLD\n");
    glob_child_pid = 0;
 
-   //wait for any child processes
+   /*wait for any child processes */
    waitpid(-1, NULL, WNOHANG);
 
-   //refresh the screen after a sync
+   /*refresh the screen after a sync */
    cb_app_button(NULL, NULL);
    
    return;
@@ -89,7 +89,7 @@ static int writef(int fp, char *format, ...)
 
    va_start(val, format);
    g_vsnprintf(buf, WRITE_MAX_BUF ,format, val);
-   //just in case g_vsnprintf reached the max
+   /*just in case g_vsnprintf reached the max */
    buf[WRITE_MAX_BUF-1] = 0;
    va_end(val);
 
@@ -105,11 +105,6 @@ int sync_loop(const char *port, int full_backup)
    
    done=cons_errors=0;
 
-//   sleep(1);
-//   while (1) {
-//      write(pipe_out, "Syncing on device\n", 18);
-//      sleep(1);
-//   }
    r = sync_lock();
    if (r) {
       _exit(0);
@@ -132,6 +127,7 @@ int sync_loop(const char *port, int full_backup)
 }
 */
 
+#ifdef USE_LOCKING
 int sync_lock(int *fd)
 {
    pid_t pid;
@@ -152,7 +148,7 @@ int sync_lock(int *fd)
    lock.l_type = F_WRLCK;
    lock.l_start = 0;
    lock.l_whence = SEEK_SET;
-   lock.l_len = 0; //Lock to the end of file
+   lock.l_len = 0; /*Lock to the end of file */
    r = fcntl(*fd, F_SETLK, &lock);
 #else
    r = flock(*fd, LOCK_EX | LOCK_NB);
@@ -208,13 +204,14 @@ int sync_unlock(int fd)
    }
    return 0;
 }
-
+#endif
 
 int sync_once(const char *port, int full_backup)
 {
+#ifdef USE_LOCKING
    int r;
    int fd;
-   
+#endif   
 
    if (glob_child_pid) {
       jpilot_logf(LOG_WARN, PN": sync PID = %d\n", glob_child_pid);
@@ -229,7 +226,7 @@ int sync_once(const char *port, int full_backup)
       perror("fork");
       return 0;
     case 0:
-      //close(pipe_in);
+      /*close(pipe_in); */
       break;
     default:
       signal(SIGCHLD, sig_handler);
@@ -245,15 +242,19 @@ int sync_once(const char *port, int full_backup)
    _exit(0);
 #endif
    
+#ifdef USE_LOCKING
    r = sync_lock(&fd);
    if (r) {
       jpilot_logf(LOG_DEBUG, "Child cannot lock file\n");
       _exit(0);
    }
+#endif
 
    jpilot_sync(port, full_backup);
+#ifdef USE_LOCKING
    sync_unlock(fd);
-      jpilot_logf(LOG_DEBUG, "sync child exiting\n");
+#endif
+   jpilot_logf(LOG_DEBUG, "sync child exiting\n");
    _exit(0);
 }
 
@@ -270,13 +271,13 @@ int jpilot_sync(const char *port, int full_backup)
    device = NULL;
    if (port) {
       if (port[0]) {
-	 //A port was passed in to use
+	 /*A port was passed in to use */
 	 device=port;
 	 found = 1;
       }
    }
    if (!found) {
-      //No port was passed in, look in env
+      /*No port was passed in, look in env */
       device = getenv("PILOTPORT");
       if (device == NULL) {
 	 device = default_device;
@@ -321,13 +322,13 @@ int jpilot_sync(const char *port, int full_backup)
 
    dlp_ReadUserInfo(sd, &U);
    
-   //User name is read by the parent process and stored in the preferences
-   //So, this is more than just displaying it to the user
+   /*User name is read by the parent process and stored in the preferences */
+   /*So, this is more than just displaying it to the user */
    writef(pipe_out, "Username is \"%s\"\n", U.username);
    jpilot_logf(LOG_DEBUG, "Username = [%s]\n", U.username);
-//   set_pref_char(PREF_USER, U.username);
-   //writef(pipe_out, "passwordlen = [%d]\n", U.passwordLength);
-   //writef(pipe_out, "password = [%s]\n", U.password);
+/*   set_pref_char(PREF_USER, U.username); */
+   /*writef(pipe_out, "passwordlen = [%d]\n", U.passwordLength); */
+   /*writef(pipe_out, "password = [%s]\n", U.password); */
   
    if (dlp_OpenConduit(sd)<0) {
       writef(pipe_out, "Sync canceled\n");
@@ -349,7 +350,7 @@ int jpilot_sync(const char *port, int full_backup)
 #ifdef DATEBOOK_HACK
    hack_delete_record(sd);
 #endif
-   // Tell the user who it is, with a different PC id.
+   /* Tell the user who it is, with a different PC id. */
    U.lastSyncPC = 0x00010000;
    U.successfulSyncDate = time(NULL);
    U.lastSyncDate = U.successfulSyncDate;
@@ -431,7 +432,7 @@ int sync_application(AppType app_type, int sd)
       writef(pipe_out, "Unable to open %s\n",pc_filename);
       return -1;
    }
-   // Open the applications database, store access handle in db
+   /* Open the applications database, store access handle in db */
    if (dlp_OpenDB(sd, 0, dlpOpenReadWrite, palm_dbname, &db) < 0) {
       g_snprintf(log_entry, 255, "Unable to open %s\n\r", palm_dbname);
       log_entry[255]='\0';
@@ -473,8 +474,8 @@ int sync_application(AppType app_type, int sd)
 	 }
 
 #if defined(WITH_JAPANESE)
-	 // Convert to SJIS Japanese Kanji code (Palm use this code)
-	 //Write the record to the Palm Pilot
+	 /* Convert to SJIS Japanese Kanji code (Palm use this code) */
+	 /*Write the record to the Palm Pilot */
 	 switch (app_type) {
 	  case DATEBOOK: {
 	     struct Appointment a;
@@ -528,12 +529,13 @@ int sync_application(AppType app_type, int sd)
 
 	 if (ret < 0) {
 	    writef(pipe_out, "dlp_WriteRecord failed\n");
-	    dlp_AddSyncLogEntry(sd, error_log_message_w);	    
+	    dlp_AddSyncLogEntry(sd, error_log_message_w);
 	 } else {
-	    //hack2
+	    /*Delete the record from the PC database if it succeeded */
+	    /*hack2 */
 	    wrote_to_datebook = 1;
 	    dlp_AddSyncLogEntry(sd, write_log_message);
-	    //Now mark the record as deleted in the pc file
+	    /*Now mark the record as deleted in the pc file */
 	    if (fseek(pc_in, -(sizeof(header)+rec_len), SEEK_CUR)) {
 	       writef(pipe_out, "fseek failed - fatal error\n");
 	       fclose(pc_in);
@@ -545,17 +547,17 @@ int sync_application(AppType app_type, int sd)
       }
 
       if ((header.rt==DELETED_PALM_REC) || (header.rt==MODIFIED_PALM_REC)) {
-	 //writef(pipe_out, "Deleting Palm id=%d,\n",header.unique_id);
+	 /*writef(pipe_out, "Deleting Palm id=%d,\n",header.unique_id); */
 	 ret = dlp_DeleteRecord(sd, db, 0, header.unique_id);
 	 
 	 if (ret < 0) {
 	    writef(pipe_out, "dlp_DeleteRecord failed\n"\
-            "This could be because the record was already deleted on the Palm");
+            "This could be because the record was already deleted on the Palm\n");
 	    dlp_AddSyncLogEntry(sd, error_log_message_d);
 	 } else {
 	    dlp_AddSyncLogEntry(sd, delete_log_message);
 	 }
-	 //Now mark the record as deleted
+	 /*Now mark the record as deleted */
 	 if (fseek(pc_in, -sizeof(header), SEEK_CUR)) {
 	    writef(pipe_out, "fseek failed - fatal error\n");
 	    fclose(pc_in);
@@ -565,7 +567,7 @@ int sync_application(AppType app_type, int sd)
 	 fwrite(&header, sizeof(header), 1, pc_in);
       }
 
-      //skip this record now that we are done with it
+      /*skip this record now that we are done with it */
       if (fseek(pc_in, rec_len, SEEK_CUR)) {
 	 writef(pipe_out, "fseek failed - fatal error\n");
 	 fclose(pc_in);
@@ -574,7 +576,7 @@ int sync_application(AppType app_type, int sd)
    }
    fclose(pc_in);
 
-   //fields[fieldno++] = cPtr;
+   /*fields[fieldno++] = cPtr; */
 
 #ifdef JPILOT_DEBUG
    dlp_ReadOpenDBInfo(sd, db, &num);
@@ -584,15 +586,15 @@ int sync_application(AppType app_type, int sd)
    dlp_ResetSyncFlags(sd, db);
    dlp_CleanUpDatabase(sd, db);
 
-   // Close the database
+   /* Close the database */
    dlp_CloseDB(sd, db);
 
    return 0;
 }
 
-//
-// Fetch the databases from the palm if modified
-//
+/* */
+/* Fetch the databases from the palm if modified */
+/* */
 int sync_fetch(int sd, int full_backup)
 {
 #define MAX_DBNAME 50
@@ -644,7 +646,7 @@ int sync_fetch(int sd, int full_backup)
 	 writef(pipe_out, "flags=0%x\n", info.flags);
 	 writef(pipe_out, "backup_flag=%d\n", info.flags & dlpDBFlagBackup);
 #endif
-	 //If modification times are the same then we don't need to fetch it
+	 /*If modification times are the same then we don't need to fetch it */
 	 if (info.modifyDate == statb.st_mtime) {
 	    writef(pipe_out, "%s is up to date, fetch skipped.\n", db_copy_name);
 	    continue;
@@ -666,7 +668,7 @@ int sync_fetch(int sd, int full_backup)
 	 }
 	 pi_file_close(pi_fp);
    
-	 //Set the create and modify times of local file to same as on palm
+	 /*Set the create and modify times of local file to same as on palm */
 	 times.actime = info.createDate;
 	 times.modtime = info.modifyDate;
 	 utime(full_name, &times);
@@ -687,21 +689,21 @@ static int hack_write_record(int sd)
    
    jpilot_logf(LOG_DEBUG, "Entering hack_write_record()\n");
    if (wrote_to_datebook) {
-      // Open the applications database, store access handle in db
+      /* Open the applications database, store access handle in db */
       if (dlp_OpenDB(sd, 0, dlpOpenWrite, "DatebookDB", &db) < 0) {
 	 dlp_AddSyncLogEntry(sd, "Unable to open DatebookDB\n\r");
 	 return -1;
       }
       datebook_create_bogus_record(record, 65536, &rec_len);
       
-      //Write a bogus record to the Palm Pilot, to delete later.
+      /*Write a bogus record to the Palm Pilot, to delete later. */
       jpilot_logf(LOG_DEBUG, "writing bogus record\n");
       ret = dlp_WriteRecord(sd, db, 0, 0, 0,
 		      record, rec_len, &hack_record_id);
       if (ret<0) {
 	 jpilot_logf(LOG_WARN, "write bogus record failed\n");
       }
-      // Close the database
+      /* Close the database */
       dlp_CloseDB(sd, db);
    }
    return 0;
@@ -714,7 +716,7 @@ static int hack_delete_record(int sd)
    int db;
 
    if (hack_record_id) {
-      // Open the applications database, store access handle in db
+      /* Open the applications database, store access handle in db */
       if (dlp_OpenDB(sd, 0, dlpOpenWrite, "DatebookDB", &db) < 0) {
 	 dlp_AddSyncLogEntry(sd, "Unable to open DatebookDB\r\n");
 	 pi_close(sd);
@@ -723,7 +725,7 @@ static int hack_delete_record(int sd)
       jpilot_logf(LOG_DEBUG, "deleting bogus record\n");
       dlp_DeleteRecord(sd, db, 0, hack_record_id);
 
-      // Close the database
+      /* Close the database */
       dlp_CloseDB(sd, db);
    }
    return 0;
@@ -769,8 +771,8 @@ static int sync_install(char *filename, int sd)
 }
 
 
-//file must not be open elsewhere when this is called
-//the first line is 0
+/*file must not be open elsewhere when this is called */
+/*the first line is 0 */
 static int sync_process_install_file(int sd)
 {
    FILE *in;

@@ -79,7 +79,7 @@ int jpilot_logf(int level, char *format, ...)
 
    va_start(val, format);
    size = g_vsnprintf(buf, WRITE_MAX_BUF ,format, val);
-   //just in case g_vsnprintf reached the max
+   /*just in case g_vsnprintf reached the max */
    if (size == -1) {
       buf[WRITE_MAX_BUF-1] = '\0';
       size=WRITE_MAX_BUF-1;

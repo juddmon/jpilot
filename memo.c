@@ -23,7 +23,7 @@
 #include <pi-socket.h>
 #include <pi-memo.h>
 #include <pi-dlp.h>
-//#include "memo.h"
+/*#include "memo.h" */
 #include "utils.h"
 #include "log.h"
 
@@ -38,7 +38,7 @@
 int pc_memo_write(struct Memo *memo, PCRecType rt, unsigned char attrib)
 {
    PCRecordHeader header;
-   //PCFileHeader   file_header;
+   /*PCFileHeader   file_header; */
    FILE *out;
    char record[65536];
    int rec_len;
@@ -200,15 +200,15 @@ int get_memo_app_info(struct MemoAppInfo *ai)
 int get_memos(MemoList **memo_list)
 {
    FILE *in, *pc_in;
-//   char db_name[34];
-//   char filler[100];
+/*   char db_name[34]; */
+/*   char filler[100]; */
    char *buf;
-//   unsigned char char_num_records[4];
-//   unsigned char char_ai_offset[4];//app info offset
+/*   unsigned char char_num_records[4]; */
+/*   unsigned char char_ai_offset[4]; //app info offset */
    int num_records, recs_returned, i, num, r;
    unsigned int offset, next_offset, rec_size;
-//   unsigned char c;
-   long fpos;  //file position indicator
+/*   unsigned char c; */
+   long fpos;  /*file position indicator */
    unsigned char attrib;
    unsigned int unique_id;
    mem_rec_header *mem_rh, *temp_mem_rh;
@@ -216,7 +216,7 @@ int get_memos(MemoList **memo_list)
    RawDBHeader rdbh;
    DBHeader dbh;
    struct Memo memo;
-   //struct AddressAppInfo ai;
+   /*struct AddressAppInfo ai; */
    MemoList *temp_memo_list;
    MyMemo mmemo;
 
@@ -229,7 +229,7 @@ int get_memos(MemoList **memo_list)
       jpilot_logf(LOG_WARN, "Error opening MemoDB.pdb\n");
       return -1;
    }
-   //Read the database header
+   /*Read the database header */
    num = fread(&rdbh, sizeof(RawDBHeader), 1, in);
    if (num != 1) {	
       if (ferror(in)) {
@@ -241,20 +241,20 @@ int get_memos(MemoList **memo_list)
 	 return MEMO_EOF;
       }      
    }
-//   if (feof(in)) {
-//      jpilot_logf(LOG_WARN, "Error reading MemoDB.pdb\n");
-//      fclose(in);
-//      return -1;
-//   }
+/*   if (feof(in)) { */
+/*      jpilot_logf(LOG_WARN, "Error reading MemoDB.pdb\n"); */
+/*      fclose(in); */
+/*      return -1; */
+/*   } */
    raw_header_to_header(&rdbh, &dbh);
    
    jpilot_logf(LOG_DEBUG, "db_name = %s\n", dbh.db_name);
    jpilot_logf(LOG_DEBUG, "num records = %d\n", dbh.number_of_records);
    jpilot_logf(LOG_DEBUG, "app info offset = %d\n", dbh.app_info_offset);
 
-   //fread(filler, 2, 1, in);
+   /*fread(filler, 2, 1, in); */
 
-   //Read each record entry header
+   /*Read each record entry header */
    num_records = dbh.number_of_records;
    for (i=1; i<num_records+1; i++) {
       num = fread(&rh, sizeof(record_header), 1, in);
@@ -295,7 +295,7 @@ int get_memos(MemoList **memo_list)
       while(!feof(in)) {
 	 fpos = ftell(in);
 	 find_next_offset(mem_rh, fpos, &next_offset, &attrib, &unique_id);
-	 //next_offset += 223;
+	 /*next_offset += 223; */
 	 rec_size = next_offset - fpos;
 #ifdef JPILOT_DEBUG
 	 jpilot_logf(LOG_DEBUG, "rec_size = %u\n",rec_size);
@@ -342,14 +342,14 @@ int get_memos(MemoList **memo_list)
    fclose(in);
    free_mem_rec_header(&mem_rh);
 
-   //
-   //Get the appointments out of the PC database
-   //
+   /* */
+   /*Get the appointments out of the PC database */
+   /* */
    pc_in = open_file("MemoDB.pc", "r");
    if (pc_in==NULL) {
       return 0;
    }
-   //r = pc_datebook_read_file_header(pc_in);
+   /*r = pc_datebook_read_file_header(pc_in); */
    while(!feof(pc_in)) {
       r = pc_memo_read_next_rec(pc_in, &mmemo);
       if (r==MEMO_EOF) break;
@@ -368,9 +368,9 @@ int get_memos(MemoList **memo_list)
 	 temp_memo_list->next = *memo_list;
 	 *memo_list = temp_memo_list;
 	 recs_returned++;
-	 //temp_address_list->ma.attrib=0;
+	 /*temp_address_list->ma.attrib=0; */
       } else {
-	 //this doesnt really free it, just the string pointers
+	 /*this doesnt really free it, just the string pointers */
 	 free_Memo(&(mmemo.memo));
       }
       if ((mmemo.rt==DELETED_PALM_REC) || (mmemo.rt==MODIFIED_PALM_REC)) {

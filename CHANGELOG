@@ -1,6 +1,52 @@
-0.90a - 06/23/99
- Initial release.
+0.95 - 09/09/99 (This is a key Y2K date, it'll probably blow up)
+ Made fixes to configure for Solaris (-lsocket).
+ Removed file locking code.
+ Highlighted calendar days with appointments.
+ Fixed a big memory leak in addresses.
+ Todos now show due date.
+ Hide completed todos is stored in preferences, so it will be remembered.
+ make install now installs empty DB files into share.  These are copied to
+  ~/.jpilot/ the first time jpilot is ran, so that it behaves before the
+  first sync.
+ Replaced all C++ style comments with C style comments.
+ 
+0.94 - 08/28/99
+ Fixed up the configure script for Solaris, and Debian users.
+ Minor GUI changes/improvements.
+ Added an Install screen.
+ 0.93 Didn't show the last todo in the DB file, fixed.
 
+0.93 - 08/10/99
+ Changed vsnprintf and snprintf to g_vsnprintf and g_snprintf for portability.
+ Changed flock calls to fcntl for portability.
+ Changed logf to jpilot_logf because logf is a call in libm on some systems
+ (portability).
+ Added Menus.
+ Added a quickfind in the address app.
+ Put in a global search (find) window.
+ Put in a preferences window and rc file support.
+ Added support for different date formats (localization).
+ Added support for weeks beginning on Monday (localization).
+ Added support for choosing the colors file from the preferences window.
+ Added a configure script.
+ Added in Japanese support.
+ Misc GUI improvements and code improvements.
+ 
+0.92 - 07/18/99
+ Fixed problem reading palm db files with 0 records.
+ Added option for viewing only uncompleted todos.
+ Fixed a GUI problem when adding an address the phone menus didn't update
+  right while selecting addresses on the left pane.
+ Added a window to show the syncing output.
+ Added a full backup button.
+ Added forking of a process to do the sync in the background.
+ Fixed category label in todo, address, and memo apps.
+ Added modify capability in datebook, address, todo, and memo apps.
+ Added the ability to check/uncheck todos.
+ When deleteing repeating appointments it will now ask if you intend to delete
+  just one occurence, or all occurences.
+ Added some tooltips to show how many records are in a DB.
+ 
 0.91 - 07/03/99
  Fixed some feof() problem that caused datebook to not work on RedHat 6.0
  I rewrote the entire datebook.c file
@@ -21,40 +67,5 @@
   The Palm Pilot will also ask this question.
  Fixed Mobile not being displayed in address app.
 
-0.92 - 07/18/99
- Fixed problem reading palm db files with 0 records.
- Added option for viewing only uncompleted todos.
- Fixed a GUI problem when adding an address the phone menus didn't update
-  right while selecting addresses on the left pane.
- Added a window to show the syncing output.
- Added a full backup button.
- Added forking of a process to do the sync in the background.
- Fixed category label in todo, address, and memo apps.
- Added modify capability in datebook, address, todo, and memo apps.
- Added the ability to check/uncheck todos.
- When deleteing repeating appointments it will now ask if you intend to delete
-  just one occurence, or all occurences.
- Added some tooltips to show how many records are in a DB.
- 
-0.93 - 08/10/99
- Changed vsnprintf and snprintf to g_vsnprintf and g_snprintf for portability.
- Changed flock calls to fcntl for portability.
- Changed logf to jpilot_logf because logf is a call in libm on some systems
- (portability).
- Added Menus.
- Added a quickfind in the address app.
- Put in a global search (find) window.
- Put in a preferences window and rc file support.
- Added support for different date formats (localization).
- Added support for weeks beginning on Monday (localization).
- Added support for choosing the colors file from the preferences window.
- Added a configure script.
- Added in Japanese support.
- Misc GUI improvements and code improvements.
- 
-0.94 - 08/28/99
- Fixed up the configure script for Solaris, and Debian users.
- Minor GUI changes/improvements.
- Added an Install screen.
- 0.93 Didn't show the last todo in the DB file, fixed.
- 
+0.90a - 06/23/99
+ Initial release.

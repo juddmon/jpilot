@@ -21,14 +21,10 @@ will list all the options.
 make uninstall is an option also.
 
 I have included a spec file so if you want to create your own RPM all you
-have to do is "rpm -tb jpilot-0.93.tar.gz"
+have to do is "rpm -tb jpilot-0.95.tar.gz"
 
 
-Currently, you have to sync before the program will behave correctly.
-It won't do anything horrible, just file read errors.
-I'll fix this someday.
 JPilot was written in such a way that it should be very safe to sync.
-I have had no reports of data being corrupted, or lost.  There is always
-that possibility though.  As with anything else, backup your data if you
-cannot afford to lose it.  Just make sure your backup software destroy it
-first ;)
+There is always the possibility of something going wrong though.  As with
+anything else, backup your data if you cannot afford to lose it.  Just make
+sure your backup software destroy it first ;)

@@ -1,4 +1,4 @@
-%define version 0.94
+%define version 0.95
 
 Summary: palm pilot desktop for Linux
 Name: jpilot
@@ -25,12 +25,16 @@ install -m 555 -s jpilot -o root -g root /usr/bin
 install -m 644 -s jpilotrc.blue -o root -g root /usr/share/jpilot
 install -m 644 -s jpilotrc.default -o root -g root /usr/share/jpilot
 install -m 644 -s jpilotrc.green -o root -g root /usr/share/jpilot
+install -m 644 -s jpilotrc.steel -o root -g root /usr/share/jpilot
+install -m 644 -s jpilotrc.purple -o root -g root /usr/share/jpilot
 
 %files
 %attr(-, bin, bin) %doc BUGS CHANGELOG COPYING CREDITS INSTALL README TODO
-%doc jpilotrc.default jpilotrc.blue jpilotrc.green icons
+%doc jpilotrc.default jpilotrc.blue jpilotrc.green jpilotrc.purple jpilotrc.steel icons
 
 %attr(0555,root,root) /usr/bin/jpilot
 %attr(0644,root,root) /usr/share/jpilotrc.blue
 %attr(0644,root,root) /usr/share/jpilotrc.default
 %attr(0644,root,root) /usr/share/jpilotrc.green
+%attr(0644,root,root) /usr/share/jpilotrc.purple
+%attr(0644,root,root) /usr/share/jpilotrc.steel

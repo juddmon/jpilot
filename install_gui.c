@@ -29,9 +29,9 @@ static int update_clist();
 GtkWidget *clist;
 int line_selected;
 
-//
-//file must not be open elsewhere when this is called
-//the first line is 0
+/* */
+/*file must not be open elsewhere when this is called */
+/*the first line is 0 */
 int install_remove_line(int deleted_line)
 {
    FILE *in;
@@ -97,7 +97,7 @@ static int install_append_line(char *line)
 
 
 
-//----------
+/*---------- */
 static gboolean cb_destroy(GtkWidget *widget)
 {
    return FALSE;
@@ -122,7 +122,7 @@ static void
    sel = gtk_file_selection_get_filename(GTK_FILE_SELECTION(data));
    jpilot_logf(LOG_DEBUG, "file selected [%s]\n", sel);
 
-   //Check to see if its a regular file
+   /*Check to see if its a regular file */
    if (stat(sel, &statb)) {
       jpilot_logf(LOG_DEBUG, "File selected was not stat-able\n");
       return;
@@ -195,7 +195,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 			       GdkEventButton *event,
 			       gpointer       data)
 {
-   //printf("row = %d\n", row);
+   /*printf("row = %d\n", row); */
    line_selected = row;
    return;
 }
@@ -221,8 +221,8 @@ void cb_install_gui(GtkWidget *widget, gpointer data)
    gtk_signal_connect(GTK_OBJECT(filew), "destroy",
                       GTK_SIGNAL_FUNC(cb_destroy), filew);
    
-   //Even though I hide the ok button I still want to connect its signal
-   //because a double click on the file name also calls this callback
+   /*Even though I hide the ok button I still want to connect its signal */
+   /*because a double click on the file name also calls this callback */
    gtk_widget_hide(GTK_WIDGET(GTK_FILE_SELECTION(filew)->ok_button));   
    gtk_signal_connect(GTK_OBJECT(GTK_FILE_SELECTION(filew)->ok_button),
 		      "clicked", GTK_SIGNAL_FUNC(cb_add), filew);
@@ -233,7 +233,7 @@ void cb_install_gui(GtkWidget *widget, gpointer data)
    gtk_clist_column_titles_passive(GTK_CLIST(clist));
    gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
 
-   //Add the scrolled window
+   /*Add the scrolled window */
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
@@ -269,11 +269,6 @@ void cb_install_gui(GtkWidget *widget, gpointer data)
    gtk_signal_connect(GTK_OBJECT(button),
 		      "clicked", GTK_SIGNAL_FUNC(cb_quit), filew);
    gtk_widget_show(button);
-//
-////   hbox = gtk_hbox_new(FALSE, 0);
-//   gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->action_area),
-//		       button, FALSE, FALSE, 0);
-//   gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
    gtk_widget_show(filew);
 

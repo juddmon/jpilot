@@ -27,6 +27,7 @@
 
 GtkWidget *show_deleted_checkbutton;
 GtkWidget *show_modified_checkbutton;
+GtkWidget *highlight_checkbutton;
 static GtkWidget *window;
 static GtkWidget *port_entry;
 
@@ -118,6 +119,11 @@ void cb_show_modified(GtkWidget *widget,
 {
    set_pref(PREF_SHOW_MODIFIED, GTK_TOGGLE_BUTTON(show_modified_checkbutton)->active);
 }
+void cb_highlight(GtkWidget *widget,
+		  gpointer data)
+{
+   set_pref(PREF_HIGHLIGHT, GTK_TOGGLE_BUTTON(highlight_checkbutton)->active);
+}
 
 
 static gboolean cb_destroy(GtkWidget *widget)
@@ -162,7 +168,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    }
 
    window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-   //gtk_window_set_default_size(GTK_WINDOW(window), 500, 300);
+   /*gtk_window_set_default_size(GTK_WINDOW(window), 500, 300); */
 
    gtk_container_set_border_width(GTK_CONTAINER(window), 10);
    gtk_window_set_title(GTK_WINDOW(window), PN" Preferences");
@@ -173,13 +179,13 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    vbox = gtk_vbox_new(FALSE, 0);
    gtk_container_add(GTK_CONTAINER(window), vbox);
 
-   // Table
+   /* Table */
    table = gtk_table_new(7, 2, FALSE);
    gtk_table_set_row_spacings(GTK_TABLE(table),0);
    gtk_table_set_col_spacings(GTK_TABLE(table),0);
    gtk_box_pack_start (GTK_BOX (vbox), table, FALSE, FALSE, 0);
 
-   // Shortdate
+   /* Shortdate */
    label = gtk_label_new("Short date format ");
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
 			     0, 1, 0, 1);
@@ -192,7 +198,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    get_pref(PREF_SHORTDATE, &ivalue, &cstr);
    gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
 
-   // Longdate
+   /* Longdate */
    label = gtk_label_new("Long date format ");
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
 			     0, 1, 1, 2);
@@ -206,7 +212,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
 
 
-   // Time
+   /* Time */
    label = gtk_label_new("Time format ");
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
 			     0, 1, 2, 3);
@@ -220,7 +226,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
 
 
-   // FDOW
+   /* FDOW */
    label = gtk_label_new("The first day of the week is ");
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
 			     0, 1, 3, 4);
@@ -234,7 +240,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
 
 
-   // GTK colors file
+   /* GTK colors file */
    label = gtk_label_new("My GTK colors file is ");
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
 			     0, 1, 4, 5);
@@ -248,7 +254,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
 
 
-   // Rate
+   /* Rate */
    label = gtk_label_new("Serial Rate ");
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
 			     0, 1, 6, 7);
@@ -261,7 +267,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    get_pref(PREF_RATE, &ivalue, &cstr);
    gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
 
-   // Port
+   /* Port */
    label = gtk_label_new("Serial Port ");
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
 			     0, 1, 5, 6);
@@ -276,7 +282,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    }
 
 
-   //Show deleted files check box
+   /*Show deleted files check box */
    show_deleted_checkbutton = gtk_check_button_new_with_label
      ("Show deleted records (default NO)");
    gtk_box_pack_start(GTK_BOX(vbox), show_deleted_checkbutton, FALSE, FALSE, 0);
@@ -289,7 +295,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 			     "clicked", GTK_SIGNAL_FUNC(cb_show_deleted),
 			     GINT_TO_POINTER(PREF_SHOW_DELETED));
 
-   //Show modified files check box
+   /*Show modified files check box */
    show_modified_checkbutton = gtk_check_button_new_with_label
      ("Show modified deleted records (default NO)");
    gtk_box_pack_start(GTK_BOX(vbox), show_modified_checkbutton, FALSE, FALSE, 0);
@@ -303,7 +309,20 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 			     GINT_TO_POINTER(PREF_SHOW_MODIFIED));
 
 
-// Create a "Quit" button
+   /*Show modified files check box */
+   highlight_checkbutton = gtk_check_button_new_with_label
+     ("Highlight calendar days with appointments");
+   gtk_box_pack_start(GTK_BOX(vbox), highlight_checkbutton, FALSE, FALSE, 0);
+   get_pref(PREF_HIGHLIGHT, &ivalue, &cstr);
+   gtk_widget_show(highlight_checkbutton);
+   if (ivalue) {
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(highlight_checkbutton), TRUE);
+   }
+   gtk_signal_connect_object(GTK_OBJECT(highlight_checkbutton), 
+			     "clicked", GTK_SIGNAL_FUNC(cb_highlight), NULL);
+
+
+/* Create a "Quit" button */
    button = gtk_button_new_with_label("Done");
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_quit), window);
