@@ -903,11 +903,11 @@ msgstr "/_Ajuda"
 
 #: jpilot.c:1134
 msgid "/Help/PayBack program"
-msgstr ""
+msgstr "/Ajuda/PayBack program"
 
 #: jpilot.c:1135
 msgid "/Help/J-Pilot"
-msgstr ""
+msgstr "/Ajuda/J-Pilot"
 
 #: jpilot.c:1202
 #, fuzzy, c-format
