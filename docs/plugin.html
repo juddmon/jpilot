@@ -14,7 +14,7 @@
 
 <h3>
 Updates</h3>
-This document was last updated 19 March 2001, for J-Pilot-0.99.&nbsp;
+This document was last updated 28 September 2002, for J-Pilot-0.99.3&nbsp;
 
 <h3>
 What are plugins?</h3>
@@ -49,7 +49,7 @@ a link to the site so that I can put it on my website.&nbsp; This will
 encourage more people to use J-Pilot and your plugin.&nbsp; Even if you
 are working on a plugin you can let me know and I will put it down as in
 progress so that someone doesn't duplicate your effort.&nbsp;  Its GNU
-licensed code so you are free to do not tell me of course, as long as you
+licensed code so you are free to not tell me of course, as long as you
 follow the GNU license.
 My email is 
 <i><a href="mailto:Judd Montgomery <judd@engineer.com>">Judd Montgomery
@@ -534,6 +534,14 @@ gets deleted from the pilot it will be marked with this record type and
 then as soon as the sync is finished the pc file will get cleaned up and
 it should be removed.&nbsp; If a crash occurs it could be possible for
 this record to be in the pc file.
+<p><tt>REPLACEMENT_PALM_REC:</tt>&nbsp;
+When a user modifies a record if its a pc side record then the pc record
+ will be deleted and a new pc record written.&nbsp; If the original record was
+ a palm record then a <tt>MODIFIED_PALM_REC</tt> is written out and then a
+ <tt>REPLACEMENT_PALM_REC</tt> for the new record.&nbsp;  Older versions of
+ J-Pilot would just delete a palm rec and write a new one.&nbsp;  This would
+ give the record a new unique ID and break some programs which tracked the
+ unique IDs of palm records.&nbsp;
 <p>The <tt>SPENT_PC_RECORD_BIT </tt>means that this record will be removed
 during the next pc file cleanup.&nbsp; If this bit is set then the record
 can be totally ignored.
@@ -544,8 +552,9 @@ can be totally ignored.
 <br><tt>&nbsp;&nbsp; DELETED_PALM_REC = 102L,</tt>
 <br><tt>&nbsp;&nbsp; NEW_PC_REC = 103L,</tt>
 <br><tt>&nbsp;&nbsp; DELETED_PC_REC =&nbsp; SPENT_PC_RECORD_BIT + 104L,</tt>
-<br><tt>&nbsp;&nbsp; DELETED_DELETED_PALM_REC =&nbsp; SPENT_PC_RECORD_BIT
-+ 105L</tt>
+<br><tt>&nbsp;&nbsp; DELETED_DELETED_PALM_REC =&nbsp; SPENT_PC_RECORD_BIT +
+105L,</tt>
+<br><tt>&nbsp;&nbsp; REPLACEMENT_PALM_REC = 106L</tt>
 <br><tt>} PCRecType;</tt>
 <p>
 <hr WIDTH="100%">
