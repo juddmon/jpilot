@@ -800,7 +800,10 @@ static void output_to_pane(const char *str)
 #endif
    get_pref(PREF_OUTPUT_HEIGHT, &ivalue, NULL);
    /* Make them look at least something if output happens */
-   if (ivalue < 60) ivalue=60;
+   if (ivalue < 60) {
+      ivalue=60;
+      set_pref(PREF_OUTPUT_HEIGHT, 60, NULL, TRUE);
+   }
    gdk_window_get_size(window->window, &w, &h);
    new_y = h - ivalue;
    gtk_paned_set_position(GTK_PANED(output_pane), new_y + 2);
