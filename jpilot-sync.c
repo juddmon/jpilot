@@ -1,4 +1,4 @@
-/* $Id: jpilot-sync.c,v 1.21 2004/12/07 06:51:08 rikster5 Exp $ */
+/* $Id: jpilot-sync.c,v 1.22 2004/12/18 00:58:05 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot-sync.c
@@ -25,6 +25,9 @@
 #include <string.h>
 #include <stdio.h>
 #include <signal.h>
+#ifdef HAVE_LOCALE_H
+#include <locale.h>
+#endif
 #include "utils.h"
 #include "log.h"
 #include "prefs.h"

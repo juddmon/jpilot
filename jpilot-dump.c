@@ -1,4 +1,4 @@
-/* $Id: jpilot-dump.c,v 1.18 2004/12/07 06:51:08 rikster5 Exp $ */
+/* $Id: jpilot-dump.c,v 1.19 2004/12/18 00:58:04 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot-dump.c
@@ -33,6 +33,9 @@
 #include <unistd.h>
 #include <utime.h>
 #include <stdio.h>
+#ifdef HAVE_LOCALE_H
+#include <locale.h>
+#endif
 #include <pi-source.h>
 #include <pi-socket.h>
 #include <pi-datebook.h>
