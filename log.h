@@ -30,7 +30,6 @@
 #define LOG_GUI    1024 /*messages always go to the gui window */
 
 /* pipe communication commands */
-//undo where?
 #define PIPE_PRINT           100
 #define PIPE_USERID          101
 #define PIPE_USERNAME        102

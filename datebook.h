@@ -68,7 +68,8 @@ struct db4_struct {
 int datebook_print(int type);
 int datebook_import(GtkWidget *window);
 int datebook_cleanup();
-int pc_datebook_write(struct Appointment *a, PCRecType rt, unsigned char attrib);
+int pc_datebook_write(struct Appointment *a, PCRecType rt,
+		      unsigned char attrib, unsigned int *unique_id);
 void free_AppointmentList(AppointmentList **al);
 
 /*
