@@ -938,7 +938,7 @@ static int find_prev_next(struct Appointment *a,
       }
       mktime(&t);
       begin_days = dateToDays(&(a->begin));
-      //undo days = dateToDays(&t);
+      days = dateToDays(&t);
 #ifdef ALARMS_DEBUG
       printf("fpn: begin_days %d days %d\n", begin_days, days);
       printf("fpn: t.tm_wday %d a->begin.tm_wday %d\n", t.tm_wday, a->begin.tm_wday);
@@ -1072,7 +1072,7 @@ static int find_prev_next(struct Appointment *a,
    safety_counter=0;
    while(forward || backward) {
       safety_counter++;
-      if (safety_counter > 20) {
+      if (safety_counter > 3000) {
 	 jp_logf(JP_LOG_STDOUT|JP_LOG_FILE, "find_prev_next():infinite loop, breaking\n");
 	 if (a->description) {
 	    jp_logf(JP_LOG_STDOUT|JP_LOG_FILE, "desc=[%s]\n", a->description);
