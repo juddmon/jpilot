@@ -134,51 +134,49 @@ int make_pref_menu(GtkWidget **pref_menu, int pref_num)
    return 0;
 }
 
-void cb_show_deleted(GtkWidget *widget,
-		     gpointer data)
+void cb_show_deleted(GtkWidget *widget, gpointer data)
 {
    set_pref(PREF_SHOW_DELETED, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
 }
-void cb_show_modified(GtkWidget *widget,
-		      gpointer data)
+void cb_show_modified(GtkWidget *widget, gpointer data)
 {
    set_pref(PREF_SHOW_MODIFIED, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
 }
-void cb_highlight(GtkWidget *widget,
-		  gpointer data)
+void cb_highlight(GtkWidget *widget, gpointer data)
 {
    set_pref(PREF_HIGHLIGHT, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
 }
-void cb_use_db3(GtkWidget *widget,
-		gpointer data)
+void cb_use_db3(GtkWidget *widget, gpointer data)
 {
    set_pref(PREF_USE_DB3, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
 }
-void cb_sync_datebook(GtkWidget *widget,
-		      gpointer data)
+void cb_sync_datebook(GtkWidget *widget, gpointer data)
 {
    set_pref(PREF_SYNC_DATEBOOK, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
 }
-void cb_sync_address(GtkWidget *widget,
-		     gpointer data)
+void cb_sync_address(GtkWidget *widget, gpointer data)
 {
    set_pref(PREF_SYNC_ADDRESS, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
 }
-void cb_sync_todo(GtkWidget *widget,
-		  gpointer data)
+void cb_sync_todo(GtkWidget *widget, gpointer data)
 {
    set_pref(PREF_SYNC_TODO, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
 }
-void cb_sync_memo(GtkWidget *widget,
-		  gpointer data)
+void cb_sync_memo(GtkWidget *widget, gpointer data)
 {
    set_pref(PREF_SYNC_MEMO, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
 }
-void cb_sync_memo32(GtkWidget *widget,
-		    gpointer data)
+void cb_sync_memo32(GtkWidget *widget, gpointer data)
 {
    set_pref(PREF_SYNC_MEMO32, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
 }
+#ifdef ENABLE_MANANA
+void cb_sync_manana(GtkWidget *widget, gpointer data)
+{
+   set_pref(PREF_SYNC_MANANA, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
+}
+#endif
+
 #ifdef ENABLE_PLUGINS
 void cb_sync_plugin(GtkWidget *widget,
 		    gpointer data)
@@ -513,7 +511,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 		      "clicked", GTK_SIGNAL_FUNC(cb_highlight), NULL);
 
 
-#ifdef USE_DB3
+#ifdef ENABLE_DATEBK
    /* Show use DateBk3/4 check box */
    checkbutton = gtk_check_button_new_with_label(_("Use DateBk3/4 note tags"));
    gtk_box_pack_start(GTK_BOX(vbox_settings), checkbutton, FALSE, FALSE, 0);
@@ -587,6 +585,19 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_signal_connect(GTK_OBJECT(checkbutton), 
 		      "clicked", GTK_SIGNAL_FUNC(cb_sync_memo32), NULL);
 
+#ifdef ENABLE_MANANA
+   /* Show sync Mañana check box */
+   checkbutton = gtk_check_button_new_with_label(_("Sync Mañana"));
+   gtk_box_pack_start(GTK_BOX(vbox_conduits), checkbutton, FALSE, FALSE, 0);
+   get_pref(PREF_SYNC_MANANA, &ivalue, &cstr);
+   gtk_widget_show(checkbutton);
+   if (ivalue) {
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
+   }
+   gtk_signal_connect(GTK_OBJECT(checkbutton), 
+		      "clicked", GTK_SIGNAL_FUNC(cb_sync_manana), NULL);
+#endif
+   
 #ifdef  ENABLE_PLUGINS
    if (!skip_plugins) {
 
@@ -668,7 +679,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.0);
    gtk_box_pack_start(GTK_BOX(vbox_alarms), label, FALSE, FALSE, 0);
 
-#ifdef ALARM_SHELL_DESC_NOTE
+#ifdef ENABLE_ALARM_SHELL_DANGER
    label = gtk_label_new(_("%D is replaced with the alarm description"));
    gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.0);
    gtk_box_pack_start(GTK_BOX(vbox_alarms), label, FALSE, FALSE, 0);
@@ -676,6 +687,14 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    label = gtk_label_new(_("%N is replaced with the alarm note"));
    gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.0);
    gtk_box_pack_start(GTK_BOX(vbox_alarms), label, FALSE, FALSE, 0);
+#else
+   label = gtk_label_new(_("%D (description substitution) is disabled in this build"));
+   gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
+   gtk_box_pack_start(GTK_BOX(vbox_settings), label, FALSE, FALSE, 0);
+
+   label = gtk_label_new(_("%N (note substitution) is disabled in this build"));
+   gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
+   gtk_box_pack_start(GTK_BOX(vbox_settings), label, FALSE, FALSE, 0);
 #endif
 
    /* Create a "Done" button */

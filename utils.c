@@ -25,6 +25,7 @@
 #include "sync.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <pi-datebook.h>
@@ -1659,7 +1660,16 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       mtodo = (MyToDo *) VP;
       record_type = mtodo->rt;
       unique_id = mtodo->unique_id;
+#ifdef ENABLE_MANANA
+      get_pref(PREF_MANANA_MODE, &ivalue, NULL);
+      if (ivalue) {
+	 strcpy(filename, "MañanaDB.pc3");
+      } else {
+	 strcpy(filename, "ToDoDB.pc3");
+      }
+#else
       strcpy(filename, "ToDoDB.pc3");
+#endif
       break;
     case MEMO:
       mmemo = (MyMemo *) VP;

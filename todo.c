@@ -262,6 +262,9 @@ int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib,
    int rec_len;
    buf_rec br;
    long char_set;
+#ifdef ENABLE_MANANA
+   long ivalue;
+#endif
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    if (char_set != CHAR_SET_LATIN1) {
@@ -287,7 +290,17 @@ int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib,
       br.unique_id = 0;
    }
 
+   *unique_id = br.unique_id;
+#ifdef ENABLE_MANANA
+   get_pref(PREF_MANANA_MODE, &ivalue, NULL);
+   if (ivalue) {
+      jp_pc_write("MañanaDB", &br);
+   } else {
+      jp_pc_write("ToDoDB", &br);
+   }
+#else
    jp_pc_write("ToDoDB", &br);
+#endif
    if (unique_id) {
       *unique_id = br.unique_id;
    }
@@ -309,20 +322,49 @@ void free_ToDoList(ToDoList **todo)
 
 int get_todo_app_info(struct ToDoAppInfo *ai)
 {
-   int num,i;
+   int num, i, r;
    unsigned int rec_size;
    unsigned char *buf;
    long char_set;
+#ifdef ENABLE_MANANA
+   long ivalue;
+#endif
 
    bzero(ai, sizeof(*ai));
+   buf=NULL;
+   /* Put at least one entry in there */
+   strcpy(ai->category.name[0], "Unfiled");
 
-   jp_get_app_info("ToDoDB", &buf, &rec_size);
+#ifdef ENABLE_MANANA
+   get_pref(PREF_MANANA_MODE, &ivalue, NULL);                                  
+   if (ivalue) {
+      r = jp_get_app_info("MañanaDB", &buf, &rec_size);
+   } else {
+      r = jp_get_app_info("ToDoDB", &buf, &rec_size);
+   }
+#else
+   r = jp_get_app_info("ToDoDB", &buf, &rec_size);
+#endif
+   if (r<0) {
+      if (buf) {
+	 free(buf);
+      }
+      return -1;
+   }
    num = unpack_ToDoAppInfo(ai, buf, rec_size);
    if (buf) {
       free(buf);
    }
    if (num <= 0) {
-      jpilot_logf(LOG_WARN, _("Error reading"), "ToDoDB.pdb");
+#ifdef ENABLE_MANANA
+      if (ivalue) {
+	 jpilot_logf(LOG_WARN, _("Error reading %s\n"), "MañanaDB.pdb");
+      } else {
+	 jpilot_logf(LOG_WARN, _("Error reading %s\n"), "ToDoDB.pdb");
+      }
+#else
+      jpilot_logf(LOG_WARN, _("Error reading %s\n"), "ToDoDB.pdb");
+#endif
       return -1;
    }
 
@@ -360,6 +402,9 @@ int get_todos2(ToDoList **todo_list, int sort_order,
    int keep_priv;
    buf_rec *br;
    long char_set;
+#ifdef ENABLE_MANANA
+   long ivalue;
+#endif
 
    jpilot_logf(LOG_DEBUG, "get_todos2()\n");
    if (modified==2) {
@@ -386,7 +431,16 @@ int get_todos2(ToDoList **todo_list, int sort_order,
    *todo_list=NULL;
    recs_returned = 0;
 
+#ifdef ENABLE_MANANA
+   get_pref(PREF_MANANA_MODE, &ivalue, NULL);
+   if (ivalue) {
+      num = jp_read_DB_files("MañanaDB", &records);
+   } else {
+      num = jp_read_DB_files("ToDoDB", &records);
+   }
+#else
    num = jp_read_DB_files("ToDoDB", &records);
+#endif
    /* Go to first entry in the list */
    for (temp_list = records; temp_list; temp_list = temp_list->prev) {
       records = temp_list;

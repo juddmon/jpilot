@@ -82,7 +82,9 @@ static prefType glob_prefs[NUM_PREFS] = {
      {"todo_export_filename", CHARTYPE, CHARTYPE, 0, NULL, 0},
      {"todo_import_path", CHARTYPE, CHARTYPE, 0, NULL, 0},
      {"memo_export_filename", CHARTYPE, CHARTYPE, 0, NULL, 0},
-     {"memo_import_path", CHARTYPE, CHARTYPE, 0, NULL, 0}
+     {"memo_import_path", CHARTYPE, CHARTYPE, 0, NULL, 0},
+     {"manana_mode", INTTYPE, INTTYPE, 0, NULL, 0},
+     {"sync_manana", INTTYPE, INTTYPE, 0, NULL, 0}
 };
 
 struct name_list {
@@ -590,7 +592,7 @@ int set_pref(int which, long n, const char *string, int save)
       str=glob_prefs[which].svalue;
    }
    r = jp_set_pref(glob_prefs, which, n, str);
-   /* #ifdef PROMETHEON */
+   /* #ifdef ENABLE_PROMETHEON */
    /* Some people like to just kill the window manager */
    /* Prometheon kills us, always be prepared for death */
    if (save) {
@@ -614,7 +616,7 @@ int set_pref_possibility(int which, long n, int save)
       str=svalue;
    }
    r = jp_set_pref(glob_prefs, which, n, str);
-   /* #ifdef PROMETHEON */
+   /* #ifdef ENABLE_PROMETHEON */
    /* Some people like to just kill the window manager */
    /* Prometheon kills us, always be prepared for death */
    if (save) {

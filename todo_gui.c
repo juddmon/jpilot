@@ -59,6 +59,9 @@ static struct tm due_date;
 static GtkWidget *due_date_button;
 static GtkWidget *todo_no_due_date_checkbox;
 static GtkWidget *radio_button_todo[NUM_TODO_PRIORITIES];
+#ifdef ENABLE_MANANA
+static GtkWidget *manana_checkbox;
+#endif
 /* We need an extra one for the ALL category */
 static GtkWidget *todo_cat_menu_item1[NUM_TODO_CAT_ITEMS+1];
 static GtkWidget *todo_cat_menu_item2[NUM_TODO_CAT_ITEMS];
@@ -939,6 +942,14 @@ int todo_get_details(struct ToDo *new_todo, unsigned char *attrib)
    return 0;
 }
 
+#ifdef ENABLE_MANANA
+static void cb_use_manana(GtkWidget *widget, gpointer data)
+{
+   set_pref(PREF_MANANA_MODE, GTK_TOGGLE_BUTTON(manana_checkbox)->active, NULL, TRUE);
+   cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
+}
+#endif
+
 static void cb_add_new_record(GtkWidget *widget, gpointer data)
 {
    MyToDo *mtodo;
@@ -1466,7 +1477,6 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    }
 
    get_todo_app_info(&todo_app_info);
-
    for (i=0; i<NUM_TODO_CAT_ITEMS; i++) {
       sort_l[i].Pcat = todo_app_info.category.name[i];
       sort_l[i].cat_num = i;
@@ -1531,7 +1541,15 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbox), hide_completed);
    gtk_signal_connect(GTK_OBJECT(checkbox), "clicked",
 		      GTK_SIGNAL_FUNC(cb_hide_completed), NULL);
-
+#ifdef ENABLE_MANANA
+   /* Mañana check box */
+   manana_checkbox = gtk_check_button_new_with_label(_("Use Mañana database"));
+   gtk_box_pack_start(GTK_BOX(vbox1), manana_checkbox, FALSE, FALSE, 0);
+   get_pref(PREF_MANANA_MODE, &ivalue, NULL);
+   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(manana_checkbox), ivalue);
+   gtk_signal_connect(GTK_OBJECT(manana_checkbox), "clicked",
+		      GTK_SIGNAL_FUNC(cb_use_manana), NULL);
+#endif
 
    /*Put the todo list window up */
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);

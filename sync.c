@@ -747,6 +747,11 @@ int jpilot_sync(struct my_sync_info *sync_info)
       if (get_pref_int_default(PREF_SYNC_MEMO32, 1)) {
 	 fast_sync_application("Memo32DB", sd);
       }
+#ifdef ENABLE_MANANA
+      if (get_pref_int_default(PREF_SYNC_MANANA, 1)) {
+	 fast_sync_application("MañanaDB", sd);
+      }
+#endif
    } else {
       fast_sync=0;
       write_to_parent(PIPE_PRINT, _("Doing a slow sync.\n"));
@@ -765,6 +770,11 @@ int jpilot_sync(struct my_sync_info *sync_info)
       if (get_pref_int_default(PREF_SYNC_MEMO32, 1)) {
 	 slow_sync_application("Memo32DB", sd);
       }
+#ifdef ENABLE_MANANA
+      if (get_pref_int_default(PREF_SYNC_MANANA, 1)) {
+	 slow_sync_application("MañanaDB", sd);
+      }
+#endif
    }
 
 
@@ -919,11 +929,12 @@ int slow_sync_application(char *DB_name, int sd)
 
    pc_in = jp_open_home_file(pc_filename, "r+");
    if (pc_in==NULL) {
-      write_to_parent(PIPE_PRINT, _("Unable to open %s\n"),pc_filename);
+      write_to_parent(PIPE_PRINT, _("Unable to open %s\n"), pc_filename);
       return -1;
    }
    /* Open the applications database, store access handle in db */
-   if (dlp_OpenDB(sd, 0, dlpOpenReadWrite, DB_name, &db) < 0) {
+   ret = dlp_OpenDB(sd, 0, dlpOpenReadWrite, DB_name, &db);
+   if (ret < 0) {
       g_snprintf(log_entry, 255, _("Unable to open %s\n"), DB_name);
       log_entry[255]='\0';
       charset_j2p(log_entry, 255, char_set);
@@ -1291,6 +1302,9 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
       "ToDoDB",
       "MemoDB",
       "Memo32DB",
+#ifdef ENABLE_MANANA
+      "MañanaDB",
+#endif
       "Saved Preferences",
       NULL
    };
@@ -2409,7 +2423,8 @@ int fast_sync_application(char *DB_name, int sd)
 	      _("Deleted a %s record."),  DB_name);
    }
    /* Open the applications database, store access handle in db */
-   if (dlp_OpenDB(sd, 0, dlpOpenReadWrite|dlpOpenSecret, DB_name, &db) < 0) {
+   ret = dlp_OpenDB(sd, 0, dlpOpenReadWrite|dlpOpenSecret, DB_name, &db);
+   if (ret < 0) {
       g_snprintf(log_entry, 255, _("Unable to open %s\n"), DB_name);
       log_entry[255]='\0';
       charset_j2p(log_entry, 255, char_set);
