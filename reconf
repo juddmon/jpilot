@@ -1,0 +1,8 @@
+#!/bin/sh
+set -v
+if [ -e Makefile ]
+then
+	make distclean
+fi
+autoreconf --verbose --foreign
+./configure

@@ -1,0 +1,147 @@
+# $Id: Makefile.am,v 1.1 2002/08/28 16:50:47 judd Exp $
+
+SUBDIRS = po Expense SyncTime KeyRing docs intl
+
+EXTRA_DIST = config.rpath  reconf autogen.sh ChangeLog docs empty icons \
+	BUGS CHANGELOG CREDITS \
+	ChangeLog UPGRADING jpilot-col.spec jpilot.kdelnk jpilot.rh7.spec \
+	jpilotrc.blue jpilotrc.default jpilotrc.green jpilotrc.purple \
+	jpilotrc.steel SlackBuild \
+	intltool-extract.in intltool-merge.in intltool-update.in
+
+bin_PROGRAMS = jpilot jpilot-dump jpilot-sync jpilot-upgrade-99
+jpilot_SOURCES = \
+	address.c \
+	address.h \
+	address_gui.c \
+	alarms.c \
+	alarms.h \
+	cp1250.c \
+	cp1250.h \
+	dat.c \
+	datebook.c \
+	datebook.h \
+	datebook_gui.c \
+	export_gui.c \
+	export.h \
+	i18n.h \
+	import_gui.c \
+	install_gui.c \
+	japanese.c \
+	japanese.h \
+	jpilot.c \
+	libplugin.c \
+	libplugin.h \
+	log.c \
+	log.h \
+	memo.c \
+	memo_gui.c \
+	memo.h \
+	monthview_gui.c \
+	password.c \
+	password.h \
+	plugins.c \
+	plugins.h \
+	prefs.c \
+	prefs_gui.c \
+	prefs_gui.h \
+	prefs.h \
+	print.c \
+	print_gui.c \
+	print.h \
+	print_headers.c \
+	print_headers.h \
+	print_logo.c \
+	print_logo.h \
+	restore_gui.c \
+	restore.h \
+	russian.c \
+	russian.h \
+	search_gui.c \
+	sync.c \
+	sync.h \
+	todo.c \
+	todo_gui.c \
+	todo.h \
+	utils.c \
+	utils.h \
+	weekview_gui.c \
+	address_ncc.xpm \
+	address.xpm \
+	datebook_ncc.xpm \
+	datebook.xpm \
+	memo_ncc.xpm \
+	memo.xpm \
+	todo_ncc.xpm \
+	todo.xpm
+
+jpilot_dump_SOURCES = \
+	address.c \
+	cp1250.c \
+	datebook.c \
+	japanese.c \
+	jpilot-dump.c \
+	libplugin.c \
+	log.c \
+	memo.c \
+	password.c \
+	plugins.c \
+	prefs.c \
+	russian.c \
+	todo.c \
+	utils.c
+
+jpilot-dump.o: jpilot-dump.c config.h utils.h log.h prefs.h \
+	datebook.h memo.h address.h todo.h password.h
+
+jpilot_sync_SOURCES = \
+	cp1250.c \
+	jpilot-sync.c \
+	japanese.c \
+	libplugin.c \
+	log.c \
+	password.c \
+	plugins.c \
+	prefs.c \
+	russian.c \
+	sync.c \
+	utils.c
+
+jpilot-sync.o: jpilot-sync.c config.h utils.h log.h prefs.h sync.h \
+	libplugin.h password.h
+
+jpilot_upgrade_99_SOURCES = \
+	cp1250.c \
+	jpilot-upgrade-99.c \
+	libplugin.c \
+	japanese.c \
+	log.c \
+	prefs.c \
+	russian.c \
+	utils.c
+
+jpilot-upgrade-99.o: jpilot-upgrade-99.c config.h utils.h
+
+localedir = $(datadir)/locale
+gnulocaledir = $(prefix)/share/locale
+I18NDEFS = -DLOCALEDIR=\"$(localedir)\" -DGNULOCALEDIR=\"$(gnulocaledir)\"
+
+CFLAGS= -Wall @CFLAGS@ @ccoptions@ @PILOT_FLAGS@ @GTK_CFLAGS@ ${I18NDEFS}
+
+jpilot_LDADD=@LIBS@ @PILOT_LIBS@ @GTK_LIBS@
+jpilot_dump_LDADD=@LIBS@ @PILOT_LIBS@ @GTK_LIBS@
+jpilot_sync_LDADD=@LIBS@ @PILOT_LIBS@ @GTK_LIBS@
+jpilot_upgrade_99_LDADD=@LIBS@ @PILOT_LIBS@ @GTK_LIBS@
+
+# Automatically update the libtool script if it becomes out-of-date.
+LIBTOOL_DEPS = @LIBTOOL_DEPS@
+libtool: $(LIBTOOL_DEPS)
+	$(SHELL) ./config.status --recheck
+
+ChangeLog:
+	rcs2log > $@
+
+.PHONY: ChangeLog
+
+
+ACLOCAL_AMFLAGS = -I m4
