@@ -2751,7 +2751,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
 #endif
 
-   /* HACK */
+   /* HACK, see clist hack explanation in memo_gui.c */
    if (clist_hack) {
       keep=record_changed;
       gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, column);
@@ -3049,6 +3049,7 @@ void cb_cal_changed(GtkWidget *widget,
    int num;
    unsigned int y,m,d;
    int mon_changed;
+   int b;
 #ifdef EASTER
    static int Easter=0;
 #endif
@@ -3057,6 +3058,11 @@ void cb_cal_changed(GtkWidget *widget,
 
    if (num!=CAL_DAY_SELECTED) {
       return;
+   }
+
+   b=dialog_save_changed_record(pane, record_changed);
+   if (b==DIALOG_SAID_1) {
+      cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
    }
 
    gtk_calendar_get_date(GTK_CALENDAR(main_calendar),&y,&m,&d);
