@@ -2568,26 +2568,14 @@ void charset_p2j(unsigned char *const buf, int max_len, int char_set)
 {
    unsigned char *newbuf;
 
-   newbuf = (unsigned char*)NULL;
-   switch (char_set) {
-    case CHAR_SET_JAPANESE : Sjis2Euc(buf, max_len); break;
-    case CHAR_SET_1250 : Win2Lat(buf,max_len); break;
-    case CHAR_SET_1251 : win1251_to_koi8(buf, max_len); break;
-    case CHAR_SET_1251_B : koi8_to_win1251(buf, max_len); break;
-    case CHAR_SET_1250UTF : newbuf = Win2UTF(buf, max_len); break;
-    case CHAR_SET_1253UTF : newbuf = win1253_to_UTF(buf, max_len); break;
-    case CHAR_SET_LATINUTF : newbuf = Lat2UTF(buf, max_len); break;
-    default : break;
-   }
-   /* overwrite original string if a new buffer was allocated */
-   if (newbuf) {
-      strncpy(buf, newbuf, max_len);
-      buf[max_len - 1] = '\0';
-      /* note : string may get truncated within a multibyte char */
-      if (strlen(newbuf) >= max_len)
-	jp_logf(JP_LOG_WARN, "charset_p2j: buffer too small - string had to be truncated to [%s]\n", buf);
-      free(newbuf);
-   }
+   newbuf = charset_p2newj(buf, max_len, char_set);
+
+   strncpy(buf, newbuf, max_len);
+   buf[max_len - 1] = '\0';
+   /* note : string may get truncated within a multibyte char */
+   if (strlen(newbuf) >= max_len)
+     jp_logf(JP_LOG_WARN, "charset_p2j: buffer too small - string had to be truncated to [%s]\n", buf);
+   free(newbuf);
 }
 
 /*
