@@ -1,4 +1,4 @@
-/* $Id: otherconv.c,v 1.18 2004/12/07 06:47:46 rikster5 Exp $ */
+/* $Id: otherconv.c,v 1.19 2005/01/15 17:00:14 rousseau Exp $ */
 
 /*******************************************************************************
  * otherconv.c
@@ -109,6 +109,10 @@ char *char_set_to_text(int char_set)
 
       case CHAR_SET_GBK_UTF:
 	 sprintf(text_char_set, "GBK");
+	 break;
+
+      case CHAR_SET_BIG5_UTF:
+	 sprintf(text_char_set, "BIG-5");
 	 break;
 
       case CHAR_SET_SJIS_UTF:
