@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.99 2004/12/03 16:57:24 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.100 2004/12/03 20:00:08 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -1434,8 +1434,7 @@ static void cb_delete_event(GtkWidget *widget, GdkEvent *event, gpointer data)
 void cb_output(GtkWidget *widget, gpointer data)
 {
    int flags;
-   int w, h, output_height, pane_y;
-   long ivalue;
+   int w, h, output_height;
 
    flags=GPOINTER_TO_INT(data);
 
