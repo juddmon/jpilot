@@ -780,7 +780,7 @@ static void output_to_pane(const char *str)
       gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(g_output_text_buffer), utf8_text, -1);
       g_free(utf8_text);
    } else
-      gtk_text_insert(GTK_TEXT_BUFFER(g_output_text), NULL, NULL, NULL, str, -1);
+      gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(g_output_text_buffer), str, -1);
    gtk_text_view_scroll_mark_onscreen(GTK_TEXT_VIEW(g_output_text), gtk_text_buffer_get_insert(GTK_TEXT_BUFFER(g_output_text_buffer)));
 #else
    gtk_text_insert(GTK_TEXT(g_output_text), NULL, NULL, NULL, str, -1);
