@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.30 2004/12/11 17:31:06 rousseau Exp $ */
+/* $Id: keyring.c,v 1.31 2004/12/20 15:58:55 rousseau Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -56,11 +56,12 @@
 #define CONNECT_SIGNALS 400
 #define DISCONNECT_SIGNALS 401
 
+#define NUM_KEYRING_CAT_ITEMS 16
 
 /* Global vars */
 /* This is the category that is currently being displayed */
-static int show_category;
-static int glob_category_number_from_menu_item[16];
+static int show_category = CATEGORY_ALL;
+static int glob_category_number_from_menu_item[NUM_KEYRING_CAT_ITEMS];
 
 static GtkWidget *clist;
 static GtkWidget *entry_name;
@@ -72,7 +73,9 @@ static GObject   *text_note_buffer;
 #endif
 static GtkWidget *menu_category1;
 static GtkWidget *menu_category2;
-static GtkWidget *menu_item_category2[16];
+static int old_category;
+static GtkWidget *menu_item_category1[NUM_KEYRING_CAT_ITEMS+1];
+static GtkWidget *menu_item_category2[NUM_KEYRING_CAT_ITEMS];
 static GtkWidget *scrolled_window;
 static GtkWidget *new_record_button;
 static GtkWidget *apply_record_button;
@@ -1129,7 +1132,6 @@ static void make_menus()
    int buf_size;
    int i, count;
    char all[]="All";
-   GtkWidget *menu_item_category1[17];
    char *categories[18];
      
    jp_logf(JP_LOG_DEBUG, "KeyRing: make_menus\n");
@@ -1446,6 +1448,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    int password_not_correct;
    char *titles[2];
    int retry;
+   int cycle_category = FALSE;
 
    titles[0] = _("Name"); titles[1] = _("Account");
    
@@ -1491,13 +1494,14 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
       }
       memset(ascii_password, 0, PASSWD_LEN-1);
    }
+   else
+      cycle_category = TRUE;
 
    /* plug entered with correct password */
    plugin_last_time = time(NULL);
    plugin_active = TRUE;
 
    record_changed=CLEAR_FLAG;
-   show_category = CATEGORY_ALL;
    clist_row_selected = 0;
 
    time(&ltime);
@@ -1662,6 +1666,18 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_widget_hide(add_record_button);
    gtk_widget_hide(apply_record_button);
 
+   if (cycle_category) {
+      old_category++;
+
+      if (NULL == menu_item_category1[old_category]) {
+	 old_category = 0;
+	 show_category = CATEGORY_ALL;
+      }
+
+      gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_item_category1[old_category]), TRUE);
+      gtk_option_menu_set_history(GTK_OPTION_MENU(menu_category1), old_category);
+   }
+
    jp_logf(JP_LOG_DEBUG, "KeyRing: calling display_records\n");
 
    display_records();
@@ -1701,6 +1717,10 @@ int plugin_gui_cleanup() {
       plugin_last_time = time(NULL);
    }
    plugin_active = FALSE;
+   for (old_category=0; old_category<NUM_KEYRING_CAT_ITEMS; old_category++) {
+      if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menu_item_category1[old_category])))
+	 break;
+   }
 
    return EXIT_SUCCESS;
 }
