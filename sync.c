@@ -1652,12 +1652,26 @@ static int sync_install(char *filename, int sd)
 	 /* This requires a reset */
 	 info.flags |= dlpDBFlagReset;
 	 info.flags |= dlpDBFlagNewer;
+	 pi_file_close(f);
+	 pdb_file_write_dbinfo(filename, &info);
+	 f = pi_file_open(filename);
+	 if (f==0) {
+	    jp_logf(JP_LOG_WARN, _("\nUnable to open '%s'!\n"), filename);
+	    return -1;
+	 }
 	 try_again = 1;
       } else if (!strcmp(info.name, "Graffiti ShortCuts ")) {
 	 strcpy(info.name, "Graffiti ShortCuts");
 	 /* This requires a reset */
 	 info.flags |= dlpDBFlagReset;
 	 info.flags |= dlpDBFlagNewer;
+	 pi_file_close(f);
+	 pdb_file_write_dbinfo(filename, &info);
+	 f = pi_file_open(filename);
+	 if (f==0) {
+	    jp_logf(JP_LOG_WARN, _("\nUnable to open '%s'!\n"), filename);
+	    return -1;
+	 }
 	 try_again = 1;
       }
       /* Here we make a special exception for Net Prefs */
@@ -1666,12 +1680,26 @@ static int sync_install(char *filename, int sd)
 	 /* This requires a reset */
 	 info.flags |= dlpDBFlagReset;
 	 info.flags |= dlpDBFlagNewer;
+	 pi_file_close(f);
+	 pdb_file_write_dbinfo(filename, &info);
+	 f = pi_file_open(filename);
+	 if (f==0) {
+	    jp_logf(JP_LOG_WARN, _("\nUnable to open '%s'!\n"), filename);
+	    return -1;
+	 }
 	 try_again = 1;
       } else if (!strcmp(info.name, "Net Prefs ")) {
 	 strcpy(info.name, "Net Prefs");
 	 /* This requires a reset */
 	 info.flags |= dlpDBFlagReset;
 	 info.flags |= dlpDBFlagNewer;
+	 pi_file_close(f);
+	 pdb_file_write_dbinfo(filename, &info);
+	 f = pi_file_open(filename);
+	 if (f==0) {
+	    jp_logf(JP_LOG_WARN, _("\nUnable to open '%s'!\n"), filename);
+	    return -1;
+	 }
 	 try_again = 1;
       }
       if (try_again) {

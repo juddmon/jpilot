@@ -217,10 +217,9 @@ int add_days_to_date(struct tm *date, int n)
 	 get_month_info(date->tm_mon, 1, date->tm_year, &fdom, &ndim);
       }
    }
-//   printf("add_days_to_date:hour = %d\n", date->tm_hour);//undo
    date->tm_isdst=-1;
    mktime(date);
-//   printf("add_days_to_date:hour = %d\n", date->tm_hour);//undo
+
    return 0;  
 }
 
@@ -2674,6 +2673,73 @@ int pdb_file_write_app_block(char *DB_name, void *bufp, int size_in)
    }
 
    utime(full_local_pdb_file, &times);
+
+   return 0;
+}
+
+/* DB_name is filename with extention and path, i.e: "/tmp/Net Prefs.prc"
+ */
+int pdb_file_write_dbinfo(char *full_DB_name, struct DBInfo *Pinfo_in)
+{
+   char full_local_pdb_file2[1024];
+   struct pi_file *pf1, *pf2;
+   struct DBInfo infop;
+   void *app_info;
+   void *sort_info;
+   void *record;
+   int r;
+   int idx;
+   int size;
+   int attr;
+   int cat;
+   pi_uid_t uid;
+   struct stat statb;
+   struct utimbuf times;
+
+   jp_logf(JP_LOG_DEBUG, "pdb_file_write_dbinfo\n");
+
+   g_snprintf(full_local_pdb_file2, 1020, "%s2", full_DB_name);
+   full_local_pdb_file2[1020]='\0';
+
+   /* After we are finished, set the create and modify times of new file
+      to the same as the old */
+   stat(full_DB_name, &statb);
+   times.actime = statb.st_atime;
+   times.modtime = statb.st_mtime;
+
+   pf1 = pi_file_open(full_DB_name);
+   if (!pf1) {
+      jp_logf(JP_LOG_WARN, "Couldn't open [%s]\n", full_DB_name);
+      return -1;
+   }
+   pi_file_get_info(pf1, &infop);
+   /* Set the DBInfo to the one coming into the function */
+   pf2 = pi_file_create(full_local_pdb_file2, Pinfo_in);
+   if (!pf2) {
+      jp_logf(JP_LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file2);
+      return -1;
+   }
+
+   pi_file_get_app_info(pf1, &app_info, &size);
+   pi_file_set_app_info(pf2, app_info, size);
+
+   pi_file_get_sort_info(pf1, &sort_info, &size);  
+   pi_file_set_sort_info(pf2, sort_info, size);
+
+   for(idx=0;;idx++) {
+      r = pi_file_read_record(pf1, idx, &record, &size, &attr, &cat, &uid);
+      if (r<0) break;
+      pi_file_append_record(pf2, record, size, attr, cat, uid);
+   }
+
+   pi_file_close(pf1);
+   pi_file_close(pf2);
+
+   if (rename(full_local_pdb_file2, full_DB_name) < 0) {
+      jp_logf(JP_LOG_WARN, "write_dbinfo: rename failed\n");
+   }
+
+   utime(full_DB_name, &times);
 
    return 0;
 }

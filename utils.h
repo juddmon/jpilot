@@ -473,6 +473,11 @@ int pdb_file_read_record_by_id(char *DB_name,
  */
 int pdb_file_write_app_block(char *DB_name, void *bufp, int size_in);
 
+/*
+ * This copies the datebase (pdb, or prc) and writes the DBInfo privided
+ * since there is no other way to set it in a file.
+ */
+int pdb_file_write_dbinfo(char *DB_name, struct DBInfo *Pinfo_in);
 
 /* category.c */
 /*
