@@ -1,9 +1,9 @@
-# $Id: autogen.sh,v 1.11 2004/11/14 19:15:41 rousseau Exp $
+# $Id: autogen.sh,v 1.12 2005/03/02 01:29:19 rikster5 Exp $
 
 set -x
 
 #Use these when updating libtool
-#libtoolize --force --copy
+libtoolize --force --copy
 #aclocal
 #autoheader
 #automake
