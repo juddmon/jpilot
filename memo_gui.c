@@ -932,7 +932,7 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
    char pdb_name[FILENAME_MAX];
    char full_name[FILENAME_MAX];
    unsigned char buffer[65536];
-   int num, r;
+   int num;
    int size;
    void *buf;
    long ivalue;
@@ -954,7 +954,7 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
    memset(&ai, 0, sizeof(ai));
 
    pf = pi_file_open(full_name);
-   r = pi_file_get_app_info(pf, &buf, &size);
+   pi_file_get_app_info(pf, &buf, &size);
 
    num = unpack_MemoAppInfo(&ai, buf, size);
    if (num <= 0) {

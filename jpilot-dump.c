@@ -28,6 +28,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <utime.h>
+#include <stdio.h>
 #include <pi-source.h>
 #include <pi-socket.h>
 #include <pi-datebook.h>

@@ -978,7 +978,7 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
    struct ExpenseAppInfo ai;
    char full_name[256];
    char buffer[65536];
-   int num, r;
+   int num;
    int size;
    void *buf;
    struct pi_file *pf;
@@ -991,7 +991,7 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
    memset(&ai, 0, sizeof(ai));
 
    pf = pi_file_open(full_name);
-   r = pi_file_get_app_info(pf, &buf, &size);
+   pi_file_get_app_info(pf, &buf, &size);
 
    num = unpack_ExpenseAppInfo(&ai, buf, size);
    if (num <= 0) {
@@ -1922,7 +1922,7 @@ int plugin_post_sync(void)
 #if 0
    struct ExpenseAppInfo ai;
    char full_name[256];
-   int num, r;
+   int num;
    int size;
    void *buf;
    struct pi_file *pf;
@@ -1939,7 +1939,7 @@ int plugin_post_sync(void)
    memset(&ai, 0, sizeof(ai));
 
    pf = pi_file_open(full_name);
-   r = pi_file_get_app_info(pf, &buf, &size);
+   pi_file_get_app_info(pf, &buf, &size);
 
    num = unpack_ExpenseAppInfo(&ai, buf, size);
    if (num <= 0) {
