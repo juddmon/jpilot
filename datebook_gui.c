@@ -4020,6 +4020,10 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_paned_pack1(GTK_PANED(pane), todo_pane, TRUE, FALSE);
    gtk_paned_pack2(GTK_PANED(pane), vbox2, TRUE, FALSE);
 
+   /* Separator */
+   separator = gtk_hseparator_new();
+   gtk_box_pack_start(GTK_BOX(vbox1), separator, FALSE, FALSE, 5);
+
    /* Make the Today is: label */
    time(&ltime);
    now = localtime(&ltime);
@@ -4029,7 +4033,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    timeout_date(NULL);
    glob_date_timer_tag = gtk_timeout_add(CLOCK_TICK, timeout_date, NULL);
 
-
+   /* Separator */
    separator = gtk_hseparator_new();
    gtk_box_pack_start(GTK_BOX(vbox1), separator, FALSE, FALSE, 5);
 
