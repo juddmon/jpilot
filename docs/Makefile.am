@@ -1,10 +1,20 @@
-# $Id: Makefile.am,v 1.7 2004/10/02 20:04:42 rousseau Exp $
+# $Id: Makefile.am,v 1.8 2004/10/05 20:19:04 rousseau Exp $
 
 # install the man pages
 man_MANS = jpilot.1 jpilot-dial.1 jpilot-sync.1 jpilot-dump.1
 
+miscdir = $(prefix)/share/doc/$(PACKAGE)-$(VERSION)
+misc_DATA = ../BUGS \
+	../ChangeLog \
+	../COPYING \
+	../AUTHORS \
+	../INSTALL \
+	../README \
+	../TODO \
+	../UPGRADING
+
 # install the manual docs
-docdir = $(prefix)/share/doc/$(PACKAGE)-$(VERSION)
+docdir = $(miscdir)/manual
 doc_DATA = manual.html \
 	    plugin.html \
 	    jpilot-address.png \
@@ -16,15 +26,7 @@ doc_DATA = manual.html \
 	    jpilot-print.png \
 	    jpilot-search.png \
 	    jpilot-todo.png \
-	    jpilot-toplogo.jpg \
-	../BUGS \
-	../ChangeLog \
-	../COPYING \
-	../AUTHORS \
-	../INSTALL \
-	../README \
-	../TODO \
-	../UPGRADING
+	    jpilot-toplogo.jpg
 
-EXTRA_DIST = $(doc_DATA) $(man_MANS)
+EXTRA_DIST = $(doc_DATA) $(misc_DATA) $(man_MANS)
 
