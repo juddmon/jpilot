@@ -91,7 +91,7 @@ int jp_logf(int level, char *format, ...)
 int jp_vlogf (int level, char *format, va_list val) {
 #define WRITE_MAX_BUF	4096
    char       		real_buf[WRITE_MAX_BUF+32];
-   char			*buf;
+   char			*buf, *local_buf;
    int			size;
    int			len;
    int			r;
@@ -130,14 +130,27 @@ int jp_vlogf (int level, char *format, va_list val) {
    buf[WRITE_MAX_BUF-1] = '\0';
    size=strlen(buf);
 
+   local_buf = buf;
+   /* UTF-8 text so transform in local encoding */
+   if (g_utf8_validate(buf, -1, NULL))
+   {
+      local_buf = g_locale_from_utf8(buf, -1, NULL, NULL, NULL);
+      if (NULL == local_buf)
+         local_buf = buf;
+   }
+
    if ((fp) && (level & glob_log_file_mask)) {
-      fwrite(buf, size, 1, fp);
+      fwrite(local_buf, size, 1, fp);
       fflush(fp);
    }
 
    if (level & glob_log_stdout_mask) {
-      fputs(buf, stdout);
+      fputs(local_buf, stdout);
    }
+
+   /* free the buffer is a conversion was used */
+   if (local_buf != buf)
+       g_free(local_buf);
 
    if ((pipe_to_parent) && (level & glob_log_gui_mask)) {
       sprintf(cmd, "%d:", PIPE_PRINT);
