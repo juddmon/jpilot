@@ -1,4 +1,4 @@
-# $Id: autogen.sh,v 1.7 2003/07/05 23:15:14 judd Exp $
+# $Id: autogen.sh,v 1.8 2004/02/29 23:08:59 judd Exp $
 
 set -x
 
@@ -8,6 +8,8 @@ set -x
 #autoheader
 #automake
 #autoconf
+#
+#gettextize -f --intl
 
 rm -f configure Makefile.in Makefile config.h.in
 aclocal -I m4
