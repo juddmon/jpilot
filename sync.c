@@ -492,8 +492,7 @@ int jp_pilot_connect(int *Psd, const char *device)
       ret = pi_bind(sd, (struct sockaddr*)&addr, sizeof(addr));
    }
    if (ret == -1) {
-      perror("pi_bind");
-      jp_logf(JP_LOG_WARN, "pi_bind %s\n", strerror(errno));
+      jp_logf(JP_LOG_WARN, "pi_bind error: %s %s\n", device, strerror(errno));
       jp_logf(JP_LOG_WARN, _("Check your serial port and settings\n"));
       return SYNC_ERROR_BIND;
    }
