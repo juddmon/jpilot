@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.29 2004/12/10 02:12:13 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.30 2004/12/11 17:31:06 rousseau Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -927,7 +927,6 @@ static void cb_clist_selection(GtkWidget      *clist,
    jp_logf(JP_LOG_DEBUG, "KeyRing: cb_clist_selection\n");
 
    if ((!event) && (clist_hack)) return;
-   if (event==0) return;
 
    if (row<0) {
       return;
