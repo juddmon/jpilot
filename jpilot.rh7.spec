@@ -62,7 +62,6 @@ rm -rf ${RPM_BUILD_ROOT}
 %{_prefix}/bin/jpilot
 %{_prefix}/bin/jpilot-dump
 %{_prefix}/bin/jpilot-sync
-%{_prefix}/bin/jpilot-upgrade-99
 %{_prefix}/share/jpilot
 %{_prefix}/lib/jpilot/plugins/libexpense.so
 %{_prefix}/lib/jpilot/plugins/libexpense.so.1

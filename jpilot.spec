@@ -72,7 +72,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/jpilot
 %{_bindir}/jpilot-dump
 %{_bindir}/jpilot-sync
-%{_bindir}/jpilot-upgrade-99
 %{_datadir}/jpilot/jpilotrc.blue
 %{_datadir}/jpilot/jpilotrc.default
 %{_datadir}/jpilot/jpilotrc.green
@@ -99,7 +98,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/locale/*/LC_MESSAGES/jpilot.mo
 %{_mandir}/man1/jpilot.1.gz
 %{_mandir}/man1/jpilot-sync.1.gz
-%{_mandir}/man1/jpilot-upgrade-99.1.gz
 %{prefix}/share/pixmaps/*
 
 %changelog
