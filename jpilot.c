@@ -62,17 +62,10 @@
 
 #include "icons/jpilot-icon4.xpm"
 
-#ifndef ENABLE_PROMETHEON
 #include "datebook.xpm"
 #include "address.xpm"
 #include "todo.xpm"
 #include "memo.xpm"
-#else
-#include "datebook_ncc.xpm"
-#include "address_ncc.xpm"
-#include "todo_ncc.xpm"
-#include "memo_ncc.xpm"
-#endif
 
 
 /*#define SHADOW GTK_SHADOW_IN */
@@ -1715,22 +1708,22 @@ char *xpm_unlocked[] = {
 #else
    gtk_menu_bar_set_shadow_type(GTK_MENU_BAR(menubar), GTK_SHADOW_NONE);
 #endif
-   //undo figure out how to do this
-   /*undo
+   /* GTK2 figure out how to do this */
+#if 0
    gtk_paint_shadow(menubar->style, menubar->window,
 		    GTK_STATE_NORMAL, GTK_SHADOW_NONE,
 		    NULL, menubar, "menubar",
 		    0, 0, 0, 0);*/
-//   gtk_widget_style_set(GTK_WIDGET(menubar),
-//			"shadow_type", GTK_SHADOW_NONE,
-//			NULL);
-//   gtk_viewport_set_shadow_type(menubar,GTK_SHADOW_NONE);
-   //menubar->style;
+   gtk_widget_style_set(GTK_WIDGET(menubar),
+			"shadow_type", GTK_SHADOW_NONE,
+			NULL);
+   gtk_viewport_set_shadow_type(menubar,GTK_SHADOW_NONE);
+   menubar->style;
+#endif
 
    gtk_box_pack_start(GTK_BOX(main_vbox), g_hbox, TRUE, TRUE, 3);
    gtk_container_set_border_width(GTK_CONTAINER(g_hbox), 10);
    gtk_box_pack_start(GTK_BOX(g_hbox), g_vbox0, FALSE, FALSE, 3);
-
 
    /* Make the output text window */
    temp_hbox = gtk_hbox_new(FALSE, 0);
@@ -1874,6 +1867,7 @@ char *xpm_unlocked[] = {
    pixmapwid = gtk_pixmap_new(pixmap, mask);
    gtk_widget_show(pixmapwid);
    gtk_container_add(GTK_CONTAINER(button_datebook), pixmapwid);
+   gtk_button_set_relief(GTK_BUTTON(button_datebook), GTK_RELIEF_NONE);
 
    /* Create "Address" pixmap */
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
@@ -1882,6 +1876,7 @@ char *xpm_unlocked[] = {
    pixmapwid = gtk_pixmap_new(pixmap, mask);
    gtk_widget_show(pixmapwid);
    gtk_container_add(GTK_CONTAINER(button_address), pixmapwid);
+   gtk_button_set_relief(GTK_BUTTON(button_address), GTK_RELIEF_NONE);
 
    /* Create "Todo" pixmap */
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
@@ -1890,6 +1885,7 @@ char *xpm_unlocked[] = {
    pixmapwid = gtk_pixmap_new(pixmap, mask);
    gtk_widget_show(pixmapwid);
    gtk_container_add(GTK_CONTAINER(button_todo), pixmapwid);
+   gtk_button_set_relief(GTK_BUTTON(button_todo), GTK_RELIEF_NONE);
 
    /* Create "memo" pixmap */
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
@@ -1898,6 +1894,7 @@ char *xpm_unlocked[] = {
    pixmapwid = gtk_pixmap_new(pixmap, mask);
    gtk_widget_show(pixmapwid);
    gtk_container_add(GTK_CONTAINER(button_memo), pixmapwid);
+   gtk_button_set_relief(GTK_BUTTON(button_memo), GTK_RELIEF_NONE);
 
    /* Show locked box */
 #ifdef ENABLE_PRIVATE
