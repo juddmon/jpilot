@@ -2324,6 +2324,18 @@ char *multibyte_safe_memccpy(char *dst, const char *src, int c, size_t len)
      return memccpy(dst, src, c, len);
 }
 
+void charset_j2p(unsigned char *buf, int max_len, long char_set)
+{
+   switch (char_set) {
+    case CHAR_SET_JAPANESE: Euc2Sjis(buf, max_len);
+    case CHAR_SET_1250: Lat2Win(buf,max_len);
+    case CHAR_SET_1251: koi8_to_win1251(buf, max_len);
+    case CHAR_SET_1251_B: win1251_to_koi8(buf, max_len);
+    case CHAR_SET_1250UTF: UTF2Win(buf,max_len);
+    case CHAR_SET_LATINUTF: UTF2Lat(buf,max_len);
+   }
+}
+
 void jp_charset_j2p(unsigned char *const buf, int max_len)
 {
    long char_set;
