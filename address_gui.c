@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.86 2004/12/07 20:31:39 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.87 2004/12/10 02:12:13 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -239,7 +239,7 @@ cb_record_changed(GtkWidget *widget,
    jp_logf(JP_LOG_DEBUG, "cb_record_changed\n");
    if (record_changed==CLEAR_FLAG) {
       connect_changed_signals(DISCONNECT_SIGNALS);
-      if (((GtkCList *)clist)->rows > 0) {
+      if (GTK_CLIST(clist)->rows > 0) {
 	 set_new_button_to(MODIFY_FLAG);
       } else {
 	 set_new_button_to(NEW_FLAG);
@@ -2325,7 +2325,7 @@ cb_key_pressed_quickfind(GtkWidget *widget, GdkEventKey *event, gpointer data)
       add=-1;
    }
    if (!add) return FALSE;
-   row_count=((GtkCList *)clist)->rows;
+   row_count =GTK_CLIST(clist)->rows;
    if (!row_count) return FALSE;
 
    gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");

@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.76 2004/12/07 20:31:40 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.77 2004/12/10 02:12:13 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -284,7 +284,7 @@ cb_record_changed(GtkWidget *widget,
    jp_logf(JP_LOG_DEBUG, "cb_record_changed\n");
    if (record_changed==CLEAR_FLAG) {
       connect_changed_signals(DISCONNECT_SIGNALS);
-      if (((GtkCList *)clist)->rows > 0) {
+      if (GTK_CLIST(clist)->rows > 0) {
 	 set_new_button_to(MODIFY_FLAG);
       } else {
 	 set_new_button_to(NEW_FLAG);

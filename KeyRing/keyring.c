@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.28 2004/12/07 20:31:40 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.29 2004/12/10 02:12:13 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -807,7 +807,7 @@ static void display_records()
    
    jp_logf(JP_LOG_DEBUG, "KeyRing: display_records\n");
 
-   row_count=((GtkCList *)clist)->rows;
+   row_count=GTK_CLIST(clist)->rows;
 
    /* Need to remove pointers to data we are about to delete */
    for (i=0; i<row_count; i++) {
