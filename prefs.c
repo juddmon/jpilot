@@ -27,6 +27,9 @@
 #include "utils.h"
 #include "prefs.h"
 #include "log.h"
+#ifdef ENABLE_GTK2
+#include "otherconv.h"
+#endif
 
 /*These are the default settings */
 /*name, usertype, filetype, ivalue, char *svalue, svalue_size; */
