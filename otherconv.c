@@ -178,12 +178,12 @@ char *other_to_UTF(const char *buf, int buf_len)
 	 buf_len), glob_frompda, &bytes_read, NULL, NULL);
       tmp_buf[bytes_read] = c;
 
-      tail = other_to_UTF(tmp_buf + bytes_read +1, buf_len);
+      tail = other_to_UTF(tmp_buf + bytes_read +1, buf_len - bytes_read - 1);
 
-      outbuf_len = strlen(head)+1+strlen(tail)+1;
+      outbuf_len = strlen(head) +4 + strlen(tail)+1;
       outbuf = g_malloc(outbuf_len);
       g_strlcpy(outbuf, head, outbuf_len);
-      g_strlcat(outbuf, "+", outbuf_len);
+      g_sprintf(outbuf + strlen (head), "\\%02X", (unsigned char)c);
       g_strlcat(outbuf, tail, outbuf_len);
 
       g_free(head);
