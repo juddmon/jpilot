@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.103 2004/12/10 02:45:06 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.104 2004/12/10 05:06:43 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -609,10 +609,15 @@ static void cb_private(GtkWidget *widget, gpointer data)
 void cb_app_button(GtkWidget *widget, gpointer data)
 {
    int app;
+   int refresh;
 
    app = GPOINTER_TO_INT(data);
 
-   if (app==REDRAW) {
+   /* If the current and selected apps are the same then just refresh screen */
+   refresh = (app==glob_app);  
+
+   /* Tear down GUI when switching apps or on forced REDRAW */
+   if ((!refresh) || (app==REDRAW)) {
       gui_cleanup();
       if (glob_date_timer_tag) {
 	 gtk_timeout_remove(glob_date_timer_tag);
@@ -620,86 +625,43 @@ void cb_app_button(GtkWidget *widget, gpointer data)
       gtk_widget_destroy(g_vbox0_1);
       gtk_widget_destroy(g_hbox2);
       create_main_boxes();
-      app = glob_app;
-      glob_app = 0;
+      if (app==REDRAW) {
+	 app = glob_app;
+      }
    }
 
    switch(app) {
     case DATEBOOK:
-      if (glob_app == DATEBOOK) {
-	 /* Refresh screen */
+      if (refresh) {
 	 datebook_refresh(TRUE);
       } else {
-/*	 gtk_container_remove(GTK_CONTAINER(g_vbox0_1->parent), */
-/*			      GTK_WIDGET(g_vbox0_1)); */
-/*	 gtk_container_remove(GTK_CONTAINER(g_hbox2->parent), */
-/*			      GTK_WIDGET(g_hbox2)); */
-	 gui_cleanup();
-	 if (glob_date_timer_tag) {
-	    gtk_timeout_remove(glob_date_timer_tag);
-	 }
-	 gtk_widget_destroy(g_vbox0_1);
-	 gtk_widget_destroy(g_hbox2);
-	 create_main_boxes();
 	 glob_app = DATEBOOK;
 	 datebook_gui(g_vbox0_1, g_hbox2);
       }
       break;
     case ADDRESS:
-      if (glob_app == ADDRESS) {
-	 /* Refresh screen */
+      if (refresh) {
 	 address_cycle_cat();
 	 address_refresh();
       } else {
-/*	 gtk_container_remove(GTK_CONTAINER(g_vbox0_1->parent), */
-/*			      GTK_WIDGET(g_vbox0_1)); */
-/*	 gtk_container_remove(GTK_CONTAINER(g_hbox2->parent), */
-/*			      GTK_WIDGET(g_hbox2)); */
-	 gui_cleanup();
-	 if (glob_date_timer_tag) {
-	    gtk_timeout_remove(glob_date_timer_tag);
-	 }
-	 gtk_widget_destroy(g_vbox0_1);
-	 gtk_widget_destroy(g_hbox2);
-	 create_main_boxes();
 	 glob_app = ADDRESS;
 	 address_gui(g_vbox0_1, g_hbox2);
       }
       break;
     case TODO:
-      if (glob_app == TODO) {
-	 /* Refresh screen */
+      if (refresh) {
 	 todo_cycle_cat();
 	 todo_refresh();
       } else {
-	 gui_cleanup();
-	 if (glob_date_timer_tag) {
-	    gtk_timeout_remove(glob_date_timer_tag);
-	 }
-	 gtk_widget_destroy(g_vbox0_1);
-	 gtk_widget_destroy(g_hbox2);
-	 create_main_boxes();
 	 glob_app = TODO;
 	 todo_gui(g_vbox0_1, g_hbox2);
       }
       break;
     case MEMO:
-      if (glob_app == MEMO) {
-	 /*refresh screen */
+      if (refresh) {
 	 memo_cycle_cat();
 	 memo_refresh();
       } else {
-/*	 gtk_container_remove(GTK_CONTAINER(g_vbox0_1->parent), */
-/*			      GTK_WIDGET(g_vbox0_1)); */
-/*	 gtk_container_remove(GTK_CONTAINER(g_hbox2->parent), */
-/*			      GTK_WIDGET(g_hbox2)); */
-	 gui_cleanup();
-	 if (glob_date_timer_tag) {
-	    gtk_timeout_remove(glob_date_timer_tag);
-	 }
-	 gtk_widget_destroy(g_vbox0_1);
-	 gtk_widget_destroy(g_hbox2);
-	 create_main_boxes();
 	 glob_app = MEMO;
 	 memo_gui(g_vbox0_1, g_hbox2);
       }
