@@ -1685,8 +1685,8 @@ static void set_begin_end_labels(struct tm *begin, struct tm *end, int flags)
       } else {
 	 get_pref_time_no_secs(pref_time);
 
-	 strftime(time1_str, sizeof(time1_str), pref_time, begin);
-	 strftime(time2_str, sizeof(time2_str), pref_time, end);
+	 jp_strftime(time1_str, sizeof(time1_str), pref_time, begin);
+	 jp_strftime(time2_str, sizeof(time2_str), pref_time, end);
 
 	 gtk_entry_set_text(GTK_ENTRY(begin_time_entry), time1_str);
 	 gtk_entry_set_text(GTK_ENTRY(end_time_entry), time2_str);
