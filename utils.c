@@ -2048,7 +2048,8 @@ int cleanup_pc_file(char *DB_name, unsigned int *max_id)
       if ((header.unique_id > *max_id)
 	  && (header.rt != PALM_REC)
 	  && (header.rt != MODIFIED_PALM_REC)
-	  && (header.rt != DELETED_PALM_REC) ){
+	  && (header.rt != DELETED_PALM_REC)
+	  && (header.rt != REPLACEMENT_PALM_REC) ){
 	 *max_id = header.unique_id;
       }
       if (fseek(pc_file, header.rec_len, SEEK_CUR)) {
