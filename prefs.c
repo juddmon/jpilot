@@ -85,7 +85,14 @@ static prefType glob_prefs[NUM_PREFS] = {
      {"memo_import_path", CHARTYPE, CHARTYPE, 0, NULL, 0},
      {"manana_mode", INTTYPE, INTTYPE, 0, NULL, 0},
      {"sync_manana", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"use_jos", INTTYPE, INTTYPE, 0, ""}
+     {"use_jos", INTTYPE, INTTYPE, 0, ""},
+     {"phone_prefix1", CHARTYPE, CHARTYPE, 0, NULL, 0},
+     {"phone_prefix1_on", INTTYPE, INTTYPE, 0, NULL, 0},
+     {"phone_prefix2", CHARTYPE, CHARTYPE, 0, NULL, 0},
+     {"phone_prefix2_on", INTTYPE, INTTYPE, 0, NULL, 0},
+     {"phone_prefix3", CHARTYPE, CHARTYPE, 0, NULL, 0},
+     {"phone_prefix3_on", INTTYPE, INTTYPE, 0, NULL, 0},
+     {"dial_command", CHARTYPE, CHARTYPE, 0, NULL, 0}
 };
 
 struct name_list {
@@ -120,6 +127,10 @@ void pref_init()
 	 break;
        case PREF_PASSWORD:
 	 glob_prefs[i].svalue=strdup("09021345070413440c08135a3215135dd217ead3b5df556322e9a14a994b0f88");
+	 glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
+	 break;
+       case PREF_DIAL_COMMAND:
+	 glob_prefs[i].svalue=strdup("jpilot-dial --lv 0 --rv 50 %n");
 	 glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
 	 break;
        default:

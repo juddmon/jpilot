@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Id: Makefile.in,v 1.15 2002/10/09 01:55:05 judd Exp $
+# $Id: Makefile.in,v 1.16 2002/10/25 01:04:35 judd Exp $
 SHELL = @SHELL@
 
 srcdir = @srcdir@
@@ -166,6 +166,7 @@ jpilot_SOURCES = \
 	datebook.c \
 	datebook.h \
 	datebook_gui.c \
+	dialer.c \
 	export_gui.c \
 	export.h \
 	i18n.h \
@@ -293,16 +294,16 @@ PROGRAMS = $(bin_PROGRAMS)
 
 am_jpilot_OBJECTS = address.$(OBJEXT) address_gui.$(OBJEXT) \
 	alarms.$(OBJEXT) cp1250.$(OBJEXT) dat.$(OBJEXT) \
-	datebook.$(OBJEXT) datebook_gui.$(OBJEXT) export_gui.$(OBJEXT) \
-	import_gui.$(OBJEXT) install_gui.$(OBJEXT) japanese.$(OBJEXT) \
-	jpilot.$(OBJEXT) libplugin.$(OBJEXT) log.$(OBJEXT) \
-	memo.$(OBJEXT) memo_gui.$(OBJEXT) monthview_gui.$(OBJEXT) \
-	password.$(OBJEXT) plugins.$(OBJEXT) prefs.$(OBJEXT) \
-	prefs_gui.$(OBJEXT) print.$(OBJEXT) print_gui.$(OBJEXT) \
-	print_headers.$(OBJEXT) print_logo.$(OBJEXT) \
-	restore_gui.$(OBJEXT) russian.$(OBJEXT) search_gui.$(OBJEXT) \
-	sync.$(OBJEXT) todo.$(OBJEXT) todo_gui.$(OBJEXT) \
-	utils.$(OBJEXT) weekview_gui.$(OBJEXT)
+	datebook.$(OBJEXT) datebook_gui.$(OBJEXT) dialer.$(OBJEXT) \
+	export_gui.$(OBJEXT) import_gui.$(OBJEXT) install_gui.$(OBJEXT) \
+	japanese.$(OBJEXT) jpilot.$(OBJEXT) libplugin.$(OBJEXT) \
+	log.$(OBJEXT) memo.$(OBJEXT) memo_gui.$(OBJEXT) \
+	monthview_gui.$(OBJEXT) password.$(OBJEXT) plugins.$(OBJEXT) \
+	prefs.$(OBJEXT) prefs_gui.$(OBJEXT) print.$(OBJEXT) \
+	print_gui.$(OBJEXT) print_headers.$(OBJEXT) \
+	print_logo.$(OBJEXT) restore_gui.$(OBJEXT) russian.$(OBJEXT) \
+	search_gui.$(OBJEXT) sync.$(OBJEXT) todo.$(OBJEXT) \
+	todo_gui.$(OBJEXT) utils.$(OBJEXT) weekview_gui.$(OBJEXT)
 jpilot_OBJECTS = $(am_jpilot_OBJECTS)
 jpilot_DEPENDENCIES =
 jpilot_LDFLAGS =
@@ -340,7 +341,8 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/address_gui.Po ./$(DEPDIR)/alarms.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/cp1250.Po ./$(DEPDIR)/dat.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/datebook.Po ./$(DEPDIR)/datebook_gui.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/export_gui.Po ./$(DEPDIR)/import_gui.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/dialer.Po ./$(DEPDIR)/export_gui.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/import_gui.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/install_gui.Po ./$(DEPDIR)/japanese.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/jpilot-dump.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/jpilot-sync.Po \
@@ -479,6 +481,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dat.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/datebook.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/datebook_gui.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dialer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/export_gui.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/import_gui.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/install_gui.Po@am__quote@

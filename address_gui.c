@@ -25,6 +25,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "utils.h"
 #include "address.h"
 #include "log.h"
@@ -1051,6 +1052,61 @@ void cb_address_clear(GtkWidget *widget,
    clear_details();
    gtk_notebook_set_page(GTK_NOTEBOOK(notebook), 0);
    gtk_widget_grab_focus(GTK_WIDGET(address_text[0]));
+}
+
+/* Attempt to make the best possible string out of whatever garbage we find
+ * Remove illegal characters, stop at carriage return and at least 1 digit
+ */
+void parse_phone_str(char *dest, char *src, int max_len)
+{
+   int i1, i2;
+
+   for (i1=0, i2=0; (i1<max_len) && src[i1]; i1++) {
+      if (isdigit(src[i1]) || (src[i1]==',')
+	  || (src[i1]=='A') || (src[i1]=='B') || (src[i1]=='C')
+	  || (src[i1]=='D') || (src[i1]=='*') || (src[i1]=='#')
+	  ) {
+	 dest[i2]=src[i1];
+	 i2++;
+      } else if (((src[i1] =='\n') || (src[i1] =='\r')) && i2) {
+	 break;
+      }
+   }
+   dest[i2]='\0';
+}
+
+void cb_dialer(GtkWidget *widget, gpointer data)
+{
+   GtkWidget *text;
+   gchar *str;
+   char *Px;
+   char number[100];
+   char ext[100];
+   int i;
+   GtkWidget *w, *window;
+
+   number[0]=ext[0]='\0';
+   text=data;
+   str=gtk_editable_get_chars(GTK_EDITABLE(text), 0, -1);
+   if (!str) return;
+   printf("[%s]\n", str);
+
+   parse_phone_str(number, str, 90);
+
+   Px = strstr(str, "x");
+   if (Px) {
+      //undo printf("Px = [%s]\n", Px);
+      parse_phone_str(ext, Px, 90);
+   }
+   g_free(str);
+
+   for (w=widget, window=NULL, i=15; w && (i>0); w=w->parent, i--) {
+      if (GTK_IS_WINDOW(w)) {
+	 window=w;
+	 break;
+      }
+   }
+   dialog_dial(window, number, ext);
 }
 
 void cb_address_quickfind(GtkWidget *widget,
@@ -2120,7 +2176,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_widget_show(notebook_tab);
 
    /*Put a table on every page */
-   table1 = gtk_table_new(9, 3, FALSE);
+   table1 = gtk_table_new(9, 4, FALSE);
    gtk_box_pack_start(GTK_BOX(vbox_temp1), table1, TRUE, TRUE, 0);
    table2 = gtk_table_new(9, 2, FALSE);
    gtk_box_pack_start(GTK_BOX(vbox_temp2), table2, TRUE, TRUE, 0);
@@ -2157,13 +2213,13 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	 if (i<(9+3)) {
 	    if (i2>2 && i2<8) {
 	       gtk_table_attach(GTK_TABLE(table1), GTK_WIDGET(phone_list_menu[i2-3]),
-				1, 2, i, i+1, GTK_SHRINK, 0, 0, 0);
+				2, 3, i, i+1, GTK_SHRINK, 0, 0, 0);
 	    } else {
 	       gtk_table_attach(GTK_TABLE(table1), GTK_WIDGET(label),
-				1, 2, i, i+1, GTK_FILL, 0, 0, 0);
+				2, 3, i, i+1, GTK_FILL, 0, 0, 0);
 	    }
 	    gtk_table_attach_defaults(GTK_TABLE(table1), GTK_WIDGET(address_text[i2]),
-				      2, 3, i, i+1);
+				      3, 4, i, i+1);
 	 }
 	 if (i>(8+3) && i<(14+3)) {
 	    gtk_table_attach_defaults(GTK_TABLE(table2), GTK_WIDGET(label),
@@ -2196,7 +2252,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	 group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button[i]));
 	 /* gtk_widget_set_usize(GTK_WIDGET(radio_button[i]), 5, 0);undo*/
 	 gtk_table_attach(GTK_TABLE(table1), GTK_WIDGET(radio_button[i]),
-			  0, 1, i+4+3, i+5+3, GTK_SHRINK, 0, 0, 0);
+			  1, 2, i+4+3, i+5+3, GTK_SHRINK, 0, 0, 0);
       }
    } else {
       label = NULL;
@@ -2216,13 +2272,19 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	 if (i<9) {
 	    if (i2>2 && i2<8) {
 	       gtk_table_attach(GTK_TABLE(table1), GTK_WIDGET(phone_list_menu[i2-3]),
-				1, 2, i, i+1, GTK_SHRINK, 0, 0, 0);
+				2, 3, i, i+1, GTK_SHRINK, 0, 0, 0);
+	       button = gtk_button_new_with_label(_("Dial"));
+	       gtk_signal_connect(GTK_OBJECT(button), "clicked",
+				  GTK_SIGNAL_FUNC(cb_dialer),
+				  address_text[i2]);
+	       gtk_table_attach(GTK_TABLE(table1), GTK_WIDGET(button),
+				0, 1, i, i+1, GTK_SHRINK, 0, 0, 0);
 	    } else {
 	       gtk_table_attach(GTK_TABLE(table1), GTK_WIDGET(label),
-				1, 2, i, i+1, GTK_FILL, 0, 0, 0);
+				2, 3, i, i+1, GTK_FILL, 0, 0, 0);
 	    }
 	    gtk_table_attach_defaults(GTK_TABLE(table1), GTK_WIDGET(address_text[i2]), /* (mo) */
-				      2, 3, i, i+1);
+				      3, 4, i, i+1);
 	 }
 	 if (i>8 && i<14) {
 	    gtk_table_attach_defaults(GTK_TABLE(table2), GTK_WIDGET(label),
@@ -2237,7 +2299,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 				      1, 2, i-14, i-13);
 	 }
       }
-
+  
       /* Capture the TAB key to change focus with it */
       for (i=0; i<NUM_ADDRESS_ENTRIES; i++) {
 	 i1=order[i];
@@ -2255,7 +2317,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	 group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button[i]));
 	 /* gtk_widget_set_usize(GTK_WIDGET(radio_button[i]), 5, 0);undo*/
 	 gtk_table_attach(GTK_TABLE(table1), GTK_WIDGET(radio_button[i]),
-			  0, 1, i+4, i+5, GTK_SHRINK, 0, 0, 0);
+			  1, 2, i+4, i+5, GTK_SHRINK, 0, 0, 0);
       }
    }
 
