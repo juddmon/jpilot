@@ -281,6 +281,8 @@ int cal_dialog(GtkWindow *main_window,
 	       const char *title, int monday_is_fdow,
 	       int *mon, int *day, int *year);
 
+void set_bg_rbg_clist(GtkWidget *clist, int row, int r, int g, int b);
+
 int clist_find_id(GtkWidget *clist,
 		  unsigned int unique_id,
 		  int *found_at,

@@ -217,8 +217,10 @@ int add_days_to_date(struct tm *date, int n)
 	 get_month_info(date->tm_mon, 1, date->tm_year, &fdom, &ndim);
       }
    }
+//   printf("add_days_to_date:hour = %d\n", date->tm_hour);//undo
    date->tm_isdst=-1;
    mktime(date);
+//   printf("add_days_to_date:hour = %d\n", date->tm_hour);//undo
    return 0;  
 }
 
@@ -633,6 +635,19 @@ void free_search_record_list(struct search_record **sr)
       free(temp_sr);
    }
    *sr = NULL;
+}
+
+void set_bg_rbg_clist(GtkWidget *clist, int row, int r, int g, int b)
+{
+   GdkColor color;
+   GdkColormap *colormap;
+
+   colormap = gtk_widget_get_colormap(clist);
+   color.red=r;
+   color.green=g;
+   color.blue=b;
+   gdk_color_alloc(colormap, &color);
+   gtk_clist_set_background(GTK_CLIST(clist), row, &color);
 }
 
 /*returns 0 if not found, 1 if found */
