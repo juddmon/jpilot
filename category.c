@@ -142,13 +142,13 @@ int pdb_file_change_indexes(char *DB_name, int old_index, int new_index)
 
    pf1 = pi_file_open(full_local_pdb_file);
    if (!pf1) {
-      jp_logf(JP_LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file);
+      jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), full_local_pdb_file);
       return -1;
    }
    pi_file_get_info(pf1, &infop);
    pf2 = pi_file_create(full_local_pdb_file2, &infop);
    if (!pf2) {
-      jp_logf(JP_LOG_WARN, "Couldn't open [%s]\n", full_local_pdb_file2);
+      jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), full_local_pdb_file2);
       return -1;
    }
 
@@ -175,7 +175,7 @@ int pdb_file_change_indexes(char *DB_name, int old_index, int new_index)
    pi_file_close(pf2);
 
    if (rename(full_local_pdb_file2, full_local_pdb_file) < 0) {
-      jp_logf(JP_LOG_WARN, "change_indexes: rename failed\n");
+      jp_logf(JP_LOG_WARN, "pdb_file_change_indexes(): %s\n, ", _("rename failed"));
    }
 
    utime(full_local_pdb_file, &times);
@@ -196,7 +196,7 @@ int edit_cats_delete_cats_pc3(char *DB_name, int cat)
 
    pc_in = jp_open_home_file(local_pc_file, "r+");
    if (pc_in==NULL) {
-      jp_logf(JP_LOG_WARN, _("Unable to open %s\n"), local_pc_file);
+      jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), local_pc_file);
       return -1;
    }
 
@@ -253,7 +253,7 @@ int _edit_cats_change_cats_pc3(char *DB_name, int old_cat,
 
    pc_in = jp_open_home_file(local_pc_file, "r+");
    if (pc_in==NULL) {
-      jp_logf(JP_LOG_WARN, _("Unable to open %s\n"), local_pc_file);
+      jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), local_pc_file);
       return -1;
    }
 
@@ -550,7 +550,7 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 	 break;
        case EDIT_CAT_ENTRY_OK:
 	 if ((Pdata->state!=EDIT_CAT_RENAME) && (Pdata->state!=EDIT_CAT_NEW)) {
-	    jp_logf(JP_LOG_WARN, "invalid state file %s line %d\n", __FILE__, __LINE__);
+	    jp_logf(JP_LOG_WARN, _("invalid state file %s line %d\n"), __FILE__, __LINE__);
 	    return;
 	 }
 	 /* Can't make an empty category, could do a dialog telling user */
@@ -657,7 +657,7 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 	 Pdata->state=EDIT_CAT_START;
 	 break;
        default:
-	 jp_logf(JP_LOG_WARN, "cb_edit_button: unknown button\n");
+	 jp_logf(JP_LOG_WARN, "cb_edit_button(): %s\n", "unknown button");
       }
    }
 }
@@ -735,7 +735,7 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
    int j;
    long char_set;
    unsigned char *catname; /* JPA category names in host character set */
-   char *titles[]={"category name"};
+   char *titles[2];
    gchar *empty_line[] = {""};
 
    jp_logf(JP_LOG_DEBUG, "edit_cats\n");
@@ -794,7 +794,11 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
    vbox2 = gtk_vbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(hbox), vbox2, FALSE, FALSE, 1);
 
+   /* correctly translate title */
+   titles[0]=strdup(_("category name"));
+   titles[1]=NULL;
    clist = gtk_clist_new_with_titles(1, titles);
+   if (titles[0]) free(titles[0]);
 
    gtk_clist_column_titles_passive(GTK_CLIST(clist));
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), 0, TRUE);
