@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jpilot 0.99.4\n"
 "Report-Msgid-Bugs-To: jpilot-devel@jpilot.org\n"
-"POT-Creation-Date: 2005-02-19 16:06+0100\n"
+"POT-Creation-Date: 2005-02-19 16:38+0100\n"
 "PO-Revision-Date: 2003-03-08 18:04+0100\n"
 "Last-Translator: Keld Simonsen <keld@dkuug.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -1599,10 +1599,43 @@ msgstr ""
 msgid "Number of backups to be archived"
 msgstr "Antal kopier som skal arkiveres?"
 
+#: prefs_gui.c:522
+msgid "Show deleted records (default NO)"
+msgstr "Vis slettede poster? (standard: nej)"
+
+#: prefs_gui.c:526
+msgid "Show modified deleted records (default NO)"
+msgstr "Vis ændrede slettede poster? (standard: nej)"
+
+#: prefs_gui.c:531
+msgid "Ask confirmation for file installation (J-Pilot -> PDA) (default YES)"
+msgstr ""
+
+#: prefs_gui.c:535
+msgid "Show popup tooltips (default YES)"
+msgstr ""
+
+#: prefs_gui.c:543
+msgid "Highlight calendar days with appointments"
+msgstr "Markér dage med aftaler"
+
+#: prefs_gui.c:549
+#, fuzzy
+msgid "Use DateBk note tags"
+msgstr "Brug DateBk notat-markeringer"
+
 #: prefs_gui.c:552
 #, fuzzy
 msgid "DateBk support disabled in this build"
 msgstr "Understøttelsen af DateBk er deaktiveret i denne udgave"
+
+#: prefs_gui.c:558
+msgid "Annotate today in day, week, and month views"
+msgstr ""
+
+#: prefs_gui.c:563
+msgid "Append years on anniversaries in day, week, and month views"
+msgstr ""
 
 #: prefs_gui.c:575
 #, fuzzy
@@ -1613,6 +1646,38 @@ msgstr "Opkalds-kommando"
 #, fuzzy, c-format
 msgid "%s is replaced by the e-mail address"
 msgstr "%t bliver erstattet med alarm-tiden"
+
+#: prefs_gui.c:597
+msgid "Hide Completed ToDos"
+msgstr "Skjul afsluttede huskelister?"
+
+#: prefs_gui.c:601
+msgid "Hide ToDos not yet due"
+msgstr ""
+
+#: prefs_gui.c:605
+msgid "Record Completion Date"
+msgstr ""
+
+#: prefs_gui.c:610
+msgid "Use Manana database"
+msgstr "Brug Manana-database"
+
+#: prefs_gui.c:618
+msgid "Use default number of days due"
+msgstr ""
+
+#: prefs_gui.c:638
+msgid "Use Memo32 (pedit32)"
+msgstr "Brug Memo32 (pedit32)"
+
+#: prefs_gui.c:645
+msgid "Open alarm windows for appointment reminders"
+msgstr "Åbn alarmvinduer for påmindelser om aftaler"
+
+#: prefs_gui.c:649
+msgid "Execute this command"
+msgstr "Udfør denne kommando"
 
 #: prefs_gui.c:653
 msgid "WARNING: executing arbitrary shell commands can be dangerous!!!"
@@ -1646,6 +1711,34 @@ msgstr "%D (beskrivelseserstatning) er deaktiveret i denne udgave"
 #: prefs_gui.c:695
 msgid "%N (note substitution) is disabled in this build"
 msgstr "%N (note-erstatning) er deaktiveret i denne udgave"
+
+#: prefs_gui.c:704
+msgid "Sync datebook"
+msgstr "Synk aftalebog"
+
+#: prefs_gui.c:708
+msgid "Sync address"
+msgstr "Synk adresse"
+
+#: prefs_gui.c:712
+msgid "Sync todo"
+msgstr "Synk huskeliste"
+
+#: prefs_gui.c:716
+msgid "Sync memo"
+msgstr "Synk notat"
+
+#: prefs_gui.c:720
+msgid "Sync memo32 (pedit32)"
+msgstr "Synk memo32 (pedit32)"
+
+#: prefs_gui.c:725
+msgid "Sync Manana"
+msgstr "Synkronisér Manana"
+
+#: prefs_gui.c:731
+msgid "Use J-OS (Not Japanese PalmOS:WorkPad/CLIE)"
+msgstr ""
 
 #: prefs_gui.c:744
 #, fuzzy, c-format
@@ -2759,52 +2852,6 @@ msgstr "adgangskode: "
 #, fuzzy
 msgid "Generate Password"
 msgstr "Indtast PalmOS-adgangskode"
-
-#~ msgid "Show deleted records (default NO)"
-#~ msgstr "Vis slettede poster? (standard: nej)"
-
-#~ msgid "Show modified deleted records (default NO)"
-#~ msgstr "Vis ændrede slettede poster? (standard: nej)"
-
-#~ msgid "Highlight calendar days with appointments"
-#~ msgstr "Markér dage med aftaler"
-
-#, fuzzy
-#~ msgid "Use DateBk note tags"
-#~ msgstr "Brug DateBk notat-markeringer"
-
-#~ msgid "Hide Completed ToDos"
-#~ msgstr "Skjul afsluttede huskelister?"
-
-#~ msgid "Use Manana database"
-#~ msgstr "Brug Manana-database"
-
-#~ msgid "Use Memo32 (pedit32)"
-#~ msgstr "Brug Memo32 (pedit32)"
-
-#~ msgid "Open alarm windows for appointment reminders"
-#~ msgstr "Åbn alarmvinduer for påmindelser om aftaler"
-
-#~ msgid "Execute this command"
-#~ msgstr "Udfør denne kommando"
-
-#~ msgid "Sync datebook"
-#~ msgstr "Synk aftalebog"
-
-#~ msgid "Sync address"
-#~ msgstr "Synk adresse"
-
-#~ msgid "Sync todo"
-#~ msgstr "Synk huskeliste"
-
-#~ msgid "Sync memo"
-#~ msgstr "Synk notat"
-
-#~ msgid "Sync memo32 (pedit32)"
-#~ msgstr "Synk memo32 (pedit32)"
-
-#~ msgid "Sync Manana"
-#~ msgstr "Synkronisér Manana"
 
 #~ msgid "Backup"
 #~ msgstr "Tag sikkerhedskopi"

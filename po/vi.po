@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jpilot 0.99.5\n"
 "Report-Msgid-Bugs-To: jpilot-devel@jpilot.org\n"
-"POT-Creation-Date: 2005-02-19 16:06+0100\n"
+"POT-Creation-Date: 2005-02-19 16:38+0100\n"
 "PO-Revision-Date: 2003-03-20 22:14+0700\n"
 "Last-Translator: Trinh Minh Thanh <tmthanh@yahoo.com>\n"
 "Language-Team: Vietnamese <gnomevi-list@lists.sourceforge.net>\n"
@@ -1581,8 +1581,40 @@ msgstr ""
 msgid "Number of backups to be archived"
 msgstr "Số lượng sao lưu được cất"
 
+#: prefs_gui.c:522
+msgid "Show deleted records (default NO)"
+msgstr "Hiển thị bản ghi đã xóa (mặc định là KHÔNG)"
+
+#: prefs_gui.c:526
+msgid "Show modified deleted records (default NO)"
+msgstr "Hiển thị bản ghi đã biến đổi (mặc định là KHÔNG)"
+
+#: prefs_gui.c:531
+msgid "Ask confirmation for file installation (J-Pilot -> PDA) (default YES)"
+msgstr ""
+
+#: prefs_gui.c:535
+msgid "Show popup tooltips (default YES)"
+msgstr ""
+
+#: prefs_gui.c:543
+msgid "Highlight calendar days with appointments"
+msgstr "Làm nổi bật ngày trên lịch có cuộc hẹn"
+
+#: prefs_gui.c:549
+msgid "Use DateBk note tags"
+msgstr "Dùng DateBk note tags"
+
 #: prefs_gui.c:552
 msgid "DateBk support disabled in this build"
+msgstr ""
+
+#: prefs_gui.c:558
+msgid "Annotate today in day, week, and month views"
+msgstr ""
+
+#: prefs_gui.c:563
+msgid "Append years on anniversaries in day, week, and month views"
 msgstr ""
 
 #: prefs_gui.c:575
@@ -1594,6 +1626,38 @@ msgstr "Lệnh quay số"
 #, fuzzy, c-format
 msgid "%s is replaced by the e-mail address"
 msgstr "%t được thay bằng số lần báo động"
+
+#: prefs_gui.c:597
+msgid "Hide Completed ToDos"
+msgstr ""
+
+#: prefs_gui.c:601
+msgid "Hide ToDos not yet due"
+msgstr ""
+
+#: prefs_gui.c:605
+msgid "Record Completion Date"
+msgstr ""
+
+#: prefs_gui.c:610
+msgid "Use Manana database"
+msgstr ""
+
+#: prefs_gui.c:618
+msgid "Use default number of days due"
+msgstr ""
+
+#: prefs_gui.c:638
+msgid "Use Memo32 (pedit32)"
+msgstr "Dùng Memo32 (pedit32)"
+
+#: prefs_gui.c:645
+msgid "Open alarm windows for appointment reminders"
+msgstr "Mở cửa sổ báo thức cho trình nhắc cuộc hẹn"
+
+#: prefs_gui.c:649
+msgid "Execute this command"
+msgstr "Thực thi lệnh này"
 
 #: prefs_gui.c:653
 msgid "WARNING: executing arbitrary shell commands can be dangerous!!!"
@@ -1627,6 +1691,34 @@ msgstr ""
 #: prefs_gui.c:695
 msgid "%N (note substitution) is disabled in this build"
 msgstr ""
+
+#: prefs_gui.c:704
+msgid "Sync datebook"
+msgstr "Sync datebook"
+
+#: prefs_gui.c:708
+msgid "Sync address"
+msgstr "Sync address"
+
+#: prefs_gui.c:712
+msgid "Sync todo"
+msgstr "Sync todo"
+
+#: prefs_gui.c:716
+msgid "Sync memo"
+msgstr "Sync memo"
+
+#: prefs_gui.c:720
+msgid "Sync memo32 (pedit32)"
+msgstr "Sync memo32 (pedit32)"
+
+#: prefs_gui.c:725
+msgid "Sync Manana"
+msgstr "Sync Manana"
+
+#: prefs_gui.c:731
+msgid "Use J-OS (Not Japanese PalmOS:WorkPad/CLIE)"
+msgstr "Dùng J-OS (không phải PalmOS của Nhật: WorkPad/CLIE)"
 
 #: prefs_gui.c:744
 #, fuzzy, c-format
@@ -2723,48 +2815,6 @@ msgstr "mật khẩu: "
 #: KeyRing/keyring.c:1637
 msgid "Generate Password"
 msgstr "Tạo mật khẩu"
-
-#~ msgid "Show deleted records (default NO)"
-#~ msgstr "Hiển thị bản ghi đã xóa (mặc định là KHÔNG)"
-
-#~ msgid "Show modified deleted records (default NO)"
-#~ msgstr "Hiển thị bản ghi đã biến đổi (mặc định là KHÔNG)"
-
-#~ msgid "Highlight calendar days with appointments"
-#~ msgstr "Làm nổi bật ngày trên lịch có cuộc hẹn"
-
-#~ msgid "Use DateBk note tags"
-#~ msgstr "Dùng DateBk note tags"
-
-#~ msgid "Use Memo32 (pedit32)"
-#~ msgstr "Dùng Memo32 (pedit32)"
-
-#~ msgid "Open alarm windows for appointment reminders"
-#~ msgstr "Mở cửa sổ báo thức cho trình nhắc cuộc hẹn"
-
-#~ msgid "Execute this command"
-#~ msgstr "Thực thi lệnh này"
-
-#~ msgid "Sync datebook"
-#~ msgstr "Sync datebook"
-
-#~ msgid "Sync address"
-#~ msgstr "Sync address"
-
-#~ msgid "Sync todo"
-#~ msgstr "Sync todo"
-
-#~ msgid "Sync memo"
-#~ msgstr "Sync memo"
-
-#~ msgid "Sync memo32 (pedit32)"
-#~ msgstr "Sync memo32 (pedit32)"
-
-#~ msgid "Sync Manana"
-#~ msgstr "Sync Manana"
-
-#~ msgid "Use J-OS (Not Japanese PalmOS:WorkPad/CLIE)"
-#~ msgstr "Dùng J-OS (không phải PalmOS của Nhật: WorkPad/CLIE)"
 
 #~ msgid "Backup"
 #~ msgstr "Sao lưu"

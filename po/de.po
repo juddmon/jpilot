@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jpilot 0.99.6\n"
 "Report-Msgid-Bugs-To: jpilot-devel@jpilot.org\n"
-"POT-Creation-Date: 2005-02-19 16:06+0100\n"
+"POT-Creation-Date: 2005-02-19 16:38+0100\n"
 "PO-Revision-Date: 2003-10-04 18:28+0200\n"
 "Last-Translator: Felix Knecht <mail AT felixknecht DOT de>\n"
 "Language-Team: German <de@li.org>\n"
@@ -1594,9 +1594,41 @@ msgstr ""
 msgid "Number of backups to be archived"
 msgstr "Wieviele Backups sollen archiviert werden?"
 
+#: prefs_gui.c:522
+msgid "Show deleted records (default NO)"
+msgstr "Gelöschte Einträge anzeigen? (Standard: Nein)"
+
+#: prefs_gui.c:526
+msgid "Show modified deleted records (default NO)"
+msgstr "Veränderte gelöschte Einträge anzeigen? (Standard: Nein)"
+
+#: prefs_gui.c:531
+msgid "Ask confirmation for file installation (J-Pilot -> PDA) (default YES)"
+msgstr ""
+
+#: prefs_gui.c:535
+msgid "Show popup tooltips (default YES)"
+msgstr ""
+
+#: prefs_gui.c:543
+msgid "Highlight calendar days with appointments"
+msgstr "Tage mit Terminen farblich kennzeichnen?"
+
+#: prefs_gui.c:549
+msgid "Use DateBk note tags"
+msgstr "DateBk Felder unterstützen"
+
 #: prefs_gui.c:552
 msgid "DateBk support disabled in this build"
 msgstr "DateBk Unterstützung wurde beim kompilieren deaktiviert"
+
+#: prefs_gui.c:558
+msgid "Annotate today in day, week, and month views"
+msgstr ""
+
+#: prefs_gui.c:563
+msgid "Append years on anniversaries in day, week, and month views"
+msgstr ""
 
 #: prefs_gui.c:575
 #, fuzzy
@@ -1607,6 +1639,38 @@ msgstr "Wähl-Befehl"
 #, fuzzy, c-format
 msgid "%s is replaced by the e-mail address"
 msgstr "%t wird durch die Alarmzeit ersetzt"
+
+#: prefs_gui.c:597
+msgid "Hide Completed ToDos"
+msgstr "Erledigte Aufgaben ausblenden"
+
+#: prefs_gui.c:601
+msgid "Hide ToDos not yet due"
+msgstr "Verstecke Aufgaben die noch nicht fällig sind"
+
+#: prefs_gui.c:605
+msgid "Record Completion Date"
+msgstr "Fertigstellungsdatum aufzeichnen"
+
+#: prefs_gui.c:610
+msgid "Use Manana database"
+msgstr "Verwende Manana Datenbank"
+
+#: prefs_gui.c:618
+msgid "Use default number of days due"
+msgstr ""
+
+#: prefs_gui.c:638
+msgid "Use Memo32 (pedit32)"
+msgstr "Memo32 (pedit32) nutzen"
+
+#: prefs_gui.c:645
+msgid "Open alarm windows for appointment reminders"
+msgstr "Meldungsfenster für Terminerinnerungen anzeigen"
+
+#: prefs_gui.c:649
+msgid "Execute this command"
+msgstr "Diesen Befehl ausführen"
 
 #: prefs_gui.c:653
 msgid "WARNING: executing arbitrary shell commands can be dangerous!!!"
@@ -1640,6 +1704,34 @@ msgstr "%D (Ersetzen der Beschreibung) in diesem Build deaktiviert"
 #: prefs_gui.c:695
 msgid "%N (note substitution) is disabled in this build"
 msgstr "%D (Ersetzen der Notiz) in diesem Build deaktiviert"
+
+#: prefs_gui.c:704
+msgid "Sync datebook"
+msgstr "Terminkalender synchronisieren"
+
+#: prefs_gui.c:708
+msgid "Sync address"
+msgstr "Adressen synchronisieren"
+
+#: prefs_gui.c:712
+msgid "Sync todo"
+msgstr "Aufgaben synchronisieren"
+
+#: prefs_gui.c:716
+msgid "Sync memo"
+msgstr "Merkzettel synchronisieren"
+
+#: prefs_gui.c:720
+msgid "Sync memo32 (pedit32)"
+msgstr "Memo32 (pedit32) synchronisieren"
+
+#: prefs_gui.c:725
+msgid "Sync Manana"
+msgstr "Manana synchronisieren"
+
+#: prefs_gui.c:731
+msgid "Use J-OS (Not Japanese PalmOS:WorkPad/CLIE)"
+msgstr "Verwende J-OS (Nicht japanisches PalmOS:WorkPad/CLIE)"
 
 #: prefs_gui.c:744
 #, fuzzy, c-format
@@ -2749,60 +2841,6 @@ msgstr "Passwort: "
 #: KeyRing/keyring.c:1637
 msgid "Generate Password"
 msgstr "Passwort erzeugen"
-
-#~ msgid "Show deleted records (default NO)"
-#~ msgstr "Gelöschte Einträge anzeigen? (Standard: Nein)"
-
-#~ msgid "Show modified deleted records (default NO)"
-#~ msgstr "Veränderte gelöschte Einträge anzeigen? (Standard: Nein)"
-
-#~ msgid "Highlight calendar days with appointments"
-#~ msgstr "Tage mit Terminen farblich kennzeichnen?"
-
-#~ msgid "Use DateBk note tags"
-#~ msgstr "DateBk Felder unterstützen"
-
-#~ msgid "Hide Completed ToDos"
-#~ msgstr "Erledigte Aufgaben ausblenden"
-
-#~ msgid "Hide ToDos not yet due"
-#~ msgstr "Verstecke Aufgaben die noch nicht fällig sind"
-
-#~ msgid "Record Completion Date"
-#~ msgstr "Fertigstellungsdatum aufzeichnen"
-
-#~ msgid "Use Manana database"
-#~ msgstr "Verwende Manana Datenbank"
-
-#~ msgid "Use Memo32 (pedit32)"
-#~ msgstr "Memo32 (pedit32) nutzen"
-
-#~ msgid "Open alarm windows for appointment reminders"
-#~ msgstr "Meldungsfenster für Terminerinnerungen anzeigen"
-
-#~ msgid "Execute this command"
-#~ msgstr "Diesen Befehl ausführen"
-
-#~ msgid "Sync datebook"
-#~ msgstr "Terminkalender synchronisieren"
-
-#~ msgid "Sync address"
-#~ msgstr "Adressen synchronisieren"
-
-#~ msgid "Sync todo"
-#~ msgstr "Aufgaben synchronisieren"
-
-#~ msgid "Sync memo"
-#~ msgstr "Merkzettel synchronisieren"
-
-#~ msgid "Sync memo32 (pedit32)"
-#~ msgstr "Memo32 (pedit32) synchronisieren"
-
-#~ msgid "Sync Manana"
-#~ msgstr "Manana synchronisieren"
-
-#~ msgid "Use J-OS (Not Japanese PalmOS:WorkPad/CLIE)"
-#~ msgstr "Verwende J-OS (Nicht japanisches PalmOS:WorkPad/CLIE)"
 
 #~ msgid "Backup"
 #~ msgstr "Backup"

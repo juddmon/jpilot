@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jpilot 0.99.6pre7\n"
 "Report-Msgid-Bugs-To: jpilot-devel@jpilot.org\n"
-"POT-Creation-Date: 2005-02-19 16:06+0100\n"
+"POT-Creation-Date: 2005-02-19 16:38+0100\n"
 "PO-Revision-Date: 2004-11-24 14:02+0900\n"
 "Last-Translator: Kazutaka HARADA <kazutaka802@yahoo.co.jp>\n"
 "Language-Team: Japanese Palm-UNIX ML <palm-unix-j@list.daionet.gr.jp>\n"
@@ -1592,9 +1592,41 @@ msgstr "シリアル接続の転送速度(USBには無関係) "
 msgid "Number of backups to be archived"
 msgstr "保存するバックアップの個数 "
 
+#: prefs_gui.c:522
+msgid "Show deleted records (default NO)"
+msgstr "削除されたレコードを表示(デフォルト NO)"
+
+#: prefs_gui.c:526
+msgid "Show modified deleted records (default NO)"
+msgstr "修正したレコードを表示(デフォルト NO)"
+
+#: prefs_gui.c:531
+msgid "Ask confirmation for file installation (J-Pilot -> PDA) (default YES)"
+msgstr "ファイルのインスール時に確認 (J-Pilot -> PDA) (デフォルト YES)"
+
+#: prefs_gui.c:535
+msgid "Show popup tooltips (default YES)"
+msgstr "ポップアップ・ツールチップを表示 (デフォルト YES)"
+
+#: prefs_gui.c:543
+msgid "Highlight calendar days with appointments"
+msgstr "予定のある日をハイライト表示する"
+
+#: prefs_gui.c:549
+msgid "Use DateBk note tags"
+msgstr "DateBk のノートタグを使う"
+
 #: prefs_gui.c:552
 msgid "DateBk support disabled in this build"
 msgstr "DataBkサポートはこのビルドでは無効です"
+
+#: prefs_gui.c:558
+msgid "Annotate today in day, week, and month views"
+msgstr ""
+
+#: prefs_gui.c:563
+msgid "Append years on anniversaries in day, week, and month views"
+msgstr ""
 
 #: prefs_gui.c:575
 msgid "Mail Command"
@@ -1604,6 +1636,38 @@ msgstr "メールコマンド"
 #, c-format
 msgid "%s is replaced by the e-mail address"
 msgstr "%s はe-mailアドレスで置き換えられます"
+
+#: prefs_gui.c:597
+msgid "Hide Completed ToDos"
+msgstr "完了したToDoを表示しない"
+
+#: prefs_gui.c:601
+msgid "Hide ToDos not yet due"
+msgstr "期限の来ていないToDoを隠す "
+
+#: prefs_gui.c:605
+msgid "Record Completion Date"
+msgstr "完了日を記録する"
+
+#: prefs_gui.c:610
+msgid "Use Manana database"
+msgstr "Manana データベースを使う"
+
+#: prefs_gui.c:618
+msgid "Use default number of days due"
+msgstr "期限の日数のデフォルト値"
+
+#: prefs_gui.c:638
+msgid "Use Memo32 (pedit32)"
+msgstr "Memo32(pedit32)を使う"
+
+#: prefs_gui.c:645
+msgid "Open alarm windows for appointment reminders"
+msgstr "予定を思い出させるためにアラームウインドウを表示する"
+
+#: prefs_gui.c:649
+msgid "Execute this command"
+msgstr "コマンドを実行する"
 
 #: prefs_gui.c:653
 msgid "WARNING: executing arbitrary shell commands can be dangerous!!!"
@@ -1637,6 +1701,34 @@ msgstr "%D （記述置き換え）はこのビルドでは無効です"
 #: prefs_gui.c:695
 msgid "%N (note substitution) is disabled in this build"
 msgstr "%N (ノート置き換え)はこのビルドでは無効です"
+
+#: prefs_gui.c:704
+msgid "Sync datebook"
+msgstr "予定表の同期"
+
+#: prefs_gui.c:708
+msgid "Sync address"
+msgstr "アドレス帳の同期"
+
+#: prefs_gui.c:712
+msgid "Sync todo"
+msgstr "Todoの同期"
+
+#: prefs_gui.c:716
+msgid "Sync memo"
+msgstr "メモ帳の同期"
+
+#: prefs_gui.c:720
+msgid "Sync memo32 (pedit32)"
+msgstr "メモ帳 (memo32/pedit32) の同期"
+
+#: prefs_gui.c:725
+msgid "Sync Manana"
+msgstr "Manana の同期"
+
+#: prefs_gui.c:731
+msgid "Use J-OS (Not Japanese PalmOS:WorkPad/CLIE)"
+msgstr "J-OS (日本語 OS の Palm / WorkPad / CLIE 以外) を使う"
 
 #: prefs_gui.c:744
 #, c-format
@@ -2734,70 +2826,6 @@ msgstr "パスワード："
 #: KeyRing/keyring.c:1637
 msgid "Generate Password"
 msgstr "パスワード生成"
-
-#~ msgid "Show deleted records (default NO)"
-#~ msgstr "削除されたレコードを表示(デフォルト NO)"
-
-#~ msgid "Show modified deleted records (default NO)"
-#~ msgstr "修正したレコードを表示(デフォルト NO)"
-
-#~ msgid ""
-#~ "Ask confirmation for file installation (J-Pilot -> PDA) (default YES)"
-#~ msgstr "ファイルのインスール時に確認 (J-Pilot -> PDA) (デフォルト YES)"
-
-#~ msgid "Show popup tooltips (default YES)"
-#~ msgstr "ポップアップ・ツールチップを表示 (デフォルト YES)"
-
-#~ msgid "Highlight calendar days with appointments"
-#~ msgstr "予定のある日をハイライト表示する"
-
-#~ msgid "Use DateBk note tags"
-#~ msgstr "DateBk のノートタグを使う"
-
-#~ msgid "Hide Completed ToDos"
-#~ msgstr "完了したToDoを表示しない"
-
-#~ msgid "Hide ToDos not yet due"
-#~ msgstr "期限の来ていないToDoを隠す "
-
-#~ msgid "Record Completion Date"
-#~ msgstr "完了日を記録する"
-
-#~ msgid "Use Manana database"
-#~ msgstr "Manana データベースを使う"
-
-#~ msgid "Use default number of days due"
-#~ msgstr "期限の日数のデフォルト値"
-
-#~ msgid "Use Memo32 (pedit32)"
-#~ msgstr "Memo32(pedit32)を使う"
-
-#~ msgid "Open alarm windows for appointment reminders"
-#~ msgstr "予定を思い出させるためにアラームウインドウを表示する"
-
-#~ msgid "Execute this command"
-#~ msgstr "コマンドを実行する"
-
-#~ msgid "Sync datebook"
-#~ msgstr "予定表の同期"
-
-#~ msgid "Sync address"
-#~ msgstr "アドレス帳の同期"
-
-#~ msgid "Sync todo"
-#~ msgstr "Todoの同期"
-
-#~ msgid "Sync memo"
-#~ msgstr "メモ帳の同期"
-
-#~ msgid "Sync memo32 (pedit32)"
-#~ msgstr "メモ帳 (memo32/pedit32) の同期"
-
-#~ msgid "Sync Manana"
-#~ msgstr "Manana の同期"
-
-#~ msgid "Use J-OS (Not Japanese PalmOS:WorkPad/CLIE)"
-#~ msgstr "J-OS (日本語 OS の Palm / WorkPad / CLIE 以外) を使う"
 
 #~ msgid "Backup"
 #~ msgstr "バックアップ"

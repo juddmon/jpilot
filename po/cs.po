@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jpilot 0.99.8-pre3\n"
 "Report-Msgid-Bugs-To: jpilot-devel@jpilot.org\n"
-"POT-Creation-Date: 2005-02-19 16:06+0100\n"
+"POT-Creation-Date: 2005-02-19 16:38+0100\n"
 "PO-Revision-Date: 2004-11-21 16:41+0100\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <translation-team-cs@lists.sourceforge.net>\n"
@@ -1599,9 +1599,42 @@ msgstr "Rychlost přenosu (nemá vliv na USB)"
 msgid "Number of backups to be archived"
 msgstr "Počet záloh, které archivovat"
 
+#: prefs_gui.c:522
+msgid "Show deleted records (default NO)"
+msgstr "Zobrazovat odstraněné záznamy (implicitně NE)"
+
+#: prefs_gui.c:526
+msgid "Show modified deleted records (default NO)"
+msgstr "Zobrazovat změněné odstraněné záznamy (implicitně NE)"
+
+#: prefs_gui.c:531
+msgid "Ask confirmation for file installation (J-Pilot -> PDA) (default YES)"
+msgstr ""
+"Žádat o potvrzení před instalací souborů (J-Pilot -> PDA) (implicitně ANO)"
+
+#: prefs_gui.c:535
+msgid "Show popup tooltips (default YES)"
+msgstr "Zobrazovat vyskakovací tipy (implicitně ANO)"
+
+#: prefs_gui.c:543
+msgid "Highlight calendar days with appointments"
+msgstr "Zvýrazňovat v kalendáři dny s akcí"
+
+#: prefs_gui.c:549
+msgid "Use DateBk note tags"
+msgstr "Používat značky poznámek DateBk"
+
 #: prefs_gui.c:552
 msgid "DateBk support disabled in this build"
 msgstr "Podpora DateBk v tomto přeložení zakázána"
+
+#: prefs_gui.c:558
+msgid "Annotate today in day, week, and month views"
+msgstr ""
+
+#: prefs_gui.c:563
+msgid "Append years on anniversaries in day, week, and month views"
+msgstr ""
 
 #: prefs_gui.c:575
 msgid "Mail Command"
@@ -1611,6 +1644,38 @@ msgstr "Příkaz pro poštu"
 #, c-format
 msgid "%s is replaced by the e-mail address"
 msgstr "%s je nahrazeno časem e-mailovou adresou"
+
+#: prefs_gui.c:597
+msgid "Hide Completed ToDos"
+msgstr "Skrýt dokončené úkoly"
+
+#: prefs_gui.c:601
+msgid "Hide ToDos not yet due"
+msgstr "Skrýt úkoly, které ještě nemají být hotovy"
+
+#: prefs_gui.c:605
+msgid "Record Completion Date"
+msgstr "Zaznamenat datum dokončení"
+
+#: prefs_gui.c:610
+msgid "Use Manana database"
+msgstr "Použít databázi Mañana"
+
+#: prefs_gui.c:618
+msgid "Use default number of days due"
+msgstr "Použít implicitní počet zbývajících dnů"
+
+#: prefs_gui.c:638
+msgid "Use Memo32 (pedit32)"
+msgstr "Používat Memo32 (pedit32)"
+
+#: prefs_gui.c:645
+msgid "Open alarm windows for appointment reminders"
+msgstr "Otevírat okna s upozorněním pro připomínání akcí"
+
+#: prefs_gui.c:649
+msgid "Execute this command"
+msgstr "Spustit tento příkaz"
 
 #: prefs_gui.c:653
 msgid "WARNING: executing arbitrary shell commands can be dangerous!!!"
@@ -1644,6 +1709,34 @@ msgstr "%D (nahrazení popisu) je v tomto přeložení zakázáno"
 #: prefs_gui.c:695
 msgid "%N (note substitution) is disabled in this build"
 msgstr "%D (nahrazení poznámky) je v tomto přeložení zakázáno"
+
+#: prefs_gui.c:704
+msgid "Sync datebook"
+msgstr "Synchronizovat diář"
+
+#: prefs_gui.c:708
+msgid "Sync address"
+msgstr "Synchronizovat kontakty"
+
+#: prefs_gui.c:712
+msgid "Sync todo"
+msgstr "Synchronizovat úkoly"
+
+#: prefs_gui.c:716
+msgid "Sync memo"
+msgstr "Synchronizovat poznámky"
+
+#: prefs_gui.c:720
+msgid "Sync memo32 (pedit32)"
+msgstr "Synchronizovat memo32 (pedit32)"
+
+#: prefs_gui.c:725
+msgid "Sync Manana"
+msgstr "Synchronizovat Mañana"
+
+#: prefs_gui.c:731
+msgid "Use J-OS (Not Japanese PalmOS:WorkPad/CLIE)"
+msgstr "Používat J-OS (Ne japonský PalmOS:WorkPad/CLIE)"
 
 #: prefs_gui.c:744
 #, c-format
@@ -2742,71 +2835,6 @@ msgstr "heslo: "
 #: KeyRing/keyring.c:1637
 msgid "Generate Password"
 msgstr "Vygenerovat heslo"
-
-#~ msgid "Show deleted records (default NO)"
-#~ msgstr "Zobrazovat odstraněné záznamy (implicitně NE)"
-
-#~ msgid "Show modified deleted records (default NO)"
-#~ msgstr "Zobrazovat změněné odstraněné záznamy (implicitně NE)"
-
-#~ msgid ""
-#~ "Ask confirmation for file installation (J-Pilot -> PDA) (default YES)"
-#~ msgstr ""
-#~ "Žádat o potvrzení před instalací souborů (J-Pilot -> PDA) (implicitně ANO)"
-
-#~ msgid "Show popup tooltips (default YES)"
-#~ msgstr "Zobrazovat vyskakovací tipy (implicitně ANO)"
-
-#~ msgid "Highlight calendar days with appointments"
-#~ msgstr "Zvýrazňovat v kalendáři dny s akcí"
-
-#~ msgid "Use DateBk note tags"
-#~ msgstr "Používat značky poznámek DateBk"
-
-#~ msgid "Hide Completed ToDos"
-#~ msgstr "Skrýt dokončené úkoly"
-
-#~ msgid "Hide ToDos not yet due"
-#~ msgstr "Skrýt úkoly, které ještě nemají být hotovy"
-
-#~ msgid "Record Completion Date"
-#~ msgstr "Zaznamenat datum dokončení"
-
-#~ msgid "Use Manana database"
-#~ msgstr "Použít databázi Mañana"
-
-#~ msgid "Use default number of days due"
-#~ msgstr "Použít implicitní počet zbývajících dnů"
-
-#~ msgid "Use Memo32 (pedit32)"
-#~ msgstr "Používat Memo32 (pedit32)"
-
-#~ msgid "Open alarm windows for appointment reminders"
-#~ msgstr "Otevírat okna s upozorněním pro připomínání akcí"
-
-#~ msgid "Execute this command"
-#~ msgstr "Spustit tento příkaz"
-
-#~ msgid "Sync datebook"
-#~ msgstr "Synchronizovat diář"
-
-#~ msgid "Sync address"
-#~ msgstr "Synchronizovat kontakty"
-
-#~ msgid "Sync todo"
-#~ msgstr "Synchronizovat úkoly"
-
-#~ msgid "Sync memo"
-#~ msgstr "Synchronizovat poznámky"
-
-#~ msgid "Sync memo32 (pedit32)"
-#~ msgstr "Synchronizovat memo32 (pedit32)"
-
-#~ msgid "Sync Manana"
-#~ msgstr "Synchronizovat Mañana"
-
-#~ msgid "Use J-OS (Not Japanese PalmOS:WorkPad/CLIE)"
-#~ msgstr "Používat J-OS (Ne japonský PalmOS:WorkPad/CLIE)"
 
 #~ msgid "Backup"
 #~ msgstr "Zálohovat"
