@@ -1,21 +1,22 @@
+# translation of jpilot-0.99.7.po to Turkish
 # JPILOT-0.99.5
-# Copyright (C) 2002 Free Software Foundation, Inc.
-# Eyüp Hakan Duran <hakan_duran@hotmail.com>, 2002.
+# Copyright (C) 2002, 2004 Free Software Foundation, Inc.
+# Eyüp Hakan Duran <hakan_duran@hotmail.com>, 2002, 2004.
 #
 #
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: jpilot 0.99.5\n"
+"Project-Id-Version: jpilot-0.99.7\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2004-02-29 02:00-0500\n"
-"PO-Revision-Date: 2003-03-19 12:10GMT\n"
+"PO-Revision-Date: 2004-03-18 01:58-0500\n"
 "Last-Translator: Eyüp Hakan Duran <hakan_duran@hotmail.com>\n"
 "Language-Team: Turkish <gnu-tr-u12a@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-9\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: KBabel 0.9.5\n"
+"X-Generator: KBabel 1.0.2\n"
 
 #: address.c:335 datebook.c:331 memo.c:155 todo.c:283
 msgid "error"
@@ -233,9 +234,8 @@ msgid "fseek failed - fatal error\n"
 msgstr "fseek baþarýsýz - ölümcül hata\n"
 
 #: category.c:405
-#, fuzzy
 msgid "Move"
-msgstr "Pzt"
+msgstr "Taþý"
 
 #: category.c:405 category.c:857 category.c:897 datebook_gui.c:1133
 #: datebook_gui.c:1567 export_gui.c:341 password.c:370 print_gui.c:335
@@ -245,36 +245,33 @@ msgstr "Ýptal"
 
 #: category.c:435
 msgid "The maximum number of categories (16) are already used"
-msgstr ""
+msgstr "Maksimum kategori sayýsý (16) zaten kullanýlmýþ"
 
 #: category.c:438
-#, fuzzy
 msgid "Enter New Category"
-msgstr "Kategorileri Düzenle"
+msgstr "Yeni Kategori Girin"
 
 #: category.c:449
-#, fuzzy
 msgid "You must select a category to rename"
-msgstr "Uzak'a (remote) %s kategorisi eklenemedi.\n"
+msgstr "Yeniden adlandýrmak için bir kategori seçmelisiniz"
 
 #: category.c:453
-#, fuzzy, c-format
+#, c-format
 msgid "You can't edit category %s.\n"
-msgstr "Uzak'a (remote) %s kategorisi eklenemedi.\n"
+msgstr "%s kategorisini düzenleyemezsiniz.\n"
 
 #: category.c:460
 msgid "Enter New Category Name"
-msgstr ""
+msgstr "Yeni Kategori Adý Girin"
 
 #: category.c:474
-#, fuzzy
 msgid "You must select a category to delete"
-msgstr "Uzak'a (remote) %s kategorisi eklenemedi.\n"
+msgstr "Silmek için bir kategori seçmelisiniz"
 
 #: category.c:478
-#, fuzzy, c-format
+#, c-format
 msgid "You can't delete category %s.\n"
-msgstr "Uzak'a (remote) %s kategorisi eklenemedi.\n"
+msgstr "%s kategorisini silemezsiniz.\n"
 
 #: category.c:494
 #, c-format
@@ -282,29 +279,30 @@ msgid ""
 "There are %d records in %s.\n"
 "Do you want to move them to %s, or delete them?"
 msgstr ""
+"%2$s'de %1$d adet kayýt var.\n"
+"Bunlarý %3$s'e taþýmak mý, silmek mi istersiniz?"
 
 #: category.c:576
 #, c-format
 msgid "The category %s can't be used more than once"
-msgstr ""
+msgstr "%s kategorisi birden fazla kullanýlamaz"
 
 #: category.c:812
 msgid "New"
-msgstr ""
+msgstr "Yeni"
 
 #: category.c:818
-#, fuzzy
 msgid "Rename"
-msgstr "isim: "
+msgstr "Yeniden adlandýr"
 
 #: category.c:904
 msgid "debug"
-msgstr ""
+msgstr "hata ayýklama"
 
 #: dat.c:671 dat.c:689 dat.c:871 dat.c:884 dat.c:988 dat.c:1007 dat.c:1020
 #: dat.c:1144 dat.c:1157
 msgid "read of file terminated\n"
-msgstr ""
+msgstr "dosya okuma sonlandýrýldý\n"
 
 #: datebook_gui.c:201 datebook_gui.c:208 datebook_gui.c:3835
 #: datebook_gui.c:3842
@@ -336,9 +334,9 @@ msgid "Sa"
 msgstr "Cts"
 
 #: datebook_gui.c:540 datebook_gui.c:2041
-#, fuzzy, c-format
+#, c-format
 msgid "Appointment description text > %d, truncating to %d\n"
-msgstr "Uyarý: Ýþ listesi açýklamasý çok uzun, %d'ye kýsaltýlýyor\n"
+msgstr "Randevu açýklama metni > %d çok uzun, %d'e kýsaltýlýyor\n"
 
 #: datebook_gui.c:550 datebook_gui.c:965 datebook_gui.c:2100
 #: datebook_gui.c:2107
@@ -462,9 +460,7 @@ msgid "You cannot have an appointment that repeats every %d %s(s)\n"
 msgstr "Her %d %s'de yinelenen randevunuz olamaz\n"
 
 #: datebook_gui.c:2108
-msgid ""
-"You can not have a weekly repeating appointment that doesn't repeat on any "
-"day of the week."
+msgid "You can not have a weekly repeating appointment that doesn't repeat on any day of the week."
 msgstr "Haftanýn herhangi bir gününde yinelenmeyen haftalýk randevunuz olamaz."
 
 #: datebook_gui.c:2255
@@ -494,7 +490,7 @@ msgstr "Hafta"
 
 #: datebook_gui.c:3925
 msgid "View appointments by week"
-msgstr ""
+msgstr "Randevularý haftalýk görüntüle"
 
 #: datebook_gui.c:3928 datebook_gui.c:4328
 msgid "Month"
@@ -502,7 +498,7 @@ msgstr "Ay"
 
 #: datebook_gui.c:3937
 msgid "View appointments by month"
-msgstr ""
+msgstr "Randevularý aylýk görüntüle"
 
 #: datebook_gui.c:3942
 msgid "Cats"
@@ -514,7 +510,7 @@ msgstr "Zaman"
 
 #: datebook_gui.c:4028
 msgid "Show ToDos"
-msgstr ""
+msgstr "Ýþ Listesini Göster"
 
 #: datebook_gui.c:4043 todo_gui.c:1954
 msgid "Task"
@@ -545,9 +541,8 @@ msgid "Start Time"
 msgstr "Baþlama Zamaný"
 
 #: datebook_gui.c:4216
-#, fuzzy
 msgid "End Time"
-msgstr "Zaman"
+msgstr "Bitiþ Zamaný"
 
 #: datebook_gui.c:4309
 msgid "DateBk Tags"
@@ -705,7 +700,6 @@ msgid "\n"
 msgstr "\n"
 
 #: jpilot.c:87
-#, fuzzy
 msgid ""
 " [-v] || [-h] || [-d] || [-a] || [-A] || [-i]\n"
 " -v displays version and compile options and exits.\n"
@@ -719,15 +713,15 @@ msgid ""
 " which port to sync on, and at what speed.\n"
 " If PILOTPORT is not set then it defaults to /dev/pilot.\n"
 msgstr ""
-" [ [-v] || [-h] || [-d] || [-a] || [-A]\n"
+" [ [-v] || [-h] || [-d] || [-a] || [-A] || [-i]\n"
 " -v sürümü ve derleme seçeneklerini görüntüler ve çýkar.\n"
 " -h yardýmý görüntüler ve çýkar.\n"
 " -d yazýlým hata giderme bilgisini stdout'ta görüntüler.\n"
 " -p eklentileri yüklemez.\n"
 " -a bu program son çalýþtýrýldýðýndan beri kaçýrýlmýþ alarmlarý yoksayar.\n"
 " -A geçmiþ ve gelecek tüm alarmlarý yoksayar.\n"
-" The PILOTPORT ve PILOTRATE çevre deðiþkenleri, hangi portun hangi hýzda "
-"eþzamanlanacaðýný\n"
+"-i jpilot'un açýlýþta kendisini simgeleþtirmesini saðlar\n"
+" The PILOTPORT ve PILOTRATE çevre deðiþkenleri, hangi portun hangi hýzda eþzamanlanacaðýný\n"
 " belirlemek için kullanýlýr.\n"
 " Eðer PILOTPORT atanmamýþsa, /dev/pilot'a öntanýmlanýr.\n"
 
@@ -765,9 +759,8 @@ msgid "About %s"
 msgstr "%s Hakkýnda"
 
 #: jpilot.c:1082
-#, fuzzy
 msgid "/_File"
-msgstr "/Dosya"
+msgstr "/_Dosya"
 
 #: jpilot.c:1083
 msgid "/File/tear"
@@ -814,9 +807,8 @@ msgid "/_View"
 msgstr "/_Görünüm"
 
 #: jpilot.c:1096
-#, fuzzy
 msgid "/View/Hide-Show-Mask Private Records"
-msgstr "/Görünüm/Özel Kayýtlarý Gizle-Göster "
+msgstr "/Görünüm/Özel Kayýtlarý Gizle-Göster-Maskele"
 
 #: jpilot.c:1097
 msgid "/View/Datebook"
@@ -835,14 +827,12 @@ msgid "/View/Memos"
 msgstr "/Görünüm/Notlar"
 
 #: jpilot.c:1101 jpilot.c:1235
-#, fuzzy
 msgid "/_Plugins"
-msgstr "/Eklentiler"
+msgstr "/_Eklentiler"
 
 #: jpilot.c:1103
-#, fuzzy
 msgid "/_Web"
-msgstr "/Web"
+msgstr "/_Web"
 
 #: jpilot.c:1104
 msgid "/Web/Netscape"
@@ -886,16 +876,16 @@ msgstr "/_Yardým"
 
 #: jpilot.c:1134
 msgid "/Help/PayBack program"
-msgstr ""
+msgstr "/Yardým/PayBack programý"
 
 #: jpilot.c:1135
 msgid "/Help/J-Pilot"
-msgstr ""
+msgstr "Yardým/J-Pilot"
 
 #: jpilot.c:1202
-#, fuzzy, c-format
+#, c-format
 msgid "/_Plugins/%s"
-msgstr "/Eklentiler/%s"
+msgstr "/_Eklentiler/%s"
 
 #: jpilot.c:1213
 #, c-format
@@ -931,9 +921,8 @@ msgid "Sync your palm to the desktop"
 msgstr "Avuçiçini masaüstüyle eþzamanlayýn"
 
 #: jpilot.c:2158
-#, fuzzy
 msgid "Font"
-msgstr "Ay"
+msgstr "Yazý tipi"
 
 #: jpilot.c:2165
 msgid "Backup"
@@ -1051,7 +1040,7 @@ msgstr "Seri Baðlantý (/dev/ttyS0, /dev/pilot)"
 
 #: prefs_gui.c:473
 msgid "Serial Rate (Does not affect USB)"
-msgstr ""
+msgstr "Seri Baðlantý Hýzý (USB'yi etkilemez)"
 
 #: prefs_gui.c:486
 msgid "Number of backups to be archived"
@@ -1070,14 +1059,12 @@ msgid "Highlight calendar days with appointments"
 msgstr "Randevulu takvim günlerini vurgula"
 
 #: prefs_gui.c:542
-#, fuzzy
 msgid "Use DateBk note tags"
 msgstr "DateBK not etiketlerini kullan"
 
 #: prefs_gui.c:552
-#, fuzzy
 msgid "DateBk support disabled in this build"
-msgstr "RandevuDf desteði bu sürümde devre dýþý býrakýlmýþtýr"
+msgstr "DateBk desteði bu sürümde devre dýþý býrakýlmýþtýr"
 
 #: prefs_gui.c:559
 msgid "Sync datebook"
@@ -1201,10 +1188,8 @@ msgid "To restore your handheld:"
 msgstr "Avuçiçini geri yüklemek için:"
 
 #: restore_gui.c:237
-msgid ""
-"1. Choose all the applications you wish to restore.  The default is all."
-msgstr ""
-"1. Geri yüklemek istediðiniz tüm uygulamalarý seçiniz.  Öntaným tümünü seçer."
+msgid "1. Choose all the applications you wish to restore.  The default is all."
+msgstr "1. Geri yüklemek istediðiniz tüm uygulamalarý seçiniz.  Öntaným tümünü seçer."
 
 #: restore_gui.c:240
 msgid "2. Enter the User Name and User ID."
@@ -1446,9 +1431,9 @@ msgid "Failed, unable to create file %s\n"
 msgstr "Baþarýsýz, dosya oluþturulamadý, %s\n"
 
 #: sync.c:1231
-#, fuzzy, c-format
+#, c-format
 msgid "Failed, unable to back up database %s\n"
-msgstr "Baþarýsýz, veritabaný yedeklenemedi\n"
+msgstr "Baþarýsýz, %s veritabaný yedeklenemedi\n"
 
 #: sync.c:1235 sync.c:1585 sync.c:1740
 msgid "OK\n"
@@ -1465,22 +1450,22 @@ msgid "Installing %s "
 msgstr "%s yükleniyor "
 
 #: sync.c:1640
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "\n"
 "Unable to open '%s': %s!\n"
 msgstr ""
 "\n"
-"'%s' açýlamýyor!\n"
+"Açýlamýyor '%s': %s!\n"
 
 #: sync.c:1644
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "\n"
 "Unable to sync '%s': file corrupted?\n"
 msgstr ""
 "\n"
-"'%s' açýlamýyor!\n"
+"'%s' eþzamanlanamýyor: bozulmuþ dosya?\n"
 
 #: sync.c:1656
 #, c-format
@@ -1511,14 +1496,14 @@ msgid "Installed %s "
 msgstr "%s yüklendi "
 
 #: sync.c:1760
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot open %s_to_install file\n"
-msgstr "Günlük (log) dosyasý açýlamadý\n"
+msgstr "%s_to_install dosyasý açýlamadý\n"
 
 #: sync.c:1766
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot open %s_to_install.tmp file\n"
-msgstr "to_install.tmp dosyasý\n"
+msgstr "%s_to_install.tmp dosyasý açýlamadý\n"
 
 #: sync.c:2080
 msgid "fast_sync_local_recs(): Out of memory\n"
@@ -1610,9 +1595,8 @@ msgid "No date"
 msgstr "Tarih yok"
 
 #: todo_gui.c:1892
-#, fuzzy
 msgid "Show Preferences"
-msgstr "Tercihler"
+msgstr "Tercihleri Göster"
 
 #: todo_gui.c:1901
 msgid "Use Manana database"
@@ -1624,11 +1608,11 @@ msgstr "Tamamlanmýþ Ýþleri Gizle"
 
 #: todo_gui.c:1919
 msgid "Hide ToDos not yet due"
-msgstr ""
+msgstr "Süresi henüz dolmamýþ Ýþleri gizle"
 
 #: todo_gui.c:1927
 msgid "Record Completion Date"
-msgstr ""
+msgstr "Tamamlanma Tarihini Kaydet"
 
 #: todo_gui.c:2033
 msgid "Completed"
@@ -1727,9 +1711,9 @@ msgid "Do you want to save this new record?"
 msgstr "Bu yeni kaydý kaydetmek istiyor musunuz?"
 
 #: utils.c:1589
-#, fuzzy, c-format
+#, c-format
 msgid "Couldn't find empty DB file %s: %s\n"
-msgstr "Boþ DB dosyasý bulunamadý.\n"
+msgstr "Boþ DB dosyasý bulunamadý %s: %s\n"
 
 #: utils.c:1592
 msgid " may not be installed.\n"
@@ -1774,7 +1758,7 @@ msgstr "Danimarka"
 
 #: Expense/expense.c:80
 msgid "EU (Euro)"
-msgstr ""
+msgstr "EU (Euro)"
 
 #: Expense/expense.c:81
 msgid "Finland"
@@ -1789,9 +1773,8 @@ msgid "Germany"
 msgstr "Almanya"
 
 #: Expense/expense.c:84
-#, fuzzy
 msgid "Hong Kong"
-msgstr "Hong Kong."
+msgstr "Hong Kong"
 
 #: Expense/expense.c:85
 msgid "Iceland"
@@ -1799,12 +1782,11 @@ msgstr "Ýzlanda"
 
 #: Expense/expense.c:86
 msgid "India"
-msgstr ""
+msgstr "Hindistan"
 
 #: Expense/expense.c:87
-#, fuzzy
 msgid "Indonesia"
-msgstr "hiçbiri/yok"
+msgstr "Endonezya"
 
 #: Expense/expense.c:88
 msgid "Ireland"
@@ -1820,7 +1802,7 @@ msgstr "Japonya"
 
 #: Expense/expense.c:91
 msgid "Korea"
-msgstr ""
+msgstr "Kore"
 
 #: Expense/expense.c:92
 msgid "Luxembourg"
@@ -1828,16 +1810,15 @@ msgstr "Lüksemburg"
 
 #: Expense/expense.c:93
 msgid "Malaysia"
-msgstr ""
+msgstr "Malezya"
 
 #: Expense/expense.c:94
 msgid "Mexico"
 msgstr "Meksika"
 
 #: Expense/expense.c:95
-#, fuzzy
 msgid "Netherlands"
-msgstr "Ýsviçre"
+msgstr "Hollanda"
 
 #: Expense/expense.c:96
 msgid "New Zealand"
@@ -1849,15 +1830,15 @@ msgstr "Norveç"
 
 #: Expense/expense.c:98
 msgid "P.R.C."
-msgstr ""
+msgstr "P.R.C."
 
 #: Expense/expense.c:99
 msgid "Philippines"
-msgstr ""
+msgstr "Filipinler"
 
 #: Expense/expense.c:100
 msgid "Singapore"
-msgstr ""
+msgstr "Singapur"
 
 #: Expense/expense.c:101
 msgid "Spain"
@@ -1872,22 +1853,20 @@ msgid "Switzerland"
 msgstr "Ýsviçre"
 
 #: Expense/expense.c:104
-#, fuzzy
 msgid "Taiwan"
-msgstr "Tren"
+msgstr "Tayvan"
 
 #: Expense/expense.c:105
-#, fuzzy
 msgid "Thailand"
-msgstr "Finlandiya"
+msgstr "Tayland"
 
 #: Expense/expense.c:106
 msgid "United Kingdom"
-msgstr ""
+msgstr "Birleþik Krallýk"
 
 #: Expense/expense.c:107
 msgid "United States"
-msgstr ""
+msgstr "Birleþik Devletler"
 
 #: Expense/expense.c:398
 msgid "Expense"
@@ -2094,9 +2073,8 @@ msgid "Incorrect, Reenter KeyRing Password"
 msgstr "Yanlýþ, KeyRing Parolasýný Tekrar Giriniz"
 
 #: KeyRing/keyring.c:1250
-#, fuzzy
 msgid "Enter a NEW KeyRing Password"
-msgstr "KeyRing Parolasýný Giriniz"
+msgstr "YENÝ bir KeyRing Parolasý Giriniz"
 
 #: KeyRing/keyring.c:1252
 msgid "Enter KeyRing Password"
@@ -2107,12 +2085,14 @@ msgid "Account"
 msgstr "Hesap"
 
 #: KeyRing/keyring.c:1440
-#, fuzzy
 msgid ""
 "Change\n"
 "KeyRing\n"
 "Password"
-msgstr "KeyRing Parolasýný Giriniz"
+msgstr ""
+"KeyRing\n"
+"Parolasýný\n"
+"Deðiþtir"
 
 #: KeyRing/keyring.c:1578
 msgid "name: "
@@ -2160,6 +2140,12 @@ msgstr "Parola Oluþtur"
 #~ msgid "Serial Rate "
 #~ msgstr "Seri Baðlantý Hýzý"
 
+#~ msgid "Cannot open "
+#~ msgstr "Açýlamýyor "
+
+#~ msgid "_to_install file\n"
+#~ msgstr "to_install dosyasý\n"
+
 #~ msgid "Holland"
 #~ msgstr "Hollanda"
 
@@ -2168,9 +2154,3 @@ msgstr "Parola Oluþtur"
 
 #~ msgid "U.S.A."
 #~ msgstr "A.B.D."
-
-#~ msgid "Cannot open "
-#~ msgstr "Açýlamýyor "
-
-#~ msgid "_to_install file\n"
-#~ msgstr "to_install dosyasý\n"
