@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.28 2004/09/29 18:35:56 rousseau Exp $
+# $Id: Makefile.am,v 1.29 2004/10/02 20:13:29 rousseau Exp $
 
 SUBDIRS = Expense SyncTime KeyRing docs dialer po m4 empty icons
 
@@ -19,7 +19,8 @@ EXTRA_DIST = config.rpath reconf autogen.sh ChangeLog \
 	dialer/Makefile.unix \
 	dialer/README \
 	dialer/jpilot-dial.c \
-	po/POTFILES
+	po/POTFILES \
+	jpilot.xpm
 
 bin_PROGRAMS = jpilot jpilot-dump jpilot-sync
 jpilot_SOURCES = \
