@@ -2609,7 +2609,8 @@ int sync_categories(char *DB_name, int sd,
       return -1;
    }
 
-   size = dlp_ReadAppBlock(sd, db, 0, buf, sizeof(buf));
+   /* buffer size passed in cannot be any larger than 0xffff */
+   size = dlp_ReadAppBlock(sd, db, 0, buf, 0xFFFF);
    jp_logf(JP_LOG_DEBUG, "readappblock r=%d\n", size);
    if (size<=0) {
       jp_logf(JP_LOG_WARN, _("Error reading appinfo block for %s\n"), DB_name);
