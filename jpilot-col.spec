@@ -1,4 +1,4 @@
-%define version 0.99.2
+%define version 0.99.3
 Name        	: jpilot
 Version     	: %{version}
 Release     	: 1_COL
@@ -117,4 +117,4 @@ ln -s /usr/doc/jpilot-0.98.1/icons/jpilot-icon2.xpm $DESTDIR/opt/kde/share/icons
 * Mon Jan 01 1998 ...
 Template Version: 1.31
 
-$Id: jpilot-col.spec,v 1.4 2002/08/28 16:43:42 judd Exp $
+$Id: jpilot-col.spec,v 1.5 2002/09/30 18:24:59 judd Exp $

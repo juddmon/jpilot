@@ -1,4 +1,4 @@
-%define version 0.99.2
+%define version 0.99.3
 
 Summary:   palm pilot desktop for Linux
 Name:      jpilot

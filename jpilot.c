@@ -931,7 +931,7 @@ void cb_about(GtkWidget *widget, gpointer data)
    sprintf(text,
 	   /*-------------------------------------------*/
 	   _("%s %s was written by\n"
-	     "Judd Montgomery (c) 1999-2001.\n"
+	     "Judd Montgomery (Copyright) 1999-2002.\n"
 	     "judd@jpilot.org\n"
 	     "http://jpilot.org\n"),   
 	   PN, VERSION);

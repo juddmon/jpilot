@@ -1,4 +1,7 @@
-0.99.3 - ?
+0.99.3 - 11/01/02
+ Made dialog windows Modal
+ Manana support http://bill.sexton.tripod.com/download.htm
+ Changed code to keep unique IDs intact.
  Support for OS 4.X passwords.
  Better DateBk support
  (seperate entry field for tag, better detection of datebk records)

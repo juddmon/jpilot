@@ -7,7 +7,7 @@
 # Please note that the actual code is *not* freely available.
 
 PACKAGE = jpilot
-VERSION = 0.99.2
+VERSION = 0.99.3
 
 # These two variables depend on the location of this directory.
 subdir = po
