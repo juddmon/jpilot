@@ -1,14 +1,19 @@
-# $Id: Makefile.am,v 1.21 2003/07/12 21:19:14 judd Exp $
+# $Id: Makefile.am,v 1.22 2003/07/31 19:00:30 judd Exp $
 
 SUBDIRS = intl Expense SyncTime KeyRing docs dialer po m4 empty icons
 
+# install the manual docs
+colordir = $(prefix)/share/$(PACKAGE)
+color_DATA = \
+	jpilotrc.blue jpilotrc.default jpilotrc.green jpilotrc.purple \
+	jpilotrc.steel
+
 EXTRA_DIST = reconf autogen.sh ChangeLog \
 	config.rpath mkinstalldirs \
-	BUGS jpilot.spec jpilot.kdelnk jpilot.rh7.spec \
-	ChangeLog UPGRADING \
+	jpilot.spec jpilot.kdelnk jpilot.rh7.spec \
 	jpilot.desktop \
-	jpilotrc.blue jpilotrc.default jpilotrc.green jpilotrc.purple \
-	jpilotrc.steel SlackBuild \
+	$(color_DATA) \
+	SlackBuild \
 	intltool-extract.in intltool-merge.in intltool-update.in \
 	m4/gtk-2.0.m4 \
 	dialer/Makefile.unix \
