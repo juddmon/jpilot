@@ -3,4 +3,4 @@
 Makefile
 Makefile.in
 libsynctime.la
-synctime.lo
+libsynctime_la-synctime.lo
