@@ -1,0 +1,13 @@
+you need to have gtk1.2 or better (I haven't tried anything older)
+gtk requires glib.
+you can get these at http://www.gtk.org
+
+pilot link must be installed and working.
+ftp://ryeham.ee.ryerson.ca/pub/PalmOS/
+
+edit the first few lines of Makefile
+make
+mkdir ~/.jpilot/
+cp jpilotrc ~/.jpilot/
+jpilot
+you may want to sync before you do anything

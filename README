@@ -1,0 +1,15 @@
+jpilot is a palm pilot desktop for Linux written by:
+Judd Montgomery, judd@engineer.com
+It is very useable, but still has many planned updates to make it better.
+
+If you like it feel to send me donations ;)
+I collect coins from anywhere, anytime also.
+email me and I'll send you my address.
+
+If you use this program send me an email and let me know.  I'd like to know
+how many people this is useful to.
+
+You should copy the jpilotrc file to ~/.jpilot/ to get rid of the ugly grey
+screens.  If you create your own cool jpilotrc files feel free to send them
+back to me and if I like it, I'll include them in the release.  I'll
+probably make a few selectable with a pull-down menu.
