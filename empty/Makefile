@@ -1,0 +1,5 @@
+all: empty
+
+empty:
+
+dist:
