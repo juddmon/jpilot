@@ -1635,6 +1635,7 @@ int main(int argc, char *argv[])
    GtkWidget *menubar;
 #ifdef ENABLE_GTK2
    GtkWidget *scrolled_window;
+   char utf8_locale[50];  
 #else
    GtkWidget *vscrollbar;
 #endif
@@ -1818,19 +1819,17 @@ char *xpm_unlocked[] = {
    /* Enable UTF8 *AFTER* potential printf to stdout for -h or -v */
    /* Not all terminals(xterm, rxvt, etc.) are UTF8 compliant */
 #if defined(ENABLE_NLS)
-#   ifdef ENABLE_GTK2
-       char utf8_locale[50];  
+# ifdef ENABLE_GTK2
 
-       /* If locale exists but does not specify an encoding, enforce utf8 */
-       if (current_locale && !strstr(current_locale, "."))
-       {
-          snprintf(utf8_locale, sizeof(utf8_locale), "%s.utf8", current_locale); 
-          setlocale(LC_ALL, utf8_locale);
-	  /* disable implicit call to setlocale(LC_ALL,"") in gtk_init() */
-	  gtk_disable_setlocale();  
-       }
-       bind_textdomain_codeset(EPN, "UTF-8");
-#   endif
+   /* If locale exists but does not specify an encoding, enforce UTF8 */
+   if (current_locale && !strstr(current_locale, ".")) {
+      snprintf(utf8_locale, sizeof(utf8_locale), "%s.UTF-8", current_locale); 
+      setlocale(LC_ALL, utf8_locale);
+      /* disable implicit call to setlocale(LC_ALL,"") in gtk_init() */
+      gtk_disable_setlocale();  
+   }
+   bind_textdomain_codeset(EPN, "UTF-8");
+# endif
 #endif
 
    /*Check to see if ~/.jpilot is there, or create it */
