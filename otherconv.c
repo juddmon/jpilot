@@ -187,9 +187,8 @@ char *other_to_UTF(const char *buf, int buf_len)
 
       outbuf_len = strlen(head) +4 + strlen(tail)+1;
       outbuf = g_malloc(outbuf_len);
-      g_strlcpy(outbuf, head, outbuf_len);
-      g_sprintf(outbuf + strlen (head), "\\%02X", (unsigned char)c);
-      g_strlcat(outbuf, tail, outbuf_len);
+      g_snprintf(outbuf, outbuf_len, "%s\\%02X%s",
+	 head, (unsigned char)c, tail);
 
       g_free(head);
       g_free(tail);
