@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.109 2005/01/16 03:46:08 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.110 2005/01/22 17:43:34 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -2510,7 +2510,7 @@ char * xpm_backup[] = {
    gtk_box_pack_start(GTK_BOX(g_vbox0), button_sync, FALSE, FALSE, 0);
 
    gtk_tooltips_set_tip(glob_tooltips, button_sync, _("Sync your palm to the desktop   Ctrl-Y"), NULL);
-   gtk_widget_add_accelerator(button, "clicked", accel_group, GDK_y,
+   gtk_widget_add_accelerator(button_sync, "clicked", accel_group, GDK_y,
 	   GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
 #ifdef FONT_TEST
