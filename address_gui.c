@@ -1427,8 +1427,6 @@ void cb_dialer(GtkWidget *widget, gpointer data)
    char number[100];
    char ext[100];
 
-   number[0]=ext[0]='\0';
-   text=data;
 #ifdef ENABLE_GTK2
    GtkTextIter    start_iter;
    GtkTextIter    end_iter;
@@ -1440,6 +1438,10 @@ void cb_dialer(GtkWidget *widget, gpointer data)
 #else
    str=gtk_editable_get_chars(GTK_EDITABLE(text), 0, -1);
 #endif
+
+   number[0]=ext[0]='\0';
+   text=data;
+
    if (!str) return;
    printf("[%s]\n", str);
 
