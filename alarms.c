@@ -779,7 +779,7 @@ int forward_backward_in_appt_time(const struct Appointment *a,
        case repeatWeekly:
 	 for (count=0, dow=t->tm_wday; count<14; count++) {
 	    sub_days_from_date(t, 1);
-#ifdef ALARMS_DEBUG      
+#ifdef ALARMS_DEBUG
 	    printf("fpn: weekly backward t.tm_wday=%d, freq=%d\n", t->tm_wday, freq);
 #endif
 	    dow--;
@@ -927,12 +927,18 @@ static int find_prev_next(struct Appointment *a,
       printf("fpn: repeatWeekly\n");
 #endif
       freq = a->repeatFrequency;
-      t.tm_year=date2->tm_year;
-      t.tm_mon=date2->tm_mon;
-      t.tm_mday=date2->tm_mday;
-      mktime(&t);
+      /* Check for future start date */
       begin_days = dateToDays(&(a->begin));
       days = dateToDays(&t);
+      if (days > begin_days) {
+	 /* appt started in past, get to current date sooner */
+	 t.tm_year=date2->tm_year;
+	 t.tm_mon=date2->tm_mon;
+	 t.tm_mday=date2->tm_mday;
+      }
+      mktime(&t);
+      begin_days = dateToDays(&(a->begin));
+      //undo days = dateToDays(&t);
 #ifdef ALARMS_DEBUG
       printf("fpn: begin_days %d days %d\n", begin_days, days);
       printf("fpn: t.tm_wday %d a->begin.tm_wday %d\n", t.tm_wday, a->begin.tm_wday);
@@ -978,8 +984,14 @@ static int find_prev_next(struct Appointment *a,
 #ifdef ALARMS_DEBUG
       printf("fpn: repeatMonthlyByDay\n");
 #endif
-      t.tm_mon=date2->tm_mon;
-      t.tm_year=date2->tm_year;
+      /* Check for future start date */
+      begin_days = dateToDays(&(a->begin));
+      days = dateToDays(&t);
+      if (days > begin_days) {
+	 /* appt started in past, get to current date sooner */
+	 t.tm_mon=date2->tm_mon;
+	 t.tm_year=date2->tm_year;
+      }
       freq = a->repeatFrequency;
 #ifdef ALARMS_DEBUG
       printf("fpn: freq=%d\n", freq);
@@ -1013,8 +1025,15 @@ static int find_prev_next(struct Appointment *a,
 #ifdef ALARMS_DEBUG
       printf("fpn: repeatMonthlyByDate\n");
 #endif
-      t.tm_mon=date2->tm_mon;
-      t.tm_year=date2->tm_year;
+      /* Check for future start date */
+      begin_days = dateToDays(&(a->begin));
+      days = dateToDays(&t);
+      if (days > begin_days) {
+	 /* appt started in past, get to current date sooner */
+	 t.tm_mon=date2->tm_mon;
+	 t.tm_year=date2->tm_year;
+      }
+
       freq = a->repeatFrequency;
       offset = ((t.tm_year - a->begin.tm_year)*12 +
 		(t.tm_mon - a->begin.tm_mon))%(a->repeatFrequency);
@@ -1029,7 +1048,12 @@ static int find_prev_next(struct Appointment *a,
 #ifdef ALARMS_DEBUG
       printf("fpn: repeatYearly\n");
 #endif
-      t.tm_year=date2->tm_year;
+      begin_days = dateToDays(&(a->begin));
+      days = dateToDays(&t);
+      if (days > begin_days) {
+	 /* appt started in past, get to current date sooner */
+	 t.tm_year=date2->tm_year;
+      }
       freq = a->repeatFrequency;
       offset = (t.tm_year - a->begin.tm_year)%(a->repeatFrequency);
 #ifdef ALARMS_DEBUG      
@@ -1084,11 +1108,11 @@ static int find_prev_next(struct Appointment *a,
 	    continue;
 	 }
       }
-      /* See that we aren't before then begin date */
+      /* See that we aren't before the begin date */
       t_begin = mktime(&(a->begin));
       if (t_temp < t_begin - adv) {
 #ifdef ALARMS_DEBUG      
-	 printf("fpn:1\n");
+	 printf("fpn: before begin date\n");
 #endif
 	 backward=0;
       }
@@ -1096,10 +1120,10 @@ static int find_prev_next(struct Appointment *a,
       if (!(a->repeatForever)) {
 	 t_end = mktime(&(a->repeatEnd));
 	 if (t_temp > t_end) {
-	    forward=0;
-#ifdef ALARMS_DEBUG      
-	    printf("fpn: 2\n");
+#ifdef ALARMS_DEBUG
+	    printf("fpn: after end date\n");
 #endif
+	    forward=0;
 	 }
       }
       t_temp-=adv;
