@@ -1,4 +1,4 @@
-/* $Id: otherconv.c,v 1.17 2004/12/07 06:31:59 rikster5 Exp $ */
+/* $Id: otherconv.c,v 1.18 2004/12/07 06:47:46 rikster5 Exp $ */
 
 /*******************************************************************************
  * otherconv.c
@@ -28,13 +28,13 @@
  */
 
 #include "config.h"
+#include <string.h>
 
 #ifdef ENABLE_GTK2
 #include <stdio.h>
 #include <errno.h>
 #include <stdlib.h>
 #include <glib.h>
-#include <string.h>
 /* To speed up compilation use these instead of glib.h
 #include <glib/gmacros.h>
 #include <glib/gconvert.h>
