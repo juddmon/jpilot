@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.86 2005/03/02 01:31:31 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.87 2005/03/02 01:34:32 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -1605,6 +1605,34 @@ static void cb_clist_selection(GtkWidget      *clist,
    connect_changed_signals(CONNECT_SIGNALS);
 }
 
+static gboolean cb_key_pressed_left_side(GtkWidget   *widget, 
+                                         GdkEventKey *event,
+                                         gpointer     next_widget)
+{
+   if (event->keyval == GDK_Return) {
+      gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
+      gtk_widget_grab_focus(GTK_WIDGET(next_widget));
+      return TRUE;
+   }
+
+   return FALSE;
+}
+
+static gboolean cb_key_pressed_right_side(GtkWidget   *widget, 
+                                          GdkEventKey *event,
+                                          gpointer     next_widget)
+{
+   if ((event->keyval == GDK_Return) && (event->state & GDK_SHIFT_MASK)) {
+      gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
+      /* Call clist_selection to handle any cleanup such as a modified record */
+      cb_clist_selection(clist, clist_row_selected, TODO_PRIORITY_COLUMN, 
+	                 GINT_TO_POINTER(1), NULL);
+      gtk_widget_grab_focus(GTK_WIDGET(next_widget));
+      return TRUE;
+   }
+
+   return FALSE;
+}
 
 void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 		       ToDoList **todo_list, int category, int main)
@@ -2329,12 +2357,25 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_box_pack_start(GTK_BOX(hbox_temp), vscrollbar, FALSE, FALSE, 0);
 #endif
 
+   gtk_widget_set_usize(GTK_WIDGET(todo_text), 10, 10);
+   gtk_widget_set_usize(GTK_WIDGET(todo_text_note), 10, 10);
+
    /* Capture the TAB key to change focus with it */
    gtk_signal_connect(GTK_OBJECT(todo_text), "key_press_event",
 		      GTK_SIGNAL_FUNC(cb_key_pressed), todo_text_note);
 
-   gtk_widget_set_usize(GTK_WIDGET(todo_text), 10, 10);
-   gtk_widget_set_usize(GTK_WIDGET(todo_text_note), 10, 10);
+   /* Capture the Enter & Shift-Enter key combinations to move back and 
+    * forth between the left- and right-hand sides of the display. */
+   gtk_signal_connect(GTK_OBJECT(clist), "key_press_event",
+		      GTK_SIGNAL_FUNC(cb_key_pressed_left_side), todo_text);
+
+   gtk_signal_connect(GTK_OBJECT(todo_text), "key_press_event",
+		      GTK_SIGNAL_FUNC(cb_key_pressed_right_side), clist);
+
+   gtk_signal_connect(GTK_OBJECT(todo_text_note), "key_press_event",
+		      GTK_SIGNAL_FUNC(cb_key_pressed_right_side), clist);
+
+   /**********************************************************************/
 
    gtk_widget_show_all(vbox);
    gtk_widget_show_all(hbox);

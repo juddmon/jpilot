@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.97 2005/03/02 01:31:31 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.98 2005/03/02 01:34:32 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -1939,6 +1939,48 @@ static void cb_clist_selection(GtkWidget      *clist,
    connect_changed_signals(CONNECT_SIGNALS);
 }
 
+static gboolean cb_key_pressed_left_side(GtkWidget   *widget, 
+                                         GdkEventKey *event,
+                                         gpointer     next_widget)
+{
+   if (event->keyval == GDK_Return) {
+      gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
+
+      switch (gtk_notebook_get_current_page(GTK_NOTEBOOK(notebook))) {
+        case 0 : 
+	   gtk_widget_grab_focus(address_text[0]);
+           break;
+        case 1 : 
+	   gtk_widget_grab_focus(address_text[8]);
+           break;
+        case 2 : 
+	   gtk_widget_grab_focus(address_text[14]);
+           break;
+        default:
+	   gtk_widget_grab_focus(address_text[0]);
+      }
+      return TRUE;
+   }
+
+   return FALSE;
+}
+
+static gboolean cb_key_pressed_right_side(GtkWidget   *widget, 
+                                          GdkEventKey *event,
+                                          gpointer     next_widget)
+{
+   if ((event->keyval == GDK_Return) && (event->state & GDK_SHIFT_MASK)) {
+      gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
+      /* Call clist_selection to handle any cleanup such as a modified record */
+      cb_clist_selection(clist, clist_row_selected, ADDRESS_PHONE_COLUMN, 
+	                 GINT_TO_POINTER(1), NULL);
+      gtk_widget_grab_focus(GTK_WIDGET(next_widget));
+      return TRUE;
+   }
+
+   return FALSE;
+}
+
 static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 				 AddressList **addr_list, int category, int main)
 {
@@ -2620,6 +2662,10 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), ADDRESS_PHONE_COLUMN, FALSE);
 
    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
+
+   /* The focus doesn't do any good on the application button */
+   gtk_widget_grab_focus(GTK_WIDGET(clist));
+
    /*gtk_clist_set_column_justification(GTK_CLIST(clist), 1, GTK_JUSTIFY_RIGHT); */
 
    hbox_temp = gtk_hbox_new(FALSE, 0);
@@ -2635,7 +2681,6 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 		      GTK_SIGNAL_FUNC(cb_address_quickfind),
 		      NULL);
    gtk_box_pack_start(GTK_BOX(hbox_temp), address_quickfind_entry, TRUE, TRUE, 0);
-   gtk_widget_grab_focus(GTK_WIDGET(address_quickfind_entry));
 
    /* The new entry gui */
    hbox_temp = gtk_hbox_new(FALSE, 0);
@@ -2854,6 +2899,11 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	 }
       }
 
+      /* Capture the Enter key to move to the left-hand side of the display */
+      gtk_signal_connect(GTK_OBJECT(clist), "key_press_event",
+		         GTK_SIGNAL_FUNC(cb_key_pressed_left_side), 
+		         NULL);
+
       /* Capture the TAB key to change focus with it */
       for (i=0; i<(NUM_ADDRESS_ENTRIES+NUM_ADDRESS_EXT_ENTRIES); i++) {
 	 i1=kana_order[i];
@@ -2861,6 +2911,10 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	 if (i2<(NUM_ADDRESS_ENTRIES+NUM_ADDRESS_EXT_ENTRIES)) {
 	    gtk_signal_connect(GTK_OBJECT(address_text[i1]), "key_press_event",
 			       GTK_SIGNAL_FUNC(cb_key_pressed), address_text[i2]);
+	    /* Capture the Shift-Enter key combination to move back to 
+	     * the right-hand side of the display. */
+	    gtk_signal_connect(GTK_OBJECT(address_text[i1]), "key_press_event",
+			       GTK_SIGNAL_FUNC(cb_key_pressed_right_side), clist);
 	 }
       }
 
@@ -2942,6 +2996,11 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	 }
       }
 
+      /* Capture the Enter key to move to the left-hand side of the display */
+      gtk_signal_connect(GTK_OBJECT(clist), "key_press_event",
+			 GTK_SIGNAL_FUNC(cb_key_pressed_left_side), 
+			 NULL);
+
       /* Capture the TAB key to change focus with it */
       for (i=0; i<NUM_ADDRESS_ENTRIES; i++) {
 	 i1=order[i];
@@ -2949,6 +3008,10 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	 if (i2<NUM_ADDRESS_ENTRIES) {
 	    gtk_signal_connect(GTK_OBJECT(address_text[i1]), "key_press_event",
 			       GTK_SIGNAL_FUNC(cb_key_pressed), address_text[i2]);
+	    /* Capture the Shift-Enter key combination to move back to 
+	     * the right-hand side of the display. */
+	    gtk_signal_connect(GTK_OBJECT(address_text[i1]), "key_press_event",
+			       GTK_SIGNAL_FUNC(cb_key_pressed_right_side), clist);
 	 }
       }
 

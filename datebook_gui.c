@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.106 2005/03/02 01:31:31 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.107 2005/03/02 01:34:32 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -2477,6 +2477,34 @@ set_new_button_to(int new_state)
    record_changed=new_state;
 }
 
+static gboolean cb_key_pressed_left_side(GtkWidget   *widget, 
+                                         GdkEventKey *event,
+                                         gpointer     next_widget)
+{
+   if (event->keyval == GDK_Return) {
+      gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
+      gtk_widget_grab_focus(GTK_WIDGET(next_widget));
+      return TRUE;
+   }
+
+   return FALSE;
+}
+
+static gboolean cb_key_pressed_right_side(GtkWidget   *widget, 
+                                          GdkEventKey *event,
+                                          gpointer     next_widget)
+{
+   if ((event->keyval == GDK_Return) && (event->state & GDK_SHIFT_MASK)) {
+      gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
+      /* Call clist_selection to handle any cleanup such as a modified record */
+      cb_clist_selection(clist, clist_row_selected, 1, GINT_TO_POINTER(1), NULL);
+      gtk_widget_grab_focus(GTK_WIDGET(next_widget));
+      return TRUE;
+   }
+
+   return FALSE;
+}
+
 static void
 cb_record_changed(GtkWidget *widget,
 		  gpointer   data)
@@ -4837,6 +4865,18 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_text_set_editable(GTK_TEXT(text_widget1), TRUE);
    gtk_text_set_editable(GTK_TEXT(text_widget2), TRUE);
 #endif
+
+   /* Capture the Enter & Shift-Enter key combinations to move back and 
+    * forth between the left- and right-hand sides of the display. */
+   gtk_signal_connect(GTK_OBJECT(clist), "key_press_event",
+		      GTK_SIGNAL_FUNC(cb_key_pressed_left_side), text_widget1);
+
+   gtk_signal_connect(GTK_OBJECT(text_widget1), "key_press_event",
+		      GTK_SIGNAL_FUNC(cb_key_pressed_right_side), clist);
+
+   gtk_signal_connect(GTK_OBJECT(text_widget2), "key_press_event",
+		      GTK_SIGNAL_FUNC(cb_key_pressed_right_side), clist);
+
 
    gtk_notebook_popup_enable(GTK_NOTEBOOK(notebook));
 
