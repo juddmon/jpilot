@@ -1530,6 +1530,7 @@ int check_copy_DBs_to_home()
    int i, c, r;
    char destname[1024];
    char srcname[1024];
+   struct utimbuf times;
    char *dbname[]={
       "DatebookDB.pdb",
 	"AddressDB.pdb",
@@ -1568,6 +1569,10 @@ int check_copy_DBs_to_home()
 	 }
 	 fclose(in);
 	 fclose(out);
+	 /* Set the dates on the file to be old (not up to date) */
+	 times.actime = 1;
+	 times.modtime = 1;
+	 utime(destname, &times);
       }
    }
    return 0;
@@ -2415,6 +2420,8 @@ int pdb_file_delete_record_by_id(char *DB_name, pi_uid_t uid_in)
    int attr;
    int cat;
    pi_uid_t uid;
+   struct stat statb;
+   struct utimbuf times;
 
    jp_logf(JP_LOG_DEBUG, "pdb_file_delete_record_by_id\n");
 
@@ -2422,6 +2429,12 @@ int pdb_file_delete_record_by_id(char *DB_name, pi_uid_t uid_in)
    get_home_file_name(local_pdb_file, full_local_pdb_file, 250);
    strcpy(full_local_pdb_file2, full_local_pdb_file);
    strcat(full_local_pdb_file2, "2");
+
+   /* After we are finished, set the create and modify times of new file
+      to the same as the old */
+   stat(full_local_pdb_file, &statb);
+   times.actime = statb.st_atime;
+   times.modtime = statb.st_mtime;
 
    pf1 = pi_file_open(full_local_pdb_file);
    if (!pf1) {
@@ -2455,6 +2468,8 @@ int pdb_file_delete_record_by_id(char *DB_name, pi_uid_t uid_in)
       jp_logf(JP_LOG_WARN, "delete: rename failed\n");
    }
 
+   utime(full_local_pdb_file, &times);
+
    return 0;
 }
 
@@ -2480,6 +2495,8 @@ int pdb_file_modify_record(char *DB_name, void *record_in, int size_in,
    int cat;
    int found;
    pi_uid_t uid;
+   struct stat statb;
+   struct utimbuf times;
 
    jp_logf(JP_LOG_DEBUG, "pi_file_modify_record\n");
 
@@ -2487,6 +2504,12 @@ int pdb_file_modify_record(char *DB_name, void *record_in, int size_in,
    get_home_file_name(local_pdb_file, full_local_pdb_file, 250);
    strcpy(full_local_pdb_file2, full_local_pdb_file);
    strcat(full_local_pdb_file2, "2");
+
+   /* After we are finished, set the create and modify times of new file
+      to the same as the old */
+   stat(full_local_pdb_file, &statb);
+   times.actime = statb.st_atime;
+   times.modtime = statb.st_mtime;
 
    pf1 = pi_file_open(full_local_pdb_file);
    if (!pf1) {
@@ -2529,6 +2552,8 @@ int pdb_file_modify_record(char *DB_name, void *record_in, int size_in,
       jp_logf(JP_LOG_WARN, "modify: rename failed\n");
    }
 
+   utime(full_local_pdb_file, &times);
+
    return 0;
 }
 
@@ -2558,7 +2583,9 @@ int pdb_file_read_record_by_id(char *DB_name,
    /* during the close bufp will be freed, so we copy it */
    if ( (r>0) && (*sizep>0) ) {
       *bufp=malloc(*sizep);
-      memcpy(*bufp, temp_buf, *sizep);
+      if (*bufp) {
+	 memcpy(*bufp, temp_buf, *sizep);
+      }
    } else {
       *bufp=NULL;
    }
@@ -2584,6 +2611,8 @@ int pdb_file_write_app_block(char *DB_name, void *bufp, int size_in)
    int attr;
    int cat;
    pi_uid_t uid;
+   struct stat statb;
+   struct utimbuf times;
 
    jp_logf(JP_LOG_DEBUG, "pdb_file_write_app_block\n");
 
@@ -2591,6 +2620,12 @@ int pdb_file_write_app_block(char *DB_name, void *bufp, int size_in)
    get_home_file_name(local_pdb_file, full_local_pdb_file, 250);
    strcpy(full_local_pdb_file2, full_local_pdb_file);
    strcat(full_local_pdb_file2, "2");
+
+   /* After we are finished, set the create and modify times of new file
+      to the same as the old */
+   stat(full_local_pdb_file, &statb);
+   times.actime = statb.st_atime;
+   times.modtime = statb.st_mtime;
 
    pf1 = pi_file_open(full_local_pdb_file);
    if (!pf1) {
@@ -2622,6 +2657,8 @@ int pdb_file_write_app_block(char *DB_name, void *bufp, int size_in)
    if (rename(full_local_pdb_file2, full_local_pdb_file) < 0) {
       jp_logf(JP_LOG_WARN, "write_app_block: rename failed\n");
    }
+
+   utime(full_local_pdb_file, &times);
 
    return 0;
 }

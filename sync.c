@@ -1196,6 +1196,7 @@ int fetch_extra_DBs(int sd, char *palm_dbname[])
 
       /* If modification times are the same then we don t need to fetch it */
       if (info.modifyDate == statb.st_mtime) {
+	 jp_logf(JP_LOG_DEBUG, "%s up to date, modify date (1) %ld\n", info.name, info.modifyDate);
 	 jp_logf(JP_LOG_GUI, _("%s (Creator ID '%s') is up to date, fetch skipped.\n"), db_copy_name, creator);
 	 continue;
       }
@@ -1536,6 +1537,7 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
 #endif
       /* If modification times are the same then we don t need to fetch it */
       if (info.modifyDate == statb.st_mtime) {
+	 jp_logf(JP_LOG_DEBUG, "%s up to date, modify date (2) %ld\n", info.name, info.modifyDate);
 	 jp_logf(JP_LOG_GUI, _("%s (Creator ID '%s') is up to date, fetch skipped.\n"), db_copy_name, creator);
 	 continue;
       }
@@ -2178,6 +2180,8 @@ int pdb_file_swap_indexes(char *DB_name, int index1, int index2)
    int cat, new_cat;
    int count;
    pi_uid_t uid;
+   struct stat statb;
+   struct utimbuf times;
 
    jp_logf(JP_LOG_DEBUG, "pi_file_swap_indexes\n");
 
@@ -2185,6 +2189,12 @@ int pdb_file_swap_indexes(char *DB_name, int index1, int index2)
    get_home_file_name(local_pdb_file, full_local_pdb_file, 250);
    strcpy(full_local_pdb_file2, full_local_pdb_file);
    strcat(full_local_pdb_file2, "2");
+
+   /* After we are finished, set the create and modify times of new file
+      to the same as the old */
+   stat(full_local_pdb_file, &statb);
+   times.actime = statb.st_atime;
+   times.modtime = statb.st_mtime;
 
    pf1 = pi_file_open(full_local_pdb_file);
    if (!pf1) {
@@ -2227,6 +2237,8 @@ int pdb_file_swap_indexes(char *DB_name, int index1, int index2)
    if (rename(full_local_pdb_file2, full_local_pdb_file) < 0) {
       jp_logf(JP_LOG_WARN, "swap_indexes: rename failed\n");
    }
+
+   utime(full_local_pdb_file, &times);
 
    return 0;
 }
@@ -2492,7 +2504,7 @@ int sync_categories(char *DB_name, int sd,
 		    int (*pack_cai_into_ai)(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
 )
 {
-   struct CategoryAppInfo local_cai, remote_cai;
+   struct CategoryAppInfo local_cai, remote_cai, orig_remote_cai;
    char full_name[256];
    char pdb_name[256];
    char log_entry[256];
@@ -2559,6 +2571,7 @@ int sync_categories(char *DB_name, int sd,
    }
 
    r = unpack_cai_from_ai(&remote_cai, buf, size);
+   memcpy(&orig_remote_cai, &remote_cai, sizeof(remote_cai));
    if (r < 0) {
       jp_logf(JP_LOG_WARN, _("%s:%d Error unpacking app info %s\n"), __FILE__, __LINE__, full_name);
       return -1;
@@ -2728,9 +2741,12 @@ int sync_categories(char *DB_name, int sd,
 
    pack_cai_into_ai(&remote_cai, buf, size_Papp_info);
 
-   dlp_WriteAppBlock(sd, db, buf, size_Papp_info);
-
-   pdb_file_write_app_block(DB_name, buf, size_Papp_info);
+   /* If the categories changed then write them out */
+   if (memcmp(&orig_remote_cai, &remote_cai, sizeof(remote_cai))) {
+      jp_logf(JP_LOG_DEBUG, "writing out new categories for %s\n", DB_name);
+      dlp_WriteAppBlock(sd, db, buf, size_Papp_info);
+      pdb_file_write_app_block(DB_name, buf, size_Papp_info);
+   }
 
    dlp_CloseDB(sd, db);
 
