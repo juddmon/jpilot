@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.27 2004/09/06 02:27:15 rikster5 Exp $
+# $Id: Makefile.am,v 1.28 2004/09/29 18:35:56 rousseau Exp $
 
 SUBDIRS = Expense SyncTime KeyRing docs dialer po m4 empty icons
 
@@ -15,7 +15,6 @@ EXTRA_DIST = config.rpath reconf autogen.sh ChangeLog \
 	jpilot.desktop \
 	$(color_DATA) \
 	SlackBuild \
-	intltool-extract.in intltool-merge.in intltool-update.in \
 	m4/gtk-2.0.m4 \
 	dialer/Makefile.unix \
 	dialer/README \
