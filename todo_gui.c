@@ -283,6 +283,11 @@ cb_record_changed(GtkWidget *widget,
 	 set_new_button_to(NEW_FLAG);
       }
    }
+   else if (record_changed==UNDELETE_FLAG)
+   {
+      jp_logf(JP_LOG_INFO|JP_LOG_GUI, _("This record is deleted.\n"
+	   "Undelete it or copy it to make changes.\n"));
+   }
 }
 
 static void connect_changed_signals(int con_or_dis)
