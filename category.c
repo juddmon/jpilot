@@ -26,6 +26,7 @@
 #include <sys/types.h>
 #include <utime.h>
 #include <unistd.h>
+#include <stdio.h>
 #include <pi-file.h>
 #include "utils.h"
 #include "log.h"
@@ -112,7 +113,11 @@ int pdb_file_change_indexes(char *DB_name, int old_index, int new_index)
    char local_pdb_file[FILENAME_MAX];
    char full_local_pdb_file[FILENAME_MAX];
    char full_local_pdb_file2[FILENAME_MAX];
+#ifdef PILOT_LINK_0_12
+   pi_file_t *pf1, *pf2;
+#else
    struct pi_file *pf1, *pf2;
+#endif
    struct DBInfo infop;
    void *app_info;
    void *sort_info;

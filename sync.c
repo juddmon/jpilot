@@ -51,6 +51,7 @@
 
 #include <pi-socket.h>
 #include <pi-dlp.h>
+#include <pi-header.h>
 #include <pi-file.h>
 #include <pi-version.h>
 
@@ -209,6 +210,8 @@ static char *get_error_str(int error)
     case SYNC_ERROR_PI_ACCEPT:
       return "SYNC_ERROR_PI_ACCEPT";
     case SYNC_ERROR_READSYSINFO:
+      return "SYNC_ERROR_PI_CONNECT";
+    case SYNC_ERROR_PI_CONNECT:
       return "SYNC_ERROR_READSYSINFO";
     case SYNC_ERROR_NOT_SAME_USER:
       return "SYNC_ERROR_NOT_SAME_USER";
@@ -403,89 +406,16 @@ static int wait_for_response(int sd)
    return command;
 }
 
-int jp_sync(struct my_sync_info *sync_info)
+#ifndef PILOT_LINK_0_12
+int jp_pilot_connect(int *Psd, const char *device)
 {
    struct pi_sockaddr addr;
    int sd;
    int ret;
-   struct PilotUser U;
-   const char *device;
-   char default_device[]="/dev/pilot";
-   int found=0, fast_sync=0;
    int i;
    int dev_usb;
    char link[FILENAME_MAX], dev_str[FILENAME_MAX], dev_dir[FILENAME_MAX], *Pc;
-#ifdef ENABLE_PLUGINS
-   GList *plugin_list, *temp_list;
-   struct plugin_s *plugin;
-#endif
-#ifdef JPILOT_DEBUG
-   int start;
-   struct DBInfo info;
-#endif
-#ifdef ENABLE_PRIVATE
-   char hex_password[PASSWD_LEN*2+4];
-#endif
-   char buf[1024];
-   long char_set;
    struct  SysInfo sys_info;
-
-   /* Load the plugins since this is a forked process */
-#ifdef ENABLE_PLUGINS
-   if (!(sync_info->flags & SYNC_NO_PLUGINS)) {
-      jp_logf(JP_LOG_DEBUG, "sync:calling load_plugins\n");
-      load_plugins();
-   }
-#endif
-#ifdef ENABLE_PLUGINS
-   /* Do the plugin_pre_sync_pre_connect calls */
-   plugin_list=NULL;
-
-   plugin_list = get_plugin_list();
-
-   for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
-      plugin = (struct plugin_s *)temp_list->data;
-      if (plugin) {
-	 if (plugin->sync_on) {
-	    if (plugin->plugin_pre_sync_pre_connect) {
-	       jp_logf(JP_LOG_DEBUG, "sync:calling plugin_pre_sync_pre_connect for [%s]\n", plugin->name);
-	       plugin->plugin_pre_sync_pre_connect();
-	    }
-	 }
-      }
-   }
-#endif
-
-   device = NULL;
-   if (sync_info->port) {
-      if (sync_info->port[0]) {
-	 /*A port was passed in to use */
-	 device=sync_info->port;
-	 found = 1;
-      }
-   }
-   if (!found) {
-      /*No port was passed in, look in env */
-      device = getenv("PILOTPORT");
-      if (device == NULL) {
-		 device = default_device;
-      }
-   }
-
-   jp_logf(JP_LOG_GUI, "****************************************\n");
-   jp_logf(JP_LOG_GUI, _(" Syncing on device %s\n"), device);
-   jp_logf(JP_LOG_GUI, _(" Press the HotSync button now\n"));
-   jp_logf(JP_LOG_GUI, "****************************************\n");
-
-   /* pilot-link older than 0.9.5 didn't have web clipping flag */
-#if PILOT_LINK_VERSION <= 0
-# if PILOT_LINK_MAJOR <= 9
-#  if PILOT_LINK_MINOR <= 5
-#   define dlpDBFlagClipping 0x200
-#  endif
-# endif
-#endif
-
    /* pilot-link > 0.9.5 needed for many USB devices */
 #ifdef USB_PILOT_LINK
    /* Newer pilot-link */
@@ -499,6 +429,7 @@ int jp_sync(struct my_sync_info *sync_info)
    addr.pi_family = PI_AF_SLP;
 #endif
 
+   *Psd=0;
    if (sd < 0) {
       int err = errno;
       perror("pi_socket");
@@ -583,11 +514,106 @@ int jp_sync(struct my_sync_info *sync_info)
 
    /* We must do this to take care of the password being required to sync
     * on Palm OS 4.x */
+   /* Later versions of pilot-link (~=0.10+) did this for us */
    if (dlp_ReadSysInfo(sd, &sys_info) < 0) {
       jp_logf(JP_LOG_WARN, "dlp_ReadSysInfo error\n");
       pi_close(sd);
       return SYNC_ERROR_READSYSINFO;
    }
+   *Psd=sd;
+   return 0;
+}
+#endif
+
+int jp_sync(struct my_sync_info *sync_info)
+{
+   int sd;
+   int ret;
+   struct PilotUser U;
+   const char *device;
+   char default_device[]="/dev/pilot";
+   int found=0, fast_sync=0;
+#ifdef ENABLE_PLUGINS
+   GList *plugin_list, *temp_list;
+   struct plugin_s *plugin;
+#endif
+#ifdef JPILOT_DEBUG
+   int start;
+   struct DBInfo info;
+#endif
+#ifdef ENABLE_PRIVATE
+   char hex_password[PASSWD_LEN*2+4];
+#endif
+   char buf[1024];
+   long char_set;
+
+   /* Load the plugins since this is a forked process */
+#ifdef ENABLE_PLUGINS
+   if (!(sync_info->flags & SYNC_NO_PLUGINS)) {
+      jp_logf(JP_LOG_DEBUG, "sync:calling load_plugins\n");
+      load_plugins();
+   }
+#endif
+#ifdef ENABLE_PLUGINS
+   /* Do the plugin_pre_sync_pre_connect calls */
+   plugin_list=NULL;
+
+   plugin_list = get_plugin_list();
+
+   for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
+      plugin = (struct plugin_s *)temp_list->data;
+      if (plugin) {
+	 if (plugin->sync_on) {
+	    if (plugin->plugin_pre_sync_pre_connect) {
+	       jp_logf(JP_LOG_DEBUG, "sync:calling plugin_pre_sync_pre_connect for [%s]\n", plugin->name);
+	       plugin->plugin_pre_sync_pre_connect();
+	    }
+	 }
+      }
+   }
+#endif
+
+   device = NULL;
+   if (sync_info->port) {
+      if (sync_info->port[0]) {
+	 /*A port was passed in to use */
+	 device=sync_info->port;
+	 found = 1;
+      }
+   }
+   if (!found) {
+      /*No port was passed in, look in env */
+      device = getenv("PILOTPORT");
+      if (device == NULL) {
+	 device = default_device;
+      }
+   }
+
+   jp_logf(JP_LOG_GUI, "****************************************\n");
+   jp_logf(JP_LOG_GUI, _(" Syncing on device %s\n"), device);
+   jp_logf(JP_LOG_GUI, _(" Press the HotSync button now\n"));
+   jp_logf(JP_LOG_GUI, "****************************************\n");
+
+   /* pilot-link older than 0.9.5 didn't have web clipping flag */
+#if PILOT_LINK_VERSION <= 0
+# if PILOT_LINK_MAJOR <= 9
+#  if PILOT_LINK_MINOR <= 5
+#   define dlpDBFlagClipping 0x200
+#  endif
+# endif
+#endif
+
+#ifdef PILOT_LINK_0_12
+   sd = pilot_connect(device);
+   if (sd < 0) {
+      return SYNC_ERROR_PI_CONNECT;
+   }
+#else
+   ret = jp_pilot_connect(&sd, device);
+   if (ret) {
+      return ret;
+   }   
+#endif
 
    /* The connection has been established here */
    /* Plugins should call pi_watchdog(); if they are going to be a while */
@@ -611,7 +637,7 @@ int jp_sync(struct my_sync_info *sync_info)
 #endif
 
    U.username[0]='\0';
-   dlp_ReadUserInfo(sd, &U);
+   ret = dlp_ReadUserInfo(sd, &U);
 
    /* Do some checks to see if this is the same palm that was synced
     * the last time
@@ -742,12 +768,25 @@ int jp_sync(struct my_sync_info *sync_info)
 
 #ifdef JPILOT_DEBUG
    start=0;
+# ifdef PILOT_LINK_0_12
+   buffer = pi_buffer_new(sizeof(struct DBInfo));
+   while(dlp_ReadDBList(sd, 0, dlpDBListRAM, start, buffer)>0) {
+      memcpy(&info, buffer->data, sizeof(struct DBInfo));
+      start=info.index+1;
+      if (info.flags & dlpDBFlagAppInfoDirty) {
+	 printf("appinfo dirty for %s\n", info.name);
+      }
+   }
+   pi_buffer_free(buffer);
+# else
    while(dlp_ReadDBList(sd, 0, dlpOpenRead, start, &info)>0) {
       start=info.index+1;
       if (info.flags & dlpDBFlagAppInfoDirty) {
 	 printf("appinfo dirty for %s\n", info.name);
       }
    }
+   pi_buffer_free(buffer);
+# endif
 #endif
 
    if ( (!(sync_info->flags & SYNC_OVERRIDE_USER)) &&
@@ -959,8 +998,12 @@ int slow_sync_application(char *DB_name, int sd)
    char log_entry[256];
    /* recordid_t id=0; */
    int index, size, attr, category;
-   char buffer[65536];
    long char_set;
+#ifdef PILOT_LINK_0_12
+   pi_buffer_t *buffer;
+#else
+   unsigned char buffer[65536];
+#endif
 
    if ((DB_name==NULL) || (strlen(DB_name) == 0) || (strlen(DB_name) > 250)) {
       return -1;
@@ -1086,8 +1129,15 @@ int slow_sync_application(char *DB_name, int sd)
 	    fclose(pc_in);
 	    return -1;
 	 }
+#ifdef PILOT_LINK_0_12
+	 buffer = pi_buffer_new(rec_len);
+	 ret = dlp_ReadRecordById(sd, db, header.unique_id, buffer,
+				  &index, &attr, &category);
+	 size= buffer->used;
+#else
 	 ret = dlp_ReadRecordById(sd, db, header.unique_id, buffer,
 				  &index, &size, &attr, &category);
+#endif
 	 if (rec_len == size) {
 	    jp_logf(JP_LOG_DEBUG, "sizes match!\n");
 #ifdef JPILOT_DEBUG
@@ -1170,10 +1220,25 @@ int fetch_extra_DBs(int sd, char *palm_dbname[])
    struct DBInfo info;
    char db_copy_name[MAX_DBNAME];
    char creator[5];
+#ifdef PILOT_LINK_0_12
+   int dbIndex;
+   pi_buffer_t *buffer;
+#endif
 
    start=cardno=0;
 
+#ifdef PILOT_LINK_0_12
+   buffer = pi_buffer_new (32 * sizeof(struct DBInfo));
+
+   while(dlp_ReadDBList(sd, cardno, dlpDBListRAM | dlpDBListMultiple, start, buffer)>0) {
+      for (dbIndex=0; dbIndex < (buffer->used / sizeof(struct DBInfo)); dbIndex++) {
+	 memcpy(&info, buffer->data + (dbIndex * sizeof(struct DBInfo)), sizeof(struct DBInfo));
+# ifdef KEEP_EDITOR_HAPPY_WITH_INDENTS
+      }}
+# endif
+#else
    while(dlp_ReadDBList(sd, cardno, dlpOpenRead, start, &info)>0) {
+#endif
       start=info.index+1;
       found = 0;
       for (i=0; palm_dbname[i]; i++) {
@@ -1228,7 +1293,14 @@ int fetch_extra_DBs(int sd, char *palm_dbname[])
 	 jp_logf(JP_LOG_WARN, _("Failed, unable to create file %s\n"), full_name);
 	 continue;
       }
+#ifdef PILOT_LINK_0_12
+      if (pi_file_retrieve(pi_fp, sd, 0, NULL)<0) {
+# ifdef KEEP_EDITOR_HAPPY_WITH_INDENTS
+      }
+# endif
+#else
       if (pi_file_retrieve(pi_fp, sd, 0)<0) {
+#endif
 	 jp_logf(JP_LOG_WARN, _("Failed, unable to back up database %s\n"), info.name);
 	 times.actime = 0;
 	 times.modtime = 0;
@@ -1242,6 +1314,13 @@ int fetch_extra_DBs(int sd, char *palm_dbname[])
       /*Set the create and modify times of local file to same as on palm */
       utime(full_name, &times);
    }
+#ifdef PILOT_LINK_0_12
+   }
+# ifdef KEEP_EDITOR_HAPPY_WITH_INDENTS
+{
+# endif
+   pi_buffer_free(buffer);
+#endif
    return 0;
 }
 
@@ -1352,6 +1431,10 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
    char db_copy_name[MAX_DBNAME];
    GList *file_list;
    GList *end_of_list;
+#ifdef PILOT_LINK_0_12
+   int dbIndex;
+   pi_buffer_t *buffer;
+#endif
 #ifdef ENABLE_PLUGINS
    GList *temp_list;
    GList *plugin_list;
@@ -1426,11 +1509,23 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
    start=cardno=0;
    file_list=NULL;
 
+#ifdef PILOT_LINK_0_12
+   buffer = pi_buffer_new(32 * sizeof(struct DBInfo));
+
+   while( (r=dlp_ReadDBList(sd, cardno, dlpDBListRAM | dlpDBListMultiple, start, buffer)) > 0) {
+      for (dbIndex=0; dbIndex < (buffer->used / sizeof(struct DBInfo)); dbIndex++) {
+	 memcpy(&info, buffer->data + (dbIndex * sizeof(struct DBInfo)), sizeof(struct DBInfo));
+# ifdef KEEP_EDITOR_HAPPY_WITH_INDENTS
+      }}
+# endif
+#else
    while( (r=dlp_ReadDBList(sd, cardno, dlpOpenRead, start, &info)) > 0) {
+#endif
+
       start=info.index+1;
       creator[0] = (info.creator & 0xFF000000) >> 24;
-      creator[1] = (info.creator & 0x00FF0000) >> 16,
-      creator[2] = (info.creator & 0x0000FF00) >> 8,
+      creator[1] = (info.creator & 0x00FF0000) >> 16;
+      creator[2] = (info.creator & 0x0000FF00) >> 8;
       creator[3] = (info.creator & 0x000000FF);
       creator[4] = '\0';
 #ifdef JPILOT_DEBUG
@@ -1578,7 +1673,11 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
 		main_app ? full_name : full_backup_name);
 	 continue;
       }
+#ifdef PILOT_LINK_0_12
+      if (pi_file_retrieve(pi_fp, sd, 0, NULL)<0) {
+#else
       if (pi_file_retrieve(pi_fp, sd, 0)<0) {
+#endif
 	 jp_logf(JP_LOG_WARN, _("Failed, unable to back up database %s\n"), info.name);
 	 times.actime = 0;
 	 times.modtime = 0;
@@ -1597,6 +1696,10 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
 	 jp_copy_file(full_name, full_backup_name);
       }
    }
+#ifdef PILOT_LINK_0_12
+   }
+   pi_buffer_free(buffer);
+#endif
    /* I'm not sure why pilot-link-0.11 is returning dlpErrNoneOpen */
    if ( ! ((r==dlpErrNotFound) || (r==dlpErrNoneOpen)) ) {
       jp_logf(JP_LOG_WARN, "ReadDBList returned = %d\n", r);
@@ -1656,7 +1759,11 @@ static int sync_install(char *filename, int sd)
    creator[4] = '\0';
    jp_logf(JP_LOG_GUI, _("(Creator ID is '%s')..."), creator);
 
+#ifdef PILOT_LINK_0_12
+   r = pi_file_install(f, sd, 0, NULL);
+#else
    r = pi_file_install(f, sd, 0);
+#endif
    if (r<0) {
       try_again = 0;
       /* TODO make this generic? Not sure it would work 100% of the time */
@@ -1718,7 +1825,11 @@ static int sync_install(char *filename, int sd)
       }
       if (try_again) {
 	 /* Try again */
+#ifdef PILOT_LINK_0_12
+	 r = pi_file_install(f, sd, 0, NULL);
+#else
 	 r = pi_file_install(f, sd, 0);
+#endif
       }
    }
 
@@ -2351,9 +2462,13 @@ int fast_sync_application(char *DB_name, int sd)
    recordid_t id=0;
    int index, size, attr, category;
    int local_num, palm_num;
-   unsigned char buffer[65536];
    char *extra_dbname[2];
    long char_set;
+#ifdef PILOT_LINK_0_12
+   pi_buffer_t *buffer;
+#else
+   unsigned char buffer[65536];
+#endif
 
    if ((DB_name==NULL) || (strlen(DB_name) == 0) || (strlen(DB_name) > 250)) {
       return -1;
@@ -2402,8 +2517,15 @@ int fast_sync_application(char *DB_name, int sd)
    }*/
 
    while(1) {
+#ifdef PILOT_LINK_0_12
+      buffer = pi_buffer_new(0);
+      ret = dlp_ReadNextModifiedRec(sd, db, buffer,
+				    &id, &index, &attr, &category);
+      size = buffer->used;
+#else
       ret = dlp_ReadNextModifiedRec(sd, db, buffer,
 				    &id, &index, &size, &attr, &category);
+#endif
       if (ret>=0 ) {
 	 jp_logf(JP_LOG_DEBUG, "read next record for %s returned %d\n", DB_name, ret);
 	 jp_logf(JP_LOG_DEBUG, "id %ld, index %d, size %d, attr 0x%x, category %d\n",id, index, size, attr, category);
@@ -2607,7 +2729,11 @@ int sync_categories(char *DB_name, int sd,
       jp_logf(JP_LOG_WARN, _("%s:%d Error reading file: %s\n"), __FILE__, __LINE__, full_name);
       return -1;
    }
+#ifdef PILOT_LINK_0_12
+   pi_file_get_app_info(pf, &Papp_info, &size_Papp_info);
+#else
    r = pi_file_get_app_info(pf, &Papp_info, &size_Papp_info);
+#endif
    if (size_Papp_info <= 0) {
       jp_logf(JP_LOG_WARN, _("%s:%d Error getting app info %s\n"), __FILE__, __LINE__, full_name);
       return -1;
@@ -2681,6 +2807,10 @@ int sync_categories(char *DB_name, int sd,
 	 for (Ri = 0; Ri < CATCOUNT; Ri++) {
 	    if ((remote_cai.ID[Ri]==local_cai.ID[Li]) && 
 		(remote_cai.name[Ri][0])) {
+#ifdef SYNC_CAT_DEBUG
+	       printf("cat %d deleted local, del cat on remote\n", Li);
+	       printf(" remote cat name %s\n", remote_cai.name[Ri]);
+#endif
 	       remote_cai.renamed[Ri]=0;
 	       remote_cai.name[Ri][0]='\0';
 	       /* This category was deleted.
