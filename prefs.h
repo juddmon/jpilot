@@ -1,4 +1,4 @@
-/* $Id: prefs.h,v 1.39 2005/01/15 17:00:14 rousseau Exp $ */
+/* $Id: prefs.h,v 1.40 2005/01/27 22:15:17 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs.h
@@ -107,8 +107,10 @@
 #define PREF_TODO_DAYS_TILL_DUE 79
 #define PREF_SHOW_TOOLTIPS 80
 #define PREF_DATEBOOK_NOTE_PANE 81
+#define PREF_DATEBOOK_HI_TODAY 82
+#define PREF_DATEBOOK_ANNI_YEARS 83
 
-#define NUM_PREFS 82
+#define NUM_PREFS 84
 
 #define MAX_PREF_NUM_BACKUPS 99
 

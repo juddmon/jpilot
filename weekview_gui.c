@@ -1,4 +1,4 @@
-/* $Id: weekview_gui.c,v 1.27 2004/12/07 06:51:08 rikster5 Exp $ */
+/* $Id: weekview_gui.c,v 1.28 2005/01/27 22:15:17 rikster5 Exp $ */
 
 /*******************************************************************************
  * weekview_gui.c
@@ -56,9 +56,7 @@ static gboolean cb_destroy(GtkWidget *widget)
    return FALSE;
 }
 
-static void
-  cb_quit(GtkWidget *widget,
-	   gpointer   data)
+static void cb_quit(GtkWidget *widget, gpointer data)
 {
    int w, h;
 
@@ -116,9 +114,7 @@ void thaw_weeks_appts()
    }
 }
 
-static void
-cb_week_move(GtkWidget *widget,
-	     gpointer   data)
+static void cb_week_move(GtkWidget *widget, gpointer data)
 {
    if (GPOINTER_TO_INT(data)==-1) {
       sub_days_from_date(&glob_week_date, 7);
@@ -175,6 +171,7 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
    char str_dow[32];
    char short_date[32];
    char default_date[]="%x";
+   int now_today;
 #ifdef ENABLE_DATEBK
    int ret;
    int cat_bit;
@@ -185,6 +182,9 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
 #ifdef ENABLE_GTK2
    GObject   *text_buffer;
 #endif
+
+   /* Determine today for highlighting */
+   now_today = get_highlighted_today(date_in);
 
    a_list = NULL;
    text = day_texts;
@@ -199,7 +199,8 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
    for (i=0; i<8; i++, add_days_to_date(&date, 1)) {
       strftime(short_date, sizeof(short_date), svalue, &date);
       jp_strftime(str_dow, sizeof(str_dow), "%A", &date);
-      g_snprintf(str, sizeof(str), "%s %s", str_dow, short_date);
+      g_snprintf(str, sizeof(str), "%s %s%s", str_dow, short_date,
+		 date.tm_mday == now_today ? _(" (TODAY)") : "");
       gtk_label_set_text(GTK_LABEL(glob_dow_labels[i]), str);
    }
 
@@ -237,6 +238,10 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
 	       desc[62]='\0';
 	    }
 	    remove_cr_lfs(desc);
+
+	    /* Append number of anniversary years if enabled & appropriate */
+	    append_anni_years(desc, 62, &date, &temp_al->mappt.appt);
+
 	    strcat(desc, "\n");
 #ifdef ENABLE_GTK2
 	    text_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text[n])));
@@ -250,6 +255,22 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
    free_AppointmentList(&a_list);
 
    return EXIT_SUCCESS;
+}
+
+/* Called when a day is clicked on the week view */
+static void cb_enter_selected_day(GtkWidget *widget, 
+                                  GdkEvent  *event, 
+				  gpointer   data)
+{
+   struct tm date;
+
+   date = glob_week_date;
+
+   /* Calculate the date which the user has clicked on */
+   add_days_to_date(&date, GPOINTER_TO_INT(data));
+
+   /* Redisplay the day view based on this date */
+   datebook_gui_setdate(date.tm_year, date.tm_mon, date.tm_mday);
 }
 
 void weekview_gui(struct tm *date_in)
@@ -270,6 +291,8 @@ void weekview_gui(struct tm *date_in)
       /* Shift focus to existing window if called again
          and window is still alive. */
       gtk_window_present(GTK_WINDOW(window));
+#else
+      gdk_window_raise(window->window);
 #endif
       return;
    }
@@ -364,6 +387,9 @@ void weekview_gui(struct tm *date_in)
       glob_week_texts[i] = gtk_text_new(NULL, NULL);
 #endif
       gtk_widget_set_usize(GTK_WIDGET(glob_week_texts[i]), 10, 10);
+      gtk_signal_connect(GTK_OBJECT(glob_week_texts[i]), "button_press_event",
+			 GTK_SIGNAL_FUNC(cb_enter_selected_day),
+			 GINT_TO_POINTER(i));
       if (i>3) {
 	 gtk_box_pack_start(GTK_BOX(vbox_right), glob_dow_labels[i], FALSE, FALSE, 0);
 	 gtk_box_pack_start(GTK_BOX(vbox_right), glob_week_texts[i], TRUE, TRUE, 0);

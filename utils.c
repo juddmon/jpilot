@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.84 2004/12/21 08:01:56 rikster5 Exp $ */
+/* $Id: utils.c,v 1.85 2005/01/27 22:15:17 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -3010,4 +3010,67 @@ size_t jp_strftime(char *s, size_t max, const char *format, const struct tm *tm)
    ret = strftime(s, max, format, tm);
 #endif
    return ret;
+}
+
+/* This function is passed a bounded event description before it appears
+ * on the gui (read-only) views. It checks if the event is a yearly repeat
+ * (i.e. an anniversary) and then if the last 4 characters look like a
+ * year. If so then it appends a "number of years" to the description.
+ * This is handy for viewing ages on birthdays etc.
+ */
+void append_anni_years(char *desc, int max, struct tm *date,
+		       struct Appointment *appt)
+{
+   int len;
+   int year;
+   /* Only append the years if this is a yearly repeating type (i.e. an
+    * anniversary) */
+   if (appt->repeatType != repeatYearly)
+      return;
+
+   /* Only display this is the user option is enabled */
+   if (!get_pref_int_default(PREF_DATEBOOK_ANNI_YEARS, FALSE))
+      return;
+
+   len = strlen(desc);
+
+   /* Make sure we have room to insert what we want */
+   if (len < 4 || len > (max - 7))
+      return;
+
+   /* Get and check for a year */
+   year = strtoul(&desc[len - 4], NULL, 10);
+
+   // Only allow up to 3 digits to be added
+   if (year < 1100 || year > 3000)
+      return;
+
+   /* Append the number of years */
+   sprintf(&desc[len], " (%d)", 1900 + date->tm_year - year);
+}
+
+/* Get today's date and work out day in month. This is used to highlight
+ * today in the gui (read-only) views. Returns the day of month if today
+ * is in the passed month else returns -1.
+ */
+int get_highlighted_today(struct tm *date)
+{
+   time_t now;
+   struct tm* now_tm;
+
+   /* Quit immediately if the user option is not enabled */
+   if (!get_pref_int_default(PREF_DATEBOOK_HI_TODAY, FALSE))
+      return EXIT_FAILURE;
+
+   /* Get now time */
+   now = time(NULL);
+   now_tm = localtime(&now);
+
+   /* Check if option is on and return today's day of month if the month
+    * and year match was was passed in */
+   if (now_tm->tm_mon != date->tm_mon || now_tm->tm_year != date->tm_year)
+      return EXIT_FAILURE;
+
+   /* Today is within the passed month, return the day of month */
+   return now_tm->tm_mday;
 }

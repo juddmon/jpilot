@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.42 2005/01/27 17:49:38 rikster5 Exp $ */
+/* $Id: prefs_gui.c,v 1.43 2005/01/27 22:15:17 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -553,6 +553,17 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
    gtk_box_pack_start(GTK_BOX(vbox_datebook), label, FALSE, FALSE, 0);
 #endif
+
+    /* Highlight today on month and week view */
+    add_checkbutton("Annotate today in day, week, and month views",
+ 		   PREF_DATEBOOK_HI_TODAY, vbox_datebook, cb_checkbox_set_pref);
+ 
+    /* Show number of years on aniversaries in month and week view */
+    add_checkbutton(
+ 	"Append years on anniversaries in day, week, and month views",
+ 	PREF_DATEBOOK_ANNI_YEARS, vbox_datebook,
+ 	cb_checkbox_set_pref);
+ 
 
    /**********************************************************************/
    /* Address preference tab */

@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.110 2005/01/22 17:43:34 rousseau Exp $ */
+/* $Id: jpilot.c,v 1.111 2005/01/27 22:15:17 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -636,7 +636,7 @@ void cb_app_button(GtkWidget *widget, gpointer data)
    switch(app) {
     case DATEBOOK:
       if (refresh) {
-	 datebook_refresh(TRUE);
+	 datebook_refresh(TRUE, TRUE);
       } else {
 	 glob_app = DATEBOOK;
 	 datebook_gui(g_vbox0_1, g_hbox2);

@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.102 2005/01/27 06:56:49 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.103 2005/01/27 22:15:16 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -626,7 +626,7 @@ int datebook_import_callback(GtkWidget *parent_window, const char *file_path, in
       free_AppointmentList(&alist);
    }
 
-   datebook_refresh(FALSE);
+   datebook_refresh(FALSE, TRUE);
    fclose(in);
    return EXIT_SUCCESS;
 }
@@ -2337,6 +2337,10 @@ static int dayview_update_clist()
 
       /* Print the appointment description */
       lstrncpy_remove_cr_lfs(str2, temp_al->mappt.appt.description, DATEBOOK_MAX_COLUMN_LEN);
+
+      /* Append number of anniversary years if enabled & appropriate */
+      append_anni_years(str2, sizeof(str2), &new_time, &temp_al->mappt.appt);
+
       gtk_clist_set_text(GTK_CLIST(clist), i, DB_APPT_COLUMN, str2);
       gtk_clist_set_row_data(GTK_CLIST(clist), i, &(temp_al->mappt));
 
@@ -3154,6 +3158,11 @@ void set_date_labels()
    } else {
       sprintf(datef, "%%a., %s", svalue);
    }
+ 
+    /* Determine today for highlighting */
+    if (now.tm_mday == get_highlighted_today(&now))
+        strcat(datef, _(" (TODAY)"));
+ 
 
    jp_strftime(str, sizeof(str), datef, &now);
    gtk_label_set_text(GTK_LABEL(dow_label), str);
@@ -3162,7 +3171,7 @@ void set_date_labels()
 static void cb_cancel(GtkWidget *widget, gpointer data)
 {
    set_new_button_to(CLEAR_FLAG);
-   datebook_refresh(FALSE);
+   datebook_refresh(FALSE, FALSE);
 }
 
 /*
@@ -3240,6 +3249,36 @@ void cb_cal_changed(GtkWidget *widget,
    dayview_update_clist();
 }
 
+/* Called by week and month views when a user clicks on a date so that we
+ * can set the day view to that date
+ */
+void datebook_gui_setdate(int year, int month, int day)
+{
+   /* This refers to the main jpilot window.  This should probably
+    * be replaced somehow by a GTK call which works out what the 
+    * top-level window is from the widget.  Right now it relies
+    * on the fact that there is only one item titled "window" in 
+    * the global name space */
+   extern GtkWidget *window;
+   
+   /* Reset current day pointers to the day the user click on */
+   current_year = year;
+   current_month = month;
+   current_day = day;
+
+   /* Redraw the day view */
+   datebook_refresh(FALSE, FALSE);
+
+   /* Force exposure of main window */
+   if (window) {
+#ifdef ENABLE_GTK2
+      gtk_window_present(GTK_WINDOW(window));
+#else
+      gdk_window_raise(window->window);
+#endif
+   }
+}
+
 static void highlight_days()
 {
    int bit, mask;
@@ -3288,7 +3327,7 @@ static int datebook_find()
    return EXIT_SUCCESS;
 }
 
-int datebook_refresh(int first)
+int datebook_refresh(int first, int do_init)
 {
    int b;
    int copy_current_day;
@@ -3301,7 +3340,8 @@ int datebook_refresh(int first)
    }
    set_new_button_to(CLEAR_FLAG);
 
-   init();
+   if (do_init)
+       init();
 
 #ifdef ENABLE_DATEBK
    if (glob_find_id) {
@@ -3341,6 +3381,7 @@ int datebook_refresh(int first)
 
    dayview_update_clist();
    highlight_days();
+   set_date_labels();
 
    datebook_find();
    return EXIT_SUCCESS;
@@ -4789,9 +4830,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    gtk_notebook_popup_enable(GTK_NOTEBOOK(notebook));
 
-   datebook_refresh(TRUE);
-
-   set_date_labels();
+   datebook_refresh(TRUE, TRUE);
 
    /* The focus doesn't do any good on the application button */
    gtk_widget_grab_focus(GTK_WIDGET(main_calendar));

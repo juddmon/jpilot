@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.46 2004/12/21 08:01:56 rikster5 Exp $ */
+/* $Id: utils.h,v 1.47 2005/01/27 22:15:17 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -371,6 +371,8 @@ int address_gui_cleanup();
 int todo_gui_cleanup();
 int memo_gui_cleanup();
 
+void datebook_gui_setdate(int year, int month, int day);
+
 /*
  * Copy src string into dest while escaping quotes with double quotes.
  * dest could be as long as strlen(src)*2.
@@ -434,7 +436,7 @@ void cb_app_button(GtkWidget *widget, gpointer data);
 void call_plugin_gui(int number, int unique_id);
 
 /*datebook_gui */
-int datebook_refresh(int first);
+int datebook_refresh(int first, int do_init);
 
 /*address_gui */
 int address_refresh();
@@ -501,6 +503,10 @@ int pdb_file_write_app_block(char *DB_name, void *bufp, int size_in);
  */
 int pdb_file_write_dbinfo(char *DB_name, struct DBInfo *Pinfo_in);
 
+void append_anni_years(char *desc, int max, struct tm *date,
+		       struct Appointment *appt);
+int get_highlighted_today(struct tm *date);
+
 /* category.c */
 /*
  * widget is a widget inside the main window used to get main window handle
@@ -543,5 +549,4 @@ char *charset_p2newj(const char *buf, int max_len, int char_set);
 
 void jp_charset_p2j(char *buf, int max_len);
 size_t jp_strftime(char *s, size_t max, const char *format, const struct tm *tm);
-
 #endif

@@ -1,4 +1,4 @@
-/* $Id: monthview_gui.c,v 1.30 2004/12/07 06:51:08 rikster5 Exp $ */
+/* $Id: monthview_gui.c,v 1.31 2005/01/27 22:15:17 rikster5 Exp $ */
 
 /*******************************************************************************
  * monthview_gui.c
@@ -78,8 +78,7 @@ static gboolean cb_destroy(GtkWidget *widget)
    return FALSE;
 }
 
-static void
-cb_quit(GtkWidget *widget, gpointer data)
+static void cb_quit(GtkWidget *widget, gpointer data)
 {
    int w, h;
 
@@ -90,9 +89,7 @@ cb_quit(GtkWidget *widget, gpointer data)
    gtk_widget_destroy(data);
 }
 
-static void
-cb_month_move(GtkWidget *widget,
-	      gpointer   data)
+static void cb_month_move(GtkWidget *widget, gpointer data)
 {
    if (GPOINTER_TO_INT(data)==-1) {
       glob_month_date.tm_mday=15;
@@ -131,8 +128,7 @@ static void cb_month_print(GtkWidget *widget, gpointer data)
 
 /*----------------------------------------------------------------------*/
 
-static void
-cb_enter_notify(GtkWidget *widget, GdkEvent *event, gpointer data)
+static void cb_enter_notify(GtkWidget *widget, GdkEvent *event, gpointer data)
 {
    static int prev_day=-1;
    GString *gstr;
@@ -161,6 +157,17 @@ cb_enter_notify(GtkWidget *widget, GdkEvent *event, gpointer data)
 #endif
 }
 
+/* Called when a day is clicked on the month view */
+static void cb_enter_selected_day(GtkWidget *widget, 
+                                  GdkEvent  *event, 
+				  gpointer   data)
+{
+   int day = GPOINTER_TO_INT(data) + 1 - glob_offset;
+
+   /* Redisplay the day view based on the date the user clicked on */
+   datebook_gui_setdate(glob_month_date.tm_year, glob_month_date.tm_mon, day);
+}
+
 /*
  * Hide, or show month boxes (days) according to the month.
  * Also, set a global offset for indexing day 1.
@@ -170,10 +177,14 @@ void hide_show_month_boxes()
 {
    int n;
    int dow, ndim;
+   int now_today;
    long fdow;
-   char str[8];
+   char str[40];
    int d;
    GtkWidget *text;
+
+   /* Determine today for highlighting */
+   now_today = get_highlighted_today(&glob_month_date);
 
    get_month_info(glob_month_date.tm_mon, 1, glob_month_date.tm_year, &dow, &ndim);
 
@@ -195,7 +206,8 @@ void hide_show_month_boxes()
 #else
       text = glob_month_texts[n];
 #endif
-      g_snprintf(str, sizeof(str), "%d", d);
+      g_snprintf(str, sizeof(str), "%d%s", d,
+		 d == now_today ? _(" (TODAY)") : "");
       gtk_label_set_text(GTK_LABEL(glob_month_labels[n]), str);
       if (n<7) {
 	 if (d>0) {
@@ -257,15 +269,18 @@ void create_month_boxes_texts(GtkWidget *month_vbox)
 	    /* motion notify is overkill but the enter_notify event doesn't work */
 	    gtk_signal_connect(GTK_OBJECT(text), "motion_notify_event",
 			       GTK_SIGNAL_FUNC(cb_enter_notify), GINT_TO_POINTER(n));
-	    gtk_box_pack_start(GTK_BOX(vbox), text, TRUE, TRUE, 0);
 #else
 	    text = glob_month_texts[n] = gtk_text_new(NULL, NULL);
 	    gtk_widget_set_usize(GTK_WIDGET(glob_month_texts[n]), 10, 10);
 	    gtk_text_set_word_wrap(GTK_TEXT(glob_month_texts[n]), FALSE);
 	    gtk_signal_connect(GTK_OBJECT(glob_month_texts[n]), "enter_notify_event",
 			       GTK_SIGNAL_FUNC(cb_enter_notify), GINT_TO_POINTER(n));
-	    gtk_box_pack_start(GTK_BOX(vbox), text, TRUE, TRUE, 0);
 #endif
+	    gtk_signal_connect(GTK_OBJECT(text), "button_press_event",
+			       GTK_SIGNAL_FUNC(cb_enter_selected_day),
+			       GINT_TO_POINTER(n));
+
+	    gtk_box_pack_start(GTK_BOX(vbox), text, TRUE, TRUE, 0);
 	 }
       }
    }
@@ -407,6 +422,10 @@ int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
 	       desc[35]='\0';
 	    }
 	    remove_cr_lfs(desc);
+
+	    /* Append number of anniversary years if enabled & appropriate */
+	    append_anni_years(desc, 35, &date, &temp_al->mappt.appt);
+
 #ifdef ENABLE_GTK2
 	    gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(text_buffers[n]), desc, -1);
 #else
@@ -439,10 +458,12 @@ void monthview_gui(struct tm *date_in)
    long w, h;
 
    if (window) {
-#ifdef ENABLE_GTK2
       /* Shift focus to existing window if called again
          and window is still alive. */
+#ifdef ENABLE_GTK2
       gtk_window_present(GTK_WINDOW(window));
+#else
+      gdk_window_raise(window->window);
 #endif
       return;
    }

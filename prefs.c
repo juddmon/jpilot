@@ -1,4 +1,4 @@
-/* $Id: prefs.c,v 1.55 2005/01/21 08:07:50 rousseau Exp $ */
+/* $Id: prefs.c,v 1.56 2005/01/27 22:15:17 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs.c
@@ -126,6 +126,8 @@ static prefType glob_prefs[NUM_PREFS] = {
      {"todo_days_till_due", INTTYPE, INTTYPE, 7, NULL, 0},
      {"show_tooltips", INTTYPE, INTTYPE, 1, NULL, 0},
      {"datebook_note_pane", INTTYPE, INTTYPE, 75, NULL, 0},
+     {"datebook_hi_today", INTTYPE, INTTYPE, 0, NULL, 0},
+     {"datebook_anni_years", INTTYPE, INTTYPE, 0, NULL, 0},
 };
 
 struct name_list {
