@@ -217,6 +217,7 @@ int add_days_to_date(struct tm *date, int n)
 	 get_month_info(date->tm_mon, 1, date->tm_year, &fdom, &ndim);
       }
    }
+   date->tm_isdst=-1;
    mktime(date);
    return 0;  
 }
@@ -255,6 +256,7 @@ int sub_days_from_date(struct tm *date, int n)
 	 date->tm_mday=ndim;
       }
    }
+   date->tm_isdst=-1;
    mktime(date);
    return 0;
 }
@@ -288,6 +290,7 @@ int add_months_to_date(struct tm *date, int n)
       date->tm_mday = days_in_month[date->tm_mon];
    }
 
+   date->tm_isdst=-1;
    mktime(date);
    return 0;  
 }
@@ -321,6 +324,7 @@ int sub_months_from_date(struct tm *date, int n)
       date->tm_mday = days_in_month[date->tm_mon];
    }
 
+   date->tm_isdst=-1;
    mktime(date);
    return 0;  
 }

@@ -2475,11 +2475,13 @@ static void cb_add_new_record(GtkWidget *widget,
 	 new_a.begin.tm_year = current_year;
 	 new_a.begin.tm_mon = current_month;
 	 new_a.begin.tm_mday = current_day;
+	 new_a.begin.tm_isdst = -1;
 	 mktime(&new_a.begin);
 	 new_a.repeatType = repeatNone;
 	 new_a.end.tm_year = current_year;
 	 new_a.end.tm_mon = current_month;
 	 new_a.end.tm_mday = current_day;
+	 new_a.end.tm_isdst = -1;
 	 mktime(&new_a.end);
       }
       if (result==DIALOG_SAID_ALL) {

@@ -280,6 +280,21 @@ int dialog_alarm(char *title, char *frame_text,
  * End Alarm GUI
  */
 
+time_t mktime_dst_adj(struct tm *tm)
+{
+   struct tm t;
+   memcpy(&t, tm, sizeof(t));
+   t.tm_isdst=-1;
+   return mktime(&t);
+}
+
+time_t tm_copy_with_dst_adj(struct tm *dest, struct tm *src)
+{
+   memcpy(dest, src, sizeof(struct tm));
+   dest->tm_isdst=-1;
+   return mktime(dest);
+}
+
 #ifdef ALARMS_DEBUG
 const char *print_date(const time_t t1)
 {
@@ -480,6 +495,8 @@ int alarms_do_one(struct Appointment *a,
 		  AlarmType type)
 {
    struct tm *Pnow;
+   struct tm begin;
+   struct tm end;
    char time_str[255];
    char desc_str[255];
    char note_str[255];
@@ -520,8 +537,10 @@ int alarms_do_one(struct Appointment *a,
    Pnow = localtime(&t_alarm);
 
    strftime(date_str, 50, pref_date, Pnow);
-   strftime(time1_str, 50, pref_time, Pnow);
-   strftime(time2_str, 50, pref_time, &(a->end));
+   tm_copy_with_dst_adj(&begin, &(a->begin));
+   strftime(time1_str, 50, pref_time, &begin);
+   tm_copy_with_dst_adj(&end, &(a->end));
+   strftime(time2_str, 50, pref_time, &end);
    sprintf(time_str, "%s %s-%s\n", date_str, time1_str, time2_str);
    desc_str[0]='\0';
    note_str[0]='\0';
@@ -855,8 +874,8 @@ static int find_prev_next(struct Appointment *a,
    *prev_found=*next_found=0;
    forward=backward=1;
 
-   t1=mktime(date1);
-   t2=mktime(date2);
+   t1=mktime_dst_adj(date1);
+   t2=mktime_dst_adj(date2);
 
    bzero(tm_prev, sizeof(struct tm));
    bzero(tm_next, sizeof(struct tm));
@@ -875,7 +894,7 @@ static int find_prev_next(struct Appointment *a,
 #ifdef ALARMS_DEBUG
       printf("fpn: repeatNone\n");
 #endif
-      t_alarm=mktime(&(a->begin)) - adv;
+      t_alarm=mktime_dst_adj(&(a->begin)) - adv;
       if ((t_alarm < t2) && (t_alarm > t1)) {
 	 memcpy(tm_prev, &(a->begin), sizeof(struct tm));
 	 *prev_found=1;
@@ -898,7 +917,7 @@ static int find_prev_next(struct Appointment *a,
       freq = a->repeatFrequency;
       t_interval = a->repeatFrequency * 86400;
       if (t_interval==0) t_interval=1;
-      t_alarm = mktime(&t);
+      t_alarm = mktime_dst_adj(&t);
       if ((t2 + adv) > t_alarm) {
 	 t_past = ((t2 + adv - t_alarm) / t_interval) *t_interval + t_alarm;
 	 t_future = (((t2 + adv - t_alarm) / t_interval) + 1) *t_interval + t_alarm;
@@ -936,6 +955,7 @@ static int find_prev_next(struct Appointment *a,
 	 t.tm_mon=date2->tm_mon;
 	 t.tm_mday=date2->tm_mday;
       }
+      t.tm_isdst=-1;
       mktime(&t);
       begin_days = dateToDays(&(a->begin));
       days = dateToDays(&t);
@@ -1079,7 +1099,7 @@ static int find_prev_next(struct Appointment *a,
 	 }
 	 break;
       }
-      t_temp = mktime(&t);
+      t_temp = mktime_dst_adj(&t);
 #ifdef ALARMS_DEBUG
 	{
 	   char str[100];
@@ -1109,7 +1129,7 @@ static int find_prev_next(struct Appointment *a,
 	 }
       }
       /* See that we aren't before the begin date */
-      t_begin = mktime(&(a->begin));
+      t_begin = mktime_dst_adj(&(a->begin));
       if (t_temp < t_begin - adv) {
 #ifdef ALARMS_DEBUG      
 	 printf("fpn: before begin date\n");
@@ -1118,7 +1138,7 @@ static int find_prev_next(struct Appointment *a,
       }
       /* If the appointment has an end date, see that we are not past it */
       if (!(a->repeatForever)) {
-	 t_end = mktime(&(a->repeatEnd));
+	 t_end = mktime_dst_adj(&(a->repeatEnd));
 	 if (t_temp > t_end) {
 #ifdef ALARMS_DEBUG
 	    printf("fpn: after end date\n");
@@ -1215,8 +1235,8 @@ int alarms_find_next(struct tm *date1_in, struct tm *date2_in, int soonest_only)
    date2.tm_sec=tm_temp->tm_sec;
    date2.tm_isdst=tm_temp->tm_isdst;
 
-   t1=mktime(&date1);
-   t2=mktime(&date2);
+   t1=mktime_dst_adj(&date1);
+   t2=mktime_dst_adj(&date2);
 
 #ifdef ALARMS_DEBUG
      {
@@ -1258,7 +1278,7 @@ int alarms_find_next(struct tm *date1_in, struct tm *date2_in, int soonest_only)
        * and is a non repeating appointment
        */
       if (temp_al->ma.a.repeatType == repeatNone) {
-	 t_alarm = mktime(&(temp_al->ma.a.begin));
+	 t_alarm = mktime_dst_adj(&(temp_al->ma.a.begin));
 	 if (t_alarm < t1) {
 #ifdef ALARMS_DEBUG      
 	    printf("non repeat before t1, t_alarm<t1, %ld<%ld\n",t_alarm,t1);
@@ -1269,10 +1289,10 @@ int alarms_find_next(struct tm *date1_in, struct tm *date2_in, int soonest_only)
 
       /* If the appointment has an end date, see that we are not past it */
       if (!(temp_al->ma.a.repeatForever)) {
-	 t_end = mktime(&(temp_al->ma.a.repeatEnd));
+	 t_end = mktime_dst_adj(&(temp_al->ma.a.repeatEnd));
 	 /* We need to add 24 hours to the end date to make it inclusive */
 	 t_end += 86400;
-	 t_begin = mktime(&(temp_al->ma.a.begin));
+	 t_begin = mktime_dst_adj(&(temp_al->ma.a.begin));
 	 if (t_end < t2) {
 #ifdef ALARMS_DEBUG      
 	    printf("past end date\n");
@@ -1319,8 +1339,8 @@ int alarms_find_next(struct tm *date1_in, struct tm *date2_in, int soonest_only)
 		     &tm_next,
 		     &prev_found,
 		     &next_found);
-      t_prev=mktime(&tm_prev);
-      t_future=mktime(&tm_next);
+      t_prev=mktime_dst_adj(&tm_prev);
+      t_future=mktime_dst_adj(&tm_next);
 
 #ifdef ALARMS_DEBUG      
       printf("adv = %ld\n", adv);
@@ -1345,7 +1365,7 @@ int alarms_find_next(struct tm *date1_in, struct tm *date2_in, int soonest_only)
       }
       if (next_found) {
 	 if (!(temp_al->ma.a.repeatForever)) {
-	    t_end = mktime(&(temp_al->ma.a.repeatEnd));
+	    t_end = mktime_dst_adj(&(temp_al->ma.a.repeatEnd));
 	    if (t_future > t_end) {
 #ifdef ALARMS_DEBUG      
 	       printf("failed future is after t_end\n");
