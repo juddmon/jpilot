@@ -181,6 +181,7 @@ static int populate_clist_sub(char *path, int check_for_dups, int check_exts)
       closedir(dir);
    }
 
+   gtk_clist_sort (GTK_CLIST (restore_clist));
    return num;
 }
 
