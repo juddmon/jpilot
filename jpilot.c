@@ -1077,20 +1077,26 @@ void get_main_menu(GtkWidget  *window,
 		   GList *plugin_list)
 /* Some of this code was copied from the gtk_tut.txt file */
 {
+#ifdef ENABLE_GTK2
+#define ICON(icon) "<StockItem>", icon
+#else
+#define ICON(icon) NULL
+#endif
+
   GtkItemFactoryEntry menu_items1[]={
   { _("/_File"),                           NULL,         NULL,           0,                  "<Branch>" },
   { _("/File/tear"),                       NULL,         NULL,           0,                  "<Tearoff>" },
-  { _("/File/_Find"),                      "<control>F", cb_search_gui,  0,                  NULL },
+  { _("/File/_Find"),                      "<control>F", cb_search_gui,  0,                  ICON(GTK_STOCK_FIND) },
   { _("/File/sep1"),                       NULL,         NULL,           0,                  "<Separator>" },
-  { _("/File/_Install"),                   "<control>I", cb_install_gui, 0,                  NULL },
+  { _("/File/_Install"),                   "<control>I", cb_install_gui, 0,                  ICON(GTK_STOCK_OPEN) },
   { _("/File/Import"),                     NULL,         cb_import,      0,                  NULL },
-  { _("/File/Export"),                     "<control>A", cb_export,      0,                  NULL },
-  { _("/File/Preferences"),                "<control>E", cb_prefs_gui,   0,                  NULL },
-  { _("/File/_Print"),                     "<control>P", cb_print,       0,                  NULL },
+  { _("/File/Export"),                     "<control>A", cb_export,      0,                  ICON(GTK_STOCK_SAVE) },
+  { _("/File/Preferences"),                "<control>E", cb_prefs_gui,   0,                  ICON(GTK_STOCK_PREFERENCES) },
+  { _("/File/_Print"),                     "<control>P", cb_print,       0,                  ICON(GTK_STOCK_PRINT) },
   { _("/File/sep1"),                       NULL,         NULL,           0,                  "<Separator>" },
-  { _("/File/Restore Handheld"),           NULL,         cb_restore,     0,                  NULL },
+  { _("/File/Restore Handheld"),           NULL,         cb_restore,     0,                  ICON(GTK_STOCK_REDO) },
   { _("/File/sep1"),                       NULL,         NULL,           0,                  "<Separator>" },
-  { _("/File/Quit"),                       "<control>Q", delete_event,   0,                  NULL },
+  { _("/File/Quit"),                       "<control>Q", delete_event,   0,                  ICON(GTK_STOCK_QUIT) },
   { _("/_View"),                           NULL,         NULL,           0,                  "<Branch>" },
   { _("/View/Hide-Show-Mask Private Records"),"<control>Z",cb_private,   0,                  NULL },
   { _("/View/Datebook"),                   "F1",         cb_app_button,  DATEBOOK,           NULL },
@@ -1131,7 +1137,7 @@ void get_main_menu(GtkWidget  *window,
 #endif
   { _("/_Help"),                           NULL,         NULL,           0,                  "<LastBranch>" },
   { _("/Help/PayBack program"),            NULL,         cb_payback,     0,                  NULL },
-  { _("/Help/J-Pilot"),                    NULL,         cb_about,       0,                  NULL },
+  { _("/Help/J-Pilot"),                    NULL,         cb_about,       0,                  ICON(GTK_STOCK_DIALOG_INFO) },
   { "END",                                 NULL,         NULL,           0,                  NULL }
  };
 
