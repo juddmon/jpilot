@@ -1053,7 +1053,7 @@ static gboolean cb_destroy_dialog(GtkWidget *widget)
 /*
  * returns 1 if OK was pressed, 2 if cancel was hit
  */
-static int dialog_password(char *ascii_password, int retry)
+static int dialog_password(GtkWidget *main_window, char *ascii_password, int retry)
 {
    GtkWidget *button, *label;
    GtkWidget *hbox1, *vbox1;
@@ -1081,6 +1081,12 @@ static int dialog_password(char *ascii_password, int retry)
 
    gtk_window_set_modal(GTK_WINDOW(dialog), TRUE);
       
+   if (main_window) {
+      if (GTK_IS_WINDOW(main_window)) {
+	 gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(main_window));
+      }
+   }
+
    vbox1 = gtk_vbox_new(FALSE, 2);
 
    gtk_container_set_border_width(GTK_CONTAINER(vbox1), 5);
@@ -1203,10 +1209,11 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    GtkWidget *label;
    GtkWidget *vscrollbar;
    GtkWidget *table;
+   GtkWidget *w;
    time_t ltime;
    struct tm *now;
    char ascii_password[PASSWD_LEN];
-   int r;
+   int i, r;
    int password_not_correct;
    int num;
    GList *records;
@@ -1223,10 +1230,20 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
       return -1;
    }
    
+   /* Find the main window from some widget */
+   for (w=hbox, i=10; w && (i>0); w=w->parent, i--) {
+      if (GTK_IS_WINDOW(w)) {
+	 break;
+      }
+   }
+   if (!GTK_IS_WINDOW(w)) {
+      w=NULL;
+   }
+
    password_not_correct=1;
    retry=FALSE;
    while (password_not_correct) {
-      r = dialog_password(ascii_password, retry);
+      r = dialog_password(w, ascii_password, retry);
       retry=TRUE;
       if (r!=1) {
 	 memset(ascii_password, 0, PASSWD_LEN-1);

@@ -303,7 +303,7 @@ static gboolean cb_destroy_dialog(GtkWidget *widget)
 /*
  * returns 1 if OK was pressed, 2 if cancel was hit
  */
-int dialog_password(char *ascii_password, int retry)
+int dialog_password(GtkWindow *main_window, char *ascii_password, int retry)
 {
    GtkWidget *button, *label;
    GtkWidget *hbox1, *vbox1;
@@ -330,6 +330,8 @@ int dialog_password(char *ascii_password, int retry)
                       GTK_SIGNAL_FUNC(cb_destroy_dialog), dialog);
 
    gtk_window_set_modal(GTK_WINDOW(dialog), TRUE);
+
+   gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(main_window));
 
    vbox1 = gtk_vbox_new(FALSE, 2);
 

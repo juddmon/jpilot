@@ -44,7 +44,7 @@ void palm_encode_md5(unsigned char *ascii, unsigned char *encoded);
 /* len is the length of the bin str, hex_str must be at least twice as long */
 void bin_to_hex_str(unsigned char *bin, char *hex_str, int len);
 
-int dialog_password(char *ascii_password, int retry);
+int dialog_password(GtkWindow *main_window, char *ascii_password, int retry);
 
 int verify_password(char *password);
 

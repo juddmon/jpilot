@@ -572,7 +572,8 @@ static void cb_private(GtkWidget *widget, gpointer data)
       if (privates==HIDE_PRIVATES) {
 	 retry=FALSE;
 	 do {
-	    r_dialog = dialog_password(ascii_password, retry);
+	    r_dialog = dialog_password(GTK_WINDOW(window),
+				       ascii_password, retry);
 	    r_pass = verify_password(ascii_password);
 	    retry=TRUE;
 	 } while ((r_pass==FALSE) && (r_dialog==1));
