@@ -2121,6 +2121,8 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    gtk_widget_hide(add_record_button);
    gtk_widget_hide(apply_record_button);
+   /* Call routine to determine if preference boxes should be hidden */
+   cb_hide_show_prefs(prefs_checkbox, NULL);
 
    todo_refresh();
 
