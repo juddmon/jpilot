@@ -3097,6 +3097,8 @@ int datebook_refresh(int first)
 #endif
 
    if (first) {
+      gtk_calendar_select_month(GTK_CALENDAR(main_calendar),
+				current_month, current_year+1900);
       gtk_calendar_select_day(GTK_CALENDAR(main_calendar), current_day);
    } else {
       copy_current_day = current_day;
