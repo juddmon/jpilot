@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jpilot 0.99.8-pre7\n"
 "Report-Msgid-Bugs-To: jpilot-devel@jpilot.org\n"
-"POT-Creation-Date: 2005-02-19 16:06+0100\n"
+"POT-Creation-Date: 2005-02-19 16:38+0100\n"
 "PO-Revision-Date: 2004-10-01 23:05+0100\n"
 "Last-Translator: Ludovic Rousseau <ludovic.rousseau@free.fr>\n"
 "Language-Team: French <traduc@traduc.org>\n"
@@ -203,9 +203,8 @@ msgid "Cancel"
 msgstr "Annuler"
 
 #: address_gui.c:2641 datebook_gui.c:4324 memo_gui.c:1515 todo_gui.c:2132
-#, fuzzy
 msgid "Cancel the modifications   ESC"
-msgstr "Appliquer les modifications   Ctrl+Entrée"
+msgstr "Annuler les modifications   Échap"
 
 #: address_gui.c:2644 category.c:413 category.c:836 datebook_gui.c:4327
 #: memo_gui.c:1517 todo_gui.c:2135 Expense/expense.c:1615
@@ -245,14 +244,12 @@ msgid "Add Record"
 msgstr "Ajouter"
 
 #: address_gui.c:2689 datebook_gui.c:4374 memo_gui.c:1560 todo_gui.c:2178
-#, fuzzy
 msgid "Add the new record   Ctrl+Enter"
-msgstr "Ajouter le nouvel enregistrement   Ctrl+R"
+msgstr "Ajouter le nouvel enregistrement   Ctrl+Enter"
 
 #: address_gui.c:2691 datebook_gui.c:4376 memo_gui.c:1562 todo_gui.c:2180
-#, fuzzy
 msgid "Add the new record"
-msgstr "Ajouter le nouvel enregistrement   Ctrl+R"
+msgstr "Ajouter le nouvel enregistrement"
 
 #: address_gui.c:2695 datebook_gui.c:4380 memo_gui.c:1565 todo_gui.c:2183
 #: Expense/expense.c:1641 KeyRing/keyring.c:1596
@@ -264,9 +261,8 @@ msgid "Commit the modifications   Ctrl+Enter"
 msgstr "Appliquer les modifications   Ctrl+Entrée"
 
 #: address_gui.c:2707 datebook_gui.c:4392 memo_gui.c:1577 todo_gui.c:2195
-#, fuzzy
 msgid "Commit the modifications"
-msgstr "Appliquer les modifications   Ctrl+Entrée"
+msgstr "Appliquer les modifications"
 
 #: address_gui.c:2718 datebook_gui.c:4437 memo_gui.c:1589 todo_gui.c:2252
 msgid "Private"
@@ -1276,27 +1272,24 @@ msgid "Show private records   Ctrl-Z"
 msgstr "Montrer les enregistrements privés   Ctrl-Z"
 
 #: jpilot.c:2483
-#, fuzzy
 msgid "Show private records"
-msgstr "Montrer les enregistrements privés   Ctrl-Z"
+msgstr "Montrer les enregistrements privés"
 
 #: jpilot.c:2488
 msgid "Hide private records   Ctrl-Z"
 msgstr "Cacher les enregistrements privés   Ctrl-Z"
 
 #: jpilot.c:2493
-#, fuzzy
 msgid "Hide private records"
-msgstr "Cacher les enregistrements privés   Ctrl-Z"
+msgstr "Cacher les enregistrements privés"
 
 #: jpilot.c:2498
 msgid "Mask private records   Ctrl-Z"
 msgstr "Masquer les enregistrements privés   Ctrl-Z"
 
 #: jpilot.c:2503
-#, fuzzy
 msgid "Mask private records"
-msgstr "Masquer les enregistrements privés   Ctrl-Z"
+msgstr "Masquer les enregistrements privés"
 
 #: jpilot.c:2513
 msgid "Sync your palm to the desktop   Ctrl-Y"
@@ -1586,9 +1579,43 @@ msgstr "Vitesse port série (sans effet pour USB)"
 msgid "Number of backups to be archived"
 msgstr "Nombre de sauvegardes à archiver"
 
+#: prefs_gui.c:522
+msgid "Show deleted records (default NO)"
+msgstr "Montrer les enregistrements effacés (NON par défaut)"
+
+#: prefs_gui.c:526
+msgid "Show modified deleted records (default NO)"
+msgstr "Montrer les enregistrements modifiés (NON par défaut)"
+
+#: prefs_gui.c:531
+msgid "Ask confirmation for file installation (J-Pilot -> PDA) (default YES)"
+msgstr ""
+"Demande confirmation pour l'installation de fichier (J-Pilot -> PDA) (OUI "
+"par défaut)"
+
+#: prefs_gui.c:535
+msgid "Show popup tooltips (default YES)"
+msgstr "Montre les bulles d'aide (défaut OUI)"
+
+#: prefs_gui.c:543
+msgid "Highlight calendar days with appointments"
+msgstr "Surligner les jours avec rendez-vous"
+
+#: prefs_gui.c:549
+msgid "Use DateBk note tags"
+msgstr "Utilise DateBk note tags"
+
 #: prefs_gui.c:552
 msgid "DateBk support disabled in this build"
 msgstr "Le support pour DateBk est désactivé pour cet exécutable"
+
+#: prefs_gui.c:558
+msgid "Annotate today in day, week, and month views"
+msgstr ""
+
+#: prefs_gui.c:563
+msgid "Append years on anniversaries in day, week, and month views"
+msgstr ""
 
 #: prefs_gui.c:575
 msgid "Mail Command"
@@ -1598,6 +1625,38 @@ msgstr "Commande d'envoi de mél"
 #, c-format
 msgid "%s is replaced by the e-mail address"
 msgstr "%s est remplacé par l'adresse mél"
+
+#: prefs_gui.c:597
+msgid "Hide Completed ToDos"
+msgstr "Masquer les tâches terminées"
+
+#: prefs_gui.c:601
+msgid "Hide ToDos not yet due"
+msgstr "Cacher les tâches à date non échue"
+
+#: prefs_gui.c:605
+msgid "Record Completion Date"
+msgstr "Date de fin de l'enregistrement"
+
+#: prefs_gui.c:610
+msgid "Use Manana database"
+msgstr "Utiliser la base de données Mañana"
+
+#: prefs_gui.c:618
+msgid "Use default number of days due"
+msgstr "Utilise le nombre de jours à 'échéance par défaut"
+
+#: prefs_gui.c:638
+msgid "Use Memo32 (pedit32)"
+msgstr "Utiliser Memo32 (pedit32)"
+
+#: prefs_gui.c:645
+msgid "Open alarm windows for appointment reminders"
+msgstr "Ouvrir une fenêtre de rappel pour les rendez vous"
+
+#: prefs_gui.c:649
+msgid "Execute this command"
+msgstr "Exécuter la commande"
 
 #: prefs_gui.c:653
 msgid "WARNING: executing arbitrary shell commands can be dangerous!!!"
@@ -1631,6 +1690,34 @@ msgstr "%D (description substitution) est désactivé pour cet exécutable"
 #: prefs_gui.c:695
 msgid "%N (note substitution) is disabled in this build"
 msgstr "%N (note substitution) est désactivé pour cet exécutable"
+
+#: prefs_gui.c:704
+msgid "Sync datebook"
+msgstr "Sync agenda"
+
+#: prefs_gui.c:708
+msgid "Sync address"
+msgstr "Sync carnet d'adresses"
+
+#: prefs_gui.c:712
+msgid "Sync todo"
+msgstr "Sync tâches"
+
+#: prefs_gui.c:716
+msgid "Sync memo"
+msgstr "Sync bloc-notes"
+
+#: prefs_gui.c:720
+msgid "Sync memo32 (pedit32)"
+msgstr "Sync memo32 (pedit32)"
+
+#: prefs_gui.c:725
+msgid "Sync Manana"
+msgstr "Sync Mañana"
+
+#: prefs_gui.c:731
+msgid "Use J-OS (Not Japanese PalmOS:WorkPad/CLIE)"
+msgstr "Utilise J-OS (Sauf PalmOS:WorkPad/CLIE japonais)"
 
 #: prefs_gui.c:744
 #, c-format
@@ -2717,72 +2804,6 @@ msgstr "Mot de passe : "
 #: KeyRing/keyring.c:1637
 msgid "Generate Password"
 msgstr "Génération d'un mot de passe"
-
-#~ msgid "Show deleted records (default NO)"
-#~ msgstr "Montrer les enregistrements effacés (NON par défaut)"
-
-#~ msgid "Show modified deleted records (default NO)"
-#~ msgstr "Montrer les enregistrements modifiés (NON par défaut)"
-
-#~ msgid ""
-#~ "Ask confirmation for file installation (J-Pilot -> PDA) (default YES)"
-#~ msgstr ""
-#~ "Demande confirmation pour l'installation de fichier (J-Pilot -> PDA) (OUI "
-#~ "par défaut)"
-
-#~ msgid "Show popup tooltips (default YES)"
-#~ msgstr "Montre les bulles d'aide (défaut OUI)"
-
-#~ msgid "Highlight calendar days with appointments"
-#~ msgstr "Surligner les jours avec rendez-vous"
-
-#~ msgid "Use DateBk note tags"
-#~ msgstr "Utilise DateBk note tags"
-
-#~ msgid "Hide Completed ToDos"
-#~ msgstr "Masquer les tâches terminées"
-
-#~ msgid "Hide ToDos not yet due"
-#~ msgstr "Cacher les tâches à date non échue"
-
-#~ msgid "Record Completion Date"
-#~ msgstr "Date de fin de l'enregistrement"
-
-#~ msgid "Use Manana database"
-#~ msgstr "Utiliser la base de données Mañana"
-
-#~ msgid "Use default number of days due"
-#~ msgstr "Utilise le nombre de jours à 'échéance par défaut"
-
-#~ msgid "Use Memo32 (pedit32)"
-#~ msgstr "Utiliser Memo32 (pedit32)"
-
-#~ msgid "Open alarm windows for appointment reminders"
-#~ msgstr "Ouvrir une fenêtre de rappel pour les rendez vous"
-
-#~ msgid "Execute this command"
-#~ msgstr "Exécuter la commande"
-
-#~ msgid "Sync datebook"
-#~ msgstr "Sync agenda"
-
-#~ msgid "Sync address"
-#~ msgstr "Sync carnet d'adresses"
-
-#~ msgid "Sync todo"
-#~ msgstr "Sync tâches"
-
-#~ msgid "Sync memo"
-#~ msgstr "Sync bloc-notes"
-
-#~ msgid "Sync memo32 (pedit32)"
-#~ msgstr "Sync memo32 (pedit32)"
-
-#~ msgid "Sync Manana"
-#~ msgstr "Sync Mañana"
-
-#~ msgid "Use J-OS (Not Japanese PalmOS:WorkPad/CLIE)"
-#~ msgstr "Utilise J-OS (Sauf PalmOS:WorkPad/CLIE japonais)"
 
 #~ msgid "Backup"
 #~ msgstr "Sauver"
