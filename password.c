@@ -217,13 +217,9 @@ int verify_password(char *password)
 }
 
 /*
- * hide passed HIDE_PRIVATES will set the hide flag.
- * hide passed SHOW_PRIVATES will unset the hide flag and also need a
- *  correct password.
- * hide passed MASK_PRIVATES will unset the hide flag and also need a
- *  correct password if current state is not SHOW_PRIVATES.
+ * hide passed HIDE_PRIVATES, SHOW_PRIVATES or MASK_PRIVATES will set the flag.
  * hide passed GET_PRIVATES will return the current hide flag.
- * hide flag is always returned, it is boolean.
+ * hide flag is always returned.
  */
 int show_privates(int hide)
 {
@@ -233,22 +229,8 @@ int show_privates(int hide)
    static int hidden=SHOW_PRIVATES;
 #endif
    
-   if (hide==GET_PRIVATES) {
-      return hidden;
-   }
-   if (hide==HIDE_PRIVATES) {
-      hidden=HIDE_PRIVATES;
-      return hidden;
-   }
-   if ((hide==MASK_PRIVATES) && (hidden==SHOW_PRIVATES)) {
-      hidden=MASK_PRIVATES;
-      return hidden;
-   }
-   if ( (hide==SHOW_PRIVATES) ||
-       ((hide==MASK_PRIVATES) && (hidden!=SHOW_PRIVATES)) ) {
-
-      hidden=SHOW_PRIVATES;
-   }
+   if (hide != GET_PRIVATES)
+      hidden = hide;
 
    return hidden;
 }
