@@ -81,6 +81,7 @@ static struct sorted_cats sort_l[NUM_TODO_CAT_ITEMS];
 
 struct ToDoAppInfo todo_app_info;
 int todo_category=CATEGORY_ALL;
+static int clist_col_selected;
 static int clist_row_selected;
 static int record_changed;
 static int clist_hack;
@@ -100,6 +101,7 @@ static void init()
    time_t ltime;
    struct tm *now;
 
+   clist_col_selected=1;
    clist_row_selected=0;
 
    record_changed=CLEAR_FLAG;
@@ -1326,6 +1328,66 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
    cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
 }
 
+/* Function is used to sort clist based on the completed checkbox */
+gint GtkClistCompareCheckbox(GtkCList *clist,
+                             gconstpointer ptr1,
+                             gconstpointer ptr2)
+{
+   GtkCListRow *row1;
+   GtkCListRow *row2;
+   MyToDo      *mtodo1;
+   MyToDo      *mtodo2;
+   struct ToDo *todo1;
+   struct ToDo *todo2;
+
+   row1 = (GtkCListRow *) ptr1;
+   row2 = (GtkCListRow *) ptr2;
+   
+   mtodo1 = row1->data; 
+   mtodo2 = row2->data; 
+
+   todo1 = &(mtodo1->todo); 
+   todo2 = &(mtodo2->todo); 
+
+   if (todo1->complete && !todo2->complete) {
+      return -1;
+   } else if (todo2->complete && !todo1->complete) {
+      return 1;
+   } else {
+      return 0;
+   }
+
+}
+
+static void cb_clist_click_column(GtkWidget *clist, int column)
+{
+   /* Clicking on same column toggles ascending/descending sort */
+   if (clist_col_selected == column)
+   {
+      if (GTK_CLIST(clist)->sort_type == GTK_SORT_ASCENDING) {
+	 gtk_clist_set_sort_type(GTK_CLIST (clist), GTK_SORT_DESCENDING);
+      }
+      else {
+	 gtk_clist_set_sort_type(GTK_CLIST (clist), GTK_SORT_ASCENDING);
+      }
+   }
+   else /* Always sort in ascending order when changing sort column */
+   {
+      gtk_clist_set_sort_type(GTK_CLIST (clist), GTK_SORT_ASCENDING);
+   }
+
+   clist_col_selected = column;
+
+   gtk_clist_set_sort_column(GTK_CLIST(clist), column);
+   if (column == 0) {
+      gtk_clist_set_compare_func(GTK_CLIST(clist),GtkClistCompareCheckbox);
+   } else {
+      gtk_clist_set_compare_func(GTK_CLIST(clist),NULL);
+   }
+   gtk_clist_sort (GTK_CLIST (clist));
+
+}
+
 static void cb_clist_selection(GtkWidget      *clist,
 			       gint           row,
 			       gint           column,
@@ -1697,6 +1759,7 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 	 /*Put a check or checked pixmap up */
 	 gtk_clist_set_pixmap(GTK_CLIST(clist), entries_shown, TODO_CHECK_COLUMN, pixmap_checked, mask_checked);
       } else {
+	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, TODO_CHECK_COLUMN, "");
 	 gtk_clist_set_pixmap(GTK_CLIST(clist), entries_shown, TODO_CHECK_COLUMN, pixmap_check, mask_check);
       }
       entries_shown++;
@@ -2051,7 +2114,10 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    pixmapwid = gtk_pixmap_new(pixmap, mask);
    hack_clist_set_column_title_pixmap(clist, TODO_CHECK_COLUMN, pixmapwid);
 
-   gtk_clist_column_titles_passive(GTK_CLIST(clist));
+   gtk_clist_column_titles_active(GTK_CLIST(clist));
+   gtk_signal_connect(GTK_OBJECT(clist), "click_column",
+                      GTK_SIGNAL_FUNC (cb_clist_click_column), NULL);
+
    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
 		      GTK_SIGNAL_FUNC(cb_clist_selection),
 		      todo_text);
