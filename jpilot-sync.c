@@ -1,4 +1,4 @@
-/* $Id: jpilot-sync.c,v 1.22 2004/12/18 00:58:05 rikster5 Exp $ */
+/* $Id: jpilot-sync.c,v 1.23 2005/01/28 16:54:13 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot-sync.c
@@ -251,7 +251,8 @@ int main(int argc, char *argv[])
    otherconv_free();
 #endif
 
-   return EXIT_SUCCESS;
+   /* r is the return value of setup_sync(), 0 if OK */
+   return r;
 }
 
 static void sig_handler(int sig)
