@@ -2527,13 +2527,7 @@ void charset_j2p(unsigned char *buf, int max_len, long char_set)
     case CHAR_SET_1250: Lat2Win(buf,max_len); break;
     case CHAR_SET_1251: koi8_to_win1251(buf, max_len); break;
     case CHAR_SET_1251_B: win1251_to_koi8(buf, max_len); break;
-    case CHAR_SET_1250_UTF:
-    case CHAR_SET_1252_UTF:
-    case CHAR_SET_1253_UTF:
-    case CHAR_SET_ISO8859_2_UTF:
-    case CHAR_SET_KOI8_R_UTF:
-    case CHAR_SET_GB2312_UTF:
-    case CHAR_SET_SJIS_UTF:
+    default:
       UTF_to_other(buf, max_len);
       break;
    }
@@ -2606,16 +2600,9 @@ unsigned char *charset_p2newj(const unsigned char *buf, int max_len, int char_se
     case CHAR_SET_1250 : Win2Lat(newbuf,max_len); break;
     case CHAR_SET_1251 : win1251_to_koi8(newbuf, max_len); break;
     case CHAR_SET_1251_B : koi8_to_win1251(newbuf, max_len); break;
-    case CHAR_SET_1250_UTF:
-    case CHAR_SET_1252_UTF:
-    case CHAR_SET_1253_UTF:
-    case CHAR_SET_ISO8859_2_UTF:
-    case CHAR_SET_KOI8_R_UTF:
-    case CHAR_SET_GB2312_UTF:
-    case CHAR_SET_SJIS_UTF:
+    default:
       newbuf = other_to_UTF(buf, max_len);
       break;
-    default : break;
    }
    return (newbuf);
 }
