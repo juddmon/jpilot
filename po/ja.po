@@ -5,11 +5,11 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: jpilot 0.99.6pre 09Jun03\n"
+"Project-Id-Version: jpilot 0.99.6pre7\n"
 "Report-Msgid-Bugs-To: jpilot-devel@jpilot.org\n"
 "POT-Creation-Date: 2005-01-08 11:39+0100\n"
 "PO-Revision-Date: 2004-11-24 14:02+0900\n"
-"Last-Translator: Kazutaka HARADA <kazutaka@dc4.so-net.ne.jp>\n"
+"Last-Translator: Kazutaka HARADA <kazutaka802@yahoo.co.jp>\n"
 "Language-Team: Japanese Palm-UNIX ML <palm-unix-j@list.daionet.gr.jp>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=euc-jp\n"
@@ -854,7 +854,7 @@ msgstr "エクスポートするレコードの選択"
 
 #: export_gui.c:278
 msgid "Use Ctrl and Shift Keys"
-msgstr "コントロールとシフトキーを使う"
+msgstr "コントロールとシフトキーを使用"
 
 #: import_gui.c:265 import_gui.c:304 import_gui.c:417 import_gui.c:497
 #: jpilot.c:501
@@ -1102,7 +1102,7 @@ msgstr "/ファイル(_F)/エクスポート"
 
 #: jpilot.c:1319 jpilot.c:2613
 msgid "/File/Preferences"
-msgstr "/ファイル(_F)/設定"
+msgstr "/ファイル(_F)/環境設定"
 
 #: jpilot.c:1320
 msgid "/File/_Print"
@@ -1122,15 +1122,15 @@ msgstr "/表示(_V)"
 
 #: jpilot.c:1326 jpilot.c:1327 jpilot.c:1328 jpilot.c:1582
 msgid "/View/Hide Private Records"
-msgstr "/表示(V)/プライベートレコードの隠蔽"
+msgstr "/表示(V)/プライベートレコードを非表示"
 
 #: jpilot.c:1327
 msgid "/View/Show Private Records"
-msgstr "/表示(V)/プライベートレコードの表示"
+msgstr "/表示(V)/プライベートレコードを表示"
 
 #: jpilot.c:1328
 msgid "/View/Mask Private Records"
-msgstr "/表示(V)/プライベートレコードのマスク"
+msgstr "/表示(V)/プライベートレコードをマスク"
 
 #: jpilot.c:1329
 msgid "/View/sep1"
@@ -1549,11 +1549,11 @@ msgstr "GTK カラーファイルの設定 "
 
 #: prefs_gui.c:454
 msgid "Serial Port (/dev/ttyS0, /dev/pilot)"
-msgstr "シリアルポート(/dev/ttyS0, /dev/pilot) "
+msgstr "ポート(/dev/ttyS0, /dev/pilot) "
 
 #: prefs_gui.c:471
 msgid "Serial Rate (Does not affect USB)"
-msgstr "シリアルの転送速度(USBには無関係) "
+msgstr "シリアル接続の転送速度(USBには無関係) "
 
 #: prefs_gui.c:484
 msgid "Number of backups to be archived"
@@ -1577,7 +1577,7 @@ msgstr "ポップアップ・ツールチップを表示 (デフォルト YES)"
 
 #: prefs_gui.c:557
 msgid "Highlight calendar days with appointments"
-msgstr "予定のある日をハイライトする"
+msgstr "予定のある日をハイライト表示する"
 
 #: prefs_gui.c:570
 msgid "Use DateBk note tags"
@@ -1800,7 +1800,7 @@ msgstr "レコードが見付かりません"
 
 #: search_gui.c:526 search_gui.c:579
 msgid "Search"
-msgstr "検索文字列"
+msgstr "検索"
 
 #: search_gui.c:541
 msgid "Search for: "
@@ -1808,7 +1808,7 @@ msgstr "検索文字列: "
 
 #: search_gui.c:548
 msgid "Case Sensitive"
-msgstr "大文字小文字を区別"
+msgstr "大文字/小文字を区別"
 
 #: sync.c:139
 msgid "open lock file failed\n"
