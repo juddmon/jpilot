@@ -2365,6 +2365,23 @@ cb_record_changed(GtkWidget *widget,
    }
 }
 
+/* fix - move this to utils? */
+time_t date2seconds(struct tm *date)
+{
+   struct tm date2;
+   bzero(&date2, sizeof(date2));
+   memcpy(&date2, date, sizeof(date2));
+   date2.tm_year=date->tm_year;
+   date2.tm_mon=date->tm_mon;
+   date2.tm_mday=date->tm_mday;
+   date2.tm_hour=date->tm_hour;
+   date2.tm_min=date->tm_min;
+   date2.tm_sec=date->tm_sec;
+   date2.tm_isdst=date->tm_isdst;
+
+   return mktime(&date2);
+}
+
 static void cb_add_new_record(GtkWidget *widget,
 			      gpointer   data)
 {
@@ -2378,6 +2395,7 @@ static void cb_add_new_record(GtkWidget *widget,
    unsigned char attrib;
    int show_priv;
    unsigned int unique_id;
+   time_t t_begin, t_end;
 
    jp_logf(JP_LOG_DEBUG, "cb_add_new_record\n");
 
@@ -2431,6 +2449,18 @@ static void cb_add_new_record(GtkWidget *widget,
       free_Appointment(&new_a);
       return;
    }
+   /* Do some validation */
+   if ((new_a.repeatType != repeatNone) && (!(new_a.repeatForever))) {
+      t_begin = date2seconds(&(new_a.begin));
+      t_end = date2seconds(&(new_a.repeatEnd));
+      if (t_begin > t_end) {
+	 dialog_generic_ok(notebook, NULL, _("Invalid Appointment"),
+			   _("The End Date of this appointment\nis before the start date."));
+	 free_Appointment(&new_a);
+	 return;
+      }
+   }
+
    if ((flag==MODIFY_FLAG) && (new_a.repeatType != repeatNone)) {
       /*We need more user input */
       /*Pop up a dialog */
