@@ -37,6 +37,7 @@
 #include <pi-version.h>
 #include <pi-datebook.h>
 #include <gdk/gdkkeysyms.h>
+#include <gdk/gdkx.h>
 
 #include "datebook.h"
 #include "address.h"
@@ -83,13 +84,14 @@
 
 #define APP_BUTTON_SIZE 44
 
-#define USAGE_STRING _("\n"EPN" [ [-v] || [-h] || [-d] || [-a] || [-A]\n"\
+#define USAGE_STRING _("\n"EPN" [ [-v] || [-h] || [-d] || [-a] || [-A] || [-i]\n"\
 " -v displays version and compile options and exits.\n"\
 " -h displays help and exits.\n"\
 " -d displays debug info to stdout.\n"\
 " -p do not load plugins.\n"\
 " -a ignore missed alarms since the last time this program was run.\n"\
 " -A ignore all alarms, past and future.\n"\
+" -i makes jpilot iconify itself upon launch"\
 " The PILOTPORT, and PILOTRATE env variables are used to specify which\n"\
 " port to sync on, and at what speed.\n"\
 " If PILOTPORT is not set then it defaults to /dev/pilot.\n")
@@ -1617,6 +1619,20 @@ void cb_font(GtkWidget *widget, gpointer data)
 }
 #endif
 
+#ifndef ENABLE_GTK2
+void jp_window_iconify(GtkWidget *window)
+{
+   g_return_if_fail(window != NULL);
+
+   GdkWindow * w = window->window;
+
+   Display *display = GDK_WINDOW_XDISPLAY(w);
+   XIconifyWindow(display,
+		  GDK_WINDOW_XWINDOW(w),
+		  DefaultScreen(display));
+}
+#endif
+
 int main(int argc,
 	 char *argv[])
 {
@@ -1649,6 +1665,7 @@ int main(int argc,
    long pref_width, pref_height;
    long char_set;
    char *geometry_str=NULL;
+   int iconify = 0;
 #ifdef ENABLE_PLUGINS
    GList *plugin_list;
    GList *temp_list;
@@ -1785,6 +1802,10 @@ char *xpm_unlocked[] = {
       if (!strncmp(argv[i], "-a", 2)) {
 	 skip_past_alarms = TRUE;
 	 jp_logf(JP_LOG_INFO, "Ignoring past alarms.\n");
+      }
+      if ( (!strncasecmp(argv[i], "-i", 2)) ||
+           (!strncasecmp(argv[i], "--iconic", 8))){
+	 iconify = 1;
       }
       if (!strncasecmp(argv[i], "-geometry", 9)) {
 	 /* The '=' isn't specified in `man X`, but we will be nice */
@@ -1935,6 +1956,7 @@ char *xpm_unlocked[] = {
 			      "title", title,
 			      NULL);
    }
+
    if (bit_mask & MASK_WIDTH) {
       pref_width = w;
    }
@@ -1959,6 +1981,12 @@ char *xpm_unlocked[] = {
 	style->font_desc = pango_font_description_from_string("Sans 16");
 	gtk_widget_set_style(window, style);
      }
+#endif
+
+#ifdef ENABLE_GTK2
+   if (iconify) {
+      gtk_window_iconify(GTK_WINDOW(window));
+   }
 #endif
 
    /* Set a handler for delete_event that immediately */
@@ -2177,6 +2205,13 @@ char *xpm_unlocked[] = {
    gtk_widget_show_all(window);
 
    gtk_widget_show(window);
+
+   /* GTK1 requires the window to be shown before iconized */
+#ifndef ENABLE_GTK2
+   if (iconify) {
+      jp_window_iconify(window);
+   }
+#endif
 
    style = gtk_widget_get_style(window);
 
