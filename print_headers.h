@@ -1,4 +1,4 @@
-/* $Id: print_headers.h,v 1.2 2004/11/22 00:52:42 rikster5 Exp $ */
+/* $Id: print_headers.h,v 1.3 2004/11/26 08:02:49 rousseau Exp $ */
 
 /*******************************************************************************
  * print_headers.h
@@ -21,6 +21,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  ******************************************************************************/
 
+void print_common_prolog(FILE *f);
+void print_common_setup(FILE *f);
 void print_common_header(FILE *f);
 void print_week_header(FILE *f);
 void print_month_header(FILE *f);
