@@ -1147,13 +1147,31 @@ int print_todos(ToDoList *todo_list, char *category_name)
       fprintf(out, "(%s) ", str);
 
       if (todo->description) {
-	 fprintf(out, "(%s) ", todo->description);
+	 int len;
+	 char *buf;
+
+	 len = strlen(todo->description);
+	 buf = (char *) malloc(2 * len + 1);
+	 memset(buf, 0, 2 * len + 1);
+	 ps_strncat(buf, todo->description, 2 * len);
+
+	 fprintf(out, "(%s) ", buf);
+	 free(buf);
       } else {
          fprintf(out, "() ");
       }
 
       if ((todo->note) && todo->note[0]) {
-	 fprintf(out, "(%s)", todo->note);
+	 int len;
+	 char *buf;
+
+	 len = strlen(todo->note);
+	 buf = (char *) malloc(2 * len + 1);
+	 memset(buf, 0, 2 * len + 1);
+	 ps_strncat(buf, todo->note, 2 * len);
+
+	 fprintf(out, "(%s) ", buf);
+	 free(buf);
       } else {
          fprintf(out, "()");
       }
