@@ -1,4 +1,4 @@
-/* $Id: datebook.c,v 1.42 2004/11/28 16:20:04 rousseau Exp $ */
+/* $Id: datebook.c,v 1.43 2004/12/07 06:51:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook.c
@@ -87,14 +87,14 @@ int datebook_sort(AppointmentList **al,
 
    if (count<2) {
       /* We don't have to sort less than 2 items */
-      return 0;
+      return EXIT_SUCCESS;
    }
 
    /* Allocate an array to be qsorted */
    sort_al = calloc(count, sizeof(AppointmentList *));
    if (!sort_al) {
       jp_logf(JP_LOG_WARN, "datebook_sort(): %s\n", _("Out of memory"));
-      return 0;
+      return EXIT_FAILURE;
    }
 
    /* Set our array to be a list of pointers to the nodes in the linked list */
@@ -115,7 +115,7 @@ int datebook_sort(AppointmentList **al,
 
    free(sort_al);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 #ifdef ENABLE_DATEBK
@@ -124,10 +124,10 @@ int db3_hack_date(struct Appointment *appt, struct tm *today)
    int t1, t2;
 
    if (today==NULL) {
-      return 0;
+      return EXIT_SUCCESS;
    }
    if (!appt->note) {
-      return 0;
+      return EXIT_SUCCESS;
    }
    if (strlen(appt->note) > 8) {
       if ((appt->note[0]=='#') && (appt->note[1]=='#')) {
@@ -135,7 +135,7 @@ int db3_hack_date(struct Appointment *appt, struct tm *today)
 	    /* Check to see if its in the future */
 	    t1 = appt->begin.tm_mday + appt->begin.tm_mon*31 + appt->begin.tm_year*372;
 	    t2 = today->tm_mday + today->tm_mon*31 + today->tm_year*372;
-	    if (t1 > t2) return 0;
+	    if (t1 > t2) return EXIT_SUCCESS;
 	    /* We found some silly hack, so we lie about the date */
 	    /*memcpy(&(appt->begin), today, sizeof(struct tm));*/
 	    /*memcpy(&(appt->end), today, sizeof(struct tm));*/
@@ -166,7 +166,7 @@ int db3_hack_date(struct Appointment *appt, struct tm *today)
 	 }
       }
    }
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /* Note should be pretty much validated by now */
@@ -336,7 +336,7 @@ int pc_datebook_write(struct Appointment *appt, PCRecType rt,
    if (!rec_len) {
       PRINT_FILE_LINE;
       jp_logf(JP_LOG_WARN, "pack_Appointment %s\n", _("error"));
-      return -1;
+      return EXIT_FAILURE;
    }
    br.rt=rt;
    br.attrib = attrib;
@@ -354,7 +354,7 @@ int pc_datebook_write(struct Appointment *appt, PCRecType rt,
       *unique_id = br.unique_id;
    }
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 void free_AppointmentList(AppointmentList **al)
@@ -377,14 +377,14 @@ int datebook_copy_appointment(struct Appointment *a1,
    *a2=malloc(sizeof(struct Appointment));
    if (!(*a2)) {
       jp_logf(JP_LOG_WARN, "datebook_copy_appointment(): %s\n", _("Out of memory"));
-      return -1;
+      return EXIT_FAILURE;
    }
    memcpy(*a2, a1, sizeof(struct Appointment));
 
    (*a2)->exception = (struct tm *)malloc(a1->exceptions * sizeof(struct tm));
    if (!(*a2)->exception) {
       jp_logf(JP_LOG_WARN, "datebook_copy_appointment(): %s 2\n", _("Out of memory"));
-      return -1;
+      return EXIT_FAILURE;
    }
    memcpy((*a2)->exception, a1->exception, a1->exceptions * sizeof(struct tm));
 
@@ -395,7 +395,7 @@ int datebook_copy_appointment(struct Appointment *a1,
       (*a2)->note=strdup(a1->note);
    }
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 
@@ -414,7 +414,7 @@ int datebook_add_exception(struct Appointment *appt, int year, int mon, int day)
    new_exception = malloc((appt->exceptions + 1) * sizeof(struct tm));
    if (!new_exception) {
       jp_logf(JP_LOG_WARN, "datebook_add_exception(): %s\n", _("Out of memory"));
-      return -1;
+      return EXIT_FAILURE;
    }
    memcpy(new_exception, appt->exception, (appt->exceptions) * sizeof(struct tm));
    free(appt->exception);
@@ -429,7 +429,7 @@ int datebook_add_exception(struct Appointment *appt, int year, int mon, int day)
    Ptm->tm_sec = 0;
    Ptm->tm_isdst = -1;
    mktime(Ptm);
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int dateToDays(struct tm *tm1)
@@ -673,10 +673,10 @@ int get_datebook_app_info(struct AppointmentAppInfo *ai)
    }
    if ((num<0) || (rec_size<=0)) {
       jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), "DatebookDB.pdb");
-      return -1;
+      return EXIT_FAILURE;
    }
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int weed_datebook_list(AppointmentList **al, int mon, int year,
@@ -824,7 +824,7 @@ int weed_datebook_list(AppointmentList **al, int mon, int year,
 	 next_al=tal->next;
       }
    }
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int appointment_on_day_list(int mon, int year, int *mask)
@@ -873,7 +873,7 @@ int appointment_on_day_list(int mon, int year, int *mask)
    }
    free_AppointmentList(&al);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int get_days_appointments(AppointmentList **appointment_list, struct tm *now,

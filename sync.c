@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.50 2004/11/28 16:20:04 rousseau Exp $ */
+/* $Id: sync.c,v 1.51 2004/12/07 06:51:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -135,7 +135,7 @@ int sync_lock(int *fd)
    *fd = open(lock_file, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
    if (*fd<0) {
       jp_logf(JP_LOG_WARN, _("open lock file failed\n"));
-      return -1;
+      return EXIT_FAILURE;
    }
 #ifndef USE_FLOCK
    lock.l_type = F_WRLCK;
@@ -151,7 +151,7 @@ int sync_lock(int *fd)
       read(*fd, str, 10);
       pid = atoi(str);
       jp_logf(JP_LOG_FATAL, _("sync file is locked by pid %d\n"), pid);
-      return -1;
+      return EXIT_FAILURE;
    } else {
       jp_logf(JP_LOG_DEBUG, "lock succeeded\n");
       pid=getpid();
@@ -159,7 +159,7 @@ int sync_lock(int *fd)
       write(*fd, str, strlen(str)+1);
       ftruncate(*fd, strlen(str)+1);
    }
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int sync_unlock(int fd)
@@ -189,13 +189,13 @@ int sync_unlock(int fd)
       pid = atoi(str);
       jp_logf(JP_LOG_WARN, _("sync is locked by pid %d\n"), pid);
       close(fd);
-      return -1;
+      return EXIT_FAILURE;
    } else {
       jp_logf(JP_LOG_DEBUG, "unlock succeeded\n");
       ftruncate(fd, 0);
       close(fd);
    }
-   return 0;
+   return EXIT_SUCCESS;
 }
 #endif
 
@@ -240,7 +240,7 @@ int sync_once(struct my_sync_info *sync_info)
       jp_logf(JP_LOG_WARN, PN": sync PID = %d\n", glob_child_pid);
       jp_logf(JP_LOG_WARN, _("%s: press the hotsync button on the cradle "
 	   "or \"kill %d\"\n"), PN, glob_child_pid);
-      return 0;
+      return EXIT_SUCCESS;
    }
 
    /* Make a copy of the sync info for the forked process */
@@ -264,7 +264,7 @@ int sync_once(struct my_sync_info *sync_info)
 	 if (!(sync_info->flags & SYNC_NO_FORK)) {
 	    signal(SIGCHLD, sig_handler);
 	 }
-	 return 0;
+	 return EXIT_SUCCESS;
       }
       /* Close all file descriptors in the child except stdout, stderr and
        * the one to talk to/from the parent.
@@ -437,7 +437,7 @@ int jp_pilot_connect(int *Psd, const char *device)
       int err = errno;
       perror("pi_socket");
       jp_logf(JP_LOG_WARN, "pi_socket %s\n", strerror(err));
-      return -1;
+      return EXIT_FAILURE;
    }
 
    strncpy(addr.pi_device, device, sizeof(addr.pi_device));
@@ -523,7 +523,7 @@ int jp_pilot_connect(int *Psd, const char *device)
       return SYNC_ERROR_READSYSINFO;
    }
    *Psd=sd;
-   return 0;
+   return EXIT_SUCCESS;
 }
 #endif
 
@@ -765,7 +765,7 @@ int jp_sync(struct my_sync_info *sync_info)
       jp_logf(JP_LOG_GUI, _("Finished restoring handheld.\n"));
       jp_logf(JP_LOG_GUI, _("You may need to sync to update J-Pilot.\n"));
       write_to_parent(PIPE_FINISHED, "\n");
-      return 0;
+      return EXIT_SUCCESS;
    }
 
 #ifdef JPILOT_DEBUG
@@ -978,7 +978,7 @@ int jp_sync(struct my_sync_info *sync_info)
    jp_logf(JP_LOG_GUI, _("Finished.\n"));
    write_to_parent(PIPE_FINISHED, "\n");
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int slow_sync_application(char *DB_name, int sd)
@@ -1007,7 +1007,7 @@ int slow_sync_application(char *DB_name, int sd)
 #endif
 
    if ((DB_name==NULL) || (strlen(DB_name) == 0) || (strlen(DB_name) > 250)) {
-      return -1;
+      return EXIT_FAILURE;
    }
    get_pref(PREF_CHAR_SET, &char_set, NULL);
 
@@ -1038,7 +1038,7 @@ int slow_sync_application(char *DB_name, int sd)
    pc_in = jp_open_home_file(pc_filename, "r+");
    if (pc_in==NULL) {
       jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), pc_filename);
-      return -1;
+      return EXIT_FAILURE;
    }
    /* Open the applications database, store access handle in db */
    ret = dlp_OpenDB(sd, 0, dlpOpenReadWrite, DB_name, &db);
@@ -1046,7 +1046,7 @@ int slow_sync_application(char *DB_name, int sd)
       g_snprintf(log_entry, sizeof(log_entry), _("Unable to open file: %s\n"), DB_name);
       charset_j2p(log_entry, sizeof(log_entry), char_set);
       dlp_AddSyncLogEntry(sd, log_entry);
-      return -1;
+      return EXIT_FAILURE;
    }
 
 #ifdef JPILOT_DEBUG
@@ -1067,7 +1067,7 @@ int slow_sync_application(char *DB_name, int sd)
       if (rec_len > 0x10000) {
 	 jp_logf(JP_LOG_WARN, _("PC file corrupt?\n"));
 	 fclose(pc_in);
-	 return -1;
+	 return EXIT_FAILURE;
       }
       if ((header.rt==NEW_PC_REC) || (header.rt==REPLACEMENT_PALM_REC)) {
 	 record = malloc(rec_len);
@@ -1110,7 +1110,7 @@ int slow_sync_application(char *DB_name, int sd)
 	    if (fseek(pc_in, -(header.header_len+rec_len), SEEK_CUR)) {
 	       jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
 	       fclose(pc_in);
-	       return -1;
+	       return EXIT_FAILURE;
 	    }
 	    header.rt=DELETED_PC_REC;
 	    write_header(pc_in, &header);
@@ -1128,7 +1128,7 @@ int slow_sync_application(char *DB_name, int sd)
 	 if (fseek(pc_in, -rec_len, SEEK_CUR)) {
 	    jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
 	    fclose(pc_in);
-	    return -1;
+	    return EXIT_FAILURE;
 	 }
 #ifdef PILOT_LINK_0_12
 	 buffer = pi_buffer_new(rec_len);
@@ -1176,7 +1176,7 @@ int slow_sync_application(char *DB_name, int sd)
 	 if (fseek(pc_in, -header.header_len, SEEK_CUR)) {
 	    jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
 	    fclose(pc_in);
-	    return -1;
+	    return EXIT_FAILURE;
 	 }
 	 header.rt=DELETED_DELETED_PALM_REC;
 	 write_header(pc_in, &header);
@@ -1186,7 +1186,7 @@ int slow_sync_application(char *DB_name, int sd)
       if (fseek(pc_in, rec_len, SEEK_CUR)) {
 	 jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
 	 fclose(pc_in);
-	 return -1;
+	 return EXIT_FAILURE;
       }
    }
    fclose(pc_in);
@@ -1202,7 +1202,7 @@ int slow_sync_application(char *DB_name, int sd)
    /* Close the database */
    dlp_CloseDB(sd, db);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -1322,7 +1322,7 @@ int fetch_extra_DBs(int sd, char *palm_dbname[])
 # endif
    pi_buffer_free(buffer);
 #endif
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 void free_file_name_list(GList **Plist)
@@ -1497,7 +1497,7 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
 
    if (mode == 2) {
       fetch_extra_DBs(sd, extra_dbname);
-      return 0;
+      return EXIT_SUCCESS;
    }
 
    if ((flags & SYNC_FULL_BACKUP)) {
@@ -1714,7 +1714,7 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
 
    free_file_name_list(&file_list);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 static int sync_install(char *filename, int sd)
@@ -1749,7 +1749,7 @@ static int sync_install(char *filename, int sd)
          jp_logf(JP_LOG_WARN, _("\nUnable to sync file: '%s': file corrupted?\n"),
 		 filename);
       }
-      return -1;
+      return EXIT_FAILURE;
    }
    memset(&info, 0, sizeof(info));
    pi_file_get_info(f, &info);
@@ -1779,7 +1779,7 @@ static int sync_install(char *filename, int sd)
 	 f = pi_file_open(filename);
 	 if (f==0) {
 	    jp_logf(JP_LOG_WARN, _("\nUnable to open file: %s\n"), filename);
-	    return -1;
+	    return EXIT_FAILURE;
 	 }
 	 try_again = 1;
       } else if (!strcmp(info.name, "Graffiti ShortCuts ")) {
@@ -1792,7 +1792,7 @@ static int sync_install(char *filename, int sd)
 	 f = pi_file_open(filename);
 	 if (f==0) {
 	    jp_logf(JP_LOG_WARN, _("\nUnable to open file: %s\n"), filename);
-	    return -1;
+	    return EXIT_FAILURE;
 	 }
 	 try_again = 1;
       }
@@ -1807,7 +1807,7 @@ static int sync_install(char *filename, int sd)
 	 f = pi_file_open(filename);
 	 if (f==0) {
 	    jp_logf(JP_LOG_WARN, _("\nUnable to open file: %s\n"), filename);
-	    return -1;
+	    return EXIT_FAILURE;
 	 }
 	 try_again = 1;
       } else if (!strcmp(info.name, "Net Prefs ")) {
@@ -1820,7 +1820,7 @@ static int sync_install(char *filename, int sd)
 	 f = pi_file_open(filename);
 	 if (f==0) {
 	    jp_logf(JP_LOG_WARN, _("\nUnable to open file: %s\n"), filename);
-	    return -1;
+	    return EXIT_FAILURE;
 	 }
 	 try_again = 1;
       }
@@ -1842,7 +1842,7 @@ static int sync_install(char *filename, int sd)
       jp_logf(JP_LOG_GUI, _("Failed.\n"));
       jp_logf(JP_LOG_WARN, log_entry);
       pi_file_close(f);
-      return -1;
+      return EXIT_FAILURE;
    }
    else {
       /* the space after the %s is a hack, the last char gets cut off */
@@ -1854,7 +1854,7 @@ static int sync_install(char *filename, int sd)
    }
    pi_file_close(f);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 
@@ -1871,14 +1871,14 @@ static int sync_process_install_file(int sd)
    in = jp_open_home_file(EPN"_to_install", "r");
    if (!in) {
       jp_logf(JP_LOG_WARN, _("Unable to open file: %s%s\n"), EPN, "_to_install");
-      return -1;
+      return EXIT_FAILURE;
    }
 
    out = jp_open_home_file(EPN"_to_install.tmp", "w");
    if (!out) {
       jp_logf(JP_LOG_WARN, _("Unable to open file: %s%s\n"), EPN, "_to_install.tmp");
       fclose(in);
-      return -1;
+      return EXIT_FAILURE;
    }
 
    for (line_count=0; (!feof(in)); line_count++) {
@@ -1901,7 +1901,7 @@ static int sync_process_install_file(int sd)
 
    rename_file(EPN"_to_install.tmp", EPN"_to_install");
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int is_backup_dir(char *name)
@@ -1910,20 +1910,20 @@ int is_backup_dir(char *name)
 
    /* backup dirs are of the form backupMMDDHHMM */
    if (strncmp(name, "backup", 6)) {
-      return 0;
+      return FALSE;
    }
    for (i=6; i<14; i++) {
       if (name[i]=='\0') {
-	 return 0;
+	 return FALSE;
       }
       if (!isdigit(name[i])) {
-	 return 0;
+	 return FALSE;
       }
    }
    if (name[i]!='\0') {
-      return 0;
+      return FALSE;
    }
-   return 1;
+   return TRUE;
 }
 
 
@@ -1982,7 +1982,7 @@ int sync_remove_r(char *full_path)
    }
    rmdir(full_path);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 static int get_oldest_newest_dir(char *oldest, char *newest, int *count)
@@ -1999,7 +1999,7 @@ static int get_oldest_newest_dir(char *oldest, char *newest, int *count)
    newest[0]='\0';
    dir = opendir(home_dir);
    if (!dir) {
-      return -1;
+      return EXIT_FAILURE;
    }
    *count = 0;
    while((dirent = readdir(dir))) {
@@ -2027,7 +2027,7 @@ static int get_oldest_newest_dir(char *oldest, char *newest, int *count)
       }
    }
    closedir(dir);
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 static int sync_rotate_backups(const int num_backups)
@@ -2114,7 +2114,7 @@ static int sync_rotate_backups(const int num_backups)
    /* Create the symlink */
    symlink(newdir, full_name);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int fast_sync_local_recs(char *DB_name, int sd, int db)
@@ -2140,7 +2140,7 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
    get_pref(PREF_CHAR_SET, &char_set, NULL);
 
    if ((DB_name==NULL) || (strlen(DB_name) > 250)) {
-      return -1;
+      return EXIT_FAILURE;
    }
    g_snprintf(pc_filename, sizeof(pc_filename), "%s.pc3", DB_name);
    /* This is an attempt to use the proper pronoun most of the time */
@@ -2166,7 +2166,7 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
    pc_in = jp_open_home_file(pc_filename, "r+");
    if (pc_in==NULL) {
       jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), pc_filename);
-      return -1;
+      return EXIT_FAILURE;
    }
 
    while(!feof(pc_in)) {
@@ -2183,7 +2183,7 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
       if (rec_len > 0x10000) {
 	 jp_logf(JP_LOG_WARN, _("PC file corrupt?\n"));
 	 fclose(pc_in);
-	 return -1;
+	 return EXIT_FAILURE;
       }
       /* Case 5: */
       if ((header.rt==NEW_PC_REC) || (header.rt==REPLACEMENT_PALM_REC)) {
@@ -2245,7 +2245,7 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
 	    if (fseek(pc_in, -(header.header_len+rec_len), SEEK_CUR)) {
 	       jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
 	       fclose(pc_in);
-	       return -1;
+	       return EXIT_FAILURE;
 	    }
 	    header.rt=DELETED_PC_REC;
 	    write_header(pc_in, &header);
@@ -2272,7 +2272,7 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
 	 if (fseek(pc_in, -rec_len, SEEK_CUR)) {
 	    jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
 	    fclose(pc_in);
-	    return -1;
+	    return EXIT_FAILURE;
 	 }
 	 ret = pdb_file_read_record_by_id(DB_name,
 					  header.unique_id,
@@ -2324,7 +2324,7 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
 	 if (fseek(pc_in, -header.header_len, SEEK_CUR)) {
 	    jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
 	    fclose(pc_in);
-	    return -1;
+	    return EXIT_FAILURE;
 	 }
 	 header.rt=DELETED_DELETED_PALM_REC;
 	 write_header(pc_in, &header);
@@ -2334,12 +2334,12 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
       if (fseek(pc_in, rec_len, SEEK_CUR)) {
 	 jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
 	 fclose(pc_in);
-	 return -1;
+	 return EXIT_FAILURE;
       }
    }
    fclose(pc_in);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -2382,13 +2382,13 @@ int pdb_file_swap_indexes(char *DB_name, int index1, int index2)
    pf1 = pi_file_open(full_local_pdb_file);
    if (!pf1) {
       jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), full_local_pdb_file);
-      return -1;
+      return EXIT_FAILURE;
    }
    pi_file_get_info(pf1, &infop);
    pf2 = pi_file_create(full_local_pdb_file2, &infop);
    if (!pf2) {
       jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), full_local_pdb_file2);
-      return -1;
+      return EXIT_FAILURE;
    }
 
    pi_file_get_app_info(pf1, &app_info, &size);
@@ -2423,7 +2423,7 @@ int pdb_file_swap_indexes(char *DB_name, int index1, int index2)
 
    utime(full_local_pdb_file, &times);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -2472,7 +2472,7 @@ int fast_sync_application(char *DB_name, int sd)
 #endif
 
    if ((DB_name==NULL) || (strlen(DB_name) == 0) || (strlen(DB_name) > 250)) {
-      return -1;
+      return EXIT_FAILURE;
    }
 
    jp_logf(JP_LOG_DEBUG, "fast_sync_application %s\n", DB_name);
@@ -2507,7 +2507,7 @@ int fast_sync_application(char *DB_name, int sd)
       g_snprintf(log_entry, sizeof(log_entry), _("Unable to open file: %s\n"), DB_name);
       charset_j2p(log_entry, sizeof(log_entry), char_set);
       dlp_AddSyncLogEntry(sd, log_entry);
-      return -1;
+      return EXIT_FAILURE;
    }
 
    /* I can't get the appinfodirty flag to work, so I do this for now */
@@ -2567,7 +2567,7 @@ int fast_sync_application(char *DB_name, int sd)
       fetch_extra_DBs(sd, extra_dbname);
    }
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 
@@ -2581,11 +2581,11 @@ int unpack_address_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_ra
    r = unpack_AddressAppInfo(&ai, ai_raw, len);
    if ((r <= 0) || (len <= 0)) {
       jp_logf(JP_LOG_DEBUG, "unpack_AddressAppInfo failed %s %d\n", __FILE__, __LINE__);
-      return -1;
+      return EXIT_FAILURE;
    }
    memcpy(cai, &(ai.category), sizeof(struct CategoryAppInfo));
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int pack_address_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
@@ -2598,17 +2598,17 @@ int pack_address_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw,
    r = unpack_AddressAppInfo(&ai, ai_raw, len);
    if (r <= 0) {
       jp_logf(JP_LOG_DEBUG, "unpack_AddressAppInfo failed %s %d\n", __FILE__, __LINE__);
-      return -1;
+      return EXIT_FAILURE;
    }
    memcpy(&(ai.category), cai, sizeof(struct CategoryAppInfo));
 
    r = pack_AddressAppInfo(&ai, ai_raw, len);
    if (r <= 0) {
       jp_logf(JP_LOG_DEBUG, "pack_AddressAppInfo failed %s %d\n", __FILE__, __LINE__);
-      return -1;
+      return EXIT_FAILURE;
    }
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int unpack_todo_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
@@ -2621,11 +2621,11 @@ int unpack_todo_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, 
    r = unpack_ToDoAppInfo(&ai, ai_raw, len);
    if ((r <= 0) || (len <= 0)) {
       jp_logf(JP_LOG_DEBUG, "unpack_ToDoAppInfo failed %s %d\n", __FILE__, __LINE__);
-      return -1;
+      return EXIT_FAILURE;
    }
    memcpy(cai, &(ai.category), sizeof(struct CategoryAppInfo));
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int pack_todo_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
@@ -2638,17 +2638,17 @@ int pack_todo_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, in
    r = unpack_ToDoAppInfo(&ai, ai_raw, len);
    if (r <= 0) {
       jp_logf(JP_LOG_DEBUG, "unpack_ToDoAppInfo failed %s %d\n", __FILE__, __LINE__);
-      return -1;
+      return EXIT_FAILURE;
    }
    memcpy(&(ai.category), cai, sizeof(struct CategoryAppInfo));
 
    r = pack_ToDoAppInfo(&ai, ai_raw, len);
    if (r <= 0) {
       jp_logf(JP_LOG_DEBUG, "pack_ToDooAppInfo failed %s %d\n", __FILE__, __LINE__);
-      return -1;
+      return EXIT_FAILURE;
    }
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int unpack_memo_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
@@ -2661,11 +2661,11 @@ int unpack_memo_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, 
    r = unpack_MemoAppInfo(&ai, ai_raw, len);
    if ((r <= 0) || (len <= 0)) {
       jp_logf(JP_LOG_DEBUG, "unpack_MemoAppInfo failed %s %d\n", __FILE__, __LINE__);
-      return -1;
+      return EXIT_FAILURE;
    }
    memcpy(cai, &(ai.category), sizeof(struct CategoryAppInfo));
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int pack_memo_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
@@ -2678,17 +2678,17 @@ int pack_memo_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, in
    r = unpack_MemoAppInfo(&ai, ai_raw, len);
    if (r <= 0) {
       jp_logf(JP_LOG_DEBUG, "unpack_MemoAppInfo failed %s %d\n", __FILE__, __LINE__);
-      return -1;
+      return EXIT_FAILURE;
    }
    memcpy(&(ai.category), cai, sizeof(struct CategoryAppInfo));
 
    r = pack_MemoAppInfo(&ai, ai_raw, len);
    if (r <= 0) {
       jp_logf(JP_LOG_DEBUG, "pack_MemoAppInfo failed %s %d\n", __FILE__, __LINE__);
-      return -1;
+      return EXIT_FAILURE;
    }
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int sync_categories(char *DB_name, int sd,
@@ -2728,7 +2728,7 @@ int sync_categories(char *DB_name, int sd,
    pf = pi_file_open(full_name);
    if (!pf) {
       jp_logf(JP_LOG_WARN, _("%s:%d Error reading file: %s\n"), __FILE__, __LINE__, full_name);
-      return -1;
+      return EXIT_FAILURE;
    }
 #ifdef PILOT_LINK_0_12
    pi_file_get_app_info(pf, &Papp_info, &size_Papp_info);
@@ -2737,13 +2737,13 @@ int sync_categories(char *DB_name, int sd,
 #endif
    if (size_Papp_info <= 0) {
       jp_logf(JP_LOG_WARN, _("%s:%d Error getting app info %s\n"), __FILE__, __LINE__, full_name);
-      return -1;
+      return EXIT_FAILURE;
    }
 
    r = unpack_cai_from_ai(&local_cai, Papp_info, size_Papp_info);
    if (r < 0) {
       jp_logf(JP_LOG_WARN, _("%s:%d Error unpacking app info %s\n"), __FILE__, __LINE__, full_name);
-      return -1;
+      return EXIT_FAILURE;
    }
 
    pi_file_close(pf);
@@ -2754,7 +2754,7 @@ int sync_categories(char *DB_name, int sd,
       g_snprintf(log_entry, sizeof(log_entry), _("Unable to open file: %s\n"), DB_name);
       charset_j2p(log_entry, sizeof(log_entry), char_set);
       dlp_AddSyncLogEntry(sd, log_entry);
-      return -1;
+      return EXIT_FAILURE;
    }
 
    /* buffer size passed in cannot be any larger than 0xffff */
@@ -2763,14 +2763,14 @@ int sync_categories(char *DB_name, int sd,
    if (size<=0) {
       jp_logf(JP_LOG_WARN, _("Error reading appinfo block for %s\n"), DB_name);
       dlp_CloseDB(sd, db);
-      return -1;
+      return EXIT_FAILURE;
    }
 
    r = unpack_cai_from_ai(&remote_cai, buf, size);
    memcpy(&orig_remote_cai, &remote_cai, sizeof(remote_cai));
    if (r < 0) {
       jp_logf(JP_LOG_WARN, _("%s:%d Error unpacking app info %s\n"), __FILE__, __LINE__, full_name);
-      return -1;
+      return EXIT_FAILURE;
    }
 
 #ifdef SYNC_CAT_DEBUG
@@ -2796,7 +2796,7 @@ int sync_categories(char *DB_name, int sd,
 	       sizeof(struct CategoryAppInfo))) {
       jp_logf(JP_LOG_DEBUG, "Category app info match, nothing to do %s\n", DB_name);
       dlp_CloseDB(sd, db);
-      return 0;
+      return EXIT_SUCCESS;
    }
 
    /* Go through the categories and try to sync them */
@@ -2947,5 +2947,5 @@ int sync_categories(char *DB_name, int sd,
 
    dlp_CloseDB(sd, db);
 
-   return 0;
+   return EXIT_SUCCESS;
 }

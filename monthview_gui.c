@@ -1,4 +1,4 @@
-/* $Id: monthview_gui.c,v 1.29 2004/11/28 16:20:04 rousseau Exp $ */
+/* $Id: monthview_gui.c,v 1.30 2004/12/07 06:51:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * monthview_gui.c
@@ -418,7 +418,7 @@ int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
    }
    free_AppointmentList(&a_list);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 void monthview_gui(struct tm *date_in)

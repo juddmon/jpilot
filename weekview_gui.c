@@ -1,4 +1,4 @@
-/* $Id: weekview_gui.c,v 1.26 2004/11/28 16:20:04 rousseau Exp $ */
+/* $Id: weekview_gui.c,v 1.27 2004/12/07 06:51:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * weekview_gui.c
@@ -152,7 +152,7 @@ int clear_weeks_appts(GtkWidget **day_texts)
 			      gtk_text_get_length(GTK_TEXT(day_texts[i])));
 #endif
    }
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -249,7 +249,7 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
    }
    free_AppointmentList(&a_list);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 void weekview_gui(struct tm *date_in)

@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.74 2004/11/28 16:20:04 rousseau Exp $ */
+/* $Id: todo_gui.c,v 1.75 2004/12/07 06:51:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -179,7 +179,7 @@ int todo_print()
    if (this_many==1) {
       mtodo = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
       if (mtodo < (MyToDo *)CLIST_MIN_DATA) {
-	 return -1;
+	 return EXIT_FAILURE;
       }
       memcpy(&(todo_list1.mtodo), mtodo, sizeof(MyToDo));
       todo_list1.next=NULL;
@@ -198,7 +198,7 @@ int todo_print()
       free_ToDoList(&todo_list);
    }
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 static void
@@ -402,7 +402,7 @@ static int todo_to_text(struct ToDo *todo, char *text, int len)
    g_snprintf(text, len, "Due: %s\nPriority: %d\nComplete: %s\n\
 Description: %s\nNote: %s\n", due, todo->priority, complete,
 	      description, note);
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -433,7 +433,7 @@ int todo_import_callback(GtkWidget *parent_window, const char *file_path, int ty
    in=fopen(file_path, "r");
    if (!in) {
       jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), file_path);
-      return -1;
+      return EXIT_FAILURE;
    }
 
    /* CSV */
@@ -610,7 +610,7 @@ int todo_import_callback(GtkWidget *parent_window, const char *file_path, int ty
 
    todo_refresh();
    fclose(in);
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int todo_import(GtkWidget *window)
@@ -627,7 +627,7 @@ int todo_import(GtkWidget *window)
    };
 
    import_gui(window, pane, type_desc, type_int, todo_import_callback);
-   return 0;
+   return EXIT_SUCCESS;
 }
 /*
  * End Import Code
@@ -880,7 +880,7 @@ int todo_export(GtkWidget *window)
 	      cb_todo_export_ok
 	      );
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -896,7 +896,7 @@ static int find_sorted_cat(int cat)
  	 return i;
       }
    }
-   return -1;
+   return EXIT_FAILURE;
 }
 
 void cb_delete_todo(GtkWidget *widget,
@@ -1103,7 +1103,7 @@ int todo_clear_details()
    set_new_button_to(CLEAR_FLAG);
    connect_changed_signals(CONNECT_SIGNALS);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int todo_get_details(struct ToDo *new_todo, unsigned char *attrib)
@@ -1178,7 +1178,7 @@ int todo_get_details(struct ToDo *new_todo, unsigned char *attrib)
    jp_logf(JP_LOG_DEBUG, "note=[%s]\n",new_todo->note);
 #endif
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 static void cb_add_new_record(GtkWidget *widget, gpointer data)
@@ -1790,7 +1790,7 @@ static int todo_find()
       }
       glob_find_id = 0;
    }
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 static gboolean
@@ -1824,7 +1824,7 @@ int todo_clist_redraw()
 {
    todo_update_clist(clist, category_menu1, &glob_todo_list, todo_category, TRUE);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int todo_cycle_cat()
@@ -1855,7 +1855,7 @@ int todo_cycle_cat()
    }
    clist_row_selected = 0;
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int todo_refresh()
@@ -1879,7 +1879,7 @@ int todo_refresh()
 	(GTK_CHECK_MENU_ITEM(todo_cat_menu_item1[index]), TRUE);
    }
    todo_find();
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int todo_gui_cleanup()
@@ -1899,7 +1899,7 @@ int todo_gui_cleanup()
 #endif
    set_pref(PREF_LAST_TODO_CATEGORY, todo_category, NULL, TRUE);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
@@ -2252,5 +2252,5 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    todo_refresh();
 
-   return 0;
+   return EXIT_SUCCESS;
 }

@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.93 2004/11/28 16:20:04 rousseau Exp $ */
+/* $Id: datebook_gui.c,v 1.94 2004/12/07 06:51:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -333,7 +333,7 @@ int datebook_to_text(struct Appointment *appt, char *text, int len)
 	      text_exceptions
 	      );
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -364,7 +364,7 @@ int datebook_import_callback(GtkWidget *parent_window, const char *file_path, in
    in=fopen(file_path, "r");
    if (!in) {
       jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), file_path);
-      return -1;
+      return EXIT_FAILURE;
    }
    /* CSV */
    if (type==IMPORT_TYPE_CSV) {
@@ -565,7 +565,7 @@ int datebook_import_callback(GtkWidget *parent_window, const char *file_path, in
 	 dialog_generic_ok(notebook, NULL, _("Error"),
 			   _("File doesn't appear to be datebook.dat format\n"));
 	 fclose(in);
-	 return 1;
+	 return EXIT_FAILURE;
       }
       alist=NULL;
       dat_get_appointments(in, &alist, &cai);
@@ -624,7 +624,7 @@ int datebook_import_callback(GtkWidget *parent_window, const char *file_path, in
 
    datebook_refresh(FALSE);
    fclose(in);
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int datebook_import(GtkWidget *window)
@@ -641,7 +641,7 @@ int datebook_import(GtkWidget *window)
    };
 
    import_gui(window, pane, type_desc, type_int, datebook_import_callback);
-   return 0;
+   return EXIT_SUCCESS;
 }
 /*
  * End Import Code
@@ -1013,7 +1013,7 @@ int datebook_export(GtkWidget *window)
 
    datebook_export_gui(window, x, y);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 static gboolean cb_export_destroy(GtkWidget *widget)
@@ -1154,7 +1154,7 @@ static int datebook_export_gui(GtkWidget *main_window, int x, int y)
 
    gtk_main();
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 /*
  * End Export GUI
@@ -1381,7 +1381,7 @@ int datebook_print(int type)
       break;
    }
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 void cb_monthview(GtkWidget *widget,
@@ -2114,21 +2114,21 @@ static int appt_get_details(struct Appointment *appt, unsigned char *attrib)
 	      appt->repeatFrequency, _(period[page]));
       dialog_generic_ok(notebook, NULL, _("Error"), str);
       appt->repeatFrequency = 1;
-      return -1;
+      return EXIT_FAILURE;
    }
 
    /* We won't allow a weekly repeating that doesn't repeat on any day */
    if ((page == PAGE_WEEK) && (total_repeat_days == 0)) {
       dialog_generic_ok(notebook, NULL, _("Error"),
 			_("You can not have a weekly repeating appointment that doesn't repeat on any day of the week."));
-      return -1;
+      return EXIT_FAILURE;
    }
 
    if (GTK_TOGGLE_BUTTON(private_checkbox)->active) {
       *attrib |= dlpRecAttrSecret;
    }
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 
@@ -2394,7 +2394,7 @@ static int dayview_update_clist()
    g_snprintf(str, sizeof(str), _("%d of %d records"), entries_shown, num_entries);
    gtk_tooltips_set_tip(glob_tooltips, GTK_CLIST(clist)->column[DB_APPT_COLUMN].button, str, NULL);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 static void
@@ -3279,7 +3279,7 @@ static int datebook_find()
       }
       glob_find_id = 0;
    }
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int datebook_refresh(int first)
@@ -3337,7 +3337,7 @@ int datebook_refresh(int first)
    highlight_days();
 
    datebook_find();
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 void cb_menu_time(GtkWidget *item,
@@ -3606,7 +3606,7 @@ int datebook_gui_cleanup()
    gtk_signal_disconnect_by_func(GTK_OBJECT(gtk_widget_get_toplevel(main_calendar)),
 				 GTK_SIGNAL_FUNC(cb_keyboard), NULL);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 static void connect_changed_signals(int con_or_dis)
@@ -4752,5 +4752,5 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    /* The focus doesn't do any good on the application button */
    gtk_widget_grab_focus(GTK_WIDGET(main_calendar));
 
-   return 0;
+   return EXIT_SUCCESS;
 }

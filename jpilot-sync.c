@@ -1,4 +1,4 @@
-/* $Id: jpilot-sync.c,v 1.20 2004/11/28 16:20:04 rousseau Exp $ */
+/* $Id: jpilot-sync.c,v 1.21 2004/12/07 06:51:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot-sync.c
@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
 #ifdef ENABLE_GTK2
    if (otherconv_init()) {
       printf("Error: could not set encoding\n");
-      return 1;
+      return EXIT_FAILURE;
    }
 #endif
 
@@ -248,7 +248,7 @@ int main(int argc, char *argv[])
    otherconv_free();
 #endif
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 static void sig_handler(int sig)

@@ -1,4 +1,4 @@
-/* $Id: todo.c,v 1.34 2004/11/28 16:20:04 rousseau Exp $ */
+/* $Id: todo.c,v 1.35 2004/12/07 06:51:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo.c
@@ -193,7 +193,7 @@ int todo_sort(ToDoList **todol, int sort_order)
 
    if (count<2) {
       /* We don't have to sort less than 2 items */
-      return 0;
+      return EXIT_SUCCESS;
    }
 
    get_todo_app_info(&ai);
@@ -204,7 +204,7 @@ int todo_sort(ToDoList **todol, int sort_order)
    sort_todol = calloc(count, sizeof(ToDoList *));
    if (!sort_todol) {
       jp_logf(JP_LOG_WARN, "todo_sort(): %s\n", _("Out of memory"));
-      return 0;
+      return EXIT_FAILURE;
    }
 
    /* Set our array to be a list of pointers to the nodes in the linked list */
@@ -233,7 +233,7 @@ int todo_sort(ToDoList **todol, int sort_order)
 
    free(sort_todol);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -284,7 +284,7 @@ int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib,
    if (!rec_len) {
       PRINT_FILE_LINE;
       jp_logf(JP_LOG_WARN, "pack_ToDo %s\n", _("error"));
-      return -1;
+      return EXIT_FAILURE;
    }
    br.rt=rt;
    br.attrib = attrib;
@@ -311,7 +311,7 @@ int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib,
       *unique_id = br.unique_id;
    }
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 void free_ToDoList(ToDoList **todo)
@@ -358,7 +358,7 @@ int get_todo_app_info(struct ToDoAppInfo *ai)
       if (buf) {
 	 free(buf);
       }
-      return -1;
+      return EXIT_FAILURE;
    }
    num = unpack_ToDoAppInfo(ai, buf, rec_size);
    if (buf) {
@@ -366,10 +366,10 @@ int get_todo_app_info(struct ToDoAppInfo *ai)
    }
    if (num <= 0) {
       jp_logf(JP_LOG_WARN, _("%s:%d Error reading file: %s\n"), __FILE__, __LINE__, DBname);
-      return -1;
+      return EXIT_FAILURE;
    }
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int get_todos(ToDoList **todo_list, int sort_order)

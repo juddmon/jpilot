@@ -1,4 +1,4 @@
-/* $Id: jpilot-dump.c,v 1.17 2004/11/28 16:20:04 rousseau Exp $ */
+/* $Id: jpilot-dump.c,v 1.18 2004/12/07 06:51:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot-dump.c
@@ -112,7 +112,7 @@ int pipe_to_parent;
 
 int sync_once(void *sync_info)
 {
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /* dump switches */
@@ -385,7 +385,7 @@ printf("date is %s",asctime(&tm_dom));
  }/*end for tal=*/
 
    free_AppointmentList(&al);
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int dumptodo()
@@ -643,7 +643,7 @@ int dumptodo()
  }/*end for tal=*/
 
    free_ToDoList(&al);
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 extern void free_MemoList(MemoList **memo);
@@ -718,7 +718,7 @@ int dumpmemo()
  }/*end for tal=*/
 
    free_MemoList(&al);
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 extern int get_address_app_info(struct AddressAppInfo *aai);
@@ -842,7 +842,7 @@ int dumpaddress()
  }/*end for tal=*/
 
    free_AddressList(&al);
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int main(int   argc,
@@ -1021,5 +1021,5 @@ printf("year=%d,month=%d,day=%d\n",Nyear,Nmonth,Nday);
 
  /* clean up */
 
-   return 0;
+   return EXIT_SUCCESS;
 }

@@ -1,4 +1,4 @@
-/* $Id: print_gui.c,v 1.14 2004/11/28 16:20:04 rousseau Exp $ */
+/* $Id: print_gui.c,v 1.15 2004/12/07 06:51:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * print_gui.c
@@ -162,7 +162,7 @@ int print_gui(GtkWidget *main_window, int app, int date_button, int mon_week_day
    if (GTK_IS_WINDOW(window)) {
       jp_logf(JP_LOG_DEBUG, "print_gui window is already up\n");
       gdk_window_raise(window->window);
-      return 0;
+      return EXIT_SUCCESS;
    }
    print_dialog=0;
    radio_button_one=NULL;

@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.66 2004/11/28 16:20:04 rousseau Exp $ */
+/* $Id: memo_gui.c,v 1.67 2004/12/07 06:51:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -237,7 +237,7 @@ int memo_print()
    if (this_many==1) {
       mmemo = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
       if (mmemo < (MyMemo *)CLIST_MIN_DATA) {
-	 return -1;
+	 return EXIT_FAILURE;
       }
       memcpy(&(memo_list1.mmemo), mmemo, sizeof(MyMemo));
       memo_list1.next=NULL;
@@ -256,7 +256,7 @@ int memo_print()
       free_MemoList(&memo_list);
    }
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -289,7 +289,7 @@ int memo_import_callback(GtkWidget *parent_window, const char *file_path, int ty
    in=fopen(file_path, "r");
    if (!in) {
       jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), file_path);
-      return -1;
+      return EXIT_FAILURE;
    }
 
    /* TEXT */
@@ -408,7 +408,7 @@ int memo_import_callback(GtkWidget *parent_window, const char *file_path, int ty
       if (dat_check_if_dat_file(in)!=DAT_MEMO_FILE) {
 	 jp_logf(JP_LOG_WARN, _("File doesn't appear to be memopad.dat format\n"));
 	 fclose(in);
-	 return 1;
+	 return EXIT_FAILURE;
       }
       memolist=NULL;
       dat_get_memos(in, &memolist, &cai);
@@ -473,7 +473,7 @@ int memo_import_callback(GtkWidget *parent_window, const char *file_path, int ty
 
    memo_refresh();
    fclose(in);
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int memo_import(GtkWidget *window)
@@ -492,7 +492,7 @@ int memo_import(GtkWidget *window)
    };
 
    import_gui(window, pane, type_desc, type_int, memo_import_callback);
-   return 0;
+   return EXIT_SUCCESS;
 }
 /*
  * End Import Code
@@ -648,7 +648,7 @@ int memo_export(GtkWidget *window)
 	      cb_memo_export_ok
 	      );
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -664,7 +664,7 @@ static int find_sorted_cat(int cat)
  	 return i;
       }
    }
-   return -1;
+   return EXIT_FAILURE;
 }
 
 void cb_delete_memo(GtkWidget *widget,
@@ -811,7 +811,7 @@ static int memo_clear_details()
 
    set_new_button_to(CLEAR_FLAG);
    jp_logf(JP_LOG_DEBUG, "Leaving memo_clear_details()\n");
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int memo_get_details(struct Memo *new_memo, unsigned char *attrib)
@@ -844,7 +844,7 @@ int memo_get_details(struct Memo *new_memo, unsigned char *attrib)
    if (GTK_TOGGLE_BUTTON(private_checkbox)->active) {
       *attrib |= dlpRecAttrSecret;
    }
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 static void cb_add_new_record(GtkWidget *widget, gpointer data)
@@ -1252,7 +1252,7 @@ static int memo_find()
       }
       glob_find_id = 0;
    }
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /* This redraws the clist */
@@ -1260,7 +1260,7 @@ int memo_clist_redraw()
 {
    memo_update_clist(clist, category_menu1, &glob_memo_list, memo_category, TRUE);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int memo_cycle_cat()
@@ -1291,7 +1291,7 @@ int memo_cycle_cat()
    }
    clist_row_selected = 0;
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int memo_refresh()
@@ -1315,7 +1315,7 @@ int memo_refresh()
 	(GTK_CHECK_MENU_ITEM(memo_cat_menu_item1[index]), TRUE);
    }
    memo_find();
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int memo_gui_cleanup()
@@ -1335,7 +1335,7 @@ int memo_gui_cleanup()
 #endif
    set_pref(PREF_LAST_MEMO_CATEGORY, memo_category, NULL, TRUE);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -1590,5 +1590,5 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    memo_refresh();
 
-   return 0;
+   return EXIT_SUCCESS;
 }

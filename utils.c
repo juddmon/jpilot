@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.78 2004/11/28 16:20:04 rousseau Exp $ */
+/* $Id: utils.c,v 1.79 2004/12/07 06:51:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -236,7 +236,7 @@ int add_days_to_date(struct tm *date, int n)
    date->tm_isdst=-1;
    mktime(date);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -275,7 +275,7 @@ int sub_days_from_date(struct tm *date, int n)
    }
    date->tm_isdst=-1;
    mktime(date);
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -309,7 +309,7 @@ int add_months_to_date(struct tm *date, int n)
 
    date->tm_isdst=-1;
    mktime(date);
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -343,7 +343,7 @@ int sub_months_from_date(struct tm *date, int n)
 
    date->tm_isdst=-1;
    mktime(date);
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -368,7 +368,7 @@ static int add_or_sub_years_to_date(struct tm *date, int n)
 	 date->tm_mday=28;
       }
    }
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int add_years_to_date(struct tm *date, int n)
@@ -482,7 +482,7 @@ static int str_to_iv_str(char *dest, int destsz, char *src, int isical)
    char *destend, *odest;
 
    if ((!src) || (!dest)) {
-      return 0;
+      return EXIT_SUCCESS;
    }
    odest = dest;
    destend = dest + destsz - 4;	/* max 4 chars into dest per loop iteration */
@@ -543,7 +543,7 @@ int str_to_csv_str(char *dest, char *src)
 
    if (dest) dest[0]='\0';
    if ((!src) || (!dest)) {
-      return 0;
+      return EXIT_SUCCESS;
    }
    s=d=0;
    while (src[s]) {
@@ -702,7 +702,7 @@ int clist_find_id(GtkWidget *clist,
 	 continue;
       }
       if (maddr->unique_id==unique_id) {
-	 found = 1;
+	 found = TRUE;
 	 *found_at = i;
       }
    }
@@ -946,7 +946,7 @@ char * xpm_float_checked[] = {
       *out_mask = NULL;
    }
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -967,7 +967,7 @@ int hack_clist_set_column_title_pixmap(GtkWidget *clist,
    gtk_widget_show(pixmapwid);
    gtk_container_add(GTK_CONTAINER(GTK_CLIST(clist)->column[column].button), pixmapwid);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 
@@ -1262,7 +1262,7 @@ int dialog_save_changed_record(GtkWidget *widget, int changed)
    b=0;
 
    if ((changed!=MODIFY_FLAG) && (changed!=NEW_FLAG)) {
-      return 0;
+      return EXIT_SUCCESS;
    }
    if (changed==MODIFY_FLAG) {
       b=dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)), 0, 0,
@@ -1304,7 +1304,7 @@ int get_home_file_name(char *file, char *full_name, int max_size)
       home=default_path;
    }
    sprintf(full_name, "%s/."EPN"/%s", home, file);
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 
@@ -1326,18 +1326,18 @@ int check_hidden_dir()
       if (mkdir(hidden_dir, 0700)) {
 	 /*Can't create directory */
 	 jp_logf(JP_LOG_WARN, _("Can't create directory %s\n"), hidden_dir);
-	 return 1;
+	 return EXIT_FAILURE;
       }
       if (stat(hidden_dir, &statb)) {
 	 jp_logf(JP_LOG_WARN, _("Can't create directory %s\n"), hidden_dir);
-	 return 1;
+	 return EXIT_FAILURE;
       }
    }
    /*Is it a directory? */
    if (!S_ISDIR(statb.st_mode)) {
       jp_logf(JP_LOG_WARN, _("%s doesn't appear to be a directory.\n"
 		  "I need it to be.\n"), hidden_dir);
-      return 1;
+      return EXIT_FAILURE;
    }
    /*Can we write in it? */
    get_home_file_name("test", test_file, sizeof(test_file));
@@ -1349,7 +1349,7 @@ int check_hidden_dir()
       unlink(test_file);
    }
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -1397,23 +1397,23 @@ int write_to_next_id_open(FILE *pc_out, unsigned int unique_id)
 
    if (fseek(pc_out, 0, SEEK_SET)) {
       jp_logf(JP_LOG_WARN, "fseek failed\n");
-      return -1;
+      return EXIT_FAILURE;
    }
 
    if (fwrite(FILE_VERSION2_CR, strlen(FILE_VERSION2_CR), 1, pc_out) != 1) {
       jp_logf(JP_LOG_WARN, _("Error writing PC header to file: next_id\n"));
-      return -1;
+      return EXIT_FAILURE;
    }
    sprintf(id_str, "%d", unique_id);
    if (fwrite(id_str, strlen(id_str), 1, pc_out) != 1) {
       jp_logf(JP_LOG_WARN, _("Error writing next id to file: next_id\n"));
-      return -1;
+      return EXIT_FAILURE;
    }
    if (fwrite("\n", strlen("\n"), 1, pc_out) != 1) {
       jp_logf(JP_LOG_WARN, _("Error writing PC header to file: next_id\n"));
-      return -1;
+      return EXIT_FAILURE;
    }
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int write_to_next_id(unsigned int unique_id)
@@ -1424,7 +1424,7 @@ int write_to_next_id(unsigned int unique_id)
    pc_out = jp_open_home_file("next_id", "r+");
    if (pc_out==NULL) {
       jp_logf(JP_LOG_WARN, _("Error opening file: next_id\n"));
-      return -1;
+      return EXIT_FAILURE;
    }
 
    ret = write_to_next_id_open(pc_out, unique_id);
@@ -1443,7 +1443,7 @@ int get_next_unique_pc_id(unsigned int *next_unique_id)
    pc_in_out = jp_open_home_file("next_id", "a+");
    if (pc_in_out==NULL) {
       jp_logf(JP_LOG_WARN, _("Error opening file: %s\n"),file_name);
-      return -1;
+      return EXIT_FAILURE;
    }
 
    if (ftell(pc_in_out)==0) {
@@ -1455,7 +1455,7 @@ int get_next_unique_pc_id(unsigned int *next_unique_id)
    pc_in_out = jp_open_home_file("next_id", "r+");
    if (pc_in_out==NULL) {
       jp_logf(JP_LOG_WARN, _("Error opening file: %s\n"),file_name);
-      return -1;
+      return EXIT_FAILURE;
    }
    memset(str, '\0', sizeof(FILE_VERSION)+4);
    fread(str, 1, strlen(FILE_VERSION), pc_in_out);
@@ -1480,7 +1480,7 @@ int get_next_unique_pc_id(unsigned int *next_unique_id)
    write_to_next_id_open(pc_in_out, *next_unique_id);
    fclose(pc_in_out);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int read_gtkrc_file()
@@ -1506,16 +1506,16 @@ int read_gtkrc_file()
    if (stat(fullname, &buf)==0) {
       jp_logf(JP_LOG_DEBUG, "parsing %s\n", fullname);
       gtk_rc_parse(fullname);
-      return 0;
+      return EXIT_SUCCESS;
    }
 
    g_snprintf(fullname, sizeof(fullname), "%s/%s/%s/%s", BASE_DIR, "share", EPN, filename);
    if (stat(fullname, &buf)==0) {
       jp_logf(JP_LOG_DEBUG, "parsing %s\n", fullname);
       gtk_rc_parse(fullname);
-      return 0;
+      return EXIT_SUCCESS;
    }
-   return -1;
+   return EXIT_FAILURE;
 }
 
 FILE *jp_open_home_file(char *filename, char *mode)
@@ -1585,7 +1585,7 @@ int check_copy_DBs_to_home()
 	 /*The file doesn't exist or is zero in size, copy an empty DB file */
 	 if ((strlen(BASE_DIR) + strlen(EPN) + strlen(dbname[i])) > sizeof(srcname)) {
 	    jp_logf(JP_LOG_DEBUG, "copy_DB_to_home filename too long\n");
-	    return -1;
+	    return EXIT_FAILURE;
 	 }
 	 g_snprintf(srcname, sizeof(srcname), "%s/%s/%s/%s", BASE_DIR, "share", EPN, dbname[i]);
 	 in = fopen(srcname, "r");
@@ -1595,11 +1595,11 @@ int check_copy_DBs_to_home()
 		    srcname, strerror(errno));
 	    jp_logf(JP_LOG_WARN, EPN); /* EPN is jpilot, or copilot depending on configure */
 	    jp_logf(JP_LOG_WARN, _(" may not be installed.\n"));
-	    return -1;
+	    return EXIT_FAILURE;
 	 }
 	 if (!out) {
 	    fclose(in);
-	    return -1;
+	    return EXIT_FAILURE;
 	 }
 	 while (!feof(in)) {
 	    c = fgetc(in);
@@ -1613,7 +1613,7 @@ int check_copy_DBs_to_home()
 	 utime(destname, &times);
       }
    }
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int jp_copy_file(char *src, char *dest)
@@ -1625,17 +1625,17 @@ int jp_copy_file(char *src, char *dest)
    unsigned char buf[10002];
 
    if (!strcmp(src, dest)) {
-      return 0;
+      return EXIT_SUCCESS;
    }
 
    in = fopen(src, "r");
    out = fopen(dest, "w");
    if (!in) {
-      return -1;
+      return EXIT_FAILURE;
    }
    if (!out) {
       fclose(in);
-      return -1;
+      return EXIT_FAILURE;
    }
    while ((r = fread(buf, 1, sizeof(buf)-2, in))) {
       fwrite(buf, 1, r, out);
@@ -1649,7 +1649,7 @@ int jp_copy_file(char *src, char *dest)
    times.modtime = statb.st_mtime;
    utime(dest, &times);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 
@@ -1706,7 +1706,7 @@ int raw_header_to_header(RawDBHeader *rdbh, DBHeader *dbh)
    dbh->next_record_list_id = bytes_to_bin(rdbh->next_record_list_id, 4);
    dbh->number_of_records = bytes_to_bin(rdbh->number_of_records, 2);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*returns 1 if found */
@@ -1778,30 +1778,30 @@ int get_app_info_size(FILE *in, int *size)
    fread(&rdbh, sizeof(RawDBHeader), 1, in);
    if (feof(in)) {
       jp_logf(JP_LOG_WARN, "get_app_info_size(): %s\n", _("Error reading file"));
-      return -1;
+      return EXIT_FAILURE;
    }
 
    raw_header_to_header(&rdbh, &dbh);
 
    if (dbh.app_info_offset==0) {
       *size=0;
-      return 0;
+      return EXIT_SUCCESS;
    }
    if (dbh.sort_info_offset!=0) {
       *size = dbh.sort_info_offset - dbh.app_info_offset;
-      return 0;
+      return EXIT_SUCCESS;
    }
    if (dbh.number_of_records==0) {
       fseek(in, 0, SEEK_END);
       *size=ftell(in) - dbh.app_info_offset;
-      return 0;
+      return EXIT_SUCCESS;
    }
 
    fread(&rh, sizeof(record_header), 1, in);
    offset = ((rh.Offset[0]*256+rh.Offset[1])*256+rh.Offset[2])*256+rh.Offset[3];
    *size=offset - dbh.app_info_offset;
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -1826,7 +1826,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
    long ivalue;
 
    if (VP==NULL) {
-      return -1;
+      return EXIT_FAILURE;
    }
 
    /* to keep the compiler happy with -Wall*/
@@ -1874,13 +1874,13 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       }
       break;
     default:
-      return 0;
+      return EXIT_SUCCESS;
    }
 
    if ((record_type==DELETED_PALM_REC) || (record_type==MODIFIED_PALM_REC)) {
       jp_logf(JP_LOG_INFO|JP_LOG_GUI, _("This record is already deleted.\n"
 	   "It is scheduled to be deleted from the Palm on the next sync.\n"));
-      return 0;
+      return EXIT_SUCCESS;
    }
    switch (record_type) {
     case NEW_PC_REC:
@@ -1888,14 +1888,14 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       pc_in=jp_open_home_file(filename, "r+");
       if (pc_in==NULL) {
 	 jp_logf(JP_LOG_WARN, _("Unable to open PC records file\n"));
-	 return -1;
+	 return EXIT_FAILURE;
       }
       while(!feof(pc_in)) {
 	 read_header(pc_in, &header);
 	 if (feof(pc_in)) {
 	    jp_logf(JP_LOG_WARN, _("Couldn't find record to delete\n"));
 	    fclose(pc_in);
-	    return -1;
+	    return EXIT_FAILURE;
 	 }
 	 /* Keep unique ID intact */
 	 if (header.header_version==2) {
@@ -1908,7 +1908,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 	       write_header(pc_in, &header);
 	       jp_logf(JP_LOG_DEBUG, "record deleted\n");
 	       fclose(pc_in);
-	       return 0;
+	       return EXIT_SUCCESS;
 	    }
 	 } else {
 	    jp_logf(JP_LOG_WARN, _("Unknown header version %d\n"), header.header_version);
@@ -1918,14 +1918,14 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 	 }
       }
       fclose(pc_in);
-      return -1;
+      return EXIT_FAILURE;
 
     case PALM_REC:
       jp_logf(JP_LOG_DEBUG, "Deleteing Palm ID %d\n",unique_id);
       pc_in=jp_open_home_file(filename, "a");
       if (pc_in==NULL) {
 	 jp_logf(JP_LOG_WARN, _("Unable to open PC records file\n"));
-	 return -1;
+	 return EXIT_FAILURE;
       }
       header.unique_id=unique_id;
       if (flag==MODIFY_FLAG) {
@@ -1973,7 +1973,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 	 break;
        default:
 	 fclose(pc_in);
-	 return 0;
+	 return EXIT_SUCCESS;
       }
       jp_logf(JP_LOG_DEBUG, "writing header to pc file\n");
       write_header(pc_in, &header);
@@ -1983,12 +1983,12 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       fwrite(record, header.rec_len, 1, pc_in);
       jp_logf(JP_LOG_DEBUG, "record deleted\n");
       fclose(pc_in);
-      return 0;
+      return EXIT_SUCCESS;
       break;
     default:
       break;
    }
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -2013,7 +2013,7 @@ int undelete_pc_record(AppType app_type, void *VP, int flag)
    int num;
 
    if (VP==NULL) {
-      return -1;
+      return EXIT_FAILURE;
    }
 
    /* to keep the compiler happy with -Wall*/
@@ -2057,7 +2057,7 @@ int undelete_pc_record(AppType app_type, void *VP, int flag)
       }
       break;
     default:
-      return 0;
+      return EXIT_SUCCESS;
    }
 
    found  = FALSE;
@@ -2067,13 +2067,13 @@ int undelete_pc_record(AppType app_type, void *VP, int flag)
 
    pc_file = jp_open_home_file(filename , "r");
    if (!pc_file) {
-      return -1;
+      return EXIT_FAILURE;
    }
 
    pc_file2=jp_open_home_file(filename2, "w");
    if (!pc_file2) {
       fclose(pc_file);
-      return -1;
+      return EXIT_FAILURE;
    }
 
    while(!feof(pc_file)) {
@@ -2168,7 +2168,7 @@ int cleanup_pc_file(char *DB_name, unsigned int *max_id)
 
    pc_file = jp_open_home_file(pc_filename , "r");
    if (!pc_file) {
-      return -1;
+      return EXIT_FAILURE;
    }
 
    compact_it = 0;
@@ -2197,7 +2197,7 @@ int cleanup_pc_file(char *DB_name, unsigned int *max_id)
    if (!compact_it) {
       jp_logf(JP_LOG_DEBUG, "No compacting needed\n");
       fclose(pc_file);
-      return 0;
+      return EXIT_SUCCESS;
    }
 
    fseek(pc_file, 0, SEEK_SET);
@@ -2205,7 +2205,7 @@ int cleanup_pc_file(char *DB_name, unsigned int *max_id)
    pc_file2=jp_open_home_file(pc_filename2, "w");
    if (!pc_file2) {
       fclose(pc_file);
-      return -1;
+      return EXIT_FAILURE;
    }
 
    while(!feof(pc_file)) {
@@ -2355,7 +2355,7 @@ int cleanup_pc_files()
       write_to_next_id(max_max_id);
    }
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int setup_sync(unsigned int flags)
@@ -2631,7 +2631,7 @@ int make_category_menu(GtkWidget **category_menu,
 
    gtk_option_menu_set_menu(GTK_OPTION_MENU(*category_menu), menu);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int pdb_file_count_recs(char *DB_name, int *num)
@@ -2650,14 +2650,14 @@ int pdb_file_count_recs(char *DB_name, int *num)
    pf = pi_file_open(full_local_pdb_file);
    if (!pf) {
       jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), full_local_pdb_file);
-      return -1;
+      return EXIT_FAILURE;
    }
 
    pi_file_get_entries(pf, num);
 
    pi_file_close(pf);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int pdb_file_delete_record_by_id(char *DB_name, pi_uid_t uid_in)
@@ -2695,13 +2695,13 @@ int pdb_file_delete_record_by_id(char *DB_name, pi_uid_t uid_in)
    pf1 = pi_file_open(full_local_pdb_file);
    if (!pf1) {
       jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), full_local_pdb_file);
-      return -1;
+      return EXIT_FAILURE;
    }
    pi_file_get_info(pf1, &infop);
    pf2 = pi_file_create(full_local_pdb_file2, &infop);
    if (!pf2) {
       jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), full_local_pdb_file2);
-      return -1;
+      return EXIT_FAILURE;
    }
 
    pi_file_get_app_info(pf1, &app_info, &size);
@@ -2726,7 +2726,7 @@ int pdb_file_delete_record_by_id(char *DB_name, pi_uid_t uid_in)
 
    utime(full_local_pdb_file, &times);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -2770,13 +2770,13 @@ int pdb_file_modify_record(char *DB_name, void *record_in, int size_in,
    pf1 = pi_file_open(full_local_pdb_file);
    if (!pf1) {
       jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), full_local_pdb_file);
-      return -1;
+      return EXIT_FAILURE;
    }
    pi_file_get_info(pf1, &infop);
    pf2 = pi_file_create(full_local_pdb_file2, &infop);
    if (!pf2) {
       jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), full_local_pdb_file2);
-      return -1;
+      return EXIT_FAILURE;
    }
 
    pi_file_get_app_info(pf1, &app_info, &size);
@@ -2810,7 +2810,7 @@ int pdb_file_modify_record(char *DB_name, void *record_in, int size_in,
 
    utime(full_local_pdb_file, &times);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int pdb_file_read_record_by_id(char *DB_name,
@@ -2832,7 +2832,7 @@ int pdb_file_read_record_by_id(char *DB_name,
    pf1 = pi_file_open(full_local_pdb_file);
    if (!pf1) {
       jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), full_local_pdb_file);
-      return -1;
+      return EXIT_FAILURE;
    }
 
    r = pi_file_read_record_by_id(pf1, uid, &temp_buf, sizep, idxp, attrp, catp);
@@ -2887,13 +2887,13 @@ int pdb_file_write_app_block(char *DB_name, void *bufp, int size_in)
    pf1 = pi_file_open(full_local_pdb_file);
    if (!pf1) {
       jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), full_local_pdb_file);
-      return -1;
+      return EXIT_FAILURE;
    }
    pi_file_get_info(pf1, &infop);
    pf2 = pi_file_create(full_local_pdb_file2, &infop);
    if (!pf2) {
       jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), full_local_pdb_file2);
-      return -1;
+      return EXIT_FAILURE;
    }
 
    pi_file_get_app_info(pf1, &app_info, &size);
@@ -2917,7 +2917,7 @@ int pdb_file_write_app_block(char *DB_name, void *bufp, int size_in)
 
    utime(full_local_pdb_file, &times);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /* DB_name is filename with extention and path, i.e: "/tmp/Net Prefs.prc"
@@ -2952,14 +2952,14 @@ int pdb_file_write_dbinfo(char *full_DB_name, struct DBInfo *Pinfo_in)
    pf1 = pi_file_open(full_DB_name);
    if (!pf1) {
       jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), full_DB_name);
-      return -1;
+      return EXIT_FAILURE;
    }
    pi_file_get_info(pf1, &infop);
    /* Set the DBInfo to the one coming into the function */
    pf2 = pi_file_create(full_local_pdb_file2, Pinfo_in);
    if (!pf2) {
       jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), full_local_pdb_file2);
-      return -1;
+      return EXIT_FAILURE;
    }
 
    pi_file_get_app_info(pf1, &app_info, &size);
@@ -2983,7 +2983,7 @@ int pdb_file_write_dbinfo(char *full_DB_name, struct DBInfo *Pinfo_in)
 
    utime(full_DB_name, &times);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 size_t jp_strftime(char *s, size_t max, const char *format, const struct tm *tm)

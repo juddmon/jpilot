@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.40 2004/11/28 16:20:04 rousseau Exp $ */
+/* $Id: prefs_gui.c,v 1.41 2004/12/07 06:51:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -154,7 +154,7 @@ int make_pref_menu(GtkWidget **pref_menu, int pref_num)
    }
    gtk_option_menu_set_menu(GTK_OPTION_MENU(*pref_menu), menu);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 void cb_backups_entry(GtkWidget *widget, gpointer data)

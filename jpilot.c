@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.101 2004/12/05 20:58:47 rousseau Exp $ */
+/* $Id: jpilot.c,v 1.102 2004/12/07 06:51:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -253,7 +253,7 @@ int create_main_boxes()
 
    gtk_box_pack_start(GTK_BOX(g_hbox), g_hbox2, TRUE, TRUE, 0);
    gtk_box_pack_start(GTK_BOX(g_vbox0), g_vbox0_1, FALSE, FALSE, 0);
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int gui_cleanup()
@@ -297,7 +297,7 @@ int gui_cleanup()
     default:
       break;
    }
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 #ifdef ENABLE_PLUGINS
@@ -772,7 +772,7 @@ int bad_sync_exit_status(int exit_status)
    };
 
    if (!GTK_IS_WINDOW(window)) {
-      return -1;
+      return EXIT_FAILURE;
    }
    if ((exit_status == SYNC_ERROR_NOT_SAME_USERID) ||
        (exit_status == SYNC_ERROR_NOT_SAME_USER)) {
@@ -785,7 +785,7 @@ int bad_sync_exit_status(int exit_status)
 			    0, 0,
 			    _("Sync Problem"), _("Sync"), text2, 1, button_text);
    }
-   return -1;
+   return EXIT_FAILURE;
 }
 
 void output_to_pane(const char *str)
@@ -1720,7 +1720,7 @@ static gint cb_output2(GtkWidget *widget, GdkEventButton *event, gpointer data)
    /* Because the pane isn't redrawn yet we can get positions from it.
     * So we have to call back after everything is drawn */
    gtk_idle_add(cb_output_idle, data);
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /* #define FONT_TEST */
@@ -2672,6 +2672,6 @@ char *xpm_unlocked[] = {
    otherconv_free();
 #endif
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 

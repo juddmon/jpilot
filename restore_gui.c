@@ -1,4 +1,4 @@
-/* $Id: restore_gui.c,v 1.15 2004/11/28 16:20:04 rousseau Exp $ */
+/* $Id: restore_gui.c,v 1.16 2004/12/07 06:51:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * restore_gui.c
@@ -28,7 +28,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
-
+#include <stdlib.h>
 
 #include "utils.h"
 #include "prefs.h"
@@ -132,7 +132,7 @@ static int populate_clist_sub(char *path, int check_for_dups, int check_exts)
 	 if (i>1000) {
 	    jp_logf(JP_LOG_WARN, "populate_clist_sub(): %s\n", _("infinite loop"));
 	    closedir(dir);
-	    return -1;
+	    return EXIT_FAILURE;
 	 }
 	 if (dirent->d_name[0]=='.') {
 	    continue;
@@ -206,7 +206,7 @@ static int populate_clist()
       gtk_clist_select_row(GTK_CLIST(restore_clist), i, 0);
    }
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 
@@ -320,5 +320,5 @@ int restore_gui(GtkWidget *main_window, int w, int h, int x, int y)
 
    gtk_main();
 
-   return 0;
+   return EXIT_SUCCESS;
 }

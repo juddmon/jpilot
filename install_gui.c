@@ -1,4 +1,4 @@
-/* $Id: install_gui.c,v 1.19 2004/11/28 16:20:04 rousseau Exp $ */
+/* $Id: install_gui.c,v 1.20 2004/12/07 06:51:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * install_gui.c
@@ -52,14 +52,14 @@ int install_remove_line(int deleted_line)
    in = jp_open_home_file(EPN"_to_install", "r");
    if (!in) {
       jp_logf(JP_LOG_DEBUG, "failed opening install_file\n");
-      return -1;
+      return EXIT_FAILURE;
    }
 
    out = jp_open_home_file(EPN"_to_install.tmp", "w");
    if (!out) {
       fclose(in);
       jp_logf(JP_LOG_DEBUG, "failed opening install_file.tmp\n");
-      return -1;
+      return EXIT_FAILURE;
    }
 
    for (line_count=0; (!feof(in)); line_count++) {
@@ -81,7 +81,7 @@ int install_remove_line(int deleted_line)
 
    rename_file(EPN"_to_install.tmp", EPN"_to_install");
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int install_append_line(const char *line)
@@ -91,17 +91,17 @@ int install_append_line(const char *line)
 
    out = jp_open_home_file(EPN"_to_install", "a");
    if (!out) {
-      return -1;
+      return EXIT_FAILURE;
    }
 
    r = fprintf(out, "%s\n", line);
    if (r==EOF) {
       fclose(out);
-      return -1;
+      return EXIT_FAILURE;
    }
    fclose(out);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 
@@ -202,7 +202,7 @@ static int
 
    in = jp_open_home_file(EPN"_to_install", "r");
    if (!in) {
-      return -1;
+      return EXIT_FAILURE;
    }
 
    gtk_clist_freeze(GTK_CLIST(clist));
@@ -226,7 +226,7 @@ static int
    fclose(in);
    gtk_clist_thaw(GTK_CLIST(clist));
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 static void cb_clist_selection(GtkWidget      *clist,
@@ -250,7 +250,7 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y)
    gchar *titles[2];
 
    if (filew) {
-      return 0;
+      return EXIT_SUCCESS;
    }
 
    line_selected = -1;
@@ -341,5 +341,5 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y)
 
    gtk_main();
 
-   return 0;
+   return EXIT_SUCCESS;
 }

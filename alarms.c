@@ -1,4 +1,4 @@
-/* $Id: alarms.c,v 1.26 2004/11/28 16:20:04 rousseau Exp $ */
+/* $Id: alarms.c,v 1.27 2004/12/07 06:51:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * alarms.c
@@ -175,7 +175,7 @@ int dialog_alarm(char *title, char *frame_text,
 
    /* Prevent alarms from going crazy and using all resources */
    if (total_alarm_windows>20) {
-      return -1;
+      return EXIT_FAILURE;
    }
    total_alarm_windows++;
 #ifdef ALARMS_DEBUG
@@ -277,7 +277,7 @@ int dialog_alarm(char *title, char *frame_text,
 
    gtk_widget_show_all(alarm_dialog);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 /*
  * End Alarm GUI
@@ -519,7 +519,7 @@ int alarms_do_one(struct Appointment *appt,
 
    switch (type) {
     case ALARM_NONE:
-      return 0;
+      return EXIT_SUCCESS;
     case ALARM_NEW:
       reason=_("Appointment Reminder");
       break;
@@ -616,7 +616,7 @@ int alarms_do_one(struct Appointment *appt,
 			  unique_id,
 			  t_alarm);
    }
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 
@@ -787,7 +787,7 @@ int forward_backward_in_appt_time(const struct Appointment *appt,
 	 add_years_to_date(t, freq);
 	 break;
       }/*switch */
-      return 0;
+      return EXIT_SUCCESS;
    }
    /* Go back in time */
    if (forward_or_backward==-1) {
@@ -836,7 +836,7 @@ int forward_backward_in_appt_time(const struct Appointment *appt,
 	 break;
       }/*switch */
    }
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 static int find_prev_next(struct Appointment *appt,
@@ -1208,7 +1208,7 @@ static int find_prev_next(struct Appointment *appt,
 	 continue;
       }
    }
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 
@@ -1240,7 +1240,7 @@ int alarms_find_next(struct tm *date1_in, struct tm *date2_in, int soonest_only)
 
    jp_logf(JP_LOG_DEBUG, "alarms_find_next()\n");
 
-   if (glob_skip_all_alarms) return 0;
+   if (glob_skip_all_alarms) return EXIT_SUCCESS;
 
    if (!date1_in) {
       time(&ltime);
@@ -1457,7 +1457,7 @@ int alarms_find_next(struct tm *date1_in, struct tm *date2_in, int soonest_only)
    }
    free_AppointmentList(&a_list);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -1490,14 +1490,14 @@ int alarms_init(unsigned char skip_past_alarms,
    }
    if (skip_all_alarms) {
       alarms_write_file();
-      return 0;
+      return EXIT_SUCCESS;
    }
 
    found_uptodate=0;
    in=jp_open_home_file(EPN".alarms", "r");
    if (!in) {
       jp_logf(JP_LOG_WARN, _("Unable to open %s.alarms file\n"), EPN);
-      return -1;
+      return EXIT_FAILURE;
    }
 
    while (!feof(in)) {
@@ -1548,5 +1548,5 @@ int alarms_init(unsigned char skip_past_alarms,
 
    gtk_timeout_add(ALARM_INTERVAL*1000, cb_timer_alarms, NULL);
 
-   return 0;
+   return EXIT_SUCCESS;
 }

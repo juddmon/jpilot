@@ -1,4 +1,4 @@
-/* $Id: category.c,v 1.18 2004/11/28 16:20:04 rousseau Exp $ */
+/* $Id: category.c,v 1.19 2004/12/07 06:51:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * category.c
@@ -151,13 +151,13 @@ int pdb_file_change_indexes(char *DB_name, int old_index, int new_index)
    pf1 = pi_file_open(full_local_pdb_file);
    if (!pf1) {
       jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), full_local_pdb_file);
-      return -1;
+      return EXIT_FAILURE;
    }
    pi_file_get_info(pf1, &infop);
    pf2 = pi_file_create(full_local_pdb_file2, &infop);
    if (!pf2) {
       jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), full_local_pdb_file2);
-      return -1;
+      return EXIT_FAILURE;
    }
 
    pi_file_get_app_info(pf1, &app_info, &size);
@@ -188,7 +188,7 @@ int pdb_file_change_indexes(char *DB_name, int old_index, int new_index)
 
    utime(full_local_pdb_file, &times);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int edit_cats_delete_cats_pc3(char *DB_name, int cat)
@@ -205,7 +205,7 @@ int edit_cats_delete_cats_pc3(char *DB_name, int cat)
    pc_in = jp_open_home_file(local_pc_file, "r+");
    if (pc_in==NULL) {
       jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), local_pc_file);
-      return -1;
+      return EXIT_FAILURE;
    }
 
    while(!feof(pc_in)) {
@@ -222,14 +222,14 @@ int edit_cats_delete_cats_pc3(char *DB_name, int cat)
       if (rec_len > 0x10000) {
 	 jp_logf(JP_LOG_WARN, _("PC file corrupt?\n"));
 	 fclose(pc_in);
-	 return -1;
+	 return EXIT_FAILURE;
       }
       if (((header.rt==NEW_PC_REC) || (header.rt==REPLACEMENT_PALM_REC)) &&
 	  ((header.attrib&0x0F)==cat)) {
 	 if (fseek(pc_in, -(header.header_len), SEEK_CUR)) {
 	    jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
 	    fclose(pc_in);
-	    return -1;
+	    return EXIT_FAILURE;
 	 }
 	 count++;
 	 header.rt=DELETED_PC_REC;
@@ -239,7 +239,7 @@ int edit_cats_delete_cats_pc3(char *DB_name, int cat)
       if (fseek(pc_in, rec_len, SEEK_CUR)) {
 	 jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
 	 fclose(pc_in);
-	 return -1;
+	 return EXIT_FAILURE;
       }
    }
 
@@ -262,7 +262,7 @@ int _edit_cats_change_cats_pc3(char *DB_name, int old_cat,
    pc_in = jp_open_home_file(local_pc_file, "r+");
    if (pc_in==NULL) {
       jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), local_pc_file);
-      return -1;
+      return EXIT_FAILURE;
    }
 
    while(!feof(pc_in)) {
@@ -279,14 +279,14 @@ int _edit_cats_change_cats_pc3(char *DB_name, int old_cat,
       if (rec_len > 0x10000) {
 	 jp_logf(JP_LOG_WARN, _("PC file corrupt?\n"));
 	 fclose(pc_in);
-	 return -1;
+	 return EXIT_FAILURE;
       }
       /* No matter what the record type we will change the cat if needed */
       if ((header.attrib&0x0F)==old_cat) {
 	 if (fseek(pc_in, -(header.header_len), SEEK_CUR)) {
 	    jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
 	    fclose(pc_in);
-	    return -1;
+	    return EXIT_FAILURE;
 	 }
 	 count++;
 	 header.attrib=(header.attrib&0xFFFFFFF0) | new_cat;
@@ -297,7 +297,7 @@ int _edit_cats_change_cats_pc3(char *DB_name, int old_cat,
 	 if (fseek(pc_in, -(header.header_len), SEEK_CUR)) {
 	    jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
 	    fclose(pc_in);
-	    return -1;
+	    return EXIT_FAILURE;
 	 }
 	 count++;
 	 header.attrib=(header.attrib&0xFFFFFFF0) | old_cat;
@@ -307,7 +307,7 @@ int _edit_cats_change_cats_pc3(char *DB_name, int old_cat,
       if (fseek(pc_in, rec_len, SEEK_CUR)) {
 	 jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
 	 fclose(pc_in);
-	 return -1;
+	 return EXIT_FAILURE;
       }
    }
 
@@ -955,5 +955,5 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
 
    memcpy(cai, &(Pdata.cai2), sizeof(struct CategoryAppInfo));
 
-   return 0;
+   return EXIT_SUCCESS;
 }

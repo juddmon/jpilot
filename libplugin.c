@@ -1,4 +1,4 @@
-/* $Id: libplugin.c,v 1.19 2004/11/28 16:20:04 rousseau Exp $ */
+/* $Id: libplugin.c,v 1.20 2004/12/07 06:51:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * libplugin.c
@@ -184,7 +184,7 @@ static int unpack_header(PC3RecordHeader *header, unsigned char *packed_header)
    memcpy(&(header->attrib), p, sizeof(unsigned char));
    p+=sizeof(unsigned char);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /* FIXME: Add jp_ and document. */
@@ -205,7 +205,7 @@ int read_header(FILE *pc_in, PC3RecordHeader *header)
    len=ntohl(l);
    if (len > sizeof(packed_header)-1) {
       jp_logf(JP_LOG_WARN, "read_header() %s\n", _("error"));
-      return -1;
+      return EXIT_FAILURE;
    }
    num = fread(packed_header+sizeof(l), len-sizeof(l), 1, pc_in);
    if (feof(pc_in)) {
@@ -273,14 +273,14 @@ int jp_install_remove_line(int deleted_line)
    in = jp_open_home_file(EPN"_to_install", "r");
    if (!in) {
       jp_logf(JP_LOG_DEBUG, "failed opening install_file\n");
-      return -1;
+      return EXIT_FAILURE;
    }
 
    out = jp_open_home_file(EPN"_to_install.tmp", "w");
    if (!out) {
       fclose(in);
       jp_logf(JP_LOG_DEBUG, "failed opening install_file.tmp\n");
-      return -1;
+      return EXIT_FAILURE;
    }
 
    for (line_count=0; (!feof(in)); line_count++) {
@@ -302,7 +302,7 @@ int jp_install_remove_line(int deleted_line)
 
    rename_file(EPN"_to_install.tmp", EPN"_to_install");
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int jp_install_append_line(char *line)
@@ -312,17 +312,17 @@ int jp_install_append_line(char *line)
 
    out = jp_open_home_file(EPN"_to_install", "a");
    if (!out) {
-      return -1;
+      return EXIT_FAILURE;
    }
 
    r = fprintf(out, "%s\n", line);
    if (r==EOF) {
       fclose(out);
-      return -1;
+      return EXIT_FAILURE;
    }
    fclose(out);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*returns 1 if found */
@@ -386,7 +386,7 @@ int jp_free_DB_records(GList **br_list)
    g_list_free(*br_list);
    *br_list=NULL;
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /* These next 2 functions were copied from pi-file.c in the pilot-link app */
@@ -443,7 +443,7 @@ static int raw_header_to_header(RawDBHeader *rdbh, DBHeader *dbh)
    dbh->next_record_list_id = bytes_to_bin(rdbh->next_record_list_id, 4);
    dbh->number_of_records = bytes_to_bin(rdbh->number_of_records, 2);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int jp_get_app_info(char *DB_name, unsigned char **buf, int *buf_size)
@@ -456,7 +456,7 @@ int jp_get_app_info(char *DB_name, unsigned char **buf, int *buf_size)
    char PDB_name[FILENAME_MAX];
 
    if ((!buf_size) || (!buf)) {
-      return -1;
+      return EXIT_FAILURE;
    }
    *buf = NULL;
    *buf_size=0;
@@ -465,14 +465,14 @@ int jp_get_app_info(char *DB_name, unsigned char **buf, int *buf_size)
    in = jp_open_home_file(PDB_name, "r");
    if (!in) {
       jp_logf(JP_LOG_WARN, _("%s:%d Error opening file: %s\n"), __FILE__, __LINE__, PDB_name);
-      return -1;
+      return EXIT_FAILURE;
    }
    num = fread(&rdbh, sizeof(RawDBHeader), 1, in);
    if (num != 1) {
       if (ferror(in)) {
 	 jp_logf(JP_LOG_WARN, _("%s:%d Error reading file: %s\n"), __FILE__, __LINE__, PDB_name);
 	 fclose(in);
-	 return -1;
+	 return EXIT_FAILURE;
       }
       if (feof(in)) {
 	 fclose(in);
@@ -484,7 +484,7 @@ int jp_get_app_info(char *DB_name, unsigned char **buf, int *buf_size)
    num = get_app_info_size(in, &rec_size);
    if (num) {
       fclose(in);
-      return -1;
+      return EXIT_FAILURE;
    }
 
    fseek(in, dbh.app_info_offset, SEEK_SET);
@@ -492,7 +492,7 @@ int jp_get_app_info(char *DB_name, unsigned char **buf, int *buf_size)
    if (!(*buf)) {
       jp_logf(JP_LOG_WARN, "jp_get_app_info(): %s\n", _("Out of memory"));
       fclose(in);
-      return -1;
+      return EXIT_FAILURE;
    }
    num = fread(*buf, rec_size, 1, in);
    if (num != 1) {
@@ -500,14 +500,14 @@ int jp_get_app_info(char *DB_name, unsigned char **buf, int *buf_size)
 	 fclose(in);
 	 free(*buf);
 	 jp_logf(JP_LOG_WARN, _("%s:%d Error reading file: %s\n"), __FILE__, __LINE__, PDB_name);
-	 return -1;
+	 return EXIT_FAILURE;
       }
    }
    fclose(in);
 
    *buf_size=rec_size;
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -520,7 +520,7 @@ int jp_delete_record(char *DB_name, buf_rec *br, int flag)
    char PC_name[FILENAME_MAX];
 
    if (br==NULL) {
-      return -1;
+      return EXIT_FAILURE;
    }
 
    g_snprintf(PC_name, sizeof(PC_name), "%s.pc3", DB_name);
@@ -528,7 +528,7 @@ int jp_delete_record(char *DB_name, buf_rec *br, int flag)
    if ((br->rt==DELETED_PALM_REC) || (br->rt==MODIFIED_PALM_REC)) {
       jp_logf(JP_LOG_INFO, _("This record is already deleted.\n"
 		  "It is scheduled to be deleted from the Palm on the next sync.\n"));
-      return 0;
+      return EXIT_SUCCESS;
    }
    switch (br->rt) {
     case NEW_PC_REC:
@@ -536,14 +536,14 @@ int jp_delete_record(char *DB_name, buf_rec *br, int flag)
       pc_in=jp_open_home_file(PC_name, "r+");
       if (pc_in==NULL) {
 	 jp_logf(JP_LOG_WARN, _("Unable to open PC records file\n"));
-	 return -1;
+	 return EXIT_FAILURE;
       }
       while(!feof(pc_in)) {
 	 read_header(pc_in, &header);
 	 if (feof(pc_in)) {
 	    jp_logf(JP_LOG_WARN, _("Couldn't find record to delete\n"));
 	    fclose(pc_in);
-	    return -1;
+	    return EXIT_FAILURE;
 	 }
 	 if (header.header_version==2) {
 	    /* Keep unique ID intact */
@@ -557,7 +557,7 @@ int jp_delete_record(char *DB_name, buf_rec *br, int flag)
 	       write_header(pc_in, &header);
 	       jp_logf(JP_LOG_DEBUG, "record deleted\n");
 	       fclose(pc_in);
-	       return 0;
+	       return EXIT_SUCCESS;
 	    }
 	 } else {
 	    jp_logf(JP_LOG_WARN, _("Unknown header version %d\n"), header.header_version);
@@ -567,14 +567,14 @@ int jp_delete_record(char *DB_name, buf_rec *br, int flag)
 	 }
       }
       fclose(pc_in);
-      return -1;
+      return EXIT_FAILURE;
 
     case PALM_REC:
       jp_logf(JP_LOG_DEBUG, "Deleteing Palm ID %d\n", br->unique_id);
       pc_in=jp_open_home_file(PC_name, "a");
       if (pc_in==NULL) {
 	 jp_logf(JP_LOG_WARN, _("Couldn't open PC records file\n"));
-	 return -1;
+	 return EXIT_FAILURE;
       }
       header.unique_id=br->unique_id;
       if (flag==MODIFY_FLAG) {
@@ -600,7 +600,7 @@ int jp_delete_record(char *DB_name, buf_rec *br, int flag)
       break;
    }
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -631,7 +631,7 @@ int jp_pc_write(char *DB_name, buf_rec *br)
    out = jp_open_home_file(PC_name, "a");
    if (!out) {
       jp_logf(JP_LOG_WARN, _("Error opening file: %s\n"), PC_name);
-      return -1;
+      return EXIT_FAILURE;
    }
 
    header.rec_len=br->size;
@@ -644,7 +644,7 @@ int jp_pc_write(char *DB_name, buf_rec *br)
 
    fclose(out);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 static int pc_read_next_rec(FILE *in, buf_rec *br)
@@ -686,7 +686,7 @@ static int pc_read_next_rec(FILE *in, buf_rec *br)
    br->buf = record;
    br->size = rec_len;
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int jp_read_DB_files(char *DB_name, GList **records)
@@ -723,7 +723,7 @@ int jp_read_DB_files(char *DB_name, GList **records)
    in = jp_open_home_file(PDB_name, "r");
    if (!in) {
       jp_logf(JP_LOG_WARN, _("Error opening file: %s\n"), PDB_name);
-      return -1;
+      return EXIT_FAILURE;
    }
    /*Read the database header */
    num = fread(&rdbh, sizeof(RawDBHeader), 1, in);
@@ -731,7 +731,7 @@ int jp_read_DB_files(char *DB_name, GList **records)
       if (ferror(in)) {
 	 jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), PDB_name);
 	 fclose(in);
-	 return -1;
+	 return EXIT_FAILURE;
       }
       if (feof(in)) {
 	 return JPILOT_EOF;
@@ -889,7 +889,7 @@ int jp_read_DB_files(char *DB_name, GList **records)
    pc_in = jp_open_home_file(PC_name, "r");
    if (pc_in==NULL) {
       jp_logf(JP_LOG_DEBUG, "jp_open_home_file failed: %s\n", PC_name);
-      return 0;
+      return EXIT_FAILURE;
    }
 
    while(!feof(pc_in)) {

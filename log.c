@@ -1,4 +1,4 @@
-/* $Id: log.c,v 1.23 2004/11/28 16:20:04 rousseau Exp $ */
+/* $Id: log.c,v 1.24 2004/12/07 06:51:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * log.c
@@ -62,7 +62,7 @@ int jp_logf(int level, char *format, ...)
    if (!((level & glob_log_file_mask) ||
        (level & glob_log_stdout_mask) ||
        (level & glob_log_gui_mask))) {
-      return 0;
+      return EXIT_SUCCESS;
    }
 
    va_start(val, format);
@@ -85,16 +85,16 @@ int jp_vlogf (int level, char *format, va_list val) {
    if (!((level & glob_log_file_mask) ||
 	 (level & glob_log_stdout_mask) ||
 	 (level & glob_log_gui_mask))) {
-      return 0;
+      return EXIT_SUCCESS;
    }
 
    if ((!fp) && (err_count>10)) {
-      return -1;
+      return EXIT_FAILURE;
    }
    if ((!fp) && (err_count==10)) {
       fprintf(stderr, _("Unable to open log file, giving up.\n"));
       err_count++;
-      return -1;
+      return EXIT_FAILURE;
    }
    if ((!fp) && (err_count<10)) {
       fp = jp_open_home_file(EPN".log", "w");
@@ -158,7 +158,7 @@ int jp_vlogf (int level, char *format, va_list val) {
       }
    }
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*

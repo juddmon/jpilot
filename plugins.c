@@ -1,4 +1,4 @@
-/* $Id: plugins.c,v 1.14 2004/11/28 16:20:04 rousseau Exp $ */
+/* $Id: plugins.c,v 1.15 2004/12/07 06:51:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * plugins.c
@@ -193,13 +193,13 @@ static int get_plugin_sync_bits()
 
    in=jp_open_home_file(EPN".plugins", "r");
    if (!in) {
-      return 0;
+      return EXIT_SUCCESS;
    }
    for (i=0; (!feof(in)); i++) {
       if (i>1000) {
 	 jp_logf(JP_LOG_WARN, "load_plugins(): %s\n", _("infinite loop"));
 	 fclose(in);
-	 return 0;
+	 return EXIT_FAILURE;
       }
       line[0]='\0';
       Pc = fgets(line, 1000, in);
@@ -214,7 +214,7 @@ static int get_plugin_sync_bits()
 	 jp_logf(JP_LOG_WARN, _("Wrong Version\n"));
 	 jp_logf(JP_LOG_WARN, _("Check preferences->conduits\n"));
 	 fclose(in);
-	 return 0;
+	 return EXIT_FAILURE;
       }
       if (i>0) {
 	 if (toupper(line[0])=='N') {
@@ -229,7 +229,7 @@ static int get_plugin_sync_bits()
       }
    }
    fclose(in);
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 static int get_plugin_info(struct plugin_s *p, char *path)
@@ -270,7 +270,7 @@ static int get_plugin_info(struct plugin_s *p, char *path)
    if (!h) {
       jp_logf(JP_LOG_WARN, _("Open failed on plugin [%s]\n error [%s]\n"), path,
 		  dlerror());
-      return -1;
+      return EXIT_FAILURE;
    }
    jp_logf(JP_LOG_DEBUG, "opened plugin [%s]\n", path);
    p->handle=h;
@@ -288,7 +288,7 @@ static int get_plugin_info(struct plugin_s *p, char *path)
       jp_logf(JP_LOG_WARN, _(" plugin is invalid: [%s]\n"), path);
       dlclose(h);
       p->handle=NULL;
-      return -1;
+      return EXIT_FAILURE;
    }
    plugin_versionM(&major_version, &minor_version);
    version=major_version*1000+minor_version;
@@ -299,7 +299,7 @@ static int get_plugin_info(struct plugin_s *p, char *path)
       jp_logf(JP_LOG_WARN, _("It is too old to work with this version of J-Pilot.\n"));
       dlclose(h);
       p->handle=NULL;
-      return -1;
+      return EXIT_FAILURE;
    }
    jp_logf(JP_LOG_DEBUG, "This plugin is version (%d.%d).\n",
 	       major_version, minor_version);
@@ -314,7 +314,7 @@ static int get_plugin_info(struct plugin_s *p, char *path)
       jp_logf(JP_LOG_WARN, _(" plugin is invalid: [%s]\n"), path);
       dlclose(h);
       p->handle=NULL;
-      return -1;
+      return EXIT_FAILURE;
    }
 
    if (p->plugin_get_name) {
@@ -405,7 +405,7 @@ static int get_plugin_info(struct plugin_s *p, char *path)
    p->plugin_unpack_cai_from_ai = dlsym(h, "plugin_unpack_cai_from_ai");
    p->plugin_pack_cai_into_ai = dlsym(h, "plugin_pack_cai_into_ai");
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /* This will always return the first plugin list entry */

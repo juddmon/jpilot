@@ -1,4 +1,4 @@
-/* $Id: address.c,v 1.33 2004/11/28 16:20:04 rousseau Exp $ */
+/* $Id: address.c,v 1.34 2004/12/07 06:51:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * address.c
@@ -261,7 +261,7 @@ int address_sort(AddressList **al, int sort_order)
 
    if (count<2) {
       /* We don't have to sort less than 2 items */
-      return 0;
+      return EXIT_SUCCESS;
    }
 
    get_address_app_info(&ai);
@@ -286,7 +286,7 @@ int address_sort(AddressList **al, int sort_order)
    sort_al = calloc(count, sizeof(AddressList *));
    if (!sort_al) {
       jp_logf(JP_LOG_WARN, "address_sort(): %s\n", _("Out of memory"));
-      return 0;
+      return EXIT_FAILURE;
    }
 
    /* Set our array to be a list of pointers to the nodes in the linked list */
@@ -315,7 +315,7 @@ int address_sort(AddressList **al, int sort_order)
 
    free(sort_al);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int pc_address_write(struct Address *addr, PCRecType rt, unsigned char attrib,
@@ -337,7 +337,7 @@ int pc_address_write(struct Address *addr, PCRecType rt, unsigned char attrib,
    if (!rec_len) {
       PRINT_FILE_LINE;
       jp_logf(JP_LOG_WARN, "pack_Address %s\n", _("error"));
-      return -1;
+      return EXIT_FAILURE;
    }
    br.rt=rt;
    br.attrib = attrib;
@@ -355,7 +355,7 @@ int pc_address_write(struct Address *addr, PCRecType rt, unsigned char attrib,
       *unique_id = br.unique_id;
    }
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 void free_AddressList(AddressList **al)
@@ -388,7 +388,7 @@ int get_address_app_info(struct AddressAppInfo *ai)
    }
    if ((num<0) || (rec_size<=0)) {
       jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), "AddressDB.pdb");
-      return -1;
+      return EXIT_FAILURE;
    }
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
@@ -406,7 +406,7 @@ int get_address_app_info(struct AddressAppInfo *ai)
 	}
    }
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int get_addresses(AddressList **address_list, int sort_order)

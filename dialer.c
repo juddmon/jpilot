@@ -1,4 +1,4 @@
-/* $Id: dialer.c,v 1.10 2004/11/28 16:20:04 rousseau Exp $ */
+/* $Id: dialer.c,v 1.11 2004/12/07 06:51:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * dialer.c
@@ -389,5 +389,5 @@ int dialog_dial(GtkWindow *main_window, char *string, char *ext)
 
    free(Pdata);
 
-   return 0;
+   return EXIT_SUCCESS;
 }

@@ -1,4 +1,4 @@
-/* $Id: export_gui.c,v 1.13 2004/11/28 16:20:04 rousseau Exp $ */
+/* $Id: export_gui.c,v 1.14 2004/12/07 06:51:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * export_gui.c
@@ -357,7 +357,7 @@ int export_gui(GtkWidget *main_window,
 
    gtk_main();
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 /*
  * End Export code

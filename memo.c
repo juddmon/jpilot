@@ -1,4 +1,4 @@
-/* $Id: memo.c,v 1.30 2004/11/28 16:20:04 rousseau Exp $ */
+/* $Id: memo.c,v 1.31 2004/12/07 06:51:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo.c
@@ -76,7 +76,7 @@ int memo_sort(MemoList **memol, int sort_order)
    int count, i;
 
    if (sort_order==SORT_DESCENDING) {
-      return 0;
+      return EXIT_SUCCESS;
    }
 
    /* Count the entries in the list */
@@ -86,14 +86,14 @@ int memo_sort(MemoList **memol, int sort_order)
 
    if (count<2) {
       /* We don't have to sort less than 2 items */
-      return 0;
+      return EXIT_SUCCESS;
    }
 
    /* Allocate an array to be qsorted */
    sort_memol = calloc(count, sizeof(MemoList *));
    if (!sort_memol) {
       jp_logf(JP_LOG_WARN, "memo_sort(): %s\n", _("Out of memory"));
-      return 0;
+      return EXIT_FAILURE;
    }
 
    /* Set our array to be a list of pointers to the nodes in the linked list */
@@ -125,7 +125,7 @@ int memo_sort(MemoList **memol, int sort_order)
 
    free(sort_memol);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -156,7 +156,7 @@ int pc_memo_write(struct Memo *memo, PCRecType rt, unsigned char attrib,
    if (!rec_len) {
       PRINT_FILE_LINE;
       jp_logf(JP_LOG_WARN, "pack_Memo %s\n", _("error"));
-      return -1;
+      return EXIT_FAILURE;
    }
    br.rt=rt;
    br.attrib = attrib;
@@ -179,7 +179,7 @@ int pc_memo_write(struct Memo *memo, PCRecType rt, unsigned char attrib,
       *unique_id = br.unique_id;
    }
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 void free_MemoList(MemoList **memo)
@@ -219,10 +219,10 @@ int get_memo_app_info(struct MemoAppInfo *ai)
    }
    if ((num<0) || (rec_size<=0)) {
       jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), DBname);
-      return -1;
+      return EXIT_FAILURE;
    }
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int get_memos(MemoList **memo_list, int sort_order)

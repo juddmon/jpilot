@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.26 2004/11/22 00:52:43 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.27 2004/12/07 06:51:09 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -171,7 +171,7 @@ static int pack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size,
 
    if (n+2>buf_size) {
       jp_logf(JP_LOG_WARN, _("KeyRing: pack_KeyRing(): buf_size too small\n"));
-      return 0;
+      return EXIT_FAILURE;
    }
 
    memset(buf, 0, n+1);
@@ -218,7 +218,7 @@ static int set_password_hash(unsigned char *buf, int buf_size, char *passwd)
    /* Must wipe passwd out of memory after using it */
    
    if (buf_size < MD5_HASH_SIZE) {
-      return -1;
+      return EXIT_FAILURE;
    }
    memset(buffer, 0, MESSAGE_BUF_SIZE);
    memcpy(buffer, buf, SALT_SIZE);
@@ -229,7 +229,7 @@ static int set_password_hash(unsigned char *buf, int buf_size, char *passwd)
    memset(buffer, 0, MESSAGE_BUF_SIZE);
 
    if (memcmp(md, buf+SALT_SIZE, MD5_HASH_SIZE)) {
-      return -1;
+      return EXIT_FAILURE;
    }
 
    MD5(passwd, strlen(passwd), md);
@@ -243,7 +243,7 @@ static int set_password_hash(unsigned char *buf, int buf_size, char *passwd)
    des_set_key(&current_key2, s2);
 #endif
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 static int unpack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size)
@@ -480,7 +480,7 @@ int plugin_get_name(char *name, int len)
 {
    jp_logf(JP_LOG_DEBUG, "KeyRing: plugin_get_name\n");
    strncpy(name, "KeyRing 0.01", len);
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -490,7 +490,7 @@ int plugin_get_name(char *name, int len)
 int plugin_get_menu_name(char *name, int len)
 {
    strncpy(name, _("KeyRing"), len);
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -501,7 +501,7 @@ int plugin_get_menu_name(char *name, int len)
 int plugin_get_help_name(char *name, int len)
 {
    g_snprintf(name, len, _("About %s"), _("KeyRing"));
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -511,7 +511,7 @@ int plugin_get_help_name(char *name, int len)
 int plugin_get_db_name(char *name, int len)
 {
    strncpy(name, "Keys-Gtkr", len);
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /* This function gets called when the "delete" button is pressed */
@@ -786,7 +786,7 @@ static int display_record(struct MyKeyRing *mkr, int at_row)
       free(temp_str);
    }
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -1116,7 +1116,7 @@ static int make_menu(char *items[], int menu_index, GtkWidget **Poption_menu,
 
    gtk_widget_show(option_menu);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /* 
@@ -1237,7 +1237,7 @@ static int dialog_password(GtkWindow *main_window, char *ascii_password, int rea
    int ret;
 
    if (!ascii_password) {
-      return -1;
+      return EXIT_FAILURE;
    }
    ascii_password[0]='\0';
    ret = 2; 
@@ -1354,21 +1354,21 @@ static int check_for_db()
       home = getenv("HOME");
       if (!home) {
 	 jp_logf(JP_LOG_WARN, _("Can't get HOME environment variable\n"));
-	 return -1;
+	 return EXIT_FAILURE;
       }
    }
    if (strlen(home)>(max_size-strlen(file)-strlen("/.jpilot/")-2)) {
       jp_logf(JP_LOG_WARN, _("Your HOME environment variable is too long for me\n"));
-      return -1;
+      return EXIT_FAILURE;
    }
    sprintf(full_name, "%s/.jpilot/%s", home, file);
    if (stat(full_name, &buf)) {
       jp_logf(JP_LOG_FATAL, _("KeyRing: file %s not found.\n"), full_name);
       jp_logf(JP_LOG_FATAL, _("KeyRing: Try Syncing.\n"), full_name);
-      return -1;
+      return EXIT_FAILURE;
    }
 		 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -1385,7 +1385,7 @@ int verify_pasword(char *ascii_password)
    jp_logf(JP_LOG_DEBUG, "KeyRing: verify_pasword\n");
 
    if (check_for_db()) {
-      return -1;
+      return EXIT_FAILURE;
    }
 
    password_not_correct = 1;
@@ -1420,7 +1420,7 @@ int verify_pasword(char *ascii_password)
    }
    jp_free_DB_records(&records);
    if (password_not_correct) return 1;
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -1457,7 +1457,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    }
 
    if (check_for_db()) {
-      return -1;
+      return EXIT_FAILURE;
    }
    
    /* Find the main window from some widget */
@@ -1673,7 +1673,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
       keyring_find(unique_id);
    }
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -1703,7 +1703,7 @@ int plugin_gui_cleanup() {
    }
    plugin_active = FALSE;
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -1720,7 +1720,7 @@ int plugin_startup(jp_startup_info *info)
 	 jp_logf(JP_LOG_DEBUG, "KeyRing: base_dir = [%s]\n", info->base_dir);
       }
    }
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -1730,7 +1730,7 @@ int plugin_startup(jp_startup_info *info)
 int plugin_pre_sync(void)
 {
    jp_logf(JP_LOG_DEBUG, "KeyRing: plugin_pre_sync\n");
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -1742,7 +1742,7 @@ int plugin_pre_sync(void)
 int plugin_sync(int sd)
 {
    jp_logf(JP_LOG_DEBUG, "KeyRing: plugin_sync\n");
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int plugin_help(char **text, int *width, int *height)
@@ -1763,7 +1763,7 @@ int plugin_help(char **text, int *width, int *height)
    *height = 0;
    *width = 0;
    
-   return 0;
+   return EXIT_SUCCESS;
 }
 	 
 /*
@@ -1772,7 +1772,7 @@ int plugin_help(char **text, int *width, int *height)
 int plugin_post_sync(void)
 {
    jp_logf(JP_LOG_DEBUG, "KeyRing: plugin_post_sync\n");
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -1781,7 +1781,7 @@ int plugin_post_sync(void)
 int plugin_exit_cleanup(void)
 {
    jp_logf(JP_LOG_DEBUG, "KeyRing: plugin_exit_cleanup\n");
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 static int add_search_result(const char *line, int unique_id, struct search_result **sr)
@@ -1791,7 +1791,7 @@ static int add_search_result(const char *line, int unique_id, struct search_resu
    jp_logf(JP_LOG_DEBUG, "KeyRing: add_search_result for [%s]\n", line);
    temp_sr=malloc(sizeof(struct search_result));
    if (!temp_sr) {
-      return -1;
+      return EXIT_FAILURE;
    }
    temp_sr->next=NULL;
    temp_sr->unique_id=unique_id;
@@ -1802,7 +1802,7 @@ static int add_search_result(const char *line, int unique_id, struct search_resu
       (*sr)->next=temp_sr;
    }
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -1915,5 +1915,5 @@ static int keyring_find(int unique_id)
       gtk_clist_moveto(GTK_CLIST(clist), found_at, 0, 0.5, 0.0);
    }
 
-   return 0;
+   return EXIT_SUCCESS;
 }

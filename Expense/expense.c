@@ -1,4 +1,4 @@
-/* $Id: expense.c,v 1.30 2004/11/22 00:52:43 rikster5 Exp $ */
+/* $Id: expense.c,v 1.31 2004/12/07 06:51:09 rikster5 Exp $ */
 
 /*******************************************************************************
  * expense.c
@@ -196,11 +196,11 @@ int plugin_unpack_cai_from_ai(struct CategoryAppInfo *cai,
    r = unpack_ExpenseAppInfo(&ai, ai_raw, len);
    if (r <= 0) {
       jp_logf(JP_LOG_DEBUG, "unpack_ExpenseAppInfo failed %s %d\n", __FILE__, __LINE__);
-      return -1;
+      return EXIT_FAILURE;
    }
    memcpy(cai, &(ai.category), sizeof(struct CategoryAppInfo));
 	  
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int plugin_pack_cai_into_ai(struct CategoryAppInfo *cai,
@@ -214,17 +214,17 @@ int plugin_pack_cai_into_ai(struct CategoryAppInfo *cai,
    r = unpack_ExpenseAppInfo(&ai, ai_raw, len);
    if (r <= 0) {
       jp_logf(JP_LOG_DEBUG, "unpack_ExpenseAppInfo failed %s %d\n", __FILE__, __LINE__);
-      return -1;
+      return EXIT_FAILURE;
    }
    memcpy(&(ai.category), cai, sizeof(struct CategoryAppInfo));
 
    r = pack_ExpenseAppInfo(&ai, ai_raw, len);
    if (r <= 0) {
       jp_logf(JP_LOG_DEBUG, "pack_ExpenseAppInfo failed %s %d\n", __FILE__, __LINE__);
-      return -1;
+      return EXIT_FAILURE;
    }
    
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 
@@ -393,7 +393,7 @@ int plugin_get_name(char *name, int len)
 {
    jp_logf(JP_LOG_DEBUG, "Expense: plugin_get_name\n");
    strncpy(name, "Expense 0.99", len);
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -403,7 +403,7 @@ int plugin_get_name(char *name, int len)
 int plugin_get_menu_name(char *name, int len)
 {
    strncpy(name, _("Expense"), len);
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -414,7 +414,7 @@ int plugin_get_menu_name(char *name, int len)
 int plugin_get_help_name(char *name, int len)
 {
    g_snprintf(name, len, _("About %s"), _("Expense"));
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -424,7 +424,7 @@ int plugin_get_help_name(char *name, int len)
 int plugin_get_db_name(char *name, int len)
 {
    strncpy(name, "ExpenseDB", len);
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -829,7 +829,7 @@ static int display_record(struct MyExpense *mex, int at_row)
       gtk_clist_set_text(GTK_CLIST(clist), at_row, 2, mex->ex.amount);
    }
    
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -1255,7 +1255,7 @@ static int make_menu(char *items[], int menu_index, GtkWidget **Poption_menu,
 
    gtk_widget_show(option_menu);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /* 
@@ -1714,7 +1714,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
       expense_find(unique_id);
    }
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -1737,7 +1737,7 @@ int plugin_gui_cleanup() {
    if (glob_myexpense_list!=NULL) {
       free_myexpense_list(&glob_myexpense_list);
    }
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -1754,7 +1754,7 @@ int plugin_startup(jp_startup_info *info)
 	 jp_logf(JP_LOG_DEBUG, "Expense: base_dir = [%s]\n", info->base_dir);
       }
    }
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -1764,7 +1764,7 @@ int plugin_startup(jp_startup_info *info)
 int plugin_pre_sync(void)
 {
    jp_logf(JP_LOG_DEBUG, "Expense: plugin_pre_sync\n");
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -1776,7 +1776,7 @@ int plugin_pre_sync(void)
 int plugin_sync(int sd)
 {
    jp_logf(JP_LOG_DEBUG, "Expense: plugin_sync\n");
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 
@@ -1787,7 +1787,7 @@ static int add_search_result(const char *line, int unique_id, struct search_resu
    jp_logf(JP_LOG_DEBUG, "Expense: add_search_result for [%s]\n", line);
    temp_sr=malloc(sizeof(struct search_result));
    if (!temp_sr) {
-      return -1;
+      return EXIT_FAILURE;
    }
    temp_sr->next=NULL;
    temp_sr->unique_id=unique_id;
@@ -1915,7 +1915,7 @@ int plugin_help(char **text, int *width, int *height)
    *height = 0;
    *width = 0;
    
-   return 0;
+   return EXIT_SUCCESS;
 }
 	 
 /*
@@ -1948,7 +1948,7 @@ int plugin_post_sync(void)
    num = unpack_ExpenseAppInfo(&ai, buf, size);
    if (num <= 0) {
       jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), "ExpenseDB.pdb");
-      return -1;
+      return EXIT_FAILURE;
    }
 
    pi_file_close(pf);
@@ -1956,7 +1956,7 @@ int plugin_post_sync(void)
    /* We have to redraw the category menus now */
    redraw_cat_menus(&(ai.category));
 #endif
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -1965,5 +1965,5 @@ int plugin_post_sync(void)
 int plugin_exit_cleanup(void)
 {
    jp_logf(JP_LOG_DEBUG, "Expense: plugin_exit_cleanup\n");
-   return 0;
+   return EXIT_SUCCESS;
 }

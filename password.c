@@ -1,4 +1,4 @@
-/* $Id: password.c,v 1.17 2004/11/28 16:20:04 rousseau Exp $ */
+/* $Id: password.c,v 1.18 2004/12/07 06:51:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * password.c
@@ -294,7 +294,7 @@ int dialog_password(GtkWindow *main_window, char *ascii_password, int retry)
    int ret;
 
    if (!ascii_password) {
-      return -1;
+      return EXIT_FAILURE;
    }
    ascii_password[0]='\0';
    ret = 2;

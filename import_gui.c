@@ -1,4 +1,4 @@
-/* $Id: import_gui.c,v 1.17 2004/11/28 16:20:04 rousseau Exp $ */
+/* $Id: import_gui.c,v 1.18 2004/12/07 06:51:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * import_gui.c
@@ -61,7 +61,7 @@ int read_csv_field(FILE *in, char *text, int size, int new_line)
    while (1) {
       c=getc(in);
       if (feof(in)) {
-	 return 0;
+	 return EXIT_SUCCESS;
 	 text[++n]='\0';
       }
       if (!strchr(sep, c)) {

@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.84 2004/12/02 19:57:07 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.85 2004/12/07 06:51:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -372,7 +372,7 @@ int address_print()
    if (this_many==1) {
       maddr = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
       if (maddr < (MyAddress *)CLIST_MIN_DATA) {
-	 return -1;
+	 return EXIT_FAILURE;
       }
       memcpy(&(address_list1.maddr), maddr, sizeof(MyAddress));
       address_list1.next=NULL;
@@ -391,7 +391,7 @@ int address_print()
       free_AddressList(&address_list);
    }
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int address_to_text(struct Address *addr, char *text, int len)
@@ -429,7 +429,7 @@ int address_to_text(struct Address *addr, char *text, int len)
 	      field_names[23], addr->phoneLabel[4],
 	      field_names[24], addr->showPhone
 	      );
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -456,7 +456,7 @@ int address_import_callback(GtkWidget *parent_window, const char *file_path, int
    in=fopen(file_path, "r");
    if (!in) {
       jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), file_path);
-      return -1;
+      return EXIT_FAILURE;
    }
 
    /* CSV */
@@ -536,7 +536,7 @@ int address_import_callback(GtkWidget *parent_window, const char *file_path, int
       if (dat_check_if_dat_file(in)!=DAT_ADDRESS_FILE) {
 	 jp_logf(JP_LOG_WARN, _("File doesn't appear to be address.dat format\n"));
 	 fclose(in);
-	 return 1;
+	 return EXIT_FAILURE;
       }
       addrlist=NULL;
       dat_get_addresses(in, &addrlist, &cai);
@@ -595,7 +595,7 @@ int address_import_callback(GtkWidget *parent_window, const char *file_path, int
 
    address_refresh();
    fclose(in);
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int address_import(GtkWidget *window)
@@ -612,7 +612,7 @@ int address_import(GtkWidget *window)
    };
 
    import_gui(window, pane, type_desc, type_int, address_import_callback);
-   return 0;
+   return EXIT_SUCCESS;
 }
 /*
  * End Import Code
@@ -1074,7 +1074,7 @@ int address_export(GtkWidget *window)
 	      cb_addr_export_ok
 	      );
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -1089,7 +1089,7 @@ static int find_sorted_cat(int cat)
 	 return i;
       }
    }
-   return 0;
+   return EXIT_FAILURE;
 }
 
 
@@ -2220,7 +2220,7 @@ static int make_phone_menu(int default_set, unsigned int callback_id, int set)
 
    gtk_widget_show(phone_list_menu[set]);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /* returns 1 if found, 0 if not */
@@ -2255,7 +2255,7 @@ int address_clist_redraw()
    address_update_clist(clist, category_menu1, &glob_address_list,
 			address_category, TRUE);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int address_cycle_cat()
@@ -2286,7 +2286,7 @@ int address_cycle_cat()
    }
    clist_row_selected = 0;
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int address_refresh()
@@ -2311,7 +2311,7 @@ int address_refresh()
 	(GTK_CHECK_MENU_ITEM(address_cat_menu_item1[index]), TRUE);
    }
    address_find();
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 
@@ -2441,7 +2441,7 @@ int address_gui_cleanup()
 #endif
    set_pref(PREF_LAST_ADDR_CATEGORY, address_category, NULL, TRUE);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -2955,5 +2955,5 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    address_refresh();
 
-   return 0;
+   return EXIT_SUCCESS;
 }

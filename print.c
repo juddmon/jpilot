@@ -1,4 +1,4 @@
-/* $Id: print.c,v 1.27 2004/11/28 16:20:04 rousseau Exp $ */
+/* $Id: print.c,v 1.28 2004/12/07 06:51:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * print.c
@@ -84,21 +84,21 @@ int courier_12()
 {
    /* fprintf(out, "/Courier 12 selectfont\n"); */
    fprintf(out, "%cC12\n", FLAG_CHAR);
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int courier_bold_12()
 {
    /* fprintf(out, "/Courier-Bold 12 selectfont\n"); */
    fprintf(out, "%cCB12\n", FLAG_CHAR);
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int clip_to_box(float x1, float y1, float x2, float y2)
 {
    fprintf(out, "%g inch %g inch %g inch %g inch rectclip\n",
            x1, y1, x2 - x1, y2 - y1);
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int puttext(float x, float y, char *text)
@@ -112,7 +112,7 @@ int puttext(float x, float y, char *text)
    ps_strncat(buf, text, 2 * len);
    fprintf(out, "%g inch %g inch moveto (%s) show\n", x, y, buf);
    free(buf);
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int header()
@@ -146,7 +146,7 @@ int header()
            "%%%%EndSetup\n"
            "%%%%Page: 1 1\n\n");
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int print_dayview(struct tm *date, AppointmentList *a_list)
@@ -203,7 +203,7 @@ int print_dayview(struct tm *date, AppointmentList *a_list)
    setlocale(LC_ALL, current_locale);
 #endif
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int fill_in(struct tm *date, AppointmentList *a_list)
@@ -294,7 +294,7 @@ int fill_in(struct tm *date, AppointmentList *a_list)
       fprintf(out, "grestore\n");
    }
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int print_days_appts(struct tm *date)
@@ -303,7 +303,7 @@ int print_days_appts(struct tm *date)
 
    out = print_open();
    if (!out) {
-      return -1;
+      return EXIT_FAILURE;
    }
 
    a_list = NULL;
@@ -316,7 +316,7 @@ int print_days_appts(struct tm *date)
 
    free_AppointmentList(&a_list);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int f_indent_print(FILE *f, int indent, char *str) {
@@ -343,7 +343,7 @@ int f_indent_print(FILE *f, int indent, char *str) {
       }
       fprintf(f, "%c", *P);
    }
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*----------------------------------------------------------------------
@@ -433,7 +433,7 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
 #ifdef HAVE_LOCALE_H
    current_locale = setlocale(LC_NUMERIC,"C");
 #endif
-   if (! (out = print_open())) return(-1);
+   if (! (out = print_open())) return(EXIT_FAILURE);
 
    fprintf(out,
 	   "%%!PS-Adobe-2.0\n"
@@ -567,7 +567,7 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
 #ifdef HAVE_LOCALE_H
    setlocale(LC_NUMERIC, current_locale);
 #endif
-     return(0);
+   return EXIT_SUCCESS;
 }
 
 /*----------------------------------------------------------------------
@@ -640,7 +640,7 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
    /*------------------------------------------------------------------
     * Set up the PostScript output file, and print the header to it.
     *------------------------------------------------------------------*/
-   if (! (out = print_open())) return(-1);
+   if (! (out = print_open())) return(EXIT_FAILURE);
 
    time(&ltime);
    fprintf(out,
@@ -779,7 +779,7 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
 #ifdef HAVE_LOCALE_H
    setlocale(LC_ALL, current_locale);
 #endif
-     return(0);
+     return EXIT_SUCCESS;
 }
 
 /*----------------------------------------------------------------------
@@ -1004,7 +1004,7 @@ int print_address_header()
 	   "0 %%The page number minus 1\n"
 	   "setup printit\n"
 	   );
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int print_addresses(AddressList *address_list)
@@ -1024,7 +1024,7 @@ int print_addresses(AddressList *address_list)
 
    out = print_open();
    if (!out) {
-      return -1;
+      return EXIT_FAILURE;
    }
 
 #ifdef HAVE_LOCALE_H
@@ -1108,7 +1108,7 @@ int print_addresses(AddressList *address_list)
    setlocale(LC_ALL, current_locale);
 #endif
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -1130,7 +1130,7 @@ int print_todos(ToDoList *todo_list, char *category_name)
 
    out = print_open();
    if (!out) {
-      return -1;
+      return EXIT_FAILURE;
    }
 
 #ifdef HAVE_LOCALE_H
@@ -1211,7 +1211,7 @@ int print_todos(ToDoList *todo_list, char *category_name)
    setlocale(LC_ALL, current_locale);
 #endif
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 /*
  *
@@ -1228,7 +1228,7 @@ int print_memos(MemoList *memo_list)
 
    out = print_open();
    if (!out) {
-      return -1;
+      return EXIT_FAILURE;
    }
 
 #ifdef HAVE_LOCALE_H
@@ -1269,5 +1269,5 @@ int print_memos(MemoList *memo_list)
 
    print_close(out);
 
-   return 0;
+   return EXIT_SUCCESS;
 }
