@@ -723,8 +723,10 @@ FILE *open_file(char *filename, char *mode)
    pc_in = fopen(file_name, mode);
    if (pc_in == NULL) {
       pc_in = fopen(file_name, "w+");
-      fclose(pc_in);
-      pc_in = fopen(file_name, mode);
+      if (pc_in) {
+	 fclose(pc_in);
+	 pc_in = fopen(file_name, mode);
+      }
    }
    return pc_in;
 }

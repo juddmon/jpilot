@@ -363,7 +363,7 @@ int get_addresses(AddressList **address_list)
 	 num = fread(buf, 1, rec_size, in);
 	 if (num<=0) {
 	    free(buf);
-	    return -1;
+	    break;
 	 }
 
 	 num = unpack_Address(&a, buf, rec_size);

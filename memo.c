@@ -254,7 +254,7 @@ int get_memos(MemoList **memo_list)
 	 num = fread(buf, 1, rec_size, in);
 	 if (!num) {	
 	    free(buf);
-	    return -1;
+	    break;
 	 }
 	 
 	 num = unpack_Memo(&memo, buf, rec_size);

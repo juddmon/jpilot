@@ -32,7 +32,7 @@
 #define PRINT_FILE_LINE printf("%s line %d\n", __FILE__, __LINE__)
 #define PN "J-Pilot"
 #define EPN "jpilot"
-#define VERSION "0.93"
+#define VERSION "0.93.1"
 #define VERSION_STRING "\n"PN" version "VERSION"\n"\
 " Copyright (C) 1999 by Judd Montgomery\n"
 

@@ -213,7 +213,8 @@ static int pc_todo_read_next_rec(FILE *in, MyToDo *mtodo)
    num = unpack_ToDo(&(mtodo->todo), record, rec_len);
    free(record);
    if (num<=0) {
-      return -1;
+      jpilot_logf(LOG_DEBUG, "unpack_ToDo failed\n");
+      return TODO_EOF;
    }
    return 0;
 }
@@ -404,12 +405,13 @@ int get_todos(ToDoList **todo_list)
 	 num = fread(buf, 1, rec_size, in);
 	 if (feof(in) || (!num)) {
 	    free(buf);
-	    return TODO_EOF;
+	    break;
 	 }
 
 	 num = unpack_ToDo(&todo, buf, rec_size);
 	 free(buf);
 	 if (num<=0) {
+	    jpilot_logf(LOG_DEBUG, "unpack_ToDo failed\n");
 	    continue;
 	 }
 #if defined(Japanese)
@@ -439,6 +441,7 @@ int get_todos(ToDoList **todo_list)
    //
    pc_in = open_file("ToDoDB.pc", "r");
    if (pc_in==NULL) {
+      jpilot_logf(LOG_DEBUG, "open_file failed\n");
       return 0;
    }
    //r = pc_datebook_read_file_header(pc_in);
