@@ -210,13 +210,13 @@ int show_privates(int hide, char *password)
 	 return HIDE_PRIVATES;
       }
 
+#ifdef ENABLE_PRIVATE
       /* It seems that Palm OS lower cases the password first */
       /* Yes, I have found this documented on Palms site */
       for (i=0; i < PASSWD_LEN; i++) {
 	 password_lower[i] = tolower(password[i]);
       }
 
-#ifdef ENABLE_PRIVATE
       matched=0;
 
       /* Check to see that the password matches */
