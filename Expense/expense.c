@@ -28,6 +28,7 @@
 #include "libplugin.h"
 
 #include <pi-expense.h>
+#include <pi-dlp.h>
 
 #define EXPENSE_CAT1 1
 #define EXPENSE_CAT2 2
@@ -36,8 +37,6 @@
 #define EXPENSE_CURRENCY 5
 
 #define CATEGORY_ALL 200
-
-#define DONT_DISPLAY 100
 
 #define CONNECT_SIGNALS 400
 #define DISCONNECT_SIGNALS 401
@@ -61,6 +60,12 @@ struct Expense {
 /* This is the category that is currently being displayed */
 static int show_category;
 static int glob_category_number_from_menu_item[16];
+static void cb_clist_selection(GtkWidget      *clist,
+			       gint           row,
+			       gint           column,
+			       GdkEventButton *event,
+			       gpointer       data);
+static void cb_add_new_record(GtkWidget *widget, gpointer data);
 
 static GtkWidget *clist;
 static GtkWidget *entry_amount;
@@ -76,18 +81,19 @@ static GtkWidget *menu_item_category2[16];
 static GtkWidget *menu_expense_type;
 static GtkWidget *menu_item_expense_type[28];
 static GtkWidget *spinner_mon, *spinner_day, *spinner_year;
-GtkAdjustment *adj_mon, *adj_day, *adj_year;
-GtkWidget *scrolled_window;
+static GtkAdjustment *adj_mon, *adj_day, *adj_year;
+static GtkWidget *scrolled_window;
 static GtkWidget *new_record_button;
 static GtkWidget *apply_record_button;
 static GtkWidget *add_record_button;
 
 static int record_changed;
+static int clist_hack;
 
 static int glob_detail_category;
 static int glob_detail_type;
 static int glob_detail_payment;
-static int glob_row_selected;
+static int clist_row_selected;
 
 static void display_records();
 
@@ -106,6 +112,69 @@ struct MyExpense {
 
 struct MyExpense *glob_myexpense_list=NULL;
 
+static int move_scrolled_window(GtkWidget *sw, float percentage);
+
+struct move_sw {
+   float percentage;
+   GtkWidget *sw;
+};
+
+static gint cb_timer_move_scrolled_window(gpointer data)
+{
+   struct move_sw *move_this;
+   int r;
+   
+   move_this = data;
+   r = move_scrolled_window(move_this->sw, move_this->percentage);
+   /*if we return TRUE then this function will get called again */
+   /*if we return FALSE then it will be taken out of timer */
+   if (r) {
+      return TRUE;
+   } else {
+      return FALSE;
+   }
+}
+
+static void move_scrolled_window_hack(GtkWidget *sw, float percentage)
+{
+   /*This is so that the caller doesn't have to worry about making */
+   /*sure they use a static variable (required for callback) */
+   static struct move_sw move_this;
+
+   move_this.percentage = percentage;
+   move_this.sw = sw;
+   
+   gtk_timeout_add(50, cb_timer_move_scrolled_window, &move_this);
+}
+
+static int move_scrolled_window(GtkWidget *sw, float percentage)
+{
+   GtkScrollbar *sb;
+   gfloat upper, lower, page_size, new_val;
+
+   if (!GTK_IS_SCROLLED_WINDOW(sw)) {
+      return 0;
+   }
+   sb = GTK_SCROLLBAR(GTK_SCROLLED_WINDOW(sw)->vscrollbar);
+   upper = GTK_ADJUSTMENT(sb->range.adjustment)->upper;
+   lower = GTK_ADJUSTMENT(sb->range.adjustment)->lower;
+   page_size = GTK_ADJUSTMENT(sb->range.adjustment)->page_size;
+   
+   /*The screen isn't done drawing yet, so we have to leave. */
+   if (page_size == 0) {
+      return 1;
+   }
+   new_val = (upper - lower) * percentage;
+   if (new_val > upper - page_size) {
+      new_val = upper - page_size;
+   }
+   gtk_adjustment_set_value(sb->range.adjustment, new_val);
+   gtk_signal_emit_by_name(GTK_OBJECT(sb->range.adjustment), "changed");
+
+   return 0;
+}
+
+
 static void
 set_new_button_to(int new_state)
 {
@@ -116,12 +185,22 @@ set_new_button_to(int new_state)
 
    switch (new_state) {
     case MODIFY_FLAG:
+      gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_SINGLE);
+      clist_hack=TRUE;
+      /* The line selected on the clist becomes unhighlighted, so we do this */
+      gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
       gtk_widget_show(apply_record_button);
       break;
     case NEW_FLAG:
+      gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_SINGLE);
+      clist_hack=TRUE;
+      /* The line selected on the clist becomes unhighlighted, so we do this */
+      gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
       gtk_widget_show(add_record_button);
       break;
     case CLEAR_FLAG:
+      gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
+      clist_hack=FALSE;
       gtk_widget_show(new_record_button);
       break;
     default:
@@ -148,7 +227,11 @@ cb_record_changed(GtkWidget *widget,
    jpilot_logf(LOG_DEBUG, "cb_record_changed\n");
    if (record_changed==CLEAR_FLAG) {
       connect_changed_signals(DISCONNECT_SIGNALS);
-      set_new_button_to(MODIFY_FLAG);
+      if (((GtkCList *)clist)->rows > 0) {
+	 set_new_button_to(MODIFY_FLAG);
+      } else {
+	 set_new_button_to(NEW_FLAG);
+      }
    }
 }
 
@@ -268,7 +351,7 @@ int plugin_get_db_name(char *name, int len)
 /*
  * A utility function for getting textual data from an enum.
  */
-char *get_entry_type(enum ExpenseType type)
+static char *get_entry_type(enum ExpenseType type)
 {
    switch(type) {
     case etAirfare:
@@ -332,10 +415,11 @@ char *get_entry_type(enum ExpenseType type)
    }
 }
 
+#ifdef JPILOT_DEBUG
 /*
  * A utility function for getting textual data from an enum.
  */
-char *get_pay_type(enum ExpensePayment type)
+static char *get_pay_type(enum ExpensePayment type)
 {
    switch (type) {
     case epAmEx:
@@ -358,22 +442,109 @@ char *get_pay_type(enum ExpensePayment type)
       return NULL;
    }
 }
+#endif
+
+/* This function gets called when the "delete" button is pressed */
+static void cb_delete(GtkWidget *widget, int data)
+{
+   struct MyExpense *mex;
+   int size;
+   char buf[0xFFFF];
+   buf_rec br;
+   int flag;
+
+   jp_logf(LOG_DEBUG, "Expense: cb_delete\n");
+
+   flag=GPOINTER_TO_INT(data);
+
+   mex = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
+   if (!mex) {
+      return;
+   }
+
+   connect_changed_signals(DISCONNECT_SIGNALS);
+   set_new_button_to(CLEAR_FLAG);
+
+   /* The record that we want to delete should be written to the pc file
+    * so that it can be deleted at sync time.  We need the original record
+    * so that if it has changed on the pilot we can warn the user that
+    * the record has changed on the pilot. */
+   size = pack_Expense(&(mex->ex), buf, 0xFFFF);
+   
+   br.rt = mex->rt;
+   br.unique_id = mex->unique_id;
+   br.attrib = mex->attrib;
+   br.buf = buf;
+   br.size = size;
+
+   if ((flag==MODIFY_FLAG) || (flag==DELETE_FLAG)) {
+      jp_delete_record("ExpenseDB", &br, DELETE_FLAG);
+   }
+
+   display_records();
+		 
+   connect_changed_signals(CONNECT_SIGNALS);
+}
+
+/*
+ * This is called when the "Clear" button is pressed.
+ * It just clears out all the detail fields.
+ */
+static void clear_details()
+{
+   time_t ltime;
+   struct tm *now;
+   
+   time(&ltime);
+   now = localtime(&ltime);
+   
+   jp_logf(LOG_DEBUG, "Expense: cb_clear\n");
+
+   connect_changed_signals(DISCONNECT_SIGNALS);
+   set_new_button_to(NEW_FLAG);
+
+   gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinner_mon), now->tm_mon+1);
+   gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinner_day), now->tm_mday);
+   gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinner_year), now->tm_year+1900);
+
+   gtk_entry_set_text(GTK_ENTRY(entry_amount), "");
+   gtk_entry_set_text(GTK_ENTRY(entry_vendor), "");
+   gtk_entry_set_text(GTK_ENTRY(entry_city), "");
+   gtk_text_backward_delete(GTK_TEXT(text_attendees),
+			    gtk_text_get_length(GTK_TEXT(text_attendees)));
+   gtk_text_backward_delete(GTK_TEXT(text_note),
+			    gtk_text_get_length(GTK_TEXT(text_note)));
+
+   connect_changed_signals(CONNECT_SIGNALS);
+}
 
 /*
  * This function is called when the user presses the "Add" button.
  * We collect all of the data from the GUI and pack it into an expense
  * record and then write it out.
  */
-static void cb_add_new_record(GtkWidget *widget,
-			      int data)
+static void cb_add_new_record(GtkWidget *widget, gpointer data)
 {
    struct Expense ex;
    buf_rec br;
    char *text;
    unsigned char buf[0xFFFF];
    int size;
+   int flag;
    
    jp_logf(LOG_DEBUG, "Expense: cb_add_new_record\n");
+
+   flag=GPOINTER_TO_INT(data);
+   
+   if (flag==CLEAR_FLAG) {
+      connect_changed_signals(DISCONNECT_SIGNALS);
+      clear_details();
+      set_new_button_to(NEW_FLAG);
+      return;
+   }
+   if ((flag!=NEW_FLAG) && (flag!=MODIFY_FLAG) && (flag!=COPY_FLAG)) {
+      return;
+   }
 
    ex.date.tm_mon  = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(spinner_mon)) - 1;;
    ex.date.tm_mday = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(spinner_day));;
@@ -438,125 +609,33 @@ static void cb_add_new_record(GtkWidget *widget,
    br.buf = buf;
    br.size = size;
 
-   /* Write out the record.  It goes to the .pc file until it gets synced */
+   /* Write out the record.  It goes to the .pc3 file until it gets synced */
    jp_pc_write("ExpenseDB", &br);
 
    connect_changed_signals(CONNECT_SIGNALS);
    set_new_button_to(CLEAR_FLAG);
    
-   if (data!=DONT_DISPLAY) {
+   if (flag==MODIFY_FLAG) {
+      cb_delete(NULL, MODIFY_FLAG);
+   } else {
       display_records();
    }
 
    return;
 }
 
-/* This function gets called when the "delete" button is pressed */
-void cb_delete(GtkWidget *widget,
-	       int data)
-{
-   struct MyExpense *mex;
-   int size;
-   char buf[0xFFFF];
-   buf_rec br;
-
-   jp_logf(LOG_DEBUG, "Expense: cb_delete\n");
-
-   mex = gtk_clist_get_row_data(GTK_CLIST(clist), glob_row_selected);
-   if (!mex) {
-      return;
-   }
-
-   connect_changed_signals(DISCONNECT_SIGNALS);
-   set_new_button_to(CLEAR_FLAG);
-
-   /* The record that we want to delete should be written to the pc file
-    * so that it can be deleted at sync time.  We need the original record
-    * so that if it has changed on the pilot we can warn the user that
-    * the record has changed on the pilot. */
-   size = pack_Expense(&(mex->ex), buf, 0xFFFF);
-   
-   br.rt = mex->rt;
-   br.unique_id = mex->unique_id;
-   br.attrib = mex->attrib;
-   br.buf = buf;
-   br.size = size;
-
-   jp_delete_record("ExpenseDB", &br, DELETE_FLAG);
-
-   if (data!=DONT_DISPLAY) {
-      display_records();
-   }
-   connect_changed_signals(CONNECT_SIGNALS);
-}
-
-/*
- * This function is called when the "modify" button is pressed.
- * We just delete the record and write a new one and redisplay them
- */
-static void cb_modify(GtkWidget *widget,
-		      int data)
-{
-   jp_logf(LOG_DEBUG, "Expense: cb_modify\n");
-
-   connect_changed_signals(DISCONNECT_SIGNALS);
-   set_new_button_to(CLEAR_FLAG);
-
-   cb_add_new_record(NULL, DONT_DISPLAY);
-   cb_delete(NULL, DONT_DISPLAY);
-   display_records();
-
-   connect_changed_signals(CONNECT_SIGNALS);
-}
-
-/*
- * This is called when the "Clear" button is pressed.
- * It just clears out all the detail fields.
- */
-static void cb_clear(GtkWidget *widget,
-		     int data)
-{
-   time_t ltime;
-   struct tm *now;
-   
-   time(&ltime);
-   now = localtime(&ltime);
-   
-   jp_logf(LOG_DEBUG, "Expense: cb_clear\n");
-
-   connect_changed_signals(DISCONNECT_SIGNALS);
-   set_new_button_to(NEW_FLAG);
-
-   gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinner_mon), now->tm_mon+1);
-   gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinner_day), now->tm_mday);
-   gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinner_year), now->tm_year+1900);
-
-   gtk_entry_set_text(GTK_ENTRY(entry_amount), "");
-   gtk_entry_set_text(GTK_ENTRY(entry_vendor), "");
-   gtk_entry_set_text(GTK_ENTRY(entry_city), "");
-   gtk_text_backward_delete(GTK_TEXT(text_attendees),
-			    gtk_text_get_length(GTK_TEXT(text_attendees)));
-   gtk_text_backward_delete(GTK_TEXT(text_note),
-			    gtk_text_get_length(GTK_TEXT(text_note)));
-
-   connect_changed_signals(CONNECT_SIGNALS);
-}
-
 /*
  * This function just adds the record to the clist on the left side of
  * the screen.
  */
-int display_record(struct MyExpense *mex)
+static int display_record(struct MyExpense *mex, int at_row)
 {
-   gchar *empty_line[] = { "","","" };
    char *Ptype;
    char date[12];
    GdkColor color;
    GdkColormap *colormap;
 
    /* jp_logf(LOG_DEBUG, "Expense: display_record\n");*/
-
-   gtk_clist_prepend(GTK_CLIST(clist), empty_line);
 
    switch (mex->rt) {
     case NEW_PC_REC:
@@ -565,14 +644,14 @@ int display_record(struct MyExpense *mex)
       color.green=CLIST_NEW_GREEN;
       color.blue=CLIST_NEW_BLUE;
       gdk_color_alloc(colormap, &color);
-      gtk_clist_set_background(GTK_CLIST(clist), 0, &color);
+      gtk_clist_set_background(GTK_CLIST(clist), at_row, &color);
     case DELETED_PALM_REC:
       colormap = gtk_widget_get_colormap(clist);
       color.red=CLIST_DEL_RED;
       color.green=CLIST_DEL_GREEN;
       color.blue=CLIST_DEL_BLUE;
       gdk_color_alloc(colormap, &color);
-      gtk_clist_set_background(GTK_CLIST(clist), 0, &color);
+      gtk_clist_set_background(GTK_CLIST(clist), at_row, &color);
       break;
     case MODIFIED_PALM_REC:
       colormap = gtk_widget_get_colormap(clist);
@@ -580,22 +659,31 @@ int display_record(struct MyExpense *mex)
       color.green=CLIST_MOD_GREEN;
       color.blue=CLIST_MOD_BLUE;
       gdk_color_alloc(colormap, &color);
-      gtk_clist_set_background(GTK_CLIST(clist), 0, &color);
+      gtk_clist_set_background(GTK_CLIST(clist), at_row, &color);
       break;
     default:
-      gtk_clist_set_background(GTK_CLIST(clist), 0, NULL);
+      if (mex->attrib & dlpRecAttrSecret) {
+	 colormap = gtk_widget_get_colormap(clist);
+	 color.red=CLIST_PRIVATE_RED;
+	 color.green=CLIST_PRIVATE_GREEN;
+	 color.blue=CLIST_PRIVATE_BLUE;
+	 gdk_color_alloc(colormap, &color);
+	 gtk_clist_set_background(GTK_CLIST(clist), at_row, &color);
+      } else {
+	 gtk_clist_set_background(GTK_CLIST(clist), at_row, NULL);
+      }
    }
 
-   gtk_clist_set_row_data(GTK_CLIST(clist), 0, mex);
+   gtk_clist_set_row_data(GTK_CLIST(clist), at_row, mex);
 
    sprintf(date, "%02d/%02d", mex->ex.date.tm_mon+1, mex->ex.date.tm_mday);
-   gtk_clist_set_text(GTK_CLIST(clist), 0, 0, date);
+   gtk_clist_set_text(GTK_CLIST(clist), at_row, 0, date);
 
    Ptype = get_entry_type(mex->ex.type);
-   gtk_clist_set_text(GTK_CLIST(clist), 0, 1, Ptype);
+   gtk_clist_set_text(GTK_CLIST(clist), at_row, 1, Ptype);
 
    if (mex->ex.amount) {
-      gtk_clist_set_text(GTK_CLIST(clist), 0, 2, mex->ex.amount);
+      gtk_clist_set_text(GTK_CLIST(clist), at_row, 2, mex->ex.amount);
    }
    
    return 0;
@@ -607,15 +695,19 @@ int display_record(struct MyExpense *mex)
  */
 static void display_records()
 {
-   int num, i, num_shown;
+   int num, i;
+   int row_count, entries_shown;
    struct MyExpense *mex;
    GList *records;
    GList *temp_list;
    buf_rec *br;
+   gchar *empty_line[] = { "","","" };
    
    records=NULL;
    
    jp_logf(LOG_DEBUG, "Expense: display_records\n");
+   
+   row_count=((GtkCList *)clist)->rows;
 
    connect_changed_signals(DISCONNECT_SIGNALS);
    set_new_button_to(CLEAR_FLAG);
@@ -626,15 +718,13 @@ static void display_records()
 
    gtk_clist_freeze(GTK_CLIST(clist));
 
-   gtk_clist_clear(GTK_CLIST(clist));
-
    /* This function takes care of reading the Database for us */
    num = jp_read_DB_files("ExpenseDB", &records);
    /* Go to first entry in the list */
    for (temp_list = records; temp_list; temp_list = temp_list->prev) {
       records = temp_list;
    }
-   num_shown = 0;
+   entries_shown = 0;
 
    for (i=0, temp_list = records; temp_list; temp_list = temp_list->next, i++) {
       if (temp_list->data) {
@@ -669,27 +759,36 @@ static void display_records()
        * unpack_Expense is already written in pilot-link, but normally
        * an unpack must be written for each type of application */
       if (unpack_Expense(&(mex->ex), br->buf, br->size)!=0) {
-	 display_record(mex);
+	 entries_shown++;
+	 if (entries_shown>row_count) {
+	    gtk_clist_append(GTK_CLIST(clist), empty_line);
+	 }
+	 display_record(mex, entries_shown-1);
       }
-      
+
       if (glob_myexpense_list==NULL) {
 	 glob_myexpense_list=mex;
       } else {
 	 glob_myexpense_list->next=mex;
       }
-      
-      num_shown++;
    }
    
-   gtk_clist_thaw(GTK_CLIST(clist));
-
-   if (num_shown) {
-      gtk_clist_select_row(GTK_CLIST(clist), 0, 0);
+   /* Delete any extra rows, the data is already freed by freeing the list */
+   for (i=row_count-1; i>=entries_shown; i--) {
+      gtk_clist_set_row_data(GTK_CLIST(clist), i, NULL);
+      gtk_clist_remove(GTK_CLIST(clist), i);
    }
+      
+   gtk_clist_thaw(GTK_CLIST(clist));
 
    jp_free_DB_records(&records);
 
    connect_changed_signals(CONNECT_SIGNALS);
+
+   if (entries_shown) {
+      gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
+      cb_clist_selection(clist, clist_row_selected, 0, (gpointer)455, NULL);
+   }
 
    jp_logf(LOG_DEBUG, "Expense: leave display_records\n");
 }
@@ -706,12 +805,34 @@ static void cb_clist_selection(GtkWidget      *clist,
 {
    struct MyExpense *mex;
    int i, item_num, category;
+   int keep, b;
    
    jp_logf(LOG_DEBUG, "Expense: cb_clist_selection\n");
+
+   if (!event) return;
 
    if (row<0) {
       return;
    }
+
+   /* HACK */
+   if (clist_hack) {
+      keep=record_changed;
+      gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, column);
+      b=dialog_save_changed_record(scrolled_window, record_changed);
+      if (b==DIALOG_SAID_1) {
+	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
+      }
+      set_new_button_to(CLEAR_FLAG);
+      /* This doesn't cause an event to occur, it does highlight
+       * the line, so we do the next call also */
+      gtk_clist_select_row(GTK_CLIST(clist), row, column);
+      cb_clist_selection(clist, row, column, GINT_TO_POINTER(1), NULL);
+      return;
+   }
+   
+   clist_row_selected = row;
+
    mex = gtk_clist_get_row_data(GTK_CLIST(clist), row);
    if (mex==NULL) {
       return;
@@ -721,8 +842,6 @@ static void cb_clist_selection(GtkWidget      *clist,
    connect_changed_signals(DISCONNECT_SIGNALS);
    set_new_button_to(NEW_FLAG);
    
-   glob_row_selected = row;
-
    category = mex->attrib & 0x0F;
    item_num=0;
    for (i=0; i<16; i++) {
@@ -788,11 +907,12 @@ static void cb_clist_selection(GtkWidget      *clist,
  * All menus use this same callback function.  I use the value parameter
  * to determine which menu was changed and which item was selected from it.
  */
-void cb_menu(GtkWidget *item, unsigned int value)
+static void cb_category(GtkWidget *item, unsigned int value)
 {
    int menu, sel;
+   int b;
    
-   jp_logf(LOG_DEBUG, "Expense: cb_menu\n");
+   jp_logf(LOG_DEBUG, "Expense: cb_category\n");
    if (!item) {
       return;
    }
@@ -805,6 +925,11 @@ void cb_menu(GtkWidget *item, unsigned int value)
 
    switch (menu) {
     case EXPENSE_CAT1:
+      b=dialog_save_changed_record(scrolled_window, record_changed);
+      if (b==DIALOG_SAID_1) {
+	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
+      }
+   
       show_category=sel;
       display_records();
       break;
@@ -858,7 +983,7 @@ static int make_menu(char *items[], int menu_index, GtkWidget **Poption_menu,
 	 item_num = i;
       }
       gtk_signal_connect(GTK_OBJECT(menu_item), "activate",
-			 cb_menu, GINT_TO_POINTER(menu_index<<8 | item_num));
+			 cb_category, GINT_TO_POINTER(menu_index<<8 | item_num));
       group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(menu_item));
       gtk_menu_append(GTK_MENU(menu), menu_item);
       gtk_widget_show(menu_item);
@@ -958,74 +1083,11 @@ static void make_menus()
    
 }
 
-int move_scrolled_window(GtkWidget *sw, float percentage);
-
-struct move_sw {
-   float percentage;
-   GtkWidget *sw;
-};
-
-gint cb_timer_move_scrolled_window(gpointer data)
-{
-   struct move_sw *move_this;
-   int r;
-   
-   move_this = data;
-   r = move_scrolled_window(move_this->sw, move_this->percentage);
-   /*if we return TRUE then this function will get called again */
-   /*if we return FALSE then it will be taken out of timer */
-   if (r) {
-      return TRUE;
-   } else {
-      return FALSE;
-   }
-}
-
-void move_scrolled_window_hack(GtkWidget *sw, float percentage)
-{
-   /*This is so that the caller doesn't have to worry about making */
-   /*sure they use a static variable (required for callback) */
-   static struct move_sw move_this;
-
-   move_this.percentage = percentage;
-   move_this.sw = sw;
-   
-   gtk_timeout_add(50, cb_timer_move_scrolled_window, &move_this);
-}
-
-int move_scrolled_window(GtkWidget *sw, float percentage)
-{
-   GtkScrollbar *sb;
-   gfloat upper, lower, page_size, new_val;
-
-   if (!GTK_IS_SCROLLED_WINDOW(sw)) {
-      return 0;
-   }
-   sb = GTK_SCROLLBAR(GTK_SCROLLED_WINDOW(sw)->vscrollbar);
-   upper = GTK_ADJUSTMENT(sb->range.adjustment)->upper;
-   lower = GTK_ADJUSTMENT(sb->range.adjustment)->lower;
-   page_size = GTK_ADJUSTMENT(sb->range.adjustment)->page_size;
-   
-   /*The screen isn't done drawing yet, so we have to leave. */
-   if (page_size == 0) {
-      return 1;
-   }
-   new_val = (upper - lower) * percentage;
-   if (new_val > upper - page_size) {
-      new_val = upper - page_size;
-   }
-   gtk_adjustment_set_value(sb->range.adjustment, new_val);
-   gtk_signal_emit_by_name(GTK_OBJECT(sb->range.adjustment), "changed");
-
-   return 0;
-}
-
-
 /*returns 0 if not found, 1 if found */
-int clist_find_id(GtkWidget *clist,
-		  unsigned int unique_id,
-		  int *found_at,
-		  int *total_count)
+static int clist_find_id(GtkWidget *clist,
+			 unsigned int unique_id,
+			 int *found_at,
+			 int *total_count)
 {
    int i, found;
    struct MyExpense *mex;
@@ -1070,6 +1132,7 @@ static int expense_find(int unique_id)
 	 total_count = 1;
       }
       gtk_clist_select_row(GTK_CLIST(clist), found_at, 0);
+      cb_clist_selection(clist, found_at, 0, (gpointer)455, NULL);
       move_scrolled_window_hack(scrolled_window,
 				(float)found_at/(float)total_count);
    }
@@ -1098,7 +1161,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
 
    record_changed=CLEAR_FLAG;
    show_category = CATEGORY_ALL;
-   glob_row_selected = 0;
+   clist_row_selected = 0;
 
    time(&ltime);
    now = localtime(&ltime);
@@ -1136,6 +1199,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    
    /* Clist */
    clist = gtk_clist_new(3);
+   clist_hack=FALSE;
    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
 		      GTK_SIGNAL_FUNC(cb_clist_selection),
 		      NULL);
@@ -1163,24 +1227,28 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    button = gtk_button_new_with_label("Copy");
    gtk_box_pack_start(GTK_BOX(temp_hbox), button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_add_new_record), NULL);
+		      GTK_SIGNAL_FUNC(cb_add_new_record), 
+		      GINT_TO_POINTER(COPY_FLAG));
 
    new_record_button = gtk_button_new_with_label("New Record");
    gtk_box_pack_start(GTK_BOX(temp_hbox), new_record_button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(new_record_button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_clear), NULL);
+		      GTK_SIGNAL_FUNC(cb_add_new_record),
+		      GINT_TO_POINTER(CLEAR_FLAG));
 
    add_record_button = gtk_button_new_with_label("Add Record");
    gtk_box_pack_start(GTK_BOX(temp_hbox), add_record_button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(add_record_button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_add_new_record), NULL);
+		      GTK_SIGNAL_FUNC(cb_add_new_record),
+		      GINT_TO_POINTER(NEW_FLAG));
    gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(GTK_BIN(add_record_button)->child)),
 		       "label_high");
 
    apply_record_button = gtk_button_new_with_label("Apply Changes");
    gtk_box_pack_start(GTK_BOX(temp_hbox), apply_record_button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(apply_record_button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_modify), NULL);
+		      GTK_SIGNAL_FUNC(cb_add_new_record),
+		      GINT_TO_POINTER(MODIFY_FLAG));
    gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(GTK_BIN(apply_record_button)->child)),
 		       "label_high");
    
@@ -1211,8 +1279,6 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_box_pack_start(GTK_BOX(temp_hbox), menu_payment, TRUE, TRUE, 0);
 
 
-   
-   
    /* Date Spinners */
    temp_hbox = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), temp_hbox, FALSE, FALSE, 0);
@@ -1343,6 +1409,13 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
  * application should go directly to that record in the case.
  */
 int plugin_gui_cleanup() {
+   int b;
+   
+   b=dialog_save_changed_record(scrolled_window, record_changed);
+   if (b==DIALOG_SAID_1) {
+      cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
+   }
+
    connect_changed_signals(DISCONNECT_SIGNALS);
 
    jp_logf(LOG_DEBUG, "Expense: plugin_gui_cleanup\n");

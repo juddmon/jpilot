@@ -1,6 +1,7 @@
 /* todo_gui.c
+ * A module of J-Pilot http://jpilot.org
  * 
- * Copyright (C) 1999 by Judd Montgomery
+ * Copyright (C) 1999-2001 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +24,7 @@
 #include <gdk/gdk.h>
 #include <time.h>
 #include <stdlib.h>
+#include <string.h>
 #include <pi-dlp.h>
 #include "utils.h"
 #include "todo.h"
@@ -36,6 +38,12 @@
 #define NUM_TODO_CAT_ITEMS 16
 #define CONNECT_SIGNALS 400
 #define DISCONNECT_SIGNALS 401
+
+#define TODO_CHECK_COLUMN     0
+#define TODO_PRIORITY_COLUMN  1
+#define TODO_NOTE_COLUMN      2
+#define TODO_DATE_COLUMN      3
+#define TODO_TEXT_COLUMN      4
 
 extern GtkTooltips *glob_tooltips;
 
@@ -57,6 +65,7 @@ static GtkWidget *category_menu1;
 static GtkWidget *category_menu2;
 static GtkWidget *scrolled_window;
 static GtkWidget *pane;
+static ToDoList *glob_todo_list=NULL;
 
 static struct sorted_cats sort_l[NUM_TODO_CAT_ITEMS];
 
@@ -64,12 +73,14 @@ struct ToDoAppInfo todo_app_info;
 int todo_category=CATEGORY_ALL;
 static int clist_row_selected;
 static int record_changed;
+static int clist_hack;
 
 void update_todo_screen();
 int todo_clear_details();
 int todo_clist_redraw();
 static void connect_changed_signals(int con_or_dis);
 static int todo_find();
+static void cb_add_new_record(GtkWidget *widget, gpointer data);
 
 
 static void init()
@@ -159,7 +170,7 @@ int todo_print()
       get_todos2(&todo_list, SORT_ASCENDING, 2, 2, 2, 2, CATEGORY_ALL);
    }
 
-   print_todos(todo_list);
+   print_todos(todo_list, PN);
 
    if ((this_many==2) || (this_many==3)) {
       free_ToDoList(&todo_list);
@@ -179,12 +190,22 @@ set_new_button_to(int new_state)
 
    switch (new_state) {
     case MODIFY_FLAG:
+      gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_SINGLE);
+      clist_hack=TRUE;
+      /* The line selected on the clist becomes unhighlighted, so we do this */
+      gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
       gtk_widget_show(apply_record_button);
       break;
     case NEW_FLAG:
+      gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_SINGLE);
+      clist_hack=TRUE;
+      /* The line selected on the clist becomes unhighlighted, so we do this */
+      gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
       gtk_widget_show(add_record_button);
       break;
     case CLEAR_FLAG:
+      gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
+      clist_hack=FALSE;
       gtk_widget_show(new_record_button);
       break;
     default:
@@ -211,7 +232,11 @@ cb_record_changed(GtkWidget *widget,
    jpilot_logf(LOG_DEBUG, "cb_record_changed\n");
    if (record_changed==CLEAR_FLAG) {
       connect_changed_signals(DISCONNECT_SIGNALS);
-      set_new_button_to(MODIFY_FLAG);
+      if (((GtkCList *)clist)->rows > 0) {
+	 set_new_button_to(MODIFY_FLAG);
+      } else {
+	 set_new_button_to(NEW_FLAG);
+      }
    }
 }
 
@@ -296,11 +321,19 @@ void cb_delete_todo(GtkWidget *widget,
 {
    MyToDo *mtodo;
    int flag;
+   int show_priv;
    
    mtodo = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
    if (mtodo < (MyToDo *)CLIST_MIN_DATA) {
       return;
    }
+   /* Do masking like Palm OS 3.5 */
+   show_priv = show_privates(GET_PRIVATES, NULL);
+   if ((show_priv != SHOW_PRIVATES) &&
+       (mtodo->attrib & dlpRecAttrSecret)) {
+      return;
+   }
+   /* End Masking */
    flag = GPOINTER_TO_INT(data);
    if ((flag==MODIFY_FLAG) || (flag==DELETE_FLAG)) {
       jpilot_logf(LOG_DEBUG, "calling delete_pc_record\n");
@@ -315,8 +348,14 @@ void cb_delete_todo(GtkWidget *widget,
    todo_clist_redraw();
 }
 
-void cb_todo_category(GtkWidget *item, int selection)
+static void cb_category(GtkWidget *item, int selection)
 {
+   int b;
+   
+   b=dialog_save_changed_record(pane, record_changed);
+   if (b==DIALOG_SAID_1) {
+      cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
+   }   
    if ((GTK_CHECK_MENU_ITEM(item))->active) {
       todo_category = selection;
       jpilot_logf(LOG_DEBUG, "todo_category = %d\n",todo_category);
@@ -337,8 +376,7 @@ void cb_check_button_no_due_date(GtkWidget *widget, gpointer data)
 void cb_hide_completed(GtkWidget *widget,
 		       gpointer   data)
 {
-   set_pref(PREF_HIDE_COMPLETED,
-	    GTK_TOGGLE_BUTTON(widget)->active);
+   set_pref(PREF_HIDE_COMPLETED, GTK_TOGGLE_BUTTON(widget)->active, NULL);
    todo_clear_details();
    todo_clist_redraw();
 }
@@ -460,17 +498,31 @@ int todo_get_details(struct ToDo *new_todo, unsigned char *attrib)
    return 0;
 }
 
-static void cb_add_new_record(GtkWidget *widget,
-			      gpointer   data)
+static void cb_add_new_record(GtkWidget *widget, gpointer data)
 {
    MyToDo *mtodo;
    struct ToDo new_todo;
    unsigned char attrib;
    int flag;
+   int show_priv;
    unsigned int unique_id;
    
    flag=GPOINTER_TO_INT(data);
    
+   /* Do masking like Palm OS 3.5 */
+   if ((GPOINTER_TO_INT(data)==COPY_FLAG) || 
+       (GPOINTER_TO_INT(data)==MODIFY_FLAG)) {
+      show_priv = show_privates(GET_PRIVATES, NULL);
+      mtodo = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
+      if (mtodo < (MyToDo *)CLIST_MIN_DATA) {
+	 return;
+      }
+      if ((show_priv != SHOW_PRIVATES) &&
+	  (mtodo->attrib & dlpRecAttrSecret)) {
+	 return;
+      }
+   }
+   /* End Masking */
    if (flag==CLEAR_FLAG) {
       /*Clear button was hit */
       todo_clear_details();
@@ -479,7 +531,7 @@ static void cb_add_new_record(GtkWidget *widget,
       gtk_widget_grab_focus(GTK_WIDGET(todo_text));
       return;
    }
-   if ((flag!=NEW_FLAG) && (flag!=MODIFY_FLAG)) {
+   if ((flag!=NEW_FLAG) && (flag!=MODIFY_FLAG) && (flag!=COPY_FLAG)) {
       return;
    }
    if (flag==MODIFY_FLAG) {
@@ -509,6 +561,23 @@ static void cb_add_new_record(GtkWidget *widget,
    return;
 }
 
+/* Do masking like Palm OS 3.5 */
+static void clear_mytodos(MyToDo *mtodo)
+{
+   mtodo->unique_id=0;
+   mtodo->attrib=mtodo->attrib & 0xF8;
+   if (mtodo->todo.description) {
+      free(mtodo->todo.description);
+      mtodo->todo.description=strdup("");
+   }
+   if (mtodo->todo.note) {
+      free(mtodo->todo.note);
+      mtodo->todo.note=strdup("");
+   }
+
+   return;
+}
+/* End Masking */
 
 static void cb_clist_selection(GtkWidget      *clist,
 			       gint           row,
@@ -520,9 +589,28 @@ static void cb_clist_selection(GtkWidget      *clist,
    MyToDo *mtodo;
    int i, index, count;
    int sorted_position;
+   int keep, b;
 
    time_t ltime;
    struct tm *now;
+   
+   if (!event) return;
+
+   /* HACK */
+   if (clist_hack) {
+      keep=record_changed;
+      gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, column);
+      b=dialog_save_changed_record(pane, record_changed);
+      if (b==DIALOG_SAID_1) {
+	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
+      }
+      set_new_button_to(CLEAR_FLAG);
+      /* This doesn't cause an event to occur, it does highlight
+       * the line, so we do the next call also */
+      gtk_clist_select_row(GTK_CLIST(clist), row, column);
+      cb_clist_selection(clist, row, column, GINT_TO_POINTER(1), NULL);
+      return;
+   }
    
    time(&ltime);
    now = localtime(&ltime);
@@ -639,7 +727,6 @@ void update_todo_screen()
    GdkColor color;
    GdkColormap *colormap;
    ToDoList *temp_todo;
-   static ToDoList *todo_list=NULL;
    char str[50];
    long ivalue;
    const char *svalue;
@@ -648,7 +735,7 @@ void update_todo_screen()
    
    row_count=((GtkCList *)clist)->rows;
    
-   free_ToDoList(&todo_list);
+   free_ToDoList(&glob_todo_list);
 
    get_pref(PREF_HIDE_COMPLETED, &hide_completed, NULL);
 
@@ -664,14 +751,14 @@ void update_todo_screen()
 #endif
 
    /* Need to get the private ones back for the hints calculation */
-   num_entries = get_todos2(&todo_list, SORT_ASCENDING, 2, 2, 1, 1, CATEGORY_ALL);
+   num_entries = get_todos2(&glob_todo_list, SORT_ASCENDING, 2, 2, 1, 1, CATEGORY_ALL);
 
    /*Clear the text box to make things look nice */
    gtk_text_set_point(GTK_TEXT(todo_text), 0);
    gtk_text_forward_delete(GTK_TEXT(todo_text),
 			   gtk_text_get_length(GTK_TEXT(todo_text)));
 
-   if (todo_list==NULL) {
+   if (glob_todo_list==NULL) {
       gtk_tooltips_set_tip(glob_tooltips, category_menu1, _("0 records"), NULL);   
       return;
    }
@@ -680,11 +767,28 @@ void update_todo_screen()
 
    entries_shown=0;
    show_priv = show_privates(GET_PRIVATES, NULL);
-   for (temp_todo = todo_list, i=0; temp_todo; temp_todo=temp_todo->next) {
+   for (temp_todo = glob_todo_list, i=0; temp_todo; temp_todo=temp_todo->next) {
       if ( ((temp_todo->mtodo.attrib & 0x0F) != todo_category) &&
 	  todo_category != CATEGORY_ALL) {
 	 continue;
       }
+      /* Do masking like Palm OS 3.5 */
+      if ((show_priv == MASK_PRIVATES) && 
+	  (temp_todo->mtodo.attrib & dlpRecAttrSecret)) {
+	 if (entries_shown+1>row_count) {
+	    gtk_clist_append(GTK_CLIST(clist), empty_line);
+	 }
+	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, TODO_CHECK_COLUMN, "---");
+	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, TODO_PRIORITY_COLUMN, "---");
+	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, TODO_TEXT_COLUMN, "--------------------");
+	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, TODO_DATE_COLUMN, "----------");
+	 clear_mytodos(&temp_todo->mtodo);
+	 gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_todo->mtodo));
+	 gtk_clist_set_background(GTK_CLIST(clist), entries_shown, NULL);
+	 entries_shown++;
+	 continue;
+      }
+      /* End Masking */
       /*Hide the completed records if need be */
       if (hide_completed && temp_todo->mtodo.todo.complete) {
 	 continue;
@@ -698,9 +802,9 @@ void update_todo_screen()
       if (entries_shown+1>row_count) {
 	 gtk_clist_append(GTK_CLIST(clist), empty_line);
       }
-      gtk_clist_set_text(GTK_CLIST(clist), entries_shown, 2, temp_todo->mtodo.todo.description);
+      gtk_clist_set_text(GTK_CLIST(clist), entries_shown, TODO_TEXT_COLUMN, temp_todo->mtodo.todo.description);
       sprintf(str, "%d", temp_todo->mtodo.todo.priority);
-      gtk_clist_set_text(GTK_CLIST(clist), entries_shown, 1, str);
+      gtk_clist_set_text(GTK_CLIST(clist), entries_shown, TODO_PRIORITY_COLUMN, str);
 
       if (!temp_todo->mtodo.todo.indefinite) {
 	  get_pref(PREF_SHORTDATE, &ivalue, &svalue);
@@ -710,7 +814,7 @@ void update_todo_screen()
       else {
 	  sprintf(str, _("No date"));
       }
-      gtk_clist_set_text(GTK_CLIST(clist), entries_shown, 4, str);
+      gtk_clist_set_text(GTK_CLIST(clist), entries_shown, TODO_DATE_COLUMN, str);
 
       gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_todo->mtodo));
 
@@ -740,7 +844,16 @@ void update_todo_screen()
 	 gtk_clist_set_background(GTK_CLIST(clist), entries_shown, &color);
 	 break;
        default:
-	 gtk_clist_set_background(GTK_CLIST(clist), entries_shown, NULL);
+	 if (temp_todo->mtodo.attrib & dlpRecAttrSecret) {
+	    colormap = gtk_widget_get_colormap(clist);
+	    color.red=CLIST_PRIVATE_RED;
+	    color.green=CLIST_PRIVATE_GREEN;
+	    color.blue=CLIST_PRIVATE_BLUE;
+	    gdk_color_alloc(colormap, &color);
+	    gtk_clist_set_background(GTK_CLIST(clist), entries_shown, &color);
+	 } else {
+	    gtk_clist_set_background(GTK_CLIST(clist), entries_shown, NULL);
+	 }
       }
       
       get_pixmaps(clist, PIXMAP_NOTE, &pixmap_note, &mask_note);
@@ -749,15 +862,15 @@ void update_todo_screen()
       
       if (temp_todo->mtodo.todo.note[0]) {
 	 /*Put a note pixmap up */
-	 gtk_clist_set_pixmap(GTK_CLIST(clist), entries_shown, 3, pixmap_note, mask_note);
+	 gtk_clist_set_pixmap(GTK_CLIST(clist), entries_shown, TODO_NOTE_COLUMN, pixmap_note, mask_note);
       } else {
-	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, 3, "");
+	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, TODO_NOTE_COLUMN, "");
       }
       if (temp_todo->mtodo.todo.complete) {
 	 /*Put a check or checked pixmap up */
-	 gtk_clist_set_pixmap(GTK_CLIST(clist), entries_shown, 0, pixmap_checked, mask_checked);
+	 gtk_clist_set_pixmap(GTK_CLIST(clist), entries_shown, TODO_CHECK_COLUMN, pixmap_checked, mask_checked);
       } else {
-	 gtk_clist_set_pixmap(GTK_CLIST(clist), entries_shown, 0, pixmap_check, mask_check);
+	 gtk_clist_set_pixmap(GTK_CLIST(clist), entries_shown, TODO_CHECK_COLUMN, pixmap_check, mask_check);
       }
       entries_shown++;
    }
@@ -766,8 +879,8 @@ void update_todo_screen()
 
    /*If there is an item in the list, select the first one */
    if (entries_shown>0) {
-      gtk_clist_select_row(GTK_CLIST(clist), 0, 1);
-      /*cb_clist_selection(clist, 0, 0, (GdkEventButton *)455, ""); */
+      gtk_clist_select_row(GTK_CLIST(clist), 0, TODO_PRIORITY_COLUMN);
+      cb_clist_selection(clist, 0, TODO_PRIORITY_COLUMN, (GdkEventButton *)455, "");
    }
 
    for (i=row_count-1; i>=entries_shown; i--) {
@@ -807,7 +920,7 @@ static int make_category_menu(GtkWidget **category_menu,
    if (include_all) {
       todo_cat_menu_item[0] = gtk_radio_menu_item_new_with_label(group, _("All"));
       gtk_signal_connect(GTK_OBJECT(todo_cat_menu_item[0]), "activate",
-			 cb_todo_category, GINT_TO_POINTER(CATEGORY_ALL));
+			 cb_category, GINT_TO_POINTER(CATEGORY_ALL));
       group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(todo_cat_menu_item[0]));
       gtk_menu_append(GTK_MENU(menu), todo_cat_menu_item[0]);
       gtk_widget_show(todo_cat_menu_item[0]);
@@ -819,7 +932,7 @@ static int make_category_menu(GtkWidget **category_menu,
 	    group, sort_l[i].Pcat);
 	 if (include_all) {
 	    gtk_signal_connect(GTK_OBJECT(todo_cat_menu_item[i+offset]), "activate",
-	       cb_todo_category, GINT_TO_POINTER(sort_l[i].cat_num));
+	       cb_category, GINT_TO_POINTER(sort_l[i].cat_num));
 	 }
 	 group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(todo_cat_menu_item[i+offset]));
 	 gtk_menu_append(GTK_MENU(menu), todo_cat_menu_item[i+offset]);
@@ -844,7 +957,8 @@ static int todo_find()
 	 if (total_count == 0) {
 	    total_count = 1;
 	 }
-	 gtk_clist_select_row(GTK_CLIST(clist), found_at, 1);
+	 gtk_clist_select_row(GTK_CLIST(clist), found_at, TODO_PRIORITY_COLUMN);
+	 cb_clist_selection(clist, found_at, TODO_PRIORITY_COLUMN, (GdkEventButton *)455, "");
 	 if (!gtk_clist_row_is_visible(GTK_CLIST(clist), found_at)) {
 	    move_scrolled_window_hack(scrolled_window,
 				      (float)found_at/(float)total_count);
@@ -880,8 +994,9 @@ int todo_clist_redraw()
 
    update_todo_screen();
    
-   /* Don't select column 0 as this is the checkbox */
-   gtk_clist_select_row(GTK_CLIST(clist), line_num, 1);
+   /* Don't select the checkbox column, it will get (un)checked */
+   gtk_clist_select_row(GTK_CLIST(clist), line_num, TODO_PRIORITY_COLUMN);
+   cb_clist_selection(clist, line_num, TODO_PRIORITY_COLUMN, (GdkEventButton *)455, "");
    
    return 0;
 }
@@ -912,8 +1027,15 @@ int todo_refresh()
 
 int todo_gui_cleanup()
 {
+   int b;
+   
+   free_ToDoList(&glob_todo_list);
+   b=dialog_save_changed_record(pane, record_changed);
+   if (b==DIALOG_SAID_1) {
+      cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
+   }
    connect_changed_signals(DISCONNECT_SIGNALS);
-   set_pref(PREF_TODO_PANE, GTK_PANED(pane)->handle_xpos);
+   set_pref(PREF_TODO_PANE, GTK_PANED(pane)->handle_xpos, NULL);
    return 0;
 }
 
@@ -921,6 +1043,9 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 {
    extern GtkWidget *glob_date_label;
    extern int glob_date_timer_tag;
+   GtkWidget *pixmapwid;
+   GdkPixmap *pixmap;
+   GdkBitmap *mask;
    GtkWidget *vbox1, *vbox2;
    GtkWidget *hbox_temp;
    GtkWidget *separator;
@@ -1022,20 +1147,31 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_box_pack_start(GTK_BOX(vbox1), scrolled_window, TRUE, TRUE, 0);
 
    clist = gtk_clist_new_with_titles(5, titles);
-   gtk_clist_set_column_title(GTK_CLIST(clist), 2, _("Task"));
-   gtk_clist_set_column_title(GTK_CLIST(clist), 4, _("Due"));
+   clist_hack=FALSE;
+   gtk_clist_set_column_title(GTK_CLIST(clist), TODO_TEXT_COLUMN, _("Task"));
+   gtk_clist_set_column_title(GTK_CLIST(clist), TODO_DATE_COLUMN, _("Due"));
+   /* Put pretty pictures in the clist column headings */
+   get_pixmaps(vbox, PIXMAP_NOTE, &pixmap, &mask);
+   pixmapwid = gtk_pixmap_new(pixmap, mask);
+   hack_clist_set_column_title_pixmap(clist, TODO_NOTE_COLUMN, pixmapwid);
+
+   get_pixmaps(vbox, PIXMAP_BOX_CHECKED, &pixmap, &mask);
+   pixmapwid = gtk_pixmap_new(pixmap, mask);
+   hack_clist_set_column_title_pixmap(clist, TODO_CHECK_COLUMN, pixmapwid);
+
+   gtk_clist_column_titles_passive(GTK_CLIST(clist));
    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
 		      GTK_SIGNAL_FUNC(cb_clist_selection),
 		      todo_text);
    gtk_clist_set_shadow_type(GTK_CLIST(clist), SHADOW);
    gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
-   gtk_clist_set_column_width(GTK_CLIST(clist), 0, 12);
-   gtk_clist_set_column_width(GTK_CLIST(clist), 1, 8);
-   gtk_clist_set_column_width(GTK_CLIST(clist), 2, 220);
-   gtk_clist_set_column_width(GTK_CLIST(clist), 3, 11);
-   gtk_clist_set_column_width(GTK_CLIST(clist), 4, 20);
-   /*   gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW */
-   /*					 (scrolled_window), clist); */
+
+   gtk_clist_set_column_auto_resize(GTK_CLIST(clist), TODO_CHECK_COLUMN, TRUE);
+   gtk_clist_set_column_auto_resize(GTK_CLIST(clist), TODO_PRIORITY_COLUMN, TRUE);
+   gtk_clist_set_column_auto_resize(GTK_CLIST(clist), TODO_NOTE_COLUMN, TRUE);
+   gtk_clist_set_column_auto_resize(GTK_CLIST(clist), TODO_DATE_COLUMN, TRUE);
+   gtk_clist_set_column_auto_resize(GTK_CLIST(clist), TODO_TEXT_COLUMN, FALSE);
+
    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
    
    /* */
@@ -1056,7 +1192,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    button = gtk_button_new_with_label(_("Copy"));
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record), 
-		      GINT_TO_POINTER(NEW_FLAG));
+		      GINT_TO_POINTER(COPY_FLAG));
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, TRUE, TRUE, 0);
    
    new_record_button = gtk_button_new_with_label(_("New Record"));

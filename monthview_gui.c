@@ -1,6 +1,7 @@
 /* monthview_gui.c
+ * A module of J-Pilot http://jpilot.org
  *
- * Copyright (C) 1999 by Judd Montgomery
+ * Copyright (C) 1999-2001 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +23,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include "utils.h"
+#include "print.h"
 #include "prefs.h"
 #include "log.h"
 #include "datebook.h"
@@ -78,6 +80,22 @@ cb_month_move(GtkWidget *widget,
    create_month_texts();
    display_months_appts(&glob_month_date, glob_month_texts);
 }
+
+/*----------------------------------------------------------------------
+ * cb_month_print	This is where month printing is kicked off from
+ *----------------------------------------------------------------------*/
+
+static void cb_month_print(GtkWidget *widget, gpointer   data)
+{
+   jpilot_logf(LOG_DEBUG, "cb_month_print called\n");
+   if (print_gui(window, DATEBOOK, 3) == DIALOG_SAID_PRINT) {
+      /* FIXME   print_months_appts(&glob_month_date, PAPER_A4);
+       */
+      print_months_appts(&glob_month_date, PAPER_Letter);
+   }
+}
+
+/*----------------------------------------------------------------------*/
 
 static void
 cb_enter_notify(GtkWidget *widget, GdkEvent *event, gpointer data)
@@ -241,6 +259,7 @@ int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
    int dow;
    int ndim;
    int n;
+   int mask;
 #ifdef USE_DB3
    int ret;
    int category;
@@ -250,6 +269,7 @@ int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
 
    a_list = NULL;
    text = day_texts;
+   mask=0;
 /*
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    if (char_set==CHAR_SET_1250) {
@@ -265,7 +285,7 @@ int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
 
    get_month_info(date.tm_mon, 1, date.tm_year, &dow, &ndim);
 
-   weed_datebook_list(&a_list, date.tm_mon, date.tm_year);
+   weed_datebook_list(&a_list, date.tm_mon, date.tm_year, &mask);
 
    for (n=0, date.tm_mday=1; date.tm_mday<=ndim; date.tm_mday++, n++) {
       date.tm_sec=0;
@@ -387,6 +407,12 @@ void monthview_gui(struct tm *date_in)
    button = gtk_button_new_with_label(_("Close"));
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_quit), window);
+   gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
+
+   /* Create a "Print" button */
+   button = gtk_button_new_with_label(_("Print"));
+   gtk_signal_connect(GTK_OBJECT(button), "clicked",
+		      GTK_SIGNAL_FUNC(cb_month_print), window);
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
 
    /*Make a right arrow for going forward a week */

@@ -1,0 +1,866 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Free Software Foundation, Inc.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: JPILOT 0.99\n"
+"POT-Creation-Date: 2001-10-21 19:27+0200\n"
+"PO-Revision-Date: 2001-10-21 19:27+0200\n"
+"Last-Translator: Matteo Fiorito <m.fiorito@tin.it>\n"
+"Language-Team: Italian <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=iso-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: address.c:232 datebook.c:211 memo.c:140 todo.c:247
+msgid "error"
+msgstr "errore"
+
+#: address.c:273 datebook.c:549 memo.c:181 todo.c:288
+msgid "Error reading"
+msgstr "Errore in lettura"
+
+#: address_gui.c:302 address_gui.c:1066
+msgid "Company/Name"
+msgstr "Azienda/Nome"
+
+#: address_gui.c:304 address_gui.c:1068
+msgid "Name/Company"
+msgstr "Nome/Azienda"
+
+#: address_gui.c:549
+msgid "Category: "
+msgstr "Categoria: "
+
+#: address_gui.c:666 memo_gui.c:435 todo_gui.c:675
+msgid "0 records"
+msgstr "0 record"
+
+#: address_gui.c:780 memo_gui.c:531 todo_gui.c:779
+#, c-format
+msgid "%d of %d records"
+msgstr "%d di %d record"
+
+#. Page 3
+#: address_gui.c:847 address_gui.c:1193 datebook_gui.c:298 memo_gui.c:562
+#: todo_gui.c:808
+msgid "All"
+msgstr "Tutti"
+
+#: address_gui.c:1073
+msgid "Phone"
+msgstr "Telefono"
+
+#: address_gui.c:1074
+msgid "Note"
+msgstr "Nota"
+
+#: address_gui.c:1090
+msgid "Quick Find"
+msgstr "Ricerca rapida"
+
+#. Delete Button
+#: address_gui.c:1106 datebook_gui.c:2340 memo_gui.c:765 todo_gui.c:1050
+msgid "Delete"
+msgstr "Cancella"
+
+#. Create "Copy" button
+#: address_gui.c:1113 datebook_gui.c:2347 memo_gui.c:771 todo_gui.c:1056
+msgid "Copy"
+msgstr "Copia"
+
+#. Create "New" button
+#: address_gui.c:1120 datebook_gui.c:2354 memo_gui.c:777 todo_gui.c:1062
+msgid "New Record"
+msgstr "Nuovo record"
+
+#. Create "Add Record" button
+#: address_gui.c:1126 datebook_gui.c:2361 memo_gui.c:783 todo_gui.c:1068
+msgid "Add Record"
+msgstr "Aggiungi record"
+
+#. Create "apply changes" button
+#: address_gui.c:1135 datebook_gui.c:2370 memo_gui.c:791 todo_gui.c:1076
+msgid "Apply Changes"
+msgstr "Applica modifiche"
+
+#. Private check box
+#: address_gui.c:1151 datebook_gui.c:2463 memo_gui.c:808 todo_gui.c:1139
+msgid "Private"
+msgstr "Privati"
+
+#. Page 1
+#: address_gui.c:1169
+msgid "Name"
+msgstr "Nome"
+
+#. Page 2
+#: address_gui.c:1177
+msgid "Address"
+msgstr "Indirizzo"
+
+#. Page 3
+#: address_gui.c:1185
+msgid "Other"
+msgstr "Altro"
+
+#. The Quickview page
+#: address_gui.c:1272
+msgid "Quick View"
+msgstr "Visualizzazione rapida"
+
+#. Create a "Quit" button
+#: datebook_gui.c:292 install_gui.c:282 prefs_gui.c:660 search_gui.c:574
+msgid "Done"
+msgstr "Fatto"
+
+#. Create a "None" button
+#: datebook_gui.c:304 datebook_gui.c:2510
+msgid "None"
+msgstr "Nessuno"
+
+#: datebook_gui.c:393
+msgid "End On Date"
+msgstr "Scadenza in data"
+
+#: datebook_gui.c:478 monthview_gui.c:322 monthview_gui.c:329 prefs.c:308
+#: weekview_gui.c:112
+msgid "Sunday"
+msgstr "Domenica"
+
+#: datebook_gui.c:479 monthview_gui.c:323 prefs.c:309 weekview_gui.c:113
+msgid "Monday"
+msgstr "Lunedì"
+
+#: datebook_gui.c:480 monthview_gui.c:324 weekview_gui.c:114
+msgid "Tuesday"
+msgstr "Martedì"
+
+#: datebook_gui.c:481 monthview_gui.c:325 weekview_gui.c:115
+msgid "Wednesday"
+msgstr "Mercoledì"
+
+#: datebook_gui.c:482 monthview_gui.c:326 weekview_gui.c:116
+msgid "Thursday"
+msgstr "Giovedì"
+
+#: datebook_gui.c:483 monthview_gui.c:327 weekview_gui.c:117
+msgid "Friday"
+msgstr "Venerdì"
+
+#: datebook_gui.c:484 monthview_gui.c:328 weekview_gui.c:118
+msgid "Saturday"
+msgstr "Sabato"
+
+#: datebook_gui.c:720
+msgid "none"
+msgstr "nessuno"
+
+#: datebook_gui.c:721
+msgid "day"
+msgstr "giorno"
+
+#: datebook_gui.c:722
+msgid "week"
+msgstr "settimana"
+
+#: datebook_gui.c:723
+msgid "month"
+msgstr "mese"
+
+#: datebook_gui.c:724
+msgid "year"
+msgstr "anno"
+
+#: datebook_gui.c:951
+#, c-format
+msgid "You cannot have an appointment that repeats every %d %s(s)\n"
+msgstr "Non si possono avere appuntamenti che si ripetono ogni %d %s(i)\n"
+
+#: datebook_gui.c:960
+msgid ""
+"You can not have a weekly repeating appointment that doesn't repeat on any "
+"day of the week.\n"
+msgstr ""
+"Non si possono avere appuntamenti settimanali che non si ripetano ogni"
+"giorno della settimana.\n"
+
+#. This is a timeless event
+#: datebook_gui.c:1063
+msgid "No Time"
+msgstr "Nessun orario"
+
+#. The No due date check box
+#: datebook_gui.c:1401 datebook_gui.c:2544 datebook_gui.c:2574
+#: datebook_gui.c:2630 datebook_gui.c:2679 todo_gui.c:101 todo_gui.c:1130
+msgid "No Date"
+msgstr "Nessuna data"
+
+#: datebook_gui.c:2149 datebook_gui.c:2156
+msgid "Su"
+msgstr "Dom"
+
+#: datebook_gui.c:2150
+msgid "Mo"
+msgstr "Lun"
+
+#: datebook_gui.c:2151
+msgid "Tu"
+msgstr "Mar"
+
+#: datebook_gui.c:2152
+msgid "We"
+msgstr "Mer"
+
+#: datebook_gui.c:2153
+msgid "RTh"
+msgstr "Gio"
+
+#: datebook_gui.c:2154
+msgid "Fr"
+msgstr "Ven"
+
+#: datebook_gui.c:2155
+msgid "Sa"
+msgstr "Sab"
+
+#. Make Weekview button
+#: datebook_gui.c:2228 datebook_gui.c:2512
+msgid "Week"
+msgstr "Settimana"
+
+#. Make Monthview button
+#: datebook_gui.c:2239 datebook_gui.c:2513
+msgid "Month"
+msgstr "Mese"
+
+#. Make Category button
+#: datebook_gui.c:2254
+msgid "Cats"
+msgstr "Cat."
+
+#. #endif
+#. gtk_clist_column_titles_hide(GTK_CLIST(clist1));
+#: datebook_gui.c:2309
+msgid "Time"
+msgstr "Orario"
+
+#: datebook_gui.c:2310
+msgid "Appointment"
+msgstr "Appuntamento"
+
+#: datebook_gui.c:2388
+msgid "Alarm"
+msgstr "Sveglia"
+
+#: datebook_gui.c:2403
+msgid "Minutes"
+msgstr "Minuti"
+
+#: datebook_gui.c:2407
+msgid "Hours"
+msgstr "Ore"
+
+#: datebook_gui.c:2409
+msgid "Days"
+msgstr "Giorni"
+
+#: datebook_gui.c:2428
+msgid "This Event has no particular time"
+msgstr "Questo evento non ha un orario preciso"
+
+#: datebook_gui.c:2436
+msgid "Starts on: "
+msgstr "Comincia alle: "
+
+#: datebook_gui.c:2448
+msgid "Time:"
+msgstr "Orario:"
+
+#: datebook_gui.c:2511
+msgid "Day"
+msgstr "Giorno"
+
+#: datebook_gui.c:2514
+msgid "Year"
+msgstr "Anno"
+
+#. no repeat page for notebook
+#: datebook_gui.c:2518
+msgid "This event will not repeat"
+msgstr "Questo evento non si ripeterà"
+
+#: datebook_gui.c:2528 datebook_gui.c:2560 datebook_gui.c:2616
+#: datebook_gui.c:2663
+msgid "Frequency is Every"
+msgstr "Periodicità ogni"
+
+#: datebook_gui.c:2533
+msgid "Day(s)"
+msgstr "Giorno(i)"
+
+#. checkbutton
+#: datebook_gui.c:2536 datebook_gui.c:2568 datebook_gui.c:2624
+#: datebook_gui.c:2671
+msgid "End on"
+msgstr "Finisce il"
+
+#: datebook_gui.c:2565
+msgid "Week(s)"
+msgstr "Settimana(e)"
+
+#: datebook_gui.c:2581
+msgid "Repeat on Days:"
+msgstr "Ripeti nei giorni:"
+
+#: datebook_gui.c:2621
+msgid "Month(s)"
+msgstr "Mese(i)"
+
+#: datebook_gui.c:2638
+msgid "Repeat by:"
+msgstr "Ripeti ogni:"
+
+#: datebook_gui.c:2642
+msgid "Day of week"
+msgstr "Giorno della settimana"
+
+#: datebook_gui.c:2651
+msgid "Date"
+msgstr "Data"
+
+#: datebook_gui.c:2668
+msgid "Year(s)"
+msgstr "Anno(i)"
+
+#: install_gui.c:223
+msgid "Install"
+msgstr "Installa"
+
+#: install_gui.c:239
+msgid "Files to be installed"
+msgstr "File da installare"
+
+#: install_gui.c:262
+msgid "To change to a hidden directory type it below and hit TAB"
+msgstr "Per raggiungere una directory nascosta scrivi il nome e premi TAB"
+
+#: install_gui.c:268
+msgid "Add"
+msgstr "Aggiungi"
+
+#: install_gui.c:275
+msgid "Remove"
+msgstr "Rimuovi"
+
+#: jpilot.c:85
+msgid ""
+"\n"
+"jpilot [ [-v] || [-h] || [-d] || [-a] || [-A]\n"
+" -v displays version and exits.\n"
+" -h displays help and exits.\n"
+" -d displays debug info to stdout.\n"
+" -p do not load plugins.\n"
+" -a ignore missed alarms since the last time this program was run.\n"
+" -A ignore all alarms, past and future.\n"
+" The PILOTPORT, and PILOTRATE env variables are used to specify which\n"
+" port to sync on, and at what speed.\n"
+" If PILOTPORT is not set then it defaults to /dev/pilot.\n"
+msgstr ""
+"\n"
+"jpilot [ [-v] || [-h] || [-d] || [-a] || [-A]\n"
+" -v mostra la versione ed esce.\n"
+" -h mostra l'help ed esce.\n"
+" -d manda le informazioni di debug allo stdout.\n"
+" -p non carica i plugins.\n"
+" -a ignora le sveglie perse dall'ultima esecuzione del programma.\n"
+" -A ignora tutte le sveglie, passate e future.\n"
+" Le variabili di ambiente PILOTPORT e PILOTRATE sono usate per specificare\n"
+" la porta e la velocità di sincronizzazione.\n"
+" Se non viene specifato PILOTPORT punta a /dev/pilot.\n"
+
+
+#. Buttons
+#: jpilot.c:367 jpilot.c:393 jpilot.c:434 jpilot.c:770 password.c:264
+#: utils.c:807
+msgid "OK"
+msgstr "OK"
+
+#: jpilot.c:372
+msgid "Help"
+msgstr "Aiuto"
+
+#: jpilot.c:438 print_gui.c:213
+msgid "Print"
+msgstr "Stampa"
+
+#: jpilot.c:439
+msgid "There is no print support for this conduit."
+msgstr "Non c'è il supporto per questo formato."
+
+#. -------------------------------------------
+#: jpilot.c:762
+#, c-format
+msgid ""
+"%s was written by\n"
+"Judd Montgomery (c) 1999-2000.\n"
+"judd@jpilot.org\n"
+"http://jpilot.org\n"
+msgstr ""
+"%s è stato scritto da\n"
+"Judd Montgomery (c) 1999-2000.\n"
+"judd@jpilot.org\n"
+"http://jpilot.org\n"
+
+#: jpilot.c:767
+#, c-format
+msgid "About %s"
+msgstr "Informazioni su %s"
+
+#: jpilot.c:832
+msgid "/File"
+msgstr "/File"
+
+#: jpilot.c:833
+msgid "/File/tear"
+msgstr "/File/tear"
+
+#: jpilot.c:834
+msgid "/File/_Find"
+msgstr "/File/Trova"
+
+#: jpilot.c:835 jpilot.c:840
+msgid "/File/sep1"
+msgstr "/File/sep1"
+
+#: jpilot.c:836
+msgid "/File/_Install"
+msgstr "/File/_Installa"
+
+#: jpilot.c:837
+msgid "/File/Preferences"
+msgstr "/File/Preferenze"
+
+#: jpilot.c:838
+msgid "/File/_Print"
+msgstr "/File/Stampa"
+
+#: jpilot.c:841
+msgid "/File/Quit"
+msgstr "/File/Esci"
+
+#: jpilot.c:843
+msgid "/_View"
+msgstr "/_Visualizza"
+
+#: jpilot.c:844
+msgid "/View/Hide-Show Private Records"
+msgstr "/Visualizza/Mostra-nascondi record privati"
+
+#: jpilot.c:845
+msgid "/View/Datebook"
+msgstr "/Visualizza/Agenda"
+
+#: jpilot.c:846
+msgid "/View/Addresses"
+msgstr "/Visualizza/Indirizzi"
+
+#: jpilot.c:847
+msgid "/View/Todos"
+msgstr "/Visualizza/Impegni"
+
+#: jpilot.c:848
+msgid "/View/Memos"
+msgstr "/Visualizza/Blocco note"
+
+#: jpilot.c:849 jpilot.c:925
+msgid "/Plugins"
+msgstr "/Plugins"
+
+#: jpilot.c:850
+msgid "/_Help"
+msgstr "/Aiuto"
+
+#: jpilot.c:851 jpilot.c:902
+#, c-format
+msgid "/_Help/%s"
+msgstr "/Aiuto/%s"
+
+#: jpilot.c:891
+#, c-format
+msgid "/Plugins/%s"
+msgstr "/Plugins/%s"
+
+#: jpilot.c:1437
+msgid "Clear"
+msgstr "Pulisci"
+
+#. Create "Quit" button
+#: jpilot.c:1493
+msgid "Quit!"
+msgstr "Esci!"
+
+#. Create "Sync" button
+#: jpilot.c:1500
+msgid "Sync"
+msgstr "Sincronizza"
+
+#: jpilot.c:1507
+msgid "Sync your palm to the desktop"
+msgstr "Sincronizza il tuo palm con il desktop"
+
+#. Create "Backup" button in left column
+#: jpilot.c:1511
+msgid "Backup"
+msgstr "Backup"
+
+#: jpilot.c:1519
+msgid ""
+"Sync your palm to the desktop\n"
+"and then do a backup"
+msgstr ""
+"Sincronizza il tuo palm con il desktop\n"
+"e poi fai un backup"
+
+#: jpilot.c:1567
+msgid "Datebook/Go to Today"
+msgstr "Agenda/Vai a oggi"
+
+#: jpilot.c:1569
+msgid "Address Book"
+msgstr "Rubrica"
+
+#: jpilot.c:1571
+msgid "ToDo List"
+msgstr "Lista impegni"
+
+#: jpilot.c:1573
+msgid "Memo Pad"
+msgstr "Blocco note"
+
+#: log.c:89
+msgid "Cannot open log file, giving up.\n"
+msgstr "Non riesco ad aprire il log file, rinuncio.\n"
+
+#: log.c:96
+msgid "Cannot open log file\n"
+msgstr "Non riesco ad aprire il log file\n"
+
+#: monthview_gui.c:358
+msgid "Monthly View"
+msgstr "Vista mensile"
+
+#. Create a "Quit" button
+#: monthview_gui.c:387 weekview_gui.c:274
+msgid "Close"
+msgstr "Chiudi"
+
+#: password.c:225
+msgid "Palm Password"
+msgstr "Password del Palm"
+
+#. Label
+#: password.c:247
+msgid "Enter PalmOS Password"
+msgstr "Inserisci la password del PalmOS"
+
+#. Create a "Quit" button
+#: password.c:270 print_gui.c:219 utils.c:817
+msgid "Cancel"
+msgstr "Cancella"
+
+#: prefs_gui.c:296
+msgid "Preferences"
+msgstr "Preferenze"
+
+#: prefs_gui.c:319
+msgid "Locale"
+msgstr "Localizzazione"
+
+#: prefs_gui.c:321
+msgid "Settings"
+msgstr "Impostazioni"
+
+#: prefs_gui.c:323
+msgid "Alarms"
+msgstr "Sveglie"
+
+#: prefs_gui.c:325
+msgid "Conduits"
+msgstr "Formati"
+
+#. Character Set
+#: prefs_gui.c:336
+msgid "Character Set "
+msgstr "Set di caratteri"
+
+#. Shortdate
+#: prefs_gui.c:349
+msgid "Short date format "
+msgstr "Formato abbreviato per la data "
+
+#. Longdate
+#: prefs_gui.c:362
+msgid "Long date format "
+msgstr "Formato esteso per la data "
+
+#. Time
+#: prefs_gui.c:376
+msgid "Time format "
+msgstr "Formato dell'orario "
+
+#. FDOW
+#: prefs_gui.c:390
+msgid "The first day of the week is "
+msgstr "Il primo giorno della settimana è "
+
+#. GTK colors file
+#: prefs_gui.c:410
+msgid "My GTK colors file is "
+msgstr "Il mio file di colori GTK è "
+
+#. Port
+#: prefs_gui.c:424
+msgid "Serial Port (/dev/ttyS0, /dev/pilot)"
+msgstr "Porta seriale (/dev/ttyS0, /dev/pilot)"
+
+#. Rate
+#: prefs_gui.c:439
+msgid "Serial Rate "
+msgstr "Velocità della seriale"
+
+#. Number of backups
+#: prefs_gui.c:452
+msgid "Number of backups to be archived"
+msgstr "Numero di backup da archiviare"
+
+#: prefs_gui.c:468
+msgid "Show deleted records (default NO)"
+msgstr "Mostra i record cancellati (default NO)"
+
+#: prefs_gui.c:481
+msgid "Show modified deleted records (default NO)"
+msgstr "Mostra i record modificati (default NO)"
+
+#: prefs_gui.c:495
+msgid "Highlight calendar days with appointments"
+msgstr "Evidenzia i giorni contenenti appuntamenti"
+
+#: prefs_gui.c:508
+msgid "Use DateBk3/4 note tags"
+msgstr "Usa i tag DateBk3/4"
+
+#: prefs_gui.c:522
+msgid "Sync datebook"
+msgstr "Sincronizzazione dell'agenda"
+
+#: prefs_gui.c:534
+msgid "Sync address"
+msgstr "Sincronizzazione della rubrica"
+
+#: prefs_gui.c:546
+msgid "Sync todo"
+msgstr "Sincronizzazione degli impegni"
+
+#: prefs_gui.c:558
+msgid "Sync memo"
+msgstr "Sincronizzazione del blocco note"
+
+#: prefs_gui.c:600
+msgid "Open alarm windows for appointment reminders"
+msgstr "Apri la finestra delle sveglie per ricordare gli appuntamenti"
+
+#: prefs_gui.c:612
+msgid "Execute this command"
+msgstr "Esegui questo comando"
+
+#. Shell warning
+#: prefs_gui.c:623
+msgid "WARNING: executing arbitrary shell commands can be dangerous!!!"
+msgstr "WARNING: eseguire comandi di shell può essere pericoloso!!"
+
+#: prefs_gui.c:631
+msgid "Alarm Command"
+msgstr "Comando della sveglia"
+
+#: prefs_gui.c:641
+msgid "%t is replaced with the alarm time"
+msgstr "%t è rimpiazzato dall'ora della sveglia"
+
+#: prefs_gui.c:645
+#, c-format
+msgid "%d is replaced with the alarm date"
+msgstr "%d è rimpiazzato dalla data della sveglia"
+
+#: prefs_gui.c:650
+msgid "%D is replaced with the alarm description"
+msgstr "%D è rimpiazzato dalla descrizione della sveglia"
+
+#: prefs_gui.c:654
+msgid "%N is replaced with the alarm note"
+msgstr "%N è rimpiazzato dalla nota della sveglia"
+
+#: print_gui.c:134
+msgid "Print Options"
+msgstr "Opzioni di stampa"
+
+#: print_gui.c:148
+msgid "One record"
+msgstr "Un record"
+
+#: print_gui.c:152
+msgid "All records in this category"
+msgstr "Tutti i record di questa categoria"
+
+#: print_gui.c:156
+msgid "Print all records"
+msgstr "Stampa tutti i record"
+
+#: print_gui.c:176
+msgid "One record per page"
+msgstr "Un record per pagina"
+
+#: print_gui.c:190
+msgid " Blank lines between each record"
+msgstr " Linee vuote tra ogni record"
+
+#. Print Command
+#: print_gui.c:199
+msgid "Print Command (e.g. lpr, or cat > file.ps)"
+msgstr "Comando di stampa (ad es. lpr, or cat > file.ps)"
+
+#: search_gui.c:455
+msgid "No records found"
+msgstr "Nessun record trovato"
+
+#: search_gui.c:526
+msgid "Search"
+msgstr "Cerca"
+
+#: search_gui.c:539
+msgid "Search for: "
+msgstr "Trova: "
+
+#: search_gui.c:546
+msgid "Case Sensitive"
+msgstr "Sensibile alle maiuscole"
+
+#: sync.c:363
+msgid " Press the HotSync button now\n"
+msgstr "Ora premi il bottone HotSync sul palm\n"
+
+#: sync.c:434
+msgid "Check your serial port and settings\n"
+msgstr "Controlla la tua porta seriale e le impostazioni\n"
+
+#: sync.c:548
+msgid "Doing a fast sync.\n"
+msgstr "Sincronizzazione rapida in esecuzione\n"
+
+#: sync.c:563
+msgid "Doing a slow sync.\n"
+msgstr "Sicronizzazione lenta in esecuzione\n"
+
+#: sync.c:624
+msgid "Thank you for using J-Pilot."
+msgstr "Grazie per avere scelto J-Pilot."
+
+#: sync.c:668
+msgid "Finished.\n"
+msgstr "Finito.\n"
+
+#: sync.c:922 sync.c:1114
+#, c-format
+msgid "%s is up to date, fetch skipped.\n"
+msgstr "%s è aggiornato, trasferimento non eseguito.\n"
+
+#: sync.c:926 sync.c:1118
+#, c-format
+msgid "Fetching '%s'... "
+msgstr "Trasferimento di '%s'... "
+
+#: sync.c:941 sync.c:1137 sync.c:1216
+msgid "OK\n"
+msgstr "OK\n"
+
+#: sync.c:1039
+#, c-format
+msgid "Skipping %s\n"
+msgstr "Saltato %s\n"
+
+#: sync.c:1172
+#, c-format
+msgid "Installing %s... "
+msgstr "Installazione %s... "
+
+#: sync.c:1202
+#, c-format
+msgid "Install %s failed"
+msgstr "Fallita installazione di %s"
+
+#. the space after the %s is a hack, the last char gets cut off
+#: sync.c:1212
+#, c-format
+msgid "Installed %s "
+msgstr "Installato %s"
+
+#: todo_gui.c:120
+msgid "Due Date"
+msgstr "Data di scadenza"
+
+#: todo_gui.c:711
+msgid "No date"
+msgstr "Nessuna data"
+
+#. The hide completed check box
+#: todo_gui.c:1009
+msgid "Hide Completed ToDos"
+msgstr "Nasconi impegni completati"
+
+#: todo_gui.c:1025
+msgid "Task"
+msgstr "Impegno"
+
+#: todo_gui.c:1026
+msgid "Due"
+msgstr "Dovuto"
+
+#. The completed check box
+#: todo_gui.c:1091
+msgid "Completed"
+msgstr "Completato"
+
+#: todo_gui.c:1099
+msgid "Priority: "
+msgstr "Priorità: "
+
+#: todo_gui.c:1119
+msgid "Date Due:"
+msgstr "Data di scadenza:"
+
+#: utils.c:101
+msgid "Today is %A, %x %X"
+msgstr "Oggi è %A %x %X."
+
+#: utils.c:103
+#, c-format
+msgid "Today is %%A, %s %s"
+msgstr "Oggi è %%A %s %s"
+
+#: utils.c:812
+msgid "Today"
+msgstr "Oggi"
+
+#: utils.c:1940
+msgid "PC ID is 0.\n"
+msgstr "ID del PC è 0.\n"
+
+#: utils.c:1941
+#, c-format
+msgid "I generated a new PC ID.  It is %d\n"
+msgstr "Generato un nuovo ID per il PC: %d\n"
+
+#: weekview_gui.c:246
+msgid "Weekly View"
+msgstr "Vista settimanale"

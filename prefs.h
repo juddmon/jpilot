@@ -1,6 +1,7 @@
-/* rcfile.h
+/* prefs.h
+ * A module of J-Pilot http://jpilot.org
  *
- * Copyright (C) 1999 by Judd Montgomery
+ * Copyright (C) 1999-2001 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +18,8 @@
  */
 #ifndef __PREFS_H__
 #define __PREFS_H__
+
+#include "libplugin.h"
 
 #define PREF_RCFILE 0
 #define PREF_TIME 1
@@ -50,16 +53,20 @@
 #define PREF_SYNC_ADDRESS 29
 #define PREF_SYNC_TODO 30
 #define PREF_SYNC_MEMO 31
-#define PREF_ADDRESS_NOTEBOOK_PAGE 32
-#define PREF_OUTPUT_HEIGHT 33
-#define PREF_OPEN_ALARM_WINDOWS 34
-#define PREF_DO_ALARM_COMMAND 35
-#define PREF_ALARM_COMMAND 36
-#define PREF_REMIND_IN 37
-#define PREF_REMIND_UNITS 38
-#define PREF_PASSWORD 39
+#define PREF_SYNC_MEMO32 32
+#define PREF_ADDRESS_NOTEBOOK_PAGE 33
+#define PREF_OUTPUT_HEIGHT 34
+#define PREF_OPEN_ALARM_WINDOWS 35
+#define PREF_DO_ALARM_COMMAND 36
+#define PREF_ALARM_COMMAND 37
+#define PREF_REMIND_IN 38
+#define PREF_REMIND_UNITS 39
+#define PREF_PASSWORD 40
+#define PREF_MEMO32_MODE 41
+#define PREF_MEMO_EXPORT_FILENAME 42
+#define PREF_MEMO_IMPORT_PATH 43
 
-#define NUM_PREFS 40
+#define NUM_PREFS 44
 
 #define NUM_SHORTDATES  7
 #define NUM_LONGDATES  6
@@ -67,8 +74,6 @@
 #define NUM_RATES  11
 
 #define MAX_PREF_NUM_BACKUPS 99
-#define INTTYPE 0
-#define CHARTYPE 1
 
 #define PREF_MDY 0
 #define PREF_DMY 1
@@ -83,29 +88,20 @@
 #define CHAR_SET_KOREAN   6 /* Korean Hangul */
 #define NUM_CHAR_SETS     7
 
-#define MAX_PREF_VALUE 80
+#define MAX_PREF_VALUE 200
 
-typedef struct {
-   char *name;
-   int usertype;
-   int filetype;
-   long ivalue;
-   char svalue[MAX_PREF_VALUE+2];
-} prefType;
-
-/*extern prefType glob_prefs[NUM_PREFS]; */
-
-int read_rc_file();
-int write_rc_file();
-int get_pref_possibility(int which, int n, char *ret);
+void pref_init();
+int pref_read_rc_file();
+int pref_write_rc_file();
 int get_pref(int which, long *n, const char **ret);
+int set_pref(int which, long n, const char *string);
+
+/* Specialized functions */
+int set_pref_possibility(int which, long n);
+int get_pref_possibility(int which, int n, char *ret);
 int get_pref_dmy_order();
 int get_pref_time_no_secs(char *datef);
 int get_pref_time_no_secs_no_ampm(char *datef);
-int set_pref(int which, long n);
-int set_pref_char(int which, char *string);
-/*This function is used externally to free up any memory that prefs is using */
-void free_prefs();
 
 /*
  * Get the preference value as long. If failed to do so, return the

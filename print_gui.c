@@ -1,6 +1,7 @@
 /* print_gui.c
+ * A module of J-Pilot http://jpilot.org
  *
- * Copyright (C) 2000 by Judd Montgomery
+ * Copyright (C) 2000-2001 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,8 +35,13 @@ static GtkWidget *window;
 static GtkWidget *radio_button_one;
 static GtkWidget *radio_button_shown;
 static GtkWidget *radio_button_all;
+static GtkWidget *radio_button_daily;
+static GtkWidget *radio_button_weekly;
+static GtkWidget *radio_button_monthly;
 
 static int print_dialog;
+/* This is a temporary hack */
+int print_day_week_month;
 
 static gboolean cb_destroy(GtkWidget *widget)
 {
@@ -46,44 +52,66 @@ static gboolean cb_destroy(GtkWidget *widget)
    jpilot_logf(LOG_DEBUG, "Cleanup print_gui\n");
 
    /* Get radio button prefs */
-   if (GTK_TOGGLE_BUTTON(radio_button_one)->active) {
-      jpilot_logf(LOG_DEBUG, "print one");
-      set_pref(PREF_PRINT_THIS_MANY, 1);
+   if (radio_button_one) {
+      if (GTK_TOGGLE_BUTTON(radio_button_one)->active) {
+	 jpilot_logf(LOG_DEBUG, "print one");
+	 set_pref(PREF_PRINT_THIS_MANY, 1, NULL);
+      }
+      if (GTK_TOGGLE_BUTTON(radio_button_shown)->active) {
+	 jpilot_logf(LOG_DEBUG, "print shown");
+	 set_pref(PREF_PRINT_THIS_MANY, 2, NULL);
+      }
+      if (GTK_TOGGLE_BUTTON(radio_button_all)->active) {
+	 jpilot_logf(LOG_DEBUG, "print all");
+	 set_pref(PREF_PRINT_THIS_MANY, 3, NULL);
+      }
    }
-   if (GTK_TOGGLE_BUTTON(radio_button_shown)->active) {
-      jpilot_logf(LOG_DEBUG, "print shown");
-      set_pref(PREF_PRINT_THIS_MANY, 2);
-   }
-   if (GTK_TOGGLE_BUTTON(radio_button_all)->active) {
-      jpilot_logf(LOG_DEBUG, "print all");
-      set_pref(PREF_PRINT_THIS_MANY, 3);
+
+   /* Get radio button prefs */
+   if (radio_button_daily) {
+      if (GTK_TOGGLE_BUTTON(radio_button_daily)->active) {
+	 jpilot_logf(LOG_DEBUG, "print daily");
+	 print_day_week_month=1;
+      }
+      if (GTK_TOGGLE_BUTTON(radio_button_weekly)->active) {
+	 jpilot_logf(LOG_DEBUG, "print weekly");
+	 print_day_week_month=2;
+      }
+      if (GTK_TOGGLE_BUTTON(radio_button_monthly)->active) {
+	 jpilot_logf(LOG_DEBUG, "print monthly");
+	 print_day_week_month=3;
+      }
    }
 
    /* Get one record per page pref */
-   if (GTK_TOGGLE_BUTTON(one_record_checkbutton)->active) {
-      jpilot_logf(LOG_DEBUG, "one record per page");
-      set_pref(PREF_PRINT_ONE_PER_PAGE, 1);
-   } else {
-      set_pref(PREF_PRINT_ONE_PER_PAGE, 0);
+   if (one_record_checkbutton) {
+      if (GTK_TOGGLE_BUTTON(one_record_checkbutton)->active) {
+	 jpilot_logf(LOG_DEBUG, "one record per page");
+	 set_pref(PREF_PRINT_ONE_PER_PAGE, 1, NULL);
+      } else {
+	 set_pref(PREF_PRINT_ONE_PER_PAGE, 0, NULL);
+      }
    }
 
    /* Get number of blank lines */
-   lines_text = gtk_entry_get_text(GTK_ENTRY(lines_entry));
-   jpilot_logf(LOG_DEBUG, "lines_entry = [%s]\n", lines_text);
-   num_lines = atoi(lines_text);
-   if (num_lines < 0) {
-      num_lines = 0;
-   }
-   if (num_lines > 99) {
-      num_lines = 99;
-   }
+   if (lines_entry) {
+      lines_text = gtk_entry_get_text(GTK_ENTRY(lines_entry));
+      jpilot_logf(LOG_DEBUG, "lines_entry = [%s]\n", lines_text);
+      num_lines = atoi(lines_text);
+      if (num_lines < 0) {
+	 num_lines = 0;
+      }
+      if (num_lines > 99) {
+	 num_lines = 99;
+      }
 
-   set_pref(PREF_NUM_BLANK_LINES, num_lines);
+      set_pref(PREF_NUM_BLANK_LINES, num_lines, NULL);
+   }
    
    /* Get print command */
    entry_text = gtk_entry_get_text(GTK_ENTRY(print_command_entry));
    jpilot_logf(LOG_DEBUG, "print_command_entry = [%s]\n", entry_text);
-   set_pref_char(PREF_PRINT_COMMAND, entry_text);
+   set_pref(PREF_PRINT_COMMAND, 0, entry_text);
    
    window = NULL;
    gtk_main_quit();
@@ -108,7 +136,7 @@ static void cb_cancel(GtkWidget *widget, gpointer data)
    print_dialog=DIALOG_SAID_CANCEL;
 }
 
-int print_gui(GtkWidget *main_window)
+int print_gui(GtkWidget *main_window, int app, int date_button)
 {
    GtkWidget *label;
    GtkWidget *button;
@@ -119,7 +147,7 @@ int print_gui(GtkWidget *main_window)
    char temp[256];
    const char *svalue;
    GSList *group;   
-   
+
    jpilot_logf(LOG_DEBUG, "print_gui\n");
    if (GTK_IS_WINDOW(window)) {
       jpilot_logf(LOG_DEBUG, "print_gui window is already up\n");
@@ -127,8 +155,14 @@ int print_gui(GtkWidget *main_window)
       return 0;
    }
    print_dialog=0;
+   radio_button_one=NULL;
+   radio_button_daily=NULL;
+   one_record_checkbutton=NULL;
+   lines_entry=NULL;
 
    window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+   gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_MOUSE);
+   
 
    gtk_container_set_border_width(GTK_CONTAINER(window), 10);
    g_snprintf(temp, 255, "%s %s", PN, _("Print Options"));
@@ -142,57 +176,99 @@ int print_gui(GtkWidget *main_window)
    gtk_container_add(GTK_CONTAINER(window), vbox);
 
 
-   /* Radio buttons for number of records to print */
-   group = NULL;
-   radio_button_one = gtk_radio_button_new_with_label
-     (group, _("One record"));
+   radio_button_daily=radio_button_weekly=radio_button_monthly=NULL;
+   /* Radio buttons for Datebook */
+   if (app==DATEBOOK) {
+      group = NULL;
 
-   group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_one));
-   radio_button_shown = gtk_radio_button_new_with_label
-     (group, _("All records in this category"));
+      radio_button_daily = gtk_radio_button_new_with_label
+	(group, _("Daily Printout"));
 
-   group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_shown));
-   radio_button_all = gtk_radio_button_new_with_label
-     (group, _("Print all records"));
+      group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_daily));
+      radio_button_weekly = gtk_radio_button_new_with_label
+	(group, _("Weekly Printout"));
+
+      group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_weekly));
+      radio_button_monthly = gtk_radio_button_new_with_label
+	(group, _("Monthly Printout"));
+
+      switch (date_button) {
+       case 1:
+	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_daily), TRUE);
+	 break;
+       case 2:
+	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_weekly), TRUE);
+	 break;
+       case 3:
+	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_monthly), TRUE);
+	 break;
+       default:
+	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_daily), TRUE);
+      }
+      gtk_box_pack_start(GTK_BOX(vbox), radio_button_daily, FALSE, FALSE, 0);
+      gtk_box_pack_start(GTK_BOX(vbox), radio_button_weekly, FALSE, FALSE, 0);
+      gtk_box_pack_start(GTK_BOX(vbox), radio_button_monthly, FALSE, FALSE, 0);
+   }
    
-   get_pref(PREF_PRINT_THIS_MANY, &ivalue, NULL);
-   if (ivalue==1) {
-      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_one), TRUE);
+   if (app!=DATEBOOK) {
+      /* Radio buttons for number of records to print */
+      group = NULL;
+
+      radio_button_one = gtk_radio_button_new_with_label
+	(group, _("One record"));
+
+      group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_one));
+      radio_button_shown = gtk_radio_button_new_with_label
+	(group, _("All records in this category"));
+
+      group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_shown));
+      radio_button_all = gtk_radio_button_new_with_label
+	(group, _("Print all records"));
+   
+      get_pref(PREF_PRINT_THIS_MANY, &ivalue, NULL);
+      switch (ivalue) {
+       case 1:
+	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_one), TRUE);
+	 break;
+       case 2:
+	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_shown), TRUE);
+	 break;
+       case 3:
+	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_all), TRUE);
+      }
+
+      gtk_box_pack_start(GTK_BOX(vbox), radio_button_one, FALSE, FALSE, 0);
+      gtk_box_pack_start(GTK_BOX(vbox), radio_button_shown, FALSE, FALSE, 0);
+      gtk_box_pack_start(GTK_BOX(vbox), radio_button_all, FALSE, FALSE, 0);
    }
-   if (ivalue==2) {
-      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_shown), TRUE);
+
+
+   if (app!=DATEBOOK) {
+      /*One record per page check box */
+      one_record_checkbutton = gtk_check_button_new_with_label
+	(_("One record per page"));
+      gtk_box_pack_start(GTK_BOX(vbox), one_record_checkbutton, FALSE, FALSE, 0);
+      get_pref(PREF_PRINT_ONE_PER_PAGE, &ivalue, NULL);
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(one_record_checkbutton), ivalue);
    }
-   if (ivalue==3) {
-      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_all), TRUE);
+
+
+   if (app!=DATEBOOK) {
+      /* Number of blank lines */
+      hbox = gtk_hbox_new(FALSE, 0);
+      gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
+
+      lines_entry = gtk_entry_new_with_max_length(2);
+      gtk_widget_set_usize(lines_entry, 30, 0);
+      gtk_box_pack_start(GTK_BOX(hbox), lines_entry, FALSE, FALSE, 0);
+
+      label = gtk_label_new(_(" Blank lines between each record"));
+      gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
+
+      get_pref(PREF_NUM_BLANK_LINES, &ivalue, NULL);
+      sprintf(temp_str, "%ld", ivalue);
+      gtk_entry_set_text(GTK_ENTRY(lines_entry), temp_str);
    }
-
-   gtk_box_pack_start(GTK_BOX(vbox), radio_button_one, FALSE, FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(vbox), radio_button_shown, FALSE, FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(vbox), radio_button_all, FALSE, FALSE, 0);
-
-
-   /*One record per page check box */
-   one_record_checkbutton = gtk_check_button_new_with_label
-     (_("One record per page"));
-   gtk_box_pack_start(GTK_BOX(vbox), one_record_checkbutton, FALSE, FALSE, 0);
-   get_pref(PREF_PRINT_ONE_PER_PAGE, &ivalue, NULL);
-   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(one_record_checkbutton), ivalue);
-
-
-   /* Number of blank lines */
-   hbox = gtk_hbox_new(FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
-
-   lines_entry = gtk_entry_new_with_max_length(2);
-   gtk_widget_set_usize(lines_entry, 30, 0);
-   gtk_box_pack_start(GTK_BOX(hbox), lines_entry, FALSE, FALSE, 0);
-
-   label = gtk_label_new(_(" Blank lines between each record"));
-   gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
-
-   get_pref(PREF_NUM_BLANK_LINES, &ivalue, NULL);
-   sprintf(temp_str, "%ld", ivalue);
-   gtk_entry_set_text(GTK_ENTRY(lines_entry), temp_str);
 
 
    /* Print Command */

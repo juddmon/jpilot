@@ -1,6 +1,7 @@
 /* password.c
+ * A module of J-Pilot http://jpilot.org
  *
- * Copyright (C) 1999 by Judd Montgomery
+ * Copyright (C) 1999-2001 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +21,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include "password.h"
 #include "prefs.h"
 #include "i18n.h"
@@ -78,6 +80,13 @@ void palm_encode(unsigned char *ascii, unsigned char *encoded)
    int mi;
    int m;
 
+   /* It seems that Palm OS lower cases the password first */
+   /* Yes, I have found this documented on Palms site */
+   len = strlen(encoded);
+   for (ai=0; ai < PASSWD_LEN; ai++) {
+      ascii[ai] = tolower(ascii[ai]);
+   }
+
    encoded[0]='\0';
    end=0;
    if (strlen(ascii)<5) {
@@ -122,6 +131,8 @@ void palm_encode(unsigned char *ascii, unsigned char *encoded)
  * hide passed HIDE_PRIVATES will set the hide flag.
  * hide passed SHOW_PRIVATES will unset the hide flag and also need a
  *  correct password.
+ * hide passed MASK_PRIVATES will unset the hide flag and also need a
+ *  correct password if current state is not SHOW_PRIVATES.
  * hide passed GET_PRIVATES will return the current hide flag.
  * hide flag is always returned, it is boolean.
  */
@@ -140,7 +151,12 @@ int show_privates(int hide, char *password)
       hidden=HIDE_PRIVATES;
       return hidden;
    }
-   if (hide==SHOW_PRIVATES) {
+   if ((hide==MASK_PRIVATES) && (hidden==SHOW_PRIVATES)) {
+      hidden=MASK_PRIVATES;
+      return hidden;
+   }
+   if ( (hide==SHOW_PRIVATES) ||
+       ((hide==MASK_PRIVATES) && (hidden!=SHOW_PRIVATES)) ) {
       /* Need to have the proper password */
       if (!password) {
 	 return HIDE_PRIVATES;

@@ -1,6 +1,7 @@
 /* password.h
+ * A module of J-Pilot http://jpilot.org
  *
- * Copyright (C) 1999 by Judd Montgomery
+ * Copyright (C) 1999-2001 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +21,7 @@
 
 #ifdef ENABLE_PRIVATE
 
-/* These are booleans, so don't change */
+#define MASK_PRIVATES 2
 #define SHOW_PRIVATES 1
 #define HIDE_PRIVATES 0
 #define GET_PRIVATES -1

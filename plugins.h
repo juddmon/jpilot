@@ -1,6 +1,7 @@
 /* plugins.h
+ * A module of J-Pilot http://jpilot.org
  * 
- * Copyright (C) 1999 by Judd Montgomery
+ * Copyright (C) 1999-2001 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,6 +48,8 @@ struct plugin_s
    int (*plugin_gui)(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id);
    int (*plugin_help)(char **text, int *width, int *height);
    int (*plugin_print)();
+   int (*plugin_import)(GtkWidget *window);
+   int (*plugin_export)(GtkWidget *window);
    int (*plugin_gui_cleanup)(void);
    int (*plugin_pre_sync)(void);
    int (*plugin_sync)(int sd);

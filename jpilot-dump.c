@@ -87,7 +87,7 @@ int dumpaddress();
 GtkWidget *glob_dialog;
 GtkWidget *glob_date_label;
 int pipe_out;
-//int sync_once(struct my_sync_info *sync_info)
+
 int sync_once(void *sync_info)
 {
    return 0;

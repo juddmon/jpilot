@@ -1,32 +1,38 @@
+0.99.1 - 02/07/01
+ Added man pages.
+ Added plugin_startup and plugin_cleanup to jpilot-sync.
+ Added a default pdb file for Expenses.
+ Added an icon when iconized.
+
 0.99 - 02/06/01
- Alphabetized 4 main app categories and expense categories
- New calendar begin/end setting method using keyboard
- jpilot-sync program added to allow command line syncing
- Made radio buttons for which phone # shows up in addr
- Made month/week views obey categories
- Made 4 main apps+expense more user friendly by detecting changes
- Added prefs for optionally backing up DBs
- Czech character set added
- Russian character set added
- Moved output screen to bottom panel in main window
- Fixed many bugs in Expense and improved GUI
- Fixed datebook entries showing weekly repeat
- Added a large view window to the monthview
- Fixed some DateBk3 bugs (templates showing as today, etc)
- Made Address screen stay as it was last used in quick/add view mode
- Alarms
- Sorted memos if they are sorted on the handheld
- Replaced calendar buttons (array) with a gtk_calendar widget
- Made Quickview a page on the address Notebook
- Made private records hidable using palm password
- Made changes for Japanese and Chinese and Korean and multibyte characters
- Included Synctime in rpm and made it detect and avoid PalmOS 3.3
- Made the creation of ~/.jpilot and ~/.jpilot/backup* perms 0700 & ~umask
+ Alphabetized 4 main app categories and expense categories.
+ New calendar begin/end setting method using keyboard.
+ jpilot-sync program added to allow command line syncing.
+ Made radio buttons for which phone # shows up in addr.
+ Made month/week views obey categories.
+ Made 4 main apps+expense more user friendly by detecting changes.
+ Added prefs for optionally backing up DBs.
+ Czech character set added.
+ Russian character set added.
+ Moved output screen to bottom panel in main window.
+ Fixed many bugs in Expense and improved GUI.
+ Fixed datebook entries showing weekly repeat.
+ Added a large view window to the monthview.
+ Fixed some DateBk3 bugs (templates showing as today, etc).
+ Made Address screen stay as it was last used in quick/add view mode.
+ Alarms.
+ Sorted memos if they are sorted on the handheld.
+ Replaced calendar buttons (array) with a gtk_calendar widget.
+ Made Quickview a page on the address Notebook.
+ Made private records hidable using palm password.
+ Made changes for Japanese and Chinese and Korean and multibyte characters.
+ Included Synctime in rpm and made it detect and avoid PalmOS 3.30.
+ Made the creation of ~/.jpilot and ~/.jpilot/backup* perms 0700 & ~umask.
   If upgrading then you may want to change the permissions of ~/.jpilot/ for
   security reasons.
- Made completed ToDos not print if hidden
- Minor postscript improvements
- Made plugin conduits selectable wether to sync or not  
+ Made completed ToDos not print if hidden.
+ Minor postscript improvements.
+ Made plugin conduits selectable wether to sync or not.  
 
 0.98 - 3/01/00
  Postscript printing support

@@ -1,6 +1,7 @@
 /* prefs.c
+ * A module of J-Pilot http://jpilot.org
  *
- * Copyright (C) 1999 by Judd Montgomery
+ * Copyright (C) 1999-2001 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,58 +29,121 @@
 #include "log.h"
 
 /*These are the default settings */
-/*name, usertype, filetype, ivalue, char svalue[MAX_PREF_VALUE+2]; */
+/*name, usertype, filetype, ivalue, char *svalue, svalue_size; */
 static prefType glob_prefs[NUM_PREFS] = {
-     {"jpilotrc", CHARTYPE, CHARTYPE, 0, "jpilotrc.default"},
-     {"time", CHARTYPE, INTTYPE, 0, ""},
-     {"sdate", CHARTYPE, INTTYPE, 0, ""},
-     {"ldate", CHARTYPE, INTTYPE, 0, ""},
-     {"fdow", CHARTYPE, INTTYPE, 0, ""},
-     {"show_deleted", INTTYPE, INTTYPE, 0, ""},
-     {"show_modified", INTTYPE, INTTYPE, 0, ""},
-     {"hide_completed", INTTYPE, INTTYPE, 0, ""},
-     {"highlight_days", INTTYPE, INTTYPE, 1, ""},
-     {"port", CHARTYPE, CHARTYPE, 0, ""},
-     {"rate", CHARTYPE, INTTYPE, 4, ""},
-     {"user", CHARTYPE, CHARTYPE, 0, ""},
-     {"user_id", INTTYPE, INTTYPE, 0, ""},
-     {"pc_id", INTTYPE, INTTYPE, 0, ""},
-     {"num_backups", INTTYPE, INTTYPE, 2, ""},
-     {"window_width", INTTYPE, INTTYPE, 770, ""},
-     {"window_height", INTTYPE, INTTYPE, 500, ""},
-     {"datebook_pane", INTTYPE, INTTYPE, 370, ""},
-     {"address_pane", INTTYPE, INTTYPE, 340, ""},
-     {"todo_pane", INTTYPE, INTTYPE, 370, ""},
-     {"memo_pane", INTTYPE, INTTYPE, 370, ""},
-     {"use_db3", INTTYPE, INTTYPE, 0, ""},
-     {"last_app", INTTYPE, INTTYPE, DATEBOOK, ""},
-     {"print_this_many", INTTYPE, INTTYPE, 3, ""},
-     {"print_one_per_page", INTTYPE, INTTYPE, 0, ""},
-     {"print_blank_lines", INTTYPE, INTTYPE, 1, ""},
-     {"print_command", CHARTYPE, CHARTYPE, 0, "lpr -h"},
-     {"char_set", CHARTYPE, INTTYPE, CHAR_SET_ENGLISH, ""},
-     {"sync_datebook", INTTYPE, INTTYPE, 1, ""},
-     {"sync_address", INTTYPE, INTTYPE, 1, ""},
-     {"sync_todo", INTTYPE, INTTYPE, 1, ""},
-     {"sync_memo", INTTYPE, INTTYPE, 1, ""},
-     {"address_page", INTTYPE, INTTYPE, 0, ""},
-     {"output_height", INTTYPE, INTTYPE, 40, ""},
-     {"open_alarm_windows", INTTYPE, INTTYPE, 1, ""},
-     {"do_alarm_command", INTTYPE, INTTYPE, 0, ""},
-     {"alarm_command", CHARTYPE, CHARTYPE, 0, "echo %t %d"},
-     {"remind_in", CHARTYPE, CHARTYPE, 0, "5"},
-     {"remind_units", INTTYPE, INTTYPE, 0, ""},
+     {"jpilotrc", CHARTYPE, CHARTYPE, 0, NULL, 0},
+     {"time", CHARTYPE, INTTYPE, 0, NULL, 0},
+     {"sdate", CHARTYPE, INTTYPE, 0, NULL, 0},
+     {"ldate", CHARTYPE, INTTYPE, 0, NULL, 0},
+     {"fdow", CHARTYPE, INTTYPE, 0, NULL, 0},
+     {"show_deleted", INTTYPE, INTTYPE, 0, NULL, 0},
+     {"show_modified", INTTYPE, INTTYPE, 0, NULL, 0},
+     {"hide_completed", INTTYPE, INTTYPE, 0, NULL, 0},
+     {"highlight_days", INTTYPE, INTTYPE, 1, NULL, 0},
+     {"port", CHARTYPE, CHARTYPE, 0, NULL, 0},
+     {"rate", CHARTYPE, INTTYPE, 4, NULL, 0},
+     {"user", CHARTYPE, CHARTYPE, 0, NULL, 0},
+     {"user_id", INTTYPE, INTTYPE, 0, NULL, 0},
+     {"pc_id", INTTYPE, INTTYPE, 0, NULL, 0},
+     {"num_backups", INTTYPE, INTTYPE, 2, NULL, 0},
+     {"window_width", INTTYPE, INTTYPE, 770, NULL, 0},
+     {"window_height", INTTYPE, INTTYPE, 500, NULL, 0},
+     {"datebook_pane", INTTYPE, INTTYPE, 370, NULL, 0},
+     {"address_pane", INTTYPE, INTTYPE, 340, NULL, 0},
+     {"todo_pane", INTTYPE, INTTYPE, 370, NULL, 0},
+     {"memo_pane", INTTYPE, INTTYPE, 370, NULL, 0},
+     {"use_db3", INTTYPE, INTTYPE, 0, NULL, 0},
+     {"last_app", INTTYPE, INTTYPE, DATEBOOK, NULL, 0},
+     {"print_this_many", INTTYPE, INTTYPE, 3, NULL, 0},
+     {"print_one_per_page", INTTYPE, INTTYPE, 0, NULL ,0},
+     {"print_blank_lines", INTTYPE, INTTYPE, 1, NULL, 0},
+     {"print_command", CHARTYPE, CHARTYPE, 0, NULL, 0},
+     {"char_set", INTTYPE, INTTYPE, CHAR_SET_ENGLISH, NULL, 0},
+     {"sync_datebook", INTTYPE, INTTYPE, 1, NULL, 0},
+     {"sync_address", INTTYPE, INTTYPE, 1, NULL, 0},
+     {"sync_todo", INTTYPE, INTTYPE, 1, NULL, 0},
+     {"sync_memo", INTTYPE, INTTYPE, 1, NULL, 0},
+     {"sync_memo32", INTTYPE, INTTYPE, 0, NULL, 0},
+     {"address_page", INTTYPE, INTTYPE, 0, NULL, 0},
+     {"output_height", INTTYPE, INTTYPE, 40, NULL, 0},
+     {"open_alarm_windows", INTTYPE, INTTYPE, 1, NULL, 0},
+     {"do_alarm_command", INTTYPE, INTTYPE, 0, NULL, 0},
+     {"alarm_command", CHARTYPE, CHARTYPE, 0, NULL, 0},
+     {"remind_in", CHARTYPE, CHARTYPE, 0, NULL, 0},
+     {"remind_units", INTTYPE, INTTYPE, 0, NULL, 0},
    /* This is actually the password, but I wanted to name it something more discreet */
-     {"session_id", CHARTYPE, CHARTYPE, 0, "09021345070413440c08135a3215135dd217ead3b5df556322e9a14a994b0f88"} 
+     {"session_id", CHARTYPE, CHARTYPE, 0, NULL, 0},
+     {"memo32_mode", INTTYPE, INTTYPE, 0, NULL, 0},
+     {"memo_export_filename", CHARTYPE, CHARTYPE, 0, NULL, 0},
+     {"memo_import_path", CHARTYPE, CHARTYPE, 0, NULL, 0}
 };
 
-struct jlist {
+struct name_list {
    char *name;
-   struct jlist *next;
+   struct name_list *next;
 };
 
-static struct jlist *dir_list=NULL;
+static struct name_list *dir_list=NULL;
 
+
+void pref_init()
+{
+   int i;
+
+   for (i=0; i<NUM_PREFS; i++) {
+      switch (i) {
+       case PREF_RCFILE:
+	 glob_prefs[i].svalue=strdup("jpilotrc.default");
+	 glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
+	 break;
+       case PREF_PRINT_COMMAND:
+	 glob_prefs[i].svalue=strdup("lpr -h");
+	 glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
+	 break;
+       case PREF_ALARM_COMMAND:
+	 glob_prefs[i].svalue=strdup("echo %t %d");
+	 glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
+	 break;
+       case PREF_REMIND_IN:
+	 glob_prefs[i].svalue=strdup("5");
+	 glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
+	 break;
+       case PREF_PASSWORD:
+	 glob_prefs[i].svalue=strdup("09021345070413440c08135a3215135dd217ead3b5df556322e9a14a994b0f88");
+	 glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
+	 break;
+       default:
+	 glob_prefs[i].svalue=strdup("");
+	 glob_prefs[i].svalue_size=1;
+      }
+   }
+}
+
+void jp_pref_init(prefType prefs[], int count)
+{
+   int i;
+
+   for (i=0; i<count; i++) {
+      if (prefs[i].svalue) {
+	 prefs[i].svalue=strdup(prefs[i].svalue);
+      } else {
+	 prefs[i].svalue=strdup("");
+      }
+      prefs[i].svalue_size=strlen(prefs[i].svalue)+1;
+   }
+}
+
+void jp_free_prefs(prefType prefs[], int count)
+{
+   int i;
+
+   for (i=0; i<count; i++) {
+      if (prefs[i].svalue) {
+	 free(prefs[i].svalue);
+	 prefs[i].svalue=NULL;
+      }
+   }
+}
 
 int get_pref_time_no_secs(char *datef)
 {
@@ -148,20 +212,23 @@ int get_pref_dmy_order()
    return 0;
 }
 
-/*This function is used externally to free up any memory that prefs is using */
-void free_prefs()
+
+/*This function is used internally to free up any memory that prefs is using */
+/* I'm not using this function right now.
+void free_name_list(struct name_list **Plist)
 {
-   struct jlist *temp_list, *next_list;
+   struct name_list *temp_list, *next_list;
    
-   for (temp_list=dir_list; temp_list; temp_list=next_list) {
+   for (temp_list=*Plist; temp_list; temp_list=next_list) {
       next_list=temp_list->next;
       if (temp_list->name) {
 	 free(temp_list->name);
       }
+      free(temp_list);
    }
-   dir_list=NULL;
+   *Plist=NULL;
 }
-
+*/
 static int get_rcfile_name(int n, char *rc_copy)
 {
    DIR *dir;
@@ -170,7 +237,7 @@ static int get_rcfile_name(int n, char *rc_copy)
    int i;
    char filename[256];
    int found, count;
-   struct jlist *temp_list, *new_entry;
+   struct name_list *temp_list, *new_entry;
   
 
    if (dir_list == NULL) {
@@ -185,7 +252,7 @@ static int get_rcfile_name(int n, char *rc_copy)
 	       continue;
 	    } else {
 	       jpilot_logf(LOG_DEBUG, "found %s\n", dirent->d_name);
-	       new_entry = malloc(sizeof(struct jlist));
+	       new_entry = malloc(sizeof(struct name_list));
 	       if (!new_entry) {
 		  jpilot_logf(LOG_FATAL, "get_rcfile_name(): Out of memory\n");
 		  return -1;
@@ -210,7 +277,7 @@ static int get_rcfile_name(int n, char *rc_copy)
 	       continue;
 	    } else {
 	       jpilot_logf(LOG_DEBUG, "found %s\n", dirent->d_name);
-	       new_entry = malloc(sizeof(struct jlist));
+	       new_entry = malloc(sizeof(struct name_list));
 	       if (!new_entry) {
 		  jpilot_logf(LOG_FATAL, "get_rcfile_name(): Out of memory 2\n");
 		  return -1;
@@ -291,8 +358,8 @@ int get_pref_possibility(int which, int n, char *pref_str)
       "38400",
       "57600",
       "115200",
-      "230400",
-      "460800"
+      "H230400",
+      "H460800"
    };
 
    static const char *char_sets[] = {
@@ -371,63 +438,136 @@ int get_pref_possibility(int which, int n, char *pref_str)
    return 0;
 }
 
-/*if n is out of range then this function will fail */
-int get_pref(int which, long *n, const char **ret)
+/*
+ * WARNING
+ * Caller must ensure that which is not out of range!
+ */
+int jp_get_pref(prefType prefs[], int which, long *n, const char **string)
 {
-   if ((which < 0) || (which > NUM_PREFS)) {
+   if (which < 0) {
       return -1;
    }
    if (n) {
-      *n = glob_prefs[which].ivalue;
+      *n = prefs[which].ivalue;
    }
-   if (glob_prefs[which].usertype == CHARTYPE) {
-      if (ret!=NULL) {
-	 *ret = glob_prefs[which].svalue;
+   if (prefs[which].usertype == CHARTYPE) {
+      if (string!=NULL) {
+	 *string = prefs[which].svalue;
       }
    } else {
-      if (ret!=NULL) {
-	 *ret = NULL;
+      if (string!=NULL) {
+	 *string = NULL;
       }
    }
    return 0;
 }
 
-int set_pref(int which, long n)
+int get_pref(int which, long *n, const char **string)
 {
-   if ((which < 0) || (which > NUM_PREFS)) {
+   if (which > NUM_PREFS) {
       return -1;
    }
-   glob_prefs[which].ivalue = n;
-   if (glob_prefs[which].usertype == CHARTYPE) {
-      get_pref_possibility(which, glob_prefs[which].ivalue, glob_prefs[which].svalue);
+   return jp_get_pref(glob_prefs, which, n, string);
+}
+
+/*
+ * Get the preference value as integer. If failed to do so, return the
+ * specified default (defval).
+ */
+long get_pref_int_default(int which, long defval)
+{
+   long val;
+
+   if (get_pref(which, &val, NULL) == 0) {
+      return val;
+   }
+   else {
+      return defval;
+   }
+}
+
+/*
+ * Treats src==NULL as ""
+ * Writes NULL at end of string
+ */
+char *pref_lstrncpy_realloc(char **dest, const char *src, int *size, int max_size)
+{
+   int new_size, len;
+   const char null_str[]="";
+   const char *Psrc;
+
+   if (!src) {
+      Psrc=null_str;
+   } else {
+      Psrc=src;
+   }
+   len=strlen(Psrc)+1;
+   new_size=*size;
+   if (len > *size) {
+      new_size=len;
+   }
+   if (new_size > max_size) new_size=max_size;
+   
+   if (new_size > *size) {
+      *dest=realloc(*dest, new_size);
+      if (!(*dest)) {
+	 return 0;
+      }
+      *size=new_size;
+   }
+   strncpy(*dest, Psrc, new_size);
+   (*dest)[new_size-1]='\0';
+
+   return *dest;
+}
+
+int jp_set_pref(prefType prefs[], int which, long n, const char *string)
+{
+   const char null_str[]="";
+   const char *Pstr;
+
+   if (which < 0) {
+      return -1;
+   }
+   prefs[which].ivalue = n;
+   if (string == NULL) {
+      Pstr=null_str;
+   } else {
+      Pstr=string;
+   }
+   if (prefs[which].usertype == CHARTYPE) {
+      pref_lstrncpy_realloc(&(prefs[which].svalue), Pstr,
+			    &(prefs[which].svalue_size), MAX_PREF_VALUE);
    }
    /* #ifdef SYMPHONET */
    /* Some people like to just kill the window manager */
    /* Symphonet kills us, always be prepared for death */
-   write_rc_file();
+   pref_write_rc_file();
    /* #endif */
    return 0;
 }
 
-int set_pref_char(int which, char *string)
+int set_pref(int which, long n, const char *string)
 {
-   if ((which < 0) || (which > NUM_PREFS)) {
+   if (which > NUM_PREFS) {
       return -1;
    }
-   if (string == NULL) {
-      glob_prefs[which].svalue[0]='\0';
-      return 0;
+   return jp_set_pref(glob_prefs, which, n, string);
+}
+
+int set_pref_possibility(int which, long n)
+{
+   char svalue[MAX_PREF_VALUE];
+   char *str=NULL;
+
+   if (which > NUM_PREFS) {
+      return -1;
    }
-   if (glob_prefs[which].filetype == CHARTYPE) {
-      strncpy(glob_prefs[which].svalue, string, MAX_PREF_VALUE);
-      glob_prefs[which].svalue[MAX_PREF_VALUE-1]='\0';
+   if (glob_prefs[which].usertype == CHARTYPE) {
+      get_pref_possibility(which, n, svalue);
+      str=svalue;
    }
-   /* #ifdef SYMPHONET */
-   /* Some people like to just kill the window manager */
-   /* Symphonet kills us, always be prepared for death */
-   write_rc_file();
-   /* #endif */
-   return 0;
+   return jp_set_pref(glob_prefs, which, n, str);
 }
 
 static int validate_glob_prefs()
@@ -512,15 +652,26 @@ static int validate_glob_prefs()
       glob_prefs[PREF_NUM_BACKUPS].ivalue = 1;
    }
 
-   get_pref_possibility(PREF_TIME, glob_prefs[PREF_TIME].ivalue, glob_prefs[PREF_TIME].svalue);
+   get_pref_possibility(PREF_TIME, glob_prefs[PREF_TIME].ivalue, svalue);
+   pref_lstrncpy_realloc(&(glob_prefs[PREF_TIME].svalue), svalue,
+			 &(glob_prefs[PREF_TIME].svalue_size), MAX_PREF_VALUE);
 
-   get_pref_possibility(PREF_SHORTDATE, glob_prefs[PREF_SHORTDATE].ivalue, glob_prefs[PREF_SHORTDATE].svalue);
+   get_pref_possibility(PREF_SHORTDATE, glob_prefs[PREF_SHORTDATE].ivalue, svalue);
+   pref_lstrncpy_realloc(&(glob_prefs[PREF_SHORTDATE].svalue), svalue,
+			 &(glob_prefs[PREF_SHORTDATE].svalue_size), MAX_PREF_VALUE);
 
-   get_pref_possibility(PREF_LONGDATE, glob_prefs[PREF_LONGDATE].ivalue, glob_prefs[PREF_LONGDATE].svalue);
 
-   get_pref_possibility(PREF_FDOW, glob_prefs[PREF_FDOW].ivalue, glob_prefs[PREF_FDOW].svalue);
+   get_pref_possibility(PREF_LONGDATE, glob_prefs[PREF_LONGDATE].ivalue, svalue);
+   pref_lstrncpy_realloc(&(glob_prefs[PREF_LONGDATE].svalue), svalue,
+			 &(glob_prefs[PREF_LONGDATE].svalue_size), MAX_PREF_VALUE);
+
+   get_pref_possibility(PREF_FDOW, glob_prefs[PREF_FDOW].ivalue, svalue);
+   pref_lstrncpy_realloc(&(glob_prefs[PREF_FDOW].svalue), svalue,
+			 &(glob_prefs[PREF_FDOW].svalue_size), MAX_PREF_VALUE);
    
-   get_pref_possibility(PREF_RATE, glob_prefs[PREF_RATE].ivalue, glob_prefs[PREF_RATE].svalue);
+   get_pref_possibility(PREF_RATE, glob_prefs[PREF_RATE].ivalue, svalue);
+   pref_lstrncpy_realloc(&(glob_prefs[PREF_RATE].svalue), svalue,
+			 &(glob_prefs[PREF_RATE].svalue_size), MAX_PREF_VALUE);
    
    for (i=0; i<1000; i++) {
       r = get_pref_possibility(PREF_RCFILE, i, svalue);
@@ -533,23 +684,24 @@ static int validate_glob_prefs()
    return 0;
 }
 
-int read_rc_file()
+int jp_pref_read_rc_file(char *filename, prefType prefs[], int num_prefs)
 {
    int i;
    FILE *in;
-   char line[256];
+   char line[1024];
    char *field1, *field2;
    char *Pc;
 
-   in=jp_open_home_file("jpilot.rc", "r");
+   in=jp_open_home_file(filename, "r");
    if (!in) {
       return -1;
    }
 
    while (!feof(in)) {
-      fgets(line, 255, in);
-      line[254] = ' ';
-      line[255] = '\0';
+      fgets(line, 1024, in);
+      if (feof(in)) break;
+      line[1023] = ' ';
+      line[1023] = '\0';
       field1 = strtok(line, " ");
       field2 = (field1 != NULL)	? strtok(NULL, "\n") : NULL;/* jonh */
       if ((field1 == NULL) || (field2 == NULL)) {
@@ -558,61 +710,66 @@ int read_rc_file()
       if ((Pc = (char *)index(field2, '\n'))) {
 	 Pc[0]='\0';
       }
-      for(i=0; i<NUM_PREFS; i++) {
-	 if (!strcmp(glob_prefs[i].name, field1)) {
-	    if (glob_prefs[i].filetype == INTTYPE) {
-	       glob_prefs[i].ivalue = atoi(field2);
+      for(i=0; i<num_prefs; i++) {
+	 if (!strcmp(prefs[i].name, field1)) {
+	    if (prefs[i].filetype == INTTYPE) {
+	       prefs[i].ivalue = atoi(field2);
 	    }
-	    if (glob_prefs[i].filetype == CHARTYPE) {
-	       strncpy(glob_prefs[i].svalue, field2, MAX_PREF_VALUE);
-	       glob_prefs[i].svalue[MAX_PREF_VALUE-1]='\0';
+	    if (prefs[i].filetype == CHARTYPE) {
+	       if (pref_lstrncpy_realloc(&(prefs[i].svalue), field2,
+					&(prefs[i].svalue_size),
+					MAX_PREF_VALUE)==NULL) {
+		  jpilot_logf(LOG_WARN, "Out of memory: read_rc_file()\n");
+		  continue;
+	       }
 	    }
 	 }
       }
    }
    fclose(in);
-   validate_glob_prefs();
-   
+
    return 0;
 }
 
-int write_rc_file()
+int pref_read_rc_file()
+{
+   int r;
+
+   r=jp_pref_read_rc_file("jpilot.rc", glob_prefs, NUM_PREFS);
+
+   validate_glob_prefs();
+   
+   return r;
+}
+
+int jp_pref_write_rc_file(char *filename, prefType prefs[], int num_prefs)
 {
    int i;
    FILE *out;
 
-   out=jp_open_home_file("jpilot.rc","w" );
+   jpilot_logf(LOG_DEBUG, "jp_pref_write_rc_file()\n");
+
+   out=jp_open_home_file(filename,"w" );
    if (!out) {
       return -1;
    }
 
-   for(i=0; i<NUM_PREFS; i++) {
+   for(i=0; i<num_prefs; i++) {
 
-      if (glob_prefs[i].filetype == INTTYPE) {
-	 fprintf(out, "%s %ld\n", glob_prefs[i].name, glob_prefs[i].ivalue);
+      if (prefs[i].filetype == INTTYPE) {
+	 fprintf(out, "%s %ld\n", prefs[i].name, prefs[i].ivalue);
       }
 
-      if (glob_prefs[i].filetype == CHARTYPE) {
-	 fprintf(out, "%s %s\n", glob_prefs[i].name, glob_prefs[i].svalue);
+      if (prefs[i].filetype == CHARTYPE) {
+	 fprintf(out, "%s %s\n", prefs[i].name, prefs[i].svalue);
       }
    }
    fclose(out);
    
    return 0;
 }
- 
-/*
- * Get the preference value as integer. If failed to do so, return the
- * specified default.
- */
-long get_pref_int_default(int which, long defval)
-{
-    long val;
 
-    if (get_pref(which, &val, NULL) == 0) {
-        return val;
-    }
-    else {
-        return defval;
-    }
+int pref_write_rc_file()
+{
+   return jp_pref_write_rc_file("jpilot.rc", glob_prefs, NUM_PREFS);
 }

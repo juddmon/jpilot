@@ -13,6 +13,10 @@
 <b>J-Pilot Plugin Manual</b></h2></center>
 
 <h3>
+Updates</h3>
+This document was last updated 19 March 2001, for J-Pilot-0.99.&nbsp;
+
+<h3>
 What are plugins?</h3>
 A plugin is code that can extend the functionality of j-pilot without adding
 any code to j-pilot, or recompiling it.&nbsp; It is basically just a shared
@@ -31,23 +35,31 @@ Plugins are relatively easy to write for J-Pilot.&nbsp; All you need to
 do is implement the plugin callback functions as needed and write the application
 specific code.&nbsp; I have provided an example plugin for the Expense
 application.&nbsp; I used this application because it is included in the
-palm pilot ROM and everyone should have it.&nbsp; It took me about 10 hours
+palm pilot ROM and everyone should have it.&nbsp; Since then I have been
+proved wrong.&nbsp;  The new m100s don't have Expense and I think some old
+Pilots don't have it.&nbsp;  It took me about 10 hours
 to write it with a lot of code reuse from other parts of j-pilot.
 <p>I have created a library of useful functions for writing J-Pilot conduits.&nbsp;
-It is called libplugin.&nbsp; To create it you need to "make libplugin"
-from the J-Pilot directory.&nbsp; It should create a file called libplugin.a.&nbsp;
-You can copy this file to the plugin directory, or just create a symbolic
-link to it.&nbsp; The naming convention is that all of these functions
-start with "jp_".
+The code is inside j-pilot and the header file is libplugin.h.&nbsp;
+The naming convention is that all of these functions
+start with "jp_".&nbsp;  There are some I threw in there and didn't add a
+jp_ prefix because I would have had to change too much existing code.&nbsp;
 <p>If you do create a plugin I would appreciate it if you would give me
 a link to the site so that I can put it on my website.&nbsp; This will
 encourage more people to use J-Pilot and your plugin.&nbsp; Even if you
 are working on a plugin you can let me know and I will put it down as in
-progress so that someone doesn't duplicate your effort.&nbsp; My email
-is
+progress so that someone doesn't duplicate your effort.&nbsp;  Its GNU
+licensed code so you are free to do not tell me of course, as long as you
+follow the GNU license.
+My email is 
 <i><a href="mailto:Judd Montgomery <judd@engineer.com>">Judd Montgomery
 &lt;judd@engineer.com></a></i>.&nbsp; The official J-Pilot website is at
-<a href="http://jpilot.linuxbox.com">http://jpilot.linuxbox.com</a>.
+<a href="http://jpilot.org">http://jpilot.org</a>.
+<h3>
+Example Plugins</h3>
+I have written Expense and SyncTime as example plugins.  Expense is a GUI
+(Graphical User Interface) application and SyncTime has no GUI.&nbsp;  It
+shouldn't be too hard to use these as a base point for writing your own.&nbsp;
 <h3>
 Plugin call back functions</h3>
 These functions are functions that you may implement in your plugin application.&nbsp;
@@ -110,11 +122,21 @@ that case this function should not be implemented.
 <p><b><tt>char *name - </tt></b>output parameter, a pointer to a pre-allocated
 buffer in j-pilots address space.&nbsp; The plugin should copy its name
 into this string.
-<br><b><tt>int len - </tt></b>input parameter, the length of this buffer.&nbsp;
+<br><b><tt>int len - </tt></b>input parameter, the length of this
+buffer.&nbsp;
 Don't overwrite this buffer.&nbsp; Its currently 50 characters.
 <p>This function is used to get the name of the plugin as it wishes to
 appear in the help menu pulldown, e.g. "About Expense".&nbsp; This function
 is not mandatory.
+<p>
+<hr WIDTH="100%">
+<p><b><tt>int plugin_help(char **text, int *width, int *height);</tt></b>
+<p><b><tt>char **text - </tt></b>output parameter, the plugin should point 
+this string pointer to a string to be displayed in the help box.&nbsp;
+<br><b><tt>int *width - </tt></b>output parameter, the width of the help
+window.
+<br><b><tt>int *height - </tt></b>output parameter, the height of the help
+window.
 <p>
 <hr WIDTH="100%">
 <p><b><tt>int plugin_get_db_name(char *name, int len);</tt></b>
@@ -198,7 +220,7 @@ connection.
 the sync process.
 <br>Unless something special is needed to be done with the sync handle
 this function does not need to be used.
-<br>The sync process in j-pilot is a forked process, and this function
+<br><b>The sync process in j-pilot is a forked process</b>, and this function
 will be called from the forked process.&nbsp; Therefore the previous state
 of global data in the plugin will not be available when this function is
 called.
@@ -206,7 +228,8 @@ called.
 <br>1. The 4 main applications are synced.
 <br>2. Plugins are synced according to the DB name passed back from plugin_get_db_name().
 <br>3. This function is called.
-<br>4. Modified pdb files are pulled back from the pilot to the desktop.
+<br>4. Modified pdb files are pulled back from the pilot to the desktop if a
+backup operation is being performed.&nbsp;
 <p>
 <hr WIDTH="100%">
 <p><b><tt>int plugin_post_sync(void);</tt></b>
@@ -234,7 +257,7 @@ it should probably be added into this library.
 <hr WIDTH="100%">
 <pre><b><tt>int jp_init(void);</tt></b></pre>
 This function must be called in the plugin.&nbsp; Preferable in plugin_startup,
-but it could be in the first function to be called.
+but it should be in the first function to be called.
 <pre>
 <hr WIDTH="100%"></pre>
 
@@ -415,15 +438,15 @@ removed from the file.
 the pilot.
 <p>
 <hr WIDTH="100%">
+<p><b><tt>int jp_install_remove_line(int deleted_line);</tt></b>
+<p><tt><b>int deleted_line - </b>input parameter, This is the line number
+to be deleted from the install file.&nbsp; The first line is line zero.</tt>
+<p>
+<hr WIDTH="100%">
 <p><b><tt>const char *jp_strstr(const char *haystack, const char *needle,
 int case_sense);</tt></b>
 <p>This function is analogous to the C function strstr except that it has
 a case sensitive parameter.
-<p>
-<hr WIDTH="100%">
-<p><b><tt>int jp_install_remove_line(int deleted_line);</tt></b>
-<p><tt><b>int deleted_line - </b>input parameter, This is the line number
-to be deleted from the install file.&nbsp; The first line is line zero.</tt>
 <p>
 <hr WIDTH="100%">
 <p><b><tt>int jp_get_app_info(char *DB_name, void **buf, int buf_size);</tt></b>
@@ -440,6 +463,17 @@ block that is allocated during this call.
 It is packed and must be unpacked into a format that is specific to each
 palm application.
 <p>
+
+<hr WIDTH="100%">
+<p><b><tt>int jp_open_home_file(char *filename, char *mode);</tt></b>
+<p><b><tt>char *filename - </tt></b>input parameter, the name of the file to
+be opened.&nbsp;
+<p><b><tt>char *mode - </tt></b>input parameter, mode to open file in.  See
+man page for fopen.&nbsp;
+<p>This function opens a file in $JPILOT_HOME/.jpilot/  Its analogous to
+fopen except that it looks in the jpilot directory for the file.
+<p>
+
 <hr WIDTH="100%">
 <h4>
 Using J-Pilot database files</h4>
@@ -585,5 +619,48 @@ be left blank since it is an outgoing parameter.&nbsp; A new unique id
 will be assigned and placed in the structure.&nbsp; Attrib is the record
 attributes, buf is a raw database record, and size is the size of the record.
 <br>&nbsp;
+
+<hr WIDTH="100%">
+<h4>
+Other Miscellaneous API Functions</h4>
+<hr WIDTH="100%">
+<p><b><tt>int unlink_file(char *filename);</tt></b>
+<p><b><tt>char *filename</tt></b> is the filename to remove.&nbsp;
+<p>This function is like unlink except that it looks for the file in the jpilot
+directory.&nbsp;
+<p>
+
+<hr WIDTH="100%">
+<p><b><tt>int rename_file(char *old_filename, char *new_filename);</tt></b>
+<p><b><tt>char *old_filename</tt></b> is the filename to rename.&nbsp;
+<p><b><tt>char *new_filename</tt></b> is the filename to rename to.&nbsp;
+<p>This function is like rename except that it looks for the files in the 
+jpilot directory.&nbsp;
+<p>
+
+<hr WIDTH="100%">
+<p><b><tt>int get_app_info_size(FILE *in, int *size);</tt></b>
+<p><b><tt>FILE *in</tt></b> input parameter, an open file pointer to a palm 
+pdb file.&nbsp;
+<p><b><tt>int *size</tt></b> output parameter, is the size of the application 
+info block.&nbsp;
+<p>
+
+<hr WIDTH="100%">
+<p><b><tt>int read_header(FILE *pc_in, PC3RecordHeader *header);</tt></b>
+<p><b><tt>FILE *pc_in</tt></b> input parameter, an open file pointer to a 
+J-Pilot pc3 file pdb file.&nbsp;
+<p><b><tt>PC3RecordHeader *header</tt></b> output parameter, the header from 
+the file read in.&nbsp;
+<p>
+
+<hr WIDTH="100%">
+<p><b><tt>int write_header(FILE *pc_out, PC3RecordHeader *header);</tt></b>
+<p><b><tt>FILE *pc_out</tt></b> input parameter, an open file pointer to a 
+J-Pilot pc3 file pdb file.&nbsp;
+<p><b><tt>PC3RecordHeader *header</tt></b> input parameter, the header to be
+written to the file.&nbsp;
+<p>
+
 </body>
 </html>

@@ -1,6 +1,7 @@
 /* plugins.c
+ * A module of J-Pilot http://jpilot.org
  *
- * Copyright (C) 1999 by Judd Montgomery
+ * Copyright (C) 1999-2001 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +30,7 @@
 #include <dlfcn.h>
 
 GList *plugins = NULL;
+GList *plugins_eol = NULL;
 
 static int get_plugin_info(struct plugin_s *p, char *path);
 static int get_plugin_sync_bits();
@@ -82,7 +84,9 @@ int load_plugins_sub1(DIR *dir, char *path, int *number, unsigned char user_only
 	 jpilot_logf(LOG_WARN, "load_plugins_sub1(): infinite loop\n");
 	 return 0;
       }
-      if (strcmp(&(dirent->d_name[strlen(dirent->d_name)-3]), ".so")) {
+      /* If the filename has either of these extensions then plug it in */
+      if ((strcmp(&(dirent->d_name[strlen(dirent->d_name)-3]), ".so")) &&
+	  (strcmp(&(dirent->d_name[strlen(dirent->d_name)-3]), ".sl"))) {
 	 continue;
       } else {
 	 jpilot_logf(LOG_DEBUG, "found plugin %s\n", dirent->d_name);
@@ -101,7 +105,15 @@ int load_plugins_sub1(DIR *dir, char *path, int *number, unsigned char user_only
 	       return count;
 	    }
 	    memcpy(new_plugin, &temp_plugin, sizeof(struct plugin_s));
-	    plugins = g_list_append(plugins, new_plugin);
+	    if (plugins==NULL) {
+	       plugins = g_list_append(plugins, new_plugin);
+	       plugins_eol=plugins;
+	    } else {
+	       plugins = g_list_append(plugins_eol, new_plugin);
+	       if (plugins_eol->next) {
+		  plugins_eol=plugins_eol->next;
+	       }
+	    }
 	    count++;
 	    (*number)++;
 	 }
@@ -121,7 +133,8 @@ int load_plugins()
    number = DATEBOOK + 100; /* I just made up this number */
    plugins = NULL;
    
-   g_snprintf(path, 250, "%s/%s/%s/%s/", BASE_DIR, "lib", EPN, "plugins");
+   /* ABILIB is for Irix, should normally be "lib" */
+   g_snprintf(path, 250, "%s/%s/%s/%s/", BASE_DIR, ABILIB, EPN, "plugins");
    jpilot_logf(LOG_DEBUG, "opening dir %s\n", path);
    cleanup_path(path);
    dir = opendir(path);
@@ -225,6 +238,8 @@ static int get_plugin_info(struct plugin_s *p, char *path)
    p->plugin_gui = NULL;
    p->plugin_help = NULL;
    p->plugin_print = NULL;
+   p->plugin_import = NULL;
+   p->plugin_export = NULL;
    p->plugin_gui_cleanup = NULL;
    p->plugin_pre_sync = NULL;
    p->plugin_sync = NULL;
@@ -243,6 +258,9 @@ static int get_plugin_info(struct plugin_s *p, char *path)
    p->full_path = strdup(path);
 
    /* plugin_versionM */
+#if defined __OpenBSD__ && !defined __ELF__
+#define dlsym(x,y) dlsym(x, "_" y)
+#endif     
    plugin_versionM = dlsym(h, "plugin_version");
    if (plugin_versionM==NULL)  {
       err = dlerror();
@@ -334,6 +352,12 @@ static int get_plugin_info(struct plugin_s *p, char *path)
    /* plugin_help */
    p->plugin_print = dlsym(h, "plugin_print");
 
+   /* plugin_import */
+   p->plugin_import = dlsym(h, "plugin_import");
+
+   /* plugin_export */
+   p->plugin_export = dlsym(h, "plugin_export");
+
    /* plugin_gui_cleanup */
    p->plugin_gui_cleanup = dlsym(h, "plugin_gui_cleanup");
 
@@ -405,159 +429,4 @@ void free_search_result(struct search_result **sr)
    }
    *sr = NULL;
 }
-
-
-/* Jason Day contributed code - Start */
-/*
- * WARNING
- * Caller must ensure that which is not out of range!
- */
-int jp_get_pref (prefType prefs[], int which, long *n, const char **ret)
-{
-    if (which < 0) {
-        return -1;
-    }
-    *n = prefs[which].ivalue;
-    if (prefs[which].usertype == CHARTYPE) {
-        if (ret != NULL) {
-            *ret = prefs[which].svalue;
-        }
-    }
-    else {
-        if (ret !=NULL) {
-            *ret = NULL;
-        }
-    }
-    return 0;
-}
-
-/*
- * WARNING
- * Caller must ensure that which is not out of range!
- */
-int jp_set_pref (prefType prefs[], int which, long n, const char *string)
-{
-    if (which < 0) {
-        return -1;
-    }
-    prefs[which].ivalue = n;
-    if (string == NULL) {
-        prefs[which].svalue[0] = '\0';
-        return 0;
-    }
-    if (prefs[which].filetype == CHARTYPE) {
-        strncpy (prefs[which].svalue, string, MAX_PREF_VALUE);
-        prefs[which].svalue[MAX_PREF_VALUE - 1] = '\0';
-    }
-    return 0;
-}
-
-/*
- * WARNING
- * Caller must ensure that which is not out of range!
- */
-int jp_set_pref_int (prefType prefs[], int which, long n)
-{
-    if (which < 0) {
-        return -1;
-    }
-    prefs[which].ivalue = n;
-    /*
-    if (prefs[which]->usertype == CHARTYPE) {
-        get_pref_possibility(which, glob_prefs[which].ivalue, glob_prefs[which].svalue);
-    }
-    */
-    return 0;
-}
-
-/*
- * WARNING
- * Caller must ensure that which is not out of range!
- */
-int jp_set_pref_char (prefType prefs[], int which, char *string)
-{
-    if (which < 0) {
-        return -1;
-    }
-    if (string == NULL) {
-        prefs[which].svalue[0] = '\0';
-        return 0;
-    }
-    if (prefs[which].filetype == CHARTYPE) {
-        strncpy (prefs[which].svalue, string, MAX_PREF_VALUE);
-        prefs[which].svalue[MAX_PREF_VALUE - 1] = '\0';
-    }
-    return 0;
-}
-
-
-int jp_read_rc_file (char *filename, prefType prefs[], int num_prefs)
-{
-    int i;
-    FILE *in;
-    char line[256];
-    char *field1, *field2;
-    char *pc;
-
-    in = jp_open_home_file (filename, "r");
-    if (!in) {
-        return -1;
-    }
-
-    while (!feof (in)) {
-        fgets (line, 255, in);
-        line[254] = ' ';
-        line[255] = '\0';
-        field1 = strtok (line, " ");
-        field2 = (field1 != NULL) ? strtok (NULL, "\n") : NULL;/* jonh */
-        if ((field1 == NULL) || (field2 == NULL)) {
-            continue;
-        }
-        if ((pc = (char *)index (field2, '\n'))) {
-            pc[0] = '\0';
-        }
-        for (i = 0; i < num_prefs; i++) {
-            if (!strcmp (prefs[i].name, field1)) {
-                if (prefs[i].filetype == INTTYPE) {
-                    prefs[i].ivalue = atoi (field2);
-                }
-                if (prefs[i].filetype == CHARTYPE) {
-                    strncpy (prefs[i].svalue, field2, MAX_PREF_VALUE);
-                    prefs[i].svalue[MAX_PREF_VALUE - 1] = '\0';
-                }
-            }
-        }
-    }
-    fclose (in);
-
-    return 0;
-}
-
-int jp_write_rc_file (char *filename, prefType prefs[], int num_prefs)
-{
-    int i;
-    FILE *out;
-
-    out = jp_open_home_file (filename, "w" );
-    if (!out) {
-        return -1;
-    }
-
-    for (i = 0; i < num_prefs; i++) {
-
-        if (prefs[i].filetype == INTTYPE) {
-            fprintf (out, "%s %ld\n", prefs[i].name, prefs[i].ivalue);
-        }
-
-        if (prefs[i].filetype == CHARTYPE) {
-            fprintf (out, "%s %s\n", prefs[i].name, prefs[i].svalue);
-        }
-    }
-    fclose (out);
-
-    return 0;
-}
-/* Jason Day contributed code - End */
-
 #endif  /* ENABLE_PLUGINS */
-

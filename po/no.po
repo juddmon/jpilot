@@ -1,18 +1,18 @@
-# J-Pilot på norsk/J-Pilot in Norwegian
+# J-Pilot pÃ¥ norsk/J-Pilot in Norwegian
 # Copyright (C) YEAR Free Software Foundation, Inc.
-# Ragnar Wisløff <ragnar.wisloff@linuxlabs.no>, 2000.
+# Ragnar WislÃ¸ff <ragnar.wisloff@linuxlabs.no>, 2000.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: JPilot\n"
 "POT-Creation-Date: 2001-02-04 18:17-0500\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Ragnar Wisløff <ragnar.wisloff@linuxlabs.no>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2001-08-16 14:53GMT+1\n"
+"Last-Translator: Ragnar WislÃ¸ff <ragnar@wisloff.no>\n"
+"Language-Team: Norsk bokmÃ¥l <no@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=latin1\n"
-"Content-Transfer-Encoding: iso-8859-1\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 0.9.5\n"
 
 #: ../address.c:233 ../datebook.c:212 ../memo.c:140 ../todo.c:248
 msgid "error"
@@ -20,15 +20,15 @@ msgstr "feil"
 
 #: ../address.c:274 ../datebook.c:550 ../memo.c:181 ../todo.c:289
 msgid "Error reading"
-msgstr "Feil under lesning"
+msgstr "Feil under lesing"
 
 #: ../address_gui.c:303 ../address_gui.c:1067
 msgid "Company/Name"
-msgstr ""
+msgstr "Bedrift/Navn"
 
 #: ../address_gui.c:305 ../address_gui.c:1069
 msgid "Name/Company"
-msgstr ""
+msgstr "Navn/Bedrift"
 
 #: ../address_gui.c:550
 msgid "Category: "
@@ -50,15 +50,15 @@ msgstr "Alle"
 
 #: ../address_gui.c:1074
 msgid "Phone"
-msgstr "Ferdig"
+msgstr "Telefon"
 
 #: ../address_gui.c:1075
 msgid "Note"
-msgstr "Ingen"
+msgstr "Notat"
 
 #: ../address_gui.c:1091
 msgid "Quick Find"
-msgstr "Hurtigsøk"
+msgstr "HurtigsÃ¸k"
 
 #: ../address_gui.c:1107 ../datebook_gui.c:2341 ../memo_gui.c:763
 #: ../todo_gui.c:1051
@@ -68,17 +68,17 @@ msgstr "Slette"
 #: ../address_gui.c:1114 ../datebook_gui.c:2348 ../memo_gui.c:769
 #: ../todo_gui.c:1057
 msgid "Copy"
-msgstr ""
+msgstr "Kopier"
 
 #: ../address_gui.c:1121 ../datebook_gui.c:2355 ../memo_gui.c:775
 #: ../todo_gui.c:1063
 msgid "New Record"
-msgstr "En post"
+msgstr "Ny post"
 
 #: ../address_gui.c:1127 ../datebook_gui.c:2362 ../memo_gui.c:781
 #: ../todo_gui.c:1069
 msgid "Add Record"
-msgstr "0 poster"
+msgstr "Legg til post"
 
 #: ../address_gui.c:1136 ../datebook_gui.c:2371 ../memo_gui.c:789
 #: ../todo_gui.c:1077
@@ -88,7 +88,7 @@ msgstr "Lagre endringer"
 #: ../address_gui.c:1152 ../datebook_gui.c:2464 ../memo_gui.c:806
 #: ../todo_gui.c:1140
 msgid "Private"
-msgstr "Skriv ut"
+msgstr "Privat"
 
 #: ../address_gui.c:1170
 msgid "Name"
@@ -113,7 +113,7 @@ msgstr "Greit"
 
 #: ../alarms.c:226
 msgid "Remind me"
-msgstr ""
+msgstr "Minn meg pÃ¥"
 
 #: ../alarms.c:236 ../datebook_gui.c:2404
 msgid "Minutes"
@@ -125,19 +125,19 @@ msgstr "Timer"
 
 #: ../alarms.c:503
 msgid "Appointment Reminder"
-msgstr ""
+msgstr "Avtale-pÃ¥minnelse"
 
 #: ../alarms.c:506
 msgid "Past Appointment"
-msgstr ""
+msgstr "ForbigÃ¥tte avtaler"
 
 #: ../alarms.c:509
 msgid "Postponed Appointment"
-msgstr ""
+msgstr "Utsatt avtale"
 
 #: ../alarms.c:512 ../datebook_gui.c:2311
 msgid "Appointment"
-msgstr ""
+msgstr "Avtale"
 
 #: ../datebook_gui.c:293 ../install_gui.c:283 ../prefs_gui.c:661
 #: ../search_gui.c:575
@@ -150,12 +150,12 @@ msgstr "Ingen"
 
 #: ../datebook_gui.c:394
 msgid "End On Date"
-msgstr ""
+msgstr "Slutt-dato"
 
 #: ../datebook_gui.c:479 ../monthview_gui.c:323 ../monthview_gui.c:330
 #: ../prefs.c:309 ../weekview_gui.c:113
 msgid "Sunday"
-msgstr "Søndag"
+msgstr "SÃ¸ndag"
 
 #: ../datebook_gui.c:480 ../monthview_gui.c:324 ../prefs.c:310
 #: ../weekview_gui.c:114
@@ -180,7 +180,7 @@ msgstr "Fredag"
 
 #: ../datebook_gui.c:485 ../monthview_gui.c:329 ../weekview_gui.c:119
 msgid "Saturday"
-msgstr "Lørdag"
+msgstr "LÃ¸rdag"
 
 #: ../datebook_gui.c:721
 msgid "none"
@@ -196,11 +196,11 @@ msgstr "uke"
 
 #: ../datebook_gui.c:724
 msgid "month"
-msgstr "måned"
+msgstr "mÃ¥ned"
 
 #: ../datebook_gui.c:725
 msgid "year"
-msgstr "år"
+msgstr "Ã¥r"
 
 #: ../datebook_gui.c:952
 #, c-format
@@ -212,7 +212,7 @@ msgid ""
 "You can not have a weekly repeating appointment that doesn't repeat on any "
 "day of the week.\n"
 msgstr ""
-"Du kan ikke ha en avtale med ukentlig gjentagelse som ikke repeteres på en "
+"Du kan ikke ha en avtale med ukentlig gjentagelse som ikke repeteres pÃ¥ en "
 "ukedag.\n"
 
 #: ../datebook_gui.c:1064
@@ -231,7 +231,7 @@ msgstr "Ingen forfallsdato"
 # one letter.
 #: ../datebook_gui.c:2150 ../datebook_gui.c:2157
 msgid "Su"
-msgstr "Sø"
+msgstr "SÃ¸"
 
 #: ../datebook_gui.c:2151
 msgid "Mo"
@@ -255,7 +255,7 @@ msgstr "Fr"
 
 #: ../datebook_gui.c:2156
 msgid "Sa"
-msgstr "Lø"
+msgstr "LÃ¸"
 
 #: ../datebook_gui.c:2229 ../datebook_gui.c:2513
 msgid "Week"
@@ -263,11 +263,11 @@ msgstr "Uke"
 
 #: ../datebook_gui.c:2240 ../datebook_gui.c:2514
 msgid "Month"
-msgstr "Måned"
+msgstr "MÃ¥ned"
 
 #: ../datebook_gui.c:2255
 msgid "Cats"
-msgstr ""
+msgstr "Katter"
 
 #: ../datebook_gui.c:2310
 msgid "Time"
@@ -287,11 +287,11 @@ msgstr "Denne avtalen har ingen tidsangivelse"
 
 #: ../datebook_gui.c:2437
 msgid "Starts on: "
-msgstr "Søk etter: "
+msgstr "Starter den:"
 
 #: ../datebook_gui.c:2449
 msgid "Time:"
-msgstr "Ingen tid"
+msgstr "Tid:"
 
 #: ../datebook_gui.c:2512
 msgid "Day"
@@ -303,7 +303,7 @@ msgstr "Dag"
 # msgstr "Pr. mnd"
 #: ../datebook_gui.c:2515
 msgid "Year"
-msgstr "År"
+msgstr "Ã…r"
 
 #: ../datebook_gui.c:2519
 msgid "This event will not repeat"
@@ -329,15 +329,15 @@ msgstr "uker(r)"
 
 #: ../datebook_gui.c:2582
 msgid "Repeat on Days:"
-msgstr "Gjenta på følgende dager: "
+msgstr "Gjenta pÃ¥ fÃ¸lgende dager: "
 
 #: ../datebook_gui.c:2622
 msgid "Month(s)"
-msgstr "måned(er)"
+msgstr "mÃ¥ned(er)"
 
 #: ../datebook_gui.c:2639
 msgid "Repeat by:"
-msgstr "Gjenta på:"
+msgstr "Gjenta pÃ¥:"
 
 #: ../datebook_gui.c:2643
 msgid "Day of week"
@@ -349,7 +349,7 @@ msgstr "dato"
 
 #: ../datebook_gui.c:2669
 msgid "Year(s)"
-msgstr "år"
+msgstr "Ã¥r"
 
 #: ../install_gui.c:224
 msgid "Install"
@@ -361,7 +361,7 @@ msgstr "Filer som skal installeres"
 
 #: ../install_gui.c:263
 msgid "To change to a hidden directory type it below and hit TAB"
-msgstr "For å bytte til en skjult katalog, angi den under og trykk TAB"
+msgstr "For Ã¥ bytte til en skjult katalog, angi den under og trykk TAB"
 
 #: ../install_gui.c:269
 msgid "Add"
@@ -381,7 +381,7 @@ msgstr "Skriv ut"
 
 #: ../jpilot.c:439
 msgid "There is no print support for this conduit."
-msgstr "Det finnes ikke skriverstøtte for dette tillegget"
+msgstr "Det finnes ikke skriverstÃ¸tte for dette tillegget"
 
 #: ../jpilot.c:762
 #, c-format
@@ -391,11 +391,15 @@ msgid ""
 "judd@jpilot.org\n"
 "http://jpilot.org\n"
 msgstr ""
+"%s er skrevet av\n"
+"Judd Montgomery (c) 1999-2000.\n"
+"judd@jpilot.org\n"
+"http://jpilot.org\n"
 
 #: ../jpilot.c:767
 #, c-format
 msgid "About %s"
-msgstr ""
+msgstr "Om %s"
 
 #: ../jpilot.c:832
 msgid "/File"
@@ -419,7 +423,7 @@ msgstr "/Arkiv/_Installer"
 
 #: ../jpilot.c:837
 msgid "/File/Preferences"
-msgstr "/Arkiv/Instillinger"
+msgstr "/Arkiv/Innstillinger"
 
 #: ../jpilot.c:838
 msgid "/File/_Print"
@@ -435,7 +439,7 @@ msgstr "/_Vis"
 
 #: ../jpilot.c:844
 msgid "/View/Hide-Show Private Records"
-msgstr ""
+msgstr "/Vis/Gjem - visning av private poster"
 
 #: ../jpilot.c:845
 msgid "/View/Datebook"
@@ -473,7 +477,7 @@ msgstr "/Tillegg/%s"
 
 #: ../jpilot.c:1437
 msgid "Clear"
-msgstr "år"
+msgstr "Fjern"
 
 #: ../jpilot.c:1493
 msgid "Quit!"
@@ -481,11 +485,11 @@ msgstr "Avslutt"
 
 #: ../jpilot.c:1500
 msgid "Sync"
-msgstr ""
+msgstr "Synkroniser"
 
 #: ../jpilot.c:1507
 msgid "Sync your palm to the desktop"
-msgstr "Synkroniser din Palm med PC'en"
+msgstr "Synkroniser Palm'en med PC'en"
 
 #: ../jpilot.c:1511
 msgid "Backup"
@@ -496,12 +500,12 @@ msgid ""
 "Sync your palm to the desktop\n"
 "and then do a backup"
 msgstr ""
-"Synkroniser din Palm med PC'en\n"
-"deretter ta sikkerhetskopi"
+"Synkroniser Palm'en med PC'en\n"
+"Ta deretter sikkerhetskopi"
 
 #: ../jpilot.c:1567
 msgid "Datebook/Go to Today"
-msgstr "Kalender/Gå til i dag"
+msgstr "Kalender/GÃ¥ til i dag"
 
 #: ../jpilot.c:1569
 msgid "Address Book"
@@ -517,27 +521,27 @@ msgstr "Notater"
 
 #: ../log.c:89
 msgid "Cannot open log file, giving up.\n"
-msgstr "Kan ikke åpne loggfil, gir opp.\n"
+msgstr "Kan ikke Ã¥pne loggfil, gir opp.\n"
 
 #: ../log.c:96
 msgid "Cannot open log file\n"
-msgstr "Kan ikke åpne loggfil\n"
+msgstr "Kan ikke Ã¥pne loggfil\n"
 
 #: ../monthview_gui.c:359
 msgid "Monthly View"
-msgstr ""
+msgstr "MÃ¥nedlig visning"
 
 #: ../monthview_gui.c:388 ../weekview_gui.c:275
 msgid "Close"
-msgstr ""
+msgstr "Lukk"
 
 #: ../password.c:226
 msgid "Palm Password"
-msgstr ""
+msgstr "Palm-passord"
 
 #: ../password.c:248
 msgid "Enter PalmOS Password"
-msgstr ""
+msgstr "Angi Palm-passord"
 
 #: ../password.c:271 ../print_gui.c:220 ../utils.c:818
 msgid "Cancel"
@@ -549,11 +553,11 @@ msgstr "Innstillinger"
 
 #: ../prefs_gui.c:320
 msgid "Locale"
-msgstr ""
+msgstr "SprÃ¥k"
 
 #: ../prefs_gui.c:322
 msgid "Settings"
-msgstr ""
+msgstr "Innstillinger"
 
 #: ../prefs_gui.c:324
 msgid "Alarms"
@@ -561,11 +565,11 @@ msgstr "Alarm"
 
 #: ../prefs_gui.c:326
 msgid "Conduits"
-msgstr ""
+msgstr "Tillegg"
 
 #: ../prefs_gui.c:337
 msgid "Character Set "
-msgstr ""
+msgstr "Tegnsett"
 
 #: ../prefs_gui.c:350
 msgid "Short date format "
@@ -581,7 +585,7 @@ msgstr "Tidsangivelse "
 
 #: ../prefs_gui.c:391
 msgid "The first day of the week is "
-msgstr "Første dag i uken er "
+msgstr "FÃ¸rste dag i uken er "
 
 #: ../prefs_gui.c:411
 msgid "My GTK colors file is "
@@ -589,15 +593,15 @@ msgstr "Min GTK-fargefil er "
 
 #: ../prefs_gui.c:425
 msgid "Serial Port (/dev/ttyS0, /dev/pilot)"
-msgstr ""
+msgstr "Seriellport (/dev/ttyS0, /dev/pilot)"
 
 #: ../prefs_gui.c:440
 msgid "Serial Rate "
-msgstr "Seriell overføringshastighet "
+msgstr "Seriell overfÃ¸ringshastighet "
 
 #: ../prefs_gui.c:453
 msgid "Number of backups to be archived"
-msgstr "Antall kopier som skal arkiveres?"
+msgstr "Antall kopier som skal arkiveres"
 
 #: ../prefs_gui.c:469
 msgid "Show deleted records (default NO)"
@@ -617,56 +621,56 @@ msgstr "Bruk DateBk3 notat-markeringer"
 
 #: ../prefs_gui.c:523
 msgid "Sync datebook"
-msgstr ""
+msgstr "Synkroniser dagbok"
 
 #: ../prefs_gui.c:535
 msgid "Sync address"
-msgstr "Adresse"
+msgstr "Synkroniseradresser"
 
 #: ../prefs_gui.c:547
 msgid "Sync todo"
-msgstr ""
+msgstr "Synkroniser oppgaver"
 
 #: ../prefs_gui.c:559
 msgid "Sync memo"
-msgstr ""
+msgstr "Synkroniser notater"
 
 #: ../prefs_gui.c:601
 msgid "Open alarm windows for appointment reminders"
-msgstr ""
+msgstr "Ã…pne alarmvinduer ved avtale-pÃ¥minnelser"
 
 #: ../prefs_gui.c:613
 msgid "Execute this command"
-msgstr ""
+msgstr "UtfÃ¸r denne kommandoen"
 
 #: ../prefs_gui.c:624
 msgid "WARNING: executing arbitrary shell commands can be dangerous!!!"
-msgstr ""
+msgstr "ADVARSEL: Ã¥ utfÃ¸re tilfeldige skall-kommandoer kan gi uforutsette resultater!"
 
 #: ../prefs_gui.c:632
 msgid "Alarm Command"
-msgstr ""
+msgstr "Alarm-kommando"
 
 #: ../prefs_gui.c:642
 msgid "%t is replaced with the alarm time"
-msgstr ""
+msgstr "%t erstattes med alarm-tidspunktet"
 
 #: ../prefs_gui.c:646
 #, c-format
 msgid "%d is replaced with the alarm date"
-msgstr ""
+msgstr "%d erstattes med alarm-datoen"
 
 #: ../prefs_gui.c:651
 msgid "%D is replaced with the alarm description"
-msgstr ""
+msgstr "%D erstattes med alarm-beskrivelsen"
 
 #: ../prefs_gui.c:655
 msgid "%N is replaced with the alarm note"
-msgstr ""
+msgstr "%N erstattes med alarm-meldingen"
 
 #: ../print_gui.c:135
 msgid "Print Options"
-msgstr "Skriverinnstilinge"
+msgstr "Skriverinnstilinger"
 
 #: ../print_gui.c:149
 msgid "One record"
@@ -686,7 +690,7 @@ msgstr "En post per side"
 
 #: ../print_gui.c:191
 msgid " Blank lines between each record"
-msgstr " Blanke linjer mellom hver post"
+msgstr " blanke linjer mellom hver post"
 
 #: ../print_gui.c:200
 msgid "Print Command (e.g. lpr, or cat > file.ps)"
@@ -698,19 +702,19 @@ msgstr "Ingen poster funnet"
 
 #: ../search_gui.c:527
 msgid "Search"
-msgstr "Søk"
+msgstr "SÃ¸k"
 
 #: ../search_gui.c:540
 msgid "Search for: "
-msgstr "Søk etter: "
+msgstr "SÃ¸k etter: "
 
 #: ../search_gui.c:547
 msgid "Case Sensitive"
-msgstr "Skill store/små bokstaver"
+msgstr "Skill store/smÃ¥ bokstaver"
 
 #: ../sync.c:364
 msgid " Press the HotSync button now\n"
-msgstr "Trykk på HotSync-knappen nå\n"
+msgstr "Trykk pÃ¥ HotSync-knappen nÃ¥\n"
 
 #: ../sync.c:435
 msgid "Check your serial port and settings\n"
@@ -718,11 +722,11 @@ msgstr "Kontroller serieporten og innstillingene\n"
 
 #: ../sync.c:549
 msgid "Doing a fast sync.\n"
-msgstr "Utfører hurtigsynkronisering\n"
+msgstr "UtfÃ¸rer hurtigsynkronisering\n"
 
 #: ../sync.c:564
 msgid "Doing a slow sync.\n"
-msgstr "Utfører en treg synkronisering\n"
+msgstr "UtfÃ¸rer en treg synkronisering\n"
 
 #: ../sync.c:625
 msgid "Thank you for using J-Pilot."
@@ -735,7 +739,7 @@ msgstr "Ferdig\n"
 #: ../sync.c:923 ../sync.c:1115
 #, c-format
 msgid "%s is up to date, fetch skipped.\n"
-msgstr "%s er oppdatert, dropper overføring\n"
+msgstr "%s er oppdatert, dropper overfÃ¸ring\n"
 
 #: ../sync.c:927 ../sync.c:1119
 #, c-format
@@ -754,17 +758,17 @@ msgstr "Hopper over %s\n"
 #: ../sync.c:1173
 #, c-format
 msgid "Installing %s... "
-msgstr "Installerer %s... "
+msgstr "Innstallerer %s... "
 
 #: ../sync.c:1203
 #, c-format
 msgid "Install %s failed"
-msgstr "Installering av %s mislyktes"
+msgstr "Innstallering av %s mislyktes"
 
 #: ../sync.c:1213
 #, c-format
 msgid "Installed %s "
-msgstr "%s installert"
+msgstr "%s innstallert"
 
 #: ../todo_gui.c:121
 msgid "Due Date"
@@ -780,15 +784,15 @@ msgstr "Gjem ferdige oppgaver?"
 
 #: ../todo_gui.c:1026
 msgid "Task"
-msgstr ""
+msgstr "Oppgave"
 
 #: ../todo_gui.c:1027
 msgid "Due"
-msgstr ""
+msgstr "Forfall"
 
 #: ../todo_gui.c:1092
 msgid "Completed"
-msgstr "Utført"
+msgstr "UtfÃ¸rt"
 
 #: ../todo_gui.c:1100
 msgid "Priority: "
@@ -817,113 +821,9 @@ msgstr "PC ID er 0.\n"
 #: ../utils.c:1942
 #, c-format
 msgid "I generated a new PC ID.  It is %d\n"
-msgstr "En ny PC IDlaget.  Det er %d\n"
+msgstr "En ny PC ID laget.  Denne er %d\n"
 
 #: ../weekview_gui.c:247
 msgid "Weekly View"
-msgstr ""
+msgstr "Ukentlig visning"
 
-#~ msgid "/_Help/About "
-#~ msgstr "/Hjelp/Om J-Pilot"
-
-#~ msgid "Out of Memory\n"
-#~ msgstr "Tomt for minne\n"
-
-#~ msgid "Error reading %s\n"
-#~ msgstr "Feil under lesning av %s\n"
-
-#~ msgid "Out of memory 1\n"
-#~ msgstr "Tomt for minne 1\n"
-
-#~ msgid "Error opening %s\n"
-#~ msgstr "Feil under åpning av %s\n"
-
-#~ msgid "Out of memory 2\n"
-#~ msgstr "Tomt for minne 2\n"
-
-#~ msgid "Error in %s\n"
-#~ msgstr "Feil i %s\n"
-
-#~ msgid "Out of memory 3\n"
-#~ msgstr "Tomt for minne 3\n"
-
-#~ msgid "Out of memory 4\n"
-#~ msgstr "Tomt for minne 4\n"
-
-#~ msgid "Add or Modify a Record"
-#~ msgstr "Legg til eller endre en post"
-
-#~ msgid "Add It"
-#~ msgstr "Legg til"
-
-#~ msgid "New"
-#~ msgstr "Ny"
-
-#~ msgid "Error on reading %s\n"
-#~ msgstr "Feil under lesning av %s\n"
-
-#~ msgid "Out of memory\n"
-#~ msgstr "Tomt for minne\n"
-
-#~ msgid "Out of memory"
-#~ msgstr "Tomt for minne"
-
-#~ msgid "Go backward 1 year"
-#~ msgstr "Gå tilbake et år"
-
-#~ msgid "Go backward 1 month"
-#~ msgstr "Gå tilbake en måned"
-
-#~ msgid "Go forward 1 month"
-#~ msgstr "Gå frem en måned"
-
-#~ msgid "Go forward 1 year"
-#~ msgstr "Gå frem et år"
-
-#~ msgid "Daily Schedule"
-#~ msgstr "Dagens gjøremål"
-
-#~ msgid "Details"
-#~ msgstr "Detaljer"
-
-#~ msgid "Begin: "
-#~ msgstr "Start: "
-
-#~ msgid "Month:"
-#~ msgstr "Mnd:"
-
-#~ msgid "Day:"
-#~ msgstr "Dag:"
-
-#~ msgid "Year:"
-#~ msgstr "År:"
-
-#~ msgid "Hour:"
-#~ msgstr "Timer:"
-
-#~ msgid "Min:"
-#~ msgstr "Min:"
-
-#~ msgid "End: "
-#~ msgstr "Slutt: "
-
-#~ msgid "Hide this window"
-#~ msgstr "Gjem dette vinduet"
-
-#~ msgid "/File/_Search"
-#~ msgstr "/Arkiv/_Søk"
-
-#~ msgid "failed"
-#~ msgstr "mislyktes"
-
-#~ msgid "out of memory\n"
-#~ msgstr "Tomt for minne\n"
-
-#~ msgid "Serial Port "
-#~ msgstr "Serieport "
-
-#~ msgid "4th"
-#~ msgstr "fjerde"
-
-#~ msgid "Last"
-#~ msgstr "siste"

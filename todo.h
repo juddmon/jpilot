@@ -1,6 +1,7 @@
 /* todo.h
+ * A module of J-Pilot http://jpilot.org
  * 
- * Copyright (C) 1999 by Judd Montgomery
+ * Copyright (C) 1999-2001 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,5 +31,6 @@ int get_todo_app_info(struct ToDoAppInfo *ai);
 int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib,
 		  unsigned int *unique_id);
 int todo_print();
+int todo_import(GtkWidget *window);
 
 #endif

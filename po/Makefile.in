@@ -1,4 +1,3 @@
-# Generated automatically from Makefile.in.in by configure.
 # Makefile for program source directory in GNU NLS utilities package.
 # Copyright (C) 1995, 1996, 1997 by Ulrich Drepper <drepper@gnu.ai.mit.edu>
 #
@@ -8,7 +7,7 @@
 # Please note that the actual code is *not* freely available.
 
 PACKAGE = jpilot
-VERSION = 0.99
+VERSION = 0.99.1r
 
 SHELL = /bin/sh
 
@@ -16,7 +15,8 @@ SHELL = /bin/sh
 srcdir = .
 top_srcdir = ..
 
-prefix = /usr
+
+prefix = ${PREFIX}
 exec_prefix = ${prefix}
 datadir = $(prefix)/share
 localedir = $(datadir)/locale
@@ -36,7 +36,7 @@ XGETTEXT = PATH=../src:$$PATH /usr/bin/xgettext
 MSGMERGE = PATH=../src:$$PATH msgmerge
 
 DEFS = -DHAVE_CONFIG_H
-CFLAGS = 
+CFLAGS = -g -O2
 CPPFLAGS = 
 
 INCLUDES = -I.. -I$(top_srcdir)/intl

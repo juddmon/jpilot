@@ -1,11 +1,11 @@
 /* memo.c
+ * A module of J-Pilot http://jpilot.org
  * 
- * Copyright (C) 1999 by Judd Montgomery
+ * Copyright (C) 1999-2001 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -31,10 +31,6 @@
 #include "prefs.h"
 #include "libplugin.h"
 #include "password.h"
-
-#include "japanese.h"
-#include "cp1250.h"
-#include "russian.h"
 
 #define MEMO_EOF 7
 
@@ -133,6 +129,13 @@ int pc_memo_write(struct Memo *memo, PCRecType rt, unsigned char attrib,
    char record[65536];
    int rec_len;
    buf_rec br;
+   long ivalue;
+   long char_set;
+
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
+   if (char_set != CHAR_SET_ENGLISH) {
+      if (memo->text) charset_j2p(memo->text, strlen(memo->text)+1, char_set);
+   }
 
    rec_len = pack_Memo(memo, record, 65535);
    if (!rec_len) {
@@ -145,7 +148,12 @@ int pc_memo_write(struct Memo *memo, PCRecType rt, unsigned char attrib,
    br.buf = record;
    br.size = rec_len;
    
-   jp_pc_write("MemoDB", &br);
+   get_pref(PREF_MEMO32_MODE, &ivalue, NULL);
+   if (ivalue) {
+      jp_pc_write("Memo32DB", &br);
+   } else {
+      jp_pc_write("MemoDB", &br);
+   }
    *unique_id = br.unique_id;
    
    return 0;
@@ -165,14 +173,20 @@ void free_MemoList(MemoList **memo)
 
 int get_memo_app_info(struct MemoAppInfo *ai)
 {
-   int num;
+   int num,i;
    unsigned int rec_size;
    unsigned char *buf;
    long char_set;
+   long ivalue;
 
    bzero(ai, sizeof(*ai));
 
-   jp_get_app_info("MemoDB", &buf, &rec_size);
+   get_pref(PREF_MEMO32_MODE, &ivalue, NULL);
+   if (ivalue) {
+      jp_get_app_info("Memo32DB", &buf, &rec_size);
+   } else {
+      jp_get_app_info("MemoDB", &buf, &rec_size);
+   }
    num = unpack_MemoAppInfo(ai, buf, rec_size);
    if (buf) {
       free(buf);
@@ -183,18 +197,12 @@ int get_memo_app_info(struct MemoAppInfo *ai)
    }
 	 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
-   if (char_set==CHAR_SET_JAPANESE ||
-       char_set==CHAR_SET_1250 ||
-       char_set==CHAR_SET_1251 ||
-       char_set==CHAR_SET_1251_B) {
-      int i;
-      for (i = 0; i < 16; i++)
-	if (ai->category.name[i][0] != '\0') {
-   	  if (char_set==CHAR_SET_JAPANESE) Sjis2Euc(ai->category.name[i], 16);
-	  if (char_set==CHAR_SET_1250) Win2Lat(ai->category.name[i], 16);
-	  if (char_set==CHAR_SET_1251) win1251_to_koi8(ai->category.name[i], 16);
-	  if (char_set==CHAR_SET_1251_B) koi8_to_win1251(ai->category.name[i], 16);
-	}
+   if (char_set != CHAR_SET_ENGLISH) {
+      for (i = 0; i < 16; i++) {
+	 if (ai->category.name[i][0] != '\0') {
+	    charset_p2j(ai->category.name[i], 16, char_set);
+	 }
+      }
    }
 
    return 0;
@@ -219,6 +227,7 @@ int get_memos2(MemoList **memo_list, int sort_order,
    long keep_modified, keep_deleted;
    int keep_priv;
    long char_set;
+   long ivalue;
    buf_rec *br;
   
    jpilot_logf(LOG_DEBUG, "get_memos2()\n");
@@ -241,7 +250,12 @@ int get_memos2(MemoList **memo_list, int sort_order,
    *memo_list=NULL;
    recs_returned = 0;
 
-   num = jp_read_DB_files("MemoDB", &records);
+   get_pref(PREF_MEMO32_MODE, &ivalue, NULL);
+   if (ivalue) {
+      num = jp_read_DB_files("Memo32DB", &records);
+   } else {
+      num = jp_read_DB_files("MemoDB", &records);
+   }
    /* Go to first entry in the list */
    for (temp_list = records; temp_list; temp_list = temp_list->prev) {
       records = temp_list;
@@ -274,12 +288,8 @@ int get_memos2(MemoList **memo_list, int sort_order,
       if ( ((br->attrib & 0x0F) != category) && category != CATEGORY_ALL) {
 	 continue;
       }
-
       get_pref(PREF_CHAR_SET, &char_set, NULL);
-      if (char_set==CHAR_SET_JAPANESE) Sjis2Euc(memo.text, 65536);
-      if (char_set==CHAR_SET_1250) Win2Lat(memo.text, 65536);
-      if (char_set==CHAR_SET_1251) win1251_to_koi8(memo.text, 65536);
-      if (char_set==CHAR_SET_1251_B) koi8_to_win1251(memo.text, 65536);
+      if (memo.text) charset_p2j(memo.text, strlen(memo.text)+1, char_set);
 
       temp_memo_list = malloc(sizeof(MemoList));
       if (!temp_memo_list) {

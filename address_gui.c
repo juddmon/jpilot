@@ -1,6 +1,7 @@
 /* address_gui.c
+ * A module of J-Pilot http://jpilot.org
  * 
- * Copyright (C) 1999 by Judd Montgomery
+ * Copyright (C) 1999-2001 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,6 +48,12 @@
 #define NUM_ADDRESS_LABELS 22
 #define NUM_PHONE_ENTRIES 5
 
+#define ADDRESS_NAME_COLUMN  0
+#define ADDRESS_NOTE_COLUMN  1
+#define ADDRESS_PHONE_COLUMN 2
+
+#define ADDRESS_MAX_CLIST_NAME 24
+
 GtkWidget *clist;
 GtkWidget *address_text[22];
 GtkWidget *text;
@@ -73,15 +80,23 @@ int address_phone_label_selected[NUM_PHONE_ENTRIES];
 static int clist_row_selected;
 extern GtkTooltips *glob_tooltips;
 
+static AddressList *glob_address_list=NULL;
+
 static GtkWidget *new_record_button;
 static GtkWidget *apply_record_button;
 static GtkWidget *add_record_button;
 static int record_changed;
+static int clist_hack;
 
 static void connect_changed_signals(int con_or_dis);
 void update_address_screen();
 int address_clist_redraw();
 static int address_find();
+static void cb_clist_selection(GtkWidget      *clist,
+			       gint           row,
+			       gint           column,
+			       GdkEventButton *event,
+			       gpointer       data);
 
 static void init()
 {
@@ -108,12 +123,22 @@ set_new_button_to(int new_state)
 
    switch (new_state) {
     case MODIFY_FLAG:
+      gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_SINGLE);
+      clist_hack=TRUE;
+      /* The line selected on the clist becomes unhighlighted, so we do this */
+      gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
       gtk_widget_show(apply_record_button);
       break;
     case NEW_FLAG:
+      gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_SINGLE);
+      clist_hack=TRUE;
+      /* The line selected on the clist becomes unhighlighted, so we do this */
+      gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
       gtk_widget_show(add_record_button);
       break;
     case CLEAR_FLAG:
+      gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
+      clist_hack=FALSE;
       gtk_widget_show(new_record_button);
       break;
     default:
@@ -140,7 +165,11 @@ cb_record_changed(GtkWidget *widget,
    jpilot_logf(LOG_DEBUG, "cb_record_changed\n");
    if (record_changed==CLEAR_FLAG) {
       connect_changed_signals(DISCONNECT_SIGNALS);
-      set_new_button_to(MODIFY_FLAG);
+      if (((GtkCList *)clist)->rows > 0) {
+	 set_new_button_to(MODIFY_FLAG);
+      } else {
+	 set_new_button_to(NEW_FLAG);
+      }
    }
 }
 
@@ -265,11 +294,19 @@ void cb_delete_address(GtkWidget *widget,
 {
    MyAddress *ma;
    int flag;
+   int show_priv;
 
    ma = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
    if (ma < (MyAddress *)CLIST_MIN_DATA) {
       return;
    }
+   /* Do masking like Palm OS 3.5 */
+   show_priv = show_privates(GET_PRIVATES, NULL);
+   if ((show_priv != SHOW_PRIVATES) &&
+       (ma->attrib & dlpRecAttrSecret)) {
+      return;
+   }
+   /* End Masking */
    flag = GPOINTER_TO_INT(data);
    if ((flag==MODIFY_FLAG) || (flag==DELETE_FLAG)) {
       delete_pc_record(ADDRESS, ma, flag);
@@ -299,9 +336,9 @@ void cb_resort(GtkWidget *widget,
    }
 
    if (by_company) {
-      gtk_clist_set_column_title(GTK_CLIST(clist), 0, _("Company/Name"));
+      gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, _("Company/Name"));
    } else {
-      gtk_clist_set_column_title(GTK_CLIST(clist), 0, _("Name/Company"));
+      gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, _("Name/Company"));
    }
 
    address_clist_redraw();
@@ -333,10 +370,10 @@ void cb_notebook_changed(GtkWidget *widget,
       return;
    }
    jpilot_logf(LOG_DEBUG, "cb_notebook_changed(), prev_page=%d, page=%d\n", prev_page, page);
-   set_pref(PREF_ADDRESS_NOTEBOOK_PAGE, page);
+   set_pref(PREF_ADDRESS_NOTEBOOK_PAGE, page, NULL);
 }
 
-void cb_new_address_done(GtkWidget *widget,
+static void cb_add_new_record(GtkWidget *widget,
 			 gpointer   data)
 {
    int i;
@@ -344,10 +381,26 @@ void cb_new_address_done(GtkWidget *widget,
    MyAddress *ma;
    unsigned char attrib;
    unsigned int unique_id;
+   int show_priv;
    
    bzero(&a, sizeof(a));
    
+   /* Do masking like Palm OS 3.5 */
+   if ((GPOINTER_TO_INT(data)==COPY_FLAG) || 
+       (GPOINTER_TO_INT(data)==MODIFY_FLAG)) {
+      show_priv = show_privates(GET_PRIVATES, NULL);
+      ma = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
+      if (ma < (MyAddress *)CLIST_MIN_DATA) {
+	 return;
+      }
+      if ((show_priv != SHOW_PRIVATES) &&
+	  (ma->attrib & dlpRecAttrSecret)) {
+	 return;
+      }
+   }
+   /* End Masking */
    if ((GPOINTER_TO_INT(data)==NEW_FLAG) || 
+       (GPOINTER_TO_INT(data)==COPY_FLAG) ||
        (GPOINTER_TO_INT(data)==MODIFY_FLAG)) {
       /*These rec_types are both the same for now */
       if (GPOINTER_TO_INT(data)==MODIFY_FLAG) {
@@ -471,7 +524,7 @@ void cb_address_quickfind(GtkWidget *widget,
    }
    /*100000 is just to prevent ininite looping during a solar flare */
    for (found = i = 0; i<100000; i++) {
-      r = gtk_clist_get_text(GTK_CLIST(clist), i, 0, &clist_text);
+      r = gtk_clist_get_text(GTK_CLIST(clist), i, ADDRESS_NAME_COLUMN, &clist_text);
       if (!r) {
 	 break;
       }
@@ -481,7 +534,8 @@ void cb_address_quickfind(GtkWidget *widget,
       if (!strncasecmp(clist_text, entry_text, strlen(entry_text))) {
 	 found = 1;
 	 found_at = i;
-	 gtk_clist_select_row(GTK_CLIST(clist), i, 0);
+	 gtk_clist_select_row(GTK_CLIST(clist), i, ADDRESS_NAME_COLUMN);
+	 cb_clist_selection(clist, i, ADDRESS_NAME_COLUMN, (GdkEventButton *)455, NULL);
       }
    }
    line_count = i;
@@ -492,10 +546,15 @@ void cb_address_quickfind(GtkWidget *widget,
    }
 }
 
-void cb_address_category(GtkWidget *item, int selection)
+static void cb_category(GtkWidget *item, int selection)
 {
-   if (!item)
-     return;
+   int b;
+   
+   if (!item) return;
+   b=dialog_save_changed_record(pane, record_changed);
+   if (b==DIALOG_SAID_1) {
+      cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
+   }
    if ((GTK_CHECK_MENU_ITEM(item))->active) {
       address_category = selection;
       jpilot_logf(LOG_DEBUG, "address_category = %d\n",address_category);
@@ -504,23 +563,63 @@ void cb_address_category(GtkWidget *item, int selection)
 }
 
 
-void cb_address_clist_sel(GtkWidget      *clist,
-			  gint           row,
-			  gint           column,
-			  GdkEventButton *event,
-			  gpointer       data)
+/* Do masking like Palm OS 3.5 */
+static void clear_myaddress(MyAddress *ma)
 {
-   /*The rename-able phone entries are indexes 3,4,5,6,7 */
+   int i;
+   
+   ma->unique_id=0;
+   ma->attrib=ma->attrib & 0xF8;
+   for (i=0; i<5; i++) {
+      ma->a.phoneLabel[i]=0;
+   }
+   ma->a.showPhone=0;
+   for (i=0; i<19; i++) {
+      if (ma->a.entry) {
+	 free(ma->a.entry[i]);
+	 ma->a.entry[i]=NULL;
+      }
+   }
+   return;
+}
+/* End Masking */
+
+static void cb_clist_selection(GtkWidget      *clist,
+			       gint           row,
+			       gint           column,
+			       GdkEventButton *event,
+			       gpointer       data)
+{
+   /* The rename-able phone entries are indexes 3,4,5,6,7 */
    struct Address *a;
    MyAddress *ma;
    int cat, count, sorted_position;
    int i, i2;
-   /*This is because the palm doesn't show the address entries in order */
+   int keep, b;
+   /* This is because the palm doesn't show the address entries in order */
    int order[NUM_ADDRESS_LABELS]={
       0,1,13,2,3,4,5,6,7,8,9,10,11,12,14,15,16,17,18,19,20,21
    };
    char *clist_text, *entry_text;
 
+   if (!event) return;
+
+   /* HACK */
+   if (clist_hack) {
+      keep=record_changed;
+      gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, column);
+      b=dialog_save_changed_record(pane, record_changed);
+      if (b==DIALOG_SAID_1) {
+	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
+      }
+      set_new_button_to(CLEAR_FLAG);
+      /* This doesn't cause an event to occur, it does highlight
+       * the line, so we do the next call also */
+      gtk_clist_select_row(GTK_CLIST(clist), row, column);
+      cb_clist_selection(clist, row, column, GINT_TO_POINTER(1), NULL);
+      return;
+   }
+   
    clist_row_selected=row;
 
    ma = gtk_clist_get_row_data(GTK_CLIST(clist), row);
@@ -534,7 +633,7 @@ void cb_address_clist_sel(GtkWidget      *clist,
    
    a=&(ma->a);
    clist_text = NULL;
-   gtk_clist_get_text(GTK_CLIST(clist), row, 0, &clist_text);
+   gtk_clist_get_text(GTK_CLIST(clist), row, ADDRESS_NAME_COLUMN, &clist_text);
    entry_text = gtk_entry_get_text(GTK_ENTRY(address_quickfind_entry));
    if (strncasecmp(clist_text, entry_text, strlen(entry_text))) {
       gtk_entry_set_text(GTK_ENTRY(address_quickfind_entry), "");
@@ -630,14 +729,13 @@ void update_address_screen()
    GdkColor color;
    GdkColormap *colormap;
    AddressList *temp_al;
-   static AddressList *address_list=NULL;
-   char str[50];
+   char str[ADDRESS_MAX_CLIST_NAME+8];
    int by_company;
    int show_priv;
 
    row_count=((GtkCList *)clist)->rows;
    
-   free_AddressList(&address_list);
+   free_AddressList(&glob_address_list);
 #ifdef JPILOT_DEBUG
     for (i=0;i<NUM_ADDRESS_CAT_ITEMS;i++) {
       jpilot_logf(LOG_DEBUG, "renamed:[%02d]:\n",address_app_info.category.renamed[i]);
@@ -658,11 +756,11 @@ void update_address_screen()
    jpilot_logf(LOG_DEBUG, "sortByCompany %d\n",address_app_info.sortByCompany);
 #endif
 
-   num_entries = get_addresses2(&address_list, SORT_ASCENDING, 2, 2, 1, CATEGORY_ALL);
+   num_entries = get_addresses2(&glob_address_list, SORT_ASCENDING, 2, 2, 1, CATEGORY_ALL);
    /*gtk_text_backward_delete(GTK_TEXT(text1), */
    /*		    gtk_text_get_length(GTK_TEXT(text1))); */
    
-   if (address_list==NULL) {
+   if (glob_address_list==NULL) {
       gtk_tooltips_set_tip(glob_tooltips, category_menu1, _("0 records"), NULL);   
       return;
    }
@@ -693,37 +791,53 @@ void update_address_screen()
 
 
    show_priv = show_privates(GET_PRIVATES, NULL);
-   for (temp_al = address_list, i=0; temp_al; temp_al=temp_al->next) {
-      if ((show_priv != SHOW_PRIVATES) && 
-	  (temp_al->ma.attrib & dlpRecAttrSecret)) {
-	 continue;
-      }
+   for (temp_al = glob_address_list, i=0; temp_al; temp_al=temp_al->next) {
       if ( ((temp_al->ma.attrib & 0x0F) != address_category) &&
 	  address_category != CATEGORY_ALL) {
+	 continue;
+      }
+      /* Do masking like Palm OS 3.5 */
+      if ((show_priv == MASK_PRIVATES) && 
+	  (temp_al->ma.attrib & dlpRecAttrSecret)) {
+	 if (entries_shown+1>row_count) {
+	    gtk_clist_append(GTK_CLIST(clist), empty_line);
+	 }
+	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_NAME_COLUMN, "---------------");
+	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_PHONE_COLUMN, "---------------");
+	 clear_myaddress(&temp_al->ma);
+	 gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_al->ma));
+	 gtk_clist_set_background(GTK_CLIST(clist), entries_shown, NULL);
+	 entries_shown++;
+	 continue;
+      }
+      /* End Masking */
+      if ((show_priv != SHOW_PRIVATES) && 
+	  (temp_al->ma.attrib & dlpRecAttrSecret)) {
 	 continue;
       }
       
       str[0]='\0';
       if (temp_al->ma.a.entry[show1] || temp_al->ma.a.entry[show2]) {
 	 if (temp_al->ma.a.entry[show1] && temp_al->ma.a.entry[show2]) {
-	    g_snprintf(str, 48, "%s, %s", temp_al->ma.a.entry[show1], temp_al->ma.a.entry[show2]);
+	    g_snprintf(str, ADDRESS_MAX_CLIST_NAME, "%s, %s", temp_al->ma.a.entry[show1], temp_al->ma.a.entry[show2]);
 	 }
 	 if (temp_al->ma.a.entry[show1] && ! temp_al->ma.a.entry[show2]) {
-	    strncpy(str, temp_al->ma.a.entry[show1], 48);
+	    strncpy(str, temp_al->ma.a.entry[show1], ADDRESS_MAX_CLIST_NAME);
 	 }
 	 if (! temp_al->ma.a.entry[show1] && temp_al->ma.a.entry[show2]) {
-	    strncpy(str, temp_al->ma.a.entry[show2], 48);
+	    strncpy(str, temp_al->ma.a.entry[show2], ADDRESS_MAX_CLIST_NAME);
 	 }
       } else if (temp_al->ma.a.entry[show3]) {
-	    strncpy(str, temp_al->ma.a.entry[show3], 48);
+	 strncpy(str, temp_al->ma.a.entry[show3], ADDRESS_MAX_CLIST_NAME);
       } else {
-	    strcpy(str, "-Unnamed-");
+	 strcpy(str, "-Unnamed-");
       }
+      str[ADDRESS_MAX_CLIST_NAME]='\0';
       if (entries_shown+1>row_count) {
 	 gtk_clist_append(GTK_CLIST(clist), empty_line);
       }
-      gtk_clist_set_text(GTK_CLIST(clist), entries_shown, 0, str);
-      gtk_clist_set_text(GTK_CLIST(clist), entries_shown, 1, temp_al->ma.a.entry[temp_al->ma.a.showPhone+3]);
+      gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_NAME_COLUMN, str);
+      gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_PHONE_COLUMN, temp_al->ma.a.entry[temp_al->ma.a.showPhone+3]);
       gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_al->ma));
 
       switch (temp_al->ma.rt) {
@@ -752,15 +866,24 @@ void update_address_screen()
 	 gtk_clist_set_background(GTK_CLIST(clist), entries_shown, &color);
 	 break;
        default:
-	 gtk_clist_set_background(GTK_CLIST(clist), entries_shown, NULL);
+	 if (temp_al->ma.attrib & dlpRecAttrSecret) {
+	    colormap = gtk_widget_get_colormap(clist);
+	    color.red=CLIST_PRIVATE_RED;
+	    color.green=CLIST_PRIVATE_GREEN;
+	    color.blue=CLIST_PRIVATE_BLUE;
+	    gdk_color_alloc(colormap, &color);
+	    gtk_clist_set_background(GTK_CLIST(clist), entries_shown, &color);
+	 } else {
+	    gtk_clist_set_background(GTK_CLIST(clist), entries_shown, NULL);
+	 }
       }
       
       if (temp_al->ma.a.entry[18]) {
 	 /*Put a note pixmap up */
 	 get_pixmaps(clist, PIXMAP_NOTE, &pixmap_note, &mask_note);
-	 gtk_clist_set_pixmap(GTK_CLIST(clist), entries_shown, 2, pixmap_note, mask_note);
+	 gtk_clist_set_pixmap(GTK_CLIST(clist), entries_shown, ADDRESS_NOTE_COLUMN, pixmap_note, mask_note);
       } else {
-	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, 2, "");
+	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_NOTE_COLUMN, "");
       }
 
       entries_shown++;
@@ -768,7 +891,8 @@ void update_address_screen()
    
    /* If there is an item in the list, select the first one */
    if (entries_shown>0) {
-      gtk_clist_select_row(GTK_CLIST(clist), 0, 1);
+      gtk_clist_select_row(GTK_CLIST(clist), 0, ADDRESS_PHONE_COLUMN);
+      cb_clist_selection(clist, 0, ADDRESS_PHONE_COLUMN, (GdkEventButton *)455, NULL);
    }
    
    for (i=row_count-1; i>=entries_shown; i--) {
@@ -846,7 +970,7 @@ static int make_category_menu(GtkWidget **category_menu,
    if (include_all) {
       address_cat_menu_item[0] = gtk_radio_menu_item_new_with_label(group, _("All"));
       gtk_signal_connect(GTK_OBJECT(address_cat_menu_item[0]), "activate",
-			 cb_address_category, GINT_TO_POINTER(CATEGORY_ALL));
+			 cb_category, GINT_TO_POINTER(CATEGORY_ALL));
       group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(address_cat_menu_item[0]));
       gtk_menu_append(GTK_MENU(menu), address_cat_menu_item[0]);
       gtk_widget_show(address_cat_menu_item[0]);
@@ -858,7 +982,7 @@ static int make_category_menu(GtkWidget **category_menu,
 	    group, sort_l[i].Pcat);
 	 if (include_all) {
 	    gtk_signal_connect(GTK_OBJECT(address_cat_menu_item[i+offset]), "activate",
-			       cb_address_category, GINT_TO_POINTER(sort_l[i].cat_num));
+			       cb_category, GINT_TO_POINTER(sort_l[i].cat_num));
 	 }
 	 group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(address_cat_menu_item[i+offset]));
 	 gtk_menu_append(GTK_MENU(menu), address_cat_menu_item[i+offset]);
@@ -887,7 +1011,8 @@ static int address_find()
 	 if (total_count == 0) {
 	    total_count = 1;
 	 }
-	 gtk_clist_select_row(GTK_CLIST(clist), found_at, 1);
+	 gtk_clist_select_row(GTK_CLIST(clist), found_at, ADDRESS_PHONE_COLUMN);
+	 cb_clist_selection(clist, found_at, ADDRESS_PHONE_COLUMN, (GdkEventButton *)455, NULL);
 	 if (!gtk_clist_row_is_visible(GTK_CLIST(clist), found_at)) {
 	    move_scrolled_window_hack(scrolled_window,
 				      (float)found_at/(float)total_count);
@@ -907,7 +1032,8 @@ int address_clist_redraw()
 
    update_address_screen();
    
-   gtk_clist_select_row(GTK_CLIST(clist), line_num, 0);
+   gtk_clist_select_row(GTK_CLIST(clist), line_num, ADDRESS_NAME_COLUMN);
+   cb_clist_selection(clist, line_num, ADDRESS_NAME_COLUMN, (GdkEventButton *)455, NULL);
    
    return 0;
 }
@@ -934,6 +1060,43 @@ int address_refresh()
    }
    address_find();
    return 0;
+}
+
+
+static gboolean
+cb_key_pressed_quickfind(GtkWidget *widget, GdkEventKey *event, gpointer data)
+{
+   int row_count;
+   int select_row;
+   int add;
+
+   add=0;
+   if ((event->keyval == GDK_KP_Down) || (event->keyval == GDK_Down)) {
+      add=1;
+   }
+   if ((event->keyval == GDK_KP_Up) || (event->keyval == GDK_Up)) {
+      add=-1;
+   }
+   if (!add) return FALSE;
+   row_count=((GtkCList *)clist)->rows;
+   if (!row_count) return FALSE;
+
+   gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event"); 
+
+   select_row=clist_row_selected+add;
+   if (select_row>row_count-1) {
+      select_row=0;
+   }
+   if (select_row<0) {
+      select_row=row_count-1;
+   }
+   gtk_clist_select_row(GTK_CLIST(clist), select_row, ADDRESS_NAME_COLUMN);
+   cb_clist_selection(clist, select_row, ADDRESS_PHONE_COLUMN, (GdkEventButton *)455, NULL);
+   if (!gtk_clist_row_is_visible(GTK_CLIST(clist), select_row)) {
+      move_scrolled_window_hack(scrolled_window,
+				(float)select_row/(float)row_count);
+   }
+   return TRUE;
 }
 
 static gboolean
@@ -969,8 +1132,15 @@ static gboolean
 
 int address_gui_cleanup()
 {
+   int b;
+   
+   free_AddressList(&glob_address_list);
+   b=dialog_save_changed_record(pane, record_changed);
+   if (b==DIALOG_SAID_1) {
+      cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
+   }
    connect_changed_signals(DISCONNECT_SIGNALS);
-   set_pref(PREF_ADDRESS_PANE, GTK_PANED(pane)->handle_xpos);
+   set_pref(PREF_ADDRESS_PANE, GTK_PANED(pane)->handle_xpos, NULL);
    return 0;
 }
 
@@ -981,6 +1151,9 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 {
    extern GtkWidget *glob_date_label;
    extern int glob_date_timer_tag;
+   GtkWidget *pixmapwid;
+   GdkPixmap *pixmap;
+   GdkBitmap *mask;
    GtkWidget *vbox1, *vbox2;
    GtkWidget *hbox_temp;
    GtkWidget *vbox_temp1, *vbox_temp2, *vbox_temp3, *hbox_temp4;
@@ -1061,26 +1234,34 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_box_pack_start(GTK_BOX(vbox1), scrolled_window, TRUE, TRUE, 0);
 
    clist = gtk_clist_new_with_titles(3, titles);
+   clist_hack=FALSE;
+   gtk_clist_column_title_passive(GTK_CLIST(clist), ADDRESS_PHONE_COLUMN);
+   gtk_clist_column_title_passive(GTK_CLIST(clist), ADDRESS_NOTE_COLUMN);
 
    if (address_app_info.sortByCompany) {
-      gtk_clist_set_column_title(GTK_CLIST(clist), 0, _("Company/Name"));
+      gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, _("Company/Name"));
    } else {
-      gtk_clist_set_column_title(GTK_CLIST(clist), 0, _("Name/Company"));
+      gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, _("Name/Company"));
    }
-   gtk_signal_connect(GTK_OBJECT(GTK_CLIST(clist)->column[0].button),
+   gtk_signal_connect(GTK_OBJECT(GTK_CLIST(clist)->column[ADDRESS_NAME_COLUMN].button),
 		      "clicked", GTK_SIGNAL_FUNC(cb_resort), 
 		      GINT_TO_POINTER(address_app_info.sortByCompany));
-   gtk_clist_set_column_title(GTK_CLIST(clist), 1, _("Phone"));
-   gtk_clist_set_column_title(GTK_CLIST(clist), 2, _("Note"));
+   gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_PHONE_COLUMN, _("Phone"));
+   /* Put pretty pictures in the clist column headings */
+   get_pixmaps(vbox, PIXMAP_NOTE, &pixmap, &mask);
+   pixmapwid = gtk_pixmap_new(pixmap, mask);
+   hack_clist_set_column_title_pixmap(clist, ADDRESS_NOTE_COLUMN, pixmapwid);
 
    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
-		      GTK_SIGNAL_FUNC(cb_address_clist_sel),
+		      GTK_SIGNAL_FUNC(cb_clist_selection),
 		      text);
    gtk_clist_set_shadow_type(GTK_CLIST(clist), SHADOW);
    gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
-   gtk_clist_set_column_width(GTK_CLIST(clist), 0, 140);
-   gtk_clist_set_column_width(GTK_CLIST(clist), 1, 140);
-   gtk_clist_set_column_width(GTK_CLIST(clist), 2, 11);
+
+   gtk_clist_set_column_auto_resize(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, TRUE);
+   gtk_clist_set_column_auto_resize(GTK_CLIST(clist), ADDRESS_NOTE_COLUMN, TRUE);
+   gtk_clist_set_column_auto_resize(GTK_CLIST(clist), ADDRESS_PHONE_COLUMN, FALSE);
+
    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
    /*gtk_clist_set_column_justification(GTK_CLIST(clist), 1, GTK_JUSTIFY_RIGHT); */
    
@@ -1091,12 +1272,13 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 0);
 
    address_quickfind_entry = gtk_entry_new();
+   gtk_signal_connect(GTK_OBJECT(address_quickfind_entry), "key_press_event",
+		      GTK_SIGNAL_FUNC(cb_key_pressed_quickfind), NULL);
    gtk_signal_connect(GTK_OBJECT(address_quickfind_entry), "changed",
 		      GTK_SIGNAL_FUNC(cb_address_quickfind),
 		      NULL);
    gtk_box_pack_start(GTK_BOX(hbox_temp), address_quickfind_entry, TRUE, TRUE, 0);
    gtk_widget_grab_focus(GTK_WIDGET(address_quickfind_entry));
-   
 
    /* The new entry gui */
    hbox_temp = gtk_hbox_new(FALSE, 0);
@@ -1112,8 +1294,8 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    /* Create "Copy" button */
    button = gtk_button_new_with_label(_("Copy"));
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_new_address_done),
-		      GINT_TO_POINTER(NEW_FLAG));
+		      GTK_SIGNAL_FUNC(cb_add_new_record),
+		      GINT_TO_POINTER(COPY_FLAG));
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, TRUE, TRUE, 0);
 
    /* Create "New" button */
@@ -1125,7 +1307,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    /* Create "Add Record" button */
    add_record_button = gtk_button_new_with_label(_("Add Record"));
    gtk_signal_connect(GTK_OBJECT(add_record_button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_new_address_done),
+		      GTK_SIGNAL_FUNC(cb_add_new_record),
 		      GINT_TO_POINTER(NEW_FLAG));
    gtk_box_pack_start(GTK_BOX(hbox_temp), add_record_button, TRUE, TRUE, 0);
    gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(GTK_BIN(add_record_button)->child)),
@@ -1134,7 +1316,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    /* Create "apply changes" button */
    apply_record_button = gtk_button_new_with_label(_("Apply Changes"));
    gtk_signal_connect(GTK_OBJECT(apply_record_button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_new_address_done),
+		      GTK_SIGNAL_FUNC(cb_add_new_record),
 		      GINT_TO_POINTER(MODIFY_FLAG));
    gtk_box_pack_start(GTK_BOX(hbox_temp), apply_record_button, TRUE, TRUE, 0);
    gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(GTK_BIN(apply_record_button)->child)),
@@ -1212,7 +1394,6 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	 make_phone_menu(i2-3, (i2-3)<<4, i2-3);
       } else {
  	 label = gtk_label_new(address_app_info.labels[i2]);
-	 /*gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_LEFT); */
 	 gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
       }
       address_text[i2] = gtk_text_new(NULL, NULL);
@@ -1261,7 +1442,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    /* Put some radio buttons for selecting which number to display in view */
    group = NULL;
    for (i=0; i<NUM_PHONE_ENTRIES; i++) {
-      radio_button[i] = gtk_radio_button_new(group);
+      radio_button[i] = gtk_radio_button_new_with_label(group, "Show\nIn List");
       group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button[i]));
       gtk_widget_set_usize(GTK_WIDGET(radio_button[i]), 5, 0);
       gtk_table_attach_defaults(GTK_TABLE(table1), GTK_WIDGET(radio_button[i]),

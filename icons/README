@@ -1,6 +1,8 @@
 Ubiratan Oliverio <ubira@mandic.com.br>
- contributed jpilot-icon1.xpm
+ contributed jpilot-icon1.xpm, Judd reduced the amount of colors
 vik vik@asi.org
  contributed jpilot-icon2.xpm
 Robert Anderson <rea@q.sr.unh.edu>
  made icon2 background clear -> icon3
+Judd Montgomery
+ took icon1, lightened it, and reduced it to 16 colors and named it icon4

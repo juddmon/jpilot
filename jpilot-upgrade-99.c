@@ -1,9 +1,30 @@
+/* jpilot-upgrade-99.c
+ * A module of J-Pilot http://jpilot.org
+ * 
+ * Copyright (C) 1999-2001 by Judd Montgomery
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 #include <stdlib.h>
 #include <sys/types.h>
 #include <dirent.h>
 #include <string.h>
 
 #include "utils.h"
+
+#define DEBUG
 
 /* To keep things happy */
 GtkWidget *glob_dialog;
@@ -27,6 +48,14 @@ int sync_once(void *vP)
 GList *get_plugin_list()
 {
    return NULL;
+}
+
+void print_pc_header(PCRecordHeader *h)
+{
+   printf("rec_len=%d\n", h->rec_len);
+   printf("unique_id=%d\n", h->unique_id);
+   printf("rt=%d\n", h->rt);
+   printf("attrib=%d\n", h->attrib);
 }
 
 int convert_pc_file(char *DB_name)
@@ -69,6 +98,9 @@ int convert_pc_file(char *DB_name)
       if (feof(pc_file)) {
 	 break;
       }
+#ifdef DEBUG
+      print_pc_header(&header);
+#endif
       if (header.rt & SPENT_PC_RECORD_BIT) {
 	 r++;
 	 if (fseek(pc_file, header.rec_len, SEEK_CUR)) {
@@ -175,6 +207,7 @@ int main()
    printf("\n");
    
    get_home_file_name("", home_dir, 255);
+   printf("Upgrading files in %s\n", home_dir);
 
    dir = opendir(home_dir);
    if (dir) {

@@ -1,6 +1,7 @@
 /* memo.h
+ * A module of J-Pilot http://jpilot.org
  * 
- * Copyright (C) 1999 by Judd Montgomery
+ * Copyright (C) 1999-2001 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,5 +31,7 @@ int pc_memo_write(struct Memo *memo, PCRecType rt, unsigned char attrib,
 		  unsigned int *unique_id);
 
 int memo_print();
+int memo_import(GtkWidget *window);
+int memo_export(GtkWidget *window);
 
 #endif

@@ -1,6 +1,7 @@
 /* weekview_gui.c
+ * A module of J-Pilot http://jpilot.org
  *
- * Copyright (C) 1999 by Judd Montgomery
+ * Copyright (C) 1999-2001 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +22,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include "print.h"
 #include "utils.h"
 #include "prefs.h"
 #include "log.h"
@@ -53,6 +55,21 @@ static void
    window = NULL;
    gtk_widget_destroy(data);
 }
+
+/*----------------------------------------------------------------------
+ * cb_week_print     This is where week printing is kicked off from
+ *----------------------------------------------------------------------*/
+
+static void cb_week_print(GtkWidget *widget, gpointer data)
+{
+   jpilot_logf(LOG_DEBUG, "cb_week_print called\n");
+   if (print_gui(window, DATEBOOK, 2) == DIALOG_SAID_PRINT) {
+      /*FIXME   print_weeks_appts(&glob_week_date, PAPER_A4); */
+      print_weeks_appts(&glob_week_date, PAPER_Letter);
+   }
+}
+
+/*----------------------------------------------------------------------*/
 
 void freeze_weeks_appts()
 {
@@ -274,6 +291,12 @@ void weekview_gui(struct tm *date_in)
    button = gtk_button_new_with_label(_("Close"));
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_quit), window);
+   gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
+
+   /* Create a "Print" button */
+   button = gtk_button_new_with_label(_("Print"));
+   gtk_signal_connect(GTK_OBJECT(button), "clicked",
+		      GTK_SIGNAL_FUNC(cb_week_print), window);
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
 
    /*Make a right arrow for going forward a week */

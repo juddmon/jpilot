@@ -1,6 +1,7 @@
 /* utils.h
+ * A module of J-Pilot http://jpilot.org
  * 
- * Copyright (C) 1999 by Judd Montgomery
+ * Copyright (C) 1999-2001 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +30,9 @@
 #include <gtk/gtk.h>
 
 #include "libplugin.h"
+#include "japanese.h"
+#include "cp1250.h"
+#include "russian.h"
 
 #define PRINT_FILE_LINE printf("%s line %d\n", __FILE__, __LINE__)
 
@@ -55,15 +59,20 @@
 #define CLIST_ADDING_ENTRY_DATA 101
 #define CLIST_MIN_DATA 199
 
-#define DIALOG_SAID_1        454
-#define DIALOG_SAID_PRINT    454
-#define DIALOG_SAID_FOURTH   454
-#define DIALOG_SAID_CURRENT  454
-#define DIALOG_SAID_2        455
-#define DIALOG_SAID_LAST     455
-#define DIALOG_SAID_ALL      455
-#define DIALOG_SAID_3        456
-#define DIALOG_SAID_CANCEL   456
+#define DIALOG_SAID_1           454
+#define DIALOG_SAID_PRINT       454
+#define DIALOG_SAID_FOURTH      454
+#define DIALOG_SAID_CURRENT     454
+#define DIALOG_SAID_2           455
+#define DIALOG_SAID_LAST        455
+#define DIALOG_SAID_ALL         455
+#define DIALOG_SAID_3           456
+#define DIALOG_SAID_CANCEL      456
+/* Import dialog */
+#define DIALOG_SAID_IMPORT_YES  455
+#define DIALOG_SAID_IMPORT_ALL  456
+#define DIALOG_SAID_IMPORT_SKIP 457
+#define DIALOG_SAID_IMPORT_QUIT 458
 
 #define CAL_DONE   100
 #define CAL_CANCEL 101
@@ -77,6 +86,27 @@
 
 #define SORT_ASCENDING       100
 #define SORT_DESCENDING      101
+
+/* Import defines */
+#define MAX_IMPORT_TYPES     10 /* Must be more than the following types */
+#define IMPORT_TYPE_UNKNOWN  99
+#define IMPORT_TYPE_TEXT    100
+#define IMPORT_TYPE_DAT     101
+#define IMPORT_TYPE_CSV     102
+#define IMPORT_TYPE_XML     103
+
+/* Export defines */
+#define EXPORT_TYPE_UNKNOWN  99
+#define EXPORT_TYPE_TEXT    100
+#define EXPORT_TYPE_DAT     101
+#define EXPORT_TYPE_CSV     102
+#define EXPORT_TYPE_XML     103
+
+/* Dat file types */
+#define DAT_DATEBOOK_FILE    10
+#define DAT_ADDRESS_FILE     11
+#define DAT_TODO_FILE        12
+#define DAT_MEMO_FILE        13
 
 extern unsigned int glob_find_id;
 
@@ -163,6 +193,14 @@ int get_pixmaps(GtkWidget *widget,
 		GdkPixmap **out_pixmap,
 		GdkBitmap **out_mask);
 
+/*
+ * This is a hack to add pixmaps in column titles.
+ * Its a hack because it assumes things about GTK that are not exposed.
+ */
+int hack_clist_set_column_title_pixmap(GtkWidget *clist,
+				       int column,
+				       GtkWidget *pixmapwid);
+
 int check_hidden_dir();
 
 int read_gtkrc_file();
@@ -198,15 +236,23 @@ int get_app_info(char *DB_name, unsigned char **buf, int *buf_size);
 
 int cleanup_pc_files();
 
-int util_sync(unsigned int flags);
+int setup_sync(unsigned int flags);
 
+/* Found in jpilot.c */
 void cb_sync(GtkWidget *widget, unsigned int flags);
 
-/*Returns the number of the button that was pressed */
+/* Returns the number of the button that was pressed */
 int dialog_generic(GdkWindow *main_window,
 		   int w, int h,
 		   char *title, char *frame_text,
 		   char *text, int nob, char *button_text[]);
+
+/*
+ * Widget must be some widget used to get the main window from.
+ * The main window passed in would be fastest.
+ * changed is MODIFY_FLAG, or NEW_FLAG
+ */
+int dialog_save_changed_record(GtkWidget *widget, int changed);
 
 /* mon 0-11
  * day 1-31
@@ -222,9 +268,6 @@ int clist_find_id(GtkWidget *clist,
 		  int *found_at,
 		  int *total_count);
 
-int clist_count(GtkWidget *clist,
-		int *total_count);
-
 int move_scrolled_window(GtkWidget *sw, float percentage);
 
 void move_scrolled_window_hack(GtkWidget *sw, float percentage);
@@ -237,7 +280,30 @@ int jpilot_copy_file(char *src, char *dest);
 void cb_search_gui(GtkWidget *widget, gpointer data);
 
 /*install_gui.c */
-void cb_install_gui(GtkWidget *widget, gpointer data);
+int install_gui(int w, int h, int x, int y);
+/*install_gui.c */
+int install_append_line(char *line);
+
+/*import_gui.c */
+void import_gui(GtkWidget *main_window, GtkWidget *main_pane,
+		char *type_desc[], int type_int[],
+		int (*import_callback)(GtkWidget *parent_window,
+				       char *file_path, int type));
+int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
+		      struct Memo *memo, struct CategoryAppInfo *cai,
+		      char *old_cat_name,
+		      int priv, int suggested_cat_num, int *new_cat_num);
+
+/* could be in dat.h or import.h */
+#define DAT_TYPE_INTEGER 1
+#define DAT_TYPE_CSTRING 5
+#define DAT_TYPE_DATE    3
+#define DAT_TYPE_BOOLEAN 6
+#define DAT_TYPE_REPEAT  8
+
+/* Returns a dat type, or 0 */
+int dat_check_if_dat_file(FILE *in);
+int dat_get_memos(FILE *in, MemoList **memolist, struct CategoryAppInfo *ai);
 
 /*weekview_gui.c */
 void cb_weekview_gui(GtkWidget *widget, gpointer data);
@@ -257,6 +323,19 @@ int datebook_gui_cleanup();
 int address_gui_cleanup();
 int todo_gui_cleanup();
 int memo_gui_cleanup();
+
+/*
+ * Copy src string into dest while escaping quotes with double quotes.
+ * dest could be as long as strlen(src)*2.
+ * Return value is the number of chars written to dest.
+ */
+int str_to_csv_str(char *dest, char *src);
+
+/*
+ * Do the opposite of str_to_csv_str, unescaping double quotes.
+ * Return value is the number of chars written to dest.
+ */
+int csv_str_to_str(char *dest, char *src);
 
 /*
  * Parse the string and replace CR and LFs with spaces
@@ -304,3 +383,18 @@ void weekview_gui(struct tm *date_in);
 
 void multibyte_safe_strncpy(char *dst, char *src, size_t max_len);
 char *multibyte_safe_memccpy(char *dst, const char *src, int c, size_t len);
+
+/*************************************
+ * convert char code 
+ *************************************/
+#define charset_j2p(buf, max_len, char_set)  {\
+	if (char_set == CHAR_SET_JAPANESE) Euc2Sjis(buf, max_len);\
+	if (char_set == CHAR_SET_1250) Lat2Win(buf,max_len);\
+	if (char_set == CHAR_SET_1251) koi8_to_win1251(buf, max_len);\
+	if (char_set == CHAR_SET_1251_B) win1251_to_koi8(buf, max_len);}
+#define charset_p2j(buf, max_len, char_set) {\
+        if (char_set == CHAR_SET_JAPANESE) Sjis2Euc(buf, max_len);\
+        if (char_set == CHAR_SET_1250) Win2Lat(buf,max_len);\
+        if (char_set == CHAR_SET_1251) win1251_to_koi8(buf, max_len);\
+        if (char_set == CHAR_SET_1251_B) koi8_to_win1251(buf, max_len);}
+

@@ -1,6 +1,7 @@
 /* datebook.h
+ * A module of J-Pilot http://jpilot.org
  * 
- * Copyright (C) 1999 by Judd Montgomery
+ * Copyright (C) 1999-2001 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,10 +29,12 @@
 #define DB3_FLOAT_HAS_NOTE 16
 #endif
 
-int datebook_print();
+int datebook_print(int type);
+int datebook_import(GtkWidget *window);
 int datebook_cleanup();
 int pc_datebook_write(struct Appointment *a, PCRecType rt, unsigned char attrib);
 void free_AppointmentList(AppointmentList **al);
+
 /*
  * If Null is passed in for date, then all appointments will be returned
  */
@@ -45,7 +48,7 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
 
 /* This funtion removes appointments from the list that obviously will not
  * occur in this month */
-int weed_datebook_list(AppointmentList **al, int mon, int year);
+int weed_datebook_list(AppointmentList **al, int mon, int year, int *mask);
 
 /* Year is years since 1900 */
 /* Mon is 0-11 */
@@ -59,6 +62,7 @@ int datebook_copy_appointment(struct Appointment *a1,
 /* returns a bit mask where bit 1 day one, etc. and it is set if an */
 /* appointment occurs on that day, 0 if not. */
 int appointment_on_day_list(int mon, int year, int *mask);
+
 /*
  * returns 1 if an appointment does occur/re-occur on dat
  * else returns 0

@@ -1,6 +1,7 @@
 /* libplugin.h
+ * A module of J-Pilot http://jpilot.org
  *
- * Copyright (C) 1999 by Judd Montgomery
+ * Copyright (C) 1999-2001 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -97,6 +98,7 @@ int get_next_unique_pc_id(unsigned int *next_unique_id);
 #define DELETE_FLAG 3
 #define MODIFY_FLAG 4
 #define NEW_FLAG    5
+#define COPY_FLAG   6
 
 #define CLIST_DEL_RED 0xCCCC;
 #define CLIST_DEL_GREEN 0xCCCC;
@@ -107,6 +109,19 @@ int get_next_unique_pc_id(unsigned int *next_unique_id);
 #define CLIST_MOD_RED 55000;
 #define CLIST_MOD_GREEN 65535;
 #define CLIST_MOD_BLUE 65535;
+#define CLIST_PRIVATE_RED 60000;
+#define CLIST_PRIVATE_GREEN 55000;
+#define CLIST_PRIVATE_BLUE 55000;
+
+#define DIALOG_SAID_1        454
+#define DIALOG_SAID_PRINT    454
+#define DIALOG_SAID_FOURTH   454
+#define DIALOG_SAID_CURRENT  454
+#define DIALOG_SAID_2        455
+#define DIALOG_SAID_LAST     455
+#define DIALOG_SAID_ALL      455
+#define DIALOG_SAID_3        456
+#define DIALOG_SAID_CANCEL   456
 
 #define LOG_DEBUG  1    /*debugging info for programers, and bug reports */
 #define LOG_INFO   2    /*info, and misc messages */
@@ -221,4 +236,84 @@ int unlink_file(char *filename);
 /* */
 int get_app_info_size(FILE *in, int *size);
 
+/*
+ * Widget must be some widget used to get the main window from.
+ * The main window passed in would be fastest.
+ * changed is MODIFY_FLAG, or NEW_FLAG
+ */
+int dialog_save_changed_record(GtkWidget *widget, int changed);
+
+/*
+ * The preferences interface makes it easy to read and write name/value pairs
+ * to a file.  Also access them efficiently.
+ */
+
+#define INTTYPE 1
+#define CHARTYPE 2
+
+/* I explain these below */
+typedef struct {
+   char *name;
+   int usertype;
+   int filetype;
+   long ivalue;
+   char *svalue;
+   int svalue_size;
+} prefType;
+
+/* char *name; */
+/*   The name of the preference, will be written to column 1 of the rc file
+ *   This needs to be set before reading the rc file.
+ */
+/* int usertype; */
+/*   INTTYPE or CHARTYPE, this is the type of value that the pref is.
+ *   This type of value will be returned and set by pref calls.
+ */
+/* int filetype; */
+/*   INTTYPE or CHARTYPE, this is the type of value that the pref is when
+ *   it is read from, or written to a file.
+ *   i.e., For some of my menus I have file type of int and usertype
+ *   of char.  I want to use char, except I don't store the char becuase
+ *   of translations, so I store 3 for the 3rd option.  It also allows
+ *   predefined allowed values for strings instead of anything goes. */
+/* long ivalue; */
+/*   The long value to be returned if of type INT
+ */
+/* char *svalue; */
+/*   The long value to be returned if of type CHAR
+ */
+/* int svalue_size; */
+/*   The size of the memory allocated for the string, Do not change. */
+
+/*
+ * To use prefs you must allocate an array of prefType and call this function
+ * before any others.
+ *  count is how many preferences in the array.
+ */
+void jp_pref_init(prefType prefs[], int count);
+/*
+ * This function can be called to free strings allocated by preferences.
+ * It should be called in the cleanup routine.
+ */
+void jp_free_prefs(prefType prefs[], int count);
+/*
+ * This function retrieves a long value and a pointer to a string of a
+ * preference structure.  *string can be passed in as a NULL and NULL can
+ * be returned if the preference is of type INT.
+ */
+int jp_get_pref(prefType prefs[], int which, long *n, const char **string);
+/*
+ * This function sets a long value and a string of a preference structure.
+ *  string can be NULL if the preference is type INT.
+ *  string can be any length, memory will be allocated.
+ */
+int jp_set_pref(prefType prefs[], int which, long n, const char *string);
+/*
+ * This function reads an rc file and sets the preferences from it.
+ */
+int jp_pref_read_rc_file(char *filename, prefType prefs[], int num_prefs);
+/*
+ * This function writes preferences to an rc file.
+ */
+int jp_pref_write_rc_file(char *filename, prefType prefs[], int num_prefs);
 #endif

@@ -11,13 +11,16 @@
 #undef PACKAGE
 #undef VERSION
 
+/* Where package is installed, used to search for config files, plugins, etc.*/
+#undef BASE_DIR
+
 /* Define for Japanese character support */
 #undef WITH_JAPANESE
 
-/* Define for plugin character support */
+/* Define for plugin support */
 #undef ENABLE_PLUGINS
 
-/* Define for plugin character support */
+/* Define for private records support */
 #undef ENABLE_PRIVATE
 
 /* Define if you want to use flock instead of fnctl for file locking
@@ -78,6 +81,9 @@
 /* This forces DateBk3/4 extensions */
 /* I don't recommend using DateBk3 or 4 */
 #define USE_DB3
+
+/* For Irix shared libraries */
+#undef ABILIB
 
 /* This is for Symphonet use only */
 #undef WITH_SYMPHONET

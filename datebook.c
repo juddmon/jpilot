@@ -1,6 +1,7 @@
 /* datebook.c
+ * A module of J-Pilot http://jpilot.org
  *
- * Copyright (C) 1999 by Judd Montgomery
+ * Copyright (C) 1999-2001 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,10 +36,6 @@
 #include "prefs.h"
 #include "libplugin.h"
 #include "password.h"
-
-#include "japanese.h"
-#include "cp1250.h"
-#include "russian.h"
 
 #ifndef FALSE
 #define FALSE 0
@@ -204,6 +201,13 @@ int pc_datebook_write(struct Appointment *a, PCRecType rt, unsigned char attrib)
    char record[65536];
    int rec_len;
    buf_rec br;
+   long char_set;
+
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
+   if (char_set != CHAR_SET_ENGLISH) {
+      if (a->description) charset_j2p(a->description, strlen(a->description)+1, char_set);
+      if (a->note) charset_j2p(a->note, strlen(a->note)+1, char_set);
+   }
 
    rec_len = pack_Appointment(a, record, 65535);
    if (!rec_len) {
@@ -211,7 +215,7 @@ int pc_datebook_write(struct Appointment *a, PCRecType rt, unsigned char attrib)
       jpilot_logf(LOG_WARN, "pack_Appointment %s\n", _("error"));
       return -1;
    }
-   br.rt=rt;
+      br.rt=rt;
    br.attrib = attrib;
    br.buf = record;
    br.size = rec_len;
@@ -368,13 +372,17 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
    long fdow;
    unsigned int ret;
    unsigned int r;
-   int begin_days, days, week1, week2;
+   int week1, week2;
    int dow, ndim;
    int i;
-   /*days_in_month is adjusted for leap year with the date */
-   /*structure */
+   /* days_in_month is adjusted for leap year with the date structure */
    int days_in_month[]={31,28,31,30,31,30,31,31,30,31,30,31
    };
+   int exception_days;
+   static int days, begin_days;
+   static struct tm cached_date;
+
+   /* jpilot_logf(LOG_DEBUG, "isApptOnDate\n"); */
 
    ret = FALSE;
    
@@ -382,14 +390,21 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
       return FALSE;
    }
 
-   /*Leap year */
+   /* To try to speed things up */
+   if (memcmp(date, &cached_date, sizeof(struct tm))) {
+      memcpy(&cached_date, date, sizeof(struct tm));
+   } else {
+      days=0;
+      begin_days=0;
+   }
+   /* Leap year */
    if ((date->tm_year%4 == 0) &&
        !(((date->tm_year+1900)%100==0) && ((date->tm_year+1900)%400!=0))
        ) {
       days_in_month[1]++;
    }
    
-   /*See if the appointment starts after date */
+   /* See if the appointment starts after date */
    r = compareTimesToDay(&(a->begin), date);
    if (r == 1) {
       return FALSE;
@@ -397,7 +412,7 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
    if (r == 0) {
       ret = TRUE;
    }
-   /*If the appointment has an end date, see that we are not past it */
+   /* If the appointment has an end date, see that we are not past it */
    if (!(a->repeatForever)) {
       r = compareTimesToDay(&(a->repeatEnd), date);
       if (r == 2) {
@@ -409,14 +424,18 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
     case repeatNone:
       break;
     case repeatDaily:
-      /*See if this appt repeats on this day */
-      begin_days = dateToDays(&(a->begin));
-      days = dateToDays(date);
+      /* See if this appt repeats on this day */
+      if (!begin_days) {
+	 begin_days = dateToDays(&(a->begin));
+      }
+      if (!days) {
+	 days = dateToDays(date);
+      }
       ret = (((days - begin_days)%(a->repeatFrequency))==0);
       break;
     case repeatWeekly:
       get_month_info(date->tm_mon, date->tm_mday, date->tm_year, &dow, &ndim);
-      /*See if the appointment repeats on this day */
+      /* See if the appointment repeats on this day */
       /*
       if (a->repeatWeekstart > 1) {
 	 a->repeatWeekstart = 1;
@@ -431,8 +450,12 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
 	 break;
       }
       /*See if we are in a week that is repeated in */
-      begin_days = dateToDays(&(a->begin));
-      days = dateToDays(date);
+      if (!begin_days) {
+	 begin_days = dateToDays(&(a->begin));
+      }
+      if (!days) {
+	 days = dateToDays(date);
+      }
       get_pref(PREF_FDOW, &fdow, NULL);
       /* Note: Palm Bug?  I think the palm does this wrong.
        * I prefer this way of doing it so that you can have appts repeating
@@ -443,27 +466,27 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
 	     %(a->repeatFrequency)==0);
       break;
     case repeatMonthlyByDay:
-      /*See if we are in a month that is repeated in */
+      /* See if we are in a month that is repeated in */
       ret = (((date->tm_year - a->begin.tm_year)*12 +
        (date->tm_mon - a->begin.tm_mon))%(a->repeatFrequency)==0);
       if (!ret) {
 	 break;
       }
-      /*If the days of the week match - good */
-      /*e.g. Monday or Thur, etc. */
+      /* If the days of the week match - good */
+      /* e.g. Monday or Thur, etc. */
       if (a->repeatDay%7 != date->tm_wday) {
 	 ret = FALSE;
 	 break;
       }
-      /*Are they both in the same week in the month */
-      /*e.g. The 3rd Mon, or the 2nd Fri, etc. */
+      /* Are they both in the same week in the month */
+      /* e.g. The 3rd Mon, or the 2nd Fri, etc. */
       week1 = a->repeatDay/7;
       week2 = (date->tm_mday - 1)/7;
       if (week1 != week2) {
 	 ret = FALSE;
       }
-      /*See if the appointment repeats on the last week of the month */
-      /*and this is the 4th, and last. */
+      /* See if the appointment repeats on the last week of the month */
+      /* and this is the 4th, and last. */
       if (week1 > 3) {
 	 if ((date->tm_mday + 7) > days_in_month[date->tm_mon]) {
 	    ret = TRUE;
@@ -471,19 +494,19 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
       }
       break;
     case repeatMonthlyByDate:
-      /*See if we are in a repeating month */
+      /* See if we are in a repeating month */
       ret = (((date->tm_year - a->begin.tm_year)*12 +
        (date->tm_mon - a->begin.tm_mon))%(a->repeatFrequency) == 0);
       if (!ret) {
 	 break;
       }
-      /*See if this is the date that the appt repeats on */
+      /* See if this is the date that the appt repeats on */
       if (date->tm_mday == a->begin.tm_mday) {
 	 ret = TRUE;
 	 break;
       }
-      /*If appt occurs after the last day of the month and this date */
-      /*is the last day of the month then it occurs today */
+      /* If appt occurs after the last day of the month and this date */
+      /* is the last day of the month then it occurs today */
       ret = ((a->begin.tm_mday > days_in_month[date->tm_mon]) &&
 	     (date->tm_mday == days_in_month[date->tm_mon]));
       break;
@@ -497,7 +520,7 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
 	 ret = TRUE;
 	 break;
       }
-      /*Take care of Feb 29th (Leap Day) */
+      /* Take care of Feb 29th (Leap Day) */
       if ((a->begin.tm_mon == 1) && (a->begin.tm_mday == 29) &&
 	(date->tm_mon == 1) && (date->tm_mday == 28)) {
 	 ret = TRUE;
@@ -511,7 +534,7 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
    }/*switch */
 
    if (ret) {
-      /*Check for exceptions */
+      /* Check for exceptions */
       for (i=0; i<a->exceptions; i++) {
 #ifdef JPILOT_DEBUG
 	 jpilot_logf(LOG_DEBUG, "exception %d mon %d\n", i, a->exception[i].tm_mon);
@@ -520,9 +543,11 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
 	 jpilot_logf(LOG_DEBUG, "exception %d yday %d\n", i, a->exception[i].tm_yday);
 	 jpilot_logf(LOG_DEBUG, "today is yday %d\n", date->tm_yday);
 #endif
-	 begin_days = dateToDays(&(a->exception[i]));
-	 days = dateToDays(date);
-	 if (begin_days == days) {
+	 exception_days = dateToDays(&(a->exception[i]));
+	 if (!days) {
+	    days = dateToDays(date);
+	 }
+	 if (exception_days == days) {
 	    ret = FALSE;
 	    break;
 	 }
@@ -534,9 +559,10 @@ unsigned int isApptOnDate(struct Appointment *a, struct tm *date)
 
 int get_datebook_app_info(struct AppointmentAppInfo *ai)
 {
-   int num;
+   int num,i;
    unsigned int rec_size;
    unsigned char *buf;
+   long char_set;
 
    bzero(ai, sizeof(*ai));
 
@@ -549,16 +575,25 @@ int get_datebook_app_info(struct AppointmentAppInfo *ai)
       jpilot_logf(LOG_WARN, _("Error reading"), "DatebookDB.pdb");
       return -1;
    }
-	 
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
+   if (char_set != CHAR_SET_ENGLISH) {
+      for (i = 0; i < 16; i++) {
+	 if (ai->category.name[i][0] != '\0') charset_p2j(ai->category.name[i], 16, char_set);
+      }
+   }
+
    return 0;
 }
 
-int weed_datebook_list(AppointmentList **al, int mon, int year)
+int weed_datebook_list(AppointmentList **al, int mon, int year, int *mask)
 {
    struct tm tm_fdom;
    struct tm tm_ldom;
+   struct tm tm_test;
    AppointmentList *prev_al, *next_al, *tal;
-   int r, dow, ndim;
+   int r, fdow, ndim;
+   int days, begin_days;
+   int ret;
    int trash_it;
 
    bzero(&tm_fdom, sizeof(tm_fdom));
@@ -567,7 +602,7 @@ int weed_datebook_list(AppointmentList **al, int mon, int year)
    tm_fdom.tm_mon=mon;
    tm_fdom.tm_year=year;
    
-   get_month_info(mon, 1, year, &dow, &ndim);
+   get_month_info(mon, 1, year, &fdow, &ndim);
 
    memcpy(&tm_ldom, &tm_fdom, sizeof(tm_fdom));
 
@@ -576,37 +611,104 @@ int weed_datebook_list(AppointmentList **al, int mon, int year)
    mktime(&tm_fdom);
    mktime(&tm_ldom);
 
+   memcpy(&tm_test, &tm_fdom, sizeof(tm_fdom));
+
+   days = dateToDays(&tm_fdom);
+
+   next_al=NULL;
    /*
     * We are going to try to shrink the linked list since we are about to
     * search though it ~30 times.
     */
    for (prev_al=NULL, tal=*al; tal; tal = next_al) {
       trash_it=0;
-      /* See if its a non-repeating appointment that isn't this month/year */
-      if (tal->ma.a.repeatType==repeatNone) {
-	 if ((tal->ma.a.begin.tm_year!=year) ||
-	     (tal->ma.a.begin.tm_mon!=mon)) {
-	    trash_it=1;
-	    goto trash;
-	 }
-      }
-      /* See if its a yearly appointment that doesn't reoccur on this month */
-      if (tal->ma.a.repeatType==repeatYearly) {
-	 if ((tal->ma.a.begin.tm_mon!=mon)) {
-	    trash_it=1;
-	    goto trash;
-	 }
-      }
-      /*See if the appointment starts after the last day of the month */
+      /* See if the appointment starts after the last day of the month */
       r = compareTimesToDay(&(tal->ma.a.begin), &tm_ldom);
       if (r == 1) {
 	 trash_it=1;
 	 goto trash;
       }
-      /*If the appointment has an end date, see if it ended before the 1st */
+      /* If the appointment has an end date, see if it ended before the 1st */
       if (!(tal->ma.a.repeatForever)) {
 	 r = compareTimesToDay(&(tal->ma.a.repeatEnd), &tm_fdom);
 	 if (r == 2) {
+	    trash_it=1;
+	    goto trash;
+	 }
+      }
+      /* No repeat */
+      /* See if its a non-repeating appointment that is this month/year */
+      if (tal->ma.a.repeatType==repeatNone) {
+	 if ((tal->ma.a.begin.tm_year==year) &&
+	     (tal->ma.a.begin.tm_mon==mon)) {
+	    tm_test.tm_mday=tal->ma.a.begin.tm_mday;
+	    mktime(&tm_test);
+	    /* Go ahead and mark this day (highlight it) */
+	    if (isApptOnDate(&(tal->ma.a), &tm_test)) {
+	       *mask = *mask | (1 << ((tal->ma.a.begin.tm_mday)-1));
+	    }
+	 } else {
+	    trash_it=1;
+	    goto trash;
+	 }
+      }
+      /* Daily */
+      /* See if this daily appt repeats this month or not */
+      if (tal->ma.a.repeatType==repeatDaily) {
+	 begin_days = dateToDays(&(tal->ma.a.begin));
+	 ret = ((days - begin_days)%(tal->ma.a.repeatFrequency));
+	 if ((ret>31) || (ret<-31)) {
+	    trash_it=1;
+	    goto trash;
+	 }
+      }
+      /* Weekly */
+      if (tal->ma.a.repeatType==repeatWeekly) {
+	 begin_days = dateToDays(&(tal->ma.a.begin));
+	 /* Note: Palm Bug?  I think the palm does this wrong.
+	  * I prefer this way of doing it so that you can have appts repeating
+	  * from Wed->Tue, for example.  The palms way prevents this */
+	 /* ret = (((int)((days - begin_days - fdow)/7))%(a->repeatFrequency)==0);*/
+	 /* But, here is the palm way */
+	 ret = (((int)((days-begin_days+tal->ma.a.begin.tm_wday-fdow)/7))
+		%(tal->ma.a.repeatFrequency));
+	 if ((ret>6) || (ret<-6)) {
+	    trash_it=1;
+	    goto trash;
+	 }
+      }
+      /* Monthly */
+      if ((tal->ma.a.repeatType==repeatMonthlyByDay) ||
+	  (tal->ma.a.repeatType==repeatMonthlyByDate)) {
+	 /* See if we are in a month that is repeated in */
+	 ret = (((year - tal->ma.a.begin.tm_year)*12 +
+		 (mon - tal->ma.a.begin.tm_mon))%(tal->ma.a.repeatFrequency)==0);
+	 if (!ret) {
+	    trash_it=1;
+	    goto trash;
+	 }
+	 if (tal->ma.a.repeatType==repeatMonthlyByDay) {
+	    tm_test.tm_mday=tal->ma.a.begin.tm_mday;
+	    mktime(&tm_test);
+	    if (isApptOnDate(&(tal->ma.a), &tm_test)) {
+	       *mask = *mask | (1 << ((tal->ma.a.begin.tm_mday)-1));
+	       trash_it=1;
+	       goto trash;
+	    }
+	 }
+      }
+      /* Yearly */
+      /* See if its a yearly appointment that does reoccur on this month */
+      if (tal->ma.a.repeatType==repeatYearly) {
+	 if ((tal->ma.a.begin.tm_mon==mon)) {
+	    tm_test.tm_mday=tal->ma.a.begin.tm_mday;
+	    mktime(&tm_test);
+	    if (isApptOnDate(&(tal->ma.a), &tm_test)) {
+	       *mask = *mask | (1 << ((tal->ma.a.begin.tm_mday)-1));
+	       /* trash_it=1; */
+	       /* goto trash; */
+	    }
+	 } else {
 	    trash_it=1;
 	    goto trash;
 	 }
@@ -634,7 +736,7 @@ int appointment_on_day_list(int mon, int year, int *mask)
 {
    struct tm tm_dom;
    AppointmentList *tal, *al;
-   int i, dow, ndim, num;
+   int dow, ndim, num;
    int bit;
 
    bzero(&tm_dom, sizeof(tm_dom));
@@ -648,12 +750,14 @@ int appointment_on_day_list(int mon, int year, int *mask)
 
    get_month_info(mon, 1, year, &dow, &ndim);
 
-   weed_datebook_list(&al, mon, year);
-
    *mask = 0;
-   
-   for (i=0, bit=1; i<ndim; i++, bit=bit<<1) {
-      tm_dom.tm_mday = i+1;
+
+   weed_datebook_list(&al, mon, year, mask);
+
+   for (tm_dom.tm_mday=1, bit=1; tm_dom.tm_mday<=ndim; tm_dom.tm_mday++, bit=bit<<1) {
+      if (*mask & bit) {
+	 continue;
+      }
       mktime(&tm_dom);
 
       for (tal=al; tal; tal = tal->next) {
@@ -663,7 +767,6 @@ int appointment_on_day_list(int mon, int year, int *mask)
 	 }
       }
    }
-
    free_AppointmentList(&al);
    
    return 0;
@@ -687,17 +790,19 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
    AppointmentList *temp_a_list;
    long keep_modified, keep_deleted;
    int keep_priv;
-   long char_set;
    buf_rec *br;
+   long char_set;
 #ifdef USE_DB3
    long use_db3_tags;
    time_t ltime;
-   struct tm *today;
+   struct tm *Ptoday, today;
 #endif
-   
+
 #ifdef USE_DB3
    time(&ltime);
-   today = localtime(&ltime);
+   Ptoday = localtime(&ltime);
+   /* Copy into stable memory */
+   memcpy(&today, Ptoday, sizeof(struct tm));
    get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
 #endif
   
@@ -746,6 +851,9 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
 	 continue;
       }
 
+      a.exception=NULL;
+      a.description=NULL;
+      a.note=NULL;
       num = unpack_Appointment(&a, br->buf, br->size);
 
       if (num <= 0) {
@@ -754,34 +862,24 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
 
 #ifdef USE_DB3
       if (use_db3_tags) {
-	 db3_hack_date(&a, today);
+	 db3_hack_date(&a, &today);
       }
 #endif
-      if ( ! ((now==NULL) || isApptOnDate(&a, now)) ) {
-	 continue;
+      if (now!=NULL) {
+	 if (!isApptOnDate(&a, now)) {
+	    free_Appointment(&a);
+	    continue;
+	 }
       }
 
       get_pref(PREF_CHAR_SET, &char_set, NULL);
-      if (char_set==CHAR_SET_JAPANESE) {
-	 Sjis2Euc(a.description, 65536);
-	 Sjis2Euc(a.note, 65536);
-      }
-      if (char_set==CHAR_SET_1250) {
-	 Win2Lat(a.description, 65536);
-	 Win2Lat(a.note, 65536);
-      }
-      if (char_set==CHAR_SET_1251) {
-	 win1251_to_koi8(a.description, 65536);
-	 win1251_to_koi8(a.note, 65536);
-      }
-      if (char_set==CHAR_SET_1251_B) {
-	 koi8_to_win1251(a.description, 65536);
-	 koi8_to_win1251(a.note, 65536);
-      }
+      if (a.description) charset_p2j(a.description, strlen(a.description)+1, char_set);
+      if (a.note) charset_p2j(a.note, strlen(a.note)+1, char_set);
 
       temp_a_list = malloc(sizeof(AppointmentList));
       if (!temp_a_list) {
 	 jpilot_logf(LOG_WARN, "get_days_appointments(): Out of memory\n");
+	 free_Appointment(&a);
 	 break;
       }
       memcpy(&(temp_a_list->ma.a), &a, sizeof(struct Appointment));

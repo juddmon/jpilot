@@ -1,6 +1,7 @@
 /* install_gui.c
+ * A module of J-Pilot http://jpilot.org
  *
- * Copyright (C) 1999 by Judd Montgomery
+ * Copyright (C) 1999-2001 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,7 +79,7 @@ int install_remove_line(int deleted_line)
    return 0;
 }
 
-static int install_append_line(char *line)
+int install_append_line(char *line)
 {
    FILE *out;
    int r;
@@ -205,7 +206,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    return;
 }
   
-void cb_install_gui(GtkWidget *widget, gpointer data)
+int install_gui(int w, int h, int x, int y)
 {
    GtkWidget *scrolled_window;
    GtkWidget *button;
@@ -215,14 +216,20 @@ void cb_install_gui(GtkWidget *widget, gpointer data)
    };
    
    if (filew) {
-      return;
+      return 0;
    }
    
    line_selected = -1;
 
    g_snprintf(temp, 255, "%s %s", PN, _("Install"));
    temp[255]='\0';
-   filew = gtk_file_selection_new(temp);
+   filew = gtk_widget_new(GTK_TYPE_FILE_SELECTION,
+			  "type", GTK_WINDOW_DIALOG,
+			  "x", x, "y", y,
+			  "width", w, "height", h,
+			  "title", temp,
+			  NULL);
+
    gtk_file_selection_hide_fileop_buttons((gpointer) filew);
 
    gtk_widget_hide((GTK_FILE_SELECTION(filew)->cancel_button));
@@ -289,4 +296,6 @@ void cb_install_gui(GtkWidget *widget, gpointer data)
    gtk_widget_show(filew);
 
    update_clist();
+   
+   return 0;
 }

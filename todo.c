@@ -1,6 +1,7 @@
 /* todo.c
+ * A module of J-Pilot http://jpilot.org
  * 
- * Copyright (C) 1999 by Judd Montgomery
+ * Copyright (C) 1999-2001 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,10 +30,6 @@
 #include "prefs.h"
 #include "libplugin.h"
 #include "password.h"
-
-#include "japanese.h"
-#include "cp1250.h"
-#include "russian.h"
 
 #define TODO_EOF 7
 
@@ -240,6 +237,13 @@ int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib,
    char record[65536];
    int rec_len;
    buf_rec br;
+   long char_set;
+
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
+   if (char_set != CHAR_SET_ENGLISH) {
+      if (todo->description) charset_j2p(todo->description, strlen(todo->description)+1, char_set);
+      if (todo->note) charset_j2p(todo->note, strlen(todo->note)+1, char_set);
+   }
 
    rec_len = pack_ToDo(todo, record, 65535);
    if (!rec_len) {
@@ -272,7 +276,7 @@ void free_ToDoList(ToDoList **todo)
 
 int get_todo_app_info(struct ToDoAppInfo *ai)
 {
-   int num;
+   int num,i;
    unsigned int rec_size;
    unsigned char *buf;
    long char_set;
@@ -290,19 +294,12 @@ int get_todo_app_info(struct ToDoAppInfo *ai)
    }
 	 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
-   if (char_set==CHAR_SET_JAPANESE ||
-       char_set==CHAR_SET_1250 ||
-       char_set==CHAR_SET_1251 ||
-       char_set==CHAR_SET_1251_B) {
-      /* Convert 'Category name' to EUC Japanese Kanji code */
-      int i;
-      for (i = 0; i < 16; i++)
-	if (ai->category.name[i][0] != '\0') {
-	   if (char_set==CHAR_SET_JAPANESE) Sjis2Euc(ai->category.name[i], 16);
-	   if (char_set==CHAR_SET_1250) Win2Lat(ai->category.name[i], 16);
-	   if (char_set==CHAR_SET_1251) win1251_to_koi8(ai->category.name[i], 16);
-	   if (char_set==CHAR_SET_1251_B) koi8_to_win1251(ai->category.name[i], 16);
-	}
+   if (char_set != CHAR_SET_ENGLISH) {
+      for (i = 0; i < 16; i++) {
+	 if (ai->category.name[i][0] != '\0') {
+	    charset_p2j(ai->category.name[i], 16, char_set);
+	 }
+      }
    }
 
    return 0;
@@ -328,9 +325,9 @@ int get_todos2(ToDoList **todo_list, int sort_order,
    ToDoList *temp_todo_list;
    long keep_modified, keep_deleted, hide_completed;
    int keep_priv;
-   long char_set;
    buf_rec *br;
-  
+   long char_set;
+
    jpilot_logf(LOG_DEBUG, "get_todos2()\n");
    if (modified==2) {
       get_pref(PREF_SHOW_MODIFIED, &keep_modified, NULL);
@@ -395,23 +392,9 @@ int get_todos2(ToDoList **todo_list, int sort_order,
       }
 
       get_pref(PREF_CHAR_SET, &char_set, NULL);
-      if (char_set==CHAR_SET_JAPANESE) {
-	 Sjis2Euc(todo.description, 65536);
-	 Sjis2Euc(todo.note, 65536);
-      }
-      if (char_set==CHAR_SET_1250) {
-	 Win2Lat(todo.description, 65536);
-	 Win2Lat(todo.note, 65536);
-      }
-      if (char_set==CHAR_SET_1251) {
-	 win1251_to_koi8(todo.description, 65536);
-	 win1251_to_koi8(todo.note, 65536);
-      }
-      if (char_set==CHAR_SET_1251_B) {
-	 koi8_to_win1251(todo.description, 65536);
-	 koi8_to_win1251(todo.note, 65536);
-      }
-						     
+      if (todo.description) charset_p2j(todo.description, strlen(todo.description)+1, char_set);
+      if (todo.note) charset_p2j(todo.note, strlen(todo.note)+1, char_set);
+
       temp_todo_list = malloc(sizeof(ToDoList));
       if (!temp_todo_list) {
 	 jpilot_logf(LOG_WARN, "get_todos2(): Out of memory\n");

@@ -1,6 +1,7 @@
 /* utils.c
+ * A module of J-Pilot http://jpilot.org
  * 
- * Copyright (C) 1999 by Judd Montgomery
+ * Copyright (C) 1999-2001 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,6 +40,9 @@
 #include "plugins.h"
 #include "libplugin.h"
 
+#include "japanese.h"
+#include "cp1250.h"
+#include "russian.h"
 
 #include <pi-source.h>
 #include <pi-socket.h>
@@ -280,6 +284,51 @@ int sub_years_from_date(struct tm *date, int n)
 }
 
 /*
+ * Copy src string into dest while escaping quotes with double quotes.
+ * dest could be as long as strlen(src)*2.
+ * Return value is the number of chars written to dest.
+ */
+int str_to_csv_str(char *dest, char *src)
+{
+   int s, d;
+   
+   if ((!src) || (!dest)) {
+      return 0;
+   }
+   s=d=0;
+   while (src[s]) {
+      if (src[s]=='\"') {
+	 dest[d++]='\"';
+      }
+      dest[d++]=src[s++];
+   }
+   dest[d++]='\0';
+   return d;
+}
+
+/*
+ * Do the opposite of str_to_csv_str, unescaping double quotes.
+ * Return value is the number of chars written to dest.
+ */
+int csv_str_to_str(char *dest, char *src)
+{
+   int s, d;
+   
+   if ((!src) || (!dest)) {
+      return 0;
+   }
+   s=d=0;
+   while (src[s]) {
+      if ((src[s]=='\"') && (src[s+1]=='\"')) {
+	 s++;
+      }
+      dest[d++]=src[s++];
+   }
+   dest[d++]='\0';
+   return d;
+}
+
+/*
  * Parse the string and replace CR and LFs with spaces
  */
 void remove_cr_lfs(char *str)
@@ -423,26 +472,6 @@ int clist_find_id(GtkWidget *clist,
    *total_count = i;
    
    return found;
-}
-
-/* todo There should be a much easier way to do this */
-int clist_count(GtkWidget *clist,
-		int *total_count)
-{
-   int i;
-   void *Pv;
-   
-   *total_count = 0;
-
-   for (i = 0; i<100000; i++) {
-      Pv = gtk_clist_get_row_data(GTK_CLIST(clist), i);
-      if (Pv < GINT_TO_POINTER(1)) {
-	 break;
-      }
-   }
-   *total_count = i;
-   
-   return 0;
 }
 
 int get_pixmaps(GtkWidget *widget,
@@ -702,6 +731,28 @@ char * xpm_float_checked[] = {
 }
 
 /*
+ * This is a hack to add pixmaps in column titles.
+ * Its a hack because it assumes things about GTK that are not exposed.
+ */
+int hack_clist_set_column_title_pixmap(GtkWidget *clist,
+				       int column,
+				       GtkWidget *pixmapwid)
+{
+   GtkWidget *old_widget;
+
+   old_widget = GTK_BIN(GTK_CLIST(clist)->column[column].button)->child;
+   if (old_widget) {
+      gtk_container_remove(GTK_CONTAINER(GTK_CLIST(clist)->column[column].button), old_widget);
+   }
+
+   gtk_widget_show(pixmapwid);
+   gtk_container_add(GTK_CONTAINER(GTK_CLIST(clist)->column[column].button), pixmapwid);
+   
+   return 0;
+}
+
+
+/*
  * Start of GTK calendar code
  */
 #define PRESSED_P            100
@@ -861,31 +912,22 @@ int dialog_generic(GdkWindow *main_window,
 		   char *text, int nob, char *button_text[])
 {
    GtkWidget *button, *label1;
-   gint px, py, pw, ph = 0;
-   gint x, y;
    
    GtkWidget *hbox1, *vbox1;
    GtkWidget *frame1;
 
-   gdk_window_get_position(main_window, &px, &py);
-   gdk_window_get_size(main_window, &pw, &ph);
-
-   /*Center the window in the main window */
-   x=px+pw/2-w/2;
-   y=py+ph/2-h/2;
-   
-   /*glob_dialog=gtk_window_new(GTK_WINDOW_TOPLEVEL);*/
+   dialog_result=0;
    if (w && h) {
       glob_dialog = gtk_widget_new(GTK_TYPE_WINDOW,
 				   "type", GTK_WINDOW_DIALOG,
-				   "x", x, "y", y,
+				   "window_position", GTK_WIN_POS_MOUSE,
 				   "width", w, "height", h,
 				   "title", title,
 				   NULL);
    } else {
       glob_dialog = gtk_widget_new(GTK_TYPE_WINDOW,
+				   "window_position", GTK_WIN_POS_MOUSE,
 				   "type", GTK_WINDOW_DIALOG,
-				   "x", x, "y", y,
 				   "title", title,
 				   NULL);
    }
@@ -908,7 +950,7 @@ int dialog_generic(GdkWindow *main_window,
    gtk_container_add(GTK_CONTAINER(frame1), vbox1);
 
    label1 = gtk_label_new(text);
-   /*This doesn\'t seem to work... */
+   /*This doesn't seem to work... */
    /*gtk_label_set_line_wrap(GTK_LABEL(label1), TRUE); */
 
    gtk_box_pack_start(GTK_BOX(vbox1), label1, FALSE, FALSE, 2);
@@ -945,6 +987,43 @@ int dialog_generic(GdkWindow *main_window,
    return dialog_result;
 }
 
+/*
+ * Widget must be some widget used to get the main window from.
+ * The main window passed in would be fastest.
+ * changed is MODIFY_FLAG, or NEW_FLAG
+ */
+int dialog_save_changed_record(GtkWidget *widget, int changed)
+{
+   GtkWidget *w;
+   int i, b;
+   char *button_text[]={gettext_noop("Yes"), gettext_noop("No")};
+
+   b=0;
+
+   if ((changed!=MODIFY_FLAG) && (changed!=NEW_FLAG)) {
+      return 0;
+   }
+   /* Find the main window from some global widget and do a dialog */
+   for (w=widget, i=10; w && (i>0); w=w->parent, i--) {
+      if (GTK_IS_WINDOW(w)) {
+	 if (changed==MODIFY_FLAG) {
+	    b=dialog_generic(GTK_WIDGET(w)->window, 0, 0,
+			     _("Save Changed Record?"), "",
+			     _("Do you want to save the changes to this record?"),
+			     2, button_text);
+	 }
+	 if (changed==NEW_FLAG) {
+	    b=dialog_generic(GTK_WIDGET(w)->window, 0, 0,
+			     _("Save New Record?"), "",
+			     _("Do you want to save this new record?"),
+			     2, button_text);
+	 }
+	 break;
+      }
+   }
+   return b;
+}
+
 /*creates the full path name of a file in the ~/.jpilot dir */
 int get_home_file_name(char *file, char *full_name, int max_size)
 {
@@ -969,9 +1048,9 @@ int get_home_file_name(char *file, char *full_name, int max_size)
 }
 
 
-/* */
-/*Returns 0 if ok */
-/* */
+/*
+ * Returns 0 if ok
+ */
 int check_hidden_dir()
 {
    struct stat statb;
@@ -1246,6 +1325,8 @@ int check_copy_DBs_to_home()
 	"AddressDB.pdb",
 	"ToDoDB.pdb",
 	"MemoDB.pdb",
+	"Memo32DB.pdb",
+	"ExpenseDB.pdb",
 	NULL
    };
 
@@ -1549,6 +1630,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
    char record[65536];
    PCRecType record_type;
    unsigned int unique_id;
+   long ivalue;
 
    if (VP==NULL) {
       return -1;
@@ -1582,7 +1664,12 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       mmemo = (MyMemo *) VP;
       record_type = mmemo->rt;
       unique_id = mmemo->unique_id;
-      strcpy(filename, "MemoDB.pc3");
+      get_pref(PREF_MEMO32_MODE, &ivalue, NULL);
+      if (ivalue) {
+	 strcpy(filename, "Memo32DB.pc3");
+      } else {
+	 strcpy(filename, "MemoDB.pc3");
+      }
       break;
     default:
       return 0;
@@ -1878,6 +1965,14 @@ int cleanup_pc_files()
    } else if (max_id > max_max_id) {
       max_max_id = max_id; 
    }
+   jpilot_logf(LOG_DEBUG, "cleanup_pc_file for Memo32DB\n");
+   ret += cleanup_pc_file("Memo32DB", &max_id);
+   jpilot_logf(LOG_DEBUG, "max_id was %d\n", max_id);
+   if (ret<0) {
+      fail_flag=1;
+   } else if (max_id > max_max_id) {
+      max_max_id = max_id; 
+   }
 #ifdef ENABLE_PLUGINS
    plugin_list = get_plugin_list();
 
@@ -1902,7 +1997,7 @@ int cleanup_pc_files()
    return 0;
 }
 
-int util_sync(unsigned int flags)
+int setup_sync(unsigned int flags)
 {
    long ivalue, num_backups;
    const char *svalue;
@@ -1932,14 +2027,21 @@ int util_sync(unsigned int flags)
    get_pref(PREF_USER_ID, &(sync_info.userID), &svalue);
    jpilot_logf(LOG_DEBUG, "pref port=[%s]\n", port);
    jpilot_logf(LOG_DEBUG, "num_backups=%d\n", num_backups);
-   
+
    get_pref(PREF_PC_ID, &(sync_info.PC_ID), &svalue);
    if (sync_info.PC_ID == 0) {
       srandom(time(NULL));
-      sync_info.PC_ID = 1+(2000000000.0*random()/(RAND_MAX+1.0));
+      /* RAND_MAX is 32768 on Solaris machines for some reason.
+       * If someone knows how to fix this, let me know.
+       */
+      if (RAND_MAX==32768) {
+	 sync_info.PC_ID = 1+(2000000000.0*random()/(2147483647+1.0));
+      } else {
+	 sync_info.PC_ID = 1+(2000000000.0*random()/(RAND_MAX+1.0));
+      }
       jpilot_logf(LOG_WARN, _("PC ID is 0.\n"));
-      jpilot_logf(LOG_WARN, _("I generated a new PC ID.  It is %d\n"), sync_info.PC_ID);
-      set_pref(PREF_PC_ID, sync_info.PC_ID);
+      jpilot_logf(LOG_WARN, _("I generated a new PC ID.  It is %lu\n"), sync_info.PC_ID);
+      set_pref(PREF_PC_ID, sync_info.PC_ID, NULL);
    }
 
    sync_info.sync_over_ride = 0;
@@ -1953,12 +2055,6 @@ int util_sync(unsigned int flags)
    return r;
 }
 
-void cb_sync(GtkWidget *widget, unsigned int flags)
-{
-   util_sync(flags);
-   return;
-}
-
 void multibyte_safe_strncpy(char *dst, char *src, size_t max_len)
 {
    long char_set;
@@ -1968,28 +2064,27 @@ void multibyte_safe_strncpy(char *dst, char *src, size_t max_len)
    if (char_set == CHAR_SET_JAPANESE ||
        char_set == CHAR_SET_TRADITIONAL_CHINESE ||
        char_set == CHAR_SET_KOREAN
-) {
-       char *p, *q;
-       int n = 0;
-       p = src; q = dst;
-       while ((*p) && n < (max_len-1)) {
-	   if ((*p) & 0x80) {
+       ) {
+      char *p, *q;
+      int n = 0;
+      p = src; q = dst;
+      while ((*p) && n < (max_len-2)) {
+	 if ((*p) & 0x80) {
+	    *q++ = *p++;
+	    n++;
+	    if (*p) {
 	       *q++ = *p++;
 	       n++;
-	       if (*p) {
-		   *q++ = *p++;
-		   n++;
-	       } 
-	   } else {
-	       *q++ = *p++;
-	       n++;
-	   }
-       }
-       if ((*p & 0x80 ) && (n < max_len)) {
-	   *q = *p;
-       } else {
-	   *q = '\0';
-       }
+	    } 
+	 } else {
+	    *q++ = *p++;
+	    n++;
+	 }
+      }
+      if (!(*p & 0x80 ) && (n < max_len-1))
+	*q++ = *p++;
+      
+      *q = '\0';
    } else {
       strncpy(dst, src, max_len);
    }
@@ -2008,31 +2103,31 @@ char *multibyte_safe_memccpy(char *dst, const char *src, int c, size_t len)
    if (char_set == CHAR_SET_JAPANESE ||
        char_set == CHAR_SET_TRADITIONAL_CHINESE ||
        char_set == CHAR_SET_KOREAN
-	   ) {                              /* Multibyte Charactors */
+       ) {                              /* Multibyte Charactors */
       char *p, *q;
       int n = 0;
 
       p = (char *)src; q = dst;
-      while ((*p) && (n < (len -1))) {
-        if ((*p) & 0x80) {
-	   *q++ = *p++;
-	   n++;
-	   if (*p) {
-	      *q++ = *p++;
-	      n++;
-	   }
-        } else {
-	   *q++ = *p++;
-	   n++;
-	}
-        if (*(p-1) == (char)(c & 0xff)) return q;
+      while ((*p) && (n < (len -2))) {
+	 if ((*p) & 0x80) {
+	    *q++ = *p++;
+	    n++;
+	    if (*p) {
+	       *q++ = *p++;
+	       n++;
+	    }
+	 } else {
+	    *q++ = *p++;
+	    n++;
+	    if (*(p-1) == (char)(c & 0xff)) return q;
+	 }
       }
-      if ((*p & 0x80) && (n < len)) {
-         *q = *p;
-      } else {
- 	 *q = '\0';
-      }
+      if (!(*p & 0x80) && (n < len-1)) 
+	*q++ = *p++;
+      
+      *q = '\0';
       return NULL; 
    } else
-      return memccpy(dst, src, c, len);
+     return memccpy(dst, src, c, len);
 }
+

@@ -1,6 +1,7 @@
 /* sync.h
+ * A module of J-Pilot http://jpilot.org
  * 
- * Copyright (C) 1999 by Judd Montgomery
+ * Copyright (C) 1999-2001 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +26,7 @@
 #define SYNC_NO_PLUGINS    2
 #define SYNC_OVERRIDE_USER 4
 #define SYNC_NO_FORK       8
+#define SYNC_RESTORE       16
 
 #define SYNC_ERROR_BIND            -10
 #define SYNC_ERROR_LISTEN          -11

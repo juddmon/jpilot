@@ -1,6 +1,7 @@
 /* prefs_gui.c
+ * A module of J-Pilot http://jpilot.org
  *
- * Copyright (C) 1999 by Judd Montgomery
+ * Copyright (C) 1999-2001 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,7 +63,11 @@ static void cb_pref_menu(GtkWidget *widget,
    pref = GPOINTER_TO_INT(data);
    value = pref & 0xFF;
    pref = pref >> 8;
-   set_pref(pref, value);
+   if (pref==PREF_RCFILE) {
+      set_pref_possibility(pref, value);
+   } else {
+      set_pref(pref, value, NULL);
+   }
    jpilot_logf(LOG_DEBUG, "pref %d, value %d\n", pref, value);
 #ifdef COLORS
    if (pref==PREF_RCFILE) {
@@ -132,42 +137,47 @@ static int make_pref_menu(GtkWidget **pref_menu, int pref_num)
 void cb_show_deleted(GtkWidget *widget,
 		     gpointer data)
 {
-   set_pref(PREF_SHOW_DELETED, GTK_TOGGLE_BUTTON(widget)->active);
+   set_pref(PREF_SHOW_DELETED, GTK_TOGGLE_BUTTON(widget)->active, NULL);
 }
 void cb_show_modified(GtkWidget *widget,
 		      gpointer data)
 {
-   set_pref(PREF_SHOW_MODIFIED, GTK_TOGGLE_BUTTON(widget)->active);
+   set_pref(PREF_SHOW_MODIFIED, GTK_TOGGLE_BUTTON(widget)->active, NULL);
 }
 void cb_highlight(GtkWidget *widget,
 		  gpointer data)
 {
-   set_pref(PREF_HIGHLIGHT, GTK_TOGGLE_BUTTON(widget)->active);
+   set_pref(PREF_HIGHLIGHT, GTK_TOGGLE_BUTTON(widget)->active, NULL);
 }
 void cb_use_db3(GtkWidget *widget,
 		gpointer data)
 {
-   set_pref(PREF_USE_DB3, GTK_TOGGLE_BUTTON(widget)->active);
+   set_pref(PREF_USE_DB3, GTK_TOGGLE_BUTTON(widget)->active, NULL);
 }
 void cb_sync_datebook(GtkWidget *widget,
 		      gpointer data)
 {
-   set_pref(PREF_SYNC_DATEBOOK, GTK_TOGGLE_BUTTON(widget)->active);
+   set_pref(PREF_SYNC_DATEBOOK, GTK_TOGGLE_BUTTON(widget)->active, NULL);
 }
 void cb_sync_address(GtkWidget *widget,
 		     gpointer data)
 {
-   set_pref(PREF_SYNC_ADDRESS, GTK_TOGGLE_BUTTON(widget)->active);
+   set_pref(PREF_SYNC_ADDRESS, GTK_TOGGLE_BUTTON(widget)->active, NULL);
 }
 void cb_sync_todo(GtkWidget *widget,
 		  gpointer data)
 {
-   set_pref(PREF_SYNC_TODO, GTK_TOGGLE_BUTTON(widget)->active);
+   set_pref(PREF_SYNC_TODO, GTK_TOGGLE_BUTTON(widget)->active, NULL);
 }
 void cb_sync_memo(GtkWidget *widget,
 		  gpointer data)
 {
-   set_pref(PREF_SYNC_MEMO, GTK_TOGGLE_BUTTON(widget)->active);
+   set_pref(PREF_SYNC_MEMO, GTK_TOGGLE_BUTTON(widget)->active, NULL);
+}
+void cb_sync_memo32(GtkWidget *widget,
+		    gpointer data)
+{
+   set_pref(PREF_SYNC_MEMO32, GTK_TOGGLE_BUTTON(widget)->active, NULL);
 }
 #ifdef ENABLE_PLUGINS
 void cb_sync_plugin(GtkWidget *widget,
@@ -201,12 +211,12 @@ void cb_sync_plugin(GtkWidget *widget,
 void cb_open_alarm(GtkWidget *widget,
 		   gpointer data)
 {
-   set_pref(PREF_OPEN_ALARM_WINDOWS, GTK_TOGGLE_BUTTON(widget)->active);
+   set_pref(PREF_OPEN_ALARM_WINDOWS, GTK_TOGGLE_BUTTON(widget)->active, NULL);
 }
 void cb_do_command(GtkWidget *widget,
 		   gpointer data)
 {
-   set_pref(PREF_DO_ALARM_COMMAND, GTK_TOGGLE_BUTTON(widget)->active);
+   set_pref(PREF_DO_ALARM_COMMAND, GTK_TOGGLE_BUTTON(widget)->active, NULL);
 }
 
 
@@ -221,11 +231,11 @@ static gboolean cb_destroy(GtkWidget *widget)
 
    entry_text = gtk_entry_get_text(GTK_ENTRY(port_entry));
    jpilot_logf(LOG_DEBUG, "port_entry = [%s]\n", entry_text);
-   set_pref_char(PREF_PORT, entry_text);
+   set_pref(PREF_PORT, 0, entry_text);
    
    entry_text = gtk_entry_get_text(GTK_ENTRY(alarm_command_entry));
    jpilot_logf(LOG_DEBUG, "alarm_command_entry = [%s]\n", entry_text);
-   set_pref_char(PREF_ALARM_COMMAND, entry_text);
+   set_pref(PREF_ALARM_COMMAND, 0, entry_text);
    
    backups_text = gtk_entry_get_text(GTK_ENTRY(backups_entry));
    jpilot_logf(LOG_DEBUG, "backups_entry = [%s]\n", backups_text);
@@ -236,9 +246,9 @@ static gboolean cb_destroy(GtkWidget *widget)
    if (num_backups > 99) {
       num_backups = 99;
    }
-   set_pref(PREF_NUM_BACKUPS, num_backups);
+   set_pref(PREF_NUM_BACKUPS, num_backups, NULL);
    
-   write_rc_file();
+   pref_write_rc_file();
 
    window = NULL;
    if (glob_app==DATEBOOK) {
@@ -564,6 +574,18 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    }
    gtk_signal_connect(GTK_OBJECT(checkbutton), 
 		      "clicked", GTK_SIGNAL_FUNC(cb_sync_memo), NULL);
+
+   /*Show sync Memo32 check box */
+   checkbutton = gtk_check_button_new_with_label
+     (_("Sync memo32 (pedit32)"));
+   gtk_box_pack_start(GTK_BOX(vbox_conduits), checkbutton, FALSE, FALSE, 0);
+   get_pref(PREF_SYNC_MEMO32, &ivalue, &cstr);
+   gtk_widget_show(checkbutton);
+   if (ivalue) {
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
+   }
+   gtk_signal_connect(GTK_OBJECT(checkbutton), 
+		      "clicked", GTK_SIGNAL_FUNC(cb_sync_memo32), NULL);
 
 #ifdef  ENABLE_PLUGINS
    if (!skip_plugins) {

@@ -4,20 +4,24 @@ AC_INIT(jpilot.c)
 
 AC_CONFIG_HEADER(config.h)
 
-AC_LIBTOOL_DLOPEN
-AM_PROG_LIBTOOL
-AC_PROG_INSTALL
 AC_ISC_POSIX
 
-dnl Checks for programs.
 AC_PROG_CC
 
-PACKAGE=jpilot
-#VERSION="0.99pre 01Feb01"
-VERSION="0.99"
-#PACKAGE=$package
-#VERSION=$version
+AC_DISABLE_STATIC
+AC_LIBTOOL_DLOPEN
+AM_PROG_LIBTOOL
 
+AC_PROG_INSTALL
+
+dnl Checks for programs.
+
+PACKAGE=jpilot
+VERSION="0.99.1r"
+#This is for creating tarballs
+PACKAGE_VERSION="0.99.1r"
+
+AC_DEFINE_UNQUOTED(BASE_DIR, "$prefix")
 #
 # This is for ncc
 #
@@ -47,8 +51,10 @@ dnl start gettext
 
 AC_DEFINE_UNQUOTED(PACKAGE, "$PACKAGE")
 AC_DEFINE_UNQUOTED(VERSION, "$VERSION")
+AC_DEFINE_UNQUOTED(PACKAGE_VERSION, "$PACKAGE_VERSION")
 AC_SUBST(PACKAGE)
 AC_SUBST(VERSION)
+AC_SUBST(PACKAGE_VERSION)
 
 ALL_LINGUAS="ja de fr da sv es nl ca cs no"
 
@@ -109,7 +115,7 @@ PILOT_LIBS="-lpisock"
 if test $pilotlibs = no ; then
 for pilot_libs in $pilot_prefix/lib /usr/lib /usr/local/lib/ \
   /usr/extra/pilot/lib ; do
-   if test -r "$pilot_libs/libpisock.so" ; then
+   if test -r $pilot_libs/libpisock.so >/dev/null 2>&1 ; then
       pilotlibs=yes
       PILOT_LIBS="-L$pilot_libs $PILOT_LIBS"
       break
@@ -172,17 +178,28 @@ fi
 AC_ARG_ENABLE(plugins, [  --disable-plugins       Do not compile plugin support]\
 , enable_plugins=no, enable_plugins=yes)
 
+PLUGIN_SUPPORT=0
+
 if test "x$enable_plugins" = "xyes"; then
-   dnl Check for shared library calls
-   AC_MSG_CHECKING(for dlopen)
-   save_LIBS="$LIBS"
-   LIBS="$LIBS -ldl"
-   AC_TRY_LINK([#include <dlfcn.h>], [dlopen("huh",0);] , have_dlopen=yes, , )
-   LIBS="$save_LIBS"
+#   dnl Check for shared library calls
+#   AC_MSG_CHECKING(for dlopen)
+#   save_LIBS="$LIBS"
+#   LIBS="$LIBS -ldl"
+#   AC_TRY_LINK([#include <dlfcn.h>], [dlopen("huh",0);] , have_dlopen=yes, , )
+#   LIBS="$save_LIBS"
+
+   AC_CHECK_FUNCS(dlopen)
+   if test "x$ac_cv_func_dlopen" = "xyes"; then
+      have_dlopen=yes
+   else
+      for lib in dl; do
+         AC_CHECK_LIB($lib, dlopen, [LIBS="$LIBS -ldl";
+          have_dlopen=yes; break])
+      done
+   fi
 
    if test "x$have_dlopen" = "xyes"; then
       AC_DEFINE(ENABLE_PLUGINS)
-      AC_MSG_RESULT(ok, plugin support enabled)
    else
       AC_MSG_RESULT(Could not find dlopen - not using plugin support)
    fi
@@ -230,7 +247,18 @@ if test "x$with_flock" != "x"; then
    AC_MSG_RESULT(Using flock instead of fnctl)
 fi
 
-AC_OUTPUT([Makefile intl/Makefile po/Makefile.in],
-[sed -e "/POTFILES =/r po/POTFILES" po/Makefile.in > po/Makefile])
+AC_SUBST(PLUGIN_SUPPORT)
 
-dnl AC_OUTPUT(Makefile)
+dnl For Irix
+abilib=$ABILIB
+if test "x$abilib" = "x"; then
+   AC_DEFINE_UNQUOTED(ABILIB, "lib")
+else
+   AC_DEFINE_UNQUOTED(ABILIB, "$abilib")
+fi
+AC_SUBST(ABILIB)
+
+AC_OUTPUT([Makefile jpilot.spec \
+ SyncTime/Makefile Expense/Makefile KeyRing/Makefile \
+ intl/Makefile po/Makefile.in ],
+ [sed -e "/POTFILES =/r po/POTFILES" po/Makefile.in > po/Makefile])

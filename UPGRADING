@@ -11,5 +11,5 @@ This may make plugins need to be recompiled, or maybe changed, but I feel
 this change had to be made before version 1.0.
 
 You should sync before upgrading to 0.99 from an earlier version.
-However if you can't or forgot, then you should sync and then run
+However if you can't or forgot, then you should backup and then run
 jpilot-upgrade-99 and it will convert the .pc files to .pc3 files.

@@ -1,4 +1,3 @@
-# Generated automatically from Makefile.in by configure.
 # Makefile for directory with message catalog handling in GNU NLS Utilities.
 # Copyright (C) 1995, 1996, 1997 Free Software Foundation, Inc.
 #
@@ -17,13 +16,14 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 PACKAGE = jpilot
-VERSION = 0.99
+VERSION = 0.99.1r
 
 SHELL = /bin/sh
 
 srcdir = .
 top_srcdir = ..
 top_builddir = ..
+
 
 prefix = /usr
 exec_prefix = ${prefix}
@@ -51,7 +51,7 @@ RANLIB = ranlib
 DEFS = -DLOCALEDIR=\"$(localedir)\" -DGNULOCALEDIR=\"$(gnulocaledir)\" \
 -DLOCALE_ALIAS_PATH=\"$(aliaspath)\" -DHAVE_CONFIG_H
 CPPFLAGS = 
-CFLAGS = 
+CFLAGS = -g -O2
 LDFLAGS = 
 
 COMPILE = $(CC) -c $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS) $(XCFLAGS)
@@ -194,10 +194,6 @@ dist distdir: Makefile $(DISTFILES)
 
 dist-libc:
 	tar zcvf intl-glibc.tar.gz $(COMSRCS) $(COMHDRS) libintl.h.glibc
-
-Makefile: Makefile.in ../config.status
-	cd .. \
-	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
 # The dependency for intlh.inst is different in gettext and all other
 # packages.  Because we cannot you GNU make features we have to solve

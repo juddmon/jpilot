@@ -51,6 +51,13 @@ make install (installs the plugin system wide)
 If you want to install the plugin for just 1 user you can copy the shared
 library to ~/.jpilot/plugins/
 
+Irix uses different lib directories for shared libraries.
+Plugins have to be installed in different directories for this reason.
+Before compiling you can use:
+for ELF 64-bit: "export ABILIB=lib64"
+for ELF N32:    "export ABILIB=lib32"
+for ELF 32-bit: "export ABILIB=lib"
+
 --- Error Messages ---
 
 Message:

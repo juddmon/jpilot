@@ -1,0 +1,72 @@
+top_srcdir = @top_srcdir@
+top_builddir = @top_srcdir@
+
+# Install variables
+prefix=@prefix@
+
+#Pilot flags (include dir), and Libraries
+PILOT_FLAGS=@PILOT_FLAGS@
+PILOT_LIBS=@PILOT_LIBS@
+
+#opensll or des
+CRYPTO_LIBS=-lcrypto
+
+#set CC to your compiler
+CC = @CC@
+INSTALL = @INSTALL@
+LIBTOOL = @LIBTOOL@
+
+# CC options
+CCDEFINES = @DEFS@
+CFLAGS = @cflags@
+OPTIONS = @ccoptions@ $(CFLAGS)
+
+# GTK+ flags
+GTKFLAGS = @GTK_CFLAGS@
+# GTK+ libs
+GTKLIBS = @GTK_LIBS@
+
+# Targets
+all: libplugin.h keyring.o libkeyring.so
+
+libkeyring.so: keyring.o
+	$(LIBTOOL) --mode=link \
+	$(CC) $(OPTIONS) -o libkeyring.la \
+	keyring.lo \
+	-rpath $(prefix)/lib/jpilot/plugins \
+	-version-info 1:1 \
+	-avoid-version \
+	$(CRYPTO_LIBS)
+
+keyring.o: keyring.c libplugin.h
+	$(LIBTOOL) --mode=compile \
+	$(CC) $(OPTIONS) $(GTKFLAGS) $(PILOT_FLAGS) -c keyring.c
+
+libplugin.h: ../libplugin.h
+	rm -f libplugin.h; ln -s ../libplugin.h libplugin.h; \
+
+clean: 
+	rm -f *.o *~ config.cache .libs/* *.so *.so.? *.so.?.? *.lo *.la
+	rm -f .libs/*
+
+distclean: clean
+	rm -f config.status config.log *.so Makefile
+
+#
+# This is a global install.  You can also install per user in
+# ~/.jpilot/plugins
+#
+install:
+	$(INSTALL) -d -m 755 $(prefix)/lib/jpilot; \
+	$(INSTALL) -d -m 755 $(prefix)/lib/jpilot/plugins; \
+	$(LIBTOOL) --mode=install -c $(INSTALL) \
+	libkeyring.la $(prefix)/lib/jpilot/plugins
+
+local_install:
+	$(INSTALL) -d -m 755 $(HOME)/.jpilot; \
+	$(INSTALL) -d -m 755 $(HOME)/.jpilot/plugins; \
+	$(LIBTOOL) --mode=install -c ./install-sh \
+	libkeyring.la $(HOME)/.jpilot/plugins
+
+uninstall:
+	rm -f $(prefix)/lib/jpilot/plugins/libkeyring.so*

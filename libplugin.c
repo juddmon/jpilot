@@ -1,11 +1,11 @@
 /* libplugin.c
+ * A module of J-Pilot http://jpilot.org
  *
- * Copyright (C) 1999 by Judd Montgomery
+ * Copyright (C) 1999-2001 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -312,12 +312,10 @@ static int find_next_offset(mem_rec_header *mem_rh, long fpos,
    unsigned char found = 0;
    unsigned long found_at;
 
-   found_at=0xFFFFFF;
+   found_at=0x1000000;
    for (temp_mem_rh=mem_rh; temp_mem_rh; temp_mem_rh = temp_mem_rh->next) {
       if ((temp_mem_rh->offset > fpos) && (temp_mem_rh->offset < found_at)) {
 	 found_at = temp_mem_rh->offset;
-	 /* *attrib = temp_mem_rh->attrib; */
-	 /* *unique_id = temp_mem_rh->unique_id; */
       }
       if ((temp_mem_rh->offset == fpos)) {
 	 found = 1;
@@ -664,10 +662,12 @@ int jp_read_DB_files(char *DB_name, GList **records)
    FILE *pc_in;
    char *buf;
    GList *temp_list;
+   GList *end_of_list;
    int num_records, recs_returned, i, num, r;
    unsigned int offset, prev_offset, next_offset, rec_size;
    int out_of_order;
-   long fpos;  /*file position indicator */
+   long fpos, fend;  /*file position indicator */
+   int ret;
    unsigned char attrib;
    unsigned int unique_id;
    mem_rec_header *mem_rh, *temp_mem_rh, *last_mem_rh;
@@ -678,8 +678,10 @@ int jp_read_DB_files(char *DB_name, GList **records)
    char PDB_name[256];
    char PC_name[256];
 
+   jp_logf(LOG_DEBUG, "Entering jp_read_DB_files\n");
+
    mem_rh = last_mem_rh = NULL;
-   *records = NULL;
+   *records = end_of_list = NULL;
    recs_returned = 0;
 
    g_snprintf(PDB_name, 255, "%s.pdb", DB_name);
@@ -760,10 +762,9 @@ int jp_read_DB_files(char *DB_name, GList **records)
    }
 
    temp_mem_rh = mem_rh;
-
    if (num_records) {
       if (out_of_order) {
-	 find_next_offset(mem_rh, 0, &next_offset, &attrib, &unique_id);
+	 ret=find_next_offset(mem_rh, 0, &next_offset, &attrib, &unique_id);
       } else {
 	 if (mem_rh) {
 	    next_offset = mem_rh->offset;
@@ -775,15 +776,27 @@ int jp_read_DB_files(char *DB_name, GList **records)
       while(!feof(in)) {
 	 fpos = ftell(in);
 	 if (out_of_order) {
-	    find_next_offset(mem_rh, fpos, &next_offset, &attrib, &unique_id);
+	    ret = find_next_offset(mem_rh, fpos, &next_offset, &attrib, &unique_id);
+	    if (!ret) {
+	       /* Next offset should be end of file */
+	       fseek(in, 0, SEEK_END);
+	       fend = ftell(in);
+	       fsetpos(in, (fpos_t *) &fpos);
+	       next_offset = fend + 1;
+	    }
 	 } else {
-	    next_offset = 0xFFFFFF;
 	    if (temp_mem_rh) {
 	       attrib = temp_mem_rh->attrib;
 	       unique_id = temp_mem_rh->unique_id;
 	       if (temp_mem_rh->next) {
 		  temp_mem_rh = temp_mem_rh->next;
 		  next_offset = temp_mem_rh->offset;
+	       } else {
+		  /* Next offset should be end of file */
+		  fseek(in, 0, SEEK_END);
+		  fend = ftell(in);
+		  fsetpos(in, (fpos_t *) &fpos);
+		  next_offset = fend + 1;
 	       }
 	    }
 	 }
@@ -795,8 +808,12 @@ int jp_read_DB_files(char *DB_name, GList **records)
 #endif
 	 buf = malloc(rec_size);
 	 if (!buf) break;
-	 num = fread(buf, rec_size, 1, in);
-	 if ((num != 1)) {
+	 num = fread(buf, 1, rec_size, in);
+	 if (num<rec_size) {
+	    rec_size=num;
+	    buf = realloc(buf, rec_size);
+	 }
+	 if ((num < 1)) {
 	    if (ferror(in)) {
 	       jp_logf(LOG_WARN, "Error reading %s 5\n", PDB_name);
 	       free(buf);
@@ -815,12 +832,24 @@ int jp_read_DB_files(char *DB_name, GList **records)
 	 temp_br->buf = buf;
 	 temp_br->size = rec_size;
 
-	 *records = g_list_append(*records, temp_br);
+	 /* g_list_append parses the list to get to the end on every call.
+	  * To speed it up we have to give the last record
+	  */
+	 if (*records==NULL) {
+	    *records = g_list_append(*records, temp_br);
+	    end_of_list=*records;
+	 } else {
+	    *records = g_list_append(end_of_list, temp_br);
+	    if (end_of_list->next) {
+	       end_of_list=end_of_list->next;
+	    }
+	 }
 	 
 	 recs_returned++;
       }
    }
    fclose(in);
+
    free_mem_rec_header(&mem_rh);
    /* */
    /* Get the appointments out of the PC database */
@@ -847,18 +876,29 @@ int jp_read_DB_files(char *DB_name, GList **records)
 	  &&(temp_br->rt!=MODIFIED_PALM_REC)
 	  &&(temp_br->rt!=DELETED_DELETED_PALM_REC)) {
 
-	 *records = g_list_append(*records, temp_br);
+	 /* g_list_append parses the list to get to the end on every call.
+	  * To speed it up we have to give the last record
+	  */
+	 if (*records==NULL) {
+	    *records = g_list_append(*records, temp_br);
+	    end_of_list=*records;
+	 } else {
+	    *records = g_list_append(end_of_list, temp_br);
+	    if (end_of_list->next) {
+	       end_of_list=end_of_list->next;
+	    }
+	 }
 	 
 	 recs_returned++;
       }
       if ((temp_br->rt==DELETED_PALM_REC) || (temp_br->rt==MODIFIED_PALM_REC)) {
 	 temp_list=*records;
 	 if (*records) {
-	    while(temp_list->next) {
-	       temp_list=temp_list->next;
+	    while(temp_list->prev) {
+	       temp_list=temp_list->prev;
 	    }
 	 }
-	 for (; temp_list; temp_list=temp_list->prev) {
+	 for (; temp_list; temp_list=temp_list->next) {
 	    if (((buf_rec *)temp_list->data)->unique_id == temp_br->unique_id) {
 	       ((buf_rec *)temp_list->data)->rt = temp_br->rt;
 	    }
@@ -867,7 +907,7 @@ int jp_read_DB_files(char *DB_name, GList **records)
    }
    fclose(pc_in);
 
-   jp_logf(LOG_DEBUG, "Leaving get_recs\n");
+   jp_logf(LOG_DEBUG, "Leaving jp_read_DB_files\n");
 
    return recs_returned;
 }

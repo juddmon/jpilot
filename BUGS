@@ -23,6 +23,9 @@ These are some of the bugs that I know about:
 
 *Priority Low:
 
+Kyocera QCP 6035 phone/palm combos don't close the address database, so it
+can't be sync'ed.  It is a Kyocera problem, and there is no known solution.
+
 *Priority Who Cares?:
 
 *Quirks (not really bugs):

@@ -72,11 +72,11 @@ int plugin_sync(int sd)
    majorVersion = (((ROMversion >> 28) & 0xf) * 10)+ ((ROMversion >> 24) & 0xf);
    minorVersion = (((ROMversion >> 20) & 0xf) * 10)+ ((ROMversion >> 16) & 0xf);
 
-   jp_logf(LOG_WARN, "synctime: Palm OS version %d.%d\n", majorVersion, minorVersion);
+   jp_logf(LOG_GUI, "synctime: Palm OS version %d.%d\n", majorVersion, minorVersion);
 
    if ((majorVersion==3) && (minorVersion==30)) {
-      jp_logf(LOG_WARN, "synctime: Palm OS Version 3.30 does not support SyncTime\n");
-      jp_logf(LOG_WARN, "synctime: NOT setting the time on the pilot\n");
+      jp_logf(LOG_GUI, "synctime: Palm OS Version 3.30 does not support SyncTime\n");
+      jp_logf(LOG_GUI, "synctime: NOT setting the time on the pilot\n");
       return 1;
    }
 
