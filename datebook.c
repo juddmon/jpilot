@@ -1,7 +1,7 @@
 /* datebook.c
  * A module of J-Pilot http://jpilot.org
  *
- * Copyright (C) 1999-2001 by Judd Montgomery
+ * Copyright (C) 1999-2002 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,6 +58,10 @@ int datebook_compare(const void *v1, const void *v2)
 
    a1=&((*al1)->ma.a);
    a2=&((*al2)->ma.a);
+
+   if ((a1->event) || (a2->event)) {
+      return a2->event-a1->event;
+   }
 
    /* Jim Rees pointed out my sorting error */
    /* return ((a1->begin.tm_hour*60 + a1->begin.tm_min) > */
