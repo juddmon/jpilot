@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.88 2004/12/10 02:45:06 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.89 2004/12/14 07:41:41 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -1577,8 +1577,7 @@ void cb_address_quickfind(GtkWidget *widget,
    if (!strlen(entry_text)) {
       return;
    }
-   /* 100000 is just paranoia, shouldn't happen */
-   for (found = i = 0; i<100000; i++) {
+   for (found = i = 0; i<GTK_CLIST(clist)->rows; i++) {
       r = gtk_clist_get_text(GTK_CLIST(clist), i, ADDRESS_NAME_COLUMN, &clist_text);
       if (!r) {
 	 break;

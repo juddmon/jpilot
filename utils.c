@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.82 2004/12/13 02:43:46 rikster5 Exp $ */
+/* $Id: utils.c,v 1.83 2004/12/14 07:41:41 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -690,8 +690,7 @@ int clist_find_id(GtkWidget *clist,
 
    *found_at = 0;
 
-   /* 100000 safety */
-   for (found = i = 0; i<100000; i++) {
+   for (found = i = 0; i<GTK_CLIST(clist)->rows; i++) {
       maddr = gtk_clist_get_row_data(GTK_CLIST(clist), i);
       if (maddr < (MyAddress *)CLIST_MIN_DATA) {
 	 break;
