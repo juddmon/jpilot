@@ -433,30 +433,6 @@ int jpilot_sync(struct my_sync_info *sync_info)
       }
    }
 
-#ifdef ENABLE_PLUGINS
-   if (!(sync_info->flags & SYNC_NO_PLUGINS)) {
-      jpilot_logf(LOG_DEBUG, "sync:calling load_plugins\n");
-      load_plugins();
-   }
-
-   /* Do the pre_sync plugin calls */
-   plugin_list=NULL;
-
-   plugin_list = get_plugin_list();
-
-   for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
-      plugin = (struct plugin_s *)temp_list->data;
-      if (plugin) {
-	 if (plugin->sync_on) {
-	    if (plugin->plugin_pre_sync) {
-	       jpilot_logf(LOG_DEBUG, "sync:calling plugin_pre_sync for [%s]\n", plugin->name);
-	       plugin->plugin_pre_sync();
-	    }
-	 }
-      }
-   }
-#endif
-
    write_to_parent(PIPE_PRINT, "****************************************\n");
    write_to_parent(PIPE_PRINT, _(" Syncing on device %s\n"), device);
    write_to_parent(PIPE_PRINT, _(" Press the HotSync button now\n"));
@@ -587,7 +563,33 @@ int jpilot_sync(struct my_sync_info *sync_info)
       pi_close(sd);
       return SYNC_ERROR_READSYSINFO;
    }
-   
+
+   /* The connection has been established here */
+   /* Plugins should call pi_watchdog(); if they are going to be a while */
+#ifdef ENABLE_PLUGINS
+   if (!(sync_info->flags & SYNC_NO_PLUGINS)) {
+      jpilot_logf(LOG_DEBUG, "sync:calling load_plugins\n");
+      load_plugins();
+   }
+
+   /* Do the pre_sync plugin calls */
+   plugin_list=NULL;
+
+   plugin_list = get_plugin_list();
+
+   for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
+      plugin = (struct plugin_s *)temp_list->data;
+      if (plugin) {
+	 if (plugin->sync_on) {
+	    if (plugin->plugin_pre_sync) {
+	       jpilot_logf(LOG_DEBUG, "sync:calling plugin_pre_sync for [%s]\n", plugin->name);
+	       plugin->plugin_pre_sync();
+	    }
+	 }
+      }
+   }
+#endif
+
    dlp_ReadUserInfo(sd, &U);
 
    /* Do some checks to see if this is the same palm that was synced
