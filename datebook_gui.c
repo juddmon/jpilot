@@ -58,6 +58,10 @@
 #define CONNECT_SIGNALS 400
 #define DISCONNECT_SIGNALS 401
 
+/* Maximum length of description (not including the null) */
+#define MAX_DESC_LEN 255
+/* todo check this before every record write */
+
 #define DB_TIME_COLUMN  0
 #define DB_NOTE_COLUMN  1
 #define DB_ALARM_COLUMN 2
@@ -531,6 +535,10 @@ int datebook_import_callback(GtkWidget *parent_window, const char *file_path, in
 	 attrib = (new_cat_num & 0x0F) |
 	   (priv ? dlpRecAttrSecret : 0);
 	 if ((ret==DIALOG_SAID_IMPORT_YES) || (import_all)) {
+	    if (strlen(new_a.description)+1 > MAX_DESC_LEN) {
+	       new_a.description[MAX_DESC_LEN+1]='\0';
+	       jp_logf(JP_LOG_WARN, _("Appointment description text > %d, truncating to %d\n"), MAX_DESC_LEN, MAX_DESC_LEN);
+	    }
 	    pc_datebook_write(&new_a, NEW_PC_REC, attrib, NULL);
 	 }
       }
@@ -2011,6 +2019,10 @@ static int get_details(struct Appointment *a, unsigned char *attrib)
     * later versions */
    if (a->description[0]=='\0') {
       a->description=strdup(" ");
+   }
+   if (strlen(a->description)+1 > MAX_DESC_LEN) {
+      a->description[MAX_DESC_LEN+1]='\0';
+      jp_logf(JP_LOG_WARN, _("Appointment description text > %d, truncating to %d\n"), MAX_DESC_LEN, MAX_DESC_LEN);
    }
    if (a->description) {
       jp_logf(JP_LOG_DEBUG, "description=[%s]\n",a->description);
