@@ -98,6 +98,7 @@ static prefType glob_prefs[NUM_PREFS] = {
      {"todo_hide_not_due", INTTYPE, INTTYPE, 0, NULL, 0},
      {"todo_completion_date", INTTYPE, INTTYPE, 0, NULL, 0},
      {"install_path", CHARTYPE, CHARTYPE, 0, NULL, 0},
+     {"memo_show_prefs", INTTYPE, INTTYPE, 1, NULL, 0},
 };
 
 struct name_list {
