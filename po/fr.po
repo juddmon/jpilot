@@ -4,12 +4,11 @@
 #
 #. prefix label
 #: dialer.c:297
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: jpilot 0.99.4\n"
-"POT-Creation-Date: 2002-12-27 18:19-0500\n"
-"PO-Revision-Date: 2002-12-27 22:56+0100\n"
+"POT-Creation-Date: 2002-12-28 13:21+0100\n"
+"PO-Revision-Date: 2002-12-28 13:47+0100\n"
 "Last-Translator: Regis Rampnoux <regisr@regix.com>\n"
 "Language-Team:  French <traduc@traduc.org>\n"
 "MIME-Version: 1.0\n"
@@ -20,9 +19,9 @@ msgstr ""
 msgid "error"
 msgstr "erreur"
 
-#: Expense/expense.c:858 Expense/expense.c:1771 address.c:386
-#: address_gui.c:1459 datebook.c:703 memo.c:217 memo_gui.c:866 todo.c:365
-#: todo.c:367 todo.c:370 todo_gui.c:1159
+#: address.c:386 address_gui.c:1459 datebook.c:703 memo.c:217 memo_gui.c:866
+#: todo.c:365 todo.c:367 todo.c:370 todo_gui.c:1159 Expense/expense.c:858
+#: Expense/expense.c:1771
 #, c-format
 msgid "Error reading %s\n"
 msgstr "Erreur en lecture %s\n"
@@ -36,16 +35,16 @@ msgstr "Ne peut pas ouvrir %s\n"
 msgid "File doesn't appear to be address.dat format\n"
 msgstr "Le fichier n'est pas du type carnet d'adresses\n"
 
-#: Expense/expense.c:432 Expense/expense.c:1104 address_gui.c:488
-#: datebook_gui.c:539 memo_gui.c:373 todo_gui.c:514
+#: address_gui.c:488 datebook_gui.c:539 memo_gui.c:373 todo_gui.c:514
+#: Expense/expense.c:432 Expense/expense.c:1104
 msgid "Unfiled"
 msgstr "Non renseigné"
 
 #. Buttons
-#: KeyRing/keyring.c:1165 address_gui.c:627 alarms.c:228 datebook_gui.c:626
-#: datebook_gui.c:1101 export_gui.c:330 jpilot.c:355 jpilot.c:402 jpilot.c:470
-#: jpilot.c:514 jpilot.c:945 memo_gui.c:463 password.c:368 restore_gui.c:218
-#: todo_gui.c:604 utils.c:1049
+#: address_gui.c:627 alarms.c:228 datebook_gui.c:626 datebook_gui.c:1101
+#: export_gui.c:330 jpilot.c:355 jpilot.c:402 jpilot.c:470 jpilot.c:514
+#: jpilot.c:945 memo_gui.c:463 password.c:368 restore_gui.c:218 todo_gui.c:604
+#: utils.c:1049 KeyRing/keyring.c:1165
 msgid "OK"
 msgstr "OK"
 
@@ -91,8 +90,8 @@ msgid "Name/Company"
 msgstr "Nom/Société"
 
 #. Category Menu
-#: Expense/expense.c:1300 Expense/expense.c:1379 KeyRing/keyring.c:1355
-#: KeyRing/keyring.c:1431 address_gui.c:1534
+#: address_gui.c:1534 Expense/expense.c:1300 Expense/expense.c:1379
+#: KeyRing/keyring.c:1355 KeyRing/keyring.c:1431
 msgid "Category: "
 msgstr "Catégorie: "
 
@@ -114,9 +113,9 @@ msgid "%d of %d records"
 msgstr "%d de %d enregistrements"
 
 #. Edit category button
-#: Expense/expense.c:1307 address_gui.c:2327 memo_gui.c:1292 todo_gui.c:1673
+#: address_gui.c:2327 memo_gui.c:1292 todo_gui.c:1673 Expense/expense.c:1307
 msgid "Edit Categories"
-msgstr ""
+msgstr "Edition Catégories"
 
 #: address_gui.c:2354
 msgid "Phone"
@@ -127,32 +126,32 @@ msgid "Quick Find"
 msgstr "Recherche rapide"
 
 #. Delete Button
-#: Expense/expense.c:1341 KeyRing/keyring.c:1390 address_gui.c:2393
-#: datebook_gui.c:3798 memo_gui.c:1343 todo_gui.c:1743
+#: address_gui.c:2393 datebook_gui.c:3798 memo_gui.c:1343 todo_gui.c:1743
+#: Expense/expense.c:1341 KeyRing/keyring.c:1390
 msgid "Delete"
 msgstr "Effacer"
 
 #. Create "Copy" button
-#: Expense/expense.c:1347 KeyRing/keyring.c:1396 address_gui.c:2400
-#: datebook_gui.c:3805 memo_gui.c:1349 todo_gui.c:1749
+#: address_gui.c:2400 datebook_gui.c:3805 memo_gui.c:1349 todo_gui.c:1749
+#: Expense/expense.c:1347 KeyRing/keyring.c:1396
 msgid "Copy"
 msgstr "Copier"
 
 #. Create "New" button
-#: Expense/expense.c:1353 KeyRing/keyring.c:1402 address_gui.c:2407
-#: datebook_gui.c:3812 memo_gui.c:1355 todo_gui.c:1755
+#: address_gui.c:2407 datebook_gui.c:3812 memo_gui.c:1355 todo_gui.c:1755
+#: Expense/expense.c:1353 KeyRing/keyring.c:1402
 msgid "New Record"
 msgstr "Nouveau"
 
 #. Create "Add Record" button
-#: Expense/expense.c:1359 KeyRing/keyring.c:1408 address_gui.c:2413
-#: datebook_gui.c:3819 memo_gui.c:1361 todo_gui.c:1761
+#: address_gui.c:2413 datebook_gui.c:3819 memo_gui.c:1361 todo_gui.c:1761
+#: Expense/expense.c:1359 KeyRing/keyring.c:1408
 msgid "Add Record"
 msgstr "Ajouter"
 
 #. Create "apply changes" button
-#: Expense/expense.c:1367 KeyRing/keyring.c:1416 address_gui.c:2422
-#: datebook_gui.c:3828 memo_gui.c:1369 todo_gui.c:1769
+#: address_gui.c:2422 datebook_gui.c:3828 memo_gui.c:1369 todo_gui.c:1769
+#: Expense/expense.c:1367 KeyRing/keyring.c:1416
 msgid "Apply Changes"
 msgstr "Appliquer"
 
@@ -162,7 +161,7 @@ msgid "Private"
 msgstr "Privé"
 
 #. Page 1
-#: KeyRing/keyring.c:1268 address_gui.c:2458
+#: address_gui.c:2458 KeyRing/keyring.c:1268
 msgid "Name"
 msgstr "Nom"
 
@@ -172,7 +171,7 @@ msgid "Address"
 msgstr "Adresse"
 
 #. Page 3
-#: Expense/expense.c:384 Expense/expense.c:1125 address_gui.c:2474
+#: address_gui.c:2474 Expense/expense.c:384 Expense/expense.c:1125
 msgid "Other"
 msgstr "Autre"
 
@@ -278,9 +277,8 @@ msgid "Browse"
 msgstr "Parcourir"
 
 #. Create a "Quit" button
-#: KeyRing/keyring.c:1171 datebook_gui.c:1106 datebook_gui.c:1567
-#: export_gui.c:335 password.c:374 print_gui.c:336 restore_gui.c:223
-#: utils.c:1059
+#: datebook_gui.c:1106 datebook_gui.c:1567 export_gui.c:335 password.c:374
+#: print_gui.c:336 restore_gui.c:223 utils.c:1059 KeyRing/keyring.c:1171
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -504,38 +502,36 @@ msgstr "Année(s)"
 
 #: dialer.c:199
 msgid "Phone Dialer"
-msgstr ""
+msgstr "Composition des numéros"
 
 #: dialer.c:234
 msgid "Prefix 1"
-msgstr ""
+msgstr "Préfixe 1"
 
 #: dialer.c:256
 msgid "Prefix 2"
-msgstr ""
+msgstr "Préfixe 2"
 
 #: dialer.c:278
 msgid "Prefix 3"
-msgstr ""
+msgstr "préfixe 3"
 
 #: dialer.c:293
 msgid "Phone number:"
-msgstr ""
+msgstr "Numéro de téléphone"
 
 #: dialer.c:324
-#, fuzzy
 msgid "Extension"
-msgstr "Expense"
+msgstr "Extension"
 
 #: dialer.c:347
-#, fuzzy
 msgid "Dial Command"
-msgstr "Commande d'alarme"
+msgstr "commande de numérotation"
 
 #. Buttons
 #: dialer.c:368
 msgid "Dismiss"
-msgstr ""
+msgstr "Annuler"
 
 #: export_gui.c:113
 msgid "File Browser"
@@ -608,7 +604,6 @@ msgid "\n"
 msgstr "\n"
 
 #: jpilot.c:93
-#, fuzzy
 msgid ""
 " [ [-v] || [-h] || [-d] || [-a] || [-A]\n"
 " -v displays version and compile options and exits.\n"
@@ -1079,29 +1074,24 @@ msgid "User ID"
 msgstr "ID utilisateur"
 
 #: search_gui.c:93
-#, fuzzy
 msgid "datebook"
-msgstr "Sync agenda"
+msgstr "agenda"
 
 #: search_gui.c:167
-#, fuzzy
 msgid "address"
 msgstr "Adresse"
 
 #: search_gui.c:232
-#, fuzzy
 msgid "ToDo"
 msgstr "Tâches à faire"
 
 #: search_gui.c:286
-#, fuzzy
 msgid "memo"
-msgstr "Sync bloc-notes"
+msgstr "bloc-notes"
 
 #: search_gui.c:342
-#, fuzzy
 msgid "plugin ?"
-msgstr "/Greffons"
+msgstr "Greffons ?"
 
 #: search_gui.c:419
 msgid "No records found"
@@ -1400,29 +1390,29 @@ msgid "disk: number of records = %d\n"
 msgstr "disque: nombre d'enregistrements = %d\n"
 
 #: sync.c:2526
-#, fuzzy, c-format
+#, c-format
 msgid "Error reading at %s : %s %d\n"
-msgstr "Erreur en lecture %s\n"
+msgstr "Erreur en lecture à %s : %s %d\n"
 
 #: sync.c:2548
-#, fuzzy, c-format
+#, c-format
 msgid "Error reading appinfo block for %s\n"
-msgstr "Erreur en lecture %s\n"
+msgstr "Erreur en lecture bloc appinfo pour %s\n"
 
 #. Fix - need a func for this logging
 #: sync.c:2686 sync.c:2690
 #, c-format
 msgid "Could not add category %s to remote.\n"
-msgstr ""
+msgstr "Impossible d'ajouter la catégorie %s au distant.\n"
 
 #: sync.c:2687 sync.c:2694
 msgid "Too many categories on remote.\n"
-msgstr ""
+msgstr "Trop de catégories sur le distant.\n"
 
 #: sync.c:2688 sync.c:2698
 #, c-format
 msgid "All records on desktop in %s will be moved to %s.\n"
-msgstr ""
+msgstr "Tous les enregistrements dans %s seront déplacés vers %s.\n"
 
 #: todo.c:245
 #, c-format
@@ -1479,64 +1469,60 @@ msgstr "Date prévue: "
 
 #: utils.c:93
 msgid "Date compiled"
-msgstr ""
+msgstr "Date de compilation"
 
 #: utils.c:94
 msgid "Compiled with these options:"
-msgstr ""
+msgstr "Compilé avec ces options:"
 
 #: utils.c:96
-#, fuzzy
 msgid "Installed Path"
-msgstr "Installé %s "
+msgstr "Chemin installé"
 
 #: utils.c:98
 msgid "pilot-link version"
-msgstr ""
+msgstr "version de pilot-link"
 
 #: utils.c:102
 msgid "USB support"
-msgstr ""
+msgstr "Support USB"
 
 #: utils.c:104 utils.c:110 utils.c:116 utils.c:122 utils.c:128 utils.c:134
 #: utils.c:140
-#, fuzzy
 msgid "yes"
-msgstr "Oui"
+msgstr "oui"
 
 #: utils.c:106 utils.c:112 utils.c:118 utils.c:124 utils.c:130 utils.c:136
 #: utils.c:142
-#, fuzzy
 msgid "no"
-msgstr "aucun"
+msgstr "non"
 
 #: utils.c:108
-#, fuzzy
 msgid "Private record support"
-msgstr "Imprimer tous les enregistrements"
+msgstr "Support des enregistrements privés"
 
 #: utils.c:114
 msgid "Datebk support"
-msgstr ""
+msgstr "Support Datebk"
 
 #: utils.c:120
-#, fuzzy
 msgid "Plugin support"
-msgstr "/Greffons"
+msgstr "Support des greffons"
 
 #: utils.c:126
 msgid "Manana support"
-msgstr ""
+msgstr "Support Manana"
 
 #: utils.c:132
 msgid "NLS support (foriegn languages)"
-msgstr ""
+msgstr "Support NLS (autres langages)"
 
 #: utils.c:138
 msgid "GTK2 support"
-msgstr ""
+msgstr "support GTK2"
 
 #: utils.c:182
+#, c-format
 msgid "Today is %A, %x %X"
 msgstr "Aujourd'hui %A, %x %X"
 
@@ -1913,9 +1899,8 @@ msgstr "Mot de passe: "
 
 #. Button for random password
 #: KeyRing/keyring.c:1457
-#, fuzzy
 msgid "Generate Password"
-msgstr "Entrez le mot de passe PalmOS"
+msgstr "Génération d'un mot de passe"
 
 #~ msgid "RTh"
 #~ msgstr "RTh"
