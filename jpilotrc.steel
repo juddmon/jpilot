@@ -105,6 +105,8 @@ base[NORMAL] = { 0.85, 0.9, 1.0 }
 
 style "text"
 {
+#This is how to use a different font for now
+#font = "-adobe-courier-medium-o-normal--8-80-75-75-m-50-iso8859-1"
 bg[NORMAL] = { 0.4, 0.4, 0.6 }
 fg[NORMAL] = { 0.0, 0.0, 0.0 }
 fg[PRELIGHT] = { 0.0, 0.0, 0.0 }
@@ -149,6 +151,17 @@ bg[ACTIVE] = { 0.3, 0.3, 0.5 }
 fg[ACTIVE] = { 1.0, 1.0, 1.0 }
 }
 
+style "calendar"
+{
+fg[NORMAL] = { 1.0, 1.0, 1.0 } #normal days text and month/year text
+bg[NORMAL] = { 0.5, 0.5, 0.7 } #top header part and off month days
+fg[SELECTED] = { 1.0, 1.0, 1.0 } # selected and week numbers
+bg[SELECTED] = { 0.5, 0.5, 0.7 } # selected and week numbers
+fg[PRELIGHT] = { 1.0, 1.0, 0.0 } # prelights for arrows
+bg[PRELIGHT] = { 0.4, 0.4, 0.6 } # prelights for arrows
+base[NORMAL] = { 0.4, 0.4, 0.6 } # bg for calendar
+}
+
   # pixmap_path "~/.pixmaps"
 
   # These set the widget types to use the styles defined above.
@@ -167,7 +180,7 @@ fg[ACTIVE] = { 1.0, 1.0, 1.0 }
   widget_class "*GtkToggleButton*" style "toggle_button"
   widget_class "*Ruler" style "ruler"
   widget_class "*GtkMenu" style "menu"
-widget_class "*Menu*" style "menu"
+  widget_class "*Menu*" style "menu"
   widget_class "*GtkOptionMenu" style "menu"
   widget_class "*GtkRadioMenuItem" style "menu"
   widget_class "*GtkText" style "text"
@@ -177,6 +190,7 @@ widget_class "*Menu*" style "menu"
   widget_class "*GtkLabel" style "label"
   widget_class "*GtkFrame" style "frame"
   widget_class "*GtkEntry" style "text"
+  widget_class "*GtkCalendar" style "calendar"
   widget "*GtkButton*.button_set" style "button_set"
   widget "*GtkButton*.button_dow" style "button_dow"
   widget "*GtkButton*.button_today" style "button_today"

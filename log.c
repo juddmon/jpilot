@@ -17,6 +17,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+/*
+ * Thanks to Jason Day for his patches that allowed plugins to log correctly
+ */
+
 #include "config.h"
 #include "i18n.h"
 #include <stdlib.h>
@@ -44,15 +48,11 @@ int glob_log_file_mask;
 int glob_log_stdout_mask;
 int glob_log_gui_mask;
 
+
 int jpilot_logf(int level, char *format, ...)
 {
-#define WRITE_MAX_BUF	4096
    va_list	       	val;
-   char			buf[WRITE_MAX_BUF];
-   int			size;
-   static FILE		*fp=NULL;
-   static int		err_count=0;
-   
+   int rval;
    
    if (!((level & glob_log_file_mask) ||
        (level & glob_log_stdout_mask) ||
@@ -60,45 +60,62 @@ int jpilot_logf(int level, char *format, ...)
       return 0;
    }
    
-   buf[0] = '\0';
-
-   if ((!fp) && (err_count>10)) {
-      return -1;
-   }
-   if ((!fp) && (err_count==10)) {
-      fprintf(stderr, _("Cannot open log file, giving up.\n"));
-      err_count++;
-      return -1;
-   }
-   if ((!fp) && (err_count<10)) {
-      fp = open_file("jpilot.log", "w");
-      if (!fp) {
-	 fprintf(stderr, _("Cannot open log file\n"));
-	 err_count++;
-      }
-   }
-
    va_start(val, format);
-   size = g_vsnprintf(buf, WRITE_MAX_BUF ,format, val);
-   /*just in case g_vsnprintf reached the max */
-   if (size == -1) {
-      buf[WRITE_MAX_BUF-1] = '\0';
-      size=WRITE_MAX_BUF-1;
-   }
+   rval = jpilot_vlogf(level, format, val);
    va_end(val);
-
-   if ((fp) && (level & glob_log_file_mask)) {
-      fwrite(buf, size, 1, fp);
-   }
-
-   if (level & glob_log_stdout_mask) {
-      fputs(buf, stdout);
-   }
-   
-   if ((pipe_out) && (level & glob_log_gui_mask)) {
-      write(pipe_out, buf, size);
-   }
-   
-   return 0;
+   return rval;
 }
 
+int jpilot_vlogf (int level, char *format, va_list val) {
+#define WRITE_MAX_BUF	4096
+    char       		buf[WRITE_MAX_BUF];
+    int			size;
+    static FILE		*fp=NULL;
+    static int		err_count=0;
+
+
+    if (!((level & glob_log_file_mask) ||
+          (level & glob_log_stdout_mask) ||
+          (level & glob_log_gui_mask))) {
+        return 0;
+    }
+
+    buf[0] = '\0';
+
+    if ((!fp) && (err_count>10)) {
+        return -1;
+    }
+    if ((!fp) && (err_count==10)) {
+        fprintf(stderr, _("Cannot open log file, giving up.\n"));
+        err_count++;
+        return -1;
+    }
+    if ((!fp) && (err_count<10)) {
+        fp = jp_open_home_file("jpilot.log", "w");
+        if (!fp) {
+            fprintf(stderr, _("Cannot open log file\n"));
+            err_count++;
+        }
+    }
+
+    size = g_vsnprintf(buf, WRITE_MAX_BUF ,format, val);
+    /*just in case g_vsnprintf reached the max */
+    if (size == -1) {
+        buf[WRITE_MAX_BUF-1] = '\0';
+        size=WRITE_MAX_BUF-1;
+    }
+
+    if ((fp) && (level & glob_log_file_mask)) {
+        fwrite(buf, size, 1, fp);
+    }
+
+    if (level & glob_log_stdout_mask) {
+        fputs(buf, stdout);
+    }
+
+    if ((pipe_out) && (level & glob_log_gui_mask)) {
+        write(pipe_out, buf, size);
+    }
+
+    return 0;
+}

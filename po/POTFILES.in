@@ -10,6 +10,7 @@ log.c
 memo.c
 memo_gui.c
 monthview_gui.c
+password.c
 plugins.c
 prefs.c
 prefs_gui.c

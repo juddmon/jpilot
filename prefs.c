@@ -4,8 +4,7 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -58,6 +57,20 @@ static prefType glob_prefs[NUM_PREFS] = {
      {"print_one_per_page", INTTYPE, INTTYPE, 0, ""},
      {"print_blank_lines", INTTYPE, INTTYPE, 1, ""},
      {"print_command", CHARTYPE, CHARTYPE, 0, "lpr -h"},
+     {"char_set", CHARTYPE, INTTYPE, CHAR_SET_ENGLISH, ""},
+     {"sync_datebook", INTTYPE, INTTYPE, 1, ""},
+     {"sync_address", INTTYPE, INTTYPE, 1, ""},
+     {"sync_todo", INTTYPE, INTTYPE, 1, ""},
+     {"sync_memo", INTTYPE, INTTYPE, 1, ""},
+     {"address_page", INTTYPE, INTTYPE, 0, ""},
+     {"output_height", INTTYPE, INTTYPE, 40, ""},
+     {"open_alarm_windows", INTTYPE, INTTYPE, 1, ""},
+     {"do_alarm_command", INTTYPE, INTTYPE, 0, ""},
+     {"alarm_command", CHARTYPE, CHARTYPE, 0, "echo %t %d"},
+     {"remind_in", CHARTYPE, CHARTYPE, 0, "5"},
+     {"remind_units", INTTYPE, INTTYPE, 0, ""},
+   /* This is actually the password, but I wanted to name it something more discreet */
+     {"session_id", CHARTYPE, CHARTYPE, 0, "09021345070413440c08135a3215135dd217ead3b5df556322e9a14a994b0f88"} 
 };
 
 struct jlist {
@@ -174,7 +187,7 @@ static int get_rcfile_name(int n, char *rc_copy)
 	       jpilot_logf(LOG_DEBUG, "found %s\n", dirent->d_name);
 	       new_entry = malloc(sizeof(struct jlist));
 	       if (!new_entry) {
-		  jpilot_logf(LOG_FATAL, _("out of memory\n"));
+		  jpilot_logf(LOG_FATAL, "get_rcfile_name(): Out of memory\n");
 		  return -1;
 	       }  
 	       new_entry->name = strdup(dirent->d_name);
@@ -199,7 +212,7 @@ static int get_rcfile_name(int n, char *rc_copy)
 	       jpilot_logf(LOG_DEBUG, "found %s\n", dirent->d_name);
 	       new_entry = malloc(sizeof(struct jlist));
 	       if (!new_entry) {
-		  jpilot_logf(LOG_FATAL, _("out of memory\n"));
+		  jpilot_logf(LOG_FATAL, "get_rcfile_name(): Out of memory 2\n");
 		  return -1;
 	       }  
 	       new_entry->name = strdup(dirent->d_name);
@@ -266,10 +279,7 @@ int get_pref_possibility(int which, int n, char *pref_str)
       "%H,%M"
    };
 
-   static const char *days[] = {
-      "Sunday",
-      "Monday"
-   };
+   static char *days[2];
 
    static const char *rates[] = {
       "300",
@@ -284,6 +294,19 @@ int get_pref_possibility(int which, int n, char *pref_str)
       "230400",
       "460800"
    };
+
+   static const char *char_sets[] = {
+      "English",
+      "Japanese",
+      "Windows1250 (EE)", 
+      "Host Windows1251 <-> Palm KOI8-R",
+      "Host KOI8-R <-> Palm Windows-1251",
+      "Chinese(Big5)",
+      "Korean"
+   };
+
+   days[0] = _("Sunday");
+   days[1] = _("Monday");
 
    switch(which) {
 
@@ -331,6 +354,14 @@ int get_pref_possibility(int which, int n, char *pref_str)
       strcpy(pref_str, rates[n]);
       break;
 
+    case PREF_CHAR_SET:
+      if ((n >= NUM_CHAR_SETS) || (n<0)) {
+	 pref_str[0]='\0';
+	 return -1;
+      }
+      strcpy(pref_str, char_sets[n]);
+      break;
+
     default:
       pref_str[0]='\0';
       jpilot_logf(LOG_DEBUG, "Unknown preference type\n");
@@ -346,7 +377,9 @@ int get_pref(int which, long *n, const char **ret)
    if ((which < 0) || (which > NUM_PREFS)) {
       return -1;
    }
-   *n = glob_prefs[which].ivalue;
+   if (n) {
+      *n = glob_prefs[which].ivalue;
+   }
    if (glob_prefs[which].usertype == CHARTYPE) {
       if (ret!=NULL) {
 	 *ret = glob_prefs[which].svalue;
@@ -368,6 +401,11 @@ int set_pref(int which, long n)
    if (glob_prefs[which].usertype == CHARTYPE) {
       get_pref_possibility(which, glob_prefs[which].ivalue, glob_prefs[which].svalue);
    }
+   /* #ifdef SYMPHONET */
+   /* Some people like to just kill the window manager */
+   /* Symphonet kills us, always be prepared for death */
+   write_rc_file();
+   /* #endif */
    return 0;
 }
 
@@ -384,6 +422,11 @@ int set_pref_char(int which, char *string)
       strncpy(glob_prefs[which].svalue, string, MAX_PREF_VALUE);
       glob_prefs[which].svalue[MAX_PREF_VALUE-1]='\0';
    }
+   /* #ifdef SYMPHONET */
+   /* Some people like to just kill the window manager */
+   /* Symphonet kills us, always be prepared for death */
+   write_rc_file();
+   /* #endif */
    return 0;
 }
 
@@ -455,6 +498,13 @@ static int validate_glob_prefs()
       glob_prefs[PREF_RATE].ivalue = 0;
    }
 
+   if (glob_prefs[PREF_CHAR_SET].ivalue >= NUM_CHAR_SETS) {
+      glob_prefs[PREF_CHAR_SET].ivalue = NUM_CHAR_SETS - 1;
+   }
+   if (glob_prefs[PREF_CHAR_SET].ivalue < 0) {
+      glob_prefs[PREF_CHAR_SET].ivalue = 0;
+   }
+
    if (glob_prefs[PREF_NUM_BACKUPS].ivalue >= MAX_PREF_NUM_BACKUPS) {
       glob_prefs[PREF_NUM_BACKUPS].ivalue = MAX_PREF_NUM_BACKUPS;
    }
@@ -491,7 +541,7 @@ int read_rc_file()
    char *field1, *field2;
    char *Pc;
 
-   in=open_file("jpilot.rc","r" );
+   in=jp_open_home_file("jpilot.rc", "r");
    if (!in) {
       return -1;
    }
@@ -531,7 +581,7 @@ int write_rc_file()
    int i;
    FILE *out;
 
-   out=open_file("jpilot.rc","w" );
+   out=jp_open_home_file("jpilot.rc","w" );
    if (!out) {
       return -1;
    }
@@ -549,4 +599,20 @@ int write_rc_file()
    fclose(out);
    
    return 0;
+}
+ 
+/*
+ * Get the preference value as integer. If failed to do so, return the
+ * specified default.
+ */
+long get_pref_int_default(int which, long defval)
+{
+    long val;
+
+    if (get_pref(which, &val, NULL) == 0) {
+        return val;
+    }
+    else {
+        return defval;
+    }
 }

@@ -4,6 +4,7 @@ AC_INIT(jpilot.c)
 
 AC_CONFIG_HEADER(config.h)
 
+AC_LIBTOOL_DLOPEN
 AM_PROG_LIBTOOL
 AC_PROG_INSTALL
 AC_ISC_POSIX
@@ -12,9 +13,20 @@ dnl Checks for programs.
 AC_PROG_CC
 
 PACKAGE=jpilot
-VERSION=0.98
+#VERSION="0.99pre 01Feb01"
+VERSION="0.99"
 #PACKAGE=$package
 #VERSION=$version
+
+#
+# This is for ncc
+#
+AC_ARG_WITH(for_NCC,
+[  --with-symphonet        Don't use this option.])
+if test "x$with_symphonet" != "x"; then
+   AC_DEFINE(WITH_SYMPHONET)
+   AC_MSG_RESULT(Compiling for Symphonet)
+fi
 
 # Compile options
 ccoptions=""
@@ -38,11 +50,18 @@ AC_DEFINE_UNQUOTED(VERSION, "$VERSION")
 AC_SUBST(PACKAGE)
 AC_SUBST(VERSION)
 
-ALL_LINGUAS="ja de fr da sv"
+ALL_LINGUAS="ja de fr da sv es nl ca cs no"
 
 dnl ud_GNU_GETTEXT
 dnl AM_WITH_NLS()
 AM_GNU_GETTEXT
+
+if test "x$MSGFMT" = "xno"; then
+   if test "x$GMSGFMT" = "xno"; then
+      AC_MSG_RESULT(I can't find gettext)
+      AC_MSG_ERROR(Either install gettext or use 'configure --disable-nls')
+   fi
+fi
 
 dnl AC_LINK_FILES($nls_cv_header_libgt, $nls_cv_header_intl)
 
@@ -62,7 +81,8 @@ fi
 
 dnl Make sure that the pilot-link stuff actually exists
 AC_MSG_CHECKING(for pilot-link header files)
-pilotinclude=no
+pilotinclude=${FORCE_PILOT_INCLUDES:-no}
+if test $pilotinclude = no ; then
 for pilot_incl in $pilot_prefix/include /usr/include /usr/local/include \
     /usr/extra/pilot/include /usr/include/libpisock; do
    if test -r "$pilot_incl/pi-config.h" ; then
@@ -71,6 +91,7 @@ for pilot_incl in $pilot_prefix/include /usr/include /usr/local/include \
       break
    fi
 done
+fi
 
 if test $pilotinclude = no ; then
    AC_MSG_RESULT(no)
@@ -82,9 +103,10 @@ fi
 
 dnl Maybe installed
 AC_MSG_CHECKING(for pilot library files)
-pilotlibs=no
+pilotlibs=${FORCE_PILOT_LIBS:-no}
 PILOT_LIBS="-lpisock"
 
+if test $pilotlibs = no ; then
 for pilot_libs in $pilot_prefix/lib /usr/lib /usr/local/lib/ \
   /usr/extra/pilot/lib ; do
    if test -r "$pilot_libs/libpisock.so" ; then
@@ -103,6 +125,7 @@ for pilot_libs in $pilot_prefix/lib /usr/lib /usr/local/lib/ \
       break
    fi
 done
+fi
 
 if test $pilotlibs = no ; then
    AC_MSG_RESULT(no)
@@ -167,6 +190,14 @@ else
    AC_MSG_RESULT(Plugin support disabled by configure options)
 fi
 
+AC_ARG_ENABLE(private, [  --disable-private       Do not use private records feature]\
+, enable_private=no, enable_private=yes)
+
+if test "x$enable_private" = "xyes"; then
+   AC_DEFINE(ENABLE_PRIVATE)
+else
+   AC_MSG_RESULT(Private record support disabled by configure options)
+fi
 
 
 dnl Checking for GTK version
@@ -191,15 +222,6 @@ AC_FUNC_UTIME_NULL
 AC_CHECK_FUNCS(memmove strchr memcpy strdup setenv \
 	       getcwd strerror)
 AC_CHECK_FUNCS(setenv)
-
-AC_ARG_WITH(japanese,
-[  --with-japanese         Use this for japanese support])
-japanese=""
-if test "x$with_japanese" != "x"; then
-   AC_DEFINE(WITH_JAPANESE)
-   AC_MSG_RESULT(Japanese support $japanese)
-fi
-AC_SUBST(japanese)
 
 AC_ARG_WITH(with_flock,
 [  --with-flock            Substitute flock instead of fnctl (for NFS)])

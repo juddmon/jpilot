@@ -1,85 +1,105 @@
-%define version 0.98.1
+%define version 0.99
 
-Summary: palm pilot desktop for Linux
-Name: jpilot
-Version: %{version}
-Release: 2
+Summary:   palm pilot desktop for Linux
+Name:      jpilot
+Version:   %{version}
+Release:   1
 Copyright: GPL
-Group: Applications/Communications
-Source: http://jpilot.linuxbox.com/jpilot-%{version}.tar.gz
-URL: http://jpilot.linuxbox.com
-Packager: Judd Montgomery <judd@engineer.com>
-Patch: patch_dst_0.98
+Group:     Applications/Communications
+Source:    http://jpilot.org/jpilot-%{version}.tar.gz
+URL:       http://jpilot.org
+Packager:  Judd Montgomery <judd@jpilot.org>
+# Patch0:    dst_0.98.patch
+# Patch1:    jpilot.makefile.patch
+Prefix:    /usr
+DocDir:    %{prefix}/share/doc
+# BuildRoot: %{_tmppath}/jpilot-root
 
 %description
-jpilot is a palm pilot desktop for Linux written by:
-Judd Montgomery, judd@engineer.com
+J-Pilot is a desktop organizer application for the palm pilot that runs
+under Linux and Unix using X-Windows and GTK+.  It is similar in
+functionality to the one that 3com distributes and has many features
+not found in the 3com desktop.
 
 %prep
-#This script was necessary for slackware, remove for RH
-set -x
 
-umask 022
-cd /usr/src/rpm/BUILD
-cd /usr/src/rpm/BUILD
-rm -rf jpilot-0.98.1
-/bin/gzip -dc /home/judd/jpilot-0.98.1.tar.gz | tar -xvvf -
-STATUS=$?
-if [ $STATUS -ne 0 ]; then
-  exit $STATUS
-fi
-cd jpilot-0.98.1
-[ `/usr/bin/id -u` = '0' ] && /bin/chown -Rf root .
-#[ `/usr/bin/id -u` = '0' ] && /bin/chgrp -Rf root .
-/bin/chmod -Rf a+rX,g-w,o-w .
-exit 0
-#end of stuff to remove for RedHat
+%setup -q
+# This seems to have already been applied
+# %patch0 -p0 -b .dst_0.98
+# %patch1 -p0 -b .makefile
 
-%setup
 %build
-patch < patch_dst_0.98
-./configure --prefix=/usr/
+gzip -9f docs/jpilot*.1
+cp docs/jpilot*.1.gz /usr/man/man1/
+#
+./configure --prefix=%{prefix}
 make
 #
 make jpilot-dump
 # Now do the plugin stuff
-make libplugin
+# make libplugin
+# Expense
 cd Expense
-./configure --prefix=/usr/
+./configure --prefix=%{prefix}
 make
+
+# SyncTime
+cd ../SyncTime
+./configure --prefix=%{prefix}
+make
+
 %install
+rm -rf $RPM_BUILD_ROOT
 strip jpilot
-install -m 555 -s jpilot -o root -g root /usr/bin/jpilot
-install -m 555 -s jpilot-dump -o root -g root /usr/bin/jpilot-dump
-install -m 755 -d /usr/share/jpilot/
-install -m 755 -d /usr/lib/jpilot/
-install -m 755 -d /usr/lib/jpilot/plugins/
-install -m 644 jpilotrc.blue -o root -g root /usr/share/jpilot/jpilotrc.blue
-install -m 644 jpilotrc.default -o root -g root /usr/share/jpilot/jpilotrc.default 
-install -m 644 jpilotrc.green -o root -g root /usr/share/jpilot/jpilotrc.green
-install -m 644 jpilotrc.purple -o root -g root /usr/share/jpilot/jpilotrc.purple
-install -m 644 jpilotrc.steel -o root -g root /usr/share/jpilot/jpilotrc.steel
-install -m 644 empty/DatebookDB.pdb -o root -g root /usr/share/jpilot/DatebookDB.pdb
-install -m 644 empty/AddressDB.pdb -o root -g root /usr/share/jpilot/AddressDB.pdb
-install -m 644 empty/ToDoDB.pdb -o root -g root /usr/share/jpilot/ToDoDB.pdb
-install -m 644 empty/MemoDB.pdb -o root -g root /usr/share/jpilot/MemoDB.pdb
-install -m 644 empty/MemoDB.pdb -o root -g root /usr/share/jpilot/MemoDB.pdb
-install -m 644 Expense/.libs/libexpense.so -o root -g root /usr/lib/jpilot/plugins/libexpense.so
+make DEST=$RPM_BUILD_ROOT install
+cd Expense && make prefix=$RPM_BUILD_ROOT%{prefix} install
+cd ../SyncTime && make prefix=$RPM_BUILD_ROOT%{prefix} install
+
+%post
+if [ -x `which libtool` ]; then
+    libtool --finish %{prefix}/lib/jpilot/plugins
+fi
+
+%clean
+rm -rf $RPM_BUILD_ROOT
 
 %files
-%attr(-, bin, bin) %doc BUGS CHANGELOG COPYING CREDITS INSTALL README TODO
+%defattr(-,root,root)
+%doc BUGS CHANGELOG COPYING CREDITS INSTALL README TODO UPGRADING
 %doc icons docs/plugin.html docs/manual.html
-%attr(0555,root,root) /usr/bin/jpilot
-%attr(0644,root,root) /usr/share/jpilot/jpilotrc.blue
-%attr(0644,root,root) /usr/share/jpilot/jpilotrc.default
-%attr(0644,root,root) /usr/share/jpilot/jpilotrc.green
-%attr(0644,root,root) /usr/share/jpilot/jpilotrc.purple
-%attr(0644,root,root) /usr/share/jpilot/jpilotrc.steel
-%attr(0644,root,root) /usr/share/jpilot/DatebookDB.pdb
-%attr(0644,root,root) /usr/share/jpilot/AddressDB.pdb
-%attr(0644,root,root) /usr/share/jpilot/ToDoDB.pdb
-%attr(0644,root,root) /usr/share/jpilot/MemoDB.pdb
-%attr(0644,root,root) /usr/lib/jpilot/plugins/libexpense.so
-%attr(0644,root,root) /usr/lib/jpilot/plugins/libexpense.so.1
-%attr(0644,root,root) /usr/lib/jpilot/plugins/libexpense.so.1.0.1
-%attr(0644,root,root) /usr/lib/jpilot/plugins/libexpense.la
+%{prefix}/bin/jpilot
+%{prefix}/bin/jpilot-dump
+%{prefix}/bin/jpilot-sync
+%{prefix}/bin/jpilot-upgrade-99
+%{prefix}/share/jpilot/jpilotrc.blue
+%{prefix}/share/jpilot/jpilotrc.default
+%{prefix}/share/jpilot/jpilotrc.green
+%{prefix}/share/jpilot/jpilotrc.purple
+%{prefix}/share/jpilot/jpilotrc.steel
+%{prefix}/share/jpilot/DatebookDB.pdb
+%{prefix}/share/jpilot/AddressDB.pdb
+%{prefix}/share/jpilot/ToDoDB.pdb
+%{prefix}/share/jpilot/MemoDB.pdb
+%{prefix}/lib/jpilot/plugins/libexpense.so
+%{prefix}/lib/jpilot/plugins/libexpense.so.1
+%{prefix}/lib/jpilot/plugins/libexpense.so.1.0.1
+%{prefix}/lib/jpilot/plugins/libexpense.la
+%{prefix}/lib/jpilot/plugins/libsynctime.so
+%{prefix}/lib/jpilot/plugins/libsynctime.so.1
+%{prefix}/lib/jpilot/plugins/libsynctime.so.1.0.1
+%{prefix}/lib/jpilot/plugins/libsynctime.la
+%{prefix}/share/locale/*/LC_MESSAGES/jpilot.mo
+/usr/man/man1/jpilot.1.gz
+/usr/man/man1/jpilot-sync.1.gz
+/usr/man/man1/jpilot-upgrade-99.1.gz
+
+%changelog
+* Wed Nov 22 2000 Matthew Vanecek <linux4us@home.com>
+- deleted the calls to 'install' in the %install section since
+  this is already done in the Makefile.
+- Deleted the %attr tags from the %files list and made the default
+  attribute to -,root,root.
+- changed the /usr/ to %{prefix}/
+- Added the %post section
+- Added the %clean section
+- Changed the description

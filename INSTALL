@@ -17,6 +17,9 @@ RedHat users must also have the pilot-link-dev rpm installed for the header
  files so that jpilot can compile.  You don't need these if you install the
 RPM.
 
+If you want i18n support you should have gettext installed.  Preferably GNU
+gettext.  If you don't have or want it use "configure --disable-nls"
+
 To compile and install do the following:
 ./configure
 make
@@ -31,7 +34,7 @@ See below for compiling plugins.
 make uninstall is an option also.
 
 I have included a spec file so if you want to create your own RPM all you
-have to do is "rpm -tb jpilot-0.97.tar.gz"
+have to do is "rpm -tb jpilot-0.99.tar.gz"
 
 
 JPilot was written in such a way that it should be very safe to sync.
@@ -41,10 +44,31 @@ sure your backup software destroy it first ;)
 
 
 I have added a couple of example plugins Expense, and SyncTime.  To use them
-make libplugin
-change to the directory (Expense, etc.) and do 
+change to the directory (Expense, SyncTime, etc.) and do
 ./configure
 make
 make install (installs the plugin system wide)
 If you want to install the plugin for just 1 user you can copy the shared
 library to ~/.jpilot/plugins/
+
+--- Error Messages ---
+
+Message:
+bash$ jpilot
+jpilot: error in loading shared libraries: libpisock.so.3: cannot open 
+shared object file: No such file or directory
+bash$
+
+Solution:
+libpisock.so is the pilot-link shared library.
+J-Pilot uses this library to talk over the serial port to the palm.
+You can find it by doing a "locate libpisock".
+Shared libraries are loaded at runtime, not compile time.
+This error is caused by ld.so not being able to find libpisock.so
+You can fix this by either adding the path to libpisock.so to the environment
+variable LD_LIBRARY_PATH.  Do this by
+LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/libpath in bash, some other shells have
+different syntax.  This can be put in your .bashrc, or profile, etc.
+The other way to fix it is to add the path to libpisock in /etc/ld.so.conf
+and then run ldconfig.  You need root to do this.
+

@@ -17,6 +17,9 @@
 /* Define for plugin character support */
 #undef ENABLE_PLUGINS
 
+/* Define for plugin character support */
+#undef ENABLE_PRIVATE
+
 /* Define if you want to use flock instead of fnctl for file locking
    Useful for some NFS implementations */
 #undef USE_FLOCK
@@ -58,7 +61,7 @@
 #undef HAVE_FCNTL_H
 
 /* Define if you have the <pi-dlp.h> header file.  */
-#undef HAVE_PI_DLP_H
+/* #undef HAVE_PI_DLP_H */
 
 /* Define if you have the <sys/file.h> header file.  */
 #undef HAVE_SYS_FILE_H
@@ -72,6 +75,17 @@
 /* Define if you have the pisock library (-lpisock).  */
 #undef HAVE_LIBPISOCK
 
-/* This forces DateBk3 extensions */
-/* I don't recommend using DateBk3 */
+/* This forces DateBk3/4 extensions */
+/* I don't recommend using DateBk3 or 4 */
 #define USE_DB3
+
+/* This is for Symphonet use only */
+#undef WITH_SYMPHONET
+
+/*
+ * Shell commands can be executed when an alarm goes off, substitution can be
+ * done using data from the appointment.
+ * By default only the date and time are allowed to be substitued.
+ * Defining this allows the description and note to be used, bad idea.
+ */
+#undef ALARM_SHELL_DESC_NOTE

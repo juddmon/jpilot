@@ -17,7 +17,7 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 PACKAGE = jpilot
-VERSION = 0.98
+VERSION = 0.99
 
 SHELL = /bin/sh
 

@@ -4,8 +4,7 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,6 +18,7 @@
 #ifndef __LOG_H__
 #define __LOG_H__
 
+#include <stdarg.h>
 
 #define LOG_DEBUG  1    /*debugging info for programers, and bug reports */
 #define LOG_INFO   2    /*info, and misc messages */
@@ -33,5 +33,6 @@ extern int glob_log_stdout_mask;
 extern int glob_log_gui_mask;
 
 int jpilot_logf(int log_level, char *format, ...);
+int jpilot_vlogf (int level, char *format, va_list val);
 
 #endif

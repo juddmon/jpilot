@@ -43,137 +43,184 @@ GTKLIBS = @GTK_LIBS@
 INTLLIBS = @INTLLIBS@
 
 # Targets
-all: po_dir intl_dir jpilot
+all: po_dir intl_dir jpilot jpilot-sync jpilot-dump
 
 jpilot: jpilot.o datebook.o address.o todo.o memo.o \
 	utils.o sync.o prefs.o log.o plugins.o \
 	datebook_gui.o address_gui.o todo_gui.o memo_gui.o \
 	prefs_gui.o search_gui.o install_gui.o weekview_gui.o \
-	monthview_gui.o print_gui.o print.o \
-	japanese.o
-	$(CC) $(OPTIONS) $(GTKFLAGS) \
+	monthview_gui.o print_gui.o print.o alarms.o libplugin.o \
+	password.o \
+	japanese.o cp1250.o russian.o
+	./libtool --mode=link $(CC) -export-dynamic $(OPTIONS) $(GTKFLAGS) \
 	jpilot.o datebook.o address.o todo.o memo.o \
 	utils.o sync.o prefs.o log.o plugins.o \
 	datebook_gui.o address_gui.o todo_gui.o memo_gui.o \
 	prefs_gui.o search_gui.o install_gui.o weekview_gui.o \
-	monthview_gui.o print_gui.o print.o \
-	japanese.o \
+	monthview_gui.o print_gui.o print.o alarms.o libplugin.o \
+	password.o \
+	japanese.o  cp1250.o russian.o \
 	$(PILOT_LIBS) $(GTKLIBS) $(INTLLIBS) \
 	-o jpilot
 
 
-jpilot.o: jpilot.c utils.h
+jpilot.o: jpilot.c config.h i18n.h utils.h log.h \
+	datebook.h address.h todo.h memo.h sync.h log.h prefs_gui.h prefs.h \
+	plugins.h print.h datebook.xpm address.xpm todo.xpm memo.xpm \
+	datebook_ncc.xpm address_ncc.xpm todo_ncc.xpm memo_ncc.xpm
 	$(CC) $(I18NDEFS) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c jpilot.c
 
-datebook.o: datebook.c datebook.h utils.h
+alarms.o: alarms.c datebook.h config.h i18n.h utils.h log.h \
+	prefs.h japanese.h cp1250.h russian.h
+	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c alarms.c
+
+datebook.o: datebook.c datebook.h config.h i18n.h utils.h log.h libplugin.h \
+	prefs.h japanese.h cp1250.h russian.h
 	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c datebook.c
 
-address.o: address.c address.h utils.h
+address.o: address.c address.h config.h i18n.h utils.h log.h libplugin.h \
+	prefs.h japanese.h cp1250.h russian.h
 	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c address.c
 
-todo.o: todo.c todo.h utils.h
+todo.o: todo.c todo.h config.h i18n.h utils.h log.h libplugin.h \
+	prefs.h japanese.h cp1250.h russian.h
 	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c todo.c
 
-memo.o: memo.c memo.h utils.h
+memo.o: memo.c memo.h config.h i18n.h utils.h log.h libplugin.h \
+	prefs.h japanese.h cp1250.h russian.h
 	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c memo.c
 
-datebook_gui.o: datebook_gui.c utils.h
+datebook_gui.o: datebook_gui.c datebook.h config.h i18n.h utils.h log.h \
+	print.h prefs.h utils.h
 	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c datebook_gui.c
 
-address_gui.o: address_gui.c utils.h
+address_gui.o: address_gui.c address.h config.h i18n.h utils.h log.h \
+	prefs.h print.h
 	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c address_gui.c
 
-todo_gui.o: todo_gui.c utils.h
+todo_gui.o: todo_gui.c todo.h config.h i18n.h utils.h log.h \
+	prefs.h print.h
 	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c todo_gui.c
 
-memo_gui.o: memo_gui.c utils.h
+memo_gui.o: memo_gui.c memo.h config.h i18n.h utils.h log.h \
+	prefs.h print.h
 	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c memo_gui.c
 
-search_gui.o: search_gui.c utils.h address.h datebook.h todo.h memo.h
+search_gui.o: search_gui.c config.h i18n.h utils.h log.h \
+	prefs.h datebook.h address.h todo.h todo.h memo.h plugins.h
 	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c search_gui.c
 
-prefs_gui.o: prefs_gui.c prefs.h utils.h
+prefs_gui.o: prefs_gui.c prefs_gui.h config.h i18n.h prefs.h utils.h log.h \
+	plugins.h
 	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c prefs_gui.c
 
 print_gui.o: print_gui.c print.h
 	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c print_gui.c
 
-install_gui.o: install_gui.c utils.h
+install_gui.o: install_gui.c config.h i18n.h utils.h prefs.h prefs_gui.h log.h
 	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c install_gui.c
 
-weekview_gui.o: weekview_gui.c utils.h
+weekview_gui.o: weekview_gui.c config.h i18n.h utils.h prefs.h log.h \
+	datebook.h
 	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c weekview_gui.c
 
-monthview_gui.o: monthview_gui.c utils.h
+monthview_gui.o: monthview_gui.c config.h i18n.h utils.h prefs.h log.h \
+	datebook.h
 	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c monthview_gui.c
 
-utils.o: utils.c utils.h sync.h
+utils.o: utils.c utils.h config.h i18n.h log.h prefs.h sync.h plugins.h
 	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c utils.c
 
-sync.o: sync.c sync.h
+sync.o: sync.c sync.h config.h i18n.h utils.h japanese.h cp1250.h log.h \
+	prefs.h libplugin.h datebook.h plugins.h russian.h
 	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c sync.c
 
-log.o: log.c log.h
+log.o: log.c log.h config.h i18n.h log.h utils.h sync.h
 	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c log.c
 
-plugins.o: plugins.c plugins.h config.h
+plugins.o: plugins.c plugins.h config.h utils.h log.h
 	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c plugins.c
 
-prefs.o: prefs.c utils.h prefs.h
+prefs.o: prefs.c prefs.h config.h i18n.h utils.h log.h
 	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c prefs.c
 
-print.o: print.c print.h config.h
+print.o: print.c print.h config.h datebook.h address.h todo.h sync.h prefs.h \
+	log.h
 	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c print.c
 
-japanese.o: japanese.c japanese.h
+japanese.o: japanese.c japanese.h config.h
 	$(CC) $(OPTIONS) -c japanese.c
-#
-#libplugin is only needed for compiling plugins
-#
-#libplugin.o: libplugin.c libplugin.h
-#	$(CC) $(OPTIONS) $(GTKFLAGS) -c libplugin.c
-#
-#libplugin: libplugin.o libplugin.h
-#	rm -f libplugin.a
-#	ar cur libplugin.a libplugin.o
-#	ranlib libplugin.a
 
-libplugin.o: libplugin.c libplugin.h
-	./libtool --mode=compile \
-	$(CC) $(OPTIONS) $(GTKFLAGS) -c libplugin.c
+cp1250.o: cp1250.c cp1250.h config.h
+	$(CC) $(OPTIONS) -c cp1250.c
 
-libplugin: libplugin.o  libplugin.h
-	./libtool --mode=link \
-	$(CC) $(OPTIONS) $(GTKFLAGS) -o libplugin.la libplugin.lo \
-	-static \
-	-rpath /home/judd/jpilot;
-	./libtool --mode=install ./install-sh \
-	libplugin.la $(PWD)
-#	./libtool --mode=finish /home/judd/jpilot/Expense;
-	
-jpilot-dump: jpilot-dump.o datebook.o log.o utils.o prefs.o todo.o plugins.o
+password.o: password.c password.h config.h
+	$(CC) $(OPTIONS) $(GTKFLAGS) -c password.c
+
+russian.o: russian.c russian.h config.h
+	$(CC) $(OPTIONS) -c russian.c
+
+libplugin:
+	echo " make libplugin is no longer a valid target."; \
+	echo " The libplugin.h header file is all that is needed now."
+
+libplugin.o: libplugin.c libplugin.h config.h
+	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c libplugin.c
+
+jpilot-sync: jpilot-sync.o utils.o log.o prefs.o sync.o plugins.o \
+	libplugin.o password.o \
+	japanese.o cp1250.o russian.o
 	$(CC) $(OPTIONS) $(GTKFLAGS) \
-	jpilot-dump.o datebook.o log.o utils.o prefs.o todo.o plugins.o \
+	jpilot-sync.o utils.o log.o prefs.o sync.o plugins.o \
+	libplugin.o password.o \
+	japanese.o cp1250.o russian.o \
+	$(PILOT_LIBS) $(GTKLIBS) $(INTLLIBS) \
+	-o jpilot-sync
+
+jpilot-sync.o: jpilot-sync.c config.h utils.h log.h prefs.h sync.h \
+	libplugin.h password.h
+	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c jpilot-sync.c
+
+jpilot-dump: jpilot-dump.o datebook.o address.o memo.h \
+	log.o utils.o prefs.o todo.o plugins.o \
+	password.o \
+	libplugin.o japanese.o cp1250.o russian.o
+	$(CC) $(OPTIONS) $(GTKFLAGS) \
+	jpilot-dump.o datebook.o address.o memo.o \
+	log.o utils.o prefs.o todo.o plugins.o \
+	password.o \
+	libplugin.o japanese.o cp1250.o russian.o \
 	$(PILOT_LIBS) $(GTKLIBS) \
 	-o jpilot-dump
 
-jpilot-dump.o: jpilot-dump.c config.h
+jpilot-dump.o: jpilot-dump.c config.h utils.h log.h prefs.h \
+	datebook.h memo.h address.h todo.h password.h
 	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c jpilot-dump.c
+
+jpilot-upgrade-99: jpilot-upgrade-99.o utils.o libplugin.o log.o prefs.o
+	$(CC) $(OPTIONS) $(GTKFLAGS) \
+	jpilot-upgrade-99.o utils.o log.o prefs.o libplugin.o \
+	$(PILOT_LIBS) $(GTKLIBS) \
+	-o jpilot-upgrade-99
+
+jpilot-upgrade-99.o: jpilot-upgrade-99.c config.h utils.h
+	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c jpilot-upgrade-99.c
 
 POFILES = @POFILES@
 GMOFILES = @GMOFILES@
 
 po_dir:
-	cd po; make
+	cd po; $(MAKE)
 
 intl_dir:
-	cd intl; make
+	cd intl; $(MAKE)
 
 clean:
-	rm -f *.o *~ config.cache 
+	rm -f *.o *~ config.cache
 
 distclean: clean
-	rm -f config.status config.h config.log jpilot Makefile
+	rm -f config.status config.h config.log Makefile \
+	jpilot-sync jpilot jpilot-dump
 
 install:
 #	./install-sh -d $(prefix)/bin/
@@ -181,6 +228,21 @@ install:
 	  ./install-sh -s -c -m 555 jpilot $(prefix)/bin/jpilot ; \
 	else \
 	  ./install-sh -s -c -m 555 jpilot $(prefix)/jpilot ; \
+	fi
+	if test -d "$(prefix)/bin" ; then \
+	  ./install-sh -s -c -m 555 jpilot-sync $(prefix)/bin/jpilot-sync ; \
+	else \
+	  ./install-sh -s -c -m 555 jpilot-sync $(prefix)/jpilot-sync ; \
+	fi
+	if test -d "$(prefix)/bin" ; then \
+	  ./install-sh -s -c -m 555 jpilot-dump $(prefix)/bin/jpilot-dump ; \
+	else \
+	  ./install-sh -s -c -m 555 jpilot-dump $(prefix)/jpilot-dump ; \
+	fi
+	if test -d "$(prefix)/bin" ; then \
+	  ./install-sh -s -c -m 555 jpilot-dump $(prefix)/bin/jpilot-upgrade-99 ; \
+	else \
+	  ./install-sh -s -c -m 555 jpilot-dump $(prefix)/jpilot-upgrade-99 ; \
 	fi
 	./install-sh -d -m 755 $(prefix)/share/jpilot
 	./install-sh -c -m 755 jpilotrc.blue $(prefix)/share/jpilot
@@ -192,15 +254,17 @@ install:
 	./install-sh -c -m 755 empty/AddressDB.pdb $(prefix)/share/jpilot/
 	./install-sh -c -m 755 empty/ToDoDB.pdb $(prefix)/share/jpilot/
 	./install-sh -c -m 755 empty/MemoDB.pdb $(prefix)/share/jpilot/
-	cd intl; make install
-	cd po; make install
+	cd intl; $(MAKE) install
+	cd po; $(MAKE) install
 
 uninstall:
-	rm $(prefix)/share/jpilot/*
-	rm $(prefix)/bin/jpilot
-	rm $(prefix)/jpilot
-	cd intl; make uninstall
-	cd po; make uninstall
+	rm -f $(prefix)/share/jpilot/*
+	rm -f $(prefix)/bin/jpilot
+	rm -f $(prefix)/bin/jpilot-sync
+	rm -f $(prefix)/bin/jpilot-dump
+	rm -f $(prefix)/jpilot
+	cd intl; $(MAKE) uninstall
+	cd po; $(MAKE) uninstall
 
 distdir = $(PACKAGE)-$(VERSION)
 dist: Makefile
@@ -217,4 +281,4 @@ dist: Makefile
 	done
 	tar chozf $(distdir).tar.gz $(distdir)
 	rm -fr $(distdir)
-	
+

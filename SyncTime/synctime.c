@@ -22,12 +22,18 @@
 #include <time.h>
 
 #include <pi-dlp.h>
+#include <pi-source.h>
 #include "libplugin.h"
 
+void plugin_version(int *major_version, int *minor_version)
+{
+   *major_version=0;
+   *minor_version=99;
+}
 
 int plugin_get_name(char *name, int len)
 {
-   strncpy(name, "SyncTime 0.96", len);
+   strncpy(name, "SyncTime 0.99", len);
    return 0;
 }
 
@@ -42,24 +48,39 @@ int plugin_help(char **text, int *width, int *height)
    /* We could also pass back *text=NULL */
    *text = strdup(
 	   /*-------------------------------------------*/
-	   "SyncTime plugin for J-Pilot was written by\r\n"
-	   "Judd Montgomery (c) 1999.\r\n"
-	   "judd@engineer.com\r\n"
-	   "http://jpilot.linuxbox.com\r\n"
-	   "SyncTime WILL NOT work with PalmOS 3.3!\r\n"
+	   "SyncTime plugin for J-Pilot was written by\n"
+	   "Judd Montgomery (c) 1999.\n"
+	   "judd@jpilot.org\n"
+	   "http://jpilot.org\n"
+	   "SyncTime WILL NOT work with PalmOS 3.3!\n"
 	   );
    *height = 200;
    *width = 300;
+   return 0;
 }
 
 int plugin_sync(int sd)
 {
    int r;
    time_t ltime;
+   unsigned long ROMversion, majorVersion, minorVersion;
 
    jp_init();
    
-   jp_logf(LOG_WARN, "synctime: setting the time on pilot\n");
+   dlp_ReadFeature(sd, makelong("psys"), 1, &ROMversion);
+   
+   majorVersion = (((ROMversion >> 28) & 0xf) * 10)+ ((ROMversion >> 24) & 0xf);
+   minorVersion = (((ROMversion >> 20) & 0xf) * 10)+ ((ROMversion >> 16) & 0xf);
+
+   jp_logf(LOG_WARN, "synctime: Palm OS version %d.%d\n", majorVersion, minorVersion);
+
+   if ((majorVersion==3) && (minorVersion==30)) {
+      jp_logf(LOG_WARN, "synctime: Palm OS Version 3.30 does not support SyncTime\n");
+      jp_logf(LOG_WARN, "synctime: NOT setting the time on the pilot\n");
+      return 1;
+   }
+
+   jp_logf(LOG_GUI, "synctime: setting the time on the pilot\n");
    
    time(&ltime);
    r = dlp_SetSysDateTime(sd, ltime);

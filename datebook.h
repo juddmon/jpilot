@@ -4,8 +4,7 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -33,10 +32,16 @@ int datebook_print();
 int datebook_cleanup();
 int pc_datebook_write(struct Appointment *a, PCRecType rt, unsigned char attrib);
 void free_AppointmentList(AppointmentList **al);
-/* */
-/*If Null is passed in for date, then all appointments will be returned */
-/* */
+/*
+ * If Null is passed in for date, then all appointments will be returned
+ */
 int get_days_appointments(AppointmentList **al_out, struct tm *date);
+/*
+ * If Null is passed in for date, then all appointments will be returned
+ * modified, deleted and private, 0 for no, 1 for yes, 2 for use prefs
+ */
+int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
+			   int modified, int deleted, int privates);
 
 /* This funtion removes appointments from the list that obviously will not
  * occur in this month */
@@ -59,6 +64,12 @@ int appointment_on_day_list(int mon, int year, int *mask);
  * else returns 0
  */
 unsigned int isApptOnDate(struct Appointment *a, struct tm *date);
+
+int dateToSecs(struct tm *tm1);
+
+int dateToDays(struct tm *tm1);
+
+int compareTimesToDay(struct tm *tm1, struct tm *tm2);
 
 #ifdef USE_DB3
 /* Returns a bitmask

@@ -1,6 +1,8 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(synctime.c)
 
+dnl AM_PROG_LIBTOOL
+
 dnl Checks for programs.
 AC_PROG_CC
 
@@ -33,7 +35,8 @@ fi
 
 dnl Make sure that the pilot-link stuff actually exists
 AC_MSG_CHECKING(for pilot-link header files)
-pilotinclude=no
+pilotinclude=${FORCE_PILOT_INCLUDES:-no}
+if test $pilotinclude = no ; then
 for pilot_incl in $pilot_prefix/include /usr/include /usr/local/include \
     /usr/extra/pilot/include /usr/include/libpisock; do
    if test -r "$pilot_incl/pi-config.h" ; then
@@ -42,6 +45,7 @@ for pilot_incl in $pilot_prefix/include /usr/include /usr/local/include \
       break
    fi
 done
+fi
 
 if test $pilotinclude = no ; then
    AC_MSG_RESULT(no)
@@ -55,9 +59,10 @@ AC_CHECK_LIB(socket, main, PILOT_LIBS=$PILOT_LIBS" -lsocket", , )
 
 dnl Maybe installed
 AC_MSG_CHECKING(for pilot library files)
-pilotlibs=no
+pilotlibs=${FORCE_PILOT_LIBS:-no}
 PILOT_LIBS="-lpisock"
 
+if test $pilotlibs = no ; then
 for pilot_libs in $pilot_prefix/lib /usr/lib /usr/local/lib/ \
   /usr/extra/pilot/lib ; do
    if test -r "$pilot_libs/libpisock.so" ; then
@@ -66,6 +71,7 @@ for pilot_libs in $pilot_prefix/lib /usr/lib /usr/local/lib/ \
       break
    fi
 done
+fi
 
 if test $pilotlibs = no ; then
    AC_MSG_RESULT(no)
@@ -73,6 +79,9 @@ if test $pilotlibs = no ; then
 else
    AC_MSG_RESULT(found at $pilot_libs)
 fi
+
+dnl Solaris needs the socket library
+AC_CHECK_LIB(socket, main, PILOT_LIBS=$PILOT_LIBS" -lsocket", , )
 
 AC_ARG_ENABLE(pl-test, [  --disable-pl-test       Do not try to compile \
 a test pilot-link program], enable_pl_test=no, enable_pl_test=yes)
@@ -87,9 +96,8 @@ if test "x$enable_pl_test" = "xyes"; then
 
    pilotcompile=no
 
-   AC_TRY_LINK([#include "pi-config.h"
-   #include "pi-socket.h"], [pi_close (0);] , pilotcompile=yes, , )
-
+   AC_TRY_LINK([#include "pi-config.h" 
+#include "pi-socket.h"], [pi_close (0);] , pilotcompile=yes, , )
 
    if test $pilotcompile = no ; then
       AC_MSG_RESULT(no)

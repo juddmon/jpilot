@@ -16,124 +16,24 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#include "config.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
 #include <ctype.h>
+#include <sys/types.h>
+#include <netinet/in.h>
 
 #include <glib.h>
 
 #include "libplugin.h"
 
-  
-#define JPILOT_EOF -7
-
-#define LOG_DEBUG  1    /*debugging info for programers, and bug reports */
-#define LOG_INFO   2    /*info, and misc messages */
-#define LOG_WARN   4    /*worse messages */
-#define LOG_FATAL  8    /*even worse messages */
-#define LOG_STDOUT 256  /*messages always go to stdout */
-#define LOG_FILE   512  /*messages always go to the log file */
-#define LOG_GUI    1024 /*messages always go to the gui window */
-
-
-typedef struct {
-  unsigned char Offset[4];  /*4 bytes offset from BOF to record */
-  unsigned char attrib;
-  unsigned char unique_ID[3];
-} record_header;
-
-typedef struct {
-   unsigned int rec_len;
-   unsigned int unique_id;
-   PCRecType rt;
-   unsigned char attrib;
-} PCRecordHeader;
-
-typedef struct mem_rec_header_s {
-   unsigned int rec_num;
-   unsigned int offset;
-   unsigned int unique_id;
-   unsigned char attrib;
-   struct mem_rec_header_s *next;
-} mem_rec_header;
-
-typedef struct {
-   unsigned char db_name[32];
-   unsigned char flags[2];
-   unsigned char version[2];
-   unsigned char creation_time[4];
-   unsigned char modification_time[4];
-   unsigned char backup_time[4];
-   unsigned char modification_number[4];
-   unsigned char app_info_offset[4];
-   unsigned char sort_info_offset[4];
-   unsigned char type[4];/*Database ID */
-   unsigned char creator_id[4];/*Application ID */
-   unsigned char unique_id_seed[4];
-   unsigned char next_record_list_id[4];
-   unsigned char number_of_records[2];
-} RawDBHeader;
-
-typedef struct {
-   char db_name[32];
-   unsigned int flags;
-   unsigned int version;
-   time_t creation_time;
-   time_t modification_time;
-   time_t backup_time;
-   unsigned int modification_number;
-   unsigned int app_info_offset;
-   unsigned int sort_info_offset;
-   char type[5];/*Database ID */
-   char creator_id[5];/*Application ID */
-   char unique_id_seed[5];
-   unsigned int next_record_list_id;
-   unsigned int number_of_records;
-} DBHeader;
-
-
-static int get_next_unique_pc_id(unsigned int *next_unique_id);
-static FILE *open_file(char *filename, char *mode);  
-
-int jp_logf(int level, char *format, ...)
-{
-   jpilot_logf(level, format);
-   return 0;
-}
-
-/*
-int null_logf(int level, char *format, ...)
-{
-   return 0;
-}
-
-void plugin_set_jpilot_logf(int (*Pjpilot_logf)(int level, char *format, ...))
-{
-   if (Pjpilot_logf==NULL) {
-      fprintf(stderr, "plugin_set_jpilot_logf NULL parameter\n");
-      return;
-   }
-   jp_logf=Pjpilot_logf;
-   jp_logf(LOG_DEBUG, "I got the log function pointer\n");
-}
-*/
-
-void plugin_version(int *major_version, int *minor_version)
-{
-   *major_version=0;
-   *minor_version=96;
-}
-
 void jp_init()
 {
-   int major, minor;
-   /* This just forces plugin_version to be linked into the shared library */
-   plugin_version(&major, &minor);
    jp_logf(0, "jp_init()\n");
 }
-   
+
 const char *jp_strstr(const char *haystack, const char *needle, int case_sense)
 {
    char *needle2;
@@ -182,89 +82,162 @@ const char *jp_strstr(const char *haystack, const char *needle, int case_sense)
    }
 }
 
-/*
-int jp_pc_write(char *DB_name, buf_rec *br)
+static int pack_header(PC3RecordHeader *header, char *packed_header)
 {
-   PCRecordHeader header;
-   FILE *out;
-   char PC_name[256];
-   unsigned int next_unique_id;
+   unsigned char *p;
+   unsigned long l;
+   unsigned long len;
 
-   get_next_unique_pc_id(&next_unique_id);
-#ifdef JPILOT_DEBUG
-   jp_logf(LOG_DEBUG, "next unique id = %d\n",next_unique_id);
-#endif
+   l=0;
+   p=packed_header;
+   /*
+    * Header structure:
+    * unsigned long header_len;
+    * unsigned long header_version;
+    * unsigned long rec_len;
+    * unsigned long unique_id;
+    * unsigned long rt;
+    * unsigned char attrib;
+    */
+   len = sizeof(unsigned long) +
+     sizeof(unsigned long) +
+     sizeof(unsigned long) +
+     sizeof(unsigned long) +
+     sizeof(unsigned long) +
+     sizeof(unsigned char);
 
-   g_snprintf(PC_name, 255, "%s.pc", DB_name);
+   header->header_version = 2;
+
+   header->header_len = len;
+
+   l=htonl(header->header_len);
+   memcpy(p, &l, sizeof(l));
+   p+=sizeof(l);
+
+   l=htonl(header->header_version);
+   memcpy(p, &l, sizeof(l));
+   p+=sizeof(l);
+
+   l=htonl(header->rec_len);
+   memcpy(p, &l, sizeof(l));
+   p+=sizeof(l);
+
+   l=htonl(header->unique_id);
+   memcpy(p, &l, sizeof(l));
+   p+=sizeof(l);
+
+   l=htonl(header->rt);
+   memcpy(p, &l, sizeof(l));
+   p+=sizeof(l);
+
+   memcpy(p, &header->attrib, sizeof(unsigned char));
+   p+=sizeof(unsigned char);
+
+   return len;
+}
+
+static int unpack_header(PC3RecordHeader *header, unsigned char *packed_header)
+{
+   unsigned char *p;
+   unsigned long l;
+
+   /*
+    * Header structure:
+    * unsigned long header_len;
+    * unsigned long header_version;
+    * unsigned long rec_len;
+    * unsigned long unique_id;
+    * unsigned long rt;
+    * unsigned char attrib;
+    */
+   p = packed_header;
    
-   out = open_file(PC_name, "a");
-   if (!out) {
-      jp_logf(LOG_WARN, "Error opening %s\n", PC_name);
+   memcpy(&l, p, sizeof(l));
+   header->header_len=ntohl(l);
+   p+=sizeof(l);
+
+   memcpy(&l, p, sizeof(l));
+   header->header_version=ntohl(l);
+   p+=sizeof(l);
+   
+   if (header->header_version > 2) {
+      jp_logf(LOG_WARN, "Unknown PC header version = %d\n", header->header_version);
+   }
+
+   memcpy(&l, p, sizeof(l));
+   header->rec_len=ntohl(l);
+   p+=sizeof(l);
+   
+   memcpy(&l, p, sizeof(l));
+   header->unique_id=ntohl(l);
+   p+=sizeof(l);
+   
+   memcpy(&l, p, sizeof(l));
+   header->rt=ntohl(l);
+   p+=sizeof(l);
+   
+   memcpy(&(header->attrib), p, sizeof(unsigned char));
+   p+=sizeof(unsigned char);
+
+   return 0;
+}
+   
+/* FIXME: Add jp_ and document. */
+int read_header(FILE *pc_in, PC3RecordHeader *header)
+{
+   unsigned long l, len;
+   unsigned char packed_header[256];
+   int num;
+
+   num = fread(&l, sizeof(l), 1, pc_in);
+   if (feof(pc_in)) {
+      return JPILOT_EOF;
+   }      
+   if (num!=1) {
+      return num;
+   }
+   memcpy(packed_header, &l, sizeof(l));
+   len=ntohl(l);
+   if (len > 255) {
+      jp_logf(LOG_WARN, "read_header() error\n");
       return -1;
    }
-
-   header.rec_len=br->size;
-   header.rt=br->rt;
-   header.attrib=br->attrib;
-   header.unique_id=next_unique_id;
-   br->unique_id=next_unique_id;
-   fwrite(&header, sizeof(header), 1, out);
-   fwrite(br->buf, br->size, 1, out);
-   fclose(out);
-   
-   return 0;
-}
-*/
-
-/*creates the full path name of a file in the ~/.jpilot dir */
-int get_home_file_name(char *file, char *full_name, int max_size)
-{
-   char *home, default_path[]=".";
-
-   home = getenv("JPILOT_HOME");
-   if (!home) {/*Not home; */
-      home = getenv("HOME");
-      if (!home) {/*Not home; */
-	 jp_logf(LOG_WARN, "Can't get HOME environment variable\n");
-      }
+   num = fread(packed_header+sizeof(l), len-sizeof(l), 1, pc_in);
+   if (feof(pc_in)) {
+      return JPILOT_EOF;
+   }      
+   if (num!=1) {
+      return num;
    }
-   if (!home) {
-      home = default_path;
-   }
-   if (strlen(home)>(max_size-strlen(file)-strlen("/.jpilot/")-2)) {
-      jp_logf(LOG_WARN, "Your HOME environment variable is too long for me\n");
-      home=default_path;
-   }
-   sprintf(full_name, "%s/.jpilot/%s", home, file);
-   return 0;
+   unpack_header(header, packed_header);
+#ifdef DEBUG
+   printf("header_len    =%ld\n", header->header_len);
+   printf("header_version=%ld\n", header->header_version);
+   printf("rec_len       =%ld\n", header->rec_len);
+   printf("unique_id     =%ld\n", header->unique_id);
+   printf("rt            =%ld\n", header->rt);
+   printf("attrib        =%d\n", header->attrib);
+#endif
+   return 1;
 }
 
-int rename_file(char *old_filename, char *new_filename)
+/* Add jp_ and document */
+int write_header(FILE *pc_out, PC3RecordHeader *header)
 {
-   char old_fullname[256];
-   char new_fullname[256];
+   unsigned long len;
+   unsigned char packed_header[256];
 
-   get_home_file_name(old_filename, old_fullname, 255);
-   get_home_file_name(new_filename, new_fullname, 255);
-   
-   return rename(old_fullname, new_fullname);
-}
+   len = pack_header(header, packed_header);
+   if (len>0) {
+      fwrite(packed_header, len, 1, pc_out);
+   }
 
-static FILE *open_file(char *filename, char *mode)
-{
-   char fullname[256];
-   FILE *pc_in;
-
-   get_home_file_name(filename, fullname, 255);
-   
-   pc_in = fopen(fullname, mode);
-
-   return pc_in;
+   return len;
 }
 
 /*
  * file must not be open elsewhere when this is called 
- * the first line is 0
+ * the first line in file is 0
  */
 int jp_install_remove_line(int deleted_line)
 {
@@ -274,13 +247,13 @@ int jp_install_remove_line(int deleted_line)
    char *Pc;
    int r, line_count;
 
-   in = open_file("jpilot_to_install", "r");
+   in = jp_open_home_file("jpilot_to_install", "r");
    if (!in) {
       jp_logf(LOG_DEBUG, "failed opening install_file\n");
       return -1;
    }
    
-   out = open_file("jpilot_to_install.tmp", "w");
+   out = jp_open_home_file("jpilot_to_install.tmp", "w");
    if (!out) {
       fclose(in);
       jp_logf(LOG_DEBUG, "failed opening install_file.tmp\n");
@@ -314,7 +287,7 @@ int jp_install_append_line(char *line)
    FILE *out;
    int r;
    
-   out = open_file("jpilot_to_install", "a");
+   out = jp_open_home_file("jpilot_to_install", "a");
    if (!out) {
       return -1;
    }
@@ -328,7 +301,6 @@ int jp_install_append_line(char *line)
 
    return 0;
 }
-
 
 /*returns 1 if found */
 /*        0 if eof */
@@ -392,8 +364,9 @@ int jp_free_DB_records(GList **br_list)
    }
    g_list_free(*br_list);
    *br_list=NULL;
+   
+   return 0;
 }
-
 
 /*These next 2 functions were copied from pi-file.c in the pilot-link app */
 /* Exact value of "Jan 1, 1970 0:00:00 GMT" - "Jan 1, 1904 0:00:00 GMT" */
@@ -404,6 +377,7 @@ pilot_time_to_unix_time (unsigned long raw_time)
 {
    return (time_t)(raw_time - PILOT_TIME_DELTA);
 }
+
 /*
 static unsigned long
 unix_time_to_pilot_time (time_t t)
@@ -411,6 +385,7 @@ unix_time_to_pilot_time (time_t t)
    return (unsigned long)((unsigned long)t + PILOT_TIME_DELTA);
 }
 */
+
 static unsigned int bytes_to_bin(unsigned char *bytes, unsigned int num_bytes)
 {
    unsigned int i, n;
@@ -420,7 +395,6 @@ static unsigned int bytes_to_bin(unsigned char *bytes, unsigned int num_bytes)
    }
    return n;
 }
-
 
 static int raw_header_to_header(RawDBHeader *rdbh, DBHeader *dbh)
 {
@@ -451,105 +425,6 @@ static int raw_header_to_header(RawDBHeader *rdbh, DBHeader *dbh)
    return 0;
 }
 
-
-void print_string(char *str, int len)
-{
-   unsigned char c;
-   int i;
-   
-   for (i=0;i<len;i++) {
-      c=str[i];
-      if (c < ' ' || c >= 0x7f)
-	printf("%x",c);
-      else
-	putchar(c);
-   }
-   printf("\n");
-}
-
-static int get_next_unique_pc_id(unsigned int *next_unique_id)
-{
-   FILE *pc_in_out;
-
-   pc_in_out = open_file("next_id", "a+");
-   if (pc_in_out==NULL) {
-      jp_logf(LOG_WARN, "Error opening next_id\n");
-      return -1;
-   }
-
-   if (ftell(pc_in_out)==0) {
-      /*We have to write out the file header */
-      *next_unique_id=1;
-      if (fwrite(next_unique_id, sizeof(*next_unique_id), 1, pc_in_out) != 1) {
-	 jp_logf(LOG_WARN, "Error writing pc header to file: next_id\n");
-	 fclose(pc_in_out);
-	 return 0;
-      }
-      fflush(pc_in_out);
-   }
-   fclose(pc_in_out);
-   pc_in_out = open_file("next_id", "r+");
-   if (pc_in_out==NULL) {
-      jp_logf(LOG_WARN, "Error opening next_id\n");
-      return -1;
-   }
-   fread(next_unique_id, sizeof(*next_unique_id), 1, pc_in_out);
-   (*next_unique_id)++;
-   if (fseek(pc_in_out, 0, SEEK_SET)) {
-      jp_logf(LOG_WARN, "fseek failed\n");
-   }
-   /*rewind(pc_in_out); */
-   /*todo - if > 16777216 then cleanup (thats a lot of records!) */
-   if (fwrite(next_unique_id, sizeof(*next_unique_id), 1, pc_in_out) != 1) {
-      jp_logf(LOG_WARN, "Error writing pc header to file: next_id\n");
-   }
-   fflush(pc_in_out);
-   fclose(pc_in_out);
-   
-   return 0;
-}
-
-/* */
-/*Warning, this function will move the file pointer */
-/* */
-int get_app_info_size(FILE *in, int *size)
-{
-   RawDBHeader rdbh;
-   DBHeader dbh;
-   unsigned int offset;
-   record_header rh;
-
-   fseek(in, 0, SEEK_SET);
-   
-   fread(&rdbh, sizeof(RawDBHeader), 1, in);
-   if (feof(in)) {
-      jp_logf(LOG_WARN, "Error reading file in get_app_info_size\n");
-      return -1;
-   }
-   
-   raw_header_to_header(&rdbh, &dbh);
-
-   if (dbh.app_info_offset==0) {
-      *size=0;
-      return 0;
-   }
-   if (dbh.sort_info_offset!=0) {
-      *size = dbh.sort_info_offset - dbh.app_info_offset;
-      return 0;
-   }
-   if (dbh.number_of_records==0) {
-      fseek(in, 0, SEEK_END);
-      *size=ftell(in) - dbh.app_info_offset;
-      return 0;
-   }
-
-   fread(&rh, sizeof(record_header), 1, in);
-   offset = ((rh.Offset[0]*256+rh.Offset[1])*256+rh.Offset[2])*256+rh.Offset[3];
-   *size=offset - dbh.app_info_offset;
-   
-   return 0;
-}
-
 int jp_get_app_info(char *DB_name, unsigned char **buf, int *buf_size)
 {
    FILE *in;
@@ -559,10 +434,14 @@ int jp_get_app_info(char *DB_name, unsigned char **buf, int *buf_size)
    DBHeader dbh;
    char PDB_name[256];
 
+   if ((!buf_size) || (!buf)) {
+      return -1;
+   }
+   *buf = NULL;
    *buf_size=0;
 
    g_snprintf(PDB_name, 255, "%s.pdb", DB_name);
-   in = open_file(PDB_name, "r");
+   in = jp_open_home_file(PDB_name, "r");
    if (!in) {
       jp_logf(LOG_WARN, "Error opening %s\n", PDB_name);
       return -1;
@@ -590,7 +469,7 @@ int jp_get_app_info(char *DB_name, unsigned char **buf, int *buf_size)
    fseek(in, dbh.app_info_offset, SEEK_SET);
    *buf=malloc(rec_size);
    if (!(*buf)) {
-      jp_logf(LOG_WARN, "Out of memory\n");
+      jp_logf(LOG_WARN, "jp_get_app_info(): Out of memory\n");
       fclose(in);
       return -1;
    }
@@ -611,19 +490,19 @@ int jp_get_app_info(char *DB_name, unsigned char **buf, int *buf_size)
 }
 
 /*
- *This deletes a record from the appropriate Datafile
+ * This deletes a record from the appropriate Datafile
  */
 int jp_delete_record(char *DB_name, buf_rec *br, int flag)
 {
    FILE *pc_in;
-   PCRecordHeader header;
+   PC3RecordHeader header;
    char PC_name[256];
 
    if (br==NULL) {
       return -1;
    }
    
-   g_snprintf(PC_name, 255, "%s.pc", DB_name);
+   g_snprintf(PC_name, 255, "%s.pc3", DB_name);
 
    if ((br->rt==DELETED_PALM_REC) || (br->rt==MODIFIED_PALM_REC)) {
       jp_logf(LOG_INFO, "This record is already deleted.\n"
@@ -632,26 +511,31 @@ int jp_delete_record(char *DB_name, buf_rec *br, int flag)
    }
    switch (br->rt) {
     case NEW_PC_REC:
-      pc_in=open_file(PC_name, "r+");
+      pc_in=jp_open_home_file(PC_name, "r+");
       if (pc_in==NULL) {
 	 jp_logf(LOG_WARN, "Couldn't open PC records file\n");
 	 return -1;
       }
       while(!feof(pc_in)) {
-	 fread(&header, sizeof(header), 1, pc_in);
+	 read_header(pc_in, &header);
 	 if (feof(pc_in)) {
 	    jp_logf(LOG_WARN, "couldn't find record to delete\n");
+	    fclose(pc_in);
 	    return -1;
 	 }
-	 if (header.unique_id==br->unique_id) {
-	    if (fseek(pc_in, -sizeof(header), SEEK_CUR)) {
-	       jp_logf(LOG_WARN, "fseek failed\n");
+	 if (header.header_version==2) {
+	    if (header.unique_id==br->unique_id) {
+	       if (fseek(pc_in, -header.header_len, SEEK_CUR)) {
+		  jp_logf(LOG_WARN, "fseek failed\n");
+	       }
+	       header.rt=DELETED_PC_REC;
+	       write_header(pc_in, &header);
+	       jp_logf(LOG_DEBUG, "record deleted\n");
+	       fclose(pc_in);
+	       return 0;
 	    }
-	    header.rt=DELETED_PC_REC;
-	    fwrite(&header, sizeof(header), 1, pc_in);
-	    jp_logf(LOG_DEBUG, "record deleted\n");
-	    fclose(pc_in);
-	    return 0;
+	 } else {
+	    jp_logf(LOG_WARN, "unknown header version %d\n", header.header_version);
 	 }
 	 if (fseek(pc_in, header.rec_len, SEEK_CUR)) {
 	    jp_logf(LOG_WARN, "fseek failed\n");
@@ -662,7 +546,7 @@ int jp_delete_record(char *DB_name, buf_rec *br, int flag)
 	 
     case PALM_REC:
       jp_logf(LOG_DEBUG, "Deleteing Palm ID %d\n", br->unique_id);
-      pc_in=open_file(PC_name, "a");
+      pc_in=jp_open_home_file(PC_name, "a");
       if (pc_in==NULL) {
 	 jp_logf(LOG_WARN, "Couldn't open PC records file\n");
 	 return -1;
@@ -677,7 +561,7 @@ int jp_delete_record(char *DB_name, buf_rec *br, int flag)
       header.rec_len = br->size;
       
       jp_logf(LOG_DEBUG, "writing header to pc file\n");
-      fwrite(&header, sizeof(header), 1, pc_in);
+      write_header(pc_in, &header);
       /*todo write the real appointment from palm db */
       /*Right now I am just writing an empty record */
       /*This will be used for making sure that the palm record hasn't changed */
@@ -693,16 +577,17 @@ int jp_delete_record(char *DB_name, buf_rec *br, int flag)
 
    return 0;
 }
-
-
+   
 int jp_pc_write(char *DB_name, buf_rec *br)
 {
-   PCRecordHeader header;
+   PC3RecordHeader header;
    FILE *out;
    unsigned int next_unique_id;
+   char packed_header[256];
+   int len;
    char PC_name[256];
 
-   g_snprintf(PC_name, 255, "%s.pc", DB_name);
+   g_snprintf(PC_name, 255, "%s.pc3", DB_name);
    PC_name[255]='\0';
    
    get_next_unique_pc_id(&next_unique_id);
@@ -710,17 +595,20 @@ int jp_pc_write(char *DB_name, buf_rec *br)
    jp_logf(LOG_DEBUG, "next unique id = %d\n",next_unique_id);
 #endif
    
-   out = open_file(PC_name, "a");
+   out = jp_open_home_file(PC_name, "a");
    if (!out) {
       jp_logf(LOG_WARN, "Error opening %s\n", PC_name);
       return -1;
    }
+
    header.rec_len=br->size;
    header.rt=br->rt;
    header.attrib=br->attrib;
    header.unique_id=next_unique_id;
    br->unique_id=next_unique_id;
-   fwrite(&header, sizeof(header), 1, out);
+   
+   len = pack_header(&header, packed_header);
+   write_header(out, &header);
    fwrite(br->buf, header.rec_len, 1, out);
 
    fclose(out);
@@ -728,30 +616,29 @@ int jp_pc_write(char *DB_name, buf_rec *br)
    return 0;
 }
 
-
 static int pc_read_next_rec(FILE *in, buf_rec *br)
 {
-   PCRecordHeader header;
+   PC3RecordHeader header;
    int rec_len, num;
    char *record;
    
    if (feof(in)) {
       return JPILOT_EOF;
    }
-   num = fread(&header, sizeof(header), 1, in);
-   if (num != 1) {
+   num = read_header(in, &header);
+   if (num < 1) {
       if (ferror(in)) {
 	 jp_logf(LOG_WARN, "Error reading pc file 1\n");
 	 return JPILOT_EOF;
       }
       if (feof(in)) {
 	 return JPILOT_EOF;
-      }      
+      }
    }
    rec_len = header.rec_len;
    record = malloc(rec_len);
    if (!record) {
-      jp_logf(LOG_WARN, "Out of memory\n");
+      jp_logf(LOG_WARN, "pc_read_next_rec(): Out of memory\n");
       return JPILOT_EOF;
    }
    num = fread(record, rec_len, 1, in);
@@ -770,7 +657,6 @@ static int pc_read_next_rec(FILE *in, buf_rec *br)
 
    return 0;
 }
-
 
 int jp_read_DB_files(char *DB_name, GList **records)
 {
@@ -798,9 +684,9 @@ int jp_read_DB_files(char *DB_name, GList **records)
 
    g_snprintf(PDB_name, 255, "%s.pdb", DB_name);
    PDB_name[255]='\0';
-   g_snprintf(PC_name, 255, "%s.pc", DB_name);
+   g_snprintf(PC_name, 255, "%s.pc3", DB_name);
    PC_name[255]='\0';
-   in = open_file(PDB_name, "r");
+   in = jp_open_home_file(PDB_name, "r");
    if (!in) {
       jp_logf(LOG_WARN, "Error opening %s\n", PDB_name);
       return -1;
@@ -856,7 +742,7 @@ int jp_read_DB_files(char *DB_name, GList **records)
 #endif
       temp_mem_rh = (mem_rec_header *)malloc(sizeof(mem_rec_header));
       if (!temp_mem_rh) {
-	 jp_logf(LOG_WARN, "Out of memory\n");
+	 jp_logf(LOG_WARN, "jp_read_DB_files(): Out of memory 1\n");
 	 break;
       }
       temp_mem_rh->next = NULL;
@@ -912,7 +798,7 @@ int jp_read_DB_files(char *DB_name, GList **records)
 	 num = fread(buf, rec_size, 1, in);
 	 if ((num != 1)) {
 	    if (ferror(in)) {
-	       jp_logf(LOG_WARN, "Error reading %s 5\n", PC_name);
+	       jp_logf(LOG_WARN, "Error reading %s 5\n", PDB_name);
 	       free(buf);
 	       break;
 	    }
@@ -920,7 +806,7 @@ int jp_read_DB_files(char *DB_name, GList **records)
 
 	 temp_br = malloc(sizeof(buf_rec));
 	 if (!temp_br) {
-	    jp_logf(LOG_WARN, "Out of memory\n");
+	    jp_logf(LOG_WARN, "jp_read_DB_files(): Out of memory 2\n");
 	    break;
 	 }
 	 temp_br->rt = PALM_REC;
@@ -939,16 +825,16 @@ int jp_read_DB_files(char *DB_name, GList **records)
    /* */
    /* Get the appointments out of the PC database */
    /* */
-   pc_in = open_file(PC_name, "r");
+   pc_in = jp_open_home_file(PC_name, "r");
    if (pc_in==NULL) {
-      jp_logf(LOG_DEBUG, "open_file failed\n");
+      jp_logf(LOG_DEBUG, "jp_open_home_file failed\n");
       return 0;
    }
 
    while(!feof(pc_in)) {
       temp_br = malloc(sizeof(buf_rec));
       if (!temp_br) {
-	 jp_logf(LOG_WARN, "Out of memory\n");
+	 jp_logf(LOG_WARN, "jp_read_DB_files(): Out of memory 3\n");
 	 break;
       }
       r = pc_read_next_rec(pc_in, temp_br);

@@ -4,8 +4,7 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,6 +26,10 @@
 #include "log.h"
 #include "datebook.h"
 #include <pi-datebook.h>
+
+
+extern int datebook_category;
+
 
 static GtkWidget *window=NULL;
 static GtkWidget *glob_week_texts[8];
@@ -121,21 +124,33 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
    char datef[20];
    int n, i;
    long ivalue;
-   long modified, deleted;
    const char *svalue;
    char str[82];
    long fdow;
    char short_date[32];
    char default_date[]="%x";
-   GdkFont *small_font;
+   /* GdkFont *small_font; */
    GdkColor color;
    GdkColormap *colormap;
+   /* long char_set;*/
+#ifdef USE_DB3
+   int ret;
+   int category;
+   int cat_bit;
+   long use_db3_tags;
+#endif
 
    a_list = NULL;
    text = day_texts;
 
-   small_font = gdk_fontset_load("-misc-fixed-medium-r-*-*-*-100-*-*-*-*-*");
-   
+   /*
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
+   if (char_set==CHAR_SET_1250) {
+       small_font = gdk_fontset_load("-misc-fixed-medium-r-*-*-*-100-*-*-*-iso8859-2");
+   } else {
+       small_font = gdk_fontset_load("-misc-fixed-medium-r-*-*-*-100-*-*-*-*-*");
+   }
+   */
    color.red = 0xAAAA;
    color.green = 0xAAAA;
    color.blue = 0xAAAA;
@@ -160,26 +175,26 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
    }
 
    /* Get all of the appointments */
-   get_days_appointments(&a_list, NULL);
+   get_days_appointments2(&a_list, NULL, 2, 2, 2);
 
    /* iterate through eight days */
    memcpy(&date, date_in, sizeof(struct tm));
 
-   get_pref(PREF_SHOW_MODIFIED, &modified, NULL);
-   get_pref(PREF_SHOW_DELETED, &deleted, NULL);
 
    for (n=0; n<8; n++, add_days_to_date(&date, 1)) {
       for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
-	 if (temp_al->ma.rt == MODIFIED_PALM_REC) {
-	    if (!modified) {
+#ifdef USE_DB3
+	 get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
+	 if (use_db3_tags) {
+	    ret = db3_is_float(&(temp_al->ma.a), &category);
+	    jpilot_logf(LOG_DEBUG, "category = 0x%x\n", category);
+	    cat_bit=1<<category;
+	    if (!(cat_bit & datebook_category)) {
+	       jpilot_logf(LOG_DEBUG, "skipping rec not in this category\n");
 	       continue;
 	    }
 	 }
-	 if (temp_al->ma.rt == DELETED_PALM_REC) {
-	    if (!deleted) {
-	       continue;
-	    }
-	 }
+#endif
 	 if (isApptOnDate(&(temp_al->ma.a), &date)) {
 	    if (temp_al->ma.a.event) {
 	       desc[0]='\0';
@@ -194,8 +209,10 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
 	    }
 	    remove_cr_lfs(desc);
 	    strcat(desc, "\n");
+	    /* gtk_text_insert(GTK_TEXT(text[n]),
+			    small_font, NULL, NULL, desc, -1);*/
 	    gtk_text_insert(GTK_TEXT(text[n]),
-			    small_font, NULL, NULL, desc, -1);
+			    NULL, NULL, NULL, desc, -1);
 	 }
       }
    }
@@ -215,6 +232,7 @@ void weekview_gui(struct tm *date_in)
    const char *str_fdow;
    long fdow;
    int i;
+   char title[200];
    
    if (window) {
       return;
@@ -225,7 +243,9 @@ void weekview_gui(struct tm *date_in)
    window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
    gtk_window_set_default_size(GTK_WINDOW(window), 800, 600);
    gtk_container_set_border_width(GTK_CONTAINER(window), 10);
-   gtk_window_set_title(GTK_WINDOW(window), PN" Weekly View");
+   g_snprintf(title, 200, "%s %s", PN, _("Weekly View"));
+   title[199]='\0';
+   gtk_window_set_title(GTK_WINDOW(window), title);
 
    gtk_signal_connect(GTK_OBJECT(window), "destroy",
                       GTK_SIGNAL_FUNC(cb_destroy), window);
@@ -251,7 +271,7 @@ void weekview_gui(struct tm *date_in)
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 3);
 
    /* Create a "Quit" button */
-   button = gtk_button_new_with_label("Close");
+   button = gtk_button_new_with_label(_("Close"));
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_quit), window);
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
@@ -281,7 +301,7 @@ void weekview_gui(struct tm *date_in)
 
    for (i=0; i<8; i++) {
       glob_week_texts[i] = gtk_text_new(NULL, NULL);
-      if (i%2) {
+      if (i>3) {
 	 gtk_box_pack_start(GTK_BOX(vbox_right), glob_week_texts[i], FALSE, FALSE, 0);
       } else {
 	 gtk_box_pack_start(GTK_BOX(vbox_left), glob_week_texts[i], FALSE, FALSE, 0);

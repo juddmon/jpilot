@@ -4,8 +4,7 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,18 +18,85 @@
 #ifndef __LIBPLUGIN_H__
 #define __LIBPLUGIN_H__
 
-# include <gtk/gtk.h>
+#include <gtk/gtk.h>
 
 /*
  * PLUGIN API for J-Pilot
  */
-#ifndef __UTILS_H__
 
-#define JPILOT_EOF -7
+/*
+ * For versioning of files
+ */
+#define FILE_VERSION     "version"
+#define FILE_VERSION2    "version2"
+#define FILE_VERSION2_CR "version2\n"
+
+
+typedef struct {
+  unsigned char Offset[4];  /*4 bytes offset from BOF to record */
+  unsigned char attrib;
+  unsigned char unique_ID[3];
+} record_header;
+
+typedef struct {
+   unsigned long header_len;
+   unsigned long header_version;
+   unsigned long rec_len;
+   unsigned long unique_id;
+   unsigned long rt; /* Record Type */
+   unsigned char attrib;
+} PC3RecordHeader;
+
+typedef struct mem_rec_header_s {
+   unsigned int rec_num;
+   unsigned int offset;
+   unsigned int unique_id;
+   unsigned char attrib;
+   struct mem_rec_header_s *next;
+} mem_rec_header;
+
+typedef struct {
+   unsigned char db_name[32];
+   unsigned char flags[2];
+   unsigned char version[2];
+   unsigned char creation_time[4];
+   unsigned char modification_time[4];
+   unsigned char backup_time[4];
+   unsigned char modification_number[4];
+   unsigned char app_info_offset[4];
+   unsigned char sort_info_offset[4];
+   unsigned char type[4];/*Database ID */
+   unsigned char creator_id[4];/*Application ID */
+   unsigned char unique_id_seed[4];
+   unsigned char next_record_list_id[4];
+   unsigned char number_of_records[2];
+} RawDBHeader;
+
+typedef struct {
+   char db_name[32];
+   unsigned int flags;
+   unsigned int version;
+   time_t creation_time;
+   time_t modification_time;
+   time_t backup_time;
+   unsigned int modification_number;
+   unsigned int app_info_offset;
+   unsigned int sort_info_offset;
+   char type[5];/*Database ID */
+   char creator_id[5];/*Application ID */
+   char unique_id_seed[5];
+   unsigned int next_record_list_id;
+   unsigned int number_of_records;
+} DBHeader;
+
+int get_next_unique_pc_id(unsigned int *next_unique_id);
 
 /* used for jp_delete_record */
+#define CLEAR_FLAG  1
+#define CANCEL_FLAG 2
 #define DELETE_FLAG 3
 #define MODIFY_FLAG 4
+#define NEW_FLAG    5
 
 #define CLIST_DEL_RED 0xCCCC;
 #define CLIST_DEL_GREEN 0xCCCC;
@@ -50,10 +116,13 @@
 #define LOG_FILE   512  /*messages always go to the log file */
 #define LOG_GUI    1024 /*messages always go to the gui window */
 
-int jpilot_logf(int level, char *format, ...);
-/* int (*jp_logf)(int level, char *format, ...); */
-int jp_logf(int level, char *format, ...);
-/* void plugin_set_jpilot_logf(int (*Pjpilot_logf)(int level, char *format, ...));*/
+#define JPILOT_EOF -7
+
+extern int jpilot_logf(int level, char *format, ...);
+/* FIXME: Need a policy.  Should all symbols avaliable to 
+ * plugins start with jp or jpilot?
+ */
+#define jp_logf jpilot_logf
 
 #define SPENT_PC_RECORD_BIT 256
 
@@ -65,8 +134,6 @@ typedef enum {
    DELETED_PC_REC =  SPENT_PC_RECORD_BIT + 104L,
    DELETED_DELETED_PALM_REC =  SPENT_PC_RECORD_BIT + 105L
 } PCRecType;
-
-#endif 
 
 typedef struct
 {
@@ -80,6 +147,8 @@ typedef struct
 typedef struct
 {
    char *base_dir;
+   int *major_version;
+   int *minor_version;
 } jp_startup_info;
 
 struct search_result
@@ -106,10 +175,9 @@ int plugin_exit_cleanup(void);
 /* callbacks are needed for print */
 
 void jp_init();
+extern FILE *jp_open_home_file(char *filename, char *mode);
 
-/* */
-/*file must not be open elsewhere when this is called */
-/*the first line is 0 */
+/* file must not be open elsewhere when this is called, the first line is 0 */
 int jp_install_remove_line(int deleted_line);
 
 int jp_install_append_line(char *line);
@@ -136,5 +204,21 @@ int jp_free_DB_records(GList **records);
 int jp_pc_write(char *DB_name, buf_rec *br);
 
 const char *jp_strstr(const char *haystack, const char *needle, int case_sense);
+
+int read_header(FILE *pc_in, PC3RecordHeader *header);
+
+int write_header(FILE *pc_out, PC3RecordHeader *header);
+
+/*
+ * These 2 functions don't take full path names.
+ * They are relative to $JPILOT_HOME/.jpilot/
+ */
+int rename_file(char *old_filename, char *new_filename);
+int unlink_file(char *filename);
+
+/* */
+/*Warning, this function will move the file pointer */
+/* */
+int get_app_info_size(FILE *in, int *size);
 
 #endif

@@ -4,8 +4,7 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -44,13 +43,13 @@ int install_remove_line(int deleted_line)
    char *Pc;
    int r, line_count;
 
-   in = open_file("jpilot_to_install", "r");
+   in = jp_open_home_file("jpilot_to_install", "r");
    if (!in) {
       jpilot_logf(LOG_DEBUG, "failed opening install_file\n");
       return -1;
    }
    
-   out = open_file("jpilot_to_install.tmp", "w");
+   out = jp_open_home_file("jpilot_to_install.tmp", "w");
    if (!out) {
       fclose(in);
       jpilot_logf(LOG_DEBUG, "failed opening install_file.tmp\n");
@@ -84,7 +83,7 @@ static int install_append_line(char *line)
    FILE *out;
    int r;
    
-   out = open_file("jpilot_to_install", "a");
+   out = jp_open_home_file("jpilot_to_install", "a");
    if (!out) {
       return -1;
    }
@@ -169,7 +168,7 @@ static int
    
    kept_line_selected = line_selected;
 
-   in = open_file("jpilot_to_install", "r");
+   in = jp_open_home_file("jpilot_to_install", "r");
    if (!in) {
       return -1;
    }

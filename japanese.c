@@ -6,110 +6,120 @@
 */
 
 #include "config.h"
+#include "japanese.h"
 
-#if defined(WITH_JAPANESE)
-
+#include <stdlib.h>
 #include <stdio.h>
+
+/* In utils.c, also a prototype in utils.h */
+void multibyte_safe_strncpy(char *dst, char *src, size_t max_len);
 
 #define isSjis1stByte(c) \
     (((c) >= 0x81 && (c) <= 0x9f) || ((c) >= 0xe0))
+#define isSjisKana(c) \
+    (0xa0 <= (c) && (c) <= 0xdf)
+#define euc_kana (0x8e)
+#define isEucKana(c) ((c) == euc_kana)
+#define isEuc(c) \
+    (0xa0 < ((unsigned char) (c)) && ((unsigned char) (c)) < 0xff)
 
-static unsigned int CharSjis2Jis(unsigned int code)
+
+static unsigned int SjisToEuc(unsigned char hi, unsigned char lo)
 {
-    unsigned char sh,sl,jh,jl;
+  if (lo >= 0x9f)
+    return ((hi * 2 - (hi >= 0xe0 ? 0xe0 : 0x60)) << 8) | (lo + 2);
+  else
+    return ((hi * 2 - (hi >= 0xe0 ? 0xe1 : 0x61)) << 8) |
+            (lo + (lo >= 0x7f ? 0x60 : 0x61));
+}
 
-    sh = (code >> 8) & 0xff;
-    sl = code & 0xff;
 
-    if (sl <= 0x9e){
-	if (sh <= 0x9f){
-	    jh = (sh - 0x71) * 2 + 1;
-	} else {
-	    jh = (sh - 0xb1) * 2 + 1;
+unsigned char *Sjis2EucCpy(unsigned char *dest, unsigned char *src, int max_len)
+{
+    unsigned char *p, *q;
+    unsigned char hi, lo;
+    unsigned int w;
+    int n = 0;
+
+    p = src;
+    q = dest;
+    while ((*p) && (n < max_len-1)) {
+	    if (isSjis1stByte(*p)) {
+  	    hi = *p++;
+	    lo = *p++;
+	    w = SjisToEuc(hi, lo);
+	    *q++ = (w >> 8) & 0xff;
+	    *q++ = w & 0xff;
+	    n += 2;
+	} else if (isSjisKana(*p)) {                /* sjis(1byte) -> euc(2byte) */
+	    *q++ = (unsigned char)euc_kana;
+	    *q++ = *p++;
+	    n += 2;
+	} else if ((*p) & 0x80) {	            /* irregular japanese char */
+	    p++;                                    /* ??abort and return NULL?? */
+	    /* discard it */ 
+	    } else {
+	    *q++ = *p++;
+	    n++;
 	}
-	jl = sl - 0x1f;
-	if (sl >= 0x80)
-	    jl--;
-    } else {
-	if (sh <= 0x9f){
-	    jh = (sh - 0x70) * 2;
-	} else {
-	    jh = (sh - 0xB0) * 2;
-	}
-	jl = sl - 0x7e;
     }
-    return (jh << 8) + jl;
+    *q = '\0';
+    return dest;
 }
 
 void Sjis2Euc(unsigned char *buf, int max_len)
 {
-    unsigned char *p, *q;
-    int half_byte = 0;
-    int word16, first_byte = 0;
-    int n;
+	unsigned char *dst;
 
-    if (buf == NULL)
-	return;
-    for (p = buf, q = buf, n = 0; *p && n < max_len; p++, n++) {
-	if (half_byte) {
-	    word16 = CharSjis2Jis((first_byte << 8) | *p) | 0x8080; /* to EUC */
-	    half_byte = 0;
-	    *q++ = word16 >> 8;
-	    *q++ = word16 & 0xff;
-	} else {
-	    if (isSjis1stByte(*p)) {
-		/* shift JIS kanji first byte */
-		half_byte = 1;
-		first_byte = *p;
-	    } else {
-		*q++ = *p;
-	    }
-	}
+	if (buf == NULL) return;
+	if ((dst = (unsigned char *)malloc(max_len*2)) != NULL) {
+		if (Sjis2EucCpy(dst, buf, max_len*2) != NULL)
+			multibyte_safe_strncpy(buf, dst, max_len);
+		free(dst);
     }
-    *q++ = '\0';
 }
 
-static unsigned int CharEuc2Sjis(unsigned int code)
+static unsigned int EucToSjis(unsigned char hi, unsigned char lo)
 {
-    register unsigned char jh, jl, sh, sl;
+  if (hi & 1)
+    return ((hi / 2 + (hi < 0xdf ? 0x31 : 0x71)) << 8) |
+            (lo - (lo >= 0xe0 ? 0x60 : 0x61));
+  else
+    return ((hi / 2 + (hi < 0xdf ? 0x30 : 0x70)) << 8) | (lo - 2);
+}
 
-    jh = (code >> 8) & 0x7f;
-    jl = code & 0x7f;
-    if (jh <= 0x5e) {
-	sh = (jh - 1) / 2 + 0x71;
-    } else {
-	sh = (jh - 1) / 2 + 0xb1;
+unsigned char *Euc2SjisCpy(unsigned char *dest, unsigned char *src, int max_len)
+{
+    unsigned char *p, *q; 
+    unsigned char hi, lo;
+    unsigned int w;
+    int n = 0;
+
+    p = src;   
+    q = dest;
+    while ((*p) && (n < max_len-1)) {
+	if (isEucKana(*p)) {      /* euc kana(2byte) -> sjis(1byte) */
+	    p++;
+	    *q++ = *p++;
+	    n++;
+	} else if (isEuc(*p) && isEuc(*(p+1))) {
+   	    hi = *p++;
+	    lo = *p++;
+	    w = EucToSjis(hi, lo);
+	    *q++ = (w >> 8) & 0xff;
+	    *q++ = w & 0xff;
+	    n += 2;
+	} else {                  /* ascii or irregular japanese char */
+	    *q++ = *p++;
+	    n++;
+	}
     }
-    if (jh & 1) {
-	if ((sl = jl + 0x1f) >= 0x7f)
-	    sl++;
-    } else {
-	sl = jl + 0x7e;
-    }
-    return (sh << 8) + sl;
+    *q = '\0';
+    return dest;
 }
 
 void Euc2Sjis(unsigned char *buf, int max_len)
 {
-    unsigned char *p = buf, *q = buf;
-    unsigned int code, cl, ch;
-    int n;
-
-    if (buf == NULL)
-	return;
-    n = 0;
-    while (*p && n < max_len) {
-	if ((ch = *p++) & 0x80) {
-	    cl = *p++;
-	    code = (ch << 8) + cl;
-	    code = CharEuc2Sjis(code);
-	    *q++ = (code >> 8) & 0xff;
-	    *q++ = code & 0xff;
-	    n += 2;
-	} else {
-	    *q++ = ch;
-	    n++;
-	}
-    }
+	if (buf == NULL) return;
+	Euc2SjisCpy(buf, buf, max_len);
 }
-#endif

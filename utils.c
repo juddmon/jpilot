@@ -4,8 +4,7 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -35,19 +34,47 @@
 #include <utime.h>
 #include <time.h>
 #include <errno.h>
+#include <gdk/gdkkeysyms.h>
+#include <gdk/gdk.h>
 #include "plugins.h"
+#include "libplugin.h"
+
 
 #include <pi-source.h>
 #include <pi-socket.h>
 #include <pi-dlp.h>
 #include <pi-file.h>
 
+/*
+ * For versioning of files
+ */
+#define FILE_VERSION     "version"
+#define FILE_VERSION2    "version2"
+#define FILE_VERSION2_CR "version2\n"
 
 /*Stuff for the dialog window */
 extern GtkWidget *glob_dialog;
 int dialog_result;
 
 unsigned int glob_find_id;
+
+/*Stuff for the calendar window */
+static int glob_cal_return_code;
+static int glob_cal_mon, glob_cal_day, glob_cal_year;
+
+
+int cat_compare(const void *v1, const void *v2)
+{
+   struct sorted_cats *s1, *s2;
+   s1=(struct sorted_cats *)v1; s2=(struct sorted_cats *)v2;
+   if ((s1)->Pcat[0]=='\0') {
+      return 1;
+   }
+   if ((s2)->Pcat[0]=='\0') {
+      return -1;
+   }
+   return strcmp((s1)->Pcat, (s2)->Pcat);
+}
 
 gint timeout_date(gpointer data)
 {
@@ -151,6 +178,106 @@ int sub_days_from_date(struct tm *date, int n)
    return 0;
 }
 
+/*
+ * This function will increment the date by n number of months and
+ * adjust the day to the last day of the month if it exceeds the number
+ * of days in the new month
+ */
+int add_months_to_date(struct tm *date, int n)
+{
+   int i;
+   int days_in_month[]={31,28,31,30,31,30,31,31,30,31,30,31
+   };
+   
+   for (i=0; i<n; i++) {
+      if (++(date->tm_mon) > 11) {
+	 date->tm_mon=0;
+	 if (++(date->tm_year)>137) {
+	    date->tm_year = 137;
+	 }
+      }
+   }
+
+   if ((date->tm_year%4 == 0) &&
+       !(((date->tm_year+1900)%100==0) && ((date->tm_year+1900)%400!=0))) {
+      days_in_month[1]++;
+   }
+   
+   if (date->tm_mday > days_in_month[date->tm_mon]) {
+      date->tm_mday = days_in_month[date->tm_mon];
+   }
+
+   mktime(date);
+   return 0;  
+}
+
+/*
+ * This function will decrement the date by n number of months and
+ * adjust the day to the last day of the month if it exceeds the number
+ * of days in the new month
+ */
+int sub_months_from_date(struct tm *date, int n)
+{
+   int i;
+   int days_in_month[]={31,28,31,30,31,30,31,31,30,31,30,31
+   };
+
+   for (i=0; i<n; i++) {
+      if (--(date->tm_mon) < 0) {
+	 date->tm_mon=11;
+	 if (--(date->tm_year)<3) {
+	    date->tm_year = 3;
+	 }
+      }
+   }
+
+   if ((date->tm_year%4 == 0) &&
+       !(((date->tm_year+1900)%100==0) && ((date->tm_year+1900)%400!=0))) {
+      days_in_month[1]++;
+   }
+   
+   if (date->tm_mday > days_in_month[date->tm_mon]) {
+      date->tm_mday = days_in_month[date->tm_mon];
+   }
+
+   mktime(date);
+   return 0;  
+}
+
+/*
+ * This function will increment the date by n number of years and
+ * adjust feb 29th to feb 28th if its not a leap year
+ */
+static int add_or_sub_years_to_date(struct tm *date, int n)
+{
+   date->tm_year += n;
+   
+   if (date->tm_year>137) {
+      date->tm_year = 137;
+   }
+   if (date->tm_year<3) {
+      date->tm_year = 3;
+   }
+   /*Leap day/year */
+   if ((date->tm_mon==1) && (date->tm_mday==29)) {
+      if (!((date->tm_year%4 == 0) &&
+	    !(((date->tm_year+1900)%100==0) && ((date->tm_year+1900)%400!=0)))) {
+	 /* Move it back one day */
+	 date->tm_mday=28;
+      }
+   }
+   return 0;
+}
+
+int add_years_to_date(struct tm *date, int n)
+{
+   return add_or_sub_years_to_date(date, n);
+}
+
+int sub_years_from_date(struct tm *date, int n)
+{
+   return add_or_sub_years_to_date(date, -n);
+}
 
 /*
  * Parse the string and replace CR and LFs with spaces
@@ -168,34 +295,26 @@ void remove_cr_lfs(char *str)
       }
    }
 }
-   
-/*void free_AnyRecordList(AnyRecordList **rl)
-{
-   AnyRecordList *temp_rl, *temp_rl_next;
 
-   for (temp_rl = *rl; temp_rl; temp_rl=temp_rl_next) {	   
-      switch (temp_rl->app_type) {
-       case DATEBOOK:
-	 free_Appointment(&(temp_rl->any.mappo.a));
-	 break;
-       case ADDRESS:
-	 free_Address(&(temp_rl->any.maddr.a));
-	 break;
-       case TODO:
-	 free_ToDo(&(temp_rl->any.mtodo.todo));
-	 break;
-       case MEMO:
-	 free_Memo(&(temp_rl->any.mmemo.memo));
-	 break;
-       default:
-	 break;
+/*
+ * This function just removes extra slashes from a string
+ */
+void cleanup_path(char *path)
+{
+   register int s, d; /* source and destination */
+
+   if (!path) return;
+   for (s=d=0; path[s]!='\0'; s++,d++) {
+      if ((path[s]=='/') && (path[s+1]=='/')) {
+	 d--;
+	 continue;
       }
-      temp_rl_next = temp_rl->next;
-      free(temp_rl);
+      if (d!=s) {
+	 path[d]=path[s];
+      }
    }
-   *rl = NULL;
+   path[d]='\0';
 }
-*/
 
 void free_search_record_list(struct search_record **sr)
 {
@@ -582,32 +701,147 @@ char * xpm_float_checked[] = {
    return 0;
 }
 
+/*
+ * Start of GTK calendar code
+ */
+#define PRESSED_P            100
+#define PRESSED_A            101
+#define PRESSED_TAB_OR_MINUS 102
+
+static GtkWidget *util_cal;
+static GtkWidget *cal_window;
+
+static void
+cb_today(GtkWidget *widget,
+	 gpointer   data)
+{
+   time_t ltime;
+   struct tm *now;
+   GtkWidget *cal;
+
+   cal = data;
+   time(&ltime);
+   now = localtime(&ltime);
+
+   gtk_calendar_select_month(GTK_CALENDAR(cal), now->tm_mon, now->tm_year+1900);
+   gtk_calendar_select_day(GTK_CALENDAR(cal), now->tm_mday);
+}
+
+static gboolean cb_destroy(GtkWidget *widget)
+{
+   gtk_main_quit();
+   return FALSE;
+}
+
+static void
+cb_quit(GtkWidget *widget,
+	gpointer   data)
+{
+   int y,m,d;
+
+   glob_cal_return_code = GPOINTER_TO_INT(data);
+
+   if (glob_cal_return_code==CAL_DONE) {
+      gtk_calendar_get_date(GTK_CALENDAR(util_cal),&y,&m,&d);
+      glob_cal_mon=m;
+      glob_cal_day=d;
+      glob_cal_year=y;
+   }
+
+   gtk_widget_destroy(cal_window);
+}
+
+/* mon 0-11
+ * day 1-31
+ * year (year - 1900)
+ * This function will bring up the cal at mon, day, year
+ * After a new date is selected it will return mon, day, year
+ */
+int cal_dialog(const char *title, int monday_is_fdow,
+	       int *mon, int *day, int *year)
+{
+   GtkWidget *button;
+   GtkWidget *vbox;
+   GtkWidget *hbox;
+   glob_cal_mon = *mon;
+   glob_cal_day = *day;
+   glob_cal_year = (*year) + 1900;
+
+   cal_window = gtk_window_new(GTK_WINDOW_DIALOG);
+   gtk_window_set_title(GTK_WINDOW(cal_window), title);
+
+   gtk_window_set_position(GTK_WINDOW(cal_window), GTK_WIN_POS_MOUSE);
+
+   gtk_window_set_modal(GTK_WINDOW(cal_window), TRUE);
+   
+   gtk_signal_connect(GTK_OBJECT(cal_window), "destroy",
+		      GTK_SIGNAL_FUNC(cb_destroy), cal_window);
+   
+   vbox = gtk_vbox_new(FALSE, 0);
+   gtk_container_add(GTK_CONTAINER(cal_window), vbox);
+
+   util_cal = gtk_calendar_new();
+   gtk_box_pack_start(GTK_BOX(vbox), util_cal, TRUE, TRUE, 0);
+
+   hbox = gtk_hbox_new(FALSE, 0);
+   gtk_container_add(GTK_CONTAINER(vbox), hbox);
+
+   gtk_calendar_display_options(GTK_CALENDAR(util_cal),
+				GTK_CALENDAR_SHOW_HEADING |
+				GTK_CALENDAR_SHOW_DAY_NAMES |
+				/*GTK_CALENDAR_NO_MONTH_CHANGE |*/
+				GTK_CALENDAR_SHOW_WEEK_NUMBERS |
+				(monday_is_fdow ? GTK_CALENDAR_WEEK_START_MONDAY : 0));
+
+   /* gtk_signal_connect(GTK_OBJECT(util_cal), "day_selected", cb_cal_sel, NULL); */
+   gtk_signal_connect(GTK_OBJECT(util_cal), "day_selected_double_click", cb_quit,
+		      GINT_TO_POINTER(CAL_DONE));
+
+   /* gtk_calendar_mark_day(GTK_CALENDAR(util_cal), 23); */
+
+   gtk_calendar_select_month(GTK_CALENDAR(util_cal), *mon, (*year)+1900);
+   gtk_calendar_select_day(GTK_CALENDAR(util_cal), *day);
+   
+
+   /* Bottom Buttons */
+   button = gtk_button_new_with_label(_("OK"));
+   gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
+   gtk_signal_connect(GTK_OBJECT(button), "clicked", GTK_SIGNAL_FUNC(cb_quit),
+		      GINT_TO_POINTER(CAL_DONE));
+   
+   button = gtk_button_new_with_label(_("Today"));
+   gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
+   gtk_signal_connect(GTK_OBJECT(button), "clicked",
+		      GTK_SIGNAL_FUNC(cb_today), util_cal);
+   
+   button = gtk_button_new_with_label(_("Cancel"));
+   gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
+   gtk_signal_connect(GTK_OBJECT(button), "clicked", GTK_SIGNAL_FUNC(cb_quit),
+		      GINT_TO_POINTER(CAL_CANCEL));
+   
+   gtk_widget_show_all(cal_window);
+
+   gtk_main();
+
+   if (glob_cal_return_code==CAL_DONE) {
+      *mon = glob_cal_mon;
+      *day = glob_cal_day;
+      *year = glob_cal_year - 1900;
+   }
+
+   return glob_cal_return_code;
+}
+/*
+ * End of GTK calendar code
+ */
+
 /* */
 /*Start of Dialog window code */
 /* */
-void cb_dialog_button_1(GtkWidget *widget,
+void cb_dialog_button(GtkWidget *widget,
 			gpointer   data)
 {
-   /*dialog_result=GPOINTER_TO_INT(data); */
-   dialog_result=DIALOG_SAID_1;
-
-   gtk_widget_destroy(glob_dialog);
-}
-
-void cb_dialog_button_2(GtkWidget *widget,
-			gpointer   data)
-{
-   /*dialog_result=GPOINTER_TO_INT(data); */
-   dialog_result=DIALOG_SAID_2;
-
-   gtk_widget_destroy(glob_dialog);
-}
-
-void cb_dialog_button_3(GtkWidget *widget,
-			gpointer   data)
-{
-   /*dialog_result=GPOINTER_TO_INT(data); */
-   dialog_result=DIALOG_SAID_3;
+   dialog_result=GPOINTER_TO_INT(data);
 
    gtk_widget_destroy(glob_dialog);
 }
@@ -640,17 +874,22 @@ int dialog_generic(GdkWindow *main_window,
    x=px+pw/2-w/2;
    y=py+ph/2-h/2;
    
-   /*glob_dialog=gtk_window_new(GTK_WINDOW_TOPLEVEL); */
-   glob_dialog = gtk_widget_new(GTK_TYPE_WINDOW,
-			   "type", GTK_WINDOW_DIALOG,
-			   "x", x, "y", y,
-			   "width", w, "height", h,
-			   "title", title,
-			   NULL);
+   /*glob_dialog=gtk_window_new(GTK_WINDOW_TOPLEVEL);*/
+   if (w && h) {
+      glob_dialog = gtk_widget_new(GTK_TYPE_WINDOW,
+				   "type", GTK_WINDOW_DIALOG,
+				   "x", x, "y", y,
+				   "width", w, "height", h,
+				   "title", title,
+				   NULL);
+   } else {
+      glob_dialog = gtk_widget_new(GTK_TYPE_WINDOW,
+				   "type", GTK_WINDOW_DIALOG,
+				   "x", x, "y", y,
+				   "title", title,
+				   NULL);
+   }
 
-   /*gtk_window_set_position(GTK_WINDOW(glob_dialog), GTK_WIN_POS_CENTER); */
-   /*gtk_window_set_position(GTK_WINDOW(glob_dialog), GTK_WIN_POS_MOUSE); */
-   
    gtk_signal_connect(GTK_OBJECT(glob_dialog), "destroy",
                       GTK_SIGNAL_FUNC(cb_destroy_dialog), glob_dialog);
 
@@ -676,26 +915,26 @@ int dialog_generic(GdkWindow *main_window,
    gtk_box_pack_start(GTK_BOX(vbox1), hbox1, TRUE, TRUE, 2);
 
    if (nob > 0) {
-      button = gtk_button_new_with_label(button_text[0]);
-      gtk_signal_connect_object(GTK_OBJECT(button), "clicked",
-				GTK_SIGNAL_FUNC(cb_dialog_button_1),
-				GINT_TO_POINTER(DIALOG_SAID_1));
+      button = gtk_button_new_with_label(gettext(button_text[0]));
+      gtk_signal_connect(GTK_OBJECT(button), "clicked",
+			 GTK_SIGNAL_FUNC(cb_dialog_button),
+			 GINT_TO_POINTER(DIALOG_SAID_1));
       gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
    }
 
    if (nob > 1) {
-      button = gtk_button_new_with_label(button_text[1]);
-      gtk_signal_connect_object(GTK_OBJECT(button), "clicked",
-				GTK_SIGNAL_FUNC(cb_dialog_button_2),
-				GINT_TO_POINTER(DIALOG_SAID_2));
+      button = gtk_button_new_with_label(gettext(button_text[1]));
+      gtk_signal_connect(GTK_OBJECT(button), "clicked",
+			 GTK_SIGNAL_FUNC(cb_dialog_button),
+			 GINT_TO_POINTER(DIALOG_SAID_2));
       gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
    }
 
    if (nob > 2) {
-      button = gtk_button_new_with_label(button_text[2]);
-      gtk_signal_connect_object(GTK_OBJECT(button), "clicked",
-				GTK_SIGNAL_FUNC(cb_dialog_button_3),
-				GINT_TO_POINTER(DIALOG_SAID_3));
+      button = gtk_button_new_with_label(gettext(button_text[2]));
+      gtk_signal_connect(GTK_OBJECT(button), "clicked",
+			 GTK_SIGNAL_FUNC(cb_dialog_button),
+			 GINT_TO_POINTER(DIALOG_SAID_3));
       gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
    }
 
@@ -745,7 +984,7 @@ int check_hidden_dir()
 
    if (stat(hidden_dir, &statb)) {
       /*directory isn\'t there, create it */
-      if (mkdir(hidden_dir, 0777)) {
+      if (mkdir(hidden_dir, 0700)) {
 	 /*Can\'t create directory */
 	 jpilot_logf(LOG_WARN, "Can't create directory %s\n", hidden_dir);
 	 return 1;
@@ -774,12 +1013,12 @@ int check_hidden_dir()
    return 0;
 }
 
-/* */
-/* month = 0-11 */
-/* day = day of month 1-31 */
-/* dow = day of week for first day of the month 0-6 */
-/* ndim = number of days in month 28-31 */
-/* */
+/*
+ * month = 0-11
+ * day = day of month 1-31
+ * dow = day of week for this date
+ * ndim = number of days in month 28-31
+ */
 void get_month_info(int month, int day, int year, int *dow, int *ndim)
 {
    time_t ltime;
@@ -824,13 +1063,56 @@ void get_this_month_info(int *dow, int *ndim)
    get_month_info(now->tm_mon, now->tm_mday, now->tm_year, dow, ndim);
 }
 
+int write_to_next_id_open(FILE *pc_out, unsigned int unique_id)
+{
+   char id_str[50];
+   
+   if (fseek(pc_out, 0, SEEK_SET)) {
+      jpilot_logf(LOG_WARN, "fseek failed\n");
+      return -1;
+   }
+   
+   if (fwrite(FILE_VERSION2_CR, strlen(FILE_VERSION2_CR), 1, pc_out) != 1) {
+      jpilot_logf(LOG_WARN, "Error writing pc header to file: next_id\n");
+      return -1;
+   }
+   sprintf(id_str, "%d", unique_id);
+   if (fwrite(id_str, strlen(id_str), 1, pc_out) != 1) {
+      jpilot_logf(LOG_WARN, "Error writing next_id to file\n");
+      return -1;
+   }
+   if (fwrite("\n", strlen("\n"), 1, pc_out) != 1) {
+      jpilot_logf(LOG_WARN, "Error writing pc header to file: next_id\n");
+      return -1;
+   }
+   return 0;
+}
+
+int write_to_next_id(unsigned int unique_id)
+{
+   FILE *pc_out;
+   int ret;
+
+   pc_out = jp_open_home_file("next_id", "r+");
+   if (pc_out==NULL) {
+      jpilot_logf(LOG_WARN, "Error opening next_id\n");
+      return -1;
+   }
+
+   ret = write_to_next_id_open(pc_out, unique_id);
+
+   fclose(pc_out);
+   
+   return ret;
+}
+
 int get_next_unique_pc_id(unsigned int *next_unique_id)
 {
-   /*PCFileHeader   file_header; */
    FILE *pc_in_out;
    char file_name[256];
+   char str[256];
 
-   pc_in_out = open_file("next_id", "a+");
+   pc_in_out = jp_open_home_file("next_id", "a+");
    if (pc_in_out==NULL) {
       jpilot_logf(LOG_WARN, "Error opening %s\n",file_name);
       return -1;
@@ -839,54 +1121,36 @@ int get_next_unique_pc_id(unsigned int *next_unique_id)
    if (ftell(pc_in_out)==0) {
       /*We have to write out the file header */
       *next_unique_id=1;
-      if (fwrite(next_unique_id, sizeof(*next_unique_id), 1, pc_in_out) != 1) {
-	 jpilot_logf(LOG_WARN, "Error writing pc header to file: next_id\n");
-	 fclose(pc_in_out);
-	 return 0;
-      }
-      fflush(pc_in_out);
+      write_to_next_id_open(pc_in_out, *next_unique_id);
    }
    fclose(pc_in_out);
-   pc_in_out = open_file("next_id", "r+");
+   pc_in_out = jp_open_home_file("next_id", "r+");
    if (pc_in_out==NULL) {
       jpilot_logf(LOG_WARN, "Error opening %s\n",file_name);
       return -1;
    }
-   fread(next_unique_id, sizeof(*next_unique_id), 1, pc_in_out);
+   memset(str, '\0', sizeof(FILE_VERSION)+4);
+   fread(str, 1, strlen(FILE_VERSION), pc_in_out);
+   if (!strcmp(str, FILE_VERSION)) {
+      /* Must be a versioned file */
+      fseek(pc_in_out, 0, SEEK_SET);
+      fgets(str, 200, pc_in_out);
+      fgets(str, 200, pc_in_out);
+      str[200]='\0';
+      *next_unique_id = atoi(str);
+   } else {
+      fseek(pc_in_out, 0, SEEK_SET);
+      fread(next_unique_id, sizeof(*next_unique_id), 1, pc_in_out);
+   }
    (*next_unique_id)++;
    if (fseek(pc_in_out, 0, SEEK_SET)) {
       jpilot_logf(LOG_WARN, "fseek failed\n");
    }
    /*rewind(pc_in_out); */
    /*todo - if > 16777216 then cleanup */
-   if (fwrite(next_unique_id, sizeof(*next_unique_id), 1, pc_in_out) != 1) {
-      jpilot_logf(LOG_WARN, "Error writing to file: next_id\n");
-   }
-   fflush(pc_in_out);
+
+   write_to_next_id_open(pc_in_out, *next_unique_id);
    fclose(pc_in_out);
-   
-   return 0;
-}
-   
-int write_to_next_id(unsigned int unique_id)
-{
-   FILE *pc_out;
-
-   pc_out = open_file("next_id", "r+");
-   if (pc_out==NULL) {
-      jpilot_logf(LOG_WARN, "Error opening next_id\n");
-      return -1;
-   }
-
-   if (fseek(pc_out, 0, SEEK_SET)) {
-      jpilot_logf(LOG_WARN, "fseek failed\n");
-      fclose(pc_out);
-      return -1;
-   }
-   if (fwrite(&unique_id, sizeof(unique_id), 1, pc_out) != 1) {
-      jpilot_logf(LOG_WARN, "Error writing to file: next_id\n");
-   }
-   fclose(pc_out);
    
    return 0;
 }
@@ -928,7 +1192,7 @@ int read_gtkrc_file()
    return -1;
 }
 
-FILE *open_file(char *filename, char *mode)
+FILE *jp_open_home_file(char *filename, char *mode)
 {
    char fullname[256];
    FILE *pc_in;
@@ -1165,7 +1429,7 @@ void print_string(char *str, int len)
 }
 
 /* */
-/*Warning, this function will move the file pointer */
+/* Warning, this function will move the file pointer */
 /* */
 int get_app_info_size(FILE *in, int *size)
 {
@@ -1217,7 +1481,7 @@ int get_app_info(char *DB_name, unsigned char **buf, int *buf_size)
    *buf_size=0;
 
    g_snprintf(PDB_name, 255, "%s.pdb", DB_name);
-   in = open_file(PDB_name, "r");
+   in = jp_open_home_file(PDB_name, "r");
    if (!in) {
       jpilot_logf(LOG_WARN, "Error opening %s\n", PDB_name);
       return -1;
@@ -1246,7 +1510,7 @@ int get_app_info(char *DB_name, unsigned char **buf, int *buf_size)
    fseek(in, dbh.app_info_offset, SEEK_SET);
    *buf=malloc(rec_size);
    if (!(*buf)) {
-      jpilot_logf(LOG_WARN, "Out of memory\n");
+      jpilot_logf(LOG_WARN, "get_app_info(): Out of memory\n");
       fclose(in);
       return -1;
    }
@@ -1266,14 +1530,13 @@ int get_app_info(char *DB_name, unsigned char **buf, int *buf_size)
    return 0;
 }
 
-/* */
-/*This deletes a record from the appropriate Datafile */
-/* */
+/*
+ * This deletes a record from the appropriate Datafile
+ */
 int delete_pc_record(AppType app_type, void *VP, int flag)
 {
-/*   int unique_id; */
    FILE *pc_in;
-   PCRecordHeader header;
+   PC3RecordHeader header;
    struct Appointment *app;
    MyAppointment *mapp;
    struct Address *address;
@@ -1301,25 +1564,25 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       mapp = (MyAppointment *) VP;
       record_type = mapp->rt;
       unique_id = mapp->unique_id;
-      strcpy(filename, "DatebookDB.pc");
+      strcpy(filename, "DatebookDB.pc3");
       break;
     case ADDRESS:
       maddress = (MyAddress *) VP;
       record_type = maddress->rt;
       unique_id = maddress->unique_id;
-      strcpy(filename, "AddressDB.pc");
+      strcpy(filename, "AddressDB.pc3");
       break;
     case TODO:
       mtodo = (MyToDo *) VP;
       record_type = mtodo->rt;
       unique_id = mtodo->unique_id;
-      strcpy(filename, "ToDoDB.pc");
+      strcpy(filename, "ToDoDB.pc3");
       break;
     case MEMO:
       mmemo = (MyMemo *) VP;
       record_type = mmemo->rt;
       unique_id = mmemo->unique_id;
-      strcpy(filename, "MemoDB.pc");
+      strcpy(filename, "MemoDB.pc3");
       break;
     default:
       return 0;
@@ -1332,26 +1595,31 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
    }
    switch (record_type) {
     case NEW_PC_REC:
-      pc_in=open_file(filename, "r+");
+      pc_in=jp_open_home_file(filename, "r+");
       if (pc_in==NULL) {
 	 jpilot_logf(LOG_WARN, "Couldn't open PC records file\n");
 	 return -1;
       }
       while(!feof(pc_in)) {
-	 fread(&header, sizeof(header), 1, pc_in);
+	 read_header(pc_in, &header);
 	 if (feof(pc_in)) {
 	    jpilot_logf(LOG_WARN, "couldn't find record to delete\n");
+	    fclose(pc_in);
 	    return -1;
 	 }
-	 if (header.unique_id==unique_id) {
-	    if (fseek(pc_in, -sizeof(header), SEEK_CUR)) {
-	       jpilot_logf(LOG_WARN, "fseek failed\n");
+	 if (header.header_version==2) {
+	    if (header.unique_id==unique_id) {
+	       if (fseek(pc_in, -header.header_len, SEEK_CUR)) {
+		  jpilot_logf(LOG_WARN, "fseek failed\n");
+	       }
+	       header.rt=DELETED_PC_REC;
+	       write_header(pc_in, &header);
+	       jpilot_logf(LOG_DEBUG, "record deleted\n");
+	       fclose(pc_in);
+	       return 0;
 	    }
-	    header.rt=DELETED_PC_REC;
-	    fwrite(&header, sizeof(header), 1, pc_in);
-	    jpilot_logf(LOG_DEBUG, "record deleted\n");
-	    fclose(pc_in);
-	    return 0;
+	 } else {
+	    jpilot_logf(LOG_WARN, "unknown header version %d\n", header.header_version);
 	 }
 	 if (fseek(pc_in, header.rec_len, SEEK_CUR)) {
 	    jpilot_logf(LOG_WARN, "fseek failed\n");
@@ -1362,7 +1630,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 	 
     case PALM_REC:
       jpilot_logf(LOG_DEBUG, "Deleteing Palm ID %d\n",unique_id);
-      pc_in=open_file(filename, "a");
+      pc_in=jp_open_home_file(filename, "a");
       if (pc_in==NULL) {
 	 jpilot_logf(LOG_WARN, "Couldn't open PC records file\n");
 	 return -1;
@@ -1416,7 +1684,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 	 return 0;
       }
       jpilot_logf(LOG_DEBUG, "writing header to pc file\n");
-      fwrite(&header, sizeof(header), 1, pc_in);
+      write_header(pc_in, &header);
       /* This record be used for making sure that the palm record 
        * hasn't changed before we delete it */
       jpilot_logf(LOG_DEBUG, "writing record to pc file, %d bytes\n", header.rec_len);
@@ -1434,7 +1702,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 
 int cleanup_pc_file(char *DB_name, unsigned int *max_id)
 {
-   PCRecordHeader header;
+   PC3RecordHeader header;
    char pc_filename[256];
    char pc_filename2[256];
    FILE *pc_file;
@@ -1452,10 +1720,10 @@ int cleanup_pc_file(char *DB_name, unsigned int *max_id)
    record = NULL;
    pc_file = pc_file2 = NULL;
 
-   g_snprintf(pc_filename, 255, "%s.pc", DB_name);
-   g_snprintf(pc_filename2, 255, "%s.pc2", DB_name);
+   g_snprintf(pc_filename, 255, "%s.pc3", DB_name);
+   g_snprintf(pc_filename2, 255, "%s.pct", DB_name);
 
-   pc_file = open_file(pc_filename , "r");
+   pc_file = jp_open_home_file(pc_filename , "r");
    if (!pc_file) {
       return -1;
    }
@@ -1463,7 +1731,7 @@ int cleanup_pc_file(char *DB_name, unsigned int *max_id)
    compact_it = 0;
    /* Scan through the file and see if it needs to be compacted */
    while(!feof(pc_file)) {
-      fread(&header, sizeof(header), 1, pc_file);
+      read_header(pc_file, &header);
       if (feof(pc_file)) {
 	 break;
       }
@@ -1490,14 +1758,14 @@ int cleanup_pc_file(char *DB_name, unsigned int *max_id)
 
    fseek(pc_file, 0, SEEK_SET);
 
-   pc_file2=open_file(pc_filename2, "w");
+   pc_file2=jp_open_home_file(pc_filename2, "w");
    if (!pc_file2) {
       fclose(pc_file);
       return -1;
    }
 
    while(!feof(pc_file)) {
-      fread(&header, sizeof(header), 1, pc_file);
+      read_header(pc_file, &header);
       if (feof(pc_file)) {
 	 break;
       }
@@ -1521,7 +1789,7 @@ int cleanup_pc_file(char *DB_name, unsigned int *max_id)
 	 }
 	 record = malloc(header.rec_len);
 	 if (!record) {
-	    jpilot_logf(LOG_WARN, "cleanup_pc_file: Out of memory\n");
+	    jpilot_logf(LOG_WARN, "cleanup_pc_file(): Out of memory\n");
 	    r = -1;
 	    break;
 	 }
@@ -1532,11 +1800,11 @@ int cleanup_pc_file(char *DB_name, unsigned int *max_id)
 	       break;
 	    }
 	 }
-	 ret = fwrite(&header, sizeof(header), 1, pc_file2);
-	 if (ret != 1) {
+	 ret = write_header(pc_file2, &header);
+	 /*if (ret != 1) {
 	    r = -1;
 	    break;
-	 }
+	 }*/
 	 ret = fwrite(record, header.rec_len, 1, pc_file2);
 	 if (ret != 1) {
 	    r = -1;
@@ -1634,11 +1902,12 @@ int cleanup_pc_files()
    return 0;
 }
 
-static void util_sync(unsigned int flags)
+int util_sync(unsigned int flags)
 {
    long ivalue, num_backups;
    const char *svalue;
    const char *port;
+   int r;
 #ifndef HAVE_SETENV
    char str[80];
 #endif
@@ -1679,13 +1948,91 @@ static void util_sync(unsigned int flags)
    sync_info.flags=flags;
    sync_info.num_backups=num_backups;
    
-   sync_once(&sync_info);
+   r = sync_once(&sync_info);
    
-   return;
+   return r;
 }
 
 void cb_sync(GtkWidget *widget, unsigned int flags)
 {
    util_sync(flags);
    return;
+}
+
+void multibyte_safe_strncpy(char *dst, char *src, size_t max_len)
+{
+   long char_set;
+
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
+
+   if (char_set == CHAR_SET_JAPANESE ||
+       char_set == CHAR_SET_TRADITIONAL_CHINESE ||
+       char_set == CHAR_SET_KOREAN
+) {
+       char *p, *q;
+       int n = 0;
+       p = src; q = dst;
+       while ((*p) && n < (max_len-1)) {
+	   if ((*p) & 0x80) {
+	       *q++ = *p++;
+	       n++;
+	       if (*p) {
+		   *q++ = *p++;
+		   n++;
+	       } 
+	   } else {
+	       *q++ = *p++;
+	       n++;
+	   }
+       }
+       if ((*p & 0x80 ) && (n < max_len)) {
+	   *q = *p;
+       } else {
+	   *q = '\0';
+       }
+   } else {
+      strncpy(dst, src, max_len);
+   }
+}
+	   
+char *multibyte_safe_memccpy(char *dst, const char *src, int c, size_t len)
+{
+   long char_set;
+
+   if (len == 0) return NULL;
+   if (dst == NULL) return NULL;
+   if (src == NULL) return NULL;
+
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
+
+   if (char_set == CHAR_SET_JAPANESE ||
+       char_set == CHAR_SET_TRADITIONAL_CHINESE ||
+       char_set == CHAR_SET_KOREAN
+	   ) {                              /* Multibyte Charactors */
+      char *p, *q;
+      int n = 0;
+
+      p = (char *)src; q = dst;
+      while ((*p) && (n < (len -1))) {
+        if ((*p) & 0x80) {
+	   *q++ = *p++;
+	   n++;
+	   if (*p) {
+	      *q++ = *p++;
+	      n++;
+	   }
+        } else {
+	   *q++ = *p++;
+	   n++;
+	}
+        if (*(p-1) == (char)(c & 0xff)) return q;
+      }
+      if ((*p & 0x80) && (n < len)) {
+         *q = *p;
+      } else {
+ 	 *q = '\0';
+      }
+      return NULL; 
+   } else
+      return memccpy(dst, src, c, len);
 }

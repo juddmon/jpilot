@@ -24,7 +24,9 @@
 #include <time.h>
 
 #include <gtk/gtk.h>
+
 #include "libplugin.h"
+
 #include <pi-expense.h>
 
 #define EXPENSE_CAT1 1
@@ -36,6 +38,9 @@
 #define CATEGORY_ALL 200
 
 #define DONT_DISPLAY 100
+
+#define CONNECT_SIGNALS 400
+#define DISCONNECT_SIGNALS 401
 
 /*  This was copied out of the pilot-link package.
  *  I just like it here for quick reference.
@@ -55,6 +60,7 @@ struct Expense {
 /* Global vars */
 /* This is the category that is currently being displayed */
 static int show_category;
+static int glob_category_number_from_menu_item[16];
 
 static GtkWidget *clist;
 static GtkWidget *entry_amount;
@@ -72,6 +78,11 @@ static GtkWidget *menu_item_expense_type[28];
 static GtkWidget *spinner_mon, *spinner_day, *spinner_year;
 GtkAdjustment *adj_mon, *adj_day, *adj_year;
 GtkWidget *scrolled_window;
+static GtkWidget *new_record_button;
+static GtkWidget *apply_record_button;
+static GtkWidget *add_record_button;
+
+static int record_changed;
 
 static int glob_detail_category;
 static int glob_detail_type;
@@ -79,6 +90,8 @@ static int glob_detail_payment;
 static int glob_row_selected;
 
 static void display_records();
+
+static void connect_changed_signals(int con_or_dis);
 
 /* This is my wrapper to the expense structure so that I can put
  * a few more fields in with it 
@@ -93,10 +106,108 @@ struct MyExpense {
 
 struct MyExpense *glob_myexpense_list=NULL;
 
+static void
+set_new_button_to(int new_state)
+{
+   jpilot_logf(LOG_DEBUG, "set_new_button_to new %d old %d\n", new_state, record_changed);
+   if (record_changed==new_state) {
+      return;
+   }
+
+   switch (new_state) {
+    case MODIFY_FLAG:
+      gtk_widget_show(apply_record_button);
+      break;
+    case NEW_FLAG:
+      gtk_widget_show(add_record_button);
+      break;
+    case CLEAR_FLAG:
+      gtk_widget_show(new_record_button);
+      break;
+    default:
+      return;
+   }
+   switch (record_changed) {
+    case MODIFY_FLAG:
+      gtk_widget_hide(apply_record_button);
+      break;
+    case NEW_FLAG:
+      gtk_widget_hide(add_record_button);
+      break;
+    case CLEAR_FLAG:
+      gtk_widget_hide(new_record_button);
+      break;
+   }
+   record_changed=new_state;
+}
+
+static void
+cb_record_changed(GtkWidget *widget,
+		  gpointer   data)
+{
+   jpilot_logf(LOG_DEBUG, "cb_record_changed\n");
+   if (record_changed==CLEAR_FLAG) {
+      connect_changed_signals(DISCONNECT_SIGNALS);
+      set_new_button_to(MODIFY_FLAG);
+   }
+}
+
+static void connect_changed_signals(int con_or_dis)
+{
+   static int connected=0;
+
+   /* CONNECT */
+   if ((con_or_dis==CONNECT_SIGNALS) && (!connected)) {
+      jp_logf(LOG_DEBUG, "Expense: connect_changed_signals\n");
+      connected=1;
+
+      gtk_signal_connect(GTK_OBJECT(spinner_mon), "changed",
+			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+      gtk_signal_connect(GTK_OBJECT(spinner_day), "changed",
+			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+      gtk_signal_connect(GTK_OBJECT(spinner_year), "changed",
+			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+      gtk_signal_connect(GTK_OBJECT(text_attendees), "changed",
+			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+      gtk_signal_connect(GTK_OBJECT(text_note), "changed",
+			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+      gtk_signal_connect(GTK_OBJECT(entry_amount), "changed",
+			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+      gtk_signal_connect(GTK_OBJECT(entry_vendor), "changed",
+			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+      gtk_signal_connect(GTK_OBJECT(entry_city), "changed",
+			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+   }
+   
+   /* DISCONNECT */
+   if ((con_or_dis==DISCONNECT_SIGNALS) && (connected)) {
+      jp_logf(LOG_DEBUG, "Expense: disconnect_changed_signals\n");
+      connected=0;
+
+      gtk_signal_disconnect_by_func(GTK_OBJECT(spinner_mon),
+				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+      gtk_signal_disconnect_by_func(GTK_OBJECT(spinner_day),
+				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+      gtk_signal_disconnect_by_func(GTK_OBJECT(spinner_year),
+				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+      gtk_signal_disconnect_by_func(GTK_OBJECT(text_attendees),
+				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+      gtk_signal_disconnect_by_func(GTK_OBJECT(text_note),
+				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+      gtk_signal_disconnect_by_func(GTK_OBJECT(entry_amount),
+				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+      gtk_signal_disconnect_by_func(GTK_OBJECT(entry_vendor),
+				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+      gtk_signal_disconnect_by_func(GTK_OBJECT(entry_city),
+				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+   }
+}
+
 static void free_myexpense_list(struct MyExpense **PPme)
 {
    struct MyExpense *me, *next_me;
 
+   jp_logf(LOG_DEBUG, "Expense: free_myexpense_list\n");
    for (me = *PPme; me; me=next_me) {
       next_me = me->next;
       free(me);
@@ -107,10 +218,19 @@ static void free_myexpense_list(struct MyExpense **PPme)
 /*
  * This is a mandatory plugin function.
  */
+void plugin_version(int *major_version, int *minor_version)
+{
+   *major_version=0;
+   *minor_version=99;
+}
+
+/*
+ * This is a mandatory plugin function.
+ */
 int plugin_get_name(char *name, int len)
 {
    jp_logf(LOG_DEBUG, "Expense: plugin_get_name\n");
-   strncpy(name, "Expense 0.97", len);
+   strncpy(name, "Expense 0.99", len);
    return 0;
 }
 
@@ -253,6 +373,8 @@ static void cb_add_new_record(GtkWidget *widget,
    unsigned char buf[0xFFFF];
    int size;
    
+   jp_logf(LOG_DEBUG, "Expense: cb_add_new_record\n");
+
    ex.date.tm_mon  = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(spinner_mon)) - 1;;
    ex.date.tm_mday = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(spinner_day));;
    ex.date.tm_year = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(spinner_year)) - 1900;;
@@ -279,7 +401,7 @@ static void cb_add_new_record(GtkWidget *widget,
    if (ex.city[0]=='\0') {
       ex.city=NULL;
    }
-   /* gtk_entry_get_text *does* allocate memory */
+   /* gtk_editable_get_chars *does* allocate memory */
    ex.attendees = gtk_editable_get_chars(GTK_EDITABLE(text_attendees), 0, -1);
    if (ex.attendees[0]=='\0') {
       ex.attendees=NULL;
@@ -311,13 +433,17 @@ static void cb_add_new_record(GtkWidget *widget,
    br.unique_id = 0;
    /* Any attributes go here.  Usually just the category */
 
-   br.attrib = glob_detail_category;
+   br.attrib = glob_category_number_from_menu_item[glob_detail_category];
+   jp_logf(LOG_DEBUG, "category is %d\n", br.attrib);
    br.buf = buf;
    br.size = size;
 
    /* Write out the record.  It goes to the .pc file until it gets synced */
    jp_pc_write("ExpenseDB", &br);
 
+   connect_changed_signals(CONNECT_SIGNALS);
+   set_new_button_to(CLEAR_FLAG);
+   
    if (data!=DONT_DISPLAY) {
       display_records();
    }
@@ -334,10 +460,15 @@ void cb_delete(GtkWidget *widget,
    char buf[0xFFFF];
    buf_rec br;
 
+   jp_logf(LOG_DEBUG, "Expense: cb_delete\n");
+
    mex = gtk_clist_get_row_data(GTK_CLIST(clist), glob_row_selected);
    if (!mex) {
       return;
    }
+
+   connect_changed_signals(DISCONNECT_SIGNALS);
+   set_new_button_to(CLEAR_FLAG);
 
    /* The record that we want to delete should be written to the pc file
     * so that it can be deleted at sync time.  We need the original record
@@ -356,6 +487,7 @@ void cb_delete(GtkWidget *widget,
    if (data!=DONT_DISPLAY) {
       display_records();
    }
+   connect_changed_signals(CONNECT_SIGNALS);
 }
 
 /*
@@ -365,9 +497,16 @@ void cb_delete(GtkWidget *widget,
 static void cb_modify(GtkWidget *widget,
 		      int data)
 {
+   jp_logf(LOG_DEBUG, "Expense: cb_modify\n");
+
+   connect_changed_signals(DISCONNECT_SIGNALS);
+   set_new_button_to(CLEAR_FLAG);
+
    cb_add_new_record(NULL, DONT_DISPLAY);
    cb_delete(NULL, DONT_DISPLAY);
    display_records();
+
+   connect_changed_signals(CONNECT_SIGNALS);
 }
 
 /*
@@ -383,6 +522,11 @@ static void cb_clear(GtkWidget *widget,
    time(&ltime);
    now = localtime(&ltime);
    
+   jp_logf(LOG_DEBUG, "Expense: cb_clear\n");
+
+   connect_changed_signals(DISCONNECT_SIGNALS);
+   set_new_button_to(NEW_FLAG);
+
    gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinner_mon), now->tm_mon+1);
    gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinner_day), now->tm_mday);
    gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinner_year), now->tm_year+1900);
@@ -394,6 +538,8 @@ static void cb_clear(GtkWidget *widget,
 			    gtk_text_get_length(GTK_TEXT(text_attendees)));
    gtk_text_backward_delete(GTK_TEXT(text_note),
 			    gtk_text_get_length(GTK_TEXT(text_note)));
+
+   connect_changed_signals(CONNECT_SIGNALS);
 }
 
 /*
@@ -408,17 +554,36 @@ int display_record(struct MyExpense *mex)
    GdkColor color;
    GdkColormap *colormap;
 
-   jp_logf(LOG_DEBUG, "Expense: display_record\n");
+   /* jp_logf(LOG_DEBUG, "Expense: display_record\n");*/
 
    gtk_clist_prepend(GTK_CLIST(clist), empty_line);
 
-   if (mex->rt == NEW_PC_REC) {
+   switch (mex->rt) {
+    case NEW_PC_REC:
       colormap = gtk_widget_get_colormap(clist);
       color.red=CLIST_NEW_RED;
       color.green=CLIST_NEW_GREEN;
       color.blue=CLIST_NEW_BLUE;
       gdk_color_alloc(colormap, &color);
       gtk_clist_set_background(GTK_CLIST(clist), 0, &color);
+    case DELETED_PALM_REC:
+      colormap = gtk_widget_get_colormap(clist);
+      color.red=CLIST_DEL_RED;
+      color.green=CLIST_DEL_GREEN;
+      color.blue=CLIST_DEL_BLUE;
+      gdk_color_alloc(colormap, &color);
+      gtk_clist_set_background(GTK_CLIST(clist), 0, &color);
+      break;
+    case MODIFIED_PALM_REC:
+      colormap = gtk_widget_get_colormap(clist);
+      color.red=CLIST_MOD_RED;
+      color.green=CLIST_MOD_GREEN;
+      color.blue=CLIST_MOD_BLUE;
+      gdk_color_alloc(colormap, &color);
+      gtk_clist_set_background(GTK_CLIST(clist), 0, &color);
+      break;
+    default:
+      gtk_clist_set_background(GTK_CLIST(clist), 0, NULL);
    }
 
    gtk_clist_set_row_data(GTK_CLIST(clist), 0, mex);
@@ -452,6 +617,9 @@ static void display_records()
    
    jp_logf(LOG_DEBUG, "Expense: display_records\n");
 
+   connect_changed_signals(DISCONNECT_SIGNALS);
+   set_new_button_to(CLEAR_FLAG);
+
    if (glob_myexpense_list!=NULL) {
       free_myexpense_list(&glob_myexpense_list);
    }
@@ -462,12 +630,12 @@ static void display_records()
 
    /* This function takes care of reading the Database for us */
    num = jp_read_DB_files("ExpenseDB", &records);
-
    /* Go to first entry in the list */
    for (temp_list = records; temp_list; temp_list = temp_list->prev) {
       records = temp_list;
    }
    num_shown = 0;
+
    for (i=0, temp_list = records; temp_list; temp_list = temp_list->next, i++) {
       if (temp_list->data) {
 	 br=temp_list->data;
@@ -477,14 +645,18 @@ static void display_records()
       if (!br->buf) {
 	 continue;
       }
+
       /* Since deleted and modified records are also returned and we don't
        * want to see those we skip over them. */
       if ((br->rt == DELETED_PALM_REC) || (br->rt == MODIFIED_PALM_REC)) {
 	 continue;
       }
-      if ( ((br->attrib & 0x0F) != show_category) &&
-	  show_category != CATEGORY_ALL) {
-	 continue;
+      if (show_category < 16) {
+	 if ( ((br->attrib & 0x0F) != 
+	       glob_category_number_from_menu_item[show_category]) &&
+	     show_category != CATEGORY_ALL) {
+	    continue;
+	 }
       }
       
       mex = malloc(sizeof(struct MyExpense));
@@ -509,13 +681,17 @@ static void display_records()
       num_shown++;
    }
    
+   gtk_clist_thaw(GTK_CLIST(clist));
+
    if (num_shown) {
       gtk_clist_select_row(GTK_CLIST(clist), 0, 0);
    }
 
-   gtk_clist_thaw(GTK_CLIST(clist));
-
    jp_free_DB_records(&records);
+
+   connect_changed_signals(CONNECT_SIGNALS);
+
+   jp_logf(LOG_DEBUG, "Expense: leave display_records\n");
 }
 
 /*
@@ -529,7 +705,10 @@ static void cb_clist_selection(GtkWidget      *clist,
 			       gpointer       data)
 {
    struct MyExpense *mex;
+   int i, item_num, category;
    
+   jp_logf(LOG_DEBUG, "Expense: cb_clist_selection\n");
+
    if (row<0) {
       return;
    }
@@ -538,15 +717,28 @@ static void cb_clist_selection(GtkWidget      *clist,
       return;
    }
 
+   /* Need to disconnect these signals first */
+   connect_changed_signals(DISCONNECT_SIGNALS);
+   set_new_button_to(NEW_FLAG);
+   
    glob_row_selected = row;
 
+   category = mex->attrib & 0x0F;
+   item_num=0;
+   for (i=0; i<16; i++) {
+      if (glob_category_number_from_menu_item[i]==category) {
+	 item_num=i;
+	 break;
+      }
+   }
+
    gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
-       (menu_item_category2[mex->attrib & 0x0F]), TRUE);
+       (menu_item_category2[item_num]), TRUE);
    gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
        (menu_item_expense_type[mex->ex.type]), TRUE);
    gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
        (menu_item_payment[mex->ex.payment]), TRUE);
-   gtk_option_menu_set_history(GTK_OPTION_MENU(menu_category2), mex->attrib & 0x0F);
+   gtk_option_menu_set_history(GTK_OPTION_MENU(menu_category2), item_num);
    gtk_option_menu_set_history(GTK_OPTION_MENU(menu_expense_type), mex->ex.type);
    gtk_option_menu_set_history(GTK_OPTION_MENU(menu_payment), mex->ex.payment);
 
@@ -586,6 +778,10 @@ static void cb_clist_selection(GtkWidget      *clist,
    if (mex->ex.note) {
       gtk_text_insert(GTK_TEXT(text_note), NULL,NULL,NULL, mex->ex.note, -1);
    }
+   set_new_button_to(CLEAR_FLAG);
+   connect_changed_signals(CONNECT_SIGNALS);
+
+   jp_logf(LOG_DEBUG, "Expense: leaving cb_clist_selection\n");
 }
 
 /*
@@ -596,6 +792,7 @@ void cb_menu(GtkWidget *item, unsigned int value)
 {
    int menu, sel;
    
+   jp_logf(LOG_DEBUG, "Expense: cb_menu\n");
    if (!item) {
       return;
    }
@@ -610,13 +807,17 @@ void cb_menu(GtkWidget *item, unsigned int value)
     case EXPENSE_CAT1:
       show_category=sel;
       display_records();
+      break;
     case EXPENSE_CAT2:
+      cb_record_changed(NULL, NULL);
       glob_detail_category=sel;
       break;
     case EXPENSE_TYPE:
+      cb_record_changed(NULL, NULL);
       glob_detail_type=sel;
       break;
     case EXPENSE_PAYMENT:
+      cb_record_changed(NULL, NULL);
       glob_detail_payment=sel;
       break;
    }
@@ -738,11 +939,12 @@ static void make_menus()
    
    categories[0]=all;
    for (i=0, count=0; i<16; i++) {
+      glob_category_number_from_menu_item[i]=0;
       if (eai.category.name[i][0]=='\0') {
 	 continue;
       }
       categories[count+1]=eai.category.name[i];
-      count++;
+      glob_category_number_from_menu_item[count++]=i;
    }
    categories[count+1]=NULL;
    
@@ -831,6 +1033,8 @@ int clist_find_id(GtkWidget *clist,
    *found_at = 0;
    *total_count = 0;
 
+   jp_logf(LOG_DEBUG, "Expense: clist_find_id\n");
+
    /*100000 is just to prevent ininite looping during a solar flare */
    for (found = i = 0; i<100000; i++) {
       mex = gtk_clist_get_row_data(GTK_CLIST(clist), i);
@@ -855,6 +1059,8 @@ static int expense_find(int unique_id)
 {
    int r, found_at, total_count;
    
+   jp_logf(LOG_DEBUG, "Expense: expense_find\n");
+
    r = clist_find_id(clist,
 		     unique_id,
 		     &found_at,
@@ -890,6 +1096,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    
    jp_logf(LOG_DEBUG, "Expense: plugin gui started, unique_id=%d\n", unique_id);
 
+   record_changed=CLEAR_FLAG;
    show_category = CATEGORY_ALL;
    glob_row_selected = 0;
 
@@ -900,14 +1107,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    jp_logf(LOG_DEBUG, "Expense: calling make_menus\n");
    make_menus();
 
-
    /* Add buttons in left vbox */
-   button = gtk_button_new_with_label("Delete");
-   gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_delete),
-		      GINT_TO_POINTER(DELETE_FLAG));
-   gtk_box_pack_start(GTK_BOX(vbox), button, TRUE, TRUE, 0);
-   
    
    /* left and right main boxes */
    vbox1 = gtk_vbox_new(FALSE, 0);
@@ -954,21 +1154,35 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_box_pack_start(GTK_BOX(vbox2), temp_hbox, FALSE, FALSE, 0);
 
    /* Add record button */
-   button = gtk_button_new_with_label("Add It");
+   button = gtk_button_new_with_label("Delete");
+   gtk_signal_connect(GTK_OBJECT(button), "clicked",
+		      GTK_SIGNAL_FUNC(cb_delete),
+		      GINT_TO_POINTER(DELETE_FLAG));
+   gtk_box_pack_start(GTK_BOX(temp_hbox), button, TRUE, TRUE, 0);
+   
+   button = gtk_button_new_with_label("Copy");
    gtk_box_pack_start(GTK_BOX(temp_hbox), button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record), NULL);
-   /* Apply Changes button */
-   button = gtk_button_new_with_label("Apply Changes");
-   gtk_box_pack_start(GTK_BOX(temp_hbox), button, TRUE, TRUE, 0);
-   gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_modify), NULL);
-   /* Clear button */
-   button = gtk_button_new_with_label("Clear");
-   gtk_box_pack_start(GTK_BOX(temp_hbox), button, TRUE, TRUE, 0);
-   gtk_signal_connect(GTK_OBJECT(button), "clicked",
+
+   new_record_button = gtk_button_new_with_label("New Record");
+   gtk_box_pack_start(GTK_BOX(temp_hbox), new_record_button, TRUE, TRUE, 0);
+   gtk_signal_connect(GTK_OBJECT(new_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_clear), NULL);
-   
+
+   add_record_button = gtk_button_new_with_label("Add Record");
+   gtk_box_pack_start(GTK_BOX(temp_hbox), add_record_button, TRUE, TRUE, 0);
+   gtk_signal_connect(GTK_OBJECT(add_record_button), "clicked",
+		      GTK_SIGNAL_FUNC(cb_add_new_record), NULL);
+   gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(GTK_BIN(add_record_button)->child)),
+		       "label_high");
+
+   apply_record_button = gtk_button_new_with_label("Apply Changes");
+   gtk_box_pack_start(GTK_BOX(temp_hbox), apply_record_button, TRUE, TRUE, 0);
+   gtk_signal_connect(GTK_OBJECT(apply_record_button), "clicked",
+		      GTK_SIGNAL_FUNC(cb_modify), NULL);
+   gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(GTK_BIN(apply_record_button)->child)),
+		       "label_high");
    
    /* Category Menu */
    temp_hbox = gtk_hbox_new(FALSE, 0);
@@ -1106,14 +1320,18 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_widget_show_all(hbox);
    gtk_widget_show_all(vbox);
    
+   gtk_widget_hide(add_record_button);
+   gtk_widget_hide(apply_record_button);
+
    jp_logf(LOG_DEBUG, "Expense: calling display_records\n");
+
    display_records();
 
+   jp_logf(LOG_DEBUG, "Expense: after display_records\n");
    
    if (unique_id) {
       expense_find(unique_id);
    }
-
 
    return 0;
 }
@@ -1125,6 +1343,8 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
  * application should go directly to that record in the case.
  */
 int plugin_gui_cleanup() {
+   connect_changed_signals(DISCONNECT_SIGNALS);
+
    jp_logf(LOG_DEBUG, "Expense: plugin_gui_cleanup\n");
    if (glob_myexpense_list!=NULL) {
       free_myexpense_list(&glob_myexpense_list);
@@ -1138,7 +1358,6 @@ int plugin_gui_cleanup() {
  */
 int plugin_startup(jp_startup_info *info)
 {
-   int maj, min;
    jp_init();
 
    jp_logf(LOG_DEBUG, "Expense: plugin_startup\n");
@@ -1300,13 +1519,15 @@ int plugin_help(char **text, int *width, int *height)
     */
    *text = strdup(
 	   /*-------------------------------------------*/
-	   "Expense plugin for J-Pilot was written by\r\n"
-	   "Judd Montgomery (c) 1999.\r\n"
-	   "judd@engineer.com\r\n"
-	   "http://jpilot.linuxbox.com\r\n"
+	   "Expense plugin for J-Pilot was written by\n"
+	   "Judd Montgomery (c) 1999.\n"
+	   "judd@jpilot.org\n"
+	   "http://jpilot.org\n"
 	   );
    *height = 200;
    *width = 300;
+   
+   return 0;
 }
 	 
 /*

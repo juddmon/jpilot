@@ -6,440 +6,909 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: JPilot\n"
-"POT-Creation-Date: 1999-12-27 03:32+0900\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Henrik Becker <Henrik-Becker@gmx.de>\n"
+"POT-Creation-Date: 2001-02-04 18:17-0500\n"
+"PO-Revision-Date: 2001-02-04 18:03+0100\n"
+"Last-Translator: Henrik Becker <HenrikBecker@web.de>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=3Dlatin1\n"
 "Content-Transfer-Encoding: iso-8859-1\n"
 
-#: address_gui.c:808 datebook_gui.c:1799 memo_gui.c:572 todo_gui.c:749
+#: ../address.c:233 ../datebook.c:212 ../memo.c:140 ../todo.c:248
+msgid "error"
+msgstr "Fehler"
+
+#: ../address.c:274 ../datebook.c:550 ../memo.c:181 ../todo.c:289
+msgid "Error reading"
+msgstr "Lesefehler"
+
+#: ../address_gui.c:303 ../address_gui.c:1067
+msgid "Company/Name"
+msgstr "Firma/Name"
+
+#: ../address_gui.c:305 ../address_gui.c:1069
+msgid "Name/Company"
+msgstr "Name/Firma"
+
+#: ../address_gui.c:550
+msgid "Category: "
+msgstr "Kategorie:"
+
+#: ../address_gui.c:667 ../memo_gui.c:435 ../todo_gui.c:676
+msgid "0 records"
+msgstr "0 Einträge"
+
+#: ../address_gui.c:781 ../memo_gui.c:529 ../todo_gui.c:780
+#, c-format
+msgid "%d of %d records"
+msgstr "%d von %d Einträgen"
+
+#: ../address_gui.c:848 ../address_gui.c:1194 ../datebook_gui.c:299
+#: ../memo_gui.c:560 ../todo_gui.c:809
+msgid "All"
+msgstr "Alle"
+
+#: ../address_gui.c:1074
+msgid "Phone"
+msgstr "Telefon"
+
+#: ../address_gui.c:1075
+msgid "Note"
+msgstr "Keine"
+
+#: ../address_gui.c:1091
+msgid "Quick Find"
+msgstr "Schnellsuche"
+
+#: ../address_gui.c:1107 ../datebook_gui.c:2341 ../memo_gui.c:763
+#: ../todo_gui.c:1051
 msgid "Delete"
 msgstr "Löschen"
 
-#: address_gui.c:869
-msgid "Quick Find"
-msgstr "Eintrag suchen"
+#: ../address_gui.c:1114 ../datebook_gui.c:2348 ../memo_gui.c:769
+#: ../todo_gui.c:1057
+msgid "Copy"
+msgstr "Kopieren"
 
-#: address_gui.c:887
-msgid "Quick View"
-msgstr "Ansicht"
+#: ../address_gui.c:1121 ../datebook_gui.c:2355 ../memo_gui.c:775
+#: ../todo_gui.c:1063
+msgid "New Record"
+msgstr "Neuer Eintrag"
 
-#: address_gui.c:898
-msgid "Add or Modify a Record"
+#: ../address_gui.c:1127 ../datebook_gui.c:2362 ../memo_gui.c:781
+#: ../todo_gui.c:1069
+msgid "Add Record"
 msgstr "Eintrag hinzufügen oder ändern"
 
-#: datebook_gui.c:266 monthview_gui.c:224 monthview_gui.c:225
-#: weekview_gui.c:113
-msgid "Sunday"
-msgstr "Sonntag"
-
-#: datebook_gui.c:266 monthview_gui.c:224 weekview_gui.c:113
-msgid "Monday"
-msgstr "Montag"
-
-#: datebook_gui.c:266 monthview_gui.c:224 weekview_gui.c:113
-msgid "Tuesday"
-msgstr "Dienstag"
-
-#: datebook_gui.c:266 monthview_gui.c:224 weekview_gui.c:113
-msgid "Wednesday"
-msgstr "Mittwoch"
-
-#: datebook_gui.c:266 monthview_gui.c:224 weekview_gui.c:113
-msgid "Thursday"
-msgstr "Donnerstag"
-
-#: datebook_gui.c:267 monthview_gui.c:225 weekview_gui.c:114
-msgid "Friday"
-msgstr "Freitag"
-
-#: datebook_gui.c:267 monthview_gui.c:225 weekview_gui.c:114
-msgid "Saturday"
-msgstr "Samstag"
-
-#: datebook_gui.c:271
-msgid "4th"
-msgstr "vierter"
-
-#: datebook_gui.c:271
-msgid "Last"
-msgstr "Letzter"
-
-#: datebook_gui.c:432
-msgid "none"
-msgstr "Keiner"
-
-#: datebook_gui.c:432
-msgid "day"
-msgstr "Tag"
-
-#: datebook_gui.c:432
-msgid "week"
-msgstr "Woche"
-
-#: datebook_gui.c:432
-msgid "month"
-msgstr "Monat"
-
-#: datebook_gui.c:432
-msgid "year"
-msgstr "Jahr"
-
-#These days of the week are put in the buttons above the calendar and
-# the little buttons in the repeat weekly window.
-# They should be one letter if possible.  The English ones get truncated to
-# one letter.
-
-#: datebook_gui.c:1545
-msgid "Su"
-msgstr "So"
-
-#: datebook_gui.c:1545
-msgid "Mo"
-msgstr "Mo"
-
-#: datebook_gui.c:1545
-msgid "Tu"
-msgstr "Di"
-
-#: datebook_gui.c:1545
-msgid "We"
-msgstr "Mi"
-
-#: datebook_gui.c:1545
-msgid "RTh"
-msgstr "Do"
-
-#: datebook_gui.c:1545
-msgid "Fr"
-msgstr "Fr"
-
-#: datebook_gui.c:1545
-msgid "Sa"
-msgstr "Sa"
-
-#: datebook_gui.c:1896
-msgid "Week"
-msgstr "Wochenansicht"
-
-#: datebook_gui.c:1902
-msgid "Month"
-msgstr "Monatsansicht"
-
-#: datebook_gui.c:1916
-msgid "Daily Schedule"
-msgstr "Tagesplanung"
-
-#: datebook_gui.c:1980 memo_gui.c:639 todo_gui.c:830
-msgid "Add It"
-msgstr "Hinzufügen"
-
-#: datebook_gui.c:1987 memo_gui.c:646 todo_gui.c:837
+#: ../address_gui.c:1136 ../datebook_gui.c:2371 ../memo_gui.c:789
+#: ../todo_gui.c:1077
 msgid "Apply Changes"
 msgstr "Änderungen übernehmen"
 
-#: datebook_gui.c:1994 memo_gui.c:653 todo_gui.c:844
-msgid "New"
-msgstr "Neu"
+#: ../address_gui.c:1152 ../datebook_gui.c:2464 ../memo_gui.c:806
+#: ../todo_gui.c:1140
+msgid "Private"
+msgstr "Privat"
 
-#: datebook_gui.c:2004
-msgid "Details"
-msgstr "Details"
+#: ../address_gui.c:1170
+msgid "Name"
+msgstr "Name"
 
-#: datebook_gui.c:2016
-msgid "Alarm"
-msgstr "Alarm"
+#: ../address_gui.c:1178
+msgid "Address"
+msgstr "Adresse"
 
-#: datebook_gui.c:2035
+#: ../address_gui.c:1186
+msgid "Other"
+msgstr "Sonstige"
+
+#: ../address_gui.c:1273
+msgid "Quick View"
+msgstr "Kurzansicht"
+
+#: ../alarms.c:220 ../jpilot.c:367 ../jpilot.c:393 ../jpilot.c:434
+#: ../jpilot.c:770 ../password.c:265 ../utils.c:808
+msgid "OK"
+msgstr "Ok"
+
+#: ../alarms.c:226
+msgid "Remind me"
+msgstr ""
+
+#: ../alarms.c:236 ../datebook_gui.c:2404
 msgid "Minutes"
 msgstr "Minuten"
 
-#: datebook_gui.c:2039
+#: ../alarms.c:238 ../datebook_gui.c:2408
 msgid "Hours"
 msgstr "Stunden"
 
-#: datebook_gui.c:2041
-msgid "Days"
-msgstr "Tage"
+#: ../alarms.c:503
+msgid "Appointment Reminder"
+msgstr "Termin"
 
-#: datebook_gui.c:2061
-msgid "This Event has no particular time"
-msgstr "Keine Zeitangabe"
+#: ../alarms.c:506
+msgid "Past Appointment"
+msgstr "Termin"
 
-#: datebook_gui.c:2080
-msgid "Begin:"
-msgstr "Beginn:"
+#: ../alarms.c:509
+msgid "Postponed Appointment"
+msgstr "Termin"
 
-#: datebook_gui.c:2109 todo_gui.c:920
-msgid "Month:"
-msgstr "Monat:"
+#: ../alarms.c:512 ../datebook_gui.c:2311
+msgid "Appointment"
+msgstr "Termin"
 
-#: datebook_gui.c:2123 todo_gui.c:923
-msgid "Day:"
-msgstr "Tag:"
+#: ../datebook_gui.c:293 ../install_gui.c:283 ../prefs_gui.c:661
+#: ../search_gui.c:575
+msgid "Done"
+msgstr "Fertig"
 
-#: datebook_gui.c:2138 todo_gui.c:926
-msgid "Year:"
-msgstr "Jahr:"
-
-#: datebook_gui.c:2156
-msgid "Hour:"
-msgstr "Stunde:"
-
-#: datebook_gui.c:2174
-msgid "Min:"
-msgstr "Min.:"
-
-#: datebook_gui.c:2191
-msgid "End: "
-msgstr "Ende:"
-
-#: datebook_gui.c:2356
+#: ../datebook_gui.c:305 ../datebook_gui.c:2511
 msgid "None"
 msgstr "Keine"
 
-#: datebook_gui.c:2357
+#: ../datebook_gui.c:394
+msgid "End On Date"
+msgstr "Enddatum"
+
+#: ../datebook_gui.c:479 ../monthview_gui.c:323 ../monthview_gui.c:330
+#: ../prefs.c:309 ../weekview_gui.c:113
+msgid "Sunday"
+msgstr "Sonntag"
+
+#: ../datebook_gui.c:480 ../monthview_gui.c:324 ../prefs.c:310
+#: ../weekview_gui.c:114
+msgid "Monday"
+msgstr "Montag"
+
+#: ../datebook_gui.c:481 ../monthview_gui.c:325 ../weekview_gui.c:115
+msgid "Tuesday"
+msgstr "Dienstag"
+
+#: ../datebook_gui.c:482 ../monthview_gui.c:326 ../weekview_gui.c:116
+msgid "Wednesday"
+msgstr "Mittwoch"
+
+#: ../datebook_gui.c:483 ../monthview_gui.c:327 ../weekview_gui.c:117
+msgid "Thursday"
+msgstr "Donnerstag"
+
+#: ../datebook_gui.c:484 ../monthview_gui.c:328 ../weekview_gui.c:118
+msgid "Friday"
+msgstr "Freitag"
+
+#: ../datebook_gui.c:485 ../monthview_gui.c:329 ../weekview_gui.c:119
+msgid "Saturday"
+msgstr "Samstag"
+
+#: ../datebook_gui.c:721
+msgid "none"
+msgstr "Keiner"
+
+#: ../datebook_gui.c:722
+msgid "day"
+msgstr "Tag"
+
+#: ../datebook_gui.c:723
+msgid "week"
+msgstr "Woche"
+
+#: ../datebook_gui.c:724
+msgid "month"
+msgstr "Monat"
+
+#: ../datebook_gui.c:725
+msgid "year"
+msgstr "Jahr"
+
+#: ../datebook_gui.c:952
+#, c-format
+msgid "You cannot have an appointment that repeats every %d %s(s)\n"
+msgstr "Eine Wiederholung alle %d %s(s) ist nicht möglich \n"
+
+#: ../datebook_gui.c:961
+msgid ""
+"You can not have a weekly repeating appointment that doesn't repeat on any "
+"day of the week.\n"
+msgstr "Wöchentliche Wiederholung nicht möglich, wenn kein Tag gewählt ist.\n"
+
+#: ../datebook_gui.c:1064
+msgid "No Time"
+msgstr "Keine Uhrzeit"
+
+#: ../datebook_gui.c:1402 ../datebook_gui.c:2545 ../datebook_gui.c:2575
+#: ../datebook_gui.c:2631 ../datebook_gui.c:2680 ../todo_gui.c:102
+#: ../todo_gui.c:1131
+msgid "No Date"
+msgstr "Kein Fälligkeitsdatum"
+
+# These days of the week are put in the buttons above the calendar and
+# the little buttons in the repeat weekly window.
+# They should be one letter if possible.  The English ones get truncated to
+# one letter.
+#: ../datebook_gui.c:2150 ../datebook_gui.c:2157
+msgid "Su"
+msgstr "So"
+
+#: ../datebook_gui.c:2151
+msgid "Mo"
+msgstr "Mo"
+
+#: ../datebook_gui.c:2152
+msgid "Tu"
+msgstr "Di"
+
+#: ../datebook_gui.c:2153
+msgid "We"
+msgstr "Mi"
+
+#: ../datebook_gui.c:2154
+msgid "RTh"
+msgstr "Do"
+
+#: ../datebook_gui.c:2155
+msgid "Fr"
+msgstr "Fr"
+
+#: ../datebook_gui.c:2156
+msgid "Sa"
+msgstr "Sa"
+
+#: ../datebook_gui.c:2229 ../datebook_gui.c:2513
+msgid "Week"
+msgstr "Wochenansicht"
+
+#: ../datebook_gui.c:2240 ../datebook_gui.c:2514
+msgid "Month"
+msgstr "Monatsansicht"
+
+#: ../datebook_gui.c:2255
+msgid "Cats"
+msgstr "Kategorien"
+
+#: ../datebook_gui.c:2310
+msgid "Time"
+msgstr "Zeit"
+
+#: ../datebook_gui.c:2389
+msgid "Alarm"
+msgstr "Alarm"
+
+#: ../datebook_gui.c:2410
+msgid "Days"
+msgstr "Tage"
+
+#: ../datebook_gui.c:2429
+msgid "This Event has no particular time"
+msgstr "Keine Zeitangabe"
+
+#: ../datebook_gui.c:2437
+msgid "Starts on: "
+msgstr "Beginn: "
+
+#: ../datebook_gui.c:2449
+msgid "Time:"
+msgstr "Zeit"
+
+#: ../datebook_gui.c:2512
 msgid "Day"
 msgstr "Tag"
 
-#: datebook_gui.c:2358
-#msgid "WeekView"
-#msgstr "Woche"
-
-#: datebook_gui.c:2359
-#msgid "MonthView"
-#msgstr "Monat"
-
-#: datebook_gui.c:2360
+# msgid "WeekView"
+# msgstr "Woche"
+# msgid "MonthView"
+# msgstr "Monat"
+#: ../datebook_gui.c:2515
 msgid "Year"
 msgstr "Jahr"
 
-#: datebook_gui.c:2367
+#: ../datebook_gui.c:2519
 msgid "This event will not repeat"
 msgstr "Keine Wiederholungen des Termins"
 
-#: datebook_gui.c:2378 datebook_gui.c:2466 datebook_gui.c:2575
-#: datebook_gui.c:2684
+#: ../datebook_gui.c:2529 ../datebook_gui.c:2561 ../datebook_gui.c:2617
+#: ../datebook_gui.c:2664
 msgid "Frequency is Every"
 msgstr "Wiederholung alle/jeden"
 
-#: datebook_gui.c:2386
+#: ../datebook_gui.c:2534
 msgid "Day(s)"
 msgstr "Tag(e)"
 
-#: datebook_gui.c:2390 datebook_gui.c:2478 datebook_gui.c:2587
-#: datebook_gui.c:2696
+#: ../datebook_gui.c:2537 ../datebook_gui.c:2569 ../datebook_gui.c:2625
+#: ../datebook_gui.c:2672
 msgid "End on"
 msgstr "Endet"
 
-#: datebook_gui.c:2474
+#: ../datebook_gui.c:2566
 msgid "Week(s)"
 msgstr "Woche(n)"
 
-#: datebook_gui.c:2546
+#: ../datebook_gui.c:2582
 msgid "Repeat on Days:"
 msgstr "Wochentage für Wiederholung:"
 
-#: datebook_gui.c:2583
+#: ../datebook_gui.c:2622
 msgid "Month(s)"
 msgstr "Monat(e)"
 
-#: datebook_gui.c:2656
+#: ../datebook_gui.c:2639
 msgid "Repeat by:"
 msgstr "Wiederholung mit:"
 
-#: datebook_gui.c:2661
+#: ../datebook_gui.c:2643
 msgid "Day of week"
 msgstr "Wochentag"
 
-#: datebook_gui.c:2671
+#: ../datebook_gui.c:2652
 msgid "Date"
 msgstr "Datum"
 
-#: datebook_gui.c:2692
+#: ../datebook_gui.c:2669
 msgid "Year(s)"
 msgstr "Jahr(e)"
 
-#: install_gui.c:215
+#: ../install_gui.c:224
+msgid "Install"
+msgstr "Instalieren"
+
+#: ../install_gui.c:240
 msgid "Files to be installed"
 msgstr "Zu installierende Dateien"
 
-#: install_gui.c:258
+#: ../install_gui.c:263
 msgid "To change to a hidden directory type it below and hit TAB"
-msgstr "Um ein verstecktes Verzeichnis aufzurufen, Namen eintippen und Tabulator-Taste drücken."
+msgstr ""
+"Um ein verstecktes Verzeichnis aufzurufen, Namen eintippen und "
+"Tabulator-Taste drücken."
 
-#: install_gui.c:264
+#: ../install_gui.c:269
 msgid "Add"
 msgstr "Hinzufügen"
 
-#: install_gui.c:271
+#: ../install_gui.c:276
 msgid "Remove"
 msgstr "Streichen"
 
-#: install_gui.c:278 prefs_gui.c:363 search_gui.c:647
-msgid "Done"
-msgstr "Beenden"
-
-#: jpilot.c:224
+#: ../jpilot.c:372
 msgid "Help"
 msgstr "Hilfe"
 
-#: jpilot.c:448
-msgid "Hide this window"
-msgstr "Fenster ausblenden"
+#: ../jpilot.c:438 ../print_gui.c:214
+msgid "Print"
+msgstr "Drucken"
 
-#: jpilot.c:563
-msgid "/_File"
-msgstr "/_Datei"
+#: ../jpilot.c:439
+msgid "There is no print support for this conduit."
+msgstr "Drucken aus diesem Conduit nicht möglich."
 
-#: jpilot.c:564
-msgid "/_File/tear"
-msgstr "/_Datei/tear"
+#: ../jpilot.c:762
+#, c-format
+msgid ""
+"%s was written by\n"
+"Judd Montgomery (c) 1999-2000.\n"
+"judd@jpilot.org\n"
+"http://jpilot.org\n"
+msgstr ""
+"%s wurde geschrieben von \n"
+"Judd Montgomery (c) 1999-2000.\n"
+"judd@jpilot.org\n"
+"http://jpilot.org\n"
 
-#: jpilot.c:565
-msgid "/File/_Search"
+#: ../jpilot.c:767
+#, c-format
+msgid "About %s"
+msgstr "Über %s"
+
+#: ../jpilot.c:832
+msgid "/File"
+msgstr "/Datei"
+
+#: ../jpilot.c:833
+msgid "/File/tear"
+msgstr "/Datei/Abreissen"
+
+#: ../jpilot.c:834
+msgid "/File/_Find"
 msgstr "/Datei/_Suchen"
 
-#: jpilot.c:566 jpilot.c:569
+#: ../jpilot.c:835 ../jpilot.c:840
 msgid "/File/sep1"
 msgstr "/Datei/sep1"
 
-#: jpilot.c:567
+#: ../jpilot.c:836
 msgid "/File/_Install"
 msgstr "/Datei/_Installieren"
 
-#: jpilot.c:568
+#: ../jpilot.c:837
 msgid "/File/Preferences"
 msgstr "/Datei/Einstellungen"
 
-#: jpilot.c:570
+#: ../jpilot.c:838
+msgid "/File/_Print"
+msgstr "/Datei/_Drucken"
+
+#: ../jpilot.c:841
 msgid "/File/Quit"
 msgstr "/Datei/Beenden"
 
-#: jpilot.c:571
+#: ../jpilot.c:843
 msgid "/_View"
 msgstr "/_Ansicht"
 
-#: jpilot.c:572
+#: ../jpilot.c:844
+msgid "/View/Hide-Show Private Records"
+msgstr "/Ansicht/Private Einträge anzeigen oder verbergen"
+
+#: ../jpilot.c:845
 msgid "/View/Datebook"
 msgstr "/Ansicht/Terminplaner"
 
-#: jpilot.c:573
+#: ../jpilot.c:846
 msgid "/View/Addresses"
 msgstr "/Ansicht/Adressen"
 
-#: jpilot.c:574
+#: ../jpilot.c:847
 msgid "/View/Todos"
 msgstr "/Ansicht/Aufgaben"
 
-#: jpilot.c:575
+#: ../jpilot.c:848
 msgid "/View/Memos"
 msgstr "/Ansicht/Merkzettel"
 
-#: jpilot.c:576 jpilot.c:663
+#: ../jpilot.c:849 ../jpilot.c:925
 msgid "/Plugins"
 msgstr "/Plugins"
 
-#: jpilot.c:577
+#: ../jpilot.c:850
 msgid "/_Help"
 msgstr "/_Hilfe"
 
-#: jpilot.c:578
-msgid "/_Help/About J-Pilot"
-msgstr "/Hilfe/Über J-Pilot"
-
-#: jpilot.c:629
-#, c-format
-msgid "/Plugins/%s"
-msgstr "/Plugins/%s"
-
-#: jpilot.c:640
+#: ../jpilot.c:851 ../jpilot.c:902
 #, c-format
 msgid "/_Help/%s"
 msgstr "/_Hilfe/%s"
 
-#: jpilot.c:1017
+#: ../jpilot.c:891
+#, c-format
+msgid "/Plugins/%s"
+msgstr "/Plugins/%s"
+
+#: ../jpilot.c:1437
+msgid "Clear"
+msgstr "Löschen"
+
+#: ../jpilot.c:1493
 msgid "Quit!"
 msgstr "Beenden!"
 
-#: prefs_gui.c:211
+#: ../jpilot.c:1500
+msgid "Sync"
+msgstr "Sync"
+
+#: ../jpilot.c:1507
+msgid "Sync your palm to the desktop"
+msgstr "Palm mit Desktop abgleichen (syncen)"
+
+#: ../jpilot.c:1511
+msgid "Backup"
+msgstr "Backup"
+
+#: ../jpilot.c:1519
+msgid ""
+"Sync your palm to the desktop\n"
+"and then do a backup"
+msgstr ""
+"Palm mit Desktop abgleichen und \n"
+"dann Backup erstellen"
+
+#: ../jpilot.c:1567
+msgid "Datebook/Go to Today"
+msgstr "Terminplaner/Heute"
+
+#: ../jpilot.c:1569
+msgid "Address Book"
+msgstr "Adressbuch"
+
+#: ../jpilot.c:1571
+msgid "ToDo List"
+msgstr "Aufgaben"
+
+#: ../jpilot.c:1573
+msgid "Memo Pad"
+msgstr "Notizzettel"
+
+#: ../log.c:89
+msgid "Cannot open log file, giving up.\n"
+msgstr "Kann Log-File nicht öffnen, gebe auf.\n"
+
+#: ../log.c:96
+msgid "Cannot open log file\n"
+msgstr "Kann Log-File nicht öffnen\n"
+
+#: ../monthview_gui.c:359
+msgid "Monthly View"
+msgstr "Monatsübersicht"
+
+#: ../monthview_gui.c:388 ../weekview_gui.c:275
+msgid "Close"
+msgstr "Schließen!"
+
+#: ../password.c:226
+msgid "Palm Password"
+msgstr ""
+
+#: ../password.c:248
+msgid "Enter PalmOS Password"
+msgstr ""
+
+#: ../password.c:271 ../print_gui.c:220 ../utils.c:818
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: ../prefs_gui.c:297
+msgid "Preferences"
+msgstr "Einstellungen"
+
+#: ../prefs_gui.c:320
+msgid "Locale"
+msgstr "Lokal"
+
+#: ../prefs_gui.c:322
+msgid "Settings"
+msgstr "Einstellungen"
+
+#: ../prefs_gui.c:324
+msgid "Alarms"
+msgstr "Alarm"
+
+#: ../prefs_gui.c:326
+msgid "Conduits"
+msgstr "Conduits"
+
+#: ../prefs_gui.c:337
+msgid "Character Set "
+msgstr "Zeichensatz "
+
+#: ../prefs_gui.c:350
 msgid "Short date format "
-msgstr "Datumskurzformat"
+msgstr "Datumskurzformat "
 
-#: prefs_gui.c:224
+#: ../prefs_gui.c:363
 msgid "Long date format "
-msgstr "Datumsformat"
+msgstr "Datumsformat "
 
-#: prefs_gui.c:238
+#: ../prefs_gui.c:377
 msgid "Time format "
-msgstr "Zeitformat"
+msgstr "Zeitformat "
 
-#: prefs_gui.c:252
+#: ../prefs_gui.c:391
 msgid "The first day of the week is "
-msgstr "Erster Wochentag ist"
+msgstr "Erster Wochentag ist "
 
-#: prefs_gui.c:266
+#: ../prefs_gui.c:411
 msgid "My GTK colors file is "
 msgstr "Als GTK-Farbdatei wähle ich"
 
-#: prefs_gui.c:280
-msgid "Serial Port "
-msgstr "Serielle Schnittstelle"
+#: ../prefs_gui.c:425
+msgid "Serial Port (/dev/ttyS0, /dev/pilot)"
+msgstr "Serielle Schnittstelle (/dev/ttyS0, /dev/pilot)"
 
-#: prefs_gui.c:295
+#: ../prefs_gui.c:440
 msgid "Serial Rate "
 msgstr "Schnittstellengeschwindigkeit"
 
-#: prefs_gui.c:308
+#: ../prefs_gui.c:453
 msgid "Number of backups to be archived"
 msgstr "Wieviele Backups sollen angelegt werden?"
 
-#: prefs_gui.c:324
+#: ../prefs_gui.c:469
 msgid "Show deleted records (default NO)"
-msgstr "Gelöschte Einträge anzeigen? (Standard: NO)"
+msgstr "Gelöschte Einträge anzeigen? (Standard: Nein)"
 
-#: prefs_gui.c:337
+#: ../prefs_gui.c:482
 msgid "Show modified deleted records (default NO)"
-msgstr "Veränderte gelöschte Einträge anzeigen? (Standard: NO)"
+msgstr "Veränderte gelöschte Einträge anzeigen? (Standard: Nein)"
 
-#: prefs_gui.c:351
+#: ../prefs_gui.c:496
 msgid "Highlight calendar days with appointments"
 msgstr "Tage mit Terminen farblich kennzeichnen?"
 
-#: search_gui.c:609
+#: ../prefs_gui.c:509
+msgid "Use DateBk3/4 note tags"
+msgstr "DateBk3/4 Tags unterstützen"
+
+#: ../prefs_gui.c:523
+msgid "Sync datebook"
+msgstr "Terminkalender synchronisieren"
+
+#: ../prefs_gui.c:535
+msgid "Sync address"
+msgstr "Adressen synchronisieren"
+
+#: ../prefs_gui.c:547
+msgid "Sync todo"
+msgstr "Aufgaben synchronisieren"
+
+#: ../prefs_gui.c:559
+msgid "Sync memo"
+msgstr "Merkzettel synchronisieren"
+
+#: ../prefs_gui.c:601
+msgid "Open alarm windows for appointment reminders"
+msgstr "Meldungsfenster für Erinnerungsalarm anzeigen"
+
+#: ../prefs_gui.c:613
+msgid "Execute this command"
+msgstr "Diesen Befehl ausführen"
+
+#: ../prefs_gui.c:624
+msgid "WARNING: executing arbitrary shell commands can be dangerous!!!"
+msgstr "ACHTUNG: Shell-Befehl auszuführen kann GEFÄHRLICH sein!"
+
+#: ../prefs_gui.c:632
+msgid "Alarm Command"
+msgstr "Alarm-Befehl"
+
+#: ../prefs_gui.c:642
+msgid "%t is replaced with the alarm time"
+msgstr "%t wird durch die Alarmzeit ersetzt"
+
+#: ../prefs_gui.c:646
+#, c-format
+msgid "%d is replaced with the alarm date"
+msgstr "%d wird durch die Alarmzeit ersetzt"
+
+#: ../prefs_gui.c:651
+msgid "%D is replaced with the alarm description"
+msgstr "%D wird durch die Alarmbeschreibung ersetzt"
+
+#: ../prefs_gui.c:655
+msgid "%N is replaced with the alarm note"
+msgstr "%N wird durch die Alarmnotiz ersetzt"
+
+#: ../print_gui.c:135
+msgid "Print Options"
+msgstr "Druckoptionen"
+
+#: ../print_gui.c:149
+msgid "One record"
+msgstr "Einen Eintrag"
+
+#: ../print_gui.c:153
+msgid "All records in this category"
+msgstr "Alle Einträge in dieser Kategorie"
+
+#: ../print_gui.c:157
+msgid "Print all records"
+msgstr "Alle Einträge drucken"
+
+#: ../print_gui.c:177
+msgid "One record per page"
+msgstr "Einen Eintrag pro Seite"
+
+#: ../print_gui.c:191
+msgid " Blank lines between each record"
+msgstr "Leerzeilen zwischen Einträgen"
+
+#: ../print_gui.c:200
+msgid "Print Command (e.g. lpr, or cat > file.ps)"
+msgstr "Druckbefehl (z.B. lpr oder cat > file.ps)"
+
+#: ../search_gui.c:456
+msgid "No records found"
+msgstr "Keine Einträge gefunden"
+
+#: ../search_gui.c:527
+msgid "Search"
+msgstr "Suchen"
+
+#: ../search_gui.c:540
 msgid "Search for: "
 msgstr "Suchen nach: "
 
-#: search_gui.c:616
+#: ../search_gui.c:547
 msgid "Case Sensitive"
-msgstr "Gross- u. Kleinschreibung beachten?"
+msgstr "Groß- u. Kleinschreibung beachten?"
 
-#: todo_gui.c:787
+#: ../sync.c:364
+msgid " Press the HotSync button now\n"
+msgstr "Hot-Sync Knopf jetzt drücken\n"
+
+#: ../sync.c:435
+msgid "Check your serial port and settings\n"
+msgstr "Überprüfen Sie die Serielle Schnittstelle und die Einstellungen\n"
+
+#: ../sync.c:549
+msgid "Doing a fast sync.\n"
+msgstr "Schneller Abgleich\n"
+
+#: ../sync.c:564
+msgid "Doing a slow sync.\n"
+msgstr "Langsamer Abgleich\n"
+
+#: ../sync.c:625
+msgid "Thank you for using J-Pilot."
+msgstr "Danke, daß Sie JPilot benutzt haben."
+
+#: ../sync.c:669
+msgid "Finished.\n"
+msgstr "Fertig.\n"
+
+#: ../sync.c:923 ../sync.c:1115
+#, c-format
+msgid "%s is up to date, fetch skipped.\n"
+msgstr "%s ist aktuell, kein Abgleich\n"
+
+#: ../sync.c:927 ../sync.c:1119
+#, c-format
+msgid "Fetching '%s'... "
+msgstr "Abgleich mit %s ..."
+
+#: ../sync.c:942 ../sync.c:1138 ../sync.c:1217
+msgid "OK\n"
+msgstr "Ok\n"
+
+#: ../sync.c:1040
+#, c-format
+msgid "Skipping %s\n"
+msgstr "Überspringe %s\n"
+
+#: ../sync.c:1173
+#, c-format
+msgid "Installing %s... "
+msgstr "Installiere %s ..."
+
+#: ../sync.c:1203
+#, c-format
+msgid "Install %s failed"
+msgstr "Installation fehlgeschlagen"
+
+#: ../sync.c:1213
+#, c-format
+msgid "Installed %s "
+msgstr "%s installiert"
+
+#: ../todo_gui.c:121
+msgid "Due Date"
+msgstr "Kein Fälligkeitsdatum"
+
+#: ../todo_gui.c:712
+msgid "No date"
+msgstr "Kein Fälligkeitsdatum"
+
+#: ../todo_gui.c:1010
 msgid "Hide Completed ToDos"
 msgstr "Erledigte Aufgaben ausblenden?"
 
-#: todo_gui.c:859
+#: ../todo_gui.c:1026
+msgid "Task"
+msgstr "Aufgabe"
+
+#: ../todo_gui.c:1027
+msgid "Due"
+msgstr "Fälligkeit"
+
+#: ../todo_gui.c:1092
 msgid "Completed"
 msgstr "Erledigt"
 
-#: todo_gui.c:868
+#: ../todo_gui.c:1100
 msgid "Priority: "
 msgstr "Priorität:"
 
-#: todo_gui.c:894
+#: ../todo_gui.c:1120
 msgid "Date Due:"
 msgstr "Fälligkeitsdatum:"
 
-#: todo_gui.c:963
-msgid "No Due Date"
-msgstr "Kein Fälligkeitsdatum"
-
-#: utils.c:76
+#: ../utils.c:102
 msgid "Today is %A, %x %X"
 msgstr "Heute ist %A, %x %X"
 
-#: utils.c:78
+#: ../utils.c:104
 msgid "Today is %%A, %s %s"
 msgstr "Heute ist %%A, %s %s"
+
+#: ../utils.c:813
+msgid "Today"
+msgstr "Tag"
+
+#: ../utils.c:1941
+msgid "PC ID is 0.\n"
+msgstr "PC ID ist 0.\n"
+
+#: ../utils.c:1942
+#, c-format
+msgid "I generated a new PC ID.  It is %d\n"
+msgstr "Ich habe eine neue PC ID angelegt: %d\n"
+
+#: ../weekview_gui.c:247
+msgid "Weekly View"
+msgstr "Wochenansicht"
+
+#~ msgid ""
+#~ "This palm doesn't have the same user name\n"
+#~ "or user ID as the one that was synced the\n"
+#~ "last time.  Syncing could have unwanted\n"
+#~ "effects.\n"
+#~ "Read the user manual if you are uncertain."
+#~ msgstr ""
+#~ "Die ID dieses Palm entspricht nicht \n"
+#~ "derjenigen, die vom letzten Sync-Vorgang\n"
+#~ "gespeichert ist. Syncing auf eigene Gefahr, \n"
+#~ "bitte lesen Sie das Handbuch."
+
+#~ msgid ""
+#~ "This palm has a NULL user id.\n"
+#~ "It may have been hard reset.\n"
+#~ "J-Pilot will not restore a palm yet.\n"
+#~ "Use pilot-xfer to restore the palm and\n"
+#~ "install-user to add a username and user ID\n"
+#~ "to the palm.\n"
+#~ "Read the user manual if you are uncertain."
+#~ msgstr ""
+#~ "Der Palm hat keine User ID (Null). \n"
+#~ "Möglicherweise wurde er zurückgesetzt. \n"
+#~ "JPilot kann einen Palm noch nicht wieder- \n"
+#~ "herstellen. Benutzen Sie dazu pilot-xfer."
+
+#~ msgid "Sync Anyway"
+#~ msgstr "Trotzdem syncen!"
+
+#~ msgid "Sync Problem"
+#~ msgstr "Problem bei Sync-Vorgang"
+
+#~ msgid "/_Help/About %s"
+#~ msgstr "/Hilfe/Über %s"
+
+#~ msgid "clicked"
+#~ msgstr "Angeklickt"
+
+#~ msgid "Add or Modify a Record"
+#~ msgstr "Eintrag hinzufügen oder ändern"
+
+#~ msgid "Daily Schedule"
+#~ msgstr "Tagesplanung"
+
+#~ msgid "Details"
+#~ msgstr "Details"
+
+#~ msgid "Serial Port "
+#~ msgstr "Serielle Schnittstelle"
+
+#~ msgid "Add It"
+#~ msgstr "Hinzufügen"
+
+#~ msgid "New"
+#~ msgstr "Neu"
+
+#~ msgid "Begin: "
+#~ msgstr "Beginn:"
+
+#~ msgid "Month:"
+#~ msgstr "Monat:"
+
+#~ msgid "Day:"
+#~ msgstr "Tag:"
+
+#~ msgid "Year:"
+#~ msgstr "Jahr:"
+
+#~ msgid "Hour:"
+#~ msgstr "Stunde:"
+
+#~ msgid "Min:"
+#~ msgstr "Min.:"
+
+#~ msgid "End: "
+#~ msgstr "Ende:"
+
+#~ msgid "Hide this window"
+#~ msgstr "Fenster ausblenden"
+
+#~ msgid "4th"
+#~ msgstr "vierter"
+
+#~ msgid "Last"
+#~ msgstr "Letzter"

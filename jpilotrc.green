@@ -132,6 +132,8 @@ bg[NORMAL] = { 0.0, 0.6, 0.6 }
 
   style "text"
   {
+#This is how to use a different font for now
+#font = "-adobe-courier-medium-o-normal--8-80-75-75-m-50-iso8859-1"
     bg[NORMAL] = { 0, 0.5, 0.5 }
     fg[NORMAL] = { 0.0, 0.0, 0.0 }
     fg[PRELIGHT] = { 0.0, 0.0, 0.0 }
@@ -171,6 +173,17 @@ style "notebook"
     fg[ACTIVE] = { 0, 0.0, 0.0 }
   }
 
+style "calendar"
+{
+fg[NORMAL] = { 0.0, 0.0, 0.0 } #normal days text and month/year text
+bg[NORMAL] = { 0.0, 0.7, 0.7 } #top header part and off month days
+fg[SELECTED] = { 0.0, 0.0, 0.0 } # selected and week numbers
+bg[SELECTED] = { 0.0, 0.7, 0.7 } # selected and week numbers
+fg[PRELIGHT] = { 1.0, 1.0, 1.0 } # prelights for arrows
+bg[PRELIGHT] = { 0.0, 0.7, 0.7 } # prelights for arrows
+base[NORMAL] = { 0.0, 0.5, 0.5 } # bg for calendar
+}
+
   # pixmap_path "~/.pixmaps"
 
   # These set the widget types to use the styles defined above.
@@ -196,6 +209,7 @@ style "notebook"
   #widget_class "*GtkCList" style "text"
   widget_class "*GtkVScrollbar" style "text"
   widget_class "*GtkHScrollbar" style "text"
+  widget_class "*GtkCalendar" style "calendar"
   widget "*GtkButton*.button_set" style "button_set"
   widget "*GtkButton*.button_dow" style "button_dow"
   widget "*GtkButton*.button_today" style "button_today"

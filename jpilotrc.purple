@@ -1,81 +1,69 @@
 style "window"
 {
-fg[NORMAL] = { 1.0, 1.0, 1.0 }
-bg[NORMAL] = { 0.4, 0.2, 0.6 }
+fg[NORMAL] = { 1.0, 1.0, 1.0 } #forground color for window
+bg[NORMAL] = { 0.4, 0.2, 0.6 } #background color for window
 }
 
 style "label"
 {
-fg[NORMAL] = { 1.0, 1.0, 1.0 }
-bg[NORMAL] = { 0.4, 0.2, 0.6 }
+fg[NORMAL] = { 1.0, 1.0, 1.0 } #foreground of a label and button text
+bg[NORMAL] = { 0.4, 0.2, 0.6 } #background for a label
 }
 
 style "label_high"
 {
+#This is a highlighted calendar button (appointment is on that day)
 fg[NORMAL] = { 0.9, 0.9, 0.5 }
-}
-
-style "label_box_cal"
-{
-fg[NORMAL] = { 0.0, 0.0, 1.0 }
-bg[NORMAL] = { 1.0, 1.0, 1.0 }
-bg[ACTIVE] = { 1.0, 1.0, 1.0 }
-bg[PRELIGHT] = { 1.0, 1.0, 1.0 }
-bg[INSENSITIVE] = { 1.0, 1.0, 1.0 }
 }
 
 style "frame"
 {
-fg[NORMAL] = { 1.0, 1.0, 1.0 }
-bg[NORMAL] = { 1.0, 1.0, 1.0 }
+fg[NORMAL] = { 1.0, 1.0, 1.0 } #the text part of a frame
+bg[NORMAL] = { 1.0, 1.0, 1.0 } #the outline part of a frame
 }
 
 style "button"
 {
 # This shows all the possible states for a button.  The only one that
 # doesn't apply is the SELECTED state.
-fg[PRELIGHT] = { 1.0, 1.0, 1.0 }
+fg[PRELIGHT] = { 1.0, 1.0, 1.0 } #bg and fg when judd-over
 bg[PRELIGHT] = { 0.5, 0.3, 0.7 }
-bg[ACTIVE] = { 0.4, 0.2, 0.6 }
+bg[ACTIVE] = { 0.4, 0.2, 0.6 } #bg and fg when button pressed
 fg[ACTIVE] = { 1.0, 1.0, 1.0 }
-bg[NORMAL] = { 0.4, 0.2, 0.6 }
+bg[NORMAL] = { 0.4, 0.2, 0.6 } #bg and fg normally
 #fg[NORMAL] = { 0.9, 1.0, 1.0 }
-bg[INSENSITIVE] = { 1.0, 1.0, 1.0 }
-fg[INSENSITIVE] = { 1.0, 0, 1.0 }
 }
   
 style "button_set" = "button"
 {
-bg[NORMAL] = { 0.6, 0.4, 0.8 }
+bg[NORMAL] = { 0.6, 0.4, 0.8 } #calendar button after its selected
 }
   
 style "button_today" = "button"
 {
-bg[NORMAL] = { 0.5, 0.3, 0.7 }
+bg[NORMAL] = { 0.5, 0.3, 0.7 } #color of the calendar button for today
 }
   
 style "button_dow" = "button"
 {
+#these are for the buttons with the days of weeks on them in the calendar
 fg[PRELIGHT] = { 0.0, 0.0, 0.0 }
 bg[PRELIGHT] = { 0.4, 0.2, 0.6 }
-bg[ACTIVE] = { 0.4, 0.2, 0.6 }
 fg[ACTIVE] = { 0.0, 0.0, 0.0 }
+bg[ACTIVE] = { 0.4, 0.2, 0.6 }
 }
 
 style "button_app"
 {
+#These are for the 4 main app buttons
 fg[PRELIGHT] = { 1.0, 1.0, 1.0 }
 bg[PRELIGHT] = { 0.6, 0.4, 0.8 }
 }
 
-style "main_button" = "button"
-{
-font = "-adobe-helvetica-medium-r-normal--*-100-*-*-*-*-*-*"
-bg[PRELIGHT] = { 0.75, 0, 0 }
-}
 
 style "toggle_button" = "button"
 {
+#toggle buttons are the buttons that stay down or up when pressed
 #fg[NORMAL] = { 1.0, 1.0, 1.0 }
 #bg[NORMAL] = { 0, 0.3, 0.6 }
 #fg[ACTIVE] = { 1.0, 1.0, 1.0 }
@@ -86,6 +74,7 @@ style "toggle_button" = "button"
 
 style "radio_button"
 {
+#these are the little square buttons
 fg[NORMAL] = { 1.0, 1.0, 0.0 }
 bg[NORMAL] = { 0.4, 0.2, 0.6 }
 fg[ACTIVE] = { 1.0, 1.0, 1.0 }
@@ -96,6 +85,7 @@ fg[PRELIGHT] = { 1.0, 1.0, 1.0 }
 
 style "spinner" = "spinner"
 {
+#these are the boxes with up/down arrows
 fg[NORMAL] = { 0.0, 0.0, 0.0 }
 bg[NORMAL] = { 0.4, 0.2, 0.6 }
 bg[PRELIGHT] = { 1.0, 1.0, 0.0 }
@@ -105,6 +95,8 @@ base[NORMAL] = { 0.85, 0.9, 1.0 }
 
 style "text"
 {
+#This is how to use a different font for now
+#font = "-adobe-courier-medium-o-normal--8-80-75-75-m-50-iso8859-1"
 bg[NORMAL] = { 0.4, 0.2, 0.6 }
 fg[NORMAL] = { 0.0, 0.0, 0.0 }
 fg[PRELIGHT] = { 0.0, 0.0, 0.0 }
@@ -121,7 +113,7 @@ base[NORMAL] = { 0.85, 0.9, 1.0 }
 
 style "ruler"
 {
-font = "-adobe-helvetica-medium-r-normal--*-80-*-*-*-*-*-*"
+#font = "-adobe-helvetica-medium-r-normal--*-80-*-*-*-*-*-*"
 }
 
 style "menu"
@@ -149,6 +141,19 @@ bg[ACTIVE] = { 0.3, 0.1, 0.5 }
 fg[ACTIVE] = { 1.0, 1.0, 1.0 }
 }
 
+style "calendar"
+{
+fg[NORMAL] = { 1.0, 1.0, 1.0 } #normal days text and month/year text
+bg[NORMAL] = { 0.5, 0.3, 0.7 } #top header part and off month days
+#bg[ACTIVE] = { 1.0, 0.0, 0.0 } #nothing
+#fg[ACTIVE] = { 1.0, 0.0, 0.0 } #nothing
+fg[SELECTED] = { 1.0, 1.0, 1.0 } # selected and week numbers
+bg[SELECTED] = { 0.5, 0.3, 0.7 } # selected and week numbers
+fg[PRELIGHT] = { 1.0, 1.0, 0.0 } # prelights for arrows
+bg[PRELIGHT] = { 0.4, 0.2, 0.6 } # prelights for arrows
+base[NORMAL] = { 0.4, 0.2, 0.6 } # bg for calendar
+}
+
   # pixmap_path "~/.pixmaps"
 
   # These set the widget types to use the styles defined above.
@@ -167,7 +172,7 @@ fg[ACTIVE] = { 1.0, 1.0, 1.0 }
   widget_class "*GtkToggleButton*" style "toggle_button"
   widget_class "*Ruler" style "ruler"
   widget_class "*GtkMenu" style "menu"
-widget_class "*Menu*" style "menu"
+  widget_class "*Menu*" style "menu"
   widget_class "*GtkOptionMenu" style "menu"
   widget_class "*GtkRadioMenuItem" style "menu"
   widget_class "*GtkText" style "text"
@@ -177,6 +182,7 @@ widget_class "*Menu*" style "menu"
   widget_class "*GtkLabel" style "label"
   widget_class "*GtkFrame" style "frame"
   widget_class "*GtkEntry" style "text"
+  widget_class "*GtkCalendar" style "calendar"
   widget "*GtkButton*.button_set" style "button_set"
   widget "*GtkButton*.button_dow" style "button_dow"
   widget "*GtkButton*.button_today" style "button_today"
@@ -184,12 +190,10 @@ widget_class "*Menu*" style "menu"
 
   # This sets all the buttons that are children of the "main window" to
   # the main_button style.  These must be documented to be taken advantage of.
-  widget "main window.*GtkButton*" style "main_button"
+  # widget "main window.*GtkButton*" style "main_button"
 
-#works->widget "*GtkTable.*GtkButton*" style "button_set"
 widget "*.button_set" style "button_set"
 widget "*.button_dow" style "button_dow"
 widget "*.button_today" style "button_today"
 widget "*.button_app" style "button_app"
-widget "*.label_box_cal" style "label_box_cal"
 widget "*.label_high" style "label_high"

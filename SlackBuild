@@ -1,0 +1,117 @@
+#!/bin/sh
+# Set initial variables:
+CWD=`pwd`
+PKG=$CWD/package
+VERSION=0.99
+
+if [ ! -d $PKG ]; then
+  mkdir -p $PKG # location to build the source
+fi
+
+echo "+======================+"
+echo "| Building jpilot-0.99 |"
+echo "+======================+"
+
+#make directory structure
+mkdir -p $PKG/usr/bin
+mkdir -p $PKG/usr/lib/jpilot/plugins
+mkdir -p $PKG/usr/man/man1
+mkdir -p $PKG/usr/share/jpilot
+mkdir -p $PKG/usr/share/doc/jpilot-0.99
+mkdir -p $PKG/usr/share/doc/jpilot-0.99/icons
+
+cp BUGS CHANGELOG COPYING CREDITS INSTALL README TODO UPGRADING \
+  $PKG/usr/share/doc/jpilot-0.99/
+#chown root.root $PKG/usr/share/doc/jpilot-0.99/*
+chmod 644 $PKG/usr/share/doc/jpilot-0.99/*
+chmod 755 $PKG/usr/share/doc/jpilot-0.99/icons
+
+cp icons/jpilot-icon1.xpm icons/jpilot-icon2.xpm icons/jpilot-icon3.xpm \
+ icons/README docs/manual.html docs/plugin.html \
+ $PKG/usr/share/doc/jpilot-0.99/icons/
+#chown root.root $PKG/usr/share/doc/jpilot-0.99/icons/*
+
+cp empty/AddressDB.pdb \
+ empty/DatebookDB.pdb \
+ empty/MemoDB.pdb \
+ empty/ToDoDB.pdb \
+ jpilotrc.blue \
+ jpilotrc.default \
+ jpilotrc.green \
+ jpilotrc.purple \
+ jpilotrc.steel \
+ $PKG/usr/share/jpilot/
+#chown root.root $PKG/usr/share/jpilot/*
+chmod 644 $PKG/usr/share/jpilot/*
+
+#compile the package
+./configure --prefix=/usr --with-ccoptions="-Wall -O2"
+echo "+======================+"
+echo "| make                 |"
+echo "+======================+"
+make
+#Expense
+echo "+======================+"
+echo "| Expense plugin       |"
+echo "+======================+"
+cd Expense
+./configure --prefix=/usr --with-ccoptions="-Wall -O2"
+make
+../libtool --mode=install ./install-sh libexpense.la $PKG/lib/jpilot/plugins/
+cd ..
+#SyncTime
+echo "+======================+"
+echo "| SyncTime             |"
+echo "+======================+"
+cd SyncTime
+./configure --prefix=/usr --with-ccoptions="-Wall -O2"
+make
+../libtool --mode=install ./install-sh libsynctime.la $PKG/lib/jpilot/plugins/
+cd ..
+
+echo "+======================+"
+echo "| Copying binaries     |"
+echo "+======================+"
+./install-sh -s -c -m 555 jpilot-dump $PKG/bin/jpilot
+./install-sh -s -c -m 555 jpilot-dump $PKG/bin/jpilot-sync
+./install-sh -s -c -m 555 jpilot-dump $PKG/bin/jpilot-dump
+./install-sh -s -c -m 555 jpilot-dump $PKG/bin/jpilot-upgrade-99
+
+echo "+======================+"
+echo "| Man files            |"
+echo "+======================+"
+cat docs/jpilot.1 | gzip -9c > $PKG/usr/man/man1/jpilot.1.gz
+cat docs/jpilot-sync.1 | gzip -9c > $PKG/usr/man/man1/jpilot-sync.1.gz
+cat docs/jpilot-upgrade-99.1 | gzip -9c > $PKG/usr/man/man1/jpilot-upgrade-99.1.gz
+
+echo "+======================+"
+echo "| po files             |"
+echo "+======================+"
+( cd po
+  for file in *.gmo ; do
+    LOC=`basename $file .gmo`
+    mkdir -p $PKG/usr/share/locale/$LOC/LC_MESSAGES
+    cat $file > $PKG/usr/share/locale/$LOC/LC_MESSAGES/jpilot.mo
+  done )
+
+echo "+======================+"
+echo "| make package         |"
+echo "+======================+"
+cd $PKG
+tar czvf ../jpilot-0.99.slack.tgz .
+
+# Warn of zero-length files:
+for file in `find . -type f -print` ; do
+ if [ "`filesize $file`" = "0" ]; then
+  echo "WARNING: zero length file $file"
+ fi
+ if [ "`filesize $file`" = "20" ]; then
+  echo "WARNING: possible empty gzipped file $file"
+ fi
+done
+
+# Clean up the extra stuff:
+if [ "$1" = "--cleanup" ]; then
+  rm -rf $PKG/jpilot-0.99
+  rm -rf $PKG
+fi

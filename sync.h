@@ -4,8 +4,7 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,6 +24,7 @@
 #define SYNC_FULL_BACKUP   1
 #define SYNC_NO_PLUGINS    2
 #define SYNC_OVERRIDE_USER 4
+#define SYNC_NO_FORK       8
 
 #define SYNC_ERROR_BIND            -10
 #define SYNC_ERROR_LISTEN          -11

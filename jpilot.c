@@ -26,7 +26,11 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <string.h>
+#include <ctype.h>
 #include <unistd.h>
+#ifdef HAVE_LOCALE_H
+#include <locale.h>
+#endif
 
 #include <pi-datebook.h>
 #include <gdk/gdkkeysyms.h>
@@ -35,30 +39,56 @@
 #include "address.h"
 #include "todo.h"
 #include "memo.h"
+#include "libplugin.h"
 #include "utils.h"
 #include "sync.h"
 #include "log.h"
 #include "prefs_gui.h"
 #include "prefs.h"
 #include "plugins.h"
+#define ALARMS
+#ifdef ALARMS
+#include "alarms.h"
+#endif
 #include "print.h"
+#include "password.h"
 #include "i18n.h"
 
+#ifndef WITH_SYMPHONET
 #include "datebook.xpm"
 #include "address.xpm"
 #include "todo.xpm"
 #include "memo.xpm"
+#else
+#include "datebook_ncc.xpm"
+#include "address_ncc.xpm"
+#include "todo_ncc.xpm"
+#include "memo_ncc.xpm"
+#endif
+
 
 /*#define SHADOW GTK_SHADOW_IN */
 /*#define SHADOW GTK_SHADOW_OUT */
 /*#define SHADOW GTK_SHADOW_ETCHED_IN */
 #define SHADOW GTK_SHADOW_ETCHED_OUT
 
-#define USAGE_STRING _("\njpilot [ [-v] || [-h] || [-d]\n"\
+#define OUTPUT_MINIMIZE 383
+#define OUTPUT_RESIZE   384
+#define OUTPUT_SETSIZE  385
+#define OUTPUT_CLEAR    386
+
+#define MASK_WIDTH  0x08
+#define MASK_HEIGHT 0x04
+#define MASK_X      0x02
+#define MASK_Y      0x01
+
+#define USAGE_STRING _("\njpilot [ [-v] || [-h] || [-d] || [-a] || [-A]\n"\
 " -v displays version and exits.\n"\
 " -h displays help and exits.\n"\
 " -d displays debug info to stdout.\n"\
 " -p do not load plugins.\n"\
+" -a ignore missed alarms since the last time this program was run.\n"\
+" -A ignore all alarms, past and future.\n"\
 " The PILOTPORT, and PILOTRATE env variables are used to specify which\n"\
 " port to sync on, and at what speed.\n"\
 " If PILOTPORT is not set then it defaults to /dev/pilot.\n")
@@ -71,18 +101,123 @@ GtkWidget *glob_date_label;
 GtkTooltips *glob_tooltips;
 gint glob_date_timer_tag;
 pid_t glob_child_pid;
+GtkWidget *g_output_text;
 GtkWidget *window;
+static GtkWidget *output_pane;
 int glob_app = 0;
 int glob_focus = 1;
-GtkWidget *glob_dialog;
-int skip_plugins;
-
+GtkWidget *glob_dialog=NULL;
+unsigned char skip_plugins;
+				       
 int pipe_in, pipe_out;
 
 GtkWidget *sync_window = NULL;
 
 static void delete_event(GtkWidget *widget, GdkEvent *event, gpointer data);
 
+/*
+ * Parses the -geometry command line parameter
+ */
+void geometry_error(const char *str)
+{
+   /* The log window hasn't been created yet */
+   jpilot_logf(LOG_STDOUT, "invalid geometry specification: \"%s\"\n", str);
+}
+
+/* gtk_init must already have been called, or will seg fault */
+gboolean parse_geometry(const char *str, 
+			int window_width, int window_height,
+			int *w, int *h, int *x, int *y,
+			int *mask)
+{
+   const char *P;
+   int field;
+   int *param;
+   int negative;
+   int max_value;
+   int sub_value;
+
+   jpilot_logf(LOG_DEBUG, "parse_geometry()\n");
+
+   if (!(x && y && w && h && str && mask)) {
+      return FALSE;
+   }
+
+   *x = *y = *w = *h = *mask = 0;
+   max_value = sub_value = 0;
+   param=w;
+   /* what param are we working on x=1, y=2, w=3, h=4 */
+   field=1;
+   /* 1 for positive, -1 for negative */
+   negative=1;
+
+   for (P=str; *P; P++) {
+      if (isdigit(*P)) {
+	 *mask=(*mask) | 1 << ((4-field) & 0x0F);
+	 if (negative==1) {
+	    *param = (*param) * 10 + (*P) - '0';
+	 }
+	 if (negative==-1) {
+	    sub_value = sub_value * 10 + (*P) - '0';
+	    *param = max_value - sub_value;
+	 }
+      }
+      if ((*P=='x')||(*P=='X')) {
+	 field++;
+	 if (field==2) {
+	    param=h;
+	    negative=1;
+	 } else {
+	    geometry_error(str);
+	    return FALSE;
+	 }
+      }
+      if ((*P == '+') || (*P == '-')) {
+	 field++;
+	 if (field<3) {
+	    field=3;
+	 }
+	 if (field>4) {
+	    geometry_error(str);
+	    return FALSE;
+	 }
+      }
+      if (*P == '+') {
+	 negative=1;
+	 if (field==3) {
+	    param=x;
+	 }
+	 if (field==4) {
+	    param=y;
+	 }
+	 *param=0;
+      }
+      if (*P == '-') {
+	 negative=-1;
+	 if (field==3) {
+	    param=x;
+	    if (*mask & MASK_WIDTH) {
+	       *param = max_value = gdk_screen_width() - *w;
+	    } else {
+	       *param = max_value = gdk_screen_width() - window_width;
+	    }
+	    sub_value=0;
+	 }
+	 if (field==4) {
+	    param=y;
+	    if (*mask & MASK_HEIGHT) {
+	       *param = max_value = gdk_screen_height() - *h;
+	    } else {
+	       *param = max_value = gdk_screen_height() - window_height;
+	    }
+	    sub_value=0;
+	 }
+      }
+   }
+   jpilot_logf(LOG_DEBUG, "w=%d, h=%d, x=%d, y=%d, mask=0x%x\n",
+	       *w, *h, *x, *y, *mask);
+   return TRUE;
+}
 
 static void cb_focus(GtkWidget *widget, GdkEvent *event, gpointer data)
 {
@@ -255,8 +390,7 @@ void cb_print(GtkWidget *widget, gpointer data)
 {
    struct plugin_s *plugin;
    GList *plugin_list, *temp_list;
-   char *button_text[]={"OK"
-   };
+   char *button_text[]={gettext_noop("OK")};
    char temp[256];
    
    switch(glob_app) {
@@ -300,13 +434,34 @@ void cb_print(GtkWidget *widget, gpointer data)
    strncpy(temp, _("OK"), 256);
    temp[255]='\0';
    button_text[0]=temp;
-   dialog_generic(GTK_WIDGET(window)->window, 300, 200,
+   dialog_generic(GTK_WIDGET(window)->window, 0, 0,
 		  _("Print"), "", 
 		  _("There is no print support for this conduit."),
 		  1, button_text);
 }
 
+static void cb_private(GtkWidget *widget, gpointer data)
+{
+   int privates, was_privates;
+   char ascii_password[64];
+   int ret;
 
+   was_privates = privates = show_privates(GET_PRIVATES, NULL);
+
+   if (privates==SHOW_PRIVATES) {
+      privates = show_privates(HIDE_PRIVATES, NULL);
+   } else {
+      ret = dialog_password(ascii_password);
+      if (ret==1) {
+	 privates = show_privates(SHOW_PRIVATES, ascii_password);
+      }
+   }
+
+   if (was_privates!=privates) {
+      cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
+   }
+}
+   
 void cb_app_button(GtkWidget *widget, gpointer data)
 {
    int app;
@@ -415,10 +570,7 @@ void cb_app_button(GtkWidget *widget, gpointer data)
 
 void cb_sync_hide(GtkWidget *widget, gpointer data)
 {
-   GtkWidget *window;
-   
-   window=data;
-   gtk_widget_destroy(window);
+   gtk_widget_destroy(sync_window);
    
    sync_window=NULL;
 }
@@ -432,19 +584,19 @@ void bad_sync_exit_status(int exit_status)
    int result;
    char text1[] =
      /*-------------------------------------------*/
-     "This palm doesn't have the same user name\r\n"
-     "or user ID as the one that was synced the\r\n"
-     "last time.  Syncing could have unwanted\r\n"
-     "effects.\r\n"
+     "This palm doesn't have the same user name\n"
+     "or user ID as the one that was synced the\n"
+     "last time.  Syncing could have unwanted\n"
+     "effects.\n"
      "Read the user manual if you are uncertain.";
    char text2[] =
      /*-------------------------------------------*/
-     "This palm has a NULL user id.\r\n"
-     "It may have been hard reset.\r\n"
-     "J-Pilot will not restore a palm yet.\r\n"
-     "Use pilot-xfer to restore the palm and\r\n"
-     "install-user to add a username and user ID\r\n"
-     "to the palm.\r\n"
+     "This palm has a NULL user id.\n"
+     "It may have been hard reset.\n"
+     "J-Pilot will not restore a palm yet.\n"
+     "Use pilot-xfer to restore the palm and\n"
+     "install-user to add a username and user ID\n"
+     "to the palm.\n"
      "Read the user manual if you are uncertain.";
    char *button_text[]={"OK", "Sync Anyway"
    };
@@ -455,7 +607,7 @@ void bad_sync_exit_status(int exit_status)
    if ((exit_status == SYNC_ERROR_NOT_SAME_USERID) ||
        (exit_status == SYNC_ERROR_NOT_SAME_USER)) {
       result = dialog_generic(GTK_WIDGET(window)->window,
-			      300, 200,
+			      0, 0,
 			      "Sync Problem", "Sync", text1, 2, button_text);
       if (result == DIALOG_SAID_2) {
 	 cb_sync(NULL, SYNC_OVERRIDE_USER | (skip_plugins ? SYNC_NO_PLUGINS : 0));
@@ -463,7 +615,7 @@ void bad_sync_exit_status(int exit_status)
    }
    if (exit_status == SYNC_ERROR_NULL_USERID) {
       dialog_generic(GTK_WIDGET(window)->window,
-		     300, 200,
+		     0, 0,
 		     "Sync Problem", "Sync", text2, 1, button_text);
    }
 }
@@ -475,71 +627,20 @@ void cb_read_pipe(gpointer data,
 {
    int num;
    char buf[1024];
+   int buf_len;
    fd_set fds;
    struct timeval tv;
    int ret;
    char *Pstr1, *Pstr2, *Pstr3;
    int user_len;
+   int password_len;
    unsigned long user_id;
+   unsigned long ivalue;
+   int w, h, new_y;
    int exit_status;
    char user[MAX_PREF_VALUE];
+   char password[MAX_PREF_VALUE];
 
-   GtkWidget *main_window, *button, *hbox1, *vbox1, *vscrollbar;
-   static GtkWidget *text;
-   int pw, ph, px, py, w, h, x, y;
-
-   main_window = data;
-   
-   if (!sync_window) {
-      gdk_window_get_position(main_window->window, &px, &py);
-      gdk_window_get_size(main_window->window, &pw, &ph);
-
-      w=400;
-      h=200;
-      x=px+pw/2-w/2;
-      y=py+ph/2-h/2;
-
-#ifdef JPILOT_DEBUG
-      jpilot_logf(LOG_DEBUG, "px=%d, py=%d, pw=%d, ph=%d\n", px, py, pw, ph);
-#endif
-      sync_window = gtk_widget_new(GTK_TYPE_WINDOW,
-				   "type", GTK_WINDOW_DIALOG,
-				   "x", x, "y", y,
-				   "width", w, "height", h,
-				   "title", "Output",
-				   NULL);
-
-      vbox1 = gtk_vbox_new(FALSE, 0);
-
-      hbox1 = gtk_hbox_new(FALSE, 0);
-
-      gtk_container_add(GTK_CONTAINER(sync_window), vbox1);
-       
-      gtk_box_pack_start(GTK_BOX(vbox1), hbox1, TRUE, TRUE, 0);
-
-      /*text box */
-      text = gtk_text_new(NULL, NULL);
-      gtk_text_set_editable(GTK_TEXT(text), FALSE);
-      gtk_text_set_word_wrap(GTK_TEXT(text), TRUE);
-      vscrollbar = gtk_vscrollbar_new(GTK_TEXT(text)->vadj);
-      gtk_box_pack_start(GTK_BOX(hbox1), text, TRUE, TRUE, 0);
-      gtk_box_pack_start(GTK_BOX(hbox1), vscrollbar, FALSE, FALSE, 0);
-
-      /*Button */
-      button = gtk_button_new_with_label (_("Hide this window"));
-      gtk_signal_connect(GTK_OBJECT(button), "clicked",
-			 GTK_SIGNAL_FUNC(cb_sync_hide),
-			 sync_window);
-      gtk_box_pack_start(GTK_BOX(vbox1), button, FALSE, FALSE, 0);
-
-      /*show it */
-      gtk_widget_show_all(GTK_WIDGET(sync_window));
-   }
-
-   if (GTK_IS_WINDOW(sync_window)) {
-      gdk_window_raise(sync_window->window);
-   }
-   
    while(1) {
       /*Linux modifies tv in the select call */
       tv.tv_sec=0;
@@ -547,18 +648,16 @@ void cb_read_pipe(gpointer data,
       FD_ZERO(&fds);
       FD_SET(in, &fds);
       ret=select(in+1, &fds, NULL, NULL, &tv);
-      if (!ret) break;
+      if (ret<1) break;
+      if (!FD_ISSET(in, &fds)) break;
       buf[0]='\0';
-      num = read(in, buf, 1022);
-      if (num >= 1022) {
+      buf_len = read(in, buf, 1022);
+      if (buf_len >= 1022) {
 	 buf[1022] = '\0';
       } else {
-	 if (num > 0) {
-	    buf[num]='\0';
+	 if (buf_len > 0) {
+	    buf[buf_len]='\0';
 	 }
-      }
-      if (num>0) {
-	 gtk_text_insert(GTK_TEXT(text), NULL, NULL, NULL, buf, num);
       }
       /*Look for the username */
       Pstr1 = strstr(buf, "sername is");
@@ -579,6 +678,30 @@ void cb_read_pipe(gpointer data,
 	    }
 	 }
       }
+#ifdef ENABLE_PRIVATE
+      /*Look for the Password */
+      Pstr1 = strstr(buf, "User Password is");
+      if (Pstr1) {
+	 Pstr2 = strchr(Pstr1, '\"');
+	 if (Pstr2) {
+	    Pstr2++;
+	    Pstr3 = strchr(Pstr2, '\"');
+	    if (Pstr3) {
+	       password_len = Pstr3 - Pstr2;
+	       if (password_len > MAX_PREF_VALUE) {
+		  password_len = MAX_PREF_VALUE;
+	       }
+	       strncpy(password, Pstr2, password_len);
+	       /* Remove this line from the output */
+	       buf_len = buf_len - (Pstr3 - Pstr1) - 1;
+	       memmove(Pstr1, Pstr3+1, buf_len);
+	       password[password_len] = '\0';
+	       jpilot_logf(LOG_DEBUG, "pipe_read: password = %s\n", password);
+	       set_pref_char(PREF_PASSWORD, password);
+	    }
+	 }
+      }
+#endif
       /*Look for the user ID */
       Pstr1 = strstr(buf, "ser ID is");
       if (Pstr1) {
@@ -609,33 +732,47 @@ void cb_read_pipe(gpointer data,
 	    bad_sync_exit_status(exit_status);
 	 }
       }
+      /* Output the text to the Sync window */
+      if (buf_len>0) {
+	 gtk_text_insert(GTK_TEXT(g_output_text), NULL, NULL, NULL, buf, buf_len);
+	 get_pref(PREF_OUTPUT_HEIGHT, &ivalue, NULL);
+	 /* Make them look at least something if output happens */
+	 if (ivalue < 60) ivalue=60;
+	 gdk_window_get_size(window->window, &w, &h);
+	 new_y = h - ivalue;
+	 gtk_paned_set_position(GTK_PANED(output_pane), new_y + 2);
+      }
+      /*Look for finish message */
+      Pstr1 = strstr(buf, "Finished");
+      if (Pstr1) {
+        cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
+      }
    }
 }
 
 void cb_about(GtkWidget *widget, gpointer data)
 {
    char text[255];
-   char *button_text[]={"OK!"
-   };
+   char *button_text[1];
    char temp[256];
-   GtkWidget *window;
-   
-   window = data;
+   char about[256];
+
    sprintf(text,
 	   /*-------------------------------------------*/
-	   PN" was written by\r\n"
-	   "Judd Montgomery (c) 1999.\r\n"
-	   "judd@engineer.com\r\n"
-	   "http://jpilot.linuxbox.com\r\n"
-	   "Please consider helping to fund his efforts.\r\n"
-	   );
+	   _("%s was written by\n"
+	     "Judd Montgomery (c) 1999-2000.\n"
+	     "judd@jpilot.org\n"
+	     "http://jpilot.org\n"),   
+	   PN);
+   g_snprintf(about, 250, _("About %s"), PN);
+
    if (GTK_IS_WINDOW(window)) {
       strncpy(temp, _("OK"), 256);
       temp[255]='\0';
       button_text[0]=temp;
       dialog_generic(GTK_WIDGET(window)->window,
-		     300, 200,
-		     "About "PN, "oOo", text, 1, button_text);
+ 		     0, 0,
+		     about, "oOo", text, 1, button_text);
    }
 }
 
@@ -643,26 +780,33 @@ void get_main_menu(GtkWidget  *window,
 		   GtkWidget **menubar,
 		   GList *plugin_list)
 /* Some of this code was copied from the gtk_tut.txt file */
-#define NUM_FACTORY_ITEMS 18
+#ifndef WITH_SYMPHONET
+#define NUM_FACTORY_ITEMS 19
+#else
+#define NUM_FACTORY_ITEMS 17
+#endif
 {
   GtkItemFactoryEntry menu_items1[NUM_FACTORY_ITEMS]={
   { NULL, NULL,         NULL,           0,        "<Branch>" },
   { NULL, NULL,         NULL,           0,        "<Tearoff>" },
-  { NULL, "<control>S", cb_search_gui,  0,        NULL },
+  { NULL, "<control>F", cb_search_gui,  0,        NULL },
   { NULL, NULL,         NULL,           0,        "<Separator>" },
-  { NULL, NULL,         cb_install_gui, 0,        NULL },
-  { NULL, NULL,         cb_prefs_gui,   0,        NULL },
-  { NULL, NULL,         cb_print,       0,        NULL },
+  { NULL, "<control>I", cb_install_gui, 0,        NULL },
+  { NULL, "<control>E", cb_prefs_gui,   GPOINTER_TO_INT(window),   NULL },
+  { NULL, "<control>P", cb_print,       0,        NULL },
+#ifndef WITH_SYMPHONET
   { NULL, NULL,         NULL,           0,        "<Separator>" },
   { NULL, "<control>Q", delete_event,   0,        NULL },
+#endif
   { NULL, NULL,         NULL,           0,        "<Branch>" },
+  { NULL, "<control>Z", cb_private,     0,        NULL },
   { NULL, "F1",         cb_app_button,  DATEBOOK, NULL },
   { NULL, "F2",         cb_app_button,  ADDRESS,  NULL },
   { NULL, "F3",         cb_app_button,  TODO,     NULL },
   { NULL, "F4",         cb_app_button,  MEMO,     NULL },
   { NULL, NULL,         NULL,           0,        "<Branch>" },
   { NULL, NULL,         NULL,           0,        "<LastBranch>" },
-  { NULL, NULL,         cb_about,       GPOINTER_TO_INT(window), NULL },
+  { NULL, NULL,         cb_about,       0,        NULL },
   { "END",NULL,         NULL,           0,        NULL }
  };
 
@@ -671,6 +815,7 @@ void get_main_menu(GtkWidget  *window,
    gint nmenu_items;
    GtkItemFactoryEntry *menu_items2;
    int i1, i2, i;
+   char temp_str[255];
 
 #ifdef ENABLE_PLUGINS
    int count, help_count;
@@ -679,26 +824,33 @@ void get_main_menu(GtkWidget  *window,
    char **plugin_menu_strings;
    char **plugin_help_strings;
    GList *temp_list;
-   char temp_str[60];
+   char *F_KEYS[]={"F5","F6","F7","F8","F9","F10","F11","F12"};
+   int f_key_count;
 #endif
 
-   menu_items1[0].path=strdup(_("/_File"));
-   menu_items1[1].path=strdup(_("/_File/tear"));
-   menu_items1[2].path=strdup(_("/File/_Search"));
-   menu_items1[3].path=strdup(_("/File/sep1"));
-   menu_items1[4].path=strdup(_("/File/_Install"));
-   menu_items1[5].path=strdup(_("/File/Preferences"));
-   menu_items1[6].path=strdup(_("/File/Print"));
-   menu_items1[7].path=strdup(_("/File/sep1"));
-   menu_items1[8].path=strdup(_("/File/Quit"));
-   menu_items1[9].path=strdup(_("/_View"));
-   menu_items1[10].path=strdup(_("/View/Datebook"));
-   menu_items1[11].path=strdup(_("/View/Addresses"));
-   menu_items1[12].path=strdup(_("/View/Todos"));
-   menu_items1[13].path=strdup(_("/View/Memos"));
-   menu_items1[14].path=strdup(_("/Plugins"));
-   menu_items1[15].path=strdup(_("/_Help"));
-   menu_items1[16].path=strdup(_("/_Help/About J-Pilot"));
+   i=0;
+   menu_items1[i++].path=strdup(_("/File"));
+   menu_items1[i++].path=strdup(_("/File/tear"));
+   menu_items1[i++].path=strdup(_("/File/_Find"));
+   menu_items1[i++].path=strdup(_("/File/sep1"));
+   menu_items1[i++].path=strdup(_("/File/_Install"));
+   menu_items1[i++].path=strdup(_("/File/Preferences"));
+   menu_items1[i++].path=strdup(_("/File/_Print"));
+#ifndef WITH_SYMPHONET
+   menu_items1[i++].path=strdup(_("/File/sep1"));
+   menu_items1[i++].path=strdup(_("/File/Quit"));
+#endif
+   menu_items1[i++].path=strdup(_("/_View"));
+   menu_items1[i++].path=strdup(_("/View/Hide-Show Private Records"));
+   menu_items1[i++].path=strdup(_("/View/Datebook"));
+   menu_items1[i++].path=strdup(_("/View/Addresses"));
+   menu_items1[i++].path=strdup(_("/View/Todos"));
+   menu_items1[i++].path=strdup(_("/View/Memos"));
+   menu_items1[i++].path=strdup(_("/Plugins"));
+   menu_items1[i++].path=strdup(_("/_Help"));
+   g_snprintf(temp_str, 100, _("/_Help/%s"), PN);
+   temp_str[100]='\0';
+   menu_items1[i++].path=strdup(temp_str);
    
 #ifdef ENABLE_PLUGINS
    /* Go to first entry in the list */
@@ -723,8 +875,13 @@ void get_main_menu(GtkWidget  *window,
       }
    }
    
-   plugin_menu_strings = malloc(count * sizeof(char *));
-   plugin_help_strings = malloc(help_count * sizeof(char *));
+   plugin_menu_strings = plugin_help_strings = NULL;
+   if (count != 0) {
+     plugin_menu_strings = malloc(count * sizeof(char *));
+   }
+   if (help_count != 0) {
+      plugin_help_strings = malloc(help_count * sizeof(char *));
+   }
    
    /* Create plugin menu strings */
    str_i = 0;
@@ -777,15 +934,19 @@ void get_main_menu(GtkWidget  *window,
       menu_items2[i2]=menu_items1[i1];
       i1++; i2++;
       str_i=0;
-      for (temp_list = plugin_list;
+      for (temp_list = plugin_list, f_key_count=0;
 	   temp_list;
-	   temp_list = temp_list->next) {
+	   temp_list = temp_list->next, f_key_count++) {
 	 p = (struct plugin_s *)temp_list->data;
 	 if (!p->menu_name) {
 	    continue;
 	 }
 	 menu_items2[i2].path=plugin_menu_strings[str_i];
-	 menu_items2[i2].accelerator=NULL;
+	 if (f_key_count < 8) {
+	    menu_items2[i2].accelerator=F_KEYS[f_key_count];
+	 } else {
+	    menu_items2[i2].accelerator=NULL;
+	 }
 	 menu_items2[i2].callback=cb_plugin_gui;
 	 menu_items2[i2].callback_action=p->number;
 	 menu_items2[i2].item_type=0;
@@ -877,11 +1038,16 @@ void get_main_menu(GtkWidget  *window,
 static void delete_event(GtkWidget *widget, GdkEvent *event, gpointer data)
 {
    int pw, ph;
+   int x,y;
 #ifdef ENABLE_PLUGINS
    struct plugin_s *plugin;
    GList *plugin_list, *temp_list;
 #endif
 
+   /* gdk_window_get_deskrelative_origin(window->window, &x, &y); */
+   gdk_window_get_origin(window->window, &x, &y);
+   jpilot_logf(LOG_DEBUG, "x=%d, y=%d\n", x, y);
+   
    gdk_window_get_size(window->window, &pw, &ph);
    set_pref(PREF_WINDOW_WIDTH, pw);
    set_pref(PREF_WINDOW_HEIGHT, ph);
@@ -915,40 +1081,125 @@ static void delete_event(GtkWidget *widget, GdkEvent *event, gpointer data)
    gtk_main_quit();
 }
 
+void cb_output(GtkWidget *widget, gpointer data)
+{
+   int flags;
+   int w, h, output_height, pane_y;
+   long ivalue;
+   
+   flags=GPOINTER_TO_INT(data);
+
+   if ((flags==OUTPUT_MINIMIZE) || (flags==OUTPUT_RESIZE)) {
+      jpilot_logf(LOG_DEBUG,"paned pos = %d\n", GTK_PANED(output_pane)->handle_ypos);
+      gdk_window_get_size(window->window, &w, &h);
+      output_height = h - GTK_PANED(output_pane)->handle_ypos;
+      set_pref(PREF_OUTPUT_HEIGHT, output_height);
+      if (flags==OUTPUT_MINIMIZE) {
+	 gtk_paned_set_position(GTK_PANED(output_pane), h + 2);
+      }
+      jpilot_logf(LOG_DEBUG,"output height = %d\n", output_height);
+   }
+   if (flags==OUTPUT_SETSIZE) {
+      get_pref(PREF_OUTPUT_HEIGHT, &ivalue, NULL);
+      gdk_window_get_size(window->window, &w, &h);
+      pane_y = h - ivalue;
+      gtk_paned_set_position(GTK_PANED(output_pane), pane_y + 2);
+      jpilot_logf(LOG_DEBUG, "setting output_pane to %d\n", pane_y);
+   }
+   if (flags==OUTPUT_CLEAR) {
+      gtk_text_set_point(GTK_TEXT(g_output_text),
+			 gtk_text_get_length(GTK_TEXT(g_output_text)));
+      gtk_text_backward_delete(GTK_TEXT(g_output_text),
+			       gtk_text_get_length(GTK_TEXT(g_output_text)));
+   }
+}
+
+static gint cb_output_idle(gpointer data)
+{
+   cb_output(NULL, data);
+   /* returning false removes this handler from being called again */
+   return FALSE;
+}
+
+static gint cb_output2(GtkWidget *widget, GdkEventButton *event, gpointer data)
+{
+   /* Because the pane isn't redrawn yet we can get positions from it.
+    * So we have to call back after everything is drawn */
+   gtk_idle_add(cb_output_idle, data);
+   return 0;
+}
+
+#ifdef FONT_TEST
+void SetFontRecursively(GtkWidget *widget, gpointer data)
+{
+   GtkStyle *style;
+   GdkFont *f;
+   
+   f = (GdkFont *)data;
+
+   style = gtk_widget_get_style(widget);
+   style->font=f;
+   gtk_widget_set_style(widget, style);
+   if (GTK_IS_CONTAINER(widget)) {
+      gtk_container_foreach(GTK_CONTAINER(widget), SetFontRecursively, f);
+   }
+}
+#endif
+
 int main(int   argc,
 	 char *argv[])
 {
    GtkWidget *main_vbox;
-   GtkWidget *temp_box;
+   GtkWidget *temp_hbox;
+   GtkWidget *temp_vbox;
    GtkWidget *button_datebook,*button_address,*button_todo,*button_memo;
    GtkWidget *button;
+   GtkWidget *arrow;
    GtkWidget *separator;
    GtkStyle *style;
    GdkBitmap *mask;
    GtkWidget *pixmapwid;
    GdkPixmap *pixmap;
    GtkWidget *menubar;
+   GtkWidget *vscrollbar;
+   unsigned char skip_past_alarms;
+   unsigned char skip_all_alarms;
    int filedesc[2];
    long ivalue;
    const char *svalue;
    int sync_only;
-   int i;
+   int i, x, y, h, w;
+   int bit_mask;
    char title[MAX_PREF_VALUE+256];
    long pref_width, pref_height;
+   long char_set;
+   char *geometry_str=NULL;
 #ifdef ENABLE_PLUGINS
    GList *plugin_list;
    GList *temp_list;
    struct plugin_s *plugin;
    jp_startup_info info;
 #endif
-   
+#ifdef FONT_TEST
+   GdkFont *f;
+#endif   
+
    sync_only=FALSE;
    skip_plugins=FALSE;
+   skip_past_alarms=FALSE;
+   skip_all_alarms=FALSE;
    /*log all output to a file */
    glob_log_file_mask = LOG_INFO | LOG_WARN | LOG_FATAL | LOG_STDOUT;
    glob_log_stdout_mask = LOG_INFO | LOG_WARN | LOG_FATAL | LOG_STDOUT;
    glob_log_gui_mask = LOG_FATAL | LOG_WARN | LOG_GUI;
    glob_find_id = 0;
+
+   read_rc_file();  /*jpilot.rc */
+
+   w = h = x = y = bit_mask = 0;
+
+   get_pref(PREF_WINDOW_WIDTH, &pref_width, NULL);
+   get_pref(PREF_WINDOW_HEIGHT, &pref_height, NULL);
 
    for (i=1; i<argc; i++) {
       if (!strncasecmp(argv[i], "-v", 2)) {
@@ -966,11 +1217,26 @@ int main(int   argc,
 	 jpilot_logf(LOG_DEBUG, "Debug messages on.\n");
       }
       if (!strncasecmp(argv[i], "-p", 2)) {
-	 skip_plugins = 1;
+	 skip_plugins = TRUE;
 	 jpilot_logf(LOG_INFO, "Not loading plugins.\n");
       }
-      if (!strncasecmp(argv[i], "-s", 2)) {
-	 sync_only=TRUE;
+      if (!strncasecmp(argv[i], "-A", 2)) {
+	 skip_all_alarms = TRUE;
+	 jpilot_logf(LOG_INFO, "Ignoring all alarms.\n");
+      }
+      if (!strncasecmp(argv[i], "-a", 2)) {
+	 skip_past_alarms = TRUE;
+	 jpilot_logf(LOG_INFO, "Ignoring past alarms.\n");
+      }
+      if (!strncasecmp(argv[i], "-geometry", 9)) {
+	 /* The '=' isn't specified in `man X`, but we will be nice */
+	 if (argv[i][9]=='=') {
+	    geometry_str=argv[i]+9;
+	 } else {
+	    if (i<argc) {
+	       geometry_str=argv[i+1];
+	    }
+	 }
       }
    }
 
@@ -1026,34 +1292,50 @@ int main(int   argc,
    gtk_set_locale();
 
 #if defined(ENABLE_NLS)
+#ifdef HAVE_LOCALE_H
    setlocale(LC_ALL, "");
+#endif
    bindtextdomain("jpilot", LOCALEDIR);
    textdomain("jpilot");
 #endif
 
-#if defined(WITH_JAPANESE)
-   gtk_rc_parse("gtkrc.ja");
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
+   switch (char_set) {
+    case CHAR_SET_JAPANESE:
+      gtk_rc_parse("gtkrc.ja");
+      break;
+    case CHAR_SET_TRADITIONAL_CHINESE:
+      gtk_rc_parse("gtkrc.zh_TW.Big5");
+      break;
+    case CHAR_SET_KOREAN:
+      gtk_rc_parse("gtkrc.ko");
+      break;
+      /* Since Now, these are not supported yet. */
+#if 0
+    case CHAR_SET_SIMPLIFIED_CHINESE:
+      gtk_rc_parse("gtkrc.zh_CN");
+      break;
+    case CHAR_SET_1250:
+      gtk_rc_parse("gtkrc.???");
+      break;
+    case CHAR_SET_1251:
+      gtk_rc_parse("gtkrc.iso-8859-5");
+      break;
+    case CHAR_SET_1251_B:
+      gtk_rc_parse("gtkrc.ru");
+      break;
 #endif
-
+    default:
+      /* do nothing */
+   }
 
    gtk_init(&argc, &argv);
 
-   read_rc_file();  /*jpilot.rc */
-
    read_gtkrc_file();
-
-   window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-
-   gtk_signal_connect(GTK_OBJECT(window), "focus_in_event",
-		      GTK_SIGNAL_FUNC(cb_focus), GINT_TO_POINTER(1));
-
-   gtk_signal_connect(GTK_OBJECT(window), "focus_out_event",
-		      GTK_SIGNAL_FUNC(cb_focus), GINT_TO_POINTER(0));
-
-   /*gtk_window_set_default_size(GTK_WINDOW(window), 770, 500); */
-   get_pref(PREF_WINDOW_WIDTH, &pref_width, &svalue);
-   get_pref(PREF_WINDOW_HEIGHT, &pref_height, &svalue);
-   gtk_window_set_default_size(GTK_WINDOW(window), pref_width, pref_height);
+   
+   /* gtk_init must already have been called, or will seg fault */
+   parse_geometry(geometry_str, pref_width, pref_height,
+		  &w, &h, &x, &y, &bit_mask);
 
    get_pref(PREF_USER, &ivalue, &svalue);
    
@@ -1062,7 +1344,33 @@ int main(int   argc,
       strcat(title, " User: ");
       strcat(title, svalue);
    }
-   gtk_window_set_title(GTK_WINDOW(window), title);
+
+   if ((bit_mask & MASK_X) || (bit_mask & MASK_Y)) {
+      window = gtk_widget_new(GTK_TYPE_WINDOW,
+			      "type", GTK_WINDOW_TOPLEVEL,
+			      "x", x, "y", y,
+			      "title", title,
+			      NULL);
+   } else {
+      window = gtk_widget_new(GTK_TYPE_WINDOW,
+			      "type", GTK_WINDOW_TOPLEVEL,
+			      "title", title,
+			      NULL);
+   }
+   if (bit_mask & MASK_WIDTH) {
+      pref_width = w;
+   }
+   if (bit_mask & MASK_HEIGHT) {
+      pref_height = h;
+   }
+
+   gtk_window_set_default_size(GTK_WINDOW(window), pref_width, pref_height);
+
+   gtk_signal_connect(GTK_OBJECT(window), "focus_in_event",
+		      GTK_SIGNAL_FUNC(cb_focus), GINT_TO_POINTER(1));
+
+   gtk_signal_connect(GTK_OBJECT(window), "focus_out_event",
+		      GTK_SIGNAL_FUNC(cb_focus), GINT_TO_POINTER(0));
 
    /* Set a handler for delete_event that immediately */
    /* exits GTK. */
@@ -1075,8 +1383,16 @@ int main(int   argc,
    g_hbox = gtk_hbox_new(FALSE, 0);
    g_vbox0 = gtk_vbox_new(FALSE, 0);
 
-   gtk_container_add(GTK_CONTAINER(window), main_vbox);
-   gtk_widget_show(main_vbox);
+   /* Output Pane */
+   output_pane = gtk_vpaned_new();
+
+   gtk_signal_connect(GTK_OBJECT(output_pane), "button_release_event",
+		      GTK_SIGNAL_FUNC(cb_output2),
+		      GINT_TO_POINTER(OUTPUT_RESIZE));
+
+   gtk_container_add(GTK_CONTAINER(window), output_pane);
+
+   gtk_paned_pack1(GTK_PANED(output_pane), main_vbox, FALSE, FALSE);
 
    /* Create the Menu Bar at the top */
 #ifdef ENABLE_PLUGINS
@@ -1086,7 +1402,6 @@ int main(int   argc,
 #endif
    gtk_box_pack_start(GTK_BOX(main_vbox), menubar, FALSE, FALSE, 0);
    gtk_menu_bar_set_shadow_type(GTK_MENU_BAR(menubar), GTK_SHADOW_NONE);
-   gtk_widget_show(menubar);
 
    
    gtk_box_pack_start(GTK_BOX(main_vbox), g_hbox, TRUE, TRUE, 3);
@@ -1094,77 +1409,100 @@ int main(int   argc,
    gtk_box_pack_start(GTK_BOX(g_hbox), g_vbox0, FALSE, FALSE, 3);
    
 
+   /* Make the output text window */
+   temp_hbox = gtk_hbox_new(FALSE, 0);
+   gtk_widget_set_usize(GTK_WIDGET(temp_hbox), 1, 1);
+   gtk_container_set_border_width(GTK_CONTAINER(temp_hbox), 5);
+   gtk_paned_pack2(GTK_PANED(output_pane), temp_hbox, FALSE, FALSE);
+
+   temp_vbox = gtk_vbox_new(FALSE, 0);
+   gtk_box_pack_end(GTK_BOX(temp_hbox), temp_vbox, FALSE, FALSE, 0);
+
+   g_output_text = gtk_text_new(NULL, NULL);
+   gtk_text_set_editable(GTK_TEXT(g_output_text), FALSE);
+   gtk_text_set_word_wrap(GTK_TEXT(g_output_text), TRUE);
+   vscrollbar = gtk_vscrollbar_new(GTK_TEXT(g_output_text)->vadj);
+   gtk_box_pack_start(GTK_BOX(temp_hbox), g_output_text, TRUE, TRUE, 0);
+   gtk_box_pack_start(GTK_BOX(temp_hbox), vscrollbar, FALSE, FALSE, 0);
+
+   /* button = gtk_button_new_with_label(_("Minimize")); */
+   button = gtk_button_new();
+   arrow = gtk_arrow_new(GTK_ARROW_DOWN, GTK_SHADOW_OUT);
+   gtk_container_add(GTK_CONTAINER(button), arrow);
+   gtk_box_pack_start(GTK_BOX(temp_vbox), button, TRUE, TRUE, 3);
+   gtk_signal_connect(GTK_OBJECT(button), "clicked",
+		      GTK_SIGNAL_FUNC(cb_output),
+		      GINT_TO_POINTER(OUTPUT_MINIMIZE));
+
+   button = gtk_button_new_with_label(_("Clear"));
+   gtk_box_pack_start(GTK_BOX(temp_vbox), button, TRUE, TRUE, 3);
+   gtk_signal_connect(GTK_OBJECT(button), "clicked",
+		      GTK_SIGNAL_FUNC(cb_output),
+		      GINT_TO_POINTER(OUTPUT_CLEAR));
+   /* End output text */
+
    /* Create "Datebook" button */
-   temp_box = gtk_hbox_new(FALSE, 0);
+   temp_hbox = gtk_hbox_new(FALSE, 0);
    button_datebook = gtk_button_new();
    gtk_signal_connect(GTK_OBJECT(button_datebook), "clicked",
 		      GTK_SIGNAL_FUNC(cb_app_button), GINT_TO_POINTER(DATEBOOK));
    gtk_widget_set_usize(button_datebook, 46, 46);
-   gtk_box_pack_start(GTK_BOX(g_vbox0), temp_box, FALSE, FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(temp_box), button_datebook, FALSE, FALSE, 0);
-   gtk_widget_show(temp_box);
+   gtk_box_pack_start(GTK_BOX(g_vbox0), temp_hbox, FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(temp_hbox), button_datebook, FALSE, FALSE, 0);
    
    /* Create "Address" button */
-   temp_box = gtk_hbox_new(FALSE, 0);
+   temp_hbox = gtk_hbox_new(FALSE, 0);
    button_address = gtk_button_new();
    gtk_signal_connect(GTK_OBJECT(button_address), "clicked",
 		      GTK_SIGNAL_FUNC(cb_app_button), GINT_TO_POINTER(ADDRESS));
    gtk_widget_set_usize(button_address, 46, 46);
-   gtk_box_pack_start(GTK_BOX(g_vbox0), temp_box, FALSE, FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(temp_box), button_address, FALSE, FALSE, 0);
-   gtk_widget_show(temp_box);
+   gtk_box_pack_start(GTK_BOX(g_vbox0), temp_hbox, FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(temp_hbox), button_address, FALSE, FALSE, 0);
 
    /* Create "Todo" button */
-   temp_box = gtk_hbox_new(FALSE, 0);
+   temp_hbox = gtk_hbox_new(FALSE, 0);
    button_todo = gtk_button_new();
    gtk_signal_connect(GTK_OBJECT(button_todo), "clicked",
 		      GTK_SIGNAL_FUNC(cb_app_button), GINT_TO_POINTER(TODO));
    gtk_widget_set_usize(button_todo, 46, 46);
-   gtk_box_pack_start(GTK_BOX(g_vbox0), temp_box, FALSE, FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(temp_box), button_todo, FALSE, FALSE, 0);
-   gtk_widget_show(temp_box);
+   gtk_box_pack_start(GTK_BOX(g_vbox0), temp_hbox, FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(temp_hbox), button_todo, FALSE, FALSE, 0);
 
    /* Create "memo" button */
-   temp_box = gtk_hbox_new(FALSE, 0);
+   temp_hbox = gtk_hbox_new(FALSE, 0);
    button_memo = gtk_button_new();
    gtk_signal_connect(GTK_OBJECT(button_memo), "clicked",
 		      GTK_SIGNAL_FUNC(cb_app_button), GINT_TO_POINTER(MEMO));
    gtk_widget_set_usize(button_memo, 46, 46);
-   gtk_box_pack_start(GTK_BOX(g_vbox0), temp_box, FALSE, FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(temp_box), button_memo, FALSE, FALSE, 0);
-   gtk_widget_show(temp_box);
+   gtk_box_pack_start(GTK_BOX(g_vbox0), temp_hbox, FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(temp_hbox), button_memo, FALSE, FALSE, 0);
 
    gtk_widget_set_name(button_datebook, "button_app");
    gtk_widget_set_name(button_address, "button_app");
    gtk_widget_set_name(button_todo, "button_app");
    gtk_widget_set_name(button_memo, "button_app");
-   gtk_widget_show(button_datebook);
-   gtk_widget_show(button_address);
-   gtk_widget_show(button_todo);
-   gtk_widget_show(button_memo);
 
    separator = gtk_hseparator_new();
    gtk_box_pack_start(GTK_BOX(g_vbox0), separator, FALSE, TRUE, 5);
-   gtk_widget_show(separator);
 
    /* Create tooltips */
    glob_tooltips = gtk_tooltips_new();
    
+#ifndef WITH_SYMPHONET
    /* Create "Quit" button */
    button = gtk_button_new_with_label(_("Quit!"));
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(delete_event), NULL);
    gtk_box_pack_start(GTK_BOX(g_vbox0), button, FALSE, FALSE, 0);
-   gtk_widget_show(button);
+#endif
 
    /* Create "Sync" button */
-   button = gtk_button_new_with_label("Sync");
+   button = gtk_button_new_with_label(_("Sync"));
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_sync),
 		      GINT_TO_POINTER(skip_plugins ? SYNC_NO_PLUGINS : 0));
 
-   gtk_box_pack_start(GTK_BOX (g_vbox0), button, FALSE, FALSE, 0);
-   gtk_widget_show (button);
+   gtk_box_pack_start(GTK_BOX(g_vbox0), button, FALSE, FALSE, 0);
 
    gtk_tooltips_set_tip(glob_tooltips, button, _("Sync your palm to the desktop"), NULL);
 
@@ -1177,7 +1515,6 @@ int main(int   argc,
 		      (skip_plugins ? SYNC_NO_PLUGINS | SYNC_FULL_BACKUP
 		      : SYNC_FULL_BACKUP));
    gtk_box_pack_start(GTK_BOX(g_vbox0), button, FALSE, FALSE, 0);
-   gtk_widget_show(button);
 
    gtk_tooltips_set_tip(glob_tooltips, button, _("Sync your palm to the desktop\n"
 			"and then do a backup"), NULL);
@@ -1185,18 +1522,14 @@ int main(int   argc,
    /*Separator */
    separator = gtk_hseparator_new();
    gtk_box_pack_start(GTK_BOX(g_vbox0), separator, FALSE, TRUE, 5);
-   gtk_widget_show(separator);
 
    /*This creates the 2 main boxes that are changeable */
    create_main_boxes();
 
-   gtk_widget_show(g_hbox);
-   gtk_widget_show(g_hbox2);
-   gtk_widget_show(g_vbox0);
-   gtk_widget_show(g_vbox0_1);
-
+   gtk_widget_show_all(window);
+   
    gtk_widget_show(window);
-
+   
    style = gtk_widget_get_style(window);
 
    /* Create "Datebook" pixmap */
@@ -1253,6 +1586,26 @@ int main(int   argc,
        (ivalue==MEMO)) {
       cb_app_button(NULL, GINT_TO_POINTER(ivalue));
    }
+
+   /* Set the pane size */
+   gdk_window_get_size(window->window, &w, &h);
+   gtk_paned_set_position(GTK_PANED(output_pane), h + 2);
+
+   /* ToDo this is broken, it doesn't take into account the window
+    * decorations.  I can't find a GDK call that does */
+   gdk_window_get_origin(window->window, &x, &y);
+   jpilot_logf(LOG_DEBUG, "x=%d, y=%d\n", x, y);
+
+   gdk_window_get_size(window->window, &w, &h);
+   jpilot_logf(LOG_DEBUG, "w=%d, h=%d\n", w, h);
+
+#ifdef FONT_TEST
+   f=gdk_fontset_load("-adobe-utopia-medium-r-normal-*-*-200-*-*-p-*-iso8859-1");
+   SetFontRecursively(window, f);
+#endif
+#ifdef ALARMS
+   alarms_init(skip_past_alarms, skip_all_alarms);
+#endif
 
    gtk_main();
 

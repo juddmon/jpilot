@@ -8,7 +8,7 @@
 # Please note that the actual code is *not* freely available.
 
 PACKAGE = jpilot
-VERSION = 0.98
+VERSION = 0.99
 
 SHELL = /bin/sh
 
@@ -44,14 +44,14 @@ INCLUDES = -I.. -I$(top_srcdir)/intl
 COMPILE = $(CC) -c $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS) $(XCFLAGS)
 
 SOURCES = cat-id-tbl.c
-POFILES =  ja.po de.po fr.po da.po sv.po
-GMOFILES =  ja.gmo de.gmo fr.gmo da.gmo sv.gmo
+POFILES =  ja.po de.po fr.po da.po sv.po es.po nl.po ca.po cs.po no.po
+GMOFILES =  ja.gmo de.gmo fr.gmo da.gmo sv.gmo es.gmo nl.gmo ca.gmo cs.gmo no.gmo
 DISTFILES = ChangeLog Makefile.in.in POTFILES.in $(PACKAGE).pot \
 stamp-cat-id $(POFILES) $(GMOFILES) $(SOURCES)
 
 POTFILES = \
 
-CATALOGS =  ja.gmo de.gmo fr.gmo da.gmo sv.gmo
+CATALOGS =  ja.gmo de.gmo fr.gmo da.gmo sv.gmo es.gmo nl.gmo ca.gmo cs.gmo no.gmo
 CATOBJEXT = .gmo
 INSTOBJEXT = .mo
 

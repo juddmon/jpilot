@@ -4,8 +4,7 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,6 +22,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "utils.h"
 #include "log.h"
 #include "plugins.h"
@@ -31,16 +31,90 @@
 GList *plugins = NULL;
 
 static int get_plugin_info(struct plugin_s *p, char *path);
-  
+static int get_plugin_sync_bits();
+
+/*
+ * Write out the jpilot.plugins file that tells which plugins to sync
+ */
+void write_plugin_sync_file()
+{
+   FILE *out;
+   GList *temp_list;
+   struct plugin_s *Pplugin;
+
+   out=jp_open_home_file("jpilot.plugins", "w");
+   if (!out) {
+      return;
+   }
+   fwrite("Version 1\n", strlen("Version 1\n"), 1, out);
+   for (temp_list = plugins; temp_list; temp_list = temp_list->next) {
+      Pplugin = temp_list->data;
+      if (Pplugin) {
+	 if (Pplugin->sync_on) {
+	    fwrite("Y ", 2, 1, out);
+	 } else {
+	    fwrite("N ", 2, 1, out);
+	 }
+	 fwrite(Pplugin->full_path, strlen(Pplugin->full_path), 1, out);
+	 fwrite("\n", strlen("\n"), 1, out);
+      }
+   }
+   fclose(out);
+}
+
+
+/* 
+ * This is just a repeated subroutine to load_plugins not needing 
+ * a name of its own.
+ * Assumes dir has already been checked
+ */
+int load_plugins_sub1(DIR *dir, char *path, int *number, unsigned char user_only)
+{
+   int i, r;
+   int count;
+   struct dirent *dirent;
+   char full_name[256];
+   struct plugin_s temp_plugin, *new_plugin;
+   
+   count = 0;
+   for (i=0; (dirent = readdir(dir)); i++) {
+      if (i>1000) {
+	 jpilot_logf(LOG_WARN, "load_plugins_sub1(): infinite loop\n");
+	 return 0;
+      }
+      if (strcmp(&(dirent->d_name[strlen(dirent->d_name)-3]), ".so")) {
+	 continue;
+      } else {
+	 jpilot_logf(LOG_DEBUG, "found plugin %s\n", dirent->d_name);
+	 /* We know path has a trailing slash after it */
+	 g_snprintf(full_name, 250, "%s%s", path, dirent->d_name);
+	 r = get_plugin_info(&temp_plugin, full_name);
+	 temp_plugin.number = *number;
+	 temp_plugin.user_only = user_only;
+	 if (r==0) {
+	    if (temp_plugin.name) {
+	       jpilot_logf(LOG_DEBUG, "plugin name is [%s]\n", temp_plugin.name);
+	    }
+	    new_plugin = malloc(sizeof(struct plugin_s));
+	    if (!new_plugin) {
+	       jpilot_logf(LOG_DEBUG, "load plugins(): Out of memory\n");
+	       return count;
+	    }
+	    memcpy(new_plugin, &temp_plugin, sizeof(struct plugin_s));
+	    plugins = g_list_append(plugins, new_plugin);
+	    count++;
+	    (*number)++;
+	 }
+      }
+   }
+   return count;
+}
+      
 int load_plugins()
 {
    DIR *dir;
-   struct dirent *dirent;
-   int i, r;
    char path[256];
-   char full_name[256];
    int count, number;
-   struct plugin_s temp_plugin, *new_plugin;
    GList *temp_list;
    
    count = 0;
@@ -49,75 +123,83 @@ int load_plugins()
    
    g_snprintf(path, 250, "%s/%s/%s/%s/", BASE_DIR, "lib", EPN, "plugins");
    jpilot_logf(LOG_DEBUG, "opening dir %s\n", path);
+   cleanup_path(path);
    dir = opendir(path);
    if (dir) {
-      for(i=0; (dirent = readdir(dir)); i++) {
-	 if (strcmp(&(dirent->d_name[strlen(dirent->d_name)-3]), ".so")) {
-	    continue;
-	 } else {
-	    jpilot_logf(LOG_DEBUG, "found plugin %s\n", dirent->d_name);
-	    g_snprintf(full_name, 250, "%s/%s", path, dirent->d_name);
-	    r = get_plugin_info(&temp_plugin, full_name);
-	    temp_plugin.number = number;
-	    if (r==0) {
-	       if (temp_plugin.name) {
-		  jpilot_logf(LOG_DEBUG, "plugin name is [%s]\n", temp_plugin.name);
-	       }
-	       new_plugin = malloc(sizeof(struct plugin_s));
-	       if (!new_plugin) {
-		  jpilot_logf(LOG_DEBUG, "Out of memory in load_plugins()\n");
-		  return count;
-	       }
-	       memcpy(new_plugin, &temp_plugin, sizeof(struct plugin_s));
-	       plugins = g_list_append(plugins, new_plugin);
-	       count++;
-	       number++;
-	    }
-	 }
-      }
-      if (dir) {
-	 closedir(dir);
-      }
+      count += load_plugins_sub1(dir, path, &number, 0);
+      closedir(dir);
    }
    
-   get_home_file_name("", path, 240);
-   strcat(path, "/plugins/");
+   get_home_file_name("plugins/", path, 240);
+   cleanup_path(path);
    jpilot_logf(LOG_DEBUG, "opening dir %s\n", path);
    dir = opendir(path);
    if (dir) {
-      for(; (dirent = readdir(dir)); i++) {
-	 if (strcmp(&(dirent->d_name[strlen(dirent->d_name)-3]), ".so")) {
-	    continue;
-	 } else {
-	    jpilot_logf(LOG_DEBUG, "found plugin %s\n", dirent->d_name);
-	    g_snprintf(full_name, 250, "%s/%s", path, dirent->d_name);
-	    r = get_plugin_info(&temp_plugin, full_name);
-	    temp_plugin.number = number;
-	    if (r==0) {
-	       if (temp_plugin.name) {
-		  jpilot_logf(LOG_DEBUG, "plugin name is [%s]\n", temp_plugin.name);
-	       }
-	       new_plugin = malloc(sizeof(struct plugin_s));
-	       memcpy(new_plugin, &temp_plugin, sizeof(struct plugin_s));
-	       if (!new_plugin) {
-		  jpilot_logf(LOG_DEBUG, "Out of memory in load_plugins()\n");
-		  return count;
-	       }
-	       plugins = g_list_append(plugins, new_plugin);
-	       count++;
-	       number++;
-	    }
-	 }
-      }
-   }
-   if (dir) {
+      count += load_plugins_sub1(dir, path, &number, 1);
       closedir(dir);
    }
    /* Go to first entry in the list */
    for (temp_list = plugins; temp_list; temp_list = temp_list->prev) {
       plugins = temp_list;
    }
+         
+   get_plugin_sync_bits();
+
    return count;
+}
+
+/* Now we need to look in the jpilot_plugins file to see which plugins
+ * are enabled to sync and which are not
+ */
+static int get_plugin_sync_bits()
+{
+   int i;
+   GList *temp_list;
+   struct plugin_s *Pplugin;
+   char line[256];
+   char *Pline;
+   char *Pc;
+   FILE *in;
+
+   in=jp_open_home_file("jpilot.plugins", "r");
+   if (!in) {
+      return 0;
+   }
+   for (i=0; (!feof(in)); i++) {   
+      if (i>1000) {
+	 jpilot_logf(LOG_WARN, "load_plugins(): infinite loop\n");
+	 fclose(in);
+	 return 0;
+      }
+      line[0]='\0';
+      Pc = fgets(line, 1000, in);
+      if (!Pc) {
+	 break;
+      }
+      if (line[strlen(line)-1]=='\n') {
+	 line[strlen(line)-1]='\0';
+      }
+      if ((!strncmp(line, "Version", 7)) && (strcmp(line, "Version 1"))) {
+	 jpilot_logf(LOG_WARN, "While reading jpilot.plugins line 1:[%s]\n", line);
+	 jpilot_logf(LOG_WARN, "Wrong Version\n");
+	 jpilot_logf(LOG_WARN, "Check preferences->conduits\n");
+	 fclose(in);
+	 return 0;
+      }
+      if (i>0) {
+	 if (toupper(line[0])=='N') {
+	    Pline = line + 2;
+	    for (temp_list = plugins; temp_list; temp_list = temp_list->next) {
+	       Pplugin = temp_list->data;
+	       if (!strcmp(Pline, Pplugin->full_path)) {
+		  Pplugin->sync_on=0;
+	       }
+	    }
+	 }
+      }
+   }
+   fclose(in);
+   return 0;
 }
 
 static int get_plugin_info(struct plugin_s *p, char *path)
@@ -127,11 +209,11 @@ static int get_plugin_info(struct plugin_s *p, char *path)
    char name[52];
    char db_name[52];
    int version, major_version, minor_version;
-   /* void (*plugin_set_jpilot_logf)(int (*Pjpilot_logf)(int level, char *format, ...));*/
    void (*plugin_versionM)(int *major_version, int *minor_version);
    
    p->full_path = NULL;
    p->handle = NULL;
+   p->sync_on = 1;
    p->name = NULL;
    p->db_name = NULL;
    p->number = 0;
@@ -149,7 +231,7 @@ static int get_plugin_info(struct plugin_s *p, char *path)
    p->plugin_post_sync = NULL;
    p->plugin_exit_cleanup = NULL;
    
-   h = dlopen(path, RTLD_LAZY);
+   h = dlopen(path, RTLD_NOW);
    if (!h) {
       jpilot_logf(LOG_WARN, "open failed on plugin [%s]\n error [%s]\n", path,
 		  dlerror());
@@ -158,16 +240,6 @@ static int get_plugin_info(struct plugin_s *p, char *path)
    jpilot_logf(LOG_DEBUG, "opened plugin [%s]\n", path);
    p->handle=h;
    
-   /* logf */
-/*
-   plugin_set_jpilot_logf = dlsym(h, "plugin_set_jpilot_logf");
-   if ((err = dlerror()) != NULL)  {
-      jpilot_logf(LOG_WARN, "plugin_set_jpilot_logf, [%s]\n [%s]\n", err, path);
-   } else {
-      plugin_set_jpilot_logf(jpilot_logf);
-   }
-*/
-
    p->full_path = strdup(path);
 
    /* plugin_versionM */
@@ -182,10 +254,11 @@ static int get_plugin_info(struct plugin_s *p, char *path)
    }
    plugin_versionM(&major_version, &minor_version);
    version=major_version*1000+minor_version;
-   if ((major_version < 0) && (minor_version < 95)) {
-      jpilot_logf(LOG_WARN, "This plugin version (%d.%d) is too old.\n",
+   if ((major_version <= 0) && (minor_version < 99)) {
+      jpilot_logf(LOG_WARN, "Plugin:[%s]\n", path);
+      jpilot_logf(LOG_WARN, "This plugin is version (%d.%d).\n",
 		  major_version, minor_version);
-      jpilot_logf(LOG_WARN, " plugin is has no version info: [%s]\n", path);
+      jpilot_logf(LOG_WARN, "It is too old to work with this version of J-Pilot.\n");
       dlclose(h);
       p->handle=NULL;
       return -1;
@@ -237,9 +310,6 @@ static int get_plugin_info(struct plugin_s *p, char *path)
    } else {
       p->help_name = NULL;
    }
-   
-
-
 
    /* plugin_get_db_name */
    jpilot_logf(LOG_DEBUG, "getting plugin_get_db_name\n");
@@ -336,4 +406,158 @@ void free_search_result(struct search_result **sr)
    *sr = NULL;
 }
 
+
+/* Jason Day contributed code - Start */
+/*
+ * WARNING
+ * Caller must ensure that which is not out of range!
+ */
+int jp_get_pref (prefType prefs[], int which, long *n, const char **ret)
+{
+    if (which < 0) {
+        return -1;
+    }
+    *n = prefs[which].ivalue;
+    if (prefs[which].usertype == CHARTYPE) {
+        if (ret != NULL) {
+            *ret = prefs[which].svalue;
+        }
+    }
+    else {
+        if (ret !=NULL) {
+            *ret = NULL;
+        }
+    }
+    return 0;
+}
+
+/*
+ * WARNING
+ * Caller must ensure that which is not out of range!
+ */
+int jp_set_pref (prefType prefs[], int which, long n, const char *string)
+{
+    if (which < 0) {
+        return -1;
+    }
+    prefs[which].ivalue = n;
+    if (string == NULL) {
+        prefs[which].svalue[0] = '\0';
+        return 0;
+    }
+    if (prefs[which].filetype == CHARTYPE) {
+        strncpy (prefs[which].svalue, string, MAX_PREF_VALUE);
+        prefs[which].svalue[MAX_PREF_VALUE - 1] = '\0';
+    }
+    return 0;
+}
+
+/*
+ * WARNING
+ * Caller must ensure that which is not out of range!
+ */
+int jp_set_pref_int (prefType prefs[], int which, long n)
+{
+    if (which < 0) {
+        return -1;
+    }
+    prefs[which].ivalue = n;
+    /*
+    if (prefs[which]->usertype == CHARTYPE) {
+        get_pref_possibility(which, glob_prefs[which].ivalue, glob_prefs[which].svalue);
+    }
+    */
+    return 0;
+}
+
+/*
+ * WARNING
+ * Caller must ensure that which is not out of range!
+ */
+int jp_set_pref_char (prefType prefs[], int which, char *string)
+{
+    if (which < 0) {
+        return -1;
+    }
+    if (string == NULL) {
+        prefs[which].svalue[0] = '\0';
+        return 0;
+    }
+    if (prefs[which].filetype == CHARTYPE) {
+        strncpy (prefs[which].svalue, string, MAX_PREF_VALUE);
+        prefs[which].svalue[MAX_PREF_VALUE - 1] = '\0';
+    }
+    return 0;
+}
+
+
+int jp_read_rc_file (char *filename, prefType prefs[], int num_prefs)
+{
+    int i;
+    FILE *in;
+    char line[256];
+    char *field1, *field2;
+    char *pc;
+
+    in = jp_open_home_file (filename, "r");
+    if (!in) {
+        return -1;
+    }
+
+    while (!feof (in)) {
+        fgets (line, 255, in);
+        line[254] = ' ';
+        line[255] = '\0';
+        field1 = strtok (line, " ");
+        field2 = (field1 != NULL) ? strtok (NULL, "\n") : NULL;/* jonh */
+        if ((field1 == NULL) || (field2 == NULL)) {
+            continue;
+        }
+        if ((pc = (char *)index (field2, '\n'))) {
+            pc[0] = '\0';
+        }
+        for (i = 0; i < num_prefs; i++) {
+            if (!strcmp (prefs[i].name, field1)) {
+                if (prefs[i].filetype == INTTYPE) {
+                    prefs[i].ivalue = atoi (field2);
+                }
+                if (prefs[i].filetype == CHARTYPE) {
+                    strncpy (prefs[i].svalue, field2, MAX_PREF_VALUE);
+                    prefs[i].svalue[MAX_PREF_VALUE - 1] = '\0';
+                }
+            }
+        }
+    }
+    fclose (in);
+
+    return 0;
+}
+
+int jp_write_rc_file (char *filename, prefType prefs[], int num_prefs)
+{
+    int i;
+    FILE *out;
+
+    out = jp_open_home_file (filename, "w" );
+    if (!out) {
+        return -1;
+    }
+
+    for (i = 0; i < num_prefs; i++) {
+
+        if (prefs[i].filetype == INTTYPE) {
+            fprintf (out, "%s %ld\n", prefs[i].name, prefs[i].ivalue);
+        }
+
+        if (prefs[i].filetype == CHARTYPE) {
+            fprintf (out, "%s %s\n", prefs[i].name, prefs[i].svalue);
+        }
+    }
+    fclose (out);
+
+    return 0;
+}
+/* Jason Day contributed code - End */
+
 #endif  /* ENABLE_PLUGINS */
+

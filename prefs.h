@@ -4,8 +4,7 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -46,8 +45,21 @@
 #define PREF_PRINT_ONE_PER_PAGE 24
 #define PREF_NUM_BLANK_LINES 25
 #define PREF_PRINT_COMMAND 26
+#define PREF_CHAR_SET 27
+#define PREF_SYNC_DATEBOOK 28
+#define PREF_SYNC_ADDRESS 29
+#define PREF_SYNC_TODO 30
+#define PREF_SYNC_MEMO 31
+#define PREF_ADDRESS_NOTEBOOK_PAGE 32
+#define PREF_OUTPUT_HEIGHT 33
+#define PREF_OPEN_ALARM_WINDOWS 34
+#define PREF_DO_ALARM_COMMAND 35
+#define PREF_ALARM_COMMAND 36
+#define PREF_REMIND_IN 37
+#define PREF_REMIND_UNITS 38
+#define PREF_PASSWORD 39
 
-#define NUM_PREFS 27
+#define NUM_PREFS 40
 
 #define NUM_SHORTDATES  7
 #define NUM_LONGDATES  6
@@ -61,6 +73,15 @@
 #define PREF_MDY 0
 #define PREF_DMY 1
 #define PREF_YMD 2
+
+#define CHAR_SET_ENGLISH  0
+#define CHAR_SET_JAPANESE 1
+#define CHAR_SET_1250     2 /* Czech */
+#define CHAR_SET_1251     3 /* Russian; palm koi8-r, host win1251 */
+#define CHAR_SET_1251_B   4 /* Russian; palm win1251, host koi8-r */
+#define CHAR_SET_TRADITIONAL_CHINESE  5 /* Taiwan Chinese */
+#define CHAR_SET_KOREAN   6 /* Korean Hangul */
+#define NUM_CHAR_SETS     7
 
 #define MAX_PREF_VALUE 80
 
@@ -85,5 +106,11 @@ int set_pref(int which, long n);
 int set_pref_char(int which, char *string);
 /*This function is used externally to free up any memory that prefs is using */
 void free_prefs();
+
+/*
+ * Get the preference value as long. If failed to do so, return the
+ * specified default.
+ */
+long get_pref_int_default(int which, long defval);
 
 #endif

@@ -5,6 +5,9 @@ send me the log file from ~/.jpilot/jpilot.log
 
 ----------------------------------------------------------------------
 
+Alarms may not work 100% right.  They should be 99% right.  Report any 
+bugs, and don't blame me if you miss your own wedding, or graduation ;)
+
 These are some of the bugs that I know about:
 
 *Priority High:
@@ -12,23 +15,13 @@ These are some of the bugs that I know about:
  - Categories are one-way sync from the palm to the desktop.  It is possible
    to do things like add a record into a deleted category on the palm.
  - Palm databases aren't always detected as being changed and then aren't 
-   brought into the desktop.
- - Sometimes you have to sync twice before the changes are synced into the 
-   desktop.
+   brought into the desktop, this affects backup.
  - Small memory leaks when switching between apps.  I probably am not doing
    something right when destroying widgets.  I don't know what it is though.
  
 *Priority Medium:
 
 *Priority Low:
- - If a record is changed on the Palm and on the desktop, then the desktop 
-   record will overwrite the one on the Palm.
- - Binary data is written to files in ~./jpilot/ so if you have this directory
-   mounted on machines with different byte ordering then unknown things will
-   happen.
- - If a home directory is mounted on different machines with different byte
-   ordering then data may get corrupted.  I haven't tested this, but I would
-   think it would be true.
 
 *Priority Who Cares?:
 
@@ -40,10 +33,14 @@ These are some of the bugs that I know about:
  - The palm pilot will only let you make appointments on 5 minute intervals.
    jpilot will allow 1 minute intervals.
 
+ - The PalmOS datebook will alarm on private records even when they are hidden
+   and they show up on the screen.  Right, or wrong, who knows.
+   I will do the same.
+
 *Palm OS bugs that I have found while creating J-Pilot
 
  - If you try to sync with a pilotrate of 0, then the palm pilot with get a
-   fatal exception and reboot.  This is a PalmOS bug.
+   fatal exception and reboot.  (tested on 3.1) This is a PalmOS bug.
 
  - The Palm pilot will let you sync (add) an appointment that repeats weekly,
    but doesn't repeat on any day.  It won't show up in the calendar, but if

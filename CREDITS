@@ -10,3 +10,25 @@
   I had priority/date and date/priority reversed.
 
 * HvR <hvrietsc@yahoo.com> sent me the jpilot-dump code.
+
+* Jason Day sent me some log patches for plugins to log correctly.
+  Also sent me some patches for plugins using rc files.
+
+* Croation patches were provided by Dobrica Pavlinusic <dpavlin@foi.hr> 
+
+* Options to not sync conduits patch from Eric Yeo <ttey@yeo.nu>
+
+* David Frey <david@eos.lugs.ch> gave me some postscript patches for using
+  recode and latin1 char sets.
+
+* "Benjamin A. Kuperman" <kuperman@cs.purdue.edu> send a patch to sync.c for
+  watchdog timeout on long copies, and a Makefile patch.
+
+* "Boris O. Gagarinov" <basi@online.ru> helped with russian character set
+  translations.
+
+* "Hiroshi MIURA" <miura@da-cha.org> for i18n help on 0.99 and multibyte
+  character patches.
+
+* If you are not in this list and you should be then let me know.
+  I want everyone to get a piece of the pie when I have the big jpilot IPO :)

@@ -1,8 +1,17 @@
 These are some of the things on my list todo, mostly, but not neccesarily
 in this order:
 
-* Make the GUI more user friendly
-* Add in alarm support
-* Better daily schedule?
-* Hide, or Show private records.
-* import/export files.
+* Restore of palm
+* printing of daily/weekly schedules
+* import/export files (most likely in XML, ldif, and CSV).
+* selective database backup
+* Edit categories on the desktop
+* Better daily schedule
+* Archiving archived records from the palm
+
+Done from last time:
+See CHANGELOG
+
+Big projects:
+
+* Web Interface

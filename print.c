@@ -4,8 +4,7 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "config.h"
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
@@ -27,9 +27,12 @@
 #include "prefs.h"
 #include "print.h"
 #include "log.h"
+#ifdef HAVE_LOCALE_H
+#include <locale.h>
+#endif
 
 static FILE *out;
-int fill_in();
+int fill_in(struct tm *date, AppointmentList *a_list);
 
 #ifdef JPILOT_PRINTABLE
 #define FLAG_CHAR 'A'
@@ -155,8 +158,43 @@ int showpage()
 
 int header()
 {
-   fprintf(out, "%%!postscript\n"
-	   "/inch {72 mul} def\n");
+   time_t ltime;
+   
+   time(&ltime);
+   fprintf(out,
+	   "%%!PS-Adobe-2.0 EPSF-2.0\n"
+	   "%%%%Creator: J-Pilot\n"
+	   "%%%%CreationDate: %s\n"
+           "%%%%DocumentData: Clean7Bit\n"
+	   /* XXX Title */
+	   "%%%%Orientation: Portrait\n"
+           /* XXX BoundingBox */
+           "%%DocumentFonts: Times-Roman Times-Bold Courier Courier-Bold\n"
+           "%%%%Magnification: 1.0000\n"
+           "%%%%Pages: 1\n"
+           "%%%%EndComments\n"
+           "%%%%BeginProlog\n"
+           "%%%%BeginResource: procset\n"
+	   "/inch {72 mul} def\n"
+	   "/Recode {\n"
+	   "  exch\n"
+	   "  findfont\n"
+	   "  dup length dict\n"
+	   "  begin\n"
+	   "    { def } forall\n"
+	   "    /Encoding ISOLatin1Encoding def\n"
+	   "    currentdict\n"
+	   "  end\n"
+	   "  definefont pop\n"
+	   "} bind def\n\n"
+	   "/Times-Roman      /Times-Roman-ISOLatin1 Recode\n"
+	   "/Times-Bold       /Times-Bold-ISOLatin1 Recode\n"
+	   "/Courier          /Courier-ISOLatin1 Recode\n"
+	   "/Courier-Bold     /Courier-Bold-ISOLatin1 Recode\n"
+           "%%%%EndResource\n"
+           "%%%%EndProlog\n"
+           "%%%%Page: 1 1\n\n",
+	   ctime(&ltime));
    return 0;
 }
 
@@ -190,7 +228,7 @@ int lineto(float x, float y)
    return 0;
 }
 
-int print_dayview(struct tm *date)
+int print_dayview(struct tm *date, AppointmentList *a_list)
 {
    float x, y;
    int hour;
@@ -201,6 +239,10 @@ int print_dayview(struct tm *date)
    struct tm hours;
    const char *svalue;
    long ivalue;
+
+#ifdef HAVE_LOCALE_H
+   setlocale(LC_ALL,"C");
+#endif
 
    header();
    /* Draw the 2 gray columns and header block */
@@ -236,7 +278,7 @@ int print_dayview(struct tm *date)
    linefromto(0.5, 9.5625, 8, 9.5625);
    stroke();
 
-   setfont("Times-Bold", 20);
+   setfont("Times-Bold-ISOLatin1", 20);
 
    /* Put the Month name up */
    newpath();
@@ -247,11 +289,11 @@ int print_dayview(struct tm *date)
    puttext(0.5, 10.25, str);
 
    /* Put the weekday name up */
-   setfont("Times-Roman", 15);
+   setfont("Times-Roman-ISOLatin1", 15);
    strftime(str, 80, "%A", date);   
    puttext(0.5, 10, str);
 
-   setfont("Times-Roman", 14);
+   setfont("Times-Roman-ISOLatin1", 14);
    hour=0;
    x=0.5; y=9.15;
    bzero(&hours, sizeof(hours));
@@ -278,7 +320,7 @@ int print_dayview(struct tm *date)
    stroke();
    
    newpath();
-   setfont("Times-Roman", 10);
+   setfont("Times-Roman-ISOLatin1", 10);
 
    time(&ltime);
    now = localtime(&ltime);
@@ -288,10 +330,19 @@ int print_dayview(struct tm *date)
    puttext(7.5, 0.9, "J-Pilot");
    stroke();
 
-   fill_in(date);
+   fill_in(date, a_list);
    
    showpage();
    
+   fprintf(out,
+	   "%%%%PageTrailer\n"
+	   "%%%%Trailer\n"
+	   "%%%%EOF\n");
+
+#ifdef HAVE_LOCALE_H
+   setlocale(LC_ALL,"C");
+#endif
+
    return 0;
 }
 
@@ -342,7 +393,7 @@ int print_monthview(struct tm *date)
    linefromto(0.5, 9.5625, 8, 9.5625);
    stroke();
 
-   setfont("Times-Bold", 20);
+   setfont("Times-Bold-ISOLatin1", 20);
 
    /* Put the Month name up */
    newpath();
@@ -351,7 +402,7 @@ int print_monthview(struct tm *date)
    puttext(0.5, 10.25, str);
 
    /* Put the weekday name up */
-   setfont("Times-Roman", 15);
+   setfont("Times-Roman-ISOLatin1", 15);
    strftime(str, 80, "%A", date);   
    puttext(0.5, 10, str);
 
@@ -382,7 +433,7 @@ int print_monthview(struct tm *date)
    stroke();
    
    newpath();
-   setfont("Times-Roman", 10);
+   setfont("Times-Roman-ISOLatin1", 10);
 
    time(&ltime);
    now = localtime(&ltime);
@@ -416,11 +467,10 @@ int print_monthview(struct tm *date)
    return 0;
 }
 
-int fill_in(struct tm *date)
+int fill_in(struct tm *date, AppointmentList *a_list)
 {
-   AppointmentList *a_list;
    AppointmentList *temp_al;
-   int i, r;
+   int i;
    int hours[24];
    int defaults1=0, defaults2=0;
    int hour24;
@@ -439,10 +489,6 @@ int fill_in(struct tm *date)
       hours[i]=0;
    }
    
-   a_list = NULL;
-   
-   r = get_days_appointments(&a_list, date);
-
    /* We have to go through them twice, once for AM, and once for PM
     * This is because of the clipping */
    for (i=0; i<2; i++) {
@@ -513,25 +559,14 @@ int fill_in(struct tm *date)
    return 0;
 }
 
-int print_datebook(int mon, int day, int year)
-{
-   struct tm date;
-   
-   date.tm_mon=mon;
-   date.tm_mday=day;
-   date.tm_year=year;
-   date.tm_sec=0;
-   date.tm_min=0;
-   date.tm_hour=11;
-   date.tm_isdst=-1;
-   mktime(&date);
-   
+int print_datebook(struct tm *date, AppointmentList *a_list)
+{   
    out = print_open();
    if (!out) {
       return -1;
    }
 
-   print_dayview(&date);
+   print_dayview(date, a_list);
 
    print_close(out);
    
@@ -585,13 +620,22 @@ int print_address_header()
    strftime(str, 250, svalue, date);
    
    fprintf(out,
-	   "%%!PS-Adobe-2.0 EPSF-2.0\n"
+	   "%%!PS-Adobe-2.0\n"
 	   "%%%%Creator: J-Pilot\n"
-	   "%%%%CreationDate: %s\n"
-	   "%%%%Title: Addresses\n"
-	   "%%%%BoundingBox: 36 36 576 756\n",
-	   str);
+	   "%%%%CreationDate: %s"
+           "%%%%DocumentData: Clean7Bit\n"
+	   /* XXX Title */
+	   "%%%%Orientation: Portrait\n"
+           /* XXX BoundingBox */
+           "%%DocumentFonts: Times-Roman Times-Bold "
+           "Courier Courier-Bold ZapfDingbats\n"
+           "%%%%Magnification: 1.0000\n"
+	   "%%%%BoundingBox: 36 36 576 756\n"
+           "%%%%EndComments\n",
+	   ctime(&ltime));
    fprintf(out,
+           "%%%%BeginProlog\n"
+           "%%%%BeginResource: procset\n"
 	   "/inch {72 mul} def\n"
 	   "/left {0.5 inch} def\n"
 	   "/bottom {1.0 inch} def\n"
@@ -609,39 +653,59 @@ int print_address_header()
 	   "} bind def\n");
    /* Checkbox stuff */
    fprintf(out,
-	  "/checkboxcheck {\n"
-	  "currentpoint 6 add moveto\n"
-	  "4 -5 rlineto\n"
-	  "6 12 rlineto\n"
-	  "} bind def\n"
-	  "/checkboxbox {\n"
-	  "8 0 rlineto\n"
-	  "0 8 rlineto\n"
-	  "-8 0 rlineto\n"
-	  "0 -8 rlineto\n"
-	  "} bind def\n"
-	  "/checkbox {\n"
-	  "currentpoint\n"
-	  "gsave\n"
-	  "newpath\n"
-	  "moveto\n"
-	  "1 setlinewidth\n"
-	  "checkboxbox\n"
-	  "stroke\n"
-	  "grestore\n"
-	  "} bind def\n"
-	  "/checkedbox {\n"
-	  "currentpoint\n"
-	  "gsave\n"
-	  "newpath\n"
-	  "moveto\n"
-	  "1 setlinewidth\n"
-	  "checkboxbox\n"
-	  "checkboxcheck\n"
-	  "stroke\n"
-	  "grestore\n"
-	  "} bind def\n"
-	  );
+	   "/checkboxcheck {\n"
+	   "%%currentpoint 6 add moveto\n"
+	   "%%4 -5 rlineto\n"
+	   "%%6 12 rlineto\n"
+           "/ZapfDingbats 14 selectfont (4) show\n" /* or 3 if you prefer */
+	   "} bind def\n"
+	   "/checkboxbox {\n"
+	   "8 0 rlineto\n"
+	   "0 8 rlineto\n"
+	   "-8 0 rlineto\n"
+	   "0 -8 rlineto\n"
+	   "} bind def\n"
+	   "/checkbox {\n"
+	   "currentpoint\n"
+	   "gsave\n"
+	   "newpath\n"
+	   "moveto\n"
+	   "1 setlinewidth\n"
+	   "checkboxbox\n"
+	   "stroke\n"
+	   "grestore\n"
+	   "} bind def\n"
+	   "/checkedbox {\n"
+	   "currentpoint\n"
+	   "gsave\n"
+	   "newpath\n"
+	   "moveto\n"
+	   "1 setlinewidth\n"
+	   "checkboxbox\n"
+	   "checkboxcheck\n"
+	   "stroke\n"
+	   "grestore\n"
+	   "} bind def\n"
+	   );
+
+   /* Recode font function */
+   fprintf(out,
+	   "/Recode {\n"
+	   "exch\n"
+	   "findfont\n"
+	   "dup length dict\n"
+	   "begin\n"
+	   "{ def\n" 
+	   "} forall\n"
+	   "/Encoding ISOLatin1Encoding def\n"
+	   "currentdict\n"
+	   "end\n"
+	   "definefont pop\n"
+	   "} bind def\n");
+   fprintf(out,
+	   "/Times-Roman  /Times-Roman-ISOLatin1 Recode\n"
+	   "/Courier      /Courier-ISOLatin1 Recode\n"
+	   "/Courier-Bold /Courier-Bold-ISOLatin1 Recode\n");
    fprintf(out,
 	  "/hline {\n"
 	   "currentpoint 1 add currentpoint 1 add\n"
@@ -671,7 +735,7 @@ int print_address_header()
    fprintf(out, 
 	   "/setup\n"
 	   "{\n"
-	   "/Times-Roman 10 selectfont\n"
+	   "/Times-Roman-ISOLatin1 10 selectfont\n"
 	   "left footer moveto\n"
 	   "(%s) show\n"
 	   "7.5 inch footer moveto\n"
@@ -679,7 +743,7 @@ int print_address_header()
 	   "%% This assumes that the prev page number is on the stack\n"
 	   "4.25 inch footer moveto\n"
 	   "1 add dup printobject show\n"
-	   "/Courier 12 selectfont\n"
+	   "/Courier-ISOLatin1 12 selectfont\n"
 	   "left top moveto\n"
 	   "} bind def\n"
 	   "/printit\n"
@@ -700,12 +764,12 @@ int print_address_header()
 	   "pop pop pop ( )\n"
 	   "} if\n"
 	   "("Q_FLAG_CHAR"C12) search {\n"
-	   "/Courier 12 selectfont\n"
+	   "/Courier-ISOLatin1 12 selectfont\n"
 	   "currentpoint 14 add moveto\n"
 	   "pop pop pop ( )\n"
 	   "} if\n"
 	   "("Q_FLAG_CHAR"CB12) search {\n"
-	   "/Courier-Bold 12 selectfont\n"
+	   "/Courier-Bold-ISOLatin1 12 selectfont\n"
 	   "currentpoint 14 add moveto\n"
 	   "pop pop pop ( )\n"
 	   "} if\n",
@@ -737,6 +801,10 @@ int print_address_header()
 	   "pop pop pop ( )\n"
 	   "} if\n"
 	   );
+   fprintf(out,
+           "%%%%EndResource\n"
+           "%%%%EndProlog\n"); /* XXX not exactly sure about position */
+
     fprintf(out,
 	    "gsave show grestore\n"
 	   "currentpoint 14 sub moveto\n"
@@ -773,6 +841,10 @@ int print_addresses(AddressList *address_list)
    if (!out) {
       return -1;
    }
+
+#ifdef HAVE_LOCALE_H
+   setlocale(LC_ALL,"C");
+#endif
 
    get_address_app_info(&address_app_info);
 
@@ -846,6 +918,10 @@ int print_addresses(AddressList *address_list)
 
    print_close(out);
    
+#ifdef HAVE_LOCALE_H
+   setlocale(LC_ALL,"");
+#endif
+
    return 0;
 }
 
@@ -871,6 +947,10 @@ int print_todos(ToDoList *todo_list)
    if (!out) {
       return -1;
    }
+
+#ifdef HAVE_LOCALE_H
+   setlocale(LC_ALL,"C");
+#endif
 
    print_address_header();
    
@@ -932,6 +1012,10 @@ int print_todos(ToDoList *todo_list)
 
    print_close(out);
    
+#ifdef HAVE_LOCALE_H
+   setlocale(LC_ALL,"");
+#endif
+
    return 0;
 }
 /*
@@ -951,6 +1035,10 @@ int print_memos(MemoList *memo_list)
    if (!out) {
       return -1;
    }
+
+#ifdef HAVE_LOCALE_H
+   setlocale(LC_ALL,"C");
+#endif
 
    print_address_header();
    
@@ -976,6 +1064,10 @@ int print_memos(MemoList *memo_list)
 	 }
       }
    }
+
+#ifdef HAVE_LOCALE_H
+   setlocale(LC_ALL,"");
+#endif
 
    print_close(out);
    

@@ -4,8 +4,7 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -104,13 +103,13 @@ static int
    char date_str[52];
    char datef[52];
    const char *svalue1;
-   long ivalue, modified, deleted;
+   long ivalue;
    struct search_record *new_sr;
    
    /*Search Appointments */
    a_list = NULL;
    
-   get_days_appointments(&a_list, NULL);
+   get_days_appointments2(&a_list, NULL, 2, 2, 2);
 
    if (a_list==NULL) {
       return 0;
@@ -118,20 +117,7 @@ static int
 
    count = 0;
 
-   get_pref(PREF_SHOW_DELETED, &deleted, NULL);
-   get_pref(PREF_SHOW_MODIFIED, &modified, NULL);
-
    for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
-      if (temp_al->ma.rt == DELETED_PALM_REC) {
-	 if (!deleted) {
-	    continue;
-	 }
-      }
-      if (temp_al->ma.rt == MODIFIED_PALM_REC) {
-	 if (!modified) {
-	    continue;
-	 }
-      }
       found = 0;
       if ( (temp_al->ma.a.description) &&
 	  (temp_al->ma.a.description[0]) ) {
@@ -201,13 +187,12 @@ static int
    AddressList *a_list;
    AddressList *temp_al;
    struct search_record *new_sr;
-   long modified, deleted;
    int i, count;
    
    /*Search Addresses */
    a_list = NULL;
 
-   get_addresses(&a_list, SORT_DESCENDING);
+   get_addresses2(&a_list, SORT_DESCENDING, 2, 2, 2, CATEGORY_ALL);
 
    if (a_list==NULL) {
       return 0;
@@ -215,20 +200,7 @@ static int
 
    count = 0;
 
-   get_pref(PREF_SHOW_DELETED, &deleted, NULL);
-   get_pref(PREF_SHOW_MODIFIED, &modified, NULL);
-
    for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
-      if (temp_al->ma.rt == DELETED_PALM_REC) {
-	 if (!deleted) {
-	    continue;
-	 }
-      }
-      if (temp_al->ma.rt == MODIFIED_PALM_REC) {
-	 if (!modified) {
-	    continue;
-	 }
-      }
       for (i=0; i<19; i++) {
 	 if (temp_al->ma.a.entry[i]) {
 	    if ( jpilot_strstr(temp_al->ma.a.entry[i], needle,
@@ -267,12 +239,11 @@ static int
    ToDoList *temp_todo;
    struct search_record *new_sr;
    int found, count;
-   long modified, deleted;
    
    /*Search Appointments */
    todo_list = NULL;
    
-   get_todos(&todo_list, SORT_DESCENDING);
+   get_todos2(&todo_list, SORT_DESCENDING, 2, 2, 2, 1, CATEGORY_ALL);
 
    if (todo_list==NULL) {
       return 0;
@@ -280,21 +251,7 @@ static int
 
    count = 0;
 
-   get_pref(PREF_SHOW_DELETED, &deleted, NULL);
-   get_pref(PREF_SHOW_MODIFIED, &modified, NULL);
-
    for (temp_todo = todo_list; temp_todo; temp_todo=temp_todo->next) {
-      if (temp_todo->mtodo.rt == DELETED_PALM_REC) {
-	 if (!deleted) {
-	    continue;
-	 }
-      }
-      if (temp_todo->mtodo.rt == MODIFIED_PALM_REC) {
-	 if (!modified) {
-	    continue;
-	 }
-      }
-
       found = 0;
       if ( (temp_todo->mtodo.todo.description) &&
 	  (temp_todo->mtodo.todo.description[0]) ) {
@@ -349,12 +306,11 @@ static int
    MemoList *temp_memo;
    struct search_record *new_sr;
    int count;
-   long modified, deleted;
    
    /*Search Memos */
    memo_list = NULL;
 
-   get_memos(&memo_list, SORT_DESCENDING);
+   get_memos2(&memo_list, SORT_DESCENDING, 2, 2, 2, CATEGORY_ALL);
 
    if (memo_list==NULL) {
       return 0;
@@ -362,20 +318,7 @@ static int
 
    count = 0;
 
-   get_pref(PREF_SHOW_DELETED, &deleted, NULL);
-   get_pref(PREF_SHOW_MODIFIED, &modified, NULL);
-
    for (temp_memo = memo_list; temp_memo; temp_memo=temp_memo->next) {
-      if (temp_memo->mmemo.rt == DELETED_PALM_REC) {
-	 if (!deleted) {
-	    continue;
-	 }
-      }
-      if (temp_memo->mmemo.rt == MODIFIED_PALM_REC) {
-	 if (!modified) {
-	    continue;
-	 }
-      }
       if (jpilot_strstr(temp_memo->mmemo.memo.text, needle,
 		 GTK_TOGGLE_BUTTON(case_sense_checkbox)->active) ) {
 	 gtk_clist_prepend(GTK_CLIST(clist), empty_line);
@@ -604,9 +547,6 @@ void cb_search_gui(GtkWidget *widget, gpointer data)
    gtk_box_pack_start(GTK_BOX(hbox), case_sense_checkbox, FALSE, FALSE, 0);
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(case_sense_checkbox),
 				FALSE);
-   /*gtk_signal_connect_object(GTK_OBJECT(todo_hide_completed_checkbox),  */
-/*			     "clicked", GTK_SIGNAL_FUNC(cb_hide_completed), */
-/*			     NULL); */
 
    /*Put the scrolled window up */
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);

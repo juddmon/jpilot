@@ -35,7 +35,8 @@ fi
 
 dnl Make sure that the pilot-link stuff actually exists
 AC_MSG_CHECKING(for pilot-link header files)
-pilotinclude=no
+pilotinclude=${FORCE_PILOT_INCLUDES:-no}
+if test $pilotinclude = no ; then
 for pilot_incl in $pilot_prefix/include /usr/include /usr/local/include \
     /usr/extra/pilot/include /usr/include/libpisock; do
    if test -r "$pilot_incl/pi-config.h" ; then
@@ -44,6 +45,7 @@ for pilot_incl in $pilot_prefix/include /usr/include /usr/local/include \
       break
    fi
 done
+fi
 
 if test $pilotinclude = no ; then
    AC_MSG_RESULT(no)
@@ -57,9 +59,10 @@ AC_CHECK_LIB(socket, main, PILOT_LIBS=$PILOT_LIBS" -lsocket", , )
 
 dnl Maybe installed
 AC_MSG_CHECKING(for pilot library files)
-pilotlibs=no
+pilotlibs=${FORCE_PILOT_LIBS:-no}
 PILOT_LIBS="-lpisock"
 
+if test $pilotlibs = no ; then
 for pilot_libs in $pilot_prefix/lib /usr/lib /usr/local/lib/ \
   /usr/extra/pilot/lib ; do
    if test -r "$pilot_libs/libpisock.so" ; then
@@ -68,6 +71,7 @@ for pilot_libs in $pilot_prefix/lib /usr/lib /usr/local/lib/ \
       break
    fi
 done
+fi
 
 if test $pilotlibs = no ; then
    AC_MSG_RESULT(no)

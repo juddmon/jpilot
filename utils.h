@@ -4,8 +4,7 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,48 +28,33 @@
 #include <pi-memo.h>
 #include <gtk/gtk.h>
 
+#include "libplugin.h"
+
 #define PRINT_FILE_LINE printf("%s line %d\n", __FILE__, __LINE__)
+
+#ifdef WITH_SYMPHONET
+#define PN "CoPilot"
+#else
 #define PN "J-Pilot"
+#endif
+
 #define EPN "jpilot"
-/* #define VERSION "0.98.1" */
 #define VERSION_STRING "\n"PN" version "VERSION"\n"\
-" Copyright (C) 1999 by Judd Montgomery\n"
+" Copyright (C) 1999-2001 by Judd Montgomery\n"
 
 /*This is how often the clock updates in milliseconds */
 #define CLOCK_TICK 1000
 
 #define CATEGORY_ALL 300
 
-#define JPILOT_EOF -7
-
 #define SHADOW GTK_SHADOW_ETCHED_OUT
 
 /*Used to mark the entry in the clist to add a record */
+/* FIXME: Move to libplugin */
 #define CLIST_NEW_ENTRY_DATA 100
 #define CLIST_ADDING_ENTRY_DATA 101
 #define CLIST_MIN_DATA 199
 
-/*#define CLIST_DEL_RED 65535; */
-/*#define CLIST_DEL_GREEN 55000; */
-/*#define CLIST_DEL_BLUE 55000; */
-#define CLIST_DEL_RED 0xCCCC;
-#define CLIST_DEL_GREEN 0xCCCC;
-#define CLIST_DEL_BLUE 0xCCCC;
-#define CLIST_NEW_RED 55000;
-#define CLIST_NEW_GREEN 55000;
-#define CLIST_NEW_BLUE 65535;
-#define CLIST_MOD_RED 55000;
-#define CLIST_MOD_GREEN 65535;
-#define CLIST_MOD_BLUE 65535;
-
-#define SPENT_PC_RECORD_BIT 256
-
-#define CLEAR_FLAG 1
-#define CANCEL_FLAG 2
-#define DELETE_FLAG 3
-#define MODIFY_FLAG 4
-#define NEW_FLAG 5
-  
 #define DIALOG_SAID_1        454
 #define DIALOG_SAID_PRINT    454
 #define DIALOG_SAID_FOURTH   454
@@ -80,6 +64,9 @@
 #define DIALOG_SAID_ALL      455
 #define DIALOG_SAID_3        456
 #define DIALOG_SAID_CANCEL   456
+
+#define CAL_DONE   100
+#define CAL_CANCEL 101
 
 #define PIXMAP_NOTE          100
 #define PIXMAP_ALARM         101
@@ -92,70 +79,6 @@
 #define SORT_DESCENDING      101
 
 extern unsigned int glob_find_id;
-
-typedef enum {
-   PALM_REC = 100L,
-   MODIFIED_PALM_REC = 101L,
-   DELETED_PALM_REC = 102L,
-   NEW_PC_REC = 103L,
-   DELETED_PC_REC =  SPENT_PC_RECORD_BIT + 104L,
-   DELETED_DELETED_PALM_REC =  SPENT_PC_RECORD_BIT + 105L
-} PCRecType;
-
-typedef struct {
-   unsigned int rec_len;
-   unsigned int unique_id;
-   PCRecType rt;
-   unsigned char attrib;
-} PCRecordHeader;
-
-typedef struct {
-   unsigned char db_name[32];
-   unsigned char flags[2];
-   unsigned char version[2];
-   unsigned char creation_time[4];
-   unsigned char modification_time[4];
-   unsigned char backup_time[4];
-   unsigned char modification_number[4];
-   unsigned char app_info_offset[4];
-   unsigned char sort_info_offset[4];
-   unsigned char type[4];/*Database ID */
-   unsigned char creator_id[4];/*Application ID */
-   unsigned char unique_id_seed[4];
-   unsigned char next_record_list_id[4];
-   unsigned char number_of_records[2];
-} RawDBHeader;
-
-typedef struct {
-   char db_name[32];
-   unsigned int flags;
-   unsigned int version;
-   time_t creation_time;
-   time_t modification_time;
-   time_t backup_time;
-   unsigned int modification_number;
-   unsigned int app_info_offset;
-   unsigned int sort_info_offset;
-   char type[5];/*Database ID */
-   char creator_id[5];/*Application ID */
-   char unique_id_seed[5];
-   unsigned int next_record_list_id;
-   unsigned int number_of_records;
-} DBHeader;
-
-typedef struct {
-  unsigned char Offset[4];  /*4 bytes offset from BOF to record */
-  unsigned char attrib;
-  unsigned char unique_ID[3];
-} record_header;
-
-typedef struct mem_rec_header_s {
-   unsigned int rec_num;
-   unsigned int offset;
-   unsigned int unique_id;
-   unsigned char attrib;
-   struct mem_rec_header_s *next;
-} mem_rec_header;
 
 typedef enum {
    DATEBOOK = 100L,
@@ -225,6 +148,14 @@ struct search_record
    struct search_record *next;
 };
 
+struct sorted_cats
+{
+   char *Pcat;
+   int cat_num;
+};
+
+int cat_compare(const void *v1, const void *v2);
+
 gint timeout_date(gpointer data);
 
 int get_pixmaps(GtkWidget *widget,
@@ -238,17 +169,13 @@ int read_gtkrc_file();
 
 int get_home_file_name(char *file, char *full_name, int max_size);
 
-FILE *open_file(char *filename, char *mode);
-
-int rename_file(char *old_filename, char *new_filename);
+FILE *jp_open_home_file(char *filename, char *mode);
 
 int raw_header_to_header(RawDBHeader *rdbh, DBHeader *dbh);
 
 int find_next_offset(mem_rec_header *mem_rh, long fpos,
 		     unsigned int *next_offset,
 		     unsigned char *attrib, unsigned int *unique_id);
-
-int get_next_unique_pc_id(unsigned int *next_unique_id);
 
 /*The VP is a pointer to MyAddress, MyAppointment, etc. */
 int delete_pc_record(AppType app_type, void *VP, int flag);
@@ -267,14 +194,11 @@ void free_mem_rec_header(mem_rec_header **mem_rh);
 
 void print_string(char *str, int len);
 
-/* */
-/*Warning, this function will move the file pointer */
-/* */
-int get_app_info_size(FILE *in, int *size);
-
 int get_app_info(char *DB_name, unsigned char **buf, int *buf_size);
 
 int cleanup_pc_files();
+
+int util_sync(unsigned int flags);
 
 void cb_sync(GtkWidget *widget, unsigned int flags);
 
@@ -283,6 +207,15 @@ int dialog_generic(GdkWindow *main_window,
 		   int w, int h,
 		   char *title, char *frame_text,
 		   char *text, int nob, char *button_text[]);
+
+/* mon 0-11
+ * day 1-31
+ * year (year - 1900)
+ * This function will bring up the cal at mon, day, year
+ * After a new date is selected it will return mon, day, year
+ */
+int cal_dialog(const char *title, int monday_is_fdow,
+	       int *mon, int *day, int *year);
 
 int clist_find_id(GtkWidget *clist,
 		  unsigned int unique_id,
@@ -330,9 +263,19 @@ int memo_gui_cleanup();
  */
 void remove_cr_lfs(char *str);
 
+void cleanup_path(char *path);
+
 int add_days_to_date(struct tm *date, int n);
 
 int sub_days_from_date(struct tm *date, int n);
+
+int add_months_to_date(struct tm *date, int n);
+
+int sub_months_from_date(struct tm *date, int n);
+
+int add_years_to_date(struct tm *date, int n);
+
+int sub_years_from_date(struct tm *date, int n);
 
 /*from jpilot.c */
 void cb_app_button(GtkWidget *widget, gpointer data);
@@ -355,6 +298,9 @@ int memo_refresh();
 void monthview_gui(struct tm *date);
 
 /* weekview_gui */
-void weekview_gui(struct tm *date);
+void weekview_gui(struct tm *date_in);
 
 #endif
+
+void multibyte_safe_strncpy(char *dst, char *src, size_t max_len);
+char *multibyte_safe_memccpy(char *dst, const char *src, int c, size_t len);
