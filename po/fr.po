@@ -1386,7 +1386,7 @@ msgstr "Supprime un enregistrement %s."
 #: sync.c:984 sync.c:2045 sync.c:2378
 #, c-format
 msgid "Wrote a %s record."
-msgstr "ECrit un enregistrement %s."
+msgstr "Ecrit un enregistrement %s."
 
 #: sync.c:986 sync.c:2047 sync.c:2380
 #, c-format
