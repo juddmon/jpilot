@@ -1198,7 +1198,7 @@ int fetch_extra_DBs(int sd, char *palm_dbname[])
 
       filename_make_legal(db_copy_name);
 
-      get_home_file_name(db_copy_name, full_name, sizeof(db_copy_name));
+      get_home_file_name(db_copy_name, full_name, sizeof(full_name));
 
       statb.st_mtime = 0;
 

@@ -896,7 +896,7 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
       strcpy(pdb_name, "MemoDB.pdb");
       strcpy(db_name, "MemoDB");
    }
-   get_home_file_name(pdb_name, full_name, sizeof(pdb_name));
+   get_home_file_name(pdb_name, full_name, sizeof(full_name));
 
    buf=NULL;
    memset(&ai, 0, sizeof(ai));
