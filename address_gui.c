@@ -1987,7 +1987,8 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
    /* Freeze clist to prevent flicker during updating */
    gtk_clist_freeze(GTK_CLIST(clist));
-   gtk_signal_disconnect_by_func(GTK_OBJECT(clist),
+   if (main)
+	   gtk_signal_disconnect_by_func(GTK_OBJECT(clist),
 				 GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
    gtk_clist_clear(GTK_CLIST(clist));
 
