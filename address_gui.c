@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.81 2004/11/26 01:01:55 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.82 2004/11/26 08:21:04 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -733,7 +733,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
    }
 
    for (i=0, temp_list=list; temp_list; temp_list = temp_list->next, i++) {
-      maddr = gtk_clist_get_row_data(GTK_CLIST(clist), (int) temp_list->data);
+      maddr = gtk_clist_get_row_data(GTK_CLIST(clist), GPOINTER_TO_INT(temp_list->data));
       if (!maddr) {
 	 continue;
 	 jp_logf(JP_LOG_WARN, _("Can't export address %d\n"), (long) temp_list->data + 1);

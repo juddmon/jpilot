@@ -1,4 +1,4 @@
-/* $Id: restore_gui.c,v 1.13 2004/11/22 00:52:42 rikster5 Exp $ */
+/* $Id: restore_gui.c,v 1.14 2004/11/26 08:21:06 rousseau Exp $ */
 
 /*******************************************************************************
  * restore_gui.c
@@ -67,7 +67,7 @@ cb_restore_ok(GtkWidget *widget, gpointer data)
 
    jp_logf(JP_LOG_WARN, "%s%s%s\n", "-----===== ", _("Restore Handheld"), " ======-----");
    for (temp_list=list; temp_list; temp_list = temp_list->next) {
-      gtk_clist_get_text(GTK_CLIST(restore_clist), (int)temp_list->data, 0, &text);
+      gtk_clist_get_text(GTK_CLIST(restore_clist), GPOINTER_TO_INT(temp_list->data), 0, &text);
       jp_logf(JP_LOG_DEBUG, "row %ld [%s]\n", (long) temp_list->data, text);
       /* Look for the file in the JPILOT_HOME and JPILOT_HOME/backup.
        * Restore the newest modified date one, or the only one.

@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.72 2004/11/26 01:01:56 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.73 2004/11/26 08:21:06 rousseau Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -704,7 +704,7 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
    /* XXX ical wants gmtime, text wants localtime */
 
    for (i=0, temp_list=list; temp_list; temp_list = temp_list->next, i++) {
-      mtodo = gtk_clist_get_row_data(GTK_CLIST(clist), (int) temp_list->data);
+      mtodo = gtk_clist_get_row_data(GTK_CLIST(clist), GPOINTER_TO_INT(temp_list->data));
       if (!mtodo) {
 	 continue;
 	 jp_logf(JP_LOG_WARN, _("Can't export todo %d\n"), (long) temp_list->data + 1);

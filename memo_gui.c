@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.64 2004/11/26 01:01:55 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.65 2004/11/26 08:21:06 rousseau Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -552,7 +552,7 @@ void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
    for (num=0, temp_list=list; temp_list; temp_list = temp_list->next, num++);
 
    for (i=0, temp_list=list; temp_list; temp_list = temp_list->next, i++) {
-      mmemo = gtk_clist_get_row_data(GTK_CLIST(clist), (int) temp_list->data);
+      mmemo = gtk_clist_get_row_data(GTK_CLIST(clist), GPOINTER_TO_INT(temp_list->data));
       if (!mmemo) {
 	 continue;
 	 jp_logf(JP_LOG_WARN, _("Can't export memo %d\n"), (long) temp_list->data + 1);
