@@ -3020,3 +3020,21 @@ int pdb_file_write_dbinfo(char *full_DB_name, struct DBInfo *Pinfo_in)
 
    return 0;
 }
+
+size_t jp_strftime(char *s, size_t max, const char *format, const struct tm *tm)
+{
+   size_t ret;
+
+   ret = strftime(s, max, format, tm);
+#ifdef ENABLE_GTK2
+   if (! g_utf8_validate(s, -1, NULL)) {
+      gchar *utf8_text;
+      
+      utf8_text = g_locale_to_utf8 (s, -1, NULL, NULL, NULL);
+      g_strlcpy(s, utf8_text, max);
+      g_free(utf8_text);
+   }
+#endif
+   return ret;
+}
+
