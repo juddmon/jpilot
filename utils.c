@@ -129,7 +129,7 @@ void get_compile_options(char *string, int len)
 #else
 	      _("no"),
 #endif
-	      _("NLS support (foriegn languages)"),
+	      _("NLS support (foreign languages)"),
 #ifdef ENABLE_NLS
 	      _("yes"),
 #else
