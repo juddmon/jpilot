@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jpilot 0.99.7\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-09-25 19:01+0200\n"
+"POT-Creation-Date: 2004-10-01 23:53+0200\n"
 "PO-Revision-Date: 2004-03-07 15:16+0100\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <translation-team-cs@lists.sourceforge.net>\n"
@@ -893,6 +893,43 @@ msgstr "Přidat"
 #: install_gui.c:320
 msgid "Remove"
 msgstr "Odstranit"
+
+#: jpilot-dump.c:53
+msgid " +B +M +A +T format like date +format (use -? for more info).\n"
+msgstr ""
+
+#: jpilot-dump.c:54
+msgid " -v displays version and exits.\n"
+msgstr ""
+
+#: jpilot-dump.c:55 utils.c:73
+msgid " -h displays help and exits.\n"
+msgstr ""
+
+#: jpilot-dump.c:56
+msgid " -B dump dateBook.\n"
+msgstr ""
+
+#: jpilot-dump.c:57
+msgid " -NYYYY/MM/DD dump apps on YYYY/MM/DD in dateBook.\n"
+msgstr ""
+
+#: jpilot-dump.c:58
+msgid " -N dump apps on today in dateBook.\n"
+msgstr ""
+
+#: jpilot-dump.c:59
+msgid " -M dump Memos.\n"
+msgstr ""
+
+#: jpilot-dump.c:60
+#, fuzzy
+msgid " -A dump Address book.\n"
+msgstr "Kontakty"
+
+#: jpilot-dump.c:61
+msgid " -T dump Todo list as CSV.\n"
+msgstr ""
 
 #: jpilot-sync.c:50
 msgid ""
@@ -2069,10 +2106,6 @@ msgstr "Poznámka"
 
 #: utils.c:72
 msgid " -v displays version and compile options and exits.\n"
-msgstr ""
-
-#: utils.c:73
-msgid " -h displays help and exits.\n"
 msgstr ""
 
 #: utils.c:74
