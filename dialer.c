@@ -289,7 +289,7 @@ int dialog_dial(GtkWindow *main_window, char *string, char *ext)
    gtk_box_pack_start(GTK_BOX(hbox1), label, FALSE, FALSE, 2);
 
    /*  prefix label */
-   label = gtk_label_new(_(""));
+   label = gtk_label_new("");
    gtk_box_pack_start(GTK_BOX(hbox1), label, FALSE, FALSE, 2);
    Pdata->label_prefix=label;
    set_prefix_label(Pdata);
