@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JPilot\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-02-29 02:00-0500\n"
+"POT-Creation-Date: 2004-03-28 22:12-0500\n"
 "PO-Revision-Date: 2001-08-16 14:53GMT+1\n"
 "Last-Translator: Ragnar Wisløff <ragnar@wisloff.no>\n"
 "Language-Team: Norsk bokmål <no@li.org>\n"
@@ -15,17 +15,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 0.9.5\n"
 
-#: address.c:335 datebook.c:331 memo.c:155 todo.c:283
+#: address.c:335 datebook.c:332 memo.c:155 todo.c:283
 msgid "error"
 msgstr "feil"
 
-#: address.c:386 address_gui.c:1554 datebook.c:703 memo.c:220 memo_gui.c:909
+#: address.c:386 address_gui.c:1557 datebook.c:704 memo.c:220 memo_gui.c:909
 #: todo_gui.c:1246 Expense/expense.c:988 Expense/expense.c:1929
 #, fuzzy, c-format
 msgid "Error reading %s\n"
 msgstr "Feil under lesing"
 
-#: address_gui.c:436 datebook_gui.c:351 memo_gui.c:267 todo_gui.c:399
+#: address_gui.c:436 datebook_gui.c:361 memo_gui.c:267 todo_gui.c:399
 #, fuzzy, c-format
 msgid "Could not open file %s\n"
 msgstr "Kan ikke åpne loggfil\n"
@@ -34,156 +34,156 @@ msgstr "Kan ikke åpne loggfil\n"
 msgid "File doesn't appear to be address.dat format\n"
 msgstr ""
 
-#: address_gui.c:525 datebook_gui.c:561 memo_gui.c:395 todo_gui.c:525
+#: address_gui.c:525 datebook_gui.c:571 memo_gui.c:395 todo_gui.c:525
 #: Expense/expense.c:512 Expense/expense.c:1268
 msgid "Unfiled"
 msgstr ""
 
 #: address_gui.c:664 alarms.c:223 category.c:404 category.c:851 category.c:891
-#: datebook_gui.c:648 datebook_gui.c:1128 export_gui.c:336 jpilot.c:355
+#: datebook_gui.c:658 datebook_gui.c:1138 export_gui.c:336 jpilot.c:355
 #: jpilot.c:402 jpilot.c:470 jpilot.c:514 jpilot.c:970 memo_gui.c:485
 #: password.c:364 restore_gui.c:292 todo_gui.c:615 utils.c:1073 utils.c:1225
 #: KeyRing/keyring.c:1270
 msgid "OK"
 msgstr "Greit"
 
-#: address_gui.c:665 datebook_gui.c:649 memo_gui.c:486 todo_gui.c:616
+#: address_gui.c:665 datebook_gui.c:659 memo_gui.c:486 todo_gui.c:616
 #: utils.c:1243
 #, fuzzy
 msgid "Yes"
 msgstr "år"
 
-#: address_gui.c:665 datebook_gui.c:649 memo_gui.c:486 todo_gui.c:616
+#: address_gui.c:665 datebook_gui.c:659 memo_gui.c:486 todo_gui.c:616
 #: utils.c:1243
 #, fuzzy
 msgid "No"
 msgstr "Ingen"
 
-#: address_gui.c:689 datebook_gui.c:676 memo_gui.c:496 todo_gui.c:642
+#: address_gui.c:689 datebook_gui.c:686 memo_gui.c:496 todo_gui.c:642
 #, c-format
 msgid "%s is a directory"
 msgstr ""
 
-#: address_gui.c:691 address_gui.c:708 datebook_gui.c:678 datebook_gui.c:695
+#: address_gui.c:691 address_gui.c:708 datebook_gui.c:688 datebook_gui.c:705
 #: memo_gui.c:498 memo_gui.c:515 todo_gui.c:644 todo_gui.c:661
 #, fuzzy
 msgid "Error Opening File"
 msgstr "Feil under lesing"
 
-#: address_gui.c:695 datebook_gui.c:682 memo_gui.c:502 todo_gui.c:648
+#: address_gui.c:695 datebook_gui.c:692 memo_gui.c:502 todo_gui.c:648
 #, c-format
 msgid "Do you want to overwrite file %s?"
 msgstr ""
 
-#: address_gui.c:697 datebook_gui.c:684 memo_gui.c:504 todo_gui.c:650
+#: address_gui.c:697 datebook_gui.c:694 memo_gui.c:504 todo_gui.c:650
 msgid "Overwrite File?"
 msgstr ""
 
-#: address_gui.c:698 datebook_gui.c:685 memo_gui.c:505 todo_gui.c:651
+#: address_gui.c:698 datebook_gui.c:695 memo_gui.c:505 todo_gui.c:651
 msgid "Overwrite File"
 msgstr ""
 
-#: address_gui.c:1134 address_gui.c:2431
+#: address_gui.c:1134 address_gui.c:2436
 msgid "Company/Name"
 msgstr "Bedrift/Navn"
 
-#: address_gui.c:1136 address_gui.c:2433
+#: address_gui.c:1136 address_gui.c:2438
 msgid "Name/Company"
 msgstr "Navn/Bedrift"
 
-#: address_gui.c:1635 Expense/expense.c:1445 Expense/expense.c:1524
+#: address_gui.c:1638 Expense/expense.c:1445 Expense/expense.c:1524
 #: KeyRing/keyring.c:1496 KeyRing/keyring.c:1572
 msgid "Category: "
 msgstr "Kategori"
 
-#: address_gui.c:1667 address_gui.c:2595
+#: address_gui.c:1670 address_gui.c:2600
 msgid "kana("
 msgstr ""
 
-#: address_gui.c:1855 memo_gui.c:1048 todo_gui.c:1478
+#: address_gui.c:1860 memo_gui.c:1050 todo_gui.c:1478
 msgid "0 records"
 msgstr "0 poster"
 
-#: address_gui.c:1953
+#: address_gui.c:1958
 msgid "-Unnamed-"
 msgstr ""
 
-#: address_gui.c:2041 datebook_gui.c:2361 memo_gui.c:1157 todo_gui.c:1631
+#: address_gui.c:2046 datebook_gui.c:2371 memo_gui.c:1159 todo_gui.c:1631
 #, c-format
 msgid "%d of %d records"
 msgstr "%d av %d poster"
 
-#: address_gui.c:2411 category.c:434 category.c:448 category.c:455
+#: address_gui.c:2416 category.c:434 category.c:448 category.c:455
 #: category.c:473 category.c:480 category.c:498 category.c:578 category.c:773
-#: memo_gui.c:1369 todo_gui.c:1880 Expense/expense.c:1452
+#: memo_gui.c:1371 todo_gui.c:1880 Expense/expense.c:1452
 msgid "Edit Categories"
 msgstr ""
 
-#: address_gui.c:2438
+#: address_gui.c:2443
 msgid "Phone"
 msgstr "Telefon"
 
-#: address_gui.c:2460
+#: address_gui.c:2465
 msgid "Quick Find"
 msgstr "Hurtigsøk"
 
-#: address_gui.c:2477 category.c:405 category.c:824 datebook_gui.c:4084
-#: memo_gui.c:1424 todo_gui.c:1992 Expense/expense.c:1486
+#: address_gui.c:2482 category.c:405 category.c:824 datebook_gui.c:4145
+#: memo_gui.c:1426 todo_gui.c:1992 Expense/expense.c:1486
 #: KeyRing/keyring.c:1531
 msgid "Delete"
 msgstr "Slette"
 
-#: address_gui.c:2484 datebook_gui.c:4091 memo_gui.c:1430 todo_gui.c:1998
+#: address_gui.c:2489 datebook_gui.c:4152 memo_gui.c:1432 todo_gui.c:1998
 #: Expense/expense.c:1492 KeyRing/keyring.c:1537
 msgid "Copy"
 msgstr "Kopier"
 
-#: address_gui.c:2491 datebook_gui.c:4098 memo_gui.c:1436 todo_gui.c:2004
+#: address_gui.c:2496 datebook_gui.c:4159 memo_gui.c:1438 todo_gui.c:2004
 #: Expense/expense.c:1498 KeyRing/keyring.c:1543
 msgid "New Record"
 msgstr "Ny post"
 
-#: address_gui.c:2497 datebook_gui.c:4105 memo_gui.c:1442 todo_gui.c:2010
+#: address_gui.c:2502 datebook_gui.c:4166 memo_gui.c:1444 todo_gui.c:2010
 #: Expense/expense.c:1504 KeyRing/keyring.c:1549
 msgid "Add Record"
 msgstr "Legg til post"
 
-#: address_gui.c:2506 datebook_gui.c:4114 memo_gui.c:1450 todo_gui.c:2018
+#: address_gui.c:2511 datebook_gui.c:4175 memo_gui.c:1452 todo_gui.c:2018
 #: Expense/expense.c:1512 KeyRing/keyring.c:1557
 msgid "Apply Changes"
 msgstr "Lagre endringer"
 
-#: address_gui.c:2522 datebook_gui.c:4165 memo_gui.c:1467 todo_gui.c:2081
+#: address_gui.c:2527 datebook_gui.c:4226 memo_gui.c:1469 todo_gui.c:2081
 msgid "Private"
 msgstr "Privat"
 
-#: address_gui.c:2542 KeyRing/keyring.c:1423
+#: address_gui.c:2547 KeyRing/keyring.c:1423
 msgid "Name"
 msgstr "Navn"
 
-#: address_gui.c:2550
+#: address_gui.c:2555
 msgid "Address"
 msgstr "Adresse"
 
-#: address_gui.c:2558 Expense/expense.c:464 Expense/expense.c:1289
+#: address_gui.c:2563 Expense/expense.c:464 Expense/expense.c:1289
 msgid "Other"
 msgstr "Andre"
 
-#: address_gui.c:2566 datebook_gui.c:1309 datebook_gui.c:1566 utils.c:2471
+#: address_gui.c:2571 datebook_gui.c:1319 datebook_gui.c:1576 utils.c:2471
 msgid "All"
 msgstr "Alle"
 
-#: address_gui.c:2696 dialer.c:305 dialer.c:330
+#: address_gui.c:2701 dialer.c:305 dialer.c:330
 msgid "Dial"
 msgstr ""
 
-#: address_gui.c:2746
+#: address_gui.c:2751
 msgid ""
 "Show\n"
 "In List"
 msgstr ""
 
-#: address_gui.c:2754
+#: address_gui.c:2759
 msgid "Quick View"
 msgstr "Kortversjon"
 
@@ -191,11 +191,11 @@ msgstr "Kortversjon"
 msgid "Remind me"
 msgstr "Minn meg på"
 
-#: alarms.c:239 datebook_gui.c:4147
+#: alarms.c:239 datebook_gui.c:4208
 msgid "Minutes"
 msgstr "Minutter"
 
-#: alarms.c:241 datebook_gui.c:4151
+#: alarms.c:241 datebook_gui.c:4212
 msgid "Hours"
 msgstr "Timer"
 
@@ -211,7 +211,7 @@ msgstr "Forbigåtte avtaler"
 msgid "Postponed Appointment"
 msgstr "Utsatt avtale"
 
-#: alarms.c:531 datebook_gui.c:3997
+#: alarms.c:531 datebook_gui.c:4053
 msgid "Appointment"
 msgstr "Avtale"
 
@@ -236,8 +236,8 @@ msgstr ""
 msgid "Move"
 msgstr "Ma"
 
-#: category.c:405 category.c:857 category.c:897 datebook_gui.c:1133
-#: datebook_gui.c:1567 export_gui.c:341 password.c:370 print_gui.c:335
+#: category.c:405 category.c:857 category.c:897 datebook_gui.c:1143
+#: datebook_gui.c:1577 export_gui.c:341 password.c:370 print_gui.c:335
 #: restore_gui.c:297 utils.c:1083 KeyRing/keyring.c:1276
 msgid "Cancel"
 msgstr "Angre"
@@ -306,122 +306,122 @@ msgstr ""
 # the little buttons in the repeat weekly window.
 # They should be one letter if possible.  The English ones get truncated to
 # one letter.
-#: datebook_gui.c:201 datebook_gui.c:208 datebook_gui.c:3835
-#: datebook_gui.c:3842
+#: datebook_gui.c:211 datebook_gui.c:218 datebook_gui.c:3876
+#: datebook_gui.c:3883
 msgid "Su"
 msgstr "Sø"
 
-#: datebook_gui.c:202 datebook_gui.c:3836
+#: datebook_gui.c:212 datebook_gui.c:3877
 msgid "Mo"
 msgstr "Ma"
 
-#: datebook_gui.c:203 datebook_gui.c:3837
+#: datebook_gui.c:213 datebook_gui.c:3878
 msgid "Tu"
 msgstr "Ti"
 
-#: datebook_gui.c:204 datebook_gui.c:3838
+#: datebook_gui.c:214 datebook_gui.c:3879
 msgid "We"
 msgstr "On"
 
-#: datebook_gui.c:205 datebook_gui.c:3839
+#: datebook_gui.c:215 datebook_gui.c:3880
 #, fuzzy
 msgid "Th"
 msgstr "To"
 
-#: datebook_gui.c:206 datebook_gui.c:3840
+#: datebook_gui.c:216 datebook_gui.c:3881
 msgid "Fr"
 msgstr "Fr"
 
-#: datebook_gui.c:207 datebook_gui.c:3841
+#: datebook_gui.c:217 datebook_gui.c:3882
 msgid "Sa"
 msgstr "Lø"
 
-#: datebook_gui.c:540 datebook_gui.c:2041
+#: datebook_gui.c:550 datebook_gui.c:2051
 #, c-format
 msgid "Appointment description text > %d, truncating to %d\n"
 msgstr ""
 
-#: datebook_gui.c:550 datebook_gui.c:965 datebook_gui.c:2100
-#: datebook_gui.c:2107
+#: datebook_gui.c:560 datebook_gui.c:975 datebook_gui.c:2110
+#: datebook_gui.c:2117
 #, fuzzy
 msgid "Error"
 msgstr "feil"
 
-#: datebook_gui.c:551
+#: datebook_gui.c:561
 msgid "File doesn't appear to be datebook.dat format\n"
 msgstr ""
 
-#: datebook_gui.c:1074 export_gui.c:255 jpilot.c:547
+#: datebook_gui.c:1084 export_gui.c:255 jpilot.c:547
 msgid "Export"
 msgstr ""
 
-#: datebook_gui.c:1091
+#: datebook_gui.c:1101
 msgid "Export All Datebook Records"
 msgstr ""
 
-#: datebook_gui.c:1110 export_gui.c:317
+#: datebook_gui.c:1120 export_gui.c:317
 msgid "Save as"
 msgstr ""
 
-#: datebook_gui.c:1120 export_gui.c:328
+#: datebook_gui.c:1130 export_gui.c:328
 msgid "Browse"
 msgstr ""
 
-#: datebook_gui.c:1303 import_gui.c:325 install_gui.c:328 prefs_gui.c:739
+#: datebook_gui.c:1313 import_gui.c:325 install_gui.c:328 prefs_gui.c:739
 #: search_gui.c:540
 msgid "Done"
 msgstr "Ferdig"
 
-#: datebook_gui.c:1315 datebook_gui.c:4325
+#: datebook_gui.c:1325 datebook_gui.c:4386
 msgid "None"
 msgstr "Ingen"
 
-#: datebook_gui.c:1427
+#: datebook_gui.c:1437
 #, fuzzy
 msgid "Begin On Date"
 msgstr "Slutt-dato"
 
-#: datebook_gui.c:1432
+#: datebook_gui.c:1442
 msgid "End On Date"
 msgstr "Slutt-dato"
 
-#: datebook_gui.c:1526 prefs.c:440
+#: datebook_gui.c:1536 prefs.c:440
 msgid "Sunday"
 msgstr "Søndag"
 
-#: datebook_gui.c:1527 prefs.c:441
+#: datebook_gui.c:1537 prefs.c:441
 msgid "Monday"
 msgstr "Mandag"
 
-#: datebook_gui.c:1528
+#: datebook_gui.c:1538
 msgid "Tuesday"
 msgstr "Tirsdag"
 
-#: datebook_gui.c:1529
+#: datebook_gui.c:1539
 msgid "Wednesday"
 msgstr "Onsdag"
 
-#: datebook_gui.c:1530
+#: datebook_gui.c:1540
 msgid "Thursday"
 msgstr "Torsdag"
 
-#: datebook_gui.c:1531
+#: datebook_gui.c:1541
 msgid "Friday"
 msgstr "Fredag"
 
-#: datebook_gui.c:1532
+#: datebook_gui.c:1542
 msgid "Saturday"
 msgstr "Lørdag"
 
-#: datebook_gui.c:1537
+#: datebook_gui.c:1547
 msgid "4th"
 msgstr ""
 
-#: datebook_gui.c:1537
+#: datebook_gui.c:1547
 msgid "Last"
 msgstr ""
 
-#: datebook_gui.c:1559
+#: datebook_gui.c:1569
 msgid ""
 "This is a repeating event.\n"
 "Do you want to apply these\n"
@@ -430,36 +430,36 @@ msgid ""
 "occurrences of this event?"
 msgstr ""
 
-#: datebook_gui.c:1565
+#: datebook_gui.c:1575
 msgid "Current"
 msgstr ""
 
-#: datebook_gui.c:1810
+#: datebook_gui.c:1820
 msgid "none"
 msgstr "ingen"
 
-#: datebook_gui.c:1811
+#: datebook_gui.c:1821
 msgid "day"
 msgstr "dag"
 
-#: datebook_gui.c:1812
+#: datebook_gui.c:1822
 msgid "week"
 msgstr "uke"
 
-#: datebook_gui.c:1813
+#: datebook_gui.c:1823
 msgid "month"
 msgstr "måned"
 
-#: datebook_gui.c:1814
+#: datebook_gui.c:1824
 msgid "year"
 msgstr "år"
 
-#: datebook_gui.c:2096 datebook_gui.c:2098
+#: datebook_gui.c:2106 datebook_gui.c:2108
 #, c-format
 msgid "You cannot have an appointment that repeats every %d %s(s)\n"
 msgstr "Du kan ikke ha en avtale som repeteres hver %d %s\n"
 
-#: datebook_gui.c:2108
+#: datebook_gui.c:2118
 #, fuzzy
 msgid ""
 "You can not have a weekly repeating appointment that doesn't repeat on any "
@@ -468,93 +468,93 @@ msgstr ""
 "Du kan ikke ha en avtale med ukentlig gjentagelse som ikke repeteres på en "
 "ukedag.\n"
 
-#: datebook_gui.c:2255
+#: datebook_gui.c:2265
 msgid "No Time"
 msgstr "Ingen tid"
 
-#: datebook_gui.c:2528
+#: datebook_gui.c:2536
 #, fuzzy
 msgid "Invalid Appointment"
 msgstr "Forbigåtte avtaler"
 
-#: datebook_gui.c:2529
+#: datebook_gui.c:2537
 msgid ""
 "The End Date of this appointment\n"
 "is before the start date."
 msgstr ""
 
-#: datebook_gui.c:2733 datebook_gui.c:4359 datebook_gui.c:4389
-#: datebook_gui.c:4445 datebook_gui.c:4494 todo_gui.c:123 todo_gui.c:2072
+#: datebook_gui.c:2745 datebook_gui.c:4420 datebook_gui.c:4450
+#: datebook_gui.c:4506 datebook_gui.c:4555 todo_gui.c:123 todo_gui.c:2072
 msgid "No Date"
 msgstr "Ingen forfallsdato"
 
-#: datebook_gui.c:3916 datebook_gui.c:4327
+#: datebook_gui.c:3957 datebook_gui.c:4388
 msgid "Week"
 msgstr "Uke"
 
-#: datebook_gui.c:3925
+#: datebook_gui.c:3966
 msgid "View appointments by week"
 msgstr ""
 
-#: datebook_gui.c:3928 datebook_gui.c:4328
+#: datebook_gui.c:3969 datebook_gui.c:4389
 msgid "Month"
 msgstr "Måned"
 
-#: datebook_gui.c:3937
+#: datebook_gui.c:3978
 msgid "View appointments by month"
 msgstr ""
 
-#: datebook_gui.c:3942
+#: datebook_gui.c:3983
 msgid "Cats"
 msgstr "Katter"
 
-#: datebook_gui.c:3996
+#: datebook_gui.c:4052
 msgid "Time"
 msgstr "Ingen tid"
 
-#: datebook_gui.c:4028
+#: datebook_gui.c:4089
 msgid "Show ToDos"
 msgstr ""
 
-#: datebook_gui.c:4043 todo_gui.c:1954
+#: datebook_gui.c:4104 todo_gui.c:1954
 msgid "Task"
 msgstr "Oppgave"
 
-#: datebook_gui.c:4044 todo_gui.c:1955
+#: datebook_gui.c:4105 todo_gui.c:1955
 msgid "Due"
 msgstr "Forfall"
 
-#: datebook_gui.c:4132
+#: datebook_gui.c:4193
 msgid "Alarm"
 msgstr "Alarm"
 
-#: datebook_gui.c:4153
+#: datebook_gui.c:4214
 msgid "Days"
 msgstr "Dager"
 
-#: datebook_gui.c:4176
+#: datebook_gui.c:4237
 msgid "This Event has no particular time"
 msgstr "Denne avtalen har ingen tidsangivelse"
 
-#: datebook_gui.c:4184
+#: datebook_gui.c:4245
 msgid "Starts on"
 msgstr "Starter den"
 
-#: datebook_gui.c:4198
+#: datebook_gui.c:4259
 #, fuzzy
 msgid "Start Time"
 msgstr "Starter den"
 
-#: datebook_gui.c:4216
+#: datebook_gui.c:4277
 #, fuzzy
 msgid "End Time"
 msgstr "Ingen tid"
 
-#: datebook_gui.c:4309
+#: datebook_gui.c:4370
 msgid "DateBk Tags"
 msgstr ""
 
-#: datebook_gui.c:4326
+#: datebook_gui.c:4387
 msgid "Day"
 msgstr "Dag"
 
@@ -562,53 +562,53 @@ msgstr "Dag"
 # msgstr "Pr. uke"
 # msgid "MonthView"
 # msgstr "Pr. mnd"
-#: datebook_gui.c:4329
+#: datebook_gui.c:4390
 msgid "Year"
 msgstr "År"
 
-#: datebook_gui.c:4333
+#: datebook_gui.c:4394
 msgid "This event will not repeat"
 msgstr "Denne avtalen skal ikke gjentas"
 
-#: datebook_gui.c:4343 datebook_gui.c:4375 datebook_gui.c:4431
-#: datebook_gui.c:4478
+#: datebook_gui.c:4404 datebook_gui.c:4436 datebook_gui.c:4492
+#: datebook_gui.c:4539
 msgid "Frequency is Every"
 msgstr "Frekvens er"
 
-#: datebook_gui.c:4348
+#: datebook_gui.c:4409
 msgid "Day(s)"
 msgstr "dag(er)"
 
-#: datebook_gui.c:4351 datebook_gui.c:4383 datebook_gui.c:4439
-#: datebook_gui.c:4486
+#: datebook_gui.c:4412 datebook_gui.c:4444 datebook_gui.c:4500
+#: datebook_gui.c:4547
 msgid "End on"
 msgstr "Slutt-dato"
 
-#: datebook_gui.c:4380
+#: datebook_gui.c:4441
 msgid "Week(s)"
 msgstr "uker(r)"
 
-#: datebook_gui.c:4396
+#: datebook_gui.c:4457
 msgid "Repeat on Days:"
 msgstr "Gjenta på følgende dager: "
 
-#: datebook_gui.c:4436
+#: datebook_gui.c:4497
 msgid "Month(s)"
 msgstr "måned(er)"
 
-#: datebook_gui.c:4453
+#: datebook_gui.c:4514
 msgid "Repeat by:"
 msgstr "Gjenta på:"
 
-#: datebook_gui.c:4457
+#: datebook_gui.c:4518
 msgid "Day of week"
 msgstr "ukedag"
 
-#: datebook_gui.c:4466
+#: datebook_gui.c:4527
 msgid "Date"
 msgstr "dato"
 
-#: datebook_gui.c:4483
+#: datebook_gui.c:4544
 msgid "Year(s)"
 msgstr "år"
 
@@ -886,11 +886,11 @@ msgstr "/_Hjelp"
 
 #: jpilot.c:1134
 msgid "/Help/PayBack program"
-msgstr ""
+msgstr "/Hjelp/PayBack program"
 
 #: jpilot.c:1135
 msgid "/Help/J-Pilot"
-msgstr ""
+msgstr "/Hjelp/J-Pilot"
 
 #: jpilot.c:1202
 #, fuzzy, c-format
@@ -980,7 +980,7 @@ msgstr "Kan ikke åpne loggfil\n"
 msgid "File doesn't appear to be memopad.dat format\n"
 msgstr ""
 
-#: memo_gui.c:1376
+#: memo_gui.c:1378
 msgid "Use Memo32 (pedit32)"
 msgstr ""
 
