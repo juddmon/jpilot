@@ -42,22 +42,6 @@ case "${build_os}" in
 esac
 AM_CONDITIONAL(JPILOT_DIALER, test x$dialer = xyes)
 
-dnl Checks for programs.
-
-dnl Compile options
-ccoptions=""
-AC_ARG_WITH(ccoptions,
-[  --with-ccoptions=       Options to pass to your C compiler])
-
-if test "x$with_ccoptions" != "x"; then
-   ccoptions=$with_ccoptions
-#   CFLAGS=""
-   AC_MSG_CHECKING(for supplied cc options)
-   AC_MSG_RESULT(Using supplied cc options $ccoptions)
-fi
-AC_SUBST(ccoptions)
-
-
 dnl ******************************
 dnl * start gettext
 dnl ******************************
@@ -529,7 +513,7 @@ echo "Compiling with plugin support..........   $enable_plugins"
 echo "Compiling with Mañana support..........   $enable_manana"
 echo "Compiling with Prometheon support......   $enable_prometheon"
 echo "GTK-2 support..........................   $have_gtk2"
-echo "Compiler Options.......................   $CFLAGS $ccoptions"
+echo "Compiler Options.......................   $CFLAGS"
 echo "Prefix directory.......................   $prefix"
 echo "pilot-link headers.....................   $pilot_incl"
 echo "NLS support (foreign languages)........   $USE_NLS"
