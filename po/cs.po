@@ -2,10 +2,12 @@
 # Copyright (C) 2002 Judd Montgomery
 # Jiri Rubes <jr@slad.cz>, 2001.
 # 
+#. prefix label
+#: dialer.c:297
 msgid ""
 msgstr ""
 "Project-Id-Version: jpilot-1.99pre\n"
-"POT-Creation-Date: 2002-12-27 18:13-0500\n"
+"POT-Creation-Date: 2002-12-27 18:19-0500\n"
 "PO-Revision-Date: 2001-02-06 09:10+0200\n"
 "Last-Translator: Jiri Rubes <jr@slad.cz>\n"
 "Language-Team: CS <cs@li.org>\n"
@@ -358,7 +360,8 @@ msgstr "Jiné"
 msgid "All"
 msgstr "V¹e"
 
-#: address_gui.c:2586
+#. Dial Phone Button
+#: address_gui.c:2586 dialer.c:311 dialer.c:336
 msgid "Dial"
 msgstr ""
 
@@ -1019,6 +1022,49 @@ msgstr "Data"
 #: datebook_gui.c:4161
 msgid "Year(s)"
 msgstr "Rok"
+
+#: dialer.c:199
+msgid "Phone Dialer"
+msgstr ""
+
+#: dialer.c:234
+msgid "Prefix 1"
+msgstr ""
+
+#: dialer.c:256
+msgid "Prefix 2"
+msgstr ""
+
+#: dialer.c:278
+msgid "Prefix 3"
+msgstr ""
+
+#: dialer.c:293
+msgid "Phone number:"
+msgstr ""
+
+# Expense/expense.c:327
+# Expense/expense.c:327
+# Expense/expense.c:327
+#: dialer.c:324
+#, fuzzy
+msgid "Extension"
+msgstr "Výdaje"
+
+# prefs_gui.c:569
+# prefs_gui.c:569
+# prefs_gui.c:653
+# prefs_gui.c:653
+# prefs_gui.c:653
+#: dialer.c:347
+#, fuzzy
+msgid "Dial Command"
+msgstr "Pøíkaz pro upozornìní"
+
+#. Buttons
+#: dialer.c:368
+msgid "Dismiss"
+msgstr ""
 
 # datebook_gui.c:884
 # datebook_gui.c:884

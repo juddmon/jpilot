@@ -3,10 +3,12 @@
 # Hiroshi Kawashima <kawashima@iname.com>, 2000
 # Hiroshi Miura <miura@da-cha.org>, 2001
 #
+#. prefix label
+#: dialer.c:297
 msgid ""
 msgstr ""
 "Project-Id-Version: jpilot 0.99.1pre 07Feb01\n"
-"POT-Creation-Date: 2002-12-27 18:13-0500\n"
+"POT-Creation-Date: 2002-12-27 18:19-0500\n"
 "PO-Revision-Date: 2001-04-06 23:32+0900\n"
 "Last-Translator: Hiroshi Miura <miura@da-cha.org>\n"
 "Language-Team: Japanese Palm-UNIX ML <palm-unix-j@list.daionet.gr.jp>\n"
@@ -182,7 +184,8 @@ msgstr "その他"
 msgid "All"
 msgstr "全て"
 
-#: address_gui.c:2586
+#. Dial Phone Button
+#: address_gui.c:2586 dialer.c:311 dialer.c:336
 msgid "Dial"
 msgstr ""
 
@@ -500,6 +503,40 @@ msgstr "日付"
 #: datebook_gui.c:4161
 msgid "Year(s)"
 msgstr "年毎"
+
+#: dialer.c:199
+msgid "Phone Dialer"
+msgstr ""
+
+#: dialer.c:234
+msgid "Prefix 1"
+msgstr ""
+
+#: dialer.c:256
+msgid "Prefix 2"
+msgstr ""
+
+#: dialer.c:278
+msgid "Prefix 3"
+msgstr ""
+
+#: dialer.c:293
+msgid "Phone number:"
+msgstr ""
+
+#: dialer.c:324
+msgid "Extension"
+msgstr ""
+
+#: dialer.c:347
+#, fuzzy
+msgid "Dial Command"
+msgstr "アラームコマンド"
+
+#. Buttons
+#: dialer.c:368
+msgid "Dismiss"
+msgstr ""
 
 #: export_gui.c:113
 msgid "File Browser"

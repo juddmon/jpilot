@@ -3,10 +3,12 @@
 # Juan Diego <diego@linuxcolombia.com.co>, 2000.
 # Cristian Othón Martínez Vera <cfuga@itam.mx>, 2001.
 #
+#. prefix label
+#: dialer.c:297
 msgid ""
 msgstr ""
 "Project-Id-Version: jpilot 0.99.1q\n"
-"POT-Creation-Date: 2002-12-27 18:13-0500\n"
+"POT-Creation-Date: 2002-12-27 18:19-0500\n"
 "PO-Revision-Date: 2001-12-30 23:13-0600\n"
 "Last-Translator: Cristian Othón Martínez Vera <cfuga@itam.mx>\n"
 "Language-Team: Spanish <es@li.org>\n"
@@ -181,7 +183,8 @@ msgstr "Otro"
 msgid "All"
 msgstr "Todos"
 
-#: address_gui.c:2586
+#. Dial Phone Button
+#: address_gui.c:2586 dialer.c:311 dialer.c:336
 msgid "Dial"
 msgstr ""
 
@@ -495,6 +498,40 @@ msgstr "Fecha"
 #: datebook_gui.c:4161
 msgid "Year(s)"
 msgstr "Año(s)"
+
+#: dialer.c:199
+msgid "Phone Dialer"
+msgstr ""
+
+#: dialer.c:234
+msgid "Prefix 1"
+msgstr ""
+
+#: dialer.c:256
+msgid "Prefix 2"
+msgstr ""
+
+#: dialer.c:278
+msgid "Prefix 3"
+msgstr ""
+
+#: dialer.c:293
+msgid "Phone number:"
+msgstr ""
+
+#: dialer.c:324
+msgid "Extension"
+msgstr ""
+
+#: dialer.c:347
+#, fuzzy
+msgid "Dial Command"
+msgstr "Comando de la Alarma"
+
+#. Buttons
+#: dialer.c:368
+msgid "Dismiss"
+msgstr ""
 
 #: export_gui.c:113
 msgid "File Browser"

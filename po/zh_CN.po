@@ -3,10 +3,12 @@
 # This file is distributed under the same license as the jpilot package.
 # Anthony Fok <anthony@thizlinux.com>, 2002.
 #
+#. prefix label
+#: dialer.c:297
 msgid ""
 msgstr ""
 "Project-Id-Version: jpilot 0.99.3\n"
-"POT-Creation-Date: 2002-12-27 18:13-0500\n"
+"POT-Creation-Date: 2002-12-27 18:19-0500\n"
 "PO-Revision-Date: 2002-10-19 10:10+0800\n"
 "Last-Translator: Anthony Fok <anthony@thizlinux.com>\n"
 "Language-Team: Chinese (simplified) <i18n-translation@lists.linux.net.cn>\n"
@@ -179,7 +181,8 @@ msgstr "其他"
 msgid "All"
 msgstr "全部"
 
-#: address_gui.c:2586
+#. Dial Phone Button
+#: address_gui.c:2586 dialer.c:311 dialer.c:336
 msgid "Dial"
 msgstr ""
 
@@ -494,6 +497,41 @@ msgstr "该月的第几天"
 #: datebook_gui.c:4161
 msgid "Year(s)"
 msgstr "年"
+
+#: dialer.c:199
+msgid "Phone Dialer"
+msgstr ""
+
+#: dialer.c:234
+msgid "Prefix 1"
+msgstr ""
+
+#: dialer.c:256
+msgid "Prefix 2"
+msgstr ""
+
+#: dialer.c:278
+msgid "Prefix 3"
+msgstr ""
+
+#: dialer.c:293
+msgid "Phone number:"
+msgstr ""
+
+#: dialer.c:324
+#, fuzzy
+msgid "Extension"
+msgstr "开支"
+
+#: dialer.c:347
+#, fuzzy
+msgid "Dial Command"
+msgstr "闹铃命令"
+
+#. Buttons
+#: dialer.c:368
+msgid "Dismiss"
+msgstr ""
 
 #: export_gui.c:113
 msgid "File Browser"
