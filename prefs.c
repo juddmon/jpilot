@@ -123,6 +123,7 @@ static prefType glob_prefs[NUM_PREFS] = {
      {"todo_days_due", INTTYPE, INTTYPE, 0, NULL, 0},
      {"todo_days_till_due", INTTYPE, INTTYPE, 7, NULL, 0},
      {"show_tooltips", INTTYPE, INTTYPE, 1, NULL, 0},
+     {"datebook_note_pane", INTTYPE, INTTYPE, 75, NULL, 0},
 };
 
 struct name_list {

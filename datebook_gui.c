@@ -90,6 +90,7 @@ static int DB_APPT_COLUMN=3;
 extern GtkTooltips *glob_tooltips;
 
 static GtkWidget *pane;
+static GtkWidget *note_pane;
 static GtkWidget *todo_pane;
 static GtkWidget *todo_vbox;
 
@@ -3582,11 +3583,13 @@ int datebook_gui_cleanup()
    connect_changed_signals(DISCONNECT_SIGNALS);
 #ifdef ENABLE_GTK2
    set_pref(PREF_DATEBOOK_PANE, gtk_paned_get_position(GTK_PANED(pane)), NULL, TRUE);
+   set_pref(PREF_DATEBOOK_NOTE_PANE, gtk_paned_get_position(GTK_PANED(note_pane)), NULL, TRUE);
    if (GTK_TOGGLE_BUTTON(show_todos_button)->active) {
       set_pref(PREF_DATEBOOK_TODO_PANE, gtk_paned_get_position(GTK_PANED(todo_pane)), NULL, TRUE);
    }
 #else
    set_pref(PREF_DATEBOOK_PANE, GTK_PANED(pane)->handle_xpos, NULL, TRUE);
+   set_pref(PREF_DATEBOOK_NOTE_PANE, GTK_PANED(note_pane)->handle_xpos, NULL, TRUE);
    if (GTK_TOGGLE_BUTTON(show_todos_button)->active) {
       set_pref(PREF_DATEBOOK_TODO_PANE, GTK_PANED(todo_pane)->handle_ypos, NULL, TRUE);
    }
@@ -4442,9 +4445,14 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    /* End time chooser */
    /* End begin and end dates */
 
+   note_pane = gtk_vpaned_new();
+   get_pref(PREF_DATEBOOK_NOTE_PANE, &ivalue, &svalue);
+   gtk_paned_set_position(GTK_PANED(note_pane), ivalue + 2);
+   gtk_box_pack_start(GTK_BOX(vbox2), note_pane, TRUE, TRUE, 5);
+
    /* Text 1 */
    hbox_temp = gtk_hbox_new(FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, TRUE, TRUE, 0);
+   gtk_paned_pack1(GTK_PANED(note_pane), hbox_temp, TRUE, FALSE);
 
 #ifdef ENABLE_GTK2
    text_widget1 = gtk_text_view_new();
@@ -4469,7 +4477,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    /* Text 2 */
    hbox_temp = gtk_hbox_new(FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, TRUE, TRUE, 0);
+   gtk_paned_pack2(GTK_PANED(note_pane), hbox_temp, TRUE, FALSE);
 
 
 #ifdef ENABLE_GTK2
