@@ -48,8 +48,25 @@ static GtkWidget *window = NULL;
 static GtkWidget *entry = NULL;
 static GtkAccelGroup *accel_group = NULL;
 
-static int
-  search_datebook(const char *needle, GtkWidget *clist)
+int datebook_search_sort_compare(const void *v1, const void *v2)
+{
+   AppointmentList **al1, **al2;
+   struct Appointment *appt1, *appt2;
+   time_t time1, time2;
+
+   al1=(AppointmentList **)v1;
+   al2=(AppointmentList **)v2;
+
+   appt1=&((*al1)->mappt.appt);
+   appt2=&((*al2)->mappt.appt);
+
+   time1 = mktime(&(appt1->begin));
+   time2 = mktime(&(appt2->begin));
+
+   return(time2 - time1); 
+}
+
+static int search_datebook(const char *needle, GtkWidget *clist)
 {
    gchar *empty_line[] = { "","" };
    AppointmentList *a_list;
@@ -72,6 +89,9 @@ static int
       return 0;
    }
 
+   /* Sort returned results according to date rather than just HH:MM */
+   datebook_sort(&a_list, datebook_search_sort_compare);
+
    count = 0;
 
    for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
@@ -91,8 +111,8 @@ static int
 	 }
       }
       if (found) {
-	 gtk_clist_append(GTK_CLIST(clist), empty_line);
-	 gtk_clist_set_text(GTK_CLIST(clist), count, 0, _("datebook"));
+	 gtk_clist_prepend(GTK_CLIST(clist), empty_line);
+	 gtk_clist_set_text(GTK_CLIST(clist), 0, 0, _("datebook"));
 
 	 /*Add to the search list */
 	 new_sr = malloc(sizeof(struct search_record));
@@ -102,7 +122,7 @@ static int
 	 new_sr->next = search_rl;
 	 search_rl = new_sr;
 
-	 gtk_clist_set_row_data(GTK_CLIST(clist), count, new_sr);
+	 gtk_clist_set_row_data(GTK_CLIST(clist), 0, new_sr);
 
 	 /*get the date */
 	 get_pref(PREF_SHORTDATE, &ivalue, &svalue1);
@@ -123,7 +143,7 @@ static int
 		       date_str,
 		       temp_al->mappt.appt.description);
 	    lstrncpy_remove_cr_lfs(str2, str, SEARCH_MAX_COLUMN_LEN);
-	    gtk_clist_set_text(GTK_CLIST(clist), count, 1, str2);
+	    gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str2);
 	 }
 	 if (found == 2) {
 #ifdef ENABLE_GTK2    
@@ -134,7 +154,7 @@ static int
 		       date_str,
 		       temp_al->mappt.appt.note);
 	    lstrncpy_remove_cr_lfs(str2, str, SEARCH_MAX_COLUMN_LEN);
-	    gtk_clist_set_text(GTK_CLIST(clist), count, 1, str2);
+	    gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str2);
 	 }
 
 	 count++;

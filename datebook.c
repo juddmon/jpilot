@@ -51,22 +51,26 @@
 int datebook_compare(const void *v1, const void *v2)
 {
    AppointmentList **al1, **al2;
-   struct Appointment *a1, *a2;
-   time_t time1, time2;
+   struct Appointment *appt1, *appt2;
 
    al1=(AppointmentList **)v1;
    al2=(AppointmentList **)v2;
 
-   a1=&((*al1)->mappt.appt);
-   a2=&((*al2)->mappt.appt);
+   appt1=&((*al1)->mappt.appt);
+   appt2=&((*al2)->mappt.appt);
 
-   time1 = mktime(&(a1->begin));
-   time2 = mktime(&(a2->begin));
+   if ((appt1->event) || (appt2->event)) {
+      return appt2->event-appt1->event;
+   }
 
-   return(time1 - time2); 
+   /* Jim Rees pointed out my sorting error */
+   /* return ((appt1->begin.tm_hour*60 + appt1->begin.tm_min) > */
+   return ((appt1->begin.tm_hour*60 + appt1->begin.tm_min) -
+	   (appt2->begin.tm_hour*60 + appt2->begin.tm_min));
 }
 
-static int datebook_sort(AppointmentList **al)
+int datebook_sort(AppointmentList **al, 
+                  int (*compare_func)(const void*, const void*))
 {
    AppointmentList *temp_al;
    AppointmentList **sort_al;
@@ -95,7 +99,7 @@ static int datebook_sort(AppointmentList **al)
    }
 
    /* qsort them */
-   qsort(sort_al, count, sizeof(AppointmentList *), datebook_compare);
+   qsort(sort_al, count, sizeof(AppointmentList *), compare_func);
 
    /* Put the linked list in the order of the array */
    sort_al[count-1]->next = NULL;
@@ -1048,7 +1052,7 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
 
    jp_free_DB_records(&records);
 
-   datebook_sort(appointment_list);
+   datebook_sort(appointment_list, datebook_compare);
 
    jp_logf(JP_LOG_DEBUG, "Leaving get_days_appointments()\n");
 

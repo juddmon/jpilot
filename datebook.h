@@ -97,6 +97,10 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
 int weed_datebook_list(AppointmentList **al, int mon, int year,
 		       int skip_privates, int *mask);
 
+/* Sorts a list of appointments according to the comparison function given */
+int datebook_sort(AppointmentList **al, 
+                  int (*compare_func)(const void*, const void*));
+
 /* Year is years since 1900 */
 /* Mon is 0-11 */
 /* Day is 1-31 */
