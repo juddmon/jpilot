@@ -2095,11 +2095,14 @@ static gboolean
    int order[NUM_ADDRESS_ENTRIES]={
       0,1,13,2,3,4,5,6,7,8,9,10,11,12,14,15,16,17,18
    };
+   int kana_order[NUM_ADDRESS_ENTRIES+NUM_ADDRESS_EXT_ENTRIES]={
+      19,20,0,1,13,21,2,3,4,5,6,7,8,9,10,11,12,14,15,16,17,18
+   };
    int page[NUM_ADDRESS_ENTRIES]={
       0,0,0,0,0,0,0,0,0,1,1,1,1,1,2,2,2,2,2
    };
    int kana_page[NUM_ADDRESS_ENTRIES + NUM_ADDRESS_EXT_ENTRIES]={
-      0,0,0,0,0,0,0,1,1,1,1,1,2,0,2,2,2,2,2,0,0,0
+      0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,2,2,2,2,2
    };
    int i;
    long use_jos, char_set;
@@ -2115,7 +2118,7 @@ static gboolean
 	 get_pref(PREF_USE_JOS, &use_jos, NULL);
 	 if (!use_jos && (char_set == CHAR_SET_JAPANESE)) {
 	    for (i=0; i<(NUM_ADDRESS_ENTRIES+NUM_ADDRESS_EXT_ENTRIES); i++) {
-	       if (address_text[order[i]] == widget) {
+	       if (address_text[kana_order[i]] == widget) {
 		  break;
 	       }
 	    }
@@ -2136,10 +2139,11 @@ static gboolean
 	 }
 	 if (!use_jos && (char_set == CHAR_SET_JAPANESE)) {
 	    gtk_notebook_set_page(GTK_NOTEBOOK(notebook), kana_page[i]);
+	    gtk_widget_grab_focus(GTK_WIDGET(address_text[kana_order[i]]));
 	 } else {
 	    gtk_notebook_set_page(GTK_NOTEBOOK(notebook), page[i]);
+	    gtk_widget_grab_focus(GTK_WIDGET(address_text[order[i]]));
 	 }
-	 gtk_widget_grab_focus(GTK_WIDGET(address_text[order[i]]));
 	 return TRUE;
       }
    }
