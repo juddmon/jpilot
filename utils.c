@@ -353,6 +353,96 @@ int sub_years_from_date(struct tm *date, int n)
    return add_or_sub_years_to_date(date, -n);
 }
 
+const char base64chars[] =
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+
+/* RFC 1341 et seq. */
+void base64_out(FILE *f, char *str)
+{
+   unsigned char *p;
+   int n;
+   unsigned int val;
+   int pad;
+   int mask, shift;
+
+   n = 0;
+   val = 0;
+   pad = 0;
+   for (p = str; *p || n; *p && p++) {
+      if (*p == '\0' && pad == 0) {
+	 pad = n;
+      }
+      val = (val << 8) + *p;
+      n++;
+      if (n == 3) {
+	 mask = 0xfc0000;
+	 shift = 18;
+	 for (n = 0; n < 4; n++) {
+	    if (pad && n > pad) {
+	       fputc('=', f);
+	    } else {
+	       fputc(base64chars[(val & mask) >> shift], f);
+	    }
+	    mask >>= 6;
+	    shift -= 6;
+	 }
+	 n = 0;
+	 val = 0;
+      }
+   }
+}
+
+/* RFC 2849 */
+void ldif_out(FILE *f, char *name, char *fmt, ...)
+{
+   va_list ap;
+   unsigned char buf[8192];
+   unsigned char buf2[2 * sizeof(buf)];
+   char *p;
+   int printable = 1;
+
+   va_start(ap, fmt);
+   vsnprintf(buf, sizeof(buf), fmt, ap);
+   if (buf[0] == ' ' || buf[0] == ':' || buf[0] == '<')	/* SAFE-INIT-CHAR */ {
+      printable = 0;
+   }
+   for (p = buf; *p && printable; p++) {
+      if (*p < 32 || *p > 126) { /* SAFE-CHAR, excluding all control chars */
+	 printable = 0;
+      }
+      if (*p == ' ' && *(p + 1) == '\0') { /* note 8 */
+	 printable = 0;
+      }
+   }
+   if (printable) {
+      fprintf(f, "%s: %s\n", name, buf);
+   } else {
+      /*
+       * Convert to UTF-8.
+       * Assume the data on this end is in ISO-8859-1 for now, which
+       * maps directly to a UCS character.  More complete character
+       * set support on the j-pilot side will require a way to
+       * translate to UCS and a more complete UCS->UTF8 converter.
+       * TO DO: iconv() can do anything -> UTF-8
+       * iconv_t foo = iconv_open("UTF-8", "ISO-8859-1");
+       * iconv(foo, buf, &sizeof(buf), buf2, &sizeof(buf2));
+       */
+      unsigned char *p, *q;
+      for (p = buf, q = buf2; *p; p++, q++) {
+	 if (*p <= 127) {
+	    *q = *p;
+	 } else {
+	    *q++ = 0xc0 | ((*p >> 6) & 0x03);
+	    *q = 0x80 | (*p & 0x3f);
+	 }
+      }
+      *q = '\0';
+      fprintf(f, "%s:: ", name);
+      base64_out(f, buf2);
+      fprintf(f, "\n");
+   }
+}
+
 /*
  * Quote for iCalendar (RFC 2445) or vCard (RFC 2426).
  * The only difference is that iCalendar also quotes semicolons.

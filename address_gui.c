@@ -557,6 +557,30 @@ int address_import(GtkWidget *window)
  * Start Export code
  */
 
+static char *ldifMapType(int label)
+{
+   switch(label) {
+    case 0:
+      return "telephoneNumber";
+    case 1:
+      return "homePhone";
+    case 2:
+      return "facsimileTelephoneNumber";
+    case 3:
+      return "xotherTelephoneNumber";
+    case 4:
+      return "mail";
+    case 5:
+      return "xmainTelephoneNumber";
+    case 6:
+      return "pager";
+    case 7:
+      return "mobile";
+    default:
+      return "xunknownTelephoneNumber";
+   }
+}
+
 static char *vCardMapType(int label)
 {
    switch(label) {
@@ -857,6 +881,79 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 }
 	 fprintf(out, "END:VCARD\n");
 	 break;
+       case EXPORT_TYPE_LDIF:
+	 /* RFC 2256 - organizationalPerson */
+	 /* RFC 2798 - inetOrgPerson */
+	 /* RFC 2849 - LDIF file format */
+	 if (i == 0) {
+	    fprintf(out, "version: 1\n");
+	 }
+	 {
+	    char *cn;
+	    char *email = NULL;
+	    char *last = ma->a.entry[0];
+	    char *first = ma->a.entry[1];
+	    for (n = 3; n < 8; n++) {
+	       if (ma->a.entry[n] && ma->a.phoneLabel[n - 3] == 4) {
+		  email = ma->a.entry[n];
+		  break;
+	       }
+	    }
+	    if (first || last) {
+	       cn = csv_text;
+	       snprintf(csv_text, sizeof(csv_text), "%s%s%s", first ? first : "",
+			first && last ? " " : "", last ? last : "");
+	       if (!last) {
+		  last = first;
+		  first = NULL;
+	       }
+	    } else if (ma->a.entry[2]) {
+	       last = ma->a.entry[2];
+	       cn = last;
+	    } else {
+	       last = "Unknown";
+	       cn = last;
+	    }
+	    /* maybe add dc=%s for each part of the email address? */
+	    /* Mozilla just does mail=%s */
+	    ldif_out(out, "dn", "cn=%s%s%s", cn, email ? ",mail=" : "",
+		     email ? email : "");
+	    fprintf(out, "dnQualifier: %s\n", PN);
+	    fprintf(out, "objectClass: top\nobjectClass: person\n");
+	    fprintf(out, "objectClass: organizationalPerson\n");
+	    fprintf(out, "objectClass: inetOrgPerson\n");
+	    ldif_out(out, "cn", "%s", cn);
+	    ldif_out(out, "sn", "%s", last);
+	    if (first)
+	      ldif_out(out, "givenName", "%s", first);
+	    for (n = 3; n < 8; n++) {
+	       if (ma->a.entry[n]) {
+		  ldif_out(out, ldifMapType(ma->a.phoneLabel[n - 3]), "%s", ma->a.entry[n]);
+	       }
+	    }
+	    if (ma->a.entry[8])
+	      ldif_out(out, "postalAddress", "%s", ma->a.entry[8]);
+	    if (ma->a.entry[9])
+	      ldif_out(out, "l", "%s", ma->a.entry[9]);
+	    if (ma->a.entry[10])
+	      ldif_out(out, "st", "%s", ma->a.entry[10]);
+	    if (ma->a.entry[11])
+	      ldif_out(out, "postalCode", "%s", ma->a.entry[11]);
+	    if (ma->a.entry[12])
+	      ldif_out(out, "c", "%s", ma->a.entry[12]);
+	    if (ma->a.entry[14])
+	      ldif_out(out, "custom1", "%s", ma->a.entry[14]);
+	    if (ma->a.entry[15])
+	      ldif_out(out, "custom2", "%s", ma->a.entry[15]);
+	    if (ma->a.entry[16])
+	      ldif_out(out, "custom3", "%s", ma->a.entry[16]);
+	    if (ma->a.entry[17])
+	      ldif_out(out, "custom4", "%s", ma->a.entry[17]);
+	    if (ma->a.entry[18])
+	      ldif_out(out, "description", "%s", ma->a.entry[18]);
+	    fprintf(out, "\n");
+	    break;
+	 }
        default:
 	 jp_logf(JP_LOG_WARN, "Unknown export type\n");
       }
@@ -884,8 +981,8 @@ static void cb_addr_export_done(GtkWidget *widget, const char *filename)
 int address_export(GtkWidget *window)
 {
    int w, h, x, y;
-   char *type_text[]={"Text", "CSV", "vCard", NULL};
-   int type_int[]={EXPORT_TYPE_TEXT, EXPORT_TYPE_CSV, EXPORT_TYPE_VCARD};
+   char *type_text[]={"Text", "CSV", "vCard", "ldif", NULL};
+   int type_int[]={EXPORT_TYPE_TEXT, EXPORT_TYPE_CSV, EXPORT_TYPE_VCARD, EXPORT_TYPE_LDIF};
 
    gdk_window_get_size(window->window, &w, &h);
    gdk_window_get_root_origin(window->window, &x, &y);

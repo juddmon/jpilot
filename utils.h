@@ -108,6 +108,7 @@
 #define EXPORT_TYPE_XML       103
 #define EXPORT_TYPE_VCARD     104
 #define EXPORT_TYPE_ICALENDAR 105
+#define EXPORT_TYPE_LDIF      106
 
 /* Dat file types */
 #define DAT_DATEBOOK_FILE    10
@@ -362,6 +363,18 @@ int str_to_vcard_str(char *, int, char *);
  * Parse the string and replace CR and LFs with spaces
  */
 void remove_cr_lfs(char *str);
+
+/*
+ * Output LDIF format (RFC 2849) to file.
+ * Name is name of item (e.g. "cn")
+ * fmt ... is like printf.
+ */
+void ldif_out(FILE *f, char *name, char *fmt, ...);
+
+/*
+ * Output base64-encoded string to file
+ */
+void base64_out(FILE *, char *);
 
 void cleanup_path(char *path);
 
