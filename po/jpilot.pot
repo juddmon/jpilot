@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-09-25 19:01+0200\n"
+"POT-Creation-Date: 2004-10-01 23:53+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -867,6 +867,42 @@ msgstr ""
 
 #: install_gui.c:320
 msgid "Remove"
+msgstr ""
+
+#: jpilot-dump.c:53
+msgid " +B +M +A +T format like date +format (use -? for more info).\n"
+msgstr ""
+
+#: jpilot-dump.c:54
+msgid " -v displays version and exits.\n"
+msgstr ""
+
+#: jpilot-dump.c:55 utils.c:73
+msgid " -h displays help and exits.\n"
+msgstr ""
+
+#: jpilot-dump.c:56
+msgid " -B dump dateBook.\n"
+msgstr ""
+
+#: jpilot-dump.c:57
+msgid " -NYYYY/MM/DD dump apps on YYYY/MM/DD in dateBook.\n"
+msgstr ""
+
+#: jpilot-dump.c:58
+msgid " -N dump apps on today in dateBook.\n"
+msgstr ""
+
+#: jpilot-dump.c:59
+msgid " -M dump Memos.\n"
+msgstr ""
+
+#: jpilot-dump.c:60
+msgid " -A dump Address book.\n"
+msgstr ""
+
+#: jpilot-dump.c:61
+msgid " -T dump Todo list as CSV.\n"
 msgstr ""
 
 #: jpilot-sync.c:50
@@ -2021,10 +2057,6 @@ msgstr ""
 
 #: utils.c:72
 msgid " -v displays version and compile options and exits.\n"
-msgstr ""
-
-#: utils.c:73
-msgid " -h displays help and exits.\n"
 msgstr ""
 
 #: utils.c:74
