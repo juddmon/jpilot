@@ -3026,15 +3026,21 @@ size_t jp_strftime(char *s, size_t max, const char *format, const struct tm *tm)
 {
    size_t ret;
 
-   ret = strftime(s, max, format, tm);
 #ifdef ENABLE_GTK2
-   if (! g_utf8_validate(s, -1, NULL)) {
-      gchar *utf8_text;
-      
-      utf8_text = g_locale_to_utf8 (s, -1, NULL, NULL, NULL);
-      g_strlcpy(s, utf8_text, max);
-      g_free(utf8_text);
-   }
+   gchar *utf8_text;
+   gchar *local_format;
+
+   /* the format string is UTF-8 encoded since it comes from a .po file */
+   local_format = g_locale_from_utf8(format, -1, NULL, NULL, NULL);
+
+   ret = strftime(s, max, local_format, tm);
+   g_free(local_format);
+
+   utf8_text = g_locale_to_utf8 (s, -1, NULL, NULL, NULL);
+   g_strlcpy(s, utf8_text, max);
+   g_free(utf8_text);
+#else
+   ret = strftime(s, max, format, tm);
 #endif
    return ret;
 }
