@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.98 2005/03/02 01:34:32 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.99 2005/03/06 19:09:22 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -1526,7 +1526,7 @@ void email_contact(GtkWidget *widget, gchar *str)
    g_snprintf(command, sizeof(command), pref_command, str);
    command[1023]='\0';
 
-   jp_logf(JP_LOG_STDOUT|JP_LOG_FILE, "executing command = [%s]\n", command);
+   jp_logf(JP_LOG_STDOUT|JP_LOG_FILE, _("executing command = [%s]\n"), command);
    system(command);
 }
 
