@@ -2178,11 +2178,5 @@ msgstr "請輸入 PalmOS 密碼"
 #~ "judd@jpilot.org\n"
 #~ "http://jpilot.org\n"
 
-#~ msgid "Sync Ma鎙na"
-#~ msgstr "同步 Manana"
-
 #~ msgid "Last Syned UserID-->\"%d\"\n"
 #~ msgstr "上次同步的使用者 ID->\"%d\"\n"
-
-#~ msgid "Use Ma鎙na database"
-#~ msgstr "使用 Manana 資料庫"
