@@ -243,8 +243,7 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y)
    GtkWidget *label;
    char temp[256];
    const char *svalue;
-   gchar *titles[] = {"Files to be installed"
-   };
+   gchar *titles[2];
 
    if (filew) {
       return 0;
@@ -281,11 +280,11 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y)
    gtk_signal_connect(GTK_OBJECT(GTK_FILE_SELECTION(filew)->ok_button),
 		      "clicked", GTK_SIGNAL_FUNC(cb_add), filew);
 
-
-   strncpy(temp, _("Files to be installed"), sizeof(temp));
-   temp[sizeof(temp)-1]='\0';
-   titles[0]=temp;
+   /* i18n hack to have title correctly translated */
+   titles[0] = strdup(_("Files to be installed"));
+   titles[1]=NULL;
    clist = gtk_clist_new_with_titles(1, titles);
+   if (titles[0]) free(titles[0]);
    gtk_widget_set_usize(GTK_WIDGET(clist), 0, 166);
    gtk_clist_column_titles_passive(GTK_CLIST(clist));
    gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
