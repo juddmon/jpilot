@@ -1567,14 +1567,13 @@ msgid "DateBk support disabled in this build"
 msgstr "Le support pour DateBk est désactivé pour cet exécutable"
 
 #: prefs_gui.c:594
-#, fuzzy
 msgid "Mail Command"
-msgstr "commande de numérotation"
+msgstr "Commande d'envoi de mél"
 
 #: prefs_gui.c:608
-#, fuzzy, c-format
+#, c-format
 msgid "%s is replaced by the e-mail address"
-msgstr "%t est remplacé par l'heure de l'alarme"
+msgstr "%s est remplacé par l'adresse mél"
 
 #: prefs_gui.c:616
 msgid "Hide Completed ToDos"
