@@ -94,7 +94,6 @@ static void cb_pref_menu(GtkWidget *widget,
    return;
 }
 
-
 int make_pref_menu(GtkWidget **pref_menu, int pref_num)
 {
    GtkWidget *menu_item;
@@ -168,6 +167,26 @@ void cb_use_db3(GtkWidget *widget, gpointer data)
 {
    set_pref(PREF_USE_DB3, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
 }
+void cb_hide_completed(GtkWidget *widget, gpointer data)
+{
+   set_pref(PREF_HIDE_COMPLETED, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
+}
+void cb_hide_not_due(GtkWidget *widget, gpointer data)
+{
+   set_pref(PREF_HIDE_NOT_DUE, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
+}
+void cb_todo_completion_date(GtkWidget *widget, gpointer data)
+{
+   set_pref(PREF_TODO_COMPLETION_DATE, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
+}
+void cb_manana_mode(GtkWidget *widget, gpointer data)
+{
+   set_pref(PREF_MANANA_MODE, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
+}
+void cb_memo32_mode(GtkWidget *widget, gpointer data)
+{
+   set_pref(PREF_MEMO32_MODE, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
+}
 void cb_sync_datebook(GtkWidget *widget, gpointer data)
 {
    set_pref(PREF_SYNC_DATEBOOK, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
@@ -239,7 +258,6 @@ void cb_do_command(GtkWidget *widget,
    set_pref(PREF_DO_ALARM_COMMAND, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
 }
 
-
 static gboolean cb_destroy(GtkWidget *widget)
 {
    const char *entry_text;
@@ -298,6 +316,10 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    GtkWidget *vbox;
    GtkWidget *vbox_locale;
    GtkWidget *vbox_settings;
+   GtkWidget *vbox_datebook;
+   GtkWidget *vbox_address;
+   GtkWidget *vbox_todo;
+   GtkWidget *vbox_memo;
    GtkWidget *vbox_alarms;
    GtkWidget *vbox_conduits;
    GtkWidget *hbox_temp;
@@ -338,13 +360,21 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    vbox = gtk_vbox_new(FALSE, 5);
    gtk_container_add(GTK_CONTAINER(window), vbox);
 
-   vbox_locale = gtk_vbox_new(FALSE, 0);
+   vbox_locale   = gtk_vbox_new(FALSE, 0);
    vbox_settings = gtk_vbox_new(FALSE, 0);
-   vbox_alarms = gtk_vbox_new(FALSE, 0);
+   vbox_datebook = gtk_vbox_new(FALSE, 0);
+   vbox_address  = gtk_vbox_new(FALSE, 0);
+   vbox_todo     = gtk_vbox_new(FALSE, 0);
+   vbox_memo     = gtk_vbox_new(FALSE, 0);
+   vbox_alarms   = gtk_vbox_new(FALSE, 0);
    vbox_conduits = gtk_vbox_new(FALSE, 0);
 
    gtk_container_set_border_width(GTK_CONTAINER(vbox_locale), 5);
    gtk_container_set_border_width(GTK_CONTAINER(vbox_settings), 5);
+   gtk_container_set_border_width(GTK_CONTAINER(vbox_datebook), 5);
+   gtk_container_set_border_width(GTK_CONTAINER(vbox_address), 5);
+   gtk_container_set_border_width(GTK_CONTAINER(vbox_todo), 5);
+   gtk_container_set_border_width(GTK_CONTAINER(vbox_memo), 5);
    gtk_container_set_border_width(GTK_CONTAINER(vbox_alarms), 5);
    gtk_container_set_border_width(GTK_CONTAINER(vbox_conduits), 5);
 
@@ -355,13 +385,22 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vbox_locale, label);
    label = gtk_label_new(_("Settings"));
    gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vbox_settings, label);
+   label = gtk_label_new(_("Datebook"));
+   gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vbox_datebook, label);
+   label = gtk_label_new(_("Address"));
+   gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vbox_address, label);
+   label = gtk_label_new(_("ToDo"));
+   gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vbox_todo, label);
+   label = gtk_label_new(_("Memo"));
+   gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vbox_memo, label);
    label = gtk_label_new(_("Alarms"));
    gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vbox_alarms, label);
    label = gtk_label_new(_("Conduits"));
    gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vbox_conduits, label);
    gtk_box_pack_start(GTK_BOX(vbox), notebook, FALSE, FALSE, 0);
 
-   /* Table for Locale */
+   /************************************************************/
+   /* Locale preference tab */
    table = gtk_table_new(5, 2, FALSE);
    gtk_table_set_row_spacings(GTK_TABLE(table),0);
    gtk_table_set_col_spacings(GTK_TABLE(table),0);
@@ -406,7 +445,6 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    get_pref(PREF_LONGDATE, &ivalue, &cstr);
    gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
 
-
    /* Time */
    label = gtk_label_new(_("Time format "));
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
@@ -419,7 +457,6 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 
    get_pref(PREF_TIME, &ivalue, &cstr);
    gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
-
 
    /* FDOW */
    label = gtk_label_new(_("The first day of the week is "));
@@ -434,8 +471,8 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    get_pref(PREF_FDOW, &ivalue, &cstr);
    gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
 
-
-   /* Table for Settings*/
+   /**********************************************************************/
+   /* Settings preference tab */
    table = gtk_table_new(4, 2, FALSE);
    gtk_table_set_row_spacings(GTK_TABLE(table),0);
    gtk_table_set_col_spacings(GTK_TABLE(table),0);
@@ -454,7 +491,6 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    get_pref(PREF_RCFILE, &ivalue, &cstr);
    gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
 
-
    /* Port */
    label = gtk_label_new(_("Serial Port (/dev/ttyS0, /dev/pilot)"));
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
@@ -468,7 +504,6 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    if (cstr) {
       gtk_entry_set_text(GTK_ENTRY(port_entry), cstr);
    }
-
 
    /* Rate */
    label = gtk_label_new(_("Serial Rate (Does not affect USB)"));
@@ -497,13 +532,12 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    sprintf(temp_str, "%ld", ivalue);
    gtk_entry_set_text(GTK_ENTRY(backups_entry), temp_str);
 
-
    /* Show deleted files check box */
    checkbutton = gtk_check_button_new_with_label
      (_("Show deleted records (default NO)"));
    gtk_box_pack_start(GTK_BOX(vbox_settings), checkbutton, FALSE, FALSE, 0);
-   get_pref(PREF_SHOW_DELETED, &ivalue, &cstr);
    gtk_widget_show(checkbutton);
+   get_pref(PREF_SHOW_DELETED, &ivalue, &cstr);
    if (ivalue) {
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
@@ -515,8 +549,8 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    checkbutton = gtk_check_button_new_with_label
      (_("Show modified deleted records (default NO)"));
    gtk_box_pack_start(GTK_BOX(vbox_settings), checkbutton, FALSE, FALSE, 0);
-   get_pref(PREF_SHOW_MODIFIED, &ivalue, &cstr);
    gtk_widget_show(checkbutton);
+   get_pref(PREF_SHOW_MODIFIED, &ivalue, &cstr);
    if (ivalue) {
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
@@ -524,26 +558,27 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 		      "clicked", GTK_SIGNAL_FUNC(cb_show_modified),
 		      GINT_TO_POINTER(PREF_SHOW_MODIFIED));
 
+   /**********************************************************************/
+   /* Datebook preference tab */
 
    /* Show highlight days check box */
    checkbutton = gtk_check_button_new_with_label
      (_("Highlight calendar days with appointments"));
-   gtk_box_pack_start(GTK_BOX(vbox_settings), checkbutton, FALSE, FALSE, 0);
-   get_pref(PREF_HIGHLIGHT, &ivalue, &cstr);
+   gtk_box_pack_start(GTK_BOX(vbox_datebook), checkbutton, FALSE, FALSE, 0);
    gtk_widget_show(checkbutton);
+   get_pref(PREF_HIGHLIGHT, &ivalue, &cstr);
    if (ivalue) {
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
    gtk_signal_connect(GTK_OBJECT(checkbutton), 
 		      "clicked", GTK_SIGNAL_FUNC(cb_highlight), NULL);
 
-
 #ifdef ENABLE_DATEBK
    /* Show use DateBk check box */
    checkbutton = gtk_check_button_new_with_label(_("Use DateBk note tags"));
-   gtk_box_pack_start(GTK_BOX(vbox_settings), checkbutton, FALSE, FALSE, 0);
-   get_pref(PREF_USE_DB3, &ivalue, &cstr);
+   gtk_box_pack_start(GTK_BOX(vbox_datebook), checkbutton, FALSE, FALSE, 0);
    gtk_widget_show(checkbutton);
+   get_pref(PREF_USE_DB3, &ivalue, &cstr);
    if (ivalue) {
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
@@ -552,127 +587,92 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 #else
    label = gtk_label_new(_("DateBk support disabled in this build"));
    gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
-   gtk_box_pack_start(GTK_BOX(vbox_settings), label, FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox_datebook), label, FALSE, FALSE, 0);
 #endif
 
+   /**********************************************************************/
+   /* Address preference tab */
+   label = gtk_label_new(_("There are no address preferences at this time"));
+   gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
+   gtk_box_pack_start(GTK_BOX(vbox_address), label, FALSE, FALSE, 0);
 
-   /* Show sync datebook check box */
-   checkbutton = gtk_check_button_new_with_label(_("Sync datebook"));
-   gtk_box_pack_start(GTK_BOX(vbox_conduits), checkbutton, FALSE, FALSE, 0);
-   get_pref(PREF_SYNC_DATEBOOK, &ivalue, &cstr);
+   /**********************************************************************/
+   /* ToDo preference tab */
+
+   /* The hide completed check box */
+   checkbutton = gtk_check_button_new_with_label(_("Hide Completed ToDos"));
+   gtk_box_pack_start(GTK_BOX(vbox_todo), checkbutton, FALSE, FALSE, 0);
    gtk_widget_show(checkbutton);
+   get_pref(PREF_HIDE_COMPLETED, &ivalue, &cstr);
    if (ivalue) {
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
-   gtk_signal_connect(GTK_OBJECT(checkbutton), 
-		      "clicked", GTK_SIGNAL_FUNC(cb_sync_datebook), NULL);
+   gtk_signal_connect(GTK_OBJECT(checkbutton),
+		      "clicked", GTK_SIGNAL_FUNC(cb_hide_completed),
+		      GINT_TO_POINTER(PREF_HIDE_COMPLETED));
 
-   /* Show sync address check box */
-   checkbutton = gtk_check_button_new_with_label(_("Sync address"));
-   gtk_box_pack_start(GTK_BOX(vbox_conduits), checkbutton, FALSE, FALSE, 0);
-   get_pref(PREF_SYNC_ADDRESS, &ivalue, &cstr);
+   /* The hide todos not yet due check box */
+   checkbutton = gtk_check_button_new_with_label(_("Hide ToDos not yet due"));;
+   gtk_box_pack_start(GTK_BOX(vbox_todo), checkbutton, FALSE, FALSE, 0);
    gtk_widget_show(checkbutton);
+   get_pref(PREF_HIDE_NOT_DUE, &ivalue, &cstr);
    if (ivalue) {
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
-   gtk_signal_connect(GTK_OBJECT(checkbutton), 
-		      "clicked", GTK_SIGNAL_FUNC(cb_sync_address), NULL);
+   gtk_signal_connect(GTK_OBJECT(checkbutton),
+		      "clicked", GTK_SIGNAL_FUNC(cb_hide_not_due),
+		      GINT_TO_POINTER(PREF_HIDE_NOT_DUE));
 
-   /* Show sync todo check box */
-   checkbutton = gtk_check_button_new_with_label(_("Sync todo"));
-   gtk_box_pack_start(GTK_BOX(vbox_conduits), checkbutton, FALSE, FALSE, 0);
-   get_pref(PREF_SYNC_TODO, &ivalue, &cstr);
+   /* The record todo completion date check box */
+   checkbutton = gtk_check_button_new_with_label(_("Record Completion Date"));;
+   gtk_box_pack_start(GTK_BOX(vbox_todo), checkbutton, FALSE, FALSE, 0);
    gtk_widget_show(checkbutton);
+   get_pref(PREF_TODO_COMPLETION_DATE, &ivalue, &cstr);
    if (ivalue) {
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
-   gtk_signal_connect(GTK_OBJECT(checkbutton), 
-		      "clicked", GTK_SIGNAL_FUNC(cb_sync_todo), NULL);
-
-   /* Show sync memo check box */
-   checkbutton = gtk_check_button_new_with_label(_("Sync memo"));
-   gtk_box_pack_start(GTK_BOX(vbox_conduits), checkbutton, FALSE, FALSE, 0);
-   get_pref(PREF_SYNC_MEMO, &ivalue, &cstr);
-   gtk_widget_show(checkbutton);
-   if (ivalue) {
-      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
-   }
-   gtk_signal_connect(GTK_OBJECT(checkbutton), 
-		      "clicked", GTK_SIGNAL_FUNC(cb_sync_memo), NULL);
-
-   /* Show sync Memo32 check box */
-   checkbutton = gtk_check_button_new_with_label
-     (_("Sync memo32 (pedit32)"));
-   gtk_box_pack_start(GTK_BOX(vbox_conduits), checkbutton, FALSE, FALSE, 0);
-   get_pref(PREF_SYNC_MEMO32, &ivalue, &cstr);
-   gtk_widget_show(checkbutton);
-   if (ivalue) {
-      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
-   }
-   gtk_signal_connect(GTK_OBJECT(checkbutton), 
-		      "clicked", GTK_SIGNAL_FUNC(cb_sync_memo32), NULL);
+   gtk_signal_connect(GTK_OBJECT(checkbutton),
+		      "clicked", GTK_SIGNAL_FUNC(cb_todo_completion_date),
+		      GINT_TO_POINTER(PREF_TODO_COMPLETION_DATE));
 
 #ifdef ENABLE_MANANA
-   /* Show sync Ma~nana check box */
-   checkbutton = gtk_check_button_new_with_label(_("Sync Manana"));
-   gtk_box_pack_start(GTK_BOX(vbox_conduits), checkbutton, FALSE, FALSE, 0);
-   get_pref(PREF_SYNC_MANANA, &ivalue, &cstr);
+   /* Use Manana check box */
+   checkbutton = gtk_check_button_new_with_label(_("Use Manana database"));;
+   gtk_box_pack_start(GTK_BOX(vbox_todo), checkbutton, FALSE, FALSE, 0);
    gtk_widget_show(checkbutton);
+   get_pref(PREF_MANANA_MODE, &ivalue, &cstr);
    if (ivalue) {
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
-   gtk_signal_connect(GTK_OBJECT(checkbutton), 
-		      "clicked", GTK_SIGNAL_FUNC(cb_sync_manana), NULL);
+   gtk_signal_connect(GTK_OBJECT(checkbutton),
+		      "clicked", GTK_SIGNAL_FUNC(cb_manana_mode),
+		      GINT_TO_POINTER(PREF_MANANA_MODE));
 #endif
-   get_pref(PREF_CHAR_SET, &ivalue, &cstr);
-   if (ivalue == CHAR_SET_JAPANESE) {
-      /*Show use Japanese Kana extention check box */
-      checkbutton = gtk_check_button_new_with_label(_("Use J-OS (Not Japanese PalmOS:WorkPad/CLIE)"));
-      gtk_box_pack_start(GTK_BOX(vbox_settings), checkbutton, FALSE, FALSE, 0);
-      get_pref(PREF_USE_JOS, &ivalue, &cstr);
-      gtk_widget_show(checkbutton);
-      if (ivalue) {
-	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
-      }
-      gtk_signal_connect(GTK_OBJECT(checkbutton), 
-			 "clicked", GTK_SIGNAL_FUNC(cb_use_jos), NULL);	   
+
+   /**********************************************************************/
+   /* Memo preference tab */
+
+   /* Memo32 check box */
+   checkbutton = gtk_check_button_new_with_label(_("Use Memo32 (pedit32)"));
+   gtk_box_pack_start(GTK_BOX(vbox_memo), checkbutton, FALSE, FALSE, 0);
+   gtk_widget_show(checkbutton);
+   get_pref(PREF_MEMO32_MODE, &ivalue, &cstr);
+   if (ivalue) {
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
+   gtk_signal_connect(GTK_OBJECT(checkbutton),
+		      "clicked", GTK_SIGNAL_FUNC(cb_memo32_mode),
+		      GINT_TO_POINTER(PREF_MEMO32_MODE));
+
+   /**********************************************************************/
+   /* Alarms preference tab */
    
-#ifdef  ENABLE_PLUGINS
-   if (!skip_plugins) {
-
-      plugin_list=NULL;
-
-      plugin_list = get_plugin_list();
-
-      for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
-	 Pplugin = (struct plugin_s *)temp_list->data;
-	 if (Pplugin) {
-	    /* Make a checkbox for each plugin */
-	    g_snprintf(temp, sizeof(temp), _("Sync %s (%s)"), Pplugin->name, Pplugin->full_path);
-	    checkbutton = gtk_check_button_new_with_label(temp);
-	    gtk_box_pack_start(GTK_BOX(vbox_conduits), checkbutton, FALSE, FALSE, 0);
-	    gtk_widget_show(checkbutton);
-	    if (Pplugin->sync_on) {
-	       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
-	    }
-	    gtk_signal_connect(GTK_OBJECT(checkbutton), "clicked", 
-			       GTK_SIGNAL_FUNC(cb_sync_plugin),
-			       GINT_TO_POINTER(Pplugin->number));
-	 }
-      }
-   }
-
-#endif
-
-
-   /* Alarms Preferences */
    /* Show open alarm windows check box */
    checkbutton = gtk_check_button_new_with_label
      (_("Open alarm windows for appointment reminders"));
    gtk_box_pack_start(GTK_BOX(vbox_alarms), checkbutton, FALSE, FALSE, 0);
-   get_pref(PREF_OPEN_ALARM_WINDOWS, &ivalue, &cstr);
    gtk_widget_show(checkbutton);
+   get_pref(PREF_OPEN_ALARM_WINDOWS, &ivalue, &cstr);
    if (ivalue) {
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
@@ -683,8 +683,8 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    checkbutton = gtk_check_button_new_with_label
      (_("Execute this command"));
    gtk_box_pack_start(GTK_BOX(vbox_alarms), checkbutton, FALSE, FALSE, 0);
-   get_pref(PREF_DO_ALARM_COMMAND, &ivalue, &cstr);
    gtk_widget_show(checkbutton);
+   get_pref(PREF_DO_ALARM_COMMAND, &ivalue, &cstr);
    if (ivalue) {
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
    }
@@ -734,6 +734,116 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    label = gtk_label_new(_("%N (note substitution) is disabled in this build"));
    gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
    gtk_box_pack_start(GTK_BOX(vbox_alarms), label, FALSE, FALSE, 0);
+#endif
+   
+   /**********************************************************************/
+   /* Conduits preference tab */
+
+   /* Show sync datebook check box */
+   checkbutton = gtk_check_button_new_with_label(_("Sync datebook"));
+   gtk_box_pack_start(GTK_BOX(vbox_conduits), checkbutton, FALSE, FALSE, 0);
+   gtk_widget_show(checkbutton);
+   get_pref(PREF_SYNC_DATEBOOK, &ivalue, &cstr);
+   if (ivalue) {
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
+   }
+   gtk_signal_connect(GTK_OBJECT(checkbutton), 
+		      "clicked", GTK_SIGNAL_FUNC(cb_sync_datebook), NULL);
+
+   /* Show sync address check box */
+   checkbutton = gtk_check_button_new_with_label(_("Sync address"));
+   gtk_box_pack_start(GTK_BOX(vbox_conduits), checkbutton, FALSE, FALSE, 0);
+   gtk_widget_show(checkbutton);
+   get_pref(PREF_SYNC_ADDRESS, &ivalue, &cstr);
+   if (ivalue) {
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
+   }
+   gtk_signal_connect(GTK_OBJECT(checkbutton), 
+		      "clicked", GTK_SIGNAL_FUNC(cb_sync_address), NULL);
+
+   /* Show sync todo check box */
+   checkbutton = gtk_check_button_new_with_label(_("Sync todo"));
+   gtk_box_pack_start(GTK_BOX(vbox_conduits), checkbutton, FALSE, FALSE, 0);
+   gtk_widget_show(checkbutton);
+   get_pref(PREF_SYNC_TODO, &ivalue, &cstr);
+   if (ivalue) {
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
+   }
+   gtk_signal_connect(GTK_OBJECT(checkbutton), 
+		      "clicked", GTK_SIGNAL_FUNC(cb_sync_todo), NULL);
+
+   /* Show sync memo check box */
+   checkbutton = gtk_check_button_new_with_label(_("Sync memo"));
+   gtk_box_pack_start(GTK_BOX(vbox_conduits), checkbutton, FALSE, FALSE, 0);
+   gtk_widget_show(checkbutton);
+   get_pref(PREF_SYNC_MEMO, &ivalue, &cstr);
+   if (ivalue) {
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
+   }
+   gtk_signal_connect(GTK_OBJECT(checkbutton), 
+		      "clicked", GTK_SIGNAL_FUNC(cb_sync_memo), NULL);
+
+   /* Show sync Memo32 check box */
+   checkbutton = gtk_check_button_new_with_label
+     (_("Sync memo32 (pedit32)"));
+   gtk_box_pack_start(GTK_BOX(vbox_conduits), checkbutton, FALSE, FALSE, 0);
+   gtk_widget_show(checkbutton);
+   get_pref(PREF_SYNC_MEMO32, &ivalue, &cstr);
+   if (ivalue) {
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
+   }
+   gtk_signal_connect(GTK_OBJECT(checkbutton), 
+		      "clicked", GTK_SIGNAL_FUNC(cb_sync_memo32), NULL);
+
+#ifdef ENABLE_MANANA
+   /* Show sync Ma~nana check box */
+   checkbutton = gtk_check_button_new_with_label(_("Sync Manana"));
+   gtk_box_pack_start(GTK_BOX(vbox_conduits), checkbutton, FALSE, FALSE, 0);
+   gtk_widget_show(checkbutton);
+   get_pref(PREF_SYNC_MANANA, &ivalue, &cstr);
+   if (ivalue) {
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
+   }
+   gtk_signal_connect(GTK_OBJECT(checkbutton), 
+		      "clicked", GTK_SIGNAL_FUNC(cb_sync_manana), NULL);
+#endif
+   get_pref(PREF_CHAR_SET, &ivalue, &cstr);
+   if (ivalue == CHAR_SET_JAPANESE) {
+      /*Show use Japanese Kana extention check box */
+      checkbutton = gtk_check_button_new_with_label(_("Use J-OS (Not Japanese PalmOS:WorkPad/CLIE)"));
+      gtk_box_pack_start(GTK_BOX(vbox_settings), checkbutton, FALSE, FALSE, 0);
+      gtk_widget_show(checkbutton);
+      get_pref(PREF_USE_JOS, &ivalue, &cstr);
+      if (ivalue) {
+	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
+      }
+      gtk_signal_connect(GTK_OBJECT(checkbutton), 
+			 "clicked", GTK_SIGNAL_FUNC(cb_use_jos), NULL);	   
+   }
+   
+#ifdef  ENABLE_PLUGINS
+   if (!skip_plugins) {
+      plugin_list=NULL;
+      plugin_list = get_plugin_list();
+
+      for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
+	 Pplugin = (struct plugin_s *)temp_list->data;
+	 if (Pplugin) {
+	    /* Make a checkbox for each plugin */
+	    g_snprintf(temp, sizeof(temp), _("Sync %s (%s)"), Pplugin->name, Pplugin->full_path);
+	    checkbutton = gtk_check_button_new_with_label(temp);
+	    gtk_box_pack_start(GTK_BOX(vbox_conduits), checkbutton, FALSE, FALSE, 0);
+	    gtk_widget_show(checkbutton);
+	    if (Pplugin->sync_on) {
+	       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
+	    }
+	    gtk_signal_connect(GTK_OBJECT(checkbutton), "clicked", 
+			       GTK_SIGNAL_FUNC(cb_sync_plugin),
+			       GINT_TO_POINTER(Pplugin->number));
+	 }
+      }
+   }
+
 #endif
 
    /* Create a "Done" button */

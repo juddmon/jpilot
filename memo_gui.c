@@ -54,7 +54,6 @@ static GtkWidget *memo_text;
 static GObject   *memo_text_buffer;
 #endif
 static GtkWidget *private_checkbox;
-static GtkWidget *memo32_checkbox;
 /*Need one extra for the ALL category */
 static GtkWidget *memo_cat_menu_item1[NUM_MEMO_CAT_ITEMS+1];
 static GtkWidget *memo_cat_menu_item2[NUM_MEMO_CAT_ITEMS];
@@ -832,13 +831,6 @@ int memo_get_details(struct Memo *new_memo, unsigned char *attrib)
    return 0;
 }
 
-static void cb_use_memo32(GtkWidget *widget,
-			  gpointer   data)
-{
-   set_pref(PREF_MEMO32_MODE, GTK_TOGGLE_BUTTON(memo32_checkbox)->active, NULL, TRUE);
-   cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
-}
-
 static void cb_add_new_record(GtkWidget *widget, gpointer data)
 {
    MyMemo *mmemo;
@@ -1416,16 +1408,6 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_edit_cats), NULL);
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
-
-
-   /* Memo32 check box */
-   memo32_checkbox = gtk_check_button_new_with_label(_("Use Memo32 (pedit32)"));
-   gtk_box_pack_start(GTK_BOX(vbox1), memo32_checkbox, FALSE, FALSE, 0);
-   get_pref(PREF_MEMO32_MODE, &ivalue, NULL);
-   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(memo32_checkbox), ivalue);
-   gtk_signal_connect(GTK_OBJECT(memo32_checkbox), "clicked",
-		      GTK_SIGNAL_FUNC(cb_use_memo32), NULL);
-
 
    /* Put the memo list window up */
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);

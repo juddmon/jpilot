@@ -58,9 +58,6 @@ static struct tm due_date;
 static GtkWidget *due_date_button;
 static GtkWidget *todo_no_due_date_checkbox;
 static GtkWidget *radio_button_todo[NUM_TODO_PRIORITIES];
-#ifdef ENABLE_MANANA
-static GtkWidget *manana_checkbox;
-#endif
 /* We need an extra one for the ALL category */
 static GtkWidget *todo_cat_menu_item1[NUM_TODO_CAT_ITEMS+1];
 static GtkWidget *todo_cat_menu_item2[NUM_TODO_CAT_ITEMS];
@@ -1002,46 +999,6 @@ void cb_check_button_no_due_date(GtkWidget *widget, gpointer data)
    }   
 }
 
-void cb_hide_completed(GtkWidget *widget,
-		       gpointer   data)
-{
-   set_pref(PREF_HIDE_COMPLETED, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
-   todo_clear_details();
-   todo_clist_redraw();
-}
-
-void cb_hide_not_due(GtkWidget *widget,
-		     gpointer   data)
-{
-   set_pref(PREF_HIDE_NOT_DUE, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
-   todo_clear_details();
-   todo_clist_redraw();
-}
-
-void cb_todo_completion_date(GtkWidget *widget,
-			     gpointer   data)
-{
-   set_pref(PREF_TODO_COMPLETION_DATE, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
-}
-
-static void cb_hide_show_prefs(GtkWidget *widget,
-			       gpointer   data)
-{
-   GtkWidget *w;
-   int n;
-   char *names[]={"button0", "button1", "button2", "button3", NULL};
-
-   set_pref(PREF_SHOW_MEMO_PREFS, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
-   for (n=0; (names[n] && (n<10)); n++) {
-      w=gtk_object_get_data(GTK_OBJECT(widget), names[n]);
-      if (GTK_TOGGLE_BUTTON(widget)->active) {
-	 if (w) gtk_widget_show(w);
-      } else {
-	 if (w) gtk_widget_hide(w);
-      }
-   }
-}
-
 int todo_clear_details()
 {
    time_t ltime;
@@ -1189,14 +1146,6 @@ int todo_get_details(struct ToDo *new_todo, unsigned char *attrib)
 
    return 0;
 }
-
-#ifdef ENABLE_MANANA
-static void cb_use_manana(GtkWidget *widget, gpointer data)
-{
-   set_pref(PREF_MANANA_MODE, GTK_TOGGLE_BUTTON(manana_checkbox)->active, NULL, TRUE);
-   cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
-}
-#endif
 
 static void cb_add_new_record(GtkWidget *widget, gpointer data)
 {
@@ -2017,65 +1966,6 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 		      GTK_SIGNAL_FUNC(cb_edit_cats), NULL);
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
 
-   
-   get_pref(PREF_HIDE_COMPLETED, &hide_completed, &svalue);
-   get_pref(PREF_HIDE_NOT_DUE, &hide_not_due, &svalue);
-   get_pref(PREF_TODO_COMPLETION_DATE, &todo_completion_date, &svalue);
-
-
-   /* Show Memo Preferences button */
-   prefs_checkbox = gtk_check_button_new_with_label(_("Show Preferences"));
-   gtk_box_pack_start(GTK_BOX(vbox1), prefs_checkbox, FALSE, FALSE, 0);
-   get_pref(PREF_SHOW_MEMO_PREFS, &ivalue, NULL);
-   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(prefs_checkbox), ivalue);
-
-   n=0;
-#ifdef ENABLE_MANANA
-   /* Man~ana check box */
-   prefs_checkboxes[n++] = manana_checkbox =
-     gtk_check_button_new_with_label(_("Use Manana database"));
-   gtk_box_pack_start(GTK_BOX(vbox1), manana_checkbox, FALSE, FALSE, 0);
-   get_pref(PREF_MANANA_MODE, &ivalue, NULL);
-   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(manana_checkbox), ivalue);
-   gtk_signal_connect(GTK_OBJECT(manana_checkbox), "clicked",
-		      GTK_SIGNAL_FUNC(cb_use_manana), NULL);
-#endif
-
-   /*The hide completed check box */
-   prefs_checkboxes[n++] = checkbox =
-     gtk_check_button_new_with_label(_("Hide Completed ToDos"));
-   gtk_box_pack_start(GTK_BOX(vbox1), checkbox, FALSE, FALSE, 0);
-   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbox), hide_completed);
-   gtk_signal_connect(GTK_OBJECT(checkbox), "clicked",
-		      GTK_SIGNAL_FUNC(cb_hide_completed), NULL);
-
-   /*The show only due items check box */
-   prefs_checkboxes[n++] = checkbox =
-     gtk_check_button_new_with_label(_("Hide ToDos not yet due"));
-   gtk_box_pack_start(GTK_BOX(vbox1), checkbox, FALSE, FALSE, 0);
-   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbox), hide_not_due);
-   gtk_signal_connect(GTK_OBJECT(checkbox), "clicked",
-		      GTK_SIGNAL_FUNC(cb_hide_not_due), NULL);
-
-   /*The show only due items check box */
-   prefs_checkboxes[n++] = checkbox =
-     gtk_check_button_new_with_label(_("Record Completion Date"));
-   gtk_box_pack_start(GTK_BOX(vbox1), checkbox, FALSE, FALSE, 0);
-   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbox), todo_completion_date);
-   gtk_signal_connect(GTK_OBJECT(checkbox), "clicked",
-		      GTK_SIGNAL_FUNC(cb_todo_completion_date), NULL);
-
-   prefs_checkboxes[n] = NULL;
-
-   /* Finally connect the signal for prefs option */
-   gtk_object_set_data(GTK_OBJECT(prefs_checkbox), "button0", prefs_checkboxes[0]);
-   gtk_object_set_data(GTK_OBJECT(prefs_checkbox), "button1", prefs_checkboxes[1]);
-   gtk_object_set_data(GTK_OBJECT(prefs_checkbox), "button2", prefs_checkboxes[2]);
-   gtk_object_set_data(GTK_OBJECT(prefs_checkbox), "button3", prefs_checkboxes[3]);
-   gtk_signal_connect(GTK_OBJECT(prefs_checkbox), "clicked",
-		      GTK_SIGNAL_FUNC(cb_hide_show_prefs), NULL);
-
-   
    /*Put the todo list window up */
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
    /*gtk_widget_set_usize(GTK_WIDGET(scrolled_window), 200, 0); */
@@ -2304,8 +2194,6 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_widget_hide(add_record_button);
    gtk_widget_hide(apply_record_button);
    gtk_widget_hide(undelete_record_button);
-   /* Call routine to determine if preference boxes should be hidden */
-   cb_hide_show_prefs(prefs_checkbox, NULL);
 
    todo_refresh();
 
