@@ -447,6 +447,7 @@ int get_pref_possibility(int which, int n, char *pref_str)
       "UTF: Greek (CP1253)",
       "UTF: Latin 2, Estern Europe (ISO8859-2)",
       "UTF: Cyrillic (KOI8-R)",
+      "UTF: Cyrillic (CP1251)",
       "UTF: Chinese (GB2312)",
       "UTF: Japanese (SJIS)",
       "UTF: Hebrew (CP1255)",

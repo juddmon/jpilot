@@ -124,10 +124,11 @@
 #define CHAR_SET_1253_UTF  9 /* Modern Greek (CP1253) */
 #define CHAR_SET_ISO8859_2_UTF 10 /* Czech, Polish (latin2, ISO8859-2) */
 #define CHAR_SET_KOI8_R_UTF 11 /* Cyrillic (KOI8-R) */
-#define CHAR_SET_GB2312_UTF 12 /* Chinese (GB2312) */
-#define CHAR_SET_SJIS_UTF 13 /* Japanese (SJIS) */
-#define CHAR_SET_1255_UTF 14 /* Hebrew (CP1255) */
-#define NUM_CHAR_SETS    15
+#define CHAR_SET_1251_UTF 12 /* Cyrillic (CP1251) */
+#define CHAR_SET_GB2312_UTF 13 /* Chinese (GB2312) */
+#define CHAR_SET_SJIS_UTF 14 /* Japanese (SJIS) */
+#define CHAR_SET_1255_UTF 15 /* Hebrew (CP1255) */
+#define NUM_CHAR_SETS    16
 
 #define MAX_PREF_VALUE 200
 

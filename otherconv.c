@@ -81,6 +81,10 @@ char *char_set_to_text(int char_set)
 	 sprintf(text_char_set, "KOI8-R");
 	 break;
 
+      case CHAR_SET_1251_UTF:
+	 sprintf(text_char_set, "CP1251");
+	 break;
+
       case CHAR_SET_GB2312_UTF:
 	 sprintf(text_char_set, "GB2312");
 	 break;
