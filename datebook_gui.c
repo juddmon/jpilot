@@ -4069,7 +4069,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 		    3, 4, 0, 1, GTK_SHRINK, GTK_FILL, 0, 0);
 
 
-   label = gtk_label_new("End Time");
+   label = gtk_label_new(_("End Time"));
    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(label),
 		    0, 1, 1, 2, GTK_SHRINK, GTK_SHRINK, 0, 0);
 
