@@ -121,44 +121,29 @@ int header()
    fprintf(out,
 	   "%%!PS-Adobe-2.0\n"
 	   "%%%%Creator: J-Pilot\n"
-	   "%%%%CreationDate: %s\n"
+	   "%%%%CreationDate: %s"
            "%%%%DocumentData: Clean7Bit\n"
-	   /* XXX Title */
 	   "%%%%Orientation: Portrait\n"
-           /* XXX BoundingBox */
            "%%DocumentFonts: Times-Roman Times-Bold Courier Courier-Bold\n"
            "%%%%Magnification: 1.0000\n"
            "%%%%Pages: 1\n"
            "%%%%EndComments\n"
            "%%%%BeginProlog\n"
-           "%%%%BeginResource: procset\n"
-	   "/inch {72 mul} def\n"
-	   "/Recode {\n"
-	   "  exch\n"
-	   "  findfont\n"
-	   "  dup length dict\n"
-	   "  begin\n"
-	   "    { def } forall\n"
-	   "    /Encoding ISOLatin1Encoding def\n"
-	   "    currentdict\n"
-	   "  end\n"
-	   "  definefont pop\n"
-	   "} bind def\n\n"
-	   "/Times-Roman      /Times-Roman-ISOLatin1 Recode\n"
-	   "/Times-Bold       /Times-Bold-ISOLatin1 Recode\n"
-	   "/Courier          /Courier-ISOLatin1 Recode\n"
-	   "/Courier-Bold     /Courier-Bold-ISOLatin1 Recode\n"
-           "%%%%EndResource\n"
-           "%%%%EndProlog\n"
-           "%%%%Page: 1 1\n\n",
-	   ctime(&ltime));
-
+	   ,ctime(&ltime));
    fprintf(out, "/PageSize (%s) def\n\n", PaperSizes[PAPER_Letter]);
-   print_common_header(out);
+   print_common_prolog(out);
+   fprintf(out,
+           "%%%%EndProlog\n"
+           "%%%%BeginSetup\n");
+   print_common_setup(out);
    fprintf(out, "595 612 div 842 792 div Min dup scale %% HACK!!!! (CMB)\n");
            /* This hack pre-scales to compensate for the standard scaling
               mechanism below, to avoid me having to redo the layout of
               the dayview for the A4 standard size page. */
+   fprintf(out,
+           "%%%%EndSetup\n"
+           "%%%%Page: 1 1\n\n");
+
    return 0;
 }
 
@@ -180,11 +165,10 @@ int print_dayview(struct tm *date, AppointmentList *a_list)
    /* Draw the 2 gray columns and header block */
    print_day_header(out);
 
-   /* Put the Month name up */
+   /* Put the month name up */
    fprintf(out, "/Times-Bold-ISOLatin1 findfont 20 scalefont setfont\n"
-           "newpath 0 setgray\n");
+                "newpath 0 setgray\n");
    get_pref(PREF_LONGDATE, &ivalue, &svalue);
-   /* strftime(str, sizeof(str), "%B %d, %Y", date); */
    strftime(str, sizeof(str), svalue, date);
    puttext(0.5, 10.25, str);
 
@@ -195,7 +179,7 @@ int print_dayview(struct tm *date, AppointmentList *a_list)
 
    /* Put the time of printing up */
    fprintf(out, "newpath\n"
-           "/Times-Roman-ISOLatin1 findfont 10 scalefont setfont\n");
+                "/Times-Roman-ISOLatin1 findfont 10 scalefont setfont\n");
 
    time(&ltime);
    now = localtime(&ltime);
@@ -205,16 +189,14 @@ int print_dayview(struct tm *date, AppointmentList *a_list)
    puttext(0.5, 0.9, str);
    puttext(7.5, 0.9, "J-Pilot");
    fprintf(out, "stroke\n");
+
    print_logo(out, 40, 90, 0.35);
 
+   /* Put the appointments on the dayview calendar */
    fill_in(date, a_list);
 
    fprintf(out, "showpage\n");
-
-   fprintf(out,
-	   "%%%%PageTrailer\n"
-	   "%%%%Trailer\n"
-	   "%%%%EOF\n");
+   fprintf(out, "%%%%EOF\n");
 
 #ifdef HAVE_LOCALE_H
    setlocale(LC_ALL, current_locale);
@@ -304,7 +286,6 @@ int fill_in(struct tm *date, AppointmentList *a_list)
 	 }
 	 if (y > 1.0) {
 	    puttext(x, y, str);
-	    /* printf("[%s]\n", str);*/
 	 } else {
 	    jp_logf(JP_LOG_WARN, "Too many appointments, dropping one\n");
 	 }
@@ -453,9 +434,29 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
    current_locale = setlocale(LC_NUMERIC,"C");
 #endif
    if (! (out = print_open())) return(-1);
-   fprintf(out, "%%!PS-Adobe-2.0\n\n"
-	   "/PageSize (%s) def\n\n", PaperSizes[paper_size]);
+
+   fprintf(out,
+	   "%%!PS-Adobe-2.0\n"
+	   "%%%%Creator: J-Pilot\n"
+	   "%%%%CreationDate: %s"
+           "%%%%DocumentData: Clean7Bit\n"
+	   "%%%%Orientation: Landscape\n\n"
+           "%%DocumentFonts: Times-Roman Times-Bold Courier Courier-Bold\n"
+           "%%%%Magnification: 1.0000\n"
+           "%%%%Pages: 1\n"
+           "%%%%EndComments\n"
+           "%%%%BeginProlog\n"
+	   ,ctime(&ltime));
+   fprintf(out, "/PageSize (%s) def\n\n", PaperSizes[paper_size]);
+   print_common_prolog(out);
+   fprintf(out,
+           "%%%%EndProlog\n"
+           "%%%%BeginSetup\n");
+   print_common_setup(out);
    print_month_header(out);
+   fprintf(out,
+           "%%%%EndSetup\n"
+           "%%%%Page: 1 1\n\n");
 
    /*------------------------------------------------------------------
     * Extract the appointments
@@ -559,6 +560,7 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
    fprintf(out, "grestore\n");
    print_logo(out, 20, 30, 0.35);
    fprintf(out, "\nshowpage\n");
+   fprintf(out, "%%%%EOF\n");
 
    print_close(out);
 
@@ -627,12 +629,6 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
    struct db4_struct db4;
 #endif
 
-   /*------------------------------------------------------------------
-    * Set up the PostScript output file, and print the header to it.
-    *------------------------------------------------------------------*/
-   time(&ltime);
-   today_date = localtime(&ltime);
-
 #ifdef ENABLE_DATEBK
    get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
 #endif
@@ -641,19 +637,42 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
    current_locale = setlocale(LC_NUMERIC,"C");
 #endif
      
+   /*------------------------------------------------------------------
+    * Set up the PostScript output file, and print the header to it.
+    *------------------------------------------------------------------*/
    if (! (out = print_open())) return(-1);
+
+   time(&ltime);
+   fprintf(out,
+	   "%%!PS-Adobe-2.0\n"
+	   "%%%%Creator: J-Pilot\n"
+	   "%%%%CreationDate: %s"
+           "%%%%DocumentData: Clean7Bit\n"
+	   "%%%%Orientation: Landscape\n"
+           "%%DocumentFonts: Times-Roman Times-Bold Courier Courier-Bold\n"
+           "%%%%Magnification: 1.0000\n"
+           "%%%%Pages: 1\n"
+           "%%%%EndComments\n"
+           "%%%%BeginProlog\n"
+	   ,ctime(&ltime));
    /*------------------------------------------------------------------
     * These are preferences for page size (passed in), first and last
     * hours on the plan (default; scales if earlier or later are present),
     * and whether to print dashes across the page.
     *------------------------------------------------------------------*/
-   fprintf(out, "%%!PS-Adobe-2.0\n\n"
-	   "/PageSize (%s) def\n\n", PaperSizes[paper_size]);
+   fprintf(out, "/PageSize (%s) def\n\n", PaperSizes[paper_size]);
    fprintf(out, "/FirstHour  9 def\n"
-	   "/LastHour  22 def\n");
+	        "/LastHour  22 def\n");
    fprintf(out, "/Dashes true def\n");
-
+   print_common_prolog(out);
+   fprintf(out,
+           "%%%%EndProlog\n"
+           "%%%%BeginSetup\n");
+   print_common_setup(out);
    print_week_header(out);
+   fprintf(out,
+           "%%%%EndSetup\n"
+           "%%%%Page: 1 1\n\n");
 
    /*------------------------------------------------------------------
     * Run through the appointments, looking for earliest and latest
@@ -684,6 +703,7 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
     * the printing process
     *------------------------------------------------------------------*/
 
+   today_date = localtime(&ltime);
    fprintf(out,
 	   "%%------------------------------------------------------------\n"
 	   "%% This is today's date, the date of printing, plus the hour\n"
@@ -753,6 +773,7 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
    }
    free_AppointmentList(&a_list);
    fprintf(out, "\nfinishprinting\n");
+   fprintf(out, "%%%%EOF\n");
    print_close(out);
 
 #ifdef HAVE_LOCALE_H
@@ -1121,7 +1142,8 @@ int print_todos(ToDoList *todo_list, char *category_name)
 
    fprintf(out, "%%!PS-Adobe-2.0\n\n"
            "/PageSize (%s) def\n\n", PaperSizes[PAPER_Letter]);
-   print_common_header(out);
+   print_common_prolog(out);
+   print_common_setup(out);
    fprintf(out, "/CategoryName (%s) def\n", category_name);
    print_todo_header(out);
 

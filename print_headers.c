@@ -21,9 +21,9 @@
 #include <stdio.h>
 #include <string.h>
 
-void print_common_header(FILE *f)
+void print_common_prolog(FILE *f)
 {
-         char *common_header =
+   char *common_prolog =
         "/Recode {\n"
         "  exch\n"
         "  findfont\n"
@@ -35,17 +35,13 @@ void print_common_header(FILE *f)
         "  end\n"
         "  definefont pop\n"
         "} bind def\n\n"
-        "/Times-Roman      /Times-Roman-ISOLatin1 Recode\n"
-        "/Times-Bold       /Times-Bold-ISOLatin1 Recode\n"
-        "/Courier          /Courier-ISOLatin1 Recode\n"
-        "/Courier-Bold     /Courier-Bold-ISOLatin1 Recode\n"
-        "/Helvetica        /Helvetica-ISOLatin1 Recode\n"
-        "/edef   { exch def } def\n"
-        "/esub   { exch sub } def\n"
-        "/l      { lineto } def\n"
-        "/m      { moveto } def\n"
-        "/rm     { rmoveto } def\n"
-        "/rl { rlineto } def\n"
+	"/inch {72 mul} def\n"
+        "/edef { exch def } def\n"
+        "/esub { exch sub } def\n"
+        "/l    { lineto } def\n"
+        "/m    { moveto } def\n"
+        "/rm   { rmoveto } def\n"
+        "/rl   { rlineto } def\n"
         "/strw { stringwidth } def\n"
         "/nstr 10 string def\n"
         "/slw  { setlinewidth } def\n"
@@ -127,7 +123,19 @@ void print_common_header(FILE *f)
         "        [ (DL)           312     624 10 ]\n"
         "        [ (Filo)         270     487 12 ]\n"
         "] def\n"
-        "\n"
+        "\n";
+    fputs(common_prolog, f);
+}
+
+void print_common_setup(FILE *f)
+{
+   char *common_setup =
+        "%------------------------------------------------------------------\n"
+        "/Times-Roman      /Times-Roman-ISOLatin1 Recode\n"
+        "/Times-Bold       /Times-Bold-ISOLatin1 Recode\n"
+        "/Courier          /Courier-ISOLatin1 Recode\n"
+        "/Courier-Bold     /Courier-Bold-ISOLatin1 Recode\n"
+        "/Helvetica        /Helvetica-ISOLatin1 Recode\n"
         "%------------------------------------------------------------------\n"
         "% Based on the paper size, work out the scaling and fontsize for\n"
         "% the page.\n"
@@ -141,7 +149,7 @@ void print_common_header(FILE *f)
         "                /linespacing fontsize 1.1 mul def\n"
         "        } if\n"
         "} forall\n";
-    fputs(common_header, f);
+    fputs(common_setup, f);
 }
 
 /*----------------------------------------------------------------------
@@ -443,7 +451,6 @@ void print_week_header(FILE *f)
         "\n"
         "%-------------------------------------------------------------\n\n\n";
 
-    print_common_header(f);
     fputs(week_header, f);
 }
 
@@ -751,7 +758,6 @@ void print_month_header(FILE *f)
         "%------------------------------------------------------------------\n"
         "\n";
 
-    print_common_header(f);
     fputs(month_header, f);
 }
 
@@ -764,8 +770,8 @@ void print_day_header(FILE *f)
 {
     char *day_header =
         "ScaleY ScaleX Min dup scale\n"
-        "%%----------------------------------------\n"
-        "%% First the gray background area\n"
+        "%----------------------------------------\n"
+        "% First the gray background area\n"
         "newpath\n"
         "0 slw\n"
         " 0.5  inch  3.5 inch m\n"
@@ -779,8 +785,8 @@ void print_day_header(FILE *f)
         "-3    inch  0        rl\n"
         " 0         -6   inch rl\n"
         "closepath 0.85 setgray fill stroke\n"
-        "%%----------------------------------------\n"
-        "%% Next highlighting lines round title\n"
+        "%----------------------------------------\n"
+        "% Next highlighting lines round title\n"
         "0 setgray\n"
         "1 slw newpath 0.5 inch 10.5    inch m 7.5 inch 0 rl stroke\n"
         "      newpath 0.5 inch  9.5625 inch m 7.5 inch 0 rl stroke\n"
@@ -789,14 +795,14 @@ void print_day_header(FILE *f)
         "0 slw\n"
         "0 1 11 {\n"
         "	/I edef\n"
-        "	%%----------------------------------------\n"
-        "	%% The hours\n"
+        "	%----------------------------------------\n"
+        "	% The hours\n"
         "	0.5 inch 9.15 inch I 0.5 inch mul sub m\n"
         "	I 10 lt { (0) show } if I nstr cvs show (:00) show\n"
         "	4.25 inch 9.15 inch I 0.5 inch mul sub m\n"
         "	I 12 add nstr cvs show (:00) show\n"
-        "	%%----------------------------------------\n"
-        "	%% The horizontal lines between hours\n"
+        "	%----------------------------------------\n"
+        "	% The horizontal lines between hours\n"
         "	1.25 inch 9 inch I 0.5 inch mul sub m 3 inch 0 rl\n"
         "	5    inch 9 inch I 0.5 inch mul sub m 3 inch 0 rl\n"
         "} for\n"
