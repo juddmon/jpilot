@@ -19,6 +19,7 @@
 
 #include "config.h"
 #include <gtk/gtk.h>
+#include <stdlib.h>
 #include <string.h>
 #include "utils.h"
 #include "prefs.h"
@@ -30,6 +31,7 @@ GtkWidget *show_modified_checkbutton;
 GtkWidget *highlight_checkbutton;
 static GtkWidget *window;
 static GtkWidget *port_entry;
+static GtkWidget *backups_entry;
 
 
 static void cb_pref_menu(GtkWidget *widget,
@@ -59,7 +61,8 @@ static int make_pref_menu(GtkWidget **pref_menu, int pref_num)
    GtkWidget *menu_item;
    GtkWidget *menu;
    GSList    *group;
-   int i, r, ivalue;
+   int i, r;
+   long ivalue;
    const char *svalue;
    char format_text[MAX_PREF_VALUE];
    char human_text[MAX_PREF_VALUE];
@@ -129,12 +132,25 @@ void cb_highlight(GtkWidget *widget,
 static gboolean cb_destroy(GtkWidget *widget)
 {
    char *entry_text;
+   char *backups_text;
+   int num_backups;
    
    jpilot_logf(LOG_DEBUG, "Cleanup\n");
 
    entry_text = gtk_entry_get_text(GTK_ENTRY(port_entry));
    jpilot_logf(LOG_DEBUG, "port_entry = [%s]\n", entry_text);
    set_pref_char(PREF_PORT, entry_text);
+   
+   backups_text = gtk_entry_get_text(GTK_ENTRY(backups_entry));
+   jpilot_logf(LOG_DEBUG, "backups_entry = [%s]\n", backups_text);
+   num_backups = atoi(backups_text);
+   if (num_backups < 1) {
+      num_backups = 1;
+   }
+   if (num_backups > 99) {
+      num_backups = 99;
+   }
+   set_pref(PREF_NUM_BACKUPS, num_backups);
    
    free_prefs();
    window = NULL;
@@ -158,8 +174,9 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    GtkWidget *button;
    GtkWidget *table;
    GtkWidget *vbox;
-   int ivalue;
+   long ivalue;
    const char *cstr;
+   char temp_str[10];
    
    jpilot_logf(LOG_DEBUG, "cb_prefs_gui\n");
    if (GTK_IS_WINDOW(window)) {
@@ -180,7 +197,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_container_add(GTK_CONTAINER(window), vbox);
 
    /* Table */
-   table = gtk_table_new(7, 2, FALSE);
+   table = gtk_table_new(8, 2, FALSE);
    gtk_table_set_row_spacings(GTK_TABLE(table),0);
    gtk_table_set_col_spacings(GTK_TABLE(table),0);
    gtk_box_pack_start (GTK_BOX (vbox), table, FALSE, FALSE, 0);
@@ -254,19 +271,6 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
 
 
-   /* Rate */
-   label = gtk_label_new("Serial Rate ");
-   gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
-			     0, 1, 6, 7);
-   gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
-
-   make_pref_menu(&pref_menu, PREF_RATE);
-   gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(pref_menu),
-			     1, 2, 6, 7);
-
-   get_pref(PREF_RATE, &ivalue, &cstr);
-   gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
-
    /* Port */
    label = gtk_label_new("Serial Port ");
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
@@ -280,6 +284,34 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    if (cstr) {
       gtk_entry_set_text(GTK_ENTRY(port_entry), cstr);
    }
+
+
+   /* Rate */
+   label = gtk_label_new("Serial Rate ");
+   gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
+			     0, 1, 6, 7);
+   gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
+
+   make_pref_menu(&pref_menu, PREF_RATE);
+   gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(pref_menu),
+			     1, 2, 6, 7);
+
+   get_pref(PREF_RATE, &ivalue, &cstr);
+   gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
+
+   /* Number of backups */
+   label = gtk_label_new("Number of backups to be archived");
+   gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
+			     0, 1, 7, 8);
+   gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
+
+   backups_entry = gtk_entry_new_with_max_length(2);
+   gtk_widget_set_usize(backups_entry, 30, 0);
+   gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(backups_entry),
+			     1, 2, 7, 8);
+   get_pref(PREF_NUM_BACKUPS, &ivalue, &cstr);
+   sprintf(temp_str, "%ld", ivalue);
+   gtk_entry_set_text(GTK_ENTRY(backups_entry), temp_str);
 
 
    /*Show deleted files check box */

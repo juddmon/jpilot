@@ -44,12 +44,22 @@ int print_address_list(AddressList **al)
 }
 #endif
 
-int address_compare(struct Address *a1, struct Address *a2, int sort_by_company)
+static int glob_sort_by_company;
+
+int address_compare(const void *v1, const void *v2)
 {
    char str1[100], str2[100];
    int sort1, sort2, sort3;
+   AddressList **al1, **al2;
+   struct Address *a1, *a2;
+
+   al1=(AddressList **)v1;
+   al2=(AddressList **)v2;
    
-   if (sort_by_company) {
+   a1=&((*al1)->ma.a);
+   a2=&((*al2)->ma.a);
+
+   if (glob_sort_by_company) {
       sort1=2; /*company */
       sort2=0; /*last name */
       sort3=1; /*first name */
@@ -98,40 +108,55 @@ int address_compare(struct Address *a1, struct Address *a2, int sort_by_company)
       strncpy(str2, a2->entry[sort3], 99);
    }
 
-   return strncasecmp(str1, str2, 99);
+   return strncasecmp(str2, str1, 99);
 }
 
 int address_sort(AddressList **al)
 {
-   AddressList *temp_al, *prev_al, *next;
+   AddressList *temp_al;
+   AddressList **sort_al;
    struct AddressAppInfo ai;
-   int found_one;
+   int count, i;
 
+   /* Count the entries in the list */
+   for (count=0, temp_al=*al; temp_al; temp_al=temp_al->next, count++) {
+      ;
+   }
+
+   if (count<2) {
+      /* We don't have to sort less than 2 items */
+      return 0;
+   }
+   
    get_address_app_info(&ai);
 
-   found_one=1;
-   while (found_one) {
-      found_one=0;
-      for (prev_al=NULL, temp_al=*al; temp_al;
-	   prev_al=temp_al, temp_al=temp_al->next) {
-	 if (temp_al->next) {
-	    if (address_compare(&(temp_al->ma.a),
-	        &(temp_al->next->ma.a), ai.sortByCompany) < 0) {
-	       found_one=1;
-	       next=temp_al->next;
-	       if (prev_al) {
-		  prev_al->next = next;
-	       }
-	       temp_al->next=next->next;
-	       next->next = temp_al;
-	       if (temp_al==*al) {
-		  *al=next;
-	       }
-	       temp_al=next;
-	    }
-	 }
-      }
+   glob_sort_by_company = ai.sortByCompany;
+
+   /* Allocate an array to be qsorted */
+   sort_al = calloc(count, sizeof(AddressList *));
+   if (!sort_al) {
+      jpilot_logf(LOG_WARN, "Out of Memory\n");
+      return 0;
    }
+   
+   /* Set our array to be a list of pointers to the nodes in the linked list */
+   for (i=0, temp_al=*al; temp_al; temp_al=temp_al->next, i++) {
+      sort_al[i] = temp_al;
+   }
+
+   /* qsort them */
+   qsort(sort_al, count, sizeof(AddressList *), address_compare);
+
+   /* Put the linked list in the order of the array */
+   sort_al[count-1]->next = NULL;
+   for (i=count-1; i; i--) {
+      sort_al[i-1]->next=sort_al[i];
+   }
+
+   *al = sort_al[0];
+
+   free(sort_al);
+
    return 0;
 }
 

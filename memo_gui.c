@@ -42,6 +42,7 @@ GtkWidget *memo_cat_menu_item1[NUM_MEMO_CAT_ITEMS+1];
 GtkWidget *memo_cat_menu_item2[NUM_MEMO_CAT_ITEMS];
 GtkWidget *category_menu1;
 GtkWidget *scrolled_window;
+GtkWidget *pane;
 
 static void update_memo_screen();
 static int memo_clear_details();
@@ -87,6 +88,8 @@ void cb_memo_category(GtkWidget *item, int selection)
 
 static int memo_clear_details()
 {
+   int new_cat;
+
    gtk_text_freeze(GTK_TEXT(memo_text));
 
    gtk_text_set_point(GTK_TEXT(memo_text), 0);
@@ -94,6 +97,16 @@ static int memo_clear_details()
 			   gtk_text_get_length(GTK_TEXT(memo_text)));
 
    gtk_text_thaw(GTK_TEXT(memo_text));
+   
+   if (memo_category==CATEGORY_ALL) {
+      new_cat = 0;
+   } else {
+      new_cat = memo_category;
+   }
+   gtk_check_menu_item_set_active
+     (GTK_CHECK_MENU_ITEM(memo_cat_menu_item2[new_cat]), TRUE);
+   gtk_option_menu_set_history(GTK_OPTION_MENU(memo_cat_menu2), new_cat);
+
    return 0;
 }
 
@@ -154,9 +167,10 @@ static void cb_add_new_record(GtkWidget *widget,
    free_Memo(&new_memo);
    if (flag==MODIFY_FLAG) {
       cb_delete_memo(NULL, data);
+   } else {
+      /* glob_find_id = unique_id;*/
+      memo_clist_redraw();
    }
-   glob_find_id = unique_id;
-   memo_clist_redraw();
    return;
 }
 
@@ -168,6 +182,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 {
    struct Memo *memo;/*, new_a; */
    MyMemo *mmemo;
+   int i, count;
 #ifdef OLD_ENTRY
    struct Memo new_memo;
    unsigned char attrib;
@@ -202,8 +217,14 @@ static void cb_clist_selection(GtkWidget      *clist,
    
    gtk_check_menu_item_set_active
      (GTK_CHECK_MENU_ITEM(memo_cat_menu_item2[mmemo->attrib & 0x0F]), TRUE);
-   gtk_option_menu_set_history
-     (GTK_OPTION_MENU(memo_cat_menu2), mmemo->attrib & 0x0F);
+   /* We need to count how many items down in the list this is */
+   for (i=mmemo->attrib & 0x0F, count=0; i>=0; i--) {
+      if (memo_cat_menu_item2[i]) {
+	 count++;
+      }
+   }
+   count--;
+   gtk_option_menu_set_history(GTK_OPTION_MENU(memo_cat_menu2), count);
 
    gtk_text_freeze(GTK_TEXT(memo_text));
 
@@ -221,7 +242,7 @@ static void update_memo_screen()
 #define MEMO_CLIST_CHAR_WIDTH 50
    int num_entries, entries_shown, precount;
    char *last;
-   int ivalue;
+   long ivalue;
    const char *svalue;
    gchar *empty_line[] = { "" };
    GdkColor color;
@@ -419,6 +440,8 @@ static int make_category_menu2()
 	   (GTK_RADIO_MENU_ITEM(memo_cat_menu_item2[i]));
 	 gtk_menu_append(GTK_MENU(menu), memo_cat_menu_item2[i]);
 	 gtk_widget_show(memo_cat_menu_item2[i]);
+      } else {
+	 memo_cat_menu_item2[i] = NULL;
       }
    }
    gtk_option_menu_set_menu(GTK_OPTION_MENU(memo_cat_menu2), menu);
@@ -463,50 +486,29 @@ static int memo_goto_line(int line_num, gfloat percentage)
    return 0;
 }
 
-/* This redraws the clist and goes back to the same line number
- * or it will go to glob_find_id if it is set.
- * If glob_find_id cannot be found, then it will set the category
- * back to ALL, and redraw the clist again
- */
+/* This redraws the clist and goes back to the same line number */
 int memo_clist_redraw()
 {
    int line_num;
-   int save_id;
-   int r;
    GtkScrollbar *sb;
    gfloat upper, lower, value, step, percentage;
    
    line_num = clist_row_selected;
 
-   if (glob_find_id) {
-      save_id = glob_find_id;
-      update_memo_screen();
-      r = memo_find();
-      if (r==0) {
-	 memo_category = CATEGORY_ALL;
-	 gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), 0);
-	 gtk_check_menu_item_set_active
-	   (GTK_CHECK_MENU_ITEM(memo_cat_menu_item1[0]), TRUE);
-	 update_memo_screen();
-	 glob_find_id = save_id;
-	 memo_find();
-      }
+   sb = GTK_SCROLLBAR(GTK_SCROLLED_WINDOW(scrolled_window)->vscrollbar);
+   upper = GTK_ADJUSTMENT(sb->range.adjustment)->upper;
+   lower = GTK_ADJUSTMENT(sb->range.adjustment)->lower;
+   value = GTK_ADJUSTMENT(sb->range.adjustment)->value;
+   step = GTK_ADJUSTMENT(sb->range.adjustment)->step_increment;
+   if (upper - lower + step) {
+      percentage = value/(upper - lower + step);
    } else {
-      sb = GTK_SCROLLBAR(GTK_SCROLLED_WINDOW(scrolled_window)->vscrollbar);
-      upper = GTK_ADJUSTMENT(sb->range.adjustment)->upper;
-      lower = GTK_ADJUSTMENT(sb->range.adjustment)->lower;
-      value = GTK_ADJUSTMENT(sb->range.adjustment)->value;
-      step = GTK_ADJUSTMENT(sb->range.adjustment)->step_increment;
-      if (upper - lower + step) {
-	 percentage = value/(upper - lower + step);
-      } else {
-	 percentage = 0;
-      }
-
-      update_memo_screen();
-
-      memo_goto_line(line_num, percentage);
+      percentage = 0;
    }
+
+   update_memo_screen();
+
+   memo_goto_line(line_num, percentage);
 
    return 0;
 }
@@ -522,26 +524,42 @@ int memo_refresh()
    return 0;
 }
 
+int memo_gui_cleanup()
+{
+   set_pref(PREF_MEMO_PANE, GTK_PANED(pane)->handle_xpos);
+   return 0;
+}
+
 /* */
 /*Main function */
 /* */
 int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
 {
    extern GtkWidget *glob_date_label;
-   extern glob_date_timer_tag;
+   extern int glob_date_timer_tag;
    GtkWidget *vbox1, *vbox2, *hbox_temp;
    GtkWidget *separator;
    GtkWidget *button;
    GtkWidget *vscrollbar;
+   long ivalue;
+   const char *svalue;
    
    clist_row_selected=0;
 
    get_memo_app_info(&memo_app_info);
 
-   vbox1 = gtk_vbox_new (FALSE, 0);
-   vbox2 = gtk_vbox_new (FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(hbox), vbox1, TRUE, TRUE, 5);
-   gtk_box_pack_start(GTK_BOX(hbox), vbox2, TRUE, TRUE, 5);
+   pane = gtk_hpaned_new();
+   get_pref(PREF_MEMO_PANE, &ivalue, &svalue);
+   gtk_paned_set_position(GTK_PANED(pane), ivalue + 2);
+
+   gtk_box_pack_start(GTK_BOX(hbox), pane, TRUE, TRUE, 5);
+
+   vbox1 = gtk_vbox_new(FALSE, 0);
+   vbox2 = gtk_vbox_new(FALSE, 0);
+
+   gtk_paned_pack1(GTK_PANED(pane), vbox1, TRUE, FALSE);
+   gtk_paned_pack2(GTK_PANED(pane), vbox2, TRUE, FALSE);
+   gtk_widget_show(pane);
 
    gtk_widget_set_usize(GTK_WIDGET(vbox1), 210, 0);
 
@@ -627,7 +645,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, TRUE, TRUE, 0);
    gtk_widget_show(button);
    
-   button = gtk_button_new_with_label("Clear");
+   button = gtk_button_new_with_label("New");
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record), 
 		      GINT_TO_POINTER(CLEAR_FLAG));

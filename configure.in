@@ -65,6 +65,16 @@ for pilot_libs in $pilot_prefix/lib /usr/lib /usr/local/lib/ \
       PILOT_LIBS="-L$pilot_libs $PILOT_LIBS"
       break
    fi
+   if test -r "$pilot_libs/libpisock.a" ; then
+      pilotlibs=yes
+      PILOT_LIBS="-L$pilot_libs $PILOT_LIBS"
+      break
+   fi
+   if test -r "$pilot_libs/libpisock.sl" ; then
+      pilotlibs=yes
+      PILOT_LIBS="-L$pilot_libs $PILOT_LIBS"
+      break
+   fi
 done
 
 if test $pilotlibs = no ; then

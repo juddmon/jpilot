@@ -111,7 +111,7 @@ static void free_myexpense_list(struct MyExpense **PPme)
 int plugin_get_name(char *name, int len)
 {
    jp_logf(LOG_DEBUG, "Expense: plugin_get_name\n");
-   strncpy(name, "Expense 0.96", len);
+   strncpy(name, "Expense 0.97", len);
    return 0;
 }
 
@@ -681,7 +681,7 @@ static void make_menus()
    struct ExpenseAppInfo eai;
    unsigned char *buf;
    int buf_size;
-   int i;
+   int i, count;
    char all[]="All";
    GtkWidget *menu_item_category1[17];
    char *categories[18];
@@ -738,13 +738,14 @@ static void make_menus()
    unpack_ExpenseAppInfo(&eai, buf, buf_size);
    
    categories[0]=all;
-   for (i=0; i<16; i++) {
+   for (i=0, count=0; i<16; i++) {
       if (eai.category.name[i][0]=='\0') {
-	 break;
+	 continue;
       }
-      categories[i+1]=eai.category.name[i];
+      categories[count+1]=eai.category.name[i];
+      count++;
    }
-   categories[i+1]=NULL;
+   categories[count+1]=NULL;
    
    records=NULL;
    
@@ -915,6 +916,9 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_box_pack_start(GTK_BOX(hbox), vbox1, TRUE, TRUE, 5);
    gtk_box_pack_start(GTK_BOX(hbox), vbox2, TRUE, TRUE, 5);
 
+   gtk_widget_set_usize(GTK_WIDGET(vbox1), 0, 230);
+   gtk_widget_set_usize(GTK_WIDGET(vbox2), 0, 230);
+
    /* Make a temporary hbox */
    temp_hbox = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox1), temp_hbox, FALSE, FALSE, 0);
@@ -931,8 +935,6 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
 				  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
    gtk_box_pack_start(GTK_BOX(vbox1), scrolled_window, TRUE, TRUE, 0);
    
-   gtk_widget_set_usize(GTK_WIDGET(vbox1), 230, 0);
-
    /* Clist */
    clist = gtk_clist_new(3);
    gtk_signal_connect(GTK_OBJECT(clist), "select_row",

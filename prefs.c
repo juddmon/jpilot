@@ -41,7 +41,15 @@ static prefType glob_prefs[NUM_PREFS] = {
      {"highlight_days", INTTYPE, INTTYPE, 1, ""},
      {"port", CHARTYPE, CHARTYPE, 0, ""},
      {"rate", CHARTYPE, INTTYPE, 4, ""},
-     {"user", CHARTYPE, CHARTYPE, 0, ""}
+     {"user", CHARTYPE, CHARTYPE, 0, ""},
+     {"user_id", INTTYPE, INTTYPE, 0, ""},
+     {"num_backups", INTTYPE, INTTYPE, 2, ""},
+     {"window_width", INTTYPE, INTTYPE, 770, ""},
+     {"window_height", INTTYPE, INTTYPE, 500, ""},
+     {"datebook_pane", INTTYPE, INTTYPE, 370, ""},
+     {"address_pane", INTTYPE, INTTYPE, 340, ""},
+     {"todo_pane", INTTYPE, INTTYPE, 370, ""},
+     {"memo_pane", INTTYPE, INTTYPE, 370, ""},
 };
 
 struct jlist {
@@ -54,7 +62,7 @@ static struct jlist *dir_list=NULL;
 
 int get_pref_dmy_order()
 {
-   int n;
+   long n;
    
    get_pref(PREF_SHORTDATE, &n, NULL);
    if (n<2) {
@@ -278,7 +286,7 @@ int get_pref_possibility(int which, int n, char *pref_str)
 }
 
 /*if n is out of range then this function will fail */
-int get_pref(int which, int *n, const char **ret)
+int get_pref(int which, long *n, const char **ret)
 {
    if ((which < 0) || (which > NUM_PREFS)) {
       return -1;
@@ -296,7 +304,7 @@ int get_pref(int which, int *n, const char **ret)
    return 0;
 }
 
-int set_pref(int which, int n)
+int set_pref(int which, long n)
 {
    if ((which < 0) || (which > NUM_PREFS)) {
       return -1;
@@ -392,6 +400,13 @@ static int validate_glob_prefs()
       glob_prefs[PREF_RATE].ivalue = 0;
    }
 
+   if (glob_prefs[PREF_NUM_BACKUPS].ivalue >= MAX_PREF_NUM_BACKUPS) {
+      glob_prefs[PREF_NUM_BACKUPS].ivalue = MAX_PREF_NUM_BACKUPS;
+   }
+   if (glob_prefs[PREF_NUM_BACKUPS].ivalue < 1) {
+      glob_prefs[PREF_NUM_BACKUPS].ivalue = 1;
+   }
+
    get_pref_possibility(PREF_TIME, glob_prefs[PREF_TIME].ivalue, glob_prefs[PREF_TIME].svalue);
 
    get_pref_possibility(PREF_SHORTDATE, glob_prefs[PREF_SHORTDATE].ivalue, glob_prefs[PREF_SHORTDATE].svalue);
@@ -428,9 +443,10 @@ int read_rc_file()
 
    while (!feof(in)) {
       fgets(line, 255, in);
+      line[254] = ' ';
       line[255] = '\0';
-      field1 = (char *)strtok(line, " ");
-      field2 = (char *)strtok(NULL, "\n");
+      field1 = strtok(line, " ");
+      field2 = (field1 != NULL)	? strtok(NULL, "\n") : NULL;/* jonh */
       if ((field1 == NULL) || (field2 == NULL)) {
 	 continue;
       }
@@ -468,7 +484,7 @@ int write_rc_file()
    for(i=0; i<NUM_PREFS; i++) {
 
       if (glob_prefs[i].filetype == INTTYPE) {
-	 fprintf(out, "%s %d\n", glob_prefs[i].name, glob_prefs[i].ivalue);
+	 fprintf(out, "%s %ld\n", glob_prefs[i].name, glob_prefs[i].ivalue);
       }
 
       if (glob_prefs[i].filetype == CHARTYPE) {

@@ -47,35 +47,65 @@
 
 #define DATEBOOK_EOF 7
 
+int datebook_compare(const void *v1, const void *v2)
+{
+   AppointmentList **al1, **al2;
+   struct Appointment *a1, *a2;
+   
+   al1=(AppointmentList **)v1;
+   al2=(AppointmentList **)v2;
+   
+   a1=&((*al1)->ma.a);
+   a2=&((*al2)->ma.a);
+
+   return (a1->begin.tm_hour > a2->begin.tm_hour);
+}
+
 static int datebook_sort(AppointmentList **al)
 {
-   AppointmentList *temp_al, *prev_al, *next;
-   int found_one;
-   
-   found_one=1;
-   while (found_one) {
-      found_one=0;
-      for (prev_al=NULL, temp_al=*al; temp_al;
-	   prev_al=temp_al, temp_al=temp_al->next) {
-	 if (temp_al->next) {
-	    if (temp_al->ma.a.begin.tm_hour > temp_al->next->ma.a.begin.tm_hour) {
-	       found_one=1;
-	       next=temp_al->next;
-	       if (prev_al) {
-		  prev_al->next = next;
-	       }
-	       temp_al->next=next->next;
-	       next->next = temp_al;
-	       if (temp_al==*al) {
-		  *al=next;
-	       }
-	       temp_al=next;
-	    }
-	 }
-      }
+   AppointmentList *temp_al;
+   AppointmentList **sort_al;
+   int count, i;
+
+   /* Count the entries in the list */
+   for (count=0, temp_al=*al; temp_al; temp_al=temp_al->next, count++) {
+      ;
    }
+
+   if (count<2) {
+      /* We don't have to sort less than 2 items */
+      return 0;
+   }
+   
+   /* Allocate an array to be qsorted */
+   sort_al = calloc(count, sizeof(AppointmentList *));
+   if (!sort_al) {
+      jpilot_logf(LOG_WARN, "Out of Memory\n");
+      return 0;
+   }
+   
+   /* Set our array to be a list of pointers to the nodes in the linked list */
+   for (i=0, temp_al=*al; temp_al; temp_al=temp_al->next, i++) {
+      sort_al[i] = temp_al;
+   }
+
+   /* qsort them */
+   qsort(sort_al, count, sizeof(AppointmentList *), datebook_compare);
+
+   /* Put the linked list in the order of the array */
+   sort_al[count-1]->next = NULL;
+   for (i=count-1; i; i--) {
+      sort_al[i-1]->next=sort_al[i];
+   }
+
+   *al = sort_al[0];
+
+   free(sort_al);
+
    return 0;
 }
+
+
 
 static int pc_datebook_read_next_rec(FILE *in, MyAppointment *ma)
 {
@@ -577,7 +607,7 @@ int appointment_on_day_list(int mon, int year, int *mask)
 {
    struct tm now;
    AppointmentList *tal, *al;
-   int ivalue;
+   long ivalue;
    const char *svalue;
    int i, dow, ndim, num;
    int bit;

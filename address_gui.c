@@ -53,6 +53,7 @@ GtkWidget *category_menu1;
 GtkWidget *scrolled_window;
 GtkWidget *address_quickfind_entry;
 GtkWidget *notebook;
+GtkWidget *pane;
 
 struct AddressAppInfo address_app_info;
 int address_category;
@@ -170,15 +171,17 @@ void cb_new_address_done(GtkWidget *widget,
       free_Address(&a);
       if (GPOINTER_TO_INT(data) == MODIFY_FLAG) {
 	 cb_delete_address(NULL, data);
+      } else {
+	 /* glob_find_id = unique_id; */
+	 address_clist_redraw();
       }
-      glob_find_id = unique_id;
-      address_clist_redraw();
    }
 }
 
 void clear_address_entries()
 {
    int i;
+   int new_cat;
    
    /*Clear all the address entry texts */
    for (i=0; i<NUM_ADDRESS_ENTRIES; i++) {
@@ -192,7 +195,15 @@ void clear_address_entries()
 					(menu_item[i][i]), TRUE);
 	 gtk_option_menu_set_history(GTK_OPTION_MENU(phone_list_menu[i]), i);
       }
-   }   
+   }
+   if (address_category==CATEGORY_ALL) {
+      new_cat = 0;
+   } else {
+      new_cat = address_category;
+   }
+   gtk_check_menu_item_set_active
+     (GTK_CHECK_MENU_ITEM(address_cat_menu_item2[new_cat]), TRUE);
+   gtk_option_menu_set_history(GTK_OPTION_MENU(address_cat_menu2), new_cat);
 }
 
 void cb_address_clear(GtkWidget *widget,
@@ -265,6 +276,7 @@ void cb_address_clist_sel(GtkWidget      *clist,
    /*The rename-able phone entries are indexes 3,4,5,6,7 */
    struct Address *a;
    MyAddress *ma;
+   int count;
    int i, i2;
    /*This is because the palm doesn\'t show the address entries in order */
    int order[22]={0,1,13,2,3,4,5,6,7,8,9,10,11,12,14,15,16,17,18,19,20,21
@@ -317,8 +329,14 @@ void cb_address_clist_sel(GtkWidget      *clist,
    if (GTK_IS_WIDGET(address_cat_menu_item2[ma->attrib & 0x0F])) {
       gtk_check_menu_item_set_active
 	(GTK_CHECK_MENU_ITEM(address_cat_menu_item2[ma->attrib & 0x0F]), TRUE);
-      gtk_option_menu_set_history
-	(GTK_OPTION_MENU(address_cat_menu2), ma->attrib & 0x0F);
+      /* We need to count how many items down in the list this is */
+      for (i=ma->attrib & 0x0F, count=0; i>=0; i--) {
+	 if (address_cat_menu_item2[i]) {
+	    count++;
+	 }
+      }
+      count--;
+      gtk_option_menu_set_history(GTK_OPTION_MENU(address_cat_menu2), count);
    }
 
    for (i=0; i<NUM_ADDRESS_ENTRIES; i++) {
@@ -357,7 +375,7 @@ void update_address_screen()
    AddressList *temp_al;
    static AddressList *address_list=NULL;
    char str[50];
-   int ivalue;
+   long ivalue;
    const char *svalue;
 
    free_AddressList(&address_list);
@@ -602,6 +620,8 @@ static int make_category_menu2()
 	   (GTK_RADIO_MENU_ITEM(address_cat_menu_item2[i]));
 	 gtk_menu_append(GTK_MENU(menu), address_cat_menu_item2[i]);
 	 gtk_widget_show(address_cat_menu_item2[i]);
+      } else {
+	 address_cat_menu_item2[i] = NULL;
       }
    }
    gtk_option_menu_set_menu(GTK_OPTION_MENU(address_cat_menu2), menu);
@@ -649,50 +669,29 @@ static int address_goto_line(int line_num, gfloat percentage)
    return 0;
 }
 
-/* This redraws the clist and goes back to the same line number
- * or it will go to glob_find_id if it is set.
- * If glob_find_id cannot be found, then it will set the category
- * back to ALL, and redraw the clist again
- */
+/* This redraws the clist and goes back to the same line number */
 int address_clist_redraw()
 {
    int line_num;
-   int save_id;
-   int r;
    GtkScrollbar *sb;
    gfloat upper, lower, value, step, percentage;
    
    line_num = clist_row_selected;
 
-   if (glob_find_id) {
-      save_id = glob_find_id;
-      update_address_screen();
-      r = address_find();
-      if (r==0) {
-	 address_category = CATEGORY_ALL;
-	 gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), 0);
-	 gtk_check_menu_item_set_active
-	   (GTK_CHECK_MENU_ITEM(address_cat_menu_item1[0]), TRUE);
-	 update_address_screen();
-	 glob_find_id = save_id;
-	 address_find();
-      }
+   sb = GTK_SCROLLBAR(GTK_SCROLLED_WINDOW(scrolled_window)->vscrollbar);
+   upper = GTK_ADJUSTMENT(sb->range.adjustment)->upper;
+   lower = GTK_ADJUSTMENT(sb->range.adjustment)->lower;
+   value = GTK_ADJUSTMENT(sb->range.adjustment)->value;
+   step = GTK_ADJUSTMENT(sb->range.adjustment)->step_increment;
+   if (upper - lower + step) {
+      percentage = value/(upper - lower + step);
    } else {
-      sb = GTK_SCROLLBAR(GTK_SCROLLED_WINDOW(scrolled_window)->vscrollbar);
-      upper = GTK_ADJUSTMENT(sb->range.adjustment)->upper;
-      lower = GTK_ADJUSTMENT(sb->range.adjustment)->lower;
-      value = GTK_ADJUSTMENT(sb->range.adjustment)->value;
-      step = GTK_ADJUSTMENT(sb->range.adjustment)->step_increment;
-      if (upper - lower + step) {
-	 percentage = value/(upper - lower + step);
-      } else {
-	 percentage = 0;
-      }
-
-      update_address_screen();
-      
-      address_goto_line(line_num, percentage);
+      percentage = 0;
    }
+
+   update_address_screen();
+   
+   address_goto_line(line_num, percentage);
    
    return 0;
 }
@@ -738,13 +737,19 @@ static gboolean
    return FALSE; 
 }
 
+int address_gui_cleanup()
+{
+   set_pref(PREF_ADDRESS_PANE, GTK_PANED(pane)->handle_xpos);
+   return 0;
+}
+
 /* */
 /*Main function */
 /* */
 int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 {
    extern GtkWidget *glob_date_label;
-   extern glob_date_timer_tag;
+   extern int glob_date_timer_tag;
    GtkWidget *vbox1, *hbox_temp;
    GtkWidget *vbox_temp1, *vbox_temp2, *vbox_temp3;
    GtkWidget *vbox2_1_sub1;
@@ -756,6 +761,8 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    GtkWidget *table1, *table2, *table3;
 /*   GtkWidget *calendar; */
    GtkWidget *notebook_tab;
+   long ivalue;
+   const char *svalue;
    
 
    int i, i1, i2;
@@ -772,12 +779,25 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
       }
    }
 
+   pane = gtk_hpaned_new();
+   get_pref(PREF_ADDRESS_PANE, &ivalue, &svalue);
+   gtk_paned_set_position(GTK_PANED(pane), ivalue + 2);
+   
+   gtk_box_pack_start(GTK_BOX(hbox), pane, TRUE, TRUE, 5);
+   
    vbox1 = gtk_vbox_new (FALSE, 0);
    vbox2_1 = gtk_vbox_new (FALSE, 0);
    vbox2_2 = gtk_vbox_new (FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(hbox), vbox1, TRUE, TRUE, 5);
-   gtk_box_pack_start(GTK_BOX(hbox), vbox2_1, TRUE, TRUE, 5);
-   gtk_box_pack_start(GTK_BOX(hbox), vbox2_2, TRUE, TRUE, 5);
+   hbox_temp = gtk_hbox_new (FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(hbox_temp), vbox2_1, TRUE, TRUE, 5);
+   gtk_box_pack_start(GTK_BOX(hbox_temp), vbox2_2, TRUE, TRUE, 5);
+   gtk_paned_pack1(GTK_PANED(pane), vbox1, TRUE, FALSE);
+   gtk_paned_pack2(GTK_PANED(pane), hbox_temp, TRUE, FALSE);
+   gtk_widget_show(GTK_WIDGET(pane));
+   gtk_widget_show(GTK_WIDGET(hbox_temp));
+   /*gtk_box_pack_start(GTK_BOX(hbox), vbox1, TRUE, TRUE, 5);*/
+   /*gtk_box_pack_start(GTK_BOX(hbox), vbox2_1, TRUE, TRUE, 5);*/
+   /*gtk_box_pack_start(GTK_BOX(hbox), vbox2_2, TRUE, TRUE, 5);*/
 
    /*Add buttons in left vbox */
    button = gtk_button_new_with_label("Delete");
@@ -925,7 +945,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_widget_show(button);
 
 
-   button = gtk_button_new_with_label("Clear");
+   button = gtk_button_new_with_label("New");
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_address_clear), NULL);
    gtk_box_pack_end(GTK_BOX(hbox_temp), button, TRUE, TRUE, 0);

@@ -19,11 +19,34 @@
 #ifndef _SYNC_H__
 #define _SYNC_H__
 
-/* Bitmasks for backup */
-#define SYNC_FULL_BACKUP 1
-#define SYNC_NO_PLUGINS  2
+#include <pi-dlp.h>
 
-int sync_once(const char *port, unsigned int flags);
-int sync_loop(const char *port, unsigned int flags);
+/* Bitmasks for backup */
+#define SYNC_FULL_BACKUP   1
+#define SYNC_NO_PLUGINS    2
+#define SYNC_OVERRIDE_USER 4
+
+#define SYNC_ERROR_BIND            -10
+#define SYNC_ERROR_LISTEN          -11
+#define SYNC_ERROR_OPEN_CONDUIT    -12
+#define SYNC_ERROR_PI_ACCEPT       -13
+#define SYNC_ERROR_NOT_SAME_USER   -20
+#define SYNC_ERROR_NOT_SAME_USERID -21
+#define SYNC_ERROR_NULL_USERID     -22
+
+struct my_sync_info {
+   unsigned int sync_over_ride;
+   char port[128];
+   unsigned int flags;
+   unsigned int num_backups;
+
+   unsigned long userID;
+   unsigned long viewerID;
+   unsigned long lastSyncPC;
+   char username[128];
+};
+
+int sync_once(struct my_sync_info *sync_info);
+int sync_loop(const char *port, unsigned int flags, const int num_backups);
 
 #endif

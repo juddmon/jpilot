@@ -45,19 +45,22 @@ in one of these directories and they will show up in the preferences menu.
 If you create your own cool jpilotrc files feel free to send them
 back to me and if I like it, I'll include it in the release.
 
-HOME:
+HOME, JPILOT_HOME:
 
-jpilot uses the HOME environment variable to make it easy to allow multiple
-pilots to be synced under the same unix user.  Just set HOME to the directory
-you want jpilot to use.  For example, I have 2 palm pilots.  I can sync the
-one I use all the time into /home/judd.  The other one I can sync into
-/home/judd/palm2 by using this script:
+jpilot uses the JPILOT_HOME environment variable to make it easy to allow
+multiple pilots to be synced under the same unix user.  Just set JPILOT_HOME
+to the directory you want jpilot to use.  For example, I have 2 palm pilots.
+I can sync the one I use all the time into /home/judd.  The other one I can
+sync into /home/judd/palm2 by using this script:
 #!/bin/bash
-HOME=/home/judd/palm2
+JPILOT_HOME=/home/judd/palm2
 jpilot
 
 This is also handy for syncing xcopilot into its own directory.
-Normally, you can just leave HOME alone.
+
+You don't have to set JPILOT_HOME.  If its not set then jpilot will use the
+HOME env variable.
+
 
 OOPS, REVERTING:
 
@@ -73,7 +76,8 @@ and then click on the deleted record and use "Add" to get a copy of it back.
 BACKUP and SYNC:
 
 The Sync button will sync the 4 applications with the palm pilot.
-The Backup button will backup every program and database from the palm pilot.
+The Backup button will backup every program and database from the palm
+pilot, except for AvantGo files (these are usually big and change daily).
 
 CLOCK UPDATE and flickers:
 

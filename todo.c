@@ -23,7 +23,6 @@
 #include <pi-socket.h>
 #include <pi-todo.h>
 #include <pi-dlp.h>
-#include "address.h"
 #include "utils.h"
 #include "log.h"
 #include "todo.h"
@@ -34,7 +33,7 @@
 
 #define TODO_EOF 7
 
-
+static struct ToDoAppInfo *glob_Ptodo_app_info;
 /*
  * sort by:
  * priority, due date
@@ -42,147 +41,169 @@
  * category, priority
  * category, due date
  */
-int todo_compare(struct ToDo *todo1, struct ToDo *todo2,
-		 struct ToDoAppInfo *ai,
-		 int cat1, int cat2)
+int todo_compare(const void *v1, const void *v2)
 {
    time_t t1, t2;
    int r;
+   int cat1, cat2;
+   ToDoList **todol1, **todol2;
+   struct ToDo *todo1, *todo2;
    int sort_by_priority;
-   
-   sort_by_priority = ai->sortByPriority;
+
+   todol1=(ToDoList **)v1;
+   todol2=(ToDoList **)v2;
+
+   todo1=&((*todol1)->mtodo.todo);
+   todo2=&((*todol2)->mtodo.todo);
+
+   sort_by_priority = glob_Ptodo_app_info->sortByPriority;
+
+   cat1 = (*todol1)->mtodo.attrib & 0x0F;
+   cat2 = (*todol2)->mtodo.attrib & 0x0F;
    
    if (sort_by_priority == 0) {
       /* due date, priority */
       if ( !(todo1->indefinite) && (todo2->indefinite) ) {
-	 return -1;
+	 return 1;
       }
       if ( (todo1->indefinite) && !(todo2->indefinite) ) {
-	 return 1;
+	 return -1;
       }
       if ( !(todo1->indefinite) && !(todo2->indefinite) ) {
 	 t1 = mktime(&(todo1->due));
 	 t2 = mktime(&(todo2->due));
 	 if ( t1 < t2 ) {
-	    return -1;
+	    return 1;
 	 }
 	 if ( t1 > t2 ) {
-	    return 1;
+	    return -1;
 	 }
       }
       if ( (todo1->priority) < (todo2->priority) ) {
-	 return -1;
-      }
-      if ( (todo1->priority) > (todo2->priority) ) {
 	 return 1;
       }
+      if ( (todo1->priority) > (todo2->priority) ) {
+	 return -1;
+      }
    }
-      
+
    if (sort_by_priority == 1) {
       /* priority, due date */
       if ( (todo1->priority) < (todo2->priority) ) {
-	 return -1;
+	 return 1;
       }
       if ( (todo1->priority) > (todo2->priority) ) {
-	 return 1;
+	 return -1;
       }
       if ( (todo1->indefinite) && (todo2->indefinite) ) {
 	 return 0;
       }
       if ( !(todo1->indefinite) && (todo2->indefinite) ) {
-	 return -1;
+	 return 1;
       }
       if ( (todo1->indefinite) && !(todo2->indefinite) ) {
-	 return 1;
+	 return -1;
       }
       t1 = mktime(&(todo1->due));
       t2 = mktime(&(todo2->due));
       if ( t1 < t2 ) {
-	 return -1;
+	 return 1;
       }
       if ( t1 > t2 ) {
-	 return 1;
+	 return -1;
       }
    }
 
    if (sort_by_priority == 2) {
       /* category, priority */
-      r = strcmp(ai->category.name[cat1],
-		 ai->category.name[cat2]);
+      r = strcmp(glob_Ptodo_app_info->category.name[cat1],
+		 glob_Ptodo_app_info->category.name[cat2]);
       if (r) {
-	 return r;
+	 return -r;
       }
       if ( (todo1->priority) < (todo2->priority) ) {
-	 return -1;
+	 return 1;
       }
       if ( (todo1->priority) > (todo2->priority) ) {
-	 return 1;
+	 return -1;
       }
    }
 
    if (sort_by_priority == 3) {
       /* category, due date */
-      r = strcmp(ai->category.name[cat1],
-		 ai->category.name[cat2]);
+      r = strcmp(glob_Ptodo_app_info->category.name[cat1],
+		 glob_Ptodo_app_info->category.name[cat2]);
       if (r) {
-	 return r;
+	 return -r;
       }
       if ( (todo1->indefinite) && (todo2->indefinite) ) {
 	 return 0;
       }
       if ( !(todo1->indefinite) && (todo2->indefinite) ) {
-	 return -1;
+	 return 1;
       }
       if ( (todo1->indefinite) && !(todo2->indefinite) ) {
-	 return 1;
+	 return -1;
       }
       t1 = mktime(&(todo1->due));
       t2 = mktime(&(todo2->due));
       if ( t1 < t2 ) {
-	 return -1;
-      }
-      if ( t1 > t2 ) {
 	 return 1;
       }
+      if ( t1 > t2 ) {
+	 return -1;
+      }
    }
-      
+
    return 0;
 }
 
-int todo_sort(ToDoList **al)
+int todo_sort(ToDoList **todol)
 {
-   ToDoList *temp_al, *prev_al, *next;
+   ToDoList *temp_todol;
+   ToDoList **sort_todol;
    struct ToDoAppInfo ai;
-   int found_one;
+   int count, i;
 
+   /* Count the entries in the list */
+   for (count=0, temp_todol=*todol; temp_todol; temp_todol=temp_todol->next, count++) {
+      ;
+   }
+
+   if (count<2) {
+      /* We don't have to sort less than 2 items */
+      return 0;
+   }
+   
    get_todo_app_info(&ai);
 
-   found_one=1;
-   while (found_one) {
-      found_one=0;
-      for (prev_al=NULL, temp_al=*al; temp_al;
-	   prev_al=temp_al, temp_al=temp_al->next) {
-	 if (temp_al->next) {
-	    if (todo_compare(&(temp_al->mtodo.todo),
-	        &(temp_al->next->mtodo.todo),
-		&ai,
-		temp_al->mtodo.attrib & 0x0F,
-		temp_al->next->mtodo.attrib & 0x0F) < 0) {
-	       found_one=1;
-	       next=temp_al->next;
-	       if (prev_al) {
-		  prev_al->next = next;
-	       }
-	       temp_al->next=next->next;
-	       next->next = temp_al;
-	       if (temp_al==*al) {
-		  *al=next;
-	       }
-	       temp_al=next;
-	    }
-	 }
-      }
+   glob_Ptodo_app_info = &ai;
+
+   /* Allocate an array to be qsorted */
+   sort_todol = calloc(count, sizeof(ToDoList *));
+   if (!sort_todol) {
+      jpilot_logf(LOG_WARN, "Out of Memory\n");
+      return 0;
    }
+   
+   /* Set our array to be a list of pointers to the nodes in the linked list */
+   for (i=0, temp_todol=*todol; temp_todol; temp_todol=temp_todol->next, i++) {
+      sort_todol[i] = temp_todol;
+   }
+
+   /* qsort them */
+   qsort(sort_todol, count, sizeof(ToDoList *), todo_compare);
+
+   /* Put the linked list in the order of the array */
+   sort_todol[count-1]->next = NULL;
+   for (i=count-1; i; i--) {
+      sort_todol[i-1]->next=sort_todol[i];
+   }
+
+   *todol = sort_todol[0];
+
+   free(sort_todol);
+
    return 0;
 }
 

@@ -83,7 +83,7 @@ weekview_gui.o: weekview_gui.c utils.h
 monthview_gui.o: monthview_gui.c utils.h
 	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c monthview_gui.c
 
-utils.o: utils.c utils.h
+utils.o: utils.c utils.h sync.h
 	$(CC) $(OPTIONS) $(PILOT_FLAGS) $(GTKFLAGS) -c utils.c
 
 sync.o: sync.c sync.h
@@ -116,19 +116,24 @@ distclean: clean
 	rm -f config.status config.h config.log jpilot Makefile
 
 install:
-#	./install-sh -d $(prefix)/bin
-	./install-sh -s -c -m 555 -g bin -o bin jpilot $(prefix)/bin
+#	./install-sh -d $(prefix)/bin/
+	if test -d "$(prefix)/bin" ; then \
+	  ./install-sh -s -c -m 555 -g bin -o bin jpilot $(prefix)/bin/jpilot ; \
+	else \
+	  ./install-sh -s -c -m 555 -g bin -o bin jpilot $(prefix)/jpilot ; \
+	fi
 	./install-sh -d -m 755 $(prefix)/share/jpilot
 	./install-sh -c -m 755 -g bin -o bin jpilotrc.blue $(prefix)/share/jpilot
-	./install-sh -c -m 755 -g bin -o bin jpilotrc.default $(prefix)/share/jpilot
-	./install-sh -c -m 755 -g bin -o bin jpilotrc.green $(prefix)/share/jpilot
-	./install-sh -c -m 755 -g bin -o bin jpilotrc.purple $(prefix)/share/jpilot
-	./install-sh -c -m 755 -g bin -o bin jpilotrc.steel $(prefix)/share/jpilot
-	./install-sh -c -m 755 -g bin -o bin empty/DatebookDB.pdb $(prefix)/share/jpilot
-	./install-sh -c -m 755 -g bin -o bin empty/AddressDB.pdb $(prefix)/share/jpilot
-	./install-sh -c -m 755 -g bin -o bin empty/ToDoDB.pdb $(prefix)/share/jpilot
-	./install-sh -c -m 755 -g bin -o bin empty/MemoDB.pdb $(prefix)/share/jpilot
+	./install-sh -c -m 755 -g bin -o bin jpilotrc.default $(prefix)/share/jpilot/
+	./install-sh -c -m 755 -g bin -o bin jpilotrc.green $(prefix)/share/jpilot/
+	./install-sh -c -m 755 -g bin -o bin jpilotrc.purple $(prefix)/share/jpilot/
+	./install-sh -c -m 755 -g bin -o bin jpilotrc.steel $(prefix)/share/jpilot/
+	./install-sh -c -m 755 -g bin -o bin empty/DatebookDB.pdb $(prefix)/share/jpilot/
+	./install-sh -c -m 755 -g bin -o bin empty/AddressDB.pdb $(prefix)/share/jpilot/
+	./install-sh -c -m 755 -g bin -o bin empty/ToDoDB.pdb $(prefix)/share/jpilot/
+	./install-sh -c -m 755 -g bin -o bin empty/MemoDB.pdb $(prefix)/share/jpilot/
 
 uninstall:
 	rm $(prefix)/share/jpilot/*
 	rm $(prefix)/bin/jpilot
+	rm $(prefix)/jpilot

@@ -59,12 +59,32 @@ gint glob_date_timer_tag;
 pid_t glob_child_pid;
 GtkWidget *window;
 int glob_app = 0;
+int glob_focus = 1;
+GtkWidget *glob_dialog;
+int skip_plugins;
 
 int pipe_in, pipe_out;
 
 GtkWidget *sync_window = NULL;
 
 static void delete_event(GtkWidget *widget, GdkEvent *event, gpointer data);
+
+
+static void cb_focus(GtkWidget *widget, GdkEvent *event, gpointer data)
+{
+   int i;
+   
+   i = GPOINTER_TO_INT(data);
+   if (i==0) {
+      glob_focus=0;
+   }
+   if (i==1) {
+      glob_focus=1;
+      if (GTK_IS_WIDGET(glob_dialog)) {
+	 gdk_window_raise(glob_dialog->window);
+      }
+   }
+}
 
 int create_main_boxes()
 {
@@ -73,6 +93,50 @@ int create_main_boxes()
 
    gtk_box_pack_start(GTK_BOX(g_hbox), g_hbox2, TRUE, TRUE, 0);
    gtk_box_pack_start(GTK_BOX(g_vbox0), g_vbox0_1, FALSE, FALSE, 0);
+   return 0;
+}
+
+int gui_cleanup()
+{
+#ifdef ENABLE_PLUGINS
+   struct plugin_s *plugin;
+   GList *plugin_list, *temp_list;
+#endif   
+   
+#ifdef ENABLE_PLUGINS
+   plugin_list = NULL;
+   plugin_list = get_plugin_list();
+
+   /* Find out which (if any) plugin to call a gui_cleanup on */
+   for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
+      plugin = (struct plugin_s *)temp_list->data;
+      if (plugin) {
+	 if (plugin->number == glob_app) {
+	    if (plugin->plugin_gui_cleanup) {
+	       plugin->plugin_gui_cleanup();
+	    }
+	    break;
+	 }
+      }
+   }
+#endif   
+   
+   switch(glob_app) {
+    case DATEBOOK:
+      datebook_gui_cleanup();
+      break;
+    case ADDRESS:
+      address_gui_cleanup();
+      break;
+    case TODO:
+      todo_gui_cleanup();
+      break;
+    case MEMO:
+      memo_gui_cleanup();
+      break;
+    default:
+      break;
+   }
    return 0;
 }
 
@@ -86,23 +150,10 @@ void call_plugin_gui(int number, int unique_id)
       return;
    }
    
+   gui_cleanup();
+
    plugin_list = NULL;
    plugin_list = get_plugin_list();
-
-
-   /* Find out which plugin to call a gui_cleanup on */
-   for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
-      plugin = (struct plugin_s *)temp_list->data;
-      if (plugin) {
-	 if (plugin->number == glob_app) {
-	    if (plugin->plugin_gui_cleanup) {
-	       plugin->plugin_gui_cleanup();
-	    }
-	    break;
-	 }
-      }
-   }
-
 
    /* destroy main boxes and recreate them */
    gtk_widget_destroy(g_vbox0_1);
@@ -198,6 +249,7 @@ void cb_app_button(GtkWidget *widget, gpointer data)
 /*			      GTK_WIDGET(g_vbox0_1)); */
 /*	 gtk_container_remove(GTK_CONTAINER(g_hbox2->parent), */
 /*			      GTK_WIDGET(g_hbox2)); */
+	 gui_cleanup();
 	 gtk_widget_destroy(g_vbox0_1);
 	 gtk_widget_destroy(g_hbox2);
 	 create_main_boxes();
@@ -217,6 +269,7 @@ void cb_app_button(GtkWidget *widget, gpointer data)
 /*			      GTK_WIDGET(g_vbox0_1)); */
 /*	 gtk_container_remove(GTK_CONTAINER(g_hbox2->parent), */
 /*			      GTK_WIDGET(g_hbox2)); */
+	 gui_cleanup();
 	 gtk_widget_destroy(g_vbox0_1);
 	 gtk_widget_destroy(g_hbox2);
 	 create_main_boxes();
@@ -232,6 +285,7 @@ void cb_app_button(GtkWidget *widget, gpointer data)
 	 /*refresh screen */
 	 todo_refresh();
       } else {
+	 gui_cleanup();
 	 gtk_widget_destroy(g_vbox0_1);
 	 gtk_widget_destroy(g_hbox2);
 	 create_main_boxes();
@@ -251,6 +305,7 @@ void cb_app_button(GtkWidget *widget, gpointer data)
 /*			      GTK_WIDGET(g_vbox0_1)); */
 /*	 gtk_container_remove(GTK_CONTAINER(g_hbox2->parent), */
 /*			      GTK_WIDGET(g_hbox2)); */
+	 gui_cleanup();
 	 gtk_widget_destroy(g_vbox0_1);
 	 gtk_widget_destroy(g_hbox2);
 	 create_main_boxes();
@@ -281,7 +336,53 @@ void cb_sync_hide(GtkWidget *widget, gpointer data)
    
    sync_window=NULL;
 }
+
+/*
+ * This is called when the user name from the palm doesn't match
+ * or the user ID from the palm is 0
+ */
+void bad_sync_exit_status(int exit_status)
+{
+   int result;
+   char text1[] =
+     /*-------------------------------------------*/
+     "This palm doesn't have the same user name\r\n"
+     "or user ID as the one that was synced the\r\n"
+     "last time.  Syncing could have unwanted\r\n"
+     "effects.\r\n"
+     "Read the user manual if you are uncertain.";
+   char text2[] =
+     /*-------------------------------------------*/
+     "This palm has a NULL user id.\r\n"
+     "It may have been hard reset.\r\n"
+     "J-Pilot will not restore a palm yet.\r\n"
+     "Use pilot-xfer to restore the palm and\r\n"
+     "install-user to add a username and user ID\r\n"
+     "to the palm.\r\n"
+     "Read the user manual if you are uncertain.";
+   char *button_text[]={"OK", "Sync Anyway"
+   };
    
+   if (!GTK_IS_WINDOW(window)) {
+      return;
+   }
+   if ((exit_status == SYNC_ERROR_NOT_SAME_USERID) ||
+       (exit_status == SYNC_ERROR_NOT_SAME_USER)) {
+      result = dialog_generic(GTK_WIDGET(window)->window,
+			      300, 200,
+			      "Sync Problem", "Sync", text1, 2, button_text);
+      if (result == DIALOG_SAID_2) {
+	 cb_sync(NULL, SYNC_OVERRIDE_USER | (skip_plugins ? SYNC_NO_PLUGINS : 0));
+      }
+   }
+   if (exit_status == SYNC_ERROR_NULL_USERID) {
+      dialog_generic(GTK_WIDGET(window)->window,
+		     300, 200,
+		     "Sync Problem", "Sync", text2, 1, button_text);
+   }
+}
+
+
 void cb_read_pipe(gpointer data,
 		  gint in,
 		  GdkInputCondition condition)
@@ -293,6 +394,8 @@ void cb_read_pipe(gpointer data,
    int ret;
    char *Pstr1, *Pstr2, *Pstr3;
    int user_len;
+   unsigned long user_id;
+   int exit_status;
    char user[MAX_PREF_VALUE];
 
    GtkWidget *main_window, *button, *hbox1, *vbox1, *vscrollbar;
@@ -359,15 +462,20 @@ void cb_read_pipe(gpointer data,
       FD_SET(in, &fds);
       ret=select(in+1, &fds, NULL, NULL, &tv);
       if (!ret) break;
+      buf[0]='\0';
       num = read(in, buf, 1022);
       if (num >= 1022) {
 	 buf[1022] = '\0';
+      } else {
+	 if (num > 0) {
+	    buf[num]='\0';
+	 }
       }
       if (num>0) {
 	 gtk_text_insert(GTK_TEXT(text), NULL, NULL, NULL, buf, num);
       }
       /*Look for the username */
-      Pstr1 = strstr(buf, "sername");
+      Pstr1 = strstr(buf, "sername is");
       if (Pstr1) {
 	 Pstr2 = strchr(Pstr1, '\"');
 	 if (Pstr2) {
@@ -383,6 +491,36 @@ void cb_read_pipe(gpointer data,
 	       jpilot_logf(LOG_DEBUG, "pipe_read: user = %s\n", user);
 	       set_pref_char(PREF_USER, user);
 	    }
+	 }
+      }
+      /*Look for the user ID */
+      Pstr1 = strstr(buf, "ser ID is");
+      if (Pstr1) {
+	 Pstr2 = Pstr1 + 9;
+	 num = sscanf(Pstr2, "%ld", &user_id);
+	 if (num > 0) {
+	    jpilot_logf(LOG_DEBUG, "pipe_read: user id = %ld\n", user_id);
+	    set_pref(PREF_USER_ID, user_id);
+	 } else {
+	    jpilot_logf(LOG_DEBUG, "pipe_read: trouble reading user id\n");
+	 }
+      }
+      /*Look for the exit status */
+      Pstr1 = strstr(buf, "exiting with status");
+      if (Pstr1) {
+	 Pstr2 = Pstr1 + 19;
+	 num = sscanf(Pstr2, "%d", &exit_status);
+	 if (num > 0) {
+	    jpilot_logf(LOG_DEBUG, "pipe_read: exit status = %d\n", exit_status);
+	 } else {
+	    jpilot_logf(LOG_DEBUG, "pipe_read: trouble reading exit status\n");
+	 }
+	 if ((exit_status == SYNC_ERROR_NOT_SAME_USERID) ||
+	     (exit_status == SYNC_ERROR_NOT_SAME_USER)) {
+	    bad_sync_exit_status(exit_status);
+	 }
+	 if (exit_status == SYNC_ERROR_NULL_USERID) {
+	    bad_sync_exit_status(exit_status);
 	 }
       }
    }
@@ -422,8 +560,6 @@ void get_main_menu(GtkWidget  *window,
 	{ "/File/_Search","<control>S", cb_search_gui,  0,        NULL },
 	{ "/File/sep1",        NULL,    NULL,           0,        "<Separator>" },
       	{ "/File/_Install",    NULL,    cb_install_gui, 0,        NULL },
-      	/*{ "/File/_WeekView",   "F5",cb_weekview_gui,    0,        NULL }, */
-      	/*{ "/File/_MonthView",  "F6",cb_monthview_gui,   0,        NULL }, */
 	{ "/File/Preferences", NULL,    cb_prefs_gui,   0,        NULL },
 	{ "/File/sep1",        NULL,    NULL,           0,        "<Separator>" },
 	{ "/File/Quit","<control>Q",    delete_event,   0,        NULL },
@@ -623,10 +759,19 @@ void get_main_menu(GtkWidget  *window,
 
 static void delete_event(GtkWidget *widget, GdkEvent *event, gpointer data)
 {
+   int pw, ph;
 #ifdef ENABLE_PLUGINS
    struct plugin_s *plugin;
    GList *plugin_list, *temp_list;
+#endif
+
+   gdk_window_get_size(window->window, &pw, &ph);
+   set_pref(PREF_WINDOW_WIDTH, pw);
+   set_pref(PREF_WINDOW_HEIGHT, ph);
    
+   gui_cleanup();
+
+#ifdef ENABLE_PLUGINS
    plugin_list = get_plugin_list();
 
    for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
@@ -661,12 +806,12 @@ int main(int   argc,
    GdkPixmap *pixmap;
    GtkWidget *menubar;
    int filedesc[2];
-   int ivalue;
+   long ivalue;
    const char *svalue;
    int sync_only;
    int i;
    char title[MAX_PREF_VALUE+40];
-   int skip_plugins;
+   long pref_width, pref_height;
 #ifdef ENABLE_PLUGINS
    GList *plugin_list;
    GList *temp_list;
@@ -768,8 +913,16 @@ int main(int   argc,
 
    window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
-   /*gtk_window_set_default_size(GTK_WINDOW(window), 770, 440); */
-   gtk_window_set_default_size(GTK_WINDOW(window), 770, 500);
+   gtk_signal_connect(GTK_OBJECT(window), "focus_in_event",
+		      GTK_SIGNAL_FUNC(cb_focus), GINT_TO_POINTER(1));
+
+   gtk_signal_connect(GTK_OBJECT(window), "focus_out_event",
+		      GTK_SIGNAL_FUNC(cb_focus), GINT_TO_POINTER(0));
+
+   /*gtk_window_set_default_size(GTK_WINDOW(window), 770, 500); */
+   get_pref(PREF_WINDOW_WIDTH, &pref_width, &svalue);
+   get_pref(PREF_WINDOW_HEIGHT, &pref_height, &svalue);
+   gtk_window_set_default_size(GTK_WINDOW(window), pref_width, pref_height);
 
    get_pref(PREF_USER, &ivalue, &svalue);
    
@@ -860,9 +1013,9 @@ int main(int   argc,
 
    /* Create "Sync" button */
    button = gtk_button_new_with_label("Sync");
-   gtk_signal_connect (GTK_OBJECT(button), "clicked",
-		       GTK_SIGNAL_FUNC(cb_sync),
-		       GINT_TO_POINTER(skip_plugins ? SYNC_NO_PLUGINS : 0));
+   gtk_signal_connect(GTK_OBJECT(button), "clicked",
+		      GTK_SIGNAL_FUNC(cb_sync),
+		      GINT_TO_POINTER(skip_plugins ? SYNC_NO_PLUGINS : 0));
 
    gtk_box_pack_start(GTK_BOX (g_vbox0), button, FALSE, FALSE, 0);
    gtk_widget_show (button);

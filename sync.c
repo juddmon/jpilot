@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
+#include <dirent.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
 #ifdef USE_FLOCK
@@ -46,26 +47,50 @@
 #include <pi-dlp.h>
 #include <pi-file.h>
 
-#define SYNC_PI_ACCEPT -12
+/* This struct is copied from pi-file.c
+ * The only reason I have it here is for the Graffiti Shortcut hack.
+ * Otherwise, it shouldn't be duplicated here.
+ */
+struct pi_file {
+   int err;
+   int for_writing;
+   FILE *f;
+   FILE *tmpf;
+   char *file_name;
+   
+   struct DBInfo info;
+   int app_info_size;
+   void *app_info;
+   int sort_info_size;
+   void *sort_info;
+   int next_record_list_id;
+   int resource_flag;
+   int ent_hdr_size;
+  
+   unsigned long unique_id_seed;
+   int nentries;
+   int nentries_allocated;
+   struct pi_file_entry *entries;
+   
+   void *rbuf;
+   int rbuf_size;
+};
+
+
+
 
 int pipe_in, pipe_out;
 extern int pipe_in, pipe_out;
 extern pid_t glob_child_pid;
 
 int sync_application(char *DB_name, int sd);
-int sync_fetch(int sd, unsigned int flags);
-int jpilot_sync(const char *port, unsigned int flags);
+int sync_fetch(int sd, unsigned int flags, const int num_backups);
+int jpilot_sync(struct my_sync_info *sync_info);
 int sync_lock();
 int sync_unlock();
-#ifdef DATEBOOK_HACK
-static int hack_delete_record(int sd);
-static int hack_write_record(int sd);
-#endif
 static int sync_process_install_file(int sd);
+static int sync_rotate_backups(const int num_backups);
 
-#ifdef DATEBOOK_HACK
-unsigned long hack_record_id;
-#endif
 int wrote_to_datebook;
 
 void sig_handler(int sig)
@@ -78,7 +103,7 @@ void sig_handler(int sig)
 
    /*refresh the screen after a sync */
    cb_app_button(NULL, NULL);
-   
+
    return;
 }
 
@@ -102,7 +127,7 @@ static int writef(int fp, char *format, ...)
 }
 
 /*
-int sync_loop(const char *port, int full_backup)
+int sync_loop(const char *port, int full_backup, const int num_backups)
 {
    int r, done, cons_errors;
    
@@ -113,7 +138,7 @@ int sync_loop(const char *port, int full_backup)
       _exit(0);
    }
    while(!done) {
-      r = jpilot_sync(NULL, full_backup);
+      r = jpilot_sync(NULL, full_backup, num_backups);
       if (r) {
 	 cons_errors++;
 	 if (cons_errors>3) {
@@ -209,12 +234,13 @@ int sync_unlock(int fd)
 }
 #endif
 
-int sync_once(const char *port, unsigned int flags)
+int sync_once(struct my_sync_info *sync_info)
 {
 #ifdef USE_LOCKING
-   int r;
    int fd;
-#endif   
+#endif
+   int r;
+   struct my_sync_info *sync_info_copy;
 
    if (glob_child_pid) {
       jpilot_logf(LOG_WARN, PN": sync PID = %d\n", glob_child_pid);
@@ -222,6 +248,14 @@ int sync_once(const char *port, unsigned int flags)
 	   "or \"kill %d\"\n", glob_child_pid);
       return 0;
    }
+
+   /* Make a copy of the sync info for the forked process */
+   sync_info_copy = malloc(sizeof(struct my_sync_info));
+   if (!sync_info_copy) {
+      jpilot_logf(LOG_WARN, PN":sync_once Out of memory\n");
+      return 0;
+   }
+   memcpy(sync_info_copy, sync_info, sizeof(struct my_sync_info));
 
    jpilot_logf(LOG_DEBUG, "forking sync process\n");
    switch ( glob_child_pid = fork() ){
@@ -235,38 +269,33 @@ int sync_once(const char *port, unsigned int flags)
       signal(SIGCHLD, sig_handler);
       return 0;
    }
-#ifdef TEST_SYNC_OUT
-   for (r=0; r<10; r++) {
-      writef(pipe_out, "Syncing on device\n");
-      writef(pipe_out, "testing %d on the write\n");
-      sleep(1);
-   }
-   jpilot_logf(LOG_DEBUG, "sync child exiting\n");
-   _exit(0);
-#endif
-   
 #ifdef USE_LOCKING
    r = sync_lock(&fd);
    if (r) {
       jpilot_logf(LOG_DEBUG, "Child cannot lock file\n");
+      free(sync_info_copy);
       _exit(0);
    }
 #endif
 
-   jpilot_sync(port, flags);
+   r = jpilot_sync(sync_info_copy);
+   if (r) {
+      writef(pipe_out, "exiting with status %d\n", r);
+   }
 #ifdef USE_LOCKING
    sync_unlock(fd);
 #endif
    jpilot_logf(LOG_DEBUG, "sync child exiting\n");
+   free(sync_info_copy);
    _exit(0);
 }
 
-int jpilot_sync(const char *port, unsigned int flags)
+int jpilot_sync(struct my_sync_info *sync_info)
 {
    struct pi_sockaddr addr;
    int sd;
-   struct PilotUser U;
    int ret;
+   struct PilotUser U;
    const char *device;
    char default_device[]="/dev/pilot";
    int found = 0;
@@ -274,12 +303,12 @@ int jpilot_sync(const char *port, unsigned int flags)
    GList *plugin_list, *temp_list;
    struct plugin_s *plugin;
 #endif
-   
+
    device = NULL;
-   if (port) {
-      if (port[0]) {
+   if (sync_info->port) {
+      if (sync_info->port[0]) {
 	 /*A port was passed in to use */
-	 device=port;
+	 device=sync_info->port;
 	 found = 1;
       }
    }
@@ -292,7 +321,7 @@ int jpilot_sync(const char *port, unsigned int flags)
    }
 
 #ifdef ENABLE_PLUGINS
-   if (!(flags & SYNC_NO_PLUGINS)) {
+   if (!(sync_info->flags & SYNC_NO_PLUGINS)) {
       jpilot_logf(LOG_DEBUG, "sync:calling load_plugins\n");
       load_plugins();
    }
@@ -338,7 +367,7 @@ int jpilot_sync(const char *port, unsigned int flags)
 #ifdef ENABLE_PLUGINS
       free_plugin_list(&plugin_list);
 #endif
-      return -1;
+      return SYNC_ERROR_BIND;
    }
 
    ret = pi_listen(sd,1);
@@ -348,7 +377,7 @@ int jpilot_sync(const char *port, unsigned int flags)
 #ifdef ENABLE_PLUGINS
       free_plugin_list(&plugin_list);
 #endif
-      return -1;
+      return SYNC_ERROR_LISTEN;
    }
 
    sd = pi_accept(sd, 0, 0);
@@ -358,14 +387,55 @@ int jpilot_sync(const char *port, unsigned int flags)
 #ifdef ENABLE_PLUGINS
       free_plugin_list(&plugin_list);
 #endif
-      return SYNC_PI_ACCEPT;
+      return SYNC_ERROR_PI_ACCEPT;
    }
 
    dlp_ReadUserInfo(sd, &U);
-   
-   /*User name is read by the parent process and stored in the preferences */
-   /*So, this is more than just displaying it to the user */
+
+   /* Do some checks to see if this is the same palm that was synced
+    * the last time
+    */
+   if (U.userID == 0) {
+      writef(pipe_out, "Last Username-->\"%s\"\n", sync_info->username);
+      writef(pipe_out, "Last UserID-->\"%d\"\n", sync_info->userID);
+      writef(pipe_out, "Username-->\"%s\"\n", U.username);
+      writef(pipe_out, "User ID-->%d\n", U.userID);
+      dlp_EndOfSync(sd, 0);
+      pi_close(sd);
+      return SYNC_ERROR_NULL_USERID;
+   }
+   if ((sync_info->userID != U.userID) &&
+       (sync_info->userID != 0) &&
+       (!(sync_info->flags & SYNC_OVERRIDE_USER))) {
+      /* These are carefully worded so as not to be read by
+       * the parent program and interpreted */
+      writef(pipe_out, "Last Username-->\"%s\"\n", sync_info->username);
+      writef(pipe_out, "Last UserID-->\"%d\"\n", sync_info->userID);
+      writef(pipe_out, "Username-->\"%s\"\n", U.username);
+      writef(pipe_out, "User ID-->%d\n", U.userID);
+      dlp_EndOfSync(sd, 0);
+      pi_close(sd);
+      return SYNC_ERROR_NOT_SAME_USERID;
+   }
+   if ((strcmp(sync_info->username, U.username)) &&
+       (sync_info->username[0]!='\0') &&
+       (!(sync_info->flags & SYNC_OVERRIDE_USER))) {
+      writef(pipe_out, "Last Username-->\"%s\"\n", sync_info->username);
+      writef(pipe_out, "Last UserID-->\"%d\"\n", sync_info->userID);
+      writef(pipe_out, "Username-->\"%s\"\n", U.username);
+      writef(pipe_out, "User ID-->%d\n", U.userID);
+      dlp_EndOfSync(sd, 0);
+      pi_close(sd);
+      return SYNC_ERROR_NOT_SAME_USER;
+   }
+
+   /* User name and User ID is read by the parent process and stored
+    * in the preferences
+    * So, this is more than just displaying it to the user */
    writef(pipe_out, "Username is \"%s\"\n", U.username);
+   writef(pipe_out, "User ID is %d\n", U.userID);
+   jpilot_logf(LOG_DEBUG, "Last Username = [%s]\n", sync_info->username);
+   jpilot_logf(LOG_DEBUG, "Last UserID = %d\n", sync_info->userID);
    jpilot_logf(LOG_DEBUG, "Username = [%s]\n", U.username);
    jpilot_logf(LOG_DEBUG, "userID = %d\n", U.userID);
    jpilot_logf(LOG_DEBUG, "lastSyncPC = %d\n", U.lastSyncPC);
@@ -378,7 +448,9 @@ int jpilot_sync(const char *port, unsigned int flags)
 #ifdef ENABLE_PLUGINS
       free_plugin_list(&plugin_list);
 #endif
-      return -1;
+      dlp_EndOfSync(sd, 0);
+      pi_close(sd);
+      return SYNC_ERROR_OPEN_CONDUIT;
    }
 
    sync_process_install_file(sd);
@@ -417,20 +489,15 @@ int jpilot_sync(const char *port, unsigned int flags)
    }
 #endif
    
-#ifdef DATEBOOK_HACK
-   hack_write_record(sd);
-#endif
-   sync_fetch(sd, flags);
+   sync_fetch(sd, sync_info->flags, sync_info->num_backups);
    
-#ifdef DATEBOOK_HACK
-   hack_delete_record(sd);
-#endif
    /* Tell the user who it is, with a different PC id. */
    U.lastSyncPC = 0x00010000;
    U.successfulSyncDate = time(NULL);
    U.lastSyncDate = U.successfulSyncDate;
    dlp_WriteUserInfo(sd, &U);
 
+   dlp_AddSyncLogEntry(sd, "Thank you for using J-Pilot.\n\r");
 
    dlp_EndOfSync(sd, 0);
    pi_close(sd);
@@ -479,11 +546,7 @@ int sync_application(char *DB_name, int sd)
    char error_log_message_d[256];
    char delete_log_message[256];
    char log_entry[256];
-/*redo
-   recordid_t id;
-   int r, index, size, attr, category;
-   char buffer[65536];
-end redo*/
+
    if ((DB_name==NULL) || (strlen(DB_name) > 250)) {
       return -1;
    }
@@ -499,13 +562,13 @@ end redo*/
       strcpy(pronoun, "a");
    }
    g_snprintf(write_log_message, 255,
-	      "Wrote %s %s record to the Pilot.\n\r", pronoun, DB_name);
+	      "Wrote %s %s record.\n\r", pronoun, DB_name);
    g_snprintf(error_log_message_w, 255,
-	      "Writing %s %s record to the Pilot failed.\n\r", pronoun, DB_name);
+	      "Writing %s %s record failed.\n\r", pronoun, DB_name);
    g_snprintf(error_log_message_d, 255,
-	      "Deleting %s %s record from the Pilot failed.\n\r", pronoun, DB_name);
+	      "Deleting %s %s record failed.\n\r", pronoun, DB_name);
    g_snprintf(delete_log_message, 256,
-	      "Deleted %s %s record from the Pilot.\n\r", pronoun, DB_name);
+	      "Deleted %s %s record.\n\r", pronoun, DB_name);
 
    pc_in = open_file(pc_filename, "r+");
    if (pc_in==NULL) {
@@ -519,15 +582,7 @@ end redo*/
       dlp_AddSyncLogEntry(sd, log_entry);
       return -1;
    }
-/*redo
-   r = dlp_ReadNextModifiedRec(sd, db, buffer,
-			   &id, &index, &size, &attr, &category);
-   printf("read next record for %s returned %d\n", DB_name, r);
-   if (r>=0 ) {
-      printf("id %d, index %d, size %d, attr 0x%x, category %d\n",id, index, size, attr, category);
-   }
- end redo
-*/
+
 #ifdef JPILOT_DEBUG
    dlp_ReadOpenDBInfo(sd, db, &num);
    writef(pipe_out ,"number of records = %d\n", num);
@@ -573,7 +628,6 @@ end redo*/
 	    if (a.note != NULL)
 	      Euc2Sjis(a.note, 65536);
 	    rec_len = pack_Appointment(&a, record, 65535);
-	    break;
 	 }
 	 if (!strcmp(DB_name, "AddressDB")) {
 	    struct Address a;
@@ -583,7 +637,6 @@ end redo*/
 	      if (a.entry[i] != NULL)
 		Euc2Sjis(a.entry[i], 65536);
 	    rec_len = pack_Address(&a, record, 65535);
-	    break;
 	 }
 	 if (!strcmp(DB_name, "ToDoDB")) {
 	    struct ToDo t;
@@ -593,7 +646,6 @@ end redo*/
             if (t.note != NULL)
 	      Euc2Sjis(t.note, 65536);
 	    rec_len = pack_ToDo(&t, record, 65535);
-	    break;
 	 }
 	 if (!strcmp(DB_name, "MemoDB")) {
 	    struct Memo m;
@@ -601,7 +653,6 @@ end redo*/
 	    if (m.text != NULL)
 	      Euc2Sjis(m.text, 65536);
 	    rec_len = pack_Memo(&m, record, 65535);
-	    break;
 	 }
 #endif
 	 ret = dlp_WriteRecord(sd, db, 0, 0, header.attrib & 0x0F,
@@ -616,9 +667,6 @@ end redo*/
 	    writef(pipe_out, "dlp_WriteRecord failed\n");
 	    dlp_AddSyncLogEntry(sd, error_log_message_w);
 	 } else {
-	    /*Delete the record from the PC database if it succeeded */
-	    /*hack2 */
-	    wrote_to_datebook = 1;
 	    dlp_AddSyncLogEntry(sd, write_log_message);
 	    /*Now mark the record as deleted in the pc file */
 	    if (fseek(pc_in, -(sizeof(header)+rec_len), SEEK_CUR)) {
@@ -680,169 +728,196 @@ end redo*/
 /*
  * Fetch the databases from the palm if modified
  */
-int sync_fetch(int sd, unsigned int flags)
+int sync_fetch(int sd, unsigned int flags, const int num_backups)
 {
 #define MAX_DBNAME 50
    struct pi_file *pi_fp;
    char full_name[256];
+   char full_backup_name[300];
+   char creator[6];
    struct stat statb;
    struct utimbuf times;
-   int i, found;
+   int i;
+   int back_it_up;
+   int manual_skip;
    int cardno, start;
    struct DBInfo info;
    char db_copy_name[MAX_DBNAME];
    char *palm_dbname[]={
       "DatebookDB",
-	"AddressDB",
-	"ToDoDB",
-	"MemoDB",
-	NULL
+      "AddressDB",
+      "ToDoDB",
+      "MemoDB",
+      NULL
+   };
+   char *skip_creators[]={
+      /* Take this out if you want to backup AvantGo files */
+      "AvGo",
+      NULL
    };
 #ifdef ENABLE_PLUGINS
    GList *plugin_list, *temp_list;
    struct plugin_s *plugin;
 #endif
    
+   jpilot_logf(LOG_DEBUG, "sync_fetch flags=0x%x, num_backups=%d\n", flags, num_backups);
+   if ((flags & SYNC_FULL_BACKUP)) {
+      jpilot_logf(LOG_DEBUG, "Full Backup\n");
+      sync_rotate_backups(num_backups);
+   }
    
-   found=start=cardno=0;
+   start=cardno=0;
    
    while(dlp_ReadDBList(sd, cardno, dlpOpenRead, start, &info)>0) {
       start=info.index+1;
+      creator[0] = (info.creator & 0xFF000000) >> 24;
+      creator[1] = (info.creator & 0x00FF0000) >> 16,
+      creator[2] = (info.creator & 0x0000FF00) >> 8,
+      creator[3] = (info.creator & 0x000000FF);
+      creator[4] = '\0';
 #ifdef JPILOT_DEBUG
       writef(pipe_out, "dbname = %s\n",info.name);
+      writef(pipe_out, "exclude from sync = %d\n",info.miscFlags & dlpDBMiscFlagExcludeFromSync);
       writef(pipe_out, "flag backup = %d\n",info.flags & dlpDBFlagBackup);
-      writef(pipe_out, "type = %x\n",info.type);
-      writef(pipe_out, "creator = %x\n",info.creator);
+      /*writef(pipe_out, "type = %x\n",info.type);*/
+      writef(pipe_out, "creator = [%c%c%c%c]\n",
+	     (info.creator & 0xFF000000) >> 24,
+	     (info.creator & 0x00FF0000) >> 16,
+	     (info.creator & 0x0000FF00) >> 8,
+	     (info.creator & 0x000000FF));
 #endif
-      if (!(flags & SYNC_FULL_BACKUP)) {
-	 for(i=0, found=0; palm_dbname[i]; i++) {
-	    if ((found = !strcmp(info.name, palm_dbname[i])))
-	      break;
+      if (flags & SYNC_FULL_BACKUP) {
+	 /* Look at the skip list */
+	 manual_skip=0;
+	 for (i=0; skip_creators[i]; i++) {
+	    if (!strcmp(creator, skip_creators[i])) {
+	       writef(pipe_out, "Skipping %s\n", info.name);
+	       manual_skip=1;
+	       break;
+	    }
+	 }
+	 if (manual_skip) {
+	    continue;
+	 }
+      }
+
+      back_it_up=0;
+      for (i=0; palm_dbname[i]; i++) {
+	 if (!strcmp(info.name, palm_dbname[i])) {
+	    jpilot_logf(LOG_DEBUG, "Found main app\n");
+	    back_it_up = 1;
+	    break;
 	 }
       }
 #ifdef ENABLE_PLUGINS
       plugin_list = get_plugin_list();
 
-      if ((!found) && (!(flags & SYNC_FULL_BACKUP))) {
+      if (!back_it_up) {
 	 for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
 	    plugin = (struct plugin_s *)temp_list->data;
 	    if (!strcmp(info.name, plugin->db_name)) {
-	       found=1;
+	       jpilot_logf(LOG_DEBUG, "Found plugin\n");
+	       back_it_up = 1;
 	       break;
 	    }
 	 }
       }
 #endif
 
-      if ((flags & SYNC_FULL_BACKUP) || found) {
-	 strncpy(db_copy_name, info.name, MAX_DBNAME-5);
-	 db_copy_name[MAX_DBNAME-5]='\0';
-	 if (info.flags & dlpDBFlagResource) {
-	    strcat(db_copy_name,".prc");
-	 } else {
-	    strcat(db_copy_name,".pdb");
-	 }
-   
-	 get_home_file_name(db_copy_name, full_name, 255);
+      if (!((flags & SYNC_FULL_BACKUP) || back_it_up)) {
+	 continue;
+      }
+#ifdef JPILOT_DEBUG
+      if (back_it_up) {
+	 jpilot_logf(LOG_DEBUG, "back_it_up is set\n");
+      }
+      if (flags & SYNC_FULL_BACKUP) {
+	 jpilot_logf(LOG_DEBUG, "full_backup is set\n");
+      }
+#endif
+      strncpy(db_copy_name, info.name, MAX_DBNAME-5);
+      db_copy_name[MAX_DBNAME-5]='\0';
+      if (info.flags & dlpDBFlagResource) {
+	 strcat(db_copy_name,".prc");
+      } else {
+	 strcat(db_copy_name,".pdb");
+      }
+	 
+      if (!strcmp(db_copy_name, "Graffiti ShortCuts .prc")) {
+	 /* Make a special exception for the graffiti shortcuts.
+	  * We want to save it as this to avoid the confusion of
+	  * having 2 different versions around */
+	 strcpy(db_copy_name, "Graffiti ShortCuts.prc");
+      }
+      get_home_file_name(db_copy_name, full_name, 255);
+      get_home_file_name("backup/", full_backup_name, 255);
+      strcat(full_backup_name, db_copy_name);
+      if (back_it_up) {
 	 if (stat(full_name, &statb) != 0) {
 	    statb.st_mtime = 0;
 	 }
+      } else {
+	 if (stat(full_backup_name, &statb) != 0) {
+	    statb.st_mtime = 0;
+	 }
+      }
 #ifdef JPILOT_DEBUG
-	 writef(pipe_out, "palm dbtime= %d, local dbtime = %d\n", info.modifyDate, statb.st_mtime);
-	 writef(pipe_out, "flags=0%x\n", info.flags);
-	 writef(pipe_out, "backup_flag=%d\n", info.flags & dlpDBFlagBackup);
+      writef(pipe_out, "palm dbtime= %d, local dbtime = %d\n", info.modifyDate, statb.st_mtime);
+      writef(pipe_out, "flags=0x%x\n", info.flags);
+      writef(pipe_out, "backup_flag=%d\n", info.flags & dlpDBFlagBackup);
 #endif
-	 /*If modification times are the same then we don't need to fetch it */
-	 if (info.modifyDate == statb.st_mtime) {
-	    writef(pipe_out, "%s is up to date, fetch skipped.\n", db_copy_name);
-	    continue;
-	 }
-
-	 writef(pipe_out, "Fetching '%s'... ", info.name);
-   
-	 info.flags &= 0xff;
-   
+      /*If modification times are the same then we don't need to fetch it */
+      if (info.modifyDate == statb.st_mtime) {
+	 writef(pipe_out, "%s is up to date, fetch skipped.\n", db_copy_name);
+	 continue;
+      }
+      
+      writef(pipe_out, "Fetching '%s'... ", info.name);
+      
+      info.flags &= 0xff;
+      
+      if (back_it_up) {
 	 pi_fp = pi_file_create(full_name, &info);
-	 if (pi_fp==0) {
-	    writef(pipe_out, "Failed, unable to create file %s\n", full_name);
-	    continue;
-	 }
-	 if(pi_file_retrieve(pi_fp, sd, 0)<0) {
-	    writef(pipe_out, "Failed, unable to back up database\n");
-	 } else {
-	    writef(pipe_out, "OK\n");
-	 }
-	 pi_file_close(pi_fp);
-   
-	 /*Set the create and modify times of local file to same as on palm */
-	 times.actime = info.createDate;
-	 times.modtime = info.modifyDate;
+      } else {
+	 pi_fp = pi_file_create(full_backup_name, &info);
+      }
+      if (pi_fp==0) {
+	 writef(pipe_out, "Failed, unable to create file %s\n",
+		back_it_up ? full_name : full_backup_name);
+	 continue;
+      }
+      if (pi_file_retrieve(pi_fp, sd, 0)<0) {
+	 writef(pipe_out, "Failed, unable to back up database\n");
+      } else {
+	 writef(pipe_out, "OK\n");
+      }
+      pi_file_close(pi_fp);
+      
+      /*Set the create and modify times of local file to same as on palm */
+      times.actime = info.createDate;
+      times.modtime = info.modifyDate;
+      if (back_it_up) {
 	 utime(full_name, &times);
+      } else {
+	 utime(full_backup_name, &times);
+      }
+
+      /* I'm not 100% sure about this, but I copy the file to backup even if
+       * it was just a regular sync, so that backup will always have the
+       * newest files. */
+      if (back_it_up) {
+	 jpilot_copy_file(full_name, full_backup_name);
       }
    }
    return 0;
 }
-
-#ifdef DATEBOOK_HACK
-static int hack_write_record(int sd)
-{
-   char record[65536];
-   int rec_len;
-   int db;
-   int ret;
-   
-   hack_record_id = 0;
-   
-   jpilot_logf(LOG_DEBUG, "Entering hack_write_record()\n");
-   if (wrote_to_datebook) {
-      /* Open the applications database, store access handle in db */
-      if (dlp_OpenDB(sd, 0, dlpOpenWrite, "DatebookDB", &db) < 0) {
-	 dlp_AddSyncLogEntry(sd, "Unable to open DatebookDB\n\r");
-	 return -1;
-      }
-      datebook_create_bogus_record(record, 65536, &rec_len);
-      
-      /*Write a bogus record to the Palm Pilot, to delete later. */
-      jpilot_logf(LOG_DEBUG, "writing bogus record\n");
-      ret = dlp_WriteRecord(sd, db, 0, 0, 0,
-		      record, rec_len, &hack_record_id);
-      if (ret<0) {
-	 jpilot_logf(LOG_WARN, "write bogus record failed\n");
-      }
-      /* Close the database */
-      dlp_CloseDB(sd, db);
-   }
-   return 0;
-}
-#endif
-
-#ifdef DATEBOOK_HACK
-static int hack_delete_record(int sd)
-{
-   int db;
-
-   if (hack_record_id) {
-      /* Open the applications database, store access handle in db */
-      if (dlp_OpenDB(sd, 0, dlpOpenWrite, "DatebookDB", &db) < 0) {
-	 dlp_AddSyncLogEntry(sd, "Unable to open DatebookDB\r\n");
-	 return -1;
-      }
-      
-      jpilot_logf(LOG_DEBUG, "deleting bogus record\n");
-      dlp_DeleteRecord(sd, db, 0, hack_record_id);
-
-      /* Close the database */
-      dlp_CloseDB(sd, db);
-   }
-   return 0;
-}
-#endif
 
 static int sync_install(char *filename, int sd)
 {
    struct pi_file *f;
    char *Pc;
    char log_entry[256];
+   int r, try_again;
    
    Pc=rindex(filename, '/');
    if (!Pc) {
@@ -857,7 +932,30 @@ static int sync_install(char *filename, int sd)
       writef(pipe_out, "\nUnable to open '%s'!\n", filename);
       return -1;
    }
-   if (pi_file_install(f, sd, 0)<0) {
+   r = pi_file_install(f, sd, 0);
+   if (r<0) {
+      try_again = 0;
+      /* Here we make a special exception for graffiti */
+      if (!strcmp(f->info.name, "Graffiti ShortCuts")) {
+	 strcpy(f->info.name, "Graffiti ShortCuts ");
+	 /* This requires a reset */
+	 f->info.flags |= dlpDBFlagReset;
+	 f->info.flags |= dlpDBFlagNewer;
+	 try_again = 1;
+      } else if (!strcmp(f->info.name, "Graffiti ShortCuts ")) {
+	 strcpy(f->info.name, "Graffiti ShortCuts");
+	 /* This requires a reset */
+	 f->info.flags |= dlpDBFlagReset;
+	 f->info.flags |= dlpDBFlagNewer;
+	 try_again = 1;
+      }
+      if (try_again) {
+	 /* Try again */
+	 r = pi_file_install(f, sd, 0);
+      }
+   }
+
+   if (r<0) {
       g_snprintf(log_entry, 255, "Install %s failed\n\r", Pc);
       log_entry[255]='\0';
       dlp_AddSyncLogEntry(sd, log_entry);
@@ -919,6 +1017,212 @@ static int sync_process_install_file(int sd)
    fclose(out);
    
    rename_file("jpilot_to_install.tmp", "jpilot_to_install");
+   
+   return 0;
+}
+
+int is_backup_dir(char *name)
+{
+   int i;
+   
+   /* backup dirs are of the form backupMMDDHHMM */
+   if (strncmp(name, "backup", 6)) {
+      return 0;
+   }
+   for (i=6; i<14; i++) {
+      if (name[i]=='\0') {
+	 return 0;
+      }
+      if (!isdigit(name[i])) {
+	 return 0;
+      }
+   }
+   if (name[i]!='\0') {
+      return 0;
+   }
+   return 1;
+}
+
+static int compare_back_dates(char *s1, char *s2)
+{
+   /* backupMMDDhhmm */
+   int i1, i2;
+   
+   if ((strlen(s1) < 8) || (strlen(s2) < 8)) {
+      return 0;
+   }
+   i1 = atoi(&s1[6]);
+   i2 = atoi(&s2[6]);
+   if (((i1/1000000) < 3) && ((i2/1000000) > 9)) {
+      /* Try to guess the year crossover with a 4 month window */
+      return 1;
+   }
+   if (i1<i2) {
+      return -1;
+   }
+   if (i1>i2) {
+      return 1;
+   }
+   return 0;
+}
+
+int sync_remove_r(char *full_path)
+{
+   DIR *dir;
+   struct dirent *dirent;
+   char full_src[300];
+   char last4[8];
+   int len;
+
+   dir = opendir(full_path);
+   if (dir) {
+      while ((dirent = readdir(dir))) {
+	 sprintf(full_src, "%s/%s", full_path, dirent->d_name);
+	 /* Just to make sure nothing too wrong is deleted */
+	 len = strlen(dirent->d_name);
+	 if (len < 4) {
+	    continue;
+	 }
+	 strcpy(last4, dirent->d_name+len-4);
+	 if ((strcmp(last4, ".pdb")==0) || (strcmp(last4, ".prc")==0)) {
+	    unlink(full_src);
+	 }
+      }
+      closedir(dir);
+   }
+   rmdir(full_path);
+
+   return 0;
+}
+
+static int get_oldest_newest_dir(char *oldest, char *newest, int *count)
+{
+   DIR *dir;
+   struct dirent *dirent;
+   char home_dir[256];
+   int r;
+
+   get_home_file_name("", home_dir, 255);
+   jpilot_logf(LOG_DEBUG, "rotate_backups: opening dir %s\n", home_dir);
+   *count = 0;
+   oldest[0]='\0';
+   newest[0]='\0';
+   dir = opendir(home_dir);
+   if (!dir) {
+      return -1;
+   }
+   *count = 0;
+   while((dirent = readdir(dir))) {
+      if (is_backup_dir(dirent->d_name)) {
+	 jpilot_logf(LOG_DEBUG, "backup dir [%s]\n", dirent->d_name);
+	 (*count)++;
+	 if (oldest[0]=='\0') {
+	    strcpy(oldest, dirent->d_name);
+	    jpilot_logf(LOG_DEBUG, "oldest is now %s\n", oldest);
+	 }
+	 if (newest[0]=='\0') {
+	    strcpy(newest, dirent->d_name);
+	    jpilot_logf(LOG_DEBUG, "newest is now %s\n", newest);
+	 }
+	 r = compare_back_dates(oldest, dirent->d_name);
+	 if (r>0) {
+	    strcpy(oldest, dirent->d_name);
+	    jpilot_logf(LOG_DEBUG, "oldest is now %s\n", oldest);
+	 }
+	 r = compare_back_dates(newest, dirent->d_name);
+	 if (r<0) {
+	    strcpy(newest, dirent->d_name);
+	    jpilot_logf(LOG_DEBUG, "newest is now %s\n", newest);
+	 }
+      }
+   }
+   closedir(dir);
+   return 0;
+}
+      
+static int sync_rotate_backups(const int num_backups)
+{
+   DIR *dir;
+   struct dirent *dirent;
+   char home_dir[256];
+   char full_name[300];
+   char full_newdir[300];
+   char full_backup[300];
+   char full_oldest[300];
+   char full_src[300];
+   char full_dest[300];
+   int r;
+   int count, safety;
+   char oldest[20];
+   char newest[20];
+   char newdir[20];
+   time_t ltime;
+   struct tm *now;
+
+   get_home_file_name("", home_dir, 255);
+
+   /* We use safety because if removing the directory fails then we
+    * will get stuck in an endless loop */
+   for (safety=100; safety>0; safety--) {
+      r = get_oldest_newest_dir(oldest, newest, &count);
+      if (r<0) {
+	 jpilot_logf(LOG_WARN, "unable to read home dir\n");
+	 break;
+      }
+      if (count > num_backups) {
+	 sprintf(full_oldest, "%s/%s", home_dir, oldest);
+	 jpilot_logf(LOG_DEBUG, "count=%d, num_backups=%d\n", count, num_backups);
+	 jpilot_logf(LOG_DEBUG, "removing dir [%s]\n", full_oldest);
+	 sync_remove_r(full_oldest);
+      } else {
+	 break;
+      }
+   }
+
+   /* Now we should have the same number of backups (or less) as num_backups */
+   
+   time(&ltime);
+   now = localtime(&ltime);
+   /* Create the new backup directory */
+   sprintf(newdir, "backup%02d%02d%02d%02d",
+	   now->tm_mon+1, now->tm_mday, now->tm_hour, now->tm_min);
+   if (strcmp(newdir, newest)) {
+      sprintf(full_newdir, "%s/%s", home_dir, newdir);
+      if (mkdir(full_newdir, 0777)==0) {
+	 count++;
+      }
+   }
+
+   /* Copy from the newest backup, if it exists */
+   if (strcmp(newdir, newest)) {
+      sprintf(full_backup, "%s/backup", home_dir);
+      sprintf(full_newdir, "%s/%s", home_dir, newdir);
+      dir = opendir(full_backup);
+      if (dir) {
+	 while ((dirent = readdir(dir))) {
+	    sprintf(full_src, "%s/%s", full_backup, dirent->d_name);
+	    sprintf(full_dest, "%s/%s", full_newdir, dirent->d_name);
+	    jpilot_copy_file(full_src, full_dest);
+	 }
+	 closedir(dir);
+      }
+   }
+
+   /* Remove the oldest backup if needed */
+   if (count > num_backups) {
+      if ( (oldest[0]!='\0') && (strcmp(newdir, oldest)) ) {
+	 sprintf(full_oldest, "%s/%s", home_dir, oldest);
+	 jpilot_logf(LOG_DEBUG, "removing dir [%s]\n", full_oldest);
+	 sync_remove_r(full_oldest);
+      }
+   }
+
+   /* Delete the symlink */
+   sprintf(full_name, "%s/backup", home_dir);
+   unlink(full_name);
+   
+   /* Create the symlink */
+   symlink(newdir, full_name);
    
    return 0;
 }

@@ -21,45 +21,219 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include "utils.h"
-/*#include "prefs.h" */
+#include "prefs.h"
 #include "log.h"
 #include "datebook.h"
-/*#include "address.h" */
-/*#include "todo.h" */
-/*#include "memo.h" */
 #include <pi-datebook.h>
-/*#include <pi-address.h> */
-/*#include <pi-todo.h> */
-/*#include <pi-memo.h> */
+#include "config.h"
+
+static GtkWidget *window=NULL;
+static GtkWidget *glob_month_vbox;
+static GtkWidget *glob_hbox_month_row[6];
+static GtkWidget *glob_month_texts[31];
+static GtkWidget *glob_month_month_label;
+static struct tm glob_month_date;
+
+
+int display_months_appts(struct tm *glob_month_date, GtkWidget **glob_month_texts);
+void create_month_boxes();
+void create_month_texts();
+void destroy_month_boxes();
+
 
 static gboolean cb_destroy(GtkWidget *widget)
 {
+   window = NULL;
    return FALSE;
 }
 
 static void
-  cb_quit(GtkWidget *widget,
-	   gpointer   data)
+cb_quit(GtkWidget *widget,
+	gpointer   data)
 {
+   window = NULL;
    gtk_widget_destroy(data);
 }
 
-void cb_monthview_gui(GtkWidget *widget, gpointer data)
+static void
+cb_month_move(GtkWidget *widget,
+	      gpointer   data)
 {
-   static GtkWidget *window=NULL;
-   GtkWidget *table;
-   GtkWidget *text;
-   GtkWidget *button;
-   GtkWidget *vbox;
-   int w, d;
-   char str[50];
+   if (GPOINTER_TO_INT(data)==-1) {
+      glob_month_date.tm_mday=15;
+      sub_days_from_date(&glob_month_date, 30);
+   }
+   if (GPOINTER_TO_INT(data)==1) {
+      glob_month_date.tm_mday=15;
+      add_days_to_date(&glob_month_date, 30);
+   }
+   destroy_month_boxes();
+   create_month_boxes();
+   create_month_texts();
+   display_months_appts(&glob_month_date, glob_month_texts);
+}
+
+void create_month_boxes()
+{
+   int i;
    
+   for (i=0; i<6; i++) {
+      glob_hbox_month_row[i] = gtk_hbox_new(TRUE, 0);
+      gtk_box_pack_start(GTK_BOX(glob_month_vbox), glob_hbox_month_row[i], TRUE, TRUE, 0);
+   }
+}
+
+void destroy_month_boxes()
+{
+   int i;
+   
+   for (i=0; i<6; i++) {
+      gtk_widget_destroy(glob_hbox_month_row[i]);
+   }
+}
+
+void create_month_texts()
+{
+   int n;
+   int dow, ndim, d;
+   int row, column;
+   long fdow;
+   const char *str_fdow;
+   char str[80];
+   GtkWidget *hbox;
+   GdkColor color;
+   GdkColormap *colormap;
+
+   /* Month name label */
+   strftime(str, 60, "%B %Y", &glob_month_date);
+   gtk_label_set_text(GTK_LABEL(glob_month_month_label), str);
+   
+   get_month_info(glob_month_date.tm_mon, 1, glob_month_date.tm_year, &dow, &ndim);
+
+   get_pref(PREF_FDOW, &fdow, &str_fdow);
+
+   d=dow;
+   row=0;
+   column=0;
+   for (n=(7+dow-fdow)%7; n>0; n--) {
+      hbox = gtk_hbox_new(TRUE, 0);
+      gtk_widget_set_usize(GTK_WIDGET(hbox), 110, 90);
+      gtk_box_pack_start(GTK_BOX(glob_hbox_month_row[0]), hbox, TRUE, TRUE, 0);
+      column++;
+   }
+
+   for (n=0; n<ndim; n++) {
+      glob_month_texts[n] = gtk_text_new(NULL, NULL);
+      gtk_widget_set_usize(GTK_WIDGET(glob_month_texts[n]), 110, 90);
+      gtk_box_pack_start(GTK_BOX(glob_hbox_month_row[row]), glob_month_texts[n], TRUE, TRUE, 0);
+      if (++column > 6) {
+	 column=0;
+	 row++;
+      }
+   }
+
+   color.red = 0xAAAA;
+   color.green = 0xAAAA;
+   color.blue = 0xAAAA;
+
+   colormap = gtk_widget_get_colormap(glob_month_texts[0]);
+   gdk_color_alloc(colormap, &color);
+
+   for (n=0; n<ndim; n++) {
+      sprintf(str, "%d\n", n + 1);
+      gtk_text_insert(GTK_TEXT(glob_month_texts[n]), NULL, NULL, &color, str, -1);
+   }
+
+   for (n=column; n<7; n++) {
+      if (column==0) break;
+      hbox = gtk_hbox_new(TRUE, 0);
+      gtk_widget_set_usize(GTK_WIDGET(hbox), 110, 90);
+      gtk_box_pack_start(GTK_BOX(glob_hbox_month_row[row]), hbox, TRUE, TRUE, 0);
+   }
+
+}
+
+int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
+{
+   AppointmentList *a_list;
+   AppointmentList *temp_al;
+   struct tm date;
+   GtkWidget **text;
+   char desc[60];
+   int dow;
+   int ndim;
+   int n;
+   GdkFont *small_font;
+
+   a_list = NULL;
+   text = day_texts;
+
+   small_font = gdk_fontset_load("-misc-fixed-medium-r-*-*-*-100-*-*-*-*-*");
+
+   memcpy(&date, date_in, sizeof(struct tm));
+
+   /* Get all of the appointments */
+   get_days_appointments(&a_list, NULL);
+
+   get_month_info(date.tm_mon, 1, date.tm_year, &dow, &ndim);
+
+   for (n=0, date.tm_mday=1; date.tm_mday<=ndim; date.tm_mday++, n++) {
+      date.tm_sec=0;
+      date.tm_min=0;
+      date.tm_hour=11;
+      date.tm_isdst=0;
+      date.tm_wday=0;
+      date.tm_yday=1;
+      mktime(&date);
+      for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
+	 if (isApptOnDate(&(temp_al->ma.a), &date)) {
+	    if (temp_al->ma.a.event) {
+	       desc[0]='\0';
+	    } else {
+	       strftime(desc, 20, "%l:%M%P ", &(temp_al->ma.a.begin));
+	    }
+	    if (temp_al->ma.a.description) {
+	       strncat(desc, temp_al->ma.a.description, 20);
+	       desc[16]='\0';
+	    }
+	    remove_cf_lfs(desc);
+	    strcat(desc, "\n");
+	    gtk_text_insert(GTK_TEXT(text[n]),
+			    small_font, NULL, NULL, desc, -1);
+	 }
+      }
+   }
+   free_AppointmentList(&a_list);
+   
+   gtk_widget_show_all(window);
+   return 0;
+}
+
+void monthview_gui(struct tm *date_in)
+{
+   char *days[]={"Sunday","Monday","Tuesday","Wednesday","Thurday",
+      "Friday","Saturday", "Sunday"};
+   GtkWidget *label;
+   GtkWidget *button;
+   GtkWidget *arrow;
+   GtkWidget *align;
+   GtkWidget *vbox;
+   GtkWidget *hbox;
+   GtkWidget *hbox_temp;
+   int i;
+   char str[256];
+   long fdow;
+   const char *str_fdow;
+
    if (GTK_IS_WIDGET(window)) {
       return;
    }
+   
+   memcpy(&glob_month_date, date_in, sizeof(struct tm));
+   
+   get_pref(PREF_FDOW, &fdow, &str_fdow);
 
    window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-   gtk_window_set_default_size(GTK_WINDOW(window), 800, 600);
    gtk_container_set_border_width(GTK_CONTAINER(window), 10);
    gtk_window_set_title(GTK_WINDOW(window), PN" Monthly View");
 
@@ -69,30 +243,63 @@ void cb_monthview_gui(GtkWidget *widget, gpointer data)
    vbox = gtk_vbox_new(FALSE, 0);
    gtk_container_add(GTK_CONTAINER(window), vbox);
 
-/*   hbox = gtk_hbox_new(FALSE, 0); */
- /*  gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0); */
+   /* This box has the close button and arrows in it */
+   align = gtk_alignment_new(0.5, 0.5, 0, 0);
+   gtk_box_pack_start(GTK_BOX(vbox), align, FALSE, FALSE, 0);
 
-   table = gtk_table_new(7, 6, TRUE);
-   gtk_box_pack_start(GTK_BOX(vbox), table, FALSE, FALSE, 0);
+   hbox_temp = gtk_hbox_new(FALSE, 0);
+
+   gtk_container_add(GTK_CONTAINER(align), hbox_temp);
+
+   /*Make a left arrow for going back a week */
+   button = gtk_button_new();
+   arrow = gtk_arrow_new(GTK_ARROW_LEFT, GTK_SHADOW_OUT);
+   gtk_container_add(GTK_CONTAINER(button), arrow);
+   gtk_signal_connect(GTK_OBJECT(button), "clicked", 
+		      GTK_SIGNAL_FUNC(cb_month_move),
+		      GINT_TO_POINTER(-1));
+   gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 3);
+
    
-   for (w=0; w<5; w++) {
-      for (d=0; d<7; d++) {
-/*	 label = gtk_label_new("1"); */
-/*	 gtk_widget_set_name(GTK_WIDGET(label), "label_box_cal"); */
-/*	 gtk_table_attach_defaults(GTK_TABLE(table), label, d, d+1, w, w+1); */
-	 text = gtk_text_new(NULL, NULL);
-	 gtk_widget_set_usize(GTK_WIDGET(text), 60, 90);
-	 sprintf(str, "%d", w*7 + d + 1);
-	 gtk_text_insert(GTK_TEXT(text), NULL,NULL, NULL, str, -1);
-	 gtk_table_attach_defaults(GTK_TABLE(table), text, d, d+1, w, w+1);
-      }
-   }
-
    /* Create a "Quit" button */
    button = gtk_button_new_with_label("Close");
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_quit), window);
-   gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
 
+   /*Make a right arrow for going forward a week */
+   button = gtk_button_new();
+   arrow = gtk_arrow_new(GTK_ARROW_RIGHT, GTK_SHADOW_OUT);
+   gtk_container_add(GTK_CONTAINER(button), arrow);
+   gtk_signal_connect(GTK_OBJECT(button), "clicked", 
+		      GTK_SIGNAL_FUNC(cb_month_move),
+		      GINT_TO_POINTER(1));
+   gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 3);
+
+
+   /* Month name label */
+   strftime(str, 60, "%B %Y", &glob_month_date);
+   glob_month_month_label = gtk_label_new(str);
+   gtk_box_pack_start(GTK_BOX(vbox), glob_month_month_label, TRUE, TRUE, 0);
+   
+   /* Days of the week */
+   hbox = gtk_hbox_new(TRUE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 0);
+   for (i=0; i<7; i++) {
+      label = gtk_label_new(days[i+fdow]);
+      gtk_box_pack_start(GTK_BOX(hbox), label, TRUE, TRUE, 0);
+   }
+
+   /* glob_month_vbox */
+   glob_month_vbox = gtk_vbox_new(TRUE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox), glob_month_vbox, TRUE, TRUE, 0);
+
+   create_month_boxes();
+     
+   create_month_texts();
+
+   display_months_appts(&glob_month_date, glob_month_texts);
+ 
    gtk_widget_show_all(window);
 }
+

@@ -42,7 +42,7 @@
 #include <pi-file.h>
 
 /*Stuff for the dialog window */
-GtkWidget *dialog;
+extern GtkWidget *glob_dialog;
 int dialog_result;
 
 unsigned int glob_find_id;
@@ -53,7 +53,7 @@ gint timeout_date(gpointer data)
    char str[102];
    char datef[102];
    const char *svalue1, *svalue2;
-   int ivalue;
+   long ivalue;
    time_t ltime;
    struct tm *now;
 
@@ -78,8 +78,90 @@ gint timeout_date(gpointer data)
    gtk_label_set_text(GTK_LABEL(glob_date_label), str);
    return TRUE;
 }
+/*
+ * This is a slow algorithm, but its not used much
+ */
+int add_days_to_date(struct tm *date, int n)
+{
+   int ndim;
+   int fdom;
+   int flag;
+   int i;
+   
+   get_month_info(date->tm_mon, 1, date->tm_year, &fdom, &ndim);
+   for (i=0; i<n; i++) {
+      flag = 0;
+      if (++(date->tm_mday) > ndim) {
+	 date->tm_mday=1;
+	 flag = 1;
+	 if (++(date->tm_mon) > 11) {
+	    date->tm_mon=0;
+	    flag = 1;
+	    if (++(date->tm_year)>137) {
+	       date->tm_year = 137;
+	    }
+	 }
+      }
+      if (flag) {
+	 get_month_info(date->tm_mon, 1, date->tm_year, &fdom, &ndim);
+      }
+   }
+   mktime(date);
+   return 0;  
+}
+
+/*
+ * This is a slow algorithm, but its not used much
+ */
+int sub_days_from_date(struct tm *date, int n)
+{
+   int ndim;
+   int fdom;
+   int flag;
+   int reset_days;
+   int i;
+   
+   get_month_info(date->tm_mon, 1, date->tm_year, &fdom, &ndim);
+   for (i=0; i<n; i++) {
+      flag = reset_days = 0;
+      if (--(date->tm_mday) < 1) {
+	 date->tm_mday=28;
+	 reset_days = 1;
+	 flag = 1;
+	 if (--(date->tm_mon) < 0) {
+	    date->tm_mon=11;
+	    flag = 1;
+	    if (--(date->tm_year)<3) {
+	       date->tm_year = 3;
+	    }
+	 }
+      }
+      if (flag) {
+	 get_month_info(date->tm_mon, 1, date->tm_year, &fdom, &ndim);
+      }
+      /* this assumes that flag is always set when reset_days is set */
+      if (reset_days) {
+	 date->tm_mday=ndim;
+      }
+   }
+   mktime(date);
+   return 0;
+}
 
 
+/*
+ * Parse the string and replace CR and LFs with spaces
+ */
+void remove_cf_lfs(char *str)
+{
+   int i;
+   for (i=0; str[i]; i++) {
+      if ((str[i]=='\r') || (str[i]=='\n')) {
+	 str[i]=' ';
+      }
+   }
+}
+   
 /*void free_AnyRecordList(AnyRecordList **rl)
 {
    AnyRecordList *temp_rl, *temp_rl_next;
@@ -217,7 +299,7 @@ int clist_find_id(GtkWidget *clist,
    return found;
 }
 
-/* //todo There should be a much easier way to do this */
+/* todo There should be a much easier way to do this */
 int clist_count(GtkWidget *clist,
 		int *total_count)
 {
@@ -412,27 +494,16 @@ char * xpm_checked[] = {
    return 0;
 }
 
-
 /* */
 /*Start of Dialog window code */
 /* */
-gint cb_timer_raise_dialog(gpointer data)
-{
-   if (GTK_IS_WIDGET(dialog)) {
-      gdk_window_raise(dialog->window);
-   } else {
-      return FALSE;
-   }
-   return TRUE;
-}
-
 void cb_dialog_button_1(GtkWidget *widget,
 			gpointer   data)
 {
    /*dialog_result=GPOINTER_TO_INT(data); */
    dialog_result=DIALOG_SAID_1;
 
-   gtk_widget_destroy(dialog);
+   gtk_widget_destroy(glob_dialog);
 }
 
 void cb_dialog_button_2(GtkWidget *widget,
@@ -441,7 +512,7 @@ void cb_dialog_button_2(GtkWidget *widget,
    /*dialog_result=GPOINTER_TO_INT(data); */
    dialog_result=DIALOG_SAID_2;
 
-   gtk_widget_destroy(dialog);
+   gtk_widget_destroy(glob_dialog);
 }
 
 void cb_dialog_button_3(GtkWidget *widget,
@@ -450,12 +521,12 @@ void cb_dialog_button_3(GtkWidget *widget,
    /*dialog_result=GPOINTER_TO_INT(data); */
    dialog_result=DIALOG_SAID_3;
 
-   gtk_widget_destroy(dialog);
+   gtk_widget_destroy(glob_dialog);
 }
 
 static gboolean cb_destroy_dialog(GtkWidget *widget)
 {
-   dialog = NULL;
+   glob_dialog = NULL;
    gtk_main_quit();
 
    return FALSE;
@@ -481,32 +552,32 @@ int dialog_generic(GdkWindow *main_window,
    x=px+pw/2-w/2;
    y=py+ph/2-h/2;
    
-   /*dialog=gtk_window_new(GTK_WINDOW_TOPLEVEL); */
-   dialog = gtk_widget_new(GTK_TYPE_WINDOW,
+   /*glob_dialog=gtk_window_new(GTK_WINDOW_TOPLEVEL); */
+   glob_dialog = gtk_widget_new(GTK_TYPE_WINDOW,
 			   "type", GTK_WINDOW_DIALOG,
 			   "x", x, "y", y,
 			   "width", w, "height", h,
 			   "title", title,
 			   NULL);
 
-   /*gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER); */
-   /*gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_MOUSE); */
+   /*gtk_window_set_position(GTK_WINDOW(glob_dialog), GTK_WIN_POS_CENTER); */
+   /*gtk_window_set_position(GTK_WINDOW(glob_dialog), GTK_WIN_POS_MOUSE); */
    
-   gtk_signal_connect(GTK_OBJECT(dialog), "destroy",
-                      GTK_SIGNAL_FUNC(cb_destroy_dialog), dialog);
+   gtk_signal_connect(GTK_OBJECT(glob_dialog), "destroy",
+                      GTK_SIGNAL_FUNC(cb_destroy_dialog), glob_dialog);
 
-   gtk_window_set_modal(GTK_WINDOW(dialog), TRUE);
+   gtk_window_set_modal(GTK_WINDOW(glob_dialog), TRUE);
    
    frame1 = gtk_frame_new(frame_text);
    gtk_frame_set_label_align(GTK_FRAME(frame1), 0.5, 0.0);
-   vbox1 = gtk_vbox_new(TRUE, 5);
+   vbox1 = gtk_vbox_new(FALSE, 5);
    hbox1 = gtk_hbox_new(TRUE, 5);
 
    gtk_container_set_border_width(GTK_CONTAINER(frame1), 5);
    gtk_container_set_border_width(GTK_CONTAINER(vbox1), 5);
    gtk_container_set_border_width(GTK_CONTAINER(hbox1), 5);
    
-   gtk_container_add(GTK_CONTAINER(dialog), frame1);
+   gtk_container_add(GTK_CONTAINER(glob_dialog), frame1);
    gtk_container_add(GTK_CONTAINER(frame1), vbox1);
 
    label1 = gtk_label_new(text);
@@ -540,9 +611,7 @@ int dialog_generic(GdkWindow *main_window,
       gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
    }
 
-   gtk_widget_show_all(dialog);
-
-   gtk_timeout_add(1000, cb_timer_raise_dialog, NULL);
+   gtk_widget_show_all(glob_dialog);
 
    gtk_main();
    
@@ -554,9 +623,15 @@ int get_home_file_name(char *file, char *full_name, int max_size)
 {
    char *home, default_path[]=".";
 
-   home = getenv("HOME");
+   home = getenv("JPILOT_HOME");
    if (!home) {/*Not home; */
-      jpilot_logf(LOG_WARN, "Can't get HOME environment variable\n");
+      home = getenv("HOME");
+      if (!home) {/*Not home; */
+	 jpilot_logf(LOG_WARN, "Can't get HOME environment variable\n");
+      }
+   }
+   if (!home) {
+      home = default_path;
    }
    if (strlen(home)>(max_size-strlen(file)-strlen("/.jpilot/")-2)) {
       jpilot_logf(LOG_WARN, "Your HOME environment variable is too long for me\n");
@@ -708,7 +783,7 @@ int read_gtkrc_file()
    char filename[256];
    char fullname[256];
    struct stat buf;
-   int ivalue;
+   long ivalue;
    const char *svalue;
    
    get_pref(PREF_RCFILE, &ivalue, &svalue);
@@ -780,7 +855,7 @@ int unlink_file(char *filename)
 }
 
 /* This function will copy an empty DB file */
-/* from the share directory to the users HOME directory */
+/* from the share directory to the users JPILOT_HOME or HOME directory */
 /* if it doesn't exist already and its length is > 0 */
 int check_copy_DBs_to_home()
 {
@@ -828,6 +903,43 @@ int check_copy_DBs_to_home()
    }
    return 0;
 }
+
+int jpilot_copy_file(char *src, char *dest)
+{
+   FILE *in, *out;
+   int r;
+   struct stat statb;
+   struct utimbuf times;
+   unsigned char buf[10002];
+
+   if (!strcmp(src, dest)) {
+      return 0;
+   }
+   
+   in = fopen(src, "r");
+   out = fopen(dest, "w");
+   if (!in) {
+      return -1;
+   }
+   if (!out) {
+      fclose(in);
+      return -1;
+   }
+   while ((r = fread(buf, 1, 10000, in))) {
+      fwrite(buf, 1, r, out);
+   }
+   fclose(in);
+   fclose(out);
+
+   /*Set the create and modify times of new file to the same as the old */
+   stat(src, &statb);
+   times.actime = statb.st_atime;
+   times.modtime = statb.st_mtime;
+   utime(dest, &times);
+
+   return 0;
+}
+
 
 
 /*These next 2 functions were copied from pi-file.c in the pilot-link app */
@@ -1123,10 +1235,8 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       }
       jpilot_logf(LOG_DEBUG, "writing header to pc file\n");
       fwrite(&header, sizeof(header), 1, pc_in);
-      /*todo write the real appointment from palm db */
-      /*Right now I am just writing an empty record */
-      /*This will be used for making sure that the palm record hasn't changed */
-      /*before we delete it */
+      /* This record be used for making sure that the palm record 
+       * hasn't changed before we delete it */
       jpilot_logf(LOG_DEBUG, "writing record to pc file, %d bytes\n", header.rec_len);
       fwrite(record, header.rec_len, 1, pc_in);
       jpilot_logf(LOG_DEBUG, "record deleted\n");
@@ -1209,11 +1319,13 @@ int cleanup_pc_files()
 
 static void util_sync(unsigned int flags)
 {
-   int ivalue;
+   long ivalue, num_backups;
    const char *svalue;
+   const char *port;
 #ifndef HAVE_SETENV
    char str[80];
 #endif
+   struct my_sync_info sync_info;
    
    get_pref(PREF_RATE, &ivalue, &svalue);
    jpilot_logf(LOG_DEBUG, "setting PILOTRATE=[%s]\n", svalue);
@@ -1226,9 +1338,22 @@ static void util_sync(unsigned int flags)
 #endif
    }
 
-   get_pref(PREF_PORT, &ivalue, &svalue);
-   jpilot_logf(LOG_DEBUG, "pref port=[%s]\n", svalue);
-   sync_once(svalue, flags);
+   get_pref(PREF_PORT, &ivalue, &port);
+   get_pref(PREF_NUM_BACKUPS, &num_backups, &svalue);
+   get_pref(PREF_USER, &ivalue, &svalue);
+   strncpy(sync_info.username, svalue, 127);
+   sync_info.username[127]='\0';
+   get_pref(PREF_USER_ID, &(sync_info.userID), &svalue);
+   jpilot_logf(LOG_DEBUG, "pref port=[%s]\n", port);
+   jpilot_logf(LOG_DEBUG, "num_backups=%d\n", num_backups);
+   
+   sync_info.sync_over_ride = 0;
+   strncpy(sync_info.port, port, 128);
+   sync_info.port[127]='\0';
+   sync_info.flags=flags;
+   sync_info.num_backups=num_backups;
+   
+   sync_once(&sync_info);
    
    return;
 }

@@ -31,14 +31,23 @@
 #define PREF_PORT 9
 #define PREF_RATE 10
 #define PREF_USER 11
+#define PREF_USER_ID 12
+#define PREF_NUM_BACKUPS 13
+#define PREF_WINDOW_WIDTH 14
+#define PREF_WINDOW_HEIGHT 15
+#define PREF_DATEBOOK_PANE 16
+#define PREF_ADDRESS_PANE 17
+#define PREF_TODO_PANE 18
+#define PREF_MEMO_PANE 19
 
-#define NUM_PREFS 12
+#define NUM_PREFS 20
 
 #define NUM_SHORTDATES  8
 #define NUM_LONGDATES  7
 #define NUM_TIMES  11
 #define NUM_RATES  11
 
+#define MAX_PREF_NUM_BACKUPS 99
 #define INTTYPE 0
 #define CHARTYPE 1
 
@@ -52,7 +61,7 @@ typedef struct {
    char *name;
    int usertype;
    int filetype;
-   int ivalue;
+   long ivalue;
    char svalue[MAX_PREF_VALUE+2];
 } prefType;
 
@@ -61,9 +70,9 @@ typedef struct {
 int read_rc_file();
 int write_rc_file();
 int get_pref_possibility(int which, int n, char *ret);
-int get_pref(int which, int *n, const char **ret);
+int get_pref(int which, long *n, const char **ret);
 int get_pref_dmy_order();
-int set_pref(int which, int n);
+int set_pref(int which, long n);
 int set_pref_char(int which, char *string);
 /*This function is used externally to free up any memory that prefs is using */
 void free_prefs();

@@ -276,7 +276,7 @@ them and pressing the "Remove" button.&nbsp; When you are done press the
 "Done" button.
 <h3>
 Preferences screen</h3>
-<img SRC="jpilot-prefs.gif" NOSAVE height=303 width=340>
+<img SRC="jpilot-prefs.gif" NOSAVE height=355 width=371>
 <br>&nbsp;
 <li>
 Choose the localization for the abbreviated dates feild.</li>
@@ -311,6 +311,12 @@ Set the serial rate.&nbsp; Some computers will not sync reliably above
 9600.&nbsp; I am not sure why this is.</li>
 
 <li>
+Set the number of backup copies to keep.&nbsp; Everytime a backup is made it
+will go into a new backup directory of ~/.jpilot/backupMMDDhhmm where MM is
+the month, DD is the day and hhmm is the time.&nbsp; Backups over the number 
+to be kept will be deleted.
+
+<li>
 Set "show deleted records".&nbsp; Having this box checked means that deleted
 records will still be displayed as a different color.&nbsp; This can be
 confusing at times.</li>
@@ -319,6 +325,13 @@ confusing at times.</li>
 Set "show modified deleted records".&nbsp; Having this box checked means
 that when a record is modified the original record will still be displayed
 as a different color.&nbsp; This can be very confusing at times.</li>
+
+<li>
+Set "Highlight calendar days with appointments".&nbsp; Having this box checked
+will make the datebook application highlight the calendar days that have
+appointments occurring on that day.&nbsp This option will slow down the
+application noticeably on slower computers depending on the number of
+records in the datebook.
 
 <h3>
 Quit</h3>
@@ -329,6 +342,31 @@ a harsh death and the cleanup routines will not be executed.
 Sync</h3>
 The sync button will sync four the main applications and any plugins that
 are installed.
+<br><br>
+If you get warnings about the palm having a different userID or a different
+username than the pilot that was last synced:
+<br><br>
+Every palm has a username and userid.&nbsp;  These can be set by using
+install-user from the pilot-link set of tools.&nbsp;  If you changed the name
+or ID and it is the same palm then you can go ahead and safely sync.&nbsp;
+If it is truly a different palm then you can still sync, just beware that any
+records pending modify/delete, etc. will try to be modified in the new palm.&nbsp;
+You can always remove the .pc files to prevent these.&nbsp;
+You can have multiple palms under the same user by using the JPILOT_HOME
+envirenment variable.
+<br><br>
+If you get warnings about the palm having a NULL userID:
+<br><br>
+J-Pilot cannot sync with this palm because it looks as though it has been
+hard-reset.&nbsp;  If it has been hard-reset (cleared) DO NOT sync it unless
+you want to lose data.&nbsp;  You should use pilot-xfer to restore the palm
+and then once the data is restored use install-user to create a username/ID
+on the palm and then sync.&nbsp;
+<br><br>
+If your palm has not been reset, but maybe just has always had a NULL userID
+because you never used the Windows or Mac desktop, then good for you!&nbsp;
+Just use install-user to add a username/ID and sync away.
+<br>
 <h3>
 Backup</h3>
 This will sync the main applications and any plugins that are installed
@@ -337,13 +375,18 @@ backup changed files, so the first time it will take a while.&nbsp; Subsequent
 backups will be a lot quicker.
 <h3>
 Restoring a Palm Pilot</h3>
-This is not part of J-Pilot.&nbsp; J-Pilot stores its files in $HOME/.jpilot/.&nbsp;
+This is not part of J-Pilot.&nbsp; J-Pilot stores its files in
+$HOME/.jpilot/ and $HOME/.jpilot/backupMMDDhhmm.&nbsp; A symbolic link of
+backup will be made to the most recent backup for convenience.&nbsp
 To restore a palm pilot that has lost its data you can use the pilot-xfer
 program that comes with pilot-link.&nbsp; The easiest way to do this is
 to put every file that you want installed (or restored) back on the palm
 pilot in one directory.&nbsp; For this example, a directory called backup.&nbsp;
 Then you can execute "pilot-xfer -r backup".&nbsp; Do not install applications
 that are already in ROM on the palm pilot, such as the Address.prc, etc.
+You probably shouldn't install "Saved Preferences.prc" to a palm pilot that
+it didn't come from since this can throw off the screen calibration and make
+it very hard to re-calibrate.
 <p>Do not try to use j-pilot to sync data back into a reset palm pilot.&nbsp;
 It will overwrite the data on the desktop with the empty palm pilot files.&nbsp;
 This may change in a later release.
@@ -375,7 +418,7 @@ coins from anywhere, anytime also.
 <p><b>Q:</b>&nbsp; Why is it called J-Pilot?&nbsp; Its not written in Java.
 <p><b>A:</b>&nbsp; Originally I wrote this program for Myself and my Wife
 to use.&nbsp; The J was for Judd or Jacki.&nbsp; Not much thought was put
-into this.&nbsp; Then, out of the goodness of my heart, I wanted to release
+into this.&nbsp; Then, out of the goodness of my heart (ughh), I wanted to release
 it under the GPL.&nbsp; I asked around for some better names, but I didn't
 come up with one.&nbsp; gtkpilot would be more appropriate, but I hate
 typing gtk.
@@ -395,7 +438,7 @@ do this, that is ok.&nbsp; My only requirement is that KDE, or Gnome isn't
 required to run J-Pilot.&nbsp; I take pride in the fact that Linux/Unix
 has many window managers available to use.
 <p><b>Q:</b>&nbsp; How do I cut-and-paste?
-<p><b>A:</b>&nbsp; Cut is ctrl-c and paste is ctrl-v.
+<p><b>A:</b>&nbsp; Cut is ctrl-x, copy is ctrl-c and paste is ctrl-v.
 <br>&nbsp;
 </body>
 </html>

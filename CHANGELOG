@@ -1,3 +1,20 @@
+0.97 - 12/22/99
+ Added Weekly and Monthly views.
+ Multiple backups supported, selectable from preferences.
+ Block reset pilots and changed user names from syncing.
+ Put paned windows in 4 main apps and made them remember where set.
+ Made Graffiti Shortcuts installable.
+ Changed to qsort from bubblesort.
+ Removed logic to make category go to ALL after add.
+ Remember window size after restart.
+ Changed from using HOME to using JPILOT_HOME then default to HOME.
+ Fixed menu history for categories (wasn't always correct).
+ Fixed Expense plugin not always showing all of the categories.
+ Fixed directory for global plugins.
+ Made the dialog raise less annoying.
+ Work around for bug where empty appointments crash PalmOS 2.0.  An empty
+  appointment description will get set to a space.
+
 0.96 - 11/10/99
  Plugin (conduit) support added.
  Patch for reversed todo sorting.

@@ -69,7 +69,7 @@ int load_plugins();
 GList *get_plugin_list();
 
 /*
- * Read a pdb file out of the $(HOME)/.j directory
+ * Read a pdb file out of the $(JPILOT_HOME || HOME)/.jpilot directory
  * It also reads the PC file
  */
 int jp_read_DB_files(char *DB_name, GList *records);

@@ -41,3 +41,5 @@ These are some of the bugs that I know about:
    but doesn't repeat on any day.  It won't show up in the calendar, but if
    you search for it, it shows up.  When you click on it in find, Fatal
    Exception and Pilot reboots.  This is a PalmOS bug if you ask me.
+
+ - Empty appointments crash palmos 2.0 (I don't allow them anymore)

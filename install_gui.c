@@ -205,6 +205,7 @@ void cb_install_gui(GtkWidget *widget, gpointer data)
    static GtkWidget *filew=NULL;
    GtkWidget *scrolled_window;
    GtkWidget *button;
+   GtkWidget *label;
    gchar *titles[] = {"Files to be installed"
    };
    
@@ -242,13 +243,18 @@ void cb_install_gui(GtkWidget *widget, gpointer data)
    gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->action_area),
 		      scrolled_window, TRUE, TRUE, 0);
    
-
    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
 		      GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
    gtk_widget_show(clist);
    gtk_widget_show(scrolled_window);
 
    
+   label = gtk_label_new("To change to a hidden directory type it below and hit TAB");
+   gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->main_vbox),
+		      label, FALSE, FALSE, 0);
+   gtk_widget_show(label);
+
+
    button = gtk_button_new_with_label("Add");
    gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->ok_button->parent),
 		      button, TRUE, TRUE, 0);

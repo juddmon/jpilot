@@ -218,9 +218,15 @@ int get_home_file_name(char *file, char *full_name, int max_size)
 {
    char *home, default_path[]=".";
 
-   home = getenv("HOME");
+   home = getenv("JPILOT_HOME");
    if (!home) {/*Not home; */
-      jp_logf(LOG_WARN, "Can't get HOME environment variable\n");
+      home = getenv("HOME");
+      if (!home) {/*Not home; */
+	 jp_logf(LOG_WARN, "Can't get HOME environment variable\n");
+      }
+   }
+   if (!home) {
+      home = default_path;
    }
    if (strlen(home)>(max_size-strlen(file)-strlen("/.jpilot/")-2)) {
       jp_logf(LOG_WARN, "Your HOME environment variable is too long for me\n");
@@ -820,7 +826,7 @@ int jp_read_DB_files(char *DB_name, GList **records)
       num = fread(&rh, sizeof(record_header), 1, in);
       if (num != 1) {
 	 if (ferror(in)) {
-	    jp_logf(LOG_WARN, "Error reading TimesheetDB.pdb 4\n");
+	    jp_logf(LOG_WARN, "Error reading %s\n", PDB_name);
 	    break;
 	 }
 	 if (feof(in)) {

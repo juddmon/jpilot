@@ -1,9 +1,9 @@
-%define version 0.96
+%define version 0.97
 
 Summary: palm pilot desktop for Linux
 Name: jpilot
 Version: %{version}
-Release: 2
+Release: 1
 Copyright: GPL
 Group: Applications/Communications
 Source: http://jpilot.linuxbox.com/jpilot-%{version}.tar.gz
@@ -15,6 +15,24 @@ jpilot is a palm pilot desktop for Linux written by:
 Judd Montgomery, judd@engineer.com
 
 %prep
+#This script was necessary for slackware, remove for RH
+set -x
+
+umask 022
+cd /usr/src/rpm/BUILD
+cd /usr/src/rpm/BUILD
+rm -rf jpilot-0.97
+/bin/gzip -dc /home/judd/jpilot-0.97.tar.gz | tar -xvvf -
+STATUS=$?
+if [ $STATUS -ne 0 ]; then
+  exit $STATUS
+fi
+cd jpilot-0.97
+[ `/usr/bin/id -u` = '0' ] && /bin/chown -Rf root .
+#[ `/usr/bin/id -u` = '0' ] && /bin/chgrp -Rf root .
+/bin/chmod -Rf a+rX,g-w,o-w .
+exit 0
+
 %setup
 %build
 ./configure --prefix=/usr/

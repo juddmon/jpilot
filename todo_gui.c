@@ -49,6 +49,7 @@ GtkWidget *todo_hide_completed_checkbox;
 GtkWidget *todo_modify_button;
 GtkWidget *category_menu1;
 GtkWidget *scrolled_window;
+GtkWidget *pane;
 
 struct ToDoAppInfo todo_app_info;
 int todo_category;
@@ -105,9 +106,10 @@ int todo_clear_details()
 {
    time_t ltime;
    struct tm *now;
+   int new_cat;
    
-   time( &ltime );
-   now = localtime( &ltime );
+   time(&ltime);
+   now = localtime(&ltime);
 
    gtk_text_freeze(GTK_TEXT(todo_text));
    gtk_text_freeze(GTK_TEXT(todo_text_note));
@@ -137,9 +139,14 @@ int todo_clear_details()
    gtk_text_thaw(GTK_TEXT(todo_text));
    gtk_text_thaw(GTK_TEXT(todo_text_note));
 
+   if (todo_category==CATEGORY_ALL) {
+      new_cat = 0;
+   } else {
+      new_cat = todo_category;
+   }
    gtk_check_menu_item_set_active
-     (GTK_CHECK_MENU_ITEM(todo_cat_menu_item2[0]), TRUE);
-   gtk_option_menu_set_history(GTK_OPTION_MENU(todo_cat_menu2), 0);
+     (GTK_CHECK_MENU_ITEM(todo_cat_menu_item2[new_cat]), TRUE);
+   gtk_option_menu_set_history(GTK_OPTION_MENU(todo_cat_menu2), new_cat);
    
    return 0;
 }
@@ -236,9 +243,10 @@ static void cb_add_new_record(GtkWidget *widget,
    free_ToDo(&new_todo);
    if (flag==MODIFY_FLAG) {
       cb_delete_todo(NULL, data);
+   } else {
+      /* glob_find_id = unique_id;*/
+      todo_clist_redraw();
    }
-   glob_find_id = unique_id;
-   todo_clist_redraw();
 
    return;
 }
@@ -252,6 +260,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 {
    struct ToDo *todo;/*, new_a; */
    MyToDo *mtodo;
+   int i, count;
 #ifdef OLD_ENTRY
    struct ToDo new_todo;
    unsigned char attrib;
@@ -302,8 +311,14 @@ static void cb_clist_selection(GtkWidget      *clist,
 
    gtk_check_menu_item_set_active
      (GTK_CHECK_MENU_ITEM(todo_cat_menu_item2[mtodo->attrib & 0x0F]), TRUE);
-   gtk_option_menu_set_history
-     (GTK_OPTION_MENU(todo_cat_menu2), mtodo->attrib & 0x0F);
+   /* We need to count how many items down in the list this is */
+   for (i=mtodo->attrib & 0x0F, count=0; i>=0; i--) {
+      if (todo_cat_menu_item2[i]) {
+	 count++;
+      }
+   }
+   count--;
+   gtk_option_menu_set_history(GTK_OPTION_MENU(todo_cat_menu2), count);
 
    
    if (todo->description) {
@@ -370,7 +385,8 @@ void update_todo_screen()
    ToDoList *temp_todo;
    static ToDoList *todo_list=NULL;
    char str[50];
-   int ivalue, hide_completed;
+   long ivalue;
+   long hide_completed;
    const char *svalue;
 
    free_ToDoList(&todo_list);
@@ -570,6 +586,8 @@ static int make_category_menu2()
 	   (GTK_RADIO_MENU_ITEM(todo_cat_menu_item2[i]));
 	 gtk_menu_append(GTK_MENU(menu), todo_cat_menu_item2[i]);
 	 gtk_widget_show(todo_cat_menu_item2[i]);
+      } else {
+	 todo_cat_menu_item2[i] = NULL;
       }
    }
    gtk_option_menu_set_menu(GTK_OPTION_MENU(todo_cat_menu2), menu);
@@ -631,50 +649,29 @@ static int todo_goto_line(int line_num, gfloat percentage)
    return 0;
 }
 
-/* This redraws the clist and goes back to the same line number
- * or it will go to glob_find_id if it is set.
- * If glob_find_id cannot be found, then it will set the category
- * back to ALL, and redraw the clist again
- */
+/* This redraws the clist and goes back to the same line number */
 int todo_clist_redraw()
 {
    int line_num;
-   int save_id;
-   int r;
    GtkScrollbar *sb;
    gfloat upper, lower, value, step, percentage;
    
    line_num = clist_row_selected;
 
-   if (glob_find_id) {
-      save_id = glob_find_id;
-      update_todo_screen();
-      r = todo_find();
-      if (r==0) {
-	 todo_category = CATEGORY_ALL;
-	 gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), 0);
-	 gtk_check_menu_item_set_active
-	   (GTK_CHECK_MENU_ITEM(todo_cat_menu_item1[0]), TRUE);
-	 update_todo_screen();
-	 glob_find_id = save_id;
-	 todo_find();
-      }
+   sb = GTK_SCROLLBAR(GTK_SCROLLED_WINDOW(scrolled_window)->vscrollbar);
+   upper = GTK_ADJUSTMENT(sb->range.adjustment)->upper;
+   lower = GTK_ADJUSTMENT(sb->range.adjustment)->lower;
+   value = GTK_ADJUSTMENT(sb->range.adjustment)->value;
+   step = GTK_ADJUSTMENT(sb->range.adjustment)->step_increment;
+   if (upper - lower + step) {
+      percentage = value/(upper - lower + step);
    } else {
-      sb = GTK_SCROLLBAR(GTK_SCROLLED_WINDOW(scrolled_window)->vscrollbar);
-      upper = GTK_ADJUSTMENT(sb->range.adjustment)->upper;
-      lower = GTK_ADJUSTMENT(sb->range.adjustment)->lower;
-      value = GTK_ADJUSTMENT(sb->range.adjustment)->value;
-      step = GTK_ADJUSTMENT(sb->range.adjustment)->step_increment;
-      if (upper - lower + step) {
-	 percentage = value/(upper - lower + step);
-      } else {
-	 percentage = 0;
-      }
-
-      update_todo_screen();
-      
-      todo_goto_line(line_num, percentage);
+      percentage = 0;
    }
+
+   update_todo_screen();
+   
+   todo_goto_line(line_num, percentage);
    
    return 0;
 }
@@ -690,10 +687,16 @@ int todo_refresh()
    return 0;
 }
 
+int todo_gui_cleanup()
+{
+   set_pref(PREF_TODO_PANE, GTK_PANED(pane)->handle_xpos);
+   return 0;
+}
+
 int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 {
    extern GtkWidget *glob_date_label;
-   extern glob_date_timer_tag;
+   extern int glob_date_timer_tag;
    GtkWidget *vbox1, *vbox2;
    GtkWidget *hbox_temp, *vbox_temp1, *vbox_temp2, *vbox_temp3, *vbox_temp4;
    GtkWidget *separator;
@@ -707,7 +710,8 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    int i;
    GSList    *group;
    int dmy_order;
-   int hide_completed;
+   long hide_completed;
+   long ivalue;
    const char *svalue;
 
    
@@ -720,10 +724,19 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    
    get_todo_app_info(&todo_app_info);
 
+   pane = gtk_hpaned_new();
+   get_pref(PREF_TODO_PANE, &ivalue, &svalue);
+   gtk_paned_set_position(GTK_PANED(pane), ivalue + 2);
+
+   gtk_box_pack_start(GTK_BOX(hbox), pane, TRUE, TRUE, 5);
+
    vbox1 = gtk_vbox_new(FALSE, 0);
    vbox2 = gtk_vbox_new(FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(hbox), vbox1, TRUE, TRUE, 5);
-   gtk_box_pack_start(GTK_BOX(hbox), vbox2, TRUE, TRUE, 5);
+
+   gtk_paned_pack1(GTK_PANED(pane), vbox1, TRUE, FALSE);
+   gtk_paned_pack2(GTK_PANED(pane), vbox2, TRUE, FALSE);
+
+   gtk_widget_show(pane);
 
    gtk_widget_set_usize(GTK_WIDGET(vbox1), 260, 0);
 
@@ -823,7 +836,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_box_pack_start(GTK_BOX(hbox_temp), todo_modify_button, TRUE, TRUE, 0);
    gtk_widget_show(todo_modify_button);
    
-   button = gtk_button_new_with_label("Clear");
+   button = gtk_button_new_with_label("New");
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record), 
 		      GINT_TO_POINTER(CLEAR_FLAG));

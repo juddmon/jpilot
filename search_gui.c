@@ -104,7 +104,7 @@ static int
    char datef[52];
    const char *svalue1;
    const char *svalue;
-   int ivalue;
+   long ivalue;
    struct search_record *new_sr;
    
    /*Search Appointments */
@@ -204,7 +204,7 @@ static int
    AddressList *temp_al;
    struct search_record *new_sr;
    const char *svalue;
-   int ivalue;
+   long ivalue;
    int i, count;
    
    /*Search Addresses */
@@ -273,7 +273,7 @@ static int
    struct search_record *new_sr;
    int found, count;
    const char *svalue;
-   int ivalue;
+   long ivalue;
    
    /*Search Appointments */
    todo_list = NULL;
@@ -358,7 +358,7 @@ static int
    struct search_record *new_sr;
    int count;
    const char *svalue;
-   int ivalue;
+   long ivalue;
    
    /*Search Memos */
    memo_list = NULL;

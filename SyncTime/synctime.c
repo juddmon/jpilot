@@ -37,7 +37,7 @@ int plugin_get_help_name(char *name, int len)
    return 0;
 }
 
-void plugin_help(char **text, int *width, int *height)
+int plugin_help(char **text, int *width, int *height)
 {
    /* We could also pass back *text=NULL */
    *text = strdup(

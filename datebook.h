@@ -47,3 +47,8 @@ int datebook_create_bogus_record(char *record, int size, int *rec_len);
 /* returns a bit mask where bit 1 day one, etc. and it is set if an */
 /* appointment occurs on that day, 0 if not. */
 int appointment_on_day_list(int mon, int year, int *mask);
+/*
+ * returns 1 if an appointment does occur/re-occur on dat
+ * else returns 0
+ */
+unsigned int isApptOnDate(struct Appointment *a, struct tm *date);

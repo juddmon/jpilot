@@ -112,7 +112,7 @@ int jp_install_append_line(char *line);
  */
 int jp_get_app_info(char *DB_name, unsigned char **buf, int *buf_size);
 /*
- * Read a pdb file out of the $(HOME)/.jpilot/ directory
+ * Read a pdb file out of the $(JPILOT_HOME || HOME)/.jpilot/ directory
  * It also reads the PC file
  */
 int jp_read_DB_files(char *DB_name, GList **records);

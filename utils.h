@@ -32,7 +32,7 @@
 #define PRINT_FILE_LINE printf("%s line %d\n", __FILE__, __LINE__)
 #define PN "J-Pilot"
 #define EPN "jpilot"
-#define VERSION "0.96"
+#define VERSION "0.97"
 #define VERSION_STRING "\n"PN" version "VERSION"\n"\
 " Copyright (C) 1999 by Judd Montgomery\n"
 
@@ -270,6 +270,8 @@ void move_scrolled_window_hack(GtkWidget *sw, float percentage);
 
 int check_copy_DBs_to_home();
 
+int jpilot_copy_file(char *src, char *dest);
+
 /*search_gui.c */
 void cb_search_gui(GtkWidget *widget, gpointer data);
 
@@ -290,6 +292,18 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox);
 int todo_gui(GtkWidget *vbox, GtkWidget *hbox);
 int memo_gui(GtkWidget *vbox, GtkWidget *hbox);
 
+int datebook_gui_cleanup();
+int address_gui_cleanup();
+int todo_gui_cleanup();
+int memo_gui_cleanup();
+
+/*
+ * Parse the string and replace CR and LFs with spaces
+ */
+void remove_cf_lfs(char *str);
+int add_days_to_date(struct tm *date, int n);
+int sub_days_from_date(struct tm *date, int n);
+
 /*from jpilot.c */
 void cb_app_button(GtkWidget *widget, gpointer data);
 void call_plugin_gui(int number, int unique_id);
@@ -301,5 +315,9 @@ int address_refresh();
 int todo_refresh();
 /*memo_gui */
 int memo_refresh();
+/* monthview_gui */
+void monthview_gui(struct tm *date);
+/* weekview_gui */
+void weekview_gui(struct tm *date);
 
 #endif
