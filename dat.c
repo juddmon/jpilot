@@ -423,29 +423,29 @@ int get_field(FILE *in, struct field *f)
 
    switch(type) {
     case DAT_TYPE_INTEGER:
-      f->type=type;
       fread(str_long, 4, 1, in);
       f->i = x86_long(str_long);
       break;
     case DAT_TYPE_CSTRING:
-      f->type=type;
       /* padding */
       fseek(in, 4, SEEK_CUR);
       get_CString(in, &PStr);
       f->str = PStr;
       break;
     case DAT_TYPE_BOOLEAN:
-      f->type=type;
       fread(str_long, 4, 1, in);
       f->i = x86_long(str_long);
       break;
     case DAT_TYPE_DATE:
-      f->type=type;
       fread(str_long, 4, 1, in);
       f->date = x86_long(str_long);
       break;
+    case DAT_TYPE_BITFLAG:
+      /* I currently do not know how to read this datatype */
+      /* It is here to read an invalid dba file for a user */
+      /* It is found in place of DAT_TYPE_REPEAT */
+      break;
     case DAT_TYPE_REPEAT:
-      f->type=type;
       /* The calling function needs to call this */
       /* get_repeat(in, NULL); */
       break;
@@ -687,10 +687,23 @@ int dat_get_appointments(FILE *in, AppointmentList **alist, struct CategoryAppIn
 	 }
 #endif
 	 if (fa[j].type!=schema[j*2+6]) {
-	    jp_logf(JP_LOG_WARN, "%s:%d Record %d, field %d: Invalid type.  Expected %d, found %d\n", __FILE__, __LINE__, i+1, j+3, schema[j*2+6], fa[j].type);
-	    jp_logf(JP_LOG_WARN, _("read of file terminated\n"));
-	    free(temp_alist);
-	    return 0;
+	    /* This is here to read an invalid dba file for a user */
+	    /* I believe it is a corrupt file, but here is a work around */
+	    if ((fa[j].type==DAT_TYPE_BITFLAG) &&
+		(schema[j*2+6]==DAT_TYPE_REPEAT) &&
+		(j+3==14)) {
+	       /* field 14, expected 8 from schema, got 7 instead */
+	       /* printf's for now, jp_logf's get into some kind of I/O deadlock */
+	       printf("%s:%d Record %d, field %d: Invalid type.  Expected %d, found %d\n", __FILE__, __LINE__, i+1, j+3, schema[j*2+6], fa[j].type);
+	       printf("Possible corrupt dba file, using a workaround.  Verify data.\n");
+	       /* Set the type to what we expect from reading the schema */
+	       fa[j].type=DAT_TYPE_REPEAT;
+	    } else {
+	       jp_logf(JP_LOG_WARN, "%s:%d Record %d, field %d: Invalid type.  Expected %d, found %d\n", __FILE__, __LINE__, i+1, j+3, schema[j*2+6], fa[j].type);
+	       jp_logf(JP_LOG_WARN, _("read of file terminated\n"));
+	       free(temp_alist);
+	       return 0;
+	    }
 	 }
 	 if (fa[j].type==DAT_TYPE_REPEAT) {
 	    get_repeat(in, &(temp_alist->ma.a));
