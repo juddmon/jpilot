@@ -699,7 +699,7 @@ msgstr "repeatType inconnu trouvé dans DatebookDB\n"
 
 #: datebook_gui.c:3164 monthview_gui.c:210 weekview_gui.c:204
 msgid " (TODAY)"
-msgstr ""
+msgstr " (AUJOURD'HUI)"
 
 #: datebook_gui.c:4130 datebook_gui.c:4604
 msgid "Week"
@@ -1611,11 +1611,13 @@ msgstr "Le support pour DateBk est désactivé pour cet exécutable"
 
 #: prefs_gui.c:558
 msgid "Annotate today in day, week, and month views"
-msgstr ""
+msgstr "Signaler aujourd'hui dans les vues jour, semaine et mois"
 
 #: prefs_gui.c:563
 msgid "Append years on anniversaries in day, week, and month views"
 msgstr ""
+"Ajoute le nombre d'années pour les anniversaires dans les vues jour, semaine "
+"et mois"
 
 #: prefs_gui.c:575
 msgid "Mail Command"
