@@ -959,8 +959,8 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	      ldif_out(out, "custom4", "%s", ma->a.entry[17]);
 	    if (ma->a.entry[18])
 	      ldif_out(out, "description", "%s", ma->a.entry[18]);
-	    if (ma->a.entry[19])
-	      ldif_out(out, "seeAlso", "%s", ma->a.entry[19]);
+/*	    if (ma->a.entry[19])
+	      ldif_out(out, "seeAlso", "%s", ma->a.entry[19]);*/
 	    fprintf(out, "\n");
 	    break;
 	 }
