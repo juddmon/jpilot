@@ -2482,7 +2482,11 @@ static void cb_add_new_record(GtkWidget *widget,
 	 free_Appointment(a);
 	 free(a);
       } else {
-	 pc_datebook_write(&new_a, REPLACEMENT_PALM_REC, attrib, &unique_id);
+	 if ((ma->rt==PALM_REC) || (ma->rt==REPLACEMENT_PALM_REC)) {
+	    pc_datebook_write(&new_a, REPLACEMENT_PALM_REC, attrib, &unique_id);
+	 } else {
+	    pc_datebook_write(&new_a, NEW_PC_REC, attrib, NULL);
+	 }
       }
    } else {
       pc_datebook_write(&new_a, NEW_PC_REC, attrib, NULL);
@@ -2540,7 +2544,11 @@ void cb_delete_appt(GtkWidget *widget, gpointer data)
  	 /*Create an exception in the appointment */
 	 datebook_copy_appointment(&(ma->a), &a);
 	 datebook_add_exception(a, current_year, current_month, current_day);
-	 pc_datebook_write(a, REPLACEMENT_PALM_REC, ma->attrib, &(ma->unique_id));
+	 if ((ma->rt==PALM_REC) || (ma->rt==REPLACEMENT_PALM_REC)) {
+	    pc_datebook_write(a, REPLACEMENT_PALM_REC, ma->attrib, &(ma->unique_id));
+	 } else {
+	    pc_datebook_write(a, NEW_PC_REC, ma->attrib, NULL);
+	 }
 	 free_Appointment(a);
 	 free(a);
 	 /*Since this was really a modify, and not a delete */
