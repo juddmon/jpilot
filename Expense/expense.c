@@ -81,6 +81,8 @@ static GtkWidget *menu_category2;
 static GtkWidget *menu_item_category2[16];
 static GtkWidget *menu_expense_type;
 static GtkWidget *menu_item_expense_type[28];
+static GtkWidget *menu_currency;
+static GtkWidget *menu_item_currency[24];
 static GtkWidget *spinner_mon, *spinner_day, *spinner_year;
 static GtkAdjustment *adj_mon, *adj_day, *adj_year;
 static GtkWidget *scrolled_window;
@@ -94,6 +96,7 @@ static int clist_hack;
 static int glob_detail_category;
 static int glob_detail_type;
 static int glob_detail_payment;
+static int glob_detail_currency;
 static int clist_row_selected;
 
 static void display_records();
@@ -557,7 +560,8 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
 
    ex.type = glob_detail_type;
    ex.payment = glob_detail_payment;
-   ex.currency=23;
+   ex.currency= glob_detail_currency;
+/*   ex.currency=23; */
    text = gtk_entry_get_text(GTK_ENTRY(entry_amount));
    ex.amount = text;
    if (ex.amount[0]=='\0') {
@@ -876,10 +880,12 @@ static void cb_clist_selection(GtkWidget      *clist,
        (menu_item_expense_type[mex->ex.type]), TRUE);
    gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
        (menu_item_payment[mex->ex.payment]), TRUE);
+   gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
+       (menu_item_currency[mex->ex.currency]), TRUE);
    gtk_option_menu_set_history(GTK_OPTION_MENU(menu_category2), item_num);
    gtk_option_menu_set_history(GTK_OPTION_MENU(menu_expense_type), mex->ex.type);
    gtk_option_menu_set_history(GTK_OPTION_MENU(menu_payment), mex->ex.payment);
-
+   gtk_option_menu_set_history(GTK_OPTION_MENU(menu_currency), mex->ex.currency);
    
    gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinner_mon), mex->ex.date.tm_mon+1);
    gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinner_day), mex->ex.date.tm_mday);
@@ -964,6 +970,9 @@ static void cb_category(GtkWidget *item, unsigned int value)
       cb_record_changed(NULL, NULL);
       glob_detail_payment=sel;
       break;
+    case EXPENSE_CURRENCY:
+      glob_detail_currency=sel; 
+      break;
    }
 }
 
@@ -1032,45 +1041,72 @@ static void make_menus()
 
    char *payment[]={
       N_("American Express"),
-	N_("Cash"),
-	N_("Check"),
-	N_("Credit Card"),
-	N_("Master Card"),
-	N_("Prepaid"),
-	N_("VISA"),
-	N_("Unfiled"),
-	NULL
+      N_("Cash"),
+      N_("Check"),
+      N_("Credit Card"),
+      N_("Master Card"),
+      N_("Prepaid"),
+      N_("VISA"),
+      N_("Unfiled"),
+      NULL
    };
    char *expense_type[]={
-        N_("Airfare"),
-	N_("Breakfast"),
-	N_("Bus"),
-	N_("BusinessMeals"),
-	N_("CarRental"),
-	N_("Dinner"),
-	N_("Entertainment"),
-	N_("Fax"),
-	N_("Gas"),
-	N_("Gifts"),
-	N_("Hotel"), 
-	N_("Incidentals"),
-	N_("Laundry"),
-	N_("Limo"),
-	N_("Lodging"),
-	N_("Lunch"),
-	N_("Mileage"),
-	N_("Other"),
-	N_("Parking"),
-	N_("Postage"),
-	N_("Snack"),
-	N_("Subway"),
-	N_("Supplies"),
-	N_("Taxi"),
-	N_("Telephone"),
-	N_("Tips"),
-	N_("Tolls"),
-	N_("Train"),
-	NULL
+      N_("Airfare"),
+      N_("Breakfast"),
+      N_("Bus"),
+      N_("BusinessMeals"),
+      N_("CarRental"),
+      N_("Dinner"),
+      N_("Entertainment"),
+      N_("Fax"),
+      N_("Gas"),
+      N_("Gifts"),
+      N_("Hotel"), 
+      N_("Incidentals"),
+      N_("Laundry"),
+      N_("Limo"),
+      N_("Lodging"),
+      N_("Lunch"),
+      N_("Mileage"),
+      N_("Other"),
+      N_("Parking"),
+      N_("Postage"),
+      N_("Snack"),
+      N_("Subway"),
+      N_("Supplies"),
+      N_("Taxi"),
+      N_("Telephone"),
+      N_("Tips"),
+      N_("Tolls"),
+      N_("Train"),
+      NULL
+   };
+   char *currency[]={
+      N_("Australia"),
+      N_("Austria"),
+      N_("Belgium"),
+      N_("Brazil"),
+      N_("Canada"),
+      N_("Denmark"),
+      N_("Finland"),
+      N_("France"),
+      N_("German"),
+      N_("Hong Kong."),
+      N_("Iceland"), 
+      N_("Ireland"),
+      N_("Italy"),
+      N_("Japan"),
+      N_("Luxembourg"),
+      N_("Mexico"),
+      N_("Holland"),
+      N_("New Zealand"),
+      N_("Norway"),
+      N_("Spain"),
+      N_("Sweden"),
+      N_("Switzerland"),
+      N_("U.K."),
+      N_("U.S.A."),
+      NULL
    };
 
    jp_logf(LOG_DEBUG, "Expense: make_menus\n");
@@ -1100,6 +1136,7 @@ static void make_menus()
    make_menu(&categories[1], EXPENSE_CAT2, &menu_category2, menu_item_category2);
    make_menu(payment, EXPENSE_PAYMENT, &menu_payment, menu_item_payment);
    make_menu(expense_type, EXPENSE_TYPE, &menu_expense_type, menu_item_expense_type);
+   make_menu(currency, EXPENSE_CURRENCY, &menu_currency, menu_item_currency);
 }
 
 /*returns 0 if not found, 1 if found */
@@ -1296,6 +1333,15 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    label = gtk_label_new(_("Payment: "));
    gtk_box_pack_start(GTK_BOX(temp_hbox), label, FALSE, FALSE, 0);
    gtk_box_pack_start(GTK_BOX(temp_hbox), menu_payment, TRUE, TRUE, 0);
+
+
+   /* Currency Menu */
+   temp_hbox = gtk_hbox_new(FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox2), temp_hbox, FALSE, FALSE, 0);
+
+   label = gtk_label_new(_("Currency: "));
+   gtk_box_pack_start(GTK_BOX(temp_hbox), label, FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(temp_hbox), menu_currency, TRUE, TRUE, 0);
 
 
    /* Date Spinners */
