@@ -25,16 +25,28 @@ not found in the 3Com desktop.
 
 %build
 %configure --prefix=%{prefix} --mandir=%{_mandir}
-gzip -9f docs/*.1
+#gzip -9f docs/*.1
 make
 
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT%{_mandir}/man1
-install docs/jpilot*.1.gz $RPM_BUILD_ROOT%{_mandir}/man1
+install docs/jpilot*.1 $RPM_BUILD_ROOT%{_mandir}/man1
 strip jpilot
 install -d $RPM_BUILD_ROOT%{_bindir}
-make prefix=$RPM_BUILD_ROOT%{prefix} mandir=$RPM_BUILD_ROOT%{_mandir} install
+make \
+ AM_MAKEFLAGS="libdir="$RPM_BUILD_ROOT%{prefix}/lib/jpilot/plugins\
+ prefix=$RPM_BUILD_ROOT%{prefix}\
+ bindir=$RPM_BUILD_ROOT%{prefix}/bin\
+ exec_prefix=$RPM_BUILD_ROOT%{prefix}/bin\
+ localedir=$RPM_BUILD_ROOT%{prefix}/share/locale\
+ mandir=$RPM_BUILD_ROOT%{_mandir}\
+ install
+# AM_MAKEFLAGS=\
+#"DESTDIR="$RPM_BUILD_ROOT%\
+#
+#make AM_MAKEFLAGS="prefix=$RPM_BUILD_ROOT"%{prefix} DESTDIR=$RPM_BUILD_ROOT" \
+#prefix=$RPM_BUILD_ROOT%{prefix} mandir=$RPM_BUILD_ROOT%{_mandir} install
 
 mkdir -p $RPM_BUILD_ROOT%{prefix}/share/pixmaps
 install -m644 icons/*.xpm $RPM_BUILD_ROOT%{prefix}/share/pixmaps
@@ -44,10 +56,13 @@ install -m644 icons/*.xpm $RPM_BUILD_ROOT%{prefix}/share/pixmaps
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%files -f rpmfiles.txt
+%files
 %defattr(-,root,root)
-%doc BUGS CHANGELOG COPYING CREDITS INSTALL README TODO UPGRADING
-%doc icons docs/plugin.html docs/manual.html
+%doc BUGS ChangeLog COPYING AUTHORS INSTALL README TODO UPGRADING
+%doc icons/README
+%doc icons/jpilot-icon1.xpm icons/jpilot-icon2.xpm
+%doc icons/jpilot-icon3.xpm icons/jpilot-icon4.xpm
+%doc docs/plugin.html docs/manual.html
 %doc docs/jpilot-address.png
 %doc docs/jpilot-datebook.png
 %doc docs/jpilot-expense.png
@@ -74,12 +89,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/jpilot/Memo32DB.pdb
 %{_datadir}/jpilot/ExpenseDB.pdb
 %{_libdir}/jpilot/plugins/libexpense.so
-#%{_libdir}/jpilot/plugins/libexpense.so.1
-#%{_libdir}/jpilot/plugins/libexpense.so.1.0.1
 %{_libdir}/jpilot/plugins/libexpense.la
 %{_libdir}/jpilot/plugins/libsynctime.so
-#%{_libdir}/jpilot/plugins/libsynctime.so.1
-#%{_libdir}/jpilot/plugins/libsynctime.so.1.0.1
 %{_libdir}/jpilot/plugins/libsynctime.la
 %{_libdir}/jpilot/plugins/libkeyring.so
 %{_libdir}/jpilot/plugins/libkeyring.la
@@ -103,3 +114,4 @@ rm -rf $RPM_BUILD_ROOT
 - Added the %post section
 - Added the %clean section
 - Changed the description
+- Oct 8, 2002 <judd@jpilot.org> updated for automake build
