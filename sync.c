@@ -72,6 +72,10 @@
 # endif
 #endif
 
+#ifndef min
+#define min(a,b) (((a) < (b)) ? (a) : (b))
+#endif
+
 /* #define JPILOT_DEBUG */
 /* #define SYNC_CAT_DEBUG */
 
@@ -1953,7 +1957,7 @@ static int sync_rotate_backups(const int num_backups)
    /* Create the new backup directory */
    g_snprintf(newdir, sizeof(newdir), "backup%02d%02d%02d%02d",
 	   now->tm_mon+1, now->tm_mday, now->tm_hour, now->tm_min);
-   if (strcmp(newdir, newest)) {
+   if (strncmp(newdir, newest, sizeof(newdir))) {
       g_snprintf(full_newdir, sizeof(full_newdir), "%s/%s", home_dir, newdir);
       if (mkdir(full_newdir, 0700)==0) {
 	 count++;
@@ -1961,7 +1965,7 @@ static int sync_rotate_backups(const int num_backups)
    }
 
    /* Copy from the newest backup, if it exists */
-   if (strcmp(newdir, newest)) {
+   if (strncmp(newdir, newest, sizeof(newdir))) {
       g_snprintf(full_backup, sizeof(full_backup), "%s/backup", home_dir);
       g_snprintf(full_newdir, sizeof(full_newdir), "%s/%s", home_dir, newdir);
       dir = opendir(full_backup);
@@ -1977,7 +1981,7 @@ static int sync_rotate_backups(const int num_backups)
 
    /* Remove the oldest backup if needed */
    if (count > num_backups) {
-      if ( (oldest[0]!='\0') && (strcmp(newdir, oldest)) ) {
+      if ( (oldest[0]!='\0') && (strncmp(newdir, oldest, sizeof(newdir))) ) {
 	 g_snprintf(full_oldest, sizeof(full_oldest), "%s/%s", home_dir, oldest);
 	 jp_logf(JP_LOG_DEBUG, "removing dir [%s]\n", full_oldest);
 	 sync_remove_r(full_oldest);
@@ -2610,7 +2614,7 @@ int sync_categories(char *DB_name, int sd,
    }
 
    /* buffer size passed in cannot be any larger than 0xffff */
-   size = dlp_ReadAppBlock(sd, db, 0, buf, 0xFFFF);
+   size = dlp_ReadAppBlock(sd, db, 0, buf, min(sizeof(buf), 0xFFFF));
    jp_logf(JP_LOG_DEBUG, "readappblock r=%d\n", size);
    if (size<=0) {
       jp_logf(JP_LOG_WARN, _("Error reading appinfo block for %s\n"), DB_name);
