@@ -17,9 +17,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* gtk2 */
-#define GTK_ENABLE_BROKEN
-
 #include "config.h"
 #include "i18n.h"
 #include <gtk/gtk.h>
@@ -38,10 +35,16 @@ extern int datebook_category;
 
 static GtkWidget *window=NULL;
 static GtkWidget *glob_month_vbox;
-static GtkWidget *glob_month_texts[37];
 static GtkWidget *glob_month_labels[37];
-static GtkWidget *glob_month_month_label;
+#ifdef ENABLE_GTK2
+static GObject   *glob_month_text_buffers[37];
+static GtkWidget *glob_month_text_views[37];
+static GObject   *big_text_buffer;
+#else
+static GtkWidget *glob_month_texts[37];
 static GtkWidget *big_text;
+#endif
+static GtkWidget *glob_month_month_label;
 static GtkWidget *glob_last_hbox_row;
 static int glob_offset;
 static struct tm glob_month_date;
@@ -53,14 +56,20 @@ static gboolean cb_destroy(GtkWidget *widget)
 {
    int n;
    GString *gstr;
+   GtkWidget *text;
 
    window = NULL;
 
    for (n=0; n<37; n++) {
-      gstr = gtk_object_get_data(GTK_OBJECT(glob_month_texts[n]), "gstr");
+#ifdef ENABLE_GTK2
+      text = glob_month_text_views[n];
+#else
+      text = glob_month_texts[n];
+#endif
+      gstr = gtk_object_get_data(GTK_OBJECT(text), "gstr");
       if (gstr) {
 	 g_string_free(gstr, TRUE);
-	 gtk_object_remove_data(GTK_OBJECT(glob_month_texts[n]), "gstr");
+	 gtk_object_remove_data(GTK_OBJECT(text), "gstr");
       }
    }
    return FALSE;
@@ -91,7 +100,11 @@ cb_month_move(GtkWidget *widget,
       add_days_to_date(&glob_month_date, 30);
    }
    hide_show_month_boxes();
+#ifdef ENABLE_GTK2
+   display_months_appts(&glob_month_date, glob_month_text_views);
+#else
    display_months_appts(&glob_month_date, glob_month_texts);
+#endif
 }
 
 /*----------------------------------------------------------------------
@@ -126,14 +139,17 @@ cb_enter_notify(GtkWidget *widget, GdkEvent *event, gpointer data)
    }
    prev_day = GPOINTER_TO_INT(data)+1-glob_offset;
 
+   gstr = gtk_object_get_data(GTK_OBJECT(widget), "gstr");
+
+#ifdef ENABLE_GTK2
+   gtk_text_buffer_set_text(GTK_TEXT_BUFFER(big_text_buffer), gstr->str, -1);
+#else
    gtk_text_set_point(GTK_TEXT(big_text),
 		      gtk_text_get_length(GTK_TEXT(big_text)));
    gtk_text_backward_delete(GTK_TEXT(big_text),
 			    gtk_text_get_length(GTK_TEXT(big_text)));
-
-   gstr = gtk_object_get_data(GTK_OBJECT(widget), "gstr");
-
    gtk_text_insert(GTK_TEXT(big_text), NULL, NULL, NULL, gstr->str, -1);
+#endif
 }
 
 /*
@@ -148,6 +164,7 @@ void hide_show_month_boxes()
    long fdow;
    char str[8];
    int d;
+   GtkWidget *text;
 
    get_month_info(glob_month_date.tm_mon, 1, glob_month_date.tm_year, &dow, &ndim);
 
@@ -164,23 +181,28 @@ void hide_show_month_boxes()
    }
 
    for (n=0; n<37; n++, d++) {
+#ifdef ENABLE_GTK2
+      text = glob_month_text_views[n];
+#else
+      text = glob_month_texts[n];
+#endif
       g_snprintf(str, sizeof(str), "%d", d);
       gtk_label_set_text(GTK_LABEL(glob_month_labels[n]), str);
       if (n<7) {
 	 if (d>0) {
-	    gtk_widget_show(GTK_WIDGET(glob_month_texts[n]));
+	    gtk_widget_show(GTK_WIDGET(text));
 	    gtk_widget_show(GTK_WIDGET(glob_month_labels[n]));
 	 } else {
-	    gtk_widget_hide(GTK_WIDGET(glob_month_texts[n]));
+	    gtk_widget_hide(GTK_WIDGET(text));
 	    gtk_widget_hide(GTK_WIDGET(glob_month_labels[n]));
 	 }
       }
       if (n>27) {
 	 if (d<=ndim) {
-	    gtk_widget_show(GTK_WIDGET(glob_month_texts[n]));
+	    gtk_widget_show(GTK_WIDGET(text));
 	    gtk_widget_show(GTK_WIDGET(glob_month_labels[n]));
 	 } else {
-	    gtk_widget_hide(GTK_WIDGET(glob_month_texts[n]));
+	    gtk_widget_hide(GTK_WIDGET(text));
 	    gtk_widget_hide(GTK_WIDGET(glob_month_labels[n]));
 	 }
       }
@@ -192,6 +214,7 @@ void create_month_boxes_texts(GtkWidget *month_vbox)
    int i, j, n;
    GtkWidget *hbox_row;
    GtkWidget *vbox;
+   GtkWidget *text;
    char str[80];
 
    n=0;
@@ -200,26 +223,58 @@ void create_month_boxes_texts(GtkWidget *month_vbox)
       gtk_box_pack_start(GTK_BOX(month_vbox), hbox_row, TRUE, TRUE, 0);
       for (j=0; j<7; j++) {
 	 vbox = gtk_vbox_new(FALSE, 0);
+#ifdef ENABLE_GTK2
+	 gtk_box_pack_start(GTK_BOX(hbox_row), vbox, TRUE, TRUE, 2);
+#else
 	 gtk_box_pack_start(GTK_BOX(hbox_row), vbox, TRUE, TRUE, 0);
+#endif
 	 n=i*7+j;
 	 if (n<37) {
-	    glob_month_texts[n] = gtk_text_new(NULL, NULL);
+	    sprintf(str, "%d", n + 1);
+	    /* Day of month labels */
+	    glob_month_labels[n] = gtk_label_new(str);
+	    gtk_misc_set_alignment(GTK_MISC(glob_month_labels[n]), 0.0, 0.5);
+	    gtk_box_pack_start(GTK_BOX(vbox), glob_month_labels[n], FALSE, FALSE, 0);
+
+#ifdef ENABLE_GTK2
+	    /* text variable only used to save some typing */
+	    text = glob_month_text_views[n] = gtk_text_view_new();
+	    glob_month_text_buffers[n] = 
+	      G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)));
+	    gtk_widget_set_usize(GTK_WIDGET(text), 10, 10);
+	    gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(text), FALSE);
+	    gtk_text_view_set_editable(GTK_TEXT_VIEW(text), FALSE);
+	    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text), GTK_WRAP_WORD);
+	    /* motion notify is overkill but the enter_notify event doesn't work */
+	    gtk_signal_connect(GTK_OBJECT(text), "motion_notify_event",
+			       GTK_SIGNAL_FUNC(cb_enter_notify), GINT_TO_POINTER(n));
+	    gtk_box_pack_start(GTK_BOX(vbox), text, TRUE, TRUE, 0);
+#else
+	    text = glob_month_texts[n] = gtk_text_new(NULL, NULL);
 	    gtk_widget_set_usize(GTK_WIDGET(glob_month_texts[n]), 10, 10);
 	    gtk_text_set_word_wrap(GTK_TEXT(glob_month_texts[n]), FALSE);
 	    gtk_signal_connect(GTK_OBJECT(glob_month_texts[n]), "enter_notify_event",
 			       GTK_SIGNAL_FUNC(cb_enter_notify), GINT_TO_POINTER(n));
-	    sprintf(str, "%d", n + 1);
-	    glob_month_labels[n] = gtk_label_new(str);
-	    gtk_misc_set_alignment(GTK_MISC(glob_month_labels[n]), 0.0, 0.5);
-	    gtk_box_pack_start(GTK_BOX(vbox), glob_month_labels[n], FALSE, FALSE, 0);
-	    gtk_box_pack_start(GTK_BOX(vbox), glob_month_texts[n], TRUE, TRUE, 0);
+	    gtk_box_pack_start(GTK_BOX(vbox), text, TRUE, TRUE, 0);
+#endif
 	 }
       }
    }
    glob_last_hbox_row = hbox_row;
+   
+#ifdef ENABLE_GTK2
+   text = gtk_text_view_new();
+   big_text_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)));
+   gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(text), FALSE);
+   gtk_text_view_set_editable(GTK_TEXT_VIEW(text), FALSE);
+   gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text), GTK_WRAP_WORD);
+   gtk_widget_set_usize(GTK_WIDGET(text), 10, 10);
+   gtk_box_pack_start(GTK_BOX(month_vbox), text, TRUE, TRUE, 4);
+#else
    big_text = gtk_text_new(NULL, NULL);
    gtk_widget_set_usize(GTK_WIDGET(big_text), 10, 10);
    gtk_box_pack_start(GTK_BOX(month_vbox), big_text, TRUE, TRUE, 0);
+#endif
 }
 
 int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
@@ -227,7 +282,10 @@ int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
    AppointmentList *a_list;
    AppointmentList *temp_al;
    struct tm date;
-   GtkWidget **text;
+   GtkWidget **texts;
+#ifdef ENABLE_GTK2
+   GObject   **text_buffers;
+#endif
    char desc[100];
    char datef[20];
    char str[80];
@@ -244,16 +302,26 @@ int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
    struct db4_struct db4;
 #endif
    GString *gstr;
+   GtkWidget *temp_text;
+
+   texts = &day_texts[glob_offset];
+#ifdef ENABLE_GTK2
+   text_buffers = &glob_month_text_buffers[glob_offset];
+#endif
 
    a_list = NULL;
-   text = &day_texts[glob_offset];
    mask=0;
 
    for (n=0; n<37; n++) {
-      gstr = gtk_object_get_data(GTK_OBJECT(glob_month_texts[n]), "gstr");
+#ifdef ENABLE_GTK2
+      temp_text = glob_month_text_views[n];
+#else
+      temp_text = glob_month_texts[n];
+#endif
+      gstr = gtk_object_get_data(GTK_OBJECT(temp_text), "gstr");
       if (gstr) {
 	 g_string_free(gstr, TRUE);
-	 gtk_object_remove_data(GTK_OBJECT(glob_month_texts[n]), "gstr");
+	 gtk_object_remove_data(GTK_OBJECT(temp_text), "gstr");
       }
    }
 
@@ -281,10 +349,14 @@ int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
       date.tm_yday=1;
       mktime(&date);
 
-      gtk_text_set_point(GTK_TEXT(text[n]),
-			 gtk_text_get_length(GTK_TEXT(text[n])));
-      gtk_text_backward_delete(GTK_TEXT(text[n]),
-			       gtk_text_get_length(GTK_TEXT(text[n])));
+#ifdef ENABLE_GTK2
+      gtk_text_buffer_set_text(GTK_TEXT_BUFFER(text_buffers[n]), "", -1);
+#else
+      gtk_text_set_point(GTK_TEXT(texts[n]),
+			 gtk_text_get_length(GTK_TEXT(texts[n])));
+      gtk_text_backward_delete(GTK_TEXT(texts[n]),
+			       gtk_text_get_length(GTK_TEXT(texts[n])));
+#endif
 
       num_shown = 0;
       for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
@@ -302,8 +374,11 @@ int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
 #endif
 	 if (isApptOnDate(&(temp_al->ma.a), &date)) {
 	    if (num_shown) {
-	       gtk_text_insert(GTK_TEXT(text[n]),
-			       NULL, NULL, NULL, "\n", -1);
+#ifdef ENABLE_GTK2
+	       gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(text_buffers[n]), "\n", -1);
+#else
+	       gtk_text_insert(GTK_TEXT(texts[n]), NULL, NULL, NULL, "\n", -1);
+#endif
 	       g_string_append(gstr, "\n");
 	    } else {
 	       gstr=g_string_new("");
@@ -323,11 +398,14 @@ int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
 	       desc[35]='\0';
 	    }
 	    remove_cr_lfs(desc);
-	    gtk_text_insert(GTK_TEXT(text[n]),
-			    NULL, NULL, NULL, desc, -1);
+#ifdef ENABLE_GTK2
+	    gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(text_buffers[n]), desc, -1);
+#else
+	    gtk_text_insert(GTK_TEXT(texts[n]), NULL, NULL, NULL, desc, -1);
+#endif
 	 }
       }
-      gtk_object_set_data(GTK_OBJECT(text[n]), "gstr", gstr);
+      gtk_object_set_data(GTK_OBJECT(texts[n]), "gstr", gstr);
    }
    free_AppointmentList(&a_list);
 
@@ -454,5 +532,9 @@ void monthview_gui(struct tm *date_in)
 
    hide_show_month_boxes();
 
+#ifdef ENABLE_GTK2
+   display_months_appts(&glob_month_date, glob_month_text_views);
+#else
    display_months_appts(&glob_month_date, glob_month_texts);
+#endif
 }
