@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.53 2004/12/30 19:40:17 judd Exp $ */
+/* $Id: sync.c,v 1.54 2005/02/27 11:31:15 rousseau Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -237,6 +237,7 @@ int sync_once(struct my_sync_info *sync_info)
 #endif
    int r;
    struct my_sync_info *sync_info_copy;
+   pid_t pid;
 
    if (glob_child_pid) {
       jp_logf(JP_LOG_WARN, PN": sync PID = %d\n", glob_child_pid);
@@ -255,7 +256,10 @@ int sync_once(struct my_sync_info *sync_info)
 
    if (!(sync_info->flags & SYNC_NO_FORK)) {
       jp_logf(JP_LOG_DEBUG, "forking sync process\n");
-      switch ( glob_child_pid = fork() ){
+      signal(SIGCHLD, sig_handler);
+      glob_child_pid = -1;
+      pid = fork();
+      switch (pid){
        case -1:
 	 perror("fork");
 	 return 0;
@@ -263,9 +267,9 @@ int sync_once(struct my_sync_info *sync_info)
 	 /* close(pipe_from_parent); */
 	 break;
        default:
-	 if (!(sync_info->flags & SYNC_NO_FORK)) {
-	    signal(SIGCHLD, sig_handler);
-	 }
+	 /* if the child is not dead yet we store its pid */
+	 if (-1 == glob_child_pid)
+	    glob_child_pid = pid;
 	 return EXIT_SUCCESS;
       }
       /* Close all file descriptors in the child except stdout, stderr and
