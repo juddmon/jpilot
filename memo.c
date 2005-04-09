@@ -1,4 +1,4 @@
-/* $Id: memo.c,v 1.32 2005/03/04 19:06:23 rousseau Exp $ */
+/* $Id: memo.c,v 1.33 2005/04/09 02:01:03 judd Exp $ */
 
 /*******************************************************************************
  * memo.c
@@ -140,8 +140,12 @@ int memo_sort(MemoList **memol, int sort_order)
 int pc_memo_write(struct Memo *memo, PCRecType rt, unsigned char attrib,
 		  unsigned int *unique_id)
 {
+#ifndef PILOT_LINK_0_12
    unsigned char record[65536];
    int rec_len;
+#else /* PILOT_LINK_0_12 */
+   pi_buffer_t *RecordBuffer;
+#endif /* PILOT_LINK_0_12 */
    buf_rec br;
    long ivalue;
    long char_set;
@@ -152,16 +156,36 @@ int pc_memo_write(struct Memo *memo, PCRecType rt, unsigned char attrib,
 	 charset_j2p(memo->text, strlen(memo->text)+1, char_set);
       }
    }
+#ifndef PILOT_LINK_0_12
    rec_len = pack_Memo(memo, record, 65535);
    if (!rec_len) {
       PRINT_FILE_LINE;
       jp_logf(JP_LOG_WARN, "pack_Memo %s\n", _("error"));
       return EXIT_FAILURE;
    }
+#else /* PILOT_LINK_0_12 */
+   RecordBuffer = pi_buffer_new(0);
+   if (pack_Memo(memo, RecordBuffer, memo_v1) == -1) {
+      PRINT_FILE_LINE;
+      jp_logf(JP_LOG_WARN, "pack_Memo %s\n", _("error"));
+      return EXIT_FAILURE;
+   }
+#endif /* PILOT_LINK_0_12 */
    br.rt=rt;
    br.attrib = attrib;
+#ifndef PILOT_LINK_0_12
    br.buf = record;
    br.size = rec_len;
+#else /* PILOT_LINK_0_12 */
+   br.buf = malloc(RecordBuffer->used);
+   if (br.buf == NULL) {
+      return EXIT_FAILURE;
+   }
+   memcpy(br.buf,RecordBuffer->data,RecordBuffer->used);
+   br.size = RecordBuffer->used;
+   pi_buffer_free(RecordBuffer);
+
+#endif /* PILOT_LINK_0_12 */
    /* Keep unique ID intact */
    if (unique_id) {
       br.unique_id = *unique_id;
@@ -246,6 +270,9 @@ int get_memos2(MemoList **memo_list, int sort_order,
    long char_set;
    long ivalue;
    buf_rec *br;
+#ifdef PILOT_LINK_0_12
+   pi_buffer_t *RecordBuffer;
+#endif /* PILOT_LINK_0_12 */
 
    jp_logf(JP_LOG_DEBUG, "get_memos2()\n");
    if (modified==2) {
@@ -301,12 +328,26 @@ int get_memos2(MemoList **memo_list, int sort_order,
 	 continue;
       }
 
+#ifndef PILOT_LINK_0_12
       /* JPA unpacking sets memo buffer */
       num = unpack_Memo(&memo, br->buf, br->size);
+#else /* PILOT_LINK_0_12 */
+      RecordBuffer = pi_buffer_new(br->size);
+      memcpy(RecordBuffer->data, br->buf, br->size);
+      RecordBuffer->used = br->size;
+#endif /* PILOT_LINK_0_12 */
 
+#ifndef PILOT_LINK_0_12
       if (num <= 0) {
 	 continue;
       }
+#else /* PILOT_LINK_0_12 */
+      if (unpack_Memo(&memo, RecordBuffer, memo_v1) == -1) {
+         free(RecordBuffer);
+	 continue;
+      }
+      free(RecordBuffer);
+#endif /* PILOT_LINK_0_12 */
 
       if ( ((br->attrib & 0x0F) != category) && category != CATEGORY_ALL) {
 	 continue;

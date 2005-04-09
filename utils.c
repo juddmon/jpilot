@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.87 2005/02/23 19:29:52 rikster5 Exp $ */
+/* $Id: utils.c,v 1.88 2005/04/09 02:01:02 judd Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -1823,7 +1823,11 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
    struct Memo *memo;
    MyMemo *mmemo;
    char filename[FILENAME_MAX];
+#ifndef PILOT_LINK_0_12
    unsigned char record[65536];
+#else /* PILOT_LINK_0_12 */
+   pi_buffer_t *RecordBuffer;
+#endif /* PILOT_LINK_0_12 */
    PCRecType record_type;
    unsigned int unique_id;
    long ivalue;
@@ -1936,55 +1940,97 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       } else {
 	 header.rt=DELETED_PALM_REC;
       }
+#ifdef PILOT_LINK_0_12
+      RecordBuffer = pi_buffer_new(0);
+#endif /* PILOT_LINK_0_12 */
       switch (app_type) {
        case DATEBOOK:
 	 appt=&mappt->appt;
 	 /*memset(&appt, 0, sizeof(appt)); */
+#ifndef PILOT_LINK_0_12
 	 header.rec_len = pack_Appointment(appt, record, sizeof(record)-1);
 	 if (!header.rec_len) {
 	    PRINT_FILE_LINE;
 	    jp_logf(JP_LOG_WARN, "pack_Appointment %s\n", _("error"));
 	 }
+#else /* PILOT_LINK_0_12 */
+	 if (pack_Appointment(appt, RecordBuffer, datebook_v1) == -1) {
+	    PRINT_FILE_LINE;
+	    jp_logf(JP_LOG_WARN, "pack_Appointment %s\n", _("error"));
+	 }
+#endif /* PILOT_LINK_0_12 */
 	 break;
        case ADDRESS:
 	 addr=&maddr->addr;
 	 /* memset(&addr, 0, sizeof(addr)); */
+#ifndef PILOT_LINK_0_12
 	 header.rec_len = pack_Address(addr, record, sizeof(record)-1);
 	 if (!header.rec_len) {
 	    PRINT_FILE_LINE;
 	    jp_logf(JP_LOG_WARN, "pack_Address %s\n", _("error"));
 	 }
+#else /* PILOT_LINK_0_12 */
+	 if (pack_Address(addr, RecordBuffer, address_v1) == -1) {
+	    PRINT_FILE_LINE;
+	    jp_logf(JP_LOG_WARN, "pack_Address %s\n", _("error"));
+	 }
+#endif /* PILOT_LINK_0_12 */
 	 break;
        case TODO:
 	 todo=&mtodo->todo;
 	 /* memset(&todo, 0, sizeof(todo)); */
+#ifndef PILOT_LINK_0_12
 	 header.rec_len = pack_ToDo(todo, record, sizeof(record)-1);
 	 if (!header.rec_len) {
 	    PRINT_FILE_LINE;
 	    jp_logf(JP_LOG_WARN, "pack_ToDo %s\n", _("error"));
 	 }
+#else /* PILOT_LINK_0_12 */
+	 if (pack_ToDo(todo, RecordBuffer, todo_v1) == -1) {
+	    PRINT_FILE_LINE;
+	    jp_logf(JP_LOG_WARN, "pack_ToDo %s\n", _("error"));
+	 }
+#endif /* PILOT_LINK_0_12 */
 	 break;
        case MEMO:
 	 memo=&mmemo->memo;
 	 /* memset(&memo, 0, sizeof(memo)); */
+#ifndef PILOT_LINK_0_12
 	 header.rec_len = pack_Memo(memo, record, sizeof(record)-1);
 
 	 if (!header.rec_len) {
 	    PRINT_FILE_LINE;
 	    jp_logf(JP_LOG_WARN, "pack_Memo %s\n", _("error"));
 	 }
+#else /* PILOT_LINK_0_12 */
+	 if (pack_Memo(memo, RecordBuffer, memo_v1) == -1) {
+	    PRINT_FILE_LINE;
+	    jp_logf(JP_LOG_WARN, "pack_Memo %s\n", _("error"));
+	 }
+#endif /* PILOT_LINK_0_12 */
 	 break;
        default:
 	 fclose(pc_in);
 	 return EXIT_SUCCESS;
       }
+#ifdef PILOT_LINK_0_12
+      header.rec_len = RecordBuffer->used;
+
+#endif /* PILOT_LINK_0_12 */
       jp_logf(JP_LOG_DEBUG, "writing header to pc file\n");
       write_header(pc_in, &header);
       /* This record be used for making sure that the palm record
        * hasn't changed before we delete it */
       jp_logf(JP_LOG_DEBUG, "writing record to pc file, %d bytes\n", header.rec_len);
+#ifndef PILOT_LINK_0_12
       fwrite(record, header.rec_len, 1, pc_in);
+#else /* PILOT_LINK_0_12 */
+      fwrite(RecordBuffer->data, header.rec_len, 1, pc_in);
+#endif /* PILOT_LINK_0_12 */
       jp_logf(JP_LOG_DEBUG, "record deleted\n");
+#ifdef PILOT_LINK_0_12
+      pi_buffer_free(RecordBuffer);
+#endif /* PILOT_LINK_0_12 */
       fclose(pc_in);
       return EXIT_SUCCESS;
       break;
