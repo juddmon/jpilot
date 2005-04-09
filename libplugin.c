@@ -1,4 +1,4 @@
-/* $Id: libplugin.c,v 1.21 2005/03/04 18:58:23 rousseau Exp $ */
+/* $Id: libplugin.c,v 1.22 2005/04/09 00:13:29 judd Exp $ */
 
 /*******************************************************************************
  * libplugin.c
@@ -87,11 +87,23 @@ const char *jp_strstr(const char *haystack, const char *needle, int case_sense)
    }
 }
 
+void jp_pack_htonl(unsigned char *dest, unsigned long l)
+{
+    dest[3]=l & 0xFF;
+    dest[2]=l>>8 & 0xFF;
+    dest[1]=l>>16 & 0xFF;
+    dest[0]=l>>24 & 0xFF;
+}
+
+void jp_unpack_ntohl(unsigned long *l, unsigned char *src)
+{
+    *l=src[0]<<24 | src[1]<<16 | src[2]<<8 | src[3];
+}
+
 static int pack_header(PC3RecordHeader *header, unsigned char *packed_header)
 {
    unsigned char *p;
    unsigned long l;
-   unsigned long len;
 
    l=0;
    p=packed_header;
@@ -104,47 +116,24 @@ static int pack_header(PC3RecordHeader *header, unsigned char *packed_header)
     * unsigned long rt;
     * unsigned char attrib;
     */
-   len = sizeof(unsigned long) +
-     sizeof(unsigned long) +
-     sizeof(unsigned long) +
-     sizeof(unsigned long) +
-     sizeof(unsigned long) +
-     sizeof(unsigned char);
+    /* 4 + 4 + 4 + 4 + 4 + 1 */
+   header->header_len = 21;
 
    header->header_version = 2;
 
-   header->header_len = len;
+   jp_pack_htonl(p, header->header_len);
+   jp_pack_htonl(p+4, header->header_version);
+   jp_pack_htonl(p+8, header->rec_len);
+   jp_pack_htonl(p+12, header->unique_id);
+   jp_pack_htonl(p+16, header->rt);
+   memcpy(p+20, &header->attrib, 1);
 
-   l=htonl(header->header_len);
-   memcpy(p, &l, sizeof(l));
-   p+=sizeof(l);
-
-   l=htonl(header->header_version);
-   memcpy(p, &l, sizeof(l));
-   p+=sizeof(l);
-
-   l=htonl(header->rec_len);
-   memcpy(p, &l, sizeof(l));
-   p+=sizeof(l);
-
-   l=htonl(header->unique_id);
-   memcpy(p, &l, sizeof(l));
-   p+=sizeof(l);
-
-   l=htonl(header->rt);
-   memcpy(p, &l, sizeof(l));
-   p+=sizeof(l);
-
-   memcpy(p, &header->attrib, sizeof(unsigned char));
-   p+=sizeof(unsigned char);
-
-   return len;
+   return header->header_len;
 }
 
 static int unpack_header(PC3RecordHeader *header, unsigned char *packed_header)
 {
    unsigned char *p;
-   unsigned long l;
 
    /*
     * Header structure:
@@ -157,32 +146,18 @@ static int unpack_header(PC3RecordHeader *header, unsigned char *packed_header)
     */
    p = packed_header;
 
-   memcpy(&l, p, sizeof(l));
-   header->header_len=ntohl(l);
-   p+=sizeof(l);
-
-   memcpy(&l, p, sizeof(l));
-   header->header_version=ntohl(l);
-   p+=sizeof(l);
+   jp_unpack_ntohl(&(header->header_len), p);
+   jp_unpack_ntohl(&(header->header_version), p+4);
 
    if (header->header_version > 2) {
       jp_logf(JP_LOG_WARN, _("Unknown PC header version = %d\n"), header->header_version);
    }
 
-   memcpy(&l, p, sizeof(l));
-   header->rec_len=ntohl(l);
-   p+=sizeof(l);
-
-   memcpy(&l, p, sizeof(l));
-   header->unique_id=ntohl(l);
-   p+=sizeof(l);
-
-   memcpy(&l, p, sizeof(l));
-   header->rt=ntohl(l);
-   p+=sizeof(l);
-
-   memcpy(&(header->attrib), p, sizeof(unsigned char));
-   p+=sizeof(unsigned char);
+   jp_unpack_ntohl(&(header->rec_len), p+8);
+   jp_unpack_ntohl(&(header->unique_id), p+12);
+   jp_unpack_ntohl(&(header->rt), p+16);
+   jp_unpack_ntohl(&(header->rt), p+20);
+   header->attrib = p[20];
 
    return EXIT_SUCCESS;
 }
@@ -190,24 +165,22 @@ static int unpack_header(PC3RecordHeader *header, unsigned char *packed_header)
 /* FIXME: Add jp_ and document. */
 int read_header(FILE *pc_in, PC3RecordHeader *header)
 {
-   unsigned long l, len;
    unsigned char packed_header[256];
    int num;
 
-   num = fread(&l, sizeof(l), 1, pc_in);
+   num = fread(packed_header, 4, 1, pc_in);
    if (feof(pc_in)) {
       return JPILOT_EOF;
    }
    if (num!=1) {
       return num;
    }
-   memcpy(packed_header, &l, sizeof(l));
-   len=ntohl(l);
-   if (len > sizeof(packed_header)-1) {
+   jp_unpack_ntohl(&(header->header_len), packed_header);
+   if (header->header_len > sizeof(packed_header)-1) {
       jp_logf(JP_LOG_WARN, "read_header() %s\n", _("error"));
       return EXIT_FAILURE;
    }
-   num = fread(packed_header+sizeof(l), len-sizeof(l), 1, pc_in);
+   num = fread(packed_header+4, (header->header_len)-4, 1, pc_in);
    if (feof(pc_in)) {
       return JPILOT_EOF;
    }
@@ -235,6 +208,8 @@ int write_header(FILE *pc_out, PC3RecordHeader *header)
    len = pack_header(header, packed_header);
    if (len>0) {
       fwrite(packed_header, len, 1, pc_out);
+   } else {
+      jp_logf(JP_LOG_WARN, "%s:%d pack_header returned error\n", __FILE__, __LINE__);
    }
 
    return len;
