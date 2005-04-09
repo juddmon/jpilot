@@ -238,6 +238,8 @@ pl_major=`grep "define PILOT_LINK_MAJOR" "$pilot_incl/pi-version.h" | \
 cut -d " " -f 3`
 pl_minor=`grep "define PILOT_LINK_MINOR" "$pilot_incl/pi-version.h" | \
 cut -d " " -f 3`
+pl_patch=`grep "define PILOT_LINK_PATCH" "$pilot_incl/pi-version.h" | \
+cut -d " " -f 3 | sed -e 's/"//g'`
 AC_MSG_RESULT([pi-version indicates $pl_version.$pl_major.$pl_minor])
 
 dnl *** check for pilot-link 0.12 and up
@@ -292,6 +294,21 @@ if test "x$pl_version_check_done" = "xno"; then
          AC_MSG_RESULT([older than 0.10.0 ... USB will NOT be enabled])
          AC_MSG_RESULT([This should be ok for old USB visors])
          pl_version_check_done=yes;
+      fi
+   fi
+fi
+
+dnl ***
+dnl *** check for broken pilot-links
+dnl ***
+if test $pl_version -eq 0 ; then
+   if test $pl_major -eq 12 ; then
+      if test $pl_minor -eq 0 ; then
+         if test $pl_patch = "-pre2" ; then
+            AC_MSG_RESULT([pilot-link 0.12.0-pre2 was found])
+            AC_MSG_ERROR([pilot-link 0.12.0-pre2 is not recommended, \
+it has some bugs with not fetching the category app info])
+	 fi
       fi
    fi
 fi
@@ -520,6 +537,6 @@ echo "NLS support (foreign languages)........   $USE_NLS"
 echo "USB support enabled....................   $usb"
 echo "dialer support.........................   $dialer"
 echo "pilot-link 0.12 support................   $pl12"
-echo "Pilot-link version found...............   $pl_version.$pl_major.$pl_minor"
+echo "Pilot-link version found...............   $pl_version.$pl_major.$pl_minor$pl_patch"
 echo
 echo "Now type make to compile"
