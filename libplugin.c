@@ -1,4 +1,4 @@
-/* $Id: libplugin.c,v 1.22 2005/04/09 00:13:29 judd Exp $ */
+/* $Id: libplugin.c,v 1.23 2005/04/12 01:35:11 judd Exp $ */
 
 /*******************************************************************************
  * libplugin.c
@@ -156,7 +156,6 @@ static int unpack_header(PC3RecordHeader *header, unsigned char *packed_header)
    jp_unpack_ntohl(&(header->rec_len), p+8);
    jp_unpack_ntohl(&(header->unique_id), p+12);
    jp_unpack_ntohl(&(header->rt), p+16);
-   jp_unpack_ntohl(&(header->rt), p+20);
    header->attrib = p[20];
 
    return EXIT_SUCCESS;
