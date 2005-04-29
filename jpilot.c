@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.115 2005/03/23 01:31:11 judd Exp $ */
+/* $Id: jpilot.c,v 1.116 2005/04/29 14:54:24 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -72,6 +72,7 @@
 #include "todo.xpm"
 #include "memo.xpm"
 
+#include "pidfile.h"
 
 /*#define SHADOW GTK_SHADOW_IN */
 /*#define SHADOW GTK_SHADOW_OUT */
@@ -126,6 +127,7 @@ int pipe_from_parent, pipe_to_child;
 GtkWidget *sync_window = NULL;
 static GtkAccelGroup *accel_group = NULL;
 
+static void sync_sig_handler (int sig);
 static void cb_delete_event(GtkWidget *widget, GdkEvent *event, gpointer data);
 void install_gui_and_size(GtkWidget *main_window);
 void cb_payback(GtkWidget *widget, gpointer data);
@@ -1632,6 +1634,8 @@ static void cb_delete_event(GtkWidget *widget, GdkEvent *event, gpointer data)
 
    cleanup_pc_files();
 
+   cleanup_pidfile();
+
    gtk_main_quit();
 }
 
@@ -1897,6 +1901,9 @@ int main(int argc, char *argv[])
    GdkFont *f;
 # endif
 #endif
+   int pid;
+   int remote_sync = FALSE;
+
 char *xpm_locked[] = {
    "15 18 4 1",
    "       c None",
@@ -2133,6 +2140,10 @@ char * xpm_backup[] = {
 	 skip_past_alarms = TRUE;
 	 jp_logf(JP_LOG_INFO, _("Ignoring past alarms.\n"));
       }
+      if ( (!strncmp(argv[i], "-s", 2)) ||
+           (!strncmp(argv[i], "--remote-sync", 13))) {
+	 remote_sync = TRUE;
+      }
       if ( (!strncasecmp(argv[i], "-i", 2)) ||
            (!strncasecmp(argv[i], "--iconic", 8))){
 	 iconify = 1;
@@ -2162,6 +2173,27 @@ char * xpm_backup[] = {
    jp_logf(JP_LOG_DEBUG, "calling check_hidden_dir\n");
    if (check_hidden_dir()) {
       exit(1);
+   }
+
+   /* Setup the pid file and check for a running jpilot */
+   setup_pidfile();
+   pid = check_for_jpilot();
+
+   if (remote_sync) {
+       if (pid) {
+           printf ("jpilot: syncing jpilot at %d\n", pid);
+           kill (pid, SIGUSR1);
+           exit (0);
+       }
+       else {
+           fprintf (stderr, "%s\n", "J-Pilot not running.");
+           exit (1);
+       }
+   }
+   else if (!pid) {
+       /* JPilot not running, install signal handler and write pid file */
+       signal(SIGUSR1, sync_sig_handler);
+       write_pid();
    }
 
    /*Check to see if DB files are there */
@@ -2757,3 +2789,7 @@ char * xpm_backup[] = {
    return EXIT_SUCCESS;
 }
 
+static void sync_sig_handler (int sig)
+{
+    setup_sync (skip_plugins ? SYNC_NO_PLUGINS : 0);
+}

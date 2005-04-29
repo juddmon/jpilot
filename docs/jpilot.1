@@ -2,7 +2,7 @@
 .SH NAME
 jpilot \- A palm pilot desktop for Linux/Unix
 .SH SYNOPSIS
-.B jpilot [-a] [-A] [-d] [-h] [-v]
+.B jpilot [-a] [-A] [-d] [-h] [-v] [-s]
 .SH "DESCRIPTION"
 J-Pilot is a desktop organizer application for the palm pilot and other
 Palm OS devices.  It is similar in functionality to the one that
@@ -26,6 +26,13 @@ ignore all alarms, past and future.
 .TP
 .B \-i 
 makes jpilot iconify itself upon launch.
+.TP
+.B \-s 
+initiates a sync on the running jpilot instance.
+
+If you have more than one jpilot running at the same time the sync may
+not work as expected since nothing is done to support a multi-instance
+configuration.
 .SH ENVIRONMENT
 The PILOTPORT, and PILOTRATE env variables are used to specify
 which port to sync on, and at what speed.

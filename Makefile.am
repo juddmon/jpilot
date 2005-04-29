@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.40 2005/04/03 18:04:27 judd Exp $
+# $Id: Makefile.am,v 1.41 2005/04/29 14:54:24 rousseau Exp $
 
 SUBDIRS = Expense SyncTime KeyRing docs dialer po m4 empty icons
 
@@ -60,6 +60,8 @@ jpilot_SOURCES = \
 	otherconv.h \
 	password.c \
 	password.h \
+	pidfile.c \
+	pidfile.h \
 	plugins.c \
 	plugins.h \
 	prefs.c \
