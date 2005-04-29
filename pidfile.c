@@ -75,7 +75,7 @@ void write_pid(void)
    jp_logf (JP_LOG_DEBUG, "pidfile: %s\n", pidfile);
    if ((fd = open (pidfile, O_WRONLY|O_CREAT|O_EXCL|O_SYNC, S_IRUSR|S_IWUSR)) != -1)
    {
-      sprintf (tmp, "%d\n", getpid());
+      g_snprintf (tmp, sizeof(tmp), "%d\n", getpid());
       write (fd, tmp, strlen (tmp));
       close (fd);
    }
