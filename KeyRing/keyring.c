@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.36 2005/03/12 19:20:33 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.37 2005/05/03 02:25:40 judd Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -1063,8 +1063,13 @@ static void cb_category(GtkWidget *item, unsigned int value)
     case KEYRING_CAT1:
       // remember the previously used category
       for (old_category=0; old_category<NUM_KEYRING_CAT_ITEMS; old_category++) {
+#ifdef ENABLE_GTK2
 	 if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menu_item_category1[old_category])))
-	    break;
+	   break;
+#else
+	 if (GTK_CHECK_MENU_ITEM(menu_item_category1[old_category])->active)
+	   break;
+#endif
       }
 
       b=dialog_save_changed_record(clist, record_changed);
