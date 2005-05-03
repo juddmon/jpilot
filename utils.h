@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.48 2005/03/19 23:01:09 rikster5 Exp $ */
+/* $Id: utils.h,v 1.49 2005/05/03 02:19:32 judd Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -133,6 +133,11 @@
 #define DAT_ADDRESS_FILE     11
 #define DAT_TODO_FILE        12
 #define DAT_MEMO_FILE        13
+
+/* Pilot-link 0.12 is broken and missing pi_uid_t */
+#ifdef PILOT_LINK_0_12
+typedef recordid_t pi_uid_t;
+#endif
 
 extern unsigned int glob_find_id;
 
