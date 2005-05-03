@@ -1,3 +1,14 @@
+0.99.8-pre9 - 03/05/05 (Ludovic Rousseau)
+ Cut-n-paste using X11 clipboard (mouse middle clic)
+ Return focus to the list after major operations which facilitates usability
+ Add hotkey (shift-return) to move focus between list and data window
+ In week and month views you can clic on a day to select it in the main view
+ Add remote sync. use "jpilot -s" to start a sync on the running jpilot
+ Add support of pilot-link 0.12.0-pre3
+ Some more bugs fixed
+ Updated translations: it, ja, fr
+ jpilot-dump.c: convert from UTF8 to local encoding
+
 0.99.8-pre8 - 19/02/05 (Ludovic Rousseau)
  Cut-n-paste using GTK+ Ctrl-C/Ctrl-V now works across all four apps
  Replace Sync and Backup text buttons by an color icon
