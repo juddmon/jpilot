@@ -1,4 +1,4 @@
-/* $Id: plugins.c,v 1.15 2004/12/07 06:51:08 rikster5 Exp $ */
+/* $Id: plugins.c,v 1.16 2005/05/08 15:57:31 judd Exp $ */
 
 /*******************************************************************************
  * plugins.c
@@ -202,7 +202,7 @@ static int get_plugin_sync_bits()
 	 return EXIT_FAILURE;
       }
       line[0]='\0';
-      Pc = fgets(line, 1000, in);
+      Pc = fgets(line, sizeof(line), in);
       if (!Pc) {
 	 break;
       }
