@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.55 2005/03/19 17:25:43 judd Exp $ */
+/* $Id: sync.c,v 1.56 2005/05/20 03:13:57 judd Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -1197,9 +1197,15 @@ int slow_sync_application(char *DB_name, int sd)
 	 if (rec_len == size) {
 	    jp_logf(JP_LOG_DEBUG, "sizes match!\n");
 #ifdef JPILOT_DEBUG
+#ifdef PILOT_LINK_0_12
+	    if (memcmp(record, buffer->data, size)==0) {
+	       jp_logf(JP_LOG_DEBUG, "Binary is the same!\n");
+	    }
+#else
 	    if (memcmp(record, buffer, size)==0) {
 	       jp_logf(JP_LOG_DEBUG, "Binary is the same!\n");
 	    }
+#endif
 	    /* FIXME What should happen here is that if the records are the same
 	     * then go ahead and delete, otherwise make a copy of the record
 	     * so that there is no data loss.
@@ -2616,20 +2622,33 @@ int fast_sync_application(char *DB_name, int sd)
 	 jp_logf(JP_LOG_DEBUG, "read next record for %s returned %d\n", DB_name, ret);
 	 jp_logf(JP_LOG_DEBUG, "id %ld, index %d, size %d, attr 0x%x, category %d\n",id, index, size, attr, category);
       } else {
+#ifdef PILOT_LINK_0_12
+	 pi_buffer_free (buffer);
+#endif
 	 break;
       }
       /* Case 1: */
       if ((attr &  dlpRecAttrDeleted) || (attr & dlpRecAttrArchived)) {
 	 jp_logf(JP_LOG_DEBUG, "found a deleted record on palm\n");
 	 pdb_file_delete_record_by_id(DB_name, id);
+#ifdef PILOT_LINK_0_12
+	 pi_buffer_free (buffer);
+#endif
 	 continue;
       }
       /* Case 2: */
       /* Note that if deleted we don't want to deal with it (taken care of above) */
       if (attr & dlpRecAttrDirty) {
-	 jp_logf(JP_LOG_DEBUG, "found a deleted record on palm\n");
+	 jp_logf(JP_LOG_DEBUG, "found a dirty record on palm\n");
+#ifdef PILOT_LINK_0_12
+	 pdb_file_modify_record(DB_name, buffer->data, buffer->used, attr, category, id);
+#else
 	 pdb_file_modify_record(DB_name, buffer, size, attr, category, id);
+#endif
       }
+#ifdef PILOT_LINK_0_12
+      pi_buffer_free (buffer);
+#endif
    }
 
    fast_sync_local_recs(DB_name, sd, db);
