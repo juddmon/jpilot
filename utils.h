@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.49 2005/05/03 02:19:32 judd Exp $ */
+/* $Id: utils.h,v 1.50 2005/06/16 03:52:01 judd Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -491,16 +491,27 @@ int pdb_file_modify_record(char *DB_name, void *record_in, int size_in,
  * attrp is the attributes
  * catp is the category (index)
  */
+#ifdef PILOT_LINK_0_12
+int pdb_file_read_record_by_id(char *DB_name, 
+			       pi_uid_t uid,
+			       void **bufp, size_t *sizep, int *idxp,
+			       int *attrp, int * catp);
+#else
 int pdb_file_read_record_by_id(char *DB_name, 
 			       pi_uid_t uid,
 			       void **bufp, int *sizep, int *idxp,
 			       int *attrp, int * catp);
+#endif
 /*
  * DB_name should be without filename ext, e.g. MemoDB
  * bufp is the packed app info block
  * size_in is the size of bufp
  */
+#ifdef PILOT_LINK_0_12
+int pdb_file_write_app_block(char *DB_name, void *bufp, size_t size_in);
+#else
 int pdb_file_write_app_block(char *DB_name, void *bufp, int size_in);
+#endif
 
 /*
  * This copies the datebase (pdb, or prc) and writes the DBInfo privided

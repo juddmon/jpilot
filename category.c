@@ -1,4 +1,4 @@
-/* $Id: category.c,v 1.22 2005/03/04 19:06:23 rousseau Exp $ */
+/* $Id: category.c,v 1.23 2005/06/16 03:52:01 judd Exp $ */
 
 /*******************************************************************************
  * category.c
@@ -129,7 +129,11 @@ int pdb_file_change_indexes(char *DB_name, int old_index, int new_index)
    void *record;
    int r;
    int idx;
+#ifdef PILOT_LINK_0_12
+   size_t size;
+#else
    int size;
+#endif
    int attr;
    int cat, new_cat;
    int count;

@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.79 2005/03/19 23:01:09 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.80 2005/06/16 03:52:01 judd Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -963,7 +963,11 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
    char full_name[FILENAME_MAX];
    unsigned char buffer[65536];
    int num;
+#ifdef PILOT_LINK_0_12
+   size_t size;
+#else
    int size;
+#endif
    void *buf;
    long ivalue;
    struct pi_file *pf;

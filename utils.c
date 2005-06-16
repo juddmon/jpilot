@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.88 2005/04/09 02:01:02 judd Exp $ */
+/* $Id: utils.c,v 1.89 2005/06/16 03:52:01 judd Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -2721,7 +2721,11 @@ int pdb_file_delete_record_by_id(char *DB_name, pi_uid_t uid_in)
    void *record;
    int r;
    int idx;
+#ifdef PILOT_LINK_0_12
+   size_t size;
+#else
    int size;
+#endif
    int attr;
    int cat;
    pi_uid_t uid;
@@ -2795,7 +2799,11 @@ int pdb_file_modify_record(char *DB_name, void *record_in, int size_in,
    void *record;
    int r;
    int idx;
+#ifdef PILOT_LINK_0_12
+   size_t size;
+#else
    int size;
+#endif
    int attr;
    int cat;
    int found;
@@ -2862,10 +2870,17 @@ int pdb_file_modify_record(char *DB_name, void *record_in, int size_in,
    return EXIT_SUCCESS;
 }
 
+#ifdef PILOT_LINK_0_12
+int pdb_file_read_record_by_id(char *DB_name,
+			       pi_uid_t uid,
+			       void **bufp, size_t *sizep, int *idxp,
+			       int *attrp, int *catp)
+#else
 int pdb_file_read_record_by_id(char *DB_name,
 			       pi_uid_t uid,
 			       void **bufp, int *sizep, int *idxp,
 			       int *attrp, int *catp)
+#endif
 {
    char local_pdb_file[FILENAME_MAX];
    char full_local_pdb_file[FILENAME_MAX];
@@ -2901,7 +2916,11 @@ int pdb_file_read_record_by_id(char *DB_name,
    return r;
 }
 
+#ifdef PILOT_LINK_0_12
+int pdb_file_write_app_block(char *DB_name, void *bufp, size_t size_in)
+#else
 int pdb_file_write_app_block(char *DB_name, void *bufp, int size_in)
+#endif
 {
    char local_pdb_file[FILENAME_MAX];
    char full_local_pdb_file[FILENAME_MAX];
@@ -2913,7 +2932,11 @@ int pdb_file_write_app_block(char *DB_name, void *bufp, int size_in)
    void *record;
    int r;
    int idx;
+#ifdef PILOT_LINK_0_12
+   size_t size;
+#else
    int size;
+#endif
    int attr;
    int cat;
    pi_uid_t uid;
@@ -2981,7 +3004,11 @@ int pdb_file_write_dbinfo(char *full_DB_name, struct DBInfo *Pinfo_in)
    void *record;
    int r;
    int idx;
+#ifdef PILOT_LINK_0_12
+   size_t size;
+#else
    int size;
+#endif
    int attr;
    int cat;
    pi_uid_t uid;

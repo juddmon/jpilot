@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.56 2005/05/20 03:13:57 judd Exp $ */
+/* $Id: sync.c,v 1.57 2005/06/16 03:52:01 judd Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -2222,7 +2222,12 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
    char error_log_message_w[256];
    char error_log_message_d[256];
    char delete_log_message[256];
-   int index, size, attr, category;
+   int index, attr, category;
+#ifdef PILOT_LINK_0_12
+   size_t size;
+#else
+   int size;
+#endif
    long char_set;
    int same; /* JPA */
 
@@ -2448,7 +2453,11 @@ int pdb_file_swap_indexes(char *DB_name, int index1, int index2)
    void *record;
    int r;
    int idx;
+#ifdef PILOT_LINK_0_12
+   size_t size;
+#else
    int size;
+#endif
    int attr;
    int cat, new_cat;
    int count;
@@ -2806,12 +2815,14 @@ int sync_categories(char *DB_name, int sd,
    char log_entry[256];
 #ifdef PILOT_LINK_0_12
    pi_buffer_t *buffer;
+   size_t size_Papp_info;
+#else
+   int size_Papp_info;
 #endif
    unsigned char buf[65536];
    char tmp_name[18];
    int i, r, Li, Ri;
    int size;
-   int size_Papp_info;
    void *Papp_info;
    struct pi_file *pf;
    int db;
