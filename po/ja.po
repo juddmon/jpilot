@@ -703,7 +703,7 @@ msgstr "DatebookDB 内に不明な繰り返しタイプが見つかりました。\n"
 #: datebook_gui.c:3191
 #, c-format
 msgid "%%a., %s"
-msgstr ""
+msgstr "%%A., %s"
 
 #: datebook_gui.c:3196 monthview_gui.c:210 weekview_gui.c:204
 msgid " (TODAY)"
@@ -1527,27 +1527,27 @@ msgstr "このバージョンの J-Pilot と動作させるには古過ぎます。\n"
 
 #: prefs.c:389
 msgid "%B %d, %Y"
-msgstr ""
+msgstr "%Y年%m月%d日"
 
 #: prefs.c:390
 msgid "%d %B %Y"
-msgstr ""
+msgstr "%Y年%b%e日"
 
 #: prefs.c:391
 msgid "%d. %B %Y"
-msgstr ""
+msgstr "%y年%m月%d日"
 
 #: prefs.c:392
 msgid "%d %B, %Y"
-msgstr ""
+msgstr "%y年%b%e日"
 
 #: prefs.c:393
 msgid "%Y. %B. %d"
-msgstr ""
+msgstr "%EY%m月%d日"
 
 #: prefs.c:394
 msgid "%Y %B %d"
-msgstr ""
+msgstr "%EY%b%e日"
 
 #: prefs_gui.c:334
 msgid "Preferences"
