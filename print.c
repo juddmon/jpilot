@@ -1,4 +1,4 @@
-/* $Id: print.c,v 1.28 2004/12/07 06:51:08 rikster5 Exp $ */
+/* $Id: print.c,v 1.29 2005/06/24 14:03:13 rousseau Exp $ */
 
 /*******************************************************************************
  * print.c
@@ -35,6 +35,7 @@
 #include "print_logo.h"
 #include "print_headers.h"
 #include "log.h"
+#include "i18n.h"
 #ifdef HAVE_LOCALE_H
 #include <locale.h>
 #endif
@@ -170,7 +171,7 @@ int print_dayview(struct tm *date, AppointmentList *a_list)
    fprintf(out, "/Times-Bold-ISOLatin1 findfont 20 scalefont setfont\n"
                 "newpath 0 setgray\n");
    get_pref(PREF_LONGDATE, NULL, &svalue);
-   strftime(str, sizeof(str), svalue, date);
+   strftime(str, sizeof(str), _(svalue), date);
    puttext(0.5, 10.25, str);
 
    /* Put the weekday name up */

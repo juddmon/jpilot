@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.108 2005/04/03 18:57:42 judd Exp $ */
+/* $Id: datebook_gui.c,v 1.109 2005/06/24 14:03:13 rousseau Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -3188,7 +3188,7 @@ void set_date_labels()
    if (svalue==NULL) {
       strcpy(datef, "%x");
    } else {
-      sprintf(datef, "%%a., %s", svalue);
+      sprintf(datef, _("%%a., %s"), svalue);
    }
  
     /* Determine today for highlighting */

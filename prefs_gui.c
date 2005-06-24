@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.45 2005/02/20 20:06:40 rousseau Exp $ */
+/* $Id: prefs_gui.c,v 1.46 2005/06/24 14:03:13 rousseau Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -130,9 +130,11 @@ int make_pref_menu(GtkWidget **pref_menu, int pref_num)
       }
       switch (pref_num) {
        case PREF_SHORTDATE:
-       case PREF_LONGDATE:
        case PREF_TIME:
 	 jp_strftime(human_text, MAX_PREF_VALUE, format_text, now);
+	 break;
+       case PREF_LONGDATE:
+	 jp_strftime(human_text, MAX_PREF_VALUE, _(format_text), now);
 	 break;
        default:
 	 strncpy(human_text, format_text, MAX_PREF_VALUE);

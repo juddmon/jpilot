@@ -1,4 +1,4 @@
-/* $Id: prefs.c,v 1.56 2005/01/27 22:15:17 rikster5 Exp $ */
+/* $Id: prefs.c,v 1.57 2005/06/24 14:03:13 rousseau Exp $ */
 
 /*******************************************************************************
  * prefs.c
@@ -386,12 +386,12 @@ int get_pref_possibility(int which, int n, char *pref_str)
    };
 
    const char *long_date_formats[] = {
-      "%B %d, %Y",
-      "%d %B %Y",
-      "%d. %B %Y",
-      "%d %B, %Y",
-      "%Y. %B. %d",
-      "%Y %B %d"
+      N_("%B %d, %Y"),
+      N_("%d %B %Y"),
+      N_("%d. %B %Y"),
+      N_("%d %B, %Y"),
+      N_("%Y. %B. %d"),
+      N_("%Y %B %d")
    };
 
    const char *time_formats[] = {
