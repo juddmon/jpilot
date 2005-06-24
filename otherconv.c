@@ -1,4 +1,4 @@
-/* $Id: otherconv.c,v 1.19 2005/01/15 17:00:14 rousseau Exp $ */
+/* $Id: otherconv.c,v 1.20 2005/06/24 13:16:46 rousseau Exp $ */
 
 /*******************************************************************************
  * otherconv.c
@@ -185,8 +185,9 @@ char *other_to_UTF(const char *buf, int buf_len)
   jp_logf(JP_LOG_DEBUG, "%s:%s converting   [%s]\n", __FILE__, __FUNCTION__,
      buf);
 
-  outbuf = (char *)g_convert_with_iconv((gchar *)buf, oc_strnlen(buf, buf_len),
-     glob_frompda, &bytes_read, NULL, &err);
+  outbuf = (char *)g_convert_with_iconv((gchar *)buf,
+      oc_strnlen(buf, buf_len) +1, /* see Debian bug #309082 for the +1 */
+      glob_frompda, &bytes_read, NULL, &err);
   if (err != NULL || bytes_read < oc_strnlen (buf, buf_len)) {
       char c;
       unsigned char *head, *tail;
