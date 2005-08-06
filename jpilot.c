@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.116 2005/04/29 14:54:24 rousseau Exp $ */
+/* $Id: jpilot.c,v 1.117 2005/08/06 18:17:23 judd Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -1325,7 +1325,7 @@ guint8 *get_inline_pixbuf_data(const char **xpm_icon_data, gint icon_size)
   { _("/File/_Install"),                   "<control>I", cb_install_gui, 0,                  ICON(GTK_STOCK_OPEN) },
   { _("/File/Import"),                     NULL,         cb_import,      0,                  ICON(GTK_STOCK_GO_FORWARD) },
   { _("/File/Export"),                     NULL,         cb_export,      0,                  ICON(GTK_STOCK_GO_BACK) },
-  { _("/File/Preferences"),                "<control>E", cb_prefs_gui,   0,                  ICON(GTK_STOCK_PREFERENCES) },
+  { _("/File/Preferences"),                "<control>S", cb_prefs_gui,   0,                  ICON(GTK_STOCK_PREFERENCES) },
   { _("/File/_Print"),                     "<control>P", cb_print,       0,                  ICON(GTK_STOCK_PRINT) },
   { _("/File/sep1"),                       NULL,         NULL,           0,                  "<Separator>" },
   { _("/File/Restore Handheld"),           NULL,         cb_restore,     0,                  ICON(GTK_STOCK_REDO) },
