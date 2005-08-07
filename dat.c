@@ -1,4 +1,4 @@
-/* $Id: dat.c,v 1.16 2004/12/07 06:51:08 rikster5 Exp $ */
+/* $Id: dat.c,v 1.17 2005/08/07 19:12:20 rousseau Exp $ */
 
 /*******************************************************************************
  * dat.c
@@ -919,7 +919,7 @@ int dat_get_addresses(FILE *in, AddressList **addrlist, struct CategoryAppInfo *
 	 }
       }
       /* Append onto the end of the list */
-      if (temp_addrlist) {
+      if (last_addrlist) {
 	 last_addrlist->next=temp_addrlist;
 	 last_addrlist=temp_addrlist;
       } else {
