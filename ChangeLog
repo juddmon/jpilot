@@ -1,3 +1,11 @@
+0.99.8-pre10 - 09/07/05 (Ludovic Rousseau)
+ Solve a data corruption problem when used with pilot-link 0.12
+ Better support of 64-bit plateforms
+ The last character was truncated using Hebrew encoding
+ Support localized date formats (for example Japanese)
+ jpilot-sync works again (no more jp_logf relocation error)
+ Some more bugs fixed
+
 0.99.8-pre9 - 03/05/05 (Ludovic Rousseau)
  Cut-n-paste using X11 clipboard (mouse middle clic)
  Return focus to the list after major operations which facilitates usability
