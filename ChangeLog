@@ -1,4 +1,4 @@
-0.99.8-pre10 - 09/07/05 (Ludovic Rousseau)
+0.99.8-pre10 - 09/08/05 (Ludovic Rousseau)
  Solve a data corruption problem when used with pilot-link 0.12
  Better support of 64-bit plateforms
  The last character was truncated using Hebrew encoding
