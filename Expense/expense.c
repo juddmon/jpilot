@@ -1,4 +1,4 @@
-/* $Id: expense.c,v 1.36 2005/06/16 03:52:01 judd Exp $ */
+/* $Id: expense.c,v 1.37 2005/08/12 17:53:35 rousseau Exp $ */
 
 /*******************************************************************************
  * expense.c
@@ -622,7 +622,7 @@ static void cb_delete(GtkWidget *widget, gpointer data)
 {
    struct MyExpense *mexp;
    int size;
-   char buf[0xFFFF];
+   unsigned char buf[0xFFFF];
    buf_rec br;
    int flag;
 
