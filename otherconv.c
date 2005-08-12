@@ -1,4 +1,4 @@
-/* $Id: otherconv.c,v 1.21 2005/08/12 19:26:32 rousseau Exp $ */
+/* $Id: otherconv.c,v 1.22 2005/08/12 19:28:48 rousseau Exp $ */
 
 /*******************************************************************************
  * otherconv.c
@@ -304,7 +304,7 @@ void UTF_to_other(char *const buf, int buf_len)
 
 #else
 
-unsigned char *other_to_UTF(const char *buf, int buf_len)
+char *other_to_UTF(const char *buf, int buf_len)
 {
 	return strdup(buf);
 }
