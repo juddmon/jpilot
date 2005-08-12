@@ -1,4 +1,4 @@
-/* $Id: otherconv.c,v 1.20 2005/06/24 13:16:46 rousseau Exp $ */
+/* $Id: otherconv.c,v 1.21 2005/08/12 19:26:32 rousseau Exp $ */
 
 /*******************************************************************************
  * otherconv.c
@@ -240,10 +240,6 @@ char *other_to_UTF(const char *buf, int buf_len)
 
 /*
  *           Conversion to pda encoding using g_iconv
- *     The conversion is performed inplace
- *
- *  Note: this should work only as long as output is guarenteed to be shorter
- *  than input - otherwise iconv might do unexpected stuff.
  */
 void UTF_to_other(char *const buf, int buf_len)
 {
@@ -251,6 +247,7 @@ void UTF_to_other(char *const buf, int buf_len)
   gchar *inptr, *outptr;
   size_t rc;
   char *errstr;
+  char buf_out[1000], *buf_out_ptr = NULL;
 
   jp_logf(JP_LOG_DEBUG, "%s:%s reset iconv state...\n", __FILE__, __FUNCTION__);
   rc = g_iconv(glob_topda, NULL, NULL, NULL, NULL);
@@ -259,7 +256,20 @@ void UTF_to_other(char *const buf, int buf_len)
 
   inleft = oc_strnlen(buf,buf_len);
   outleft = buf_len-1;
-  inptr = outptr = buf;
+  inptr = buf;
+
+   if (buf_len > sizeof(buf_out))
+   {
+      buf_out_ptr = malloc(buf_len);
+      if (NULL == buf_out_ptr)
+      {
+	 jp_logf(JP_LOG_WARN, errstr, inptr - buf);
+	 return;
+      }
+      outptr = buf_out_ptr;
+   }
+   else
+      outptr = buf_out;
 
   rc = g_iconv(glob_topda, &inptr, &inleft, &outptr, &outleft);
   *outptr = 0;
@@ -279,6 +289,14 @@ void UTF_to_other(char *const buf, int buf_len)
     }
     jp_logf(JP_LOG_WARN, errstr, inptr - buf);
   }
+
+   if (buf_out_ptr)
+   {
+      g_strlcpy(buf, buf_out_ptr, buf_len);
+      free(buf_out_ptr);
+   }
+   else
+      g_strlcpy(buf, buf_out, buf_len);
 
   jp_logf(JP_LOG_DEBUG, "%s:%s converted to [%s]\n", __FILE__, __FUNCTION__,
      buf);
