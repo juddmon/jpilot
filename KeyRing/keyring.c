@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.37 2005/05/03 02:25:40 judd Exp $ */
+/* $Id: keyring.c,v 1.38 2005/08/12 17:54:42 rousseau Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -627,15 +627,15 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
 #endif
 
    kr.name = strdup(kr.name);
-   jp_charset_j2p((unsigned char *)kr.name, strlen(kr.name)+1);
+   jp_charset_j2p(kr.name, strlen(kr.name)+1);
 
    kr.account = strdup(kr.account);
-   jp_charset_j2p((unsigned char *)kr.account, strlen(kr.account)+1);
+   jp_charset_j2p(kr.account, strlen(kr.account)+1);
    
    kr.password = strdup(kr.password);
-   jp_charset_j2p((unsigned char *)kr.password, strlen(kr.password)+1);
+   jp_charset_j2p(kr.password, strlen(kr.password)+1);
    
-   jp_charset_j2p((unsigned char *)kr.note, strlen(kr.note)+1);
+   jp_charset_j2p(kr.note, strlen(kr.note)+1);
 
    pack_KeyRing(&kr, buf, 0xFFFF, &new_size);
 
@@ -982,7 +982,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 
 	  temp_str = malloc((len = strlen(mkr->kr.name)*2+1));
 	  multibyte_safe_strncpy(temp_str, mkr->kr.name, len);
-      jp_charset_p2j((unsigned char *)temp_str, len);
+      jp_charset_p2j(temp_str, len);
       gtk_entry_set_text(GTK_ENTRY(entry_name), temp_str);
       free(temp_str);
    } else {
@@ -994,7 +994,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 
 	  temp_str = malloc((len = strlen(mkr->kr.account)*2+1));
 	  multibyte_safe_strncpy(temp_str, mkr->kr.account, len);
-      jp_charset_p2j((unsigned char *)temp_str, len);
+      jp_charset_p2j(temp_str, len);
       gtk_entry_set_text(GTK_ENTRY(entry_account), temp_str); 
       free(temp_str);
    } else {
@@ -1006,7 +1006,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 
 	  temp_str = malloc((len = strlen(mkr->kr.password)*2+1));
 	  multibyte_safe_strncpy(temp_str, mkr->kr.password, len);
-      jp_charset_p2j((unsigned char *)temp_str, len);
+      jp_charset_p2j(temp_str, len);
       gtk_entry_set_text(GTK_ENTRY(entry_password), temp_str); 
       free(temp_str);
    } else {
@@ -1025,7 +1025,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 
 	  temp_str = malloc((len = strlen(mkr->kr.note)*2+1));
 	  multibyte_safe_strncpy(temp_str, mkr->kr.note, len);
-      jp_charset_p2j((unsigned char *)temp_str, len);
+      jp_charset_p2j(temp_str, len);
 #ifdef ENABLE_GTK2
       gtk_text_buffer_set_text(GTK_TEXT_BUFFER(text_note_buffer), temp_str, -1);
 #else
@@ -1170,7 +1170,7 @@ static void make_menus()
       if (ai.name[i][0]=='\0') {
 	 continue;
       }
-      jp_charset_p2j((unsigned char *)ai.name[i], 16);
+      jp_charset_p2j(ai.name[i], 16);
       categories[count+1]=ai.name[i];
       glob_category_number_from_menu_item[count++]=i;
    }
