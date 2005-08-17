@@ -1,4 +1,4 @@
-/* $Id: otherconv.c,v 1.22 2005/08/12 19:28:48 rousseau Exp $ */
+/* $Id: otherconv.c,v 1.23 2005/08/17 18:13:15 rousseau Exp $ */
 
 /*******************************************************************************
  * otherconv.c
@@ -59,7 +59,7 @@ static GIConv glob_frompda = NULL;
  * To avoid messing with conflicting declarations, I just implement my own version.
  * (this is easy & portable might not be very efficient) -- Amit Aronovitch
  */
-G_INLINE_FUNC size_t oc_strnlen(const char *s, size_t maxlen) {
+size_t oc_strnlen(const char *s, size_t maxlen) {
   const char *p,*endp;
 
   endp = s+maxlen;
