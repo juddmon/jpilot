@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.117 2005/08/06 18:17:23 judd Exp $ */
+/* $Id: jpilot.c,v 1.118 2005/08/26 02:59:25 judd Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -44,6 +44,7 @@
 
 #include "datebook.h"
 #include "address.h"
+#include "install_user.h"
 #include "todo.h"
 #include "memo.h"
 #include "libplugin.h"
@@ -614,6 +615,12 @@ static void cb_private(GtkWidget *widget, gpointer data)
    if (was_privates != privates)
       cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
 }
+
+void cb_install_user(GtkWidget *widget, gpointer data)
+{
+   install_user_gui(window);
+}
+
 
 void cb_app_button(GtkWidget *widget, gpointer data)
 {
@@ -1286,6 +1293,59 @@ const char *date_menu_icon[] = {
    "  ..2,zAB.<C292.",
    "   ............l"};
 
+const char *user_icon[] = {
+"16 16 34 1",
+" 	c None",
+".	c #FFFFFF",
+"+	c #303030",
+"@	c #A5B56E",
+"#	c #272727",
+"$	c #222222",
+"%	c #1E1E1E",
+"&	c #1A1A1A",
+"*	c #151515",
+"=	c #000000",
+"-	c #303030",
+";	c #2B2B2B",
+">	c #111111",
+",	c #0D0D0D",
+"'	c #C0C0C0",
+")	c #080808",
+"!	c #808080",
+"~	c #040404",
+"{	c #1B1FE8",
+"]	c #870C0C",
+"^	c #DC261E",
+"/	c #E52920",
+"(	c #DB251D",
+"_	c #D1221B",
+":	c #CB211A",
+"<	c #BA1B16",
+"[	c #B11915",
+"}	c #F2DE09",
+"|	c #8F0E0D",
+"1	c #D3231C",
+"2	c #C21E18",
+"3	c #A91613",
+"4	c #A01311",
+"5	c #98110F",
+" +++++++++++++++",
+"++++++++++++++++",
+"++@@@@#$%&*=@@@@",
+"++@@-;#$%&*>=@@@",
+"++@@-;#$%&*>,=@@",
+"++@@-'..%&*>,)=@",
+"++@@@-!.'+*>,)~=",
+"++@@-'{'..!>,)~=",
+"++@@-'.....>,)~=",
+"++@@@-'...!>,==@",
+"++@@@-....=>,=@@",
+"++@@@-''''!=,=@@",
+"++@@@@]=!!!!====",
+"++@@@^]!'.'']]@=",
+"++@@/(_:'<[]}}|]",
+"++@@/^1:2<[345|]"};
+
 guint8 *get_inline_pixbuf_data(const char **xpm_icon_data, gint icon_size)
 {
    GdkPixbuf  *pixbuf;
@@ -1328,6 +1388,7 @@ guint8 *get_inline_pixbuf_data(const char **xpm_icon_data, gint icon_size)
   { _("/File/Preferences"),                "<control>S", cb_prefs_gui,   0,                  ICON(GTK_STOCK_PREFERENCES) },
   { _("/File/_Print"),                     "<control>P", cb_print,       0,                  ICON(GTK_STOCK_PRINT) },
   { _("/File/sep1"),                       NULL,         NULL,           0,                  "<Separator>" },
+  { _("/File/Install User"),               NULL,         cb_install_user,0,                  ICON_XPM(user_icon, 16) },
   { _("/File/Restore Handheld"),           NULL,         cb_restore,     0,                  ICON(GTK_STOCK_REDO) },
   { _("/File/sep1"),                       NULL,         NULL,           0,                  "<Separator>" },
   { _("/File/_Quit"),                      "<control>Q", cb_delete_event,0,                  ICON(GTK_STOCK_QUIT) },

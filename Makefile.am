@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.42 2005/08/06 21:57:14 rousseau Exp $
+# $Id: Makefile.am,v 1.43 2005/08/26 02:59:26 judd Exp $
 
 SUBDIRS = Expense SyncTime KeyRing docs dialer po m4 empty icons
 
@@ -45,6 +45,7 @@ jpilot_SOURCES = \
 	i18n.h \
 	import_gui.c \
 	install_gui.c \
+	install_user.c \
 	japanese.c \
 	japanese.h \
 	jpilot.c \

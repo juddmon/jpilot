@@ -1,4 +1,4 @@
-/* $Id: sync.h,v 1.12 2004/11/22 00:52:42 rikster5 Exp $ */
+/* $Id: sync.h,v 1.13 2005/08/26 02:59:26 judd Exp $ */
 
 /*******************************************************************************
  * sync.h
@@ -26,11 +26,12 @@
 #include <pi-dlp.h>
 
 /* Bitmasks for backup */
-#define SYNC_FULL_BACKUP   1
-#define SYNC_NO_PLUGINS    2
-#define SYNC_OVERRIDE_USER 4
-#define SYNC_NO_FORK       8
-#define SYNC_RESTORE       16
+#define SYNC_FULL_BACKUP   0x01
+#define SYNC_NO_PLUGINS    0x02
+#define SYNC_OVERRIDE_USER 0x04
+#define SYNC_NO_FORK       0x08
+#define SYNC_RESTORE       0x10
+#define SYNC_INSTALL_USER  0x20
 
 #define SYNC_ERROR_BIND            -10
 #define SYNC_ERROR_LISTEN          -11

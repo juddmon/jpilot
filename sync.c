@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.57 2005/06/16 03:52:01 judd Exp $ */
+/* $Id: sync.c,v 1.58 2005/08/26 02:59:26 judd Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -415,6 +415,25 @@ static int wait_for_response(int sd)
    return command;
 }
 
+int jp_install_user(const char *device, int sd, struct my_sync_info *sync_info)
+{
+   struct PilotUser U;
+
+   U.userID=sync_info->userID;
+   U.viewerID=0;
+   U.lastSyncPC=0;
+   strncpy(U.username, sync_info->username, sizeof(U.username));
+
+   dlp_WriteUserInfo(sd, &U);
+
+   dlp_EndOfSync(sd, 0);
+   pi_close(sd);
+
+   jp_logf(JP_LOG_GUI, _("Finished installing user information.\n"));
+   return EXIT_SUCCESS;
+}
+
+
 #ifdef PILOT_LINK_0_12
 int jp_pilot_connect(int *Psd, const char *device)
 {
@@ -665,6 +684,12 @@ int jp_sync(struct my_sync_info *sync_info)
 
    ret = jp_pilot_connect(&sd, device);
    if (ret) {
+      return ret;
+   }
+
+   if (sync_info->flags & SYNC_INSTALL_USER) {
+      ret = jp_install_user(device, sd, sync_info);
+      write_to_parent(PIPE_FINISHED, "\n");
       return ret;
    }
 
