@@ -46,8 +46,7 @@ If you are using Palm OS > 4.0 and see this message:
 You must upgrade your desktop software or remove the password from the
 handheld."
 
-You will currently have to remove the password from the handheld.  This will
-be supported later.  Blame the stupid US laws (DMCA) on holding this up.
+You need pilot-link > 0.11.5
 
 ==============================================================================
 SERIAL PORT SETUP:
