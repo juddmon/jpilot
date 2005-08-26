@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.43 2005/08/26 02:59:26 judd Exp $
+# $Id: Makefile.am,v 1.44 2005/08/26 03:16:30 judd Exp $
 
 SUBDIRS = Expense SyncTime KeyRing docs dialer po m4 empty icons
 
@@ -142,7 +142,6 @@ AM_CFLAGS= @PILOT_FLAGS@ @GTK_CFLAGS@ ${I18NDEFS}
 jpilot_LDFLAGS = -export-dynamic
 jpilot_LDADD=@LIBS@ @PILOT_LIBS@ @GTK_LIBS@
 jpilot_dump_LDADD=@LIBS@ @PILOT_LIBS@ @GTK_LIBS@
-jpilot_sync_LDFLAGS = -export-dynamic
 jpilot_sync_LDADD=@LIBS@ @PILOT_LIBS@ @GTK_LIBS@
 
 # Automatically update the libtool script if it becomes out-of-date.
