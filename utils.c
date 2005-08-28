@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.90 2005/08/28 09:44:19 rousseau Exp $ */
+/* $Id: utils.c,v 1.91 2005/08/28 20:19:34 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -1200,9 +1200,6 @@ int dialog_generic_with_text(GtkWindow *main_window,
    } else {
       label1 = gtk_label_new(text);
       gtk_box_pack_start(GTK_BOX(vbox1), label1, FALSE, FALSE, 2);
-#ifdef ENABLE_GTK2
-      gtk_label_set_selectable(GTK_LABEL(label1), TRUE);
-#endif
    }
 
    gtk_box_pack_start(GTK_BOX(vbox1), hbox1, FALSE, FALSE, 2);
