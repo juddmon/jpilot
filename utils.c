@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.89 2005/06/16 03:52:01 judd Exp $ */
+/* $Id: utils.c,v 1.90 2005/08/28 09:44:19 rousseau Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -1208,6 +1208,20 @@ int dialog_generic_with_text(GtkWindow *main_window,
    gtk_box_pack_start(GTK_BOX(vbox1), hbox1, FALSE, FALSE, 2);
 
    for (i=0; i < nob; i++) {
+#ifdef ENABLE_GTK2
+      if (0 == strcmp("OK", button_text[i]))
+	 button = gtk_button_new_from_stock(GTK_STOCK_OK);
+      else
+	 if (0 == strcmp("Cancel", button_text[i]))
+	    button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
+	 else
+	    if (0 == strcmp("Yes", button_text[i]))
+	       button = gtk_button_new_from_stock(GTK_STOCK_YES);
+	    else
+	       if (0 == strcmp("No", button_text[i]))
+		  button = gtk_button_new_from_stock(GTK_STOCK_NO);
+	       else
+#endif
       button = gtk_button_new_with_label(gettext(button_text[i]));
       gtk_signal_connect(GTK_OBJECT(button), "clicked",
 			 GTK_SIGNAL_FUNC(cb_dialog_button),
