@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.101 2005/06/16 03:47:51 judd Exp $ */
+/* $Id: address_gui.c,v 1.102 2005/08/28 09:58:42 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -2370,6 +2370,10 @@ int address_refresh()
 	(GTK_CHECK_MENU_ITEM(address_cat_menu_item1[index]), TRUE);
    }
    address_find();
+
+   /* gives the focus to the search field */
+   gtk_widget_grab_focus(address_quickfind_entry);
+
    return EXIT_SUCCESS;
 }
 
