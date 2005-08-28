@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.118 2005/08/26 02:59:25 judd Exp $ */
+/* $Id: jpilot.c,v 1.119 2005/08/28 09:32:44 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -1865,7 +1865,7 @@ void jp_window_iconify(GtkWidget *window)
 void cb_payback(GtkWidget *widget, gpointer data)
 {
    int w, h;
-   char *button_text[]={"OK"};
+   char *button_text[]={N_("OK")};
    char *text=
      "Buy a Palm Tungsten, or Palm Zire, register it on-line and "
      "earn points for the J-Pilot project.\n\n"
