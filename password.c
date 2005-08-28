@@ -1,4 +1,4 @@
-/* $Id: password.c,v 1.18 2004/12/07 06:51:08 rikster5 Exp $ */
+/* $Id: password.c,v 1.19 2005/08/28 09:32:03 rousseau Exp $ */
 
 /*******************************************************************************
  * password.c
@@ -346,13 +346,21 @@ int dialog_password(GtkWindow *main_window, char *ascii_password, int retry)
    gtk_box_pack_start(GTK_BOX(vbox1), hbox1, FALSE, FALSE, 2);
 
    /* Buttons */
+#ifdef ENABLE_GTK2
+   button = gtk_button_new_from_stock(GTK_STOCK_OK);
+#else
    button = gtk_button_new_with_label(_("OK"));
+#endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_dialog_button),
 		      GINT_TO_POINTER(DIALOG_SAID_1));
    gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
 
+#ifdef ENABLE_GTK2
+   button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
+#else
    button = gtk_button_new_with_label(_("Cancel"));
+#endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_dialog_button),
 		      GINT_TO_POINTER(DIALOG_SAID_2));
