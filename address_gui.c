@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.102 2005/08/28 09:58:42 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.103 2005/08/28 12:29:49 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -2682,7 +2682,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    hbox_temp = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox1), hbox_temp, FALSE, FALSE, 0);
 
-   label = gtk_label_new(_("Quick Find"));
+   label = gtk_label_new(_("Quick Find: "));
    gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 0);
 
    address_quickfind_entry = gtk_entry_new();
