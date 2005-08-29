@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.103 2005/08/28 12:29:49 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.104 2005/08/29 06:50:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -2673,9 +2673,6 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), ADDRESS_PHONE_COLUMN, FALSE);
 
    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
-
-   /* The focus doesn't do any good on the application button */
-   gtk_widget_grab_focus(GTK_WIDGET(clist));
 
    /*gtk_clist_set_column_justification(GTK_CLIST(clist), 1, GTK_JUSTIFY_RIGHT); */
 

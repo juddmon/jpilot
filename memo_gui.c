@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.80 2005/06/16 03:52:01 judd Exp $ */
+/* $Id: memo_gui.c,v 1.81 2005/08/29 06:50:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -1537,9 +1537,6 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_clist_set_column_width(GTK_CLIST(clist), 0, 50);
 
    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
-
-   /* The focus doesn't do any good on the application button */
-   gtk_widget_grab_focus(GTK_WIDGET(clist));
 
    /*
     * The right hand part of the main window follows:

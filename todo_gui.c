@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.89 2005/06/16 03:52:01 judd Exp $ */
+/* $Id: todo_gui.c,v 1.90 2005/08/29 06:50:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -2154,9 +2154,6 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), TODO_TEXT_COLUMN, FALSE);
 
    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
-
-   /* The focus doesn't do any good on the application button */
-   gtk_widget_grab_focus(GTK_WIDGET(clist));
 
    /* */
    /* The right hand part of the main window follows: */
