@@ -1,4 +1,4 @@
-/* $Id: otherconv.c,v 1.23 2005/08/17 18:13:15 rousseau Exp $ */
+/* $Id: otherconv.c,v 1.24 2005/08/30 19:07:00 rikster5 Exp $ */
 
 /*******************************************************************************
  * otherconv.c
@@ -67,7 +67,7 @@ size_t oc_strnlen(const char *s, size_t maxlen) {
   return p-s;
 }
 
-void oc_free_iconv(char *funcname, GIConv conv, char *convname) {
+void oc_free_iconv(const char *funcname, GIConv conv, char *convname) {
   if (conv != NULL) {
     if (g_iconv_close(conv) != 0) {
       jp_logf(JP_LOG_WARN, "%s: error exit from g_iconv_close(%s)\n",
