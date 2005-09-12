@@ -48,6 +48,17 @@ base[SELECTED] = { 0.19, 0.19, 0.61 } # selected and week numbers for GTK2.x
 text[ACTIVE]   = { 1.0, 1.0, 1.0 }    # week numbers when focus is not on widget for GTK2.x
 base[ACTIVE]   = { 0.19, 0.19, 0.61 } # week numbers when focus is not on widget for GTK2.x
 }
+
+style "text"
+{
+#This is how to use a different font under GTK 1.x
+#font = "-adobe-courier-medium-o-normal--8-80-75-75-m-50-iso8859-1"
+#This is how to use a different font under GTK 2.x
+#text[NORMAL] = { 0.0, 0.0, 0.0 }
+#base[NORMAL] = { 1.0, 1.0, 1.0 }
+}
+
+
 ################################################################################
 # These set the widget types to use the styles defined above.
 widget_class "*GtkCalendar" style "calendar"
@@ -56,3 +67,6 @@ widget_class "*GtkCalendar" style "calendar"
 # These set the widget types for named gtk widgets in the C code
 widget "*.label_high" style "label_high"
 
+# For text
+widget_class "*GtkText" style "text"
+widget_class "*GtkTextView" style "text"
