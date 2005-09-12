@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.119 2005/08/28 09:32:44 rousseau Exp $ */
+/* $Id: jpilot.c,v 1.120 2005/09/12 00:46:35 judd Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -739,7 +739,8 @@ int bad_sync_exit_status(int exit_status)
          "Every palm must have a unique user id in order to sync properly.\n"
          "If it has been hard reset, use restore from the menu to restore it,\n"
          "or use pilot-xfer.\n"
-         "To add a user name and ID use install-user, i.e install-user \"name\" 12345.\n"
+         "To add a user name and ID use the install-user command line tool,\n"
+	 "or use install-user from the menu\n"
          "Read the user manual if you are uncertain.");
    char *button_text[]={N_("Cancel Sync"), N_("Sync Anyway")
    };
