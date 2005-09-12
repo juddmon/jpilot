@@ -1,4 +1,4 @@
-/* $Id: prefs.c,v 1.57 2005/06/24 14:03:13 rousseau Exp $ */
+/* $Id: prefs.c,v 1.58 2005/09/12 00:48:18 judd Exp $ */
 
 /*******************************************************************************
  * prefs.c
@@ -37,7 +37,7 @@
 /*These are the default settings */
 /*name, usertype, filetype, ivalue, char *svalue, svalue_size; */
 static prefType glob_prefs[NUM_PREFS] = {
-     {"rcfile", CHARTYPE, CHARTYPE, 0, NULL, 0},
+     {"jpilotrc", CHARTYPE, CHARTYPE, 0, NULL, 0},
      {"time", CHARTYPE, INTTYPE, 0, NULL, 0},
      {"sdate", CHARTYPE, INTTYPE, 0, NULL, 0},
      {"ldate", CHARTYPE, INTTYPE, 0, NULL, 0},
