@@ -54,6 +54,7 @@ style "text"
 #This is how to use a different font under GTK 1.x
 #font = "-adobe-courier-medium-o-normal--8-80-75-75-m-50-iso8859-1"
 #This is how to use a different font under GTK 2.x
+#font_name = "Sans 12"
 #text[NORMAL] = { 0.0, 0.0, 0.0 }
 #base[NORMAL] = { 1.0, 1.0, 1.0 }
 }
