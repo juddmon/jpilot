@@ -1,4 +1,4 @@
-/* $Id: prefs.c,v 1.58 2005/09/12 00:48:18 judd Exp $ */
+/* $Id: prefs.c,v 1.59 2005/09/24 19:23:50 judd Exp $ */
 
 /*******************************************************************************
  * prefs.c
@@ -434,10 +434,10 @@ int get_pref_possibility(int which, int n, char *pref_str)
       "Host KOI8-R <-> Palm Windows-1251",
       "Chinese(Big5)",
       "Korean",
-      "UTF: Latin 2, Estern Europe (CP1250)",
+      "UTF: Latin 2, Eastern Europe (CP1250)",
       "UTF: Latin 1, Western Europe (CP1252)",
       "UTF: Greek (CP1253)",
-      "UTF: Latin 2, Estern Europe (ISO8859-2)",
+      "UTF: Latin 2, Eastern Europe (ISO8859-2)",
       "UTF: Cyrillic (KOI8-R)",
       "UTF: Cyrillic (CP1251)",
       "UTF: Simplified Chinese (GBK)",
