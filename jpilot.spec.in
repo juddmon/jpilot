@@ -8,7 +8,7 @@ License:   GPL
 Group:     Applications/Productivity
 Source:    http://jpilot.org/jpilot-%{version}.tar.gz
 URL:       http://jpilot.org
-Packager:  Paul Gear <paul@gear.dyndns.org>
+Packager:  Judd Montgomery <judd@jpilot.org>
 Prefix:    /usr
 DocDir:    %{prefix}/share/doc
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
@@ -90,28 +90,41 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/jpilot/MemoDB.pdb
 %{_datadir}/jpilot/Memo32DB.pdb
 %{_datadir}/jpilot/ExpenseDB.pdb
-%{_libdir}/jpilot/plugins/libexpense.so
-%{_libdir}/jpilot/plugins/libexpense.so.0
-%{_libdir}/jpilot/plugins/libexpense.so.0.0.0
-%{_libdir}/jpilot/plugins/libexpense.la
-%{_libdir}/jpilot/plugins/libsynctime.so
-%{_libdir}/jpilot/plugins/libsynctime.so.0
-%{_libdir}/jpilot/plugins/libsynctime.so.0.0.0
-%{_libdir}/jpilot/plugins/libsynctime.la
-%{_libdir}/jpilot/plugins/libkeyring.so
-%{_libdir}/jpilot/plugins/libkeyring.so.0
-%{_libdir}/jpilot/plugins/libkeyring.so.0.0.0
-%{_libdir}/jpilot/plugins/libkeyring.la
+#%{_libdir}/jpilot/plugins/libexpense.so
+#%{_libdir}/jpilot/plugins/libexpense.so.0
+#%{_libdir}/jpilot/plugins/libexpense.so.0.0.0
+#%{_libdir}/jpilot/plugins/libexpense.la
+#%{_libdir}/jpilot/plugins/libsynctime.so
+#%{_libdir}/jpilot/plugins/libsynctime.so.0
+#%{_libdir}/jpilot/plugins/libsynctime.so.0.0.0
+#%{_libdir}/jpilot/plugins/libsynctime.la
+#%{_libdir}/jpilot/plugins/libkeyring.so
+#%{_libdir}/jpilot/plugins/libkeyring.so.0
+#%{_libdir}/jpilot/plugins/libkeyring.so.0.0.0
+#%{_libdir}/jpilot/plugins/libkeyring.la
+%{prefix}/lib/jpilot/plugins/libexpense.so
+%{prefix}/lib/jpilot/plugins/libexpense.so.0
+%{prefix}/lib/jpilot/plugins/libexpense.so.0.0.0
+%{prefix}/lib/jpilot/plugins/libexpense.la
+%{prefix}/lib/jpilot/plugins/libsynctime.so
+%{prefix}/lib/jpilot/plugins/libsynctime.so.0
+%{prefix}/lib/jpilot/plugins/libsynctime.so.0.0.0
+%{prefix}/lib/jpilot/plugins/libsynctime.la
+%{prefix}/lib/jpilot/plugins/libkeyring.so
+%{prefix}/lib/jpilot/plugins/libkeyring.so.0
+%{prefix}/lib/jpilot/plugins/libkeyring.so.0.0.0
+%{prefix}/lib/jpilot/plugins/libkeyring.la
 %{_datadir}/locale/*/LC_MESSAGES/jpilot.mo
 %{_mandir}/man1/jpilot.1.gz
 %{_mandir}/man1/jpilot-dial.1.gz
 %{_mandir}/man1/jpilot-sync.1.gz
 %{_mandir}/man1/jpilot-dump.1.gz
-%{_mandir}/man1/jpilot-upgrade-99.1.gz
 %{prefix}/share/pixmaps/*
 %{_datadir}/gnome/apps/Applications/jpilot.desktop
 
 %changelog
+* Sat Sep 24 2005 Judd Montgomery <judd@jpilot.org>
+- Updated for SuSE 9.3
 * Sat Feb 22 2003 Judd Montgomery <judd@jpilot.org>
 - fixed jpilotrc.* and empty/* files not being included
 * Sat Feb 22 2003 Vladimir Bormotov <bor@insight.donbass.com>
