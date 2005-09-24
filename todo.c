@@ -1,4 +1,4 @@
-/* $Id: todo.c,v 1.37 2005/04/09 02:01:03 judd Exp $ */
+/* $Id: todo.c,v 1.38 2005/09/24 19:26:35 judd Exp $ */
 
 /*******************************************************************************
  * todo.c
@@ -296,6 +296,7 @@ int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib,
    if (pack_ToDo(todo, RecordBuffer, todo_v1) == -1) {
       PRINT_FILE_LINE;
       jp_logf(JP_LOG_WARN, "pack_ToDo %s\n", _("error"));
+      pi_buffer_free(RecordBuffer);
       return EXIT_FAILURE;
    }
 #endif /* PILOT_LINK_0_12 */
@@ -305,13 +306,8 @@ int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib,
    br.buf = record;
    br.size = rec_len;
 #else /* PILOT_LINK_0_12 */
-   br.buf = malloc(RecordBuffer->used);
-   if (br.buf == NULL) {
-      return EXIT_FAILURE;
-   }
-   memcpy(br.buf,RecordBuffer->data,RecordBuffer->used);
+   br.buf = RecordBuffer->data;
    br.size = RecordBuffer->used;
-   pi_buffer_free(RecordBuffer);
 #endif /* PILOT_LINK_0_12 */
    /* Keep unique ID intact */
    if (unique_id) {
@@ -333,6 +329,8 @@ int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib,
    if (unique_id) {
       *unique_id = br.unique_id;
    }
+
+   pi_buffer_free(RecordBuffer);
 
    return EXIT_SUCCESS;
 }
@@ -504,10 +502,10 @@ int get_todos2(ToDoList **todo_list, int sort_order,
       }
 #else /* PILOT_LINK_0_12 */
       if (unpack_ToDo(&todo, RecordBuffer, todo_v1) == -1) {
-         free(RecordBuffer);
+	 pi_buffer_free(RecordBuffer);
 	 continue;
       }
-      free(RecordBuffer);
+      pi_buffer_free(RecordBuffer);
 #endif /* PILOT_LINK_0_12 */
 
       if ( ((br->attrib & 0x0F) != category) && category != CATEGORY_ALL) {

@@ -1,4 +1,4 @@
-/* $Id: memo.c,v 1.33 2005/04/09 02:01:03 judd Exp $ */
+/* $Id: memo.c,v 1.34 2005/09/24 19:26:35 judd Exp $ */
 
 /*******************************************************************************
  * memo.c
@@ -177,13 +177,8 @@ int pc_memo_write(struct Memo *memo, PCRecType rt, unsigned char attrib,
    br.buf = record;
    br.size = rec_len;
 #else /* PILOT_LINK_0_12 */
-   br.buf = malloc(RecordBuffer->used);
-   if (br.buf == NULL) {
-      return EXIT_FAILURE;
-   }
-   memcpy(br.buf,RecordBuffer->data,RecordBuffer->used);
+   br.buf = RecordBuffer->data;
    br.size = RecordBuffer->used;
-   pi_buffer_free(RecordBuffer);
 
 #endif /* PILOT_LINK_0_12 */
    /* Keep unique ID intact */
@@ -202,6 +197,10 @@ int pc_memo_write(struct Memo *memo, PCRecType rt, unsigned char attrib,
    if (unique_id) {
       *unique_id = br.unique_id;
    }
+
+#ifndef PILOT_LINK_0_12
+   pi_buffer_free(RecordBuffer);
+#endif
 
    return EXIT_SUCCESS;
 }
@@ -343,10 +342,10 @@ int get_memos2(MemoList **memo_list, int sort_order,
       }
 #else /* PILOT_LINK_0_12 */
       if (unpack_Memo(&memo, RecordBuffer, memo_v1) == -1) {
-         free(RecordBuffer);
+	 pi_buffer_free(RecordBuffer);
 	 continue;
       }
-      free(RecordBuffer);
+      pi_buffer_free(RecordBuffer);
 #endif /* PILOT_LINK_0_12 */
 
       if ( ((br->attrib & 0x0F) != category) && category != CATEGORY_ALL) {

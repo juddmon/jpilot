@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.58 2005/08/26 02:59:26 judd Exp $ */
+/* $Id: sync.c,v 1.59 2005/09/24 19:26:35 judd Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -1156,6 +1156,7 @@ int slow_sync_application(char *DB_name, int sd)
 	 num = fread(record, rec_len, 1, pc_in);
 	 if (num != 1) {
 	    if (ferror(pc_in)) {
+	       free(record);
 	       break;
 	    }
 	 }
@@ -1201,6 +1202,7 @@ int slow_sync_application(char *DB_name, int sd)
 	 num = fread(record, rec_len, 1, pc_in);
 	 if (num != 1) {
 	    if (ferror(pc_in)) {
+	       free(record);
 	       break;
 	    }
 	 }
@@ -1208,6 +1210,7 @@ int slow_sync_application(char *DB_name, int sd)
 	    jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
 	    fclose(pc_in);
 	    dlp_CloseDB(sd, db);
+	    free(record);
 	    return EXIT_FAILURE;
 	 }
 #ifdef PILOT_LINK_0_12
@@ -1240,6 +1243,10 @@ int slow_sync_application(char *DB_name, int sd)
 	     */
 #endif
 	 }
+	 free(record);
+#ifdef PILOT_LINK_0_12
+	 pi_buffer_free(buffer);
+#endif
 	 /* if (ret>=0 ) {
 	    printf("id %ld, index %d, size %d, attr 0x%x, category %d\n",id, index, size, attr, category);
 	 }

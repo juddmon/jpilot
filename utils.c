@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.91 2005/08/28 20:19:34 rikster5 Exp $ */
+/* $Id: utils.c,v 1.92 2005/09/24 19:26:35 judd Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -2022,6 +2022,9 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 	 break;
        default:
 	 fclose(pc_in);
+#ifndef PILOT_LINK_0_12
+	 pi_buffer_free(RecordBuffer);
+#endif
 	 return EXIT_SUCCESS;
       }
 #ifdef PILOT_LINK_0_12
@@ -2043,11 +2046,17 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       pi_buffer_free(RecordBuffer);
 #endif /* PILOT_LINK_0_12 */
       fclose(pc_in);
+#ifndef PILOT_LINK_0_12
+      pi_buffer_free(RecordBuffer);
+#endif
       return EXIT_SUCCESS;
       break;
     default:
       break;
    }
+#ifndef PILOT_LINK_0_12
+   pi_buffer_free(RecordBuffer);
+#endif
    return EXIT_SUCCESS;
 }
 
@@ -3125,7 +3134,7 @@ void append_anni_years(char *desc, int max, struct tm *date,
    /* Get and check for a year */
    year = strtoul(&desc[len - 4], NULL, 10);
 
-   // Only allow up to 3 digits to be added
+   /* Only allow up to 3 digits to be added */
    if (year < 1100 || year > 3000)
       return;
 

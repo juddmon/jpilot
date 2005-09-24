@@ -1,4 +1,4 @@
-/* $Id: datebook.c,v 1.45 2005/04/09 02:01:03 judd Exp $ */
+/* $Id: datebook.c,v 1.46 2005/09/24 19:26:35 judd Exp $ */
 
 /*******************************************************************************
  * datebook.c
@@ -353,13 +353,8 @@ int pc_datebook_write(struct Appointment *appt, PCRecType rt,
    br.buf = record;
    br.size = rec_len;
 #else /* PILOT_LINK_0_12 */
-   br.buf = malloc(RecordBuffer->used);
-   if (br.buf == NULL) {
-      return EXIT_FAILURE;
-   }
-   memcpy(br.buf,RecordBuffer->data,RecordBuffer->used);
+   br.buf = RecordBuffer->data;
    br.size = RecordBuffer->used;
-   pi_buffer_free(RecordBuffer);
 #endif /* PILOT_LINK_0_12 */
    /* Keep unique ID intact */
    if ((unique_id) && (*unique_id!=0)) {
@@ -372,6 +367,10 @@ int pc_datebook_write(struct Appointment *appt, PCRecType rt,
    if (unique_id) {
       *unique_id = br.unique_id;
    }
+
+#ifdef PILOT_LINK_0_12
+   pi_buffer_free(RecordBuffer);
+#endif
 
    return EXIT_SUCCESS;
 }
@@ -1000,12 +999,12 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
       memcpy(RecordBuffer->data, br->buf, br->size);
       RecordBuffer->used = br->size;
       if (unpack_Appointment(&appt, RecordBuffer, datebook_v1) == -1) {
-         free(RecordBuffer);
+	 pi_buffer_free(RecordBuffer);
 #endif /* PILOT_LINK_0_12 */
 	 continue;
       }
 #ifdef PILOT_LINK_0_12
-      free(RecordBuffer);
+      pi_buffer_free(RecordBuffer);
 #endif /* PILOT_LINK_0_12 */
 
 #ifdef ENABLE_DATEBK

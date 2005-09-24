@@ -1,4 +1,4 @@
-/* $Id: address.c,v 1.36 2005/04/09 02:01:03 judd Exp $ */
+/* $Id: address.c,v 1.37 2005/09/24 19:26:35 judd Exp $ */
 
 /*******************************************************************************
  * address.c
@@ -359,13 +359,8 @@ int pc_address_write(struct Address *addr, PCRecType rt, unsigned char attrib,
    br.buf = record;
    br.size = rec_len;
 #else /* PILOT_LINK_0_12 */
-   br.buf = malloc(RecordBuffer->used);
-   if (br.buf == NULL) {
-      return EXIT_FAILURE;
-   }
-   memcpy(br.buf,RecordBuffer->data,RecordBuffer->used);
+   br.buf = RecordBuffer->data;
    br.size = RecordBuffer->used;
-   pi_buffer_free(RecordBuffer);
 #endif /* PILOT_LINK_0_12 */
    /* Keep unique ID intact */
    if (unique_id) {
@@ -379,6 +374,9 @@ int pc_address_write(struct Address *addr, PCRecType rt, unsigned char attrib,
       *unique_id = br.unique_id;
    }
 
+#ifdef PILOT_LINK_0_12
+   pi_buffer_free(RecordBuffer);
+#endif
    return EXIT_SUCCESS;
 }
 
@@ -516,14 +514,15 @@ int get_addresses2(AddressList **address_list, int sort_order,
 
 #ifndef PILOT_LINK_0_12
       if (num <= 0) {
+	 pi_buffer_free(RecordBuffer);
 	 continue;
       }
 #else /* PILOT_LINK_0_12 */
       if (unpack_Address(&addr, RecordBuffer, address_v1) == -1) {
-         free(RecordBuffer);
+	 pi_buffer_free(RecordBuffer);
 	 continue;
       }
-      free(RecordBuffer);
+      pi_buffer_free(RecordBuffer);
 #endif /* PILOT_LINK_0_12 */
 
       if ( ((br->attrib & 0x0F) != category) && category != CATEGORY_ALL) {
