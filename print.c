@@ -1,4 +1,4 @@
-/* $Id: print.c,v 1.29 2005/06/24 14:03:13 rousseau Exp $ */
+/* $Id: print.c,v 1.30 2005/09/25 03:30:03 judd Exp $ */
 
 /*******************************************************************************
  * print.c
@@ -629,12 +629,14 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
    long use_db3_tags;
    struct db4_struct db4;
 #endif
+#ifdef HAVE_LOCALE_H
+   char *current_locale;
+#endif
 
 #ifdef ENABLE_DATEBK
    get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
 #endif
 #ifdef HAVE_LOCALE_H
-   char *current_locale;
    current_locale = setlocale(LC_NUMERIC,"C");
 #endif
 
@@ -1022,6 +1024,9 @@ int print_addresses(AddressList *address_list)
    int order[22]={0,1,13,2,3,4,5,6,7,8,9,10,11,12,14,15,16,17,18,19,20,21
    };
    char str[100];
+#ifdef HAVE_LOCALE_H
+   char *current_locale;
+#endif
 
    out = print_open();
    if (!out) {
@@ -1029,7 +1034,6 @@ int print_addresses(AddressList *address_list)
    }
 
 #ifdef HAVE_LOCALE_H
-   char *current_locale;
    current_locale = setlocale(LC_NUMERIC,"C");
 #endif
 
@@ -1128,6 +1132,9 @@ int print_todos(ToDoList *todo_list, char *category_name)
    char str[100];
    time_t ltime;
    struct tm *now;
+#ifdef HAVE_LOCALE_H
+   char *current_locale;
+#endif
 
    out = print_open();
    if (!out) {
@@ -1135,7 +1142,6 @@ int print_todos(ToDoList *todo_list, char *category_name)
    }
 
 #ifdef HAVE_LOCALE_H
-   char *current_locale;
    current_locale = setlocale(LC_NUMERIC,"C");
 #endif
 
@@ -1226,6 +1232,9 @@ int print_memos(MemoList *memo_list)
    MemoList *temp_l;
    struct Memo *memo;
    int i;
+#ifdef HAVE_LOCALE_H
+   char *current_locale;
+#endif
 
    out = print_open();
    if (!out) {
@@ -1233,7 +1242,6 @@ int print_memos(MemoList *memo_list)
    }
 
 #ifdef HAVE_LOCALE_H
-   char *current_locale;
    current_locale = setlocale(LC_NUMERIC,"C");
 #endif
 

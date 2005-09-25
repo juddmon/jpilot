@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.120 2005/09/12 00:46:35 judd Exp $ */
+/* $Id: jpilot.c,v 1.121 2005/09/25 03:30:03 judd Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -1965,7 +1965,12 @@ int main(int argc, char *argv[])
 #endif
    int pid;
    int remote_sync = FALSE;
-
+#if defined(ENABLE_NLS)
+#  ifdef HAVE_LOCALE_H
+   char *current_locale;
+#  endif
+# endif
+   
 char *xpm_locked[] = {
    "15 18 4 1",
    "       c None",
@@ -2133,8 +2138,7 @@ char * xpm_backup[] = {
    /* enable internationalization(i18n) before printing any output */
 #if defined(ENABLE_NLS)
 #  ifdef HAVE_LOCALE_H
-      char *current_locale;
-      current_locale = setlocale(LC_ALL, "");
+   current_locale = setlocale(LC_ALL, "");
 #  endif
    bindtextdomain(EPN, LOCALEDIR);
    textdomain(EPN);
