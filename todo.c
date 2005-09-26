@@ -1,4 +1,4 @@
-/* $Id: todo.c,v 1.38 2005/09/24 19:26:35 judd Exp $ */
+/* $Id: todo.c,v 1.39 2005/09/26 03:27:59 judd Exp $ */
 
 /*******************************************************************************
  * todo.c
@@ -330,7 +330,9 @@ int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib,
       *unique_id = br.unique_id;
    }
 
+#ifdef PILOT_LINK_0_12
    pi_buffer_free(RecordBuffer);
+#endif
 
    return EXIT_SUCCESS;
 }

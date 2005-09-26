@@ -1,4 +1,4 @@
-/* $Id: address.c,v 1.37 2005/09/24 19:26:35 judd Exp $ */
+/* $Id: address.c,v 1.38 2005/09/26 03:27:59 judd Exp $ */
 
 /*******************************************************************************
  * address.c
@@ -514,7 +514,6 @@ int get_addresses2(AddressList **address_list, int sort_order,
 
 #ifndef PILOT_LINK_0_12
       if (num <= 0) {
-	 pi_buffer_free(RecordBuffer);
 	 continue;
       }
 #else /* PILOT_LINK_0_12 */

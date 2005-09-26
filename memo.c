@@ -1,4 +1,4 @@
-/* $Id: memo.c,v 1.34 2005/09/24 19:26:35 judd Exp $ */
+/* $Id: memo.c,v 1.35 2005/09/26 03:27:59 judd Exp $ */
 
 /*******************************************************************************
  * memo.c
@@ -198,7 +198,7 @@ int pc_memo_write(struct Memo *memo, PCRecType rt, unsigned char attrib,
       *unique_id = br.unique_id;
    }
 
-#ifndef PILOT_LINK_0_12
+#ifdef PILOT_LINK_0_12
    pi_buffer_free(RecordBuffer);
 #endif
 

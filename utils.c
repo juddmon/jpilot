@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.92 2005/09/24 19:26:35 judd Exp $ */
+/* $Id: utils.c,v 1.93 2005/09/26 03:27:59 judd Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -2022,7 +2022,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 	 break;
        default:
 	 fclose(pc_in);
-#ifndef PILOT_LINK_0_12
+#ifdef PILOT_LINK_0_12
 	 pi_buffer_free(RecordBuffer);
 #endif
 	 return EXIT_SUCCESS;
@@ -2046,7 +2046,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       pi_buffer_free(RecordBuffer);
 #endif /* PILOT_LINK_0_12 */
       fclose(pc_in);
-#ifndef PILOT_LINK_0_12
+#ifdef PILOT_LINK_0_12
       pi_buffer_free(RecordBuffer);
 #endif
       return EXIT_SUCCESS;
@@ -2054,7 +2054,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
     default:
       break;
    }
-#ifndef PILOT_LINK_0_12
+#ifdef PILOT_LINK_0_12
    pi_buffer_free(RecordBuffer);
 #endif
    return EXIT_SUCCESS;
