@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.38 2005/08/12 17:54:42 rousseau Exp $ */
+/* $Id: keyring.c,v 1.39 2005/10/07 19:30:59 rousseau Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -43,6 +43,7 @@
 #include <pi-file.h>
 
 #include "../i18n.h"
+#include "prefs.h"
 
 #define KEYRING_CAT1 1
 #define KEYRING_CAT2 2
@@ -82,6 +83,7 @@ static GtkWidget *apply_record_button;
 static GtkWidget *add_record_button;
 static GtkWidget *delete_record_button;
 static GtkWidget *copy_record_button;
+static GtkWidget *pane = NULL;
 
 static int record_changed;
 static int clist_hack;
@@ -1457,6 +1459,8 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
 #endif
    GtkWidget *table;
    GtkWindow *w;
+   GtkWidget *separator;
+   long ivalue;
    time_t ltime;
    struct tm *now;
    char ascii_password[PASSWD_LEN];
@@ -1529,11 +1533,17 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    jp_logf(JP_LOG_DEBUG, "KeyRing: calling make_menus\n");
    make_menus();
    
+   pane = gtk_hpaned_new();
+   get_pref(PREF_KEYRING_PANE, &ivalue, NULL);
+   gtk_paned_set_position(GTK_PANED(pane), ivalue + 2);
+
+   gtk_box_pack_start(GTK_BOX(hbox), pane, TRUE, TRUE, 5);
+
    /* left and right main boxes */
    vbox1 = gtk_vbox_new(FALSE, 0);
    vbox2 = gtk_vbox_new(FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(hbox), vbox1, TRUE, TRUE, 5);
-   gtk_box_pack_start(GTK_BOX(hbox), vbox2, TRUE, TRUE, 5);
+   gtk_paned_pack1(GTK_PANED(pane), vbox1, TRUE, FALSE);
+   gtk_paned_pack2(GTK_PANED(pane), vbox2, TRUE, FALSE);
 
    gtk_widget_set_usize(GTK_WIDGET(vbox1), 0, 230);
    gtk_widget_set_usize(GTK_WIDGET(vbox2), 0, 230);
@@ -1611,6 +1621,10 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(GTK_BIN(apply_record_button)->child)),
 		       "label_high");
    
+   /* Separator */
+   separator = gtk_hseparator_new();
+   gtk_box_pack_start(GTK_BOX(vbox2), separator, FALSE, FALSE, 5);
+
    /* Table */
    table = gtk_table_new(4, 10, FALSE);
    gtk_table_set_row_spacings(GTK_TABLE(table),0);
@@ -1735,6 +1749,18 @@ int plugin_gui_cleanup() {
       plugin_last_time = time(NULL);
    }
    plugin_active = FALSE;
+
+   /* the pane may not exist.
+    * if the wrong password is entered the gui is not built */
+   if (pane)
+   {
+#ifdef ENABLE_GTK2
+      set_pref(PREF_KEYRING_PANE, gtk_paned_get_position(GTK_PANED(pane)), NULL, TRUE);
+#else
+      set_pref(PREF_KEYRING_PANE, GTK_PANED(pane)->handle_xpos, NULL, TRUE);
+#endif
+      pane = NULL;
+   }
 
    return EXIT_SUCCESS;
 }

@@ -1,4 +1,4 @@
-/* $Id: expense.c,v 1.37 2005/08/12 17:53:35 rousseau Exp $ */
+/* $Id: expense.c,v 1.38 2005/10/07 19:30:59 rousseau Exp $ */
 
 /*******************************************************************************
  * expense.c
@@ -36,6 +36,7 @@
 #include "libplugin.h"
 #include "../i18n.h"
 #include "utils.h"
+#include "prefs.h"
 
 /******************************************************************************/
 /* Constants                                                                  */
@@ -158,6 +159,7 @@ static GtkWidget *entry_amount;
 static GtkWidget *entry_vendor;
 static GtkWidget *entry_city;
 static GtkWidget *text_attendees;
+static GtkWidget *pane;
 #ifdef ENABLE_GTK2
 static GObject   *text_attendees_buffer;
 #endif
@@ -1539,8 +1541,10 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    GtkWidget *temp_vbox;
    GtkWidget *button;
    GtkWidget *label;
+   GtkWidget *separator;
    time_t ltime;
    struct tm *now;
+   long ivalue;
    
    jp_logf(JP_LOG_DEBUG, "Expense: plugin gui started, unique_id=%d\n", unique_id);
 
@@ -1558,11 +1562,17 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    jp_logf(JP_LOG_DEBUG, "Expense: calling make_menus\n");
    make_menus();
 
+   pane = gtk_hpaned_new();
+   get_pref(PREF_EXPENSE_PANE, &ivalue, NULL);
+   gtk_paned_set_position(GTK_PANED(pane), ivalue + 2);
+
+   gtk_box_pack_start(GTK_BOX(hbox), pane, TRUE, TRUE, 5);
+
    /* left and right main boxes */
    vbox1 = gtk_vbox_new(FALSE, 0);
    vbox2 = gtk_vbox_new(FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(hbox), vbox1, TRUE, TRUE, 5);
-   gtk_box_pack_start(GTK_BOX(hbox), vbox2, TRUE, TRUE, 5);
+   gtk_paned_pack1(GTK_PANED(pane), vbox1, TRUE, FALSE);
+   gtk_paned_pack2(GTK_PANED(pane), vbox2, TRUE, FALSE);
 
    gtk_widget_set_usize(GTK_WIDGET(vbox1), 0, 230);
    gtk_widget_set_usize(GTK_WIDGET(vbox2), 0, 230);
@@ -1653,6 +1663,10 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(GTK_BIN(apply_record_button)->child)),
                        "label_high");
    
+   /* Separator */
+   separator = gtk_hseparator_new();
+   gtk_box_pack_start(GTK_BOX(vbox2), separator, FALSE, FALSE, 5);
+
    table = gtk_table_new(8, 2, FALSE);
    gtk_box_pack_start(GTK_BOX(vbox2), table, FALSE, FALSE, 0);
 
@@ -1894,6 +1908,12 @@ int plugin_gui_cleanup() {
    connect_changed_signals(DISCONNECT_SIGNALS);
 
    free_myexpense_list(&glob_myexpense_list);
+
+#ifdef ENABLE_GTK2
+   set_pref(PREF_EXPENSE_PANE, gtk_paned_get_position(GTK_PANED(pane)), NULL, TRUE);
+#else
+   set_pref(PREF_EXPENSE_PANE, GTK_PANED(pane)->handle_xpos, NULL, TRUE);
+#endif
 
    return EXIT_SUCCESS;
 }

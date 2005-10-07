@@ -1,4 +1,4 @@
-/* $Id: prefs.h,v 1.40 2005/01/27 22:15:17 rikster5 Exp $ */
+/* $Id: prefs.h,v 1.41 2005/10/07 19:30:59 rousseau Exp $ */
 
 /*******************************************************************************
  * prefs.h
@@ -109,8 +109,10 @@
 #define PREF_DATEBOOK_NOTE_PANE 81
 #define PREF_DATEBOOK_HI_TODAY 82
 #define PREF_DATEBOOK_ANNI_YEARS 83
+#define PREF_KEYRING_PANE 84
+#define PREF_EXPENSE_PANE 85
 
-#define NUM_PREFS 84
+#define NUM_PREFS 86
 
 #define MAX_PREF_NUM_BACKUPS 99
 
