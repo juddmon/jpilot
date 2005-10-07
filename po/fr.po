@@ -198,9 +198,8 @@ msgid "Phone"
 msgstr "Téléphone"
 
 #: address_gui.c:2684
-#, fuzzy
 msgid "Quick Find: "
-msgstr "Recherche rapide"
+msgstr "Recherche rapide : "
 
 #: address_gui.c:2700 category.c:421 category.c:877 category.c:917
 #: datebook_gui.c:1154 datebook_gui.c:1582 datebook_gui.c:4371
@@ -1055,7 +1054,6 @@ msgstr ""
 "non désirés. Lisez le manuel utilisateur en cas de doute."
 
 #: jpilot.c:738
-#, fuzzy
 msgid ""
 "This palm has a NULL user id.\n"
 "Every palm must have a unique user id in order to sync properly.\n"
@@ -1069,8 +1067,8 @@ msgstr ""
 "Chaque palm doit avoir un user id unique pour un synchronisation correcte.\n"
 "Si il a été remis à zéro, utilisez le menu restauration manuelle\n"
 "ou utilisez  pilot-xfer.\n"
-"Pour ajouter un nom d'utilisateur et ID utilisez install-user, i.e. install-"
-"user \"name\" 12345.\n"
+"Pour ajouter un nom d'utilisateur et ID utilisez la commande install-user\n"
+"ou utilisez 'Installer un utilisateur' depuis le menu\n"
 "Lisez le manuel utilisateur en cas de doute."
 
 #: jpilot.c:745
@@ -1135,9 +1133,8 @@ msgid "/File/_Print"
 msgstr "/Fichier/Im_primer"
 
 #: jpilot.c:1392
-#, fuzzy
 msgid "/File/Install User"
-msgstr "/Fichier/_Installer"
+msgstr "/Fichier/Installer un utilisateur"
 
 #: jpilot.c:1393
 msgid "/File/Restore Handheld"
