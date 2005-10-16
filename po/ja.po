@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jpilot 0.99.6pre7\n"
 "Report-Msgid-Bugs-To: jpilot-devel@jpilot.org\n"
-"POT-Creation-Date: 2005-10-07 21:40+0200\n"
+"POT-Creation-Date: 2005-10-07 22:31+0200\n"
 "PO-Revision-Date: 2005-02-23 22:31+0900\n"
 "Last-Translator: Kazutaka HARADA <kazutaka802@yahoo.co.jp>\n"
 "Language-Team: Japanese Palm-UNIX ML <palm-unix-j@list.daionet.gr.jp>\n"
@@ -32,7 +32,7 @@ msgstr "エラー"
 
 #: address.c:412 address_gui.c:1686 datebook.c:693 libplugin.c:706
 #: libplugin.c:730 memo.c:244 memo_gui.c:996 todo_gui.c:1318
-#: Expense/expense.c:1134 Expense/expense.c:2130
+#: Expense/expense.c:1138 Expense/expense.c:2152
 #, c-format
 msgid "Error reading file: %s\n"
 msgstr "ファイル %sの読み込みエラー\n"
@@ -59,7 +59,7 @@ msgid "File doesn't appear to be address.dat format\n"
 msgstr "ファイルはaddress.datフォーマットでは無いようです\n"
 
 #: address_gui.c:558 datebook_gui.c:582 memo_gui.c:436 todo_gui.c:571
-#: Expense/expense.c:615 Expense/expense.c:1402
+#: Expense/expense.c:619 Expense/expense.c:1406
 msgid "Unfiled"
 msgstr "分類無し"
 
@@ -67,7 +67,7 @@ msgstr "分類無し"
 #: datebook_gui.c:669 datebook_gui.c:1149 export_gui.c:339 jpilot.c:363
 #: jpilot.c:409 jpilot.c:477 jpilot.c:521 jpilot.c:968 jpilot.c:1869
 #: memo_gui.c:526 password.c:352 restore_gui.c:307 todo_gui.c:661 utils.c:1084
-#: utils.c:1256 KeyRing/keyring.c:1315
+#: utils.c:1256 KeyRing/keyring.c:1322
 msgid "OK"
 msgstr "OK"
 
@@ -153,8 +153,8 @@ msgstr "カテゴリが有効ではありません。\n"
 msgid "executing command = [%s]\n"
 msgstr "実行するコマンド = [%s]\n"
 
-#: address_gui.c:1775 Expense/expense.c:1589 KeyRing/keyring.c:1555
-#: KeyRing/keyring.c:1635
+#: address_gui.c:1775 Expense/expense.c:1603 KeyRing/keyring.c:1577
+#: KeyRing/keyring.c:1656
 msgid "Category: "
 msgstr "カテゴリ："
 
@@ -190,7 +190,7 @@ msgstr "%d/%dレコード"
 
 #: address_gui.c:2635 category.c:450 category.c:464 category.c:471
 #: category.c:489 category.c:496 category.c:514 category.c:594 category.c:789
-#: memo_gui.c:1508 todo_gui.c:2116 Expense/expense.c:1595
+#: memo_gui.c:1508 todo_gui.c:2116 Expense/expense.c:1609
 msgid "Edit Categories"
 msgstr "カテゴリ編集"
 
@@ -206,7 +206,7 @@ msgstr "簡易検索"
 #: address_gui.c:2700 category.c:421 category.c:877 category.c:917
 #: datebook_gui.c:1154 datebook_gui.c:1582 datebook_gui.c:4371
 #: export_gui.c:344 memo_gui.c:1552 password.c:362 print_gui.c:338
-#: restore_gui.c:312 todo_gui.c:2169 utils.c:1094 KeyRing/keyring.c:1321
+#: restore_gui.c:312 todo_gui.c:2169 utils.c:1094 KeyRing/keyring.c:1332
 msgid "Cancel"
 msgstr "キャンセル"
 
@@ -216,12 +216,13 @@ msgid "Cancel the modifications"
 msgstr "変更をキャンセル   ESC"
 
 #: address_gui.c:2705 category.c:421 category.c:844 datebook_gui.c:4376
-#: memo_gui.c:1557 todo_gui.c:2174 Expense/expense.c:1632
-#: KeyRing/keyring.c:1590
+#: memo_gui.c:1557 todo_gui.c:2174 Expense/expense.c:1646
+#: KeyRing/keyring.c:1612
 msgid "Delete"
 msgstr "削除"
 
 #: address_gui.c:2705 datebook_gui.c:4376 memo_gui.c:1557 todo_gui.c:2174
+#: Expense/expense.c:1646 KeyRing/keyring.c:1612
 #, fuzzy
 msgid "Delete the selected record"
 msgstr "選択したレコードを削除 Ctrl+D"
@@ -236,40 +237,44 @@ msgid "Undelete the selected record"
 msgstr "選択したレコードを削除 Ctrl+D"
 
 #: address_gui.c:2717 datebook_gui.c:4388 memo_gui.c:1569 todo_gui.c:2186
-#: Expense/expense.c:1638 KeyRing/keyring.c:1596
+#: Expense/expense.c:1651 KeyRing/keyring.c:1617
 msgid "Copy"
 msgstr "コピー"
 
 #: address_gui.c:2717 datebook_gui.c:4388 memo_gui.c:1569 todo_gui.c:2186
+#: Expense/expense.c:1651 KeyRing/keyring.c:1617
 #, fuzzy
 msgid "Copy the selected record"
 msgstr "選択したレコードを削除 Ctrl+D"
 
 #: address_gui.c:2723 datebook_gui.c:4394 memo_gui.c:1575 todo_gui.c:2192
-#: Expense/expense.c:1644 KeyRing/keyring.c:1602
+#: Expense/expense.c:1656 KeyRing/keyring.c:1622
 msgid "New Record"
 msgstr "新規レコード"
 
 #: address_gui.c:2723 datebook_gui.c:4394 memo_gui.c:1575 todo_gui.c:2192
+#: Expense/expense.c:1656 KeyRing/keyring.c:1622
 #, fuzzy
 msgid "Add a new record"
 msgstr "新規レコードの追加"
 
 #: address_gui.c:2728 datebook_gui.c:4400 memo_gui.c:1581 todo_gui.c:2198
-#: Expense/expense.c:1650 KeyRing/keyring.c:1608
+#: Expense/expense.c:1661 KeyRing/keyring.c:1627
 msgid "Add Record"
 msgstr "レコードの追加"
 
 #: address_gui.c:2728 datebook_gui.c:4400 memo_gui.c:1581 todo_gui.c:2198
+#: Expense/expense.c:1661 KeyRing/keyring.c:1627
 msgid "Add the new record"
 msgstr "新規レコードの追加"
 
 #: address_gui.c:2738 datebook_gui.c:4410 memo_gui.c:1591 todo_gui.c:2208
-#: Expense/expense.c:1658 KeyRing/keyring.c:1616
+#: Expense/expense.c:1670 KeyRing/keyring.c:1636
 msgid "Apply Changes"
 msgstr "変更を適用"
 
 #: address_gui.c:2738 datebook_gui.c:4410 memo_gui.c:1591 todo_gui.c:2208
+#: Expense/expense.c:1670 KeyRing/keyring.c:1636
 msgid "Commit the modifications"
 msgstr "変更を反映"
 
@@ -277,7 +282,7 @@ msgstr "変更を反映"
 msgid "Private"
 msgstr "プライベート"
 
-#: address_gui.c:2775 KeyRing/keyring.c:1473
+#: address_gui.c:2775 KeyRing/keyring.c:1485
 msgid "Name"
 msgstr "名前"
 
@@ -285,7 +290,7 @@ msgstr "名前"
 msgid "Address"
 msgstr "アドレス帳"
 
-#: address_gui.c:2791 Expense/expense.c:567 Expense/expense.c:1423
+#: address_gui.c:2791 Expense/expense.c:571 Expense/expense.c:1427
 msgid "Other"
 msgstr "その他"
 
@@ -1093,7 +1098,7 @@ msgstr "同期"
 msgid "Unknown command from sync process\n"
 msgstr "Unknown command from sync process\n"
 
-#: jpilot.c:980 Expense/expense.c:512 KeyRing/keyring.c:508
+#: jpilot.c:980 Expense/expense.c:516 KeyRing/keyring.c:512
 #, c-format
 msgid "About %s"
 msgstr "%s について"
@@ -2256,7 +2261,7 @@ msgstr "優先度："
 msgid "Date Due:"
 msgstr "締切日："
 
-#: todo_gui.c:2313 Expense/expense.c:1849 KeyRing/keyring.c:1668
+#: todo_gui.c:2313 Expense/expense.c:1862 KeyRing/keyring.c:1689
 msgid "Note"
 msgstr "ノート"
 
@@ -2381,11 +2386,11 @@ msgstr "新規レコードを保存しますか？"
 msgid "Do you want to save this new record?"
 msgstr "新しいレコードを保存しますか？"
 
-#: utils.c:1310 KeyRing/keyring.c:1373
+#: utils.c:1310 KeyRing/keyring.c:1385
 msgid "Can't get HOME environment variable\n"
 msgstr "環境変数 HOME が取得できません。\n"
 
-#: utils.c:1317 KeyRing/keyring.c:1378
+#: utils.c:1317 KeyRing/keyring.c:1390
 msgid "Your HOME environment variable is too long for me\n"
 msgstr "環境変数 HOME が長過ぎます。\n"
 
@@ -2446,388 +2451,388 @@ msgstr "新しい %lu という PC ID を生成しました\n"
 msgid "Weekly View"
 msgstr "週間表示"
 
-#: Expense/expense.c:98
+#: Expense/expense.c:99
 msgid "Australia"
 msgstr "オーストラリアドル"
 
-#: Expense/expense.c:99
+#: Expense/expense.c:100
 msgid "Austria"
 msgstr "オーストリア"
 
-#: Expense/expense.c:100
+#: Expense/expense.c:101
 msgid "Belgium"
 msgstr "ベルギー"
 
-#: Expense/expense.c:101
+#: Expense/expense.c:102
 msgid "Brazil"
 msgstr "ブラジル"
 
-#: Expense/expense.c:102
+#: Expense/expense.c:103
 msgid "Canada"
 msgstr "カナダドル"
 
-#: Expense/expense.c:103
+#: Expense/expense.c:104
 msgid "Denmark"
 msgstr "デンマーク"
 
-#: Expense/expense.c:104
+#: Expense/expense.c:105
 msgid "EU (Euro)"
 msgstr "ユーロ"
 
-#: Expense/expense.c:105
+#: Expense/expense.c:106
 msgid "Finland"
 msgstr "フィンランド"
 
-#: Expense/expense.c:106
+#: Expense/expense.c:107
 msgid "France"
 msgstr "フラン"
 
-#: Expense/expense.c:107
+#: Expense/expense.c:108
 msgid "Germany"
 msgstr "ドイツマルク"
 
-#: Expense/expense.c:108
+#: Expense/expense.c:109
 msgid "Hong Kong"
 msgstr "香港ドル"
 
-#: Expense/expense.c:109
+#: Expense/expense.c:110
 msgid "Iceland"
 msgstr "アイスランド"
 
-#: Expense/expense.c:110
+#: Expense/expense.c:111
 msgid "India"
 msgstr "ルピー"
 
-#: Expense/expense.c:111
+#: Expense/expense.c:112
 msgid "Indonesia"
 msgstr "ルピア"
 
-#: Expense/expense.c:112
+#: Expense/expense.c:113
 msgid "Ireland"
 msgstr "アイルランド"
 
-#: Expense/expense.c:113
+#: Expense/expense.c:114
 msgid "Italy"
 msgstr "イタリアリラ"
 
-#: Expense/expense.c:114
+#: Expense/expense.c:115
 msgid "Japan"
 msgstr "日本円"
 
-#: Expense/expense.c:115
+#: Expense/expense.c:116
 msgid "Korea"
 msgstr "ウォン"
 
-#: Expense/expense.c:116
+#: Expense/expense.c:117
 msgid "Luxembourg"
 msgstr "ルクセンブルグ"
 
-#: Expense/expense.c:117
+#: Expense/expense.c:118
 msgid "Malaysia"
 msgstr "リンギット"
 
-#: Expense/expense.c:118
+#: Expense/expense.c:119
 msgid "Mexico"
 msgstr "メキシコ"
 
-#: Expense/expense.c:119
+#: Expense/expense.c:120
 msgid "Netherlands"
 msgstr "ギルダー"
 
-#: Expense/expense.c:120
+#: Expense/expense.c:121
 msgid "New Zealand"
 msgstr "ニュージーランドドル"
 
-#: Expense/expense.c:121
+#: Expense/expense.c:122
 msgid "Norway"
 msgstr "ノルウエイ"
 
-#: Expense/expense.c:122
+#: Expense/expense.c:123
 msgid "P.R.C."
 msgstr "人民元"
 
-#: Expense/expense.c:123
+#: Expense/expense.c:124
 msgid "Philippines"
 msgstr "フィリピン・ペソ"
 
-#: Expense/expense.c:124
+#: Expense/expense.c:125
 msgid "Singapore"
 msgstr "シンガポ−ル･ドル"
 
-#: Expense/expense.c:125
+#: Expense/expense.c:126
 msgid "Spain"
 msgstr "スペイン"
 
-#: Expense/expense.c:126
+#: Expense/expense.c:127
 msgid "Sweden"
 msgstr "スエーデン"
 
-#: Expense/expense.c:127
+#: Expense/expense.c:128
 msgid "Switzerland"
 msgstr "スイスフラン"
 
-#: Expense/expense.c:128
+#: Expense/expense.c:129
 msgid "Taiwan"
 msgstr "ニュー台湾ドル"
 
-#: Expense/expense.c:129
+#: Expense/expense.c:130
 msgid "Thailand"
 msgstr "バーツ"
 
-#: Expense/expense.c:130
+#: Expense/expense.c:131
 msgid "United Kingdom"
 msgstr "ポンド"
 
-#: Expense/expense.c:131
+#: Expense/expense.c:132
 msgid "United States"
 msgstr "米ドル"
 
-#: Expense/expense.c:501 Expense/expense.c:512
+#: Expense/expense.c:505 Expense/expense.c:516
 msgid "Expense"
 msgstr "支払い帳"
 
-#: Expense/expense.c:533 Expense/expense.c:1406
+#: Expense/expense.c:537 Expense/expense.c:1410
 msgid "Airfare"
 msgstr "航空運賃"
 
-#: Expense/expense.c:535 Expense/expense.c:1407
+#: Expense/expense.c:539 Expense/expense.c:1411
 msgid "Breakfast"
 msgstr "朝食"
 
-#: Expense/expense.c:537 Expense/expense.c:1408
+#: Expense/expense.c:541 Expense/expense.c:1412
 msgid "Bus"
 msgstr "バス"
 
-#: Expense/expense.c:539 Expense/expense.c:1409
+#: Expense/expense.c:543 Expense/expense.c:1413
 msgid "BusinessMeals"
 msgstr "ビジネスランチ"
 
-#: Expense/expense.c:541 Expense/expense.c:1410
+#: Expense/expense.c:545 Expense/expense.c:1414
 msgid "CarRental"
 msgstr "自動車レンタル"
 
-#: Expense/expense.c:543 Expense/expense.c:1411
+#: Expense/expense.c:547 Expense/expense.c:1415
 msgid "Dinner"
 msgstr "夕食"
 
-#: Expense/expense.c:545 Expense/expense.c:1412
+#: Expense/expense.c:549 Expense/expense.c:1416
 msgid "Entertainment"
 msgstr "エンターテイメント"
 
-#: Expense/expense.c:547 Expense/expense.c:1413
+#: Expense/expense.c:551 Expense/expense.c:1417
 msgid "Fax"
 msgstr "ファックス"
 
-#: Expense/expense.c:549 Expense/expense.c:1414
+#: Expense/expense.c:553 Expense/expense.c:1418
 msgid "Gas"
 msgstr "ガス"
 
-#: Expense/expense.c:551 Expense/expense.c:1415
+#: Expense/expense.c:555 Expense/expense.c:1419
 msgid "Gifts"
 msgstr "贈り物"
 
-#: Expense/expense.c:553 Expense/expense.c:1416
+#: Expense/expense.c:557 Expense/expense.c:1420
 msgid "Hotel"
 msgstr "ホテル"
 
-#: Expense/expense.c:555 Expense/expense.c:1417
+#: Expense/expense.c:559 Expense/expense.c:1421
 msgid "Incidentals"
 msgstr "収入"
 
-#: Expense/expense.c:557 Expense/expense.c:1418
+#: Expense/expense.c:561 Expense/expense.c:1422
 msgid "Laundry"
 msgstr "洗濯"
 
-#: Expense/expense.c:559 Expense/expense.c:1419
+#: Expense/expense.c:563 Expense/expense.c:1423
 msgid "Limo"
 msgstr "リムジン"
 
-#: Expense/expense.c:561 Expense/expense.c:1420
+#: Expense/expense.c:565 Expense/expense.c:1424
 msgid "Lodging"
 msgstr "読み込み中"
 
-#: Expense/expense.c:563 Expense/expense.c:1421
+#: Expense/expense.c:567 Expense/expense.c:1425
 msgid "Lunch"
 msgstr "昼食"
 
-#: Expense/expense.c:565 Expense/expense.c:1422
+#: Expense/expense.c:569 Expense/expense.c:1426
 msgid "Mileage"
 msgstr "マイレージ"
 
-#: Expense/expense.c:569 Expense/expense.c:1424
+#: Expense/expense.c:573 Expense/expense.c:1428
 msgid "Parking"
 msgstr "駐車"
 
-#: Expense/expense.c:571 Expense/expense.c:1425
+#: Expense/expense.c:575 Expense/expense.c:1429
 msgid "Postage"
 msgstr "郵便"
 
-#: Expense/expense.c:573 Expense/expense.c:1426
+#: Expense/expense.c:577 Expense/expense.c:1430
 msgid "Snack"
 msgstr "菓子"
 
-#: Expense/expense.c:575 Expense/expense.c:1427
+#: Expense/expense.c:579 Expense/expense.c:1431
 msgid "Subway"
 msgstr "地下鉄"
 
-#: Expense/expense.c:577 Expense/expense.c:1428
+#: Expense/expense.c:581 Expense/expense.c:1432
 msgid "Supplies"
 msgstr "消耗品"
 
-#: Expense/expense.c:579 Expense/expense.c:1429
+#: Expense/expense.c:583 Expense/expense.c:1433
 msgid "Taxi"
 msgstr "タクシー"
 
-#: Expense/expense.c:581 Expense/expense.c:1430
+#: Expense/expense.c:585 Expense/expense.c:1434
 msgid "Telephone"
 msgstr "電話"
 
-#: Expense/expense.c:583 Expense/expense.c:1431
+#: Expense/expense.c:587 Expense/expense.c:1435
 msgid "Tips"
 msgstr "チップ"
 
-#: Expense/expense.c:585 Expense/expense.c:1432
+#: Expense/expense.c:589 Expense/expense.c:1436
 msgid "Tolls"
 msgstr "通行料"
 
-#: Expense/expense.c:587 Expense/expense.c:1433
+#: Expense/expense.c:591 Expense/expense.c:1437
 msgid "Train"
 msgstr "電車"
 
-#: Expense/expense.c:601
+#: Expense/expense.c:605
 msgid "AmEx"
 msgstr "AMEX"
 
-#: Expense/expense.c:603 Expense/expense.c:1396
+#: Expense/expense.c:607 Expense/expense.c:1400
 msgid "Cash"
 msgstr "現金"
 
-#: Expense/expense.c:605 Expense/expense.c:1397
+#: Expense/expense.c:609 Expense/expense.c:1401
 msgid "Check"
 msgstr "小切手"
 
-#: Expense/expense.c:607
+#: Expense/expense.c:611
 msgid "CreditCard"
 msgstr "クレジット"
 
-#: Expense/expense.c:609
+#: Expense/expense.c:613
 msgid "MasterCard"
 msgstr "マスターカード"
 
-#: Expense/expense.c:611 Expense/expense.c:1400
+#: Expense/expense.c:615 Expense/expense.c:1404
 msgid "Prepaid"
 msgstr "プリペイドカード"
 
-#: Expense/expense.c:613 Expense/expense.c:1401
+#: Expense/expense.c:617 Expense/expense.c:1405
 msgid "VISA"
 msgstr "VISA"
 
-#: Expense/expense.c:1206
+#: Expense/expense.c:1210
 msgid "Expense: Unknown category\n"
 msgstr "Expense: 不明なカテゴリです。\n"
 
-#: Expense/expense.c:1212
+#: Expense/expense.c:1216
 msgid "Expense: Unknown expense type\n"
 msgstr "Expense: 不明な支出タイプです。\n"
 
-#: Expense/expense.c:1218
+#: Expense/expense.c:1222
 msgid "Expense: Unknown payment type\n"
 msgstr "Expense: 不明な支払いタイプです。\n"
 
-#: Expense/expense.c:1395
+#: Expense/expense.c:1399
 msgid "American Express"
 msgstr "アメリカンエクスプレス"
 
-#: Expense/expense.c:1398
+#: Expense/expense.c:1402
 msgid "Credit Card"
 msgstr "クレジットカード"
 
-#: Expense/expense.c:1399
+#: Expense/expense.c:1403
 msgid "Master Card"
 msgstr "マスターカード"
 
-#: Expense/expense.c:1674
+#: Expense/expense.c:1687
 msgid "Category:"
 msgstr "カテゴリ："
 
-#: Expense/expense.c:1687
+#: Expense/expense.c:1700
 msgid "Type:"
 msgstr "タイプ："
 
-#: Expense/expense.c:1700
+#: Expense/expense.c:1713
 msgid "Payment:"
 msgstr "支払い："
 
-#: Expense/expense.c:1713
+#: Expense/expense.c:1726
 msgid "Currency:"
 msgstr "通貨："
 
-#: Expense/expense.c:1726
+#: Expense/expense.c:1739
 msgid "Date:"
 msgstr "日付"
 
-#: Expense/expense.c:1743
+#: Expense/expense.c:1756
 msgid "Month:"
 msgstr "月："
 
-#: Expense/expense.c:1757
+#: Expense/expense.c:1770
 msgid "Day:"
 msgstr "日："
 
-#: Expense/expense.c:1771
+#: Expense/expense.c:1784
 msgid "Year:"
 msgstr "年："
 
-#: Expense/expense.c:1784
+#: Expense/expense.c:1797
 msgid "Amount:"
 msgstr "合計："
 
-#: Expense/expense.c:1798
+#: Expense/expense.c:1811
 msgid "Vendor:"
 msgstr "ベンダー："
 
-#: Expense/expense.c:1812
+#: Expense/expense.c:1825
 msgid "City:"
 msgstr "都市："
 
-#: Expense/expense.c:1826
+#: Expense/expense.c:1839
 msgid "Attendees"
 msgstr "随行者"
 
-#: KeyRing/keyring.c:178
+#: KeyRing/keyring.c:182
 msgid "KeyRing: pack_KeyRing(): buf_size too small\n"
 msgstr "KeyRing: pack_KeyRing(): buf_size が小さ過ぎます。\n"
 
-#: KeyRing/keyring.c:497 KeyRing/keyring.c:508
+#: KeyRing/keyring.c:501 KeyRing/keyring.c:512
 msgid "KeyRing"
 msgstr "KeyRing"
 
-#: KeyRing/keyring.c:1293
+#: KeyRing/keyring.c:1297
 msgid "Incorrect, Reenter KeyRing Password"
 msgstr "パスワードが違います。もう一度入れてください。"
 
-#: KeyRing/keyring.c:1295
+#: KeyRing/keyring.c:1299
 msgid "Enter a NEW KeyRing Password"
 msgstr "新しいKeyRingパスワードを入力"
 
-#: KeyRing/keyring.c:1297
+#: KeyRing/keyring.c:1301
 msgid "Enter KeyRing Password"
 msgstr "KeyRingパスワード入力"
 
-#: KeyRing/keyring.c:1383
+#: KeyRing/keyring.c:1395
 #, c-format
 msgid "KeyRing: file %s not found.\n"
 msgstr "KeyRing: ファイル %s が見付かりません。\n"
 
-#: KeyRing/keyring.c:1384
+#: KeyRing/keyring.c:1396
 msgid "KeyRing: Try Syncing.\n"
 msgstr "KeyRing: 同期を試行中.\n"
 
-#: KeyRing/keyring.c:1473
+#: KeyRing/keyring.c:1485
 msgid "Account"
 msgstr "アカウント"
 
-#: KeyRing/keyring.c:1486
+#: KeyRing/keyring.c:1498
 msgid ""
 "Change\n"
 "KeyRing\n"
@@ -2836,19 +2841,19 @@ msgstr ""
 "KeyRing\n"
 "パスワードを変更"
 
-#: KeyRing/keyring.c:1641
+#: KeyRing/keyring.c:1662
 msgid "name: "
 msgstr "名前："
 
-#: KeyRing/keyring.c:1648
+#: KeyRing/keyring.c:1669
 msgid "account: "
 msgstr "アカウント："
 
-#: KeyRing/keyring.c:1655
+#: KeyRing/keyring.c:1676
 msgid "password: "
 msgstr "パスワード："
 
-#: KeyRing/keyring.c:1661
+#: KeyRing/keyring.c:1682
 msgid "Generate Password"
 msgstr "パスワード生成"
 

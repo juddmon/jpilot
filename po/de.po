@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jpilot 0.99.6\n"
 "Report-Msgid-Bugs-To: jpilot-devel@jpilot.org\n"
-"POT-Creation-Date: 2005-10-07 21:40+0200\n"
+"POT-Creation-Date: 2005-10-07 22:31+0200\n"
 "PO-Revision-Date: 2003-10-04 18:28+0200\n"
 "Last-Translator: Felix Knecht <mail AT felixknecht DOT de>\n"
 "Language-Team: German <de@li.org>\n"
@@ -34,7 +34,7 @@ msgstr "Fehler"
 
 #: address.c:412 address_gui.c:1686 datebook.c:693 libplugin.c:706
 #: libplugin.c:730 memo.c:244 memo_gui.c:996 todo_gui.c:1318
-#: Expense/expense.c:1134 Expense/expense.c:2130
+#: Expense/expense.c:1138 Expense/expense.c:2152
 #, fuzzy, c-format
 msgid "Error reading file: %s\n"
 msgstr "Fehler beim lesen von %s\n"
@@ -59,7 +59,7 @@ msgid "File doesn't appear to be address.dat format\n"
 msgstr "Diese Datei scheint nicht im address.dat Format zu sein\n"
 
 #: address_gui.c:558 datebook_gui.c:582 memo_gui.c:436 todo_gui.c:571
-#: Expense/expense.c:615 Expense/expense.c:1402
+#: Expense/expense.c:619 Expense/expense.c:1406
 msgid "Unfiled"
 msgstr "Nicht abgelegt"
 
@@ -67,7 +67,7 @@ msgstr "Nicht abgelegt"
 #: datebook_gui.c:669 datebook_gui.c:1149 export_gui.c:339 jpilot.c:363
 #: jpilot.c:409 jpilot.c:477 jpilot.c:521 jpilot.c:968 jpilot.c:1869
 #: memo_gui.c:526 password.c:352 restore_gui.c:307 todo_gui.c:661 utils.c:1084
-#: utils.c:1256 KeyRing/keyring.c:1315
+#: utils.c:1256 KeyRing/keyring.c:1322
 msgid "OK"
 msgstr "Ok"
 
@@ -156,8 +156,8 @@ msgstr ""
 msgid "executing command = [%s]\n"
 msgstr "Diesen Befehl ausführen"
 
-#: address_gui.c:1775 Expense/expense.c:1589 KeyRing/keyring.c:1555
-#: KeyRing/keyring.c:1635
+#: address_gui.c:1775 Expense/expense.c:1603 KeyRing/keyring.c:1577
+#: KeyRing/keyring.c:1656
 msgid "Category: "
 msgstr "Kategorie:"
 
@@ -194,7 +194,7 @@ msgstr "%d von %d Einträgen"
 
 #: address_gui.c:2635 category.c:450 category.c:464 category.c:471
 #: category.c:489 category.c:496 category.c:514 category.c:594 category.c:789
-#: memo_gui.c:1508 todo_gui.c:2116 Expense/expense.c:1595
+#: memo_gui.c:1508 todo_gui.c:2116 Expense/expense.c:1609
 msgid "Edit Categories"
 msgstr "Kategorien editieren"
 
@@ -209,7 +209,7 @@ msgstr "Schnellsuche : "
 #: address_gui.c:2700 category.c:421 category.c:877 category.c:917
 #: datebook_gui.c:1154 datebook_gui.c:1582 datebook_gui.c:4371
 #: export_gui.c:344 memo_gui.c:1552 password.c:362 print_gui.c:338
-#: restore_gui.c:312 todo_gui.c:2169 utils.c:1094 KeyRing/keyring.c:1321
+#: restore_gui.c:312 todo_gui.c:2169 utils.c:1094 KeyRing/keyring.c:1332
 msgid "Cancel"
 msgstr "Abbrechen"
 
@@ -219,12 +219,13 @@ msgid "Cancel the modifications"
 msgstr "Kompiliert mit folgenden Optionen:"
 
 #: address_gui.c:2705 category.c:421 category.c:844 datebook_gui.c:4376
-#: memo_gui.c:1557 todo_gui.c:2174 Expense/expense.c:1632
-#: KeyRing/keyring.c:1590
+#: memo_gui.c:1557 todo_gui.c:2174 Expense/expense.c:1646
+#: KeyRing/keyring.c:1612
 msgid "Delete"
 msgstr "Löschen"
 
 #: address_gui.c:2705 datebook_gui.c:4376 memo_gui.c:1557 todo_gui.c:2174
+#: Expense/expense.c:1646 KeyRing/keyring.c:1612
 #, fuzzy
 msgid "Delete the selected record"
 msgstr "Einen %s-Eintrag gelöscht."
@@ -240,41 +241,45 @@ msgid "Undelete the selected record"
 msgstr "Einen %s-Eintrag gelöscht."
 
 #: address_gui.c:2717 datebook_gui.c:4388 memo_gui.c:1569 todo_gui.c:2186
-#: Expense/expense.c:1638 KeyRing/keyring.c:1596
+#: Expense/expense.c:1651 KeyRing/keyring.c:1617
 msgid "Copy"
 msgstr "Kopieren"
 
 #: address_gui.c:2717 datebook_gui.c:4388 memo_gui.c:1569 todo_gui.c:2186
+#: Expense/expense.c:1651 KeyRing/keyring.c:1617
 #, fuzzy
 msgid "Copy the selected record"
 msgstr "Eintrag hinzufügen"
 
 #: address_gui.c:2723 datebook_gui.c:4394 memo_gui.c:1575 todo_gui.c:2192
-#: Expense/expense.c:1644 KeyRing/keyring.c:1602
+#: Expense/expense.c:1656 KeyRing/keyring.c:1622
 msgid "New Record"
 msgstr "Neuer Eintrag"
 
 #: address_gui.c:2723 datebook_gui.c:4394 memo_gui.c:1575 todo_gui.c:2192
+#: Expense/expense.c:1656 KeyRing/keyring.c:1622
 #, fuzzy
 msgid "Add a new record"
 msgstr "Eintrag hinzufügen"
 
 #: address_gui.c:2728 datebook_gui.c:4400 memo_gui.c:1581 todo_gui.c:2198
-#: Expense/expense.c:1650 KeyRing/keyring.c:1608
+#: Expense/expense.c:1661 KeyRing/keyring.c:1627
 msgid "Add Record"
 msgstr "Eintrag hinzufügen"
 
 #: address_gui.c:2728 datebook_gui.c:4400 memo_gui.c:1581 todo_gui.c:2198
+#: Expense/expense.c:1661 KeyRing/keyring.c:1627
 #, fuzzy
 msgid "Add the new record"
 msgstr "Eintrag hinzufügen"
 
 #: address_gui.c:2738 datebook_gui.c:4410 memo_gui.c:1591 todo_gui.c:2208
-#: Expense/expense.c:1658 KeyRing/keyring.c:1616
+#: Expense/expense.c:1670 KeyRing/keyring.c:1636
 msgid "Apply Changes"
 msgstr "Änderungen übernehmen"
 
 #: address_gui.c:2738 datebook_gui.c:4410 memo_gui.c:1591 todo_gui.c:2208
+#: Expense/expense.c:1670 KeyRing/keyring.c:1636
 #, fuzzy
 msgid "Commit the modifications"
 msgstr "Kompiliert mit folgenden Optionen:"
@@ -283,7 +288,7 @@ msgstr "Kompiliert mit folgenden Optionen:"
 msgid "Private"
 msgstr "Privat"
 
-#: address_gui.c:2775 KeyRing/keyring.c:1473
+#: address_gui.c:2775 KeyRing/keyring.c:1485
 msgid "Name"
 msgstr "Name"
 
@@ -291,7 +296,7 @@ msgstr "Name"
 msgid "Address"
 msgstr "Adresse"
 
-#: address_gui.c:2791 Expense/expense.c:567 Expense/expense.c:1423
+#: address_gui.c:2791 Expense/expense.c:571 Expense/expense.c:1427
 msgid "Other"
 msgstr "Sonstige"
 
@@ -1091,7 +1096,7 @@ msgstr "Sync"
 msgid "Unknown command from sync process\n"
 msgstr ""
 
-#: jpilot.c:980 Expense/expense.c:512 KeyRing/keyring.c:508
+#: jpilot.c:980 Expense/expense.c:516 KeyRing/keyring.c:512
 #, c-format
 msgid "About %s"
 msgstr "Über %s"
@@ -2267,7 +2272,7 @@ msgstr "Priorität: "
 msgid "Date Due:"
 msgstr "Fälligkeitsdatum:"
 
-#: todo_gui.c:2313 Expense/expense.c:1849 KeyRing/keyring.c:1668
+#: todo_gui.c:2313 Expense/expense.c:1862 KeyRing/keyring.c:1689
 msgid "Note"
 msgstr "Notiz"
 
@@ -2391,11 +2396,11 @@ msgstr "Neuen Eintrag speichern?"
 msgid "Do you want to save this new record?"
 msgstr "Wollen Sie den neuen Eintrag speichern?"
 
-#: utils.c:1310 KeyRing/keyring.c:1373
+#: utils.c:1310 KeyRing/keyring.c:1385
 msgid "Can't get HOME environment variable\n"
 msgstr ""
 
-#: utils.c:1317 KeyRing/keyring.c:1378
+#: utils.c:1317 KeyRing/keyring.c:1390
 msgid "Your HOME environment variable is too long for me\n"
 msgstr ""
 
@@ -2456,341 +2461,341 @@ msgstr "Ich habe eine neue PC ID angelegt: %lu\n"
 msgid "Weekly View"
 msgstr "Wochenansicht"
 
-#: Expense/expense.c:98
+#: Expense/expense.c:99
 msgid "Australia"
 msgstr "Australien"
 
-#: Expense/expense.c:99
+#: Expense/expense.c:100
 msgid "Austria"
 msgstr "Österreich"
 
-#: Expense/expense.c:100
+#: Expense/expense.c:101
 msgid "Belgium"
 msgstr "Belgien"
 
-#: Expense/expense.c:101
+#: Expense/expense.c:102
 msgid "Brazil"
 msgstr "Brasilien"
 
-#: Expense/expense.c:102
+#: Expense/expense.c:103
 msgid "Canada"
 msgstr "Kanada"
 
-#: Expense/expense.c:103
+#: Expense/expense.c:104
 msgid "Denmark"
 msgstr "Dänemark"
 
-#: Expense/expense.c:104
+#: Expense/expense.c:105
 msgid "EU (Euro)"
 msgstr ""
 
-#: Expense/expense.c:105
+#: Expense/expense.c:106
 msgid "Finland"
 msgstr "Finnland"
 
-#: Expense/expense.c:106
+#: Expense/expense.c:107
 msgid "France"
 msgstr "Frankreich"
 
-#: Expense/expense.c:107
+#: Expense/expense.c:108
 msgid "Germany"
 msgstr "Deutschland"
 
-#: Expense/expense.c:108
+#: Expense/expense.c:109
 #, fuzzy
 msgid "Hong Kong"
 msgstr "Hong Kong"
 
-#: Expense/expense.c:109
+#: Expense/expense.c:110
 msgid "Iceland"
 msgstr "Island"
 
-#: Expense/expense.c:110
+#: Expense/expense.c:111
 msgid "India"
 msgstr ""
 
-#: Expense/expense.c:111
+#: Expense/expense.c:112
 #, fuzzy
 msgid "Indonesia"
 msgstr "Keiner"
 
-#: Expense/expense.c:112
+#: Expense/expense.c:113
 msgid "Ireland"
 msgstr "Irland"
 
-#: Expense/expense.c:113
+#: Expense/expense.c:114
 msgid "Italy"
 msgstr "Italien"
 
-#: Expense/expense.c:114
+#: Expense/expense.c:115
 msgid "Japan"
 msgstr "Japan"
 
-#: Expense/expense.c:115
+#: Expense/expense.c:116
 msgid "Korea"
 msgstr ""
 
-#: Expense/expense.c:116
+#: Expense/expense.c:117
 msgid "Luxembourg"
 msgstr "Luxemburg"
 
-#: Expense/expense.c:117
+#: Expense/expense.c:118
 msgid "Malaysia"
 msgstr ""
 
-#: Expense/expense.c:118
+#: Expense/expense.c:119
 msgid "Mexico"
 msgstr "Mexiko"
 
-#: Expense/expense.c:119
+#: Expense/expense.c:120
 #, fuzzy
 msgid "Netherlands"
 msgstr "Schweiz"
 
-#: Expense/expense.c:120
+#: Expense/expense.c:121
 msgid "New Zealand"
 msgstr "Neuseeland"
 
-#: Expense/expense.c:121
+#: Expense/expense.c:122
 msgid "Norway"
 msgstr "Norwegen"
 
-#: Expense/expense.c:122
+#: Expense/expense.c:123
 msgid "P.R.C."
 msgstr ""
 
-#: Expense/expense.c:123
+#: Expense/expense.c:124
 msgid "Philippines"
 msgstr ""
 
-#: Expense/expense.c:124
+#: Expense/expense.c:125
 msgid "Singapore"
 msgstr ""
 
-#: Expense/expense.c:125
+#: Expense/expense.c:126
 msgid "Spain"
 msgstr "Spanien"
 
-#: Expense/expense.c:126
+#: Expense/expense.c:127
 msgid "Sweden"
 msgstr "Schweden"
 
-#: Expense/expense.c:127
+#: Expense/expense.c:128
 msgid "Switzerland"
 msgstr "Schweiz"
 
-#: Expense/expense.c:128
+#: Expense/expense.c:129
 #, fuzzy
 msgid "Taiwan"
 msgstr "Eisenbahn"
 
-#: Expense/expense.c:129
+#: Expense/expense.c:130
 #, fuzzy
 msgid "Thailand"
 msgstr "Finnland"
 
-#: Expense/expense.c:130
+#: Expense/expense.c:131
 msgid "United Kingdom"
 msgstr ""
 
-#: Expense/expense.c:131
+#: Expense/expense.c:132
 msgid "United States"
 msgstr ""
 
-#: Expense/expense.c:501 Expense/expense.c:512
+#: Expense/expense.c:505 Expense/expense.c:516
 msgid "Expense"
 msgstr "Kosten"
 
-#: Expense/expense.c:533 Expense/expense.c:1406
+#: Expense/expense.c:537 Expense/expense.c:1410
 msgid "Airfare"
 msgstr "Flugkosten"
 
-#: Expense/expense.c:535 Expense/expense.c:1407
+#: Expense/expense.c:539 Expense/expense.c:1411
 msgid "Breakfast"
 msgstr "Frühstück"
 
-#: Expense/expense.c:537 Expense/expense.c:1408
+#: Expense/expense.c:541 Expense/expense.c:1412
 msgid "Bus"
 msgstr "Bus"
 
-#: Expense/expense.c:539 Expense/expense.c:1409
+#: Expense/expense.c:543 Expense/expense.c:1413
 msgid "BusinessMeals"
 msgstr "Geschäftsessen"
 
-#: Expense/expense.c:541 Expense/expense.c:1410
+#: Expense/expense.c:545 Expense/expense.c:1414
 msgid "CarRental"
 msgstr "Autoverleih"
 
-#: Expense/expense.c:543 Expense/expense.c:1411
+#: Expense/expense.c:547 Expense/expense.c:1415
 msgid "Dinner"
 msgstr "Abendessen"
 
-#: Expense/expense.c:545 Expense/expense.c:1412
+#: Expense/expense.c:549 Expense/expense.c:1416
 msgid "Entertainment"
 msgstr "Unterhaltung"
 
-#: Expense/expense.c:547 Expense/expense.c:1413
+#: Expense/expense.c:551 Expense/expense.c:1417
 msgid "Fax"
 msgstr "Fax"
 
-#: Expense/expense.c:549 Expense/expense.c:1414
+#: Expense/expense.c:553 Expense/expense.c:1418
 msgid "Gas"
 msgstr "Benzin"
 
-#: Expense/expense.c:551 Expense/expense.c:1415
+#: Expense/expense.c:555 Expense/expense.c:1419
 msgid "Gifts"
 msgstr "Geschenke"
 
-#: Expense/expense.c:553 Expense/expense.c:1416
+#: Expense/expense.c:557 Expense/expense.c:1420
 msgid "Hotel"
 msgstr "Hotel"
 
-#: Expense/expense.c:555 Expense/expense.c:1417
+#: Expense/expense.c:559 Expense/expense.c:1421
 msgid "Incidentals"
 msgstr "Nebenkosten"
 
-#: Expense/expense.c:557 Expense/expense.c:1418
+#: Expense/expense.c:561 Expense/expense.c:1422
 msgid "Laundry"
 msgstr "Wäscherei"
 
-#: Expense/expense.c:559 Expense/expense.c:1419
+#: Expense/expense.c:563 Expense/expense.c:1423
 msgid "Limo"
 msgstr "Limousine"
 
-#: Expense/expense.c:561 Expense/expense.c:1420
+#: Expense/expense.c:565 Expense/expense.c:1424
 msgid "Lodging"
 msgstr "Unterkunft"
 
-#: Expense/expense.c:563 Expense/expense.c:1421
+#: Expense/expense.c:567 Expense/expense.c:1425
 msgid "Lunch"
 msgstr "Mittagessen"
 
-#: Expense/expense.c:565 Expense/expense.c:1422
+#: Expense/expense.c:569 Expense/expense.c:1426
 msgid "Mileage"
 msgstr "Kilometergeld"
 
-#: Expense/expense.c:569 Expense/expense.c:1424
+#: Expense/expense.c:573 Expense/expense.c:1428
 msgid "Parking"
 msgstr "Parken"
 
-#: Expense/expense.c:571 Expense/expense.c:1425
+#: Expense/expense.c:575 Expense/expense.c:1429
 msgid "Postage"
 msgstr "Porto"
 
-#: Expense/expense.c:573 Expense/expense.c:1426
+#: Expense/expense.c:577 Expense/expense.c:1430
 msgid "Snack"
 msgstr "Imbiss"
 
-#: Expense/expense.c:575 Expense/expense.c:1427
+#: Expense/expense.c:579 Expense/expense.c:1431
 msgid "Subway"
 msgstr "U-Bahn"
 
-#: Expense/expense.c:577 Expense/expense.c:1428
+#: Expense/expense.c:581 Expense/expense.c:1432
 msgid "Supplies"
 msgstr "Zubehör"
 
-#: Expense/expense.c:579 Expense/expense.c:1429
+#: Expense/expense.c:583 Expense/expense.c:1433
 msgid "Taxi"
 msgstr "Taxi"
 
-#: Expense/expense.c:581 Expense/expense.c:1430
+#: Expense/expense.c:585 Expense/expense.c:1434
 msgid "Telephone"
 msgstr "Telefon"
 
-#: Expense/expense.c:583 Expense/expense.c:1431
+#: Expense/expense.c:587 Expense/expense.c:1435
 msgid "Tips"
 msgstr "Trinkgeld"
 
-#: Expense/expense.c:585 Expense/expense.c:1432
+#: Expense/expense.c:589 Expense/expense.c:1436
 msgid "Tolls"
 msgstr "Maut"
 
-#: Expense/expense.c:587 Expense/expense.c:1433
+#: Expense/expense.c:591 Expense/expense.c:1437
 msgid "Train"
 msgstr "Eisenbahn"
 
-#: Expense/expense.c:601
+#: Expense/expense.c:605
 msgid "AmEx"
 msgstr "AmEx"
 
-#: Expense/expense.c:603 Expense/expense.c:1396
+#: Expense/expense.c:607 Expense/expense.c:1400
 msgid "Cash"
 msgstr "Bar"
 
-#: Expense/expense.c:605 Expense/expense.c:1397
+#: Expense/expense.c:609 Expense/expense.c:1401
 msgid "Check"
 msgstr "Scheck"
 
-#: Expense/expense.c:607
+#: Expense/expense.c:611
 msgid "CreditCard"
 msgstr "Kreditkarte"
 
-#: Expense/expense.c:609
+#: Expense/expense.c:613
 msgid "MasterCard"
 msgstr "MasterCard"
 
-#: Expense/expense.c:611 Expense/expense.c:1400
+#: Expense/expense.c:615 Expense/expense.c:1404
 msgid "Prepaid"
 msgstr "Vorausbezahlt"
 
-#: Expense/expense.c:613 Expense/expense.c:1401
+#: Expense/expense.c:617 Expense/expense.c:1405
 msgid "VISA"
 msgstr "VISA"
 
-#: Expense/expense.c:1206
+#: Expense/expense.c:1210
 msgid "Expense: Unknown category\n"
 msgstr ""
 
-#: Expense/expense.c:1212
+#: Expense/expense.c:1216
 msgid "Expense: Unknown expense type\n"
 msgstr ""
 
-#: Expense/expense.c:1218
+#: Expense/expense.c:1222
 msgid "Expense: Unknown payment type\n"
 msgstr ""
 
-#: Expense/expense.c:1395
+#: Expense/expense.c:1399
 msgid "American Express"
 msgstr "American Express"
 
-#: Expense/expense.c:1398
+#: Expense/expense.c:1402
 msgid "Credit Card"
 msgstr "Kreditkarte"
 
-#: Expense/expense.c:1399
+#: Expense/expense.c:1403
 msgid "Master Card"
 msgstr "Master Card"
 
-#: Expense/expense.c:1674
+#: Expense/expense.c:1687
 #, fuzzy
 msgid "Category:"
 msgstr "Kategorie:"
 
-#: Expense/expense.c:1687
+#: Expense/expense.c:1700
 #, fuzzy
 msgid "Type:"
 msgstr "Typ: "
 
-#: Expense/expense.c:1700
+#: Expense/expense.c:1713
 #, fuzzy
 msgid "Payment:"
 msgstr "Bezahlung: "
 
-#: Expense/expense.c:1713
+#: Expense/expense.c:1726
 #, fuzzy
 msgid "Currency:"
 msgstr "Währung: "
 
-#: Expense/expense.c:1726
+#: Expense/expense.c:1739
 #, fuzzy
 msgid "Date:"
 msgstr "Datum"
 
-#: Expense/expense.c:1743
+#: Expense/expense.c:1756
 msgid "Month:"
 msgstr "Monat:"
 
-#: Expense/expense.c:1757
+#: Expense/expense.c:1770
 msgid "Day:"
 msgstr "Tag:"
 
@@ -2798,63 +2803,63 @@ msgstr "Tag:"
 # msgstr "Woche"
 # msgid "MonthView"
 # msgstr "Monat"
-#: Expense/expense.c:1771
+#: Expense/expense.c:1784
 msgid "Year:"
 msgstr "Jahr:"
 
-#: Expense/expense.c:1784
+#: Expense/expense.c:1797
 #, fuzzy
 msgid "Amount:"
 msgstr "Betrag: "
 
-#: Expense/expense.c:1798
+#: Expense/expense.c:1811
 #, fuzzy
 msgid "Vendor:"
 msgstr "Verkäufer: "
 
-#: Expense/expense.c:1812
+#: Expense/expense.c:1825
 #, fuzzy
 msgid "City:"
 msgstr "Stadt:"
 
-#: Expense/expense.c:1826
+#: Expense/expense.c:1839
 msgid "Attendees"
 msgstr "Teilnehmer"
 
-#: KeyRing/keyring.c:178
+#: KeyRing/keyring.c:182
 msgid "KeyRing: pack_KeyRing(): buf_size too small\n"
 msgstr ""
 
-#: KeyRing/keyring.c:497 KeyRing/keyring.c:508
+#: KeyRing/keyring.c:501 KeyRing/keyring.c:512
 msgid "KeyRing"
 msgstr ""
 
-#: KeyRing/keyring.c:1293
+#: KeyRing/keyring.c:1297
 msgid "Incorrect, Reenter KeyRing Password"
 msgstr "Falsches KeyRing Passwort. Bitte erneut eingeben"
 
-#: KeyRing/keyring.c:1295
+#: KeyRing/keyring.c:1299
 msgid "Enter a NEW KeyRing Password"
 msgstr "Bitte NEUES KeyRing Passwort eingeben"
 
-#: KeyRing/keyring.c:1297
+#: KeyRing/keyring.c:1301
 msgid "Enter KeyRing Password"
 msgstr "Bitte KeyRing Passwort eingeben"
 
-#: KeyRing/keyring.c:1383
+#: KeyRing/keyring.c:1395
 #, c-format
 msgid "KeyRing: file %s not found.\n"
 msgstr ""
 
-#: KeyRing/keyring.c:1384
+#: KeyRing/keyring.c:1396
 msgid "KeyRing: Try Syncing.\n"
 msgstr ""
 
-#: KeyRing/keyring.c:1473
+#: KeyRing/keyring.c:1485
 msgid "Account"
 msgstr "Konto"
 
-#: KeyRing/keyring.c:1486
+#: KeyRing/keyring.c:1498
 msgid ""
 "Change\n"
 "KeyRing\n"
@@ -2864,19 +2869,19 @@ msgstr ""
 "KeyRing}\n"
 "Passwort"
 
-#: KeyRing/keyring.c:1641
+#: KeyRing/keyring.c:1662
 msgid "name: "
 msgstr "Name: "
 
-#: KeyRing/keyring.c:1648
+#: KeyRing/keyring.c:1669
 msgid "account: "
 msgstr "Konto: "
 
-#: KeyRing/keyring.c:1655
+#: KeyRing/keyring.c:1676
 msgid "password: "
 msgstr "Passwort: "
 
-#: KeyRing/keyring.c:1661
+#: KeyRing/keyring.c:1682
 msgid "Generate Password"
 msgstr "Passwort erzeugen"
 

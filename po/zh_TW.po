@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jpilot-0.99.8-pre7\n"
 "Report-Msgid-Bugs-To: jpilot-devel@jpilot.org\n"
-"POT-Creation-Date: 2005-10-07 21:40+0200\n"
+"POT-Creation-Date: 2005-10-07 22:31+0200\n"
 "PO-Revision-Date: 2005-01-14 22:27+0800\n"
 "Last-Translator: Jouston Huang <jouston@jouston.no-ip.com>\n"
 "Language-Team: Traditional Chinese <zh-l10n@i18n.linux.org.tw>\n"
@@ -36,7 +36,7 @@ msgstr "錯誤"
 
 #: address.c:412 address_gui.c:1686 datebook.c:693 libplugin.c:706
 #: libplugin.c:730 memo.c:244 memo_gui.c:996 todo_gui.c:1318
-#: Expense/expense.c:1134 Expense/expense.c:2130
+#: Expense/expense.c:1138 Expense/expense.c:2152
 #, c-format
 msgid "Error reading file: %s\n"
 msgstr "讀取檔案錯誤: %s\n"
@@ -63,7 +63,7 @@ msgid "File doesn't appear to be address.dat format\n"
 msgstr "檔案似乎不是 address.dat 格式\n"
 
 #: address_gui.c:558 datebook_gui.c:582 memo_gui.c:436 todo_gui.c:571
-#: Expense/expense.c:615 Expense/expense.c:1402
+#: Expense/expense.c:619 Expense/expense.c:1406
 msgid "Unfiled"
 msgstr "未歸檔"
 
@@ -71,7 +71,7 @@ msgstr "未歸檔"
 #: datebook_gui.c:669 datebook_gui.c:1149 export_gui.c:339 jpilot.c:363
 #: jpilot.c:409 jpilot.c:477 jpilot.c:521 jpilot.c:968 jpilot.c:1869
 #: memo_gui.c:526 password.c:352 restore_gui.c:307 todo_gui.c:661 utils.c:1084
-#: utils.c:1256 KeyRing/keyring.c:1315
+#: utils.c:1256 KeyRing/keyring.c:1322
 msgid "OK"
 msgstr "確定"
 
@@ -157,8 +157,8 @@ msgstr "類別不正確\n"
 msgid "executing command = [%s]\n"
 msgstr "執行命令 = [%s]\n"
 
-#: address_gui.c:1775 Expense/expense.c:1589 KeyRing/keyring.c:1555
-#: KeyRing/keyring.c:1635
+#: address_gui.c:1775 Expense/expense.c:1603 KeyRing/keyring.c:1577
+#: KeyRing/keyring.c:1656
 msgid "Category: "
 msgstr "類別: "
 
@@ -194,7 +194,7 @@ msgstr "第 %d 筆 共 %d 筆紀錄"
 
 #: address_gui.c:2635 category.c:450 category.c:464 category.c:471
 #: category.c:489 category.c:496 category.c:514 category.c:594 category.c:789
-#: memo_gui.c:1508 todo_gui.c:2116 Expense/expense.c:1595
+#: memo_gui.c:1508 todo_gui.c:2116 Expense/expense.c:1609
 msgid "Edit Categories"
 msgstr "編輯類別"
 
@@ -210,7 +210,7 @@ msgstr "快速尋找"
 #: address_gui.c:2700 category.c:421 category.c:877 category.c:917
 #: datebook_gui.c:1154 datebook_gui.c:1582 datebook_gui.c:4371
 #: export_gui.c:344 memo_gui.c:1552 password.c:362 print_gui.c:338
-#: restore_gui.c:312 todo_gui.c:2169 utils.c:1094 KeyRing/keyring.c:1321
+#: restore_gui.c:312 todo_gui.c:2169 utils.c:1094 KeyRing/keyring.c:1332
 msgid "Cancel"
 msgstr "取消"
 
@@ -220,12 +220,13 @@ msgid "Cancel the modifications"
 msgstr "套用修改   Ctrl+Enter"
 
 #: address_gui.c:2705 category.c:421 category.c:844 datebook_gui.c:4376
-#: memo_gui.c:1557 todo_gui.c:2174 Expense/expense.c:1632
-#: KeyRing/keyring.c:1590
+#: memo_gui.c:1557 todo_gui.c:2174 Expense/expense.c:1646
+#: KeyRing/keyring.c:1612
 msgid "Delete"
 msgstr "刪除"
 
 #: address_gui.c:2705 datebook_gui.c:4376 memo_gui.c:1557 todo_gui.c:2174
+#: Expense/expense.c:1646 KeyRing/keyring.c:1612
 #, fuzzy
 msgid "Delete the selected record"
 msgstr "刪除選擇的紀錄   Ctrl+D"
@@ -240,41 +241,45 @@ msgid "Undelete the selected record"
 msgstr "刪除選擇的紀錄   Ctrl+D"
 
 #: address_gui.c:2717 datebook_gui.c:4388 memo_gui.c:1569 todo_gui.c:2186
-#: Expense/expense.c:1638 KeyRing/keyring.c:1596
+#: Expense/expense.c:1651 KeyRing/keyring.c:1617
 msgid "Copy"
 msgstr "複製"
 
 #: address_gui.c:2717 datebook_gui.c:4388 memo_gui.c:1569 todo_gui.c:2186
+#: Expense/expense.c:1651 KeyRing/keyring.c:1617
 #, fuzzy
 msgid "Copy the selected record"
 msgstr "刪除選擇的紀錄   Ctrl+D"
 
 #: address_gui.c:2723 datebook_gui.c:4394 memo_gui.c:1575 todo_gui.c:2192
-#: Expense/expense.c:1644 KeyRing/keyring.c:1602
+#: Expense/expense.c:1656 KeyRing/keyring.c:1622
 msgid "New Record"
 msgstr "新增紀錄"
 
 #: address_gui.c:2723 datebook_gui.c:4394 memo_gui.c:1575 todo_gui.c:2192
+#: Expense/expense.c:1656 KeyRing/keyring.c:1622
 #, fuzzy
 msgid "Add a new record"
 msgstr "加入這個新紀錄   Ctrl+R"
 
 #: address_gui.c:2728 datebook_gui.c:4400 memo_gui.c:1581 todo_gui.c:2198
-#: Expense/expense.c:1650 KeyRing/keyring.c:1608
+#: Expense/expense.c:1661 KeyRing/keyring.c:1627
 msgid "Add Record"
 msgstr "加入紀錄"
 
 #: address_gui.c:2728 datebook_gui.c:4400 memo_gui.c:1581 todo_gui.c:2198
+#: Expense/expense.c:1661 KeyRing/keyring.c:1627
 #, fuzzy
 msgid "Add the new record"
 msgstr "加入這個新紀錄   Ctrl+R"
 
 #: address_gui.c:2738 datebook_gui.c:4410 memo_gui.c:1591 todo_gui.c:2208
-#: Expense/expense.c:1658 KeyRing/keyring.c:1616
+#: Expense/expense.c:1670 KeyRing/keyring.c:1636
 msgid "Apply Changes"
 msgstr "套用變更"
 
 #: address_gui.c:2738 datebook_gui.c:4410 memo_gui.c:1591 todo_gui.c:2208
+#: Expense/expense.c:1670 KeyRing/keyring.c:1636
 #, fuzzy
 msgid "Commit the modifications"
 msgstr "套用修改   Ctrl+Enter"
@@ -283,7 +288,7 @@ msgstr "套用修改   Ctrl+Enter"
 msgid "Private"
 msgstr "私人"
 
-#: address_gui.c:2775 KeyRing/keyring.c:1473
+#: address_gui.c:2775 KeyRing/keyring.c:1485
 msgid "Name"
 msgstr "姓名"
 
@@ -291,7 +296,7 @@ msgstr "姓名"
 msgid "Address"
 msgstr "地址"
 
-#: address_gui.c:2791 Expense/expense.c:567 Expense/expense.c:1423
+#: address_gui.c:2791 Expense/expense.c:571 Expense/expense.c:1427
 msgid "Other"
 msgstr "其他"
 
@@ -1093,7 +1098,7 @@ msgstr "同步"
 msgid "Unknown command from sync process\n"
 msgstr "同步的過程中使用了未知的命令\n"
 
-#: jpilot.c:980 Expense/expense.c:512 KeyRing/keyring.c:508
+#: jpilot.c:980 Expense/expense.c:516 KeyRing/keyring.c:512
 #, c-format
 msgid "About %s"
 msgstr "關於 %s"
@@ -2252,7 +2257,7 @@ msgstr "優先值: "
 msgid "Date Due:"
 msgstr "到期日:"
 
-#: todo_gui.c:2313 Expense/expense.c:1849 KeyRing/keyring.c:1668
+#: todo_gui.c:2313 Expense/expense.c:1862 KeyRing/keyring.c:1689
 msgid "Note"
 msgstr "註釋"
 
@@ -2376,11 +2381,11 @@ msgstr "儲存新紀錄?"
 msgid "Do you want to save this new record?"
 msgstr "您要儲存此筆新增的紀錄嗎?"
 
-#: utils.c:1310 KeyRing/keyring.c:1373
+#: utils.c:1310 KeyRing/keyring.c:1385
 msgid "Can't get HOME environment variable\n"
 msgstr "無法取得 HOME 環境變數\n"
 
-#: utils.c:1317 KeyRing/keyring.c:1378
+#: utils.c:1317 KeyRing/keyring.c:1390
 msgid "Your HOME environment variable is too long for me\n"
 msgstr "您的 HOME 環境變數對 J-Pilot 來說太長\n"
 
@@ -2441,388 +2446,388 @@ msgstr "我產生了一個新的 PC ID, 它是 %lu\n"
 msgid "Weekly View"
 msgstr "每週檢視"
 
-#: Expense/expense.c:98
+#: Expense/expense.c:99
 msgid "Australia"
 msgstr "澳洲"
 
-#: Expense/expense.c:99
+#: Expense/expense.c:100
 msgid "Austria"
 msgstr "奧地利"
 
-#: Expense/expense.c:100
+#: Expense/expense.c:101
 msgid "Belgium"
 msgstr "比利時"
 
-#: Expense/expense.c:101
+#: Expense/expense.c:102
 msgid "Brazil"
 msgstr "巴西"
 
-#: Expense/expense.c:102
+#: Expense/expense.c:103
 msgid "Canada"
 msgstr "加拿大"
 
-#: Expense/expense.c:103
+#: Expense/expense.c:104
 msgid "Denmark"
 msgstr "丹麥"
 
-#: Expense/expense.c:104
+#: Expense/expense.c:105
 msgid "EU (Euro)"
 msgstr "歐盟 (Euro)"
 
-#: Expense/expense.c:105
+#: Expense/expense.c:106
 msgid "Finland"
 msgstr "芬蘭"
 
-#: Expense/expense.c:106
+#: Expense/expense.c:107
 msgid "France"
 msgstr "法國"
 
-#: Expense/expense.c:107
+#: Expense/expense.c:108
 msgid "Germany"
 msgstr "德國"
 
-#: Expense/expense.c:108
+#: Expense/expense.c:109
 msgid "Hong Kong"
 msgstr "香港"
 
-#: Expense/expense.c:109
+#: Expense/expense.c:110
 msgid "Iceland"
 msgstr "冰島"
 
-#: Expense/expense.c:110
+#: Expense/expense.c:111
 msgid "India"
 msgstr "印度"
 
-#: Expense/expense.c:111
+#: Expense/expense.c:112
 msgid "Indonesia"
 msgstr "印尼"
 
-#: Expense/expense.c:112
+#: Expense/expense.c:113
 msgid "Ireland"
 msgstr "愛爾蘭"
 
-#: Expense/expense.c:113
+#: Expense/expense.c:114
 msgid "Italy"
 msgstr "義大利"
 
-#: Expense/expense.c:114
+#: Expense/expense.c:115
 msgid "Japan"
 msgstr "日本"
 
-#: Expense/expense.c:115
+#: Expense/expense.c:116
 msgid "Korea"
 msgstr "韓國"
 
-#: Expense/expense.c:116
+#: Expense/expense.c:117
 msgid "Luxembourg"
 msgstr "盧森堡"
 
-#: Expense/expense.c:117
+#: Expense/expense.c:118
 msgid "Malaysia"
 msgstr "馬來西亞"
 
-#: Expense/expense.c:118
+#: Expense/expense.c:119
 msgid "Mexico"
 msgstr "墨西哥"
 
-#: Expense/expense.c:119
+#: Expense/expense.c:120
 msgid "Netherlands"
 msgstr "尼德蘭 (荷蘭)"
 
-#: Expense/expense.c:120
+#: Expense/expense.c:121
 msgid "New Zealand"
 msgstr "紐西蘭"
 
-#: Expense/expense.c:121
+#: Expense/expense.c:122
 msgid "Norway"
 msgstr "挪威"
 
-#: Expense/expense.c:122
+#: Expense/expense.c:123
 msgid "P.R.C."
 msgstr "中華人民共和國"
 
-#: Expense/expense.c:123
+#: Expense/expense.c:124
 msgid "Philippines"
 msgstr "菲律賓"
 
-#: Expense/expense.c:124
+#: Expense/expense.c:125
 msgid "Singapore"
 msgstr "新加坡"
 
-#: Expense/expense.c:125
+#: Expense/expense.c:126
 msgid "Spain"
 msgstr "西班牙"
 
-#: Expense/expense.c:126
+#: Expense/expense.c:127
 msgid "Sweden"
 msgstr "瑞典"
 
-#: Expense/expense.c:127
+#: Expense/expense.c:128
 msgid "Switzerland"
 msgstr "瑞士"
 
-#: Expense/expense.c:128
+#: Expense/expense.c:129
 msgid "Taiwan"
 msgstr "台灣"
 
-#: Expense/expense.c:129
+#: Expense/expense.c:130
 msgid "Thailand"
 msgstr "泰國"
 
-#: Expense/expense.c:130
+#: Expense/expense.c:131
 msgid "United Kingdom"
 msgstr "英國"
 
-#: Expense/expense.c:131
+#: Expense/expense.c:132
 msgid "United States"
 msgstr "美國"
 
-#: Expense/expense.c:501 Expense/expense.c:512
+#: Expense/expense.c:505 Expense/expense.c:516
 msgid "Expense"
 msgstr "開支"
 
-#: Expense/expense.c:533 Expense/expense.c:1406
+#: Expense/expense.c:537 Expense/expense.c:1410
 msgid "Airfare"
 msgstr "飛機票"
 
-#: Expense/expense.c:535 Expense/expense.c:1407
+#: Expense/expense.c:539 Expense/expense.c:1411
 msgid "Breakfast"
 msgstr "早餐"
 
-#: Expense/expense.c:537 Expense/expense.c:1408
+#: Expense/expense.c:541 Expense/expense.c:1412
 msgid "Bus"
 msgstr "公共汽車"
 
-#: Expense/expense.c:539 Expense/expense.c:1409
+#: Expense/expense.c:543 Expense/expense.c:1413
 msgid "BusinessMeals"
 msgstr "商務餐會"
 
-#: Expense/expense.c:541 Expense/expense.c:1410
+#: Expense/expense.c:545 Expense/expense.c:1414
 msgid "CarRental"
 msgstr "租車"
 
-#: Expense/expense.c:543 Expense/expense.c:1411
+#: Expense/expense.c:547 Expense/expense.c:1415
 msgid "Dinner"
 msgstr "晚餐"
 
-#: Expense/expense.c:545 Expense/expense.c:1412
+#: Expense/expense.c:549 Expense/expense.c:1416
 msgid "Entertainment"
 msgstr "娛樂"
 
-#: Expense/expense.c:547 Expense/expense.c:1413
+#: Expense/expense.c:551 Expense/expense.c:1417
 msgid "Fax"
 msgstr "傳真"
 
-#: Expense/expense.c:549 Expense/expense.c:1414
+#: Expense/expense.c:553 Expense/expense.c:1418
 msgid "Gas"
 msgstr "汽油"
 
-#: Expense/expense.c:551 Expense/expense.c:1415
+#: Expense/expense.c:555 Expense/expense.c:1419
 msgid "Gifts"
 msgstr "禮品"
 
-#: Expense/expense.c:553 Expense/expense.c:1416
+#: Expense/expense.c:557 Expense/expense.c:1420
 msgid "Hotel"
 msgstr "飯店"
 
-#: Expense/expense.c:555 Expense/expense.c:1417
+#: Expense/expense.c:559 Expense/expense.c:1421
 msgid "Incidentals"
 msgstr "雜費"
 
-#: Expense/expense.c:557 Expense/expense.c:1418
+#: Expense/expense.c:561 Expense/expense.c:1422
 msgid "Laundry"
 msgstr "洗衣"
 
-#: Expense/expense.c:559 Expense/expense.c:1419
+#: Expense/expense.c:563 Expense/expense.c:1423
 msgid "Limo"
 msgstr "豪華轎車"
 
-#: Expense/expense.c:561 Expense/expense.c:1420
+#: Expense/expense.c:565 Expense/expense.c:1424
 msgid "Lodging"
 msgstr "寄宿"
 
-#: Expense/expense.c:563 Expense/expense.c:1421
+#: Expense/expense.c:567 Expense/expense.c:1425
 msgid "Lunch"
 msgstr "午餐"
 
-#: Expense/expense.c:565 Expense/expense.c:1422
+#: Expense/expense.c:569 Expense/expense.c:1426
 msgid "Mileage"
 msgstr "里程"
 
-#: Expense/expense.c:569 Expense/expense.c:1424
+#: Expense/expense.c:573 Expense/expense.c:1428
 msgid "Parking"
 msgstr "停車費"
 
-#: Expense/expense.c:571 Expense/expense.c:1425
+#: Expense/expense.c:575 Expense/expense.c:1429
 msgid "Postage"
 msgstr "郵費"
 
-#: Expense/expense.c:573 Expense/expense.c:1426
+#: Expense/expense.c:577 Expense/expense.c:1430
 msgid "Snack"
 msgstr "零嘴"
 
-#: Expense/expense.c:575 Expense/expense.c:1427
+#: Expense/expense.c:579 Expense/expense.c:1431
 msgid "Subway"
 msgstr "地下鐵"
 
-#: Expense/expense.c:577 Expense/expense.c:1428
+#: Expense/expense.c:581 Expense/expense.c:1432
 msgid "Supplies"
 msgstr "生活用品"
 
-#: Expense/expense.c:579 Expense/expense.c:1429
+#: Expense/expense.c:583 Expense/expense.c:1433
 msgid "Taxi"
 msgstr "計程車"
 
-#: Expense/expense.c:581 Expense/expense.c:1430
+#: Expense/expense.c:585 Expense/expense.c:1434
 msgid "Telephone"
 msgstr "電話費"
 
-#: Expense/expense.c:583 Expense/expense.c:1431
+#: Expense/expense.c:587 Expense/expense.c:1435
 msgid "Tips"
 msgstr "小費"
 
-#: Expense/expense.c:585 Expense/expense.c:1432
+#: Expense/expense.c:589 Expense/expense.c:1436
 msgid "Tolls"
 msgstr "通行費"
 
-#: Expense/expense.c:587 Expense/expense.c:1433
+#: Expense/expense.c:591 Expense/expense.c:1437
 msgid "Train"
 msgstr "火車"
 
-#: Expense/expense.c:601
+#: Expense/expense.c:605
 msgid "AmEx"
 msgstr "美國運通 (AmEx)"
 
-#: Expense/expense.c:603 Expense/expense.c:1396
+#: Expense/expense.c:607 Expense/expense.c:1400
 msgid "Cash"
 msgstr "現金"
 
-#: Expense/expense.c:605 Expense/expense.c:1397
+#: Expense/expense.c:609 Expense/expense.c:1401
 msgid "Check"
 msgstr "支票"
 
-#: Expense/expense.c:607
+#: Expense/expense.c:611
 msgid "CreditCard"
 msgstr "信用卡"
 
-#: Expense/expense.c:609
+#: Expense/expense.c:613
 msgid "MasterCard"
 msgstr "萬事達卡 (MasterCard)"
 
-#: Expense/expense.c:611 Expense/expense.c:1400
+#: Expense/expense.c:615 Expense/expense.c:1404
 msgid "Prepaid"
 msgstr "預付"
 
-#: Expense/expense.c:613 Expense/expense.c:1401
+#: Expense/expense.c:617 Expense/expense.c:1405
 msgid "VISA"
 msgstr "VISA 卡"
 
-#: Expense/expense.c:1206
+#: Expense/expense.c:1210
 msgid "Expense: Unknown category\n"
 msgstr "開支: 未知類別\n"
 
-#: Expense/expense.c:1212
+#: Expense/expense.c:1216
 msgid "Expense: Unknown expense type\n"
 msgstr "開支: 未知開支類型\n"
 
-#: Expense/expense.c:1218
+#: Expense/expense.c:1222
 msgid "Expense: Unknown payment type\n"
 msgstr "開支: 未知付款方式\n"
 
-#: Expense/expense.c:1395
+#: Expense/expense.c:1399
 msgid "American Express"
 msgstr "美國運通 (American Express)"
 
-#: Expense/expense.c:1398
+#: Expense/expense.c:1402
 msgid "Credit Card"
 msgstr "信用卡"
 
-#: Expense/expense.c:1399
+#: Expense/expense.c:1403
 msgid "Master Card"
 msgstr "萬事達卡 (MasterCard)"
 
-#: Expense/expense.c:1674
+#: Expense/expense.c:1687
 msgid "Category:"
 msgstr "類別:"
 
-#: Expense/expense.c:1687
+#: Expense/expense.c:1700
 msgid "Type:"
 msgstr "類型:"
 
-#: Expense/expense.c:1700
+#: Expense/expense.c:1713
 msgid "Payment:"
 msgstr "付款方式:"
 
-#: Expense/expense.c:1713
+#: Expense/expense.c:1726
 msgid "Currency:"
 msgstr "匯率:"
 
-#: Expense/expense.c:1726
+#: Expense/expense.c:1739
 msgid "Date:"
 msgstr "日期:"
 
-#: Expense/expense.c:1743
+#: Expense/expense.c:1756
 msgid "Month:"
 msgstr "月:"
 
-#: Expense/expense.c:1757
+#: Expense/expense.c:1770
 msgid "Day:"
 msgstr "日:"
 
-#: Expense/expense.c:1771
+#: Expense/expense.c:1784
 msgid "Year:"
 msgstr "年:"
 
-#: Expense/expense.c:1784
+#: Expense/expense.c:1797
 msgid "Amount:"
 msgstr "金額:"
 
-#: Expense/expense.c:1798
+#: Expense/expense.c:1811
 msgid "Vendor:"
 msgstr "廠商:"
 
-#: Expense/expense.c:1812
+#: Expense/expense.c:1825
 msgid "City:"
 msgstr "城市:"
 
-#: Expense/expense.c:1826
+#: Expense/expense.c:1839
 msgid "Attendees"
 msgstr "出席者"
 
-#: KeyRing/keyring.c:178
+#: KeyRing/keyring.c:182
 msgid "KeyRing: pack_KeyRing(): buf_size too small\n"
 msgstr "鑰匙圈: pack_鑰匙圈(): buf_size 太小\n"
 
-#: KeyRing/keyring.c:497 KeyRing/keyring.c:508
+#: KeyRing/keyring.c:501 KeyRing/keyring.c:512
 msgid "KeyRing"
 msgstr "鑰匙圈"
 
-#: KeyRing/keyring.c:1293
+#: KeyRing/keyring.c:1297
 msgid "Incorrect, Reenter KeyRing Password"
 msgstr "不正確, 請重新輸入鑰匙圈密碼"
 
-#: KeyRing/keyring.c:1295
+#: KeyRing/keyring.c:1299
 msgid "Enter a NEW KeyRing Password"
 msgstr "請輸入新的鑰匙圈密碼"
 
-#: KeyRing/keyring.c:1297
+#: KeyRing/keyring.c:1301
 msgid "Enter KeyRing Password"
 msgstr "輸入鑰匙圈密碼"
 
-#: KeyRing/keyring.c:1383
+#: KeyRing/keyring.c:1395
 #, c-format
 msgid "KeyRing: file %s not found.\n"
 msgstr "鑰匙圈: 檔案 %s 找不到.\n"
 
-#: KeyRing/keyring.c:1384
+#: KeyRing/keyring.c:1396
 msgid "KeyRing: Try Syncing.\n"
 msgstr "鑰匙圈: 嚐試同步.\n"
 
-#: KeyRing/keyring.c:1473
+#: KeyRing/keyring.c:1485
 msgid "Account"
 msgstr "帳號"
 
-#: KeyRing/keyring.c:1486
+#: KeyRing/keyring.c:1498
 msgid ""
 "Change\n"
 "KeyRing\n"
@@ -2832,19 +2837,19 @@ msgstr ""
 "鑰匙圈\n"
 "密碼"
 
-#: KeyRing/keyring.c:1641
+#: KeyRing/keyring.c:1662
 msgid "name: "
 msgstr "名字: "
 
-#: KeyRing/keyring.c:1648
+#: KeyRing/keyring.c:1669
 msgid "account: "
 msgstr "帳號: "
 
-#: KeyRing/keyring.c:1655
+#: KeyRing/keyring.c:1676
 msgid "password: "
 msgstr "密碼: "
 
-#: KeyRing/keyring.c:1661
+#: KeyRing/keyring.c:1682
 msgid "Generate Password"
 msgstr "自動產生密碼"
 
