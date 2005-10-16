@@ -209,9 +209,8 @@ msgid "Cancel"
 msgstr "Annuler"
 
 #: address_gui.c:2700 datebook_gui.c:4371 memo_gui.c:1552 todo_gui.c:2169
-#, fuzzy
 msgid "Cancel the modifications"
-msgstr "Annuler les modifications   Échap"
+msgstr "Annuler les modifications"
 
 #: address_gui.c:2705 category.c:421 category.c:844 datebook_gui.c:4376
 #: memo_gui.c:1557 todo_gui.c:2174 Expense/expense.c:1646
@@ -221,18 +220,16 @@ msgstr "Effacer"
 
 #: address_gui.c:2705 datebook_gui.c:4376 memo_gui.c:1557 todo_gui.c:2174
 #: Expense/expense.c:1646 KeyRing/keyring.c:1612
-#, fuzzy
 msgid "Delete the selected record"
-msgstr "Efface l'enregistrement sélectionné   Ctrl+D"
+msgstr "Efface l'enregistrement sélectionné"
 
 #: address_gui.c:2711 datebook_gui.c:4382 memo_gui.c:1563 todo_gui.c:2180
 msgid "Undelete"
 msgstr "Restaurer"
 
 #: address_gui.c:2711 datebook_gui.c:4382 memo_gui.c:1563 todo_gui.c:2180
-#, fuzzy
 msgid "Undelete the selected record"
-msgstr "Efface l'enregistrement sélectionné   Ctrl+D"
+msgstr "Récupérer l'enregistrement sélectionné"
 
 #: address_gui.c:2717 datebook_gui.c:4388 memo_gui.c:1569 todo_gui.c:2186
 #: Expense/expense.c:1651 KeyRing/keyring.c:1617
@@ -241,9 +238,8 @@ msgstr "Copier"
 
 #: address_gui.c:2717 datebook_gui.c:4388 memo_gui.c:1569 todo_gui.c:2186
 #: Expense/expense.c:1651 KeyRing/keyring.c:1617
-#, fuzzy
 msgid "Copy the selected record"
-msgstr "Efface l'enregistrement sélectionné   Ctrl+D"
+msgstr "Copier l'enregistrement sélectionné"
 
 #: address_gui.c:2723 datebook_gui.c:4394 memo_gui.c:1575 todo_gui.c:2192
 #: Expense/expense.c:1656 KeyRing/keyring.c:1622
@@ -252,9 +248,8 @@ msgstr "Nouveau"
 
 #: address_gui.c:2723 datebook_gui.c:4394 memo_gui.c:1575 todo_gui.c:2192
 #: Expense/expense.c:1656 KeyRing/keyring.c:1622
-#, fuzzy
 msgid "Add a new record"
-msgstr "Ajouter le nouvel enregistrement"
+msgstr "Ajouter un nouvel enregistrement"
 
 #: address_gui.c:2728 datebook_gui.c:4400 memo_gui.c:1581 todo_gui.c:2198
 #: Expense/expense.c:1661 KeyRing/keyring.c:1627
