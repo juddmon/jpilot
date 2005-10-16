@@ -447,6 +447,8 @@ fi
 
 if test "x$have_gtk2" = "xyes"; then
   AC_DEFINE(ENABLE_GTK2, 1, [ GTK-2 support ])
+else
+  AC_DEFINE(DISABLE_STOCK_BUTTONS, 1, [ do not use GTK2 stock buttons ])
 fi
 
 dnl Checks for header files.

@@ -1,4 +1,4 @@
-/* $Id: expense.c,v 1.38 2005/10/07 19:30:59 rousseau Exp $ */
+/* $Id: expense.c,v 1.39 2005/10/16 09:42:25 rousseau Exp $ */
 
 /*******************************************************************************
  * expense.c
@@ -37,6 +37,7 @@
 #include "../i18n.h"
 #include "utils.h"
 #include "prefs.h"
+#include "stock_buttons.h"
 
 /******************************************************************************/
 /* Constants                                                                  */
@@ -160,6 +161,9 @@ static GtkWidget *entry_vendor;
 static GtkWidget *entry_city;
 static GtkWidget *text_attendees;
 static GtkWidget *pane;
+#ifndef ENABLE_STOCK_BUTTONS
+static GtkAccelGroup *accel_group;
+#endif
 #ifdef ENABLE_GTK2
 static GObject   *text_attendees_buffer;
 #endif
@@ -1537,7 +1541,7 @@ static int expense_find(int unique_id)
 int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
 {
    GtkWidget *vbox1, *vbox2;
-   GtkWidget *temp_hbox;
+   GtkWidget *hbox_temp;
    GtkWidget *temp_vbox;
    GtkWidget *button;
    GtkWidget *label;
@@ -1577,25 +1581,35 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_widget_set_usize(GTK_WIDGET(vbox1), 0, 230);
    gtk_widget_set_usize(GTK_WIDGET(vbox2), 0, 230);
 
+   /* Make accelerators for some buttons window */
+#ifndef ENABLE_STOCK_BUTTONS
+   accel_group = gtk_accel_group_new();
+#ifdef ENABLE_GTK2
+   gtk_window_add_accel_group(GTK_WINDOW(gtk_widget_get_toplevel(vbox)), accel_group);
+#else
+   gtk_accel_group_attach(accel_group, GTK_OBJECT(gtk_widget_get_toplevel(vbox)));
+#endif
+#endif
+
    /************************************************************/
    /* Left half of screen */
 
    /* Make menu box for category menu */
    left_menu_box = gtk_hbox_new(FALSE, 0);
 
-   temp_hbox = gtk_hbox_new(FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(vbox1), temp_hbox, FALSE, FALSE, 0);
+   hbox_temp = gtk_hbox_new(FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox1), hbox_temp, FALSE, FALSE, 0);
    
    label = gtk_label_new(_("Category: "));
-   gtk_box_pack_start(GTK_BOX(temp_hbox), label, FALSE, FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(temp_hbox), left_menu_box, TRUE, TRUE, 0);
+   gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(hbox_temp), left_menu_box, TRUE, TRUE, 0);
    gtk_box_pack_start(GTK_BOX(left_menu_box), menu_category1, TRUE, TRUE, 0);
 
    /* Edit category button */
    button = gtk_button_new_with_label(_("Edit Categories"));
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
                       GTK_SIGNAL_FUNC(cb_edit_cats), NULL);
-   gtk_box_pack_start(GTK_BOX(temp_hbox), button, FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
 
    /* Scrolled Window */
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
@@ -1625,45 +1639,44 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    /************************************************************/
    /* Right half of screen */
 
-   temp_hbox = gtk_hbox_new(FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(vbox2), temp_hbox, FALSE, FALSE, 0);
+   hbox_temp = gtk_hbox_new(FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
    /* Delete, Copy, New, etc. buttons */
-   delete_record_button = gtk_button_new_with_label(_("Delete"));
+   CREATE_BUTTON(delete_record_button, _("Delete"), DELETE, _("Delete the selected record"), GDK_d, GDK_CONTROL_MASK, "Ctrl+D");
    gtk_signal_connect(GTK_OBJECT(delete_record_button), "clicked",
                       GTK_SIGNAL_FUNC(cb_delete),
                       GINT_TO_POINTER(DELETE_FLAG));
-   gtk_box_pack_start(GTK_BOX(temp_hbox), delete_record_button, TRUE, TRUE, 0);
    
-   copy_record_button = gtk_button_new_with_label(_("Copy"));
-   gtk_box_pack_start(GTK_BOX(temp_hbox), copy_record_button, TRUE, TRUE, 0);
+   CREATE_BUTTON(copy_record_button, _("Copy"), COPY, _("Copy the selected record"), GDK_o, GDK_CONTROL_MASK, "Ctrl+O");
    gtk_signal_connect(GTK_OBJECT(copy_record_button), "clicked",
                       GTK_SIGNAL_FUNC(cb_add_new_record), 
                       GINT_TO_POINTER(COPY_FLAG));
 
-   new_record_button = gtk_button_new_with_label(_("New Record"));
-   gtk_box_pack_start(GTK_BOX(temp_hbox), new_record_button, TRUE, TRUE, 0);
+   CREATE_BUTTON(new_record_button, _("New Record"), NEW, _("Add a new record"), GDK_n, GDK_CONTROL_MASK, "Ctrl+N")
    gtk_signal_connect(GTK_OBJECT(new_record_button), "clicked",
                       GTK_SIGNAL_FUNC(cb_add_new_record),
                       GINT_TO_POINTER(CLEAR_FLAG));
 
-   add_record_button = gtk_button_new_with_label(_("Add Record"));
-   gtk_box_pack_start(GTK_BOX(temp_hbox), add_record_button, TRUE, TRUE, 0);
+   CREATE_BUTTON(add_record_button, _("Add Record"), ADD, _("Add the new record"), GDK_Return, GDK_CONTROL_MASK, "Ctrl+Enter")
    gtk_signal_connect(GTK_OBJECT(add_record_button), "clicked",
                       GTK_SIGNAL_FUNC(cb_add_new_record),
                       GINT_TO_POINTER(NEW_FLAG));
+#ifndef ENABLE_STOCK_BUTTONS
    gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(GTK_BIN(add_record_button)->child)),
                        "label_high");
+#endif
 
-   apply_record_button = gtk_button_new_with_label(_("Apply Changes"));
-   gtk_box_pack_start(GTK_BOX(temp_hbox), apply_record_button, TRUE, TRUE, 0);
+   CREATE_BUTTON(apply_record_button, _("Apply Changes"), APPLY, _("Commit the modifications"), GDK_Return, GDK_CONTROL_MASK, "Ctrl+Enter")
    gtk_signal_connect(GTK_OBJECT(apply_record_button), "clicked",
                       GTK_SIGNAL_FUNC(cb_add_new_record),
                       GINT_TO_POINTER(MODIFY_FLAG));
+#ifndef ENABLE_STOCK_BUTTONS
    gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(GTK_BIN(apply_record_button)->child)),
                        "label_high");
+#endif
    
-   /* Separator */
+   /*Separator */
    separator = gtk_hseparator_new();
    gtk_box_pack_start(GTK_BOX(vbox2), separator, FALSE, FALSE, 5);
 
@@ -1733,13 +1746,13 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
                              0, 1, 4, 5);
 #endif
 
-   temp_hbox = gtk_hbox_new(FALSE, 0);
-   gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(temp_hbox),
+   hbox_temp = gtk_hbox_new(FALSE, 0);
+   gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(hbox_temp),
                              1, 2, 4, 5);
 
    /* Month spinner */
    temp_vbox = gtk_vbox_new(FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(temp_hbox), temp_vbox, FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(hbox_temp), temp_vbox, FALSE, FALSE, 0);
    label = gtk_label_new(_("Month:"));
    gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
    gtk_box_pack_start(GTK_BOX(temp_vbox), label, FALSE, TRUE, 0);
@@ -1753,7 +1766,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
 
    /* Day spinner */
    temp_vbox = gtk_vbox_new(FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(temp_hbox), temp_vbox, FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(hbox_temp), temp_vbox, FALSE, FALSE, 0);
    label = gtk_label_new(_("Day:"));
    gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
    gtk_box_pack_start(GTK_BOX(temp_vbox), label, FALSE, TRUE, 0);
@@ -1767,7 +1780,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
 
    /* Year spinner */
    temp_vbox = gtk_vbox_new(FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(temp_hbox), temp_vbox, FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(hbox_temp), temp_vbox, FALSE, FALSE, 0);
    label = gtk_label_new(_("Year:"));
    gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
    gtk_box_pack_start(GTK_BOX(temp_vbox), label, FALSE, TRUE, 0);
@@ -1908,6 +1921,15 @@ int plugin_gui_cleanup() {
    connect_changed_signals(DISCONNECT_SIGNALS);
 
    free_myexpense_list(&glob_myexpense_list);
+
+   /* Remove the accelerators */
+#ifndef ENABLE_STOCK_BUTTONS
+#ifdef ENABLE_GTK2
+   gtk_window_remove_accel_group(GTK_WINDOW(gtk_widget_get_toplevel(pane)), accel_group);
+#else
+   gtk_accel_group_detach(accel_group, GTK_OBJECT(gtk_widget_get_toplevel(pane)));
+#endif
+#endif
 
 #ifdef ENABLE_GTK2
    set_pref(PREF_EXPENSE_PANE, gtk_paned_get_position(GTK_PANED(pane)), NULL, TRUE);

@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.39 2005/10/07 19:30:59 rousseau Exp $ */
+/* $Id: keyring.c,v 1.40 2005/10/16 09:42:25 rousseau Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -44,6 +44,7 @@
 
 #include "../i18n.h"
 #include "prefs.h"
+#include "stock_buttons.h"
 
 #define KEYRING_CAT1 1
 #define KEYRING_CAT2 2
@@ -84,6 +85,9 @@ static GtkWidget *add_record_button;
 static GtkWidget *delete_record_button;
 static GtkWidget *copy_record_button;
 static GtkWidget *pane = NULL;
+#ifndef ENABLE_STOCK_BUTTONS
+static GtkAccelGroup *accel_group;
+#endif
 
 static int record_changed;
 static int clist_hack;
@@ -1312,13 +1316,21 @@ static int dialog_password(GtkWindow *main_window, char *ascii_password, int rea
    gtk_box_pack_start(GTK_BOX(vbox1), hbox1, FALSE, FALSE, 2);
 
    /* Buttons */
+#ifdef ENABLE_STOCK_BUTTONS
+   button = gtk_button_new_from_stock(GTK_STOCK_OK);
+#else
    button = gtk_button_new_with_label(_("OK"));
+#endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_dialog_button),
 		      GINT_TO_POINTER(DIALOG_SAID_1));
    gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
 
+#ifdef ENABLE_STOCK_BUTTONS
+   button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
+#else
    button = gtk_button_new_with_label(_("Cancel"));
+#endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_dialog_button),
 		      GINT_TO_POINTER(DIALOG_SAID_2));
@@ -1451,7 +1463,7 @@ int verify_pasword(char *ascii_password)
 int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
 {
    GtkWidget *vbox1, *vbox2;
-   GtkWidget *temp_hbox;
+   GtkWidget *hbox_temp;
    GtkWidget *button;
    GtkWidget *label;
 #ifndef ENABLE_GTK2
@@ -1548,13 +1560,23 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_widget_set_usize(GTK_WIDGET(vbox1), 0, 230);
    gtk_widget_set_usize(GTK_WIDGET(vbox2), 0, 230);
 
+   /* Make accelerators for some buttons window */
+#ifndef ENABLE_STOCK_BUTTONS
+   accel_group = gtk_accel_group_new();
+#ifdef ENABLE_GTK2
+   gtk_window_add_accel_group(GTK_WINDOW(gtk_widget_get_toplevel(vbox)), accel_group);
+#else
+   gtk_accel_group_attach(accel_group, GTK_OBJECT(gtk_widget_get_toplevel(vbox)));
+#endif
+#endif
+
    /* Make a temporary hbox */
-   temp_hbox = gtk_hbox_new(FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(vbox1), temp_hbox, FALSE, FALSE, 0);
+   hbox_temp = gtk_hbox_new(FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox1), hbox_temp, FALSE, FALSE, 0);
    
    label = gtk_label_new(_("Category: "));
-   gtk_box_pack_start(GTK_BOX(temp_hbox), label, FALSE, FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(temp_hbox), menu_category1, TRUE, TRUE, 0);
+   gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(hbox_temp), menu_category1, TRUE, TRUE, 0);
 
    
    /* Scrolled Window */
@@ -1583,45 +1605,44 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    /* Right half of screen */
    /* -------------------- */
    
-   temp_hbox = gtk_hbox_new(FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(vbox2), temp_hbox, FALSE, FALSE, 0);
+   hbox_temp = gtk_hbox_new(FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
    /* Add record button */
-   delete_record_button = gtk_button_new_with_label(_("Delete"));
+   CREATE_BUTTON(delete_record_button, _("Delete"), DELETE, _("Delete the selected record"), GDK_d, GDK_CONTROL_MASK, "Ctrl+D");
    gtk_signal_connect(GTK_OBJECT(delete_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_delete),
 		      GINT_TO_POINTER(DELETE_FLAG));
-   gtk_box_pack_start(GTK_BOX(temp_hbox), delete_record_button, TRUE, TRUE, 0);
 
-   copy_record_button = gtk_button_new_with_label(_("Copy"));
-   gtk_box_pack_start(GTK_BOX(temp_hbox), copy_record_button, TRUE, TRUE, 0);
+   CREATE_BUTTON(copy_record_button, _("Copy"), COPY, _("Copy the selected record"), GDK_o, GDK_CONTROL_MASK, "Ctrl+O");
    gtk_signal_connect(GTK_OBJECT(copy_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record),
 		      GINT_TO_POINTER(COPY_FLAG));
 
-   new_record_button = gtk_button_new_with_label(_("New Record"));
-   gtk_box_pack_start(GTK_BOX(temp_hbox), new_record_button, TRUE, TRUE, 0);
+   CREATE_BUTTON(new_record_button, _("New Record"), NEW, _("Add a new record"), GDK_n, GDK_CONTROL_MASK, "Ctrl+N")
    gtk_signal_connect(GTK_OBJECT(new_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record),
 		      GINT_TO_POINTER(CLEAR_FLAG));
 
-   add_record_button = gtk_button_new_with_label(_("Add Record"));
-   gtk_box_pack_start(GTK_BOX(temp_hbox), add_record_button, TRUE, TRUE, 0);
+   CREATE_BUTTON(add_record_button, _("Add Record"), ADD, _("Add the new record"), GDK_Return, GDK_CONTROL_MASK, "Ctrl+Enter")
    gtk_signal_connect(GTK_OBJECT(add_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record),
 		      GINT_TO_POINTER(NEW_FLAG));
+#ifndef ENABLE_STOCK_BUTTONS
    gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(GTK_BIN(add_record_button)->child)),
 		       "label_high");
+#endif
 
-   apply_record_button = gtk_button_new_with_label(_("Apply Changes"));
-   gtk_box_pack_start(GTK_BOX(temp_hbox), apply_record_button, TRUE, TRUE, 0);
+   CREATE_BUTTON(apply_record_button, _("Apply Changes"), APPLY, _("Commit the modifications"), GDK_Return, GDK_CONTROL_MASK, "Ctrl+Enter")
    gtk_signal_connect(GTK_OBJECT(apply_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record),
 		      GINT_TO_POINTER(MODIFY_FLAG));
+#ifndef ENABLE_STOCK_BUTTONS
    gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(GTK_BIN(apply_record_button)->child)),
 		       "label_high");
+#endif
    
-   /* Separator */
+   /*Separator */
    separator = gtk_hseparator_new();
    gtk_box_pack_start(GTK_BOX(vbox2), separator, FALSE, FALSE, 5);
 
@@ -1668,8 +1689,8 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    label = gtk_label_new(_("Note"));
    gtk_box_pack_start(GTK_BOX(vbox2), label, FALSE, FALSE, 0);
 
-   temp_hbox = gtk_hbox_new(FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(vbox2), temp_hbox, TRUE, TRUE, 0);
+   hbox_temp = gtk_hbox_new(FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, TRUE, TRUE, 0);
 
 #ifdef ENABLE_GTK2
    text_note = gtk_text_view_new();
@@ -1682,14 +1703,14 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
 				   GTK_POLICY_AUTOMATIC, GTK_POLICY_ALWAYS);
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 1);
    gtk_container_add(GTK_CONTAINER(scrolled_window), text_note);
-   gtk_box_pack_start_defaults(GTK_BOX(temp_hbox), scrolled_window);
+   gtk_box_pack_start_defaults(GTK_BOX(hbox_temp), scrolled_window);
 #else
    text_note = gtk_text_new(NULL, NULL);
    gtk_text_set_editable(GTK_TEXT(text_note), TRUE);
    gtk_text_set_word_wrap(GTK_TEXT(text_note), TRUE);
    vscrollbar = gtk_vscrollbar_new(GTK_TEXT(text_note)->vadj);
-   gtk_box_pack_start(GTK_BOX(temp_hbox), text_note, TRUE, TRUE, 0);
-   gtk_box_pack_start(GTK_BOX(temp_hbox), vscrollbar, FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(hbox_temp), text_note, TRUE, TRUE, 0);
+   gtk_box_pack_start(GTK_BOX(hbox_temp), vscrollbar, FALSE, FALSE, 0);
 #endif
 
    gtk_widget_show_all(hbox);
@@ -1750,16 +1771,25 @@ int plugin_gui_cleanup() {
    }
    plugin_active = FALSE;
 
+   /* Remove the accelerators */
+#ifndef ENABLE_STOCK_BUTTONS
+#ifdef ENABLE_GTK2
+   gtk_window_remove_accel_group(GTK_WINDOW(gtk_widget_get_toplevel(pane)), accel_group);
+#else
+   gtk_accel_group_detach(accel_group, GTK_OBJECT(gtk_widget_get_toplevel(pane)));
+#endif
+#endif
+
    /* the pane may not exist.
-    * if the wrong password is entered the gui is not built */
+	* if the wrong password is entered the gui is not built */
    if (pane)
    {
 #ifdef ENABLE_GTK2
-      set_pref(PREF_KEYRING_PANE, gtk_paned_get_position(GTK_PANED(pane)), NULL, TRUE);
+	   set_pref(PREF_KEYRING_PANE, gtk_paned_get_position(GTK_PANED(pane)), NULL, TRUE);
 #else
-      set_pref(PREF_KEYRING_PANE, GTK_PANED(pane)->handle_xpos, NULL, TRUE);
+	   set_pref(PREF_KEYRING_PANE, GTK_PANED(pane)->handle_xpos, NULL, TRUE);
 #endif
-      pane = NULL;
+	   pane = NULL;
    }
 
    return EXIT_SUCCESS;

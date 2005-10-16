@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.81 2005/08/29 06:50:08 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.82 2005/10/16 09:42:25 rousseau Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -37,6 +37,7 @@
 #include "print.h"
 #include "memo.h"
 #include "export.h"
+#include "stock_buttons.h"
 
 
 #define MEMO_MAX_COLUMN_LEN 80
@@ -1548,76 +1549,52 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    /* Add record modification buttons on right side */
 
    /* Create Cancel button */
-   cancel_record_button = gtk_button_new_with_label(_("Cancel"));
+   CREATE_BUTTON(cancel_record_button, _("Cancel"), CANCEL, _("Cancel the modifications"), GDK_Escape, 0, "ESC")
    gtk_signal_connect(GTK_OBJECT(cancel_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_cancel), NULL);
-   gtk_box_pack_start(GTK_BOX(hbox_temp), cancel_record_button, TRUE, TRUE, 0);
-   gtk_widget_add_accelerator(cancel_record_button, "clicked", accel_group,
-      GDK_Escape, 0, GTK_ACCEL_VISIBLE);
-   gtk_tooltips_set_tip(glob_tooltips, cancel_record_button,
-			_("Cancel the modifications   ESC"), NULL);
 
-   delete_record_button = gtk_button_new_with_label(_("Delete"));
+   /* Delete Button */
+   CREATE_BUTTON(delete_record_button, _("Delete"), DELETE, _("Delete the selected record"), GDK_d, GDK_CONTROL_MASK, "Ctrl+D")
    gtk_signal_connect(GTK_OBJECT(delete_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_delete_memo),
 		      GINT_TO_POINTER(DELETE_FLAG));
-   gtk_box_pack_start(GTK_BOX(hbox_temp), delete_record_button, TRUE, TRUE, 0);
-   gtk_widget_add_accelerator(delete_record_button, "clicked", accel_group,
-	 GDK_d, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-   gtk_tooltips_set_tip(glob_tooltips, delete_record_button, _("Delete the selected record   Ctrl+D"), NULL);
 
-   undelete_record_button = gtk_button_new_with_label(_("Undelete"));
+   /* Undelete Button */
+   CREATE_BUTTON(undelete_record_button, _("Undelete"), UNDELETE, _("Undelete the selected record"), 0, 0, "")
    gtk_signal_connect(GTK_OBJECT(undelete_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_undelete_memo),
 		      GINT_TO_POINTER(UNDELETE_FLAG));
-   gtk_box_pack_start(GTK_BOX(hbox_temp), undelete_record_button, TRUE, TRUE, 0);
 
-   copy_record_button = gtk_button_new_with_label(_("Copy"));
+   /* Create "Copy" button */
+   CREATE_BUTTON(copy_record_button, _("Copy"), COPY, _("Copy the selected record"), GDK_o, GDK_CONTROL_MASK, "Ctrl+O")
    gtk_signal_connect(GTK_OBJECT(copy_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record),
 		      GINT_TO_POINTER(COPY_FLAG));
-   gtk_box_pack_start(GTK_BOX(hbox_temp), copy_record_button, TRUE, TRUE, 0);
-   gtk_widget_add_accelerator(copy_record_button, "clicked", accel_group, GDK_o,
-      GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-   gtk_tooltips_set_tip(glob_tooltips, copy_record_button, _("Copy the record   Ctrl+O"), NULL);
 
-   new_record_button = gtk_button_new_with_label(_("New Record"));
+   /* Create "New" button */
+   CREATE_BUTTON(new_record_button, _("New Record"), NEW, _("Add a new record"), GDK_n, GDK_CONTROL_MASK, "Ctrl+N")
    gtk_signal_connect(GTK_OBJECT(new_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record),
 		      GINT_TO_POINTER(CLEAR_FLAG));
-   gtk_box_pack_start(GTK_BOX(hbox_temp), new_record_button, TRUE, TRUE, 0);
-   gtk_widget_add_accelerator(new_record_button, "clicked", accel_group, GDK_n,
-      GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-   gtk_tooltips_set_tip(glob_tooltips, new_record_button, _("Add a new record   Ctrl+N"), NULL);
 
-   add_record_button = gtk_button_new_with_label(_("Add Record"));
+   /* Create "Add Record" button */
+   CREATE_BUTTON(add_record_button, _("Add Record"), ADD, _("Add the new record"), GDK_Return, GDK_CONTROL_MASK, "Ctrl+Enter")
    gtk_signal_connect(GTK_OBJECT(add_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record),
 		      GINT_TO_POINTER(NEW_FLAG));
-   gtk_box_pack_start(GTK_BOX(hbox_temp), add_record_button, TRUE, TRUE, 0);
+#ifdef DISBLE_STOCK_BUTTONS
    gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(GTK_BIN(add_record_button)->child)),
 		       "label_high");
-#ifdef ENABLE_GTK2
-   gtk_widget_add_accelerator(add_record_button, "clicked", accel_group,
-      GDK_Return, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-   gtk_tooltips_set_tip(glob_tooltips, add_record_button, _("Add the new record   Ctrl+Enter"), NULL);
-#else
-   gtk_tooltips_set_tip(glob_tooltips, add_record_button, _("Add the new record"), NULL);
 #endif
 
-   apply_record_button = gtk_button_new_with_label(_("Apply Changes"));
+   /* Create "apply changes" button */
+   CREATE_BUTTON(apply_record_button, _("Apply Changes"), APPLY, _("Commit the modifications"), GDK_Return, GDK_CONTROL_MASK, "Ctrl+Enter")
    gtk_signal_connect(GTK_OBJECT(apply_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record),
 		      GINT_TO_POINTER(MODIFY_FLAG));
-   gtk_box_pack_start(GTK_BOX(hbox_temp), apply_record_button, TRUE, TRUE, 0);
+#ifdef DISBLE_STOCK_BUTTONS
    gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(GTK_BIN(apply_record_button)->child)),
 		       "label_high");
-#ifdef ENABLE_GTK2
-   gtk_widget_add_accelerator(apply_record_button, "clicked", accel_group,
-      GDK_Return, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-   gtk_tooltips_set_tip(glob_tooltips, apply_record_button, _("Commit the modifications   Ctrl+Enter"), NULL);
-#else
-   gtk_tooltips_set_tip(glob_tooltips, apply_record_button, _("Commit the modifications"), NULL);
 #endif
 
 
