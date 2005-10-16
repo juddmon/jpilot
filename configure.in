@@ -78,10 +78,7 @@ dnl ******************************
 dnl Check for pilot-link libs
 pilot_prefix=""
 AC_ARG_WITH(pilot_prefix,
- [  --with-pilot-prefix=    Prefix to top level of pilot-link files
-                            (e.g., = /usr/local if the pilot-link includes
-                             are in /usr/local/include
-                             and libs are in /usr/local/lib)])
+ AC_HELP_STRING([--with-pilot-prefix=PFX],[Prefix to top level of pilot-link files (e.g., = /usr/local if the pilot-link includes are in /usr/local/include and libs are in /usr/local/lib)]))
 
 if test "x$with_pilot_prefix" != "x"; then
    pilot_prefix=$with_pilot_prefix
@@ -150,8 +147,10 @@ dnl AC_CHECK_LIB(socket, main, PILOT_LIBS=$PILOT_LIBS" -lsocket", , )
 AC_CHECK_FUNC(gethostent, , AC_CHECK_LIB(nsl, gethostent))
 AC_CHECK_FUNC(setsockopt, , AC_CHECK_LIB(socket, setsockopt))
 
-AC_ARG_ENABLE(pl-test, [  --disable-pl-test       Do not try to compile a test pilot-link program],
-enable_pl_test=$enableval, enable_pl_test=yes)
+AC_ARG_ENABLE(pl-test,
+   AC_HELP_STRING([--disable-pl-test],[Do not try to compile a test pilot-link program]),
+   enable_pl_test=$enableval,
+   enable_pl_test=yes)
 
 if test "x$enable_pl_test" = "xyes"; then
 
@@ -334,8 +333,10 @@ dnl ******************************
 dnl * Enable/Disable features
 dnl ******************************
 
-AC_ARG_ENABLE(plugins, [  --disable-plugins       Do not compile plugin support],
-enable_plugins=$enableval, enable_plugins=yes)
+AC_ARG_ENABLE(plugins,
+   AC_HELP_STRING([--disable-plugins],[Do not compile plugin support]),
+   enable_plugins=$enableval,
+   enable_plugins=yes)
 
 plugin_support=no
 
@@ -369,7 +370,7 @@ else
 fi
 
 AC_ARG_ENABLE(private,
-   [  --disable-private       Do not use private records feature (password not needed to see private records)],
+   AC_HELP_STRING([--disable-private],[Do not use private records feature (password not needed to see private records)]),
    enable_private=$enableval,
    enable_private=yes;
    AC_DEFINE(ENABLE_PRIVATE, 1, [ Private record support ]))
@@ -379,7 +380,7 @@ if test $enable_private = no; then
 fi
 
 AC_ARG_ENABLE(datebk,
-   [  --disable-datebk        Disable Datebk support],
+   AC_HELP_STRING([--disable-datebk],[Disable Datebk support]),
    enable_datebk=$enableval,
    enable_datebk=yes;
    AC_DEFINE(ENABLE_DATEBK, 1, [ DateBk support ])
@@ -390,7 +391,7 @@ if test $enable_datebk = no; then
 fi
 
 AC_ARG_ENABLE(manana,
-   [  --disable-manana        Disable Mañana support],
+   AC_HELP_STRING([--disable-manana],[Disable Mañana support]),
    enable_manana=$enableval,
    enable_manana=yes;
    AC_DEFINE(ENABLE_MANANA, 1, [ Manana support ])
@@ -401,7 +402,7 @@ if test $enable_manana = no; then
 fi
 
 AC_ARG_ENABLE(prometheon,
-   [  --enable-prometheon     For use with Prometheon: http://www.prometheon.net],
+   AC_HELP_STRING([--enable-prometheon],[For use with Prometheon: http://www.prometheon.net]),
    enable_prometheon=$enableval;
    AC_DEFINE(ENABLE_PROMETHEON, 1, [ Prometheon support ])
    AC_DEFINE_UNQUOTED(PROGNAME, "copilot", [ program name ])
@@ -417,7 +418,7 @@ fi
 AC_SUBST(PROGNAME)
 
 AC_ARG_ENABLE(alarm-shell-danger,
-   [  --enable-alarm-shell-danger Allow alarm descriptions and notes to be used in alarm shell commands],
+   AC_HELP_STRING([--enable-alarm-shell-danger],[Allow alarm descriptions and notes to be used in alarm shell commands]),
    enable_alarm_shell_danger=$enableval;
    AC_DEFINE(ENABLE_ALARM_SHELL_DANGER, 1, [ Datebook description and note allowed  in shell commands ])
    ,
@@ -428,7 +429,7 @@ dnl *************************
 dnl * GTK 2
 dnl *************************
 AC_ARG_ENABLE(gtk2,
-   [  --enable-gtk2           Enable GTK-2 support],
+   AC_HELP_STRING([--enable-gtk2],[Enable GTK-2 support]),
    AC_MSG_RESULT(GTK2 support enabled by configure options),
    )
 
@@ -483,7 +484,7 @@ if test "x$make_keyring" != "xyes"; then
 fi
 
 AC_ARG_WITH(with_flock,
-[  --with-flock            Substitute flock instead of fnctl (for NFS)])
+   AC_HELP_STRING([--with-flock],[Substitute flock instead of fnctl (for NFS)]))
 if test "x$with_flock" != "x"; then
    AC_DEFINE(USE_FLOCK, 1, [ Using flock instead of fnctl ])
    AC_MSG_RESULT(Using flock instead of fnctl)
