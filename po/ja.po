@@ -8,12 +8,12 @@ msgstr ""
 "Project-Id-Version: jpilot 0.99.6pre7\n"
 "Report-Msgid-Bugs-To: jpilot-devel@jpilot.org\n"
 "POT-Creation-Date: 2005-10-07 22:31+0200\n"
-"PO-Revision-Date: 2005-02-23 22:31+0900\n"
+"PO-Revision-Date: 2005-10-17 22:16+0900\n"
 "Last-Translator: Kazutaka HARADA <kazutaka802@yahoo.co.jp>\n"
 "Language-Team: Japanese Palm-UNIX ML <palm-unix-j@list.daionet.gr.jp>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=euc-jp\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Transfer-Encoding: 8bit"
 
 #: address.c:288 address.c:552 alarms.c:352 dat.c:181 dat.c:655 dat.c:857
 #: dat.c:991 dat.c:1130 datebook.c:96 datebook.c:397 datebook.c:404
@@ -199,9 +199,8 @@ msgid "Phone"
 msgstr "ÅÅÏÃÈÖ¹æ"
 
 #: address_gui.c:2684
-#, fuzzy
 msgid "Quick Find: "
-msgstr "´Ê°×¸¡º÷"
+msgstr "¥¯¥¤¥Ã¥¯¸¡º÷: "
 
 #: address_gui.c:2700 category.c:421 category.c:877 category.c:917
 #: datebook_gui.c:1154 datebook_gui.c:1582 datebook_gui.c:4371
@@ -211,9 +210,8 @@ msgid "Cancel"
 msgstr "¥­¥ã¥ó¥»¥ë"
 
 #: address_gui.c:2700 datebook_gui.c:4371 memo_gui.c:1552 todo_gui.c:2169
-#, fuzzy
 msgid "Cancel the modifications"
-msgstr "ÊÑ¹¹¤ò¥­¥ã¥ó¥»¥ë   ESC"
+msgstr "ÊÑ¹¹¤ò¥­¥ã¥ó¥»¥ë"
 
 #: address_gui.c:2705 category.c:421 category.c:844 datebook_gui.c:4376
 #: memo_gui.c:1557 todo_gui.c:2174 Expense/expense.c:1646
@@ -223,18 +221,16 @@ msgstr "ºï½ü"
 
 #: address_gui.c:2705 datebook_gui.c:4376 memo_gui.c:1557 todo_gui.c:2174
 #: Expense/expense.c:1646 KeyRing/keyring.c:1612
-#, fuzzy
 msgid "Delete the selected record"
-msgstr "ÁªÂò¤·¤¿¥ì¥³¡¼¥É¤òºï½ü Ctrl+D"
+msgstr "ÁªÂò¤·¤¿¥ì¥³¡¼¥É¤òºï½ü"
 
 #: address_gui.c:2711 datebook_gui.c:4382 memo_gui.c:1563 todo_gui.c:2180
 msgid "Undelete"
 msgstr "ºï½ü¤òÌá¤¹"
 
 #: address_gui.c:2711 datebook_gui.c:4382 memo_gui.c:1563 todo_gui.c:2180
-#, fuzzy
 msgid "Undelete the selected record"
-msgstr "ÁªÂò¤·¤¿¥ì¥³¡¼¥É¤òºï½ü Ctrl+D"
+msgstr "ÁªÂò¤·¤¿¥ì¥³¡¼¥É¤Îºï½ü¤ò¼è¤ê¾Ã¤¹"
 
 #: address_gui.c:2717 datebook_gui.c:4388 memo_gui.c:1569 todo_gui.c:2186
 #: Expense/expense.c:1651 KeyRing/keyring.c:1617
@@ -243,9 +239,8 @@ msgstr "¥³¥Ô¡¼"
 
 #: address_gui.c:2717 datebook_gui.c:4388 memo_gui.c:1569 todo_gui.c:2186
 #: Expense/expense.c:1651 KeyRing/keyring.c:1617
-#, fuzzy
 msgid "Copy the selected record"
-msgstr "ÁªÂò¤·¤¿¥ì¥³¡¼¥É¤òºï½ü Ctrl+D"
+msgstr "ÁªÂò¤·¤¿¥ì¥³¡¼¥É¤ò¥³¥Ô¡¼"
 
 #: address_gui.c:2723 datebook_gui.c:4394 memo_gui.c:1575 todo_gui.c:2192
 #: Expense/expense.c:1656 KeyRing/keyring.c:1622
@@ -254,7 +249,6 @@ msgstr "¿·µ¬¥ì¥³¡¼¥É"
 
 #: address_gui.c:2723 datebook_gui.c:4394 memo_gui.c:1575 todo_gui.c:2192
 #: Expense/expense.c:1656 KeyRing/keyring.c:1622
-#, fuzzy
 msgid "Add a new record"
 msgstr "¿·µ¬¥ì¥³¡¼¥É¤ÎÄÉ²Ã"
 
@@ -1059,7 +1053,6 @@ msgstr ""
 "¤è¤¯Ê¬¤«¤é¤Ê¤¤»ş¤Ï¥æ¡¼¥¶¡¼¥Ş¥Ë¥å¥¢¥ë¤òÆÉ¤ó¤Ç¤¯¤À¤µ¤¤¡£"
 
 #: jpilot.c:738
-#, fuzzy
 msgid ""
 "This palm has a NULL user id.\n"
 "Every palm must have a unique user id in order to sync properly.\n"
@@ -1070,12 +1063,12 @@ msgid ""
 "Read the user manual if you are uncertain."
 msgstr ""
 "¤³¤Î Palm ¥Ç¥Ğ¥¤¥¹¤Ë¤Ï¥æ¡¼¥¶¡¼ ID ¤¬¤¢¤ê¤Ş¤»¤ó¡£\n"
-"Æ±´ü¤òÅ¬ÀÚ¤Ë¹Ô¤¦¤Ë¤Ï¡¢Á´¤Æ¤Î Palm ¥Ç¥Ğ¥¤¥¹¤Ï¸ÄÊÌ¤Î¥æ¡¼¥¶¡¼ ID ¤ò»ı¤Ã¤Æ¤¤¤ëÉ¬"
-"Í×¤¬¤¢¤ê¤Ş¤¹¡£.\n"
+"Æ±´ü¤òÅ¬ÀÚ¤Ë¹Ô¤¦¤Ë¤Ï¡¢Á´¤Æ¤Î Palm ¥Ç¥Ğ¥¤¥¹¤Ï¸ÄÊÌ¤Î¥æ¡¼¥¶¡¼ ID ¤ò\n"
+"»ı¤Ã¤Æ¤¤¤ëÉ¬Í×¤¬¤¢¤ê¤Ş¤¹¡£.\n"
 "¤â¤·¥Ï¡¼¥É¥ê¥»¥Ã¥È¤ò¤·¤¿¾ì¹ç¤Ï¡¢¥á¥Ë¥å¡¼¤«¤é ¥ê¥¹¥È¥¢¤ò¼Â¹Ô¤¹¤ë¤«¡¢\n"
 "pilot-xfer¤ò»È¤Ã¤Æ²¼¤µ¤¤¡£\n"
-"install-user ¤Ç¥æ¡¼¥¶¡¼Ì¾¤È¥æ¡¼¥¶¡¼ ID ¤òÄÉ²Ã¤¹¤ë¤Ë¤Ï¡¢install-user \"¥æ¡¼"
-"¥¶¡¼Ì¾\" 12345 ¤Î¤è¤¦¤Ë¼Â¹Ô¤·¤Æ²¼¤µ¤¤¡£\n"
+"install-user ¤Ç¥æ¡¼¥¶¡¼Ì¾¤È¥æ¡¼¥¶¡¼ ID ¤òÄÉ²Ã¤¹¤ë¤Ë¤Ï¡¢\n"
+"install-user \"¥æ¡¼¥¶¡¼Ì¾\" 12345 ¤Î¤è¤¦¤Ë¼Â¹Ô¤·¤Æ²¼¤µ¤¤¡£\n"
 "¤è¤¯Ê¬¤«¤é¤Ê¤¤»ş¤Ï¥æ¡¼¥¶¡¼¥Ş¥Ë¥å¥¢¥ë¤òÆÉ¤ó¤Ç¤¯¤À¤µ¤¤¡£"
 
 #: jpilot.c:745
@@ -1109,7 +1102,7 @@ msgstr "/¥Õ¥¡¥¤¥ë(_F)"
 
 #: jpilot.c:1383
 msgid "/File/tear"
-msgstr "/¥Õ¥¡¥¤¥ë(_F)/Ê¬Î¥"
+msgstr "/¥Õ¥¡¥¤¥ë(_F)/Ê¬Î¥(_T)"
 
 #: jpilot.c:1384
 msgid "/File/_Find"
@@ -1125,28 +1118,27 @@ msgstr "/¥Õ¥¡¥¤¥ë(_F)/¥¤¥ó¥¹¥È¡¼¥ë(_I)"
 
 #: jpilot.c:1387
 msgid "/File/Import"
-msgstr "/¥Õ¥¡¥¤¥ë(_F)/¥¤¥ó¥İ¡¼¥È"
+msgstr "/¥Õ¥¡¥¤¥ë(_F)/¥¤¥ó¥İ¡¼¥È(_N)"
 
 #: jpilot.c:1388
 msgid "/File/Export"
-msgstr "/¥Õ¥¡¥¤¥ë(_F)/¥¨¥¯¥¹¥İ¡¼¥È"
+msgstr "/¥Õ¥¡¥¤¥ë(_F)/¥¨¥¯¥¹¥İ¡¼¥È(_E)"
 
 #: jpilot.c:1389 jpilot.c:2825
 msgid "/File/Preferences"
-msgstr "/¥Õ¥¡¥¤¥ë(_F)/´Ä¶­ÀßÄê"
+msgstr "/¥Õ¥¡¥¤¥ë(_F)/´Ä¶­ÀßÄê(_O)"
 
 #: jpilot.c:1390
 msgid "/File/_Print"
 msgstr "/¥Õ¥¡¥¤¥ë(_F)/°õºş(_P)"
 
 #: jpilot.c:1392
-#, fuzzy
 msgid "/File/Install User"
-msgstr "/¥Õ¥¡¥¤¥ë(_F)/¥¤¥ó¥¹¥È¡¼¥ë(_I)"
+msgstr "/¥Õ¥¡¥¤¥ë(_F)/¥æ¡¼¥¶¡¼¤Î¥¤¥ó¥¹¥È¡¼¥ë(_U)"
 
 #: jpilot.c:1393
 msgid "/File/Restore Handheld"
-msgstr "/¥Õ¥¡¥¤¥ë(_F)/¥ê¥¹¥È¥¢"
+msgstr "/¥Õ¥¡¥¤¥ë(_F)/¥ê¥¹¥È¥¢(_R)"
 
 #: jpilot.c:1395
 msgid "/File/_Quit"
@@ -1158,15 +1150,15 @@ msgstr "/É½¼¨(_V)"
 
 #: jpilot.c:1397 jpilot.c:1398 jpilot.c:1399 jpilot.c:1653
 msgid "/View/Hide Private Records"
-msgstr "/É½¼¨(V)/¥×¥é¥¤¥Ù¡¼¥È¥ì¥³¡¼¥É¤òÈóÉ½¼¨"
+msgstr "/É½¼¨(_V)/¥×¥é¥¤¥Ù¡¼¥È¥ì¥³¡¼¥É¤òÈóÉ½¼¨(_H)"
 
 #: jpilot.c:1398
 msgid "/View/Show Private Records"
-msgstr "/É½¼¨(V)/¥×¥é¥¤¥Ù¡¼¥È¥ì¥³¡¼¥É¤òÉ½¼¨"
+msgstr "/É½¼¨(_V)/¥×¥é¥¤¥Ù¡¼¥È¥ì¥³¡¼¥É¤òÉ½¼¨(_S)"
 
 #: jpilot.c:1399
 msgid "/View/Mask Private Records"
-msgstr "/É½¼¨(V)/¥×¥é¥¤¥Ù¡¼¥È¥ì¥³¡¼¥É¤ò¥Ş¥¹¥¯"
+msgstr "/É½¼¨(_V)/¥×¥é¥¤¥Ù¡¼¥È¥ì¥³¡¼¥É¤ò¥Ş¥¹¥¯(_U)"
 
 #: jpilot.c:1400
 msgid "/View/sep1"
@@ -1174,19 +1166,19 @@ msgstr "/É½¼¨(_V)/sep1"
 
 #: jpilot.c:1401
 msgid "/View/Datebook"
-msgstr "/É½¼¨(_V)/Í½ÄêÉ½"
+msgstr "/É½¼¨(_V)/Í½ÄêÉ½(_S)"
 
 #: jpilot.c:1402
 msgid "/View/Addresses"
-msgstr "/É½¼¨(_V)/¥¢¥É¥ì¥¹Ä¢"
+msgstr "/É½¼¨(_V)/¥¢¥É¥ì¥¹Ä¢(_A)"
 
 #: jpilot.c:1403
 msgid "/View/Todos"
-msgstr "/É½¼¨(_V)/Todo¥ê¥¹¥È"
+msgstr "/É½¼¨(_V)/Todo¥ê¥¹¥È(_T)"
 
 #: jpilot.c:1404
 msgid "/View/Memos"
-msgstr "/É½¼¨(_V)/¥á¥âÄ¢"
+msgstr "/É½¼¨(_V)/¥á¥âÄ¢(_M)"
 
 #: jpilot.c:1405 jpilot.c:1539
 msgid "/_Plugins"
@@ -1194,43 +1186,43 @@ msgstr "/¥×¥é¥°¥¤¥ó(_P)"
 
 #: jpilot.c:1407
 msgid "/_Web"
-msgstr "¥¦¥§¥Ö(_W)"
+msgstr "/¥¦¥§¥Ö(_W)"
 
 #: jpilot.c:1408
 msgid "/Web/Netscape"
-msgstr "¥¦¥§¥Ö(_W)/Netscape"
+msgstr "/¥¦¥§¥Ö(_W)/Netscape(_N)"
 
 #: jpilot.c:1412
 msgid "/Web/Mozilla"
-msgstr "¥¦¥§¥Ö(_W)/Mozilla"
+msgstr "/¥¦¥§¥Ö(_W)/Mozilla(_M)"
 
 #: jpilot.c:1417
 msgid "/Web/Galeon"
-msgstr "¥¦¥§¥Ö(_W)/Galeon"
+msgstr "/¥¦¥§¥Ö(_W)/Galeon(_G)"
 
 #: jpilot.c:1422
 msgid "/Web/Opera"
-msgstr "¥¦¥§¥Ö(_W)/Opera"
+msgstr "/¥¦¥§¥Ö(_W)/Opera(_O)"
 
 #: jpilot.c:1426
 msgid "/Web/GnomeUrl"
-msgstr "¥¦¥§¥Ö(_W)/GnomeUrl"
+msgstr "/¥¦¥§¥Ö(_W)/GnomeUrl(_U)"
 
 #: jpilot.c:1428
 msgid "/Web/Lynx"
-msgstr "¥¦¥§¥Ö(_W)/Lynx"
+msgstr "/¥¦¥§¥Ö(_W)/Lynx(_X)"
 
 #: jpilot.c:1430
 msgid "/Web/Links"
-msgstr "¥¦¥§¥Ö(_W)/Links"
+msgstr "/¥¦¥§¥Ö(_W)/Links(_L)"
 
 #: jpilot.c:1432
 msgid "/Web/W3M"
-msgstr "¥¦¥§¥Ö(_W)/W3M"
+msgstr "/¥¦¥§¥Ö(_W)/W3M(_W)"
 
 #: jpilot.c:1434
 msgid "/Web/Konqueror"
-msgstr "¥¦¥§¥Ö(_W)/Konqueror"
+msgstr "/¥¦¥§¥Ö(_W)/Konqueror(_K)"
 
 #: jpilot.c:1437
 msgid "/_Help"
@@ -1923,7 +1915,7 @@ msgstr "´°Î»\n"
 
 #: sync.c:432
 msgid "Finished installing user information.\n"
-msgstr ""
+msgstr "¥æ¡¼¥¶¡¼¾ğÊó¤Î¥¤¥ó¥¹¥È¡¼¥ë¤¬´°Î»¤·¤Ş¤·¤¿¡£\n"
 
 #: sync.c:457 sync.c:574
 msgid "Check your serial port and settings\n"
@@ -2858,25 +2850,25 @@ msgid "Generate Password"
 msgstr "¥Ñ¥¹¥ï¡¼¥ÉÀ¸À®"
 
 #~ msgid "Cancel the modifications   ESC"
-#~ msgstr "ÊÑ¹¹¤ò¥­¥ã¥ó¥»¥ë   ESC"
+#~ msgstr "å¤‰æ›´ã‚’ã‚­ãƒ£ãƒ³ã‚»ãƒ«   ESC"
 
 #~ msgid "Delete the selected record   Ctrl+D"
-#~ msgstr "ÁªÂò¤·¤¿¥ì¥³¡¼¥É¤òºï½ü Ctrl+D"
+#~ msgstr "é¸æŠã—ãŸãƒ¬ã‚³ãƒ¼ãƒ‰ã‚’å‰Šé™¤ Ctrl+D"
 
 #~ msgid "Copy the record   Ctrl+O"
-#~ msgstr "¥ì¥³¡¼¥É¤Î¥³¥Ô¡¼ Ctrl+O"
+#~ msgstr "ãƒ¬ã‚³ãƒ¼ãƒ‰ã®ã‚³ãƒ”ãƒ¼ Ctrl+O"
 
 #~ msgid "Add a new record   Ctrl+N"
-#~ msgstr "¿·µ¬¥ì¥³¡¼¥É¤ÎÄÉ²Ã Ctrl+N"
+#~ msgstr "æ–°è¦ãƒ¬ã‚³ãƒ¼ãƒ‰ã®è¿½åŠ  Ctrl+N"
 
 #~ msgid "Add the new record   Ctrl+Enter"
-#~ msgstr "¿·µ¬¥ì¥³¡¼¥É¤ÎÄÉ²Ã   Ctrl+Enter"
+#~ msgstr "æ–°è¦ãƒ¬ã‚³ãƒ¼ãƒ‰ã®è¿½åŠ    Ctrl+Enter"
 
 #~ msgid "Commit the modifications   Ctrl+Enter"
-#~ msgstr "ÊÑ¹¹¤òÅ¬ÍÑ Ctrl+Enter"
+#~ msgstr "å¤‰æ›´ã‚’é©ç”¨ Ctrl+Enter"
 
 #~ msgid "Backup"
-#~ msgstr "¥Ğ¥Ã¥¯¥¢¥Ã¥×"
+#~ msgstr "ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—"
 
 #~ msgid "OK, I will do it"
-#~ msgstr "OK¡¢¼Â¹Ô¤·¤Ş¤¹¡£"
+#~ msgstr "OKã€å®Ÿè¡Œã—ã¾ã™ã€‚"
