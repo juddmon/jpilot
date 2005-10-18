@@ -1,14 +1,14 @@
 # Mensajes en español para jpilot-0.99.8-pre11.
-# Copyright (C) 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
+# Copyright (C) 2001-2005 Free Software Foundation, Inc.
 # Juan Diego <diego@linuxcolombia.com.co>, 2000.
-# Cristian Othón Martínez Vera <cfuga@itam.mx>, 2001, 2002, 2003, 2004, 2005.
+# Cristian Othón Martínez Vera <cfuga@itam.mx>, 2001-2005.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: jpilot 0.99.8-pre11\n"
 "Report-Msgid-Bugs-To: jpilot-devel@jpilot.org\n"
 "POT-Creation-Date: 2005-10-07 22:31+0200\n"
-"PO-Revision-Date: 2005-09-12 15:32-0500\n"
+"PO-Revision-Date: 2005-10-17 00:36-0500\n"
 "Last-Translator: Cristian Othón Martínez Vera <cfuga@itam.mx>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -210,9 +210,8 @@ msgid "Cancel"
 msgstr "Cancelar"
 
 #: address_gui.c:2700 datebook_gui.c:4371 memo_gui.c:1552 todo_gui.c:2169
-#, fuzzy
 msgid "Cancel the modifications"
-msgstr "Cancelar las modificaciones   ESC"
+msgstr "Cancelar las modificaciones"
 
 #: address_gui.c:2705 category.c:421 category.c:844 datebook_gui.c:4376
 #: memo_gui.c:1557 todo_gui.c:2174 Expense/expense.c:1646
@@ -222,18 +221,16 @@ msgstr "Borrar"
 
 #: address_gui.c:2705 datebook_gui.c:4376 memo_gui.c:1557 todo_gui.c:2174
 #: Expense/expense.c:1646 KeyRing/keyring.c:1612
-#, fuzzy
 msgid "Delete the selected record"
-msgstr "Borrar el registro seleccionado  Ctrl+D"
+msgstr "Borrar el registro seleccionado"
 
 #: address_gui.c:2711 datebook_gui.c:4382 memo_gui.c:1563 todo_gui.c:2180
 msgid "Undelete"
 msgstr "Recuperar"
 
 #: address_gui.c:2711 datebook_gui.c:4382 memo_gui.c:1563 todo_gui.c:2180
-#, fuzzy
 msgid "Undelete the selected record"
-msgstr "Borrar el registro seleccionado  Ctrl+D"
+msgstr "Recuperar el registro seleccionado"
 
 #: address_gui.c:2717 datebook_gui.c:4388 memo_gui.c:1569 todo_gui.c:2186
 #: Expense/expense.c:1651 KeyRing/keyring.c:1617
@@ -242,9 +239,9 @@ msgstr "Copiar"
 
 #: address_gui.c:2717 datebook_gui.c:4388 memo_gui.c:1569 todo_gui.c:2186
 #: Expense/expense.c:1651 KeyRing/keyring.c:1617
-#, fuzzy
 msgid "Copy the selected record"
-msgstr "Borrar el registro seleccionado  Ctrl+D"
+msgstr "Copiar el registro seleccionado"
+
 
 #: address_gui.c:2723 datebook_gui.c:4394 memo_gui.c:1575 todo_gui.c:2192
 #: Expense/expense.c:1656 KeyRing/keyring.c:1622
@@ -253,9 +250,8 @@ msgstr "Nuevo Registro"
 
 #: address_gui.c:2723 datebook_gui.c:4394 memo_gui.c:1575 todo_gui.c:2192
 #: Expense/expense.c:1656 KeyRing/keyring.c:1622
-#, fuzzy
 msgid "Add a new record"
-msgstr "Agregar el registro nuevo"
+msgstr "Agregar un registro nuevo"
 
 #: address_gui.c:2728 datebook_gui.c:4400 memo_gui.c:1581 todo_gui.c:2198
 #: Expense/expense.c:1661 KeyRing/keyring.c:1627
