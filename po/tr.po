@@ -1,5 +1,5 @@
-# translation of jpilot-0.99.8-pre11.po to Turkish
-# jpilot-0.99.8-pre11.po'nun Türkçe'ye çevirisi
+# translation of jpilot-0.99.8-pre12.po to Turkish
+# jpilot-0.99.8-pre12.po'nun Türkçe'ye çevirisi
 # Copyright (C) 2002, 2004, 2005 Free Software Foundation, Inc.
 # Eyüp Hakan Duran <hakan_duran@hotmail.com>, 2002, 2004, 2005.
 #
@@ -7,10 +7,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: jpilot-0.99.8-pre11\n"
+"Project-Id-Version: jpilot-0.99.8-pre12\n"
 "Report-Msgid-Bugs-To: jpilot-devel@jpilot.org\n"
 "POT-Creation-Date: 2005-10-07 22:31+0200\n"
-"PO-Revision-Date: 2005-09-13 21:01-0400\n"
+"PO-Revision-Date: 2005-10-17 21:55-0400\n"
 "Last-Translator: Eyüp Hakan Duran <hakan_duran@hotmail.com>\n"
 "Language-Team: Turkish <gnu-tr-u12a@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -213,9 +213,8 @@ msgid "Cancel"
 msgstr "Ýptal"
 
 #: address_gui.c:2700 datebook_gui.c:4371 memo_gui.c:1552 todo_gui.c:2169
-#, fuzzy
 msgid "Cancel the modifications"
-msgstr "Deðiþiklikleri iptalet   ESC"
+msgstr "Deðiþiklikleri iptal et"
 
 #: address_gui.c:2705 category.c:421 category.c:844 datebook_gui.c:4376
 #: memo_gui.c:1557 todo_gui.c:2174 Expense/expense.c:1646
@@ -225,18 +224,16 @@ msgstr "Sil"
 
 #: address_gui.c:2705 datebook_gui.c:4376 memo_gui.c:1557 todo_gui.c:2174
 #: Expense/expense.c:1646 KeyRing/keyring.c:1612
-#, fuzzy
 msgid "Delete the selected record"
-msgstr "Seçili kaydý sil   Ctrl+D"
+msgstr "Seçili kaydý sil"
 
 #: address_gui.c:2711 datebook_gui.c:4382 memo_gui.c:1563 todo_gui.c:2180
 msgid "Undelete"
 msgstr "Silmeyi geri al"
 
 #: address_gui.c:2711 datebook_gui.c:4382 memo_gui.c:1563 todo_gui.c:2180
-#, fuzzy
 msgid "Undelete the selected record"
-msgstr "Seçili kaydý sil   Ctrl+D"
+msgstr "Silinmiþ seçili kaydý kurtar"
 
 #: address_gui.c:2717 datebook_gui.c:4388 memo_gui.c:1569 todo_gui.c:2186
 #: Expense/expense.c:1651 KeyRing/keyring.c:1617
@@ -245,9 +242,8 @@ msgstr "Kopyala"
 
 #: address_gui.c:2717 datebook_gui.c:4388 memo_gui.c:1569 todo_gui.c:2186
 #: Expense/expense.c:1651 KeyRing/keyring.c:1617
-#, fuzzy
 msgid "Copy the selected record"
-msgstr "Seçili kaydý sil   Ctrl+D"
+msgstr "Seçili kaydý kopyala"
 
 #: address_gui.c:2723 datebook_gui.c:4394 memo_gui.c:1575 todo_gui.c:2192
 #: Expense/expense.c:1656 KeyRing/keyring.c:1622
@@ -256,9 +252,8 @@ msgstr "Yeni Kayýt"
 
 #: address_gui.c:2723 datebook_gui.c:4394 memo_gui.c:1575 todo_gui.c:2192
 #: Expense/expense.c:1656 KeyRing/keyring.c:1622
-#, fuzzy
 msgid "Add a new record"
-msgstr "Yeni kaydý ekle"
+msgstr "Yeni bir kayýt ekle"
 
 #: address_gui.c:2728 datebook_gui.c:4400 memo_gui.c:1581 todo_gui.c:2198
 #: Expense/expense.c:1661 KeyRing/keyring.c:1627
@@ -472,9 +467,7 @@ msgstr "Olmasý gereken:  "
 #: dat.c:1160
 #, c-format
 msgid "%s:%d Record %d, field %d: Invalid type.  Expected %d, found %d\n"
-msgstr ""
-"%1$s:%2$d Kayýt %3$d, alan %4$d: Geçersiz tür.  %5$d bekleniyordu, %6$d "
-"bulundu\n"
+msgstr "%1$s:%2$d Kayýt %3$d, alan %4$d: Geçersiz tür.  %5$d bekleniyordu, %6$d bulundu\n"
 
 #: dat.c:675 dat.c:693 dat.c:875 dat.c:888 dat.c:992 dat.c:1011 dat.c:1024
 #: dat.c:1148 dat.c:1161
@@ -672,9 +665,7 @@ msgid "You cannot have an appointment that repeats every %d %s(s)\n"
 msgstr "Her %d %s'de yinelenen randevunuz olamaz\n"
 
 #: datebook_gui.c:2124
-msgid ""
-"You can not have a weekly repeating appointment that doesn't repeat on any "
-"day of the week."
+msgid "You can not have a weekly repeating appointment that doesn't repeat on any day of the week."
 msgstr "Haftanýn herhangi bir gününde yinelenmeyen haftalýk randevunuz olamaz."
 
 #: datebook_gui.c:2277
@@ -951,9 +942,7 @@ msgstr "Kapat"
 
 #: jpilot-dump.c:64
 msgid " +B +M +A +T format like date +format (use -? for more info).\n"
-msgstr ""
-" +B +M +A +T biçemi, tarih +biçemi gibi (daha fazla bilgi için -? "
-"kullanýn).\n"
+msgstr " +B +M +A +T biçemi, tarih +biçemi gibi (daha fazla bilgi için -? kullanýn).\n"
 
 #: jpilot-dump.c:65
 msgid " -v displays version and exits.\n"
@@ -969,8 +958,7 @@ msgstr " -B randevuDefterini boþaltýr.\n"
 
 #: jpilot-dump.c:68
 msgid " -NYYYY/MM/DD dump apps on YYYY/MM/DD in dateBook.\n"
-msgstr ""
-" -NYYYY/MM/DD randevuDefterinde YYYY/MM/DD'deki randevularý boþaltýr.\n"
+msgstr " -NYYYY/MM/DD randevuDefterinde YYYY/MM/DD'deki randevularý boþaltýr.\n"
 
 #: jpilot-dump.c:69
 msgid " -N dump apps on today in dateBook.\n"
@@ -989,10 +977,8 @@ msgid " -T dump Todo list as CSV.\n"
 msgstr " -T Ýþ Listesini CSV gibi boþaltýr.\n"
 
 #: jpilot-sync.c:65
-msgid ""
-" J-Pilot preferences are read to get port, rate, number of backups, etc.\n"
-msgstr ""
-" J-Pilot tercihleri port, yedekleme sayýsý, vs.'yi almak için okunur.\n"
+msgid " J-Pilot preferences are read to get port, rate, number of backups, etc.\n"
+msgstr " J-Pilot tercihleri port, yedekleme sayýsý, vs.'yi almak için okunur.\n"
 
 #: jpilot-sync.c:66
 msgid " -v = version\n"
@@ -1012,16 +998,14 @@ msgstr " -P = eklentileri yükleme.\n"
 
 #: jpilot-sync.c:70
 msgid " -b = Do a sync and then a backup, otherwise just do a sync.\n"
-msgstr ""
-" -b = Eþzmanalyýn ve daha sonra yedekleyin, ya da yalnýzca eþzamanlayýn.\n"
+msgstr " -b = Eþzmanalyýn ve daha sonra yedekleyin, ya da yalnýzca eþzamanlayýn.\n"
 
 #: jpilot-sync.c:71
 msgid " -l = loop, otherwise sync once and exit.\n"
 msgstr " -l =  döngüle, aksi halde bir kez eþzamanla ve çýk.\n"
 
 #: jpilot-sync.c:72
-msgid ""
-" -p {port} = Use this port to sync with instead of getting preferences.\n"
+msgid " -p {port} = Use this port to sync with instead of getting preferences.\n"
 msgstr " -p {port} = Tercihleri almaktansa bu portu kullanarak eþzamanla.\n"
 
 #: jpilot.c:142
@@ -1074,10 +1058,8 @@ msgstr ""
 "Bu avuçiçi, NULL kullanýcý kimliðine sahip.\n"
 "Uygun þekilde eþzamanlanmak için her palm, kendine has bir kullanýcý\n"
 "kimliðine sahip olmalýdýr. Eðer donaným yeniden baþlatýldýysa, yeniden\n"
-"yüklemek için menüden yeniden yüklemeyi kullanýn ya da pilot-xfer'i "
-"kullanýn.\n"
-"Bir kullanýcý adý ve kimliði eklemek için install-user komut satýrý aracý "
-"kullanýn,\n"
+"yüklemek için menüden yeniden yüklemeyi kullanýn ya da pilot-xfer'i kullanýn.\n"
+"Bir kullanýcý adý ve kimliði eklemek için install-user komut satýrý aracý kullanýn,\n"
 "ya da menüden kullanýcý-yükle'yi kullanýn\n"
 "Emin deðilseniz kullanýcý klavuzunu okuyun."
 
@@ -1358,16 +1340,12 @@ msgstr "Bana bir daha söyleme!"
 
 #: jpilot.c:2821
 msgid ""
-"J-Pilot is using the GTK2 graphical toolkit. This version of the toolkit "
-"uses UTF-8 to encode characters.\n"
-"You should select a UTF-8 charset so you can see the non-ASCII characters "
-"(accents for example).\n"
+"J-Pilot is using the GTK2 graphical toolkit. This version of the toolkit uses UTF-8 to encode characters.\n"
+"You should select a UTF-8 charset so you can see the non-ASCII characters (accents for example).\n"
 "\n"
 msgstr ""
-"J-Pilot, GTK2 grafik araç kitini kullanýyor. Araç kitinin bu sürümü "
-"karakterleri kodlamada UTF-8 kullanýr.\n"
-"ASCII olmayan karakterleri (örneðin aksanlar) görebilmek için bir UTF-8 "
-"karakter kümesi seçmelisiniz.\n"
+"J-Pilot, GTK2 grafik araç kitini kullanýyor. Araç kitinin bu sürümü karakterleri kodlamada UTF-8 kullanýr.\n"
+"ASCII olmayan karakterleri (örneðin aksanlar) görebilmek için bir UTF-8 karakter kümesi seçmelisiniz.\n"
 "\n"
 
 #: jpilot.c:2824
@@ -1821,10 +1799,8 @@ msgid "To restore your handheld:"
 msgstr "Avuçiçini geri yüklemek için:"
 
 #: restore_gui.c:252
-msgid ""
-"1. Choose all the applications you wish to restore.  The default is all."
-msgstr ""
-"1. Geri yüklemek istediðiniz tüm uygulamalarý seçiniz.  Öntaným tümünü seçer."
+msgid "1. Choose all the applications you wish to restore.  The default is all."
+msgstr "1. Geri yüklemek istediðiniz tüm uygulamalarý seçiniz.  Öntaným tümünü seçer."
 
 #: restore_gui.c:255
 msgid "2. Enter the User Name and User ID."
@@ -1907,8 +1883,7 @@ msgstr "eþzamanlama pid %d tarafýndan kilitlendi\n"
 #: sync.c:244
 #, c-format
 msgid "%s: press the hotsync button on the cradle or \"kill %d\"\n"
-msgstr ""
-"%s: kaidedeki eþzamanlama (hotsync) düðmesine basýnýz ya da \"kill %d\"\n"
+msgstr "%s: kaidedeki eþzamanlama (hotsync) düðmesine basýnýz ya da \"kill %d\"\n"
 
 #: sync.c:297
 #, c-format
@@ -2277,8 +2252,7 @@ msgstr " -p eklentileri yükleme.\n"
 
 #: utils.c:80
 msgid " -a ignore missed alarms since the last time this program was run.\n"
-msgstr ""
-" -a bu programýn son çalýþtýrýlýþýndan beri kaçýrýlmýþ alarmlarý yoksay.\n"
+msgstr " -a bu programýn son çalýþtýrýlýþýndan beri kaçýrýlmýþ alarmlarý yoksay.\n"
 
 #: utils.c:81
 msgid " -A ignore all alarms)); past and future.\n"
@@ -2290,8 +2264,7 @@ msgstr " -i jpilotun açýlmasýyla birlikte kendini simgeleþtirmesini saðlar\n"
 
 #: utils.c:83
 msgid " The PILOTPORT, and PILOTRATE env variables are used to specify\n"
-msgstr ""
-"PILOTPORT ve PILOTRATE çevre deðiþkenleri, hangi porttan ve hangi hýzla\n"
+msgstr "PILOTPORT ve PILOTRATE çevre deðiþkenleri, hangi porttan ve hangi hýzla\n"
 
 #: utils.c:84
 msgid " which port to sync on, and at what speed.\n"
@@ -2856,15 +2829,3 @@ msgstr "parola: "
 #: KeyRing/keyring.c:1682
 msgid "Generate Password"
 msgstr "Parola Oluþtur"
-
-#~ msgid "Copy the record   Ctrl+O"
-#~ msgstr "Kaydý kopyala   Ctrl+O"
-
-#~ msgid "Add a new record   Ctrl+N"
-#~ msgstr "Yeni bir kayýt ekle   Ctrl+N"
-
-#~ msgid "Add the new record   Ctrl+Enter"
-#~ msgstr "Yeni kaydý ekle   Ctrl+Enter"
-
-#~ msgid "Commit the modifications   Ctrl+Enter"
-#~ msgstr "Deðiþiklikleri onayla   Ctrl+Enter"
