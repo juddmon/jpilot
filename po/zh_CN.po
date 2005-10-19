@@ -6,10 +6,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: jpilot 0.99.8-pre3\n"
+"Project-Id-Version: jpilot 0.99.8-pre12\n"
 "Report-Msgid-Bugs-To: jpilot-devel@jpilot.org\n"
 "POT-Creation-Date: 2005-10-07 22:31+0200\n"
-"PO-Revision-Date: 2004-11-23 20:28+0800\n"
+"PO-Revision-Date: 2005-10-18 13:58+0800\n"
 "Last-Translator: Funda Wang <fundawang@linux.net.cn>\n"
 "Language-Team: Chinese (simplified) <i18n-translation@lists.linux.net.cn>\n"
 "MIME-Version: 1.0\n"
@@ -200,9 +200,8 @@ msgid "Phone"
 msgstr "电话"
 
 #: address_gui.c:2684
-#, fuzzy
 msgid "Quick Find: "
-msgstr "快速查找"
+msgstr "快速查找："
 
 #: address_gui.c:2700 category.c:421 category.c:877 category.c:917
 #: datebook_gui.c:1154 datebook_gui.c:1582 datebook_gui.c:4371
@@ -212,9 +211,8 @@ msgid "Cancel"
 msgstr "取消"
 
 #: address_gui.c:2700 datebook_gui.c:4371 memo_gui.c:1552 todo_gui.c:2169
-#, fuzzy
 msgid "Cancel the modifications"
-msgstr "确认修改   Ctrl+Enter"
+msgstr "取消修改"
 
 #: address_gui.c:2705 category.c:421 category.c:844 datebook_gui.c:4376
 #: memo_gui.c:1557 todo_gui.c:2174 Expense/expense.c:1646
@@ -224,18 +222,16 @@ msgstr "删除"
 
 #: address_gui.c:2705 datebook_gui.c:4376 memo_gui.c:1557 todo_gui.c:2174
 #: Expense/expense.c:1646 KeyRing/keyring.c:1612
-#, fuzzy
 msgid "Delete the selected record"
-msgstr "删除选中的记录   Ctrl+D"
+msgstr "删除选中的记录"
 
 #: address_gui.c:2711 datebook_gui.c:4382 memo_gui.c:1563 todo_gui.c:2180
 msgid "Undelete"
 msgstr "取消删除"
 
 #: address_gui.c:2711 datebook_gui.c:4382 memo_gui.c:1563 todo_gui.c:2180
-#, fuzzy
 msgid "Undelete the selected record"
-msgstr "删除选中的记录   Ctrl+D"
+msgstr "取消选中记录的删除"
 
 #: address_gui.c:2717 datebook_gui.c:4388 memo_gui.c:1569 todo_gui.c:2186
 #: Expense/expense.c:1651 KeyRing/keyring.c:1617
@@ -244,9 +240,8 @@ msgstr "复制"
 
 #: address_gui.c:2717 datebook_gui.c:4388 memo_gui.c:1569 todo_gui.c:2186
 #: Expense/expense.c:1651 KeyRing/keyring.c:1617
-#, fuzzy
 msgid "Copy the selected record"
-msgstr "删除选中的记录   Ctrl+D"
+msgstr "复制选中的记录"
 
 #: address_gui.c:2723 datebook_gui.c:4394 memo_gui.c:1575 todo_gui.c:2192
 #: Expense/expense.c:1656 KeyRing/keyring.c:1622
@@ -255,9 +250,8 @@ msgstr "新建记录"
 
 #: address_gui.c:2723 datebook_gui.c:4394 memo_gui.c:1575 todo_gui.c:2192
 #: Expense/expense.c:1656 KeyRing/keyring.c:1622
-#, fuzzy
 msgid "Add a new record"
-msgstr "添加新记录   Ctrl+R"
+msgstr "添加新记录"
 
 #: address_gui.c:2728 datebook_gui.c:4400 memo_gui.c:1581 todo_gui.c:2198
 #: Expense/expense.c:1661 KeyRing/keyring.c:1627
@@ -266,9 +260,8 @@ msgstr "添加记录"
 
 #: address_gui.c:2728 datebook_gui.c:4400 memo_gui.c:1581 todo_gui.c:2198
 #: Expense/expense.c:1661 KeyRing/keyring.c:1627
-#, fuzzy
 msgid "Add the new record"
-msgstr "添加新记录   Ctrl+R"
+msgstr "添加新记录"
 
 #: address_gui.c:2738 datebook_gui.c:4410 memo_gui.c:1591 todo_gui.c:2208
 #: Expense/expense.c:1670 KeyRing/keyring.c:1636
@@ -277,9 +270,8 @@ msgstr "应用更改"
 
 #: address_gui.c:2738 datebook_gui.c:4410 memo_gui.c:1591 todo_gui.c:2208
 #: Expense/expense.c:1670 KeyRing/keyring.c:1636
-#, fuzzy
 msgid "Commit the modifications"
-msgstr "确认修改   Ctrl+Enter"
+msgstr "确认修改"
 
 #: address_gui.c:2755 datebook_gui.c:4461 memo_gui.c:1609 todo_gui.c:2271
 msgid "Private"
@@ -667,9 +659,7 @@ msgid "You cannot have an appointment that repeats every %d %s(s)\n"
 msgstr "您添加的约会不可以每 %d %s重复一次。\n"
 
 #: datebook_gui.c:2124
-msgid ""
-"You can not have a weekly repeating appointment that doesn't repeat on any "
-"day of the week."
+msgid "You can not have a weekly repeating appointment that doesn't repeat on any day of the week."
 msgstr "您添加了一个每周重复约会，但该约会未在一周的任何一天重复。"
 
 #: datebook_gui.c:2277
@@ -703,11 +693,11 @@ msgstr "DateBookDB 中有未知的 repeatType\n"
 #: datebook_gui.c:3192
 #, c-format
 msgid "%%a., %s"
-msgstr ""
+msgstr "%%a.，%s"
 
 #: datebook_gui.c:3197 monthview_gui.c:210 weekview_gui.c:204
 msgid " (TODAY)"
-msgstr ""
+msgstr " (今天)"
 
 #: datebook_gui.c:4184 datebook_gui.c:4628
 msgid "Week"
@@ -979,8 +969,7 @@ msgid " -T dump Todo list as CSV.\n"
 msgstr " -M 将待办工作列表转存为 CSV。\n"
 
 #: jpilot-sync.c:65
-msgid ""
-" J-Pilot preferences are read to get port, rate, number of backups, etc.\n"
+msgid " J-Pilot preferences are read to get port, rate, number of backups, etc.\n"
 msgstr " J-Pilot 首选项可读取端口、速率、备份数，等等。\n"
 
 #: jpilot-sync.c:66
@@ -1008,8 +997,7 @@ msgid " -l = loop, otherwise sync once and exit.\n"
 msgstr " -l = 循环，否则只同步一次并退出。\n"
 
 #: jpilot-sync.c:72
-msgid ""
-" -p {port} = Use this port to sync with instead of getting preferences.\n"
+msgid " -p {port} = Use this port to sync with instead of getting preferences.\n"
 msgstr " -p {端口} = 使用此端口同步，而不是从首选项获取端口。\n"
 
 #: jpilot.c:142
@@ -1049,7 +1037,6 @@ msgstr ""
 "如果您不确定的话，请阅读用户手册。"
 
 #: jpilot.c:738
-#, fuzzy
 msgid ""
 "This palm has a NULL user id.\n"
 "Every palm must have a unique user id in order to sync properly.\n"
@@ -1062,7 +1049,7 @@ msgstr ""
 "此 Palm 的用户 ID 为 NULL。\n"
 "每台 Palm 都必须有一个唯一的用户 ID 以便正确进行同步。\n"
 "如果进行了硬件重置，可以从菜单中选择恢复进行恢复，您也可以使用 pilot-xfer。\n"
-"要添加用户名和 ID，请使用 install-user，即 install-user \"用户名\" 12345。\n"
+"要添加用户名和 ID，请使用 install-user 命令行工具，或者从菜单中选择安装用户。\n"
 "如果您不确定的话，请阅读用户手册。"
 
 #: jpilot.c:745
@@ -1127,9 +1114,8 @@ msgid "/File/_Print"
 msgstr "/文件(F)/打印(_P)"
 
 #: jpilot.c:1392
-#, fuzzy
 msgid "/File/Install User"
-msgstr "/文件(F)/安装(_I)"
+msgstr "/文件(F)/安装用户"
 
 #: jpilot.c:1393
 msgid "/File/Restore Handheld"
@@ -1144,24 +1130,20 @@ msgid "/_View"
 msgstr "/查看(_V)"
 
 #: jpilot.c:1397 jpilot.c:1398 jpilot.c:1399 jpilot.c:1653
-#, fuzzy
 msgid "/View/Hide Private Records"
-msgstr "/查看(V)/稳藏、显示或屏蔽私人记录"
+msgstr "/查看(V)/隐藏私人记录"
 
 #: jpilot.c:1398
-#, fuzzy
 msgid "/View/Show Private Records"
-msgstr "/查看(V)/稳藏、显示或屏蔽私人记录"
+msgstr "/查看(V)/显示私人记录"
 
 #: jpilot.c:1399
-#, fuzzy
 msgid "/View/Mask Private Records"
-msgstr "/查看(V)/稳藏、显示或屏蔽私人记录"
+msgstr "/查看(V)/屏蔽私人记录"
 
 #: jpilot.c:1400
-#, fuzzy
 msgid "/View/sep1"
-msgstr "/文件(F)/sep1"
+msgstr "/查看(F)/sep1"
 
 #: jpilot.c:1401
 msgid "/View/Datebook"
@@ -1278,34 +1260,28 @@ msgid "Clear"
 msgstr "清除"
 
 #: jpilot.c:2579
-#, fuzzy
 msgid "Show private records   Ctrl-Z"
-msgstr "显示私人记录"
+msgstr "显示私人记录   Ctrl+Z"
 
 #: jpilot.c:2584
-#, fuzzy
 msgid "Show private records"
 msgstr "显示私人记录"
 
 #: jpilot.c:2589
-#, fuzzy
 msgid "Hide private records   Ctrl-Z"
-msgstr "隐藏私人记录"
+msgstr "隐藏私人记录   Ctrl-Z"
 
 #: jpilot.c:2594
-#, fuzzy
 msgid "Hide private records"
 msgstr "隐藏私人记录"
 
 #: jpilot.c:2599
-#, fuzzy
 msgid "Mask private records   Ctrl-Z"
-msgstr "掩盖私人记录"
+msgstr "屏蔽私人记录   Ctrl-Z"
 
 #: jpilot.c:2604
-#, fuzzy
 msgid "Mask private records"
-msgstr "掩盖私人记录"
+msgstr "屏蔽私人记录"
 
 #: jpilot.c:2614
 msgid "Sync your palm to the desktop   Ctrl-Y"
@@ -1341,12 +1317,11 @@ msgstr "备忘录"
 
 #: jpilot.c:2807
 msgid "Do it now"
-msgstr ""
+msgstr "立即执行"
 
 #: jpilot.c:2807
-#, fuzzy
 msgid "Remind me later"
-msgstr "提醒我"
+msgstr "稍后提醒我"
 
 #: jpilot.c:2807
 msgid "Don't tell me again!"
@@ -1354,10 +1329,8 @@ msgstr "别再通知我了"
 
 #: jpilot.c:2821
 msgid ""
-"J-Pilot is using the GTK2 graphical toolkit. This version of the toolkit "
-"uses UTF-8 to encode characters.\n"
-"You should select a UTF-8 charset so you can see the non-ASCII characters "
-"(accents for example).\n"
+"J-Pilot is using the GTK2 graphical toolkit. This version of the toolkit uses UTF-8 to encode characters.\n"
+"You should select a UTF-8 charset so you can see the non-ASCII characters (accents for example).\n"
 "\n"
 msgstr ""
 "J-Pilot 使用 GTK2 图形前端。此版本的图形前端使用 UTF-8 对字符编码。\n"
@@ -1381,7 +1354,6 @@ msgid "\"."
 msgstr "”。"
 
 #: jpilot.c:2830
-#, fuzzy
 msgid "Select a UTF-8 encoding"
 msgstr "选择 UTF-8 编码"
 
@@ -1534,27 +1506,27 @@ msgstr "无法与此版本的 J-Pilot 共同工作。\n"
 
 #: prefs.c:391
 msgid "%B %d, %Y"
-msgstr ""
+msgstr "%Y-%m-%d"
 
 #: prefs.c:392
 msgid "%d %B %Y"
-msgstr ""
+msgstr "%Y-%m-%d"
 
 #: prefs.c:393
 msgid "%d. %B %Y"
-msgstr ""
+msgstr "%Y-%m-%d"
 
 #: prefs.c:394
 msgid "%d %B, %Y"
-msgstr ""
+msgstr "%Y-%m-%d"
 
 #: prefs.c:395
 msgid "%Y. %B. %d"
-msgstr ""
+msgstr "%Y年%m月%d日"
 
 #: prefs.c:396
 msgid "%Y %B %d"
-msgstr ""
+msgstr "%Y年%m月%d日"
 
 #: prefs_gui.c:334
 msgid "Preferences"
@@ -1650,11 +1622,11 @@ msgstr "此版本没有启用 DateBk 支持"
 
 #: prefs_gui.c:560
 msgid "Annotate today in day, week, and month views"
-msgstr ""
+msgstr "在天、周和月视图中批注今天"
 
 #: prefs_gui.c:565
 msgid "Append years on anniversaries in day, week, and month views"
-msgstr ""
+msgstr "在天、周和月视图中追加年份纪念日"
 
 #: prefs_gui.c:577
 msgid "Mail Command"
@@ -1816,8 +1788,7 @@ msgid "To restore your handheld:"
 msgstr "要恢复您的手持设备："
 
 #: restore_gui.c:252
-msgid ""
-"1. Choose all the applications you wish to restore.  The default is all."
+msgid "1. Choose all the applications you wish to restore.  The default is all."
 msgstr "1. 选择所有您要恢复的应用程序。默认是全部。"
 
 #: restore_gui.c:255
@@ -1914,7 +1885,7 @@ msgstr "完成\n"
 
 #: sync.c:432
 msgid "Finished installing user information.\n"
-msgstr ""
+msgstr "安装用户信息完成。\n"
 
 #: sync.c:457 sync.c:574
 msgid "Check your serial port and settings\n"
@@ -2742,29 +2713,24 @@ msgid "Master Card"
 msgstr "万事达卡 (MasterCard)"
 
 #: Expense/expense.c:1687
-#, fuzzy
 msgid "Category:"
 msgstr "类别："
 
 #: Expense/expense.c:1700
-#, fuzzy
 msgid "Type:"
 msgstr "类型："
 
 #: Expense/expense.c:1713
-#, fuzzy
 msgid "Payment:"
-msgstr "付款："
+msgstr "支付："
 
 #: Expense/expense.c:1726
-#, fuzzy
 msgid "Currency:"
 msgstr "货币："
 
 #: Expense/expense.c:1739
-#, fuzzy
 msgid "Date:"
-msgstr "该月的第几天"
+msgstr "日期："
 
 #: Expense/expense.c:1756
 msgid "Month:"
@@ -2779,17 +2745,14 @@ msgid "Year:"
 msgstr "年："
 
 #: Expense/expense.c:1797
-#, fuzzy
 msgid "Amount:"
 msgstr "金额："
 
 #: Expense/expense.c:1811
-#, fuzzy
 msgid "Vendor:"
 msgstr "商户："
 
 #: Expense/expense.c:1825
-#, fuzzy
 msgid "City:"
 msgstr "城市："
 
@@ -2855,29 +2818,3 @@ msgstr "密码："
 #: KeyRing/keyring.c:1682
 msgid "Generate Password"
 msgstr "生成密码"
-
-#, fuzzy
-#~ msgid "Cancel the modifications   ESC"
-#~ msgstr "确认修改   Ctrl+Enter"
-
-#~ msgid "Delete the selected record   Ctrl+D"
-#~ msgstr "删除选中的记录   Ctrl+D"
-
-#~ msgid "Copy the record   Ctrl+O"
-#~ msgstr "复制记录   Ctrl+O"
-
-#~ msgid "Add a new record   Ctrl+N"
-#~ msgstr "添加新记录   Ctrl+N"
-
-#, fuzzy
-#~ msgid "Add the new record   Ctrl+Enter"
-#~ msgstr "添加新记录   Ctrl+R"
-
-#~ msgid "Commit the modifications   Ctrl+Enter"
-#~ msgstr "确认修改   Ctrl+Enter"
-
-#~ msgid "Backup"
-#~ msgstr "备份"
-
-#~ msgid "OK, I will do it"
-#~ msgstr "好，我会去办"
