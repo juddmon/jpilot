@@ -2849,26 +2849,3 @@ msgstr "�ѥ���ɡ�"
 msgid "Generate Password"
 msgstr "�ѥ��������"
 
-#~ msgid "Cancel the modifications   ESC"
-#~ msgstr "変更をキャンセル   ESC"
-
-#~ msgid "Delete the selected record   Ctrl+D"
-#~ msgstr "選択したレコードを削除 Ctrl+D"
-
-#~ msgid "Copy the record   Ctrl+O"
-#~ msgstr "レコードのコピー Ctrl+O"
-
-#~ msgid "Add a new record   Ctrl+N"
-#~ msgstr "新規レコードの追加 Ctrl+N"
-
-#~ msgid "Add the new record   Ctrl+Enter"
-#~ msgstr "新規レコードの追加   Ctrl+Enter"
-
-#~ msgid "Commit the modifications   Ctrl+Enter"
-#~ msgstr "変更を適用 Ctrl+Enter"
-
-#~ msgid "Backup"
-#~ msgstr "バックアップ"
-
-#~ msgid "OK, I will do it"
-#~ msgstr "OK、実行します。"
