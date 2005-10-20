@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.40 2005/10/16 09:42:25 rousseau Exp $ */
+/* $Id: keyring.c,v 1.41 2005/10/20 17:09:18 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -861,7 +861,9 @@ static void display_records()
 
       /* Since deleted and modified records are also returned and we don't
        * want to see those we skip over them. */
-      if ((br->rt == DELETED_PALM_REC) || (br->rt == MODIFIED_PALM_REC)) {
+      if ((br->rt == DELETED_PALM_REC) || 
+	  (br->rt == DELETED_PC_REC)   ||
+	  (br->rt == MODIFIED_PALM_REC) ) {
 	 continue;
       }
       if (show_category < 16) {
