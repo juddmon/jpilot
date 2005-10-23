@@ -1,4 +1,4 @@
-/* $Id: datebook.c,v 1.46 2005/09/24 19:26:35 judd Exp $ */
+/* $Id: datebook.c,v 1.47 2005/10/23 18:58:24 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook.c
@@ -42,13 +42,6 @@
 #include "prefs.h"
 #include "libplugin.h"
 #include "password.h"
-
-#ifndef FALSE
-#define FALSE 0
-#endif
-#ifndef TRUE
-#define TRUE 1
-#endif
 
 #define DATEBOOK_EOF 7
 
