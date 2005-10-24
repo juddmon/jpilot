@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.41 2005/10/20 17:09:18 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.42 2005/10/24 19:15:41 judd Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -1549,7 +1549,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    
    pane = gtk_hpaned_new();
    get_pref(PREF_KEYRING_PANE, &ivalue, NULL);
-   gtk_paned_set_position(GTK_PANED(pane), ivalue + 2);
+   gtk_paned_set_position(GTK_PANED(pane), ivalue + PANE_CREEP);
 
    gtk_box_pack_start(GTK_BOX(hbox), pane, TRUE, TRUE, 5);
 

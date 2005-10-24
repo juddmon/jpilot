@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.92 2005/10/24 18:56:53 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.93 2005/10/24 19:15:41 judd Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -2073,7 +2073,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    pane = gtk_hpaned_new();
    get_pref(PREF_TODO_PANE, &ivalue, &svalue);
-   gtk_paned_set_position(GTK_PANED(pane), ivalue + 2);
+   gtk_paned_set_position(GTK_PANED(pane), ivalue + PANE_CREEP);
 
    gtk_box_pack_start(GTK_BOX(hbox), pane, TRUE, TRUE, 5);
 

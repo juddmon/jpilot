@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.122 2005/10/24 15:27:48 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.123 2005/10/24 19:15:41 judd Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -791,7 +791,7 @@ void output_to_pane(const char *str)
    }
    gdk_window_get_size(window->window, &w, &h);
    new_y = h - ivalue;
-   gtk_paned_set_position(GTK_PANED(output_pane), new_y + 2);
+   gtk_paned_set_position(GTK_PANED(output_pane), new_y);
 }
 
 /* #define PIPE_DEBUG */
@@ -1716,13 +1716,13 @@ void cb_output(GtkWidget *widget, gpointer data)
 #endif
       gdk_window_get_size(window->window, &w, &h);
 #ifdef ENABLE_GTK2
-      output_height = (h - gtk_paned_get_position(GTK_PANED(output_pane))) + 2;
+      output_height = (h - gtk_paned_get_position(GTK_PANED(output_pane)));
 #else
-      output_height = (h - GTK_PANED(output_pane)->handle_ypos) + 2;
+      output_height = (h - GTK_PANED(output_pane)->handle_ypos);
 #endif
       set_pref(PREF_OUTPUT_HEIGHT, output_height, NULL, TRUE);
       if (flags==OUTPUT_MINIMIZE) {
-	 gtk_paned_set_position(GTK_PANED(output_pane), h + 2);
+	 gtk_paned_set_position(GTK_PANED(output_pane), h);
       }
       jp_logf(JP_LOG_DEBUG,"output height = %d\n", output_height);
    }
@@ -2778,7 +2778,7 @@ char * xpm_backup[] = {
 
    /* Set the pane size */
    gdk_window_get_size(window->window, &w, &h);
-   gtk_paned_set_position(GTK_PANED(output_pane), h + 2);
+   gtk_paned_set_position(GTK_PANED(output_pane), h);
 
    /* ToDo this is broken, it doesn't take into account the window
     * decorations.  I can't find a GDK call that does */

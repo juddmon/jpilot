@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.112 2005/10/24 19:00:10 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.113 2005/10/24 19:15:41 judd Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -3989,14 +3989,14 @@ void cb_todos_show(GtkWidget *widget, gpointer data)
    }
    if (GTK_TOGGLE_BUTTON(widget)->active) {
       get_pref(PREF_DATEBOOK_TODO_PANE, &ivalue, NULL);
-      gtk_paned_set_position(GTK_PANED(todo_pane), ivalue + 2);
+      gtk_paned_set_position(GTK_PANED(todo_pane), ivalue + PANE_CREEP);
       gtk_widget_show_all(GTK_WIDGET(todo_vbox));
    } else {
       gtk_widget_hide_all(GTK_WIDGET(todo_vbox));
       /* This shouldn't need to be done in gtk2 */
       gtk_widget_set_usize(todo_vbox, 1, 1);
       gdk_window_get_size(gtk_widget_get_toplevel(widget)->window, &w, &h);
-      gtk_paned_set_position(GTK_PANED(todo_pane), h+2);
+      gtk_paned_set_position(GTK_PANED(todo_pane), h + PANE_CREEP);
    }
 }
 
@@ -4113,10 +4113,10 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    pane = gtk_hpaned_new();
    todo_pane = gtk_vpaned_new();
    get_pref(PREF_DATEBOOK_PANE, &ivalue, NULL);
-   gtk_paned_set_position(GTK_PANED(pane), ivalue + 2);
+   gtk_paned_set_position(GTK_PANED(pane), ivalue + PANE_CREEP);
 
    get_pref(PREF_DATEBOOK_TODO_PANE, &ivalue, NULL);
-   gtk_paned_set_position(GTK_PANED(todo_pane), ivalue + 2);
+   gtk_paned_set_position(GTK_PANED(todo_pane), ivalue + PANE_CREEP);
 
    gtk_box_pack_start(GTK_BOX(hbox), pane, TRUE, TRUE, 5);
    hbox2 = gtk_hbox_new(FALSE, 0);
@@ -4548,7 +4548,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    note_pane = gtk_vpaned_new();
    get_pref(PREF_DATEBOOK_NOTE_PANE, &ivalue, NULL);
-   gtk_paned_set_position(GTK_PANED(note_pane), ivalue + 2);
+   gtk_paned_set_position(GTK_PANED(note_pane), ivalue + PANE_CREEP);
    gtk_box_pack_start(GTK_BOX(vbox2), note_pane, TRUE, TRUE, 5);
 
    /* Text 1 */

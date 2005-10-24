@@ -1,4 +1,4 @@
-/* $Id: expense.c,v 1.39 2005/10/16 09:42:25 rousseau Exp $ */
+/* $Id: expense.c,v 1.40 2005/10/24 19:15:41 judd Exp $ */
 
 /*******************************************************************************
  * expense.c
@@ -1568,7 +1568,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
 
    pane = gtk_hpaned_new();
    get_pref(PREF_EXPENSE_PANE, &ivalue, NULL);
-   gtk_paned_set_position(GTK_PANED(pane), ivalue + 2);
+   gtk_paned_set_position(GTK_PANED(pane), ivalue + PANE_CREEP);
 
    gtk_box_pack_start(GTK_BOX(hbox), pane, TRUE, TRUE, 5);
 
