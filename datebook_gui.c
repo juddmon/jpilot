@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.111 2005/10/24 15:27:48 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.112 2005/10/24 19:00:10 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -4401,7 +4401,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_signal_connect(GTK_OBJECT(add_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record),
 		      GINT_TO_POINTER(NEW_FLAG));
-#ifdef DISABLE_STOCK_BUTTONS
+#ifndef ENABLE_STOCK_BUTTONS
    gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(GTK_BIN(add_record_button)->child)),
 		       "label_high");
 #endif
@@ -4411,7 +4411,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_signal_connect(GTK_OBJECT(apply_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record),
 		      GINT_TO_POINTER(MODIFY_FLAG));
-#ifdef DISABLE_STOCK_BUTTONS
+#ifndef ENABLE_STOCK_BUTTONS
    gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(GTK_BIN(apply_record_button)->child)),
 		       "label_high");
 #endif
