@@ -1,4 +1,4 @@
-/* $Id: libplugin.h,v 1.19 2004/11/22 06:58:09 rikster5 Exp $ */
+/* $Id: libplugin.h,v 1.20 2005/10/24 15:27:48 rikster5 Exp $ */
 
 /*******************************************************************************
  * libplugin.h
@@ -147,7 +147,7 @@ int get_next_unique_pc_id(unsigned int *next_unique_id);
 #define DIALOG_SAID_3        456
 #define DIALOG_SAID_CANCEL   456
 
-#define JP_LOG_DEBUG  1    /*debugging info for programers, and bug reports */
+#define JP_LOG_DEBUG  1    /*debugging info for programmers, and bug reports */
 #define JP_LOG_INFO   2    /*info, and misc messages */
 #define JP_LOG_WARN   4    /*worse messages */
 #define JP_LOG_FATAL  8    /*even worse messages */
@@ -325,7 +325,7 @@ typedef struct {
 /*   INTTYPE or CHARTYPE, this is the type of value that the pref is when
  *   it is read from, or written to a file.
  *   i.e., For some of my menus I have file type of int and usertype
- *   of char.  I want to use char, except I don't store the char becuase
+ *   of char.  I want to use char, except I don't store the char because
  *   of translations, so I store 3 for the 3rd option.  It also allows
  *   predefined allowed values for strings instead of anything goes. */
 /* long ivalue; */

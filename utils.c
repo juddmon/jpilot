@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.93 2005/09/26 03:27:59 judd Exp $ */
+/* $Id: utils.c,v 1.94 2005/10/24 15:27:48 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -68,7 +68,7 @@ static int glob_cal_return_code;
 static int glob_cal_mon, glob_cal_day, glob_cal_year;
 
 /*
- * Returns usgae string that needs to be freed by the caller
+ * Returns usage string that needs to be freed by the caller
  */
 void fprint_usage_string(FILE *out)
 {
@@ -1939,7 +1939,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       return EXIT_FAILURE;
 
     case PALM_REC:
-      jp_logf(JP_LOG_DEBUG, "Deleteing Palm ID %d\n",unique_id);
+      jp_logf(JP_LOG_DEBUG, "Deleting Palm ID %d\n",unique_id);
       pc_in=jp_open_home_file(filename, "a");
       if (pc_in==NULL) {
 	 jp_logf(JP_LOG_WARN, _("Unable to open PC records file\n"));

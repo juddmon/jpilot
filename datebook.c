@@ -1,4 +1,4 @@
-/* $Id: datebook.c,v 1.47 2005/10/23 18:58:24 rikster5 Exp $ */
+/* $Id: datebook.c,v 1.48 2005/10/24 15:27:48 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook.c
@@ -151,7 +151,7 @@ int db3_hack_date(struct Appointment *appt, struct tm *today)
 	    if (!(appt->repeatForever)) {
 	       if (compareTimesToDay(today, &(appt->repeatEnd))==1) {
 		  /* end date is before start date, illegal appointment */
-		  /* make it legal, by only floating upto the end date */
+		  /* make it legal, by only floating up to the end date */
 		  memcpy(&(appt->begin), &(appt->repeatEnd), sizeof(struct tm));
 		  memcpy(&(appt->end), &(appt->repeatEnd), sizeof(struct tm));
 	       }
@@ -206,7 +206,7 @@ void db3_fill_struct(char *note, int type, struct db4_struct *db4)
       db4->link = DB3_LINK_YES;
    }
    /* bytes 11-14 I don't understand yet */
-   /* bytes 15-18 lower 6 bits make 24 bit numer (not sure of byte order) */
+   /* bytes 15-18 lower 6 bits make 24 bit number (not sure of byte order) */
    db4->custom_alarm_sound = ((note[14] & 0x3F) << 18) +
      ((note[15] & 0x3F) << 12) +
      ((note[16] & 0x3F) << 6) +

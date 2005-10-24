@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.110 2005/10/16 09:42:25 rousseau Exp $ */
+/* $Id: datebook_gui.c,v 1.111 2005/10/24 15:27:48 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -1377,7 +1377,7 @@ int datebook_print(int type)
       }
       break;
     case MONTHLY:
-      jp_logf(JP_LOG_DEBUG, "datebook_print monthy\n");
+      jp_logf(JP_LOG_DEBUG, "datebook_print monthly\n");
       get_pref(PREF_PAPER_SIZE, &paper_size, NULL);
       if (paper_size==1) {
          print_months_appts(&date, PAPER_A4);
@@ -1634,12 +1634,12 @@ long get_dom_type(int month, int dom, int year, int dow)
 
    r=((int)((dom-1)/7))*7 + dow;
 
-   /* If its the 5th occurence of this dow in the month then it is always */
+   /* If its the 5th occurrence of this dow in the month then it is always */
    /*going to be the last occurrence of that dow in the month. */
    /*Sometimes this will occur in the 4th week, sometimes in the 5th. */
-   /* If its the 4th occurence of this dow in the month and there is a 5th */
-   /*then it always the 4th occurence. */
-   /* If its the 4th occurence of this dow in the month and there is not a */
+   /* If its the 4th occurrence of this dow in the month and there is a 5th */
+   /*then it always the 4th occurrence. */
+   /* If its the 4th occurrence of this dow in the month and there is not a */
    /*5th then we need to ask if this appointment repeats on the last dow of */
    /*the month, or the 4th dow of every month. */
    /* This should be perfectly clear now, right? */
@@ -4705,7 +4705,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
       }
       strncpy(days2, _(days[j]), 10);
       days2[10]='\0';
-      /* If no translation occured then use the first letter only */
+      /* If no translation occurred then use the first letter only */
       if (!strcmp(days2, days[j])) {
 	 days2[0]=days[j][0];
 	 days2[1]='\0';

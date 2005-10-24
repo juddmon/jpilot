@@ -1,4 +1,4 @@
-/* $Id: print.c,v 1.30 2005/09/25 03:30:03 judd Exp $ */
+/* $Id: print.c,v 1.31 2005/10/24 15:27:48 rikster5 Exp $ */
 
 /*******************************************************************************
  * print.c
@@ -1020,7 +1020,7 @@ int print_addresses(AddressList *address_list)
    int show1, show2, show3;
    int j, i, i2;
    int len;
-   /*This is because the palm doesn\'t show the address entries in order */
+   /* This is because the palm doesn't show the address entries in order */
    int order[22]={0,1,13,2,3,4,5,6,7,8,9,10,11,12,14,15,16,17,18,19,20,21
    };
    char str[100];

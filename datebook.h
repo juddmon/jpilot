@@ -1,4 +1,4 @@
-/* $Id: datebook.h,v 1.20 2004/11/22 06:58:09 rikster5 Exp $ */
+/* $Id: datebook.h,v 1.21 2005/10/24 15:27:48 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook.h
@@ -95,7 +95,7 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
 			   int modified, int deleted, int privates,
 			   int *total_records);
 
-/* This funtion removes appointments from the list that obviously will not
+/* This function removes appointments from the list that obviously will not
  * occur in this month.  Skip privates will ignore private records.
  */
 int weed_datebook_list(AppointmentList **al, int mon, int year,

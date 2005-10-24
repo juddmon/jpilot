@@ -1,4 +1,4 @@
-/* $Id: japanese.c,v 1.9 2004/11/29 06:24:46 rikster5 Exp $ */
+/* $Id: japanese.c,v 1.10 2005/10/24 15:27:48 rikster5 Exp $ */
 
 /*******************************************************************************
  * japanese.c
@@ -108,7 +108,7 @@ char *Sjis2EucCpy(char *dest, char *src, int max_len)
 
 /*
    convert strings from Sjis to EUC.
-   max_len includes null termiantion.
+   max_len includes null termination.
    size of buf must be more than max_len.
 
 */
@@ -122,7 +122,7 @@ void Sjis2Euc(char *buf, int max_len)
                             /* assign buffer for destination. */
 		if (Sjis2EucCpy(dst, buf, max_len) != NULL) {
 			multibyte_safe_strncpy(buf, dst, max_len);
-			buf[max_len-1] = '\0';  /* i am a paranoire B-) */
+			buf[max_len-1] = '\0';  /* i am a paranoid B-) */
 		}
 		free(dst);
 	}
@@ -130,7 +130,7 @@ void Sjis2Euc(char *buf, int max_len)
 
 /*
    convert strings from Sjis to EUC with buffer extension.
-   max_len includes null termiantion.
+   max_len includes null termination.
    size of buf must be more than max_len.
 
 */
@@ -148,7 +148,7 @@ void Sjis2Euc_x(char *buf, int max_len)
 	    buf = strdup(dst);
 	} else {
 	    multibyte_safe_strncpy(buf, dst, max_len);
-	    buf[max_len-1] = '\0';  /* i am a paranoire B-) */
+	    buf[max_len-1] = '\0';  /* i am a paranoid B-) */
 	}
     }
     free(dst);
@@ -171,7 +171,7 @@ static unsigned int EucToSjis(unsigned char hi, unsigned char lo)
 
 /*
    Convert string from euc to sjis with coping to another buffer.
-   Theoritically, strlen(EUC) >= strlen(SJIS),
+   Theoretically, strlen(EUC) >= strlen(SJIS),
     then it is ok that dest == src.
  */
 char *Euc2SjisCpy(char *dest, char *src, int max_len)
@@ -224,7 +224,7 @@ void Euc2Sjis(char *buf, int max_len)
 
 /*
    convert strings from Sjis to EUC.
-   max_len includes null termiantion.
+   max_len includes null termination.
    size of buf must be more than max_len.
 
 */
@@ -237,7 +237,7 @@ void jp_Sjis2Euc(char *buf, int max_len)
 	if (max_len > 0xFFFF) max_len = 0xFFFF;
 	if (Sjis2EucCpy(dst, buf, max_len) != NULL) {
 		multibyte_safe_strncpy(buf, dst, max_len);
-		buf[max_len-1] = '\0';  /* i am a paranoire B-) */
+		buf[max_len-1] = '\0';  /* i am a paranoid B-) */
 	}
 }
 

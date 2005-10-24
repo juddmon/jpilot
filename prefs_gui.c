@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.46 2005/06/24 14:03:13 rousseau Exp $ */
+/* $Id: prefs_gui.c,v 1.47 2005/10/24 15:27:48 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -560,7 +560,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
     add_checkbutton(_("Annotate today in day, week, and month views"),
  		   PREF_DATEBOOK_HI_TODAY, vbox_datebook, cb_checkbox_set_pref);
  
-    /* Show number of years on aniversaries in month and week view */
+    /* Show number of years on anniversaries in month and week view */
     add_checkbutton(
  	_("Append years on anniversaries in day, week, and month views"),
  	PREF_DATEBOOK_ANNI_YEARS, vbox_datebook,

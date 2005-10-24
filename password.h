@@ -1,4 +1,4 @@
-/* $Id: password.h,v 1.7 2004/11/22 00:52:42 rikster5 Exp $ */
+/* $Id: password.h,v 1.8 2005/10/24 15:27:48 rikster5 Exp $ */
 
 /*******************************************************************************
  * password.h
@@ -35,7 +35,7 @@
  * hide passed 0 will unset the hide flag
  * hide passed -1 will return the current hide flag
  * hide flag is always returned
- * The caller will have to ensure a password wsa entered before calling here
+ * The caller will have to ensure a password was entered before calling here
  */
 int show_privates(int hide);
 

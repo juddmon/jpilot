@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.121 2005/09/25 03:30:03 judd Exp $ */
+/* $Id: jpilot.c,v 1.122 2005/10/24 15:27:48 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -101,7 +101,7 @@ GtkTooltips *glob_tooltips;
 #ifdef ENABLE_GTK2
 /* GTK+ clipboard (Ctrl-V/Ctrl-C) */
 gchar *glob_gtk_clipboard_text = NULL;
-/* X11 clipboard (middle mouse clic) */
+/* X11 clipboard (middle mouse click) */
 gchar *glob_x11_clipboard_text = NULL;
 #endif
 gint glob_date_timer_tag;
@@ -818,7 +818,7 @@ static void cb_read_pipe_from_child(gpointer data,
 
    /* This is so we can always look at the previous char in buf */
    buf = &buf_space[1];
-   buf[-1]='A'; /* that looks wierd */
+   buf[-1]='A'; /* that looks weird */
 
    done=0;
    while (!done) {

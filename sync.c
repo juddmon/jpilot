@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.59 2005/09/24 19:26:35 judd Exp $ */
+/* $Id: sync.c,v 1.60 2005/10/24 15:27:48 rikster5 Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -2789,7 +2789,7 @@ int pack_todo_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, in
 
    r = pack_ToDoAppInfo(&ai, ai_raw, len);
    if (r <= 0) {
-      jp_logf(JP_LOG_DEBUG, "pack_ToDooAppInfo failed %s %d\n", __FILE__, __LINE__);
+      jp_logf(JP_LOG_DEBUG, "pack_ToDoAppInfo failed %s %d\n", __FILE__, __LINE__);
       return EXIT_FAILURE;
    }
 
@@ -2981,7 +2981,7 @@ int sync_categories(char *DB_name, int sd,
 	       remote_cai.renamed[Ri]=0;
 	       remote_cai.name[Ri][0]='\0';
 	       /* This category was deleted.
-		Move the records to unfiled */
+		Move the records to Unfiled */
 	       jp_logf(JP_LOG_DEBUG, "Moving category %d to unfiled...", Ri);
 	       r = dlp_MoveCategory(sd, db, Ri, 0);
 	       jp_logf(JP_LOG_DEBUG, "dlp_MoveCategory returned %d\n", r);

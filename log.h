@@ -1,4 +1,4 @@
-/* $Id: log.h,v 1.11 2004/11/22 00:52:42 rikster5 Exp $ */
+/* $Id: log.h,v 1.12 2005/10/24 15:27:48 rikster5 Exp $ */
 
 /*******************************************************************************
  * log.h
@@ -25,7 +25,7 @@
 
 #include <stdarg.h>
 
-#define JP_LOG_DEBUG  1    /*debugging info for programers, and bug reports */
+#define JP_LOG_DEBUG  1    /*debugging info for programmers, and bug reports */
 #define JP_LOG_INFO   2    /*info, and misc messages */
 #define JP_LOG_WARN   4    /*worse messages */
 #define JP_LOG_FATAL  8    /*even worse messages */

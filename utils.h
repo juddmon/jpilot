@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.50 2005/06/16 03:52:01 judd Exp $ */
+/* $Id: utils.h,v 1.51 2005/10/24 15:27:48 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -216,7 +216,7 @@ struct sorted_cats
 };
 
 /*
- * Returns usgae string that needs to be freed by the caller
+ * Returns usage string that needs to be freed by the caller
  */
 void fprint_usage_string(FILE *out);
 
@@ -386,7 +386,7 @@ void datebook_gui_setdate(int year, int month, int day);
 int str_to_csv_str(char *dest, char *src);
 
 /*
- * Copy src string into dest while escaping carraige returns,
+ * Copy src string into dest while escaping carriage returns,
  * backslashes, commas and semicolons.  Also do line wrapping.
  * dest could be as long as strlen(src) * 2 + strlen(src) / 30.
  * Return value is the number of chars written to dest.
@@ -514,7 +514,7 @@ int pdb_file_write_app_block(char *DB_name, void *bufp, int size_in);
 #endif
 
 /*
- * This copies the datebase (pdb, or prc) and writes the DBInfo privided
+ * This copies the database (pdb, or prc) and writes the DBInfo privided
  * since there is no other way to set it in a file.
  */
 int pdb_file_write_dbinfo(char *DB_name, struct DBInfo *Pinfo_in);

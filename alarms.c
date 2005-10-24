@@ -1,4 +1,4 @@
-/* $Id: alarms.c,v 1.27 2004/12/07 06:51:08 rikster5 Exp $ */
+/* $Id: alarms.c,v 1.28 2005/10/24 15:27:48 rikster5 Exp $ */
 
 /*******************************************************************************
  * alarms.c
@@ -724,7 +724,7 @@ gint cb_timer_alarms(gpointer data)
 
 /*
  * This routine takes time (t) and either advances t to the next
- * occurence of a repeating appointment, or the previous occurence
+ * occurrence of a repeating appointment, or the previous occurrence
  *
  * a is the appointment passed in
  * t is an in/out param.
@@ -940,7 +940,7 @@ static int find_prev_next(struct Appointment *appt,
       Pnow = localtime(&t_future);
       memcpy(tm_next, Pnow, sizeof(struct tm));
       forward=backward=0;
-      /* since the code above disregarged DST in the above calcs,
+      /* since the code above disregarded DST in the above calcs,
        * we have to try to correct for it here */
       if (tm_prev->tm_hour<appt->begin.tm_hour) {
 	 t_past+=3600; /* 1 hour for dst */
