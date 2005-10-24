@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.91 2005/10/16 09:42:25 rousseau Exp $ */
+/* $Id: todo_gui.c,v 1.92 2005/10/24 18:56:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -2199,7 +2199,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_signal_connect(GTK_OBJECT(add_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record),
 		      GINT_TO_POINTER(NEW_FLAG));
-#ifdef DISABLE_STOCK_BUTTONS
+#ifndef ENABLE_STOCK_BUTTONS
    gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(GTK_BIN(add_record_button)->child)),
 		       "label_high");
 #endif
@@ -2209,7 +2209,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_signal_connect(GTK_OBJECT(apply_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record),
 		      GINT_TO_POINTER(MODIFY_FLAG));
-#ifdef DISABLE_STOCK_BUTTONS
+#ifndef ENABLE_STOCK_BUTTONS
    gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(GTK_BIN(apply_record_button)->child)),
 		       "label_high");
 #endif
