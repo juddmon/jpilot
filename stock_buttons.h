@@ -1,4 +1,4 @@
-/* $Id: stock_buttons.h,v 1.1 2005/10/16 09:42:25 rousseau Exp $ */
+/* $Id: stock_buttons.h,v 1.2 2005/10/24 00:24:19 judd Exp $ */
 
 /*******************************************************************************
  * stock_buttons.h
@@ -24,7 +24,7 @@
 
 extern GtkTooltips *glob_tooltips;
 
-#ifdef DISABLE_STOCK_BUTTONS
+#ifndef ENABLE_STOCK_BUTTONS
 
 /* old behavior */
 #include "gdk/gdkkeysyms.h"
