@@ -1,4 +1,4 @@
-/* $Id: expense.c,v 1.40 2005/10/24 19:15:41 judd Exp $ */
+/* $Id: expense.c,v 1.41 2005/10/25 06:47:30 rikster5 Exp $ */
 
 /*******************************************************************************
  * expense.c
@@ -2055,41 +2055,25 @@ int plugin_search(const char *search_string, int case_sense, struct search_resul
        * unpack_Expense is already written in pilot-link, but normally
        * an unpack must be written for each type of application */
       if (unpack_Expense(&(mexp.ex), br->buf, br->size)!=0) {
-         if (jp_strstr(mexp.ex.amount, search_string, case_sense)) {
+         line = NULL;
+
+         if (jp_strstr(mexp.ex.amount, search_string, case_sense))
+            line = mexp.ex.amount;
+
+         if (jp_strstr(mexp.ex.vendor, search_string, case_sense))
+            line = mexp.ex.vendor;
+
+         if (jp_strstr(mexp.ex.city, search_string, case_sense))
+            line = mexp.ex.city;
+
+         if (jp_strstr(mexp.ex.attendees, search_string, case_sense))
+            line = mexp.ex.attendees;
+
+         if (jp_strstr(mexp.ex.note, search_string, case_sense))
+            line = mexp.ex.note;
+
+         if (line) {
             /* Add it to our result list */
-            line = strdup(mexp.ex.amount);
-            jp_logf(JP_LOG_DEBUG, "Expense: calling add_search_result\n");
-            add_search_result(line, br->unique_id, sr);
-            jp_logf(JP_LOG_DEBUG, "Expense: back from add_search_result\n");
-            count++;
-         }
-         if (jp_strstr(mexp.ex.vendor, search_string, case_sense)) {
-            /* Add it to our result list */
-            line = strdup(mexp.ex.vendor);
-            jp_logf(JP_LOG_DEBUG, "Expense: calling add_search_result\n");
-            add_search_result(line, br->unique_id, sr);
-            jp_logf(JP_LOG_DEBUG, "Expense: back from add_search_result\n");
-            count++;
-         }
-         if (jp_strstr(mexp.ex.city, search_string, case_sense)) {
-            /* Add it to our result list */
-            line = strdup(mexp.ex.city);
-            jp_logf(JP_LOG_DEBUG, "Expense: calling add_search_result\n");
-            add_search_result(line, br->unique_id, sr);
-            jp_logf(JP_LOG_DEBUG, "Expense: back from add_search_result\n");
-            count++;
-         }
-         if (jp_strstr(mexp.ex.attendees, search_string, case_sense)) {
-            /* Add it to our result list */
-            line = strdup(mexp.ex.attendees);
-            jp_logf(JP_LOG_DEBUG, "Expense: calling add_search_result\n");
-            add_search_result(line, br->unique_id, sr);
-            jp_logf(JP_LOG_DEBUG, "Expense: back from add_search_result\n");
-            count++;
-         }
-         if (jp_strstr(mexp.ex.note, search_string, case_sense)) {
-            /* Add it to our result list */
-            line = strdup(mexp.ex.note);
             jp_logf(JP_LOG_DEBUG, "Expense: calling add_search_result\n");
             add_search_result(line, br->unique_id, sr);
             jp_logf(JP_LOG_DEBUG, "Expense: back from add_search_result\n");
