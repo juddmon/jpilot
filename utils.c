@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.94 2005/10/24 15:27:48 rikster5 Exp $ */
+/* $Id: utils.c,v 1.95 2005/10/25 02:15:28 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -76,10 +76,10 @@ void fprint_usage_string(FILE *out)
    fprintf(out, "%s", _(" -v displays version and compile options and exits.\n"));
    fprintf(out, "%s", _(" -h displays help and exits.\n"));
    fprintf(out, "%s", _(" -d displays debug info to stdout.\n"));
-   fprintf(out, "%s", _(" -p do not load plugins.\n"));
-   fprintf(out, "%s", _(" -a ignore missed alarms since the last time this program was run.\n"));
-   fprintf(out, "%s", _(" -A ignore all alarms)); past and future.\n"));
-   fprintf(out, "%s", _(" -i makes jpilot iconify itself upon launch\n"));
+   fprintf(out, "%s", _(" -p skips loading plugins.\n"));
+   fprintf(out, "%s", _(" -a ignores missed alarms since the last time program was run.\n"));
+   fprintf(out, "%s", _(" -A ignores all alarms past and future.\n"));
+   fprintf(out, "%s", _(" -i makes program iconify itself upon launch.\n"));
    fprintf(out, "%s", _(" The PILOTPORT, and PILOTRATE env variables are used to specify\n"));
    fprintf(out, "%s", _(" which port to sync on, and at what speed.\n"));
    fprintf(out, "%s", _(" If PILOTPORT is not set then it defaults to /dev/pilot.\n"));
