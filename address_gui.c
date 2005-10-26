@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.106 2005/10/24 18:56:53 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.107 2005/10/26 01:33:10 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -1587,32 +1587,26 @@ void cb_address_quickfind(GtkWidget *widget,
 			  gpointer   data)
 {
    const char *entry_text;
-   int i, r, found, found_at, line_count;
    char *clist_text;
+   int i, r;
 
-   found_at = 0;
+   jp_logf(JP_LOG_DEBUG, "cb_address_quickfind\n");
+
    entry_text = gtk_entry_get_text(GTK_ENTRY(widget));
    if (!strlen(entry_text)) {
       return;
    }
-   for (found = i = 0; i<GTK_CLIST(clist)->rows; i++) {
+
+   for (i = 0; i<GTK_CLIST(clist)->rows; i++) {
       r = gtk_clist_get_text(GTK_CLIST(clist), i, ADDRESS_NAME_COLUMN, &clist_text);
       if (!r) {
-	 break;
-      }
-      if (found) {
-	 continue;
+         break;
       }
       if (!strncasecmp(clist_text, entry_text, strlen(entry_text))) {
-	 found = 1;
-	 found_at = i;
-	 clist_select_row(GTK_CLIST(clist), i, ADDRESS_NAME_COLUMN);
+         clist_select_row(GTK_CLIST(clist), i, ADDRESS_NAME_COLUMN);
+         gtk_clist_moveto(GTK_CLIST(clist), i, 0, 0.5, 0.0);
+         break;
       }
-   }
-   line_count = i;
-
-   if (found) {
-      gtk_clist_moveto(GTK_CLIST(clist), found_at, 0, 0.5, 0.0);
    }
 }
 
