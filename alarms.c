@@ -1,4 +1,4 @@
-/* $Id: alarms.c,v 1.28 2005/10/24 15:27:48 rikster5 Exp $ */
+/* $Id: alarms.c,v 1.29 2005/10/26 04:27:22 rikster5 Exp $ */
 
 /*******************************************************************************
  * alarms.c
@@ -42,7 +42,7 @@
 
 /* This is how often to check for alarms in seconds */
 /* Every call takes CPU time(not much), so you may want it to be greater */
-#define ALARM_INTERVAL 1
+#define ALARM_INTERVAL 10
 
 
 #define PREV_ALARM_MASK 1
@@ -1545,6 +1545,10 @@ int alarms_init(unsigned char skip_past_alarms,
    mktime(&tm1);
 
    alarms_find_next(&tm1, &now, FALSE);
+
+   /* Pop up reminder windows for expired alarms immediately
+    * rather than waiting ALARM_INTERVAL seconds and then doing it */
+   cb_timer_alarms(NULL);
 
    gtk_timeout_add(ALARM_INTERVAL*1000, cb_timer_alarms, NULL);
 
