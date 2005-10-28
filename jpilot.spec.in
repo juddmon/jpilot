@@ -10,7 +10,7 @@ Source:    http://jpilot.org/jpilot-%{version}.tar.gz
 URL:       http://jpilot.org
 Packager:  Judd Montgomery <judd@jpilot.org>
 Prefix:    /usr
-DocDir:    %{prefix}/share/doc
+DocDir:    %{prefix}/share/doc/%{name}-%{version}
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 Requires:  pilot-link > 0.11.2
 
@@ -24,6 +24,7 @@ not found in the 3Com desktop.
 %define _mandir %{prefix}/share/man
 %define _infodir %{prefix}/share/info
 %define _datadir %{prefix}/share
+%define _docdir %{prefix}/share/doc/%{name}-%{version}
 
 %prep
 
@@ -31,9 +32,9 @@ not found in the 3Com desktop.
 
 %build
 if [ ! -f ./configure ]; then
-  ./autogen.sh --prefix=%{prefix} --mandir=%{_mandir}
+  ./autogen.sh --prefix=%{prefix} --mandir=%{_mandir} --enable-gtk2
 else
-  %configure --prefix=%{prefix} --mandir=%{_mandir}
+  %configure --prefix=%{prefix} --mandir=%{_mandir} --enable-gtk2
 fi
 #gzip -9f docs/*.1
 make
@@ -49,8 +50,8 @@ strip jpilot
 install -d $RPM_BUILD_ROOT%{_bindir}
 make DESTDIR=$RPM_BUILD_ROOT install 
 
-mkdir -p $RPM_BUILD_ROOT%{prefix}/share/pixmaps
-install -m644 icons/*.xpm $RPM_BUILD_ROOT%{prefix}/share/pixmaps
+#mkdir -p $RPM_BUILD_ROOT%{prefix}/share/pixmaps
+#install -m644 icons/*.xpm $RPM_BUILD_ROOT%{prefix}/share/pixmaps
 
 %post
 
@@ -59,22 +60,32 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root)
-%docdir /usr/doc
-%doc BUGS ChangeLog COPYING AUTHORS INSTALL README TODO UPGRADING
-%doc icons/README
-%doc icons/jpilot-icon1.xpm icons/jpilot-icon2.xpm
-%doc icons/jpilot-icon3.xpm icons/jpilot-icon4.xpm
-%doc docs/plugin.html docs/manual.html
-%doc docs/jpilot-address.png
-%doc docs/jpilot-datebook.png
-%doc docs/jpilot-expense.png
-%doc docs/jpilot-install.png
-%doc docs/jpilot-memo.png
-%doc docs/jpilot-prefs.png
-%doc docs/jpilot-print.png
-%doc docs/jpilot-search.png
-%doc docs/jpilot-todo.png
-%doc docs/jpilot-toplogo.jpg
+#%docdir /usr/doc
+%{_docdir}/BUGS
+%{_docdir}/ChangeLog
+%{_docdir}/COPYING
+%{_docdir}/AUTHORS
+%{_docdir}/INSTALL
+%{_docdir}/README
+%{_docdir}/TODO
+%{_docdir}/UPGRADING
+%{_docdir}/icons/README
+%{_docdir}/icons/jpilot-icon1.xpm
+%{_docdir}/icons/jpilot-icon2.xpm
+%{_docdir}/icons/jpilot-icon3.xpm
+%{_docdir}/icons/jpilot-icon4.xpm
+%{_docdir}/manual/plugin.html
+%{_docdir}/manual/manual.html
+%{_docdir}/manual/jpilot-address.png
+%{_docdir}/manual/jpilot-datebook.png
+%{_docdir}/manual/jpilot-expense.png
+%{_docdir}/manual/jpilot-install.png
+%{_docdir}/manual/jpilot-memo.png
+%{_docdir}/manual/jpilot-prefs.png
+%{_docdir}/manual/jpilot-print.png
+%{_docdir}/manual/jpilot-search.png
+%{_docdir}/manual/jpilot-todo.png
+%{_docdir}/manual/jpilot-toplogo.jpg
 %{_bindir}/jpilot
 %{_bindir}/jpilot-dump
 %{_bindir}/jpilot-dial
@@ -119,8 +130,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man1/jpilot-dial.1.gz
 %{_mandir}/man1/jpilot-sync.1.gz
 %{_mandir}/man1/jpilot-dump.1.gz
-%{prefix}/share/pixmaps/*
-%{_datadir}/gnome/apps/Applications/jpilot.desktop
+#%{prefix}/share/pixmaps/*
+%{_datadir}/applications/jpilot.desktop
 
 %changelog
 * Sat Sep 24 2005 Judd Montgomery <judd@jpilot.org>
