@@ -1,4 +1,4 @@
-/* $Id: otherconv.c,v 1.24 2005/08/30 19:07:00 rikster5 Exp $ */
+/* $Id: otherconv.c,v 1.25 2005/10/28 01:16:50 judd Exp $ */
 
 /*******************************************************************************
  * otherconv.c
@@ -83,52 +83,39 @@ void oc_free_iconv(const char *funcname, GIConv conv, char *convname) {
  */
 char *char_set_to_text(int char_set)
 {
-   static char text_char_set[100];
-
    switch (char_set)
    {
       case CHAR_SET_1250_UTF:
-	 sprintf(text_char_set, "CP1250");
-	 break;
+	 return "CP1250";
 
       case CHAR_SET_1253_UTF:
-	 sprintf(text_char_set, "CP1253");
-	 break;
+	 return "CP1253";
 
       case CHAR_SET_ISO8859_2_UTF:
-	 sprintf(text_char_set, "ISO8859-2");
-	 break;
+	 return "ISO8859-2";
 
       case CHAR_SET_KOI8_R_UTF:
-	 sprintf(text_char_set, "KOI8-R");
-	 break;
+	 return "KOI8-R";
 
       case CHAR_SET_1251_UTF:
-	 sprintf(text_char_set, "CP1251");
-	 break;
+	 return "CP1251";
 
       case CHAR_SET_GBK_UTF:
-	 sprintf(text_char_set, "GBK");
-	 break;
+	 return "GBK";
 
       case CHAR_SET_BIG5_UTF:
-	 sprintf(text_char_set, "BIG-5");
-	 break;
+	 return "BIG-5";
 
       case CHAR_SET_SJIS_UTF:
-	 sprintf(text_char_set, "SJIS");
-	 break;
+	 return "SJIS";
 
       case CHAR_SET_1255_UTF:
-	 sprintf(text_char_set, "CP1255");
-	 break;
+	 return "CP1255";
 
       case CHAR_SET_1252_UTF:
       default:
-	 sprintf(text_char_set, "CP1252");
+	 return "CP1252";
    }
-
-   return text_char_set;
 }
 
 /*
@@ -180,10 +167,13 @@ char *other_to_UTF(const char *buf, int buf_len)
   gsize bytes_read;
   GError *err = NULL;
 
+#ifdef OTHERCONV_DEBUG
   jp_logf(JP_LOG_DEBUG, "%s:%s reset iconv state...\n", __FILE__, __FUNCTION__);
+#endif
   rc = g_iconv(glob_frompda, NULL, NULL, NULL, NULL);
-  jp_logf(JP_LOG_DEBUG, "%s:%s converting   [%s]\n", __FILE__, __FUNCTION__,
-     buf);
+#ifdef OTHERCONV_DEBUG
+  jp_logf(JP_LOG_DEBUG, "%s:%s converting   [%s]\n", __FILE__, __FUNCTION__, buf);
+#endif
 
   outbuf = (char *)g_convert_with_iconv((gchar *)buf,
       oc_strnlen(buf, buf_len) +1, /* see Debian bug #309082 for the +1 */
@@ -224,9 +214,9 @@ char *other_to_UTF(const char *buf, int buf_len)
       g_free(tail);
   }
 
-  jp_logf(JP_LOG_DEBUG, "%s:%s converted to [%s]\n", __FILE__, __FUNCTION__,
-	outbuf);
-
+#ifdef OTHERCONV_DEBUG
+  jp_logf(JP_LOG_DEBUG, "%s:%s converted to [%s]\n", __FILE__, __FUNCTION__, outbuf);
+#endif
   /*
    * Note: outbuf was allocated by glib, so should be freed with g_free
    * To be 100% safe, I should have done strncpy to a new malloc-allocated string.
@@ -249,10 +239,13 @@ void UTF_to_other(char *const buf, int buf_len)
   char *errstr;
   char buf_out[1000], *buf_out_ptr = NULL;
 
+#ifdef OTHERCONV_DEBUG
   jp_logf(JP_LOG_DEBUG, "%s:%s reset iconv state...\n", __FILE__, __FUNCTION__);
+#endif
   rc = g_iconv(glob_topda, NULL, NULL, NULL, NULL);
-  jp_logf(JP_LOG_DEBUG, "%s:%s converting   [%s]\n", __FILE__, __FUNCTION__,
-     buf);
+#ifdef OTHERCONV_DEBUG
+  jp_logf(JP_LOG_DEBUG, "%s:%s converting   [%s]\n", __FILE__, __FUNCTION__, buf);
+#endif
 
   inleft = oc_strnlen(buf,buf_len);
   outleft = buf_len-1;
@@ -298,8 +291,9 @@ void UTF_to_other(char *const buf, int buf_len)
    else
       g_strlcpy(buf, buf_out, buf_len);
 
-  jp_logf(JP_LOG_DEBUG, "%s:%s converted to [%s]\n", __FILE__, __FUNCTION__,
-     buf);
+#ifdef OTHERCONV_DEBUG
+  jp_logf(JP_LOG_DEBUG, "%s:%s converted to [%s]\n", __FILE__, __FUNCTION__, buf);
+#endif
 }
 
 #else
