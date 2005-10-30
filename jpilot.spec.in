@@ -81,7 +81,14 @@ rm -rf $RPM_BUILD_ROOT
 %{_docdir}/manual/jpilot-expense.png
 %{_docdir}/manual/jpilot-install.png
 %{_docdir}/manual/jpilot-memo.png
-%{_docdir}/manual/jpilot-prefs.png
+%{_docdir}/manual/jpilot-prefs-1.png
+%{_docdir}/manual/jpilot-prefs-2.png
+%{_docdir}/manual/jpilot-prefs-3.png
+%{_docdir}/manual/jpilot-prefs-4.png
+%{_docdir}/manual/jpilot-prefs-5.png
+%{_docdir}/manual/jpilot-prefs-6.png
+%{_docdir}/manual/jpilot-prefs-7.png
+%{_docdir}/manual/jpilot-prefs-8.png
 %{_docdir}/manual/jpilot-print.png
 %{_docdir}/manual/jpilot-search.png
 %{_docdir}/manual/jpilot-todo.png

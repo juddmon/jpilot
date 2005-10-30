@@ -43,7 +43,14 @@ install/doinst.sh \
 /usr/doc/$PACKAGE-$VERSION/jpilot-expense.png \
 /usr/doc/$PACKAGE-$VERSION/jpilot-install.png \
 /usr/doc/$PACKAGE-$VERSION/jpilot-memo.png \
-/usr/doc/$PACKAGE-$VERSION/jpilot-prefs.png \
+/usr/doc/$PACKAGE-$VERSION/jpilot-prefs-1.png \
+/usr/doc/$PACKAGE-$VERSION/jpilot-prefs-2.png \
+/usr/doc/$PACKAGE-$VERSION/jpilot-prefs-3.png \
+/usr/doc/$PACKAGE-$VERSION/jpilot-prefs-4.png \
+/usr/doc/$PACKAGE-$VERSION/jpilot-prefs-5.png \
+/usr/doc/$PACKAGE-$VERSION/jpilot-prefs-6.png \
+/usr/doc/$PACKAGE-$VERSION/jpilot-prefs-7.png \
+/usr/doc/$PACKAGE-$VERSION/jpilot-prefs-8.png \
 /usr/doc/$PACKAGE-$VERSION/jpilot-print.png \
 /usr/doc/$PACKAGE-$VERSION/jpilot-search.png \
 /usr/doc/$PACKAGE-$VERSION/jpilot-todo.png \
