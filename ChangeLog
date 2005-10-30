@@ -1,3 +1,9 @@
+0.99.8 - 11/30/05
+ This release is dedicated to my Mother who unexpectedly passed away
+ this last year.
+ Added translation for Kinyarwanda
+ Added panes to Expense and KeyRing
+
 0.99.8-pre11 - 09/11/05
  Added an install user from the menu.
  Other miscellaneous fixes/changes
@@ -72,7 +78,7 @@
   - Hebrew (CP1255),
   - Cyrillic (CP1251),
   - Cyrillic (KOI8-R),
-  - Latin 2, Estern Europe (ISO8859-2),
+  - Latin 2, Eastern Europe (ISO8859-2),
   - Japanese (SJIS),
   - Chinese (GB2312)
  Complete Chinese translation. Thanks to lei Yu
