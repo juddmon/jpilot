@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.47 2005/10/16 09:42:25 rousseau Exp $
+# $Id: Makefile.am,v 1.48 2005/10/31 02:05:03 judd Exp $
 
 SUBDIRS = Expense SyncTime KeyRing docs dialer po m4 empty icons
 
@@ -11,7 +11,7 @@ color_DATA = \
 EXTRA_DIST = config.rpath reconf autogen.sh ChangeLog ChangeLog.cvs \
 	description-pak \
 	mkinstalldirs \
-	jpilot.spec jpilot.kdelnk jpilot.rh7.spec \
+	jpilot.spec jpilot.kdelnk \
 	jpilot.desktop \
 	$(color_DATA) \
 	SlackBuild \
