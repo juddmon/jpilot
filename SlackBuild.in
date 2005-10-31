@@ -1,3 +1,4 @@
+#!/bin/bash
 PACKAGE=@PACKAGE@
 VERSION=@VERSION@
 ARCH=i386
@@ -28,7 +29,6 @@ install/doinst.sh \
 /usr/lib/jpilot/plugins/libkeyring.so.0.0.0 \
 /usr/man/man1/jpilot.1 \
 /usr/man/man1/jpilot-dial.1 \
-/usr/man/man1/jpilot-upgrade-99.1 \
 /usr/man/man1/jpilot-sync.1 \
 /usr/doc/$PACKAGE-$VERSION/AUTHORS \
 /usr/doc/$PACKAGE-$VERSION/BUGS \
@@ -38,25 +38,25 @@ install/doinst.sh \
 /usr/doc/$PACKAGE-$VERSION/README \
 /usr/doc/$PACKAGE-$VERSION/TODO \
 /usr/doc/$PACKAGE-$VERSION/UPGRADING \
-/usr/doc/$PACKAGE-$VERSION/jpilot-address.png \
-/usr/doc/$PACKAGE-$VERSION/jpilot-datebook.png \
-/usr/doc/$PACKAGE-$VERSION/jpilot-expense.png \
-/usr/doc/$PACKAGE-$VERSION/jpilot-install.png \
-/usr/doc/$PACKAGE-$VERSION/jpilot-memo.png \
-/usr/doc/$PACKAGE-$VERSION/jpilot-prefs-1.png \
-/usr/doc/$PACKAGE-$VERSION/jpilot-prefs-2.png \
-/usr/doc/$PACKAGE-$VERSION/jpilot-prefs-3.png \
-/usr/doc/$PACKAGE-$VERSION/jpilot-prefs-4.png \
-/usr/doc/$PACKAGE-$VERSION/jpilot-prefs-5.png \
-/usr/doc/$PACKAGE-$VERSION/jpilot-prefs-6.png \
-/usr/doc/$PACKAGE-$VERSION/jpilot-prefs-7.png \
-/usr/doc/$PACKAGE-$VERSION/jpilot-prefs-8.png \
-/usr/doc/$PACKAGE-$VERSION/jpilot-print.png \
-/usr/doc/$PACKAGE-$VERSION/jpilot-search.png \
-/usr/doc/$PACKAGE-$VERSION/jpilot-todo.png \
-/usr/doc/$PACKAGE-$VERSION/jpilot-toplogo.jpg \
-/usr/doc/$PACKAGE-$VERSION/manual.html \
-/usr/doc/$PACKAGE-$VERSION/plugin.html \
+/usr/doc/$PACKAGE-$VERSION/manual/jpilot-address.png \
+/usr/doc/$PACKAGE-$VERSION/manual/jpilot-datebook.png \
+/usr/doc/$PACKAGE-$VERSION/manual/jpilot-expense.png \
+/usr/doc/$PACKAGE-$VERSION/manual/jpilot-install.png \
+/usr/doc/$PACKAGE-$VERSION/manual/jpilot-memo.png \
+/usr/doc/$PACKAGE-$VERSION/manual/jpilot-prefs-1.png \
+/usr/doc/$PACKAGE-$VERSION/manual/jpilot-prefs-2.png \
+/usr/doc/$PACKAGE-$VERSION/manual/jpilot-prefs-3.png \
+/usr/doc/$PACKAGE-$VERSION/manual/jpilot-prefs-4.png \
+/usr/doc/$PACKAGE-$VERSION/manual/jpilot-prefs-5.png \
+/usr/doc/$PACKAGE-$VERSION/manual/jpilot-prefs-6.png \
+/usr/doc/$PACKAGE-$VERSION/manual/jpilot-prefs-7.png \
+/usr/doc/$PACKAGE-$VERSION/manual/jpilot-prefs-8.png \
+/usr/doc/$PACKAGE-$VERSION/manual/jpilot-print.png \
+/usr/doc/$PACKAGE-$VERSION/manual/jpilot-search.png \
+/usr/doc/$PACKAGE-$VERSION/manual/jpilot-todo.png \
+/usr/doc/$PACKAGE-$VERSION/manual/jpilot-toplogo.jpg \
+/usr/doc/$PACKAGE-$VERSION/manual/manual.html \
+/usr/doc/$PACKAGE-$VERSION/manual/plugin.html \
 /usr/doc/$PACKAGE-$VERSION/icons/README \
 /usr/doc/$PACKAGE-$VERSION/icons/jpilot-icon1.xpm \
 /usr/doc/$PACKAGE-$VERSION/icons/jpilot-icon2.xpm \
