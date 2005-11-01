@@ -2263,24 +2263,20 @@ msgid " -d displays debug info to stdout.\n"
 msgstr " -d affiche les information de debug sur stdout.\n"
 
 #: utils.c:79
-#, fuzzy
 msgid " -p skips loading plugins.\n"
-msgstr "Non chargement des plugins.\n"
+msgstr " -p non chargement des plugins.\n"
 
 #: utils.c:80
-#, fuzzy
 msgid " -a ignores missed alarms since the last time program was run.\n"
 msgstr " -a ignore les alarmes échues depuis la dernière exécution.\n"
 
 #: utils.c:81
-#, fuzzy
 msgid " -A ignores all alarms past and future.\n"
-msgstr " -A ignore touttes les alarmes; passées et futures.\n"
+msgstr " -A ignore toutes les alarmes; passées et futures.\n"
 
 #: utils.c:82
-#, fuzzy
 msgid " -i makes program iconify itself upon launch.\n"
-msgstr " -i iconifie jpilot au lancement\n"
+msgstr " -i iconifie jpilot au lancement.\n"
 
 #: utils.c:83
 msgid " The PILOTPORT, and PILOTRATE env variables are used to specify\n"
