@@ -1,4 +1,4 @@
-/* $Id: jpilot-sync.c,v 1.23 2005/01/28 16:54:13 rousseau Exp $ */
+/* $Id: jpilot-sync.c,v 1.24 2005/11/05 15:15:06 judd Exp $ */
 
 /*******************************************************************************
  * jpilot-sync.c
@@ -44,6 +44,7 @@ int pipe_to_parent, pipe_from_parent;
 pid_t glob_child_pid;
 GtkWidget *glob_dialog;
 pid_t glob_child_pid;
+GtkTooltips *glob_tooltips;
 
 unsigned char skip_plugins;
 
