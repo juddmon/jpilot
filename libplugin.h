@@ -1,4 +1,4 @@
-/* $Id: libplugin.h,v 1.20 2005/10/24 15:27:48 rikster5 Exp $ */
+/* $Id: libplugin.h,v 1.21 2005/11/06 05:30:44 rikster5 Exp $ */
 
 /*******************************************************************************
  * libplugin.h
@@ -263,6 +263,10 @@ int jp_read_DB_files(char *DB_name, GList **records);
  *This deletes a record from the appropriate Datafile
  */
 int jp_delete_record(char *DB_name, buf_rec *br, int flag);
+/*
+ *This undeletes a record from the appropriate Datafile
+ */
+int jp_undelete_record(char *DB_name, buf_rec *br, int flag);
 /*
  * Free the record list
  */

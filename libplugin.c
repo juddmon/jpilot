@@ -1,4 +1,4 @@
-/* $Id: libplugin.c,v 1.24 2005/10/24 15:27:48 rikster5 Exp $ */
+/* $Id: libplugin.c,v 1.25 2005/11/06 05:30:44 rikster5 Exp $ */
 
 /*******************************************************************************
  * libplugin.c
@@ -522,8 +522,7 @@ int jp_delete_record(char *DB_name, buf_rec *br, int flag)
 	 if (header.header_version==2) {
 	    /* Keep unique ID intact */
 	    if ((header.unique_id==br->unique_id) &&
-		((header.rt==NEW_PC_REC) || (header.rt==REPLACEMENT_PALM_REC))
-		) {
+	       ((header.rt==NEW_PC_REC) || (header.rt==REPLACEMENT_PALM_REC))) {
 	       if (fseek(pc_in, -header.header_len, SEEK_CUR)) {
 		  jp_logf(JP_LOG_WARN, "fseek failed\n");
 	       }
@@ -575,6 +574,110 @@ int jp_delete_record(char *DB_name, buf_rec *br, int flag)
    }
 
    return EXIT_SUCCESS;
+}
+
+/*
+ * This undeletes a record from the appropriate Datafile
+ */
+int jp_undelete_record(char *DB_name, buf_rec *br, int flag)
+{
+   char filename[FILENAME_MAX];
+   char filename2[FILENAME_MAX];
+   FILE *pc_file  = NULL;
+   FILE *pc_file2 = NULL;
+   PC3RecordHeader header;
+   char *record;
+   unsigned int unique_id;
+   int found;
+   int ret = -1;
+   int num;
+
+   if (br==NULL) {
+      return EXIT_FAILURE;
+   }
+
+   unique_id = br->unique_id;
+   found  = FALSE;
+   record = NULL;
+
+   g_snprintf(filename, sizeof(filename), "%s.pc3", DB_name);
+   g_snprintf(filename2, sizeof(filename2), "%s.pct", filename);
+
+   pc_file = jp_open_home_file(filename , "r");
+   if (!pc_file) {
+      return EXIT_FAILURE;
+   }
+
+   pc_file2=jp_open_home_file(filename2, "w");
+   if (!pc_file2) {
+      fclose(pc_file);
+      return EXIT_FAILURE;
+   }
+
+   while(!feof(pc_file)) {
+      read_header(pc_file, &header);
+      if (feof(pc_file)) {
+	 break;
+      }
+      /* Skip copying DELETED_PALM_REC entry which undeletes it */
+      if (header.unique_id == unique_id &&
+	  header.rt == DELETED_PALM_REC) {
+	 found = TRUE;
+	 if (fseek(pc_file, header.rec_len, SEEK_CUR)) {
+	    jp_logf(JP_LOG_WARN, "fseek failed\n");
+	    ret = -1;
+	    break;
+	 }
+	 continue;
+      }
+      /* Change header on DELETED_PC_REC to undelete this type */
+      if (header.unique_id == unique_id &&
+          header.rt == DELETED_PC_REC) {
+	  found = TRUE;
+          header.rt = NEW_PC_REC;
+      }
+
+      /* Otherwise, keep whatever is there by copying it to the new pc3 file */
+      record = malloc(header.rec_len);
+      if (!record) {
+	 jp_logf(JP_LOG_WARN, "cleanup_pc_file(): Out of memory\n");
+	 ret = -1;
+	 break;
+      }
+      num = fread(record, header.rec_len, 1, pc_file);
+      if (num != 1) {
+	 if (ferror(pc_file)) {
+	    ret = -1;
+	    break;
+	 }
+      }
+      ret = write_header(pc_file2, &header);
+      ret = fwrite(record, header.rec_len, 1, pc_file2);
+      if (ret != 1) {
+	 ret = -1;
+	 break;
+      }
+      free(record);
+      record = NULL;
+   }
+
+   if (record) {
+      free(record);
+   }
+   if (pc_file) {
+      fclose(pc_file);
+   }
+   if (pc_file2) {
+      fclose(pc_file2);
+   }
+
+   if (found) {
+      rename_file(filename2, filename);
+   } else {
+      unlink_file(filename2);
+   }
+
+   return ret;
 }
 
 /*
