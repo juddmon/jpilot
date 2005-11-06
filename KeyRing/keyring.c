@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.43 2005/11/06 05:30:12 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.44 2005/11/06 05:35:06 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -346,7 +346,6 @@ static int get_keyring(struct MyKeyRing **mkr_list, int category)
    GList *temp_list;
    buf_rec *br;
    struct MyKeyRing *mkr;
-   int num;
    int rec_count;
    long keep_modified, keep_deleted;
 
