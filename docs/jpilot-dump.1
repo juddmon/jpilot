@@ -1,19 +1,14 @@
 .TH JPILOT-DUMP 1
 .SH NAME
-jpilot-dump \- A command line tool for dumping jpilot databases
-device.
+jpilot-dump \- A command line tool for dumping jpilot databases.
 .SH SYNOPSIS
 .B jpilot-dump
 [ options ]
 .SH DESCRIPTION
 Dump jpilot databases.
 .SH OPTIONS
-.TP
 .B \+B \+M \+A \+T
-format like date +format (use -? for more info).
-.TP
-.B \-?
-give possible format strings
+format like date +format.
 .TP
 .B \-v
 displays version and exits.
@@ -21,23 +16,26 @@ displays version and exits.
 .B \-h
 displays help and exits.
 .TP
-.B \-B
-dump dateBook.
+.B \-f
+displays help for format codes.
 .TP
-.BI "\-N" YYYY/MM/DD
-dump apps on YYYY/MM/DD in dateBook.
+.B \-D
+dump DateBook.
 .TP
 .B \-N
-dump apps on today in dateBook.
+dump appts for today in DateBook.
 .TP
-.B \-M
-dump Memos.
+.BI "\-N" YYYY/MM/DD
+dump appts on YYYY/MM/DD in DateBook.
 .TP
 .B \-A
 dump Address book.
 .TP
 .B \-T
 dump Todo list as CSV.
+.TP
+.B \-M
+dump Memos.
 .SH BUGS
 See /usr/share/doc/jpilot/BUGS
 .SH SEE ALSO
