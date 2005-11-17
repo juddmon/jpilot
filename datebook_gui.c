@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.114 2005/11/17 21:28:43 rousseau Exp $ */
+/* $Id: datebook_gui.c,v 1.115 2005/11/17 21:49:13 rousseau Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -667,7 +667,7 @@ void appt_export_ok(int type, const char *filename)
    struct stat statb;
    int i, r;
    char *button_text[]={N_("OK")};
-   char *button_overwrite_text[]={N_("Yes"), N_("No")};
+   char *button_overwrite_text[]={N_("No"), N_("Yes")};
    char text[1024];
    char csv_text[65550];
    char *p;
@@ -1147,15 +1147,6 @@ static int datebook_export_gui(GtkWidget *main_window, int x, int y)
    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
 #ifdef ENABLE_GTK2
-   button = gtk_button_new_from_stock(GTK_STOCK_OK);
-#else
-   button = gtk_button_new_with_label(_("OK"));
-#endif
-   gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
-   gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_ok), export_window);
-
-#ifdef ENABLE_GTK2
    button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
 #else
    button = gtk_button_new_with_label(_("Cancel"));
@@ -1163,6 +1154,15 @@ static int datebook_export_gui(GtkWidget *main_window, int x, int y)
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_export_quit), export_window);
+
+#ifdef ENABLE_GTK2
+   button = gtk_button_new_from_stock(GTK_STOCK_OK);
+#else
+   button = gtk_button_new_with_label(_("OK"));
+#endif
+   gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
+   gtk_signal_connect(GTK_OBJECT(button), "clicked",
+		      GTK_SIGNAL_FUNC(cb_ok), export_window);
 
    gtk_widget_show_all(export_window);
 

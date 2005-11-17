@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.96 2005/11/17 21:33:15 rousseau Exp $ */
+/* $Id: utils.c,v 1.97 2005/11/17 21:49:13 rousseau Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -1082,20 +1082,6 @@ int cal_dialog(GtkWindow *main_window,
 
    /* Bottom Buttons */
 #ifdef ENABLE_GTK2
-   button = gtk_button_new_from_stock(GTK_STOCK_OK);
-#else
-   button = gtk_button_new_with_label(_("OK"));
-#endif
-   gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
-   gtk_signal_connect(GTK_OBJECT(button), "clicked", GTK_SIGNAL_FUNC(cb_quit),
-		      GINT_TO_POINTER(CAL_DONE));
-
-   button = gtk_button_new_with_label(_("Today"));
-   gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
-   gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_today), util_cal);
-
-#ifdef ENABLE_GTK2
    button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
 #else
    button = gtk_button_new_with_label(_("Cancel"));
@@ -1103,6 +1089,20 @@ int cal_dialog(GtkWindow *main_window,
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button), "clicked", GTK_SIGNAL_FUNC(cb_quit),
 		      GINT_TO_POINTER(CAL_CANCEL));
+
+   button = gtk_button_new_with_label(_("Today"));
+   gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
+   gtk_signal_connect(GTK_OBJECT(button), "clicked",
+		      GTK_SIGNAL_FUNC(cb_today), util_cal);
+
+#ifdef ENABLE_GTK2
+   button = gtk_button_new_from_stock(GTK_STOCK_OK);
+#else
+   button = gtk_button_new_with_label(_("OK"));
+#endif
+   gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
+   gtk_signal_connect(GTK_OBJECT(button), "clicked", GTK_SIGNAL_FUNC(cb_quit),
+		      GINT_TO_POINTER(CAL_DONE));
 
    gtk_widget_show_all(cal_window);
 
@@ -1232,10 +1232,13 @@ int dialog_generic_with_text(GtkWindow *main_window,
 			 GTK_SIGNAL_FUNC(cb_dialog_button),
 			 GINT_TO_POINTER(DIALOG_SAID_1 + i));
       gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
-      if (i == 0)
+
+      /* default button is the last one */
+      if (i == nob-1)
       {
 	 GTK_WIDGET_SET_FLAGS(button, GTK_CAN_DEFAULT);
 	 gtk_widget_grab_default(button);
+	 gtk_widget_grab_focus(button);
       }
    }
 
@@ -1279,7 +1282,7 @@ int dialog_generic_ok(GtkWidget *widget,
 int dialog_save_changed_record(GtkWidget *widget, int changed)
 {
    int b;
-   char *button_text[] = {N_("Yes"), N_("No")};
+   char *button_text[] = {N_("No"), N_("Yes")};
 
    b=0;
 
