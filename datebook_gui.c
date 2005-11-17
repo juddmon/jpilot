@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.113 2005/10/24 19:15:41 judd Exp $ */
+/* $Id: datebook_gui.c,v 1.114 2005/11/17 21:28:43 rousseau Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -1146,12 +1146,20 @@ static int datebook_export_gui(GtkWidget *main_window, int x, int y)
    hbox = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
+#ifdef ENABLE_GTK2
+   button = gtk_button_new_from_stock(GTK_STOCK_OK);
+#else
    button = gtk_button_new_with_label(_("OK"));
+#endif
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_ok), export_window);
 
+#ifdef ENABLE_GTK2
+   button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
+#else
    button = gtk_button_new_with_label(_("Cancel"));
+#endif
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_export_quit), export_window);
