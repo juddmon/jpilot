@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.95 2005/10/25 02:15:28 rikster5 Exp $ */
+/* $Id: utils.c,v 1.96 2005/11/17 21:33:15 rousseau Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -1081,7 +1081,11 @@ int cal_dialog(GtkWindow *main_window,
 
 
    /* Bottom Buttons */
+#ifdef ENABLE_GTK2
+   button = gtk_button_new_from_stock(GTK_STOCK_OK);
+#else
    button = gtk_button_new_with_label(_("OK"));
+#endif
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button), "clicked", GTK_SIGNAL_FUNC(cb_quit),
 		      GINT_TO_POINTER(CAL_DONE));
@@ -1091,7 +1095,11 @@ int cal_dialog(GtkWindow *main_window,
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_today), util_cal);
 
+#ifdef ENABLE_GTK2
+   button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
+#else
    button = gtk_button_new_with_label(_("Cancel"));
+#endif
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button), "clicked", GTK_SIGNAL_FUNC(cb_quit),
 		      GINT_TO_POINTER(CAL_CANCEL));
