@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.115 2005/11/17 21:49:13 rousseau Exp $ */
+/* $Id: datebook_gui.c,v 1.116 2005/11/22 04:46:56 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -2387,7 +2387,7 @@ static int dayview_update_clist()
    /* If there are items in the list, highlight the selected row */
    if (i>0) {
       /* Select the existing requested row, or row 0 if that is impossible */
-      if (clist_row_selected <= entries_shown) {
+      if (clist_row_selected < entries_shown) {
 	 clist_select_row(GTK_CLIST(clist), clist_row_selected, 1);
 	 if (!gtk_clist_row_is_visible(GTK_CLIST(clist), clist_row_selected)) {
 	    gtk_clist_moveto(GTK_CLIST(clist), clist_row_selected, 0, 0.5, 0.0);

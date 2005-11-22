@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.109 2005/11/17 21:49:13 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.110 2005/11/22 04:46:56 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -2212,7 +2212,7 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    /* If there are items in the list, highlight the selected row */
    if ((main) && (entries_shown>0)) {
       /* Select the existing requested row, or row 0 if that is impossible */
-      if (clist_row_selected <= entries_shown)
+      if (clist_row_selected < entries_shown)
       {
 	 clist_select_row(GTK_CLIST(clist), clist_row_selected, ADDRESS_PHONE_COLUMN);
 	 if (!gtk_clist_row_is_visible(GTK_CLIST(clist), clist_row_selected)) {
