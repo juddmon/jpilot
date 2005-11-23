@@ -1,7 +1,6 @@
 ==============================================================================
-Last updated: 30 Jan 2002 by jbm
+Last updated: 23 Nov 2005 by rw
 ==============================================================================
-
 
 === Web ======================================================================
 For the latest news, versions, documents, plugins, etc.
@@ -11,7 +10,7 @@ http://www.jpilot.org
 
 === Documents ================================================================
 Be sure to read the docs in the doc directory, or if installed from the RPM
-in /usr/doc/jpilot-0.99.6/.
+in /usr/share/doc/jpilot-0.99.8/.
 ==============================================================================
 
 
@@ -26,7 +25,7 @@ To compile J-Pilot you need to have GTK+ 1.2 or higher installed.
 You can find out what version you have by running "gtk-config --version".
 GTK+ requires glib.  The glib version probably should match the gtk version.
 You can also do a "glib-config --version".
-You can get these at http://www.gtk.org
+You can get these tools at http://www.gtk.org
 
 Pilot link must be installed and working.
 http://www.pilot-link.org
@@ -34,14 +33,14 @@ RedHat users must also have the pilot-link-dev rpm installed for the header
  files so that jpilot can compile.  You don't need these if you install the
 jpilot RPM.
 
-If you want i18n support you should have gettext installed.  Preferably GNU
-gettext.  If you don't have or want it use "configure --disable-nls"
+If you want i18n support you should have gettext installed (preferably GNU
+gettext).  If you don't have, or want it, use "configure --disable-nls"
 ==============================================================================
 
 
 === Compiling ================================================================
 To compile and install do the following:
-./configure --prefix=/usr  (configure --help will list all the options.)
+./configure (configure --help will list all the options.)
 make
 make install
 jpilot
