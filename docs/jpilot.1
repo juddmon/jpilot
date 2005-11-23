@@ -1,8 +1,8 @@
-.TH J-PILOT 1
+.TH J-PILOT 1 "November 22, 2005"
 .SH NAME
 jpilot \- A palm pilot desktop for Linux/Unix
 .SH SYNOPSIS
-.B jpilot [-a] [-A] [-d] [-h] [-v] [-s]
+.B jpilot [-v] [-h] [-d] [-a] [-A] [-i] [-s]
 .SH "DESCRIPTION"
 J-Pilot is a desktop organizer application for the palm pilot and other
 Palm OS devices.  It is similar in functionality to the one that
@@ -19,23 +19,29 @@ displays help and exits.
 displays debug info to stdout.
 .TP
 .B \-a
-ignore missed alarms since the last time this program was run.
+ignores missed alarms since the last time program was run.
 .TP
 .B \-A
-ignore all alarms, past and future.
+ignores all alarms, past and future.
 .TP
 .B \-i 
-makes jpilot iconify itself upon launch.
+makes 
+.B jpilot
+iconify itself upon launch.
 .TP
 .B \-s 
-initiates a sync on the running jpilot instance.
+initiates a sync on the running
+.B jpilot
+instance.
 
-If you have more than one jpilot running at the same time the sync may
+If you have more than one 
+.B jpilot 
+running at the same time the sync may
 not work as expected since nothing is done to support a multi-instance
 configuration.
 .SH ENVIRONMENT
-The PILOTPORT, and PILOTRATE env variables are used to specify
-which port to sync on, and at what speed.
+The PILOTPORT and PILOTRATE environment variables are used to specify
+which port to sync on and at what speed.
 
 If PILOTPORT is not set then it defaults to /dev/pilot.
 .SH BUGS
