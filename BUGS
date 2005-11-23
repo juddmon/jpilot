@@ -1,15 +1,22 @@
+==============================================================================
+The most recent list of bugs can be found at http://bugs.jpilot.org
 
-If you wish to report a bug, and the bug is reproduceable it may be helpful to
-me if you run jpilot -d to run in debug mode, reproduce the error and then
-send me the log file from ~/.jpilot/jpilot.log
+To report new bugs please use the reporting form on bugs.jpilot.org
+
+When reporting a bug, particularly if the bug is reproduceable, it may be
+helpful to run 'jpilot -d' to turn debug mode on.  Perform the sequence
+of actions necessary to reproduce the error and then include the 
+log file(~/.jpilot/jpilot.log) in the bug report.
 
 ==============================================================================
 
-These are some of the bugs that I know about:
+These are some of the known bugs:
 
 * Priority High:
 
 * Priority Medium:
+
+ - print system is not i18n compliant
 
 * Priority Low:
 
@@ -31,11 +38,11 @@ These are some of the bugs that I know about:
 
  - The PalmOS datebook will alarm on private records even when they are hidden
    and they show up on the screen.  Right, or wrong, who knows.
-   I will do the same.
+   Jpilot will do the same.
 
-*Palm OS bugs that I have found while creating J-Pilot
+* Palm OS bugs that have been found while creating J-Pilot
 
- - If you try to sync with a pilotrate of 0, then the palm pilot with get a
+ - If you try to sync with a pilotrate of 0 then the palm pilot with get a
    fatal exception and reboot.  (tested on 3.1) This is a PalmOS bug.
 
  - The Palm pilot will let you sync (add) an appointment that repeats weekly,
@@ -43,7 +50,7 @@ These are some of the bugs that I know about:
    you search for it, it shows up.  When you click on it in find, a Fatal
    Exception occurs and the Pilot reboots.  This is a PalmOS bug if you ask me.
 
- - Empty appointments crash Palm OS 2.0 (I don't allow them anymore)
+ - Empty appointments crash Palm OS 2.0 (Jpilot doesn't allow them anymore)
 
 Syncing of categories:
 
