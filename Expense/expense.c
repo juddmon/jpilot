@@ -1,4 +1,4 @@
-/* $Id: expense.c,v 1.41 2005/10/25 06:47:30 rikster5 Exp $ */
+/* $Id: expense.c,v 1.42 2005/11/24 23:53:39 rikster5 Exp $ */
 
 /*******************************************************************************
  * expense.c
@@ -1175,7 +1175,7 @@ static void cb_clist_selection(GtkWidget      *clist,
       keep=record_changed;
       gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, column);
       b=dialog_save_changed_record(scrolled_window, record_changed);
-      if (b==DIALOG_SAID_1) {
+      if (b==DIALOG_SAID_2) {
          cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
       }
       set_new_button_to(CLEAR_FLAG);
@@ -1308,7 +1308,7 @@ static void cb_pulldown_menu(GtkWidget *item, unsigned int value)
    switch (menu) {
     case EXPENSE_CAT1:
       b=dialog_save_changed_record(scrolled_window, record_changed);
-      if (b==DIALOG_SAID_1) {
+      if (b==DIALOG_SAID_2) {
          cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
       }
    
@@ -1914,7 +1914,7 @@ int plugin_gui_cleanup() {
    jp_logf(JP_LOG_DEBUG, "Expense: plugin_gui_cleanup\n");
 
    b=dialog_save_changed_record(scrolled_window, record_changed);
-   if (b==DIALOG_SAID_1) {
+   if (b==DIALOG_SAID_2) {
       cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
    }
 

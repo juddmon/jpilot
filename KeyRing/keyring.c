@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.45 2005/11/17 21:49:13 rousseau Exp $ */
+/* $Id: keyring.c,v 1.46 2005/11/24 23:53:39 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -1038,7 +1038,7 @@ static void cb_clist_selection(GtkWidget      *clist,
       keep=record_changed;
       gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, column);
       b=dialog_save_changed_record(clist, record_changed);
-      if (b==DIALOG_SAID_1) {
+      if (b==DIALOG_SAID_2) {
 	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
       }
       set_new_button_to(CLEAR_FLAG);
@@ -1144,7 +1144,7 @@ static void cb_category(GtkWidget *item, unsigned int selection)
 
    if ((GTK_CHECK_MENU_ITEM(item))->active) {
       b=dialog_save_changed_record(clist, record_changed);
-      if (b==DIALOG_SAID_1) {
+      if (b==DIALOG_SAID_2) {
 	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
       }   
 
@@ -1318,7 +1318,7 @@ static gboolean cb_destroy_dialog(GtkWidget *widget)
 }
 
 /*
- * returns 1 if OK was pressed, 2 if cancel was hit
+ * returns 2 if OK was pressed, 1 if cancel was hit
  */
 static int dialog_password(GtkWindow *main_window, 
 			   char *ascii_password, 
@@ -1380,7 +1380,7 @@ static int dialog_password(GtkWindow *main_window,
    gtk_entry_set_visibility(GTK_ENTRY(entry), FALSE);
    gtk_signal_connect(GTK_OBJECT(entry), "activate",
 		      GTK_SIGNAL_FUNC(cb_dialog_button),
-		      GINT_TO_POINTER(DIALOG_SAID_1));
+		      GINT_TO_POINTER(DIALOG_SAID_2));
    gtk_box_pack_start(GTK_BOX(hbox1), entry, TRUE, TRUE, 1);
 
    /* Button Box */
@@ -1396,7 +1396,7 @@ static int dialog_password(GtkWindow *main_window,
 #endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_dialog_button),
-		      GINT_TO_POINTER(DIALOG_SAID_2));
+		      GINT_TO_POINTER(DIALOG_SAID_1));
    gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
 
 #ifdef ENABLE_STOCK_BUTTONS
@@ -1406,13 +1406,13 @@ static int dialog_password(GtkWindow *main_window,
 #endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_dialog_button),
-		      GINT_TO_POINTER(DIALOG_SAID_1));
+		      GINT_TO_POINTER(DIALOG_SAID_2));
    gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
 
    Pdata = malloc(sizeof(struct dialog_data));
    if (Pdata) {
       /* Set the default button pressed to CANCEL */
-      Pdata->button_hit = DIALOG_SAID_2;
+      Pdata->button_hit = DIALOG_SAID_1;
       Pdata->entry=entry;
       Pdata->text[0]='\0';
    }
@@ -1766,7 +1766,7 @@ int plugin_gui_cleanup() {
    jp_logf(JP_LOG_DEBUG, "KeyRing: plugin_gui_cleanup\n");
 
    b=dialog_save_changed_record(clist, record_changed);
-   if (b==DIALOG_SAID_1) {
+   if (b==DIALOG_SAID_2) {
       cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
    }
 
@@ -1858,7 +1858,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
       while (password_not_correct) {
 	 r = dialog_password(w, ascii_password, retry);
 	 retry = PASSWD_ENTER_RETRY;
-	 if (r != 1) {
+	 if (r != 2) {
 	    memset(ascii_password, 0, PASSWD_LEN-1);
 	    return 0;
 	 }
