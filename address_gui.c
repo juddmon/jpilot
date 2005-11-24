@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.110 2005/11/22 04:46:56 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.111 2005/11/24 22:19:21 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -729,7 +729,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
       r = dialog_generic(GTK_WINDOW(export_window),
 			 0, 0, _("Overwrite File?"),
 			 _("Overwrite File"), text, 2, button_overwrite_text);
-      if (r!=DIALOG_SAID_1) {
+      if (r!=DIALOG_SAID_2) {
 	 return;
       }
    }
@@ -1617,7 +1617,7 @@ static void cb_category(GtkWidget *item, int selection)
    if (!item) return;
    if ((GTK_CHECK_MENU_ITEM(item))->active) {
       b=dialog_save_changed_record(pane, record_changed);
-      if (b==DIALOG_SAID_1) {
+      if (b==DIALOG_SAID_2) {
 	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
       }
 
@@ -1716,7 +1716,7 @@ static void cb_clist_selection(GtkWidget      *clist,
       keep=record_changed;
       clist_select_row(GTK_CLIST(clist), clist_row_selected, column);
       b=dialog_save_changed_record(pane, record_changed);
-      if (b==DIALOG_SAID_1) {
+      if (b==DIALOG_SAID_2) {
 	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
       }
       set_new_button_to(CLEAR_FLAG);
@@ -2319,7 +2319,7 @@ int address_cycle_cat()
    int i, new_cat;
 
    b=dialog_save_changed_record(pane, record_changed);
-   if (b==DIALOG_SAID_1) {
+   if (b==DIALOG_SAID_2) {
       cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
    }
 
@@ -2488,7 +2488,7 @@ int address_gui_cleanup()
    int b;
 
    b=dialog_save_changed_record(pane, record_changed);
-   if (b==DIALOG_SAID_1) {
+   if (b==DIALOG_SAID_2) {
       cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
    }
    free_AddressList(&glob_address_list);

@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.116 2005/11/22 04:46:56 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.117 2005/11/24 22:19:21 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -704,7 +704,7 @@ void appt_export_ok(int type, const char *filename)
       r = dialog_generic(GTK_WINDOW(export_window),
 			 0, 0, _("Overwrite File?"),
 			 _("Overwrite File"), text, 2, button_overwrite_text);
-      if (r!=DIALOG_SAID_1) {
+      if (r!=DIALOG_SAID_2) {
 	 return;
       }
    }
@@ -1211,7 +1211,7 @@ static void cb_category(GtkWidget *widget, gpointer data)
 
    flag=GPOINTER_TO_INT(data);
    b=dialog_save_changed_record(pane, record_changed);
-   if (b==DIALOG_SAID_1) {
+   if (b==DIALOG_SAID_2) {
       cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
    }
    count=0;
@@ -2911,7 +2911,7 @@ static void cb_clist_selection(GtkWidget      *clist,
       keep=record_changed;
       clist_select_row(GTK_CLIST(clist), clist_row_selected, column);
       b=dialog_save_changed_record(pane, record_changed);
-      if (b==DIALOG_SAID_1) {
+      if (b==DIALOG_SAID_2) {
 	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
       }
       set_new_button_to(CLEAR_FLAG);
@@ -3215,9 +3215,39 @@ static void cb_cancel(GtkWidget *widget, gpointer data)
    datebook_refresh(FALSE, FALSE);
 }
 
-/*
- * When a calendar day is pressed
- */
+/* When cursor navigation keys are used in calendar */
+gboolean cb_key_pressed_in_calendar(GtkWidget   *widget,
+                                    GdkEventKey *event,
+                                    gpointer     data)
+{
+   GdkEvent synthesized_event;
+
+   switch (event->keyval) {
+    case GDK_Left:
+    case GDK_KP_Left:
+    case GDK_Right:
+    case GDK_KP_Right:
+    case GDK_Up:
+    case GDK_KP_Up:
+    case GDK_Down:
+    case GDK_KP_Down:
+      synthesized_event.key.type = GDK_KEY_PRESS;
+      synthesized_event.key.window = widget->window;
+      synthesized_event.key.send_event = FALSE;	  
+      synthesized_event.key.time = GDK_CURRENT_TIME;   
+      synthesized_event.key.state = 0;
+      synthesized_event.key.keyval = GDK_space;
+      synthesized_event.key.length = 0;
+      /* According to GTK+ documentation key.string is deprecated and 
+      * should not be used. */
+      /* synthesized_event->key.string = NULL */
+//      synthesized_event.key.group = 0;
+      gtk_main_do_event(&synthesized_event);
+   }
+
+   return FALSE;
+}
+
 void cb_cal_changed(GtkWidget *widget,
 		    gpointer   data)
 {
@@ -3236,7 +3266,7 @@ void cb_cal_changed(GtkWidget *widget,
    }
 
    b=dialog_save_changed_record(pane, record_changed);
-   if (b==DIALOG_SAID_1) {
+   if (b==DIALOG_SAID_2) {
       cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
    }
    set_new_button_to(CLEAR_FLAG);
@@ -3380,7 +3410,7 @@ int datebook_refresh(int first, int do_init)
    int copy_current_year;
 
    b=dialog_save_changed_record(pane, record_changed);
-   if (b==DIALOG_SAID_1) {
+   if (b==DIALOG_SAID_2) {
       cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
    }
    set_new_button_to(CLEAR_FLAG);
@@ -3628,7 +3658,7 @@ cb_keyboard(GtkWidget *widget, GdkEventKey *event, gpointer *p)
       gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
 
       b=dialog_save_changed_record(pane, record_changed);
-      if (b==DIALOG_SAID_1) {
+      if (b==DIALOG_SAID_2) {
 	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
       }
       set_new_button_to(CLEAR_FLAG);
@@ -3672,7 +3702,7 @@ int datebook_gui_cleanup()
    int b;
 
    b=dialog_save_changed_record(pane, record_changed);
-   if (b==DIALOG_SAID_1) {
+   if (b==DIALOG_SAID_2) {
       cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
    }
 
@@ -4866,6 +4896,15 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_signal_connect(GTK_OBJECT(text_widget2), "key_press_event",
 		      GTK_SIGNAL_FUNC(cb_key_pressed_right_side), clist);
 
+
+   gtk_signal_connect(GTK_OBJECT(main_calendar),
+		      "day_selected", GTK_SIGNAL_FUNC(cb_cal_changed),
+		      GINT_TO_POINTER(CAL_DAY_SELECTED));
+   gtk_signal_connect(GTK_OBJECT(main_calendar), "key_press_event",
+		      GTK_SIGNAL_FUNC(cb_key_pressed_in_calendar), NULL);
+//   gtk_signal_connect(GTK_OBJECT(main_calendar), "key_release_event",
+//		      GTK_SIGNAL_FUNC(cb_key_pressed_in_calendar), NULL);
+   set_date_labels();
 
    gtk_notebook_popup_enable(GTK_NOTEBOOK(notebook));
 

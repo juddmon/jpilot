@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.87 2005/11/22 04:46:57 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.88 2005/11/24 22:19:21 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -544,7 +544,7 @@ void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
       r = dialog_generic(GTK_WINDOW(export_window),
 			 0, 0, _("Overwrite File?"),
 			 _("Overwrite File"), text, 2, button_overwrite_text);
-      if (r!=DIALOG_SAID_1) {
+      if (r!=DIALOG_SAID_2) {
 	 return;
       }
    }
@@ -774,7 +774,7 @@ static void cb_category(GtkWidget *item, int selection)
 
    if ((GTK_CHECK_MENU_ITEM(item))->active) {
       b=dialog_save_changed_record(pane, record_changed);
-      if (b==DIALOG_SAID_1) {
+      if (b==DIALOG_SAID_2) {
 	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
       }
 
@@ -1028,7 +1028,7 @@ static void cb_clist_selection(GtkWidget      *clist,
       keep=record_changed;
       clist_select_row(GTK_CLIST(clist), clist_row_selected, column);
       b=dialog_save_changed_record(pane, record_changed);
-      if (b==DIALOG_SAID_1) {
+      if (b==DIALOG_SAID_2) {
 	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
       }
       set_new_button_to(CLEAR_FLAG);
@@ -1316,7 +1316,7 @@ int memo_cycle_cat()
    int i, new_cat;
 
    b=dialog_save_changed_record(pane, record_changed);
-   if (b==DIALOG_SAID_1) {
+   if (b==DIALOG_SAID_2) {
       cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
    }
 
@@ -1370,7 +1370,7 @@ int memo_gui_cleanup()
    int b;
 
    b=dialog_save_changed_record(pane, record_changed);
-   if (b==DIALOG_SAID_1) {
+   if (b==DIALOG_SAID_2) {
       cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
    }
    free_MemoList(&glob_memo_list);
