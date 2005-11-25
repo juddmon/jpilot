@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.117 2005/11/24 22:19:21 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.118 2005/11/25 18:20:09 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -3215,39 +3215,7 @@ static void cb_cancel(GtkWidget *widget, gpointer data)
    datebook_refresh(FALSE, FALSE);
 }
 
-/* When cursor navigation keys are used in calendar */
-gboolean cb_key_pressed_in_calendar(GtkWidget   *widget,
-                                    GdkEventKey *event,
-                                    gpointer     data)
-{
-   GdkEvent synthesized_event;
-
-   switch (event->keyval) {
-    case GDK_Left:
-    case GDK_KP_Left:
-    case GDK_Right:
-    case GDK_KP_Right:
-    case GDK_Up:
-    case GDK_KP_Up:
-    case GDK_Down:
-    case GDK_KP_Down:
-      synthesized_event.key.type = GDK_KEY_PRESS;
-      synthesized_event.key.window = widget->window;
-      synthesized_event.key.send_event = FALSE;	  
-      synthesized_event.key.time = GDK_CURRENT_TIME;   
-      synthesized_event.key.state = 0;
-      synthesized_event.key.keyval = GDK_space;
-      synthesized_event.key.length = 0;
-      /* According to GTK+ documentation key.string is deprecated and 
-      * should not be used. */
-      /* synthesized_event->key.string = NULL */
-//      synthesized_event.key.group = 0;
-      gtk_main_do_event(&synthesized_event);
-   }
-
-   return FALSE;
-}
-
+/* When a calendar day is pressed */
 void cb_cal_changed(GtkWidget *widget,
 		    gpointer   data)
 {
@@ -4896,15 +4864,6 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_signal_connect(GTK_OBJECT(text_widget2), "key_press_event",
 		      GTK_SIGNAL_FUNC(cb_key_pressed_right_side), clist);
 
-
-   gtk_signal_connect(GTK_OBJECT(main_calendar),
-		      "day_selected", GTK_SIGNAL_FUNC(cb_cal_changed),
-		      GINT_TO_POINTER(CAL_DAY_SELECTED));
-   gtk_signal_connect(GTK_OBJECT(main_calendar), "key_press_event",
-		      GTK_SIGNAL_FUNC(cb_key_pressed_in_calendar), NULL);
-//   gtk_signal_connect(GTK_OBJECT(main_calendar), "key_release_event",
-//		      GTK_SIGNAL_FUNC(cb_key_pressed_in_calendar), NULL);
-   set_date_labels();
 
    gtk_notebook_popup_enable(GTK_NOTEBOOK(notebook));
 
