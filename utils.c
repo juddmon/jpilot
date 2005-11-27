@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.99 2005/11/27 04:56:33 judd Exp $ */
+/* $Id: utils.c,v 1.100 2005/11/27 14:03:42 rousseau Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -106,7 +106,7 @@ void get_compile_options(char *string, int len)
 	      " %s - %s\n"
 	      " %s - %s\n"
 	      " %s - %s\n"
-	      " %s - %s\n",
+	      " %s - %s",
 	      _("Date compiled"), __DATE__, __TIME__,
 	      _("Compiled with these options:"),
 
@@ -1157,6 +1157,8 @@ int dialog_generic(GtkWindow *main_window,
 				"type", GTK_WINDOW_TOPLEVEL,
 				"window_position", GTK_WIN_POS_MOUSE,
 				NULL);
+
+   gtk_window_set_title(glob_dialog, title);
 
    gtk_signal_connect(GTK_OBJECT(glob_dialog), "destroy",
                       GTK_SIGNAL_FUNC(cb_destroy_dialog), glob_dialog);
