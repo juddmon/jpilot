@@ -1,4 +1,4 @@
-/* $Id: category.c,v 1.25 2005/11/27 19:14:33 rikster5 Exp $ */
+/* $Id: category.c,v 1.26 2005/11/27 20:22:13 rikster5 Exp $ */
 
 /*******************************************************************************
  * category.c
@@ -835,7 +835,7 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
    gtk_button_box_set_spacing(GTK_BUTTON_BOX(hbox), 6);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox, FALSE, FALSE, 1);
 
-#ifdef ENABLE_GTK2
+#ifdef ENABLE_STOCK_BUTTONS
    button = gtk_button_new_from_stock(GTK_STOCK_NEW);
 #else
    button = gtk_button_new_with_label(_("New"));
@@ -851,7 +851,7 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
 		      GINT_TO_POINTER(EDIT_CAT_RENAME));
    gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 1);
 
-#ifdef ENABLE_GTK2
+#ifdef ENABLE_STOCK_BUTTONS
    button = gtk_button_new_from_stock(GTK_STOCK_DELETE);
 #else
    button = gtk_button_new_with_label(_("Delete"));
