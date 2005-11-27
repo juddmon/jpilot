@@ -1,4 +1,4 @@
-/* $Id: export_gui.c,v 1.17 2005/11/27 00:07:23 judd Exp $ */
+/* $Id: export_gui.c,v 1.18 2005/11/27 19:14:34 rikster5 Exp $ */
 
 /*******************************************************************************
  * export_gui.c
@@ -336,7 +336,7 @@ int export_gui(GtkWidget *main_window,
    hbox = gtk_hbutton_box_new();
    gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
    gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox), GTK_BUTTONBOX_END);
-   gtk_button_box_set_spacing(hbox, 6);
+   gtk_button_box_set_spacing(GTK_BUTTON_BOX(hbox), 6);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
 #ifdef ENABLE_GTK2

@@ -1,4 +1,4 @@
-/* $Id: category.c,v 1.24 2005/11/27 00:07:23 judd Exp $ */
+/* $Id: category.c,v 1.25 2005/11/27 19:14:33 rikster5 Exp $ */
 
 /*******************************************************************************
  * category.c
@@ -832,7 +832,7 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
    hbox = gtk_hbutton_box_new();
    gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
    gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox), GTK_BUTTONBOX_END);
-   gtk_button_box_set_spacing(hbox, 6);
+   gtk_button_box_set_spacing(GTK_BUTTON_BOX(hbox), 6);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox, FALSE, FALSE, 1);
 
 #ifdef ENABLE_GTK2
@@ -884,7 +884,7 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
    hbox = gtk_hbutton_box_new();
    gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
    gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox), GTK_BUTTONBOX_END);
-   gtk_button_box_set_spacing(hbox, 6);
+   gtk_button_box_set_spacing(GTK_BUTTON_BOX(hbox), 6);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 1);
 #ifdef ENABLE_GTK2
    button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
@@ -935,7 +935,7 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
    hbox = gtk_hbutton_box_new();
    gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
    gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox), GTK_BUTTONBOX_END);
-   gtk_button_box_set_spacing(hbox, 6);
+   gtk_button_box_set_spacing(GTK_BUTTON_BOX(hbox), 6);
    gtk_box_pack_start(GTK_BOX(vbox3), hbox, FALSE, FALSE, 2);
 
    /* Buttons */

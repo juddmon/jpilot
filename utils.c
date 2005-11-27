@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.100 2005/11/27 14:03:42 rousseau Exp $ */
+/* $Id: utils.c,v 1.101 2005/11/27 19:14:34 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -1063,7 +1063,7 @@ int cal_dialog(GtkWindow *main_window,
    hbox = gtk_hbutton_box_new();
    gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
    gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox), GTK_BUTTONBOX_END);
-   gtk_button_box_set_spacing(hbox, 6);
+   gtk_button_box_set_spacing(GTK_BUTTON_BOX(hbox), 6);
    gtk_container_add(GTK_CONTAINER(vbox), hbox);
 
    gtk_calendar_display_options(GTK_CALENDAR(util_cal),
@@ -1158,7 +1158,7 @@ int dialog_generic(GtkWindow *main_window,
 				"window_position", GTK_WIN_POS_MOUSE,
 				NULL);
 
-   gtk_window_set_title(glob_dialog, title);
+   gtk_window_set_title(GTK_WINDOW(glob_dialog), title);
 
    gtk_signal_connect(GTK_OBJECT(glob_dialog), "destroy",
                       GTK_SIGNAL_FUNC(cb_destroy_dialog), glob_dialog);
@@ -1208,7 +1208,7 @@ int dialog_generic(GtkWindow *main_window,
    g_free(markup);
    gtk_label_set_selectable(GTK_LABEL(label1), TRUE);
 #else
-   gtk_window_set_title(glob_dialog, title);
+   gtk_window_set_title(GTK_WINDOW(glob_dialog), title);
    gtk_label_set_text(GTK_LABEL(label1), text);
 #endif
    gtk_box_pack_start(GTK_BOX(vbox2), label1, FALSE, FALSE, 2);
@@ -1216,7 +1216,7 @@ int dialog_generic(GtkWindow *main_window,
    hbox1 = gtk_hbutton_box_new();
    gtk_container_set_border_width(GTK_CONTAINER(hbox1), 12);
    gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox1), GTK_BUTTONBOX_END);
-   gtk_button_box_set_spacing(hbox1, 6);
+   gtk_button_box_set_spacing(GTK_BUTTON_BOX(hbox1), 6);
 
    gtk_box_pack_start(GTK_BOX(vbox1), hbox1, FALSE, FALSE, 2);
 

@@ -1,4 +1,4 @@
-/* $Id: search_gui.c,v 1.36 2005/11/27 14:01:52 rousseau Exp $ */
+/* $Id: search_gui.c,v 1.37 2005/11/27 19:14:34 rikster5 Exp $ */
 
 /*******************************************************************************
  * search_gui.c
@@ -575,7 +575,7 @@ void cb_search_gui(GtkWidget *widget, gpointer data)
    hbox = gtk_hbutton_box_new();
    gtk_container_set_border_width(GTK_CONTAINER(hbox), 6);
    gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox), GTK_BUTTONBOX_END);
-   gtk_button_box_set_spacing(hbox, 6);
+   gtk_button_box_set_spacing(GTK_BUTTON_BOX(hbox), 6);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
    /* Create a "Search" button */

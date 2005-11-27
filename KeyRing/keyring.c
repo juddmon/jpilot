@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.48 2005/11/27 14:05:06 rousseau Exp $ */
+/* $Id: keyring.c,v 1.49 2005/11/27 19:14:34 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -1392,7 +1392,7 @@ static int dialog_password(GtkWindow *main_window,
    /* Button Box */
    hbox1 = gtk_hbutton_box_new();
    gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox1), GTK_BUTTONBOX_END);
-   gtk_button_box_set_spacing(hbox1, 6);
+   gtk_button_box_set_spacing(GTK_BUTTON_BOX(hbox1), 6);
    gtk_container_set_border_width(GTK_CONTAINER(hbox1), 5);
    gtk_box_pack_start(GTK_BOX(vbox1), hbox1, FALSE, FALSE, 2);
 

@@ -1,4 +1,4 @@
-/* $Id: install_user.c,v 1.2 2005/11/27 00:07:23 judd Exp $ */
+/* $Id: install_user.c,v 1.3 2005/11/27 19:14:34 rikster5 Exp $ */
 
 /*******************************************************************************
  * install_user.c
@@ -197,7 +197,7 @@ int dialog_install_user(GtkWindow *main_window, char *user, int user_len, unsign
 
    hbox = gtk_hbutton_box_new();
    gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox), GTK_BUTTONBOX_END);
-   gtk_button_box_set_spacing(hbox, 6);
+   gtk_button_box_set_spacing(GTK_BUTTON_BOX(hbox), 6);
    gtk_container_set_border_width(GTK_CONTAINER(hbox), 5);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 2);
 

@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.120 2005/11/27 14:05:05 rousseau Exp $ */
+/* $Id: datebook_gui.c,v 1.121 2005/11/27 19:14:33 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -1146,7 +1146,7 @@ static int datebook_export_gui(GtkWidget *main_window, int x, int y)
    hbox = gtk_hbutton_box_new();
    gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
    gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox), GTK_BUTTONBOX_END);
-   gtk_button_box_set_spacing(hbox, 6);
+   gtk_button_box_set_spacing(GTK_BUTTON_BOX(hbox), 6);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
 #ifdef ENABLE_GTK2
