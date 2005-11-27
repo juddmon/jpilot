@@ -1,4 +1,4 @@
-/* $Id: search_gui.c,v 1.35 2005/11/27 00:07:23 judd Exp $ */
+/* $Id: search_gui.c,v 1.36 2005/11/27 14:01:52 rousseau Exp $ */
 
 /*******************************************************************************
  * search_gui.c
@@ -535,7 +535,7 @@ void cb_search_gui(GtkWidget *widget, gpointer data)
    gtk_container_add(GTK_CONTAINER(window), vbox);
 
    hbox = gtk_hbox_new(FALSE, 0);
-   gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
+   gtk_container_set_border_width(GTK_CONTAINER(hbox), 6);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
    label = gtk_label_new(_("Search for: "));
@@ -552,7 +552,7 @@ void cb_search_gui(GtkWidget *widget, gpointer data)
 
    /*Put the scrolled window up */
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
-   gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 12);
+   gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 3);
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
 				  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
    gtk_box_pack_start(GTK_BOX(vbox), scrolled_window, TRUE, TRUE, 0);
@@ -573,7 +573,7 @@ void cb_search_gui(GtkWidget *widget, gpointer data)
 		      clist);
 
    hbox = gtk_hbutton_box_new();
-   gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
+   gtk_container_set_border_width(GTK_CONTAINER(hbox), 6);
    gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox), GTK_BUTTONBOX_END);
    gtk_button_box_set_spacing(hbox, 6);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
