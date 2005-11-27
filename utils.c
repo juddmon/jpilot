@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.98 2005/11/27 00:07:23 judd Exp $ */
+/* $Id: utils.c,v 1.99 2005/11/27 04:56:33 judd Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -2047,9 +2047,6 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       fwrite(RecordBuffer->data, header.rec_len, 1, pc_in);
 #endif /* PILOT_LINK_0_12 */
       jp_logf(JP_LOG_DEBUG, "record deleted\n");
-#ifdef PILOT_LINK_0_12
-      pi_buffer_free(RecordBuffer);
-#endif /* PILOT_LINK_0_12 */
       fclose(pc_in);
 #ifdef PILOT_LINK_0_12
       pi_buffer_free(RecordBuffer);
