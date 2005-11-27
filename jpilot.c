@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.124 2005/11/27 00:07:23 judd Exp $ */
+/* $Id: jpilot.c,v 1.125 2005/11/27 20:08:34 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -593,12 +593,12 @@ static void cb_private(GtkWidget *widget, gpointer data)
 				       ascii_password, retry);
 	    r_pass = verify_password(ascii_password);
 	    retry=TRUE;
-	 } while ((r_pass==FALSE) && (r_dialog==1));
+	 } while ((r_pass==FALSE) && (r_dialog==2));
       }
 #else
-      r_dialog = 1;
+      r_dialog = 2;
 #endif
-      if (r_dialog==1) {
+      if (r_dialog==2) {
 	 gtk_widget_hide(button_locked);
 	 gtk_widget_hide(button_locked_masked);
 	 gtk_widget_show(button_unlocked);

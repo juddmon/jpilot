@@ -1,4 +1,4 @@
-/* $Id: password.c,v 1.22 2005/11/27 19:14:34 rikster5 Exp $ */
+/* $Id: password.c,v 1.23 2005/11/27 20:08:34 rikster5 Exp $ */
 
 /*******************************************************************************
  * password.c
@@ -282,7 +282,7 @@ static gboolean cb_destroy_dialog(GtkWidget *widget)
 }
 
 /*
- * returns 1 if OK was pressed, 2 if cancel was hit
+ * returns 1 if cancel was pressed, 2 if OK was hit
  */
 int dialog_password(GtkWindow *main_window, char *ascii_password, int retry)
 {
@@ -342,7 +342,7 @@ int dialog_password(GtkWindow *main_window, char *ascii_password, int retry)
    gtk_entry_set_visibility(GTK_ENTRY(entry), FALSE);
    gtk_signal_connect(GTK_OBJECT(entry), "activate",
 		      GTK_SIGNAL_FUNC(cb_dialog_button),
-		      GINT_TO_POINTER(DIALOG_SAID_1));
+		      GINT_TO_POINTER(DIALOG_SAID_2));
    gtk_box_pack_start(GTK_BOX(hbox1), entry, TRUE, TRUE, 1);
 
 
@@ -361,7 +361,7 @@ int dialog_password(GtkWindow *main_window, char *ascii_password, int retry)
 #endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_dialog_button),
-		      GINT_TO_POINTER(DIALOG_SAID_2));
+		      GINT_TO_POINTER(DIALOG_SAID_1));
    gtk_box_pack_start(GTK_BOX(hbox1), button, FALSE, FALSE, 1);
 
 #ifdef ENABLE_GTK2
@@ -371,7 +371,7 @@ int dialog_password(GtkWindow *main_window, char *ascii_password, int retry)
 #endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_dialog_button),
-		      GINT_TO_POINTER(DIALOG_SAID_1));
+		      GINT_TO_POINTER(DIALOG_SAID_2));
    gtk_box_pack_start(GTK_BOX(hbox1), button, FALSE, FALSE, 1);
    GTK_WIDGET_SET_FLAGS(button, GTK_CAN_DEFAULT);
    gtk_widget_grab_default(button);
@@ -379,7 +379,7 @@ int dialog_password(GtkWindow *main_window, char *ascii_password, int retry)
    Pdata = malloc(sizeof(struct dialog_data));
    if (Pdata) {
       /* Set the default button pressed to CANCEL */
-      Pdata->button_hit = DIALOG_SAID_2;
+      Pdata->button_hit = DIALOG_SAID_1;
       Pdata->entry=entry;
       Pdata->text[0]='\0';
    }
