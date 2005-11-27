@@ -1,0 +1,2876 @@
+# Ukrainian translation to jpilot
+# Copyright (C) YEAR Judd Montgomery
+# Copyright (C) 2004 Free Software Foundation, Inc.
+# This file is distributed under the same license as the jpilot package.
+# Maxim V. Dziumanenko <mvd@mylinux.com.ua>, 2004-2005.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: jpilot 0.99.8-pre12\n"
+"Report-Msgid-Bugs-To: jpilot-devel@jpilot.org\n"
+"POT-Creation-Date: 2005-11-26 19:27-0500\n"
+"PO-Revision-Date: 2005-11-25 17:56+0300\n"
+"Last-Translator: Maxim V. Dziumanenko <mvd@mylinux.com.ua>\n"
+"Language-Team: Ukrainian <translation-team-uk@lists.sourceforge.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: address.c:288 address.c:552 alarms.c:352 dat.c:181 dat.c:655 dat.c:857
+#: dat.c:991 dat.c:1130 datebook.c:89 datebook.c:390 datebook.c:397
+#: datebook.c:427 datebook.c:1046 jpilot.c:1530 libplugin.c:467
+#: libplugin.c:749 libplugin.c:856 libplugin.c:935 libplugin.c:976 memo.c:95
+#: memo.c:367 plugins.c:108 prefs.c:314 prefs.c:339 prefs.c:854 sync.c:252
+#: sync.c:1153 sync.c:2320 todo.c:206 todo.c:548 utils.c:2312
+msgid "Out of memory"
+msgstr "Скінчилась пам'ять"
+
+#: address.c:345 address.c:352 datebook.c:340 libplugin.c:179 memo.c:163
+#: memo.c:170 todo.c:291 todo.c:298 utils.c:1970 utils.c:1975 utils.c:1986
+#: utils.c:1991 utils.c:2002 utils.c:2007 utils.c:2019 utils.c:2024
+msgid "error"
+msgstr "помилка"
+
+#: address.c:412 address_gui.c:1680 datebook.c:686 libplugin.c:809
+#: libplugin.c:833 memo.c:244 memo_gui.c:996 todo_gui.c:1318
+#: Expense/expense.c:1138 Expense/expense.c:2136
+#, c-format
+msgid "Error reading file: %s\n"
+msgstr "Помилка при читанні файлу: %s\n"
+
+#: address_gui.c:261 datebook_gui.c:2532 memo_gui.c:184 todo_gui.c:305
+#: KeyRing/keyring.c:512
+msgid ""
+"This record is deleted.\n"
+"Undelete it or copy it to make changes.\n"
+msgstr ""
+"Запис видалений.\n"
+"Щоб внести зміни поверніть його з видаленого стану або скопіюйте.\n"
+
+#: address_gui.c:469 category.c:159 category.c:165 category.c:213
+#: category.c:270 datebook_gui.c:372 memo_gui.c:301 sync.c:1116 sync.c:1122
+#: sync.c:2295 sync.c:2515 sync.c:2521 sync.c:2638 sync.c:2904 todo_gui.c:445
+#: utils.c:2726 utils.c:2775 utils.c:2781 utils.c:2854 utils.c:2860
+#: utils.c:2923 utils.c:2986 utils.c:2992 utils.c:3055 utils.c:3062
+#, c-format
+msgid "Unable to open file: %s\n"
+msgstr "Не вдається відкрити файл: %s\n"
+
+#: address_gui.c:548
+msgid "File doesn't appear to be address.dat format\n"
+msgstr "Формат файлу не схожий на address.dat\n"
+
+#: address_gui.c:558 datebook_gui.c:582 memo_gui.c:436 todo_gui.c:571
+#: Expense/expense.c:619 Expense/expense.c:1406
+msgid "Unfiled"
+msgstr "Не представлене"
+
+#: address_gui.c:697 alarms.c:226 category.c:420 category.c:902 category.c:955
+#: datebook_gui.c:669 datebook_gui.c:1164 export_gui.c:354 jpilot.c:363
+#: jpilot.c:408 jpilot.c:476 jpilot.c:520 jpilot.c:965 jpilot.c:1864
+#: memo_gui.c:526 password.c:370 restore_gui.c:322 todo_gui.c:661 utils.c:1104
+#: utils.c:1261 KeyRing/keyring.c:1413
+msgid "OK"
+msgstr "Гаразд"
+
+#: address_gui.c:698 datebook_gui.c:670 memo_gui.c:527 todo_gui.c:662
+#: utils.c:1279
+msgid "No"
+msgstr "Ні"
+
+#: address_gui.c:698 datebook_gui.c:670 memo_gui.c:527 todo_gui.c:662
+#: utils.c:1279
+msgid "Yes"
+msgstr "Так"
+
+#: address_gui.c:722 datebook_gui.c:697 memo_gui.c:537 todo_gui.c:688
+#, c-format
+msgid "%s is a directory"
+msgstr "%s є каталогом"
+
+#: address_gui.c:724 address_gui.c:741 datebook_gui.c:699 datebook_gui.c:716
+#: memo_gui.c:539 memo_gui.c:556 todo_gui.c:690 todo_gui.c:707
+msgid "Error Opening File"
+msgstr "Помилка при відкриванні файлу"
+
+#: address_gui.c:728 datebook_gui.c:703 memo_gui.c:543 todo_gui.c:694
+#, c-format
+msgid "Do you want to overwrite file %s?"
+msgstr "Бажаєте перезаписати файл %s?"
+
+#: address_gui.c:730 datebook_gui.c:705 memo_gui.c:545 todo_gui.c:696
+msgid "Overwrite File?"
+msgstr "Перезаписати файл?"
+
+#: address_gui.c:739 datebook_gui.c:714 memo_gui.c:554 todo_gui.c:705
+#, c-format
+msgid "Error opening file: %s"
+msgstr "Помилка при відкриванні файлу: %s"
+
+#: address_gui.c:750
+#, c-format
+msgid "Can't export address %d\n"
+msgstr "Не вдається експортувати адресу %d\n"
+
+#: address_gui.c:815 address_gui.c:823 address_gui.c:840
+msgid "Field"
+msgstr "Поле"
+
+#: address_gui.c:1039 datebook_gui.c:985 memo_gui.c:612 todo_gui.c:844
+msgid "Unknown export type\n"
+msgstr "Невідомий тип експорту\n"
+
+#: address_gui.c:1230 address_gui.c:2649
+msgid "Company/Name"
+msgstr "Компанія/Ім'я"
+
+#: address_gui.c:1232 address_gui.c:2651
+msgid "Name/Company"
+msgstr "Ім'я/Компанія"
+
+#: address_gui.c:1330 datebook_gui.c:2610 memo_gui.c:913 todo_gui.c:1246
+#: KeyRing/keyring.c:823
+msgid "You can't modify a record that is deleted\n"
+msgstr "Не можна змінювати видалений запис\n"
+
+#: address_gui.c:1473 address_gui.c:1851 address_gui.c:2362 memo_gui.c:821
+#: memo_gui.c:1079 memo_gui.c:1358 todo_gui.c:1112 todo_gui.c:1515
+#: todo_gui.c:1528 todo_gui.c:1961
+msgid "Category is not legal\n"
+msgstr "Некоректна категорія\n"
+
+#: address_gui.c:1531 alarms.c:607 dialer.c:165
+#, c-format
+msgid "executing command = [%s]\n"
+msgstr "виконується команда = [%s]\n"
+
+#: address_gui.c:1769 Expense/expense.c:1603 KeyRing/keyring.c:1927
+#: KeyRing/keyring.c:2018
+msgid "Category: "
+msgstr "Категорія: "
+
+#: address_gui.c:1801 address_gui.c:2821
+msgid "kana("
+msgstr "kana("
+
+#: address_gui.c:1913 address_gui.c:2931
+msgid "E-mail"
+msgstr "Ел.адреса"
+
+#: address_gui.c:1915 address_gui.c:1918 address_gui.c:2932
+msgid "Mail"
+msgstr "Пошта"
+
+#: address_gui.c:1923 address_gui.c:1926 address_gui.c:2935 dialer.c:308
+#: dialer.c:333
+msgid "Dial"
+msgstr "Дзвонити"
+
+#: address_gui.c:2136 address_gui.c:2160
+msgid "-Unnamed-"
+msgstr "-Без назви-"
+
+#: address_gui.c:2233 memo_gui.c:1268 todo_gui.c:1850
+msgid "0 records"
+msgstr "0 записів"
+
+#: address_gui.c:2236 datebook_gui.c:2407 memo_gui.c:1271 todo_gui.c:1853
+#, c-format
+msgid "%d of %d records"
+msgstr "%d з %d записів"
+
+#: address_gui.c:2629 category.c:450 category.c:464 category.c:471
+#: category.c:489 category.c:496 category.c:514 category.c:594 category.c:789
+#: memo_gui.c:1508 todo_gui.c:2116 Expense/expense.c:1609
+msgid "Edit Categories"
+msgstr "Правка категорій"
+
+#: address_gui.c:2656
+msgid "Phone"
+msgstr "Телефон"
+
+#: address_gui.c:2678
+msgid "Quick Find: "
+msgstr "Швидко знайти: "
+
+#: address_gui.c:2694 category.c:421 category.c:892 category.c:945
+#: datebook_gui.c:1155 datebook_gui.c:1592 datebook_gui.c:4377
+#: export_gui.c:345 memo_gui.c:1552 password.c:360 print_gui.c:338
+#: restore_gui.c:313 todo_gui.c:2169 utils.c:1090 KeyRing/keyring.c:1403
+#: KeyRing/keyring.c:1959
+msgid "Cancel"
+msgstr "Скасувати"
+
+#: address_gui.c:2694 datebook_gui.c:4377 memo_gui.c:1552 todo_gui.c:2169
+#: KeyRing/keyring.c:1959
+msgid "Cancel the modifications"
+msgstr "Скасувати зміни"
+
+#: address_gui.c:2699 category.c:421 category.c:857 datebook_gui.c:4382
+#: memo_gui.c:1557 todo_gui.c:2174 Expense/expense.c:1646
+#: KeyRing/keyring.c:1964
+msgid "Delete"
+msgstr "Видалити"
+
+#: address_gui.c:2699 datebook_gui.c:4382 memo_gui.c:1557 todo_gui.c:2174
+#: Expense/expense.c:1646 KeyRing/keyring.c:1964
+msgid "Delete the selected record"
+msgstr "Повернути з видаленого стану виділений запис"
+
+#: address_gui.c:2705 datebook_gui.c:4388 memo_gui.c:1563 todo_gui.c:2180
+#: KeyRing/keyring.c:1970
+msgid "Undelete"
+msgstr "Повернути з видаленого стану"
+
+#: address_gui.c:2705 datebook_gui.c:4388 memo_gui.c:1563 todo_gui.c:2180
+#: KeyRing/keyring.c:1970
+msgid "Undelete the selected record"
+msgstr "Повернути з видаленого стану виділений запис"
+
+#: address_gui.c:2711 datebook_gui.c:4394 memo_gui.c:1569 todo_gui.c:2186
+#: Expense/expense.c:1651 KeyRing/keyring.c:1976
+msgid "Copy"
+msgstr "Копіювати"
+
+#: address_gui.c:2711 datebook_gui.c:4394 memo_gui.c:1569 todo_gui.c:2186
+#: Expense/expense.c:1651 KeyRing/keyring.c:1976
+msgid "Copy the selected record"
+msgstr "Копіювати видалений запис"
+
+#: address_gui.c:2717 datebook_gui.c:4400 memo_gui.c:1575 todo_gui.c:2192
+#: Expense/expense.c:1656 KeyRing/keyring.c:1982
+msgid "New Record"
+msgstr "Новий запис"
+
+#: address_gui.c:2717 datebook_gui.c:4400 memo_gui.c:1575 todo_gui.c:2192
+#: Expense/expense.c:1656 KeyRing/keyring.c:1982
+msgid "Add a new record"
+msgstr "Додати новий запис"
+
+#: address_gui.c:2722 datebook_gui.c:4406 memo_gui.c:1581 todo_gui.c:2198
+#: Expense/expense.c:1661 KeyRing/keyring.c:1988
+msgid "Add Record"
+msgstr "Додати запис"
+
+#: address_gui.c:2722 datebook_gui.c:4406 memo_gui.c:1581 todo_gui.c:2198
+#: Expense/expense.c:1661 KeyRing/keyring.c:1988
+msgid "Add the new record"
+msgstr "Додати новий запис"
+
+#: address_gui.c:2732 datebook_gui.c:4416 memo_gui.c:1591 todo_gui.c:2208
+#: Expense/expense.c:1670 KeyRing/keyring.c:1998
+msgid "Apply Changes"
+msgstr "Застосувати зміни"
+
+#: address_gui.c:2732 datebook_gui.c:4416 memo_gui.c:1591 todo_gui.c:2208
+#: Expense/expense.c:1670 KeyRing/keyring.c:1998
+msgid "Commit the modifications"
+msgstr "Закріпити зміни"
+
+#: address_gui.c:2749 datebook_gui.c:4467 memo_gui.c:1609 todo_gui.c:2271
+msgid "Private"
+msgstr "Приватний"
+
+#: address_gui.c:2769 KeyRing/keyring.c:1839
+msgid "Name"
+msgstr "Ім'я"
+
+#: address_gui.c:2777 prefs_gui.c:370
+msgid "Address"
+msgstr "Адреса"
+
+#: address_gui.c:2785 Expense/expense.c:571 Expense/expense.c:1427
+msgid "Other"
+msgstr "Інше"
+
+#: address_gui.c:2793 datebook_gui.c:1343 datebook_gui.c:1592 utils.c:2682
+#: KeyRing/keyring.c:1226
+msgid "All"
+msgstr "Усі"
+
+#: address_gui.c:2996
+msgid ""
+"Show\n"
+"In List"
+msgstr ""
+"Показувати\n"
+"у списку"
+
+#: address_gui.c:3004
+msgid "Quick View"
+msgstr "Зведення"
+
+#: alarms.c:232
+msgid "Remind me"
+msgstr "Нагадати"
+
+#: alarms.c:242 datebook_gui.c:4449
+msgid "Minutes"
+msgstr "хвилин"
+
+#: alarms.c:244 datebook_gui.c:4453
+msgid "Hours"
+msgstr "годин"
+
+#: alarms.c:439
+#, c-format
+msgid "Unable to open %s%s file\n"
+msgstr "Не вдається відкрити файл %s%s\n"
+
+#: alarms.c:524
+msgid "Appointment Reminder"
+msgstr "Нагадування про зустріч"
+
+#: alarms.c:527
+msgid "Past Appointment"
+msgstr "Минула зустріч"
+
+#: alarms.c:530
+msgid "Postponed Appointment"
+msgstr "Відстрочена зустріч"
+
+#: alarms.c:533 datebook_gui.c:4285
+msgid "Appointment"
+msgstr "Зустріч"
+
+#: alarms.c:614
+msgid "J-Pilot Alarm"
+msgstr "Сповіщення J-Pilot"
+
+#: alarms.c:1131
+msgid "infinite loop, breaking\n"
+msgstr "нескінченний цикл, переривається\n"
+
+#: alarms.c:1499
+#, c-format
+msgid "Unable to open %s.alarms file\n"
+msgstr "Не вдається відкрити %s\n"
+
+#: category.c:192 sync.c:2552 utils.c:2802 utils.c:2890 utils.c:3012
+#: utils.c:3082
+msgid "rename failed"
+msgstr "помилка перейменування"
+
+#: category.c:229 category.c:286 sync.c:1145 sync.c:2311
+msgid "PC file corrupt?\n"
+msgstr "PC файл пошкоджений?\n"
+
+#: category.c:236 category.c:246 category.c:293 category.c:304 category.c:314
+#: sync.c:1190 sync.c:1210 sync.c:1270 sync.c:1281 sync.c:2373 sync.c:2400
+#: sync.c:2452 sync.c:2462
+msgid "fseek failed - fatal error\n"
+msgstr "помилка при fseek() - фатальна помилка\n"
+
+#: category.c:421
+msgid "Move"
+msgstr "Перемістити"
+
+#: category.c:451
+msgid "The maximum number of categories (16) are already used"
+msgstr "Вже використано максимальну кількість категорій (16)"
+
+#: category.c:454
+msgid "Enter New Category"
+msgstr "Введіть нову категорію"
+
+#: category.c:465
+msgid "You must select a category to rename"
+msgstr "Необхідно вибрати категорію для перейменування"
+
+#: category.c:469
+#, c-format
+msgid "You can't edit category %s.\n"
+msgstr "Не можна редагувати категорію %s.\n"
+
+#: category.c:476
+msgid "Enter New Category Name"
+msgstr "Введіть нову назву категорії"
+
+#: category.c:490
+msgid "You must select a category to delete"
+msgstr "Необхідно вибрати категорію для видалення"
+
+#: category.c:494
+#, c-format
+msgid "You can't delete category %s.\n"
+msgstr "Не можна видалити категорію %s.\n"
+
+#: category.c:510
+#, c-format
+msgid ""
+"There are %d records in %s.\n"
+"Do you want to move them to %s, or delete them?"
+msgstr ""
+"%d записів у %s.\n"
+"Ви хочете перемістити їх у %s, чи видалити їх?"
+
+#: category.c:569
+#, c-format
+msgid "invalid state file %s line %d\n"
+msgstr "неправильний стан файлу %s рядок %d\n"
+
+#: category.c:592
+#, c-format
+msgid "The category %s can't be used more than once"
+msgstr "Категорія %s не може використовуватись більше ніж один раз"
+
+#: category.c:816
+msgid "category name"
+msgstr "назва категорії"
+
+#: category.c:841
+msgid "New"
+msgstr "Створити"
+
+#: category.c:848
+msgid "Rename"
+msgstr "Перейменувати"
+
+#: category.c:963
+msgid "debug"
+msgstr "налагодження"
+
+#: dat.c:455
+msgid "unknown type ="
+msgstr "невідомий тип ="
+
+#: dat.c:536
+#, c-format
+msgid "fields per row count != %d, unknown format\n"
+msgstr "кількість полів на рядок != %d, невідомий формат\n"
+
+#: dat.c:550
+#, c-format
+msgid "field count != %d, unknown format\n"
+msgstr "кількість полів != %d, невідомий формат\n"
+
+#: dat.c:558
+msgid "Unknown format, file has wrong schema\n"
+msgstr "Невідомий формат, файл має неправильну схему\n"
+
+#: dat.c:559
+msgid "File schema is:"
+msgstr "Схема файлу:"
+
+#: dat.c:564
+msgid "It should be:  "
+msgstr "Має бути:"
+
+#: dat.c:674 dat.c:692 dat.c:874 dat.c:887 dat.c:1010 dat.c:1023 dat.c:1147
+#: dat.c:1160
+#, c-format
+msgid "%s:%d Record %d, field %d: Invalid type.  Expected %d, found %d\n"
+msgstr ""
+"%s:%d Запис %d, поле %d: Неправильний тип.  Очікувалось %d, знайдено %d\n"
+
+#: dat.c:675 dat.c:693 dat.c:875 dat.c:888 dat.c:992 dat.c:1011 dat.c:1024
+#: dat.c:1148 dat.c:1161
+msgid "read of file terminated\n"
+msgstr "читання файлу перервано\n"
+
+#: datebook.c:643
+#, c-format
+msgid "Unknown repeatType (%d) found in DatebookDB\n"
+msgstr "У DatebookDB знайдено невідомий repeatType (%d)\n"
+
+#: datebook_gui.c:222 datebook_gui.c:229 datebook_gui.c:4084
+#: datebook_gui.c:4091
+msgid "Su"
+msgstr "Нд"
+
+#: datebook_gui.c:223 datebook_gui.c:4085
+msgid "Mo"
+msgstr "Пн"
+
+#: datebook_gui.c:224 datebook_gui.c:4086
+msgid "Tu"
+msgstr "Вт"
+
+#: datebook_gui.c:225 datebook_gui.c:4087
+msgid "We"
+msgstr "Ср"
+
+#: datebook_gui.c:226 datebook_gui.c:4088
+msgid "Th"
+msgstr "Чт"
+
+#: datebook_gui.c:227 datebook_gui.c:4089
+msgid "Fr"
+msgstr "Пн"
+
+#: datebook_gui.c:228 datebook_gui.c:4090
+msgid "Sa"
+msgstr "Сб"
+
+#: datebook_gui.c:561 datebook_gui.c:2063
+#, c-format
+msgid "Appointment description text > %d, truncating to %d\n"
+msgstr "Текст опису зустрічі > %d, обрізано до %d\n"
+
+#: datebook_gui.c:571 datebook_gui.c:986 datebook_gui.c:2124
+#: datebook_gui.c:2131
+msgid "Error"
+msgstr "Помилка"
+
+#: datebook_gui.c:572
+msgid "File doesn't appear to be datebook.dat format\n"
+msgstr "Формат файлу не схожий на  datebook.dat\n"
+
+#: datebook_gui.c:986
+msgid "Unknown export type"
+msgstr "Невідомий тип експорту"
+
+#: datebook_gui.c:1095 export_gui.c:258 jpilot.c:553
+msgid "Export"
+msgstr "Експорт"
+
+#: datebook_gui.c:1112
+msgid "Export All Datebook Records"
+msgstr "Експортувати усі записи календар"
+
+#: datebook_gui.c:1131 export_gui.c:320
+msgid "Save as"
+msgstr "Зберегти як"
+
+#: datebook_gui.c:1141 export_gui.c:331
+msgid "Browse"
+msgstr "Огляд"
+
+#: datebook_gui.c:1302
+msgid "Datebook Categories"
+msgstr "Категорії календаря"
+
+#: datebook_gui.c:1337 import_gui.c:311 prefs_gui.c:770
+msgid "Done"
+msgstr "Завершено"
+
+#: datebook_gui.c:1349 datebook_gui.c:4632
+msgid "None"
+msgstr "Немає"
+
+#: datebook_gui.c:1461
+msgid "Begin On Date"
+msgstr "Дата початку"
+
+#: datebook_gui.c:1466
+msgid "End On Date"
+msgstr "Дата закінчення"
+
+#: datebook_gui.c:1560 prefs.c:413
+msgid "Sunday"
+msgstr "Неділя"
+
+#: datebook_gui.c:1561 prefs.c:414
+msgid "Monday"
+msgstr "Понеділок"
+
+#: datebook_gui.c:1562
+msgid "Tuesday"
+msgstr "Вівторок"
+
+#: datebook_gui.c:1563
+msgid "Wednesday"
+msgstr "Середа"
+
+#: datebook_gui.c:1564
+msgid "Thursday"
+msgstr "Четвер"
+
+#: datebook_gui.c:1565
+msgid "Friday"
+msgstr "П'ятниця"
+
+#: datebook_gui.c:1566
+msgid "Saturday"
+msgstr "Субота"
+
+#: datebook_gui.c:1569
+msgid "4th"
+msgstr "4-й"
+
+#: datebook_gui.c:1569
+msgid "Last"
+msgstr "Останній"
+
+#: datebook_gui.c:1572
+#, c-format
+msgid ""
+"This appointment can either\n"
+"repeat on the 4th %s\n"
+"of the month, or on the last\n"
+"%s of the month.\n"
+"Which do you want?"
+msgstr ""
+"Ця зустріч може повторюватись\n"
+"або кожної 4-ї %s\n"
+"місяця, або у останній\n"
+"%s місяця.\n"
+"Що ви обираєте?"
+
+#: datebook_gui.c:1579 datebook_gui.c:1596
+msgid "Question?"
+msgstr "Запитання?"
+
+#: datebook_gui.c:1587
+msgid ""
+"This is a repeating event.\n"
+"Do you want to apply these\n"
+"changes to just the CURRENT\n"
+"event, or ALL of the\n"
+"occurrences of this event?"
+msgstr ""
+"Це періодична подія.\n"
+"Бажаєте застосувати ці зміни\n"
+"лише до ПОТОЧНОЇ події,\n"
+"чи до усіх таких подій?"
+
+#: datebook_gui.c:1592
+msgid "Current"
+msgstr "Поточна"
+
+#: datebook_gui.c:1831
+msgid "none"
+msgstr "немає"
+
+#: datebook_gui.c:1832
+msgid "day"
+msgstr "день"
+
+#: datebook_gui.c:1833
+msgid "week"
+msgstr "тиждень"
+
+#: datebook_gui.c:1834
+msgid "month"
+msgstr "місяць"
+
+#: datebook_gui.c:1835
+msgid "year"
+msgstr "рік"
+
+#: datebook_gui.c:2119 datebook_gui.c:2122
+#, c-format
+msgid "You cannot have an appointment that repeats every %d %s(s)\n"
+msgstr "Зустріч, що повторюється кожні %d %s(s) неможлива.\n"
+
+#: datebook_gui.c:2132
+msgid ""
+"You can not have a weekly repeating appointment that doesn't repeat on any "
+"day of the week."
+msgstr "Щотижнева зустріч, що не повторюється у жоден із днів тижня неможлива."
+
+#: datebook_gui.c:2285
+msgid "No Time"
+msgstr "Час не вказано"
+
+#: datebook_gui.c:2626
+msgid "Invalid Appointment"
+msgstr "Неправильна зустріч"
+
+#: datebook_gui.c:2627
+msgid ""
+"The End Date of this appointment\n"
+"is before the start date."
+msgstr ""
+"Дата закінчення цієї зустрічі більш рання,\n"
+"ніж дата початку."
+
+#: datebook_gui.c:2882 datebook_gui.c:4666 datebook_gui.c:4696
+#: datebook_gui.c:4752 datebook_gui.c:4801 todo_gui.c:135 todo_gui.c:2262
+msgid "No Date"
+msgstr "Дату не вказано"
+
+#: datebook_gui.c:2996
+#, c-format
+msgid "Error in DateBookDB advanceUnits = %d\n"
+msgstr "Помилка у DateBookDB advanceUnits = %d\n"
+
+#: datebook_gui.c:3167
+msgid "Unknown repeatType found in DatebookDB\n"
+msgstr "Знайдено невідомий repeatType у DatebookDB\n"
+
+#: datebook_gui.c:3200
+#, c-format
+msgid "%%a., %s"
+msgstr "%%a., %s"
+
+#: datebook_gui.c:3205 monthview_gui.c:210 weekview_gui.c:204
+msgid " (TODAY)"
+msgstr " (СЬОГОДНІ)"
+
+#: datebook_gui.c:4190 datebook_gui.c:4634
+msgid "Week"
+msgstr "Тиждень"
+
+#: datebook_gui.c:4196
+msgid "W"
+msgstr "Тж"
+
+#: datebook_gui.c:4198
+msgid "View appointments by week"
+msgstr "Переглянути зустрічі тижня"
+
+#: datebook_gui.c:4201 datebook_gui.c:4635
+msgid "Month"
+msgstr "Місяць"
+
+#: datebook_gui.c:4208
+msgid "M"
+msgstr "Мс"
+
+#: datebook_gui.c:4210
+msgid "View appointments by month"
+msgstr "Переглянути зустрічі місяця"
+
+#: datebook_gui.c:4215
+msgid "Cats"
+msgstr "Категорії"
+
+#: datebook_gui.c:4284
+msgid "Time"
+msgstr "Час"
+
+#: datebook_gui.c:4321
+msgid "Show ToDos"
+msgstr "Показувати завдання"
+
+#: datebook_gui.c:4336 todo_gui.c:2131
+msgid "Task"
+msgstr "Завдання"
+
+#: datebook_gui.c:4337 todo_gui.c:2132
+msgid "Due"
+msgstr "До"
+
+#: datebook_gui.c:4434
+msgid "Alarm"
+msgstr "Сповіщення"
+
+#: datebook_gui.c:4455
+msgid "Days"
+msgstr "днів"
+
+#: datebook_gui.c:4478
+msgid "This Event has no particular time"
+msgstr "Ця подія не має особливого часу"
+
+#: datebook_gui.c:4486
+msgid "Starts on"
+msgstr "Починається"
+
+#: datebook_gui.c:4500
+msgid "Start Time"
+msgstr "Час початку"
+
+#: datebook_gui.c:4518
+msgid "End Time"
+msgstr "Час закінчення"
+
+#: datebook_gui.c:4616
+msgid "DateBk Tags"
+msgstr "Теги DateBk"
+
+#: datebook_gui.c:4633
+msgid "Day"
+msgstr "День"
+
+#: datebook_gui.c:4636
+msgid "Year"
+msgstr "Рік"
+
+#: datebook_gui.c:4640
+msgid "This event will not repeat"
+msgstr "Ця подія не повторюється"
+
+#: datebook_gui.c:4650 datebook_gui.c:4682 datebook_gui.c:4738
+#: datebook_gui.c:4785
+msgid "Frequency is Every"
+msgstr "Повторюється кожен"
+
+#: datebook_gui.c:4655
+msgid "Day(s)"
+msgstr "день"
+
+#: datebook_gui.c:4658 datebook_gui.c:4690 datebook_gui.c:4746
+#: datebook_gui.c:4793
+msgid "End on"
+msgstr "Закінчується"
+
+#: datebook_gui.c:4687
+msgid "Week(s)"
+msgstr "тиждень"
+
+#: datebook_gui.c:4703
+msgid "Repeat on Days:"
+msgstr "Повторюється у дні:"
+
+#: datebook_gui.c:4743
+msgid "Month(s)"
+msgstr "місяць"
+
+#: datebook_gui.c:4760
+msgid "Repeat by:"
+msgstr "Повторюється у:"
+
+#: datebook_gui.c:4764
+msgid "Day of week"
+msgstr "День тижня"
+
+#: datebook_gui.c:4773
+msgid "Date"
+msgstr "Дата"
+
+#: datebook_gui.c:4790
+msgid "Year(s)"
+msgstr "рік"
+
+#: dialer.c:196
+msgid "Phone Dialer"
+msgstr "Набирання номера"
+
+#: dialer.c:231
+msgid "Prefix 1"
+msgstr "Префікс 1"
+
+#: dialer.c:253
+msgid "Prefix 2"
+msgstr "Префікс 2"
+
+#: dialer.c:275
+msgid "Prefix 3"
+msgstr "Префікс 3"
+
+#: dialer.c:290
+msgid "Phone number:"
+msgstr "номер телефону:"
+
+#: dialer.c:321
+msgid "Extension"
+msgstr "Розширення"
+
+#: dialer.c:344
+msgid "Dial Command"
+msgstr "Команда набирання"
+
+#: dialer.c:369
+msgid "Dismiss"
+msgstr "Відпустити"
+
+#: export_gui.c:116
+msgid "File Browser"
+msgstr "Огляд файлів"
+
+#: export_gui.c:276
+msgid "Select records to be exported"
+msgstr "Виберіть записи для експорту"
+
+#: export_gui.c:278
+msgid "Use Ctrl and Shift Keys"
+msgstr "Користуйтесь клавішами Ctrl та Shift"
+
+#: import_gui.c:265 import_gui.c:304 import_gui.c:417 import_gui.c:497
+#: jpilot.c:509
+msgid "Import"
+msgstr "Імпорт"
+
+#: import_gui.c:298 install_gui.c:311
+msgid "To change to a hidden directory type it below and hit TAB"
+msgstr ""
+"Щоб змінити прихований каталог, наберіть його назву нижче та натисніть Tab"
+
+#: import_gui.c:324
+msgid "Import File Type"
+msgstr "Тип файлу імпорту"
+
+#: import_gui.c:436
+msgid "Record was marked as private"
+msgstr "Запис позначений як приватний"
+
+#: import_gui.c:438
+msgid "Record was not marked as private"
+msgstr "Запис не позначений як приватний"
+
+#: import_gui.c:445
+#, c-format
+msgid "Category before import was: [%s]"
+msgstr "Перед імпортом категорія була: [%s]"
+
+#: import_gui.c:451
+#, c-format
+msgid "Record will be put in category [%s]"
+msgstr "Запис був у категорії [%s]"
+
+#: import_gui.c:504
+msgid "Import All"
+msgstr "Імпортувати усе"
+
+#: import_gui.c:511
+msgid "Skip"
+msgstr "Пропустити"
+
+#: import_gui.c:518
+msgid "Quit"
+msgstr "Вийти"
+
+#: install_gui.c:258
+msgid "Install"
+msgstr "Встановити"
+
+#: install_gui.c:288
+msgid "Files to be installed"
+msgstr "Файли, що будуть встановлені"
+
+#: install_gui.c:320
+msgid "Add"
+msgstr "Додати"
+
+#: install_gui.c:331
+msgid "Remove"
+msgstr "Видалити"
+
+#: install_gui.c:342 monthview_gui.c:511 search_gui.c:595 weekview_gui.c:337
+msgid "Close"
+msgstr "Закрити"
+
+#: jpilot-dump.c:95
+#, fuzzy
+msgid " +B +M +A +T format like date +format.\n"
+msgstr ""
+" +B +M +A +T дата відповідна до формату +format (використовуйте -? для "
+"докладнішої інформації).\n"
+
+#: jpilot-dump.c:96
+msgid " -v displays version and exits.\n"
+msgstr " -v вивести версію та завершитись.\n"
+
+#: jpilot-dump.c:97 utils.c:77
+msgid " -h displays help and exits.\n"
+msgstr " -h вивести версію та завершитись.\n"
+
+#: jpilot-dump.c:98
+#, fuzzy
+msgid " -f displays help for format codes.\n"
+msgstr " -h вивести версію та завершитись.\n"
+
+#: jpilot-dump.c:99
+#, fuzzy
+msgid " -D dump DateBook.\n"
+msgstr " -B дамп календаря.\n"
+
+#: jpilot-dump.c:100
+#, fuzzy
+msgid " -N dump appts for today in DateBook.\n"
+msgstr " -N дамп програми сьогодні у календарі.\n"
+
+#: jpilot-dump.c:101
+#, fuzzy
+msgid " -NYYYY/MM/DD dump appts on YYYY/MM/DD in DateBook.\n"
+msgstr " -NYYYY/MM/DD дамп програм у YYYY/MM/DD у календарі.\n"
+
+#: jpilot-dump.c:102
+msgid " -A dump Address book.\n"
+msgstr " -A дамп адресної книги.\n"
+
+#: jpilot-dump.c:103
+#, fuzzy
+msgid " -T dump ToDo list as CSV.\n"
+msgstr " -T дамп списку завдань у CSV.\n"
+
+#: jpilot-dump.c:104
+msgid " -M dump Memos.\n"
+msgstr " -M дамп пам'яток.\n"
+
+#: jpilot-sync.c:66
+msgid ""
+" J-Pilot preferences are read to get port, rate, number of backups, etc.\n"
+msgstr ""
+" Читаються параметри J-Pilot для визначення порта, швидкості, кількості "
+"резервних копій, тощо.\n"
+
+#: jpilot-sync.c:67
+msgid " -v = version\n"
+msgstr " -v = версія\n"
+
+#: jpilot-sync.c:68
+msgid " -h = help\n"
+msgstr " -h = довідка\n"
+
+#: jpilot-sync.c:69
+msgid " -d = run in debug mode\n"
+msgstr " -d = запустити у налагоджувальному режимі\n"
+
+#: jpilot-sync.c:70
+msgid " -P = do not load plugins.\n"
+msgstr " -P = не завантажувати модулі.\n"
+
+#: jpilot-sync.c:71
+msgid " -b = Do a sync and then a backup, otherwise just do a sync.\n"
+msgstr ""
+" -b = синхронізувати а потім робити резервну копію, чи просто "
+"синхронізувати.\n"
+
+#: jpilot-sync.c:72
+msgid " -l = loop, otherwise sync once and exit.\n"
+msgstr ""
+" -l = циклічно, у іншому випадку один раз виконати синхронізацію та вийти.\n"
+
+#: jpilot-sync.c:73
+msgid ""
+" -p {port} = Use this port to sync with instead of getting preferences.\n"
+msgstr ""
+" -p {порт} = Використовувати цей порт для синхронізації замість отримання "
+"параметрів.\n"
+
+#: jpilot.c:142
+#, c-format
+msgid "Invalid geometry specification: \"%s\"\n"
+msgstr "Неправильно вказано геометрію: \"%s\"\n"
+
+#: jpilot.c:385
+msgid "Help"
+msgstr "Довідка"
+
+#: jpilot.c:449 monthview_gui.c:517 print_gui.c:332 weekview_gui.c:343
+msgid "Print"
+msgstr "Друк"
+
+#: jpilot.c:450
+msgid "There is no print support for this conduit."
+msgstr "Для цього каналу друк не підтримується."
+
+#: jpilot.c:510
+msgid "There is no import support for this conduit."
+msgstr "Для цього каналу імпорт не підтримується."
+
+#: jpilot.c:554
+msgid "There is no export support for this conduit."
+msgstr "Для цього каналу експорт не підтримується."
+
+#: jpilot.c:730
+msgid ""
+"This palm doesn't have the same user name\n"
+"or user ID as the one that was synced the\n"
+"last time.  Syncing could have unwanted effects.\n"
+"Read the user manual if you are uncertain."
+msgstr ""
+"Назва або ідентифікатор користувача цього пристрою palm\n"
+"відрізняється від назви або ідентифікатора, що були під час\n"
+"останньої синхронізації.  Синхронізація може призвести до небажаних\n"
+"ефектів. Якщо щось незрозуміло, читайте довідку користувача."
+
+#: jpilot.c:737
+msgid ""
+"This palm has a NULL user id.\n"
+"Every palm must have a unique user id in order to sync properly.\n"
+"If it has been hard reset, use restore from the menu to restore it,\n"
+"or use pilot-xfer.\n"
+"To add a user name and ID use the install-user command line tool,\n"
+"or use install-user from the menu\n"
+"Read the user manual if you are uncertain."
+msgstr ""
+"Ідентифікатор користувача цього пристрою palm дорівнює NULL.\n"
+"Що синхронізація відбувалась правильно, кожен palm повинен мати\n"
+"унікальний ідентифікатор. Якщо він був скинутий, відновіть його у,\n"
+"меню відновлення або використовуючи pilot-xfer.\n"
+"Щоб додати ім'я та ідентифікатор користувача використовуйте\n"
+"програму install-user, або пункт меню Встановити користувача.\n"
+"Якщо щось незрозуміло, читайте довідку користувача."
+
+#: jpilot.c:744
+msgid "Cancel Sync"
+msgstr "Скасувати синхронізацію"
+
+#: jpilot.c:744
+msgid "Sync Anyway"
+msgstr "Синхронізувати все одно"
+
+#: jpilot.c:753 jpilot.c:757
+msgid "Sync Problem"
+msgstr "Помилка синхронізації"
+
+#: jpilot.c:956
+msgid "Unknown command from sync process\n"
+msgstr "Невідома команда від процесу синхронізації\n"
+
+#: jpilot.c:977 Expense/expense.c:516 KeyRing/keyring.c:1568
+#, c-format
+msgid "About %s"
+msgstr "Про %s"
+
+#: jpilot.c:1378
+msgid "/_File"
+msgstr "/_Файл"
+
+#: jpilot.c:1379
+msgid "/File/tear"
+msgstr "/Файл/tear"
+
+#: jpilot.c:1380
+msgid "/File/_Find"
+msgstr "/Файл/З_найти"
+
+#: jpilot.c:1381 jpilot.c:1387 jpilot.c:1390
+msgid "/File/sep1"
+msgstr "/Файл/sep1"
+
+#: jpilot.c:1382
+msgid "/File/_Install"
+msgstr "/Файл/_Встановити"
+
+#: jpilot.c:1383
+msgid "/File/Import"
+msgstr "/Файл/Імпорт"
+
+#: jpilot.c:1384
+msgid "/File/Export"
+msgstr "/Файл/Експорт"
+
+#: jpilot.c:1385 jpilot.c:2814
+msgid "/File/Preferences"
+msgstr "/Файл/Вподобання"
+
+#: jpilot.c:1386
+msgid "/File/_Print"
+msgstr "/Файл/Д_рук"
+
+#: jpilot.c:1388
+msgid "/File/Install User"
+msgstr "/Файл/Встановити користувача"
+
+#: jpilot.c:1389
+msgid "/File/Restore Handheld"
+msgstr "/Файл/Відновити КПК"
+
+#: jpilot.c:1391
+msgid "/File/_Quit"
+msgstr "/Файл/Ви_йти"
+
+#: jpilot.c:1392
+msgid "/_View"
+msgstr "/_Вигляд"
+
+#: jpilot.c:1393 jpilot.c:1394 jpilot.c:1395 jpilot.c:1649
+msgid "/View/Hide Private Records"
+msgstr "/Вигляд/Сховати приватні записи"
+
+#: jpilot.c:1394
+msgid "/View/Show Private Records"
+msgstr "/Вигляд/Показати приватні записи"
+
+#: jpilot.c:1395
+msgid "/View/Mask Private Records"
+msgstr "/Вигляд/Маскувати приватні записи"
+
+#: jpilot.c:1396
+msgid "/View/sep1"
+msgstr "/Файл/sep1"
+
+#: jpilot.c:1397
+msgid "/View/Datebook"
+msgstr "/Вигляд/Календар"
+
+#: jpilot.c:1398
+msgid "/View/Addresses"
+msgstr "/Вигляд/Адресна книга"
+
+#: jpilot.c:1399
+msgid "/View/Todos"
+msgstr "/Вигляд/Завдання"
+
+#: jpilot.c:1400
+msgid "/View/Memos"
+msgstr "/Вигляд/Пам'ятки"
+
+#: jpilot.c:1401 jpilot.c:1535
+msgid "/_Plugins"
+msgstr "/_Модулі"
+
+#: jpilot.c:1403
+msgid "/_Web"
+msgstr "/_Web"
+
+#: jpilot.c:1404
+msgid "/Web/Netscape"
+msgstr "/Web/Netscape"
+
+#: jpilot.c:1408
+msgid "/Web/Mozilla"
+msgstr "/Web/Mozilla"
+
+#: jpilot.c:1413
+msgid "/Web/Galeon"
+msgstr "/Web/Galeon"
+
+#: jpilot.c:1418
+msgid "/Web/Opera"
+msgstr "/Web/Opera"
+
+#: jpilot.c:1422
+msgid "/Web/GnomeUrl"
+msgstr "/Web/GnomeUrl"
+
+#: jpilot.c:1424
+msgid "/Web/Lynx"
+msgstr "/Web/Lynx"
+
+#: jpilot.c:1426
+msgid "/Web/Links"
+msgstr "/Web/Links"
+
+#: jpilot.c:1428
+msgid "/Web/W3M"
+msgstr "/Web/W3M"
+
+#: jpilot.c:1430
+msgid "/Web/Konqueror"
+msgstr "/Web/Konqueror"
+
+#: jpilot.c:1433
+msgid "/_Help"
+msgstr "/_Довідка"
+
+#: jpilot.c:1434
+msgid "/Help/PayBack program"
+msgstr "/Довідка/Програма PayBack"
+
+#: jpilot.c:1435
+msgid "/Help/J-Pilot"
+msgstr "/Довідка/J-Pilot"
+
+#: jpilot.c:1502
+#, c-format
+msgid "/_Plugins/%s"
+msgstr "/_Модулі/%s"
+
+#: jpilot.c:1513
+#, c-format
+msgid "/_Help/%s"
+msgstr "/_Довідка/%s"
+
+#: jpilot.c:1812
+msgid "Font Selection Dialog"
+msgstr "Діалог вибору шрифту"
+
+#: jpilot.c:2143
+msgid "calendar:week_start:0"
+msgstr "calendar:week_start:0"
+
+#: jpilot.c:2188
+msgid "Not loading plugins.\n"
+msgstr "Не завантажено модулі.\n"
+
+#: jpilot.c:2192
+msgid "Ignoring all alarms.\n"
+msgstr "Ігноруються усі сповіщення.\n"
+
+#: jpilot.c:2196
+msgid "Ignoring past alarms.\n"
+msgstr "Ігноруються останні сповіщення.\n"
+
+#: jpilot.c:2291 jpilot.c:2299
+msgid "Unable to open pipe\n"
+msgstr "Не вдається відкрити канал\n"
+
+#: jpilot.c:2350
+msgid " User: "
+msgstr "Користувач: "
+
+#: jpilot.c:2497
+msgid "Clear"
+msgstr "Очистити"
+
+#: jpilot.c:2568
+msgid "Show private records   Ctrl-Z"
+msgstr "Показати приватні записи   Ctrl-Z"
+
+#: jpilot.c:2573
+msgid "Show private records"
+msgstr "Показати приватні записи"
+
+#: jpilot.c:2578
+msgid "Hide private records   Ctrl-Z"
+msgstr "Сховати приватні записи   Ctrl-Z"
+
+#: jpilot.c:2583
+msgid "Hide private records"
+msgstr "Сховати приватні записи"
+
+#: jpilot.c:2588
+msgid "Mask private records   Ctrl-Z"
+msgstr "Маскувати приватні записи   Ctrl-Z"
+
+#: jpilot.c:2593
+msgid "Mask private records"
+msgstr "Маскувати приватні записи"
+
+#: jpilot.c:2603
+msgid "Sync your palm to the desktop   Ctrl-Y"
+msgstr "Синхронізувати palm з програмою   Ctrl-Y"
+
+#: jpilot.c:2609
+msgid "Font"
+msgstr "Шрифт"
+
+#: jpilot.c:2624
+msgid ""
+"Sync your palm to the desktop\n"
+"and then do a backup"
+msgstr ""
+"Синхронізувати palm з програмою\n"
+"потім зробити резервну копію"
+
+#: jpilot.c:2738
+msgid "Datebook/Go to Today"
+msgstr "Календар/Перейти на сьогодні"
+
+#: jpilot.c:2740
+msgid "Address Book"
+msgstr "Адресна книга"
+
+#: jpilot.c:2742
+msgid "ToDo List"
+msgstr "Перелік завдань"
+
+#: jpilot.c:2744
+msgid "Memo Pad"
+msgstr "Блокнот пам'яток"
+
+#: jpilot.c:2796
+msgid "Do it now"
+msgstr "Виконати зараз"
+
+#: jpilot.c:2796
+msgid "Remind me later"
+msgstr "Нагадати пізніше"
+
+#: jpilot.c:2796
+msgid "Don't tell me again!"
+msgstr "Більше не згадувати!"
+
+#: jpilot.c:2810
+msgid ""
+"J-Pilot is using the GTK2 graphical toolkit. This version of the toolkit "
+"uses UTF-8 to encode characters.\n"
+"You should select a UTF-8 charset so you can see the non-ASCII characters "
+"(accents for example).\n"
+"\n"
+msgstr ""
+"J-Pilot використовує графічну бібліотеку GTK2. Ця версія бібліотеки "
+"використовує UTF-8 для кодування символів.\n"
+"Слід вибрати набір символів UTF-8, тоді ви зможете побачити не-ASCII символи "
+"(наприклад символи з акцентами).\n"
+"\n"
+
+#: jpilot.c:2813
+msgid "Go to the menu \""
+msgstr "Перейдіть в меню \""
+
+#: jpilot.c:2815
+msgid "\" and change the \""
+msgstr "\" та змініть \""
+
+#: jpilot.c:2816 prefs_gui.c:390
+msgid "Character Set "
+msgstr "Набір символів "
+
+#: jpilot.c:2817
+msgid "\"."
+msgstr "\"."
+
+#: jpilot.c:2819
+msgid "Select a UTF-8 encoding"
+msgstr "Виберіть кодування UTF-8"
+
+#: libplugin.c:153
+#, c-format
+msgid "Unknown PC header version = %d\n"
+msgstr "Невідома версія заголовка PC = %d\n"
+
+#: libplugin.c:441
+#, c-format
+msgid "%s:%d Error opening file: %s\n"
+msgstr "%s:%d Помилка відкривання файлу: %s\n"
+
+#: libplugin.c:447 libplugin.c:476 sync.c:2880 todo.c:391
+#, c-format
+msgid "%s:%d Error reading file: %s\n"
+msgstr "%s:%d Помилка читання файлу: %s\n"
+
+#: libplugin.c:503 utils.c:1904
+msgid ""
+"This record is already deleted.\n"
+"It is scheduled to be deleted from the Palm on the next sync.\n"
+msgstr ""
+"Цей запис вже видалено.\n"
+"Він запланований на видалення з Palm при черговій синхронізації.\n"
+
+#: libplugin.c:512 utils.c:1913 utils.c:1950
+msgid "Unable to open PC records file\n"
+msgstr "Не вдається відкрити файл записів PC\n"
+
+#: libplugin.c:518 utils.c:1919
+msgid "Couldn't find record to delete\n"
+msgstr "Не вдається знайти запис для видалення\n"
+
+#: libplugin.c:536 utils.c:1937
+#, c-format
+msgid "Unknown header version %d\n"
+msgstr "Невідома версія заголовка %d\n"
+
+#: libplugin.c:549
+msgid "Couldn't open PC records file\n"
+msgstr "Не вдається відкрити файл записів PC\n"
+
+#: libplugin.c:710 libplugin.c:802 utils.c:1464 utils.c:1476
+#, c-format
+msgid "Error opening file: %s\n"
+msgstr "Помилка при відкриванні файлу: %s\n"
+
+#: libplugin.c:739
+msgid "Error reading PC file 1\n"
+msgstr "Помилка при читанні файлу PC 1\n"
+
+#: libplugin.c:755
+msgid "Error reading PC file 2\n"
+msgstr "Помилка при читанні файлу PC 1\n"
+
+#: libplugin.c:927
+#, c-format
+msgid "Error reading %s 5\n"
+msgstr "Помилка при читанні %s 5\n"
+
+#: log.c:95
+#, c-format
+msgid "Unable to open log file, giving up.\n"
+msgstr "Не вдається відкрити файл журналу, спроби закінчені.\n"
+
+#: log.c:102
+#, c-format
+msgid "Unable to open log file\n"
+msgstr "Не вдається відкрити файл журналу\n"
+
+#: memo_gui.c:318
+msgid "Memo text > 65535, truncating\n"
+msgstr "Довжина тексту пам'ятки > 65535, обрізується\n"
+
+#: memo_gui.c:348
+#, c-format
+msgid "Imported Memo %s\n"
+msgstr "Імпортована пам'ятка %s\n"
+
+#: memo_gui.c:419
+msgid "File doesn't appear to be memopad.dat format\n"
+msgstr "Формат файлу не схожий на формат memopad.dat\n"
+
+#: memo_gui.c:568 memo_gui.c:583
+#, c-format
+msgid "Can't export memo %d\n"
+msgstr "Не вдається експортувати %d\n"
+
+#: monthview_gui.c:475
+msgid "Monthly View"
+msgstr "Перегляд місяця"
+
+#: password.c:304
+msgid "Palm Password"
+msgstr "Пароль Palm"
+
+#: password.c:335
+msgid "Incorrect, Reenter PalmOS Password"
+msgstr "Некоректний, введіть пароль PalmOS"
+
+#: password.c:337
+msgid "Enter PalmOS Password"
+msgstr "Введіть пароль PalmOS"
+
+#: plugins.c:88 plugins.c:200 restore_gui.c:133
+msgid "infinite loop"
+msgstr "нескінчений цикл"
+
+#: plugins.c:213
+#, c-format
+msgid "While reading %s%s line 1:[%s]\n"
+msgstr "при читанні %s%s рядок 1:[%s]\n"
+
+#: plugins.c:214
+msgid "Wrong Version\n"
+msgstr "Неправильна версія\n"
+
+#: plugins.c:215
+msgid "Check preferences->conduits\n"
+msgstr "Перевірте параметри->канали\n"
+
+#: plugins.c:271
+#, c-format
+msgid ""
+"Open failed on plugin [%s]\n"
+" error [%s]\n"
+msgstr ""
+"Помилка відкривання у модулі [%s]\n"
+" помилка [%s]\n"
+
+#: plugins.c:288 plugins.c:314
+#, c-format
+msgid " plugin is invalid: [%s]\n"
+msgstr " модуль неправильний: [%s]\n"
+
+#: plugins.c:296
+#, c-format
+msgid "Plugin:[%s]\n"
+msgstr "Модуль:[%s]\n"
+
+#: plugins.c:297
+#, c-format
+msgid "This plugin is version (%d.%d).\n"
+msgstr "Цей модуль версії (%d.%d).\n"
+
+#: plugins.c:299
+msgid "It is too old to work with this version of J-Pilot.\n"
+msgstr "Занадто давній та не підтримується цією версією J-Pilot.\n"
+
+#: prefs.c:391
+msgid "%B %d, %Y"
+msgstr "%B %d, %Y"
+
+#: prefs.c:392
+msgid "%d %B %Y"
+msgstr "%d %B %Y"
+
+#: prefs.c:393
+msgid "%d. %B %Y"
+msgstr "%d. %B %Y"
+
+#: prefs.c:394
+msgid "%d %B, %Y"
+msgstr "%d %B, %Y"
+
+#: prefs.c:395
+msgid "%Y. %B. %d"
+msgstr "%Y. %B. %d"
+
+#: prefs.c:396
+msgid "%Y %B %d"
+msgstr "%Y %B %d"
+
+#: prefs_gui.c:334
+msgid "Preferences"
+msgstr "Вподобання"
+
+#: prefs_gui.c:364
+msgid "Locale"
+msgstr "Локаль"
+
+#: prefs_gui.c:366
+msgid "Settings"
+msgstr "Параметри"
+
+#: prefs_gui.c:368
+msgid "Datebook"
+msgstr "Календар"
+
+#: prefs_gui.c:372
+msgid "ToDo"
+msgstr "Завдання"
+
+#: prefs_gui.c:374
+msgid "Memo"
+msgstr "Пам'ятки"
+
+#: prefs_gui.c:376
+msgid "Alarms"
+msgstr "Сповіщення"
+
+#: prefs_gui.c:378
+msgid "Conduits"
+msgstr "Канали"
+
+#: prefs_gui.c:403
+msgid "Short date format "
+msgstr "Короткий формат дати "
+
+#: prefs_gui.c:416
+msgid "Long date format "
+msgstr "Довгий формат дати "
+
+#: prefs_gui.c:429
+msgid "Time format "
+msgstr "Формат часу "
+
+#: prefs_gui.c:443
+msgid "The first day of the week is "
+msgstr "Перший день тижня "
+
+#: prefs_gui.c:464
+msgid "My GTK colors file is "
+msgstr "Файл власних GTK кольорів "
+
+#: prefs_gui.c:477
+msgid "Serial Port (/dev/ttyS0, /dev/pilot)"
+msgstr "Послідовний порт (/dev/ttyS0, /dev/pilot)"
+
+#: prefs_gui.c:494
+msgid "Serial Rate (Does not affect USB)"
+msgstr "Швидкість послідовного порта (не впливає на USB)"
+
+#: prefs_gui.c:507
+msgid "Number of backups to be archived"
+msgstr "Кількість резервних копій"
+
+#: prefs_gui.c:524
+msgid "Show deleted records (default NO)"
+msgstr "Показувати видалені записи (типово НІ)"
+
+#: prefs_gui.c:528
+msgid "Show modified deleted records (default NO)"
+msgstr "Показувати змінені записи (типово НІ)"
+
+#: prefs_gui.c:533
+msgid "Ask confirmation for file installation (J-Pilot -> PDA) (default YES)"
+msgstr "Підтверджувати встановлення файлів (J-Pilot -> PDA) (типово ТАК)"
+
+#: prefs_gui.c:537
+msgid "Show popup tooltips (default YES)"
+msgstr "Показувати підказки (типово ТАК)"
+
+#: prefs_gui.c:545
+msgid "Highlight calendar days with appointments"
+msgstr "Підсвічувати дні календаря із зустрічами"
+
+#: prefs_gui.c:551
+msgid "Use DateBk note tags"
+msgstr "Використовувати DateBk тег приміток"
+
+#: prefs_gui.c:554
+msgid "DateBk support disabled in this build"
+msgstr "Підтримка DateBk вимкнена у цій збірці"
+
+#: prefs_gui.c:560
+msgid "Annotate today in day, week, and month views"
+msgstr "Відмічати сьогоднішній день при перегляді дня, тижня та місяця"
+
+#: prefs_gui.c:565
+msgid "Append years on anniversaries in day, week, and month views"
+msgstr "Додавати роки до річниць при перегляді дня, тижня та місяця "
+
+#: prefs_gui.c:577
+msgid "Mail Command"
+msgstr "Команда перевірки пошти"
+
+#: prefs_gui.c:591
+#, c-format
+msgid "%s is replaced by the e-mail address"
+msgstr "%s замінено на адресу ел.пошти"
+
+#: prefs_gui.c:599
+msgid "Hide Completed ToDos"
+msgstr "Приховувати завершені завдання"
+
+#: prefs_gui.c:603
+msgid "Hide ToDos not yet due"
+msgstr "Приховувати незавершені завдання"
+
+#: prefs_gui.c:607
+msgid "Record Completion Date"
+msgstr "Записувати дату завершення"
+
+#: prefs_gui.c:612
+msgid "Use Manana database"
+msgstr "Використовувати базу даних Manana"
+
+#: prefs_gui.c:620
+msgid "Use default number of days due"
+msgstr "Використовувати типову кількість потрібних днів"
+
+#: prefs_gui.c:640
+msgid "Use Memo32 (pedit32)"
+msgstr "Використовувати Memo32 (pedit32)"
+
+#: prefs_gui.c:647
+msgid "Open alarm windows for appointment reminders"
+msgstr "Відкривати вікна сповіщення для нагадування"
+
+#: prefs_gui.c:651
+msgid "Execute this command"
+msgstr "Виконати цю команду"
+
+#: prefs_gui.c:655
+msgid "WARNING: executing arbitrary shell commands can be dangerous!!!"
+msgstr ""
+"ПОПЕРЕДЖЕННЯ: виконання довільних сценаріїв оболонки може бути небезпечним!!!"
+
+#: prefs_gui.c:663
+msgid "Alarm Command"
+msgstr "Команда сповіщення"
+
+#: prefs_gui.c:676
+msgid "%t is replaced with the alarm time"
+msgstr "%t замінюється на час сповіщення"
+
+#: prefs_gui.c:680
+#, c-format
+msgid "%d is replaced with the alarm date"
+msgstr "%d замінюється на дату сповіщення"
+
+#: prefs_gui.c:685
+msgid "%D is replaced with the alarm description"
+msgstr "%D замінюється на опис сповіщення"
+
+#: prefs_gui.c:689
+msgid "%N is replaced with the alarm note"
+msgstr "%N замінюється на примітку сповіщення"
+
+#: prefs_gui.c:693
+msgid "%D (description substitution) is disabled in this build"
+msgstr "%D (підстановку опису) вимкнено у цій збірці"
+
+#: prefs_gui.c:697
+msgid "%N (note substitution) is disabled in this build"
+msgstr "%D (підстановку приміток) вимкнено у цій збірці"
+
+#: prefs_gui.c:706
+msgid "Sync datebook"
+msgstr "Синхронізувати календар"
+
+#: prefs_gui.c:710
+msgid "Sync address"
+msgstr "Синхронізувати адреси"
+
+#: prefs_gui.c:714
+msgid "Sync todo"
+msgstr "Синхронізувати завдання"
+
+#: prefs_gui.c:718
+msgid "Sync memo"
+msgstr "Синхронізувати пам'ятки"
+
+#: prefs_gui.c:722
+msgid "Sync memo32 (pedit32)"
+msgstr "Синхронізувати memo32 (pedit32)"
+
+#: prefs_gui.c:727
+msgid "Sync Manana"
+msgstr "Синхронізувати Manana"
+
+#: prefs_gui.c:733
+msgid "Use J-OS (Not Japanese PalmOS:WorkPad/CLIE)"
+msgstr "Використовувати J-OS (Не японська PalmOS:WorkPad/CLIE)"
+
+#: prefs_gui.c:746
+#, c-format
+msgid "Sync %s (%s)"
+msgstr "Триває синхронізація %s (%s)"
+
+#: print_gui.c:178
+msgid "Print Options"
+msgstr "Параметри друку"
+
+#: print_gui.c:192
+msgid "Paper Size"
+msgstr "Розмір паперу"
+
+#: print_gui.c:209
+msgid "Daily Printout"
+msgstr "Роздрук дня"
+
+#: print_gui.c:215
+msgid "Weekly Printout"
+msgstr "Роздрук тижня"
+
+#: print_gui.c:221
+msgid "Monthly Printout"
+msgstr "Роздрук місяць"
+
+#: print_gui.c:261
+msgid "One record"
+msgstr "Один запис"
+
+#: print_gui.c:265
+msgid "All records in this category"
+msgstr "Усі записи у цій категорії"
+
+#: print_gui.c:269
+msgid "Print all records"
+msgstr "Друкувати усі записи"
+
+#: print_gui.c:292
+msgid "One record per page"
+msgstr "Один запис на сторінку"
+
+#: print_gui.c:308
+msgid " Blank lines between each record"
+msgstr " порожніх рядків між записами"
+
+#: print_gui.c:318
+msgid "Print Command (e.g. lpr, or cat > file.ps)"
+msgstr "Команда друку (наприклад lpr, або cat > file.ps)"
+
+#: restore_gui.c:68 restore_gui.c:229
+msgid "Restore Handheld"
+msgstr "Відновити КПК"
+
+#: restore_gui.c:249
+msgid "To restore your handheld:"
+msgstr "Щоб відновити КПК:"
+
+#: restore_gui.c:252
+msgid ""
+"1. Choose all the applications you wish to restore.  The default is all."
+msgstr ""
+"1. Виберіть усі додатки, які слід відновити.  Типово відновлюються усі."
+
+#: restore_gui.c:255
+msgid "2. Enter the User Name and User ID."
+msgstr "2. Введіть ім'я та ідентифікатор користувача."
+
+#: restore_gui.c:258
+msgid "3. Press the OK button."
+msgstr "3. Натисніть кнопку Гаразд."
+
+#: restore_gui.c:261
+msgid "This will overwrite data that is currently on the handheld."
+msgstr "Це призведе до запису даних у КПК."
+
+#: restore_gui.c:282
+msgid "User Name"
+msgstr "Ім'я користувача"
+
+#: restore_gui.c:295
+msgid "User ID"
+msgstr "Ідентифікатор користувача"
+
+#: search_gui.c:118
+msgid "datebook"
+msgstr "календар"
+
+#: search_gui.c:199
+msgid "address"
+msgstr "адреса"
+
+#: search_gui.c:265
+msgid "todo"
+msgstr "завдання"
+
+#: search_gui.c:319
+msgid "memo"
+msgstr "пам'ятки"
+
+#: search_gui.c:375
+msgid "plugin ?"
+msgstr "модуль ?"
+
+#: search_gui.c:447
+msgid "No records found"
+msgstr "Записів не знайдено"
+
+#: search_gui.c:525 search_gui.c:585
+msgid "Search"
+msgstr "Пошук"
+
+#: search_gui.c:541
+msgid "Search for: "
+msgstr "Шукати: "
+
+#: search_gui.c:548
+msgid "Case Sensitive"
+msgstr "Враховувати регістр"
+
+#: sync.c:139
+msgid "open lock file failed\n"
+msgstr "Не вдається відкрити файл блокування\n"
+
+#: sync.c:152
+msgid "lock failed\n"
+msgstr "помилка блокування\n"
+
+#: sync.c:155
+#, c-format
+msgid "sync file is locked by pid %d\n"
+msgstr "файл синхронізації заблокований процесом з номером %d\n"
+
+#: sync.c:189
+msgid "unlock failed\n"
+msgstr "помилка розблокування\n"
+
+#: sync.c:192
+#, c-format
+msgid "sync is locked by pid %d\n"
+msgstr "синхронізацію заблоковано процесом з номером %d\n"
+
+#: sync.c:244
+#, c-format
+msgid "%s: press the hotsync button on the cradle or \"kill %d\"\n"
+msgstr ""
+"%s: натисніть кнопку ГарячаСинхронізація на пристрої або виконайте \"kill %d"
+"\"\n"
+
+#: sync.c:297
+#, c-format
+msgid "Exiting with status %s\n"
+msgstr "Завершення зі статусом %s\n"
+
+#: sync.c:298
+msgid "Finished\n"
+msgstr "Завершено\n"
+
+#: sync.c:432
+msgid "Finished installing user information.\n"
+msgstr "Завершено занесення інформації про користувача.\n"
+
+#: sync.c:457 sync.c:574
+msgid "Check your serial port and settings\n"
+msgstr "Перевірте параметри послідовного порта\n"
+
+#: sync.c:672
+#, c-format
+msgid " Syncing on device %s\n"
+msgstr " Синхронізація на пристрій %s\n"
+
+#: sync.c:673
+msgid " Press the HotSync button now\n"
+msgstr " Зараз натисніть кнопку ГарячаСинхронізація\n"
+
+#: sync.c:725 sync.c:747 sync.c:769
+#, c-format
+msgid "Last Synced Username-->\"%s\"\n"
+msgstr "Останнє синхронізоване ім'я користувача-->\"%s\"\n"
+
+#: sync.c:726 sync.c:748 sync.c:770
+#, c-format
+msgid "Last Synced UserID-->\"%d\"\n"
+msgstr "Останнє синхронізований ID користувача-->\"%d\"\n"
+
+#: sync.c:727 sync.c:749 sync.c:771
+#, c-format
+msgid " This Username-->\"%s\"\n"
+msgstr " Це ім'я користувача-->\"%s\"\n"
+
+#: sync.c:728 sync.c:750 sync.c:772
+#, c-format
+msgid " This User ID-->%d\n"
+msgstr " Цей ID користувача-->\"%d\"\n"
+
+#: sync.c:793
+#, c-format
+msgid "Username is \"%s\"\n"
+msgstr "Ім'я користувача \"%s\"\n"
+
+#: sync.c:794
+#, c-format
+msgid "User ID is %d\n"
+msgstr "ID користувача %d\n"
+
+#: sync.c:796 sync.c:802
+#, c-format
+msgid "lastSyncPC = %d\n"
+msgstr "lastSyncPC = %d\n"
+
+#: sync.c:797
+#, c-format
+msgid "This PC = %lu\n"
+msgstr "Цей PC = %lu\n"
+
+#: sync.c:798
+#, c-format
+msgid "Last Username = [%s]\n"
+msgstr "Останнє ім'я = [%s]\n"
+
+#: sync.c:799
+#, c-format
+msgid "Last UserID = %d\n"
+msgstr "Останній ID користувача = %d\n"
+
+#: sync.c:800
+#, c-format
+msgid "Username = [%s]\n"
+msgstr "Ім'я користувача = [%s]\n"
+
+#: sync.c:801
+#, c-format
+msgid "userID = %d\n"
+msgstr "userID = %d\n"
+
+#: sync.c:819
+msgid "Sync canceled\n"
+msgstr "Синхронізацію перервано\n"
+
+#: sync.c:841
+msgid "Finished restoring handheld.\n"
+msgstr "Відновлення КПК завершено.\n"
+
+#: sync.c:842
+msgid "You may need to sync to update J-Pilot.\n"
+msgstr "Необхідна синхронізація для оновлення J-Pilot.\n"
+
+#: sync.c:872
+msgid "Doing a fast sync.\n"
+msgstr "Виконується швидка синхронізація.\n"
+
+#: sync.c:911
+msgid "Doing a slow sync.\n"
+msgstr "Виконується повільна синхронізація.\n"
+
+#: sync.c:1012
+msgid "Thank you for using J-Pilot."
+msgstr "Дякуємо за використання J-Pilot."
+
+#: sync.c:1054
+msgid "Finished.\n"
+msgstr "Завершено.\n"
+
+#: sync.c:1090 sync.c:2612
+#, c-format
+msgid "Syncing %s\n"
+msgstr "Триває синхронізація %s\n"
+
+#: sync.c:1096 sync.c:2276 sync.c:2618
+#, c-format
+msgid "Wrote an %s record."
+msgstr "Записано запис %s."
+
+#: sync.c:1098 sync.c:2278 sync.c:2620
+#, c-format
+msgid "Writing an %s record failed."
+msgstr "Записування запису %s завершився помилкою."
+
+#: sync.c:1100 sync.c:2280 sync.c:2622
+#, c-format
+msgid "Deleting an %s record failed."
+msgstr "Видалення запису %s завершився помилкою."
+
+#: sync.c:1102 sync.c:2282 sync.c:2624
+#, c-format
+msgid "Deleted an %s record."
+msgstr "Видалено запис %s."
+
+#: sync.c:1105 sync.c:2285 sync.c:2627
+#, c-format
+msgid "Wrote a %s record."
+msgstr "Записано запис %s."
+
+#: sync.c:1107 sync.c:2287 sync.c:2629
+#, c-format
+msgid "Writing a %s record failed."
+msgstr "Записування запису %s завершився помилкою."
+
+#: sync.c:1109 sync.c:2289 sync.c:2631
+#, c-format
+msgid "Deleting a %s record failed."
+msgstr "Видалення запису %s завершився помилкою."
+
+#: sync.c:1111 sync.c:2291 sync.c:2633
+#, c-format
+msgid "Deleted a %s record."
+msgstr "Видалено запис %s."
+
+#: sync.c:1131
+#, c-format
+msgid "number of records = %d\n"
+msgstr "кількість записів = %d\n"
+
+#: sync.c:1258 sync.c:2436
+msgid ""
+"dlp_DeleteRecord failed\n"
+"This could be because the record was already deleted on the Palm\n"
+msgstr ""
+"Помилка у dlp_DeleteRecord()\n"
+"Це може бути через те, що запис був вже видалений у Palm\n"
+
+#: sync.c:1357 sync.c:1770
+#, c-format
+msgid "%s (Creator ID '%s') is up to date, fetch skipped.\n"
+msgstr "%s (ID автора '%s') оновлено, отримання пропущено.\n"
+
+#: sync.c:1361 sync.c:1774
+#, c-format
+msgid "Fetching '%s' (Creator ID '%s')... "
+msgstr "Отримується '%s' (ID автора '%s')... "
+
+#: sync.c:1368 sync.c:1780
+#, c-format
+msgid "Failed, unable to create file %s\n"
+msgstr "Помилка, не вдається створити файл %s\n"
+
+#: sync.c:1379 sync.c:1789
+#, c-format
+msgid "Failed, unable to back up database %s\n"
+msgstr "Помилка, не вдається створити резервну копію бази даних %s\n"
+
+#: sync.c:1383 sync.c:1793 sync.c:1975
+msgid "OK\n"
+msgstr "Гаразд\n"
+
+#: sync.c:1686
+#, c-format
+msgid "Skipping %s (Creator ID '%s')\n"
+msgstr "Пропускається %s (ID автора '%s')\n"
+
+#: sync.c:1861
+#, c-format
+msgid "Installing %s "
+msgstr "Встановлюється %s "
+
+#: sync.c:1867
+#, c-format
+msgid ""
+"\n"
+"Unable to open file: '%s': %s!\n"
+msgstr ""
+"\n"
+"Не вдається відкрити файл '%s': %s!\n"
+
+#: sync.c:1871
+#, c-format
+msgid ""
+"\n"
+"Unable to sync file: '%s': file corrupted?\n"
+msgstr ""
+"\n"
+"Не вдається синхронізувати файл '%s': файл пошкоджений?\n"
+
+#: sync.c:1883
+#, c-format
+msgid "(Creator ID is '%s')..."
+msgstr "(ID автора '%s')..."
+
+#: sync.c:1903 sync.c:1916 sync.c:1931 sync.c:1944
+#, c-format
+msgid ""
+"\n"
+"Unable to open file: %s\n"
+msgstr ""
+"\n"
+"Не вдається відкрити файл: %s\n"
+
+#: sync.c:1960
+#, c-format
+msgid "Install %s failed"
+msgstr "Встановлення %s завершилось помилкою"
+
+#: sync.c:1964
+msgid "Failed.\n"
+msgstr "Помилка.\n"
+
+#: sync.c:1971
+#, c-format
+msgid "Installed %s "
+msgstr "Встановлено %s "
+
+#: sync.c:1995 sync.c:2001
+#, c-format
+msgid "Unable to open file: %s%s\n"
+msgstr "Не вдається відкрити файл: %s%s\n"
+
+#: sync.c:2181
+msgid "Unable to read home dir\n"
+msgstr "Не вдається прочитати домашній каталог\n"
+
+#: sync.c:2710
+#, c-format
+msgid "palm: number of records = %d\n"
+msgstr "palm: кількість записів = %d\n"
+
+#: sync.c:2711
+#, c-format
+msgid "disk: number of records = %d\n"
+msgstr "disk: кількість записів = %d\n"
+
+#: sync.c:2889
+#, c-format
+msgid "%s:%d Error getting app info %s\n"
+msgstr "%s:%d Помилка отримання інформації про додаток %s\n"
+
+#: sync.c:2895 sync.c:2937
+#, c-format
+msgid "%s:%d Error unpacking app info %s\n"
+msgstr "%s:%d Помилка розпаковування інформації про додаток %s\n"
+
+#: sync.c:2917 sync.c:2929
+#, c-format
+msgid "Error reading appinfo block for %s\n"
+msgstr "Помилка читання блоку інформації про додаток для %s\n"
+
+#: sync.c:3077 sync.c:3081
+#, c-format
+msgid "Could not add category %s to remote.\n"
+msgstr "Не вдається додати категорію %s до віддаленої сторони.\n"
+
+#: sync.c:3078 sync.c:3084
+msgid "Too many categories on remote.\n"
+msgstr "Надто багато категорій для віддаленої сторони.\n"
+
+#: sync.c:3079 sync.c:3087
+#, c-format
+msgid "All records on desktop in %s will be moved to %s.\n"
+msgstr "Усі записи програми у %s будуть переміщені у %s.\n"
+
+#: todo.c:248
+#, c-format
+msgid "ToDo description text > %d, truncating to %d\n"
+msgstr "Текст опису завдання > %d, обрізано до %d\n"
+
+#: todo.c:255
+#, c-format
+msgid "ToDo note text > %d, truncating to %d\n"
+msgstr "Текст пам'ятки до завдання > %d, обрізано до %d\n"
+
+#: todo.c:380
+#, c-format
+msgid "%s:%d Error reading category info %s\n"
+msgstr "%s:%d Помилка при читанні інформації категорії %s\n"
+
+#: todo_gui.c:154
+msgid "Due Date"
+msgstr "Дата завершення"
+
+#: todo_gui.c:561
+msgid "File doesn't appear to be todo.dat format\n"
+msgstr "Формат файлу не схожий на формат todo.dat\n"
+
+#: todo_gui.c:720 todo_gui.c:735
+#, c-format
+msgid "Can't export todo %d\n"
+msgstr "Не вдається експортувати список завдань %d\n"
+
+#: todo_gui.c:1556
+msgid "Priority out of range\n"
+msgstr "Пріоритет поза межами\n"
+
+#: todo_gui.c:1772
+#, c-format
+msgid "No date"
+msgstr "Немає дати"
+
+#: todo_gui.c:2223
+msgid "Completed"
+msgstr "Завершено"
+
+#: todo_gui.c:2231
+msgid "Priority: "
+msgstr "Пріоритет: "
+
+#: todo_gui.c:2251
+msgid "Date Due:"
+msgstr "Дата завершення:"
+
+#: todo_gui.c:2313 Expense/expense.c:1862 KeyRing/keyring.c:2051
+msgid "Note"
+msgstr "Примітка"
+
+#: utils.c:76
+msgid " -v displays version and compile options and exits.\n"
+msgstr " -v вивести версію та параметри компіляції.\n"
+
+#: utils.c:78
+msgid " -d displays debug info to stdout.\n"
+msgstr " -d вивести налагоджувальну інформацію у стандартний вивід.\n"
+
+#: utils.c:79
+#, fuzzy
+msgid " -p skips loading plugins.\n"
+msgstr "Не завантажено модулі.\n"
+
+#: utils.c:80
+#, fuzzy
+msgid " -a ignores missed alarms since the last time program was run.\n"
+msgstr " -a ігнорувати пропущені з моменту останнього запуску сповіщення.\n"
+
+#: utils.c:81
+#, fuzzy
+msgid " -A ignores all alarms past and future.\n"
+msgstr " -A ігнорувати усі сповіщення)); минулі та майбутні.\n"
+
+#: utils.c:82
+#, fuzzy
+msgid " -i makes program iconify itself upon launch.\n"
+msgstr " -i мінімізувати jpilot після запуску\n"
+
+#: utils.c:83
+msgid " The PILOTPORT, and PILOTRATE env variables are used to specify\n"
+msgstr " Змінні оточення PILOTPORT та PILOTRATE використовуються для\n"
+
+#: utils.c:84
+msgid " which port to sync on, and at what speed.\n"
+msgstr " визначення порта та швидкості синхронізації.\n"
+
+#: utils.c:85
+msgid " If PILOTPORT is not set then it defaults to /dev/pilot.\n"
+msgstr " Якщо PILOTPORT не встановлено, то типове значення /dev/pilot.\n"
+
+#: utils.c:110
+msgid "Date compiled"
+msgstr "Дата завершення"
+
+#: utils.c:111
+msgid "Compiled with these options:"
+msgstr "Скомпільовано з цими параметрами:"
+
+#: utils.c:113
+msgid "Installed Path"
+msgstr "Шлях встановлення"
+
+#: utils.c:115
+msgid "pilot-link version"
+msgstr "версія pilot-link"
+
+#: utils.c:119
+msgid "USB support"
+msgstr "Підтримка USB"
+
+#: utils.c:121 utils.c:127 utils.c:133 utils.c:139 utils.c:145 utils.c:151
+#: utils.c:157
+msgid "yes"
+msgstr "так"
+
+#: utils.c:123 utils.c:129 utils.c:135 utils.c:141 utils.c:147 utils.c:153
+#: utils.c:159
+msgid "no"
+msgstr "ні"
+
+#: utils.c:125
+msgid "Private record support"
+msgstr "Підтримка приватних записів"
+
+#: utils.c:131
+msgid "Datebk support"
+msgstr "Підтримка Datebk"
+
+#: utils.c:137
+msgid "Plugin support"
+msgstr "Підтримка модулів"
+
+#: utils.c:143
+msgid "Manana support"
+msgstr "Підтримка Manana"
+
+#: utils.c:149
+msgid "NLS support (foreign languages)"
+msgstr "Підтримка NLS (національні мови)"
+
+#: utils.c:155
+msgid "GTK2 support"
+msgstr "Підтримка GTK2"
+
+#: utils.c:198
+#, c-format
+msgid "Today is %A, %x %X"
+msgstr "Сьогодні %A, %x %X"
+
+#: utils.c:200
+#, c-format
+msgid "Today is %%A, %s %s"
+msgstr "Сьогодні %%A, %s %s"
+
+#: utils.c:1096
+msgid "Today"
+msgstr "Сьогодні"
+
+#: utils.c:1288
+msgid "Save Changed Record?"
+msgstr "Зберегти змінені записи?"
+
+#: utils.c:1289
+msgid "Do you want to save the changes to this record?"
+msgstr "Бажаєте зберегти зміни у цьому записі?"
+
+#: utils.c:1294
+msgid "Save New Record?"
+msgstr "Зберегти новий запис?"
+
+#: utils.c:1295
+msgid "Do you want to save this new record?"
+msgstr "Бажаєте зберегти цей новий запис?"
+
+#: utils.c:1315 KeyRing/keyring.c:1462
+msgid "Can't get HOME environment variable\n"
+msgstr "Не вдається отримати змінну оточення HOME\n"
+
+#: utils.c:1322
+msgid "Your HOME environment variable is too long for me\n"
+msgstr "Значення змінної оточення HOME надто довге\n"
+
+#: utils.c:1347 utils.c:1351
+#, c-format
+msgid "Can't create directory %s\n"
+msgstr "Не можна видалити категорію %s.\n"
+
+#: utils.c:1357
+#, c-format
+msgid ""
+"%s doesn't appear to be a directory.\n"
+"I need it to be.\n"
+msgstr ""
+"%s не схожий на каталог.\n"
+"Має бути каталогом.\n"
+
+#: utils.c:1365
+#, c-format
+msgid "I can't write files in directory %s\n"
+msgstr "Не вдається записати файли у каталоги %s\n"
+
+#: utils.c:1423 utils.c:1432
+msgid "Error writing PC header to file: next_id\n"
+msgstr "Помилка запису заголовку PC у файл: next_id\n"
+
+#: utils.c:1428
+msgid "Error writing next id to file: next_id\n"
+msgstr "Помилка запису наступного ідентифікатора у файл: next_id\n"
+
+#: utils.c:1445
+msgid "Error opening file: next_id\n"
+msgstr "Помилка при відкриванні файлу: next_id\n"
+
+#: utils.c:1613
+#, c-format
+msgid "Couldn't find empty DB file %s: %s\n"
+msgstr "Не вдається знайти порожній DB файл %s: %s\n"
+
+#: utils.c:1616
+msgid " may not be installed.\n"
+msgstr " можливо не встановлений.\n"
+
+#: utils.c:1799
+msgid "Error reading file"
+msgstr "Помилка при читанні файлу"
+
+#: utils.c:2480
+msgid "PC ID is 0.\n"
+msgstr "PC ID дорівнює 0.\n"
+
+#: utils.c:2481
+#, c-format
+msgid "I generated a new PC ID.  It is %lu\n"
+msgstr "Створено новий PC ID.  Він дорівнює %lu\n"
+
+#: weekview_gui.c:303
+msgid "Weekly View"
+msgstr "Перегляд тижня"
+
+#: Expense/expense.c:99
+msgid "Australia"
+msgstr "Австралія"
+
+#: Expense/expense.c:100
+msgid "Austria"
+msgstr "Австрія"
+
+#: Expense/expense.c:101
+msgid "Belgium"
+msgstr "Бельгія"
+
+#: Expense/expense.c:102
+msgid "Brazil"
+msgstr "Бразилія"
+
+#: Expense/expense.c:103
+msgid "Canada"
+msgstr "Канада"
+
+#: Expense/expense.c:104
+msgid "Denmark"
+msgstr "Данія"
+
+#: Expense/expense.c:105
+msgid "EU (Euro)"
+msgstr "EU (Євро)"
+
+#: Expense/expense.c:106
+msgid "Finland"
+msgstr "Фінляндія"
+
+#: Expense/expense.c:107
+msgid "France"
+msgstr "Франція"
+
+#: Expense/expense.c:108
+msgid "Germany"
+msgstr "Німеччина"
+
+#: Expense/expense.c:109
+msgid "Hong Kong"
+msgstr "Гонг Конг"
+
+#: Expense/expense.c:110
+msgid "Iceland"
+msgstr "Ісландія"
+
+#: Expense/expense.c:111
+msgid "India"
+msgstr "Індія"
+
+#: Expense/expense.c:112
+msgid "Indonesia"
+msgstr "Індонезія"
+
+#: Expense/expense.c:113
+msgid "Ireland"
+msgstr "Ірландія"
+
+#: Expense/expense.c:114
+msgid "Italy"
+msgstr "Італія"
+
+#: Expense/expense.c:115
+msgid "Japan"
+msgstr "Японія"
+
+#: Expense/expense.c:116
+msgid "Korea"
+msgstr "Корея"
+
+#: Expense/expense.c:117
+msgid "Luxembourg"
+msgstr "Люксембург"
+
+#: Expense/expense.c:118
+msgid "Malaysia"
+msgstr "Малайзія"
+
+#: Expense/expense.c:119
+msgid "Mexico"
+msgstr "Мексика"
+
+#: Expense/expense.c:120
+msgid "Netherlands"
+msgstr "Голландія"
+
+#: Expense/expense.c:121
+msgid "New Zealand"
+msgstr "Нова Зеландія"
+
+#: Expense/expense.c:122
+msgid "Norway"
+msgstr "Норвегія"
+
+#: Expense/expense.c:123
+msgid "P.R.C."
+msgstr "P.R.C."
+
+#: Expense/expense.c:124
+msgid "Philippines"
+msgstr "Філіппіни"
+
+#: Expense/expense.c:125
+msgid "Singapore"
+msgstr "Сінгапур"
+
+#: Expense/expense.c:126
+msgid "Spain"
+msgstr "Іспанія"
+
+#: Expense/expense.c:127
+msgid "Sweden"
+msgstr "Швеція"
+
+#: Expense/expense.c:128
+msgid "Switzerland"
+msgstr "Швейцарія"
+
+#: Expense/expense.c:129
+msgid "Taiwan"
+msgstr "Тайвань"
+
+#: Expense/expense.c:130
+msgid "Thailand"
+msgstr "Таїланд"
+
+#: Expense/expense.c:131
+msgid "United Kingdom"
+msgstr "Велика Британія"
+
+#: Expense/expense.c:132
+msgid "United States"
+msgstr "США"
+
+#: Expense/expense.c:505 Expense/expense.c:516
+msgid "Expense"
+msgstr "Видатки"
+
+#: Expense/expense.c:537 Expense/expense.c:1410
+msgid "Airfare"
+msgstr "Авіатариф"
+
+#: Expense/expense.c:539 Expense/expense.c:1411
+msgid "Breakfast"
+msgstr "Сніданок"
+
+#: Expense/expense.c:541 Expense/expense.c:1412
+msgid "Bus"
+msgstr "Автобус"
+
+#: Expense/expense.c:543 Expense/expense.c:1413
+msgid "BusinessMeals"
+msgstr "Бізнес Ланч"
+
+#: Expense/expense.c:545 Expense/expense.c:1414
+msgid "CarRental"
+msgstr "Оренда машин"
+
+#: Expense/expense.c:547 Expense/expense.c:1415
+msgid "Dinner"
+msgstr "Обід"
+
+#: Expense/expense.c:549 Expense/expense.c:1416
+msgid "Entertainment"
+msgstr "Розваги"
+
+#: Expense/expense.c:551 Expense/expense.c:1417
+msgid "Fax"
+msgstr "Факс"
+
+#: Expense/expense.c:553 Expense/expense.c:1418
+msgid "Gas"
+msgstr "Газ"
+
+#: Expense/expense.c:555 Expense/expense.c:1419
+msgid "Gifts"
+msgstr "Дарунки"
+
+#: Expense/expense.c:557 Expense/expense.c:1420
+msgid "Hotel"
+msgstr "Готель"
+
+#: Expense/expense.c:559 Expense/expense.c:1421
+msgid "Incidentals"
+msgstr "Випадковості"
+
+#: Expense/expense.c:561 Expense/expense.c:1422
+msgid "Laundry"
+msgstr "Пральня"
+
+#: Expense/expense.c:563 Expense/expense.c:1423
+msgid "Limo"
+msgstr "Limo"
+
+#: Expense/expense.c:565 Expense/expense.c:1424
+msgid "Lodging"
+msgstr "Житло"
+
+#: Expense/expense.c:567 Expense/expense.c:1425
+msgid "Lunch"
+msgstr "Ланч"
+
+#: Expense/expense.c:569 Expense/expense.c:1426
+msgid "Mileage"
+msgstr "Проїзд"
+
+#: Expense/expense.c:573 Expense/expense.c:1428
+msgid "Parking"
+msgstr "Паркування"
+
+#: Expense/expense.c:575 Expense/expense.c:1429
+msgid "Postage"
+msgstr "Поштові"
+
+#: Expense/expense.c:577 Expense/expense.c:1430
+msgid "Snack"
+msgstr "Закуска"
+
+#: Expense/expense.c:579 Expense/expense.c:1431
+msgid "Subway"
+msgstr "Метро"
+
+#: Expense/expense.c:581 Expense/expense.c:1432
+msgid "Supplies"
+msgstr "Постачальники"
+
+#: Expense/expense.c:583 Expense/expense.c:1433
+msgid "Taxi"
+msgstr "Таксі"
+
+#: Expense/expense.c:585 Expense/expense.c:1434
+msgid "Telephone"
+msgstr "Телефон"
+
+#: Expense/expense.c:587 Expense/expense.c:1435
+msgid "Tips"
+msgstr "Особливі"
+
+#: Expense/expense.c:589 Expense/expense.c:1436
+msgid "Tolls"
+msgstr "Мито"
+
+#: Expense/expense.c:591 Expense/expense.c:1437
+msgid "Train"
+msgstr "Поїзд"
+
+#: Expense/expense.c:605
+msgid "AmEx"
+msgstr "AmEx"
+
+#: Expense/expense.c:607 Expense/expense.c:1400
+msgid "Cash"
+msgstr "Готівка"
+
+#: Expense/expense.c:609 Expense/expense.c:1401
+msgid "Check"
+msgstr "Чеки"
+
+#: Expense/expense.c:611
+msgid "CreditCard"
+msgstr "Кредитні картки"
+
+#: Expense/expense.c:613
+msgid "MasterCard"
+msgstr "MasterCard"
+
+#: Expense/expense.c:615 Expense/expense.c:1404
+msgid "Prepaid"
+msgstr "Передплачені"
+
+#: Expense/expense.c:617 Expense/expense.c:1405
+msgid "VISA"
+msgstr "VISA"
+
+#: Expense/expense.c:1210
+msgid "Expense: Unknown category\n"
+msgstr "Витрати: невідома категорія\n"
+
+#: Expense/expense.c:1216
+msgid "Expense: Unknown expense type\n"
+msgstr "Витрати: невідомий тип витрат\n"
+
+#: Expense/expense.c:1222
+msgid "Expense: Unknown payment type\n"
+msgstr "Витрати: Невідомий тип платежу\n"
+
+#: Expense/expense.c:1399
+msgid "American Express"
+msgstr "American Express"
+
+#: Expense/expense.c:1402
+msgid "Credit Card"
+msgstr "Кредитна картка"
+
+#: Expense/expense.c:1403
+msgid "Master Card"
+msgstr "Master Card"
+
+#: Expense/expense.c:1687
+msgid "Category:"
+msgstr "Категорія:"
+
+#: Expense/expense.c:1700
+msgid "Type:"
+msgstr "Тип:"
+
+#: Expense/expense.c:1713
+msgid "Payment:"
+msgstr "Оплата:"
+
+#: Expense/expense.c:1726
+msgid "Currency:"
+msgstr "Валюта:"
+
+#: Expense/expense.c:1739
+msgid "Date:"
+msgstr "Дата:"
+
+#: Expense/expense.c:1756
+msgid "Month:"
+msgstr "Місяць:"
+
+#: Expense/expense.c:1770
+msgid "Day:"
+msgstr "День:"
+
+#: Expense/expense.c:1784
+msgid "Year:"
+msgstr "Рік:"
+
+#: Expense/expense.c:1797
+msgid "Amount:"
+msgstr "Сума:"
+
+#: Expense/expense.c:1811
+msgid "Vendor:"
+msgstr "Виробник:"
+
+#: Expense/expense.c:1825
+msgid "City:"
+msgstr "Місто:"
+
+#: Expense/expense.c:1839
+msgid "Attendees"
+msgstr "Супровід"
+
+#: KeyRing/keyring.c:190
+msgid "KeyRing: pack_KeyRing(): buf_size too small\n"
+msgstr "В'язка ключів: pack_KeyRing(): надто мале значення buf_size\n"
+
+#: KeyRing/keyring.c:1377
+msgid "Incorrect, Reenter KeyRing Password"
+msgstr "Некоректно, введіть повторно пароль до в'язки ключів"
+
+#: KeyRing/keyring.c:1379
+msgid "Enter a NEW KeyRing Password"
+msgstr "Введіть НОВИЙ пароль в'язки ключів"
+
+#: KeyRing/keyring.c:1381
+msgid "Enter KeyRing Password"
+msgstr "Введіть пароль в'язки ключів"
+
+#: KeyRing/keyring.c:1467
+#, fuzzy
+msgid "Your HOME environment variable is too long(>1024)\n"
+msgstr "Значення змінної оточення HOME надто довге\n"
+
+#: KeyRing/keyring.c:1472
+#, c-format
+msgid "KeyRing: file %s not found.\n"
+msgstr "В'язка ключів: файл %s не існує.\n"
+
+#: KeyRing/keyring.c:1473
+msgid "KeyRing: Try Syncing.\n"
+msgstr "В'язка ключів: спроба синхронізації.\n"
+
+#: KeyRing/keyring.c:1557 KeyRing/keyring.c:1568
+msgid "KeyRing"
+msgstr "В'язка ключів"
+
+#: KeyRing/keyring.c:1839
+msgid "Account"
+msgstr "Рахунок"
+
+#: KeyRing/keyring.c:1854
+msgid ""
+"Change\n"
+"KeyRing\n"
+"Password"
+msgstr ""
+"Змінити\n"
+"пароль\n"
+"в'язки ключів"
+
+#: KeyRing/keyring.c:2024
+msgid "name: "
+msgstr "ім'я: "
+
+#: KeyRing/keyring.c:2031
+msgid "account: "
+msgstr "рахунок: "
+
+#: KeyRing/keyring.c:2038
+msgid "password: "
+msgstr "пароль: "
+
+#: KeyRing/keyring.c:2045
+msgid "Generate Password"
+msgstr "Створити пароль"
+
+#~ msgid "Directory"
+#~ msgstr "Каталог"
+
+#~ msgid "Overwrite File"
+#~ msgstr "Перезаписати файл"
+
+#~ msgid "Filename"
+#~ msgstr "Назва файлу"
+
+#~ msgid "Answer: "
+#~ msgstr "Відповідь: "
+
+#~ msgid "Sync"
+#~ msgstr "Синхронізувати"
+
+#~ msgid " -p do not load plugins.\n"
+#~ msgstr " -p не завантажувати модуль.\n"
