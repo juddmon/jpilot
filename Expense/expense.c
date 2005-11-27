@@ -1,4 +1,4 @@
-/* $Id: expense.c,v 1.42 2005/11/24 23:53:39 rikster5 Exp $ */
+/* $Id: expense.c,v 1.43 2005/11/27 00:07:23 judd Exp $ */
 
 /*******************************************************************************
  * expense.c
@@ -1639,7 +1639,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    /************************************************************/
    /* Right half of screen */
 
-   hbox_temp = gtk_hbox_new(FALSE, 0);
+   hbox_temp = gtk_hbox_new(FALSE, 6);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
    /* Delete, Copy, New, etc. buttons */

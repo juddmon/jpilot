@@ -1,4 +1,4 @@
-/* $Id: search_gui.c,v 1.34 2004/12/10 02:17:51 rikster5 Exp $ */
+/* $Id: search_gui.c,v 1.35 2005/11/27 00:07:23 judd Exp $ */
 
 /*******************************************************************************
  * search_gui.c
@@ -522,7 +522,6 @@ void cb_search_gui(GtkWidget *widget, gpointer data)
 
    window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
    gtk_window_set_default_size(GTK_WINDOW(window), 500, 300);
-   gtk_container_set_border_width(GTK_CONTAINER(window), 10);
    g_snprintf(temp, sizeof(temp), "%s %s", PN, _("Search"));
    gtk_window_set_title(GTK_WINDOW(window), temp);
 
@@ -536,6 +535,7 @@ void cb_search_gui(GtkWidget *widget, gpointer data)
    gtk_container_add(GTK_CONTAINER(window), vbox);
 
    hbox = gtk_hbox_new(FALSE, 0);
+   gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
    label = gtk_label_new(_("Search for: "));
@@ -552,7 +552,7 @@ void cb_search_gui(GtkWidget *widget, gpointer data)
 
    /*Put the scrolled window up */
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
-   gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 0);
+   gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 12);
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
 				  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
    gtk_box_pack_start(GTK_BOX(vbox), scrolled_window, TRUE, TRUE, 0);
@@ -572,17 +572,28 @@ void cb_search_gui(GtkWidget *widget, gpointer data)
 		      GTK_SIGNAL_FUNC(cb_entry),
 		      clist);
 
-   hbox = gtk_hbox_new(FALSE, 0);
+   hbox = gtk_hbutton_box_new();
+   gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
+   gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox), GTK_BUTTONBOX_END);
+   gtk_button_box_set_spacing(hbox, 6);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
    /* Create a "Search" button */
+#ifdef ENABLE_GTK2
+   button = gtk_button_new_from_stock(GTK_STOCK_FIND);
+#else
    button = gtk_button_new_with_label(_("Search"));
+#endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_search), clist);
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
 
    /* Create a "Done" button */
+#ifdef ENABLE_GTK2
+   button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
+#else
    button = gtk_button_new_with_label(_("Close"));
+#endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_quit), window);
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);

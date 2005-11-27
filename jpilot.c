@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.123 2005/10/24 19:15:41 judd Exp $ */
+/* $Id: jpilot.c,v 1.124 2005/11/27 00:07:23 judd Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -382,8 +382,7 @@ void call_plugin_help(int number)
 	       plugin->plugin_help(&text, &width, &height);
 	       if (text) {
 		  dialog_generic(GTK_WINDOW(window),
-				width, height,
-				 _("Help"), plugin->name, text, 1, button_text);
+				 _("Help"), DIALOG_INFO, text, 1, button_text);
 		  free(text);
 	       }
 	    }
@@ -446,8 +445,8 @@ void cb_print(GtkWidget *widget, gpointer data)
       }
    }
 #endif
-   dialog_generic(GTK_WINDOW(window), 0, 0,
-		  _("Print"), NULL,
+   dialog_generic(GTK_WINDOW(window),
+		  _("Print"), DIALOG_WARNING,
 		  _("There is no print support for this conduit."),
 		  1, button_text);
 }
@@ -506,8 +505,8 @@ void cb_import(GtkWidget *widget, gpointer data)
       }
    }
 #endif
-   dialog_generic(GTK_WINDOW(window), 0, 0,
-		  _("Import"), NULL,
+   dialog_generic(GTK_WINDOW(window),
+		  _("Import"), DIALOG_WARNING,
 		  _("There is no import support for this conduit."),
 		  1, button_text);
 }
@@ -550,8 +549,8 @@ void cb_export(GtkWidget *widget, gpointer data)
       }
    }
 #endif
-   dialog_generic(GTK_WINDOW(window), 0, 0,
-		  _("Export"), NULL,
+   dialog_generic(GTK_WINDOW(window),
+		  _("Export"), DIALOG_WARNING,
 		  _("There is no export support for this conduit."),
 		  1, button_text);
 }
@@ -751,13 +750,11 @@ int bad_sync_exit_status(int exit_status)
    if ((exit_status == SYNC_ERROR_NOT_SAME_USERID) ||
        (exit_status == SYNC_ERROR_NOT_SAME_USER)) {
       return dialog_generic(GTK_WINDOW(window),
-			      0, 0,
-			      _("Sync Problem"), _("Sync"), text1, 2, button_text);
+			      _("Sync Problem"), DIALOG_WARNING, text1, 2, button_text);
    }
    if (exit_status == SYNC_ERROR_NULL_USERID) {
       return dialog_generic(GTK_WINDOW(window),
-			    0, 0,
-			    _("Sync Problem"), _("Sync"), text2, 1, button_text);
+			    _("Sync Problem"), DIALOG_ERROR, text2, 1, button_text);
    }
    return EXIT_FAILURE;
 }
@@ -982,9 +979,8 @@ void cb_about(GtkWidget *widget, gpointer data)
    get_compile_options(options, sizeof(options));
 
    if (GTK_IS_WINDOW(window)) {
-      dialog_generic_with_text(GTK_WINDOW(window),
-			       w, h,
-			       about, PN" "VERSION, options, 1, button_text, 1);
+      dialog_generic(GTK_WINDOW(window),
+			       about, DIALOG_INFO, options, 1, button_text);
    }
 }
 
@@ -1865,29 +1861,22 @@ void jp_window_iconify(GtkWidget *window)
 
 void cb_payback(GtkWidget *widget, gpointer data)
 {
-   int w, h;
    char *button_text[]={N_("OK")};
    char *text=
-     "Buy a Palm Tungsten, or Palm Zire, register it on-line and "
+     "Buy a Palm Tungsten, or Palm Zire, register it on-line and\n"
      "earn points for the J-Pilot project.\n\n"
-     "If you already own a Tungsten, or Zire Palm, consider registering it "
-     "on-line to help J-Pilot.  "
+     "If you already own a Tungsten, or Zire Palm, consider registering it\n"
+     "on-line to help J-Pilot.\n"
      "Visit http://jpilot.org/payback.html for details.\n\n"
-     "This message will not be automatically displayed again and can be found later "
+     "This message will not be automatically displayed again and can be found later\n"
      "in the help menu.\n\n\n"
      "PALM, TUNGSTEN and ZIRE are among the trademarks of palmOne, Inc."
      ;
 
-   gdk_window_get_size(window->window, &w, &h);
-
-#ifdef ENABLE_GTK2
-   h = 2;
-#endif
-
    if (GTK_IS_WINDOW(window)) {
-      dialog_generic_with_text(GTK_WINDOW(window), w/2, h*2/3,
-			       PN, "Register your Palm in the Payback Program",
-			       text, 1, button_text, 1);
+      dialog_generic(GTK_WINDOW(window),
+	    "Register your Palm in the Payback Program", DIALOG_INFO,
+	    text, 1, button_text);
    }
 }
 
@@ -2609,7 +2598,7 @@ char * xpm_backup[] = {
    gtk_signal_connect(GTK_OBJECT(button_sync), "clicked",
 		      GTK_SIGNAL_FUNC(cb_sync),
 		      GINT_TO_POINTER(skip_plugins ? SYNC_NO_PLUGINS : 0));
-   gtk_box_pack_start(GTK_BOX(g_vbox0), button_sync, FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(g_vbox0), button_sync, FALSE, FALSE, 3);
 
    gtk_tooltips_set_tip(glob_tooltips, button_sync, _("Sync your palm to the desktop   Ctrl-Y"), NULL);
    gtk_widget_add_accelerator(button_sync, "clicked", accel_group, GDK_y,
@@ -2630,7 +2619,7 @@ char * xpm_backup[] = {
 		      GINT_TO_POINTER
 		      (skip_plugins ? SYNC_NO_PLUGINS | SYNC_FULL_BACKUP
 		      : SYNC_FULL_BACKUP));
-   gtk_box_pack_start(GTK_BOX(g_vbox0), button_backup, FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(g_vbox0), button_backup, FALSE, FALSE, 3);
 
    gtk_tooltips_set_tip(glob_tooltips, button_backup, _("Sync your palm to the desktop\n"
 			"and then do a backup"), NULL);
@@ -2826,8 +2815,8 @@ char * xpm_backup[] = {
       g_strlcat(text, _("\" and change the \""), sizeof(text));
       g_strlcat(text, _("Character Set "), sizeof(text));
       g_strlcat(text, _("\"."), sizeof(text));
-      ret = dialog_generic(GTK_WINDOW(window), 0, 0,
-         _("Select a UTF-8 encoding"), NULL, text, 3, button_text);
+      ret = dialog_generic(GTK_WINDOW(window),
+         _("Select a UTF-8 encoding"), DIALOG_QUESTION, text, 3, button_text);
 
       switch (ret) {
        case DIALOG_SAID_1: 

@@ -1,4 +1,4 @@
-/* $Id: password.c,v 1.20 2005/11/17 21:49:13 rousseau Exp $ */
+/* $Id: password.c,v 1.21 2005/11/27 00:07:23 judd Exp $ */
 
 /*******************************************************************************
  * password.c
@@ -314,11 +314,17 @@ int dialog_password(GtkWindow *main_window, char *ascii_password, int retry)
 
    gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(main_window));
 
+   hbox1 = gtk_hbox_new(FALSE, 2);
+   gtk_container_add(GTK_CONTAINER(dialog), hbox1);
+#ifdef ENABLE_GTK2
+   gtk_box_pack_start(GTK_BOX(hbox1), gtk_image_new_from_stock(GTK_STOCK_DIALOG_AUTHENTICATION, GTK_ICON_SIZE_DIALOG), FALSE, FALSE, 2);
+#endif
+
    vbox1 = gtk_vbox_new(FALSE, 2);
 
    gtk_container_set_border_width(GTK_CONTAINER(vbox1), 5);
 
-   gtk_container_add(GTK_CONTAINER(dialog), vbox1);
+   gtk_container_add(GTK_CONTAINER(hbox1), vbox1);
 
    hbox1 = gtk_hbox_new(TRUE, 2);
    gtk_container_set_border_width(GTK_CONTAINER(hbox1), 5);
@@ -341,7 +347,9 @@ int dialog_password(GtkWindow *main_window, char *ascii_password, int retry)
 
 
    /* Button Box */
-   hbox1 = gtk_hbox_new(TRUE, 2);
+   hbox1 = gtk_hbutton_box_new();
+   gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox1), GTK_BUTTONBOX_END);
+   gtk_button_box_set_spacing(hbox1, 6);
    gtk_container_set_border_width(GTK_CONTAINER(hbox1), 5);
    gtk_box_pack_start(GTK_BOX(vbox1), hbox1, FALSE, FALSE, 2);
 
@@ -354,7 +362,7 @@ int dialog_password(GtkWindow *main_window, char *ascii_password, int retry)
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_dialog_button),
 		      GINT_TO_POINTER(DIALOG_SAID_2));
-   gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
+   gtk_box_pack_start(GTK_BOX(hbox1), button, FALSE, FALSE, 1);
 
 #ifdef ENABLE_GTK2
    button = gtk_button_new_from_stock(GTK_STOCK_OK);
@@ -364,8 +372,9 @@ int dialog_password(GtkWindow *main_window, char *ascii_password, int retry)
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_dialog_button),
 		      GINT_TO_POINTER(DIALOG_SAID_1));
-   gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
-
+   gtk_box_pack_start(GTK_BOX(hbox1), button, FALSE, FALSE, 1);
+   GTK_WIDGET_SET_FLAGS(button, GTK_CAN_DEFAULT);
+   gtk_widget_grab_default(button);
 
    Pdata = malloc(sizeof(struct dialog_data));
    if (Pdata) {

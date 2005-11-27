@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.97 2005/11/17 21:49:13 rousseau Exp $ */
+/* $Id: utils.c,v 1.98 2005/11/27 00:07:23 judd Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -1060,7 +1060,10 @@ int cal_dialog(GtkWindow *main_window,
    util_cal = gtk_calendar_new();
    gtk_box_pack_start(GTK_BOX(vbox), util_cal, TRUE, TRUE, 0);
 
-   hbox = gtk_hbox_new(FALSE, 0);
+   hbox = gtk_hbutton_box_new();
+   gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
+   gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox), GTK_BUTTONBOX_END);
+   gtk_button_box_set_spacing(hbox, 6);
    gtk_container_add(GTK_CONTAINER(vbox), hbox);
 
    gtk_calendar_display_options(GTK_CALENDAR(util_cal),
@@ -1140,32 +1143,20 @@ static gboolean cb_destroy_dialog(GtkWidget *widget)
 }
 
 /* nob = number of buttons */
-int dialog_generic_with_text(GtkWindow *main_window,
-			     int w, int h,
-			     char *title, char *frame_text,
-			     char *text, int nob, char *button_text[],
-			     int with_text)
+int dialog_generic(GtkWindow *main_window,
+			     char *title, int type,
+			     char *text, int nob, char *button_text[])
 {
    GtkWidget *button, *label1;
-#ifdef ENABLE_GTK2
-   GtkTextView *text_widget;
-#else
-   GtkText *text_widget;
-#endif
-
-   GtkWidget *hbox1, *vbox1;
-   GtkWidget *frame1;
+   GtkWidget *hbox1, *vbox1, *vbox2, *image;
    int i;
+   char *markup;
 
    dialog_result=0;
    glob_dialog = gtk_widget_new(GTK_TYPE_WINDOW,
 				"type", GTK_WINDOW_TOPLEVEL,
 				"window_position", GTK_WIN_POS_MOUSE,
-				"title", title,
 				NULL);
-   if (w && h) {
-      gtk_window_set_default_size(GTK_WINDOW(glob_dialog), w, h);
-   }
 
    gtk_signal_connect(GTK_OBJECT(glob_dialog), "destroy",
                       GTK_SIGNAL_FUNC(cb_destroy_dialog), glob_dialog);
@@ -1176,39 +1167,54 @@ int dialog_generic_with_text(GtkWindow *main_window,
       gtk_window_set_transient_for(GTK_WINDOW(glob_dialog), GTK_WINDOW(main_window));
    }
 
-   frame1 = gtk_frame_new(frame_text);
-   gtk_frame_set_label_align(GTK_FRAME(frame1), 0.5, 0.0);
    vbox1 = gtk_vbox_new(FALSE, 5);
-   hbox1 = gtk_hbox_new(TRUE, 5);
+   gtk_container_add(GTK_CONTAINER(glob_dialog), vbox1);
 
-   gtk_container_set_border_width(GTK_CONTAINER(frame1), 5);
-   gtk_container_set_border_width(GTK_CONTAINER(vbox1), 5);
-   gtk_container_set_border_width(GTK_CONTAINER(hbox1), 5);
-
-   gtk_container_add(GTK_CONTAINER(glob_dialog), frame1);
-   gtk_container_add(GTK_CONTAINER(frame1), vbox1);
-
-
-   if (with_text) {
-#ifndef ENABLE_GTK2
-      text_widget = GTK_TEXT(gtk_text_new(NULL, NULL));
-      gtk_text_set_editable(text_widget, FALSE);
-      gtk_text_set_word_wrap(text_widget, TRUE);
-      gtk_box_pack_start(GTK_BOX(vbox1), GTK_WIDGET(text_widget), TRUE, TRUE, 0);
-      gtk_text_insert(text_widget, NULL, NULL, NULL, text, -1);
-#else
-      text_widget = GTK_TEXT_VIEW(gtk_text_view_new());
-      gtk_text_buffer_set_text(
-	 gtk_text_view_get_buffer(text_widget), text, -1);
-      gtk_text_view_set_editable(text_widget, FALSE);
-      gtk_text_view_set_cursor_visible(text_widget, FALSE);
-      gtk_text_view_set_wrap_mode(text_widget, GTK_WRAP_WORD);
-      gtk_box_pack_start(GTK_BOX(vbox1), GTK_WIDGET(text_widget), TRUE, TRUE, 0);
-#endif
-   } else {
-      label1 = gtk_label_new(text);
-      gtk_box_pack_start(GTK_BOX(vbox1), label1, FALSE, FALSE, 2);
+   hbox1 = gtk_hbox_new(FALSE, 2);
+   gtk_container_add(GTK_CONTAINER(vbox1), hbox1);
+   gtk_container_set_border_width(GTK_CONTAINER(hbox1), 12);
+#ifdef ENABLE_GTK2
+   switch(type)
+   {
+      case DIALOG_INFO:
+	 image = gtk_image_new_from_stock(GTK_STOCK_DIALOG_INFO, GTK_ICON_SIZE_DIALOG);
+	 break;
+      case DIALOG_QUESTION:
+	 image = gtk_image_new_from_stock(GTK_STOCK_DIALOG_QUESTION, GTK_ICON_SIZE_DIALOG);
+	 break;
+      case DIALOG_ERROR:
+	 image = gtk_image_new_from_stock(GTK_STOCK_DIALOG_ERROR, GTK_ICON_SIZE_DIALOG);
+	 break;
+      case DIALOG_WARNING:
+	 image = gtk_image_new_from_stock(GTK_STOCK_DIALOG_WARNING, GTK_ICON_SIZE_DIALOG);
+	 break;
+      default:
+	 image = NULL;
    }
+   if (image)
+      gtk_box_pack_start(GTK_BOX(hbox1), image, FALSE, FALSE, 2);
+#endif
+
+   vbox2 = gtk_vbox_new(FALSE, 5);
+   gtk_container_set_border_width(GTK_CONTAINER(vbox2), 5);
+   gtk_box_pack_start(GTK_BOX(hbox1), vbox2, FALSE, FALSE, 2);
+
+   label1 = gtk_label_new(NULL);
+#ifdef ENABLE_GTK2
+   markup = g_markup_printf_escaped("<b><big>%s</big></b>\n\n%s", title, text);
+   gtk_label_set_markup(GTK_LABEL(label1), markup);
+   g_free(markup);
+   gtk_label_set_selectable(GTK_LABEL(label1), TRUE);
+#else
+   gtk_window_set_title(glob_dialog, title);
+   gtk_label_set_text(GTK_LABEL(label1), text);
+#endif
+   gtk_box_pack_start(GTK_BOX(vbox2), label1, FALSE, FALSE, 2);
+
+   hbox1 = gtk_hbutton_box_new();
+   gtk_container_set_border_width(GTK_CONTAINER(hbox1), 12);
+   gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox1), GTK_BUTTONBOX_END);
+   gtk_button_box_set_spacing(hbox1, 6);
 
    gtk_box_pack_start(GTK_BOX(vbox1), hbox1, FALSE, FALSE, 2);
 
@@ -1249,28 +1255,16 @@ int dialog_generic_with_text(GtkWindow *main_window,
    return dialog_result;
 }
 
-int dialog_generic(GtkWindow *main_window,
-		   int w, int h,
-		   char *title, char *frame_text,
-		   char *text, int nob, char *button_text[])
-{
-   return dialog_generic_with_text(main_window,
-				   w, h,
-				   title, frame_text,
-				   text, nob, button_text,
-				   0);
-}
-
 int dialog_generic_ok(GtkWidget *widget,
-		      char *title, char *frame_text, char *text)
+		      char *title, int type, char *text)
 {
    char *button_text[] = {N_("OK")};
 
    if (widget) {
       return dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(widget))),
-			    0, 0, title, frame_text, text, 1, button_text);
+			    title, type, text, 1, button_text);
    }
-   return dialog_generic(NULL, 0, 0, title, frame_text, text, 1, button_text);
+   return dialog_generic(NULL, title, type, text, 1, button_text);
 }
 
 
@@ -1290,14 +1284,14 @@ int dialog_save_changed_record(GtkWidget *widget, int changed)
       return EXIT_SUCCESS;
    }
    if (changed==MODIFY_FLAG) {
-      b=dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)), 0, 0,
-		       _("Save Changed Record?"), NULL,
+      b=dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)),
+		       _("Save Changed Record?"), DIALOG_QUESTION,
 		       _("Do you want to save the changes to this record?"),
 		       2, button_text);
    }
    if (changed==NEW_FLAG) {
-      b=dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)), 0, 0,
-		       _("Save New Record?"), NULL,
+      b=dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)),
+		       _("Save New Record?"), DIALOG_QUESTION,
 		       _("Do you want to save this new record?"),
 		       2, button_text);
    }

@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.96 2005/11/24 22:19:21 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.97 2005/11/27 00:07:23 judd Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -687,14 +687,14 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
       if (S_ISDIR(statb.st_mode)) {
 	 g_snprintf(text, sizeof(text), _("%s is a directory"), filename);
 	 dialog_generic(GTK_WINDOW(export_window),
-			0, 0, _("Error Opening File"),
-			_("Directory"), text, 1, button_text);
+			_("Error Opening File"),
+			DIALOG_ERROR, text, 1, button_text);
 	 return;
       }
       g_snprintf(text, sizeof(text), _("Do you want to overwrite file %s?"), filename);
       r = dialog_generic(GTK_WINDOW(export_window),
-			 0, 0, _("Overwrite File?"),
-			 _("Overwrite File"), text, 2, button_overwrite_text);
+			 _("Overwrite File?"),
+			 DIALOG_QUESTION, text, 2, button_overwrite_text);
       if (r!=DIALOG_SAID_2) {
 	 return;
       }
@@ -704,8 +704,8 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
    if (!out) {
       g_snprintf(text, sizeof(text), _("Error opening file: %s"), filename);
       dialog_generic(GTK_WINDOW(export_window),
-		     0, 0, _("Error Opening File"),
-		     _("Filename"), text, 1, button_text);
+		     _("Error Opening File"),
+		     DIALOG_ERROR, text, 1, button_text);
       return;
    }
 
@@ -2159,7 +2159,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    /* */
    /* The right hand part of the main window follows: */
    /* */
-   hbox_temp = gtk_hbox_new(FALSE, 0);
+   hbox_temp = gtk_hbox_new(FALSE, 6);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
 

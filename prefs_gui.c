@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.47 2005/10/24 15:27:48 rikster5 Exp $ */
+/* $Id: prefs_gui.c,v 1.48 2005/11/27 00:07:23 judd Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -760,10 +760,18 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 #endif
 
    /* Create a "Done" button */
+   hbox_temp = gtk_hbutton_box_new();
+   gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox_temp), GTK_BUTTONBOX_END);
+   gtk_box_pack_start(GTK_BOX(vbox), hbox_temp, FALSE, FALSE, 1);
+
+#ifdef ENABLE_GTK2
+   button = gtk_button_new_from_stock(GTK_STOCK_OK);
+#else
    button = gtk_button_new_with_label(_("Done"));
+#endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_quit), window);
-   gtk_box_pack_end(GTK_BOX(vbox), button, FALSE, FALSE, 0);
+   gtk_box_pack_end(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
 
    gtk_widget_show_all(window);
 }

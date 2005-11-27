@@ -1,4 +1,4 @@
-/* $Id: category.c,v 1.23 2005/06/16 03:52:01 judd Exp $ */
+/* $Id: category.c,v 1.24 2005/11/27 00:07:23 judd Exp $ */
 
 /*******************************************************************************
  * category.c
@@ -446,8 +446,8 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 	    }
 	 }
 	 if (count>14) {
-	    dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)), 0, 0,
-			   _("Edit Categories"), NULL,
+	    dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)),
+			   _("Edit Categories"), DIALOG_ERROR,
 			   _("The maximum number of categories (16) are already used"), 1, button_text);
 	    return;
 	 }
@@ -460,15 +460,15 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 	 break;
        case EDIT_CAT_RENAME:
 	 if ((catnum<0) || (Pdata->cai2.name[catnum][0]=='\0')) {
-	    dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)), 0, 0,
-			   _("Edit Categories"), NULL,
+	    dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)),
+			   _("Edit Categories"), DIALOG_ERROR,
 			   _("You must select a category to rename"), 1, button_text);
 	    return;
 	 }
  	 if (catnum == 0) {
 	    g_snprintf(temp, sizeof(temp), _("You can't edit category %s.\n"), Pdata->cai1.name[0]);
-	    dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)), 0, 0,
-			   _("Edit Categories"), NULL,
+	    dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)),
+			   _("Edit Categories"), DIALOG_ERROR,
 			   temp, 1, button_text);
 	    return;
 	 }
@@ -485,15 +485,15 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 	 printf("delete cat\n");
 #endif
 	 if (catnum<0) {
-	    dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)), 0, 0,
-			   _("Edit Categories"), NULL,
+	    dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)),
+			   _("Edit Categories"), DIALOG_ERROR,
 			   _("You must select a category to delete"), 1, button_text);
 	    return;
 	 }
 	 if (catnum==0) {
 	    sprintf(temp, _("You can't delete category %s.\n"), Pdata->cai1.name[0]);
-	    dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)), 0, 0,
-			   _("Edit Categories"), NULL,
+	    dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)),
+			   _("Edit Categories"), DIALOG_ERROR,
 			   temp, 1, button_text);
 	    return;
 	 }
@@ -510,8 +510,8 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 	    g_snprintf(temp, sizeof(temp), _("There are %d records in %s.\n"
 		       "Do you want to move them to %s, or delete them?"),
 		       count, Pdata->cai1.name[catnum], Pdata->cai1.name[0]);
-	    r = dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)), 0, 0,
-			       _("Edit Categories"), NULL,
+	    r = dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)),
+			       _("Edit Categories"), DIALOG_QUESTION,
 			       temp, 3, move_text);
 	    switch (r) {
 	     case DIALOG_SAID_1:
@@ -590,8 +590,8 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 	       if (((i != catnum) || (Pdata->state != EDIT_CAT_RENAME))
 		   && !strcmp(pilotentry, Pdata->cai2.name[i])) {
 		  sprintf(temp, _("The category %s can't be used more than once"), entry_text);
-		  dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)), 0, 0,
-				 _("Edit Categories"), NULL,
+		  dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)),
+				 _("Edit Categories"), DIALOG_ERROR,
 				 temp, 1, button_text);
 		  return;
 	       }
@@ -740,7 +740,7 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
 {
    GtkWidget *button;
    GtkWidget *hbox, *vbox;
-   GtkWidget *vbox1, *vbox2;
+   GtkWidget *vbox1, *vbox2, *vbox3;
    GtkWidget *dialog;
    GtkWidget *clist;
    GtkWidget *entry;
@@ -798,11 +798,13 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
 
    gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_widget_get_toplevel(widget)));
 
+   vbox3 = gtk_vbox_new(FALSE, 0);
    hbox = gtk_hbox_new(FALSE, 0);
 
    gtk_container_set_border_width(GTK_CONTAINER(hbox), 5);
 
-   gtk_container_add(GTK_CONTAINER(dialog), hbox);
+   gtk_container_add(GTK_CONTAINER(dialog), vbox3);
+   gtk_container_add(GTK_CONTAINER(vbox3), hbox);
 
    vbox1 = gtk_vbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(hbox), vbox1, FALSE, FALSE, 1);
@@ -817,6 +819,7 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
    if (titles[0]) free(titles[0]);
 
    gtk_clist_column_titles_passive(GTK_CLIST(clist));
+   gtk_clist_set_column_min_width(GTK_CLIST(clist), 0, 100);
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), 0, TRUE);
 
    Pdata.clist = clist;
@@ -826,10 +829,17 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
    gtk_box_pack_start(GTK_BOX(vbox1), clist, TRUE, TRUE, 1);
 
    /* Buttons */
-   hbox = gtk_hbox_new(FALSE, 0);
+   hbox = gtk_hbutton_box_new();
+   gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
+   gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox), GTK_BUTTONBOX_END);
+   gtk_button_box_set_spacing(hbox, 6);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox, FALSE, FALSE, 1);
 
+#ifdef ENABLE_GTK2
+   button = gtk_button_new_from_stock(GTK_STOCK_NEW);
+#else
    button = gtk_button_new_with_label(_("New"));
+#endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_edit_button),
 		      GINT_TO_POINTER(EDIT_CAT_NEW));
@@ -841,7 +851,11 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
 		      GINT_TO_POINTER(EDIT_CAT_RENAME));
    gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 1);
 
+#ifdef ENABLE_GTK2
+   button = gtk_button_new_from_stock(GTK_STOCK_DELETE);
+#else
    button = gtk_button_new_with_label(_("Delete"));
+#endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_edit_button),
 		      GINT_TO_POINTER(EDIT_CAT_DELETE));
@@ -856,8 +870,6 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
    gtk_box_pack_start(GTK_BOX(vbox), separator, FALSE, FALSE, 0);
    label = gtk_label_new("");
    gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
-   hbox = gtk_hbox_new(FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 1);
    separator = gtk_hseparator_new();
    gtk_box_pack_start(GTK_BOX(vbox), separator, FALSE, FALSE, 0);
 
@@ -867,18 +879,35 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
    gtk_signal_connect(GTK_OBJECT(entry), "activate",
 		      GTK_SIGNAL_FUNC(cb_edit_button),
 		      GINT_TO_POINTER(EDIT_CAT_ENTRY_OK));
-   gtk_box_pack_start(GTK_BOX(hbox), entry, FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox), entry, FALSE, FALSE, 0);
+
+   hbox = gtk_hbutton_box_new();
+   gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
+   gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox), GTK_BUTTONBOX_END);
+   gtk_button_box_set_spacing(hbox, 6);
+   gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 1);
+#ifdef ENABLE_GTK2
+   button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
+#else
+   button = gtk_button_new_with_label(_("Cancel"));
+#endif
+   gtk_signal_connect(GTK_OBJECT(button), "clicked",
+		      GTK_SIGNAL_FUNC(cb_edit_button),
+		      GINT_TO_POINTER(EDIT_CAT_ENTRY_CANCEL));
+   gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 1);
+
+#ifdef ENABLE_GTK2
+   button = gtk_button_new_from_stock(GTK_STOCK_OK);
+#else
    button = gtk_button_new_with_label(_("OK"));
+#endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_edit_button),
 		      GINT_TO_POINTER(EDIT_CAT_ENTRY_OK));
    gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 1);
 
-   button = gtk_button_new_with_label(_("Cancel"));
-   gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_edit_button),
-		      GINT_TO_POINTER(EDIT_CAT_ENTRY_CANCEL));
-   gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 1);
+   separator = gtk_hseparator_new();
+   gtk_box_pack_start(GTK_BOX(vbox), separator, FALSE, FALSE, 0);
 
    Pdata.entry_box = vbox;
    Pdata.entry = entry;
@@ -903,21 +932,31 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
    }
 
    /* Button Box */
-   hbox = gtk_hbox_new(TRUE, 2);
-   gtk_container_set_border_width(GTK_CONTAINER(hbox), 5);
-   gtk_box_pack_start(GTK_BOX(vbox1), hbox, FALSE, FALSE, 2);
+   hbox = gtk_hbutton_box_new();
+   gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
+   gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox), GTK_BUTTONBOX_END);
+   gtk_button_box_set_spacing(hbox, 6);
+   gtk_box_pack_start(GTK_BOX(vbox3), hbox, FALSE, FALSE, 2);
 
    /* Buttons */
-   button = gtk_button_new_with_label(_("OK"));
-   gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_dialog_button),
-		      GINT_TO_POINTER(DIALOG_SAID_1));
-   gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 1);
-
+#ifdef ENABLE_GTK2
+   button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
+#else
    button = gtk_button_new_with_label(_("Cancel"));
+#endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_dialog_button),
 		      GINT_TO_POINTER(DIALOG_SAID_2));
+   gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 1);
+
+#ifdef ENABLE_GTK2
+   button = gtk_button_new_from_stock(GTK_STOCK_OK);
+#else
+   button = gtk_button_new_with_label(_("OK"));
+#endif
+   gtk_signal_connect(GTK_OBJECT(button), "clicked",
+		      GTK_SIGNAL_FUNC(cb_dialog_button),
+		      GINT_TO_POINTER(DIALOG_SAID_1));
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 1);
 
 #ifdef EDIT_CATS_DEBUG

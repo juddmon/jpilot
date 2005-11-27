@@ -1,4 +1,4 @@
-/* $Id: dialer.c,v 1.11 2004/12/07 06:51:08 rikster5 Exp $ */
+/* $Id: dialer.c,v 1.12 2005/11/27 00:07:23 judd Exp $ */
 
 /*******************************************************************************
  * dialer.c
@@ -357,12 +357,17 @@ int dialog_dial(GtkWindow *main_window, char *string, char *ext)
 
 
    /* Button Box */
-   hbox1 = gtk_hbox_new(TRUE, 2);
-   gtk_container_set_border_width(GTK_CONTAINER(hbox1), 5);
+   hbox1 = gtk_hbutton_box_new();
+   gtk_container_set_border_width(GTK_CONTAINER(hbox1), 7);
+   gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox1), GTK_BUTTONBOX_END);
    gtk_box_pack_start(GTK_BOX(vbox1), hbox1, FALSE, FALSE, 2);
 
    /* Buttons */
+#ifdef ENABLE_GTK2
+   button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
+#else
    button = gtk_button_new_with_label(_("Dismiss"));
+#endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_dialog_button),
 		      GINT_TO_POINTER(DIALOG_SAID_1));

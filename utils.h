@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.52 2005/10/24 19:15:41 judd Exp $ */
+/* $Id: utils.h,v 1.53 2005/11/27 00:07:23 judd Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -105,6 +105,11 @@
 #define DIALOG_SAID_IMPORT_ALL  456
 #define DIALOG_SAID_IMPORT_SKIP 457
 #define DIALOG_SAID_IMPORT_QUIT 458
+
+#define DIALOG_INFO     1
+#define DIALOG_QUESTION 2
+#define DIALOG_ERROR    3
+#define DIALOG_WARNING  4
 
 #define CAL_DONE   100
 #define CAL_CANCEL 101
@@ -286,16 +291,9 @@ int setup_sync(unsigned int flags);
 void cb_sync(GtkWidget *widget, unsigned int flags);
 void get_compile_options(char *string, int len);
 
-int dialog_generic_with_text(GtkWindow *main_window,
-			     int w, int h,
-			     char *title, char *frame_text,
-			     char *text, int nob, char *button_text[],
-			     int with_text);
-
 /* Returns the number of the button that was pressed */
 int dialog_generic(GtkWindow *main_window,
-		   int w, int h,
-		   char *title, char *frame_text,
+		   char *title, int type,
 		   char *text, int nob, char *button_text[]);
 
 /*
@@ -304,7 +302,7 @@ int dialog_generic(GtkWindow *main_window,
  * This just calls dialog_generic with an OK button.
  */
 int dialog_generic_ok(GtkWidget *widget,
-		      char *title, char *frame_text, char *text);
+		      char *title, int type, char *text);
 
 /*
  * Widget must be some widget used to get the main window from.

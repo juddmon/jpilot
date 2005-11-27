@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.118 2005/11/25 18:20:09 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.119 2005/11/27 00:07:23 judd Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -568,7 +568,7 @@ int datebook_import_callback(GtkWidget *parent_window, const char *file_path, in
    if (type==IMPORT_TYPE_DAT) {
       jp_logf(JP_LOG_DEBUG, "Datebook import DAT [%s]\n", file_path);
       if (dat_check_if_dat_file(in)!=DAT_DATEBOOK_FILE) {
-	 dialog_generic_ok(notebook, NULL, _("Error"),
+	 dialog_generic_ok(notebook, _("Error"), DIALOG_ERROR,
 			   _("File doesn't appear to be datebook.dat format\n"));
 	 fclose(in);
 	 return EXIT_FAILURE;
@@ -696,14 +696,14 @@ void appt_export_ok(int type, const char *filename)
       if (S_ISDIR(statb.st_mode)) {
 	 g_snprintf(text, sizeof(text), _("%s is a directory"), filename);
 	 dialog_generic(GTK_WINDOW(export_window),
-			0, 0, _("Error Opening File"),
-			_("Directory"), text, 1, button_text);
+			_("Error Opening File"),
+			DIALOG_ERROR, text, 1, button_text);
 	 return;
       }
       g_snprintf(text, sizeof(text), _("Do you want to overwrite file %s?"), filename);
       r = dialog_generic(GTK_WINDOW(export_window),
-			 0, 0, _("Overwrite File?"),
-			 _("Overwrite File"), text, 2, button_overwrite_text);
+			 _("Overwrite File?"),
+			 DIALOG_QUESTION, text, 2, button_overwrite_text);
       if (r!=DIALOG_SAID_2) {
 	 return;
       }
@@ -713,8 +713,8 @@ void appt_export_ok(int type, const char *filename)
    if (!out) {
       g_snprintf(text, sizeof(text), _("Error opening file: %s"), filename);
       dialog_generic(GTK_WINDOW(export_window),
-		     0, 0, _("Error Opening File"),
-		     _("Filename"), text, 1, button_text);
+		     _("Error Opening File"),
+		     DIALOG_ERROR, text, 1, button_text);
       return;
    }
 
@@ -983,7 +983,7 @@ void appt_export_ok(int type, const char *filename)
 	 break;
        default:
 	 jp_logf(JP_LOG_WARN, _("Unknown export type\n"));
-	 dialog_generic_ok(notebook, NULL, _("Error"), _("Unknown export type"));
+	 dialog_generic_ok(notebook, _("Error"), DIALOG_ERROR, _("Unknown export type"));
       }
    }
 
@@ -1143,7 +1143,10 @@ static int datebook_export_gui(GtkWidget *main_window, int x, int y)
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_export_browse), export_window);
 
-   hbox = gtk_hbox_new(FALSE, 0);
+   hbox = gtk_hbutton_box_new();
+   gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
+   gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox), GTK_BUTTONBOX_END);
+   gtk_button_box_set_spacing(hbox, 6);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
 #ifdef ENABLE_GTK2
@@ -1573,8 +1576,7 @@ int dialog_4_or_last(int dow)
 	   "Which do you want?"),
 	   _(days[dow]), _(days[dow]));
    return dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(scrolled_window)),
-			 200, 200,
-			 _("Question?"), _("Answer: "),
+			 _("Question?"), DIALOG_QUESTION,
 			 text, 2, button_text);
 }
 
@@ -1591,8 +1593,7 @@ int dialog_current_all_cancel()
    };
 
    return dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(scrolled_window)),
-			 200, 200,
-			 _("Question?"), _("Answer: "),
+			 _("Question?"), DIALOG_QUESTION,
 			 _(text), 3, button_text);
 }
 
@@ -1616,8 +1617,7 @@ int dialog_easter(int mday)
 	   "Birthday!\n", who);
 
    return dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(scrolled_window)),
-			 200, 200,
-			 "Happy Birthday to Me!", "(iiiii)",
+			 "Happy Birthday to Me!", DIALOG_INFO,
 			 text, 1, button_text);
 }
 /* */
@@ -2121,14 +2121,14 @@ static int appt_get_details(struct Appointment *appt, unsigned char *attrib)
       g_snprintf(str, sizeof(str),
               _("You cannot have an appointment that repeats every %d %s(s)\n"),
 	      appt->repeatFrequency, _(period[page]));
-      dialog_generic_ok(notebook, NULL, _("Error"), str);
+      dialog_generic_ok(notebook, _("Error"), DIALOG_ERROR, str);
       appt->repeatFrequency = 1;
       return EXIT_FAILURE;
    }
 
    /* We won't allow a weekly repeating that doesn't repeat on any day */
    if ((page == PAGE_WEEK) && (total_repeat_days == 0)) {
-      dialog_generic_ok(notebook, NULL, _("Error"),
+      dialog_generic_ok(notebook, _("Error"), DIALOG_ERROR,
 			_("You can not have a weekly repeating appointment that doesn't repeat on any day of the week."));
       return EXIT_FAILURE;
    }
@@ -2623,7 +2623,7 @@ static void cb_add_new_record(GtkWidget *widget,
       t_begin = date2seconds(&(new_appt.begin));
       t_end = date2seconds(&(new_appt.repeatEnd));
       if (t_begin > t_end) {
-	 dialog_generic_ok(notebook, NULL, _("Invalid Appointment"),
+	 dialog_generic_ok(notebook, _("Invalid Appointment"), DIALOG_ERROR,
 			   _("The End Date of this appointment\nis before the start date."));
 	 free_Appointment(&new_appt);
 	 return;
@@ -4366,7 +4366,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    /*
     * The right hand part of the main window follows:
     */
-   hbox_temp = gtk_hbox_new(FALSE, 0);
+   hbox_temp = gtk_hbox_new(FALSE, 6);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
 
