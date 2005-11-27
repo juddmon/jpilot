@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.49 2005/11/27 19:14:34 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.50 2005/11/27 19:50:06 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -1397,7 +1397,7 @@ static int dialog_password(GtkWindow *main_window,
    gtk_box_pack_start(GTK_BOX(vbox1), hbox1, FALSE, FALSE, 2);
 
    /* Buttons */
-#ifdef ENABLE_STOCK_BUTTONS
+#ifdef ENABLE_GTK2
    button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
 #else
    button = gtk_button_new_with_label(_("Cancel"));
@@ -1407,7 +1407,7 @@ static int dialog_password(GtkWindow *main_window,
 		      GINT_TO_POINTER(DIALOG_SAID_1));
    gtk_box_pack_start(GTK_BOX(hbox1), button, FALSE, FALSE, 1);
 
-#ifdef ENABLE_STOCK_BUTTONS
+#ifdef ENABLE_GTK2
    button = gtk_button_new_from_stock(GTK_STOCK_OK);
 #else
    button = gtk_button_new_with_label(_("OK"));
