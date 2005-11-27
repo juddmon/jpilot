@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.112 2005/11/27 00:07:23 judd Exp $ */
+/* $Id: address_gui.c,v 1.113 2005/11/27 14:05:05 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -2687,7 +2687,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_box_pack_start(GTK_BOX(hbox_temp), address_quickfind_entry, TRUE, TRUE, 0);
 
    /* The new entry gui */
-   hbox_temp = gtk_hbox_new(FALSE, 6);
+   hbox_temp = gtk_hbox_new(FALSE, 3);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
    /* Create Cancel button */

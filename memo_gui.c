@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.89 2005/11/27 00:07:23 judd Exp $ */
+/* $Id: memo_gui.c,v 1.90 2005/11/27 14:05:05 rousseau Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -1542,7 +1542,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    /*
     * The right hand part of the main window follows:
     */
-   hbox_temp = gtk_hbox_new(FALSE, 6);
+   hbox_temp = gtk_hbox_new(FALSE, 3);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
 

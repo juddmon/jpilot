@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.47 2005/11/27 00:07:23 judd Exp $ */
+/* $Id: keyring.c,v 1.48 2005/11/27 14:05:06 rousseau Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -1952,7 +1952,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    /**********************************************************************/
    /* Right half of screen */
    /**********************************************************************/
-   hbox_temp = gtk_hbox_new(FALSE, 6);
+   hbox_temp = gtk_hbox_new(FALSE, 3);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
    /* Cancel button */
