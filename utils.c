@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.101 2005/11/27 19:14:34 rikster5 Exp $ */
+/* $Id: utils.c,v 1.102 2005/11/28 07:01:38 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -89,24 +89,25 @@ void get_compile_options(char *string, int len)
 {
    g_snprintf(string, len,
 	      PN" version "VERSION"\n"
-	      " Copyright (C) 1999-2004 by Judd Montgomery\n"
-	      " judd@jpilot.org, http://jpilot.org\n"
+	      "  Copyright (C) 1999-2005 by Judd Montgomery\n"
+	      "  judd@jpilot.org, http://jpilot.org\n"
+	      "\n"
 	      PN" comes with ABSOLUTELY NO WARRANTY; for details see the file\n"
-	      "COPYING included with the source code, or in /usr/docs/jpilot/.\n\n"
+	      "COPYING included with the source code, or in /usr/share/docs/jpilot/.\n\n"
 	      "This program is free software; you can redistribute it and/or modify\n"
 	      "it under the terms of the GNU General Public License as published by\n"
 	      "the Free Software Foundation; version 2 of the License.\n\n"
 	      "%s %s %s\n"
 	      "%s\n"
-	      " %s - %s\n"
-	      " %s - %d.%d.%d\n"
-	      " %s - %s\n"
-	      " %s - %s\n"
-	      " %s - %s\n"
-	      " %s - %s\n"
-	      " %s - %s\n"
-	      " %s - %s\n"
-	      " %s - %s",
+	      "  %s - %s\n"
+	      "  %s - %d.%d.%d\n"
+	      "  %s - %s\n"
+	      "  %s - %s\n"
+	      "  %s - %s\n"
+	      "  %s - %s\n"
+	      "  %s - %s\n"
+	      "  %s - %s\n"
+	      "  %s - %s",
 	      _("Date compiled"), __DATE__, __TIME__,
 	      _("Compiled with these options:"),
 

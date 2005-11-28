@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.125 2005/11/27 20:08:34 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.126 2005/11/28 07:01:38 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -1432,7 +1432,7 @@ guint8 *get_inline_pixbuf_data(const char **xpm_icon_data, gint icon_size)
 #endif
   { _("/_Help"),                           NULL,         NULL,           0,                  "<LastBranch>" },
   { _("/Help/PayBack program"),            NULL,         cb_payback,     0,                  NULL },
-  { _("/Help/J-Pilot"),                    NULL,         cb_about,       0,                  ICON(GTK_STOCK_DIALOG_INFO) },
+  { _("/Help/About J-Pilot"),              NULL,         cb_about,       0,                  ICON(GTK_STOCK_DIALOG_INFO) },
   { "END",                                 NULL,         NULL,           0,                  NULL }
  };
 
