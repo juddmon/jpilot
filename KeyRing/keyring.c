@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.50 2005/11/27 19:50:06 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.51 2005/11/28 07:22:23 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -1594,9 +1594,10 @@ int plugin_help(char **text, int *width, int *height)
 	   "Judd Montgomery (c) 2001.\n"
 	   "judd@jpilot.org\n"
 	   "http://jpilot.org\n"
+	   "\n"
 	   "KeyRing is a free PalmOS program for storing\n"
 	   "passwords and other information encrypted\n"
-	   "http://gnukeyring.sourceforge.net\n"
+	   "http://gnukeyring.sourceforge.net"
 	   );
    *height = 0;
    *width  = 0;

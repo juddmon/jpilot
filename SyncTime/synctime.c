@@ -1,4 +1,4 @@
-/* $Id: synctime.c,v 1.9 2004/11/22 00:52:43 rikster5 Exp $ */
+/* $Id: synctime.c,v 1.10 2005/11/28 07:22:23 rikster5 Exp $ */
 
 /*******************************************************************************
  * synctime.c
@@ -58,7 +58,8 @@ int plugin_help(char **text, int *width, int *height)
 	   "Judd Montgomery (c) 1999.\n"
 	   "judd@jpilot.org\n"
 	   "http://jpilot.org\n"
-	   "SyncTime WILL NOT work with PalmOS 3.3!\n"
+	   "\n"
+	   "SyncTime WILL NOT work with PalmOS 3.3!"
 	   );
    *height = 0;
    *width = 0;

@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.126 2005/11/28 07:01:38 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.127 2005/11/28 07:22:22 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -382,7 +382,7 @@ void call_plugin_help(int number)
 	       plugin->plugin_help(&text, &width, &height);
 	       if (text) {
 		  dialog_generic(GTK_WINDOW(window),
-				 _("Help"), DIALOG_INFO, text, 1, button_text);
+				 plugin->help_name, DIALOG_INFO, text, 1, button_text);
 		  free(text);
 	       }
 	    }
