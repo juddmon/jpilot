@@ -1,4 +1,4 @@
-/* $Id: category.c,v 1.26 2005/11/27 20:22:13 rikster5 Exp $ */
+/* $Id: category.c,v 1.27 2005/11/28 07:31:28 rikster5 Exp $ */
 
 /*******************************************************************************
  * category.c
@@ -461,14 +461,14 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
        case EDIT_CAT_RENAME:
 	 if ((catnum<0) || (Pdata->cai2.name[catnum][0]=='\0')) {
 	    dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)),
-			   _("Edit Categories"), DIALOG_ERROR,
+			   _("Edit Categories Error"), DIALOG_ERROR,
 			   _("You must select a category to rename"), 1, button_text);
 	    return;
 	 }
  	 if (catnum == 0) {
 	    g_snprintf(temp, sizeof(temp), _("You can't edit category %s.\n"), Pdata->cai1.name[0]);
 	    dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)),
-			   _("Edit Categories"), DIALOG_ERROR,
+			   _("Edit Categories Error"), DIALOG_ERROR,
 			   temp, 1, button_text);
 	    return;
 	 }
@@ -486,7 +486,7 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 #endif
 	 if (catnum<0) {
 	    dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)),
-			   _("Edit Categories"), DIALOG_ERROR,
+			   _("Edit Categories Error"), DIALOG_ERROR,
 			   _("You must select a category to delete"), 1, button_text);
 	    return;
 	 }
