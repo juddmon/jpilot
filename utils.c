@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.102 2005/11/28 07:01:38 rikster5 Exp $ */
+/* $Id: utils.c,v 1.103 2005/11/28 19:09:17 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -1211,6 +1211,7 @@ int dialog_generic(GtkWindow *main_window,
 #else
    gtk_window_set_title(GTK_WINDOW(glob_dialog), title);
    gtk_label_set_text(GTK_LABEL(label1), text);
+   gtk_label_set_justify(GTK_LABEL(label1), GTK_JUSTIFY_LEFT);
 #endif
    gtk_box_pack_start(GTK_BOX(vbox2), label1, FALSE, FALSE, 2);
 
