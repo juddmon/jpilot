@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.103 2005/11/28 19:09:17 rikster5 Exp $ */
+/* $Id: utils.c,v 1.104 2005/11/29 23:25:59 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -1152,6 +1152,12 @@ int dialog_generic(GtkWindow *main_window,
    GtkWidget *hbox1, *vbox1, *vbox2, *image;
    int i;
    char *markup;
+
+   /* This gdk function call is required in order to avoid a GTK
+    * error which causes X and the mouse pointer to lock up.
+    * The lockup is generated whenever a modal dialog is created
+    * from the callback routine of a clist. */
+   gdk_pointer_ungrab(GDK_CURRENT_TIME);
 
    dialog_result=0;
    glob_dialog = gtk_widget_new(GTK_TYPE_WINDOW,
