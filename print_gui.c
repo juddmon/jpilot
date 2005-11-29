@@ -1,4 +1,4 @@
-/* $Id: print_gui.c,v 1.15 2004/12/07 06:51:08 rikster5 Exp $ */
+/* $Id: print_gui.c,v 1.16 2005/11/29 22:33:41 rousseau Exp $ */
 
 /*******************************************************************************
  * print_gui.c
@@ -326,16 +326,27 @@ int print_gui(GtkWidget *main_window, int app, int date_button, int mon_week_day
 
 
    /* Create a "Print" button */
-   hbox = gtk_hbox_new(TRUE, 0);
+   hbox = gtk_hbutton_box_new();
+   gtk_container_set_border_width(GTK_CONTAINER(hbox), 6);
+   gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox), GTK_BUTTONBOX_END);
+   gtk_button_box_set_spacing(GTK_BUTTON_BOX(hbox), 6);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 0);
 
+#ifdef ENABLE_GTK2
+   button = gtk_button_new_from_stock(GTK_STOCK_PRINT);
+#else
    button = gtk_button_new_with_label(_("Print"));
+#endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_print), window);
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
 
    /* Create a "Quit" button */
+#ifdef ENABLE_GTK2
+   button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
+#else
    button = gtk_button_new_with_label(_("Cancel"));
+#endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_cancel), window);
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
