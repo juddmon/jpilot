@@ -1,4 +1,4 @@
-/* $Id: import_gui.c,v 1.19 2005/11/29 22:36:31 rousseau Exp $ */
+/* $Id: import_gui.c,v 1.20 2005/11/30 01:38:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * import_gui.c
@@ -309,7 +309,7 @@ void import_gui(GtkWidget *main_window, GtkWidget *main_pane,
    gtk_widget_show(button);
 
 #ifdef ENABLE_GTK2
-   button = gtk_button_new_from_stock(GTK_STOCK_OK);
+   button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
 #else
    button = gtk_button_new_with_label(_("Done"));
 #endif
