@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.104 2005/11/29 23:25:59 rikster5 Exp $ */
+/* $Id: utils.c,v 1.105 2005/11/30 01:44:30 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -1213,7 +1213,6 @@ int dialog_generic(GtkWindow *main_window,
    markup = g_markup_printf_escaped("<b><big>%s</big></b>\n\n%s", title, text);
    gtk_label_set_markup(GTK_LABEL(label1), markup);
    g_free(markup);
-   gtk_label_set_selectable(GTK_LABEL(label1), TRUE);
 #else
    gtk_window_set_title(GTK_WINDOW(glob_dialog), title);
    gtk_label_set_text(GTK_LABEL(label1), text);
