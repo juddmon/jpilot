@@ -1,4 +1,4 @@
-/* $Id: alarms.c,v 1.29 2005/10/26 04:27:22 rikster5 Exp $ */
+/* $Id: alarms.c,v 1.30 2005/12/02 17:12:02 rousseau Exp $ */
 
 /*******************************************************************************
  * alarms.c
@@ -80,6 +80,9 @@ struct alarm_dialog_data {
    GtkWidget *radio2;
    int button_hit;
 };
+
+/* main jpilot window */
+extern GtkWidget *window;
 
 static struct jp_alarms *alarm_list=NULL;
 static struct jp_alarms *Plast_alarm_list=NULL;
@@ -189,6 +192,7 @@ int dialog_alarm(char *title, char *frame_text,
    gtk_signal_connect(GTK_OBJECT(alarm_dialog), "destroy",
                       GTK_SIGNAL_FUNC(cb_destroy_dialog), alarm_dialog);
 
+   gtk_window_set_transient_for(GTK_WINDOW(alarm_dialog), GTK_WINDOW(window));
 
    frame = gtk_frame_new(frame_text);
    gtk_frame_set_label_align(GTK_FRAME(frame), 0.5, 0.0);
