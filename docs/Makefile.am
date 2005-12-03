@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.9 2005/10/30 16:49:12 judd Exp $
+# $Id: Makefile.am,v 1.10 2005/12/03 22:30:57 rikster5 Exp $
 
 # install the man pages
 man_MANS = jpilot.1 jpilot-dial.1 jpilot-sync.1 jpilot-dump.1
@@ -10,8 +10,7 @@ misc_DATA = ../BUGS \
 	../AUTHORS \
 	../INSTALL \
 	../README \
-	../TODO \
-	../UPGRADING
+	../TODO
 
 # install the manual docs
 docdir = $(miscdir)/manual

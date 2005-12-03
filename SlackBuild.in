@@ -37,7 +37,6 @@ install/doinst.sh \
 /usr/doc/$PACKAGE-$VERSION/INSTALL \
 /usr/doc/$PACKAGE-$VERSION/README \
 /usr/doc/$PACKAGE-$VERSION/TODO \
-/usr/doc/$PACKAGE-$VERSION/UPGRADING \
 /usr/doc/$PACKAGE-$VERSION/manual/jpilot-address.png \
 /usr/doc/$PACKAGE-$VERSION/manual/jpilot-datebook.png \
 /usr/doc/$PACKAGE-$VERSION/manual/jpilot-expense.png \

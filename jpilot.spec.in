@@ -68,7 +68,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_docdir}/INSTALL
 %{_docdir}/README
 %{_docdir}/TODO
-%{_docdir}/UPGRADING
 %{_docdir}/icons/README
 %{_docdir}/icons/jpilot-icon1.xpm
 %{_docdir}/icons/jpilot-icon2.xpm
