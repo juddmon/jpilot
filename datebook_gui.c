@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.122 2005/12/03 21:44:10 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.123 2005/12/03 22:05:22 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -2880,6 +2880,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    MyAppointment *mappt;
    char temp[20];
    int i, b;
+   unsigned int unique_id = 0;
 #ifdef ENABLE_DATEBK
    int type;
    char *note;
@@ -2892,12 +2893,24 @@ static void cb_clist_selection(GtkWidget      *clist,
 #endif
 
    if ((record_changed==MODIFY_FLAG) || (record_changed==NEW_FLAG)) {
+      mappt = gtk_clist_get_row_data(GTK_CLIST(clist), row);
+      if (mappt!=NULL) {
+	 unique_id = mappt->unique_id;
+      }
+
       b=dialog_save_changed_record(pane, record_changed);
       if (b==DIALOG_SAID_2) {
 	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
       }
       set_new_button_to(CLEAR_FLAG);
-      clist_select_row(GTK_CLIST(clist), row, column);
+
+      if (unique_id)
+      {
+	 glob_find_id = unique_id;
+         datebook_find();
+      } else {
+	 clist_select_row(GTK_CLIST(clist), row, column);
+      }
       return;
    }
 

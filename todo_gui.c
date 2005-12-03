@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.99 2005/12/03 21:44:10 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.100 2005/12/03 22:05:22 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -1424,20 +1424,32 @@ static void cb_clist_selection(GtkWidget      *clist,
 {
    struct ToDo *todo;
    MyToDo *mtodo;
-   int i, index, count;
+   int i, index, count, b;
    int sorted_position;
-   int b;
+   unsigned int unique_id = 0;
 
    time_t ltime;
    struct tm *now;
 
    if ((record_changed==MODIFY_FLAG) || (record_changed==NEW_FLAG)) {
+      mtodo = gtk_clist_get_row_data(GTK_CLIST(clist), row);
+      if (mtodo!=NULL) {
+	 unique_id = mtodo->unique_id;
+      }
+
       b=dialog_save_changed_record(pane, record_changed);
       if (b==DIALOG_SAID_2) {
 	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
       }
       set_new_button_to(CLEAR_FLAG);
-      clist_select_row(GTK_CLIST(clist), row, column);
+
+      if (unique_id)
+      {
+	 glob_find_id = unique_id;
+         todo_find();
+      } else {
+	 clist_select_row(GTK_CLIST(clist), row, column);
+      }
       return;
    }
 

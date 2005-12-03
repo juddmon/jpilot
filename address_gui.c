@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.114 2005/12/03 21:44:10 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.115 2005/12/03 22:05:22 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -1689,6 +1689,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    struct Address *addr;
    MyAddress *maddr;
    int cat, count, sorted_position;
+   unsigned int unique_id = 0;
    int i, i2;
    int b;
    char *tmp_p;
@@ -1697,12 +1698,24 @@ static void cb_clist_selection(GtkWidget      *clist,
    long use_jos, char_set;
 
    if ((record_changed==MODIFY_FLAG) || (record_changed==NEW_FLAG)) {
+      maddr = gtk_clist_get_row_data(GTK_CLIST(clist), row);
+      if (maddr!=NULL) {
+	 unique_id = maddr->unique_id;
+      }
+
       b=dialog_save_changed_record(pane, record_changed);
       if (b==DIALOG_SAID_2) {
 	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
       }
       set_new_button_to(CLEAR_FLAG);
-      clist_select_row(GTK_CLIST(clist), row, column);
+
+      if (unique_id)
+      {
+	 glob_find_id = unique_id;
+         address_find();
+      } else {
+	 clist_select_row(GTK_CLIST(clist), row, column);
+      }
       return;
    }
 

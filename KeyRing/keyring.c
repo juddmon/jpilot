@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.52 2005/12/03 21:44:11 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.53 2005/12/03 22:05:22 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -1013,18 +1013,31 @@ static void cb_clist_selection(GtkWidget      *clist,
    struct MyKeyRing *mkr;
    int i, item_num, category;
    int b;
+   unsigned int unique_id = 0;
    char *temp_str;
    int len;
   
    jp_logf(JP_LOG_DEBUG, "KeyRing: cb_clist_selection\n");
 
    if ((record_changed==MODIFY_FLAG) || (record_changed==NEW_FLAG)) {
+      mkr = gtk_clist_get_row_data(GTK_CLIST(clist), row);
+      if (mkr!=NULL) {
+	 unique_id = mkr->unique_id;
+      }
+
       b=dialog_save_changed_record(clist, record_changed);
       if (b==DIALOG_SAID_2) {
 	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
       }
       set_new_button_to(CLEAR_FLAG);
-      clist_select_row(GTK_CLIST(clist), row, column);
+
+      if (unique_id)
+      {
+	 glob_find_id = unique_id;
+         keyring_find();
+      } else {
+	 clist_select_row(GTK_CLIST(clist), row, column);
+      }
       return;
    }
 

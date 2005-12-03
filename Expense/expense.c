@@ -1,4 +1,4 @@
-/* $Id: expense.c,v 1.46 2005/12/03 21:44:11 rikster5 Exp $ */
+/* $Id: expense.c,v 1.47 2005/12/03 22:05:22 rikster5 Exp $ */
 
 /*******************************************************************************
  * expense.c
@@ -1154,16 +1154,29 @@ static void cb_clist_selection(GtkWidget      *clist,
    int i, item_num, category;
    int b;
    int currency_position;
+   unsigned int unique_id = 0;
 
    jp_logf(JP_LOG_DEBUG, "Expense: cb_clist_selection\n");
 
    if ((record_changed==MODIFY_FLAG) || (record_changed==NEW_FLAG)) {
+      mexp = gtk_clist_get_row_data(GTK_CLIST(clist), row);
+      if (mexp!=NULL) {
+	 unique_id = mexp->unique_id;
+      }
+
       b=dialog_save_changed_record(scrolled_window, record_changed);
       if (b==DIALOG_SAID_2) {
          cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
       }
       set_new_button_to(CLEAR_FLAG);
-      gtk_clist_select_row(GTK_CLIST(clist), row, column);
+
+      if (unique_id)
+      {
+	 glob_find_id = unique_id;
+         expense_find();
+      } else {
+	 clist_select_row(GTK_CLIST(clist), row, column);
+      }
       return;
    }
    
