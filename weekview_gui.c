@@ -1,4 +1,4 @@
-/* $Id: weekview_gui.c,v 1.30 2005/02/03 16:11:31 rikster5 Exp $ */
+/* $Id: weekview_gui.c,v 1.31 2005/12/03 21:47:49 rikster5 Exp $ */
 
 /*******************************************************************************
  * weekview_gui.c
@@ -180,7 +180,8 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
    struct db4_struct db4;
 #endif
 #ifdef ENABLE_GTK2
-   GObject   *text_buffer;
+   GObject *text_buffer;
+   char    *markup_str;
 #endif
 
    a_list = NULL;
@@ -200,9 +201,25 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
       /* Determine today for highlighting */
       now_today = get_highlighted_today(&date);
 
-      g_snprintf(str, sizeof(str), "%s %s%s", str_dow, short_date,
-		 date.tm_mday == now_today ? _(" (TODAY)") : "");
+      g_snprintf(str, sizeof(str), "%s %s", str_dow, short_date);
+
+#ifdef ENABLE_GTK2
+      if (date.tm_mday == now_today)
+      {
+	 markup_str = g_markup_printf_escaped("<b>%s</b>", str);
+      } else {
+	 markup_str = g_markup_printf_escaped("%s", str);
+      }
+      gtk_label_set_markup(GTK_LABEL(glob_dow_labels[i]), markup_str);
+      g_free(markup_str);
+#else
+      if (date.tm_mday == now_today)
+      {
+	 g_snprintf(str, sizeof(str), "%s%s", str, _(" (TODAY)"));
+      }
       gtk_label_set_text(GTK_LABEL(glob_dow_labels[i]), str);
+#endif
+
    }
 
    /* Get all of the appointments */

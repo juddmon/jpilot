@@ -1,4 +1,4 @@
-/* $Id: prefs.c,v 1.60 2005/10/07 19:30:59 rousseau Exp $ */
+/* $Id: prefs.c,v 1.61 2005/12/03 21:47:49 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs.c
@@ -126,7 +126,7 @@ static prefType glob_prefs[NUM_PREFS] = {
      {"todo_days_till_due", INTTYPE, INTTYPE, 7, NULL, 0},
      {"show_tooltips", INTTYPE, INTTYPE, 1, NULL, 0},
      {"datebook_note_pane", INTTYPE, INTTYPE, 75, NULL, 0},
-     {"datebook_hi_today", INTTYPE, INTTYPE, 0, NULL, 0},
+     {"datebook_hi_today", INTTYPE, INTTYPE, 1, NULL, 0},
      {"datebook_anni_years", INTTYPE, INTTYPE, 0, NULL, 0},
      {"keyring_pane", INTTYPE, INTTYPE, 0, NULL, 0},
      {"expense_pane", INTTYPE, INTTYPE, 0, NULL, 0},

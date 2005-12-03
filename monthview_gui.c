@@ -1,4 +1,4 @@
-/* $Id: monthview_gui.c,v 1.32 2005/01/29 12:09:01 rousseau Exp $ */
+/* $Id: monthview_gui.c,v 1.33 2005/12/03 21:47:49 rikster5 Exp $ */
 
 /*******************************************************************************
  * monthview_gui.c
@@ -182,6 +182,9 @@ void hide_show_month_boxes()
    char str[40];
    int d;
    GtkWidget *text;
+#ifdef ENABLE_GTK2
+   char *markup_str;
+#endif
 
    /* Determine today for highlighting */
    now_today = get_highlighted_today(&glob_month_date);
@@ -206,9 +209,25 @@ void hide_show_month_boxes()
 #else
       text = glob_month_texts[n];
 #endif
-      g_snprintf(str, sizeof(str), "%d%s", d,
-		 d == now_today ? _(" (TODAY)") : "");
+      g_snprintf(str, sizeof(str), "%d", d);
+
+#ifdef ENABLE_GTK2
+      if (d == now_today)
+      {
+	 markup_str = g_markup_printf_escaped("<b>%s</b>", str);
+      } else {
+	 markup_str = g_markup_printf_escaped("%s", str);
+      }
+      gtk_label_set_markup(GTK_LABEL(glob_month_labels[n]), markup_str);
+      g_free(markup_str);
+#else
+      if (d == now_today)
+      {
+	 g_snprintf(str, sizeof(str), "%s%s", str, _(" (TODAY)"));
+      }
       gtk_label_set_text(GTK_LABEL(glob_month_labels[n]), str);
+#endif
+
       if (n<7) {
 	 if (d>0) {
 	    gtk_widget_show(GTK_WIDGET(text));
