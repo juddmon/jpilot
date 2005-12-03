@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.98 2005/11/27 14:05:05 rousseau Exp $ */
+/* $Id: todo_gui.c,v 1.99 2005/12/03 21:44:10 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -90,7 +90,6 @@ int todo_category=CATEGORY_ALL;
 static int clist_col_selected;
 static int clist_row_selected;
 static int record_changed;
-static int clist_hack;
 
 void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 		       ToDoList **todo_list, int category, int main);
@@ -218,34 +217,22 @@ set_new_button_to(int new_state)
 
    switch (new_state) {
     case MODIFY_FLAG:
-      gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_SINGLE);
-      clist_hack=TRUE;
-      /* The line selected on the clist becomes unhighlighted, so we do this */
-      clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
       gtk_widget_show(apply_record_button);
       gtk_widget_show(cancel_record_button);
       gtk_widget_hide(delete_record_button);
       break;
     case NEW_FLAG:
-      gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_SINGLE);
-      clist_hack=TRUE;
-      /* The line selected on the clist becomes unhighlighted, so we do this */
-      clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
       gtk_widget_show(add_record_button);
       gtk_widget_show(cancel_record_button);
       gtk_widget_hide(copy_record_button);
       gtk_widget_hide(delete_record_button);
       break;
     case CLEAR_FLAG:
-      gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
-      clist_hack=FALSE;
       gtk_widget_show(new_record_button);
       gtk_widget_show(copy_record_button);
       gtk_widget_show(delete_record_button);
       break;
     case UNDELETE_FLAG:
-      gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
-      clist_hack=FALSE;
       gtk_widget_hide(delete_record_button);
       gtk_widget_show(undelete_record_button);
       break;
@@ -1435,21 +1422,16 @@ static void cb_clist_selection(GtkWidget      *clist,
 			       GdkEventButton *event,
 			       gpointer       data)
 {
-   struct ToDo *todo;/*, new_a; */
+   struct ToDo *todo;
    MyToDo *mtodo;
    int i, index, count;
    int sorted_position;
-   int keep, b;
+   int b;
 
    time_t ltime;
    struct tm *now;
 
-   if ((!event) && (clist_hack)) return;
-
-   /* HACK, see clist hack explanation in memo_gui.c */
-   if (clist_hack) {
-      keep=record_changed;
-      clist_select_row(GTK_CLIST(clist), clist_row_selected, column);
+   if ((record_changed==MODIFY_FLAG) || (record_changed==NEW_FLAG)) {
       b=dialog_save_changed_record(pane, record_changed);
       if (b==DIALOG_SAID_2) {
 	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
@@ -1476,9 +1458,7 @@ static void cb_clist_selection(GtkWidget      *clist,
       */
    {
       set_new_button_to(UNDELETE_FLAG);
-   }
-   else
-   {
+   } else {
       set_new_button_to(CLEAR_FLAG);
    }
 
@@ -2127,7 +2107,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_box_pack_start(GTK_BOX(vbox1), scrolled_window, TRUE, TRUE, 0);
 
    clist = gtk_clist_new_with_titles(5, titles);
-   clist_hack=FALSE;
+   
    gtk_clist_set_column_title(GTK_CLIST(clist), TODO_TEXT_COLUMN, _("Task"));
    gtk_clist_set_column_title(GTK_CLIST(clist), TODO_DATE_COLUMN, _("Due"));
    /* Put pretty pictures in the clist column headings */

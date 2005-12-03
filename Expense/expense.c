@@ -1,4 +1,4 @@
-/* $Id: expense.c,v 1.45 2005/11/28 07:22:22 rikster5 Exp $ */
+/* $Id: expense.c,v 1.46 2005/12/03 21:44:11 rikster5 Exp $ */
 
 /*******************************************************************************
  * expense.c
@@ -177,7 +177,6 @@ static int show_category;
 static int glob_category_number_from_menu_item[MAX_CATEGORY2];
 
 static int record_changed;
-static int clist_hack;
 static int clist_row_selected;
 static int connected=0;
 
@@ -278,25 +277,15 @@ static void set_new_button_to(int new_state)
 
    switch (new_state) {
     case MODIFY_FLAG:
-      gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_SINGLE);
-      clist_hack=TRUE;
-      /* The line selected on the clist becomes unhighlighted, so we do this */
-      gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
       gtk_widget_show(apply_record_button);
       gtk_widget_hide(delete_record_button);
       break;
     case NEW_FLAG:
-      gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_SINGLE);
-      clist_hack=TRUE;
-      /* The line selected on the clist becomes unhighlighted, so we do this */
-      gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
       gtk_widget_show(add_record_button);
       gtk_widget_hide(copy_record_button);
       gtk_widget_hide(delete_record_button);
       break;
     case CLEAR_FLAG:
-      gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
-      clist_hack=FALSE;
       gtk_widget_show(new_record_button);
       gtk_widget_show(copy_record_button);
       gtk_widget_show(delete_record_button);
@@ -1163,17 +1152,12 @@ static void cb_clist_selection(GtkWidget      *clist,
 {
    struct MyExpense *mexp;
    int i, item_num, category;
-   int keep, b;
+   int b;
    int currency_position;
 
    jp_logf(JP_LOG_DEBUG, "Expense: cb_clist_selection\n");
 
-   if ((!event) && (clist_hack)) return;
-
-   /* HACK, see clist hack explanation in memo_gui.c */
-   if (clist_hack) {
-      keep=record_changed;
-      gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, column);
+   if ((record_changed==MODIFY_FLAG) || (record_changed==NEW_FLAG)) {
       b=dialog_save_changed_record(scrolled_window, record_changed);
       if (b==DIALOG_SAID_2) {
          cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
@@ -1620,7 +1604,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    
    /* Clist */
    clist = gtk_clist_new(3);
-   clist_hack=FALSE;
+
    /* gtk_clist_set_shadow_type(GTK_CLIST(clist), SHADOW);*/
    gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
    gtk_clist_set_column_width(GTK_CLIST(clist), 0, 50);

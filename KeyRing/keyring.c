@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.51 2005/11/28 07:22:23 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.52 2005/12/03 21:44:11 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -124,7 +124,6 @@ static GtkWidget *pane = NULL;
 static GtkAccelGroup *accel_group;
 #endif
 static int record_changed;
-static int clist_hack;
 static int clist_row_selected;
 
 #ifdef HEADER_NEW_DES_H
@@ -429,34 +428,22 @@ static void set_new_button_to(int new_state)
 
    switch (new_state) {
     case MODIFY_FLAG:
-      gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_SINGLE);
-      clist_hack=TRUE;
-      /* The line selected on the clist becomes unhighlighted, so we do this */
-      gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
       gtk_widget_show(apply_record_button);
       gtk_widget_show(cancel_record_button);
       gtk_widget_hide(delete_record_button);
       break;
     case NEW_FLAG:
-      gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_SINGLE);
-      clist_hack=TRUE;
-      /* The line selected on the clist becomes unhighlighted, so we do this */
-      gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
       gtk_widget_show(add_record_button);
       gtk_widget_show(cancel_record_button);
       gtk_widget_hide(copy_record_button);
       gtk_widget_hide(delete_record_button);
       break;
     case CLEAR_FLAG:
-      gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
-      clist_hack=FALSE;
       gtk_widget_show(new_record_button);
       gtk_widget_show(copy_record_button);
       gtk_widget_show(delete_record_button);
       break;
     case UNDELETE_FLAG:
-      gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
-      clist_hack=FALSE;
       gtk_widget_show(undelete_record_button);
       gtk_widget_hide(delete_record_button);
       break;
@@ -1025,18 +1012,13 @@ static void cb_clist_selection(GtkWidget      *clist,
 {
    struct MyKeyRing *mkr;
    int i, item_num, category;
-   int keep, b;
+   int b;
    char *temp_str;
    int len;
   
    jp_logf(JP_LOG_DEBUG, "KeyRing: cb_clist_selection\n");
 
-   if ((!event) && (clist_hack)) return;
-
-   /* HACK, see clist hack explanation in memo_gui.c */
-   if (clist_hack) {
-      keep=record_changed;
-      gtk_clist_select_row(GTK_CLIST(clist), clist_row_selected, column);
+   if ((record_changed==MODIFY_FLAG) || (record_changed==NEW_FLAG)) {
       b=dialog_save_changed_record(clist, record_changed);
       if (b==DIALOG_SAID_2) {
 	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
@@ -1938,7 +1920,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    
    /* Clist */
    clist = gtk_clist_new_with_titles(2, titles);
-   clist_hack=FALSE;
+   
    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
 		      GTK_SIGNAL_FUNC(cb_clist_selection),
 		      NULL);

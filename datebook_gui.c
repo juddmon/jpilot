@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.121 2005/11/27 19:14:33 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.122 2005/12/03 21:44:10 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -157,7 +157,6 @@ static int current_month; /*range 0-11 */
 static int current_year;  /*years since 1900 */
 static int clist_row_selected;
 static int record_changed;
-static int clist_hack;
 int datebook_category=0xFFFF; /* This is a bitmask */
 #ifdef ENABLE_DATEBK
 static GtkWidget *datebk_entry;
@@ -2424,34 +2423,22 @@ set_new_button_to(int new_state)
 
    switch (new_state) {
     case MODIFY_FLAG:
-      gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_SINGLE);
-      clist_hack=TRUE;
-      /* The line selected on the clist becomes unhighlighted, so we do this */
-      clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
       gtk_widget_show(apply_record_button);
       gtk_widget_show(cancel_record_button);
       gtk_widget_hide(delete_record_button);
       break;
     case NEW_FLAG:
-      gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_SINGLE);
-      clist_hack=TRUE;
-      /* The line selected on the clist becomes unhighlighted, so we do this */
-      clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
       gtk_widget_show(add_record_button);
       gtk_widget_show(cancel_record_button);
       gtk_widget_hide(copy_record_button);
       gtk_widget_hide(delete_record_button);
       break;
     case CLEAR_FLAG:
-      gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
-      clist_hack=FALSE;
       gtk_widget_show(new_record_button);
       gtk_widget_show(copy_record_button);
       gtk_widget_show(delete_record_button);
       break;
     case UNDELETE_FLAG:
-      gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
-      clist_hack=FALSE;
       gtk_widget_hide(delete_record_button);
       gtk_widget_show(undelete_record_button);
       break;
@@ -2892,7 +2879,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    struct Appointment *appt;
    MyAppointment *mappt;
    char temp[20];
-   int i, b, keep;
+   int i, b;
 #ifdef ENABLE_DATEBK
    int type;
    char *note;
@@ -2900,16 +2887,11 @@ static void cb_clist_selection(GtkWidget      *clist,
    long use_db3_tags;
 #endif
 
-   if ((!event) && (clist_hack)) return;
-
 #ifdef ENABLE_DATEBK
    get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
 #endif
 
-   /* HACK, see clist hack explanation in memo_gui.c */
-   if (clist_hack) {
-      keep=record_changed;
-      clist_select_row(GTK_CLIST(clist), clist_row_selected, column);
+   if ((record_changed==MODIFY_FLAG) || (record_changed==NEW_FLAG)) {
       b=dialog_save_changed_record(pane, record_changed);
       if (b==DIALOG_SAID_2) {
 	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
@@ -2933,9 +2915,7 @@ static void cb_clist_selection(GtkWidget      *clist,
       */
    {
       set_new_button_to(UNDELETE_FLAG);
-   }
-   else
-   {
+   } else {
       set_new_button_to(CLEAR_FLAG);
    }
 
@@ -4263,8 +4243,6 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 #else
    clist = gtk_clist_new_with_titles(4, titles);
 #endif
-
-   clist_hack=FALSE;
 
    gtk_clist_column_titles_passive(GTK_CLIST(clist));
 
