@@ -1,4 +1,4 @@
-/* $Id: expense.c,v 1.48 2005/12/03 22:15:04 rikster5 Exp $ */
+/* $Id: expense.c,v 1.49 2005/12/03 22:32:45 rikster5 Exp $ */
 
 /*******************************************************************************
  * expense.c
@@ -199,8 +199,9 @@ static void cb_clist_selection(GtkWidget      *clist,
                                gpointer       data);
 static void cb_add_new_record(GtkWidget *widget, gpointer data);
 static void cb_pulldown_menu(GtkWidget *item, unsigned int value);
-static int make_menu(char *items[], int menu_index, GtkWidget **Poption_menu,
+static int  make_menu(char *items[], int menu_index, GtkWidget **Poption_menu,
                      GtkWidget *menu_items[]);
+static int  expense_find(int unique_id);
 
 /******************************************************************************/
 /* Start of code                                                              */
