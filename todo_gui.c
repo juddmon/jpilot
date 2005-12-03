@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.100 2005/12/03 22:05:22 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.101 2005/12/03 23:16:48 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -206,8 +206,7 @@ int todo_print()
    return EXIT_SUCCESS;
 }
 
-static void
-set_new_button_to(int new_state)
+static void set_new_button_to(int new_state)
 {
    jp_logf(JP_LOG_DEBUG, "set_new_button_to new %d old %d\n", new_state, record_changed);
 
@@ -217,60 +216,53 @@ set_new_button_to(int new_state)
 
    switch (new_state) {
     case MODIFY_FLAG:
-      gtk_widget_show(apply_record_button);
       gtk_widget_show(cancel_record_button);
+      gtk_widget_show(copy_record_button);
+      gtk_widget_show(apply_record_button);
+
+      gtk_widget_hide(add_record_button);
       gtk_widget_hide(delete_record_button);
+      gtk_widget_hide(new_record_button);
+      gtk_widget_hide(undelete_record_button);
+
       break;
     case NEW_FLAG:
-      gtk_widget_show(add_record_button);
       gtk_widget_show(cancel_record_button);
+      gtk_widget_show(add_record_button);
+
+      gtk_widget_hide(apply_record_button);
       gtk_widget_hide(copy_record_button);
       gtk_widget_hide(delete_record_button);
+      gtk_widget_hide(new_record_button);
+      gtk_widget_hide(undelete_record_button);
+
       break;
     case CLEAR_FLAG:
-      gtk_widget_show(new_record_button);
-      gtk_widget_show(copy_record_button);
       gtk_widget_show(delete_record_button);
+      gtk_widget_show(copy_record_button);
+      gtk_widget_show(new_record_button);
+
+      gtk_widget_hide(add_record_button);
+      gtk_widget_hide(apply_record_button);
+      gtk_widget_hide(cancel_record_button);
+      gtk_widget_hide(undelete_record_button);
+
       break;
     case UNDELETE_FLAG:
-      gtk_widget_hide(delete_record_button);
       gtk_widget_show(undelete_record_button);
+      gtk_widget_show(copy_record_button);
+      gtk_widget_show(new_record_button);
+
+      gtk_widget_hide(add_record_button);
+      gtk_widget_hide(apply_record_button);
+      gtk_widget_hide(cancel_record_button);
+      gtk_widget_hide(delete_record_button);
       break;
+
     default:
       return;
    }
-   switch (record_changed) {
-    case MODIFY_FLAG:
-      gtk_widget_hide(apply_record_button);
-      gtk_widget_hide(cancel_record_button);
-      gtk_widget_show(copy_record_button);
-      gtk_widget_show(delete_record_button);
-      break;
-    case NEW_FLAG:
-      gtk_widget_hide(add_record_button);
-      gtk_widget_hide(cancel_record_button);
-      gtk_widget_show(copy_record_button);
-      gtk_widget_show(delete_record_button);
-      break;
-    case CLEAR_FLAG:
-      if (new_state != UNDELETE_FLAG)
-      {
-         gtk_widget_hide(new_record_button);
-         gtk_widget_hide(delete_record_button);
-      }
-      else
-      {
-	 gtk_widget_hide(delete_record_button);
-      }
-      break;
-    case UNDELETE_FLAG:
-      if (new_state != UNDELETE_FLAG)
-      {
-	 gtk_widget_hide(undelete_record_button);
-	 gtk_widget_show(delete_record_button);
-      }
-      break;
-   }
+
    record_changed=new_state;
 }
 
