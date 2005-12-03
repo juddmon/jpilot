@@ -98,16 +98,3 @@ and possibly merged with other items.
 I have followed the documention I found on the web.  I have not tested to see
 if this exact behavior is duplicated.
 
-* Bugs specific to Version 0.99.3, and 0.99.4:
-  (SERIOUS)
-  If you create an appointment in jpilot and change it more than once before
-  a sync you can overwrite another appointment.
-  The appointment is given a low, not very unique ID (1, 2, 3, etc). that can
-  overwrite other appointments that were created this way.
-  i.e. an appointment is entered, modified and then synced.
-   Its ID will be 1.
-   Another appointment is entered in jpilot and modified.  It may get an ID
-   of 1.  When it is synced it will overwrite the previous appointment with
-   an ID of 1.
-  If appointments are just entered, not modified and synced everything is fine.
-  
