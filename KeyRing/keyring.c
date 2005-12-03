@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.53 2005/12/03 22:05:22 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.54 2005/12/03 22:15:04 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -1033,8 +1033,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 
       if (unique_id)
       {
-	 glob_find_id = unique_id;
-         keyring_find();
+         keyring_find(unique_id);
       } else {
 	 clist_select_row(GTK_CLIST(clist), row, column);
       }

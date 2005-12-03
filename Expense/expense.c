@@ -1,4 +1,4 @@
-/* $Id: expense.c,v 1.47 2005/12/03 22:05:22 rikster5 Exp $ */
+/* $Id: expense.c,v 1.48 2005/12/03 22:15:04 rikster5 Exp $ */
 
 /*******************************************************************************
  * expense.c
@@ -1172,8 +1172,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 
       if (unique_id)
       {
-	 glob_find_id = unique_id;
-         expense_find();
+         expense_find(unique_id);
       } else {
 	 clist_select_row(GTK_CLIST(clist), row, column);
       }
