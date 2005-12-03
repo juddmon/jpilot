@@ -1,4 +1,4 @@
-/* $Id: alarms.c,v 1.31 2005/12/02 17:17:34 rousseau Exp $ */
+/* $Id: alarms.c,v 1.32 2005/12/03 00:00:39 rikster5 Exp $ */
 
 /*******************************************************************************
  * alarms.c
@@ -193,7 +193,9 @@ int dialog_alarm(char *title, char *frame_text,
                       GTK_SIGNAL_FUNC(cb_destroy_dialog), alarm_dialog);
 
    gtk_window_set_transient_for(GTK_WINDOW(alarm_dialog), GTK_WINDOW(window));
+#ifdef ENABLE_GTK2
    gtk_window_stick(GTK_WINDOW(alarm_dialog));
+#endif
 
    frame = gtk_frame_new(frame_text);
    gtk_frame_set_label_align(GTK_FRAME(frame), 0.5, 0.0);
