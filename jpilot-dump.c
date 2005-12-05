@@ -1,4 +1,4 @@
-/* $Id: jpilot-dump.c,v 1.21 2005/11/08 22:29:34 rikster5 Exp $ */
+/* $Id: jpilot-dump.c,v 1.22 2005/12/05 05:25:52 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot-dump.c
@@ -72,7 +72,7 @@ int  Nday;
 int  dumpA;
 int  dumpM;
 int  dumpT;
-char *formatB;
+char *formatD;
 char *formatM;
 char *formatA;
 char *formatT;
@@ -92,7 +92,7 @@ int pipe_to_parent;
 void fprint_jpd_usage_string(FILE *out)
 {
    fprintf(out, "%s-dump [ +format [-v] || [-h] || [-f] || [-D] || [-A] || [-T] || [-M] || [-N] ]\n", EPN);
-   fprintf(out, "%s", _(" +B +M +A +T format like date +format.\n"));
+   fprintf(out, "%s", _(" +D +A +T +M format like date +format.\n"));
    fprintf(out, "%s", _(" -v displays version and exits.\n"));
    fprintf(out, "%s", _(" -h displays help and exits.\n"));
    fprintf(out, "%s", _(" -f displays help for format codes.\n"));
@@ -187,11 +187,11 @@ int dumpbook()
          utf8_to_local(tal->mappt.appt.note);
 
          /* sort through format codes */
-         for (i=2; formatB[i] != '\0'; i++) {
-            if ( formatB[i] != '%') {
-               printf("%c", formatB[i]);
+         for (i=2; formatD[i] != '\0'; i++) {
+            if ( formatD[i] != '%') {
+               printf("%c", formatD[i]);
             } else {
-               switch (formatB[i+1]) {
+               switch (formatD[i+1]) {
                 case '\0':
                      break;
                 case 'n' :
@@ -264,7 +264,7 @@ int dumpbook()
                 /* now process the double character format codes */
                 case 'b' :
                 case 'e' :
-                     if (formatB[i+1] == 'b') {
+                     if (formatD[i+1] == 'b') {
                         year   = tal->mappt.appt.begin.tm_year+1900;
                         month  = tal->mappt.appt.begin.tm_mon+1;
                         day    = tal->mappt.appt.begin.tm_mday;
@@ -278,9 +278,9 @@ int dumpbook()
                         minute = tal->mappt.appt.end.tm_min;
                      }
                      /* do %bx and %ex format codes */
-                     switch (formatB[i+2]) {
+                     switch (formatD[i+2]) {
                       case '\0':
-                        printf("%c", formatB[i+1]);
+                        printf("%c", formatD[i+1]);
                         break;
                       case 'm' :
                         printf("%.2d", month);
@@ -392,7 +392,7 @@ int dumpbook()
                         i++;
                         break;
                       default: /* 2 letter format codes */
-                        printf("%c%c", formatB[i+1], formatB[i+2]);
+                        printf("%c%c", formatD[i+1], formatD[i+2]);
                         i++;
                         break;
                      } /* end switch 2 letters format codes */
@@ -400,12 +400,12 @@ int dumpbook()
                      break;
 
                 default: /* one letter format codes */
-                  printf("%c", formatB[i+1]);
+                  printf("%c", formatD[i+1]);
                   i++;
                   break;
                } /* end switch one letter format codes */
             } /* end if % */
-         } /* for loop over formatB */
+         } /* for loop over formatD */
          printf("\n");
       } /* end if excluding deleted records */
    } /* end for loop on tal= */
@@ -880,7 +880,7 @@ int main(int argc, char *argv[])
    struct tm *now;
 
    /* fill dump format with default */
-   formatB="+B%N";
+   formatD="+D%N";
    formatM="+M%N";
    formatA="+A%N";
    formatT="+T%N";
@@ -911,8 +911,8 @@ int main(int argc, char *argv[])
 
    /* process command line options */
    for (i=1; i<argc; i++) {
-      if (!strncasecmp(argv[i], "+B", 2)) {
-         formatB=argv[i];
+      if (!strncasecmp(argv[i], "+D", 2)) {
+         formatD=argv[i];
       }
       if (!strncasecmp(argv[i], "+M", 2)) {
          formatM=argv[i];
@@ -991,17 +991,14 @@ int main(int argc, char *argv[])
          puts("%bh prints month Jan-Dec");
          puts("%bb prints month Jan-Dec");
          puts("%bB prints month January-December");
-         printf("+B Datebook SPECIFIC strings (Default is %s):\n", formatB);
+         printf("+D Datebook SPECIFIC strings (Default is %s):\n", formatD);
          puts("if %b=%b then begin date/time, if %b=%e then end date/time");
          puts("%N prints start-date,start-time,end-date,end-time,\"description\"");
          puts("%w prints 1 if alarm on else prints 0");
          puts("%v prints nr of advance alarm units");
          puts("%u prints unit of advance m(inute), h(our), d(ay)");
-         printf("+M memo SPECIFIC strings (Default is %s):\n", formatM);
-         puts("%x prints memo");
-         puts("%X prints memo CR,LF,etc removed");
-         puts("%C prints category of memo as text");
          printf("+A Address SPECIFIC strings (Default is %s):\n", formatA);
+         puts("%N prints every field from last name to note on a separate line");
          puts("%C prints category of address as text");
          puts("%l last name");
          puts("%f first name");
@@ -1023,6 +1020,11 @@ int main(int argc, char *argv[])
          puts("%c prints 1 if completed else 0");
          puts("%i prints 1 if indefinite else 0");
          puts("%p prints priority of todo item");
+         printf("+M memo SPECIFIC strings (Default is %s):\n", formatM);
+         puts("%N prints each memo separated by a blank line");
+         puts("%x prints memo");
+         puts("%X prints memo CR,LF,etc removed");
+         puts("%C prints category of memo as text");
          exit(0);
       }  /* end printing format usage */
    }  /* end for over argc */
