@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.48 2005/11/27 00:07:23 judd Exp $ */
+/* $Id: prefs_gui.c,v 1.49 2005/12/06 04:52:40 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -551,9 +551,10 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    add_checkbutton(_("Use DateBk note tags"),
 		   PREF_USE_DB3, vbox_datebook, cb_checkbox_set_pref);
 #else
-   label = gtk_label_new(_("DateBk support disabled in this build"));
-   gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
-   gtk_box_pack_start(GTK_BOX(vbox_datebook), label, FALSE, FALSE, 0);
+   checkbutton = gtk_check_button_new_with_label(_("DateBk support disabled in this build"));
+   gtk_widget_set_sensitive(checkbutton, FALSE);
+   gtk_box_pack_start(GTK_BOX(vbox_datebook), checkbutton, FALSE, FALSE, 0);
+   gtk_widget_show(checkbutton);
 #endif
 
     /* Highlight today on month and week view */
