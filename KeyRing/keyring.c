@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.54 2005/12/03 22:15:04 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.55 2005/12/06 03:33:01 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -428,6 +428,52 @@ static void set_new_button_to(int new_state)
 
    switch (new_state) {
     case MODIFY_FLAG:
+      gtk_widget_show(cancel_record_button);
+      gtk_widget_show(copy_record_button);
+      gtk_widget_show(apply_record_button);
+
+      gtk_widget_hide(add_record_button);
+      gtk_widget_hide(delete_record_button);
+      gtk_widget_hide(new_record_button);
+      gtk_widget_hide(undelete_record_button);
+
+      break;
+    case NEW_FLAG:
+      gtk_widget_show(cancel_record_button);
+      gtk_widget_show(add_record_button);
+
+      gtk_widget_hide(apply_record_button);
+      gtk_widget_hide(copy_record_button);
+      gtk_widget_hide(delete_record_button);
+      gtk_widget_hide(new_record_button);
+      gtk_widget_hide(undelete_record_button);
+
+      break;
+    case CLEAR_FLAG:
+      gtk_widget_show(delete_record_button);
+      gtk_widget_show(copy_record_button);
+      gtk_widget_show(new_record_button);
+
+      gtk_widget_hide(add_record_button);
+      gtk_widget_hide(apply_record_button);
+      gtk_widget_hide(cancel_record_button);
+      gtk_widget_hide(undelete_record_button);
+
+      break;
+    case UNDELETE_FLAG:
+      gtk_widget_show(undelete_record_button);
+      gtk_widget_show(copy_record_button);
+      gtk_widget_show(new_record_button);
+
+      gtk_widget_hide(add_record_button);
+      gtk_widget_hide(apply_record_button);
+      gtk_widget_hide(cancel_record_button);
+      gtk_widget_hide(delete_record_button);
+      break;
+
+      /*
+   switch (new_state) {
+    case MODIFY_FLAG:
       gtk_widget_show(apply_record_button);
       gtk_widget_show(cancel_record_button);
       gtk_widget_hide(delete_record_button);
@@ -442,15 +488,22 @@ static void set_new_button_to(int new_state)
       gtk_widget_show(new_record_button);
       gtk_widget_show(copy_record_button);
       gtk_widget_show(delete_record_button);
+
+      gtk_widget_hide(add_record_button);
+      gtk_widget_hide(apply_record_button);
+      gtk_widget_hide(cancel_record_button);
+      gtk_widget_hide(undelete_record_button);
       break;
     case UNDELETE_FLAG:
       gtk_widget_show(undelete_record_button);
       gtk_widget_hide(delete_record_button);
       break;
+      */
 
     default:
       return;
    }
+   /*
    switch (record_changed) {
     case MODIFY_FLAG:
       gtk_widget_hide(apply_record_button);
@@ -476,6 +529,7 @@ static void set_new_button_to(int new_state)
       gtk_widget_show(delete_record_button);
       break;
    }
+   */
 
    record_changed=new_state;
 }
