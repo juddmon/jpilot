@@ -1,4 +1,4 @@
-/* $Id: search_gui.c,v 1.37 2005/11/27 19:14:34 rikster5 Exp $ */
+/* $Id: search_gui.c,v 1.38 2005/12/06 06:49:02 rikster5 Exp $ */
 
 /*******************************************************************************
  * search_gui.c
@@ -446,6 +446,10 @@ static void cb_entry(GtkWidget *widget, gpointer data)
       gtk_clist_prepend(GTK_CLIST(clist), empty_line);
       gtk_clist_set_text(GTK_CLIST(clist), 0, 1, _("No records found"));
    }
+
+   /* Highlight the first row in the list of returned items.
+    * This does NOT cause the main window to jump to the selected record. */
+   clist_select_row(GTK_CLIST(clist), 0, 0);
 
    return;
 }
