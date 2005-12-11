@@ -1,4 +1,4 @@
-/* $Id: otherconv.c,v 1.25 2005/10/28 01:16:50 judd Exp $ */
+/* $Id: otherconv.c,v 1.26 2005/12/11 20:39:00 judd Exp $ */
 
 /*******************************************************************************
  * otherconv.c
@@ -111,6 +111,9 @@ char *char_set_to_text(int char_set)
 
       case CHAR_SET_1255_UTF:
 	 return "CP1255";
+
+      case CHAR_SET_949_UTF:
+	 return "CP949";
 
       case CHAR_SET_1252_UTF:
       default:

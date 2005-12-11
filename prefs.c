@@ -1,4 +1,4 @@
-/* $Id: prefs.c,v 1.61 2005/12/03 21:47:49 rikster5 Exp $ */
+/* $Id: prefs.c,v 1.62 2005/12/11 20:39:00 judd Exp $ */
 
 /*******************************************************************************
  * prefs.c
@@ -446,6 +446,7 @@ int get_pref_possibility(int which, int n, char *pref_str)
       "UTF: Japanese (SJIS)",
       "UTF: Hebrew (CP1255)",
       "UTF: Traditional Chinese (BIG-5)",
+      "UTF: Korean (CP949)",
    };
 
    static const char *paper_sizes[] = {

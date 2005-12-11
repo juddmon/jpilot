@@ -1,4 +1,4 @@
-/* $Id: prefs.h,v 1.41 2005/10/07 19:30:59 rousseau Exp $ */
+/* $Id: prefs.h,v 1.42 2005/12/11 20:39:00 judd Exp $ */
 
 /*******************************************************************************
  * prefs.h
@@ -134,7 +134,8 @@
 #define CHAR_SET_SJIS_UTF 14 /* Japanese (SJIS) */
 #define CHAR_SET_1255_UTF 15 /* Hebrew (CP1255) */
 #define CHAR_SET_BIG5_UTF 16 /* Chinese (BIG-5) */
-#define NUM_CHAR_SETS    17
+#define CHAR_SET_949_UTF 17 /* Korean (CP949) */
+#define NUM_CHAR_SETS    18
 
 #define MAX_PREF_VALUE 200
 
