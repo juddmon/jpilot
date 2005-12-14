@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.124 2005/12/03 23:16:48 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.125 2005/12/14 21:26:59 rousseau Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -3595,6 +3595,9 @@ cb_key_pressed(GtkWidget *widget, GdkEventKey *event,
    return FALSE;
 }
 
+#if 0
+// do not remap PageUp and PageDown to previous/next day since these kays are
+// also used by GTK+ for Begin/End in a textfield
 static gboolean
 cb_keyboard(GtkWidget *widget, GdkEventKey *event, gpointer *p)
 {
@@ -3656,6 +3659,7 @@ cb_keyboard(GtkWidget *widget, GdkEventKey *event, gpointer *p)
    }
    return FALSE;
 }
+#endif
 
 int datebook_gui_cleanup()
 {
@@ -3699,8 +3703,10 @@ int datebook_gui_cleanup()
    gtk_accel_group_detach(accel_group, GTK_OBJECT(gtk_widget_get_toplevel(main_calendar)));
 #endif
 
+#if 0
    gtk_signal_disconnect_by_func(GTK_OBJECT(gtk_widget_get_toplevel(main_calendar)),
 				 GTK_SIGNAL_FUNC(cb_keyboard), NULL);
+#endif
 
    return EXIT_SUCCESS;
 }
@@ -4175,8 +4181,10 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_accel_group_attach(accel_group, GTK_OBJECT(gtk_widget_get_toplevel(vbox)));
 #endif
 
+#if 0
    gtk_signal_connect(GTK_OBJECT(gtk_widget_get_toplevel(vbox)), "key_press_event",
 		      GTK_SIGNAL_FUNC(cb_keyboard), NULL);
+#endif
 
    /* Make Weekview button */
    button = gtk_button_new_with_label(_("Week"));
