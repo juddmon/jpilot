@@ -1,4 +1,4 @@
-/* $Id: alarms.c,v 1.32 2005/12/03 00:00:39 rikster5 Exp $ */
+/* $Id: alarms.c,v 1.33 2005/12/14 21:53:16 rousseau Exp $ */
 
 /*******************************************************************************
  * alarms.c
@@ -120,7 +120,6 @@ static void cb_dialog_button(GtkWidget *widget,
 static gboolean cb_destroy_dialog(GtkWidget *widget)
 {
    struct alarm_dialog_data *Pdata;
-   const char *entry;
    time_t ltime;
    time_t advance;
    time_t remind;
@@ -133,11 +132,10 @@ static gboolean cb_destroy_dialog(GtkWidget *widget)
    if (!Pdata) {
       return TRUE;
    }
-   entry = gtk_entry_get_text(GTK_ENTRY(Pdata->remind_entry));
    if (Pdata->button_hit==DIALOG_SAID_2) {
-      remind = atoi(entry);
-      jp_logf(JP_LOG_DEBUG, "remind entry = [%s]\n", entry);
-      set_pref(PREF_REMIND_IN, 0, entry, TRUE);
+      remind = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(Pdata->remind_entry));
+      jp_logf(JP_LOG_DEBUG, "remind = [%d]\n", remind);
+      set_pref(PREF_REMIND_IN, remind, NULL, TRUE);
       if (GTK_TOGGLE_BUTTON(Pdata->radio1)->active) {
 	 set_pref(PREF_REMIND_UNITS, 0, NULL, TRUE);
 	 remind *= 60;
@@ -158,7 +156,7 @@ static gboolean cb_destroy_dialog(GtkWidget *widget)
    return TRUE;
 }
 
-int dialog_alarm(char *title, char *frame_text,
+int dialog_alarm(char *title, char *reason,
 		 char *time_str, char *desc_str, char *note_str,
 		 unsigned int unique_id,
 		 time_t remind_time)
@@ -167,14 +165,19 @@ int dialog_alarm(char *title, char *frame_text,
    GtkWidget *button, *label;
    GtkWidget *hbox1, *vbox1;
    GtkWidget *vbox_temp;
-   GtkWidget *frame;
    GtkWidget *alarm_dialog;
    GtkWidget *remind_entry;
    GtkWidget *radio1;
    GtkWidget *radio2;
    struct alarm_dialog_data *Pdata;
    long pref_units;
-   const char *pref_entry;
+   long pref_entry;
+   GtkWidget *image;
+#ifdef ENABLE_GTK2
+   char *markup;
+#else
+   char markup[2048];
+#endif
 
    /* Prevent alarms from going crazy and using all resources */
    if (total_alarm_windows>20) {
@@ -197,44 +200,71 @@ int dialog_alarm(char *title, char *frame_text,
    gtk_window_stick(GTK_WINDOW(alarm_dialog));
 #endif
 
-   frame = gtk_frame_new(frame_text);
-   gtk_frame_set_label_align(GTK_FRAME(frame), 0.5, 0.0);
-   vbox1 = gtk_vbox_new(FALSE, 2);
-   hbox1 = gtk_hbox_new(TRUE, 2);
+   vbox1 = gtk_vbox_new(FALSE, 5);
+   gtk_container_add(GTK_CONTAINER(alarm_dialog), vbox1);
 
-   gtk_container_set_border_width(GTK_CONTAINER(frame), 5);
-   gtk_container_set_border_width(GTK_CONTAINER(vbox1), 5);
-   gtk_container_set_border_width(GTK_CONTAINER(hbox1), 5);
+   hbox1 = gtk_hbox_new(FALSE, 5);
+   gtk_box_pack_start(GTK_BOX(vbox1), hbox1, FALSE, FALSE, 0);
 
-   gtk_container_add(GTK_CONTAINER(alarm_dialog), frame);
-   gtk_container_add(GTK_CONTAINER(frame), vbox1);
-
-   /* Label */
-   label = gtk_label_new(time_str);
-   gtk_label_set_line_wrap(GTK_LABEL(label), TRUE);
-   gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
-   gtk_box_pack_start(GTK_BOX(vbox1), label, FALSE, FALSE, 2);
+#ifdef ENABLE_GTK2
+   image = gtk_image_new_from_stock(GTK_STOCK_DIALOG_INFO, GTK_ICON_SIZE_DIALOG);
+   gtk_box_pack_start(GTK_BOX(hbox1), image, FALSE, FALSE, 12);
+#endif
 
    /* Label */
-   label = gtk_label_new(desc_str);
-   gtk_label_set_line_wrap(GTK_LABEL(label), TRUE);
-   gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
-   gtk_box_pack_start(GTK_BOX(vbox1), label, FALSE, FALSE, 2);
+   label = gtk_label_new("");
+#ifdef ENABLE_GTK2
+   markup = g_markup_printf_escaped("<b><big>%s</big></b>\n\n%s\n\n%s\n\n%s",
+	 desc_str, reason, time_str, note_str);
+   gtk_label_set_markup(GTK_LABEL(label), markup);
+   g_free(markup);
+#else
+   g_snprintf(markup, sizeof(markup), "%s\n\n%s\n\n%s\n\n%s",
+	 desc_str, reason, time_str, note_str);
+   gtk_label_set_text(GTK_LABEL(label), markup);
+#endif
+   gtk_box_pack_start(GTK_BOX(hbox1), label, FALSE, FALSE, 6);
 
-   /* Label */
-   label = gtk_label_new(note_str);
-   gtk_label_set_line_wrap(GTK_LABEL(label), TRUE);
-   gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
-   gtk_box_pack_start(GTK_BOX(vbox1), label, FALSE, FALSE, 2);
+   /* remind delay */
+   hbox1 = gtk_hbox_new(TRUE, 6);
+#ifdef ENABLE_GTK2
+   remind_entry = gtk_spin_button_new_with_range(0, 59, 1);
+#else
+   {
+	   GtkAdjustment *spinner_adj;
 
-   /* Buttons */
+	   spinner_adj = (GtkAdjustment *) gtk_adjustment_new(50.0, 0.0, 59.0,
+		   1.0, 5.0, 5.0);
+	   remind_entry = gtk_spin_button_new(spinner_adj, 1.0, 0);
+   }
+#endif
+   gtk_box_pack_start(GTK_BOX(hbox1), remind_entry, FALSE, TRUE, 5);
+
+   vbox_temp = gtk_vbox_new(FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(hbox1), vbox_temp, FALSE, TRUE, 1);
+
+   radio1 = gtk_radio_button_new_with_label(NULL, _("Minutes"));
+   group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio1));
+   radio2 = gtk_radio_button_new_with_label(group, _("Hours"));
+   group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio2));
+
+   gtk_box_pack_start(GTK_BOX(vbox_temp), radio1, TRUE, TRUE, 1);
+   gtk_box_pack_start(GTK_BOX(vbox_temp), radio2, TRUE, TRUE, 1);
+
    gtk_box_pack_start(GTK_BOX(vbox1), hbox1, TRUE, TRUE, 2);
 
-   button = gtk_button_new_with_label(_("OK"));
-   gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_dialog_button),
-		      GINT_TO_POINTER(DIALOG_SAID_1));
-   gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
+   get_pref(PREF_REMIND_IN, &pref_entry, NULL);
+   gtk_spin_button_set_value(GTK_SPIN_BUTTON(remind_entry), pref_entry);
+
+   get_pref(PREF_REMIND_UNITS, &pref_units, NULL);
+   if (pref_units) {
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio2), TRUE);
+   } else {
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio1), TRUE);
+   }
+
+   /* Buttons */
+   gtk_container_set_border_width(GTK_CONTAINER(hbox1), 12);
 
    button = gtk_button_new_with_label(_("Remind me"));
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
@@ -242,18 +272,15 @@ int dialog_alarm(char *title, char *frame_text,
 		      GINT_TO_POINTER(DIALOG_SAID_2));
    gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
 
-   remind_entry = gtk_entry_new_with_max_length(4);
-   gtk_box_pack_start(GTK_BOX(hbox1), remind_entry, TRUE, TRUE, 1);
-
-   group = NULL;
-   radio1 = gtk_radio_button_new_with_label(NULL, _("Minutes"));
-   group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio1));
-   radio2 = gtk_radio_button_new_with_label(group, _("Hours"));
-   group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio2));
-
-   gtk_widget_set_usize(GTK_WIDGET(remind_entry), 5, 0);
-   gtk_widget_set_usize(GTK_WIDGET(radio1), 5, 0);
-   gtk_widget_set_usize(GTK_WIDGET(radio2), 5, 0);
+#ifdef ENABLE_GTK2
+   button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
+#else
+   button = gtk_button_new_with_label(_("OK"));
+#endif
+   gtk_signal_connect(GTK_OBJECT(button), "clicked",
+		      GTK_SIGNAL_FUNC(cb_dialog_button),
+		      GINT_TO_POINTER(DIALOG_SAID_1));
+   gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
 
    Pdata = malloc(sizeof(struct alarm_dialog_data));
    if (Pdata) {
@@ -266,21 +293,6 @@ int dialog_alarm(char *title, char *frame_text,
       Pdata->radio2=radio2;
    }
    gtk_object_set_data(GTK_OBJECT(alarm_dialog), "alarm", Pdata);
-
-   get_pref(PREF_REMIND_IN, NULL, &pref_entry);
-   gtk_entry_set_text(GTK_ENTRY(remind_entry), pref_entry);
-
-   get_pref(PREF_REMIND_UNITS, &pref_units, NULL);
-   if (pref_units) {
-      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio2), TRUE);
-   } else {
-      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio1), TRUE);
-   }
-
-   vbox_temp = gtk_vbox_new(FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(hbox1), vbox_temp, TRUE, TRUE, 1);
-   gtk_box_pack_start(GTK_BOX(vbox_temp), radio1, TRUE, TRUE, 1);
-   gtk_box_pack_start(GTK_BOX(vbox_temp), radio2, TRUE, TRUE, 1);
 
    gtk_widget_show_all(alarm_dialog);
 

@@ -1,4 +1,4 @@
-/* $Id: prefs.c,v 1.62 2005/12/11 20:39:00 judd Exp $ */
+/* $Id: prefs.c,v 1.63 2005/12/14 21:53:16 rousseau Exp $ */
 
 /*******************************************************************************
  * prefs.c
@@ -81,7 +81,7 @@ static prefType glob_prefs[NUM_PREFS] = {
      {"open_alarm_windows", INTTYPE, INTTYPE, 1, NULL, 0},
      {"do_alarm_command", INTTYPE, INTTYPE, 0, NULL, 0},
      {"alarm_command", CHARTYPE, CHARTYPE, 0, NULL, 0},
-     {"remind_in", CHARTYPE, CHARTYPE, 0, NULL, 0},
+     {"remind_in", INTTYPE, INTTYPE, 0, NULL, 0},
      {"remind_units", INTTYPE, INTTYPE, 0, NULL, 0},
    /* This is actually the password, but I wanted to name it something more discreet */
      {"session_id", CHARTYPE, CHARTYPE, 0, NULL, 0},
