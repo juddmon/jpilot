@@ -1,0 +1,2838 @@
+# JPILOT Messages.
+# Copyright (C) YEAR Judd Montgomery
+# This file is distributed under the same license as the jpilot package.
+# Byeong-Taek Lee <byeongtaek.lee@gmail.com>, 2005.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: jpilot 0.99.8\n"
+"Report-Msgid-Bugs-To: jpilot-devel@jpilot.org\n"
+"POT-Creation-Date: 2005-11-29 20:38+0100\n"
+"PO-Revision-Date: 2005-12-11 23:24-0800\n"
+"Last-Translator: Byeong-Taek Lee <beongtaek.lee@gmail.com>\n"
+"Language-Team: Korean <LL@tli.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=euc-kr\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: address.c:288 address.c:552 alarms.c:352 dat.c:181 dat.c:655 dat.c:857
+#: dat.c:991 dat.c:1130 datebook.c:89 datebook.c:390 datebook.c:397
+#: datebook.c:427 datebook.c:1046 jpilot.c:1530 libplugin.c:467
+#: libplugin.c:749 libplugin.c:856 libplugin.c:935 libplugin.c:976 memo.c:95
+#: memo.c:367 plugins.c:108 prefs.c:314 prefs.c:339 prefs.c:854 sync.c:252
+#: sync.c:1153 sync.c:2320 todo.c:206 todo.c:548 utils.c:2313
+msgid "Out of memory"
+msgstr "메모리 부족"
+
+#: address.c:345 address.c:352 datebook.c:340 libplugin.c:179 memo.c:163
+#: memo.c:170 todo.c:291 todo.c:298 utils.c:1974 utils.c:1979 utils.c:1990
+#: utils.c:1995 utils.c:2006 utils.c:2011 utils.c:2023 utils.c:2028
+msgid "error"
+msgstr "오류"
+
+#: address.c:412 address_gui.c:1680 datebook.c:686 libplugin.c:809
+#: libplugin.c:833 memo.c:244 memo_gui.c:996 todo_gui.c:1318
+#: Expense/expense.c:1138 Expense/expense.c:2136
+#, c-format
+msgid "Error reading file: %s\n"
+msgstr "파일 읽기 오류: %s\n"
+
+#: address_gui.c:261 datebook_gui.c:2532 memo_gui.c:184 todo_gui.c:305
+#: KeyRing/keyring.c:512
+msgid ""
+"This record is deleted.\n"
+"Undelete it or copy it to make changes.\n"
+msgstr ""
+"이 자료는 삭제되었습니다.\n"
+"변경하기 위해서는 복구하거나 복사하십시오.\n"
+
+#: address_gui.c:469 category.c:159 category.c:165 category.c:213
+#: category.c:270 datebook_gui.c:372 memo_gui.c:301 sync.c:1116 sync.c:1122
+#: sync.c:2295 sync.c:2515 sync.c:2521 sync.c:2638 sync.c:2904 todo_gui.c:445
+#: utils.c:2727 utils.c:2776 utils.c:2782 utils.c:2855 utils.c:2861
+#: utils.c:2924 utils.c:2987 utils.c:2993 utils.c:3056 utils.c:3063
+#, c-format
+msgid "Unable to open file: %s\n"
+msgstr "파일을 열 수 없음: %s\n"
+
+#: address_gui.c:548
+msgid "File doesn't appear to be address.dat format\n"
+msgstr "파일 형식이 address.dat이 아닌 듯합니다.\n"
+
+#: address_gui.c:558 datebook_gui.c:582 memo_gui.c:436 todo_gui.c:571
+#: Expense/expense.c:619 Expense/expense.c:1406
+msgid "Unfiled"
+msgstr "비분류"
+
+#: address_gui.c:697 alarms.c:226 category.c:420 category.c:902 category.c:955
+#: datebook_gui.c:669 datebook_gui.c:1164 export_gui.c:354 jpilot.c:363
+#: jpilot.c:408 jpilot.c:476 jpilot.c:520 jpilot.c:965 jpilot.c:1864
+#: memo_gui.c:526 password.c:370 restore_gui.c:322 todo_gui.c:661 utils.c:1105
+#: utils.c:1265 KeyRing/keyring.c:1413
+msgid "OK"
+msgstr "확인"
+
+#: address_gui.c:698 datebook_gui.c:670 memo_gui.c:527 todo_gui.c:662
+#: utils.c:1283
+msgid "No"
+msgstr "아니오"
+
+#: address_gui.c:698 datebook_gui.c:670 memo_gui.c:527 todo_gui.c:662
+#: utils.c:1283
+msgid "Yes"
+msgstr "예"
+
+#: address_gui.c:722 datebook_gui.c:697 memo_gui.c:537 todo_gui.c:688
+#, c-format
+msgid "%s is a directory"
+msgstr "%s는 디렉토리입니다."
+
+#: address_gui.c:724 address_gui.c:741 datebook_gui.c:699 datebook_gui.c:716
+#: memo_gui.c:539 memo_gui.c:556 todo_gui.c:690 todo_gui.c:707
+msgid "Error Opening File"
+msgstr "파일열기 오류"
+
+#: address_gui.c:728 datebook_gui.c:703 memo_gui.c:543 todo_gui.c:694
+#, c-format
+msgid "Do you want to overwrite file %s?"
+msgstr "%s 파일을 덮어쓰시겠습니까?"
+
+#: address_gui.c:730 datebook_gui.c:705 memo_gui.c:545 todo_gui.c:696
+msgid "Overwrite File?"
+msgstr "파일을 덮어쓰시겠습니까?"
+
+#: address_gui.c:739 datebook_gui.c:714 memo_gui.c:554 todo_gui.c:705
+#, c-format
+msgid "Error opening file: %s"
+msgstr "파일 열기 오류: %s"
+
+#: address_gui.c:750
+#, c-format
+msgid "Can't export address %d\n"
+msgstr "주소를 내보낼 수 없습니다 %d\n"
+
+#: address_gui.c:815 address_gui.c:823 address_gui.c:840
+msgid "Field"
+msgstr "필드"
+
+#: address_gui.c:1039 datebook_gui.c:985 memo_gui.c:612 todo_gui.c:844
+msgid "Unknown export type\n"
+msgstr "알려지지 않은 내보내기 유형\n"
+
+#: address_gui.c:1230 address_gui.c:2649
+msgid "Company/Name"
+msgstr "회사/이름"
+
+#: address_gui.c:1232 address_gui.c:2651
+msgid "Name/Company"
+msgstr "이름/회사"
+
+#: address_gui.c:1330 datebook_gui.c:2610 memo_gui.c:913 todo_gui.c:1246
+#: KeyRing/keyring.c:823
+msgid "You can't modify a record that is deleted\n"
+msgstr "삭제된 자료는 변경할 수 없습니다.\n"
+
+#: address_gui.c:1473 address_gui.c:1851 address_gui.c:2362 memo_gui.c:821
+#: memo_gui.c:1079 memo_gui.c:1358 todo_gui.c:1112 todo_gui.c:1515
+#: todo_gui.c:1528 todo_gui.c:1961
+msgid "Category is not legal\n"
+msgstr "범주는 허용되지 않습니다\n"
+
+#: address_gui.c:1531 alarms.c:607 dialer.c:165
+#, c-format
+msgid "executing command = [%s]\n"
+msgstr "실행 명령 = [%s]\n"
+
+#: address_gui.c:1769 Expense/expense.c:1603 KeyRing/keyring.c:1928
+#: KeyRing/keyring.c:2019
+msgid "Category: "
+msgstr "범주: "
+
+#: address_gui.c:1801 address_gui.c:2821
+msgid "kana("
+msgstr "가나("
+
+#: address_gui.c:1913 address_gui.c:2931
+msgid "E-mail"
+msgstr "이메일"
+
+#: address_gui.c:1915 address_gui.c:1918 address_gui.c:2932
+msgid "Mail"
+msgstr "메일"
+
+#: address_gui.c:1923 address_gui.c:1926 address_gui.c:2935 dialer.c:308
+#: dialer.c:333
+msgid "Dial"
+msgstr "전화걸기"
+
+#: address_gui.c:2136 address_gui.c:2160
+msgid "-Unnamed-"
+msgstr "-이름없음-"
+
+#: address_gui.c:2233 memo_gui.c:1268 todo_gui.c:1850
+msgid "0 records"
+msgstr "0 자료"
+
+#: address_gui.c:2236 datebook_gui.c:2407 memo_gui.c:1271 todo_gui.c:1853
+#, c-format
+msgid "%d of %d records"
+msgstr "%d 번째 자료 (전체 %d 개)"
+
+#: address_gui.c:2629 category.c:450 category.c:496 category.c:514
+#: category.c:594 category.c:789 memo_gui.c:1508 todo_gui.c:2116
+#: Expense/expense.c:1609
+msgid "Edit Categories"
+msgstr "범주 편집"
+
+#: address_gui.c:2656
+msgid "Phone"
+msgstr "전화"
+
+#: address_gui.c:2678
+msgid "Quick Find: "
+msgstr "빨리 찾기: "
+
+#: address_gui.c:2694 category.c:421 category.c:892 category.c:945
+#: datebook_gui.c:1155 datebook_gui.c:1592 datebook_gui.c:4377
+#: export_gui.c:345 memo_gui.c:1552 password.c:360 print_gui.c:338
+#: restore_gui.c:313 todo_gui.c:2169 utils.c:1091 KeyRing/keyring.c:1403
+#: KeyRing/keyring.c:1960
+msgid "Cancel"
+msgstr "취소"
+
+#: address_gui.c:2694 datebook_gui.c:4377 memo_gui.c:1552 todo_gui.c:2169
+#: KeyRing/keyring.c:1960
+msgid "Cancel the modifications"
+msgstr "변경한 것 취소"
+
+#: address_gui.c:2699 category.c:421 category.c:857 datebook_gui.c:4382
+#: memo_gui.c:1557 todo_gui.c:2174 Expense/expense.c:1646
+#: KeyRing/keyring.c:1965
+msgid "Delete"
+msgstr "지우기"
+
+#: address_gui.c:2699 datebook_gui.c:4382 memo_gui.c:1557 todo_gui.c:2174
+#: Expense/expense.c:1646 KeyRing/keyring.c:1965
+msgid "Delete the selected record"
+msgstr "선택된 자료 지우기"
+
+#: address_gui.c:2705 datebook_gui.c:4388 memo_gui.c:1563 todo_gui.c:2180
+#: KeyRing/keyring.c:1971
+msgid "Undelete"
+msgstr "지우기 취소"
+
+#: address_gui.c:2705 datebook_gui.c:4388 memo_gui.c:1563 todo_gui.c:2180
+#: KeyRing/keyring.c:1971
+msgid "Undelete the selected record"
+msgstr "선택된 자료 지우기 취소"
+
+#: address_gui.c:2711 datebook_gui.c:4394 memo_gui.c:1569 todo_gui.c:2186
+#: Expense/expense.c:1651 KeyRing/keyring.c:1977
+msgid "Copy"
+msgstr "복사"
+
+#: address_gui.c:2711 datebook_gui.c:4394 memo_gui.c:1569 todo_gui.c:2186
+#: Expense/expense.c:1651 KeyRing/keyring.c:1977
+msgid "Copy the selected record"
+msgstr "선택된 자료 복사"
+
+#: address_gui.c:2717 datebook_gui.c:4400 memo_gui.c:1575 todo_gui.c:2192
+#: Expense/expense.c:1656 KeyRing/keyring.c:1983
+msgid "New Record"
+msgstr "새 항목"
+
+#: address_gui.c:2717 datebook_gui.c:4400 memo_gui.c:1575 todo_gui.c:2192
+#: Expense/expense.c:1656 KeyRing/keyring.c:1983
+msgid "Add a new record"
+msgstr "새 자료 더하기"
+
+#: address_gui.c:2722 datebook_gui.c:4406 memo_gui.c:1581 todo_gui.c:2198
+#: Expense/expense.c:1661 KeyRing/keyring.c:1989
+msgid "Add Record"
+msgstr "자료 더하기"
+
+#: address_gui.c:2722 datebook_gui.c:4406 memo_gui.c:1581 todo_gui.c:2198
+#: Expense/expense.c:1661 KeyRing/keyring.c:1989
+msgid "Add the new record"
+msgstr "새 자료 더하기"
+
+#: address_gui.c:2732 datebook_gui.c:4416 memo_gui.c:1591 todo_gui.c:2208
+#: Expense/expense.c:1670 KeyRing/keyring.c:1999
+msgid "Apply Changes"
+msgstr "바뀐 것 적용"
+
+#: address_gui.c:2732 datebook_gui.c:4416 memo_gui.c:1591 todo_gui.c:2208
+#: Expense/expense.c:1670 KeyRing/keyring.c:1999
+msgid "Commit the modifications"
+msgstr "변경 실행"
+
+#: address_gui.c:2749 datebook_gui.c:4467 memo_gui.c:1609 todo_gui.c:2271
+msgid "Private"
+msgstr "보안"
+
+#: address_gui.c:2769 KeyRing/keyring.c:1840
+msgid "Name"
+msgstr "이름"
+
+#: address_gui.c:2777 prefs_gui.c:370
+msgid "Address"
+msgstr "주소"
+
+#: address_gui.c:2785 Expense/expense.c:571 Expense/expense.c:1427
+msgid "Other"
+msgstr "기타"
+
+#: address_gui.c:2793 datebook_gui.c:1343 datebook_gui.c:1592 utils.c:2683
+#: KeyRing/keyring.c:1226
+msgid "All"
+msgstr "전체"
+
+#: address_gui.c:2996
+msgid ""
+"Show\n"
+"In List"
+msgstr ""
+"보기\n"
+"목록 내에서"
+
+#: address_gui.c:3004
+msgid "Quick View"
+msgstr "빨리 보기"
+
+#: alarms.c:232
+msgid "Remind me"
+msgstr "상기시키기"
+
+#: alarms.c:242 datebook_gui.c:4449
+msgid "Minutes"
+msgstr "분"
+
+#: alarms.c:244 datebook_gui.c:4453
+msgid "Hours"
+msgstr "시"
+
+#: alarms.c:439
+#, c-format
+msgid "Unable to open %s%s file\n"
+msgstr "%s%s 파일을 열 수 없음\n"
+
+#: alarms.c:524
+msgid "Appointment Reminder"
+msgstr "약속 상기"
+
+#: alarms.c:527
+msgid "Past Appointment"
+msgstr "과거 약속"
+
+#: alarms.c:530
+msgid "Postponed Appointment"
+msgstr "연기된 약속"
+
+#: alarms.c:533 datebook_gui.c:4285
+msgid "Appointment"
+msgstr "약속"
+
+#: alarms.c:614
+msgid "J-Pilot Alarm"
+msgstr "J-Pilot 알람"
+
+#: alarms.c:1131
+msgid "infinite loop, breaking\n"
+msgstr "무한 루프, 멈추기\n"
+
+#: alarms.c:1499
+#, c-format
+msgid "Unable to open %s.alarms file\n"
+msgstr "%s 알람 파일을 열 수 없음\n"
+
+#: category.c:192 sync.c:2552 utils.c:2803 utils.c:2891 utils.c:3013
+#: utils.c:3083
+msgid "rename failed"
+msgstr "이름바꾸기 실패"
+
+#: category.c:229 category.c:286 sync.c:1145 sync.c:2311
+msgid "PC file corrupt?\n"
+msgstr "PC 파일이 깨짐?\n"
+
+#: category.c:236 category.c:246 category.c:293 category.c:304 category.c:314
+#: sync.c:1190 sync.c:1210 sync.c:1270 sync.c:1281 sync.c:2373 sync.c:2400
+#: sync.c:2452 sync.c:2462
+msgid "fseek failed - fatal error\n"
+msgstr "fseek 실패 - 중요한 에러\n"
+
+#: category.c:421
+msgid "Move"
+msgstr "이동"
+
+#: category.c:451
+msgid "The maximum number of categories (16) are already used"
+msgstr "이미 최대 범주 수(16)를 사용 중"
+
+#: category.c:454
+msgid "Enter New Category"
+msgstr "새 범주 넣기"
+
+#: category.c:464 category.c:471 category.c:489
+msgid "Edit Categories Error"
+msgstr "범주 편집 오류"
+
+#: category.c:465
+msgid "You must select a category to rename"
+msgstr "이름을 바꾸기 위해서는 범주를 선택해야 함"
+
+#: category.c:469
+#, c-format
+msgid "You can't edit category %s.\n"
+msgstr "%s 범주는 편집할 수 없습니다.\n"
+
+#: category.c:476
+msgid "Enter New Category Name"
+msgstr "새 범주 이름 넣기"
+
+#: category.c:490
+msgid "You must select a category to delete"
+msgstr "삭제하기 위해서는 범주를 선택해야 함"
+
+#: category.c:494
+#, c-format
+msgid "You can't delete category %s.\n"
+msgstr "%s 범주를 삭제할 수 없음.\n"
+
+#: category.c:510
+#, c-format
+msgid ""
+"There are %d records in %s.\n"
+"Do you want to move them to %s, or delete them?"
+msgstr ""
+"%d개 자료가 %s에 있습니다.\n"
+"%s로 옮기거나 삭제하시겠습니까?"
+
+#: category.c:569
+#, c-format
+msgid "invalid state file %s line %d\n"
+msgstr "%s 파일의 잘못된 상태 (%d 줄)\n"
+
+#: category.c:592
+#, c-format
+msgid "The category %s can't be used more than once"
+msgstr "%s 범주는 한 번 이상 사용될 수 없음"
+
+#: category.c:816
+msgid "category name"
+msgstr "범주 이름"
+
+#: category.c:841
+msgid "New"
+msgstr "새 범주"
+
+#: category.c:848
+msgid "Rename"
+msgstr "이름바꾸기"
+
+#: category.c:963
+msgid "debug"
+msgstr "오류검사"
+
+#: dat.c:455
+msgid "unknown type ="
+msgstr "알려지지 않은 유형="
+
+#: dat.c:536
+#, c-format
+msgid "fields per row count != %d, unknown format\n"
+msgstr "줄당 항목 수 != %d, 알려지지 않은 형식\n"
+
+#: dat.c:550
+#, c-format
+msgid "field count != %d, unknown format\n"
+msgstr "항목 수 !=%d, 알려지지 않은 포맷\n"
+
+#: dat.c:558
+msgid "Unknown format, file has wrong schema\n"
+msgstr "알려지지 않은 포맷, 파일이 잘못된 스키마를 가짐\n"
+
+#: dat.c:559
+msgid "File schema is:"
+msgstr "파일 스키마:"
+
+#: dat.c:564
+msgid "It should be:  "
+msgstr "원칙: "
+
+#: dat.c:674 dat.c:692 dat.c:874 dat.c:887 dat.c:1010 dat.c:1023 dat.c:1147
+#: dat.c:1160
+#, c-format
+msgid "%s:%d Record %d, field %d: Invalid type.  Expected %d, found %d\n"
+msgstr "%s:%d 자료 %d, 항목 %d: 타당치 않은 유형. 기대값 %d, 찾아진 것 %d\n"
+
+#: dat.c:675 dat.c:693 dat.c:875 dat.c:888 dat.c:992 dat.c:1011 dat.c:1024
+#: dat.c:1148 dat.c:1161
+msgid "read of file terminated\n"
+msgstr "파일 읽기 종료\n"
+
+#: datebook.c:643
+#, c-format
+msgid "Unknown repeatType (%d) found in DatebookDB\n"
+msgstr "DatebookDB에서 알려지지 않은 반복유형 (%d) 발견\n"
+
+#: datebook_gui.c:222 datebook_gui.c:229 datebook_gui.c:4084
+#: datebook_gui.c:4091
+msgid "Su"
+msgstr "일"
+
+#: datebook_gui.c:223 datebook_gui.c:4085
+msgid "Mo"
+msgstr "월"
+
+#: datebook_gui.c:224 datebook_gui.c:4086
+msgid "Tu"
+msgstr "화"
+
+#: datebook_gui.c:225 datebook_gui.c:4087
+msgid "We"
+msgstr "수"
+
+#: datebook_gui.c:226 datebook_gui.c:4088
+msgid "Th"
+msgstr "목"
+
+#: datebook_gui.c:227 datebook_gui.c:4089
+msgid "Fr"
+msgstr "금"
+
+#: datebook_gui.c:228 datebook_gui.c:4090
+msgid "Sa"
+msgstr "토"
+
+#: datebook_gui.c:561 datebook_gui.c:2063
+#, c-format
+msgid "Appointment description text > %d, truncating to %d\n"
+msgstr "약속 내용 > %d, %d까지 잘려짐\n"
+
+#: datebook_gui.c:571 datebook_gui.c:986 datebook_gui.c:2124
+#: datebook_gui.c:2131
+msgid "Error"
+msgstr "오류"
+
+#: datebook_gui.c:572
+msgid "File doesn't appear to be datebook.dat format\n"
+msgstr "파일이 datebook.dat 포맷이 아닌 듯\n"
+
+#: datebook_gui.c:986
+msgid "Unknown export type"
+msgstr "알려지지 않은 내보내기 유형"
+
+#: datebook_gui.c:1095 export_gui.c:258 jpilot.c:553
+msgid "Export"
+msgstr "내보내기"
+
+#: datebook_gui.c:1112
+msgid "Export All Datebook Records"
+msgstr "모든 Datebook 자료 내보내기"
+
+#: datebook_gui.c:1131 export_gui.c:320
+msgid "Save as"
+msgstr "새이름 저장"
+
+#: datebook_gui.c:1141 export_gui.c:331
+msgid "Browse"
+msgstr "펼쳐보기"
+
+#: datebook_gui.c:1302
+msgid "Datebook Categories"
+msgstr "Datebook 범주"
+
+#: datebook_gui.c:1337 import_gui.c:311 prefs_gui.c:770
+msgid "Done"
+msgstr "완료"
+
+#: datebook_gui.c:1349 datebook_gui.c:4632
+msgid "None"
+msgstr "없음"
+
+#: datebook_gui.c:1461
+msgid "Begin On Date"
+msgstr "시작 날짜"
+
+#: datebook_gui.c:1466
+msgid "End On Date"
+msgstr "끝나는 날짜"
+
+#: datebook_gui.c:1560 prefs.c:413
+msgid "Sunday"
+msgstr "일요일"
+
+#: datebook_gui.c:1561 prefs.c:414
+msgid "Monday"
+msgstr "월요일"
+
+#: datebook_gui.c:1562
+msgid "Tuesday"
+msgstr "화요일"
+
+#: datebook_gui.c:1563
+msgid "Wednesday"
+msgstr "수요일"
+
+#: datebook_gui.c:1564
+msgid "Thursday"
+msgstr "목요일"
+
+#: datebook_gui.c:1565
+msgid "Friday"
+msgstr "금요일"
+
+#: datebook_gui.c:1566
+msgid "Saturday"
+msgstr "토요일"
+
+#: datebook_gui.c:1569
+msgid "4th"
+msgstr "4번째"
+
+#: datebook_gui.c:1569
+msgid "Last"
+msgstr "마지막"
+
+#: datebook_gui.c:1572
+#, c-format
+msgid ""
+"This appointment can either\n"
+"repeat on the 4th %s\n"
+"of the month, or on the last\n"
+"%s of the month.\n"
+"Which do you want?"
+msgstr ""
+"이 약속은 4번째 해당 월의\n"
+"4번째 %s에\n"
+"혹은 해당 월의 마지막 %s에\n"
+"반복될 수 없습니다.\n"
+"어느 것을 원합니까?"
+
+#: datebook_gui.c:1579 datebook_gui.c:1596
+msgid "Question?"
+msgstr "질문?"
+
+#: datebook_gui.c:1587
+msgid ""
+"This is a repeating event.\n"
+"Do you want to apply these\n"
+"changes to just the CURRENT\n"
+"event, or ALL of the\n"
+"occurrences of this event?"
+msgstr ""
+"반복 사건입니다\n"
+"현재 바꾼 것들을\n"
+"현재 사건에만 적용하시겠습니까\n"
+"반복되는 모든 사건들에\n"
+"적용하시겠습니까?"
+
+#: datebook_gui.c:1592
+msgid "Current"
+msgstr "현재"
+
+#: datebook_gui.c:1831
+msgid "none"
+msgstr "없음"
+
+#: datebook_gui.c:1832
+msgid "day"
+msgstr "일"
+
+#: datebook_gui.c:1833
+msgid "week"
+msgstr "주"
+
+#: datebook_gui.c:1834
+msgid "month"
+msgstr "월"
+
+#: datebook_gui.c:1835
+msgid "year"
+msgstr "년"
+
+#: datebook_gui.c:2119 datebook_gui.c:2122
+#, c-format
+msgid "You cannot have an appointment that repeats every %d %s(s)\n"
+msgstr "매 %d %s에 반복하는 약속을 가질 수 없습니다\n"
+
+#: datebook_gui.c:2132
+msgid ""
+"You can not have a weekly repeating appointment that doesn't repeat on any "
+"day of the week."
+msgstr ""
+"주중의 어떤 날에도 반복하지 않는"
+"매주 반복 약속을 가질 수는 없습니다"
+
+#: datebook_gui.c:2285
+msgid "No Time"
+msgstr "비 시간"
+
+#: datebook_gui.c:2626
+msgid "Invalid Appointment"
+msgstr "타당하지 않은 약속"
+
+#: datebook_gui.c:2627
+msgid ""
+"The End Date of this appointment\n"
+"is before the start date."
+msgstr ""
+"이 약속의 종료일이\n"
+"시작날짜의 이전입??니다."
+
+#: datebook_gui.c:2882 datebook_gui.c:4666 datebook_gui.c:4696
+#: datebook_gui.c:4752 datebook_gui.c:4801 todo_gui.c:135 todo_gui.c:2262
+msgid "No Date"
+msgstr "날짜 없음"
+
+#: datebook_gui.c:2996
+#, c-format
+msgid "Error in DateBookDB advanceUnits = %d\n"
+msgstr "DateBookDB 고급단위 에러 = %d\n"
+
+#: datebook_gui.c:3167
+msgid "Unknown repeatType found in DatebookDB\n"
+msgstr "DatebookDB에서 알려지지 않은 반복유형 발견\n"
+
+#: datebook_gui.c:3200
+#, c-format
+msgid "%%a., %s"
+msgstr "%%a., %s"
+
+#: datebook_gui.c:3205 monthview_gui.c:226 weekview_gui.c:218
+msgid " (TODAY)"
+msgstr " (오늘)"
+
+#: datebook_gui.c:4190 datebook_gui.c:4634
+msgid "Week"
+msgstr "주"
+
+#: datebook_gui.c:4196
+msgid "W"
+msgstr "W"
+
+#: datebook_gui.c:4198
+msgid "View appointments by week"
+msgstr "주단위 약속보기"
+
+#: datebook_gui.c:4201 datebook_gui.c:4635
+msgid "Month"
+msgstr "월"
+
+#: datebook_gui.c:4208
+msgid "M"
+msgstr "M"
+
+#: datebook_gui.c:4210
+msgid "View appointments by month"
+msgstr "월단위 약속보기"
+
+#: datebook_gui.c:4215
+msgid "Cats"
+msgstr "Cats"
+
+#: datebook_gui.c:4284
+msgid "Time"
+msgstr "시간"
+
+#: datebook_gui.c:4321
+msgid "Show ToDos"
+msgstr "할 일 보기"
+
+#: datebook_gui.c:4336 todo_gui.c:2131
+msgid "Task"
+msgstr "과제"
+
+#: datebook_gui.c:4337 todo_gui.c:2132
+msgid "Due"
+msgstr "기한"
+
+#: datebook_gui.c:4434
+msgid "Alarm"
+msgstr "알람"
+
+#: datebook_gui.c:4455
+msgid "Days"
+msgstr "일"
+
+#: datebook_gui.c:4478
+msgid "This Event has no particular time"
+msgstr "이 사건에는 특정 시간 정보가 없음"
+
+#: datebook_gui.c:4486
+msgid "Starts on"
+msgstr "시작 시점"
+
+#: datebook_gui.c:4500
+msgid "Start Time"
+msgstr "시작 시간"
+
+#: datebook_gui.c:4518
+msgid "End Time"
+msgstr "종료 시간"
+
+#: datebook_gui.c:4616
+msgid "DateBk Tags"
+msgstr "DateBk 꼬리표"
+
+#: datebook_gui.c:4633
+msgid "Day"
+msgstr "일"
+
+#: datebook_gui.c:4636
+msgid "Year"
+msgstr "년"
+
+#: datebook_gui.c:4640
+msgid "This event will not repeat"
+msgstr "이 사건은 반복되지 않음"
+
+#: datebook_gui.c:4650 datebook_gui.c:4682 datebook_gui.c:4738
+#: datebook_gui.c:4785
+msgid "Frequency is Every"
+msgstr "빈도의 단위: 매"
+
+#: datebook_gui.c:4655
+msgid "Day(s)"
+msgstr "일"
+
+#: datebook_gui.c:4658 datebook_gui.c:4690 datebook_gui.c:4746
+#: datebook_gui.c:4793
+msgid "End on"
+msgstr "종료 시점"
+
+#: datebook_gui.c:4687
+msgid "Week(s)"
+msgstr "주"
+
+#: datebook_gui.c:4703
+msgid "Repeat on Days:"
+msgstr "반복 요일"
+
+#: datebook_gui.c:4743
+msgid "Month(s)"
+msgstr "월"
+
+#: datebook_gui.c:4760
+msgid "Repeat by:"
+msgstr "반복 단위:"
+
+#: datebook_gui.c:4764
+msgid "Day of week"
+msgstr "요일"
+
+#: datebook_gui.c:4773
+msgid "Date"
+msgstr "일"
+
+#: datebook_gui.c:4790
+msgid "Year(s)"
+msgstr "년"
+
+#: dialer.c:196
+msgid "Phone Dialer"
+msgstr "전화 걸기"
+
+#: dialer.c:231
+msgid "Prefix 1"
+msgstr "접두사 1"
+
+#: dialer.c:253
+msgid "Prefix 2"
+msgstr "접두사 2"
+
+#: dialer.c:275
+msgid "Prefix 3"
+msgstr "접두사 3"
+
+#: dialer.c:290
+msgid "Phone number:"
+msgstr "전화 번호:"
+
+#: dialer.c:321
+msgid "Extension"
+msgstr "확장"
+
+#: dialer.c:344
+msgid "Dial Command"
+msgstr "전화걸기 명령"
+
+#: dialer.c:369
+msgid "Dismiss"
+msgstr "종료"
+
+#: export_gui.c:116
+msgid "File Browser"
+msgstr "파일 브라우져"
+
+#: export_gui.c:276
+msgid "Select records to be exported"
+msgstr "내보내기할 자료 선택"
+
+#: export_gui.c:278
+msgid "Use Ctrl and Shift Keys"
+msgstr "Ctrl과 Shift 키를 사용하세요"
+
+#: import_gui.c:265 import_gui.c:304 import_gui.c:417 import_gui.c:497
+#: jpilot.c:509
+msgid "Import"
+msgstr "들여오기"
+
+#: import_gui.c:298 install_gui.c:311
+msgid "To change to a hidden directory type it below and hit TAB"
+msgstr ""
+"숨김 유형의 디렉토리로 변경하려면, 아래에 직접 입력하고 TAB을 치세요"
+
+#: import_gui.c:324
+msgid "Import File Type"
+msgstr "들여올 파일 유형"
+
+#: import_gui.c:436
+msgid "Record was marked as private"
+msgstr "자표가 보안 정보로 지정됨 "
+
+#: import_gui.c:438
+msgid "Record was not marked as private"
+msgstr "자료가 보안 정보로 지정되지 않음"
+
+#: import_gui.c:445
+#, c-format
+msgid "Category before import was: [%s]"
+msgstr "들여오기 전의 범주: [%s]"
+
+#: import_gui.c:451
+#, c-format
+msgid "Record will be put in category [%s]"
+msgstr "자료가 다음 범주로 입력됨 [%s]"
+
+#: import_gui.c:504
+msgid "Import All"
+msgstr "모두 들여오기"
+
+#: import_gui.c:511
+msgid "Skip"
+msgstr "건너뛰기"
+
+#: import_gui.c:518
+msgid "Quit"
+msgstr "종료"
+
+#: install_gui.c:258
+msgid "Install"
+msgstr "설치"
+
+#: install_gui.c:288
+msgid "Files to be installed"
+msgstr "설치할 파일들"
+
+#: install_gui.c:320
+msgid "Add"
+msgstr "추가"
+
+#: install_gui.c:331
+msgid "Remove"
+msgstr "제거"
+
+#: install_gui.c:342 monthview_gui.c:530 search_gui.c:595 weekview_gui.c:354
+msgid "Close"
+msgstr "닫기"
+
+#: jpilot-dump.c:95
+msgid " +B +M +A +T format like date +format.\n"
+msgstr "날짜 +format과 같은 +B +M +A +T 포맷\n"
+
+#: jpilot-dump.c:96
+msgid " -v displays version and exits.\n"
+msgstr "-v 버전 정보 보여준 후 나가기.\n"
+
+#: jpilot-dump.c:97 utils.c:77
+msgid " -h displays help and exits.\n"
+msgstr "-h 도움말 보여준 후 나가기.\n"
+
+#: jpilot-dump.c:98
+msgid " -f displays help for format codes.\n"
+msgstr "-f 형식 코드 도움말 보여주기.\n"
+
+#: jpilot-dump.c:99
+msgid " -D dump DateBook.\n"
+msgstr "-D DateBook 덤프하기\n"
+
+#: jpilot-dump.c:100
+msgid " -N dump appts for today in DateBook.\n"
+msgstr "-N DateBook에서 오늘 약속 덤프\n"
+
+#: jpilot-dump.c:101
+msgid " -NYYYY/MM/DD dump appts on YYYY/MM/DD in DateBook.\n"
+msgstr "-NYYYY/MM/DD Datebook의 YYYY/MM/DD의 약속 덤프.\n"
+
+#: jpilot-dump.c:102
+msgid " -A dump Address book.\n"
+msgstr "-A 주소록 덤프\n"
+
+#: jpilot-dump.c:103
+msgid " -T dump ToDo list as CSV.\n"
+msgstr "-T CSV로 할일 목록 덤프.\n"
+
+#: jpilot-dump.c:104
+msgid " -M dump Memos.\n"
+msgstr "-M 메모 덤프.\n"
+
+#: jpilot-sync.c:66
+msgid ""
+" J-Pilot preferences are read to get port, rate, number of backups, etc.\n"
+msgstr ""
+"포트/전송속도/백업의 숫자, 기타 정보를 얻기 위해 J-Pilot 선택사항을 읽기.\n"
+
+#: jpilot-sync.c:67
+msgid " -v = version\n"
+msgstr "-v = 버전\n"
+
+#: jpilot-sync.c:68
+msgid " -h = help\n"
+msgstr "-h = 도움말\n"
+
+#: jpilot-sync.c:69
+msgid " -d = run in debug mode\n"
+msgstr " -d = 디버그모드로 실행\n"
+
+#: jpilot-sync.c:70
+msgid " -P = do not load plugins.\n"
+msgstr " -P = 플러그인을 띄우지 않기.\n"
+
+#: jpilot-sync.c:71
+msgid " -b = Do a sync and then a backup, otherwise just do a sync.\n"
+msgstr " -b = 싱크한 후 백업하기, 가능하지 않다면 싱크만 하기.\n"
+
+#: jpilot-sync.c:72
+msgid " -l = loop, otherwise sync once and exit.\n"
+msgstr " -l = 반복, 가능하지 않다면 싱크한 후 종료.\n"
+
+#: jpilot-sync.c:73
+msgid ""
+" -p {port} = Use this port to sync with instead of getting preferences.\n"
+msgstr " -p {port} = 싱크를 위해 선택사항 정보 대신 이 포트 사용\n"
+
+#: jpilot.c:142
+#, c-format
+msgid "Invalid geometry specification: \"%s\"\n"
+msgstr "타당하지 않은 위상 정보: \"%s\"\n"
+
+#: jpilot.c:449 monthview_gui.c:536 print_gui.c:332 weekview_gui.c:360
+msgid "Print"
+msgstr "인쇄"
+
+#: jpilot.c:450
+msgid "There is no print support for this conduit."
+msgstr "이 컨듀잇은 인쇄지원이 안됩니다."
+
+#: jpilot.c:510
+msgid "There is no import support for this conduit."
+msgstr "이 컨듀잇은 들여오기 지원이 안됩니다."
+
+#: jpilot.c:554
+msgid "There is no export support for this conduit."
+msgstr "이 컨듀잇은 내보내기 지원이 안됩니다."
+
+#: jpilot.c:730
+msgid ""
+"This palm doesn't have the same user name\n"
+"or user ID as the one that was synced the\n"
+"last time.  Syncing could have unwanted effects.\n"
+"Read the user manual if you are uncertain."
+msgstr ""
+"이 팜은 최근 싱크된 것과 동일한 사용자 이름\n"
+"혹은 사용자 ID를 가지고 있지 않습니다.\n"
+"싱크한다면 원치 않는 결과를 가져올 수 있습니다.\n"
+"잘 모르겠다면 사용자 설명서를 읽어보십시오."
+
+#: jpilot.c:737
+msgid ""
+"This palm has a NULL user id.\n"
+"Every palm must have a unique user id in order to sync properly.\n"
+"If it has been hard reset, use restore from the menu to restore it,\n"
+"or use pilot-xfer.\n"
+"To add a user name and ID use the install-user command line tool,\n"
+"or use install-user from the menu\n"
+"Read the user manual if you are uncertain."
+msgstr ""
+"이 팜에는 사용자 id가 없습니다.\n"
+"모든 팜은 고유의 사용자 id를 가지고 있어야 제대로 싱크됩니다.\n"
+"하드리셋을 했다면, 메뉴의 복구하기를 사용하거나 pilot-xfer를\n"
+"사용하여 복구하십시오.\n"
+"사용자이름과 ID를 추가하기 위해서는 install-user 명령행 도구를\n"
+"사용하거나 메뉴의 사용자 입력을 사용하십시오.\n"
+"잘 모르겠다면 사용자 설명서를 읽어보십시오."
+
+#: jpilot.c:744
+msgid "Cancel Sync"
+msgstr "싱크 취소"
+
+#: jpilot.c:744
+msgid "Sync Anyway"
+msgstr "싱크 계속하기"
+
+#: jpilot.c:753 jpilot.c:757
+msgid "Sync Problem"
+msgstr "싱크 문제"
+
+#: jpilot.c:956
+msgid "Unknown command from sync process\n"
+msgstr "싱크 수행 중 알려지지 않은 명령\n"
+
+#: jpilot.c:977 Expense/expense.c:516 KeyRing/keyring.c:1568
+#, c-format
+msgid "About %s"
+msgstr "정보 %s"
+
+#: jpilot.c:1378
+msgid "/_File"
+msgstr "/파일(_F)"
+
+#: jpilot.c:1379
+msgid "/File/tear"
+msgstr "/파일/tear"
+
+#: jpilot.c:1380
+msgid "/File/_Find"
+msgstr "/파일/찾기(_F)"
+
+#: jpilot.c:1381 jpilot.c:1387 jpilot.c:1390
+msgid "/File/sep1"
+msgstr "/파일/sep1"
+
+#: jpilot.c:1382
+msgid "/File/_Install"
+msgstr "/파일/설치하기(_I)"
+
+#: jpilot.c:1383
+msgid "/File/Import"
+msgstr "/파일/들여오기"
+
+#: jpilot.c:1384
+msgid "/File/Export"
+msgstr "/파일/내보내기"
+
+#: jpilot.c:1385 jpilot.c:2814
+msgid "/File/Preferences"
+msgstr "/파일/선택사항"
+
+#: jpilot.c:1386
+msgid "/File/_Print"
+msgstr "/파일/인쇄(_P)"
+
+#: jpilot.c:1388
+msgid "/File/Install User"
+msgstr "/파일/사용자 입력"
+
+#: jpilot.c:1389
+msgid "/File/Restore Handheld"
+msgstr "/파일/팜 복구하기"
+
+#: jpilot.c:1391
+msgid "/File/_Quit"
+msgstr "/파일/종료(_Q)"
+
+#: jpilot.c:1392
+msgid "/_View"
+msgstr "/보기(_V)"
+
+#: jpilot.c:1393 jpilot.c:1394 jpilot.c:1395 jpilot.c:1649
+msgid "/View/Hide Private Records"
+msgstr "/보기/보안 자료 감추기"
+
+#: jpilot.c:1394
+msgid "/View/Show Private Records"
+msgstr "/보기/보안 자료 표시하기"
+
+#: jpilot.c:1395
+msgid "/View/Mask Private Records"
+msgstr "/보기/보안 자료 마스크"
+
+#: jpilot.c:1396
+msgid "/View/sep1"
+msgstr "/보기/sep1"
+
+#: jpilot.c:1397
+msgid "/View/Datebook"
+msgstr "/보기/일정관리"
+
+#: jpilot.c:1398
+msgid "/View/Addresses"
+msgstr "/보기/주소록"
+
+#: jpilot.c:1399
+msgid "/View/Todos"
+msgstr "/보기/할일"
+
+#: jpilot.c:1400
+msgid "/View/Memos"
+msgstr "/보기/메모"
+
+#: jpilot.c:1401 jpilot.c:1535
+msgid "/_Plugins"
+msgstr "/플러그인(_P)"
+
+#: jpilot.c:1403
+msgid "/_Web"
+msgstr "/웹(_W)"
+
+#: jpilot.c:1404
+msgid "/Web/Netscape"
+msgstr "/웹/넷스케입"
+
+#: jpilot.c:1408
+msgid "/Web/Mozilla"
+msgstr "/웹/모질라"
+
+#: jpilot.c:1413
+msgid "/Web/Galeon"
+msgstr "/웹/갈레온"
+
+#: jpilot.c:1418
+msgid "/Web/Opera"
+msgstr "/웹/오페라"
+
+#: jpilot.c:1422
+msgid "/Web/GnomeUrl"
+msgstr "/웹/GnomeUrl"
+
+#: jpilot.c:1424
+msgid "/Web/Lynx"
+msgstr "/웹/Lynx"
+
+#: jpilot.c:1426
+msgid "/Web/Links"
+msgstr "/웹/Links"
+
+#: jpilot.c:1428
+msgid "/Web/W3M"
+msgstr "/웹/W3M"
+
+#: jpilot.c:1430
+msgid "/Web/Konqueror"
+msgstr "/웹/컹커러"
+
+#: jpilot.c:1433
+msgid "/_Help"
+msgstr "/도움말(_H)"
+
+#: jpilot.c:1434
+msgid "/Help/PayBack program"
+msgstr "/도움말/PayBack 프로그램"
+
+#: jpilot.c:1435
+msgid "/Help/About J-Pilot"
+msgstr "/도움말/J-Pilot에 관하여"
+
+#: jpilot.c:1502
+#, c-format
+msgid "/_Plugins/%s"
+msgstr "/플러그인(_P)/%s"
+
+#: jpilot.c:1513
+#, c-format
+msgid "/_Help/%s"
+msgstr "/도움말(_H)/%s"
+
+#: jpilot.c:1812
+msgid "Font Selection Dialog"
+msgstr "글꼴 선택 대화상자"
+
+#: jpilot.c:2143
+msgid "calendar:week_start:0"
+msgstr "달력:한주 시작(_s):0"
+
+#: jpilot.c:2188
+msgid "Not loading plugins.\n"
+msgstr "플러그인이 로딩되지 않음.\n"
+
+#: jpilot.c:2192
+msgid "Ignoring all alarms.\n"
+msgstr "모든 알람 무시.\n"
+
+#: jpilot.c:2196
+msgid "Ignoring past alarms.\n"
+msgstr "과거 알람 무시.\n"
+
+#: jpilot.c:2291 jpilot.c:2299
+msgid "Unable to open pipe\n"
+msgstr "파이프를 열 수 없음\n"
+
+#: jpilot.c:2350
+msgid " User: "
+msgstr " 사용자: "
+
+#: jpilot.c:2497
+msgid "Clear"
+msgstr "지우기"
+
+#: jpilot.c:2568
+msgid "Show private records   Ctrl-Z"
+msgstr "보안 정보 표시하기   Ctrl-Z"
+
+#: jpilot.c:2573
+msgid "Show private records"
+msgstr "보안 정보 표시하기"
+
+#: jpilot.c:2578
+msgid "Hide private records   Ctrl-Z"
+msgstr "보안 정보 감추기   Ctrl-Z"
+
+#: jpilot.c:2583
+msgid "Hide private records"
+msgstr "보안 정보 감추기"
+
+#: jpilot.c:2588
+msgid "Mask private records   Ctrl-Z"
+msgstr "보안 정보 마스크   Ctrl-Z"
+
+#: jpilot.c:2593
+msgid "Mask private records"
+msgstr "보안 정보 마스크"
+
+#: jpilot.c:2603
+msgid "Sync your palm to the desktop   Ctrl-Y"
+msgstr "데스크탑으로 팜을 싱크하기 Ctrl-Y"
+
+#: jpilot.c:2609
+msgid "Font"
+msgstr "글꼴"
+
+#: jpilot.c:2624
+msgid ""
+"Sync your palm to the desktop\n"
+"and then do a backup"
+msgstr ""
+"팜을 데스크탑으로 싱크한 후\n"
+"백업하기"
+
+#: jpilot.c:2738
+msgid "Datebook/Go to Today"
+msgstr "일정관리/오늘로 가기"
+
+#: jpilot.c:2740
+msgid "Address Book"
+msgstr "주소록"
+
+#: jpilot.c:2742
+msgid "ToDo List"
+msgstr "할일 목록"
+
+#: jpilot.c:2744
+msgid "Memo Pad"
+msgstr "메모장"
+
+#: jpilot.c:2796
+msgid "Do it now"
+msgstr "지금 하기"
+
+#: jpilot.c:2796
+msgid "Remind me later"
+msgstr "나중에 알려주기"
+
+#: jpilot.c:2796
+msgid "Don't tell me again!"
+msgstr "다시 알려주지 말기"
+
+#: jpilot.c:2810
+msgid ""
+"J-Pilot is using the GTK2 graphical toolkit. This version of the toolkit "
+"uses UTF-8 to encode characters.\n"
+"You should select a UTF-8 charset so you can see the non-ASCII characters "
+"(accents for example).\n"
+"\n"
+msgstr ""
+"J-Pilot은 GTK2 그래픽 툴킷을 사용하고 있습니다. 이 버전의 툴킷은 UTF-8을"
+"사용하여 문자를 부호화합니다.\n"
+"ASCII 문자 이외의 문자를 보기 위해서는 UTF-8 문자를 선택해야 합니다.\n"
+"(예를 들면 악센트).\n"
+"\n"
+
+#: jpilot.c:2813
+msgid "Go to the menu \""
+msgstr "메뉴로 가기 \""
+
+#: jpilot.c:2815
+msgid "\" and change the \""
+msgstr "\" 그리고 바꾸기 \""
+
+#: jpilot.c:2816 prefs_gui.c:390
+msgid "Character Set "
+msgstr "문자 셋 "
+
+#: jpilot.c:2817
+msgid "\"."
+msgstr "\"."
+
+#: jpilot.c:2819
+msgid "Select a UTF-8 encoding"
+msgstr "UTF-I 부호화 선택"
+
+#: libplugin.c:153
+#, c-format
+msgid "Unknown PC header version = %d\n"
+msgstr "알려지지 않은 PC header 버전 = %d\n"
+
+#: libplugin.c:441
+#, c-format
+msgid "%s:%d Error opening file: %s\n"
+msgstr "%s:%d 파일 열기 오류: %s\n"
+
+#: libplugin.c:447 libplugin.c:476 sync.c:2880 todo.c:391
+#, c-format
+msgid "%s:%d Error reading file: %s\n"
+msgstr "%s:%d 파일 읽기 오류: %s\n"
+
+#: libplugin.c:503 utils.c:1908
+msgid ""
+"This record is already deleted.\n"
+"It is scheduled to be deleted from the Palm on the next sync.\n"
+msgstr ""
+"이 자료는 이미 삭제되었음.\n"
+"다음 싱크할 때 팜에서 삭제될 예정임\n"
+
+
+#: libplugin.c:512 utils.c:1917 utils.c:1954
+msgid "Unable to open PC records file\n"
+msgstr "PC 자료파일을 열 수 없음\n"
+
+#: libplugin.c:518 utils.c:1923
+msgid "Couldn't find record to delete\n"
+msgstr "삭제할 자료를 찾을 수 없음\n"
+
+#: libplugin.c:536 utils.c:1941
+#, c-format
+msgid "Unknown header version %d\n"
+msgstr "알려지지 않은 헤더 버전 %d\n"
+
+#: libplugin.c:549
+msgid "Couldn't open PC records file\n"
+msgstr "PC 자료 파일을 열 수 없음\n"
+
+#: libplugin.c:710 libplugin.c:802 utils.c:1468 utils.c:1480
+#, c-format
+msgid "Error opening file: %s\n"
+msgstr "파일 열기 오류: %s\n"
+
+#: libplugin.c:739
+msgid "Error reading PC file 1\n"
+msgstr "PC 파일을 열 때 오류 1\n"
+
+#: libplugin.c:755
+msgid "Error reading PC file 2\n"
+msgstr "PC 파일을 열 때 오류 2\n"
+
+#: libplugin.c:927
+#, c-format
+msgid "Error reading %s 5\n"
+msgstr "파일 읽기 오류 %s 5\n"
+
+#: log.c:95
+#, c-format
+msgid "Unable to open log file, giving up.\n"
+msgstr "기록 파일을 열 수 없음, 포기.\n"
+
+#: log.c:102
+#, c-format
+msgid "Unable to open log file\n"
+msgstr "기폭 파일을 열 수 없음\n"
+
+#: memo_gui.c:318
+msgid "Memo text > 65535, truncating\n"
+msgstr "메모 텍스크 크기 > 65535, 잘라냄\n"
+
+#: memo_gui.c:348
+#, c-format
+msgid "Imported Memo %s\n"
+msgstr "메모 들여오기 %s\n"
+
+#: memo_gui.c:419
+msgid "File doesn't appear to be memopad.dat format\n"
+msgstr "파일이 memopad.dat 형식이 아닌듯함\n"
+
+#: memo_gui.c:568 memo_gui.c:583
+#, c-format
+msgid "Can't export memo %d\n"
+msgstr "메모 %d를 내보내기 할 수 없음\n"
+
+#: monthview_gui.c:494
+msgid "Monthly View"
+msgstr "월별 보기"
+
+#: password.c:304
+msgid "Palm Password"
+msgstr "팜 비밀번호"
+
+#: password.c:335
+msgid "Incorrect, Reenter PalmOS Password"
+msgstr "틀렸음, 팜 비밀번호를 다시 입력하세요"
+
+#: password.c:337
+msgid "Enter PalmOS Password"
+msgstr "팜 비밀번호를 입력하세요"
+
+#: plugins.c:88 plugins.c:200 restore_gui.c:133
+msgid "infinite loop"
+msgstr "무한 루프"
+
+#: plugins.c:213
+#, c-format
+msgid "While reading %s%s line 1:[%s]\n"
+msgstr "%s%s 라인 1을 읽는 동안: [%s]\n"
+
+#: plugins.c:214
+msgid "Wrong Version\n"
+msgstr "잘못된 버전\n"
+
+#: plugins.c:215
+msgid "Check preferences->conduits\n"
+msgstr "선택사항->컨듀잇을 점검하세요\n"
+
+#: plugins.c:271
+#, c-format
+msgid ""
+"Open failed on plugin [%s]\n"
+" error [%s]\n"
+msgstr ""
+"플러그인 [%s]를 여는데 실패\n"
+"오류 [%s]\n"
+
+#: plugins.c:288 plugins.c:314
+#, c-format
+msgid " plugin is invalid: [%s]\n"
+msgstr " 플러그인이 타당하지 않음: [%s]\n"
+
+#: plugins.c:296
+#, c-format
+msgid "Plugin:[%s]\n"
+msgstr "플러기인: [%s]\n"
+
+#: plugins.c:297
+#, c-format
+msgid "This plugin is version (%d.%d).\n"
+msgstr "이 플러그인의 버전 (%d.%d).\n"
+
+#: plugins.c:299
+msgid "It is too old to work with this version of J-Pilot.\n"
+msgstr "J-Pilot 버전에 비추어 작동하기 너무 오래되었습니다.\n"
+
+#: prefs.c:391
+msgid "%B %d, %Y"
+msgstr "%B %d, %Y"
+
+#: prefs.c:392
+msgid "%d %B %Y"
+msgstr "%d %B %Y"
+
+#: prefs.c:393
+msgid "%d. %B %Y"
+msgstr "%d. %B %Y"
+
+#: prefs.c:394
+msgid "%d %B, %Y"
+msgstr "%d %B, %Y"
+
+#: prefs.c:395
+msgid "%Y. %B. %d"
+msgstr "%Y. %B. %d"
+
+#: prefs.c:396
+msgid "%Y %B %d"
+msgstr "%Y %B %d"
+
+#: prefs_gui.c:334
+msgid "Preferences"
+msgstr "선택사항"
+
+#: prefs_gui.c:364
+msgid "Locale"
+msgstr "로케일"
+
+#: prefs_gui.c:366
+msgid "Settings"
+msgstr "세팅"
+
+#: prefs_gui.c:368
+msgid "Datebook"
+msgstr "일정관리"
+
+#: prefs_gui.c:372
+msgid "ToDo"
+msgstr "할일"
+
+#: prefs_gui.c:374
+msgid "Memo"
+msgstr "메모"
+
+#: prefs_gui.c:376
+msgid "Alarms"
+msgstr "알람"
+
+#: prefs_gui.c:378
+msgid "Conduits"
+msgstr "컨듀잇"
+
+#: prefs_gui.c:403
+msgid "Short date format "
+msgstr "단축 날짜 형식 "
+
+#: prefs_gui.c:416
+msgid "Long date format "
+msgstr "긴 날짜 형식 "
+
+#: prefs_gui.c:429
+msgid "Time format "
+msgstr "시간 형식 "
+
+#: prefs_gui.c:443
+msgid "The first day of the week is "
+msgstr "한주의 시작 요일 "
+
+#: prefs_gui.c:464
+msgid "My GTK colors file is "
+msgstr "내 GTK 색 파일 "
+
+#: prefs_gui.c:477
+msgid "Serial Port (/dev/ttyS0, /dev/pilot)"
+msgstr "직렬 포트 (/dev/ttyS0, /dev/pilot)"
+
+#: prefs_gui.c:494
+msgid "Serial Rate (Does not affect USB)"
+msgstr "직렬 속도 (USB에 영향을 미치지 않음)"
+
+#: prefs_gui.c:507
+msgid "Number of backups to be archived"
+msgstr "백업 숫자"
+
+#: prefs_gui.c:524
+msgid "Show deleted records (default NO)"
+msgstr "삭제 자료 보여주기 (기본값 아니오)"
+
+#: prefs_gui.c:528
+msgid "Show modified deleted records (default NO)"
+msgstr "변경된 삭제 자료 보여주기 (기본값 아니오)"
+
+#: prefs_gui.c:533
+msgid "Ask confirmation for file installation (J-Pilot -> PDA) (default YES)"
+msgstr "파일 설치 (J-Pilot -> PDA) 할 때 확인 (기본값 예)"
+
+#: prefs_gui.c:537
+msgid "Show popup tooltips (default YES)"
+msgstr "팝업 도움말 보여주기 (기본값 예)"
+
+#: prefs_gui.c:545
+msgid "Highlight calendar days with appointments"
+msgstr "약속있는 날짜를 달력에서 강조하기"
+
+#: prefs_gui.c:551
+msgid "Use DateBk note tags"
+msgstr "DateBk 노트 택 사용하기"
+
+#: prefs_gui.c:554
+msgid "DateBk support disabled in this build"
+msgstr "이 버전에서는 DateBk 지원을 하지 않음"
+
+#: prefs_gui.c:560
+msgid "Annotate today in day, week, and month views"
+msgstr "일/주/월간 보기에서 오늘을 주석처리"
+
+#: prefs_gui.c:565
+msgid "Append years on anniversaries in day, week, and month views"
+msgstr "일/주/월간 보기에서 매년 기념일을 추가"
+
+#: prefs_gui.c:577
+msgid "Mail Command"
+msgstr "메일 명령"
+
+#: prefs_gui.c:591
+#, c-format
+msgid "%s is replaced by the e-mail address"
+msgstr "%s는 이메일 주소로 대치됨"
+
+#: prefs_gui.c:599
+msgid "Hide Completed ToDos"
+msgstr "완료된 할일 숨기기"
+
+#: prefs_gui.c:603
+msgid "Hide ToDos not yet due"
+msgstr "아직 마감일이 아닌 할일 숨기기"
+
+#: prefs_gui.c:607
+msgid "Record Completion Date"
+msgstr "자료 완료 날짜"
+
+#: prefs_gui.c:612
+msgid "Use Manana database"
+msgstr "Manana 데이타베이스 사용"
+
+#: prefs_gui.c:620
+msgid "Use default number of days due"
+msgstr "마감날짜로 기본값 사용"
+
+#: prefs_gui.c:640
+msgid "Use Memo32 (pedit32)"
+msgstr "Memo32 사용 (pedit32)"
+
+#: prefs_gui.c:647
+msgid "Open alarm windows for appointment reminders"
+msgstr "약속 환기를 위해 알람 창 열기"
+
+#: prefs_gui.c:651
+msgid "Execute this command"
+msgstr "이 명령을 수행"
+
+#: prefs_gui.c:655
+msgid "WARNING: executing arbitrary shell commands can be dangerous!!!"
+msgstr "경고: 임의의 쉘 명령을 수행하는 것은 위험할 수 있습니다!!!"
+
+#: prefs_gui.c:663
+msgid "Alarm Command"
+msgstr "알람 명령"
+
+#: prefs_gui.c:676
+msgid "%t is replaced with the alarm time"
+msgstr "%t는 알람시간으로 대치됨"
+
+#: prefs_gui.c:680
+#, c-format
+msgid "%d is replaced with the alarm date"
+msgstr "%d는 알람 날짜로 대치됨"
+
+#: prefs_gui.c:685
+msgid "%D is replaced with the alarm description"
+msgstr "%D는 알람 내용 설명으로 대치됨"
+
+#: prefs_gui.c:689
+msgid "%N is replaced with the alarm note"
+msgstr "%N은 알람 노트로 대치됨"
+
+#: prefs_gui.c:693
+msgid "%D (description substitution) is disabled in this build"
+msgstr "%D (기술 대치)는 현재의 프로그램에서 지원하지 않음"
+
+#: prefs_gui.c:697
+msgid "%N (note substitution) is disabled in this build"
+msgstr "%N (노트 대치)는 현재의 프로그램에서 지원하지 않음"
+
+#: prefs_gui.c:706
+msgid "Sync datebook"
+msgstr "일정관리 싱크"
+
+#: prefs_gui.c:710
+msgid "Sync address"
+msgstr "주소록 싱크"
+
+#: prefs_gui.c:714
+msgid "Sync todo"
+msgstr "할일 싱크"
+
+#: prefs_gui.c:718
+msgid "Sync memo"
+msgstr "메모 싱크"
+
+#: prefs_gui.c:722
+msgid "Sync memo32 (pedit32)"
+msgstr "메모32 싱크 (pedit32)"
+
+#: prefs_gui.c:727
+msgid "Sync Manana"
+msgstr "Manana 싱크"
+
+#: prefs_gui.c:733
+msgid "Use J-OS (Not Japanese PalmOS:WorkPad/CLIE)"
+msgstr "J-OS (일본판 팜이 아님:WorkPad/CLIE) 사용하기"
+
+#: prefs_gui.c:746
+#, c-format
+msgid "Sync %s (%s)"
+msgstr "싱크 %s (%s)"
+
+#: print_gui.c:178
+msgid "Print Options"
+msgstr "인쇄 선택사항"
+
+#: print_gui.c:192
+msgid "Paper Size"
+msgstr "종이 크기"
+
+#: print_gui.c:209
+msgid "Daily Printout"
+msgstr "일별 인쇄"
+
+#: print_gui.c:215
+msgid "Weekly Printout"
+msgstr "주별 인쇄"
+
+#: print_gui.c:221
+msgid "Monthly Printout"
+msgstr "월별 인쇄"
+
+#: print_gui.c:261
+msgid "One record"
+msgstr "자료 하나"
+
+#: print_gui.c:265
+msgid "All records in this category"
+msgstr "이 범주의 모든 자료"
+
+#: print_gui.c:269
+msgid "Print all records"
+msgstr "모든 자료 인쇄"
+
+#: print_gui.c:292
+msgid "One record per page"
+msgstr "쪽당 하나의 자료"
+
+#: print_gui.c:308
+msgid " Blank lines between each record"
+msgstr " 각 자료 사이에 빈 줄"
+
+#: print_gui.c:318
+msgid "Print Command (e.g. lpr, or cat > file.ps)"
+msgstr "인쇄 명령 (예. lpr, 혹은 cat > file.ps)"
+
+#: restore_gui.c:68 restore_gui.c:229
+msgid "Restore Handheld"
+msgstr "팜 복원"
+
+#: restore_gui.c:249
+msgid "To restore your handheld:"
+msgstr "당신의 팜을 복원하기 위해:"
+
+#: restore_gui.c:252
+msgid ""
+"1. Choose all the applications you wish to restore.  The default is all."
+msgstr ""
+"1. 복원하기를 원하는 모든 응용프로그램을 선택. 기본값은 모두."
+
+#: restore_gui.c:255
+msgid "2. Enter the User Name and User ID."
+msgstr "2. 사용자 이름과 사용자 ID를 입력"
+
+#: restore_gui.c:258
+msgid "3. Press the OK button."
+msgstr "3. 확인 버튼 누르기"
+
+#: restore_gui.c:261
+msgid "This will overwrite data that is currently on the handheld."
+msgstr "이것은 현재 팜에 있는 자료를 덮어쓸 것입니다."
+
+#: restore_gui.c:282
+msgid "User Name"
+msgstr "사용자 이름"
+
+#: restore_gui.c:295
+msgid "User ID"
+msgstr "사용자 ID"
+
+#: search_gui.c:118
+msgid "datebook"
+msgstr "일정관리"
+
+#: search_gui.c:199
+msgid "address"
+msgstr "주소록"
+
+#: search_gui.c:265
+msgid "todo"
+msgstr "할일"
+
+#: search_gui.c:319
+msgid "memo"
+msgstr "메모"
+
+#: search_gui.c:375
+msgid "plugin ?"
+msgstr "플러그인 ?"
+
+#: search_gui.c:447
+msgid "No records found"
+msgstr "발견된 자료가 없음"
+
+#: search_gui.c:525 search_gui.c:585
+msgid "Search"
+msgstr "찾기"
+
+#: search_gui.c:541
+msgid "Search for: "
+msgstr "찾기: "
+
+#: search_gui.c:548
+msgid "Case Sensitive"
+msgstr "대소문자 구분"
+
+#: sync.c:139
+msgid "open lock file failed\n"
+msgstr "잠금파일 열기 실패\n"
+
+#: sync.c:152
+msgid "lock failed\n"
+msgstr "잠금 실패\n"
+
+#: sync.c:155
+#, c-format
+msgid "sync file is locked by pid %d\n"
+msgstr "싱크 파일이 pid %d에 의해 잠겨짐\n"
+
+#: sync.c:189
+msgid "unlock failed\n"
+msgstr "잠금해제 실패\n"
+
+#: sync.c:192
+#, c-format
+msgid "sync is locked by pid %d\n"
+msgstr "싱크가 pid %d에 의해 잠김\n"
+
+#: sync.c:244
+#, c-format
+msgid "%s: press the hotsync button on the cradle or \"kill %d\"\n"
+msgstr "%s: 크레이들의 핫싱크 버튼을 누르거나 \"kill %d\"를 실행\n"
+
+#: sync.c:297
+#, c-format
+msgid "Exiting with status %s\n"
+msgstr "%s 상태로 끝내기\n"
+
+#: sync.c:298
+msgid "Finished\n"
+msgstr "종료됨\n"
+
+#: sync.c:432
+msgid "Finished installing user information.\n"
+msgstr "사용자 정보 설치하기가 종료됨.\n"
+
+#: sync.c:457 sync.c:574
+msgid "Check your serial port and settings\n"
+msgstr "직렬포트와 세팅을 점검하세요\n"
+
+#: sync.c:672
+#, c-format
+msgid " Syncing on device %s\n"
+msgstr " %s 장치에서 싱크중\n"
+
+#: sync.c:673
+msgid " Press the HotSync button now\n"
+msgstr " 지금 핫싱크 버튼을 누르세요\n"
+
+#: sync.c:725 sync.c:747 sync.c:769
+#, c-format
+msgid "Last Synced Username-->\"%s\"\n"
+msgstr "최근 싱크한 사용자이름-->\"%s\"\n"
+
+#: sync.c:726 sync.c:748 sync.c:770
+#, c-format
+msgid "Last Synced UserID-->\"%d\"\n"
+msgstr "최근 싱크한 사용자 ID-->\"%d\"\n"
+
+#: sync.c:727 sync.c:749 sync.c:771
+#, c-format
+msgid " This Username-->\"%s\"\n"
+msgstr " 이 사용자이름-->\"%s\"\n"
+
+#: sync.c:728 sync.c:750 sync.c:772
+#, c-format
+msgid " This User ID-->%d\n"
+msgstr " 이 사용자 ID-->%d\n"
+
+#: sync.c:793
+#, c-format
+msgid "Username is \"%s\"\n"
+msgstr "사용자 이름은 \"%s\"\n"
+
+#: sync.c:794
+#, c-format
+msgid "User ID is %d\n"
+msgstr "사용자 ID는 %d\n"
+
+#: sync.c:796 sync.c:802
+#, c-format
+msgid "lastSyncPC = %d\n"
+msgstr "최근 싱크한 PC = %d\n"
+
+#: sync.c:797
+#, c-format
+msgid "This PC = %lu\n"
+msgstr "이 PC = %lu\n"
+
+#: sync.c:798
+#, c-format
+msgid "Last Username = [%s]\n"
+msgstr "최근 사용자이름 = [%s]\n"
+
+#: sync.c:799
+#, c-format
+msgid "Last UserID = %d\n"
+msgstr "최근 사용자ID = %d\n"
+
+#: sync.c:800
+#, c-format
+msgid "Username = [%s]\n"
+msgstr "사용자이름 = [%s]\n"
+
+#: sync.c:801
+#, c-format
+msgid "userID = %d\n"
+msgstr "사용자ID = %d\n"
+
+#: sync.c:819
+msgid "Sync canceled\n"
+msgstr "싱크 취소\n"
+
+#: sync.c:841
+msgid "Finished restoring handheld.\n"
+msgstr "팜 복원 완료.\n"
+
+#: sync.c:842
+msgid "You may need to sync to update J-Pilot.\n"
+msgstr "J-Pilot을 업데이트하기 위해 싱크할 필요가 있습니다.\n"
+
+#: sync.c:872
+msgid "Doing a fast sync.\n"
+msgstr "빠른 싱크 수행중.\n"
+
+#: sync.c:911
+msgid "Doing a slow sync.\n"
+msgstr "느린 싱크 수행중.\n"
+
+#: sync.c:1012
+msgid "Thank you for using J-Pilot."
+msgstr "J-Pilot을 사용해주셔서 감사합니다."
+
+#: sync.c:1054
+msgid "Finished.\n"
+msgstr "완료.\n"
+
+#: sync.c:1090 sync.c:2612
+#, c-format
+msgid "Syncing %s\n"
+msgstr "%s 싱크중\n"
+
+#: sync.c:1096 sync.c:2276 sync.c:2618
+#, c-format
+msgid "Wrote an %s record."
+msgstr "%s 자료를 기록."
+
+#: sync.c:1098 sync.c:2278 sync.c:2620
+#, c-format
+msgid "Writing an %s record failed."
+msgstr "%s 자료 기록 실패"
+
+#: sync.c:1100 sync.c:2280 sync.c:2622
+#, c-format
+msgid "Deleting an %s record failed."
+msgstr "%s 자료 삭제 실패"
+
+#: sync.c:1102 sync.c:2282 sync.c:2624
+#, c-format
+msgid "Deleted an %s record."
+msgstr "%s 자료 삭제됨"
+
+#: sync.c:1105 sync.c:2285 sync.c:2627
+#, c-format
+msgid "Wrote a %s record."
+msgstr "%s 자료 기록됨"
+
+#: sync.c:1107 sync.c:2287 sync.c:2629
+#, c-format
+msgid "Writing a %s record failed."
+msgstr "%s 자료 기록 실패"
+
+#: sync.c:1109 sync.c:2289 sync.c:2631
+#, c-format
+msgid "Deleting a %s record failed."
+msgstr "%s 자료 삭제 실패"
+
+#: sync.c:1111 sync.c:2291 sync.c:2633
+#, c-format
+msgid "Deleted a %s record."
+msgstr "%s 자료 삭제됨"
+
+#: sync.c:1131
+#, c-format
+msgid "number of records = %d\n"
+msgstr "자료 수 = %d\n"
+
+#: sync.c:1258 sync.c:2436
+msgid ""
+"dlp_DeleteRecord failed\n"
+"This could be because the record was already deleted on the Palm\n"
+msgstr ""
+"dlp_자료삭제(_D) 실패\n"
+"자료가 이미 팜에서 삭제되었기 때문일 수 있습니다.\n"
+
+#: sync.c:1357 sync.c:1770
+#, c-format
+msgid "%s (Creator ID '%s') is up to date, fetch skipped.\n"
+msgstr "%s (생성 ID '%s') 업데이트 중, 가져오기는 건너뜀.\n"
+
+#: sync.c:1361 sync.c:1774
+#, c-format
+msgid "Fetching '%s' (Creator ID '%s')... "
+msgstr "'%s' 가져오는 중 (생성 ID '%s')... "
+
+#: sync.c:1368 sync.c:1780
+#, c-format
+msgid "Failed, unable to create file %s\n"
+msgstr "실패, %s 파일을 생성할 수 없습니다.\n"
+
+#: sync.c:1379 sync.c:1789
+#, c-format
+msgid "Failed, unable to back up database %s\n"
+msgstr "실패, %s 데이터베이스를 백업할 수 없습니다.\n"
+
+#: sync.c:1383 sync.c:1793 sync.c:1975
+msgid "OK\n"
+msgstr "확인\n"
+
+#: sync.c:1686
+#, c-format
+msgid "Skipping %s (Creator ID '%s')\n"
+msgstr "%s 건너뜀 (생성 ID '%s')\n"
+
+#: sync.c:1861
+#, c-format
+msgid "Installing %s "
+msgstr "%s 설치 중 "
+
+#: sync.c:1867
+#, c-format
+msgid ""
+"\n"
+"Unable to open file: '%s': %s!\n"
+msgstr ""
+"\n"
+"파일을 열 수 없습니다: '%s': %s!\n"
+
+#: sync.c:1871
+#, c-format
+msgid ""
+"\n"
+"Unable to sync file: '%s': file corrupted?\n"
+msgstr ""
+"\n"
+"파일을 싱크할 수 없습니다: '%s': 깨진 파일?\n"
+
+#: sync.c:1883
+#, c-format
+msgid "(Creator ID is '%s')..."
+msgstr "(생성 ID는 '%s')..."
+
+#: sync.c:1903 sync.c:1916 sync.c:1931 sync.c:1944
+#, c-format
+msgid ""
+"\n"
+"Unable to open file: %s\n"
+msgstr ""
+"\n"
+"파일을 열수 없습니다: %s\n"
+
+#: sync.c:1960
+#, c-format
+msgid "Install %s failed"
+msgstr "%s 설치 실패"
+
+#: sync.c:1964
+msgid "Failed.\n"
+msgstr "실패.\n"
+
+#: sync.c:1971
+#, c-format
+msgid "Installed %s "
+msgstr "%s 설치됨 "
+
+#: sync.c:1995 sync.c:2001
+#, c-format
+msgid "Unable to open file: %s%s\n"
+msgstr "파일을 열 수 없습니다: %s%s\n"
+
+#: sync.c:2181
+msgid "Unable to read home dir\n"
+msgstr "홈디렉토리를 읽을 수 없습니다\n"
+
+#: sync.c:2710
+#, c-format
+msgid "palm: number of records = %d\n"
+msgstr "팜: 자료 수 = %d\n"
+
+#: sync.c:2711
+#, c-format
+msgid "disk: number of records = %d\n"
+msgstr "디스크: 자료 수 = %d\n"
+
+#: sync.c:2889
+#, c-format
+msgid "%s:%d Error getting app info %s\n"
+msgstr "%s:%d %s 프로그램 정보를 가져오는 중 오류\n"
+
+#: sync.c:2895 sync.c:2937
+#, c-format
+msgid "%s:%d Error unpacking app info %s\n"
+msgstr "%s:%d %s 프로그램 정보 인출 중 오류\n"
+
+#: sync.c:2917 sync.c:2929
+#, c-format
+msgid "Error reading appinfo block for %s\n"
+msgstr "%s 프로그램 정보 블럭을 읽는 중 오류\n"
+
+#: sync.c:3077 sync.c:3081
+#, c-format
+msgid "Could not add category %s to remote.\n"
+msgstr "원격으로 %s 범주를 추가할 수 없습니다.\n"
+
+#: sync.c:3078 sync.c:3084
+msgid "Too many categories on remote.\n"
+msgstr "원격상에 너무 많은 범주가 있습니다.\n"
+
+#: sync.c:3079 sync.c:3087
+#, c-format
+msgid "All records on desktop in %s will be moved to %s.\n"
+msgstr "%s 의 데스크탑상 모든 자료가 %s로 옮겨질 것입니다.\n"
+
+#: todo.c:248
+#, c-format
+msgid "ToDo description text > %d, truncating to %d\n"
+msgstr "할일 설명 택스트 > %d, %d까지 잘려짐\n"
+
+#: todo.c:255
+#, c-format
+msgid "ToDo note text > %d, truncating to %d\n"
+msgstr "할일 노트 텍스트 > %d, %d까지 잘려짐\n"
+
+#: todo.c:380
+#, c-format
+msgid "%s:%d Error reading category info %s\n"
+msgstr "%s:%d %s 범주 정보 읽을 때 오류\n"
+
+#: todo_gui.c:154
+msgid "Due Date"
+msgstr "완료 날짜"
+
+#: todo_gui.c:561
+msgid "File doesn't appear to be todo.dat format\n"
+msgstr "파일이 todo.dat 형식이 아닌듯함\n"
+
+#: todo_gui.c:720 todo_gui.c:735
+#, c-format
+msgid "Can't export todo %d\n"
+msgstr "할일 %d를 내보내기 할 수 없음\n"
+
+#: todo_gui.c:1556
+msgid "Priority out of range\n"
+msgstr "우선순위가 범위 밖임\n"
+
+#: todo_gui.c:1772
+#, c-format
+msgid "No date"
+msgstr "날짜 없음"
+
+#: todo_gui.c:2223
+msgid "Completed"
+msgstr "완료"
+
+#: todo_gui.c:2231
+msgid "Priority: "
+msgstr "우선순위: "
+
+#: todo_gui.c:2251
+msgid "Date Due:"
+msgstr "약속 날짜:"
+
+#: todo_gui.c:2313 Expense/expense.c:1862 KeyRing/keyring.c:2052
+msgid "Note"
+msgstr "노트"
+
+#: utils.c:76
+msgid " -v displays version and compile options and exits.\n"
+msgstr "-v 버전과 컴파일 옵션을 표시하고 종료.\n"
+
+#: utils.c:78
+msgid " -d displays debug info to stdout.\n"
+msgstr "-d 디버그 정보를 표준출력으로 표시.\n"
+
+#: utils.c:79
+msgid " -p skips loading plugins.\n"
+msgstr " -p 플러그인 로딩을 건너뜀.\n"
+
+#: utils.c:80
+msgid " -a ignores missed alarms since the last time program was run.\n"
+msgstr " -a 최근 프로그램이 실행된 이래로 놓친 알람을 무시.\n"
+
+#: utils.c:81
+msgid " -A ignores all alarms past and future.\n"
+msgstr " -A 모든 과거와 미래의 알람을 무시.\n"
+
+#: utils.c:82
+msgid " -i makes program iconify itself upon launch.\n"
+msgstr " -i 프로그램을 실행시키자마자 아이콘상태로 만듬.\n"
+
+#: utils.c:83
+msgid " The PILOTPORT, and PILOTRATE env variables are used to specify\n"
+msgstr " PILOTPORT와 PILOTRATE 환경정보를 이용할 수 있음\n"
+
+#: utils.c:84
+msgid " which port to sync on, and at what speed.\n"
+msgstr " 어느 포트로 어느 정도 속도로 싱크할 것인지\n"
+
+#: utils.c:85
+msgid " If PILOTPORT is not set then it defaults to /dev/pilot.\n"
+msgstr " PILOTPORT가 정해져있지 않다면 기본값은 /dev/pilot임.\n"
+
+#: utils.c:111
+msgid "Date compiled"
+msgstr "날짜 컴파일됨"
+
+#: utils.c:112
+msgid "Compiled with these options:"
+msgstr "이 옵션들을 가지고 컴파일됨:"
+
+#: utils.c:114
+msgid "Installed Path"
+msgstr "설치된 패스"
+
+#: utils.c:116
+msgid "pilot-link version"
+msgstr "pilot-link 버전"
+
+#: utils.c:120
+msgid "USB support"
+msgstr "USB 지원"
+
+#: utils.c:122 utils.c:128 utils.c:134 utils.c:140 utils.c:146 utils.c:152
+#: utils.c:158
+msgid "yes"
+msgstr "예"
+
+#: utils.c:124 utils.c:130 utils.c:136 utils.c:142 utils.c:148 utils.c:154
+#: utils.c:160
+msgid "no"
+msgstr "아니오"
+
+#: utils.c:126
+msgid "Private record support"
+msgstr "보안 자료 지원"
+
+#: utils.c:132
+msgid "Datebk support"
+msgstr "일정관리 지원"
+
+#: utils.c:138
+msgid "Plugin support"
+msgstr "플러그인 지원"
+
+#: utils.c:144
+msgid "Manana support"
+msgstr "Manana 지원"
+
+#: utils.c:150
+msgid "NLS support (foreign languages)"
+msgstr "NLS 지원 (외국어)"
+
+#: utils.c:156
+msgid "GTK2 support"
+msgstr "GTK2 지원"
+
+#: utils.c:199
+#, c-format
+msgid "Today is %A, %x %X"
+msgstr "오늘은 %A, %x %X"
+
+#: utils.c:201
+#, c-format
+msgid "Today is %%A, %s %s"
+msgstr "오늘은 %%A, %s %s"
+
+#: utils.c:1097
+msgid "Today"
+msgstr "오늘"
+
+#: utils.c:1292
+msgid "Save Changed Record?"
+msgstr "바뀐 자료를 저장하시겠습니까?"
+
+#: utils.c:1293
+msgid "Do you want to save the changes to this record?"
+msgstr "바뀐 내용을 이 자료에 저장하시겠습니까?"
+
+#: utils.c:1298
+msgid "Save New Record?"
+msgstr "새 자료를 저장하시겠습니까?"
+
+#: utils.c:1299
+msgid "Do you want to save this new record?"
+msgstr "이 새 자료를 저장하시겠습니까?"
+
+#: utils.c:1319 KeyRing/keyring.c:1462
+msgid "Can't get HOME environment variable\n"
+msgstr "홈 환경 정보를 얻을 수 없습니다\n"
+
+#: utils.c:1326
+msgid "Your HOME environment variable is too long for me\n"
+msgstr "당신의 홈 환경정보는 너무 깁니다.\n"
+
+#: utils.c:1351 utils.c:1355
+#, c-format
+msgid "Can't create directory %s\n"
+msgstr "%s 디렉토리를 만들 수 없습니다.\n"
+
+#: utils.c:1361
+#, c-format
+msgid ""
+"%s doesn't appear to be a directory.\n"
+"I need it to be.\n"
+msgstr ""
+"%s는 디렉토리가 아닌 듯함.\n"
+"디렉토리여야 할 필요가 있음.\n"
+
+#: utils.c:1369
+#, c-format
+msgid "I can't write files in directory %s\n"
+msgstr "%s 디렉토리에 파일을 쓸 수 없습니다.\n"
+
+#: utils.c:1427 utils.c:1436
+msgid "Error writing PC header to file: next_id\n"
+msgstr "PC 헤더를 파일에 쓰는 중 에러: next_id\n"
+
+#: utils.c:1432
+msgid "Error writing next id to file: next_id\n"
+msgstr "다음 id를 파일에 쓰는 중 에러: next_id\n"
+
+#: utils.c:1449
+msgid "Error opening file: next_id\n"
+msgstr "파일을 여는 중 에러: next_id\n"
+
+#: utils.c:1617
+#, c-format
+msgid "Couldn't find empty DB file %s: %s\n"
+msgstr "빈 DB파일 %s를(을) 찾을 수 없음: %s\n"
+
+#: utils.c:1620
+msgid " may not be installed.\n"
+msgstr " 설치될 수 없는 듯.\n"
+
+#: utils.c:1803
+msgid "Error reading file"
+msgstr "파일 읽기 오류"
+
+#: utils.c:2481
+msgid "PC ID is 0.\n"
+msgstr "PC ID는 0.\n"
+
+#: utils.c:2482
+#, c-format
+msgid "I generated a new PC ID.  It is %lu\n"
+msgstr "새 PC ID가 생성되었습니다. %lu\n"
+
+#: weekview_gui.c:320
+msgid "Weekly View"
+msgstr "주별 보기"
+
+#: Expense/expense.c:99
+msgid "Australia"
+msgstr "오스트레일리아"
+
+#: Expense/expense.c:100
+msgid "Austria"
+msgstr "오스트리아"
+
+#: Expense/expense.c:101
+msgid "Belgium"
+msgstr "벨기에"
+
+#: Expense/expense.c:102
+msgid "Brazil"
+msgstr "브라질"
+
+#: Expense/expense.c:103
+msgid "Canada"
+msgstr "캐나다"
+
+#: Expense/expense.c:104
+msgid "Denmark"
+msgstr "덴마크"
+
+#: Expense/expense.c:105
+msgid "EU (Euro)"
+msgstr "EU (유로)"
+
+#: Expense/expense.c:106
+msgid "Finland"
+msgstr "핀란드"
+
+#: Expense/expense.c:107
+msgid "France"
+msgstr "프랑스"
+
+#: Expense/expense.c:108
+msgid "Germany"
+msgstr "독일"
+
+#: Expense/expense.c:109
+msgid "Hong Kong"
+msgstr "홍콩"
+
+#: Expense/expense.c:110
+msgid "Iceland"
+msgstr "아이슬란드"
+
+#: Expense/expense.c:111
+msgid "India"
+msgstr "인도"
+
+#: Expense/expense.c:112
+msgid "Indonesia"
+msgstr "인도네시아"
+
+#: Expense/expense.c:113
+msgid "Ireland"
+msgstr "아일랜드"
+
+#: Expense/expense.c:114
+msgid "Italy"
+msgstr "이태리"
+
+#: Expense/expense.c:115
+msgid "Japan"
+msgstr "일본"
+
+#: Expense/expense.c:116
+msgid "Korea"
+msgstr "한국"
+
+#: Expense/expense.c:117
+msgid "Luxembourg"
+msgstr "룩셈부르그"
+
+#: Expense/expense.c:118
+msgid "Malaysia"
+msgstr "말레이지아"
+
+#: Expense/expense.c:119
+msgid "Mexico"
+msgstr "멕시코"
+
+#: Expense/expense.c:120
+msgid "Netherlands"
+msgstr "네덜란드"
+
+#: Expense/expense.c:121
+msgid "New Zealand"
+msgstr "뉴질랜드"
+
+#: Expense/expense.c:122
+msgid "Norway"
+msgstr "노르웨이"
+
+#: Expense/expense.c:123
+msgid "P.R.C."
+msgstr "P.R.C."
+
+#: Expense/expense.c:124
+msgid "Philippines"
+msgstr "필리핀"
+
+#: Expense/expense.c:125
+msgid "Singapore"
+msgstr "싱가폴"
+
+#: Expense/expense.c:126
+msgid "Spain"
+msgstr "스페인"
+
+#: Expense/expense.c:127
+msgid "Sweden"
+msgstr "스웨덴"
+
+#: Expense/expense.c:128
+msgid "Switzerland"
+msgstr "스위질랜드"
+
+#: Expense/expense.c:129
+msgid "Taiwan"
+msgstr "대만"
+
+#: Expense/expense.c:130
+msgid "Thailand"
+msgstr "태국"
+
+#: Expense/expense.c:131
+msgid "United Kingdom"
+msgstr "영국"
+
+#: Expense/expense.c:132
+msgid "United States"
+msgstr "미국"
+
+#: Expense/expense.c:505 Expense/expense.c:516
+msgid "Expense"
+msgstr "가계부"
+
+#: Expense/expense.c:537 Expense/expense.c:1410
+msgid "Airfare"
+msgstr "항공료"
+
+#: Expense/expense.c:539 Expense/expense.c:1411
+msgid "Breakfast"
+msgstr "아침식사"
+
+#: Expense/expense.c:541 Expense/expense.c:1412
+msgid "Bus"
+msgstr "버스"
+
+#: Expense/expense.c:543 Expense/expense.c:1413
+msgid "BusinessMeals"
+msgstr "사업차 식사"
+
+#: Expense/expense.c:545 Expense/expense.c:1414
+msgid "CarRental"
+msgstr "자동차 렌트"
+
+#: Expense/expense.c:547 Expense/expense.c:1415
+msgid "Dinner"
+msgstr "저녁"
+
+#: Expense/expense.c:549 Expense/expense.c:1416
+msgid "Entertainment"
+msgstr "오락"
+
+#: Expense/expense.c:551 Expense/expense.c:1417
+msgid "Fax"
+msgstr "팩스"
+
+#: Expense/expense.c:553 Expense/expense.c:1418
+msgid "Gas"
+msgstr "기름"
+
+#: Expense/expense.c:555 Expense/expense.c:1419
+msgid "Gifts"
+msgstr "선물"
+
+#: Expense/expense.c:557 Expense/expense.c:1420
+msgid "Hotel"
+msgstr "호텔"
+
+#: Expense/expense.c:559 Expense/expense.c:1421
+msgid "Incidentals"
+msgstr "예비비"
+
+#: Expense/expense.c:561 Expense/expense.c:1422
+msgid "Laundry"
+msgstr "세탁"
+
+#: Expense/expense.c:563 Expense/expense.c:1423
+msgid "Limo"
+msgstr "리무진"
+
+#: Expense/expense.c:565 Expense/expense.c:1424
+msgid "Lodging"
+msgstr "숙박"
+
+#: Expense/expense.c:567 Expense/expense.c:1425
+msgid "Lunch"
+msgstr "점심"
+
+#: Expense/expense.c:569 Expense/expense.c:1426
+msgid "Mileage"
+msgstr "마일리지"
+
+#: Expense/expense.c:573 Expense/expense.c:1428
+msgid "Parking"
+msgstr "주차"
+
+#: Expense/expense.c:575 Expense/expense.c:1429
+msgid "Postage"
+msgstr "우편"
+
+#: Expense/expense.c:577 Expense/expense.c:1430
+msgid "Snack"
+msgstr "스낵"
+
+#: Expense/expense.c:579 Expense/expense.c:1431
+msgid "Subway"
+msgstr "지하철"
+
+#: Expense/expense.c:581 Expense/expense.c:1432
+msgid "Supplies"
+msgstr "비품"
+
+#: Expense/expense.c:583 Expense/expense.c:1433
+msgid "Taxi"
+msgstr "택시"
+
+#: Expense/expense.c:585 Expense/expense.c:1434
+msgid "Telephone"
+msgstr "전화"
+
+#: Expense/expense.c:587 Expense/expense.c:1435
+msgid "Tips"
+msgstr "팁"
+
+#: Expense/expense.c:589 Expense/expense.c:1436
+msgid "Tolls"
+msgstr "통행료"
+
+#: Expense/expense.c:591 Expense/expense.c:1437
+msgid "Train"
+msgstr "기차"
+
+#: Expense/expense.c:605
+msgid "AmEx"
+msgstr "아멕스"
+
+#: Expense/expense.c:607 Expense/expense.c:1400
+msgid "Cash"
+msgstr "현금"
+
+#: Expense/expense.c:609 Expense/expense.c:1401
+msgid "Check"
+msgstr "체크카드"
+
+#: Expense/expense.c:611
+msgid "CreditCard"
+msgstr "크레딧카드"
+
+#: Expense/expense.c:613
+msgid "MasterCard"
+msgstr "마스터카드"
+
+#: Expense/expense.c:615 Expense/expense.c:1404
+msgid "Prepaid"
+msgstr "선불"
+
+#: Expense/expense.c:617 Expense/expense.c:1405
+msgid "VISA"
+msgstr "비자"
+
+#: Expense/expense.c:1210
+msgid "Expense: Unknown category\n"
+msgstr "가계부: 알려지지 않은 범주\n"
+
+#: Expense/expense.c:1216
+msgid "Expense: Unknown expense type\n"
+msgstr "가계부: 알려지지 않은 비용 유형\n"
+
+#: Expense/expense.c:1222
+msgid "Expense: Unknown payment type\n"
+msgstr "가계부: 알려지지 않은 지불 유형\n"
+
+#: Expense/expense.c:1399
+msgid "American Express"
+msgstr "아메리칸 익스프레스"
+
+#: Expense/expense.c:1402
+msgid "Credit Card"
+msgstr "크레딧 카드"
+
+#: Expense/expense.c:1403
+msgid "Master Card"
+msgstr "마스터 카드"
+
+#: Expense/expense.c:1687
+msgid "Category:"
+msgstr "범주:"
+
+#: Expense/expense.c:1700
+msgid "Type:"
+msgstr "유형:"
+
+#: Expense/expense.c:1713
+msgid "Payment:"
+msgstr "지불:"
+
+#: Expense/expense.c:1726
+msgid "Currency:"
+msgstr "통화:"
+
+#: Expense/expense.c:1739
+msgid "Date:"
+msgstr "날짜:"
+
+#: Expense/expense.c:1756
+msgid "Month:"
+msgstr "월:"
+
+#: Expense/expense.c:1770
+msgid "Day:"
+msgstr "날짜:"
+
+#: Expense/expense.c:1784
+msgid "Year:"
+msgstr "년:"
+
+#: Expense/expense.c:1797
+msgid "Amount:"
+msgstr "양:"
+
+#: Expense/expense.c:1811
+msgid "Vendor:"
+msgstr "벤더:"
+
+#: Expense/expense.c:1825
+msgid "City:"
+msgstr "도시:"
+
+#: Expense/expense.c:1839
+msgid "Attendees"
+msgstr "참가자"
+
+#: KeyRing/keyring.c:190
+msgid "KeyRing: pack_KeyRing(): buf_size too small\n"
+msgstr "키링: pack_KeyRing(): buf_size가 너무 작음\n"
+
+#: KeyRing/keyring.c:1377
+msgid "Incorrect, Reenter KeyRing Password"
+msgstr "부정확한 정보, 키링 비밀번호를 다시 입력하세요"
+
+#: KeyRing/keyring.c:1379
+msgid "Enter a NEW KeyRing Password"
+msgstr "새 키링 비밀번호를 넣으세요"
+
+#: KeyRing/keyring.c:1381
+msgid "Enter KeyRing Password"
+msgstr "키링 비밀번호를 넣으세요"
+
+#: KeyRing/keyring.c:1467
+msgid "Your HOME environment variable is too long(>1024)\n"
+msgstr "홈 환경변수가 너무 깁니다(>1024)\n"
+
+#: KeyRing/keyring.c:1472
+#, c-format
+msgid "KeyRing: file %s not found.\n"
+msgstr "키링: 파일 %s가 발견되지 않음.\n"
+
+#: KeyRing/keyring.c:1473
+msgid "KeyRing: Try Syncing.\n"
+msgstr "키링: 싱크를 시도해보세요.\n"
+
+#: KeyRing/keyring.c:1557 KeyRing/keyring.c:1568
+msgid "KeyRing"
+msgstr "키링"
+
+#: KeyRing/keyring.c:1840
+msgid "Account"
+msgstr "계정"
+
+#: KeyRing/keyring.c:1855
+msgid ""
+"Change\n"
+"KeyRing\n"
+"Password"
+msgstr ""
+"변경\n"
+"키링\n"
+"비밀번호"
+
+#: KeyRing/keyring.c:2025
+msgid "name: "
+msgstr "이름: "
+
+#: KeyRing/keyring.c:2032
+msgid "account: "
+msgstr "계정: "
+
+#: KeyRing/keyring.c:2039
+msgid "password: "
+msgstr "비밀번호: "
+
+#: KeyRing/keyring.c:2046
+msgid "Generate Password"
+msgstr "비밀번호 생성"
