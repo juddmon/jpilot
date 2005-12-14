@@ -48,7 +48,7 @@ dnl ******************************
 AC_PROG_INTLTOOL()
 
 dnl Set of available languages
-ALL_LINGUAS="ca cs da de es fr it ja nl no ru rw sv tr uk vi zh_CN zh_TW"
+ALL_LINGUAS="ca cs da de es fr it ja ko nl no ru rw sv tr uk vi zh_CN zh_TW"
 
 dnl AM_GNU_GETTEXT([])
 AM_GNU_GETTEXT([external])
