@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.125 2005/12/14 21:26:59 rousseau Exp $ */
+/* $Id: datebook_gui.c,v 1.126 2005/12/14 21:32:11 rousseau Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -4190,7 +4190,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    button = gtk_button_new_with_label(_("Week"));
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_weekview), NULL);
-   gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 3);
    gtk_widget_show(button);
    gtk_label_set_pattern(GTK_LABEL(GTK_BIN(button)->child), "_");
    gtk_widget_add_accelerator(GTK_WIDGET(button), "clicked", accel_group, *_("W"),
@@ -4201,7 +4201,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    button = gtk_button_new_with_label(_("Month"));
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_monthview), NULL);
-   gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 3);
    gtk_widget_show(button);
 
    gtk_label_set_pattern(GTK_LABEL(GTK_BIN(button)->child), "_");
