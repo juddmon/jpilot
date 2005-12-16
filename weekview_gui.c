@@ -1,4 +1,4 @@
-/* $Id: weekview_gui.c,v 1.31 2005/12/03 21:47:49 rikster5 Exp $ */
+/* $Id: weekview_gui.c,v 1.32 2005/12/16 20:02:05 rousseau Exp $ */
 
 /*******************************************************************************
  * weekview_gui.c
@@ -294,7 +294,9 @@ static void cb_enter_selected_day(GtkWidget *widget,
 void weekview_gui(struct tm *date_in)
 {
    GtkWidget *button;
+#ifndef ENABLE_GTK2
    GtkWidget *arrow;
+#endif
    GtkWidget *align;
    GtkWidget *vbox, *hbox;
    GtkWidget *hbox_temp;
@@ -337,39 +339,57 @@ void weekview_gui(struct tm *date_in)
    align = gtk_alignment_new(0.5, 0.5, 0, 0);
    gtk_box_pack_start(GTK_BOX(vbox), align, FALSE, FALSE, 0);
 
-   hbox_temp = gtk_hbox_new(FALSE, 0);
+   hbox_temp = gtk_hbutton_box_new();
+   gtk_button_box_set_spacing(GTK_BUTTON_BOX(hbox_temp), 6);
+   gtk_container_set_border_width(GTK_CONTAINER(hbox_temp), 6);
 
    gtk_container_add(GTK_CONTAINER(align), hbox_temp);
 
    /*Make a left arrow for going back a week */
+#ifdef ENABLE_GTK2
+   button = gtk_button_new_from_stock(GTK_STOCK_GO_BACK);
+#else
    button = gtk_button_new();
    arrow = gtk_arrow_new(GTK_ARROW_LEFT, GTK_SHADOW_OUT);
    gtk_container_add(GTK_CONTAINER(button), arrow);
+#endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_week_move),
 		      GINT_TO_POINTER(-1));
-   gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 3);
+   gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
 
-   /* Create a "Quit" button */
+   /* Create a "Close" button */
+#ifdef ENABLE_GTK2
+   button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
+#else
    button = gtk_button_new_with_label(_("Close"));
+#endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_quit), window);
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
 
    /* Create a "Print" button */
+#ifdef ENABLE_GTK2
+   button = gtk_button_new_from_stock(GTK_STOCK_PRINT);
+#else
    button = gtk_button_new_with_label(_("Print"));
+#endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_week_print), window);
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
 
    /*Make a right arrow for going forward a week */
+#ifdef ENABLE_GTK2
+   button = gtk_button_new_from_stock(GTK_STOCK_GO_FORWARD);
+#else
    button = gtk_button_new();
    arrow = gtk_arrow_new(GTK_ARROW_RIGHT, GTK_SHADOW_OUT);
    gtk_container_add(GTK_CONTAINER(button), arrow);
+#endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_week_move),
 		      GINT_TO_POINTER(1));
-   gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 3);
+   gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
 
    get_pref(PREF_FDOW, &fdow, NULL);
 
