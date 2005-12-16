@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.127 2005/11/28 07:22:22 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.128 2005/12/16 13:33:27 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -1367,7 +1367,7 @@ guint8 *get_inline_pixbuf_data(const char **xpm_icon_data, gint icon_size)
    gdk_pixdata_from_pixbuf(pixdata, pixbuf, FALSE);
    data = gdk_pixdata_serialize(pixdata, &len);
 
-   g_free(pixbuf);
+   g_object_unref(pixbuf);
    g_free(pixdata);
 
    return data;
