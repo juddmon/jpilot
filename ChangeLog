@@ -1,3 +1,12 @@
+0.99.9-pre1 - 18/12/05 (Released by Ludovic Rousseau)
+ Generalization of GTK+2 stock buttons (butons with icon) and make
+ J-Pilot more conform to GNOME Human Interface Guidelines
+ Build with GTK+2 by default. Use --disable-gtk2 if you want GTK+1 instead
+ Add Ukrainian and Korean translations
+ Add support of Korean (CP949) encoding
+ Correct a bug that prevented jpilot to start with GTK+ 2.8 (Ubuntu)
+ Some more bugs fixed
+
 0.99.8 - 11/30/05
  This release is dedicated to my Mother who unexpectedly passed away
  this last year.
