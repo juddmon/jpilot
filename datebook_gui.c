@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.127 2005/12/18 14:07:05 rousseau Exp $ */
+/* $Id: datebook_gui.c,v 1.128 2005/12/18 14:17:56 rousseau Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -1278,6 +1278,7 @@ void cb_date_cats(GtkWidget *widget, gpointer data)
    GtkWidget *table;
    GtkWidget *button;
    GtkWidget *vbox, *hbox;
+   long char_set;
 
    jp_logf(JP_LOG_DEBUG, "cb_date_cats\n");
    if (GTK_IS_WINDOW(window_date_cats)) {
@@ -1313,10 +1314,14 @@ void cb_date_cats(GtkWidget *widget, gpointer data)
    gtk_table_set_col_spacings(GTK_TABLE(table),0);
    gtk_box_pack_start(GTK_BOX(vbox), table, FALSE, FALSE, 0);
 
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
    for (i=0, bit=1; i<16; i++, bit <<= 1) {
       if (ai.category.name[i][0]) {
-	 toggle_button[i]=gtk_toggle_button_new_with_label
-	   (ai.category.name[i]);
+	 char *l;
+
+	 l = charset_p2newj(ai.category.name[i], sizeof(ai.category.name[0]), char_set);
+	 toggle_button[i]=gtk_toggle_button_new_with_label(l);
+	 g_free(l);
 	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(toggle_button[i]),
 				      datebook_category & bit);
 	 gtk_table_attach_defaults
