@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.105 2005/11/30 01:44:30 rikster5 Exp $ */
+/* $Id: utils.c,v 1.106 2005/12/18 14:22:44 rousseau Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -1525,8 +1525,7 @@ int read_gtkrc_file()
      jp_logf(JP_LOG_DEBUG, "rc file from prefs is NULL\n");
    }
 
-   strncpy(filename, svalue, sizeof(filename));
-   filename[sizeof(filename)-1]='\0';
+   g_strlcpy(filename, svalue, sizeof(filename));
 
    /*Try to read the file out of the home directory first */
    get_home_file_name(filename, fullname, sizeof(fullname));
@@ -1712,8 +1711,7 @@ int raw_header_to_header(RawDBHeader *rdbh, DBHeader *dbh)
 {
    unsigned long temp;
 
-   strncpy(dbh->db_name, rdbh->db_name, 31);
-   dbh->db_name[sizeof(dbh->db_name)-1] = '\0';
+   g_strlcpy(dbh->db_name, rdbh->db_name, sizeof(dbh->db_name));
    dbh->flags = bytes_to_bin(rdbh->flags, 2);
    dbh->version = bytes_to_bin(rdbh->version, 2);
    temp = bytes_to_bin(rdbh->creation_time, 4);
@@ -1725,12 +1723,9 @@ int raw_header_to_header(RawDBHeader *rdbh, DBHeader *dbh)
    dbh->modification_number = bytes_to_bin(rdbh->modification_number, 4);
    dbh->app_info_offset = bytes_to_bin(rdbh->app_info_offset, 4);
    dbh->sort_info_offset = bytes_to_bin(rdbh->sort_info_offset, 4);
-   strncpy(dbh->type, rdbh->type, sizeof(dbh->type));
-   dbh->type[sizeof(dbh->type)-1] = '\0';
-   strncpy(dbh->creator_id, rdbh->creator_id, sizeof(dbh->creator_id));
-   dbh->creator_id[sizeof(dbh->creator_id)-1] = '\0';
-   strncpy(dbh->unique_id_seed, rdbh->unique_id_seed, sizeof(dbh->unique_id_seed));
-   dbh->unique_id_seed[sizeof(dbh->unique_id_seed)-1] = '\0';
+   g_strlcpy(dbh->type, rdbh->type, sizeof(dbh->type));
+   g_strlcpy(dbh->creator_id, rdbh->creator_id, sizeof(dbh->creator_id));
+   g_strlcpy(dbh->unique_id_seed, rdbh->unique_id_seed, sizeof(dbh->unique_id_seed));
    dbh->next_record_list_id = bytes_to_bin(rdbh->next_record_list_id, 4);
    dbh->number_of_records = bytes_to_bin(rdbh->number_of_records, 2);
 
@@ -2468,8 +2463,7 @@ int setup_sync(unsigned int flags)
    jp_logf(JP_LOG_DEBUG, "pref port=[%s]\n", port);
    jp_logf(JP_LOG_DEBUG, "num_backups=%d\n", num_backups);
    get_pref(PREF_USER, NULL, &svalue);
-   strncpy(sync_info.username, svalue, sizeof(sync_info.username));
-   sync_info.username[sizeof(sync_info.username)-1]='\0';
+   g_strlcpy(sync_info.username, svalue, sizeof(sync_info.username));
    get_pref(PREF_USER_ID, &(sync_info.userID), NULL);
 
    get_pref(PREF_PC_ID, &(sync_info.PC_ID), NULL);
@@ -2489,8 +2483,7 @@ int setup_sync(unsigned int flags)
    }
 
    sync_info.sync_over_ride = 0;
-   strncpy(sync_info.port, port, sizeof(sync_info.port));
-   sync_info.port[sizeof(sync_info.port)-1]='\0';
+   g_strlcpy(sync_info.port, port, sizeof(sync_info.port));
    sync_info.flags=flags;
    sync_info.num_backups=num_backups;
 
@@ -2624,8 +2617,7 @@ void charset_p2j(char *const buf, int max_len, int char_set)
 
    newbuf = charset_p2newj(buf, max_len, char_set);
 
-   strncpy(buf, newbuf, max_len);
-   buf[max_len - 1] = '\0';
+   g_strlcpy(buf, newbuf, max_len);
    /* note : string may get truncated within a multibyte char */
    if (strlen(newbuf) >= max_len)
      jp_logf(JP_LOG_WARN, "charset_p2j: buffer too small - string had to be truncated to [%s]\n", buf);
@@ -2643,15 +2635,13 @@ char *charset_p2newj(const char *buf, int max_len, int char_set)
 
    /* allocate a longer buffer if not done in conversion routine */
    if (char_set < CHAR_SET_UTF) {
-      newbuf = (char*)malloc(2*max_len - 1);
+      newbuf = g_malloc(2*max_len - 1);
       if (newbuf) {
 	 /* be safe, though string should fit into buf */
-	 strncpy(newbuf, buf, max_len);
-	 newbuf[max_len - 1] = '\0';
+	 g_strlcpy(newbuf, buf, max_len);
       }
-   } else {
-      newbuf = (char*)NULL; /* keep compiler happy */
    }
+
    switch (char_set) {
     case CHAR_SET_JAPANESE : Sjis2Euc(newbuf, max_len); break;
     case CHAR_SET_1250 : Win2Lat(newbuf,max_len); break;
