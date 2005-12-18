@@ -1,4 +1,4 @@
-/* $Id: import_gui.c,v 1.20 2005/11/30 01:38:53 rikster5 Exp $ */
+/* $Id: import_gui.c,v 1.21 2005/12/18 15:22:28 rousseau Exp $ */
 
 /*******************************************************************************
  * import_gui.c
@@ -301,13 +301,6 @@ void import_gui(GtkWidget *main_window, GtkWidget *main_pane,
    gtk_widget_show(label);
 
 
-   button = gtk_button_new_with_label(_("Import"));
-   gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->ok_button->parent),
-		      button, TRUE, TRUE, 0);
-   gtk_signal_connect(GTK_OBJECT(button),
-		      "clicked", GTK_SIGNAL_FUNC(cb_import), filew);
-   gtk_widget_show(button);
-
 #ifdef ENABLE_GTK2
    button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
 #else
@@ -317,6 +310,13 @@ void import_gui(GtkWidget *main_window, GtkWidget *main_pane,
 		      button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button),
 		      "clicked", GTK_SIGNAL_FUNC(cb_quit), filew);
+   gtk_widget_show(button);
+
+   button = gtk_button_new_with_label(_("Import"));
+   gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->ok_button->parent),
+		      button, TRUE, TRUE, 0);
+   gtk_signal_connect(GTK_OBJECT(button),
+		      "clicked", GTK_SIGNAL_FUNC(cb_import), filew);
    gtk_widget_show(button);
 
    /* File Type */
