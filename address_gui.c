@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.116 2005/12/03 23:16:48 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.117 2005/12/18 14:54:39 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -469,8 +469,7 @@ int address_import_callback(GtkWidget *parent_window, const char *file_path, int
 #ifdef JPILOT_DEBUG
 	 printf("category is [%s]\n", text);
 #endif
-	 strncpy(old_cat_name, text, 16);
-	 old_cat_name[16]='\0';
+	 g_strlcpy(old_cat_name, text, 17);
 	 attrib=0;
 	 /* Figure out what the best category number is */
 	 suggested_cat_num=0;
@@ -541,12 +540,10 @@ int address_import_callback(GtkWidget *parent_window, const char *file_path, int
       for (temp_addrlist=addrlist; temp_addrlist; temp_addrlist=temp_addrlist->next) {
 	 index=temp_addrlist->maddr.unique_id-1;
 	 if (index<0) {
-	    strncpy(old_cat_name, _("Unfiled"), 16);
-	    old_cat_name[16]='\0';
+	    g_strlcpy(old_cat_name, _("Unfiled"), 17);
 	    index=0;
 	 } else {
-	    strncpy(old_cat_name, cai.name[index], 16);
-	    old_cat_name[16]='\0';
+	    g_strlcpy(old_cat_name, cai.name[index], 17);
 	 }
 	 attrib=0;
 	 /* Figure out what category it was in the dat file */
@@ -693,8 +690,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
    /* this stuff is for vcard only. */
    /* todo: create a pre-export switch */
    get_pref(PREF_USER, NULL, &svalue);
-   strncpy(text, svalue, sizeof(text));
-   text[sizeof(text)-1]='\0';
+   g_strlcpy(text, svalue, sizeof(text));
    str_to_ical_str(username, sizeof(username), text);
    get_pref(PREF_USER_ID, &userid, NULL);
    gethostname(text, sizeof(text));

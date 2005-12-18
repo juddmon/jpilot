@@ -1,4 +1,4 @@
-/* $Id: install_user.c,v 1.3 2005/11/27 19:14:34 rikster5 Exp $ */
+/* $Id: install_user.c,v 1.4 2005/12/18 14:54:39 rousseau Exp $ */
 
 /*******************************************************************************
  * install_user.c
@@ -74,9 +74,9 @@ void cb_install_user_button(GtkWidget *widget,
    if (Pdata) {
       Pdata->button_hit = GPOINTER_TO_INT(data);
       if (Pdata->button_hit == DIALOG_SAID_1) {
-	 strncpy(Pdata->user, gtk_entry_get_text(GTK_ENTRY(Pdata->user_entry)),
-		 sizeof(Pdata->user));
-	 Pdata->user[sizeof(Pdata->user) - 1] = '\0';
+	 g_strlcpy(Pdata->user,
+	       gtk_entry_get_text(GTK_ENTRY(Pdata->user_entry)),
+	       sizeof(Pdata->user));
 	 sscanf(gtk_entry_get_text(GTK_ENTRY(Pdata->ID_entry)), "%ld",
 		&(Pdata->id));
       }
@@ -224,8 +224,7 @@ int dialog_install_user(GtkWindow *main_window, char *user, int user_len, unsign
 
    gtk_main();
    
-   strncpy(user, data.user, user_len);
-   user[user_len-1]='\0';
+   g_strlcpy(user, data.user, user_len);
    *user_id = data.id;
    
    return data.button_hit;

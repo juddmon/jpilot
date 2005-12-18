@@ -1,4 +1,4 @@
-/* $Id: export_gui.c,v 1.18 2005/11/27 19:14:34 rikster5 Exp $ */
+/* $Id: export_gui.c,v 1.19 2005/12/18 14:54:39 rousseau Exp $ */
 
 /*******************************************************************************
  * export_gui.c
@@ -98,8 +98,7 @@ int export_browse(GtkWidget *main_window, int pref_export)
 
    if (pref_export) {
       get_pref(pref_export, NULL, &svalue);
-      strncpy(dir, svalue, MAX_PREF_VALUE);
-      dir[MAX_PREF_VALUE]='\0';
+      g_strlcpy(dir, svalue, sizeof(dir));
       i=strlen(dir)-1;
       if (i<0) i=0;
       if (dir[i]!='/') {

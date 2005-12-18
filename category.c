@@ -1,4 +1,4 @@
-/* $Id: category.c,v 1.27 2005/11/28 07:31:28 rikster5 Exp $ */
+/* $Id: category.c,v 1.28 2005/12/18 14:54:39 rousseau Exp $ */
 
 /*******************************************************************************
  * category.c
@@ -581,8 +581,7 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 	    entry_text = gtk_entry_get_text(GTK_ENTRY(Pdata->entry));
 	    /* JPA convert entry to Pilot character set before checking */
 	    /* note : don't know Pilot size until converted */
-	    strncpy(pilotentry, entry_text, HOSTCATLTH);
-	    pilotentry[HOSTCATLTH-1] = '\0';
+	    g_strlcpy(pilotentry, entry_text, HOSTCATLTH);
 	    charset_j2p(pilotentry, HOSTCATLTH, char_set);
 	    pilotentry[PILOTCATLTH-1] = '\0';
 	    for (i=0; i<CATCOUNT; i++) {
@@ -612,8 +611,7 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 	    gtk_clist_set_text(GTK_CLIST(Pdata->clist), i, 0, entry_text);
 	    /* JPA enter new category name in Palm Pilot character set */
 	    charset_j2p((char *)entry_text, HOSTCATLTH, char_set);
-	    strncpy(Pdata->cai2.name[catnum], entry_text, PILOTCATLTH);
-	    Pdata->cai2.name[catnum][PILOTCATLTH-1]='\0';
+	    g_strlcpy(Pdata->cai2.name[catnum], entry_text, PILOTCATLTH);
 	 }
 
 	 if (Pdata->state==EDIT_CAT_NEW) {
@@ -639,8 +637,8 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 		  /* JPA get the old text from listbox, to avoid making */
 		  /* character set conversions */
 	          r = gtk_clist_get_text(GTK_CLIST(Pdata->clist), i, 0, &text);
-                  if (r) strncpy(currentname, text, HOSTCATLTH);
-                  currentname[HOSTCATLTH-1] = '\0';
+                  if (r)
+		     g_strlcpy(currentname, text, HOSTCATLTH);
 		  Pdata->cai2.ID[i]=id;
 		  strcpy(Pdata->cai2.name[i], pilotentry);
 		  Pdata->cai2.renamed[i]=1;
@@ -652,8 +650,8 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
                      if (j < CATCOUNT) {
                         strcpy(previousname, currentname);
 			r = gtk_clist_get_text(GTK_CLIST(Pdata->clist), i, 0, &text);
-                        if (r) strncpy(currentname, text, HOSTCATLTH);
-                        currentname[HOSTCATLTH-1] = '\0';
+                        if (r)
+			   g_strlcpy(currentname, text, HOSTCATLTH);
 		        gtk_clist_set_text(GTK_CLIST(Pdata->clist), i, 0, previousname);
                         j++;
 		     }
@@ -758,8 +756,7 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
 
    Pdata.selected=-1;
    Pdata.state=EDIT_CAT_START;
-   strncpy(Pdata.db_name, db_name, 16);
-   Pdata.db_name[15]='\0';
+   g_strlcpy(Pdata.db_name, db_name, 16);
 #ifdef EDIT_CATS_DEBUG
    for (i = 0; i < CATCOUNT; i++) {
       if (cai->name[i][0] != '\0') {

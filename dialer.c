@@ -1,4 +1,4 @@
-/* $Id: dialer.c,v 1.12 2005/11/27 00:07:23 judd Exp $ */
+/* $Id: dialer.c,v 1.13 2005/12/18 14:54:39 rousseau Exp $ */
 
 /*******************************************************************************
  * dialer.c
@@ -132,10 +132,8 @@ static void dialer(gpointer data, int phone_or_ext)
    if (phone_or_ext==CHOOSE_EXT) {
       Pext=gtk_entry_get_text(GTK_ENTRY(Pdata->entry_ext));
       if (!Pext) Pext=null_str;
-      strncpy(str, Pext, sizeof(str));
+      g_strlcpy(str, Pext, sizeof(str));
    }
-   str[sizeof(str)-1]='\0';
-
 
    pref_command = gtk_entry_get_text(GTK_ENTRY(Pdata->entry_command));
    /* Make a system call command string */

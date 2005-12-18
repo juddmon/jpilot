@@ -1,4 +1,4 @@
-/* $Id: alarms.c,v 1.33 2005/12/14 21:53:16 rousseau Exp $ */
+/* $Id: alarms.c,v 1.34 2005/12/18 14:54:39 rousseau Exp $ */
 
 /*******************************************************************************
  * alarms.c
@@ -565,12 +565,10 @@ int alarms_do_one(struct Appointment *appt,
    desc_str[0]='\0';
    note_str[0]='\0';
    if (appt->description) {
-      strncpy(desc_str, appt->description, sizeof(desc_str));
-      desc_str[sizeof(desc_str)-1]='\0';
+      g_strlcpy(desc_str, appt->description, sizeof(desc_str));
    }
    if (appt->note) {
-      strncpy(note_str, appt->note, sizeof(note_str));
-      note_str[sizeof(note_str)-1]='\0';
+      g_strlcpy(note_str, appt->note, sizeof(note_str));
    }
 
    get_pref(PREF_ALARM_COMMAND, NULL, &pref_command);

@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.128 2005/12/18 14:17:56 rousseau Exp $ */
+/* $Id: datebook_gui.c,v 1.129 2005/12/18 14:54:39 rousseau Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -385,8 +385,7 @@ int datebook_import_callback(GtkWidget *parent_window, const char *file_path, in
 #ifdef JPILOT_DEBUG
 	 printf("category is [%s]\n", text);
 #endif
-	 strncpy(old_cat_name, text, 16);
-	 old_cat_name[16]='\0';
+	 g_strlcpy(old_cat_name, text, 17);
 	 attrib=0;
 	 /* Figure out what the best category number is */
 	 suggested_cat_num=0;
@@ -578,12 +577,10 @@ int datebook_import_callback(GtkWidget *parent_window, const char *file_path, in
       for (temp_alist=alist; temp_alist; temp_alist=temp_alist->next) {
 	 index=temp_alist->mappt.unique_id-1;
 	 if (index<0) {
-	    strncpy(old_cat_name, _("Unfiled"), 16);
-	    old_cat_name[16]='\0';
+	    g_strlcpy(old_cat_name, _("Unfiled"), 17);
 	    index=0;
 	 } else {
-	    strncpy(old_cat_name, cai.name[index], 16);
-	    old_cat_name[16]='\0';
+	    g_strlcpy(old_cat_name, cai.name[index], 17);
 	 }
 	 attrib=0;
 	 /* Figure out what category it was in the dat file */
@@ -682,8 +679,7 @@ void appt_export_ok(int type, const char *filename)
    /* this stuff is for ical only. */
    /* todo: create a pre-export switch */
    get_pref(PREF_USER, NULL, &svalue);
-   strncpy(text, svalue, 127);
-   text[127]='\0';
+   g_strlcpy(text, svalue, 128);
    str_to_ical_str(username, sizeof(username), text);
    get_pref(PREF_USER_ID, &userid, &svalue);
    gethostname(text, 127);
@@ -826,8 +822,7 @@ void appt_export_ok(int type, const char *filename)
 		 now->tm_hour,
 		 now->tm_min,
 		 now->tm_sec);
-	 strncpy(text, mappt->appt.description, 50);
-	 text[50] = '\0';
+	 g_strlcpy(text, mappt->appt.description, 51);
 	 if ((p = strchr(text, '\n'))) {
 	    *p = '\0';
 	 }
@@ -4717,8 +4712,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
       if (j>6) {
 	 j=0;
       }
-      strncpy(days2, _(days[j]), 10);
-      days2[10]='\0';
+      g_strlcpy(days2, _(days[j]), sizeof(days2));
       /* If no translation occurred then use the first letter only */
       if (!strcmp(days2, days[j])) {
 	 days2[0]=days[j][0];

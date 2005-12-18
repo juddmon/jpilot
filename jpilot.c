@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.128 2005/12/16 13:33:27 rousseau Exp $ */
+/* $Id: jpilot.c,v 1.129 2005/12/18 14:54:39 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -888,8 +888,7 @@ static void cb_read_pipe_from_child(gpointer data,
 		  if (user_len > MAX_PREF_VALUE) {
 		     user_len = MAX_PREF_VALUE;
 		  }
-		  strncpy(user, Pstr2, user_len);
-		  user[user_len] = '\0';
+		  g_strlcpy(user, Pstr2, user_len+1);
 		  jp_logf(JP_LOG_DEBUG, "pipe_read: user = %s\n", user);
 		  set_pref(PREF_USER, 0, user, TRUE);
 	       }
@@ -906,8 +905,7 @@ static void cb_read_pipe_from_child(gpointer data,
 		  if (password_len > MAX_PREF_VALUE) {
 		     password_len = MAX_PREF_VALUE;
 		  }
-		  strncpy(password, Pstr2, password_len);
-		  password[password_len] = '\0';
+		  g_strlcpy(password, Pstr2, password_len+1);
 		  jp_logf(JP_LOG_DEBUG, "pipe_read: password = %s\n", password);
 		  set_pref(PREF_PASSWORD, 0, password, TRUE);
 	       }

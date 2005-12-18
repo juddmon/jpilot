@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.60 2005/10/24 15:27:48 rikster5 Exp $ */
+/* $Id: sync.c,v 1.61 2005/12/18 14:54:39 rousseau Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -1329,8 +1329,7 @@ void fetch_extra_DBs2(int sd, struct DBInfo info, char *palm_dbname[])
       return;
    }
 
-   strncpy(db_copy_name, info.name, MAX_DBNAME-5);
-   db_copy_name[MAX_DBNAME-5]='\0';
+   g_strlcpy(db_copy_name, info.name, MAX_DBNAME-5);
    if (info.flags & dlpDBFlagResource) {
       strcat(db_copy_name,".prc");
    } else if (strncmp(db_copy_name + strlen(db_copy_name) - 4, ".pqa", 4)) {
@@ -1710,8 +1709,7 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
 	 }
       }
 #endif
-      strncpy(db_copy_name, info.name, MAX_DBNAME-5);
-      db_copy_name[MAX_DBNAME-5]='\0';
+      g_strlcpy(db_copy_name, info.name, MAX_DBNAME-5);
       if (info.flags & dlpDBFlagResource) {
 	 strcat(db_copy_name,".prc");
       } else if (strncmp(db_copy_name + strlen(db_copy_name) - 4, ".pqa", 4)) {
@@ -2092,8 +2090,7 @@ int sync_remove_r(char *full_path)
 	 if (len < 4) {
 	    continue;
 	 }
-	 strncpy(last4, dirent->d_name+len-4, 4);
-	 last4[4]='\0';
+	 g_strlcpy(last4, dirent->d_name+len-4, 5);
 	 if ((strcmp(last4, ".pdb")==0) ||
 	     (strcmp(last4, ".prc")==0) ||
 	     (strcmp(last4, ".pqa")==0)) {
@@ -3021,8 +3018,7 @@ int sync_categories(char *DB_name, int sd,
 #endif
 	    r = pdb_file_swap_indexes(DB_name, Li, found_name_at);
 	    edit_cats_swap_cats_pc3(DB_name, Li, Ri);
-	    strncpy(tmp_name, local_cai.name[found_ID_at], PILOTCATLTH);
-	    tmp_name[PILOTCATLTH-1]='\0';
+	    g_strlcpy(tmp_name, local_cai.name[found_ID_at], PILOTCATLTH);
 	    strncpy(local_cai.name[found_ID_at],
 		    local_cai.name[Li], PILOTCATLTH);
 	    strncpy(local_cai.name[Li], tmp_name, PILOTCATLTH);
@@ -3036,9 +3032,8 @@ int sync_categories(char *DB_name, int sd,
 #ifdef SYNC_CAT_DEBUG
 	    printf("cat index %d case 3\n", Li);
 #endif
-	    strncpy(remote_cai.name[found_ID_at],
+	    g_strlcpy(remote_cai.name[found_ID_at],
 		    local_cai.name[Li], PILOTCATLTH);
-	    remote_cai.name[found_ID_at][PILOTCATLTH-1]='\0';
 	 }
       }
       if ((!found_name) && (!found_ID)) {
@@ -3047,9 +3042,8 @@ int sync_categories(char *DB_name, int sd,
 #ifdef SYNC_CAT_DEBUG
 	    printf("cat index %d case 4\n", Li);
 #endif
-	    strncpy(remote_cai.name[Li],
+	    g_strlcpy(remote_cai.name[Li],
 		    local_cai.name[Li], PILOTCATLTH);
-	    remote_cai.name[Li][PILOTCATLTH-1]='\0';
 	    remote_cai.renamed[Li]=0;
  	    remote_cai.ID[Li]=local_cai.ID[Li];
 	    continue;
@@ -3062,9 +3056,8 @@ int sync_categories(char *DB_name, int sd,
 	    found_a_hole=FALSE;
 	    for (i=1; i<CATCOUNT; i++) {
 	       if (remote_cai.name[i][0]=='\0') {
-		  strncpy(remote_cai.name[i],
+		  g_strlcpy(remote_cai.name[i],
 			  local_cai.name[Li], PILOTCATLTH);
-		  remote_cai.name[i][PILOTCATLTH-1]='\0';
 		  remote_cai.renamed[i]=0;
 		  remote_cai.ID[i]=remote_cai.ID[Li];
 		  r = pdb_file_change_indexes(DB_name, Li, i);

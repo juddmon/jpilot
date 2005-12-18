@@ -1,4 +1,4 @@
-/* $Id: password.c,v 1.23 2005/11/27 20:08:34 rikster5 Exp $ */
+/* $Id: password.c,v 1.24 2005/12/18 14:54:39 rousseau Exp $ */
 
 /*******************************************************************************
  * password.c
@@ -124,8 +124,7 @@ void palm_encode_hash(unsigned char *ascii, unsigned char *encoded)
       return;
    }
 
-   strncpy(encoded, ascii, PASSWD_LEN);
-   encoded[PASSWD_LEN-1]='\0';
+   g_strlcpy(encoded, ascii, PASSWD_LEN);
    len = strlen((char *)encoded);
    for (ai=len; ai < PASSWD_LEN; ai++) {
       encoded[ai] = encoded[ai-len] + len;
@@ -272,8 +271,7 @@ static gboolean cb_destroy_dialog(GtkWidget *widget)
    entry = gtk_entry_get_text(GTK_ENTRY(Pdata->entry));
 
    if (entry) {
-      strncpy(Pdata->text, entry, PASSWD_LEN);
-      Pdata->text[PASSWD_LEN]='\0';
+      g_strlcpy(Pdata->text, entry, PASSWD_LEN+1);
    }
 
    gtk_main_quit();
@@ -397,7 +395,7 @@ int dialog_password(GtkWindow *main_window, char *ascii_password, int retry)
    if (Pdata->button_hit==DIALOG_SAID_2) {
       ret = 2;
    }
-   strncpy(ascii_password, Pdata->text, PASSWD_LEN);
+   g_strlcpy(ascii_password, Pdata->text, PASSWD_LEN+1);
 
    free(Pdata);
 

@@ -1,4 +1,4 @@
-/* $Id: jpilot-sync.c,v 1.24 2005/11/05 15:15:06 judd Exp $ */
+/* $Id: jpilot-sync.c,v 1.25 2005/12/18 14:54:39 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot-sync.c
@@ -153,8 +153,7 @@ int main(int argc, char *argv[])
       if (!strncmp(argv[i], "-p", 2)) {
 	 i++;
 	 if (i<argc) {
-	    strncpy(port, argv[i], MAX_PREF_VALUE);
-	    port[MAX_PREF_VALUE-1]='\0';
+	    g_strlcpy(port, argv[i], MAX_PREF_VALUE);
 	    /* Prefs are not saved, so this is not persistent */
 	    set_pref(PREF_PORT, 0, port, FALSE);
 	 }

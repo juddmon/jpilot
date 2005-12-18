@@ -1,4 +1,4 @@
-/* $Id: install_gui.c,v 1.22 2005/11/27 00:07:23 judd Exp $ */
+/* $Id: install_gui.c,v 1.23 2005/12/18 14:54:39 rousseau Exp $ */
 
 /*******************************************************************************
  * install_gui.c
@@ -127,8 +127,7 @@ static void
    jp_logf(JP_LOG_DEBUG, "Quit\n");
 
    sel = gtk_file_selection_get_filename(GTK_FILE_SELECTION(data));
-   strncpy(dir, sel, MAX_PREF_VALUE);
-   dir[MAX_PREF_VALUE]='\0';
+   g_strlcpy(dir, sel, sizeof(dir));
    i=strlen(dir)-1;
    if (i<0) i=0;
    if (dir[i]!='/') {

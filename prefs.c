@@ -1,4 +1,4 @@
-/* $Id: prefs.c,v 1.63 2005/12/14 21:53:16 rousseau Exp $ */
+/* $Id: prefs.c,v 1.64 2005/12/18 14:54:39 rousseau Exp $ */
 
 /*******************************************************************************
  * prefs.c
@@ -353,8 +353,7 @@ static int get_rcfile_name(int n, char *rc_copy)
    found = 0;
    for (i=0, temp_list=dir_list; temp_list; temp_list=temp_list->next, i++) {
       if (i == n) {
-	 strncpy(rc_copy, temp_list->name, MAX_PREF_VALUE);
-	 rc_copy[MAX_PREF_VALUE-1]='\0';
+	 g_strlcpy(rc_copy, temp_list->name, MAX_PREF_VALUE);
 	 found=1;
 	 break;
       }
@@ -606,8 +605,7 @@ char *pref_lstrncpy_realloc(char **dest, const char *src, int *size, int max_siz
       }
       *size=new_size;
    }
-   strncpy(*dest, Psrc, new_size);
-   (*dest)[new_size-1]='\0';
+   g_strlcpy(*dest, Psrc, new_size);
 
    return *dest;
 }
