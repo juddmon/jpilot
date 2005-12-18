@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.129 2005/12/18 14:54:39 rousseau Exp $ */
+/* $Id: jpilot.c,v 1.130 2005/12/18 15:46:54 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -1912,7 +1912,9 @@ int main(int argc, char *argv[])
    GtkWidget *temp_vbox;
    GtkWidget *button_datebook,*button_address,*button_todo,*button_memo;
    GtkWidget *button;
+#ifndef ENABLE_GTK2
    GtkWidget *arrow;
+#endif
    GtkWidget *separator;
    GtkStyle *style;
    GdkBitmap *mask;
@@ -2458,7 +2460,10 @@ char * xpm_backup[] = {
    gtk_container_set_border_width(GTK_CONTAINER(temp_hbox), 5);
    gtk_paned_pack2(GTK_PANED(output_pane), temp_hbox, FALSE, FALSE);
 
-   temp_vbox = gtk_vbox_new(FALSE, 0);
+   temp_vbox = gtk_vbutton_box_new();
+   gtk_button_box_set_spacing(GTK_BUTTON_BOX(temp_vbox), 6);
+   gtk_container_set_border_width(GTK_CONTAINER(temp_vbox), 6);
+   gtk_button_box_set_layout(GTK_BUTTON_BOX(temp_vbox), GTK_BUTTONBOX_END);
    gtk_box_pack_end(GTK_BOX(temp_hbox), temp_vbox, FALSE, FALSE, 0);
 
 #ifdef ENABLE_GTK2
@@ -2483,20 +2488,28 @@ char * xpm_backup[] = {
    gtk_box_pack_start(GTK_BOX(temp_hbox), vscrollbar, FALSE, FALSE, 0);
 #endif
 
-   /* button = gtk_button_new_with_label(_("Minimize")); */
-   button = gtk_button_new();
-   arrow = gtk_arrow_new(GTK_ARROW_DOWN, GTK_SHADOW_OUT);
-   gtk_container_add(GTK_CONTAINER(button), arrow);
-   gtk_box_pack_start(GTK_BOX(temp_vbox), button, TRUE, TRUE, 3);
-   gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_output),
-		      GINT_TO_POINTER(OUTPUT_MINIMIZE));
-
+#ifdef ENABLE_GTK2
+   button = gtk_button_new_from_stock(GTK_STOCK_CLEAR);
+#else
    button = gtk_button_new_with_label(_("Clear"));
+#endif
    gtk_box_pack_start(GTK_BOX(temp_vbox), button, TRUE, TRUE, 3);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_output),
 		      GINT_TO_POINTER(OUTPUT_CLEAR));
+
+#ifdef ENABLE_GTK2
+   button = gtk_button_new_from_stock(GTK_STOCK_REMOVE);
+#else
+   /* button = gtk_button_new_with_label(_("Minimize")); */
+   button = gtk_button_new();
+   arrow = gtk_arrow_new(GTK_ARROW_DOWN, GTK_SHADOW_OUT);
+   gtk_container_add(GTK_CONTAINER(button), arrow);
+#endif
+   gtk_box_pack_start(GTK_BOX(temp_vbox), button, TRUE, TRUE, 3);
+   gtk_signal_connect(GTK_OBJECT(button), "clicked",
+		      GTK_SIGNAL_FUNC(cb_output),
+		      GINT_TO_POINTER(OUTPUT_MINIMIZE));
    /* End output text */
 
    /* Create "Datebook" button */
