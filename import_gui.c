@@ -1,4 +1,4 @@
-/* $Id: import_gui.c,v 1.21 2005/12/18 15:22:28 rousseau Exp $ */
+/* $Id: import_gui.c,v 1.22 2005/12/18 15:27:59 rousseau Exp $ */
 
 /*******************************************************************************
  * import_gui.c
@@ -494,7 +494,9 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
    }
 
    /* Box for buttons  */
-   temp_hbox = gtk_hbox_new(FALSE, 0);
+   temp_hbox = gtk_hbutton_box_new();
+   gtk_button_box_set_spacing(GTK_BUTTON_BOX(temp_hbox), 6);
+   gtk_container_set_border_width(GTK_CONTAINER(temp_hbox), 6);
    gtk_box_pack_start(GTK_BOX(vbox), temp_hbox, FALSE, FALSE, 0);
 
    /* Import button */
@@ -519,7 +521,11 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
 		      GINT_TO_POINTER(DIALOG_SAID_IMPORT_SKIP));
 
    /* Quit button */
-   button = gtk_button_new_with_label(_("Quit"));
+#ifdef ENABLE_GTK2
+   button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
+#else
+   button = gtk_button_new_with_label(_("Close"));
+#endif
    gtk_box_pack_start(GTK_BOX(temp_hbox), button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_import_record_ask_quit),
