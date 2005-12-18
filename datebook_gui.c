@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.126 2005/12/14 21:32:11 rousseau Exp $ */
+/* $Id: datebook_gui.c,v 1.127 2005/12/18 14:07:05 rousseau Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -1329,11 +1329,16 @@ void cb_date_cats(GtkWidget *widget, gpointer data)
       }
    }
 
-   hbox = gtk_hbox_new(FALSE, 0);
+   hbox = gtk_hbutton_box_new();
+   gtk_button_box_set_spacing(GTK_BUTTON_BOX(hbox), 6);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
-   /* Create a "Quit" button */
-   button = gtk_button_new_with_label(_("Done"));
+   /* Create a "Close" button */
+#ifdef ENABLE_GTK2
+   button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
+#else
+   button = gtk_button_new_with_label(_("Close"));
+#endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_quit_date_cats), window_date_cats);
    gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 0);
@@ -4215,7 +4220,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
       button = gtk_button_new_with_label(_("Cats"));
       gtk_signal_connect(GTK_OBJECT(button), "clicked",
 			 GTK_SIGNAL_FUNC(cb_date_cats), NULL);
-      gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 0);
+      gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 3);
       gtk_widget_show(button);
    }
 #endif
