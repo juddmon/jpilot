@@ -1,4 +1,4 @@
-/* $Id: import_gui.c,v 1.22 2005/12/18 15:27:59 rousseau Exp $ */
+/* $Id: import_gui.c,v 1.23 2005/12/18 15:33:54 rousseau Exp $ */
 
 /*******************************************************************************
  * import_gui.c
@@ -398,6 +398,8 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
    int pw, ph;
    gint px, py;
    char str[100];
+   char *l;
+   long char_set;
 
    /* There is no support yet for changing the suggested category */
    /* Like a menu for selecting cat to be imported into, etc. */
@@ -446,14 +448,18 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
    gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
 
 
-   g_snprintf(str, sizeof(str), _("Category before import was: [%s]"), old_cat_name);
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
+   l = charset_p2newj(old_cat_name, 17, char_set);
+   g_snprintf(str, sizeof(str), _("Category before import was: [%s]"), l);
+   g_free(l);
    label = gtk_label_new(str);
    gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
    gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
 
 
-   g_snprintf(str, sizeof(str), _("Record will be put in category [%s]"),
-	      cai->name[suggested_cat_num]);
+   l = charset_p2newj(cai->name[suggested_cat_num], 17, char_set);
+   g_snprintf(str, sizeof(str), _("Record will be put in category [%s]"), l);
+   g_free(l);
    label = gtk_label_new(str);
    gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
    gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
