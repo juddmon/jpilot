@@ -1,4 +1,4 @@
-/* $Id: japanese.c,v 1.10 2005/10/24 15:27:48 rikster5 Exp $ */
+/* $Id: japanese.c,v 1.11 2005/12/18 15:05:40 rousseau Exp $ */
 
 /*******************************************************************************
  * japanese.c
@@ -118,7 +118,7 @@ void Sjis2Euc(char *buf, int max_len)
 	char *dst;
 
 	if (buf == NULL) return;
-	if ((dst = (char *)malloc(max_len)) != NULL) {
+	if ((dst = malloc(max_len)) != NULL) {
                             /* assign buffer for destination. */
 		if (Sjis2EucCpy(dst, buf, max_len) != NULL) {
 			multibyte_safe_strncpy(buf, dst, max_len);
@@ -141,7 +141,7 @@ void Sjis2Euc_x(char *buf, int max_len)
     char *p;
 
     if (buf == NULL) return;
-    if ((dst = (char *)malloc(max_len*2)) == NULL) return; /* assign buffer for destination. */
+    if ((dst = malloc(max_len*2)) == NULL) return; /* assign buffer for destination. */
     if ((p = Sjis2EucCpy(dst, buf, max_len*2)) != NULL) {
 	if (strlen(dst) > strlen(buf)) {
 	    free(buf);

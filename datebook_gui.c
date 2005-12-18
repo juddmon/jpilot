@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.129 2005/12/18 14:54:39 rousseau Exp $ */
+/* $Id: datebook_gui.c,v 1.130 2005/12/18 15:05:40 rousseau Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -2646,7 +2646,7 @@ static void cb_add_new_record(GtkWidget *widget,
       }
       if (result==DIALOG_SAID_ALL) {
 	 /*We still need to keep the exceptions of the original record */
-	 new_appt.exception = (struct tm *)malloc(mappt->appt.exceptions * sizeof(struct tm));
+	 new_appt.exception = malloc(mappt->appt.exceptions * sizeof(struct tm));
 	 memcpy(new_appt.exception, mappt->appt.exception, mappt->appt.exceptions * sizeof(struct tm));
 	 new_appt.exceptions = mappt->appt.exceptions;
       }

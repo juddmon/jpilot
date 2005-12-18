@@ -1,4 +1,4 @@
-/* $Id: datebook.c,v 1.48 2005/10/24 15:27:48 rikster5 Exp $ */
+/* $Id: datebook.c,v 1.49 2005/12/18 15:05:40 rousseau Exp $ */
 
 /*******************************************************************************
  * datebook.c
@@ -392,7 +392,7 @@ int datebook_copy_appointment(struct Appointment *a1,
    }
    memcpy(*a2, a1, sizeof(struct Appointment));
 
-   (*a2)->exception = (struct tm *)malloc(a1->exceptions * sizeof(struct tm));
+   (*a2)->exception = malloc(a1->exceptions * sizeof(struct tm));
    if (!(*a2)->exception) {
       jp_logf(JP_LOG_WARN, "datebook_copy_appointment(): %s 2\n", _("Out of memory"));
       return EXIT_FAILURE;
@@ -1015,7 +1015,7 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
       get_pref(PREF_CHAR_SET, &char_set, NULL);
 
       if (appt.description) {
-	 if ((buf = (char *)malloc((len = strlen(appt.description)*2+1))) != NULL) {
+	 if ((buf = malloc((len = strlen(appt.description)*2+1))) != NULL) {
 	    multibyte_safe_strncpy(buf, appt.description, len);
 	    charset_p2j(buf, len, char_set);
 	    if (strlen(buf) > strlen(appt.description)) {
@@ -1028,7 +1028,7 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
 	 }
       }
       if (appt.note) {
-	 if ((buf = (char *) malloc((len = strlen(appt.note)*2+1))) != NULL) {
+	 if ((buf = malloc((len = strlen(appt.note)*2+1))) != NULL) {
 	    multibyte_safe_strncpy(buf, appt.note, len);
 	    charset_p2j(buf, len, char_set);
 	    if (strlen(buf) > strlen(appt.note)) {

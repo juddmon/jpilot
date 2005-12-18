@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.117 2005/12/18 14:54:39 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.118 2005/12/18 15:05:40 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -1333,7 +1333,7 @@ static void cb_add_new_record(GtkWidget *widget,
 	    str1 = gtk_editable_get_chars(GTK_EDITABLE(address_text[i]), 0, -1);
 	    str2 = gtk_editable_get_chars(GTK_EDITABLE(address_text[i+NUM_ADDRESS_ENTRIES]), 0, -1);
 #endif
-	    if ((str0 = (char *)malloc(strlen(str1)+strlen(str2)+2))!=NULL) {
+	    if ((str0 = malloc(strlen(str1)+strlen(str2)+2))!=NULL) {
 	       if (*str1 !='\0') {
 		  strcpy(str0, str1);strcat(str0,"\1");strcat(str0, str2);
 	       } else {

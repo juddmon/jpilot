@@ -1,4 +1,4 @@
-/* $Id: print.c,v 1.31 2005/10/24 15:27:48 rikster5 Exp $ */
+/* $Id: print.c,v 1.32 2005/12/18 15:05:40 rousseau Exp $ */
 
 /*******************************************************************************
  * print.c
@@ -108,7 +108,7 @@ int puttext(float x, float y, char *text)
    char *buf;
 
    len = strlen(text);
-   buf = (char *) malloc(2 * len + 1);
+   buf = malloc(2 * len + 1);
    memset(buf, 0, 2 * len + 1);
    ps_strncat(buf, text, 2 * len);
    fprintf(out, "%g inch %g inch moveto (%s) show\n", x, y, buf);
@@ -1180,7 +1180,7 @@ int print_todos(ToDoList *todo_list, char *category_name)
 	 char *buf;
 
 	 len = strlen(todo->description);
-	 buf = (char *) malloc(2 * len + 1);
+	 buf = malloc(2 * len + 1);
 	 memset(buf, 0, 2 * len + 1);
 	 ps_strncat(buf, todo->description, 2 * len);
 
@@ -1195,7 +1195,7 @@ int print_todos(ToDoList *todo_list, char *category_name)
 	 char *buf;
 
 	 len = strlen(todo->note);
-	 buf = (char *) malloc(2 * len + 1);
+	 buf = malloc(2 * len + 1);
 	 memset(buf, 0, 2 * len + 1);
 	 ps_strncat(buf, todo->note, 2 * len);
 

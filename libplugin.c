@@ -1,4 +1,4 @@
-/* $Id: libplugin.c,v 1.25 2005/11/06 05:30:44 rikster5 Exp $ */
+/* $Id: libplugin.c,v 1.26 2005/12/18 15:05:40 rousseau Exp $ */
 
 /*******************************************************************************
  * libplugin.c
@@ -851,7 +851,7 @@ int jp_read_DB_files(char *DB_name, GList **records)
       jp_logf(JP_LOG_DEBUG, "    unique_ID %d %d %d = ",rh.unique_ID[0],rh.unique_ID[1],rh.unique_ID[2]);
       jp_logf(JP_LOG_DEBUG, "%d\n",(rh.unique_ID[0]*256+rh.unique_ID[1])*256+rh.unique_ID[2]);
 #endif
-      temp_mem_rh = (mem_rec_header *)malloc(sizeof(mem_rec_header));
+      temp_mem_rh = malloc(sizeof(mem_rec_header));
       if (!temp_mem_rh) {
 	 jp_logf(JP_LOG_WARN, "jp_read_DB_files(): %s 1\n", _("Out of memory"));
 	 break;

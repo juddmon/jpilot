@@ -1,4 +1,4 @@
-/* $Id: address.c,v 1.38 2005/09/26 03:27:59 judd Exp $ */
+/* $Id: address.c,v 1.39 2005/12/18 15:05:40 rousseau Exp $ */
 
 /*******************************************************************************
  * address.c
@@ -97,26 +97,26 @@ int address_compare(const void *v1, const void *v2)
    if (!(glob_sort_rule & SORT_JAPANESE) | (glob_sort_rule & SORT_JOS)) { /* normal */
       if (a1->entry[sort1] || a1->entry[sort2]) {
 	 if (a1->entry[sort1] && a1->entry[sort2]) {
-	    if ((str1 = (char *)malloc(strlen(a1->entry[sort1])+strlen(a1->entry[sort2])+1)) == NULL) {
+	    if ((str1 = malloc(strlen(a1->entry[sort1])+strlen(a1->entry[sort2])+1)) == NULL) {
 	       return 0;
 	    }
 	    strcpy(str1, a1->entry[sort1]);
 	    strcat(str1, a1->entry[sort2]);
 	 }
 	 if (a1->entry[sort1] && (!a1->entry[sort2])) {
-	    if ((str1 = (char *)malloc(strlen(a1->entry[sort1])+1)) == NULL) {
+	    if ((str1 = malloc(strlen(a1->entry[sort1])+1)) == NULL) {
 	       return 0;
 	    }
 	    strcpy(str1, a1->entry[sort1]);
 	 }
 	 if ((!a1->entry[sort1]) && a1->entry[sort2]) {
-	    if ((str1 = (char *)malloc(strlen(a1->entry[sort2])+1)) == NULL) {
+	    if ((str1 = malloc(strlen(a1->entry[sort2])+1)) == NULL) {
 	       return 0;
 	    }
 	    strcpy(str1, a1->entry[sort2]);
 	 }
       } else if (a1->entry[sort3]) {
-	 if ((str1 = (char *)malloc(strlen(a1->entry[sort3])+1)) == NULL) {
+	 if ((str1 = malloc(strlen(a1->entry[sort3])+1)) == NULL) {
 	    return 0;
 	 }
 	 strcpy(str1, a1->entry[sort3]);
@@ -126,26 +126,26 @@ int address_compare(const void *v1, const void *v2)
 
       if (a2->entry[sort1] || a2->entry[sort2]) {
 	 if (a2->entry[sort1] && a2->entry[sort2]) {
-	    if ((str2 = (char *)malloc(strlen(a2->entry[sort1])+strlen(a2->entry[sort2])+1)) == NULL) {
+	    if ((str2 = malloc(strlen(a2->entry[sort1])+strlen(a2->entry[sort2])+1)) == NULL) {
 	       return 0;
 	    }
 	    strcpy(str2, a2->entry[sort1]);
 	    strcat(str2, a2->entry[sort2]);
 	 }
 	 if (a2->entry[sort1] && (!a2->entry[sort2])) {
-	    if ((str2 = (char *)malloc(strlen(a2->entry[sort1])+1)) == NULL) {
+	    if ((str2 = malloc(strlen(a2->entry[sort1])+1)) == NULL) {
 	       return 0;
 	    }
 	    strcpy(str2, a2->entry[sort1]);
 	 }
 	 if ((!a2->entry[sort1]) && a2->entry[sort2]) {
-	    if ((str2 = (char *)malloc(strlen(a2->entry[sort2])+1)) == NULL) {
+	    if ((str2 = malloc(strlen(a2->entry[sort2])+1)) == NULL) {
 	       return 0;
 	    }
 	    strcpy(str2, a2->entry[sort2]);
 	 }
       } else if (a2->entry[sort3]) {
-	 if ((str2 = (char *)malloc(strlen(a2->entry[sort3])+1)) == NULL) {
+	 if ((str2 = malloc(strlen(a2->entry[sort3])+1)) == NULL) {
 	    return 0;
 	 }
 	 strcpy(str2, a2->entry[sort3]);
@@ -159,7 +159,7 @@ int address_compare(const void *v1, const void *v2)
 	 if (a1->entry[sort1] && a1->entry[sort2]) {
 	    if (!(tmp_p1 = strchr(a1->entry[sort1],'\1'))) tmp_p1=a1->entry[sort1]+1;
 	    if (!(tmp_p2 = strchr(a1->entry[sort2],'\1'))) tmp_p2=a1->entry[sort2]+1;
-	    if ((str1 = (char *)malloc(strlen(tmp_p1)+strlen(tmp_p2)+1)) == NULL) {
+	    if ((str1 = malloc(strlen(tmp_p1)+strlen(tmp_p2)+1)) == NULL) {
 	       return 0;
 	    }
 	    strcpy(str1, tmp_p1);
@@ -167,21 +167,21 @@ int address_compare(const void *v1, const void *v2)
 	 }
 	 if (a1->entry[sort1] && (!a1->entry[sort2])) {
 	    if (!(tmp_p1 = strchr(a1->entry[sort1],'\1'))) tmp_p1=a1->entry[sort1]+1;
-	    if ((str1 = (char *)malloc(strlen(tmp_p1)+1)) == NULL) {
+	    if ((str1 = malloc(strlen(tmp_p1)+1)) == NULL) {
 	       return 0;
 	    }
 	    strcpy(str1, tmp_p1);
 	 }
 	 if ((!a1->entry[sort1]) && a1->entry[sort2]) {
 	    if (!(tmp_p2 = strchr(a1->entry[sort2],'\1'))) tmp_p2=a1->entry[sort2]+1;
-	    if ((str1 = (char *)malloc(strlen(tmp_p2)+1)) == NULL) {
+	    if ((str1 = malloc(strlen(tmp_p2)+1)) == NULL) {
 	       return 0;
 	    }
 	    strcpy(str1, tmp_p2);
 	 }
       } else if (a1->entry[sort3]) {
 	 if (!(tmp_p3 = strchr(a1->entry[sort3],'\1'))) tmp_p3=a1->entry[sort3]+1;
-	 if ((str1 = (char *)malloc(strlen(tmp_p3)+1)) == NULL) {
+	 if ((str1 = malloc(strlen(tmp_p3)+1)) == NULL) {
 	    return 0;
 	 }
 	 strcpy(str1, tmp_p3);
@@ -193,7 +193,7 @@ int address_compare(const void *v1, const void *v2)
 	 if (a2->entry[sort1] && a2->entry[sort2]) {
 	    if (!(tmp_p1 = strchr(a2->entry[sort1],'\1'))) tmp_p1=a2->entry[sort1]+1;
 	    if (!(tmp_p2 = strchr(a2->entry[sort2],'\1'))) tmp_p2=a2->entry[sort2]+1;
-	    if ((str2 = (char *)malloc(strlen(tmp_p1)+strlen(tmp_p2)+1)) == NULL) {
+	    if ((str2 = malloc(strlen(tmp_p1)+strlen(tmp_p2)+1)) == NULL) {
 	       return 0;
 	    }
 	    strcpy(str2, tmp_p1);
@@ -201,21 +201,21 @@ int address_compare(const void *v1, const void *v2)
 	 }
 	 if (a2->entry[sort1] && (!a2->entry[sort2])) {
 	    if (!(tmp_p1 = strchr(a2->entry[sort1],'\1'))) tmp_p1=a2->entry[sort1]+1;
-	    if ((str2 = (char *)malloc(strlen(tmp_p1)+1)) == NULL) {
+	    if ((str2 = malloc(strlen(tmp_p1)+1)) == NULL) {
 	       return 0;
 	    }
 	    strcpy(str2, tmp_p1);
 	 }
 	 if ((!a2->entry[sort1]) && a2->entry[sort2]) {
 	    if (!(tmp_p2 = strchr(a2->entry[sort2],'\1'))) tmp_p2=a2->entry[sort2]+1;
-	    if ((str2 = (char *)malloc(strlen(tmp_p2)+1)) == NULL) {
+	    if ((str2 = malloc(strlen(tmp_p2)+1)) == NULL) {
 	       return 0;
 	    }
 	    strcpy(str2, tmp_p2);
 	 }
       } else if (a2->entry[sort3]) {
 	 if (!(tmp_p3 = strchr(a2->entry[sort3],'\1'))) tmp_p3=a2->entry[sort3]+1;
-	 if ((str2 = (char *)malloc(strlen(tmp_p3)+1)) == NULL) {
+	 if ((str2 = malloc(strlen(tmp_p3)+1)) == NULL) {
 	    return 0;
 	 }
 	 strcpy(str2, tmp_p3);

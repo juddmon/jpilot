@@ -1,4 +1,4 @@
-/* $Id: todo.c,v 1.39 2005/09/26 03:27:59 judd Exp $ */
+/* $Id: todo.c,v 1.40 2005/12/18 15:05:40 rousseau Exp $ */
 
 /*******************************************************************************
  * todo.c
@@ -523,7 +523,7 @@ int get_todos2(ToDoList **todo_list, int sort_order,
          buf = charset_p2newj(todo.description, strlen(todo.description)+1, char_set);
          if (buf) {
 	    /* JPA use new conversion routines
-	     if ((buf = (char *)malloc(strlen(todo.description)*2+1)) != NULL) {
+	     if ((buf = malloc(strlen(todo.description)*2+1)) != NULL) {
 	     strcpy(buf, todo.description);
 	     charset_p2j((unsigned char *)buf, strlen(todo.description)*2+1, char_set);
 	     */
@@ -535,7 +535,7 @@ int get_todos2(ToDoList **todo_list, int sort_order,
 	 buf = charset_p2newj(todo.note, strlen(todo.note)+1, char_set);
          if (buf) {
 	    /* JPA use new conversion routines
-	     if ((buf = (char *)malloc(strlen(todo.note)*2+1)) != NULL) {
+	     if ((buf = malloc(strlen(todo.note)*2+1)) != NULL) {
 	     strcpy(buf, todo.note);
 	     charset_p2j((unsigned char *)buf, strlen(todo.note)*2+1, char_set);
 	     */
