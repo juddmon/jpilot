@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.130 2005/12/18 15:46:54 rousseau Exp $ */
+/* $Id: jpilot.c,v 1.131 2005/12/19 20:22:06 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -2460,10 +2460,8 @@ char * xpm_backup[] = {
    gtk_container_set_border_width(GTK_CONTAINER(temp_hbox), 5);
    gtk_paned_pack2(GTK_PANED(output_pane), temp_hbox, FALSE, FALSE);
 
-   temp_vbox = gtk_vbutton_box_new();
-   gtk_button_box_set_spacing(GTK_BUTTON_BOX(temp_vbox), 6);
+   temp_vbox = gtk_vbox_new(FALSE, 3);
    gtk_container_set_border_width(GTK_CONTAINER(temp_vbox), 6);
-   gtk_button_box_set_layout(GTK_BUTTON_BOX(temp_vbox), GTK_BUTTONBOX_END);
    gtk_box_pack_end(GTK_BOX(temp_hbox), temp_vbox, FALSE, FALSE, 0);
 
 #ifdef ENABLE_GTK2
