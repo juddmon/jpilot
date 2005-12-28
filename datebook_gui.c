@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.130 2005/12/18 15:05:40 rousseau Exp $ */
+/* $Id: datebook_gui.c,v 1.131 2005/12/28 02:26:17 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -822,7 +822,13 @@ void appt_export_ok(int type, const char *filename)
 		 now->tm_hour,
 		 now->tm_min,
 		 now->tm_sec);
-	 g_strlcpy(text, mappt->appt.description, 51);
+	 /* Handle pathological case with null description.
+	  * Bugzilla Bug 1533 */
+	 if (mappt->appt.description) {
+	    g_strlcpy(text, mappt->appt.description, 51);
+	 } else {
+	    text[0] = '\0';
+	 }
 	 if ((p = strchr(text, '\n'))) {
 	    *p = '\0';
 	 }
