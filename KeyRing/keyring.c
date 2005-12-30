@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.55 2005/12/06 03:33:01 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.56 2005/12/30 02:36:44 judd Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -79,7 +79,7 @@ struct KeyRing {
    char *account;  /* Encrypted */
    char *password; /* Encrypted */
    char *note;	   /* Encrypted */
-   unsigned long last_changed; /* Encrypted */
+   struct tm last_changed; /* Encrypted */
 };
 /* 
  * This is my wrapper to the KeyRing structure so that I can put
@@ -102,6 +102,7 @@ static GtkWidget *clist;
 static GtkWidget *entry_name;
 static GtkWidget *entry_account;
 static GtkWidget *entry_password;
+static GtkWidget *entry_last_changed;
 static GtkWidget *keyr_note;
 #ifdef ENABLE_GTK2
 static GObject	 *keyr_note_buffer;
@@ -165,18 +166,33 @@ static int pack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size,
    int n;
    int i;
    char empty[]="";
+   time_t ltime;
+   struct tm *now;
+   char last_changed[2];
+   unsigned short packed_date;
 
    jp_logf(JP_LOG_DEBUG, "KeyRing: pack_KeyRing()\n");
 
-   *wrote_size=0;
+   /* Put the current time in the lastChanged part of the record */
+   time(&ltime);
+   now = localtime(&ltime);
+   memcpy(&(kr->last_changed), now, sizeof(struct tm));
+   
+   packed_date = (((now->tm_year - 4) << 9) & 0xFE00) |
+     (((now->tm_mon+1) << 5) & 0x01E0) |
+     (now->tm_mday & 0x001F);
+   set_short(last_changed, packed_date);
 
+   *wrote_size=0;
+   
    if (!(kr->name))	kr->name=empty;
    if (!(kr->account))	kr->account=empty;
    if (!(kr->password)) kr->password=empty;
    if (!(kr->note))	kr->note=empty;
 
+   /* 2 is for the lastChanged date */
    /* 3 chars accounts for NULL string terminators */
-   n=strlen(kr->account) + strlen(kr->password) + strlen(kr->note) + 3;
+   n=strlen(kr->account) + strlen(kr->password) + strlen(kr->note) + 2 + 3;
    /* The encrypted portion must be a multiple of 8 */
    if ((n%8)) {
       n=n+(8-(n%8));
@@ -199,6 +215,8 @@ static int pack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size,
    strcpy(&buf[i], kr->password);
    i += strlen(kr->password)+1;
    strcpy(&buf[i], kr->note);
+   i += strlen(kr->note)+1;
+   strncpy(&buf[i], last_changed, 2);
    for (i=strlen(kr->name)+1; i<n; i=i+8) {
       /* des_encrypt3((DES_LONG *)&buf[i], s1, s2, s1); */
 #ifdef HEADER_NEW_DES_H
@@ -226,8 +244,9 @@ static int unpack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size)
    int rem;
    unsigned char *clear_text;
    unsigned char *P;
-   unsigned char *Pstr[3];
-   unsigned char *safety[]={"","",""};
+   unsigned char *Pstr[4];
+   unsigned char *safety[]={"","","",""};
+   unsigned short packed_date;
 
    jp_logf(JP_LOG_DEBUG, "KeyRing: unpack_KeyRing\n");
    if (!memchr(buf, '\0', buf_size)) {
@@ -266,24 +285,39 @@ static int unpack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size)
    Pstr[0]=clear_text;
    Pstr[1]=safety[1];
    Pstr[2]=safety[2];
+   Pstr[3]=safety[3];
 
-   for (i=0, j=1; (i<rem) && (j<3); i++) {
+   for (i=0, j=1; (i<rem) && (j<4); i++) {
       if (!clear_text[i]) {
 	 Pstr[j]=&clear_text[i+1];
 	 j++;
       }
    }
 
+   kr->name=strdup(buf);
+   kr->account=strdup(Pstr[0]);
+   kr->password=strdup(Pstr[1]);
+   kr->note=strdup(Pstr[2]);
+
+   packed_date = get_short(Pstr[3]);
+   kr->last_changed.tm_year = ((packed_date & 0xFE00) >> 9) + 4;
+   kr->last_changed.tm_mon  = ((packed_date & 0x01E0) >> 5) - 1;
+   kr->last_changed.tm_mday = (packed_date & 0x001F);
+   kr->last_changed.tm_hour = 0;
+   kr->last_changed.tm_min  = 0;
+   kr->last_changed.tm_sec  = 0;
+   kr->last_changed.tm_isdst= -1;
+
 #ifdef DEBUG
    printf("name  [%s]\n", buf);
    printf("Pstr0 [%s]\n", Pstr[0]);
    printf("Pstr1 [%s]\n", Pstr[1]);
    printf("Pstr2 [%s]\n", Pstr[2]);
+   printf("last_changed %d-%d-%d\n",
+	  kr->last_changed.tm_year,
+	  kr->last_changed.tm_mon,
+	  kr->last_changed.tm_mday);
 #endif
-   kr->name=strdup(buf);
-   kr->account=strdup(Pstr[0]);
-   kr->password=strdup(Pstr[1]);
-   kr->note=strdup(Pstr[2]);
 
    free(clear_text);
 
@@ -578,6 +612,8 @@ static void connect_changed_signals(int con_or_dis)
 			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
       gtk_signal_connect(GTK_OBJECT(entry_password), "changed",
 			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+      gtk_signal_connect(GTK_OBJECT(entry_last_changed), "changed",
+			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
 #ifdef ENABLE_GTK2
       g_signal_connect(keyr_note_buffer, "changed",
 			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
@@ -605,6 +641,8 @@ static void connect_changed_signals(int con_or_dis)
       gtk_signal_disconnect_by_func(GTK_OBJECT(entry_account),
 				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
       gtk_signal_disconnect_by_func(GTK_OBJECT(entry_password),
+				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+      gtk_signal_disconnect_by_func(GTK_OBJECT(entry_last_changed),
 				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
 #ifdef ENABLE_GTK2
       g_signal_handlers_disconnect_by_func(keyr_note_buffer,
@@ -741,6 +779,7 @@ static int keyr_clear_details()
    gtk_entry_set_text(GTK_ENTRY(entry_name), "");
    gtk_entry_set_text(GTK_ENTRY(entry_account), "");
    gtk_entry_set_text(GTK_ENTRY(entry_password), "");
+   gtk_entry_set_text(GTK_ENTRY(entry_last_changed), "");
 #ifdef ENABLE_GTK2
    gtk_text_buffer_set_text(GTK_TEXT_BUFFER(keyr_note_buffer), "", -1);
 #else
@@ -804,6 +843,10 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    kr.name     = (char *)gtk_entry_get_text(GTK_ENTRY(entry_name));
    kr.account  = (char *)gtk_entry_get_text(GTK_ENTRY(entry_account));
    kr.password = (char *)gtk_entry_get_text(GTK_ENTRY(entry_password));
+
+   /* If we make entry_last_changed editable then we will need
+    * to collect the last changed date info here
+    */
 #ifdef ENABLE_GTK2
    gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(keyr_note_buffer),&start_iter,&end_iter);
    kr.note = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(keyr_note_buffer),&start_iter,&end_iter,TRUE);
@@ -1070,7 +1113,9 @@ static void cb_clist_selection(GtkWidget      *clist,
    unsigned int unique_id = 0;
    char *temp_str;
    int len;
-  
+   const char *short_date;
+   char temp[255];
+
    jp_logf(JP_LOG_DEBUG, "KeyRing: cb_clist_selection\n");
 
    if ((record_changed==MODIFY_FLAG) || (record_changed==NEW_FLAG)) {
@@ -1158,7 +1203,11 @@ static void cb_clist_selection(GtkWidget      *clist,
    } else {
       gtk_entry_set_text(GTK_ENTRY(entry_password), "");
    }
-   
+
+   get_pref(PREF_SHORTDATE, NULL, &short_date);
+   strftime(temp, sizeof(temp), short_date, &(mkr->kr.last_changed));
+   gtk_entry_set_text(GTK_ENTRY(entry_last_changed), temp);
+
 #ifdef ENABLE_GTK2
    gtk_text_buffer_set_text(GTK_TEXT_BUFFER(keyr_note_buffer), "", -1);
 #else
@@ -2058,7 +2107,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_box_pack_start(GTK_BOX(vbox2), separator, FALSE, FALSE, 5);
 
    /* Table */
-   table = gtk_table_new(4, 10, FALSE);
+   table = gtk_table_new(5, 10, FALSE);
    gtk_table_set_row_spacings(GTK_TABLE(table),0);
    gtk_table_set_col_spacings(GTK_TABLE(table),0);
    gtk_box_pack_start(GTK_BOX(vbox2), table, FALSE, FALSE, 0);
@@ -2089,6 +2138,18 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label), 0, 1, 3, 4);
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(entry_password), 1, 9, 3, 4);
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
+
+   /* last changed */
+   label = gtk_label_new(_("last changed: "));
+   gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label), 0, 1, 4, 5);
+   gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
+
+   hbox_temp = gtk_hbox_new(FALSE, 0);
+   gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(hbox_temp), 1, 10, 4, 5);
+
+   entry_last_changed = gtk_entry_new();
+   gtk_entry_set_editable(GTK_ENTRY(entry_last_changed), FALSE);
+   gtk_box_pack_start(GTK_BOX(hbox_temp), entry_last_changed, FALSE, FALSE, 0);
 
    /* Button for random password */
    button = gtk_button_new_with_label(_("Generate Password"));
@@ -2158,4 +2219,3 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
 
    return EXIT_SUCCESS;
 }
-
