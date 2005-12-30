@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.106 2005/12/18 14:22:44 rousseau Exp $ */
+/* $Id: utils.c,v 1.107 2005/12/30 17:05:36 judd Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -62,10 +62,6 @@ extern GtkWidget *glob_dialog;
 int dialog_result;
 
 unsigned int glob_find_id;
-
-/*Stuff for the calendar window */
-static int glob_cal_return_code;
-static int glob_cal_mon, glob_cal_day, glob_cal_year;
 
 /*
  * Returns usage string that needs to be freed by the caller
@@ -979,13 +975,6 @@ int hack_clist_set_column_title_pixmap(GtkWidget *clist,
 /*
  * Start of GTK calendar code
  */
-#define PRESSED_P            100
-#define PRESSED_A            101
-#define PRESSED_TAB_OR_MINUS 102
-
-static GtkWidget *util_cal;
-static GtkWidget *cal_window;
-
 static void
 cb_today(GtkWidget *widget,
 	 gpointer   data)
@@ -1013,17 +1002,30 @@ cb_quit(GtkWidget *widget,
 	gpointer   data)
 {
    unsigned int y,m,d;
+   unsigned int *Py,*Pm,*Pd;
+   int *Preturn_code;
+   GtkWidget *cal=NULL;
+   GtkWidget *window;
 
-   glob_cal_return_code = GPOINTER_TO_INT(data);
+   window = gtk_widget_get_toplevel(widget);
 
-   if (glob_cal_return_code==CAL_DONE) {
-      gtk_calendar_get_date(GTK_CALENDAR(util_cal),&y,&m,&d);
-      glob_cal_mon=m;
-      glob_cal_day=d;
-      glob_cal_year=y;
+   Preturn_code = gtk_object_get_data(GTK_OBJECT(window), "return_code");
+   if (Preturn_code) *Preturn_code = GPOINTER_TO_INT(data);
+   cal = gtk_object_get_data(GTK_OBJECT(window), "cal");
+
+   if (*Preturn_code==CAL_DONE) {
+      if (cal) {
+	 gtk_calendar_get_date(GTK_CALENDAR(cal),&y,&m,&d);
+	 Pm = gtk_object_get_data(GTK_OBJECT(window), "mon");
+	 Pd = gtk_object_get_data(GTK_OBJECT(window), "day");
+	 Py = gtk_object_get_data(GTK_OBJECT(window), "year");
+	 if (Pm) *Pm=m;
+	 if (Pd) *Pd=d;
+	 if (Py) *Py=y;
+      }
    }
 
-   gtk_widget_destroy(cal_window);
+   gtk_widget_destroy(window);
 }
 
 /* mon 0-11
@@ -1039,27 +1041,27 @@ int cal_dialog(GtkWindow *main_window,
    GtkWidget *button;
    GtkWidget *vbox;
    GtkWidget *hbox;
-   glob_cal_mon = *mon;
-   glob_cal_day = *day;
-   glob_cal_year = (*year) + 1900;
+   GtkWidget *cal;
+   GtkWidget *window;
+   int return_code;
 
-   cal_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-   gtk_window_set_title(GTK_WINDOW(cal_window), title);
+   window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+   gtk_window_set_title(GTK_WINDOW(window), title);
 
-   gtk_window_set_position(GTK_WINDOW(cal_window), GTK_WIN_POS_MOUSE);
+   gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_MOUSE);
 
-   gtk_window_set_modal(GTK_WINDOW(cal_window), TRUE);
+   gtk_window_set_modal(GTK_WINDOW(window), TRUE);
 
-   gtk_window_set_transient_for(GTK_WINDOW(cal_window), GTK_WINDOW(main_window));
+   gtk_window_set_transient_for(GTK_WINDOW(window), GTK_WINDOW(main_window));
 
-   gtk_signal_connect(GTK_OBJECT(cal_window), "destroy",
-		      GTK_SIGNAL_FUNC(cb_destroy), cal_window);
+   gtk_signal_connect(GTK_OBJECT(window), "destroy",
+		      GTK_SIGNAL_FUNC(cb_destroy), window);
 
    vbox = gtk_vbox_new(FALSE, 0);
-   gtk_container_add(GTK_CONTAINER(cal_window), vbox);
+   gtk_container_add(GTK_CONTAINER(window), vbox);
 
-   util_cal = gtk_calendar_new();
-   gtk_box_pack_start(GTK_BOX(vbox), util_cal, TRUE, TRUE, 0);
+   cal = gtk_calendar_new();
+   gtk_box_pack_start(GTK_BOX(vbox), cal, TRUE, TRUE, 0);
 
    hbox = gtk_hbutton_box_new();
    gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
@@ -1067,21 +1069,21 @@ int cal_dialog(GtkWindow *main_window,
    gtk_button_box_set_spacing(GTK_BUTTON_BOX(hbox), 6);
    gtk_container_add(GTK_CONTAINER(vbox), hbox);
 
-   gtk_calendar_display_options(GTK_CALENDAR(util_cal),
+   gtk_calendar_display_options(GTK_CALENDAR(cal),
 				GTK_CALENDAR_SHOW_HEADING |
 				GTK_CALENDAR_SHOW_DAY_NAMES |
 				/*GTK_CALENDAR_NO_MONTH_CHANGE |*/
 				GTK_CALENDAR_SHOW_WEEK_NUMBERS |
 				(monday_is_fdow ? GTK_CALENDAR_WEEK_START_MONDAY : 0));
 
-   /* gtk_signal_connect(GTK_OBJECT(util_cal), "day_selected", cb_cal_sel, NULL); */
-   gtk_signal_connect(GTK_OBJECT(util_cal), "day_selected_double_click", GTK_SIGNAL_FUNC(cb_quit),
+   /* gtk_signal_connect(GTK_OBJECT(cal), "day_selected", cb_cal_sel, NULL); */
+   gtk_signal_connect(GTK_OBJECT(cal), "day_selected_double_click", GTK_SIGNAL_FUNC(cb_quit),
 		      GINT_TO_POINTER(CAL_DONE));
 
-   /* gtk_calendar_mark_day(GTK_CALENDAR(util_cal), 23); */
+   /* gtk_calendar_mark_day(GTK_CALENDAR(cal), 23); */
 
-   gtk_calendar_select_month(GTK_CALENDAR(util_cal), *mon, (*year)+1900);
-   gtk_calendar_select_day(GTK_CALENDAR(util_cal), *day);
+   gtk_calendar_select_month(GTK_CALENDAR(cal), *mon, (*year)+1900);
+   gtk_calendar_select_day(GTK_CALENDAR(cal), *day);
 
 
    /* Bottom Buttons */
@@ -1097,7 +1099,7 @@ int cal_dialog(GtkWindow *main_window,
    button = gtk_button_new_with_label(_("Today"));
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_today), util_cal);
+		      GTK_SIGNAL_FUNC(cb_today), cal);
 
 #ifdef ENABLE_GTK2
    button = gtk_button_new_from_stock(GTK_STOCK_OK);
@@ -1108,17 +1110,19 @@ int cal_dialog(GtkWindow *main_window,
    gtk_signal_connect(GTK_OBJECT(button), "clicked", GTK_SIGNAL_FUNC(cb_quit),
 		      GINT_TO_POINTER(CAL_DONE));
 
-   gtk_widget_show_all(cal_window);
+   gtk_object_set_data(GTK_OBJECT(window), "mon", mon);
+   gtk_object_set_data(GTK_OBJECT(window), "day", day);
+   gtk_object_set_data(GTK_OBJECT(window), "year", year);
+   gtk_object_set_data(GTK_OBJECT(window), "return_code", &return_code);
+   gtk_object_set_data(GTK_OBJECT(window), "cal", cal);
+   
+   gtk_widget_show_all(window);
 
    gtk_main();
 
-   if (glob_cal_return_code==CAL_DONE) {
-      *mon = glob_cal_mon;
-      *day = glob_cal_day;
-      *year = glob_cal_year - 1900;
-   }
+   *year -= 1900;
 
-   return glob_cal_return_code;
+   return return_code;
 }
 /*
  * End of GTK calendar code
