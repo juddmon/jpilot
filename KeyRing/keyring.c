@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.56 2005/12/30 02:36:44 judd Exp $ */
+/* $Id: keyring.c,v 1.57 2005/12/30 19:01:08 judd Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -102,7 +102,6 @@ static GtkWidget *clist;
 static GtkWidget *entry_name;
 static GtkWidget *entry_account;
 static GtkWidget *entry_password;
-static GtkWidget *entry_last_changed;
 static GtkWidget *keyr_note;
 #ifdef ENABLE_GTK2
 static GObject	 *keyr_note_buffer;
@@ -121,6 +120,8 @@ static GtkWidget *undelete_record_button;
 static GtkWidget *copy_record_button;
 static GtkWidget *cancel_record_button;
 static GtkWidget *pane = NULL;
+static GtkWidget *date_button;
+struct tm glob_date;
 #ifndef ENABLE_STOCK_BUTTONS
 static GtkAccelGroup *accel_group;
 #endif
@@ -166,21 +167,14 @@ static int pack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size,
    int n;
    int i;
    char empty[]="";
-   time_t ltime;
-   struct tm *now;
    char last_changed[2];
    unsigned short packed_date;
 
    jp_logf(JP_LOG_DEBUG, "KeyRing: pack_KeyRing()\n");
 
-   /* Put the current time in the lastChanged part of the record */
-   time(&ltime);
-   now = localtime(&ltime);
-   memcpy(&(kr->last_changed), now, sizeof(struct tm));
-   
-   packed_date = (((now->tm_year - 4) << 9) & 0xFE00) |
-     (((now->tm_mon+1) << 5) & 0x01E0) |
-     (now->tm_mday & 0x001F);
+   packed_date = (((kr->last_changed.tm_year - 4) << 9) & 0xFE00) |
+     (((kr->last_changed.tm_mon+1) << 5) & 0x01E0) |
+     (kr->last_changed.tm_mday & 0x001F);
    set_short(last_changed, packed_date);
 
    *wrote_size=0;
@@ -612,7 +606,7 @@ static void connect_changed_signals(int con_or_dis)
 			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
       gtk_signal_connect(GTK_OBJECT(entry_password), "changed",
 			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-      gtk_signal_connect(GTK_OBJECT(entry_last_changed), "changed",
+      gtk_signal_connect(GTK_OBJECT(date_button), "pressed",
 			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
 #ifdef ENABLE_GTK2
       g_signal_connect(keyr_note_buffer, "changed",
@@ -642,7 +636,7 @@ static void connect_changed_signals(int con_or_dis)
 				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
       gtk_signal_disconnect_by_func(GTK_OBJECT(entry_password),
 				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-      gtk_signal_disconnect_by_func(GTK_OBJECT(entry_last_changed),
+      gtk_signal_disconnect_by_func(GTK_OBJECT(date_button),
 				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
 #ifdef ENABLE_GTK2
       g_signal_handlers_disconnect_by_func(keyr_note_buffer,
@@ -764,6 +758,17 @@ static void cb_cancel(GtkWidget *widget, gpointer data)
    keyr_update_clist();
 }
 
+static void update_date_button(GtkWidget *button, struct tm *t)
+{
+   const char *short_date;
+   char str[255];
+
+   get_pref(PREF_SHORTDATE, NULL, &short_date);
+   strftime(str, sizeof(str), short_date, t);
+
+   gtk_label_set_text(GTK_LABEL(GTK_BIN(button)->child), str);
+}
+
 /*
  * This is called when the "Clear" button is pressed.
  * It just clears out all the detail fields on the right-hand side.
@@ -771,15 +776,22 @@ static void cb_cancel(GtkWidget *widget, gpointer data)
 static int keyr_clear_details()
 {
    int new_cat;
+   struct tm *now;
+   time_t ltime;
 
    jp_logf(JP_LOG_DEBUG, "KeyRing: cb_clear\n");
 
    connect_changed_signals(DISCONNECT_SIGNALS);
 
+   /* Put the current time in the lastChanged part of the record */
+   time(&ltime);
+   now = localtime(&ltime);
+   memcpy(&glob_date, now, sizeof(struct tm));
+   update_date_button(date_button, &glob_date);
+
    gtk_entry_set_text(GTK_ENTRY(entry_name), "");
    gtk_entry_set_text(GTK_ENTRY(entry_account), "");
    gtk_entry_set_text(GTK_ENTRY(entry_password), "");
-   gtk_entry_set_text(GTK_ENTRY(entry_last_changed), "");
 #ifdef ENABLE_GTK2
    gtk_text_buffer_set_text(GTK_TEXT_BUFFER(keyr_note_buffer), "", -1);
 #else
@@ -844,9 +856,9 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    kr.account  = (char *)gtk_entry_get_text(GTK_ENTRY(entry_account));
    kr.password = (char *)gtk_entry_get_text(GTK_ENTRY(entry_password));
 
-   /* If we make entry_last_changed editable then we will need
-    * to collect the last changed date info here
-    */
+   /* Put the glob_date in the lastChanged part of the record */
+   memcpy(&(kr.last_changed), &glob_date, sizeof(struct tm));
+   
 #ifdef ENABLE_GTK2
    gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(keyr_note_buffer),&start_iter,&end_iter);
    kr.note = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(keyr_note_buffer),&start_iter,&end_iter,TRUE);
@@ -932,6 +944,19 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    keyring_find(br.unique_id);
 
    return;
+}
+
+static void cb_date_button(GtkWidget *widget, gpointer data)
+{
+   long fdow;
+
+   get_pref(PREF_FDOW, &fdow, NULL);
+
+   jp_cal_dialog(GTK_WINDOW(gtk_widget_get_toplevel(widget)), "", fdow,
+		 &(glob_date.tm_mon),
+		 &(glob_date.tm_mday),
+		 &(glob_date.tm_year));
+   update_date_button(date_button, &glob_date);
 }
 
 /* First pass at password generating code */
@@ -1113,8 +1138,6 @@ static void cb_clist_selection(GtkWidget      *clist,
    unsigned int unique_id = 0;
    char *temp_str;
    int len;
-   const char *short_date;
-   char temp[255];
 
    jp_logf(JP_LOG_DEBUG, "KeyRing: cb_clist_selection\n");
 
@@ -1204,9 +1227,8 @@ static void cb_clist_selection(GtkWidget      *clist,
       gtk_entry_set_text(GTK_ENTRY(entry_password), "");
    }
 
-   get_pref(PREF_SHORTDATE, NULL, &short_date);
-   strftime(temp, sizeof(temp), short_date, &(mkr->kr.last_changed));
-   gtk_entry_set_text(GTK_ENTRY(entry_last_changed), temp);
+   memcpy(&glob_date, &(mkr->kr.last_changed), sizeof(struct tm));
+   update_date_button(date_button, &(mkr->kr.last_changed));
 
 #ifdef ENABLE_GTK2
    gtk_text_buffer_set_text(GTK_TEXT_BUFFER(keyr_note_buffer), "", -1);
@@ -2144,12 +2166,10 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label), 0, 1, 4, 5);
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
 
-   hbox_temp = gtk_hbox_new(FALSE, 0);
-   gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(hbox_temp), 1, 10, 4, 5);
-
-   entry_last_changed = gtk_entry_new();
-   gtk_entry_set_editable(GTK_ENTRY(entry_last_changed), FALSE);
-   gtk_box_pack_start(GTK_BOX(hbox_temp), entry_last_changed, FALSE, FALSE, 0);
+   date_button = gtk_button_new_with_label("");
+   gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(date_button), 1, 10, 4, 5);
+   gtk_signal_connect(GTK_OBJECT(date_button), "clicked",
+		      GTK_SIGNAL_FUNC(cb_date_button), date_button);
 
    /* Button for random password */
    button = gtk_button_new_with_label(_("Generate Password"));

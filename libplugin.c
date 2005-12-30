@@ -1,4 +1,4 @@
-/* $Id: libplugin.c,v 1.26 2005/12/18 15:05:40 rousseau Exp $ */
+/* $Id: libplugin.c,v 1.27 2005/12/30 19:01:08 judd Exp $ */
 
 /*******************************************************************************
  * libplugin.c
@@ -1028,4 +1028,3 @@ int jp_read_DB_files(char *DB_name, GList **records)
 
    return recs_returned;
 }
-

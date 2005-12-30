@@ -1,4 +1,4 @@
-/* $Id: libplugin.h,v 1.21 2005/11/06 05:30:44 rikster5 Exp $ */
+/* $Id: libplugin.h,v 1.22 2005/12/30 19:01:08 judd Exp $ */
 
 /*******************************************************************************
  * libplugin.h
@@ -297,6 +297,18 @@ int get_app_info_size(FILE *in, int *size);
  * The main window passed in would be fastest.
  * changed is MODIFY_FLAG, or NEW_FLAG
  */
+int dialog_save_changed_record(GtkWidget *widget, int changed);
+
+/* mon 0-11
+ * day 1-31
+ * year (year - 1900)
+ * This function will bring up the cal at mon, day, year
+ * After a new date is selected it will return mon, day, year
+ */
+int jp_cal_dialog(GtkWindow *main_window,
+		  const char *title, int monday_is_fdow,
+		  int *mon, int *day, int *year);
+
 int dialog_save_changed_record(GtkWidget *widget, int changed);
 
 /*

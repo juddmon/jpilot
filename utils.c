@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.107 2005/12/30 17:05:36 judd Exp $ */
+/* $Id: utils.c,v 1.108 2005/12/30 19:01:08 judd Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -1123,6 +1123,15 @@ int cal_dialog(GtkWindow *main_window,
    *year -= 1900;
 
    return return_code;
+}
+
+int jp_cal_dialog(GtkWindow *main_window,
+		  const char *title, int monday_is_fdow,
+		  int *mon, int *day, int *year)
+{
+   return cal_dialog(main_window,
+		     title, monday_is_fdow,
+		     mon, day, year);
 }
 /*
  * End of GTK calendar code
