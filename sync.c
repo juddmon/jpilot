@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.61 2005/12/18 14:54:39 rousseau Exp $ */
+/* $Id: sync.c,v 1.62 2005/12/30 04:33:45 rikster5 Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -455,6 +455,7 @@ int jp_pilot_connect(int *Psd, const char *device)
    if (ret < 0) {
       jp_logf(JP_LOG_WARN, "pi_bind error: %s %s\n", device, strerror(errno));
       jp_logf(JP_LOG_WARN, _("Check your serial port and settings\n"));
+      pi_close(sd);
       return SYNC_ERROR_BIND;
    }
 
@@ -572,6 +573,7 @@ int jp_pilot_connect(int *Psd, const char *device)
    if (ret == -1) {
       jp_logf(JP_LOG_WARN, "pi_bind error: %s %s\n", device, strerror(errno));
       jp_logf(JP_LOG_WARN, _("Check your serial port and settings\n"));
+      pi_close(sd);
       return SYNC_ERROR_BIND;
    }
 
