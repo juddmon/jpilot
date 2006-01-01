@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.109 2006/01/01 22:33:05 rousseau Exp $ */
+/* $Id: utils.c,v 1.110 2006/01/01 22:36:32 rousseau Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -1162,9 +1162,12 @@ int dialog_generic(GtkWindow *main_window,
 			     char *text, int nob, char *button_text[])
 {
    GtkWidget *button, *label1;
-   GtkWidget *hbox1, *vbox1, *vbox2, *image;
+   GtkWidget *hbox1, *vbox1, *vbox2;
    int i;
+#ifdef ENABLE_GTK2
+   GtkWidget *image;
    char *markup;
+#endif
 
    /* This gdk function call is required in order to avoid a GTK
     * error which causes X and the mouse pointer to lock up.

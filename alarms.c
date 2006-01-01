@@ -1,4 +1,4 @@
-/* $Id: alarms.c,v 1.34 2005/12/18 14:54:39 rousseau Exp $ */
+/* $Id: alarms.c,v 1.35 2006/01/01 22:36:32 rousseau Exp $ */
 
 /*******************************************************************************
  * alarms.c
@@ -172,8 +172,8 @@ int dialog_alarm(char *title, char *reason,
    struct alarm_dialog_data *Pdata;
    long pref_units;
    long pref_entry;
-   GtkWidget *image;
 #ifdef ENABLE_GTK2
+   GtkWidget *image;
    char *markup;
 #else
    char markup[2048];
