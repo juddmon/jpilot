@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.53 2005/11/27 00:07:23 judd Exp $ */
+/* $Id: utils.h,v 1.54 2006/01/01 22:33:44 rousseau Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -572,4 +572,7 @@ char *charset_p2newj(const char *buf, int max_len, int char_set);
 
 void jp_charset_p2j(char *buf, int max_len);
 size_t jp_strftime(char *s, size_t max, const char *format, const struct tm *tm);
+#ifndef ENABLE_GTK2
+size_t g_strlcpy(char *dst, const char *src, size_t siz);
+#endif
 #endif
