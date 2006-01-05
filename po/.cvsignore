@@ -7,6 +7,7 @@ fr.gmo
 @GETTEXT_PACKAGE@.pot
 it.gmo
 ja.gmo
+ko.gmo
 Makefile
 Makefile.in
 nl.gmo
@@ -16,6 +17,7 @@ rw.gmo
 stamp-po
 sv.gmo
 tr.gmo
+uk.gmo
 vi.gmo
 zh_CN.gmo
 zh_TW.gmo
