@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.132 2006/01/05 17:17:15 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.133 2006/01/05 22:52:32 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -2597,8 +2597,8 @@ static void cb_add_new_record(GtkWidget *widget,
 
    if (flag==CLEAR_FLAG) {
       /*Clear button was hit */
-      connect_changed_signals(DISCONNECT_SIGNALS);
       clear_details();
+      connect_changed_signals(DISCONNECT_SIGNALS);
       set_new_button_to(NEW_FLAG);
       gtk_widget_grab_focus(GTK_WIDGET(text_widget1));
       return;

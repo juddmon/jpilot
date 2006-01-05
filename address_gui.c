@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.119 2006/01/05 17:17:15 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.120 2006/01/05 22:52:32 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -1470,8 +1470,9 @@ void cb_address_clear(GtkWidget *widget,
 {
    addr_clear_details();
    gtk_notebook_set_page(GTK_NOTEBOOK(notebook), 0);
-   gtk_widget_grab_focus(GTK_WIDGET(address_text[0]));
+   connect_changed_signals(DISCONNECT_SIGNALS);
    set_new_button_to(NEW_FLAG);
+   gtk_widget_grab_focus(GTK_WIDGET(address_text[0]));
 }
 
 /* Attempt to make the best possible string out of whatever garbage we find
