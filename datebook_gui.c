@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.133 2006/01/05 22:52:32 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.134 2006/01/05 23:18:33 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -104,7 +104,7 @@ static GtkWidget *todo_vbox;
 static void highlight_days();
 
 static int datebook_find();
-static int dayview_update_clist();
+static int datebook_update_clist();
 static void update_endon_button(GtkWidget *button, struct tm *t);
 static void set_begin_end_labels(struct tm *begin, struct tm *end, int flags);
 
@@ -1237,7 +1237,7 @@ static void cb_category(GtkWidget *widget, gpointer data)
    } else {
       datebook_category=0x0000;
    }
-   dayview_update_clist();
+   datebook_update_clist();
 }
 
 static void cb_toggle(GtkWidget *widget, int category)
@@ -1267,7 +1267,7 @@ static void cb_toggle(GtkWidget *widget, int category)
       datebook_category &= ~cat_bit;
    }
 
-   dayview_update_clist();
+   datebook_update_clist();
 }
 
 void cb_date_cats(GtkWidget *widget, gpointer data)
@@ -1743,7 +1743,7 @@ static void clear_begin_end_labels()
 			UPDATE_DATE_MENUS);
 }
 
-static void clear_details()
+static void appt_clear_details()
 {
    int i;
    struct tm today;
@@ -2181,7 +2181,7 @@ static void clear_myappointment(MyAppointment *mappt)
 }
 /* End Masking */
 
-static int dayview_update_clist()
+static int datebook_update_clist()
 {
    int num_entries, entries_shown, num, i;
    AppointmentList *temp_al;
@@ -2211,7 +2211,7 @@ static int dayview_update_clist()
    char str[DATEBOOK_MAX_COLUMN_LEN+2];
    char str2[DATEBOOK_MAX_COLUMN_LEN];
 
-   jp_logf(JP_LOG_DEBUG, "dayview_update_clist()\n");
+   jp_logf(JP_LOG_DEBUG, "datebook_update_clist()\n");
 
    free_AppointmentList(&glob_al);
 
@@ -2409,7 +2409,7 @@ static int dayview_update_clist()
       }
    } else {
       set_new_button_to(CLEAR_FLAG);
-      clear_details();
+      appt_clear_details();
    }
 
    gtk_clist_thaw(GTK_CLIST(clist));
@@ -2597,7 +2597,7 @@ static void cb_add_new_record(GtkWidget *widget,
 
    if (flag==CLEAR_FLAG) {
       /*Clear button was hit */
-      clear_details();
+      appt_clear_details();
       connect_changed_signals(DISCONNECT_SIGNALS);
       set_new_button_to(NEW_FLAG);
       gtk_widget_grab_focus(GTK_WIDGET(text_widget1));
@@ -2714,7 +2714,7 @@ static void cb_add_new_record(GtkWidget *widget,
 
    free_Appointment(&new_appt);
 
-   dayview_update_clist();
+   datebook_update_clist();
    highlight_days();
 
    glob_find_id = unique_id;
@@ -2797,7 +2797,7 @@ void cb_delete_appt(GtkWidget *widget, gpointer data)
    }
 
    if ((flag == DELETE_FLAG) || (result == DIALOG_SAID_CURRENT))  {
-      dayview_update_clist();
+      datebook_update_clist();
       highlight_days();
    }
 }
@@ -2840,7 +2840,7 @@ void cb_undelete_appt(GtkWidget *widget,
       */
    }
 
-   dayview_update_clist();
+   datebook_update_clist();
    highlight_days();
 }
 
@@ -3299,7 +3299,7 @@ void cb_cal_changed(GtkWidget *widget,
       highlight_days();
    }
    clist_row_selected = 0;
-   dayview_update_clist();
+   datebook_update_clist();
 
    /* Keep focus on calendar so that GTK accelerator keys for calendar
     * can continue to be used */
@@ -3436,7 +3436,7 @@ int datebook_refresh(int first, int do_init)
 		      "day_selected", GTK_SIGNAL_FUNC(cb_cal_changed),
 		      GINT_TO_POINTER(CAL_DAY_SELECTED));
 
-   dayview_update_clist();
+   datebook_update_clist();
    highlight_days();
    set_date_labels();
 
