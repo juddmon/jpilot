@@ -1,4 +1,4 @@
-/* $Id: alarms.c,v 1.35 2006/01/01 22:36:32 rousseau Exp $ */
+/* $Id: alarms.c,v 1.36 2006/01/05 05:04:22 rikster5 Exp $ */
 
 /*******************************************************************************
  * alarms.c
@@ -561,7 +561,11 @@ int alarms_do_one(struct Appointment *appt,
    strftime(time1_str, sizeof(time1_str), pref_time, &begin);
    tm_copy_with_dst_adj(&end, &(appt->end));
    strftime(time2_str, sizeof(time2_str), pref_time, &end);
-   g_snprintf(time_str, sizeof(time_str), "%s %s-%s\n", date_str, time1_str, time2_str);
+   if (strcmp(time1_str,time2_str) == 0)
+      g_snprintf(time_str, sizeof(time_str), "%s %s", date_str, time1_str);
+   else
+      g_snprintf(time_str, sizeof(time_str), "%s %s-%s", date_str, time1_str, time2_str);
+
    desc_str[0]='\0';
    note_str[0]='\0';
    if (appt->description) {
