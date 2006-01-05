@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.95 2006/01/05 17:17:15 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.96 2006/01/05 22:46:23 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -809,7 +809,9 @@ static int memo_clear_details()
    }
 
    set_new_button_to(CLEAR_FLAG);
+   connect_changed_signals(CONNECT_SIGNALS);
    jp_logf(JP_LOG_DEBUG, "Leaving memo_clear_details()\n");
+
    return EXIT_SUCCESS;
 }
 
