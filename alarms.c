@@ -1,4 +1,4 @@
-/* $Id: alarms.c,v 1.36 2006/01/05 05:04:22 rikster5 Exp $ */
+/* $Id: alarms.c,v 1.37 2006/01/05 05:15:42 rikster5 Exp $ */
 
 /*******************************************************************************
  * alarms.c
@@ -214,13 +214,23 @@ int dialog_alarm(char *title, char *reason,
    /* Label */
    label = gtk_label_new("");
 #ifdef ENABLE_GTK2
-   markup = g_markup_printf_escaped("<b><big>%s</big></b>\n\n%s\n\n%s\n\n%s",
-	 desc_str, reason, time_str, note_str);
+   if (note_str[0] == '\0') {
+      markup = g_markup_printf_escaped("<b><big>%s</big></b>\n\n%s\n\n%s",
+               desc_str, reason, time_str);
+   } else {
+      markup = g_markup_printf_escaped("<b><big>%s</big></b>\n\n%s\n\n%s\n\n%s",
+               desc_str, reason, time_str, note_str);
+   }
    gtk_label_set_markup(GTK_LABEL(label), markup);
    g_free(markup);
 #else
-   g_snprintf(markup, sizeof(markup), "%s\n\n%s\n\n%s\n\n%s",
-	 desc_str, reason, time_str, note_str);
+   if (note_str[0] == '\0') {
+      g_snprintf(markup, sizeof(markup), "%s\n\n%s\n\n%s",
+                 desc_str, reason, time_str);
+   } else {
+      g_snprintf(markup, sizeof(markup), "%s\n\n%s\n\n%s\n\n%s",
+                 desc_str, reason, time_str, note_str);
+   }
    gtk_label_set_text(GTK_LABEL(label), markup);
 #endif
    gtk_box_pack_start(GTK_BOX(hbox1), label, FALSE, FALSE, 6);
