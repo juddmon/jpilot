@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.118 2005/12/18 15:05:40 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.119 2006/01/05 17:17:15 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -1931,22 +1931,37 @@ static gboolean cb_key_pressed_left_side(GtkWidget   *widget,
                                          GdkEventKey *event,
                                          gpointer     next_widget)
 {
+   GtkWidget *entry_widget;
+#ifdef ENABLE_GTK2
+   GtkTextBuffer *text_buffer;
+   GtkTextIter    iter;
+#endif
+
    if (event->keyval == GDK_Return) {
       gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
 
       switch (gtk_notebook_get_current_page(GTK_NOTEBOOK(notebook))) {
         case 0 : 
-	   gtk_widget_grab_focus(address_text[0]);
+	   entry_widget = address_text[0];
            break;
         case 1 : 
-	   gtk_widget_grab_focus(address_text[8]);
+	   entry_widget = address_text[8];
            break;
         case 2 : 
-	   gtk_widget_grab_focus(address_text[14]);
+	   entry_widget = address_text[14];
            break;
         default:
-	   gtk_widget_grab_focus(address_text[0]);
+	   entry_widget = address_text[0];
       }
+      gtk_widget_grab_focus(entry_widget);
+
+#ifdef ENABLE_GTK2
+      /* Position cursor at start of text */
+      text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(entry_widget));
+      gtk_text_buffer_get_start_iter(text_buffer, &iter);
+      gtk_text_buffer_place_cursor(text_buffer, &iter);
+#endif
+
       return TRUE;
    }
 

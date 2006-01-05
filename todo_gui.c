@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.102 2005/12/18 14:54:39 rousseau Exp $ */
+/* $Id: todo_gui.c,v 1.103 2006/01/05 17:17:16 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -1594,9 +1594,20 @@ static gboolean cb_key_pressed_left_side(GtkWidget   *widget,
                                          GdkEventKey *event,
                                          gpointer     next_widget)
 {
+#ifdef ENABLE_GTK2
+   GtkTextBuffer *text_buffer;
+   GtkTextIter    iter;
+#endif
+
    if (event->keyval == GDK_Return) {
       gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
       gtk_widget_grab_focus(GTK_WIDGET(next_widget));
+#ifdef ENABLE_GTK2
+      /* Position cursor at start of text */
+      text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(next_widget));
+      gtk_text_buffer_get_start_iter(text_buffer, &iter);
+      gtk_text_buffer_place_cursor(text_buffer, &iter);
+#endif
       return TRUE;
    }
 
