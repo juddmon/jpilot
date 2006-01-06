@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.110 2006/01/01 22:36:32 rousseau Exp $ */
+/* $Id: utils.c,v 1.111 2006/01/06 02:33:30 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -1484,18 +1484,21 @@ int get_next_unique_pc_id(unsigned int *next_unique_id)
    char file_name[FILENAME_MAX];
    char str[256];
 
-   pc_in_out = jp_open_home_file("next_id", "a+");
+   /* Check that file exists and is non-empty.  If not,
+    * create it and start unique id numbering from 1 */
+   pc_in_out = jp_open_home_file("next_id", "a");
    if (pc_in_out==NULL) {
       jp_logf(JP_LOG_WARN, _("Error opening file: %s\n"),file_name);
       return EXIT_FAILURE;
    }
-
    if (ftell(pc_in_out)==0) {
-      /*We have to write out the file header */
+      /* The file is new.  We have to write out the file header */
       *next_unique_id=1;
       write_to_next_id_open(pc_in_out, *next_unique_id);
    }
    fclose(pc_in_out);
+
+   /* Now that file has been verified we can use it to find the next id */
    pc_in_out = jp_open_home_file("next_id", "r+");
    if (pc_in_out==NULL) {
       jp_logf(JP_LOG_WARN, _("Error opening file: %s\n"),file_name);
@@ -1523,7 +1526,7 @@ int get_next_unique_pc_id(unsigned int *next_unique_id)
 
    write_to_next_id_open(pc_in_out, *next_unique_id);
    fclose(pc_in_out);
-
+   
    return EXIT_SUCCESS;
 }
 
