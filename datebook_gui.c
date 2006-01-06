@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.134 2006/01/05 23:18:33 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.135 2006/01/06 00:57:16 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -115,9 +115,11 @@ static void cb_clist_selection(GtkWidget      *clist,
 			       gpointer       data);
 static void cb_add_new_record(GtkWidget *widget,
 			      gpointer   data);
+static void cb_cal_changed(GtkWidget *widget, gpointer data);
 
 static void set_new_button_to(int new_state);
 static void connect_changed_signals(int con_or_dis);
+
 
 static GtkWidget *main_calendar;
 static GtkWidget *dow_label;
@@ -2702,12 +2704,17 @@ static void cb_add_new_record(GtkWidget *widget,
    } else {
       unique_id=0; /* Has to be zero */
       pc_datebook_write(&new_appt, NEW_PC_REC, attrib, &unique_id);
-      /* Fixme - what should happen here is that the calendar should be
+      /* FIXME - what should happen here is that the calendar should be
          positioned on the or the next future occurrence */
       gtk_calendar_freeze(GTK_CALENDAR(main_calendar));
-      gtk_calendar_select_day(GTK_CALENDAR(main_calendar), 1);
+      /* Unselect current day before changing to a new month.  
+       * This prevents a GTK error when the new month does not have the
+       * same number of days.  Example: attempting to switch from Jan. 31 to 
+       * Feb. 31 */
+      gtk_calendar_select_day(GTK_CALENDAR(main_calendar), 0);
       gtk_calendar_select_month(GTK_CALENDAR(main_calendar),
-				new_appt.begin.tm_mon, new_appt.begin.tm_year+1900);
+				new_appt.begin.tm_mon, 
+				new_appt.begin.tm_year+1900);
       gtk_calendar_select_day(GTK_CALENDAR(main_calendar), new_appt.begin.tm_mday);
       gtk_calendar_thaw(GTK_CALENDAR(main_calendar));
    }
@@ -3234,7 +3241,7 @@ void cb_cal_changed(GtkWidget *widget,
 		    gpointer   data)
 {
    int num;
-   unsigned int y,m,d;
+   unsigned int cal_year, cal_month, cal_day;
    int mon_changed;
    int b;
 #ifdef EASTER
@@ -3253,31 +3260,39 @@ void cb_cal_changed(GtkWidget *widget,
    }
    set_new_button_to(CLEAR_FLAG);
 
-   gtk_calendar_get_date(GTK_CALENDAR(main_calendar),&y,&m,&d);
+   gtk_calendar_get_date(GTK_CALENDAR(main_calendar),
+	                 &cal_year, &cal_month, &cal_day);
 
-   if (y < 1903) {
-      y=1903;
-      gtk_calendar_select_month(GTK_CALENDAR(main_calendar),
-				m, 1903);
+   /* Day 0 is used in GTK to unselect the current highlighted day -- 
+    * NOT to change to the zeroeth day */
+   if (cal_day==0) { 
+      return;
    }
-   if (y > 2037) {
-      y=2037;
+
+   if (cal_year < 1903) {
+      cal_year=1903;
       gtk_calendar_select_month(GTK_CALENDAR(main_calendar),
-				m, 2037);
+				cal_month, 1903);
+   }
+   if (cal_year > 2037) {
+      cal_year=2037;
+      gtk_calendar_select_month(GTK_CALENDAR(main_calendar),
+				cal_month, 2037);
    }
 
    mon_changed=0;
-   if (current_year!=y-1900) {
-      current_year=y-1900;
+   if (current_year!=cal_year-1900) {
+      current_year=cal_year-1900;
       mon_changed=1;
    }
-   if (current_month!=m) {
-      current_month=m;
+   if (current_month!=cal_month) {
+      current_month=cal_month;
       mon_changed=1;
    }
-   current_day=d;
+   current_day=cal_day;
 
-   jp_logf(JP_LOG_DEBUG, "cb_cal_changed, %02d/%02d/%02d\n", m,d,y);
+   jp_logf(JP_LOG_DEBUG, "cb_cal_changed, %02d/%02d/%02d\n", 
+	                                  cal_month,cal_day,cal_year);
 
    set_date_labels();
    /* */
@@ -3424,9 +3439,9 @@ int datebook_refresh(int first, int do_init)
       copy_current_day = current_day;
       copy_current_month = current_month;
       copy_current_year = current_year;
-      /* See other calls to select day as to why I set it to 1 first */
       gtk_calendar_freeze(GTK_CALENDAR(main_calendar));
-      gtk_calendar_select_day(GTK_CALENDAR(main_calendar), 1);
+      /* Unselect current day before changing to a new month */
+      gtk_calendar_select_day(GTK_CALENDAR(main_calendar), 0);
       gtk_calendar_select_month(GTK_CALENDAR(main_calendar),
 				copy_current_month, copy_current_year+1900);
       gtk_calendar_select_day(GTK_CALENDAR(main_calendar), copy_current_day);
