@@ -1,4 +1,4 @@
-/* $Id: search_gui.c,v 1.39 2006/01/10 05:59:11 rikster5 Exp $ */
+/* $Id: search_gui.c,v 1.40 2006/01/10 06:25:00 rikster5 Exp $ */
 
 /*******************************************************************************
  * search_gui.c
@@ -50,6 +50,8 @@ static GtkWidget *case_sense_checkbox;
 static GtkWidget *window = NULL;
 static GtkWidget *entry = NULL;
 static GtkAccelGroup *accel_group = NULL;
+
+static int clist_row_selected;
 
 int datebook_search_sort_compare(const void *v1, const void *v2)
 {
@@ -465,8 +467,9 @@ static void cb_clist_selection(GtkWidget      *clist,
 		               GdkEventButton *event,
 		               gpointer       data)
 {
-
    struct search_record *sr;
+
+   clist_row_selected = row;
 
    if (!event) return;
 
@@ -499,6 +502,20 @@ static void cb_clist_selection(GtkWidget      *clist,
 #endif
       break;
    }
+}
+
+static gboolean cb_key_pressed_in_clist(GtkWidget   *widget, 
+                                        GdkEventKey *event,
+                                        gpointer     data)
+{
+   if (event->keyval == GDK_Return) {
+      gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
+      cb_clist_selection(widget, clist_row_selected, 0, (GdkEventButton *)1, NULL);
+
+      return TRUE;
+   }
+
+   return FALSE;
 }
 
 void cb_search_gui(GtkWidget *widget, gpointer data)
@@ -565,6 +582,9 @@ void cb_search_gui(GtkWidget *widget, gpointer data)
    clist = gtk_clist_new(2);
    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
 		      GTK_SIGNAL_FUNC(cb_clist_selection),
+		      NULL);
+   gtk_signal_connect(GTK_OBJECT(clist), "key_press_event",
+		      GTK_SIGNAL_FUNC(cb_key_pressed_in_clist), 
 		      NULL);
    gtk_clist_set_shadow_type(GTK_CLIST(clist), SHADOW);
    gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
