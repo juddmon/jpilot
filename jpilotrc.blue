@@ -30,13 +30,13 @@ bg[NORMAL] = { 1.0, 0.98, .84 }
 style "button"
 {
 fg[PRELIGHT]    = { 1.0, 1.0, 1.0 }
-bg[PRELIGHT]    = { 0, 0.4, 0.6 }
+bg[PRELIGHT]    = { 0.0, 0.4, 0.7 }
 fg[ACTIVE]      = { 1.0, 1.0, 1.0 }
 bg[ACTIVE]      = { 0, 0.4, 0.6 }
 fg[NORMAL]      = { 0.5, 1.0, 1.0 }
 bg[NORMAL]      = { 0.0, 0.3, 0.6 }
 fg[INSENSITIVE] = { 0.0, 0.0, 0.0 }
-bg[INSENSITIVE] = { 0.0, .404, .835}
+bg[INSENSITIVE] = { 0.0, .404, .835 }
 }
   
 style "button_app"
@@ -57,12 +57,13 @@ style "toggle_button" = "button"
 
 style "radio_button"
 {
-fg[PRELIGHT] = { 1.0, 1.0, 1.0 }
-bg[PRELIGHT] = { 0.0, 0.3, 0.6 }
-fg[NORMAL]   = { 1.0, 1.0, 0.0 }
-bg[NORMAL]   = { 0, 0.3, 0.6 }
-fg[ACTIVE]   = { 1.0, 1.0, 1.0 }
-bg[ACTIVE]   = { 1.0, 1.0, 0.0 }
+fg[PRELIGHT]   = { 1.0, 1.0, 1.0 }
+bg[PRELIGHT]   = { 0.0, 0.3, 0.6 }
+base[PRELIGHT] = { 0.0, 0.0, 0.0 }  #bg inside checkboxes when prelit
+fg[NORMAL]     = { 0.0, 0.0, 0.0 }
+bg[NORMAL]     = { 0, 0.3, 0.6 }
+fg[ACTIVE]     = { 1.0, 1.0, 1.0 }
+bg[ACTIVE]     = { 1.0, 1.0, 0.0 }
 }
 
 style "spin_button"

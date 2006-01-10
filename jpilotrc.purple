@@ -64,7 +64,8 @@ fg[PRELIGHT] = { 1.0, 1.0, 1.0 }
 bg[PRELIGHT] = { 0.4, 0.2, 0.6 }
 fg[ACTIVE]   = { 1.0, 1.0, 1.0 }
 bg[ACTIVE]   = { 1.0, 1.0, 0.0 }
-fg[NORMAL]   = { 1.0, 1.0, 0.0 }
+#fg[NORMAL]   = { 1.0, 1.0, 0.0 }
+fg[NORMAL]   = { .17, .09, .25 }
 bg[NORMAL]   = { 0.4, 0.2, 0.6 }
 }
 

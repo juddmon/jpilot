@@ -30,7 +30,7 @@ bg[INSENSITIVE] = { 0.0, .690, .678 }
 style "button_app"
 {
 fg[PRELIGHT] = { 1.0, 1.0, 1.0 }
-bg[PRELIGHT] = { 1.0, 1.0, 1.0 }
+bg[PRELIGHT] = { 0.0, .65, .65 }
 }
 
 style "toggle_button" = "button"
