@@ -1,4 +1,4 @@
-/* $Id: search_gui.c,v 1.38 2005/12/06 06:49:02 rikster5 Exp $ */
+/* $Id: search_gui.c,v 1.39 2006/01/10 05:59:11 rikster5 Exp $ */
 
 /*******************************************************************************
  * search_gui.c
@@ -515,6 +515,7 @@ void cb_search_gui(GtkWidget *widget, gpointer data)
       /* Shift focus to existing window if called again
          and window is still alive. */
       gtk_window_present(GTK_WINDOW(window));
+      gtk_widget_grab_focus(GTK_WIDGET(entry));
 #endif
       return;
    }
