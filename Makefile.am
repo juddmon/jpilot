@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.48 2005/10/31 02:05:03 judd Exp $
+# $Id: Makefile.am,v 1.49 2006/01/10 07:24:02 rikster5 Exp $
 
 SUBDIRS = Expense SyncTime KeyRing docs dialer po m4 empty icons
 
@@ -157,6 +157,26 @@ better-world:
 
 peace:
 	echo "make peace: not war"
+
+test_compile:
+	@-rm -f autogen.log autogen.log2 make.log
+	@echo "Configuring GTK1 build"
+	autogen.sh --disable-gtk2 > autogen.log 2>&1
+	@-grep -v 'warning: underquoted definition' autogen.log > autogen.log2
+	!(grep 'warn'   autogen.log2)
+	!(grep ' error' autogen.log2)
+	make > make.log 2>&1
+	!(grep 'warn'  make.log)
+	!(grep 'error' make.log)
+	@-rm -f autogen.log autogen.log2 make.log
+	@echo "Configuring GTK2 build"
+	autogen.sh > autogen.log 2>&1
+	@-grep -v 'warning: underquoted definition' autogen.log > autogen.log2
+	!(grep 'warn'   autogen.log2)
+	!(grep ' error' autogen.log2)
+	make > make.log 2>&1
+	!(grep 'warn'  make.log)
+	!(grep 'error' make.log)
 
 ChangeLog.cvs:
 	rcs2log | perl -pe 's/rousseau /Ludovic Rousseau /; \
