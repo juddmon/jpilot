@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.138 2006/01/11 21:27:40 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.139 2006/01/11 22:50:46 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -2570,6 +2570,7 @@ static void cb_add_new_record(GtkWidget *widget,
    int flag;
    int create_exception=0;
    int result;
+   int r;
    unsigned char attrib;
    int show_priv;
    unsigned int unique_id;
@@ -2622,8 +2623,8 @@ static void cb_add_new_record(GtkWidget *widget,
    } else {
       mappt=NULL;
    }
-   result = appt_get_details(&new_appt, &attrib);
-   if (result < 0) {
+   r = appt_get_details(&new_appt, &attrib);
+   if (r < 0) {
       free_Appointment(&new_appt);
       return;
    }
@@ -2861,8 +2862,26 @@ void cb_check_button_alarm(GtkWidget *widget, gpointer data)
 
 void cb_check_button_notime(GtkWidget *widget, gpointer data)
 {
+   /* GTK does not handle nested callbacks well!  
+    * When a time is selected from the drop-down menus cb_menu_time
+    * is called.  cb_menu_time, in turn, de-selects the notime checkbutton
+    * which causes a signal to be generated which invokes
+    * cb_check_button_notime.  Finally, both callback routines call
+    * set_begin_end_labels and in that routine is a call which sets the
+    * currently selected item in the gtk_option_menu.  This sequence of
+    * events screws up the option menu for the first click.  One solution
+    * would be to disable signals in cb_menu_time, de-select the checkbutton,
+    * and then re-enable signals.  Given the frequency with which the menus
+    * are used this solution involves too much of a performance hit.
+    * Instead, in this routine only the entry widgets are updated and the menus
+    * are left alone.  Currently(20060111) this produces no difference in 
+    * jpilot behavior because the menus have been set to correct values in 
+    * other routines. */
+   /*
    set_begin_end_labels(&begin_date, &end_date, UPDATE_DATE_ENTRIES |
                                                 UPDATE_DATE_MENUS);
+   */
+   set_begin_end_labels(&begin_date, &end_date, UPDATE_DATE_ENTRIES);
 }
 
 void cb_check_button_endon(GtkWidget *widget, gpointer data)
