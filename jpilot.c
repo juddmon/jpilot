@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.131 2005/12/19 20:22:06 rousseau Exp $ */
+/* $Id: jpilot.c,v 1.132 2006/01/11 01:57:54 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -34,6 +34,9 @@
 #include <fcntl.h>
 #ifdef HAVE_LOCALE_H
 #include <locale.h>
+#endif
+#ifdef HAVE_LANGINFO_H
+#include <langinfo.h>
 #endif
 #include <sys/stat.h>
 
@@ -2138,12 +2141,20 @@ char * xpm_backup[] = {
    pref_read_rc_file();
 
    /* Extract first day of week preference from locale in GTK2 */
-#ifdef ENABLE_GTK2
-#  if defined(ENABLE_NLS)
-      week_start = dgettext("gtk20", "calendar:week_start:0");
-      if (strncmp(week_start, "calendar:week_start:", 20) == 0)
-	 pref_fdow = *(week_start + 20) - '0';
-
+#  ifdef ENABLE_GTK2
+#     ifdef HAVE_LANGINFO_H
+	 /* GTK 2.8 libraries */
+	 week_start = nl_langinfo (_NL_TIME_FIRST_WEEKDAY);
+	 pref_fdow = *((unsigned char *) week_start) % 7;
+#     else
+	 /* GTK 2.6 libraries */
+#        if defined(ENABLE_NLS)
+	    week_start = dgettext("gtk20", "calendar:week_start:0");
+	    if (strncmp("calendar:week_start:", week_start, 20) == 0) {
+	       pref_fdow = *(week_start + 20) - '0';
+	    }
+#        endif
+#     endif
       if (pref_fdow > 1)
 	 pref_fdow = 1;
       if (pref_fdow < 0)
@@ -2151,7 +2162,7 @@ char * xpm_backup[] = {
 
       set_pref_possibility(PREF_FDOW, pref_fdow, TRUE);
 #  endif
-#endif
+
 
 #ifdef ENABLE_GTK2
    if (otherconv_init()) {
