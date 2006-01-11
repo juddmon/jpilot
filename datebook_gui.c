@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.137 2006/01/11 21:21:27 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.138 2006/01/11 21:27:40 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -2570,7 +2570,6 @@ static void cb_add_new_record(GtkWidget *widget,
    int flag;
    int create_exception=0;
    int result;
-   int r;
    unsigned char attrib;
    int show_priv;
    unsigned int unique_id;
@@ -2623,8 +2622,8 @@ static void cb_add_new_record(GtkWidget *widget,
    } else {
       mappt=NULL;
    }
-   r = appt_get_details(&new_appt, &attrib);
-   if (r < 0) {
+   result = appt_get_details(&new_appt, &attrib);
+   if (result < 0) {
       free_Appointment(&new_appt);
       return;
    }
