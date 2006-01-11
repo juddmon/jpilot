@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.135 2006/01/06 00:57:16 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.136 2006/01/11 21:06:20 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -3482,7 +3482,15 @@ void cb_menu_time(GtkWidget *item,
 static gboolean
 cb_hide_menu_time(GtkWidget *widget, gpointer data)
 {
-   set_begin_end_labels(&begin_date, &end_date, UPDATE_DATE_MENUS);
+   /* Require that appt. end times be after the begin time */
+   /* This mimics the behavior of PalmOs more closely */
+   if (begin_date.tm_hour > end_date.tm_hour)
+   {
+      end_date.tm_hour = begin_date.tm_hour;
+   }
+
+   set_begin_end_labels(&begin_date, &end_date, UPDATE_DATE_MENUS |
+                                                UPDATE_DATE_ENTRIES);
 
    return FALSE;
 }
