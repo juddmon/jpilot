@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.136 2006/01/11 21:06:20 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.137 2006/01/11 21:21:27 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -3502,11 +3502,7 @@ cb_hide_menu_time(GtkWidget *widget, gpointer data)
 
 static void entry_key_pressed(int next_digit, int begin_or_end)
 {
-   struct tm t1, t2;
    struct tm *Pt;
-
-   memset(&t1, 0, sizeof(t1));
-   memset(&t2, 0, sizeof(t2));
 
    if (begin_or_end) {
       Pt = &end_date;
