@@ -1,3 +1,15 @@
+0.99.9-pre2 - 15/01/06 (Released by Ludovic Rousseau)
+ Fix Bugzilla 1533 where null description in appointment crashes ical
+  export of datebook
+ Keyring: Added a field for the last changed date and set it to today
+  when the record is changed.
+ Search: 
+  - Have focus default to search entry field when the Find window is
+  called to the front
+  - Added ability to hit Enter and automatically go to the currently
+  highlighted record.
+ Some more bugs fixed
+
 0.99.9-pre1 - 18/12/05 (Released by Ludovic Rousseau)
  Generalization of GTK+2 stock buttons (butons with icon) and make
  J-Pilot more conform to GNOME Human Interface Guidelines
