@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.111 2006/01/06 02:33:30 rikster5 Exp $ */
+/* $Id: utils.c,v 1.112 2006/01/26 00:51:04 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -1120,7 +1120,9 @@ int cal_dialog(GtkWindow *main_window,
 
    gtk_main();
 
-   *year -= 1900;
+   if (return_code == CAL_DONE) {
+      *year -= 1900;
+   }
 
    return return_code;
 }
