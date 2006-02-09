@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.132 2006/01/11 01:57:54 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.133 2006/02/09 04:38:55 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -767,24 +767,9 @@ void output_to_pane(const char *str)
    int w, h, new_y;
    long ivalue;
 
-#ifdef ENABLE_GTK2
-   GtkTextIter end_iter;
-   gtk_text_buffer_get_end_iter(g_output_text_buffer, &end_iter);
-
-   if (! g_utf8_validate(str, -1, NULL)) {
-      gchar *utf8_text;
-
-      utf8_text = g_locale_to_utf8 (str, -1, NULL, NULL, NULL);
-      gtk_text_buffer_insert_at_cursor(g_output_text_buffer, utf8_text, -1);
-      g_free(utf8_text);
-   } else
-      gtk_text_buffer_insert(g_output_text_buffer, &end_iter, str, -1);
-   gtk_text_view_scroll_mark_onscreen(g_output_text, gtk_text_buffer_get_insert(g_output_text_buffer));
-#else
-   gtk_text_insert(g_output_text, NULL, NULL, NULL, str, -1);
-#endif
+   /* Adjust window height to user preference or minimum size */
    get_pref(PREF_OUTPUT_HEIGHT, &ivalue, NULL);
-   /* Make them look at least something if output happens */
+   /* Make them look at something if output happens */
    if (ivalue < 60) {
       ivalue=60;
       set_pref(PREF_OUTPUT_HEIGHT, 60, NULL, TRUE);
@@ -792,6 +777,51 @@ void output_to_pane(const char *str)
    gdk_window_get_size(window->window, &w, &h);
    new_y = h - ivalue;
    gtk_paned_set_position(GTK_PANED(output_pane), new_y);
+
+   /* Output text to window */
+#ifdef ENABLE_GTK2
+   GtkTextIter end_iter;
+   GtkTextMark *end_mark;
+   gboolean scroll_to_end = FALSE;
+   gdouble sbar_value, sbar_page_size, sbar_upper;
+ 
+   /* The window position scrolls with new input if the user has left
+    * the scrollbar at the bottom of the window.  Otherwise, if the user
+    * is scrolling back through the log then jpilot does nothing and defers
+    * to the user. */
+
+   /* Get position of scrollbar */
+   sbar_value = g_output_text->vadjustment->value;
+   sbar_page_size = g_output_text->vadjustment->page_size;
+   sbar_upper = g_output_text->vadjustment->upper;
+   /* Keep scrolling to the end only if we are already at the end
+    * or the window has just been created and is blank */
+   if (abs((sbar_value+sbar_page_size) - sbar_upper) < 5  ||
+       sbar_page_size == 1) {
+      scroll_to_end = TRUE;
+   }
+
+   gtk_text_buffer_get_end_iter(g_output_text_buffer, &end_iter);
+
+   if (! g_utf8_validate(str, -1, NULL)) {
+      gchar *utf8_text;
+
+      utf8_text = g_locale_to_utf8 (str, -1, NULL, NULL, NULL);
+      gtk_text_buffer_insert(g_output_text_buffer, &end_iter, utf8_text, -1);
+      g_free(utf8_text);
+   } else
+      gtk_text_buffer_insert(g_output_text_buffer, &end_iter, str, -1);
+
+   if (scroll_to_end) {
+      end_mark = gtk_text_buffer_create_mark(g_output_text_buffer, NULL, &end_iter, TRUE);
+      gtk_text_buffer_move_mark(g_output_text_buffer, end_mark, &end_iter);
+      gtk_text_view_scroll_to_mark(g_output_text, end_mark, 0, TRUE, 0.0, 0.0);
+      gtk_text_buffer_delete_mark(g_output_text_buffer, end_mark);
+   }
+#else
+   /* Nothing fancy is done for GTK1 */
+   gtk_text_insert(g_output_text, NULL, NULL, NULL, str, -1);
+#endif
 }
 
 /* #define PIPE_DEBUG */
