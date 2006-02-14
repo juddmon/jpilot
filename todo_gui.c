@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.103 2006/01/05 17:17:16 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.104 2006/02/14 20:40:48 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -538,7 +538,7 @@ int todo_import_callback(GtkWidget *parent_window, const char *file_path, int ty
       if (dat_check_if_dat_file(in)!=DAT_TODO_FILE) {
 	 jp_logf(JP_LOG_WARN, _("File doesn't appear to be todo.dat format\n"));
 	 fclose(in);
-	 return 1;
+	 return EXIT_FAILURE;
       }
       todolist=NULL;
       dat_get_todos(in, &todolist, &cai);
