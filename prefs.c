@@ -1,4 +1,4 @@
-/* $Id: prefs.c,v 1.64 2005/12/18 14:54:39 rousseau Exp $ */
+/* $Id: prefs.c,v 1.65 2006/02/14 20:53:26 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs.c
@@ -33,6 +33,8 @@
 #ifdef ENABLE_GTK2
 #include "otherconv.h"
 #endif
+
+extern int t_fmt_ampm;
 
 /*These are the default settings */
 /*name, usertype, filetype, ivalue, char *svalue, svalue_size; */
@@ -370,6 +372,7 @@ static int get_rcfile_name(int n, char *rc_copy)
 #define NUM_SHORTDATES 7
 #define NUM_LONGDATES 6
 #define NUM_TIMES 10
+#define NUM_TIMES_NO_AMPM 6
 #define NUM_RATES 11
 #define NUM_PAPER_SIZES 2
 
@@ -404,6 +407,15 @@ int get_pref_possibility(int which, int n, char *pref_str)
       "%I:%M %p",
       "%H:%M",
       "%I.%M %p",
+      "%H.%M",
+      "%H,%M"
+   };
+
+   const char *time_formats_no_ampm[] = {
+      "%H:%M:%S",
+      "%H.%M.%S",
+      "%H,%M,%S",
+      "%H:%M",
       "%H.%M",
       "%H,%M"
    };
@@ -460,12 +472,20 @@ int get_pref_possibility(int which, int n, char *pref_str)
       break;
 
     case PREF_TIME:
-      if ((n >= NUM_TIMES) || (n<0)) {
-	 pref_str[0]='\0';
-	 return EXIT_FAILURE;
+      if (t_fmt_ampm) {
+	 if ((n >= NUM_TIMES) || (n<0)) {
+	    pref_str[0]='\0';
+	    return EXIT_FAILURE;
+	 }
+	 strcpy(pref_str, time_formats[n]);
+      } else {
+	 if ((n >= NUM_TIMES_NO_AMPM) || (n<0)) {
+	    pref_str[0]='\0';
+	    return EXIT_FAILURE;
+	 }
+	 strcpy(pref_str, time_formats_no_ampm[n]);
       }
-      strcpy(pref_str, time_formats[n]);
-      break;
+	 break;
 
     case PREF_SHORTDATE:
       if ((n >= NUM_SHORTDATES) || (n<0)) {
@@ -695,8 +715,15 @@ static int validate_glob_prefs()
    int i, r;
    char svalue[MAX_PREF_VALUE];
 
-   if (glob_prefs[PREF_TIME].ivalue >= NUM_TIMES) {
-      glob_prefs[PREF_TIME].ivalue = NUM_TIMES - 1;
+   if (t_fmt_ampm) {
+      if (glob_prefs[PREF_TIME].ivalue >= NUM_TIMES) {
+	 glob_prefs[PREF_TIME].ivalue = NUM_TIMES - 1;
+      }
+   }
+   else {
+      if (glob_prefs[PREF_TIME].ivalue >= NUM_TIMES_NO_AMPM) {
+	 glob_prefs[PREF_TIME].ivalue = NUM_TIMES_NO_AMPM - 1;
+      }
    }
    if (glob_prefs[PREF_TIME].ivalue < 0) {
       glob_prefs[PREF_TIME].ivalue = 0;
