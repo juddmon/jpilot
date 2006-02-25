@@ -1,4 +1,4 @@
-/* $Id: jpilot-dump.c,v 1.23 2006/02/14 20:53:26 rikster5 Exp $ */
+/* $Id: jpilot-dump.c,v 1.24 2006/02/25 17:48:20 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot-dump.c
@@ -172,6 +172,7 @@ int dumpbook()
    tm_dom.tm_mday = Nday;
    tm_dom.tm_year = Nyear-1900;
    tm_dom.tm_mon  = Nmonth-1;
+   tm_dom.tm_isdst = 0;
    mktime(&tm_dom);
 
 #ifdef JDUMP_DEBUG
