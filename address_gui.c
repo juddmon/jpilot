@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.120 2006/01/05 22:52:32 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.121 2006/03/15 20:03:26 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -92,6 +92,11 @@ char *field_names_ja[]={"kana(Last)", "Last",  "kana(First)", "First",
 
 #define ADDRESS_MAX_CLIST_NAME 30
 #define ADDRESS_MAX_COLUMN_LEN 80
+
+/* Many RFCs require that the line termination be CRLF rather than just \n.
+ * For conformance to standards this requires adding the two-byte string to
+ * the end of strings destined for export */
+#define CRLF "\x0D\x0A"
 
 GtkWidget *clist;
 GtkWidget *address_text[NUM_ADDRESS_ENTRIES+NUM_ADDRESS_EXT_ENTRIES];
@@ -836,16 +841,17 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 
        case EXPORT_TYPE_VCARD:
 	 /* RFC 2426: vCard MIME Directory Profile */
-	 fprintf(out, "BEGIN:VCARD\nVERSION:3.0\n");
-	 fprintf(out, "PRODID:%s\n", FPI_STRING);
+	 fprintf(out, "BEGIN:VCARD%s", CRLF);
+	 fprintf(out, "VERSION:3.0%s", CRLF);
+	 fprintf(out, "PRODID:%s%s", FPI_STRING, CRLF);
 	 if (maddr->attrib & dlpRecAttrSecret) {
-	    fprintf(out, "CLASS:PRIVATE\n");
+	    fprintf(out, "CLASS:PRIVATE%s", CRLF);
 	 }
-	 fprintf(out, "UID:palm-addressbook-%08x-%08lx-%s@%s\n",
-		 maddr->unique_id, userid, username, hostname);
+	 fprintf(out, "UID:palm-addressbook-%08x-%08lx-%s@%s%s",
+		 maddr->unique_id, userid, username, hostname, CRLF);
 	 str_to_vcard_str(csv_text, sizeof(csv_text),
 			  address_app_info.category.name[maddr->attrib & 0x0F]);
-	 fprintf(out, "CATEGORIES:%s\n", csv_text);
+	 fprintf(out, "CATEGORIES:%s%s", csv_text, CRLF);
 	 if (maddr->addr.entry[0] || maddr->addr.entry[1]) {
 	    char *last = maddr->addr.entry[0];
 	    char *first = maddr->addr.entry[1];
@@ -861,7 +867,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	       str_to_vcard_str(csv_text, sizeof(csv_text), last);
 	       fprintf(out, "%s", csv_text);
 	    }
-	    fprintf(out, "\n");
+	    fprintf(out, CRLF);
 	    fprintf(out, "N:");
 	    if (last) {
 	       str_to_vcard_str(csv_text, sizeof(csv_text), last);
@@ -873,32 +879,32 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	       str_to_vcard_str(csv_text, sizeof(csv_text), first);
 	       fprintf(out, "%s", csv_text);
 	    }
-	    fprintf(out, "\n");
+	    fprintf(out, CRLF);
 	 } else if (maddr->addr.entry[2]) {
 	    str_to_vcard_str(csv_text, sizeof(csv_text), maddr->addr.entry[2]);
-	    fprintf(out, "FN:%s\nN:%s\n", csv_text, csv_text);
+	    fprintf(out, "FN:%s%sN:%s%s", csv_text, CRLF, csv_text, CRLF);
 	 } else {
-	    fprintf(out, "FN:-Unknown-\nN:known-;-Un\n");
+	    fprintf(out, "FN:-Unknown-%sN:known-;-Un%s", CRLF, CRLF);
 	 }
 	 if (maddr->addr.entry[13]) {
 	    str_to_vcard_str(csv_text, sizeof(csv_text), maddr->addr.entry[13]);
-	    fprintf(out, "TITLE:%s\n", csv_text);
+	    fprintf(out, "TITLE:%s%s", csv_text, CRLF);
 	 }
 	 if (maddr->addr.entry[2]) {
 	    str_to_vcard_str(csv_text, sizeof(csv_text), maddr->addr.entry[2]);
-	    fprintf(out, "ORG:%s\n", csv_text);
+	    fprintf(out, "ORG:%s%s", csv_text, CRLF);
 	 }
 	 for (n = 3; n < 8; n++) {
 	    if (maddr->addr.entry[n]) {
 	       str_to_vcard_str(csv_text, sizeof(csv_text), maddr->addr.entry[n]);
 	       if (maddr->addr.phoneLabel[n - 3] == 4) {
-		  fprintf(out, "EMAIL:%s\n", csv_text);
+		  fprintf(out, "EMAIL:%s%s", csv_text, CRLF);
 	       } else {
 		  fprintf(out, "TEL;TYPE=%s", vCardMapType(maddr->addr.phoneLabel[n - 3]));
 		  if (maddr->addr.showPhone == n - 3) {
 		     fprintf(out, ",pref");
 		  }
-		  fprintf(out, ":%s\n", csv_text);
+		  fprintf(out, ":%s%s", csv_text, CRLF);
 	       }
 	    }
 	 }
@@ -914,7 +920,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 		  fprintf(out, ";");
 	       }
 	    }
-	    fprintf(out, "\n");
+	    fprintf(out, CRLF);
 	 }
 	 if (maddr->addr.entry[14] || maddr->addr.entry[15] || maddr->addr.entry[16] ||
 	     maddr->addr.entry[17] || maddr->addr.entry[18]) {
@@ -928,15 +934,15 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 		     fprintf(out, " ");
 		  }
 		  if (n==18 && firstnote) {
-		     fprintf(out, "%s\\n\n", csv_text);
+		     fprintf(out, "%s\\n%s", csv_text, CRLF);
 		  } else {
-		     fprintf(out, "%s:\\n\n %s\\n\n", labels[n-14], csv_text);
+		     fprintf(out, "%s:\\n%s %s\\n%s", labels[n-14], CRLF, csv_text, CRLF);
 		  }
 		  firstnote=0;
 	       }
 	    }
 	 }
-	 fprintf(out, "END:VCARD\n");
+	 fprintf(out, "END:VCARD%s", CRLF);
 	 break;
        case EXPORT_TYPE_LDIF:
 	 /* RFC 2256 - organizationalPerson */
