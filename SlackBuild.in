@@ -5,7 +5,7 @@ ARCH=i386
 RELEASE=1
 #
 mkdir install
-cp description-pak install/description
+cp description-pak install/slack-desc
 echo "cat /install/description" > install/doinst.sh
 #
 tar czvf $PACKAGE-$VERSION-$ARCH-$RELEASE.tgz \
