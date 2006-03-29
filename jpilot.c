@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.135 2006/02/14 20:53:26 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.136 2006/03/29 04:25:35 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -795,9 +795,9 @@ void output_to_pane(const char *str)
    sbar_value = g_output_text->vadjustment->value;
    sbar_page_size = g_output_text->vadjustment->page_size;
    sbar_upper = g_output_text->vadjustment->upper;
-   /* Keep scrolling to the end only if we are already at the end
-    * or the window has just been created and is blank */
-   if (abs((sbar_value+sbar_page_size) - sbar_upper) < 5  ||
+   /* Keep scrolling to the end only if we are already near(1 window) of the end
+    * OR the window has just been created and is blank */
+   if (abs((sbar_value+sbar_page_size) - sbar_upper) < sbar_page_size  ||
        sbar_page_size == 1) {
       scroll_to_end = TRUE;
    }
