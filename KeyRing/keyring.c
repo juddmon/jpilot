@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.57 2005/12/30 19:01:08 judd Exp $ */
+/* $Id: keyring.c,v 1.58 2006/04/10 23:31:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -925,7 +925,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    if (flag==MODIFY_FLAG) {
       cb_delete_keyring(NULL, data);
       if ((mkr->rt==PALM_REC) || (mkr->rt==REPLACEMENT_PALM_REC)) {
-	 br.rt = unique_id;
+	 br.unique_id = unique_id;
 	 br.rt = REPLACEMENT_PALM_REC;
       } else {
 	 br.unique_id = 0;
