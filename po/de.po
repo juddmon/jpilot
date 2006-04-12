@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jpilot 0.99.6\n"
 "Report-Msgid-Bugs-To: jpilot-devel@jpilot.org\n"
-"POT-Creation-Date: 2006-01-12 18:34+0100\n"
-"PO-Revision-Date: 2003-10-04 18:28+0200\n"
-"Last-Translator: Felix Knecht <mail AT felixknecht DOT de>\n"
+"POT-Creation-Date: 2006-02-14 22:12+0100\n"
+"PO-Revision-Date: 2006-03-26 04:07+0100\n"
+"Last-Translator: Peter Mukunda Pasedach <mukunda@mukunda.de>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-15\n"
@@ -1126,9 +1126,8 @@ msgid "/File/_Print"
 msgstr "/Datei/_Drucken"
 
 #: jpilot.c:1389
-#, fuzzy
 msgid "/File/Install User"
-msgstr "/Datei/_Installieren"
+msgstr "/Datei/Benutzer Installieren"
 
 #: jpilot.c:1390
 msgid "/File/Restore Handheld"
@@ -1143,24 +1142,20 @@ msgid "/_View"
 msgstr "/_Ansicht"
 
 #: jpilot.c:1394 jpilot.c:1395 jpilot.c:1396 jpilot.c:1650
-#, fuzzy
 msgid "/View/Hide Private Records"
-msgstr "/Ansicht/_Private Einträge verbergen, anzeigen oder maskieren"
+msgstr "/Ansicht/Private Einträge verbergen"
 
 #: jpilot.c:1395
-#, fuzzy
 msgid "/View/Show Private Records"
-msgstr "/Ansicht/_Private Einträge verbergen, anzeigen oder maskieren"
+msgstr "/Ansicht/Private Einträge anzeigen"
 
 #: jpilot.c:1396
-#, fuzzy
 msgid "/View/Mask Private Records"
-msgstr "/Ansicht/_Private Einträge verbergen, anzeigen oder maskieren"
+msgstr "/Ansicht/Private Einträge maskieren"
 
 #: jpilot.c:1397
-#, fuzzy
 msgid "/View/sep1"
-msgstr "/Datei/sep1"
+msgstr "/Ansicht/sep1"
 
 #: jpilot.c:1398
 msgid "/View/Datebook"
@@ -1231,9 +1226,8 @@ msgid "/Help/PayBack program"
 msgstr "/Hilfe/PayBack program"
 
 #: jpilot.c:1436
-#, fuzzy
 msgid "/Help/About J-Pilot"
-msgstr "/Hilfe/J-Pilot"
+msgstr "/Hilfe/über J-Pilot"
 
 #: jpilot.c:1503
 #, c-format
