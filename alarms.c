@@ -1,4 +1,4 @@
-/* $Id: alarms.c,v 1.37 2006/01/05 05:15:42 rikster5 Exp $ */
+/* $Id: alarms.c,v 1.38 2006/04/17 05:31:37 rikster5 Exp $ */
 
 /*******************************************************************************
  * alarms.c
@@ -233,6 +233,7 @@ int dialog_alarm(char *title, char *reason,
    }
    gtk_label_set_text(GTK_LABEL(label), markup);
 #endif
+   gtk_label_set_line_wrap(GTK_LABEL(label), TRUE);
    gtk_box_pack_start(GTK_BOX(hbox1), label, FALSE, FALSE, 6);
 
    /* remind delay */
