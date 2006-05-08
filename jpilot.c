@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.136 2006/03/29 04:25:35 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.137 2006/05/08 15:51:27 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -2182,7 +2182,7 @@ char * xpm_backup[] = {
 #     ifdef HAVE_LANGINFO_H
 	 /* GTK 2.8 libraries */
 	 week_start = nl_langinfo (_NL_TIME_FIRST_WEEKDAY);
-	 pref_fdow = *((unsigned char *) week_start) % 7;
+	 pref_fdow = *((unsigned char *) week_start) - 1;
 #     else
 	 /* GTK 2.6 libraries */
 #        if defined(ENABLE_NLS)
