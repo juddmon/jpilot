@@ -1,4 +1,4 @@
-/* $Id: otherconv.c,v 1.26 2005/12/11 20:39:00 judd Exp $ */
+/* $Id: otherconv.c,v 1.27 2006/05/09 20:51:21 rousseau Exp $ */
 
 /*******************************************************************************
  * otherconv.c
@@ -259,7 +259,7 @@ void UTF_to_other(char *const buf, int buf_len)
       buf_out_ptr = malloc(buf_len);
       if (NULL == buf_out_ptr)
       {
-	 jp_logf(JP_LOG_WARN, errstr, inptr - buf);
+	 jp_logf(JP_LOG_WARN, "no more memory");
 	 return;
       }
       outptr = buf_out_ptr;
