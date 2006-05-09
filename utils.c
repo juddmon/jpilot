@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.112 2006/01/26 00:51:04 rikster5 Exp $ */
+/* $Id: utils.c,v 1.113 2006/05/09 20:52:40 rousseau Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -651,6 +651,7 @@ void set_bg_rgb_clist_row(GtkWidget *clist, int row, int r, int g, int b)
    color.red=r;
    color.green=g;
    color.blue=b;
+   color.pixel=0;
 
    new_style->base[GTK_STATE_NORMAL] = color;
    gtk_clist_set_row_style(GTK_CLIST(clist), row, new_style);
@@ -672,6 +673,8 @@ void set_fg_rgb_clist_cell(GtkWidget *clist, int row, int col, int r, int g, int
    fg_color.red=r;
    fg_color.green=g;
    fg_color.blue=b;
+   fg_color.pixel=0;
+
    new_style->fg[GTK_STATE_NORMAL]   = fg_color;
    new_style->fg[GTK_STATE_SELECTED] = fg_color;
    gtk_clist_set_cell_style(GTK_CLIST(clist), row, col, new_style);
