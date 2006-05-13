@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.62 2005/12/30 04:33:45 rikster5 Exp $ */
+/* $Id: sync.c,v 1.63 2006/05/13 20:44:42 judd Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -928,7 +928,7 @@ int jp_sync(struct my_sync_info *sync_info)
 	 slow_sync_application("ToDoDB", sd);
       }
       if (get_pref_int_default(PREF_SYNC_MEMO, 1)) {
-	 sync_categories("Memo32DB", sd,
+	 sync_categories("MemoDB", sd,
 			 unpack_memo_cai_from_ai,
 			 pack_memo_cai_into_ai);
 	 slow_sync_application("MemoDB", sd);
@@ -941,7 +941,7 @@ int jp_sync(struct my_sync_info *sync_info)
       }
 #ifdef ENABLE_MANANA
       if (get_pref_int_default(PREF_SYNC_MANANA, 1)) {
-	 sync_categories("ToDoDB", sd,
+	 sync_categories("MañanaDB", sd,
 			 unpack_todo_cai_from_ai,
 			 pack_todo_cai_into_ai);
 	 slow_sync_application("MañanaDB", sd);
