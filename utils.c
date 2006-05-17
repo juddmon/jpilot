@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.113 2006/05/09 20:52:40 rousseau Exp $ */
+/* $Id: utils.c,v 1.114 2006/05/17 22:09:32 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -1364,14 +1364,15 @@ int check_hidden_dir()
 {
    struct stat statb;
    char hidden_dir[FILENAME_MAX];
-   char test_file[FILENAME_MAX];
    FILE *out;
 
    get_home_file_name("", hidden_dir, sizeof(hidden_dir));
    hidden_dir[strlen(hidden_dir)-1]='\0';
 
    if (stat(hidden_dir, &statb)) {
-      /*directory isn't there, create it */
+      /* Directory isn't there, create it. 
+       * Only user is given permission to enter and change directory contents
+       * which provides some primitive privacy protection. */
       if (mkdir(hidden_dir, 0700)) {
 	 /*Can't create directory */
 	 jp_logf(JP_LOG_WARN, _("Can't create directory %s\n"), hidden_dir);
@@ -1389,14 +1390,10 @@ int check_hidden_dir()
       return EXIT_FAILURE;
    }
    /*Can we write in it? */
-   get_home_file_name("test", test_file, sizeof(test_file));
-   out = fopen(test_file, "w+");
-   if (!out) {
+   if (access(hidden_dir, W_OK) != 0) {
       jp_logf(JP_LOG_WARN, _("I can't write files in directory %s\n"), hidden_dir);
-   } else {
-      fclose(out);
-      unlink(test_file);
-   }
+      return EXIT_FAILURE;
+   } 
 
    return EXIT_SUCCESS;
 }
@@ -1584,6 +1581,10 @@ FILE *jp_open_home_file(char *filename, char *mode)
 	 pc_in = fopen(fullname, mode);
       }
    }
+
+   /* Enhance privacy by only allowing user to read & write files */
+   chmod(fullname, 0600);
+
    return pc_in;
 }
 

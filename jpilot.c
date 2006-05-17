@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.137 2006/05/08 15:51:27 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.138 2006/05/17 22:09:32 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -2157,6 +2157,11 @@ char * xpm_backup[] = {
    glob_log_stdout_mask = JP_LOG_INFO | JP_LOG_WARN | JP_LOG_FATAL | JP_LOG_STDOUT;
    glob_log_gui_mask = JP_LOG_FATAL | JP_LOG_WARN | JP_LOG_GUI;
    glob_find_id = 0;
+
+   /* Directory ~/.jpilot is created with permissions of 700 to prevent anyone
+    * but the user from looking at potentially sensitive files.
+    * Files within the directory have permission 600 */
+   umask(0077);
 
    /* enable internationalization(i18n) before printing any output */
 #if defined(ENABLE_NLS)
