@@ -1,4 +1,4 @@
-/* $Id: restore_gui.c,v 1.19 2005/11/27 19:14:34 rikster5 Exp $ */
+/* $Id: restore_gui.c,v 1.20 2006/05/18 16:31:13 rikster5 Exp $ */
 
 /*******************************************************************************
  * restore_gui.c
@@ -220,7 +220,7 @@ int restore_gui(GtkWidget *main_window, int w, int h, int x, int y)
    GtkWidget *label;
    const char *svalue;
    long ivalue;
-   char str_int[10];
+   char str_int[20];
 
    jp_logf(JP_LOG_DEBUG, "restore_gui()\n");
 
