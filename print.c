@@ -1,4 +1,4 @@
-/* $Id: print.c,v 1.32 2005/12/18 15:05:40 rousseau Exp $ */
+/* $Id: print.c,v 1.33 2006/05/26 20:52:14 judd Exp $ */
 
 /*******************************************************************************
  * print.c
@@ -539,18 +539,15 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
 
    /*------------------------------------------------------------------*/
    memcpy(&date, date_in, sizeof(struct tm));
-   sub_months_from_date(&date, 1);
    date.tm_mday = 1;	/* Go to the first of the month */
    mktime(&date);
+   sub_months_from_date(&date, 1);
    strftime(desc, sizeof(desc), "(%B %Y) %w ", &date);
    fprintf(out, "\n\n%%----------------------------------------\n"
            "%% Now generate the small months\n\n"
            "%s %d ", desc, days_in_mon(&date));
 
-   memcpy(&date, date_in, sizeof(struct tm));
-   add_months_to_date(&date, 1);
-   date.tm_mday = 1;	/* Go to the first of the month */
-   mktime(&date);
+   add_months_to_date(&date, 2);
    strftime(desc, sizeof(desc), "(%B %Y) %w ", &date);
    fprintf(out, "%s %d SmallMonths\n", desc, days_in_mon(&date));
 
