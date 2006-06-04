@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.121 2006/03/15 20:03:26 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.122 2006/06/04 23:06:07 judd Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -131,10 +131,6 @@ int address_category=CATEGORY_ALL;
 int address_phone_label_selected[NUM_PHONE_ENTRIES];
 static int clist_row_selected;
 extern GtkTooltips *glob_tooltips;
-#ifdef ENABLE_GTK2
-extern gchar *glob_gtk_clipboard_text;
-extern gchar *glob_x11_clipboard_text;
-#endif
 
 static AddressList *glob_address_list=NULL;
 static AddressList *export_address_list=NULL;
@@ -2504,10 +2500,6 @@ int address_gui_cleanup()
    free_AddressList(&glob_address_list);
    connect_changed_signals(DISCONNECT_SIGNALS);
 #ifdef ENABLE_GTK2
-   glob_gtk_clipboard_text = gtk_clipboard_wait_for_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
-   glob_x11_clipboard_text = gtk_clipboard_wait_for_text(gtk_clipboard_get(GDK_SELECTION_PRIMARY));
-#endif
-#ifdef ENABLE_GTK2
    set_pref(PREF_ADDRESS_PANE, gtk_paned_get_position(GTK_PANED(pane)), NULL, TRUE);
 #else
    set_pref(PREF_ADDRESS_PANE, GTK_PANED(pane)->handle_xpos, NULL, TRUE);
@@ -2578,24 +2570,6 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    if (address_app_info.category.name[address_category][0]=='\0') {
       address_category=CATEGORY_ALL;
    }
-
-#ifdef ENABLE_GTK2
-   /* Preserve clipboard buffer across applications */
-   if (glob_gtk_clipboard_text != NULL)
-   {
-      gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
-                             glob_gtk_clipboard_text, -1);
-      g_free(glob_gtk_clipboard_text);
-      glob_gtk_clipboard_text = NULL;
-   }
-   if (glob_x11_clipboard_text != NULL)
-   {
-      gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_PRIMARY),
-                             glob_x11_clipboard_text, -1);
-      g_free(glob_x11_clipboard_text);
-      glob_x11_clipboard_text = NULL;
-   }
-#endif
 
    accel_group = gtk_accel_group_new();
    gtk_window_add_accel_group(GTK_WINDOW(gtk_widget_get_toplevel(vbox)),

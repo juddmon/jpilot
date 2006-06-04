@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.140 2006/04/20 12:29:03 rousseau Exp $ */
+/* $Id: datebook_gui.c,v 1.141 2006/06/04 23:06:07 judd Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -91,10 +91,6 @@ static int DB_APPT_COLUMN=3;
 #define HOURS_FLAG      0x40
 
 extern GtkTooltips *glob_tooltips;
-#ifdef ENABLE_GTK2
-extern gchar *glob_gtk_clipboard_text;
-extern gchar *glob_x11_clipboard_text;
-#endif
 
 static GtkWidget *pane;
 static GtkWidget *note_pane;
@@ -3725,10 +3721,6 @@ int datebook_gui_cleanup()
 
    connect_changed_signals(DISCONNECT_SIGNALS);
 #ifdef ENABLE_GTK2
-   glob_gtk_clipboard_text = gtk_clipboard_wait_for_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
-   glob_x11_clipboard_text = gtk_clipboard_wait_for_text(gtk_clipboard_get(GDK_SELECTION_PRIMARY));
-#endif
-#ifdef ENABLE_GTK2
    set_pref(PREF_DATEBOOK_PANE, gtk_paned_get_position(GTK_PANED(pane)), NULL, TRUE);
    set_pref(PREF_DATEBOOK_NOTE_PANE, gtk_paned_get_position(GTK_PANED(note_pane)), NULL, TRUE);
    if (GTK_TOGGLE_BUTTON(show_todos_button)->active) {
@@ -4144,24 +4136,6 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 #ifdef ENABLE_DATEBK
    datebk_entry = NULL;
    get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
-#endif
-
-#ifdef ENABLE_GTK2
-   /* Preserve clipboard buffer across applications */
-   if (glob_gtk_clipboard_text != NULL)
-   {
-      gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
-                             glob_gtk_clipboard_text, -1);
-      g_free(glob_gtk_clipboard_text);
-      glob_gtk_clipboard_text = NULL;
-   }
-   if (glob_x11_clipboard_text != NULL)
-   {
-      gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_PRIMARY),
-                             glob_x11_clipboard_text, -1);
-      g_free(glob_x11_clipboard_text);
-      glob_x11_clipboard_text = NULL;
-   }
 #endif
 
    pane = gtk_hpaned_new();
