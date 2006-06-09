@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.141 2006/06/04 23:06:07 judd Exp $ */
+/* $Id: datebook_gui.c,v 1.142 2006/06/09 03:05:35 judd Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -3641,7 +3641,6 @@ cb_key_pressed(GtkWidget *widget, GdkEventKey *event,
    return FALSE;
 }
 
-#if 0
 // do not remap PageUp and PageDown to previous/next day since these kays are
 // also used by GTK+ for Begin/End in a textfield
 static gboolean
@@ -3705,7 +3704,7 @@ cb_keyboard(GtkWidget *widget, GdkEventKey *event, gpointer *p)
    }
    return FALSE;
 }
-#endif
+
 
 int datebook_gui_cleanup()
 {
@@ -3745,10 +3744,10 @@ int datebook_gui_cleanup()
    gtk_accel_group_detach(accel_group, GTK_OBJECT(gtk_widget_get_toplevel(main_calendar)));
 #endif
 
-#if 0
-   gtk_signal_disconnect_by_func(GTK_OBJECT(gtk_widget_get_toplevel(main_calendar)),
+   gtk_signal_disconnect_by_func(GTK_OBJECT(main_calendar),
 				 GTK_SIGNAL_FUNC(cb_keyboard), NULL);
-#endif
+   gtk_signal_disconnect_by_func(GTK_OBJECT(clist),
+				 GTK_SIGNAL_FUNC(cb_keyboard), NULL);
 
    return EXIT_SUCCESS;
 }
@@ -4114,9 +4113,6 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    long use_db3_tags;
 #endif
 
-   time_t ltime;
-   struct tm *now;
-
    int i, j;
 #define MAX_STR 100
    char days2[12];
@@ -4163,8 +4159,6 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_box_pack_start(GTK_BOX(vbox1), separator, FALSE, FALSE, 5);
 
    /* Make the Today is: label */
-   time(&ltime);
-   now = localtime(&ltime);
 
    glob_date_label = gtk_label_new(" ");
    gtk_box_pack_start(GTK_BOX(vbox1), glob_date_label, FALSE, FALSE, 0);
@@ -4203,11 +4197,6 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_window_add_accel_group(GTK_WINDOW(gtk_widget_get_toplevel(vbox)), accel_group);
 #else
    gtk_accel_group_attach(accel_group, GTK_OBJECT(gtk_widget_get_toplevel(vbox)));
-#endif
-
-#if 0
-   gtk_signal_connect(GTK_OBJECT(gtk_widget_get_toplevel(vbox)), "key_press_event",
-		      GTK_SIGNAL_FUNC(cb_keyboard), NULL);
 #endif
 
    /* Make Weekview button */
@@ -4256,11 +4245,10 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 				  GTK_POLICY_NEVER, GTK_POLICY_NEVER);
    /* Create the "No Time" appointment box */
    vbox_no_time_appts = gtk_vbox_new(FALSE, 0);
-   //gtk_container_add(GTK_CONTAINER(scrolled_window2), GTK_WIDGET(vbox_no_time_appts));
+
    gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(scrolled_window2),
 					 GTK_WIDGET(vbox_no_time_appts));
    gtk_box_pack_start(GTK_BOX(vbox1), scrolled_window2, FALSE, FALSE, 0);
-   //gtk_box_pack_start(GTK_BOX(vbox1), vbox_no_time_appts, FALSE, FALSE, 0);
 #endif
 
    /* create a new scrolled window. */
@@ -4892,6 +4880,12 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    /* The focus doesn't do any good on the application button */
    gtk_widget_grab_focus(GTK_WIDGET(main_calendar));
+
+   gtk_signal_connect(GTK_OBJECT(main_calendar), "key_press_event",
+		      GTK_SIGNAL_FUNC(cb_keyboard), NULL);
+
+   gtk_signal_connect(GTK_OBJECT(clist), "key_press_event",
+		      GTK_SIGNAL_FUNC(cb_keyboard), NULL);
 
    return EXIT_SUCCESS;
 }
