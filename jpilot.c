@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.139 2006/06/04 23:06:07 judd Exp $ */
+/* $Id: jpilot.c,v 1.140 2006/06/09 20:42:57 judd Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -1096,6 +1096,41 @@ void cb_install_gui(GtkWidget *widget, gpointer data)
    install_gui_and_size(window);
 }
 
+#ifdef ENABLE_GTK2
+#include <gdk-pixbuf/gdk-pixdata.h>
+
+guint8 *get_inline_pixbuf_data(const char **xpm_icon_data, gint icon_size)
+{
+   GdkPixbuf  *pixbuf;
+   GdkPixdata *pixdata;
+   GdkPixbuf  *scaled_pb;
+   guint8     *data;
+   guint       len;
+
+   pixbuf = gdk_pixbuf_new_from_xpm_data(xpm_icon_data);
+   if (!pixbuf)
+      return NULL;
+
+   if (gdk_pixbuf_get_width(pixbuf)  != icon_size ||
+       gdk_pixbuf_get_height(pixbuf) != icon_size) {
+      scaled_pb = gdk_pixbuf_scale_simple(pixbuf, icon_size, icon_size,
+	 GDK_INTERP_BILINEAR);
+      g_object_unref(G_OBJECT(pixbuf));
+      pixbuf = scaled_pb;
+   }
+
+   pixdata = (GdkPixdata*)g_malloc(sizeof(GdkPixdata));
+   gdk_pixdata_from_pixbuf(pixdata, pixbuf, FALSE);
+   data = gdk_pixdata_serialize(pixdata, &len);
+
+   g_object_unref(pixbuf);
+   g_free(pixdata);
+
+   return data;
+}
+#endif
+
+
 void get_main_menu(GtkWidget  *window,
 		   GtkWidget **menubar,
 		   GList *plugin_list)
@@ -1108,9 +1143,6 @@ void get_main_menu(GtkWidget  *window,
 #define ICON(icon) NULL
 #define ICON_XPM(icon, size) NULL
 #endif
-
-#ifdef ENABLE_GTK2
-#include <gdk-pixbuf/gdk-pixdata.h>
 
 const char *todo_menu_icon[]={
    "14 14 38 1",
@@ -1369,36 +1401,6 @@ const char *user_icon[] = {
 "++@@/(_:'<[]}}|]",
 "++@@/^1:2<[345|]"};
 
-guint8 *get_inline_pixbuf_data(const char **xpm_icon_data, gint icon_size)
-{
-   GdkPixbuf  *pixbuf;
-   GdkPixdata *pixdata;
-   GdkPixbuf  *scaled_pb;
-   guint8     *data;
-   guint       len;
-
-   pixbuf = gdk_pixbuf_new_from_xpm_data(xpm_icon_data);
-   if (!pixbuf)
-      return NULL;
-
-   if (gdk_pixbuf_get_width(pixbuf)  != icon_size ||
-       gdk_pixbuf_get_height(pixbuf) != icon_size) {
-      scaled_pb = gdk_pixbuf_scale_simple(pixbuf, icon_size, icon_size,
-	 GDK_INTERP_BILINEAR);
-      g_object_unref(G_OBJECT(pixbuf));
-      pixbuf = scaled_pb;
-   }
-
-   pixdata = (GdkPixdata*)g_malloc(sizeof(GdkPixdata));
-   gdk_pixdata_from_pixbuf(pixdata, pixbuf, FALSE);
-   data = gdk_pixdata_serialize(pixdata, &len);
-
-   g_object_unref(pixbuf);
-   g_free(pixdata);
-
-   return data;
-}
-#endif
 
   GtkItemFactoryEntry menu_items1[]={
   { _("/_File"),                           NULL,         NULL,           0,                  "<Branch>" },
