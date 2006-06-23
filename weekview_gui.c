@@ -1,4 +1,4 @@
-/* $Id: weekview_gui.c,v 1.32 2005/12/16 20:02:05 rousseau Exp $ */
+/* $Id: weekview_gui.c,v 1.33 2006/06/23 13:38:32 rousseau Exp $ */
 
 /*******************************************************************************
  * weekview_gui.c
@@ -35,6 +35,7 @@
 
 
 extern int datebook_category;
+extern int glob_app;
 
 
 static GtkWidget *window=NULL;
@@ -281,6 +282,9 @@ static void cb_enter_selected_day(GtkWidget *widget,
 				  gpointer   data)
 {
    struct tm date;
+
+   if (glob_app != DATEBOOK)
+      return;
 
    date = glob_week_date;
 

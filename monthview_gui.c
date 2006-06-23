@@ -1,4 +1,4 @@
-/* $Id: monthview_gui.c,v 1.34 2005/12/16 20:02:05 rousseau Exp $ */
+/* $Id: monthview_gui.c,v 1.35 2006/06/23 13:38:22 rousseau Exp $ */
 
 /*******************************************************************************
  * monthview_gui.c
@@ -35,6 +35,7 @@
 #include "config.h"
 
 extern int datebook_category;
+extern int glob_app;
 
 static GtkWidget *window=NULL;
 static GtkWidget *glob_month_vbox;
@@ -163,6 +164,9 @@ static void cb_enter_selected_day(GtkWidget *widget,
 				  gpointer   data)
 {
    int day = GPOINTER_TO_INT(data) + 1 - glob_offset;
+
+   if (glob_app != DATEBOOK)
+      return;
 
    /* Redisplay the day view based on the date the user clicked on */
    datebook_gui_setdate(glob_month_date.tm_year, glob_month_date.tm_mon, day);
