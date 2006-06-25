@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.114 2006/05/17 22:09:32 rikster5 Exp $ */
+/* $Id: utils.c,v 1.115 2006/06/25 03:36:36 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -169,6 +169,18 @@ int cat_compare(const void *v1, const void *v2)
       return -1;
    }
    return strcmp((s1)->Pcat, (s2)->Pcat);
+}
+
+int get_timeout_interval()
+{
+   const char *svalue;
+
+   get_pref(PREF_TIME, NULL, &svalue);
+   if (strstr(svalue,"%S"))
+      return CLOCK_TICK;
+   else
+      return 60*CLOCK_TICK;
+
 }
 
 gint timeout_date(gpointer data)

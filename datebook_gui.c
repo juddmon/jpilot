@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.142 2006/06/09 03:05:35 judd Exp $ */
+/* $Id: datebook_gui.c,v 1.143 2006/06/25 03:36:35 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -4163,7 +4163,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    glob_date_label = gtk_label_new(" ");
    gtk_box_pack_start(GTK_BOX(vbox1), glob_date_label, FALSE, FALSE, 0);
    timeout_date(NULL);
-   glob_date_timer_tag = gtk_timeout_add(CLOCK_TICK, timeout_date, NULL);
+   glob_date_timer_tag = gtk_timeout_add(get_timeout_interval(), timeout_date, NULL);
 
    /* Separator */
    separator = gtk_hseparator_new();

@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.122 2006/06/04 23:06:07 judd Exp $ */
+/* $Id: address_gui.c,v 1.123 2006/06/25 03:36:36 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -2594,7 +2594,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    glob_date_label = gtk_label_new(" ");
    gtk_box_pack_start(GTK_BOX(vbox1), glob_date_label, FALSE, FALSE, 0);
    timeout_date(NULL);
-   glob_date_timer_tag = gtk_timeout_add(CLOCK_TICK, timeout_date, NULL);
+   glob_date_timer_tag = gtk_timeout_add(get_timeout_interval(), timeout_date, NULL);
 
    /* Separator */
    separator = gtk_hseparator_new();
