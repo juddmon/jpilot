@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.58 2006/04/10 23:31:08 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.59 2006/06/25 04:49:51 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -1305,7 +1305,7 @@ static int make_menu(char *items[], int menu_index, GtkWidget **Poption_menu,
    group = NULL;
    
    for (i=0; items[i]; i++) {
-      menu_item = gtk_radio_menu_item_new_with_label(group, items[i]);
+      menu_item = gtk_radio_menu_item_new_with_label(group, gettext(items[i]));
       menu_items[i] = menu_item;
       if (menu_index==KEYRING_CAT1) {
 	 if (i==0) {
@@ -1342,7 +1342,6 @@ static void make_menus()
    unsigned char *buf;
    int buf_size;
    int i, count;
-   char all[]=N_("All");
    char *categories[18];
      
    jp_logf(JP_LOG_DEBUG, "KeyRing: make_menus\n");
@@ -1363,7 +1362,7 @@ static void make_menus()
 
    free(buf);
    
-   categories[0]=all;
+   categories[0]= "All";
    for (i=0, count=0; i<NUM_KEYRING_CAT_ITEMS; i++) {
       glob_category_number_from_menu_item[i]=0;
       if (ai.name[i][0]=='\0') {
