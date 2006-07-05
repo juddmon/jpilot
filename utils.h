@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.54 2006/01/01 22:33:44 rousseau Exp $ */
+/* $Id: utils.h,v 1.55 2006/07/05 00:34:11 judd Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -259,7 +259,7 @@ int get_home_file_name(char *file, char *full_name, int max_size);
 
 FILE *jp_open_home_file(char *filename, char *mode);
 
-int raw_header_to_header(RawDBHeader *rdbh, DBHeader *dbh);
+int unpack_db_header(DBHeader *dbh, unsigned char *buffer);
 
 int find_next_offset(mem_rec_header *mem_rh, long fpos,
 		     unsigned int *next_offset,

@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.115 2006/06/25 03:36:36 rikster5 Exp $ */
+/* $Id: utils.c,v 1.116 2006/07/05 00:34:11 judd Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -1744,27 +1744,27 @@ unsigned int bytes_to_bin(unsigned char *bytes, unsigned int num_bytes)
    return n;
 }
 
-int raw_header_to_header(RawDBHeader *rdbh, DBHeader *dbh)
+int unpack_db_header(DBHeader *dbh, unsigned char *buffer)
 {
    unsigned long temp;
 
-   g_strlcpy(dbh->db_name, rdbh->db_name, sizeof(dbh->db_name));
-   dbh->flags = bytes_to_bin(rdbh->flags, 2);
-   dbh->version = bytes_to_bin(rdbh->version, 2);
-   temp = bytes_to_bin(rdbh->creation_time, 4);
+   g_strlcpy(dbh->db_name, buffer, 32);
+   dbh->flags = bytes_to_bin(buffer + 32, 2);
+   dbh->version = bytes_to_bin(buffer + 34, 2);
+   temp = bytes_to_bin(buffer + 36, 4);
    dbh->creation_time = pilot_time_to_unix_time(temp);
-   temp = bytes_to_bin(rdbh->modification_time, 4);
+   temp = bytes_to_bin(buffer + 40, 4);
    dbh->modification_time = pilot_time_to_unix_time(temp);
-   temp = bytes_to_bin(rdbh->backup_time, 4);
+   temp = bytes_to_bin(buffer + 44, 4);
    dbh->backup_time = pilot_time_to_unix_time(temp);
-   dbh->modification_number = bytes_to_bin(rdbh->modification_number, 4);
-   dbh->app_info_offset = bytes_to_bin(rdbh->app_info_offset, 4);
-   dbh->sort_info_offset = bytes_to_bin(rdbh->sort_info_offset, 4);
-   g_strlcpy(dbh->type, rdbh->type, sizeof(dbh->type));
-   g_strlcpy(dbh->creator_id, rdbh->creator_id, sizeof(dbh->creator_id));
-   g_strlcpy(dbh->unique_id_seed, rdbh->unique_id_seed, sizeof(dbh->unique_id_seed));
-   dbh->next_record_list_id = bytes_to_bin(rdbh->next_record_list_id, 4);
-   dbh->number_of_records = bytes_to_bin(rdbh->number_of_records, 2);
+   dbh->modification_number = bytes_to_bin(buffer + 48, 4);
+   dbh->app_info_offset = bytes_to_bin(buffer + 52, 4);
+   dbh->sort_info_offset = bytes_to_bin(buffer + 56, 4);
+   g_strlcpy(dbh->type, buffer + 60, 5);
+   g_strlcpy(dbh->creator_id, buffer + 64, 5);
+   g_strlcpy(dbh->unique_id_seed, buffer + 68, 5);
+   dbh->next_record_list_id = bytes_to_bin(buffer + 72, 4);
+   dbh->number_of_records = bytes_to_bin(buffer + 76, 2);
 
    return EXIT_SUCCESS;
 }
@@ -1828,20 +1828,20 @@ void print_string(char *str, int len)
 /* */
 int get_app_info_size(FILE *in, int *size)
 {
-   RawDBHeader rdbh;
+   unsigned char raw_header[LEN_RAW_DB_HEADER];
    DBHeader dbh;
    unsigned int offset;
    record_header rh;
 
    fseek(in, 0, SEEK_SET);
 
-   fread(&rdbh, sizeof(RawDBHeader), 1, in);
+   fread(raw_header, LEN_RAW_DB_HEADER, 1, in);
    if (feof(in)) {
       jp_logf(JP_LOG_WARN, "get_app_info_size(): %s\n", _("Error reading file"));
       return EXIT_FAILURE;
    }
 
-   raw_header_to_header(&rdbh, &dbh);
+   unpack_db_header(&dbh, raw_header);
 
    if (dbh.app_info_offset==0) {
       *size=0;

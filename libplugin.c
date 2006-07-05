@@ -1,4 +1,4 @@
-/* $Id: libplugin.c,v 1.27 2005/12/30 19:01:08 judd Exp $ */
+/* $Id: libplugin.c,v 1.28 2006/07/05 00:34:11 judd Exp $ */
 
 /*******************************************************************************
  * libplugin.c
@@ -391,41 +391,12 @@ static unsigned int bytes_to_bin(unsigned char *bytes, unsigned int num_bytes)
    return n;
 }
 
-static int raw_header_to_header(RawDBHeader *rdbh, DBHeader *dbh)
-{
-   unsigned long temp;
-
-   strncpy(dbh->db_name, rdbh->db_name, 31);
-   dbh->db_name[31] = '\0';
-   dbh->flags = bytes_to_bin(rdbh->flags, 2);
-   dbh->version = bytes_to_bin(rdbh->version, 2);
-   temp = bytes_to_bin(rdbh->creation_time, 4);
-   dbh->creation_time = pilot_time_to_unix_time(temp);
-   temp = bytes_to_bin(rdbh->modification_time, 4);
-   dbh->modification_time = pilot_time_to_unix_time(temp);
-   temp = bytes_to_bin(rdbh->backup_time, 4);
-   dbh->backup_time = pilot_time_to_unix_time(temp);
-   dbh->modification_number = bytes_to_bin(rdbh->modification_number, 4);
-   dbh->app_info_offset = bytes_to_bin(rdbh->app_info_offset, 4);
-   dbh->sort_info_offset = bytes_to_bin(rdbh->sort_info_offset, 4);
-   strncpy(dbh->type, rdbh->type, 4);
-   dbh->type[4] = '\0';
-   strncpy(dbh->creator_id, rdbh->creator_id, 4);
-   dbh->creator_id[4] = '\0';
-   strncpy(dbh->unique_id_seed, rdbh->unique_id_seed, 4);
-   dbh->unique_id_seed[4] = '\0';
-   dbh->next_record_list_id = bytes_to_bin(rdbh->next_record_list_id, 4);
-   dbh->number_of_records = bytes_to_bin(rdbh->number_of_records, 2);
-
-   return EXIT_SUCCESS;
-}
-
 int jp_get_app_info(char *DB_name, unsigned char **buf, int *buf_size)
 {
    FILE *in;
    int num;
    int rec_size;
-   RawDBHeader rdbh;
+   unsigned char raw_header[LEN_RAW_DB_HEADER];
    DBHeader dbh;
    char PDB_name[FILENAME_MAX];
 
@@ -441,7 +412,7 @@ int jp_get_app_info(char *DB_name, unsigned char **buf, int *buf_size)
       jp_logf(JP_LOG_WARN, _("%s:%d Error opening file: %s\n"), __FILE__, __LINE__, PDB_name);
       return EXIT_FAILURE;
    }
-   num = fread(&rdbh, sizeof(RawDBHeader), 1, in);
+   num = fread(raw_header, LEN_RAW_DB_HEADER, 1, in);
    if (num != 1) {
       if (ferror(in)) {
 	 jp_logf(JP_LOG_WARN, _("%s:%d Error reading file: %s\n"), __FILE__, __LINE__, PDB_name);
@@ -453,7 +424,7 @@ int jp_get_app_info(char *DB_name, unsigned char **buf, int *buf_size)
 	 return JPILOT_EOF;
       }
    }
-   raw_header_to_header(&rdbh, &dbh);
+   unpack_db_header(&dbh, raw_header);
 
    num = get_app_info_size(in, &rec_size);
    if (num) {
@@ -782,7 +753,7 @@ int jp_read_DB_files(char *DB_name, GList **records)
    unsigned int unique_id;
    mem_rec_header *mem_rh, *temp_mem_rh, *last_mem_rh;
    record_header rh;
-   RawDBHeader rdbh;
+   unsigned char raw_header[LEN_RAW_DB_HEADER];
    DBHeader dbh;
    buf_rec *temp_br;
    int temp_br_used;
@@ -803,7 +774,7 @@ int jp_read_DB_files(char *DB_name, GList **records)
       return -1;
    }
    /*Read the database header */
-   num = fread(&rdbh, sizeof(RawDBHeader), 1, in);
+   num = fread(raw_header, LEN_RAW_DB_HEADER, 1, in);
    if (num != 1) {
       if (ferror(in)) {
 	 jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), PDB_name);
@@ -814,7 +785,8 @@ int jp_read_DB_files(char *DB_name, GList **records)
 	 return JPILOT_EOF;
       }
    }
-   raw_header_to_header(&rdbh, &dbh);
+   unpack_db_header(&dbh, raw_header);
+
 #ifdef JPILOT_DEBUG
    jp_logf(JP_LOG_DEBUG, "db_name = %s\n", dbh.db_name);
    jp_logf(JP_LOG_DEBUG, "num records = %d\n", dbh.number_of_records);

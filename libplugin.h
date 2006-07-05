@@ -1,4 +1,4 @@
-/* $Id: libplugin.h,v 1.22 2005/12/30 19:01:08 judd Exp $ */
+/* $Id: libplugin.h,v 1.23 2006/07/05 00:34:11 judd Exp $ */
 
 /*******************************************************************************
  * libplugin.h
@@ -75,22 +75,7 @@ typedef struct mem_rec_header_s {
    struct mem_rec_header_s *next;
 } mem_rec_header;
 
-typedef struct {
-   unsigned char db_name[32];
-   unsigned char flags[2];
-   unsigned char version[2];
-   unsigned char creation_time[4];
-   unsigned char modification_time[4];
-   unsigned char backup_time[4];
-   unsigned char modification_number[4];
-   unsigned char app_info_offset[4];
-   unsigned char sort_info_offset[4];
-   unsigned char type[4];/*Database ID */
-   unsigned char creator_id[4];/*Application ID */
-   unsigned char unique_id_seed[4];
-   unsigned char next_record_list_id[4];
-   unsigned char number_of_records[2];
-} RawDBHeader;
+#define LEN_RAW_DB_HEADER 78
 
 typedef struct {
    char db_name[32];
