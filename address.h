@@ -1,4 +1,4 @@
-/* $Id: address.h,v 1.9 2004/11/22 00:52:41 rikster5 Exp $ */
+/* $Id: address.h,v 1.10 2006/07/21 22:25:24 rikster5 Exp $ */
 
 /*******************************************************************************
  * address.h
@@ -26,13 +26,11 @@
 #include <pi-address.h>
 #include "utils.h"
 
-/* This flag will force sorting other than on the palm
- * 0 on palm: by lastname, first
- * 1 on palm: by company
- * 0 will sort same as on palm
- * 1 will reverse it
+/* This flag affects sorting of address records
+ * 0 : by lastname, first
+ * 1 : by company name
  */
-extern int sort_override;
+extern int sort_by_company;
 
 int get_address_app_info(struct AddressAppInfo *aai);
 int pc_address_write(struct Address *a, PCRecType rt, unsigned char attrib,

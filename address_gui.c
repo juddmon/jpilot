@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.123 2006/06/25 03:36:36 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.124 2006/07/21 22:25:24 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -1185,17 +1185,9 @@ static void cb_cancel(GtkWidget *widget, gpointer data)
 void cb_resort(GtkWidget *widget,
 	       gpointer   data)
 {
-   int by_company;
    MyAddress *maddr;
 
-   by_company=GPOINTER_TO_INT(data);
-
-   if (sort_override) {
-      sort_override=0;
-   } else {
-      sort_override=1;
-      by_company=!(by_company & 1);
-   }
+   sort_by_company = !(sort_by_company & 1);
 
    /* Return to this record after resorting */
    maddr = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
@@ -1210,13 +1202,12 @@ void cb_resort(GtkWidget *widget,
    address_find();
 
    /* Update labels after redrawing clist to work around GTK bug */
-   if (by_company) {
+   if (sort_by_company) {
       gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, _("Company/Name"));
    } else {
       gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, _("Name/Company"));
    }
 }
-
 
 void cb_phone_menu(GtkWidget *item, unsigned int value)
 {
@@ -2064,7 +2055,7 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    get_pixmaps(clist, PIXMAP_NOTE, &pixmap_note, &mask_note);
 
    by_company = address_app_info.sortByCompany;
-   if (sort_override) {
+   if (sort_by_company) {
       by_company=!(by_company & 1);
    }
    if (by_company) {
@@ -2629,14 +2620,18 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_clist_column_title_passive(GTK_CLIST(clist), ADDRESS_PHONE_COLUMN);
    gtk_clist_column_title_passive(GTK_CLIST(clist), ADDRESS_NOTE_COLUMN);
 
-   if (address_app_info.sortByCompany) {
+   /* Initialize sort_by_company the first time program is called */ 
+   if (sort_by_company == -1) {
+      sort_by_company = address_app_info.sortByCompany;
+   }
+
+   if (sort_by_company) {
       gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, _("Company/Name"));
    } else {
       gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, _("Name/Company"));
    }
    gtk_signal_connect(GTK_OBJECT(GTK_CLIST(clist)->column[ADDRESS_NAME_COLUMN].button),
-		      "clicked", GTK_SIGNAL_FUNC(cb_resort),
-		      GINT_TO_POINTER(address_app_info.sortByCompany));
+		      "clicked", GTK_SIGNAL_FUNC(cb_resort), NULL);
    gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_PHONE_COLUMN, _("Phone"));
    /* Put pretty pictures in the clist column headings */
    get_pixmaps(vbox, PIXMAP_NOTE, &pixmap, &mask);

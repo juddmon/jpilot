@@ -1,4 +1,4 @@
-/* $Id: address.c,v 1.39 2005/12/18 15:05:40 rousseau Exp $ */
+/* $Id: address.c,v 1.40 2006/07/21 22:25:24 rikster5 Exp $ */
 
 /*******************************************************************************
  * address.c
@@ -43,7 +43,7 @@ static int glob_sort_rule;
 #define SORT_BY_COMPANY 1
 #define SORT_JAPANESE 2
 #define SORT_JOS 4
-int sort_override=0;
+int sort_by_company=-1;
 
 #ifdef JPILOT_DEBUG
 int print_address_list(AddressList **al)
@@ -250,7 +250,6 @@ int address_sort(AddressList **al, int sort_order)
 {
    AddressList *temp_al;
    AddressList **sort_al;
-   struct AddressAppInfo ai;
    int count, i;
    long use_jos, char_set;
 
@@ -264,10 +263,8 @@ int address_sort(AddressList **al, int sort_order)
       return EXIT_SUCCESS;
    }
 
-   get_address_app_info(&ai);
-   glob_sort_rule = ai.sortByCompany;
-   if (sort_override) {
-      glob_sort_rule = !(ai.sortByCompany & SORT_BY_COMPANY);
+   if (sort_by_company) {
+      glob_sort_rule = SORT_BY_COMPANY;
    }
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    if (char_set == CHAR_SET_JAPANESE || char_set == CHAR_SET_SJIS_UTF) {
