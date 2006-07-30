@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.55 2006/07/05 00:34:11 judd Exp $ */
+/* $Id: utils.h,v 1.56 2006/07/30 13:51:46 rousseau Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -235,6 +235,8 @@ struct sorted_cats
 void fprint_usage_string(FILE *out);
 
 int cat_compare(const void *v1, const void *v2);
+
+int get_timeout_interval();
 
 gint timeout_date(gpointer data);
 
