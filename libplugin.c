@@ -1,4 +1,4 @@
-/* $Id: libplugin.c,v 1.28 2006/07/05 00:34:11 judd Exp $ */
+/* $Id: libplugin.c,v 1.29 2006/07/30 13:57:00 rousseau Exp $ */
 
 /*******************************************************************************
  * libplugin.c
@@ -367,11 +367,13 @@ int jp_free_DB_records(GList **br_list)
 /* Exact value of "Jan 1, 1970 0:00:00 GMT" - "Jan 1, 1904 0:00:00 GMT" */
 #define PILOT_TIME_DELTA (unsigned)(2082844800)
 
+#if 0
 static time_t
 pilot_time_to_unix_time (unsigned long raw_time)
 {
    return (time_t)(raw_time - PILOT_TIME_DELTA);
 }
+#endif
 
 /*
 static unsigned long
@@ -381,6 +383,7 @@ unix_time_to_pilot_time (time_t t)
 }
 */
 
+#if 0
 static unsigned int bytes_to_bin(unsigned char *bytes, unsigned int num_bytes)
 {
    unsigned int i, n;
@@ -390,6 +393,7 @@ static unsigned int bytes_to_bin(unsigned char *bytes, unsigned int num_bytes)
    }
    return n;
 }
+#endif
 
 int jp_get_app_info(char *DB_name, unsigned char **buf, int *buf_size)
 {
