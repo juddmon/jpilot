@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.116 2006/07/05 00:34:11 judd Exp $ */
+/* $Id: utils.c,v 1.117 2006/07/30 14:01:00 rousseau Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -1376,7 +1376,6 @@ int check_hidden_dir()
 {
    struct stat statb;
    char hidden_dir[FILENAME_MAX];
-   FILE *out;
 
    get_home_file_name("", hidden_dir, sizeof(hidden_dir));
    hidden_dir[strlen(hidden_dir)-1]='\0';
