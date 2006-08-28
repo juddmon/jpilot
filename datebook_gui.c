@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.143 2006/06/25 03:36:35 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.144 2006/08/28 01:44:38 judd Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -46,8 +46,7 @@
 #include "alarms.h"
 #include "japanese.h"
 #include "stock_buttons.h"
-//#define DAY_VIEW
-//undo
+/* #define DAY_VIEW */
 #ifdef DAY_VIEW
 #include "dayview.h"
 #endif
@@ -3641,8 +3640,6 @@ cb_key_pressed(GtkWidget *widget, GdkEventKey *event,
    return FALSE;
 }
 
-// do not remap PageUp and PageDown to previous/next day since these kays are
-// also used by GTK+ for Begin/End in a textfield
 static gboolean
 cb_keyboard(GtkWidget *widget, GdkEventKey *event, gpointer *p)
 {

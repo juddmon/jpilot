@@ -1,4 +1,4 @@
-/* $Id: jpilot-dump.c,v 1.24 2006/02/25 17:48:20 rousseau Exp $ */
+/* $Id: jpilot-dump.c,v 1.25 2006/08/28 01:44:39 judd Exp $ */
 
 /*******************************************************************************
  * jpilot-dump.c
@@ -45,7 +45,6 @@
 #include <pi-datebook.h>
 
 /* Jpilot header files */
-//#include "utils.h"
 #include "datebook.h"
 #include "address.h"
 #include "todo.h"
