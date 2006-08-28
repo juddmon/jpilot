@@ -1,95 +1,104 @@
 #!/bin/bash
+#
+# First build with
+# ./configure --prefix=/usr; make; make install
+#
 PACKAGE=@PACKAGE@
 VERSION=@VERSION@
 ARCH=i386
 RELEASE=1
 #
-mkdir install
-cp description-pak install/slack-desc
-echo "cat /install/description" > install/doinst.sh
+STARTDIR=`pwd`
+TMPDIR=`mktemp -d -t slackware.XXXXXX` || exit 1
+# echo Created $TMPDIR
+mkdir $TMPDIR/install
+cp description-pak $TMPDIR/install/slack-desc
 #
-tar czvf $PACKAGE-$VERSION-$ARCH-$RELEASE.tgz \
-install/description \
-install/doinst.sh \
-/usr/bin/jpilot \
-/usr/bin/jpilot-dump \
-/usr/bin/jpilot-dial \
-/usr/bin/jpilot-sync \
-/usr/lib/jpilot/plugins/libexpense.la \
-/usr/lib/jpilot/plugins/libexpense.so \
-/usr/lib/jpilot/plugins/libexpense.so.0 \
-/usr/lib/jpilot/plugins/libexpense.so.0.0.0 \
-/usr/lib/jpilot/plugins/libsynctime.la \
-/usr/lib/jpilot/plugins/libsynctime.so \
-/usr/lib/jpilot/plugins/libsynctime.so.0 \
-/usr/lib/jpilot/plugins/libsynctime.so.0.0.0 \
-/usr/lib/jpilot/plugins/libkeyring.la \
-/usr/lib/jpilot/plugins/libkeyring.so \
-/usr/lib/jpilot/plugins/libkeyring.so.0 \
-/usr/lib/jpilot/plugins/libkeyring.so.0.0.0 \
-/usr/man/man1/jpilot.1 \
-/usr/man/man1/jpilot-dial.1 \
-/usr/man/man1/jpilot-sync.1 \
-/usr/doc/$PACKAGE-$VERSION/AUTHORS \
-/usr/doc/$PACKAGE-$VERSION/BUGS \
-/usr/doc/$PACKAGE-$VERSION/COPYING \
-/usr/doc/$PACKAGE-$VERSION/ChangeLog \
-/usr/doc/$PACKAGE-$VERSION/INSTALL \
-/usr/doc/$PACKAGE-$VERSION/README \
-/usr/doc/$PACKAGE-$VERSION/TODO \
-/usr/doc/$PACKAGE-$VERSION/manual/jpilot-address.png \
-/usr/doc/$PACKAGE-$VERSION/manual/jpilot-datebook.png \
-/usr/doc/$PACKAGE-$VERSION/manual/jpilot-expense.png \
-/usr/doc/$PACKAGE-$VERSION/manual/jpilot-install.png \
-/usr/doc/$PACKAGE-$VERSION/manual/jpilot-memo.png \
-/usr/doc/$PACKAGE-$VERSION/manual/jpilot-prefs-1.png \
-/usr/doc/$PACKAGE-$VERSION/manual/jpilot-prefs-2.png \
-/usr/doc/$PACKAGE-$VERSION/manual/jpilot-prefs-3.png \
-/usr/doc/$PACKAGE-$VERSION/manual/jpilot-prefs-4.png \
-/usr/doc/$PACKAGE-$VERSION/manual/jpilot-prefs-5.png \
-/usr/doc/$PACKAGE-$VERSION/manual/jpilot-prefs-6.png \
-/usr/doc/$PACKAGE-$VERSION/manual/jpilot-prefs-7.png \
-/usr/doc/$PACKAGE-$VERSION/manual/jpilot-prefs-8.png \
-/usr/doc/$PACKAGE-$VERSION/manual/jpilot-print.png \
-/usr/doc/$PACKAGE-$VERSION/manual/jpilot-search.png \
-/usr/doc/$PACKAGE-$VERSION/manual/jpilot-todo.png \
-/usr/doc/$PACKAGE-$VERSION/manual/jpilot-toplogo.jpg \
-/usr/doc/$PACKAGE-$VERSION/manual/manual.html \
-/usr/doc/$PACKAGE-$VERSION/manual/plugin.html \
-/usr/doc/$PACKAGE-$VERSION/icons/README \
-/usr/doc/$PACKAGE-$VERSION/icons/jpilot-icon1.xpm \
-/usr/doc/$PACKAGE-$VERSION/icons/jpilot-icon2.xpm \
-/usr/doc/$PACKAGE-$VERSION/icons/jpilot-icon3.xpm \
-/usr/doc/$PACKAGE-$VERSION/icons/jpilot-icon4.xpm \
-/usr/share/$PACKAGE/AddressDB.pdb \
-/usr/share/$PACKAGE/DatebookDB.pdb \
-/usr/share/$PACKAGE/ExpenseDB.pdb \
-/usr/share/$PACKAGE/Memo32DB.pdb \
-/usr/share/$PACKAGE/MemoDB.pdb \
-/usr/share/$PACKAGE/ToDoDB.pdb \
-/usr/share/$PACKAGE/jpilotrc.blue \
-/usr/share/$PACKAGE/jpilotrc.default \
-/usr/share/$PACKAGE/jpilotrc.green \
-/usr/share/$PACKAGE/jpilotrc.purple \
-/usr/share/$PACKAGE/jpilotrc.steel \
-/usr/share/locale/ca/LC_MESSAGES/jpilot.mo \
-/usr/share/locale/cs/LC_MESSAGES/jpilot.mo \
-/usr/share/locale/da/LC_MESSAGES/jpilot.mo \
-/usr/share/locale/de/LC_MESSAGES/jpilot.mo \
-/usr/share/locale/es/LC_MESSAGES/jpilot.mo \
-/usr/share/locale/fr/LC_MESSAGES/jpilot.mo \
-/usr/share/locale/it/LC_MESSAGES/jpilot.mo \
-/usr/share/locale/ja/LC_MESSAGES/jpilot.mo \
-/usr/share/locale/nl/LC_MESSAGES/jpilot.mo \
-/usr/share/locale/no/LC_MESSAGES/jpilot.mo \
-/usr/share/locale/ru/LC_MESSAGES/jpilot.mo \
-/usr/share/locale/rw/LC_MESSAGES/jpilot.mo \
-/usr/share/locale/sv/LC_MESSAGES/jpilot.mo \
-/usr/share/locale/tr/LC_MESSAGES/jpilot.mo \
-/usr/share/locale/vi/LC_MESSAGES/jpilot.mo \
-/usr/share/locale/zh_CN/LC_MESSAGES/jpilot.mo \
-/usr/share/locale/zh_TW/LC_MESSAGES/jpilot.mo
+cd /
+tar cf - \
+usr/bin/jpilot \
+usr/bin/jpilot-dump \
+usr/bin/jpilot-dial \
+usr/bin/jpilot-sync \
+usr/lib/jpilot/plugins/libexpense.la \
+usr/lib/jpilot/plugins/libexpense.so \
+usr/lib/jpilot/plugins/libexpense.so.0 \
+usr/lib/jpilot/plugins/libexpense.so.0.0.0 \
+usr/lib/jpilot/plugins/libsynctime.la \
+usr/lib/jpilot/plugins/libsynctime.so \
+usr/lib/jpilot/plugins/libsynctime.so.0 \
+usr/lib/jpilot/plugins/libsynctime.so.0.0.0 \
+usr/lib/jpilot/plugins/libkeyring.la \
+usr/lib/jpilot/plugins/libkeyring.so \
+usr/lib/jpilot/plugins/libkeyring.so.0 \
+usr/lib/jpilot/plugins/libkeyring.so.0.0.0 \
+usr/man/man1/jpilot.1 \
+usr/man/man1/jpilot-dial.1 \
+usr/man/man1/jpilot-sync.1 \
+usr/doc/$PACKAGE-$VERSION/AUTHORS \
+usr/doc/$PACKAGE-$VERSION/BUGS \
+usr/doc/$PACKAGE-$VERSION/COPYING \
+usr/doc/$PACKAGE-$VERSION/ChangeLog \
+usr/doc/$PACKAGE-$VERSION/INSTALL \
+usr/doc/$PACKAGE-$VERSION/README \
+usr/doc/$PACKAGE-$VERSION/TODO \
+usr/doc/$PACKAGE-$VERSION/manual/jpilot-address.png \
+usr/doc/$PACKAGE-$VERSION/manual/jpilot-datebook.png \
+usr/doc/$PACKAGE-$VERSION/manual/jpilot-expense.png \
+usr/doc/$PACKAGE-$VERSION/manual/jpilot-install.png \
+usr/doc/$PACKAGE-$VERSION/manual/jpilot-memo.png \
+usr/doc/$PACKAGE-$VERSION/manual/jpilot-prefs-1.png \
+usr/doc/$PACKAGE-$VERSION/manual/jpilot-prefs-2.png \
+usr/doc/$PACKAGE-$VERSION/manual/jpilot-prefs-3.png \
+usr/doc/$PACKAGE-$VERSION/manual/jpilot-prefs-4.png \
+usr/doc/$PACKAGE-$VERSION/manual/jpilot-prefs-5.png \
+usr/doc/$PACKAGE-$VERSION/manual/jpilot-prefs-6.png \
+usr/doc/$PACKAGE-$VERSION/manual/jpilot-prefs-7.png \
+usr/doc/$PACKAGE-$VERSION/manual/jpilot-prefs-8.png \
+usr/doc/$PACKAGE-$VERSION/manual/jpilot-print.png \
+usr/doc/$PACKAGE-$VERSION/manual/jpilot-search.png \
+usr/doc/$PACKAGE-$VERSION/manual/jpilot-todo.png \
+usr/doc/$PACKAGE-$VERSION/manual/jpilot-toplogo.jpg \
+usr/doc/$PACKAGE-$VERSION/manual/manual.html \
+usr/doc/$PACKAGE-$VERSION/manual/plugin.html \
+usr/doc/$PACKAGE-$VERSION/icons/README \
+usr/doc/$PACKAGE-$VERSION/icons/jpilot-icon1.xpm \
+usr/doc/$PACKAGE-$VERSION/icons/jpilot-icon2.xpm \
+usr/doc/$PACKAGE-$VERSION/icons/jpilot-icon3.xpm \
+usr/doc/$PACKAGE-$VERSION/icons/jpilot-icon4.xpm \
+usr/share/$PACKAGE/AddressDB.pdb \
+usr/share/$PACKAGE/DatebookDB.pdb \
+usr/share/$PACKAGE/ExpenseDB.pdb \
+usr/share/$PACKAGE/Memo32DB.pdb \
+usr/share/$PACKAGE/MemoDB.pdb \
+usr/share/$PACKAGE/ToDoDB.pdb \
+usr/share/$PACKAGE/jpilotrc.blue \
+usr/share/$PACKAGE/jpilotrc.default \
+usr/share/$PACKAGE/jpilotrc.green \
+usr/share/$PACKAGE/jpilotrc.purple \
+usr/share/$PACKAGE/jpilotrc.steel \
+usr/share/locale/ca/LC_MESSAGES/jpilot.mo \
+usr/share/locale/cs/LC_MESSAGES/jpilot.mo \
+usr/share/locale/da/LC_MESSAGES/jpilot.mo \
+usr/share/locale/de/LC_MESSAGES/jpilot.mo \
+usr/share/locale/es/LC_MESSAGES/jpilot.mo \
+usr/share/locale/fr/LC_MESSAGES/jpilot.mo \
+usr/share/locale/it/LC_MESSAGES/jpilot.mo \
+usr/share/locale/ja/LC_MESSAGES/jpilot.mo \
+usr/share/locale/ko/LC_MESSAGES/jpilot.mo \
+usr/share/locale/nl/LC_MESSAGES/jpilot.mo \
+usr/share/locale/no/LC_MESSAGES/jpilot.mo \
+usr/share/locale/ru/LC_MESSAGES/jpilot.mo \
+usr/share/locale/rw/LC_MESSAGES/jpilot.mo \
+usr/share/locale/sv/LC_MESSAGES/jpilot.mo \
+usr/share/locale/tr/LC_MESSAGES/jpilot.mo \
+usr/share/locale/uk/LC_MESSAGES/jpilot.mo \
+usr/share/locale/vi/LC_MESSAGES/jpilot.mo \
+usr/share/locale/zh_CN/LC_MESSAGES/jpilot.mo \
+usr/share/locale/zh_TW/LC_MESSAGES/jpilot.mo \
+| (cd $TMPDIR; tar xf -)
 #
-rm install/description
-rm install/doinst.sh
-rmdir install
+cd $TMPDIR
+makepkg -l n -c n $PACKAGE-$VERSION-$ARCH-$RELEASE.tgz
+cp $TMPDIR/*.tgz $STARTDIR/
+rm -rf $TMPDIR
