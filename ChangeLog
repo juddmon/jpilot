@@ -1,4 +1,10 @@
-0.99.9-pre2 - 15/01/06 (Released by Ludovic Rousseau)
+0.99.9 - 08/27/06
+ Fixed a major Memo category sync bug.
+ Removed clipboard code, which would cause X to freeze when ran with some
+ applications, rdesktop, to name one.
+ Many bug fixes, and GUI im[provements, see Changelog.cvs for details.
+
+0.99.9-pre2 - 01/15/06 (Released by Ludovic Rousseau)
  Fix Bugzilla 1533 where null description in appointment crashes ical
   export of datebook
  Keyring: Added a field for the last changed date and set it to today
@@ -10,7 +16,7 @@
   highlighted record.
  Some more bugs fixed
 
-0.99.9-pre1 - 18/12/05 (Released by Ludovic Rousseau)
+0.99.9-pre1 - 12/18/05 (Released by Ludovic Rousseau)
  Generalization of GTK+2 stock buttons (butons with icon) and make
  J-Pilot more conform to GNOME Human Interface Guidelines
  Build with GTK+2 by default. Use --disable-gtk2 if you want GTK+1 instead
