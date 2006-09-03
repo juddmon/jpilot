@@ -1,4 +1,4 @@
-/* $Id: address.c,v 1.40 2006/07/21 22:25:24 rikster5 Exp $ */
+/* $Id: address.c,v 1.41 2006/09/03 04:06:24 rikster5 Exp $ */
 
 /*******************************************************************************
  * address.c
@@ -265,7 +265,10 @@ int address_sort(AddressList **al, int sort_order)
 
    if (sort_by_company) {
       glob_sort_rule = SORT_BY_COMPANY;
+   } else {
+      glob_sort_rule = 0;
    }
+
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    if (char_set == CHAR_SET_JAPANESE || char_set == CHAR_SET_SJIS_UTF) {
       glob_sort_rule = glob_sort_rule | SORT_JAPANESE;

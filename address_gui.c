@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.124 2006/07/21 22:25:24 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.125 2006/09/03 04:06:24 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -1989,7 +1989,6 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    AddressList *temp_al;
    char str[ADDRESS_MAX_CLIST_NAME+8];
    char str2[ADDRESS_MAX_COLUMN_LEN+2];
-   int by_company;
    int show_priv;
    long use_jos, char_set;
    char *tmp_p1, *tmp_p2, *tmp_p3;
@@ -2054,11 +2053,7 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    show_priv = show_privates(GET_PRIVATES);
    get_pixmaps(clist, PIXMAP_NOTE, &pixmap_note, &mask_note);
 
-   by_company = address_app_info.sortByCompany;
    if (sort_by_company) {
-      by_company=!(by_company & 1);
-   }
-   if (by_company) {
       show1=2; /*company */
       show2=0; /*last name */
       show3=1; /*first name */
@@ -2141,7 +2136,7 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 	 if (temp_al->maddr.addr.entry[show1]) field1=temp_al->maddr.addr.entry[show1];
 	 if (temp_al->maddr.addr.entry[show2]) field2=temp_al->maddr.addr.entry[show2];
 	 if (temp_al->maddr.addr.entry[show3]) field3=temp_al->maddr.addr.entry[show3];
-	 if (by_company) {
+	 if (sort_by_company) {
 	    /* Company / Last, First */
 	    if (!(field1[0])) tmp_delim1=blank;
 	    if ((!field2[0]) || (!field3[0])) tmp_delim2=blank;
