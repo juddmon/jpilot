@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.125 2006/09/03 04:06:24 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.126 2006/09/26 22:51:57 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -64,6 +64,7 @@
 #define NUM_ADDRESS_ENTRIES 19
 #define NUM_ADDRESS_LABELS 22
 #define NUM_PHONE_ENTRIES 5
+#define NOTE_FIELD_INDEX 18
 
 /* There are 3 extra fields for Japanese Palm OS's KANA extension in address book.
  * Kana means 'pronounce of name'.
@@ -2933,15 +2934,17 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 				      1, 2, i-9, i-8);
 	 }
 	 if (i>13 && i<100) {
+            /* Note field on 3rd tab is made larger than others to improve UI */
 #ifdef ENABLE_GTK2
 	    gtk_table_attach(GTK_TABLE(table3), GTK_WIDGET(label),
-			     0, 1, i-14, i-13,GTK_FILL, 0, 2, 0);
+			     0, 1, i-14, i-(i != NOTE_FIELD_INDEX ? 13 : 9), GTK_FILL, 0, 2, 0);
 #else
 	    gtk_table_attach_defaults(GTK_TABLE(table3), GTK_WIDGET(label),
-				      0, 1, i-14, i-13);
+				      0, 1, i-14, i-(i != NOTE_FIELD_INDEX ? 13 : 9));
 #endif
-	    gtk_table_attach_defaults(GTK_TABLE(table3), GTK_WIDGET(address_text[i2]),
-				      1, 2, i-14, i-13);
+            gtk_table_attach_defaults(GTK_TABLE(table3), GTK_WIDGET(address_text[i2]),
+				      1, 2, i-14, i-(i != NOTE_FIELD_INDEX ? 13 : 9));
+
 	 }
       }
 
