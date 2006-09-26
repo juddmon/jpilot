@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.140 2006/06/09 20:42:57 judd Exp $ */
+/* $Id: jpilot.c,v 1.141 2006/09/26 21:03:40 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -1953,10 +1953,20 @@ int main(int argc, char *argv[])
    GtkWidget *menubar;
 #ifdef ENABLE_GTK2
    GtkWidget *scrolled_window;
-   char *week_start;
-   int   pref_fdow = 0;
 #else
    GtkWidget *vscrollbar;
+#endif
+/* Extract first day of week preference from locale in GTK2 */
+#ifdef ENABLE_GTK2
+   int   pref_fdow = 0;
+#  ifdef HAVE__NL_TIME_FIRST_WEEKDAY
+      char *langinfo;
+      int week_1stday = 0;
+      int first_weekday = 1;
+      unsigned int week_origin;
+#  else
+      char *week_start;
+#  endif
 #endif
    unsigned char skip_past_alarms;
    unsigned char skip_all_alarms;
@@ -2179,18 +2189,31 @@ char * xpm_backup[] = {
    pref_read_rc_file();
 
    /* Extract first day of week preference from locale in GTK2 */
+
 #  ifdef ENABLE_GTK2
-#     ifdef HAVE_LANGINFO_H
+#     ifdef HAVE__NL_TIME_FIRST_WEEKDAY
 	 /* GTK 2.8 libraries */
-	 week_start = nl_langinfo (_NL_TIME_FIRST_WEEKDAY);
-	 pref_fdow = *((unsigned char *) week_start) - 1;
+         langinfo = nl_langinfo(_NL_TIME_FIRST_WEEKDAY);
+         first_weekday = langinfo[0];
+         langinfo = nl_langinfo(_NL_TIME_WEEK_1STDAY);
+         week_origin = GPOINTER_TO_INT(langinfo);
+         if (week_origin == 19971130)      /* Sunday */
+            week_1stday = 0;
+         else if (week_origin == 19971201) /* Monday */
+            week_1stday = 1;
+         else
+            g_warning ("Unknown value of _NL_TIME_WEEK_1STDAY.\n");
+
+         pref_fdow = (week_1stday + first_weekday - 1) % 7;
 #     else
 	 /* GTK 2.6 libraries */
 #        if defined(ENABLE_NLS)
 	    week_start = dgettext("gtk20", "calendar:week_start:0");
 	    if (strncmp("calendar:week_start:", week_start, 20) == 0) {
 	       pref_fdow = *(week_start + 20) - '0';
-	    }
+	    } else {
+               pref_fdow = -1;
+            }
 #        endif
 #     endif
       if (pref_fdow > 1)

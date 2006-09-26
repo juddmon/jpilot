@@ -73,6 +73,22 @@ dnl * end gettext
 dnl ******************************
 
 dnl ******************************
+dnl * Check whether nl_langinfo can provide start of week
+dnl ******************************
+
+# _NL_TIME_FIRST_WEEKDAY is an enum and not a define
+AC_MSG_CHECKING([for _NL_TIME_FIRST_WEEKDAY])
+AC_TRY_LINK([#include <langinfo.h>], [
+char c;
+c = *((unsigned char *)  nl_langinfo(_NL_TIME_FIRST_WEEKDAY));
+], gtk_ok=yes, gtk_ok=no)
+AC_MSG_RESULT($gtk_ok)
+if test "$gtk_ok" = "yes"; then
+  AC_DEFINE([HAVE__NL_TIME_FIRST_WEEKDAY], [1],
+	    [Define if _NL_TIME_FIRST_WEEKDAY is available])
+fi
+
+dnl ******************************
 dnl * pilot-link libs
 dnl ******************************
 dnl Check for pilot-link libs
