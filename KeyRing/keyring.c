@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.59 2006/06/25 04:49:51 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.60 2006/09/26 23:49:13 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -499,65 +499,9 @@ static void set_new_button_to(int new_state)
       gtk_widget_hide(delete_record_button);
       break;
 
-      /*
-   switch (new_state) {
-    case MODIFY_FLAG:
-      gtk_widget_show(apply_record_button);
-      gtk_widget_show(cancel_record_button);
-      gtk_widget_hide(delete_record_button);
-      break;
-    case NEW_FLAG:
-      gtk_widget_show(add_record_button);
-      gtk_widget_show(cancel_record_button);
-      gtk_widget_hide(copy_record_button);
-      gtk_widget_hide(delete_record_button);
-      break;
-    case CLEAR_FLAG:
-      gtk_widget_show(new_record_button);
-      gtk_widget_show(copy_record_button);
-      gtk_widget_show(delete_record_button);
-
-      gtk_widget_hide(add_record_button);
-      gtk_widget_hide(apply_record_button);
-      gtk_widget_hide(cancel_record_button);
-      gtk_widget_hide(undelete_record_button);
-      break;
-    case UNDELETE_FLAG:
-      gtk_widget_show(undelete_record_button);
-      gtk_widget_hide(delete_record_button);
-      break;
-      */
-
     default:
       return;
    }
-   /*
-   switch (record_changed) {
-    case MODIFY_FLAG:
-      gtk_widget_hide(apply_record_button);
-      gtk_widget_hide(cancel_record_button);
-      gtk_widget_show(copy_record_button);
-      gtk_widget_show(delete_record_button);
-      break;
-    case NEW_FLAG:
-      gtk_widget_hide(add_record_button);
-      gtk_widget_hide(cancel_record_button);
-      gtk_widget_show(copy_record_button);
-      gtk_widget_show(delete_record_button);
-      break;
-    case CLEAR_FLAG:
-      if (new_state != UNDELETE_FLAG)
-      {
-	 gtk_widget_hide(new_record_button);
-	 gtk_widget_hide(delete_record_button);
-      }
-      break;
-    case UNDELETE_FLAG:
-      gtk_widget_hide(undelete_record_button);
-      gtk_widget_show(delete_record_button);
-      break;
-   }
-   */
 
    record_changed=new_state;
 }
@@ -2047,7 +1991,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 0);
    gtk_box_pack_start(GTK_BOX(hbox_temp), menu_category1, TRUE, TRUE, 0);
 
-   /* Scrolled Window */
+   /* Scrolled window */
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 0);
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
@@ -2079,13 +2023,13 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_signal_connect(GTK_OBJECT(cancel_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_cancel), NULL);
 
-   /* Delete Button */
+   /* Delete button */
    CREATE_BUTTON(delete_record_button, _("Delete"), DELETE, _("Delete the selected record"), GDK_d, GDK_CONTROL_MASK, "Ctrl+D");
    gtk_signal_connect(GTK_OBJECT(delete_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_delete_keyring),
 		      GINT_TO_POINTER(DELETE_FLAG));
 
-   /* Undelete Button */
+   /* Undelete button */
    CREATE_BUTTON(undelete_record_button, _("Undelete"), UNDELETE, _("Undelete the selected record"), 0, 0, "")
    gtk_signal_connect(GTK_OBJECT(undelete_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_undelete_keyring),
@@ -2123,7 +2067,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
 		       "label_high");
 #endif
    
-   /*Separator */
+   /* Separator */
    separator = gtk_hseparator_new();
    gtk_box_pack_start(GTK_BOX(vbox2), separator, FALSE, FALSE, 5);
 
@@ -2133,34 +2077,34 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_table_set_col_spacings(GTK_TABLE(table),0);
    gtk_box_pack_start(GTK_BOX(vbox2), table, FALSE, FALSE, 0);
    
-   /* Category Menu */
+   /* Category menu */
    label = gtk_label_new(_("Category: "));
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label), 0, 1, 0, 1);
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(menu_category2), 1, 10, 0, 1);
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
 
-   /* name Entry */
+   /* Name entry */
    label = gtk_label_new(_("name: "));
    entry_name = gtk_entry_new();
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label), 0, 1, 1, 2);
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(entry_name), 1, 10, 1, 2);
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
 
-   /* account Entry */
+   /* Account entry */
    label = gtk_label_new(_("account: "));
    entry_account = gtk_entry_new();
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label), 0, 1, 2, 3);
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(entry_account), 1, 10, 2, 3);
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
 
-   /* password */
+   /* Password entry */
    label = gtk_label_new(_("password: "));
    entry_password = gtk_entry_new();
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label), 0, 1, 3, 4);
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(entry_password), 1, 9, 3, 4);
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
 
-   /* last changed */
+   /* Last Changed entry */
    label = gtk_label_new(_("last changed: "));
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label), 0, 1, 4, 5);
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
@@ -2170,7 +2114,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_signal_connect(GTK_OBJECT(date_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_date_button), date_button);
 
-   /* Button for random password */
+   /* Generate Password button (creates random password) */
    button = gtk_button_new_with_label(_("Generate Password"));
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(button), 9, 10, 3, 4);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
