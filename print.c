@@ -1,4 +1,4 @@
-/* $Id: print.c,v 1.33 2006/05/26 20:52:14 judd Exp $ */
+/* $Id: print.c,v 1.34 2006/09/26 17:13:12 rikster5 Exp $ */
 
 /*******************************************************************************
  * print.c
@@ -528,7 +528,7 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
 	    desc[0]='\0';
 	    if (temp_al->mappt.appt.description) {
 	       ps_strncat(desc, temp_al->mappt.appt.description, 100);
-	       desc[100]='\0';
+	       desc[99]='\0';
 	    }
 	    remove_cr_lfs(desc);
 	    fprintf(out, "%s (%s) %simedItem\n", tmp, desc,
