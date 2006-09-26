@@ -116,7 +116,7 @@ PILOT_LIBS="-lpisock"
 
 if test $pilotlibs = no ; then
 for pilot_libs in $pilot_prefix/lib /usr/lib /usr/local/lib/ \
-  /usr/extra/pilot/lib ; do
+  /usr/extra/pilot/lib $pilot_prefix/lib64 /usr/lib64 ; do
    if test -r $pilot_libs/libpisock.so >/dev/null 2>&1 ; then
       pilotlibs=yes
       PILOT_LIBS="-L$pilot_libs $PILOT_LIBS"
