@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.60 2006/09/26 23:49:13 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.61 2006/09/26 23:52:00 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -59,6 +59,7 @@
 
 #define CONNECT_SIGNALS    400
 #define DISCONNECT_SIGNALS 401
+#define PASSWD_FLAG 1
 
 #define NUM_KEYRING_CAT_ITEMS 16
 
@@ -159,6 +160,8 @@ static void cb_clist_selection(GtkWidget      *clist,
 			       gpointer       data);
 
 static int keyring_find(int unique_id);
+
+static void update_date_button(GtkWidget *button, struct tm *t);
 
 /****************************** Main Code *************************************/
 static int pack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size,
@@ -509,12 +512,26 @@ static void set_new_button_to(int new_state)
 static void cb_record_changed(GtkWidget *widget,
 			      gpointer	 data)
 {
+   int flag;
+   struct tm *now;
+   time_t ltime;
+
    jp_logf(JP_LOG_DEBUG, "cb_record_changed\n");
+
+   flag = GPOINTER_TO_INT(data);
 
    if (record_changed==CLEAR_FLAG) {
       connect_changed_signals(DISCONNECT_SIGNALS);
       if ((GTK_CLIST(clist)->rows > 0)) {
 	 set_new_button_to(MODIFY_FLAG);
+         /* Update the lastChanged field when password is modified */
+         if (flag == PASSWD_FLAG)
+         {
+            time(&ltime);
+            now = localtime(&ltime);
+            memcpy(&glob_date, now, sizeof(struct tm));
+            update_date_button(date_button, &glob_date);
+         }
       } else {
 	 set_new_button_to(NEW_FLAG);
       }
@@ -549,7 +566,8 @@ static void connect_changed_signals(int con_or_dis)
       gtk_signal_connect(GTK_OBJECT(entry_account), "changed",
 			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
       gtk_signal_connect(GTK_OBJECT(entry_password), "changed",
-			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+			 GTK_SIGNAL_FUNC(cb_record_changed), 
+                         GINT_TO_POINTER(PASSWD_FLAG));
       gtk_signal_connect(GTK_OBJECT(date_button), "pressed",
 			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
 #ifdef ENABLE_GTK2
@@ -579,7 +597,8 @@ static void connect_changed_signals(int con_or_dis)
       gtk_signal_disconnect_by_func(GTK_OBJECT(entry_account),
 				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
       gtk_signal_disconnect_by_func(GTK_OBJECT(entry_password),
-				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+				    GTK_SIGNAL_FUNC(cb_record_changed), 
+                                    GINT_TO_POINTER(PASSWD_FLAG));
       gtk_signal_disconnect_by_func(GTK_OBJECT(date_button),
 				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
 #ifdef ENABLE_GTK2
