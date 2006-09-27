@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.63 2006/09/27 19:20:20 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.64 2006/09/27 22:48:37 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -50,6 +50,7 @@
 /********************************* Constants **********************************/
 #define KEYRING_CAT1 1
 #define KEYRING_CAT2 2
+#define NUM_KEYRING_CAT_ITEMS 16
 
 #define PASSWD_ENTER	   0
 #define PASSWD_ENTER_RETRY 1
@@ -61,7 +62,9 @@
 #define DISCONNECT_SIGNALS 401
 #define PASSWD_FLAG 1
 
-#define NUM_KEYRING_CAT_ITEMS 16
+#define KEYR_CHGD_COLUMN 0
+#define KEYR_NAME_COLUMN 1
+#define KEYR_ACCT_COLUMN 2
 
 /* re-ask password PLUGIN_MAX_INACTIVE_TIME seconds after 
  * deselecting the plugin */
@@ -510,6 +513,31 @@ static void set_new_button_to(int new_state)
    record_changed=new_state;
 }
 
+/* Function is used to sort clist based on the Last Changed date field */
+gint GtkClistKeyrCompareDates(GtkCList *clist,
+                              gconstpointer ptr1,
+                              gconstpointer ptr2)
+{
+   GtkCListRow *row1, *row2;
+   struct MyKeyRing *mkr1,*mkr2;
+   struct KeyRing   *keyr1, *keyr2;
+   time_t            time1,  time2;
+
+   row1 = (GtkCListRow *) ptr1;
+   row2 = (GtkCListRow *) ptr2;
+
+   mkr1 = row1->data;
+   mkr2 = row2->data;
+
+   keyr1 = &(mkr1->kr);
+   keyr2 = &(mkr2->kr);
+
+   time1 = mktime(&(keyr1->last_changed));
+   time2 = mktime(&(keyr2->last_changed));
+
+   return(time1 - time2);
+}
+
 static void cb_clist_click_column(GtkWidget *clist, int column)
 {
    struct MyKeyRing *mkr;
@@ -543,19 +571,15 @@ static void cb_clist_click_column(GtkWidget *clist, int column)
    clist_col_selected = column;
 
    gtk_clist_set_sort_column(GTK_CLIST(clist), column);
-   /*
    switch (column) {
-    case 0: 
-      gtk_clist_set_compare_func(GTK_CLIST(clist),GtkClistCompareCheckbox);
-      break;
-    case 3: // Due Date column 
-      gtk_clist_set_compare_func(GTK_CLIST(clist),GtkClistCompareDates);
+    case KEYR_CHGD_COLUMN:  // Last Changed column 
+      gtk_clist_set_compare_func(GTK_CLIST(clist),GtkClistKeyrCompareDates);
       break;
     default: // All other columns can use GTK default sort function
       gtk_clist_set_compare_func(GTK_CLIST(clist),NULL);
       break;
    }
-   */
+
    gtk_clist_sort(GTK_CLIST(clist));
 
    /* return to previously selected record */
@@ -1021,6 +1045,8 @@ static int display_record(struct MyKeyRing *mkr, int row)
    char temp[8];
    char *temp_str;
    int	len;
+   const char *svalue;
+   char str[50];
 
    jp_logf(JP_LOG_DEBUG, "KeyRing: display_record\n");
 
@@ -1047,24 +1073,33 @@ static int display_record(struct MyKeyRing *mkr, int row)
 
    gtk_clist_set_row_data(GTK_CLIST(clist), row, mkr);
 
+   if (mkr->kr.last_changed.tm_year==0) {
+      sprintf(str, _("No date"));
+      gtk_clist_set_text(GTK_CLIST(clist), row, KEYR_CHGD_COLUMN, str);
+   } else {
+      get_pref(PREF_SHORTDATE, NULL, &svalue);
+      strftime(str, sizeof(str), svalue, &(mkr->kr.last_changed));
+      gtk_clist_set_text(GTK_CLIST(clist), row, KEYR_CHGD_COLUMN, str);
+   }   
+
    if ( (!(mkr->kr.name)) || (mkr->kr.name[0]=='\0') ) {
       sprintf(temp, "#%03d", row);
-      gtk_clist_set_text(GTK_CLIST(clist), row, 0, temp);
+      gtk_clist_set_text(GTK_CLIST(clist), row, KEYR_NAME_COLUMN, temp);
    } else {
       temp_str = malloc((len = strlen(mkr->kr.name)*2+1));
       multibyte_safe_strncpy(temp_str, mkr->kr.name, len);
       jp_charset_p2j(temp_str, len);
-      gtk_clist_set_text(GTK_CLIST(clist), row, 0, temp_str);
+      gtk_clist_set_text(GTK_CLIST(clist), row, KEYR_NAME_COLUMN, temp_str);
       free(temp_str);
    }
 
    if ( (!(mkr->kr.account)) || (mkr->kr.account[0]=='\0') ) {
-      gtk_clist_set_text(GTK_CLIST(clist), row, 1, "");
+      gtk_clist_set_text(GTK_CLIST(clist), row, KEYR_ACCT_COLUMN, "");
    } else {
       temp_str = malloc((len = strlen(mkr->kr.account)*2+1));
       multibyte_safe_strncpy(temp_str, mkr->kr.account, len);
       jp_charset_p2j(temp_str, len);
-      gtk_clist_set_text(GTK_CLIST(clist), row, 1, temp_str);
+      gtk_clist_set_text(GTK_CLIST(clist), row, KEYR_ACCT_COLUMN, temp_str);
       free(temp_str);
    }
 
@@ -1080,7 +1115,7 @@ static void keyr_update_clist()
    int num;
    int entries_shown;
    struct MyKeyRing *temp_list;
-   gchar *empty_line[] = { "", "" };
+   gchar *empty_line[] = { "", "", "" };
    
    jp_logf(JP_LOG_DEBUG, "KeyRing: keyr_update_clist\n");
 
@@ -1971,7 +2006,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    char ascii_password[PASSWD_LEN];
    int r;
    int password_not_correct;
-   char *titles[] = { N_("Name"), N_("Account") };
+   char *titles[] = { N_("Changed"), N_("Name"), N_("Account") };
    int retry;
    int cycle_category = FALSE;
 
@@ -2071,12 +2106,13 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_box_pack_start(GTK_BOX(vbox1), scrolled_window, TRUE, TRUE, 0);
    
    /* Clist */
-   clist = gtk_clist_new_with_titles(2, titles);
+   clist = gtk_clist_new_with_titles(3, titles);
    
    gtk_clist_column_titles_active(GTK_CLIST(clist));
-   gtk_clist_set_column_width(GTK_CLIST(clist), 0, 150);
-   gtk_clist_set_column_width(GTK_CLIST(clist), 1, 60);
-   gtk_clist_set_sort_column(GTK_CLIST(clist), 0);
+   gtk_clist_set_column_auto_resize(GTK_CLIST(clist), KEYR_CHGD_COLUMN, TRUE);
+   gtk_clist_set_column_width(GTK_CLIST(clist), KEYR_NAME_COLUMN, 150);
+
+   gtk_clist_set_sort_column(GTK_CLIST(clist), KEYR_NAME_COLUMN);
    gtk_clist_set_sort_type(GTK_CLIST(clist), GTK_SORT_ASCENDING);
    gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
 
