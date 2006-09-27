@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.106 2006/06/25 03:36:36 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.107 2006/09/27 21:02:59 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -1367,6 +1367,19 @@ gint GtkClistCompareDates(GtkCList *clist,
 
 static void cb_clist_click_column(GtkWidget *clist, int column)
 {
+   MyToDo *mtodo;
+   unsigned int unique_id;
+
+   /* Remember currently selected item and return to it after sort 
+    * This is critically important because sorting without updating the 
+    * global variable clist_row_selected can cause data loss */
+   mtodo = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
+   if (mtodo < (MyToDo *)CLIST_MIN_DATA) {
+      glob_find_id = 0;
+   } else {
+      glob_find_id = mtodo->unique_id;
+   }
+
    /* Clicking on same column toggles ascending/descending sort */
    if (clist_col_selected == column)
    {
@@ -1386,10 +1399,10 @@ static void cb_clist_click_column(GtkWidget *clist, int column)
 
    gtk_clist_set_sort_column(GTK_CLIST(clist), column);
    switch (column) {
-    case 0: /* Checkbox column */
+    case TODO_CHECK_COLUMN: /* Checkbox column */
       gtk_clist_set_compare_func(GTK_CLIST(clist),GtkClistCompareCheckbox);
       break;
-    case 3: /* Due Date column */
+    case TODO_DATE_COLUMN:  /* Due Date column */
       gtk_clist_set_compare_func(GTK_CLIST(clist),GtkClistCompareDates);
       break;
     default: /* All other columns can use GTK default sort function */
@@ -1398,6 +1411,8 @@ static void cb_clist_click_column(GtkWidget *clist, int column)
    }
    gtk_clist_sort (GTK_CLIST (clist));
 
+   /* Return to previously selected item */
+   todo_find();
 }
 
 static void cb_clist_selection(GtkWidget      *clist,
