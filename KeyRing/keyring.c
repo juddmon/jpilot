@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.61 2006/09/26 23:52:00 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.62 2006/09/27 00:24:34 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -127,6 +127,7 @@ struct tm glob_date;
 static GtkAccelGroup *accel_group;
 #endif
 static int record_changed;
+static int clist_col_selected;
 static int clist_row_selected;
 
 #ifdef HEADER_NEW_DES_H
@@ -507,6 +508,42 @@ static void set_new_button_to(int new_state)
    }
 
    record_changed=new_state;
+}
+
+static void cb_clist_click_column(GtkWidget *clist, int column)
+{
+   /* Clicking on same column toggles ascending/descending sort */
+   if (clist_col_selected == column)
+   {
+      if (GTK_CLIST(clist)->sort_type == GTK_SORT_ASCENDING) {
+	 gtk_clist_set_sort_type(GTK_CLIST (clist), GTK_SORT_DESCENDING);
+      }
+      else {
+	 gtk_clist_set_sort_type(GTK_CLIST (clist), GTK_SORT_ASCENDING);
+      }
+   }
+   else /* Always sort in ascending order when changing sort column */
+   {
+      gtk_clist_set_sort_type(GTK_CLIST (clist), GTK_SORT_ASCENDING);
+   }
+
+   clist_col_selected = column;
+
+   gtk_clist_set_sort_column(GTK_CLIST(clist), column);
+   /*
+   switch (column) {
+    case 0: 
+      gtk_clist_set_compare_func(GTK_CLIST(clist),GtkClistCompareCheckbox);
+      break;
+    case 3: // Due Date column 
+      gtk_clist_set_compare_func(GTK_CLIST(clist),GtkClistCompareDates);
+      break;
+    default: // All other columns can use GTK default sort function
+      gtk_clist_set_compare_func(GTK_CLIST(clist),NULL);
+      break;
+   }
+   */
+   gtk_clist_sort (GTK_CLIST (clist));
 }
 
 static void cb_record_changed(GtkWidget *widget,
@@ -2020,16 +2057,21 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    /* Clist */
    clist = gtk_clist_new_with_titles(2, titles);
    
+   gtk_clist_column_titles_active(GTK_CLIST(clist));
+   gtk_clist_set_column_width(GTK_CLIST(clist), 0, 150);
+   gtk_clist_set_column_width(GTK_CLIST(clist), 1, 60);
+   gtk_clist_set_sort_column(GTK_CLIST(clist), 0);
+   gtk_clist_set_sort_type(GTK_CLIST(clist), GTK_SORT_ASCENDING);
+   gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
+
+   gtk_signal_connect(GTK_OBJECT(clist), "click_column",
+                      GTK_SIGNAL_FUNC (cb_clist_click_column), NULL);
+
    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
 		      GTK_SIGNAL_FUNC(cb_clist_selection),
 		      NULL);
-   gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
-   gtk_clist_set_column_width(GTK_CLIST(clist), 0, 150);
-   gtk_clist_set_column_width(GTK_CLIST(clist), 1, 60);
+
    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
-   
-   gtk_clist_set_sort_column(GTK_CLIST(clist), 0);
-   gtk_clist_set_sort_type(GTK_CLIST(clist), GTK_SORT_ASCENDING);
    
    /**********************************************************************/
    /* Right half of screen */
