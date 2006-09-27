@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.62 2006/09/27 00:24:34 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.63 2006/09/27 19:20:20 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -512,6 +512,19 @@ static void set_new_button_to(int new_state)
 
 static void cb_clist_click_column(GtkWidget *clist, int column)
 {
+   struct MyKeyRing *mkr;
+   unsigned int unique_id;
+
+   /* Return to the selected record after sorting. 
+    * This is critically important because sorting without updating the 
+    * global variable clist_row_selected can cause data loss */
+   mkr = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
+   if (mkr < (struct MyKeyRing *)CLIST_MIN_DATA) {
+      unique_id = 0;
+   } else {
+      unique_id = mkr->unique_id;
+   }
+
    /* Clicking on same column toggles ascending/descending sort */
    if (clist_col_selected == column)
    {
@@ -543,7 +556,10 @@ static void cb_clist_click_column(GtkWidget *clist, int column)
       break;
    }
    */
-   gtk_clist_sort (GTK_CLIST (clist));
+   gtk_clist_sort(GTK_CLIST(clist));
+
+   /* return to previously selected record */
+   keyring_find(unique_id);
 }
 
 static void cb_record_changed(GtkWidget *widget,
