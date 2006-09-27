@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.107 2006/09/27 21:02:59 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.108 2006/09/27 21:35:10 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -1822,6 +1822,9 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    }
 
    jp_logf(JP_LOG_DEBUG, "entries_shown=%d\n",entries_shown);
+
+   /* Sort the clist */
+   gtk_clist_sort(GTK_CLIST(clist));
 
    if (main) {
       gtk_signal_connect(GTK_OBJECT(clist), "select_row",
