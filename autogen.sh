@@ -1,27 +1,29 @@
-# $Id: autogen.sh,v 1.12 2005/03/02 01:29:19 rikster5 Exp $
+# $Id: autogen.sh,v 1.13 2006/09/28 04:12:21 rikster5 Exp $
 
+# Echo commands before they execute to help show 
 set -x
 
-#Use these when updating libtool
-libtoolize --force --copy
-#aclocal
-#autoheader
-#automake
-#autoconf
-#
-#gettextize -f --intl
+# Clear the files that will be rebuilt by autoconf, automake, & autoheader
+rm -f configure Makefile Makefile.in config.h.in
 
-rm -f configure Makefile.in Makefile config.h.in
-
-echo "Running intltoolize"
-#gettextize --force --intl
+# Create aclocal.m4, macros that are used in all subsequent processing
 aclocal -I m4
+
+# Copy over scripts for libtool
+libtoolize --force --copy --automake
+
+# Copy over scripts to allow localization and internationalization
 intltoolize --force --copy --automake
 
+# Create config.h.in from configure.in
 autoheader
+# Create Makefile.in from Makefile.am & configure.in
 automake --add-missing --foreign
+# Create config.h, Makefile, & configure script
 autoconf
 
+
+# By default, run configure after generating build environment
 if test x$NOCONFIGURE = x; then
   echo Running configure $conf_flags "$@" ...
   ./configure $conf_flags "$@" \
@@ -29,3 +31,4 @@ if test x$NOCONFIGURE = x; then
 else
   echo Skipping configure process.
 fi
+
