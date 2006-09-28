@@ -9,6 +9,7 @@ dialer.c
 export_gui.c
 import_gui.c
 install_gui.c
+install_user.c
 jpilot-dump.c
 jpilot-sync.c
 jpilot.c
@@ -34,3 +35,4 @@ utils.c
 weekview_gui.c
 Expense/expense.c
 KeyRing/keyring.c
+SyncTime/synctime.c
