@@ -1,7 +1,8 @@
-# $Id: Makefile.am,v 1.2 2003/07/31 19:00:30 judd Exp $
+# $Id: Makefile.am,v 1.3 2006/09/28 18:36:20 rikster5 Exp $
 
-# install the manual docs
-pdbdir = $(prefix)/share/$(PACKAGE)
+# install blank pdb files
+pdbdir = $(datadir)/$(PACKAGE)
+
 pdb_DATA = AddressDB.pdb \
            DatebookDB.pdb \
            ExpenseDB.pdb \

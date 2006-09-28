@@ -1,10 +1,12 @@
-# $Id: Makefile.am,v 1.10 2005/12/03 22:30:57 rikster5 Exp $
+# $Id: Makefile.am,v 1.11 2006/09/28 18:36:20 rikster5 Exp $
 
-# install the man pages
+# Install the man pages
 man_MANS = jpilot.1 jpilot-dial.1 jpilot-sync.1 jpilot-dump.1
 
-miscdir = $(prefix)/share/doc/$(PACKAGE)-$(VERSION)
-misc_DATA = ../BUGS \
+# Install the standard GNU doc files
+miscdir = $(datadir)/doc/$(PACKAGE)-$(VERSION)
+misc_DATA = \
+	../BUGS \
 	../ChangeLog \
 	../COPYING \
 	../AUTHORS \
@@ -12,27 +14,28 @@ misc_DATA = ../BUGS \
 	../README \
 	../TODO
 
-# install the manual docs
+# Install the manual docs
 docdir = $(miscdir)/manual
-doc_DATA = manual.html \
-	    plugin.html \
-	    jpilot-address.png \
-	    jpilot-datebook.png \
-	    jpilot-expense.png \
-	    jpilot-install.png \
-	    jpilot-memo.png \
-	    jpilot-prefs-1.png \
-	    jpilot-prefs-2.png \
-	    jpilot-prefs-3.png \
-	    jpilot-prefs-4.png \
-	    jpilot-prefs-5.png \
-	    jpilot-prefs-6.png \
-	    jpilot-prefs-7.png \
-	    jpilot-prefs-8.png \
-	    jpilot-print.png \
-	    jpilot-search.png \
-	    jpilot-todo.png \
-	    jpilot-toplogo.jpg
+doc_DATA = \
+	manual.html \
+	plugin.html \
+	jpilot-address.png \
+	jpilot-datebook.png \
+	jpilot-expense.png \
+	jpilot-install.png \
+	jpilot-memo.png \
+	jpilot-prefs-1.png \
+	jpilot-prefs-2.png \
+	jpilot-prefs-3.png \
+	jpilot-prefs-4.png \
+	jpilot-prefs-5.png \
+	jpilot-prefs-6.png \
+	jpilot-prefs-7.png \
+	jpilot-prefs-8.png \
+	jpilot-print.png \
+	jpilot-search.png \
+	jpilot-todo.png \
+	jpilot-toplogo.jpg
 
-EXTRA_DIST = $(doc_DATA) $(misc_DATA) $(man_MANS)
+EXTRA_DIST = $(man_MANS) $(misc_DATA) $(doc_DATA) 
 
