@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jpilot 0.99.8-pre3\n"
 "Report-Msgid-Bugs-To: jpilot-devel@jpilot.org\n"
-"POT-Creation-Date: 2006-08-27 21:17-0400\n"
+"POT-Creation-Date: 2006-09-28 15:06-0700\n"
 "PO-Revision-Date: 2005-04-04 10:55-0700\n"
 "Last-Translator: Steven Michael Murphy <murf@e-tools.com>\n"
 "Language-Team: Kinyarwanda <translation-team-rw@lists.sourceforge.net>\n"
@@ -24,624 +24,683 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: address.c:285 address.c:549 alarms.c:382 dat.c:181 dat.c:655 dat.c:857
-#: dat.c:991 dat.c:1130 datebook.c:89 datebook.c:390 datebook.c:397
-#: datebook.c:427 datebook.c:1046 jpilot.c:1558 libplugin.c:442
-#: libplugin.c:724 libplugin.c:832 libplugin.c:911 libplugin.c:952 memo.c:95
-#: memo.c:367 plugins.c:108 prefs.c:316 prefs.c:341 prefs.c:880 sync.c:252
-#: sync.c:1155 sync.c:2319 todo.c:206 todo.c:548 utils.c:2349
+#: ../address.c:288 ../address.c:552 ../alarms.c:382 ../dat.c:181 ../dat.c:655
+#: ../dat.c:857 ../dat.c:991 ../dat.c:1130 ../datebook.c:89 ../datebook.c:390
+#: ../datebook.c:397 ../datebook.c:427 ../datebook.c:1046 ../jpilot.c:1558
+#: ../libplugin.c:442 ../libplugin.c:724 ../libplugin.c:832 ../libplugin.c:911
+#: ../libplugin.c:952 ../memo.c:95 ../memo.c:367 ../plugins.c:108
+#: ../prefs.c:316 ../prefs.c:341 ../prefs.c:880 ../sync.c:252 ../sync.c:1155
+#: ../sync.c:2319 ../todo.c:206 ../todo.c:548 ../utils.c:2349
 msgid "Out of memory"
 msgstr "Ububiko bwarenzwe"
 
-#: address.c:342 address.c:349 datebook.c:340 libplugin.c:179 memo.c:163
-#: memo.c:170 todo.c:291 todo.c:298 utils.c:2010 utils.c:2015 utils.c:2026
-#: utils.c:2031 utils.c:2042 utils.c:2047 utils.c:2059 utils.c:2064
+#: ../address.c:345 ../address.c:352 ../datebook.c:340 ../libplugin.c:179
+#: ../memo.c:163 ../memo.c:170 ../todo.c:291 ../todo.c:298 ../utils.c:2010
+#: ../utils.c:2015 ../utils.c:2026 ../utils.c:2031 ../utils.c:2042
+#: ../utils.c:2047 ../utils.c:2059 ../utils.c:2064
 #, fuzzy
 msgid "error"
 msgstr "Ikosa"
 
 # svtools/source\misc\errtxt.src:RID_ERRHDL.ERRCODE_SFX_DOLOADFAILED.text
-#: address.c:409 address_gui.c:1656 datebook.c:686 libplugin.c:784
-#: libplugin.c:809 memo.c:244 memo_gui.c:977 todo_gui.c:1289
-#: Expense/expense.c:1122 Expense/expense.c:2127
+#: ../address.c:412 ../address_gui.c:1657 ../datebook.c:686 ../libplugin.c:784
+#: ../libplugin.c:809 ../memo.c:244 ../memo_gui.c:977 ../todo_gui.c:1289
+#: ../Expense/expense.c:1122 ../Expense/expense.c:2127
 #, fuzzy, c-format
 msgid "Error reading file: %s\n"
 msgstr "Ikosa mu gusoma idosiye"
 
-#: address_gui.c:248 datebook_gui.c:2538 memo_gui.c:166 todo_gui.c:280
-#: KeyRing/keyring.c:581
+#: ../address_gui.c:249 ../datebook_gui.c:2537 ../memo_gui.c:166
+#: ../todo_gui.c:280 ../KeyRing/keyring.c:619
 #, fuzzy
 msgid ""
 "This record is deleted.\n"
 "Undelete it or copy it to make changes.\n"
 msgstr "Icyabitswe ni Cyasibwe Cyangwa Gukoporora Kuri Ubwoko Amahinduka"
 
-#: address_gui.c:456 category.c:159 category.c:165 category.c:213
-#: category.c:270 datebook_gui.c:369 memo_gui.c:283 sync.c:1118 sync.c:1124
-#: sync.c:2294 sync.c:2514 sync.c:2520 sync.c:2637 sync.c:2903 todo_gui.c:420
-#: utils.c:2758 utils.c:2807 utils.c:2813 utils.c:2886 utils.c:2892
-#: utils.c:2955 utils.c:3018 utils.c:3024 utils.c:3087 utils.c:3094
+#: ../address_gui.c:457 ../category.c:159 ../category.c:165 ../category.c:213
+#: ../category.c:270 ../datebook_gui.c:368 ../memo_gui.c:283 ../sync.c:1118
+#: ../sync.c:1124 ../sync.c:2294 ../sync.c:2514 ../sync.c:2520 ../sync.c:2637
+#: ../sync.c:2903 ../todo_gui.c:420 ../utils.c:2758 ../utils.c:2807
+#: ../utils.c:2813 ../utils.c:2886 ../utils.c:2892 ../utils.c:2955
+#: ../utils.c:3018 ../utils.c:3024 ../utils.c:3087 ../utils.c:3094
 #, fuzzy, c-format
 msgid "Unable to open file: %s\n"
 msgstr "Kuri Gufungura IDOSIYE"
 
-#: address_gui.c:534
+#: ../address_gui.c:535
 #, fuzzy
 msgid "File doesn't appear to be address.dat format\n"
 msgstr "Idosiye Kugaragara Kuri Aderesi"
 
-#: address_gui.c:544 datebook_gui.c:578 memo_gui.c:417 todo_gui.c:545
-#: Expense/expense.c:603 Expense/expense.c:1397
+#: ../address_gui.c:545 ../datebook_gui.c:577 ../memo_gui.c:417
+#: ../todo_gui.c:545 ../Expense/expense.c:603 ../Expense/expense.c:1397
 msgid "Unfiled"
 msgstr ""
 
-#: address_gui.c:681 alarms.c:289 category.c:420 category.c:899 category.c:952
-#: datebook_gui.c:663 datebook_gui.c:1162 export_gui.c:353 jpilot.c:361
-#: jpilot.c:406 jpilot.c:474 jpilot.c:518 jpilot.c:991 jpilot.c:1892
-#: memo_gui.c:505 password.c:368 restore_gui.c:322 todo_gui.c:633 utils.c:1122
-#: utils.c:1303 KeyRing/keyring.c:1531
+#. JPA
+#. current category name
+#. previous category name
+#. yes!
+#. entry text, in Pilot character set
+#: ../address_gui.c:682 ../alarms.c:289 ../category.c:420 ../category.c:899
+#: ../category.c:952 ../datebook_gui.c:662 ../datebook_gui.c:1161
+#: ../export_gui.c:353 ../jpilot.c:361 ../jpilot.c:406 ../jpilot.c:474
+#: ../jpilot.c:518 ../jpilot.c:991 ../jpilot.c:1892 ../memo_gui.c:505
+#: ../password.c:368 ../restore_gui.c:322 ../todo_gui.c:633 ../utils.c:1122
+#: ../utils.c:1303 ../KeyRing/keyring.c:1582
 msgid "OK"
 msgstr "OKE"
 
-#: address_gui.c:682 datebook_gui.c:664 memo_gui.c:506 todo_gui.c:634
-#: utils.c:1321
+#: ../address_gui.c:683 ../datebook_gui.c:663 ../memo_gui.c:506
+#: ../todo_gui.c:634 ../utils.c:1321
 msgid "No"
 msgstr "Oya"
 
-#: address_gui.c:682 datebook_gui.c:664 memo_gui.c:506 todo_gui.c:634
-#: utils.c:1321
+#: ../address_gui.c:683 ../datebook_gui.c:663 ../memo_gui.c:506
+#: ../todo_gui.c:634 ../utils.c:1321
 msgid "Yes"
 msgstr "Yego"
 
-#: address_gui.c:705 datebook_gui.c:690 memo_gui.c:516 todo_gui.c:659
+#: ../address_gui.c:706 ../datebook_gui.c:689 ../memo_gui.c:516
+#: ../todo_gui.c:659
 #, fuzzy, c-format
 msgid "%s is a directory"
 msgstr "%sni a bushyinguro"
 
 # basctl/source\basicide\basidesh.src:RID_STR_ERROROPENSTORAGE.text
-#: address_gui.c:707 address_gui.c:724 datebook_gui.c:692 datebook_gui.c:709
-#: memo_gui.c:518 memo_gui.c:535 todo_gui.c:661 todo_gui.c:678
+#: ../address_gui.c:708 ../address_gui.c:725 ../datebook_gui.c:691
+#: ../datebook_gui.c:708 ../memo_gui.c:518 ../memo_gui.c:535 ../todo_gui.c:661
+#: ../todo_gui.c:678
 #, fuzzy
 msgid "Error Opening File"
 msgstr "Hari ikibazo mu gufungura dosiye"
 
-#: address_gui.c:711 datebook_gui.c:696 memo_gui.c:522 todo_gui.c:665
+#: ../address_gui.c:712 ../datebook_gui.c:695 ../memo_gui.c:522
+#: ../todo_gui.c:665
 #, fuzzy, c-format
 msgid "Do you want to overwrite file %s?"
 msgstr "Kuri Guhindura IDOSIYE"
 
-#: address_gui.c:713 datebook_gui.c:698 memo_gui.c:524 todo_gui.c:667
+#: ../address_gui.c:714 ../datebook_gui.c:697 ../memo_gui.c:524
+#: ../todo_gui.c:667
 #, fuzzy
 msgid "Overwrite File?"
 msgstr "Gusimbuza Idosiye"
 
 # basctl/source\basicide\basidesh.src:RID_STR_ERROROPENSTORAGE.text
-#: address_gui.c:722 datebook_gui.c:707 memo_gui.c:533 todo_gui.c:676
+#: ../address_gui.c:723 ../datebook_gui.c:706 ../memo_gui.c:533
+#: ../todo_gui.c:676
 #, fuzzy, c-format
 msgid "Error opening file: %s"
 msgstr "Hari ikibazo mu gufungura dosiye"
 
-#: address_gui.c:733
+#: ../address_gui.c:734
 #, fuzzy, c-format
 msgid "Can't export address %d\n"
 msgstr "Kohereza Aderesi"
 
-#: address_gui.c:798 address_gui.c:806 address_gui.c:823
+#: ../address_gui.c:799 ../address_gui.c:807 ../address_gui.c:824
 msgid "Field"
 msgstr "Umwanya"
 
-#: address_gui.c:1023 datebook_gui.c:983 memo_gui.c:591 todo_gui.c:815
+#: ../address_gui.c:1024 ../datebook_gui.c:982 ../memo_gui.c:591
+#: ../todo_gui.c:815
 #, fuzzy
 msgid "Unknown export type\n"
 msgstr "Kohereza"
 
-#: address_gui.c:1206 address_gui.c:2629
+#: ../address_gui.c:1207 ../address_gui.c:2625
 #, fuzzy
 msgid "Company/Name"
 msgstr "Izina ry'Ikigo:"
 
-#: address_gui.c:1208 address_gui.c:2631
+#: ../address_gui.c:1209 ../address_gui.c:2627
 msgid "Name/Company"
 msgstr ""
 
-#: address_gui.c:1305 datebook_gui.c:2616 memo_gui.c:894 todo_gui.c:1217
-#: KeyRing/keyring.c:919
+#: ../address_gui.c:1306 ../datebook_gui.c:2615 ../memo_gui.c:894
+#: ../todo_gui.c:1217 ../KeyRing/keyring.c:959
 #, fuzzy
 msgid "You can't modify a record that is deleted\n"
 msgstr "Guhindura a Icyabitswe ni"
 
-#: address_gui.c:1448 address_gui.c:1833 address_gui.c:2359 memo_gui.c:800
-#: memo_gui.c:1065 memo_gui.c:1355 todo_gui.c:1083 todo_gui.c:1491
-#: todo_gui.c:1504 todo_gui.c:1948
+#. Illegal category
+#: ../address_gui.c:1449 ../address_gui.c:1834 ../address_gui.c:2355
+#: ../memo_gui.c:800 ../memo_gui.c:1065 ../memo_gui.c:1355 ../todo_gui.c:1083
+#: ../todo_gui.c:1506 ../todo_gui.c:1519 ../todo_gui.c:1966
 #, fuzzy
 msgid "Category is not legal\n"
 msgstr "ni OYA"
 
-#: address_gui.c:1507 alarms.c:639 dialer.c:163
+#: ../address_gui.c:1508 ../alarms.c:639 ../dialer.c:163
 #, fuzzy, c-format
 msgid "executing command = [%s]\n"
 msgstr "Gukora: %s]%s Komandi:"
 
 # so3/src\svuidlg.src:MD_DDE_LINKEDIT.FT_DDE_ITEM.text
-#: address_gui.c:1751 Expense/expense.c:1594 KeyRing/keyring.c:2046
-#: KeyRing/keyring.c:2137
+#. Category menu
+#: ../address_gui.c:1752 ../Expense/expense.c:1594 ../KeyRing/keyring.c:2097
+#: ../KeyRing/keyring.c:2194
 #, fuzzy
 msgid "Category: "
 msgstr "Icyiciro"
 
-#: address_gui.c:1783 address_gui.c:2800
+#: ../address_gui.c:1784 ../address_gui.c:2796
 msgid "kana("
 msgstr ""
 
-#: address_gui.c:1895 address_gui.c:2910
+#: ../address_gui.c:1896 ../address_gui.c:2906
 msgid "E-mail"
 msgstr "ubutumwa nterineti/elegitoroniki"
 
-#: address_gui.c:1897 address_gui.c:1900 address_gui.c:2911
+#: ../address_gui.c:1898 ../address_gui.c:1901 ../address_gui.c:2907
 msgid "Mail"
 msgstr "Ubutumwa"
 
-#: address_gui.c:1905 address_gui.c:1908 address_gui.c:2914 dialer.c:306
-#: dialer.c:331
+#. Dial Phone Button
+#: ../address_gui.c:1906 ../address_gui.c:1909 ../address_gui.c:2910
+#: ../dialer.c:306 ../dialer.c:331
 msgid "Dial"
 msgstr ""
 
-#: address_gui.c:2133 address_gui.c:2157
+#: ../address_gui.c:2129 ../address_gui.c:2153
 #, fuzzy
 msgid "-Unnamed-"
 msgstr "-kitiswe-"
 
-#: address_gui.c:2230 memo_gui.c:1265 todo_gui.c:1837
+#: ../address_gui.c:2226 ../memo_gui.c:1265 ../todo_gui.c:1855
 #, fuzzy
 msgid "0 records"
 msgstr "0 Ibyabitswe"
 
-#: address_gui.c:2233 datebook_gui.c:2415 memo_gui.c:1268 todo_gui.c:1840
+#: ../address_gui.c:2229 ../datebook_gui.c:2414 ../memo_gui.c:1268
+#: ../todo_gui.c:1858
 #, fuzzy, c-format
 msgid "%d of %d records"
 msgstr "%dBya Ibyabitswe"
 
-#: address_gui.c:2604 category.c:450 category.c:496 category.c:514
-#: category.c:593 category.c:786 memo_gui.c:1483 todo_gui.c:2081
-#: Expense/expense.c:1600
+#. Edit category button
+#: ../address_gui.c:2600 ../category.c:450 ../category.c:496 ../category.c:514
+#: ../category.c:593 ../category.c:786 ../memo_gui.c:1483 ../todo_gui.c:2099
+#: ../Expense/expense.c:1600
 msgid "Edit Categories"
 msgstr "Kwandika ibyiciro"
 
-#: address_gui.c:2635
+#: ../address_gui.c:2631
 msgid "Phone"
 msgstr "Telefone"
 
-#: address_gui.c:2657
+#: ../address_gui.c:2653
 msgid "Quick Find: "
 msgstr ""
 
-#: address_gui.c:2673 category.c:421 category.c:889 category.c:942
-#: datebook_gui.c:1153 datebook_gui.c:1600 datebook_gui.c:4387
-#: export_gui.c:344 memo_gui.c:1517 password.c:358 print_gui.c:348
-#: restore_gui.c:313 todo_gui.c:2134 utils.c:1108 KeyRing/keyring.c:1521
-#: KeyRing/keyring.c:2078
+#. Create Cancel button
+#. Add record modification buttons on right side
+#. Create "event" button
+#. Create Cancel button
+#. Add record modification buttons on right side
+#. Create Cancel button
+#. Cancel button
+#: ../address_gui.c:2669 ../category.c:421 ../category.c:889 ../category.c:942
+#: ../datebook_gui.c:1152 ../datebook_gui.c:1599 ../datebook_gui.c:4384
+#: ../export_gui.c:344 ../install_user.c:207 ../memo_gui.c:1517
+#: ../password.c:358 ../print_gui.c:348 ../restore_gui.c:313
+#: ../todo_gui.c:2152 ../utils.c:1108 ../KeyRing/keyring.c:1572
+#: ../KeyRing/keyring.c:2135
 msgid "Cancel"
 msgstr "Kureka"
 
-#: address_gui.c:2673 datebook_gui.c:4387 memo_gui.c:1517 todo_gui.c:2134
-#: KeyRing/keyring.c:2078
+#: ../address_gui.c:2669 ../datebook_gui.c:4384 ../memo_gui.c:1517
+#: ../todo_gui.c:2152 ../KeyRing/keyring.c:2135
 #, fuzzy
 msgid "Cancel the modifications"
 msgstr "i"
 
-#: address_gui.c:2678 category.c:421 category.c:854 datebook_gui.c:4392
-#: memo_gui.c:1522 todo_gui.c:2139 Expense/expense.c:1637
-#: KeyRing/keyring.c:2083
+#. Delete Button
+#. Create "Delete" button
+#. Delete Button
+#. Delete button
+#. Delete, Copy, New, etc. buttons
+#. Delete button
+#: ../address_gui.c:2674 ../category.c:421 ../category.c:854
+#: ../datebook_gui.c:4389 ../memo_gui.c:1522 ../todo_gui.c:2157
+#: ../Expense/expense.c:1637 ../KeyRing/keyring.c:2140
 msgid "Delete"
 msgstr "Gusiba"
 
-#: address_gui.c:2678 datebook_gui.c:4392 memo_gui.c:1522 todo_gui.c:2139
-#: Expense/expense.c:1637 KeyRing/keyring.c:2083
+#: ../address_gui.c:2674 ../datebook_gui.c:4389 ../memo_gui.c:1522
+#: ../todo_gui.c:2157 ../Expense/expense.c:1637 ../KeyRing/keyring.c:2140
 #, fuzzy
 msgid "Delete the selected record"
 msgstr "i Byahiswemo Icyabitswe"
 
-#: address_gui.c:2684 datebook_gui.c:4398 memo_gui.c:1528 todo_gui.c:2145
-#: KeyRing/keyring.c:2089
+#. Undelete Button
+#. Create "Undelete" button
+#. Undelete Button
+#. Undelete button
+#: ../address_gui.c:2680 ../datebook_gui.c:4395 ../memo_gui.c:1528
+#: ../todo_gui.c:2163 ../KeyRing/keyring.c:2146
 msgid "Undelete"
 msgstr ""
 
-#: address_gui.c:2684 datebook_gui.c:4398 memo_gui.c:1528 todo_gui.c:2145
-#: KeyRing/keyring.c:2089
+#: ../address_gui.c:2680 ../datebook_gui.c:4395 ../memo_gui.c:1528
+#: ../todo_gui.c:2163 ../KeyRing/keyring.c:2146
 #, fuzzy
 msgid "Undelete the selected record"
 msgstr "i Byahiswemo Icyabitswe"
 
-#: address_gui.c:2690 datebook_gui.c:4404 memo_gui.c:1534 todo_gui.c:2151
-#: Expense/expense.c:1642 KeyRing/keyring.c:2095
+#. Create "Copy" button
+#. Copy button
+#: ../address_gui.c:2686 ../datebook_gui.c:4401 ../memo_gui.c:1534
+#: ../todo_gui.c:2169 ../Expense/expense.c:1642 ../KeyRing/keyring.c:2152
 msgid "Copy"
 msgstr "Guporora"
 
-#: address_gui.c:2690 datebook_gui.c:4404 memo_gui.c:1534 todo_gui.c:2151
-#: Expense/expense.c:1642 KeyRing/keyring.c:2095
+#: ../address_gui.c:2686 ../datebook_gui.c:4401 ../memo_gui.c:1534
+#: ../todo_gui.c:2169 ../Expense/expense.c:1642 ../KeyRing/keyring.c:2152
 #, fuzzy
 msgid "Copy the selected record"
 msgstr "i Byahiswemo Icyabitswe"
 
-#: address_gui.c:2696 datebook_gui.c:4410 memo_gui.c:1540 todo_gui.c:2157
-#: Expense/expense.c:1647 KeyRing/keyring.c:2101
+#. Create "New" button
+#. New Record button
+#: ../address_gui.c:2692 ../datebook_gui.c:4407 ../memo_gui.c:1540
+#: ../todo_gui.c:2175 ../Expense/expense.c:1647 ../KeyRing/keyring.c:2158
 msgid "New Record"
 msgstr "Icyabitswe Gishya"
 
-#: address_gui.c:2696 datebook_gui.c:4410 memo_gui.c:1540 todo_gui.c:2157
-#: Expense/expense.c:1647 KeyRing/keyring.c:2101
+#: ../address_gui.c:2692 ../datebook_gui.c:4407 ../memo_gui.c:1540
+#: ../todo_gui.c:2175 ../Expense/expense.c:1647 ../KeyRing/keyring.c:2158
 #, fuzzy
 msgid "Add a new record"
 msgstr "a Gishya Icyabitswe"
 
-#: address_gui.c:2701 datebook_gui.c:4416 memo_gui.c:1546 todo_gui.c:2163
-#: Expense/expense.c:1652 KeyRing/keyring.c:2107
+#. Create "Add Record" button
+#. Add Record button
+#: ../address_gui.c:2697 ../datebook_gui.c:4413 ../memo_gui.c:1546
+#: ../todo_gui.c:2181 ../Expense/expense.c:1652 ../KeyRing/keyring.c:2164
 msgid "Add Record"
 msgstr ""
 
-#: address_gui.c:2701 datebook_gui.c:4416 memo_gui.c:1546 todo_gui.c:2163
-#: Expense/expense.c:1652 KeyRing/keyring.c:2107
+#: ../address_gui.c:2697 ../datebook_gui.c:4413 ../memo_gui.c:1546
+#: ../todo_gui.c:2181 ../Expense/expense.c:1652 ../KeyRing/keyring.c:2164
 #, fuzzy
 msgid "Add the new record"
 msgstr "i Gishya Icyabitswe"
 
-#: address_gui.c:2711 datebook_gui.c:4426 memo_gui.c:1556 todo_gui.c:2173
-#: Expense/expense.c:1661 KeyRing/keyring.c:2117
+#. Create "apply changes" button
+#. Apply Changes button
+#: ../address_gui.c:2707 ../datebook_gui.c:4423 ../memo_gui.c:1556
+#: ../todo_gui.c:2191 ../Expense/expense.c:1661 ../KeyRing/keyring.c:2174
 msgid "Apply Changes"
 msgstr ""
 
-#: address_gui.c:2711 datebook_gui.c:4426 memo_gui.c:1556 todo_gui.c:2173
-#: Expense/expense.c:1661 KeyRing/keyring.c:2117
+#: ../address_gui.c:2707 ../datebook_gui.c:4423 ../memo_gui.c:1556
+#: ../todo_gui.c:2191 ../Expense/expense.c:1661 ../KeyRing/keyring.c:2174
 #, fuzzy
 msgid "Commit the modifications"
 msgstr "i"
 
-#: address_gui.c:2728 datebook_gui.c:4477 memo_gui.c:1574 todo_gui.c:2236
+#. Private check box
+#: ../address_gui.c:2724 ../datebook_gui.c:4474 ../memo_gui.c:1574
+#: ../todo_gui.c:2254
 msgid "Private"
 msgstr "By'umwihariko"
 
-#: address_gui.c:2748 KeyRing/keyring.c:1958
+#. Page 1
+#: ../address_gui.c:2744 ../KeyRing/keyring.c:2009
 msgid "Name"
 msgstr "Izina"
 
-#: address_gui.c:2756 prefs_gui.c:370
+#. Page 2
+#: ../address_gui.c:2752 ../prefs_gui.c:370
 msgid "Address"
 msgstr "Aderesi"
 
-#: address_gui.c:2764 Expense/expense.c:555 Expense/expense.c:1418
+#. Page 3
+#: ../address_gui.c:2760 ../Expense/expense.c:555 ../Expense/expense.c:1418
 msgid "Other"
 msgstr "Ikindi"
 
-#: address_gui.c:2772 datebook_gui.c:1351 datebook_gui.c:1600 utils.c:2714
+#. Page 4
+#. Create a "All" button
+#: ../address_gui.c:2768 ../datebook_gui.c:1350 ../datebook_gui.c:1599
+#: ../utils.c:2714
 msgid "All"
 msgstr "Byose"
 
-#: address_gui.c:2975
+#: ../address_gui.c:2973
 msgid ""
 "Show\n"
 "In List"
 msgstr ""
 
-#: address_gui.c:2983
+#. The Quickview page
+#: ../address_gui.c:2981
 msgid "Quick View"
 msgstr ""
 
-#: alarms.c:257 datebook_gui.c:4459
+#: ../alarms.c:257 ../datebook_gui.c:4456
 msgid "Minutes"
 msgstr "Iminota"
 
-#: alarms.c:259 datebook_gui.c:4463
+#: ../alarms.c:259 ../datebook_gui.c:4460
 msgid "Hours"
 msgstr "amasaha"
 
-#: alarms.c:280
+#: ../alarms.c:280
 msgid "Remind me"
 msgstr ""
 
-#: alarms.c:469
+#: ../alarms.c:469
 #, fuzzy, c-format
 msgid "Unable to open %s%s file\n"
 msgstr "Kuri Gufungura"
 
-#: alarms.c:554
+#: ../alarms.c:554
 msgid "Appointment Reminder"
 msgstr ""
 
-#: alarms.c:557
+#: ../alarms.c:557
 msgid "Past Appointment"
 msgstr ""
 
-#: alarms.c:560
+#: ../alarms.c:560
 msgid "Postponed Appointment"
 msgstr ""
 
-#: alarms.c:563 datebook_gui.c:4295
+#: ../alarms.c:563 ../datebook_gui.c:4292
 msgid "Appointment"
 msgstr ""
 
-#: alarms.c:646
+#: ../alarms.c:646
 msgid "J-Pilot Alarm"
 msgstr ""
 
-#: alarms.c:1163
+#: ../alarms.c:1163
 #, fuzzy
 msgid "infinite loop, breaking\n"
 msgstr "Bidashira"
 
-#: alarms.c:1531
+#: ../alarms.c:1531
 #, fuzzy, c-format
 msgid "Unable to open %s.alarms file\n"
 msgstr "Kuri Gufungura"
 
-#: category.c:192 sync.c:2551 utils.c:2834 utils.c:2922 utils.c:3044
-#: utils.c:3114
+#: ../category.c:192 ../sync.c:2551 ../utils.c:2834 ../utils.c:2922
+#: ../utils.c:3044 ../utils.c:3114
 #, fuzzy
 msgid "rename failed"
 msgstr "Guhindura izina Byanze"
 
-#: category.c:229 category.c:286 sync.c:1147 sync.c:2310
+#: ../category.c:229 ../category.c:286 ../sync.c:1147 ../sync.c:2310
 #, fuzzy
 msgid "PC file corrupt?\n"
 msgstr "IDOSIYE"
 
-#: category.c:236 category.c:246 category.c:293 category.c:304 category.c:314
-#: sync.c:1192 sync.c:1212 sync.c:1272 sync.c:1283 sync.c:2372 sync.c:2399
-#: sync.c:2451 sync.c:2461
+#: ../category.c:236 ../category.c:246 ../category.c:293 ../category.c:304
+#: ../category.c:314 ../sync.c:1192 ../sync.c:1212 ../sync.c:1272
+#: ../sync.c:1283 ../sync.c:2372 ../sync.c:2399 ../sync.c:2451 ../sync.c:2461
 #, fuzzy
 msgid "fseek failed - fatal error\n"
 msgstr "Byanze"
 
-#: category.c:421
+#: ../category.c:421
 msgid "Move"
 msgstr "Kwimura"
 
-#: category.c:451
+#: ../category.c:451
 #, fuzzy
 msgid "The maximum number of categories (16) are already used"
 msgstr "Kinini Umubare Bya Ibyiciro"
 
-#: category.c:454
+#: ../category.c:454
 msgid "Enter New Category"
 msgstr ""
 
-#: category.c:464 category.c:471 category.c:489
+#: ../category.c:464 ../category.c:471 ../category.c:489
 #, fuzzy
 msgid "Edit Categories Error"
 msgstr "Kwandika ibyiciro"
 
-#: category.c:465
+#: ../category.c:465
 #, fuzzy
 msgid "You must select a category to rename"
 msgstr "Guhitamo a Icyiciro Kuri Guhindura izina"
 
-#: category.c:469
+#: ../category.c:469
 #, fuzzy, c-format
 msgid "You can't edit category %s.\n"
 msgstr "Guhindura Icyiciro"
 
-#: category.c:476
+#: ../category.c:476
 msgid "Enter New Category Name"
 msgstr ""
 
-#: category.c:490
+#: ../category.c:490
 #, fuzzy
 msgid "You must select a category to delete"
 msgstr "Guhitamo a Icyiciro Kuri Gusiba"
 
-#: category.c:494
+#: ../category.c:494
 #, fuzzy, c-format
 msgid "You can't delete category %s.\n"
 msgstr "Gusiba Icyiciro"
 
-#: category.c:510
+#: ../category.c:510
 #, fuzzy, c-format
 msgid ""
 "There are %d records in %s.\n"
 "Do you want to move them to %s, or delete them?"
 msgstr "Ibyabitswe in Kuri Kwimura Kuri Cyangwa Gusiba"
 
-#: category.c:569
+#: ../category.c:569
 #, fuzzy, c-format
 msgid "invalid state file %s line %d\n"
 msgstr "Sibyo Leta IDOSIYE Umurongo"
 
-#: category.c:591
+#: ../category.c:591
 #, fuzzy, c-format
 msgid "The category %s can't be used more than once"
 msgstr "Icyiciro Birenzeho Rimwe"
 
-#: category.c:813
+#. correctly translate title
+#: ../category.c:813
 #, fuzzy
 msgid "category name"
 msgstr "Icyiciro Izina:"
 
-#: category.c:838
+#: ../category.c:838
 msgid "New"
 msgstr "Gishya"
 
-#: category.c:845
+#: ../category.c:845
 msgid "Rename"
 msgstr "Guhindura izina"
 
 # Debug menu items
-#: category.c:960
+#: ../category.c:960
 #, fuzzy
 msgid "debug"
 msgstr "Kosora amakosa"
 
-#: dat.c:455
+#: ../dat.c:455
 #, fuzzy
 msgid "unknown type ="
 msgstr "Kitazwi Ubwoko"
 
-#: dat.c:536
+#: ../dat.c:536
 #, fuzzy, c-format
 msgid "fields per row count != %d, unknown format\n"
 msgstr "Imyanya Urubariro IBARA Kitazwi"
 
-#: dat.c:550
+#: ../dat.c:550
 #, fuzzy, c-format
 msgid "field count != %d, unknown format\n"
 msgstr "Umwanya IBARA Kitazwi"
 
-#: dat.c:558
+#: ../dat.c:558
 #, fuzzy
 msgid "Unknown format, file has wrong schema\n"
 msgstr "Imiterere IDOSIYE"
 
-#: dat.c:559
+#: ../dat.c:559
 #, fuzzy
 msgid "File schema is:"
 msgstr "Idosiye Igishushanyo ni"
 
-#: dat.c:564
+#: ../dat.c:564
 msgid "It should be:  "
 msgstr ""
 
-#: dat.c:674 dat.c:692 dat.c:874 dat.c:887 dat.c:1010 dat.c:1023 dat.c:1147
-#: dat.c:1160
+#: ../dat.c:674 ../dat.c:692 ../dat.c:874 ../dat.c:887 ../dat.c:1010
+#: ../dat.c:1023 ../dat.c:1147 ../dat.c:1160
 #, fuzzy, c-format
 msgid "%s:%d Record %d, field %d: Invalid type.  Expected %d, found %d\n"
 msgstr "%s:%dUmwanya Ubwoko Itegerejwe Byabonetse"
 
-#: dat.c:675 dat.c:693 dat.c:875 dat.c:888 dat.c:992 dat.c:1011 dat.c:1024
-#: dat.c:1148 dat.c:1161
+#: ../dat.c:675 ../dat.c:693 ../dat.c:875 ../dat.c:888 ../dat.c:992
+#: ../dat.c:1011 ../dat.c:1024 ../dat.c:1148 ../dat.c:1161
 #, fuzzy
 msgid "read of file terminated\n"
 msgstr "Gusoma Bya IDOSIYE"
 
-#: datebook.c:643
+#: ../datebook.c:643
 #, fuzzy, c-format
 msgid "Unknown repeatType (%d) found in DatebookDB\n"
 msgstr "Byabonetse in"
 
-#: datebook_gui.c:219 datebook_gui.c:226 datebook_gui.c:4120
-#: datebook_gui.c:4127
+#: ../datebook_gui.c:218 ../datebook_gui.c:225 ../datebook_gui.c:4117
+#: ../datebook_gui.c:4124
 msgid "Su"
 msgstr ""
 
-#: datebook_gui.c:220 datebook_gui.c:4121
+#: ../datebook_gui.c:219 ../datebook_gui.c:4118
 #, fuzzy
 msgid "Mo"
 msgstr "ukwezi"
 
-#: datebook_gui.c:221 datebook_gui.c:4122
+#: ../datebook_gui.c:220 ../datebook_gui.c:4119
 msgid "Tu"
 msgstr ""
 
-#: datebook_gui.c:222 datebook_gui.c:4123
+#: ../datebook_gui.c:221 ../datebook_gui.c:4120
 msgid "We"
 msgstr "Twebwe"
 
-#: datebook_gui.c:223 datebook_gui.c:4124
+#: ../datebook_gui.c:222 ../datebook_gui.c:4121
 msgid "Th"
 msgstr ""
 
-#: datebook_gui.c:224 datebook_gui.c:4125
+#: ../datebook_gui.c:223 ../datebook_gui.c:4122
 msgid "Fr"
 msgstr ""
 
-#: datebook_gui.c:225 datebook_gui.c:4126
+#: ../datebook_gui.c:224 ../datebook_gui.c:4123
 msgid "Sa"
 msgstr ""
 
-#: datebook_gui.c:557 datebook_gui.c:2071
+#: ../datebook_gui.c:556 ../datebook_gui.c:2070
 #, fuzzy, c-format
 msgid "Appointment description text > %d, truncating to %d\n"
 msgstr "Isobanuramiterere Umwandiko Kuri"
 
-#: datebook_gui.c:567 datebook_gui.c:984 datebook_gui.c:2132
-#: datebook_gui.c:2139
+#: ../datebook_gui.c:566 ../datebook_gui.c:983 ../datebook_gui.c:2131
+#: ../datebook_gui.c:2138
 msgid "Error"
 msgstr "Ikosa"
 
-#: datebook_gui.c:568
+#: ../datebook_gui.c:567
 #, fuzzy
 msgid "File doesn't appear to be datebook.dat format\n"
 msgstr "Idosiye Kugaragara Kuri"
 
-#: datebook_gui.c:984
+#: ../datebook_gui.c:983
 #, fuzzy
 msgid "Unknown export type"
 msgstr "Kohereza Ubwoko"
 
 # filter/source\pdf\impdialog.src:RID_PDF_EXPORT_DLG.BT_OK.text
 # filter/source\xsltdialog\xmlfiltertestdialog.src:DLG_XML_FILTER_TEST_DIALOG.FL_EXPORT.text
-#: datebook_gui.c:1093 export_gui.c:257 jpilot.c:551
+#: ../datebook_gui.c:1092 ../export_gui.c:257 ../jpilot.c:551
 msgid "Export"
 msgstr "Kohereza"
 
-#: datebook_gui.c:1110
+#. Label for instructions
+#: ../datebook_gui.c:1109
 msgid "Export All Datebook Records"
 msgstr ""
 
-#: datebook_gui.c:1129 export_gui.c:319
+#: ../datebook_gui.c:1128 ../export_gui.c:319
 msgid "Save as"
 msgstr "kubika nka"
 
-#: datebook_gui.c:1139 export_gui.c:330
+#: ../datebook_gui.c:1138 ../export_gui.c:330
 msgid "Browse"
 msgstr "Gushakisha"
 
-#: datebook_gui.c:1301
+#: ../datebook_gui.c:1300
 msgid "Datebook Categories"
 msgstr ""
 
-#: datebook_gui.c:1344 import_gui.c:533 install_gui.c:341 monthview_gui.c:545
-#: search_gui.c:620 weekview_gui.c:369
+#: ../datebook_gui.c:1343 ../import_gui.c:533 ../install_gui.c:341
+#: ../monthview_gui.c:545 ../search_gui.c:620 ../weekview_gui.c:369
 msgid "Close"
 msgstr "Gufunga"
 
-#: datebook_gui.c:1357 datebook_gui.c:4642
+#. Create a "None" button
+#. labels for notebook
+#: ../datebook_gui.c:1356 ../datebook_gui.c:4639
 msgid "None"
 msgstr "Ntacyo"
 
-#: datebook_gui.c:1469
+#: ../datebook_gui.c:1468
 msgid "Begin On Date"
 msgstr ""
 
-#: datebook_gui.c:1474
+#: ../datebook_gui.c:1473
 #, fuzzy
 msgid "End On Date"
 msgstr "Impera"
 
-#: datebook_gui.c:1568 prefs.c:424
+#: ../datebook_gui.c:1567 ../prefs.c:424
 msgid "Sunday"
 msgstr ""
 
-#: datebook_gui.c:1569 prefs.c:425
+#: ../datebook_gui.c:1568 ../prefs.c:425
 msgid "Monday"
 msgstr ""
 
-#: datebook_gui.c:1570
+#: ../datebook_gui.c:1569
 msgid "Tuesday"
 msgstr ""
 
-#: datebook_gui.c:1571
+#: ../datebook_gui.c:1570
 msgid "Wednesday"
 msgstr ""
 
-#: datebook_gui.c:1572
+#: ../datebook_gui.c:1571
 msgid "Thursday"
 msgstr ""
 
-#: datebook_gui.c:1573
+#: ../datebook_gui.c:1572
 msgid "Friday"
 msgstr ""
 
-#: datebook_gui.c:1574
+#: ../datebook_gui.c:1573
 msgid "Saturday"
 msgstr ""
 
-#: datebook_gui.c:1577
+#: ../datebook_gui.c:1576
 msgid "4th"
 msgstr ""
 
-#: datebook_gui.c:1577
+#: ../datebook_gui.c:1576
 msgid "Last"
 msgstr "Iheruka"
 
-#: datebook_gui.c:1580
+#: ../datebook_gui.c:1579
 #, fuzzy, c-format
 msgid ""
 "This appointment can either\n"
@@ -651,11 +710,12 @@ msgid ""
 "Which do you want?"
 msgstr "ku i Bya i Ukwezi Cyangwa ku i Bya i Ukwezi"
 
-#: datebook_gui.c:1587 datebook_gui.c:1604
+#: ../datebook_gui.c:1586 ../datebook_gui.c:1603
 msgid "Question?"
 msgstr ""
 
-#: datebook_gui.c:1595
+#. ---------------------------
+#: ../datebook_gui.c:1594
 #, fuzzy
 msgid ""
 "This is a repeating event.\n"
@@ -666,240 +726,251 @@ msgid ""
 msgstr "ni a Icyabaye Kuri Gukurikiza Kuri i Cyangwa Bya Bya iyi Icyabaye"
 
 # sc/source\core\src\compiler.src:RID_SC_FUNCTION_NAMES.SC_OPCODE_CURRENT.text
-#: datebook_gui.c:1600
+#: ../datebook_gui.c:1599
 #, fuzzy
 msgid "Current"
 msgstr "KIGEZWEHO"
 
-#: datebook_gui.c:1839
+#: ../datebook_gui.c:1838
 msgid "none"
 msgstr "ntacyo"
 
-#: datebook_gui.c:1840
+#: ../datebook_gui.c:1839
 msgid "day"
 msgstr "umunsi"
 
 # svtools/source\control\calendar.src:STR_SVT_CALENDAR_WEEK.text
-#: datebook_gui.c:1841
+#: ../datebook_gui.c:1840
 #, fuzzy
 msgid "week"
 msgstr "Icyumweru"
 
-#: datebook_gui.c:1842
+#: ../datebook_gui.c:1841
 msgid "month"
 msgstr "ukwezi"
 
-#: datebook_gui.c:1843
+#: ../datebook_gui.c:1842
 msgid "year"
 msgstr "umwaka"
 
-#: datebook_gui.c:2127 datebook_gui.c:2130
+#: ../datebook_gui.c:2126 ../datebook_gui.c:2129
 #, fuzzy, c-format
 msgid "You cannot have an appointment that repeats every %d %s(s)\n"
 msgstr "buri S"
 
-#: datebook_gui.c:2140
+#: ../datebook_gui.c:2139
 #, fuzzy
 msgid ""
 "You can not have a weekly repeating appointment that doesn't repeat on any "
 "day of the week."
 msgstr "OYA a Buri kyumweru Gusubiramo ku UMUNSI Bya i Icyumweru"
 
-#: datebook_gui.c:2293
+#. This is a timeless event
+#: ../datebook_gui.c:2292
 msgid "No Time"
 msgstr ""
 
-#: datebook_gui.c:2632
+#: ../datebook_gui.c:2631
 msgid "Invalid Appointment"
 msgstr ""
 
-#: datebook_gui.c:2633
+#: ../datebook_gui.c:2632
 #, fuzzy
 msgid ""
 "The End Date of this appointment\n"
 "is before the start date."
 msgstr "Impera Bya iyi Mbere i Gutangira Itariki"
 
-#: datebook_gui.c:2902 datebook_gui.c:4676 datebook_gui.c:4706
-#: datebook_gui.c:4761 datebook_gui.c:4810 todo_gui.c:130 todo_gui.c:2227
+#. The No due date check box
+#: ../datebook_gui.c:2901 ../datebook_gui.c:4673 ../datebook_gui.c:4703
+#: ../datebook_gui.c:4758 ../datebook_gui.c:4807 ../todo_gui.c:130
+#: ../todo_gui.c:2245
 msgid "No Date"
 msgstr ""
 
-#: datebook_gui.c:3022
+#: ../datebook_gui.c:3021
 #, fuzzy, c-format
 msgid "Error in DateBookDB advanceUnits = %d\n"
 msgstr "in"
 
-#: datebook_gui.c:3193
+#: ../datebook_gui.c:3192
 #, fuzzy
 msgid "Unknown repeatType found in DatebookDB\n"
 msgstr "Byabonetse in"
 
-#: datebook_gui.c:3226
+#: ../datebook_gui.c:3225
 #, c-format
 msgid "%%a., %s"
 msgstr ""
 
-#: datebook_gui.c:3231 monthview_gui.c:230 weekview_gui.c:219
+#: ../datebook_gui.c:3230 ../monthview_gui.c:230 ../weekview_gui.c:219
 msgid " (TODAY)"
 msgstr ""
 
-#: datebook_gui.c:4203 datebook_gui.c:4644
+#. Make Weekview button
+#: ../datebook_gui.c:4200 ../datebook_gui.c:4641
 msgid "Week"
 msgstr "Icyumweru"
 
-#: datebook_gui.c:4209
+#: ../datebook_gui.c:4206
 msgid "W"
 msgstr "W"
 
-#: datebook_gui.c:4211
+#: ../datebook_gui.c:4208
 #, fuzzy
 msgid "View appointments by week"
 msgstr "ku Icyumweru"
 
-#: datebook_gui.c:4214 datebook_gui.c:4645
+#. Make Monthview button
+#: ../datebook_gui.c:4211 ../datebook_gui.c:4642
 msgid "Month"
 msgstr "Ukwezi"
 
-#: datebook_gui.c:4221
+#: ../datebook_gui.c:4218
 msgid "M"
 msgstr "M"
 
-#: datebook_gui.c:4223
+#: ../datebook_gui.c:4220
 #, fuzzy
 msgid "View appointments by month"
 msgstr "ku Ukwezi"
 
-#: datebook_gui.c:4228
+#. Make Category button
+#: ../datebook_gui.c:4225
 msgid "Cats"
 msgstr ""
 
-#: datebook_gui.c:4294
+#: ../datebook_gui.c:4291
 msgid "Time"
 msgstr "Igihe"
 
-#: datebook_gui.c:4331
+#.
+#. * Hide ToDo button
+#.
+#: ../datebook_gui.c:4328
 msgid "Show ToDos"
 msgstr ""
 
-#: datebook_gui.c:4346 todo_gui.c:2096
+#: ../datebook_gui.c:4343 ../todo_gui.c:2114
 msgid "Task"
 msgstr "Igikorwa"
 
-#: datebook_gui.c:4347 todo_gui.c:2097
+#: ../datebook_gui.c:4344 ../todo_gui.c:2115
 msgid "Due"
 msgstr ""
 
-#: datebook_gui.c:4444
+#: ../datebook_gui.c:4441
 msgid "Alarm"
 msgstr ""
 
-#: datebook_gui.c:4465
+#: ../datebook_gui.c:4462
 msgid "Days"
 msgstr "Iminsi"
 
-#: datebook_gui.c:4488
+#: ../datebook_gui.c:4485
 #, fuzzy
 msgid "This Event has no particular time"
 msgstr "Oya Igihe"
 
-#: datebook_gui.c:4496
+#: ../datebook_gui.c:4493
 #, fuzzy
 msgid "Starts on"
 msgstr "ku"
 
-#: datebook_gui.c:4510
+#: ../datebook_gui.c:4507
 #, fuzzy
 msgid "Start Time"
 msgstr "Gutangira"
 
-#: datebook_gui.c:4528
+#: ../datebook_gui.c:4525
 #, fuzzy
 msgid "End Time"
 msgstr "Impera"
 
-#: datebook_gui.c:4626
+#: ../datebook_gui.c:4623
 msgid "DateBk Tags"
 msgstr ""
 
-#: datebook_gui.c:4643
+#: ../datebook_gui.c:4640
 msgid "Day"
 msgstr "Umunsi"
 
-#: datebook_gui.c:4646
+#: ../datebook_gui.c:4643
 msgid "Year"
 msgstr "Umwaka"
 
-#: datebook_gui.c:4650
+#. no repeat page for notebook
+#: ../datebook_gui.c:4647
 #, fuzzy
 msgid "This event will not repeat"
 msgstr "Icyabaye OYA Gusubiramo"
 
-#: datebook_gui.c:4660 datebook_gui.c:4692 datebook_gui.c:4747
-#: datebook_gui.c:4794
+#: ../datebook_gui.c:4657 ../datebook_gui.c:4689 ../datebook_gui.c:4744
+#: ../datebook_gui.c:4791
 #, fuzzy
 msgid "Frequency is Every"
 msgstr "ni"
 
-#: datebook_gui.c:4665
+#: ../datebook_gui.c:4662
 msgid "Day(s)"
 msgstr "U(I)munsi"
 
-#: datebook_gui.c:4668 datebook_gui.c:4700 datebook_gui.c:4755
-#: datebook_gui.c:4802
+#. checkbutton
+#: ../datebook_gui.c:4665 ../datebook_gui.c:4697 ../datebook_gui.c:4752
+#: ../datebook_gui.c:4799
 #, fuzzy
 msgid "End on"
 msgstr "Impera ku"
 
-#: datebook_gui.c:4697
+#: ../datebook_gui.c:4694
 #, fuzzy
 msgid "Week(s)"
 msgstr "ibyumweru"
 
-#: datebook_gui.c:4713
+#: ../datebook_gui.c:4710
 #, fuzzy
 msgid "Repeat on Days:"
 msgstr "ku"
 
-#: datebook_gui.c:4752
+#: ../datebook_gui.c:4749
 #, fuzzy
 msgid "Month(s)"
 msgstr "amezi"
 
-#: datebook_gui.c:4769
+#: ../datebook_gui.c:4766
 #, fuzzy
 msgid "Repeat by:"
 msgstr "ku"
 
-#: datebook_gui.c:4773
+#: ../datebook_gui.c:4770
 #, fuzzy
 msgid "Day of week"
 msgstr "Bya Icyumweru"
 
-#: datebook_gui.c:4782
+#: ../datebook_gui.c:4779
 msgid "Date"
 msgstr "Itariki"
 
-#: datebook_gui.c:4799
+#: ../datebook_gui.c:4796
 #, fuzzy
 msgid "Year(s)"
 msgstr "S"
 
-#: dialer.c:194
+#: ../dialer.c:194
 msgid "Phone Dialer"
 msgstr "uterefona"
 
-#: dialer.c:229
+#: ../dialer.c:229
 #, fuzzy
 msgid "Prefix 1"
 msgstr "1."
 
-#: dialer.c:251
+#: ../dialer.c:251
 #, fuzzy
 msgid "Prefix 2"
 msgstr "2."
 
-#: dialer.c:273
+#: ../dialer.c:273
 #, fuzzy
 msgid "Prefix 3"
 msgstr "3."
@@ -907,220 +978,261 @@ msgstr "3."
 # VCARD_LDAP_PHONE_NUMBER
 # # @name VCARD_LDAP_PHONE_NUMBER
 # # @loc None
-#: dialer.c:288
+#: ../dialer.c:288
 #, fuzzy
 msgid "Phone number:"
 msgstr "Nomero ya terefoni"
 
-#: dialer.c:319
+#: ../dialer.c:319
 msgid "Extension"
 msgstr "Umugereka"
 
-#: dialer.c:342
+#: ../dialer.c:342
 msgid "Dial Command"
 msgstr ""
 
-#: dialer.c:367
+#: ../dialer.c:367
 msgid "Dismiss"
 msgstr ""
 
-#: export_gui.c:115
+#: ../export_gui.c:115
 #, fuzzy
 msgid "File Browser"
 msgstr "Idosiye"
 
-#: export_gui.c:275
+#. Label for instructions
+#: ../export_gui.c:275
 #, fuzzy
 msgid "Select records to be exported"
 msgstr "Ibyabitswe Kuri"
 
-#: export_gui.c:277
+#: ../export_gui.c:277
 #, fuzzy
 msgid "Use Ctrl and Shift Keys"
 msgstr "Na"
 
-#: import_gui.c:265 import_gui.c:315 import_gui.c:423 import_gui.c:509
-#: jpilot.c:507
+#. Import button
+#: ../import_gui.c:265 ../import_gui.c:315 ../import_gui.c:423
+#: ../import_gui.c:509 ../jpilot.c:507
 msgid "Import"
 msgstr "Kuzana"
 
-#: import_gui.c:298 install_gui.c:310
+#: ../import_gui.c:298 ../install_gui.c:310
 #, fuzzy
 msgid "To change to a hidden directory type it below and hit TAB"
 msgstr "Guhindura>> Kuri a gihishwe bushyinguro Ubwoko munsi Na kanda"
 
-#: import_gui.c:307 prefs_gui.c:771
+#: ../import_gui.c:307 ../prefs_gui.c:771
 msgid "Done"
 msgstr "Byakozwe"
 
-#: import_gui.c:328
+#: ../import_gui.c:328
 #, fuzzy
 msgid "Import File Type"
 msgstr "Idosiye"
 
-#: import_gui.c:442
+#: ../import_gui.c:442
 #, fuzzy
 msgid "Record was marked as private"
 msgstr "cy/ byagarajwe Nka By'umwihariko"
 
-#: import_gui.c:444
+#: ../import_gui.c:444
 #, fuzzy
 msgid "Record was not marked as private"
 msgstr "OYA cy/ byagarajwe Nka By'umwihariko"
 
-#: import_gui.c:453
+#: ../import_gui.c:453
 #, fuzzy, c-format
 msgid "Category before import was: [%s]"
 msgstr "Mbere Kuzana"
 
-#: import_gui.c:461
+#: ../import_gui.c:461
 #, fuzzy, c-format
 msgid "Record will be put in category [%s]"
 msgstr "Gushyira in Icyiciro"
 
-#: import_gui.c:516
+#. Import All button
+#: ../import_gui.c:516
 msgid "Import All"
 msgstr ""
 
-#: import_gui.c:523
+#. Skip button
+#: ../import_gui.c:523
 msgid "Skip"
 msgstr ""
 
-#: install_gui.c:257
+#: ../install_gui.c:257
 msgid "Install"
 msgstr "Kora iyinjizaporogaramu"
 
-#: install_gui.c:287
+#. i18n hack to have title correctly translated
+#: ../install_gui.c:287
 #, fuzzy
 msgid "Files to be installed"
 msgstr "Kuri"
 
-#: install_gui.c:319
+#: ../install_gui.c:319
 msgid "Add"
 msgstr "Kongera"
 
-#: install_gui.c:330
+#: ../install_gui.c:330
 msgid "Remove"
 msgstr "Gukuraho"
 
-#: jpilot-dump.c:96
+#: ../install_user.c:115 ../install_user.c:214
+#, fuzzy
+msgid "Install User"
+msgstr "/Idosiye"
+
+#: ../install_user.c:138
+msgid ""
+"A PalmOS(c) device needs a user name and a user ID in order to sync properly."
+msgstr ""
+
+#: ../install_user.c:145
+msgid ""
+"If you want to sync more than 1 PalmOS(c) device each one should have a "
+"different ID and preferably a different user name."
+msgstr ""
+
+#: ../install_user.c:175
+msgid "Most people choose their name or nickname for the user name."
+msgstr ""
+
+#: ../install_user.c:182
+#, fuzzy
+msgid "User name"
+msgstr "Izinakoresha"
+
+#: ../install_user.c:187
+msgid "The ID should be a random number."
+msgstr ""
+
+#: ../install_user.c:194 ../restore_gui.c:295
+msgid "User ID"
+msgstr "koresha Indango"
+
+#: ../jpilot-dump.c:95
 #, fuzzy
 msgid " +D +A +T +M format like date +format.\n"
 msgstr ""
 "+A Imiterere nka Itariki Imiterere Gukoresha kugirango Birenzeho Ibisobanuro"
 
-#: jpilot-dump.c:97
+#: ../jpilot-dump.c:96
 #, fuzzy
 msgid " -v displays version and exits.\n"
 msgstr "-v Verisiyo Na"
 
-#: jpilot-dump.c:98 utils.c:73
+#: ../jpilot-dump.c:97 ../utils.c:73
 #, fuzzy
 msgid " -h displays help and exits.\n"
 msgstr "-h Ifashayobora Na"
 
-#: jpilot-dump.c:99
+#: ../jpilot-dump.c:98
 #, fuzzy
 msgid " -f displays help for format codes.\n"
 msgstr "-h Ifashayobora Na"
 
-#: jpilot-dump.c:100
+#: ../jpilot-dump.c:99
 #, fuzzy
 msgid " -D dump DateBook.\n"
 msgstr "-A Igitabo"
 
-#: jpilot-dump.c:101
+#: ../jpilot-dump.c:100
 #, fuzzy
 msgid " -N dump appts for today in DateBook.\n"
 msgstr "-ku UYUMUNSI in"
 
-#: jpilot-dump.c:102
+#: ../jpilot-dump.c:101
 #, fuzzy
 msgid " -NYYYY/MM/DD dump appts on YYYY/MM/DD in DateBook.\n"
 msgstr "-ku in"
 
-#: jpilot-dump.c:103
+#: ../jpilot-dump.c:102
 #, fuzzy
 msgid " -A dump Address book.\n"
 msgstr "-A Igitabo"
 
-#: jpilot-dump.c:104
+#: ../jpilot-dump.c:103
 #, fuzzy
 msgid " -T dump ToDo list as CSV.\n"
 msgstr "-Urutonde Nka"
 
-#: jpilot-dump.c:105
+#: ../jpilot-dump.c:104
 msgid " -M dump Memos.\n"
 msgstr ""
 
-#: jpilot-sync.c:66
+#: ../jpilot-sync.c:66
 #, fuzzy
 msgid ""
 " J-Pilot preferences are read to get port, rate, number of backups, etc.\n"
 msgstr ""
 "Ibyahiswemo Gusoma Kuri Kubona Umuyoboro Igipimo Umubare Bya Ibyashyinguwe"
 
-#: jpilot-sync.c:67
+#: ../jpilot-sync.c:67
 #, fuzzy
 msgid " -v = version\n"
 msgstr "-v"
 
-#: jpilot-sync.c:68
+#: ../jpilot-sync.c:68
 #, fuzzy
 msgid " -h = help\n"
 msgstr "-h"
 
-#: jpilot-sync.c:69
+#: ../jpilot-sync.c:69
 #, fuzzy
 msgid " -d = run in debug mode\n"
 msgstr "-D Gukoresha in Kosora amakosa"
 
-#: jpilot-sync.c:70
+#: ../jpilot-sync.c:70
 #, fuzzy
 msgid " -P = do not load plugins.\n"
 msgstr "-OYA Ibirimo"
 
-#: jpilot-sync.c:71
+#: ../jpilot-sync.c:71
 #, fuzzy
 msgid " -b = Do a sync and then a backup, otherwise just do a sync.\n"
 msgstr "-B a Na Hanyuma a Inyibutsa a"
 
-#: jpilot-sync.c:72
+#: ../jpilot-sync.c:72
 #, fuzzy
 msgid " -l = loop, otherwise sync once and exit.\n"
 msgstr "-L Rimwe Na Gusohoka"
 
-#: jpilot-sync.c:73
+#: ../jpilot-sync.c:73
 #, fuzzy
 msgid ""
 " -p {port} = Use this port to sync with instead of getting preferences.\n"
 msgstr "-P Umuyoboro iyi Umuyoboro Kuri Na: Bya Ibyahiswemo"
 
-#: jpilot.c:140
+#. The log window hasn't been created yet
+#: ../jpilot.c:140
 #, fuzzy, c-format
 msgid "Invalid geometry specification: \"%s\"\n"
 msgstr "Iyigamashusho"
 
-#: jpilot.c:447 monthview_gui.c:555 print_gui.c:338 weekview_gui.c:379
+#: ../jpilot.c:447 ../monthview_gui.c:555 ../print_gui.c:338
+#: ../weekview_gui.c:379
 msgid "Print"
 msgstr "Gucapa"
 
-#: jpilot.c:448
+#: ../jpilot.c:448
 #, fuzzy
 msgid "There is no print support for this conduit."
 msgstr "ni Oya Gucapa Gushigikira kugirango iyi"
 
-#: jpilot.c:508
+#: ../jpilot.c:508
 #, fuzzy
 msgid "There is no import support for this conduit."
 msgstr "ni Oya Kuzana Gushigikira kugirango iyi"
 
-#: jpilot.c:552
+#: ../jpilot.c:552
 #, fuzzy
 msgid "There is no export support for this conduit."
 msgstr "ni Oya Kohereza Gushigikira kugirango iyi"
 
-#: jpilot.c:728
+#. -------------------------------------------
+#: ../jpilot.c:728
 #, fuzzy
 msgid ""
 "This palm doesn't have the same user name\n"
@@ -1130,7 +1242,8 @@ msgid ""
 msgstr ""
 "Palm i Ukoresha: Ukoresha: Nka i Igihe Ingaruka i Ukoresha: Bikorwa NIBA"
 
-#: jpilot.c:735
+#. -------------------------------------------
+#: ../jpilot.c:735
 #, fuzzy
 msgid ""
 "This palm has a NULL user id.\n"
@@ -1147,316 +1260,319 @@ msgstr ""
 "porogaramu Ukoresha: i E Kwinjiza porogaramu Ukoresha: Izina: i Ukoresha: "
 "Bikorwa NIBA"
 
-#: jpilot.c:742
+#: ../jpilot.c:742
 msgid "Cancel Sync"
 msgstr ""
 
-#: jpilot.c:742
+#: ../jpilot.c:742
 msgid "Sync Anyway"
 msgstr ""
 
-#: jpilot.c:751 jpilot.c:755
+#: ../jpilot.c:751 ../jpilot.c:755
 msgid "Sync Problem"
 msgstr ""
 
-#: jpilot.c:982
+#: ../jpilot.c:982
 #, fuzzy
 msgid "Unknown command from sync process\n"
 msgstr "Komandi: Bivuye"
 
 # offmgr/source\offapp\intro\intro.hrc:TEXT_DEFAULTABOUT.text
-#: jpilot.c:1003 Expense/expense.c:500 KeyRing/keyring.c:1686
+#: ../jpilot.c:1003 ../Expense/expense.c:500 ../KeyRing/keyring.c:1737
+#: ../SyncTime/synctime.c:48
 #, fuzzy, c-format
 msgid "About %s"
 msgstr "Ibyerekeye"
 
-#: jpilot.c:1406
+#: ../jpilot.c:1406
 #, fuzzy
 msgid "/_File"
 msgstr "/Idosiye"
 
-#: jpilot.c:1407
+#: ../jpilot.c:1407
 #, fuzzy
 msgid "/File/tear"
 msgstr "/Idosiye"
 
-#: jpilot.c:1408
+#: ../jpilot.c:1408
 #, fuzzy
 msgid "/File/_Find"
 msgstr "/Idosiye"
 
-#: jpilot.c:1409 jpilot.c:1415 jpilot.c:1418
+#: ../jpilot.c:1409 ../jpilot.c:1415 ../jpilot.c:1418
 #, fuzzy
 msgid "/File/sep1"
 msgstr "/Idosiye"
 
-#: jpilot.c:1410
+#: ../jpilot.c:1410
 #, fuzzy
 msgid "/File/_Install"
 msgstr "/Idosiye"
 
-#: jpilot.c:1411
+#: ../jpilot.c:1411
 #, fuzzy
 msgid "/File/Import"
 msgstr "/Idosiye"
 
-#: jpilot.c:1412
+#: ../jpilot.c:1412
 #, fuzzy
 msgid "/File/Export"
 msgstr "/Idosiye"
 
-#: jpilot.c:1413 jpilot.c:2872
+#: ../jpilot.c:1413 ../jpilot.c:2895
 #, fuzzy
 msgid "/File/Preferences"
 msgstr "/Idosiye"
 
-#: jpilot.c:1414
+#: ../jpilot.c:1414
 #, fuzzy
 msgid "/File/_Print"
 msgstr "/Idosiye"
 
-#: jpilot.c:1416
+#: ../jpilot.c:1416
 #, fuzzy
 msgid "/File/Install User"
 msgstr "/Idosiye"
 
-#: jpilot.c:1417
+#: ../jpilot.c:1417
 #, fuzzy
 msgid "/File/Restore Handheld"
 msgstr "/Idosiye"
 
-#: jpilot.c:1419
+#: ../jpilot.c:1419
 #, fuzzy
 msgid "/File/_Quit"
 msgstr "/Idosiye"
 
-#: jpilot.c:1420
+#: ../jpilot.c:1420
 msgid "/_View"
 msgstr ""
 
-#: jpilot.c:1421 jpilot.c:1422 jpilot.c:1423 jpilot.c:1677
+#: ../jpilot.c:1421 ../jpilot.c:1422 ../jpilot.c:1423 ../jpilot.c:1677
 #, fuzzy
 msgid "/View/Hide Private Records"
 msgstr "By'umwihariko Ibyabitswe"
 
-#: jpilot.c:1422
+#: ../jpilot.c:1422
 #, fuzzy
 msgid "/View/Show Private Records"
 msgstr "By'umwihariko Ibyabitswe"
 
-#: jpilot.c:1423
+#: ../jpilot.c:1423
 #, fuzzy
 msgid "/View/Mask Private Records"
 msgstr "By'umwihariko Ibyabitswe"
 
-#: jpilot.c:1424
+#: ../jpilot.c:1424
 #, fuzzy
 msgid "/View/sep1"
 msgstr "/Idosiye"
 
-#: jpilot.c:1425
+#: ../jpilot.c:1425
 msgid "/View/Datebook"
 msgstr ""
 
-#: jpilot.c:1426
+#: ../jpilot.c:1426
 #, fuzzy
 msgid "/View/Addresses"
 msgstr "/Aderesi"
 
-#: jpilot.c:1427
+#: ../jpilot.c:1427
 msgid "/View/Todos"
 msgstr ""
 
-#: jpilot.c:1428
+#: ../jpilot.c:1428
 msgid "/View/Memos"
 msgstr ""
 
-#: jpilot.c:1429 jpilot.c:1563
+#: ../jpilot.c:1429 ../jpilot.c:1563
 msgid "/_Plugins"
 msgstr ""
 
-#: jpilot.c:1431
+#: ../jpilot.c:1431
 msgid "/_Web"
 msgstr ""
 
-#: jpilot.c:1432
+#. web
+#: ../jpilot.c:1432
 #, fuzzy
 msgid "/Web/Netscape"
 msgstr "/Netscape"
 
-#: jpilot.c:1436
+#: ../jpilot.c:1436
 #, fuzzy
 msgid "/Web/Mozilla"
 msgstr "/Mozilla"
 
-#: jpilot.c:1441
+#: ../jpilot.c:1441
 msgid "/Web/Galeon"
 msgstr ""
 
-#: jpilot.c:1446
+#: ../jpilot.c:1446
 msgid "/Web/Opera"
 msgstr ""
 
-#: jpilot.c:1450
+#: ../jpilot.c:1450
 msgid "/Web/GnomeUrl"
 msgstr ""
 
-#: jpilot.c:1452
+#: ../jpilot.c:1452
 msgid "/Web/Lynx"
 msgstr ""
 
-#: jpilot.c:1454
+#: ../jpilot.c:1454
 msgid "/Web/Links"
 msgstr ""
 
-#: jpilot.c:1456
+#: ../jpilot.c:1456
 msgid "/Web/W3M"
 msgstr ""
 
-#: jpilot.c:1458
+#: ../jpilot.c:1458
 msgid "/Web/Konqueror"
 msgstr ""
 
 # sfx2/source\appl\newhelp.src:STR_HELP_WINDOW_TITLE.text
-#: jpilot.c:1461
+#: ../jpilot.c:1461
 #, fuzzy
 msgid "/_Help"
 msgstr "/Kugoboka"
 
-#: jpilot.c:1462
+#: ../jpilot.c:1462
 #, fuzzy
 msgid "/Help/PayBack program"
 msgstr "/Porogaramu"
 
-#: jpilot.c:1463
+#: ../jpilot.c:1463
 msgid "/Help/About J-Pilot"
 msgstr ""
 
-#: jpilot.c:1530
+#: ../jpilot.c:1530
 #, c-format
 msgid "/_Plugins/%s"
 msgstr ""
 
 # sfx2/source\appl\newhelp.src:STR_HELP_WINDOW_TITLE.text
-#: jpilot.c:1541
+#: ../jpilot.c:1541
 #, fuzzy, c-format
 msgid "/_Help/%s"
 msgstr "/Kugoboka"
 
-#: jpilot.c:1840
+#: ../jpilot.c:1840
 msgid "Font Selection Dialog"
 msgstr ""
 
-#: jpilot.c:2190
+#: ../jpilot.c:2211
 #, fuzzy
 msgid "calendar:week_start:0"
 msgstr "Kalindari 0"
 
-#: jpilot.c:2237
+#: ../jpilot.c:2260
 #, fuzzy
 msgid "Not loading plugins.\n"
 msgstr "Itangira..."
 
-#: jpilot.c:2241
+#: ../jpilot.c:2264
 #, fuzzy
 msgid "Ignoring all alarms.\n"
 msgstr "Kwirengagiza Byose"
 
-#: jpilot.c:2245
+#: ../jpilot.c:2268
 #, fuzzy
 msgid "Ignoring past alarms.\n"
 msgstr "Kwirengagiza"
 
-#: jpilot.c:2340 jpilot.c:2348
+#: ../jpilot.c:2363 ../jpilot.c:2371
 #, fuzzy
 msgid "Unable to open pipe\n"
 msgstr "Kuri Gufungura"
 
-#: jpilot.c:2399
+#: ../jpilot.c:2422
 #, fuzzy
 msgid " User: "
 msgstr "Ukoresha:"
 
-#: jpilot.c:2541
+#: ../jpilot.c:2564
 msgid "Clear"
 msgstr "bigaragara,kigaragara"
 
-#: jpilot.c:2626
+#: ../jpilot.c:2649
 #, fuzzy
 msgid "Show private records   Ctrl-Z"
 msgstr "By'umwihariko Ibyabitswe"
 
-#: jpilot.c:2631
+#: ../jpilot.c:2654
 #, fuzzy
 msgid "Show private records"
 msgstr "By'umwihariko Ibyabitswe"
 
-#: jpilot.c:2636
+#: ../jpilot.c:2659
 #, fuzzy
 msgid "Hide private records   Ctrl-Z"
 msgstr "By'umwihariko Ibyabitswe"
 
-#: jpilot.c:2641
+#: ../jpilot.c:2664
 #, fuzzy
 msgid "Hide private records"
 msgstr "By'umwihariko Ibyabitswe"
 
-#: jpilot.c:2646
+#: ../jpilot.c:2669
 #, fuzzy
 msgid "Mask private records   Ctrl-Z"
 msgstr "By'umwihariko Ibyabitswe"
 
-#: jpilot.c:2651
+#: ../jpilot.c:2674
 #, fuzzy
 msgid "Mask private records"
 msgstr "By'umwihariko Ibyabitswe"
 
-#: jpilot.c:2661
+#: ../jpilot.c:2684
 #, fuzzy
 msgid "Sync your palm to the desktop   Ctrl-Y"
 msgstr "Palm Kuri i Ibiro"
 
-#: jpilot.c:2667
+#. Create "Font" button
+#: ../jpilot.c:2690
 msgid "Font"
 msgstr "Umukono"
 
-#: jpilot.c:2682
+#: ../jpilot.c:2705
 #, fuzzy
 msgid ""
 "Sync your palm to the desktop\n"
 "and then do a backup"
 msgstr "Palm Kuri i Hanyuma a Inyibutsa"
 
-#: jpilot.c:2796
+#: ../jpilot.c:2819
 #, fuzzy
 msgid "Datebook/Go to Today"
 msgstr "Kuri"
 
-#: jpilot.c:2798
+#: ../jpilot.c:2821
 msgid "Address Book"
 msgstr "Agatabondanganturo"
 
-#: jpilot.c:2800
+#: ../jpilot.c:2823
 msgid "ToDo List"
 msgstr ""
 
-#: jpilot.c:2802
+#: ../jpilot.c:2825
 msgid "Memo Pad"
 msgstr ""
 
-#: jpilot.c:2854
+#: ../jpilot.c:2877
 msgid "Do it now"
 msgstr ""
 
-#: jpilot.c:2854
+#: ../jpilot.c:2877
 msgid "Remind me later"
 msgstr ""
 
-#: jpilot.c:2854
+#: ../jpilot.c:2877
 msgid "Don't tell me again!"
 msgstr ""
 
-#: jpilot.c:2868
+#: ../jpilot.c:2891
 #, fuzzy
 msgid ""
 "J-Pilot is using the GTK2 graphical toolkit. This version of the toolkit "
@@ -1468,12 +1584,12 @@ msgstr ""
 "ni ikoresha i Verisiyo Bya i 8 Kuri Inyuguti Guhitamo a 8 i Inyuguti "
 "kugirango Urugero"
 
-#: jpilot.c:2871
+#: ../jpilot.c:2894
 #, fuzzy
 msgid "Go to the menu \""
 msgstr "Kuri i Ibikubiyemo"
 
-#: jpilot.c:2873
+#: ../jpilot.c:2896
 #, fuzzy
 msgid "\" and change the \""
 msgstr "\"Na Guhindura>> i"
@@ -1483,7 +1599,8 @@ msgstr "\"Na Guhindura>> i"
 # #-#-#-#-#  dbaccess.pot (PACKAGE VERSION)  #-#-#-#-#
 # #-#-#-#-#  dbaccess.pot (PACKAGE VERSION)  #-#-#-#-#
 # #-#-#-#-#  dbaccess.pot (PACKAGE VERSION)  #-#-#-#-#
-#: jpilot.c:2874 prefs_gui.c:390
+#. Character Set
+#: ../jpilot.c:2897 ../prefs_gui.c:390
 #, fuzzy
 msgid "Character Set "
 msgstr "Ishyirahamwe ry'Inyuguti"
@@ -1491,162 +1608,162 @@ msgstr "Ishyirahamwe ry'Inyuguti"
 # #-#-#-#-#  dbaccess.pot (PACKAGE VERSION)  #-#-#-#-#
 # #-#-#-#-#  dbaccess.pot (PACKAGE VERSION)  #-#-#-#-#
 # #-#-#-#-#  dbaccess.pot (PACKAGE VERSION)  #-#-#-#-#
-#: jpilot.c:2875
+#: ../jpilot.c:2898
 #, fuzzy
 msgid "\"."
 msgstr "\"."
 
-#: jpilot.c:2877
+#: ../jpilot.c:2900
 #, fuzzy
 msgid "Select a UTF-8 encoding"
 msgstr "8 Imisobekere:"
 
-#: libplugin.c:153
+#: ../libplugin.c:153
 #, fuzzy, c-format
 msgid "Unknown PC header version = %d\n"
 msgstr "Umutwempangano Verisiyo"
 
-#: libplugin.c:416
+#: ../libplugin.c:416
 #, fuzzy, c-format
 msgid "%s:%d Error opening file: %s\n"
 msgstr "%s:%dGufungura %s%S IDOSIYE"
 
-#: libplugin.c:422 libplugin.c:451 sync.c:2879 todo.c:391
+#: ../libplugin.c:422 ../libplugin.c:451 ../sync.c:2879 ../todo.c:391
 #, fuzzy, c-format
 msgid "%s:%d Error reading file: %s\n"
 msgstr "%s:%dIDOSIYE"
 
-#: libplugin.c:478 utils.c:1944
+#: ../libplugin.c:478 ../utils.c:1944
 #, fuzzy
 msgid ""
 "This record is already deleted.\n"
 "It is scheduled to be deleted from the Palm on the next sync.\n"
 msgstr "Icyabitswe ni Cyasibwe ni Kuri Cyasibwe Bivuye i ku i Komeza>>"
 
-#: libplugin.c:487 utils.c:1953 utils.c:1990
+#: ../libplugin.c:487 ../utils.c:1953 ../utils.c:1990
 #, fuzzy
 msgid "Unable to open PC records file\n"
 msgstr "Kuri Gufungura Ibyabitswe"
 
-#: libplugin.c:493 utils.c:1959
+#: ../libplugin.c:493 ../utils.c:1959
 #, fuzzy
 msgid "Couldn't find record to delete\n"
 msgstr "Gushaka Icyabitswe Kuri"
 
-#: libplugin.c:511 utils.c:1977
+#: ../libplugin.c:511 ../utils.c:1977
 #, fuzzy, c-format
 msgid "Unknown header version %d\n"
 msgstr "Umutwempangano Verisiyo"
 
-#: libplugin.c:524
+#: ../libplugin.c:524
 #, fuzzy
 msgid "Couldn't open PC records file\n"
 msgstr "Gufungura Ibyabitswe"
 
 # basctl/source\basicide\basidesh.src:RID_STR_ERROROPENSTORAGE.text
-#: libplugin.c:685 libplugin.c:777 utils.c:1504 utils.c:1517
+#: ../libplugin.c:685 ../libplugin.c:777 ../utils.c:1504 ../utils.c:1517
 #, fuzzy, c-format
 msgid "Error opening file: %s\n"
 msgstr "Hari ikibazo mu gufungura dosiye"
 
-#: libplugin.c:714
+#: ../libplugin.c:714
 #, fuzzy
 msgid "Error reading PC file 1\n"
 msgstr "IDOSIYE"
 
-#: libplugin.c:730
+#: ../libplugin.c:730
 #, fuzzy
 msgid "Error reading PC file 2\n"
 msgstr "IDOSIYE"
 
-#: libplugin.c:903
+#: ../libplugin.c:903
 #, c-format
 msgid "Error reading %s 5\n"
 msgstr ""
 
-#: log.c:95
+#: ../log.c:95
 #, fuzzy, c-format
 msgid "Unable to open log file, giving up.\n"
 msgstr "Kuri Gufungura LOG IDOSIYE Hejuru"
 
-#: log.c:102
+#: ../log.c:102
 #, fuzzy, c-format
 msgid "Unable to open log file\n"
 msgstr "Kuri Gufungura LOG"
 
-#: memo_gui.c:300
+#: ../memo_gui.c:300
 #, fuzzy
 msgid "Memo text > 65535, truncating\n"
 msgstr "Umwandiko"
 
-#: memo_gui.c:330
+#: ../memo_gui.c:330
 #, c-format
 msgid "Imported Memo %s\n"
 msgstr ""
 
-#: memo_gui.c:400
+#: ../memo_gui.c:400
 #, fuzzy
 msgid "File doesn't appear to be memopad.dat format\n"
 msgstr "Idosiye Kugaragara Kuri"
 
-#: memo_gui.c:547 memo_gui.c:562
+#: ../memo_gui.c:547 ../memo_gui.c:562
 #, fuzzy, c-format
 msgid "Can't export memo %d\n"
 msgstr "Kohereza Umwandikorusobe..."
 
-#: monthview_gui.c:500
+#: ../monthview_gui.c:500
 msgid "Monthly View"
 msgstr ""
 
-#: password.c:302
+#: ../password.c:302
 msgid "Palm Password"
 msgstr ""
 
-#: password.c:333
+#: ../password.c:333
 msgid "Incorrect, Reenter PalmOS Password"
 msgstr ""
 
-#: password.c:335
+#: ../password.c:335
 msgid "Enter PalmOS Password"
 msgstr ""
 
-#: plugins.c:88 plugins.c:200 restore_gui.c:133
+#: ../plugins.c:88 ../plugins.c:200 ../restore_gui.c:133
 #, fuzzy
 msgid "infinite loop"
 msgstr "Bidashira"
 
-#: plugins.c:213
+#: ../plugins.c:213
 #, fuzzy, c-format
 msgid "While reading %s%s line 1:[%s]\n"
 msgstr "Umurongo 1."
 
-#: plugins.c:214
+#: ../plugins.c:214
 msgid "Wrong Version\n"
 msgstr ""
 
-#: plugins.c:215
+#: ../plugins.c:215
 #, fuzzy
 msgid "Check preferences->conduits\n"
 msgstr "Ibyahiswemo"
 
-#: plugins.c:271
+#: ../plugins.c:271
 #, fuzzy, c-format
 msgid ""
 "Open failed on plugin [%s]\n"
 " error [%s]\n"
 msgstr "Byanze ku Ikosa"
 
-#: plugins.c:288 plugins.c:314
+#: ../plugins.c:288 ../plugins.c:314
 #, fuzzy, c-format
 msgid " plugin is invalid: [%s]\n"
 msgstr "ni Sibyo"
 
-#: plugins.c:296
+#: ../plugins.c:296
 #, c-format
 msgid "Plugin:[%s]\n"
 msgstr ""
 
-#: plugins.c:297
+#: ../plugins.c:297
 #, fuzzy, c-format
 msgid "This plugin is version (%d.%d).\n"
 msgstr ""
@@ -1659,1321 +1776,1368 @@ msgstr ""
 "X- Generator: KBabel 1. 0\n"
 "."
 
-#: plugins.c:299
+#: ../plugins.c:299
 #, fuzzy
 msgid "It is too old to work with this version of J-Pilot.\n"
 msgstr "ni ki/ bishaje Kuri Akazi Na: iyi Verisiyo Bya"
 
-#: prefs.c:393
+#: ../prefs.c:393
 msgid "%B %d, %Y"
 msgstr ""
 
-#: prefs.c:394
+#: ../prefs.c:394
 msgid "%d %B %Y"
 msgstr ""
 
-#: prefs.c:395
+#: ../prefs.c:395
 msgid "%d. %B %Y"
 msgstr ""
 
-#: prefs.c:396
+#: ../prefs.c:396
 msgid "%d %B, %Y"
 msgstr ""
 
-#: prefs.c:397
+#: ../prefs.c:397
 msgid "%Y. %B. %d"
 msgstr ""
 
-#: prefs.c:398
+#: ../prefs.c:398
 msgid "%Y %B %d"
 msgstr ""
 
-#: prefs_gui.c:334
+#: ../prefs_gui.c:334
 msgid "Preferences"
 msgstr "Ibyahisemo"
 
 # officecfg/registry\schema\org\openoffice\Setup.xcs:....L10N.ooLocale.text
-#: prefs_gui.c:364
+#: ../prefs_gui.c:364
 msgid "Locale"
 msgstr "Umwanya"
 
-#: prefs_gui.c:366
+#: ../prefs_gui.c:366
 msgid "Settings"
 msgstr "Amagenamiterere"
 
-#: prefs_gui.c:368
+#: ../prefs_gui.c:368
 msgid "Datebook"
 msgstr ""
 
-#: prefs_gui.c:372
+#: ../prefs_gui.c:372
 msgid "ToDo"
 msgstr ""
 
 # sysui/oounix\office\cde\writer.lng:<memo_action_label>.text
-#: prefs_gui.c:374
+#: ../prefs_gui.c:374
 msgid "Memo"
 msgstr "Ubutumwa"
 
-#: prefs_gui.c:376
+#: ../prefs_gui.c:376
 msgid "Alarms"
 msgstr ""
 
-#: prefs_gui.c:378
+#: ../prefs_gui.c:378
 msgid "Conduits"
 msgstr ""
 
-#: prefs_gui.c:403
+#. Shortdate
+#: ../prefs_gui.c:403
 #, fuzzy
 msgid "Short date format "
 msgstr "Itariki Imiterere"
 
-#: prefs_gui.c:416
+#. Longdate
+#: ../prefs_gui.c:416
 #, fuzzy
 msgid "Long date format "
 msgstr "Itariki Imiterere"
 
-#: prefs_gui.c:429
+#. Time
+#: ../prefs_gui.c:429
 #, fuzzy
 msgid "Time format "
 msgstr "Imiterere y'igihe"
 
-#: prefs_gui.c:443
+#: ../prefs_gui.c:443
 #, fuzzy
 msgid "The first day of the week is "
 msgstr "Itangira UMUNSI Bya i Icyumweru ni"
 
-#: prefs_gui.c:464
+#. GTK colors file
+#: ../prefs_gui.c:464
 #, fuzzy
 msgid "My GTK colors file is "
 msgstr "Amabara IDOSIYE ni"
 
-#: prefs_gui.c:477
+#. Port
+#: ../prefs_gui.c:477
 msgid "Serial Port (/dev/ttyS0, /dev/pilot)"
 msgstr ""
 
-#: prefs_gui.c:494
+#. Rate
+#: ../prefs_gui.c:494
 #, fuzzy
 msgid "Serial Rate (Does not affect USB)"
 msgstr "OYA"
 
-#: prefs_gui.c:507
+#. Number of backups
+#: ../prefs_gui.c:507
 #, fuzzy
 msgid "Number of backups to be archived"
 msgstr "Bya Ibyashyinguwe Kuri"
 
-#: prefs_gui.c:524
+#. Show deleted files check box
+#: ../prefs_gui.c:524
 #, fuzzy
 msgid "Show deleted records (default NO)"
 msgstr "Cyasibwe Ibyabitswe Mburabuzi"
 
-#: prefs_gui.c:528
+#. Show modified files check box
+#: ../prefs_gui.c:528
 #, fuzzy
 msgid "Show modified deleted records (default NO)"
 msgstr "Byahinduwe Cyasibwe Ibyabitswe Mburabuzi"
 
-#: prefs_gui.c:533
+#: ../prefs_gui.c:533
 #, fuzzy
 msgid "Ask confirmation for file installation (J-Pilot -> PDA) (default YES)"
 msgstr "Iyemeza kugirango IDOSIYE iyinjizaporogaramu Mburabuzi"
 
-#: prefs_gui.c:537
+#. Show tooltips check box
+#: ../prefs_gui.c:537
 #, fuzzy
 msgid "Show popup tooltips (default YES)"
 msgstr "Mburabuzi"
 
-#: prefs_gui.c:545
+#. ********************************************************************
+#. Datebook preference tab
+#. Show highlight days check box
+#: ../prefs_gui.c:545
 #, fuzzy
 msgid "Highlight calendar days with appointments"
 msgstr "Kalindari Iminsi Na:"
 
-#: prefs_gui.c:551
+#. Show use DateBk check box
+#: ../prefs_gui.c:551
 #, fuzzy
 msgid "Use DateBk note tags"
 msgstr "Impugukirwa"
 
-#: prefs_gui.c:554
+#: ../prefs_gui.c:554
 #, fuzzy
 msgid "DateBk support disabled in this build"
 msgstr "Gushigikira Yahagaritswe in iyi"
 
-#: prefs_gui.c:561
+#. Highlight today on month and week view
+#: ../prefs_gui.c:561
 msgid "Annotate today in day, week, and month views"
 msgstr ""
 
-#: prefs_gui.c:566
+#: ../prefs_gui.c:566
 msgid "Append years on anniversaries in day, week, and month views"
 msgstr ""
 
-#: prefs_gui.c:578
+#: ../prefs_gui.c:578
 msgid "Mail Command"
 msgstr ""
 
-#: prefs_gui.c:592
+#: ../prefs_gui.c:592
 #, fuzzy, c-format
 msgid "%s is replaced by the e-mail address"
 msgstr "%sni ku i E Ubutumwa Aderesi"
 
-#: prefs_gui.c:600
+#. ********************************************************************
+#. ToDo preference tab
+#. The hide completed check box
+#: ../prefs_gui.c:600
 msgid "Hide Completed ToDos"
 msgstr ""
 
-#: prefs_gui.c:604
+#. The hide todos not yet due check box
+#: ../prefs_gui.c:604
 #, fuzzy
 msgid "Hide ToDos not yet due"
 msgstr "OYA"
 
-#: prefs_gui.c:608
+#. The record todo completion date check box
+#: ../prefs_gui.c:608
 msgid "Record Completion Date"
 msgstr ""
 
-#: prefs_gui.c:613
+#. Use Manana check box
+#: ../prefs_gui.c:613
 #, fuzzy
 msgid "Use Manana database"
 msgstr "Ububikoshingiro"
 
-#: prefs_gui.c:621
+#: ../prefs_gui.c:621
 #, fuzzy
 msgid "Use default number of days due"
 msgstr "Mburabuzi Umubare Bya Iminsi"
 
-#: prefs_gui.c:641
+#. ********************************************************************
+#. Memo preference tab
+#. Memo32 check box
+#: ../prefs_gui.c:641
 msgid "Use Memo32 (pedit32)"
 msgstr ""
 
-#: prefs_gui.c:648
+#. ********************************************************************
+#. Alarms preference tab
+#. Show open alarm windows check box
+#: ../prefs_gui.c:648
 #, fuzzy
 msgid "Open alarm windows for appointment reminders"
 msgstr "kugirango"
 
-#: prefs_gui.c:652
+#. Show open alarm windows check box
+#: ../prefs_gui.c:652
 #, fuzzy
 msgid "Execute this command"
 msgstr "iyi Komandi:"
 
-#: prefs_gui.c:656
+#. Shell warning
+#: ../prefs_gui.c:656
 #, fuzzy
 msgid "WARNING: executing arbitrary shell commands can be dangerous!!!"
 msgstr "Gukora:%s Igikonoshwa Amabwiriza"
 
-#: prefs_gui.c:664
+#: ../prefs_gui.c:664
 msgid "Alarm Command"
 msgstr ""
 
-#: prefs_gui.c:677
+#: ../prefs_gui.c:677
 #, fuzzy
 msgid "%t is replaced with the alarm time"
 msgstr "%tni Na: i Igihe"
 
-#: prefs_gui.c:681
+#: ../prefs_gui.c:681
 #, fuzzy, c-format
 msgid "%d is replaced with the alarm date"
 msgstr "%dni Na: i Itariki"
 
-#: prefs_gui.c:686
+#: ../prefs_gui.c:686
 #, fuzzy
 msgid "%D is replaced with the alarm description"
 msgstr "%Dni Na: i Isobanuramiterere"
 
-#: prefs_gui.c:690
+#: ../prefs_gui.c:690
 #, fuzzy
 msgid "%N is replaced with the alarm note"
 msgstr "%Nni Na: i Impugukirwa"
 
-#: prefs_gui.c:694
+#: ../prefs_gui.c:694
 #, fuzzy
 msgid "%D (description substitution) is disabled in this build"
 msgstr "%D(Isobanuramiterere ni Yahagaritswe in iyi"
 
-#: prefs_gui.c:698
+#: ../prefs_gui.c:698
 #, fuzzy
 msgid "%N (note substitution) is disabled in this build"
 msgstr "%N(Impugukirwa ni Yahagaritswe in iyi"
 
-#: prefs_gui.c:707
+#. ********************************************************************
+#. Conduits preference tab
+#. Show sync datebook check box
+#: ../prefs_gui.c:707
 msgid "Sync datebook"
 msgstr ""
 
-#: prefs_gui.c:711
+#. Show sync address check box
+#: ../prefs_gui.c:711
 #, fuzzy
 msgid "Sync address"
 msgstr "Aderesi"
 
-#: prefs_gui.c:715
+#. Show sync todo check box
+#: ../prefs_gui.c:715
 msgid "Sync todo"
 msgstr ""
 
-#: prefs_gui.c:719
+#. Show sync memo check box
+#: ../prefs_gui.c:719
 #, fuzzy
 msgid "Sync memo"
 msgstr "Umwandikorusobe..."
 
-#: prefs_gui.c:723
+#. Show sync Memo32 check box
+#: ../prefs_gui.c:723
 msgid "Sync memo32 (pedit32)"
 msgstr ""
 
-#: prefs_gui.c:728
+#. Show sync Ma~nana check box
+#: ../prefs_gui.c:728
 msgid "Sync Manana"
 msgstr ""
 
-#: prefs_gui.c:734
+#. Show use Japanese Kana extention check box
+#: ../prefs_gui.c:734
 msgid "Use J-OS (Not Japanese PalmOS:WorkPad/CLIE)"
 msgstr ""
 
-#: prefs_gui.c:747
+#. Make a checkbox for each plugin
+#: ../prefs_gui.c:747
 #, c-format
 msgid "Sync %s (%s)"
 msgstr ""
 
-#: print_gui.c:178
+#: ../print_gui.c:178
 msgid "Print Options"
 msgstr "Ihitamo ry'Ishyirwa-Rupapuro"
 
 # padmin/source\rtsetup.src:RID_RTS_PAPERPAGE.RID_RTS_PAPER_PAPER_TXT.text
-#: print_gui.c:192
+#: ../print_gui.c:192
 #, fuzzy
 msgid "Paper Size"
 msgstr "Ingano y'urupapuro"
 
-#: print_gui.c:209
+#: ../print_gui.c:209
 msgid "Daily Printout"
 msgstr ""
 
-#: print_gui.c:215
+#: ../print_gui.c:215
 msgid "Weekly Printout"
 msgstr ""
 
-#: print_gui.c:221
+#: ../print_gui.c:221
 msgid "Monthly Printout"
 msgstr ""
 
-#: print_gui.c:261
+#: ../print_gui.c:261
 #, fuzzy
 msgid "One record"
 msgstr "Icyabitswe"
 
-#: print_gui.c:265
+#: ../print_gui.c:265
 #, fuzzy
 msgid "All records in this category"
 msgstr "Ibyabitswe in iyi Icyiciro"
 
-#: print_gui.c:269
+#: ../print_gui.c:269
 #, fuzzy
 msgid "Print all records"
 msgstr "Byose Ibyabitswe"
 
-#: print_gui.c:292
+#: ../print_gui.c:292
 #, fuzzy
 msgid "One record per page"
 msgstr "Icyabitswe Ipaji"
 
-#: print_gui.c:308
+#: ../print_gui.c:308
 #, fuzzy
 msgid " Blank lines between each record"
 msgstr "Imirongo hagati Icyabitswe"
 
-#: print_gui.c:318
+#. Print Command
+#: ../print_gui.c:318
 #, fuzzy
 msgid "Print Command (e.g. lpr, or cat > file.ps)"
 msgstr "g."
 
-#: restore_gui.c:68 restore_gui.c:229
+#: ../restore_gui.c:68 ../restore_gui.c:229
 msgid "Restore Handheld"
 msgstr ""
 
-#: restore_gui.c:249
+#. Label for instructions
+#: ../restore_gui.c:249
 #, fuzzy
 msgid "To restore your handheld:"
 msgstr "Kugarura"
 
-#: restore_gui.c:252
+#: ../restore_gui.c:252
 #, fuzzy
 msgid ""
 "1. Choose all the applications you wish to restore.  The default is all."
 msgstr "1.."
 
-#: restore_gui.c:255
+#: ../restore_gui.c:255
 #, fuzzy
 msgid "2. Enter the User Name and User ID."
 msgstr "2.."
 
-#: restore_gui.c:258
+#: ../restore_gui.c:258
 #, fuzzy
 msgid "3. Press the OK button."
 msgstr "3.."
 
-#: restore_gui.c:261
+#: ../restore_gui.c:261
 #, fuzzy
 msgid "This will overwrite data that is currently on the handheld."
 msgstr "Guhindura Ibyatanzwe ni ku i"
 
-#: restore_gui.c:282
+#: ../restore_gui.c:282
 msgid "User Name"
 msgstr "Izinakoresha"
 
-#: restore_gui.c:295
-msgid "User ID"
-msgstr "koresha Indango"
-
-#: search_gui.c:120
+#: ../search_gui.c:120
 msgid "datebook"
 msgstr ""
 
-#: search_gui.c:201
+#: ../search_gui.c:201
 #, fuzzy
 msgid "address"
 msgstr "Aderesi"
 
-#: search_gui.c:267
+#: ../search_gui.c:267
 msgid "todo"
 msgstr ""
 
-#: search_gui.c:321
+#: ../search_gui.c:321
 msgid "memo"
 msgstr "ubutumwa"
 
-#: search_gui.c:377
+#: ../search_gui.c:377
 msgid "plugin ?"
 msgstr ""
 
-#: search_gui.c:449
+#: ../search_gui.c:449
 #, fuzzy
 msgid "No records found"
 msgstr "Ibyabitswe Byabonetse"
 
-#: search_gui.c:547 search_gui.c:610
+#: ../search_gui.c:547 ../search_gui.c:610
 msgid "Search"
 msgstr "Gushaka"
 
-#: search_gui.c:563
+#: ../search_gui.c:563
 #, fuzzy
 msgid "Search for: "
 msgstr "Gushakisha:"
 
 # officecfg/registry\schema\org\openoffice\Office\Calc.xcs:....Calculate.Other.CaseSensitive.text
-#: search_gui.c:570
+#: ../search_gui.c:570
 #, fuzzy
 msgid "Case Sensitive"
 msgstr "Imyandikire y'inyuguti nkuru/ nto"
 
-#: sync.c:139
+#: ../sync.c:139
 #, fuzzy
 msgid "open lock file failed\n"
 msgstr "Gufungura IDOSIYE"
 
-#: sync.c:152
+#: ../sync.c:152
 msgid "lock failed\n"
 msgstr ""
 
-#: sync.c:155
+#: ../sync.c:155
 #, fuzzy, c-format
 msgid "sync file is locked by pid %d\n"
 msgstr "IDOSIYE ni Gifunze ku"
 
-#: sync.c:189
+#: ../sync.c:189
 msgid "unlock failed\n"
 msgstr ""
 
-#: sync.c:192
+#: ../sync.c:192
 #, fuzzy, c-format
 msgid "sync is locked by pid %d\n"
 msgstr "ni Gifunze ku"
 
-#: sync.c:244
+#: ../sync.c:244
 #, fuzzy, c-format
 msgid "%s: press the hotsync button on the cradle or \"kill %d\"\n"
 msgstr "%s:Kanda i Akabuto ku i Cyangwa"
 
-#: sync.c:297
+#: ../sync.c:297
 #, fuzzy, c-format
 msgid "Exiting with status %s\n"
 msgstr "Na: Imimerere"
 
-#: sync.c:298
+#: ../sync.c:298
 msgid "Finished\n"
 msgstr ""
 
-#: sync.c:432
+#: ../sync.c:432
 msgid "Finished installing user information.\n"
 msgstr ""
 
-#: sync.c:457 sync.c:575
+#: ../sync.c:457 ../sync.c:575
 #, fuzzy
 msgid "Check your serial port and settings\n"
 msgstr "Umuyoboro Na"
 
-#: sync.c:674
+#: ../sync.c:674
 #, fuzzy, c-format
 msgid " Syncing on device %s\n"
 msgstr "ku APAREYE"
 
-#: sync.c:675
+#: ../sync.c:675
 #, fuzzy
 msgid " Press the HotSync button now\n"
 msgstr "i Akabuto"
 
-#: sync.c:727 sync.c:749 sync.c:771
+#: ../sync.c:727 ../sync.c:749 ../sync.c:771
 #, c-format
 msgid "Last Synced Username-->\"%s\"\n"
 msgstr ""
 
-#: sync.c:728 sync.c:750 sync.c:772
+#: ../sync.c:728 ../sync.c:750 ../sync.c:772
 #, c-format
 msgid "Last Synced UserID-->\"%d\"\n"
 msgstr ""
 
-#: sync.c:729 sync.c:751 sync.c:773
+#: ../sync.c:729 ../sync.c:751 ../sync.c:773
 #, c-format
 msgid " This Username-->\"%s\"\n"
 msgstr ""
 
-#: sync.c:730 sync.c:752 sync.c:774
+#: ../sync.c:730 ../sync.c:752 ../sync.c:774
 #, c-format
 msgid " This User ID-->%d\n"
 msgstr ""
 
-#: sync.c:795
+#: ../sync.c:795
 #, fuzzy, c-format
 msgid "Username is \"%s\"\n"
 msgstr "ni"
 
-#: sync.c:796
+#: ../sync.c:796
 #, fuzzy, c-format
 msgid "User ID is %d\n"
 msgstr "ni"
 
-#: sync.c:798 sync.c:804
+#: ../sync.c:798 ../sync.c:804
 #, c-format
 msgid "lastSyncPC = %d\n"
 msgstr ""
 
-#: sync.c:799
+#: ../sync.c:799
 #, c-format
 msgid "This PC = %lu\n"
 msgstr ""
 
-#: sync.c:800
+#: ../sync.c:800
 #, c-format
 msgid "Last Username = [%s]\n"
 msgstr ""
 
-#: sync.c:801
+#: ../sync.c:801
 #, c-format
 msgid "Last UserID = %d\n"
 msgstr ""
 
-#: sync.c:802
+#: ../sync.c:802
 #, fuzzy, c-format
 msgid "Username = [%s]\n"
 msgstr "Izina ry'ukoresha"
 
-#: sync.c:803
+#: ../sync.c:803
 #, c-format
 msgid "userID = %d\n"
 msgstr ""
 
-#: sync.c:821
+#: ../sync.c:821
 msgid "Sync canceled\n"
 msgstr ""
 
-#: sync.c:843
+#: ../sync.c:843
 msgid "Finished restoring handheld.\n"
 msgstr ""
 
-#: sync.c:844
+#: ../sync.c:844
 #, fuzzy
 msgid "You may need to sync to update J-Pilot.\n"
 msgstr "Gicurasi Kuri Kuri Kuvugurura"
 
-#: sync.c:874
+#: ../sync.c:874
 #, fuzzy
 msgid "Doing a fast sync.\n"
 msgstr "a Byihuta"
 
-#: sync.c:913
+#: ../sync.c:913
 #, fuzzy
 msgid "Doing a slow sync.\n"
 msgstr "a Buhoro"
 
-#: sync.c:1014
+#: ../sync.c:1014
 #, fuzzy
 msgid "Thank you for using J-Pilot."
 msgstr "kugirango ikoresha"
 
 # wizards/source\importwizard\importwi.src:sReady.text
-#: sync.c:1056
+#: ../sync.c:1056
 #, fuzzy
 msgid "Finished.\n"
 msgstr "Byarangiye"
 
-#: sync.c:1092 sync.c:2611
+#: ../sync.c:1092 ../sync.c:2611
 #, c-format
 msgid "Syncing %s\n"
 msgstr ""
 
-#: sync.c:1098 sync.c:2275 sync.c:2617
+#: ../sync.c:1098 ../sync.c:2275 ../sync.c:2617
 #, fuzzy, c-format
 msgid "Wrote an %s record."
 msgstr "Icyabitswe"
 
-#: sync.c:1100 sync.c:2277 sync.c:2619
+#: ../sync.c:1100 ../sync.c:2277 ../sync.c:2619
 #, fuzzy, c-format
 msgid "Writing an %s record failed."
 msgstr "Icyabitswe Byanze"
 
-#: sync.c:1102 sync.c:2279 sync.c:2621
+#: ../sync.c:1102 ../sync.c:2279 ../sync.c:2621
 #, fuzzy, c-format
 msgid "Deleting an %s record failed."
 msgstr "Icyabitswe Byanze"
 
-#: sync.c:1104 sync.c:2281 sync.c:2623
+#: ../sync.c:1104 ../sync.c:2281 ../sync.c:2623
 #, fuzzy, c-format
 msgid "Deleted an %s record."
 msgstr "Icyabitswe"
 
-#: sync.c:1107 sync.c:2284 sync.c:2626
+#: ../sync.c:1107 ../sync.c:2284 ../sync.c:2626
 #, fuzzy, c-format
 msgid "Wrote a %s record."
 msgstr "a Icyabitswe"
 
-#: sync.c:1109 sync.c:2286 sync.c:2628
+#: ../sync.c:1109 ../sync.c:2286 ../sync.c:2628
 #, fuzzy, c-format
 msgid "Writing a %s record failed."
 msgstr "a Icyabitswe Byanze"
 
-#: sync.c:1111 sync.c:2288 sync.c:2630
+#: ../sync.c:1111 ../sync.c:2288 ../sync.c:2630
 #, fuzzy, c-format
 msgid "Deleting a %s record failed."
 msgstr "a Icyabitswe Byanze"
 
-#: sync.c:1113 sync.c:2290 sync.c:2632
+#: ../sync.c:1113 ../sync.c:2290 ../sync.c:2632
 #, fuzzy, c-format
 msgid "Deleted a %s record."
 msgstr "a Icyabitswe"
 
-#: sync.c:1133
+#: ../sync.c:1133
 #, fuzzy, c-format
 msgid "number of records = %d\n"
 msgstr "Umubare Bya Ibyabitswe"
 
-#: sync.c:1260 sync.c:2435
+#: ../sync.c:1260 ../sync.c:2435
 #, fuzzy
 msgid ""
 "dlp_DeleteRecord failed\n"
 "This could be because the record was already deleted on the Palm\n"
 msgstr "i Icyabitswe Cyasibwe ku i"
 
-#: sync.c:1358 sync.c:1770
+#: ../sync.c:1358 ../sync.c:1770
 #, fuzzy, c-format
 msgid "%s (Creator ID '%s') is up to date, fetch skipped.\n"
 msgstr "%s(ni Hejuru Kuri Itariki"
 
-#: sync.c:1362 sync.c:1774
+#: ../sync.c:1362 ../sync.c:1774
 #, c-format
 msgid "Fetching '%s' (Creator ID '%s')... "
 msgstr ""
 
-#: sync.c:1369 sync.c:1780
+#: ../sync.c:1369 ../sync.c:1780
 #, fuzzy, c-format
 msgid "Failed, unable to create file %s\n"
 msgstr "Kuri Kurema IDOSIYE"
 
-#: sync.c:1380 sync.c:1789
+#: ../sync.c:1380 ../sync.c:1789
 #, fuzzy, c-format
 msgid "Failed, unable to back up database %s\n"
 msgstr "Kuri Inyuma Hejuru Ububikoshingiro"
 
-#: sync.c:1384 sync.c:1793 sync.c:1975
+#: ../sync.c:1384 ../sync.c:1793 ../sync.c:1975
 msgid "OK\n"
 msgstr ""
 
-#: sync.c:1687
+#: ../sync.c:1687
 #, c-format
 msgid "Skipping %s (Creator ID '%s')\n"
 msgstr ""
 
-#: sync.c:1861
+#: ../sync.c:1861
 #, fuzzy, c-format
 msgid "Installing %s "
 msgstr "Gukora iyinjizaporogaramu..."
 
-#: sync.c:1867
+#: ../sync.c:1867
 #, fuzzy, c-format
 msgid ""
 "\n"
 "Unable to open file: '%s': %s!\n"
 msgstr "Kuri Gufungura IDOSIYE"
 
-#: sync.c:1871
+#: ../sync.c:1871
 #, fuzzy, c-format
 msgid ""
 "\n"
 "Unable to sync file: '%s': file corrupted?\n"
 msgstr "Kuri IDOSIYE IDOSIYE"
 
-#: sync.c:1883
+#: ../sync.c:1883
 #, fuzzy, c-format
 msgid "(Creator ID is '%s')..."
 msgstr "(ni"
 
-#: sync.c:1903 sync.c:1916 sync.c:1931 sync.c:1944
+#: ../sync.c:1903 ../sync.c:1916 ../sync.c:1931 ../sync.c:1944
 #, fuzzy, c-format
 msgid ""
 "\n"
 "Unable to open file: %s\n"
 msgstr "Kuri Gufungura IDOSIYE"
 
-#: sync.c:1960
+#: ../sync.c:1960
 #, fuzzy, c-format
 msgid "Install %s failed"
 msgstr "Byanze"
 
-#: sync.c:1964
+#: ../sync.c:1964
 #, fuzzy
 msgid "Failed.\n"
 msgstr "Byanze"
 
-#: sync.c:1971
+#. the space after the %s is a hack, the last char gets cut off
+#: ../sync.c:1971
 #, c-format
 msgid "Installed %s "
 msgstr ""
 
-#: sync.c:1995 sync.c:2001
+#: ../sync.c:1995 ../sync.c:2001
 #, fuzzy, c-format
 msgid "Unable to open file: %s%s\n"
 msgstr "Kuri Gufungura IDOSIYE"
 
-#: sync.c:2180
+#: ../sync.c:2180
 #, fuzzy
 msgid "Unable to read home dir\n"
 msgstr "Kuri Gusoma Ku Ntangiriro"
 
-#: sync.c:2709
+#: ../sync.c:2709
 #, fuzzy, c-format
 msgid "palm: number of records = %d\n"
 msgstr "Palm Umubare Bya Ibyabitswe"
 
-#: sync.c:2710
+#: ../sync.c:2710
 #, fuzzy, c-format
 msgid "disk: number of records = %d\n"
 msgstr "Umubare Bya Ibyabitswe"
 
-#: sync.c:2888
+#: ../sync.c:2888
 #, fuzzy, c-format
 msgid "%s:%d Error getting app info %s\n"
 msgstr "%s:%dIbisobanuro"
 
-#: sync.c:2894 sync.c:2936
+#: ../sync.c:2894 ../sync.c:2936
 #, fuzzy, c-format
 msgid "%s:%d Error unpacking app info %s\n"
 msgstr "%s:%dIbisobanuro"
 
-#: sync.c:2916 sync.c:2928
+#: ../sync.c:2916 ../sync.c:2928
 #, fuzzy, c-format
 msgid "Error reading appinfo block for %s\n"
 msgstr "Funga kugirango"
 
-#: sync.c:3072 sync.c:3076
+#. Fix - need a func for this logging
+#: ../sync.c:3072 ../sync.c:3076
 #, fuzzy, c-format
 msgid "Could not add category %s to remote.\n"
 msgstr "OYA Kongeramo Icyiciro Kuri"
 
-#: sync.c:3073 sync.c:3079
+#: ../sync.c:3073 ../sync.c:3079
 #, fuzzy
 msgid "Too many categories on remote.\n"
 msgstr "Ibyiciro ku"
 
-#: sync.c:3074 sync.c:3082
+#: ../sync.c:3074 ../sync.c:3082
 #, fuzzy, c-format
 msgid "All records on desktop in %s will be moved to %s.\n"
 msgstr "Ibyabitswe ku Ibiro in Kuri"
 
-#: todo.c:248
+#: ../todo.c:248
 #, fuzzy, c-format
 msgid "ToDo description text > %d, truncating to %d\n"
 msgstr "Isobanuramiterere Umwandiko Kuri"
 
-#: todo.c:255
+#: ../todo.c:255
 #, fuzzy, c-format
 msgid "ToDo note text > %d, truncating to %d\n"
 msgstr "Impugukirwa Umwandiko Kuri"
 
-#: todo.c:380
+#: ../todo.c:380
 #, fuzzy, c-format
 msgid "%s:%d Error reading category info %s\n"
 msgstr "%s:%dIcyiciro Ibisobanuro"
 
-#: todo_gui.c:149
+#: ../todo_gui.c:149
 msgid "Due Date"
 msgstr ""
 
-#: todo_gui.c:535
+#: ../todo_gui.c:535
 #, fuzzy
 msgid "File doesn't appear to be todo.dat format\n"
 msgstr "Idosiye Kugaragara Kuri"
 
-#: todo_gui.c:691 todo_gui.c:706
+#: ../todo_gui.c:691 ../todo_gui.c:706
 #, fuzzy, c-format
 msgid "Can't export todo %d\n"
 msgstr "Kohereza"
 
-#: todo_gui.c:1532
+#: ../todo_gui.c:1547
 #, fuzzy
 msgid "Priority out of range\n"
 msgstr "Inyuma Bya"
 
-#: todo_gui.c:1759
+#: ../todo_gui.c:1774 ../KeyRing/keyring.c:1077
 #, fuzzy, c-format
 msgid "No date"
 msgstr "Itariki"
 
-#: todo_gui.c:2188
+#. The completed check box
+#: ../todo_gui.c:2206
 msgid "Completed"
 msgstr ""
 
 # sfx2/source\dialog\mailwindow.src:RID_MAIL_WINDOW.FT_MAILWIN_PRIO.text
-#: todo_gui.c:2196
+#: ../todo_gui.c:2214
 #, fuzzy
 msgid "Priority: "
 msgstr "By'ibanze"
 
-#: todo_gui.c:2216
+#: ../todo_gui.c:2234
 msgid "Date Due:"
 msgstr ""
 
-#: todo_gui.c:2278 Expense/expense.c:1853 KeyRing/keyring.c:2180
+#. Note textbox
+#: ../todo_gui.c:2296 ../Expense/expense.c:1853 ../KeyRing/keyring.c:2237
 msgid "Note"
 msgstr "Igisobanuro"
 
-#: utils.c:72
+#: ../utils.c:72
 #, fuzzy
 msgid " -v displays version and compile options and exits.\n"
 msgstr "-v Verisiyo Na Gukusanya Amahitamo Na"
 
-#: utils.c:74
+#: ../utils.c:74
 #, fuzzy
 msgid " -d displays debug info to stdout.\n"
 msgstr "-D Kosora amakosa Ibisobanuro Kuri"
 
-#: utils.c:75
+#: ../utils.c:75
 #, fuzzy
 msgid " -p skips loading plugins.\n"
 msgstr "Itangira..."
 
-#: utils.c:76
+#: ../utils.c:76
 #, fuzzy
 msgid " -a ignores missed alarms since the last time program was run.\n"
 msgstr "-a Kwirengagiza guhera i Iheruka Igihe iyi Porogaramu Gukoresha"
 
-#: utils.c:77
+#: ../utils.c:77
 #, fuzzy
 msgid " -A ignores all alarms past and future.\n"
 msgstr "-A Kwirengagiza Byose Na"
 
-#: utils.c:78
+#: ../utils.c:78
 #, fuzzy
 msgid " -i makes program iconify itself upon launch.\n"
 msgstr "-i"
 
-#: utils.c:79
+#: ../utils.c:79
 #, fuzzy
 msgid " The PILOTPORT, and PILOTRATE env variables are used to specify\n"
 msgstr "Na Ibihinduka Kuri"
 
-#: utils.c:80
+#: ../utils.c:80
 #, fuzzy
 msgid " which port to sync on, and at what speed.\n"
 msgstr "Umuyoboro Kuri ku Na ku Umuvuduko"
 
-#: utils.c:81
+#: ../utils.c:81
 #, fuzzy
 msgid " If PILOTPORT is not set then it defaults to /dev/pilot.\n"
 msgstr "ni OYA Gushyiraho Hanyuma Kuri"
 
-#: utils.c:107
+#: ../utils.c:107
 msgid "Date compiled"
 msgstr ""
 
-#: utils.c:108
+#: ../utils.c:108
 #, fuzzy
 msgid "Compiled with these options:"
 msgstr "Na: Amahitamo"
 
-#: utils.c:110
+#: ../utils.c:110
 msgid "Installed Path"
 msgstr ""
 
-#: utils.c:112
+#: ../utils.c:112
 #, fuzzy
 msgid "pilot-link version"
 msgstr "Ihuza Verisiyo"
 
-#: utils.c:116
+#: ../utils.c:116
 #, fuzzy
 msgid "USB support"
 msgstr "Gushigikira"
 
-#: utils.c:118 utils.c:124 utils.c:130 utils.c:136 utils.c:142 utils.c:148
-#: utils.c:154
+#: ../utils.c:118 ../utils.c:124 ../utils.c:130 ../utils.c:136 ../utils.c:142
+#: ../utils.c:148 ../utils.c:154
 msgid "yes"
 msgstr "Yego"
 
-#: utils.c:120 utils.c:126 utils.c:132 utils.c:138 utils.c:144 utils.c:150
-#: utils.c:156
+#: ../utils.c:120 ../utils.c:126 ../utils.c:132 ../utils.c:138 ../utils.c:144
+#: ../utils.c:150 ../utils.c:156
 #, fuzzy
 msgid "no"
 msgstr "Oya"
 
-#: utils.c:122
+#: ../utils.c:122
 #, fuzzy
 msgid "Private record support"
 msgstr "Icyabitswe Gushigikira"
 
-#: utils.c:128
+#: ../utils.c:128
 #, fuzzy
 msgid "Datebk support"
 msgstr "Gushigikira"
 
-#: utils.c:134
+#: ../utils.c:134
 #, fuzzy
 msgid "Plugin support"
 msgstr "Gushigikira"
 
-#: utils.c:140
+#: ../utils.c:140
 #, fuzzy
 msgid "Manana support"
 msgstr "Gushigikira"
 
-#: utils.c:146
+#: ../utils.c:146
 #, fuzzy
 msgid "NLS support (foreign languages)"
 msgstr "Gushigikira Mvamahanga Indimi"
 
-#: utils.c:152
+#: ../utils.c:152
 #, fuzzy
 msgid "GTK2 support"
 msgstr "Gushigikira"
 
-#: utils.c:207
+#: ../utils.c:207
 #, fuzzy, c-format
 msgid "Today is %A, %x %X"
 msgstr "ni"
 
-#: utils.c:209
+#: ../utils.c:209
 #, fuzzy, c-format
 msgid "Today is %%A, %s %s"
 msgstr "ni"
 
-#: utils.c:1114
+#: ../utils.c:1114
 msgid "Today"
 msgstr "Uyu munsi"
 
-#: utils.c:1330
+#: ../utils.c:1330
 #, fuzzy
 msgid "Save Changed Record?"
 msgstr "Kubika"
 
-#: utils.c:1331
+#: ../utils.c:1331
 #, fuzzy
 msgid "Do you want to save the changes to this record?"
 msgstr "Kuri Kubika i Amahinduka Kuri iyi Icyabitswe"
 
-#: utils.c:1336
+#: ../utils.c:1336
 #, fuzzy
 msgid "Save New Record?"
 msgstr "Kubika"
 
-#: utils.c:1337
+#: ../utils.c:1337
 #, fuzzy
 msgid "Do you want to save this new record?"
 msgstr "Kuri Kubika iyi Gishya Icyabitswe"
 
-#: utils.c:1357 KeyRing/keyring.c:1580
+#. Not home;
+#: ../utils.c:1357 ../KeyRing/keyring.c:1631
 #, fuzzy
 msgid "Can't get HOME environment variable\n"
 msgstr "Kubona"
 
-#: utils.c:1364
+#: ../utils.c:1364
 #, fuzzy
 msgid "Your HOME environment variable is too long for me\n"
 msgstr "IMPINDURAGACIRO ni kugirango"
 
-#: utils.c:1389 utils.c:1393
+#. Can't create directory
+#: ../utils.c:1389 ../utils.c:1393
 #, fuzzy, c-format
 msgid "Can't create directory %s\n"
 msgstr "Kurema bushyinguro"
 
-#: utils.c:1399
+#: ../utils.c:1399
 #, fuzzy, c-format
 msgid ""
 "%s doesn't appear to be a directory.\n"
 "I need it to be.\n"
 msgstr "%sKugaragara Kuri a bushyinguro Kuri"
 
-#: utils.c:1405
+#: ../utils.c:1405
 #, fuzzy, c-format
 msgid "I can't write files in directory %s\n"
 msgstr "Kwandika Idosiye in bushyinguro"
 
-#: utils.c:1461 utils.c:1470
+#: ../utils.c:1461 ../utils.c:1470
 #, fuzzy
 msgid "Error writing PC header to file: next_id\n"
 msgstr "Umutwempangano Kuri IDOSIYE"
 
-#: utils.c:1466
+#: ../utils.c:1466
 #, fuzzy
 msgid "Error writing next id to file: next_id\n"
 msgstr "Komeza>> ID Kuri IDOSIYE"
 
-#: utils.c:1483
+#: ../utils.c:1483
 #, fuzzy
 msgid "Error opening file: next_id\n"
 msgstr "Gufungura%S IDOSIYE"
 
-#: utils.c:1657
+#: ../utils.c:1657
 #, fuzzy, c-format
 msgid "Couldn't find empty DB file %s: %s\n"
 msgstr "Gushaka ubusa IDOSIYE"
 
-#: utils.c:1660
+#. EPN is jpilot, or copilot depending on configure
+#: ../utils.c:1660
 #, fuzzy
 msgid " may not be installed.\n"
 msgstr "Gicurasi OYA"
 
 # svtools/source\misc\errtxt.src:RID_ERRHDL.ERRCODE_SFX_DOLOADFAILED.text
-#: utils.c:1839
+#: ../utils.c:1839
 #, fuzzy
 msgid "Error reading file"
 msgstr "Ikosa mu gusoma idosiye"
 
-#: utils.c:2516
+#: ../utils.c:2516
 #, fuzzy
 msgid "PC ID is 0.\n"
 msgstr "ni 0"
 
-#: utils.c:2517
+#: ../utils.c:2517
 #, fuzzy, c-format
 msgid "I generated a new PC ID.  It is %lu\n"
 msgstr "a Gishya ni"
 
-#: weekview_gui.c:326
+#: ../weekview_gui.c:326
 msgid "Weekly View"
 msgstr ""
 
-#: Expense/expense.c:99
+#: ../Expense/expense.c:99
 msgid "Australia"
 msgstr "Ositaraliya"
 
-#: Expense/expense.c:100
+#: ../Expense/expense.c:100
 msgid "Austria"
 msgstr "Ositiriya"
 
-#: Expense/expense.c:101
+#: ../Expense/expense.c:101
 msgid "Belgium"
 msgstr "Ububiligi"
 
-#: Expense/expense.c:102
+#: ../Expense/expense.c:102
 msgid "Brazil"
 msgstr "Burezile"
 
-#: Expense/expense.c:103
+#: ../Expense/expense.c:103
 msgid "Canada"
 msgstr "Kanada"
 
-#: Expense/expense.c:104
+#: ../Expense/expense.c:104
 msgid "Denmark"
 msgstr "Danimarike"
 
-#: Expense/expense.c:105
+#: ../Expense/expense.c:105
 msgid "EU (Euro)"
 msgstr ""
 
-#: Expense/expense.c:106
+#: ../Expense/expense.c:106
 msgid "Finland"
 msgstr "Finilande"
 
-#: Expense/expense.c:107
+#: ../Expense/expense.c:107
 msgid "France"
 msgstr "Ubufaransa"
 
-#: Expense/expense.c:108
+#: ../Expense/expense.c:108
 msgid "Germany"
 msgstr "Ubudage"
 
-#: Expense/expense.c:109
+#: ../Expense/expense.c:109
 msgid "Hong Kong"
 msgstr "Hongo Kongo"
 
-#: Expense/expense.c:110
+#: ../Expense/expense.c:110
 msgid "Iceland"
 msgstr "Isilande"
 
-#: Expense/expense.c:111
+#: ../Expense/expense.c:111
 msgid "India"
 msgstr "Ubuhinde"
 
-#: Expense/expense.c:112
+#: ../Expense/expense.c:112
 msgid "Indonesia"
 msgstr "Indonesiya"
 
-#: Expense/expense.c:113
+#: ../Expense/expense.c:113
 msgid "Ireland"
 msgstr "Irilande"
 
-#: Expense/expense.c:114
+#: ../Expense/expense.c:114
 msgid "Italy"
 msgstr "Ubutariyani"
 
-#: Expense/expense.c:115
+#: ../Expense/expense.c:115
 msgid "Japan"
 msgstr "Ubuyapani"
 
-#: Expense/expense.c:116
+#: ../Expense/expense.c:116
 msgid "Korea"
 msgstr ""
 
-#: Expense/expense.c:117
+#: ../Expense/expense.c:117
 msgid "Luxembourg"
 msgstr "Lugizamburu"
 
-#: Expense/expense.c:118
+#: ../Expense/expense.c:118
 msgid "Malaysia"
 msgstr "Malesiya"
 
-#: Expense/expense.c:119
+#: ../Expense/expense.c:119
 msgid "Mexico"
 msgstr "Megizike"
 
-#: Expense/expense.c:120
+#: ../Expense/expense.c:120
 msgid "Netherlands"
 msgstr "Nederilande"
 
-#: Expense/expense.c:121
+#: ../Expense/expense.c:121
 msgid "New Zealand"
 msgstr "Nuveli Zelande"
 
-#: Expense/expense.c:122
+#: ../Expense/expense.c:122
 msgid "Norway"
 msgstr "Noruveje"
 
-#: Expense/expense.c:123
+#: ../Expense/expense.c:123
 #, fuzzy
 msgid "P.R.C."
 msgstr "C."
 
-#: Expense/expense.c:124
+#: ../Expense/expense.c:124
 msgid "Philippines"
 msgstr "Filipine"
 
-#: Expense/expense.c:125
+#: ../Expense/expense.c:125
 msgid "Singapore"
 msgstr "Singapore"
 
-#: Expense/expense.c:126
+#: ../Expense/expense.c:126
 msgid "Spain"
 msgstr "Esipanye"
 
-#: Expense/expense.c:127
+#: ../Expense/expense.c:127
 msgid "Sweden"
 msgstr "Suwede"
 
-#: Expense/expense.c:128
+#: ../Expense/expense.c:128
 msgid "Switzerland"
 msgstr "Ubusuwisi"
 
-#: Expense/expense.c:129
+#: ../Expense/expense.c:129
 msgid "Taiwan"
 msgstr "Tayiwani"
 
-#: Expense/expense.c:130
+#: ../Expense/expense.c:130
 msgid "Thailand"
 msgstr "Tayilande"
 
-#: Expense/expense.c:131
+#: ../Expense/expense.c:131
 msgid "United Kingdom"
 msgstr "Ubwongereza (UK)"
 
-#: Expense/expense.c:132
+#: ../Expense/expense.c:132
 msgid "United States"
 msgstr "Leta Zunze Ubumwe"
 
-#: Expense/expense.c:489 Expense/expense.c:500
+#: ../Expense/expense.c:489 ../Expense/expense.c:500
 msgid "Expense"
 msgstr ""
 
-#: Expense/expense.c:521 Expense/expense.c:1401
+#: ../Expense/expense.c:521 ../Expense/expense.c:1401
 msgid "Airfare"
 msgstr ""
 
-#: Expense/expense.c:523 Expense/expense.c:1402
+#: ../Expense/expense.c:523 ../Expense/expense.c:1402
 msgid "Breakfast"
 msgstr ""
 
-#: Expense/expense.c:525 Expense/expense.c:1403
+#: ../Expense/expense.c:525 ../Expense/expense.c:1403
 msgid "Bus"
 msgstr ""
 
-#: Expense/expense.c:527 Expense/expense.c:1404
+#: ../Expense/expense.c:527 ../Expense/expense.c:1404
 msgid "BusinessMeals"
 msgstr ""
 
-#: Expense/expense.c:529 Expense/expense.c:1405
+#: ../Expense/expense.c:529 ../Expense/expense.c:1405
 msgid "CarRental"
 msgstr ""
 
-#: Expense/expense.c:531 Expense/expense.c:1406
+#: ../Expense/expense.c:531 ../Expense/expense.c:1406
 msgid "Dinner"
 msgstr ""
 
-#: Expense/expense.c:533 Expense/expense.c:1407
+#: ../Expense/expense.c:533 ../Expense/expense.c:1407
 msgid "Entertainment"
 msgstr ""
 
-#: Expense/expense.c:535 Expense/expense.c:1408
+#: ../Expense/expense.c:535 ../Expense/expense.c:1408
 msgid "Fax"
 msgstr "Fagisi"
 
-#: Expense/expense.c:537 Expense/expense.c:1409
+#: ../Expense/expense.c:537 ../Expense/expense.c:1409
 msgid "Gas"
 msgstr ""
 
-#: Expense/expense.c:539 Expense/expense.c:1410
+#: ../Expense/expense.c:539 ../Expense/expense.c:1410
 msgid "Gifts"
 msgstr ""
 
-#: Expense/expense.c:541 Expense/expense.c:1411
+#: ../Expense/expense.c:541 ../Expense/expense.c:1411
 msgid "Hotel"
 msgstr ""
 
-#: Expense/expense.c:543 Expense/expense.c:1412
+#: ../Expense/expense.c:543 ../Expense/expense.c:1412
 msgid "Incidentals"
 msgstr ""
 
-#: Expense/expense.c:545 Expense/expense.c:1413
+#: ../Expense/expense.c:545 ../Expense/expense.c:1413
 msgid "Laundry"
 msgstr ""
 
-#: Expense/expense.c:547 Expense/expense.c:1414
+#: ../Expense/expense.c:547 ../Expense/expense.c:1414
 msgid "Limo"
 msgstr ""
 
-#: Expense/expense.c:549 Expense/expense.c:1415
+#: ../Expense/expense.c:549 ../Expense/expense.c:1415
 msgid "Lodging"
 msgstr ""
 
-#: Expense/expense.c:551 Expense/expense.c:1416
+#: ../Expense/expense.c:551 ../Expense/expense.c:1416
 msgid "Lunch"
 msgstr ""
 
-#: Expense/expense.c:553 Expense/expense.c:1417
+#: ../Expense/expense.c:553 ../Expense/expense.c:1417
 msgid "Mileage"
 msgstr ""
 
-#: Expense/expense.c:557 Expense/expense.c:1419
+#: ../Expense/expense.c:557 ../Expense/expense.c:1419
 msgid "Parking"
 msgstr ""
 
-#: Expense/expense.c:559 Expense/expense.c:1420
+#: ../Expense/expense.c:559 ../Expense/expense.c:1420
 msgid "Postage"
 msgstr ""
 
-#: Expense/expense.c:561 Expense/expense.c:1421
+#: ../Expense/expense.c:561 ../Expense/expense.c:1421
 msgid "Snack"
 msgstr ""
 
-#: Expense/expense.c:563 Expense/expense.c:1422
+#: ../Expense/expense.c:563 ../Expense/expense.c:1422
 msgid "Subway"
 msgstr ""
 
-#: Expense/expense.c:565 Expense/expense.c:1423
+#: ../Expense/expense.c:565 ../Expense/expense.c:1423
 msgid "Supplies"
 msgstr ""
 
-#: Expense/expense.c:567 Expense/expense.c:1424
+#: ../Expense/expense.c:567 ../Expense/expense.c:1424
 msgid "Taxi"
 msgstr ""
 
-#: Expense/expense.c:569 Expense/expense.c:1425
+#: ../Expense/expense.c:569 ../Expense/expense.c:1425
 msgid "Telephone"
 msgstr "terefoni"
 
 # officecfg/registry\schema\org\openoffice\Office\Common.xcs:....Help.Tip.text
-#: Expense/expense.c:571 Expense/expense.c:1426
+#: ../Expense/expense.c:571 ../Expense/expense.c:1426
 msgid "Tips"
 msgstr "Inyobora"
 
-#: Expense/expense.c:573 Expense/expense.c:1427
+#: ../Expense/expense.c:573 ../Expense/expense.c:1427
 msgid "Tolls"
 msgstr ""
 
-#: Expense/expense.c:575 Expense/expense.c:1428
+#: ../Expense/expense.c:575 ../Expense/expense.c:1428
 msgid "Train"
 msgstr ""
 
-#: Expense/expense.c:589
+#: ../Expense/expense.c:589
 msgid "AmEx"
 msgstr ""
 
-#: Expense/expense.c:591 Expense/expense.c:1391
+#: ../Expense/expense.c:591 ../Expense/expense.c:1391
 msgid "Cash"
 msgstr ""
 
-#: Expense/expense.c:593 Expense/expense.c:1392
+#: ../Expense/expense.c:593 ../Expense/expense.c:1392
 msgid "Check"
 msgstr "Kugenzura"
 
-#: Expense/expense.c:595
+#: ../Expense/expense.c:595
 msgid "CreditCard"
 msgstr ""
 
-#: Expense/expense.c:597
+#: ../Expense/expense.c:597
 msgid "MasterCard"
 msgstr ""
 
-#: Expense/expense.c:599 Expense/expense.c:1395
+#: ../Expense/expense.c:599 ../Expense/expense.c:1395
 msgid "Prepaid"
 msgstr ""
 
-#: Expense/expense.c:601 Expense/expense.c:1396
+#: ../Expense/expense.c:601 ../Expense/expense.c:1396
 msgid "VISA"
 msgstr ""
 
-#: Expense/expense.c:1201
+#: ../Expense/expense.c:1201
 msgid "Expense: Unknown category\n"
 msgstr ""
 
-#: Expense/expense.c:1207
+#: ../Expense/expense.c:1207
 msgid "Expense: Unknown expense type\n"
 msgstr ""
 
-#: Expense/expense.c:1213
+#: ../Expense/expense.c:1213
 msgid "Expense: Unknown payment type\n"
 msgstr ""
 
-#: Expense/expense.c:1390
+#: ../Expense/expense.c:1390
 msgid "American Express"
 msgstr ""
 
-#: Expense/expense.c:1393
+#: ../Expense/expense.c:1393
 msgid "Credit Card"
 msgstr "ikarita y'inguzanyo"
 
-#: Expense/expense.c:1394
+#: ../Expense/expense.c:1394
 msgid "Master Card"
 msgstr ""
 
 # so3/src\svuidlg.src:MD_DDE_LINKEDIT.FT_DDE_ITEM.text
-#: Expense/expense.c:1678
+#. Category Menu
+#: ../Expense/expense.c:1678
 #, fuzzy
 msgid "Category:"
 msgstr "Icyiciro"
 
 # sfx2/source\dialog\dinfdlg.src:TP_DOCINFODOC.FT_FILE_TYP.text
-#: Expense/expense.c:1691
+#. Type Menu
+#: ../Expense/expense.c:1691
 #, fuzzy
 msgid "Type:"
 msgstr "Ubwoko"
 
-#: Expense/expense.c:1704
+#. Payment Menu
+#: ../Expense/expense.c:1704
 msgid "Payment:"
 msgstr ""
 
@@ -2981,43 +3145,48 @@ msgstr ""
 # svx/source\dialog\numfmt.src:RID_SVXPAGE_NUMBERFORMAT.LB_CATEGORY.5.text
 # #-#-#-#-#  svx.pot (PACKAGE VERSION)  #-#-#-#-#
 # svx/source\dialog\sdstring.src:RID_SVXSTR_TBLAFMT_CURRENCY.text
-#: Expense/expense.c:1717
+#. Currency Menu
+#: ../Expense/expense.c:1717
 #, fuzzy
 msgid "Currency:"
 msgstr "Ifaranga"
 
-#: Expense/expense.c:1730
+#. Date Spinners
+#: ../Expense/expense.c:1730
 #, fuzzy
 msgid "Date:"
 msgstr "Itariki"
 
-#: Expense/expense.c:1747
+#: ../Expense/expense.c:1747
 #, fuzzy
 msgid "Month:"
 msgstr "ukwezi:"
 
-#: Expense/expense.c:1761
+#: ../Expense/expense.c:1761
 #, fuzzy
 msgid "Day:"
 msgstr "Umunsi:"
 
-#: Expense/expense.c:1775
+#: ../Expense/expense.c:1775
 #, fuzzy
 msgid "Year:"
 msgstr "umwaka:"
 
 # sw/source\ui\table\insrc.src:DLG_INS_ROW_COL.FT_COUNT.text
-#: Expense/expense.c:1788
+#. Amount Entry
+#: ../Expense/expense.c:1788
 #, fuzzy
 msgid "Amount:"
 msgstr "Igiteranyo"
 
-#: Expense/expense.c:1802
+#. Vendor Entry
+#: ../Expense/expense.c:1802
 #, fuzzy
 msgid "Vendor:"
 msgstr "Umucuruzi"
 
-#: Expense/expense.c:1816
+#. City
+#: ../Expense/expense.c:1816
 #, fuzzy
 msgid "City:"
 msgstr "Umujyi:"
@@ -3026,50 +3195,57 @@ msgstr "Umujyi:"
 # officecfg/registry\schema\org\openoffice\Office\Impress.xcs:....Snap.Position.ExtendEdges.text
 # #-#-#-#-#  officecfg.pot (PACKAGE VERSION)  #-#-#-#-#
 # officecfg/registry\schema\org\openoffice\Office\Draw.xcs:....Snap.Position.ExtendEdges.text
-#: Expense/expense.c:1830
+#. Attendees
+#: ../Expense/expense.c:1830
 msgid "Attendees"
 msgstr "Abitabiriye"
 
-#: KeyRing/keyring.c:199
+#: ../KeyRing/keyring.c:206
 msgid "KeyRing: pack_KeyRing(): buf_size too small\n"
 msgstr ""
 
-#: KeyRing/keyring.c:1495
+#: ../KeyRing/keyring.c:1546
 msgid "Incorrect, Reenter KeyRing Password"
 msgstr ""
 
-#: KeyRing/keyring.c:1497
+#: ../KeyRing/keyring.c:1548
 #, fuzzy
 msgid "Enter a NEW KeyRing Password"
 msgstr "a"
 
-#: KeyRing/keyring.c:1499
+#: ../KeyRing/keyring.c:1550
 msgid "Enter KeyRing Password"
 msgstr ""
 
-#: KeyRing/keyring.c:1585
+#: ../KeyRing/keyring.c:1636
 #, fuzzy
 msgid "Your HOME environment variable is too long(>1024)\n"
 msgstr "IMPINDURAGACIRO ni kugirango"
 
-#: KeyRing/keyring.c:1590
+#: ../KeyRing/keyring.c:1641
 #, fuzzy, c-format
 msgid "KeyRing: file %s not found.\n"
 msgstr "IDOSIYE OYA Byabonetse"
 
-#: KeyRing/keyring.c:1591
+#: ../KeyRing/keyring.c:1642
 msgid "KeyRing: Try Syncing.\n"
 msgstr ""
 
-#: KeyRing/keyring.c:1675 KeyRing/keyring.c:1686
+#: ../KeyRing/keyring.c:1726 ../KeyRing/keyring.c:1737
 msgid "KeyRing"
 msgstr ""
 
-#: KeyRing/keyring.c:1958
+#: ../KeyRing/keyring.c:2009
+#, fuzzy
+msgid "Changed"
+msgstr "Kureka"
+
+#: ../KeyRing/keyring.c:2009
 msgid "Account"
 msgstr "konti"
 
-#: KeyRing/keyring.c:1973
+#. Change Password button
+#: ../KeyRing/keyring.c:2024
 msgid ""
 "Change\n"
 "KeyRing\n"
@@ -3077,30 +3253,57 @@ msgid ""
 msgstr ""
 
 # basctl/source\basicide\moduldlg.src:RID_DLG_NEWLIB.RID_FT_NEWLIB.text
-#: KeyRing/keyring.c:2143
+#. Name entry
+#: ../KeyRing/keyring.c:2200
 #, fuzzy
 msgid "name: "
 msgstr "Izina:"
 
 # svtools/source\dialogs\logindlg.src:DLG_LOGIN.FT_LOGIN_ACCOUNT.text
-#: KeyRing/keyring.c:2150
+#. Account entry
+#: ../KeyRing/keyring.c:2207
 #, fuzzy
 msgid "account: "
 msgstr "Konti:"
 
 # basctl/source\basicide\moduldlg.src:RID_TP_LIBS.RID_PB_PASSWORD.text
-#: KeyRing/keyring.c:2157
+#. Password entry
+#: ../KeyRing/keyring.c:2214
 #, fuzzy
 msgid "password: "
 msgstr "Ijambobanga..."
 
-#: KeyRing/keyring.c:2164
+#. Last Changed entry
+#: ../KeyRing/keyring.c:2221
 msgid "last changed: "
 msgstr ""
 
-#: KeyRing/keyring.c:2174
+#. Generate Password button (creates random password)
+#: ../KeyRing/keyring.c:2231
 msgid "Generate Password"
 msgstr ""
+
+#: ../SyncTime/synctime.c:48
+#, fuzzy
+msgid "SyncTime"
+msgstr "Umwandikorusobe..."
+
+#: ../SyncTime/synctime.c:88
+msgid "synctime: Palm OS Version 3.25 and 3.30 do not support SyncTime\n"
+msgstr ""
+
+#: ../SyncTime/synctime.c:89
+msgid "synctime: NOT setting the time on the pilot\n"
+msgstr ""
+
+#: ../SyncTime/synctime.c:94
+msgid "synctime: Setting the time on the pilot... "
+msgstr ""
+
+#: ../SyncTime/synctime.c:99
+#, fuzzy
+msgid "Done\n"
+msgstr "Byakozwe"
 
 #~ msgid "Quit"
 #~ msgstr "Kuvamo"
