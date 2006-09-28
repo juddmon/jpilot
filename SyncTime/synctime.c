@@ -1,4 +1,4 @@
-/* $Id: synctime.c,v 1.10 2005/11/28 07:22:23 rikster5 Exp $ */
+/* $Id: synctime.c,v 1.11 2006/09/28 22:01:37 rikster5 Exp $ */
 
 /*******************************************************************************
  * synctime.c
@@ -85,18 +85,18 @@ int plugin_sync(int sd)
 
    if (majorVersion==3) {
       if ((minorVersion==30) || (minorVersion==25)) {
-	 jp_logf(JP_LOG_GUI, "synctime: Palm OS Version 3.25 and 3.30 do not support SyncTime\n");
-	 jp_logf(JP_LOG_GUI, "synctime: NOT setting the time on the pilot\n");
+	 jp_logf(JP_LOG_GUI, _("synctime: Palm OS Version 3.25 and 3.30 do not support SyncTime\n"));
+	 jp_logf(JP_LOG_GUI, _("synctime: NOT setting the time on the pilot\n"));
 	 return 1;
       }
    }
 
-   jp_logf(JP_LOG_GUI, "synctime: Setting the time on the pilot... ");
+   jp_logf(JP_LOG_GUI, _("synctime: Setting the time on the pilot... "));
    
    time(&ltime);
    r = dlp_SetSysDateTime(sd, ltime);
    
-   jp_logf(JP_LOG_GUI, "Done\n");
+   jp_logf(JP_LOG_GUI, _("Done\n"));
 
    return 0;
 }
