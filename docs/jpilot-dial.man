@@ -5,12 +5,6 @@ jpilot-dial \- generates the DTMF tone signals used for telephone dialing
 .B jpilot-dial
 .RI [ options ] " number" ...
 .SH DESCRIPTION
-This manual page briefly documents the
-.B jpilot-dial
-command.
-This manual page was written for the Debian distribution
-because the original program does not have a manual page.
-.PP
 .B jpilot-dial
 generates the DTMF tone signals used for telephone
 dialing and by default sends the signals to the sound card.
@@ -69,5 +63,5 @@ default 0
 .BR jpilot (1)
 .br
 .SH AUTHOR
-This manual page was written by Ludovic Rousseau <rousseau@debian.org>,
+This manual page was written by Ludovic Rousseau <rousseau@debian.org>
 for the Debian GNU/Linux system (but may be used by others).

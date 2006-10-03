@@ -45,7 +45,7 @@ which port to sync on and at what speed.
 
 If PILOTPORT is not set then it defaults to /dev/pilot.
 .SH BUGS
-See /usr/share/doc/jpilot/BUGS
+See @DOCDIR@/BUGS
 .SH SEE ALSO
 jpilot-sync(1)
 .SH AUTHOR

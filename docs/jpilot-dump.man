@@ -1,4 +1,4 @@
-.TH JPILOT-DUMP 1 "November 22, 2005"
+.TH JPILOT-DUMP 1 "September 2001"
 .SH NAME
 jpilot-dump \- A command line tool for dumping jpilot databases.
 .SH SYNOPSIS
@@ -8,7 +8,7 @@ jpilot-dump \- A command line tool for dumping jpilot databases.
 Dump jpilot databases.
 .SH OPTIONS
 .TP
-.B \+D \+A \+T \+M 
+.B \+B \+M \+A \+T
 format like date +format.
 .TP
 .B \-v
@@ -38,7 +38,7 @@ dump Todo list as CSV.
 .B \-M
 dump Memos.
 .SH BUGS
-See /usr/local/share/doc/jpilot-0.99.8/BUGS
+See @DOCDIR@/BUGS
 .SH SEE ALSO
 jpilot(1)
 .SH AUTHOR

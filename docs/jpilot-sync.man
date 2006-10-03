@@ -32,7 +32,7 @@ Stay in a loop, otherwise sync once and exit.
 Use this port to sync with instead of using preferences or the
 default of /dev/jpilot.
 .SH BUGS
-See /usr/share/doc/jpilot/BUGS
+See @DOCDIR@/BUGS
 .SH SEE ALSO
 jpilot(1)
 .SH AUTHOR

@@ -1,6 +1,7 @@
-# $Id: Makefile.am,v 1.11 2006/09/28 18:36:20 rikster5 Exp $
+# $Id: Makefile.am,v 1.12 2006/10/03 20:56:18 rikster5 Exp $
 
 # Install the man pages
+raw_mans = jpilot.man jpilot-dial.man jpilot-sync.man jpilot-dump.man
 man_MANS = jpilot.1 jpilot-dial.1 jpilot-sync.1 jpilot-dump.1
 
 # Install the standard GNU doc files
@@ -37,5 +38,9 @@ doc_DATA = \
 	jpilot-todo.png \
 	jpilot-toplogo.jpg
 
-EXTRA_DIST = $(man_MANS) $(misc_DATA) $(doc_DATA) 
+EXTRA_DIST = $(raw_mans) $(man_MANS) $(misc_DATA) $(doc_DATA) 
+
+# Make rule to build man pages
+%.1 : %.man
+	sed -e 's|@DOCDIR@|$(miscdir)|g' $< > $@
 
