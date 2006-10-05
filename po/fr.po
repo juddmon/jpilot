@@ -1009,33 +1009,37 @@ msgid "Remove"
 msgstr "Supprimer"
 
 #: ../install_user.c:115 ../install_user.c:214
-#, fuzzy
 msgid "Install User"
-msgstr "/Fichier/Installer un utilisateur"
+msgstr "Installer un utilisateur"
 
 #: ../install_user.c:138
 msgid ""
 "A PalmOS(c) device needs a user name and a user ID in order to sync properly."
 msgstr ""
+"Un PDA PalmOS(c) a besoin d'un ID d'utilisateur pour fonctionner "
+"correctement."
 
 #: ../install_user.c:145
 msgid ""
 "If you want to sync more than 1 PalmOS(c) device each one should have a "
 "different ID and preferably a different user name."
 msgstr ""
+"Si vous voulez synchroniser plus d'un PDA, chaque PDA doit avoir un ID "
+"différent et, de préférence, un nom d'utilisateur différent."
 
 #: ../install_user.c:175
 msgid "Most people choose their name or nickname for the user name."
 msgstr ""
+"La plupart des utilisateurs utilisent leur nom ou surnom comme nom "
+"d'utilisateur."
 
 #: ../install_user.c:182
-#, fuzzy
 msgid "User name"
 msgstr "Nom d'utilisateur"
 
 #: ../install_user.c:187
 msgid "The ID should be a random number."
-msgstr ""
+msgstr "L'ID devrait être un nombre aléatoire."
 
 #: ../install_user.c:194 ../restore_gui.c:295
 msgid "User ID"
@@ -2053,7 +2057,7 @@ msgstr "Terminé\n"
 
 #: ../sync.c:432
 msgid "Finished installing user information.\n"
-msgstr ""
+msgstr "Fin de l'installation des informations utilisateur.\n"
 
 #: ../sync.c:457 ../sync.c:575
 msgid "Check your serial port and settings\n"
@@ -2978,9 +2982,8 @@ msgid "KeyRing"
 msgstr "KeyRing"
 
 #: ../KeyRing/keyring.c:2009
-#, fuzzy
 msgid "Changed"
-msgstr "Annuler"
+msgstr "Modifié"
 
 #: ../KeyRing/keyring.c:2009
 msgid "Account"
@@ -3015,7 +3018,7 @@ msgstr "Mot de passe : "
 #. Last Changed entry
 #: ../KeyRing/keyring.c:2221
 msgid "last changed: "
-msgstr ""
+msgstr "dernier changement : "
 
 #. Generate Password button (creates random password)
 #: ../KeyRing/keyring.c:2231
@@ -3023,26 +3026,24 @@ msgid "Generate Password"
 msgstr "Génération d'un mot de passe"
 
 #: ../SyncTime/synctime.c:48
-#, fuzzy
 msgid "SyncTime"
-msgstr "Sync bloc-notes"
+msgstr "SyncTime"
 
 #: ../SyncTime/synctime.c:88
 msgid "synctime: Palm OS Version 3.25 and 3.30 do not support SyncTime\n"
-msgstr ""
+msgstr "synctime: Palm OS versions 3.25 et 3.30 ne supportent pas SyncTime\n"
 
 #: ../SyncTime/synctime.c:89
 msgid "synctime: NOT setting the time on the pilot\n"
-msgstr ""
+msgstr "synctime: PAS de mise à l'heure du pilot\n"
 
 #: ../SyncTime/synctime.c:94
 msgid "synctime: Setting the time on the pilot... "
-msgstr ""
+msgstr "synctime: Mise à l'heure du pilot..."
 
 #: ../SyncTime/synctime.c:99
-#, fuzzy
 msgid "Done\n"
-msgstr "Valider"
+msgstr "Fait\n"
 
 #~ msgid "Quit"
 #~ msgstr "Quitter"
