@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.64 2006/09/27 22:48:37 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.65 2006/10/05 14:20:55 rousseau Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -2006,7 +2006,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    char ascii_password[PASSWD_LEN];
    int r;
    int password_not_correct;
-   char *titles[] = { N_("Changed"), N_("Name"), N_("Account") };
+   char *titles[3]; /* { "Changed", "Name", "Account" }; */
    int retry;
    int cycle_category = FALSE;
 
@@ -2106,6 +2106,9 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_box_pack_start(GTK_BOX(vbox1), scrolled_window, TRUE, TRUE, 0);
    
    /* Clist */
+   titles[0] = _("Changed");
+   titles[1] = _("Name");
+   titles[2] = _("Account");
    clist = gtk_clist_new_with_titles(3, titles);
    
    gtk_clist_column_titles_active(GTK_CLIST(clist));
