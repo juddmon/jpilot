@@ -1,100 +1,217 @@
+dnl ############################################################################
 dnl Process this file with autoconf to produce a configure script.
+dnl ############################################################################
 
+dnl boilerplate to initialize autoconf(AC) and automake(AM)
 AC_PREREQ([2.58])
 AC_INIT(jpilot, 0.99.9)
 AM_INIT_AUTOMAKE([1.8])
 
-AC_CANONICAL_HOST
-
-dnl create a config.h file (Automake will add -DHAVE_CONFIG_H)
+dnl use a config.h file rather than string of -DXXX args to compiler
+dnl run autoheader before autoconf to create config.h.in from configure.in
 AM_CONFIG_HEADER(config.h)
-
+dnl enable maintainer mode in Makefiles (make dist, distclean)
 AM_MAINTAINER_MODE
 
-AC_SUBST(VERSION)
-AC_SUBST(CFLAGS)
-
+dnl ############################################################################
+dnl Check for programs needed during configure or build
+dnl ############################################################################
+AC_CANONICAL_HOST # determine build host
 AC_PROG_CC
+dnl AC_ISC_POSIX only needed for Interacive Systems UNIX which Sun
+dnl is discontinuing support on as of 7/23/2006.
+dnl This obsolete macro should probably be removed. 
 AC_ISC_POSIX
+dnl Need intltool for i18n support
+AC_PROG_INTLTOOL()
+AC_PROG_INSTALL
+AC_PATH_PROG([SED], [sed], [ AC_MSG_ERROR([sed is required for configure script]) ])
+AC_PATH_PROG([GREP], [grep], [ AC_MSG_ERROR([grep is required for configure script]) ])
+AC_PATH_PROG([CUT], [cut], [ AC_MSG_ERROR([cut is required for configure script]) ])
 
+dnl ******************************
+dnl Libtool setup
+dnl ******************************
+dnl enable shared library building, turn off static libraries
 AC_DISABLE_STATIC
 AC_LIBTOOL_DLOPEN
-AM_PROG_LIBTOOL
-
-AC_PROG_INSTALL
-
-AC_PATH_PROG([SED], [sed], [ AC_MSG_ERROR([sed is required]) ])
-
-if test "x$prefix" = "xNONE"; then
-   AC_DEFINE_UNQUOTED(BASE_DIR, "$ac_default_prefix", [ BASE_DIR ])
-else
-   AC_DEFINE_UNQUOTED(BASE_DIR, "$prefix", [ BASE_DIR ])
-fi
+AC_PROG_LIBTOOL
+AC_SUBST(LIBTOOL_DEPS)
 
 dnl ******************************
-dnl * dialer conditional
+dnl Gettext setup
 dnl ******************************
-dnl check operating system for jpilot-dialer
-case "${build_os}" in
-  linux-gnu)     dialer=yes ;;
-  *) AC_MSG_WARN([Operating system ${build_os} not supported by
-  jpilot-dialer]) ; dialer=no ;;
-esac
-AM_CONDITIONAL(JPILOT_DIALER, test x$dialer = xyes)
-
-dnl ******************************
-dnl * start gettext
-dnl ******************************
-AC_PROG_INTLTOOL()
-
 dnl Set of available languages
 ALL_LINGUAS="ca cs da de es fr it ja ko nl nb ru rw sv tr uk vi zh_CN zh_TW"
 
-dnl AM_GNU_GETTEXT([])
+dnl Name of language files
+GETTEXT_PACKAGE=jpilot
+AC_SUBST(GETTEXT_PACKAGE)
+dnl 9/29/2006: Work around a bug in current versions of gettext/intltool
+dnl            which leave this macro undefined.  
+DATADIRNAME=share
+AC_SUBST(DATADIRNAME)
+
+dnl Setup gettext using version available on host
+dnl The intl/ directory is not exported with the distribution
 AM_GNU_GETTEXT([external])
 AM_GNU_GETTEXT_VERSION([0.14.5])
 
 if test "x$MSGFMT" = "xno"; then
    if test "x$GMSGFMT" = "xno"; then
-      AC_MSG_RESULT(I can't find gettext)
+      AC_MSG_RESULT(No gettext found)
       AC_MSG_ERROR(Either install gettext or use 'configure --disable-nls')
    fi
 fi
 
-AC_SUBST(BUILD_INCLUDED_LIBINTL)
-AC_SUBST(USE_INCLUDED_LIBINTL)
-AC_SUBST(INTLOBJS)
-AC_SUBST(GLIBC21)
-AC_SUBST(INTL_LIBTOOL_SUFFIX_PREFIX)
-AC_SUBST(INTLBISON)
+dnl ############################################################################
+dnl Process Enable/Disable configure arguments
+dnl ############################################################################
 
-dnl ******************************
-dnl * end gettext
-dnl ******************************
+AC_ARG_ENABLE(plugins,
+   AC_HELP_STRING([--disable-plugins],[Do not compile plugin support]),
+   enable_plugins=$enableval,
+   enable_plugins=yes)
 
-dnl ******************************
-dnl * Check whether nl_langinfo can provide start of week
-dnl ******************************
+plugin_support=no
 
-# _NL_TIME_FIRST_WEEKDAY is an enum and not a define
-AC_MSG_CHECKING([for _NL_TIME_FIRST_WEEKDAY])
-AC_TRY_LINK([#include <langinfo.h>], [
-char c;
-c = *((unsigned char *)  nl_langinfo(_NL_TIME_FIRST_WEEKDAY));
-], gtk_ok=yes, gtk_ok=no)
-AC_MSG_RESULT($gtk_ok)
-if test "$gtk_ok" = "yes"; then
-  AC_DEFINE([HAVE__NL_TIME_FIRST_WEEKDAY], [1],
-	    [Define if _NL_TIME_FIRST_WEEKDAY is available])
+if test "x$enable_plugins" = "xyes"; then
+   AC_CHECK_FUNCS(dlopen)
+   if test "x$ac_cv_func_dlopen" = "xyes"; then
+      have_dlopen=yes
+   else
+      for lib in dl; do
+         AC_CHECK_LIB($lib, dlopen, [LIBS="$LIBS -ldl";
+          have_dlopen=yes; break])
+      done
+   fi
+
+   if test "x$have_dlopen" = "xyes"; then
+      AC_DEFINE(ENABLE_PLUGINS, 1, [ plugin support ])
+      plugin_support="yes"
+##      AC_SUBST(plugin_support) ## %RW: not apparently used anywhere
+   else
+      AC_MSG_RESULT(Could not find dlopen - plugin support disabled)
+   fi
+else
+   AC_MSG_RESULT(Plugin support disabled by configure options)
 fi
 
+dnl ************************************************************ 
+
+AC_ARG_ENABLE(private,
+   AC_HELP_STRING([--disable-private],[Do not use private records feature (password not needed to see private records)]),
+   enable_private=$enableval,
+   enable_private=yes)
+
+if test "$enable_private" = "yes"; then
+   AC_DEFINE(ENABLE_PRIVATE, 1, [ Private record support ])
+else
+   AC_MSG_RESULT(Private record support disabled by configure options)
+fi
+
+dnl ************************************************************ 
+
+AC_ARG_ENABLE(datebk,
+   AC_HELP_STRING([--disable-datebk],[Disable Datebk support]),
+   enable_datebk=$enableval,
+   enable_datebk=yes)
+
+if test "$enable_datebk" = "yes"; then
+   AC_DEFINE(ENABLE_DATEBK, 1, [ DateBk support ])
+else
+   AC_MSG_RESULT(Datebk support disabled by configure options)
+fi
+
+dnl ************************************************************ 
+
+AC_ARG_ENABLE(manana,
+   AC_HELP_STRING([--disable-manana],[Disable Mañana support]),
+   enable_manana=$enableval,
+   enable_manana=yes)
+
+if test "$enable_manana" = "yes"; then
+   AC_DEFINE(ENABLE_MANANA, 1, [ Manana support ])
+else
+   AC_MSG_RESULT(Mañana support disabled by configure options)
+fi
+
+dnl ************************************************************ 
+
+AC_ARG_ENABLE(prometheon,
+   AC_HELP_STRING([--enable-prometheon],[For use with Prometheon: http://www.prometheon.net]),
+   enable_prometheon=$enableval,
+   enable_prometheon=no)
+
+if test "$enable_prometheon" = "yes"; then
+   AC_DEFINE(ENABLE_PROMETHEON, 1, [ Prometheon support ])
+   AC_DEFINE_UNQUOTED(PROGNAME, "copilot", [ program name ])
+   AC_MSG_RESULT(Prometheon support enabled)
+else
+   AC_DEFINE_UNQUOTED(PROGNAME, "jpilot", [ program name ])
+fi
+
+AC_SUBST(PROGNAME)
+
+dnl ************************************************************ 
+
+AC_ARG_ENABLE(alarm-shell-danger,
+   AC_HELP_STRING([--enable-alarm-shell-danger],[Allow alarm descriptions and notes to be used in alarm shell commands]),
+   enable_alarm_shell_danger=$enableval,
+   enable_alarm_shell_danger=no;
+   )
+
+if test "$enable_alarm_shell_dange" = "yes"; then
+   AC_DEFINE(ENABLE_ALARM_SHELL_DANGER, 1, [ Datebook description and note allowed  in shell commands ])
+fi
+
+dnl ************************************************************ 
+
+AC_ARG_ENABLE(gtk2,
+   AC_HELP_STRING([--disable-gtk2],[Disable GTK2 support and compile with GTK1]),
+   enable_gtk2=$enableval,
+   enable_gtk2=yes)
+
+if test "$enable_gtk2" = "no"; then
+  AC_MSG_RESULT(GTK2 support disabled by configure options)
+fi
+
+dnl Checking for GTK version
+
+have_gtk2=no;
+if test "x$enable_gtk2" = "xyes"; then
+  AC_DEFINE(ENABLE_GTK2, 1, [ GTK-2 support ])
+  AM_PATH_GTK_2_0(2.0.3, have_gtk2=yes,
+     AC_MSG_ERROR([*** GTK >= 2.0.3 not found ***]))
+fi
+if test "x$have_gtk2" = "xno"; then
+  AM_PATH_GTK(1.2.0,,
+     AC_MSG_ERROR([*** GTK >= 1.2.0 not found ***]))
+fi
+
+dnl ************************************************************ 
+
+AC_ARG_ENABLE(stock_buttons,
+   AC_HELP_STRING([--enable-stock-buttons],[Enable stock buttons]),
+   AC_MSG_RESULT(stock buttons enabled by configure options),
+   )
+if test "x$enable_stock_buttons" = "xyes"; then
+  if test "x$have_gtk2" = "xyes"; then
+    AC_DEFINE(ENABLE_STOCK_BUTTONS, 1, [ Use GTK2 stock buttons ])
+  else
+    AC_MSG_ERROR([GTK2 required for stock buttons])
+  fi
+fi
+
+dnl ############################################################################
+dnl Check for libraries needed 
+dnl ############################################################################
 dnl ******************************
 dnl * pilot-link libs
 dnl ******************************
-dnl Check for pilot-link libs
 pilot_prefix=""
 AC_ARG_WITH(pilot_prefix,
- AC_HELP_STRING([--with-pilot-prefix=PFX],[Prefix to top level of pilot-link files (e.g., = /usr/local if the pilot-link includes are in /usr/local/include and libs are in /usr/local/lib)]))
+            AC_HELP_STRING([--with-pilot-prefix=PFX],[Prefix to top level of pilot-link files (e.g., = /usr/local if the pilot-link includes are in /usr/local/include and libs are in /usr/local/lib)]))
 
 if test "x$with_pilot_prefix" != "x"; then
    pilot_prefix=$with_pilot_prefix
@@ -104,9 +221,9 @@ dnl Make sure that the pilot-link stuff actually exists
 
 AC_MSG_CHECKING(for pilot-link header files)
 pilotinclude=${FORCE_PILOT_INCLUDES:-no}
-if test $pilotinclude = no ; then
+if test "$pilotinclude" = "no" ; then
 for pilot_incl in $pilot_prefix/include /usr/include /usr/local/include \
-    /usr/extra/pilot/include /usr/include/libpisock; do
+                  /usr/extra/pilot/include /usr/include/libpisock; do
    if test -r "$pilot_incl/pi-version.h" ; then
       pilotinclude=yes
       PILOT_FLAGS="$PILOT_FLAGS -I$pilot_incl"
@@ -115,24 +232,22 @@ for pilot_incl in $pilot_prefix/include /usr/include /usr/local/include \
 done
 fi
 
-if test $pilotinclude = no ; then
+if test "$pilotinclude" = "no" ; then
    AC_MSG_RESULT(no)
    AC_MSG_ERROR(Could not find the pilot-link header files)
 else
    AC_MSG_RESULT(found at $pilot_incl)
 fi
 
-
-dnl pilot-link maybe installed at this point
-
+dnl pilot-link headers are installed.  Now check for libraries
 
 AC_MSG_CHECKING(for pilot library files)
 pilotlibs=${FORCE_PILOT_LIBS:-no}
 PILOT_LIBS="-lpisock"
 
-if test $pilotlibs = no ; then
+if test "$pilotlibs" = "no" ; then
 for pilot_libs in $pilot_prefix/lib /usr/lib /usr/local/lib/ \
-  /usr/extra/pilot/lib $pilot_prefix/lib64 /usr/lib64 ; do
+   /usr/extra/pilot/lib $pilot_prefix/lib64 /usr/lib64 ; do
    if test -r $pilot_libs/libpisock.so >/dev/null 2>&1 ; then
       pilotlibs=yes
       PILOT_LIBS="-L$pilot_libs $PILOT_LIBS"
@@ -151,7 +266,7 @@ for pilot_libs in $pilot_prefix/lib /usr/lib /usr/local/lib/ \
 done
 fi
 
-if test $pilotlibs = no ; then
+if test "$pilotlibs" = "no" ; then
    AC_MSG_RESULT(no)
    AC_MSG_ERROR(Could not find the pilot-link libraries)
 else
@@ -159,24 +274,27 @@ else
 fi
 
 dnl Solaris needs the socket library
-dnl AC_CHECK_LIB(socket, main, PILOT_LIBS=$PILOT_LIBS" -lsocket", , )
 AC_CHECK_FUNC(gethostent, , AC_CHECK_LIB(nsl, gethostent))
 AC_CHECK_FUNC(setsockopt, , AC_CHECK_LIB(socket, setsockopt))
+
+dnl Substitute macros now that LIB & FLAG detection is done
+AC_SUBST(PILOT_LIBS)
+AC_SUBST(PILOT_FLAGS)
+
+dnl ************************************************************ 
 
 AC_ARG_ENABLE(pl-test,
    AC_HELP_STRING([--disable-pl-test],[Do not try to compile a test pilot-link program]),
    enable_pl_test=$enableval,
    enable_pl_test=yes)
 
-if test "x$enable_pl_test" = "xyes"; then
+dnl run some simple tests to verify pilot-link environment
 
-   dnl Check to make sure pilot-link library can be linked
+if test "x$enable_pl_test" = "xyes"; then
 
    pilotcompile=no
 
-   dnl *************************
-   dnl * Link a tiny program to make sure we have the environment right
-   dnl *************************
+   dnl Check to make sure pilot-link library can be linked
 
    AC_MSG_CHECKING(to see if I can compile a pilot link program)
    save_CFLAGS="$CFLAGS"
@@ -187,21 +305,16 @@ if test "x$enable_pl_test" = "xyes"; then
    AC_TRY_LINK([#include "pi-version.h"
 #include "pi-socket.h"], [pi_close (0);] , pilotcompile=yes, , )
 
-
-   if test $pilotcompile = no ; then
+   if test "$pilotcompile" = "no" ; then
       AC_MSG_RESULT(no)
       AC_MSG_ERROR(Could not compile a test pilot-link program)
    else
       AC_MSG_RESULT(ok)
-      AC_SUBST(PILOT_FLAGS)
-      AC_SUBST(PILOT_LIBS)
    fi
 
-   dnl ******************************
-   dnl * Try to run a pilot-link program (tests dynamic linking)
-   dnl ******************************
+   dnl Try to run a pilot-link program (tests dynamic linking)
 
-   AC_MSG_CHECKING(running a pilot-link program )
+   AC_MSG_CHECKING(if I can run a pilot-link program)
    AC_TRY_RUN([
 #include <pi-version.h>
 int main()
@@ -217,31 +330,28 @@ int main()
 * This test can be disabled by the --disable-pl-test option])
    , [ error ])
 
+   dnl restore variables after pilot-link testing
+   CFLAGS="$save_CFLAGS"
+   LIBS="$save_LIBS"
+
 fi
 
-dnl *************************
 dnl * Check pilot-link pi-version.h
-dnl *************************
 
-AC_MSG_CHECKING(pilot-link version )
+AC_MSG_CHECKING(pilot-link version)
 
-dnl ** save CFLAGS
 save_CFLAGS="$CFLAGS"
 CFLAGS="$CFLAGS $PILOT_FLAGS"
 save_LIBS="$LIBS"
 LIBS="$LIBS $PILOT_LIBS"
 
-dnl *** check for pi-version.h
 AC_TRY_COMPILE([#include <pi-version.h>], [
    exit(0);
 ], ,
  AC_MSG_ERROR([pilot-link header pi-version.h not found])
 )
 
-
-dnl *****
 dnl * Pilot-link version variations, USB support, 12.0, etc.
-dnl *****
 
 usb=no;
 pl12=no;
@@ -258,6 +368,7 @@ cut -d " " -f 3 | sed -e 's/"//g'`
 AC_MSG_RESULT([pi-version indicates $pl_version.$pl_major.$pl_minor])
 
 dnl *** check for pilot-link 0.12 and up
+
 if test $pl_version -eq 0 ; then
    if test $pl_major -ge 12 ; then
       pl12=yes
@@ -273,15 +384,10 @@ dnl *** check for broken pilot-link versions
 if test "x$pl_version_check_done" = "xno"; then
    if test $pl_version -eq 0 ; then
       if test $pl_major -eq 11 ; then
-         if test $pl_minor -eq 0 ; then
-            AC_MSG_ERROR([pilot-link versions 0.11.0 - 0.11.2 are not compatible with J-Pilot])
-         fi
-         if test $pl_minor -eq 1 ; then
-            AC_MSG_ERROR([pilot-link versions 0.11.0 - 0.11.2 are not compatible with J-Pilot])
-         fi
-         if test $pl_minor -eq 2 ; then
-            AC_MSG_ERROR([pilot-link versions 0.11.0 - 0.11.2 are not compatible with J-Pilot])
-         fi
+         case $pl_minor in
+            [0-2])
+               AC_MSG_ERROR([pilot-link versions 0.11.0 - 0.11.2 are not compatible with J-Pilot]) ;;
+         esac
          usb=yes
          pl_version_check_done=yes;
          AC_MSG_RESULT([pilot-link has USB])
@@ -319,15 +425,14 @@ dnl ***
 if test $pl_version -eq 0 ; then
    if test $pl_major -eq 12 ; then
       if test $pl_minor -eq 0 ; then
-         if test $pl_patch = "-pre2" ; then
+         if test "$pl_patch" = "-pre2" ; then
             AC_MSG_RESULT([pilot-link 0.12.0-pre2 was found])
             AC_MSG_ERROR([pilot-link 0.12.0-pre2 is not recommended, \
 it has some bugs with not fetching the category app info])
-	 fi
+         fi
       fi
    fi
 fi
-
 
 if test "x$usb" = "xyes"; then
    AC_DEFINE(USB_PILOT_LINK, 1, [ usb support ])
@@ -337,6 +442,7 @@ if test "x$pl12" = "xyes"; then
    AC_DEFINE(PILOT_LINK_0_12, 1, [ pl-0.12 support ])
 fi
 
+dnl restore variables after pilot-link testing
 CFLAGS="$save_CFLAGS"
 LIBS="$save_LIBS"
 
@@ -344,181 +450,76 @@ dnl ******************************
 dnl * End pilot-links tests
 dnl ******************************
 
+dnl Check for OpenSSL libs necessary for Keyring
+AC_CHECK_LIB([crypto], [SSLeay_version], have_libcrypto=1, have_libcrypto=0)
 
-dnl ******************************
-dnl * Enable/Disable features
-dnl ******************************
-
-AC_ARG_ENABLE(plugins,
-   AC_HELP_STRING([--disable-plugins],[Do not compile plugin support]),
-   enable_plugins=$enableval,
-   enable_plugins=yes)
-
-plugin_support=no
-
-if test "x$enable_plugins" = "xyes"; then
-#   dnl Check for shared library calls
-#   AC_MSG_CHECKING(for dlopen)
-#   save_LIBS="$LIBS"
-#   LIBS="$LIBS -ldl"
-#   AC_TRY_LINK([#include <dlfcn.h>], [dlopen("huh",0);] , have_dlopen=yes, , )
-#   LIBS="$save_LIBS"
-
-   AC_CHECK_FUNCS(dlopen)
-   if test "x$ac_cv_func_dlopen" = "xyes"; then
-      have_dlopen=yes
-   else
-      for lib in dl; do
-         AC_CHECK_LIB($lib, dlopen, [LIBS="$LIBS -ldl";
-          have_dlopen=yes; break])
-      done
-   fi
-
-   if test "x$have_dlopen" = "xyes"; then
-      AC_DEFINE(ENABLE_PLUGINS, 1, [ plugin support ])
-      plugin_support="yes"
-      AC_SUBST(plugin_support)
-   else
-      AC_MSG_RESULT(Could not find dlopen - not using plugin support)
-   fi
-else
-   AC_MSG_RESULT(Plugin support disabled by configure options)
-fi
-
-AC_ARG_ENABLE(private,
-   AC_HELP_STRING([--disable-private],[Do not use private records feature (password not needed to see private records)]),
-   enable_private=$enableval,
-   enable_private=yes;
-   AC_DEFINE(ENABLE_PRIVATE, 1, [ Private record support ]))
-
-if test $enable_private = no; then
-   AC_MSG_RESULT(Private record support disabled by configure options)
-fi
-
-AC_ARG_ENABLE(datebk,
-   AC_HELP_STRING([--disable-datebk],[Disable Datebk support]),
-   enable_datebk=$enableval,
-   enable_datebk=yes;
-   AC_DEFINE(ENABLE_DATEBK, 1, [ DateBk support ])
-   )
-
-if test $enable_datebk = no; then
-   AC_MSG_RESULT(Datebk support disabled by configure options)
-fi
-
-AC_ARG_ENABLE(manana,
-   AC_HELP_STRING([--disable-manana],[Disable Mañana support]),
-   enable_manana=$enableval,
-   enable_manana=yes;
-   AC_DEFINE(ENABLE_MANANA, 1, [ Manana support ])
-   )
-
-if test $enable_manana = no; then
-   AC_MSG_RESULT(Mañana support disabled by configure options)
-fi
-
-AC_ARG_ENABLE(prometheon,
-   AC_HELP_STRING([--enable-prometheon],[For use with Prometheon: http://www.prometheon.net]),
-   enable_prometheon=$enableval;
-   AC_DEFINE(ENABLE_PROMETHEON, 1, [ Prometheon support ])
-   AC_DEFINE_UNQUOTED(PROGNAME, "copilot", [ program name ])
-   ,
-   enable_prometheon=no;
-   AC_DEFINE_UNQUOTED(PROGNAME, "jpilot", [ program name ])
-   )
-
-if test $enable_prometheon = yes; then
-   AC_MSG_RESULT(Prometheon support enabled)
-fi
-
-AC_SUBST(PROGNAME)
-
-AC_ARG_ENABLE(alarm-shell-danger,
-   AC_HELP_STRING([--enable-alarm-shell-danger],[Allow alarm descriptions and notes to be used in alarm shell commands]),
-   enable_alarm_shell_danger=$enableval;
-   AC_DEFINE(ENABLE_ALARM_SHELL_DANGER, 1, [ Datebook description and note allowed  in shell commands ])
-   ,
-   enable_alarm_shell_danger=no;
-   )
-
-dnl *************************
-dnl * GTK 2
-dnl *************************
-AC_ARG_ENABLE(gtk2,
-   AC_HELP_STRING([--disable-gtk2],[Disable GTK2 support and compile with GTK1]),
-   enable_gtk2=$enableval,
-   enable_gtk2=yes
-   )
-
-if test $enable_gtk2 = no; then
-  AC_MSG_RESULT(GTK2 support disabled by configure options)
-fi
-
-dnl Checking for GTK version
-dnl Check for GTK2
-
-have_gtk2=no;
-if test "x$enable_gtk2" = "xyes"; then
-  AC_DEFINE(ENABLE_GTK2, 1, [ GTK-2 support ])
-  AM_PATH_GTK_2_0(2.0.3, have_gtk2=yes,
-    AC_MSG_ERROR([*** GTK >= 2.0.3 not found ***]))
-fi
-if test "x$have_gtk2" = "xno"; then
-  AM_PATH_GTK(1.2.0,,
-    AC_MSG_ERROR([*** GTK >= 1.2.0 not found ***]))
-fi
-
-
-dnl *************************
-dnl * Stock buttons
-dnl *************************
-
-AC_ARG_ENABLE(stock_buttons,
-   AC_HELP_STRING([--enable-stock-buttons],[Enable stock buttons]),
-   AC_MSG_RESULT(stock buttons enabled by configure options),
-   )
-if test "x$enable_stock_buttons" = "xyes"; then
-  if test "x$have_gtk2" = "xyes"; then
-    AC_DEFINE(ENABLE_STOCK_BUTTONS, 1, [ Use GTK2 stock buttons ])
-  else
-    AC_MSG_ERROR([GTK2 required for stock buttons])
-  fi
-fi
-
-dnl *************************
-dnl * End Stock buttons
-dnl *************************
-
-dnl Checks for header files.
+dnl ############################################################################
+dnl Check for headers needed 
+dnl ############################################################################
+dnl 10/02/06: These macros are obsolecscent.  All new machines are likely to run
+dnl these correctly and the correct ifdefs do not exist in the code to make use
+dnl of them anyways.
+dnl *********************
 AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
-AC_HAVE_HEADERS(fcntl.h sys/file.h sys/time.h unistd.h string.h locale.h langinfo.h)
+dnl *********************
 
+dnl 10/2/06: only headers used for true code portability right now are locale.h, langinfo.h
+AC_CHECK_HEADERS([fcntl.h langinfo.h locale.h stdlib.h string.h strings.h sys/file.h sys/socket.h sys/time.h unistd.h utime.h])
+
+# Headers required for plugins
+AC_CHECK_HEADERS(netinet/in.h, have_netinet=1, have_netinet=0)
+if test "$plugin_support" = "yes" -a "$have_netinet" = "0"; then
+   plugin_support = "no"
+fi
+
+# jpilot-dial required headers
+AC_CHECK_HEADERS(termio.h, have_termio=1, have_termio=0)
+
+dnl Headers needed to build keyring
+AC_CHECK_HEADERS([openssl/md5.h], have_openssl_md5=1, have_openssl_md5=0)
+AC_CHECK_HEADERS([openssl/des.h], have_openssl_des=1, have_openssl_des=0)
+
+dnl ############################################################################
+dnl Check for typedefs and structures needed 
+dnl ############################################################################
 dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_INLINE
 AC_TYPE_PID_T
+AC_TYPE_SIZE_T
+AC_TYPE_UID_T
 AC_HEADER_TIME
+dnl 10/2/06: This is obsolescent on most systems now as the tm struct is in time.h
 AC_STRUCT_TM
 
+dnl ******************************
+dnl Check whether nl_langinfo can provide start of week to GTK
+dnl ******************************
+
+# _NL_TIME_FIRST_WEEKDAY is an enum and not a define
+AC_MSG_CHECKING([for _NL_TIME_FIRST_WEEKDAY])
+AC_TRY_LINK([#include <langinfo.h>], [
+char c;
+c = *((unsigned char *)  nl_langinfo(_NL_TIME_FIRST_WEEKDAY));
+], 
+nl_ok=yes, nl_ok=no)
+AC_MSG_RESULT($nl_ok)
+
+if test "$nl_ok" = "yes"; then
+  AC_DEFINE([HAVE__NL_TIME_FIRST_WEEKDAY], [1],
+       [Define if _NL_TIME_FIRST_WEEKDAY is available])
+fi
+
+dnl ############################################################################
+dnl Check for individual functions needed 
+dnl ############################################################################
 dnl Checks for library functions.
 AC_TYPE_SIGNAL
-AC_FUNC_STRFTIME
-AC_FUNC_UTIME_NULL
-#AC_CHECK_FUNCS(mkdir mktime select strdup strstr setenv)
-AC_CHECK_FUNCS(memmove strchr memcpy strdup setenv \
-	       getcwd strerror)
+AC_FUNC_STRCOLL
+#AC_FUNC_MALLOC
+#AC_FUNC_REALLOC
+
 AC_CHECK_FUNCS(setenv)
-
-AC_CHECK_HEADERS([openssl/md5.h], OPEN_SSL_MD5=1, OPEN_SSL_MD5=0)
-AC_CHECK_HEADERS([openssl/des.h], OPEN_SSL_DES=1, OPEN_SSL_DES=0)
-if test "$OPEN_SSL_MD5" = "1"; then
-   if test "$OPEN_SSL_DES" = "1"; then
-      make_keyring=yes
-   fi
-fi
-
-if test "x$make_keyring" != "xyes"; then
-   AC_MSG_WARN([Open SSL headers not found, Keyring will not be built])
-fi
 
 AC_ARG_WITH(with_flock,
    AC_HELP_STRING([--with-flock],[Substitute flock instead of fnctl (for NFS)]))
@@ -527,7 +528,62 @@ if test "x$with_flock" != "x"; then
    AC_MSG_RESULT(Using flock instead of fnctl)
 fi
 
-dnl For Irix
+dnl ############################################################################
+dnl Figure which programs can be built on this particular host with the 
+dnl libraries available.
+dnl ############################################################################
+
+dnl * Work out which plugins to make
+
+make_keyring=no
+if test "$have_libcrypto" = "1"; then
+   if test "$have_openssl_md5" = "1" -a "$have_openssl_des" = "1"; then
+      make_keyring=yes
+   else
+      AC_MSG_WARN([OpenSSL headers not found, Keyring will not be built])
+   fi
+else
+   AC_MSG_WARN([OpenSSL library not found, Keyring will not be built])
+fi
+
+keyring_plugin=no;
+if test "x$make_keyring" = "xyes" -a "x$plugin_support" = "xyes"; then
+   keyring_plugin=yes;
+fi
+
+AM_CONDITIONAL(MAKE_KEYRING, test "x$keyring_plugin" = "xyes")
+AM_CONDITIONAL(MAKE_EXPENSE, test "x$plugin_support" = "xyes")
+AM_CONDITIONAL(MAKE_SYNCTIME, test "x$plugin_support" = "xyes")
+
+dnl * Work out whether dialer can be built
+
+dnl check operating system for jpilot-dialer
+dialer=no
+if test "$have_termio" = "1"; then
+   case "${build_os}" in
+      linux-gnu)     dialer=yes  ;;
+
+      *) AC_MSG_WARN(
+		   [Operating system ${build_os} not supported by jpilot-dialer]) ; 
+			dialer=no ;;
+
+   esac
+fi
+
+AM_CONDITIONAL(JPILOT_DIALER, test "x$dialer" = "xyes")
+
+dnl ############################################################################
+dnl Miscellaneous definitions
+dnl ############################################################################
+
+dnl Define BASE_DIR in which is passed on to users in Jpilot help window
+if test "x$prefix" = "xNONE"; then
+   AC_DEFINE_UNQUOTED(BASE_DIR, "$ac_default_prefix", [ BASE_DIR ])
+else
+   AC_DEFINE_UNQUOTED(BASE_DIR, "$prefix", [ BASE_DIR ])
+fi
+
+dnl For Irix Systems
 abilib=$ABILIB
 if test "x$abilib" = "x"; then
    AC_DEFINE_UNQUOTED(ABILIB, "lib", [ ABILIB ])
@@ -536,47 +592,51 @@ else
 fi
 AC_SUBST(ABILIB)
 
+dnl ############################################################################
+dnl Setup complete.  Create the specified files
+dnl ############################################################################
+AC_CONFIG_FILES([Makefile
+                 Expense/Makefile
+                 SyncTime/Makefile
+                 KeyRing/Makefile
+                 dialer/Makefile
+                 m4/Makefile
+                 po/Makefile.in
+                 icons/Makefile
+                 docs/Makefile
+                 empty/Makefile
+                 jpilot.spec 
+                 SlackBuild ])
+
+AC_OUTPUT
+
+dnl Make SlackBuild executable
+chmod +x SlackBuild 
+
 dnl ******************************
-dnl * what plugins to make
+dnl Configuration messages
 dnl ******************************
-      
-keyring_plugin=no;
-if test x$make_keyring = xyes -a x$plugin_support = xyes; then
-  keyring_plugin=yes;
-fi
-AM_CONDITIONAL(MAKE_KEYRING, test x$keyring_plugin = xyes)
-AM_CONDITIONAL(MAKE_EXPENSE, test x$plugin_support = xyes)
-AM_CONDITIONAL(MAKE_SYNCTIME, test x$plugin_support = xyes)
-
-AC_OUTPUT(Makefile docs/Makefile Expense/Makefile KeyRing/Makefile 
-		  dialer/Makefile po/Makefile.in SyncTime/Makefile
-		  jpilot.spec SlackBuild m4/Makefile empty/Makefile
-		  icons/Makefile)
-
-chmod +x SlackBuild
-
-#
-# Configuration messages
-#
 AC_MSG_RESULT()
 AC_MSG_RESULT(This package is configured for the following features:)
 AC_MSG_RESULT(------------------------------------------------------)
-echo "Compiling Expense plugin...............   $plugin_support"
-echo "Compiling SyncTime plugin..............   $plugin_support"
-echo "Compiling KeyRing plugin...............   $keyring_plugin"
-echo "Compiling with private record support..   $enable_private"
-echo "Compiling with Datebk support..........   $enable_datebk"
-echo "Compiling with plugin support..........   $enable_plugins"
-echo "Compiling with Mañana support..........   $enable_manana"
-echo "Compiling with Prometheon support......   $enable_prometheon"
-echo "GTK-2 support..........................   $have_gtk2"
-echo "Compiler Options.......................   $CFLAGS"
-echo "Prefix directory.......................   $prefix"
-echo "pilot-link headers.....................   $pilot_incl"
-echo "NLS support (foreign languages)........   $USE_NLS"
-echo "USB support enabled....................   $usb"
-echo "dialer support.........................   $dialer"
-echo "pilot-link 0.12 support................   $pl12"
-echo "Pilot-link version found...............   $pl_version.$pl_major.$pl_minor$pl_patch"
-echo
-echo "Now type make to compile"
+AC_MSG_RESULT(Compiling with plugin support..........   $enable_plugins)
+AC_MSG_RESULT(Compiling with private record support..   $enable_private)
+AC_MSG_RESULT(Compiling with Datebk support..........   $enable_datebk)
+AC_MSG_RESULT(Compiling with Mañana support..........   $enable_manana)
+AC_MSG_RESULT(Compiling with Prometheon support......   $enable_prometheon)
+AC_MSG_RESULT(Compiling Expense plugin...............   $plugin_support)
+AC_MSG_RESULT(Compiling SyncTime plugin..............   $plugin_support)
+AC_MSG_RESULT(Compiling KeyRing plugin...............   $keyring_plugin)
+AC_MSG_RESULT(Compiling dialer add-on................   $dialer)
+AC_MSG_RESULT(GTK-2 support..........................   $have_gtk2)
+AC_MSG_RESULT(NLS support (foreign languages)........   $USE_NLS)
+AC_MSG_RESULT(Compiler Options.......................   $CFLAGS)
+AC_MSG_RESULT(Prefix directory.......................   $prefix)
+AC_MSG_RESULT(pilot-link headers.....................   $pilot_incl)
+AC_MSG_RESULT(USB support enabled....................   $usb)
+AC_MSG_RESULT(pilot-link 0.12 support................   $pl12)
+AC_MSG_RESULT(pilot-link version found...............   $pl_version.$pl_major.$pl_minor$pl_patch)
+AC_MSG_RESULT()
+AC_MSG_RESULT(Now type make to compile)
+AC_MSG_RESULT()
+

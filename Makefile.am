@@ -1,31 +1,34 @@
-# $Id: Makefile.am,v 1.49 2006/01/10 07:24:02 rikster5 Exp $
+# $Id: Makefile.am,v 1.50 2006/10/09 23:57:50 rikster5 Exp $
 
-SUBDIRS = Expense SyncTime KeyRing docs dialer po m4 empty icons
+SUBDIRS = Expense SyncTime KeyRing dialer m4 po icons docs empty 
 
-# install the manual docs
-colordir = $(prefix)/share/$(PACKAGE)
-color_DATA = \
-	jpilotrc.blue jpilotrc.default jpilotrc.green jpilotrc.purple \
-	jpilotrc.steel
-
-EXTRA_DIST = config.rpath reconf autogen.sh ChangeLog ChangeLog.cvs \
-	description-pak \
+EXTRA_DIST = config.rpath reconf autogen.sh \
+	m4/gtk-2.0.m4 \
+	intltool-extract.in intltool-merge.in intltool-update.in \
 	mkinstalldirs \
+	ChangeLog ChangeLog.cvs \
+	po/POTFILES \
 	jpilot.spec jpilot.kdelnk \
+	SlackBuild description-pak \
 	jpilot.desktop \
 	$(color_DATA) \
-	SlackBuild \
-	intltool-extract.in intltool-merge.in intltool-update.in \
-	m4/gtk-2.0.m4 \
-	dialer/Makefile.unix \
-	dialer/README \
-	dialer/jpilot-dial.c \
-	po/POTFILES \
 	jpilot.xpm
 
 DISTCLEANFILES = intltool-extract intltool-merge intltool-update
 
+desktopdir = $(datadir)/applications
+desktop_DATA = jpilot.desktop
+
+# The skin files for changing jpilot appearance
+colordir = $(pkgdatadir)
+color_DATA = \
+	jpilotrc.blue jpilotrc.default jpilotrc.green jpilotrc.purple \
+	jpilotrc.steel
+
+# Instructions for the code to build begins here
+
 bin_PROGRAMS = jpilot jpilot-dump jpilot-sync
+
 jpilot_SOURCES = \
 	address.c \
 	address.h \
@@ -135,17 +138,27 @@ jpilot_sync_SOURCES = \
 jpilot-sync.o: jpilot-sync.c config.h utils.h log.h prefs.h sync.h \
 	libplugin.h password.h
 
+# Include gettext macros that we have placed in the m4 directory
+# and include in the distribution.
+ACLOCAL_AMFLAGS = -I m4
+
+# Add i18n support
 localedir = $(datadir)/locale
-gnulocaledir = $(prefix)/share/locale
-I18NDEFS = -DLOCALEDIR=\"$(localedir)\" -DGNULOCALEDIR=\"$(gnulocaledir)\"
+I18NDEFS = -DLOCALEDIR=\"$(localedir)\"
 
 AM_CFLAGS= @PILOT_FLAGS@ @GTK_CFLAGS@ ${I18NDEFS}
 
+# Add linkflags
 jpilot_LDFLAGS = -export-dynamic
 jpilot_LDADD=@LIBS@ @PILOT_LIBS@ @GTK_LIBS@
 jpilot_dump_LDADD=@LIBS@ @PILOT_LIBS@ @GTK_LIBS@
 jpilot_sync_LDFLAGS = -export-dynamic
 jpilot_sync_LDADD=@LIBS@ @PILOT_LIBS@ @GTK_LIBS@
+
+################################################################################
+## The rest of the file is copied over to the Makefile with only variable
+## substitution.
+################################################################################
 
 # Automatically update the libtool script if it becomes out-of-date.
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
@@ -183,9 +196,4 @@ ChangeLog.cvs:
 	s/judd /Judd Montgomery /; s/desrod /David A. Desrosiers /; \
 	s/rikster5 /Rik Wehbring /' > $@
 
-
-ACLOCAL_AMFLAGS = -I m4
-
-desktopdir = $(datadir)/applications
-desktop_DATA = jpilot.desktop
 
