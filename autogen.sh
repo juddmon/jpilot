@@ -1,4 +1,4 @@
-# $Id: autogen.sh,v 1.14 2006/10/09 23:57:49 rikster5 Exp $
+# $Id: autogen.sh,v 1.15 2006/10/10 01:40:33 rikster5 Exp $
 
 # Echo commands before they execute to help show progress
 set -x
@@ -10,7 +10,12 @@ rm -f configure Makefile Makefile.in config.h.in
 aclocal -I m4
 
 # Prepare build for gettext.  Must precede intltoolize
-gettextize --force --copy --no-changelog
+#gettextize only needs to be run when first adapting a program for NLS
+#gettextize --force --copy
+
+# autopoint is a lightweight gettextize which copies required files
+# but does not change Makefile.am
+autopoint --force
 # Copy over scripts to allow internationalization
 intltoolize --force --copy --automake
 # Copy over scripts for libtool
