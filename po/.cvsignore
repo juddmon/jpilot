@@ -2,6 +2,7 @@
 Makefile
 Makefile.in
 Makevars.template
+POTFILES
 quot.sed
 stamp-po
 stamp-it
