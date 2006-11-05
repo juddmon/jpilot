@@ -1156,9 +1156,9 @@ msgid ""
 "Read the user manual if you are uncertain."
 msgstr ""
 "Ce palm n'a pas le même nom d'utilisateur\n"
-"ou de user ID que celui de la dernière\n"
-"synchronisation. Synchroniser peut avoir des effets\n"
-"non désirés. Lisez le manuel utilisateur en cas de doute."
+"ou de user ID que celui de la dernière synchronisation.\n"
+"Synchroniser peut avoir des effets non désirés.\n"
+"Lisez le manuel utilisateur en cas de doute."
 
 #. -------------------------------------------
 #: ../jpilot.c:735
