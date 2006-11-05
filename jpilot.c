@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.141 2006/09/26 21:03:40 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.142 2006/11/05 13:23:36 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -748,11 +748,11 @@ int bad_sync_exit_status(int exit_status)
    if ((exit_status == SYNC_ERROR_NOT_SAME_USERID) ||
        (exit_status == SYNC_ERROR_NOT_SAME_USER)) {
       return dialog_generic(GTK_WINDOW(window),
-			      _("Sync Problem"), DIALOG_WARNING, text1, 2, button_text);
+			      _("Sync Problem"), DIALOG_WARNING, _(text1), 2, button_text);
    }
    if (exit_status == SYNC_ERROR_NULL_USERID) {
       return dialog_generic(GTK_WINDOW(window),
-			    _("Sync Problem"), DIALOG_ERROR, text2, 1, button_text);
+			    _("Sync Problem"), DIALOG_ERROR, _(text2), 1, button_text);
    }
    return EXIT_FAILURE;
 }
