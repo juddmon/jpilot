@@ -1,4 +1,4 @@
-/* $Id: search_gui.c,v 1.40 2006/01/10 06:25:00 rikster5 Exp $ */
+/* $Id: search_gui.c,v 1.41 2006/11/07 07:20:42 rikster5 Exp $ */
 
 /*******************************************************************************
  * search_gui.c
@@ -612,6 +612,10 @@ void cb_search_gui(GtkWidget *widget, gpointer data)
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_search), clist);
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
+
+   /* clicking on "Case Sensitive" also starts a search */
+   gtk_signal_connect(GTK_OBJECT(case_sense_checkbox), "clicked",
+		      GTK_SIGNAL_FUNC(cb_search), clist);
 
    /* Create a "Done" button */
 #ifdef ENABLE_GTK2
