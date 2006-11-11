@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.142 2006/11/05 13:23:36 rousseau Exp $ */
+/* $Id: jpilot.c,v 1.143 2006/11/11 02:08:59 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -761,13 +761,22 @@ void output_to_pane(const char *str)
 {
    int w, h, new_y;
    long ivalue;
+   GtkWidget *pane_hbox;
+   GtkRequisition size_requisition;
 
    /* Adjust window height to user preference or minimum size */
    get_pref(PREF_OUTPUT_HEIGHT, &ivalue, NULL);
    /* Make them look at something if output happens */
-   if (ivalue < 60) {
-      ivalue=60;
-      set_pref(PREF_OUTPUT_HEIGHT, 60, NULL, TRUE);
+   if (ivalue < 50) {
+#  ifdef ENABLE_GTK2
+      /* Ask GTK for size which is just large enough to show both buttons */
+      pane_hbox = gtk_paned_get_child2(GTK_PANED(output_pane));
+      gtk_widget_size_request(pane_hbox, &size_requisition);
+      ivalue = size_requisition.height + 1;
+#  else
+      ivalue = 50;
+#  endif
+      set_pref(PREF_OUTPUT_HEIGHT, ivalue, NULL, TRUE);
    }
    gdk_window_get_size(window->window, &w, &h);
    new_y = h - ivalue;
@@ -2528,9 +2537,8 @@ char * xpm_backup[] = {
 
    /* Make the output text window */
    temp_hbox = gtk_hbox_new(FALSE, 0);
-   gtk_widget_set_usize(GTK_WIDGET(temp_hbox), 1, 1);
    gtk_container_set_border_width(GTK_CONTAINER(temp_hbox), 5);
-   gtk_paned_pack2(GTK_PANED(output_pane), temp_hbox, FALSE, FALSE);
+   gtk_paned_pack2(GTK_PANED(output_pane), temp_hbox, TRUE, TRUE);
 
    temp_vbox = gtk_vbox_new(FALSE, 3);
    gtk_container_set_border_width(GTK_CONTAINER(temp_vbox), 6);
