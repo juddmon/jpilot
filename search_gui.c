@@ -1,4 +1,4 @@
-/* $Id: search_gui.c,v 1.41 2006/11/07 07:20:42 rikster5 Exp $ */
+/* $Id: search_gui.c,v 1.42 2006/11/11 13:12:33 rousseau Exp $ */
 
 /*******************************************************************************
  * search_gui.c
@@ -52,6 +52,9 @@ static GtkWidget *entry = NULL;
 static GtkAccelGroup *accel_group = NULL;
 
 static int clist_row_selected;
+
+static void cb_clist_selection(GtkWidget *clist, gint row, gint column,
+      GdkEventButton *event, gpointer data);
 
 int datebook_search_sort_compare(const void *v1, const void *v2)
 {
@@ -452,6 +455,9 @@ static void cb_entry(GtkWidget *widget, gpointer data)
    /* Highlight the first row in the list of returned items.
     * This does NOT cause the main window to jump to the selected record. */
    clist_select_row(GTK_CLIST(clist), 0, 0);
+
+   /* select the first record found */
+   cb_clist_selection(clist, 0, 0, (GdkEventButton *)1, NULL);
 
    return;
 }
