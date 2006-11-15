@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.143 2006/11/11 02:08:59 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.144 2006/11/15 21:49:20 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -2538,7 +2538,7 @@ char * xpm_backup[] = {
    /* Make the output text window */
    temp_hbox = gtk_hbox_new(FALSE, 0);
    gtk_container_set_border_width(GTK_CONTAINER(temp_hbox), 5);
-   gtk_paned_pack2(GTK_PANED(output_pane), temp_hbox, TRUE, TRUE);
+   gtk_paned_pack2(GTK_PANED(output_pane), temp_hbox, FALSE, TRUE);
 
    temp_vbox = gtk_vbox_new(FALSE, 3);
    gtk_container_set_border_width(GTK_CONTAINER(temp_vbox), 6);
