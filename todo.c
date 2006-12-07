@@ -1,4 +1,4 @@
-/* $Id: todo.c,v 1.40 2005/12/18 15:05:40 rousseau Exp $ */
+/* $Id: todo.c,v 1.41 2006/12/07 15:11:35 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo.c
@@ -244,14 +244,12 @@ void pc_todo_validate_correct(struct ToDo *todo)
 {
    if (todo->description) {
       if ((strlen(todo->description)+1 > MAX_TODO_DESC_LEN)) {
-	 jp_logf(JP_LOG_WARN, "%s\n", todo->description);
 	 jp_logf(JP_LOG_WARN, _("ToDo description text > %d, truncating to %d\n"), MAX_TODO_DESC_LEN, MAX_TODO_DESC_LEN-1);
 	 todo->description[MAX_TODO_DESC_LEN-1]='\0';
       }
    }
    if (todo->note) {
       if ((strlen(todo->note)+1 > MAX_TODO_NOTE_LEN)) {
-	 jp_logf(JP_LOG_WARN, "%s\n", todo->note);
 	 jp_logf(JP_LOG_WARN, _("ToDo note text > %d, truncating to %d\n"), MAX_TODO_NOTE_LEN, MAX_TODO_NOTE_LEN-1);
 	 todo->note[MAX_TODO_NOTE_LEN-1]='\0';
       }
