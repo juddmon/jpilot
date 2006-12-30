@@ -1,4 +1,4 @@
-/* $Id: print.c,v 1.35 2006/09/26 20:18:23 rousseau Exp $ */
+/* $Id: print.c,v 1.36 2006/12/30 17:17:06 rousseau Exp $ */
 
 /*******************************************************************************
  * print.c
@@ -946,7 +946,7 @@ int print_address_header()
 	   "pop pop pop ( )\n"
 	   "} if\n"
 	   "("Q_FLAG_CHAR"END) search { %%if\n"
-	   "   stop\n"
+	   "   showpage stop\n"
 	   "} if\n"
 	   "("Q_FLAG_CHAR"C12) search {\n"
 	   "/Courier-ISOLatin1 12 selectfont\n"
