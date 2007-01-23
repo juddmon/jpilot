@@ -864,7 +864,7 @@ msgstr "La fréquence est chaque"
 
 #: ../datebook_gui.c:4662
 msgid "Day(s)"
-msgstr "Jour(s)"
+msgstr "jour(s)"
 
 #. checkbutton
 #: ../datebook_gui.c:4665 ../datebook_gui.c:4697 ../datebook_gui.c:4752
@@ -874,7 +874,7 @@ msgstr "Fin le"
 
 #: ../datebook_gui.c:4694
 msgid "Week(s)"
-msgstr "Semaines(s)"
+msgstr "semaine(s)"
 
 #: ../datebook_gui.c:4710
 msgid "Repeat on Days:"
@@ -882,7 +882,7 @@ msgstr "Répété les jours :"
 
 #: ../datebook_gui.c:4749
 msgid "Month(s)"
-msgstr "Mois"
+msgstr "mois"
 
 #: ../datebook_gui.c:4766
 msgid "Repeat by:"
@@ -898,7 +898,7 @@ msgstr "Date"
 
 #: ../datebook_gui.c:4796
 msgid "Year(s)"
-msgstr "Année(s)"
+msgstr "année(s)"
 
 #: ../dialer.c:194
 msgid "Phone Dialer"
