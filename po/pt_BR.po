@@ -1,14 +1,14 @@
 # Brazilian Portuguese translation of J-Pilot.
 # Copyright (C) 2006 Judd Montgomery
 # This file is distributed under the same license as the J-Pilot package.
-# Leonardo Ferreira Fontenelle <leo.fontenelle@gmail.com, 2006.
+# Leonardo Ferreira Fontenelle <leo.fontenelle@gmail.com, 2006,2007.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: J-Pilot 0.99\n"
 "Report-Msgid-Bugs-To: jpilot-devel@jpilot.org\n"
 "POT-Creation-Date: 2006-08-27 21:43-0400\n"
-"PO-Revision-Date: 2007-01-02 03:49-0200\n"
+"PO-Revision-Date: 2007-02-01 16:16-0200\n"
 "Last-Translator: Leonardo Ferreira Fontenelle <leo.fontenelle@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <ldp-br@bazar2.conectiva.com.br>\n"
 "MIME-Version: 1.0\n"
@@ -84,8 +84,7 @@ msgstr "erro"
 #: Expense/expense.c:2127
 #, c-format
 msgid "Error reading file: %s\n"
-msgstr ""
-"Erro abrindo arquivo: %s\n"
+msgstr "Erro abrindo arquivo: %s\n"
 
 #: address_gui.c:248
 #: datebook_gui.c:2537
@@ -126,13 +125,11 @@ msgstr ""
 #: utils.c:3094
 #, c-format
 msgid "Unable to open file: %s\n"
-msgstr ""
-"Não foi possível abrir arquivo: %s\n"
+msgstr "Não foi possível abrir arquivo: %s\n"
 
 #: address_gui.c:534
 msgid "File doesn't appear to be address.dat format\n"
-msgstr ""
-"Arquivo não parece seguir o formato address.dat\n"
+msgstr "Arquivo não parece seguir o formato address.dat\n"
 
 #: address_gui.c:544
 #: datebook_gui.c:577
@@ -228,8 +225,7 @@ msgstr "Erro abrindo arquivo: %s"
 #: address_gui.c:733
 #, c-format
 msgid "Can't export address %d\n"
-msgstr ""
-"Não foi possível exportar endereço %d\n"
+msgstr "Não foi possível exportar endereço %d\n"
 
 #: address_gui.c:798
 #: address_gui.c:806
@@ -242,8 +238,7 @@ msgstr "Campo"
 #: memo_gui.c:591
 #: todo_gui.c:815
 msgid "Unknown export type\n"
-msgstr ""
-"Tipo de exportação desconhecido\n"
+msgstr "Tipo de exportação desconhecido\n"
 
 #: address_gui.c:1206
 #: address_gui.c:2629
@@ -274,16 +269,14 @@ msgstr "Você não pode modificar um registro excluído\n"
 #: todo_gui.c:1504
 #: todo_gui.c:1948
 msgid "Category is not legal\n"
-msgstr ""
-"Categoria ilegal\n"
+msgstr "Categoria ilegal\n"
 
 #: address_gui.c:1507
 #: alarms.c:639
 #: dialer.c:163
 #, c-format
 msgid "executing command = [%s]\n"
-msgstr ""
-"executando comando = [%s]\n"
+msgstr "executando comando = [%s]\n"
 
 #: address_gui.c:1751
 #: Expense/expense.c:1594
@@ -479,7 +472,7 @@ msgstr "Adiciona o novo registro"
 #: Expense/expense.c:1661
 #: KeyRing/keyring.c:2117
 msgid "Apply Changes"
-msgstr "Aplicar Mudancas"
+msgstr "Aplicar Mudanças"
 
 #: address_gui.c:2711
 #: datebook_gui.c:4423
@@ -549,8 +542,7 @@ msgstr "Lembrar-me"
 #: alarms.c:469
 #, c-format
 msgid "Unable to open %s%s file\n"
-msgstr ""
-"Não foi possível abrir arquivo %s%s\n"
+msgstr "Não foi possível abrir arquivo %s%s\n"
 
 #: alarms.c:554
 msgid "Appointment Reminder"
@@ -575,14 +567,12 @@ msgstr "Alarme J-Pilot"
 
 #: alarms.c:1163
 msgid "infinite loop, breaking\n"
-msgstr ""
-"laço infinito, quebrando\n"
+msgstr "loop infinito, quebrando\n"
 
 #: alarms.c:1531
 #, c-format
 msgid "Unable to open %s.alarms file\n"
-msgstr ""
-"Não foi possível abrir arquivo %s.alarms\n"
+msgstr "Não foi possível abrir arquivo %s.alarms\n"
 
 #: category.c:192
 #: sync.c:2551
@@ -598,8 +588,7 @@ msgstr "falha ao renomear"
 #: sync.c:1147
 #: sync.c:2310
 msgid "PC file corrupt?\n"
-msgstr ""
-"Arquivo corrompido no PC?\n"
+msgstr "Arquivo corrompido no PC?\n"
 
 #: category.c:236
 #: category.c:246
@@ -615,8 +604,7 @@ msgstr ""
 #: sync.c:2451
 #: sync.c:2461
 msgid "fseek failed - fatal error\n"
-msgstr ""
-"Falha no fseek - erro fatal\n"
+msgstr "Falha no fseek - erro fatal\n"
 
 #: category.c:421
 msgid "Move"
@@ -643,8 +631,7 @@ msgstr "Você deve selecionar uma categoria para renomear"
 #: category.c:469
 #, c-format
 msgid "You can't edit category %s.\n"
-msgstr ""
-"Você não pode editar a categoria %s.\n"
+msgstr "Você não pode editar a categoria %s.\n"
 
 #: category.c:476
 msgid "Enter New Category Name"
@@ -657,8 +644,7 @@ msgstr "Você deve selecionar uma categoria para excluir"
 #: category.c:494
 #, c-format
 msgid "You can't delete category %s.\n"
-msgstr ""
-"Você não pode excluir a categoria %s.\n"
+msgstr "Você não pode excluir a categoria %s.\n"
 
 #: category.c:510
 #, c-format
@@ -672,8 +658,7 @@ msgstr ""
 #: category.c:569
 #, c-format
 msgid "invalid state file %s line %d\n"
-msgstr ""
-"estado inválido no arquivo %s, linha %d\n"
+msgstr "estado inválido no arquivo %s, linha %d\n"
 
 #: category.c:591
 #, c-format
@@ -703,19 +688,16 @@ msgstr "tipo desconhecido ="
 #: dat.c:536
 #, c-format
 msgid "fields per row count != %d, unknown format\n"
-msgstr ""
-"conta de campos por coluna != %d, formato desconhecido\n"
+msgstr "conta de campos por coluna != %d, formato desconhecido\n"
 
 #: dat.c:550
 #, c-format
 msgid "field count != %d, unknown format\n"
-msgstr ""
-"conta de campos != %d, formato desconhecido\n"
+msgstr "conta de campos != %d, formato desconhecido\n"
 
 #: dat.c:558
 msgid "Unknown format, file has wrong schema\n"
-msgstr ""
-"Formato desconhecido, arquivo tem esquema incorreto\n"
+msgstr "Formato desconhecido, arquivo tem esquema incorreto\n"
 
 #: dat.c:559
 msgid "File schema is:"
@@ -735,8 +717,7 @@ msgstr "Deveria ser:"
 #: dat.c:1160
 #, c-format
 msgid "%s:%d Record %d, field %d: Invalid type.  Expected %d, found %d\n"
-msgstr ""
-"%s:%d Registro %d, campo %d: Tipo inválido. Esperava-se %d, encontrou-se %d\n"
+msgstr "%s:%d Registro %d, campo %d: Tipo inválido. Esperava-se %d, encontrou-se %d\n"
 
 #: dat.c:675
 #: dat.c:693
@@ -748,14 +729,12 @@ msgstr ""
 #: dat.c:1148
 #: dat.c:1161
 msgid "read of file terminated\n"
-msgstr ""
-"leitura do arquivo terminada\n"
+msgstr "leitura do arquivo terminada\n"
 
 #: datebook.c:643
 #, c-format
 msgid "Unknown repeatType (%d) found in DatebookDB\n"
-msgstr ""
-"Foi encontrado repeatType (%d) desconhecido em DatebookDB\n"
+msgstr "Foi encontrado repeatType (%d) desconhecido em DatebookDB\n"
 
 #: datebook_gui.c:218
 #: datebook_gui.c:225
@@ -798,8 +777,7 @@ msgstr "Sáb"
 #: datebook_gui.c:2070
 #, c-format
 msgid "Appointment description text > %d, truncating to %d\n"
-msgstr ""
-"Texto descritor de compromisso > %d, truncando para %d\n"
+msgstr "Texto descritor de compromisso > %d, truncando para %d\n"
 
 #: datebook_gui.c:566
 #: datebook_gui.c:983
@@ -810,8 +788,7 @@ msgstr "Erro"
 
 #: datebook_gui.c:567
 msgid "File doesn't appear to be datebook.dat format\n"
-msgstr ""
-"Arquivo não parece seguir o format datebook.dat\n"
+msgstr "Arquivo não parece seguir o formato datebook.dat\n"
 
 #: datebook_gui.c:983
 msgid "Unknown export type"
@@ -961,8 +938,7 @@ msgstr "ano"
 #: datebook_gui.c:2129
 #, c-format
 msgid "You cannot have an appointment that repeats every %d %s(s)\n"
-msgstr ""
-"Não é possível ter compromissos que se repitam a cada %d %s(s)\n"
+msgstr "Não é possível ter compromissos que se repitam a cada %d %s(s)\n"
 
 #: datebook_gui.c:2139
 msgid "You can not have a weekly repeating appointment that doesn't repeat on any day of the week."
@@ -997,8 +973,7 @@ msgstr "Sem Data"
 #: datebook_gui.c:3021
 #, c-format
 msgid "Error in DateBookDB advanceUnits = %d\n"
-msgstr ""
-"Erro no DateBookDB advanceUnits = %d\n"
+msgstr "Erro no DateBookDB advanceUnits = %d\n"
 
 #: datebook_gui.c:3192
 msgid "Unknown repeatType found in DatebookDB\n"
@@ -1204,7 +1179,7 @@ msgstr "Importar"
 #: import_gui.c:298
 #: install_gui.c:310
 msgid "To change to a hidden directory type it below and hit TAB"
-msgstr "Para mudar para um diretório oculdo, digite-o abaixo e pressione TAB"
+msgstr "Para mudar para um diretório oculto, digite-o abaixo e pressione TAB"
 
 #: import_gui.c:307
 #: prefs_gui.c:771
@@ -1259,97 +1234,81 @@ msgstr "Remover"
 
 #: jpilot-dump.c:95
 msgid " +D +A +T +M format like date +format.\n"
-msgstr ""
-" Formato +D +A +T +M, como date +format.\n"
+msgstr " Formato +D +A +T +M, como date +format.\n"
 
 #: jpilot-dump.c:96
 msgid " -v displays version and exits.\n"
-msgstr ""
-" -v mostra a versão e sai.\n"
+msgstr " -v mostra a versão e sai.\n"
 
 #: jpilot-dump.c:97
 #: utils.c:73
 msgid " -h displays help and exits.\n"
-msgstr ""
-" -h mostra a ajuda e sai.\n"
+msgstr " -h mostra a ajuda e sai.\n"
 
 #: jpilot-dump.c:98
 msgid " -f displays help for format codes.\n"
-msgstr ""
-" -f mostra a ajuda para códigos de formato.\n"
+msgstr " -f mostra a ajuda para códigos de formato.\n"
 
 #: jpilot-dump.c:99
 msgid " -D dump DateBook.\n"
-msgstr ""
-" -D despeja o Calendário.\n"
+msgstr " -D despeja o Calendário.\n"
 
 #: jpilot-dump.c:100
 msgid " -N dump appts for today in DateBook.\n"
-msgstr ""
-" -N despeja compromissos de hoje do Calendário.\n"
+msgstr " -N despeja compromissos de hoje do Calendário.\n"
 
 #: jpilot-dump.c:101
 msgid " -NYYYY/MM/DD dump appts on YYYY/MM/DD in DateBook.\n"
-msgstr ""
-" -NAAAA/MM/DD despeja compromissos de AAAA/MM/DD do Calendário.\n"
+msgstr " -NAAAA/MM/DD despeja compromissos de AAAA/MM/DD do Calendário.\n"
 
 #: jpilot-dump.c:102
 msgid " -A dump Address book.\n"
-msgstr ""
-" -A despeja os Contatos.\n"
+msgstr " -A despeja os Contatos.\n"
 
 #: jpilot-dump.c:103
 msgid " -T dump ToDo list as CSV.\n"
-msgstr ""
-" -T despeja a lista de Tarefas como CSV.\n"
+msgstr " -T despeja a lista de Tarefas como CSV.\n"
 
 #: jpilot-dump.c:104
 msgid " -M dump Memos.\n"
-msgstr ""
-" -M despeja os Memos.\n"
+msgstr " -M despeja os Memos.\n"
 
 #: jpilot-sync.c:66
 msgid " J-Pilot preferences are read to get port, rate, number of backups, etc.\n"
-msgstr ""
-" As preferências do J-Pilot determinam a porta, a taxa de transferência, etc.\n"
+msgstr " As preferências do J-Pilot determinam a porta, a taxa de transferência, etc.\n"
 
 #: jpilot-sync.c:67
 msgid " -v = version\n"
-msgstr ""
-" -v = versão\n"
+msgstr " -v = versão\n"
 
 #: jpilot-sync.c:68
 msgid " -h = help\n"
-msgstr ""
-" -h = ajuda\n"
+msgstr " -h = ajuda\n"
 
 #: jpilot-sync.c:69
 msgid " -d = run in debug mode\n"
-msgstr ""
-" -d = executar em modo de depuração\n"
+msgstr " -d = executar em modo de depuração\n"
 
 #: jpilot-sync.c:70
 msgid " -P = do not load plugins.\n"
-msgstr ""
-" -P = não carregar plug-ins.\n"
+msgstr " -P = não carregar plug-ins.\n"
 
 #: jpilot-sync.c:71
 msgid " -b = Do a sync and then a backup, otherwise just do a sync.\n"
-msgstr " -b = Sincronizar e então fazer uma cópia, senaõ apenas sincronizar.\n"
+msgstr " -b = Sincronizar e então fazer uma cópia, senão apenas sincronizar.\n"
 
 #: jpilot-sync.c:72
 msgid " -l = loop, otherwise sync once and exit.\n"
-msgstr " -l = laço, senão sincroniza uma vez e sai.\n"
+msgstr " -l = loop, senão sincroniza uma vez e sai.\n"
 
 #: jpilot-sync.c:73
 msgid " -p {port} = Use this port to sync with instead of getting preferences.\n"
-msgstr " -p {porta} = Usar esta porta para sincronzar em vez de ler a preferência.\n"
+msgstr " -p {porta} = Usar esta porta para sincronizar em vez de ler as preferências.\n"
 
 #: jpilot.c:140
 #, c-format
 msgid "Invalid geometry specification: \"%s\"\n"
-msgstr ""
-"Especificação geométrica inválida: \"%s\"\n"
+msgstr "Especificação geométrica inválida: \"%s\"\n"
 
 #: jpilot.c:447
 #: monthview_gui.c:555
@@ -1379,7 +1338,7 @@ msgid ""
 msgstr ""
 "Este dispositivo não tem o mesmo nome de usuário\n"
 "ou ID de usuário que aquele sincronizado da última\n"
-"vez. Sincronizar pod trazer efeitos indesejados.\n"
+"vez. Sincronizar pode trazer efeitos indesejados.\n"
 "Se você não tiver certeza, leia o manual do usuário."
 
 #: jpilot.c:735
@@ -1592,24 +1551,20 @@ msgstr "calendar:week_start:0"
 
 #: jpilot.c:2237
 msgid "Not loading plugins.\n"
-msgstr ""
-"Não carregando plug-ins.\n"
+msgstr "Não carregando plug-ins.\n"
 
 #: jpilot.c:2241
 msgid "Ignoring all alarms.\n"
-msgstr ""
-"Ignorando todos os alarmes.\n"
+msgstr "Ignorando todos os alarmes.\n"
 
 #: jpilot.c:2245
 msgid "Ignoring past alarms.\n"
-msgstr ""
-"Ignorando alarmes passados.\n"
+msgstr "Ignorando alarmes passados.\n"
 
 #: jpilot.c:2340
 #: jpilot.c:2348
 msgid "Unable to open pipe\n"
-msgstr ""
-"Não foi possível abrir pipe\n"
+msgstr "Não foi possível abrir pipe\n"
 
 #: jpilot.c:2399
 msgid " User: "
@@ -1721,14 +1676,12 @@ msgstr "Selecionar uma codificação UTF-8"
 #: libplugin.c:153
 #, c-format
 msgid "Unknown PC header version = %d\n"
-msgstr ""
-"Versão de cabeçalho do PC desconhecida = %d\n"
+msgstr "Versão de cabeçalho do PC desconhecida = %d\n"
 
 #: libplugin.c:416
 #, c-format
 msgid "%s:%d Error opening file: %s\n"
-msgstr ""
-"%s:%d Erro abrindo arquivo: %s\n"
+msgstr "%s:%d Erro abrindo arquivo: %s\n"
 
 #: libplugin.c:422
 #: libplugin.c:451
@@ -1736,8 +1689,7 @@ msgstr ""
 #: todo.c:391
 #, c-format
 msgid "%s:%d Error reading file: %s\n"
-msgstr ""
-"%s:%d Erro lendo arquivo: %s\n"
+msgstr "%s:%d Erro lendo arquivo: %s\n"
 
 #: libplugin.c:478
 #: utils.c:1944
@@ -1752,8 +1704,7 @@ msgstr ""
 #: utils.c:1953
 #: utils.c:1990
 msgid "Unable to open PC records file\n"
-msgstr ""
-"Não foi possível abrir o arquivo de registros do PC\n"
+msgstr "Não foi possível abrir o arquivo de registros do PC\n"
 
 #: libplugin.c:493
 #: utils.c:1959
@@ -1764,8 +1715,7 @@ msgstr "Não foi possível encontrar registro a ser excluído\n"
 #: utils.c:1977
 #, c-format
 msgid "Unknown header version %d\n"
-msgstr ""
-"Cabeçalho desconhecido versão %d\n"
+msgstr "Cabeçalho desconhecido versão %d\n"
 
 #: libplugin.c:524
 msgid "Couldn't open PC records file\n"
@@ -1777,47 +1727,39 @@ msgstr "Não foi possível abrir arquivo de registros do PC\n"
 #: utils.c:1517
 #, c-format
 msgid "Error opening file: %s\n"
-msgstr ""
-"Erro ao abrir arquivo: %s\n"
+msgstr "Erro ao abrir arquivo: %s\n"
 
 #: libplugin.c:714
 msgid "Error reading PC file 1\n"
-msgstr ""
-"Erro ao ler arquivo 1 de PC\n"
+msgstr "Erro ao ler arquivo 1 de PC\n"
 
 #: libplugin.c:730
 msgid "Error reading PC file 2\n"
-msgstr ""
-"Erro ao ler arquivo 2 de PC\n"
+msgstr "Erro ao ler arquivo 2 de PC\n"
 
 #: libplugin.c:903
 #, c-format
 msgid "Error reading %s 5\n"
-msgstr ""
-"Erro lendo %s 5\n"
+msgstr "Erro lendo %s 5\n"
 
 #: log.c:95
 #, c-format
 msgid "Unable to open log file, giving up.\n"
-msgstr ""
-"Não foi possível abrir arquivo de log, desistindo.\n"
+msgstr "Não foi possível abrir arquivo de log, desistindo.\n"
 
 #: log.c:102
 #, c-format
 msgid "Unable to open log file\n"
-msgstr ""
-"Não foi possível abrir arquivo de log\n"
+msgstr "Não foi possível abrir arquivo de log\n"
 
 #: memo_gui.c:300
 msgid "Memo text > 65535, truncating\n"
-msgstr ""
-"Texto de Memo > 65535, truncando\n"
+msgstr "Texto de Memo > 65535, truncando\n"
 
 #: memo_gui.c:330
 #, c-format
 msgid "Imported Memo %s\n"
-msgstr ""
-"Memos Importados %s\n"
+msgstr "Memos Importados %s\n"
 
 #: memo_gui.c:400
 msgid "File doesn't appear to be memopad.dat format\n"
@@ -1827,8 +1769,7 @@ msgstr "Arquivo não parece seguir o formato memopad.dat\n"
 #: memo_gui.c:562
 #, c-format
 msgid "Can't export memo %d\n"
-msgstr ""
-"Não foi possível exportar memo %d\n"
+msgstr "Não foi possível exportar memo %d\n"
 
 #: monthview_gui.c:500
 msgid "Monthly View"
@@ -1855,18 +1796,15 @@ msgstr "loop infinito"
 #: plugins.c:213
 #, c-format
 msgid "While reading %s%s line 1:[%s]\n"
-msgstr ""
-"Ao ler %s%s linha 1:[%s]\n"
+msgstr "Ao ler %s%s linha 1:[%s]\n"
 
 #: plugins.c:214
 msgid "Wrong Version\n"
-msgstr ""
-"Versão Incorreta\n"
+msgstr "Versão Incorreta\n"
 
 #: plugins.c:215
 msgid "Check preferences->conduits\n"
-msgstr ""
-"Verifique Preferências->Canais\n"
+msgstr "Verifique Preferências->Canais\n"
 
 #: plugins.c:271
 #, c-format
@@ -1874,27 +1812,24 @@ msgid ""
 "Open failed on plugin [%s]\n"
 " error [%s]\n"
 msgstr ""
-"Falha ao abrir o plugin [%s]\n"
+"Falha ao abrir o plug-in [%s]\n"
 " erro [%s]\n"
 
 #: plugins.c:288
 #: plugins.c:314
 #, c-format
 msgid " plugin is invalid: [%s]\n"
-msgstr ""
-" plug-in é inválido: [%s]\n"
+msgstr " plug-in é inválido: [%s]\n"
 
 #: plugins.c:296
 #, c-format
 msgid "Plugin:[%s]\n"
-msgstr ""
-"Plug-in:[%s]\n"
+msgstr "Plug-in:[%s]\n"
 
 #: plugins.c:297
 #, c-format
 msgid "This plugin is version (%d.%d).\n"
-msgstr ""
-"Este plugin é versão (%d.%d).\n"
+msgstr "A versão deste plug-in é (%d.%d).\n"
 
 #: plugins.c:299
 msgid "It is too old to work with this version of J-Pilot.\n"
@@ -2247,175 +2182,146 @@ msgstr "Dif. maiúsc./minúsc."
 
 #: sync.c:139
 msgid "open lock file failed\n"
-msgstr ""
-"falha ao abrir o arquivo de trava\n"
+msgstr "falha ao abrir o arquivo de trava\n"
 
 #: sync.c:152
 msgid "lock failed\n"
-msgstr ""
-"falha em travar\n"
+msgstr "falha em travar\n"
 
 #: sync.c:155
 #, c-format
 msgid "sync file is locked by pid %d\n"
-msgstr ""
-"arquivo de sincronização travado pelo pid %d\n"
+msgstr "arquivo de sincronização travado pelo pid %d\n"
 
 #: sync.c:189
 msgid "unlock failed\n"
-msgstr ""
-"falha em destravar\n"
+msgstr "falha em destravar\n"
 
 #: sync.c:192
 #, c-format
 msgid "sync is locked by pid %d\n"
-msgstr ""
-"sincronização travada pelo pid %d\n"
+msgstr "sincronização travada pelo pid %d\n"
 
 #: sync.c:244
 #, c-format
 msgid "%s: press the hotsync button on the cradle or \"kill %d\"\n"
-msgstr ""
-"%s: pressione o botão HotSync no berço ou \"kill %d\"\n"
+msgstr "%s: pressione o botão HotSync no berço ou \"kill %d\"\n"
 
 #: sync.c:297
 #, c-format
 msgid "Exiting with status %s\n"
-msgstr ""
-"Saindo com estado %s\n"
+msgstr "Saindo com estado %s\n"
 
 #: sync.c:298
 msgid "Finished\n"
-msgstr ""
-"Concluído\n"
+msgstr "Concluído\n"
 
 #: sync.c:432
 msgid "Finished installing user information.\n"
-msgstr ""
-"As informações do usuário foram instaladas.\n"
+msgstr "As informações do usuário foram instaladas.\n"
 
 #: sync.c:457
 #: sync.c:575
 msgid "Check your serial port and settings\n"
-msgstr ""
-"Verifique sua porta serial e as configurações\n"
+msgstr "Verifique sua porta serial e as configurações\n"
 
 #: sync.c:674
 #, c-format
 msgid " Syncing on device %s\n"
-msgstr ""
-" Sincronizando com dispositivo %s\n"
+msgstr " Sincronizando com dispositivo %s\n"
 
 #: sync.c:675
 msgid " Press the HotSync button now\n"
-msgstr ""
-" Pressione o botão HotSync agora\n"
+msgstr " Pressione o botão HotSync agora\n"
 
 #: sync.c:727
 #: sync.c:749
 #: sync.c:771
 #, c-format
 msgid "Last Synced Username-->\"%s\"\n"
-msgstr ""
-"Nome do último usuário sincronizado-->\"%s\"\n"
+msgstr "Nome do último usuário sincronizado-->\"%s\"\n"
 
 #: sync.c:728
 #: sync.c:750
 #: sync.c:772
 #, c-format
 msgid "Last Synced UserID-->\"%d\"\n"
-msgstr ""
-"ID do último usuário sincronizado-->\"%d\"\n"
+msgstr "ID do último usuário sincronizado-->\"%d\"\n"
 
 #: sync.c:729
 #: sync.c:751
 #: sync.c:773
 #, c-format
 msgid " This Username-->\"%s\"\n"
-msgstr ""
-" Nome deste usuário-->\"%s\"\n"
+msgstr " Nome deste usuário-->\"%s\"\n"
 
 #: sync.c:730
 #: sync.c:752
 #: sync.c:774
 #, c-format
 msgid " This User ID-->%d\n"
-msgstr ""
-" ID deste usuário-->\"%d\"\n"
+msgstr " ID deste usuário-->\"%d\"\n"
 
 #: sync.c:795
 #, c-format
 msgid "Username is \"%s\"\n"
-msgstr ""
-"Nome de usuário é \"%s\"\n"
+msgstr "Nome de usuário é \"%s\"\n"
 
 #: sync.c:796
 #, c-format
 msgid "User ID is %d\n"
-msgstr ""
-"ID de usuário é %d\n"
+msgstr "ID de usuário é %d\n"
 
 #: sync.c:798
 #: sync.c:804
 #, c-format
 msgid "lastSyncPC = %d\n"
-msgstr ""
-"lastSyncPC = %d\n"
+msgstr "lastSyncPC = %d\n"
 
 #: sync.c:799
 #, c-format
 msgid "This PC = %lu\n"
-msgstr ""
-"Este PC = %lu\n"
+msgstr "Este PC = %lu\n"
 
 #: sync.c:800
 #, c-format
 msgid "Last Username = [%s]\n"
-msgstr ""
-"Último nome de usuário = [%s]\n"
+msgstr "Último nome de usuário = [%s]\n"
 
 #: sync.c:801
 #, c-format
 msgid "Last UserID = %d\n"
-msgstr ""
-"Última ID de usuário = %d\n"
+msgstr "Última ID de usuário = %d\n"
 
 #: sync.c:802
 #, c-format
 msgid "Username = [%s]\n"
-msgstr ""
-"Nome de usuário = [%s]\n"
+msgstr "Nome de usuário = [%s]\n"
 
 #: sync.c:803
 #, c-format
 msgid "userID = %d\n"
-msgstr ""
-"ID de usuário = %d\n"
+msgstr "ID de usuário = %d\n"
 
 #: sync.c:821
 msgid "Sync canceled\n"
-msgstr ""
-"Sincronização cancelada\n"
+msgstr "Sincronização cancelada\n"
 
 #: sync.c:843
 msgid "Finished restoring handheld.\n"
-msgstr ""
-"A restauração do dispositivo foi concluída.\n"
+msgstr "A restauração do dispositivo foi concluída.\n"
 
 #: sync.c:844
 msgid "You may need to sync to update J-Pilot.\n"
-msgstr ""
-"Você pode precisar sincronizar para atualizar o J-Pilot.\n"
+msgstr "Você pode precisar sincronizar para atualizar o J-Pilot.\n"
 
 #: sync.c:874
 msgid "Doing a fast sync.\n"
-msgstr ""
-"Fazendo uma sincronização rápida.\n"
+msgstr "Fazendo uma sincronização rápida.\n"
 
 #: sync.c:913
 msgid "Doing a slow sync.\n"
-msgstr ""
-"Fazendo uma sincronização lenta.\n"
+msgstr "Fazendo uma sincronização lenta.\n"
 
 #: sync.c:1014
 msgid "Thank you for using J-Pilot."
@@ -2423,15 +2329,13 @@ msgstr "Obrigado por utilizar o J-Pilot."
 
 #: sync.c:1056
 msgid "Finished.\n"
-msgstr ""
-"Concluído.\n"
+msgstr "Concluído.\n"
 
 #: sync.c:1092
 #: sync.c:2611
 #, c-format
 msgid "Syncing %s\n"
-msgstr ""
-"Sincronizando %s\n"
+msgstr "Sincronizando %s\n"
 
 #: sync.c:1098
 #: sync.c:2275
@@ -2492,8 +2396,7 @@ msgstr "Registro %s excluído."
 #: sync.c:1133
 #, c-format
 msgid "number of records = %d\n"
-msgstr ""
-"número de registros = %d\n"
+msgstr "número de registros = %d\n"
 
 #: sync.c:1260
 #: sync.c:2435
@@ -2508,8 +2411,7 @@ msgstr ""
 #: sync.c:1770
 #, c-format
 msgid "%s (Creator ID '%s') is up to date, fetch skipped.\n"
-msgstr ""
-"%s (ID de Criador '%s') é atual, ignorando.\n"
+msgstr "%s (ID de Criador '%s') é atual, ignorando.\n"
 
 #: sync.c:1362
 #: sync.c:1774
@@ -2521,28 +2423,24 @@ msgstr "Baixando '%s' (ID de Criador '%s')..."
 #: sync.c:1780
 #, c-format
 msgid "Failed, unable to create file %s\n"
-msgstr ""
-"Falha: não foi possível criar arquivo %s\n"
+msgstr "Falha: não foi possível criar arquivo %s\n"
 
 #: sync.c:1380
 #: sync.c:1789
 #, c-format
 msgid "Failed, unable to back up database %s\n"
-msgstr ""
-"Falha: não foi possível copiar o banco de dados %s\n"
+msgstr "Falha: não foi possível copiar o banco de dados %s\n"
 
 #: sync.c:1384
 #: sync.c:1793
 #: sync.c:1975
 msgid "OK\n"
-msgstr ""
-"OK\n"
+msgstr "OK\n"
 
 #: sync.c:1687
 #, c-format
 msgid "Skipping %s (Creator ID '%s')\n"
-msgstr ""
-"Ignorando %s (ID de Criados '%s')\n"
+msgstr "Ignorando %s (ID de Criados '%s')\n"
 
 #: sync.c:1861
 #, c-format
@@ -2591,8 +2489,7 @@ msgstr "Falha na instalação de %s"
 
 #: sync.c:1964
 msgid "Failed.\n"
-msgstr ""
-"Falha.\n"
+msgstr "Falha.\n"
 
 #: sync.c:1971
 #, c-format
@@ -2603,83 +2500,70 @@ msgstr "%s instalado"
 #: sync.c:2001
 #, c-format
 msgid "Unable to open file: %s%s\n"
-msgstr ""
-"Não foi possível abrir arquivo: %s%s\n"
+msgstr "Não foi possível abrir arquivo: %s%s\n"
 
 #: sync.c:2180
 msgid "Unable to read home dir\n"
-msgstr ""
-"Não foi possível ler a pasta pessoal\n"
+msgstr "Não foi possível ler a pasta pessoal\n"
 
 #: sync.c:2709
 #, c-format
 msgid "palm: number of records = %d\n"
-msgstr ""
-"palm: número de registros = %d\n"
+msgstr "palm: número de registros = %d\n"
 
 #: sync.c:2710
 #, c-format
 msgid "disk: number of records = %d\n"
-msgstr ""
-"disco: número de registros = %d\n"
+msgstr "disco: número de registros = %d\n"
 
 #: sync.c:2888
 #, c-format
 msgid "%s:%d Error getting app info %s\n"
-msgstr ""
-"%s:%d Erro ao obter informaçôes da aplicação %s\n"
+msgstr "%s:%d Erro ao obter informações da aplicação %s\n"
 
 #: sync.c:2894
 #: sync.c:2936
 #, c-format
 msgid "%s:%d Error unpacking app info %s\n"
-msgstr ""
-"%s:%d Erro ao desempacotar informaçôes da aplicação %s\n"
+msgstr "%s:%d Erro ao desempacotar informações da aplicação %s\n"
 
 #: sync.c:2916
 #: sync.c:2928
 #, c-format
 msgid "Error reading appinfo block for %s\n"
-msgstr ""
-"Erro ao ler block appinfo para %s\n"
+msgstr "Erro ao ler bloco appinfo para %s\n"
 
 #: sync.c:3072
 #: sync.c:3076
 #, c-format
 msgid "Could not add category %s to remote.\n"
-msgstr ""
-"Não foi possível adicionar categoria %s ao dispositivo.\n"
+msgstr "Não foi possível adicionar categoria %s ao dispositivo.\n"
 
 #: sync.c:3073
 #: sync.c:3079
 msgid "Too many categories on remote.\n"
-msgstr ""
-"Categorias demais no dispositivo.\n"
+msgstr "Categorias demais no dispositivo.\n"
 
 #: sync.c:3074
 #: sync.c:3082
 #, c-format
 msgid "All records on desktop in %s will be moved to %s.\n"
-msgstr ""
-"Todos os registros do computador em %s serão movidos para %s.\n"
+msgstr "Todos os registros do computador em %s serão movidos para %s.\n"
 
 #: todo.c:248
 #, c-format
 msgid "ToDo description text > %d, truncating to %d\n"
-msgstr ""
-"Texto de descrição de tarefas > %d, truncando em %d\n"
+msgstr "Texto de descrição de tarefas > %d, truncando em %d\n"
 
 #: todo.c:255
 #, c-format
 msgid "ToDo note text > %d, truncating to %d\n"
-msgstr ""
-"Texto de nota da tarefa > %d, truncando em %d\n"
+msgstr "Texto de nota da tarefa > %d, truncando em %d\n"
 
 #: todo.c:380
 #, c-format
 msgid "%s:%d Error reading category info %s\n"
-msgstr ""
-"%s:%d Erro lendo informações de categoria %s\n"
+msgstr "%s:%d Erro lendo informações de categoria %s\n"
 
 #: todo_gui.c:149
 msgid "Due Date"
@@ -2687,20 +2571,17 @@ msgstr "Prazo"
 
 #: todo_gui.c:535
 msgid "File doesn't appear to be todo.dat format\n"
-msgstr ""
-"Arquivo não parece ter formato todo.dat\n"
+msgstr "Arquivo não parece ter formato todo.dat\n"
 
 #: todo_gui.c:691
 #: todo_gui.c:706
 #, c-format
 msgid "Can't export todo %d\n"
-msgstr ""
-"Não foi possível exportar tarefa %d\n"
+msgstr "Não foi possível exportar tarefa %d\n"
 
 #: todo_gui.c:1532
 msgid "Priority out of range\n"
-msgstr ""
-"Prioridade fora de faixa\n"
+msgstr "Prioridade fora de faixa\n"
 
 #: todo_gui.c:1759
 #, c-format
@@ -2727,48 +2608,39 @@ msgstr "Nota"
 
 #: utils.c:72
 msgid " -v displays version and compile options and exits.\n"
-msgstr ""
-" -v exibe a versão e as opções de compilação e sai.\n"
+msgstr " -v exibe a versão e as opções de compilação e sai.\n"
 
 #: utils.c:74
 msgid " -d displays debug info to stdout.\n"
-msgstr ""
-" -d exibe informações de depuração na saída padrão.\n"
+msgstr " -d exibe informações de depuração na saída padrão.\n"
 
 #: utils.c:75
 msgid " -p skips loading plugins.\n"
-msgstr ""
-" -p não carrega os plug-ins.\n"
+msgstr " -p não carrega os plug-ins.\n"
 
 #: utils.c:76
 msgid " -a ignores missed alarms since the last time program was run.\n"
-msgstr ""
-" -a ignora os alarmes perdidos desde a última execução do programa.\n"
+msgstr " -a ignora os alarmes perdidos desde a última execução do programa.\n"
 
 #: utils.c:77
 msgid " -A ignores all alarms past and future.\n"
-msgstr ""
-" -A ignora tudos os alarmes, passadoso e futuros.\n"
+msgstr " -A ignora todos os alarmes, passados e futuros.\n"
 
 #: utils.c:78
 msgid " -i makes program iconify itself upon launch.\n"
-msgstr ""
-" -i faz o programa ser lançado iconificado.\n"
+msgstr " -i faz o programa ser lançado iconificado.\n"
 
 #: utils.c:79
 msgid " The PILOTPORT, and PILOTRATE env variables are used to specify\n"
-msgstr ""
-" As variáveis PILOTPORT e PILOTRATE são usadas para especificar\n"
+msgstr " As variáveis PILOTPORT e PILOTRATE são usadas para especificar\n"
 
 #: utils.c:80
 msgid " which port to sync on, and at what speed.\n"
-msgstr ""
-" através de qual porta sincronizar, e com que velocidade.\n"
+msgstr " através de qual porta sincronizar, e com que velocidade.\n"
 
 #: utils.c:81
 msgid " If PILOTPORT is not set then it defaults to /dev/pilot.\n"
-msgstr ""
-" Se PILOTPORT não estiver definida, o padrão é /dev/pilot.\n"
+msgstr " Se PILOTPORT não estiver definida, o padrão é /dev/pilot.\n"
 
 #: utils.c:107
 msgid "Date compiled"
@@ -2867,20 +2739,17 @@ msgstr "Você deseja salvar este novo registro?"
 #: utils.c:1357
 #: KeyRing/keyring.c:1580
 msgid "Can't get HOME environment variable\n"
-msgstr ""
-"Não foi possível obter a variável HOME\n"
+msgstr "Não foi possível obter a variável HOME\n"
 
 #: utils.c:1364
 msgid "Your HOME environment variable is too long for me\n"
-msgstr ""
-"Sua variável de ambiente HOME é longa demais para mim\n"
+msgstr "Sua variável de ambiente HOME é longa demais para mim\n"
 
 #: utils.c:1389
 #: utils.c:1393
 #, c-format
 msgid "Can't create directory %s\n"
-msgstr ""
-"Não foi possível criar o diretório %s\n"
+msgstr "Não foi possível criar o diretório %s\n"
 
 #: utils.c:1399
 #, c-format
@@ -2894,35 +2763,29 @@ msgstr ""
 #: utils.c:1405
 #, c-format
 msgid "I can't write files in directory %s\n"
-msgstr ""
-"Não me é possível gravar arquivos no diretório %s\n"
+msgstr "Não me é possível gravar arquivos no diretório %s\n"
 
 #: utils.c:1461
 #: utils.c:1470
 msgid "Error writing PC header to file: next_id\n"
-msgstr ""
-"Erro ao escrever cabeçalho de PC no arquivo: next_id\n"
+msgstr "Erro ao escrever cabeçalho de PC no arquivo: next_id\n"
 
 #: utils.c:1466
 msgid "Error writing next id to file: next_id\n"
-msgstr ""
-"Erro ao escrever próxima ID no arquivo: next_id\n"
+msgstr "Erro ao escrever próxima ID no arquivo: next_id\n"
 
 #: utils.c:1483
 msgid "Error opening file: next_id\n"
-msgstr ""
-"Erro ao abrir arquivo: next_id\n"
+msgstr "Erro ao abrir arquivo: next_id\n"
 
 #: utils.c:1657
 #, c-format
 msgid "Couldn't find empty DB file %s: %s\n"
-msgstr ""
-"Não foi possível localizar arquivo DB vazio %s: %s\n"
+msgstr "Não foi possível localizar arquivo DB vazio %s: %s\n"
 
 #: utils.c:1660
 msgid " may not be installed.\n"
-msgstr ""
-" pode não estar instalado.\n"
+msgstr " pode não estar instalado.\n"
 
 #: utils.c:1839
 msgid "Error reading file"
@@ -2930,14 +2793,12 @@ msgstr "Erro lendo arquivo"
 
 #: utils.c:2516
 msgid "PC ID is 0.\n"
-msgstr ""
-"ID do PC é 0.\n"
+msgstr "ID do PC é 0.\n"
 
 #: utils.c:2517
 #, c-format
 msgid "I generated a new PC ID.  It is %lu\n"
-msgstr ""
-"Gerei uma nova ID de PC: %lu\n"
+msgstr "Gerei uma nova ID de PC: %lu\n"
 
 #: weekview_gui.c:326
 msgid "Weekly View"
@@ -3253,18 +3114,15 @@ msgstr "VISA"
 
 #: Expense/expense.c:1201
 msgid "Expense: Unknown category\n"
-msgstr ""
-"Despesas: categoria desconhecida\n"
+msgstr "Despesas: categoria desconhecida\n"
 
 #: Expense/expense.c:1207
 msgid "Expense: Unknown expense type\n"
-msgstr ""
-"Despesas: tipo de despesa desconhecido\n"
+msgstr "Despesas: tipo de despesa desconhecido\n"
 
 #: Expense/expense.c:1213
 msgid "Expense: Unknown payment type\n"
-msgstr ""
-"Despesas: tipo de pagamento desconhecido\n"
+msgstr "Despesas: tipo de pagamento desconhecido\n"
 
 #: Expense/expense.c:1390
 msgid "American Express"
@@ -3328,8 +3186,7 @@ msgstr "Participantes"
 
 #: KeyRing/keyring.c:199
 msgid "KeyRing: pack_KeyRing(): buf_size too small\n"
-msgstr ""
-"KeyRing: pack_KeyRing(): buf_size pequeno demais\n"
+msgstr "KeyRing: pack_KeyRing(): buf_size pequeno demais\n"
 
 #: KeyRing/keyring.c:1495
 msgid "Incorrect, Reenter KeyRing Password"
@@ -3345,19 +3202,16 @@ msgstr "Digine Senha KeyRing"
 
 #: KeyRing/keyring.c:1585
 msgid "Your HOME environment variable is too long(>1024)\n"
-msgstr ""
-"Sua variável HOME é longa demais (>1024)\n"
+msgstr "Sua variável HOME é longa demais (>1024)\n"
 
 #: KeyRing/keyring.c:1590
 #, c-format
 msgid "KeyRing: file %s not found.\n"
-msgstr ""
-"KeyRing: arquivo %s não encontrado.\n"
+msgstr "KeyRing: arquivo %s não encontrado.\n"
 
 #: KeyRing/keyring.c:1591
 msgid "KeyRing: Try Syncing.\n"
-msgstr ""
-"KeyRing: Tente Sincronizar.\n"
+msgstr "KeyRing: Tente Sincronizar.\n"
 
 #: KeyRing/keyring.c:1675
 #: KeyRing/keyring.c:1686
@@ -3397,3 +3251,4 @@ msgstr "Última alteração:"
 #: KeyRing/keyring.c:2174
 msgid "Generate Password"
 msgstr "Gerar Senha"
+
