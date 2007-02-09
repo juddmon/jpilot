@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.117 2006/07/30 14:01:00 rousseau Exp $ */
+/* $Id: utils.c,v 1.118 2007/02/09 16:39:27 rousseau Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -35,6 +35,7 @@
 #include <pi-address.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/file.h>
 /*#include <unistd.h> */
 #include <utime.h>
 #include <time.h>
@@ -1486,7 +1487,7 @@ int write_to_next_id(unsigned int unique_id)
 
    ret = write_to_next_id_open(pc_out, unique_id);
 
-   fclose(pc_out);
+   jp_close_home_file(pc_out);
 
    return ret;
 }
@@ -1509,7 +1510,7 @@ int get_next_unique_pc_id(unsigned int *next_unique_id)
       *next_unique_id=1;
       write_to_next_id_open(pc_in_out, *next_unique_id);
    }
-   fclose(pc_in_out);
+   jp_close_home_file(pc_in_out);
 
    /* Now that file has been verified we can use it to find the next id */
    pc_in_out = jp_open_home_file("next_id", "r+");
@@ -1538,7 +1539,7 @@ int get_next_unique_pc_id(unsigned int *next_unique_id)
    /*todo - if > 16777216 then cleanup */
 
    write_to_next_id_open(pc_in_out, *next_unique_id);
-   fclose(pc_in_out);
+   jp_close_home_file(pc_in_out);
    
    return EXIT_SUCCESS;
 }
@@ -1593,10 +1594,26 @@ FILE *jp_open_home_file(char *filename, char *mode)
       }
    }
 
+   /* lock access */
+   if (flock(fileno(pc_in), LOCK_EX) < 0)
+   {
+      jp_logf(JP_LOG_WARN, "locking failed: %s\n", strerror(errno));
+      return NULL;
+   }
+
    /* Enhance privacy by only allowing user to read & write files */
    chmod(fullname, 0600);
 
    return pc_in;
+}
+
+int jp_close_home_file(FILE *pc_in)
+{
+   /* unlock access */
+   if (flock(fileno(pc_in), LOCK_UN) < 0)
+      jp_logf(JP_LOG_WARN, "unlocking failed: %s\n", strerror(errno));
+
+   fclose(pc_in);
 }
 
 int rename_file(char *old_filename, char *new_filename)
@@ -1957,7 +1974,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 	 read_header(pc_in, &header);
 	 if (feof(pc_in)) {
 	    jp_logf(JP_LOG_WARN, _("Couldn't find record to delete\n"));
-	    fclose(pc_in);
+	    jp_close_home_file(pc_in);
 	    return EXIT_FAILURE;
 	 }
 	 /* Keep unique ID intact */
@@ -1970,7 +1987,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 	       header.rt=DELETED_PC_REC;
 	       write_header(pc_in, &header);
 	       jp_logf(JP_LOG_DEBUG, "record deleted\n");
-	       fclose(pc_in);
+	       jp_close_home_file(pc_in);
 	       return EXIT_SUCCESS;
 	    }
 	 } else {
@@ -1980,7 +1997,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 	    jp_logf(JP_LOG_WARN, "fseek failed\n");
 	 }
       }
-      fclose(pc_in);
+      jp_close_home_file(pc_in);
       return EXIT_FAILURE;
 
     case PALM_REC:
@@ -2066,7 +2083,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 #endif /* PILOT_LINK_0_12 */
 	 break;
        default:
-	 fclose(pc_in);
+	 jp_close_home_file(pc_in);
 #ifdef PILOT_LINK_0_12
 	 pi_buffer_free(RecordBuffer);
 #endif
@@ -2087,7 +2104,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       fwrite(RecordBuffer->data, header.rec_len, 1, pc_in);
 #endif /* PILOT_LINK_0_12 */
       jp_logf(JP_LOG_DEBUG, "record deleted\n");
-      fclose(pc_in);
+      jp_close_home_file(pc_in);
 #ifdef PILOT_LINK_0_12
       pi_buffer_free(RecordBuffer);
 #endif
@@ -2183,7 +2200,7 @@ int undelete_pc_record(AppType app_type, void *VP, int flag)
 
    pc_file2=jp_open_home_file(filename2, "w");
    if (!pc_file2) {
-      fclose(pc_file);
+      jp_close_home_file(pc_file);
       return EXIT_FAILURE;
    }
 
@@ -2238,10 +2255,10 @@ int undelete_pc_record(AppType app_type, void *VP, int flag)
       free(record);
    }
    if (pc_file) {
-      fclose(pc_file);
+      jp_close_home_file(pc_file);
    }
    if (pc_file2) {
-      fclose(pc_file2);
+      jp_close_home_file(pc_file2);
    }
 
    if (found) {
@@ -2307,7 +2324,7 @@ int cleanup_pc_file(char *DB_name, unsigned int *max_id)
 
    if (!compact_it) {
       jp_logf(JP_LOG_DEBUG, "No compacting needed\n");
-      fclose(pc_file);
+      jp_close_home_file(pc_file);
       return EXIT_SUCCESS;
    }
 
@@ -2315,7 +2332,7 @@ int cleanup_pc_file(char *DB_name, unsigned int *max_id)
 
    pc_file2=jp_open_home_file(pc_filename2, "w");
    if (!pc_file2) {
-      fclose(pc_file);
+      jp_close_home_file(pc_file);
       return EXIT_FAILURE;
    }
 
@@ -2376,10 +2393,10 @@ int cleanup_pc_file(char *DB_name, unsigned int *max_id)
       free(record);
    }
    if (pc_file) {
-      fclose(pc_file);
+      jp_close_home_file(pc_file);
    }
    if (pc_file2) {
-      fclose(pc_file2);
+      jp_close_home_file(pc_file2);
    }
 
    if (r>=0) {
