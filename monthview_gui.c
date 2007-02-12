@@ -1,4 +1,4 @@
-/* $Id: monthview_gui.c,v 1.35 2006/06/23 13:38:22 rousseau Exp $ */
+/* $Id: monthview_gui.c,v 1.36 2007/02/12 06:07:09 rikster5 Exp $ */
 
 /*******************************************************************************
  * monthview_gui.c
@@ -87,7 +87,7 @@ static void cb_quit(GtkWidget *widget, gpointer data)
    set_pref(PREF_MONTHVIEW_WIDTH, w, NULL, FALSE);
    set_pref(PREF_MONTHVIEW_HEIGHT, h, NULL, FALSE);
 
-   gtk_widget_destroy(data);
+   gtk_widget_destroy(window);
 }
 
 static void cb_month_move(GtkWidget *widget, gpointer data)
@@ -546,6 +546,9 @@ void monthview_gui(struct tm *date_in)
 #endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_quit), window);
+   /* Closing the window via a delete event uses the same cleanup routine */
+   gtk_signal_connect(GTK_OBJECT(window), "delete_event",
+		      GTK_SIGNAL_FUNC(cb_quit), NULL);
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
 
    /* Create a "Print" button */

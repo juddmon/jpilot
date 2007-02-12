@@ -1,4 +1,4 @@
-/* $Id: weekview_gui.c,v 1.33 2006/06/23 13:38:32 rousseau Exp $ */
+/* $Id: weekview_gui.c,v 1.34 2007/02/12 06:07:09 rikster5 Exp $ */
 
 /*******************************************************************************
  * weekview_gui.c
@@ -65,7 +65,7 @@ static void cb_quit(GtkWidget *widget, gpointer data)
    set_pref(PREF_WEEKVIEW_WIDTH, w, NULL, FALSE);
    set_pref(PREF_WEEKVIEW_HEIGHT, h, NULL, FALSE);
 
-   gtk_widget_destroy(data);
+   gtk_widget_destroy(window);
 }
 
 /*----------------------------------------------------------------------
@@ -369,7 +369,11 @@ void weekview_gui(struct tm *date_in)
    button = gtk_button_new_with_label(_("Close"));
 #endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_quit), window);
+		      GTK_SIGNAL_FUNC(cb_quit), NULL);
+   /* Closing the window via a delete event uses the same cleanup routine */
+   gtk_signal_connect(GTK_OBJECT(window), "delete_event",
+		      GTK_SIGNAL_FUNC(cb_quit), NULL);
+
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
 
    /* Create a "Print" button */
