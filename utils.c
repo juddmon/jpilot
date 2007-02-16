@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.118 2007/02/09 16:39:27 rousseau Exp $ */
+/* $Id: utils.c,v 1.119 2007/02/16 13:21:34 rousseau Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -1594,15 +1594,19 @@ FILE *jp_open_home_file(char *filename, char *mode)
       }
    }
 
-   /* lock access */
-   if (flock(fileno(pc_in), LOCK_EX) < 0)
+   /* if the file exists */
+   if (pc_in)
    {
-      jp_logf(JP_LOG_WARN, "locking failed: %s\n", strerror(errno));
-      return NULL;
-   }
+      /* lock access */
+      if (flock(fileno(pc_in), LOCK_EX) < 0)
+      {
+	 jp_logf(JP_LOG_WARN, "locking failed: %s\n", strerror(errno));
+	 return NULL;
+      }
 
-   /* Enhance privacy by only allowing user to read & write files */
-   chmod(fullname, 0600);
+      /* Enhance privacy by only allowing user to read & write files */
+      chmod(fullname, 0600);
+   }
 
    return pc_in;
 }
