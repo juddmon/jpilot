@@ -1,4 +1,4 @@
-/* $Id: address.c,v 1.42 2007/04/13 12:38:42 rousseau Exp $ */
+/* $Id: address.c,v 1.43 2007/04/13 12:40:04 rousseau Exp $ */
 
 /*******************************************************************************
  * address.c
@@ -46,7 +46,7 @@ static int glob_sort_rule;
 int sort_by_company=-1;
 
 #ifdef JPILOT_DEBUG
-int print_address_list(AddressList **al)
+void print_address_list(AddressList **al)
 {
    AddressList *temp_al, *prev_al;
 
