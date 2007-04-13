@@ -1,4 +1,4 @@
-/* $Id: address.c,v 1.41 2006/09/03 04:06:24 rikster5 Exp $ */
+/* $Id: address.c,v 1.42 2007/04/13 12:38:42 rousseau Exp $ */
 
 /*******************************************************************************
  * address.c
@@ -48,7 +48,7 @@ int sort_by_company=-1;
 #ifdef JPILOT_DEBUG
 int print_address_list(AddressList **al)
 {
-   AddressList *temp_al, *prev_al, *next;
+   AddressList *temp_al, *prev_al;
 
    for (prev_al=NULL, temp_al=*al; temp_al;
 	prev_al=temp_al, temp_al=temp_al->next) {
