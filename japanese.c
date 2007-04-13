@@ -1,4 +1,4 @@
-/* $Id: japanese.c,v 1.11 2005/12/18 15:05:40 rousseau Exp $ */
+/* $Id: japanese.c,v 1.12 2007/04/13 12:47:58 rousseau Exp $ */
 
 /*******************************************************************************
  * japanese.c
@@ -219,7 +219,7 @@ void Euc2Sjis(char *buf, int max_len)
 {
 	if (buf == NULL) return;
 	if (max_len <= 0) return;
-	(void *)Euc2SjisCpy(buf, buf, max_len);
+	Euc2SjisCpy(buf, buf, max_len);
 }
 
 /*
