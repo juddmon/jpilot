@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.127 2006/12/06 23:52:18 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.128 2007/04/13 13:14:23 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -156,6 +156,9 @@ static void cb_clist_selection(GtkWidget      *clist,
 			       gint           column,
 			       GdkEventButton *event,
 			       gpointer       data);
+
+char *address_app_info_labels[19+3];
+char *address_app_info_phoneLabels[8];
 
 static void init()
 {
@@ -1763,7 +1766,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 	    if (addr->entry[i2]) {
 	       if (i2>2 && i2<8) {
 		  gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL,
-				  address_app_info.phoneLabels[addr->phoneLabel[i2-3]], -1);
+				  address_app_info_phoneLabels[addr->phoneLabel[i2-3]], -1);
 	       } else {
 		  gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL, address_app_info.labels[i2], -1);
 	       }
@@ -1797,7 +1800,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 	 if (addr->entry[i2]) {
 	    if (i2>2 && i2<8) {
 	       gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL,
-			       address_app_info.phoneLabels[addr->phoneLabel[i2-3]],
+			       address_app_info_phoneLabels[addr->phoneLabel[i2-3]],
 			       -1);
 	    } else {
 	       gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL, address_app_info.labels[i2], -1);
@@ -2013,11 +2016,11 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
    for (i=0;i<NUM_ADDRESS_LABELS;i++) {
       jp_logf(JP_LOG_DEBUG, "labels[%02d]:",i);
-      print_string(address_app_info.labels[i],16);
+      print_string(address_app_info_labels[i],16);
    }
    for (i=0;i<8;i++) {
       jp_logf(JP_LOG_DEBUG, "phoneLabels[%d]:",i);
-      print_string(address_app_info.phoneLabels[i],16);
+      print_string(address_app_info_phoneLabels[i],16);
    }
    jp_logf(JP_LOG_DEBUG, "country %d\n",address_app_info.country);
    jp_logf(JP_LOG_DEBUG, "sortByCompany %d\n",address_app_info.sortByCompany);
@@ -2250,9 +2253,9 @@ static int make_phone_menu(int default_set, unsigned int callback_id, int set)
    group = NULL;
 
    for (i=0; i<8; i++) {
-      if (address_app_info.phoneLabels[i][0]) {
+      if (address_app_info_phoneLabels[i][0]) {
 	 menu_item[set][i] = gtk_radio_menu_item_new_with_label(
-			group, address_app_info.phoneLabels[i]);
+			group, address_app_info_phoneLabels[i]);
 	 gtk_signal_connect(GTK_OBJECT(menu_item[set][i]), "activate",
 			    GTK_SIGNAL_FUNC(cb_phone_menu),
 			    GINT_TO_POINTER(callback_id + i));
@@ -2539,12 +2542,24 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    get_address_app_info(&address_app_info);
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
+   /* Convert to host character set */
    for (i=0; i<NUM_ADDRESS_CAT_ITEMS; i++) {
       cat_name = charset_p2newj(address_app_info.category.name[i], 31, char_set);
       strcpy(sort_l[i].Pcat, cat_name);
       free(cat_name);
       sort_l[i].cat_num=i;
    }
+   if (char_set != CHAR_SET_LATIN1) {
+      for (i = 0; i < 19 + 3; i++)
+	 if (address_app_info.labels[i][0] != '\0') {
+	    address_app_info_labels[i] = charset_p2newj(address_app_info.labels[i],16, char_set);
+	 }
+      for (i = 0; i < 8; i++)
+	 if (address_app_info.phoneLabels[i][0] != '\0') {
+	    address_app_info_phoneLabels[i] = charset_p2newj(address_app_info.phoneLabels[i],16, char_set);
+	 }
+   }
+
    qsort(sort_l, NUM_ADDRESS_CAT_ITEMS, sizeof(struct sorted_cats), cat_compare);
 #ifdef JPILOT_DEBUG
    for (i=0; i<NUM_ADDRESS_CAT_ITEMS; i++) {
@@ -2789,7 +2804,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	 if (i2>2 && i2<8) {
 	    make_phone_menu(i2-3, (i2-3)<<4, i2-3);
 	 } else if (i2 < NUM_ADDRESS_ENTRIES) {
-	    label = gtk_label_new(address_app_info.labels[i2]);
+	    label = gtk_label_new(address_app_info_labels[i2]);
 	    /*gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_LEFT); */
 	    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
 	 } else {
@@ -2884,7 +2899,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	 if (i2>2 && i2<8) {
 	    make_phone_menu(i2-3, (i2-3)<<4, i2-3);
 	 } else {
-	    label = gtk_label_new(address_app_info.labels[i2]);
+	    label = gtk_label_new(address_app_info_labels[i2]);
 	    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
 	 }
 #ifdef ENABLE_GTK2

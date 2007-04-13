@@ -1,4 +1,4 @@
-/* $Id: address.c,v 1.43 2007/04/13 12:40:04 rousseau Exp $ */
+/* $Id: address.c,v 1.44 2007/04/13 13:14:23 rousseau Exp $ */
 
 /*******************************************************************************
  * address.c
@@ -397,7 +397,6 @@ int get_address_app_info(struct AddressAppInfo *ai)
    int num;
    int rec_size;
    unsigned char *buf;
-   long char_set;
 
    memset(ai, 0, sizeof(*ai));
    /* Put at least one entry in there */
@@ -411,21 +410,6 @@ int get_address_app_info(struct AddressAppInfo *ai)
    if ((num<0) || (rec_size<=0)) {
       jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), "AddressDB.pdb");
       return EXIT_FAILURE;
-   }
-
-   get_pref(PREF_CHAR_SET, &char_set, NULL);
-   if (char_set != CHAR_SET_LATIN1) {
-      /* Convert to host character set */
-      int i;
-
-      for (i = 0; i < 19 + 3; i++)
-	if (ai->labels[i][0] != '\0') {
-	   charset_p2j(ai->labels[i],16, char_set);
-	}
-      for (i = 0; i < 8; i++)
-	if (ai->phoneLabels[i][0] != '\0') {
-	   charset_p2j(ai->phoneLabels[i],16, char_set);
-	}
    }
 
    return EXIT_SUCCESS;
