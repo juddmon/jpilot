@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.63 2006/05/13 20:44:42 judd Exp $ */
+/* $Id: sync.c,v 1.64 2007/04/13 12:36:34 rousseau Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -627,6 +627,13 @@ int jp_sync(struct my_sync_info *sync_info)
 #endif
    char buf[1024];
    long char_set;
+#ifdef JPILOT_DEBUG
+#ifdef PILOT_LINK_0_12
+   pi_buffer_t *buffer;
+#else
+   unsigned char buffer[65536];
+#endif
+#endif
 
    /* Load the plugins since this is a forked process */
 #ifdef ENABLE_PLUGINS
