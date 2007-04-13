@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.108 2006/09/27 21:35:10 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.109 2007/04/13 12:53:26 rousseau Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -1368,7 +1368,6 @@ gint GtkClistCompareDates(GtkCList *clist,
 static void cb_clist_click_column(GtkWidget *clist, int column)
 {
    MyToDo *mtodo;
-   unsigned int unique_id;
 
    /* Remember currently selected item and return to it after sort 
     * This is critically important because sorting without updating the 
