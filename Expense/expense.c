@@ -1,4 +1,4 @@
-/* $Id: expense.c,v 1.50 2005/12/06 03:33:01 rikster5 Exp $ */
+/* $Id: expense.c,v 1.51 2007/04/13 12:45:11 rousseau Exp $ */
 
 /*******************************************************************************
  * expense.c
@@ -577,35 +577,6 @@ static char *get_entry_type(enum ExpenseType type)
       return NULL;
    }
 }
-
-#ifdef JPILOT_DEBUG
-/*
- * A utility function for getting textual data from an enum.
- */
-static char *get_pay_type(enum ExpensePayment type)
-{
-   switch (type) {
-    case epAmEx:
-      return _("AmEx");
-    case epCash:
-      return _("Cash");
-    case epCheck:
-      return _("Check");
-    case epCreditCard:
-      return _("CreditCard");
-    case epMasterCard:
-      return _("MasterCard");
-    case epPrepaid:
-      return _("Prepaid");
-    case epVISA:
-      return _("VISA");
-    case epUnfiled:
-      return _("Unfiled");
-    default:
-      return NULL;
-   }
-}
-#endif
 
 /* This function gets called when the "delete" button is pressed */
 static void cb_delete(GtkWidget *widget, gpointer data)
