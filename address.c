@@ -1,4 +1,4 @@
-/* $Id: address.c,v 1.44 2007/04/13 13:14:23 rousseau Exp $ */
+/* $Id: address.c,v 1.45 2007/05/30 21:44:57 rikster5 Exp $ */
 
 /*******************************************************************************
  * address.c
@@ -59,11 +59,12 @@ void print_address_list(AddressList **al)
 
 int address_compare(const void *v1, const void *v2)
 {
-   char *str1, *str2;
-   int sort1, sort2, sort3;
    AddressList **al1, **al2;
    struct Address *a1, *a2;
-   int i;
+   char *str1, *str2;
+   int last_cmp1, last_cmp2;
+   int sort_idx[4];
+   int i, j, r;
 
    al1=(AddressList **)v1;
    al2=(AddressList **)v2;
@@ -72,88 +73,85 @@ int address_compare(const void *v1, const void *v2)
    a2=&((*al2)->maddr.addr);
 
    if (glob_sort_rule & SORT_BY_COMPANY) {
-      sort1=2; /*company */
-      sort2=0; /*last name */
-      sort3=1; /*first name */
+      sort_idx[1] = 2; /* company    */
+      sort_idx[2] = 0; /* last name  */
+      sort_idx[3] = 1; /* first name */
    } else {
-      sort1=0; /*last name */
-      sort2=1; /*first name */
-      sort3=2; /*company */
+      sort_idx[1] = 0; /* last name  */
+      sort_idx[2] = 1; /* first name */
+      sort_idx[3] = 2; /* company    */
    }
-   /* sort_rule: */
-     /* SORT_BY_COMPANY */
-   /*0 last, first or */
-   /*1 company, last */
-     /* SORT_JAPANESE */
-        /* 0 no use */
-        /* 2 use japanese */
-     /* SORT_JOS */
-        /* 0 no use */
-        /* 4 using J-OS */
 
+   last_cmp1=last_cmp2=0;
    str1=str2=NULL;
 
-
    if (!(glob_sort_rule & SORT_JAPANESE) | (glob_sort_rule & SORT_JOS)) { /* normal */
-      if (a1->entry[sort1] || a1->entry[sort2]) {
-	 if (a1->entry[sort1] && a1->entry[sort2]) {
-	    if ((str1 = malloc(strlen(a1->entry[sort1])+strlen(a1->entry[sort2])+1)) == NULL) {
-	       return 0;
-	    }
-	    strcpy(str1, a1->entry[sort1]);
-	    strcat(str1, a1->entry[sort2]);
-	 }
-	 if (a1->entry[sort1] && (!a1->entry[sort2])) {
-	    if ((str1 = malloc(strlen(a1->entry[sort1])+1)) == NULL) {
-	       return 0;
-	    }
-	    strcpy(str1, a1->entry[sort1]);
-	 }
-	 if ((!a1->entry[sort1]) && a1->entry[sort2]) {
-	    if ((str1 = malloc(strlen(a1->entry[sort2])+1)) == NULL) {
-	       return 0;
-	    }
-	    strcpy(str1, a1->entry[sort2]);
-	 }
-      } else if (a1->entry[sort3]) {
-	 if ((str1 = malloc(strlen(a1->entry[sort3])+1)) == NULL) {
-	    return 0;
-	 }
-	 strcpy(str1, a1->entry[sort3]);
-      } else {
-	 return -1;
-      }
+      while (last_cmp1 < 3 && last_cmp2 < 3) {
+         /* Find the next non-blank field to use for sorting */
+         for (i=last_cmp1+1; i<=3; i++) {
+            if (a1->entry[sort_idx[i]]) {
+               if ((str1 = malloc(strlen(a1->entry[sort_idx[i]])+1)) == NULL) {
+                  return 0;
+               }
+               strcpy(str1, a1->entry[sort_idx[i]]);
+               /* Convert string to lower case for more accurate comparison */
+               for (j=strlen(str1)-1; j >= 0; j--) {
+                  str1[j] = tolower(str1[j]);
+               }
+               break;
+            }
+         }
+         last_cmp1 = i;
 
-      if (a2->entry[sort1] || a2->entry[sort2]) {
-	 if (a2->entry[sort1] && a2->entry[sort2]) {
-	    if ((str2 = malloc(strlen(a2->entry[sort1])+strlen(a2->entry[sort2])+1)) == NULL) {
-	       return 0;
-	    }
-	    strcpy(str2, a2->entry[sort1]);
-	    strcat(str2, a2->entry[sort2]);
-	 }
-	 if (a2->entry[sort1] && (!a2->entry[sort2])) {
-	    if ((str2 = malloc(strlen(a2->entry[sort1])+1)) == NULL) {
-	       return 0;
-	    }
-	    strcpy(str2, a2->entry[sort1]);
-	 }
-	 if ((!a2->entry[sort1]) && a2->entry[sort2]) {
-	    if ((str2 = malloc(strlen(a2->entry[sort2])+1)) == NULL) {
-	       return 0;
-	    }
-	    strcpy(str2, a2->entry[sort2]);
-	 }
-      } else if (a2->entry[sort3]) {
-	 if ((str2 = malloc(strlen(a2->entry[sort3])+1)) == NULL) {
-	    return 0;
-	 }
-	 strcpy(str2, a2->entry[sort3]);
-      } else {
-	 free(str1);
-	 return 1;
-      }
+         if (!str1) {
+            return -1;
+         }
+
+         for (i=last_cmp2+1; i<=3; i++) {
+            if (a2->entry[sort_idx[i]]) {
+               if ((str2 = malloc(strlen(a2->entry[sort_idx[i]])+1)) == NULL) {
+                  return 0;
+               }
+               strcpy(str2, a2->entry[sort_idx[i]]);
+               for (j=strlen(str2)-1; j >= 0; j--) {
+                  str2[j] = tolower(str2[j]);
+               }
+               break;
+            }
+         }
+         last_cmp2 = i;
+
+         if (!str2) {
+            free(str1);
+            return 1;
+         }
+
+         r = strcoll(str1, str2);
+
+         if (str1) {
+            free(str1);
+         }
+         if (str2) {
+            free(str2);
+         }
+
+         if (r != 0) {
+            return r;
+         }
+
+         /* Comparisons between unequal fields, such as last name and company
+          * must assume that the other fields are blank.  This matches
+          * Palm sort ordering. */
+         if (last_cmp1 != last_cmp2) {
+            return (last_cmp2 - last_cmp1);
+         }
+      }   /* end of while loop to search over 3 fields */
+
+      /* Compared all search fields and no difference found */
+      return 0;
+
    } else if ((glob_sort_rule & SORT_JAPANESE) && !(glob_sort_rule & SORT_JOS)){
+      int sort1, sort2, sort3;
       char *tmp_p1, *tmp_p2, *tmp_p3;
       if (a1->entry[sort1] || a1->entry[sort2]) {
 	 if (a1->entry[sort1] && a1->entry[sort2]) {
@@ -186,7 +184,7 @@ int address_compare(const void *v1, const void *v2)
 	 }
 	 strcpy(str1, tmp_p3);
       } else {
-	 return -1;
+	 return 1;
       }
 
       if (a2->entry[sort1] || a2->entry[sort2]) {
@@ -221,26 +219,26 @@ int address_compare(const void *v1, const void *v2)
 	 strcpy(str2, tmp_p3);
       } else {
 	 free(str1);
-	 return 1;
+	 return -1;
       }
-   }
 
-   /* lower case the strings for a better compare */
-   for (i=strlen(str1)-1; i >= 0; i--) {
-      str1[i] = tolower(str1[i]);
-   }
-   for (i=strlen(str2)-1; i >= 0; i--) {
-      str2[i] = tolower(str2[i]);
-   }
+      /* lower case the strings for a better compare */
+      for (i=strlen(str1)-1; i >= 0; i--) {
+         str1[i] = tolower(str1[i]);
+      }
+      for (i=strlen(str2)-1; i >= 0; i--) {
+         str2[i] = tolower(str2[i]);
+      }
 
-   i = strcoll(str2, str1);
-   if (str1) {
-      free(str1);
+      i = strcoll(str1, str2);
+      if (str1) {
+         free(str1);
+      }
+      if (str2) {
+         free(str2);
+      }
+      return i;
    }
-   if (str2) {
-      free(str2);
-   }
-   return i;
 }
 
 /*
@@ -299,18 +297,18 @@ int address_sort(AddressList **al, int sort_order)
 
    /* Put the linked list in the order of the array */
    if (sort_order==SORT_ASCENDING) {
+      sort_al[count-1]->next = NULL;
+      for (i=count-1; i>0; i--) {
+	 sort_al[i-1]->next=sort_al[i];
+      }
+      *al = sort_al[0];
+   } else {
+      /* Descending order */
       for (i=count-1; i>0; i--) {
 	 sort_al[i]->next=sort_al[i-1];
       }
       sort_al[0]->next = NULL;
       *al = sort_al[count-1];
-   } else {
-      /* Descending order */
-      sort_al[count-1]->next = NULL;
-      for (i=count-1; i; i--) {
-	 sort_al[i-1]->next=sort_al[i];
-      }
-      *al = sort_al[0];
    }
 
    free(sort_al);
