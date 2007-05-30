@@ -1,4 +1,4 @@
-/* $Id: address.c,v 1.45 2007/05/30 21:44:57 rikster5 Exp $ */
+/* $Id: address.c,v 1.46 2007/05/30 22:31:36 rikster5 Exp $ */
 
 /*******************************************************************************
  * address.c
@@ -83,10 +83,10 @@ int address_compare(const void *v1, const void *v2)
    }
 
    last_cmp1=last_cmp2=0;
-   str1=str2=NULL;
 
    if (!(glob_sort_rule & SORT_JAPANESE) | (glob_sort_rule & SORT_JOS)) { /* normal */
       while (last_cmp1 < 3 && last_cmp2 < 3) {
+	 str1=str2=NULL;
          /* Find the next non-blank field to use for sorting */
          for (i=last_cmp1+1; i<=3; i++) {
             if (a1->entry[sort_idx[i]]) {
