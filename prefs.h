@@ -1,4 +1,4 @@
-/* $Id: prefs.h,v 1.42 2005/12/11 20:39:00 judd Exp $ */
+/* $Id: prefs.h,v 1.43 2007/06/05 19:39:48 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs.h
@@ -111,8 +111,10 @@
 #define PREF_DATEBOOK_ANNI_YEARS 83
 #define PREF_KEYRING_PANE 84
 #define PREF_EXPENSE_PANE 85
+#define PREF_TODO_SORT_COLUMN 86
+#define PREF_TODO_SORT_ORDER 87
 
-#define NUM_PREFS 86
+#define NUM_PREFS 88
 
 #define MAX_PREF_NUM_BACKUPS 99
 

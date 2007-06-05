@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.110 2007/06/05 18:48:05 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.111 2007/06/05 19:39:48 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -1989,6 +1989,8 @@ int todo_gui_cleanup()
    set_pref(PREF_TODO_PANE, GTK_PANED(pane)->handle_xpos, NULL, TRUE);
 #endif
    set_pref(PREF_LAST_TODO_CATEGORY, todo_category, NULL, TRUE);
+   set_pref(PREF_TODO_SORT_COLUMN, clist_col_selected, NULL, TRUE);
+   set_pref(PREF_TODO_SORT_ORDER, GTK_CLIST(clist)->sort_type, NULL, TRUE);
 
    return EXIT_SUCCESS;
 }
@@ -2136,6 +2138,24 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), TODO_NOTE_COLUMN, TRUE);
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), TODO_DATE_COLUMN, TRUE);
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), TODO_TEXT_COLUMN, FALSE);
+
+   /* Restore previous sorting configuration */
+   get_pref(PREF_TODO_SORT_COLUMN, &ivalue, NULL);
+   clist_col_selected = ivalue;
+   gtk_clist_set_sort_column(GTK_CLIST(clist), clist_col_selected);
+   switch (clist_col_selected) {
+    case TODO_CHECK_COLUMN: /* Checkbox column */
+      gtk_clist_set_compare_func(GTK_CLIST(clist),GtkClistCompareCheckbox);
+      break;
+    case TODO_DATE_COLUMN:  /* Due Date column */
+      gtk_clist_set_compare_func(GTK_CLIST(clist),GtkClistCompareDates);
+      break;
+    default: /* All other columns can use GTK default sort function */
+      gtk_clist_set_compare_func(GTK_CLIST(clist),NULL);
+      break;
+   }
+   get_pref(PREF_TODO_SORT_ORDER, &ivalue, NULL);
+   gtk_clist_set_sort_type(GTK_CLIST (clist), ivalue);
 
    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
 
