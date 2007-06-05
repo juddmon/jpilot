@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.144 2006/08/28 01:44:38 judd Exp $ */
+/* $Id: datebook_gui.c,v 1.145 2007/06/05 18:48:04 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -2534,8 +2534,9 @@ cb_record_changed(GtkWidget *widget,
    }
    else if (record_changed==UNDELETE_FLAG)
    {
-      jp_logf(JP_LOG_INFO|JP_LOG_GUI, _("This record is deleted.\n"
-	   "Undelete it or copy it to make changes.\n"));
+      jp_logf(JP_LOG_INFO|JP_LOG_GUI, 
+              _("This record is deleted.\n"
+	        "Undelete it or copy it to make changes.\n"));
    }
 }
 

@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.109 2007/04/13 12:53:26 rousseau Exp $ */
+/* $Id: todo_gui.c,v 1.110 2007/06/05 18:48:05 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -277,8 +277,9 @@ cb_record_changed(GtkWidget *widget,
    }
    else if (record_changed==UNDELETE_FLAG)
    {
-      jp_logf(JP_LOG_INFO|JP_LOG_GUI, _("This record is deleted.\n"
-	   "Undelete it or copy it to make changes.\n"));
+      jp_logf(JP_LOG_INFO|JP_LOG_GUI, 
+              _("This record is deleted.\n"
+	        "Undelete it or copy it to make changes.\n"));
    }
 }
 
