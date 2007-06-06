@@ -1,4 +1,4 @@
-/* $Id: libplugin.c,v 1.29 2006/07/30 13:57:00 rousseau Exp $ */
+/* $Id: libplugin.c,v 1.30 2007/06/06 02:45:10 rikster5 Exp $ */
 
 /*******************************************************************************
  * libplugin.c
@@ -339,15 +339,10 @@ static void free_mem_rec_header(mem_rec_header **mem_rh)
 /* void free_buf_rec_list(GList **br_list) */
 int jp_free_DB_records(GList **br_list)
 {
-   GList *temp_list, *first;
+   GList *temp_list;
    buf_rec *br;
 
-   /* Go to first entry in the list */
-   first=NULL;
-   for (temp_list = *br_list; temp_list; temp_list = temp_list->prev) {
-      first = temp_list;
-   }
-   for (temp_list = first; temp_list; temp_list = temp_list->next) {
+   for (temp_list = *br_list; temp_list; temp_list = temp_list->next) {
       if (temp_list->data) {
 	 br=temp_list->data;
 	 if (br->buf) {
@@ -920,6 +915,7 @@ int jp_read_DB_files(char *DB_name, GList **records)
 	 /* g_list_append parses the list to get to the end on every call.
 	  * To speed it up we have to give the last record
 	  */
+         /*
 	 if (*records==NULL) {
 	    *records = g_list_append(*records, temp_br);
 	    end_of_list=*records;
@@ -929,6 +925,8 @@ int jp_read_DB_files(char *DB_name, GList **records)
 	       end_of_list=end_of_list->next;
 	    }
 	 }
+         */
+         *records = g_list_prepend(*records, temp_br);
 
 	 recs_returned++;
       }
@@ -961,30 +959,12 @@ int jp_read_DB_files(char *DB_name, GList **records)
       if (temp_br->rt!=DELETED_PALM_REC  &&
 	  temp_br->rt!=MODIFIED_PALM_REC &&
 	  temp_br->rt!=DELETED_DELETED_PALM_REC) {
-
-	 /* g_list_append parses the list to get to the end on every call.
-	  * To speed it up we have to give the last record
-	  */
-	 if (*records==NULL) {
-	    *records = g_list_append(*records, temp_br);
-	    end_of_list=*records;
-	 } else {
-	    *records = g_list_append(end_of_list, temp_br);
-	    if (end_of_list->next) {
-	       end_of_list=end_of_list->next;
-	    }
-	 }
+         *records = g_list_prepend(*records, temp_br);
          temp_br_used = 1;
 	 recs_returned++;
       }
       if ((temp_br->rt==DELETED_PALM_REC) || (temp_br->rt==MODIFIED_PALM_REC)) {
-	 temp_list=*records;
-	 if (*records) {
-	    while(temp_list->prev) {
-	       temp_list=temp_list->prev;
-	    }
-	 }
-	 for (; temp_list; temp_list=temp_list->next) {
+	 for (temp_list=*records; temp_list; temp_list=temp_list->next) {
 	    if (((buf_rec *)temp_list->data)->unique_id == temp_br->unique_id) {
 	       if (((buf_rec *)temp_list->data)->rt == PALM_REC) {
 		  ((buf_rec *)temp_list->data)->rt = temp_br->rt;

@@ -1,4 +1,4 @@
-/* $Id: datebook.c,v 1.49 2005/12/18 15:05:40 rousseau Exp $ */
+/* $Id: datebook.c,v 1.50 2007/06/06 02:45:09 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook.c
@@ -954,10 +954,7 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
      return 0;
 
    if (total_records) *total_records = num;
-   /* Go to first entry in the list */
-   for (temp_list = records; temp_list; temp_list = temp_list->prev) {
-      records = temp_list;
-   }
+
    for (i=0, temp_list = records; temp_list; temp_list = temp_list->next, i++) {
       if (temp_list->data) {
 	 br=temp_list->data;

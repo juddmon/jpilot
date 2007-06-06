@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.65 2006/10/05 14:20:55 rousseau Exp $ */
+/* $Id: keyring.c,v 1.66 2007/06/06 02:45:10 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -391,11 +391,6 @@ static int get_keyring(struct MyKeyRing **mkr_list, int category)
    /* Read raw database of records */
    if (jp_read_DB_files("Keys-Gtkr", &records) == -1)
      return 0;
-
-   /* Go to first entry in the list */
-   for (temp_list = records; temp_list; temp_list = temp_list->prev) {
-      records = temp_list;
-   }
 
    /* Get preferences used for filtering */
    get_pref(PREF_SHOW_MODIFIED, &keep_modified, NULL);
@@ -1672,7 +1667,7 @@ static int verify_pasword(char *ascii_password)
 
    password_not_correct = 1;
    /* Find special record marked as password */
-   for (temp_list = records; temp_list; temp_list = temp_list->prev) {
+   for (temp_list = records; temp_list; temp_list = temp_list->next) {
       if (temp_list->data) {
 	 br=temp_list->data;
       } else {

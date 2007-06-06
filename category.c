@@ -1,4 +1,4 @@
-/* $Id: category.c,v 1.28 2005/12/18 14:54:39 rousseau Exp $ */
+/* $Id: category.c,v 1.29 2007/06/06 02:45:09 rikster5 Exp $ */
 
 /*******************************************************************************
  * category.c
@@ -78,10 +78,6 @@ int jp_count_records_in_cat(char *db_name, int cat_index)
    if (-1 == num)
      return 0;
 
-   /* Go to first entry in the list */
-   for (temp_list = records; temp_list; temp_list = temp_list->prev) {
-      records = temp_list;
-   }
    for (i=0, temp_list = records; temp_list; temp_list = temp_list->next, i++) {
       if (temp_list->data) {
 	 br=temp_list->data;
@@ -356,10 +352,6 @@ int edit_cats_change_cats_pdb(char *DB_name, int old_cat, int new_cat)
    if (-1 == r)
      return 0;
 
-   /* Go to first entry in the list */
-   for (temp_list = records; temp_list; temp_list = temp_list->prev) {
-      records = temp_list;
-   }
    for (i=0, temp_list = records; temp_list; temp_list = temp_list->next, i++) {
       if (temp_list->data) {
 	 br=temp_list->data;

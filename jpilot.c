@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.144 2006/11/15 21:49:20 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.145 2007/06/06 02:45:09 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -1501,10 +1501,6 @@ const char *user_icon[] = {
    }
 
 #ifdef ENABLE_PLUGINS
-   /* Go to first entry in the list */
-   for (temp_list = plugin_list; temp_list; temp_list = temp_list->prev)
-      plugin_list = temp_list;
-
    /* Count the plugin/ entries */
    for (count=0, temp_list = plugin_list;
 	temp_list; temp_list = temp_list->next) {

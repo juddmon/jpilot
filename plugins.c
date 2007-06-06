@@ -1,4 +1,4 @@
-/* $Id: plugins.c,v 1.16 2005/05/08 15:57:31 judd Exp $ */
+/* $Id: plugins.c,v 1.17 2007/06/06 02:45:10 rikster5 Exp $ */
 
 /*******************************************************************************
  * plugins.c
@@ -109,9 +109,6 @@ int load_plugins_sub1(DIR *dir, char *path, int *number, unsigned char user_only
 	       return count;
 	    }
 	    memcpy(new_plugin, &temp_plugin, sizeof(struct plugin_s));
-	    /* g_list_append searches the list until it reaches the end
-	     * we want to avoid that slowness, prepend works for that
-	     * in this case since we have the head */
 	    plugins = g_list_prepend(plugins, new_plugin);
 	    count++;
 	    (*number)++;
@@ -167,10 +164,6 @@ int load_plugins()
    if (dir) {
       count += load_plugins_sub1(dir, path, &number, 1);
       closedir(dir);
-   }
-   /* Go to first entry in the list */
-   for (temp_list = plugins; temp_list; temp_list = temp_list->prev) {
-      plugins = temp_list;
    }
 
    get_plugin_sync_bits();
@@ -419,10 +412,6 @@ void free_plugin_list(GList **plugin_list)
    GList *temp_list;
    struct plugin_s *p;
 
-   /* Go to first entry in the list */
-   for (temp_list = *plugin_list; temp_list; temp_list = temp_list->prev) {
-      *plugin_list = temp_list;
-   }
    for (temp_list = *plugin_list; temp_list; temp_list = temp_list->next) {
       if (temp_list->data) {
 	 p=temp_list->data;

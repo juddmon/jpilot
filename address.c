@@ -1,4 +1,4 @@
-/* $Id: address.c,v 1.46 2007/05/30 22:31:36 rikster5 Exp $ */
+/* $Id: address.c,v 1.47 2007/06/06 02:45:09 rikster5 Exp $ */
 
 /*******************************************************************************
  * address.c
@@ -462,10 +462,6 @@ int get_addresses2(AddressList **address_list, int sort_order,
    if (-1 == num)
      return 0;
 
-   /* Go to first entry in the list */
-   for (temp_list = records; temp_list; temp_list = temp_list->prev) {
-      records = temp_list;
-   }
    for (i=0, temp_list = records; temp_list; temp_list = temp_list->next, i++) {
       if (temp_list->data) {
 	 br=temp_list->data;

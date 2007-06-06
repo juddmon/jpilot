@@ -1,4 +1,4 @@
-/* $Id: memo.c,v 1.35 2005/09/26 03:27:59 judd Exp $ */
+/* $Id: memo.c,v 1.36 2007/06/06 02:45:10 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo.c
@@ -303,10 +303,7 @@ int get_memos2(MemoList **memo_list, int sort_order,
       if (-1 == num)
         return 0;
    }
-   /* Go to first entry in the list */
-   for (temp_list = records; temp_list; temp_list = temp_list->prev) {
-      records = temp_list;
-   }
+
    for (i=0, temp_list = records; temp_list; temp_list = temp_list->next, i++) {
       if (temp_list->data) {
 	 br=temp_list->data;

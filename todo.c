@@ -1,4 +1,4 @@
-/* $Id: todo.c,v 1.41 2006/12/07 15:11:35 rikster5 Exp $ */
+/* $Id: todo.c,v 1.42 2007/06/06 02:45:10 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo.c
@@ -464,10 +464,7 @@ int get_todos2(ToDoList **todo_list, int sort_order,
    if (-1 == num)
       return 0;
 #endif
-   /* Go to first entry in the list */
-   for (temp_list = records; temp_list; temp_list = temp_list->prev) {
-      records = temp_list;
-   }
+
    for (i=0, temp_list = records; temp_list; temp_list = temp_list->next, i++) {
       if (temp_list->data) {
 	 br=temp_list->data;

@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.64 2007/04/13 12:36:34 rousseau Exp $ */
+/* $Id: sync.c,v 1.65 2007/06/06 02:45:10 rikster5 Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -1446,10 +1446,6 @@ void free_file_name_list(GList **Plist)
    if (!Plist) return;
    list = *Plist;
 
-   /* Go to first entry in the list */
-   for (temp_list = *Plist; temp_list; temp_list = temp_list->prev) {
-      list = temp_list;
-   }
    for (temp_list = list; temp_list; temp_list = temp_list->next) {
       if (temp_list->data) {
 	 free(temp_list->data);
@@ -1471,14 +1467,11 @@ void move_removed_apps(GList *file_list)
    GList *list, *temp_list;
    int found;
 
-   list = NULL;
-   for (temp_list = file_list; temp_list; temp_list = temp_list->prev) {
-      list = temp_list;
-   }
+   list = file_list;
 
 #ifdef JPILOT_DEBUG
    printf("printing file list\n");
-   for (temp_list = list; temp_list; temp_list = temp_list->next) {
+   for (temp_list = file_list; temp_list; temp_list = temp_list->next) {
       if (temp_list->data) {
 	 printf("File list [%s]\n", (char *)temp_list->data);
       }
@@ -1739,15 +1732,7 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
 
       /* Add this to our file name list if not manually skipped */
       jp_logf(JP_LOG_DEBUG, "appending [%s]\n", db_copy_name);
-      if (file_list==NULL) {
-	 file_list = g_list_append(file_list, strdup(db_copy_name));
-	 end_of_list=file_list;
-      } else {
-	 file_list = g_list_append(file_list, strdup(db_copy_name));
-	 if (end_of_list->next) {
-	    end_of_list=end_of_list->next;
-	 }
-      }
+      file_list = g_list_prepend(file_list, strdup(db_copy_name));
 
       if ( (mode==0) && (!main_app) ) {
 	 continue;
