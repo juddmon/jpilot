@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.129 2007/06/05 18:48:05 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.130 2007/06/14 14:21:00 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -39,6 +39,7 @@
 #include "export.h"
 #include <pi-dlp.h>
 #include "stock_buttons.h"
+#include "otherconv.h"
 
 /* There are a large number of calls to gtk_text_insert in the code.  To
  * add ifdef/endif blocks around all of them would make the code unreadable.
@@ -1800,11 +1801,23 @@ static void cb_clist_selection(GtkWidget      *clist,
 	 i2=order[i];
 	 if (addr->entry[i2]) {
 	    if (i2>2 && i2<8) {
-	       gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL,
-			       address_app_info_phoneLabels[addr->phoneLabel[i2-3]],
-			       -1);
+	       char *label = address_app_info_phoneLabels[addr->phoneLabel[i2-3]];
+#ifdef ENABLE_GTK2
+	       label = other_to_UTF(label, strlen(label));
+#endif
+	       gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL, label, -1);
+#ifdef ENABLE_GTK2
+	       g_free(label);
+#endif
 	    } else {
-	       gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL, address_app_info.labels[i2], -1);
+	       char *label = address_app_info.labels[i2];
+#ifdef ENABLE_GTK2
+	       label = other_to_UTF(label, strlen(label));
+#endif
+	       gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL, label, -1);
+#ifdef ENABLE_GTK2
+	       g_free(label);
+#endif
 	    }
 	    gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL, ": ", -1);
 	    gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL, addr->entry[i2], -1);
