@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.13 2007/06/15 14:53:54 rousseau Exp $
+# $Id: Makefile.am,v 1.14 2007/06/15 14:57:17 rousseau Exp $
 
 # Install the man pages
 raw_mans = jpilot.man jpilot-dial.man jpilot-sync.man jpilot-dump.man
@@ -38,7 +38,8 @@ doc_DATA = \
 	jpilot-todo.png \
 	jpilot-toplogo.jpg
 
-EXTRA_DIST = $(raw_mans) $(man_MANS) $(misc_DATA) $(doc_DATA) 
+EXTRA_DIST = $(raw_mans) $(misc_DATA) $(doc_DATA) 
+DISTCLEANFILES = $(man_MANS)
 
 # Make rule to build man pages
 %.1 : %.man
