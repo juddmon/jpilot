@@ -1,6 +1,6 @@
-# $Id: Makefile.am,v 1.4 2006/09/28 18:36:20 rikster5 Exp $
+# $Id: Makefile.am,v 1.5 2007/06/15 14:53:54 rousseau Exp $
 
-icondir = $(datadir)/doc/$(PACKAGE)-$(VERSION)/icons
+icondir = $(datadir)/doc/$(PACKAGE)/icons
 icon_DATA = \
 	jpilot-icon1.xpm \
 	jpilot-icon2.xpm \

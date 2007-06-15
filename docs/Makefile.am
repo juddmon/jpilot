@@ -1,11 +1,11 @@
-# $Id: Makefile.am,v 1.12 2006/10/03 20:56:18 rikster5 Exp $
+# $Id: Makefile.am,v 1.13 2007/06/15 14:53:54 rousseau Exp $
 
 # Install the man pages
 raw_mans = jpilot.man jpilot-dial.man jpilot-sync.man jpilot-dump.man
 man_MANS = jpilot.1 jpilot-dial.1 jpilot-sync.1 jpilot-dump.1
 
 # Install the standard GNU doc files
-miscdir = $(datadir)/doc/$(PACKAGE)-$(VERSION)
+miscdir = $(datadir)/doc/$(PACKAGE)
 misc_DATA = \
 	../BUGS \
 	../ChangeLog \
