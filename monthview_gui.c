@@ -1,4 +1,4 @@
-/* $Id: monthview_gui.c,v 1.36 2007/02/12 06:07:09 rikster5 Exp $ */
+/* $Id: monthview_gui.c,v 1.37 2007/07/22 17:29:24 rikster5 Exp $ */
 
 /*******************************************************************************
  * monthview_gui.c
@@ -132,22 +132,26 @@ static void cb_month_print(GtkWidget *widget, gpointer data)
 static void cb_enter_notify(GtkWidget *widget, GdkEvent *event, gpointer data)
 {
    static int prev_day=-1;
+#ifdef ENABLE_GTK2
+   GtkWidget *textview;
+#endif 
    GString *gstr;
-
+   
    if (prev_day==GPOINTER_TO_INT(data)+1-glob_offset) {
       return;
    }
    prev_day = GPOINTER_TO_INT(data)+1-glob_offset;
 
-   gstr = gtk_object_get_data(GTK_OBJECT(widget), "gstr");
-
 #ifdef ENABLE_GTK2
+   textview = gtk_bin_get_child(GTK_BIN(widget));
+   gstr = gtk_object_get_data(GTK_OBJECT(textview), "gstr");
    if (gstr) {
       gtk_text_buffer_set_text(GTK_TEXT_BUFFER(big_text_buffer), gstr->str, -1);
    } else {
       gtk_text_buffer_set_text(GTK_TEXT_BUFFER(big_text_buffer), "", -1);
    }
 #else
+   gstr = gtk_object_get_data(GTK_OBJECT(widget), "gstr");
    gtk_text_set_point(GTK_TEXT(big_text),
 		      gtk_text_get_length(GTK_TEXT(big_text)));
    gtk_text_backward_delete(GTK_TEXT(big_text),
@@ -259,6 +263,9 @@ void create_month_boxes_texts(GtkWidget *month_vbox)
    GtkWidget *hbox_row;
    GtkWidget *vbox;
    GtkWidget *text;
+#ifdef ENABLE_GTK2
+   GtkWidget *event_box;
+#endif
    char str[80];
 
    n=0;
@@ -289,21 +296,33 @@ void create_month_boxes_texts(GtkWidget *month_vbox)
 	    gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(text), FALSE);
 	    gtk_text_view_set_editable(GTK_TEXT_VIEW(text), FALSE);
 	    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text), GTK_WRAP_WORD);
-	    /* motion notify is overkill but the enter_notify event doesn't work */
-	    gtk_signal_connect(GTK_OBJECT(text), "motion_notify_event",
+
+            /* textview widget does not support window events such as 
+             * enter_notify.  The widget must be wrapped in an event box 
+             * in order to work correctly. */
+            event_box = gtk_event_box_new();
+            gtk_container_add(GTK_CONTAINER(event_box), text);
+
+	    gtk_signal_connect(GTK_OBJECT(event_box), "enter_notify_event",
 			       GTK_SIGNAL_FUNC(cb_enter_notify), GINT_TO_POINTER(n));
+	    gtk_signal_connect(GTK_OBJECT(text), "button_press_event",
+			       GTK_SIGNAL_FUNC(cb_enter_selected_day),
+			       GINT_TO_POINTER(n));
+
+	    gtk_box_pack_start(GTK_BOX(vbox), event_box, TRUE, TRUE, 0);
+
 #else
 	    text = glob_month_texts[n] = gtk_text_new(NULL, NULL);
 	    gtk_widget_set_usize(GTK_WIDGET(glob_month_texts[n]), 10, 10);
 	    gtk_text_set_word_wrap(GTK_TEXT(glob_month_texts[n]), FALSE);
 	    gtk_signal_connect(GTK_OBJECT(glob_month_texts[n]), "enter_notify_event",
 			       GTK_SIGNAL_FUNC(cb_enter_notify), GINT_TO_POINTER(n));
-#endif
 	    gtk_signal_connect(GTK_OBJECT(text), "button_press_event",
 			       GTK_SIGNAL_FUNC(cb_enter_selected_day),
 			       GINT_TO_POINTER(n));
 
 	    gtk_box_pack_start(GTK_BOX(vbox), text, TRUE, TRUE, 0);
+#endif
 	 }
       }
    }
