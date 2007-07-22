@@ -1,4 +1,4 @@
-/* $Id: monthview_gui.c,v 1.37 2007/07/22 17:29:24 rikster5 Exp $ */
+/* $Id: monthview_gui.c,v 1.38 2007/07/22 17:32:59 rikster5 Exp $ */
 
 /*******************************************************************************
  * monthview_gui.c
@@ -305,7 +305,7 @@ void create_month_boxes_texts(GtkWidget *month_vbox)
 
 	    gtk_signal_connect(GTK_OBJECT(event_box), "enter_notify_event",
 			       GTK_SIGNAL_FUNC(cb_enter_notify), GINT_TO_POINTER(n));
-	    gtk_signal_connect(GTK_OBJECT(text), "button_press_event",
+	    gtk_signal_connect(GTK_OBJECT(text), "button_release_event",
 			       GTK_SIGNAL_FUNC(cb_enter_selected_day),
 			       GINT_TO_POINTER(n));
 
@@ -317,7 +317,7 @@ void create_month_boxes_texts(GtkWidget *month_vbox)
 	    gtk_text_set_word_wrap(GTK_TEXT(glob_month_texts[n]), FALSE);
 	    gtk_signal_connect(GTK_OBJECT(glob_month_texts[n]), "enter_notify_event",
 			       GTK_SIGNAL_FUNC(cb_enter_notify), GINT_TO_POINTER(n));
-	    gtk_signal_connect(GTK_OBJECT(text), "button_press_event",
+	    gtk_signal_connect(GTK_OBJECT(text), "button_release_event",
 			       GTK_SIGNAL_FUNC(cb_enter_selected_day),
 			       GINT_TO_POINTER(n));
 

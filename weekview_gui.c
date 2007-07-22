@@ -1,4 +1,4 @@
-/* $Id: weekview_gui.c,v 1.34 2007/02/12 06:07:09 rikster5 Exp $ */
+/* $Id: weekview_gui.c,v 1.35 2007/07/22 17:32:59 rikster5 Exp $ */
 
 /*******************************************************************************
  * weekview_gui.c
@@ -430,7 +430,7 @@ void weekview_gui(struct tm *date_in)
       glob_week_texts[i] = gtk_text_new(NULL, NULL);
 #endif
       gtk_widget_set_usize(GTK_WIDGET(glob_week_texts[i]), 10, 10);
-      gtk_signal_connect(GTK_OBJECT(glob_week_texts[i]), "button_press_event",
+      gtk_signal_connect(GTK_OBJECT(glob_week_texts[i]), "button_release_event",
 			 GTK_SIGNAL_FUNC(cb_enter_selected_day),
 			 GINT_TO_POINTER(i));
       if (i>3) {
