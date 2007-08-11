@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.130 2007/06/14 14:21:00 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.131 2007/08/11 19:29:29 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -2563,16 +2563,18 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
       free(cat_name);
       sort_l[i].cat_num=i;
    }
-   if (char_set != CHAR_SET_LATIN1) {
-      for (i = 0; i < 19 + 3; i++)
-	 if (address_app_info.labels[i][0] != '\0') {
-	    address_app_info_labels[i] = charset_p2newj(address_app_info.labels[i],16, char_set);
-	 }
-      for (i = 0; i < 8; i++)
-	 if (address_app_info.phoneLabels[i][0] != '\0') {
-	    address_app_info_phoneLabels[i] = charset_p2newj(address_app_info.phoneLabels[i],16, char_set);
-	 }
-   }
+   for (i = 0; i < 19 + 3; i++)
+      if (address_app_info.labels[i][0] != '\0') {
+	 address_app_info_labels[i] = (char_set != CHAR_SET_LATIN1) ? charset_p2newj(address_app_info.labels[i],16, char_set) : address_app_info.labels[i];
+      }
+      else
+	 address_app_info_labels[i] = "";
+   for (i = 0; i < 8; i++)
+      if (address_app_info.phoneLabels[i][0] != '\0') {
+	 address_app_info_phoneLabels[i] = (char_set != CHAR_SET_LATIN1) ? charset_p2newj(address_app_info.phoneLabels[i],16, char_set) : address_app_info.phoneLabels[i];
+      }
+      else
+	 address_app_info_phoneLabels[i] = "";
 
    qsort(sort_l, NUM_ADDRESS_CAT_ITEMS, sizeof(struct sorted_cats), cat_compare);
 #ifdef JPILOT_DEBUG
