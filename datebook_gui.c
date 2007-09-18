@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.145 2007/06/05 18:48:04 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.146 2007/09/18 16:55:27 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -1750,6 +1750,10 @@ static void appt_clear_details()
 
    connect_changed_signals(DISCONNECT_SIGNALS);
 
+   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_button_alarm), FALSE);
+   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_button_notime), TRUE);
+   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(private_checkbox), FALSE);
+
    clear_begin_end_labels();
 
 #ifdef ENABLE_GTK2
@@ -1773,8 +1777,8 @@ static void appt_clear_details()
 #endif
 
    gtk_notebook_set_page(GTK_NOTEBOOK(notebook), PAGE_NONE);
-   /* Clear the notebook pages */
 
+   /* Clear the notebook pages */
    gtk_entry_set_text(GTK_ENTRY(units_entry), "5");
    gtk_entry_set_text(GTK_ENTRY(repeat_day_entry), "1");
    gtk_entry_set_text(GTK_ENTRY(repeat_week_entry), "1");
@@ -1786,15 +1790,11 @@ static void appt_clear_details()
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_button_mon_endon), FALSE);
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_button_year_endon), FALSE);
 
-   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_button_notime), TRUE);
-
    for(i=0; i<7; i++) {
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(toggle_button_repeat_days[i]), FALSE);
    }
 
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(toggle_button_repeat_mon_bydate), TRUE);
-
-   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(private_checkbox), FALSE);
 
    memset(&today, 0, sizeof(today));
    today.tm_year = current_year;
