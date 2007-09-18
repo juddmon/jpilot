@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.49 2005/12/06 04:52:40 rikster5 Exp $ */
+/* $Id: prefs_gui.c,v 1.50 2007/09/18 17:11:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -491,7 +491,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 		      GINT_TO_POINTER(PREF_PORT));
 
    /* Rate */
-   label = gtk_label_new(_("Serial Rate (Does not affect USB)"));
+   label = gtk_label_new(_("Serial Rate"));
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
 			     0, 1, 2, 3);
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);

@@ -1,4 +1,4 @@
-/* $Id: prefs.c,v 1.67 2007/08/07 16:03:06 rikster5 Exp $ */
+/* $Id: prefs.c,v 1.68 2007/09/18 17:11:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs.c
@@ -49,7 +49,7 @@ static prefType glob_prefs[NUM_PREFS] = {
      {"todo_hide_completed", INTTYPE, INTTYPE, 0, NULL, 0},
      {"datebook_highlight_days", INTTYPE, INTTYPE, 1, NULL, 0},
      {"port", CHARTYPE, CHARTYPE, 0, NULL, 0},
-     {"rate", CHARTYPE, INTTYPE, 4, NULL, 0},
+     {"rate", CHARTYPE, INTTYPE, 8, NULL, 0},
      {"user", CHARTYPE, CHARTYPE, 0, NULL, 0},
      {"user_id", INTTYPE, INTTYPE, 0, NULL, 0},
      {"pc_id", INTTYPE, INTTYPE, 0, NULL, 0},
