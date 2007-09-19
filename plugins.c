@@ -1,4 +1,4 @@
-/* $Id: plugins.c,v 1.17 2007/06/06 02:45:10 rikster5 Exp $ */
+/* $Id: plugins.c,v 1.18 2007/09/19 20:42:22 rikster5 Exp $ */
 
 /*******************************************************************************
  * plugins.c
@@ -141,7 +141,6 @@ int load_plugins()
    DIR *dir;
    char path[FILENAME_MAX];
    int count, number;
-   GList *temp_list;
 
    count = 0;
    number = DATEBOOK + 100; /* I just made up this number */

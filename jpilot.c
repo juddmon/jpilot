@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.145 2007/06/06 02:45:09 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.146 2007/09/19 20:42:22 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -761,8 +761,10 @@ void output_to_pane(const char *str)
 {
    int w, h, new_y;
    long ivalue;
+#ifdef ENABLE_GTK2
    GtkWidget *pane_hbox;
    GtkRequisition size_requisition;
+#endif
 
    /* Adjust window height to user preference or minimum size */
    get_pref(PREF_OUTPUT_HEIGHT, &ivalue, NULL);

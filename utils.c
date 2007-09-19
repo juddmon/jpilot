@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.119 2007/02/16 13:21:34 rousseau Exp $ */
+/* $Id: utils.c,v 1.120 2007/09/19 20:42:22 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -63,6 +63,11 @@ extern GtkWidget *glob_dialog;
 int dialog_result;
 
 unsigned int glob_find_id;
+
+/****************************** Prototypes ************************************/
+int jp_close_home_file(FILE *pc_in);
+
+/****************************** Main Code *************************************/
 
 /*
  * Returns usage string that needs to be freed by the caller
@@ -1617,7 +1622,7 @@ int jp_close_home_file(FILE *pc_in)
    if (flock(fileno(pc_in), LOCK_UN) < 0)
       jp_logf(JP_LOG_WARN, "unlocking failed: %s\n", strerror(errno));
 
-   fclose(pc_in);
+   return fclose(pc_in);
 }
 
 int rename_file(char *old_filename, char *new_filename)
