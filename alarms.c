@@ -1,4 +1,4 @@
-/* $Id: alarms.c,v 1.39 2007/09/19 20:45:50 rikster5 Exp $ */
+/* $Id: alarms.c,v 1.40 2007/09/20 18:53:09 rikster5 Exp $ */
 
 /*******************************************************************************
  * alarms.c
@@ -1180,7 +1180,7 @@ static int find_prev_next(struct Appointment *appt,
 
       /* Check that proposed alarm is not before the appt begin date */
       t_begin = mktime_dst_adj(&(appt->begin));
-      if (t_temp <= t_begin - adv) {
+      if (t_temp <= t_begin) {
 #ifdef ALARMS_DEBUG
 	 printf("fpn: before begin date\n");
 #endif
