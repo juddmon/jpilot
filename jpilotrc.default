@@ -41,6 +41,11 @@ style "label_high"
 fg[NORMAL] = { 0.0, 0.0, 0.9 }
 }
 
+style "today"
+{
+base[NORMAL] = { 0.36, 0.51, .63 }
+}
+
 style "calendar"
 {
 text[SELECTED] = { 1.0, 1.0, 1.0 }    # selected and week numbers for GTK2.x
@@ -63,11 +68,11 @@ style "text"
 ################################################################################
 # These set the widget types to use the styles defined above.
 widget_class "*GtkCalendar" style "calendar"
+widget_class "*GtkText" style "text"
+widget_class "*GtkTextView" style "text"
 
 ############################################################
 # These set the widget types for named gtk widgets in the C code
 widget "*.label_high" style "label_high"
+widget "*.today"      style "today"
 
-# For text
-widget_class "*GtkText" style "text"
-widget_class "*GtkTextView" style "text"

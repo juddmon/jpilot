@@ -9,6 +9,11 @@ style "label_high"
 fg[NORMAL] = { 0.0, 0.0, 0.8 }
 }
 
+style "today"
+{
+base[NORMAL] = { 0.0, 0.70, .71 }
+}
+
 style "tooltips"
 {
 fg[NORMAL] = { 0.0, 0.0, 0.0 }
@@ -132,5 +137,6 @@ widget_class "*GtkCalendar" style "calendar"
 # These set the widget types for named gtk widgets in the C code
 widget "*.button_app" style "button_app"
 widget "*.label_high" style "label_high"
+widget "*.today"      style "today"
 widget "gtk-tooltips*" style "tooltips"
 

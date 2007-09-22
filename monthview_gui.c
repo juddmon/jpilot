@@ -1,4 +1,4 @@
-/* $Id: monthview_gui.c,v 1.38 2007/07/22 17:32:59 rikster5 Exp $ */
+/* $Id: monthview_gui.c,v 1.39 2007/09/22 18:48:26 rikster5 Exp $ */
 
 /*******************************************************************************
  * monthview_gui.c
@@ -223,8 +223,10 @@ void hide_show_month_boxes()
       if (d == now_today)
       {
 	 markup_str = g_markup_printf_escaped("<b>%s</b>", str);
+         gtk_widget_set_name(text, "today");
       } else {
 	 markup_str = g_markup_printf_escaped("%s", str);
+         gtk_widget_set_name(text, "");
       }
       gtk_label_set_markup(GTK_LABEL(glob_month_labels[n]), markup_str);
       g_free(markup_str);

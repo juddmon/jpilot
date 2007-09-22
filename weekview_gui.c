@@ -1,4 +1,4 @@
-/* $Id: weekview_gui.c,v 1.35 2007/07/22 17:32:59 rikster5 Exp $ */
+/* $Id: weekview_gui.c,v 1.36 2007/09/22 18:48:26 rikster5 Exp $ */
 
 /*******************************************************************************
  * weekview_gui.c
@@ -208,8 +208,10 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
       if (date.tm_mday == now_today)
       {
 	 markup_str = g_markup_printf_escaped("<b>%s</b>", str);
+         gtk_widget_set_name(GTK_WIDGET(text[i]), "today");
       } else {
 	 markup_str = g_markup_printf_escaped("%s", str);
+         gtk_widget_set_name(GTK_WIDGET(text[i]), "");
       }
       gtk_label_set_markup(GTK_LABEL(glob_dow_labels[i]), markup_str);
       g_free(markup_str);
