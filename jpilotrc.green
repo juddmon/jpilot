@@ -132,6 +132,7 @@ widget_class "*GtkTextView" style "text"
 widget_class "*GtkCList" style "text"
 widget_class "*GtkVScrollbar" style "text"
 widget_class "*GtkHScrollbar" style "text"
+widget_class "*GtkEventBox" style "window"
 widget_class "*GtkCalendar" style "calendar"
 ############################################################
 # These set the widget types for named gtk widgets in the C code
@@ -139,4 +140,5 @@ widget "*.button_app" style "button_app"
 widget "*.label_high" style "label_high"
 widget "*.today"      style "today"
 widget "gtk-tooltips*" style "tooltips"
+
 
