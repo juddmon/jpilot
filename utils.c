@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.120 2007/09/19 20:42:22 rikster5 Exp $ */
+/* $Id: utils.c,v 1.121 2007/09/23 01:20:42 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -2812,8 +2812,6 @@ int pdb_file_delete_record_by_id(char *DB_name, pi_uid_t uid_in)
    int attr;
    int cat;
    pi_uid_t uid;
-   struct stat statb;
-   struct utimbuf times;
 
    jp_logf(JP_LOG_DEBUG, "pdb_file_delete_record_by_id\n");
 
@@ -2821,12 +2819,6 @@ int pdb_file_delete_record_by_id(char *DB_name, pi_uid_t uid_in)
    get_home_file_name(local_pdb_file, full_local_pdb_file, sizeof(full_local_pdb_file));
    strcpy(full_local_pdb_file2, full_local_pdb_file);
    strcat(full_local_pdb_file2, "2");
-
-   /* After we are finished, set the create and modify times of new file
-      to the same as the old */
-   stat(full_local_pdb_file, &statb);
-   times.actime = statb.st_atime;
-   times.modtime = statb.st_mtime;
 
    pf1 = pi_file_open(full_local_pdb_file);
    if (!pf1) {
@@ -2860,8 +2852,6 @@ int pdb_file_delete_record_by_id(char *DB_name, pi_uid_t uid_in)
       jp_logf(JP_LOG_WARN, "pdb_file_delete_record_by_id(): %s\n", _("rename failed"));
    }
 
-   utime(full_local_pdb_file, &times);
-
    return EXIT_SUCCESS;
 }
 
@@ -2891,8 +2881,6 @@ int pdb_file_modify_record(char *DB_name, void *record_in, int size_in,
    int cat;
    int found;
    pi_uid_t uid;
-   struct stat statb;
-   struct utimbuf times;
 
    jp_logf(JP_LOG_DEBUG, "pi_file_modify_record\n");
 
@@ -2900,12 +2888,6 @@ int pdb_file_modify_record(char *DB_name, void *record_in, int size_in,
    get_home_file_name(local_pdb_file, full_local_pdb_file, sizeof(full_local_pdb_file));
    strcpy(full_local_pdb_file2, full_local_pdb_file);
    strcat(full_local_pdb_file2, "2");
-
-   /* After we are finished, set the create and modify times of new file
-      to the same as the old */
-   stat(full_local_pdb_file, &statb);
-   times.actime = statb.st_atime;
-   times.modtime = statb.st_mtime;
 
    pf1 = pi_file_open(full_local_pdb_file);
    if (!pf1) {
@@ -2947,8 +2929,6 @@ int pdb_file_modify_record(char *DB_name, void *record_in, int size_in,
    if (rename(full_local_pdb_file2, full_local_pdb_file) < 0) {
       jp_logf(JP_LOG_WARN, "pdb_file_modify_record(): %s\n", _("rename failed"));
    }
-
-   utime(full_local_pdb_file, &times);
 
    return EXIT_SUCCESS;
 }
@@ -3023,8 +3003,6 @@ int pdb_file_write_app_block(char *DB_name, void *bufp, int size_in)
    int attr;
    int cat;
    pi_uid_t uid;
-   struct stat statb;
-   struct utimbuf times;
 
    jp_logf(JP_LOG_DEBUG, "pdb_file_write_app_block\n");
 
@@ -3032,12 +3010,6 @@ int pdb_file_write_app_block(char *DB_name, void *bufp, int size_in)
    get_home_file_name(local_pdb_file, full_local_pdb_file, sizeof(full_local_pdb_file));
    strcpy(full_local_pdb_file2, full_local_pdb_file);
    strcat(full_local_pdb_file2, "2");
-
-   /* After we are finished, set the create and modify times of new file
-      to the same as the old */
-   stat(full_local_pdb_file, &statb);
-   times.actime = statb.st_atime;
-   times.modtime = statb.st_mtime;
 
    pf1 = pi_file_open(full_local_pdb_file);
    if (!pf1) {
@@ -3069,8 +3041,6 @@ int pdb_file_write_app_block(char *DB_name, void *bufp, int size_in)
    if (rename(full_local_pdb_file2, full_local_pdb_file) < 0) {
       jp_logf(JP_LOG_WARN, "pdb_file_write_app_block(): %s\n", _("rename failed"));
    }
-
-   utime(full_local_pdb_file, &times);
 
    return EXIT_SUCCESS;
 }
