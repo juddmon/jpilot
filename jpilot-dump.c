@@ -1,4 +1,4 @@
-/* $Id: jpilot-dump.c,v 1.25 2006/08/28 01:44:39 judd Exp $ */
+/* $Id: jpilot-dump.c,v 1.26 2007/10/03 13:33:21 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot-dump.c
@@ -49,6 +49,7 @@
 #include "address.h"
 #include "todo.h"
 #include "memo.h"
+#include "prefs.h"
 
 #include "i18n.h"
 #ifdef ENABLE_GTK2
@@ -64,6 +65,7 @@
 /******************************* Global vars **********************************/
 /* dump switches */
 int  dumpD;
+int  dumpI;
 int  dumpN;
 int  Nyear;
 int  Nmonth;
@@ -91,12 +93,13 @@ int t_fmt_ampm;
 /****************************** Main Code *************************************/
 void fprint_jpd_usage_string(FILE *out)
 {
-   fprintf(out, "%s-dump [ +format [-v] || [-h] || [-f] || [-D] || [-A] || [-T] || [-M] || [-N] ]\n", EPN);
+   fprintf(out, "%s-dump [ +format [-v] || [-h] || [-f] || [-D] || [-i] || [-A] || [-T] || [-M] || [-N] ]\n", EPN);
    fprintf(out, "%s", _(" +D +A +T +M format like date +format.\n"));
    fprintf(out, "%s", _(" -v displays version and exits.\n"));
    fprintf(out, "%s", _(" -h displays help and exits.\n"));
    fprintf(out, "%s", _(" -f displays help for format codes.\n"));
    fprintf(out, "%s", _(" -D dump DateBook.\n"));
+   fprintf(out, "%s", _(" -i dump DateBook in iCalendar format.\n"));
    fprintf(out, "%s", _(" -N dump appts for today in DateBook.\n"));
    fprintf(out, "%s", _(" -NYYYY/MM/DD dump appts on YYYY/MM/DD in DateBook.\n"));
    fprintf(out, "%s", _(" -A dump Address book.\n"));
@@ -147,6 +150,225 @@ void takeoutfunnies(char *str)
          str[i]=' ';
       }
    }
+}
+
+
+int dumpical()
+{
+   MyAppointment *mappt;
+   AppointmentList *al, *temp_list;
+   int i;
+   char text[1024];
+   char csv_text[65550];
+   char *p;
+   time_t ltime;
+   struct tm *now;
+   char username[256];
+   char hostname[256];
+   const char *svalue;
+   long userid;
+
+   al=NULL;
+
+   /* this stuff is for ical only. */
+   /* todo: create a pre-export switch */
+
+   get_pref(PREF_USER, NULL, &svalue);
+   g_strlcpy(text, svalue, 128);
+   str_to_ical_str(username, sizeof(username), text);
+   get_pref(PREF_USER_ID, &userid, &svalue);
+   gethostname(text, 127);
+   text[127]='\0';
+   str_to_ical_str(hostname, sizeof(hostname), text);
+
+   get_days_appointments2(&al, NULL, 2, 2, 2, NULL);
+
+   time(&ltime);
+   now = gmtime(&ltime);
+   mappt=NULL;
+   for (i=0, temp_list=al; temp_list; temp_list = temp_list->next, i++) {
+      mappt = &(temp_list->mappt);
+      /* RFC 2445: Internet Calendaring and Scheduling Core
+       *           Object Specification */
+      if (i == 0) {
+	 printf("BEGIN:VCALENDAR\nVERSION:2.0\n");
+	 printf("PRODID:%s\n", FPI_STRING);
+      }
+      printf("BEGIN:VEVENT\n");
+      /* XXX maybe if it's secret export a VFREEBUSY busy instead? */
+      if (mappt->attrib & dlpRecAttrSecret) {
+	 printf("CLASS:PRIVATE\n");
+      }
+      printf("UID:palm-datebook-%08x-%08lx-%s@%s\n",
+	    mappt->unique_id, userid, username, hostname);
+      printf("DTSTAMP:%04d%02d%02dT%02d%02d%02dZ\n",
+	    now->tm_year+1900,
+	    now->tm_mon+1,
+	    now->tm_mday,
+	    now->tm_hour,
+	    now->tm_min,
+	    now->tm_sec);
+      /* Handle pathological case with null description.
+       * Bugzilla Bug 1533 */
+      if (mappt->appt.description) {
+	 g_strlcpy(text, mappt->appt.description, 51);
+      } else {
+	 text[0] = '\0';
+      }
+      if ((p = strchr(text, '\n'))) {
+	 *p = '\0';
+      }
+      str_to_ical_str(csv_text, sizeof(csv_text), text);
+      printf("SUMMARY:%s%s\n", csv_text,
+	    strlen(text) > 49 ? "..." : "");
+      str_to_ical_str(csv_text, sizeof(csv_text), mappt->appt.description);
+      printf("DESCRIPTION:%s", csv_text);
+      if (mappt->appt.note && mappt->appt.note[0]) {
+	 str_to_ical_str(csv_text, sizeof(csv_text), mappt->appt.note);
+	 printf("\\n\n %s\n", csv_text);
+      } else {
+	 printf("\n");
+      }
+      if (mappt->appt.event) {
+	 printf("DTSTART;VALUE=DATE:%04d%02d%02d\n",
+	       mappt->appt.begin.tm_year+1900,
+	       mappt->appt.begin.tm_mon+1,
+	       mappt->appt.begin.tm_mday);
+	 /* XXX unclear: can "event" span multiple days? */
+	 /* since DTEND is "noninclusive", should this be the next day? */
+	 if (mappt->appt.end.tm_year != mappt->appt.begin.tm_year ||
+	       mappt->appt.end.tm_mon != mappt->appt.begin.tm_mon ||
+	       mappt->appt.end.tm_mday != mappt->appt.begin.tm_mday) {
+	    printf("DTEND;VALUE=DATE:%04d%02d%02d\n",
+		  mappt->appt.end.tm_year+1900,
+		  mappt->appt.end.tm_mon+1,
+		  mappt->appt.end.tm_mday);
+	 }
+      } else {
+	 /*
+	  * These are "local" times, so will be treated as being in
+	  * the other person's timezone when they are imported.  This
+	  * may or may not be what is desired.  (DateBk calls this
+	  * "all time zones").
+	  *
+	  * DateBk timezones could help us decide what to do here.
+	  *
+	  * When using DateBk timezones, we could write them out
+	  * as iCalendar timezones.
+	  *
+	  * Maybe the default should be to write an absolute (UTC) time,
+	  * and only write a "local" time when using DateBk and it says to.
+	  * It'd be interesting to see if repeated events get translated
+	  * properly when doing this, or if they become not eligible for
+	  * daylight savings.  This probably depends on the importing
+	  * application.
+	  */
+	 printf("DTSTART:%04d%02d%02dT%02d%02d00\n",
+	       mappt->appt.begin.tm_year+1900,
+	       mappt->appt.begin.tm_mon+1,
+	       mappt->appt.begin.tm_mday,
+	       mappt->appt.begin.tm_hour,
+	       mappt->appt.begin.tm_min);
+	 printf("DTEND:%04d%02d%02dT%02d%02d00\n",
+	       mappt->appt.end.tm_year+1900,
+	       mappt->appt.end.tm_mon+1,
+	       mappt->appt.end.tm_mday,
+	       mappt->appt.end.tm_hour,
+	       mappt->appt.end.tm_min);
+      }
+      if (mappt->appt.repeatType != repeatNone) {
+	 int wcomma, rptday;
+	 char *wday[] = {"SU","MO","TU","WE","TH","FR","SA"};
+	 printf("RRULE:FREQ=");
+	 switch(mappt->appt.repeatType) {
+	    case repeatNone:
+	       /* can't happen, just here to quiet gcc down. */
+	       break;
+	    case repeatDaily:
+	       printf("DAILY");
+	       break;
+	    case repeatWeekly:
+	       printf("WEEKLY;BYDAY=");
+	       wcomma=0;
+	       for (i=0; i<7; i++) {
+		  if (mappt->appt.repeatDays[i]) {
+		     if (wcomma) {
+			printf(",");
+		     }
+		     wcomma = 1;
+		     printf(wday[i]);
+		  }
+	       }
+	       break;
+	    case repeatMonthlyByDay:
+	       rptday = (mappt->appt.repeatDay / 7) + 1;
+	       printf("MONTHLY;BYDAY=%d%s", rptday == 5 ? -1 : rptday,
+		     wday[mappt->appt.repeatDay % 7]);
+	       break;
+	    case repeatMonthlyByDate:
+	       printf("MONTHLY;BYMONTHDAY=%d", mappt->appt.begin.tm_mday);
+	       break;
+	    case repeatYearly:
+	       printf("YEARLY");
+	       break;
+	 }
+	 if (mappt->appt.repeatFrequency != 1) {
+	    if (mappt->appt.repeatType == repeatWeekly &&
+		  mappt->appt.repeatWeekstart >= 0 && mappt->appt.repeatWeekstart < 7) {
+	       printf(";WKST=%s", wday[mappt->appt.repeatWeekstart]);
+	    }
+	    printf(";INTERVAL=%d", mappt->appt.repeatFrequency);
+	 }
+	 if (!mappt->appt.repeatForever) {
+	    printf(";UNTIL=%04d%02d%02d",
+		  mappt->appt.repeatEnd.tm_year+1900,
+		  mappt->appt.repeatEnd.tm_mon+1,
+		  mappt->appt.repeatEnd.tm_mday);
+	 }
+	 printf("\n");
+	 if (mappt->appt.exceptions > 0) {
+	    printf("EXDATE;VALUE=DATE:");
+	    for (i=0; i<mappt->appt.exceptions; i++) {
+	       if (i>0) {
+		  printf(",");
+	       }
+	       printf("%04d%02d%02d",
+		     mappt->appt.exception[i].tm_year+1900,
+		     mappt->appt.exception[i].tm_mon+1,
+		     mappt->appt.exception[i].tm_mday);
+	    }
+	    printf("\n");
+	 }
+      }
+      if (mappt->appt.alarm) {
+	 char *units;
+	 printf("BEGIN:VALARM\nACTION:DISPLAY\n");
+	 str_to_ical_str(csv_text, sizeof(csv_text), mappt->appt.description);
+	 printf("DESCRIPTION:%s\n", csv_text);
+	 switch (mappt->appt.advanceUnits) {
+	    case advMinutes:
+	       units = "M";
+	       break;
+	    case advHours:
+	       units = "H";
+	       break;
+	    case advDays:
+	       units = "D";
+	       break;
+	    default: /* XXX */
+	       units = "?";
+	       break;
+	 }
+	 printf("TRIGGER:-PT%d%s\n", mappt->appt.advance, units);
+	 printf("END:VALARM\n");
+      }
+      printf("END:VEVENT\n");
+      if (temp_list->next == NULL) {
+	 printf("END:VCALENDAR\n");
+      }
+   }
+   free_AppointmentList(&al);
+   return EXIT_SUCCESS;
 }
 
 int dumpbook()
@@ -886,6 +1108,7 @@ int main(int argc, char *argv[])
    formatA="+A%N";
    formatT="+T%N";
    dumpD  = FALSE;
+   dumpI  = FALSE;
    dumpN  = FALSE;
    Nyear  = 1997;
    Nmonth = 12;
@@ -934,6 +1157,9 @@ int main(int argc, char *argv[])
       }
       if (!strncasecmp(argv[i], "-D", 2)) {
          dumpD = TRUE;
+      }
+      if (!strncasecmp(argv[i], "-I", 2)) {
+         dumpI = TRUE;
       }
       if (!strncasecmp(argv[i], "-N", 2)) {
          dumpN = TRUE;
@@ -1030,6 +1256,9 @@ int main(int argc, char *argv[])
       }  /* end printing format usage */
    }  /* end for over argc */
 
+   pref_init();
+   pref_read_rc_file();
+
 #ifdef ENABLE_GTK2
    if (otherconv_init()) {
       printf("Error: could not set encoding\n");
@@ -1040,6 +1269,10 @@ int main(int argc, char *argv[])
    /* dump selected database */
    if (dumpD) {
       dumpbook();
+   }
+
+   if (dumpI) {
+      dumpical();
    }
 
    if (dumpA) {
