@@ -1,4 +1,7 @@
-# $Id: autogen.sh,v 1.15 2006/10/10 01:40:33 rikster5 Exp $
+# $Id: autogen.sh,v 1.16 2007/10/03 12:47:19 rousseau Exp $
+
+# Exit is a command fails
+set -e
 
 # Echo commands before they execute to help show progress
 set -x
