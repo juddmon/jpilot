@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.146 2007/09/19 20:42:22 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.147 2007/10/03 14:09:36 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -1927,7 +1927,7 @@ gint cb_check_version(gpointer main_window)
    get_pref(PREF_VERSION, NULL, &Pver);
 
    memset(str_ver, 0, 8);
-   if (str_ver) strncpy(str_ver, Pver, 6);
+   strncpy(str_ver, Pver, 6);
    lver=atol(str_ver);
    major=lver/10000;
    minor=(lver/100)%100;
