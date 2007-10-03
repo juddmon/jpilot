@@ -1,4 +1,4 @@
-/* $Id: address.c,v 1.47 2007/06/06 02:45:09 rikster5 Exp $ */
+/* $Id: address.c,v 1.48 2007/10/03 13:57:51 rousseau Exp $ */
 
 /*******************************************************************************
  * address.c
@@ -61,7 +61,7 @@ int address_compare(const void *v1, const void *v2)
 {
    AddressList **al1, **al2;
    struct Address *a1, *a2;
-   char *str1, *str2;
+   char *str1 = NULL, *str2 = NULL;
    int last_cmp1, last_cmp2;
    int sort_idx[4];
    int i, j, r;
