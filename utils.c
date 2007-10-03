@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.121 2007/09/23 01:20:42 rikster5 Exp $ */
+/* $Id: utils.c,v 1.122 2007/10/03 14:14:30 rousseau Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -1908,7 +1908,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 #ifndef PILOT_LINK_0_12
    unsigned char record[65536];
 #else /* PILOT_LINK_0_12 */
-   pi_buffer_t *RecordBuffer;
+   pi_buffer_t *RecordBuffer = NULL;
 #endif /* PILOT_LINK_0_12 */
    PCRecType record_type;
    unsigned int unique_id;
@@ -2123,7 +2123,8 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       break;
    }
 #ifdef PILOT_LINK_0_12
-   pi_buffer_free(RecordBuffer);
+   if (RecordBuffer)
+	   pi_buffer_free(RecordBuffer);
 #endif
    return EXIT_SUCCESS;
 }
