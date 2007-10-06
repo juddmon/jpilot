@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.122 2007/10/03 14:14:30 rousseau Exp $ */
+/* $Id: utils.c,v 1.123 2007/10/06 15:04:22 rousseau Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -1743,6 +1743,7 @@ int jp_copy_file(char *src, char *dest)
 
 
 
+#if 0
 /*These next 2 functions were copied from pi-file.c in the pilot-link app */
 /* Exact value of "Jan 1, 1970 0:00:00 GMT" - "Jan 1, 1904 0:00:00 GMT" */
 #define PILOT_TIME_DELTA (unsigned)(2082844800)
@@ -1758,6 +1759,7 @@ unix_time_to_pilot_time (time_t t)
 {
    return (unsigned long)((unsigned long)t + PILOT_TIME_DELTA);
 }
+#endif
 
 unsigned int bytes_to_bin(unsigned char *bytes, unsigned int num_bytes)
 {
