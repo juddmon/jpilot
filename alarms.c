@@ -1,4 +1,4 @@
-/* $Id: alarms.c,v 1.41 2007/09/21 19:58:30 rikster5 Exp $ */
+/* $Id: alarms.c,v 1.42 2007/10/10 17:07:33 rikster5 Exp $ */
 
 /*******************************************************************************
  * alarms.c
@@ -960,6 +960,9 @@ static int find_prev_next(struct Appointment *appt,
 
    /* Optimize initial start position of search */ 
    switch (appt->repeatType) {
+    case repeatNone:
+      /* Already handled.  Here only to shut up compiler warnings */
+      break;
     case repeatDaily:
 #ifdef ALARMS_DEBUG
       printf("fpn: repeatDaily\n");
