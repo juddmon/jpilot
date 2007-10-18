@@ -1,4 +1,4 @@
-/* $Id: address.c,v 1.48 2007/10/03 13:57:51 rousseau Exp $ */
+/* $Id: address.c,v 1.49 2007/10/18 22:55:27 rikster5 Exp $ */
 
 /*******************************************************************************
  * address.c
@@ -239,6 +239,9 @@ int address_compare(const void *v1, const void *v2)
       }
       return i;
    }
+
+   /* Should never be reached.  Assume records are unsortable if reached */
+   return 0;
 }
 
 /*
