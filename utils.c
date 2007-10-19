@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.123 2007/10/06 15:04:22 rousseau Exp $ */
+/* $Id: utils.c,v 1.124 2007/10/19 03:35:06 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -2698,13 +2698,23 @@ char *charset_p2newj(const char *buf, int max_len, int char_set)
 {
    char *newbuf = NULL;
 
-   /* allocate a longer buffer if not done in conversion routine */
-   if (char_set < CHAR_SET_UTF) {
-      newbuf = g_malloc(2*max_len - 1);
-      if (newbuf) {
-	 /* be safe, though string should fit into buf */
-	 g_strlcpy(newbuf, buf, max_len);
+   /* Allocate a longer buffer if not done in conversion routine */
+   /* Only old conversion routines don't assign a buffer */
+   switch (char_set) {
+    case CHAR_SET_JAPANESE:
+    case CHAR_SET_1250:
+    case CHAR_SET_1251:
+    case CHAR_SET_1251_B:
+      if (char_set < CHAR_SET_UTF) {
+         newbuf = g_malloc(2*max_len - 1);
+         if (newbuf) {
+            /* be safe, though string should fit into buf */
+            g_strlcpy(newbuf, buf, max_len);
+         }
       }
+      break;
+    default:
+      break;
    }
 
    switch (char_set) {
@@ -2716,6 +2726,7 @@ char *charset_p2newj(const char *buf, int max_len, int char_set)
       newbuf = other_to_UTF(buf, max_len);
       break;
    }
+
    return (newbuf);
 }
 
