@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.131 2007/08/11 19:29:29 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.132 2007/10/19 17:52:17 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -671,6 +671,8 @@ static char *vCardMapType(int label)
    }
 }
 
+static int find_sorted_cat(int cat);
+
 void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 		       int type, const char *filename)
 {
@@ -790,8 +792,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	    fprintf(out, "\n");
 	 }
 	 len=0;
-	 str_to_csv_str(csv_text,
-			address_app_info.category.name[maddr->attrib & 0x0F]);
+	 str_to_csv_str(csv_text, sort_l[find_sorted_cat(maddr->attrib & 0x0F)].Pcat);
 	 fprintf(out, "\"%s\",", csv_text);
 	 fprintf(out, "\"%s\",", (maddr->attrib & dlpRecAttrSecret) ? "1":"0");
 	 if (!use_jos && (char_set == CHAR_SET_JAPANESE || char_set == CHAR_SET_SJIS_UTF)) {
@@ -799,6 +800,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	    for (n = 0; n < NUM_ADDRESS_ENTRIES + NUM_ADDRESS_EXT_ENTRIES; n++) {
 	       csv_text[0] = '\0';
 	       if ((order_ja[n] < NUM_ADDRESS_EXT_ENTRIES)
+		   && maddr->addr.entry[order_ja[n]]
 		   && (tmp_p = strchr(maddr->addr.entry[order_ja[n]],'\1'))) {
 		  if (strlen(maddr->addr.entry[order_ja[n]]) > 65535) {
 		     jp_logf(JP_LOG_WARN, "%s > 65535\n", _("Field"));
@@ -808,7 +810,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 		     *(tmp_p) = '\1';
 		  }
 	       } else if (order_ja[n] < NUM_ADDRESS_ENTRIES) {
-		  if (strlen(maddr->addr.entry[i]) > 65535) {
+		  if (maddr->addr.entry[order_ja[n]] && (strlen(maddr->addr.entry[order_ja[n]]) > 65535)) {
 		     jp_logf(JP_LOG_WARN, "%s > 65535\n", _("Field"));
 		  } else {
 		     str_to_csv_str(csv_text, maddr->addr.entry[order_ja[n]]);
@@ -817,7 +819,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 			  && (tmp_p = strchr(maddr->addr.entry[order_ja[n] - NUM_ADDRESS_ENTRIES], '\1'))) {
 		  str_to_csv_str(csv_text, (tmp_p + 1));
 	       } else {
-		  str_to_csv_str(csv_text, maddr->addr.entry[order_ja[n]]);
+		  str_to_csv_str(csv_text, maddr->addr.entry[order_ja[n] - NUM_ADDRESS_ENTRIES]);
 	       }
 	       fprintf(out, "\"%s\", ", csv_text);
 	    }
