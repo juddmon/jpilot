@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.66 2007/10/19 02:09:55 rikster5 Exp $ */
+/* $Id: sync.c,v 1.67 2007/10/19 19:26:18 rikster5 Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -1095,6 +1095,7 @@ int slow_sync_application(char *DB_name, int sd)
    char error_log_message_w[256];
    char error_log_message_d[256];
    char delete_log_message[256];
+   char conflict_log_message[256];
    int  same;
 
    jp_logf(JP_LOG_DEBUG, "slow_sync_application\n");
@@ -1118,6 +1119,8 @@ int slow_sync_application(char *DB_name, int sd)
 	      _("Deleting an %s record failed."), DB_name);
       g_snprintf(delete_log_message, sizeof(delete_log_message),
 	      _("Deleted an %s record."), DB_name);
+      g_snprintf(conflict_log_message, sizeof(conflict_log_message),
+	      _("Sync Conflict: duplicated an %s record."), DB_name);
    } else {
       g_snprintf(write_log_message, sizeof(write_log_message),
 	      _("Wrote a %s record."), DB_name);
@@ -1127,6 +1130,8 @@ int slow_sync_application(char *DB_name, int sd)
 	      _("Deleting a %s record failed."), DB_name);
       g_snprintf(delete_log_message, sizeof(delete_log_message),
 	      _("Deleted a %s record."), DB_name);
+      g_snprintf(conflict_log_message, sizeof(conflict_log_message),
+	      _("Sync Conflict: duplicated a %s record."), DB_name);
    }
 
    g_snprintf(pc_filename, sizeof(pc_filename), "%s.pc3", DB_name);
@@ -1337,6 +1342,7 @@ int slow_sync_application(char *DB_name, int sd)
              * order to prevent overwriting by the modified PC record.  */
             if ((header.rt==MODIFIED_PALM_REC)) {
                jp_logf(JP_LOG_DEBUG, "Case 4: duplicating record\n");
+               jp_logf(JP_LOG_GUI, "Sync Conflict: a %s record must be manually merged\n", DB_name);
 
                /* Write record to Palm and get new unique ID */
                jp_logf(JP_LOG_DEBUG, "Writing PC record to palm\n");
@@ -1355,8 +1361,8 @@ int slow_sync_application(char *DB_name, int sd)
                   dlp_AddSyncLogEntry(sd, error_log_message_w);
                   dlp_AddSyncLogEntry(sd, "\n");
                } else {
-                  charset_j2p(write_log_message,255,char_set);
-                  dlp_AddSyncLogEntry(sd, write_log_message);
+                  charset_j2p(conflict_log_message,255,char_set);
+                  dlp_AddSyncLogEntry(sd, conflict_log_message);
                   dlp_AddSyncLogEntry(sd, "\n");
                   /* Now mark the record as deleted in the pc file */
                   if (fseek(pc_in, -(header.header_len+lrec_len), SEEK_CUR)) {
@@ -2369,7 +2375,8 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
    char error_log_message_w[256];
    char error_log_message_d[256];
    char delete_log_message[256];
-   int same; /* JPA */
+   char conflict_log_message[256];
+   int same;
 
    jp_logf(JP_LOG_DEBUG, "fast_sync_local_recs\n");
    get_pref(PREF_CHAR_SET, &char_set, NULL);
@@ -2384,6 +2391,8 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
 	      _("Deleting an %s record failed."), DB_name);
       g_snprintf(delete_log_message, sizeof(delete_log_message),
 	      _("Deleted an %s record."), DB_name);
+      g_snprintf(conflict_log_message, sizeof(conflict_log_message),
+	      _("Sync Conflict: duplicated an %s record."), DB_name);
    } else {
       g_snprintf(write_log_message, sizeof(write_log_message),
 	      _("Wrote a %s record."), DB_name);
@@ -2393,6 +2402,8 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
 	      _("Deleting a %s record failed."), DB_name);
       g_snprintf(delete_log_message, sizeof(delete_log_message),
 	      _("Deleted a %s record."), DB_name);
+      g_snprintf(conflict_log_message, sizeof(conflict_log_message),
+	      _("Sync Conflict: duplicated a %s record."), DB_name);
    }
    g_snprintf(pc_filename, sizeof(pc_filename), "%s.pc3", DB_name);
    pc_in = jp_open_home_file(pc_filename, "r+");
@@ -2586,6 +2597,7 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
              * overwriting by the modified PC record.  */
             if ((header.rt==MODIFIED_PALM_REC)) {
                jp_logf(JP_LOG_DEBUG, "Case 4: duplicating record\n");
+               jp_logf(JP_LOG_GUI, "Sync Conflict: a %s record must be manually merged\n", DB_name);
 
                /* Write record to Palm and get new unique ID */
                jp_logf(JP_LOG_DEBUG, "Writing PC record to palm\n");
@@ -2607,8 +2619,8 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
                   dlp_AddSyncLogEntry(sd, error_log_message_w);
                   dlp_AddSyncLogEntry(sd, "\n");
                } else {
-                  charset_j2p(write_log_message,255,char_set);
-                  dlp_AddSyncLogEntry(sd, write_log_message);
+                  charset_j2p(conflict_log_message,255,char_set);
+                  dlp_AddSyncLogEntry(sd, conflict_log_message);
                   dlp_AddSyncLogEntry(sd, "\n");
                   /* Now mark the record as deleted in the pc file */
                   if (fseek(pc_in, -(header.header_len+lrec_len), SEEK_CUR)) {
