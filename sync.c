@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.67 2007/10/19 19:26:18 rikster5 Exp $ */
+/* $Id: sync.c,v 1.68 2007/10/19 23:58:14 rikster5 Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -1655,8 +1655,7 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
    struct utimbuf times;
    int i, r;
    int main_app;
-   int mode;
-   int manual_skip;
+   int skip_file;
    int cardno, start;
    struct DBInfo info;
    char db_copy_name[MAX_DBNAME];
@@ -1711,35 +1710,29 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
 	{ 0, 0, "u8EZ", NULL},
 	{ 0, 0, NULL, NULL}
    };
+   unsigned int full_backup; = flags & SYNC_FULL_BACKUP;
 
-   /*
-    * Here are the possibilities for mode:
-    * 0. slow sync                  fetch DBs if main app
-    * 1. slow sync && full backup   fetch DBs if main app, copy DB to backup
-    * 2. fast sync                  return
-    * 3. fast sync && full backup   fetch DBs in backup dir
-    */
    jp_logf(JP_LOG_DEBUG, "sync_fetch flags=0x%x, num_backups=%d, fast=%d\n",
 	   flags, num_backups, fast_sync);
 
-   end_of_list=NULL;
+   full_backup = flags & SYNC_FULL_BACKUP;
 
-   mode = ((flags & SYNC_FULL_BACKUP) ? 1:0) + (fast_sync ? 2:0);
-
-   if (mode == 2) {
+   /* Fast sync still needs to fetch Saved Preferences before exiting */
+   if (fast_sync && !full_backup) {
       fetch_extra_DBs(sd, extra_dbname);
       return EXIT_SUCCESS;
    }
 
-   if ((flags & SYNC_FULL_BACKUP)) {
+   if (full_backup) {
       jp_logf(JP_LOG_DEBUG, "Full Backup\n");
-      pi_watchdog(sd,10); /* prevent from timing out on long copy times */
+      pi_watchdog(sd,10); /* prevent Palm timing out on long disk copy times */
       sync_rotate_backups(num_backups);
       pi_watchdog(sd,0);  /* back to normal behavior */
    }
 
    start=cardno=0;
    file_list=NULL;
+   end_of_list=NULL;
 
 #ifdef PILOT_LINK_0_12
    buffer = pi_buffer_new(32 * sizeof(struct DBInfo));
@@ -1767,24 +1760,24 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
       /*jp_logf(JP_LOG_DEBUG, "type = %x\n",info.type);*/
       jp_logf(JP_LOG_DEBUG, "Creator ID = [%s]\n", creator);
 #endif
-      if (flags & SYNC_FULL_BACKUP) {
+      if (full_backup) {
 	 /* Look at the skip list */
-	 manual_skip=0;
+	 skip_file=0;
 	 for (i=0; skip_db[i].creator || skip_db[i].dbname; i++) {
 	    if (skip_db[i].creator &&
 		!strcmp(creator, skip_db[i].creator)) {
 	       if (skip_db[i].flags &&
 		   (info.flags & skip_db[i].flags) != skip_db[i].flags) {
-		  manual_skip=1;
+		  skip_file=1;
 		  break;
 	       }
 	       else if (skip_db[i].not_flags &&
 			!(info.flags & skip_db[i].not_flags)) {
-		  manual_skip=1;
+		  skip_file=1;
 		  break;
 	       }
 	       else if (!skip_db[i].flags && !skip_db[i].not_flags) {
-		  manual_skip=1;
+		  skip_file=1;
 		  break;
 	       }
 	    }
@@ -1792,48 +1785,98 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
 		!strcmp(info.name,skip_db[i].dbname)) {
 	       if (skip_db[i].flags &&
 		   (info.flags & skip_db[i].flags) != skip_db[i].flags) {
-		  manual_skip=1;
+		  skip_file=1;
 		  break;
 	       }
 	       else if (skip_db[i].not_flags &&
 			(info.flags & skip_db[i].not_flags)) {
-		  manual_skip=1;
+		  skip_file=1;
 		  break;
 	       }
 	       else if (!skip_db[i].flags && !skip_db[i].not_flags) {
-		  manual_skip=1;
+		  skip_file=1;
 		  break;
 	       }
 	    }
 	 }
-	 if (manual_skip) {
+	 if (skip_file) {
 	    jp_logf(JP_LOG_GUI, _("Skipping %s (Creator ID '%s')\n"), info.name, creator);
 	    continue;
 	 }
       }
 
-      main_app=0;
+      main_app = 0;
+      skip_file = 0;
       for (i=0; palm_dbname[i]; i++) {
 	 if (!strcmp(info.name, palm_dbname[i])) {
 	    jp_logf(JP_LOG_DEBUG, "Found main app\n");
 	    main_app = 1;
-	    break;
-	 }
-      }
+            /* Skip if conduit is not enabled in preferences */
+            if (!full_backup) {
+               switch (i) {
+                case 0:
+                  if (!get_pref_int_default(PREF_SYNC_DATEBOOK, 1)) {
+                     skip_file = 1; 
+                  }
+                  break;
+                case 1:
+                  if (!get_pref_int_default(PREF_SYNC_ADDRESS, 1)) {
+                     skip_file = 1; 
+                  }
+                  break;
+                case 2:
+                  if (!get_pref_int_default(PREF_SYNC_TODO, 1)) {
+                     skip_file = 1; 
+                  }
+                  break;
+                case 3:
+                  if (!get_pref_int_default(PREF_SYNC_MEMO, 1)) {
+                     skip_file = 1; 
+                  }
+                  break;
+                case 4:
+                  if (!get_pref_int_default(PREF_SYNC_MEMO32, 1)) {
+                     skip_file = 1; 
+                  }
+                  break;
+#ifdef ENABLE_MANANA                  
+                case 5:
+                  if (!get_pref_int_default(PREF_SYNC_MANANA, 1)) {
+                     skip_file = 1; 
+                  }
+                  break;
+#endif
+               } /* end switch */
+            } /* end if checking for excluded conduits */
+	    break; 
+	 } /* end if checking for main app */
+      } /* for loop over main app names */
+
+      /* skip main app conduit as necessary */
+      if (skip_file) continue;
+
 #ifdef ENABLE_PLUGINS
       plugin_list = get_plugin_list();
 
       if (!main_app) {
+         skip_file = 0;
 	 for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
 	    plugin = (struct plugin_s *)temp_list->data;
 	    if (!strcmp(info.name, plugin->db_name)) {
 	       jp_logf(JP_LOG_DEBUG, "Found plugin\n");
 	       main_app = 1;
+               /* Skip if conduit is not enabled */
+               if (!full_backup && !plugin->sync_on) {
+                 skip_file = 1;
+               }
 	       break;
 	    }
 	 }
       }
 #endif
+      /* skip plugin conduit as necessary */
+      if (skip_file) continue;
+      
       g_strlcpy(db_copy_name, info.name, MAX_DBNAME-5);
       if (info.flags & dlpDBFlagResource) {
 	 strcat(db_copy_name,".prc");
@@ -1857,7 +1900,7 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
       jp_logf(JP_LOG_DEBUG, "appending [%s]\n", db_copy_name);
       file_list = g_list_prepend(file_list, strdup(db_copy_name));
 
-      if ( (mode==0) && (!main_app) ) {
+      if ( !fast_sync && !full_backup && !main_app ) {
 	 continue;
       }
 #ifdef JPILOT_DEBUG
@@ -1866,13 +1909,12 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
       }
 #endif
 
-      statb.st_mtime = 0;
-
-      if (main_app && (mode<2)) {
+      if (main_app && !fast_sync) {
 	 file_name = full_name;
       } else {
 	 file_name = full_backup_name;
       }
+      statb.st_mtime = 0;
       stat(file_name, &statb);
 #ifdef JPILOT_DEBUG
       jp_logf(JP_LOG_GUI, "palm dbtime= %d, local dbtime = %d\n", info.modifyDate, statb.st_mtime);
@@ -1915,7 +1957,7 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
       utime(file_name, &times);
 
       /* This call preserves the file times */
-      if ((main_app) && (mode==1)) {
+      if (main_app && !fast_sync && full_backup) {
 	 jp_copy_file(full_name, full_backup_name);
       }
    }
@@ -1927,7 +1969,7 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
    palmos_error = pi_palmos_error(sd);
    if (palmos_error==dlpErrNotFound) {
       jp_logf(JP_LOG_DEBUG, "Good return code (dlpErrNotFound)\n");
-      if ((mode==1) || (mode==3)) {
+      if (full_backup) {
 	 jp_logf(JP_LOG_DEBUG, "Removing apps not found on the palm\n");
 	 move_removed_apps(file_list);
       }
@@ -1940,7 +1982,7 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
    /* I'm not sure why pilot-link-0.11 is returning dlpErrNoneOpen */
    if ((r==dlpErrNotFound) || (r==dlpErrNoneOpen)) {
       jp_logf(JP_LOG_DEBUG, "Good return code (dlpErrNotFound)\n");
-      if ((mode==1) || (mode==3)) {
+      if (full_backup) {
 	 jp_logf(JP_LOG_DEBUG, "Removing apps not found on the palm\n");
 	 move_removed_apps(file_list);
       }
