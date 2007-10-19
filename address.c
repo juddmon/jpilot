@@ -1,4 +1,4 @@
-/* $Id: address.c,v 1.49 2007/10/18 22:55:27 rikster5 Exp $ */
+/* $Id: address.c,v 1.50 2007/10/19 17:12:41 rikster5 Exp $ */
 
 /*******************************************************************************
  * address.c
@@ -151,8 +151,14 @@ int address_compare(const void *v1, const void *v2)
       return 0;
 
    } else if ((glob_sort_rule & SORT_JAPANESE) && !(glob_sort_rule & SORT_JOS)){
+      /* Japanese sorting has not been updated to fix Bug 1814 because no test
+       * platform is available for Western programmers maintaining Jpilot. */
       int sort1, sort2, sort3;
       char *tmp_p1, *tmp_p2, *tmp_p3;
+      sort1 = sort_idx[1];
+      sort2 = sort_idx[2];
+      sort3 = sort_idx[3];
+
       if (a1->entry[sort1] || a1->entry[sort2]) {
 	 if (a1->entry[sort1] && a1->entry[sort2]) {
 	    if (!(tmp_p1 = strchr(a1->entry[sort1],'\1'))) tmp_p1=a1->entry[sort1]+1;
