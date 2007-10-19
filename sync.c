@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.65 2007/06/06 02:45:10 rikster5 Exp $ */
+/* $Id: sync.c,v 1.66 2007/10/19 02:09:55 rikster5 Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  ******************************************************************************/
 
-# include "config.h"
+#include "config.h"
 #include "i18n.h"
 #include <stdlib.h>
 #include <string.h>
@@ -32,9 +32,9 @@
 #include <sys/time.h>
 #include <sys/socket.h>
 #ifdef USE_FLOCK
-#include <sys/file.h>
+# include <sys/file.h>
 #else
-#include <fcntl.h>
+# include <fcntl.h>
 #endif
 #include <errno.h>
 #include <signal.h>
@@ -264,10 +264,10 @@ int sync_once(struct my_sync_info *sync_info)
 	 perror("fork");
 	 return 0;
        case 0:
-	 /* close(pipe_from_parent); */
+	 /* child continues sync */
 	 break;
        default:
-	 /* if the child is not dead yet we store its pid */
+         /* parent stores child pid and goes back to GUI */
 	 if (-1 == glob_child_pid)
 	    glob_child_pid = pid;
 	 return EXIT_SUCCESS;
@@ -628,24 +628,24 @@ int jp_sync(struct my_sync_info *sync_info)
    char buf[1024];
    long char_set;
 #ifdef JPILOT_DEBUG
-#ifdef PILOT_LINK_0_12
+# ifdef PILOT_LINK_0_12
    pi_buffer_t *buffer;
-#else
+# else
    unsigned char buffer[65536];
-#endif
+# endif
 #endif
 
-   /* Load the plugins since this is a forked process */
+   /* Load the plugins for a forked process */
 #ifdef ENABLE_PLUGINS
-   if (!(sync_info->flags & SYNC_NO_PLUGINS)) {
+   if (!(sync_info->flags & SYNC_NO_FORK) &&
+       !(sync_info->flags & SYNC_NO_PLUGINS)) {
       jp_logf(JP_LOG_DEBUG, "sync:calling load_plugins\n");
       load_plugins();
    }
 #endif
 #ifdef ENABLE_PLUGINS
    /* Do the plugin_pre_sync_pre_connect calls */
-   plugin_list=NULL;
-
+   plugin_list = NULL;
    plugin_list = get_plugin_list();
 
    for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
@@ -827,7 +827,8 @@ int jp_sync(struct my_sync_info *sync_info)
       jp_logf(JP_LOG_WARN, "dlp_OpenConduit() failed\n");
       jp_logf(JP_LOG_WARN, _("Sync canceled\n"));
 #ifdef ENABLE_PLUGINS
-      free_plugin_list(&plugin_list);
+      if (!(sync_info->flags & SYNC_NO_FORK)) 
+         free_plugin_list(&plugin_list);
 #endif
       dlp_EndOfSync(sd, 0);
       pi_close(sd);
@@ -1023,7 +1024,8 @@ int jp_sync(struct my_sync_info *sync_info)
       dlp_EndOfSync(sd, 0);
       pi_close(sd);
 #ifdef ENABLE_PLUGINS
-      free_plugin_list(&plugin_list);
+      if (!(sync_info->flags & SYNC_NO_FORK)) 
+         free_plugin_list(&plugin_list);
 #endif
       return 0;
    }
@@ -1056,8 +1058,10 @@ int jp_sync(struct my_sync_info *sync_info)
       }
    }
 
-   jp_logf(JP_LOG_DEBUG, "freeing plugin list\n");
-   free_plugin_list(&plugin_list);
+   if (!(sync_info->flags & SYNC_NO_FORK)) {
+      jp_logf(JP_LOG_DEBUG, "freeing plugin list\n");
+      free_plugin_list(&plugin_list);
+   }
 #endif
 
    jp_logf(JP_LOG_GUI, _("Finished.\n"));
@@ -1068,37 +1072,42 @@ int jp_sync(struct my_sync_info *sync_info)
 
 int slow_sync_application(char *DB_name, int sd)
 {
-   unsigned long new_id;
    int db;
    int ret;
    int num;
    FILE *pc_in;
-   PC3RecordHeader header;
-   char *record;
-   int rec_len;
    char pc_filename[FILENAME_MAX];
+   PC3RecordHeader header;
+   /* local (.pc3) record */
+   void *lrec;
+   int lrec_len;
+   /* remote (Palm) record */
+#ifdef PILOT_LINK_0_12
+   pi_buffer_t *rrec;
+#else
+   unsigned char rrec[65536];
+#endif
+   int  rindex, rattr, rcategory;
+   int  rrec_len;
+   long char_set;
+   char log_entry[256];
    char write_log_message[256];
    char error_log_message_w[256];
    char error_log_message_d[256];
    char delete_log_message[256];
-   char log_entry[256];
-   /* recordid_t id=0; */
-   int index, size, attr, category;
-   long char_set;
-#ifdef PILOT_LINK_0_12
-   pi_buffer_t *buffer;
-#else
-   unsigned char buffer[65536];
-#endif
+   int  same;
+
+   jp_logf(JP_LOG_DEBUG, "slow_sync_application\n");
 
    if ((DB_name==NULL) || (strlen(DB_name) == 0) || (strlen(DB_name) > 250)) {
       return EXIT_FAILURE;
    }
-   get_pref(PREF_CHAR_SET, &char_set, NULL);
 
    g_snprintf(log_entry, sizeof(log_entry), _("Syncing %s\n"), DB_name);
    jp_logf(JP_LOG_GUI, log_entry);
-   g_snprintf(pc_filename, sizeof(pc_filename), "%s.pc3", DB_name);
+
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
+
    /* This is an attempt to use the proper pronoun most of the time */
    if (strchr("aeiou", tolower(DB_name[0]))) {
       g_snprintf(write_log_message, sizeof(write_log_message),
@@ -1120,6 +1129,7 @@ int slow_sync_application(char *DB_name, int sd)
 	      _("Deleted a %s record."), DB_name);
    }
 
+   g_snprintf(pc_filename, sizeof(pc_filename), "%s.pc3", DB_name);
    pc_in = jp_open_home_file(pc_filename, "r+");
    if (pc_in==NULL) {
       jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), pc_filename);
@@ -1132,6 +1142,7 @@ int slow_sync_application(char *DB_name, int sd)
       charset_j2p(log_entry, sizeof(log_entry), char_set);
       dlp_AddSyncLogEntry(sd, log_entry);
       jp_logf(JP_LOG_WARN, "slow_sync_application: %s", log_entry);
+      fclose(pc_in);
       return EXIT_FAILURE;
    }
 
@@ -1139,7 +1150,9 @@ int slow_sync_application(char *DB_name, int sd)
    dlp_ReadOpenDBInfo(sd, db, &num);
    jp_logf(JP_LOG_GUI ,_("number of records = %d\n"), num);
 #endif
-   while(!feof(pc_in)) {
+
+   /* Loop over records in .pc3 file */
+   while (!feof(pc_in)) {
       num = read_header(pc_in, &header);
       if (num!=1) {
 	 if (ferror(pc_in)) {
@@ -1149,40 +1162,46 @@ int slow_sync_application(char *DB_name, int sd)
 	    break;
 	 }
       }
-      rec_len = header.rec_len;
-      if (rec_len > 0x10000) {
+
+      lrec_len = header.rec_len;
+      if (lrec_len > 0x10000) {
 	 jp_logf(JP_LOG_WARN, _("PC file corrupt?\n"));
 	 fclose(pc_in);
 	 dlp_CloseDB(sd, db);
 	 return EXIT_FAILURE;
       }
+
+      /* Case 5: */
       if ((header.rt==NEW_PC_REC) || (header.rt==REPLACEMENT_PALM_REC)) {
-	 record = malloc(rec_len);
-	 if (!record) {
+	 jp_logf(JP_LOG_DEBUG, "Case 5: new pc record\n");
+	 lrec = malloc(lrec_len);
+	 if (!lrec) {
 	    jp_logf(JP_LOG_WARN, "slow_sync_application(): %s\n", _("Out of memory"));
 	    break;
 	 }
-	 num = fread(record, rec_len, 1, pc_in);
+	 num = fread(lrec, lrec_len, 1, pc_in);
 	 if (num != 1) {
 	    if (ferror(pc_in)) {
-	       free(record);
+	       free(lrec);
 	       break;
 	    }
 	 }
 
+	 jp_logf(JP_LOG_DEBUG, "Writing PC record to palm\n");
+
 	 if (header.rt==REPLACEMENT_PALM_REC) {
 	    ret = dlp_WriteRecord(sd, db, header.attrib & dlpRecAttrSecret,
 				  header.unique_id, header.attrib & 0x0F,
-				  record, rec_len, &new_id);
+				  lrec, lrec_len, &header.unique_id);
 	 } else {
 	    ret = dlp_WriteRecord(sd, db, header.attrib & dlpRecAttrSecret,
 				  0, header.attrib & 0x0F,
-				  record, rec_len, &new_id);
+				  lrec, lrec_len, &header.unique_id);
 	 }
 
-	 if (record) {
-	    free(record);
-	    record = NULL;
+	 if (lrec) {
+	    free(lrec);
+	    lrec = NULL;
 	 }
 
 	 if (ret < 0) {
@@ -1194,8 +1213,8 @@ int slow_sync_application(char *DB_name, int sd)
 	    charset_j2p(write_log_message,255,char_set);
 	    dlp_AddSyncLogEntry(sd, write_log_message);
 	    dlp_AddSyncLogEntry(sd, "\n");
-	    /*Now mark the record as deleted in the pc file */
-	    if (fseek(pc_in, -(header.header_len+rec_len), SEEK_CUR)) {
+	    /* mark the record as deleted in the pc file */
+	    if (fseek(pc_in, -(header.header_len+lrec_len), SEEK_CUR)) {
 	       jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
 	       fclose(pc_in);
 	       dlp_CloseDB(sd, db);
@@ -1204,106 +1223,204 @@ int slow_sync_application(char *DB_name, int sd)
 	    header.rt=DELETED_PC_REC;
 	    write_header(pc_in, &header);
 	 }
-      }
+      } /* endif Case 5 */
+
+      /* Case 3 & 4: */
       if ((header.rt==DELETED_PALM_REC) || (header.rt==MODIFIED_PALM_REC)) {
-	 rec_len = header.rec_len;
-	 record = malloc(rec_len);
-	 num = fread(record, rec_len, 1, pc_in);
+	 jp_logf(JP_LOG_DEBUG, "Case 3&4: deleted or modified pc record\n");
+	 lrec = malloc(lrec_len);
+	 if (!lrec) {
+	    jp_logf(JP_LOG_WARN, "slow_sync_application(): %s\n", 
+                               _("Out of memory"));
+	    break;
+	 }
+	 num = fread(lrec, lrec_len, 1, pc_in);
 	 if (num != 1) {
 	    if (ferror(pc_in)) {
-	       free(record);
+	       free(lrec);
 	       break;
 	    }
 	 }
-	 if (fseek(pc_in, -rec_len, SEEK_CUR)) {
-	    jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
-	    fclose(pc_in);
-	    dlp_CloseDB(sd, db);
-	    free(record);
-	    return EXIT_FAILURE;
-	 }
 #ifdef PILOT_LINK_0_12
-	 buffer = pi_buffer_new(rec_len);
-	 ret = dlp_ReadRecordById(sd, db, header.unique_id, buffer,
-				  &index, &attr, &category);
-	 size= buffer->used;
+	 rrec = pi_buffer_new(65536);
+	 if (!rrec) {
+	    jp_logf(JP_LOG_WARN, "slow_sync_application(), pi_buffer_new: %s\n",
+                               _("Out of memory"));
+            free(lrec);
+	    break;
+	 }
+	 ret = dlp_ReadRecordById(sd, db, header.unique_id, rrec,
+				  &rindex, &rattr, &rcategory);
+	 rrec_len = rrec->used;
 #else
-	 ret = dlp_ReadRecordById(sd, db, header.unique_id, buffer,
-				  &index, &size, &attr, &category);
+	 ret = dlp_ReadRecordById(sd, db, header.unique_id, rrec,
+				  &rindex, &rrec_len, &rattr, &rcategory);
 #endif
-	 if (rec_len == size) {
-	    jp_logf(JP_LOG_DEBUG, "sizes match!\n");
 #ifdef JPILOT_DEBUG
-#ifdef PILOT_LINK_0_12
-	    if (memcmp(record, buffer->data, size)==0) {
-	       jp_logf(JP_LOG_DEBUG, "Binary is the same!\n");
-	    }
-#else
-	    if (memcmp(record, buffer, size)==0) {
-	       jp_logf(JP_LOG_DEBUG, "Binary is the same!\n");
-	    }
-#endif
-	    /* FIXME What should happen here is that if the records are the same
-	     * then go ahead and delete, otherwise make a copy of the record
-	     * so that there is no data loss.
-	     * memcmp doesn't seem to work for datebook, probably because
-	     * some of the struct tm fields and things can be different and
-	     * not affect the record.
-	     */
-#endif
-	 }
-	 free(record);
-#ifdef PILOT_LINK_0_12
-	 pi_buffer_free(buffer);
-#endif
-	 /* if (ret>=0 ) {
-	    printf("id %ld, index %d, size %d, attr 0x%x, category %d\n",id, index, size, attr, category);
-	 }
-	 jp_logf(JP_LOG_WARN, "Deleting Palm id=%d,\n",header.unique_id); */
-
-	 ret = dlp_DeleteRecord(sd, db, 0, header.unique_id);
-
-	 if (ret < 0) {
-	    jp_logf(JP_LOG_WARN, _("dlp_DeleteRecord failed\n"\
-            "This could be because the record was already deleted on the Palm\n"));
-	    charset_j2p(error_log_message_d,255,char_set);
-	    dlp_AddSyncLogEntry(sd, error_log_message_d);
-	    dlp_AddSyncLogEntry(sd, "\n");
+	 if (ret>=0 ) {
+	    printf("read record by id %s returned %d\n", DB_name, ret);
+	    printf("id %ld, index %d, size %d, attr 0x%x, category %d\n",
+		   header.unique_id, rindex, rrec_len, rattr, rcategory);
 	 } else {
-	    charset_j2p(delete_log_message,255,char_set);
-	    dlp_AddSyncLogEntry(sd, delete_log_message);
-	    dlp_AddSyncLogEntry(sd, "\n");
+	    printf("Case 3&4: read record by id failed\n");
+         }
+#endif
+
+	 /* Check whether records are the same 
+          * Unfortunately the palm and Jpilot store some fields differently.
+          * This may be caused by byte-ordering issues between the Palm 
+          * and the host PC.  The time structs are also likely to be different
+          * since Palm measures from 1904 and the host PC probably doesn't.
+          * The result is that a direct memcmp will not work.  Ideally
+          * one would have comparison routines on a per DB_name basis but 
+          * this doesn't seem feasible.
+          * Our only recourse is to compare lengths which is imperfect 
+          * and can obviously hide a lot of simple changes */
+         /* same = rrec && (lrec_len==rrec_len) && !memcmp(lrec, rrec, lrec_len); */
+         same = rrec && (lrec_len==rrec_len);
+#ifdef JPILOT_DEBUG
+         printf("Same is %d\n", same);
+#endif
+
+         if (ret < 0) {
+            /* lrec can't be found which means it has already 
+             * been deleted from the Palm side.
+             * Mark the local record as deleted */
+            jp_logf(JP_LOG_DEBUG, "Case 3&4: no remote record found, must have been deleted on the Palm\n");
+	    if (fseek(pc_in, -(header.header_len+lrec_len), SEEK_CUR)) {
+               jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
+               fclose(pc_in);
+               dlp_CloseDB(sd, db);
+               free(lrec);
+#ifdef PILOT_LINK_0_12
+               pi_buffer_free(rrec);
+#endif
+               return EXIT_FAILURE;
+            }
+            header.rt=DELETED_DELETED_PALM_REC;
+            write_header(pc_in, &header);
+         } 
+         /* Next check for match between lrec and rrec */
+	 else if (same && (header.unique_id != 0)) {
+	    jp_logf(JP_LOG_DEBUG, "Case 3&4: lrec & rrec match, deleting\n");
+            ret = dlp_DeleteRecord(sd, db, 0, header.unique_id);
+            if (ret < 0) {
+               jp_logf(JP_LOG_WARN, _("dlp_DeleteRecord failed\n"\
+               "This could be because the record was already deleted on the Palm\n"));
+               charset_j2p(error_log_message_d,255,char_set);
+               dlp_AddSyncLogEntry(sd, error_log_message_d);
+               dlp_AddSyncLogEntry(sd, "\n");
+            } else {
+               charset_j2p(delete_log_message,255,char_set);
+               dlp_AddSyncLogEntry(sd, delete_log_message);
+               dlp_AddSyncLogEntry(sd, "\n");
+            }
+	    
+            /* Now mark the record in pc3 file as deleted */
+	    if (fseek(pc_in, -(header.header_len+lrec_len), SEEK_CUR)) {
+               jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
+               fclose(pc_in);
+               dlp_CloseDB(sd, db);
+               free(lrec);
+#ifdef PILOT_LINK_0_12
+               pi_buffer_free(rrec);
+#endif
+               return EXIT_FAILURE;
+            }
+            header.rt=DELETED_DELETED_PALM_REC;
+            write_header(pc_in, &header);
+
+         } else {
+            /* Record has been changed on the palm as well as the PC.  
+             *
+             * It must be copied to the palm under a new unique ID in
+             * order to prevent overwriting by the modified PC record.  */
+            if ((header.rt==MODIFIED_PALM_REC)) {
+               jp_logf(JP_LOG_DEBUG, "Case 4: duplicating record\n");
+
+               /* Write record to Palm and get new unique ID */
+               jp_logf(JP_LOG_DEBUG, "Writing PC record to palm\n");
+               ret = dlp_WriteRecord(sd, db, rattr & dlpRecAttrSecret,
+                                     0, rattr & 0x0F,
+#ifdef PILOT_LINK_0_12
+                                     rrec->data,
+#else
+                                     rrec,
+#endif
+                                     rrec_len, &header.unique_id);
+
+               if (ret < 0) {
+                  jp_logf(JP_LOG_WARN, "dlp_WriteRecord failed\n");
+                  charset_j2p(error_log_message_w,255,char_set);
+                  dlp_AddSyncLogEntry(sd, error_log_message_w);
+                  dlp_AddSyncLogEntry(sd, "\n");
+               } else {
+                  charset_j2p(write_log_message,255,char_set);
+                  dlp_AddSyncLogEntry(sd, write_log_message);
+                  dlp_AddSyncLogEntry(sd, "\n");
+                  /* Now mark the record as deleted in the pc file */
+                  if (fseek(pc_in, -(header.header_len+lrec_len), SEEK_CUR)) {
+                     jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
+                     fclose(pc_in);
+                     dlp_CloseDB(sd, db);
+                     free(lrec);
+#ifdef PILOT_LINK_0_12
+                     pi_buffer_free(rrec);
+#endif
+                     return EXIT_FAILURE;
+                  }
+                  header.rt=DELETED_PC_REC;
+                  write_header(pc_in, &header);
+               }
+            } else {
+               /* Record was a deletion on the PC but modified on the Palm
+                * The PC deletion is ignored by skipping the .pc3 file entry */
+               jp_logf(JP_LOG_DEBUG, "Case 3: skipping PC deleted record\n");
+               if (fseek(pc_in, -(header.header_len+lrec_len), SEEK_CUR)) {
+                  jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
+                  fclose(pc_in);
+                  dlp_CloseDB(sd, db);
+                  free(lrec);
+#ifdef PILOT_LINK_0_12
+                  pi_buffer_free(rrec);
+#endif
+                  return EXIT_FAILURE;
+               }
+               header.rt=DELETED_PC_REC;
+               write_header(pc_in, &header);
+            }
+
+         } /* end if checking whether old & new records are the same */
+
+         /* free buffers */
+	 if (lrec) {
+	    free(lrec);
+	    lrec = NULL;
 	 }
-	 /*Now mark the record as deleted */
-	 if (fseek(pc_in, -header.header_len, SEEK_CUR)) {
-	    jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
-	    fclose(pc_in);
-	    dlp_CloseDB(sd, db);
-	    return EXIT_FAILURE;
-	 }
-	 header.rt=DELETED_DELETED_PALM_REC;
-	 write_header(pc_in, &header);
+
+#ifdef PILOT_LINK_0_12
+         pi_buffer_free(rrec);
+#endif
+
+      } /* end if Case 3&4 */
+
+      /* move to next record in .pc3 file */
+      if (fseek(pc_in, lrec_len, SEEK_CUR)) {
+         jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
+         fclose(pc_in);
+         dlp_CloseDB(sd, db);
+         return EXIT_FAILURE;
       }
 
-      /*skip this record now that we are done with it */
-      if (fseek(pc_in, rec_len, SEEK_CUR)) {
-	 jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
-	 fclose(pc_in);
-	 dlp_CloseDB(sd, db);
-	 return EXIT_FAILURE;
-      }
-   }
+   } /* end while on feof(pc_in) */
+
    fclose(pc_in);
-
 #ifdef JPILOT_DEBUG
    dlp_ReadOpenDBInfo(sd, db, &num);
    jp_logf(JP_LOG_WARN ,"number of records = %d\n", num);
 #endif
-
    dlp_ResetSyncFlags(sd, db);
    dlp_CleanUpDatabase(sd, db);
-
-   /* Close the database */
    dlp_CloseDB(sd, db);
 
    return EXIT_SUCCESS;
@@ -2235,32 +2352,28 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
    int ret;
    int num;
    FILE *pc_in;
-   PC3RecordHeader header;
-   unsigned int old_unique_id;
-   char *record;
-   void *Pbuf;
-   int rec_len;
    char pc_filename[FILENAME_MAX];
+   PC3RecordHeader header;
+   unsigned int orig_unique_id;
+   void *lrec;  /* local (.pc3) record */
+   int  lrec_len;
+   void *rrec;  /* remote (Palm) record */
+   int  rindex, rattr, rcategory;
+#ifdef PILOT_LINK_0_12
+   size_t rrec_len;
+#else
+   int rrec_len;
+#endif
+   long char_set;
    char write_log_message[256];
    char error_log_message_w[256];
    char error_log_message_d[256];
    char delete_log_message[256];
-   int index, attr, category;
-#ifdef PILOT_LINK_0_12
-   size_t size;
-#else
-   int size;
-#endif
-   long char_set;
    int same; /* JPA */
 
    jp_logf(JP_LOG_DEBUG, "fast_sync_local_recs\n");
    get_pref(PREF_CHAR_SET, &char_set, NULL);
 
-   if ((DB_name==NULL) || (strlen(DB_name) > 250)) {
-      return EXIT_FAILURE;
-   }
-   g_snprintf(pc_filename, sizeof(pc_filename), "%s.pc3", DB_name);
    /* This is an attempt to use the proper pronoun most of the time */
    if (strchr("aeiou", tolower(DB_name[0]))) {
       g_snprintf(write_log_message, sizeof(write_log_message),
@@ -2281,13 +2394,15 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
       g_snprintf(delete_log_message, sizeof(delete_log_message),
 	      _("Deleted a %s record."), DB_name);
    }
+   g_snprintf(pc_filename, sizeof(pc_filename), "%s.pc3", DB_name);
    pc_in = jp_open_home_file(pc_filename, "r+");
    if (pc_in==NULL) {
       jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), pc_filename);
       return EXIT_FAILURE;
    }
 
-   while(!feof(pc_in)) {
+   /* Loop over records in .pc3 file */
+   while (!feof(pc_in)) {
       num = read_header(pc_in, &header);
       if (num!=1) {
 	 if (ferror(pc_in)) {
@@ -2297,57 +2412,60 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
 	    break;
 	 }
       }
-      rec_len = header.rec_len;
-      if (rec_len > 0x10000) {
+
+      lrec_len = header.rec_len;
+      if (lrec_len > 0x10000) {
 	 jp_logf(JP_LOG_WARN, _("PC file corrupt?\n"));
 	 fclose(pc_in);
 	 return EXIT_FAILURE;
       }
+
       /* Case 5: */
       if ((header.rt==NEW_PC_REC) || (header.rt==REPLACEMENT_PALM_REC)) {
-	 jp_logf(JP_LOG_DEBUG, "new pc record\n");
-	 record = malloc(rec_len);
-	 if (!record) {
-	    jp_logf(JP_LOG_WARN, "fast_sync_local_recs(): %s\n", _("Out of memory"));
+	 jp_logf(JP_LOG_DEBUG, "Case 5: new pc record\n");
+	 lrec = malloc(lrec_len);
+	 if (!lrec) {
+	    jp_logf(JP_LOG_WARN, "fast_sync_local_recs(): %s\n", 
+                               _("Out of memory"));
 	    break;
 	 }
-	 num = fread(record, rec_len, 1, pc_in);
+	 num = fread(lrec, lrec_len, 1, pc_in);
 	 if (num != 1) {
 	    if (ferror(pc_in)) {
+               free(lrec);
 	       break;
 	    }
 	 }
 
 	 jp_logf(JP_LOG_DEBUG, "Writing PC record to palm\n");
 
-	 old_unique_id=header.unique_id;
+	 orig_unique_id = header.unique_id;
 	 if (header.rt==REPLACEMENT_PALM_REC) {
 	    ret = dlp_WriteRecord(sd, db, header.attrib & dlpRecAttrSecret,
 				  header.unique_id, header.attrib & 0x0F,
-				  record, rec_len, &header.unique_id);
+				  lrec, lrec_len, &header.unique_id);
 	 } else {
 	    ret = dlp_WriteRecord(sd, db, header.attrib & dlpRecAttrSecret,
 				  0, header.attrib & 0x0F,
-				  record, rec_len, &header.unique_id);
+				  lrec, lrec_len, &header.unique_id);
 	 }
 
 	 jp_logf(JP_LOG_DEBUG, "Writing PC record to local\n");
 	 if (ret >=0) {
 	    if ((header.rt==REPLACEMENT_PALM_REC) &&
-		(old_unique_id != header.unique_id)) {
+		(orig_unique_id != header.unique_id)) {
 	       /* There is a possibility that the palm handed back a unique ID
-		* other than the one we requested
-		*/
-	       pdb_file_delete_record_by_id(DB_name, old_unique_id);
+		* other than the one we requested */
+	       pdb_file_delete_record_by_id(DB_name, orig_unique_id);
 	    }
-	    pdb_file_modify_record(DB_name, record, rec_len,
+	    pdb_file_modify_record(DB_name, lrec, lrec_len,
 				   header.attrib & dlpRecAttrSecret,
 				   header.attrib & 0x0F, header.unique_id);
 	 }
 
-	 if (record) {
-	    free(record);
-	    record = NULL;
+	 if (lrec) {
+	    free(lrec);
+	    lrec = NULL;
 	 }
 
 	 if (ret < 0) {
@@ -2359,8 +2477,8 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
 	    charset_j2p(write_log_message,255,char_set);
 	    dlp_AddSyncLogEntry(sd, write_log_message);
 	    dlp_AddSyncLogEntry(sd, "\n");
-	    /* Now mark the record as deleted in the pc file */
-	    if (fseek(pc_in, -(header.header_len+rec_len), SEEK_CUR)) {
+	    /* mark the record as deleted in the pc file */
+	    if (fseek(pc_in, -(header.header_len+lrec_len), SEEK_CUR)) {
 	       jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
 	       fclose(pc_in);
 	       return EXIT_FAILURE;
@@ -2368,93 +2486,180 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
 	    header.rt=DELETED_PC_REC;
 	    write_header(pc_in, &header);
 	 }
-      }
-      /* Case 3: */
-      /* FIXME What should happen here is that if the records are the same
-       * then go ahead and delete, otherwise make a copy of the record
-       * so that there is no data loss.
-       * memcmp doesn't seem to work for datebook, probably because
-       * some of the struct tm fields and things can be different and
-       * not affect the record.
-       */
+
+      } /* endif Case 5 */
+
+      /* Case 3 & 4: */
       if ((header.rt==DELETED_PALM_REC) || (header.rt==MODIFIED_PALM_REC)) {
-	 jp_logf(JP_LOG_DEBUG, "deleted or modified pc record\n");
-	 rec_len = header.rec_len;
-	 record = malloc(rec_len);
-	 num = fread(record, rec_len, 1, pc_in);
+	 jp_logf(JP_LOG_DEBUG, "Case 3&4: deleted or modified pc record\n");
+	 lrec = malloc(lrec_len);
+	 if (!lrec) {
+	    jp_logf(JP_LOG_WARN, "fast_sync_local_recs(): %s\n", 
+                               _("Out of memory"));
+	    break;
+	 }
+	 num = fread(lrec, lrec_len, 1, pc_in);
 	 if (num != 1) {
 	    if (ferror(pc_in)) {
+               free(lrec);
 	       break;
 	    }
 	 }
-	 if (fseek(pc_in, -rec_len, SEEK_CUR)) {
-	    jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
-	    fclose(pc_in);
-	    return EXIT_FAILURE;
-	 }
 	 ret = pdb_file_read_record_by_id(DB_name,
 					  header.unique_id,
-					  &Pbuf, &size, &index,
-					  &attr, &category);
-	 /* ret = dlp_ReadRecordById(sd, db, header.unique_id, buffer,
-				  &index, &size, &attr, &category); */
-
-	 /* JPA check whether records are the same, before freeing space */
-         same = Pbuf && !memcmp(record, Pbuf, size);
-
-	 if (Pbuf) free (Pbuf);
+					  &rrec, &rrec_len, &rindex,
+					  &rattr, &rcategory);
 #ifdef JPILOT_DEBUG
 	 if (ret>=0 ) {
 	    printf("read record by id %s returned %d\n", DB_name, ret);
 	    printf("id %ld, index %d, size %d, attr 0x%x, category %d\n",
-		   header.unique_id, index, size, attr, category);
-	 }
+		   header.unique_id, rindex, rrec_len, rattr, rcategory);
+	 } else {
+	    printf("Case 3&4: read record by id failed\n");
+         }
 #endif
-	 if ((rec_len == size) && (header.unique_id != 0)) {
-	    jp_logf(JP_LOG_DEBUG, "sizes match!\n");
-	    /* FIXME This code never worked right.  It could be because
-	     * Pbuf was freed in pi_file_close before here
-	     * I have not tested it since I fixed it */
-            /* JPA this is indeed the case, moreover there was a */
-            /* bad condition in pdb_file_read_record_by_id() */
-            /* if (same) { */ /* JPA */
-	    if (1) { /* reports of above line causing deletes to fail */
-	       /* if (memcmp(record, Pbuf, size)==0)
-		jp_logf(JP_LOG_DEBUG,"Binary is the same!\n"); */
-	       /* jp_logf(JP_LOG_GUI, "Deleting Palm id=%d,\n",header.unique_id);*/
-	       ret = dlp_DeleteRecord(sd, db, 0, header.unique_id);
-	       if (ret < 0) {
-		  jp_logf(JP_LOG_WARN, _("dlp_DeleteRecord failed\n"
-					 "This could be because the record was already deleted on the Palm\n"));
-		  charset_j2p(error_log_message_d,255,char_set);
-		  dlp_AddSyncLogEntry(sd, error_log_message_d);
-		  dlp_AddSyncLogEntry(sd, "\n");
-	       } else {
-		  charset_j2p(delete_log_message,255,char_set);
-		  dlp_AddSyncLogEntry(sd, delete_log_message);
-		  dlp_AddSyncLogEntry(sd, "\n");
-		  pdb_file_delete_record_by_id(DB_name, header.unique_id);
-	       }
-	    }
+	 /* Check whether records are the same 
+          * Unfortunately the palm and Jpilot store some fields differently.
+          * This may be caused by byte-ordering issues between the Palm 
+          * and the host PC.  The time structs are also likely to be different
+          * since Palm measures from 1904 and the host PC probably doesn't.
+          * The result is that a direct memcmp will not work.  Ideally
+          * one would have comparison routines on a per DB_name basis but 
+          * this doesn't seem feasible.
+          * Our only recourse is to compare lengths which is imperfect 
+          * and can obviously hide a lot of simple changes */
+         /* same = rrec && (lrec_len==rrec_len) && !memcmp(lrec, rrec, lrec_len); */
+         same = rrec && (lrec_len==rrec_len);
+#ifdef JPILOT_DEBUG
+         printf("Same is %d\n", same);
+#endif
+
+         if (ret < 0) {
+            /* lrec can't be found in pdb file which means it
+             * has already been deleted from the Palm side.
+             * Mark the local record as deleted */
+            jp_logf(JP_LOG_DEBUG, "Case 3&4: no remote record found, must have been deleted on the Palm\n");
+	    if (fseek(pc_in, -(header.header_len+lrec_len), SEEK_CUR)) {
+               jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
+               fclose(pc_in);
+               free(lrec);
+               free(rrec);
+               return EXIT_FAILURE;
+            }
+            header.rt=DELETED_DELETED_PALM_REC;
+            write_header(pc_in, &header);
+         } 
+         /* Next check for match between lrec and rrec */
+	 else if (same && (header.unique_id != 0)) {
+	    jp_logf(JP_LOG_DEBUG, "Case 3&4: lrec & rrec match, deleting\n");
+            ret = dlp_DeleteRecord(sd, db, 0, header.unique_id);
+            if (ret < 0) {
+               jp_logf(JP_LOG_WARN, _("dlp_DeleteRecord failed\n"
+                                      "This could be because the record was already deleted on the Palm\n"));
+               charset_j2p(error_log_message_d,255,char_set);
+               dlp_AddSyncLogEntry(sd, error_log_message_d);
+               dlp_AddSyncLogEntry(sd, "\n");
+            } else {
+               charset_j2p(delete_log_message,255,char_set);
+               dlp_AddSyncLogEntry(sd, delete_log_message);
+               dlp_AddSyncLogEntry(sd, "\n");
+               pdb_file_delete_record_by_id(DB_name, header.unique_id);
+            }
+	    
+            /* Now mark the record in pc3 file as deleted */
+	    if (fseek(pc_in, -(header.header_len+lrec_len), SEEK_CUR)) {
+               jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
+               fclose(pc_in);
+               free(lrec);
+               free(rrec);
+               return EXIT_FAILURE;
+            }
+            header.rt=DELETED_DELETED_PALM_REC;
+            write_header(pc_in, &header);
+
+         } else {
+            /* Record has been changed on the palm as well as the PC.  
+             *
+             * The changed record has already been transferred to the local pdb 
+             * file from the palm. It must be copied to the palm and to the 
+             * local pdb file under a new unique ID in order to prevent 
+             * overwriting by the modified PC record.  */
+            if ((header.rt==MODIFIED_PALM_REC)) {
+               jp_logf(JP_LOG_DEBUG, "Case 4: duplicating record\n");
+
+               /* Write record to Palm and get new unique ID */
+               jp_logf(JP_LOG_DEBUG, "Writing PC record to palm\n");
+               ret = dlp_WriteRecord(sd, db, rattr & dlpRecAttrSecret,
+                                     0, rattr & 0x0F,
+                                     rrec, rrec_len, &header.unique_id);
+
+               /* Write record to local pdb file */
+               jp_logf(JP_LOG_DEBUG, "Writing PC record to local\n");
+               if (ret >=0) {
+                  pdb_file_modify_record(DB_name, rrec, rrec_len,
+                                         rattr & dlpRecAttrSecret,
+                                         rattr & 0x0F, header.unique_id);
+               }
+
+               if (ret < 0) {
+                  jp_logf(JP_LOG_WARN, "dlp_WriteRecord failed\n");
+                  charset_j2p(error_log_message_w,255,char_set);
+                  dlp_AddSyncLogEntry(sd, error_log_message_w);
+                  dlp_AddSyncLogEntry(sd, "\n");
+               } else {
+                  charset_j2p(write_log_message,255,char_set);
+                  dlp_AddSyncLogEntry(sd, write_log_message);
+                  dlp_AddSyncLogEntry(sd, "\n");
+                  /* Now mark the record as deleted in the pc file */
+                  if (fseek(pc_in, -(header.header_len+lrec_len), SEEK_CUR)) {
+                     jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
+                     fclose(pc_in);
+                     free(lrec);
+                     free(rrec);
+                     return EXIT_FAILURE;
+                  }
+                  header.rt=DELETED_PC_REC;
+                  write_header(pc_in, &header);
+               }
+            } else {
+               /* Record was a deletion on the PC but modified on the Palm
+                * The PC deletion is ignored by skipping the .pc3 file entry */
+               jp_logf(JP_LOG_DEBUG, "Case 3: skipping PC deleted record\n");
+               if (fseek(pc_in, -(header.header_len+lrec_len), SEEK_CUR)) {
+                  jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
+                  fclose(pc_in);
+                  free(lrec);
+                  free(rrec);
+                  return EXIT_FAILURE;
+               }
+               header.rt=DELETED_PC_REC;
+               write_header(pc_in, &header);
+            }
+
+         } /* end if checking whether old & new records are the same */
+
+         /* free buffers */
+	 if (lrec) {
+	    free(lrec);
+	    lrec = NULL;
 	 }
 
-	 /*Now mark the record as deleted */
-	 if (fseek(pc_in, -header.header_len, SEEK_CUR)) {
-	    jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
-	    fclose(pc_in);
-	    return EXIT_FAILURE;
-	 }
-	 header.rt=DELETED_DELETED_PALM_REC;
-	 write_header(pc_in, &header);
+         if (rrec) {
+            free(rrec);
+            rrec = NULL;
+         }
+
+      } /* end if Case 3&4 */
+
+      /* move to next record in .pc3 file */
+      if (fseek(pc_in, lrec_len, SEEK_CUR)) {
+         jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
+         fclose(pc_in);
+         return EXIT_FAILURE;
       }
 
-      /*skip this record now that we are done with it */
-      if (fseek(pc_in, rec_len, SEEK_CUR)) {
-	 jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
-	 fclose(pc_in);
-	 return EXIT_FAILURE;
-      }
-   }
+   } /* end while on feof(pc_in) */
+
    fclose(pc_in);
 
    return EXIT_SUCCESS;
@@ -2557,18 +2762,21 @@ int pdb_file_swap_indexes(char *DB_name, int index1, int index2)
  *     remove local record (LR)
  *   Case 2:
  *   if RR changed
- *     change LR, If it doesn't exist then add it
- * For each LR
+ *     change LR, If LR doesn't exist then add it
+ *
+ * For each local record (LR):
  *   Case 3:
- *   if LR deleted or archived
- *     if RR==OLR (Original LR) remove RR, and LR
+ *   if LR deleted
+ *     if RR==OLR (Original LR) remove both RR and LR
  *   Case 4:
  *   if LR changed
  *     We have a new local record (NLR) and a
- *        modified (deleted) local record (MLR)
+ *     modified (deleted) local record (MLR)
  *     if NLR==RR then do nothing (either both were changed equally, or
  *				   local was changed and changed back)
- *     add NLR to remote, if RR==LR remove RR
+ *     otherwise,
+ *       add NLR to remote
+ *       if RR==LR remove RR
  *   Case 5:
  *   if new LR
  *     add LR to remote
@@ -2577,31 +2785,33 @@ int fast_sync_application(char *DB_name, int sd)
 {
    int db;
    int ret;
+   long char_set;
+   char log_entry[256];
    char write_log_message[256];
    char error_log_message_w[256];
    char error_log_message_d[256];
    char delete_log_message[256];
-   char log_entry[256];
-   recordid_t id=0;
-   int index, size, attr, category;
-   int local_num, palm_num;
-   char *extra_dbname[2];
-   long char_set;
+   /* remote (Palm) record */
 #ifdef PILOT_LINK_0_12
-   pi_buffer_t *buffer;
+   pi_buffer_t *rrec;
 #else
-   unsigned char buffer[65536];
+   unsigned char rrec[65536];
 #endif
+   recordid_t rid=0;
+   int rindex, rrec_len, rattr, rcategory;
+   int num_local_recs, num_palm_recs;
+   char *extra_dbname[2];
+
+   jp_logf(JP_LOG_DEBUG, "fast_sync_application %s\n", DB_name);
 
    if ((DB_name==NULL) || (strlen(DB_name) == 0) || (strlen(DB_name) > 250)) {
       return EXIT_FAILURE;
    }
 
-   jp_logf(JP_LOG_DEBUG, "fast_sync_application %s\n", DB_name);
-   get_pref(PREF_CHAR_SET, &char_set, NULL);
-
    g_snprintf(log_entry, sizeof(log_entry), _("Syncing %s\n"), DB_name);
    jp_logf(JP_LOG_GUI, log_entry);
+
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
 
    /* This is an attempt to use the proper pronoun most of the time */
    if (strchr("aeiou", tolower(DB_name[0]))) {
@@ -2634,54 +2844,56 @@ int fast_sync_application(char *DB_name, int sd)
    }
 
    /* I can't get the appinfodirty flag to work, so I do this for now */
-   /*ret = dlp_ReadAppBlock(sd, db, 0, buffer, 65535);
+   /*ret = dlp_ReadAppBlock(sd, db, 0, rrec, 65535);
    jp_logf(JP_LOG_DEBUG, "readappblock ret=%d\n", ret);
    if (ret>0) {
-      pdb_file_write_app_block(DB_name, buffer, ret);
+      pdb_file_write_app_block(DB_name, rrec, ret);
    }*/
 
+   /* Loop over all Palm records with dirty bit set */
    while(1) {
 #ifdef PILOT_LINK_0_12
-      buffer = pi_buffer_new(0);
-      ret = dlp_ReadNextModifiedRec(sd, db, buffer,
-				    &id, &index, &attr, &category);
-      size = buffer->used;
+      rrec = pi_buffer_new(0);
+      ret = dlp_ReadNextModifiedRec(sd, db, rrec,
+				    &rid, &rindex, &rattr, &rcategory);
+      rrec_len = rrec->used;
 #else
-      ret = dlp_ReadNextModifiedRec(sd, db, buffer,
-				    &id, &index, &size, &attr, &category);
+      ret = dlp_ReadNextModifiedRec(sd, db, rrec,
+				    &rid, &rindex, &rrec_len, &rattr, &rcategory);
 #endif
       if (ret>=0 ) {
 	 jp_logf(JP_LOG_DEBUG, "read next record for %s returned %d\n", DB_name, ret);
-	 jp_logf(JP_LOG_DEBUG, "id %ld, index %d, size %d, attr 0x%x, category %d\n",id, index, size, attr, category);
+	 jp_logf(JP_LOG_DEBUG, "id %ld, index %d, size %d, attr 0x%x, category %d\n",rid, rindex, rrec_len, rattr, rcategory);
       } else {
 #ifdef PILOT_LINK_0_12
-	 pi_buffer_free (buffer);
+	 pi_buffer_free(rrec);
 #endif
 	 break;
       }
+
       /* Case 1: */
-      if ((attr &  dlpRecAttrDeleted) || (attr & dlpRecAttrArchived)) {
-	 jp_logf(JP_LOG_DEBUG, "found a deleted record on palm\n");
-	 pdb_file_delete_record_by_id(DB_name, id);
+      if ((rattr & dlpRecAttrDeleted) || (rattr & dlpRecAttrArchived)) {
+	 jp_logf(JP_LOG_DEBUG, "Case 1: found a deleted record on palm\n");
+	 pdb_file_delete_record_by_id(DB_name, rid);
 #ifdef PILOT_LINK_0_12
-	 pi_buffer_free (buffer);
+	 pi_buffer_free(rrec);
 #endif
 	 continue;
       }
+
       /* Case 2: */
-      /* Note that if deleted we don't want to deal with it (taken care of above) */
-      if (attr & dlpRecAttrDirty) {
-	 jp_logf(JP_LOG_DEBUG, "found a dirty record on palm\n");
+      if (rattr & dlpRecAttrDirty) {
+	 jp_logf(JP_LOG_DEBUG, "Case 2: found a dirty record on palm\n");
 #ifdef PILOT_LINK_0_12
-	 pdb_file_modify_record(DB_name, buffer->data, buffer->used, attr, category, id);
+	 pdb_file_modify_record(DB_name, rrec->data, rrec->used, rattr, rcategory, rid);
 #else
-	 pdb_file_modify_record(DB_name, buffer, size, attr, category, id);
+	 pdb_file_modify_record(DB_name, rrec, rrec_len, rattr, rcategory, rid);
 #endif
       }
 #ifdef PILOT_LINK_0_12
-      pi_buffer_free (buffer);
+      pi_buffer_free(rrec);
 #endif
-   }
+   } /* end while over Palm records */
 
    fast_sync_local_recs(DB_name, sd, db);
 
@@ -2689,17 +2901,17 @@ int fast_sync_application(char *DB_name, int sd)
    dlp_CleanUpDatabase(sd, db);
 
    /* Count the number of records, should be equal, may not be */
-   dlp_ReadOpenDBInfo(sd, db, &palm_num);
-   pdb_file_count_recs(DB_name, &local_num);
+   dlp_ReadOpenDBInfo(sd, db, &num_palm_recs);
+   pdb_file_count_recs(DB_name, &num_local_recs);
 
    dlp_CloseDB(sd, db);
 
-   if (local_num != palm_num) {
+   if (num_local_recs != num_palm_recs) {
       extra_dbname[0] = DB_name;
       extra_dbname[1] = NULL;
       jp_logf(JP_LOG_DEBUG, "fetch_extra_DBs() [%s]\n", extra_dbname[0]);
-      jp_logf(JP_LOG_DEBUG ,_("palm: number of records = %d\n"), palm_num);
-      jp_logf(JP_LOG_DEBUG ,_("disk: number of records = %d\n"), local_num);
+      jp_logf(JP_LOG_DEBUG ,_("palm: number of records = %d\n"), num_palm_recs);
+      jp_logf(JP_LOG_DEBUG ,_("disk: number of records = %d\n"), num_local_recs);
       fetch_extra_DBs(sd, extra_dbname);
    }
 
