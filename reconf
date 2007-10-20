@@ -1,12 +1,13 @@
 #!/bin/sh
 
+set -e
 set -v
 set -x
 if [ -e Makefile ]
 then
 	make distclean
 fi
-rm -f *.cache *.m4
+rm -rf *.cache *.m4
 rm -f config.log config.status
 #rm -f config.guess config.sub depcomp ltmain.sh
 #(cat m4/*.m4 > acinclude.m4 2> /dev/null)
