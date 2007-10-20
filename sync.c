@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.68 2007/10/19 23:58:14 rikster5 Exp $ */
+/* $Id: sync.c,v 1.69 2007/10/20 00:28:06 rikster5 Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -1710,7 +1710,7 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
 	{ 0, 0, "u8EZ", NULL},
 	{ 0, 0, NULL, NULL}
    };
-   unsigned int full_backup; = flags & SYNC_FULL_BACKUP;
+   unsigned int full_backup;
 
    jp_logf(JP_LOG_DEBUG, "sync_fetch flags=0x%x, num_backups=%d, fast=%d\n",
 	   flags, num_backups, fast_sync);
