@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.69 2007/10/20 00:28:06 rikster5 Exp $ */
+/* $Id: sync.c,v 1.70 2007/10/21 02:14:40 rikster5 Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -228,6 +228,42 @@ static char *get_error_str(int error)
       sprintf(buf, "%d", error);
       return NULL;
    }
+}
+
+/* Attempt to match records
+ *
+ * Unfortunately the palm and Jpilot store some fields differently.
+ * This may be caused by endianess issues between the Palm and the host PC.
+ * The time structs are also likely to be different since Palm measures from 
+ * 1904 and the host PC doesn't.
+ * The result is that a direct memcmp usually won't work.  
+ * Ideally, one would have comparison routines on a per DB_name basis.
+ * Until those are written we fall back on comparing the lengths of records
+ * which is imperfect and can obviously hide a lot of simple changes */
+int match_records(void *rrec, int rrec_len, 
+                  void *lrec, int lrec_len, 
+                  char *DB_name)
+{
+
+   if (!rrec || !lrec)
+      return 0;
+   
+   if (lrec_len != rrec_len)
+      return 0;
+
+   /* memcmp works for a few specific databases */
+   if (!strcmp(DB_name,"MemoDB"))
+      return !(memcmp(lrec, rrec, lrec_len));
+
+   if (!strcmp(DB_name,"Memo32DB"))
+      return !(memcmp(lrec, rrec, lrec_len));
+
+   if (!strcmp(DB_name,"ToDoDB"))
+      return !(memcmp(lrec, rrec, lrec_len));
+
+   /* Lengths match and no other checks possible */
+   return 1;
+
 }
 
 int sync_once(struct my_sync_info *sync_info)
@@ -1271,18 +1307,9 @@ int slow_sync_application(char *DB_name, int sd)
          }
 #endif
 
-	 /* Check whether records are the same 
-          * Unfortunately the palm and Jpilot store some fields differently.
-          * This may be caused by byte-ordering issues between the Palm 
-          * and the host PC.  The time structs are also likely to be different
-          * since Palm measures from 1904 and the host PC probably doesn't.
-          * The result is that a direct memcmp will not work.  Ideally
-          * one would have comparison routines on a per DB_name basis but 
-          * this doesn't seem feasible.
-          * Our only recourse is to compare lengths which is imperfect 
-          * and can obviously hide a lot of simple changes */
-         /* same = rrec && (lrec_len==rrec_len) && !memcmp(lrec, rrec, lrec_len); */
-         same = rrec && (lrec_len==rrec_len);
+	 /* Check whether records are the same */
+         /* same = rrec && (lrec_len==rrec_len) */
+         same = match_records(rrec, rrec_len, lrec, lrec_len, DB_name);
 #ifdef JPILOT_DEBUG
          printf("Same is %d\n", same);
 #endif
@@ -2571,18 +2598,9 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
 	    printf("Case 3&4: read record by id failed\n");
          }
 #endif
-	 /* Check whether records are the same 
-          * Unfortunately the palm and Jpilot store some fields differently.
-          * This may be caused by byte-ordering issues between the Palm 
-          * and the host PC.  The time structs are also likely to be different
-          * since Palm measures from 1904 and the host PC probably doesn't.
-          * The result is that a direct memcmp will not work.  Ideally
-          * one would have comparison routines on a per DB_name basis but 
-          * this doesn't seem feasible.
-          * Our only recourse is to compare lengths which is imperfect 
-          * and can obviously hide a lot of simple changes */
-         /* same = rrec && (lrec_len==rrec_len) && !memcmp(lrec, rrec, lrec_len); */
-         same = rrec && (lrec_len==rrec_len);
+	 /* Check whether records are the same */
+         /* same = rrec && (lrec_len==rrec_len) */
+         same = match_records(rrec, rrec_len, lrec, lrec_len, DB_name);
 #ifdef JPILOT_DEBUG
          printf("Same is %d\n", same);
 #endif
