@@ -1,4 +1,4 @@
-/* $Id: memo.c,v 1.36 2007/06/06 02:45:10 rikster5 Exp $ */
+/* $Id: memo.c,v 1.37 2007/10/23 18:29:14 judd Exp $ */
 
 /*******************************************************************************
  * memo.c
@@ -129,7 +129,7 @@ int memo_sort(MemoList **memol, int sort_order)
 }
 
 /*
- * This function writes to the MemoDB.pc3 file
+ * This function writes to the MemosDB-PMem.pc3 file
  *
  * memo - input - a memo to be written
  * rt - input - type of record to be written
@@ -149,7 +149,10 @@ int pc_memo_write(struct Memo *memo, PCRecType rt, unsigned char attrib,
    buf_rec br;
    long ivalue;
    long char_set;
+   long memo_version;
 
+   get_pref(PREF_MEMO_VERSION, &memo_version, NULL);
+   
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    if (char_set != CHAR_SET_LATIN1) {
       if (memo->text) {
@@ -192,7 +195,11 @@ int pc_memo_write(struct Memo *memo, PCRecType rt, unsigned char attrib,
    if (ivalue) {
       jp_pc_write("Memo32DB", &br);
    } else {
-      jp_pc_write("MemoDB", &br);
+      if (memo_version==2) {
+	 jp_pc_write("MemosDB-PMem", &br);
+      } else {
+	 jp_pc_write("MemoDB", &br);
+      }
    }
    if (unique_id) {
       *unique_id = br.unique_id;
@@ -224,16 +231,23 @@ int get_memo_app_info(struct MemoAppInfo *ai)
    unsigned char *buf;
    long ivalue;
    char DBname[32];
+   long memo_version;
 
    memset(ai, 0, sizeof(*ai));
    /* Put at least one entry in there */
    strcpy(ai->category.name[0], "Unfiled");
 
+   get_pref(PREF_MEMO_VERSION, &memo_version, NULL);
+
    get_pref(PREF_MEMO32_MODE, &ivalue, NULL);
    if (ivalue) {
       strcpy(DBname, "Memo32DB");
    } else {
-      strcpy(DBname, "MemoDB");
+      if (memo_version==2) {
+	 strcpy(DBname, "MemosDB-PMem");
+      } else {
+	 strcpy(DBname, "MemoDB");
+      }
    }
    jp_get_app_info(DBname, &buf, (int*)&rec_size);
    num = unpack_MemoAppInfo(ai, buf, rec_size);
@@ -267,7 +281,7 @@ int get_memos2(MemoList **memo_list, int sort_order,
    long keep_modified, keep_deleted;
    int keep_priv;
    long char_set;
-   long ivalue;
+   long ivalue, memo_version;
    buf_rec *br;
 #ifdef PILOT_LINK_0_12
    pi_buffer_t *RecordBuffer;
@@ -293,13 +307,19 @@ int get_memos2(MemoList **memo_list, int sort_order,
    *memo_list=NULL;
    recs_returned = 0;
 
+   get_pref(PREF_MEMO_VERSION, &memo_version, NULL);
+
    get_pref(PREF_MEMO32_MODE, &ivalue, NULL);
    if (ivalue) {
       num = jp_read_DB_files("Memo32DB", &records);
       if (-1 == num)
         return 0;
    } else {
-      num = jp_read_DB_files("MemoDB", &records);
+      if (memo_version==2) {
+	 num = jp_read_DB_files("MemosDB-PMem", &records);
+      } else {
+	 num = jp_read_DB_files("MemoDB", &records);
+      }
       if (-1 == num)
         return 0;
    }

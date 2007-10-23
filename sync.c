@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.70 2007/10/21 02:14:40 rikster5 Exp $ */
+/* $Id: sync.c,v 1.71 2007/10/23 18:29:15 judd Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -105,6 +105,9 @@ int unpack_todo_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, 
 int pack_todo_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len);
 int unpack_memo_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len);
 int pack_memo_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len);
+/* New applications */
+int unpack_contact_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len);
+int pack_contact_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len);
 
 void sig_handler(int sig)
 {
@@ -670,6 +673,85 @@ int jp_sync(struct my_sync_info *sync_info)
    unsigned char buffer[65536];
 # endif
 #endif
+   int i;
+   char dbname[][32]={
+      "DatebookDB",
+	"AddressDB",
+	"ToDoDB",
+	"MemoDB",
+	"Memo32DB",
+#ifdef ENABLE_MANANA
+	"MañanaDB",
+#endif
+	""
+   };
+   int pref_sync_array[]={
+      PREF_SYNC_DATEBOOK,
+	PREF_SYNC_ADDRESS,
+	PREF_SYNC_TODO,
+	PREF_SYNC_MEMO,
+	PREF_SYNC_MEMO32,
+#ifdef ENABLE_MANANA
+	PREF_SYNC_MANANA,
+#endif
+	0
+   };
+
+   /* 
+    * This is pretty confusing, but a little necessary.
+    * This is an array of pointers to functions and will need to be changed
+    * to point to calendar, contacts, tasks, memos, etc. as preferenced
+    * dictate
+    */
+   int (*unpack_cai_from_buf[])(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len) = {
+      NULL,
+	unpack_address_cai_from_ai,
+	unpack_todo_cai_from_ai,
+	unpack_memo_cai_from_ai,
+	unpack_memo_cai_from_ai,
+#ifdef ENABLE_MANANA
+	unpack_todo_cai_from_ai,
+#endif
+	NULL
+   };
+   int (*pack_cai_into_buf[])(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len) = {
+      NULL,
+	pack_address_cai_into_ai,
+	pack_todo_cai_into_ai,
+	pack_memo_cai_into_ai,
+	pack_memo_cai_into_ai,
+#ifdef ENABLE_MANANA
+	pack_todo_cai_into_ai,
+#endif
+	NULL
+   };
+
+   long datebook_version, address_version, todo_version, memo_version;
+
+   /* Convert to new database names if prefs set */
+   rename_dbnames(dbname);
+
+   /* Change unpack/pack function pointers if needed */
+   get_pref(PREF_DATEBOOK_VERSION, &datebook_version, NULL);
+   get_pref(PREF_ADDRESS_VERSION, &address_version, NULL);
+   get_pref(PREF_TODO_VERSION, &todo_version, NULL);
+   get_pref(PREF_MEMO_VERSION, &memo_version, NULL);
+   if (datebook_version==1) {
+      /* Not coded yet */
+      ;
+   }
+   if (address_version==1) {
+      unpack_cai_from_buf[1]=unpack_contact_cai_from_ai;
+      pack_cai_into_buf[1]=pack_contact_cai_into_ai;
+   }
+   if (todo_version==1) {
+      /* Not coded yet */
+      ;
+   }
+   if (memo_version==1) {
+      /* Not coded yet */
+      ;
+   }
 
    /* Load the plugins for a forked process */
 #ifdef ENABLE_PLUGINS
@@ -912,85 +994,29 @@ int jp_sync(struct my_sync_info *sync_info)
 # endif
 #endif
 
+   /* Do a fast, or a slow sync on each application in the arrays */
    if ( (!(sync_info->flags & SYNC_OVERRIDE_USER)) &&
-       (U.lastSyncPC == sync_info->PC_ID) ) {
+	(U.lastSyncPC == sync_info->PC_ID) ) {
       fast_sync=1;
       jp_logf(JP_LOG_GUI, _("Doing a fast sync.\n"));
-      if (get_pref_int_default(PREF_SYNC_DATEBOOK, 1)) {
-	 /* sync_categories("DatebookDB", sd); */
-	 fast_sync_application("DatebookDB", sd);
+      for (i=0; dbname[i][0]; i++) {
+	 if (get_pref_int_default(pref_sync_array[i], 1)) {
+	    if (unpack_cai_from_buf[i] && pack_cai_into_buf[i]) {
+	       sync_categories(dbname[i], sd,
+			       unpack_cai_from_buf[i],
+			       pack_cai_into_buf[i]);
+	    }
+	    fast_sync_application(dbname[i], sd);
+	 }
       }
-      if (get_pref_int_default(PREF_SYNC_ADDRESS, 1)) {
-	 sync_categories("AddressDB", sd,
-			 unpack_address_cai_from_ai,
-			 pack_address_cai_into_ai);
-	 fast_sync_application("AddressDB", sd);
-      }
-      if (get_pref_int_default(PREF_SYNC_TODO, 1)) {
-	 sync_categories("ToDoDB", sd,
-			 unpack_todo_cai_from_ai,
-			 pack_todo_cai_into_ai);
-	 fast_sync_application("ToDoDB", sd);
-      }
-      if (get_pref_int_default(PREF_SYNC_MEMO, 1)) {
-	 sync_categories("MemoDB", sd,
-			 unpack_memo_cai_from_ai,
-			 pack_memo_cai_into_ai);
-	 fast_sync_application("MemoDB", sd);
-      }
-      if (get_pref_int_default(PREF_SYNC_MEMO32, 1)) {
-	 sync_categories("Memo32DB", sd,
-			 unpack_memo_cai_from_ai,
-			 pack_memo_cai_into_ai);
-	 fast_sync_application("Memo32DB", sd);
-      }
-#ifdef ENABLE_MANANA
-      if (get_pref_int_default(PREF_SYNC_MANANA, 1)) {
-	 sync_categories("MañanaDB", sd,
-			 unpack_todo_cai_from_ai,
-			 pack_todo_cai_into_ai);
-	 fast_sync_application("MañanaDB", sd);
-      }
-#endif
    } else {
       fast_sync=0;
       jp_logf(JP_LOG_GUI, _("Doing a slow sync.\n"));
-      if (get_pref_int_default(PREF_SYNC_DATEBOOK, 1)) {
-	 /* sync_categories("DatebookDB", sd); */
-	 slow_sync_application("DatebookDB", sd);
+      for (i=0; dbname[i][0]; i++) {
+	 if (get_pref_int_default(pref_sync_array[i], 1)) {
+	    slow_sync_application(dbname[i], sd);
+	 }
       }
-      if (get_pref_int_default(PREF_SYNC_ADDRESS, 1)) {
-	 sync_categories("AddressDB", sd,
-			 unpack_address_cai_from_ai,
-			 pack_address_cai_into_ai);
-	 slow_sync_application("AddressDB", sd);
-      }
-      if (get_pref_int_default(PREF_SYNC_TODO, 1)) {
-	 sync_categories("ToDoDB", sd,
-			 unpack_todo_cai_from_ai,
-			 pack_todo_cai_into_ai);
-	 slow_sync_application("ToDoDB", sd);
-      }
-      if (get_pref_int_default(PREF_SYNC_MEMO, 1)) {
-	 sync_categories("MemoDB", sd,
-			 unpack_memo_cai_from_ai,
-			 pack_memo_cai_into_ai);
-	 slow_sync_application("MemoDB", sd);
-      }
-      if (get_pref_int_default(PREF_SYNC_MEMO32, 1)) {
-	 sync_categories("Memo32DB", sd,
-			 unpack_memo_cai_from_ai,
-			 pack_memo_cai_into_ai);
-	 slow_sync_application("Memo32DB", sd);
-      }
-#ifdef ENABLE_MANANA
-      if (get_pref_int_default(PREF_SYNC_MANANA, 1)) {
-	 sync_categories("MañanaDB", sd,
-			 unpack_todo_cai_from_ai,
-			 pack_todo_cai_into_ai);
-	 slow_sync_application("MañanaDB", sd);
-      }
-#endif
    }
 
 
@@ -1699,7 +1725,7 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
    struct plugin_s *plugin;
 #endif
    char *file_name;
-   char *palm_dbname[]={
+   char palm_dbname[][32]={
       "DatebookDB",
       "AddressDB",
       "ToDoDB",
@@ -1709,7 +1735,7 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
       "MañanaDB",
 #endif
       "Saved Preferences",
-      NULL
+      ""
    };
    char *extra_dbname[]={
       "Saved Preferences",
@@ -1742,6 +1768,11 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
    jp_logf(JP_LOG_DEBUG, "sync_fetch flags=0x%x, num_backups=%d, fast=%d\n",
 	   flags, num_backups, fast_sync);
 
+   rename_dbnames(palm_dbname);
+
+   end_of_list=NULL;
+
+   //mode = ((flags & SYNC_FULL_BACKUP) ? 1:0) + (fast_sync ? 2:0);
    full_backup = flags & SYNC_FULL_BACKUP;
 
    /* Fast sync still needs to fetch Saved Preferences before exiting */
@@ -3025,6 +3056,60 @@ int pack_address_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw,
    r = pack_AddressAppInfo(&ai, ai_raw, len);
    if (r <= 0) {
       jp_logf(JP_LOG_DEBUG, "pack_AddressAppInfo failed %s %d\n", __FILE__, __LINE__);
+      return EXIT_FAILURE;
+   }
+
+   return EXIT_SUCCESS;
+}
+
+int unpack_contact_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
+{
+   struct ContactAppInfo ai;
+   int r;
+   pi_buffer_t pi_buf;
+
+   jp_logf(JP_LOG_DEBUG, "unpack_contact_cai_from_ai\n");
+
+   pi_buf.data = ai_raw;
+   pi_buf.used = len;
+   pi_buf.allocated = len;
+   r = unpack_ContactAppInfo(&ai, &pi_buf);
+   if ((r <= 0) || (len <= 0)) {
+      jp_logf(JP_LOG_DEBUG, "unpack_ContactAppInfo failed %s %d\n", __FILE__, __LINE__);
+      return EXIT_FAILURE;
+   }
+   memcpy(cai, &(ai.category), sizeof(struct CategoryAppInfo));
+
+   return EXIT_SUCCESS;
+}
+
+int pack_contact_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
+{
+   struct ContactAppInfo ai;
+   int r;
+   pi_buffer_t *pi_buf;
+
+   jp_logf(JP_LOG_DEBUG, "pack_contact_cai_into_ai\n");
+
+   pi_buffer_new(len);
+   pi_buffer_append(pi_buf, ai_raw, len);
+
+   r = unpack_ContactAppInfo(&ai, pi_buf);
+   if (r <= 0) {
+      jp_logf(JP_LOG_DEBUG, "unpack_ContactAppInfo failed %s %d\n", __FILE__, __LINE__);
+      pi_buffer_free(pi_buf);
+      return EXIT_FAILURE;
+   }
+   memcpy(&(ai.category), cai, sizeof(struct CategoryAppInfo));
+
+   //r = pack_ContactAppInfo(&ai, ai_raw, len);
+   r = pack_ContactAppInfo(&ai, pi_buf);
+   //undo check buffer sizes
+   memcpy(ai_raw, pi_buf->data, pi_buf->used);
+   pi_buffer_free(pi_buf);
+
+   if (r <= 0) {
+      jp_logf(JP_LOG_DEBUG, "pack_ContactAppInfo failed %s %d\n", __FILE__, __LINE__);
       return EXIT_FAILURE;
    }
 

@@ -1,4 +1,4 @@
-/* $Id: prefs.h,v 1.43 2007/06/05 19:39:48 rikster5 Exp $ */
+/* $Id: prefs.h,v 1.44 2007/10/23 18:29:14 judd Exp $ */
 
 /*******************************************************************************
  * prefs.h
@@ -111,10 +111,19 @@
 #define PREF_DATEBOOK_ANNI_YEARS 83
 #define PREF_KEYRING_PANE 84
 #define PREF_EXPENSE_PANE 85
-#define PREF_TODO_SORT_COLUMN 86
-#define PREF_TODO_SORT_ORDER 87
+/* 1 for Datebook, 2 for Calendar */
+#define PREF_DATEBOOK_VERSION 86
+/* 1 for Address, 2 for Contacts */
+#define PREF_ADDRESS_VERSION 87
+/* 1 for Todo, 2 for Tasks */
+#define PREF_TODO_VERSION 88
+/* 1 for Memo, 2 for Memos */
+#define PREF_MEMO_VERSION 89
+#define PREF_CONTACTS_PHOTO_FILENAME 90
+#define PREF_TODO_SORT_COLUMN 91
+#define PREF_TODO_SORT_ORDER 92
 
-#define NUM_PREFS 88
+#define NUM_PREFS 93
 
 #define MAX_PREF_NUM_BACKUPS 99
 

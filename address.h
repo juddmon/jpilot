@@ -1,4 +1,4 @@
-/* $Id: address.h,v 1.10 2006/07/21 22:25:24 rikster5 Exp $ */
+/* $Id: address.h,v 1.11 2007/10/23 18:29:14 judd Exp $ */
 
 /*******************************************************************************
  * address.h
@@ -33,9 +33,12 @@
 extern int sort_by_company;
 
 int get_address_app_info(struct AddressAppInfo *aai);
+
 int pc_address_write(struct Address *a, PCRecType rt, unsigned char attrib,
 		     unsigned int *unqiue_id);
+
 void free_AddressList(AddressList **al);
+
 /* 
  * sort_order: 0=descending,  1=ascending
  */
@@ -46,5 +49,26 @@ int get_addresses2(AddressList **address_list, int sort_order,
 int address_print();
 int address_import(GtkWidget *window);
 int address_export(GtkWidget *window);
+
+/* Contact header */
+
+int get_contact_app_info(struct ContactAppInfo *cai);
+
+int pc_contact_write(struct Contact *c, PCRecType rt, unsigned char attrib,
+		     unsigned int *unqiue_id);
+
+void free_ContactList(ContactList **cl);
+
+int get_contacts(ContactList **contact_list, int sort_order);
+int get_contacts2(ContactList **contact_list, int sort_order,
+		  int modified, int deleted, int privates, int category);
+
+int copy_address_ai_to_contact_ai(const struct AddressAppInfo *aai, struct ContactAppInfo *cai);
+
+int copy_contact_to_address(const struct Contact *c, struct Address *a);
+
+int copy_address_to_contact(const struct Address *a, struct Contact *c);
+
+int copy_addresses_to_contacts(AddressList *al, ContactList **cl);
 
 #endif

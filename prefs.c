@@ -1,4 +1,4 @@
-/* $Id: prefs.c,v 1.68 2007/09/18 17:11:53 rikster5 Exp $ */
+/* $Id: prefs.c,v 1.69 2007/10/23 18:29:15 judd Exp $ */
 
 /*******************************************************************************
  * prefs.c
@@ -132,6 +132,11 @@ static prefType glob_prefs[NUM_PREFS] = {
      {"datebook_anni_years", INTTYPE, INTTYPE, 0, NULL, 0},
      {"keyring_pane", INTTYPE, INTTYPE, 0, NULL, 0},
      {"expense_pane", INTTYPE, INTTYPE, 0, NULL, 0},
+     {"datebook_version", INTTYPE, INTTYPE, 0, NULL, 0},
+     {"address_version", INTTYPE, INTTYPE, 0, NULL, 0},
+     {"todo_version", INTTYPE, INTTYPE, 0, NULL, 0},
+     {"memo_version", INTTYPE, INTTYPE, 0, NULL, 0},
+     {"contacts_photo_filename", CHARTYPE, CHARTYPE, 0, NULL, 0},
      {"todo_sort_column", INTTYPE, INTTYPE, 1, NULL, 0},
      {"todo_sort_order", INTTYPE, INTTYPE, 0, NULL, 0},
 };

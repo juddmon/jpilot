@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.98 2006/06/25 03:36:36 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.99 2007/10/23 18:29:14 judd Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -953,16 +953,25 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
    void *buf;
    long ivalue;
    struct pi_file *pf;
-
+   long memo_version;
+     
    jp_logf(JP_LOG_DEBUG, "cb_edit_cats\n");
 
+   get_pref(PREF_MEMO_VERSION, &memo_version, NULL);
+
    get_pref(PREF_MEMO32_MODE, &ivalue, NULL);
+
    if (ivalue) {
       strcpy(pdb_name, "Memo32DB.pdb");
       strcpy(db_name, "Memo32DB");
    } else {
-      strcpy(pdb_name, "MemoDB.pdb");
-      strcpy(db_name, "MemoDB");
+      if (memo_version==2) {
+	 strcpy(pdb_name, "MemosDB-PMem.pdb");
+	 strcpy(db_name, "MemosDB-PMem");
+      } else {
+	 strcpy(pdb_name, "MemoDB.pdb");
+	 strcpy(db_name, "MemoDB");
+      }
    }
    get_home_file_name(pdb_name, full_name, sizeof(full_name));
 
@@ -984,7 +993,11 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
 
    size = pack_MemoAppInfo(&ai, buffer, sizeof(buffer));
 
-   pdb_file_write_app_block("MemoDB", buffer, size);
+   if (memo_version==2) {
+      pdb_file_write_app_block("MemosDB-PMem", buffer, size);
+   } else {
+      pdb_file_write_app_block("MemoDB", buffer, size);
+   }
 
    cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
 }

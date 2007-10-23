@@ -1,6 +1,6 @@
-# $Id: Makefile.am,v 1.51 2006/10/10 01:53:57 rikster5 Exp $
+# $Id: Makefile.am,v 1.52 2007/10/23 18:29:13 judd Exp $
 
-SUBDIRS = Expense SyncTime KeyRing dialer m4 po icons docs empty 
+SUBDIRS = Expense SyncTime KeyRing dialer m4 po icons docs empty
 
 EXTRA_DIST = config.rpath mkinstalldirs reconf autogen.sh \
 	intltool-extract.in intltool-merge.in intltool-update.in \
@@ -34,6 +34,7 @@ jpilot_SOURCES = \
 	alarms.c \
 	alarms.h \
 	category.c \
+	contact.c \
 	cp1250.c \
 	cp1250.h \
 	dat.c \
@@ -51,6 +52,8 @@ jpilot_SOURCES = \
 	japanese.c \
 	japanese.h \
 	jpilot.c \
+	jp-contact.c \
+	jp-pi-contact.h \
 	libplugin.c \
 	libplugin.h \
 	log.c \

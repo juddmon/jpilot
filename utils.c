@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.124 2007/10/19 03:35:06 rikster5 Exp $ */
+/* $Id: utils.c,v 1.125 2007/10/23 18:29:15 judd Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -33,6 +33,7 @@
 #include <unistd.h>
 #include <pi-datebook.h>
 #include <pi-address.h>
+#include <jp-pi-contact.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/file.h>
@@ -164,6 +165,67 @@ void get_compile_options(char *string, int len)
 	      );
 }
 
+
+void rename_dbnames(char dbname[][32])
+{
+   int i;
+   long datebook_version, address_version, todo_version, memo_version;
+
+   get_pref(PREF_DATEBOOK_VERSION, &datebook_version, NULL);
+   get_pref(PREF_ADDRESS_VERSION, &address_version, NULL);
+   get_pref(PREF_TODO_VERSION, &todo_version, NULL);
+   get_pref(PREF_MEMO_VERSION, &memo_version, NULL);
+   for (i=0; dbname[i] && dbname[i][0]; i++) {
+      if (datebook_version==1) {
+	 if (!strcmp(dbname[i], "DatebookDB.pdb")) {
+	    strcpy(dbname[i], "CalendarDB-PDat.pdb");
+	 }
+	 if (!strcmp(dbname[i], "DatebookDB.pc3")) {
+	    strcpy(dbname[i], "CalendarDB-PDat.pc3");
+	 }
+	 if (!strcmp(dbname[i], "DatebookDB")) {
+	    strcpy(dbname[i], "CalendarDB-Pdat");
+	 }
+      }
+
+      if (address_version==1) {
+	 if (!strcmp(dbname[i], "AddressDB.pdb")) {
+	    strcpy(dbname[i], "ContactsDB-PAdd.pdb");
+	 }
+	 if (!strcmp(dbname[i], "AddressDB.pc3")) {
+	    strcpy(dbname[i], "ContactsDB-PAdd.pc3");
+	 }
+	 if (!strcmp(dbname[i], "AddressDB")) {
+	    strcpy(dbname[i], "ContactsDB-PAdd");
+	 }
+      }
+
+      if (todo_version==1) {
+	 if (!strcmp(dbname[i], "ToDoDB.pdb")) {
+	    strcpy(dbname[i], "TasksDB-PTod.pdb");
+	 }
+	 if (!strcmp(dbname[i], "ToDoDB.pc3")) {
+	    strcpy(dbname[i], "TasksDB-PTod.pc3");
+	 }
+	 if (!strcmp(dbname[i], "ToDoDB")) {
+	    strcpy(dbname[i], "TasksDB-PTod");
+	 }
+      }
+
+      if (memo_version==1) {
+	 if (!strcmp(dbname[i], "MemoDB.pdb")) {
+	    strcpy(dbname[i], "MemosDB-PMem.pdb");
+	 }
+	 if (!strcmp(dbname[i], "MemoDB.pc3")) {
+	    strcpy(dbname[i], "MemosDB-PMem.pc3");
+	 }
+	 if (!strcmp(dbname[i], "MemoDB")) {
+	    strcpy(dbname[i], "MemosDB-PMem");
+	 }
+      }
+   }
+}
+
 int cat_compare(const void *v1, const void *v2)
 {
    struct sorted_cats *s1, *s2;
@@ -186,7 +248,6 @@ int get_timeout_interval()
       return CLOCK_TICK;
    else
       return 60*CLOCK_TICK;
-
 }
 
 gint timeout_date(gpointer data)
@@ -402,7 +463,7 @@ const char base64chars[] =
 /* RFC 1341 et seq. */
 void base64_out(FILE *f, char *str)
 {
-   unsigned char *p;
+   char *p;
    int n;
    unsigned int val;
    int pad;
@@ -445,11 +506,11 @@ void ldif_out(FILE *f, char *name, char *fmt, ...)
    int printable = 1;
 
    va_start(ap, fmt);
-   vsnprintf(buf, sizeof(buf), fmt, ap);
+   vsnprintf((char *)buf, sizeof(buf), fmt, ap);
    if (buf[0] == ' ' || buf[0] == ':' || buf[0] == '<')	/* SAFE-INIT-CHAR */ {
       printable = 0;
    }
-   for (p = buf; *p && printable; p++) {
+   for (p = (char *)buf; *p && printable; p++) {
       if (*p < 32 || *p > 126) { /* SAFE-CHAR, excluding all control chars */
 	 printable = 0;
       }
@@ -481,7 +542,7 @@ void ldif_out(FILE *f, char *name, char *fmt, ...)
       }
       *q = '\0';
       fprintf(f, "%s:: ", name);
-      base64_out(f, buf2);
+      base64_out(f, (char *)buf2);
       fprintf(f, "\n");
    }
 }
@@ -1657,26 +1718,29 @@ int check_copy_DBs_to_home()
    char destname[FILENAME_MAX];
    char srcname[FILENAME_MAX];
    struct utimbuf times;
-   char *dbname[]={
+   char dbname_pdb[][32]={
       "DatebookDB.pdb",
 	"AddressDB.pdb",
 	"ToDoDB.pdb",
 	"MemoDB.pdb",
 	"Memo32DB.pdb",
 	"ExpenseDB.pdb",
-	NULL
+	""
    };
 
-   for (i=0; dbname[i]!=NULL; i++) {
-      get_home_file_name(dbname[i], destname, sizeof(destname));
+   /* Convert to new database names if prefs set */
+   rename_dbnames(dbname_pdb);
+   
+   for (i=0; dbname_pdb[i][0]; i++) {
+      get_home_file_name(dbname_pdb[i], destname, sizeof(destname));
       r = stat(destname, &sbuf);
       if (((r)&&(errno==ENOENT)) || (sbuf.st_size==0)) {
 	 /*The file doesn't exist or is zero in size, copy an empty DB file */
-	 if ((strlen(BASE_DIR) + strlen(EPN) + strlen(dbname[i])) > sizeof(srcname)) {
+	 if ((strlen(BASE_DIR) + strlen(EPN) + strlen(dbname_pdb[i])) > sizeof(srcname)) {
 	    jp_logf(JP_LOG_DEBUG, "copy_DB_to_home filename too long\n");
 	    return EXIT_FAILURE;
 	 }
-	 g_snprintf(srcname, sizeof(srcname), "%s/%s/%s/%s", BASE_DIR, "share", EPN, dbname[i]);
+	 g_snprintf(srcname, sizeof(srcname), "%s/%s/%s/%s", BASE_DIR, "share", EPN, dbname_pdb[i]);
 	 in = fopen(srcname, "r");
 	 out = fopen(destname, "w");
 	 if (!in) {
@@ -1902,19 +1966,24 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
    MyAppointment *mappt;
    struct Address *addr;
    MyAddress *maddr;
+   struct Contact *cont;
+   MyContact *mcont;
    struct ToDo *todo;
    MyToDo *mtodo;
    struct Memo *memo;
    MyMemo *mmemo;
    char filename[FILENAME_MAX];
-#ifndef PILOT_LINK_0_12
-   unsigned char record[65536];
-#else /* PILOT_LINK_0_12 */
+#ifdef PILOT_LINK_0_12
+   pi_buffer_t *RecordBuffer;
+#else /* not PILOT_LINK_0_12 */
    pi_buffer_t *RecordBuffer = NULL;
-#endif /* PILOT_LINK_0_12 */
+#endif
+   unsigned char record[65536];
    PCRecType record_type;
    unsigned int unique_id;
    long ivalue;
+
+   jp_logf(JP_LOG_DEBUG, "delete_pc_record(%d, , %d)\n", app_type, flag);
 
    if (VP==NULL) {
       return EXIT_FAILURE;
@@ -1923,6 +1992,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
    /* to keep the compiler happy with -Wall*/
    mappt=NULL;
    maddr=NULL;
+   mcont=NULL;
    mtodo=NULL;
    mmemo=NULL;
    switch (app_type) {
@@ -1937,6 +2007,12 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       record_type = maddr->rt;
       unique_id = maddr->unique_id;
       strcpy(filename, "AddressDB.pc3");
+      break;
+    case CONTACTS:
+      mcont = (MyContact *) VP;
+      record_type = mcont->rt;
+      unique_id = mcont->unique_id;
+      strcpy(filename, "ContactsDB-PAdd.pc3");
       break;
     case TODO:
       mtodo = (MyToDo *) VP;
@@ -1973,18 +2049,27 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 	   "It is scheduled to be deleted from the Palm on the next sync.\n"));
       return EXIT_SUCCESS;
    }
+#ifdef PILOT_LINK_0_12
+   RecordBuffer = pi_buffer_new(0);
+#endif
    switch (record_type) {
     case NEW_PC_REC:
     case REPLACEMENT_PALM_REC:
       pc_in=jp_open_home_file(filename, "r+");
       if (pc_in==NULL) {
 	 jp_logf(JP_LOG_WARN, _("Unable to open PC records file\n"));
+#ifdef PILOT_LINK_0_12
+	 pi_buffer_free(RecordBuffer);
+#endif
 	 return EXIT_FAILURE;
       }
       while(!feof(pc_in)) {
 	 read_header(pc_in, &header);
 	 if (feof(pc_in)) {
 	    jp_logf(JP_LOG_WARN, _("Couldn't find record to delete\n"));
+#ifdef PILOT_LINK_0_12
+	    pi_buffer_free(RecordBuffer);
+#endif
 	    jp_close_home_file(pc_in);
 	    return EXIT_FAILURE;
 	 }
@@ -2008,14 +2093,21 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 	    jp_logf(JP_LOG_WARN, "fseek failed\n");
 	 }
       }
+
+#ifdef PILOT_LINK_0_12
+      pi_buffer_free(RecordBuffer);
+#endif
       jp_close_home_file(pc_in);
       return EXIT_FAILURE;
 
     case PALM_REC:
-      jp_logf(JP_LOG_DEBUG, "Deleting Palm ID %d\n",unique_id);
+      jp_logf(JP_LOG_DEBUG, "Deleting Palm ID %d\n", unique_id);
       pc_in=jp_open_home_file(filename, "a");
       if (pc_in==NULL) {
 	 jp_logf(JP_LOG_WARN, _("Unable to open PC records file\n"));
+#ifdef PILOT_LINK_0_12
+	 pi_buffer_free(RecordBuffer);
+#endif
 	 return EXIT_FAILURE;
       }
       header.unique_id=unique_id;
@@ -2025,105 +2117,141 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 	 header.rt=DELETED_PALM_REC;
       }
 #ifdef PILOT_LINK_0_12
-      RecordBuffer = pi_buffer_new(0);
-#endif /* PILOT_LINK_0_12 */
       switch (app_type) {
        case DATEBOOK:
 	 appt=&mappt->appt;
 	 /*memset(&appt, 0, sizeof(appt)); */
-#ifndef PILOT_LINK_0_12
+	 if (pack_Appointment(appt, RecordBuffer, datebook_v1) == -1) {
+	    PRINT_FILE_LINE;
+	    jp_logf(JP_LOG_WARN, "pack_Appointment %s\n", _("error"));
+	 }
+	 break;
+       case ADDRESS:
+	 addr=&maddr->addr;
+	 /* memset(&addr, 0, sizeof(addr)); */
+	 if (pack_Address(addr, RecordBuffer, address_v1) == -1) {
+	    PRINT_FILE_LINE;
+	    jp_logf(JP_LOG_WARN, "pack_Address %s\n", _("error"));
+	 }
+	 break;
+       case CONTACTS:
+	 cont=&mcont->cont;
+	 /* memset(&cont, 0, sizeof(cont)); */
+	 //header.rec_len = pack_Contact(cont, record, sizeof(record)-1);
+	 //if (!header.rec_len) {
+	 //   PRINT_FILE_LINE;
+	 //   jp_logf(JP_LOG_WARN, "pack_Contact %s\n", _("error"));
+	 //}
+	 if (pack_Contact(cont, RecordBuffer) == -1) {
+	    PRINT_FILE_LINE;
+	    jp_logf(JP_LOG_WARN, "pack_Contact %s\n", _("error"));
+	 }
+	 break;
+       case TODO:
+	 todo=&mtodo->todo;
+	 /* memset(&todo, 0, sizeof(todo)); */
+	 if (pack_ToDo(todo, RecordBuffer, todo_v1) == -1) {
+	    PRINT_FILE_LINE;
+	    jp_logf(JP_LOG_WARN, "pack_ToDo %s\n", _("error"));
+	 }
+	 break;
+       case MEMO:
+	 memo=&mmemo->memo;
+	 /* memset(&memo, 0, sizeof(memo)); */
+	 if (pack_Memo(memo, RecordBuffer, memo_v1) == -1) {
+	    PRINT_FILE_LINE;
+	    jp_logf(JP_LOG_WARN, "pack_Memo %s\n", _("error"));
+	 }
+	 break;
+       default:
+	 fclose(pc_in);
+	 pi_buffer_free(RecordBuffer);
+	 return EXIT_SUCCESS;
+      } /* switch */
+#else /* Not PILOT_LINK_0_12 */
+      switch (app_type) {
+       case DATEBOOK:
+	 appt=&mappt->appt;
+	 /*memset(&appt, 0, sizeof(appt)); */
 	 header.rec_len = pack_Appointment(appt, record, sizeof(record)-1);
 	 if (!header.rec_len) {
 	    PRINT_FILE_LINE;
 	    jp_logf(JP_LOG_WARN, "pack_Appointment %s\n", _("error"));
 	 }
-#else /* PILOT_LINK_0_12 */
-	 if (pack_Appointment(appt, RecordBuffer, datebook_v1) == -1) {
-	    PRINT_FILE_LINE;
-	    jp_logf(JP_LOG_WARN, "pack_Appointment %s\n", _("error"));
-	 }
-#endif /* PILOT_LINK_0_12 */
 	 break;
        case ADDRESS:
 	 addr=&maddr->addr;
 	 /* memset(&addr, 0, sizeof(addr)); */
-#ifndef PILOT_LINK_0_12
 	 header.rec_len = pack_Address(addr, record, sizeof(record)-1);
 	 if (!header.rec_len) {
 	    PRINT_FILE_LINE;
 	    jp_logf(JP_LOG_WARN, "pack_Address %s\n", _("error"));
 	 }
-#else /* PILOT_LINK_0_12 */
-	 if (pack_Address(addr, RecordBuffer, address_v1) == -1) {
+	 break;
+       case CONTACTS:
+	 cont=&mcont->cont;
+	 /* memset(&cont, 0, sizeof(cont)); */
+	 header.rec_len = pack_Contact(cont, record, sizeof(record)-1);
+	 if (!header.rec_len) {
 	    PRINT_FILE_LINE;
-	    jp_logf(JP_LOG_WARN, "pack_Address %s\n", _("error"));
+	    jp_logf(JP_LOG_WARN, "pack_Contact %s\n", _("error"));
 	 }
-#endif /* PILOT_LINK_0_12 */
 	 break;
        case TODO:
 	 todo=&mtodo->todo;
 	 /* memset(&todo, 0, sizeof(todo)); */
-#ifndef PILOT_LINK_0_12
 	 header.rec_len = pack_ToDo(todo, record, sizeof(record)-1);
 	 if (!header.rec_len) {
 	    PRINT_FILE_LINE;
 	    jp_logf(JP_LOG_WARN, "pack_ToDo %s\n", _("error"));
 	 }
-#else /* PILOT_LINK_0_12 */
-	 if (pack_ToDo(todo, RecordBuffer, todo_v1) == -1) {
-	    PRINT_FILE_LINE;
-	    jp_logf(JP_LOG_WARN, "pack_ToDo %s\n", _("error"));
-	 }
-#endif /* PILOT_LINK_0_12 */
 	 break;
        case MEMO:
 	 memo=&mmemo->memo;
 	 /* memset(&memo, 0, sizeof(memo)); */
-#ifndef PILOT_LINK_0_12
 	 header.rec_len = pack_Memo(memo, record, sizeof(record)-1);
 
 	 if (!header.rec_len) {
 	    PRINT_FILE_LINE;
 	    jp_logf(JP_LOG_WARN, "pack_Memo %s\n", _("error"));
 	 }
-#else /* PILOT_LINK_0_12 */
-	 if (pack_Memo(memo, RecordBuffer, memo_v1) == -1) {
-	    PRINT_FILE_LINE;
-	    jp_logf(JP_LOG_WARN, "pack_Memo %s\n", _("error"));
-	 }
-#endif /* PILOT_LINK_0_12 */
 	 break;
        default:
 	 jp_close_home_file(pc_in);
 #ifdef PILOT_LINK_0_12
 	 pi_buffer_free(RecordBuffer);
-#endif
-	 return EXIT_SUCCESS;
-      }
-#ifdef PILOT_LINK_0_12
-      header.rec_len = RecordBuffer->used;
-
 #endif /* PILOT_LINK_0_12 */
+	 return EXIT_SUCCESS;
+      } /* switch */
+#endif
+
+#ifdef PILOT_LINK_0_12
+      header.rec_len = RecordBuffer->used; /* PILOT_LINK_0_12 */
+
       jp_logf(JP_LOG_DEBUG, "writing header to pc file\n");
       write_header(pc_in, &header);
       /* This record be used for making sure that the palm record
        * hasn't changed before we delete it */
       jp_logf(JP_LOG_DEBUG, "writing record to pc file, %d bytes\n", header.rec_len);
-#ifndef PILOT_LINK_0_12
-      fwrite(record, header.rec_len, 1, pc_in);
-#else /* PILOT_LINK_0_12 */
       fwrite(RecordBuffer->data, header.rec_len, 1, pc_in);
-#endif /* PILOT_LINK_0_12 */
       jp_logf(JP_LOG_DEBUG, "record deleted\n");
       jp_close_home_file(pc_in);
-#ifdef PILOT_LINK_0_12
-      pi_buffer_free(RecordBuffer);
+      pi_buffer_free(RecordBuffer); /* PILOT_LINK_0_12 */
+#else /* not PILOT_LINK_0_12 */
+      jp_logf(JP_LOG_DEBUG, "writing header to pc file\n");
+      write_header(pc_in, &header);
+      /* This record be used for making sure that the palm record
+       * hasn't changed before we delete it */
+      jp_logf(JP_LOG_DEBUG, "writing record to pc file, %d bytes\n", header.rec_len);
+      fwrite(record, header.rec_len, 1, pc_in);
+      jp_logf(JP_LOG_DEBUG, "record deleted\n");
+      jp_close_home_file(pc_in);
 #endif
       return EXIT_SUCCESS;
       break;
     default:
       break;
-   }
+   } /* switch (record_type) */
 #ifdef PILOT_LINK_0_12
    if (RecordBuffer)
 	   pi_buffer_free(RecordBuffer);
@@ -2151,11 +2279,21 @@ int undelete_pc_record(AppType app_type, void *VP, int flag)
    int found;
    int ret = -1;
    int num;
+   char dbname[][32]={
+      "DatebookDB.pc3",
+	"AddressDB.pc3",
+	"ToDoDB.pc3",
+	"MemoDB.pc3",
+	""
+   };
 
    if (VP==NULL) {
       return EXIT_FAILURE;
    }
 
+   /* Convert to new database names if prefs set */
+   rename_dbnames(dbname);
+   
    /* to keep the compiler happy with -Wall*/
    mappt = NULL;
    maddr = NULL;
@@ -2165,12 +2303,12 @@ int undelete_pc_record(AppType app_type, void *VP, int flag)
     case DATEBOOK:
       mappt = (MyAppointment *) VP;
       unique_id = mappt->unique_id;
-      strcpy(filename, "DatebookDB.pc3");
+      strcpy(filename, dbname[0]);
       break;
     case ADDRESS:
       maddr = (MyAddress *) VP;
       unique_id = maddr->unique_id;
-      strcpy(filename, "AddressDB.pc3");
+      strcpy(filename, dbname[1]);
       break;
     case TODO:
       mtodo = (MyToDo *) VP;
@@ -2180,10 +2318,10 @@ int undelete_pc_record(AppType app_type, void *VP, int flag)
       if (ivalue) {
 	 strcpy(filename, "MañanaDB.pc3");
       } else {
-	 strcpy(filename, "ToDoDB.pc3");
+	 strcpy(filename, dbname[2]);
       }
 #else
-      strcpy(filename, "ToDoDB.pc3");
+      strcpy(filename, dbname[2]);
 #endif
       break;
     case MEMO:
@@ -2193,7 +2331,7 @@ int undelete_pc_record(AppType app_type, void *VP, int flag)
       if (ivalue) {
 	 strcpy(filename, "Memo32DB.pc3");
       } else {
-	 strcpy(filename, "MemoDB.pc3");
+	 strcpy(filename, dbname[3]);
       }
       break;
     default:
@@ -2429,49 +2567,33 @@ int cleanup_pc_files()
    GList *plugin_list, *temp_list;
    struct plugin_s *plugin;
 #endif
+   int i;
+   char dbname[][32]={
+      "DatebookDB",
+	"AddressDB",
+	"ToDoDB",
+	"MemoDB",
+	"Memo32DB",
+	""
+   };
+
+   /* Convert to new database names if prefs set */
+   rename_dbnames(dbname);
 
    fail_flag = 0;
    max_id = max_max_id = 0;
-   jp_logf(JP_LOG_DEBUG, "cleanup_pc_file for DatebookDB\n");
-   ret = cleanup_pc_file("DatebookDB", &max_id);
-   jp_logf(JP_LOG_DEBUG, "max_id was %d\n", max_id);
-   if (ret<0) {
-      fail_flag=1;
-   } else if (max_id > max_max_id) {
-      max_max_id = max_id;
+
+   for (i=0; dbname[i][0]; i++) {
+      jp_logf(JP_LOG_DEBUG, "cleanup_pc_file for %s\n", dbname[i]);
+      ret = cleanup_pc_file(dbname[i], &max_id);
+      jp_logf(JP_LOG_DEBUG, "max_id was %d\n", max_id);
+      if (ret<0) {
+	 fail_flag=1;
+      } else if (max_id > max_max_id) {
+	 max_max_id = max_id;
+      }
    }
-   jp_logf(JP_LOG_DEBUG, "cleanup_pc_file for AddressDB\n");
-   ret = cleanup_pc_file("AddressDB", &max_id);
-   jp_logf(JP_LOG_DEBUG, "max_id was %d\n", max_id);
-   if (ret<0) {
-      fail_flag=1;
-   } else if (max_id > max_max_id) {
-      max_max_id = max_id;
-   }
-   jp_logf(JP_LOG_DEBUG, "cleanup_pc_file for ToDoDB\n");
-   ret = cleanup_pc_file("ToDoDB", &max_id);
-   jp_logf(JP_LOG_DEBUG, "max_id was %d\n", max_id);
-   if (ret<0) {
-      fail_flag=1;
-   } else if (max_id > max_max_id) {
-      max_max_id = max_id;
-   }
-   jp_logf(JP_LOG_DEBUG, "cleanup_pc_file for MemoDB\n");
-   ret += cleanup_pc_file("MemoDB", &max_id);
-   jp_logf(JP_LOG_DEBUG, "max_id was %d\n", max_id);
-   if (ret<0) {
-      fail_flag=1;
-   } else if (max_id > max_max_id) {
-      max_max_id = max_id;
-   }
-   jp_logf(JP_LOG_DEBUG, "cleanup_pc_file for Memo32DB\n");
-   ret += cleanup_pc_file("Memo32DB", &max_id);
-   jp_logf(JP_LOG_DEBUG, "max_id was %d\n", max_id);
-   if (ret<0) {
-      fail_flag=1;
-   } else if (max_id > max_max_id) {
-      max_max_id = max_id;
-   }
+
 #ifdef ENABLE_PLUGINS
    plugin_list = get_plugin_list();
 

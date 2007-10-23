@@ -1,4 +1,4 @@
-/* $Id: sync.h,v 1.13 2005/08/26 02:59:26 judd Exp $ */
+/* $Id: sync.h,v 1.14 2007/10/23 18:29:14 judd Exp $ */
 
 /*******************************************************************************
  * sync.h
@@ -49,9 +49,9 @@ struct my_sync_info {
    unsigned int flags;
    unsigned int num_backups;
 
-   unsigned long userID;
+   long userID;
    unsigned long viewerID;
-   unsigned long PC_ID;
+   long PC_ID;
    char username[128];
 };
 

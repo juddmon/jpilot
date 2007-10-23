@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.56 2006/07/30 13:51:46 rousseau Exp $ */
+/* $Id: utils.h,v 1.57 2007/10/23 18:29:14 judd Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -32,6 +32,7 @@
 #include <pi-todo.h>
 #include <pi-memo.h>
 #include <pi-file.h>
+#include "jp-pi-contact.h"
 #include <gtk/gtk.h>
 
 #include "libplugin.h"
@@ -160,6 +161,10 @@ typedef enum {
    ADDRESS,
    TODO,
    MEMO,
+   CALENDAR,
+   CONTACTS,
+   TASKS,
+   MEMOS,
    REDRAW
 } AppType;
 
@@ -215,6 +220,22 @@ typedef struct MemoList_s {
    MyMemo mmemo;
 } MemoList;
 
+/*
+ * New OS PIM applications in OS 5.x
+ */
+typedef struct {
+   PCRecType rt;
+   unsigned int unique_id;
+   unsigned char attrib;
+   struct Contact cont;
+} MyContact;
+
+typedef struct ContactList_s {
+   AppType app_type;
+   struct ContactList_s *next;
+   MyContact mcont;
+} ContactList;
+
 struct search_record
 {
    AppType app_type;
@@ -228,6 +249,12 @@ struct sorted_cats
    char Pcat[32];
    int cat_num;
 };
+
+/* 
+ * Takes an array of database names and changes the names them to the new 
+ * PIM names
+ */
+void rename_dbnames(char dbname[][32]);
 
 /*
  * Returns usage string that needs to be freed by the caller

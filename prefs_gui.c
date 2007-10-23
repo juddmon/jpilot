@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.50 2007/09/18 17:11:53 rikster5 Exp $ */
+/* $Id: prefs_gui.c,v 1.51 2007/10/23 18:29:15 judd Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -212,6 +212,20 @@ void cb_checkbox_set_pref(GtkWidget *widget, gpointer data)
    set_pref(GPOINTER_TO_INT(data), GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
 }
 
+/*
+ * upper 16 bits of data is pref to set
+ * lower 16 bits of data is value to set it to
+ */
+void cb_radio_set_pref(GtkWidget *widget, gpointer data)
+{
+   unsigned long pref, value;
+   pref=GPOINTER_TO_INT(data);
+   value=pref & 0xFFFF;
+   pref >>= 16;
+   set_pref(GPOINTER_TO_INT(pref), GPOINTER_TO_INT(value), NULL, TRUE);
+}
+
+
 #ifdef ENABLE_PLUGINS
 void cb_sync_plugin(GtkWidget *widget,
 		    gpointer data)
@@ -304,10 +318,12 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    GtkWidget *vbox_conduits;
    GtkWidget *hbox_temp;
    GtkWidget *notebook;
+   GtkWidget *radio_button_address_version[2];
    long ivalue;
    const char *cstr;
    char temp_str[10];
    char temp[256];
+   GSList *group;
 #ifdef ENABLE_PLUGINS
    GList *plugin_list, *temp_list;
    struct plugin_s *Pplugin;
@@ -592,6 +608,34 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    label = gtk_label_new(_("%s is replaced by the e-mail address"));
    gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.0);
    gtk_box_pack_start(GTK_BOX(vbox_address), label, FALSE, FALSE, 0);
+
+   group = NULL;
+   radio_button_address_version[0] = 
+     gtk_radio_button_new_with_label(group, _("My Palm has the Address application"));
+   group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_address_version[0]));
+   radio_button_address_version[1] = 
+     gtk_radio_button_new_with_label(group, _("My Palm has the Contacts application"));
+   group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_address_version[1]));
+   gtk_box_pack_start(GTK_BOX(vbox_address), radio_button_address_version[0],
+		      FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox_address), radio_button_address_version[1],
+		      FALSE, FALSE, 0);
+
+   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_address_version[0]), TRUE);
+
+   gtk_signal_connect(GTK_OBJECT(radio_button_address_version[0]), "pressed",
+		      GTK_SIGNAL_FUNC(cb_radio_set_pref),
+		      GINT_TO_POINTER((PREF_ADDRESS_VERSION<<16)|0));
+   gtk_signal_connect(GTK_OBJECT(radio_button_address_version[1]), "pressed",
+		      GTK_SIGNAL_FUNC(cb_radio_set_pref),
+		      GINT_TO_POINTER((PREF_ADDRESS_VERSION<<16)|1));
+
+   get_pref(PREF_ADDRESS_VERSION, &ivalue, NULL);
+   if (ivalue) {
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_address_version[1]), TRUE);
+   } else {
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_address_version[0]), TRUE);
+   }
 
    /**********************************************************************/
    /* ToDo preference tab */
