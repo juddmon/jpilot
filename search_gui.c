@@ -1,4 +1,4 @@
-/* $Id: search_gui.c,v 1.42 2006/11/11 13:12:33 rousseau Exp $ */
+/* $Id: search_gui.c,v 1.43 2007/10/23 21:35:10 rousseau Exp $ */
 
 /*******************************************************************************
  * search_gui.c
@@ -425,7 +425,7 @@ static void cb_entry(GtkWidget *widget, gpointer data)
    gchar *empty_line[] = { "","" };
    GtkWidget *clist;
    const char *entry_text;
-   int count;
+   int count = 0;
 
    jp_logf(JP_LOG_DEBUG, "enter cb_entry\n");
 
@@ -439,13 +439,19 @@ static void cb_entry(GtkWidget *widget, gpointer data)
 
    gtk_clist_clear(GTK_CLIST(clist));
 
-   count = search_datebook(entry_text, clist);
    count += search_address(entry_text, clist);
    count += search_todo(entry_text, clist);
    count += search_memo(entry_text, clist);
 #ifdef ENABLE_PLUGINS
    count += search_plugins(entry_text, clist);
 #endif
+
+   /* sort the results */
+   gtk_clist_set_sort_column(GTK_CLIST(clist), 1);
+   gtk_clist_sort(GTK_CLIST(clist));
+
+   /* the datebook events are already sorted by date */
+   count += search_datebook(entry_text, clist);
 
    if (count == 0) {
       gtk_clist_prepend(GTK_CLIST(clist), empty_line);
