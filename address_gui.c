@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.135 2007/10/24 20:04:42 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.136 2007/10/24 20:05:48 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -520,7 +520,7 @@ GString *contact_to_gstring(struct Contact *cont)
        case ADDRESS_GUI_WEBSITE:
 	 if (cont->entry[schema[i].record_field]==NULL) continue;
 	 utf = charset_p2newj(contact_app_info.labels[schema[i].record_field], 16, char_set);
-	 g_string_sprintfa(s, _("%s%s:%s"),
+	 g_string_sprintfa(s, _("%s%s: %s"),
 			    NL, utf, cont->entry[schema[i].record_field]);
 	 g_free(utf);
 	 NL[0]='\n';
@@ -529,7 +529,7 @@ GString *contact_to_gstring(struct Contact *cont)
 	 if (cont->entry[schema[i].record_field]==NULL) {
 	    phone_i++; continue;
 	 }
-	 g_string_sprintfa(s, _("%s%s:%s"),
+	 g_string_sprintfa(s, _("%s%s: %s"),
 			   NL, contact_app_info.phoneLabels[cont->phoneLabel[phone_i]],
 			   cont->entry[schema[i].record_field]);
 	 NL[0]='\n';
@@ -539,7 +539,7 @@ GString *contact_to_gstring(struct Contact *cont)
 	 if (cont->entry[schema[i].record_field]==NULL) {
 	    IM_i++; continue;
 	 }
-	 g_string_sprintfa(s, _("%s%s:%s"),
+	 g_string_sprintfa(s, _("%s%s: %s"),
 			   NL, contact_app_info.IMLabels[cont->IMLabel[IM_i]],
 			   cont->entry[schema[i].record_field]);
 	 NL[0]='\n';
@@ -549,7 +549,7 @@ GString *contact_to_gstring(struct Contact *cont)
 	 if (cont->entry[schema[i].record_field]==NULL) {
 	    address_i++; continue;
 	 }
-	 g_string_sprintfa(s, _("%s%s:%s"),
+	 g_string_sprintfa(s, _("%s%s: %s"),
 			   NL, contact_app_info.addrLabels[cont->addressLabel[address_i]],
 			   cont->entry[schema[i].record_field]);
 	 NL[0]='\n';
@@ -560,7 +560,7 @@ GString *contact_to_gstring(struct Contact *cont)
 	 get_pref(PREF_LONGDATE, NULL, &pref_date);
 	 strftime(birthday_str, sizeof(birthday_str), pref_date, &cont->birthday);
 
-	 g_string_sprintfa(s, _("%s%s:%s"),
+	 g_string_sprintfa(s, _("%s%s: %s"),
 			   NL, contact_app_info.labels[schema[i].record_field],
 			   birthday_str);
 	 NL[0]='\n';
