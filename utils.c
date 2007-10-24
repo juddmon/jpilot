@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.125 2007/10/23 18:29:15 judd Exp $ */
+/* $Id: utils.c,v 1.126 2007/10/24 20:00:35 rousseau Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -2844,6 +2844,7 @@ char *charset_p2newj(const char *buf, int max_len, int char_set)
     case CHAR_SET_1250 : Win2Lat(newbuf,max_len); break;
     case CHAR_SET_1251 : win1251_to_koi8(newbuf, max_len); break;
     case CHAR_SET_1251_B : koi8_to_win1251(newbuf, max_len); break;
+	case CHAR_SET_LATIN1 : newbuf = g_strdup(buf);
     default:
       newbuf = other_to_UTF(buf, max_len);
       break;
