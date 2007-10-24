@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.133 2007/10/23 18:29:14 judd Exp $ */
+/* $Id: address_gui.c,v 1.134 2007/10/24 19:57:38 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -505,6 +505,10 @@ GString *contact_to_gstring(struct Contact *cont)
    char birthday_str[255];
    const char *pref_date;
    char NL[2];
+   char *utf;
+   long char_set;
+
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
 
    s = g_string_sized_new(4096);
    NL[0]='\0'; NL[1]='\0';
@@ -515,9 +519,10 @@ GString *contact_to_gstring(struct Contact *cont)
        case ADDRESS_GUI_LABEL_TEXT:
        case ADDRESS_GUI_WEBSITE:
 	 if (cont->entry[schema[i].record_field]==NULL) continue;
+	 utf = charset_p2newj(contact_app_info.labels[schema[i].record_field], 16, char_set);
 	 g_string_sprintfa(s, "%s%s:%s",
-			    NL, contact_app_info.labels[schema[i].record_field],
-			    cont->entry[schema[i].record_field]);
+			    NL, utf, cont->entry[schema[i].record_field]);
+	 g_free(utf);
 	 NL[0]='\n';
 	 break;
        case ADDRESS_GUI_DIAL_SHOW_MENU_TEXT:
@@ -2300,6 +2305,9 @@ static void cb_clist_selection(GtkWidget      *clist,
    int address_i, IM_i, phone_i;
    char birthday_str[255];
    GString *s;
+   long char_set;
+
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
 
    if ((record_changed==MODIFY_FLAG) || (record_changed==NEW_FLAG)) {
       mcont = gtk_clist_get_row_data(GTK_CLIST(clist), row);
@@ -2419,8 +2427,10 @@ static void cb_clist_selection(GtkWidget      *clist,
 // NEW CODE
    /* Fill out the "All" text buffer */
    gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL, _("Category: "), -1);
-   gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL,
-		   contact_app_info.category.name[mcont->attrib & 0x0F], -1);
+   char *utf;
+   utf = charset_p2newj(contact_app_info.category.name[mcont->attrib & 0x0F], 16, char_set);
+   gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL, utf, -1);
+   g_free(utf);
    gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL, "\n", -1);
    
    s = contact_to_gstring(cont);
@@ -3559,12 +3569,15 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
       /* Add widgets for each page */
       group=NULL;
       for (i=0; i<schema_size; i++) {
+	 char *utf;
 
 	 if (schema[i].notebook_page!=page_i) continue;
 	 switch (schema[i].type) {
 	  case ADDRESS_GUI_LABEL_TEXT:
 	    /* Label */
-	    label = gtk_label_new(contact_app_info.labels[schema[i].record_field]);
+	    utf = charset_p2newj(contact_app_info.labels[schema[i].record_field], 16, char_set);
+	    label = gtk_label_new(utf);
+	    g_free(utf);
 	    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
 	    //gtk_box_pack_start(GTK_BOX(vbox_left), label, TRUE, TRUE, 0);
 	    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(label),
