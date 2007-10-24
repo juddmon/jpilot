@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: jpilot-devel@jpilot.org\n"
-"POT-Creation-Date: 2006-09-28 15:06-0700\n"
+"POT-Creation-Date: 2007-10-24 22:51+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,53 +16,61 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../address.c:288 ../address.c:552 ../alarms.c:382 ../dat.c:181 ../dat.c:655
-#: ../dat.c:857 ../dat.c:991 ../dat.c:1130 ../datebook.c:89 ../datebook.c:390
-#: ../datebook.c:397 ../datebook.c:427 ../datebook.c:1046 ../jpilot.c:1558
-#: ../libplugin.c:442 ../libplugin.c:724 ../libplugin.c:832 ../libplugin.c:911
-#: ../libplugin.c:952 ../memo.c:95 ../memo.c:367 ../plugins.c:108
-#: ../prefs.c:316 ../prefs.c:341 ../prefs.c:880 ../sync.c:252 ../sync.c:1155
-#: ../sync.c:2319 ../todo.c:206 ../todo.c:548 ../utils.c:2349
+#: ../address.c:295 ../address.c:539 ../alarms.c:370 ../contact.c:277
+#: ../contact.c:582 ../dat.c:181 ../dat.c:655 ../dat.c:857 ../dat.c:991
+#: ../dat.c:1130 ../datebook.c:89 ../datebook.c:390 ../datebook.c:397
+#: ../datebook.c:427 ../datebook.c:1043 ../jpilot.c:1565 ../libplugin.c:437
+#: ../libplugin.c:719 ../libplugin.c:827 ../libplugin.c:906 ../libplugin.c:950
+#: ../memo.c:95 ../memo.c:384 ../plugins.c:112 ../prefs.c:323 ../prefs.c:348
+#: ../prefs.c:887 ../sync.c:291 ../sync.c:1246 ../sync.c:1301 ../sync.c:1315
+#: ../sync.c:2540 ../sync.c:2609 ../todo.c:206 ../todo.c:543 ../utils.c:2516
 msgid "Out of memory"
 msgstr ""
 
-#: ../address.c:345 ../address.c:352 ../datebook.c:340 ../libplugin.c:179
-#: ../memo.c:163 ../memo.c:170 ../todo.c:291 ../todo.c:298 ../utils.c:2010
-#: ../utils.c:2015 ../utils.c:2026 ../utils.c:2031 ../utils.c:2042
-#: ../utils.c:2047 ../utils.c:2059 ../utils.c:2064
+#: ../address.c:352 ../address.c:359 ../contact.c:334 ../datebook.c:340
+#: ../libplugin.c:179 ../memo.c:166 ../memo.c:173 ../todo.c:289 ../todo.c:296
+#: ../utils.c:2126 ../utils.c:2134 ../utils.c:2147 ../utils.c:2155
+#: ../utils.c:2163 ../utils.c:2179 ../utils.c:2188 ../utils.c:2197
+#: ../utils.c:2206 ../utils.c:2216
 msgid "error"
 msgstr ""
 
-#: ../address.c:412 ../address_gui.c:1657 ../datebook.c:686 ../libplugin.c:784
-#: ../libplugin.c:809 ../memo.c:244 ../memo_gui.c:977 ../todo_gui.c:1289
-#: ../Expense/expense.c:1122 ../Expense/expense.c:2127
+#: ../address.c:418 ../address_gui.c:1990 ../contact.c:403 ../datebook.c:686
+#: ../libplugin.c:779 ../libplugin.c:804 ../memo.c:258 ../memo_gui.c:986
+#: ../todo_gui.c:1290 ../Expense/expense.c:1088 ../Expense/expense.c:2088
 #, c-format
 msgid "Error reading file: %s\n"
 msgstr ""
 
-#: ../address_gui.c:249 ../datebook_gui.c:2537 ../memo_gui.c:166
-#: ../todo_gui.c:280 ../KeyRing/keyring.c:619
+#: ../address_gui.c:389 ../datebook_gui.c:2538 ../memo_gui.c:166
+#: ../todo_gui.c:281 ../KeyRing/keyring.c:614
 msgid ""
 "This record is deleted.\n"
 "Undelete it or copy it to make changes.\n"
 msgstr ""
 
-#: ../address_gui.c:457 ../category.c:159 ../category.c:165 ../category.c:213
-#: ../category.c:270 ../datebook_gui.c:368 ../memo_gui.c:283 ../sync.c:1118
-#: ../sync.c:1124 ../sync.c:2294 ../sync.c:2514 ../sync.c:2520 ../sync.c:2637
-#: ../sync.c:2903 ../todo_gui.c:420 ../utils.c:2758 ../utils.c:2807
-#: ../utils.c:2813 ../utils.c:2886 ../utils.c:2892 ../utils.c:2955
-#: ../utils.c:3018 ../utils.c:3024 ../utils.c:3087 ../utils.c:3094
+#: ../address_gui.c:523 ../address_gui.c:532 ../address_gui.c:542
+#: ../address_gui.c:552 ../address_gui.c:563
+#, c-format
+msgid "%s%s: %s"
+msgstr ""
+
+#: ../address_gui.c:641 ../category.c:155 ../category.c:161 ../category.c:209
+#: ../category.c:266 ../datebook_gui.c:368 ../memo_gui.c:283 ../sync.c:1202
+#: ../sync.c:1208 ../sync.c:2511 ../sync.c:2814 ../sync.c:2820 ../sync.c:2942
+#: ../sync.c:3264 ../todo_gui.c:421 ../utils.c:2921 ../utils.c:2962
+#: ../utils.c:2968 ../utils.c:3031 ../utils.c:3037 ../utils.c:3098
+#: ../utils.c:3153 ../utils.c:3159 ../utils.c:3220 ../utils.c:3227
 #, c-format
 msgid "Unable to open file: %s\n"
 msgstr ""
 
-#: ../address_gui.c:535
+#: ../address_gui.c:720
 msgid "File doesn't appear to be address.dat format\n"
 msgstr ""
 
-#: ../address_gui.c:545 ../datebook_gui.c:577 ../memo_gui.c:417
-#: ../todo_gui.c:545 ../Expense/expense.c:603 ../Expense/expense.c:1397
+#: ../address_gui.c:730 ../datebook_gui.c:577 ../memo_gui.c:417
+#: ../todo_gui.c:546 ../Expense/expense.c:1363
 msgid "Unfiled"
 msgstr ""
 
@@ -71,143 +79,189 @@ msgstr ""
 #. previous category name
 #. yes!
 #. entry text, in Pilot character set
-#: ../address_gui.c:682 ../alarms.c:289 ../category.c:420 ../category.c:899
-#: ../category.c:952 ../datebook_gui.c:662 ../datebook_gui.c:1161
+#: ../address_gui.c:867 ../alarms.c:289 ../category.c:412 ../category.c:891
+#: ../category.c:944 ../datebook_gui.c:662 ../datebook_gui.c:1161
 #: ../export_gui.c:353 ../jpilot.c:361 ../jpilot.c:406 ../jpilot.c:474
-#: ../jpilot.c:518 ../jpilot.c:991 ../jpilot.c:1892 ../memo_gui.c:505
-#: ../password.c:368 ../restore_gui.c:322 ../todo_gui.c:633 ../utils.c:1122
-#: ../utils.c:1303 ../KeyRing/keyring.c:1582
+#: ../jpilot.c:518 ../jpilot.c:1002 ../jpilot.c:1899 ../memo_gui.c:505
+#: ../password.c:368 ../restore_gui.c:322 ../todo_gui.c:634 ../utils.c:1189
+#: ../utils.c:1370 ../KeyRing/keyring.c:1577
 msgid "OK"
 msgstr ""
 
-#: ../address_gui.c:683 ../datebook_gui.c:663 ../memo_gui.c:506
-#: ../todo_gui.c:634 ../utils.c:1321
+#: ../address_gui.c:868 ../datebook_gui.c:663 ../memo_gui.c:506
+#: ../todo_gui.c:635 ../utils.c:1388
 msgid "No"
 msgstr ""
 
-#: ../address_gui.c:683 ../datebook_gui.c:663 ../memo_gui.c:506
-#: ../todo_gui.c:634 ../utils.c:1321
+#: ../address_gui.c:868 ../datebook_gui.c:663 ../memo_gui.c:506
+#: ../todo_gui.c:635 ../utils.c:1388
 msgid "Yes"
 msgstr ""
 
-#: ../address_gui.c:706 ../datebook_gui.c:689 ../memo_gui.c:516
-#: ../todo_gui.c:659
+#: ../address_gui.c:891 ../datebook_gui.c:689 ../memo_gui.c:516
+#: ../todo_gui.c:660
 #, c-format
 msgid "%s is a directory"
 msgstr ""
 
-#: ../address_gui.c:708 ../address_gui.c:725 ../datebook_gui.c:691
-#: ../datebook_gui.c:708 ../memo_gui.c:518 ../memo_gui.c:535 ../todo_gui.c:661
-#: ../todo_gui.c:678
+#: ../address_gui.c:893 ../address_gui.c:910 ../datebook_gui.c:691
+#: ../datebook_gui.c:708 ../memo_gui.c:518 ../memo_gui.c:535 ../todo_gui.c:662
+#: ../todo_gui.c:679
 msgid "Error Opening File"
 msgstr ""
 
-#: ../address_gui.c:712 ../datebook_gui.c:695 ../memo_gui.c:522
-#: ../todo_gui.c:665
+#: ../address_gui.c:897 ../datebook_gui.c:695 ../memo_gui.c:522
+#: ../todo_gui.c:666
 #, c-format
 msgid "Do you want to overwrite file %s?"
 msgstr ""
 
-#: ../address_gui.c:714 ../datebook_gui.c:697 ../memo_gui.c:524
-#: ../todo_gui.c:667
+#: ../address_gui.c:899 ../datebook_gui.c:697 ../memo_gui.c:524
+#: ../todo_gui.c:668
 msgid "Overwrite File?"
 msgstr ""
 
-#: ../address_gui.c:723 ../datebook_gui.c:706 ../memo_gui.c:533
-#: ../todo_gui.c:676
+#: ../address_gui.c:908 ../datebook_gui.c:706 ../memo_gui.c:533
+#: ../todo_gui.c:677
 #, c-format
 msgid "Error opening file: %s"
 msgstr ""
 
-#: ../address_gui.c:734
+#: ../address_gui.c:919
 #, c-format
 msgid "Can't export address %d\n"
 msgstr ""
 
-#: ../address_gui.c:799 ../address_gui.c:807 ../address_gui.c:824
+#: ../address_gui.c:987 ../address_gui.c:995 ../address_gui.c:1015
 msgid "Field"
 msgstr ""
 
-#: ../address_gui.c:1024 ../datebook_gui.c:982 ../memo_gui.c:591
-#: ../todo_gui.c:815
+#: ../address_gui.c:1216 ../datebook_gui.c:982 ../memo_gui.c:591
+#: ../todo_gui.c:816
 msgid "Unknown export type\n"
 msgstr ""
 
-#: ../address_gui.c:1207 ../address_gui.c:2625
+#: ../address_gui.c:1464 ../address_gui.c:3357
 msgid "Company/Name"
 msgstr ""
 
-#: ../address_gui.c:1209 ../address_gui.c:2627
+#: ../address_gui.c:1466 ../address_gui.c:3359
 msgid "Name/Company"
 msgstr ""
 
-#: ../address_gui.c:1306 ../datebook_gui.c:2615 ../memo_gui.c:894
-#: ../todo_gui.c:1217 ../KeyRing/keyring.c:959
+#: ../address_gui.c:1593 ../datebook_gui.c:2616 ../memo_gui.c:894
+#: ../todo_gui.c:1218 ../KeyRing/keyring.c:954
 msgid "You can't modify a record that is deleted\n"
 msgstr ""
 
 #. Illegal category
-#: ../address_gui.c:1449 ../address_gui.c:1834 ../address_gui.c:2355
-#: ../memo_gui.c:800 ../memo_gui.c:1065 ../memo_gui.c:1355 ../todo_gui.c:1083
+#: ../address_gui.c:1780 ../address_gui.c:2404 ../address_gui.c:3067
+#: ../memo_gui.c:800 ../memo_gui.c:1078 ../memo_gui.c:1368 ../todo_gui.c:1084
 #: ../todo_gui.c:1506 ../todo_gui.c:1519 ../todo_gui.c:1966
 msgid "Category is not legal\n"
 msgstr ""
 
-#: ../address_gui.c:1508 ../alarms.c:639 ../dialer.c:163
+#: ../address_gui.c:1832
+msgid "email command empty\n"
+msgstr ""
+
+#: ../address_gui.c:1840 ../alarms.c:629 ../dialer.c:163
 #, c-format
 msgid "executing command = [%s]\n"
 msgstr ""
 
+#: ../address_gui.c:2046
+msgid "Birthday"
+msgstr ""
+
+#: ../address_gui.c:2128
+msgid "External program not found, or other error"
+msgstr ""
+
+#: ../address_gui.c:2129
+msgid ""
+"J-Pilot can not find an external program \"convert\"\n"
+"or an error occurred while executing convert.\n"
+"You may need to install package ImageMagick"
+msgstr ""
+
+#: ../address_gui.c:2130
+#, c-format
+msgid "Command executed was \"%s\"\n"
+msgstr ""
+
+#: ../address_gui.c:2131
+#, c-format
+msgid "return code was %d\n"
+msgstr ""
+
+#: ../address_gui.c:2210
+msgid "Add Photo"
+msgstr ""
+
+#. NEW CODE
+#. Fill out the "All" text buffer
 #. Category menu
-#: ../address_gui.c:1752 ../Expense/expense.c:1594 ../KeyRing/keyring.c:2097
-#: ../KeyRing/keyring.c:2194
+#: ../address_gui.c:2429 ../Expense/expense.c:1560 ../KeyRing/keyring.c:2092
+#: ../KeyRing/keyring.c:2192
 msgid "Category: "
 msgstr ""
 
-#: ../address_gui.c:1784 ../address_gui.c:2796
-msgid "kana("
-msgstr ""
-
-#: ../address_gui.c:1896 ../address_gui.c:2906
+#. Set dial/email button text and callback data
+#: ../address_gui.c:2448 ../address_gui.c:3608
 msgid "E-mail"
 msgstr ""
 
-#: ../address_gui.c:1898 ../address_gui.c:1901 ../address_gui.c:2907
+#: ../address_gui.c:2451 ../address_gui.c:2453 ../address_gui.c:3609
 msgid "Mail"
 msgstr ""
 
 #. Dial Phone Button
-#: ../address_gui.c:1906 ../address_gui.c:1909 ../address_gui.c:2910
+#: ../address_gui.c:2458 ../address_gui.c:2460 ../address_gui.c:3612
 #: ../dialer.c:306 ../dialer.c:331
 msgid "Dial"
 msgstr ""
 
-#: ../address_gui.c:2129 ../address_gui.c:2153
+#: ../address_gui.c:2748 ../address_gui.c:2772
 msgid "-Unnamed-"
 msgstr ""
 
-#: ../address_gui.c:2226 ../memo_gui.c:1265 ../todo_gui.c:1855
+#: ../address_gui.c:2845 ../memo_gui.c:1278 ../todo_gui.c:1855
 msgid "0 records"
 msgstr ""
 
-#: ../address_gui.c:2229 ../datebook_gui.c:2414 ../memo_gui.c:1268
+#: ../address_gui.c:2848 ../datebook_gui.c:2414 ../memo_gui.c:1281
 #: ../todo_gui.c:1858
 #, c-format
 msgid "%d of %d records"
 msgstr ""
 
+#: ../address_gui.c:3241 ../address_gui.c:3248 ../KeyRing/keyring.c:2105
+msgid "Name"
+msgstr ""
+
+#: ../address_gui.c:3242 ../address_gui.c:3243 ../address_gui.c:3244
+#: ../address_gui.c:3249 ../prefs_gui.c:386
+msgid "Address"
+msgstr ""
+
+#: ../address_gui.c:3245 ../address_gui.c:3250 ../Expense/expense.c:555
+#: ../Expense/expense.c:1384
+msgid "Other"
+msgstr ""
+
 #. Edit category button
-#: ../address_gui.c:2600 ../category.c:450 ../category.c:496 ../category.c:514
-#: ../category.c:593 ../category.c:786 ../memo_gui.c:1483 ../todo_gui.c:2099
-#: ../Expense/expense.c:1600
+#: ../address_gui.c:3332 ../category.c:442 ../category.c:488 ../category.c:506
+#: ../category.c:585 ../category.c:778 ../memo_gui.c:1496 ../todo_gui.c:2101
+#: ../Expense/expense.c:1566
 msgid "Edit Categories"
 msgstr ""
 
-#: ../address_gui.c:2631
+#: ../address_gui.c:3363
 msgid "Phone"
 msgstr ""
 
-#: ../address_gui.c:2653
+#: ../address_gui.c:3386
 msgid "Quick Find: "
 msgstr ""
 
@@ -218,17 +272,17 @@ msgstr ""
 #. Add record modification buttons on right side
 #. Create Cancel button
 #. Cancel button
-#: ../address_gui.c:2669 ../category.c:421 ../category.c:889 ../category.c:942
-#: ../datebook_gui.c:1152 ../datebook_gui.c:1599 ../datebook_gui.c:4384
-#: ../export_gui.c:344 ../install_user.c:207 ../memo_gui.c:1517
+#: ../address_gui.c:3402 ../category.c:413 ../category.c:881 ../category.c:934
+#: ../datebook_gui.c:1152 ../datebook_gui.c:1599 ../datebook_gui.c:4385
+#: ../export_gui.c:344 ../install_user.c:207 ../memo_gui.c:1530
 #: ../password.c:358 ../print_gui.c:348 ../restore_gui.c:313
-#: ../todo_gui.c:2152 ../utils.c:1108 ../KeyRing/keyring.c:1572
-#: ../KeyRing/keyring.c:2135
+#: ../todo_gui.c:2172 ../utils.c:1175 ../KeyRing/keyring.c:1567
+#: ../KeyRing/keyring.c:2133
 msgid "Cancel"
 msgstr ""
 
-#: ../address_gui.c:2669 ../datebook_gui.c:4384 ../memo_gui.c:1517
-#: ../todo_gui.c:2152 ../KeyRing/keyring.c:2135
+#: ../address_gui.c:3402 ../datebook_gui.c:4385 ../memo_gui.c:1530
+#: ../todo_gui.c:2172 ../KeyRing/keyring.c:2133
 msgid "Cancel the modifications"
 msgstr ""
 
@@ -238,14 +292,14 @@ msgstr ""
 #. Delete button
 #. Delete, Copy, New, etc. buttons
 #. Delete button
-#: ../address_gui.c:2674 ../category.c:421 ../category.c:854
-#: ../datebook_gui.c:4389 ../memo_gui.c:1522 ../todo_gui.c:2157
-#: ../Expense/expense.c:1637 ../KeyRing/keyring.c:2140
+#: ../address_gui.c:3407 ../category.c:413 ../category.c:846
+#: ../datebook_gui.c:4390 ../memo_gui.c:1535 ../todo_gui.c:2177
+#: ../Expense/expense.c:1603 ../KeyRing/keyring.c:2138
 msgid "Delete"
 msgstr ""
 
-#: ../address_gui.c:2674 ../datebook_gui.c:4389 ../memo_gui.c:1522
-#: ../todo_gui.c:2157 ../Expense/expense.c:1637 ../KeyRing/keyring.c:2140
+#: ../address_gui.c:3407 ../datebook_gui.c:4390 ../memo_gui.c:1535
+#: ../todo_gui.c:2177 ../Expense/expense.c:1603 ../KeyRing/keyring.c:2138
 msgid "Delete the selected record"
 msgstr ""
 
@@ -253,108 +307,94 @@ msgstr ""
 #. Create "Undelete" button
 #. Undelete Button
 #. Undelete button
-#: ../address_gui.c:2680 ../datebook_gui.c:4395 ../memo_gui.c:1528
-#: ../todo_gui.c:2163 ../KeyRing/keyring.c:2146
+#: ../address_gui.c:3413 ../datebook_gui.c:4396 ../memo_gui.c:1541
+#: ../todo_gui.c:2183 ../KeyRing/keyring.c:2144
 msgid "Undelete"
 msgstr ""
 
-#: ../address_gui.c:2680 ../datebook_gui.c:4395 ../memo_gui.c:1528
-#: ../todo_gui.c:2163 ../KeyRing/keyring.c:2146
+#: ../address_gui.c:3413 ../datebook_gui.c:4396 ../memo_gui.c:1541
+#: ../todo_gui.c:2183 ../KeyRing/keyring.c:2144
 msgid "Undelete the selected record"
 msgstr ""
 
 #. Create "Copy" button
 #. Copy button
-#: ../address_gui.c:2686 ../datebook_gui.c:4401 ../memo_gui.c:1534
-#: ../todo_gui.c:2169 ../Expense/expense.c:1642 ../KeyRing/keyring.c:2152
+#: ../address_gui.c:3419 ../datebook_gui.c:4402 ../memo_gui.c:1547
+#: ../todo_gui.c:2189 ../Expense/expense.c:1608 ../KeyRing/keyring.c:2150
 msgid "Copy"
 msgstr ""
 
-#: ../address_gui.c:2686 ../datebook_gui.c:4401 ../memo_gui.c:1534
-#: ../todo_gui.c:2169 ../Expense/expense.c:1642 ../KeyRing/keyring.c:2152
+#: ../address_gui.c:3419 ../datebook_gui.c:4402 ../memo_gui.c:1547
+#: ../todo_gui.c:2189 ../Expense/expense.c:1608 ../KeyRing/keyring.c:2150
 msgid "Copy the selected record"
 msgstr ""
 
 #. Create "New" button
 #. New Record button
-#: ../address_gui.c:2692 ../datebook_gui.c:4407 ../memo_gui.c:1540
-#: ../todo_gui.c:2175 ../Expense/expense.c:1647 ../KeyRing/keyring.c:2158
+#: ../address_gui.c:3425 ../datebook_gui.c:4408 ../memo_gui.c:1553
+#: ../todo_gui.c:2195 ../Expense/expense.c:1613 ../KeyRing/keyring.c:2156
 msgid "New Record"
 msgstr ""
 
-#: ../address_gui.c:2692 ../datebook_gui.c:4407 ../memo_gui.c:1540
-#: ../todo_gui.c:2175 ../Expense/expense.c:1647 ../KeyRing/keyring.c:2158
+#: ../address_gui.c:3425 ../datebook_gui.c:4408 ../memo_gui.c:1553
+#: ../todo_gui.c:2195 ../Expense/expense.c:1613 ../KeyRing/keyring.c:2156
 msgid "Add a new record"
 msgstr ""
 
 #. Create "Add Record" button
 #. Add Record button
-#: ../address_gui.c:2697 ../datebook_gui.c:4413 ../memo_gui.c:1546
-#: ../todo_gui.c:2181 ../Expense/expense.c:1652 ../KeyRing/keyring.c:2164
+#: ../address_gui.c:3430 ../datebook_gui.c:4414 ../memo_gui.c:1559
+#: ../todo_gui.c:2201 ../Expense/expense.c:1618 ../KeyRing/keyring.c:2162
 msgid "Add Record"
 msgstr ""
 
-#: ../address_gui.c:2697 ../datebook_gui.c:4413 ../memo_gui.c:1546
-#: ../todo_gui.c:2181 ../Expense/expense.c:1652 ../KeyRing/keyring.c:2164
+#: ../address_gui.c:3430 ../datebook_gui.c:4414 ../memo_gui.c:1559
+#: ../todo_gui.c:2201 ../Expense/expense.c:1618 ../KeyRing/keyring.c:2162
 msgid "Add the new record"
 msgstr ""
 
 #. Create "apply changes" button
 #. Apply Changes button
-#: ../address_gui.c:2707 ../datebook_gui.c:4423 ../memo_gui.c:1556
-#: ../todo_gui.c:2191 ../Expense/expense.c:1661 ../KeyRing/keyring.c:2174
+#: ../address_gui.c:3440 ../datebook_gui.c:4424 ../memo_gui.c:1569
+#: ../todo_gui.c:2211 ../Expense/expense.c:1627 ../KeyRing/keyring.c:2172
 msgid "Apply Changes"
 msgstr ""
 
-#: ../address_gui.c:2707 ../datebook_gui.c:4423 ../memo_gui.c:1556
-#: ../todo_gui.c:2191 ../Expense/expense.c:1661 ../KeyRing/keyring.c:2174
+#: ../address_gui.c:3440 ../datebook_gui.c:4424 ../memo_gui.c:1569
+#: ../todo_gui.c:2211 ../Expense/expense.c:1627 ../KeyRing/keyring.c:2172
 msgid "Commit the modifications"
 msgstr ""
 
 #. Private check box
-#: ../address_gui.c:2724 ../datebook_gui.c:4474 ../memo_gui.c:1574
-#: ../todo_gui.c:2254
+#: ../address_gui.c:3457 ../datebook_gui.c:4475 ../memo_gui.c:1587
+#: ../todo_gui.c:2274
 msgid "Private"
 msgstr ""
 
-#. Page 1
-#: ../address_gui.c:2744 ../KeyRing/keyring.c:2009
-msgid "Name"
+#: ../address_gui.c:3618
+msgid "Show In List"
 msgstr ""
 
-#. Page 2
-#: ../address_gui.c:2752 ../prefs_gui.c:370
-msgid "Address"
+#: ../address_gui.c:3761
+msgid "Reminder"
 msgstr ""
 
-#. Page 3
-#: ../address_gui.c:2760 ../Expense/expense.c:555 ../Expense/expense.c:1418
-msgid "Other"
+#: ../address_gui.c:3777 ../datebook_gui.c:4463
+msgid "Days"
 msgstr ""
 
-#. Page 4
+#. All page
 #. Create a "All" button
-#: ../address_gui.c:2768 ../datebook_gui.c:1350 ../datebook_gui.c:1599
-#: ../utils.c:2714
+#: ../address_gui.c:3812 ../datebook_gui.c:1350 ../datebook_gui.c:1599
+#: ../utils.c:2877
 msgid "All"
 msgstr ""
 
-#: ../address_gui.c:2973
-msgid ""
-"Show\n"
-"In List"
-msgstr ""
-
-#. The Quickview page
-#: ../address_gui.c:2981
-msgid "Quick View"
-msgstr ""
-
-#: ../alarms.c:257 ../datebook_gui.c:4456
+#: ../alarms.c:257 ../datebook_gui.c:4457
 msgid "Minutes"
 msgstr ""
 
-#: ../alarms.c:259 ../datebook_gui.c:4460
+#: ../alarms.c:259 ../datebook_gui.c:4461
 msgid "Hours"
 msgstr ""
 
@@ -362,124 +402,125 @@ msgstr ""
 msgid "Remind me"
 msgstr ""
 
-#: ../alarms.c:469
+#: ../alarms.c:457
 #, c-format
 msgid "Unable to open %s%s file\n"
 msgstr ""
 
-#: ../alarms.c:554
+#: ../alarms.c:544
 msgid "Appointment Reminder"
 msgstr ""
 
-#: ../alarms.c:557
+#: ../alarms.c:547
 msgid "Past Appointment"
 msgstr ""
 
-#: ../alarms.c:560
+#: ../alarms.c:550
 msgid "Postponed Appointment"
 msgstr ""
 
-#: ../alarms.c:563 ../datebook_gui.c:4292
+#: ../alarms.c:553 ../datebook_gui.c:4293
 msgid "Appointment"
 msgstr ""
 
-#: ../alarms.c:646
+#: ../alarms.c:636
 msgid "J-Pilot Alarm"
 msgstr ""
 
-#: ../alarms.c:1163
+#: ../alarms.c:1103
 msgid "infinite loop, breaking\n"
 msgstr ""
 
-#: ../alarms.c:1531
+#: ../alarms.c:1472
 #, c-format
 msgid "Unable to open %s.alarms file\n"
 msgstr ""
 
-#: ../category.c:192 ../sync.c:2551 ../utils.c:2834 ../utils.c:2922
-#: ../utils.c:3044 ../utils.c:3114
+#: ../category.c:188 ../sync.c:2851 ../utils.c:2989 ../utils.c:3067
+#: ../utils.c:3179 ../utils.c:3247
 msgid "rename failed"
 msgstr ""
 
-#: ../category.c:229 ../category.c:286 ../sync.c:1147 ../sync.c:2310
+#: ../category.c:225 ../category.c:282 ../sync.c:1235 ../sync.c:2529
 msgid "PC file corrupt?\n"
 msgstr ""
 
-#: ../category.c:236 ../category.c:246 ../category.c:293 ../category.c:304
-#: ../category.c:314 ../sync.c:1192 ../sync.c:1212 ../sync.c:1272
-#: ../sync.c:1283 ../sync.c:2372 ../sync.c:2399 ../sync.c:2451 ../sync.c:2461
+#: ../category.c:232 ../category.c:242 ../category.c:289 ../category.c:300
+#: ../category.c:310 ../sync.c:1285 ../sync.c:1349 ../sync.c:1379
+#: ../sync.c:1422 ../sync.c:1439 ../sync.c:1468 ../sync.c:2593 ../sync.c:2645
+#: ../sync.c:2673 ../sync.c:2718 ../sync.c:2732 ../sync.c:2759
 msgid "fseek failed - fatal error\n"
 msgstr ""
 
-#: ../category.c:421
+#: ../category.c:413
 msgid "Move"
 msgstr ""
 
-#: ../category.c:451
+#: ../category.c:443
 msgid "The maximum number of categories (16) are already used"
 msgstr ""
 
-#: ../category.c:454
+#: ../category.c:446
 msgid "Enter New Category"
 msgstr ""
 
-#: ../category.c:464 ../category.c:471 ../category.c:489
+#: ../category.c:456 ../category.c:463 ../category.c:481
 msgid "Edit Categories Error"
 msgstr ""
 
-#: ../category.c:465
+#: ../category.c:457
 msgid "You must select a category to rename"
 msgstr ""
 
-#: ../category.c:469
+#: ../category.c:461
 #, c-format
 msgid "You can't edit category %s.\n"
 msgstr ""
 
-#: ../category.c:476
+#: ../category.c:468
 msgid "Enter New Category Name"
 msgstr ""
 
-#: ../category.c:490
+#: ../category.c:482
 msgid "You must select a category to delete"
 msgstr ""
 
-#: ../category.c:494
+#: ../category.c:486
 #, c-format
 msgid "You can't delete category %s.\n"
 msgstr ""
 
-#: ../category.c:510
+#: ../category.c:502
 #, c-format
 msgid ""
 "There are %d records in %s.\n"
 "Do you want to move them to %s, or delete them?"
 msgstr ""
 
-#: ../category.c:569
+#: ../category.c:561
 #, c-format
 msgid "invalid state file %s line %d\n"
 msgstr ""
 
-#: ../category.c:591
+#: ../category.c:583
 #, c-format
 msgid "The category %s can't be used more than once"
 msgstr ""
 
 #. correctly translate title
-#: ../category.c:813
+#: ../category.c:805
 msgid "category name"
 msgstr ""
 
-#: ../category.c:838
+#: ../category.c:830
 msgid "New"
 msgstr ""
 
-#: ../category.c:845
+#: ../category.c:837
 msgid "Rename"
 msgstr ""
 
-#: ../category.c:960
+#: ../category.c:952
 msgid "debug"
 msgstr ""
 
@@ -525,32 +566,32 @@ msgstr ""
 msgid "Unknown repeatType (%d) found in DatebookDB\n"
 msgstr ""
 
-#: ../datebook_gui.c:218 ../datebook_gui.c:225 ../datebook_gui.c:4117
-#: ../datebook_gui.c:4124
+#: ../datebook_gui.c:218 ../datebook_gui.c:225 ../datebook_gui.c:4118
+#: ../datebook_gui.c:4125
 msgid "Su"
 msgstr ""
 
-#: ../datebook_gui.c:219 ../datebook_gui.c:4118
+#: ../datebook_gui.c:219 ../datebook_gui.c:4119
 msgid "Mo"
 msgstr ""
 
-#: ../datebook_gui.c:220 ../datebook_gui.c:4119
+#: ../datebook_gui.c:220 ../datebook_gui.c:4120
 msgid "Tu"
 msgstr ""
 
-#: ../datebook_gui.c:221 ../datebook_gui.c:4120
+#: ../datebook_gui.c:221 ../datebook_gui.c:4121
 msgid "We"
 msgstr ""
 
-#: ../datebook_gui.c:222 ../datebook_gui.c:4121
+#: ../datebook_gui.c:222 ../datebook_gui.c:4122
 msgid "Th"
 msgstr ""
 
-#: ../datebook_gui.c:223 ../datebook_gui.c:4122
+#: ../datebook_gui.c:223 ../datebook_gui.c:4123
 msgid "Fr"
 msgstr ""
 
-#: ../datebook_gui.c:224 ../datebook_gui.c:4123
+#: ../datebook_gui.c:224 ../datebook_gui.c:4124
 msgid "Sa"
 msgstr ""
 
@@ -594,13 +635,13 @@ msgid "Datebook Categories"
 msgstr ""
 
 #: ../datebook_gui.c:1343 ../import_gui.c:533 ../install_gui.c:341
-#: ../monthview_gui.c:545 ../search_gui.c:620 ../weekview_gui.c:369
+#: ../monthview_gui.c:566 ../search_gui.c:636 ../weekview_gui.c:371
 msgid "Close"
 msgstr ""
 
 #. Create a "None" button
 #. labels for notebook
-#: ../datebook_gui.c:1356 ../datebook_gui.c:4639
+#: ../datebook_gui.c:1356 ../datebook_gui.c:4640
 msgid "None"
 msgstr ""
 
@@ -612,11 +653,11 @@ msgstr ""
 msgid "End On Date"
 msgstr ""
 
-#: ../datebook_gui.c:1567 ../prefs.c:424
+#: ../datebook_gui.c:1567 ../prefs.c:431
 msgid "Sunday"
 msgstr ""
 
-#: ../datebook_gui.c:1568 ../prefs.c:425
+#: ../datebook_gui.c:1568 ../prefs.c:432
 msgid "Monday"
 msgstr ""
 
@@ -712,172 +753,168 @@ msgstr ""
 msgid "No Time"
 msgstr ""
 
-#: ../datebook_gui.c:2631
+#: ../datebook_gui.c:2632
 msgid "Invalid Appointment"
 msgstr ""
 
-#: ../datebook_gui.c:2632
+#: ../datebook_gui.c:2633
 msgid ""
 "The End Date of this appointment\n"
 "is before the start date."
 msgstr ""
 
 #. The No due date check box
-#: ../datebook_gui.c:2901 ../datebook_gui.c:4673 ../datebook_gui.c:4703
-#: ../datebook_gui.c:4758 ../datebook_gui.c:4807 ../todo_gui.c:130
-#: ../todo_gui.c:2245
+#: ../datebook_gui.c:2902 ../datebook_gui.c:4674 ../datebook_gui.c:4704
+#: ../datebook_gui.c:4759 ../datebook_gui.c:4808 ../todo_gui.c:130
+#: ../todo_gui.c:2265
 msgid "No Date"
 msgstr ""
 
-#: ../datebook_gui.c:3021
+#: ../datebook_gui.c:3022
 #, c-format
 msgid "Error in DateBookDB advanceUnits = %d\n"
 msgstr ""
 
-#: ../datebook_gui.c:3192
+#: ../datebook_gui.c:3193
 msgid "Unknown repeatType found in DatebookDB\n"
 msgstr ""
 
-#: ../datebook_gui.c:3225
+#: ../datebook_gui.c:3226
 #, c-format
 msgid "%%a., %s"
 msgstr ""
 
-#: ../datebook_gui.c:3230 ../monthview_gui.c:230 ../weekview_gui.c:219
+#: ../datebook_gui.c:3231 ../monthview_gui.c:236 ../weekview_gui.c:221
 msgid " (TODAY)"
 msgstr ""
 
 #. Make Weekview button
-#: ../datebook_gui.c:4200 ../datebook_gui.c:4641
+#: ../datebook_gui.c:4201 ../datebook_gui.c:4642
 msgid "Week"
 msgstr ""
 
-#: ../datebook_gui.c:4206
+#: ../datebook_gui.c:4207
 msgid "W"
 msgstr ""
 
-#: ../datebook_gui.c:4208
+#: ../datebook_gui.c:4209
 msgid "View appointments by week"
 msgstr ""
 
 #. Make Monthview button
-#: ../datebook_gui.c:4211 ../datebook_gui.c:4642
+#: ../datebook_gui.c:4212 ../datebook_gui.c:4643
 msgid "Month"
 msgstr ""
 
-#: ../datebook_gui.c:4218
+#: ../datebook_gui.c:4219
 msgid "M"
 msgstr ""
 
-#: ../datebook_gui.c:4220
+#: ../datebook_gui.c:4221
 msgid "View appointments by month"
 msgstr ""
 
 #. Make Category button
-#: ../datebook_gui.c:4225
+#: ../datebook_gui.c:4226
 msgid "Cats"
 msgstr ""
 
-#: ../datebook_gui.c:4291
+#: ../datebook_gui.c:4292
 msgid "Time"
 msgstr ""
 
 #.
 #. * Hide ToDo button
 #.
-#: ../datebook_gui.c:4328
+#: ../datebook_gui.c:4329
 msgid "Show ToDos"
 msgstr ""
 
-#: ../datebook_gui.c:4343 ../todo_gui.c:2114
+#: ../datebook_gui.c:4344 ../todo_gui.c:2116
 msgid "Task"
 msgstr ""
 
-#: ../datebook_gui.c:4344 ../todo_gui.c:2115
+#: ../datebook_gui.c:4345 ../todo_gui.c:2117
 msgid "Due"
 msgstr ""
 
-#: ../datebook_gui.c:4441
+#: ../datebook_gui.c:4442
 msgid "Alarm"
 msgstr ""
 
-#: ../datebook_gui.c:4462
-msgid "Days"
-msgstr ""
-
-#: ../datebook_gui.c:4485
+#: ../datebook_gui.c:4486
 msgid "This Event has no particular time"
 msgstr ""
 
-#: ../datebook_gui.c:4493
+#: ../datebook_gui.c:4494
 msgid "Starts on"
 msgstr ""
 
-#: ../datebook_gui.c:4507
+#: ../datebook_gui.c:4508
 msgid "Start Time"
 msgstr ""
 
-#: ../datebook_gui.c:4525
+#: ../datebook_gui.c:4526
 msgid "End Time"
 msgstr ""
 
-#: ../datebook_gui.c:4623
+#: ../datebook_gui.c:4624
 msgid "DateBk Tags"
 msgstr ""
 
-#: ../datebook_gui.c:4640
+#: ../datebook_gui.c:4641
 msgid "Day"
 msgstr ""
 
-#: ../datebook_gui.c:4643
+#: ../datebook_gui.c:4644
 msgid "Year"
 msgstr ""
 
 #. no repeat page for notebook
-#: ../datebook_gui.c:4647
+#: ../datebook_gui.c:4648
 msgid "This event will not repeat"
 msgstr ""
 
-#: ../datebook_gui.c:4657 ../datebook_gui.c:4689 ../datebook_gui.c:4744
-#: ../datebook_gui.c:4791
+#: ../datebook_gui.c:4658 ../datebook_gui.c:4690 ../datebook_gui.c:4745
+#: ../datebook_gui.c:4792
 msgid "Frequency is Every"
 msgstr ""
 
-#: ../datebook_gui.c:4662
+#: ../datebook_gui.c:4663
 msgid "Day(s)"
 msgstr ""
 
 #. checkbutton
-#: ../datebook_gui.c:4665 ../datebook_gui.c:4697 ../datebook_gui.c:4752
-#: ../datebook_gui.c:4799
+#: ../datebook_gui.c:4666 ../datebook_gui.c:4698 ../datebook_gui.c:4753
+#: ../datebook_gui.c:4800
 msgid "End on"
 msgstr ""
 
-#: ../datebook_gui.c:4694
+#: ../datebook_gui.c:4695
 msgid "Week(s)"
 msgstr ""
 
-#: ../datebook_gui.c:4710
+#: ../datebook_gui.c:4711
 msgid "Repeat on Days:"
 msgstr ""
 
-#: ../datebook_gui.c:4749
+#: ../datebook_gui.c:4750
 msgid "Month(s)"
 msgstr ""
 
-#: ../datebook_gui.c:4766
+#: ../datebook_gui.c:4767
 msgid "Repeat by:"
 msgstr ""
 
-#: ../datebook_gui.c:4770
+#: ../datebook_gui.c:4771
 msgid "Day of week"
 msgstr ""
 
-#: ../datebook_gui.c:4779
+#: ../datebook_gui.c:4780
 msgid "Date"
 msgstr ""
 
-#: ../datebook_gui.c:4796
+#: ../datebook_gui.c:4797
 msgid "Year(s)"
 msgstr ""
 
@@ -936,7 +973,7 @@ msgstr ""
 msgid "To change to a hidden directory type it below and hit TAB"
 msgstr ""
 
-#: ../import_gui.c:307 ../prefs_gui.c:771
+#: ../import_gui.c:307 ../prefs_gui.c:815
 msgid "Done"
 msgstr ""
 
@@ -945,10 +982,12 @@ msgid "Import File Type"
 msgstr ""
 
 #: ../import_gui.c:442
+#, c-format
 msgid "Record was marked as private"
 msgstr ""
 
 #: ../import_gui.c:444
+#, c-format
 msgid "Record was not marked as private"
 msgstr ""
 
@@ -1020,43 +1059,47 @@ msgstr ""
 msgid "User ID"
 msgstr ""
 
-#: ../jpilot-dump.c:95
+#: ../jpilot-dump.c:97
 msgid " +D +A +T +M format like date +format.\n"
 msgstr ""
 
-#: ../jpilot-dump.c:96
+#: ../jpilot-dump.c:98
 msgid " -v displays version and exits.\n"
 msgstr ""
 
-#: ../jpilot-dump.c:97 ../utils.c:73
+#: ../jpilot-dump.c:99 ../utils.c:80
 msgid " -h displays help and exits.\n"
 msgstr ""
 
-#: ../jpilot-dump.c:98
+#: ../jpilot-dump.c:100
 msgid " -f displays help for format codes.\n"
 msgstr ""
 
-#: ../jpilot-dump.c:99
+#: ../jpilot-dump.c:101
 msgid " -D dump DateBook.\n"
 msgstr ""
 
-#: ../jpilot-dump.c:100
-msgid " -N dump appts for today in DateBook.\n"
-msgstr ""
-
-#: ../jpilot-dump.c:101
-msgid " -NYYYY/MM/DD dump appts on YYYY/MM/DD in DateBook.\n"
-msgstr ""
-
 #: ../jpilot-dump.c:102
-msgid " -A dump Address book.\n"
+msgid " -i dump DateBook in iCalendar format.\n"
 msgstr ""
 
 #: ../jpilot-dump.c:103
-msgid " -T dump ToDo list as CSV.\n"
+msgid " -N dump appts for today in DateBook.\n"
 msgstr ""
 
 #: ../jpilot-dump.c:104
+msgid " -NYYYY/MM/DD dump appts on YYYY/MM/DD in DateBook.\n"
+msgstr ""
+
+#: ../jpilot-dump.c:105
+msgid " -A dump Address book.\n"
+msgstr ""
+
+#: ../jpilot-dump.c:106
+msgid " -T dump ToDo list as CSV.\n"
+msgstr ""
+
+#: ../jpilot-dump.c:107
 msgid " -M dump Memos.\n"
 msgstr ""
 
@@ -1100,8 +1143,8 @@ msgstr ""
 msgid "Invalid geometry specification: \"%s\"\n"
 msgstr ""
 
-#: ../jpilot.c:447 ../monthview_gui.c:555 ../print_gui.c:338
-#: ../weekview_gui.c:379
+#: ../jpilot.c:447 ../monthview_gui.c:579 ../print_gui.c:338
+#: ../weekview_gui.c:385
 msgid "Print"
 msgstr ""
 
@@ -1150,267 +1193,267 @@ msgstr ""
 msgid "Sync Problem"
 msgstr ""
 
-#: ../jpilot.c:982
+#: ../jpilot.c:993
 msgid "Unknown command from sync process\n"
 msgstr ""
 
-#: ../jpilot.c:1003 ../Expense/expense.c:500 ../KeyRing/keyring.c:1737
+#: ../jpilot.c:1014 ../Expense/expense.c:500 ../KeyRing/keyring.c:1732
 #: ../SyncTime/synctime.c:48
 #, c-format
 msgid "About %s"
 msgstr ""
 
-#: ../jpilot.c:1406
+#: ../jpilot.c:1417
 msgid "/_File"
 msgstr ""
 
-#: ../jpilot.c:1407
+#: ../jpilot.c:1418
 msgid "/File/tear"
 msgstr ""
 
-#: ../jpilot.c:1408
+#: ../jpilot.c:1419
 msgid "/File/_Find"
 msgstr ""
 
-#: ../jpilot.c:1409 ../jpilot.c:1415 ../jpilot.c:1418
+#: ../jpilot.c:1420 ../jpilot.c:1426 ../jpilot.c:1429
 msgid "/File/sep1"
 msgstr ""
 
-#: ../jpilot.c:1410
+#: ../jpilot.c:1421
 msgid "/File/_Install"
 msgstr ""
 
-#: ../jpilot.c:1411
+#: ../jpilot.c:1422
 msgid "/File/Import"
 msgstr ""
 
-#: ../jpilot.c:1412
+#: ../jpilot.c:1423
 msgid "/File/Export"
 msgstr ""
 
-#: ../jpilot.c:1413 ../jpilot.c:2895
+#: ../jpilot.c:1424 ../jpilot.c:2901
 msgid "/File/Preferences"
 msgstr ""
 
-#: ../jpilot.c:1414
+#: ../jpilot.c:1425
 msgid "/File/_Print"
 msgstr ""
 
-#: ../jpilot.c:1416
+#: ../jpilot.c:1427
 msgid "/File/Install User"
 msgstr ""
 
-#: ../jpilot.c:1417
+#: ../jpilot.c:1428
 msgid "/File/Restore Handheld"
 msgstr ""
 
-#: ../jpilot.c:1419
+#: ../jpilot.c:1430
 msgid "/File/_Quit"
 msgstr ""
 
-#: ../jpilot.c:1420
+#: ../jpilot.c:1431
 msgid "/_View"
 msgstr ""
 
-#: ../jpilot.c:1421 ../jpilot.c:1422 ../jpilot.c:1423 ../jpilot.c:1677
+#: ../jpilot.c:1432 ../jpilot.c:1433 ../jpilot.c:1434 ../jpilot.c:1684
 msgid "/View/Hide Private Records"
 msgstr ""
 
-#: ../jpilot.c:1422
+#: ../jpilot.c:1433
 msgid "/View/Show Private Records"
 msgstr ""
 
-#: ../jpilot.c:1423
+#: ../jpilot.c:1434
 msgid "/View/Mask Private Records"
 msgstr ""
 
-#: ../jpilot.c:1424
+#: ../jpilot.c:1435
 msgid "/View/sep1"
 msgstr ""
 
-#: ../jpilot.c:1425
+#: ../jpilot.c:1436
 msgid "/View/Datebook"
 msgstr ""
 
-#: ../jpilot.c:1426
+#: ../jpilot.c:1437
 msgid "/View/Addresses"
 msgstr ""
 
-#: ../jpilot.c:1427
+#: ../jpilot.c:1438
 msgid "/View/Todos"
 msgstr ""
 
-#: ../jpilot.c:1428
+#: ../jpilot.c:1439
 msgid "/View/Memos"
 msgstr ""
 
-#: ../jpilot.c:1429 ../jpilot.c:1563
+#: ../jpilot.c:1440 ../jpilot.c:1570
 msgid "/_Plugins"
 msgstr ""
 
-#: ../jpilot.c:1431
+#: ../jpilot.c:1442
 msgid "/_Web"
 msgstr ""
 
 #. web
-#: ../jpilot.c:1432
+#: ../jpilot.c:1443
 msgid "/Web/Netscape"
 msgstr ""
 
-#: ../jpilot.c:1436
+#: ../jpilot.c:1447
 msgid "/Web/Mozilla"
 msgstr ""
 
-#: ../jpilot.c:1441
+#: ../jpilot.c:1452
 msgid "/Web/Galeon"
 msgstr ""
 
-#: ../jpilot.c:1446
+#: ../jpilot.c:1457
 msgid "/Web/Opera"
 msgstr ""
 
-#: ../jpilot.c:1450
+#: ../jpilot.c:1461
 msgid "/Web/GnomeUrl"
 msgstr ""
 
-#: ../jpilot.c:1452
+#: ../jpilot.c:1463
 msgid "/Web/Lynx"
 msgstr ""
 
-#: ../jpilot.c:1454
+#: ../jpilot.c:1465
 msgid "/Web/Links"
 msgstr ""
 
-#: ../jpilot.c:1456
+#: ../jpilot.c:1467
 msgid "/Web/W3M"
 msgstr ""
 
-#: ../jpilot.c:1458
+#: ../jpilot.c:1469
 msgid "/Web/Konqueror"
 msgstr ""
 
-#: ../jpilot.c:1461
+#: ../jpilot.c:1472
 msgid "/_Help"
 msgstr ""
 
-#: ../jpilot.c:1462
+#: ../jpilot.c:1473
 msgid "/Help/PayBack program"
 msgstr ""
 
-#: ../jpilot.c:1463
+#: ../jpilot.c:1474
 msgid "/Help/About J-Pilot"
 msgstr ""
 
-#: ../jpilot.c:1530
+#: ../jpilot.c:1537
 #, c-format
 msgid "/_Plugins/%s"
 msgstr ""
 
-#: ../jpilot.c:1541
+#: ../jpilot.c:1548
 #, c-format
 msgid "/_Help/%s"
 msgstr ""
 
-#: ../jpilot.c:1840
+#: ../jpilot.c:1847
 msgid "Font Selection Dialog"
 msgstr ""
 
-#: ../jpilot.c:2211
+#: ../jpilot.c:2218
 msgid "calendar:week_start:0"
 msgstr ""
 
-#: ../jpilot.c:2260
+#: ../jpilot.c:2267
 msgid "Not loading plugins.\n"
 msgstr ""
 
-#: ../jpilot.c:2264
+#: ../jpilot.c:2271
 msgid "Ignoring all alarms.\n"
 msgstr ""
 
-#: ../jpilot.c:2268
+#: ../jpilot.c:2275
 msgid "Ignoring past alarms.\n"
 msgstr ""
 
-#: ../jpilot.c:2363 ../jpilot.c:2371
+#: ../jpilot.c:2370 ../jpilot.c:2378
 msgid "Unable to open pipe\n"
 msgstr ""
 
-#: ../jpilot.c:2422
+#: ../jpilot.c:2429
 msgid " User: "
 msgstr ""
 
-#: ../jpilot.c:2564
+#: ../jpilot.c:2570
 msgid "Clear"
 msgstr ""
 
-#: ../jpilot.c:2649
+#: ../jpilot.c:2655
 msgid "Show private records   Ctrl-Z"
 msgstr ""
 
-#: ../jpilot.c:2654
+#: ../jpilot.c:2660
 msgid "Show private records"
 msgstr ""
 
-#: ../jpilot.c:2659
+#: ../jpilot.c:2665
 msgid "Hide private records   Ctrl-Z"
 msgstr ""
 
-#: ../jpilot.c:2664
+#: ../jpilot.c:2670
 msgid "Hide private records"
 msgstr ""
 
-#: ../jpilot.c:2669
+#: ../jpilot.c:2675
 msgid "Mask private records   Ctrl-Z"
 msgstr ""
 
-#: ../jpilot.c:2674
+#: ../jpilot.c:2680
 msgid "Mask private records"
 msgstr ""
 
-#: ../jpilot.c:2684
+#: ../jpilot.c:2690
 msgid "Sync your palm to the desktop   Ctrl-Y"
 msgstr ""
 
 #. Create "Font" button
-#: ../jpilot.c:2690
+#: ../jpilot.c:2696
 msgid "Font"
 msgstr ""
 
-#: ../jpilot.c:2705
+#: ../jpilot.c:2711
 msgid ""
 "Sync your palm to the desktop\n"
 "and then do a backup"
 msgstr ""
 
-#: ../jpilot.c:2819
+#: ../jpilot.c:2825
 msgid "Datebook/Go to Today"
 msgstr ""
 
-#: ../jpilot.c:2821
+#: ../jpilot.c:2827
 msgid "Address Book"
 msgstr ""
 
-#: ../jpilot.c:2823
+#: ../jpilot.c:2829
 msgid "ToDo List"
 msgstr ""
 
-#: ../jpilot.c:2825
+#: ../jpilot.c:2831
 msgid "Memo Pad"
 msgstr ""
 
-#: ../jpilot.c:2877
+#: ../jpilot.c:2883
 msgid "Do it now"
 msgstr ""
 
-#: ../jpilot.c:2877
+#: ../jpilot.c:2883
 msgid "Remind me later"
 msgstr ""
 
-#: ../jpilot.c:2877
+#: ../jpilot.c:2883
 msgid "Don't tell me again!"
 msgstr ""
 
-#: ../jpilot.c:2891
+#: ../jpilot.c:2897
 msgid ""
 "J-Pilot is using the GTK2 graphical toolkit. This version of the toolkit "
 "uses UTF-8 to encode characters.\n"
@@ -1419,24 +1462,24 @@ msgid ""
 "\n"
 msgstr ""
 
-#: ../jpilot.c:2894
+#: ../jpilot.c:2900
 msgid "Go to the menu \""
 msgstr ""
 
-#: ../jpilot.c:2896
+#: ../jpilot.c:2902
 msgid "\" and change the \""
 msgstr ""
 
 #. Character Set
-#: ../jpilot.c:2897 ../prefs_gui.c:390
+#: ../jpilot.c:2903 ../prefs_gui.c:406
 msgid "Character Set "
 msgstr ""
 
-#: ../jpilot.c:2898
+#: ../jpilot.c:2904
 msgid "\"."
 msgstr ""
 
-#: ../jpilot.c:2900
+#: ../jpilot.c:2906
 msgid "Select a UTF-8 encoding"
 msgstr ""
 
@@ -1445,53 +1488,53 @@ msgstr ""
 msgid "Unknown PC header version = %d\n"
 msgstr ""
 
-#: ../libplugin.c:416
+#: ../libplugin.c:411
 #, c-format
 msgid "%s:%d Error opening file: %s\n"
 msgstr ""
 
-#: ../libplugin.c:422 ../libplugin.c:451 ../sync.c:2879 ../todo.c:391
+#: ../libplugin.c:417 ../libplugin.c:446 ../sync.c:3240 ../todo.c:389
 #, c-format
 msgid "%s:%d Error reading file: %s\n"
 msgstr ""
 
-#: ../libplugin.c:478 ../utils.c:1944
+#: ../libplugin.c:473 ../utils.c:2048
 msgid ""
 "This record is already deleted.\n"
 "It is scheduled to be deleted from the Palm on the next sync.\n"
 msgstr ""
 
-#: ../libplugin.c:487 ../utils.c:1953 ../utils.c:1990
+#: ../libplugin.c:482 ../utils.c:2060 ../utils.c:2107
 msgid "Unable to open PC records file\n"
 msgstr ""
 
-#: ../libplugin.c:493 ../utils.c:1959
+#: ../libplugin.c:488 ../utils.c:2069
 msgid "Couldn't find record to delete\n"
 msgstr ""
 
-#: ../libplugin.c:511 ../utils.c:1977
+#: ../libplugin.c:506 ../utils.c:2090
 #, c-format
 msgid "Unknown header version %d\n"
 msgstr ""
 
-#: ../libplugin.c:524
+#: ../libplugin.c:519
 msgid "Couldn't open PC records file\n"
 msgstr ""
 
-#: ../libplugin.c:685 ../libplugin.c:777 ../utils.c:1504 ../utils.c:1517
+#: ../libplugin.c:680 ../libplugin.c:772 ../utils.c:1571 ../utils.c:1584
 #, c-format
 msgid "Error opening file: %s\n"
 msgstr ""
 
-#: ../libplugin.c:714
+#: ../libplugin.c:709
 msgid "Error reading PC file 1\n"
 msgstr ""
 
-#: ../libplugin.c:730
+#: ../libplugin.c:725
 msgid "Error reading PC file 2\n"
 msgstr ""
 
-#: ../libplugin.c:903
+#: ../libplugin.c:898
 #, c-format
 msgid "Error reading %s 5\n"
 msgstr ""
@@ -1524,7 +1567,7 @@ msgstr ""
 msgid "Can't export memo %d\n"
 msgstr ""
 
-#: ../monthview_gui.c:500
+#: ../monthview_gui.c:521
 msgid "Monthly View"
 msgstr ""
 
@@ -1540,315 +1583,323 @@ msgstr ""
 msgid "Enter PalmOS Password"
 msgstr ""
 
-#: ../plugins.c:88 ../plugins.c:200 ../restore_gui.c:133
+#: ../plugins.c:90 ../plugins.c:204 ../restore_gui.c:133
 msgid "infinite loop"
 msgstr ""
 
-#: ../plugins.c:213
+#: ../plugins.c:217
 #, c-format
 msgid "While reading %s%s line 1:[%s]\n"
 msgstr ""
 
-#: ../plugins.c:214
+#: ../plugins.c:218
 msgid "Wrong Version\n"
 msgstr ""
 
-#: ../plugins.c:215
+#: ../plugins.c:219
 msgid "Check preferences->conduits\n"
 msgstr ""
 
-#: ../plugins.c:271
+#: ../plugins.c:275
 #, c-format
 msgid ""
 "Open failed on plugin [%s]\n"
 " error [%s]\n"
 msgstr ""
 
-#: ../plugins.c:288 ../plugins.c:314
+#: ../plugins.c:292 ../plugins.c:318
 #, c-format
 msgid " plugin is invalid: [%s]\n"
 msgstr ""
 
-#: ../plugins.c:296
+#: ../plugins.c:300
 #, c-format
 msgid "Plugin:[%s]\n"
 msgstr ""
 
-#: ../plugins.c:297
+#: ../plugins.c:301
 #, c-format
 msgid "This plugin is version (%d.%d).\n"
 msgstr ""
 
-#: ../plugins.c:299
+#: ../plugins.c:303
 msgid "It is too old to work with this version of J-Pilot.\n"
 msgstr ""
 
-#: ../prefs.c:393
+#: ../prefs.c:400
 msgid "%B %d, %Y"
 msgstr ""
 
-#: ../prefs.c:394
+#: ../prefs.c:401
 msgid "%d %B %Y"
 msgstr ""
 
-#: ../prefs.c:395
+#: ../prefs.c:402
 msgid "%d. %B %Y"
 msgstr ""
 
-#: ../prefs.c:396
+#: ../prefs.c:403
 msgid "%d %B, %Y"
 msgstr ""
 
-#: ../prefs.c:397
+#: ../prefs.c:404
 msgid "%Y. %B. %d"
 msgstr ""
 
-#: ../prefs.c:398
+#: ../prefs.c:405
 msgid "%Y %B %d"
 msgstr ""
 
-#: ../prefs_gui.c:334
+#: ../prefs_gui.c:350
 msgid "Preferences"
 msgstr ""
 
-#: ../prefs_gui.c:364
+#: ../prefs_gui.c:380
 msgid "Locale"
 msgstr ""
 
-#: ../prefs_gui.c:366
+#: ../prefs_gui.c:382
 msgid "Settings"
 msgstr ""
 
-#: ../prefs_gui.c:368
+#: ../prefs_gui.c:384
 msgid "Datebook"
 msgstr ""
 
-#: ../prefs_gui.c:372
+#: ../prefs_gui.c:388
 msgid "ToDo"
 msgstr ""
 
-#: ../prefs_gui.c:374
+#: ../prefs_gui.c:390
 msgid "Memo"
 msgstr ""
 
-#: ../prefs_gui.c:376
+#: ../prefs_gui.c:392
 msgid "Alarms"
 msgstr ""
 
-#: ../prefs_gui.c:378
+#: ../prefs_gui.c:394
 msgid "Conduits"
 msgstr ""
 
 #. Shortdate
-#: ../prefs_gui.c:403
+#: ../prefs_gui.c:419
 msgid "Short date format "
 msgstr ""
 
 #. Longdate
-#: ../prefs_gui.c:416
+#: ../prefs_gui.c:432
 msgid "Long date format "
 msgstr ""
 
 #. Time
-#: ../prefs_gui.c:429
+#: ../prefs_gui.c:445
 msgid "Time format "
 msgstr ""
 
-#: ../prefs_gui.c:443
+#: ../prefs_gui.c:459
 msgid "The first day of the week is "
 msgstr ""
 
 #. GTK colors file
-#: ../prefs_gui.c:464
+#: ../prefs_gui.c:480
 msgid "My GTK colors file is "
 msgstr ""
 
 #. Port
-#: ../prefs_gui.c:477
+#: ../prefs_gui.c:493
 msgid "Serial Port (/dev/ttyS0, /dev/pilot)"
 msgstr ""
 
 #. Rate
-#: ../prefs_gui.c:494
-msgid "Serial Rate (Does not affect USB)"
+#: ../prefs_gui.c:510
+msgid "Serial Rate"
 msgstr ""
 
 #. Number of backups
-#: ../prefs_gui.c:507
+#: ../prefs_gui.c:523
 msgid "Number of backups to be archived"
 msgstr ""
 
 #. Show deleted files check box
-#: ../prefs_gui.c:524
+#: ../prefs_gui.c:540
 msgid "Show deleted records (default NO)"
 msgstr ""
 
 #. Show modified files check box
-#: ../prefs_gui.c:528
+#: ../prefs_gui.c:544
 msgid "Show modified deleted records (default NO)"
 msgstr ""
 
-#: ../prefs_gui.c:533
+#: ../prefs_gui.c:549
 msgid "Ask confirmation for file installation (J-Pilot -> PDA) (default YES)"
 msgstr ""
 
 #. Show tooltips check box
-#: ../prefs_gui.c:537
+#: ../prefs_gui.c:553
 msgid "Show popup tooltips (default YES)"
 msgstr ""
 
 #. ********************************************************************
 #. Datebook preference tab
 #. Show highlight days check box
-#: ../prefs_gui.c:545
+#: ../prefs_gui.c:561
 msgid "Highlight calendar days with appointments"
 msgstr ""
 
 #. Show use DateBk check box
-#: ../prefs_gui.c:551
+#: ../prefs_gui.c:567
 msgid "Use DateBk note tags"
 msgstr ""
 
-#: ../prefs_gui.c:554
+#: ../prefs_gui.c:570
 msgid "DateBk support disabled in this build"
 msgstr ""
 
 #. Highlight today on month and week view
-#: ../prefs_gui.c:561
+#: ../prefs_gui.c:577
 msgid "Annotate today in day, week, and month views"
 msgstr ""
 
-#: ../prefs_gui.c:566
+#: ../prefs_gui.c:582
 msgid "Append years on anniversaries in day, week, and month views"
 msgstr ""
 
-#: ../prefs_gui.c:578
+#: ../prefs_gui.c:594
 msgid "Mail Command"
 msgstr ""
 
-#: ../prefs_gui.c:592
+#: ../prefs_gui.c:608
 #, c-format
 msgid "%s is replaced by the e-mail address"
+msgstr ""
+
+#: ../prefs_gui.c:614
+msgid "My Palm has the Address application"
+msgstr ""
+
+#: ../prefs_gui.c:617
+msgid "My Palm has the Contacts application"
 msgstr ""
 
 #. ********************************************************************
 #. ToDo preference tab
 #. The hide completed check box
-#: ../prefs_gui.c:600
+#: ../prefs_gui.c:644
 msgid "Hide Completed ToDos"
 msgstr ""
 
 #. The hide todos not yet due check box
-#: ../prefs_gui.c:604
+#: ../prefs_gui.c:648
 msgid "Hide ToDos not yet due"
 msgstr ""
 
 #. The record todo completion date check box
-#: ../prefs_gui.c:608
+#: ../prefs_gui.c:652
 msgid "Record Completion Date"
 msgstr ""
 
 #. Use Manana check box
-#: ../prefs_gui.c:613
+#: ../prefs_gui.c:657
 msgid "Use Manana database"
 msgstr ""
 
-#: ../prefs_gui.c:621
+#: ../prefs_gui.c:665
 msgid "Use default number of days due"
 msgstr ""
 
 #. ********************************************************************
 #. Memo preference tab
 #. Memo32 check box
-#: ../prefs_gui.c:641
+#: ../prefs_gui.c:685
 msgid "Use Memo32 (pedit32)"
 msgstr ""
 
 #. ********************************************************************
 #. Alarms preference tab
 #. Show open alarm windows check box
-#: ../prefs_gui.c:648
+#: ../prefs_gui.c:692
 msgid "Open alarm windows for appointment reminders"
 msgstr ""
 
 #. Show open alarm windows check box
-#: ../prefs_gui.c:652
+#: ../prefs_gui.c:696
 msgid "Execute this command"
 msgstr ""
 
 #. Shell warning
-#: ../prefs_gui.c:656
+#: ../prefs_gui.c:700
 msgid "WARNING: executing arbitrary shell commands can be dangerous!!!"
 msgstr ""
 
-#: ../prefs_gui.c:664
+#: ../prefs_gui.c:708
 msgid "Alarm Command"
 msgstr ""
 
-#: ../prefs_gui.c:677
+#: ../prefs_gui.c:721
 msgid "%t is replaced with the alarm time"
 msgstr ""
 
-#: ../prefs_gui.c:681
+#: ../prefs_gui.c:725
 #, c-format
 msgid "%d is replaced with the alarm date"
 msgstr ""
 
-#: ../prefs_gui.c:686
+#: ../prefs_gui.c:730
 msgid "%D is replaced with the alarm description"
 msgstr ""
 
-#: ../prefs_gui.c:690
+#: ../prefs_gui.c:734
 msgid "%N is replaced with the alarm note"
 msgstr ""
 
-#: ../prefs_gui.c:694
+#: ../prefs_gui.c:738
 msgid "%D (description substitution) is disabled in this build"
 msgstr ""
 
-#: ../prefs_gui.c:698
+#: ../prefs_gui.c:742
 msgid "%N (note substitution) is disabled in this build"
 msgstr ""
 
 #. ********************************************************************
 #. Conduits preference tab
 #. Show sync datebook check box
-#: ../prefs_gui.c:707
+#: ../prefs_gui.c:751
 msgid "Sync datebook"
 msgstr ""
 
 #. Show sync address check box
-#: ../prefs_gui.c:711
+#: ../prefs_gui.c:755
 msgid "Sync address"
 msgstr ""
 
 #. Show sync todo check box
-#: ../prefs_gui.c:715
+#: ../prefs_gui.c:759
 msgid "Sync todo"
 msgstr ""
 
 #. Show sync memo check box
-#: ../prefs_gui.c:719
+#: ../prefs_gui.c:763
 msgid "Sync memo"
 msgstr ""
 
 #. Show sync Memo32 check box
-#: ../prefs_gui.c:723
+#: ../prefs_gui.c:767
 msgid "Sync memo32 (pedit32)"
 msgstr ""
 
 #. Show sync Ma~nana check box
-#: ../prefs_gui.c:728
+#: ../prefs_gui.c:772
 msgid "Sync Manana"
 msgstr ""
 
 #. Show use Japanese Kana extention check box
-#: ../prefs_gui.c:734
+#: ../prefs_gui.c:778
 msgid "Use J-OS (Not Japanese PalmOS:WorkPad/CLIE)"
 msgstr ""
 
 #. Make a checkbox for each plugin
-#: ../prefs_gui.c:747
+#: ../prefs_gui.c:791
 #, c-format
 msgid "Sync %s (%s)"
 msgstr ""
@@ -1928,374 +1979,385 @@ msgstr ""
 msgid "User Name"
 msgstr ""
 
-#: ../search_gui.c:120
+#: ../search_gui.c:123
 msgid "datebook"
 msgstr ""
 
-#: ../search_gui.c:201
+#: ../search_gui.c:204
 msgid "address"
 msgstr ""
 
-#: ../search_gui.c:267
+#: ../search_gui.c:270
 msgid "todo"
 msgstr ""
 
-#: ../search_gui.c:321
+#: ../search_gui.c:324
 msgid "memo"
 msgstr ""
 
-#: ../search_gui.c:377
+#: ../search_gui.c:380
 msgid "plugin ?"
 msgstr ""
 
-#: ../search_gui.c:449
+#: ../search_gui.c:458
 msgid "No records found"
 msgstr ""
 
-#: ../search_gui.c:547 ../search_gui.c:610
+#: ../search_gui.c:559 ../search_gui.c:622
 msgid "Search"
 msgstr ""
 
-#: ../search_gui.c:563
+#: ../search_gui.c:575
 msgid "Search for: "
 msgstr ""
 
-#: ../search_gui.c:570
+#: ../search_gui.c:582
 msgid "Case Sensitive"
 msgstr ""
 
-#: ../sync.c:139
+#: ../sync.c:142
 msgid "open lock file failed\n"
 msgstr ""
 
-#: ../sync.c:152
+#: ../sync.c:155
 msgid "lock failed\n"
 msgstr ""
 
-#: ../sync.c:155
+#: ../sync.c:158
 #, c-format
 msgid "sync file is locked by pid %d\n"
 msgstr ""
 
-#: ../sync.c:189
+#: ../sync.c:192
 msgid "unlock failed\n"
 msgstr ""
 
-#: ../sync.c:192
+#: ../sync.c:195
 #, c-format
 msgid "sync is locked by pid %d\n"
 msgstr ""
 
-#: ../sync.c:244
+#: ../sync.c:283
 #, c-format
 msgid "%s: press the hotsync button on the cradle or \"kill %d\"\n"
 msgstr ""
 
-#: ../sync.c:297
+#: ../sync.c:336
 #, c-format
 msgid "Exiting with status %s\n"
 msgstr ""
 
-#: ../sync.c:298
+#: ../sync.c:337
 msgid "Finished\n"
 msgstr ""
 
-#: ../sync.c:432
+#: ../sync.c:471
 msgid "Finished installing user information.\n"
 msgstr ""
 
-#: ../sync.c:457 ../sync.c:575
+#: ../sync.c:496 ../sync.c:614
 msgid "Check your serial port and settings\n"
-msgstr ""
-
-#: ../sync.c:674
-#, c-format
-msgid " Syncing on device %s\n"
-msgstr ""
-
-#: ../sync.c:675
-msgid " Press the HotSync button now\n"
-msgstr ""
-
-#: ../sync.c:727 ../sync.c:749 ../sync.c:771
-#, c-format
-msgid "Last Synced Username-->\"%s\"\n"
-msgstr ""
-
-#: ../sync.c:728 ../sync.c:750 ../sync.c:772
-#, c-format
-msgid "Last Synced UserID-->\"%d\"\n"
-msgstr ""
-
-#: ../sync.c:729 ../sync.c:751 ../sync.c:773
-#, c-format
-msgid " This Username-->\"%s\"\n"
-msgstr ""
-
-#: ../sync.c:730 ../sync.c:752 ../sync.c:774
-#, c-format
-msgid " This User ID-->%d\n"
-msgstr ""
-
-#: ../sync.c:795
-#, c-format
-msgid "Username is \"%s\"\n"
-msgstr ""
-
-#: ../sync.c:796
-#, c-format
-msgid "User ID is %d\n"
-msgstr ""
-
-#: ../sync.c:798 ../sync.c:804
-#, c-format
-msgid "lastSyncPC = %d\n"
 msgstr ""
 
 #: ../sync.c:799
 #, c-format
-msgid "This PC = %lu\n"
+msgid " Syncing on device %s\n"
 msgstr ""
 
 #: ../sync.c:800
+msgid " Press the HotSync button now\n"
+msgstr ""
+
+#: ../sync.c:852 ../sync.c:874 ../sync.c:896
+#, c-format
+msgid "Last Synced Username-->\"%s\"\n"
+msgstr ""
+
+#: ../sync.c:853 ../sync.c:875 ../sync.c:897
+#, c-format
+msgid "Last Synced UserID-->\"%d\"\n"
+msgstr ""
+
+#: ../sync.c:854 ../sync.c:876 ../sync.c:898
+#, c-format
+msgid " This Username-->\"%s\"\n"
+msgstr ""
+
+#: ../sync.c:855 ../sync.c:877 ../sync.c:899
+#, c-format
+msgid " This User ID-->%d\n"
+msgstr ""
+
+#: ../sync.c:920
+#, c-format
+msgid "Username is \"%s\"\n"
+msgstr ""
+
+#: ../sync.c:921
+#, c-format
+msgid "User ID is %d\n"
+msgstr ""
+
+#: ../sync.c:923 ../sync.c:929
+#, c-format
+msgid "lastSyncPC = %d\n"
+msgstr ""
+
+#: ../sync.c:924
+#, c-format
+msgid "This PC = %lu\n"
+msgstr ""
+
+#: ../sync.c:925
 #, c-format
 msgid "Last Username = [%s]\n"
 msgstr ""
 
-#: ../sync.c:801
+#: ../sync.c:926
 #, c-format
 msgid "Last UserID = %d\n"
 msgstr ""
 
-#: ../sync.c:802
+#: ../sync.c:927
 #, c-format
 msgid "Username = [%s]\n"
 msgstr ""
 
-#: ../sync.c:803
+#: ../sync.c:928
 #, c-format
 msgid "userID = %d\n"
 msgstr ""
 
-#: ../sync.c:821
+#: ../sync.c:946
 msgid "Sync canceled\n"
 msgstr ""
 
-#: ../sync.c:843
+#: ../sync.c:969
 msgid "Finished restoring handheld.\n"
 msgstr ""
 
-#: ../sync.c:844
+#: ../sync.c:970
 msgid "You may need to sync to update J-Pilot.\n"
 msgstr ""
 
-#: ../sync.c:874
+#: ../sync.c:1001
 msgid "Doing a fast sync.\n"
 msgstr ""
 
-#: ../sync.c:913
+#: ../sync.c:1014
 msgid "Doing a slow sync.\n"
 msgstr ""
 
-#: ../sync.c:1014
+#: ../sync.c:1084
 msgid "Thank you for using J-Pilot."
 msgstr ""
 
-#: ../sync.c:1056
+#: ../sync.c:1129
 msgid "Finished.\n"
 msgstr ""
 
-#: ../sync.c:1092 ../sync.c:2611
+#: ../sync.c:1169 ../sync.c:2914
 #, c-format
 msgid "Syncing %s\n"
 msgstr ""
 
-#: ../sync.c:1098 ../sync.c:2275 ../sync.c:2617
+#: ../sync.c:1177 ../sync.c:2487 ../sync.c:2922
 #, c-format
 msgid "Wrote an %s record."
 msgstr ""
 
-#: ../sync.c:1100 ../sync.c:2277 ../sync.c:2619
+#: ../sync.c:1179 ../sync.c:2489 ../sync.c:2924
 #, c-format
 msgid "Writing an %s record failed."
 msgstr ""
 
-#: ../sync.c:1102 ../sync.c:2279 ../sync.c:2621
+#: ../sync.c:1181 ../sync.c:2491 ../sync.c:2926
 #, c-format
 msgid "Deleting an %s record failed."
 msgstr ""
 
-#: ../sync.c:1104 ../sync.c:2281 ../sync.c:2623
+#: ../sync.c:1183 ../sync.c:2493 ../sync.c:2928
 #, c-format
 msgid "Deleted an %s record."
 msgstr ""
 
-#: ../sync.c:1107 ../sync.c:2284 ../sync.c:2626
+#: ../sync.c:1185 ../sync.c:2495
+#, c-format
+msgid "Sync Conflict: duplicated an %s record."
+msgstr ""
+
+#: ../sync.c:1188 ../sync.c:2498 ../sync.c:2931
 #, c-format
 msgid "Wrote a %s record."
 msgstr ""
 
-#: ../sync.c:1109 ../sync.c:2286 ../sync.c:2628
+#: ../sync.c:1190 ../sync.c:2500 ../sync.c:2933
 #, c-format
 msgid "Writing a %s record failed."
 msgstr ""
 
-#: ../sync.c:1111 ../sync.c:2288 ../sync.c:2630
+#: ../sync.c:1192 ../sync.c:2502 ../sync.c:2935
 #, c-format
 msgid "Deleting a %s record failed."
 msgstr ""
 
-#: ../sync.c:1113 ../sync.c:2290 ../sync.c:2632
+#: ../sync.c:1194 ../sync.c:2504 ../sync.c:2937
 #, c-format
 msgid "Deleted a %s record."
 msgstr ""
 
-#: ../sync.c:1133
+#: ../sync.c:1196 ../sync.c:2506
+#, c-format
+msgid "Sync Conflict: duplicated a %s record."
+msgstr ""
+
+#: ../sync.c:1218
 #, c-format
 msgid "number of records = %d\n"
 msgstr ""
 
-#: ../sync.c:1260 ../sync.c:2435
+#: ../sync.c:1366 ../sync.c:2659
 msgid ""
 "dlp_DeleteRecord failed\n"
 "This could be because the record was already deleted on the Palm\n"
 msgstr ""
 
-#: ../sync.c:1358 ../sync.c:1770
+#: ../sync.c:1541 ../sync.c:1985
 #, c-format
 msgid "%s (Creator ID '%s') is up to date, fetch skipped.\n"
 msgstr ""
 
-#: ../sync.c:1362 ../sync.c:1774
+#: ../sync.c:1545 ../sync.c:1989
 #, c-format
 msgid "Fetching '%s' (Creator ID '%s')... "
 msgstr ""
 
-#: ../sync.c:1369 ../sync.c:1780
+#: ../sync.c:1552 ../sync.c:1995
 #, c-format
 msgid "Failed, unable to create file %s\n"
 msgstr ""
 
-#: ../sync.c:1380 ../sync.c:1789
+#: ../sync.c:1563 ../sync.c:2004
 #, c-format
 msgid "Failed, unable to back up database %s\n"
 msgstr ""
 
-#: ../sync.c:1384 ../sync.c:1793 ../sync.c:1975
+#: ../sync.c:1567 ../sync.c:2008 ../sync.c:2190
 msgid "OK\n"
-msgstr ""
-
-#: ../sync.c:1687
-#, c-format
-msgid "Skipping %s (Creator ID '%s')\n"
 msgstr ""
 
 #: ../sync.c:1861
 #, c-format
+msgid "Skipping %s (Creator ID '%s')\n"
+msgstr ""
+
+#: ../sync.c:2076
+#, c-format
 msgid "Installing %s "
 msgstr ""
 
-#: ../sync.c:1867
+#: ../sync.c:2082
 #, c-format
 msgid ""
 "\n"
 "Unable to open file: '%s': %s!\n"
 msgstr ""
 
-#: ../sync.c:1871
+#: ../sync.c:2086
 #, c-format
 msgid ""
 "\n"
 "Unable to sync file: '%s': file corrupted?\n"
 msgstr ""
 
-#: ../sync.c:1883
+#: ../sync.c:2098
 #, c-format
 msgid "(Creator ID is '%s')..."
 msgstr ""
 
-#: ../sync.c:1903 ../sync.c:1916 ../sync.c:1931 ../sync.c:1944
+#: ../sync.c:2118 ../sync.c:2131 ../sync.c:2146 ../sync.c:2159
 #, c-format
 msgid ""
 "\n"
 "Unable to open file: %s\n"
 msgstr ""
 
-#: ../sync.c:1960
+#: ../sync.c:2175
 #, c-format
 msgid "Install %s failed"
 msgstr ""
 
-#: ../sync.c:1964
+#: ../sync.c:2179
 msgid "Failed.\n"
 msgstr ""
 
 #. the space after the %s is a hack, the last char gets cut off
-#: ../sync.c:1971
+#: ../sync.c:2186
 #, c-format
 msgid "Installed %s "
 msgstr ""
 
-#: ../sync.c:1995 ../sync.c:2001
+#: ../sync.c:2210 ../sync.c:2216
 #, c-format
 msgid "Unable to open file: %s%s\n"
 msgstr ""
 
-#: ../sync.c:2180
+#: ../sync.c:2395
 msgid "Unable to read home dir\n"
 msgstr ""
 
-#: ../sync.c:2709
+#: ../sync.c:3016
 #, c-format
 msgid "palm: number of records = %d\n"
 msgstr ""
 
-#: ../sync.c:2710
+#: ../sync.c:3017
 #, c-format
 msgid "disk: number of records = %d\n"
 msgstr ""
 
-#: ../sync.c:2888
+#: ../sync.c:3249
 #, c-format
 msgid "%s:%d Error getting app info %s\n"
 msgstr ""
 
-#: ../sync.c:2894 ../sync.c:2936
+#: ../sync.c:3255 ../sync.c:3297
 #, c-format
 msgid "%s:%d Error unpacking app info %s\n"
 msgstr ""
 
-#: ../sync.c:2916 ../sync.c:2928
+#: ../sync.c:3277 ../sync.c:3289
 #, c-format
 msgid "Error reading appinfo block for %s\n"
 msgstr ""
 
 #. Fix - need a func for this logging
-#: ../sync.c:3072 ../sync.c:3076
+#: ../sync.c:3433 ../sync.c:3437
 #, c-format
 msgid "Could not add category %s to remote.\n"
 msgstr ""
 
-#: ../sync.c:3073 ../sync.c:3079
+#: ../sync.c:3434 ../sync.c:3440
+#, c-format
 msgid "Too many categories on remote.\n"
 msgstr ""
 
-#: ../sync.c:3074 ../sync.c:3082
+#: ../sync.c:3435 ../sync.c:3443
 #, c-format
 msgid "All records on desktop in %s will be moved to %s.\n"
 msgstr ""
 
-#: ../todo.c:248
+#: ../todo.c:247
 #, c-format
 msgid "ToDo description text > %d, truncating to %d\n"
 msgstr ""
 
-#: ../todo.c:255
+#: ../todo.c:253
 #, c-format
 msgid "ToDo note text > %d, truncating to %d\n"
 msgstr ""
 
-#: ../todo.c:380
+#: ../todo.c:378
 #, c-format
 msgid "%s:%d Error reading category info %s\n"
 msgstr ""
@@ -2304,11 +2366,11 @@ msgstr ""
 msgid "Due Date"
 msgstr ""
 
-#: ../todo_gui.c:535
+#: ../todo_gui.c:536
 msgid "File doesn't appear to be todo.dat format\n"
 msgstr ""
 
-#: ../todo_gui.c:691 ../todo_gui.c:706
+#: ../todo_gui.c:692 ../todo_gui.c:707
 #, c-format
 msgid "Can't export todo %d\n"
 msgstr ""
@@ -2317,212 +2379,212 @@ msgstr ""
 msgid "Priority out of range\n"
 msgstr ""
 
-#: ../todo_gui.c:1774 ../KeyRing/keyring.c:1077
+#: ../todo_gui.c:1774 ../KeyRing/keyring.c:1072
 #, c-format
 msgid "No date"
 msgstr ""
 
 #. The completed check box
-#: ../todo_gui.c:2206
+#: ../todo_gui.c:2226
 msgid "Completed"
 msgstr ""
 
-#: ../todo_gui.c:2214
+#: ../todo_gui.c:2234
 msgid "Priority: "
 msgstr ""
 
-#: ../todo_gui.c:2234
+#: ../todo_gui.c:2254
 msgid "Date Due:"
 msgstr ""
 
 #. Note textbox
-#: ../todo_gui.c:2296 ../Expense/expense.c:1853 ../KeyRing/keyring.c:2237
+#: ../todo_gui.c:2316 ../Expense/expense.c:1819 ../KeyRing/keyring.c:2235
 msgid "Note"
 msgstr ""
 
-#: ../utils.c:72
+#: ../utils.c:79
 msgid " -v displays version and compile options and exits.\n"
 msgstr ""
 
-#: ../utils.c:74
+#: ../utils.c:81
 msgid " -d displays debug info to stdout.\n"
 msgstr ""
 
-#: ../utils.c:75
+#: ../utils.c:82
 msgid " -p skips loading plugins.\n"
 msgstr ""
 
-#: ../utils.c:76
+#: ../utils.c:83
 msgid " -a ignores missed alarms since the last time program was run.\n"
 msgstr ""
 
-#: ../utils.c:77
+#: ../utils.c:84
 msgid " -A ignores all alarms past and future.\n"
 msgstr ""
 
-#: ../utils.c:78
+#: ../utils.c:85
 msgid " -i makes program iconify itself upon launch.\n"
 msgstr ""
 
-#: ../utils.c:79
+#: ../utils.c:86
 msgid " The PILOTPORT, and PILOTRATE env variables are used to specify\n"
 msgstr ""
 
-#: ../utils.c:80
+#: ../utils.c:87
 msgid " which port to sync on, and at what speed.\n"
 msgstr ""
 
-#: ../utils.c:81
+#: ../utils.c:88
 msgid " If PILOTPORT is not set then it defaults to /dev/pilot.\n"
 msgstr ""
 
-#: ../utils.c:107
+#: ../utils.c:114
 msgid "Date compiled"
 msgstr ""
 
-#: ../utils.c:108
+#: ../utils.c:115
 msgid "Compiled with these options:"
 msgstr ""
 
-#: ../utils.c:110
+#: ../utils.c:117
 msgid "Installed Path"
 msgstr ""
 
-#: ../utils.c:112
+#: ../utils.c:119
 msgid "pilot-link version"
 msgstr ""
 
-#: ../utils.c:116
+#: ../utils.c:123
 msgid "USB support"
 msgstr ""
 
-#: ../utils.c:118 ../utils.c:124 ../utils.c:130 ../utils.c:136 ../utils.c:142
-#: ../utils.c:148 ../utils.c:154
+#: ../utils.c:125 ../utils.c:131 ../utils.c:137 ../utils.c:143 ../utils.c:149
+#: ../utils.c:155 ../utils.c:161
 msgid "yes"
 msgstr ""
 
-#: ../utils.c:120 ../utils.c:126 ../utils.c:132 ../utils.c:138 ../utils.c:144
-#: ../utils.c:150 ../utils.c:156
+#: ../utils.c:127 ../utils.c:133 ../utils.c:139 ../utils.c:145 ../utils.c:151
+#: ../utils.c:157 ../utils.c:163
 msgid "no"
 msgstr ""
 
-#: ../utils.c:122
+#: ../utils.c:129
 msgid "Private record support"
 msgstr ""
 
-#: ../utils.c:128
+#: ../utils.c:135
 msgid "Datebk support"
 msgstr ""
 
-#: ../utils.c:134
+#: ../utils.c:141
 msgid "Plugin support"
 msgstr ""
 
-#: ../utils.c:140
+#: ../utils.c:147
 msgid "Manana support"
 msgstr ""
 
-#: ../utils.c:146
+#: ../utils.c:153
 msgid "NLS support (foreign languages)"
 msgstr ""
 
-#: ../utils.c:152
+#: ../utils.c:159
 msgid "GTK2 support"
 msgstr ""
 
-#: ../utils.c:207
+#: ../utils.c:274
 #, c-format
 msgid "Today is %A, %x %X"
 msgstr ""
 
-#: ../utils.c:209
+#: ../utils.c:276
 #, c-format
 msgid "Today is %%A, %s %s"
 msgstr ""
 
-#: ../utils.c:1114
+#: ../utils.c:1181
 msgid "Today"
 msgstr ""
 
-#: ../utils.c:1330
+#: ../utils.c:1397
 msgid "Save Changed Record?"
 msgstr ""
 
-#: ../utils.c:1331
+#: ../utils.c:1398
 msgid "Do you want to save the changes to this record?"
 msgstr ""
 
-#: ../utils.c:1336
+#: ../utils.c:1403
 msgid "Save New Record?"
 msgstr ""
 
-#: ../utils.c:1337
+#: ../utils.c:1404
 msgid "Do you want to save this new record?"
 msgstr ""
 
 #. Not home;
-#: ../utils.c:1357 ../KeyRing/keyring.c:1631
+#: ../utils.c:1424 ../KeyRing/keyring.c:1626
 msgid "Can't get HOME environment variable\n"
 msgstr ""
 
-#: ../utils.c:1364
+#: ../utils.c:1431
 msgid "Your HOME environment variable is too long for me\n"
 msgstr ""
 
 #. Can't create directory
-#: ../utils.c:1389 ../utils.c:1393
+#: ../utils.c:1456 ../utils.c:1460
 #, c-format
 msgid "Can't create directory %s\n"
 msgstr ""
 
-#: ../utils.c:1399
+#: ../utils.c:1466
 #, c-format
 msgid ""
 "%s doesn't appear to be a directory.\n"
 "I need it to be.\n"
 msgstr ""
 
-#: ../utils.c:1405
+#: ../utils.c:1472
 #, c-format
 msgid "I can't write files in directory %s\n"
 msgstr ""
 
-#: ../utils.c:1461 ../utils.c:1470
+#: ../utils.c:1528 ../utils.c:1537
 msgid "Error writing PC header to file: next_id\n"
 msgstr ""
 
-#: ../utils.c:1466
+#: ../utils.c:1533
 msgid "Error writing next id to file: next_id\n"
 msgstr ""
 
-#: ../utils.c:1483
+#: ../utils.c:1550
 msgid "Error opening file: next_id\n"
 msgstr ""
 
-#: ../utils.c:1657
+#: ../utils.c:1747
 #, c-format
 msgid "Couldn't find empty DB file %s: %s\n"
 msgstr ""
 
 #. EPN is jpilot, or copilot depending on configure
-#: ../utils.c:1660
+#: ../utils.c:1750
 msgid " may not be installed.\n"
 msgstr ""
 
-#: ../utils.c:1839
+#: ../utils.c:1931
 msgid "Error reading file"
 msgstr ""
 
-#: ../utils.c:2516
+#: ../utils.c:2667
 msgid "PC ID is 0.\n"
 msgstr ""
 
-#: ../utils.c:2517
+#: ../utils.c:2668
 #, c-format
 msgid "I generated a new PC ID.  It is %lu\n"
 msgstr ""
 
-#: ../weekview_gui.c:326
+#: ../weekview_gui.c:328
 msgid "Weekly View"
 msgstr ""
 
@@ -2666,220 +2728,208 @@ msgstr ""
 msgid "Expense"
 msgstr ""
 
-#: ../Expense/expense.c:521 ../Expense/expense.c:1401
+#: ../Expense/expense.c:521 ../Expense/expense.c:1367
 msgid "Airfare"
 msgstr ""
 
-#: ../Expense/expense.c:523 ../Expense/expense.c:1402
+#: ../Expense/expense.c:523 ../Expense/expense.c:1368
 msgid "Breakfast"
 msgstr ""
 
-#: ../Expense/expense.c:525 ../Expense/expense.c:1403
+#: ../Expense/expense.c:525 ../Expense/expense.c:1369
 msgid "Bus"
 msgstr ""
 
-#: ../Expense/expense.c:527 ../Expense/expense.c:1404
+#: ../Expense/expense.c:527 ../Expense/expense.c:1370
 msgid "BusinessMeals"
 msgstr ""
 
-#: ../Expense/expense.c:529 ../Expense/expense.c:1405
+#: ../Expense/expense.c:529 ../Expense/expense.c:1371
 msgid "CarRental"
 msgstr ""
 
-#: ../Expense/expense.c:531 ../Expense/expense.c:1406
+#: ../Expense/expense.c:531 ../Expense/expense.c:1372
 msgid "Dinner"
 msgstr ""
 
-#: ../Expense/expense.c:533 ../Expense/expense.c:1407
+#: ../Expense/expense.c:533 ../Expense/expense.c:1373
 msgid "Entertainment"
 msgstr ""
 
-#: ../Expense/expense.c:535 ../Expense/expense.c:1408
+#: ../Expense/expense.c:535 ../Expense/expense.c:1374
 msgid "Fax"
 msgstr ""
 
-#: ../Expense/expense.c:537 ../Expense/expense.c:1409
+#: ../Expense/expense.c:537 ../Expense/expense.c:1375
 msgid "Gas"
 msgstr ""
 
-#: ../Expense/expense.c:539 ../Expense/expense.c:1410
+#: ../Expense/expense.c:539 ../Expense/expense.c:1376
 msgid "Gifts"
 msgstr ""
 
-#: ../Expense/expense.c:541 ../Expense/expense.c:1411
+#: ../Expense/expense.c:541 ../Expense/expense.c:1377
 msgid "Hotel"
 msgstr ""
 
-#: ../Expense/expense.c:543 ../Expense/expense.c:1412
+#: ../Expense/expense.c:543 ../Expense/expense.c:1378
 msgid "Incidentals"
 msgstr ""
 
-#: ../Expense/expense.c:545 ../Expense/expense.c:1413
+#: ../Expense/expense.c:545 ../Expense/expense.c:1379
 msgid "Laundry"
 msgstr ""
 
-#: ../Expense/expense.c:547 ../Expense/expense.c:1414
+#: ../Expense/expense.c:547 ../Expense/expense.c:1380
 msgid "Limo"
 msgstr ""
 
-#: ../Expense/expense.c:549 ../Expense/expense.c:1415
+#: ../Expense/expense.c:549 ../Expense/expense.c:1381
 msgid "Lodging"
 msgstr ""
 
-#: ../Expense/expense.c:551 ../Expense/expense.c:1416
+#: ../Expense/expense.c:551 ../Expense/expense.c:1382
 msgid "Lunch"
 msgstr ""
 
-#: ../Expense/expense.c:553 ../Expense/expense.c:1417
+#: ../Expense/expense.c:553 ../Expense/expense.c:1383
 msgid "Mileage"
 msgstr ""
 
-#: ../Expense/expense.c:557 ../Expense/expense.c:1419
+#: ../Expense/expense.c:557 ../Expense/expense.c:1385
 msgid "Parking"
 msgstr ""
 
-#: ../Expense/expense.c:559 ../Expense/expense.c:1420
+#: ../Expense/expense.c:559 ../Expense/expense.c:1386
 msgid "Postage"
 msgstr ""
 
-#: ../Expense/expense.c:561 ../Expense/expense.c:1421
+#: ../Expense/expense.c:561 ../Expense/expense.c:1387
 msgid "Snack"
 msgstr ""
 
-#: ../Expense/expense.c:563 ../Expense/expense.c:1422
+#: ../Expense/expense.c:563 ../Expense/expense.c:1388
 msgid "Subway"
 msgstr ""
 
-#: ../Expense/expense.c:565 ../Expense/expense.c:1423
+#: ../Expense/expense.c:565 ../Expense/expense.c:1389
 msgid "Supplies"
 msgstr ""
 
-#: ../Expense/expense.c:567 ../Expense/expense.c:1424
+#: ../Expense/expense.c:567 ../Expense/expense.c:1390
 msgid "Taxi"
 msgstr ""
 
-#: ../Expense/expense.c:569 ../Expense/expense.c:1425
+#: ../Expense/expense.c:569 ../Expense/expense.c:1391
 msgid "Telephone"
 msgstr ""
 
-#: ../Expense/expense.c:571 ../Expense/expense.c:1426
+#: ../Expense/expense.c:571 ../Expense/expense.c:1392
 msgid "Tips"
 msgstr ""
 
-#: ../Expense/expense.c:573 ../Expense/expense.c:1427
+#: ../Expense/expense.c:573 ../Expense/expense.c:1393
 msgid "Tolls"
 msgstr ""
 
-#: ../Expense/expense.c:575 ../Expense/expense.c:1428
+#: ../Expense/expense.c:575 ../Expense/expense.c:1394
 msgid "Train"
 msgstr ""
 
-#: ../Expense/expense.c:589
-msgid "AmEx"
-msgstr ""
-
-#: ../Expense/expense.c:591 ../Expense/expense.c:1391
-msgid "Cash"
-msgstr ""
-
-#: ../Expense/expense.c:593 ../Expense/expense.c:1392
-msgid "Check"
-msgstr ""
-
-#: ../Expense/expense.c:595
-msgid "CreditCard"
-msgstr ""
-
-#: ../Expense/expense.c:597
-msgid "MasterCard"
-msgstr ""
-
-#: ../Expense/expense.c:599 ../Expense/expense.c:1395
-msgid "Prepaid"
-msgstr ""
-
-#: ../Expense/expense.c:601 ../Expense/expense.c:1396
-msgid "VISA"
-msgstr ""
-
-#: ../Expense/expense.c:1201
+#: ../Expense/expense.c:1167
 msgid "Expense: Unknown category\n"
 msgstr ""
 
-#: ../Expense/expense.c:1207
+#: ../Expense/expense.c:1173
 msgid "Expense: Unknown expense type\n"
 msgstr ""
 
-#: ../Expense/expense.c:1213
+#: ../Expense/expense.c:1179
 msgid "Expense: Unknown payment type\n"
 msgstr ""
 
-#: ../Expense/expense.c:1390
+#: ../Expense/expense.c:1356
 msgid "American Express"
 msgstr ""
 
-#: ../Expense/expense.c:1393
+#: ../Expense/expense.c:1357
+msgid "Cash"
+msgstr ""
+
+#: ../Expense/expense.c:1358
+msgid "Check"
+msgstr ""
+
+#: ../Expense/expense.c:1359
 msgid "Credit Card"
 msgstr ""
 
-#: ../Expense/expense.c:1394
+#: ../Expense/expense.c:1360
 msgid "Master Card"
 msgstr ""
 
+#: ../Expense/expense.c:1361
+msgid "Prepaid"
+msgstr ""
+
+#: ../Expense/expense.c:1362
+msgid "VISA"
+msgstr ""
+
 #. Category Menu
-#: ../Expense/expense.c:1678
+#: ../Expense/expense.c:1644
 msgid "Category:"
 msgstr ""
 
 #. Type Menu
-#: ../Expense/expense.c:1691
+#: ../Expense/expense.c:1657
 msgid "Type:"
 msgstr ""
 
 #. Payment Menu
-#: ../Expense/expense.c:1704
+#: ../Expense/expense.c:1670
 msgid "Payment:"
 msgstr ""
 
 #. Currency Menu
-#: ../Expense/expense.c:1717
+#: ../Expense/expense.c:1683
 msgid "Currency:"
 msgstr ""
 
 #. Date Spinners
-#: ../Expense/expense.c:1730
+#: ../Expense/expense.c:1696
 msgid "Date:"
 msgstr ""
 
-#: ../Expense/expense.c:1747
+#: ../Expense/expense.c:1713
 msgid "Month:"
 msgstr ""
 
-#: ../Expense/expense.c:1761
+#: ../Expense/expense.c:1727
 msgid "Day:"
 msgstr ""
 
-#: ../Expense/expense.c:1775
+#: ../Expense/expense.c:1741
 msgid "Year:"
 msgstr ""
 
 #. Amount Entry
-#: ../Expense/expense.c:1788
+#: ../Expense/expense.c:1754
 msgid "Amount:"
 msgstr ""
 
 #. Vendor Entry
-#: ../Expense/expense.c:1802
+#: ../Expense/expense.c:1768
 msgid "Vendor:"
 msgstr ""
 
 #. City
-#: ../Expense/expense.c:1816
+#: ../Expense/expense.c:1782
 msgid "City:"
 msgstr ""
 
 #. Attendees
-#: ../Expense/expense.c:1830
+#: ../Expense/expense.c:1796
 msgid "Attendees"
 msgstr ""
 
@@ -2887,73 +2937,74 @@ msgstr ""
 msgid "KeyRing: pack_KeyRing(): buf_size too small\n"
 msgstr ""
 
-#: ../KeyRing/keyring.c:1546
+#: ../KeyRing/keyring.c:1541
 msgid "Incorrect, Reenter KeyRing Password"
 msgstr ""
 
-#: ../KeyRing/keyring.c:1548
+#: ../KeyRing/keyring.c:1543
 msgid "Enter a NEW KeyRing Password"
 msgstr ""
 
-#: ../KeyRing/keyring.c:1550
+#: ../KeyRing/keyring.c:1545
 msgid "Enter KeyRing Password"
 msgstr ""
 
-#: ../KeyRing/keyring.c:1636
+#: ../KeyRing/keyring.c:1631
 msgid "Your HOME environment variable is too long(>1024)\n"
 msgstr ""
 
-#: ../KeyRing/keyring.c:1641
+#: ../KeyRing/keyring.c:1636
 #, c-format
 msgid "KeyRing: file %s not found.\n"
 msgstr ""
 
-#: ../KeyRing/keyring.c:1642
+#: ../KeyRing/keyring.c:1637
 msgid "KeyRing: Try Syncing.\n"
 msgstr ""
 
-#: ../KeyRing/keyring.c:1726 ../KeyRing/keyring.c:1737
+#: ../KeyRing/keyring.c:1721 ../KeyRing/keyring.c:1732
 msgid "KeyRing"
 msgstr ""
 
-#: ../KeyRing/keyring.c:2009
-msgid "Changed"
-msgstr ""
-
-#: ../KeyRing/keyring.c:2009
-msgid "Account"
-msgstr ""
-
 #. Change Password button
-#: ../KeyRing/keyring.c:2024
+#: ../KeyRing/keyring.c:2019
 msgid ""
 "Change\n"
 "KeyRing\n"
 "Password"
 msgstr ""
 
+#. Clist
+#: ../KeyRing/keyring.c:2104
+msgid "Changed"
+msgstr ""
+
+#: ../KeyRing/keyring.c:2106
+msgid "Account"
+msgstr ""
+
 #. Name entry
-#: ../KeyRing/keyring.c:2200
+#: ../KeyRing/keyring.c:2198
 msgid "name: "
 msgstr ""
 
 #. Account entry
-#: ../KeyRing/keyring.c:2207
+#: ../KeyRing/keyring.c:2205
 msgid "account: "
 msgstr ""
 
 #. Password entry
-#: ../KeyRing/keyring.c:2214
+#: ../KeyRing/keyring.c:2212
 msgid "password: "
 msgstr ""
 
 #. Last Changed entry
-#: ../KeyRing/keyring.c:2221
+#: ../KeyRing/keyring.c:2219
 msgid "last changed: "
 msgstr ""
 
 #. Generate Password button (creates random password)
-#: ../KeyRing/keyring.c:2231
+#: ../KeyRing/keyring.c:2229
 msgid "Generate Password"
 msgstr ""
 
