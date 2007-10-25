@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.72 2007/10/24 20:16:56 rousseau Exp $ */
+/* $Id: sync.c,v 1.73 2007/10/25 03:34:14 rikster5 Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -1182,7 +1182,7 @@ int slow_sync_application(char *DB_name, int sd)
       g_snprintf(delete_log_message, sizeof(delete_log_message),
 	      _("Deleted an %s record."), DB_name);
       g_snprintf(conflict_log_message, sizeof(conflict_log_message),
-	      _("Sync Conflict: duplicated a %s record."), DB_name);
+	      _("Sync Conflict: duplicated an %s record."), DB_name);
    } else {
       g_snprintf(write_log_message, sizeof(write_log_message),
 	      _("Wrote a %s record."), DB_name);
@@ -2492,7 +2492,7 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
       g_snprintf(delete_log_message, sizeof(delete_log_message),
 	      _("Deleted an %s record."), DB_name);
       g_snprintf(conflict_log_message, sizeof(conflict_log_message),
-	      _("Sync Conflict: duplicated a %s record."), DB_name);
+	      _("Sync Conflict: duplicated an %s record."), DB_name);
    } else {
       g_snprintf(write_log_message, sizeof(write_log_message),
 	      _("Wrote a %s record."), DB_name);
