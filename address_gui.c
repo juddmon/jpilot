@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.136 2007/10/24 20:05:48 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.137 2007/10/25 18:55:30 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -3254,6 +3254,17 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    clist_row_selected=0;
 
    get_pref(PREF_ADDRESS_VERSION, &address_version, NULL);
+   if (address_version)
+   {
+	unsigned char *buf;
+	int rec_size;
+
+   	if ((EXIT_FAILURE == jp_get_app_info("ContactsDB-PAdd", &buf, &rec_size)) || (0 == rec_size))
+	{
+	    jp_logf(JP_LOG_WARN, _("Reverting to Address database\n"));
+	    address_version = 0;
+	}
+   }
 
    init();
 
