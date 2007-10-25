@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.57 2007/10/23 18:29:14 judd Exp $ */
+/* $Id: utils.h,v 1.58 2007/10/25 18:53:33 rousseau Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -287,6 +287,7 @@ int read_gtkrc_file();
 int get_home_file_name(char *file, char *full_name, int max_size);
 
 FILE *jp_open_home_file(char *filename, char *mode);
+int jp_close_home_file(FILE *pc_in);
 
 int unpack_db_header(DBHeader *dbh, unsigned char *buffer);
 

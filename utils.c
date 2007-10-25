@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.126 2007/10/24 20:00:35 rousseau Exp $ */
+/* $Id: utils.c,v 1.127 2007/10/25 18:53:32 rousseau Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -66,7 +66,6 @@ int dialog_result;
 unsigned int glob_find_id;
 
 /****************************** Prototypes ************************************/
-int jp_close_home_file(FILE *pc_in);
 
 /****************************** Main Code *************************************/
 
@@ -2164,7 +2163,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 	 }
 	 break;
        default:
-	 fclose(pc_in);
+	 jp_close_home_file(pc_in);
 	 pi_buffer_free(RecordBuffer);
 	 return EXIT_SUCCESS;
       } /* switch */

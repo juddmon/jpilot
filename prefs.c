@@ -1,4 +1,4 @@
-/* $Id: prefs.c,v 1.69 2007/10/23 18:29:15 judd Exp $ */
+/* $Id: prefs.c,v 1.70 2007/10/25 18:53:32 rousseau Exp $ */
 
 /*******************************************************************************
  * prefs.c
@@ -929,7 +929,7 @@ int jp_pref_write_rc_file(char *filename, prefType prefs[], int num_prefs)
 	 fprintf(out, "%s %s\n", prefs[i].name, prefs[i].svalue);
       }
    }
-   fclose(out);
+   jp_close_home_file(out);
 
    return EXIT_SUCCESS;
 }

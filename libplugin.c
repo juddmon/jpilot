@@ -1,4 +1,4 @@
-/* $Id: libplugin.c,v 1.30 2007/06/06 02:45:10 rikster5 Exp $ */
+/* $Id: libplugin.c,v 1.31 2007/10/25 18:53:32 rousseau Exp $ */
 
 /*******************************************************************************
  * libplugin.c
@@ -252,7 +252,7 @@ int jp_install_remove_line(int deleted_line)
 
    out = jp_open_home_file(EPN"_to_install.tmp", "w");
    if (!out) {
-      fclose(in);
+      jp_close_home_file(in);
       jp_logf(JP_LOG_DEBUG, "failed opening install_file.tmp\n");
       return EXIT_FAILURE;
    }
@@ -271,8 +271,8 @@ int jp_install_remove_line(int deleted_line)
 	 break;
       }
    }
-   fclose(in);
-   fclose(out);
+   jp_close_home_file(in);
+   jp_close_home_file(out);
 
    rename_file(EPN"_to_install.tmp", EPN"_to_install");
 
@@ -291,10 +291,10 @@ int jp_install_append_line(char *line)
 
    r = fprintf(out, "%s\n", line);
    if (r==EOF) {
-      fclose(out);
+      jp_close_home_file(out);
       return EXIT_FAILURE;
    }
-   fclose(out);
+   jp_close_home_file(out);
 
    return EXIT_SUCCESS;
 }
@@ -415,11 +415,11 @@ int jp_get_app_info(char *DB_name, unsigned char **buf, int *buf_size)
    if (num != 1) {
       if (ferror(in)) {
 	 jp_logf(JP_LOG_WARN, _("%s:%d Error reading file: %s\n"), __FILE__, __LINE__, PDB_name);
-	 fclose(in);
+	 jp_close_home_file(in);
 	 return EXIT_FAILURE;
       }
       if (feof(in)) {
-	 fclose(in);
+	 jp_close_home_file(in);
 	 return JPILOT_EOF;
       }
    }
@@ -427,7 +427,7 @@ int jp_get_app_info(char *DB_name, unsigned char **buf, int *buf_size)
 
    num = get_app_info_size(in, &rec_size);
    if (num) {
-      fclose(in);
+      jp_close_home_file(in);
       return EXIT_FAILURE;
    }
 
@@ -435,19 +435,19 @@ int jp_get_app_info(char *DB_name, unsigned char **buf, int *buf_size)
    *buf=malloc(rec_size);
    if (!(*buf)) {
       jp_logf(JP_LOG_WARN, "jp_get_app_info(): %s\n", _("Out of memory"));
-      fclose(in);
+      jp_close_home_file(in);
       return EXIT_FAILURE;
    }
    num = fread(*buf, rec_size, 1, in);
    if (num != 1) {
       if (ferror(in)) {
-	 fclose(in);
+	 jp_close_home_file(in);
 	 free(*buf);
 	 jp_logf(JP_LOG_WARN, _("%s:%d Error reading file: %s\n"), __FILE__, __LINE__, PDB_name);
 	 return EXIT_FAILURE;
       }
    }
-   fclose(in);
+   jp_close_home_file(in);
 
    *buf_size=rec_size;
 
@@ -486,7 +486,7 @@ int jp_delete_record(char *DB_name, buf_rec *br, int flag)
 	 read_header(pc_in, &header);
 	 if (feof(pc_in)) {
 	    jp_logf(JP_LOG_WARN, _("Couldn't find record to delete\n"));
-	    fclose(pc_in);
+	    jp_close_home_file(pc_in);
 	    return EXIT_FAILURE;
 	 }
 	 if (header.header_version==2) {
@@ -499,7 +499,7 @@ int jp_delete_record(char *DB_name, buf_rec *br, int flag)
 	       header.rt=DELETED_PC_REC;
 	       write_header(pc_in, &header);
 	       jp_logf(JP_LOG_DEBUG, "record deleted\n");
-	       fclose(pc_in);
+	       jp_close_home_file(pc_in);
 	       return EXIT_SUCCESS;
 	    }
 	 } else {
@@ -509,7 +509,7 @@ int jp_delete_record(char *DB_name, buf_rec *br, int flag)
 	    jp_logf(JP_LOG_WARN, "fseek failed\n");
 	 }
       }
-      fclose(pc_in);
+      jp_close_home_file(pc_in);
       return EXIT_FAILURE;
 
     case PALM_REC:
@@ -537,7 +537,7 @@ int jp_delete_record(char *DB_name, buf_rec *br, int flag)
       jp_logf(JP_LOG_DEBUG, "writing record to pc file, %d bytes\n", header.rec_len);
       fwrite(br->buf, header.rec_len, 1, pc_in);
       jp_logf(JP_LOG_DEBUG, "record deleted\n");
-      fclose(pc_in);
+      jp_close_home_file(pc_in);
       break;
     default:
       break;
@@ -580,7 +580,7 @@ int jp_undelete_record(char *DB_name, buf_rec *br, int flag)
 
    pc_file2=jp_open_home_file(filename2, "w");
    if (!pc_file2) {
-      fclose(pc_file);
+      jp_close_home_file(pc_file);
       return EXIT_FAILURE;
    }
 
@@ -635,10 +635,10 @@ int jp_undelete_record(char *DB_name, buf_rec *br, int flag)
       free(record);
    }
    if (pc_file) {
-      fclose(pc_file);
+      jp_close_home_file(pc_file);
    }
    if (pc_file2) {
-      fclose(pc_file2);
+      jp_close_home_file(pc_file2);
    }
 
    if (found) {
@@ -689,7 +689,7 @@ int jp_pc_write(char *DB_name, buf_rec *br)
    write_header(out, &header);
    fwrite(br->buf, header.rec_len, 1, out);
 
-   fclose(out);
+   jp_close_home_file(out);
 
    return EXIT_SUCCESS;
 }
@@ -777,10 +777,11 @@ int jp_read_DB_files(char *DB_name, GList **records)
    if (num != 1) {
       if (ferror(in)) {
 	 jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), PDB_name);
-	 fclose(in);
+	 jp_close_home_file(in);
 	 return -1;
       }
       if (feof(in)) {
+	 jp_close_home_file(in);
 	 return JPILOT_EOF;
       }
    }
@@ -805,6 +806,7 @@ int jp_read_DB_files(char *DB_name, GList **records)
 	    break;
 	 }
 	 if (feof(in)) {
+	    jp_close_home_file(in);
 	    return JPILOT_EOF;
 	 }
       }
@@ -931,7 +933,7 @@ int jp_read_DB_files(char *DB_name, GList **records)
 	 recs_returned++;
       }
    }
-   fclose(in);
+   jp_close_home_file(in);
 
    free_mem_rec_header(&mem_rh);
    /* */
@@ -978,7 +980,7 @@ int jp_read_DB_files(char *DB_name, GList **records)
          free(temp_br);
       }
    }
-   fclose(pc_in);
+   jp_close_home_file(pc_in);
 
    jp_logf(JP_LOG_DEBUG, "Leaving jp_read_DB_files\n");
 
