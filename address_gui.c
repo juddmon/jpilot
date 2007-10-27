@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.137 2007/10/25 18:55:30 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.138 2007/10/27 07:44:35 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -208,7 +208,7 @@ GtkWidget *vscrollbar;
 //GtkWidget *menu;
 GtkWidget *notebook_label[6];
 GtkWidget *phone_type_list_menu[NUM_PHONE_ENTRIES];
-GtkWidget *phone_type_menu_item[7][8]; /* 7 menus with 8 possible entries */
+GtkWidget *phone_type_menu_item[NUM_MENU_ITEM1][NUM_MENU_ITEM2]; /* 7 menus with 8 possible entries */
 GtkWidget *address_type_list_menu[3];
 GtkWidget *address_type_menu_item[3][3]; /* 3 menus with 3 possible entries */
 GtkWidget *IM_type_list_menu[2];
