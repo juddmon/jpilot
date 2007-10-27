@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.138 2007/10/27 07:44:35 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.139 2007/10/27 07:47:28 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -94,7 +94,7 @@ static address_schema_entry *schema;
 
 #define NUM_IMS 2
 #define NUM_ADDRESSES 3
-int schema_size;
+static int schema_size;
 static address_schema_entry contact_schema[NUM_CONTACT_FIELDS]={
      {contLastname, 0, ADDRESS_GUI_LABEL_TEXT},
      {contFirstname, 0, ADDRESS_GUI_LABEL_TEXT},
@@ -164,15 +164,15 @@ static address_schema_entry address_schema[19]={
  * This keeps track of whether we are using addresses, or contacts
  * 0 is addresses, 1 is contacts
  */
-long address_version=0;
+static long address_version=0;
 
 //undo not needed??
-char *field_names[]={"Last", "First", "Title", "Company", "Phone1",
+static char *field_names[]={"Last", "First", "Title", "Company", "Phone1",
      "Phone2", "Phone3", "Phone4", "Phone5", "Address", "City", "State",
      "ZipCode", "Country", "Custom1", "Custom2", "Custom3", "Custom4",
      "Note", "phoneLabel1", "phoneLabel2", "phoneLabel3", "phoneLabel4",
      "phoneLabel5", "showPhone", NULL};
-char *field_names_ja[]={"kana(Last)", "Last",  "kana(First)", "First",
+static char *field_names_ja[]={"kana(Last)", "Last",  "kana(First)", "First",
      "Title", "kana(Company)","Company", "Phone1",
      "Phone2", "Phone3", "Phone4", "Phone5", "Address", "City", "State",
      "ZipCode", "Country", "Custom1", "Custom2", "Custom3", "Custom4",
@@ -191,38 +191,38 @@ char *field_names_ja[]={"kana(Last)", "Last",  "kana(First)", "First",
  * the end of strings destined for export */
 #define CRLF "\x0D\x0A"
 
-GtkWidget *clist;
+static GtkWidget *clist;
 #define MAX_NUM_TEXTS contNote+1
-GtkWidget *address_text[MAX_NUM_TEXTS];
+static GtkWidget *address_text[MAX_NUM_TEXTS];
 #ifdef ENABLE_GTK2
 static GObject *gtk_txt_buf_address_text[MAX_NUM_TEXTS];
 #endif
-GtkWidget *text;
+static GtkWidget *text;
 #ifdef ENABLE_GTK2
 static GObject *gtk_txt_buf_text;
 #endif
 #ifndef ENABLE_GTK2
-GtkWidget *vscrollbar;
+static GtkWidget *vscrollbar;
 #endif
 //defines??
 //GtkWidget *menu;
-GtkWidget *notebook_label[6];
-GtkWidget *phone_type_list_menu[NUM_PHONE_ENTRIES];
-GtkWidget *phone_type_menu_item[NUM_MENU_ITEM1][NUM_MENU_ITEM2]; /* 7 menus with 8 possible entries */
-GtkWidget *address_type_list_menu[3];
-GtkWidget *address_type_menu_item[3][3]; /* 3 menus with 3 possible entries */
-GtkWidget *IM_type_list_menu[2];
-GtkWidget *IM_type_menu_item[2][5]; /* 2 menus with 5 possible entries */
+static GtkWidget *notebook_label[6];
+static GtkWidget *phone_type_list_menu[NUM_PHONE_ENTRIES];
+static GtkWidget *phone_type_menu_item[NUM_MENU_ITEM1][NUM_MENU_ITEM2]; /* 7 menus with 8 possible entries */
+static GtkWidget *address_type_list_menu[3];
+static GtkWidget *address_type_menu_item[3][3]; /* 3 menus with 3 possible entries */
+static GtkWidget *IM_type_list_menu[2];
+static GtkWidget *IM_type_menu_item[2][5]; /* 2 menus with 5 possible entries */
 int address_phone_label_selected[NUM_PHONE_ENTRIES];
 int address_type_selected[3];
 int IM_type_selected[2];
 
 /* We need an extra one for the ALL category */
-GtkWidget *address_cat_menu_item1[NUM_ADDRESS_CAT_ITEMS+1];
-GtkWidget *address_cat_menu_item2[NUM_ADDRESS_CAT_ITEMS];
+static GtkWidget *address_cat_menu_item1[NUM_ADDRESS_CAT_ITEMS+1];
+static GtkWidget *address_cat_menu_item2[NUM_ADDRESS_CAT_ITEMS];
 static GtkWidget *category_menu1;
 static GtkWidget *category_menu2;
-GtkWidget *address_quickfind_entry;
+static GtkWidget *address_quickfind_entry;
 static GtkWidget *notebook;
 static GtkWidget *pane;
 static GtkWidget *radio_button[NUM_PHONE_ENTRIES];
@@ -260,12 +260,12 @@ struct tm birthday;
 static GtkWidget *image=NULL;
 struct ContactPicture contact_picture;
 
-GList *changed_list=NULL;
+static GList *changed_list=NULL;
 
 static void connect_changed_signals(int con_or_dis);
 static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 				 ContactList **cont_list, int category, int main);
-int address_clist_redraw();
+static int address_clist_redraw();
 static int address_find();
 static void get_address_attrib(unsigned char *attrib);
 static void cb_clist_selection(GtkWidget      *clist,
