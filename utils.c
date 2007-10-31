@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.127 2007/10/25 18:53:32 rousseau Exp $ */
+/* $Id: utils.c,v 1.128 2007/10/31 04:02:34 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -1973,11 +1973,11 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
    MyMemo *mmemo;
    char filename[FILENAME_MAX];
 #ifdef PILOT_LINK_0_12
-   pi_buffer_t *RecordBuffer;
-#else /* not PILOT_LINK_0_12 */
    pi_buffer_t *RecordBuffer = NULL;
-#endif
+#else /* not PILOT_LINK_0_12 */
    unsigned char record[65536];
+#endif
+//   unsigned char record[65536];
    PCRecType record_type;
    unsigned int unique_id;
    long ivalue;
