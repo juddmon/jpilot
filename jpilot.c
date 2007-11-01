@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.147 2007/10/03 14:09:36 rousseau Exp $ */
+/* $Id: jpilot.c,v 1.148 2007/11/01 11:00:20 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -43,7 +43,6 @@
 #include <pi-version.h>
 #include <pi-datebook.h>
 #include <gdk/gdkkeysyms.h>
-#include <gdk/gdkx.h>
 
 #include "datebook.h"
 #include "address.h"
