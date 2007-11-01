@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.129 2007/11/01 12:56:36 rousseau Exp $ */
+/* $Id: utils.c,v 1.130 2007/11/01 13:11:03 rousseau Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -1341,7 +1341,7 @@ int dialog_generic(GtkWindow *main_window,
 		  button = gtk_button_new_from_stock(GTK_STOCK_NO);
 	       else
 #endif
-      button = gtk_button_new_with_label(gettext(button_text[i]));
+      button = gtk_button_new_with_label(_(button_text[i]));
       gtk_signal_connect(GTK_OBJECT(button), "clicked",
 			 GTK_SIGNAL_FUNC(cb_dialog_button),
 			 GINT_TO_POINTER(DIALOG_SAID_1 + i));
