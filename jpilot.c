@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.148 2007/11/01 11:00:20 rousseau Exp $ */
+/* $Id: jpilot.c,v 1.149 2007/11/01 11:07:26 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -2877,12 +2877,10 @@ char * xpm_backup[] = {
 #ifdef ENABLE_GTK2
 {
    long utf_encoding;
-   long char_set;
    char *button_text[] = 
       { N_("Do it now"), N_("Remind me later"), N_("Don't tell me again!") };
 
-   /* get charset to check if a UTF-8 one is used */
-   get_pref(PREF_CHAR_SET, &char_set, NULL);
+   /* check if a UTF-8 one is used */
    if (char_set >= CHAR_SET_UTF)
       set_pref(PREF_UTF_ENCODING, 1, NULL, TRUE);
 
