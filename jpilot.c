@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.153 2007/11/01 12:44:23 rousseau Exp $ */
+/* $Id: jpilot.c,v 1.154 2007/11/01 12:47:50 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -1477,7 +1477,8 @@ const char *user_icon[] = {
    GtkAccelGroup *accel_group;
    gint nmenu_items;
    GtkItemFactoryEntry *menu_items2;
-   int i1, i2, i;
+   int i1, i2;
+   unsigned int i;
    char temp_str[255];
 
 #ifdef ENABLE_PLUGINS
