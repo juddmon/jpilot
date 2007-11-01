@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.150 2007/11/01 11:10:00 rousseau Exp $ */
+/* $Id: jpilot.c,v 1.151 2007/11/01 11:15:09 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -1141,7 +1141,7 @@ guint8 *get_inline_pixbuf_data(const char **xpm_icon_data, gint icon_size)
 #endif
 
 
-void get_main_menu(GtkWidget  *window,
+void get_main_menu(GtkWidget  *my_window,
 		   GtkWidget **menubar,
 		   GList *plugin_list)
 /* Some of this code was copied from the gtk_tut.txt file */
@@ -1496,7 +1496,7 @@ const char *user_icon[] = {
    /* So we have to do this to keep the compiler happy */
    for (i=0; i<sizeof(menu_items1)/sizeof(menu_items1[0]); i++) {
       if (menu_items1[i].callback==cb_prefs_gui) {
-	 menu_items1[i].callback_action = GPOINTER_TO_INT(window);
+	 menu_items1[i].callback_action = GPOINTER_TO_INT(my_window);
 	 break;
       }
    }
@@ -1651,9 +1651,9 @@ const char *user_icon[] = {
 
    /* Attach the new accelerator group to the window. */
 #ifdef ENABLE_GTK2
-   gtk_window_add_accel_group(GTK_WINDOW(window), accel_group);
+   gtk_window_add_accel_group(GTK_WINDOW(my_window), accel_group);
 #else
-   gtk_accel_group_attach(accel_group, GTK_OBJECT(window));
+   gtk_accel_group_attach(accel_group, GTK_OBJECT(my_window));
 #endif
 
    if (menubar) {
