@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.149 2007/11/01 11:07:26 rousseau Exp $ */
+/* $Id: jpilot.c,v 1.150 2007/11/01 11:10:00 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -907,9 +907,9 @@ static void cb_read_pipe_from_child(gpointer data,
 	    break;
 	  case PIPE_USERID:
 	    /* Look for the user ID */
-	    num = sscanf(Pstr1, "%ld", &user_id);
+	    num = sscanf(Pstr1, "%lu", &user_id);
 	    if (num > 0) {
-	       jp_logf(JP_LOG_DEBUG, "pipe_read: user id = %ld\n", user_id);
+	       jp_logf(JP_LOG_DEBUG, "pipe_read: user id = %lu\n", user_id);
 	       set_pref(PREF_USER_ID, user_id, NULL, TRUE);
 	    } else {
 	       jp_logf(JP_LOG_DEBUG, "pipe_read: trouble reading user id\n");
