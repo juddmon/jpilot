@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.128 2007/10/31 04:02:34 rikster5 Exp $ */
+/* $Id: utils.c,v 1.129 2007/11/01 12:56:36 rousseau Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -61,6 +61,7 @@
 
 /*Stuff for the dialog window */
 extern GtkWidget *glob_dialog;
+extern GtkWidget *glob_date_label;
 int dialog_result;
 
 unsigned int glob_find_id;
@@ -251,7 +252,6 @@ int get_timeout_interval()
 
 gint timeout_date(gpointer data)
 {
-   extern GtkWidget *glob_date_label;
    char str[102];
    char datef[102];
    const char *svalue1, *svalue2;
