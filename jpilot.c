@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.154 2007/11/01 12:47:50 rousseau Exp $ */
+/* $Id: jpilot.c,v 1.155 2007/11/01 12:51:04 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -1972,7 +1972,9 @@ int main(int argc, char *argv[])
       int first_weekday = 1;
       unsigned int week_origin;
 #  else
+#    ifdef ENABLE_NLS
       char *week_start;
+#    endif
 #  endif
 #endif
    unsigned char skip_past_alarms;
