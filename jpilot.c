@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.152 2007/11/01 12:39:48 rousseau Exp $ */
+/* $Id: jpilot.c,v 1.153 2007/11/01 12:44:23 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -123,7 +123,6 @@ int pipe_from_child, pipe_to_parent;
 int pipe_from_parent, pipe_to_child;
 
 GtkWidget *sync_window = NULL;
-static GtkAccelGroup *accel_group = NULL;
 
 static void sync_sig_handler (int sig);
 static void cb_delete_event(GtkWidget *widget, GdkEvent *event, gpointer data);
@@ -1962,6 +1961,7 @@ int main(int argc, char *argv[])
 #else
    GtkWidget *vscrollbar;
 #endif
+	GtkAccelGroup *accel_group;
 /* Extract first day of week preference from locale in GTK2 */
 #ifdef ENABLE_GTK2
    int   pref_fdow = 0;
