@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.67 2007/11/04 10:48:24 rousseau Exp $ */
+/* $Id: keyring.c,v 1.68 2007/11/04 12:46:22 rousseau Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -1371,7 +1371,7 @@ static int make_menu(char *items[], int menu_index, GtkWidget **Poption_menu,
    group = NULL;
    
    for (i=0; items[i]; i++) {
-      menu_item = gtk_radio_menu_item_new_with_label(group, gettext(items[i]));
+      menu_item = gtk_radio_menu_item_new_with_label(group, _(items[i]));
       menu_items[i] = menu_item;
       if (menu_index==KEYRING_CAT1) {
 	 if (i==0) {
