@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.155 2007/11/01 12:51:04 rousseau Exp $ */
+/* $Id: jpilot.c,v 1.156 2007/11/04 15:16:05 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -2741,7 +2741,7 @@ char * xpm_backup[] = {
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
 					 &style->bg[GTK_STATE_NORMAL],
 					 datebook_xpm);
-   pixmapwid = gtk_pixmap_new(pixmap, mask);
+   pixmapwid = gtk_pixmap_new(pixmap, NULL);
    gtk_widget_show(pixmapwid);
    gtk_container_add(GTK_CONTAINER(button_datebook), pixmapwid);
    gtk_button_set_relief(GTK_BUTTON(button_datebook), GTK_RELIEF_NONE);
@@ -2750,7 +2750,7 @@ char * xpm_backup[] = {
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
 					 &style->bg[GTK_STATE_NORMAL],
 					 address_xpm);
-   pixmapwid = gtk_pixmap_new(pixmap, mask);
+   pixmapwid = gtk_pixmap_new(pixmap, NULL);
    gtk_widget_show(pixmapwid);
    gtk_container_add(GTK_CONTAINER(button_address), pixmapwid);
    gtk_button_set_relief(GTK_BUTTON(button_address), GTK_RELIEF_NONE);
@@ -2759,7 +2759,7 @@ char * xpm_backup[] = {
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
 					 &style->bg[GTK_STATE_NORMAL],
 					 todo_xpm);
-   pixmapwid = gtk_pixmap_new(pixmap, mask);
+   pixmapwid = gtk_pixmap_new(pixmap, NULL);
    gtk_widget_show(pixmapwid);
    gtk_container_add(GTK_CONTAINER(button_todo), pixmapwid);
    gtk_button_set_relief(GTK_BUTTON(button_todo), GTK_RELIEF_NONE);
@@ -2768,7 +2768,7 @@ char * xpm_backup[] = {
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
 					 &style->bg[GTK_STATE_NORMAL],
 					 memo_xpm);
-   pixmapwid = gtk_pixmap_new(pixmap, mask);
+   pixmapwid = gtk_pixmap_new(pixmap, NULL);
    gtk_widget_show(pixmapwid);
    gtk_container_add(GTK_CONTAINER(button_memo), pixmapwid);
    gtk_button_set_relief(GTK_BUTTON(button_memo), GTK_RELIEF_NONE);
@@ -2788,7 +2788,7 @@ char * xpm_backup[] = {
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
 					 &style->bg[GTK_STATE_NORMAL],
 					 xpm_locked);
-   pixmapwid = gtk_pixmap_new(pixmap, mask);
+   pixmapwid = gtk_pixmap_new(pixmap, NULL);
    gtk_widget_show(pixmapwid);
    gtk_container_add(GTK_CONTAINER(button_locked), pixmapwid);
 
@@ -2796,7 +2796,7 @@ char * xpm_backup[] = {
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
 					 &style->bg[GTK_STATE_NORMAL],
 					 xpm_locked_masked);
-   pixmapwid = gtk_pixmap_new(pixmap, mask);
+   pixmapwid = gtk_pixmap_new(pixmap, NULL);
    gtk_widget_show(pixmapwid);
    gtk_container_add(GTK_CONTAINER(button_locked_masked), pixmapwid);
 
@@ -2804,7 +2804,7 @@ char * xpm_backup[] = {
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
 					 &style->bg[GTK_STATE_NORMAL],
 					 xpm_unlocked);
-   pixmapwid = gtk_pixmap_new(pixmap, mask);
+   pixmapwid = gtk_pixmap_new(pixmap, NULL);
    gtk_widget_show(pixmapwid);
    gtk_container_add(GTK_CONTAINER(button_unlocked), pixmapwid);
 
@@ -2812,7 +2812,7 @@ char * xpm_backup[] = {
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
 					 &style->bg[GTK_STATE_NORMAL],
 					 xpm_sync);
-   pixmapwid = gtk_pixmap_new(pixmap, mask);
+   pixmapwid = gtk_pixmap_new(pixmap, NULL);
    gtk_widget_show(pixmapwid);
    gtk_container_add(GTK_CONTAINER(button_sync), pixmapwid);
 
@@ -2820,7 +2820,7 @@ char * xpm_backup[] = {
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
 					 &style->bg[GTK_STATE_NORMAL],
 					 xpm_backup);
-   pixmapwid = gtk_pixmap_new(pixmap, mask);
+   pixmapwid = gtk_pixmap_new(pixmap, NULL);
    gtk_widget_show(pixmapwid);
    gtk_container_add(GTK_CONTAINER(button_backup), pixmapwid);
 
