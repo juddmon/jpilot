@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.66 2007/06/06 02:45:10 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.67 2007/11/04 10:48:24 rousseau Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -533,6 +533,23 @@ gint GtkClistKeyrCompareDates(GtkCList *clist,
    return(time1 - time2);
 }
 
+/* Function is used to sort clist case insensitiv */
+gint GtkClistKeyrCompareNocase (GtkCList *clist,
+                              gconstpointer ptr1,
+                              gconstpointer ptr2)
+{
+   GtkCListRow *row1, *row2;
+   gchar *str1, *str2;
+
+   row1 = (GtkCListRow *) ptr1;
+   row2 = (GtkCListRow *) ptr2;
+
+   str1 = GTK_CELL_TEXT(row1->cell[clist->sort_column])->text;
+   str2 = GTK_CELL_TEXT(row2->cell[clist->sort_column])->text;
+
+   return g_strcasecmp(str1, str2);
+}
+
 static void cb_clist_click_column(GtkWidget *clist, int column)
 {
    struct MyKeyRing *mkr;
@@ -569,6 +586,9 @@ static void cb_clist_click_column(GtkWidget *clist, int column)
    switch (column) {
     case KEYR_CHGD_COLUMN:  // Last Changed column 
       gtk_clist_set_compare_func(GTK_CLIST(clist),GtkClistKeyrCompareDates);
+      break;
+    case KEYR_NAME_COLUMN: 
+      gtk_clist_set_compare_func(GTK_CLIST(clist),GtkClistKeyrCompareNocase);
       break;
     default: // All other columns can use GTK default sort function
       gtk_clist_set_compare_func(GTK_CLIST(clist),NULL);
@@ -2111,6 +2131,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_clist_set_column_width(GTK_CLIST(clist), KEYR_NAME_COLUMN, 150);
 
    gtk_clist_set_sort_column(GTK_CLIST(clist), KEYR_NAME_COLUMN);
+   gtk_clist_set_compare_func(GTK_CLIST(clist), GtkClistKeyrCompareNocase);
    gtk_clist_set_sort_type(GTK_CLIST(clist), GTK_SORT_ASCENDING);
    gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
 
