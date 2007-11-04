@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.139 2007/10/27 07:47:28 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.140 2007/11/04 10:43:03 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -234,6 +234,8 @@ static struct sorted_cats sort_l[NUM_ADDRESS_CAT_ITEMS];
 int address_category=CATEGORY_ALL;
 static int clist_row_selected;
 extern GtkTooltips *glob_tooltips;
+extern GtkWidget *glob_date_label;
+extern int glob_date_timer_tag;
 
 static ContactList *glob_contact_list=NULL;
 static ContactList *export_contact_list=NULL;
@@ -3211,8 +3213,6 @@ int address_gui_cleanup()
  */
 int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 {
-   extern GtkWidget *glob_date_label;
-   extern int glob_date_timer_tag;
    GtkWidget *scrolled_window;
    GtkWidget *pixmapwid;
    GdkPixmap *pixmap;
