@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.73 2007/10/25 03:34:14 rikster5 Exp $ */
+/* $Id: sync.c,v 1.74 2007/11/04 15:52:08 rousseau Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -1865,7 +1865,7 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
 
       main_app = 0;
       skip_file = 0;
-      for (i=0; palm_dbname[i]; i++) {
+      for (i=0; palm_dbname[i][0]; i++) {
 	 if (!strcmp(info.name, palm_dbname[i])) {
 	    jp_logf(JP_LOG_DEBUG, "Found main app\n");
 	    main_app = 1;
