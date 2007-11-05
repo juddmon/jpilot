@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.75 2007/11/05 01:08:55 rikster5 Exp $ */
+/* $Id: sync.c,v 1.76 2007/11/05 01:14:22 rikster5 Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -922,6 +922,8 @@ int jp_sync(struct my_sync_info *sync_info)
    }
    jp_logf(JP_LOG_GUI, _("lastSyncPC = %d\n"), U.lastSyncPC);
    jp_logf(JP_LOG_GUI, _("This PC = %lu\n"), sync_info->PC_ID);
+   jp_logf(JP_LOG_GUI, "****************************************\n");
+
    jp_logf(JP_LOG_DEBUG, _("Last Username = [%s]\n"), sync_info->username);
    jp_logf(JP_LOG_DEBUG, _("Last UserID = %d\n"), sync_info->userID);
    jp_logf(JP_LOG_DEBUG, _("Username = [%s]\n"), U.username);
@@ -1777,7 +1779,6 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
 
    end_of_list=NULL;
 
-   //mode = ((flags & SYNC_FULL_BACKUP) ? 1:0) + (fast_sync ? 2:0);
    full_backup = flags & SYNC_FULL_BACKUP;
 
    /* Fast sync still needs to fetch Saved Preferences before exiting */
