@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.74 2007/11/04 15:52:08 rousseau Exp $ */
+/* $Id: sync.c,v 1.75 2007/11/05 01:08:55 rikster5 Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -1014,6 +1014,11 @@ int jp_sync(struct my_sync_info *sync_info)
       jp_logf(JP_LOG_GUI, _("Doing a slow sync.\n"));
       for (i=0; dbname[i][0]; i++) {
 	 if (get_pref_int_default(pref_sync_array[i], 1)) {
+	    if (unpack_cai_from_buf[i] && pack_cai_into_buf[i]) {
+	       sync_categories(dbname[i], sd,
+			       unpack_cai_from_buf[i],
+			       pack_cai_into_buf[i]);
+	    }
 	    slow_sync_application(dbname[i], sd);
 	 }
       }
