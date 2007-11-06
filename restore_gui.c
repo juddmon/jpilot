@@ -1,4 +1,4 @@
-/* $Id: restore_gui.c,v 1.21 2007/11/06 23:05:50 rikster5 Exp $ */
+/* $Id: restore_gui.c,v 1.22 2007/11/06 23:12:14 rikster5 Exp $ */
 
 /*******************************************************************************
  * restore_gui.c
@@ -166,7 +166,7 @@ static int populate_clist_sub(char *path, int check_for_dups, int check_exts)
 	    }
 	    if (found) continue;
 	 }
-         printf("Adding '%s'\n", dirent->d_name);
+
 	 row_text[0]=dirent->d_name;
 #ifdef ENABLE_GTK2
 	 {
