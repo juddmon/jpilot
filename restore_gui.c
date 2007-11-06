@@ -1,4 +1,4 @@
-/* $Id: restore_gui.c,v 1.20 2006/05/18 16:31:13 rikster5 Exp $ */
+/* $Id: restore_gui.c,v 1.21 2007/11/06 23:05:50 rikster5 Exp $ */
 
 /*******************************************************************************
  * restore_gui.c
@@ -166,12 +166,21 @@ static int populate_clist_sub(char *path, int check_for_dups, int check_exts)
 	    }
 	    if (found) continue;
 	 }
+         printf("Adding '%s'\n", dirent->d_name);
 	 row_text[0]=dirent->d_name;
 #ifdef ENABLE_GTK2
 	 {
 	    gchar *utf8_text;
 
 	    utf8_text = g_locale_to_utf8(row_text[0], -1, NULL, NULL, NULL);
+            if (!utf8_text) {
+
+               jp_logf(JP_LOG_GUI, _("Unable to convert filename for GTK display\n"
+                                     "See console log to find which file will not be restored"));
+               jp_logf(JP_LOG_WARN, _("Unable to convert filename for GTK display\n"
+                                      "File %s will not be restored\n"), row_text[0]);
+               continue;
+            }
 	    row_text[0] = utf8_text;
 	    gtk_clist_append(GTK_CLIST(restore_clist), row_text);
 	    g_free(utf8_text);
