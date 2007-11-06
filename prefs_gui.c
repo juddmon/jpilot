@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.51 2007/10/23 18:29:15 judd Exp $ */
+/* $Id: prefs_gui.c,v 1.52 2007/11/06 06:41:40 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -209,7 +209,16 @@ void cb_text_entry(GtkWidget *widget, gpointer data)
 
 void cb_checkbox_set_pref(GtkWidget *widget, gpointer data)
 {
-   set_pref(GPOINTER_TO_INT(data), GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
+   unsigned long pref, value;
+
+   pref = GPOINTER_TO_INT(data);
+   value = GTK_TOGGLE_BUTTON(widget)->active;
+   set_pref(pref, value, NULL, TRUE);
+   /* FIXME: Should eliminate references to SYNC_MEMO32 and use the preference
+    * SYNC_MEMO instead */
+   if (pref==PREF_SYNC_MEMO) {
+      set_pref(PREF_SYNC_MEMO32, value, NULL, TRUE);
+   }
 }
 
 /*
@@ -219,10 +228,31 @@ void cb_checkbox_set_pref(GtkWidget *widget, gpointer data)
 void cb_radio_set_pref(GtkWidget *widget, gpointer data)
 {
    unsigned long pref, value;
+   long ivalue;
+   const char *cstr;
+
    pref=GPOINTER_TO_INT(data);
    value=pref & 0xFFFF;
    pref >>= 16;
-   set_pref(GPOINTER_TO_INT(pref), GPOINTER_TO_INT(value), NULL, TRUE);
+   set_pref(pref, value, NULL, TRUE);
+   /* FIXME: Hack which preserves MEMO32 pref.  This should be
+    * eliminated in favor of just PREF_MEMO_VERSION */
+   if (pref==PREF_MEMO_VERSION) {
+      if (value==2) {
+         set_pref(PREF_MEMO32_MODE, 1, NULL, TRUE);
+
+         get_pref(PREF_SYNC_MEMO, &ivalue, &cstr);
+         if (ivalue) {
+            set_pref(PREF_SYNC_MEMO32, 1, NULL, TRUE);
+         } else {
+            set_pref(PREF_SYNC_MEMO32, 0, NULL, TRUE);
+         }
+
+      } else {
+         set_pref(PREF_MEMO32_MODE, 0, NULL, TRUE);
+         set_pref(PREF_SYNC_MEMO32, 0, NULL, TRUE);
+      }
+   }
 }
 
 
@@ -317,8 +347,15 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    GtkWidget *vbox_alarms;
    GtkWidget *vbox_conduits;
    GtkWidget *hbox_temp;
+   GtkWidget *hseparator;
    GtkWidget *notebook;
+   /* FIXME: Uncomment when support for Calendar and Task has been added */
+#if 0
+   GtkWidget *radio_button_datebook_version[2];
+   GtkWidget *radio_button_todo_version[2];
+#endif
    GtkWidget *radio_button_address_version[2];
+   GtkWidget *radio_button_memo_version[3];
    long ivalue;
    const char *cstr;
    char temp_str[10];
@@ -557,6 +594,40 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    /**********************************************************************/
    /* Datebook preference tab */
 
+   /* FIXME: undef when support for Calendar has been coded */
+#if 0
+   /* Radio box to choose which database to use: Datebook/Calendar */
+   group = NULL;
+   radio_button_datebook_version[0] = 
+     gtk_radio_button_new_with_label(group, _("Use Datebook database (Palm OS <= 3.5) "));
+   group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_datebook_version[0]));
+   radio_button_datebook_version[1] = 
+     gtk_radio_button_new_with_label(group, _("Use Calendar database (Palm OS >= 4.0) "));
+   group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_datebook_version[1]));
+   gtk_box_pack_start(GTK_BOX(vbox_datebook), radio_button_datebook_version[0],
+		      FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox_datebook), radio_button_datebook_version[1],
+		      FALSE, FALSE, 0);
+
+   gtk_signal_connect(GTK_OBJECT(radio_button_datebook_version[0]), "pressed",
+		      GTK_SIGNAL_FUNC(cb_radio_set_pref),
+		      GINT_TO_POINTER((PREF_DATEBOOK_VERSION<<16)|0));
+   gtk_signal_connect(GTK_OBJECT(radio_button_datebook_version[1]), "pressed",
+		      GTK_SIGNAL_FUNC(cb_radio_set_pref),
+		      GINT_TO_POINTER((PREF_DATEBOOK_VERSION<<16)|1));
+
+   get_pref(PREF_DATEBOOK_VERSION, &ivalue, NULL);
+   if (ivalue) {
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_datebook_version[1]), TRUE);
+   } else {
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_datebook_version[0]), TRUE);
+   }
+
+   /* Separate database selection from less important options */
+   hseparator = gtk_hseparator_new();
+   gtk_box_pack_start(GTK_BOX(vbox_address), hseparator, FALSE, FALSE, 3);
+#endif
+
    /* Show highlight days check box */
    add_checkbutton(_("Highlight calendar days with appointments"),
 		   PREF_DATEBOOK_HIGHLIGHT_DAYS, vbox_datebook,
@@ -587,6 +658,37 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    /**********************************************************************/
    /* Address preference tab */
 
+   /* Radio box to choose which database to use: Address/Contacts */
+   group = NULL;
+   radio_button_address_version[0] = 
+     gtk_radio_button_new_with_label(group, _("Use Address  database (Palm OS <= 3.5) "));
+   group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_address_version[0]));
+   radio_button_address_version[1] = 
+     gtk_radio_button_new_with_label(group, _("Use Contacts database (Palm OS >= 4.0) "));
+   group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_address_version[1]));
+   gtk_box_pack_start(GTK_BOX(vbox_address), radio_button_address_version[0],
+		      FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox_address), radio_button_address_version[1],
+		      FALSE, FALSE, 0);
+
+   gtk_signal_connect(GTK_OBJECT(radio_button_address_version[0]), "pressed",
+		      GTK_SIGNAL_FUNC(cb_radio_set_pref),
+		      GINT_TO_POINTER((PREF_ADDRESS_VERSION<<16)|0));
+   gtk_signal_connect(GTK_OBJECT(radio_button_address_version[1]), "pressed",
+		      GTK_SIGNAL_FUNC(cb_radio_set_pref),
+		      GINT_TO_POINTER((PREF_ADDRESS_VERSION<<16)|1));
+
+   get_pref(PREF_ADDRESS_VERSION, &ivalue, NULL);
+   if (ivalue) {
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_address_version[1]), TRUE);
+   } else {
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_address_version[0]), TRUE);
+   }
+
+   /* Separate database selection from less important options */
+   hseparator = gtk_hseparator_new();
+   gtk_box_pack_start(GTK_BOX(vbox_address), hseparator, FALSE, FALSE, 3);
+
    /* Command to use for e-mailing from address book */
    hbox_temp = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox_address), hbox_temp, FALSE, FALSE, 0);
@@ -609,36 +711,42 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.0);
    gtk_box_pack_start(GTK_BOX(vbox_address), label, FALSE, FALSE, 0);
 
-   group = NULL;
-   radio_button_address_version[0] = 
-     gtk_radio_button_new_with_label(group, _("My Palm has the Address application"));
-   group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_address_version[0]));
-   radio_button_address_version[1] = 
-     gtk_radio_button_new_with_label(group, _("My Palm has the Contacts application"));
-   group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_address_version[1]));
-   gtk_box_pack_start(GTK_BOX(vbox_address), radio_button_address_version[0],
-		      FALSE, FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(vbox_address), radio_button_address_version[1],
-		      FALSE, FALSE, 0);
-
-   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_address_version[0]), TRUE);
-
-   gtk_signal_connect(GTK_OBJECT(radio_button_address_version[0]), "pressed",
-		      GTK_SIGNAL_FUNC(cb_radio_set_pref),
-		      GINT_TO_POINTER((PREF_ADDRESS_VERSION<<16)|0));
-   gtk_signal_connect(GTK_OBJECT(radio_button_address_version[1]), "pressed",
-		      GTK_SIGNAL_FUNC(cb_radio_set_pref),
-		      GINT_TO_POINTER((PREF_ADDRESS_VERSION<<16)|1));
-
-   get_pref(PREF_ADDRESS_VERSION, &ivalue, NULL);
-   if (ivalue) {
-      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_address_version[1]), TRUE);
-   } else {
-      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_address_version[0]), TRUE);
-   }
-
    /**********************************************************************/
    /* ToDo preference tab */
+
+   /* FIXME: undef when support for Task has been coded */
+#if 0
+   /* Radio box to choose which database to use: Todo/Task */
+   group = NULL;
+   radio_button_task_version[0] = 
+     gtk_radio_button_new_with_label(group, _("Use ToDo database (Palm OS <= 3.5) "));
+   group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_todo_version[0]));
+   radio_button_todo_version[1] = 
+     gtk_radio_button_new_with_label(group, _("Use Task database (Palm OS >= 4.0) "));
+   group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_todo_version[1]));
+   gtk_box_pack_start(GTK_BOX(vbox_todo), radio_button_todo_version[0],
+		      FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox_todo), radio_button_todo_version[1],
+		      FALSE, FALSE, 0);
+
+   gtk_signal_connect(GTK_OBJECT(radio_button_todo_version[0]), "pressed",
+		      GTK_SIGNAL_FUNC(cb_radio_set_pref),
+		      GINT_TO_POINTER((PREF_TODO_VERSION<<16)|0));
+   gtk_signal_connect(GTK_OBJECT(radio_button_todo_version[1]), "pressed",
+		      GTK_SIGNAL_FUNC(cb_radio_set_pref),
+		      GINT_TO_POINTER((PREF_TODO_VERSION<<16)|1));
+
+   get_pref(PREF_TODO_VERSION, &ivalue, NULL);
+   if (ivalue) {
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_todo_version[1]), TRUE);
+   } else {
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_todo_version[0]), TRUE);
+   }
+
+   /* Separate database selection from less important options */
+   hseparator = gtk_hseparator_new();
+   gtk_box_pack_start(GTK_BOX(vbox_address), hseparator, FALSE, FALSE, 3);
+#endif
 
    /* The hide completed check box */
    add_checkbutton(_("Hide Completed ToDos"),
@@ -680,10 +788,57 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 
    /**********************************************************************/
    /* Memo preference tab */
+   /* Radio box to choose which database to use: Memo/Memo32/Memos*/
+   group = NULL;
+   radio_button_memo_version[0] = 
+     gtk_radio_button_new_with_label(group, _("Use Memo database (Palm OS <= 3.5)"));
+   group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_memo_version[0]));
+   radio_button_memo_version[1] = 
+     gtk_radio_button_new_with_label(group, _("Use Memos database (Palm OS >= 4.0)"));
+   group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_memo_version[1]));
+   radio_button_memo_version[2] = 
+     gtk_radio_button_new_with_label(group, _("Use Memo32 database (pedit32)"));
+   group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_memo_version[2]));
+   gtk_box_pack_start(GTK_BOX(vbox_memo), radio_button_memo_version[0],
+		      FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox_memo), radio_button_memo_version[1],
+		      FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox_memo), radio_button_memo_version[2],
+		      FALSE, FALSE, 0);
 
-   /* Memo32 check box */
-   add_checkbutton(_("Use Memo32 (pedit32)"),
-		   PREF_MEMO32_MODE, vbox_memo, cb_checkbox_set_pref);
+   gtk_signal_connect(GTK_OBJECT(radio_button_memo_version[0]), "pressed",
+		      GTK_SIGNAL_FUNC(cb_radio_set_pref),
+		      GINT_TO_POINTER((PREF_MEMO_VERSION<<16)|0));
+   gtk_signal_connect(GTK_OBJECT(radio_button_memo_version[1]), "pressed",
+		      GTK_SIGNAL_FUNC(cb_radio_set_pref),
+		      GINT_TO_POINTER((PREF_MEMO_VERSION<<16)|1));
+   gtk_signal_connect(GTK_OBJECT(radio_button_memo_version[2]), "pressed",
+		      GTK_SIGNAL_FUNC(cb_radio_set_pref),
+		      GINT_TO_POINTER((PREF_MEMO_VERSION<<16)|2));
+
+   /* Backwards compatability with MEMO32 preference */
+   /* FIXME: Would be nice to eliminate all MEMO32 references in
+    * the code and just use PREF_MEMO_VERSION everywhere */
+   get_pref(PREF_MEMO32_MODE, &ivalue, NULL);
+   if (ivalue) {
+      set_pref(PREF_MEMO_VERSION, 2, NULL, TRUE);
+   }
+
+   get_pref(PREF_MEMO_VERSION, &ivalue, NULL);
+   switch (ivalue) {
+    case 0:
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_memo_version[0]), TRUE);
+      break;
+    case 1:
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_memo_version[1]), TRUE);
+      break;
+    case 2:
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_memo_version[2]), TRUE);
+      break;
+    default:
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_memo_version[0]), TRUE);
+      break;
+   }
 
    /**********************************************************************/
    /* Alarms preference tab */
@@ -759,13 +914,16 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    add_checkbutton(_("Sync todo"),
 		   PREF_SYNC_TODO, vbox_conduits, cb_checkbox_set_pref);
 
+   /* FIXME: Eliminate SYNC_MEMO32 everywhere in the code in favor of
+    * SYNC_MEMO.  This stanza ensures backward compatability */
+   get_pref(PREF_SYNC_MEMO32, &ivalue, NULL);
+   if (ivalue) {
+      set_pref(PREF_SYNC_MEMO, 1, NULL, TRUE);
+   }
+
    /* Show sync memo check box */
    add_checkbutton(_("Sync memo"),
 		   PREF_SYNC_MEMO, vbox_conduits, cb_checkbox_set_pref);
-
-   /* Show sync Memo32 check box */
-   add_checkbutton(_("Sync memo32 (pedit32)"),
-		   PREF_SYNC_MEMO32, vbox_conduits, cb_checkbox_set_pref);
 
 #ifdef ENABLE_MANANA
    /* Show sync Ma~nana check box */
