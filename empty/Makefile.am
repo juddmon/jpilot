@@ -1,13 +1,17 @@
-# $Id: Makefile.am,v 1.3 2006/09/28 18:36:20 rikster5 Exp $
+# $Id: Makefile.am,v 1.4 2007/11/06 19:25:12 rikster5 Exp $
 
 # install blank pdb files
 pdbdir = $(datadir)/$(PACKAGE)
 
-pdb_DATA = AddressDB.pdb \
-           DatebookDB.pdb \
-           ExpenseDB.pdb \
-           Memo32DB.pdb \
+pdb_DATA = DatebookDB.pdb \
+           CalendarDB-PDat.pdb \
+           AddressDB.pdb \
+           ContactsDB-PAdd.pdb \
+           ToDoDB.pdb \
+           TasksDB-PTod.pdb \
            MemoDB.pdb \
-           ToDoDB.pdb
+           MemosDB-PMem.pdb \
+           Memo32DB.pdb \
+           ExpenseDB.pdb
 
 EXTRA_DIST = $(pdb_DATA)
