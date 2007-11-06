@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.99 2007/10/23 18:29:14 judd Exp $ */
+/* $Id: memo_gui.c,v 1.100 2007/11/06 20:12:45 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -965,7 +965,7 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
       strcpy(pdb_name, "Memo32DB.pdb");
       strcpy(db_name, "Memo32DB");
    } else {
-      if (memo_version==2) {
+      if (memo_version==1) {
 	 strcpy(pdb_name, "MemosDB-PMem.pdb");
 	 strcpy(db_name, "MemosDB-PMem");
       } else {

@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.130 2007/11/01 13:11:03 rousseau Exp $ */
+/* $Id: utils.c,v 1.131 2007/11/06 20:12:45 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -1980,7 +1980,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 //   unsigned char record[65536];
    PCRecType record_type;
    unsigned int unique_id;
-   long ivalue;
+   long ivalue, memo_version;
 
    jp_logf(JP_LOG_DEBUG, "delete_pc_record(%d, , %d)\n", app_type, flag);
 
@@ -2032,11 +2032,16 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       mmemo = (MyMemo *) VP;
       record_type = mmemo->rt;
       unique_id = mmemo->unique_id;
+      get_pref(PREF_MEMO_VERSION, &memo_version, NULL);
       get_pref(PREF_MEMO32_MODE, &ivalue, NULL);
       if (ivalue) {
 	 strcpy(filename, "Memo32DB.pc3");
       } else {
-	 strcpy(filename, "MemoDB.pc3");
+         if (memo_version==1) {
+            strcpy(filename, "MemosDB-PMem.pc3");
+         } else {
+            strcpy(filename, "MemoDB.pc3");
+         }
       }
       break;
     default:

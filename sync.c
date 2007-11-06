@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.76 2007/11/05 01:14:22 rikster5 Exp $ */
+/* $Id: sync.c,v 1.77 2007/11/06 20:12:45 rikster5 Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -259,6 +259,9 @@ int match_records(void *rrec, int rrec_len,
       return !(memcmp(lrec, rrec, lrec_len));
 
    if (!strcmp(DB_name,"Memo32DB"))
+      return !(memcmp(lrec, rrec, lrec_len));
+
+   if (!strcmp(DB_name,"MemosDB-PMem"))
       return !(memcmp(lrec, rrec, lrec_len));
 
    if (!strcmp(DB_name,"ToDoDB"))

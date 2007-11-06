@@ -1,4 +1,4 @@
-/* $Id: memo.c,v 1.37 2007/10/23 18:29:14 judd Exp $ */
+/* $Id: memo.c,v 1.38 2007/11/06 20:12:45 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo.c
@@ -195,7 +195,7 @@ int pc_memo_write(struct Memo *memo, PCRecType rt, unsigned char attrib,
    if (ivalue) {
       jp_pc_write("Memo32DB", &br);
    } else {
-      if (memo_version==2) {
+      if (memo_version==1) {
 	 jp_pc_write("MemosDB-PMem", &br);
       } else {
 	 jp_pc_write("MemoDB", &br);
@@ -243,7 +243,7 @@ int get_memo_app_info(struct MemoAppInfo *ai)
    if (ivalue) {
       strcpy(DBname, "Memo32DB");
    } else {
-      if (memo_version==2) {
+      if (memo_version==1) {
 	 strcpy(DBname, "MemosDB-PMem");
       } else {
 	 strcpy(DBname, "MemoDB");
@@ -315,7 +315,7 @@ int get_memos2(MemoList **memo_list, int sort_order,
       if (-1 == num)
         return 0;
    } else {
-      if (memo_version==2) {
+      if (memo_version==1) {
 	 num = jp_read_DB_files("MemosDB-PMem", &records);
       } else {
 	 num = jp_read_DB_files("MemoDB", &records);
