@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.140 2007/11/04 10:43:03 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.141 2007/11/07 19:00:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -441,6 +441,7 @@ static void connect_changed_signals(int con_or_dis)
 #endif
 	    continue;
 	 }
+         jp_logf(JP_LOG_DEBUG, "connect_changed_signals(): Encountered unknown object type.  Skipping\n");
       }
       return;
    }
@@ -3476,6 +3477,9 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu2, TRUE, TRUE, 0);
 
+   for (i=0; i<NUM_ADDRESS_CAT_ITEMS; i++) {
+      changed_list = g_list_prepend(changed_list, address_cat_menu_item2[i]);
+   }
 
    /*Add the notebook for new entries */
    notebook = gtk_notebook_new();
