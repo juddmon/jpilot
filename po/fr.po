@@ -622,7 +622,7 @@ msgstr "Type d'export inconnu"
 
 #: ../datebook_gui.c:1092 ../export_gui.c:257 ../jpilot.c:551
 msgid "Export"
-msgstr "Export"
+msgstr "Exporter"
 
 #. Label for instructions
 #: ../datebook_gui.c:1109
@@ -1000,7 +1000,7 @@ msgstr "Valider"
 
 #: ../import_gui.c:328
 msgid "Import File Type"
-msgstr "Import Fichier"
+msgstr "Importer Fichier"
 
 #: ../import_gui.c:442
 #, c-format
@@ -1268,11 +1268,11 @@ msgstr "/Fichier/_Installer"
 
 #: ../jpilot.c:1422
 msgid "/File/Import"
-msgstr "/Fichier/Import"
+msgstr "/Fichier/Importer"
 
 #: ../jpilot.c:1423
 msgid "/File/Export"
-msgstr "/Fichier/Export"
+msgstr "/Fichier/Exporter"
 
 #: ../jpilot.c:1424 ../jpilot.c:2901
 msgid "/File/Preferences"
