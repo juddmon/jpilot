@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.77 2007/11/06 20:12:45 rikster5 Exp $ */
+/* $Id: sync.c,v 1.78 2007/11/07 00:09:15 rikster5 Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -2186,7 +2186,7 @@ static int sync_install(char *filename, int sd)
       dlp_AddSyncLogEntry(sd, log_entry);
       dlp_AddSyncLogEntry(sd, "\n");;
       jp_logf(JP_LOG_GUI, _("Failed.\n"));
-      jp_logf(JP_LOG_WARN, log_entry);
+      jp_logf(JP_LOG_WARN, "%s\n", log_entry);
       pi_file_close(f);
       return EXIT_FAILURE;
    }
