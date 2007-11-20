@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.78 2007/11/07 00:09:15 rikster5 Exp $ */
+/* $Id: sync.c,v 1.79 2007/11/20 22:05:20 rousseau Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -3260,7 +3260,7 @@ int sync_categories(char *DB_name, int sd,
    }
 
    r = unpack_cai_from_ai(&local_cai, Papp_info, size_Papp_info);
-   if (r < 0) {
+   if (EXIT_SUCCESS != r) {
       jp_logf(JP_LOG_WARN, _("%s:%d Error unpacking app info %s\n"), __FILE__, __LINE__, full_name);
       return EXIT_FAILURE;
    }
@@ -3301,11 +3301,11 @@ int sync_categories(char *DB_name, int sd,
    }
 #endif
    r = unpack_cai_from_ai(&remote_cai, buf, size);
-   memcpy(&orig_remote_cai, &remote_cai, sizeof(remote_cai));
-   if (r < 0) {
+   if (EXIT_SUCCESS != r) {
       jp_logf(JP_LOG_WARN, _("%s:%d Error unpacking app info %s\n"), __FILE__, __LINE__, full_name);
       return EXIT_FAILURE;
    }
+   memcpy(&orig_remote_cai, &remote_cai, sizeof(remote_cai));
 
 #ifdef SYNC_CAT_DEBUG
    printf("DB_name [%s]\n", DB_name);
