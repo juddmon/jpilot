@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.145 2007/11/20 22:35:44 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.146 2007/11/20 22:58:30 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -2540,6 +2540,9 @@ static void cb_clist_selection(GtkWidget      *clist,
 	 else {
 	    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(birthday_checkbox),
 		  FALSE);
+	    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(reminder_checkbox),
+		  FALSE);
+	    gtk_entry_set_text(GTK_ENTRY(reminder_entry), "");
 	 }
 	 break;
       }
