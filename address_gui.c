@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.142 2007/11/20 22:16:04 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.143 2007/11/20 22:18:44 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -3566,12 +3566,12 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	 /* Create a photo menu */
 	 menu = gtk_menu_new();
 
-	 menu_item = gtk_menu_item_new_with_label("Change Photo");
+	 menu_item = gtk_menu_item_new_with_label(_("Change Photo"));
 	 gtk_widget_show(menu_item);
 	 gtk_signal_connect(GTK_OBJECT(menu_item), "activate",
 			    G_CALLBACK(cb_photo_menu_select), GINT_TO_POINTER(1));
 	 gtk_menu_attach(GTK_MENU(menu), menu_item, 0, 1, 0, 1);
-	 menu_item = gtk_menu_item_new_with_label("Remove Photo");
+	 menu_item = gtk_menu_item_new_with_label(_("Remove Photo"));
 	 gtk_widget_show(menu_item);
 	 gtk_signal_connect(GTK_OBJECT(menu_item), "activate",
 			    G_CALLBACK(cb_photo_menu_select), GINT_TO_POINTER(2));
