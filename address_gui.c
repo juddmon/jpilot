@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.141 2007/11/07 19:00:08 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.142 2007/11/20 22:16:04 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -2234,6 +2234,7 @@ int browse_photo(GtkWidget *main_window)
    if (selection) {
       jp_logf(JP_LOG_DEBUG, "browse_photo(): selection = %s\n", selection);
       change_photo(selection);
+      return 1;
    }
 
    return 0;
@@ -2244,8 +2245,9 @@ void cb_photo_menu_select(GtkWidget       *item,
 {
 //undo   printf("selected %d\n", selected);
    if (selected == 1) {
-      browse_photo(gtk_widget_get_toplevel(clist));
-      return;
+      if (0 == browse_photo(gtk_widget_get_toplevel(clist)))
+	 /* change photo canceled */
+	 return;
    }
    if (selected==2) {
       if (image) {
@@ -2258,8 +2260,9 @@ void cb_photo_menu_select(GtkWidget       *item,
 	 contact_picture.length=0;
 	 contact_picture.data=NULL;
       }
-      cb_record_changed(NULL, NULL);
    }
+
+   cb_record_changed(NULL, NULL);
 }
 
 static gint cb_photo_menu_popup(GtkWidget *widget, GdkEvent *event)
