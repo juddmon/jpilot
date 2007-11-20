@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.143 2007/11/20 22:18:44 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.144 2007/11/20 22:25:50 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -522,10 +522,16 @@ GString *contact_to_gstring(struct Contact *cont)
        case ADDRESS_GUI_LABEL_TEXT:
        case ADDRESS_GUI_WEBSITE:
 	 if (cont->entry[schema[i].record_field]==NULL) continue;
-	 utf = charset_p2newj(contact_app_info.labels[schema[i].record_field], 16, char_set);
-	 g_string_sprintfa(s, _("%s%s: %s"),
-			    NL, utf, cont->entry[schema[i].record_field]);
-	 g_free(utf);
+	 if (address_version)
+	    g_string_sprintfa(s, _("%s%s: %s"),
+		  NL, contact_app_info.labels[schema[i].record_field], cont->entry[schema[i].record_field]);
+	 else
+	 {
+	    utf = charset_p2newj(contact_app_info.labels[schema[i].record_field], 16, char_set);
+	    g_string_sprintfa(s, _("%s%s: %s"),
+		  NL, utf, cont->entry[schema[i].record_field]);
+	    g_free(utf);
+	 }
 	 NL[0]='\n';
 	 break;
        case ADDRESS_GUI_DIAL_SHOW_MENU_TEXT:
@@ -3593,9 +3599,14 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	 switch (schema[i].type) {
 	  case ADDRESS_GUI_LABEL_TEXT:
 	    /* Label */
-	    utf = charset_p2newj(contact_app_info.labels[schema[i].record_field], 16, char_set);
-	    label = gtk_label_new(utf);
-	    g_free(utf);
+		if (address_version)
+		   label = gtk_label_new(contact_app_info.labels[schema[i].record_field]);
+		else
+		{
+		   utf = charset_p2newj(contact_app_info.labels[schema[i].record_field], 16, char_set);
+		   label = gtk_label_new(utf);
+		   g_free(utf);
+		}
 	    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
 	    //gtk_box_pack_start(GTK_BOX(vbox_left), label, TRUE, TRUE, 0);
 	    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(label),
