@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.52 2007/11/06 06:41:40 rikster5 Exp $ */
+/* $Id: prefs_gui.c,v 1.53 2007/11/23 19:13:55 rousseau Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -599,10 +599,10 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    /* Radio box to choose which database to use: Datebook/Calendar */
    group = NULL;
    radio_button_datebook_version[0] = 
-     gtk_radio_button_new_with_label(group, _("Use Datebook database (Palm OS <= 3.5) "));
+     gtk_radio_button_new_with_label(group, _("Use Datebook database (Palm OS <= 3.5)"));
    group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_datebook_version[0]));
    radio_button_datebook_version[1] = 
-     gtk_radio_button_new_with_label(group, _("Use Calendar database (Palm OS >= 4.0) "));
+     gtk_radio_button_new_with_label(group, _("Use Calendar database (Palm OS >= 4.0)"));
    group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_datebook_version[1]));
    gtk_box_pack_start(GTK_BOX(vbox_datebook), radio_button_datebook_version[0],
 		      FALSE, FALSE, 0);
@@ -661,10 +661,10 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    /* Radio box to choose which database to use: Address/Contacts */
    group = NULL;
    radio_button_address_version[0] = 
-     gtk_radio_button_new_with_label(group, _("Use Address  database (Palm OS <= 3.5) "));
+     gtk_radio_button_new_with_label(group, _("Use Address database (Palm OS <= 3.5)"));
    group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_address_version[0]));
    radio_button_address_version[1] = 
-     gtk_radio_button_new_with_label(group, _("Use Contacts database (Palm OS >= 4.0) "));
+     gtk_radio_button_new_with_label(group, _("Use Contacts database (Palm OS >= 4.0)"));
    group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_address_version[1]));
    gtk_box_pack_start(GTK_BOX(vbox_address), radio_button_address_version[0],
 		      FALSE, FALSE, 0);
