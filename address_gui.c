@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.146 2007/11/20 22:58:30 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.147 2007/11/24 14:58:11 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -208,7 +208,7 @@ static GtkWidget *vscrollbar;
 //GtkWidget *menu;
 static GtkWidget *notebook_label[6];
 static GtkWidget *phone_type_list_menu[NUM_PHONE_ENTRIES];
-static GtkWidget *phone_type_menu_item[NUM_MENU_ITEM1][NUM_MENU_ITEM2]; /* 7 menus with 8 possible entries */
+static GtkWidget *phone_type_menu_item[NUM_MENU_ITEM1][NUM_MENU_ITEM2]; /* 8 menus with 8 possible entries */
 static GtkWidget *address_type_list_menu[3];
 static GtkWidget *address_type_menu_item[3][3]; /* 3 menus with 3 possible entries */
 static GtkWidget *IM_type_list_menu[2];
@@ -1747,20 +1747,23 @@ void addr_clear_details()
 	 if (phone_i==0) {
 	    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button[0]), TRUE);
 	 }
-	 gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
-					(phone_type_menu_item[phone_i][phone_i]), TRUE);
+	 if (phone_type_menu_item[phone_i][phone_i])
+	    gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
+		  (phone_type_menu_item[phone_i][phone_i]), TRUE);
 	 gtk_option_menu_set_history(GTK_OPTION_MENU(phone_type_list_menu[phone_i]), phone_i);
 	 phone_i++;
 	 break;
        case ADDRESS_GUI_IM_MENU_TEXT:
-	 gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
-					(IM_type_menu_item[IM_i][IM_i]), TRUE);
+	 if (IM_type_menu_item[IM_i][IM_i])
+	    gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
+		  (IM_type_menu_item[IM_i][IM_i]), TRUE);
 	 gtk_option_menu_set_history(GTK_OPTION_MENU(IM_type_list_menu[IM_i]), IM_i);
 	 IM_i++;
 	 break;
        case ADDRESS_GUI_ADDR_MENU_TEXT:
-	 gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
-					(address_type_menu_item[address_i][address_i]), TRUE);
+	 if (address_type_menu_item[address_i][address_i])
+	    gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
+		  (address_type_menu_item[address_i][address_i]), TRUE);
 	 gtk_option_menu_set_history(GTK_OPTION_MENU(address_type_list_menu[address_i]), address_i);
 	 address_i++;
 	 break;
@@ -2977,7 +2980,7 @@ static int make_phone_menu(int default_set, unsigned int callback_id, int set)
    menu = gtk_menu_new();
    group = NULL;
 
-   for (i=0; i<8; i++) {
+   for (i=0; i<NUM_MENU_ITEM2; i++) {
       if (contact_app_info.phoneLabels[i][0]) {
 	 phone_type_menu_item[set][i] = gtk_radio_menu_item_new_with_label(
 			group, contact_app_info.phoneLabels[i]);
