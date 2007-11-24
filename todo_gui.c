@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.111 2007/06/05 19:39:48 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.112 2007/11/24 17:16:14 rousseau Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -2117,10 +2117,16 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_clist_set_column_title(GTK_CLIST(clist), TODO_DATE_COLUMN, _("Due"));
    /* Put pretty pictures in the clist column headings */
    get_pixmaps(vbox, PIXMAP_NOTE, &pixmap, &mask);
+#ifdef __APPLE__
+   mask = NULL;
+#endif
    pixmapwid = gtk_pixmap_new(pixmap, mask);
    hack_clist_set_column_title_pixmap(clist, TODO_NOTE_COLUMN, pixmapwid);
 
    get_pixmaps(vbox, PIXMAP_BOX_CHECKED, &pixmap, &mask);
+#ifdef __APPLE__
+   mask = NULL;
+#endif
    pixmapwid = gtk_pixmap_new(pixmap, mask);
    hack_clist_set_column_title_pixmap(clist, TODO_CHECK_COLUMN, pixmapwid);
 

@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.146 2007/09/18 16:55:27 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.147 2007/11/24 17:18:28 rousseau Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -4294,16 +4294,25 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    /* Put pretty pictures in the clist column headings */
    get_pixmaps(vbox, PIXMAP_NOTE, &pixmap, &mask);
+#ifdef __APPLE__
+   mask = NULL;
+#endif
    pixmapwid = gtk_pixmap_new(pixmap, mask);
    hack_clist_set_column_title_pixmap(clist, DB_NOTE_COLUMN, pixmapwid);
 
    get_pixmaps(vbox, PIXMAP_ALARM, &pixmap, &mask);
+#ifdef __APPLE__
+   mask = NULL;
+#endif
    pixmapwid = gtk_pixmap_new(pixmap, mask);
    hack_clist_set_column_title_pixmap(clist, DB_ALARM_COLUMN, pixmapwid);
 
 #ifdef ENABLE_DATEBK
    if (use_db3_tags) {
       get_pixmaps(vbox, PIXMAP_FLOAT_CHECKED, &pixmap, &mask);
+#ifdef __APPLE__
+   mask = NULL;
+#endif
       pixmapwid = gtk_pixmap_new(pixmap, mask);
       hack_clist_set_column_title_pixmap(clist, DB_FLOAT_COLUMN, pixmapwid);
    }
@@ -4345,10 +4354,16 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_clist_set_column_title(GTK_CLIST(todo_clist), TODO_DATE_COLUMN, _("Due"));
    /* Put pretty pictures in the clist column headings */
    get_pixmaps(vbox, PIXMAP_NOTE, &pixmap, &mask);
+#ifdef __APPLE__
+   mask = NULL;
+#endif
    pixmapwid = gtk_pixmap_new(pixmap, mask);
    hack_clist_set_column_title_pixmap(todo_clist, TODO_NOTE_COLUMN, pixmapwid);
 
    get_pixmaps(vbox, PIXMAP_BOX_CHECKED, &pixmap, &mask);
+#ifdef __APPLE__
+   mask = NULL;
+#endif
    pixmapwid = gtk_pixmap_new(pixmap, mask);
    hack_clist_set_column_title_pixmap(todo_clist, TODO_CHECK_COLUMN, pixmapwid);
 
