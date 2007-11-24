@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.112 2007/11/24 17:16:14 rousseau Exp $ */
+/* $Id: todo_gui.c,v 1.113 2007/11/24 17:22:21 rousseau Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -1688,6 +1688,11 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    get_pixmaps(clist, PIXMAP_NOTE, &pixmap_note, &mask_note);
    get_pixmaps(clist, PIXMAP_BOX_CHECK, &pixmap_check, &mask_check);
    get_pixmaps(clist, PIXMAP_BOX_CHECKED, &pixmap_checked,&mask_checked);
+#ifdef __APPLE__
+   mask_note = NULL;
+   mask_check = NULL;
+   mask_checked = NULL;
+#endif
 
    entries_shown=0;
    show_priv = show_privates(GET_PRIVATES);
