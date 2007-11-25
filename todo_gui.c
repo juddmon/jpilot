@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.113 2007/11/24 17:22:21 rousseau Exp $ */
+/* $Id: todo_gui.c,v 1.114 2007/11/25 12:12:33 rousseau Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -1578,6 +1578,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 
    /*If they have clicked on the checkmark box then do a modify */
    if (column==0) {
+#if 0
       todo->complete = !(todo->complete);
       /* See if we need to mark the due date as the date completed */
       if (todo->complete) {
@@ -1596,6 +1597,8 @@ static void cb_clist_selection(GtkWidget      *clist,
 	 }
       }
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(todo_completed_checkbox), todo->complete);
+#endif
+      gtk_signal_emit_by_name(GTK_OBJECT(todo_completed_checkbox), "clicked");
       gtk_signal_emit_by_name(GTK_OBJECT(apply_record_button), "clicked");
    }
    connect_changed_signals(CONNECT_SIGNALS);
