@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.157 2007/11/07 02:27:31 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.158 2007/11/25 12:17:13 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -91,8 +91,6 @@
 #define MASK_HEIGHT 0x04
 #define MASK_X      0x02
 #define MASK_Y      0x01
-
-#define APP_BUTTON_SIZE 44
 
 
 GtkWidget *g_hbox, *g_vbox0;
@@ -2595,7 +2593,6 @@ char * xpm_backup[] = {
    button_datebook = gtk_button_new();
    gtk_signal_connect(GTK_OBJECT(button_datebook), "clicked",
 		      GTK_SIGNAL_FUNC(cb_app_button), GINT_TO_POINTER(DATEBOOK));
-   gtk_widget_set_usize(button_datebook, APP_BUTTON_SIZE, APP_BUTTON_SIZE);
    gtk_box_pack_start(GTK_BOX(g_vbox0), temp_hbox, FALSE, FALSE, 0);
    gtk_box_pack_start(GTK_BOX(temp_hbox), button_datebook, TRUE, FALSE, 0);
 
@@ -2604,7 +2601,6 @@ char * xpm_backup[] = {
    button_address = gtk_button_new();
    gtk_signal_connect(GTK_OBJECT(button_address), "clicked",
 		      GTK_SIGNAL_FUNC(cb_app_button), GINT_TO_POINTER(ADDRESS));
-   gtk_widget_set_usize(button_address, APP_BUTTON_SIZE, APP_BUTTON_SIZE);
    gtk_box_pack_start(GTK_BOX(g_vbox0), temp_hbox, FALSE, FALSE, 0);
    gtk_box_pack_start(GTK_BOX(temp_hbox), button_address, TRUE, FALSE, 0);
 
@@ -2613,7 +2609,6 @@ char * xpm_backup[] = {
    button_todo = gtk_button_new();
    gtk_signal_connect(GTK_OBJECT(button_todo), "clicked",
 		      GTK_SIGNAL_FUNC(cb_app_button), GINT_TO_POINTER(TODO));
-   gtk_widget_set_usize(button_todo, APP_BUTTON_SIZE, APP_BUTTON_SIZE);
    gtk_box_pack_start(GTK_BOX(g_vbox0), temp_hbox, FALSE, FALSE, 0);
    gtk_box_pack_start(GTK_BOX(temp_hbox), button_todo, TRUE, FALSE, 0);
 
@@ -2622,7 +2617,6 @@ char * xpm_backup[] = {
    button_memo = gtk_button_new();
    gtk_signal_connect(GTK_OBJECT(button_memo), "clicked",
 		      GTK_SIGNAL_FUNC(cb_app_button), GINT_TO_POINTER(MEMO));
-   gtk_widget_set_usize(button_memo, APP_BUTTON_SIZE, APP_BUTTON_SIZE);
    gtk_box_pack_start(GTK_BOX(g_vbox0), temp_hbox, FALSE, FALSE, 0);
    gtk_box_pack_start(GTK_BOX(temp_hbox), button_memo, TRUE, FALSE, 0);
 
