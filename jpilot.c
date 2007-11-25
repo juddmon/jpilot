@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.158 2007/11/25 12:17:13 rousseau Exp $ */
+/* $Id: jpilot.c,v 1.159 2007/11/25 12:19:21 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -2735,6 +2735,9 @@ char * xpm_backup[] = {
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
 					 &style->bg[GTK_STATE_NORMAL],
 					 datebook_xpm);
+#ifdef __APPLE__
+   mask = NULL;
+#endif
    pixmapwid = gtk_pixmap_new(pixmap, mask);
    gtk_widget_show(pixmapwid);
    gtk_container_add(GTK_CONTAINER(button_datebook), pixmapwid);
@@ -2744,6 +2747,9 @@ char * xpm_backup[] = {
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
 					 &style->bg[GTK_STATE_NORMAL],
 					 address_xpm);
+#ifdef __APPLE__
+   mask = NULL;
+#endif
    pixmapwid = gtk_pixmap_new(pixmap, mask);
    gtk_widget_show(pixmapwid);
    gtk_container_add(GTK_CONTAINER(button_address), pixmapwid);
@@ -2753,6 +2759,9 @@ char * xpm_backup[] = {
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
 					 &style->bg[GTK_STATE_NORMAL],
 					 todo_xpm);
+#ifdef __APPLE__
+   mask = NULL;
+#endif
    pixmapwid = gtk_pixmap_new(pixmap, mask);
    gtk_widget_show(pixmapwid);
    gtk_container_add(GTK_CONTAINER(button_todo), pixmapwid);
@@ -2762,6 +2771,9 @@ char * xpm_backup[] = {
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
 					 &style->bg[GTK_STATE_NORMAL],
 					 memo_xpm);
+#ifdef __APPLE__
+   mask = NULL;
+#endif
    pixmapwid = gtk_pixmap_new(pixmap, mask);
    gtk_widget_show(pixmapwid);
    gtk_container_add(GTK_CONTAINER(button_memo), pixmapwid);
@@ -2782,6 +2794,9 @@ char * xpm_backup[] = {
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
 					 &style->bg[GTK_STATE_NORMAL],
 					 xpm_locked);
+#ifdef __APPLE__
+   mask = NULL;
+#endif
    pixmapwid = gtk_pixmap_new(pixmap, mask);
    gtk_widget_show(pixmapwid);
    gtk_container_add(GTK_CONTAINER(button_locked), pixmapwid);
@@ -2790,6 +2805,9 @@ char * xpm_backup[] = {
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
 					 &style->bg[GTK_STATE_NORMAL],
 					 xpm_locked_masked);
+#ifdef __APPLE__
+   mask = NULL;
+#endif
    pixmapwid = gtk_pixmap_new(pixmap, mask);
    gtk_widget_show(pixmapwid);
    gtk_container_add(GTK_CONTAINER(button_locked_masked), pixmapwid);
@@ -2798,6 +2816,9 @@ char * xpm_backup[] = {
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
 					 &style->bg[GTK_STATE_NORMAL],
 					 xpm_unlocked);
+#ifdef __APPLE__
+   mask = NULL;
+#endif
    pixmapwid = gtk_pixmap_new(pixmap, mask);
    gtk_widget_show(pixmapwid);
    gtk_container_add(GTK_CONTAINER(button_unlocked), pixmapwid);
@@ -2806,6 +2827,9 @@ char * xpm_backup[] = {
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
 					 &style->bg[GTK_STATE_NORMAL],
 					 xpm_sync);
+#ifdef __APPLE__
+   mask = NULL;
+#endif
    pixmapwid = gtk_pixmap_new(pixmap, mask);
    gtk_widget_show(pixmapwid);
    gtk_container_add(GTK_CONTAINER(button_sync), pixmapwid);
@@ -2814,6 +2838,9 @@ char * xpm_backup[] = {
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
 					 &style->bg[GTK_STATE_NORMAL],
 					 xpm_backup);
+#ifdef __APPLE__
+   mask = NULL;
+#endif
    pixmapwid = gtk_pixmap_new(pixmap, mask);
    gtk_widget_show(pixmapwid);
    gtk_container_add(GTK_CONTAINER(button_backup), pixmapwid);
