@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.147 2007/11/24 14:58:11 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.148 2007/11/28 19:14:42 judd Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -1241,7 +1241,7 @@ static void cb_addr_update_clist(GtkWidget *clist, int category)
 static void cb_addr_export_done(GtkWidget *widget, const char *filename)
 {
    //free_AddressList(&export_contact_list);
-   free_ContactList(&export_contact_list);
+   jp_free_ContactList(&export_contact_list);
 
    set_pref(PREF_ADDRESS_EXPORT_FILENAME, 0, filename, TRUE);
 }
@@ -1661,7 +1661,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
 	    break;
 	  case ADDRESS_GUI_BIRTHDAY:
 	    if (contact_picture.data) {
-	       Contact_add_picture(&cont, &contact_picture);
+	       jp_Contact_add_picture(&cont, &contact_picture);
 	    }
 	    break;
 	 }
@@ -1691,7 +1691,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
 	 free_Address(&addr);
       } else {
 	 pc_contact_write(&cont, type, attrib, &unique_id);
-	 free_Contact(&cont);
+	 jp_free_Contact(&cont);
       }
 
       address_clist_redraw();
@@ -2652,7 +2652,7 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    char *tmp_delim1, *tmp_delim2;
    AddressList *addr_list;
 
-   free_ContactList(cont_list);
+   jp_free_ContactList(cont_list);
 
    if (address_version==0) {
       addr_list = NULL;
@@ -3208,8 +3208,8 @@ int address_gui_cleanup()
    changed_list=NULL;
 
    //undo free_AddressList(&glob_address_list);
-   free_ContactList(&glob_contact_list);
-   free_ContactList(&export_contact_list);
+   jp_free_ContactList(&glob_contact_list);
+   jp_free_ContactList(&export_contact_list);
    connect_changed_signals(DISCONNECT_SIGNALS);
 #ifdef ENABLE_GTK2
    set_pref(PREF_ADDRESS_PANE, gtk_paned_get_position(GTK_PANED(pane)), NULL, TRUE);

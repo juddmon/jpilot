@@ -140,19 +140,19 @@ extern "C" {
 		char IMLabels[5][16];		/* Duplication of some labels, to greatly reduce hair 	*/
 	};
 
-	extern void free_Contact PI_ARGS((struct Contact *));
-	extern int unpack_Contact
+	extern void jp_free_Contact PI_ARGS((struct Contact *));
+	extern int jp_unpack_Contact
 	    PI_ARGS((struct Contact *, pi_buffer_t *));
-	extern int pack_Contact
+	extern int jp_pack_Contact
 	    PI_ARGS((struct Contact *, pi_buffer_t *));
-	extern int unpack_ContactAppInfo
+	extern int jp_unpack_ContactAppInfo
 	    PI_ARGS((struct ContactAppInfo *, pi_buffer_t *));
-	extern int pack_ContactAppInfo
+	extern int jp_pack_ContactAppInfo
 	    PI_ARGS((struct ContactAppInfo *, pi_buffer_t *buf));
 
-	extern int Contact_add_blob
+	extern int jp_Contact_add_blob
 	    PI_ARGS((struct Contact *, struct ContactBlob *));
-	extern int Contact_add_picture
+	extern int jp_Contact_add_picture
 	    PI_ARGS((struct Contact *, struct ContactPicture *));
 
 #ifdef __cplusplus

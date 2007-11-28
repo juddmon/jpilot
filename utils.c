@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.131 2007/11/06 20:12:45 rikster5 Exp $ */
+/* $Id: utils.c,v 1.132 2007/11/28 19:14:42 judd Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -31,9 +31,9 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <jp-pi-contact.h>
 #include <pi-datebook.h>
 #include <pi-address.h>
-#include <jp-pi-contact.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/file.h>
@@ -2141,14 +2141,14 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
        case CONTACTS:
 	 cont=&mcont->cont;
 	 /* memset(&cont, 0, sizeof(cont)); */
-	 //header.rec_len = pack_Contact(cont, record, sizeof(record)-1);
+	 //header.rec_len = jp_pack_Contact(cont, record, sizeof(record)-1);
 	 //if (!header.rec_len) {
 	 //   PRINT_FILE_LINE;
-	 //   jp_logf(JP_LOG_WARN, "pack_Contact %s\n", _("error"));
+	 //   jp_logf(JP_LOG_WARN, "jp_pack_Contact %s\n", _("error"));
 	 //}
-	 if (pack_Contact(cont, RecordBuffer) == -1) {
+	 if (jp_pack_Contact(cont, RecordBuffer) == -1) {
 	    PRINT_FILE_LINE;
-	    jp_logf(JP_LOG_WARN, "pack_Contact %s\n", _("error"));
+	    jp_logf(JP_LOG_WARN, "jp_pack_Contact %s\n", _("error"));
 	 }
 	 break;
        case TODO:
@@ -2195,10 +2195,10 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
        case CONTACTS:
 	 cont=&mcont->cont;
 	 /* memset(&cont, 0, sizeof(cont)); */
-	 header.rec_len = pack_Contact(cont, record, sizeof(record)-1);
+	 header.rec_len = jp_pack_Contact(cont, record, sizeof(record)-1);
 	 if (!header.rec_len) {
 	    PRINT_FILE_LINE;
-	    jp_logf(JP_LOG_WARN, "pack_Contact %s\n", _("error"));
+	    jp_logf(JP_LOG_WARN, "jp_pack_Contact %s\n", _("error"));
 	 }
 	 break;
        case TODO:

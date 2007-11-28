@@ -1,4 +1,4 @@
-/* $Id: contact.c,v 1.1 2007/10/23 18:29:13 judd Exp $ */
+/* $Id: contact.c,v 1.2 2007/11/28 19:14:42 judd Exp $ */
 
 /*******************************************************************************
  * contact.c
@@ -328,10 +328,10 @@ int pc_contact_write(struct Contact *cont, PCRecType rt, unsigned char attrib,
    }
 
    RecordBuffer = pi_buffer_new(0);
-   pack_Contact(cont, RecordBuffer);
+   jp_pack_Contact(cont, RecordBuffer);
    if (!RecordBuffer->used) {
       PRINT_FILE_LINE;
-      jp_logf(JP_LOG_WARN, "pack_Contact %s\n", _("error"));
+      jp_logf(JP_LOG_WARN, "jp_pack_Contact %s\n", _("error"));
       pi_buffer_free(RecordBuffer);
       return EXIT_FAILURE;
    }
@@ -363,12 +363,12 @@ int pc_contact_write(struct Contact *cont, PCRecType rt, unsigned char attrib,
    return EXIT_SUCCESS;
 }
 
-void free_ContactList(ContactList **cl)
+void jp_free_ContactList(ContactList **cl)
 {
    ContactList *temp_cl, *temp_cl_next;
 
    for (temp_cl = *cl; temp_cl; temp_cl=temp_cl_next) {
-      free_Contact(&(temp_cl->mcont.cont));
+      jp_free_Contact(&(temp_cl->mcont.cont));
       temp_cl_next = temp_cl->next;
       free(temp_cl);
    }
@@ -388,12 +388,12 @@ int get_contact_app_info(struct ContactAppInfo *ai)
    strcpy(ai->category.name[0], "Unfiled");
 
    jp_get_app_info("ContactsDB-PAdd", &buf, &rec_size);
-   //num = unpack_ContactAppInfo(ai, buf, rec_size);
+   //num = jp_unpack_ContactAppInfo(ai, buf, rec_size);
    pi_buf.data = buf;
    pi_buf.used = rec_size;
    pi_buf.allocated = rec_size;
 
-   num = unpack_ContactAppInfo(ai, &pi_buf);
+   num = jp_unpack_ContactAppInfo(ai, &pi_buf);
 
    if (buf) {
       free(buf);
@@ -534,8 +534,8 @@ int get_contacts2(ContactList **contact_list, int sort_order,
       pi_buf.data = br->buf;
       pi_buf.used = br->size;
       pi_buf.allocated = br->size;
-      //num = unpack_Contact(&cont, br->buf, br->size);
-      num = unpack_Contact(&cont, &pi_buf);
+      //num = jp_unpack_Contact(&cont, br->buf, br->size);
+      num = jp_unpack_Contact(&cont, &pi_buf);
 //#else /* PILOT_LINK_0_12 */
 //      RecordBuffer = pi_buffer_new(br->size);
 //      memcpy(RecordBuffer->data, br->buf, br->size);
@@ -547,7 +547,7 @@ int get_contacts2(ContactList **contact_list, int sort_order,
 	 continue;
       }
 //#else /* PILOT_LINK_0_12 */
-//      if (unpack_Contact(&cont, RecordBuffer, contact_v1) == -1) {
+//      if (jp_unpack_Contact(&cont, RecordBuffer, contact_v1) == -1) {
 //	 pi_buffer_free(RecordBuffer);
 //	 continue;
 //      }

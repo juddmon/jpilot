@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.79 2007/11/20 22:05:20 rousseau Exp $ */
+/* $Id: sync.c,v 1.80 2007/11/28 19:14:42 judd Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -3082,9 +3082,9 @@ int unpack_contact_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_ra
    pi_buf.data = ai_raw;
    pi_buf.used = len;
    pi_buf.allocated = len;
-   r = unpack_ContactAppInfo(&ai, &pi_buf);
+   r = jp_unpack_ContactAppInfo(&ai, &pi_buf);
    if ((r <= 0) || (len <= 0)) {
-      jp_logf(JP_LOG_DEBUG, "unpack_ContactAppInfo failed %s %d\n", __FILE__, __LINE__);
+      jp_logf(JP_LOG_DEBUG, "jp_unpack_ContactAppInfo failed %s %d\n", __FILE__, __LINE__);
       return EXIT_FAILURE;
    }
    memcpy(cai, &(ai.category), sizeof(struct CategoryAppInfo));
@@ -3103,22 +3103,22 @@ int pack_contact_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw,
    pi_buffer_new(len);
    pi_buffer_append(pi_buf, ai_raw, len);
 
-   r = unpack_ContactAppInfo(&ai, pi_buf);
+   r = jp_unpack_ContactAppInfo(&ai, pi_buf);
    if (r <= 0) {
-      jp_logf(JP_LOG_DEBUG, "unpack_ContactAppInfo failed %s %d\n", __FILE__, __LINE__);
+      jp_logf(JP_LOG_DEBUG, "jp_unpack_ContactAppInfo failed %s %d\n", __FILE__, __LINE__);
       pi_buffer_free(pi_buf);
       return EXIT_FAILURE;
    }
    memcpy(&(ai.category), cai, sizeof(struct CategoryAppInfo));
 
-   //r = pack_ContactAppInfo(&ai, ai_raw, len);
-   r = pack_ContactAppInfo(&ai, pi_buf);
+   //r = jp_pack_ContactAppInfo(&ai, ai_raw, len);
+   r = jp_pack_ContactAppInfo(&ai, pi_buf);
    //undo check buffer sizes
    memcpy(ai_raw, pi_buf->data, pi_buf->used);
    pi_buffer_free(pi_buf);
 
    if (r <= 0) {
-      jp_logf(JP_LOG_DEBUG, "pack_ContactAppInfo failed %s %d\n", __FILE__, __LINE__);
+      jp_logf(JP_LOG_DEBUG, "jp_pack_ContactAppInfo failed %s %d\n", __FILE__, __LINE__);
       return EXIT_FAILURE;
    }
 

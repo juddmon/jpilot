@@ -1,4 +1,4 @@
-/* $Id: jp-contact.c,v 1.1 2007/10/23 18:29:13 judd Exp $ */
+/* $Id: jp-contact.c,v 1.2 2007/11/28 19:14:42 judd Exp $ */
 
 /*******************************************************************************
  * contact.c:  Translate Palm contact data formats
@@ -35,7 +35,7 @@
  
 /***********************************************************************
  *
- * Function:    free_Contact
+ * Function:    jp_free_Contact
  *
  * Summary:   Free the members of an contact structure
  *
@@ -44,7 +44,7 @@
  * Returns:     Nothing
  *
  ***********************************************************************/
-void free_Contact(struct Contact *c)
+void jp_free_Contact(struct Contact *c)
 {
 	int 	i;
 
@@ -63,7 +63,7 @@ void free_Contact(struct Contact *c)
 
 /***********************************************************************
  *
- * Function:    unpack_Contact
+ * Function:    jp_unpack_Contact
  *
  * Summary:     Fill in the contact structure based on the raw record 
  *            data
@@ -74,7 +74,7 @@ void free_Contact(struct Contact *c)
  *            buffer otherwise
  *
  ***********************************************************************/
-int unpack_Contact(struct Contact *c, pi_buffer_t *buf)
+int jp_unpack_Contact(struct Contact *c, pi_buffer_t *buf)
 //contactsType type param ???
 {
 	unsigned long contents1;
@@ -220,7 +220,7 @@ int unpack_Contact(struct Contact *c, pi_buffer_t *buf)
 
 /***********************************************************************
  *
- * Function:    pack_Contact
+ * Function:    jp_pack_Contact
  *
  * Summary:     Fill in the raw contact record data based on the 
  *		contact structure
@@ -233,7 +233,7 @@ int unpack_Contact(struct Contact *c, pi_buffer_t *buf)
  *
  ***********************************************************************/
 //contactsType type parameter???
-int pack_Contact(struct Contact *c, pi_buffer_t *buf)
+int jp_pack_Contact(struct Contact *c, pi_buffer_t *buf)
 {
 	int l, destlen = 17;
 
@@ -365,7 +365,7 @@ int pack_Contact(struct Contact *c, pi_buffer_t *buf)
 
 /***********************************************************************
  *
- * Function:    Contact_add_blob
+ * Function:    jp_Contact_add_blob
  *
  * Summary:     Add a blob record to a Contact Record
  *
@@ -376,7 +376,7 @@ int pack_Contact(struct Contact *c, pi_buffer_t *buf)
  *              1 on other error
  *
  ***********************************************************************/
-int Contact_add_blob(struct Contact *c, struct ContactBlob *blob)
+int jp_Contact_add_blob(struct Contact *c, struct ContactBlob *blob)
 {
 	int v;
 	for (v=0; v<MAX_CONTACT_BLOBS; v++) {
@@ -397,7 +397,7 @@ int Contact_add_blob(struct Contact *c, struct ContactBlob *blob)
 
 /***********************************************************************
  *
- * Function:    Contact_add_picture
+ * Function:    jp_Contact_add_picture
  *
  * Summary:     Add a picture blob record to a Contact Record
  *  This will add a blob, but not touch the picture structure of the
@@ -410,7 +410,7 @@ int Contact_add_blob(struct Contact *c, struct ContactBlob *blob)
  *              1 on other error
  *
  ***********************************************************************/
-int Contact_add_picture(struct Contact *c, struct ContactPicture *p)
+int jp_Contact_add_picture(struct Contact *c, struct ContactPicture *p)
 {
 	int v;
 
@@ -436,7 +436,7 @@ int Contact_add_picture(struct Contact *c, struct ContactPicture *p)
   
 /***********************************************************************
  *
- * Function:    unpack_ContactAppInfo
+ * Function:    jp_unpack_ContactAppInfo
  *
  * Summary:     Fill in the app info structure based on the raw app 
  *		info data
@@ -448,7 +448,7 @@ int Contact_add_picture(struct Contact *c, struct ContactPicture *p)
  *		buffer otherwise
  *
  ***********************************************************************/
-int unpack_ContactAppInfo(struct ContactAppInfo *ai, pi_buffer_t *buf)
+int jp_unpack_ContactAppInfo(struct ContactAppInfo *ai, pi_buffer_t *buf)
 {
 	int i, j, destlen;
 	unsigned char *start, *Pbuf;
@@ -463,7 +463,7 @@ int unpack_ContactAppInfo(struct ContactAppInfo *ai, pi_buffer_t *buf)
 		ai->version = 11;
 		ai->num_labels=53;
 	} else {
-		fprintf(stderr, "contact.c: unpack_ContactAppInfo: ContactAppInfo size of %d incorrect\n", len);
+		fprintf(stderr, "contact.c: jp_unpack_ContactAppInfo: ContactAppInfo size of %d incorrect\n", len);
 		return -1;
 	}
 
@@ -513,7 +513,7 @@ int unpack_ContactAppInfo(struct ContactAppInfo *ai, pi_buffer_t *buf)
 
 /***********************************************************************
  *
- * Function:    pack_ContactAppInfo
+ * Function:    jp_pack_ContactAppInfo
  *
  * Summary:     Fill in the raw app info record data based on the
  *		ContactAppInfo structure
@@ -525,7 +525,7 @@ int unpack_ContactAppInfo(struct ContactAppInfo *ai, pi_buffer_t *buf)
  *		buffer otherwise
  *
  ***********************************************************************/
-int pack_ContactAppInfo(struct ContactAppInfo *ai, pi_buffer_t *buf)
+int jp_pack_ContactAppInfo(struct ContactAppInfo *ai, pi_buffer_t *buf)
 {
 	int i;
 	int destlen;
