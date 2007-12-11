@@ -1,4 +1,4 @@
-/* $Id: log.c,v 1.27 2007/12/11 17:59:51 judd Exp $ */
+/* $Id: log.c,v 1.28 2007/12/11 20:21:05 rousseau Exp $ */
 
 /*******************************************************************************
  * log.c
@@ -97,7 +97,10 @@ int jp_vlogf (int level, char *format, va_list val) {
       return EXIT_FAILURE;
    }
    if ((!fp) && (err_count<10)) {
-      fp = jp_open_home_file(EPN".log", "w");
+      char fullname[FILENAME_MAX];
+      get_home_file_name(EPN".log", fullname, sizeof(fullname));
+
+      fp = fopen(fullname, "w");
       if (!fp) {
 	 fprintf(stderr, _("Unable to open log file\n"));
 	 err_count++;
