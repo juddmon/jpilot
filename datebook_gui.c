@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.147 2007/11/24 17:18:28 rousseau Exp $ */
+/* $Id: datebook_gui.c,v 1.148 2007/12/12 23:13:26 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -2556,6 +2556,26 @@ time_t date2seconds(struct tm *date)
 
    return mktime(&date2);
 }
+/* fix - move this to utils? */
+int find_next_rpt_event(struct Appointment *appt,
+			struct tm *srch_start_tm,
+                        struct tm *next_tm)
+{
+   struct tm prev_tm;
+   int prev_found, next_found;
+
+   find_prev_next(appt,
+                  0,
+                  srch_start_tm,
+                  srch_start_tm,
+                  &prev_tm,
+                  next_tm,
+                  &prev_found,
+                  &next_found);
+
+   return next_found;
+
+}
 
 static void cb_add_new_record(GtkWidget *widget,
 			      gpointer   data)
@@ -2571,6 +2591,9 @@ static void cb_add_new_record(GtkWidget *widget,
    int show_priv;
    unsigned int unique_id;
    time_t t_begin, t_end;
+   struct tm tm_next;
+   int next_found;
+
 
    jp_logf(JP_LOG_DEBUG, "cb_add_new_record\n");
 
@@ -2624,7 +2647,28 @@ static void cb_add_new_record(GtkWidget *widget,
       free_Appointment(&new_appt);
       return;
    }
-   /* Do some validation */
+
+   /* Validate dates for repeating events */
+   if (new_appt.repeatType != repeatNone)
+   {
+      next_found = find_next_rpt_event(&new_appt, &(new_appt.begin), &tm_next);
+
+      if (next_found) {
+         jp_logf(JP_LOG_DEBUG, "Repeat event begin day shifted from %d to %d\n", 
+                                new_appt.begin.tm_mday, tm_next.tm_mday);
+         new_appt.begin.tm_year = tm_next.tm_year; 
+         new_appt.begin.tm_mon = tm_next.tm_mon; 
+         new_appt.begin.tm_mday = tm_next.tm_mday; 
+         new_appt.begin.tm_isdst = -1;
+         mktime(&(new_appt.begin));
+         new_appt.end.tm_year = tm_next.tm_year; 
+         new_appt.end.tm_mon = tm_next.tm_mon; 
+         new_appt.end.tm_mday = tm_next.tm_mday; 
+         new_appt.end.tm_isdst = -1;
+         mktime(&(new_appt.end));
+      }
+   }
+
    if ((new_appt.repeatType != repeatNone) && (!(new_appt.repeatForever))) {
       t_begin = date2seconds(&(new_appt.begin));
       t_end = date2seconds(&(new_appt.repeatEnd));
@@ -2702,6 +2746,7 @@ static void cb_add_new_record(GtkWidget *widget,
       pc_datebook_write(&new_appt, NEW_PC_REC, attrib, &unique_id);
       /* FIXME - what should happen here is that the calendar should be
          positioned on the or the next future occurrence */
+      // %RW : should call search routine find_next at this point
       gtk_calendar_freeze(GTK_CALENDAR(main_calendar));
       /* Unselect current day before changing to a new month.  
        * This prevents a GTK error when the new month does not have the

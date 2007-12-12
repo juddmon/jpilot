@@ -1,4 +1,4 @@
-/* $Id: alarms.h,v 1.4 2004/11/22 00:52:42 rikster5 Exp $ */
+/* $Id: alarms.h,v 1.5 2007/12/12 23:13:26 rikster5 Exp $ */
 
 /*******************************************************************************
  * alarms.h
@@ -29,3 +29,19 @@ int alarms_init(unsigned char skip_past_alarms,
  * date1, and date2 can be NULL, meaning the current time.
  */
 int alarms_find_next(struct tm *date1, struct tm *date2, int soonest_only);
+
+/* 
+ * Finds the previous and next occurrences of a repeating event between
+ * date1 and date2. 
+ * Used to position datebook calendar correctly.
+ */
+int find_prev_next(struct Appointment *appt,
+			  time_t adv,
+			  struct tm *date1,
+			  struct tm *date2,
+			  struct tm *tm_prev,
+			  struct tm *tm_next,
+			  int *prev_found,
+			  int *next_found);
+
+

@@ -1,4 +1,4 @@
-/* $Id: alarms.c,v 1.42 2007/10/10 17:07:33 rikster5 Exp $ */
+/* $Id: alarms.c,v 1.43 2007/12/12 23:13:26 rikster5 Exp $ */
 
 /*******************************************************************************
  * alarms.c
@@ -882,7 +882,7 @@ int forward_backward_in_appt_time(const struct Appointment *appt,
  *   Alternatively the C math functions such as floor could be used but there 
  *   seems little point in invoking such overhead.
  */
-static int find_prev_next(struct Appointment *appt,
+int find_prev_next(struct Appointment *appt,
 			  time_t adv,
 			  struct tm *date1,
 			  struct tm *date2,
