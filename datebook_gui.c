@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.148 2007/12/12 23:13:26 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.149 2007/12/13 00:12:46 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -2591,10 +2591,11 @@ static void cb_add_new_record(GtkWidget *widget,
    int show_priv;
    unsigned int unique_id;
    time_t t_begin, t_end;
-   struct tm tm_next;
+   struct tm next_tm;
    int next_found;
-
-
+   time_t ltime;
+   struct tm *now;
+   
    jp_logf(JP_LOG_DEBUG, "cb_add_new_record\n");
 
    unique_id=0;
@@ -2651,19 +2652,19 @@ static void cb_add_new_record(GtkWidget *widget,
    /* Validate dates for repeating events */
    if (new_appt.repeatType != repeatNone)
    {
-      next_found = find_next_rpt_event(&new_appt, &(new_appt.begin), &tm_next);
+      next_found = find_next_rpt_event(&new_appt, &(new_appt.begin), &next_tm);
 
       if (next_found) {
          jp_logf(JP_LOG_DEBUG, "Repeat event begin day shifted from %d to %d\n", 
-                                new_appt.begin.tm_mday, tm_next.tm_mday);
-         new_appt.begin.tm_year = tm_next.tm_year; 
-         new_appt.begin.tm_mon = tm_next.tm_mon; 
-         new_appt.begin.tm_mday = tm_next.tm_mday; 
+                                new_appt.begin.tm_mday, next_tm.tm_mday);
+         new_appt.begin.tm_year = next_tm.tm_year; 
+         new_appt.begin.tm_mon = next_tm.tm_mon; 
+         new_appt.begin.tm_mday = next_tm.tm_mday; 
          new_appt.begin.tm_isdst = -1;
          mktime(&(new_appt.begin));
-         new_appt.end.tm_year = tm_next.tm_year; 
-         new_appt.end.tm_mon = tm_next.tm_mon; 
-         new_appt.end.tm_mday = tm_next.tm_mday; 
+         new_appt.end.tm_year = next_tm.tm_year; 
+         new_appt.end.tm_mon = next_tm.tm_mon; 
+         new_appt.end.tm_mday = next_tm.tm_mday; 
          new_appt.end.tm_isdst = -1;
          mktime(&(new_appt.end));
       }
@@ -2744,9 +2745,23 @@ static void cb_add_new_record(GtkWidget *widget,
    } else {
       unique_id=0; /* Has to be zero */
       pc_datebook_write(&new_appt, NEW_PC_REC, attrib, &unique_id);
-      /* FIXME - what should happen here is that the calendar should be
-         positioned on the or the next future occurrence */
-      // %RW : should call search routine find_next at this point
+   }
+
+   /* Position calendar on the actual event or next future occurrence depending
+    * on what is closest to the current date */
+   if ((flag!=COPY_FLAG))
+   {
+      if (new_appt.repeatType == repeatNone) {
+         memcpy(&next_tm, &(new_appt.begin), sizeof(next_tm)); 
+      } else {
+         time(&ltime);
+         now = localtime(&ltime);
+         next_found = find_next_rpt_event(&new_appt, now, &next_tm);
+         if (!next_found) {
+            memcpy(&next_tm, &(new_appt.begin), sizeof(next_tm)); 
+         }
+      }
+
       gtk_calendar_freeze(GTK_CALENDAR(main_calendar));
       /* Unselect current day before changing to a new month.  
        * This prevents a GTK error when the new month does not have the
@@ -2754,11 +2769,11 @@ static void cb_add_new_record(GtkWidget *widget,
        * Feb. 31 */
       gtk_calendar_select_day(GTK_CALENDAR(main_calendar), 0);
       gtk_calendar_select_month(GTK_CALENDAR(main_calendar),
-				new_appt.begin.tm_mon, 
-				new_appt.begin.tm_year+1900);
-      gtk_calendar_select_day(GTK_CALENDAR(main_calendar), new_appt.begin.tm_mday);
+				next_tm.tm_mon, 
+				next_tm.tm_year+1900);
+      gtk_calendar_select_day(GTK_CALENDAR(main_calendar), next_tm.tm_mday);
       gtk_calendar_thaw(GTK_CALENDAR(main_calendar));
-   }
+   } 
 
    free_Appointment(&new_appt);
 
