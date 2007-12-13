@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.132 2007/11/28 19:14:42 judd Exp $ */
+/* $Id: utils.c,v 1.133 2007/12/13 22:01:48 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -2088,6 +2088,9 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 	       write_header(pc_in, &header);
 	       jp_logf(JP_LOG_DEBUG, "record deleted\n");
 	       jp_close_home_file(pc_in);
+#ifdef PILOT_LINK_0_12
+	       pi_buffer_free(RecordBuffer);
+#endif
 	       return EXIT_SUCCESS;
 	    }
 	 } else {
@@ -2098,10 +2101,10 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 	 }
       }
 
+      jp_close_home_file(pc_in);
 #ifdef PILOT_LINK_0_12
       pi_buffer_free(RecordBuffer);
 #endif
-      jp_close_home_file(pc_in);
       return EXIT_FAILURE;
 
     case PALM_REC:
@@ -2222,9 +2225,6 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 	 break;
        default:
 	 jp_close_home_file(pc_in);
-#ifdef PILOT_LINK_0_12
-	 pi_buffer_free(RecordBuffer);
-#endif /* PILOT_LINK_0_12 */
 	 return EXIT_SUCCESS;
       } /* switch */
 #endif
