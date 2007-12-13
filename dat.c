@@ -1,4 +1,4 @@
-/* $Id: dat.c,v 1.17 2005/08/07 19:12:20 rousseau Exp $ */
+/* $Id: dat.c,v 1.18 2007/12/13 02:53:30 rikster5 Exp $ */
 
 /*******************************************************************************
  * dat.c
@@ -322,7 +322,7 @@ int get_repeat(FILE *in, struct Appointment *appt)
       break;
     case MONTHLY_BY_DAY:
       fread(str_long, 4, 1, in);
-      l = x86_long(str_long);
+      s = x86_long(str_long);
 #ifdef JPILOT_DEBUG
       printf("Day Index = %d\n", l);
 #endif
@@ -332,6 +332,8 @@ int get_repeat(FILE *in, struct Appointment *appt)
 #ifdef JPILOT_DEBUG
       printf("Week Index = %d\n", l);
 #endif
+
+      appt->repeatDay = 7*l + s;
       break;
     case MONTHLY_BY_DATE:
       fread(str_long, 4, 1, in);
