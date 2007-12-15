@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.133 2007/12/13 22:01:48 rikster5 Exp $ */
+/* $Id: utils.c,v 1.134 2007/12/15 21:13:22 judd Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -1977,7 +1977,6 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 #else /* not PILOT_LINK_0_12 */
    unsigned char record[65536];
 #endif
-//   unsigned char record[65536];
    PCRecType record_type;
    unsigned int unique_id;
    long ivalue, memo_version;
