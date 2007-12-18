@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.150 2007/12/18 00:41:42 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.151 2007/12/18 01:30:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -1512,6 +1512,8 @@ static void init()
 {
    time_t ltime;
    struct tm *now;
+   struct tm next_tm;
+   int next_found;
    AppointmentList *a_list;
    AppointmentList *temp_al;
 #ifdef ENABLE_DATEBK
@@ -1548,11 +1550,27 @@ static void init()
       for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
 	 if (temp_al->mappt.unique_id == glob_find_id) {
 	    jp_logf(JP_LOG_DEBUG, "init() found glob_find_id\n");
-	    current_month = temp_al->mappt.appt.begin.tm_mon;
-	    current_day = temp_al->mappt.appt.begin.tm_mday;
-	    current_year = temp_al->mappt.appt.begin.tm_year;
-	    break;
-	 }
+            /* Position calendar on the actual event or 
+             * next future occurrence depending  
+             * on what is closest to the current date */
+            if (temp_al->mappt.appt.repeatType == repeatNone) {
+                next_found = 0;
+            } else {
+                next_found = find_next_rpt_event(&(temp_al->mappt.appt), 
+                                                 now, &next_tm);
+            }
+
+            if (!next_found) {
+               current_month = temp_al->mappt.appt.begin.tm_mon;
+               current_day = temp_al->mappt.appt.begin.tm_mday;
+               current_year = temp_al->mappt.appt.begin.tm_year;
+            } else {
+               current_month = next_tm.tm_mon;
+               current_day = next_tm.tm_mday;
+               current_year = next_tm.tm_year;
+            }
+
+         }
       }
       free_AppointmentList(&a_list);
    }
