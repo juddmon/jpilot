@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.58 2007/10/25 18:53:33 rousseau Exp $ */
+/* $Id: utils.h,v 1.59 2007/12/18 00:41:42 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -471,6 +471,23 @@ int sub_months_from_date(struct tm *date, int n);
 int add_years_to_date(struct tm *date, int n);
 
 int sub_years_from_date(struct tm *date, int n);
+
+time_t mktime_dst_adj(struct tm *tm);
+
+int dateToDays(struct tm *tm1);
+
+int find_prev_next(struct Appointment *appt,
+                   time_t adv,
+                   struct tm *date1,
+                   struct tm *date2,
+                   struct tm *tm_prev,
+                   struct tm *tm_next,
+                   int *prev_found,
+		   int *next_found);
+
+int find_next_rpt_event(struct Appointment *appt,
+                        struct tm *srch_start_tm,
+                        struct tm *next_tm);
 
 /*from jpilot.c */
 void cb_app_button(GtkWidget *widget, gpointer data);

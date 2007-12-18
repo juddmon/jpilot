@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.149 2007/12/13 00:12:46 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.150 2007/12/18 00:41:42 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -2555,26 +2555,6 @@ time_t date2seconds(struct tm *date)
    date2.tm_isdst=date->tm_isdst;
 
    return mktime(&date2);
-}
-/* fix - move this to utils? */
-int find_next_rpt_event(struct Appointment *appt,
-			struct tm *srch_start_tm,
-                        struct tm *next_tm)
-{
-   struct tm prev_tm;
-   int prev_found, next_found;
-
-   find_prev_next(appt,
-                  0,
-                  srch_start_tm,
-                  srch_start_tm,
-                  &prev_tm,
-                  next_tm,
-                  &prev_found,
-                  &next_found);
-
-   return next_found;
-
 }
 
 static void cb_add_new_record(GtkWidget *widget,
