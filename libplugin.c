@@ -1,4 +1,4 @@
-/* $Id: libplugin.c,v 1.31 2007/10/25 18:53:32 rousseau Exp $ */
+/* $Id: libplugin.c,v 1.32 2007/12/18 21:00:57 rousseau Exp $ */
 
 /*******************************************************************************
  * libplugin.c
@@ -33,6 +33,7 @@
 
 #include "libplugin.h"
 #include "i18n.h"
+#include "utils.h"
 
 void jp_init()
 {
@@ -214,19 +215,19 @@ int write_header(FILE *pc_out, PC3RecordHeader *header)
    return len;
 }
 
-int get_home_file_name(char *file, char *full_name, int max_size);
+int jp_get_home_file_name(char *file, char *full_name, int max_size);
 int jp_get_home_file_name(char *file, char *full_name, int max_size)
 {
    return get_home_file_name(file, full_name, max_size);
 }
 
-int pdb_file_write_app_block(char *DB_name, void *bufp, int size_in);
+int jp_pdb_file_write_app_block(char *DB_name, void *bufp, int size_in);
 int jp_pdb_file_write_app_block(char *DB_name, void *bufp, int size_in)
 {
    return pdb_file_write_app_block(DB_name, bufp, size_in);
 }
 
-int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai);
+int jp_edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai);
 int jp_edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
 {
    return edit_cats(widget, db_name, cai);
@@ -301,7 +302,7 @@ int jp_install_append_line(char *line)
 
 /*returns 1 if found */
 /*        0 if eof */
-static int find_next_offset(mem_rec_header *mem_rh, long fpos,
+static int static_find_next_offset(mem_rec_header *mem_rh, long fpos,
 			    long *next_offset,
 			    unsigned char *attrib, unsigned int *unique_id)
 {
@@ -324,7 +325,7 @@ static int find_next_offset(mem_rec_header *mem_rh, long fpos,
    return found;
 }
 
-static void free_mem_rec_header(mem_rec_header **mem_rh)
+static void static_free_mem_rec_header(mem_rec_header **mem_rh)
 {
    mem_rec_header *h, *next_h;
 
@@ -846,7 +847,7 @@ int jp_read_DB_files(char *DB_name, GList **records)
    temp_mem_rh = mem_rh;
    if (num_records) {
       if (out_of_order) {
-	 ret=find_next_offset(mem_rh, 0, &next_offset, &attrib, &unique_id);
+	 ret=static_find_next_offset(mem_rh, 0, &next_offset, &attrib, &unique_id);
       } else {
 	 if (mem_rh) {
 	    next_offset = mem_rh->offset;
@@ -858,7 +859,7 @@ int jp_read_DB_files(char *DB_name, GList **records)
       while(!feof(in)) {
 	 fpos = ftell(in);
 	 if (out_of_order) {
-	    ret = find_next_offset(mem_rh, fpos, &next_offset, &attrib, &unique_id);
+	    ret = static_find_next_offset(mem_rh, fpos, &next_offset, &attrib, &unique_id);
 	    if (!ret) {
 	       /* Next offset should be end of file */
 	       fseek(in, 0, SEEK_END);
@@ -935,7 +936,7 @@ int jp_read_DB_files(char *DB_name, GList **records)
    }
    jp_close_home_file(in);
 
-   free_mem_rec_header(&mem_rh);
+   static_free_mem_rec_header(&mem_rh);
    /* */
    /* Get the appointments out of the PC database */
    /* */
