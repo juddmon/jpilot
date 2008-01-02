@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.151 2007/12/18 01:30:07 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.152 2008/01/02 16:05:35 rousseau Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -2256,12 +2256,20 @@ static int datebook_update_clist()
    show_priv = show_privates(GET_PRIVATES);
    get_pixmaps(scrolled_window, PIXMAP_NOTE, &pixmap_note, &mask_note);
    get_pixmaps(scrolled_window, PIXMAP_ALARM,&pixmap_alarm, &mask_alarm);
+#ifdef __APPLE__
+   mask_note = NULL;
+   mask_alarm = NULL;
+#endif
 #  ifdef ENABLE_DATEBK
    get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
    get_pixmaps(scrolled_window, PIXMAP_FLOAT_CHECK,
 	       &pixmap_float_check, &mask_float_check);
    get_pixmaps(scrolled_window, PIXMAP_FLOAT_CHECKED,
 	       &pixmap_float_checked, &mask_float_checked);
+#ifdef __APPLE__
+   mask_float_check = NULL;
+   mask_float_checked = NULL;
+#endif
 #  endif
 
    entries_shown=0;
