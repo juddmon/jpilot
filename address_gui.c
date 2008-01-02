@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.149 2007/12/11 17:44:25 judd Exp $ */
+/* $Id: address_gui.c,v 1.150 2008/01/02 15:32:22 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -3394,6 +3394,9 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_PHONE_COLUMN, _("Phone"));
    /* Put pretty pictures in the clist column headings */
    get_pixmaps(vbox, PIXMAP_NOTE, &pixmap, &mask);
+#ifdef __APPLE__
+   mask = NULL;
+#endif
    pixmapwid = gtk_pixmap_new(pixmap, mask);
    hack_clist_set_column_title_pixmap(clist, ADDRESS_NOTE_COLUMN, pixmapwid);
 
