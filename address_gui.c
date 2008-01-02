@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.150 2008/01/02 15:32:22 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.151 2008/01/02 15:38:41 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -2693,6 +2693,9 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    get_pref(PREF_USE_JOS, &use_jos, NULL);
    show_priv = show_privates(GET_PRIVATES);
    get_pixmaps(clist, PIXMAP_NOTE, &pixmap_note, &mask_note);
+#ifdef __APPLE__
+   mask_note = NULL;
+#endif
 
    if (sort_by_company) {
       show1=contCompany;
