@@ -1,4 +1,4 @@
-/* $Id: install_user.c,v 1.4 2005/12/18 14:54:39 rousseau Exp $ */
+/* $Id: install_user.c,v 1.5 2008/01/13 22:25:10 rousseau Exp $ */
 
 /*******************************************************************************
  * install_user.c
@@ -77,7 +77,7 @@ void cb_install_user_button(GtkWidget *widget,
 	 g_strlcpy(Pdata->user,
 	       gtk_entry_get_text(GTK_ENTRY(Pdata->user_entry)),
 	       sizeof(Pdata->user));
-	 sscanf(gtk_entry_get_text(GTK_ENTRY(Pdata->ID_entry)), "%ld",
+	 sscanf(gtk_entry_get_text(GTK_ENTRY(Pdata->ID_entry)), "%lu",
 		&(Pdata->id));
       }
    }
