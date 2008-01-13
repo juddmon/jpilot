@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.53 2007/11/23 19:13:55 rousseau Exp $ */
+/* $Id: prefs_gui.c,v 1.54 2008/01/13 22:13:33 rousseau Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -41,6 +41,9 @@ static GtkWidget *todo_days_due_entry;
 
 extern int glob_app;
 extern GtkTooltips *glob_tooltips;
+#ifdef ENABLE_PLUGINS
+extern unsigned char skip_plugins;
+#endif
 
 #ifdef COLORS
 

@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.152 2008/01/02 16:05:35 rousseau Exp $ */
+/* $Id: datebook_gui.c,v 1.153 2008/01/13 22:13:33 rousseau Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -90,6 +90,15 @@ static int DB_APPT_COLUMN=3;
 #define HOURS_FLAG      0x40
 
 extern GtkTooltips *glob_tooltips;
+extern GtkWidget *glob_date_label;
+extern gint glob_date_timer_tag;
+
+/* This refers to the main jpilot window.  This should probably
+ * be replaced somehow by a GTK call which works out what the 
+ * top-level window is from the widget.  Right now it relies
+ * on the fact that there is only one item titled "window" in 
+ * the global name space */
+extern GtkWidget *window;
 
 static GtkWidget *pane;
 static GtkWidget *note_pane;
@@ -3397,13 +3406,6 @@ void cb_cal_changed(GtkWidget *widget,
  */
 void datebook_gui_setdate(int year, int month, int day)
 {
-   /* This refers to the main jpilot window.  This should probably
-    * be replaced somehow by a GTK call which works out what the 
-    * top-level window is from the widget.  Right now it relies
-    * on the fact that there is only one item titled "window" in 
-    * the global name space */
-   extern GtkWidget *window;
-   
    /* Reset current day pointers to the day the user click on */
    current_year = year;
    current_month = month;
@@ -4129,8 +4131,6 @@ static gint cb_datebook_idle(gpointer data)
 
 int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 {
-   extern GtkWidget *glob_date_label;
-   extern gint glob_date_timer_tag;
    GtkWidget *pixmapwid;
    GdkPixmap *pixmap;
    GdkBitmap *mask;

@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.100 2007/11/06 20:12:45 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.101 2008/01/13 22:13:33 rousseau Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -49,6 +49,8 @@
 #define DISCONNECT_SIGNALS 401
 
 extern GtkTooltips *glob_tooltips;
+extern GtkWidget *glob_date_label;
+extern int glob_date_timer_tag;
 
 struct MemoAppInfo memo_app_info;
 static int memo_category = CATEGORY_ALL;
@@ -1400,8 +1402,6 @@ int memo_gui_cleanup()
  */
 int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
 {
-   extern GtkWidget *glob_date_label;
-   extern int glob_date_timer_tag;
    int i;
    GtkWidget *scrolled_window;
    GtkWidget *vbox1, *vbox2, *hbox_temp;
