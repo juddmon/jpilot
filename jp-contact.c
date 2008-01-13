@@ -1,4 +1,4 @@
-/* $Id: jp-contact.c,v 1.3 2008/01/13 21:41:52 rousseau Exp $ */
+/* $Id: jp-contact.c,v 1.4 2008/01/13 21:54:24 rousseau Exp $ */
 
 /*******************************************************************************
  * contact.c:  Translate Palm contact data formats
@@ -527,7 +527,7 @@ int jp_unpack_ContactAppInfo(struct ContactAppInfo *ai, pi_buffer_t *buf)
  ***********************************************************************/
 int jp_pack_ContactAppInfo(struct ContactAppInfo *ai, pi_buffer_t *buf)
 {
-	int i;
+	/* int i; */
 	int destlen;
 
 	if (buf == NULL || buf->data == NULL)
