@@ -1,4 +1,4 @@
-/* $Id: otherconv.c,v 1.27 2006/05/09 20:51:21 rousseau Exp $ */
+/* $Id: otherconv.c,v 1.28 2008/01/13 22:00:24 rousseau Exp $ */
 
 /*******************************************************************************
  * otherconv.c
@@ -269,7 +269,7 @@ void UTF_to_other(char *const buf, int buf_len)
 
   rc = g_iconv(glob_topda, &inptr, &inleft, &outptr, &outleft);
   *outptr = 0;
-  if (rc<0) {
+  if ((size_t)(-1) == rc) {
     switch (errno) {
     case EILSEQ:
       errstr = "iconv: unconvertable sequence at place %d\n";
