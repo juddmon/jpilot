@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.80 2007/11/28 19:14:42 judd Exp $ */
+/* $Id: sync.c,v 1.81 2008/01/13 14:40:50 rousseau Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -3100,7 +3100,7 @@ int pack_contact_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw,
 
    jp_logf(JP_LOG_DEBUG, "pack_contact_cai_into_ai\n");
 
-   pi_buffer_new(len);
+   pi_buf = pi_buffer_new(len);
    pi_buffer_append(pi_buf, ai_raw, len);
 
    r = jp_unpack_ContactAppInfo(&ai, pi_buf);
