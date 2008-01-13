@@ -1,4 +1,4 @@
-/* $Id: prefs.c,v 1.71 2008/01/13 22:16:34 rousseau Exp $ */
+/* $Id: prefs.c,v 1.72 2008/01/13 22:19:06 rousseau Exp $ */
 
 /*******************************************************************************
  * prefs.c
@@ -180,7 +180,7 @@ void pref_init()
 	 glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
 	 break;
        case PREF_MAIL_COMMAND:
-	 glob_prefs[i].svalue=strdup("mozilla-thunderbird -remote \"mailto(\%s)\"");
+	 glob_prefs[i].svalue=strdup("mozilla-thunderbird -remote \"mailto(%s)\"");
 	 glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
 	 break;
        default:
