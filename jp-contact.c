@@ -1,4 +1,4 @@
-/* $Id: jp-contact.c,v 1.2 2007/11/28 19:14:42 judd Exp $ */
+/* $Id: jp-contact.c,v 1.3 2008/01/13 21:41:52 rousseau Exp $ */
 
 /*******************************************************************************
  * contact.c:  Translate Palm contact data formats
@@ -540,7 +540,7 @@ int jp_pack_ContactAppInfo(struct ContactAppInfo *ai, pi_buffer_t *buf)
 
 	buf->used = pack_CategoryAppInfo(&ai->category, buf->data, buf->allocated);
 	if (buf->used != 278)
-		return i;
+		return -1;
 
 	pi_buffer_append(buf, ai->unknown1, 26);
 
