@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.135 2007/12/18 00:41:42 rikster5 Exp $ */
+/* $Id: utils.c,v 1.136 2008/01/13 18:18:29 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -2252,9 +2252,8 @@ int check_copy_DBs_to_home()
 	    fclose(in);
 	    return EXIT_FAILURE;
 	 }
-	 while (!feof(in)) {
-	    c = fgetc(in);
-	    fputc(c, out);
+	 while ( (c=fgetc(in)) != EOF ) {
+            fputc(c, out);
 	 }
 	 fclose(in);
 	 fclose(out);
