@@ -1,4 +1,4 @@
-/* $Id: prefs.c,v 1.70 2007/10/25 18:53:32 rousseau Exp $ */
+/* $Id: prefs.c,v 1.71 2008/01/13 22:16:34 rousseau Exp $ */
 
 /*******************************************************************************
  * prefs.c
@@ -99,7 +99,7 @@ static prefType glob_prefs[NUM_PREFS] = {
      {"memo_import_path", CHARTYPE, CHARTYPE, 0, NULL, 0},
      {"manana_mode", INTTYPE, INTTYPE, 0, NULL, 0},
      {"sync_manana", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"use_jos", INTTYPE, INTTYPE, 0, ""},
+     {"use_jos", INTTYPE, INTTYPE, 0, NULL, 0},
      {"phone_prefix1", CHARTYPE, CHARTYPE, 0, NULL, 0},
      {"phone_prefix1_on", INTTYPE, INTTYPE, 0, NULL, 0},
      {"phone_prefix2", CHARTYPE, CHARTYPE, 0, NULL, 0},
