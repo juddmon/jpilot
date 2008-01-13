@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.151 2008/01/02 15:38:41 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.152 2008/01/13 14:54:28 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -1780,6 +1780,12 @@ void addr_clear_details()
    if (image) {
       gtk_widget_destroy(image);
       image = NULL;
+   }
+   if (contact_picture.data) {
+      free(contact_picture.data);
+      contact_picture.dirty=0;
+      contact_picture.length=0;
+      contact_picture.data=NULL;
    }
 
    if (address_category==CATEGORY_ALL) {
