@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.114 2007/11/25 12:12:33 rousseau Exp $ */
+/* $Id: todo_gui.c,v 1.115 2008/01/13 22:04:29 rousseau Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -50,6 +50,8 @@
 #define DISCONNECT_SIGNALS 401
 
 extern GtkTooltips *glob_tooltips;
+extern GtkWidget *glob_date_label;
+extern int glob_date_timer_tag;
 
 static GtkWidget *clist;
 static GtkWidget *todo_text, *todo_text_note;
@@ -2005,8 +2007,6 @@ int todo_gui_cleanup()
 
 int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 {
-   extern GtkWidget *glob_date_label;
-   extern int glob_date_timer_tag;
    GtkWidget *scrolled_window;
    GtkWidget *pixmapwid;
    GdkPixmap *pixmap;
