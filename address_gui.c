@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.152 2008/01/13 14:54:28 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.153 2008/01/19 14:22:41 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -523,8 +523,12 @@ GString *contact_to_gstring(struct Contact *cont)
        case ADDRESS_GUI_WEBSITE:
 	 if (cont->entry[schema[i].record_field]==NULL) continue;
 	 if (address_version)
+	 {
+	    utf = charset_p2newj(contact_app_info.labels[schema[i].record_field], 16, char_set);
 	    g_string_sprintfa(s, _("%s%s: %s"),
-		  NL, contact_app_info.labels[schema[i].record_field], cont->entry[schema[i].record_field]);
+		  NL, utf, cont->entry[schema[i].record_field]);
+	    g_free(utf);
+	 }
 	 else
 	 {
 	    utf = charset_p2newj(contact_app_info.labels[schema[i].record_field], 16, char_set);
@@ -538,9 +542,11 @@ GString *contact_to_gstring(struct Contact *cont)
 	 if (cont->entry[schema[i].record_field]==NULL) {
 	    phone_i++; continue;
 	 }
+	 utf = charset_p2newj(contact_app_info.phoneLabels[cont->phoneLabel[phone_i]], 16, char_set);
 	 g_string_sprintfa(s, _("%s%s: %s"),
-			   NL, contact_app_info.phoneLabels[cont->phoneLabel[phone_i]],
+			   NL, utf,
 			   cont->entry[schema[i].record_field]);
+	 g_free(utf);
 	 NL[0]='\n';
 	 phone_i++;
 	 break;
@@ -548,9 +554,11 @@ GString *contact_to_gstring(struct Contact *cont)
 	 if (cont->entry[schema[i].record_field]==NULL) {
 	    IM_i++; continue;
 	 }
+	 utf = charset_p2newj(contact_app_info.IMLabels[cont->IMLabel[IM_i]], 16, char_set);
 	 g_string_sprintfa(s, _("%s%s: %s"),
-			   NL, contact_app_info.IMLabels[cont->IMLabel[IM_i]],
+			   NL, utf,
 			   cont->entry[schema[i].record_field]);
+	 g_free(utf);
 	 NL[0]='\n';
 	 IM_i++;
 	 break;
@@ -558,9 +566,11 @@ GString *contact_to_gstring(struct Contact *cont)
 	 if (cont->entry[schema[i].record_field]==NULL) {
 	    address_i++; continue;
 	 }
+	 utf = charset_p2newj(contact_app_info.addrLabels[cont->addressLabel[address_i]], 16, char_set);
 	 g_string_sprintfa(s, _("%s%s: %s"),
-			   NL, contact_app_info.addrLabels[cont->addressLabel[address_i]],
+			   NL, utf,
 			   cont->entry[schema[i].record_field]);
+	 g_free(utf);
 	 NL[0]='\n';
 	 address_i++;
 	 break;
@@ -569,9 +579,9 @@ GString *contact_to_gstring(struct Contact *cont)
 	 get_pref(PREF_LONGDATE, NULL, &pref_date);
 	 strftime(birthday_str, sizeof(birthday_str), pref_date, &cont->birthday);
 
-	 g_string_sprintfa(s, _("%s%s: %s"),
-			   NL, contact_app_info.labels[schema[i].record_field],
-			   birthday_str);
+	 utf = charset_p2newj(contact_app_info.labels[schema[i].record_field], 16, char_set);
+	 g_string_sprintfa(s, _("%s%s: %s"), NL, utf, birthday_str);
+	 g_free(utf);
 	 NL[0]='\n';
 	 break;
       }
@@ -2983,6 +2993,10 @@ static int make_phone_menu(int default_set, unsigned int callback_id, int set)
    int i;
    GSList *group;
    GtkWidget *menu;
+   char *utf;
+   long char_set;
+
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
 
    phone_type_list_menu[set] = gtk_option_menu_new();
 
@@ -2991,8 +3005,9 @@ static int make_phone_menu(int default_set, unsigned int callback_id, int set)
 
    for (i=0; i<NUM_MENU_ITEM2; i++) {
       if (contact_app_info.phoneLabels[i][0]) {
+	 utf = charset_p2newj(contact_app_info.phoneLabels[i], 16, char_set);
 	 phone_type_menu_item[set][i] = gtk_radio_menu_item_new_with_label(
-			group, contact_app_info.phoneLabels[i]);
+			group, utf);
 	 gtk_signal_connect(GTK_OBJECT(phone_type_menu_item[set][i]), "activate",
 			    GTK_SIGNAL_FUNC(cb_phone_menu),
 			    GINT_TO_POINTER(callback_id<<8 | i));
