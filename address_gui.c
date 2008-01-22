@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.153 2008/01/19 14:22:41 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.154 2008/01/22 02:22:10 judd Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -873,7 +873,8 @@ static char *vCardMapType(int label)
 void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 		       int type, const char *filename)
 {
-   MyAddress *maddr;
+   MyAddress *maddr;//undo remove addr
+   MyContact *mcont;
    GList *list, *temp_list;
    FILE *out;
    struct stat statb;
@@ -883,15 +884,24 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
    char str1[256], str2[256];
    char pref_time[40];
    int i, r, n, len;
+   int record_num;
    char *button_text[]={N_("OK")};
    char *button_overwrite_text[]={N_("No"), N_("Yes")};
    char text[1024];
+   char date_string[1024];
    char csv_text[65550];
    long char_set, use_jos;
    char username[256];
    char hostname[256];
    const char *svalue;
    long userid;
+   char birthday_str[255];
+   const char *pref_date;
+   int address_i, IM_i, phone_i;
+#ifdef ENABLE_GTK2
+   GtkTextIter start_iter;
+   GtkTextIter end_iter;
+#endif
 
    /* this stuff is for vcard only. */
    /* todo: create a pre-export switch */
@@ -931,120 +941,140 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
       return;
    }
 
-   for (i=0, temp_list=list; temp_list; temp_list = temp_list->next, i++) {
-      maddr = gtk_clist_get_row_data(GTK_CLIST(clist), GPOINTER_TO_INT(temp_list->data));
-      if (!maddr) {
+   /* Get a date string for the file header */
+   get_pref(PREF_SHORTDATE, NULL, &short_date);
+   get_pref_time_no_secs(pref_time);
+   time(&ltime);
+   now = localtime(&ltime);
+   strftime(str1, sizeof(str1), short_date, now);
+   strftime(str2, sizeof(str2), pref_time, now);
+   g_snprintf(date_string, sizeof(date_string), "%s %s", str1, str2);
+
+
+   for (record_num=0, temp_list=list; temp_list; temp_list = temp_list->next, record_num++) {
+      maddr = gtk_clist_get_row_data(GTK_CLIST(clist), GPOINTER_TO_INT(temp_list->data));//undo
+      mcont = gtk_clist_get_row_data(GTK_CLIST(clist), GPOINTER_TO_INT(temp_list->data));
+      if (!mcont) {
 	 continue;
 	 jp_logf(JP_LOG_WARN, _("Can't export address %d\n"), (long) temp_list->data + 1);
       }
+      
       switch (type) {
        case EXPORT_TYPE_TEXT:
-	 get_pref(PREF_SHORTDATE, NULL, &short_date);
-	 get_pref_time_no_secs(pref_time);
-	 time(&ltime);
-	 now = localtime(&ltime);
-	 strftime(str1, sizeof(str1), short_date, now);
-	 strftime(str2, sizeof(str2), pref_time, now);
-	 g_snprintf(text, sizeof(text), "%s %s", str1, str2);
+	 if (record_num == 0) {
+	    /* Todo Should I translate these? */
+	    if (address_version==0) {
+	       fprintf(out, "Addresses exported from %s on %s\n\n", PN, date_string);
+	    } else {   
+	       fprintf(out, "Contacts version %d exported from %s on %s\n\n", address_version, PN, date_string);
+	    }
+	 }
 
 	 /* Todo Should I translate these? */
-	 fprintf(out, "Address: exported from %s on %s\n", PN, text);
-	 fprintf(out, "Category: %s\n", address_app_info.category.name[maddr->attrib & 0x0F]);
+	 fprintf(out, "Category: %s\n", contact_app_info.category.name[mcont->attrib & 0x0F]);
 	 fprintf(out, "Private: %s\n",
-		 (maddr->attrib & dlpRecAttrSecret) ? "Yes":"No");
-//undo rewrite
-//	 for (n=0; (field_names[n]) && (n < NUM_ADDRESS_ENTRIES); n++) {
-//	    fprintf(out, "%s: ", field_names[n]);
-//	    fprintf(out, "%s\n", maddr->addr.entry[order[n]] ?
-//		    maddr->addr.entry[order[n]] : "");
-//	 }
-	 for (n = 0; (field_names[n + NUM_ADDRESS_ENTRIES]) && ( n < NUM_PHONE_ENTRIES); n++) {
-	    fprintf(out, "%s: ", field_names[n + NUM_ADDRESS_ENTRIES]);
-	    fprintf(out, "%d\n", maddr->addr.phoneLabel[n]);
+		 (mcont->attrib & dlpRecAttrSecret) ? "Yes":"No");
+
+	 address_i=phone_i=IM_i=0;
+	 for (i=0; i<schema_size; i++) {
+	    /* Get the entry texts */
+	    if (mcont->cont.entry[schema[i].record_field]) {
+	       switch (schema[i].type) {
+		case ADDRESS_GUI_IM_MENU_TEXT:
+		  fprintf(out, "%s: ", contact_app_info.IMLabels[mcont->cont.IMLabel[IM_i]]);
+		  IM_i++;
+		  break;
+		case ADDRESS_GUI_DIAL_SHOW_MENU_TEXT:
+		  fprintf(out, "%s: ", contact_app_info.phoneLabels[mcont->cont.phoneLabel[phone_i]]);
+		  phone_i++;
+		  break;
+		case ADDRESS_GUI_ADDR_MENU_TEXT:
+		  fprintf(out, "%s: ", contact_app_info.addrLabels[mcont->cont.addressLabel[address_i]]);
+		  address_i++;
+		  break;
+		default:
+		  fprintf(out, "%s: ", contact_app_info.labels[schema[i].record_field] ? contact_app_info.labels[schema[i].record_field] : "");
+	       }
+	       switch (schema[i].type) {
+		case ADDRESS_GUI_LABEL_TEXT:
+		case ADDRESS_GUI_DIAL_SHOW_MENU_TEXT:
+		case ADDRESS_GUI_IM_MENU_TEXT:
+		case ADDRESS_GUI_ADDR_MENU_TEXT:
+		case ADDRESS_GUI_WEBSITE:
+		  fprintf(out, "%s\n", mcont->cont.entry[schema[i].record_field]);
+		  break;
+		case ADDRESS_GUI_BIRTHDAY:
+		  if (mcont->cont.birthdayFlag) {
+		     birthday_str[0]='\0';
+		     get_pref(PREF_SHORTDATE, NULL, &pref_date);
+		     strftime(birthday_str, sizeof(birthday_str), pref_date, &(mcont->cont.birthday));
+		     fprintf(out, "%s: ", contact_app_info.labels[schema[i].record_field] ? contact_app_info.labels[schema[i].record_field] : "");
+		     fprintf(out, "%s\n", birthday_str);
+		  }
+		  break;
+	       }
+	    }
 	 }
-	 fprintf(out, "Show Phone: %d\n\n", maddr->addr.showPhone);
+
+	 fprintf(out, "Show Phone: %d\n\n", mcont->cont.showPhone);
 	 break;
+
        case EXPORT_TYPE_CSV:
-	 get_pref(PREF_CHAR_SET, &char_set, NULL);
-	 get_pref(PREF_USE_JOS, &use_jos, NULL);
-	 if (i==0) {
-	    fprintf(out, "CSV address: Category, Private, ");
-	    if (!use_jos && (char_set == CHAR_SET_JAPANESE || char_set == CHAR_SET_SJIS_UTF)) {
-	       for (n=0; (field_names_ja[n])
-		    && (n < NUM_ADDRESS_ENTRIES + (NUM_PHONE_ENTRIES * 2) + 1
-			+ NUM_ADDRESS_EXT_ENTRIES); n++) {
-		  fprintf(out, "%s", field_names_ja[n]);
-		  if (field_names_ja[n+1]) {
-		     fprintf(out, ", ");
-		  }
-	       }
-	    } else {
-	       for (n=0; (field_names[n])
-		    && (n < NUM_ADDRESS_ENTRIES + (NUM_PHONE_ENTRIES*2) +1 ); n++) {
-		  fprintf(out, "%s", field_names[n]);
-		  if (field_names[n+1]) {
-		     fprintf(out, ", ");
-		  }
-	       }
-	    }
-	    fprintf(out, "\n");
-	 }
-	 len=0;
-	 str_to_csv_str(csv_text,
-			address_app_info.category.name[maddr->attrib & 0x0F]);
-	 fprintf(out, "\"%s\",", csv_text);
-	 fprintf(out, "\"%s\",", (maddr->attrib & dlpRecAttrSecret) ? "1":"0");
-	 if (!use_jos && (char_set == CHAR_SET_JAPANESE || char_set == CHAR_SET_SJIS_UTF)) {
-	    //char *tmp_p;
-	    for (n = 0; n < NUM_ADDRESS_ENTRIES + NUM_ADDRESS_EXT_ENTRIES; n++) {
-	       csv_text[0] = '\0';
-	       //undo rewrite
-#if 0
-	       if ((order_ja[n] < NUM_ADDRESS_EXT_ENTRIES)
-		   && (tmp_p = strchr(maddr->addr.entry[order_ja[n]],'\1'))) {
-		  if (strlen(maddr->addr.entry[order_ja[n]]) > 65535) {
-		     jp_logf(JP_LOG_WARN, "%s > 65535\n", _("Field"));
-		  } else {
-		     *(tmp_p) = '\0';
-		     str_to_csv_str(csv_text, maddr->addr.entry[order_ja[n]]);
-		     *(tmp_p) = '\1';
-		  }
-	       } else if (order_ja[n] < NUM_ADDRESS_ENTRIES) {
-		  if (strlen(maddr->addr.entry[i]) > 65535) {
-		     jp_logf(JP_LOG_WARN, "%s > 65535\n", _("Field"));
-		  } else {
-		     str_to_csv_str(csv_text, maddr->addr.entry[order_ja[n]]);
-		  }
-	       } else if (maddr->addr.entry[order_ja[n] - NUM_ADDRESS_ENTRIES]
-			  && (tmp_p = strchr(maddr->addr.entry[order_ja[n] - NUM_ADDRESS_ENTRIES], '\1'))) {
-		  str_to_csv_str(csv_text, (tmp_p + 1));
-	       } else {
-		  str_to_csv_str(csv_text, maddr->addr.entry[order_ja[n]]);
-	       }
-#endif
-	       fprintf(out, "\"%s\", ", csv_text);
-	    }
-	 } else {
-	    for (n = 0; n < NUM_ADDRESS_ENTRIES; n++) {
-	       csv_text[0]='\0';
-//undo rewrite
-#if 0
-	       if (maddr->addr.entry[order[n]]) {
-		  if (strlen(maddr->addr.entry[order[n]])>65535) {
-		     jp_logf(JP_LOG_WARN, "%s > 65535\n", _("Field"));
-		  } else {
-		     str_to_csv_str(csv_text, maddr->addr.entry[order[n]]);
-		  }
-	       }
-#endif
+	 /* Secret */
+	 fprintf(out, "\"%s\",", (mcont->attrib & dlpRecAttrSecret) ? "Yes":"No");
+	 /* Category name */
+	 fprintf(out, "\"%s\",", contact_app_info.category.name[mcont->attrib & 0x0F]);
+
+	 address_i=phone_i=IM_i=0;
+	 /* The Contact entry values */
+	 for (i=0; i<schema_size; i++) {
+	    switch (schema[i].type) {
+	       /* For labels that are menu selectable ("Work", Fax", etc)
+		* we list what they are set to in the record
+		*/
+	     case ADDRESS_GUI_IM_MENU_TEXT:
+	       str_to_csv_str(csv_text, contact_app_info.IMLabels[mcont->cont.IMLabel[IM_i]]);
 	       fprintf(out, "\"%s\",", csv_text);
+	       str_to_csv_str(csv_text, mcont->cont.entry[schema[i].record_field] ?
+			      mcont->cont.entry[schema[i].record_field] : "");
+	       fprintf(out, "\"%s\",", csv_text);
+	       IM_i++;
+	       break;
+	     case ADDRESS_GUI_DIAL_SHOW_MENU_TEXT:
+	       str_to_csv_str(csv_text, contact_app_info.phoneLabels[mcont->cont.phoneLabel[phone_i]]);
+	       fprintf(out, "\"%s\",", csv_text);
+	       str_to_csv_str(csv_text, mcont->cont.entry[schema[i].record_field] ?
+			      mcont->cont.entry[schema[i].record_field] : "");
+	       fprintf(out, "\"%s\",", csv_text);
+	       phone_i++;
+	       break;
+	     case ADDRESS_GUI_ADDR_MENU_TEXT:
+	       str_to_csv_str(csv_text, contact_app_info.addrLabels[mcont->cont.addressLabel[address_i]]);
+	       fprintf(out, "\"%s\",", csv_text);
+	       str_to_csv_str(csv_text, mcont->cont.entry[schema[i].record_field] ?
+			      mcont->cont.entry[schema[i].record_field] : "");
+	       fprintf(out, "\"%s\",", csv_text);
+	       address_i++;
+	       break;
+	     case ADDRESS_GUI_LABEL_TEXT:
+	     case ADDRESS_GUI_WEBSITE:
+	       fprintf(out, "\"%s\",", mcont->cont.entry[schema[i].record_field] ?
+		       mcont->cont.entry[schema[i].record_field] : "");
+	       break;
+	     case ADDRESS_GUI_BIRTHDAY:
+	       if (mcont->cont.birthdayFlag) {
+		  birthday_str[0]='\0'; 
+		  get_pref(PREF_SHORTDATE, NULL, &pref_date);
+		  strftime(birthday_str, sizeof(birthday_str), pref_date, &(mcont->cont.birthday));
+		  fprintf(out, "\"%s\",", birthday_str);
+	       } else {
+		  fprintf(out, "\"\",");
+	       }
+	       break;
 	    }
 	 }
-	 for (n = 0; n < NUM_PHONE_ENTRIES; n++) {
-	    fprintf(out, "\"%d\",", maddr->addr.phoneLabel[n]);
-	 }
-	 fprintf(out, "\"%d\"", maddr->addr.showPhone);
-	 fprintf(out, "\n");
+
+	 fprintf(out, "\"%d\"\n", mcont->cont.showPhone);
 	 break;
 
        case EXPORT_TYPE_VCARD:
@@ -1156,7 +1186,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 /* RFC 2256 - organizationalPerson */
 	 /* RFC 2798 - inetOrgPerson */
 	 /* RFC 2849 - LDIF file format */
-	 if (i == 0) {
+	 if (record_num == 0) {
 	    fprintf(out, "version: 1\n");
 	 }
 	 {
