@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.154 2008/01/22 02:22:10 judd Exp $ */
+/* $Id: address_gui.c,v 1.155 2008/01/23 03:12:21 judd Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -72,11 +72,12 @@
 #define NUM_ADDRESS_EXT_ENTRIES 3
 
 #define ADDRESS_GUI_LABEL_TEXT 2
-#define ADDRESS_GUI_DIAL_SHOW_MENU_TEXT 3
-#define ADDRESS_GUI_IM_MENU_TEXT 4
-#define ADDRESS_GUI_ADDR_MENU_TEXT 5
-#define ADDRESS_GUI_WEBSITE 6
-#define ADDRESS_GUI_BIRTHDAY 7
+#define ADDRESS_GUI_LABEL_TEXT_SCROLL 3
+#define ADDRESS_GUI_DIAL_SHOW_MENU_TEXT 4
+#define ADDRESS_GUI_IM_MENU_TEXT 5
+#define ADDRESS_GUI_ADDR_MENU_TEXT 6
+#define ADDRESS_GUI_WEBSITE 7
+#define ADDRESS_GUI_BIRTHDAY 8
 
 #define PHOTO_X 139
 #define PHOTO_Y 144
@@ -94,6 +95,9 @@ static address_schema_entry *schema;
 
 #define NUM_IMS 2
 #define NUM_ADDRESSES 3
+#define NUM_CONTACT_NOTEBOOK_PAGES 6
+#define NUM_ADDRESS_NOTEBOOK_PAGES 4
+
 static int schema_size;
 static address_schema_entry contact_schema[NUM_CONTACT_FIELDS]={
      {contLastname, 0, ADDRESS_GUI_LABEL_TEXT},
@@ -110,32 +114,32 @@ static address_schema_entry contact_schema[NUM_CONTACT_FIELDS]={
      {contIM1, 0, ADDRESS_GUI_IM_MENU_TEXT},
      {contIM2, 0, ADDRESS_GUI_IM_MENU_TEXT},
      {contWebsite, 0, ADDRESS_GUI_WEBSITE},
-     {contAddress1, 1, ADDRESS_GUI_ADDR_MENU_TEXT},
-     {contCity1, 1, ADDRESS_GUI_LABEL_TEXT},
-     {contState1, 1, ADDRESS_GUI_LABEL_TEXT},
-     {contZip1, 1, ADDRESS_GUI_LABEL_TEXT},
-     {contCountry1, 1, ADDRESS_GUI_LABEL_TEXT},
-     {contAddress2, 2, ADDRESS_GUI_ADDR_MENU_TEXT},
-     {contCity2, 2, ADDRESS_GUI_LABEL_TEXT},
-     {contState2, 2, ADDRESS_GUI_LABEL_TEXT},
-     {contZip2, 2, ADDRESS_GUI_LABEL_TEXT},
-     {contCountry2, 2, ADDRESS_GUI_LABEL_TEXT},
-     {contAddress3, 3, ADDRESS_GUI_ADDR_MENU_TEXT},
-     {contCity3, 3, ADDRESS_GUI_LABEL_TEXT},
-     {contState3, 3, ADDRESS_GUI_LABEL_TEXT},
-     {contZip3, 3, ADDRESS_GUI_LABEL_TEXT},
-     {contCountry3, 3, ADDRESS_GUI_LABEL_TEXT},
-     {contBirthday, 4, ADDRESS_GUI_BIRTHDAY},
-     {contCustom1, 4, ADDRESS_GUI_LABEL_TEXT},
-     {contCustom2, 4, ADDRESS_GUI_LABEL_TEXT},
-     {contCustom3, 4, ADDRESS_GUI_LABEL_TEXT},
-     {contCustom4, 4, ADDRESS_GUI_LABEL_TEXT},
-     {contCustom5, 4, ADDRESS_GUI_LABEL_TEXT},
-     {contCustom6, 4, ADDRESS_GUI_LABEL_TEXT},
-     {contCustom7, 4, ADDRESS_GUI_LABEL_TEXT},
-     {contCustom8, 4, ADDRESS_GUI_LABEL_TEXT},
-     {contCustom9, 4, ADDRESS_GUI_LABEL_TEXT},
-     {contNote, 4, ADDRESS_GUI_LABEL_TEXT}
+     {contNote, 1, ADDRESS_GUI_LABEL_TEXT_SCROLL},
+     {contAddress1, 2, ADDRESS_GUI_ADDR_MENU_TEXT},
+     {contCity1, 2, ADDRESS_GUI_LABEL_TEXT},
+     {contState1, 2, ADDRESS_GUI_LABEL_TEXT},
+     {contZip1, 2, ADDRESS_GUI_LABEL_TEXT},
+     {contCountry1, 2, ADDRESS_GUI_LABEL_TEXT},
+     {contAddress2, 3, ADDRESS_GUI_ADDR_MENU_TEXT},
+     {contCity2, 3, ADDRESS_GUI_LABEL_TEXT},
+     {contState2, 3, ADDRESS_GUI_LABEL_TEXT},
+     {contZip2, 3, ADDRESS_GUI_LABEL_TEXT},
+     {contCountry2, 3, ADDRESS_GUI_LABEL_TEXT},
+     {contAddress3, 4, ADDRESS_GUI_ADDR_MENU_TEXT},
+     {contCity3, 4, ADDRESS_GUI_LABEL_TEXT},
+     {contState3, 4, ADDRESS_GUI_LABEL_TEXT},
+     {contZip3, 4, ADDRESS_GUI_LABEL_TEXT},
+     {contCountry3, 4, ADDRESS_GUI_LABEL_TEXT},
+     {contBirthday, 5, ADDRESS_GUI_BIRTHDAY},
+     {contCustom1, 5, ADDRESS_GUI_LABEL_TEXT},
+     {contCustom2, 5, ADDRESS_GUI_LABEL_TEXT},
+     {contCustom3, 5, ADDRESS_GUI_LABEL_TEXT},
+     {contCustom4, 5, ADDRESS_GUI_LABEL_TEXT},
+     {contCustom5, 5, ADDRESS_GUI_LABEL_TEXT},
+     {contCustom6, 5, ADDRESS_GUI_LABEL_TEXT},
+     {contCustom7, 5, ADDRESS_GUI_LABEL_TEXT},
+     {contCustom8, 5, ADDRESS_GUI_LABEL_TEXT},
+     {contCustom9, 5, ADDRESS_GUI_LABEL_TEXT}
 };
 
 static address_schema_entry address_schema[19]={
@@ -148,16 +152,16 @@ static address_schema_entry address_schema[19]={
      {contPhone3, 0, ADDRESS_GUI_DIAL_SHOW_MENU_TEXT},
      {contPhone4, 0, ADDRESS_GUI_DIAL_SHOW_MENU_TEXT},
      {contPhone5, 0, ADDRESS_GUI_DIAL_SHOW_MENU_TEXT},
-     {contAddress1, 1, ADDRESS_GUI_LABEL_TEXT},
-     {contCity1, 1, ADDRESS_GUI_LABEL_TEXT},
-     {contState1, 1, ADDRESS_GUI_LABEL_TEXT},
-     {contZip1, 1, ADDRESS_GUI_LABEL_TEXT},
-     {contCountry1, 1, ADDRESS_GUI_LABEL_TEXT},
-     {contCustom1, 2, ADDRESS_GUI_LABEL_TEXT},
-     {contCustom2, 2, ADDRESS_GUI_LABEL_TEXT},
-     {contCustom3, 2, ADDRESS_GUI_LABEL_TEXT},
-     {contCustom4, 2, ADDRESS_GUI_LABEL_TEXT},
-     {contNote, 2, ADDRESS_GUI_LABEL_TEXT}
+     {contNote, 1, ADDRESS_GUI_LABEL_TEXT_SCROLL},
+     {contAddress1, 2, ADDRESS_GUI_LABEL_TEXT},
+     {contCity1, 2, ADDRESS_GUI_LABEL_TEXT},
+     {contState1, 2, ADDRESS_GUI_LABEL_TEXT},
+     {contZip1, 2, ADDRESS_GUI_LABEL_TEXT},
+     {contCountry1, 2, ADDRESS_GUI_LABEL_TEXT},
+     {contCustom1, 3, ADDRESS_GUI_LABEL_TEXT},
+     {contCustom2, 3, ADDRESS_GUI_LABEL_TEXT},
+     {contCustom3, 3, ADDRESS_GUI_LABEL_TEXT},
+     {contCustom4, 3, ADDRESS_GUI_LABEL_TEXT}
 };
 
 /*
@@ -206,7 +210,7 @@ static GtkWidget *vscrollbar;
 #endif
 //defines??
 //GtkWidget *menu;
-static GtkWidget *notebook_label[6];
+static GtkWidget *notebook_label[NUM_CONTACT_NOTEBOOK_PAGES];
 static GtkWidget *phone_type_list_menu[NUM_PHONE_ENTRIES];
 static GtkWidget *phone_type_menu_item[NUM_MENU_ITEM1][NUM_MENU_ITEM2]; /* 8 menus with 8 possible entries */
 static GtkWidget *address_type_list_menu[3];
@@ -520,6 +524,7 @@ GString *contact_to_gstring(struct Contact *cont)
    for (i=0; i<schema_size; i++) {
       switch (schema[i].type) {
        case ADDRESS_GUI_LABEL_TEXT:
+       case ADDRESS_GUI_LABEL_TEXT_SCROLL:
        case ADDRESS_GUI_WEBSITE:
 	 if (cont->entry[schema[i].record_field]==NULL) continue;
 	 if (address_version)
@@ -997,6 +1002,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	       }
 	       switch (schema[i].type) {
 		case ADDRESS_GUI_LABEL_TEXT:
+		case ADDRESS_GUI_LABEL_TEXT_SCROLL:
 		case ADDRESS_GUI_DIAL_SHOW_MENU_TEXT:
 		case ADDRESS_GUI_IM_MENU_TEXT:
 		case ADDRESS_GUI_ADDR_MENU_TEXT:
@@ -1057,6 +1063,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	       address_i++;
 	       break;
 	     case ADDRESS_GUI_LABEL_TEXT:
+	     case ADDRESS_GUI_LABEL_TEXT_SCROLL:
 	     case ADDRESS_GUI_WEBSITE:
 	       fprintf(out, "\"%s\",", mcont->cont.entry[schema[i].record_field] ?
 		       mcont->cont.entry[schema[i].record_field] : "");
@@ -1538,9 +1545,15 @@ void cb_IM_type_menu(GtkWidget *item, unsigned int value)
    }
 }
 
+/* The least significant byte of value is the selection of the menu,
+ * i.e., which item is chosen (Work, Office, Home).
+ * The next to least significant byte is the address type menu
+ * that is being selected (there are 3 addresses and 3 pulldown menus)
+ */
 void cb_address_type_menu(GtkWidget *item, unsigned int value)
 {
    int menu, selection;
+   int address_i, i;
 
    if (!item)
      return;
@@ -1550,9 +1563,18 @@ void cb_address_type_menu(GtkWidget *item, unsigned int value)
       jp_logf(JP_LOG_DEBUG, "addr_type_menu = %d\n", menu);
       jp_logf(JP_LOG_DEBUG, "selection = %d\n", selection);
       address_type_selected[menu] = selection;
-
-      if (GTK_IS_LABEL(notebook_label[menu+1])) {
-	 gtk_label_set_text(GTK_LABEL(notebook_label[menu+1]), contact_app_info.addrLabels[selection]);
+      /* We want to make the notebook page tab label match the type of
+       * address from the menu.  So, we'll find the nth address menu
+       * and set whatever page the schema says it resides on
+       */
+      address_i=0;
+      for (i=0; i<schema_size; i++) {
+	 if (schema[i].type == ADDRESS_GUI_ADDR_MENU_TEXT) {
+	    if (address_i == menu) {
+	       gtk_label_set_text(GTK_LABEL(notebook_label[schema[i].notebook_page]), contact_app_info.addrLabels[selection]);
+	    }
+	    address_i++;
+	 }
       }
    }
 }
@@ -1650,6 +1672,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
       for (i=0; i<schema_size; i++) {
 	 switch (schema[i].type) {
 	  case ADDRESS_GUI_LABEL_TEXT:
+	  case ADDRESS_GUI_LABEL_TEXT_SCROLL:
 	    break;
 	  case ADDRESS_GUI_DIAL_SHOW_MENU_TEXT:
 	    if (GTK_TOGGLE_BUTTON(radio_button[phone_i])->active) {
@@ -1686,6 +1709,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
 	 /* Get the entry texts */
 	 switch (schema[i].type) {
 	  case ADDRESS_GUI_LABEL_TEXT:
+	  case ADDRESS_GUI_LABEL_TEXT_SCROLL:
 	  case ADDRESS_GUI_DIAL_SHOW_MENU_TEXT:
 	  case ADDRESS_GUI_IM_MENU_TEXT:
 	  case ADDRESS_GUI_ADDR_MENU_TEXT:
@@ -1766,6 +1790,7 @@ void addr_clear_details()
    for (i=0; i<schema_size; i++) {
       switch (schema[i].type) {
        case ADDRESS_GUI_LABEL_TEXT:
+       case ADDRESS_GUI_LABEL_TEXT_SCROLL:
        case ADDRESS_GUI_DIAL_SHOW_MENU_TEXT:
        case ADDRESS_GUI_ADDR_MENU_TEXT:
        case ADDRESS_GUI_IM_MENU_TEXT:
@@ -2503,6 +2528,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    for (i=0; i<schema_size; i++) {
       switch (schema[i].type) {
        case ADDRESS_GUI_LABEL_TEXT:
+       case ADDRESS_GUI_LABEL_TEXT_SCROLL:
 	 goto set_text;
        case ADDRESS_GUI_DIAL_SHOW_MENU_TEXT:
 	 /* Set dial/email button text and callback data */
@@ -2547,9 +2573,12 @@ static void cb_clist_selection(GtkWidget      *clist,
 					   (address_type_menu_item[address_i][cont->addressLabel[address_i]]), TRUE);
 	    gtk_option_menu_set_history(GTK_OPTION_MENU(address_type_list_menu[address_i]),
 					cont->addressLabel[address_i]);
-	    /* Set the label on the notebook to match the type of address */
-	    if (GTK_IS_LABEL(notebook_label[address_i+1])) {
-	       gtk_label_set_text(GTK_LABEL(notebook_label[address_i+1]), contact_app_info.addrLabels[cont->addressLabel[address_i]]);
+	    /* We want to make the notebook page tab label match the type of
+	     * address from the menu.  So, we'll find the nth address menu
+	     * and set whatever page the schema says it resides on
+	     */
+	    if (GTK_IS_LABEL(notebook_label[schema[i].notebook_page])) {
+	       gtk_label_set_text(GTK_LABEL(notebook_label[schema[i].notebook_page]), contact_app_info.addrLabels[cont->addressLabel[address_i]]);
 	    }
 	 }
 	 address_i++;
@@ -3223,6 +3252,7 @@ cb_key_pressed(GtkWidget *widget, GdkEventKey *event)
    for (i=j=0; i<schema_size; i++) {
       switch (schema[i].type) {
        case ADDRESS_GUI_LABEL_TEXT:
+       case ADDRESS_GUI_LABEL_TEXT_SCROLL:
        case ADDRESS_GUI_DIAL_SHOW_MENU_TEXT:
        case ADDRESS_GUI_ADDR_MENU_TEXT:
        case ADDRESS_GUI_IM_MENU_TEXT:
@@ -3311,8 +3341,11 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    long char_set;
    char *cat_name;
 
+   /* Note that the contact pages labeled "Address" will change
+    * dynamically if the address type pulldown is selected */
    char *contact_page_names[]={
       N_("Name"),
+      N_("Note"),
 	N_("Address"),
 	N_("Address"),
 	N_("Address"),
@@ -3320,6 +3353,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    };
    char *address_page_names[]={
       N_("Name"),
+	N_("Note"),
 	N_("Address"),
 	N_("Other")
    };
@@ -3344,11 +3378,11 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    if (address_version) {
       page_names = contact_page_names;
-      num_pages=5;
+      num_pages=NUM_CONTACT_NOTEBOOK_PAGES;
       get_contact_app_info(&contact_app_info);
    } else {
       page_names = address_page_names;
-      num_pages=3;
+      num_pages=NUM_ADDRESS_NOTEBOOK_PAGES;
       get_address_app_info(&address_app_info);
       copy_address_ai_to_contact_ai(&address_app_info, &contact_app_info);
    }
@@ -3575,6 +3609,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	 if (schema[i].notebook_page!=page_i) continue;
 	 switch (schema[i].type) {
 	  case ADDRESS_GUI_LABEL_TEXT:
+	  case ADDRESS_GUI_LABEL_TEXT_SCROLL:
 	    if (x<2) x=2;
 	    y++;
 	    break;
@@ -3665,8 +3700,8 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	 if (schema[i].notebook_page!=page_i) continue;
 	 switch (schema[i].type) {
 	  case ADDRESS_GUI_LABEL_TEXT:
-	    /* Label */
-		if (address_version)
+	  case ADDRESS_GUI_LABEL_TEXT_SCROLL:	    /* Label */
+	    if (address_version)
 		   label = gtk_label_new(contact_app_info.labels[schema[i].record_field]);
 		else
 		{
@@ -3685,14 +3720,28 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	    gtk_text_view_set_editable(GTK_TEXT_VIEW(address_text[schema[i].record_field]), TRUE);
 	    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(address_text[schema[i].record_field]), GTK_WRAP_CHAR);
 	    gtk_container_set_border_width(GTK_CONTAINER(address_text[schema[i].record_field]), 1);
+
+	    if (schema[i].type == ADDRESS_GUI_LABEL_TEXT_SCROLL) {
+	       scrolled_window = gtk_scrolled_window_new(NULL, NULL);
+	       gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
+					      GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
+	       gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 1);
+	       gtk_container_add(GTK_CONTAINER(scrolled_window), address_text[schema[i].record_field]);
+	    }
+
 #else
 	    address_text[schema[i].record_field] = gtk_text_new(NULL, NULL);
 	    gtk_text_set_editable(GTK_TEXT(address_text[schema[i].record_field]), TRUE);
 	    gtk_text_set_word_wrap(GTK_TEXT(address_text[schema[i].record_field]), TRUE);
 #endif
 	    gtk_widget_set_usize(GTK_WIDGET(address_text[schema[i].record_field]), 0, 25);
-	    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(address_text[schema[i].record_field]),
-				      x-1, x, table_y_i, table_y_i+1);
+	    if (schema[i].type == ADDRESS_GUI_LABEL_TEXT_SCROLL) {
+	       gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(scrolled_window),
+					 x-1, x, table_y_i, table_y_i+1);
+	    } else {
+	       gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(address_text[schema[i].record_field]),
+					 x-1, x, table_y_i, table_y_i+1);
+	    }
 
 #ifdef ENABLE_GTK2
 	    changed_list = g_list_prepend(changed_list, gtk_txt_buf_address_text[schema[i].record_field]);
@@ -3889,6 +3938,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    for (i=0; i<schema_size; i++) {
       switch (schema[i].type) {
        case ADDRESS_GUI_LABEL_TEXT:
+       case ADDRESS_GUI_LABEL_TEXT_SCROLL:
        case ADDRESS_GUI_DIAL_SHOW_MENU_TEXT:
        case ADDRESS_GUI_ADDR_MENU_TEXT:
        case ADDRESS_GUI_IM_MENU_TEXT:
@@ -3912,7 +3962,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_widget_show(vbox_temp);
    gtk_widget_show(notebook_tab);
 
-   /*The Quickview (ALL) page */
+   /* The Quickview (ALL) page */
    hbox_temp = gtk_hbox_new (FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox_temp), hbox_temp, TRUE, TRUE, 0);
 
