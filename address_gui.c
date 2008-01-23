@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.155 2008/01/23 03:12:21 judd Exp $ */
+/* $Id: address_gui.c,v 1.156 2008/01/23 14:11:36 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -529,10 +529,8 @@ GString *contact_to_gstring(struct Contact *cont)
 	 if (cont->entry[schema[i].record_field]==NULL) continue;
 	 if (address_version)
 	 {
-	    utf = charset_p2newj(contact_app_info.labels[schema[i].record_field], 16, char_set);
 	    g_string_sprintfa(s, _("%s%s: %s"),
-		  NL, utf, cont->entry[schema[i].record_field]);
-	    g_free(utf);
+		  NL, contact_app_info.labels[schema[i].record_field], cont->entry[schema[i].record_field]);
 	 }
 	 else
 	 {
