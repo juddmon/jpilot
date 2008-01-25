@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.156 2008/01/23 14:11:36 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.157 2008/01/25 19:47:21 judd Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -71,13 +71,12 @@
  */
 #define NUM_ADDRESS_EXT_ENTRIES 3
 
-#define ADDRESS_GUI_LABEL_TEXT 2
-#define ADDRESS_GUI_LABEL_TEXT_SCROLL 3
-#define ADDRESS_GUI_DIAL_SHOW_MENU_TEXT 4
-#define ADDRESS_GUI_IM_MENU_TEXT 5
-#define ADDRESS_GUI_ADDR_MENU_TEXT 6
-#define ADDRESS_GUI_WEBSITE 7
-#define ADDRESS_GUI_BIRTHDAY 8
+#define ADDRESS_GUI_LABEL_TEXT 2 /* Show a label and a textview widget */
+#define ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT 3 /* Show a dial button, show in list radio button, and a phone menu, and a textview */
+#define ADDRESS_GUI_IM_MENU_TEXT 4 /* Show a IM menu and a textview */
+#define ADDRESS_GUI_ADDR_MENU_TEXT 5 /* Show a address menu and a textview */
+#define ADDRESS_GUI_WEBSITE_TEXT 6 /* Show a website button and a textview */
+#define ADDRESS_GUI_BIRTHDAY 7 /* Show a birthdate checkbox and complex birthday GUI */
 
 #define PHOTO_X 139
 #define PHOTO_Y 144
@@ -104,17 +103,17 @@ static address_schema_entry contact_schema[NUM_CONTACT_FIELDS]={
      {contFirstname, 0, ADDRESS_GUI_LABEL_TEXT},
      {contCompany, 0, ADDRESS_GUI_LABEL_TEXT},
      {contTitle, 0, ADDRESS_GUI_LABEL_TEXT},
-     {contPhone1, 0, ADDRESS_GUI_DIAL_SHOW_MENU_TEXT},
-     {contPhone2, 0, ADDRESS_GUI_DIAL_SHOW_MENU_TEXT},
-     {contPhone3, 0, ADDRESS_GUI_DIAL_SHOW_MENU_TEXT},
-     {contPhone4, 0, ADDRESS_GUI_DIAL_SHOW_MENU_TEXT},
-     {contPhone5, 0, ADDRESS_GUI_DIAL_SHOW_MENU_TEXT},
-     {contPhone6, 0, ADDRESS_GUI_DIAL_SHOW_MENU_TEXT},
-     {contPhone7, 0, ADDRESS_GUI_DIAL_SHOW_MENU_TEXT},
+     {contPhone1, 0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
+     {contPhone2, 0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
+     {contPhone3, 0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
+     {contPhone4, 0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
+     {contPhone5, 0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
+     {contPhone6, 0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
+     {contPhone7, 0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
      {contIM1, 0, ADDRESS_GUI_IM_MENU_TEXT},
      {contIM2, 0, ADDRESS_GUI_IM_MENU_TEXT},
-     {contWebsite, 0, ADDRESS_GUI_WEBSITE},
-     {contNote, 1, ADDRESS_GUI_LABEL_TEXT_SCROLL},
+     {contWebsite, 0, ADDRESS_GUI_WEBSITE_TEXT},
+     {contNote, 1, ADDRESS_GUI_LABEL_TEXT},
      {contAddress1, 2, ADDRESS_GUI_ADDR_MENU_TEXT},
      {contCity1, 2, ADDRESS_GUI_LABEL_TEXT},
      {contState1, 2, ADDRESS_GUI_LABEL_TEXT},
@@ -147,12 +146,12 @@ static address_schema_entry address_schema[19]={
      {contFirstname, 0, ADDRESS_GUI_LABEL_TEXT},
      {contTitle, 0, ADDRESS_GUI_LABEL_TEXT},
      {contCompany, 0, ADDRESS_GUI_LABEL_TEXT},
-     {contPhone1, 0, ADDRESS_GUI_DIAL_SHOW_MENU_TEXT},
-     {contPhone2, 0, ADDRESS_GUI_DIAL_SHOW_MENU_TEXT},
-     {contPhone3, 0, ADDRESS_GUI_DIAL_SHOW_MENU_TEXT},
-     {contPhone4, 0, ADDRESS_GUI_DIAL_SHOW_MENU_TEXT},
-     {contPhone5, 0, ADDRESS_GUI_DIAL_SHOW_MENU_TEXT},
-     {contNote, 1, ADDRESS_GUI_LABEL_TEXT_SCROLL},
+     {contPhone1, 0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
+     {contPhone2, 0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
+     {contPhone3, 0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
+     {contPhone4, 0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
+     {contPhone5, 0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
+     {contNote, 1, ADDRESS_GUI_LABEL_TEXT},
      {contAddress1, 2, ADDRESS_GUI_LABEL_TEXT},
      {contCity1, 2, ADDRESS_GUI_LABEL_TEXT},
      {contState1, 2, ADDRESS_GUI_LABEL_TEXT},
@@ -524,8 +523,7 @@ GString *contact_to_gstring(struct Contact *cont)
    for (i=0; i<schema_size; i++) {
       switch (schema[i].type) {
        case ADDRESS_GUI_LABEL_TEXT:
-       case ADDRESS_GUI_LABEL_TEXT_SCROLL:
-       case ADDRESS_GUI_WEBSITE:
+       case ADDRESS_GUI_WEBSITE_TEXT:
 	 if (cont->entry[schema[i].record_field]==NULL) continue;
 	 if (address_version)
 	 {
@@ -541,7 +539,7 @@ GString *contact_to_gstring(struct Contact *cont)
 	 }
 	 NL[0]='\n';
 	 break;
-       case ADDRESS_GUI_DIAL_SHOW_MENU_TEXT:
+       case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
 	 if (cont->entry[schema[i].record_field]==NULL) {
 	    phone_i++; continue;
 	 }
@@ -987,7 +985,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 		  fprintf(out, "%s: ", contact_app_info.IMLabels[mcont->cont.IMLabel[IM_i]]);
 		  IM_i++;
 		  break;
-		case ADDRESS_GUI_DIAL_SHOW_MENU_TEXT:
+		case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
 		  fprintf(out, "%s: ", contact_app_info.phoneLabels[mcont->cont.phoneLabel[phone_i]]);
 		  phone_i++;
 		  break;
@@ -1000,11 +998,10 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	       }
 	       switch (schema[i].type) {
 		case ADDRESS_GUI_LABEL_TEXT:
-		case ADDRESS_GUI_LABEL_TEXT_SCROLL:
-		case ADDRESS_GUI_DIAL_SHOW_MENU_TEXT:
+		case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
 		case ADDRESS_GUI_IM_MENU_TEXT:
 		case ADDRESS_GUI_ADDR_MENU_TEXT:
-		case ADDRESS_GUI_WEBSITE:
+		case ADDRESS_GUI_WEBSITE_TEXT:
 		  fprintf(out, "%s\n", mcont->cont.entry[schema[i].record_field]);
 		  break;
 		case ADDRESS_GUI_BIRTHDAY:
@@ -1044,7 +1041,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	       fprintf(out, "\"%s\",", csv_text);
 	       IM_i++;
 	       break;
-	     case ADDRESS_GUI_DIAL_SHOW_MENU_TEXT:
+	     case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
 	       str_to_csv_str(csv_text, contact_app_info.phoneLabels[mcont->cont.phoneLabel[phone_i]]);
 	       fprintf(out, "\"%s\",", csv_text);
 	       str_to_csv_str(csv_text, mcont->cont.entry[schema[i].record_field] ?
@@ -1061,8 +1058,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	       address_i++;
 	       break;
 	     case ADDRESS_GUI_LABEL_TEXT:
-	     case ADDRESS_GUI_LABEL_TEXT_SCROLL:
-	     case ADDRESS_GUI_WEBSITE:
+	     case ADDRESS_GUI_WEBSITE_TEXT:
 	       fprintf(out, "\"%s\",", mcont->cont.entry[schema[i].record_field] ?
 		       mcont->cont.entry[schema[i].record_field] : "");
 	       break;
@@ -1670,9 +1666,8 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
       for (i=0; i<schema_size; i++) {
 	 switch (schema[i].type) {
 	  case ADDRESS_GUI_LABEL_TEXT:
-	  case ADDRESS_GUI_LABEL_TEXT_SCROLL:
 	    break;
-	  case ADDRESS_GUI_DIAL_SHOW_MENU_TEXT:
+	  case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
 	    if (GTK_TOGGLE_BUTTON(radio_button[phone_i])->active) {
 	       cont.showPhone=phone_i;
 	    }
@@ -1687,7 +1682,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
 	    cont.addressLabel[address_i]=address_type_selected[address_i];
 	    address_i++;
 	    break;
-	  case ADDRESS_GUI_WEBSITE:
+	  case ADDRESS_GUI_WEBSITE_TEXT:
 	    break;
 	  case ADDRESS_GUI_BIRTHDAY:
 	    if (GTK_TOGGLE_BUTTON(birthday_checkbox)->active) {
@@ -1707,11 +1702,10 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
 	 /* Get the entry texts */
 	 switch (schema[i].type) {
 	  case ADDRESS_GUI_LABEL_TEXT:
-	  case ADDRESS_GUI_LABEL_TEXT_SCROLL:
-	  case ADDRESS_GUI_DIAL_SHOW_MENU_TEXT:
+	  case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
 	  case ADDRESS_GUI_IM_MENU_TEXT:
 	  case ADDRESS_GUI_ADDR_MENU_TEXT:
-	  case ADDRESS_GUI_WEBSITE:
+	  case ADDRESS_GUI_WEBSITE_TEXT:
 #ifdef ENABLE_GTK2
 	    gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(gtk_txt_buf_address_text[schema[i].record_field]),&start_iter,&end_iter);
 	    cont.entry[schema[i].record_field] =
@@ -1788,11 +1782,10 @@ void addr_clear_details()
    for (i=0; i<schema_size; i++) {
       switch (schema[i].type) {
        case ADDRESS_GUI_LABEL_TEXT:
-       case ADDRESS_GUI_LABEL_TEXT_SCROLL:
-       case ADDRESS_GUI_DIAL_SHOW_MENU_TEXT:
+       case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
        case ADDRESS_GUI_ADDR_MENU_TEXT:
        case ADDRESS_GUI_IM_MENU_TEXT:
-       case ADDRESS_GUI_WEBSITE:
+       case ADDRESS_GUI_WEBSITE_TEXT:
 #ifdef ENABLE_GTK2
 	 gtk_text_buffer_set_text(GTK_TEXT_BUFFER(gtk_txt_buf_address_text[schema[i].record_field]), "", -1);
 #else
@@ -1806,7 +1799,7 @@ void addr_clear_details()
    address_i=IM_i=phone_i=0;
    for (i=0; i<schema_size; i++) {
       switch (schema[i].type) {
-       case ADDRESS_GUI_DIAL_SHOW_MENU_TEXT:
+       case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
 	 if (phone_i==0) {
 	    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button[0]), TRUE);
 	 }
@@ -1830,7 +1823,7 @@ void addr_clear_details()
 	 gtk_option_menu_set_history(GTK_OPTION_MENU(address_type_list_menu[address_i]), address_i);
 	 address_i++;
 	 break;
-       case ADDRESS_GUI_WEBSITE:
+       case ADDRESS_GUI_WEBSITE_TEXT:
 	 break;
        case ADDRESS_GUI_BIRTHDAY:
 	 gtk_entry_set_text(GTK_ENTRY(reminder_entry), "");
@@ -2526,9 +2519,8 @@ static void cb_clist_selection(GtkWidget      *clist,
    for (i=0; i<schema_size; i++) {
       switch (schema[i].type) {
        case ADDRESS_GUI_LABEL_TEXT:
-       case ADDRESS_GUI_LABEL_TEXT_SCROLL:
 	 goto set_text;
-       case ADDRESS_GUI_DIAL_SHOW_MENU_TEXT:
+       case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
 	 /* Set dial/email button text and callback data */
 	 if (!strcmp(contact_app_info.phoneLabels[cont->phoneLabel[phone_i]], _("E-mail"))) {
 	    gtk_object_set_data(GTK_OBJECT(dial_button[phone_i]), "mail", GINT_TO_POINTER(1));
@@ -2581,7 +2573,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 	 }
 	 address_i++;
 	 goto set_text;
-       case ADDRESS_GUI_WEBSITE:
+       case ADDRESS_GUI_WEBSITE_TEXT:
 	 set_text:
 #ifdef ENABLE_GTK2
 	 gtk_text_buffer_set_text(GTK_TEXT_BUFFER(gtk_txt_buf_address_text[schema[i].record_field]), "", -1);
@@ -3250,11 +3242,10 @@ cb_key_pressed(GtkWidget *widget, GdkEventKey *event)
    for (i=j=0; i<schema_size; i++) {
       switch (schema[i].type) {
        case ADDRESS_GUI_LABEL_TEXT:
-       case ADDRESS_GUI_LABEL_TEXT_SCROLL:
-       case ADDRESS_GUI_DIAL_SHOW_MENU_TEXT:
+       case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
        case ADDRESS_GUI_ADDR_MENU_TEXT:
        case ADDRESS_GUI_IM_MENU_TEXT:
-       case ADDRESS_GUI_WEBSITE:
+       case ADDRESS_GUI_WEBSITE_TEXT:
 	 if (first < 0) {
 	    page = schema[i].notebook_page;
 	    first = next = schema[i].record_field;
@@ -3607,11 +3598,10 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	 if (schema[i].notebook_page!=page_i) continue;
 	 switch (schema[i].type) {
 	  case ADDRESS_GUI_LABEL_TEXT:
-	  case ADDRESS_GUI_LABEL_TEXT_SCROLL:
 	    if (x<2) x=2;
 	    y++;
 	    break;
-	  case ADDRESS_GUI_DIAL_SHOW_MENU_TEXT:
+	  case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
 	    if (x<4) x=4;
 	    y++;
 	    break;
@@ -3623,7 +3613,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	    if (x<2) x=2;
 	    y++;
 	    break;
-	  case ADDRESS_GUI_WEBSITE:
+	  case ADDRESS_GUI_WEBSITE_TEXT:
 	    if (x<2) x=2;
 	    y++;
 	    break;
@@ -3698,19 +3688,19 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	 if (schema[i].notebook_page!=page_i) continue;
 	 switch (schema[i].type) {
 	  case ADDRESS_GUI_LABEL_TEXT:
-	  case ADDRESS_GUI_LABEL_TEXT_SCROLL:	    /* Label */
-	    if (address_version)
-		   label = gtk_label_new(contact_app_info.labels[schema[i].record_field]);
-		else
-		{
-		   utf = charset_p2newj(contact_app_info.labels[schema[i].record_field], 16, char_set);
-		   label = gtk_label_new(utf);
-		   g_free(utf);
-		}
-	    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
-	    //gtk_box_pack_start(GTK_BOX(vbox_left), label, TRUE, TRUE, 0);
-	    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(label),
-			     x-2, x-1, table_y_i, table_y_i+1, GTK_SHRINK, 0, 0, 0);
+	    /* Make a special case for Note so it has a scrollbar and no label */
+	    if (schema[i].record_field != contNote) {
+	       if (address_version) {
+		  label = gtk_label_new(contact_app_info.labels[schema[i].record_field]);
+	       } else {
+		  utf = charset_p2newj(contact_app_info.labels[schema[i].record_field], 16, char_set);
+		  label = gtk_label_new(utf);
+		  g_free(utf);
+	       }
+	       gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
+	       gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(label),
+				x-2, x-1, table_y_i, table_y_i+1, GTK_SHRINK, 0, 0, 0);
+	    }
 	    /* Text */
 #ifdef ENABLE_GTK2
 	    address_text[schema[i].record_field] = gtk_text_view_new();
@@ -3719,7 +3709,8 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(address_text[schema[i].record_field]), GTK_WRAP_CHAR);
 	    gtk_container_set_border_width(GTK_CONTAINER(address_text[schema[i].record_field]), 1);
 
-	    if (schema[i].type == ADDRESS_GUI_LABEL_TEXT_SCROLL) {
+	    /* Make a special case for Note so it has a scrollbar and no label */
+	    if (schema[i].record_field == contNote) {
 	       scrolled_window = gtk_scrolled_window_new(NULL, NULL);
 	       gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
 					      GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
@@ -3733,7 +3724,9 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	    gtk_text_set_word_wrap(GTK_TEXT(address_text[schema[i].record_field]), TRUE);
 #endif
 	    gtk_widget_set_usize(GTK_WIDGET(address_text[schema[i].record_field]), 0, 25);
-	    if (schema[i].type == ADDRESS_GUI_LABEL_TEXT_SCROLL) {
+
+	    /* Make a special case for Note so it has a scrollbar and no label */
+	    if (schema[i].record_field == contNote) {
 	       gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(scrolled_window),
 					 x-1, x, table_y_i, table_y_i+1);
 	    } else {
@@ -3747,7 +3740,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	    changed_list = g_list_prepend(changed_list, address_text[schema[i].record_field]);
 #endif
 	    break;
-	  case ADDRESS_GUI_DIAL_SHOW_MENU_TEXT:
+	  case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
 	    if (!strcmp(contact_app_info.phoneLabels[phone_i], _("E-mail"))) {
 	       dial_button[phone_i] = gtk_button_new_with_label(_("Mail"));
 	       gtk_object_set_data(GTK_OBJECT(dial_button[phone_i]), "mail", GINT_TO_POINTER(1));
@@ -3851,7 +3844,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	    changed_list = g_list_prepend(changed_list, address_text[schema[i].record_field]);
 #endif
 	    break;
-	  case ADDRESS_GUI_WEBSITE:
+	  case ADDRESS_GUI_WEBSITE_TEXT:
 	    /* Label */
 	    button = gtk_button_new_with_label(contact_app_info.labels[schema[i].record_field]);
 	    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(button),
@@ -3936,11 +3929,10 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    for (i=0; i<schema_size; i++) {
       switch (schema[i].type) {
        case ADDRESS_GUI_LABEL_TEXT:
-       case ADDRESS_GUI_LABEL_TEXT_SCROLL:
-       case ADDRESS_GUI_DIAL_SHOW_MENU_TEXT:
+       case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
        case ADDRESS_GUI_ADDR_MENU_TEXT:
        case ADDRESS_GUI_IM_MENU_TEXT:
-       case ADDRESS_GUI_WEBSITE:
+       case ADDRESS_GUI_WEBSITE_TEXT:
 	 /* Capture the Shift-Enter key combination to move back to 
 	  * the right-hand side of the display. */
 	 gtk_signal_connect(GTK_OBJECT(address_text[schema[i].record_field]), "key_press_event",
