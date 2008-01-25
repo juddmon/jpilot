@@ -1,4 +1,4 @@
-/* $Id: search_gui.c,v 1.43 2007/10/23 21:35:10 rousseau Exp $ */
+/* $Id: search_gui.c,v 1.44 2008/01/25 21:13:37 judd Exp $ */
 
 /*******************************************************************************
  * search_gui.c
@@ -55,6 +55,13 @@ static int clist_row_selected;
 
 static void cb_clist_selection(GtkWidget *clist, gint row, gint column,
       GdkEventButton *event, gpointer data);
+
+/*
+ * This keeps track of whether we are using addresses, or contacts
+ * 0 is addresses, 1 is contacts
+ * We could probably make this global
+ */
+static long address_version=0;
 
 int datebook_search_sort_compare(const void *v1, const void *v2)
 {
@@ -175,41 +182,55 @@ static int search_datebook(const char *needle, GtkWidget *clist)
    return count;
 }
 
-static int search_address(const char *needle, GtkWidget *clist)
+static int search_address_or_contacts(const char *needle, GtkWidget *clist)
 {
    gchar *empty_line[] = { "","" };
    char str2[SEARCH_MAX_COLUMN_LEN+2];
-   AddressList *a_list;
-   AddressList *temp_al;
+   AddressList *addr_list;
+   ContactList *cont_list;
+   ContactList *temp_cl;
    struct search_record *new_sr;
    int i, count;
 
-   /*Search Addresses */
-   a_list = NULL;
+   get_pref(PREF_ADDRESS_VERSION, &address_version, NULL);
 
-   get_addresses2(&a_list, SORT_DESCENDING, 2, 2, 2, CATEGORY_ALL);
+   /* Get addresses and move to a contacts structure, or get contacts directly */
+   if (address_version==0) {
+      addr_list = NULL;
+      get_addresses2(&addr_list, SORT_ASCENDING, 2, 2, 1, CATEGORY_ALL);
+      copy_addresses_to_contacts(addr_list, &cont_list);
+      free_AddressList(&addr_list);
+   } else {
+      cont_list = NULL;
+      /* Need to get all records including private ones for the tooltips calculation */
+      get_contacts2(&cont_list, SORT_ASCENDING, 2, 2, 1, CATEGORY_ALL);
+   }
 
-   if (a_list==NULL) {
+   if (cont_list==NULL) {
       return 0;
    }
 
    count = 0;
 
-   for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
-      for (i=0; i<19; i++) {
-	 if (temp_al->maddr.addr.entry[i]) {
-	    if ( jp_strstr(temp_al->maddr.addr.entry[i], needle,
+   for (temp_cl = cont_list; temp_cl; temp_cl=temp_cl->next) {
+      for (i=0; i<NUM_CONTACT_ENTRIES; i++) {
+	 if (temp_cl->mcont.cont.entry[i]) {
+	    if ( jp_strstr(temp_cl->mcont.cont.entry[i], needle,
 			       GTK_TOGGLE_BUTTON(case_sense_checkbox)->active) ) {
 	       gtk_clist_prepend(GTK_CLIST(clist), empty_line);
-	       gtk_clist_set_text(GTK_CLIST(clist), 0, 0, _("address"));
-	       lstrncpy_remove_cr_lfs(str2, temp_al->maddr.addr.entry[i], SEARCH_MAX_COLUMN_LEN);
+	       if (address_version==0) {
+		  gtk_clist_set_text(GTK_CLIST(clist), 0, 0, _("address"));
+	       } else {
+		  gtk_clist_set_text(GTK_CLIST(clist), 0, 0, _("contact"));
+	       }
+	       lstrncpy_remove_cr_lfs(str2, temp_cl->mcont.cont.entry[i], SEARCH_MAX_COLUMN_LEN);
 	       gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str2);
 
 	       /*Add to the search list */
 	       new_sr = malloc(sizeof(struct search_record));
 	       new_sr->app_type = ADDRESS;
 	       new_sr->plugin_flag = 0;
-	       new_sr->unique_id = temp_al->maddr.unique_id;
+	       new_sr->unique_id = temp_cl->mcont.unique_id;
 	       new_sr->next = search_rl;
 	       search_rl = new_sr;
 
@@ -222,9 +243,9 @@ static int search_address(const char *needle, GtkWidget *clist)
       }
    }
 
-   jp_logf(JP_LOG_DEBUG, "calling free_AddressList\n");
-   free_AddressList(&a_list);
-   a_list = NULL;
+   jp_logf(JP_LOG_DEBUG, "calling free_ContactList\n");
+   jp_free_ContactList(&cont_list);
+   cont_list = NULL;
    return count;
 }
 
@@ -439,7 +460,7 @@ static void cb_entry(GtkWidget *widget, gpointer data)
 
    gtk_clist_clear(GTK_CLIST(clist));
 
-   count += search_address(entry_text, clist);
+   count += search_address_or_contacts(entry_text, clist);
    count += search_todo(entry_text, clist);
    count += search_memo(entry_text, clist);
 #ifdef ENABLE_PLUGINS
@@ -642,4 +663,3 @@ void cb_search_gui(GtkWidget *widget, gpointer data)
 
    gtk_widget_show_all(window);
 }
-
