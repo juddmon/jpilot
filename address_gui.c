@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.157 2008/01/25 19:47:21 judd Exp $ */
+/* $Id: address_gui.c,v 1.158 2008/01/25 23:07:27 judd Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -1083,17 +1083,17 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 fprintf(out, "BEGIN:VCARD%s", CRLF);
 	 fprintf(out, "VERSION:3.0%s", CRLF);
 	 fprintf(out, "PRODID:%s%s", FPI_STRING, CRLF);
-	 if (maddr->attrib & dlpRecAttrSecret) {
+	 if (mcont->attrib & dlpRecAttrSecret) {
 	    fprintf(out, "CLASS:PRIVATE%s", CRLF);
 	 }
 	 fprintf(out, "UID:palm-addressbook-%08x-%08lx-%s@%s%s",
-		 maddr->unique_id, userid, username, hostname, CRLF);
+		 mcont->unique_id, userid, username, hostname, CRLF);
 	 str_to_vcard_str(csv_text, sizeof(csv_text),
-			  address_app_info.category.name[maddr->attrib & 0x0F]);
+			  contact_app_info.category.name[mcont->attrib & 0x0F]);
 	 fprintf(out, "CATEGORIES:%s%s", csv_text, CRLF);
-	 if (maddr->addr.entry[0] || maddr->addr.entry[1]) {
-	    char *last = maddr->addr.entry[0];
-	    char *first = maddr->addr.entry[1];
+	 if (mcont->cont.entry[contLastname] || mcont->cont.entry[contFirstname]) {
+	    char *last = mcont->cont.entry[contLastname];
+	    char *first = mcont->cont.entry[contFirstname];
 	    fprintf(out, "FN:");
 	    if (first) {
 	       str_to_vcard_str(csv_text, sizeof(csv_text), first);
@@ -1119,66 +1119,103 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	       fprintf(out, "%s", csv_text);
 	    }
 	    fprintf(out, CRLF);
-	 } else if (maddr->addr.entry[2]) {
-	    str_to_vcard_str(csv_text, sizeof(csv_text), maddr->addr.entry[2]);
+	 } else if (mcont->cont.entry[contCompany]) {
+	    str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[contCompany]);
 	    fprintf(out, "FN:%s%sN:%s%s", csv_text, CRLF, csv_text, CRLF);
 	 } else {
 	    fprintf(out, "FN:-Unknown-%sN:known-;-Un%s", CRLF, CRLF);
 	 }
-	 if (maddr->addr.entry[13]) {
-	    str_to_vcard_str(csv_text, sizeof(csv_text), maddr->addr.entry[13]);
+	 if (mcont->cont.entry[contTitle]) {
+	    str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[contTitle]);
 	    fprintf(out, "TITLE:%s%s", csv_text, CRLF);
 	 }
-	 if (maddr->addr.entry[2]) {
-	    str_to_vcard_str(csv_text, sizeof(csv_text), maddr->addr.entry[2]);
+	 if (mcont->cont.entry[contCompany]) {
+	    str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[contCompany]);
 	    fprintf(out, "ORG:%s%s", csv_text, CRLF);
 	 }
-	 for (n = 3; n < 8; n++) {
-	    if (maddr->addr.entry[n]) {
-	       str_to_vcard_str(csv_text, sizeof(csv_text), maddr->addr.entry[n]);
-	       if (maddr->addr.phoneLabel[n - 3] == 4) {
+	 for (n = contPhone1; n < contPhone7 + 1; n++) {
+	    if (mcont->cont.entry[n]) {
+	       str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[n]);
+	       if (!strcmp(contact_app_info.phoneLabels[mcont->cont.phoneLabel[n-contPhone1]], _("E-mail"))) {
 		  fprintf(out, "EMAIL:%s%s", csv_text, CRLF);
 	       } else {
-		  fprintf(out, "TEL;TYPE=%s", vCardMapType(maddr->addr.phoneLabel[n - 3]));
-		  if (maddr->addr.showPhone == n - 3) {
+		  fprintf(out, "TEL;TYPE=%s", vCardMapType(mcont->cont.phoneLabel[n - contPhone1]));
+		  if (mcont->cont.showPhone == n - contPhone1) {
 		     fprintf(out, ",pref");
 		  }
 		  fprintf(out, ":%s%s", csv_text, CRLF);
 	       }
 	    }
 	 }
-	 if (maddr->addr.entry[8] || maddr->addr.entry[9] || maddr->addr.entry[10] || maddr->addr.entry[11] || maddr->addr.entry[12]) {
-	    /* XXX wrap this line. */
-	    fprintf(out, "ADR:;;");
-	    for (n = 8; n < 13; n++) {
-	       if (maddr->addr.entry[n]) {
-		  str_to_vcard_str(csv_text, sizeof(csv_text), maddr->addr.entry[n]);
-		  fprintf(out, "%s", csv_text);
-	       }
-	       if (n < 12) {
-		  fprintf(out, ";");
+	 for (i=0; i<3; i++) {
+	    int address_i, city_i, state_i, zip_i, country_i;
+	    switch (i) {
+	     case 0:
+	       address_i = contAddress1;
+	       city_i = contCity1;
+	       state_i = contState1;
+	       zip_i = contZip1;
+	       country_i = contCountry1;
+	       break;
+	     case 1:
+	       address_i = contAddress2;
+	       city_i = contCity2;
+	       state_i = contState2;
+	       zip_i = contZip2;
+	       country_i = contCountry2;
+	       break;
+	     case 2:
+	       address_i = contAddress3;
+	       city_i = contCity3;
+	       state_i = contState3;
+	       zip_i = contZip3;
+	       country_i = contCountry3;
+	       break;
+	    }
+	    if (mcont->cont.entry[address_i] ||
+		mcont->cont.entry[city_i] ||
+		mcont->cont.entry[state_i] ||
+		mcont->cont.entry[zip_i] ||
+		mcont->cont.entry[country_i]) {
+	       fprintf(out, "ADR:;;");
+	       for (n = address_i; n < country_i + 1; n++) {
+		  if (mcont->cont.entry[n]) {
+		     str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[n]);
+		     fprintf(out, "%s", csv_text);
+		  }
+		  if (n < country_i) {
+		     fprintf(out, ";");
+		  }
 	       }
 	    }
 	    fprintf(out, CRLF);
 	 }
-	 if (maddr->addr.entry[14] || maddr->addr.entry[15] || maddr->addr.entry[16] ||
-	     maddr->addr.entry[17] || maddr->addr.entry[18]) {
-	    char *labels[]={"Custom1","Custom2","Custom3","Custom4","Note"};
+	 if (mcont->cont.entry[contCustom1] ||
+	     mcont->cont.entry[contCustom2] ||
+	     mcont->cont.entry[contCustom3] ||
+	     mcont->cont.entry[contCustom4] ||
+	     mcont->cont.entry[contCustom5] ||
+	     mcont->cont.entry[contCustom6] ||
+	     mcont->cont.entry[contCustom7] ||
+	     mcont->cont.entry[contCustom8] ||
+	     mcont->cont.entry[contCustom9] ||
+	     mcont->cont.entry[contNote]) {
 	    int firstnote=1;
 	    fprintf(out, "NOTE:");
-	    for (n=14;n<=18;n++) {
-	       if (maddr->addr.entry[n]) {
-		  str_to_vcard_str(csv_text, sizeof(csv_text), maddr->addr.entry[n]);
+	    for (n=contCustom1; n<=contNote; n++) {
+	       if (mcont->cont.entry[n]) {
+		  str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[n]);
 		  if (firstnote == 0) {
 		     fprintf(out, " ");
 		  }
-		  if (n==18 && firstnote) {
+		  if (n == contNote && firstnote) {
 		     fprintf(out, "%s\\n%s", csv_text, CRLF);
 		  } else {
-		     fprintf(out, "%s:\\n%s %s\\n%s", labels[n-14], CRLF, csv_text, CRLF);
+		     fprintf(out, "%s:\\n%s %s\\n%s", contact_app_info.labels[n], CRLF, csv_text, CRLF);
 		  }
 		  firstnote=0;
 	       }
+	       if (n == contCustom9) n = contNote - 1;
 	    }
 	 }
 	 fprintf(out, "END:VCARD%s", CRLF);
