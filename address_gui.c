@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.159 2008/01/26 03:43:24 judd Exp $ */
+/* $Id: address_gui.c,v 1.160 2008/01/26 09:47:44 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -898,10 +898,13 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
    char birthday_str[255];
    const char *pref_date;
    int address_i, IM_i, phone_i;
+   char *utf;
 #ifdef ENABLE_GTK2
    GtkTextIter start_iter;
    GtkTextIter end_iter;
 #endif
+
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
 
    /* this stuff is for vcard only. */
    /* todo: create a pre-export switch */
@@ -970,7 +973,9 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 }
 
 	 /* Todo Should I translate these? */
-	 fprintf(out, "Category: %s\n", contact_app_info.category.name[mcont->attrib & 0x0F]);
+	 utf = charset_p2newj(contact_app_info.category.name[mcont->attrib & 0x0F], 16, char_set);
+	 fprintf(out, "Category: %s\n", utf);
+	 g_free(utf);
 	 fprintf(out, "Private: %s\n",
 		 (mcont->attrib & dlpRecAttrSecret) ? "Yes":"No");
 
@@ -992,7 +997,14 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 		  address_i++;
 		  break;
 		default:
-		  fprintf(out, "%s: ", contact_app_info.labels[schema[i].record_field] ? contact_app_info.labels[schema[i].record_field] : "");
+		  if (contact_app_info.labels[schema[i].record_field])
+		  {
+		     utf = charset_p2newj(contact_app_info.labels[schema[i].record_field], 16, char_set);
+		     fprintf(out, "%s: ", utf);
+		     g_free(utf);
+		  }
+		  else
+		     fprintf(out, ": ");
 	       }
 	       switch (schema[i].type) {
 		case ADDRESS_GUI_LABEL_TEXT:
