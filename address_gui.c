@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.158 2008/01/25 23:07:27 judd Exp $ */
+/* $Id: address_gui.c,v 1.159 2008/01/26 03:43:24 judd Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -874,7 +874,6 @@ static char *vCardMapType(int label)
 void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 		       int type, const char *filename)
 {
-   MyAddress *maddr;//undo remove addr
    MyContact *mcont;
    GList *list, *temp_list;
    FILE *out;
@@ -953,7 +952,6 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 
 
    for (record_num=0, temp_list=list; temp_list; temp_list = temp_list->next, record_num++) {
-      maddr = gtk_clist_get_row_data(GTK_CLIST(clist), GPOINTER_TO_INT(temp_list->data));//undo
       mcont = gtk_clist_get_row_data(GTK_CLIST(clist), GPOINTER_TO_INT(temp_list->data));
       if (!mcont) {
 	 continue;
@@ -1230,11 +1228,11 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 {
 	    char *cn;
 	    char *email = NULL;
-	    char *last = maddr->addr.entry[0];
-	    char *first = maddr->addr.entry[1];
-	    for (n = 3; n < 8; n++) {
-	       if (maddr->addr.entry[n] && maddr->addr.phoneLabel[n - 3] == 4) {
-		  email = maddr->addr.entry[n];
+	    char *last = mcont->cont.entry[contLastname];
+	    char *first = mcont->cont.entry[contFirstname];
+	    for (n = contPhone1; n <= contPhone7; n++) {
+	       if (mcont->cont.entry[n] && mcont->cont.phoneLabel[n - contPhone1] == 4) {
+		  email = mcont->cont.entry[n];
 		  break;
 	       }
 	    }
@@ -1246,8 +1244,8 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 		  last = first;
 		  first = NULL;
 	       }
-	    } else if (maddr->addr.entry[2]) {
-	       last = maddr->addr.entry[2];
+	    } else if (mcont->cont.entry[contCompany]) {
+	       last = mcont->cont.entry[contCompany];
 	       cn = last;
 	    } else {
 	       last = "Unknown";
@@ -1265,37 +1263,79 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	    ldif_out(out, "sn", "%s", last);
 	    if (first)
 	      ldif_out(out, "givenName", "%s", first);
-	    if (maddr->addr.entry[2])
-	      ldif_out(out, "o", "%s", maddr->addr.entry[2]);
-	    for (n = 3; n < 8; n++) {
-	       if (maddr->addr.entry[n]) {
-		  ldif_out(out, ldifMapType(maddr->addr.phoneLabel[n - 3]), "%s", maddr->addr.entry[n]);
+	    if (mcont->cont.entry[contCompany])
+	      ldif_out(out, "o", "%s", mcont->cont.entry[contCompany]);
+	    for (n = contPhone1; n <= contPhone7; n++) {
+	       if (mcont->cont.entry[n]) {
+		  ldif_out(out, ldifMapType(mcont->cont.phoneLabel[n - contPhone1]), "%s", mcont->cont.entry[n]);
 	       }
 	    }
-	    if (maddr->addr.entry[8])
-	      ldif_out(out, "postalAddress", "%s", maddr->addr.entry[8]);
-	    if (maddr->addr.entry[9])
-	      ldif_out(out, "l", "%s", maddr->addr.entry[9]);
-	    if (maddr->addr.entry[10])
-	      ldif_out(out, "st", "%s", maddr->addr.entry[10]);
-	    if (maddr->addr.entry[11])
-	      ldif_out(out, "postalCode", "%s", maddr->addr.entry[11]);
-	    if (maddr->addr.entry[12])
-	      ldif_out(out, "c", "%s", maddr->addr.entry[12]);
-	    if (maddr->addr.entry[13])
-	      ldif_out(out, "title", "%s", maddr->addr.entry[13]);
-	    if (maddr->addr.entry[14])
-	      ldif_out(out, "custom1", "%s", maddr->addr.entry[14]);
-	    if (maddr->addr.entry[15])
-	      ldif_out(out, "custom2", "%s", maddr->addr.entry[15]);
-	    if (maddr->addr.entry[16])
-	      ldif_out(out, "custom3", "%s", maddr->addr.entry[16]);
-	    if (maddr->addr.entry[17])
-	      ldif_out(out, "custom4", "%s", maddr->addr.entry[17]);
-	    if (maddr->addr.entry[18])
-	      ldif_out(out, "description", "%s", maddr->addr.entry[18]);
-/*	    if (maddr->addr.entry[19])
-	      ldif_out(out, "seeAlso", "%s", maddr->addr.entry[19]);*/
+	    if (mcont->cont.entry[contAddress1])
+	      ldif_out(out, "postalAddress", "%s", mcont->cont.entry[contAddress1]);
+	    if (mcont->cont.entry[contCity1])
+	      ldif_out(out, "l", "%s", mcont->cont.entry[contCity1]);
+	    if (mcont->cont.entry[contState1])
+	      ldif_out(out, "st", "%s", mcont->cont.entry[contState1]);
+	    if (mcont->cont.entry[contZip1])
+	      ldif_out(out, "postalCode", "%s", mcont->cont.entry[contZip1]);
+	    if (mcont->cont.entry[contCountry1])
+	      ldif_out(out, "c", "%s", mcont->cont.entry[contCountry1]);
+
+	    if (mcont->cont.entry[contAddress2])
+	      ldif_out(out, "postalAddress", "%s", mcont->cont.entry[contAddress2]);
+	    if (mcont->cont.entry[contCity2])
+	      ldif_out(out, "l", "%s", mcont->cont.entry[contCity2]);
+	    if (mcont->cont.entry[contState2])
+	      ldif_out(out, "st", "%s", mcont->cont.entry[contState2]);
+	    if (mcont->cont.entry[contZip2])
+	      ldif_out(out, "postalCode", "%s", mcont->cont.entry[contZip2]);
+	    if (mcont->cont.entry[contCountry2])
+	      ldif_out(out, "c", "%s", mcont->cont.entry[contCountry2]);
+
+	    if (mcont->cont.entry[contAddress3])
+	      ldif_out(out, "postalAddress", "%s", mcont->cont.entry[contAddress3]);
+	    if (mcont->cont.entry[contCity3])
+	      ldif_out(out, "l", "%s", mcont->cont.entry[contCity3]);
+	    if (mcont->cont.entry[contState3])
+	      ldif_out(out, "st", "%s", mcont->cont.entry[contState3]);
+	    if (mcont->cont.entry[contZip3])
+	      ldif_out(out, "postalCode", "%s", mcont->cont.entry[contZip3]);
+	    if (mcont->cont.entry[contCountry3])
+	      ldif_out(out, "c", "%s", mcont->cont.entry[contCountry3]);
+
+	    if (mcont->cont.entry[contIM1]) {
+	      strncpy(text, contact_app_info.IMLabels[mcont->cont.IMLabel[0]], 100);
+	      ldif_out(out, text, "%s", mcont->cont.entry[contIM1]);
+	    }
+	    if (mcont->cont.entry[contIM2]) {
+	      strncpy(text, contact_app_info.IMLabels[mcont->cont.IMLabel[1]], 100);
+	      ldif_out(out, text, "%s", mcont->cont.entry[contIM2]);
+	    }
+
+	    if (mcont->cont.entry[contWebsite])
+	      ldif_out(out, "website", "%s", mcont->cont.entry[contWebsite]);
+	    if (mcont->cont.entry[contTitle])
+	      ldif_out(out, "title", "%s", mcont->cont.entry[contTitle]);
+	    if (mcont->cont.entry[contCustom1])
+	      ldif_out(out, "custom1", "%s", mcont->cont.entry[contCustom1]);
+	    if (mcont->cont.entry[contCustom2])
+	      ldif_out(out, "custom2", "%s", mcont->cont.entry[contCustom2]);
+	    if (mcont->cont.entry[contCustom3])
+	      ldif_out(out, "custom3", "%s", mcont->cont.entry[contCustom3]);
+	    if (mcont->cont.entry[contCustom4])
+	      ldif_out(out, "custom4", "%s", mcont->cont.entry[contCustom4]);
+	    if (mcont->cont.entry[contCustom5])
+	      ldif_out(out, "custom5", "%s", mcont->cont.entry[contCustom5]);
+	    if (mcont->cont.entry[contCustom6])
+	      ldif_out(out, "custom6", "%s", mcont->cont.entry[contCustom6]);
+	    if (mcont->cont.entry[contCustom7])
+	      ldif_out(out, "custom7", "%s", mcont->cont.entry[contCustom7]);
+	    if (mcont->cont.entry[contCustom8])
+	      ldif_out(out, "custom8", "%s", mcont->cont.entry[contCustom8]);
+	    if (mcont->cont.entry[contCustom9])
+	      ldif_out(out, "custom9", "%s", mcont->cont.entry[contCustom9]);
+	    if (mcont->cont.entry[contNote])
+	      ldif_out(out, "description", "%s", mcont->cont.entry[contNote]);
 	    fprintf(out, "\n");
 	    break;
 	 }
