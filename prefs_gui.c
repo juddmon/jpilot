@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.54 2008/01/13 22:13:33 rousseau Exp $ */
+/* $Id: prefs_gui.c,v 1.55 2008/01/27 04:14:31 judd Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -77,6 +77,77 @@ void set_colors()
    gtk_widget_queue_draw(main_window);
 }
 #endif
+
+/* Serial Port Menu code */
+
+static GtkWidget *port_menu;
+GtkWidget *port_menu_item[10];
+static char *port_choices[]={
+   "other", "usb:",
+     "/dev/ttyUSB0", "/dev/ttyUSB1", "/dev/ttyUSB2", "/dev/ttyUSB3",
+     "/dev/ttyS0", "/dev/ttyS1", "/dev/ttyS2", "/dev/ttyS3",
+     NULL
+};
+
+static void cb_serial_port_menu(GtkWidget *widget,
+				gpointer   data)
+{
+   if (!widget)
+     return;
+   if (!(GTK_CHECK_MENU_ITEM(widget))->active) {
+      return;
+   }
+
+   gtk_entry_set_text(GTK_ENTRY(port_entry), port_choices[GPOINTER_TO_INT(data)]);
+
+   return;
+}
+
+int make_serial_port_menu(GtkWidget **port_menu)
+{
+   GtkWidget *menu;
+   GSList    *group;
+   int i, r, selected;
+   long ivalue;
+   const char *svalue;
+   const char *entry_text;
+   char format_text[MAX_PREF_VALUE];
+   char human_text[MAX_PREF_VALUE];
+
+   *port_menu = gtk_option_menu_new();
+
+   menu = gtk_menu_new();
+   group = NULL;
+   selected=0;
+
+   entry_text = gtk_entry_get_text(GTK_ENTRY(port_entry));
+
+   for (i=0; port_choices[i]; i++) {
+      port_menu_item[i] = gtk_radio_menu_item_new_with_label(group, port_choices[i]);
+      group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(port_menu_item[i]));
+      gtk_menu_append(GTK_MENU(menu), port_menu_item[i]);
+
+      if (!strcmp(entry_text, port_choices[i])) {
+	 gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(port_menu_item[i]), TRUE);
+	 selected=i;
+      }
+
+      /* We don't want a callback if "other" is selected */
+      if (i) {
+	 gtk_signal_connect(GTK_OBJECT(port_menu_item[i]), "activate", GTK_SIGNAL_FUNC(cb_serial_port_menu),
+			    GINT_TO_POINTER(i));
+      }
+
+      gtk_widget_show(port_menu_item[i]);
+   }
+   gtk_option_menu_set_menu(GTK_OPTION_MENU(*port_menu), menu);
+
+   gtk_option_menu_set_history(GTK_OPTION_MENU(*port_menu), selected);
+
+   return EXIT_SUCCESS;
+}
+
+/* End Serial Port Menu code */
 
 static void cb_pref_menu(GtkWidget *widget,
 			 gpointer   data)
@@ -205,9 +276,27 @@ void cb_checkbox_show_tooltips(GtkWidget *widget, gpointer data)
 void cb_text_entry(GtkWidget *widget, gpointer data)
 {
    const char *entry_text;
+   int i, found;
 
    entry_text = gtk_entry_get_text(GTK_ENTRY(widget));
    set_pref(GPOINTER_TO_INT(data), 0, entry_text, FALSE);
+
+   if (GPOINTER_TO_INT(data) == PREF_PORT) {
+      if (GTK_IS_WIDGET(port_menu_item[0])) {
+	 found=0;
+	 for (i=0; port_choices[i]; i++) {
+	    if (!strcmp(entry_text, port_choices[i])) {
+	       gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(port_menu_item[i]), TRUE);
+	       gtk_option_menu_set_history(GTK_OPTION_MENU(port_menu), i);
+	       found=1;
+	    }
+	 }
+	 if (!found) {
+	    gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(port_menu_item[0]), TRUE);
+	    gtk_option_menu_set_history(GTK_OPTION_MENU(port_menu), 0);
+	 }
+      }
+   }
 }
 
 void cb_checkbox_set_pref(GtkWidget *widget, gpointer data)
@@ -511,7 +600,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 
    /**********************************************************************/
    /* Settings preference tab */
-   table = gtk_table_new(4, 2, FALSE);
+   table = gtk_table_new(4, 3, FALSE);
    gtk_table_set_row_spacings(GTK_TABLE(table),0);
    gtk_table_set_col_spacings(GTK_TABLE(table),0);
    gtk_box_pack_start(GTK_BOX(vbox_settings), table, FALSE, FALSE, 0);
@@ -519,25 +608,26 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    /* GTK colors file */
    label = gtk_label_new(_("My GTK colors file is "));
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
-			     0, 1, 0, 1);
+			     0, 2, 0, 1);
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
 
    make_pref_menu(&pref_menu, PREF_RCFILE);
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(pref_menu),
-			     1, 2, 0, 1);
+			     2, 3, 0, 1);
 
    get_pref(PREF_RCFILE, &ivalue, &cstr);
    gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
 
+
    /* Port */
-   label = gtk_label_new(_("Serial Port (/dev/ttyS0, /dev/pilot)"));
+   label = gtk_label_new(_("Serial Port"));
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
 			     0, 1, 1, 2);
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
 
    port_entry = gtk_entry_new_with_max_length(MAX_PREF_VALUE - 2);
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(port_entry),
-			     1, 2, 1, 2);
+			     2, 3, 1, 2);
    get_pref(PREF_PORT, &ivalue, &cstr);
    if (cstr) {
       gtk_entry_set_text(GTK_ENTRY(port_entry), cstr);
@@ -546,15 +636,22 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 		      "changed", GTK_SIGNAL_FUNC(cb_text_entry),
 		      GINT_TO_POINTER(PREF_PORT));
 
+   /* Serial Port Menu */
+   /* Note that port_entry must exist before we call this function */
+   make_serial_port_menu(&port_menu);
+   gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(port_menu),
+			     1, 2, 1, 2);
+
+
    /* Rate */
    label = gtk_label_new(_("Serial Rate"));
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
-			     0, 1, 2, 3);
+			     0, 2, 2, 3);
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
 
    make_pref_menu(&pref_menu, PREF_RATE);
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(pref_menu),
-			     1, 2, 2, 3);
+			     2, 3, 2, 3);
 
    get_pref(PREF_RATE, &ivalue, &cstr);
    gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
@@ -562,13 +659,13 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    /* Number of backups */
    label = gtk_label_new(_("Number of backups to be archived"));
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
-			     0, 1, 3, 4);
+			     0, 2, 3, 4);
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
 
    backups_entry = gtk_entry_new_with_max_length(2);
    gtk_widget_set_usize(backups_entry, 30, 0);
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(backups_entry),
-			     1, 2, 3, 4);
+			     2, 3, 3, 4);
    get_pref(PREF_NUM_BACKUPS, &ivalue, &cstr);
    sprintf(temp_str, "%ld", ivalue);
    gtk_entry_set_text(GTK_ENTRY(backups_entry), temp_str);
