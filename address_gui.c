@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.160 2008/01/26 09:47:44 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.161 2008/01/27 21:03:37 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -883,14 +883,14 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
    struct tm *now;
    char str1[256], str2[256];
    char pref_time[40];
-   int i, r, n, len;
+   int i, r, n;
    int record_num;
    char *button_text[]={N_("OK")};
    char *button_overwrite_text[]={N_("No"), N_("Yes")};
    char text[1024];
    char date_string[1024];
    char csv_text[65550];
-   long char_set, use_jos;
+   long char_set;
    char username[256];
    char hostname[256];
    const char *svalue;
@@ -899,10 +899,6 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
    const char *pref_date;
    int address_i, IM_i, phone_i;
    char *utf;
-#ifdef ENABLE_GTK2
-   GtkTextIter start_iter;
-   GtkTextIter end_iter;
-#endif
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
 
@@ -968,7 +964,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	    if (address_version==0) {
 	       fprintf(out, "Addresses exported from %s on %s\n\n", PN, date_string);
 	    } else {   
-	       fprintf(out, "Contacts version %d exported from %s on %s\n\n", address_version, PN, date_string);
+	       fprintf(out, "Contacts version %ld exported from %s on %s\n\n", address_version, PN, date_string);
 	    }
 	 }
 

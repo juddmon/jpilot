@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.55 2008/01/27 04:14:31 judd Exp $ */
+/* $Id: prefs_gui.c,v 1.56 2008/01/27 21:03:37 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -107,12 +107,8 @@ int make_serial_port_menu(GtkWidget **port_menu)
 {
    GtkWidget *menu;
    GSList    *group;
-   int i, r, selected;
-   long ivalue;
-   const char *svalue;
+   int i, selected;
    const char *entry_text;
-   char format_text[MAX_PREF_VALUE];
-   char human_text[MAX_PREF_VALUE];
 
    *port_menu = gtk_option_menu_new();
 
