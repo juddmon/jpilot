@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.136 2008/01/13 18:18:29 rikster5 Exp $ */
+/* $Id: utils.c,v 1.137 2008/01/27 22:03:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -2218,17 +2218,18 @@ int check_copy_DBs_to_home()
    struct utimbuf times;
    char dbname_pdb[][32]={
       "DatebookDB.pdb",
-	"AddressDB.pdb",
-	"ToDoDB.pdb",
-	"MemoDB.pdb",
-	"Memo32DB.pdb",
-	"ExpenseDB.pdb",
-	""
+      "CalendarDB-PDat.pdb",
+      "AddressDB.pdb",
+      "ContactsDB-PAdd.pdb",
+      "ToDoDB.pdb",
+      "TasksDB-PTod.pdb",
+      "MemoDB.pdb",
+      "MemosDB-PMem.pdb",
+      "Memo32DB.pdb",
+      "ExpenseDB.pdb",
+      ""
    };
 
-   /* Convert to new database names if prefs set */
-   rename_dbnames(dbname_pdb);
-   
    for (i=0; dbname_pdb[i][0]; i++) {
       get_home_file_name(dbname_pdb[i], destname, sizeof(destname));
       r = stat(destname, &sbuf);
