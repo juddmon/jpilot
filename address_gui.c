@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.161 2008/01/27 21:03:37 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.162 2008/01/29 17:57:58 judd Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -113,32 +113,32 @@ static address_schema_entry contact_schema[NUM_CONTACT_FIELDS]={
      {contIM1, 0, ADDRESS_GUI_IM_MENU_TEXT},
      {contIM2, 0, ADDRESS_GUI_IM_MENU_TEXT},
      {contWebsite, 0, ADDRESS_GUI_WEBSITE_TEXT},
-     {contNote, 1, ADDRESS_GUI_LABEL_TEXT},
-     {contAddress1, 2, ADDRESS_GUI_ADDR_MENU_TEXT},
-     {contCity1, 2, ADDRESS_GUI_LABEL_TEXT},
-     {contState1, 2, ADDRESS_GUI_LABEL_TEXT},
-     {contZip1, 2, ADDRESS_GUI_LABEL_TEXT},
-     {contCountry1, 2, ADDRESS_GUI_LABEL_TEXT},
-     {contAddress2, 3, ADDRESS_GUI_ADDR_MENU_TEXT},
-     {contCity2, 3, ADDRESS_GUI_LABEL_TEXT},
-     {contState2, 3, ADDRESS_GUI_LABEL_TEXT},
-     {contZip2, 3, ADDRESS_GUI_LABEL_TEXT},
-     {contCountry2, 3, ADDRESS_GUI_LABEL_TEXT},
-     {contAddress3, 4, ADDRESS_GUI_ADDR_MENU_TEXT},
-     {contCity3, 4, ADDRESS_GUI_LABEL_TEXT},
-     {contState3, 4, ADDRESS_GUI_LABEL_TEXT},
-     {contZip3, 4, ADDRESS_GUI_LABEL_TEXT},
-     {contCountry3, 4, ADDRESS_GUI_LABEL_TEXT},
-     {contBirthday, 5, ADDRESS_GUI_BIRTHDAY},
-     {contCustom1, 5, ADDRESS_GUI_LABEL_TEXT},
-     {contCustom2, 5, ADDRESS_GUI_LABEL_TEXT},
-     {contCustom3, 5, ADDRESS_GUI_LABEL_TEXT},
-     {contCustom4, 5, ADDRESS_GUI_LABEL_TEXT},
-     {contCustom5, 5, ADDRESS_GUI_LABEL_TEXT},
-     {contCustom6, 5, ADDRESS_GUI_LABEL_TEXT},
-     {contCustom7, 5, ADDRESS_GUI_LABEL_TEXT},
-     {contCustom8, 5, ADDRESS_GUI_LABEL_TEXT},
-     {contCustom9, 5, ADDRESS_GUI_LABEL_TEXT}
+     {contAddress1, 1, ADDRESS_GUI_ADDR_MENU_TEXT},
+     {contCity1, 1, ADDRESS_GUI_LABEL_TEXT},
+     {contState1, 1, ADDRESS_GUI_LABEL_TEXT},
+     {contZip1, 1, ADDRESS_GUI_LABEL_TEXT},
+     {contCountry1, 1, ADDRESS_GUI_LABEL_TEXT},
+     {contAddress2, 2, ADDRESS_GUI_ADDR_MENU_TEXT},
+     {contCity2, 2, ADDRESS_GUI_LABEL_TEXT},
+     {contState2, 2, ADDRESS_GUI_LABEL_TEXT},
+     {contZip2, 2, ADDRESS_GUI_LABEL_TEXT},
+     {contCountry2, 2, ADDRESS_GUI_LABEL_TEXT},
+     {contAddress3, 3, ADDRESS_GUI_ADDR_MENU_TEXT},
+     {contCity3, 3, ADDRESS_GUI_LABEL_TEXT},
+     {contState3, 3, ADDRESS_GUI_LABEL_TEXT},
+     {contZip3, 3, ADDRESS_GUI_LABEL_TEXT},
+     {contCountry3, 3, ADDRESS_GUI_LABEL_TEXT},
+     {contBirthday, 4, ADDRESS_GUI_BIRTHDAY},
+     {contCustom1, 4, ADDRESS_GUI_LABEL_TEXT},
+     {contCustom2, 4, ADDRESS_GUI_LABEL_TEXT},
+     {contCustom3, 4, ADDRESS_GUI_LABEL_TEXT},
+     {contCustom4, 4, ADDRESS_GUI_LABEL_TEXT},
+     {contCustom5, 4, ADDRESS_GUI_LABEL_TEXT},
+     {contCustom6, 4, ADDRESS_GUI_LABEL_TEXT},
+     {contCustom7, 4, ADDRESS_GUI_LABEL_TEXT},
+     {contCustom8, 4, ADDRESS_GUI_LABEL_TEXT},
+     {contCustom9, 4, ADDRESS_GUI_LABEL_TEXT},
+     {contNote, 5, ADDRESS_GUI_LABEL_TEXT}
 };
 
 static address_schema_entry address_schema[19]={
@@ -151,16 +151,16 @@ static address_schema_entry address_schema[19]={
      {contPhone3, 0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
      {contPhone4, 0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
      {contPhone5, 0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
-     {contNote, 1, ADDRESS_GUI_LABEL_TEXT},
-     {contAddress1, 2, ADDRESS_GUI_LABEL_TEXT},
-     {contCity1, 2, ADDRESS_GUI_LABEL_TEXT},
-     {contState1, 2, ADDRESS_GUI_LABEL_TEXT},
-     {contZip1, 2, ADDRESS_GUI_LABEL_TEXT},
-     {contCountry1, 2, ADDRESS_GUI_LABEL_TEXT},
-     {contCustom1, 3, ADDRESS_GUI_LABEL_TEXT},
-     {contCustom2, 3, ADDRESS_GUI_LABEL_TEXT},
-     {contCustom3, 3, ADDRESS_GUI_LABEL_TEXT},
-     {contCustom4, 3, ADDRESS_GUI_LABEL_TEXT}
+     {contAddress1, 1, ADDRESS_GUI_LABEL_TEXT},
+     {contCity1, 1, ADDRESS_GUI_LABEL_TEXT},
+     {contState1, 1, ADDRESS_GUI_LABEL_TEXT},
+     {contZip1, 1, ADDRESS_GUI_LABEL_TEXT},
+     {contCountry1, 1, ADDRESS_GUI_LABEL_TEXT},
+     {contCustom1, 2, ADDRESS_GUI_LABEL_TEXT},
+     {contCustom2, 2, ADDRESS_GUI_LABEL_TEXT},
+     {contCustom3, 2, ADDRESS_GUI_LABEL_TEXT},
+     {contCustom4, 2, ADDRESS_GUI_LABEL_TEXT},
+     {contNote, 3, ADDRESS_GUI_LABEL_TEXT}
 };
 
 /*
@@ -3419,17 +3419,17 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
     * dynamically if the address type pulldown is selected */
    char *contact_page_names[]={
       N_("Name"),
-      N_("Note"),
 	N_("Address"),
 	N_("Address"),
 	N_("Address"),
-	N_("Other")
+	N_("Other"),
+	N_("Note")
    };
    char *address_page_names[]={
       N_("Name"),
-	N_("Note"),
 	N_("Address"),
-	N_("Other")
+	N_("Other"),
+	N_("Note")
    };
    char **page_names;
 
