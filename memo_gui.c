@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.101 2008/01/13 22:13:33 rousseau Exp $ */
+/* $Id: memo_gui.c,v 1.102 2008/01/31 19:05:17 judd Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -995,11 +995,8 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
 
    size = pack_MemoAppInfo(&ai, buffer, sizeof(buffer));
 
-   if (memo_version==2) {
-      pdb_file_write_app_block("MemosDB-PMem", buffer, size);
-   } else {
-      pdb_file_write_app_block("MemoDB", buffer, size);
-   }
+   pdb_file_write_app_block(db_name, buffer, size);
+   
 
    cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
 }
