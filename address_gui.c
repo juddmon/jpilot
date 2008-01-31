@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.162 2008/01/29 17:57:58 judd Exp $ */
+/* $Id: address_gui.c,v 1.163 2008/01/31 19:03:28 judd Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -175,12 +175,14 @@ static char *field_names[]={"Last", "First", "Title", "Company", "Phone1",
      "ZipCode", "Country", "Custom1", "Custom2", "Custom3", "Custom4",
      "Note", "phoneLabel1", "phoneLabel2", "phoneLabel3", "phoneLabel4",
      "phoneLabel5", "showPhone", NULL};
-static char *field_names_ja[]={"kana(Last)", "Last",  "kana(First)", "First",
+/*
+ static char *field_names_ja[]={"kana(Last)", "Last",  "kana(First)", "First",
      "Title", "kana(Company)","Company", "Phone1",
      "Phone2", "Phone3", "Phone4", "Phone5", "Address", "City", "State",
      "ZipCode", "Country", "Custom1", "Custom2", "Custom3", "Custom4",
      "Note", "phoneLabel1", "phoneLabel2", "phoneLabel3", "phoneLabel4",
      "phoneLabel5", "showPhone", NULL};
+ */
 
 #define ADDRESS_NAME_COLUMN  0
 #define ADDRESS_NOTE_COLUMN  1
@@ -2120,9 +2122,9 @@ static void clear_mycontact(MyContact *mcont)
 }
 /* End Masking */
 
-static void cb_edit_cats(GtkWidget *widget, gpointer data)
+static void cb_edit_cats_address(GtkWidget *widget, gpointer data)
 {
-   struct AddressAppInfo ai;
+   struct AddressAppInfo aai;
    char full_name[FILENAME_MAX];
    char buffer[65536];
    int num;
@@ -2134,17 +2136,18 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
    void *buf;
    struct pi_file *pf;
 
-   jp_logf(JP_LOG_DEBUG, "cb_edit_cats\n");
+   jp_logf(JP_LOG_DEBUG, "cb_edit_cats_address\n");
 
    get_home_file_name("AddressDB.pdb", full_name, sizeof(full_name));
 
    buf=NULL;
-   memset(&ai, 0, sizeof(ai));
+   memset(&aai, 0, sizeof(aai));
 
    pf = pi_file_open(full_name);
    pi_file_get_app_info(pf, &buf, &size);
 
-   num = unpack_AddressAppInfo(&ai, buf, size);
+   num = unpack_AddressAppInfo(&aai, buf, size);
+
    if (num <= 0) {
       jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), "AddressDB.pdb");
       return;
@@ -2152,11 +2155,65 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
 
    pi_file_close(pf);
 
-   edit_cats(widget, "AddressDB", &(ai.category));
+   edit_cats(widget, "AddressDB", &(aai.category));
 
-   size = pack_AddressAppInfo(&ai, (unsigned char*)buffer, sizeof(buffer));
+   size = pack_AddressAppInfo(&aai, (unsigned char*)buffer, sizeof(buffer));
 
    pdb_file_write_app_block("AddressDB", buffer, size);
+}
+
+static void cb_edit_cats_category(GtkWidget *widget, gpointer data)
+{
+   struct ContactAppInfo cai;
+   char full_name[FILENAME_MAX];
+   int num;
+#ifdef PILOT_LINK_0_12
+   size_t size;
+#else
+   int size;
+#endif
+   void *buf;
+   struct pi_file *pf;
+   pi_buffer_t *pi_buf;
+
+   jp_logf(JP_LOG_DEBUG, "cb_edit_cats_category\n");
+
+   get_home_file_name("ContactsDB-PAdd.pdb", full_name, sizeof(full_name));
+
+   buf=NULL;
+   memset(&cai, 0, sizeof(cai));
+
+   /* Contacts App Info is 1152 or so */
+   pi_buf = pi_buffer_new(1500);
+
+   pf = pi_file_open(full_name);
+   pi_file_get_app_info(pf, &buf, &size);
+
+   pi_buf = pi_buffer_append(pi_buf, buf, size);
+   
+   num = jp_unpack_ContactAppInfo(&cai, pi_buf);
+   if (num <= 0) {
+      jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), "ContactsDB-PAdd.pdb");
+      pi_buffer_free(pi_buf);
+      return;
+   }
+
+   pi_file_close(pf);
+
+   edit_cats(widget, "ContactsDB-PAdd", &(cai.category));
+
+   size = jp_pack_ContactAppInfo(&cai, pi_buf);
+
+   pdb_file_write_app_block("ContactsDB-PAdd", pi_buf->data, pi_buf->used);
+}
+
+static void cb_edit_cats(GtkWidget *widget, gpointer data)
+{
+   if (address_version) {
+      cb_edit_cats_category(widget, data);
+   } else {
+      cb_edit_cats_address(widget, data);
+   }
 
    cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
 }
