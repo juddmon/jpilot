@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.163 2008/01/31 19:03:28 judd Exp $ */
+/* $Id: address_gui.c,v 1.164 2008/01/31 21:46:18 judd Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -951,6 +951,38 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
    strftime(str2, sizeof(str2), pref_time, now);
    g_snprintf(date_string, sizeof(date_string), "%s %s", str1, str2);
 
+
+   /* Write a header to the CSV file */
+   if (type == EXPORT_TYPE_CSV) {
+      fprintf(out, "CSV contacts version 1: Private, Category, ");
+      address_i=phone_i=IM_i=0;
+      for (i=0; i<schema_size; i++) {
+	 switch (schema[i].type) {
+	  case ADDRESS_GUI_IM_MENU_TEXT:
+	    fprintf(out, "IM %d label, ", IM_i);
+	    fprintf(out, "IM %d, ", IM_i);
+	    IM_i++;
+	    break;
+	  case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
+	    fprintf(out, "Phone %d label, ", phone_i);
+	    fprintf(out, "Phone %d, ", phone_i);
+	    phone_i++;
+	    break;
+	  case ADDRESS_GUI_ADDR_MENU_TEXT:
+	    fprintf(out, "Address %d label, ", address_i);
+	    fprintf(out, "Address %d, ", address_i);
+	    address_i++;
+	    break;
+	  case ADDRESS_GUI_LABEL_TEXT:
+	  case ADDRESS_GUI_WEBSITE_TEXT:
+	  case ADDRESS_GUI_BIRTHDAY:
+	    fprintf(out, "%s, ", contact_app_info.labels[schema[i].record_field]);
+	    break;
+	 }
+      }
+
+      fprintf(out, "Show in List\n");
+   }
 
    for (record_num=0, temp_list=list; temp_list; temp_list = temp_list->next, record_num++) {
       mcont = gtk_clist_get_row_data(GTK_CLIST(clist), GPOINTER_TO_INT(temp_list->data));
