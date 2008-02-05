@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.153 2008/01/13 22:13:33 rousseau Exp $ */
+/* $Id: datebook_gui.c,v 1.154 2008/02/05 03:54:45 judd Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -2812,6 +2812,8 @@ void cb_delete_appt(GtkWidget *widget, gpointer data)
    int flag;
    int result = 0;
    int show_priv;
+   int write_flag, write_type;
+   unsigned int *write_unique_id;
 
    mappt = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
    if (mappt < (MyAppointment *)CLIST_MIN_DATA) {
@@ -2834,6 +2836,9 @@ void cb_delete_appt(GtkWidget *widget, gpointer data)
    /*We need to take care of the 2 options allowed when modifying */
    /*repeating appointments */
    /* */
+   write_flag = 0;
+   write_unique_id = NULL;
+
    if (mappt->appt.repeatType != repeatNone) {
       /*We need more user input */
       /*Pop up a dialog */
@@ -2842,22 +2847,33 @@ void cb_delete_appt(GtkWidget *widget, gpointer data)
 	 return;
       }
       if (result==DIALOG_SAID_CURRENT) {
+	 write_flag = 1;
  	 /*Create an exception in the appointment */
 	 datebook_copy_appointment(&(mappt->appt), &appt);
 	 datebook_add_exception(appt, current_year, current_month, current_day);
 	 if ((mappt->rt==PALM_REC) || (mappt->rt==REPLACEMENT_PALM_REC)) {
-	    pc_datebook_write(appt, REPLACEMENT_PALM_REC, mappt->attrib, &(mappt->unique_id));
+	    write_type = REPLACEMENT_PALM_REC;
+	    write_unique_id = &(mappt->unique_id);
 	 } else {
-	    pc_datebook_write(appt, NEW_PC_REC, mappt->attrib, NULL);
+	    write_type = REPLACEMENT_PALM_REC;
+	    write_unique_id = NULL;
 	 }
-	 free_Appointment(appt);
-	 free(appt);
 	 /*Since this was really a modify, and not a delete */
 	 flag=MODIFY_FLAG;
       }
    }
-
+   /* Its important to write a delete record first and then a new/modified
+    * record in that order.  This is so that the sync code can check to see
+    * if the remote record is the same as the removed, or changed local
+    * or not before it goes and modifies it.
+    */
    delete_pc_record(DATEBOOK, mappt, flag);
+   if (write_flag) {
+      pc_datebook_write(appt, write_type, mappt->attrib, write_unique_id);
+      free_Appointment(appt);
+      free(appt);
+   }
+
    if (flag==DELETE_FLAG) {
       /* when we redraw we want to go to the line above the deleted one */
       if (clist_row_selected>0) {
