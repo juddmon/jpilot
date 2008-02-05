@@ -1,4 +1,4 @@
-/* $Id: address.h,v 1.12 2008/01/13 21:47:13 rousseau Exp $ */
+/* $Id: address.h,v 1.13 2008/02/05 00:57:25 judd Exp $ */
 
 /*******************************************************************************
  * address.h
@@ -25,6 +25,28 @@
 
 #include <pi-address.h>
 #include "utils.h"
+
+/*
+ * This describes how to draw a GUI entry for each field in an address record
+ */
+typedef struct {
+   int record_field;
+   int notebook_page;
+   int type;
+} address_schema_entry;
+
+#define NUM_IMS 2
+#define NUM_ADDRESSES 3
+#define NUM_CONTACT_NOTEBOOK_PAGES 6
+#define NUM_ADDRESS_NOTEBOOK_PAGES 4
+
+#define ADDRESS_GUI_LABEL_TEXT 2 /* Show a label and a textview widget */
+#define ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT 3 /* Show a dial button, show in list radio button, and a phone menu, and a textview */
+#define ADDRESS_GUI_IM_MENU_TEXT 4 /* Show a IM menu and a textview */
+#define ADDRESS_GUI_ADDR_MENU_TEXT 5 /* Show a address menu and a textview */
+#define ADDRESS_GUI_WEBSITE_TEXT 6 /* Show a website button and a textview */
+#define ADDRESS_GUI_BIRTHDAY 7 /* Show a birthdate checkbox and complex birthday GUI */
+
 
 /* This flag affects sorting of address records
  * 0 : by lastname, first

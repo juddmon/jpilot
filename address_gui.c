@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.164 2008/01/31 21:46:18 judd Exp $ */
+/* $Id: address_gui.c,v 1.165 2008/02/05 00:57:25 judd Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -71,33 +71,12 @@
  */
 #define NUM_ADDRESS_EXT_ENTRIES 3
 
-#define ADDRESS_GUI_LABEL_TEXT 2 /* Show a label and a textview widget */
-#define ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT 3 /* Show a dial button, show in list radio button, and a phone menu, and a textview */
-#define ADDRESS_GUI_IM_MENU_TEXT 4 /* Show a IM menu and a textview */
-#define ADDRESS_GUI_ADDR_MENU_TEXT 5 /* Show a address menu and a textview */
-#define ADDRESS_GUI_WEBSITE_TEXT 6 /* Show a website button and a textview */
-#define ADDRESS_GUI_BIRTHDAY 7 /* Show a birthdate checkbox and complex birthday GUI */
-
 #define PHOTO_X 139
 #define PHOTO_Y 144
 
-/*
- * This describes how to draw a GUI entry for each field in an address record
- */
-typedef struct {
-   int record_field;
-   int notebook_page;
-   int type;
-} address_schema_entry;
-
 static address_schema_entry *schema;
-
-#define NUM_IMS 2
-#define NUM_ADDRESSES 3
-#define NUM_CONTACT_NOTEBOOK_PAGES 6
-#define NUM_ADDRESS_NOTEBOOK_PAGES 4
-
 static int schema_size;
+
 static address_schema_entry contact_schema[NUM_CONTACT_FIELDS]={
      {contLastname, 0, ADDRESS_GUI_LABEL_TEXT},
      {contFirstname, 0, ADDRESS_GUI_LABEL_TEXT},
@@ -162,6 +141,7 @@ static address_schema_entry address_schema[19]={
      {contCustom4, 2, ADDRESS_GUI_LABEL_TEXT},
      {contNote, 3, ADDRESS_GUI_LABEL_TEXT}
 };
+
 
 /*
  * This keeps track of whether we are using addresses, or contacts
@@ -469,37 +449,49 @@ static void connect_changed_signals(int con_or_dis)
    }
 }
 
-//undo convert
+//undo jbm convert
 int address_print()
 {
    long this_many;
-   MyAddress *maddr;
-   AddressList *address_list;
-   AddressList address_list1;
+   AddressList *addr_list;
+   MyContact *mcont;
+   ContactList *cont_list;
+   ContactList cont_list1;
+   int get_category;
 
    get_pref(PREF_PRINT_THIS_MANY, &this_many, NULL);
 
-   address_list=NULL;
+   cont_list=NULL;
    if (this_many==1) {
-      maddr = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
-      if (maddr < (MyAddress *)CLIST_MIN_DATA) {
+      mcont = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
+      if (mcont < (MyContact *)CLIST_MIN_DATA) {
 	 return EXIT_FAILURE;
       }
-      memcpy(&(address_list1.maddr), maddr, sizeof(MyAddress));
-      address_list1.next=NULL;
-      address_list = &address_list1;
-   }
-   if (this_many==2) {
-      get_addresses2(&address_list, SORT_ASCENDING, 2, 2, 2, address_category);
-   }
-   if (this_many==3) {
-      get_addresses2(&address_list, SORT_ASCENDING, 2, 2, 2, CATEGORY_ALL);
+      memcpy(&(cont_list1.mcont), mcont, sizeof(MyContact));
+      cont_list1.next=NULL;
+      cont_list = &cont_list1;
    }
 
-   print_addresses(address_list);
+   /* Get contacts, or Addresses */
+   if ((this_many==2) || (this_many==3)) {
+      get_category = CATEGORY_ALL;
+      if (this_many==2) {
+	 get_category = address_category;
+      }
+      if (address_version==0) {
+	 addr_list = NULL;
+	 get_addresses2(&addr_list, SORT_ASCENDING, 2, 2, 1, get_category);
+	 copy_addresses_to_contacts(addr_list, &cont_list);
+	 free_AddressList(&addr_list);
+      } else {
+	 get_contacts2(&cont_list, SORT_ASCENDING, 2, 2, 1, get_category);
+      }
+   }
+
+   print_contacts(cont_list, &contact_app_info, schema, schema_size);
 
    if ((this_many==2) || (this_many==3)) {
-      free_AddressList(&address_list);
+      jp_free_ContactList(&cont_list);
    }
 
    return EXIT_SUCCESS;

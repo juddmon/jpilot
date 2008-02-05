@@ -1,4 +1,4 @@
-/* $Id: print.c,v 1.36 2006/12/30 17:17:06 rousseau Exp $ */
+/* $Id: print.c,v 1.37 2008/02/05 00:57:25 judd Exp $ */
 
 /*******************************************************************************
  * print.c
@@ -1007,20 +1007,24 @@ int print_address_header()
    return EXIT_SUCCESS;
 }
 
-int print_addresses(AddressList *address_list)
+
+int print_contacts(ContactList *contact_list, struct ContactAppInfo *contact_app_info,
+		   address_schema_entry *schema, int schema_size)
 {
    long one_rec_per_page;
    long lines_between_recs;
-   AddressList *temp_al;
-   struct AddressAppInfo address_app_info;
-   struct Address *addr;
+   ContactList *temp_cl;
+   //struct Contact *cont;
+   MyContact *mcont;
    int show1, show2, show3;
-   int j, i, i2;
-   int len;
-   /* This is because the palm doesn't show the address entries in order */
-   int order[22]={0,1,13,2,3,4,5,6,7,8,9,10,11,12,14,15,16,17,18,19,20,21
-   };
+   int i;
+   int address_i, phone_i, IM_i;
    char str[100];
+   char spaces[24];
+   char birthday_str[255];
+   const char *pref_date;
+   char *utf;
+   long char_set;
 #ifdef HAVE_LOCALE_H
    char *current_locale;
 #endif
@@ -1034,41 +1038,43 @@ int print_addresses(AddressList *address_list)
    current_locale = setlocale(LC_NUMERIC,"C");
 #endif
 
-   get_address_app_info(&address_app_info);
+   memset(spaces, ' ', 25);
+
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
 
    print_address_header();
 
-   if (address_app_info.sortByCompany) {
-      show1=2; /*company */
-      show2=0; /*last name */
-      show3=1; /*first name */
+   if (sort_by_company) {
+      show1=contCompany;
+      show2=contLastname;
+      show3=contFirstname;
    } else {
-      show1=0; /*last name */
-      show2=1; /*first name */
-      show3=2; /*company */
+      show1=contLastname;
+      show2=contFirstname;
+      show3=contCompany;
    }
 
 #define NUM_ADDRESS_ENTRIES 19
    get_pref(PREF_PRINT_ONE_PER_PAGE, &one_rec_per_page, NULL);
    get_pref(PREF_NUM_BLANK_LINES, &lines_between_recs, NULL);
 
-   for (temp_al = address_list; temp_al; temp_al=temp_al->next) {
+   for (temp_cl = contact_list; temp_cl; temp_cl=temp_cl->next) {
 
       fprintf(out, "%cHLINE\n", FLAG_CHAR);
 
       str[0]='\0';
-      if (temp_al->maddr.addr.entry[show1] || temp_al->maddr.addr.entry[show2]) {
-	 if (temp_al->maddr.addr.entry[show1] && temp_al->maddr.addr.entry[show2]) {
-	    g_snprintf(str, sizeof(str), "%s, %s", temp_al->maddr.addr.entry[show1], temp_al->maddr.addr.entry[show2]);
+      if (temp_cl->mcont.cont.entry[show1] || temp_cl->mcont.cont.entry[show2]) {
+	 if (temp_cl->mcont.cont.entry[show1] && temp_cl->mcont.cont.entry[show2]) {
+	    g_snprintf(str, sizeof(str), "%s, %s", temp_cl->mcont.cont.entry[show1], temp_cl->mcont.cont.entry[show2]);
 	 }
-	 if (temp_al->maddr.addr.entry[show1] && ! temp_al->maddr.addr.entry[show2]) {
-	    strncpy(str, temp_al->maddr.addr.entry[show1], 48);
+	 if (temp_cl->mcont.cont.entry[show1] && ! temp_cl->mcont.cont.entry[show2]) {
+	    strncpy(str, temp_cl->mcont.cont.entry[show1], 48);
 	 }
-	 if (! temp_al->maddr.addr.entry[show1] && temp_al->maddr.addr.entry[show2]) {
-	    strncpy(str, temp_al->maddr.addr.entry[show2], 48);
+	 if (! temp_cl->mcont.cont.entry[show1] && temp_cl->mcont.cont.entry[show2]) {
+	    strncpy(str, temp_cl->mcont.cont.entry[show2], 48);
 	 }
-      } else if (temp_al->maddr.addr.entry[show3]) {
-	    strncpy(str, temp_al->maddr.addr.entry[show3], 48);
+      } else if (temp_cl->mcont.cont.entry[show3]) {
+	    strncpy(str, temp_cl->mcont.cont.entry[show3], 48);
       } else {
 	    strcpy(str, "-Unnamed-");
       }
@@ -1077,24 +1083,64 @@ int print_addresses(AddressList *address_list)
       fprintf(out, "%s\n", str);
       courier_12();
 
-      addr = &(temp_al->maddr.addr);
-      for (i=0; i<NUM_ADDRESS_ENTRIES; i++) {
-	 i2=order[i];
-	 if (addr->entry[i2]) {
-	    if (i2>2 && i2<8) {
-	       fprintf(out, "%s: ", address_app_info.phoneLabels[addr->phoneLabel[i2-3]]);
-	       len = strlen(address_app_info.phoneLabels[addr->phoneLabel[i2-3]]);
-	    } else {
-	       fprintf(out, "%s: ", address_app_info.labels[i2]);
-	       len = strlen(address_app_info.labels[i2]);
+      mcont = &(temp_cl->mcont);
+      address_i=phone_i=IM_i=0;
+      for (i=0; i<schema_size; i++) {
+	 /* Get the entry texts */
+	 if (mcont->cont.entry[schema[i].record_field]) {
+	    switch (schema[i].type) {
+	     case ADDRESS_GUI_IM_MENU_TEXT:
+	       g_snprintf(str, 18, "%s:%s", contact_app_info->IMLabels[mcont->cont.IMLabel[IM_i]], spaces);
+	       fprintf(out, "%s", str);
+	       IM_i++;
+	       break;
+	     case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
+	       g_snprintf(str, 18, "%s:%s", contact_app_info->phoneLabels[mcont->cont.phoneLabel[phone_i]], spaces);
+	       fprintf(out, "%s", str);
+	       phone_i++;
+	       break;
+	     case ADDRESS_GUI_ADDR_MENU_TEXT:
+	       g_snprintf(str, 18, "%s:%s", contact_app_info->addrLabels[mcont->cont.addressLabel[address_i]], spaces);
+	       fprintf(out, "%s", str);
+	       address_i++;
+	       break;
+	     default:
+	       if (contact_app_info->labels[schema[i].record_field]) {
+		  utf = charset_p2newj(contact_app_info->labels[schema[i].record_field], 16, char_set);
+		  g_snprintf(str, 18, "%s:%s", utf, spaces);
+		  fprintf(out, "%s", str);
+		  g_free(utf);
+	       }
+	       else {
+		  g_snprintf(str, 18, ":%s", spaces);
+		  fprintf(out, "%s", str);
+	       }
 	    }
-	    for (j=16-len; j; j--) {
-	       fprintf(out, " ");
+	    switch (schema[i].type) {
+	     case ADDRESS_GUI_LABEL_TEXT:
+	     case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
+	     case ADDRESS_GUI_IM_MENU_TEXT:
+	     case ADDRESS_GUI_ADDR_MENU_TEXT:
+	     case ADDRESS_GUI_WEBSITE_TEXT:
+	       f_indent_print(out, 17, mcont->cont.entry[schema[i].record_field]);
+	       fprintf(out, "\n");
+	       break;
+	     case ADDRESS_GUI_BIRTHDAY:
+	       if (mcont->cont.birthdayFlag) {
+		  birthday_str[0]='\0';
+		  get_pref(PREF_SHORTDATE, NULL, &pref_date);
+		  strftime(birthday_str, sizeof(birthday_str), pref_date, &(mcont->cont.birthday));
+		  g_snprintf(str, 18, "%s:%s", contact_app_info->labels[schema[i].record_field] ? contact_app_info->labels[schema[i].record_field] : "",
+			     spaces);
+		  fprintf(out, "%s", str);
+		  f_indent_print(out, 17, birthday_str);
+		  fprintf(out, "\n");
+	       }
+	       break;
 	    }
-	    f_indent_print(out, 18, addr->entry[i2]);
-	    fprintf(out, "\n");
 	 }
       }
+
       if (one_rec_per_page) {
 	 fprintf(out, "%cLINEFEED\n", FLAG_CHAR);
       } else {
