@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.168 2008/02/10 16:42:35 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.169 2008/02/10 16:47:16 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -1177,7 +1177,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	    }
 	 }
 	 for (i=0; i<3; i++) {
-	    int address_i, city_i, state_i, zip_i, country_i;
+	    int address_i = 0, city_i = 0, state_i = 0, zip_i = 0, country_i = 0;
 	    switch (i) {
 	     case 0:
 	       address_i = contAddress1;
