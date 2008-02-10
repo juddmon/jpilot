@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.166 2008/02/10 16:35:18 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.167 2008/02/10 16:38:30 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -1049,7 +1049,9 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 /* Secret */
 	 fprintf(out, "\"%s\",", (mcont->attrib & dlpRecAttrSecret) ? "Yes":"No");
 	 /* Category name */
-	 fprintf(out, "\"%s\",", contact_app_info.category.name[mcont->attrib & 0x0F]);
+	 utf = charset_p2newj(contact_app_info.category.name[mcont->attrib & 0x0F], 16, char_set);
+	 fprintf(out, "\"%s\",", utf);
+	 g_free(utf);
 
 	 address_i=phone_i=IM_i=0;
 	 /* The Contact entry values */
