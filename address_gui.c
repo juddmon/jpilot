@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.165 2008/02/05 00:57:25 judd Exp $ */
+/* $Id: address_gui.c,v 1.166 2008/02/10 16:35:18 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -1019,14 +1019,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 		  address_i++;
 		  break;
 		default:
-		  if (contact_app_info.labels[schema[i].record_field])
-		  {
-		     utf = charset_p2newj(contact_app_info.labels[schema[i].record_field], 16, char_set);
-		     fprintf(out, "%s: ", utf);
-		     g_free(utf);
-		  }
-		  else
-		     fprintf(out, ": ");
+		  fprintf(out, "%s: ", contact_app_info.labels[schema[i].record_field] ? contact_app_info.labels[schema[i].record_field] : "");
 	       }
 	       switch (schema[i].type) {
 		case ADDRESS_GUI_LABEL_TEXT:
