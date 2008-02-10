@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.167 2008/02/10 16:38:30 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.168 2008/02/10 16:42:35 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -1115,9 +1115,11 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 }
 	 fprintf(out, "UID:palm-addressbook-%08x-%08lx-%s@%s%s",
 		 mcont->unique_id, userid, username, hostname, CRLF);
-	 str_to_vcard_str(csv_text, sizeof(csv_text),
-			  contact_app_info.category.name[mcont->attrib & 0x0F]);
+	 utf = charset_p2newj(contact_app_info.category.name[mcont->attrib & 0x0F], 16, char_set);
+	 str_to_vcard_str(csv_text, sizeof(csv_text), utf);
 	 fprintf(out, "CATEGORIES:%s%s", csv_text, CRLF);
+	 fprintf(out, "\"%s\",", utf);
+	 g_free(utf);
 	 if (mcont->cont.entry[contLastname] || mcont->cont.entry[contFirstname]) {
 	    char *last = mcont->cont.entry[contLastname];
 	    char *first = mcont->cont.entry[contFirstname];
