@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.137 2008/01/27 22:03:53 rikster5 Exp $ */
+/* $Id: utils.c,v 1.138 2008/02/24 10:26:13 rousseau Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -2164,8 +2164,14 @@ FILE *jp_open_home_file(char *filename, char *mode)
       /* lock access */
       if (flock(fileno(pc_in), LOCK_EX) < 0)
       {
-	 jp_logf(JP_LOG_WARN, "locking failed: %s\n", strerror(errno));
-	 return NULL;
+	 jp_logf(JP_LOG_WARN, "locking %s failed: %s\n", filename, strerror(errno));
+	 if (ENOLCK != errno)
+	 {
+	    fclose(pc_in);
+	    return NULL;
+	 }
+	 else
+	    jp_logf(JP_LOG_WARN, "continue without locking\n");
       }
 
       /* Enhance privacy by only allowing user to read & write files */
