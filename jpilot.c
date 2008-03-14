@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.159 2007/11/25 12:19:21 rousseau Exp $ */
+/* $Id: jpilot.c,v 1.160 2008/03/14 17:42:47 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -2246,40 +2246,40 @@ char * xpm_backup[] = {
 
    /* parse command line options */
    for (i=1; i<argc; i++) {
-      if (!strncasecmp(argv[i], "-v", 2)) {
+      if (!strncasecmp(argv[i], "-v", 3)) {
 	 char options[1024];
 	 get_compile_options(options, sizeof(options));
 	 printf("\n%s\n", options);
 	 exit(0);
       }
-      if ( (!strncasecmp(argv[i], "-h", 2)) ||
-	  (!strncasecmp(argv[i], "-?", 2)) ) {
+      if ( (!strncasecmp(argv[i], "-h", 3)) ||
+	  (!strncasecmp(argv[i], "-?", 3)) ) {
 	 fprint_usage_string(stderr);
 	 exit(0);
       }
-      if (!strncasecmp(argv[i], "-d", 2)) {
+      if (!strncasecmp(argv[i], "-d", 3)) {
 	 glob_log_stdout_mask = 0xFFFF;
 	 glob_log_file_mask = 0xFFFF;
 	 jp_logf(JP_LOG_DEBUG, "Debug messages on.\n");
       }
-      if (!strncasecmp(argv[i], "-p", 2)) {
+      if (!strncasecmp(argv[i], "-p", 3)) {
 	 skip_plugins = TRUE;
 	 jp_logf(JP_LOG_INFO, _("Not loading plugins.\n"));
       }
-      if (!strncmp(argv[i], "-A", 2)) {
+      if (!strncmp(argv[i], "-A", 3)) {
 	 skip_all_alarms = TRUE;
 	 jp_logf(JP_LOG_INFO, _("Ignoring all alarms.\n"));
       }
-      if (!strncmp(argv[i], "-a", 2)) {
+      if (!strncmp(argv[i], "-a", 3)) {
 	 skip_past_alarms = TRUE;
 	 jp_logf(JP_LOG_INFO, _("Ignoring past alarms.\n"));
       }
-      if ( (!strncmp(argv[i], "-s", 2)) ||
-           (!strncmp(argv[i], "--remote-sync", 13))) {
+      if ( (!strncmp(argv[i], "-s", 3)) ||
+           (!strncmp(argv[i], "--remote-sync", 14))) {
 	 remote_sync = TRUE;
       }
-      if ( (!strncasecmp(argv[i], "-i", 2)) ||
-           (!strncasecmp(argv[i], "--iconic", 8))){
+      if ( (!strncasecmp(argv[i], "-i", 3)) ||
+           (!strncasecmp(argv[i], "--iconic", 9))){
 	 iconify = 1;
       }
       if (!strncasecmp(argv[i], "-geometry", 9)) {
