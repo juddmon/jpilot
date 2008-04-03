@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.154 2008/02/05 03:54:45 judd Exp $ */
+/* $Id: datebook_gui.c,v 1.155 2008/04/03 15:59:58 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -4547,6 +4547,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    /* Units entry for alarm */
    units_entry = gtk_entry_new_with_max_length(2);
+   entry_set_multiline_truncate(GTK_ENTRY(units_entry), TRUE);
    gtk_widget_set_usize(units_entry, 30, 0);
    gtk_box_pack_start(GTK_BOX(hbox_alarm2), units_entry, FALSE, FALSE, 0);
 
@@ -4755,6 +4756,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    label = gtk_label_new(_("Frequency is Every"));
    gtk_box_pack_start(GTK_BOX(hbox_repeat_day1), label, FALSE, FALSE, 2);
    repeat_day_entry = gtk_entry_new_with_max_length(2);
+   entry_set_multiline_truncate(GTK_ENTRY(repeat_day_entry), TRUE);
    gtk_widget_set_usize(repeat_day_entry, 30, 0);
    gtk_box_pack_start(GTK_BOX(hbox_repeat_day1), repeat_day_entry, FALSE, FALSE, 0);
    label = gtk_label_new(_("Day(s)"));
@@ -4787,6 +4789,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    label = gtk_label_new(_("Frequency is Every"));
    gtk_box_pack_start(GTK_BOX(hbox_repeat_week1), label, FALSE, FALSE, 2);
    repeat_week_entry = gtk_entry_new_with_max_length(2);
+   entry_set_multiline_truncate(GTK_ENTRY(repeat_week_entry), TRUE);
    gtk_widget_set_usize(repeat_week_entry, 30, 0);
    gtk_box_pack_start(GTK_BOX(hbox_repeat_week1), repeat_week_entry, FALSE, FALSE, 0);
    label = gtk_label_new(_("Week(s)"));
@@ -4842,6 +4845,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    label = gtk_label_new(_("Frequency is Every"));
    gtk_box_pack_start(GTK_BOX(hbox_repeat_mon1), label, FALSE, FALSE, 2);
    repeat_mon_entry = gtk_entry_new_with_max_length(2);
+   entry_set_multiline_truncate(GTK_ENTRY(repeat_mon_entry), TRUE);
    gtk_widget_set_usize(repeat_mon_entry, 30, 0);
    gtk_box_pack_start(GTK_BOX(hbox_repeat_mon1), repeat_mon_entry, FALSE, FALSE, 0);
    label = gtk_label_new (_("Month(s)"));
@@ -4889,6 +4893,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    label = gtk_label_new(_("Frequency is Every"));
    gtk_box_pack_start(GTK_BOX (hbox_repeat_year1), label, FALSE, FALSE, 2);
    repeat_year_entry = gtk_entry_new_with_max_length(2);
+   entry_set_multiline_truncate(GTK_ENTRY(repeat_year_entry), TRUE);
    gtk_widget_set_usize(repeat_year_entry, 30, 0);
    gtk_box_pack_start(GTK_BOX(hbox_repeat_year1), repeat_year_entry, FALSE, FALSE, 0);
    label = gtk_label_new(_("Year(s)"));

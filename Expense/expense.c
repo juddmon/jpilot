@@ -1,4 +1,4 @@
-/* $Id: expense.c,v 1.52 2007/06/06 02:45:10 rikster5 Exp $ */
+/* $Id: expense.c,v 1.53 2008/04/03 15:59:59 rikster5 Exp $ */
 
 /*******************************************************************************
  * expense.c
@@ -1761,6 +1761,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
                              0, 1, 5, 6);
 #endif
    entry_amount = gtk_entry_new();
+   entry_set_multiline_truncate(GTK_ENTRY(entry_amount), TRUE);
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(entry_amount),
                              1, 2, 5, 6);
 
@@ -1775,6 +1776,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
                              0, 1, 6, 7);
 #endif
    entry_vendor = gtk_entry_new();
+   entry_set_multiline_truncate(GTK_ENTRY(entry_vendor), TRUE);
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(entry_vendor),
                              1, 2, 6, 7);
 
@@ -1789,6 +1791,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
                              0, 1, 7, 8);
 #endif
    entry_city = gtk_entry_new();
+   entry_set_multiline_truncate(GTK_ENTRY(entry_city), TRUE);
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(entry_city),
                              1, 2, 7, 8);
 

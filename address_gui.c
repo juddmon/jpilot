@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.169 2008/02/10 16:47:16 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.170 2008/04/03 15:59:58 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -3661,6 +3661,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 0);
 
    address_quickfind_entry = gtk_entry_new();
+   entry_set_multiline_truncate(GTK_ENTRY(address_quickfind_entry), TRUE);
    gtk_signal_connect(GTK_OBJECT(address_quickfind_entry), "key_press_event",
 		      GTK_SIGNAL_FUNC(cb_key_pressed_quickfind), NULL);
    gtk_signal_connect(GTK_OBJECT(address_quickfind_entry), "changed",
@@ -4068,6 +4069,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	    gtk_box_pack_start(GTK_BOX(hbox_temp), reminder_box, FALSE, FALSE, 0);
 
 	    reminder_entry = gtk_entry_new_with_max_length(2);
+            entry_set_multiline_truncate(GTK_ENTRY(reminder_entry), TRUE);
 	    gtk_widget_set_usize(reminder_entry, 30, 0);
 	    gtk_box_pack_start(GTK_BOX(reminder_box), reminder_entry, FALSE, FALSE, 0);
 

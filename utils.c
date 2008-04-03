@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.138 2008/02/24 10:26:13 rousseau Exp $ */
+/* $Id: utils.c,v 1.139 2008/04/03 15:59:58 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -1255,6 +1255,11 @@ void set_fg_rgb_clist_cell(GtkWidget *clist, int row, int col, int r, int g, int
    new_style->fg[GTK_STATE_NORMAL]   = fg_color;
    new_style->fg[GTK_STATE_SELECTED] = fg_color;
    gtk_clist_set_cell_style(GTK_CLIST(clist), row, col, new_style);
+}
+
+void entry_set_multiline_truncate(GtkEntry *entry, gboolean value)
+{
+   entry->truncate_multiline = value; 
 }
 
 /*returns 0 if not found, 1 if found */

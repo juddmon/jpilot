@@ -1,4 +1,4 @@
-/* $Id: restore_gui.c,v 1.22 2007/11/06 23:12:14 rikster5 Exp $ */
+/* $Id: restore_gui.c,v 1.23 2008/04/03 15:59:58 rikster5 Exp $ */
 
 /*******************************************************************************
  * restore_gui.c
@@ -291,6 +291,7 @@ int restore_gui(GtkWidget *main_window, int w, int h, int x, int y)
    label = gtk_label_new(_("User Name"));
    gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
    user_entry = gtk_entry_new_with_max_length(126);
+   entry_set_multiline_truncate(GTK_ENTRY(user_entry), TRUE);
    get_pref(PREF_USER, NULL, &svalue);
    if (svalue) {
       gtk_entry_set_text(GTK_ENTRY(user_entry), svalue);
@@ -304,6 +305,7 @@ int restore_gui(GtkWidget *main_window, int w, int h, int x, int y)
    label = gtk_label_new(_("User ID"));
    gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
    user_id_entry = gtk_entry_new_with_max_length(10);
+   entry_set_multiline_truncate(GTK_ENTRY(user_id_entry), TRUE);
    get_pref(PREF_USER_ID, &ivalue, NULL);
    sprintf(str_int, "%ld", ivalue);
    gtk_entry_set_text(GTK_ENTRY(user_id_entry), str_int);

@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.56 2008/01/27 21:03:37 rikster5 Exp $ */
+/* $Id: prefs_gui.c,v 1.57 2008/04/03 15:59:58 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -622,6 +622,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
 
    port_entry = gtk_entry_new_with_max_length(MAX_PREF_VALUE - 2);
+   entry_set_multiline_truncate(GTK_ENTRY(port_entry), TRUE);
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(port_entry),
 			     2, 3, 1, 2);
    get_pref(PREF_PORT, &ivalue, &cstr);
@@ -659,6 +660,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
 
    backups_entry = gtk_entry_new_with_max_length(2);
+   entry_set_multiline_truncate(GTK_ENTRY(backups_entry), TRUE);
    gtk_widget_set_usize(backups_entry, 30, 0);
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(backups_entry),
 			     2, 3, 3, 4);
@@ -870,6 +872,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 		   PREF_TODO_DAYS_DUE, hbox_temp, cb_checkbox_set_pref);
 
    todo_days_due_entry = gtk_entry_new_with_max_length(MAX_PREF_VALUE - 2);
+   entry_set_multiline_truncate(GTK_ENTRY(todo_days_due_entry), TRUE);
    get_pref(PREF_TODO_DAYS_TILL_DUE, &ivalue, &cstr);
    temp[0]='\0';
    g_snprintf(temp, sizeof(temp), "%ld", ivalue);

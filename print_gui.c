@@ -1,4 +1,4 @@
-/* $Id: print_gui.c,v 1.16 2005/11/29 22:33:41 rousseau Exp $ */
+/* $Id: print_gui.c,v 1.17 2008/04/03 15:59:58 rikster5 Exp $ */
 
 /*******************************************************************************
  * print_gui.c
@@ -302,6 +302,7 @@ int print_gui(GtkWidget *main_window, int app, int date_button, int mon_week_day
       gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
       lines_entry = gtk_entry_new_with_max_length(2);
+      entry_set_multiline_truncate(GTK_ENTRY(lines_entry), TRUE);
       gtk_widget_set_usize(lines_entry, 30, 0);
       gtk_box_pack_start(GTK_BOX(hbox), lines_entry, FALSE, FALSE, 0);
 

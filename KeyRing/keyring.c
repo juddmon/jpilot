@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.68 2007/11/04 12:46:22 rousseau Exp $ */
+/* $Id: keyring.c,v 1.69 2008/04/03 15:59:59 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -2218,6 +2218,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    /* Name entry */
    label = gtk_label_new(_("name: "));
    entry_name = gtk_entry_new();
+   entry_set_multiline_truncate(GTK_ENTRY(entry_name), TRUE);
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label), 0, 1, 1, 2);
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(entry_name), 1, 10, 1, 2);
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
@@ -2225,6 +2226,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    /* Account entry */
    label = gtk_label_new(_("account: "));
    entry_account = gtk_entry_new();
+   entry_set_multiline_truncate(GTK_ENTRY(entry_account), TRUE);
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label), 0, 1, 2, 3);
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(entry_account), 1, 10, 2, 3);
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);

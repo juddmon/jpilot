@@ -1,4 +1,4 @@
-/* $Id: install_user.c,v 1.5 2008/01/13 22:25:10 rousseau Exp $ */
+/* $Id: install_user.c,v 1.6 2008/04/03 15:59:58 rikster5 Exp $ */
 
 /*******************************************************************************
  * install_user.c
@@ -160,8 +160,10 @@ int dialog_install_user(GtkWindow *main_window, char *user, int user_len, unsign
    g_snprintf(s_id, 30, "%ld", id);
 
    user_entry = gtk_entry_new_with_max_length(128);
+   entry_set_multiline_truncate(GTK_ENTRY(user_entry), TRUE);
    data.user_entry = user_entry;
    ID_entry = gtk_entry_new_with_max_length(32);
+   entry_set_multiline_truncate(GTK_ENTRY(ID_entry), TRUE);
    data.ID_entry = ID_entry;
    gtk_entry_set_text(GTK_ENTRY(ID_entry), s_id);
    whoami = jp_user_or_whoami();
