@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.160 2008/03/14 17:42:47 rousseau Exp $ */
+/* $Id: jpilot.c,v 1.161 2008/04/15 23:41:49 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -114,7 +114,7 @@ int glob_focus = 1;
 GtkWidget *glob_dialog=NULL;
 unsigned char skip_plugins;
 static GtkWidget *button_locked, *button_locked_masked, *button_unlocked, *button_sync, *button_backup;
-GtkCheckMenuItem *menu_hide_privates;
+GtkCheckMenuItem *menu_hide_privates, *menu_show_privates, *menu_mask_privates;
 int t_fmt_ampm = TRUE;
 
 int pipe_from_child, pipe_to_parent;
@@ -553,11 +553,17 @@ static void cb_private(GtkWidget *widget, gpointer data)
 {
    int privates, was_privates;
    int r_dialog = 0;
+   static int skip_false_call = 0;
 #ifdef ENABLE_PRIVATE
    char ascii_password[64];
    int r_pass;
    int retry;
 #endif
+
+   if (skip_false_call) {
+      skip_false_call = 0;
+      return;
+   }
 
    was_privates = show_privates(GET_PRIVATES);
    privates = show_privates(GPOINTER_TO_INT(data));
@@ -603,6 +609,23 @@ static void cb_private(GtkWidget *widget, gpointer data)
 	 cb_private(NULL, GINT_TO_POINTER(HIDE_PRIVATES));
       }
       break;
+   }
+
+   if (widget) {
+      /* Setting the state of the menu causes a signal to be emitted which calls cb_private again.
+       * This second call needs to be ignored */
+      skip_false_call = 1;
+      switch (privates) {
+       case MASK_PRIVATES:
+         gtk_check_menu_item_set_active(menu_mask_privates, TRUE);
+         break;
+       case HIDE_PRIVATES:
+         gtk_check_menu_item_set_active(menu_hide_privates, TRUE);
+         break;
+       case SHOW_PRIVATES:
+         gtk_check_menu_item_set_active(menu_show_privates, TRUE);
+         break;
+      }
    }
 
    if (was_privates != privates)
@@ -1679,6 +1702,12 @@ const char *user_icon[] = {
    menu_hide_privates = GTK_CHECK_MENU_ITEM(gtk_item_factory_get_widget(
                                             item_factory,
                                             _("/View/Hide Private Records")));
+   menu_show_privates = GTK_CHECK_MENU_ITEM(gtk_item_factory_get_widget(
+                                            item_factory,
+                                            _("/View/Show Private Records")));
+   menu_mask_privates = GTK_CHECK_MENU_ITEM(gtk_item_factory_get_widget(
+                                            item_factory,
+                                            _("/View/Mask Private Records")));
 }
 
 static void cb_delete_event(GtkWidget *widget, GdkEvent *event, gpointer data)
