@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.81 2008/01/13 14:40:50 rousseau Exp $ */
+/* $Id: sync.c,v 1.82 2008/04/15 03:28:05 rikster5 Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -1766,7 +1766,6 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
 	{ 0, 0, "appl", NULL},
 	{ 0, 0, "boot", NULL},
 	{ 0, 0, "Fntl", NULL},
-	{ 0, 0, "modm", NULL},
 	{ 0, 0, "PMHa", NULL},
 	{ 0, 0, "PMNe", NULL},
 	{ 0, 0, "ppp_", NULL},
@@ -1833,20 +1832,25 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
 	 for (i=0; skip_db[i].creator || skip_db[i].dbname; i++) {
 	    if (skip_db[i].creator &&
 		!strcmp(creator, skip_db[i].creator)) {
-	       if (skip_db[i].flags &&
-		   (info.flags & skip_db[i].flags) != skip_db[i].flags) {
-		  skip_file=1;
-		  break;
-	       }
-	       else if (skip_db[i].not_flags &&
-			!(info.flags & skip_db[i].not_flags)) {
-		  skip_file=1;
-		  break;
-	       }
-	       else if (!skip_db[i].flags && !skip_db[i].not_flags) {
-		  skip_file=1;
-		  break;
-	       }
+               if (skip_db[i].dbname && strcmp(info.name,skip_db[i].dbname)) {
+                  continue;   /* Only creator matched, not DBname.  */
+               }
+               else {
+                  if (skip_db[i].flags &&
+                      (info.flags & skip_db[i].flags) != skip_db[i].flags) {
+                     skip_file=1;
+                     break;
+                  }
+                  else if (skip_db[i].not_flags &&
+                           !(info.flags & skip_db[i].not_flags)) {
+                     skip_file=1;
+                     break;
+                  }
+                  else if (!skip_db[i].flags && !skip_db[i].not_flags) {
+                     skip_file=1;
+                     break;
+                  }
+               }
 	    }
 	    if (skip_db[i].dbname &&
 		!strcmp(info.name,skip_db[i].dbname)) {
