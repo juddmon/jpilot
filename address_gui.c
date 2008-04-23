@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.171 2008/04/23 22:02:38 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.172 2008/04/23 22:14:38 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -492,7 +492,7 @@ int address_print()
    print_contacts(cont_list, &contact_app_info, schema, schema_size);
 
    if ((this_many==2) || (this_many==3)) {
-      jp_free_ContactList(&cont_list);
+      free_ContactList(&cont_list);
    }
 
    return EXIT_SUCCESS;
@@ -1467,8 +1467,7 @@ static void cb_addr_update_clist(GtkWidget *clist, int category)
 
 static void cb_addr_export_done(GtkWidget *widget, const char *filename)
 {
-   //free_AddressList(&export_contact_list);
-   jp_free_ContactList(&export_contact_list);
+   free_ContactList(&export_contact_list);
 
    set_pref(PREF_ADDRESS_EXPORT_FILENAME, 0, filename, TRUE);
 }
@@ -2958,7 +2957,7 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    char *tmp_delim1, *tmp_delim2;
    AddressList *addr_list;
 
-   jp_free_ContactList(cont_list);
+   free_ContactList(cont_list);
 
    if (address_version==0) {
       addr_list = NULL;
@@ -3522,8 +3521,8 @@ int address_gui_cleanup()
    changed_list=NULL;
 
    //undo free_AddressList(&glob_address_list);
-   jp_free_ContactList(&glob_contact_list);
-   jp_free_ContactList(&export_contact_list);
+   free_ContactList(&glob_contact_list);
+   free_ContactList(&export_contact_list);
    connect_changed_signals(DISCONNECT_SIGNALS);
 #ifdef ENABLE_GTK2
    set_pref(PREF_ADDRESS_PANE, gtk_paned_get_position(GTK_PANED(pane)), NULL, TRUE);

@@ -1,4 +1,4 @@
-/* $Id: address.h,v 1.13 2008/02/05 00:57:25 judd Exp $ */
+/* $Id: address.h,v 1.14 2008/04/23 22:14:38 rikster5 Exp $ */
 
 /*******************************************************************************
  * address.h
@@ -79,7 +79,7 @@ int get_contact_app_info(struct ContactAppInfo *cai);
 int pc_contact_write(struct Contact *c, PCRecType rt, unsigned char attrib,
 		     unsigned int *unqiue_id);
 
-void jp_free_ContactList(ContactList **cl);
+void free_ContactList(ContactList **cl);
 
 int get_contacts(ContactList **contact_list, int sort_order);
 int get_contacts2(ContactList **contact_list, int sort_order,

@@ -1,4 +1,4 @@
-/* $Id: contact.c,v 1.2 2007/11/28 19:14:42 judd Exp $ */
+/* $Id: contact.c,v 1.3 2008/04/23 22:14:38 rikster5 Exp $ */
 
 /*******************************************************************************
  * contact.c
@@ -363,7 +363,7 @@ int pc_contact_write(struct Contact *cont, PCRecType rt, unsigned char attrib,
    return EXIT_SUCCESS;
 }
 
-void jp_free_ContactList(ContactList **cl)
+void free_ContactList(ContactList **cl)
 {
    ContactList *temp_cl, *temp_cl_next;
 

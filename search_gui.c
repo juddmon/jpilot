@@ -1,4 +1,4 @@
-/* $Id: search_gui.c,v 1.44 2008/01/25 21:13:37 judd Exp $ */
+/* $Id: search_gui.c,v 1.45 2008/04/23 22:14:38 rikster5 Exp $ */
 
 /*******************************************************************************
  * search_gui.c
@@ -244,7 +244,7 @@ static int search_address_or_contacts(const char *needle, GtkWidget *clist)
    }
 
    jp_logf(JP_LOG_DEBUG, "calling free_ContactList\n");
-   jp_free_ContactList(&cont_list);
+   free_ContactList(&cont_list);
    cont_list = NULL;
    return count;
 }
