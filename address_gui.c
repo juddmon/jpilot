@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.170 2008/04/03 15:59:58 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.171 2008/04/23 22:02:38 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -26,6 +26,7 @@
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 #include <gdk/gdk.h>
+//#define __USE_XOPEN 1
 #include <time.h>
 /* For open, read */
 #include <unistd.h>
@@ -637,18 +638,22 @@ int address_import_callback(GtkWidget *parent_window, const char *file_path, int
    FILE *in;
    char text[65536];
    struct Address new_addr;
+   struct Contact new_cont;
+   struct CategoryAppInfo *p_cai;
+
    unsigned char attrib;
-   int i, ret, index;
+   int i, j, ret, index;
+   int address_i, IM_i, phone_i;
    int import_all;
+   const char *pref_date;
+   char old_cat_name[32];
+   int new_cat_num, suggested_cat_num;
+   int priv;
+   GString *cont_text;
+
    AddressList *addrlist;
    AddressList *temp_addrlist;
    struct CategoryAppInfo cai;
-   char old_cat_name[32];
-   int suggested_cat_num;
-   int new_cat_num;
-   int priv;
-
-   get_address_attrib(&attrib);
 
    in=fopen(file_path, "r");
    if (!in) {
@@ -656,11 +661,23 @@ int address_import_callback(GtkWidget *parent_window, const char *file_path, int
       return EXIT_FAILURE;
    }
 
-   /* CSV */
-   if (type==IMPORT_TYPE_CSV) {
+   switch (type) {
+
+    case IMPORT_TYPE_CSV:
       jp_logf(JP_LOG_DEBUG, "Address import CSV [%s]\n", file_path);
-      /* The first line is format, so we don't need it */
+
+      /* Switch between contacts & address data structures */
+      if (address_version) {
+         p_cai = &contact_app_info.category;
+      }
+      else {
+         p_cai = &address_app_info.category;
+      }
+      
+      /* Skip the first line which is solely format */
+      /* TODO: put in a small amount of error checking code to verify that file look okay */
       fgets(text, sizeof(text), in);
+
       import_all=FALSE;
       while (1) {
 	 /* Read the category field */
@@ -670,14 +687,13 @@ int address_import_callback(GtkWidget *parent_window, const char *file_path, int
 	 printf("category is [%s]\n", text);
 #endif
 	 g_strlcpy(old_cat_name, text, 17);
-	 attrib=0;
-	 /* Figure out what the best category number is */
-	 suggested_cat_num=0;
+	 attrib = 0;
+	 /* Try to match imported category name to an existing category number */
+	 suggested_cat_num = 0;
 	 for (i=0; i<NUM_ADDRESS_CAT_ITEMS; i++) {
-	    if (address_app_info.category.name[i][0]=='\0') continue;
-	    if (!strcmp(address_app_info.category.name[i], old_cat_name)) {
-	       suggested_cat_num=i;
-	       i=1000;
+	    if (!p_cai->name[i][0]) continue;
+	    if (!strcmp(p_cai->name[i], old_cat_name)) {
+	       suggested_cat_num = i;
 	       break;
 	    }
 	 }
@@ -689,24 +705,75 @@ int address_import_callback(GtkWidget *parent_window, const char *file_path, int
 #endif
 	 sscanf(text, "%d", &priv);
 
-//undo rewrite
-//	 for (i=0; i<19; i++) {
-//	    new_addr.entry[order[i]]=NULL;
-//	    ret = read_csv_field(in, text, sizeof(text));
-//	    new_addr.entry[order[i]]=strdup(text);
-//	 }
-	 for (i=0; i<5; i++) {
+         /* Need to clear record if doing multiple imports */
+         memset(&new_cont, 0, sizeof(new_cont));  
+	 address_i=phone_i=IM_i=0;
+	 for (i=0; i<schema_size; i++) {
 	    ret = read_csv_field(in, text, sizeof(text));
-	    sscanf(text, "%d", &(new_addr.phoneLabel[i]));
-	 }
-	 ret = read_csv_field(in, text, sizeof(text));
-	 sscanf(text, "%d", &(new_addr.showPhone));
+	    switch (schema[i].type) {
+	     case ADDRESS_GUI_IM_MENU_TEXT:
+               for (j = 0; j < 5; j++) {
+                 if (strcmp(text, contact_app_info.IMLabels[j]) == 0) {
+                    new_cont.IMLabel[IM_i] = j;
+                    break;
+                 }
+               }
+               ret = read_csv_field(in, text, sizeof(text));
+               new_cont.entry[schema[i].record_field] = strdup(text);
+	       IM_i++;
+	       break;
+	     case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
+               for (j = 0; j < 8; j++) {
+                 if (address_version) {
+                    if (strcmp(text, contact_app_info.phoneLabels[j]) == 0) {
+                       new_cont.phoneLabel[phone_i] = j;
+                       break;
+                    }
+                 } else {
+                    if (strcmp(text, address_app_info.phoneLabels[j]) == 0) {
+                       new_cont.phoneLabel[phone_i] = j;
+                       break;
+                    }
+                 }
+               }
+               ret = read_csv_field(in, text, sizeof(text));
+               new_cont.entry[schema[i].record_field] = strdup(text);
+	       phone_i++;
+	       break;
+	     case ADDRESS_GUI_ADDR_MENU_TEXT:
+               for (j = 0; j < 3; j++) {
+                 if (strcmp(text, contact_app_info.addrLabels[j]) == 0) {
+                    new_cont.addressLabel[address_i] = j;
+                    break;
+                 }
+               }
+               ret = read_csv_field(in, text, sizeof(text));
+               new_cont.entry[schema[i].record_field] = strdup(text);
+	       address_i++;
+	       break;
+	     case ADDRESS_GUI_LABEL_TEXT:
+	     case ADDRESS_GUI_WEBSITE_TEXT:
+               new_cont.entry[schema[i].record_field] = strdup(text);
+	       break;
+	     case ADDRESS_GUI_BIRTHDAY:
+               if (text[0])
+               {
+                  new_cont.birthdayFlag = 1;
+		  get_pref(PREF_SHORTDATE, NULL, &pref_date);
+		  strptime(text, pref_date, &new_cont.birthday);
+               }
+	       break;
+            }
+         }
 
-	 address_to_text(&new_addr, text, sizeof(text));
+	 ret = read_csv_field(in, text, sizeof(text));
+	 sscanf(text, "%d", &(new_cont.showPhone));
+
+	 cont_text = contact_to_gstring(&new_cont);
 	 if (!import_all) {
 	    ret=import_record_ask(parent_window, pane,
-				  text,
-				  &(address_app_info.category),
+				  cont_text->str,
+				  p_cai,
 				  old_cat_name,
 				  priv,
 				  suggested_cat_num,
@@ -714,21 +781,26 @@ int address_import_callback(GtkWidget *parent_window, const char *file_path, int
 	 } else {
 	    new_cat_num=suggested_cat_num;
 	 }
+         g_string_free(cont_text, TRUE);
+
 	 if (ret==DIALOG_SAID_IMPORT_QUIT) break;
 	 if (ret==DIALOG_SAID_IMPORT_SKIP) continue;
 	 if (ret==DIALOG_SAID_IMPORT_ALL) {
 	    import_all=TRUE;
 	 }
 	 attrib = (new_cat_num & 0x0F) |
-	   (priv ? dlpRecAttrSecret : 0);
-	 if ((ret==DIALOG_SAID_IMPORT_YES) || (import_all)) {
-	    pc_address_write(&new_addr, NEW_PC_REC, attrib, NULL);
+	          (priv ? dlpRecAttrSecret : 0);
+	 if ((ret==DIALOG_SAID_IMPORT_YES) || import_all) {
+            if (address_version) {
+               pc_contact_write(&new_cont, NEW_PC_REC, attrib, NULL);
+            } else {
+               copy_contact_to_address(&new_cont,&new_addr);
+               pc_address_write(&new_addr, NEW_PC_REC, attrib, NULL);
+            }
 	 }
       }
-   }
 
-   /* Palm Desktop DAT format */
-   if (type==IMPORT_TYPE_DAT) {
+   case IMPORT_TYPE_DAT:  /* Palm Desktop DAT format */
       jp_logf(JP_LOG_DEBUG, "Address import DAT [%s]\n", file_path);
       if (dat_check_if_dat_file(in)!=DAT_ADDRESS_FILE) {
 	 jp_logf(JP_LOG_WARN, _("File doesn't appear to be address.dat format\n"));
@@ -786,7 +858,8 @@ int address_import_callback(GtkWidget *parent_window, const char *file_path, int
 	 }
       }
       free_AddressList(&addrlist);
-   }
+
+   }  /* end switch for import types */
 
    address_refresh();
    fclose(in);
@@ -946,7 +1019,12 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 
    /* Write a header to the CSV file */
    if (type == EXPORT_TYPE_CSV) {
-      fprintf(out, "CSV contacts version 1: Private, Category, ");
+      if (address_version) {
+         fprintf(out, "CSV contacts version "VERSION": Category, Private, ");
+      } else {
+         fprintf(out, "CSV address version "VERSION": Category, Private, ");
+      }
+
       address_i=phone_i=IM_i=0;
       for (i=0; i<schema_size; i++) {
 	 switch (schema[i].type) {
@@ -1046,20 +1124,20 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 break;
 
        case EXPORT_TYPE_CSV:
-	 /* Secret */
-	 fprintf(out, "\"%s\",", (mcont->attrib & dlpRecAttrSecret) ? "Yes":"No");
 	 /* Category name */
 	 utf = charset_p2newj(contact_app_info.category.name[mcont->attrib & 0x0F], 16, char_set);
 	 fprintf(out, "\"%s\",", utf);
 	 g_free(utf);
 
+	 /* Private */
+	 fprintf(out, "\"%s\",", (mcont->attrib & dlpRecAttrSecret) ? "1":"0");
+
 	 address_i=phone_i=IM_i=0;
 	 /* The Contact entry values */
 	 for (i=0; i<schema_size; i++) {
 	    switch (schema[i].type) {
-	       /* For labels that are menu selectable ("Work", Fax", etc)
-		* we list what they are set to in the record
-		*/
+             /* For labels that are menu selectable ("Work", Fax", etc)
+	      * we list what they are set to in the record */
 	     case ADDRESS_GUI_IM_MENU_TEXT:
 	       str_to_csv_str(csv_text, contact_app_info.IMLabels[mcont->cont.IMLabel[IM_i]]);
 	       fprintf(out, "\"%s\",", csv_text);
