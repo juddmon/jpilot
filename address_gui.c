@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.173 2008/04/24 01:26:00 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.174 2008/04/24 22:12:52 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -1081,6 +1081,18 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 
 	 address_i=phone_i=IM_i=0;
 	 for (i=0; i<schema_size; i++) {
+            /* Special handling for birthday which doesn't have an entry
+             * field but instead has a flag and a tm struct field */
+            if ((schema[i].type == ADDRESS_GUI_BIRTHDAY) &&
+                 mcont->cont.birthdayFlag)
+            {
+               fprintf(out, "%s: ", contact_app_info.labels[schema[i].record_field] ? contact_app_info.labels[schema[i].record_field] : "");
+               birthday_str[0]='\0';
+               get_pref(PREF_SHORTDATE, NULL, &pref_date);
+               strftime(birthday_str, sizeof(birthday_str), pref_date, &(mcont->cont.birthday));
+               fprintf(out, "%s\n", birthday_str);
+            }
+
 	    if (mcont->cont.entry[schema[i].record_field]) {
                /* Print labels for menu selectable fields (Work, Fax, etc.) */
 	       switch (schema[i].type) {
@@ -1099,7 +1111,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 		default:
 		  fprintf(out, "%s: ", contact_app_info.labels[schema[i].record_field] ? contact_app_info.labels[schema[i].record_field] : "");
 	       }
-               /* Next print the field entry */
+               /* Next print the entry field */
 	       switch (schema[i].type) {
 		case ADDRESS_GUI_LABEL_TEXT:
 		case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
@@ -1107,15 +1119,6 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 		case ADDRESS_GUI_ADDR_MENU_TEXT:
 		case ADDRESS_GUI_WEBSITE_TEXT:
 		  fprintf(out, "%s\n", mcont->cont.entry[schema[i].record_field]);
-		  break;
-		case ADDRESS_GUI_BIRTHDAY:
-		  if (mcont->cont.birthdayFlag) {
-		     birthday_str[0]='\0';
-		     get_pref(PREF_SHORTDATE, NULL, &pref_date);
-		     strftime(birthday_str, sizeof(birthday_str), pref_date, &(mcont->cont.birthday));
-		     fprintf(out, "%s: ", contact_app_info.labels[schema[i].record_field] ? contact_app_info.labels[schema[i].record_field] : "");
-		     fprintf(out, "%s\n", birthday_str);
-		  }
 		  break;
 	       }
 	    }
