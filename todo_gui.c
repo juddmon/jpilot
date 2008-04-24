@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.115 2008/01/13 22:04:29 rousseau Exp $ */
+/* $Id: todo_gui.c,v 1.116 2008/04/24 01:26:01 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -636,6 +636,7 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
    char *button_text[]={N_("OK")};
    char *button_overwrite_text[]={N_("No"), N_("Yes")};
    char text[1024];
+   char date_string[1024];
    char str1[256], str2[256];
    char pref_time[40];
    char *csv_text;
@@ -644,19 +645,11 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
    char hostname[256];
    const char *svalue;
    long userid;
+   long char_set;
+   char *utf;
 
-   /* this stuff is for ical only. */
-   /* todo: create a pre-export switch */
-   get_pref(PREF_USER, NULL, &svalue);
-   g_strlcpy(text, svalue, sizeof(text));
-   str_to_ical_str(username, sizeof(username), text);
-   get_pref(PREF_USER_ID, &userid, NULL);
-   gethostname(text, sizeof(text));
-   text[sizeof(text)-1]='\0';
-   str_to_ical_str(hostname, sizeof(hostname), text);
-
-   list=GTK_CLIST(clist)->selection;
-
+   /* Open file for export, including corner cases where file exists or 
+    * can't be opened */
    if (!stat(filename, &statb)) {
       if (S_ISDIR(statb.st_mode)) {
 	 g_snprintf(text, sizeof(text), _("%s is a directory"), filename);
@@ -683,9 +676,40 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
       return;
    }
 
-   time(&ltime);
-   now = gmtime(&ltime);
-   /* XXX ical wants gmtime, text wants localtime */
+   /* Special setup for ICAL export */
+   if (type == EXPORT_TYPE_ICALENDAR) {
+      get_pref(PREF_USER, NULL, &svalue);
+      g_strlcpy(text, svalue, 128);
+      str_to_ical_str(username, sizeof(username), text);
+      get_pref(PREF_USER_ID, &userid, NULL);
+      gethostname(text, sizeof(text));
+      text[sizeof(text)-1]='\0';
+      str_to_ical_str(hostname, sizeof(hostname), text);
+
+      time(&ltime);
+      now = gmtime(&ltime);
+   }
+
+   /* Write a header for TEXT file */
+   if (type == EXPORT_TYPE_TEXT) {
+      get_pref(PREF_SHORTDATE, NULL, &short_date);
+      get_pref_time_no_secs(pref_time);
+      time(&ltime);
+      now = localtime(&ltime);
+      strftime(str1, sizeof(str1), short_date, now);
+      strftime(str2, sizeof(str2), pref_time, now);
+      g_snprintf(date_string, sizeof(date_string), "%s %s", str1, str2);
+      /* Todo Should I translate these? */
+      fprintf(out, "ToDo exported from %s "VERSION" on %s\n\n", PN, date_string);
+   }
+
+   /* Write a header to the CSV file */
+   if (type == EXPORT_TYPE_CSV) {
+      fprintf(out, "CSV todo version "VERSION": Category, Private, Indefinite, Due Date, Priority, Completed, ToDo Text, Note\n");
+   }
+
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
+   list=GTK_CLIST(clist)->selection;
 
    for (i=0, temp_list=list; temp_list; temp_list = temp_list->next, i++) {
       mtodo = gtk_clist_get_row_data(GTK_CLIST(clist), GPOINTER_TO_INT(temp_list->data));
@@ -695,9 +719,6 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
       }
       switch (type) {
        case EXPORT_TYPE_CSV:
-	 if (i==0) {
-	    fprintf(out, "CSV todo: Category, Private, Indefinite, Due Date, Priority, Completed, ToDo Text, Note\n");
-	 }
 	 len=0;
 	 if (mtodo->todo.description) {
 	    len=strlen(mtodo->todo.description) * 2 + 4;
@@ -708,16 +729,17 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	    continue;
 	    jp_logf(JP_LOG_WARN, _("Can't export todo %d\n"), (long) temp_list->data + 1);
 	 }
-	 str_to_csv_str(csv_text, todo_app_info.category.name[mtodo->attrib & 0x0F]);
-	 fprintf(out, "\"%s\",", csv_text);
+	 utf = charset_p2newj(todo_app_info.category.name[mtodo->attrib & 0x0F], 16, char_set);
+	 fprintf(out, "\"%s\",", utf);
+	 g_free(utf);
 	 fprintf(out, "\"%s\",", (mtodo->attrib & dlpRecAttrSecret) ? "1":"0");
 	 fprintf(out, "\"%s\",", mtodo->todo.indefinite ? "1":"0");
 	 if (mtodo->todo.indefinite) {
-	    csv_text[0]='\0';
+	    text[0]='\0';
 	 } else {
-	    strftime(csv_text, len, "%Y %02m %02d", &(mtodo->todo.due));
+	    strftime(text, len, "%Y %02m %02d", &(mtodo->todo.due));
 	 }
-	 fprintf(out, "\"%s\",", csv_text);
+	 fprintf(out, "\"%s\",", text);
 	 fprintf(out, "\"%d\",", mtodo->todo.priority);
 	 fprintf(out, "\"%s\",", mtodo->todo.complete ? "1":"0");
 	 if (mtodo->todo.description) {
@@ -734,18 +756,12 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 }
 	 free(csv_text);
 	 break;
-       case EXPORT_TYPE_TEXT:
-	 get_pref(PREF_SHORTDATE, NULL, &short_date);
-	 get_pref_time_no_secs(pref_time);
-	 time(&ltime);
-	 now = localtime(&ltime);
-	 strftime(str1, sizeof(str1), short_date, now);
-	 strftime(str2, sizeof(str2), pref_time, now);
-	 g_snprintf(text, sizeof(text), "%s %s", str1, str2);
 
-	 /* Todo Should I translate these? */
-	 fprintf(out, "ToDo: exported from %s on %s\n", PN, text);
-	 fprintf(out, "Category: %s\n", todo_app_info.category.name[mtodo->attrib & 0x0F]);
+       case EXPORT_TYPE_TEXT:
+	 utf = charset_p2newj(todo_app_info.category.name[mtodo->attrib & 0x0F], 16, char_set);
+	 fprintf(out, "Category: %s\n", utf);
+	 g_free(utf);
+
 	 fprintf(out, "Private: %s\n",
 		 (mtodo->attrib & dlpRecAttrSecret) ? "Yes":"No");
 	 if (mtodo->todo.indefinite) {
@@ -760,9 +776,10 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	    fprintf(out, "Description: %s\n", mtodo->todo.description);
 	 }
 	 if (mtodo->todo.note) {
-	    fprintf(out, "Note: %s\n", mtodo->todo.note);
+	    fprintf(out, "Note: %s\n\n", mtodo->todo.note);
 	 }
 	 break;
+
        case EXPORT_TYPE_ICALENDAR:
 	 /* RFC 2445: Internet Calendaring and Scheduling Core
 	  *           Object Specification */

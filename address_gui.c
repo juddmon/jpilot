@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.172 2008/04/23 22:14:38 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.173 2008/04/24 01:26:00 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -967,20 +967,8 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
    int address_i, IM_i, phone_i;
    char *utf;
 
-   get_pref(PREF_CHAR_SET, &char_set, NULL);
-
-   /* this stuff is for vcard only. */
-   /* todo: create a pre-export switch */
-   get_pref(PREF_USER, NULL, &svalue);
-   g_strlcpy(text, svalue, sizeof(text));
-   str_to_ical_str(username, sizeof(username), text);
-   get_pref(PREF_USER_ID, &userid, NULL);
-   gethostname(text, sizeof(text));
-   text[sizeof(text)-1]='\0';
-   str_to_ical_str(hostname, sizeof(hostname), text);
-
-   list=GTK_CLIST(clist)->selection;
-
+   /* Open file for export, including corner cases where file exists or 
+    * can't be opened */
    if (!stat(filename, &statb)) {
       if (S_ISDIR(statb.st_mode)) {
 	 g_snprintf(text, sizeof(text), _("%s is a directory"), filename);
@@ -1007,15 +995,33 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
       return;
    }
 
-   /* Get a date string for the file header */
-   get_pref(PREF_SHORTDATE, NULL, &short_date);
-   get_pref_time_no_secs(pref_time);
-   time(&ltime);
-   now = localtime(&ltime);
-   strftime(str1, sizeof(str1), short_date, now);
-   strftime(str2, sizeof(str2), pref_time, now);
-   g_snprintf(date_string, sizeof(date_string), "%s %s", str1, str2);
+   /* Convert strings for VCARD export */
+   if (type == EXPORT_TYPE_VCARD) {
+      get_pref(PREF_USER, NULL, &svalue);
+      g_strlcpy(text, svalue, sizeof(text));
+      str_to_ical_str(username, sizeof(username), text);
+      get_pref(PREF_USER_ID, &userid, NULL);
+      gethostname(text, sizeof(text));
+      text[sizeof(text)-1]='\0';
+      str_to_ical_str(hostname, sizeof(hostname), text);
+   }
 
+   /* Write a header for TEXT file */
+   if (type == EXPORT_TYPE_TEXT) {
+      get_pref(PREF_SHORTDATE, NULL, &short_date);
+      get_pref_time_no_secs(pref_time);
+      time(&ltime);
+      now = localtime(&ltime);
+      strftime(str1, sizeof(str1), short_date, now);
+      strftime(str2, sizeof(str2), pref_time, now);
+      g_snprintf(date_string, sizeof(date_string), "%s %s", str1, str2);
+      /* Todo Should I translate these? */
+      if (address_version==0) {
+         fprintf(out, "Address exported from %s "VERSION" on %s\n\n", PN, date_string);
+      } else {   
+         fprintf(out, "Contact exported from %s "VERSION" on %s\n\n", PN, date_string);
+      }
+   }
 
    /* Write a header to the CSV file */
    if (type == EXPORT_TYPE_CSV) {
@@ -1052,8 +1058,12 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
       }
 
       fprintf(out, "Show in List\n");
-   }
+   }  /* end writing CSV header */
 
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
+   list=GTK_CLIST(clist)->selection;
+
+   /* Loop over clist of records to export */
    for (record_num=0, temp_list=list; temp_list; temp_list = temp_list->next, record_num++) {
       mcont = gtk_clist_get_row_data(GTK_CLIST(clist), GPOINTER_TO_INT(temp_list->data));
       if (!mcont) {
@@ -1063,16 +1073,6 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
       
       switch (type) {
        case EXPORT_TYPE_TEXT:
-	 if (record_num == 0) {
-	    /* Todo Should I translate these? */
-	    if (address_version==0) {
-	       fprintf(out, "Addresses exported from %s on %s\n\n", PN, date_string);
-	    } else {   
-	       fprintf(out, "Contacts version %ld exported from %s on %s\n\n", address_version, PN, date_string);
-	    }
-	 }
-
-	 /* Todo Should I translate these? */
 	 utf = charset_p2newj(contact_app_info.category.name[mcont->attrib & 0x0F], 16, char_set);
 	 fprintf(out, "Category: %s\n", utf);
 	 g_free(utf);
@@ -1081,8 +1081,8 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 
 	 address_i=phone_i=IM_i=0;
 	 for (i=0; i<schema_size; i++) {
-	    /* Get the entry texts */
 	    if (mcont->cont.entry[schema[i].record_field]) {
+               /* Print labels for menu selectable fields (Work, Fax, etc.) */
 	       switch (schema[i].type) {
 		case ADDRESS_GUI_IM_MENU_TEXT:
 		  fprintf(out, "%s: ", contact_app_info.IMLabels[mcont->cont.IMLabel[IM_i]]);
@@ -1099,6 +1099,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 		default:
 		  fprintf(out, "%s: ", contact_app_info.labels[schema[i].record_field] ? contact_app_info.labels[schema[i].record_field] : "");
 	       }
+               /* Next print the field entry */
 	       switch (schema[i].type) {
 		case ADDRESS_GUI_LABEL_TEXT:
 		case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
@@ -1327,6 +1328,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 }
 	 fprintf(out, "END:VCARD%s", CRLF);
 	 break;
+
        case EXPORT_TYPE_LDIF:
 	 /* RFC 2256 - organizationalPerson */
 	 /* RFC 2798 - inetOrgPerson */
@@ -1448,6 +1450,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	    fprintf(out, "\n");
 	    break;
 	 }
+
        default:
 	 jp_logf(JP_LOG_WARN, _("Unknown export type\n"));
       }

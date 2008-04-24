@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.155 2008/04/03 15:59:58 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.156 2008/04/24 01:26:01 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -679,20 +679,13 @@ void appt_export_ok(int type, const char *filename)
    char hostname[256];
    const char *svalue;
    long userid;
+   const char *short_date;
+   char pref_time[40];
+   char str1[256], str2[256];
+   char date_string[1024];
 
-   al=NULL;
-
-   /* this stuff is for ical only. */
-   /* todo: create a pre-export switch */
-   get_pref(PREF_USER, NULL, &svalue);
-   g_strlcpy(text, svalue, 128);
-   str_to_ical_str(username, sizeof(username), text);
-   get_pref(PREF_USER_ID, &userid, &svalue);
-   gethostname(text, 127);
-   text[127]='\0';
-   str_to_ical_str(hostname, sizeof(hostname), text);
-
-
+   /* Open file for export, including corner cases where file exists or 
+    * can't be opened */
    if (!stat(filename, &statb)) {
       if (S_ISDIR(statb.st_mode)) {
 	 g_snprintf(text, sizeof(text), _("%s is a directory"), filename);
@@ -719,10 +712,45 @@ void appt_export_ok(int type, const char *filename)
       return;
    }
 
+   /* Special setup for ICAL export */
+   if (type == EXPORT_TYPE_ICALENDAR) {
+      get_pref(PREF_USER, NULL, &svalue);
+      g_strlcpy(text, svalue, 128);
+      str_to_ical_str(username, sizeof(username), text);
+      get_pref(PREF_USER_ID, &userid, &svalue);
+      gethostname(text, sizeof(text));
+      text[sizeof(text)-1]='\0';
+      str_to_ical_str(hostname, sizeof(hostname), text);
+
+      time(&ltime);
+      now = gmtime(&ltime);
+   }
+
+   /* Write a header for TEXT file */
+   if (type == EXPORT_TYPE_TEXT) {
+      get_pref(PREF_SHORTDATE, NULL, &short_date);
+      get_pref_time_no_secs(pref_time);
+      time(&ltime);
+      now = localtime(&ltime);
+      strftime(str1, sizeof(str1), short_date, now);
+      strftime(str2, sizeof(str2), pref_time, now);
+      g_snprintf(date_string, sizeof(date_string), "%s %s", str1, str2);
+      /* Todo Should I translate these? */
+      fprintf(out, "Datebook exported from %s "VERSION" on %s\n\n", PN, date_string);
+   }
+
+   /* Write a header to the CSV file */
+   if (type == EXPORT_TYPE_CSV) {
+      fprintf(out, "CSV datebook version "VERSION": Category, Private, "
+              "Description, Note, Event, Begin, End, Alarm, Advance, "
+              "Advance Units, Repeat Type, Repeat Forever, Repeat End, "
+              "Repeat Frequency, Repeat Day, Repeat Days, "
+              "Week Start, Number of Exceptions, Exceptions\n");
+   }
+
+   al=NULL;
    get_days_appointments2(&al, NULL, 2, 2, 2, NULL);
 
-   time(&ltime);
-   now = gmtime(&ltime);
    mappt=NULL;
    for (i=0, temp_list=al; temp_list; temp_list = temp_list->next, i++) {
       mappt = &(temp_list->mappt);
@@ -732,17 +760,9 @@ void appt_export_ok(int type, const char *filename)
 	 datebook_to_text(&(mappt->appt), csv_text, 65535);
 	 fprintf(out, "%s\n", csv_text);
 	 break;
-       case EXPORT_TYPE_CSV:
-	 if (i==0) {
-	    fprintf(out, "CSV datebook: Category, Private, "
-		    "Description, Note, Event, Begin, End, Alarm, Advance, "
-		    "Advance Units, Repeat Type, Repeat Forever, Repeat End, "
-		    "Repeat Frequency, Repeat Day, Repeat Days, "
-		    "Week Start, Number of Exceptions, Exceptions\n");
-	 }
 
-	 str_to_csv_str(csv_text, "");
-	 fprintf(out, "\"%s\",", csv_text);
+       case EXPORT_TYPE_CSV:
+	 fprintf(out, "\"\",");  /* No category for Datebook */
 	 fprintf(out, "\"%s\",", (mappt->attrib & dlpRecAttrSecret) ? "1":"0");
 
 	 str_to_csv_str(csv_text, mappt->appt.description);
@@ -807,6 +827,7 @@ void appt_export_ok(int type, const char *filename)
 	 }
 	 fprintf(out, "\"\n");
 	 break;
+
        case EXPORT_TYPE_ICALENDAR:
 	 /* RFC 2445: Internet Calendaring and Scheduling Core
 	  *           Object Specification */

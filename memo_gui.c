@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.102 2008/01/31 19:05:17 judd Exp $ */
+/* $Id: memo_gui.c,v 1.103 2008/04/24 01:26:01 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -500,7 +500,7 @@ void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
    GList *list, *temp_list;
    FILE *out;
    struct stat statb;
-   int i, r, num, len;
+   int i, r, len;
    const char *short_date;
    time_t ltime;
    struct tm *now;
@@ -508,11 +508,14 @@ void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
    char *button_overwrite_text[]={N_("No"), N_("Yes")};
    char text[1024];
    char str1[256], str2[256];
+   char date_string[1024];
    char pref_time[40];
    char *csv_text;
+   long char_set;
+   char *utf;
 
-   list=GTK_CLIST(clist)->selection;
-
+   /* Open file for export, including corner cases where file exists or 
+    * can't be opened */
    if (!stat(filename, &statb)) {
       if (S_ISDIR(statb.st_mode)) {
 	 g_snprintf(text, sizeof(text), _("%s is a directory"), filename);
@@ -539,8 +542,26 @@ void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
       return;
    }
 
-   /* Count how many are to be exported */
-   for (num=0, temp_list=list; temp_list; temp_list = temp_list->next, num++);
+   /* Write a header for TEXT file */
+   if (type == EXPORT_TYPE_TEXT) {
+      get_pref(PREF_SHORTDATE, NULL, &short_date);
+      get_pref_time_no_secs(pref_time);
+      time(&ltime);
+      now = localtime(&ltime);
+      strftime(str1, sizeof(str1), short_date, now);
+      strftime(str2, sizeof(str2), pref_time, now);
+      g_snprintf(date_string, sizeof(date_string), "%s %s", str1, str2);
+      /* Todo Should I translate these? */
+      fprintf(out, "Memo exported from %s "VERSION" on %s\n\n", PN, date_string);
+   }
+
+   /* Write a header to the CSV file */
+   if (type == EXPORT_TYPE_CSV) {
+      fprintf(out, "CSV memo version "VERSION": Category, Private, Memo Text\n");
+   }
+
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
+   list=GTK_CLIST(clist)->selection;
 
    for (i=0, temp_list=list; temp_list; temp_list = temp_list->next, i++) {
       mmemo = gtk_clist_get_row_data(GTK_CLIST(clist), GPOINTER_TO_INT(temp_list->data));
@@ -550,9 +571,6 @@ void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
       }
       switch (type) {
        case EXPORT_TYPE_CSV:
-	 if (i==0) {
-	    fprintf(out, "CSV memo: Category, Private, Memo Text\n");
-	 }
 	 len=0;
 	 if (mmemo->memo.text) {
 	    len=strlen(mmemo->memo.text) * 2 + 4;
@@ -563,13 +581,15 @@ void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	    continue;
 	    jp_logf(JP_LOG_WARN, _("Can't export memo %d\n"), (long) temp_list->data + 1);
 	 }
-	 str_to_csv_str(csv_text, memo_app_info.category.name[mmemo->attrib & 0x0F]);
-	 fprintf(out, "\"%s\",", csv_text);
+	 utf = charset_p2newj(memo_app_info.category.name[mmemo->attrib & 0x0F], 16, char_set);
+	 fprintf(out, "\"%s\",", utf);
+	 g_free(utf);
 	 fprintf(out, "\"%s\",", (mmemo->attrib & dlpRecAttrSecret) ? "1":"0");
 	 str_to_csv_str(csv_text, mmemo->memo.text);
 	 fprintf(out, "\"%s\"\n", csv_text);
 	 free(csv_text);
 	 break;
+
        case EXPORT_TYPE_TEXT:
 	 get_pref(PREF_SHORTDATE, NULL, &short_date);
 	 get_pref_time_no_secs(pref_time);
@@ -580,15 +600,17 @@ void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 g_snprintf(text, sizeof(text), "%s %s", str1, str2);
 
 	 /* Todo Should I translate these? */
-	 fprintf(out, "Memo: %ld, exported from %s on %s\n",
-		 (long) temp_list->data + 1, PN, text);
-	 fprintf(out, "Category: %s\n", memo_app_info.category.name[mmemo->attrib & 0x0F]);
-	 fprintf(out, "This memo was marked as: %s\n",
-		 (mmemo->attrib & dlpRecAttrSecret) ? "Private":"Not Private");
+	 fprintf(out, "Memo: %ld\n", (long) temp_list->data + 1);
+	 utf = charset_p2newj(memo_app_info.category.name[mmemo->attrib & 0x0F], 16, char_set);
+	 fprintf(out, "Category: %s\n", utf);
+	 g_free(utf);
+	 fprintf(out, "Private: %s\n",
+		 (mmemo->attrib & dlpRecAttrSecret) ? "Yes":"No");
 	 fprintf(out, "----- Start of Memo -----\n");
 	 fprintf(out, "%s", mmemo->memo.text);
 	 fprintf(out, "\n----- End of Memo -----\n\n");
 	 break;
+
        default:
 	 jp_logf(JP_LOG_WARN, _("Unknown export type\n"));
       }
