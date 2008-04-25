@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.118 2008/04/25 04:34:52 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.119 2008/04/25 22:46:14 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -48,6 +48,9 @@
 #define NUM_TODO_CAT_ITEMS 16
 #define CONNECT_SIGNALS 400
 #define DISCONNECT_SIGNALS 401
+/* Keeps track of whether code is using ToDo, or Tasks database
+ * 0 is ToDo, 1 is Tasks */
+static long todo_version=0;
 
 extern GtkTooltips *glob_tooltips;
 extern GtkWidget *glob_date_label;
@@ -2043,6 +2046,8 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    GtkAccelGroup *accel_group;
    long char_set;
    char *cat_name;
+
+   get_pref(PREF_TODO_VERSION, &todo_version, NULL);
 
    init();
 

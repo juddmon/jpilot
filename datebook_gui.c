@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.158 2008/04/25 04:34:52 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.159 2008/04/25 22:46:14 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -88,6 +88,10 @@ static int DB_APPT_COLUMN=3;
 #define START_TIME_FLAG 0x00
 #define END_TIME_FLAG   0x80
 #define HOURS_FLAG      0x40
+
+/* Keeps track of whether code is using Datebook, or Calendar database
+ * 0 is Datebook, 1 is Calendar */
+static long datebook_version=0;
 
 extern GtkTooltips *glob_tooltips;
 extern GtkWidget *glob_date_label;
@@ -4229,6 +4233,8 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
       N_("Sa"),
       N_("Su")
    };
+
+   get_pref(PREF_DATEBOOK_VERSION, &datebook_version, NULL);
 
    init();
 

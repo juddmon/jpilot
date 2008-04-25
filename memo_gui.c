@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.105 2008/04/25 04:34:52 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.106 2008/04/25 22:46:14 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -47,6 +47,10 @@
 
 #define CONNECT_SIGNALS 400
 #define DISCONNECT_SIGNALS 401
+
+/* Keeps track of whether code is using Memo, or Memos database
+ * 0 is Memo, 1 is Memos */
+static long memo_version=0;
 
 extern GtkTooltips *glob_tooltips;
 extern GtkWidget *glob_date_label;
@@ -1430,6 +1434,8 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    GtkAccelGroup *accel_group;
    long char_set;
    char *cat_name;
+
+   get_pref(PREF_MEMO_VERSION, &memo_version, NULL);
 
    clist_row_selected=0;
    record_changed=CLEAR_FLAG;
