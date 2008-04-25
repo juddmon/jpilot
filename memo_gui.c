@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.103 2008/04/24 01:26:01 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.104 2008/04/25 02:42:12 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -256,7 +256,7 @@ int memo_print()
 /*
  * Start Import Code
  */
-int memo_import_callback(GtkWidget *parent_window, const char *file_path, int type)
+int cb_memo_import(GtkWidget *parent_window, const char *file_path, int type)
 {
    FILE *in;
    char line[256];
@@ -275,11 +275,6 @@ int memo_import_callback(GtkWidget *parent_window, const char *file_path, int ty
    int new_cat_num;
    int priv;
 
-   memo_get_details(&new_memo, &attrib);
-   if (new_memo.text) {
-      free_Memo(&new_memo);
-   }
-
    in=fopen(file_path, "r");
    if (!in) {
       jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), file_path);
@@ -289,6 +284,11 @@ int memo_import_callback(GtkWidget *parent_window, const char *file_path, int ty
    /* TEXT */
    if (type==IMPORT_TYPE_TEXT) {
       jp_logf(JP_LOG_DEBUG, "Memo import text [%s]\n", file_path);
+
+      /* Trick to get currently selected category into attrib */
+      memo_get_details(&new_memo, &attrib);
+      free_Memo(&new_memo);
+
       text_len=0;
       text[0]='\0';
       while (!feof(in)) {
@@ -312,7 +312,6 @@ int memo_import_callback(GtkWidget *parent_window, const char *file_path, int ty
       jp_charset_p2j(text, sizeof(text));
       text_len = strlen(text);
 #endif
-
 #ifdef JPILOT_DEBUG
       printf("text=[%s]\n", text);
       printf("text_len=%d\n", text_len);
@@ -320,6 +319,7 @@ int memo_import_callback(GtkWidget *parent_window, const char *file_path, int ty
 #endif
 
       new_memo.text=text;
+
       ret=import_record_ask(parent_window, pane,
 			    new_memo.text,
 			    &(memo_app_info.category),
@@ -336,37 +336,36 @@ int memo_import_callback(GtkWidget *parent_window, const char *file_path, int ty
    /* CSV */
    if (type==IMPORT_TYPE_CSV) {
       jp_logf(JP_LOG_DEBUG, "Memo import CSV [%s]\n", file_path);
-      /* The first line is format, so we don't need it */
-      fgets(text, 1000, in);
+      /* Skip the first line which contains the format */
+      fgets(text, sizeof(text), in);
+
       import_all=FALSE;
       while (1) {
 	 /* Read the category field */
-	 ret = read_csv_field(in, text, 65535);
+	 ret = read_csv_field(in, text, sizeof(text));
 	 if (feof(in)) break;
 #ifdef JPILOT_DEBUG
 	 printf("category is [%s]\n", text);
 #endif
 	 g_strlcpy(old_cat_name, text, 17);
-	 attrib=0;
 	 /* Figure out what the best category number is */
 	 suggested_cat_num=0;
 	 for (i=0; i<NUM_MEMO_CAT_ITEMS; i++) {
-	    if (memo_app_info.category.name[i][0]=='\0') continue;
+	    if (!memo_app_info.category.name[i][0]) continue;
 	    if (!strcmp(memo_app_info.category.name[i], old_cat_name)) {
 	       suggested_cat_num=i;
-	       i=1000;
 	       break;
 	    }
 	 }
 
 	 /* Read the private field */
-	 ret = read_csv_field(in, text, 65535);
+	 ret = read_csv_field(in, text, sizeof(text));
 #ifdef JPILOT_DEBUG
 	 printf("private is [%s]\n", text);
 #endif
 	 sscanf(text, "%d", &priv);
 
-	 ret = read_csv_field(in, text, 65535);
+	 ret = read_csv_field(in, text, sizeof(text));
 #ifdef JPILOT_DEBUG
 	 printf("memo text is [%s]\n", text);
 #endif
@@ -430,7 +429,6 @@ int memo_import_callback(GtkWidget *parent_window, const char *file_path, int ty
 	       if (memo_app_info.category.name[i][0]=='\0') continue;
 	       if (!strcmp(memo_app_info.category.name[i], old_cat_name)) {
 		  suggested_cat_num=i;
-		  i=1000;
 		  break;
 	       }
 	    }
@@ -482,7 +480,7 @@ int memo_import(GtkWidget *window)
       0
    };
 
-   import_gui(window, pane, type_desc, type_int, memo_import_callback);
+   import_gui(window, pane, type_desc, type_int, cb_memo_import);
    return EXIT_SUCCESS;
 }
 /*

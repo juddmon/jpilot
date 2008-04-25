@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.156 2008/04/24 01:26:01 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.157 2008/04/25 02:42:12 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -350,7 +350,7 @@ int datebook_to_text(struct Appointment *appt, char *text, int len)
 /*
  * Start Import Code
  */
-int datebook_import_callback(GtkWidget *parent_window, const char *file_path, int type)
+int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int type)
 {
    FILE *in;
    char text[65536];
@@ -380,8 +380,9 @@ int datebook_import_callback(GtkWidget *parent_window, const char *file_path, in
    /* CSV */
    if (type==IMPORT_TYPE_CSV) {
       jp_logf(JP_LOG_DEBUG, "Datebook import CSV [%s]\n", file_path);
-      /* The first line is format, so we don't need it */
-      fgets(text, 2000, in);
+      /* Skip the first line which contains the format */
+      fgets(text, sizeof(text), in);
+
       import_all=FALSE;
       while (1) {
 	 memset(&new_appt, 0, sizeof(new_appt));
@@ -392,14 +393,12 @@ int datebook_import_callback(GtkWidget *parent_window, const char *file_path, in
 	 printf("category is [%s]\n", text);
 #endif
 	 g_strlcpy(old_cat_name, text, 17);
-	 attrib=0;
 	 /* Figure out what the best category number is */
 	 suggested_cat_num=0;
 	 for (i=0; i<NUM_DATEBOOK_CAT_ITEMS; i++) {
-	    if (ai.category.name[i][0]=='\0') continue;
+	    if (!ai.category.name[i][0]) continue;
 	    if (!strcmp(ai.category.name[i], old_cat_name)) {
 	       suggested_cat_num=i;
-	       i=1000;
 	       break;
 	    }
 	 }
@@ -568,6 +567,7 @@ int datebook_import_callback(GtkWidget *parent_window, const char *file_path, in
 	 }
       }
    }
+
    /* Palm Desktop DAT format */
    if (type==IMPORT_TYPE_DAT) {
       jp_logf(JP_LOG_DEBUG, "Datebook import DAT [%s]\n", file_path);
@@ -588,16 +588,14 @@ int datebook_import_callback(GtkWidget *parent_window, const char *file_path, in
 	 } else {
 	    g_strlcpy(old_cat_name, cai.name[index], 17);
 	 }
-	 attrib=0;
 	 /* Figure out what category it was in the dat file */
 	 index=temp_alist->mappt.unique_id-1;
 	 suggested_cat_num=0;
 	 if (index>-1) {
 	    for (i=0; i<NUM_DATEBOOK_CAT_ITEMS; i++) {
-	       if (ai.category.name[i][0]=='\0') continue;
+	       if (!ai.category.name[i][0]) continue;
 	       if (!strcmp(ai.category.name[i], old_cat_name)) {
 		  suggested_cat_num=i;
-		  i=1000;
 		  break;
 	       }
 	    }
@@ -648,7 +646,7 @@ int datebook_import(GtkWidget *window)
       0
    };
 
-   import_gui(window, pane, type_desc, type_int, datebook_import_callback);
+   import_gui(window, pane, type_desc, type_int, cb_dbook_import);
    return EXIT_SUCCESS;
 }
 /*

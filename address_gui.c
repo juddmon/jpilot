@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.174 2008/04/24 22:12:52 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.175 2008/04/25 02:42:11 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -633,7 +633,7 @@ int address_to_text(struct Address *addr, char *text, int len)//old
 /*
  * Start Import Code
  */
-int address_import_callback(GtkWidget *parent_window, const char *file_path, int type)
+int cb_addr_import(GtkWidget *parent_window, const char *file_path, int type)
 {
    FILE *in;
    char text[65536];
@@ -687,7 +687,6 @@ int address_import_callback(GtkWidget *parent_window, const char *file_path, int
 	 printf("category is [%s]\n", text);
 #endif
 	 g_strlcpy(old_cat_name, text, 17);
-	 attrib = 0;
 	 /* Try to match imported category name to an existing category number */
 	 suggested_cat_num = 0;
 	 for (i=0; i<NUM_ADDRESS_CAT_ITEMS; i++) {
@@ -799,6 +798,7 @@ int address_import_callback(GtkWidget *parent_window, const char *file_path, int
             }
 	 }
       }
+      break;
 
    case IMPORT_TYPE_DAT:  /* Palm Desktop DAT format */
       jp_logf(JP_LOG_DEBUG, "Address import DAT [%s]\n", file_path);
@@ -827,7 +827,6 @@ int address_import_callback(GtkWidget *parent_window, const char *file_path, int
 	       if (address_app_info.category.name[i][0]=='\0') continue;
 	       if (!strcmp(address_app_info.category.name[i], old_cat_name)) {
 		  suggested_cat_num=i;
-		  i=1000;
 		  break;
 	       }
 	    }
@@ -858,6 +857,7 @@ int address_import_callback(GtkWidget *parent_window, const char *file_path, int
 	 }
       }
       free_AddressList(&addrlist);
+      break;
 
    }  /* end switch for import types */
 
@@ -879,7 +879,7 @@ int address_import(GtkWidget *window)
       0
    };
 
-   import_gui(window, pane, type_desc, type_int, address_import_callback);
+   import_gui(window, pane, type_desc, type_int, cb_addr_import);
    return EXIT_SUCCESS;
 }
 /*

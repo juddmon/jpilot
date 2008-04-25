@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.116 2008/04/24 01:26:01 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.117 2008/04/25 02:42:12 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -396,7 +396,7 @@ Description: %s\nNote: %s\n", due, todo->priority, complete,
 /*
  * Start Import Code
  */
-int todo_import_callback(GtkWidget *parent_window, const char *file_path, int type)
+int cb_todo_import(GtkWidget *parent_window, const char *file_path, int type)
 {
    FILE *in;
    char text[65536];
@@ -415,9 +415,6 @@ int todo_import_callback(GtkWidget *parent_window, const char *file_path, int ty
    int priv, indefinite, priority, completed;
    int year, month, day;
 
-   todo_get_details(&new_todo, &attrib);
-   free_ToDo(&new_todo);
-
    in=fopen(file_path, "r");
    if (!in) {
       jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), file_path);
@@ -427,8 +424,9 @@ int todo_import_callback(GtkWidget *parent_window, const char *file_path, int ty
    /* CSV */
    if (type==IMPORT_TYPE_CSV) {
       jp_logf(JP_LOG_DEBUG, "Todo import CSV [%s]\n", file_path);
-      /* The first line is format, so we don't need it */
+      /* Skip the first line which contains the format */
       fgets(text, sizeof(text), in);
+
       import_all=FALSE;
       while (1) {
 	 /* Read the category field */
@@ -445,7 +443,6 @@ int todo_import_callback(GtkWidget *parent_window, const char *file_path, int ty
 	    if (todo_app_info.category.name[i][0]=='\0') continue;
 	    if (!strcmp(todo_app_info.category.name[i], old_cat_name)) {
 	       suggested_cat_num=i;
-	       i=1000;
 	       break;
 	    }
 	 }
@@ -503,6 +500,7 @@ int todo_import_callback(GtkWidget *parent_window, const char *file_path, int ty
 	 new_todo.due.tm_mon=month-1;
 	 new_todo.due.tm_mday=day;
 	 new_todo.priority=priority;
+	 new_todo.complete=completed;
 	 new_todo.description=description;
 	 new_todo.note=note;
 
@@ -550,7 +548,6 @@ int todo_import_callback(GtkWidget *parent_window, const char *file_path, int ty
 	 } else {
 	    g_strlcpy(old_cat_name, cai.name[index], 17);
 	 }
-	 attrib=0;
 	 /* Figure out what category it was in the dat file */
 	 index=temp_todolist->mtodo.unique_id-1;
 	 suggested_cat_num=0;
@@ -559,7 +556,6 @@ int todo_import_callback(GtkWidget *parent_window, const char *file_path, int ty
 	       if (todo_app_info.category.name[i][0]=='\0') continue;
 	       if (!strcmp(todo_app_info.category.name[i], old_cat_name)) {
 		  suggested_cat_num=i;
-		  i=1000;
 		  break;
 	       }
 	    }
@@ -611,7 +607,7 @@ int todo_import(GtkWidget *window)
       0
    };
 
-   import_gui(window, pane, type_desc, type_int, todo_import_callback);
+   import_gui(window, pane, type_desc, type_int, cb_todo_import);
    return EXIT_SUCCESS;
 }
 /*
