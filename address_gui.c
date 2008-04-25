@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.176 2008/04/25 04:34:52 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.177 2008/04/25 04:42:55 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -2850,7 +2850,10 @@ static void cb_clist_selection(GtkWidget      *clist,
 	       /* Reminder checkbox */
 	       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(reminder_checkbox),
 					    cont->reminder);
-	    }
+	    } else {
+               gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(reminder_checkbox), FALSE);
+               gtk_entry_set_text(GTK_ENTRY(reminder_entry), "");
+            }
 	 }
 	 else {
 	    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(birthday_checkbox),
