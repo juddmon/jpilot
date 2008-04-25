@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.177 2008/04/25 04:42:55 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.178 2008/04/25 22:23:22 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -27,6 +27,7 @@
 #include <gdk/gdkkeysyms.h>
 #include <gdk/gdk.h>
 //#define __USE_XOPEN 1
+//#define possibly needed for strptime used in csv import
 #include <time.h>
 /* For open, read */
 #include <unistd.h>
@@ -761,6 +762,13 @@ int cb_addr_import(GtkWidget *parent_window, const char *file_path, int type)
 		  get_pref(PREF_SHORTDATE, NULL, &pref_date);
 		  strptime(text, pref_date, &new_cont.birthday);
                }
+               /* Also get Reminder Advance field */
+               ret = read_csv_field(in, text, sizeof(text));
+               if (text[0]) {
+                  new_cont.reminder = TRUE;
+                  sscanf(text, "%d", &(new_cont.advance));
+                  new_cont.advanceUnits = 1;  /* Days */
+               }
 	       break;
             }
          }
@@ -1050,9 +1058,12 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	    fprintf(out, "Address %d, ", address_i);
 	    address_i++;
 	    break;
+	  case ADDRESS_GUI_BIRTHDAY:
+	    fprintf(out, "%s, ", contact_app_info.labels[schema[i].record_field]);
+	    fprintf(out, "Reminder Advance, ");
+            break;
 	  case ADDRESS_GUI_LABEL_TEXT:
 	  case ADDRESS_GUI_WEBSITE_TEXT:
-	  case ADDRESS_GUI_BIRTHDAY:
 	    fprintf(out, "%s, ", contact_app_info.labels[schema[i].record_field]);
 	    break;
 	 }
@@ -1178,8 +1189,16 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 		  get_pref(PREF_SHORTDATE, NULL, &pref_date);
 		  strftime(birthday_str, sizeof(birthday_str), pref_date, &(mcont->cont.birthday));
 		  fprintf(out, "\"%s\",", birthday_str);
+
+                  if (mcont->cont.reminder) {
+                     fprintf(out, "\"%d\",", mcont->cont.advance);
+                  } else {
+                     fprintf(out, "\"\",");
+                  }
+
 	       } else {
-		  fprintf(out, "\"\",");
+		  fprintf(out, "\"\",");  /* for null Birthday field */
+		  fprintf(out, "\"\",");  /* for null Birthday Reminder field */
 	       }
 	       break;
 	    }
