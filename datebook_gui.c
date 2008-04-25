@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.157 2008/04/25 02:42:12 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.158 2008/04/25 04:34:52 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -213,15 +213,19 @@ int datebook_to_text(struct Appointment *appt, char *text, int len)
    char text_alarm[40];
    char text_repeat_days[200];
    char text_exceptions[65535];
-   char *adv_type[]={"Minutes", "Hours", "Days"
+   char *adv_type[] = {
+      N_("Minutes"), 
+      N_("Hours"), 
+      N_("Days")
    };
-   char *repeat_type[]={"Repeat Never",
-	"Repeat Daily",
-	"Repeat Weekly",
-	"Repeat MonthlyByDay",
-	"Repeat MonthlyByDate",
-	"Repeat YearlyDate",
-	"Repeat YearlyDay"
+   char *repeat_type[] = { 
+      N_("Repeat Never"),
+      N_("Repeat Daily"),
+      N_("Repeat Weekly"),
+      N_("Repeat MonthlyByDay"),
+      N_("Repeat MonthlyByDate"),
+      N_("Repeat YearlyDate"),
+      N_("Repeat YearlyDay")
    };
    char *days[] = {
       N_("Su"),
@@ -243,7 +247,7 @@ int datebook_to_text(struct Appointment *appt, char *text, int len)
    /* Event date/time */
    strftime(str_begin_date, sizeof(str_begin_date), short_date, &(appt->begin));
    if (appt->event) {
-      sprintf(text_time, "Appointment starts on %s\nTime: Event",
+      sprintf(text_time, _("Appointment starts on %s\nTime: Event"),
 	      str_begin_date);
    } else {
       strftime(str_begin_time, sizeof(str_begin_time), pref_time, &(appt->begin));
@@ -251,7 +255,7 @@ int datebook_to_text(struct Appointment *appt, char *text, int len)
       str_begin_date[19]='\0';
       str_begin_time[19]='\0';
       str_end_time[19]='\0';
-      sprintf(text_time, "Appointment starts on %s\nTime: %s to %s",
+      sprintf(text_time, _("Appointment starts on %s\nTime: %s to %s"),
 	      str_begin_date, str_begin_time, str_end_time);
    }
    /* Alarm */
@@ -261,7 +265,7 @@ int datebook_to_text(struct Appointment *appt, char *text, int len)
       if ((i>-1) && (i<3)) {
 	 strcat(text_alarm, adv_type[i]);
       } else {
-	 strcat(text_alarm, "Unknown");
+	 strcat(text_alarm, _("Unknown"));
       }
    } else {
       text_alarm[0]='\0';
@@ -271,18 +275,18 @@ int datebook_to_text(struct Appointment *appt, char *text, int len)
    if ((i > -1) && (i < 7)) {
       strcpy(text_repeat_type, repeat_type[i]);
    } else {
-      strcpy(text_repeat_type, "Unknown");
+      strcpy(text_repeat_type, _("Unknown"));
    }
    /* End Date */
    if (appt->repeatForever) {
-      sprintf(text_end_date, "End Date: Never\n");
+      sprintf(text_end_date, _("End Date: Never\n"));
    } else {
-      strcpy(text_end_date, "End Date: ");
+      strcpy(text_end_date, _("End Date: "));
       strftime(temp, sizeof(temp), short_date, &(appt->repeatEnd));
       strcat(text_end_date, temp);
       strcat(text_end_date, "\n");
    }
-   sprintf(text_repeat_freq, "Repeat Frequency: %d\n", appt->repeatFrequency);
+   sprintf(text_repeat_freq, _("Repeat Frequency: %d\n"), appt->repeatFrequency);
    if (appt->repeatType==repeatNone) {
       text_end_date[0]='\0';
       text_repeat_freq[0]='\0';
@@ -290,12 +294,12 @@ int datebook_to_text(struct Appointment *appt, char *text, int len)
    /* Repeat Day (for MonthlyByDay) */
    text_repeat_day[0]='\0';
    if (appt->repeatType==repeatMonthlyByDay) {
-      sprintf(text_repeat_day, "Monthly Repeat Day %d\n", appt->repeatDay);
+      sprintf(text_repeat_day, _("Monthly Repeat Day %d\n"), appt->repeatDay);
    }
    /* Repeat Days (for weekly) */
    text_repeat_days[0]='\0';
    if (appt->repeatType==repeatWeekly) {
-      strcpy(text_repeat_days, "Repeat Days: ");
+      strcpy(text_repeat_days, _("Repeat Days: "));
       for (i=0; i<7; i++) {
 	 if (appt->repeatDays[i]) {
 	    strcat(text_repeat_days, " ");
@@ -306,13 +310,13 @@ int datebook_to_text(struct Appointment *appt, char *text, int len)
    }
    text_exceptions[0]='\0';
    if (appt->exceptions > 0) {
-      sprintf(text_exceptions, "Number of exceptions: %d", appt->exceptions);
+      sprintf(text_exceptions, _("Number of exceptions: %d"), appt->exceptions);
       for (i=0; i<appt->exceptions; i++) {
 	 strcat(text_exceptions, "\n");
 	 strftime(temp, sizeof(temp), short_date, &(appt->exception[i]));
 	 strcat(text_exceptions, temp);
 	 if (strlen(text_exceptions)>65000) {
-	    strcat(text_exceptions, "\nmore...");
+	    strcat(text_exceptions, _("\nmore..."));
 	    break;
 	 }
       }
@@ -320,25 +324,25 @@ int datebook_to_text(struct Appointment *appt, char *text, int len)
    }
 
    g_snprintf(text, len,
-	      "Description: %s\n"
-	      "Note: %s\n"
+	      "%s %s\n"
+	      "%s %s\n"
 	      "%s\n"
-	      "Alarm: %s%s\n"
-	      "Repeat Type: %s\n"
+	      "%s %s%s\n"
+	      "%s %s\n"
 	      "%s"
 	      "%s"
-	      "Start of Week: %s\n"
+	      "%s %s\n"
 	      "%s"
 	      "%s"
 	      "%s",
-	      appt->description,
-	      appt->note,
+              _("Description:"), appt->description,
+	      _("Note:"), appt->note,
 	      text_time,
-	      appt->alarm ? "Yes" : "No", text_alarm,
-	      text_repeat_type,
+	      _("Alarm:"), appt->alarm ? _("Yes"):_("No"), text_alarm,
+	      _("Repeat Type:"), text_repeat_type,
 	      text_repeat_freq,
 	      text_end_date,
-	      _(days[appt->repeatWeekstart]),
+	      _("Start of Week:"), _(days[appt->repeatWeekstart]),
 	      text_repeat_day,
 	      text_repeat_days,
 	      text_exceptions
@@ -733,8 +737,8 @@ void appt_export_ok(int type, const char *filename)
       strftime(str1, sizeof(str1), short_date, now);
       strftime(str2, sizeof(str2), pref_time, now);
       g_snprintf(date_string, sizeof(date_string), "%s %s", str1, str2);
-      /* Todo Should I translate these? */
-      fprintf(out, "Datebook exported from %s "VERSION" on %s\n\n", PN, date_string);
+      fprintf(out, _("Datebook exported from %s %s on %s\n\n"), 
+                                           PN,VERSION,date_string);
    }
 
    /* Write a header to the CSV file */
@@ -755,7 +759,7 @@ void appt_export_ok(int type, const char *filename)
       switch (type) {
        case EXPORT_TYPE_TEXT:
 	 csv_text[0]='\0';
-	 datebook_to_text(&(mappt->appt), csv_text, 65535);
+	 datebook_to_text(&(mappt->appt), csv_text, sizeof(csv_text));
 	 fprintf(out, "%s\n", csv_text);
 	 break;
 

@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.175 2008/04/25 02:42:11 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.176 2008/04/25 04:34:52 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -1015,11 +1015,12 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
       strftime(str1, sizeof(str1), short_date, now);
       strftime(str2, sizeof(str2), pref_time, now);
       g_snprintf(date_string, sizeof(date_string), "%s %s", str1, str2);
-      /* Todo Should I translate these? */
       if (address_version==0) {
-         fprintf(out, "Address exported from %s "VERSION" on %s\n\n", PN, date_string);
+         fprintf(out, _("Address exported from %s %s on %s\n\n"), 
+                                               PN,VERSION,date_string);
       } else {   
-         fprintf(out, "Contact exported from %s "VERSION" on %s\n\n", PN, date_string);
+         fprintf(out, _("Contact exported from %s %s on %s\n\n"), 
+                                               PN,VERSION,date_string);
       }
    }
 
@@ -1074,10 +1075,10 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
       switch (type) {
        case EXPORT_TYPE_TEXT:
 	 utf = charset_p2newj(contact_app_info.category.name[mcont->attrib & 0x0F], 16, char_set);
-	 fprintf(out, "Category: %s\n", utf);
+	 fprintf(out, _("Category: %s\n"), utf);
 	 g_free(utf);
-	 fprintf(out, "Private: %s\n",
-		 (mcont->attrib & dlpRecAttrSecret) ? "Yes":"No");
+	 fprintf(out, _("Private: %s\n"),
+		 (mcont->attrib & dlpRecAttrSecret) ? _("Yes"):_("No"));
 
 	 address_i=phone_i=IM_i=0;
 	 for (i=0; i<schema_size; i++) {
@@ -1123,8 +1124,8 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	       }
 	    }
 	 }
+	 fprintf(out, "\n");
 
-	 fprintf(out, "Show Phone: %d\n\n", mcont->cont.showPhone);
 	 break;
 
        case EXPORT_TYPE_CSV:

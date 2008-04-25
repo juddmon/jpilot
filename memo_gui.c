@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.104 2008/04/25 02:42:12 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.105 2008/04/25 04:34:52 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -549,8 +549,8 @@ void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
       strftime(str1, sizeof(str1), short_date, now);
       strftime(str2, sizeof(str2), pref_time, now);
       g_snprintf(date_string, sizeof(date_string), "%s %s", str1, str2);
-      /* Todo Should I translate these? */
-      fprintf(out, "Memo exported from %s "VERSION" on %s\n\n", PN, date_string);
+      fprintf(out, _("Memo exported from %s %s on %s\n\n"), 
+                                         PN,VERSION,date_string);
    }
 
    /* Write a header to the CSV file */
@@ -597,16 +597,15 @@ void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 strftime(str2, sizeof(str2), pref_time, now);
 	 g_snprintf(text, sizeof(text), "%s %s", str1, str2);
 
-	 /* Todo Should I translate these? */
-	 fprintf(out, "Memo: %ld\n", (long) temp_list->data + 1);
+	 fprintf(out, _("Memo: %ld\n"), (long) temp_list->data + 1);
 	 utf = charset_p2newj(memo_app_info.category.name[mmemo->attrib & 0x0F], 16, char_set);
-	 fprintf(out, "Category: %s\n", utf);
+	 fprintf(out, _("Category: %s\n"), utf);
 	 g_free(utf);
-	 fprintf(out, "Private: %s\n",
+	 fprintf(out, _("Private: %s\n"),
 		 (mmemo->attrib & dlpRecAttrSecret) ? "Yes":"No");
-	 fprintf(out, "----- Start of Memo -----\n");
+	 fprintf(out, _("----- Start of Memo -----\n"));
 	 fprintf(out, "%s", mmemo->memo.text);
-	 fprintf(out, "\n----- End of Memo -----\n\n");
+	 fprintf(out, _("\n----- End of Memo -----\n\n"));
 	 break;
 
        default:

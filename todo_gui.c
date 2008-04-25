@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.117 2008/04/25 02:42:12 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.118 2008/04/25 04:34:52 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -695,8 +695,8 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
       strftime(str1, sizeof(str1), short_date, now);
       strftime(str2, sizeof(str2), pref_time, now);
       g_snprintf(date_string, sizeof(date_string), "%s %s", str1, str2);
-      /* Todo Should I translate these? */
-      fprintf(out, "ToDo exported from %s "VERSION" on %s\n\n", PN, date_string);
+      fprintf(out, _("ToDo exported from %s %s on %s\n\n"), 
+                                         PN,VERSION,date_string);
    }
 
    /* Write a header to the CSV file */
@@ -755,24 +755,24 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 
        case EXPORT_TYPE_TEXT:
 	 utf = charset_p2newj(todo_app_info.category.name[mtodo->attrib & 0x0F], 16, char_set);
-	 fprintf(out, "Category: %s\n", utf);
+	 fprintf(out, _("Category: %s\n"), utf);
 	 g_free(utf);
 
-	 fprintf(out, "Private: %s\n",
-		 (mtodo->attrib & dlpRecAttrSecret) ? "Yes":"No");
+	 fprintf(out, _("Private: %s\n"),
+		 (mtodo->attrib & dlpRecAttrSecret) ? _("Yes"):_("No"));
 	 if (mtodo->todo.indefinite) {
-	    fprintf(out, "Due Date: Indefinite\n");
+	    fprintf(out, _("Due Date: None\n"));
 	 } else {
-	    strftime(text, sizeof(text), "%Y %02m %02d", &(mtodo->todo.due));
-	    fprintf(out, "Due Date: %s\n", text);
+            strftime(text, sizeof(text), short_date, &(mtodo->todo.due));
+	    fprintf(out, _("Due Date: %s\n"), text);
 	 }
-	 fprintf(out, "Priority: %d\n", mtodo->todo.priority);
-	 fprintf(out, "Completed: %s\n", mtodo->todo.complete ? "Yes":"No");
+	 fprintf(out, _("Priority: %d\n"), mtodo->todo.priority);
+	 fprintf(out, _("Completed: %s\n"), mtodo->todo.complete ? _("Yes"):_("No"));
 	 if (mtodo->todo.description) {
-	    fprintf(out, "Description: %s\n", mtodo->todo.description);
+	    fprintf(out, _("Description: %s\n"), mtodo->todo.description);
 	 }
 	 if (mtodo->todo.note) {
-	    fprintf(out, "Note: %s\n\n", mtodo->todo.note);
+	    fprintf(out, _("Note: %s\n\n"), mtodo->todo.note);
 	 }
 	 break;
 
