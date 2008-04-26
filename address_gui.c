@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.178 2008/04/25 22:23:22 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.179 2008/04/26 12:03:04 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -1974,6 +1974,9 @@ void addr_clear_details()
    int sorted_position;
    //long use_jos, char_set;
    int address_i, IM_i, phone_i;
+   long ivalue;
+   const char *cstr;
+   char reminder_str[10];
 
    /* Need to disconnect these signals first */
    connect_changed_signals(DISCONNECT_SIGNALS);
@@ -2037,9 +2040,12 @@ void addr_clear_details()
        case ADDRESS_GUI_WEBSITE_TEXT:
 	 break;
        case ADDRESS_GUI_BIRTHDAY:
-	 gtk_entry_set_text(GTK_ENTRY(reminder_entry), "");
 	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(birthday_checkbox), 0);
 	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(reminder_checkbox), 0);
+         get_pref(PREF_TODO_DAYS_TILL_DUE, &ivalue, &cstr);
+         reminder_str[0]='\0';
+         g_snprintf(reminder_str, sizeof(reminder_str), "%ld", ivalue);
+	 gtk_entry_set_text(GTK_ENTRY(reminder_entry), reminder_str);
 	 break;
       }
    }
@@ -2647,6 +2653,9 @@ static void cb_clist_selection(GtkWidget      *clist,
    //long use_jos, char_set;
    int address_i, IM_i, phone_i;
    char birthday_str[255];
+   long ivalue;
+   const char *cstr;
+   char reminder_str[10];
    GString *s;
    long char_set;
 
@@ -2854,6 +2863,10 @@ static void cb_clist_selection(GtkWidget      *clist,
 	 }
 	 break;
        case ADDRESS_GUI_BIRTHDAY:
+         get_pref(PREF_TODO_DAYS_TILL_DUE, &ivalue, &cstr);
+         reminder_str[0]='\0';
+         g_snprintf(reminder_str, sizeof(reminder_str), "%ld", ivalue);
+
 	 if (cont->birthdayFlag) {
 	    memcpy(&birthday, &cont->birthday, sizeof(struct tm));
 	    set_button_label_to_date(birthday_button, &birthday);
@@ -2871,7 +2884,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 					    cont->reminder);
 	    } else {
                gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(reminder_checkbox), FALSE);
-               gtk_entry_set_text(GTK_ENTRY(reminder_entry), "");
+               gtk_entry_set_text(GTK_ENTRY(reminder_entry), reminder_str);
             }
 	 }
 	 else {
@@ -2879,7 +2892,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 		  FALSE);
 	    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(reminder_checkbox),
 		  FALSE);
-	    gtk_entry_set_text(GTK_ENTRY(reminder_entry), "");
+	    gtk_entry_set_text(GTK_ENTRY(reminder_entry), reminder_str);
 	 }
 	 break;
       }
