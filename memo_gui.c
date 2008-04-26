@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.106 2008/04/25 22:46:14 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.107 2008/04/26 11:23:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -553,13 +553,22 @@ void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
       strftime(str1, sizeof(str1), short_date, now);
       strftime(str2, sizeof(str2), pref_time, now);
       g_snprintf(date_string, sizeof(date_string), "%s %s", str1, str2);
-      fprintf(out, _("Memo exported from %s %s on %s\n\n"), 
-                                         PN,VERSION,date_string);
+      if (memo_version==0) {
+         fprintf(out, _("Memo exported from %s %s on %s\n\n"), 
+                                            PN,VERSION,date_string);
+      } else {
+         fprintf(out, _("Memos exported from %s %s on %s\n\n"), 
+                                             PN,VERSION,date_string);
+      }
    }
 
    /* Write a header to the CSV file */
    if (type == EXPORT_TYPE_CSV) {
-      fprintf(out, "CSV memo version "VERSION": Category, Private, Memo Text\n");
+      if (memo_version==0) {
+         fprintf(out, "CSV memo version "VERSION": Category, Private, Memo Text\n");
+      } else {
+         fprintf(out, "CSV memos version "VERSION": Category, Private, Memo Text\n");
+      }
    }
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
