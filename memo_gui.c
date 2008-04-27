@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.107 2008/04/26 11:23:08 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.108 2008/04/27 16:06:12 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -483,6 +483,13 @@ int memo_import(GtkWidget *window)
       IMPORT_TYPE_DAT,
       0
    };
+
+   /* Hide ABA import of Memos until file format has been decoded */
+   if (memo_version==1) {
+      type_desc[2] = NULL;
+      type_int[2] = 0;
+
+   }
 
    import_gui(window, pane, type_desc, type_int, cb_memo_import);
    return EXIT_SUCCESS;

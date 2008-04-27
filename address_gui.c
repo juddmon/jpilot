@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.179 2008/04/26 12:03:04 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.180 2008/04/27 16:06:12 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -886,6 +886,13 @@ int address_import(GtkWidget *window)
       IMPORT_TYPE_DAT,
       0
    };
+
+   /* Hide ABA import of Contacts until file format has been decoded */
+   if (address_version==1) {
+      type_desc[1] = NULL;
+      type_int[1] = 0;
+
+   }
 
    import_gui(window, pane, type_desc, type_int, cb_addr_import);
    return EXIT_SUCCESS;
