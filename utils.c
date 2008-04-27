@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.141 2008/04/26 11:21:32 rikster5 Exp $ */
+/* $Id: utils.c,v 1.142 2008/04/27 15:10:49 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -1760,7 +1760,6 @@ int dialog_generic(GtkWindow *main_window,
     * error which causes X and the mouse pointer to lock up.
     * The lockup is generated whenever a modal dialog is created
     * from the callback routine of a clist. */
-   gtk_grab_remove(GTK_WIDGET(main_window));
    gdk_pointer_ungrab(GDK_CURRENT_TIME);
 
    dialog_result=0;
@@ -1864,9 +1863,6 @@ int dialog_generic(GtkWindow *main_window,
    gtk_widget_show_all(glob_dialog);
 
    gtk_main();
-
-   /* Undo earlier gdk_pointer_ungrab and allow GTK to have pointer again */
-   gtk_grab_add(GTK_WIDGET(main_window));
 
    return dialog_result;
 }
