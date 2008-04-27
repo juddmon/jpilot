@@ -1,4 +1,4 @@
-/* $Id: import_gui.c,v 1.23 2005/12/18 15:33:54 rousseau Exp $ */
+/* $Id: import_gui.c,v 1.24 2008/04/27 16:32:31 rikster5 Exp $ */
 
 /*******************************************************************************
  * import_gui.c
@@ -194,6 +194,7 @@ cb_import(GtkWidget *widget,
       return;
    }
    glob_import_callback(filesel, sel, glob_type_selected);
+   cb_quit(widget, filew);
 }
 
 static void cb_import_select_row(GtkWidget *file_clist,
@@ -235,21 +236,19 @@ static void cb_import_select_row(GtkWidget *file_clist,
 void import_gui(GtkWidget *main_window, GtkWidget *main_pane,
 		char *type_desc[], int type_int[],
 		int (*import_callback)(GtkWidget *parent_window,
-				       const char *file_path, int type))
+	        const char *file_path, int type))
 {
    GtkWidget *button;
    GtkWidget *vbox, *hbox;
    GtkWidget *label;
-   char temp[256];
+   char title[256];
    const char *svalue;
    GSList *group;
    int i;
    int pw, ph, px, py;
 
-   if (filew) {
-      return;
-   }
-
+   if (filew) return;
+   
    line_selected = -1;
 
    gdk_window_get_size(main_window->window, &pw, &ph);
@@ -262,11 +261,11 @@ void import_gui(GtkWidget *main_window, GtkWidget *main_pane,
 #endif
    px+=40;
 
-   g_snprintf(temp, sizeof(temp), "%s %s", PN, _("Import"));
+   g_snprintf(title, sizeof(title), "%s %s", PN, _("Import"));
 
    filew = gtk_widget_new(GTK_TYPE_FILE_SELECTION,
 			  "type", GTK_WINDOW_TOPLEVEL,
-			  "title", temp,
+			  "title", title,
 			  NULL);
 
    gtk_window_set_default_size(GTK_WINDOW(filew), pw, ph);
