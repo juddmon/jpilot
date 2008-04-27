@@ -1,4 +1,4 @@
-/* $Id: export_gui.c,v 1.19 2005/12/18 14:54:39 rousseau Exp $ */
+/* $Id: export_gui.c,v 1.20 2008/04/27 16:30:19 rikster5 Exp $ */
 
 /*******************************************************************************
  * export_gui.c
@@ -236,6 +236,7 @@ int export_gui(GtkWidget *main_window,
    GtkWidget *cat_menu_item[NUM_CAT_ITEMS+1];
    GtkWidget *scrolled_window;
    GtkWidget *label;
+   char title[256];
    GSList *group;
    int i;
    const char *svalue;
@@ -252,9 +253,11 @@ int export_gui(GtkWidget *main_window,
 
    glob_pref_export=pref_export;
 
+   g_snprintf(title, sizeof(title), "%s %s", PN, _("Export"));
+
    export_window = gtk_widget_new(GTK_TYPE_WINDOW,
 				  "type", GTK_WINDOW_TOPLEVEL,
-				  "title", _("Export"),
+				  "title", title,
 				  NULL);
 
    gtk_window_set_default_size(GTK_WINDOW(export_window), w, h);
