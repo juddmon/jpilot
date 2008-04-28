@@ -1,4 +1,4 @@
-/* $Id: address.h,v 1.14 2008/04/23 22:14:38 rikster5 Exp $ */
+/* $Id: address.h,v 1.15 2008/04/28 21:11:10 rikster5 Exp $ */
 
 /*******************************************************************************
  * address.h
@@ -39,6 +39,7 @@ typedef struct {
 #define NUM_ADDRESSES 3
 #define NUM_CONTACT_NOTEBOOK_PAGES 6
 #define NUM_ADDRESS_NOTEBOOK_PAGES 4
+#define NUM_ADDRESS_FIELDS 19
 
 #define ADDRESS_GUI_LABEL_TEXT 2 /* Show a label and a textview widget */
 #define ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT 3 /* Show a dial button, show in list radio button, and a phone menu, and a textview */
