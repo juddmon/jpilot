@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.180 2008/04/27 16:06:12 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.181 2008/04/28 20:30:13 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -34,7 +34,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-/* */
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -46,8 +45,34 @@
 #include "password.h"
 #include "export.h"
 #include <pi-dlp.h>
-#include "stock_buttons.h"
 #include "jp-pi-contact.h"
+#include "stock_buttons.h"
+
+/******************************************************************************/
+/* Constants */
+/******************************************************************************/
+#define CONNECT_SIGNALS 400
+#define DISCONNECT_SIGNALS 401
+#define NUM_MENU_ITEM1 8
+#define NUM_MENU_ITEM2 8
+#define NUM_ADDRESS_CAT_ITEMS 16
+#define NUM_PHONE_ENTRIES 7
+
+#define ADDRESS_NAME_COLUMN  0
+#define ADDRESS_NOTE_COLUMN  1
+#define ADDRESS_PHONE_COLUMN 2
+
+#define ADDRESS_MAX_CLIST_NAME 30
+#define ADDRESS_MAX_COLUMN_LEN 80
+
+/* Size of photo to display in Jpilot.  Actual photo can be larger */
+#define PHOTO_X_SZ 139
+#define PHOTO_Y_SZ 144
+
+/* Many RFCs require that the line termination be CRLF rather than just \n.
+ * For conformance to standards this requires adding the two-byte string to
+ * the end of strings destined for export */
+#define CRLF "\x0D\x0A"
 
 /* There are a large number of calls to gtk_text_insert in the code.  To
  * add ifdef/endif blocks around all of them would make the code unreadable.
@@ -58,90 +83,72 @@
 #define gtk_text_insert(buffer,arg2,arg3,arg4,string,length) gtk_text_buffer_insert_at_cursor(buffer,string,length)
 #endif
 
-#define CONNECT_SIGNALS 400
-#define DISCONNECT_SIGNALS 401
-#define NUM_MENU_ITEM1 8
-#define NUM_MENU_ITEM2 8
-#define NUM_ADDRESS_CAT_ITEMS 16
-#define NUM_ADDRESS_ENTRIES 19
-//#define NUM_ADDRESS_LABELS 22
-//#define NUM_PHONE_ENTRIES 5
-#define NUM_PHONE_ENTRIES 7
-
-/* There are 3 extra fields for Japanese Palm OS's KANA extension in address book.
- * Kana means 'pronounce of name'.
- */
-#define NUM_ADDRESS_EXT_ENTRIES 3
-
-#define PHOTO_X 139
-#define PHOTO_Y 144
-
 static address_schema_entry *schema;
 static int schema_size;
 
 static address_schema_entry contact_schema[NUM_CONTACT_FIELDS]={
-     {contLastname, 0, ADDRESS_GUI_LABEL_TEXT},
+     {contLastname,  0, ADDRESS_GUI_LABEL_TEXT},
      {contFirstname, 0, ADDRESS_GUI_LABEL_TEXT},
-     {contCompany, 0, ADDRESS_GUI_LABEL_TEXT},
-     {contTitle, 0, ADDRESS_GUI_LABEL_TEXT},
-     {contPhone1, 0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
-     {contPhone2, 0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
-     {contPhone3, 0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
-     {contPhone4, 0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
-     {contPhone5, 0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
-     {contPhone6, 0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
-     {contPhone7, 0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
-     {contIM1, 0, ADDRESS_GUI_IM_MENU_TEXT},
-     {contIM2, 0, ADDRESS_GUI_IM_MENU_TEXT},
-     {contWebsite, 0, ADDRESS_GUI_WEBSITE_TEXT},
-     {contAddress1, 1, ADDRESS_GUI_ADDR_MENU_TEXT},
-     {contCity1, 1, ADDRESS_GUI_LABEL_TEXT},
-     {contState1, 1, ADDRESS_GUI_LABEL_TEXT},
-     {contZip1, 1, ADDRESS_GUI_LABEL_TEXT},
-     {contCountry1, 1, ADDRESS_GUI_LABEL_TEXT},
-     {contAddress2, 2, ADDRESS_GUI_ADDR_MENU_TEXT},
-     {contCity2, 2, ADDRESS_GUI_LABEL_TEXT},
-     {contState2, 2, ADDRESS_GUI_LABEL_TEXT},
-     {contZip2, 2, ADDRESS_GUI_LABEL_TEXT},
-     {contCountry2, 2, ADDRESS_GUI_LABEL_TEXT},
-     {contAddress3, 3, ADDRESS_GUI_ADDR_MENU_TEXT},
-     {contCity3, 3, ADDRESS_GUI_LABEL_TEXT},
-     {contState3, 3, ADDRESS_GUI_LABEL_TEXT},
-     {contZip3, 3, ADDRESS_GUI_LABEL_TEXT},
-     {contCountry3, 3, ADDRESS_GUI_LABEL_TEXT},
-     {contBirthday, 4, ADDRESS_GUI_BIRTHDAY},
-     {contCustom1, 4, ADDRESS_GUI_LABEL_TEXT},
-     {contCustom2, 4, ADDRESS_GUI_LABEL_TEXT},
-     {contCustom3, 4, ADDRESS_GUI_LABEL_TEXT},
-     {contCustom4, 4, ADDRESS_GUI_LABEL_TEXT},
-     {contCustom5, 4, ADDRESS_GUI_LABEL_TEXT},
-     {contCustom6, 4, ADDRESS_GUI_LABEL_TEXT},
-     {contCustom7, 4, ADDRESS_GUI_LABEL_TEXT},
-     {contCustom8, 4, ADDRESS_GUI_LABEL_TEXT},
-     {contCustom9, 4, ADDRESS_GUI_LABEL_TEXT},
-     {contNote, 5, ADDRESS_GUI_LABEL_TEXT}
+     {contCompany,   0, ADDRESS_GUI_LABEL_TEXT},
+     {contTitle,     0, ADDRESS_GUI_LABEL_TEXT},
+     {contPhone1,    0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
+     {contPhone2,    0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
+     {contPhone3,    0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
+     {contPhone4,    0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
+     {contPhone5,    0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
+     {contPhone6,    0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
+     {contPhone7,    0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
+     {contIM1,       0, ADDRESS_GUI_IM_MENU_TEXT},
+     {contIM2,       0, ADDRESS_GUI_IM_MENU_TEXT},
+     {contWebsite,   0, ADDRESS_GUI_WEBSITE_TEXT},
+     {contAddress1,  1, ADDRESS_GUI_ADDR_MENU_TEXT},
+     {contCity1,     1, ADDRESS_GUI_LABEL_TEXT},
+     {contState1,    1, ADDRESS_GUI_LABEL_TEXT},
+     {contZip1,      1, ADDRESS_GUI_LABEL_TEXT},
+     {contCountry1,  1, ADDRESS_GUI_LABEL_TEXT},
+     {contAddress2,  2, ADDRESS_GUI_ADDR_MENU_TEXT},
+     {contCity2,     2, ADDRESS_GUI_LABEL_TEXT},
+     {contState2,    2, ADDRESS_GUI_LABEL_TEXT},
+     {contZip2,      2, ADDRESS_GUI_LABEL_TEXT},
+     {contCountry2,  2, ADDRESS_GUI_LABEL_TEXT},
+     {contAddress3,  3, ADDRESS_GUI_ADDR_MENU_TEXT},
+     {contCity3,     3, ADDRESS_GUI_LABEL_TEXT},
+     {contState3,    3, ADDRESS_GUI_LABEL_TEXT},
+     {contZip3,      3, ADDRESS_GUI_LABEL_TEXT},
+     {contCountry3,  3, ADDRESS_GUI_LABEL_TEXT},
+     {contBirthday,  4, ADDRESS_GUI_BIRTHDAY},
+     {contCustom1,   4, ADDRESS_GUI_LABEL_TEXT},
+     {contCustom2,   4, ADDRESS_GUI_LABEL_TEXT},
+     {contCustom3,   4, ADDRESS_GUI_LABEL_TEXT},
+     {contCustom4,   4, ADDRESS_GUI_LABEL_TEXT},
+     {contCustom5,   4, ADDRESS_GUI_LABEL_TEXT},
+     {contCustom6,   4, ADDRESS_GUI_LABEL_TEXT},
+     {contCustom7,   4, ADDRESS_GUI_LABEL_TEXT},
+     {contCustom8,   4, ADDRESS_GUI_LABEL_TEXT},
+     {contCustom9,   4, ADDRESS_GUI_LABEL_TEXT},
+     {contNote,      5, ADDRESS_GUI_LABEL_TEXT}
 };
 
-static address_schema_entry address_schema[19]={
-     {contLastname, 0, ADDRESS_GUI_LABEL_TEXT},
+static address_schema_entry address_schema[NUM_ADDRESS_FIELDS]={
+     {contLastname,  0, ADDRESS_GUI_LABEL_TEXT},
      {contFirstname, 0, ADDRESS_GUI_LABEL_TEXT},
-     {contTitle, 0, ADDRESS_GUI_LABEL_TEXT},
-     {contCompany, 0, ADDRESS_GUI_LABEL_TEXT},
-     {contPhone1, 0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
-     {contPhone2, 0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
-     {contPhone3, 0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
-     {contPhone4, 0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
-     {contPhone5, 0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
-     {contAddress1, 1, ADDRESS_GUI_LABEL_TEXT},
-     {contCity1, 1, ADDRESS_GUI_LABEL_TEXT},
-     {contState1, 1, ADDRESS_GUI_LABEL_TEXT},
-     {contZip1, 1, ADDRESS_GUI_LABEL_TEXT},
-     {contCountry1, 1, ADDRESS_GUI_LABEL_TEXT},
-     {contCustom1, 2, ADDRESS_GUI_LABEL_TEXT},
-     {contCustom2, 2, ADDRESS_GUI_LABEL_TEXT},
-     {contCustom3, 2, ADDRESS_GUI_LABEL_TEXT},
-     {contCustom4, 2, ADDRESS_GUI_LABEL_TEXT},
-     {contNote, 3, ADDRESS_GUI_LABEL_TEXT}
+     {contTitle,     0, ADDRESS_GUI_LABEL_TEXT},
+     {contCompany,   0, ADDRESS_GUI_LABEL_TEXT},
+     {contPhone1,    0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
+     {contPhone2,    0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
+     {contPhone3,    0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
+     {contPhone4,    0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
+     {contPhone5,    0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
+     {contAddress1,  1, ADDRESS_GUI_LABEL_TEXT},
+     {contCity1,     1, ADDRESS_GUI_LABEL_TEXT},
+     {contState1,    1, ADDRESS_GUI_LABEL_TEXT},
+     {contZip1,      1, ADDRESS_GUI_LABEL_TEXT},
+     {contCountry1,  1, ADDRESS_GUI_LABEL_TEXT},
+     {contCustom1,   2, ADDRESS_GUI_LABEL_TEXT},
+     {contCustom2,   2, ADDRESS_GUI_LABEL_TEXT},
+     {contCustom3,   2, ADDRESS_GUI_LABEL_TEXT},
+     {contCustom4,   2, ADDRESS_GUI_LABEL_TEXT},
+     {contNote,      3, ADDRESS_GUI_LABEL_TEXT}
 };
 
 
@@ -150,33 +157,6 @@ static address_schema_entry address_schema[19]={
  * 0 is addresses, 1 is contacts
  */
 static long address_version=0;
-
-//undo not needed??
-static char *field_names[]={"Last", "First", "Title", "Company", "Phone1",
-     "Phone2", "Phone3", "Phone4", "Phone5", "Address", "City", "State",
-     "ZipCode", "Country", "Custom1", "Custom2", "Custom3", "Custom4",
-     "Note", "phoneLabel1", "phoneLabel2", "phoneLabel3", "phoneLabel4",
-     "phoneLabel5", "showPhone", NULL};
-/*
- static char *field_names_ja[]={"kana(Last)", "Last",  "kana(First)", "First",
-     "Title", "kana(Company)","Company", "Phone1",
-     "Phone2", "Phone3", "Phone4", "Phone5", "Address", "City", "State",
-     "ZipCode", "Country", "Custom1", "Custom2", "Custom3", "Custom4",
-     "Note", "phoneLabel1", "phoneLabel2", "phoneLabel3", "phoneLabel4",
-     "phoneLabel5", "showPhone", NULL};
- */
-
-#define ADDRESS_NAME_COLUMN  0
-#define ADDRESS_NOTE_COLUMN  1
-#define ADDRESS_PHONE_COLUMN 2
-
-#define ADDRESS_MAX_CLIST_NAME 30
-#define ADDRESS_MAX_COLUMN_LEN 80
-
-/* Many RFCs require that the line termination be CRLF rather than just \n.
- * For conformance to standards this requires adding the two-byte string to
- * the end of strings destined for export */
-#define CRLF "\x0D\x0A"
 
 static GtkWidget *clist;
 #define MAX_NUM_TEXTS contNote+1
@@ -196,13 +176,13 @@ static GtkWidget *vscrollbar;
 static GtkWidget *notebook_label[NUM_CONTACT_NOTEBOOK_PAGES];
 static GtkWidget *phone_type_list_menu[NUM_PHONE_ENTRIES];
 static GtkWidget *phone_type_menu_item[NUM_MENU_ITEM1][NUM_MENU_ITEM2]; /* 8 menus with 8 possible entries */
-static GtkWidget *address_type_list_menu[3];
-static GtkWidget *address_type_menu_item[3][3]; /* 3 menus with 3 possible entries */
-static GtkWidget *IM_type_list_menu[2];
-static GtkWidget *IM_type_menu_item[2][5]; /* 2 menus with 5 possible entries */
+static GtkWidget *address_type_list_menu[NUM_ADDRESSES];
+static GtkWidget *address_type_menu_item[NUM_ADDRESSES][NUM_ADDRESSES]; /* 3 menus with 3 possible entries */
+static GtkWidget *IM_type_list_menu[NUM_IMS];
+static GtkWidget *IM_type_menu_item[NUM_IMS][5]; /* 2 menus with 5 possible entries */
 int address_phone_label_selected[NUM_PHONE_ENTRIES];
-int address_type_selected[3];
-int IM_type_selected[2];
+int address_type_selected[NUM_ADDRESSES];
+int IM_type_selected[NUM_IMS];
 
 /* We need an extra one for the ALL category */
 static GtkWidget *address_cat_menu_item1[NUM_ADDRESS_CAT_ITEMS+1];
@@ -276,7 +256,7 @@ static void init()
    } else {
       jp_logf(JP_LOG_DEBUG, "setting schema to addresses\n");
       schema = address_schema;
-      schema_size = 19;
+      schema_size = NUM_ADDRESS_FIELDS;
    }
 
    time(&ltime);
@@ -376,7 +356,7 @@ cb_record_changed(GtkWidget *widget,
    {
       jp_logf(JP_LOG_INFO|JP_LOG_GUI,
 	      _("This record is deleted.\n"
-	      "Undelete it or copy it to make changes.\n"));
+	        "Undelete it or copy it to make changes.\n"));
    }
 }
 
@@ -586,51 +566,6 @@ GString *contact_to_gstring(struct Contact *cont)
    return s;
 }
 
-//undo use above function
-int address_to_text(struct Address *addr, char *text, int len)//old
-{
-   char *Pstr;
-   int left;
-
-   Pstr = text;
-   left = len;
-   //undo use a gstring?
-   g_snprintf(text, len,
-	      "%s: %s\n%s: %s\n%s: %s\n%s: %s\n%s: %s\n"
-	      "%s: %s\n%s: %s\n%s: %s\n%s: %s\n%s: %s\n"
-	      "%s: %s\n%s: %s\n%s: %s\n%s: %s\n%s: %s\n"
-	      "%s: %s\n%s: %s\n%s: %s\n%s: %s\n"
-	      "%s: %d\n%s: %d\n%s: %d\n%s: %d\n%s: %d\n"
-	      "%s: %d\n",
-	      contact_app_info.labels[entryLastname], addr->entry[entryLastname],
-	      field_names[1], addr->entry[entryFirstname],
-	      field_names[2], addr->entry[entryTitle],
-	      field_names[3], addr->entry[entryCompany],
-	      field_names[4], addr->entry[entryPhone1],
-	      field_names[5], addr->entry[entryPhone2],
-	      field_names[6], addr->entry[entryPhone3],
-	      field_names[7], addr->entry[entryPhone4],
-	      field_names[8], addr->entry[entryPhone5],
-	      field_names[9], addr->entry[entryAddress],
-	      field_names[10], addr->entry[entryCity],
-	      field_names[11], addr->entry[entryState],
-	      field_names[12], addr->entry[entryZip],
-	      field_names[13], addr->entry[entryCountry],
-	      field_names[14], addr->entry[entryCustom1],
-	      field_names[15], addr->entry[entryCustom2],
-	      field_names[16], addr->entry[entryCustom3],
-	      field_names[17], addr->entry[entryCustom4],
-	      field_names[18], addr->entry[entryNote],
-	      field_names[19], addr->phoneLabel[0],
-	      field_names[20], addr->phoneLabel[1],
-	      field_names[21], addr->phoneLabel[2],
-	      field_names[22], addr->phoneLabel[3],
-	      field_names[23], addr->phoneLabel[4],
-	      field_names[24], addr->showPhone
-	      );
-   return EXIT_SUCCESS;
-}
-
 /*
  * Start Import Code
  */
@@ -741,7 +676,7 @@ int cb_addr_import(GtkWidget *parent_window, const char *file_path, int type)
 	       phone_i++;
 	       break;
 	     case ADDRESS_GUI_ADDR_MENU_TEXT:
-               for (j = 0; j < 3; j++) {
+               for (j = 0; j < NUM_ADDRESSES; j++) {
                  if (strcmp(text, contact_app_info.addrLabels[j]) == 0) {
                     new_cont.addressLabel[address_i] = j;
                     break;
@@ -832,7 +767,7 @@ int cb_addr_import(GtkWidget *parent_window, const char *file_path, int type)
 	 suggested_cat_num=0;
 	 if (index>-1) {
 	    for (i=0; i<NUM_ADDRESS_CAT_ITEMS; i++) {
-	       if (address_app_info.category.name[i][0]=='\0') continue;
+	       if (!address_app_info.category.name[i][0]) continue;
 	       if (!strcmp(address_app_info.category.name[i], old_cat_name)) {
 		  suggested_cat_num=i;
 		  break;
@@ -842,14 +777,16 @@ int cb_addr_import(GtkWidget *parent_window, const char *file_path, int type)
 
 	 ret=0;
 	 if (!import_all) {
-	    address_to_text(&(temp_addrlist->maddr.addr), text, sizeof(text));
+            copy_address_to_contact(&(temp_addrlist->maddr.addr), &new_cont);
+            cont_text = contact_to_gstring(&new_cont);
 	    ret=import_record_ask(parent_window, pane,
-				  text,
+				  cont_text->str,
 				  &(address_app_info.category),
 				  old_cat_name,
 				  (temp_addrlist->maddr.attrib & 0x10),
 				  suggested_cat_num,
 				  &new_cat_num);
+            g_string_free(cont_text, TRUE);
 	 } else {
 	    new_cat_num=suggested_cat_num;
 	 }
@@ -1285,7 +1222,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	       }
 	    }
 	 }
-	 for (i=0; i<3; i++) {
+	 for (i=0; i<NUM_ADDRESSES; i++) {
 	    int address_i = 0, city_i = 0, state_i = 0, zip_i = 0, country_i = 0;
 	    switch (i) {
 	     case 0:
@@ -1573,7 +1510,7 @@ void cb_delete_address(GtkWidget *widget, gpointer data)
    /* JPA convert to Palm character set */
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    if (char_set != CHAR_SET_LATIN1) {
-      for (i=0; i<19; i++) {
+      for (i=0; i<NUM_ADDRESS_FIELDS; i++) {
 	 if (maddr.addr.entry[i]) {
 	    charset_j2p(maddr.addr.entry[i],
 			strlen(maddr.addr.entry[i])+1, char_set);
@@ -1801,9 +1738,8 @@ void cb_notebook_changed(GtkWidget *widget,
    /* GTK calls this function while it is destroying the notebook
     * I use this function to tell if it is being destroyed */
    prev_page = gtk_notebook_get_current_page(GTK_NOTEBOOK(widget));
-   if (prev_page<0) {
-      return;
-   }
+   if (prev_page<0) return;
+   
    jp_logf(JP_LOG_DEBUG, "cb_notebook_changed(), prev_page=%d, page=%d\n", prev_page, page);
    set_pref(PREF_ADDRESS_NOTEBOOK_PAGE, page, NULL, TRUE);
 }
@@ -1838,7 +1774,6 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    int flag, type;
    unsigned int unique_id;
    int show_priv;
-   //long use_jos, char_set;
 #ifdef ENABLE_GTK2
    GtkTextIter start_iter;
    GtkTextIter end_iter;
@@ -1979,7 +1914,6 @@ void addr_clear_details()
    int i;
    int new_cat;
    int sorted_position;
-   //long use_jos, char_set;
    int address_i, IM_i, phone_i;
    long ivalue;
    const char *cstr;
@@ -1996,8 +1930,6 @@ void addr_clear_details()
    gtk_text_forward_delete(GTK_TEXT(text),
 			   gtk_text_get_length(GTK_TEXT(text)));
 #endif
-
-   //START NEW CODE
 
    /* Clear all of the text fields */
    for (i=0; i<schema_size; i++) {
@@ -2236,25 +2168,40 @@ static void cb_category(GtkWidget *item, int selection)
    }
 }
 
-
 /* Do masking like Palm OS 3.5 */
 static void clear_mycontact(MyContact *mcont)
 {
-   int i;
-
    mcont->unique_id=0;
    mcont->attrib=mcont->attrib & 0xF8;
-   for (i=0; i<8; i++) {//undo need a define for this
+   memset(&(mcont->cont), 0, sizeof(struct Contact));
+
+   /* Old code for clearing contact structure field by field.  Easier to
+    * simply clear the entire struct with memset 
+   int i;
+
+   for (i=0; i<8; i++) {//TODO: need a define for this
       mcont->cont.phoneLabel[i]=0;
    }
-   //undo need to clear addrLabels, and IMLabels
+   for (i=0; i<NUM_ADDRESSES; i++) {
+      mcont->cont.addressLabel[i]=0;
+   }
+   for (i=0; i<NUM_IMS; i++) {
+      mcont->cont.IMLabel[i]=0;
+   }
    mcont->cont.showPhone=0;
+   mcont->cont.birthdayFlag=0;
+   mcont->cont.reminder=0;
+   mcont->cont.advance=0;
+   mcont->cont.advanceUnits=0;
+   memset(&(mcont->cont.birthday), 0, sizeof(struct tm));
+
    for (i=0; i<NUM_CONTACT_ENTRIES; i++) {
       if (mcont->cont.entry) {
 	 free(mcont->cont.entry[i]);
 	 mcont->cont.entry[i]=NULL;
       }
    }
+   */
    return;
 }
 /* End Masking */
@@ -2355,25 +2302,6 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
    cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
 }
 
-GtkWidget *image_from_data(void *buf, size_t size)
-{
-    GdkPixbufLoader *loader;
-    GError *error;
-    GdkPixbuf *pb;
-    GtkWidget *image;
-
-    error=NULL;
-    loader = gdk_pixbuf_loader_new();
-    gdk_pixbuf_loader_write(loader, buf, size, &error);
-    pb = gdk_pixbuf_loader_get_pixbuf(loader);
-    image = g_object_ref(gtk_image_new_from_pixbuf(pb));
-    if (loader) {
-	gdk_pixbuf_loader_close(loader, &error);
-	g_object_unref(loader);
-    }
-
-    return image;
-}
 
 static void set_button_label_to_date(GtkWidget *button, struct tm *date)
 {
@@ -2434,6 +2362,25 @@ static void cb_check_button_reminder(GtkWidget *widget, gpointer data)
 /*
  * Photo Code
  */
+GtkWidget *image_from_data(void *buf, size_t size)
+{
+    GdkPixbufLoader *loader;
+    GError *error;
+    GdkPixbuf *pb;
+    GtkWidget *image;
+
+    error=NULL;
+    loader = gdk_pixbuf_loader_new();
+    gdk_pixbuf_loader_write(loader, buf, size, &error);
+    pb = gdk_pixbuf_loader_get_pixbuf(loader);
+    image = g_object_ref(gtk_image_new_from_pixbuf(pb));
+    if (loader) {
+	gdk_pixbuf_loader_close(loader, &error);
+	g_object_unref(loader);
+    }
+
+    return image;
+}
 
 int change_photo(char *filename)
 {
@@ -2453,8 +2400,8 @@ int change_photo(char *filename)
    }
    printf("close = %d\n", close(out));
 */
-   sprintf(command, "convert -resize %dx%d %s jpg:-", PHOTO_X, PHOTO_Y, filename);
-   printf("calling %s\n", command);
+   sprintf(command, "convert -resize %dx%d %s jpg:-", PHOTO_X_SZ, PHOTO_Y_SZ, filename);
+   //printf("calling %s\n", command);
    in = popen(command, "r");
    //#include <errno.h>
    //   printf("in=%d errno=%d ECHILD=%d UNDO\n", in, errno, ECHILD);
@@ -2479,7 +2426,7 @@ int change_photo(char *filename)
    if (r) {
       dialog_generic_ok(gtk_widget_get_toplevel(notebook),
 			_("External program not found, or other error"), DIALOG_ERROR,
-			_("J-Pilot can not find an external program \"convert\"\nor an error occurred while executing convert.\nYou may need to install package ImageMagick"));
+			_("J-Pilot can not find the external program \"convert\"\nor an error occurred while executing convert.\nYou may need to install package ImageMagick"));
       jp_logf(JP_LOG_WARN, _("Command executed was \"%s\"\n"), command);
       jp_logf(JP_LOG_WARN, _("return code was %d\n"), r);
       return -1;
@@ -2506,15 +2453,13 @@ int change_photo(char *filename)
    return 0;
 }
 
-//undo make a common filesel function
-static void
-cb_photo_browse_cancel(GtkWidget *widget, gpointer data)
+//TODO: make a common filesel function
+static void cb_photo_browse_cancel(GtkWidget *widget, gpointer data)
 {
    gtk_widget_destroy(data);
 }
 
-static void
-cb_photo_browse_ok(GtkWidget *widget, gpointer data)
+static void cb_photo_browse_ok(GtkWidget *widget, gpointer data)
 {
    const char *sel;
    char **Pselection;
@@ -2593,7 +2538,6 @@ int browse_photo(GtkWidget *main_window)
 void cb_photo_menu_select(GtkWidget       *item,
 			  GtkPositionType  selected)
 {
-//undo   printf("selected %d\n", selected);
    if (selected == 1) {
       if (0 == browse_photo(gtk_widget_get_toplevel(clist)))
 	 /* change photo canceled */
@@ -2654,10 +2598,8 @@ static void cb_clist_selection(GtkWidget      *clist,
    unsigned int unique_id = 0;
    int i;
    int b;
-   //char *tmp_p;
    char *clist_text;
    const char *entry_text;
-   //long use_jos, char_set;
    int address_i, IM_i, phone_i;
    char birthday_str[255];
    long ivalue;
@@ -2770,7 +2712,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    }
    /* End category menu */
 
-   //undo what is text?
+   /* Freeze the "All" text buffer to prevent flicker while updating */
 #ifdef ENABLE_GTK2
    gtk_widget_freeze_child_notify(text);
 
@@ -2783,18 +2725,18 @@ static void cb_clist_selection(GtkWidget      *clist,
 			   gtk_text_get_length(GTK_TEXT(text)));
 #endif
 
-// NEW CODE
    /* Fill out the "All" text buffer */
-   gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL, _("Category: "), -1);
-   char *utf;
-   utf = charset_p2newj(contact_app_info.category.name[mcont->attrib & 0x0F], 16, char_set);
-   gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL, utf, -1);
-   g_free(utf);
-   gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL, "\n", -1);
-   
    s = contact_to_gstring(cont);
-   gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL, s->str, -1);
-   // printf("[%s]\n",s->str);
+   if (s->len) {
+      gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL, _("Category: "), -1);
+      char *utf;
+      utf = charset_p2newj(contact_app_info.category.name[mcont->attrib & 0x0F], 16, char_set);
+      gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL, utf, -1);
+      g_free(utf);
+      gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL, "\n", -1);
+      
+      gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL, s->str, -1);
+   }
    g_string_free(s, TRUE);
 
    address_i=phone_i=IM_i=0;
@@ -2819,7 +2761,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 	    gtk_object_set(GTK_OBJECT(dial_button[phone_i]), "label", _("Dial"), NULL);
 #endif
 	 }
-	 //undo #defines?
+	 //TODO: replace hardcoded numbers with #defines?
 	 if ((phone_i<7) && (cont->phoneLabel[phone_i] < 8)) {
 	    if (GTK_IS_WIDGET(phone_type_menu_item[phone_i][cont->phoneLabel[phone_i]])) {
 	       gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
@@ -3023,7 +2965,6 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       addr_clear_details();
    }
 
-
    /* Clear the text box to make things look nice */
    if (main) {
 #ifdef ENABLE_GTK2
@@ -3037,9 +2978,10 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
    /* Freeze clist to prevent flicker during updating */
    gtk_clist_freeze(GTK_CLIST(clist));
-   if (main)
-	   gtk_signal_disconnect_by_func(GTK_OBJECT(clist),
-				 GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
+   if (main) {
+      gtk_signal_disconnect_by_func(GTK_OBJECT(clist),
+				    GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
+   }
    gtk_clist_clear(GTK_CLIST(clist));
 
    /* Collect preferences and pixmaps before loop */
@@ -3247,7 +3189,7 @@ static int make_IM_type_menu(int default_set, unsigned int callback_id, int set)
    menu = gtk_menu_new();
    group = NULL;
 
-   //undo define for 5
+   //TODO: define for 5
    for (i=0; i<5; i++) {
       if (contact_app_info.IMLabels[i][0]) {
 	 IM_type_menu_item[set][i] = gtk_radio_menu_item_new_with_label(
@@ -3279,7 +3221,7 @@ static int make_IM_type_menu(int default_set, unsigned int callback_id, int set)
 }
 
 
-//undo rewrite this crappy function
+//TODO: rewrite this crappy function
 /* default set is which menu item is to be set on by default */
 /* set is which set in the menu_item array to use */
 static int make_address_type_menu(int default_set, int set)
@@ -3293,8 +3235,7 @@ static int make_address_type_menu(int default_set, int set)
    menu = gtk_menu_new();
    group = NULL;
 
-   //undo define for 3
-   for (i=0; i<3; i++) {
+   for (i=0; i<NUM_ADDRESSES; i++) {
       if (contact_app_info.addrLabels[i][0]) {
 	 address_type_menu_item[set][i] = gtk_radio_menu_item_new_with_label(
 			group, contact_app_info.addrLabels[i]);
@@ -3497,8 +3438,7 @@ cb_key_pressed_quickfind(GtkWidget *widget, GdkEventKey *event, gpointer data)
    return TRUE;
 }
    
-static gboolean
-cb_key_pressed(GtkWidget *widget, GdkEventKey *event)
+static gboolean cb_key_pressed(GtkWidget *widget, GdkEventKey *event)
 {
 #ifdef ENABLE_GTK2
    GtkTextIter    cursor_pos_iter;
@@ -3569,7 +3509,6 @@ int address_gui_cleanup()
    g_list_free(changed_list);
    changed_list=NULL;
 
-   //undo free_AddressList(&glob_address_list);
    free_ContactList(&glob_contact_list);
    free_ContactList(&export_contact_list);
    connect_changed_signals(DISCONNECT_SIGNALS);
@@ -3615,7 +3554,6 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    int x, y;
 
    int i, phone_i, num_pages;
-//   long use_jos, char_set;
    long char_set;
    char *cat_name;
 
@@ -3623,17 +3561,17 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
     * dynamically if the address type pulldown is selected */
    char *contact_page_names[]={
       N_("Name"),
-	N_("Address"),
-	N_("Address"),
-	N_("Address"),
-	N_("Other"),
-	N_("Note")
+      N_("Address"),
+      N_("Address"),
+      N_("Address"),
+      N_("Other"),
+      N_("Note")
    };
    char *address_page_names[]={
       N_("Name"),
-	N_("Address"),
-	N_("Other"),
-	N_("Note")
+      N_("Address"),
+      N_("Other"),
+      N_("Note")
    };
    char **page_names;
 
@@ -3777,8 +3715,6 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), ADDRESS_PHONE_COLUMN, FALSE);
 
    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
-
-   /*gtk_clist_set_column_justification(GTK_CLIST(clist), 1, GTK_JUSTIFY_RIGHT); */
 
    hbox_temp = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox1), hbox_temp, FALSE, FALSE, 0);
@@ -3937,7 +3873,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 
 	 //picture_box = gtk_hbox_new(FALSE, 0);
 	 picture_button = gtk_button_new();
-	 gtk_widget_set_usize(GTK_WIDGET(picture_button), PHOTO_X+10, PHOTO_Y+10);
+	 gtk_widget_set_usize(GTK_WIDGET(picture_button), PHOTO_X_SZ+10, PHOTO_Y_SZ+10);
 //	 gtk_button_set_relief(GTK_BUTTON(picture_button), GTK_RELIEF_NONE);
 	 gtk_container_set_border_width(GTK_CONTAINER(picture_button), 0);
 	 gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(picture_button),
