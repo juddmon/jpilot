@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.60 2008/04/03 15:59:59 rikster5 Exp $ */
+/* $Id: utils.h,v 1.61 2008/04/29 14:21:24 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -271,14 +271,6 @@ int get_pixmaps(GtkWidget *widget,
 		int which_one,
 		GdkPixmap **out_pixmap,
 		GdkBitmap **out_mask);
-
-/*
- * This is a hack to add pixmaps in column titles.
- * Its a hack because it assumes things about GTK that are not exposed.
- */
-int hack_clist_set_column_title_pixmap(GtkWidget *clist,
-				       int column,
-				       GtkWidget *pixmapwid);
 
 int check_hidden_dir();
 

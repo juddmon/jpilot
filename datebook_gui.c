@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.159 2008/04/25 22:46:14 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.160 2008/04/29 14:21:24 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -4409,14 +4409,14 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    mask = NULL;
 #endif
    pixmapwid = gtk_pixmap_new(pixmap, mask);
-   hack_clist_set_column_title_pixmap(clist, DB_NOTE_COLUMN, pixmapwid);
+   gtk_clist_set_column_widget(GTK_CLIST(clist), DB_NOTE_COLUMN, pixmapwid);
 
    get_pixmaps(vbox, PIXMAP_ALARM, &pixmap, &mask);
 #ifdef __APPLE__
    mask = NULL;
 #endif
    pixmapwid = gtk_pixmap_new(pixmap, mask);
-   hack_clist_set_column_title_pixmap(clist, DB_ALARM_COLUMN, pixmapwid);
+   gtk_clist_set_column_widget(GTK_CLIST(clist), DB_ALARM_COLUMN, pixmapwid);
 
 #ifdef ENABLE_DATEBK
    if (use_db3_tags) {
@@ -4425,7 +4425,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    mask = NULL;
 #endif
       pixmapwid = gtk_pixmap_new(pixmap, mask);
-      hack_clist_set_column_title_pixmap(clist, DB_FLOAT_COLUMN, pixmapwid);
+      gtk_clist_set_column_widget(GTK_CLIST(clist), DB_FLOAT_COLUMN, pixmapwid);
    }
 #endif
 
@@ -4469,14 +4469,14 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    mask = NULL;
 #endif
    pixmapwid = gtk_pixmap_new(pixmap, mask);
-   hack_clist_set_column_title_pixmap(todo_clist, TODO_NOTE_COLUMN, pixmapwid);
+   gtk_clist_set_column_widget(GTK_CLIST(todo_clist), TODO_NOTE_COLUMN, pixmapwid);
 
    get_pixmaps(vbox, PIXMAP_BOX_CHECKED, &pixmap, &mask);
 #ifdef __APPLE__
    mask = NULL;
 #endif
    pixmapwid = gtk_pixmap_new(pixmap, mask);
-   hack_clist_set_column_title_pixmap(todo_clist, TODO_CHECK_COLUMN, pixmapwid);
+   gtk_clist_set_column_widget(GTK_CLIST(todo_clist), TODO_CHECK_COLUMN, pixmapwid);
 
    gtk_clist_column_titles_passive(GTK_CLIST(todo_clist));
    gtk_signal_connect(GTK_OBJECT(todo_clist), "select_row",

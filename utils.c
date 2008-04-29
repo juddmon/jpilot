@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.142 2008/04/27 15:10:49 rikster5 Exp $ */
+/* $Id: utils.c,v 1.143 2008/04/29 14:21:24 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -1534,28 +1534,6 @@ char * xpm_float_checked[] = {
 
    return EXIT_SUCCESS;
 }
-
-/*
- * This is a hack to add pixmaps in column titles.
- * Its a hack because it assumes things about GTK that are not exposed.
- */
-int hack_clist_set_column_title_pixmap(GtkWidget *clist,
-				       int column,
-				       GtkWidget *pixmapwid)
-{
-   GtkWidget *old_widget;
-
-   old_widget = GTK_BIN(GTK_CLIST(clist)->column[column].button)->child;
-   if (old_widget) {
-      gtk_container_remove(GTK_CONTAINER(GTK_CLIST(clist)->column[column].button), old_widget);
-   }
-
-   gtk_widget_show(pixmapwid);
-   gtk_container_add(GTK_CONTAINER(GTK_CLIST(clist)->column[column].button), pixmapwid);
-
-   return EXIT_SUCCESS;
-}
-
 
 /*
  * Start of GTK calendar code

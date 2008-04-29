@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.119 2008/04/25 22:46:14 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.120 2008/04/29 14:21:24 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -2147,14 +2147,14 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    mask = NULL;
 #endif
    pixmapwid = gtk_pixmap_new(pixmap, mask);
-   hack_clist_set_column_title_pixmap(clist, TODO_NOTE_COLUMN, pixmapwid);
+   gtk_clist_set_column_widget(GTK_CLIST(clist), TODO_NOTE_COLUMN, pixmapwid);
 
    get_pixmaps(vbox, PIXMAP_BOX_CHECKED, &pixmap, &mask);
 #ifdef __APPLE__
    mask = NULL;
 #endif
    pixmapwid = gtk_pixmap_new(pixmap, mask);
-   hack_clist_set_column_title_pixmap(clist, TODO_CHECK_COLUMN, pixmapwid);
+   gtk_clist_set_column_widget(GTK_CLIST(clist), TODO_CHECK_COLUMN, pixmapwid);
 
    gtk_clist_column_titles_active(GTK_CLIST(clist));
    gtk_signal_connect(GTK_OBJECT(clist), "click_column",

@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.182 2008/04/29 04:15:16 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.183 2008/04/29 14:21:24 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -3739,7 +3739,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    mask = NULL;
 #endif
    pixmapwid = gtk_pixmap_new(pixmap, mask);
-   hack_clist_set_column_title_pixmap(clist, ADDRESS_NOTE_COLUMN, pixmapwid);
+   gtk_clist_set_column_widget(GTK_CLIST(clist), ADDRESS_NOTE_COLUMN, pixmapwid);
 
    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
 		      GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
