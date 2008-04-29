@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.184 2008/04/29 18:51:18 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.185 2008/04/29 19:11:32 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -53,10 +53,10 @@
 /******************************************************************************/
 #define CONNECT_SIGNALS 400
 #define DISCONNECT_SIGNALS 401
-#define NUM_MENU_ITEM1 8
-#define NUM_MENU_ITEM2 8
 #define NUM_ADDRESS_CAT_ITEMS 16
 #define NUM_PHONE_ENTRIES 7
+#define NUM_PHONE_LABELS 8
+#define NUM_IM_LABELS 5
 
 #define ADDRESS_NAME_COLUMN  0
 #define ADDRESS_NOTE_COLUMN  1
@@ -174,11 +174,11 @@ static GtkWidget *vscrollbar;
 //TODO: defines for other hardcoded numbers??
 static GtkWidget *notebook_label[NUM_CONTACT_NOTEBOOK_PAGES];
 static GtkWidget *phone_type_list_menu[NUM_PHONE_ENTRIES];
-static GtkWidget *phone_type_menu_item[NUM_MENU_ITEM1][NUM_MENU_ITEM2]; /* 8 menus with 8 possible entries */
+static GtkWidget *phone_type_menu_item[NUM_PHONE_ENTRIES][NUM_PHONE_LABELS]; /* 7 menus with 8 possible entries */
 static GtkWidget *address_type_list_menu[NUM_ADDRESSES];
 static GtkWidget *address_type_menu_item[NUM_ADDRESSES][NUM_ADDRESSES]; /* 3 menus with 3 possible entries */
 static GtkWidget *IM_type_list_menu[NUM_IMS];
-static GtkWidget *IM_type_menu_item[NUM_IMS][5]; /* 2 menus with 5 possible entries */
+static GtkWidget *IM_type_menu_item[NUM_IMS][NUM_IM_LABELS]; /* 2 menus with 5 possible entries */
 int address_phone_label_selected[NUM_PHONE_ENTRIES];
 int address_type_selected[NUM_ADDRESSES];
 int IM_type_selected[NUM_IMS];
@@ -268,8 +268,8 @@ static void init()
 
    changed_list=NULL;
    record_changed=CLEAR_FLAG;
-   for (i=0; i<NUM_MENU_ITEM1; i++) {
-      for (j=0; j<NUM_MENU_ITEM2; j++) {
+   for (i=0; i<NUM_ADDRESSES; i++) {
+      for (j=0; j<NUM_PHONE_LABELS; j++) {
 	 phone_type_menu_item[i][j] = NULL;
       }
    }
@@ -646,7 +646,7 @@ int cb_addr_import(GtkWidget *parent_window, const char *file_path, int type)
 	    ret = read_csv_field(in, text, sizeof(text));
 	    switch (schema[i].type) {
 	     case ADDRESS_GUI_IM_MENU_TEXT:
-               for (j = 0; j < 5; j++) {
+               for (j = 0; j < NUM_IM_LABELS; j++) {
                  if (strcmp(text, contact_app_info.IMLabels[j]) == 0) {
                     new_cont.IMLabel[IM_i] = j;
                     break;
@@ -657,7 +657,7 @@ int cb_addr_import(GtkWidget *parent_window, const char *file_path, int type)
 	       IM_i++;
 	       break;
 	     case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
-               for (j = 0; j < 8; j++) {
+               for (j = 0; j < NUM_PHONE_LABELS; j++) {
                  if (address_version) {
                     if (strcmp(text, contact_app_info.phoneLabels[j]) == 0) {
                        new_cont.phoneLabel[phone_i] = j;
@@ -2780,8 +2780,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 	    gtk_object_set(GTK_OBJECT(dial_button[phone_i]), "label", _("Dial"), NULL);
 #endif
 	 }
-	 //TODO: replace hardcoded numbers with #defines?
-	 if ((phone_i<7) && (cont->phoneLabel[phone_i] < 8)) {
+	 if ((phone_i<NUM_PHONE_ENTRIES) && (cont->phoneLabel[phone_i] < NUM_PHONE_LABELS)) {
 	    if (GTK_IS_WIDGET(phone_type_menu_item[phone_i][cont->phoneLabel[phone_i]])) {
 	       gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
 					      (phone_type_menu_item[phone_i][cont->phoneLabel[phone_i]]), TRUE);
@@ -3225,8 +3224,7 @@ static int make_IM_type_menu(int default_set, unsigned int callback_id, int set)
    menu = gtk_menu_new();
    group = NULL;
 
-   //TODO: define for 5
-   for (i=0; i<5; i++) {
+   for (i=0; i<NUM_IM_LABELS; i++) {
       if (contact_app_info.IMLabels[i][0]) {
 	 IM_type_menu_item[set][i] = gtk_radio_menu_item_new_with_label(
 			group, contact_app_info.IMLabels[i]);
@@ -3318,7 +3316,7 @@ static int make_phone_menu(int default_set, unsigned int callback_id, int set)
    menu = gtk_menu_new();
    group = NULL;
 
-   for (i=0; i<NUM_MENU_ITEM2; i++) {
+   for (i=0; i<NUM_PHONE_LABELS; i++) {
       if (contact_app_info.phoneLabels[i][0]) {
 	 utf = charset_p2newj(contact_app_info.phoneLabels[i], 16, char_set);
 	 phone_type_menu_item[set][i] = gtk_radio_menu_item_new_with_label(
