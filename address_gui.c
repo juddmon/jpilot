@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.185 2008/04/29 19:11:32 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.186 2008/04/29 19:22:38 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -2895,27 +2895,49 @@ static gboolean cb_key_pressed_left_side(GtkWidget   *widget,
    if (event->keyval == GDK_Return) {
       gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
 
-      switch (gtk_notebook_get_current_page(GTK_NOTEBOOK(notebook))) {
-        case 0 :
-	   entry_widget = address_text[contLastname];
-           break;
-        case 1 :
-	   entry_widget = address_text[contAddress1];
-           break;
-        case 2 :
-	   entry_widget = address_text[contAddress2];
-           break;
-        case 3 :
-	   entry_widget = address_text[contAddress3];
-           break;
-        case 4 :
-	   entry_widget = address_text[contCustom1];
-           break;
-        default:
-	   entry_widget = address_text[0];
+      if (address_version==0) {
+         switch (gtk_notebook_get_current_page(GTK_NOTEBOOK(notebook))) {
+           case 0 :
+              entry_widget = address_text[contLastname];
+              break;
+           case 1 :
+              entry_widget = address_text[contAddress1];
+              break;
+           case 2 :
+              entry_widget = address_text[contCustom1];
+              break;
+           case 3 :
+              entry_widget = address_text[contNote];
+              break;
+           default:
+              entry_widget = address_text[0];
+         }
+      } else {
+         switch (gtk_notebook_get_current_page(GTK_NOTEBOOK(notebook))) {
+           case 0 :
+              entry_widget = address_text[contLastname];
+              break;
+           case 1 :
+              entry_widget = address_text[contAddress1];
+              break;
+           case 2 :
+              entry_widget = address_text[contAddress2];
+              break;
+           case 3 :
+              entry_widget = address_text[contAddress3];
+              break;
+           case 4 :
+              entry_widget = address_text[contCustom1];
+              break;
+           case 5 :
+              entry_widget = address_text[contNote];
+              break;
+           default:
+              entry_widget = address_text[0];
+         }
       }
-      gtk_widget_grab_focus(entry_widget);
 
+      gtk_widget_grab_focus(entry_widget);
 #ifdef ENABLE_GTK2
       /* Position cursor at start of text */
       text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(entry_widget));
