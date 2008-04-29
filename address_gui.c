@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.183 2008/04/29 14:21:24 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.184 2008/04/29 18:51:18 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -1926,6 +1926,10 @@ void addr_clear_details()
    long ivalue;
    const char *cstr;
    char reminder_str[10];
+   /* Palm has phone popup menus in one order and the display of phone tabs 
+    * in another. This reorders the tabs to produce the more usable order of 
+    * the Palm desktop software */
+   int phone_btn_order[NUM_PHONE_ENTRIES] = { 0, 1, 4, 7, 5, 3, 2 };
 
    /* Need to disconnect these signals first */
    connect_changed_signals(DISCONNECT_SIGNALS);
@@ -1964,10 +1968,17 @@ void addr_clear_details()
 	 if (phone_i==0) {
 	    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button[0]), TRUE);
 	 }
-	 if (phone_type_menu_item[phone_i][phone_i])
-	    gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
-		  (phone_type_menu_item[phone_i][phone_i]), TRUE);
-	 gtk_option_menu_set_history(GTK_OPTION_MENU(phone_type_list_menu[phone_i]), phone_i);
+         if (address_version) {
+            if (phone_type_menu_item[phone_i][phone_btn_order[phone_i]])
+               gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
+                     (phone_type_menu_item[phone_i][phone_btn_order[phone_i]]), TRUE);
+            gtk_option_menu_set_history(GTK_OPTION_MENU(phone_type_list_menu[phone_i]), phone_btn_order[phone_i]);
+         } else {
+            if (phone_type_menu_item[phone_i][phone_i])
+               gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
+                     (phone_type_menu_item[phone_i][phone_i]), TRUE);
+            gtk_option_menu_set_history(GTK_OPTION_MENU(phone_type_list_menu[phone_i]), phone_i);
+         }
 	 phone_i++;
 	 break;
        case ADDRESS_GUI_IM_MENU_TEXT:
@@ -4020,11 +4031,11 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 			     x-3, x-2, table_y_i, table_y_i+1, GTK_SHRINK, 0, 0, 0);
 
 	    changed_list = g_list_prepend(changed_list, radio_button[phone_i]);
-	    
+	
 	    make_phone_menu(phone_i, phone_i, phone_i);
 	    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(phone_type_list_menu[phone_i]),
 			     x-2, x-1, table_y_i, table_y_i+1, GTK_SHRINK, 0, 0, 0);
-	    
+
 	    /* Text */
 #ifdef ENABLE_GTK2
 	    address_text[schema[i].record_field] = gtk_text_view_new();
@@ -4108,8 +4119,10 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 #endif
 	    break;
 	  case ADDRESS_GUI_WEBSITE_TEXT:
-	    /* Label */
+	    /* Button used as label */
 	    button = gtk_button_new_with_label(contact_app_info.labels[schema[i].record_field]);
+            /* Remove normal button behavior to accept focus */
+            gtk_button_set_focus_on_click(GTK_BUTTON(button), FALSE);
 	    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(button),
 			     x-2, x-1, table_y_i, table_y_i+1, GTK_SHRINK, 0, 0, 0);
 	    /* Text */
