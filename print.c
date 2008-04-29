@@ -1,4 +1,4 @@
-/* $Id: print.c,v 1.37 2008/02/05 00:57:25 judd Exp $ */
+/* $Id: print.c,v 1.38 2008/04/29 04:15:16 rikster5 Exp $ */
 
 /*******************************************************************************
  * print.c
@@ -1044,14 +1044,22 @@ int print_contacts(ContactList *contact_list, struct ContactAppInfo *contact_app
 
    print_address_header();
 
-   if (sort_by_company) {
-      show1=contCompany;
+   switch (addr_sort_order) {
+    case SORT_BY_FNAME:
+      show1=contFirstname;
       show2=contLastname;
-      show3=contFirstname;
-   } else {
+      show3=contCompany;
+      break;
+    case SORT_BY_LNAME:
       show1=contLastname;
       show2=contFirstname;
       show3=contCompany;
+      break;
+    case SORT_BY_COMPANY:
+      show1=contCompany;
+      show2=contLastname;
+      show3=contFirstname;
+      break;
    }
 
 #define NUM_ADDRESS_ENTRIES 19

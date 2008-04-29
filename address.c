@@ -1,4 +1,4 @@
-/* $Id: address.c,v 1.50 2007/10/19 17:12:41 rikster5 Exp $ */
+/* $Id: address.c,v 1.51 2008/04/29 04:15:16 rikster5 Exp $ */
 
 /*******************************************************************************
  * address.c
@@ -40,10 +40,9 @@
 #define ADDRESS_EOF 7
 
 static int glob_sort_rule;
-#define SORT_BY_COMPANY 1
-#define SORT_JAPANESE 2
-#define SORT_JOS 4
-int sort_by_company=-1;
+#define SORT_JAPANESE 8
+#define SORT_JOS 16
+int addr_sort_order;
 
 #ifdef JPILOT_DEBUG
 void print_address_list(AddressList **al)
@@ -72,15 +71,23 @@ int address_compare(const void *v1, const void *v2)
    a1=&((*al1)->maddr.addr);
    a2=&((*al2)->maddr.addr);
 
-   if (glob_sort_rule & SORT_BY_COMPANY) {
-      sort_idx[1] = 2; /* company    */
+   switch (glob_sort_rule & 0x7) {
+    case SORT_BY_FNAME:
+      sort_idx[1] = 1; /* first name */
       sort_idx[2] = 0; /* last name  */
-      sort_idx[3] = 1; /* first name */
-   } else {
+      sort_idx[3] = 2; /* company    */
+      break;
+    case SORT_BY_LNAME:
       sort_idx[1] = 0; /* last name  */
       sort_idx[2] = 1; /* first name */
       sort_idx[3] = 2; /* company    */
-   }
+      break;
+    case SORT_BY_COMPANY:
+      sort_idx[1] = 2; /* company    */
+      sort_idx[2] = 0; /* last name  */
+      sort_idx[3] = 1; /* first name */
+      break;
+   } 
 
    last_cmp1=last_cmp2=0;
 
@@ -103,9 +110,7 @@ int address_compare(const void *v1, const void *v2)
          }
          last_cmp1 = i;
 
-         if (!str1) {
-            return -1;
-         }
+         if (!str1) return -1;
 
          for (i=last_cmp2+1; i<=3; i++) {
             if (a2->entry[sort_idx[i]]) {
@@ -128,16 +133,10 @@ int address_compare(const void *v1, const void *v2)
 
          r = strcoll(str1, str2);
 
-         if (str1) {
-            free(str1);
-         }
-         if (str2) {
-            free(str2);
-         }
+         if (str1) free(str1);
+         if (str2) free(str2);
 
-         if (r != 0) {
-            return r;
-         }
+         if (r != 0) return r;
 
          /* Comparisons between unequal fields, such as last name and company
           * must assume that the other fields are blank.  This matches
@@ -237,12 +236,9 @@ int address_compare(const void *v1, const void *v2)
       }
 
       i = strcoll(str1, str2);
-      if (str1) {
-         free(str1);
-      }
-      if (str2) {
-         free(str2);
-      }
+      if (str1) free(str1);
+      if (str2) free(str2);
+
       return i;
    }
 
@@ -261,20 +257,14 @@ int address_sort(AddressList **al, int sort_order)
    long use_jos, char_set;
 
    /* Count the entries in the list */
-   for (count=0, temp_al=*al; temp_al; temp_al=temp_al->next, count++) {
-      ;
-   }
+   for (count=0, temp_al=*al; temp_al; temp_al=temp_al->next, count++) {}
 
    if (count<2) {
       /* We don't have to sort less than 2 items */
       return EXIT_SUCCESS;
    }
 
-   if (sort_by_company) {
-      glob_sort_rule = SORT_BY_COMPANY;
-   } else {
-      glob_sort_rule = 0;
-   }
+   glob_sort_rule = addr_sort_order;
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    if (char_set == CHAR_SET_JAPANESE || char_set == CHAR_SET_SJIS_UTF) {

@@ -1,4 +1,4 @@
-/* $Id: prefs.c,v 1.72 2008/01/13 22:19:06 rousseau Exp $ */
+/* $Id: prefs.c,v 1.73 2008/04/29 04:15:16 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs.c
@@ -139,6 +139,7 @@ static prefType glob_prefs[NUM_PREFS] = {
      {"contacts_photo_filename", CHARTYPE, CHARTYPE, 0, NULL, 0},
      {"todo_sort_column", INTTYPE, INTTYPE, 1, NULL, 0},
      {"todo_sort_order", INTTYPE, INTTYPE, 0, NULL, 0},
+     {"addr_sort_order", INTTYPE, INTTYPE, 0, NULL, 0},
 };
 
 struct name_list {

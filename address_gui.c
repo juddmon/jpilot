@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.181 2008/04/28 20:30:13 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.182 2008/04/29 04:15:16 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -171,8 +171,7 @@ static GObject *gtk_txt_buf_text;
 #ifndef ENABLE_GTK2
 static GtkWidget *vscrollbar;
 #endif
-//defines??
-//GtkWidget *menu;
+//TODO: defines for other hardcoded numbers??
 static GtkWidget *notebook_label[NUM_CONTACT_NOTEBOOK_PAGES];
 static GtkWidget *phone_type_list_menu[NUM_PHONE_ENTRIES];
 static GtkWidget *phone_type_menu_item[NUM_MENU_ITEM1][NUM_MENU_ITEM2]; /* 8 menus with 8 possible entries */
@@ -1650,7 +1649,10 @@ void cb_resort(GtkWidget *widget,
 {
    MyAddress *maddr;
 
-   sort_by_company = !(sort_by_company & 1);
+   /* Rotate address sort order among 3 possibilities */
+   addr_sort_order = addr_sort_order << 1;
+   if (!(addr_sort_order & 0x07)) addr_sort_order = 1;
+   set_pref(PREF_ADDR_SORT_ORDER, addr_sort_order, NULL, TRUE);
 
    /* Return to this record after resorting */
    maddr = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
@@ -1665,10 +1667,16 @@ void cb_resort(GtkWidget *widget,
    address_find();
 
    /* Update labels after redrawing clist to work around GTK bug */
-   if (sort_by_company) {
-      gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, _("Company/Name"));
-   } else {
-      gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, _("Name/Company"));
+   switch (addr_sort_order) {
+    case SORT_BY_LNAME: 
+      gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, _("Last Name/Company"));
+      break;
+    case SORT_BY_FNAME: 
+      gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, _("First Name/Company"));
+      break;
+    case SORT_BY_COMPANY: 
+      gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, _("Company/Last Name"));
+      break;
    }
 }
 
@@ -2993,18 +3001,28 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    mask_note = NULL;
 #endif
 
-   if (sort_by_company) {
-      show1=contCompany;
-      show2=contLastname;
-      show3=contFirstname;
-      delim1 = slash;
-      delim2 = comma_space;
-   } else {
+   switch (addr_sort_order) {
+    case SORT_BY_LNAME:
       show1=contLastname;
       show2=contFirstname;
       show3=contCompany;
       delim1 = comma_space;
       delim2 = slash;
+      break;
+    case SORT_BY_FNAME:
+      show1=contFirstname;
+      show2=contLastname;
+      show3=contCompany;
+      delim1 = comma_space;
+      delim2 = slash;
+      break;
+    case SORT_BY_COMPANY:
+      show1=contCompany;
+      show2=contLastname;
+      show3=contFirstname;
+      delim1 = slash;
+      delim2 = comma_space;
+      break;
    }
 
    entries_shown=0;
@@ -3077,17 +3095,24 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 	 if (temp_cl->mcont.cont.entry[show1]) field1=temp_cl->mcont.cont.entry[show1];
 	 if (temp_cl->mcont.cont.entry[show2]) field2=temp_cl->mcont.cont.entry[show2];
 	 if (temp_cl->mcont.cont.entry[show3]) field3=temp_cl->mcont.cont.entry[show3];
-	 if (sort_by_company) {
+         switch (addr_sort_order) {
+          case SORT_BY_LNAME:
+	    if ((!field1[0]) || (!field2[0])) tmp_delim1=blank;
+	    if (!(field3[0])) tmp_delim2=blank;
+	    if ((!field1[0]) && (!field2[0])) tmp_delim2=blank;
+            break;
+          case SORT_BY_FNAME:
+	    if ((!field1[0]) || (!field2[0])) tmp_delim1=blank;
+	    if (!(field3[0])) tmp_delim2=blank;
+	    if ((!field1[0]) && (!field2[0])) tmp_delim2=blank;
+            break;
+          case SORT_BY_COMPANY:
 	    /* Company / Last, First */
 	    if (!(field1[0])) tmp_delim1=blank;
 	    if ((!field2[0]) || (!field3[0])) tmp_delim2=blank;
 	    if ((!field2[0]) && (!field3[0])) tmp_delim1=blank;
-	 } else {
-	    /* Last, First / Company */
-	    if ((!field1[0]) || (!field2[0])) tmp_delim1=blank;
-	    if (!(field3[0])) tmp_delim2=blank;
-	    if ((!field1[0]) && (!field2[0])) tmp_delim2=blank;
-	 }
+            break;
+         }
 	 g_snprintf(str, ADDRESS_MAX_CLIST_NAME, "%s%s%s%s%s",
 		    field1, tmp_delim1, field2, tmp_delim2, field3);
 	 if (strlen(str)<1) strcpy(str, _("-Unnamed-"));
@@ -3683,18 +3708,30 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_clist_column_title_passive(GTK_CLIST(clist), ADDRESS_PHONE_COLUMN);
    gtk_clist_column_title_passive(GTK_CLIST(clist), ADDRESS_NOTE_COLUMN);
 
-   /* Initialize sort_by_company the first time program is called */ 
-   if (sort_by_company == -1) {
-      sort_by_company = contact_app_info.sortByCompany;
+   /* Initialize addr_sort_order the first time program is called */ 
+   get_pref(PREF_ADDR_SORT_ORDER, &ivalue, NULL);
+   addr_sort_order = ivalue;
+   if (!addr_sort_order) {
+      if (contact_app_info.sortByCompany) {
+         addr_sort_order = SORT_BY_COMPANY;
+      } else {
+         addr_sort_order = SORT_BY_LNAME;
+      }
    }
-
-   if (sort_by_company) {
-      gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, _("Company/Name"));
-   } else {
-      gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, _("Name/Company"));
+   switch (addr_sort_order) {
+    case SORT_BY_LNAME: 
+      gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, _("Last Name/Company"));
+      break;
+    case SORT_BY_FNAME: 
+      gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, _("First Name/Company"));
+      break;
+    case SORT_BY_COMPANY: 
+      gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, _("Company/Last Name"));
+      break;
    }
    gtk_signal_connect(GTK_OBJECT(GTK_CLIST(clist)->column[ADDRESS_NAME_COLUMN].button),
 		      "clicked", GTK_SIGNAL_FUNC(cb_resort), NULL);
+
    gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_PHONE_COLUMN, _("Phone"));
    /* Put pretty pictures in the clist column headings */
    get_pixmaps(vbox, PIXMAP_NOTE, &pixmap, &mask);

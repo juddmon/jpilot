@@ -1,4 +1,4 @@
-/* $Id: contact.c,v 1.3 2008/04/23 22:14:38 rikster5 Exp $ */
+/* $Id: contact.c,v 1.4 2008/04/29 04:15:16 rikster5 Exp $ */
 
 /*******************************************************************************
  * contact.c
@@ -39,20 +39,21 @@
 #include "address.h"
 
 static int glob_sort_rule;
-#define SORT_BY_COMPANY 1
-#define SORT_JAPANESE 2
-#define SORT_JOS 4
-static int sort_override=0;
+#define SORT_JAPANESE 8
+#define SORT_JOS 16
 
 #define CONT_ADDR_MAP_SIZE (NUM_CONTACT_ENTRIES * 2)
 
 int contact_compare(const void *v1, const void *v2)
 {
-   char *str1, *str2;
-   int sort1, sort2, sort3;
    ContactList **cl1, **cl2;
    struct Contact *c1, *c2;
-   int i;
+   char *str1 = NULL, *str2 = NULL;
+   //int sort1, sort2, sort3;
+   //int i;
+   int last_cmp1, last_cmp2;
+   int sort_idx[4];
+   int i, j, r;
 
    cl1=(ContactList **)v1;
    cl2=(ContactList **)v2;
@@ -60,90 +61,93 @@ int contact_compare(const void *v1, const void *v2)
    c1=&((*cl1)->mcont.cont);
    c2=&((*cl2)->mcont.cont);
 
-   if (glob_sort_rule & SORT_BY_COMPANY) {
-      sort1=contCompany;
-      sort2=contLastname;
-      sort3=contFirstname;
-   } else {
-      sort1=contLastname;
-      sort2=contFirstname;
-      sort3=contCompany;
-   }
-   /* sort_rule: */
-     /* SORT_BY_COMPANY */
-   /*0 last, first or */
-   /*1 company, last */
-     /* SORT_JAPANESE */
-        /* 0 no use */
-        /* 2 use japanese */
-     /* SORT_JOS */
-        /* 0 no use */
-        /* 4 using J-OS */
+   switch (glob_sort_rule & 0x7) {
+    case SORT_BY_FNAME:
+      sort_idx[1] = 1; /* first name */
+      sort_idx[2] = 0; /* last name  */
+      sort_idx[3] = 2; /* company    */
+      break;
+    case SORT_BY_LNAME:
+      sort_idx[1] = 0; /* last name  */
+      sort_idx[2] = 1; /* first name */
+      sort_idx[3] = 2; /* company    */
+      break;
+    case SORT_BY_COMPANY:
+      sort_idx[1] = 2; /* company    */
+      sort_idx[2] = 0; /* last name  */
+      sort_idx[3] = 1; /* first name */
+      break;
+   } 
 
-   str1=str2=NULL;
-
+   last_cmp1=last_cmp2=0;
 
    if (!(glob_sort_rule & SORT_JAPANESE) | (glob_sort_rule & SORT_JOS)) { /* normal */
-      if (c1->entry[sort1] || c1->entry[sort2]) {
-	 if (c1->entry[sort1] && c1->entry[sort2]) {
-	    if ((str1 = malloc(strlen(c1->entry[sort1])+strlen(c1->entry[sort2])+1)) == NULL) {
-	       return 0;
-	    }
-	    strcpy(str1, c1->entry[sort1]);
-	    strcat(str1, c1->entry[sort2]);
-	 }
-	 if (c1->entry[sort1] && (!c1->entry[sort2])) {
-	    if ((str1 = malloc(strlen(c1->entry[sort1])+1)) == NULL) {
-	       return 0;
-	    }
-	    strcpy(str1, c1->entry[sort1]);
-	 }
-	 if ((!c1->entry[sort1]) && c1->entry[sort2]) {
-	    if ((str1 = malloc(strlen(c1->entry[sort2])+1)) == NULL) {
-	       return 0;
-	    }
-	    strcpy(str1, c1->entry[sort2]);
-	 }
-      } else if (c1->entry[sort3]) {
-	 if ((str1 = malloc(strlen(c1->entry[sort3])+1)) == NULL) {
-	    return 0;
-	 }
-	 strcpy(str1, c1->entry[sort3]);
-      } else {
-	 return -1;
-      }
+      while (last_cmp1 < 3 && last_cmp2 < 3) {
+	 str1=str2=NULL;
+         /* Find the next non-blank field to use for sorting */
+         for (i=last_cmp1+1; i<=3; i++) {
+            if (c1->entry[sort_idx[i]]) {
+               if ((str1 = malloc(strlen(c1->entry[sort_idx[i]])+1)) == NULL) {
+                  return 0;
+               }
+               strcpy(str1, c1->entry[sort_idx[i]]);
+               /* Convert string to lower case for more accurate comparison */
+               for (j=strlen(str1)-1; j >= 0; j--) {
+                  str1[j] = tolower(str1[j]);
+               }
+               break;
+            }
+         }
+         last_cmp1 = i;
 
-      if (c2->entry[sort1] || c2->entry[sort2]) {
-	 if (c2->entry[sort1] && c2->entry[sort2]) {
-	    if ((str2 = malloc(strlen(c2->entry[sort1])+strlen(c2->entry[sort2])+1)) == NULL) {
-	       return 0;
-	    }
-	    strcpy(str2, c2->entry[sort1]);
-	    strcat(str2, c2->entry[sort2]);
-	 }
-	 if (c2->entry[sort1] && (!c2->entry[sort2])) {
-	    if ((str2 = malloc(strlen(c2->entry[sort1])+1)) == NULL) {
-	       return 0;
-	    }
-	    strcpy(str2, c2->entry[sort1]);
-	 }
-	 if ((!c2->entry[sort1]) && c2->entry[sort2]) {
-	    if ((str2 = malloc(strlen(c2->entry[sort2])+1)) == NULL) {
-	       return 0;
-	    }
-	    strcpy(str2, c2->entry[sort2]);
-	 }
-      } else if (c2->entry[sort3]) {
-	 if ((str2 = malloc(strlen(c2->entry[sort3])+1)) == NULL) {
-	    return 0;
-	 }
-	 strcpy(str2, c2->entry[sort3]);
-      } else {
-	 free(str1);
-	 return 1;
-      }
+         if (!str1) return -1;
+
+         for (i=last_cmp2+1; i<=3; i++) {
+            if (c2->entry[sort_idx[i]]) {
+               if ((str2 = malloc(strlen(c2->entry[sort_idx[i]])+1)) == NULL) {
+                  return 0;
+               }
+               strcpy(str2, c2->entry[sort_idx[i]]);
+               for (j=strlen(str2)-1; j >= 0; j--) {
+                  str2[j] = tolower(str2[j]);
+               }
+               break;
+            }
+         }
+         last_cmp2 = i;
+
+         if (!str2) {
+            free(str1);
+            return 1;
+         }
+
+         r = strcoll(str1, str2);
+
+         if (str1) free(str1);
+         if (str2) free(str2);
+
+         if (r != 0) return r;
+
+         /* Comparisons between unequal fields, such as last name and company
+          * must assume that the other fields are blank.  This matches
+          * Palm sort ordering. */
+         if (last_cmp1 != last_cmp2) {
+            return (last_cmp2 - last_cmp1);
+         }
+      }   /* end of while loop to search over 3 fields */
+
+      /* Compared all search fields and no difference found */
+      return 0;
+
    } else if ((glob_sort_rule & SORT_JAPANESE) && !(glob_sort_rule & SORT_JOS)){
+      /* Japanese sorting has not been updated to fix Bug 1814 because no test
+       * platform is available for Western programmers maintaining Jpilot. */
+      int sort1, sort2, sort3;
       char *tmp_p1, *tmp_p2, *tmp_p3;
+      sort1 = sort_idx[1];
+      sort2 = sort_idx[2];
+      sort3 = sort_idx[3];
+
       if (c1->entry[sort1] || c1->entry[sort2]) {
 	 if (c1->entry[sort1] && c1->entry[sort2]) {
 	    if (!(tmp_p1 = strchr(c1->entry[sort1],'\1'))) tmp_p1=c1->entry[sort1]+1;
@@ -175,7 +179,7 @@ int contact_compare(const void *v1, const void *v2)
 	 }
 	 strcpy(str1, tmp_p3);
       } else {
-	 return -1;
+	 return 1;
       }
 
       if (c2->entry[sort1] || c2->entry[sort2]) {
@@ -210,26 +214,27 @@ int contact_compare(const void *v1, const void *v2)
 	 strcpy(str2, tmp_p3);
       } else {
 	 free(str1);
-	 return 1;
+	 return -1;
       }
+
+      /* lower case the strings for a better compare */
+      for (i=strlen(str1)-1; i >= 0; i--) {
+         str1[i] = tolower(str1[i]);
+      }
+      for (i=strlen(str2)-1; i >= 0; i--) {
+         str2[i] = tolower(str2[i]);
+      }
+
+      i = strcoll(str1, str2);
+      if (str1) free(str1);
+      if (str2) free(str2);
+
+      return i;
    }
 
-   /* lower case the strings for a better compare */
-   for (i=strlen(str1)-1; i >= 0; i--) {
-      str1[i] = tolower(str1[i]);
-   }
-   for (i=strlen(str2)-1; i >= 0; i--) {
-      str2[i] = tolower(str2[i]);
-   }
+   /* Should never be reached.  Assume records are unsortable if reached */
+   return 0;
 
-   i = strcoll(str2, str1);
-   if (str1) {
-      free(str1);
-   }
-   if (str2) {
-      free(str2);
-   }
-   return i;
 }
 
 /*
@@ -239,25 +244,19 @@ int contacts_sort(ContactList **cl, int sort_order)
 {
    ContactList *temp_cl;
    ContactList **sort_cl;
-   struct ContactAppInfo ai;
    int count, i;
    long use_jos, char_set;
 
    /* Count the entries in the list */
-   for (count=0, temp_cl=*cl; temp_cl; temp_cl=temp_cl->next, count++) {
-      ;
-   }
+   for (count=0, temp_cl=*cl; temp_cl; temp_cl=temp_cl->next, count++) {}
 
    if (count<2) {
       /* We don't have to sort less than 2 items */
       return EXIT_SUCCESS;
    }
 
-   get_contact_app_info(&ai);
-   glob_sort_rule = ai.sortByCompany;
-   if (sort_override) {
-      glob_sort_rule = !(ai.sortByCompany & SORT_BY_COMPANY);
-   }
+   glob_sort_rule = addr_sort_order;
+
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    if (char_set == CHAR_SET_JAPANESE || char_set == CHAR_SET_SJIS_UTF) {
       glob_sort_rule = glob_sort_rule | SORT_JAPANESE;
@@ -274,7 +273,7 @@ int contacts_sort(ContactList **cl, int sort_order)
    /* Allocate an array to be qsorted */
    sort_cl = calloc(count, sizeof(ContactList *));
    if (!sort_cl) {
-      jp_logf(JP_LOG_WARN, "contact_sort(): %s\n", _("Out of memory"));
+      jp_logf(JP_LOG_WARN, "contacts_sort(): %s\n", _("Out of memory"));
       return EXIT_FAILURE;
    }
 
@@ -288,18 +287,18 @@ int contacts_sort(ContactList **cl, int sort_order)
 
    /* Put the linked list in the order of the array */
    if (sort_order==SORT_ASCENDING) {
+      sort_cl[count-1]->next = NULL;
+      for (i=count-1; i>0; i--) {
+	 sort_cl[i-1]->next=sort_cl[i];
+      }
+      *cl = sort_cl[0];
+   } else {
+      /* Descending order */
       for (i=count-1; i>0; i--) {
 	 sort_cl[i]->next=sort_cl[i-1];
       }
       sort_cl[0]->next = NULL;
       *cl = sort_cl[count-1];
-   } else {
-      /* Descending order */
-      sort_cl[count-1]->next = NULL;
-      for (i=count-1; i; i--) {
-	 sort_cl[i-1]->next=sort_cl[i];
-      }
-      *cl = sort_cl[0];
    }
 
    free(sort_cl);

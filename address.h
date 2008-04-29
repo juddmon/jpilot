@@ -1,4 +1,4 @@
-/* $Id: address.h,v 1.15 2008/04/28 21:11:10 rikster5 Exp $ */
+/* $Id: address.h,v 1.16 2008/04/29 04:15:16 rikster5 Exp $ */
 
 /*******************************************************************************
  * address.h
@@ -48,12 +48,12 @@ typedef struct {
 #define ADDRESS_GUI_WEBSITE_TEXT 6 /* Show a website button and a textview */
 #define ADDRESS_GUI_BIRTHDAY 7 /* Show a birthdate checkbox and complex birthday GUI */
 
+#define SORT_BY_LNAME 1
+#define SORT_BY_FNAME 2
+#define SORT_BY_COMPANY 4
 
-/* This flag affects sorting of address records
- * 0 : by lastname, first
- * 1 : by company name
- */
-extern int sort_by_company;
+/* This flag affects sorting of address records */
+extern int addr_sort_order;
 
 int get_address_app_info(struct AddressAppInfo *aai);
 
