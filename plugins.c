@@ -1,4 +1,4 @@
-/* $Id: plugins.c,v 1.19 2007/10/06 15:36:43 rousseau Exp $ */
+/* $Id: plugins.c,v 1.20 2008/04/30 23:26:06 rikster5 Exp $ */
 
 /*******************************************************************************
  * plugins.c
@@ -426,15 +426,12 @@ void free_plugin_list(GList **plugin_list)
    for (temp_list = *plugin_list; temp_list; temp_list = temp_list->next) {
       if (temp_list->data) {
 	 p=temp_list->data;
-	 if (p->full_path) {
-	    free(p->full_path);
-	 }
-	 if (p->name) {
-	    free(p->name);
-	 }
-	 if (p->db_name) {
-	    free(p->db_name);
-	 }
+	 if (p->full_path) free(p->full_path);
+	 if (p->name)      free(p->name);
+	 if (p->menu_name) free(p->menu_name);
+	 if (p->help_name) free(p->help_name);
+	 if (p->db_name)   free(p->db_name);
+
 	 free(p);
       }
    }
