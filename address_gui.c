@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.187 2008/04/30 18:08:18 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.188 2008/04/30 19:52:00 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -2558,6 +2558,7 @@ int browse_photo(GtkWidget *main_window)
    if (selection) {
       jp_logf(JP_LOG_DEBUG, "browse_photo(): selection = %s\n", selection);
       change_photo(selection);
+      free(selection);
       return 1;
    }
 
@@ -2682,6 +2683,9 @@ static void cb_clist_selection(GtkWidget      *clist,
    connect_changed_signals(DISCONNECT_SIGNALS);
 
    if (mcont->cont.picture && mcont->cont.picture->data) {
+      if (contact_picture.data) {
+	 free(contact_picture.data);
+      }
       /* Set global variables to keep the picture data */
       contact_picture.data=malloc(mcont->cont.picture->length);
       memcpy(contact_picture.data, mcont->cont.picture->data, mcont->cont.picture->length);
