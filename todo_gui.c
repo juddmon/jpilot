@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.120 2008/04/29 14:21:24 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.121 2008/04/30 18:08:18 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -521,9 +521,8 @@ int cb_todo_import(GtkWidget *parent_window, const char *file_path, int type)
 	 }
 	 if (ret==DIALOG_SAID_IMPORT_QUIT) break;
 	 if (ret==DIALOG_SAID_IMPORT_SKIP) continue;
-	 if (ret==DIALOG_SAID_IMPORT_ALL) {
-	    import_all=TRUE;
-	 }
+	 if (ret==DIALOG_SAID_IMPORT_ALL)  import_all=TRUE;
+
 	 attrib = (new_cat_num & 0x0F) |
 	   (priv ? dlpRecAttrSecret : 0);
 	 if ((ret==DIALOG_SAID_IMPORT_YES) || (import_all)) {
@@ -579,9 +578,8 @@ int cb_todo_import(GtkWidget *parent_window, const char *file_path, int type)
 	 }
 	 if (ret==DIALOG_SAID_IMPORT_QUIT) break;
 	 if (ret==DIALOG_SAID_IMPORT_SKIP) continue;
-	 if (ret==DIALOG_SAID_IMPORT_ALL) {
-	    import_all=TRUE;
-	 }
+	 if (ret==DIALOG_SAID_IMPORT_ALL)  import_all=TRUE;
+
 	 attrib = (new_cat_num & 0x0F) |
 	   ((temp_todolist->mtodo.attrib & 0x10) ? dlpRecAttrSecret : 0);
 	 if ((ret==DIALOG_SAID_IMPORT_YES) || (import_all)) {

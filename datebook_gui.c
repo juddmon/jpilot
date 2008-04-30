@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.160 2008/04/29 14:21:24 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.161 2008/04/30 18:08:18 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -362,6 +362,8 @@ int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int type)
 {
    FILE *in;
    char text[65536];
+   char description[65536];
+   char note[65536];
    struct Appointment new_appt;
    struct AppointmentAppInfo ai;
    unsigned char attrib;
@@ -419,15 +421,19 @@ int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int type)
 	 sscanf(text, "%d", &priv);
 
 	 /* Description */
-	 ret = read_csv_field(in, text, 65535);
-	 text[65535]='\0';
-	 new_appt.description=strdup(text);
+	 ret = read_csv_field(in, description, 65535);
+	 description[65535]='\0';
+	 if (strlen(description) > 0) {
+            new_appt.description=description;
+	 } else {
+            new_appt.description=NULL;
+	 }
 
 	 /* Note */
-	 ret = read_csv_field(in, text, 65535);
-	 text[65535]='\0';
-	 if (strlen(text) > 0) {
-	    new_appt.note=strdup(text);
+	 ret = read_csv_field(in, note, 65535);
+	 note[65535]='\0';
+	 if (strlen(note) > 0) {
+	    new_appt.note=note;
 	 } else {
 	    new_appt.note=NULL;
 	 }
@@ -559,11 +565,11 @@ int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int type)
 	 } else {
 	    new_cat_num=suggested_cat_num;
 	 }
+
 	 if (ret==DIALOG_SAID_IMPORT_QUIT) break;
 	 if (ret==DIALOG_SAID_IMPORT_SKIP) continue;
-	 if (ret==DIALOG_SAID_IMPORT_ALL) {
-	    import_all=TRUE;
-	 }
+	 if (ret==DIALOG_SAID_IMPORT_ALL)  import_all=TRUE;
+
 	 attrib = (new_cat_num & 0x0F) |
 	   (priv ? dlpRecAttrSecret : 0);
 	 if ((ret==DIALOG_SAID_IMPORT_YES) || (import_all)) {
@@ -624,9 +630,8 @@ int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int type)
 	 }
 	 if (ret==DIALOG_SAID_IMPORT_QUIT) break;
 	 if (ret==DIALOG_SAID_IMPORT_SKIP) continue;
-	 if (ret==DIALOG_SAID_IMPORT_ALL) {
-	    import_all=TRUE;
-	 }
+	 if (ret==DIALOG_SAID_IMPORT_ALL)  import_all=TRUE;
+
 	 attrib = (new_cat_num & 0x0F) |
 	   ((temp_alist->mappt.attrib & 0x10) ? dlpRecAttrSecret : 0);
 	 if ((ret==DIALOG_SAID_IMPORT_YES) || (import_all)) {

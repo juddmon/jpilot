@@ -1,4 +1,4 @@
-/* $Id: jp-contact.c,v 1.4 2008/01/13 21:54:24 rousseau Exp $ */
+/* $Id: jp-contact.c,v 1.5 2008/04/30 18:08:18 rikster5 Exp $ */
 
 /*******************************************************************************
  * contact.c:  Translate Palm contact data formats
@@ -52,8 +52,14 @@ void jp_free_Contact(struct Contact *c)
 		if (c->entry[i])
 			free(c->entry[i]);
 	for (i = 0; i < MAX_CONTACT_BLOBS; i++) {
-		if (c->blob[i]) free(c->blob[i]);
+		if (c->blob[i]) {
+         if (c->blob[i]->data)
+            free(c->blob[i]->data);
+ 
+         free(c->blob[i]);
+      }
 	}
+
 	if (c->picture) free(c->picture);
 }
 

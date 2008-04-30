@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.108 2008/04/27 16:06:12 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.109 2008/04/30 18:08:18 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -387,9 +387,8 @@ int cb_memo_import(GtkWidget *parent_window, const char *file_path, int type)
 	 }
 	 if (ret==DIALOG_SAID_IMPORT_QUIT) break;
 	 if (ret==DIALOG_SAID_IMPORT_SKIP) continue;
-	 if (ret==DIALOG_SAID_IMPORT_ALL) {
-	    import_all=TRUE;
-	 }
+	 if (ret==DIALOG_SAID_IMPORT_ALL)  import_all=TRUE;
+
 	 attrib = (new_cat_num & 0x0F) |
 	   (priv ? dlpRecAttrSecret : 0);
 	 if ((ret==DIALOG_SAID_IMPORT_YES) || (import_all)) {
@@ -452,9 +451,8 @@ int cb_memo_import(GtkWidget *parent_window, const char *file_path, int type)
 	 }
 	 if (ret==DIALOG_SAID_IMPORT_QUIT) break;
 	 if (ret==DIALOG_SAID_IMPORT_SKIP) continue;
-	 if (ret==DIALOG_SAID_IMPORT_ALL) {
-	    import_all=TRUE;
-	 }
+	 if (ret==DIALOG_SAID_IMPORT_ALL)  import_all=TRUE;
+
 	 attrib = (new_cat_num & 0x0F) |
 	   ((temp_memolist->mmemo.attrib & 0x10) ? dlpRecAttrSecret : 0);
 	 if ((ret==DIALOG_SAID_IMPORT_YES) || (import_all)) {

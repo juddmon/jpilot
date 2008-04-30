@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.186 2008/04/29 19:22:38 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.187 2008/04/30 18:08:18 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -171,7 +171,6 @@ static GObject *gtk_txt_buf_text;
 #ifndef ENABLE_GTK2
 static GtkWidget *vscrollbar;
 #endif
-//TODO: defines for other hardcoded numbers??
 static GtkWidget *notebook_label[NUM_CONTACT_NOTEBOOK_PAGES];
 static GtkWidget *phone_type_list_menu[NUM_PHONE_ENTRIES];
 static GtkWidget *phone_type_menu_item[NUM_PHONE_ENTRIES][NUM_PHONE_LABELS]; /* 7 menus with 8 possible entries */
@@ -724,19 +723,29 @@ int cb_addr_import(GtkWidget *parent_window, const char *file_path, int type)
 	 }
          g_string_free(cont_text, TRUE);
 
-	 if (ret==DIALOG_SAID_IMPORT_QUIT) break;
-	 if (ret==DIALOG_SAID_IMPORT_SKIP) continue;
+	 if (ret==DIALOG_SAID_IMPORT_QUIT) {
+            jp_free_Contact(&new_cont);
+            break;
+         }
+	 if (ret==DIALOG_SAID_IMPORT_SKIP) {
+            jp_free_Contact(&new_cont);
+            continue;
+         }
 	 if (ret==DIALOG_SAID_IMPORT_ALL) {
-	    import_all=TRUE;
-	 }
+            import_all=TRUE;
+         }
+
 	 attrib = (new_cat_num & 0x0F) |
 	          (priv ? dlpRecAttrSecret : 0);
 	 if ((ret==DIALOG_SAID_IMPORT_YES) || import_all) {
             if (address_version) {
                pc_contact_write(&new_cont, NEW_PC_REC, attrib, NULL);
+               jp_free_Contact(&new_cont);
             } else {
                copy_contact_to_address(&new_cont,&new_addr);
+               jp_free_Contact(&new_cont);
                pc_address_write(&new_addr, NEW_PC_REC, attrib, NULL);
+               free_Address(&new_addr);
             }
 	 }
       }
@@ -786,14 +795,14 @@ int cb_addr_import(GtkWidget *parent_window, const char *file_path, int type)
 				  suggested_cat_num,
 				  &new_cat_num);
             g_string_free(cont_text, TRUE);
+            jp_free_Contact(&new_cont);
 	 } else {
 	    new_cat_num=suggested_cat_num;
 	 }
 	 if (ret==DIALOG_SAID_IMPORT_QUIT) break;
 	 if (ret==DIALOG_SAID_IMPORT_SKIP) continue;
-	 if (ret==DIALOG_SAID_IMPORT_ALL) {
-	    import_all=TRUE;
-	 }
+	 if (ret==DIALOG_SAID_IMPORT_ALL)  import_all=TRUE;
+
 	 attrib = (new_cat_num & 0x0F) |
 	   ((temp_addrlist->maddr.attrib & 0x10) ? dlpRecAttrSecret : 0);
 	 if ((ret==DIALOG_SAID_IMPORT_YES) || (import_all)) {
@@ -1904,6 +1913,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
 
       if (address_version==0) {
 	 copy_contact_to_address(&cont, &addr);
+	 jp_free_Contact(&cont);
 	 pc_address_write(&addr, type, attrib, &unique_id);
 	 free_Address(&addr);
       } else {
@@ -3343,6 +3353,7 @@ static int make_phone_menu(int default_set, unsigned int callback_id, int set)
 	 utf = charset_p2newj(contact_app_info.phoneLabels[i], 16, char_set);
 	 phone_type_menu_item[set][i] = gtk_radio_menu_item_new_with_label(
 			group, utf);
+         g_free(utf);
 	 gtk_signal_connect(GTK_OBJECT(phone_type_menu_item[set][i]), "activate",
 			    GTK_SIGNAL_FUNC(cb_phone_menu),
 			    GINT_TO_POINTER(callback_id<<8 | i));
