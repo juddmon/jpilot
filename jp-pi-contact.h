@@ -34,12 +34,12 @@
 #define MAX_CONTACT_VERSION 11
 
 #define NUM_CONTACT_ENTRIES 39
-#define NUM_CONTACT_FIELDS 40
+#define NUM_CONTACT_FIELDS  40
 
 #define NUM_CONTACT_V10_LABELS 49
 #define NUM_CONTACT_V11_LABELS 53
 
-/* Blob types, or blob creator IDs can range from BD00 - Bd09 for Contacts */
+/* Blob types, or blob creator IDs, can range from BD00 - Bd09 for Contacts */
 #define BLOB_TYPE_PICTURE_ID "Bd00"
 #define MAX_CONTACT_BLOBS 10
 
@@ -132,17 +132,18 @@ extern "C" {
       int version;
       int num_labels;
       struct CategoryAppInfo category;
-      char unknown1[26];      /* Palm has not documented what this is */
-      char labels[53][16];    /* Hairy to explain, obvious to look at      */
+      char unknown1[26];         /* Palm has not documented what this is */
+      char labels[53][16];       /* Hairy to explain, obvious to look at */
       /*int labelRenamed[53];*/  /* list of booleans showing which labels were modified   */
       int country;
       int sortByCompany;
-      char phoneLabels[8][16];   /* Duplication of some labels, to greatly reduce hair    */
-      char addrLabels[3][16];    /* Duplication of some labels, to greatly reduce hair    */
-      char IMLabels[5][16];      /* Duplication of some labels, to greatly reduce hair    */
+      char phoneLabels[8][16];   /* Duplication of some labels, to greatly reduce hair */
+      char addrLabels[3][16];    /* Duplication of some labels, to greatly reduce hair */
+      char IMLabels[5][16];      /* Duplication of some labels, to greatly reduce hair */
    };
 
-   extern void jp_free_Contact PI_ARGS((struct Contact *));
+   extern void jp_free_Contact
+       PI_ARGS((struct Contact *));
    extern int jp_unpack_Contact
        PI_ARGS((struct Contact *, pi_buffer_t *));
    extern int jp_pack_Contact
