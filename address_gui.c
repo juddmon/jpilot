@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.191 2008/05/01 19:28:44 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.192 2008/05/01 19:58:12 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -2992,7 +2992,7 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    GdkPixmap *pixmap_note;
    GdkBitmap *mask_note;
    ContactList *temp_cl;
-   char str[ADDRESS_MAX_CLIST_NAME+8];
+   char str[ADDRESS_MAX_COLUMN_LEN+2];
    char str2[ADDRESS_MAX_COLUMN_LEN+2];
    int show_priv;
    long use_jos, char_set;
@@ -3162,10 +3162,10 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 	    if ((!field2[0]) && (!field3[0])) tmp_delim1=blank;
             break;
          }
-	 g_snprintf(str, ADDRESS_MAX_CLIST_NAME, "%s%s%s%s%s",
+	 g_snprintf(str, ADDRESS_MAX_COLUMN_LEN, "%s%s%s%s%s",
 		    field1, tmp_delim1, field2, tmp_delim2, field3);
 	 if (strlen(str)<1) strcpy(str, _("-Unnamed-"));
-	 str[ADDRESS_MAX_CLIST_NAME]='\0';
+	 str[ADDRESS_MAX_COLUMN_LEN]='\0';
 
 	 gtk_clist_append(GTK_CLIST(clist), empty_line);
       }
