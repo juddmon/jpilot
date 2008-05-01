@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.188 2008/04/30 19:52:00 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.189 2008/05/01 00:39:25 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -337,9 +337,8 @@ static void set_new_button_to(int new_state)
    record_changed=new_state;
 }
 
-static void
-cb_record_changed(GtkWidget *widget,
-		  gpointer   data)
+static void cb_record_changed(GtkWidget *widget,
+		              gpointer   data)
 {
    jp_logf(JP_LOG_DEBUG, "cb_record_changed\n");
    if (record_changed==CLEAR_FLAG) {
@@ -1567,7 +1566,7 @@ void cb_delete_contact(GtkWidget *widget, gpointer data)
    /* JPA convert to Palm character set */
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    if (char_set != CHAR_SET_LATIN1) {
-      for (i=0; i<NUM_CONTACT_FIELDS; i++) {
+      for (i=0; i<NUM_CONTACT_ENTRIES; i++) {
 	 if (mcont->cont.entry[i]) {
 	    charset_j2p(mcont->cont.entry[i],
 			strlen(mcont->cont.entry[i])+1, char_set);
@@ -1832,11 +1831,10 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
 
       cont.showPhone=0;
 
+      /* Get the menu labels and settings */
       address_i = IM_i = phone_i = 0;
       for (i=0; i<schema_size; i++) {
 	 switch (schema[i].type) {
-	  case ADDRESS_GUI_LABEL_TEXT:
-	    break;
 	  case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
 	    if (GTK_TOGGLE_BUTTON(radio_button[phone_i])->active) {
 	       cont.showPhone=phone_i;
@@ -1852,8 +1850,6 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
 	    cont.addressLabel[address_i]=address_type_selected[address_i];
 	    address_i++;
 	    break;
-	  case ADDRESS_GUI_WEBSITE_TEXT:
-	    break;
 	  case ADDRESS_GUI_BIRTHDAY:
 	    if (GTK_TOGGLE_BUTTON(birthday_checkbox)->active) {
 	       cont.birthdayFlag = 1;
@@ -1865,11 +1861,14 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
 	       cont.advanceUnits = 1; /* Days */
 	    }
 	    break;
+	  case ADDRESS_GUI_LABEL_TEXT:
+	  case ADDRESS_GUI_WEBSITE_TEXT:
+	    break;
 	 }
       }
       
+      /* Get the entry texts */
       for (i=0; i<schema_size; i++) {
-	 /* Get the entry texts */
 	 switch (schema[i].type) {
 	  case ADDRESS_GUI_LABEL_TEXT:
 	  case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
@@ -1886,14 +1885,16 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
 #endif
 	    break;
 	  case ADDRESS_GUI_BIRTHDAY:
-	    if (contact_picture.data) {
-	       jp_Contact_add_picture(&cont, &contact_picture);
-	    }
 	    break;
 	 }
       }
 
-      /*Get the attributes */
+      /* Get the picture */
+      if (contact_picture.data) {
+         jp_Contact_add_picture(&cont, &contact_picture);
+      }
+
+      /* Get the attributes */
       get_address_attrib(&attrib);
 
       set_new_button_to(CLEAR_FLAG);
