@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.190 2008/05/01 03:45:44 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.191 2008/05/01 19:28:44 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -2319,6 +2319,8 @@ static void cb_edit_cats_category(GtkWidget *widget, gpointer data)
    size = jp_pack_ContactAppInfo(&cai, pi_buf);
 
    pdb_file_write_app_block("ContactsDB-PAdd", pi_buf->data, pi_buf->used);
+
+   pi_buffer_free(pi_buf);
 }
 
 static void cb_edit_cats(GtkWidget *widget, gpointer data)
