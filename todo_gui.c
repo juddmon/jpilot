@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.121 2008/04/30 18:08:18 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.122 2008/05/01 04:04:00 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -1714,7 +1714,6 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 #endif
 
    entries_shown=0;
-   show_priv = show_privates(GET_PRIVATES);
    for (temp_todo = *todo_list, i=0; temp_todo; temp_todo=temp_todo->next) {
       if ( ((temp_todo->mtodo.attrib & 0x0F) != category) &&
 	  category != CATEGORY_ALL) {
