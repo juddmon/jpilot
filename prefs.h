@@ -1,4 +1,4 @@
-/* $Id: prefs.h,v 1.46 2008/04/29 04:15:16 rikster5 Exp $ */
+/* $Id: prefs.h,v 1.47 2008/05/01 22:29:14 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs.h
@@ -123,8 +123,9 @@
 #define PREF_TODO_SORT_COLUMN 91
 #define PREF_TODO_SORT_ORDER 92
 #define PREF_ADDR_SORT_ORDER 93
+#define PREF_ADDR_NAME_COL_SZ 94
 
-#define NUM_PREFS 94
+#define NUM_PREFS 95
 
 #define MAX_PREF_NUM_BACKUPS 99
 

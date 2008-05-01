@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.192 2008/05/01 19:58:12 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.193 2008/05/01 22:29:14 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -1481,6 +1481,15 @@ int address_export(GtkWidget *window)
 /*
  * End Export Code
  */
+void cb_resize_column (GtkCList *clist,
+                       gint column,
+                       gint width,
+                       gpointer user_data)
+{
+   if (column != ADDRESS_NAME_COLUMN) return;
+
+   set_pref(PREF_ADDR_NAME_COL_SZ, width, NULL, TRUE);
+}
 
 static int find_sorted_cat(int cat)
 {
@@ -3798,9 +3807,16 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_clist_set_shadow_type(GTK_CLIST(clist), GTK_SHADOW_ETCHED_OUT);
    gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
 
-   gtk_clist_set_column_auto_resize(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, TRUE);
+   gtk_clist_set_column_min_width(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, 60);
+   get_pref(PREF_ADDR_NAME_COL_SZ, &ivalue, NULL);
+   gtk_clist_set_column_width(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, ivalue);
+
+   gtk_clist_set_column_auto_resize(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, FALSE);
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), ADDRESS_NOTE_COLUMN, TRUE);
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), ADDRESS_PHONE_COLUMN, FALSE);
+
+   gtk_signal_connect(GTK_OBJECT(clist), "resize-column",
+               GTK_SIGNAL_FUNC(cb_resize_column), NULL);
 
    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
 
