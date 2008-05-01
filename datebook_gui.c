@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.161 2008/04/30 18:08:18 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.162 2008/05/01 04:03:32 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -2239,7 +2239,7 @@ static void clear_myappointment(MyAppointment *mappt)
 
 static int datebook_update_clist()
 {
-   int num_entries, entries_shown, num, i;
+   int num_entries, entries_shown, num;
    AppointmentList *temp_al;
    gchar *empty_line[] = { "","","","",""};
    char begin_time[32];
@@ -2301,20 +2301,20 @@ static int datebook_update_clist()
    mask_note = NULL;
    mask_alarm = NULL;
 #endif
-#  ifdef ENABLE_DATEBK
+#ifdef ENABLE_DATEBK
    get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
    get_pixmaps(scrolled_window, PIXMAP_FLOAT_CHECK,
 	       &pixmap_float_check, &mask_float_check);
    get_pixmaps(scrolled_window, PIXMAP_FLOAT_CHECKED,
 	       &pixmap_float_checked, &mask_float_checked);
-#ifdef __APPLE__
+#  ifdef __APPLE__
    mask_float_check = NULL;
    mask_float_checked = NULL;
-#endif
 #  endif
+#endif
 
    entries_shown=0;
-   for (temp_al = glob_al, i=0; temp_al; temp_al=temp_al->next, i++) {
+   for (temp_al = glob_al; temp_al; temp_al=temp_al->next) {
 #ifdef ENABLE_DATEBK
       ret=0;
       if (use_db3_tags) {
@@ -2322,7 +2322,6 @@ static int datebook_update_clist()
 	 jp_logf(JP_LOG_DEBUG, "category = 0x%x\n", db4.category);
 	 cat_bit=1<<db4.category;
 	 if (!(cat_bit & datebook_category)) {
-	    i--;
 	    jp_logf(JP_LOG_DEBUG, "skipping rec not in this category\n");
 	    continue;
 	 }
@@ -2332,11 +2331,11 @@ static int datebook_update_clist()
       if ((show_priv == MASK_PRIVATES) &&
 	  (temp_al->mappt.attrib & dlpRecAttrSecret)) {
 	 gtk_clist_append(GTK_CLIST(clist), empty_line);
-	 gtk_clist_set_text(GTK_CLIST(clist), i, DB_TIME_COLUMN, "----------");
-	 gtk_clist_set_text(GTK_CLIST(clist), i, DB_APPT_COLUMN, "---------------");
+	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, DB_TIME_COLUMN, "----------");
+	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, DB_APPT_COLUMN, "---------------");
 	 clear_myappointment(&temp_al->mappt);
-	 gtk_clist_set_row_data(GTK_CLIST(clist), i, &(temp_al->mappt));
-	 gtk_clist_set_row_style(GTK_CLIST(clist), i, NULL);
+	 gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_al->mappt));
+	 gtk_clist_set_row_style(GTK_CLIST(clist), entries_shown, NULL);
 	 entries_shown++;
 	 continue;
       }
@@ -2345,13 +2344,12 @@ static int datebook_update_clist()
       /* Hide the private records if need be */
       if ((show_priv != SHOW_PRIVATES) &&
 	  (temp_al->mappt.attrib & dlpRecAttrSecret)) {
-	 i--;
 	 continue;
       }
 
       /* Add entry to clist */
       gtk_clist_append(GTK_CLIST(clist), empty_line);
-      entries_shown++;
+      //entries_shown++;
 
       /* Print the event time */
       if (temp_al->mappt.appt.event) {
@@ -2364,16 +2362,16 @@ static int datebook_update_clist()
 	 strftime(end_time, sizeof(end_time), datef, &(temp_al->mappt.appt.end));
 	 g_snprintf(a_time, sizeof(a_time), "%s-%s", begin_time, end_time);
       }
-      gtk_clist_set_text(GTK_CLIST(clist), i, DB_TIME_COLUMN, a_time);
+      gtk_clist_set_text(GTK_CLIST(clist), entries_shown, DB_TIME_COLUMN, a_time);
 
 #ifdef ENABLE_DATEBK
       if (use_db3_tags) {
 	 if (db4.floating_event==DB3_FLOAT) {
-	    gtk_clist_set_pixmap(GTK_CLIST(clist), i, DB_FLOAT_COLUMN, pixmap_float_check,
+	    gtk_clist_set_pixmap(GTK_CLIST(clist), entries_shown, DB_FLOAT_COLUMN, pixmap_float_check,
 				 mask_float_check);
 	 }
 	 if (db4.floating_event==DB3_FLOAT_COMPLETE) {
-	    gtk_clist_set_pixmap(GTK_CLIST(clist), i, DB_FLOAT_COLUMN, pixmap_float_checked,
+	    gtk_clist_set_pixmap(GTK_CLIST(clist), entries_shown, DB_FLOAT_COLUMN, pixmap_float_checked,
 				 mask_float_checked);
 	 }
       }
@@ -2411,12 +2409,12 @@ static int datebook_update_clist()
 #endif
       /* Put a note pixmap up */
       if (has_note) {
-	 gtk_clist_set_pixmap(GTK_CLIST(clist), i, DB_NOTE_COLUMN, pixmap_note, mask_note);
+	 gtk_clist_set_pixmap(GTK_CLIST(clist), entries_shown, DB_NOTE_COLUMN, pixmap_note, mask_note);
       }
 
       /* Put an alarm pixmap up */
       if (temp_al->mappt.appt.alarm) {
-	 gtk_clist_set_pixmap(GTK_CLIST(clist), i, DB_ALARM_COLUMN, pixmap_alarm, mask_alarm);
+	 gtk_clist_set_pixmap(GTK_CLIST(clist), entries_shown, DB_ALARM_COLUMN, pixmap_alarm, mask_alarm);
       }
 
       /* Print the appointment description */
@@ -2425,41 +2423,41 @@ static int datebook_update_clist()
       /* Append number of anniversary years if enabled & appropriate */
       append_anni_years(str2, sizeof(str2), &new_time, &temp_al->mappt.appt);
 
-      gtk_clist_set_text(GTK_CLIST(clist), i, DB_APPT_COLUMN, str2);
-      gtk_clist_set_row_data(GTK_CLIST(clist), i, &(temp_al->mappt));
+      gtk_clist_set_text(GTK_CLIST(clist), entries_shown, DB_APPT_COLUMN, str2);
+      gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_al->mappt));
 
       /* Highlight row background depending on status */
       switch (temp_al->mappt.rt) {
        case NEW_PC_REC:
        case REPLACEMENT_PALM_REC:
-	 set_bg_rgb_clist_row(clist, i,
+	 set_bg_rgb_clist_row(clist, entries_shown,
 			      CLIST_NEW_RED, CLIST_NEW_GREEN, CLIST_NEW_BLUE);
 	 break;
        case DELETED_PALM_REC:
        case DELETED_PC_REC:
-	 set_bg_rgb_clist_row(clist, i,
+	 set_bg_rgb_clist_row(clist, entries_shown,
 			      CLIST_DEL_RED, CLIST_DEL_GREEN, CLIST_DEL_BLUE);
 	 break;
        case MODIFIED_PALM_REC:
-	 set_bg_rgb_clist_row(clist, i,
+	 set_bg_rgb_clist_row(clist, entries_shown,
 			      CLIST_MOD_RED, CLIST_MOD_GREEN, CLIST_MOD_BLUE);
 	 break;
        default:
 	 if (temp_al->mappt.attrib & dlpRecAttrSecret) {
-	    set_bg_rgb_clist_row(clist, i,
+	    set_bg_rgb_clist_row(clist, entries_shown,
 			     CLIST_PRIVATE_RED, CLIST_PRIVATE_GREEN, CLIST_PRIVATE_BLUE);
 	 } else {
-	    gtk_clist_set_row_style(GTK_CLIST(clist), i, NULL);
+	    gtk_clist_set_row_style(GTK_CLIST(clist), entries_shown, NULL);
 	 }
       }
-
+      entries_shown++;
    }
 
    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
 		      GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
 
    /* If there are items in the list, highlight the selected row */
-   if (i>0) {
+   if (entries_shown>0) {
       /* Select the existing requested row, or row 0 if that is impossible */
       if (clist_row_selected < entries_shown) {
 	 clist_select_row(GTK_CLIST(clist), clist_row_selected, 1);
