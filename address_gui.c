@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.189 2008/05/01 00:39:25 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.190 2008/05/01 03:45:44 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -3211,8 +3211,10 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       entries_shown++;
    }
 
-   gtk_signal_connect(GTK_OBJECT(clist), "select_row",
-		      GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
+   if (main) {
+      gtk_signal_connect(GTK_OBJECT(clist), "select_row",
+                         GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
+   }
 
    /* If there are items in the list, highlight the selected row */
    if ((main) && (entries_shown>0)) {

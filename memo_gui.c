@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.109 2008/04/30 18:08:18 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.110 2008/05/01 03:45:44 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -1288,8 +1288,10 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
    jp_logf(JP_LOG_DEBUG, "entries_shown=%d\n", entries_shown);
 
-   gtk_signal_connect(GTK_OBJECT(clist), "select_row",
-		      GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
+   if (main) {
+      gtk_signal_connect(GTK_OBJECT(clist), "select_row",
+               GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
+   }
 
    /* If there are items in the list, highlight the selected row */
    if ((main) && (entries_shown>0)) {
