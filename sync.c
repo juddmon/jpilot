@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.82 2008/04/15 03:28:05 rikster5 Exp $ */
+/* $Id: sync.c,v 1.83 2008/05/02 18:18:50 judd Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -248,11 +248,13 @@ int match_records(void *rrec, int rrec_len,
                   char *DB_name)
 {
 
-   if (!rrec || !lrec)
+   if (!rrec || !lrec) {
       return 0;
+   }
    
-   if (lrec_len != rrec_len)
+   if (lrec_len != rrec_len) {
       return 0;
+   }
 
    /* memcmp works for a few specific databases */
    if (!strcmp(DB_name,"MemoDB"))
@@ -677,6 +679,7 @@ int jp_sync(struct my_sync_info *sync_info)
 # endif
 #endif
    int i;
+   /* rename_dbnames is used to modify this list to newer databases if needed*/
    char dbname[][32]={
       "DatebookDB",
 	"AddressDB",
@@ -1735,6 +1738,7 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
    struct plugin_s *plugin;
 #endif
    char *file_name;
+   /* rename_dbnames is used to modify this list to newer databases if needed*/
    char palm_dbname[][32]={
       "DatebookDB",
       "AddressDB",
