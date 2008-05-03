@@ -1,4 +1,4 @@
-/* $Id: weekview_gui.c,v 1.37 2008/05/02 18:24:16 judd Exp $ */
+/* $Id: weekview_gui.c,v 1.38 2008/05/03 02:58:16 judd Exp $ */
 
 /*******************************************************************************
  * weekview_gui.c
@@ -183,10 +183,6 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
 #ifdef ENABLE_GTK2
    GObject *text_buffer;
    char    *markup_str;
-   GdkColor color, bcolor;
-
-   gdk_color_parse ("yellow", &color);
-   gdk_color_parse ("white", &bcolor);
 #endif
 
    a_list = NULL;
@@ -212,11 +208,9 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
       if (date.tm_mday == now_today)
       {
 	 markup_str = g_markup_printf_escaped("<b>%s</b>", str);
- 	 gtk_widget_modify_base(GTK_WIDGET(text[i]), GTK_STATE_NORMAL, &color);
          gtk_widget_set_name(GTK_WIDGET(text[i]), "today");
       } else {
 	 markup_str = g_markup_printf_escaped("%s", str);
- 	 gtk_widget_modify_base(GTK_WIDGET(text[i]), GTK_STATE_NORMAL, &bcolor);
          gtk_widget_set_name(GTK_WIDGET(text[i]), "");
       }
       gtk_label_set_markup(GTK_LABEL(glob_dow_labels[i]), markup_str);
