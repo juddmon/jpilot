@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.83 2008/05/02 18:18:50 judd Exp $ */
+/* $Id: sync.c,v 1.84 2008/05/03 15:58:48 judd Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -3224,14 +3224,14 @@ int sync_categories(char *DB_name, int sd,
    char log_entry[256];
 #ifdef PILOT_LINK_0_12
    pi_buffer_t *buffer;
-   size_t size_Papp_info;
+   size_t local_cai_size;
 #else
-   int size_Papp_info;
+   int local_cai_size;
 #endif
    unsigned char buf[65536];
    char tmp_name[18];
    int i, r, Li, Ri;
-   int size;
+   int remote_cai_size;
    void *Papp_info;
    struct pi_file *pf;
    int db;
@@ -3258,16 +3258,16 @@ int sync_categories(char *DB_name, int sd,
       return EXIT_FAILURE;
    }
 #ifdef PILOT_LINK_0_12
-   pi_file_get_app_info(pf, &Papp_info, &size_Papp_info);
+   pi_file_get_app_info(pf, &Papp_info, &local_cai_size);
 #else
-   r = pi_file_get_app_info(pf, &Papp_info, &size_Papp_info);
+   r = pi_file_get_app_info(pf, &Papp_info, &local_cai_size);
 #endif
-   if (size_Papp_info <= 0) {
+   if (local_cai_size <= 0) {
       jp_logf(JP_LOG_WARN, _("%s:%d Error getting app info %s\n"), __FILE__, __LINE__, full_name);
       return EXIT_FAILURE;
    }
 
-   r = unpack_cai_from_ai(&local_cai, Papp_info, size_Papp_info);
+   r = unpack_cai_from_ai(&local_cai, Papp_info, local_cai_size);
    if (EXIT_SUCCESS != r) {
       jp_logf(JP_LOG_WARN, _("%s:%d Error unpacking app info %s\n"), __FILE__, __LINE__, full_name);
       return EXIT_FAILURE;
@@ -3288,27 +3288,27 @@ int sync_categories(char *DB_name, int sd,
 #ifdef PILOT_LINK_0_12
    buffer = pi_buffer_new(0xFFFF);
    /* buffer size passed in cannot be any larger than 0xffff */
-   size = dlp_ReadAppBlock(sd, db, 0, -1, buffer);
-   jp_logf(JP_LOG_DEBUG, "readappblock r=%d\n", size);
-   if ((size<=0) || (size > sizeof(buf))) {
+   remote_cai_size = dlp_ReadAppBlock(sd, db, 0, -1, buffer);
+   jp_logf(JP_LOG_DEBUG, "readappblock r=%d\n", remote_cai_size);
+   if ((remote_cai_size<=0) || (remote_cai_size > sizeof(buf))) {
       jp_logf(JP_LOG_WARN, _("Error reading appinfo block for %s\n"), DB_name);
       dlp_CloseDB(sd, db);
       pi_buffer_free(buffer);
       return EXIT_FAILURE;
    }
-   memcpy(buf, buffer->data, size);
+   memcpy(buf, buffer->data, remote_cai_size);
    pi_buffer_free(buffer);
 #else
    /* buffer size passed in cannot be any larger than 0xffff */
-   size = dlp_ReadAppBlock(sd, db, 0, buf, min(sizeof(buf), 0xFFFF));
-   jp_logf(JP_LOG_DEBUG, "readappblock r=%d\n", size);
-   if (size<=0) {
+   remote_cai_size = dlp_ReadAppBlock(sd, db, 0, buf, min(sizeof(buf), 0xFFFF));
+   jp_logf(JP_LOG_DEBUG, "readappblock r=%d\n", remote_cai_size);
+   if (remote_cai_size<=0) {
       jp_logf(JP_LOG_WARN, _("Error reading appinfo block for %s\n"), DB_name);
       dlp_CloseDB(sd, db);
       return EXIT_FAILURE;
    }
 #endif
-   r = unpack_cai_from_ai(&remote_cai, buf, size);
+   r = unpack_cai_from_ai(&remote_cai, buf, remote_cai_size);
    if (EXIT_SUCCESS != r) {
       jp_logf(JP_LOG_WARN, _("%s:%d Error unpacking app info %s\n"), __FILE__, __LINE__, full_name);
       return EXIT_FAILURE;
@@ -3316,7 +3316,8 @@ int sync_categories(char *DB_name, int sd,
    memcpy(&orig_remote_cai, &remote_cai, sizeof(remote_cai));
 
 #ifdef SYNC_CAT_DEBUG
-   printf("DB_name [%s]\n", DB_name);
+   printf("--- DB_name [%s]\n", DB_name);
+   printf("--- local: size is %d ---\n", local_cai_size);
    for (i = 0; i < CATCOUNT; i++) {
       if (local_cai.name[i][0] != '\0') {
 	 printf("local: cat %d [%s] ID %d renamed %d\n", i,
@@ -3324,7 +3325,7 @@ int sync_categories(char *DB_name, int sd,
 		local_cai.ID[i], local_cai.renamed[i]);
       }
    }
-   printf("--- remote: size is %d ---\n", size);
+   printf("--- remote: size is %d ---\n", remote_cai_size);
    for (i = 0; i < CATCOUNT; i++) {
       if (remote_cai.name[i][0] != '\0') {
 	 printf("remote: cat %d [%s] ID %d renamed %d\n", i,
@@ -3475,13 +3476,13 @@ int sync_categories(char *DB_name, int sd,
       remote_cai.renamed[i]=0;
    }
 
-   pack_cai_into_ai(&remote_cai, buf, size_Papp_info);
+   pack_cai_into_ai(&remote_cai, buf, remote_cai_size);
 
    /* If the categories changed then write them out */
    if (memcmp(&orig_remote_cai, &remote_cai, sizeof(remote_cai))) {
       jp_logf(JP_LOG_DEBUG, "writing out new categories for %s\n", DB_name);
-      dlp_WriteAppBlock(sd, db, buf, size_Papp_info);
-      pdb_file_write_app_block(DB_name, buf, size_Papp_info);
+      dlp_WriteAppBlock(sd, db, buf, remote_cai_size);
+      pdb_file_write_app_block(DB_name, buf, remote_cai_size);
    }
 
    dlp_CloseDB(sd, db);
