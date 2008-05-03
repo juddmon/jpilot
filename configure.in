@@ -4,7 +4,7 @@ dnl ############################################################################
 
 dnl boilerplate to initialize autoconf(AC) and automake(AM)
 AC_PREREQ([2.58])
-AC_INIT(jpilot, 1.6.0-pre1)
+AC_INIT(jpilot, 1.6.0-pre2)
 AM_INIT_AUTOMAKE([1.8])
 
 dnl use a config.h file rather than string of -DXXX args to compiler
