@@ -1,4 +1,4 @@
-/* $Id: print.c,v 1.38 2008/04/29 04:15:16 rikster5 Exp $ */
+/* $Id: print.c,v 1.39 2008/05/03 17:16:54 judd Exp $ */
 
 /*******************************************************************************
  * print.c
@@ -1038,7 +1038,7 @@ int print_contacts(ContactList *contact_list, struct ContactAppInfo *contact_app
    current_locale = setlocale(LC_NUMERIC,"C");
 #endif
 
-   memset(spaces, ' ', 25);
+   memset(spaces, ' ', sizeof(spaces));
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
 
