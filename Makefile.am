@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.54 2007/11/28 19:14:42 judd Exp $
+# $Id: Makefile.am,v 1.55 2008/05/03 03:02:40 judd Exp $
 
 SUBDIRS = Expense SyncTime KeyRing dialer m4 po icons docs empty
 
@@ -6,6 +6,7 @@ EXTRA_DIST = config.rpath mkinstalldirs reconf autogen.sh \
 	intltool-extract.in intltool-merge.in intltool-update.in \
 	ChangeLog ChangeLog.cvs \
 	po/POTFILES \
+	po/jpilot.pot \
 	jpilot.spec \
 	SlackBuild description-pak \
 	jpilot.desktop \
