@@ -1,9 +1,8 @@
 # Italian messages for jpilot.
-# Copyright (C) 2001, 2002, 2005 Free Software Foundation, Inc.
 # This file is distributed under the same license as the jpilot package.
-# Marco Colombo <m.colombo@ed.ac.uk>, 2005.
-# Michele Mazzucchi <mijio@mac.com>, 2001, 2002.
 #
+# Michele Mazzucchi <mijio@mac.com>, 2001, 2002.
+# Marco Colombo <m.colombo@ed.ac.uk>, 2005.
 msgid ""
 msgstr ""
 "Project-Id-Version: jpilot 0.99.8-pre7\n"

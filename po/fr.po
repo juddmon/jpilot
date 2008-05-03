@@ -1,7 +1,7 @@
-# JPILOT Messages.
-# Copyright (C) 2003 Free Software Foundation, Inc.
-# Regis Rampnoux <regisr@regix.com>, 2000-2003.
+# French translations for JPILOT.
 #
+# Regis Rampnoux <regisr@regix.com>, 2000-2003.
+# Ludovic Rousseau <ludovic.rousseau@free.fr>, 2004.
 msgid ""
 msgstr ""
 "Project-Id-Version: jpilot 0.99.9-pre1\n"

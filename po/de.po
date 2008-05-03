@@ -1,9 +1,8 @@
-# translation of de.po to German
 # German translation for jpilot.
-# Copyright (C) 2001,2003 Free Software Foundation, Inc.
-# Henrik Becker <HenrikBecker@web.de>, 2001.
-# Felix Knecht <mail AT felixknecht DOT de>, 2003
 #
+# Henrik Becker <HenrikBecker@web.de>, 2001.
+# Felix Knecht <mail AT felixknecht DOT de>, 2003.
+# Peter Mukunda Pasedach <mukunda@mukunda.de>, 2006.
 msgid ""
 msgstr ""
 "Project-Id-Version: jpilot 0.99.6\n"
@@ -11,7 +10,7 @@ msgstr ""
 "POT-Creation-Date: 2006-09-28 15:06-0700\n"
 "PO-Revision-Date: 2006-03-26 04:07+0100\n"
 "Last-Translator: Peter Mukunda Pasedach <mukunda@mukunda.de>\n"
-"Language-Team: German <de@li.org>\n"
+"Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-15\n"
 "Content-Transfer-Encoding: 8bit\n"

@@ -1,11 +1,8 @@
-# translation of zh_TW.po to Traditional Chinese
-# translation of jpilot-0.99.8-pre3.po to Traditional Chinese
 # Chinese (traditional) translation for jpilot.
-# Copyright (C) 2002  Judd Montgomery <judd@jpilot.org>
 # This file is distributed under the same license as the jpilot package.
+#
 # Anthony Fok <anthony@thizlinux.com>, 2002.
 # Jouston Huang <jouston@jouston.no-ip.com>, 2004, 2005.
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: jpilot-0.99.8-pre7\n"
@@ -13,7 +10,7 @@ msgstr ""
 "POT-Creation-Date: 2006-09-28 15:06-0700\n"
 "PO-Revision-Date: 2005-01-14 22:27+0800\n"
 "Last-Translator: Jouston Huang <jouston@jouston.no-ip.com>\n"
-"Language-Team: Traditional Chinese <zh-l10n@i18n.linux.org.tw>\n"
+"Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=BIG5\n"
 "Content-Transfer-Encoding: 8bit\n"

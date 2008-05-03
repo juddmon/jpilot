@@ -1,16 +1,15 @@
-# Dutch translation for jpilot.
-# Copyright (C) 2003 Judd Montgomery
+# Dutch translations for jpilot.
 # This file is distributed under the same license as the jpilot package.
-# Bram Schoenmakers <bram_s@softhome.net>, 2003.
 #
+# Bram Schoenmakers <bram_s@softhome.net>, 2003.
 msgid ""
 msgstr ""
 "Project-Id-Version: jpilot 0.99.2\n"
 "Report-Msgid-Bugs-To: jpilot-devel@jpilot.org\n"
 "POT-Creation-Date: 2006-09-28 15:06-0700\n"
 "PO-Revision-Date: 2001-12-30 12:48GMT\n"
-"Last-Translator: ?? <??@??>\n"
-"Language-Team: NL <nl@li.org>\n"
+"Last-Translator: Bram Schoenmakers <bram_s@softhome.net>\n"
+"Language-Team: Dutch <vertaling@vrijschrift.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"

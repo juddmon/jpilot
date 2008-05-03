@@ -1,9 +1,8 @@
 # Russian translation for J-Pilot.
-# Copyright (C) 2001-2002 Free Software Foundation, Inc.
-# Alexander Bokovoy <ab@altlinux.ru>, 2001-2002.
+#
+# Alexander Bokovoy <ab@altlinux.ru>, 2001, 2002.
 # Andrey Brindeew <abr@altlinux.ru>, 2003.
 # Eugene Morozov <eugene@renice.org>, 2004.
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: JPilot\n"
@@ -11,7 +10,7 @@ msgstr ""
 "POT-Creation-Date: 2006-09-28 15:06-0700\n"
 "PO-Revision-Date: 2004-03-19 16:12+0300\n"
 "Last-Translator: Eugene Morozov <eugene@renice.org>\n"
-"Language-Team: Russian <ru@li.org>\n"
+"Language-Team: Russian <gnu@mx.ru>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"

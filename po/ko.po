@@ -1,8 +1,7 @@
-# JPILOT Messages.
-# Copyright (C) YEAR Judd Montgomery
+# Korean translations for jpilot.
 # This file is distributed under the same license as the jpilot package.
-# Byeong-Taek Lee <byeongtaek.lee@gmail.com>, 2005.
 #
+# Byeong-Taek Lee <byeongtaek.lee@gmail.com>, 2005.
 msgid ""
 msgstr ""
 "Project-Id-Version: jpilot 0.99.8\n"
@@ -10,7 +9,7 @@ msgstr ""
 "POT-Creation-Date: 2006-09-28 15:06-0700\n"
 "PO-Revision-Date: 2005-12-11 23:24-0800\n"
 "Last-Translator: Byeong-Taek Lee <beongtaek.lee@gmail.com>\n"
-"Language-Team: Korean <LL@tli.org>\n"
+"Language-Team: Korean <translation-team-ko@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=euc-kr\n"
 "Content-Transfer-Encoding: 8bit\n"
