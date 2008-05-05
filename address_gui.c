@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.193 2008/05/01 22:29:14 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.194 2008/05/05 19:32:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -26,7 +26,8 @@
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 #include <gdk/gdk.h>
-//#define __USE_XOPEN 1
+//#define _USE_XOPEN
+//#define _XOPEN_SOURCE
 //#define possibly needed for strptime used in csv import
 #include <time.h>
 /* For open, read */
@@ -3061,6 +3062,7 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
    switch (addr_sort_order) {
     case SORT_BY_LNAME:
+    default:
       show1=contLastname;
       show2=contFirstname;
       show3=contCompany;

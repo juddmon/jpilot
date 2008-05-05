@@ -1,4 +1,4 @@
-/* $Id: print.c,v 1.39 2008/05/03 17:16:54 judd Exp $ */
+/* $Id: print.c,v 1.40 2008/05/05 19:32:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * print.c
@@ -1014,7 +1014,6 @@ int print_contacts(ContactList *contact_list, struct ContactAppInfo *contact_app
    long one_rec_per_page;
    long lines_between_recs;
    ContactList *temp_cl;
-   //struct Contact *cont;
    MyContact *mcont;
    int show1, show2, show3;
    int i;
@@ -1045,14 +1044,15 @@ int print_contacts(ContactList *contact_list, struct ContactAppInfo *contact_app
    print_address_header();
 
    switch (addr_sort_order) {
+    case SORT_BY_LNAME:
+    default:
+      show1=contLastname;
+      show2=contFirstname;
+      show3=contCompany;
+      break;
     case SORT_BY_FNAME:
       show1=contFirstname;
       show2=contLastname;
-      show3=contCompany;
-      break;
-    case SORT_BY_LNAME:
-      show1=contLastname;
-      show2=contFirstname;
       show3=contCompany;
       break;
     case SORT_BY_COMPANY:
