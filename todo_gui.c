@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.122 2008/05/01 04:04:00 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.123 2008/05/05 20:21:05 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -469,7 +469,7 @@ int cb_todo_import(GtkWidget *parent_window, const char *file_path, int type)
 #ifdef JPILOT_DEBUG
 	 printf("due date is [%s]\n", text);
 #endif
-	 sscanf(text, "%d %d %d", &year, &month, &day);
+	 sscanf(text, "%d/%d/%d", &year, &month, &day);
 
 	 /* Read the Priority field */
 	 ret = read_csv_field(in, text, sizeof(text));
@@ -734,7 +734,7 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 if (mtodo->todo.indefinite) {
 	    text[0]='\0';
 	 } else {
-	    strftime(text, len, "%Y %02m %02d", &(mtodo->todo.due));
+	    strftime(text, len, "%Y/%02m/%02d", &(mtodo->todo.due));
 	 }
 	 fprintf(out, "\"%s\",", text);
 	 fprintf(out, "\"%d\",", mtodo->todo.priority);

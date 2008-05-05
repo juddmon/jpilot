@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.194 2008/05/05 19:32:07 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.195 2008/05/05 20:21:05 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -26,9 +26,6 @@
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 #include <gdk/gdk.h>
-//#define _USE_XOPEN
-//#define _XOPEN_SOURCE
-//#define possibly needed for strptime used in csv import
 #include <time.h>
 /* For open, read */
 #include <unistd.h>
@@ -579,10 +576,10 @@ int cb_addr_import(GtkWidget *parent_window, const char *file_path, int type)
    int i, j, ret, index;
    int address_i, IM_i, phone_i;
    int import_all;
-   const char *pref_date;
    char old_cat_name[32];
    int new_cat_num, suggested_cat_num;
    int priv;
+   int year, month, day;
    GString *cont_text;
 
    AddressList *addrlist;
@@ -692,8 +689,11 @@ int cb_addr_import(GtkWidget *parent_window, const char *file_path, int type)
                if (text[0])
                {
                   new_cont.birthdayFlag = 1;
-		  get_pref(PREF_SHORTDATE, NULL, &pref_date);
-		  strptime(text, pref_date, &new_cont.birthday);
+                  sscanf(text, "%d/%d/%d", &year, &month, &day);
+                  memset(&(new_cont.birthday), 0, sizeof(new_cont.birthday));
+                  new_cont.birthday.tm_year=year-1900;
+                  new_cont.birthday.tm_mon=month-1;
+                  new_cont.birthday.tm_mday=day;
                }
                /* Also get Reminder Advance field */
                ret = read_csv_field(in, text, sizeof(text));
@@ -1138,8 +1138,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	     case ADDRESS_GUI_BIRTHDAY:
 	       if (mcont->cont.birthdayFlag) {
 		  birthday_str[0]='\0'; 
-		  get_pref(PREF_SHORTDATE, NULL, &pref_date);
-		  strftime(birthday_str, sizeof(birthday_str), pref_date, &(mcont->cont.birthday));
+		  strftime(birthday_str, sizeof(birthday_str), "%Y/%02m/%02d", &(mcont->cont.birthday));
 		  fprintf(out, "\"%s\",", birthday_str);
 
                   if (mcont->cont.reminder) {
