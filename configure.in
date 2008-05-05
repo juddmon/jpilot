@@ -357,14 +357,14 @@ usb=no;
 pl12=no;
 pl_version_check_done=no;
 
-pl_version=`grep "define PILOT_LINK_VERSION" "$pilot_incl/pi-version.h" | \
-cut -d " " -f 3`
-pl_major=`grep "define PILOT_LINK_MAJOR" "$pilot_incl/pi-version.h" | \
-cut -d " " -f 3`
-pl_minor=`grep "define PILOT_LINK_MINOR" "$pilot_incl/pi-version.h" | \
-cut -d " " -f 3`
-pl_patch=`grep "define PILOT_LINK_PATCH" "$pilot_incl/pi-version.h" | \
-cut -d " " -f 3 | sed -e 's/"//g'`
+pl_version=`$GREP "define PILOT_LINK_VERSION" "$pilot_incl/pi-version.h" | \
+$CUT -d " " -f 3`
+pl_major=`$GREP "define PILOT_LINK_MAJOR" "$pilot_incl/pi-version.h" | \
+$CUT -d " " -f 3`
+pl_minor=`$GREP "define PILOT_LINK_MINOR" "$pilot_incl/pi-version.h" | \
+$CUT -d " " -f 3`
+pl_patch=`$GREP "define PILOT_LINK_PATCH" "$pilot_incl/pi-version.h" | \
+$CUT -d " " -f 3 | $SED -e 's/"//g'`
 AC_MSG_RESULT([pi-version indicates $pl_version.$pl_major.$pl_minor])
 
 dnl *** check for pilot-link 0.12 and up
@@ -376,46 +376,8 @@ if test $pl_version -eq 0 ; then
       pl_version_check_done=yes;
       AC_MSG_RESULT([pilot-link has USB])
       AC_MSG_RESULT([pilot-link has card support (>12.0)])
-   fi
-fi
-
-dnl *** check for pilot-link 0.11
-dnl *** check for broken pilot-link versions
-if test "x$pl_version_check_done" = "xno"; then
-   if test $pl_version -eq 0 ; then
-      if test $pl_major -eq 11 ; then
-         case $pl_minor in
-            [0-2])
-               AC_MSG_ERROR([pilot-link versions 0.11.0 - 0.11.2 are not compatible with J-Pilot]) ;;
-         esac
-         usb=yes
-         pl_version_check_done=yes;
-         AC_MSG_RESULT([pilot-link has USB])
-      fi
-   fi
-fi
-
-dnl *** check for pilot-link 0.10
-dnl *** check for broken pilot-link versions
-if test "x$pl_version_check_done" = "xno"; then
-   if test $pl_version -eq 0 ; then
-      if test $pl_major -eq 10 ; then
-         usb=yes
-         pl_version_check_done=yes;
-         AC_MSG_RESULT([pilot-link has USB])
-         AC_MSG_RESULT([pilot-link 0.10.x is not recommended])
-      fi
-   fi
-fi
-
-dnl *** Check for pilot-link 0.9.0 or older
-if test "x$pl_version_check_done" = "xno"; then
-   if test $pl_version -eq 0 ; then
-      if test $pl_major -lt 10 ; then
-         AC_MSG_RESULT([older than 0.10.0 ... USB will NOT be enabled])
-         AC_MSG_RESULT([This should be ok for old USB visors])
-         pl_version_check_done=yes;
-      fi
+   else
+      AC_MSG_ERROR([pilot-link version > 0.12.0 is required])
    fi
 fi
 
