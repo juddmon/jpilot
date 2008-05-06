@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.69 2008/04/03 15:59:59 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.70 2008/05/06 00:11:52 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -209,19 +209,19 @@ static int pack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size,
 
    memset(buf, 0, n+1);
    *wrote_size = n;
-   strcpy(buf, kr->name);
+   strcpy((char *)buf, kr->name);
    i = strlen(kr->name)+1;
-   strcpy(&buf[i], kr->account);
+   strcpy((char *)&buf[i], kr->account);
    i += strlen(kr->account)+1;
-   strcpy(&buf[i], kr->password);
+   strcpy((char *)&buf[i], kr->password);
    i += strlen(kr->password)+1;
-   strcpy(&buf[i], kr->note);
+   strcpy((char *)&buf[i], kr->note);
    i += strlen(kr->note)+1;
-   strncpy(&buf[i], last_changed, 2);
+   strncpy((char *)&buf[i], last_changed, 2);
    for (i=strlen(kr->name)+1; i<n; i=i+8) {
       /* des_encrypt3((DES_LONG *)&buf[i], s1, s2, s1); */
 #ifdef HEADER_NEW_DES_H
-      DES_ecb3_encrypt(&buf[i], &buf[i], 
+      DES_ecb3_encrypt((DES_cblock *)&buf[i], (DES_cblock *)&buf[i], 
 		       &s1, &s2, &s1, DES_ENCRYPT);
 #else
       des_ecb3_encrypt((const_des_cblock *)&buf[i], (des_cblock *)(&buf[i]),
@@ -246,7 +246,7 @@ static int unpack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size)
    unsigned char *clear_text;
    unsigned char *P;
    unsigned char *Pstr[4];
-   unsigned char *safety[]={"","","",""};
+   char *safety[]= {"","","",""};
    unsigned short packed_date;
 
    jp_logf(JP_LOG_DEBUG, "KeyRing: unpack_KeyRing\n");
@@ -254,7 +254,7 @@ static int unpack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size)
       jp_logf(JP_LOG_DEBUG, "KeyRing: unpack_KeyRing(): No null terminater found in buf\n");
       return 0;
    }
-   n=strlen(buf)+1;
+   n=strlen((char *)buf)+1;
 
    rem=buf_size-n;
    if (rem>0xFFFF) {
@@ -274,7 +274,7 @@ static int unpack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size)
    P=&buf[n];
    for (i=0; i<rem; i+=8) {
 #ifdef HEADER_NEW_DES_H
-      DES_ecb3_encrypt(&P[i], clear_text+i,
+      DES_ecb3_encrypt((DES_cblock *)&P[i], (DES_cblock *)(clear_text+i),
 		       &s1, &s2, &s1, DES_DECRYPT);
 #else
       des_ecb3_encrypt((const_des_cblock *)&P[i], (des_cblock *)(clear_text+i),
@@ -284,9 +284,9 @@ static int unpack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size)
    }
 
    Pstr[0]=clear_text;
-   Pstr[1]=safety[1];
-   Pstr[2]=safety[2];
-   Pstr[3]=safety[3];
+   Pstr[1]=(unsigned char *)safety[1];
+   Pstr[2]=(unsigned char *)safety[2];
+   Pstr[3]=(unsigned char *)safety[3];
 
    for (i=0, j=1; (i<rem) && (j<4); i++) {
       if (!clear_text[i]) {
@@ -295,10 +295,10 @@ static int unpack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size)
       }
    }
 
-   kr->name=strdup(buf);
-   kr->account=strdup(Pstr[0]);
-   kr->password=strdup(Pstr[1]);
-   kr->note=strdup(Pstr[2]);
+   kr->name=strdup((char *)buf);
+   kr->account=strdup((char *)Pstr[0]);
+   kr->password=strdup((char *)Pstr[1]);
+   kr->note=strdup((char *)Pstr[2]);
 
    packed_date = get_short(Pstr[3]);
    kr->last_changed.tm_year = ((packed_date & 0xFE00) >> 9) + 4;
@@ -340,7 +340,7 @@ static int set_password_hash(unsigned char *buf, int buf_size, char *passwd)
    /* Must wipe passwd out of memory after using it */
    memset(buffer, 0, MESSAGE_BUF_SIZE);
    memcpy(buffer, buf, SALT_SIZE);
-   strncpy(buffer+SALT_SIZE, passwd, MESSAGE_BUF_SIZE - SALT_SIZE - 1);
+   strncpy((char *)(buffer+SALT_SIZE), passwd, MESSAGE_BUF_SIZE - SALT_SIZE - 1);
    MD5(buffer, MESSAGE_BUF_SIZE, md);
 
    /* wipe out password traces */
@@ -350,7 +350,7 @@ static int set_password_hash(unsigned char *buf, int buf_size, char *passwd)
       return EXIT_FAILURE;
    }
 
-   MD5(passwd, strlen(passwd), md);
+   MD5((unsigned char *)passwd, strlen(passwd), md);
    memcpy(current_key1, md, 8);
    memcpy(current_key2, md+8, 8);
 #ifdef HEADER_NEW_DES_H

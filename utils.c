@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.143 2008/04/29 14:21:24 rikster5 Exp $ */
+/* $Id: utils.c,v 1.144 2008/05/06 00:11:52 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -2326,7 +2326,7 @@ int unpack_db_header(DBHeader *dbh, unsigned char *buffer)
 {
    unsigned long temp;
 
-   g_strlcpy(dbh->db_name, buffer, 32);
+   g_strlcpy(dbh->db_name, (char *)buffer, 32);
    dbh->flags = bytes_to_bin(buffer + 32, 2);
    dbh->version = bytes_to_bin(buffer + 34, 2);
    temp = bytes_to_bin(buffer + 36, 4);
@@ -2338,9 +2338,9 @@ int unpack_db_header(DBHeader *dbh, unsigned char *buffer)
    dbh->modification_number = bytes_to_bin(buffer + 48, 4);
    dbh->app_info_offset = bytes_to_bin(buffer + 52, 4);
    dbh->sort_info_offset = bytes_to_bin(buffer + 56, 4);
-   g_strlcpy(dbh->type, buffer + 60, 5);
-   g_strlcpy(dbh->creator_id, buffer + 64, 5);
-   g_strlcpy(dbh->unique_id_seed, buffer + 68, 5);
+   g_strlcpy(dbh->type, (char *)(buffer + 60), 5);
+   g_strlcpy(dbh->creator_id, (char *)(buffer + 64), 5);
+   g_strlcpy(dbh->unique_id_seed, (char *)(buffer + 68), 5);
    dbh->next_record_list_id = bytes_to_bin(buffer + 72, 4);
    dbh->number_of_records = bytes_to_bin(buffer + 76, 2);
 

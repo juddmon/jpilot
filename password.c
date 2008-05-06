@@ -1,4 +1,4 @@
-/* $Id: password.c,v 1.24 2005/12/18 14:54:39 rousseau Exp $ */
+/* $Id: password.c,v 1.25 2008/05/06 00:11:52 rikster5 Exp $ */
 
 /*******************************************************************************
  * password.c
@@ -124,7 +124,7 @@ void palm_encode_hash(unsigned char *ascii, unsigned char *encoded)
       return;
    }
 
-   g_strlcpy(encoded, ascii, PASSWD_LEN);
+   g_strlcpy((char *)encoded, (char *)ascii, PASSWD_LEN);
    len = strlen((char *)encoded);
    for (ai=len; ai < PASSWD_LEN; ai++) {
       encoded[ai] = encoded[ai-len] + len;

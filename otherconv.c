@@ -1,4 +1,4 @@
-/* $Id: otherconv.c,v 1.28 2008/01/13 22:00:24 rousseau Exp $ */
+/* $Id: otherconv.c,v 1.29 2008/05/06 00:11:52 rikster5 Exp $ */
 
 /*******************************************************************************
  * otherconv.c
@@ -183,10 +183,10 @@ char *other_to_UTF(const char *buf, int buf_len)
       glob_frompda, &bytes_read, NULL, &err);
   if (err != NULL || bytes_read < oc_strnlen (buf, buf_len)) {
       char c;
-      unsigned char *head, *tail;
+      char *head, *tail;
       int outbuf_len;
-      unsigned char *tmp_buf = (unsigned char *)buf;
-     static int call_depth = 0;
+      char *tmp_buf = (char *)buf;
+      static int call_depth = 0;
 
       if (0 == call_depth)
 	 jp_logf(JP_LOG_WARN, "%s:%s g_convert_with_iconv error: %s, buff: %s\n",
@@ -200,8 +200,11 @@ char *other_to_UTF(const char *buf, int buf_len)
       /* convert the head, skip the problematic char, convert the tail */
       c = tmp_buf[bytes_read];
       tmp_buf[bytes_read] = '\0';
-      head = (char *)g_convert_with_iconv((gchar *)tmp_buf, oc_strnlen(tmp_buf,
-	 buf_len), glob_frompda, &bytes_read, NULL, NULL);
+      head = g_convert_with_iconv(tmp_buf, 
+                                  oc_strnlen(tmp_buf, buf_len),
+                                  glob_frompda, 
+                                  &bytes_read, 
+                                  NULL, NULL);
       tmp_buf[bytes_read] = c;
 
       call_depth++;
@@ -210,8 +213,7 @@ char *other_to_UTF(const char *buf, int buf_len)
 
       outbuf_len = strlen(head) +4 + strlen(tail)+1;
       outbuf = g_malloc(outbuf_len);
-      g_snprintf(outbuf, outbuf_len, "%s\\%02X%s",
-	 head, (unsigned char)c, tail);
+      g_snprintf(outbuf, outbuf_len, "%s\\%02X%s", head, (unsigned char)c, tail);
 
       g_free(head);
       g_free(tail);
