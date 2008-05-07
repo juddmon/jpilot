@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.144 2008/05/06 00:11:52 rikster5 Exp $ */
+/* $Id: utils.c,v 1.145 2008/05/07 13:58:15 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -1259,7 +1259,11 @@ void set_fg_rgb_clist_cell(GtkWidget *clist, int row, int col, int r, int g, int
 
 void entry_set_multiline_truncate(GtkEntry *entry, gboolean value)
 {
-   entry->truncate_multiline = value; 
+#ifdef ENABLE_GTK2
+#  if GTK_MINOR_VERSION >= 10
+      entry->truncate_multiline = value; 
+#  endif
+#endif
 }
 
 /*returns 0 if not found, 1 if found */
