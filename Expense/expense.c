@@ -1,4 +1,4 @@
-/* $Id: expense.c,v 1.53 2008/04/03 15:59:59 rikster5 Exp $ */
+/* $Id: expense.c,v 1.54 2008/05/08 13:48:59 rousseau Exp $ */
 
 /*******************************************************************************
  * expense.c
@@ -34,7 +34,7 @@
 #include <pi-file.h>
 
 #include "libplugin.h"
-#include "../i18n.h"
+#include "i18n.h"
 #include "utils.h"
 #include "prefs.h"
 #include "stock_buttons.h"
@@ -1310,7 +1310,7 @@ static int make_menu(char *items[], int menu_index, GtkWidget **Poption_menu,
    group = NULL;
    
    for (i=0; items[i]; i++) {
-      menu_item = gtk_radio_menu_item_new_with_label(group, gettext(items[i]));
+      menu_item = gtk_radio_menu_item_new_with_label(group, _(items[i]));
       menu_items[i] = menu_item;
       if (menu_index==EXPENSE_CAT1) {
          if (i==0) {
