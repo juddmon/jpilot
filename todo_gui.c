@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.123 2008/05/05 20:21:05 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.124 2008/05/08 13:52:10 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -2121,10 +2121,14 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu1, TRUE, TRUE, 0);
 
    /* Edit category button */
+	/* RW:5/8/2008: Temporarily removed ability to edit categories with Jpilot
+	 * because the back-end code WILL often lose user data */
+	/*
    button = gtk_button_new_with_label(_("Edit Categories"));
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_edit_cats), NULL);
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
+   */
 
    /*Put the todo list window up */
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
