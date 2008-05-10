@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.196 2008/05/08 13:52:10 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.197 2008/05/10 15:49:35 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -2332,6 +2332,7 @@ static void cb_edit_cats_category(GtkWidget *widget, gpointer data)
    pi_buffer_free(pi_buf);
 }
 
+#if 0
 static void cb_edit_cats(GtkWidget *widget, gpointer data)
 {
    if (address_version) {
@@ -2342,6 +2343,7 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
 
    cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
 }
+#endif
 
 
 static void set_button_label_to_date(GtkWidget *button, struct tm *date)
