@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.163 2008/05/10 15:48:39 rousseau Exp $ */
+/* $Id: datebook_gui.c,v 1.164 2008/05/10 15:59:36 rousseau Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -2842,7 +2842,7 @@ void cb_delete_appt(GtkWidget *widget, gpointer data)
    int flag;
    int result = 0;
    int show_priv;
-   int write_flag, write_type;
+   int write_flag;
    unsigned int *write_unique_id;
 
    mappt = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
@@ -2882,10 +2882,8 @@ void cb_delete_appt(GtkWidget *widget, gpointer data)
 	 datebook_copy_appointment(&(mappt->appt), &appt);
 	 datebook_add_exception(appt, current_year, current_month, current_day);
 	 if ((mappt->rt==PALM_REC) || (mappt->rt==REPLACEMENT_PALM_REC)) {
-	    write_type = REPLACEMENT_PALM_REC;
 	    write_unique_id = &(mappt->unique_id);
 	 } else {
-	    write_type = REPLACEMENT_PALM_REC;
 	    write_unique_id = NULL;
 	 }
 	 /*Since this was really a modify, and not a delete */
@@ -2899,7 +2897,7 @@ void cb_delete_appt(GtkWidget *widget, gpointer data)
     */
    delete_pc_record(DATEBOOK, mappt, flag);
    if (write_flag) {
-      pc_datebook_write(appt, write_type, mappt->attrib, write_unique_id);
+      pc_datebook_write(appt, REPLACEMENT_PALM_REC, mappt->attrib, write_unique_id);
       free_Appointment(appt);
       free(appt);
    }
