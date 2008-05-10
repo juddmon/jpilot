@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.125 2008/05/10 16:06:09 rousseau Exp $ */
+/* $Id: todo_gui.c,v 1.126 2008/05/10 16:07:38 rousseau Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -629,7 +629,7 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
    int i, r, len;
    const char *short_date;
    time_t ltime;
-   struct tm *now;
+   struct tm *now = NULL;
    char *button_text[]={N_("OK")};
    char *button_overwrite_text[]={N_("No"), N_("Yes")};
    char text[1024];
