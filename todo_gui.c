@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.124 2008/05/08 13:52:10 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.125 2008/05/10 16:06:09 rousseau Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -1277,6 +1277,7 @@ static void clear_mytodos(MyToDo *mtodo)
 }
 /* End Masking */
 
+#if 0
 static void cb_edit_cats(GtkWidget *widget, gpointer data)
 {
    struct ToDoAppInfo ai;
@@ -1317,6 +1318,7 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
 
    cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
 }
+#endif
 
 /* Function is used to sort clist based on the completed checkbox */
 gint GtkClistCompareCheckbox(GtkCList *clist,
@@ -2031,7 +2033,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 #ifndef ENABLE_GTK2
    GtkWidget *vscrollbar;
 #endif
-   GtkWidget *button;
+   /*GtkWidget *button;*/
    time_t ltime;
    struct tm *now;
    char str[MAX_RADIO_BUTTON_LEN];
