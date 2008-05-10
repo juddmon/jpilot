@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.162 2008/05/01 04:03:32 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.163 2008/05/10 15:48:39 rousseau Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -685,7 +685,7 @@ void appt_export_ok(int type, const char *filename)
    char csv_text[65550];
    char *p;
    time_t ltime;
-   struct tm *now;
+   struct tm *now = NULL;
    char username[256];
    char hostname[256];
    const char *svalue;
