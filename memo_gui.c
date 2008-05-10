@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.111 2008/05/08 13:52:10 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.112 2008/05/10 16:04:24 rousseau Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -976,6 +976,7 @@ static void clear_mymemo(MyMemo *mmemo)
 /* End Masking */
 
 
+#if 0
 static void cb_edit_cats(GtkWidget *widget, gpointer data)
 {
    struct MemoAppInfo ai;
@@ -1037,6 +1038,7 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
 
    cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
 }
+#endif
 
 
 static void cb_clist_selection(GtkWidget      *clist,
@@ -1442,7 +1444,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    GtkWidget *scrolled_window;
    GtkWidget *vbox1, *vbox2, *hbox_temp;
    GtkWidget *separator;
-   GtkWidget *button;
+   /*GtkWidget *button;*/
 #ifndef ENABLE_GTK2
    GtkWidget *vscrollbar;
 #endif
