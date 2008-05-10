@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.197 2008/05/10 15:49:35 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.198 2008/05/10 16:01:39 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -2245,6 +2245,7 @@ static void clear_mycontact(MyContact *mcont)
 }
 /* End Masking */
 
+#if 0
 static void cb_edit_cats_address(GtkWidget *widget, gpointer data)
 {
    struct AddressAppInfo aai;
@@ -2331,6 +2332,7 @@ static void cb_edit_cats_category(GtkWidget *widget, gpointer data)
 
    pi_buffer_free(pi_buf);
 }
+#endif
 
 #if 0
 static void cb_edit_cats(GtkWidget *widget, gpointer data)
