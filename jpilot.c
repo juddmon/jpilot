@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.161 2008/04/15 23:41:49 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.162 2008/05/14 18:46:20 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -1145,7 +1145,7 @@ guint8 *get_inline_pixbuf_data(const char **xpm_icon_data, gint icon_size)
        gdk_pixbuf_get_height(pixbuf) != icon_size) {
       scaled_pb = gdk_pixbuf_scale_simple(pixbuf, icon_size, icon_size,
 	 GDK_INTERP_BILINEAR);
-      g_object_unref(G_OBJECT(pixbuf));
+      gdk_pixbuf_unref(pixbuf);
       pixbuf = scaled_pb;
    }
 
@@ -1153,7 +1153,7 @@ guint8 *get_inline_pixbuf_data(const char **xpm_icon_data, gint icon_size)
    gdk_pixdata_from_pixbuf(pixdata, pixbuf, FALSE);
    data = gdk_pixdata_serialize(pixdata, &len);
 
-   g_object_unref(pixbuf);
+   gdk_pixbuf_unref(pixbuf);
    g_free(pixdata);
 
    return data;
