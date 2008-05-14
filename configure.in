@@ -4,7 +4,7 @@ dnl ############################################################################
 
 dnl boilerplate to initialize autoconf(AC) and automake(AM)
 AC_PREREQ([2.58])
-AC_INIT(jpilot, 1.6.0-pre2)
+AC_INIT(jpilot, 1.6.0-pre4)
 AM_INIT_AUTOMAKE([1.8])
 
 dnl use a config.h file rather than string of -DXXX args to compiler
@@ -353,8 +353,6 @@ AC_TRY_COMPILE([#include <pi-version.h>], [
 
 dnl * Pilot-link version variations, USB support, 12.0, etc.
 
-usb=no;
-pl12=no;
 pl_version_check_done=no;
 
 pl_version=`$GREP "define PILOT_LINK_VERSION" "$pilot_incl/pi-version.h" | \
@@ -371,8 +369,6 @@ dnl *** check for pilot-link 0.12 and up
 
 if test $pl_version -eq 0 ; then
    if test $pl_major -ge 12 ; then
-      pl12=yes
-      usb=yes
       pl_version_check_done=yes;
       AC_MSG_RESULT([pilot-link has USB])
       AC_MSG_RESULT([pilot-link has card support (>12.0)])
@@ -396,13 +392,12 @@ it has some bugs with not fetching the category app info])
    fi
 fi
 
-if test "x$usb" = "xyes"; then
-   AC_DEFINE(USB_PILOT_LINK, 1, [ usb support ])
-fi
-
-if test "x$pl12" = "xyes"; then
-   AC_DEFINE(PILOT_LINK_0_12, 1, [ pl-0.12 support ])
-fi
+dnl * pilot-link > 0.12 is now required which guarantees these
+dnl * macros can be set.  Eventually jpilot C code that uses
+dnl * these macros can be replaced and the macros removed from 
+dnl * the configuration file
+AC_DEFINE(USB_PILOT_LINK, 1, [ usb support ])
+AC_DEFINE(PILOT_LINK_0_12, 1, [ pl-0.12 support ])
 
 dnl restore variables after pilot-link testing
 CFLAGS="$save_CFLAGS"
@@ -595,8 +590,7 @@ AC_MSG_RESULT(NLS support (foreign languages)........   $USE_NLS)
 AC_MSG_RESULT(Compiler Options.......................   $CFLAGS)
 AC_MSG_RESULT(Prefix directory.......................   $prefix)
 AC_MSG_RESULT(pilot-link headers.....................   $pilot_incl)
-AC_MSG_RESULT(USB support enabled....................   $usb)
-AC_MSG_RESULT(pilot-link 0.12 support................   $pl12)
+AC_MSG_RESULT(USB support enabled....................   yes)
 AC_MSG_RESULT(pilot-link version found...............   $pl_version.$pl_major.$pl_minor$pl_patch)
 AC_MSG_RESULT()
 AC_MSG_RESULT(Now type make to compile)
