@@ -1,4 +1,4 @@
-/* $Id: contact.c,v 1.4 2008/04/29 04:15:16 rikster5 Exp $ */
+/* $Id: contact.c,v 1.5 2008/05/14 12:01:33 rousseau Exp $ */
 
 /*******************************************************************************
  * contact.c
@@ -68,6 +68,7 @@ int contact_compare(const void *v1, const void *v2)
       sort_idx[3] = 2; /* company    */
       break;
     case SORT_BY_LNAME:
+    default:
       sort_idx[1] = 0; /* last name  */
       sort_idx[2] = 1; /* first name */
       sort_idx[3] = 2; /* company    */
