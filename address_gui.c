@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.198 2008/05/10 16:01:39 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.199 2008/05/14 18:05:37 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -1668,7 +1668,7 @@ void cb_resort(GtkWidget *widget,
 
    /* Rotate address sort order among 3 possibilities */
    addr_sort_order = addr_sort_order << 1;
-   if (!(addr_sort_order & 0x07)) addr_sort_order = 1;
+   if (!(addr_sort_order & 0x07)) addr_sort_order = SORT_BY_LNAME;
    set_pref(PREF_ADDR_SORT_ORDER, addr_sort_order, NULL, TRUE);
 
    /* Return to this record after resorting */
@@ -3160,6 +3160,7 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 	 if (temp_cl->mcont.cont.entry[show3]) field3=temp_cl->mcont.cont.entry[show3];
          switch (addr_sort_order) {
           case SORT_BY_LNAME:
+          default:
 	    if ((!field1[0]) || (!field2[0])) tmp_delim1=blank;
 	    if (!(field3[0])) tmp_delim2=blank;
 	    if ((!field1[0]) && (!field2[0])) tmp_delim2=blank;
@@ -3776,18 +3777,12 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_clist_column_title_passive(GTK_CLIST(clist), ADDRESS_PHONE_COLUMN);
    gtk_clist_column_title_passive(GTK_CLIST(clist), ADDRESS_NOTE_COLUMN);
 
-   /* Initialize addr_sort_order the first time program is called */ 
    get_pref(PREF_ADDR_SORT_ORDER, &ivalue, NULL);
    addr_sort_order = ivalue;
-   if (!addr_sort_order) {
-      if (contact_app_info.sortByCompany) {
-         addr_sort_order = SORT_BY_COMPANY;
-      } else {
-         addr_sort_order = SORT_BY_LNAME;
-      }
-   }
    switch (addr_sort_order) {
     case SORT_BY_LNAME: 
+    default:
+      addr_sort_order = SORT_BY_LNAME;  /* Initialize variable if default case taken */
       gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, _("Last Name/Company"));
       break;
     case SORT_BY_FNAME: 

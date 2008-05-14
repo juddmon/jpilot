@@ -1,4 +1,4 @@
-/* $Id: address.c,v 1.51 2008/04/29 04:15:16 rikster5 Exp $ */
+/* $Id: address.c,v 1.52 2008/05/14 18:05:37 rikster5 Exp $ */
 
 /*******************************************************************************
  * address.c
@@ -73,19 +73,20 @@ int address_compare(const void *v1, const void *v2)
 
    switch (glob_sort_rule & 0x7) {
     case SORT_BY_FNAME:
-      sort_idx[1] = 1; /* first name */
-      sort_idx[2] = 0; /* last name  */
-      sort_idx[3] = 2; /* company    */
+      sort_idx[1] = entryFirstname;
+      sort_idx[2] = entryLastname;
+      sort_idx[3] = entryCompany;
       break;
     case SORT_BY_LNAME:
-      sort_idx[1] = 0; /* last name  */
-      sort_idx[2] = 1; /* first name */
-      sort_idx[3] = 2; /* company    */
+    default:
+      sort_idx[1] = entryLastname;
+      sort_idx[2] = entryFirstname;
+      sort_idx[3] = entryCompany;
       break;
     case SORT_BY_COMPANY:
-      sort_idx[1] = 2; /* company    */
-      sort_idx[2] = 0; /* last name  */
-      sort_idx[3] = 1; /* first name */
+      sort_idx[1] = entryCompany;
+      sort_idx[2] = entryLastname;
+      sort_idx[3] = entryFirstname;
       break;
    } 
 

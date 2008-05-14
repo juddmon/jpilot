@@ -1,4 +1,4 @@
-/* $Id: contact.c,v 1.5 2008/05/14 12:01:33 rousseau Exp $ */
+/* $Id: contact.c,v 1.6 2008/05/14 18:05:38 rikster5 Exp $ */
 
 /*******************************************************************************
  * contact.c
@@ -49,8 +49,6 @@ int contact_compare(const void *v1, const void *v2)
    ContactList **cl1, **cl2;
    struct Contact *c1, *c2;
    char *str1 = NULL, *str2 = NULL;
-   //int sort1, sort2, sort3;
-   //int i;
    int last_cmp1, last_cmp2;
    int sort_idx[4];
    int i, j, r;
@@ -63,20 +61,20 @@ int contact_compare(const void *v1, const void *v2)
 
    switch (glob_sort_rule & 0x7) {
     case SORT_BY_FNAME:
-      sort_idx[1] = 1; /* first name */
-      sort_idx[2] = 0; /* last name  */
-      sort_idx[3] = 2; /* company    */
+      sort_idx[1] = contFirstname;
+      sort_idx[2] = contLastname;
+      sort_idx[3] = contCompany;
       break;
     case SORT_BY_LNAME:
     default:
-      sort_idx[1] = 0; /* last name  */
-      sort_idx[2] = 1; /* first name */
-      sort_idx[3] = 2; /* company    */
+      sort_idx[1] = contLastname;
+      sort_idx[2] = contFirstname;
+      sort_idx[3] = contCompany;
       break;
     case SORT_BY_COMPANY:
-      sort_idx[1] = 2; /* company    */
-      sort_idx[2] = 0; /* last name  */
-      sort_idx[3] = 1; /* first name */
+      sort_idx[1] = contCompany;
+      sort_idx[2] = contLastname;
+      sort_idx[3] = contFirstname;
       break;
    } 
 
