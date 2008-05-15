@@ -192,15 +192,19 @@ fi
 dnl ************************************************************ 
 
 AC_ARG_ENABLE(stock_buttons,
-   AC_HELP_STRING([--enable-stock-buttons],[Enable stock buttons]),
-   AC_MSG_RESULT(stock buttons enabled by configure options),
-   )
+   AC_HELP_STRING([--disable-stock-buttons],[Disable stock buttons)]),
+   enable_stock_buttons=$enableval,
+   enable_stock_buttons=yes)
+
 if test "x$enable_stock_buttons" = "xyes"; then
   if test "x$have_gtk2" = "xyes"; then
     AC_DEFINE(ENABLE_STOCK_BUTTONS, 1, [ Use GTK2 stock buttons ])
+    AC_MSG_RESULT(stock buttons enabled by configure options)
   else
     AC_MSG_ERROR([GTK2 required for stock buttons])
   fi
+else
+    AC_MSG_RESULT(stock buttons disabled by configure options)
 fi
 
 dnl ############################################################################
