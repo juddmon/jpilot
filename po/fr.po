@@ -1807,12 +1807,12 @@ msgid "Show popup tooltips (default YES)"
 msgstr "Montre les bulles d'aide (défaut OUI)"
 
 #: ../prefs_gui.c:602
-msgid "Use Datebook database (Palm OS <= 3.5)"
-msgstr "Utiliser la base de donnée Datebook (Palm OS <= 3.5)"
+msgid "Use Datebook database (Palm OS < 5.2.1)"
+msgstr "Utiliser la base de donnée Datebook (Palm OS < 5.2.1)"
 
 #: ../prefs_gui.c:605
-msgid "Use Calendar database (Palm OS >= 4.0)"
-msgstr "Utiliser la base de donnée Calendar (Palm OS >= 4.0)"
+msgid "Use Calendar database (Palm OS > 5.2)"
+msgstr "Utiliser la base de donnée Calendar (Palm OS > 5.2)"
 
 #. Show highlight days check box
 #: ../prefs_gui.c:632
@@ -1840,12 +1840,12 @@ msgstr ""
 "et mois"
 
 #: ../prefs_gui.c:664
-msgid "Use Address database (Palm OS <= 3.5)"
-msgstr "Utiliser la base de donnée Address (Palm OS <= 3.5)"
+msgid "Use Address database (Palm OS < 5.2.1)"
+msgstr "Utiliser la base de donnée Address (Palm OS < 5.2.1)"
 
 #: ../prefs_gui.c:667
-msgid "Use Contacts database (Palm OS >= 4.0)"
-msgstr "Utiliser la base de donnée Contacts (Palm OS >= 4.0)"
+msgid "Use Contacts database (Palm OS > 5.2)"
+msgstr "Utiliser la base de donnée Contacts (Palm OS > 5.2)"
 
 #: ../prefs_gui.c:696
 msgid "Mail Command"
@@ -1857,11 +1857,11 @@ msgid "%s is replaced by the e-mail address"
 msgstr "%s est remplacé par l'adresse mél"
 
 #: ../prefs_gui.c:722
-msgid "Use ToDo database (Palm OS <= 3.5) "
+msgid "Use ToDo database (Palm OS < 5.2.1) "
 msgstr ""
 
 #: ../prefs_gui.c:725
-msgid "Use Task database (Palm OS >= 4.0) "
+msgid "Use Task database (Palm OS > 5.2) "
 msgstr ""
 
 #. The hide completed check box
@@ -1889,11 +1889,11 @@ msgid "Use default number of days due"
 msgstr "Utilise le nombre de jours à 'échéance par défaut"
 
 #: ../prefs_gui.c:794
-msgid "Use Memo database (Palm OS <= 3.5)"
+msgid "Use Memo database (Palm OS < 5.2.1)"
 msgstr ""
 
 #: ../prefs_gui.c:797
-msgid "Use Memos database (Palm OS >= 4.0)"
+msgid "Use Memos database (Palm OS > 5.2)"
 msgstr ""
 
 #: ../prefs_gui.c:800
