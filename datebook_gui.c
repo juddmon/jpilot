@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.164 2008/05/10 15:59:36 rousseau Exp $ */
+/* $Id: datebook_gui.c,v 1.165 2008/05/21 13:14:58 rousseau Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -282,14 +282,14 @@ int datebook_to_text(struct Appointment *appt, char *text, int len)
       strcpy(text_repeat_type, _("Unknown"));
    }
    /* End Date */
+   strcpy(text_end_date, _("End Date: "));
    if (appt->repeatForever) {
-      sprintf(text_end_date, _("End Date: Never\n"));
+      strcat(text_end_date, _("Never"));
    } else {
-      strcpy(text_end_date, _("End Date: "));
       strftime(temp, sizeof(temp), short_date, &(appt->repeatEnd));
       strcat(text_end_date, temp);
-      strcat(text_end_date, "\n");
    }
+   strcat(text_end_date, "\n");
    sprintf(text_repeat_freq, _("Repeat Frequency: %d\n"), appt->repeatFrequency);
    if (appt->repeatType==repeatNone) {
       text_end_date[0]='\0';
