@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.199 2008/05/14 18:05:37 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.200 2008/05/21 13:24:17 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -1050,30 +1050,30 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
             if ((schema[i].type == ADDRESS_GUI_BIRTHDAY) &&
                  mcont->cont.birthdayFlag)
             {
-               fprintf(out, "%s: ", contact_app_info.labels[schema[i].record_field] ? contact_app_info.labels[schema[i].record_field] : "");
+               fprintf(out, _("%s: "), contact_app_info.labels[schema[i].record_field] ? contact_app_info.labels[schema[i].record_field] : "");
                birthday_str[0]='\0';
                get_pref(PREF_SHORTDATE, NULL, &pref_date);
                strftime(birthday_str, sizeof(birthday_str), pref_date, &(mcont->cont.birthday));
-               fprintf(out, "%s\n", birthday_str);
+               fprintf(out, _("%s\n"), birthday_str);
             }
 
 	    if (mcont->cont.entry[schema[i].record_field]) {
                /* Print labels for menu selectable fields (Work, Fax, etc.) */
 	       switch (schema[i].type) {
 		case ADDRESS_GUI_IM_MENU_TEXT:
-		  fprintf(out, "%s: ", contact_app_info.IMLabels[mcont->cont.IMLabel[IM_i]]);
+		  fprintf(out, _("%s: "), contact_app_info.IMLabels[mcont->cont.IMLabel[IM_i]]);
 		  IM_i++;
 		  break;
 		case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
-		  fprintf(out, "%s: ", contact_app_info.phoneLabels[mcont->cont.phoneLabel[phone_i]]);
+		  fprintf(out, _("%s: "), contact_app_info.phoneLabels[mcont->cont.phoneLabel[phone_i]]);
 		  phone_i++;
 		  break;
 		case ADDRESS_GUI_ADDR_MENU_TEXT:
-		  fprintf(out, "%s: ", contact_app_info.addrLabels[mcont->cont.addressLabel[address_i]]);
+		  fprintf(out, _("%s: "), contact_app_info.addrLabels[mcont->cont.addressLabel[address_i]]);
 		  address_i++;
 		  break;
 		default:
-		  fprintf(out, "%s: ", contact_app_info.labels[schema[i].record_field] ? contact_app_info.labels[schema[i].record_field] : "");
+		  fprintf(out, _("%s: "), contact_app_info.labels[schema[i].record_field] ? contact_app_info.labels[schema[i].record_field] : "");
 	       }
                /* Next print the entry field */
 	       switch (schema[i].type) {
