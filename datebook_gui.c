@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.165 2008/05/21 13:14:58 rousseau Exp $ */
+/* $Id: datebook_gui.c,v 1.166 2008/05/21 13:18:44 rousseau Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -277,7 +277,7 @@ int datebook_to_text(struct Appointment *appt, char *text, int len)
    /* Repeat Type */
    i=appt->repeatType;
    if ((i > -1) && (i < 7)) {
-      strcpy(text_repeat_type, repeat_type[i]);
+      strcpy(text_repeat_type, _(repeat_type[i]));
    } else {
       strcpy(text_repeat_type, _("Unknown"));
    }
