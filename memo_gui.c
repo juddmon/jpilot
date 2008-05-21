@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.112 2008/05/10 16:04:24 rousseau Exp $ */
+/* $Id: memo_gui.c,v 1.113 2008/05/21 13:29:49 rousseau Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -620,7 +620,7 @@ void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 fprintf(out, _("Category: %s\n"), utf);
 	 g_free(utf);
 	 fprintf(out, _("Private: %s\n"),
-		 (mmemo->attrib & dlpRecAttrSecret) ? "Yes":"No");
+		 (mmemo->attrib & dlpRecAttrSecret) ? _("Yes"):_("No"));
 	 fprintf(out, _("----- Start of Memo -----\n"));
 	 fprintf(out, "%s", mmemo->memo.text);
 	 fprintf(out, _("\n----- End of Memo -----\n\n"));
