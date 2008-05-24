@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.126 2008/05/10 16:07:38 rousseau Exp $ */
+/* $Id: todo_gui.c,v 1.127 2008/05/24 14:53:13 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -48,6 +48,12 @@
 #define NUM_TODO_CAT_ITEMS 16
 #define CONNECT_SIGNALS 400
 #define DISCONNECT_SIGNALS 401
+
+#ifndef max
+#  define max(a,b) (((a) > (b)) ? (a) : (b))
+#endif
+
+
 /* Keeps track of whether code is using ToDo, or Tasks database
  * 0 is ToDo, 1 is Tasks */
 static long todo_version=0;
@@ -626,7 +632,7 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
    GList *list, *temp_list;
    FILE *out;
    struct stat statb;
-   int i, r, len;
+   int i, r, len1, len2;
    const char *short_date;
    time_t ltime;
    struct tm *now = NULL;
@@ -716,12 +722,16 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
       }
       switch (type) {
        case EXPORT_TYPE_CSV:
-	 len=0;
+	 len1=len2=0;
 	 if (mtodo->todo.description) {
-	    len=strlen(mtodo->todo.description) * 2 + 4;
+	    len1=strlen(mtodo->todo.description) * 2 + 4;
 	 }
-	 if (len<256) len=256;
-	 csv_text=malloc(len);
+	 if (mtodo->todo.note) {
+	    len2=strlen(mtodo->todo.note) * 2 + 4;
+	 }
+         len1 = max(len1, len2);
+	 if (len1<256) len1=256;
+	 csv_text=malloc(len1);
 	 if (!csv_text) {
 	    continue;
 	    jp_logf(JP_LOG_WARN, _("Can't export todo %d\n"), (long) temp_list->data + 1);
@@ -732,11 +742,11 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 fprintf(out, "\"%s\",", (mtodo->attrib & dlpRecAttrSecret) ? "1":"0");
 	 fprintf(out, "\"%s\",", mtodo->todo.indefinite ? "1":"0");
 	 if (mtodo->todo.indefinite) {
-	    text[0]='\0';
+	    fprintf(out, "\"\",");
 	 } else {
-	    strftime(text, len, "%Y/%02m/%02d", &(mtodo->todo.due));
+	    strftime(text, sizeof(text), "%Y/%02m/%02d", &(mtodo->todo.due));
+	    fprintf(out, "\"%s\",", text);
 	 }
-	 fprintf(out, "\"%s\",", text);
 	 fprintf(out, "\"%d\",", mtodo->todo.priority);
 	 fprintf(out, "\"%s\",", mtodo->todo.complete ? "1":"0");
 	 if (mtodo->todo.description) {
