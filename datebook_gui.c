@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.167 2008/05/25 09:31:07 rousseau Exp $ */
+/* $Id: datebook_gui.c,v 1.168 2008/05/25 09:46:20 rousseau Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -2293,8 +2293,10 @@ static int datebook_update_clist()
 				 GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
    gtk_clist_clear(GTK_CLIST(clist));
 #ifdef __APPLE__
+   gtk_clist_thaw(GTK_CLIST(clist));
    gtk_widget_hide(clist);
    gtk_widget_show_all(clist);
+   gtk_clist_freeze(GTK_CLIST(clist));
 #endif
 
    /* Collect preferences and constant pixmaps for loop */

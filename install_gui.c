@@ -1,4 +1,4 @@
-/* $Id: install_gui.c,v 1.23 2005/12/18 14:54:39 rousseau Exp $ */
+/* $Id: install_gui.c,v 1.24 2008/05/25 09:46:20 rousseau Exp $ */
 
 /*******************************************************************************
  * install_gui.c
@@ -206,6 +206,12 @@ static int
 
    gtk_clist_freeze(GTK_CLIST(clist));
    gtk_clist_clear(GTK_CLIST(clist));
+#ifdef __APPLE__
+   gtk_clist_thaw(GTK_CLIST(clist));
+   gtk_widget_hide(clist);
+   gtk_widget_show_all(clist);
+   gtk_clist_freeze(GTK_CLIST(clist));
+#endif
 
    for (count=0; (!feof(in)); count++) {
       line[0]='\0';
