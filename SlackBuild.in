@@ -72,6 +72,10 @@ usr/share/$PACKAGE/ExpenseDB.pdb \
 usr/share/$PACKAGE/Memo32DB.pdb \
 usr/share/$PACKAGE/MemoDB.pdb \
 usr/share/$PACKAGE/ToDoDB.pdb \
+usr/share/$PACKAGE/TasksDB-PTod.pdb \
+usr/share/$PACKAGE/CalendarDB-PDat.pdb \
+usr/share/$PACKAGE/ContactsDB-PAdd.pdb \
+usr/share/$PACKAGE/MemosDB-PMem.pdb \
 usr/share/$PACKAGE/jpilotrc.blue \
 usr/share/$PACKAGE/jpilotrc.default \
 usr/share/$PACKAGE/jpilotrc.green \
