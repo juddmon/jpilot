@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.70 2008/05/06 00:11:52 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.71 2008/05/25 09:31:07 rousseau Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -1147,6 +1147,10 @@ static void keyr_update_clist()
    gtk_signal_disconnect_by_func(GTK_OBJECT(clist),
 				 GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
    gtk_clist_clear(GTK_CLIST(clist));
+#ifdef __APPLE__
+   gtk_widget_hide(clist);
+   gtk_widget_show_all(clist);
+#endif
 
    entries_shown=0;
 

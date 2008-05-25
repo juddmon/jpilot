@@ -1,4 +1,4 @@
-/* $Id: expense.c,v 1.54 2008/05/08 13:48:59 rousseau Exp $ */
+/* $Id: expense.c,v 1.55 2008/05/25 09:31:07 rousseau Exp $ */
 
 /*******************************************************************************
  * expense.c
@@ -925,6 +925,10 @@ static void display_records()
    gtk_signal_disconnect_by_func(GTK_OBJECT(clist),
                                  GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
    gtk_clist_clear(GTK_CLIST(clist));
+#ifdef __APPLE__
+   gtk_widget_hide(clist);
+   gtk_widget_show_all(clist);
+#endif
 
    /* This function takes care of reading the Database for us */
    num = jp_read_DB_files("ExpenseDB", &records);

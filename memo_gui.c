@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.113 2008/05/21 13:29:49 rousseau Exp $ */
+/* $Id: memo_gui.c,v 1.114 2008/05/25 09:31:07 rousseau Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -1211,6 +1211,10 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 	   gtk_signal_disconnect_by_func(GTK_OBJECT(clist),
 				 GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
    gtk_clist_clear(GTK_CLIST(clist));
+#ifdef __APPLE__
+   gtk_widget_hide(clist);
+   gtk_widget_show_all(clist);
+#endif
 
    show_priv = show_privates(GET_PRIVATES);
 

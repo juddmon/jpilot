@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.127 2008/05/24 14:53:13 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.128 2008/05/25 09:31:07 rousseau Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -1711,6 +1711,10 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 				    GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
    }
    gtk_clist_clear(GTK_CLIST(clist));
+#ifdef __APPLE__
+   gtk_widget_hide(clist);
+   gtk_widget_show_all(clist);
+#endif
 
    /* Collect preferences and constant pixmaps for loop */
    get_pref(PREF_TODO_HIDE_COMPLETED, &hide_completed, NULL);
