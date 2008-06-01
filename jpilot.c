@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.162 2008/05/14 18:46:20 rousseau Exp $ */
+/* $Id: jpilot.c,v 1.163 2008/06/01 18:52:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -744,19 +744,20 @@ int bad_sync_exit_status(int exit_status)
 {
    char text1[] =
       /*-------------------------------------------*/
-      N_("This palm doesn't have the same user name\n"
+      N_("This handheld does not have the same user name\n"
          "or user ID as the one that was synced the\n"
          "last time.  Syncing could have unwanted effects."
          "\n"
          "Read the user manual if you are uncertain.");
    char text2[] =
       /*-------------------------------------------*/
-      N_("This palm has a NULL user id.\n"
-         "Every palm must have a unique user id in order to sync properly.\n"
-         "If it has been hard reset, use restore from the menu to restore it,\n"
-         "or use pilot-xfer.\n"
-         "To add a user name and ID use the install-user command line tool,\n"
-	 "or use install-user from the menu\n"
+      N_("This handheld has a NULL user ID.\n"
+         "Every handheld must have a unique user ID in order to sync properly.\n"
+         "If the handheld has been hard reset, \n"
+         "   use restore from the menu to restore it.\n"
+         "Otherwise, to add a new user name and ID\n"
+         "   use install-user from the menu.\n"
+         "\n"
          "Read the user manual if you are uncertain.");
    char *button_text[]={N_("Cancel Sync"), N_("Sync Anyway")
    };
@@ -2908,7 +2909,7 @@ char * xpm_backup[] = {
    gdk_window_get_size(window->window, &w, &h);
    gtk_paned_set_position(GTK_PANED(output_pane), h);
 
-   /* ToDo this is broken, it doesn't take into account the window
+   /* TODO: this is broken, it doesn't take into account the window
     * decorations.  I can't find a GDK call that does */
    gdk_window_get_origin(window->window, &x, &y);
    jp_logf(JP_LOG_DEBUG, "x=%d, y=%d\n", x, y);
@@ -2946,7 +2947,7 @@ char * xpm_backup[] = {
       g_strlcpy(text, 
          _("J-Pilot is using the GTK2 graphical toolkit. "
            "This version of the toolkit uses UTF-8 to encode characters.\n"
-           "You should select a UTF-8 charset so you can see the non-ASCII characters (accents for example).\n\n"), sizeof(text));
+           "You should select a UTF-8 charset so that you can see non-ASCII characters (accents for example).\n\n"), sizeof(text));
       g_strlcat(text, _("Go to the menu \""), sizeof(text));
       g_strlcat(text, _("/File/Preferences"), sizeof(text));
       g_strlcat(text, _("\" and change the \""), sizeof(text));

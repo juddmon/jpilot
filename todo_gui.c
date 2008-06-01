@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.129 2008/05/25 09:46:20 rousseau Exp $ */
+/* $Id: todo_gui.c,v 1.130 2008/06/01 18:52:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -1287,7 +1287,6 @@ static void clear_mytodos(MyToDo *mtodo)
 }
 /* End Masking */
 
-#if 0
 static void cb_edit_cats(GtkWidget *widget, gpointer data)
 {
    struct ToDoAppInfo ai;
@@ -1328,7 +1327,6 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
 
    cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
 }
-#endif
 
 /* Function is used to sort clist based on the completed checkbox */
 gint GtkClistCompareCheckbox(GtkCList *clist,
@@ -2049,7 +2047,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 #ifndef ENABLE_GTK2
    GtkWidget *vscrollbar;
 #endif
-   /*GtkWidget *button;*/
+   GtkWidget *button;
    time_t ltime;
    struct tm *now;
    char str[MAX_RADIO_BUTTON_LEN];
@@ -2139,14 +2137,10 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu1, TRUE, TRUE, 0);
 
    /* Edit category button */
-	/* RW:5/8/2008: Temporarily removed ability to edit categories with Jpilot
-	 * because the back-end code WILL often lose user data */
-	/*
    button = gtk_button_new_with_label(_("Edit Categories"));
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_edit_cats), NULL);
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
-   */
 
    /*Put the todo list window up */
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);

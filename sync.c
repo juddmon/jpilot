@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.84 2008/05/03 15:58:48 judd Exp $ */
+/* $Id: sync.c,v 1.85 2008/06/01 18:52:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -20,6 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  ******************************************************************************/
 
+/********************************* Includes ***********************************/
 #include "config.h"
 #include "i18n.h"
 #include <stdlib.h>
@@ -32,9 +33,9 @@
 #include <sys/time.h>
 #include <sys/socket.h>
 #ifdef USE_FLOCK
-# include <sys/file.h>
+#  include <sys/file.h>
 #else
-# include <fcntl.h>
+#  include <fcntl.h>
 #endif
 #include <errno.h>
 #include <signal.h>
@@ -56,33 +57,34 @@
 #include <pi-file.h>
 #include <pi-version.h>
 #ifdef PILOT_LINK_0_12
-# include <pi-error.h>
+#  include <pi-error.h>
 #endif
 
+/********************************* Constants **********************************/
 #define FD_ERROR 1001
-
 
 /* Try to determine if version of pilot-link > 0.9.x */
 #ifdef USB_PILOT_LINK
-# undef USB_PILOT_LINK
+#  undef USB_PILOT_LINK
 #endif
 
 #if PILOT_LINK_VERSION > 0
-# define USB_PILOT_LINK
-#else
-# if PILOT_LINK_MAJOR > 9
 #  define USB_PILOT_LINK
-# endif
+#else
+#  if PILOT_LINK_MAJOR > 9
+#     define USB_PILOT_LINK
+#  endif
 #endif
 
 #ifndef min
-#define min(a,b) (((a) < (b)) ? (a) : (b))
+#  define min(a,b) (((a) < (b)) ? (a) : (b))
 #endif
 
 /* #define PIPE_DEBUG */
 /* #define JPILOT_DEBUG */
 /* #define SYNC_CAT_DEBUG */
 
+/****************************** Prototypes ************************************/
 extern int pipe_to_parent, pipe_from_parent;
 extern pid_t glob_child_pid;
 
@@ -105,9 +107,11 @@ int unpack_todo_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, 
 int pack_todo_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len);
 int unpack_memo_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len);
 int pack_memo_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len);
-/* New applications */
+/* New 2.0 applications */
 int unpack_contact_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len);
 int pack_contact_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len);
+
+/****************************** Main Code *************************************/
 
 void sig_handler(int sig)
 {
@@ -235,7 +239,7 @@ static char *get_error_str(int error)
 
 /* Attempt to match records
  *
- * Unfortunately the palm and Jpilot store some fields differently.
+ * Unfortunately the Palm and Jpilot store some fields differently.
  * This may be caused by endianess issues between the Palm and the host PC.
  * The time structs are also likely to be different since Palm measures from 
  * 1904 and the host PC doesn't.
@@ -249,11 +253,11 @@ int match_records(void *rrec, int rrec_len,
 {
 
    if (!rrec || !lrec) {
-      return 0;
+      return FALSE;
    }
    
    if (lrec_len != rrec_len) {
-      return 0;
+      return FALSE;
    }
 
    /* memcmp works for a few specific databases */
@@ -270,7 +274,7 @@ int match_records(void *rrec, int rrec_len,
       return !(memcmp(lrec, rrec, lrec_len));
 
    /* Lengths match and no other checks possible */
-   return 1;
+   return TRUE;
 
 }
 
@@ -918,7 +922,7 @@ int jp_sync(struct my_sync_info *sync_info)
    }
 
    /* User name and User ID is read by the parent process and stored
-    * in the preferences
+    * in the preferences.
     * So, this is more than just displaying it to the user */
    if (!(sync_info->flags & SYNC_RESTORE)) {
       write_to_parent(PIPE_USERNAME, "\"%s\"\n", U.username);
@@ -930,11 +934,11 @@ int jp_sync(struct my_sync_info *sync_info)
    jp_logf(JP_LOG_GUI, _("This PC = %lu\n"), sync_info->PC_ID);
    jp_logf(JP_LOG_GUI, "****************************************\n");
 
-   jp_logf(JP_LOG_DEBUG, _("Last Username = [%s]\n"), sync_info->username);
-   jp_logf(JP_LOG_DEBUG, _("Last UserID = %d\n"), sync_info->userID);
-   jp_logf(JP_LOG_DEBUG, _("Username = [%s]\n"), U.username);
-   jp_logf(JP_LOG_DEBUG, _("userID = %d\n"), U.userID);
-   jp_logf(JP_LOG_DEBUG, _("lastSyncPC = %d\n"), U.lastSyncPC);
+   jp_logf(JP_LOG_DEBUG, "Last Username = [%s]\n", sync_info->username);
+   jp_logf(JP_LOG_DEBUG, "Last UserID = %d\n", sync_info->userID);
+   jp_logf(JP_LOG_DEBUG, "Username = [%s]\n", U.username);
+   jp_logf(JP_LOG_DEBUG, "userID = %d\n", U.userID);
+   jp_logf(JP_LOG_DEBUG, "lastSyncPC = %d\n", U.lastSyncPC);
 
 #ifdef ENABLE_PRIVATE
    if (U.passwordLength > 0) {
@@ -1228,7 +1232,7 @@ int slow_sync_application(char *DB_name, int sd)
 
 #ifdef JPILOT_DEBUG
    dlp_ReadOpenDBInfo(sd, db, &num);
-   jp_logf(JP_LOG_GUI ,_("number of records = %d\n"), num);
+   jp_logf(JP_LOG_GUI , "number of records = %d\n", num);
 #endif
 
    /* Loop over records in .pc3 file */
@@ -2121,7 +2125,7 @@ static int sync_install(char *filename, int sd)
 #endif
    if (r<0) {
       try_again = 0;
-      /* TODO make this generic? Not sure it would work 100% of the time */
+      /* TODO: make this generic? Not sure it would work 100% of the time */
       /* Here we make a special exception for graffiti */
       if (!strcmp(info.name, "Graffiti ShortCuts")) {
 	 strcpy(info.name, "Graffiti ShortCuts ");
@@ -2786,94 +2790,6 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
 }
 
 /*
- * This takes 2 category indexes and swaps them in every record.
- * returns the number of record's categories swapped.
- */
-int pdb_file_swap_indexes(char *DB_name, int index1, int index2)
-{
-   char local_pdb_file[FILENAME_MAX];
-   char full_local_pdb_file[FILENAME_MAX];
-   char full_local_pdb_file2[FILENAME_MAX];
-   struct pi_file *pf1, *pf2;
-   struct DBInfo infop;
-   void *app_info;
-   void *sort_info;
-   void *record;
-   int r;
-   int idx;
-#ifdef PILOT_LINK_0_12
-   size_t size;
-#else
-   int size;
-#endif
-   int attr;
-   int cat, new_cat;
-   int count;
-   pi_uid_t uid;
-   struct stat statb;
-   struct utimbuf times;
-
-   jp_logf(JP_LOG_DEBUG, "pi_file_swap_indexes\n");
-
-   g_snprintf(local_pdb_file, sizeof(local_pdb_file), "%s.pdb", DB_name);
-   get_home_file_name(local_pdb_file, full_local_pdb_file, sizeof(full_local_pdb_file));
-   strcpy(full_local_pdb_file2, full_local_pdb_file);
-   strcat(full_local_pdb_file2, "2");
-
-   /* After we are finished, set the create and modify times of new file
-      to the same as the old */
-   stat(full_local_pdb_file, &statb);
-   times.actime = statb.st_atime;
-   times.modtime = statb.st_mtime;
-
-   pf1 = pi_file_open(full_local_pdb_file);
-   if (!pf1) {
-      jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), full_local_pdb_file);
-      return EXIT_FAILURE;
-   }
-   pi_file_get_info(pf1, &infop);
-   pf2 = pi_file_create(full_local_pdb_file2, &infop);
-   if (!pf2) {
-      jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), full_local_pdb_file2);
-      return EXIT_FAILURE;
-   }
-
-   pi_file_get_app_info(pf1, &app_info, &size);
-   pi_file_set_app_info(pf2, app_info, size);
-
-   pi_file_get_sort_info(pf1, &sort_info, &size);
-   pi_file_set_sort_info(pf2, sort_info, size);
-
-   count = 0;
-
-   for(idx=0;;idx++) {
-      r = pi_file_read_record(pf1, idx, &record, &size, &attr, &cat, &uid);
-      if (r<0) break;
-      new_cat=cat;
-      if (cat==index1) {
-	 new_cat=index2;
-	 count++;
-      }
-      if (cat==index2) {
-	 new_cat=index1;
-	 count++;
-      }
-      pi_file_append_record(pf2, record, size, attr, new_cat, uid);
-   }
-
-   pi_file_close(pf1);
-   pi_file_close(pf2);
-
-   if (rename(full_local_pdb_file2, full_local_pdb_file) < 0) {
-      jp_logf(JP_LOG_WARN, "pdb_file_swap_indexes(): %s\n,", _("rename failed"));
-   }
-
-   utime(full_local_pdb_file, &times);
-
-   return EXIT_SUCCESS;
-}
-
-/*
  * This code does not do archiving.
  *
  * For each remote record (RR):
@@ -3030,8 +2946,8 @@ int fast_sync_application(char *DB_name, int sd)
       extra_dbname[0] = DB_name;
       extra_dbname[1] = NULL;
       jp_logf(JP_LOG_DEBUG, "fetch_extra_DBs() [%s]\n", extra_dbname[0]);
-      jp_logf(JP_LOG_DEBUG ,_("palm: number of records = %d\n"), num_palm_recs);
-      jp_logf(JP_LOG_DEBUG ,_("disk: number of records = %d\n"), num_local_recs);
+      jp_logf(JP_LOG_DEBUG, "palm: number of records = %d\n", num_palm_recs);
+      jp_logf(JP_LOG_DEBUG, "disk: number of records = %d\n", num_local_recs);
       fetch_extra_DBs(sd, extra_dbname);
    }
 
@@ -3046,6 +2962,7 @@ int unpack_address_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_ra
 
    jp_logf(JP_LOG_DEBUG, "unpack_address_cai_from_ai\n");
 
+   memset(&ai, 0, sizeof(ai));
    r = unpack_AddressAppInfo(&ai, ai_raw, len);
    if ((r <= 0) || (len <= 0)) {
       jp_logf(JP_LOG_DEBUG, "unpack_AddressAppInfo failed %s %d\n", __FILE__, __LINE__);
@@ -3087,6 +3004,7 @@ int unpack_contact_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_ra
 
    jp_logf(JP_LOG_DEBUG, "unpack_contact_cai_from_ai\n");
 
+   memset(&ai, 0, sizeof(ai));
    pi_buf.data = ai_raw;
    pi_buf.used = len;
    pi_buf.allocated = len;
@@ -3140,6 +3058,7 @@ int unpack_todo_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, 
 
    jp_logf(JP_LOG_DEBUG, "unpack_todo_cai_from_ai\n");
 
+   memset(&ai, 0, sizeof(ai));
    r = unpack_ToDoAppInfo(&ai, ai_raw, len);
    if ((r <= 0) || (len <= 0)) {
       jp_logf(JP_LOG_DEBUG, "unpack_ToDoAppInfo failed %s %d\n", __FILE__, __LINE__);
@@ -3180,6 +3099,13 @@ int unpack_memo_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, 
 
    jp_logf(JP_LOG_DEBUG, "unpack_memo_cai_from_ai\n");
 
+	/* Bug 1922 in pilot-link-0.12.3 and below.
+	 * unpack_MemoAppInfo does not zero out all bytes of the 
+	 * appinfo struct and so it must be cleared here with a memset.
+	 * Can be removed from this and all other unpack routines when
+	 * Bug 1922 is fixed.
+	 * RW: 6/1/2008 */
+   memset(&ai, 0, sizeof(ai));
    r = unpack_MemoAppInfo(&ai, ai_raw, len);
    if ((r <= 0) || (len <= 0)) {
       jp_logf(JP_LOG_DEBUG, "unpack_MemoAppInfo failed %s %d\n", __FILE__, __LINE__);
@@ -3222,28 +3148,32 @@ int sync_categories(char *DB_name, int sd,
    char full_name[FILENAME_MAX];
    char pdb_name[FILENAME_MAX];
    char log_entry[256];
+   struct pi_file *pf;
 #ifdef PILOT_LINK_0_12
    pi_buffer_t *buffer;
    size_t local_cai_size;
 #else
    int local_cai_size;
 #endif
-   unsigned char buf[65536];
-   char tmp_name[18];
-   int i, r, Li, Ri;
    int remote_cai_size;
-   void *Papp_info;
-   struct pi_file *pf;
+   unsigned char buf[65536];
    int db;
+   void *Papp_info;
+   char tmp_name[18];
+   int tmp_int;
+   int i, r, Li, Ri;
    int found_name, found_ID;
    int found_name_at, found_ID_at;
-   int found_a_hole;
+   int found_a_slot;
+   int move_from_idx[NUM_CATEGORIES];
+   int move_to_idx[NUM_CATEGORIES];
+   int move_i = 0;
    int loop;
    long char_set;
 
-   get_pref(PREF_CHAR_SET, &char_set, NULL);
-
    jp_logf(JP_LOG_DEBUG, "sync_categories for %s\n", DB_name);
+
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
 
    g_snprintf(pdb_name, sizeof(pdb_name), "%s%s", DB_name, ".pdb");
    get_home_file_name(pdb_name, full_name, sizeof(full_name));
@@ -3315,107 +3245,162 @@ int sync_categories(char *DB_name, int sd,
    }
    memcpy(&orig_remote_cai, &remote_cai, sizeof(remote_cai));
 
-#ifdef SYNC_CAT_DEBUG
-   printf("--- DB_name [%s]\n", DB_name);
-   printf("--- local: size is %d ---\n", local_cai_size);
-   for (i = 0; i < CATCOUNT; i++) {
-      if (local_cai.name[i][0] != '\0') {
-	 printf("local: cat %d [%s] ID %d renamed %d\n", i,
-		local_cai.name[i],
-		local_cai.ID[i], local_cai.renamed[i]);
-      }
-   }
-   printf("--- remote: size is %d ---\n", remote_cai_size);
-   for (i = 0; i < CATCOUNT; i++) {
-      if (remote_cai.name[i][0] != '\0') {
-	 printf("remote: cat %d [%s] ID %d renamed %d\n", i,
-		remote_cai.name[i],
-		remote_cai.ID[i], remote_cai.renamed[i]);
-      }
-   }
-#endif
-
-   /* Do a memcmp first to see if common case, nothing has changed */
-   if (!memcmp(&(local_cai), &(remote_cai),
-	       sizeof(struct CategoryAppInfo))) {
+   /* Do a memcmp first to see if nothing has changed, the common case */
+   if (!memcmp(&(local_cai), &(remote_cai), sizeof(local_cai))) {
       jp_logf(JP_LOG_DEBUG, "Category app info match, nothing to do %s\n", DB_name);
       dlp_CloseDB(sd, db);
       return EXIT_SUCCESS;
    }
 
-   /* Go through the categories and try to sync them */
-   for (Li = loop = 0; ((Li < CATCOUNT) && (loop<256)); Li++, loop++) {
+#ifdef SYNC_CAT_DEBUG
+   printf("--- pre-sync CategoryAppInfo\n");
+   printf("--- DB_name [%s]\n", DB_name);
+   printf("--- local: size is %d ---\n", local_cai_size);
+   for (i=0; i<NUM_CATEGORIES; i++) {
+      printf("local: cat %d [%s] ID %d renamed %d\n", i,
+             local_cai.name[i],
+             local_cai.ID[i], local_cai.renamed[i]);
+   }
+   printf("--- remote: size is %d ---\n", remote_cai_size);
+   for (i=0; i<NUM_CATEGORIES; i++) {
+	 printf("remote: cat %d [%s] ID %d renamed %d\n", i,
+		remote_cai.name[i],
+		remote_cai.ID[i], remote_cai.renamed[i]);
+   }
+#endif
+
+   /* Go through the categories, skipping the reserved 'Unfiled' at index 0,
+    * and try to synchronize them.
+    * loop variable is to prevent infinite loops */
+   for (Li=loop=1; ((Li<NUM_CATEGORIES) && (loop<256)); Li++, loop++) {
       found_name=found_ID=FALSE;
       found_name_at=found_ID_at=0;
-      /* Did a cat get deleted locally? */
-      if ((local_cai.name[Li][0]==0) && (local_cai.ID[Li]!=0)) {
-	 for (Ri = 0; Ri < CATCOUNT; Ri++) {
-	    if ((remote_cai.ID[Ri]==local_cai.ID[Li]) &&
-		(remote_cai.name[Ri][0])) {
-#ifdef SYNC_CAT_DEBUG
-	       printf("cat %d deleted local, del cat on remote\n", Li);
-	       printf(" remote cat name %s\n", remote_cai.name[Ri]);
-#endif
-	       remote_cai.renamed[Ri]=0;
-	       remote_cai.name[Ri][0]='\0';
-	       /* This category was deleted.
-		Move the records to Unfiled */
-	       jp_logf(JP_LOG_DEBUG, "Moving category %d to unfiled...", Ri);
-	       r = dlp_MoveCategory(sd, db, Ri, 0);
-	       jp_logf(JP_LOG_DEBUG, "dlp_MoveCategory returned %d\n", r);
-	    }
-	 }
+
+      /* Blank entry in table */
+      if ((local_cai.name[Li][0]==0) && (local_cai.ID[Li]==0)) {
 	 continue;
       }
+      /* 0: Category deleted locally.  Undocumented by Palm */
       if (local_cai.name[Li][0]==0) {
+         if ((!remote_cai.renamed[Li]) && (remote_cai.ID[Li]!=0)) {
+#ifdef SYNC_CAT_DEBUG
+            printf("cat %d deleted local, del cat on remote\n", Li);
+            printf(" remote cat name %s\n", remote_cai.name[Li]);
+            printf(" remote rename flag was %d\n", remote_cai.renamed[Li]);
+#endif
+            remote_cai.name[Li][0]='\0';
+            remote_cai.ID[Li]=0;
+            remote_cai.renamed[Li]=0;
+            /* This category was deleted.  Move records on Palm to Unfiled */
+            jp_logf(JP_LOG_DEBUG, "Moving category %d to unfiled...", Li);
+            r = dlp_MoveCategory(sd, db, Li, 0);
+            jp_logf(JP_LOG_DEBUG, "dlp_MoveCategory returned %d\n", r);
+         }
 	 continue;
       }
-      /* Search for the local category name on the remote */
-      for (Ri = 0; Ri < CATCOUNT; Ri++) {
-	 if (! strncmp(local_cai.name[Li], remote_cai.name[Ri], PILOTCATLTH)) {
+
+      /* Do a search for the local category name and ID on the remote */
+      for (Ri = 1; Ri < NUM_CATEGORIES; Ri++) {
+	 if (! strncmp(local_cai.name[Li], remote_cai.name[Ri], PILOTCAT_NAME_SZ)) {
+#ifdef SYNC_CAT_DEBUG
+            if (found_name)
+               printf("Found name %s twice at %d and %d\n", 
+                                  local_cai.name[Li], found_name_at, Ri);
+#endif
 	    found_name=TRUE;
 	    found_name_at=Ri;
 	 }
 	 if (local_cai.ID[Li] == remote_cai.ID[Ri]) {
+#ifdef SYNC_CAT_DEBUG
+            if (found_ID && (local_cai.ID[Li] != 0))
+               printf("Found ID %d twice at %d and %d\n", 
+                                local_cai.ID[Li], found_ID_at, Ri);
+#endif
 	    found_ID=TRUE;
 	    found_ID_at=Ri;
 	 }
       }
+
+      /* Process the results of the name and ID search */
       if (found_name) {
 	 if (Li==found_name_at) {
-	    /* 1: OK */
+	    /* 1: OK. Index and name match so there is nothing to do. */
 #ifdef SYNC_CAT_DEBUG
 	    printf("cat index %d ok\n", Li);
 #endif
+            continue;
 	 } else {
-	    /* 2: change all local recs to use remote recs ID */
+	    /* 2: Change all local recs to use remote recs ID */
 	    /* This is where there is a bit of trouble, since we have a pdb
 	     * file on the local side we don't store the ID and there is no way
 	     * to do this.
-	     * So, we will swap indexes on the local records.
+	     * Instead, we will swap indexes on the local records.
 	     */
 #ifdef SYNC_CAT_DEBUG
 	    printf("cat index %d case 2\n", Li);
+	    printf("Swapping index %d to %d\n", Li, found_name_at);
 #endif
 	    r = pdb_file_swap_indexes(DB_name, Li, found_name_at);
-	    edit_cats_swap_cats_pc3(DB_name, Li, Ri);
-	    g_strlcpy(tmp_name, local_cai.name[found_ID_at], PILOTCATLTH);
-	    strncpy(local_cai.name[found_ID_at],
-		    local_cai.name[Li], PILOTCATLTH);
-	    strncpy(local_cai.name[Li], tmp_name, PILOTCATLTH);
-	    Li--;
+	    r = edit_cats_swap_cats_pc3(DB_name, Li, found_name_at);
+            /* Swap name, ID, and renamed attributes in local table */
+	    g_strlcpy(tmp_name, local_cai.name[found_name_at], PILOTCAT_NAME_SZ);
+	    strncpy(local_cai.name[found_name_at],
+		    local_cai.name[Li], PILOTCAT_NAME_SZ);
+	    strncpy(local_cai.name[Li], tmp_name, PILOTCAT_NAME_SZ);
+
+            tmp_int = local_cai.ID[found_name_at]; 
+            local_cai.ID[found_name_at] = local_cai.ID[Li];
+            local_cai.ID[Li] = tmp_int;
+
+            tmp_int = local_cai.renamed[found_name_at]; 
+            local_cai.renamed[found_name_at] = local_cai.renamed[Li];
+            local_cai.renamed[Li] = tmp_int;
+
+            if (found_name_at > Li) {
+               /* Need to reprocess this Li index because a new one has
+                * has been swapped in. */
+               Li--;
+            }
 	    continue;
 	 }
       }
-      if ((!found_name) && (local_cai.renamed[Li])) {
-	 if (found_ID) {
+      if ((!found_name) && (found_ID)) {
+	 if (local_cai.renamed[Li]) {
 	    /* 3: Change remote category name to match local at index Li */
 #ifdef SYNC_CAT_DEBUG
 	    printf("cat index %d case 3\n", Li);
 #endif
 	    g_strlcpy(remote_cai.name[found_ID_at],
-		    local_cai.name[Li], PILOTCATLTH);
-	 }
+		      local_cai.name[Li], PILOTCAT_NAME_SZ);
+            continue;
+	 } else {
+            if (remote_cai.renamed[found_ID_at]) {
+               /* 3a1: Category has been renamed on Palm. Undocumented */
+#ifdef SYNC_CAT_DEBUG
+               printf("cat index %d case 3a1\n", Li);
+#endif
+               continue;
+            } else {
+               /* 3a2: Category has been deleted on Palm. Undocumented */
+#ifdef SYNC_CAT_DEBUG
+               printf("cat index %d case 3a2\n", Li);
+               printf("cat %d deleted remote, del cat on local\n", Li);
+               printf(" local cat name %s\n", local_cai.name[Li]);
+#endif
+               local_cai.renamed[Li]=0;
+               local_cai.name[Li][0]='\0';
+               local_cai.ID[Li]=0;
+
+               remote_cai.name[found_ID_at][0]='\0';
+               remote_cai.ID[found_ID_at]=0;
+               remote_cai.renamed[found_ID_at]=0;
+               jp_logf(JP_LOG_DEBUG, "Moving local recs category %d to Unfiled\n", Li);
+               /* Move only changed records(pc3) to Unfiled.  Records in pdb
+                * will be handled by sync record process */
+               edit_cats_change_cats_pc3(DB_name, Li, 0);
+               continue;
+            }
+         }
       }
       if ((!found_name) && (!found_ID)) {
 	 if (remote_cai.name[Li][0]=='\0') {
@@ -3424,66 +3409,134 @@ int sync_categories(char *DB_name, int sd,
 	    printf("cat index %d case 4\n", Li);
 #endif
 	    g_strlcpy(remote_cai.name[Li],
-		    local_cai.name[Li], PILOTCATLTH);
-	    remote_cai.renamed[Li]=0;
+		      local_cai.name[Li], PILOTCAT_NAME_SZ);
  	    remote_cai.ID[Li]=local_cai.ID[Li];
+	    remote_cai.renamed[Li]=0;
 	    continue;
 	 } else {
+            if (!remote_cai.renamed[Li]) {
+               /* 5a: Category was deleted locally and a new one replaced it.
+                *     Undocumented by Palm. */
+#ifdef SYNC_CAT_DEBUG
+               printf("cat index %d case 5a\n", Li);
+#endif
+               /* Move the old category's records to Unfiled */
+	       jp_logf(JP_LOG_DEBUG, "Moving category %d to unfiled...", Li);
+	       r = dlp_MoveCategory(sd, db, Li, 0);
+	       jp_logf(JP_LOG_DEBUG, "dlp_MoveCategory returned %d\n", r);
+
+               /* Rename slot to the new category */
+               g_strlcpy(remote_cai.name[Li], local_cai.name[Li], PILOTCAT_NAME_SZ);
+               remote_cai.ID[Li]=local_cai.ID[Li];
+               remote_cai.renamed[Li]=0;
+               continue;
+            }
+            if (!local_cai.renamed[Li]) {
+               /* 5b: Category was deleted on Palm and a new one replaced it.
+                *     Undocumented by Palm. */
+#ifdef SYNC_CAT_DEBUG
+               printf("cat index %d case 5b\n", Li);
+#endif
+               /* Move the old category's records to Unfiled */
+               jp_logf(JP_LOG_DEBUG, "Moving local recs category %d to Unfiled\n", Li);
+               /* Move only changed records(pc3) to Unfiled.  Records in pdb
+                * will be handled by sync record process */
+               edit_cats_change_cats_pc3(DB_name, Li, 0);
+               remote_cai.renamed[Li]=0;
+               continue;
+            }
+
 	    /* 5: Add local category to remote in the next available slot.
-	     local records are changed to use this index. */
+	          local records are changed to use this index. */
 #ifdef SYNC_CAT_DEBUG
  	    printf("cat index %d case 5\n", Li);
 #endif
-	    found_a_hole=FALSE;
-	    for (i=1; i<CATCOUNT; i++) {
-	       if (remote_cai.name[i][0]=='\0') {
-		  g_strlcpy(remote_cai.name[i],
-			  local_cai.name[Li], PILOTCATLTH);
-		  remote_cai.renamed[i]=0;
-		  remote_cai.ID[i]=remote_cai.ID[Li];
-		  r = pdb_file_change_indexes(DB_name, Li, i);
-		  edit_cats_change_cats_pc3(DB_name, Li, i);
-		  found_a_hole=TRUE;
-		  break;
-	       }
-	    }
-	    if (!found_a_hole) {
-	       jp_logf(JP_LOG_WARN, _("Could not add category %s to remote.\n"), local_cai.name[Li]);
-	       jp_logf(JP_LOG_WARN, _("Too many categories on remote.\n"));
-	       jp_logf(JP_LOG_WARN, _("All records on desktop in %s will be moved to %s.\n"), local_cai.name[Li], local_cai.name[0]);
-	       /* Fix - need a func for this logging */
-	       g_snprintf(log_entry, sizeof(log_entry), _("Could not add category %s to remote.\n"), local_cai.name[Li]);
-	       charset_j2p(log_entry, 255, char_set);
-	       dlp_AddSyncLogEntry(sd, log_entry);
-	       g_snprintf(log_entry, sizeof(log_entry), _("Too many categories on remote.\n"));
-	       charset_j2p(log_entry, sizeof(log_entry), char_set);
-	       dlp_AddSyncLogEntry(sd, log_entry);
-	       g_snprintf(log_entry, sizeof(log_entry), _("All records on desktop in %s will be moved to %s.\n"), local_cai.name[Li], local_cai.name[0]);
-	       charset_j2p(log_entry, sizeof(log_entry), char_set);
-	       dlp_AddSyncLogEntry(sd, log_entry);
-	       jp_logf(JP_LOG_DEBUG, "Moving local recs category %d to unfiled...", Li);
-	       edit_cats_change_cats_pc3(DB_name, Li, 0);
-	       edit_cats_change_cats_pdb(DB_name, Li, 0);
-	    }
+            found_a_slot=FALSE;
+            for (i=1; i<NUM_CATEGORIES; i++) {
+               if (remote_cai.name[i][0]=='\0') {
+                  g_strlcpy(remote_cai.name[i], 
+                            local_cai.name[Li], PILOTCAT_NAME_SZ);
+                  remote_cai.renamed[i]=1;
+                  remote_cai.ID[i]=local_cai.ID[Li];
+                  move_from_idx[move_i] = Li;
+                  move_to_idx[move_i] = i;
+                  if (++move_i >= NUM_CATEGORIES) {
+                     move_i = NUM_CATEGORIES-1;
+                     jp_logf(JP_LOG_DEBUG, "Exceeded number of categorie for case 5\n");
+                  }
+                  found_a_slot=TRUE;
+                  break;
+               }
+            }
+            if (!found_a_slot) {
+               jp_logf(JP_LOG_WARN, _("Could not add category %s to remote.\n"), local_cai.name[Li]);
+               jp_logf(JP_LOG_WARN, _("Too many categories on remote.\n"));
+               jp_logf(JP_LOG_WARN, _("All records on desktop in %s will be moved to %s.\n"), local_cai.name[Li], local_cai.name[0]);
+               /* Fix - need a func for this logging */
+               g_snprintf(log_entry, sizeof(log_entry), _("Could not add category %s to remote.\n"), local_cai.name[Li]);
+               charset_j2p(log_entry, 255, char_set);
+               dlp_AddSyncLogEntry(sd, log_entry);
+               g_snprintf(log_entry, sizeof(log_entry), _("Too many categories on remote.\n"));
+               charset_j2p(log_entry, sizeof(log_entry), char_set);
+               dlp_AddSyncLogEntry(sd, log_entry);
+               g_snprintf(log_entry, sizeof(log_entry), _("All records on desktop in %s will be moved to %s.\n"), local_cai.name[Li], local_cai.name[0]);
+               charset_j2p(log_entry, sizeof(log_entry), char_set);
+               dlp_AddSyncLogEntry(sd, log_entry);
+
+               jp_logf(JP_LOG_DEBUG, "Moving local recs category %d to Unfiled...", Li);
+               edit_cats_change_cats_pc3(DB_name, Li, 0);
+               edit_cats_change_cats_pdb(DB_name, Li, 0);
+            }
+            continue;
 	 }
       }
 #ifdef SYNC_CAT_DEBUG
-      printf("cat index %d case (none)\n", Li);
+      printf("Error: cat index %d passed through with no processing\n", Li);
 #endif
    }
+   /* Move records locally into correct index slots */
+   /* Note that this happens in reverse order so that A->B, B->C, does not
+    * result in records from A and B in category C */
+   for (i=move_i-1; i>=0; i--) {
+      if (move_from_idx[i]) {
+         pdb_file_change_indexes(DB_name, move_from_idx[i], move_to_idx[i]);
+         edit_cats_change_cats_pc3(DB_name, move_from_idx[i], move_to_idx[i]);
+      }
+   }
 
-   for (i = 0; i < CATCOUNT; i++) {
+   /* Clear the rename flags now that sync has occurred */
+   for (i=0; i<NUM_CATEGORIES; i++) {
       remote_cai.renamed[i]=0;
    }
 
+   /* Clear any ID fields for blank slots */
+   for (i=0; i<NUM_CATEGORIES; i++) {
+      if (remote_cai.name[i][0]=='\0') {
+         remote_cai.ID[i] = 0;
+      }
+   }
+
+#ifdef SYNC_CAT_DEBUG
+   printf("--- post-sync CategoryAppInfo\n");
+   printf("--- DB_name [%s]\n", DB_name);
+   for (i=0; i<NUM_CATEGORIES; i++) {
+      printf("local: cat %d [%s] ID %d renamed %d\n", i,
+             local_cai.name[i],
+             local_cai.ID[i], local_cai.renamed[i]);
+   }
+   printf("-----------------------------\n");
+   for (i=0; i<NUM_CATEGORIES; i++) {
+      printf("remote: cat %d [%s] ID %d renamed %d\n", i,
+             remote_cai.name[i],
+             remote_cai.ID[i], remote_cai.renamed[i]);
+   }
+#endif
+
    pack_cai_into_ai(&remote_cai, buf, remote_cai_size);
 
-   /* If the categories changed then write them out */
-   if (memcmp(&orig_remote_cai, &remote_cai, sizeof(remote_cai))) {
-      jp_logf(JP_LOG_DEBUG, "writing out new categories for %s\n", DB_name);
-      dlp_WriteAppBlock(sd, db, buf, remote_cai_size);
-      pdb_file_write_app_block(DB_name, buf, remote_cai_size);
-   }
+   jp_logf(JP_LOG_DEBUG, "writing out new categories for %s\n", DB_name);
+   dlp_WriteAppBlock(sd, db, buf, remote_cai_size);
+   pdb_file_write_app_block(DB_name, buf, remote_cai_size);
 
    dlp_CloseDB(sd, db);
 

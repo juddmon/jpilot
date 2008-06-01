@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.202 2008/05/25 09:46:20 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.203 2008/06/01 18:52:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -2245,7 +2245,6 @@ static void clear_mycontact(MyContact *mcont)
 }
 /* End Masking */
 
-#if 0
 static void cb_edit_cats_address(GtkWidget *widget, gpointer data)
 {
    struct AddressAppInfo aai;
@@ -2332,9 +2331,7 @@ static void cb_edit_cats_category(GtkWidget *widget, gpointer data)
 
    pi_buffer_free(pi_buf);
 }
-#endif
 
-#if 0
 static void cb_edit_cats(GtkWidget *widget, gpointer data)
 {
    if (address_version) {
@@ -2345,8 +2342,6 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
 
    cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
 }
-#endif
-
 
 static void set_button_label_to_date(GtkWidget *button, struct tm *date)
 {
@@ -3761,14 +3756,10 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu1, TRUE, TRUE, 0);
 
    /* Edit category button */
-	/* RW:5/8/2008: Temporarily removed ability to edit categories with Jpilot
-	 * because the back-end code WILL often lose user data */
-	/*
    button = gtk_button_new_with_label(_("Edit Categories"));
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_edit_cats), NULL);
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
-   */
 
    /* Put the address list window up */
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);

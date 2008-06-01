@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.61 2008/04/29 14:21:24 rikster5 Exp $ */
+/* $Id: utils.h,v 1.62 2008/06/01 18:52:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -43,15 +43,11 @@
 #define PRINT_FILE_LINE printf("%s line %d\n", __FILE__, __LINE__)
 
 #ifdef ENABLE_PROMETHEON
-#define PN "CoPilot"
+#  define PN "CoPilot"
+#  define EPN "copilot"
 #else
-#define PN "J-Pilot"
-#endif
-
-#ifdef ENABLE_PROMETHEON
-#define EPN "copilot"
-#else
-#define EPN "jpilot"
+#  define PN "J-Pilot"
+#  define EPN "jpilot"
 #endif
 
 #define	FPI_STRING	"-//Judd Montgomery//NONSGML "PN" "VERSION"//EN"
@@ -60,9 +56,9 @@
  * differing by 2 pixels.  This may not be true on every system.
  */
 #ifdef ENABLE_GTK2
-# define PANE_CREEP 0
+#  define PANE_CREEP 0
 #else
-# define PANE_CREEP 2
+#  define PANE_CREEP 2
 #endif
 
 /*This is how often the clock updates in milliseconds */
@@ -82,9 +78,9 @@
  *             names may be (hopefully safely) truncated.
  */
 
-#define HOSTCATLTH 16
-#define PILOTCATLTH 16
-#define CATCOUNT 16 /* number of categories */
+#define NUM_CATEGORIES 16 
+#define HOSTCAT_NAME_SZ 16
+#define PILOTCAT_NAME_SZ 16
 
 /*Used to mark the entry in the clist to add a record */
 /* FIXME: Move to libplugin */
@@ -584,13 +580,11 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai);
  * returns the number of record's categories changed.
  */
 int pdb_file_change_indexes(char *DB_name, int old_index, int new_index);
-int edit_cats_change_cats_pc3(char *DB_name, int old_cat,
-			      int new_cat);
-int edit_cats_swap_cats_pc3(char *DB_name, int old_cat,
-			    int new_cat);
+int pdb_file_swap_indexes(char *DB_name, int old_cat, int new_cat);
+int edit_cats_change_cats_pc3(char *DB_name, int old_cat, int new_cat);
+int edit_cats_swap_cats_pc3(char *DB_name, int old_cat, int new_cat);
 int edit_cats_change_cats_pdb(char *DB_name, int old_cat, int new_cat);
 
-  
 int make_category_menu(GtkWidget **category_menu,
 		       GtkWidget **cat_menu_item,
 		       struct sorted_cats *sort_l,

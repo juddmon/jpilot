@@ -1,4 +1,4 @@
-/* $Id: category.c,v 1.29 2007/06/06 02:45:09 rikster5 Exp $ */
+/* $Id: category.c,v 1.30 2008/06/01 18:52:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * category.c
@@ -20,6 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  ******************************************************************************/
 
+/********************************* Includes ***********************************/
 #include "config.h"
 #include "i18n.h"
 #include <gtk/gtk.h>
@@ -35,9 +36,7 @@
 #include "log.h"
 #include "prefs.h"
 
-
-/* #define EDIT_CATS_DEBUG 1 */
-
+/********************************* Constants **********************************/
 #define EDIT_CAT_START        100
 #define EDIT_CAT_NEW          101
 #define EDIT_CAT_RENAME       102
@@ -45,6 +44,9 @@
 #define EDIT_CAT_ENTRY_OK     104
 #define EDIT_CAT_ENTRY_CANCEL 105
 
+/* #define EDIT_CATS_DEBUG 1 */
+
+/****************************** Prototypes ************************************/
 struct dialog_cats_data {
    int button_hit;
    int selected;
@@ -59,18 +61,16 @@ struct dialog_cats_data {
    struct CategoryAppInfo cai2;
 };
 
+/****************************** Main Code *************************************/
 
-/*
- * commented in header file
- */
-int jp_count_records_in_cat(char *db_name, int cat_index)
+int count_records_in_cat(char *db_name, int cat_index)
 {
    GList *records;
    GList *temp_list;
-   int count, i, num;
+   int count, num;
    buf_rec *br;
 
-   jp_logf(JP_LOG_DEBUG, "jp_count_records_in_cat\n");
+   jp_logf(JP_LOG_DEBUG, "count_records_in_cat\n");
 
    count = 0;
 
@@ -78,66 +78,237 @@ int jp_count_records_in_cat(char *db_name, int cat_index)
    if (-1 == num)
      return 0;
 
-   for (i=0, temp_list = records; temp_list; temp_list = temp_list->next, i++) {
+   for (temp_list = records; temp_list; temp_list = temp_list->next) {
       if (temp_list->data) {
 	 br=temp_list->data;
       } else {
 	 continue;
       }
-      if (!br->buf) {
-	 continue;
-      }
 
-      if ( (br->rt==DELETED_PALM_REC) || (br->rt==MODIFIED_PALM_REC) ) {
-	 continue;
-      }
+      if (!br->buf) continue;
+      if ((br->rt==DELETED_PALM_REC) || (br->rt==MODIFIED_PALM_REC)) continue;
+      if ((br->attrib & 0x0F) != cat_index) continue;
 
-      if ( (br->attrib & 0x0F) != cat_index) {
-	 continue;
-      }
       count++;
    }
 
    jp_free_DB_records(&records);
 
-   jp_logf(JP_LOG_DEBUG, "Leaving jp_count_records_in_cat()\n");
+   jp_logf(JP_LOG_DEBUG, "Leaving count_records_in_cat()\n");
+
+   return count;
+}
+
+int edit_cats_delete_cats_pc3(char *DB_name, int cat)
+{
+   char local_pc_file[FILENAME_MAX];
+   FILE *pc_in;
+   PC3RecordHeader header;
+   int num;
+   int rec_len;
+   int count=0;
+
+   g_snprintf(local_pc_file, sizeof(local_pc_file), "%s.pc3", DB_name);
+
+   pc_in = jp_open_home_file(local_pc_file, "r+");
+   if (pc_in==NULL) {
+      jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), local_pc_file);
+      return EXIT_FAILURE;
+   }
+
+   while (!feof(pc_in)) {
+      num = read_header(pc_in, &header);
+      if (num!=1) {
+	 if (ferror(pc_in)) break;
+	 if (feof(pc_in)) break;
+      }
+
+      rec_len = header.rec_len;
+      if (rec_len > 0x10000) {
+	 jp_logf(JP_LOG_WARN, _("PC file corrupt?\n"));
+	 fclose(pc_in);
+	 return EXIT_FAILURE;
+      }
+      if (((header.rt==NEW_PC_REC) || (header.rt==REPLACEMENT_PALM_REC)) &&
+	  ((header.attrib&0x0F)==cat)) {
+	 if (fseek(pc_in, -(header.header_len), SEEK_CUR)) {
+	    jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
+	    fclose(pc_in);
+	    return EXIT_FAILURE;
+	 }
+	 header.rt=DELETED_PC_REC;
+	 write_header(pc_in, &header);
+	 count++;
+      }
+      /* Skip this record now that we are done with it */
+      if (fseek(pc_in, rec_len, SEEK_CUR)) {
+	 jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
+	 fclose(pc_in);
+	 return EXIT_FAILURE;
+      }
+   }
+
+   fclose(pc_in);
+   return count;
+}
+
+/* Helper routine to change categories.
+ * Function changes category regardless of record type */
+int _edit_cats_change_cats_pc3(char *DB_name, 
+                               int old_cat, int new_cat, 
+                               int swap)
+{
+   char local_pc_file[FILENAME_MAX];
+   FILE *pc_in;
+   PC3RecordHeader header;
+   int rec_len;
+   int num;
+   int current_cat;
+   int count=0;
+   
+   g_snprintf(local_pc_file, sizeof(local_pc_file), "%s.pc3", DB_name);
+
+   pc_in = jp_open_home_file(local_pc_file, "r+");
+   if (pc_in==NULL) {
+      jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), local_pc_file);
+      return EXIT_FAILURE;
+   }
+
+   while (!feof(pc_in)) {
+      num = read_header(pc_in, &header);
+      if (num!=1) {
+	 if (ferror(pc_in)) break;
+	 if (feof(pc_in))   break;
+      }
+      rec_len = header.rec_len;
+      if (rec_len > 0x10000) {
+	 jp_logf(JP_LOG_WARN, _("PC file corrupt?\n"));
+	 fclose(pc_in);
+	 return EXIT_FAILURE;
+      }
+
+      current_cat = header.attrib & 0x0F;
+      if (current_cat==old_cat) {
+	 if (fseek(pc_in, -(header.header_len), SEEK_CUR)) {
+	    jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
+	    fclose(pc_in);
+	    return EXIT_FAILURE;
+	 }
+	 header.attrib=(header.attrib&0xFFFFFFF0) | new_cat;
+	 write_header(pc_in, &header);
+	 count++;
+      }
+      if ((swap) && (current_cat==new_cat)) {
+	 if (fseek(pc_in, -(header.header_len), SEEK_CUR)) {
+	    jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
+	    fclose(pc_in);
+	    return EXIT_FAILURE;
+	 }
+	 header.attrib=(header.attrib&0xFFFFFFF0) | old_cat;
+	 write_header(pc_in, &header);
+	 count++;
+      }
+      /* Skip the rest of the record now that we are done with it */
+      if (fseek(pc_in, rec_len, SEEK_CUR)) {
+	 jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
+	 fclose(pc_in);
+	 return EXIT_FAILURE;
+      }
+   }
+
+   fclose(pc_in);
+   return count;
+}
+
+/* Exported routine to change categories in PC3 file */
+int edit_cats_change_cats_pc3(char *DB_name, int old_cat, int new_cat)
+{
+   return _edit_cats_change_cats_pc3(DB_name, old_cat, new_cat, FALSE);
+}
+
+/* Exported routine to swap categories in PC3 file */
+int edit_cats_swap_cats_pc3(char *DB_name, int old_cat, int new_cat)
+{
+   return _edit_cats_change_cats_pc3(DB_name, old_cat, new_cat, TRUE);
+}
+
+
+/*
+ * This routine changes records from old_cat to new_cat.
+ *  It does not modify the local pdb file.
+ *  It does this by writing a modified record to the pc3 file.
+ */
+int edit_cats_change_cats_pdb(char *DB_name, int old_cat, int new_cat)
+{
+   GList *temp_list;
+   GList *records;
+   buf_rec *br;
+   int num, count;
+
+   jp_logf(JP_LOG_DEBUG, "edit_cats_change_cats_pdb\n");
+
+   count=0;
+   num = jp_read_DB_files(DB_name, &records);
+   if (-1 == num)
+     return 0;
+
+   for (temp_list = records; temp_list; temp_list = temp_list->next) {
+      if (temp_list->data) {
+	 br=temp_list->data;
+      } else {
+	 continue;
+      }
+
+      if (!br->buf) continue;
+      if ((br->rt==DELETED_PALM_REC) || (br->rt==MODIFIED_PALM_REC)) continue;
+
+      if ((br->attrib & 0x0F) == old_cat) {
+	 if (new_cat==-1) {
+	    /* write a deleted rec */
+	    jp_delete_record(DB_name, br, DELETE_FLAG);
+	    count++;
+	 } else {
+	    /* write a deleted rec */
+	    br->attrib=(br->attrib&0xFFFFFFF0) | (new_cat&0x0F);
+	    jp_delete_record(DB_name, br, MODIFY_FLAG);
+	    br->rt=REPLACEMENT_PALM_REC;
+	    jp_pc_write(DB_name, br);
+	    count++;
+	 }
+      }
+   }
+
+   jp_free_DB_records(&records);
 
    return count;
 }
 
 /*
- * This changes every record with index old_index and changes it to new_index
- * returns the number of record's categories changed.
+ * This helper routine changes the category index of records in the pdb file.
+ * It will change all old_index records to new_index and with the swap 
+ * option will also change new_index records to old_index ones.
+ * Returns the number of records where the category was changed.
  */
-int pdb_file_change_indexes(char *DB_name, int old_index, int new_index)
+int _change_cat_pdb(char *DB_name, int old_index, int new_index, int swap)
 {
    char local_pdb_file[FILENAME_MAX];
    char full_local_pdb_file[FILENAME_MAX];
    char full_local_pdb_file2[FILENAME_MAX];
-#ifdef PILOT_LINK_0_12
    pi_file_t *pf1, *pf2;
-#else
-   struct pi_file *pf1, *pf2;
-#endif
    struct DBInfo infop;
    void *app_info;
    void *sort_info;
    void *record;
-   int r;
-   int idx;
-#ifdef PILOT_LINK_0_12
    size_t size;
-#else
-   int size;
-#endif
-   int attr;
-   int cat, new_cat;
-   int count;
    pi_uid_t uid;
    struct stat statb;
    struct utimbuf times;
+   int idx;
+   int attr;
+   int cat;
+   int count;
 
-   jp_logf(JP_LOG_DEBUG, "pi_file_change_indexes\n");
+   jp_logf(JP_LOG_DEBUG, "_change_cat_pdb\n");
 
    g_snprintf(local_pdb_file, sizeof(local_pdb_file), "%s.pdb", DB_name);
    get_home_file_name(local_pdb_file, full_local_pdb_file, sizeof(full_local_pdb_file));
@@ -168,17 +339,18 @@ int pdb_file_change_indexes(char *DB_name, int old_index, int new_index)
    pi_file_get_sort_info(pf1, &sort_info, &size);
    pi_file_set_sort_info(pf2, sort_info, size);
 
+   idx = 0;
    count = 0;
-
-   for(idx=0;;idx++) {
-      r = pi_file_read_record(pf1, idx, &record, &size, &attr, &cat, &uid);
-      if (r<0) break;
-      new_cat=cat;
+   while((pi_file_read_record(pf1, idx, &record, &size, &attr, &cat, &uid)) > 0) {
       if (cat==old_index) {
 	 cat=new_index;
 	 count++;
-      }
+      } else if ((swap) && (cat==new_index)) {
+	 cat=old_index;
+	 count++;
+      } 
       pi_file_append_record(pf2, record, size, attr, cat, uid);
+      idx++;
    }
 
    pi_file_close(pf1);
@@ -193,196 +365,16 @@ int pdb_file_change_indexes(char *DB_name, int old_index, int new_index)
    return EXIT_SUCCESS;
 }
 
-int edit_cats_delete_cats_pc3(char *DB_name, int cat)
+/* Exported routine to change categories in pdb file */
+int pdb_file_change_indexes(char *DB_name, int old_cat, int new_cat)
 {
-   char local_pc_file[FILENAME_MAX];
-   int num;
-   FILE *pc_in;
-   PC3RecordHeader header;
-   int rec_len;
-   int count=0;
-
-   g_snprintf(local_pc_file, sizeof(local_pc_file), "%s.pc3", DB_name);
-
-   pc_in = jp_open_home_file(local_pc_file, "r+");
-   if (pc_in==NULL) {
-      jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), local_pc_file);
-      return EXIT_FAILURE;
-   }
-
-   while(!feof(pc_in)) {
-      num = read_header(pc_in, &header);
-      if (num!=1) {
-	 if (ferror(pc_in)) {
-	    break;
-	 }
-	 if (feof(pc_in)) {
-	    break;
-	 }
-      }
-      rec_len = header.rec_len;
-      if (rec_len > 0x10000) {
-	 jp_logf(JP_LOG_WARN, _("PC file corrupt?\n"));
-	 fclose(pc_in);
-	 return EXIT_FAILURE;
-      }
-      if (((header.rt==NEW_PC_REC) || (header.rt==REPLACEMENT_PALM_REC)) &&
-	  ((header.attrib&0x0F)==cat)) {
-	 if (fseek(pc_in, -(header.header_len), SEEK_CUR)) {
-	    jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
-	    fclose(pc_in);
-	    return EXIT_FAILURE;
-	 }
-	 count++;
-	 header.rt=DELETED_PC_REC;
-	 write_header(pc_in, &header);
-      }
-      /*skip this record now that we are done with it */
-      if (fseek(pc_in, rec_len, SEEK_CUR)) {
-	 jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
-	 fclose(pc_in);
-	 return EXIT_FAILURE;
-      }
-   }
-
-   fclose(pc_in);
-   return count;
+   return _change_cat_pdb(DB_name, old_cat, new_cat, FALSE);
 }
 
-int _edit_cats_change_cats_pc3(char *DB_name, int old_cat,
-			       int new_cat, int swap)
+/* Exported routine to swap categories in pdb file */
+int pdb_file_swap_indexes(char *DB_name, int old_cat, int new_cat)
 {
-   char local_pc_file[FILENAME_MAX];
-   int num;
-   FILE *pc_in;
-   PC3RecordHeader header;
-   int rec_len;
-   int count=0;
-
-   g_snprintf(local_pc_file, sizeof(local_pc_file), "%s.pc3", DB_name);
-
-   pc_in = jp_open_home_file(local_pc_file, "r+");
-   if (pc_in==NULL) {
-      jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), local_pc_file);
-      return EXIT_FAILURE;
-   }
-
-   while(!feof(pc_in)) {
-      num = read_header(pc_in, &header);
-      if (num!=1) {
-	 if (ferror(pc_in)) {
-	    break;
-	 }
-	 if (feof(pc_in)) {
-	    break;
-	 }
-      }
-      rec_len = header.rec_len;
-      if (rec_len > 0x10000) {
-	 jp_logf(JP_LOG_WARN, _("PC file corrupt?\n"));
-	 fclose(pc_in);
-	 return EXIT_FAILURE;
-      }
-      /* No matter what the record type we will change the cat if needed */
-      if ((header.attrib&0x0F)==old_cat) {
-	 if (fseek(pc_in, -(header.header_len), SEEK_CUR)) {
-	    jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
-	    fclose(pc_in);
-	    return EXIT_FAILURE;
-	 }
-	 count++;
-	 header.attrib=(header.attrib&0xFFFFFFF0) | new_cat;
-	 write_header(pc_in, &header);
-      }
-      /* No matter what the record type we will change the cat if needed */
-      if ((swap) && ((header.attrib&0x0F)==new_cat)) {
-	 if (fseek(pc_in, -(header.header_len), SEEK_CUR)) {
-	    jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
-	    fclose(pc_in);
-	    return EXIT_FAILURE;
-	 }
-	 count++;
-	 header.attrib=(header.attrib&0xFFFFFFF0) | old_cat;
-	 write_header(pc_in, &header);
-      }
-      /*skip this record now that we are done with it */
-      if (fseek(pc_in, rec_len, SEEK_CUR)) {
-	 jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
-	 fclose(pc_in);
-	 return EXIT_FAILURE;
-      }
-   }
-
-   fclose(pc_in);
-   return count;
-}
-
-int edit_cats_change_cats_pc3(char *DB_name, int old_cat,
-			       int new_cat)
-{
-   return _edit_cats_change_cats_pc3(DB_name, old_cat, new_cat, 0);
-}
-
-int edit_cats_swap_cats_pc3(char *DB_name, int old_cat,
-			    int new_cat)
-{
-   return _edit_cats_change_cats_pc3(DB_name, old_cat, new_cat, 1);
-}
-
-
-/*
- * This routine changes records from old_cat to new_cat.
- *  It does not modify a local pdb file.
- *  It does this by writing a modified record to the pc3 file.
- */
-int edit_cats_change_cats_pdb(char *DB_name, int old_cat, int new_cat)
-{
-   int i, r, count;
-   buf_rec *br;
-   GList *records;
-   GList *temp_list;
-
-   jp_logf(JP_LOG_DEBUG, "edit_cats_change_cats_pdb\n");
-#ifdef EDIT_CATS_DEBUG
-  printf("edit_cats_change_cats_pdb\n");
-#endif
-
-   count=0;
-   r = jp_read_DB_files(DB_name, &records);
-   if (-1 == r)
-     return 0;
-
-   for (i=0, temp_list = records; temp_list; temp_list = temp_list->next, i++) {
-      if (temp_list->data) {
-	 br=temp_list->data;
-      } else {
-	 continue;
-      }
-      if (!br->buf) {
-	 continue;
-      }
-      if ( (br->rt==DELETED_PALM_REC) || (br->rt==MODIFIED_PALM_REC) ) {
-	 continue;
-      }
-      if ( (br->attrib & 0x0F) == old_cat) {
-	 if (new_cat==-1) {
-	    /* write a deleted rec */
-	    jp_delete_record(DB_name, br, DELETE_FLAG);
-	    count++;
-	 } else {
-	    /* write a deleted rec */
-	    br->attrib=(br->attrib&0xFFFFFFF0) | (new_cat&0x0F);
-	    jp_delete_record(DB_name, br, MODIFY_FLAG);
-	    br->rt=REPLACEMENT_PALM_REC;
-	    jp_pc_write(DB_name, br);
-	    count++;
-	 }
-      }
-   }
-
-   jp_free_DB_records(&records);
-
-   return count;
+   return _change_cat_pdb(DB_name, old_cat, new_cat, TRUE);
 }
 
 /*
@@ -406,9 +398,9 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
    int id;
    int button;
    int catnum; /* JPA */
-   char currentname[HOSTCATLTH]; /* current category name */
-   char previousname[HOSTCATLTH]; /* previous category name */
-   char pilotentry[HOSTCATLTH /* yes! */]; /* entry text, in Pilot character set */
+   char currentname[HOSTCAT_NAME_SZ]; /* current category name */
+   char previousname[HOSTCAT_NAME_SZ]; /* previous category name */
+   char pilotentry[HOSTCAT_NAME_SZ]; /* entry text, in Pilot character set */
    char *button_text[]={N_("OK")};
    char *move_text[]={N_("Move"), N_("Delete"), N_("Cancel")};
    char *text;
@@ -420,24 +412,24 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
    Pdata = gtk_object_get_data(GTK_OBJECT(gtk_widget_get_toplevel(widget)), "dialog_cats_data");
 
    /* JPA get the selected category number */
-   catnum = -1;
+   catnum = 0;
    i = 0;
-   while ((i <= Pdata->selected) && (catnum < CATCOUNT)) {
+   while ((i <= Pdata->selected) && (catnum < NUM_CATEGORIES)) {
       if (Pdata->cai2.name[++catnum][0]) i++;
    }
-   if (catnum >= CATCOUNT) catnum = -1; /* not found */
+   if (catnum >= NUM_CATEGORIES) catnum = -1;  /* not found */
 
    if (Pdata) {
       switch (button) {
        case EDIT_CAT_NEW:
 	 count=0;
-	 for (i=1; i<CATCOUNT; i++) {
+	 for (i=0; i<NUM_CATEGORIES-1; i++) {
 	    r = gtk_clist_get_text(GTK_CLIST(Pdata->clist), i, 0, &text);
 	    if ((r) && (text[0])) {
 	       count++;
 	    }
 	 }
-	 if (count>14) {
+	 if (count>NUM_CATEGORIES-2) {
 	    dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)),
 			   _("Edit Categories"), DIALOG_ERROR,
 			   _("The maximum number of categories (16) are already used"), 1, button_text);
@@ -450,6 +442,7 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 	 gtk_widget_grab_focus(GTK_WIDGET(Pdata->entry));
 	 Pdata->state=EDIT_CAT_NEW;
 	 break;
+
        case EDIT_CAT_RENAME:
 	 if ((catnum<0) || (Pdata->cai2.name[catnum][0]=='\0')) {
 	    dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)),
@@ -457,13 +450,11 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 			   _("You must select a category to rename"), 1, button_text);
 	    return;
 	 }
+#ifdef EDIT_CATS_DEBUG
  	 if (catnum == 0) {
-	    g_snprintf(temp, sizeof(temp), _("You can't edit category %s.\n"), Pdata->cai1.name[0]);
-	    dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)),
-			   _("Edit Categories Error"), DIALOG_ERROR,
-			   temp, 1, button_text);
-	    return;
-	 }
+            printf("Trying to rename category 0!\n");
+         }
+#endif
 	 r = gtk_clist_get_text(GTK_CLIST(Pdata->clist), Pdata->selected, 0, &text);
 	 gtk_label_set_text(GTK_LABEL(Pdata->label), _("Enter New Category Name"));
 	 gtk_entry_set_text(GTK_ENTRY(Pdata->entry), text);
@@ -472,6 +463,7 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 	 gtk_widget_grab_focus(GTK_WIDGET(Pdata->entry));
 	 Pdata->state=EDIT_CAT_RENAME;
 	 break;
+
        case EDIT_CAT_DELETE:
 #ifdef EDIT_CATS_DEBUG
 	 printf("delete cat\n");
@@ -482,19 +474,17 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 			   _("You must select a category to delete"), 1, button_text);
 	    return;
 	 }
-	 if (catnum==0) {
-	    sprintf(temp, _("You can't delete category %s.\n"), Pdata->cai1.name[0]);
-	    dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)),
-			   _("Edit Categories"), DIALOG_ERROR,
-			   temp, 1, button_text);
-	    return;
-	 }
-	 /* See if category is not-empty */
+#ifdef EDIT_CATS_DEBUG
+ 	 if (catnum == 0) {
+            printf("Trying to delete category 0!\n");
+         }
+#endif
+	 /* Check if category is empty */
 	 if (Pdata->cai2.name[catnum][0]=='\0') {
 	    return;
 	 }
-	 /* check to see if any records are in this cat. */
- 	 count = jp_count_records_in_cat(Pdata->db_name, catnum);
+	 /* Check to see if there are records are in this category */
+ 	 count = count_records_in_cat(Pdata->db_name, catnum);
 #ifdef EDIT_CATS_DEBUG
 	 printf("count=%d\n", count);
 #endif
@@ -534,7 +524,7 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 	       break;
 	     case DIALOG_SAID_3:
 #ifdef EDIT_CATS_DEBUG
-	       printf("DO Nothing\n");
+	       printf("Delete Canceled\n");
 #endif
 	       return;
 	    }
@@ -543,40 +533,41 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 #ifdef EDIT_CATS_DEBUG
 	 printf("DELETE category\n");
 #endif
-	 Pdata->cai2.ID[catnum]=Pdata->cai1.ID[catnum];
 	 Pdata->cai2.name[catnum][0]='\0';
-	 Pdata->cai2.renamed[catnum]=1;
+	 Pdata->cai2.ID[catnum]=Pdata->cai1.ID[catnum];
+	 Pdata->cai2.renamed[catnum]=0;
 	 /* JPA move category names upward in listbox */
 	 /* we get the old text from listbox, to avoid making */
 	 /* character set conversions */
-         for (i=Pdata->selected; i<CATCOUNT-1; i++) {
+         for (i=Pdata->selected; i<NUM_CATEGORIES-2; i++) {
 	    r = gtk_clist_get_text(GTK_CLIST(Pdata->clist), i+1, 0, &text);
             if (r) gtk_clist_set_text(GTK_CLIST(Pdata->clist), i, 0, text);
 	 }
 	 /* JPA now clear the last category */
-	 gtk_clist_set_text(GTK_CLIST(Pdata->clist), CATCOUNT-1, 0, "");
+	 gtk_clist_set_text(GTK_CLIST(Pdata->clist), NUM_CATEGORIES-2, 0, "");
 	 break;
+
        case EDIT_CAT_ENTRY_OK:
 	 if ((Pdata->state!=EDIT_CAT_RENAME) && (Pdata->state!=EDIT_CAT_NEW)) {
 	    jp_logf(JP_LOG_WARN, _("invalid state file %s line %d\n"), __FILE__, __LINE__);
 	    return;
 	 }
-	 /* Can't make an empty category, could do a dialog telling user */
 	 entry_text = gtk_entry_get_text(GTK_ENTRY(Pdata->entry));
-	 if ( (!entry_text) || (!entry_text[0]) ) {
+
+	 /* Can't make an empty category, could do a dialog telling user */
+	 if ((!entry_text) || (!entry_text[0])) {
 	    return;
 	 }
 
  	 if ((Pdata->state==EDIT_CAT_RENAME) || (Pdata->state==EDIT_CAT_NEW)) {
 	    /* Check for category being used more than once */
 	    /* moved here by JPA for use in both new and rename cases */
-	    entry_text = gtk_entry_get_text(GTK_ENTRY(Pdata->entry));
 	    /* JPA convert entry to Pilot character set before checking */
 	    /* note : don't know Pilot size until converted */
-	    g_strlcpy(pilotentry, entry_text, HOSTCATLTH);
-	    charset_j2p(pilotentry, HOSTCATLTH, char_set);
-	    pilotentry[PILOTCATLTH-1] = '\0';
-	    for (i=0; i<CATCOUNT; i++) {
+	    g_strlcpy(pilotentry, entry_text, HOSTCAT_NAME_SZ);
+	    charset_j2p(pilotentry, HOSTCAT_NAME_SZ, char_set);
+	    pilotentry[PILOTCAT_NAME_SZ-1] = '\0';
+	    for (i=0; i<NUM_CATEGORIES; i++) {
 	       /* JPA allow a category to be renamed to its previous name */
 	       if (((i != catnum) || (Pdata->state != EDIT_CAT_RENAME))
 		   && !strcmp(pilotentry, Pdata->cai2.name[i])) {
@@ -593,17 +584,12 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 	    printf("rename cat\n");
 #endif
 	    i=Pdata->selected;
-	    entry_text = gtk_entry_get_text(GTK_ENTRY(Pdata->entry));
- 	    /* Pdata->cai2.renamed[i]=1; */
- 	    /* gtk_clist_set_text(GTK_CLIST(Pdata->clist), i, 0, Pdata->cai2.name[i]); */
-	    /* JPA strncpy(Pdata->cai2.name[catnum], entry_text, PILOTCATLTH); */
-	    /* JPA Pdata->cai2.name[catnum][PILOTCATLTH-1]='\0'; */
-	    Pdata->cai2.renamed[catnum]=1;
 	    /* JPA assuming gtk makes a copy */
 	    gtk_clist_set_text(GTK_CLIST(Pdata->clist), i, 0, entry_text);
 	    /* JPA enter new category name in Palm Pilot character set */
-	    charset_j2p((char *)entry_text, HOSTCATLTH, char_set);
-	    g_strlcpy(Pdata->cai2.name[catnum], entry_text, PILOTCATLTH);
+	    charset_j2p((char *)entry_text, HOSTCAT_NAME_SZ, char_set);
+	    g_strlcpy(Pdata->cai2.name[catnum], entry_text, PILOTCAT_NAME_SZ);
+	    Pdata->cai2.renamed[catnum]=1;
 	 }
 
 	 if (Pdata->state==EDIT_CAT_NEW) {
@@ -613,38 +599,38 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 	    /* JPA have already checked category is not being used more than once */
 	    /* Find a new category ID */
 	    id=128;
-	    for (i=1; i<CATCOUNT; i++) {
+	    for (i=1; i<NUM_CATEGORIES; i++) {
 	       if (Pdata->cai2.ID[i]==id) {
 		  id++;
-		  i=0;
+		  i=1;
 	       }
 	    }
 	    /* Find an empty slot */
 	    /* When the new button was pressed we already checked for an empty slot */
-	    for (i=1; i<CATCOUNT; i++) {
+	    for (i=1; i<NUM_CATEGORIES; i++) {
 	       if (Pdata->cai2.name[i][0]=='\0') {
 #ifdef EDIT_CATS_DEBUG
 		  printf("slot %d is empty\n", i);
 #endif
 		  /* JPA get the old text from listbox, to avoid making */
 		  /* character set conversions */
-	          r = gtk_clist_get_text(GTK_CLIST(Pdata->clist), i, 0, &text);
+	          r = gtk_clist_get_text(GTK_CLIST(Pdata->clist), i-1, 0, &text);
                   if (r)
-		     g_strlcpy(currentname, text, HOSTCATLTH);
-		  Pdata->cai2.ID[i]=id;
+		     g_strlcpy(currentname, text, HOSTCAT_NAME_SZ);
 		  strcpy(Pdata->cai2.name[i], pilotentry);
+		  Pdata->cai2.ID[i]=id;
 		  Pdata->cai2.renamed[i]=1;
-		  gtk_clist_set_text(GTK_CLIST(Pdata->clist), i, 0, entry_text);
+		  gtk_clist_set_text(GTK_CLIST(Pdata->clist), i-1, 0, entry_text);
 		  /* JPA relabel category labels beyond the change */
                   j = ++i;
-                  while (r && (i < CATCOUNT)) {
-		     while ((j < CATCOUNT) && (Pdata->cai2.name[j][0] == '\0')) j++;
-                     if (j < CATCOUNT) {
+                  while (r && (i < NUM_CATEGORIES)) {
+		     while ((j < NUM_CATEGORIES) && (Pdata->cai2.name[j][0] == '\0')) j++;
+                     if (j < NUM_CATEGORIES) {
                         strcpy(previousname, currentname);
-			r = gtk_clist_get_text(GTK_CLIST(Pdata->clist), i, 0, &text);
+			r = gtk_clist_get_text(GTK_CLIST(Pdata->clist), i-1, 0, &text);
                         if (r)
-			   g_strlcpy(currentname, text, HOSTCATLTH);
-		        gtk_clist_set_text(GTK_CLIST(Pdata->clist), i, 0, previousname);
+			   g_strlcpy(currentname, text, HOSTCAT_NAME_SZ);
+		        gtk_clist_set_text(GTK_CLIST(Pdata->clist), i-1, 0, previousname);
                         j++;
 		     }
                      i++;
@@ -657,11 +643,13 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 	 gtk_widget_show(Pdata->button_box);
 	 Pdata->state=EDIT_CAT_START;
 	 break;
+
        case EDIT_CAT_ENTRY_CANCEL:
 	 gtk_widget_hide(Pdata->entry_box);
 	 gtk_widget_show(Pdata->button_box);
 	 Pdata->state=EDIT_CAT_START;
 	 break;
+
        default:
 	 jp_logf(JP_LOG_WARN, "cb_edit_button(): %s\n", "unknown button");
       }
@@ -699,7 +687,7 @@ static void cb_edit_cats_debug(GtkWidget *widget, gpointer data)
    int i;
 
    Pdata=data;
-   for (i=0; i<CATCOUNT; i++) {
+   for (i=0; i<NUM_CATEGORIES; i++) {
       printf("cai %2d [%16s] ID %3d %d: [%16s] ID %3d %d\n", i,
 	     Pdata->cai1.name[i], Pdata->cai1.ID[i], Pdata->cai1.renamed[i],
 	     Pdata->cai2.name[i], Pdata->cai2.ID[i], Pdata->cai2.renamed[i]);
@@ -734,14 +722,13 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
    GtkWidget *dialog;
    GtkWidget *clist;
    GtkWidget *entry;
-   GtkWidget *separator;
    GtkWidget *label;
+   GtkWidget *separator;
    struct dialog_cats_data Pdata;
-   int i;
-   int j;
+   int i, j;
    long char_set;
-   char *catname; /* JPA category names in host character set */
-   char *titles[2];
+   char *catname_hchar;    /* Category names in host character set */
+   char *titles[2] = {N_("Category"), NULL};
    gchar *empty_line[] = {""};
 
    jp_logf(JP_LOG_DEBUG, "edit_cats\n");
@@ -750,7 +737,7 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
    Pdata.state=EDIT_CAT_START;
    g_strlcpy(Pdata.db_name, db_name, 16);
 #ifdef EDIT_CATS_DEBUG
-   for (i = 0; i < CATCOUNT; i++) {
+   for (i = 0; i < NUM_CATEGORIES; i++) {
       if (cai->name[i][0] != '\0') {
 	 printf("cat %d [%s] ID %d renamed %d\n", i, cai->name[i],
 		cai->ID[i], cai->renamed[i]);
@@ -779,20 +766,17 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
 			   NULL);
 
    gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_MOUSE);
+   gtk_window_set_modal(GTK_WINDOW(dialog), TRUE);
+   gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_widget_get_toplevel(widget)));
 
    gtk_signal_connect(GTK_OBJECT(dialog), "destroy",
                       GTK_SIGNAL_FUNC(cb_destroy_dialog), dialog);
 
-   gtk_window_set_modal(GTK_WINDOW(dialog), TRUE);
-
-   gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_widget_get_toplevel(widget)));
-
    vbox3 = gtk_vbox_new(FALSE, 0);
-   hbox = gtk_hbox_new(FALSE, 0);
-
-   gtk_container_set_border_width(GTK_CONTAINER(hbox), 5);
-
    gtk_container_add(GTK_CONTAINER(dialog), vbox3);
+
+   hbox = gtk_hbox_new(FALSE, 0);
+   gtk_container_set_border_width(GTK_CONTAINER(hbox), 5);
    gtk_container_add(GTK_CONTAINER(vbox3), hbox);
 
    vbox1 = gtk_vbox_new(FALSE, 0);
@@ -801,21 +785,39 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
    vbox2 = gtk_vbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(hbox), vbox2, FALSE, FALSE, 1);
 
-   /* correctly translate title */
-   titles[0]=strdup(_("category name"));
-   titles[1]=NULL;
    clist = gtk_clist_new_with_titles(1, titles);
-   if (titles[0]) free(titles[0]);
 
    gtk_clist_column_titles_passive(GTK_CLIST(clist));
    gtk_clist_set_column_min_width(GTK_CLIST(clist), 0, 100);
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), 0, TRUE);
-
-   Pdata.clist = clist;
    gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
+
    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
 		      GTK_SIGNAL_FUNC(cb_clist_edit_cats), &Pdata);
    gtk_box_pack_start(GTK_BOX(vbox1), clist, TRUE, TRUE, 1);
+
+   /* Fill clist with categories except for category 0, Unfiled,
+    * which is not editable */
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
+   for (i=j=1; i<NUM_CATEGORIES; i++,j++) {
+      gtk_clist_append(GTK_CLIST(clist), empty_line);
+      /* Hide void category names */
+      while ((j < NUM_CATEGORIES) && ((cai->name[j][0] == '\0') || (!cai->ID[j]))) {
+	 /* Remove categories which have a null ID 
+          * to facilitate recovering from errors, */
+	 /* however we cannot synchronize them to the Palm Pilot */
+         if (!cai->ID[j]) cai->name[j][0] = '\0';
+         j++;
+      }
+      if (j < NUM_CATEGORIES) {
+          /* Must do character set conversion from Palm to Host */
+          catname_hchar = charset_p2newj(cai->name[j], PILOTCAT_NAME_SZ, char_set);
+	  gtk_clist_set_text(GTK_CLIST(clist), i-1, 0, catname_hchar);
+          free(catname_hchar);
+      }
+   }
+
+   Pdata.clist = clist;
 
    /* Buttons */
    hbox = gtk_hbutton_box_new();
@@ -864,7 +866,7 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
 
    Pdata.label = label;
 
-   entry = gtk_entry_new_with_max_length(HOSTCATLTH-1);
+   entry = gtk_entry_new_with_max_length(HOSTCAT_NAME_SZ-1);
    gtk_signal_connect(GTK_OBJECT(entry), "activate",
 		      GTK_SIGNAL_FUNC(cb_edit_button),
 		      GINT_TO_POINTER(EDIT_CAT_ENTRY_OK));
@@ -901,25 +903,6 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
    Pdata.entry_box = vbox;
    Pdata.entry = entry;
 
-   get_pref(PREF_CHAR_SET, &char_set, NULL); /* JPA */
-   for (i=j=0; i<CATCOUNT; i++,j++) {
-      gtk_clist_append(GTK_CLIST(clist), empty_line);
-        /* JPA hide void category names */
-      while ((j < CATCOUNT) && ((cai->name[j][0] == '\0') || (j && !cai->ID[j]))) {
-	 /* JPA remove categories which have a null ID */
-	 /* to facilitate recovering from errors, */
-	 /* however we cannot synchronize them to the Palm Pilot */
-         if (j && !cai->ID[j]) cai->name[j][0] = '\0';
-         j++;
-      }
-      if (j < CATCOUNT) {
-	 /* gtk_clist_set_text(GTK_CLIST(clist), i, 0, cai->name[i]); JPA */
-          catname = charset_p2newj(cai->name[j], PILOTCATLTH, char_set);
-	  gtk_clist_set_text(GTK_CLIST(clist), i, 0, catname); /* JPA */
-          free(catname);
-      }
-   }
-
    /* Button Box */
    hbox = gtk_hbutton_box_new();
    gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
@@ -949,27 +932,25 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 1);
 
 #ifdef EDIT_CATS_DEBUG
-   button = gtk_button_new_with_label(_("debug"));
+   button = gtk_button_new_with_label("DEBUG");
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_edit_cats_debug), &Pdata);
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 1);
 #endif
 
    /* Set the default button pressed to CANCEL */
-   /* Initialize data structure */
    Pdata.button_hit = DIALOG_SAID_2;
+   /* Initialize data structures */
    memcpy(&(Pdata.cai1), cai, sizeof(struct CategoryAppInfo));
    memcpy(&(Pdata.cai2), cai, sizeof(struct CategoryAppInfo));
-
    gtk_object_set_data(GTK_OBJECT(dialog), "dialog_cats_data", &Pdata);
 
    gtk_widget_show_all(dialog);
-
    gtk_widget_hide(Pdata.entry_box);
 
    gtk_main();
 
-   /* OK, we're back */
+   /* OK, back from gtk_main loop */
 #ifdef EDIT_CATS_DEBUG
    if (Pdata.button_hit==DIALOG_SAID_1) {
       printf("pressed 1\n");
@@ -982,7 +963,7 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
       return DIALOG_SAID_2;
    }
 #ifdef EDIT_CATS_DEBUG
-   for (i=0; i<CATCOUNT; i++) {
+   for (i=0; i<NUM_CATEGORIES; i++) {
       printf("name %d [%s] ID %d [%s] ID %d\n", i,
 			 Pdata.cai1.name[i], Pdata.cai1.ID[i],
 			 Pdata.cai2.name[i], Pdata.cai2.ID[i]);

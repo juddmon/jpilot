@@ -1,4 +1,4 @@
-/* $Id: expense.c,v 1.56 2008/05/25 09:46:20 rousseau Exp $ */
+/* $Id: expense.c,v 1.57 2008/06/01 18:52:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * expense.c
@@ -53,10 +53,6 @@
 #define MAX_EXPENSE_TYPES 28
 #define MAX_PAYMENTS       8
 #define MAX_CURRENCYS     34
-
-/* this is alredy defined in utils.h with a different value */
-#undef  CATEGORY_ALL
-#define CATEGORY_ALL 200
 
 #define CONNECT_SIGNALS    400
 #define DISCONNECT_SIGNALS 401
@@ -160,7 +156,7 @@ static GtkWidget *entry_amount;
 static GtkWidget *entry_vendor;
 static GtkWidget *entry_city;
 static GtkWidget *text_attendees;
-static GtkWidget *pane;
+static GtkWidget *pane=NULL;
 #ifndef ENABLE_STOCK_BUTTONS
 static GtkAccelGroup *accel_group;
 #endif
@@ -214,6 +210,7 @@ int plugin_unpack_cai_from_ai(struct CategoryAppInfo *cai,
    
    jp_logf(JP_LOG_DEBUG, "unpack_expense_cai_from_ai\n");
 
+   memset(&ai, 0, sizeof(ai));
    r = unpack_ExpenseAppInfo(&ai, ai_raw, len);
    if (r <= 0) {
       jp_logf(JP_LOG_DEBUG, "unpack_ExpenseAppInfo failed %s %d\n", __FILE__, __LINE__);
@@ -1512,6 +1509,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    time_t ltime;
    struct tm *now;
    long ivalue;
+   int i;
    
    jp_logf(JP_LOG_DEBUG, "Expense: plugin gui started, unique_id=%d\n", unique_id);
 
@@ -1527,6 +1525,10 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
 
    /* Make the menus */
    jp_logf(JP_LOG_DEBUG, "Expense: calling make_menus\n");
+   for (i=0; i<MAX_CATEGORY2; i++) {
+      menu_item_category2[i] = NULL;
+   }
+
    make_menus();
 
    pane = gtk_hpaned_new();
@@ -1888,20 +1890,23 @@ int plugin_gui_cleanup() {
 
    free_myexpense_list(&glob_myexpense_list);
 
-   /* Remove the accelerators */
+   if (pane) {
+      /* Remove the accelerators */
 #ifndef ENABLE_STOCK_BUTTONS
 #ifdef ENABLE_GTK2
-   gtk_window_remove_accel_group(GTK_WINDOW(gtk_widget_get_toplevel(pane)), accel_group);
+      gtk_window_remove_accel_group(GTK_WINDOW(gtk_widget_get_toplevel(pane)), accel_group);
 #else
-   gtk_accel_group_detach(accel_group, GTK_OBJECT(gtk_widget_get_toplevel(pane)));
+      gtk_accel_group_detach(accel_group, GTK_OBJECT(gtk_widget_get_toplevel(pane)));
 #endif
 #endif
 
 #ifdef ENABLE_GTK2
-   set_pref(PREF_EXPENSE_PANE, gtk_paned_get_position(GTK_PANED(pane)), NULL, TRUE);
+      set_pref(PREF_EXPENSE_PANE, gtk_paned_get_position(GTK_PANED(pane)), NULL, TRUE);
 #else
-   set_pref(PREF_EXPENSE_PANE, GTK_PANED(pane)->handle_xpos, NULL, TRUE);
+      set_pref(PREF_EXPENSE_PANE, GTK_PANED(pane)->handle_xpos, NULL, TRUE);
 #endif
+      pane = NULL;
+   }
 
    return EXIT_SUCCESS;
 }

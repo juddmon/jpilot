@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.115 2008/05/25 09:46:20 rousseau Exp $ */
+/* $Id: memo_gui.c,v 1.116 2008/06/01 18:52:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -975,8 +975,6 @@ static void clear_mymemo(MyMemo *mmemo)
 }
 /* End Masking */
 
-
-#if 0
 static void cb_edit_cats(GtkWidget *widget, gpointer data)
 {
    struct MemoAppInfo ai;
@@ -1038,8 +1036,6 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
 
    cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
 }
-#endif
-
 
 static void cb_clist_selection(GtkWidget      *clist,
 			       gint           row,
@@ -1450,7 +1446,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    GtkWidget *scrolled_window;
    GtkWidget *vbox1, *vbox2, *hbox_temp;
    GtkWidget *separator;
-   /*GtkWidget *button;*/
+   GtkWidget *button;
 #ifndef ENABLE_GTK2
    GtkWidget *vscrollbar;
 #endif
@@ -1539,14 +1535,11 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
 
    /* Edit category button */
-	/* RW:5/8/2008: Temporarily removed ability to edit categories with Jpilot
-	 * because the back-end code WILL often lose user data */
-	/*
    button = gtk_button_new_with_label(_("Edit Categories"));
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_edit_cats), NULL);
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
-   */
+
    /* Put the memo list window up */
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
    /*gtk_widget_set_usize(GTK_WIDGET(scrolled_window), 330, 100); */
