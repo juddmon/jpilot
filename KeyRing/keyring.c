@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.72 2008/05/25 09:46:20 rousseau Exp $ */
+/* $Id: keyring.c,v 1.73 2008/06/01 19:02:59 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -43,7 +43,7 @@
 /* Jpilot header files */
 #include "libplugin.h"
 #include "utils.h"
-#include "../i18n.h"
+#include "i18n.h"
 #include "prefs.h"
 #include "stock_buttons.h"
 
@@ -85,10 +85,8 @@ struct KeyRing {
    char *note;	   /* Encrypted */
    struct tm last_changed; /* Encrypted */
 };
-/* 
- * This is my wrapper to the KeyRing structure so that I can put
- * a few more fields in with it.
- */
+/* My wrapper to the KeyRing structure so that I can put a few more 
+ * fields in with it.  */
 struct MyKeyRing {
    PCRecType rt;
    unsigned int unique_id;
@@ -168,6 +166,69 @@ static int keyring_find(int unique_id);
 static void update_date_button(GtkWidget *button, struct tm *t);
 
 /****************************** Main Code *************************************/
+
+/* Routine to get category app info from raw buffer. 
+ * KeyRing is broken and uses a non-standard length CategoryAppInfo.
+ * The KeyRing structure is 276 bytes whereas pilot-link uses 278.
+ * Code below is taken from unpack_CategoryAppInfo in pilot-link but modified
+ * for the shortened structure. */
+int plugin_unpack_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *record, int len)
+{
+   int i, rec;
+
+   if (len < 2 + 16 * 16 + 16 + 2)
+      return EXIT_FAILURE;
+   rec = get_short(record);
+   for (i = 0; i < 16; i++) {
+      if (rec & (1 << i))
+         cai->renamed[i] = 1;
+      else
+         cai->renamed[i] = 0;
+   }
+   record += 2;
+   for (i = 0; i < 16; i++) {
+      memcpy(cai->name[i], record, 16);
+      record += 16;
+   }
+   memcpy(cai->ID, record, 16);
+   record += 16;
+   cai->lastUniqueID = get_byte(record);
+   record += 2;
+
+   return EXIT_SUCCESS;
+}
+
+/* Routine to pack CategoryAppInfo struct into non-standard size buffer */
+int plugin_pack_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *record, int len)
+{
+   int i, rec;
+
+   if (!record) {
+      return EXIT_SUCCESS;
+   }
+   if (len < (2 + 16 * 16 + 16 + 2))
+      return EXIT_FAILURE;   /* not enough room */
+   rec = 0;
+   for (i = 0; i < 16; i++) {
+      if (cai->renamed[i])
+         rec |= (1 << i);
+   }
+   set_short(record, rec);
+   record += 2;
+   for (i = 0; i < 16; i++) {
+      memcpy(record, cai->name[i], 16);
+      record += 16;
+   }
+   memcpy(record, cai->ID, 16);
+   record += 16;
+   set_byte(record, cai->lastUniqueID);
+   record++;
+   set_byte(record, 0);      /* gapfill */
+   record++;
+
+   return EXIT_SUCCESS;
+}
+
 static int pack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size,
 			int *wrote_size)
 {
@@ -180,8 +241,8 @@ static int pack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size,
    jp_logf(JP_LOG_DEBUG, "KeyRing: pack_KeyRing()\n");
 
    packed_date = (((kr->last_changed.tm_year - 4) << 9) & 0xFE00) |
-     (((kr->last_changed.tm_mon+1) << 5) & 0x01E0) |
-     (kr->last_changed.tm_mday & 0x001F);
+                 (((kr->last_changed.tm_mon+1) << 5) & 0x01E0) |
+                   (kr->last_changed.tm_mday & 0x001F);
    set_short(last_changed, packed_date);
 
    *wrote_size=0;
@@ -219,7 +280,6 @@ static int pack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size,
    i += strlen(kr->note)+1;
    strncpy((char *)&buf[i], last_changed, 2);
    for (i=strlen(kr->name)+1; i<n; i=i+8) {
-      /* des_encrypt3((DES_LONG *)&buf[i], s1, s2, s1); */
 #ifdef HEADER_NEW_DES_H
       DES_ecb3_encrypt((DES_cblock *)&buf[i], (DES_cblock *)&buf[i], 
 		       &s1, &s2, &s1, DES_ENCRYPT);
@@ -251,14 +311,14 @@ static int unpack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size)
 
    jp_logf(JP_LOG_DEBUG, "KeyRing: unpack_KeyRing\n");
    if (!memchr(buf, '\0', buf_size)) {
-      jp_logf(JP_LOG_DEBUG, "KeyRing: unpack_KeyRing(): No null terminater found in buf\n");
+      jp_logf(JP_LOG_DEBUG, "KeyRing: unpack_KeyRing(): No null terminator found in buf\n");
       return 0;
    }
    n=strlen((char *)buf)+1;
 
    rem=buf_size-n;
    if (rem>0xFFFF) {
-      /* This can be cause by a bug in libplugin.c from jpilot 0.99.1 
+      /* This can be caused by a bug in libplugin.c from jpilot 0.99.1 
        * and before.  It occurs on the last record */
       jp_logf(JP_LOG_DEBUG, "KeyRing: unpack_KeyRing(): buffer too big n=%d, buf_size=%d\n", n, buf_size);
       jp_logf(JP_LOG_DEBUG, "KeyRing: unpack_KeyRing(): truncating\n");
@@ -266,7 +326,7 @@ static int unpack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size)
       rem=rem-(rem%8);
    }
    clear_text=malloc(rem+8); /* Allow for some safety NULLs */
-   bzero(clear_text, rem+8);
+   memset(clear_text, 0, rem+8);
 
    jp_logf(JP_LOG_DEBUG, "KeyRing: unpack_KeyRing(): rem (should be multiple of 8)=%d\n", rem);
    jp_logf(JP_LOG_DEBUG, "KeyRing: unpack_KeyRing(): rem%%8=%d\n", rem%8);
@@ -373,7 +433,9 @@ static int set_password_hash(unsigned char *buf, int buf_size, char *passwd)
 
 /* End password change code   */
 
-/* utility function to read keyring data file and filter out unwanted records */
+/* Utility function to read keyring data file and filter out unwanted records 
+ *
+ * Returns the number of records read */
 static int get_keyring(struct MyKeyRing **mkr_list, int category)
 {
    GList *records=NULL;
@@ -533,7 +595,7 @@ gint GtkClistKeyrCompareDates(GtkCList *clist,
    return(time1 - time2);
 }
 
-/* Function is used to sort clist case insensitiv */
+/* Function is used to sort clist case insensitively */
 gint GtkClistKeyrCompareNocase (GtkCList *clist,
                               gconstpointer ptr1,
                               gconstpointer ptr2)
@@ -647,9 +709,11 @@ static void connect_changed_signals(int con_or_dis)
       connected=1;
 
       for (i=0; i<NUM_KEYRING_CAT_ITEMS; i++) {
-	 if (menu_item_category2[i]) {
-	    gtk_signal_connect(GTK_OBJECT(menu_item_category2[i]), "toggled",
-			       GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+	 if (menu_item_category2[i] != NULL) {
+	    gtk_signal_connect(GTK_OBJECT(menu_item_category2[i]), 
+                               "toggled",
+			       GTK_SIGNAL_FUNC(cb_record_changed), 
+                               NULL);
 	 }
       }
 
@@ -825,8 +889,8 @@ static void update_date_button(GtkWidget *button, struct tm *t)
 }
 
 /*
- * This is called when the "Clear" button is pressed.
- * It just clears out all the detail fields on the right-hand side.
+ * This is called when the "New" button is pressed.
+ * It clears out all the detail fields on the right-hand side.
  */
 static int keyr_clear_details()
 {
@@ -1265,9 +1329,11 @@ static void cb_clist_selection(GtkWidget      *clist,
       }
    }
 
-   gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
-				 (menu_item_category2[item_num]), TRUE);
-   gtk_option_menu_set_history(GTK_OPTION_MENU(menu_category2), item_num);
+   if (item_num < NUM_KEYRING_CAT_ITEMS) {
+      gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
+                                    (menu_item_category2[item_num]), TRUE);
+      gtk_option_menu_set_history(GTK_OPTION_MENU(menu_category2), item_num);
+   }
 
    if (mkr->kr.name) {
       temp_str = malloc((len = strlen(mkr->kr.name)*2+1));
@@ -1410,7 +1476,7 @@ static int make_menu(char *items[], int menu_index, GtkWidget **Poption_menu,
 static void make_menus()
 {
    GList *records;
-   struct CategoryAppInfo ai;
+   struct CategoryAppInfo cai;
    unsigned char *buf;
    int buf_size;
    int i, count;
@@ -1420,28 +1486,19 @@ static void make_menus()
 
    /* This gets the application specific data out of the database for us.
     * We still need to write a function to unpack it from its blob form. */
-   
+   memset(&cai, 0, sizeof(cai));
    jp_get_app_info("Keys-Gtkr", &buf, &buf_size);
-
-   /* This call should work, but the appinfo is too small, so we do it */
-   /* Keyring is not using a legal category app info structure */
-   /* unpack_CategoryAppInfo(&ai, buf, buf_size+4); */
-   
-   /* I'm going to be lazy and only get the names, since that's all I use */
-   for (i=0; i<NUM_KEYRING_CAT_ITEMS; i++) {
-      memcpy(&ai.name[i][0], buf+i*16+2, 16);
-   }
-
+   plugin_unpack_cai_from_ai(&cai, buf, buf_size);
    free(buf);
    
    categories[0]= "All";
    for (i=0, count=0; i<NUM_KEYRING_CAT_ITEMS; i++) {
       glob_category_number_from_menu_item[i]=0;
-      if (ai.name[i][0]=='\0') {
+      if (cai.name[i][0]=='\0') {
 	 continue;
       }
-      jp_charset_p2j(ai.name[i], 16);
-      categories[count+1]=ai.name[i];
+      jp_charset_p2j(cai.name[i], 16);
+      categories[count+1]=cai.name[i];
       glob_category_number_from_menu_item[count++]=i;
    }
    categories[count+1]=NULL;
@@ -1498,8 +1555,8 @@ static gboolean cb_destroy_dialog(GtkWidget *widget)
    if (entry) {
       strncpy(Pdata->text, entry, PASSWD_LEN);
       Pdata->text[PASSWD_LEN]='\0';
-      /* Wipe out password data */
-      gtk_entry_set_text(GTK_ENTRY(Pdata->entry), "	     ");
+      /* Clear entry field */
+      gtk_entry_set_text(GTK_ENTRY(Pdata->entry), "");
    }
 
    gtk_main_quit();
@@ -1969,6 +2026,8 @@ int plugin_gui_cleanup() {
       cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
    }
 
+   connect_changed_signals(DISCONNECT_SIGNALS);
+
    free_mykeyring_list(&glob_keyring_list);
 
    /* if the password was correct */
@@ -1977,10 +2036,8 @@ int plugin_gui_cleanup() {
    }
    plugin_active = FALSE;
 
-   connect_changed_signals(DISCONNECT_SIGNALS);
-
    /* the pane may not exist if the wrong password is entered and
-    * the GUI is not built */
+    * the GUI was not built */
    if (pane)
    {
       /* Remove the accelerators */
@@ -2030,6 +2087,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    char *titles[3]; /* { "Changed", "Name", "Account" }; */
    int retry;
    int cycle_category = FALSE;
+   int i;
 
    jp_logf(JP_LOG_DEBUG, "KeyRing: plugin gui started, unique_id=%d\n", unique_id);
 
@@ -2052,7 +2110,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
       /* reset last time we entered */
       plugin_last_time = 0;
 
-      password_not_correct = 1;
+      password_not_correct = TRUE;
       retry = PASSWD_ENTER;
       while (password_not_correct) {
 	 r = dialog_password(w, ascii_password, retry);
@@ -2106,6 +2164,10 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
 #endif
 
    /* Make the menus */
+   for (i=0; i<NUM_KEYRING_CAT_ITEMS; i++) {
+      menu_item_category2[i] = NULL;
+   }
+
    make_menus();
 
    /**********************************************************************/
@@ -2322,3 +2384,4 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
 
    return EXIT_SUCCESS;
 }
+
