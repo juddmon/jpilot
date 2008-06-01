@@ -55,7 +55,7 @@ AC_SUBST(DATADIRNAME)
 dnl Setup gettext using version available on host
 dnl The intl/ directory is not exported with the distribution
 AM_GNU_GETTEXT([external])
-AM_GNU_GETTEXT_VERSION([0.14.5])
+AM_GNU_GETTEXT_VERSION([0.16.1])
 
 if test "x$MSGFMT" = "xno"; then
    if test "x$GMSGFMT" = "xno"; then

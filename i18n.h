@@ -1,4 +1,4 @@
-/* $Id: i18n.h,v 1.6 2004/11/22 00:52:42 rikster5 Exp $ */
+/* $Id: i18n.h,v 1.7 2008/06/01 21:33:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * i18n.h
@@ -21,26 +21,18 @@
  ******************************************************************************/
 
 #ifndef __I18N_H__
-#define __I18N_H__
+#  define __I18N_H__
 
-#include "config.h"
+#  include "config.h"
 
-#if defined(ENABLE_NLS)
-#if defined(HAVE_GETTEXT)
-#include	<libintl.h>
-#else
-#include	"intl/libintl.h"
-#endif
-#define	_(str)	gettext(str)
-#else
-#define	_(str)	str
-#endif
-
-#ifndef gettext_noop
-#define	gettext_noop(str) str
-#endif
-#ifndef N_
-#define N_(str) str
-#endif
+#  if defined(HAVE_GETTEXT)
+#    include "gettext.h"
+#    define _(str) gettext(str)
+#    define N_(str) str
+#    define C_(context, str) pgettext(context, str)
+#  else
+#    define _(str) str
+#    define C_(context, str) str
+#  endif
 
 #endif
