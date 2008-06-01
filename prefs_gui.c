@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.58 2008/05/03 16:37:49 judd Exp $ */
+/* $Id: prefs_gui.c,v 1.59 2008/06/01 21:34:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -508,7 +508,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vbox_settings, label);
    label = gtk_label_new(_("Datebook"));
    gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vbox_datebook, label);
-   label = gtk_label_new(_("Address"));
+   label = gtk_label_new(C_("prefgui","Address"));
    gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vbox_address, label);
    label = gtk_label_new(_("ToDo"));
    gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vbox_todo, label);
