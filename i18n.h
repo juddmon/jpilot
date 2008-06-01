@@ -1,4 +1,4 @@
-/* $Id: i18n.h,v 1.7 2008/06/01 21:33:07 rikster5 Exp $ */
+/* $Id: i18n.h,v 1.8 2008/06/01 21:55:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * i18n.h
@@ -26,6 +26,7 @@
 #  include "config.h"
 
 #  if defined(HAVE_GETTEXT)
+#    include <locale.h>
 #    include "gettext.h"
 #    define _(str) gettext(str)
 #    define N_(str) str
