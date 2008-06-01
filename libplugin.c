@@ -1,4 +1,4 @@
-/* $Id: libplugin.c,v 1.32 2007/12/18 21:00:57 rousseau Exp $ */
+/* $Id: libplugin.c,v 1.33 2008/06/01 23:10:30 rikster5 Exp $ */
 
 /*******************************************************************************
  * libplugin.c
@@ -517,7 +517,7 @@ int jp_delete_record(char *DB_name, buf_rec *br, int flag)
       jp_logf(JP_LOG_DEBUG, "Deleting Palm ID %d\n", br->unique_id);
       pc_in=jp_open_home_file(PC_name, "a");
       if (pc_in==NULL) {
-	 jp_logf(JP_LOG_WARN, _("Couldn't open PC records file\n"));
+	 jp_logf(JP_LOG_WARN, _("Unable to open PC records file\n"));
 	 return EXIT_FAILURE;
       }
       header.unique_id=br->unique_id;

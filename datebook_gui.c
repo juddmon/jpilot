@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.168 2008/05/25 09:46:20 rousseau Exp $ */
+/* $Id: datebook_gui.c,v 1.169 2008/06/01 23:10:30 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -649,9 +649,9 @@ int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int type)
 int datebook_import(GtkWidget *window)
 {
    char *type_desc[] = {
-      "CSV (Comma Separated Values)",
-      "DAT/DBA (Palm Archive Formats)",
-      NULL
+      N_("CSV (Comma Separated Values)"),
+      N_("DAT/DBA (Palm Archive Formats)"),
+		NULL
    };
    int type_int[] = {
       IMPORT_TYPE_CSV,
@@ -1119,7 +1119,10 @@ static int datebook_export_gui(GtkWidget *main_window, int x, int y)
    GtkWidget *hbox;
    GtkWidget *label;
    GSList *group;
-   char *type_text[]={"Text", "CSV", "iCalendar", NULL};
+   char *type_text[]={N_("Text"), 
+	                   N_("CSV"), 
+							 N_("iCalendar"),
+							 NULL};
    int type_int[]={EXPORT_TYPE_TEXT, EXPORT_TYPE_CSV, EXPORT_TYPE_ICALENDAR};
    int i;
    const char *svalue;

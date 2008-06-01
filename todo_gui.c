@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.130 2008/06/01 18:52:53 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.131 2008/06/01 23:10:30 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -604,8 +604,8 @@ int cb_todo_import(GtkWidget *parent_window, const char *file_path, int type)
 int todo_import(GtkWidget *window)
 {
    char *type_desc[] = {
-      "CSV (Comma Separated Values)",
-      "DAT/TDA (Palm Archive Formats)",
+      N_("CSV (Comma Separated Values)"),
+      N_("DAT/TDA (Palm Archive Formats)"),
       NULL
    };
    int type_int[] = {
@@ -865,7 +865,10 @@ static void cb_todo_export_done(GtkWidget *widget, const char *filename)
 int todo_export(GtkWidget *window)
 {
    int w, h, x, y;
-   char *type_text[]={"Text", "CSV", "iCalendar", NULL};
+   char *type_text[]={N_("Text"), 
+	                   N_("CSV"), 
+							 N_("iCalendar"), 
+							 NULL};
    int type_int[]={EXPORT_TYPE_TEXT, EXPORT_TYPE_CSV, EXPORT_TYPE_ICALENDAR};
 
    gdk_window_get_size(window->window, &w, &h);
@@ -1529,7 +1532,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    sorted_position = find_sorted_cat(index);
    if (todo_cat_menu_item2[sorted_position]==NULL) {
       /* Illegal category */
-      jp_logf(JP_LOG_DEBUG, _("Category is not legal\n"));
+      jp_logf(JP_LOG_DEBUG, "Category is not legal\n");
       index = sorted_position = 0;
       sorted_position = find_sorted_cat(index);
    }

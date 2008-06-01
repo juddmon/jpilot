@@ -1,4 +1,4 @@
-/* $Id: import_gui.c,v 1.24 2008/04/27 16:32:31 rikster5 Exp $ */
+/* $Id: import_gui.c,v 1.25 2008/06/01 23:10:30 rikster5 Exp $ */
 
 /*******************************************************************************
  * import_gui.c
@@ -330,7 +330,7 @@ void import_gui(GtkWidget *main_window, GtkWidget *main_pane,
    group = NULL;
    for (i=0; i<MAX_IMPORT_TYPES; i++) {
       if (type_desc[i]==NULL) break;
-      radio_types[i] = gtk_radio_button_new_with_label(group, type_desc[i]);
+      radio_types[i] = gtk_radio_button_new_with_label(group, _(type_desc[i]));
       radio_file_types[i] = type_int[i];
       group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_types[i]));
       gtk_box_pack_start(GTK_BOX(vbox), radio_types[i], TRUE, TRUE, 0);

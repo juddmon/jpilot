@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.59 2008/06/01 21:34:53 rikster5 Exp $ */
+/* $Id: prefs_gui.c,v 1.60 2008/06/01 23:10:30 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -602,7 +602,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_box_pack_start(GTK_BOX(vbox_settings), table, FALSE, FALSE, 0);
 
    /* GTK colors file */
-   label = gtk_label_new(_("My GTK colors file is "));
+   label = gtk_label_new(_("GTK color theme file"));
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
 			     0, 2, 0, 1);
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);

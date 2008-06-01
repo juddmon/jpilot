@@ -1,4 +1,4 @@
-/* $Id: restore_gui.c,v 1.23 2008/04/03 15:59:58 rikster5 Exp $ */
+/* $Id: restore_gui.c,v 1.24 2008/06/01 23:10:30 rikster5 Exp $ */
 
 /*******************************************************************************
  * restore_gui.c
@@ -174,11 +174,10 @@ static int populate_clist_sub(char *path, int check_for_dups, int check_exts)
 
 	    utf8_text = g_locale_to_utf8(row_text[0], -1, NULL, NULL, NULL);
             if (!utf8_text) {
-
-               jp_logf(JP_LOG_GUI, _("Unable to convert filename for GTK display\n"
-                                     "See console log to find which file will not be restored"));
-               jp_logf(JP_LOG_WARN, _("Unable to convert filename for GTK display\n"
-                                      "File %s will not be restored\n"), row_text[0]);
+               jp_logf(JP_LOG_GUI, _("Unable to convert filename for GTK display\n"));
+               jp_logf(JP_LOG_GUI, _("See console log to find which file will not be restored"));
+               jp_logf(JP_LOG_WARN, _("Unable to convert filename for GTK display\n"));
+               jp_logf(JP_LOG_WARN, _("File %s will not be restored\n"), row_text[0]);
                continue;
             }
 	    row_text[0] = utf8_text;
@@ -258,7 +257,7 @@ int restore_gui(GtkWidget *main_window, int w, int h, int x, int y)
    label = gtk_label_new(_("To restore your handheld:"));
    gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
    gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
-   label = gtk_label_new(_("1. Choose all the applications you wish to restore.  The default is all."));
+   label = gtk_label_new(_("1. Choose the applications you wish to restore.  The default is all."));
    gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
    gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
    label = gtk_label_new(_("2. Enter the User Name and User ID."));

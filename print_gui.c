@@ -1,4 +1,4 @@
-/* $Id: print_gui.c,v 1.17 2008/04/03 15:59:58 rikster5 Exp $ */
+/* $Id: print_gui.c,v 1.18 2008/06/01 23:10:30 rikster5 Exp $ */
 
 /*******************************************************************************
  * print_gui.c
@@ -258,7 +258,7 @@ int print_gui(GtkWidget *main_window, int app, int date_button, int mon_week_day
       group = NULL;
 
       radio_button_one = gtk_radio_button_new_with_label
-	(group, _("One record"));
+	(group, _("Selected record"));
 
       group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_one));
       radio_button_shown = gtk_radio_button_new_with_label

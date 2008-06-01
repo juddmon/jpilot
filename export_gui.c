@@ -1,4 +1,4 @@
-/* $Id: export_gui.c,v 1.20 2008/04/27 16:30:19 rikster5 Exp $ */
+/* $Id: export_gui.c,v 1.21 2008/06/01 23:10:30 rikster5 Exp $ */
 
 /*******************************************************************************
  * export_gui.c
@@ -307,7 +307,7 @@ int export_gui(GtkWidget *main_window,
    group = NULL;
    for (i=0; i<100; i++) {
       if (type_text[i]==NULL) break;
-      export_radio_type[i] = gtk_radio_button_new_with_label(group, type_text[i]);
+      export_radio_type[i] = gtk_radio_button_new_with_label(group, _(type_text[i]));
       group = gtk_radio_button_group(GTK_RADIO_BUTTON(export_radio_type[i]));
       gtk_box_pack_start(GTK_BOX(vbox), export_radio_type[i], FALSE, FALSE, 0);
       gtk_signal_connect(GTK_OBJECT(export_radio_type[i]), "pressed",

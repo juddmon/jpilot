@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.163 2008/06/01 18:52:53 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.164 2008/06/01 23:10:30 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -1925,20 +1925,19 @@ void cb_payback(GtkWidget *widget, gpointer data)
 {
    char *button_text[]={N_("OK")};
    char *text=
-     "Buy a Palm Tungsten, or Palm Zire, register it on-line and\n"
-     "earn points for the J-Pilot project.\n\n"
-     "If you already own a Tungsten, or Zire Palm, consider registering it\n"
-     "on-line to help J-Pilot.\n"
-     "Visit http://jpilot.org/payback.html for details.\n\n"
-     "This message will not be automatically displayed again and can be found later\n"
-     "in the help menu.\n\n\n"
-     "PALM, TUNGSTEN and ZIRE are among the trademarks of palmOne, Inc."
-     ;
+	   N_("Buy a Palm Tungsten, or Palm Zire, register it on-line and\n"
+         "earn points for the J-Pilot project.\n\n"
+         "If you already own a Tungsten, or Zire Palm, consider registering it\n"
+        "on-line to help J-Pilot.\n"
+        "Visit http://jpilot.org/payback.html for details.\n\n"
+        "This message will not be automatically displayed again and can be found later\n"
+        "in the help menu.\n\n\n"
+        "PALM, TUNGSTEN and ZIRE are among the trademarks of palmOne, Inc.");
 
    if (GTK_IS_WINDOW(window)) {
       dialog_generic(GTK_WINDOW(window),
-	    "Register your Palm in the Payback Program", DIALOG_INFO,
-	    text, 1, button_text);
+	    _("Register your Palm in the Payback Program"), DIALOG_INFO,
+	    _(text), 1, button_text);
    }
 }
 
@@ -2945,14 +2944,12 @@ char * xpm_backup[] = {
       char text[1000];
 
       g_strlcpy(text, 
-         _("J-Pilot is using the GTK2 graphical toolkit. "
+         _("J-Pilot uses the GTK2 graphical toolkit. "
            "This version of the toolkit uses UTF-8 to encode characters.\n"
            "You should select a UTF-8 charset so that you can see non-ASCII characters (accents for example).\n\n"), sizeof(text));
-      g_strlcat(text, _("Go to the menu \""), sizeof(text));
-      g_strlcat(text, _("/File/Preferences"), sizeof(text));
-      g_strlcat(text, _("\" and change the \""), sizeof(text));
-      g_strlcat(text, _("Character Set "), sizeof(text));
-      g_strlcat(text, _("\"."), sizeof(text));
+      g_strlcat(text, 
+		          _("Go to the menu \"File/Preferences\" and change the \"Character Set\"."), 
+					 sizeof(text));
       ret = dialog_generic(GTK_WINDOW(window),
          _("Select a UTF-8 encoding"), DIALOG_QUESTION, text, 3, button_text);
 

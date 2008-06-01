@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.116 2008/06/01 18:52:53 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.117 2008/06/01 23:10:30 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -470,9 +470,9 @@ int cb_memo_import(GtkWidget *parent_window, const char *file_path, int type)
 int memo_import(GtkWidget *window)
 {
    char *type_desc[] = {
-      "Text",
-      "CSV (Comma Separated Values)",
-      "DAT/MPA (Palm Archive Formats)",
+      N_("Text"),
+      N_("CSV (Comma Separated Values)"),
+      N_("DAT/MPA (Palm Archive Formats)"),
       NULL
    };
    int type_int[] = {
@@ -653,7 +653,9 @@ static void cb_memo_export_done(GtkWidget *widget, const char *filename)
 int memo_export(GtkWidget *window)
 {
    int w, h, x, y;
-   char *type_text[]={"Text", "CSV", NULL};
+   char *type_text[]={N_("Text"), 
+	                   N_("CSV"), 
+							 NULL};
    int type_int[]={EXPORT_TYPE_TEXT, EXPORT_TYPE_CSV};
 
    gdk_window_get_size(window->window, &w, &h);

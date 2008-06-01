@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.203 2008/06/01 18:52:53 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.204 2008/06/01 23:10:30 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -822,8 +822,8 @@ int cb_addr_import(GtkWidget *parent_window, const char *file_path, int type)
 int address_import(GtkWidget *window)
 {
    char *type_desc[] = {
-      "CSV (Comma Separated Values)",
-      "DAT/ABA (Palm Archive Formats)",
+      N_("CSV (Comma Separated Values)"),
+      N_("DAT/ABA (Palm Archive Formats)"),
       NULL
    };
    int type_int[] = {
@@ -1452,7 +1452,11 @@ static void cb_addr_export_done(GtkWidget *widget, const char *filename)
 int address_export(GtkWidget *window)
 {
    int w, h, x, y;
-   char *type_text[]={"Text", "CSV", "vCard", "ldif", NULL};
+   char *type_text[]={N_("Text"), 
+	                   N_("CSV"), 
+							 N_("vCard"), 
+							 N_("ldif"), 
+							 NULL};
    int type_int[]={EXPORT_TYPE_TEXT, EXPORT_TYPE_CSV, EXPORT_TYPE_VCARD, EXPORT_TYPE_LDIF};
 
    gdk_window_get_size(window->window, &w, &h);
@@ -2098,7 +2102,7 @@ void email_contact(GtkWidget *widget, gchar *str)
 
    get_pref(PREF_MAIL_COMMAND, NULL, &pref_command);
    if (!pref_command) {
-      jp_logf(JP_LOG_DEBUG, _("email command empty\n"));
+      jp_logf(JP_LOG_DEBUG, "email command empty\n");
       return;
    }
 

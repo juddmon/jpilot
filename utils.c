@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.145 2008/05/07 13:58:15 rikster5 Exp $ */
+/* $Id: utils.c,v 1.146 2008/06/01 23:10:30 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -1913,7 +1913,7 @@ int get_home_file_name(char *file, char *full_name, int max_size)
       home = default_path;
    }
    if (strlen(home)>(max_size-strlen(file)-strlen("/."EPN"/")-2)) {
-      jp_logf(JP_LOG_WARN, _("Your HOME environment variable is too long for me\n"));
+      jp_logf(JP_LOG_WARN, _("HOME environment variable is too long to process\n"));
       home=default_path;
    }
    sprintf(full_name, "%s/."EPN"/%s", home, file);
@@ -1937,7 +1937,7 @@ int check_hidden_dir()
        * Only user is given permission to enter and change directory contents
        * which provides some primitive privacy protection. */
       if (mkdir(hidden_dir, 0700)) {
-	 /*Can't create directory */
+	 /* Can't create directory */
 	 jp_logf(JP_LOG_WARN, _("Can't create directory %s\n"), hidden_dir);
 	 return EXIT_FAILURE;
       }
@@ -1946,15 +1946,14 @@ int check_hidden_dir()
 	 return EXIT_FAILURE;
       }
    }
-   /*Is it a directory? */
+   /* Is it a directory? */
    if (!S_ISDIR(statb.st_mode)) {
-      jp_logf(JP_LOG_WARN, _("%s doesn't appear to be a directory.\n"
-		  "I need it to be.\n"), hidden_dir);
+      jp_logf(JP_LOG_WARN, _("%s is not a directory.\n"), hidden_dir);
       return EXIT_FAILURE;
    }
-   /*Can we write in it? */
+   /* Can we write in it? */
    if (access(hidden_dir, W_OK) != 0) {
-      jp_logf(JP_LOG_WARN, _("I can't write files in directory %s\n"), hidden_dir);
+      jp_logf(JP_LOG_WARN, _("Unable to get write permission for directory %s\n"), hidden_dir);
       return EXIT_FAILURE;
    } 
 
@@ -2010,16 +2009,12 @@ int write_to_next_id_open(FILE *pc_out, unsigned int unique_id)
    }
 
    if (fwrite(FILE_VERSION2_CR, strlen(FILE_VERSION2_CR), 1, pc_out) != 1) {
-      jp_logf(JP_LOG_WARN, _("Error writing PC header to file: next_id\n"));
+      jp_logf(JP_LOG_WARN, _("Error writing version header to file: next_id\n"));
       return EXIT_FAILURE;
    }
-   sprintf(id_str, "%d", unique_id);
+   sprintf(id_str, "%d\n", unique_id);
    if (fwrite(id_str, strlen(id_str), 1, pc_out) != 1) {
       jp_logf(JP_LOG_WARN, _("Error writing next id to file: next_id\n"));
-      return EXIT_FAILURE;
-   }
-   if (fwrite("\n", strlen("\n"), 1, pc_out) != 1) {
-      jp_logf(JP_LOG_WARN, _("Error writing PC header to file: next_id\n"));
       return EXIT_FAILURE;
    }
    return EXIT_SUCCESS;
@@ -3160,7 +3155,7 @@ int setup_sync(unsigned int flags)
 	 sync_info.PC_ID = 1+(2000000000.0*random()/(RAND_MAX+1.0));
       }
       jp_logf(JP_LOG_WARN, _("PC ID is 0.\n"));
-      jp_logf(JP_LOG_WARN, _("I generated a new PC ID.  It is %lu\n"), sync_info.PC_ID);
+      jp_logf(JP_LOG_WARN, _("Generated a new PC ID.  It is %lu\n"), sync_info.PC_ID);
       set_pref(PREF_PC_ID, sync_info.PC_ID, NULL, TRUE);
    }
 
