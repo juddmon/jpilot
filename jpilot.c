@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.166 2008/06/02 00:17:40 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.167 2008/06/02 00:20:11 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -714,6 +714,7 @@ void cb_sync(GtkWidget *widget, unsigned int flags)
    }
 
    setup_sync(flags);
+
    return;
 }
 
@@ -851,6 +852,10 @@ static void cb_read_pipe_from_child(gpointer data,
    int command;
    char user[MAX_PREF_VALUE];
    char command_str[80];
+   long char_set;
+   const char *svalue;
+   char title[MAX_PREF_VALUE+256];
+   char *user_name;
 
    /* This is so we can always look at the previous char in buf */
    buf = &buf_space[1];
@@ -985,6 +990,18 @@ static void cb_read_pipe_from_child(gpointer data,
 	    }
 	    break;
 	  case PIPE_FINISHED:
+	    /* Update main window title as user name may have changed */
+	    get_pref(PREF_CHAR_SET, &char_set, NULL);
+	    get_pref(PREF_USER, NULL, &svalue);
+	    strcpy(title, PN" "VERSION);
+	    if ((svalue) && (svalue[0])) {
+	       strcat(title, _(" User: "));
+	       user_name = charset_p2newj(svalue, strlen(svalue)+1, char_set);
+	       strcat(title, user_name);
+	       gtk_window_set_title(GTK_WINDOW(window), title);
+	       free(user_name);
+	    }
+            /* And redraw GUI */
 	    if (Pstr1) {
 	       cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
 	    }
