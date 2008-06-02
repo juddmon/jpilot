@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.86 2008/06/02 01:07:41 rikster5 Exp $ */
+/* $Id: sync.c,v 1.87 2008/06/02 01:27:26 rikster5 Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -288,9 +288,9 @@ int sync_once(struct my_sync_info *sync_info)
    pid_t pid;
 
    if (glob_child_pid) {
-      jp_logf(JP_LOG_WARN, PN": sync PID = %d\n", glob_child_pid);
-      jp_logf(JP_LOG_WARN, _("%s: press the hotsync button on the cradle "
-	   "or \"kill %d\"\n"), PN, glob_child_pid);
+      jp_logf(JP_LOG_WARN, _("%s: sync process already in progress (process ID = %d\n)"), PN, glob_child_pid);
+      jp_logf(JP_LOG_WARN, _("%s: press the hotsync button on the cradle\n"
+	                     "      or stop the sync by typing \"kill %d\" at the command line\n"), PN, glob_child_pid);
       return EXIT_SUCCESS;
    }
 

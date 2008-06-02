@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.167 2008/06/02 00:20:11 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.168 2008/06/02 01:27:26 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -726,9 +726,9 @@ int bad_sync_exit_status(int exit_status)
 {
    char text1[] =
       /*-------------------------------------------*/
-      N_("This handheld does not have the same user name\n"
-         "or user ID as the one that was synced the\n"
-         "last time.  Syncing could have unwanted effects."
+      N_("This handheld does not have the same user name or user ID\n"
+         "as the one that was synced the last time.\n"
+         "Syncing could have unwanted effects.\n"
          "\n"
          "Read the user manual if you are uncertain.");
    char text2[] =
