@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.63 2008/06/02 00:09:28 rikster5 Exp $ */
+/* $Id: utils.h,v 1.64 2008/06/02 00:12:39 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -376,14 +376,6 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
 		      int priv, int suggested_cat_num, int *new_cat_num);
 
 int verify_csv_header(const char *header, int num_fields, const char *file_name);
-
-/* could be in dat.h or import.h */
-#define DAT_TYPE_INTEGER 1
-#define DAT_TYPE_CSTRING 5
-#define DAT_TYPE_DATE    3
-#define DAT_TYPE_BOOLEAN 6
-#define DAT_TYPE_BITFLAG 7
-#define DAT_TYPE_REPEAT  8
 
 /* Returns a dat type, or 0 */
 int dat_check_if_dat_file(FILE *in);

@@ -1,4 +1,4 @@
-/* $Id: dat.c,v 1.18 2007/12/13 02:53:30 rikster5 Exp $ */
+/* $Id: dat.c,v 1.19 2008/06/02 00:12:39 rikster5 Exp $ */
 
 /*******************************************************************************
  * dat.c
@@ -19,7 +19,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  ******************************************************************************/
-
 /*
  * Thanks to nseessle@mail.hh.provi.de
  * http://ourworld.compuserve.com/homepages/nseessle/frames/pilot/dat_e.htm
@@ -29,20 +28,17 @@
  * For their descriptions of the dat formats.
  */
 
+/********************************* Includes ***********************************/
 #include "config.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
-#ifdef HAVE_LOCALE_H
-#include <locale.h>
-#endif
 #include "log.h"
 #include "utils.h"
 #include "i18n.h"
 
-#define JPILOT_DEBUGno
-
+/********************************* Constants **********************************/
 #define DAT_STATUS_ADD     0x01
 #define DAT_STATUS_UPDATE  0x02
 #define DAT_STATUS_DELETE  0x04
@@ -58,7 +54,16 @@
 #define YEARLY_BY_DATE  5
 #define YEARLY_BY_DAY   6
 
+#define DAT_TYPE_INTEGER 1
+#define DAT_TYPE_CSTRING 5
+#define DAT_TYPE_DATE    3
+#define DAT_TYPE_BOOLEAN 6
+#define DAT_TYPE_BITFLAG 7
+#define DAT_TYPE_REPEAT  8
 
+/* #define JPILOT_DEBUG */
+
+/****************************** Prototypes ************************************/
 #ifdef JPILOT_DEBUG
 static int print_date(int palm_date);
 #endif
@@ -70,6 +75,7 @@ struct field {
    char *str;
 };
 
+/****************************** Main Code *************************************/
 static int x86_short(unsigned char *str)
 {
    return str[1] * 0x100 + str[0];
@@ -392,7 +398,10 @@ int print_field(struct field *f)
       printf("%d\n", f->i);
       break;
     case DAT_TYPE_CSTRING:
-      printf("%s\n", f->str);
+      if (f->str)
+	 printf("%s\n", f->str);
+      else
+	 printf("\n");
       break;
     case DAT_TYPE_BOOLEAN:
       if (f->i) {
