@@ -1,4 +1,4 @@
-/* $Id: monthview_gui.c,v 1.41 2008/05/03 02:58:16 judd Exp $ */
+/* $Id: monthview_gui.c,v 1.42 2008/06/02 00:17:40 rikster5 Exp $ */
 
 /*******************************************************************************
  * monthview_gui.c
@@ -21,23 +21,21 @@
  ******************************************************************************/
 
 #include "config.h"
-#include "i18n.h"
-#include <gtk/gtk.h>
-#include <string.h>
-#include <ctype.h>
 #include <stdlib.h>
+#include <string.h>
+#include <gtk/gtk.h>
+#include <pi-datebook.h>
 #include "utils.h"
-#include "print.h"
+#include "i18n.h"
 #include "prefs.h"
 #include "log.h"
 #include "datebook.h"
-#include <pi-datebook.h>
-#include "config.h"
+#include "print.h"
 
 extern int datebook_category;
 extern int glob_app;
 
-static GtkWidget *window=NULL;
+GtkWidget *monthview_window=NULL;
 static GtkWidget *glob_month_vbox;
 static GtkWidget *glob_month_labels[37];
 #ifdef ENABLE_GTK2
@@ -62,7 +60,7 @@ static gboolean cb_destroy(GtkWidget *widget)
    GString *gstr;
    GtkWidget *text;
 
-   window = NULL;
+   monthview_window = NULL;
 
    for (n=0; n<37; n++) {
 #ifdef ENABLE_GTK2
@@ -79,15 +77,15 @@ static gboolean cb_destroy(GtkWidget *widget)
    return FALSE;
 }
 
-static void cb_quit(GtkWidget *widget, gpointer data)
+void cb_monthview_quit(GtkWidget *widget, gpointer data)
 {
    int w, h;
 
-   gdk_window_get_size(window->window, &w, &h);
+   gdk_window_get_size(monthview_window->window, &w, &h);
    set_pref(PREF_MONTHVIEW_WIDTH, w, NULL, FALSE);
    set_pref(PREF_MONTHVIEW_HEIGHT, h, NULL, FALSE);
 
-   gtk_widget_destroy(window);
+   gtk_widget_destroy(monthview_window);
 }
 
 static void cb_month_move(GtkWidget *widget, gpointer data)
@@ -117,7 +115,7 @@ static void cb_month_print(GtkWidget *widget, gpointer data)
    long paper_size;
 
    jp_logf(JP_LOG_DEBUG, "cb_month_print called\n");
-   if (print_gui(window, DATEBOOK, 3, 0x04) == DIALOG_SAID_PRINT) {
+   if (print_gui(monthview_window, DATEBOOK, 3, 0x04) == DIALOG_SAID_PRINT) {
       get_pref(PREF_PAPER_SIZE, &paper_size, NULL);
       if (paper_size==1) {
 	 print_months_appts(&glob_month_date, PAPER_A4);
@@ -503,12 +501,12 @@ void monthview_gui(struct tm *date_in)
    char title[200];
    long w, h;
 
-   if (window) {
+   if (monthview_window) {
        /* Delete any existing window to ensure that new window is biased
 	* around currently selected date and so that the new window
 	* contents are updated with any changes on the day view.
 	*/
-       gtk_widget_destroy(window);
+       gtk_widget_destroy(monthview_window);
    }
 
    memcpy(&glob_month_date, date_in, sizeof(struct tm));
@@ -520,20 +518,20 @@ void monthview_gui(struct tm *date_in)
 
    g_snprintf(title, sizeof(title), "%s %s", PN, _("Monthly View"));
 
-   window = gtk_widget_new(GTK_TYPE_WINDOW,
-			   "type", GTK_WINDOW_TOPLEVEL,
-			   "title", title,
-			   NULL);
+   monthview_window = gtk_widget_new(GTK_TYPE_WINDOW,
+	       		                      "type", GTK_WINDOW_TOPLEVEL,
+			                            "title", title,
+			                            NULL);
 
-   gtk_window_set_default_size(GTK_WINDOW(window), w, h);
+   gtk_window_set_default_size(GTK_WINDOW(monthview_window), w, h);
 
-   gtk_container_set_border_width(GTK_CONTAINER(window), 10);
+   gtk_container_set_border_width(GTK_CONTAINER(monthview_window), 10);
 
-   gtk_signal_connect(GTK_OBJECT(window), "destroy",
-                      GTK_SIGNAL_FUNC(cb_destroy), window);
+   gtk_signal_connect(GTK_OBJECT(monthview_window), "destroy",
+                      GTK_SIGNAL_FUNC(cb_destroy), monthview_window);
 
    vbox = gtk_vbox_new(FALSE, 0);
-   gtk_container_add(GTK_CONTAINER(window), vbox);
+   gtk_container_add(GTK_CONTAINER(monthview_window), vbox);
 
    /* This box has the close button and arrows in it */
    align = gtk_alignment_new(0.5, 0.5, 0, 0);
@@ -566,10 +564,10 @@ void monthview_gui(struct tm *date_in)
    button = gtk_button_new_with_label(_("Close"));
 #endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_quit), window);
+		      GTK_SIGNAL_FUNC(cb_monthview_quit), monthview_window);
    /* Closing the window via a delete event uses the same cleanup routine */
-   gtk_signal_connect(GTK_OBJECT(window), "delete_event",
-		      GTK_SIGNAL_FUNC(cb_quit), NULL);
+   gtk_signal_connect(GTK_OBJECT(monthview_window), "delete_event",
+		      GTK_SIGNAL_FUNC(cb_monthview_quit), NULL);
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
 
    /* Create a "Print" button */
@@ -579,7 +577,7 @@ void monthview_gui(struct tm *date_in)
    button = gtk_button_new_with_label(_("Print"));
 #endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_month_print), window);
+		      GTK_SIGNAL_FUNC(cb_month_print), monthview_window);
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
 
    /*Make a right arrow for going forward a week */
@@ -626,7 +624,7 @@ void monthview_gui(struct tm *date_in)
 
    create_month_boxes_texts(glob_month_vbox);
 
-   gtk_widget_show_all(window);
+   gtk_widget_show_all(monthview_window);
 
    hide_show_month_boxes();
 

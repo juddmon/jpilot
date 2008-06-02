@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.165 2008/06/02 00:05:03 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.166 2008/06/02 00:17:40 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -118,6 +118,13 @@ int t_fmt_ampm = TRUE;
 
 int pipe_from_child, pipe_to_parent;
 int pipe_from_parent, pipe_to_child;
+
+extern GtkWidget *monthview_window;
+extern GtkWidget *weekview_window;
+
+/* GUI cleanup routines for weekview and monthview windows */
+extern void cb_weekview_quit(GtkWidget *widget, gpointer data);
+extern void cb_monthview_quit(GtkWidget *widget, gpointer data);
 
 /****************************** Prototypes ************************************/
 static void cb_delete_event(GtkWidget *widget, GdkEvent *event, gpointer data);
@@ -1468,6 +1475,11 @@ static void cb_delete_event(GtkWidget *widget, GdkEvent *event, gpointer data)
    set_pref(PREF_LAST_APP, glob_app, NULL, TRUE);
 
    gui_cleanup();
+
+   if (weekview_window) 
+      cb_weekview_quit(weekview_window, NULL);
+   if (monthview_window) 
+      cb_monthview_quit(monthview_window, NULL);
 
 #ifdef ENABLE_PLUGINS
    plugin_list = get_plugin_list();

@@ -1,4 +1,4 @@
-/* $Id: weekview_gui.c,v 1.38 2008/05/03 02:58:16 judd Exp $ */
+/* $Id: weekview_gui.c,v 1.39 2008/06/02 00:17:40 rikster5 Exp $ */
 
 /*******************************************************************************
  * weekview_gui.c
@@ -21,24 +21,21 @@
  ******************************************************************************/
 
 #include "config.h"
-#include "i18n.h"
-#include <gtk/gtk.h>
-#include <string.h>
-#include <ctype.h>
 #include <stdlib.h>
-#include "print.h"
+#include <string.h>
+#include <gtk/gtk.h>
+#include <pi-datebook.h>
+#include "i18n.h"
 #include "utils.h"
 #include "prefs.h"
 #include "log.h"
 #include "datebook.h"
-#include <pi-datebook.h>
-
+#include "print.h"
 
 extern int datebook_category;
 extern int glob_app;
 
-
-static GtkWidget *window=NULL;
+GtkWidget *weekview_window=NULL;
 static GtkWidget *glob_dow_labels[8];
 static GtkWidget *glob_week_texts[8];
 #ifdef ENABLE_GTK2
@@ -53,19 +50,19 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts);
 
 static gboolean cb_destroy(GtkWidget *widget)
 {
-   window = NULL;
+   weekview_window = NULL;
    return FALSE;
 }
 
-static void cb_quit(GtkWidget *widget, gpointer data)
+void cb_weekview_quit(GtkWidget *widget, gpointer data)
 {
    int w, h;
 
-   gdk_window_get_size(window->window, &w, &h);
+   gdk_window_get_size(weekview_window->window, &w, &h);
    set_pref(PREF_WEEKVIEW_WIDTH, w, NULL, FALSE);
    set_pref(PREF_WEEKVIEW_HEIGHT, h, NULL, FALSE);
 
-   gtk_widget_destroy(window);
+   gtk_widget_destroy(weekview_window);
 }
 
 /*----------------------------------------------------------------------
@@ -77,7 +74,7 @@ static void cb_week_print(GtkWidget *widget, gpointer data)
    long paper_size;
 
    jp_logf(JP_LOG_DEBUG, "cb_week_print called\n");
-   if (print_gui(window, DATEBOOK, 2, 0x02) == DIALOG_SAID_PRINT) {
+   if (print_gui(weekview_window, DATEBOOK, 2, 0x02) == DIALOG_SAID_PRINT) {
       get_pref(PREF_PAPER_SIZE, &paper_size, NULL);
       if (paper_size==1) {
 	 print_weeks_appts(&glob_week_date, PAPER_A4);
@@ -312,12 +309,12 @@ void weekview_gui(struct tm *date_in)
    char title[200];
    long w, h;
 
-   if (window) {
+   if (weekview_window) {
        /* Delete any existing window to ensure that new window is biased
 	* around currently selected date and so that the new window
 	* contents are updated with any changes on the day view.
 	*/
-       gtk_widget_destroy(window);
+       gtk_widget_destroy(weekview_window);
    }
 
    memcpy(&glob_week_date, date_in, sizeof(struct tm));
@@ -326,20 +323,20 @@ void weekview_gui(struct tm *date_in)
    get_pref(PREF_WEEKVIEW_HEIGHT, &h, NULL);
 
    g_snprintf(title, sizeof(title), "%s %s", PN, _("Weekly View"));
-   window = gtk_widget_new(GTK_TYPE_WINDOW,
-			   "type", GTK_WINDOW_TOPLEVEL,
-			   "title", title,
-			   NULL);
+   weekview_window = gtk_widget_new(GTK_TYPE_WINDOW,
+			            "type", GTK_WINDOW_TOPLEVEL,
+			            "title", title,
+			            NULL);
 
-   gtk_window_set_default_size(GTK_WINDOW(window), w, h);
+   gtk_window_set_default_size(GTK_WINDOW(weekview_window), w, h);
 
-   gtk_container_set_border_width(GTK_CONTAINER(window), 10);
+   gtk_container_set_border_width(GTK_CONTAINER(weekview_window), 10);
 
-   gtk_signal_connect(GTK_OBJECT(window), "destroy",
-                      GTK_SIGNAL_FUNC(cb_destroy), window);
+   gtk_signal_connect(GTK_OBJECT(weekview_window), "destroy",
+                      GTK_SIGNAL_FUNC(cb_destroy), weekview_window);
 
    vbox = gtk_vbox_new(FALSE, 0);
-   gtk_container_add(GTK_CONTAINER(window), vbox);
+   gtk_container_add(GTK_CONTAINER(weekview_window), vbox);
 
    /* This box has the close button and arrows in it */
    align = gtk_alignment_new(0.5, 0.5, 0, 0);
@@ -371,10 +368,10 @@ void weekview_gui(struct tm *date_in)
    button = gtk_button_new_with_label(_("Close"));
 #endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_quit), NULL);
+		      GTK_SIGNAL_FUNC(cb_weekview_quit), NULL);
    /* Closing the window via a delete event uses the same cleanup routine */
-   gtk_signal_connect(GTK_OBJECT(window), "delete_event",
-		      GTK_SIGNAL_FUNC(cb_quit), NULL);
+   gtk_signal_connect(GTK_OBJECT(weekview_window), "delete_event",
+		      GTK_SIGNAL_FUNC(cb_weekview_quit), NULL);
 
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
 
@@ -385,7 +382,7 @@ void weekview_gui(struct tm *date_in)
    button = gtk_button_new_with_label(_("Print"));
 #endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_week_print), window);
+		      GTK_SIGNAL_FUNC(cb_week_print), weekview_window);
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
 
    /*Make a right arrow for going forward a week */
@@ -446,5 +443,5 @@ void weekview_gui(struct tm *date_in)
 
    display_weeks_appts(&glob_week_date, glob_week_texts);
 
-   gtk_widget_show_all(window);
+   gtk_widget_show_all(weekview_window);
 }
