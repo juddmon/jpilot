@@ -1,4 +1,4 @@
-/* $Id: expense.c,v 1.57 2008/06/01 18:52:53 rikster5 Exp $ */
+/* $Id: expense.c,v 1.58 2008/06/02 03:44:21 rikster5 Exp $ */
 
 /*******************************************************************************
  * expense.c
@@ -1068,11 +1068,7 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
    char full_name[256];
    char buffer[65536];
    int num;
-#ifdef PILOT_LINK_0_12
    size_t size;
-#else
-   int size;
-#endif
    void *buf;
    struct pi_file *pf;
 
