@@ -1,4 +1,4 @@
-/* $Id: contact.c,v 1.6 2008/05/14 18:05:38 rikster5 Exp $ */
+/* $Id: contact.c,v 1.7 2008/06/02 03:43:02 rikster5 Exp $ */
 
 /*******************************************************************************
  * contact.c
@@ -308,12 +308,7 @@ int contacts_sort(ContactList **cl, int sort_order)
 int pc_contact_write(struct Contact *cont, PCRecType rt, unsigned char attrib,
 		     unsigned int *unique_id)
 {
-//#ifndef PILOT_LINK_0_12
-//   char *record;
-//   int rec_len;
-//#else /* PILOT_LINK_0_12 */
    pi_buffer_t *RecordBuffer;
-//#endif /* PILOT_LINK_0_12 */
    int i;
    buf_rec br;
    long char_set;
@@ -336,13 +331,8 @@ int pc_contact_write(struct Contact *cont, PCRecType rt, unsigned char attrib,
    br.rt=rt;
    br.attrib = attrib;
 
-//#ifndef PILOT_LINK_0_12
-//   br.buf = record;
-//   br.size = rec_len;
-//#else /* PILOT_LINK_0_12 */
    br.buf = RecordBuffer->data;
    br.size = RecordBuffer->used;
-//#endif /* PILOT_LINK_0_12 */
    /* Keep unique ID intact */
    if (unique_id) {
       br.unique_id = *unique_id;
@@ -355,9 +345,8 @@ int pc_contact_write(struct Contact *cont, PCRecType rt, unsigned char attrib,
       *unique_id = br.unique_id;
    }
 
-#ifdef PILOT_LINK_0_12
    pi_buffer_free(RecordBuffer);
-#endif
+
    return EXIT_SUCCESS;
 }
 
@@ -475,9 +464,7 @@ int get_contacts2(ContactList **contact_list, int sort_order,
    long char_set;
    buf_rec *br;
    char *buf;
-#ifdef PILOT_LINK_0_12
    pi_buffer_t pi_buf;
-#endif /* PILOT_LINK_0_12 */
 
    jp_logf(JP_LOG_DEBUG, "get_contacts2()\n");
    if (modified==2) {

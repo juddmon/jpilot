@@ -1,4 +1,4 @@
-/* $Id: todo.c,v 1.42 2007/06/06 02:45:10 rikster5 Exp $ */
+/* $Id: todo.c,v 1.43 2008/06/02 03:43:02 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo.c
@@ -259,12 +259,7 @@ void pc_todo_validate_correct(struct ToDo *todo)
 int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib,
 		  unsigned int *unique_id)
 {
-#ifndef PILOT_LINK_0_12
-   unsigned char record[65536];
-   int rec_len;
-#else /* PILOT_LINK_0_12 */
    pi_buffer_t *RecordBuffer;
-#endif /* PILOT_LINK_0_12 */
    buf_rec br;
    long char_set;
 #ifdef ENABLE_MANANA
@@ -282,14 +277,6 @@ int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib,
    }
 
    pc_todo_validate_correct(todo);
-#ifndef PILOT_LINK_0_12
-   rec_len = pack_ToDo(todo, record, 65535);
-   if (!rec_len) {
-      PRINT_FILE_LINE;
-      jp_logf(JP_LOG_WARN, "pack_ToDo %s\n", _("error"));
-      return EXIT_FAILURE;
-   }
-#else /* PILOT_LINK_0_12 */
    RecordBuffer = pi_buffer_new(0);
    if (pack_ToDo(todo, RecordBuffer, todo_v1) == -1) {
       PRINT_FILE_LINE;
@@ -297,16 +284,10 @@ int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib,
       pi_buffer_free(RecordBuffer);
       return EXIT_FAILURE;
    }
-#endif /* PILOT_LINK_0_12 */
    br.rt=rt;
    br.attrib = attrib;
-#ifndef PILOT_LINK_0_12
-   br.buf = record;
-   br.size = rec_len;
-#else /* PILOT_LINK_0_12 */
    br.buf = RecordBuffer->data;
    br.size = RecordBuffer->used;
-#endif /* PILOT_LINK_0_12 */
    /* Keep unique ID intact */
    if (unique_id) {
       br.unique_id = *unique_id;
@@ -328,9 +309,7 @@ int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib,
       *unique_id = br.unique_id;
    }
 
-#ifdef PILOT_LINK_0_12
    pi_buffer_free(RecordBuffer);
-#endif
 
    return EXIT_SUCCESS;
 }
@@ -416,9 +395,7 @@ int get_todos2(ToDoList **todo_list, int sort_order,
    buf_rec *br;
    long char_set;
    char *buf;
-#ifdef PILOT_LINK_0_12
    pi_buffer_t *RecordBuffer;
-#endif /* PILOT_LINK_0_12 */
 #ifdef ENABLE_MANANA
    long ivalue;
 #endif
@@ -485,25 +462,15 @@ int get_todos2(ToDoList **todo_list, int sort_order,
 	 continue;
       }
 
-#ifndef PILOT_LINK_0_12
-      num = unpack_ToDo(&todo, br->buf, br->size);
-#else /* PILOT_LINK_0_12 */
       RecordBuffer = pi_buffer_new(br->size);
       memcpy(RecordBuffer->data, br->buf, br->size);
       RecordBuffer->used = br->size;
-#endif /* PILOT_LINK_0_12 */
 
-#ifndef PILOT_LINK_0_12
-      if (num <= 0) {
-	 continue;
-      }
-#else /* PILOT_LINK_0_12 */
       if (unpack_ToDo(&todo, RecordBuffer, todo_v1) == -1) {
 	 pi_buffer_free(RecordBuffer);
 	 continue;
       }
       pi_buffer_free(RecordBuffer);
-#endif /* PILOT_LINK_0_12 */
 
       if ( ((br->attrib & 0x0F) != category) && category != CATEGORY_ALL) {
 	 continue;

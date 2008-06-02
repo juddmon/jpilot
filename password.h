@@ -1,4 +1,4 @@
-/* $Id: password.h,v 1.8 2005/10/24 15:27:48 rikster5 Exp $ */
+/* $Id: password.h,v 1.9 2008/06/02 03:43:02 rikster5 Exp $ */
 
 /*******************************************************************************
  * password.h
@@ -41,9 +41,8 @@ int show_privates(int hide);
 
 #ifdef ENABLE_PRIVATE
 void palm_encode_hash(unsigned char *ascii, unsigned char *encoded);
-#ifdef USB_PILOT_LINK
+
 void palm_encode_md5(unsigned char *ascii, unsigned char *encoded);
-#endif
 
 /* len is the length of the bin str, hex_str must be at least twice as long */
 void bin_to_hex_str(unsigned char *bin, char *hex_str, int len);

@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.205 2008/06/02 00:09:28 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.206 2008/06/02 03:43:02 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -2262,11 +2262,7 @@ static void cb_edit_cats_address(GtkWidget *widget, gpointer data)
    char full_name[FILENAME_MAX];
    char buffer[65536];
    int num;
-#ifdef PILOT_LINK_0_12
    size_t size;
-#else
-   int size;
-#endif
    void *buf;
    struct pi_file *pf;
 
@@ -2301,11 +2297,7 @@ static void cb_edit_cats_category(GtkWidget *widget, gpointer data)
    struct ContactAppInfo cai;
    char full_name[FILENAME_MAX];
    int num;
-#ifdef PILOT_LINK_0_12
    size_t size;
-#else
-   int size;
-#endif
    void *buf;
    struct pi_file *pf;
    pi_buffer_t *pi_buf;

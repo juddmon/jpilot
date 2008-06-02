@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.87 2008/06/02 01:27:26 rikster5 Exp $ */
+/* $Id: sync.c,v 1.88 2008/06/02 03:43:02 rikster5 Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -56,25 +56,10 @@
 #include <pi-header.h>
 #include <pi-file.h>
 #include <pi-version.h>
-#ifdef PILOT_LINK_0_12
-#  include <pi-error.h>
-#endif
+#include <pi-error.h>
 
 /********************************* Constants **********************************/
 #define FD_ERROR 1001
-
-/* Try to determine if version of pilot-link > 0.9.x */
-#ifdef USB_PILOT_LINK
-#  undef USB_PILOT_LINK
-#endif
-
-#if PILOT_LINK_VERSION > 0
-#  define USB_PILOT_LINK
-#else
-#  if PILOT_LINK_MAJOR > 9
-#     define USB_PILOT_LINK
-#  endif
-#endif
 
 #ifndef min
 #  define min(a,b) (((a) < (b)) ? (a) : (b))
@@ -482,7 +467,6 @@ int jp_install_user(const char *device, int sd, struct my_sync_info *sync_info)
 }
 
 
-#ifdef PILOT_LINK_0_12
 int jp_pilot_connect(int *Psd, const char *device)
 {
    int sd;
@@ -536,124 +520,6 @@ int jp_pilot_connect(int *Psd, const char *device)
    return EXIT_SUCCESS;
 }
 
-#else /* #ifdef PILOT_LINK_0_12 */
-int jp_pilot_connect(int *Psd, const char *device)
-{
-   struct pi_sockaddr addr;
-   int sd;
-   int ret;
-   int i;
-   int dev_usb;
-   char link[FILENAME_MAX], dev_str[FILENAME_MAX], dev_dir[FILENAME_MAX], *Pc;
-   struct  SysInfo sys_info;
-   /* pilot-link > 0.9.5 needed for many USB devices */
-#ifdef USB_PILOT_LINK
-   /* Newer pilot-link */
-   sd = pi_socket(PI_AF_PILOT, PI_SOCK_STREAM, PI_PF_DLP);
-#else
-   /* 0.9.5 or older */
-   sd = pi_socket(PI_AF_SLP, PI_SOCK_STREAM, PI_PF_PADP);
-   addr.pi_family = PI_AF_SLP;
-#endif
-
-   *Psd=0;
-   if (sd < 0) {
-      int err = errno;
-      perror("pi_socket");
-      jp_logf(JP_LOG_WARN, "pi_socket %s\n", strerror(err));
-      return EXIT_FAILURE;
-   }
-
-   strncpy(addr.pi_device, device, sizeof(addr.pi_device));
-
-   /* This is for USB, whose device doesn't exist until the cradle is pressed
-    * We will give them 5 seconds */
-   link[0]='\0';
-   g_snprintf(dev_str, sizeof(dev_str), "%s", device);
-   g_snprintf(dev_dir, sizeof(dev_dir), "%s", device);
-   dev_usb=0;
-   for (Pc=&dev_dir[strlen(dev_dir)-1]; Pc>dev_dir; Pc--) {
-      if (*Pc=='/') *Pc='\0';
-      else break;
-   }
-   Pc = strrchr(dev_dir, '/');
-   if (Pc) {
-      *Pc = '\0';
-   }
-   for (i=10; i>0; i--) {
-      ret = readlink(dev_str, link, sizeof(link));
-      if (ret>0) {
-	 link[ret]='\0';
-      } else {
-	 if (strstr(dev_str, "usb") || strstr(dev_str, "USB")) {
-	    dev_usb=1;
-	 }
-	 break;
-      }
-      if (link[0]=='/') {
-	 strcpy(dev_str, link);
-	 strcpy(dev_dir, link);
-	 for (Pc=&dev_dir[strlen(dev_dir)-1]; Pc>dev_dir; Pc--) {
-	    if (*Pc=='/') *Pc='\0';
-	    else break;
-	 }
-	 Pc = strrchr(dev_dir, '/');
-	 if (Pc) {
-	    *Pc = '\0';
-	 }
-      } else {
-	 g_snprintf(dev_str, sizeof(dev_str), "%s/%s", dev_dir, link);
-      }
-      if (strstr(link, "usb") || strstr(link, "USB")) {
-	 dev_usb=1;
-	 break;
-      }
-   }
-   if (dev_usb) {
-      for (i=7; i>0; i--) {
-	 ret = pi_bind(sd, (struct sockaddr*)&addr, sizeof(addr));
-	 if (ret!=-1) break;
-	 sleep(1);
-      }
-   } else {
-      ret = pi_bind(sd, (struct sockaddr*)&addr, sizeof(addr));
-   }
-   if (ret == -1) {
-      jp_logf(JP_LOG_WARN, "pi_bind error: %s %s\n", device, strerror(errno));
-      jp_logf(JP_LOG_WARN, _("Check your serial port and settings\n"));
-      pi_close(sd);
-      return SYNC_ERROR_BIND;
-   }
-
-   ret = pi_listen(sd, 1);
-   if (ret == -1) {
-      perror("pi_listen");
-      jp_logf(JP_LOG_WARN, "pi_listen %s\n", strerror(errno));
-      pi_close(sd);
-      return SYNC_ERROR_LISTEN;
-   }
-
-   sd = pi_accept(sd, 0, 0);
-   if(sd == -1) {
-      perror("pi_accept");
-      jp_logf(JP_LOG_WARN, "pi_accept %s\n", strerror(errno));
-      pi_close(sd);
-      return SYNC_ERROR_PI_ACCEPT;
-   }
-
-   /* We must do this to take care of the password being required to sync
-    * on Palm OS 4.x */
-   /* Later versions of pilot-link (~=0.10+) did this for us */
-   if (dlp_ReadSysInfo(sd, &sys_info) < 0) {
-      jp_logf(JP_LOG_WARN, "dlp_ReadSysInfo error\n");
-      pi_close(sd);
-      return SYNC_ERROR_READSYSINFO;
-   }
-   *Psd=sd;
-   return EXIT_SUCCESS;
-}
-#endif
-
 int jp_sync(struct my_sync_info *sync_info)
 {
    int sd;
@@ -676,11 +542,7 @@ int jp_sync(struct my_sync_info *sync_info)
    char buf[1024];
    long char_set;
 #ifdef JPILOT_DEBUG
-# ifdef PILOT_LINK_0_12
    pi_buffer_t *buffer;
-# else
-   unsigned char buffer[65536];
-# endif
 #endif
    int i;
    /* rename_dbnames is used to modify this list to newer databases if needed*/
@@ -985,7 +847,6 @@ int jp_sync(struct my_sync_info *sync_info)
 
 #ifdef JPILOT_DEBUG
    start=0;
-# ifdef PILOT_LINK_0_12
    buffer = pi_buffer_new(sizeof(struct DBInfo));
    while(dlp_ReadDBList(sd, 0, dlpDBListRAM, start, buffer)>0) {
       memcpy(&info, buffer->data, sizeof(struct DBInfo));
@@ -995,14 +856,6 @@ int jp_sync(struct my_sync_info *sync_info)
       }
    }
    pi_buffer_free(buffer);
-# else
-   while(dlp_ReadDBList(sd, 0, dlpOpenRead, start, &info)>0) {
-      start=info.index+1;
-      if (info.flags & dlpDBFlagAppInfoDirty) {
-	 printf("appinfo dirty for %s\n", info.name);
-      }
-   }
-# endif
 #endif
 
    /* Do a fast, or a slow sync on each application in the arrays */
@@ -1160,11 +1013,7 @@ int slow_sync_application(char *DB_name, int sd)
    void *lrec;
    int lrec_len;
    /* remote (Palm) record */
-#ifdef PILOT_LINK_0_12
    pi_buffer_t *rrec;
-#else
-   unsigned char rrec[65536];
-#endif
    int  rindex, rattr, rcategory;
    int  rrec_len;
    long char_set;
@@ -1324,7 +1173,6 @@ int slow_sync_application(char *DB_name, int sd)
 	       break;
 	    }
 	 }
-#ifdef PILOT_LINK_0_12
 	 rrec = pi_buffer_new(65536);
 	 if (!rrec) {
 	    jp_logf(JP_LOG_WARN, "slow_sync_application(), pi_buffer_new: %s\n",
@@ -1335,10 +1183,6 @@ int slow_sync_application(char *DB_name, int sd)
 	 ret = dlp_ReadRecordById(sd, db, header.unique_id, rrec,
 				  &rindex, &rattr, &rcategory);
 	 rrec_len = rrec->used;
-#else
-	 ret = dlp_ReadRecordById(sd, db, header.unique_id, rrec,
-				  &rindex, &rrec_len, &rattr, &rcategory);
-#endif
 #ifdef JPILOT_DEBUG
 	 if (ret>=0 ) {
 	    printf("read record by id %s returned %d\n", DB_name, ret);
@@ -1366,9 +1210,7 @@ int slow_sync_application(char *DB_name, int sd)
                fclose(pc_in);
                dlp_CloseDB(sd, db);
                free(lrec);
-#ifdef PILOT_LINK_0_12
                pi_buffer_free(rrec);
-#endif
                return EXIT_FAILURE;
             }
             header.rt=DELETED_DELETED_PALM_REC;
@@ -1396,9 +1238,7 @@ int slow_sync_application(char *DB_name, int sd)
                fclose(pc_in);
                dlp_CloseDB(sd, db);
                free(lrec);
-#ifdef PILOT_LINK_0_12
                pi_buffer_free(rrec);
-#endif
                return EXIT_FAILURE;
             }
             header.rt=DELETED_DELETED_PALM_REC;
@@ -1417,11 +1257,7 @@ int slow_sync_application(char *DB_name, int sd)
                jp_logf(JP_LOG_DEBUG, "Writing PC record to palm\n");
                ret = dlp_WriteRecord(sd, db, rattr & dlpRecAttrSecret,
                                      0, rattr & 0x0F,
-#ifdef PILOT_LINK_0_12
                                      rrec->data,
-#else
-                                     rrec,
-#endif
                                      rrec_len, &header.unique_id);
 
                if (ret < 0) {
@@ -1439,9 +1275,7 @@ int slow_sync_application(char *DB_name, int sd)
                      fclose(pc_in);
                      dlp_CloseDB(sd, db);
                      free(lrec);
-#ifdef PILOT_LINK_0_12
                      pi_buffer_free(rrec);
-#endif
                      return EXIT_FAILURE;
                   }
                   header.rt=DELETED_PC_REC;
@@ -1456,9 +1290,7 @@ int slow_sync_application(char *DB_name, int sd)
                   fclose(pc_in);
                   dlp_CloseDB(sd, db);
                   free(lrec);
-#ifdef PILOT_LINK_0_12
                   pi_buffer_free(rrec);
-#endif
                   return EXIT_FAILURE;
                }
                header.rt=DELETED_PC_REC;
@@ -1473,9 +1305,7 @@ int slow_sync_application(char *DB_name, int sd)
 	    lrec = NULL;
 	 }
 
-#ifdef PILOT_LINK_0_12
          pi_buffer_free(rrec);
-#endif
 
       } /* end if Case 3&4 */
 
@@ -1568,14 +1398,7 @@ void fetch_extra_DBs2(int sd, struct DBInfo info, char *palm_dbname[])
       jp_logf(JP_LOG_WARN, _("Failed, unable to create file %s\n"), full_name);
       return;
    }
-#ifdef PILOT_LINK_0_12
    if (pi_file_retrieve(pi_fp, sd, 0, NULL)<0) {
-# ifdef KEEP_EDITOR_HAPPY_WITH_INDENTS
-   }
-# endif
-#else
-   if (pi_file_retrieve(pi_fp, sd, 0)<0) {
-#endif
       jp_logf(JP_LOG_WARN, _("Failed, unable to back up database %s\n"), info.name);
       times.actime = 0;
       times.modtime = 0;
@@ -1598,16 +1421,13 @@ int fetch_extra_DBs(int sd, char *palm_dbname[])
 #define MAX_DBNAME 50
    int cardno, start;
    struct DBInfo info;
-#ifdef PILOT_LINK_0_12
    int dbIndex;
    pi_buffer_t *buffer;
-#endif
 
    jp_logf(JP_LOG_DEBUG, "fetch_extra_DBs()\n");
 
    start=cardno=0;
 
-#ifdef PILOT_LINK_0_12
    buffer = pi_buffer_new(32 * sizeof(struct DBInfo));
 
    /* Pilot-link 0.12 can return multiple db infos if the DLP is 1.2 and above */
@@ -1619,14 +1439,6 @@ int fetch_extra_DBs(int sd, char *palm_dbname[])
       }
    }
    pi_buffer_free(buffer);
-#else
-
-   /* Pilot-link < 0.12 */
-   while(dlp_ReadDBList(sd, cardno, dlpOpenRead, start, &info)>0) {
-      start=info.index+1;
-      fetch_extra_DBs2(sd, info, palm_dbname);
-   }
-#endif
 
    return EXIT_SUCCESS;
 }
@@ -1730,11 +1542,9 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
    char db_copy_name[MAX_DBNAME];
    GList *file_list;
    GList *end_of_list;
-#ifdef PILOT_LINK_0_12
    int palmos_error;
    int dbIndex;
    pi_buffer_t *buffer;
-#endif
 #ifdef ENABLE_PLUGINS
    GList *temp_list;
    GList *plugin_list;
@@ -1807,18 +1617,11 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
    file_list=NULL;
    end_of_list=NULL;
 
-#ifdef PILOT_LINK_0_12
    buffer = pi_buffer_new(32 * sizeof(struct DBInfo));
 
    while( (r=dlp_ReadDBList(sd, cardno, dlpDBListRAM | dlpDBListMultiple, start, buffer)) > 0) {
       for (dbIndex=0; dbIndex < (buffer->used / sizeof(struct DBInfo)); dbIndex++) {
 	 memcpy(&info, buffer->data + (dbIndex * sizeof(struct DBInfo)), sizeof(struct DBInfo));
-# ifdef KEEP_EDITOR_HAPPY_WITH_INDENTS
-      }}
-# endif
-#else
-   while( (r=dlp_ReadDBList(sd, cardno, dlpOpenRead, start, &info)) > 0) {
-#endif
 
       start=info.index+1;
       creator[0] = (info.creator & 0xFF000000) >> 24;
@@ -2016,11 +1819,7 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
 		main_app ? full_name : full_backup_name);
 	 continue;
       }
-#ifdef PILOT_LINK_0_12
       if (pi_file_retrieve(pi_fp, sd, 0, NULL)<0) {
-#else
-      if (pi_file_retrieve(pi_fp, sd, 0)<0) {
-#endif
 	 jp_logf(JP_LOG_WARN, _("Failed, unable to back up database %s\n"), info.name);
 	 times.actime = 0;
 	 times.modtime = 0;
@@ -2039,11 +1838,8 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
 	 jp_copy_file(full_name, full_backup_name);
       }
    }
-#ifdef PILOT_LINK_0_12
    }
    pi_buffer_free(buffer);
-#endif
-#ifdef PILOT_LINK_0_12
    palmos_error = pi_palmos_error(sd);
    if (palmos_error==dlpErrNotFound) {
       jp_logf(JP_LOG_DEBUG, "Good return code (dlpErrNotFound)\n");
@@ -2056,18 +1852,6 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
       jp_logf(JP_LOG_WARN, "palmos_error = %d\n", palmos_error);
       jp_logf(JP_LOG_WARN, "dlp_strerror is %s\n", dlp_strerror(palmos_error));
    }
-#else
-   /* I'm not sure why pilot-link-0.11 is returning dlpErrNoneOpen */
-   if ((r==dlpErrNotFound) || (r==dlpErrNoneOpen)) {
-      jp_logf(JP_LOG_DEBUG, "Good return code (dlpErrNotFound)\n");
-      if (full_backup) {
-	 jp_logf(JP_LOG_DEBUG, "Removing apps not found on the palm\n");
-	 move_removed_apps(file_list);
-      }
-   } else {
-      jp_logf(JP_LOG_WARN, "ReadDBList returned = %d\n", r);
-   }
-#endif
 	
    free_file_name_list(&file_list);
 
@@ -2117,11 +1901,7 @@ static int sync_install(char *filename, int sd)
    creator[4] = '\0';
    jp_logf(JP_LOG_GUI, _("(Creator ID is '%s')..."), creator);
 
-#ifdef PILOT_LINK_0_12
    r = pi_file_install(f, sd, 0, NULL);
-#else
-   r = pi_file_install(f, sd, 0);
-#endif
    if (r<0) {
       try_again = 0;
       /* TODO: make this generic? Not sure it would work 100% of the time */
@@ -2183,11 +1963,7 @@ static int sync_install(char *filename, int sd)
       }
       if (try_again) {
 	 /* Try again */
-#ifdef PILOT_LINK_0_12
 	 r = pi_file_install(f, sd, 0, NULL);
-#else
-	 r = pi_file_install(f, sd, 0);
-#endif
       }
    }
 
@@ -2485,11 +2261,7 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
    int  lrec_len;
    void *rrec;  /* remote (Palm) record */
    int  rindex, rattr, rcategory;
-#ifdef PILOT_LINK_0_12
    size_t rrec_len;
-#else
-   int rrec_len;
-#endif
    long char_set;
    char write_log_message[256];
    char error_log_message_w[256];
@@ -2827,11 +2599,7 @@ int fast_sync_application(char *DB_name, int sd)
    char error_log_message_d[256];
    char delete_log_message[256];
    /* remote (Palm) record */
-#ifdef PILOT_LINK_0_12
    pi_buffer_t *rrec;
-#else
-   unsigned char rrec[65536];
-#endif
    recordid_t rid=0;
    int rindex, rrec_len, rattr, rcategory;
    int num_local_recs, num_palm_recs;
@@ -2887,22 +2655,15 @@ int fast_sync_application(char *DB_name, int sd)
 
    /* Loop over all Palm records with dirty bit set */
    while(1) {
-#ifdef PILOT_LINK_0_12
       rrec = pi_buffer_new(0);
       ret = dlp_ReadNextModifiedRec(sd, db, rrec,
 				    &rid, &rindex, &rattr, &rcategory);
       rrec_len = rrec->used;
-#else
-      ret = dlp_ReadNextModifiedRec(sd, db, rrec,
-				    &rid, &rindex, &rrec_len, &rattr, &rcategory);
-#endif
       if (ret>=0 ) {
 	 jp_logf(JP_LOG_DEBUG, "read next record for %s returned %d\n", DB_name, ret);
 	 jp_logf(JP_LOG_DEBUG, "id %ld, index %d, size %d, attr 0x%x, category %d\n",rid, rindex, rrec_len, rattr, rcategory);
       } else {
-#ifdef PILOT_LINK_0_12
 	 pi_buffer_free(rrec);
-#endif
 	 break;
       }
 
@@ -2910,24 +2671,16 @@ int fast_sync_application(char *DB_name, int sd)
       if ((rattr & dlpRecAttrDeleted) || (rattr & dlpRecAttrArchived)) {
 	 jp_logf(JP_LOG_DEBUG, "Case 1: found a deleted record on palm\n");
 	 pdb_file_delete_record_by_id(DB_name, rid);
-#ifdef PILOT_LINK_0_12
 	 pi_buffer_free(rrec);
-#endif
 	 continue;
       }
 
       /* Case 2: */
       if (rattr & dlpRecAttrDirty) {
 	 jp_logf(JP_LOG_DEBUG, "Case 2: found a dirty record on palm\n");
-#ifdef PILOT_LINK_0_12
 	 pdb_file_modify_record(DB_name, rrec->data, rrec->used, rattr, rcategory, rid);
-#else
-	 pdb_file_modify_record(DB_name, rrec, rrec_len, rattr, rcategory, rid);
-#endif
       }
-#ifdef PILOT_LINK_0_12
       pi_buffer_free(rrec);
-#endif
    } /* end while over Palm records */
 
    fast_sync_local_recs(DB_name, sd, db);
@@ -3148,12 +2901,8 @@ int sync_categories(char *DB_name, int sd,
    char pdb_name[FILENAME_MAX];
    char log_entry[256];
    struct pi_file *pf;
-#ifdef PILOT_LINK_0_12
    pi_buffer_t *buffer;
    size_t local_cai_size;
-#else
-   int local_cai_size;
-#endif
    int remote_cai_size;
    unsigned char buf[65536];
    int db;
@@ -3186,11 +2935,7 @@ int sync_categories(char *DB_name, int sd,
       jp_logf(JP_LOG_WARN, _("%s:%d Error reading file: %s\n"), __FILE__, __LINE__, full_name);
       return EXIT_FAILURE;
    }
-#ifdef PILOT_LINK_0_12
    pi_file_get_app_info(pf, &Papp_info, &local_cai_size);
-#else
-   r = pi_file_get_app_info(pf, &Papp_info, &local_cai_size);
-#endif
    if (local_cai_size <= 0) {
       jp_logf(JP_LOG_WARN, _("%s:%d Error getting app info %s\n"), __FILE__, __LINE__, full_name);
       return EXIT_FAILURE;
@@ -3214,7 +2959,6 @@ int sync_categories(char *DB_name, int sd,
       return EXIT_FAILURE;
    }
 
-#ifdef PILOT_LINK_0_12
    buffer = pi_buffer_new(0xFFFF);
    /* buffer size passed in cannot be any larger than 0xffff */
    remote_cai_size = dlp_ReadAppBlock(sd, db, 0, -1, buffer);
@@ -3227,16 +2971,6 @@ int sync_categories(char *DB_name, int sd,
    }
    memcpy(buf, buffer->data, remote_cai_size);
    pi_buffer_free(buffer);
-#else
-   /* buffer size passed in cannot be any larger than 0xffff */
-   remote_cai_size = dlp_ReadAppBlock(sd, db, 0, buf, min(sizeof(buf), 0xFFFF));
-   jp_logf(JP_LOG_DEBUG, "readappblock r=%d\n", remote_cai_size);
-   if (remote_cai_size<=0) {
-      jp_logf(JP_LOG_WARN, _("Error reading appinfo block for %s\n"), DB_name);
-      dlp_CloseDB(sd, db);
-      return EXIT_FAILURE;
-   }
-#endif
    r = unpack_cai_from_ai(&remote_cai, buf, remote_cai_size);
    if (EXIT_SUCCESS != r) {
       jp_logf(JP_LOG_WARN, _("%s:%d Error unpacking app info %s\n"), __FILE__, __LINE__, full_name);

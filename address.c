@@ -1,4 +1,4 @@
-/* $Id: address.c,v 1.52 2008/05/14 18:05:37 rikster5 Exp $ */
+/* $Id: address.c,v 1.53 2008/06/02 03:43:02 rikster5 Exp $ */
 
 /*******************************************************************************
  * address.c
@@ -319,12 +319,7 @@ int address_sort(AddressList **al, int sort_order)
 int pc_address_write(struct Address *addr, PCRecType rt, unsigned char attrib,
 		     unsigned int *unique_id)
 {
-#ifndef PILOT_LINK_0_12
-   char record[65536];
-   int rec_len;
-#else /* PILOT_LINK_0_12 */
    pi_buffer_t *RecordBuffer;
-#endif /* PILOT_LINK_0_12 */
    int i;
    buf_rec br;
    long char_set;
@@ -336,30 +331,16 @@ int pc_address_write(struct Address *addr, PCRecType rt, unsigned char attrib,
       }
    }
 
-#ifndef PILOT_LINK_0_12
-   rec_len = pack_Address(addr, (unsigned char *)record, 65535);
-   if (!rec_len) {
-      PRINT_FILE_LINE;
-      jp_logf(JP_LOG_WARN, "pack_Address %s\n", _("error"));
-      return EXIT_FAILURE;
-   }
-#else /* PILOT_LINK_0_12 */
    RecordBuffer = pi_buffer_new(0);
    if (pack_Address(addr, RecordBuffer, address_v1) == -1) {
       PRINT_FILE_LINE;
       jp_logf(JP_LOG_WARN, "pack_Address %s\n", _("error"));
       return EXIT_FAILURE;
    }
-#endif /* PILOT_LINK_0_12 */
    br.rt=rt;
    br.attrib = attrib;
-#ifndef PILOT_LINK_0_12
-   br.buf = record;
-   br.size = rec_len;
-#else /* PILOT_LINK_0_12 */
    br.buf = RecordBuffer->data;
    br.size = RecordBuffer->used;
-#endif /* PILOT_LINK_0_12 */
    /* Keep unique ID intact */
    if (unique_id) {
       br.unique_id = *unique_id;
@@ -372,9 +353,8 @@ int pc_address_write(struct Address *addr, PCRecType rt, unsigned char attrib,
       *unique_id = br.unique_id;
    }
 
-#ifdef PILOT_LINK_0_12
    pi_buffer_free(RecordBuffer);
-#endif
+
    return EXIT_SUCCESS;
 }
 
@@ -434,9 +414,7 @@ int get_addresses2(AddressList **address_list, int sort_order,
    long char_set;
    buf_rec *br;
    char *buf;
-#ifdef PILOT_LINK_0_12
    pi_buffer_t *RecordBuffer;
-#endif /* PILOT_LINK_0_12 */
 
    jp_logf(JP_LOG_DEBUG, "get_addresses2()\n");
    if (modified==2) {
@@ -482,25 +460,15 @@ int get_addresses2(AddressList **address_list, int sort_order,
 	 continue;
       }
 
-#ifndef PILOT_LINK_0_12
-      num = unpack_Address(&addr, br->buf, br->size);
-#else /* PILOT_LINK_0_12 */
       RecordBuffer = pi_buffer_new(br->size);
       memcpy(RecordBuffer->data, br->buf, br->size);
       RecordBuffer->used = br->size;
-#endif /* PILOT_LINK_0_12 */
 
-#ifndef PILOT_LINK_0_12
-      if (num <= 0) {
-	 continue;
-      }
-#else /* PILOT_LINK_0_12 */
       if (unpack_Address(&addr, RecordBuffer, address_v1) == -1) {
 	 pi_buffer_free(RecordBuffer);
 	 continue;
       }
       pi_buffer_free(RecordBuffer);
-#endif /* PILOT_LINK_0_12 */
 
       if ( ((br->attrib & 0x0F) != category) && category != CATEGORY_ALL) {
 	 continue;

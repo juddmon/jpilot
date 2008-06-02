@@ -1,4 +1,4 @@
-/* $Id: password.c,v 1.25 2008/05/06 00:11:52 rikster5 Exp $ */
+/* $Id: password.c,v 1.26 2008/06/02 03:43:02 rikster5 Exp $ */
 
 /*******************************************************************************
  * password.c
@@ -31,23 +31,7 @@
 #include "i18n.h"
 
 #include <pi-version.h>
-
-/* Try to determine if version of pilot-link > 0.9.x */
-#ifdef USB_PILOT_LINK
-# undef USB_PILOT_LINK
-#endif
-
-#if PILOT_LINK_VERSION > 0
-# define USB_PILOT_LINK
-#else
-# if PILOT_LINK_MAJOR > 9
-#  define USB_PILOT_LINK
-# endif
-#endif
-
-#ifdef USB_PILOT_LINK
 #include <pi-md5.h>
-#endif
 
 #ifdef ENABLE_PRIVATE
 
@@ -146,7 +130,6 @@ void palm_encode_hash(unsigned char *ascii, unsigned char *encoded)
    }
 }
 
-#ifdef USB_PILOT_LINK
 /*
  * encoded is a pre-allocated buffer at least 16 bytes long
  *
@@ -164,7 +147,6 @@ void palm_encode_md5(unsigned char *ascii, unsigned char *encoded)
 
    memcpy(encoded, digest, 16);
 }
-#endif /* USB_PILOT_LINK */
 
 #endif
 
@@ -197,7 +179,6 @@ int verify_password(char *password)
       return TRUE;
    }
 
-# ifdef USB_PILOT_LINK
    /* We need a new pilot-link > 0.11 for this */
    /* The Password didn't match.
     * It could also be an MD5 password.
@@ -210,7 +191,6 @@ int verify_password(char *password)
    if (!strcmp(hex_str, pref_password)) {
       return TRUE;
    }
-# endif /* USB_PILOT_LINK */
    return FALSE;
 #else
    /* Return TRUE without checking the password */

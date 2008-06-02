@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.147 2008/06/02 00:09:28 rikster5 Exp $ */
+/* $Id: utils.c,v 1.148 2008/06/02 03:43:02 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -121,11 +121,7 @@ void get_compile_options(char *string, int len)
 	      PILOT_LINK_MAJOR,
 	      PILOT_LINK_MINOR,
 	      _("USB support"),
-#ifdef USB_PILOT_LINK
 	      _("yes"),
-#else
-	      _("no"),
-#endif
 	      _("Private record support"),
 #ifdef ENABLE_PRIVATE
 	      _("yes"),
@@ -2459,11 +2455,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
    struct Memo *memo;
    MyMemo *mmemo;
    char filename[FILENAME_MAX];
-#ifdef PILOT_LINK_0_12
    pi_buffer_t *RecordBuffer = NULL;
-#else /* not PILOT_LINK_0_12 */
-   unsigned char record[65536];
-#endif
    PCRecType record_type;
    unsigned int unique_id;
    long ivalue, memo_version;
@@ -2539,27 +2531,21 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 	   "It is scheduled to be deleted from the Palm on the next sync.\n"));
       return EXIT_SUCCESS;
    }
-#ifdef PILOT_LINK_0_12
    RecordBuffer = pi_buffer_new(0);
-#endif
    switch (record_type) {
     case NEW_PC_REC:
     case REPLACEMENT_PALM_REC:
       pc_in=jp_open_home_file(filename, "r+");
       if (pc_in==NULL) {
 	 jp_logf(JP_LOG_WARN, _("Unable to open PC records file\n"));
-#ifdef PILOT_LINK_0_12
 	 pi_buffer_free(RecordBuffer);
-#endif
 	 return EXIT_FAILURE;
       }
       while(!feof(pc_in)) {
 	 read_header(pc_in, &header);
 	 if (feof(pc_in)) {
 	    jp_logf(JP_LOG_WARN, _("Couldn't find record to delete\n"));
-#ifdef PILOT_LINK_0_12
 	    pi_buffer_free(RecordBuffer);
-#endif
 	    jp_close_home_file(pc_in);
 	    return EXIT_FAILURE;
 	 }
@@ -2574,9 +2560,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 	       write_header(pc_in, &header);
 	       jp_logf(JP_LOG_DEBUG, "record deleted\n");
 	       jp_close_home_file(pc_in);
-#ifdef PILOT_LINK_0_12
 	       pi_buffer_free(RecordBuffer);
-#endif
 	       return EXIT_SUCCESS;
 	    }
 	 } else {
@@ -2588,9 +2572,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       }
 
       jp_close_home_file(pc_in);
-#ifdef PILOT_LINK_0_12
       pi_buffer_free(RecordBuffer);
-#endif
       return EXIT_FAILURE;
 
     case PALM_REC:
@@ -2598,9 +2580,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       pc_in=jp_open_home_file(filename, "a");
       if (pc_in==NULL) {
 	 jp_logf(JP_LOG_WARN, _("Unable to open PC records file\n"));
-#ifdef PILOT_LINK_0_12
 	 pi_buffer_free(RecordBuffer);
-#endif
 	 return EXIT_FAILURE;
       }
       header.unique_id=unique_id;
@@ -2609,7 +2589,6 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       } else {
 	 header.rt=DELETED_PALM_REC;
       }
-#ifdef PILOT_LINK_0_12
       switch (app_type) {
        case DATEBOOK:
 	 appt=&mappt->appt;
@@ -2661,62 +2640,8 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 	 pi_buffer_free(RecordBuffer);
 	 return EXIT_SUCCESS;
       } /* switch */
-#else /* Not PILOT_LINK_0_12 */
-      switch (app_type) {
-       case DATEBOOK:
-	 appt=&mappt->appt;
-	 /*memset(&appt, 0, sizeof(appt)); */
-	 header.rec_len = pack_Appointment(appt, record, sizeof(record)-1);
-	 if (!header.rec_len) {
-	    PRINT_FILE_LINE;
-	    jp_logf(JP_LOG_WARN, "pack_Appointment %s\n", _("error"));
-	 }
-	 break;
-       case ADDRESS:
-	 addr=&maddr->addr;
-	 /* memset(&addr, 0, sizeof(addr)); */
-	 header.rec_len = pack_Address(addr, record, sizeof(record)-1);
-	 if (!header.rec_len) {
-	    PRINT_FILE_LINE;
-	    jp_logf(JP_LOG_WARN, "pack_Address %s\n", _("error"));
-	 }
-	 break;
-       case CONTACTS:
-	 cont=&mcont->cont;
-	 /* memset(&cont, 0, sizeof(cont)); */
-	 header.rec_len = jp_pack_Contact(cont, record, sizeof(record)-1);
-	 if (!header.rec_len) {
-	    PRINT_FILE_LINE;
-	    jp_logf(JP_LOG_WARN, "jp_pack_Contact %s\n", _("error"));
-	 }
-	 break;
-       case TODO:
-	 todo=&mtodo->todo;
-	 /* memset(&todo, 0, sizeof(todo)); */
-	 header.rec_len = pack_ToDo(todo, record, sizeof(record)-1);
-	 if (!header.rec_len) {
-	    PRINT_FILE_LINE;
-	    jp_logf(JP_LOG_WARN, "pack_ToDo %s\n", _("error"));
-	 }
-	 break;
-       case MEMO:
-	 memo=&mmemo->memo;
-	 /* memset(&memo, 0, sizeof(memo)); */
-	 header.rec_len = pack_Memo(memo, record, sizeof(record)-1);
 
-	 if (!header.rec_len) {
-	    PRINT_FILE_LINE;
-	    jp_logf(JP_LOG_WARN, "pack_Memo %s\n", _("error"));
-	 }
-	 break;
-       default:
-	 jp_close_home_file(pc_in);
-	 return EXIT_SUCCESS;
-      } /* switch */
-#endif
-
-#ifdef PILOT_LINK_0_12
-      header.rec_len = RecordBuffer->used; /* PILOT_LINK_0_12 */
+      header.rec_len = RecordBuffer->used;
 
       jp_logf(JP_LOG_DEBUG, "writing header to pc file\n");
       write_header(pc_in, &header);
@@ -2726,26 +2651,14 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       fwrite(RecordBuffer->data, header.rec_len, 1, pc_in);
       jp_logf(JP_LOG_DEBUG, "record deleted\n");
       jp_close_home_file(pc_in);
-      pi_buffer_free(RecordBuffer); /* PILOT_LINK_0_12 */
-#else /* not PILOT_LINK_0_12 */
-      jp_logf(JP_LOG_DEBUG, "writing header to pc file\n");
-      write_header(pc_in, &header);
-      /* This record be used for making sure that the palm record
-       * hasn't changed before we delete it */
-      jp_logf(JP_LOG_DEBUG, "writing record to pc file, %d bytes\n", header.rec_len);
-      fwrite(record, header.rec_len, 1, pc_in);
-      jp_logf(JP_LOG_DEBUG, "record deleted\n");
-      jp_close_home_file(pc_in);
-#endif
+      pi_buffer_free(RecordBuffer);
       return EXIT_SUCCESS;
       break;
     default:
       break;
    } /* switch (record_type) */
-#ifdef PILOT_LINK_0_12
    if (RecordBuffer)
 	   pi_buffer_free(RecordBuffer);
-#endif
    return EXIT_SUCCESS;
 }
 
@@ -3431,11 +3344,7 @@ int pdb_file_delete_record_by_id(char *DB_name, pi_uid_t uid_in)
    void *record;
    int r;
    int idx;
-#ifdef PILOT_LINK_0_12
    size_t size;
-#else
-   int size;
-#endif
    int attr;
    int cat;
    pi_uid_t uid;
@@ -3499,11 +3408,7 @@ int pdb_file_modify_record(char *DB_name, void *record_in, int size_in,
    void *record;
    int r;
    int idx;
-#ifdef PILOT_LINK_0_12
    size_t size;
-#else
-   int size;
-#endif
    int attr;
    int cat;
    int found;
@@ -3560,17 +3465,10 @@ int pdb_file_modify_record(char *DB_name, void *record_in, int size_in,
    return EXIT_SUCCESS;
 }
 
-#ifdef PILOT_LINK_0_12
 int pdb_file_read_record_by_id(char *DB_name,
 			       pi_uid_t uid,
 			       void **bufp, size_t *sizep, int *idxp,
 			       int *attrp, int *catp)
-#else
-int pdb_file_read_record_by_id(char *DB_name,
-			       pi_uid_t uid,
-			       void **bufp, int *sizep, int *idxp,
-			       int *attrp, int *catp)
-#endif
 {
    char local_pdb_file[FILENAME_MAX];
    char full_local_pdb_file[FILENAME_MAX];
@@ -3606,11 +3504,7 @@ int pdb_file_read_record_by_id(char *DB_name,
    return r;
 }
 
-#ifdef PILOT_LINK_0_12
 int pdb_file_write_app_block(char *DB_name, void *bufp, size_t size_in)
-#else
-int pdb_file_write_app_block(char *DB_name, void *bufp, int size_in)
-#endif
 {
    char local_pdb_file[FILENAME_MAX];
    char full_local_pdb_file[FILENAME_MAX];
@@ -3622,11 +3516,7 @@ int pdb_file_write_app_block(char *DB_name, void *bufp, int size_in)
    void *record;
    int r;
    int idx;
-#ifdef PILOT_LINK_0_12
    size_t size;
-#else
-   int size;
-#endif
    int attr;
    int cat;
    pi_uid_t uid;
@@ -3684,11 +3574,7 @@ int pdb_file_write_dbinfo(char *full_DB_name, struct DBInfo *Pinfo_in)
    void *record;
    int r;
    int idx;
-#ifdef PILOT_LINK_0_12
    size_t size;
-#else
-   int size;
-#endif
    int attr;
    int cat;
    pi_uid_t uid;

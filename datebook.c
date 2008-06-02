@@ -1,4 +1,4 @@
-/* $Id: datebook.c,v 1.51 2007/12/18 00:41:42 rikster5 Exp $ */
+/* $Id: datebook.c,v 1.52 2008/06/02 03:43:02 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook.c
@@ -314,12 +314,7 @@ int db3_parse_tag(char *note, int *type, struct db4_struct *db4)
 int pc_datebook_write(struct Appointment *appt, PCRecType rt,
 		      unsigned char attrib, unsigned int *unique_id)
 {
-#ifndef PILOT_LINK_0_12
-   unsigned char record[65536];
-   int rec_len;
-#else /* PILOT_LINK_0_12 */
    pi_buffer_t *RecordBuffer;
-#endif /* PILOT_LINK_0_12 */
    buf_rec br;
    long char_set;
 
@@ -329,26 +324,16 @@ int pc_datebook_write(struct Appointment *appt, PCRecType rt,
       if (appt->note) charset_j2p(appt->note, strlen(appt->note)+1, char_set);
    }
 
-#ifndef PILOT_LINK_0_12
-   rec_len = pack_Appointment(appt, record, 65535);
-   if (!rec_len) {
-#else /* PILOT_LINK_0_12 */
    RecordBuffer = pi_buffer_new(0);
    if (pack_Appointment(appt, RecordBuffer, datebook_v1) == -1) {
-#endif /* PILOT_LINK_0_12 */
       PRINT_FILE_LINE;
       jp_logf(JP_LOG_WARN, "pack_Appointment %s\n", _("error"));
       return EXIT_FAILURE;
    }
    br.rt=rt;
    br.attrib = attrib;
-#ifndef PILOT_LINK_0_12
-   br.buf = record;
-   br.size = rec_len;
-#else /* PILOT_LINK_0_12 */
    br.buf = RecordBuffer->data;
    br.size = RecordBuffer->used;
-#endif /* PILOT_LINK_0_12 */
    /* Keep unique ID intact */
    if ((unique_id) && (*unique_id!=0)) {
       br.unique_id = *unique_id;
@@ -361,9 +346,7 @@ int pc_datebook_write(struct Appointment *appt, PCRecType rt,
       *unique_id = br.unique_id;
    }
 
-#ifdef PILOT_LINK_0_12
    pi_buffer_free(RecordBuffer);
-#endif
 
    return EXIT_SUCCESS;
 }
@@ -893,9 +876,7 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
    long char_set;
    char *buf;
    size_t len;
-#ifdef PILOT_LINK_0_12
    pi_buffer_t *RecordBuffer;
-#endif /* PILOT_LINK_0_12 */
 #ifdef ENABLE_DATEBK
    long use_db3_tags;
    time_t ltime;
@@ -960,24 +941,15 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
       appt.exception=NULL;
       appt.description=NULL;
       appt.note=NULL;
-#ifndef PILOT_LINK_0_12
-      num = unpack_Appointment(&appt, br->buf, br->size);
-#endif /* ! PILOT_LINK_0_12 */
 
-#ifndef PILOT_LINK_0_12
-      if (num <= 0) {
-#else /* PILOT_LINK_0_12 */
       RecordBuffer = pi_buffer_new(br->size);
       memcpy(RecordBuffer->data, br->buf, br->size);
       RecordBuffer->used = br->size;
       if (unpack_Appointment(&appt, RecordBuffer, datebook_v1) == -1) {
 	 pi_buffer_free(RecordBuffer);
-#endif /* PILOT_LINK_0_12 */
 	 continue;
       }
-#ifdef PILOT_LINK_0_12
       pi_buffer_free(RecordBuffer);
-#endif /* PILOT_LINK_0_12 */
 
 #ifdef ENABLE_DATEBK
       if (use_db3_tags) {

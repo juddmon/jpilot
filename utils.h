@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.64 2008/06/02 00:12:39 rikster5 Exp $ */
+/* $Id: utils.h,v 1.65 2008/06/02 03:43:02 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -146,9 +146,7 @@
 #define DAT_MEMO_FILE        13
 
 /* Pilot-link 0.12 is broken and missing pi_uid_t */
-#ifdef PILOT_LINK_0_12
 typedef recordid_t pi_uid_t;
-#endif
 
 extern unsigned int glob_find_id;
 
@@ -529,27 +527,16 @@ int pdb_file_modify_record(char *DB_name, void *record_in, int size_in,
  * attrp is the attributes
  * catp is the category (index)
  */
-#ifdef PILOT_LINK_0_12
 int pdb_file_read_record_by_id(char *DB_name, 
 			       pi_uid_t uid,
 			       void **bufp, size_t *sizep, int *idxp,
 			       int *attrp, int * catp);
-#else
-int pdb_file_read_record_by_id(char *DB_name, 
-			       pi_uid_t uid,
-			       void **bufp, int *sizep, int *idxp,
-			       int *attrp, int * catp);
-#endif
 /*
  * DB_name should be without filename ext, e.g. MemoDB
  * bufp is the packed app info block
  * size_in is the size of bufp
  */
-#ifdef PILOT_LINK_0_12
 int pdb_file_write_app_block(char *DB_name, void *bufp, size_t size_in);
-#else
-int pdb_file_write_app_block(char *DB_name, void *bufp, int size_in);
-#endif
 
 /*
  * This copies the database (pdb, or prc) and writes the DBInfo privided

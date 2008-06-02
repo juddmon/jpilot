@@ -396,13 +396,6 @@ it has some bugs with not fetching the category app info])
    fi
 fi
 
-dnl * pilot-link > 0.12 is now required which guarantees these
-dnl * macros can be set.  Eventually jpilot C code that uses
-dnl * these macros can be replaced and the macros removed from 
-dnl * the configuration file
-AC_DEFINE(USB_PILOT_LINK, 1, [ usb support ])
-AC_DEFINE(PILOT_LINK_0_12, 1, [ pl-0.12 support ])
-
 dnl restore variables after pilot-link testing
 CFLAGS="$save_CFLAGS"
 LIBS="$save_LIBS"
