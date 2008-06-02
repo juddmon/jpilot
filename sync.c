@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.85 2008/06/01 18:52:53 rikster5 Exp $ */
+/* $Id: sync.c,v 1.86 2008/06/02 01:07:41 rikster5 Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -898,11 +898,10 @@ int jp_sync(struct my_sync_info *sync_info)
 	 pi_close(sd);
 	 return SYNC_ERROR_NOT_SAME_USERID;
       }
-   }
-   if ((strcmp(sync_info->username, U.username)) &&
-       (sync_info->username[0]!='\0') &&
-       (!(sync_info->flags & SYNC_OVERRIDE_USER)) &&
-       (!(sync_info->flags & SYNC_RESTORE))) {
+   } else if ((strcmp(sync_info->username, U.username)) &&
+              (sync_info->username[0]!='\0') &&
+              (!(sync_info->flags & SYNC_OVERRIDE_USER)) &&
+              (!(sync_info->flags & SYNC_RESTORE))) {
       jp_logf(JP_LOG_GUI, _("Last Synced Username-->\"%s\"\n"), sync_info->username);
       jp_logf(JP_LOG_GUI, _("Last Synced UserID-->\"%d\"\n"), sync_info->userID);
       jp_logf(JP_LOG_GUI, _(" This Username-->\"%s\"\n"), U.username);
