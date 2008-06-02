@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.164 2008/06/01 23:10:30 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.165 2008/06/02 00:05:03 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -20,8 +20,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  ******************************************************************************/
 
+/********************************* Includes ***********************************/
 #include "config.h"
-#include <gtk/gtk.h>
 #include <time.h>
 #include <sys/types.h>
 #include <sys/time.h>
@@ -33,55 +33,48 @@
 #include <unistd.h>
 #include <fcntl.h>
 #ifdef HAVE_LOCALE_H
-#include <locale.h>
+#  include <locale.h>
 #endif
 #ifdef HAVE_LANGINFO_H
-#include <langinfo.h>
+#  include <langinfo.h>
 #endif
 #include <sys/stat.h>
-
-#include <pi-version.h>
-#include <pi-datebook.h>
+#include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 
+#include "utils.h"
+#include "i18n.h"
+#ifdef ENABLE_GTK2
+#  include "otherconv.h"
+#endif
+#include "libplugin.h"
 #include "datebook.h"
 #include "address.h"
 #include "install_user.h"
 #include "todo.h"
 #include "memo.h"
-#include "libplugin.h"
-#include "utils.h"
 #include "sync.h"
 #include "log.h"
 #include "prefs_gui.h"
 #include "prefs.h"
 #include "plugins.h"
-#define ALARMS
-#ifdef ALARMS
 #include "alarms.h"
-#endif
 #include "print.h"
 #include "restore.h"
 #include "password.h"
-#include "i18n.h"
-#ifdef ENABLE_GTK2
-#include "otherconv.h"
-#endif
-
-#include "icons/jpilot-icon4.xpm"
-
-#include "datebook.xpm"
-#include "address.xpm"
-#include "todo.xpm"
-#include "memo.xpm"
-
 #include "pidfile.h"
 
-/*#define SHADOW GTK_SHADOW_IN */
-/*#define SHADOW GTK_SHADOW_OUT */
-/*#define SHADOW GTK_SHADOW_ETCHED_IN */
-#define SHADOW GTK_SHADOW_ETCHED_OUT
+#include "icons/jpilot-icon4.xpm"
+#include "icons/datebook.xpm"
+#include "icons/address.xpm"
+#include "icons/todo.xpm"
+#include "icons/memo.xpm"
+#include "icons/appl_menu_icons.h"
+#include "icons/lock_icons.h"
+#include "icons/sync.xpm"
+#include "icons/backup.xpm"
 
+/********************************* Constants **********************************/
 #define OUTPUT_MINIMIZE 383
 #define OUTPUT_RESIZE   384
 #define OUTPUT_SETSIZE  385
@@ -92,7 +85,8 @@
 #define MASK_X      0x02
 #define MASK_Y      0x01
 
-
+/* #define PIPE_DEBUG */
+/******************************* Global vars **********************************/
 GtkWidget *g_hbox, *g_vbox0;
 GtkWidget *g_hbox2, *g_vbox0_1;
 
@@ -110,33 +104,29 @@ GtkText *g_output_text;
 GtkWidget *window;
 static GtkWidget *output_pane;
 int glob_app = 0;
-int glob_focus = 1;
 GtkWidget *glob_dialog=NULL;
 unsigned char skip_plugins;
-static GtkWidget *button_locked, *button_locked_masked, *button_unlocked, *button_sync, *button_backup;
-GtkCheckMenuItem *menu_hide_privates, *menu_show_privates, *menu_mask_privates;
+static GtkWidget *button_locked, 
+                 *button_locked_masked, 
+                 *button_unlocked, 
+                 *button_sync, 
+                 *button_backup;
+GtkCheckMenuItem *menu_hide_privates, 
+                 *menu_show_privates, 
+                 *menu_mask_privates;
 int t_fmt_ampm = TRUE;
 
 int pipe_from_child, pipe_to_parent;
 int pipe_from_parent, pipe_to_child;
 
-GtkWidget *sync_window = NULL;
-
-static void sync_sig_handler (int sig);
+/****************************** Prototypes ************************************/
 static void cb_delete_event(GtkWidget *widget, GdkEvent *event, gpointer data);
 void install_gui_and_size(GtkWidget *main_window);
-void cb_payback(GtkWidget *widget, gpointer data);
 
-/*
- * Parses the -geometry command line parameter
- */
-void geometry_error(const char *str)
-{
-   /* The log window hasn't been created yet */
-   jp_logf(JP_LOG_STDOUT, _("Invalid geometry specification: \"%s\"\n"), str);
-}
+/****************************** Main Code *************************************/
 
-/* gtk_init must already have been called, or will seg fault */
+/* Parses the -geometry command line parameter
+ * gtk_init must already have been called, or will seg fault */
 gboolean parse_geometry(const char *str,
 			int window_width, int window_height,
 			int *w, int *h, int *x, int *y,
@@ -180,7 +170,7 @@ gboolean parse_geometry(const char *str,
 	    param=h;
 	    negative=1;
 	 } else {
-	    geometry_error(str);
+		 jp_logf(JP_LOG_STDOUT, _("Invalid geometry specification: \"%s\"\n"), str);
 	    return FALSE;
 	 }
       }
@@ -190,7 +180,7 @@ gboolean parse_geometry(const char *str,
 	    field=3;
 	 }
 	 if (field>4) {
-	    geometry_error(str);
+		 jp_logf(JP_LOG_STDOUT, _("Invalid geometry specification: \"%s\"\n"), str);
 	    return FALSE;
 	 }
       }
@@ -230,24 +220,6 @@ gboolean parse_geometry(const char *str,
 	       *w, *h, *x, *y, *mask);
    return TRUE;
 }
-
-#if 0
-static void cb_focus(GtkWidget *widget, GdkEvent *event, gpointer data)
-{
-   int i;
-
-   i = GPOINTER_TO_INT(data);
-   if (i==0) {
-      glob_focus=0;
-   }
-   if (i==1) {
-      glob_focus=1;
-      if (GTK_IS_WIDGET(glob_dialog)) {
-	 gdk_window_raise(glob_dialog->window);
-      }
-   }
-}
-#endif
 
 int create_main_boxes()
 {
@@ -347,9 +319,6 @@ void cb_plugin_gui(GtkWidget *widget, int number)
    call_plugin_gui(number, 0);
 }
 
-#endif
-
-#ifdef ENABLE_PLUGINS
 void call_plugin_help(int number)
 {
    struct plugin_s *plugin;
@@ -366,7 +335,6 @@ void call_plugin_help(int number)
    plugin_list = get_plugin_list();
 
    /* Find out which plugin we are calling */
-
    for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
       plugin = (struct plugin_s *)temp_list->data;
       if (plugin) {
@@ -612,7 +580,8 @@ static void cb_private(GtkWidget *widget, gpointer data)
    }
 
    if (widget) {
-      /* Setting the state of the menu causes a signal to be emitted which calls cb_private again.
+      /* Setting the state of the menu causes a signal to be emitted 
+       * which calls cb_private again.
        * This second call needs to be ignored */
       skip_false_call = 1;
       switch (privates) {
@@ -707,6 +676,11 @@ void cb_app_button(GtkWidget *widget, gpointer data)
 	cb_app_button(NULL, GINT_TO_POINTER(glob_app));
       break;
    }
+}
+
+static void sync_sig_handler (int sig)
+{
+    setup_sync (skip_plugins ? SYNC_NO_PLUGINS : 0);
 }
 
 void cb_sync(GtkWidget *widget, unsigned int flags)
@@ -850,7 +824,6 @@ void output_to_pane(const char *str)
 #endif
 }
 
-/* #define PIPE_DEBUG */
 static void cb_read_pipe_from_child(gpointer data,
 				    gint in,
 				    GdkInputCondition condition)
@@ -1041,6 +1014,29 @@ void cb_about(GtkWidget *widget, gpointer data)
    }
 }
 
+void cb_payback(GtkWidget *widget, gpointer data)
+{
+   char *button_text[]={N_("OK")};
+   char *text=
+	   N_("Buy a Palm Tungsten, or Palm Zire, register it on-line and\n"
+         "earn points for the J-Pilot project.\n\n"
+         "If you already own a Tungsten, or Zire Palm, consider registering it\n"
+        "on-line to help J-Pilot.\n"
+        "Visit http://jpilot.org/payback.html for details.\n\n"
+        "This message will not be automatically displayed again and can be found later\n"
+        "in the help menu.\n\n\n"
+        "PALM, TUNGSTEN and ZIRE are among the trademarks of palmOne, Inc.");
+
+   if (GTK_IS_WINDOW(window)) {
+      dialog_generic(GTK_WINDOW(window),
+	    _("Register your Palm in the Payback Program"), DIALOG_INFO,
+	    _(text), 1, button_text);
+   }
+}
+
+/* Experimental webmenu that has never been used in practice */
+#ifdef WEBMENU
+
 #define NETSCAPE_EXISTING   0
 #define NETSCAPE_NEW_WINDOW 1
 #define NETSCAPE_NEW        2
@@ -1107,6 +1103,8 @@ void cb_web(GtkWidget *widget, gpointer data)
    system(url_commands[sel].command);
 }
 
+#endif
+
 void install_gui_and_size(GtkWidget *main_window)
 {
    int w, h, x, y;
@@ -1161,7 +1159,6 @@ guint8 *get_inline_pixbuf_data(const char **xpm_icon_data, gint icon_size)
 }
 #endif
 
-
 void get_main_menu(GtkWidget  *my_window,
 		   GtkWidget **menubar,
 		   GList *plugin_list)
@@ -1174,264 +1171,6 @@ void get_main_menu(GtkWidget  *my_window,
 #define ICON(icon) NULL
 #define ICON_XPM(icon, size) NULL
 #endif
-
-const char *todo_menu_icon[]={
-   "14 14 38 1",
-   "# c None",
-   ". c #000000",
-   "a c #ffffff",
-   "b c #f7f3f7",
-   "c c #636563",
-   "d c #adaaad",
-   "e c #e7e3e7",
-   "f c #c6c7c6",
-   "g c #737573",
-   "h c #b5b6b5",
-   "i c #d6cfce",
-   "j c #5a5d5a",
-   "k c #5a595a",
-   "l c #525552",
-   "m c #c67d7b",
-   "n c #ad7173",
-   "o c #ad7d7b",
-   "p c #9c9a9c",
-   "q c #bd5d5a",
-   "r c #9c0000",
-   "s c #ad4142",
-   "t c #a51c18",
-   "u c #b54d4a",
-   "v c #efd7d6",
-   "w c #b53c39",
-   "x c #ad3431",
-   "y c #d69294",
-   "z c #a52021",
-   "A c #dea6a5",
-   "B c #9c0808",
-   "C c #b54542",
-   "D c #bd5552",
-   "E c #a51410",
-   "F c #ad2421",
-   "G c #ad2c29",
-   "H c #ad2829",
-   "I c #bdbebd",
-   "J c #b5b2b5",
-   "...........###",
-   ".aaaaaaabcd.##",
-   ".aaaaaaafgah.#",
-   ".aaaaaaaijkl.#",
-   ".aaaaaaamnop.#",
-   ".aaaaaaqrsah.#",
-   ".atuaavrwaah.#",
-   ".axryazraaah.#",
-   ".aABryrwaaah.#",
-   ".aaCrDraaaah.#",
-   ".aaAErFaaaah.#",
-   ".aaaGHaaaaah.#",
-   ".aIhhhhhhhhJ.#",
-   ".............#"};
-
-const char *addr_menu_icon[] = {
-   "16 16 43 1",
-   " 	c None",
-   ".	c #000000",
-   "+	c #BDBEBD",
-   "@	c #FFFFFF",
-   "#	c #A5A2A5",
-   "$	c #FFFBFF",
-   "%	c #CEB69C",
-   "&	c #8C7152",
-   "*	c #846D52",
-   "=	c #BDB2A5",
-   "-	c #EFEBE7",
-   ";	c #F7F3F7",
-   ">	c #AD8E6B",
-   ",	c #DED3BD",
-   "'	c #5A4129",
-   ")	c #7B6D5A",
-   "!	c #313031",
-   "~	c #525552",
-   "{	c #EFDFCE",
-   "]	c #F7EFE7",
-   "^	c #735D42",
-   "/	c #736152",
-   "(	c #7392AD",
-   "_	c #C6655A",
-   ":	c #425973",
-   "<	c #D6D7D6",
-   "[	c #ADAEAD",
-   "}	c #9C9A9C",
-   "|	c #4A6984",
-   "1	c #9CBAD6",
-   "2	c #4A6584",
-   "3	c #314D6B",
-   "4	c #63798C",
-   "5	c #5A7D94",
-   "6	c #5A7994",
-   "7	c #39556B",
-   "8	c #314963",
-   "9	c #EFEFEF",
-   "0	c #C6C7C6",
-   "a	c #5A5D5A",
-   "b	c #7B797B",
-   "c	c #E7DFD6",
-   "d	c #948E84",
-   " .............. ",
-   ".+@@@@@@@@@@@@#.",
-   ".@$%&*=@@@$@@@-.",
-   ".@;>,')@!~@~@@-.",
-   ".@;{]^/@@@@@@@-.",
-   ".@$(_:<@[@}[@@-.",
-   ".@|1234@@@@@@@-.",
-   ".@56|78@}}90@@-.",
-   ".@@@@@@@@@@@@@-.",
-   ".@@a@a@b@}@0@@c.",
-   ".#-----------cd.",
-   " .............. ",
-   "                ",
-   "                ",
-   "                ",
-   "                "};
-
-const char *date_menu_icon[] = {
-   "16 16 68 1",
-   " 	c None",
-   ".	c #000000",
-   "+	c #FFFFFF",
-   "@	c #E7E3E7",
-   "#	c #C6C3C6",
-   "$	c #F7F3F7",
-   "%	c #FFFBFF",
-   "&	c #ADAAAD",
-   "*	c #525152",
-   "=	c #101410",
-   "-	c #101010",
-   ";	c #393839",
-   ">	c #6B6D6B",
-   ",	c #ADAEAD",
-   "'	c #737173",
-   ")	c #5A5D5A",
-   "!	c #424142",
-   "~	c #BD8E31",
-   "{	c #EFB239",
-   "]	c #423010",
-   "^	c #E7E7E7",
-   "/	c #B5B6B5",
-   "(	c #636163",
-   "_	c #DEDBDE",
-   ":	c #737573",
-   "<	c #4A494A",
-   "[	c #EFB639",
-   "}	c #F7D794",
-   "|	c #F7BA42",
-   "1	c #946D21",
-   "2	c #A5A2A5",
-   "3	c #949294",
-   "4	c #FFE7BD",
-   "5	c #FFD784",
-   "6	c #FFC342",
-   "7	c #CECFCE",
-   "8	c #080808",
-   "9	c #BDBABD",
-   "0	c #BD8A31",
-   "a	c #FFE3B5",
-   "b	c #FFD78C",
-   "c	c #D6D3D6",
-   "d	c #313431",
-   "e	c #8C8A8C",
-   "f	c #313029",
-   "g	c #CECFBD",
-   "h	c #E7AE39",
-   "i	c #FFDFA5",
-   "j	c #FFCB5A",
-   "k	c #D69E31",
-   "l	c #F7F7F7",
-   "m	c #392808",
-   "n	c #8C6D21",
-   "o	c #292008",
-   "p	c #8C8E8C",
-   "q	c #C6C3AD",
-   "r	c #DEDFDE",
-   "s	c #CECBCE",
-   "t	c #C6C7C6",
-   "u	c #393C31",
-   "v	c #ADAE9C",
-   "w	c #D6D7D6",
-   "x	c #BDBEBD",
-   "y	c #B5B2B5",
-   "z	c #424542",
-   "A	c #A5A6A5",
-   "B	c #9C9A9C",
-   "C	c #9C9E9C",
-   "    .........   ",
-   "   .+++++++@#.  ",
-   "   .+$$$$$$#%&. ",
-   "   .*=.-;>$,')!.",
-   "  ..~{]^/.(_:<=.",
-   " ..[}|1%$^.(/23.",
-   " .[4566+789.2^3.",
-   ".0ab666cde$&fg3.",
-   ".hij66kde+l_-^3.",
-   ".mn666o>++pd.q3.",
-   ".r$+++cd&+$s-^3.",
-   ".&@l+++c<%t2uv3.",
-   " .7wl%+%l79.2^3.",
-   " ..x9s:s,y.)t^3.",
-   "  ..2,zAB.<C292.",
-   "   ............l"};
-
-const char *user_icon[] = {
-"16 16 34 1",
-" 	c None",
-".	c #FFFFFF",
-"+	c #303030",
-"@	c #A5B56E",
-"#	c #272727",
-"$	c #222222",
-"%	c #1E1E1E",
-"&	c #1A1A1A",
-"*	c #151515",
-"=	c #000000",
-"-	c #303030",
-";	c #2B2B2B",
-">	c #111111",
-",	c #0D0D0D",
-"'	c #C0C0C0",
-")	c #080808",
-"!	c #808080",
-"~	c #040404",
-"{	c #1B1FE8",
-"]	c #870C0C",
-"^	c #DC261E",
-"/	c #E52920",
-"(	c #DB251D",
-"_	c #D1221B",
-":	c #CB211A",
-"<	c #BA1B16",
-"[	c #B11915",
-"}	c #F2DE09",
-"|	c #8F0E0D",
-"1	c #D3231C",
-"2	c #C21E18",
-"3	c #A91613",
-"4	c #A01311",
-"5	c #98110F",
-" +++++++++++++++",
-"++++++++++++++++",
-"++@@@@#$%&*=@@@@",
-"++@@-;#$%&*>=@@@",
-"++@@-;#$%&*>,=@@",
-"++@@-'..%&*>,)=@",
-"++@@@-!.'+*>,)~=",
-"++@@-'{'..!>,)~=",
-"++@@-'.....>,)~=",
-"++@@@-'...!>,==@",
-"++@@@-....=>,=@@",
-"++@@@-''''!=,=@@",
-"++@@@@]=!!!!====",
-"++@@@^]!'.'']]@=",
-"++@@/(_:'<[]}}|]",
-"++@@/^1:2<[345|]"};
-
 
   GtkItemFactoryEntry menu_items1[]={
   { _("/_File"),                           NULL,         NULL,           0,                  "<Branch>", NULL },
@@ -1559,7 +1298,6 @@ const char *user_icon[] = {
 	 plugin_menu_strings[str_i++]=strdup(temp_str);
       }
    }
-
 
    /* Create help menu strings */
    str_i = 0;
@@ -1805,104 +1543,11 @@ static gint cb_output_idle(gpointer data)
 
 static gint cb_output2(GtkWidget *widget, GdkEventButton *event, gpointer data)
 {
-   /* Because the pane isn't redrawn yet we can get positions from it.
+   /* Because the pane isn't redrawn yet we can't get positions from it.
     * So we have to call back after everything is drawn */
    gtk_idle_add(cb_output_idle, data);
    return EXIT_SUCCESS;
 }
-
-/* #define FONT_TEST */
-#ifdef FONT_TEST
-
-# ifdef ENABLE_GTK2
-void SetFontRecursively2(GtkWidget *widget, gpointer data)
-{
-   GtkStyle *style;
-   char *font_desc;
-
-   font_desc = (char *)data;
-
-   g_print("font desc=[%s]\n", font_desc);
-   style = gtk_widget_get_style(widget);
-   pango_font_description_free(style->font_desc);
-   style->font_desc = pango_font_description_from_string(font_desc);
-   gtk_widget_set_style(widget, style);
-   if (GTK_IS_CONTAINER(widget)) {
-      gtk_container_foreach(GTK_CONTAINER(widget), SetFontRecursively2, font_desc);
-   }
-}
-# else
-void SetFontRecursively(GtkWidget *widget, gpointer data)
-{
-   GtkStyle *style;
-   GdkFont *f;
-
-   f = (GdkFont *)data;
-
-   style = gtk_widget_get_style(widget);
-   gtk_widget_set_style(widget, style);
-   if (GTK_IS_CONTAINER(widget)) {
-      gtk_container_foreach(GTK_CONTAINER(widget), SetFontRecursively, f);
-   }
-}
-# endif
-void font_selection_ok(GtkWidget *w, GtkFontSelectionDialog *fs)
-{
-   gchar *s = gtk_font_selection_dialog_get_font_name(fs);
-
-# ifndef ENABLE_GTK2
-   GdkFont *f;
-# endif
-
-# ifdef ENABLE_GTK2
-   SetFontRecursively2(window, s);
-# else
-   f=gdk_fontset_load(s);
-   SetFontRecursively(window, f);
-# endif
-
-   g_free(s);
-   gtk_widget_destroy(GTK_WIDGET(fs));
-   cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
-}
-
-void font_sel_dialog()
-{
-   static GtkWidget *fontsel = NULL;
-
-   if (!fontsel) {
-      fontsel = gtk_font_selection_dialog_new(_("Font Selection Dialog"));
-      gtk_window_set_position(GTK_WINDOW(fontsel), GTK_WIN_POS_MOUSE);
-
-      gtk_signal_connect(GTK_OBJECT(fontsel), "destroy",
-			 GTK_SIGNAL_FUNC(gtk_widget_destroyed),
-			 &fontsel);
-
-      gtk_window_set_modal(GTK_WINDOW(fontsel), TRUE);
-
-      gtk_signal_connect(GTK_OBJECT(GTK_FONT_SELECTION_DIALOG(fontsel)->ok_button),
-			 "clicked", GTK_SIGNAL_FUNC(font_selection_ok),
-			 GTK_FONT_SELECTION_DIALOG(fontsel));
-      gtk_signal_connect_object(GTK_OBJECT(GTK_FONT_SELECTION_DIALOG(fontsel)->cancel_button),
-				"clicked", GTK_SIGNAL_FUNC(gtk_widget_destroy),
-				GTK_OBJECT(fontsel));
-     }
-
-   if (!GTK_WIDGET_VISIBLE(fontsel)) {
-      gtk_widget_show(fontsel);
-   } else {
-      gtk_widget_destroy(fontsel);
-   }
-}
-
-/*fixme move to font.c */
-void cb_font(GtkWidget *widget, gpointer data)
-{
-   font_sel_dialog();
-
-   return;
-}
-#endif
 
 #ifndef ENABLE_GTK2
 void jp_window_iconify(GtkWidget *window)
@@ -1921,25 +1566,6 @@ void jp_window_iconify(GtkWidget *window)
 }
 #endif
 
-void cb_payback(GtkWidget *widget, gpointer data)
-{
-   char *button_text[]={N_("OK")};
-   char *text=
-	   N_("Buy a Palm Tungsten, or Palm Zire, register it on-line and\n"
-         "earn points for the J-Pilot project.\n\n"
-         "If you already own a Tungsten, or Zire Palm, consider registering it\n"
-        "on-line to help J-Pilot.\n"
-        "Visit http://jpilot.org/payback.html for details.\n\n"
-        "This message will not be automatically displayed again and can be found later\n"
-        "in the help menu.\n\n\n"
-        "PALM, TUNGSTEN and ZIRE are among the trademarks of palmOne, Inc.");
-
-   if (GTK_IS_WINDOW(window)) {
-      dialog_generic(GTK_WINDOW(window),
-	    _("Register your Palm in the Payback Program"), DIALOG_INFO,
-	    _(text), 1, button_text);
-   }
-}
 
 gint cb_check_version(gpointer main_window)
 {
@@ -2023,11 +1649,6 @@ int main(int argc, char *argv[])
    struct plugin_s *plugin;
    jp_startup_info info;
 #endif
-#ifdef FONT_TEST
-# ifndef ENABLE_GTK2
-   GdkFont *f;
-# endif
-#endif
    int pid;
    int remote_sync = FALSE;
 #if defined(ENABLE_NLS)
@@ -2036,159 +1657,6 @@ int main(int argc, char *argv[])
 #  endif
 # endif
    
-char *xpm_locked[] = {
-   "15 18 4 1",
-   "       c None",
-   "b      c #000000000000",
-   "g      c #777777777777",
-   "w      c #FFFFFFFFFFFF",
-   "               ",
-   "      bbb      ",
-   "    bwwwwwb    ",
-   "   bwbbbbwbb   ",
-   "  bwb     bwb  ",
-   "  bwb     bwb  ",
-   "  bwb     bwb  ",
-   "  bwb     bwb  ",
-   " bbbbbbbbbbbbb ",
-   " bwwwwwwwwwwwb ",
-   " bgggggggggggb ",
-   " bwgwwwwwwwgwb ",
-   " bggwwwwwwwggb ",
-   " bwgwwwwwwwgwb ",
-   " bgggggggggggb ",
-   " bwwwwwwwwwwwb ",
-   " bbbbbbbbbbbbb ",
-   "               "
-};
-
-char *xpm_locked_masked[] = {
-   "15 18 4 1",
-   "       c None",
-   "b      c #000000000000",
-   "g      c #777777777777",
-   "w      c #FFFFFFFFFFFF",
-   "               ",
-   "      bbb      ",
-   "    bwwwwwb    ",
-   "   bwbbbbwbb   ",
-   "  bwb     bwb  ",
-   "  bwb     bwb  ",
-   "  bwb     bwb  ",
-   "  bwb     bwb  ",
-   " bbbbbbbbbbbbb ",
-   " bwwbbwwbbwwbb ",
-   " bbbwwbbwwbbwb ",
-   " bwwbbwwbbwwbb ",
-   " bbbwwbbwwbbwb ",
-   " bwwbbwwbbwwbb ",
-   " bbbwwbbwwbbwb ",
-   " bwwbbwwbbwwbb ",
-   " bbbbbbbbbbbbb ",
-   "               "
-};
-
-char *xpm_unlocked[] = {
-   "21 18 4 1",
-   "       c None",
-   "b      c #000000000000",
-   "g      c #777777777777",
-   "w      c #FFFFFFFF0000",
-   "                      ",
-   "              bbb     ",
-   "            bwwwwwb   ",
-   "           bwbbbbwbb  ",
-   "          bwb     bwb ",
-   "          bwb     bwb ",
-   "          bwb     bwb ",
-   "          bwb     bwb ",
-   " bbbbbbbbbbbbb        ",
-   " bwwwwwwwwwwwb        ",
-   " bgggggggggggb        ",
-   " bwwwwwwwwwwwb        ",
-   " bgggggggggggb        ",
-   " bwwwwwwwwwwwb        ",
-   " bgggggggggggb        ",
-   " bwwwwwwwwwwwb        ",
-   " bbbbbbbbbbbbb        ",
-   "                      "
-};
-
-char * xpm_sync[] = {
-   "27 24 7 1",
-   " 	c None",
-   ".	c #020043",
-   "+	c #6B0000",
-   "@	c #002EC9",
-   "#	c #9D0505",
-   "$	c #F71711",
-   "%	c #00A0FF",
-   "                           ",
-   "           ++++            ",
-   "        ++++     .         ",
-   "       +#+      .@..       ",
-   "      +#+      .%@@@.      ",
-   "     +#+      .%@%@@@.     ",
-   "    +#+    . .%@%@@@@@.    ",
-   "    +#+    ..%%%@..@@@.    ",
-   "   +##+    .%%%..  .@@@.   ",
-   "   +#+     .%%%.    .@@.   ",
-   "   +#+     ......   .@@.   ",
-   "   +#+               .@.   ",
-   "   +#+               .@.   ",
-   "   +##+   ++++++     .@.   ",
-   "   +##+    +$$$+     .@.   ",
-   "   +###+  ++$$$+    .@@.   ",
-   "    +###++#$$$++    .@.    ",
-   "    +#####$#$+ +    .@.    ",
-   "     +###$#$+      .@.     ",
-   "      +###$+      .@.      ",
-   "       ++#+      .@.       ",
-   "         +     ....        ",
-   "            ....           ",
-   "                           "
-};
-
-char * xpm_backup[] = {
-   "27 24 13 1",
-   " 	c None",
-   ".	c #454545",
-   "+	c #B2B2B2",
-   "@	c #000000",
-   "#	c #FFFFFF",
-   "$	c #315D00",
-   "%	c #29B218",
-   "&	c #18B210",
-   "*	c #52B631",
-   "=	c #42B629",
-   "-	c #31B221",
-   ";	c #08AE08",
-   ">	c #848284",
-   "                           ",
-   "     .............         ",
-   "    .+++++++++++++@        ",
-   "    .+@@@@@@@@@@@+@        ",
-   "    .+@....#####@+@        ",
-   "    .+@.........@+@        ",
-   "    .+@#########@+@        ",
-   "    .+@#@#@@@@@#@+@ $$     ",
-   "    .+@#########@+@ $%$    ",
-   "    .+@#@#@@@@@#@+@ $%$    ",
-   "    .+@#########@+@ $%&$   ",
-   "    .+@########$$$$$$%&$   ",
-   "    .+@@@@@@@@@$**=-%%&&$  ",
-   "    .+@++++@+++$**=-%%&&$  ",
-   "    .+@++++@+++$**=-%%&&;$ ",
-   "    .+@@@@@@@@@$**=-%%&&;$>",
-   "    .++++++++++$**=-%%&&$>>",
-   "    .+..+..+..+$**=-%%&&$> ",
-   "    .+..+..+..+$$$$$$%&$>> ",
-   "    .++++++++++>>>>>$%&$>  ",
-   "     @@@@@@@@@@@@@  $%$>>  ",
-   "                    $%$>   ",
-   "                    $$>>   ",
-   "                     >>    "
-};
 
    sync_only=FALSE;
    skip_plugins=FALSE;
@@ -2489,13 +1957,6 @@ char * xpm_backup[] = {
 
    gtk_window_set_default_size(GTK_WINDOW(window), pref_width, pref_height);
 
-#if 0
-   gtk_signal_connect(GTK_OBJECT(window), "focus_in_event",
-		      GTK_SIGNAL_FUNC(cb_focus), GINT_TO_POINTER(1));
-
-   gtk_signal_connect(GTK_OBJECT(window), "focus_out_event",
-		      GTK_SIGNAL_FUNC(cb_focus), GINT_TO_POINTER(0));
-#endif
 #if 0 /* removeme */
      {
 	GtkStyle *style;
@@ -2512,8 +1973,7 @@ char * xpm_backup[] = {
    }
 #endif
 
-   /* Set a handler for delete_event that immediately */
-   /* exits GTK. */
+   /* Set a handler for delete_event that immediately exits GTK. */
    gtk_signal_connect(GTK_OBJECT(window), "delete_event",
 		      GTK_SIGNAL_FUNC(cb_delete_event), NULL);
 
@@ -2544,18 +2004,6 @@ char * xpm_backup[] = {
 #ifdef ENABLE_GTK2
 #else
    gtk_menu_bar_set_shadow_type(GTK_MENU_BAR(menubar), GTK_SHADOW_NONE);
-#endif
-   /* GTK2 figure out how to do this */
-#if 0
-   gtk_paint_shadow(menubar->style, menubar->window,
-		    GTK_STATE_NORMAL, GTK_SHADOW_NONE,
-		    NULL, menubar, "menubar",
-		    0, 0, 0, 0);*/
-   gtk_widget_style_set(GTK_WIDGET(menubar),
-			"shadow_type", GTK_SHADOW_NONE,
-			NULL);
-   gtk_viewport_set_shadow_type(menubar,GTK_SHADOW_NONE);
-   menubar->style;
 #endif
 
    gtk_box_pack_start(GTK_BOX(main_vbox), g_hbox, TRUE, TRUE, 3);
@@ -2716,14 +2164,6 @@ char * xpm_backup[] = {
    gtk_widget_add_accelerator(button_sync, "clicked", accel_group, GDK_y,
 	   GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
-#ifdef FONT_TEST
-   /* Create "Font" button */
-   button = gtk_button_new_with_label(_("Font"));
-   gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_font), NULL);
-
-   gtk_box_pack_start(GTK_BOX(g_vbox0), button, FALSE, FALSE, 0);
-#endif
    /* Create "Backup" button in left column */
    button_backup = gtk_button_new();
    gtk_signal_connect(GTK_OBJECT(button_backup), "clicked",
@@ -2733,8 +2173,9 @@ char * xpm_backup[] = {
 		      : SYNC_FULL_BACKUP));
    gtk_box_pack_start(GTK_BOX(g_vbox0), button_backup, FALSE, FALSE, 3);
 
-   gtk_tooltips_set_tip(glob_tooltips, button_backup, _("Sync your palm to the desktop\n"
-			"and then do a backup"), NULL);
+   gtk_tooltips_set_tip(glob_tooltips, button_backup, 
+	                     _("Sync your palm to the desktop\n"
+		                    "and then do a backup"), NULL);
 
    /*Separator */
    separator = gtk_hseparator_new();
@@ -2822,7 +2263,7 @@ char * xpm_backup[] = {
    /* Create "locked" pixmap */
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
 					 &style->bg[GTK_STATE_NORMAL],
-					 xpm_locked);
+					 locked_xpm);
 #ifdef __APPLE__
    mask = NULL;
 #endif
@@ -2833,7 +2274,7 @@ char * xpm_backup[] = {
    /* Create "locked/masked" pixmap */
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
 					 &style->bg[GTK_STATE_NORMAL],
-					 xpm_locked_masked);
+					 locked_masked_xpm);
 #ifdef __APPLE__
    mask = NULL;
 #endif
@@ -2844,7 +2285,7 @@ char * xpm_backup[] = {
    /* Create "unlocked" pixmap */
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
 					 &style->bg[GTK_STATE_NORMAL],
-					 xpm_unlocked);
+					 unlocked_xpm);
 #ifdef __APPLE__
    mask = NULL;
 #endif
@@ -2855,7 +2296,7 @@ char * xpm_backup[] = {
    /* Create "sync" pixmap */
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
 					 &style->bg[GTK_STATE_NORMAL],
-					 xpm_sync);
+					 sync_xpm);
 #ifdef __APPLE__
    mask = NULL;
 #endif
@@ -2866,7 +2307,7 @@ char * xpm_backup[] = {
    /* Create "backup" pixmap */
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
 					 &style->bg[GTK_STATE_NORMAL],
-					 xpm_backup);
+					 backup_xpm);
 #ifdef __APPLE__
    mask = NULL;
 #endif
@@ -2916,16 +2357,7 @@ char * xpm_backup[] = {
    gdk_window_get_size(window->window, &w, &h);
    jp_logf(JP_LOG_DEBUG, "w=%d, h=%d\n", w, h);
 
-#ifdef FONT_TEST
-/*   f=gdk_fontset_load("-adobe-utopia-medium-r-normal-*-*-200-*-*-p-*-iso8859-1");
-   f=gdk_fontset_load("-adobe-utopia-bold-i-normal-*-*-100-*-*-p-*-iso8859-2");
-   SetFontRecursively(window, f);
-   SetFontRecursively2(window, "Sans 14");
-   SetFontRecursively2(menubar, "Sans 16");*/
-#endif
-#ifdef ALARMS
    alarms_init(skip_past_alarms, skip_all_alarms);
-#endif
 
 #ifdef ENABLE_GTK2
 {
@@ -2979,7 +2411,3 @@ char * xpm_backup[] = {
    return EXIT_SUCCESS;
 }
 
-static void sync_sig_handler (int sig)
-{
-    setup_sync (skip_plugins ? SYNC_NO_PLUGINS : 0);
-}
