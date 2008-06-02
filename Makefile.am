@@ -1,9 +1,9 @@
-# $Id: Makefile.am,v 1.56 2008/06/02 00:05:03 rikster5 Exp $
+# $Id: Makefile.am,v 1.57 2008/06/02 17:24:10 rikster5 Exp $
 
 SUBDIRS = Expense SyncTime KeyRing dialer m4 po icons docs empty
 
 EXTRA_DIST = config.rpath mkinstalldirs reconf autogen.sh \
-	intltool-extract.in intltool-merge.in intltool-update.in \
+	intltool-extract.in intltool-merge.in intltool-update.in gettext.h \
 	ChangeLog ChangeLog.cvs \
 	po/POTFILES \
 	po/jpilot.pot \

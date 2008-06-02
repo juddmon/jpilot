@@ -1,8 +1,8 @@
-# $Id: Makefile.am,v 1.7 2006/09/04 19:45:03 judd Exp $
+# $Id: Makefile.am,v 1.8 2008/06/02 17:24:10 rikster5 Exp $
 
 libdir = $(prefix)/lib/jpilot/plugins
 
-EXTRA_DIST = README.txt
+EXTRA_DIST = README
 
 if MAKE_KEYRING
 
