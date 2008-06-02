@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.146 2008/06/01 23:10:30 rikster5 Exp $ */
+/* $Id: utils.c,v 1.147 2008/06/02 00:09:28 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -3800,6 +3800,28 @@ void append_anni_years(char *desc, int max, struct tm *date,
 
    /* Append the number of years */
    sprintf(&desc[len], " (%d)", 1900 + date->tm_year - year);
+}
+
+/* Validate CSV header before import
+ * Current test merely checks for the correct number of fields in the header
+ * but does not check name, type, etc. h More tests could also be added
+ * to compare the jpilot version that produced the file with the jpilot
+ * version that is importing the file. */ 
+int verify_csv_header(const char *header, int num_fields, const char *file_name) 
+{
+   int i, comma_cnt;   
+
+   for (i=0, comma_cnt=0; i<strlen(header); i++) {
+      if (header[i] == ',') comma_cnt++; 
+   }
+   if (comma_cnt != num_fields-1) {
+      jp_logf(JP_LOG_WARN, "Incorrect header format for CSV import\n"
+			   "Check line 1 of file %s\n"
+			   "Aborting import\n" , file_name);
+      return EXIT_FAILURE;
+   } 
+
+   return EXIT_SUCCESS;
 }
 
 /* Get today's date and work out day in month. This is used to highlight

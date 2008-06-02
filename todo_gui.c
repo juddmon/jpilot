@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.131 2008/06/01 23:10:30 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.132 2008/06/02 00:09:28 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -46,6 +46,7 @@
 
 #define NUM_TODO_PRIORITIES 5
 #define NUM_TODO_CAT_ITEMS 16
+#define NUM_TODO_CSV_FIELDS 8
 #define CONNECT_SIGNALS 400
 #define DISCONNECT_SIGNALS 401
 
@@ -433,8 +434,10 @@ int cb_todo_import(GtkWidget *parent_window, const char *file_path, int type)
    /* CSV */
    if (type==IMPORT_TYPE_CSV) {
       jp_logf(JP_LOG_DEBUG, "Todo import CSV [%s]\n", file_path);
-      /* Skip the first line which contains the format */
+      /* Get the first line containing the format and check for reasonableness */
       fgets(text, sizeof(text), in);
+      ret = verify_csv_header(text, NUM_TODO_CSV_FIELDS, file_path);
+      if (EXIT_FAILURE == ret) return EXIT_FAILURE;
 
       import_all=FALSE;
       while (1) {

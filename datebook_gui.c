@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.169 2008/06/01 23:10:30 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.170 2008/06/02 00:09:28 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -79,6 +79,7 @@ static int DB_APPT_COLUMN=3;
 #endif
 
 #define NUM_DATEBOOK_CAT_ITEMS 16
+#define NUM_DBOOK_CSV_FIELDS 19
 
 #define DATEBOOK_MAX_COLUMN_LEN 80
 
@@ -390,8 +391,10 @@ int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int type)
    /* CSV */
    if (type==IMPORT_TYPE_CSV) {
       jp_logf(JP_LOG_DEBUG, "Datebook import CSV [%s]\n", file_path);
-      /* Skip the first line which contains the format */
+      /* Get the first line containing the format and check for reasonableness */
       fgets(text, sizeof(text), in);
+      ret = verify_csv_header(text, NUM_DBOOK_CSV_FIELDS, file_path);
+      if (EXIT_FAILURE == ret) return EXIT_FAILURE;
 
       import_all=FALSE;
       while (1) {

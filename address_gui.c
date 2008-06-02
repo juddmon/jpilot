@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.204 2008/06/01 23:10:30 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.205 2008/06/02 00:09:28 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -62,6 +62,8 @@
 
 #define ADDRESS_MAX_CLIST_NAME 30
 #define ADDRESS_MAX_COLUMN_LEN 80
+#define NUM_CONT_CSV_FIELDS 56
+#define NUM_ADDR_CSV_FIELDS 27
 
 /* Size of photo to display in Jpilot.  Actual photo can be larger */
 #define PHOTO_X_SZ 139
@@ -605,9 +607,14 @@ int cb_addr_import(GtkWidget *parent_window, const char *file_path, int type)
          p_cai = &address_app_info.category;
       }
       
-      /* Skip the first line which is solely format */
-      /* TODO: put in a small amount of error checking code to verify that file look okay */
+      /* Get the first line containing the format and check for reasonableness */
       fgets(text, sizeof(text), in);
+      if (address_version) {
+	 ret = verify_csv_header(text, NUM_CONT_CSV_FIELDS, file_path);
+      } else {
+	 ret = verify_csv_header(text, NUM_ADDR_CSV_FIELDS, file_path);
+      }
+      if (EXIT_FAILURE == ret) return EXIT_FAILURE;
 
       import_all=FALSE;
       while (1) {

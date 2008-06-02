@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.62 2008/06/01 18:52:53 rikster5 Exp $ */
+/* $Id: utils.h,v 1.63 2008/06/02 00:09:28 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -374,6 +374,8 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
 		      char *text, struct CategoryAppInfo *cai,
 		      char *old_cat_name,
 		      int priv, int suggested_cat_num, int *new_cat_num);
+
+int verify_csv_header(const char *header, int num_fields, const char *file_name);
 
 /* could be in dat.h or import.h */
 #define DAT_TYPE_INTEGER 1

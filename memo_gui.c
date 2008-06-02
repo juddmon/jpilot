@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.117 2008/06/01 23:10:30 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.118 2008/06/02 00:09:28 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -47,6 +47,8 @@
 
 #define CONNECT_SIGNALS 400
 #define DISCONNECT_SIGNALS 401
+
+#define NUM_MEMO_CSV_FIELDS 3
 
 /* Keeps track of whether code is using Memo, or Memos database
  * 0 is Memo, 1 is Memos */
@@ -340,8 +342,10 @@ int cb_memo_import(GtkWidget *parent_window, const char *file_path, int type)
    /* CSV */
    if (type==IMPORT_TYPE_CSV) {
       jp_logf(JP_LOG_DEBUG, "Memo import CSV [%s]\n", file_path);
-      /* Skip the first line which contains the format */
+      /* Get the first line containing the format and check for reasonableness */
       fgets(text, sizeof(text), in);
+      ret = verify_csv_header(text, NUM_MEMO_CSV_FIELDS, file_path);
+      if (EXIT_FAILURE == ret) return EXIT_FAILURE;
 
       import_all=FALSE;
       while (1) {
