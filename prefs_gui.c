@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.62 2008/06/03 01:08:57 rikster5 Exp $ */
+/* $Id: prefs_gui.c,v 1.63 2008/06/03 15:28:21 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -975,10 +975,12 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_box_pack_start(GTK_BOX(vbox_alarms), label, FALSE, FALSE, 0);
 #else
    label = gtk_label_new(_("%D (description substitution) is disabled in this build"));
+   gtk_widget_set_sensitive(label, FALSE);
    gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
    gtk_box_pack_start(GTK_BOX(vbox_alarms), label, FALSE, FALSE, 0);
 
    label = gtk_label_new(_("%N (note substitution) is disabled in this build"));
+   gtk_widget_set_sensitive(label, FALSE);
    gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
    gtk_box_pack_start(GTK_BOX(vbox_alarms), label, FALSE, FALSE, 0);
 #endif
