@@ -1,4 +1,4 @@
-/* $Id: synctime.c,v 1.11 2006/09/28 22:01:37 rikster5 Exp $ */
+/* $Id: synctime.c,v 1.12 2008/06/03 01:04:40 rikster5 Exp $ */
 
 /*******************************************************************************
  * synctime.c
@@ -21,15 +21,13 @@
  ******************************************************************************/
 
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
 #include <time.h>
 
 #include <pi-dlp.h>
-#include <pi-source.h>
-#include "libplugin.h"
 
-#include "../i18n.h"
+#include "libplugin.h"
+#include "i18n.h"
 
 void plugin_version(int *major_version, int *minor_version)
 {
@@ -40,13 +38,13 @@ void plugin_version(int *major_version, int *minor_version)
 int plugin_get_name(char *name, int len)
 {
    strncpy(name, "SyncTime 0.99", len);
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int plugin_get_help_name(char *name, int len)
 {
    g_snprintf(name, len, _("About %s"), _("SyncTime"));
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int plugin_help(char **text, int *width, int *height)
@@ -63,7 +61,7 @@ int plugin_help(char **text, int *width, int *height)
 	   );
    *height = 0;
    *width = 0;
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int plugin_sync(int sd)
@@ -87,7 +85,7 @@ int plugin_sync(int sd)
       if ((minorVersion==30) || (minorVersion==25)) {
 	 jp_logf(JP_LOG_GUI, _("synctime: Palm OS Version 3.25 and 3.30 do not support SyncTime\n"));
 	 jp_logf(JP_LOG_GUI, _("synctime: NOT setting the time on the pilot\n"));
-	 return 1;
+	 return EXIT_FAILURE;
       }
    }
 
@@ -98,5 +96,5 @@ int plugin_sync(int sd)
    
    jp_logf(JP_LOG_GUI, _("Done\n"));
 
-   return 0;
+   return EXIT_SUCCESS;
 }
