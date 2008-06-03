@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.169 2008/06/03 01:02:53 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.170 2008/06/03 23:47:00 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -2281,15 +2281,15 @@ int main(int argc, char *argv[])
       int ret;
       char text[1000];
 
-      g_strlcpy(text, 
+      g_snprintf(text, sizeof(text),
          _("J-Pilot uses the GTK2 graphical toolkit. "
            "This version of the toolkit uses UTF-8 to encode characters.\n"
-           "You should select a UTF-8 charset so that you can see non-ASCII characters (accents for example).\n\n"), sizeof(text));
-      g_strlcat(text, 
-		          _("Go to the menu \"File/Preferences\" and change the \"Character Set\"."), 
-					 sizeof(text));
+           "You should select a UTF-8 charset so that you can see non-ASCII characters (accents for example).\n"
+           "\n"
+           /* Coded to reuse existing i18n strings */
+           "Go to the menu \"%s\" and change the \"%s\"."), _("/File/Preferences"), _("Character Set"));
       ret = dialog_generic(GTK_WINDOW(window),
-         _("Select a UTF-8 encoding"), DIALOG_QUESTION, text, 3, button_text);
+            _("Select a UTF-8 encoding"), DIALOG_QUESTION, text, 3, button_text);
 
       switch (ret) {
        case DIALOG_SAID_1: 
