@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.134 2008/06/03 01:02:53 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.135 2008/06/03 01:25:55 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -49,11 +49,6 @@
 #define NUM_TODO_CSV_FIELDS 8
 #define CONNECT_SIGNALS 400
 #define DISCONNECT_SIGNALS 401
-
-#ifndef max
-#  define max(a,b) (((a) > (b)) ? (a) : (b))
-#endif
-
 
 /* Keeps track of whether code is using ToDo, or Tasks database
  * 0 is ToDo, 1 is Tasks */
@@ -619,7 +614,7 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
    GList *list, *temp_list;
    FILE *out;
    struct stat statb;
-   int i, r, len1, len2;
+   int i, r;
    const char *short_date;
    time_t ltime;
    struct tm *now = NULL;
@@ -629,7 +624,7 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
    char date_string[1024];
    char str1[256], str2[256];
    char pref_time[40];
-   char *csv_text;
+   char csv_text[65550];
    char *p;
    char username[256];
    char hostname[256];
@@ -709,20 +704,6 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
       }
       switch (type) {
        case EXPORT_TYPE_CSV:
-	 len1=len2=0;
-	 if (mtodo->todo.description) {
-	    len1=strlen(mtodo->todo.description) * 2 + 4;
-	 }
-	 if (mtodo->todo.note) {
-	    len2=strlen(mtodo->todo.note) * 2 + 4;
-	 }
-         len1 = max(len1, len2);
-	 if (len1<256) len1=256;
-	 csv_text=malloc(len1);
-	 if (!csv_text) {
-	    continue;
-	    jp_logf(JP_LOG_WARN, _("Can't export todo %d\n"), (long) temp_list->data + 1);
-	 }
 	 utf = charset_p2newj(todo_app_info.category.name[mtodo->attrib & 0x0F], 16, char_set);
 	 fprintf(out, "\"%s\",", utf);
 	 g_free(utf);
@@ -748,7 +729,6 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 } else {
 	    fprintf(out, "\"\",");
 	 }
-	 free(csv_text);
 	 break;
 
        case EXPORT_TYPE_TEXT:

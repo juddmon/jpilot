@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.120 2008/06/03 01:02:53 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.121 2008/06/03 01:25:55 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -507,7 +507,7 @@ void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
    char str1[256], str2[256];
    char date_string[1024];
    char pref_time[40];
-   char *csv_text;
+   char csv_text[65550];
    long char_set;
    char *utf;
 
@@ -582,18 +582,12 @@ void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	    len=strlen(mmemo->memo.text) * 2 + 4;
 	 }
 	 if (len<256) len=256;
-	 csv_text=malloc(len);
-	 if (!csv_text) {
-	    continue;
-	    jp_logf(JP_LOG_WARN, _("Can't export memo %d\n"), (long) temp_list->data + 1);
-	 }
 	 utf = charset_p2newj(memo_app_info.category.name[mmemo->attrib & 0x0F], 16, char_set);
 	 fprintf(out, "\"%s\",", utf);
 	 g_free(utf);
 	 fprintf(out, "\"%s\",", (mmemo->attrib & dlpRecAttrSecret) ? "1":"0");
 	 str_to_csv_str(csv_text, mmemo->memo.text);
 	 fprintf(out, "\"%s\"\n", csv_text);
-	 free(csv_text);
 	 break;
 
        case EXPORT_TYPE_TEXT:
