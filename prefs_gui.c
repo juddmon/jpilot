@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.61 2008/06/03 01:02:53 rikster5 Exp $ */
+/* $Id: prefs_gui.c,v 1.62 2008/06/03 01:08:57 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -716,6 +716,16 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 		   PREF_DATEBOOK_HIGHLIGHT_DAYS, vbox_datebook,
 		   cb_checkbox_set_pref);
 
+    /* Highlight today on month and week view */
+    add_checkbutton(_("Annotate today in day, week, and month views"),
+ 		   PREF_DATEBOOK_HI_TODAY, vbox_datebook, cb_checkbox_set_pref);
+ 
+    /* Show number of years on anniversaries in month and week view */
+    add_checkbutton(
+ 	_("Append years on anniversaries in day, week, and month views"),
+ 	PREF_DATEBOOK_ANNI_YEARS, vbox_datebook,
+ 	cb_checkbox_set_pref);
+
 #ifdef ENABLE_DATEBK
    /* Show use DateBk check box */
    add_checkbutton(_("Use DateBk note tags"),
@@ -726,16 +736,6 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_box_pack_start(GTK_BOX(vbox_datebook), checkbutton, FALSE, FALSE, 0);
    gtk_widget_show(checkbutton);
 #endif
-
-    /* Highlight today on month and week view */
-    add_checkbutton(_("Annotate today in day, week, and month views"),
- 		   PREF_DATEBOOK_HI_TODAY, vbox_datebook, cb_checkbox_set_pref);
- 
-    /* Show number of years on anniversaries in month and week view */
-    add_checkbutton(
- 	_("Append years on anniversaries in day, week, and month views"),
- 	PREF_DATEBOOK_ANNI_YEARS, vbox_datebook,
- 	cb_checkbox_set_pref);
  
 
    /**********************************************************************/
