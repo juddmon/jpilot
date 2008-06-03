@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.66 2008/06/03 01:02:53 rikster5 Exp $ */
+/* $Id: utils.h,v 1.67 2008/06/03 03:23:15 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -562,7 +562,8 @@ int make_category_menu(GtkWidget **category_menu,
 		       struct sorted_cats *sort_l,
 		       void (*selection_callback)
 		       (GtkWidget *item, int selection),
-		       int add_an_all_item);
+		       int add_an_all_item,
+		       int add_edit_cat_item);
 
 void multibyte_safe_strncpy(char *dst, char *src, size_t len);
 char *multibyte_safe_memccpy(char *dst, const char *src, int c, size_t len);

@@ -1,4 +1,4 @@
-/* $Id: export_gui.c,v 1.22 2008/06/03 01:02:53 rikster5 Exp $ */
+/* $Id: export_gui.c,v 1.23 2008/06/03 03:23:15 rikster5 Exp $ */
 
 /*******************************************************************************
  * export_gui.c
@@ -282,7 +282,7 @@ int export_gui(GtkWidget *main_window,
 
    /* Put the export category menu up */
    make_category_menu(&category_menu, cat_menu_item, sort_l,
-		      cb_export_category, TRUE);
+		      cb_export_category, TRUE, FALSE);
    gtk_box_pack_start(GTK_BOX(vbox), category_menu, FALSE, FALSE, 0);
 
    /* Put the record list window up */

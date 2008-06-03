@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.135 2008/06/03 01:25:55 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.136 2008/06/03 03:23:15 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -67,8 +67,8 @@ static struct tm due_date;
 static GtkWidget *due_date_button;
 static GtkWidget *todo_no_due_date_checkbox;
 static GtkWidget *radio_button_todo[NUM_TODO_PRIORITIES];
-/* We need an extra one for the ALL category */
-static GtkWidget *todo_cat_menu_item1[NUM_TODO_CAT_ITEMS+1];
+/* Need two extra slots for the ALL category and Edit Categories... */
+static GtkWidget *todo_cat_menu_item1[NUM_TODO_CAT_ITEMS+2];
 static GtkWidget *todo_cat_menu_item2[NUM_TODO_CAT_ITEMS];
 static GtkWidget *new_record_button;
 static GtkWidget *apply_record_button;
@@ -100,6 +100,7 @@ static void connect_changed_signals(int con_or_dis);
 static int todo_find();
 static void cb_add_new_record(GtkWidget *widget, gpointer data);
 int todo_get_details(struct ToDo *new_todo, unsigned char *attrib);
+static void cb_edit_cats(GtkWidget *widget, gpointer data);
 
 
 static void init()
@@ -976,7 +977,11 @@ static void cb_category(GtkWidget *item, int selection)
 	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
       }
 
-      todo_category = selection;
+      if (selection==NUM_TODO_CAT_ITEMS+1) {
+         cb_edit_cats(item, NULL);
+      } else {
+         todo_category = selection;
+      }
       clist_row_selected = 0;
       jp_logf(JP_LOG_DEBUG, "todo_category = %d\n",todo_category);
       todo_clear_details();
@@ -1940,7 +1945,6 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    GtkWidget *hbox_temp;
    GtkWidget *separator;
    GtkWidget *label;
-   GtkWidget *button;
    time_t ltime;
    struct tm *now;
    char str[MAX_RADIO_BUTTON_LEN];
@@ -2026,14 +2030,8 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    /*Put the left-hand category menu up */
    make_category_menu(&category_menu1, todo_cat_menu_item1,
-		      sort_l, cb_category, TRUE);
+		      sort_l, cb_category, TRUE, TRUE);
    gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu1, TRUE, TRUE, 0);
-
-   /* Edit category button */
-   button = gtk_button_new_with_label(_("Edit Categories"));
-   gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_edit_cats), NULL);
-   gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
 
    /*Put the todo list window up */
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
@@ -2214,7 +2212,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    /*Put the right-hand category menu up */
    make_category_menu(&category_menu2, todo_cat_menu_item2,
-		      sort_l, NULL, FALSE);
+		      sort_l, NULL, FALSE, FALSE);
 
    gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu2, TRUE, TRUE, 0);
 

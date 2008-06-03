@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.207 2008/06/03 01:02:53 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.208 2008/06/03 03:23:15 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -173,8 +173,8 @@ int address_phone_label_selected[NUM_PHONE_ENTRIES];
 int address_type_selected[NUM_ADDRESSES];
 int IM_type_selected[NUM_IMS];
 
-/* We need an extra one for the ALL category */
-static GtkWidget *address_cat_menu_item1[NUM_ADDRESS_CAT_ITEMS+1];
+/* Need two extra slots for the ALL category and Edit Categories... */
+static GtkWidget *address_cat_menu_item1[NUM_ADDRESS_CAT_ITEMS+2];
 static GtkWidget *address_cat_menu_item2[NUM_ADDRESS_CAT_ITEMS];
 static GtkWidget *category_menu1;
 static GtkWidget *category_menu2;
@@ -231,6 +231,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 			       gint           column,
 			       GdkEventButton *event,
 			       gpointer       data);
+static void cb_edit_cats(GtkWidget *widget, gpointer data);
 
 static void init()
 {
@@ -2152,7 +2153,11 @@ static void cb_category(GtkWidget *item, int selection)
 	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
       }
 
-      address_category = selection;
+      if (selection==NUM_ADDRESS_CAT_ITEMS+1) {
+         cb_edit_cats(item, NULL);
+      } else {
+         address_category = selection;
+      }
       clist_row_selected = 0;
       jp_logf(JP_LOG_DEBUG, "address_category = %d\n",address_category);
       address_update_clist(clist, category_menu1, &glob_contact_list,
@@ -3646,14 +3651,8 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    /* Put the category menu up */
    make_category_menu(&category_menu1, address_cat_menu_item1,
-		      sort_l, cb_category, TRUE);
+		      sort_l, cb_category, TRUE, TRUE);
    gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu1, TRUE, TRUE, 0);
-
-   /* Edit category button */
-   button = gtk_button_new_with_label(_("Edit Categories"));
-   gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_edit_cats), NULL);
-   gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
 
    /* Put the address list window up */
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
@@ -3796,7 +3795,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    /*Add the new category menu */
    make_category_menu(&category_menu2, address_cat_menu_item2,
-		      sort_l, NULL, FALSE);
+		      sort_l, NULL, FALSE, FALSE);
 
    gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu2, TRUE, TRUE, 0);
 

@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.121 2008/06/03 01:25:55 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.122 2008/06/03 03:23:15 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -65,8 +65,8 @@ static GtkWidget *clist;
 static GtkWidget *memo_text;
 static GObject   *memo_text_buffer;
 static GtkWidget *private_checkbox;
-/*Need one extra for the ALL category */
-static GtkWidget *memo_cat_menu_item1[NUM_MEMO_CAT_ITEMS+1];
+/* Need two extra slots for the ALL category and Edit Categories... */
+static GtkWidget *memo_cat_menu_item1[NUM_MEMO_CAT_ITEMS+2];
 static GtkWidget *memo_cat_menu_item2[NUM_MEMO_CAT_ITEMS];
 static GtkWidget *category_menu1;
 static GtkWidget *category_menu2;
@@ -92,6 +92,7 @@ int memo_get_details(struct Memo *new_memo, unsigned char *attrib);
 static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 			      MemoList **memo_list, int category, int main);
 static void cb_add_new_record(GtkWidget *widget, gpointer data);
+static void cb_edit_cats(GtkWidget *widget, gpointer data);
 
 static void set_new_button_to(int new_state)
 {
@@ -778,7 +779,11 @@ static void cb_category(GtkWidget *item, int selection)
 	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
       }
 
-      memo_category = selection;
+      if (selection==NUM_MEMO_CAT_ITEMS+1) {
+         cb_edit_cats(item, NULL);
+      } else {
+         memo_category = selection;
+      }
       clist_row_selected = 0;
       jp_logf(JP_LOG_DEBUG, "cb_category() cat=%d\n", memo_category);
       memo_clear_details();
@@ -1389,7 +1394,6 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    GtkWidget *scrolled_window;
    GtkWidget *vbox1, *vbox2, *hbox_temp;
    GtkWidget *separator;
-   GtkWidget *button;
    long ivalue;
    GtkAccelGroup *accel_group;
    long char_set;
@@ -1470,15 +1474,8 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    /* Put the left-hand category menu up */
    make_category_menu(&category_menu1, memo_cat_menu_item1,
-		      sort_l, cb_category, TRUE);
+		      sort_l, cb_category, TRUE, TRUE);
    gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu1, TRUE, TRUE, 0);
-
-
-   /* Edit category button */
-   button = gtk_button_new_with_label(_("Edit Categories"));
-   gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_edit_cats), NULL);
-   gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
 
    /* Put the memo list window up */
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
@@ -1572,7 +1569,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    /*Put the right-hand category menu up */
    make_category_menu(&category_menu2, memo_cat_menu_item2,
-		      sort_l, NULL, FALSE);
+		      sort_l, NULL, FALSE, FALSE);
    gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu2, TRUE, TRUE, 0);
 
 

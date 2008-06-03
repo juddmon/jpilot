@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.149 2008/06/03 01:02:53 rikster5 Exp $ */
+/* $Id: utils.c,v 1.150 2008/06/03 03:23:15 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -3233,7 +3233,8 @@ int make_category_menu(GtkWidget **category_menu,
 		       struct sorted_cats *sort_l,
 		       void (*selection_callback)
 		       (GtkWidget *item, int selection),
-		       int add_an_all_item)
+		       int add_an_all_item,
+		       int add_edit_cat_item)
 {
    GtkWidget *menu;
    GSList    *group;
@@ -3257,6 +3258,7 @@ int make_category_menu(GtkWidget **category_menu,
       gtk_widget_show(cat_menu_item[0]);
       offset=1;
    }
+
    for (i=0; i<NUM_CAT_ITEMS; i++) {
       if (sort_l[i].Pcat[0]) {
 	 cat_menu_item[i+offset] = gtk_radio_menu_item_new_with_label(
@@ -3269,6 +3271,18 @@ int make_category_menu(GtkWidget **category_menu,
 	 gtk_menu_append(GTK_MENU(menu), cat_menu_item[i+offset]);
 	 gtk_widget_show(cat_menu_item[i+offset]);
       }
+   }
+
+   if (add_edit_cat_item) {
+      cat_menu_item[i+offset] = gtk_radio_menu_item_new_with_label(group, 
+                                   _("Edit Categories..."));
+      if (selection_callback) {
+         gtk_signal_connect(GTK_OBJECT(cat_menu_item[i+offset]), "activate",
+                            GTK_SIGNAL_FUNC(selection_callback), GINT_TO_POINTER(i+offset));
+      }
+      group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(cat_menu_item[i+offset]));
+      gtk_menu_append(GTK_MENU(menu), cat_menu_item[i+offset]);
+      gtk_widget_show(cat_menu_item[i+offset]);
    }
 
    gtk_option_menu_set_menu(GTK_OPTION_MENU(*category_menu), menu);
