@@ -1,4 +1,4 @@
-/* $Id: print_gui.c,v 1.18 2008/06/01 23:10:30 rikster5 Exp $ */
+/* $Id: print_gui.c,v 1.19 2008/06/03 01:02:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * print_gui.c
@@ -333,21 +333,13 @@ int print_gui(GtkWidget *main_window, int app, int date_button, int mon_week_day
    gtk_button_box_set_spacing(GTK_BUTTON_BOX(hbox), 6);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 0);
 
-#ifdef ENABLE_GTK2
    button = gtk_button_new_from_stock(GTK_STOCK_PRINT);
-#else
-   button = gtk_button_new_with_label(_("Print"));
-#endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_print), window);
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
 
    /* Create a "Quit" button */
-#ifdef ENABLE_GTK2
    button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
-#else
-   button = gtk_button_new_with_label(_("Cancel"));
-#endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_cancel), window);
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);

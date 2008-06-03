@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.73 2008/06/01 19:02:59 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.74 2008/06/03 01:02:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -105,9 +105,7 @@ static GtkWidget *entry_name;
 static GtkWidget *entry_account;
 static GtkWidget *entry_password;
 static GtkWidget *keyr_note;
-#ifdef ENABLE_GTK2
 static GObject	 *keyr_note_buffer;
-#endif
 static GtkWidget *menu_category1;
 static GtkWidget *menu_category2;
 static int old_category;
@@ -726,13 +724,8 @@ static void connect_changed_signals(int con_or_dis)
                          GINT_TO_POINTER(PASSWD_FLAG));
       gtk_signal_connect(GTK_OBJECT(date_button), "pressed",
 			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-#ifdef ENABLE_GTK2
       g_signal_connect(keyr_note_buffer, "changed",
 			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-#else
-      gtk_signal_connect(GTK_OBJECT(keyr_note), "changed",
-			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-#endif
    }
    
    /* DISCONNECT */
@@ -757,13 +750,8 @@ static void connect_changed_signals(int con_or_dis)
                                     GINT_TO_POINTER(PASSWD_FLAG));
       gtk_signal_disconnect_by_func(GTK_OBJECT(date_button),
 				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-#ifdef ENABLE_GTK2
       g_signal_handlers_disconnect_by_func(keyr_note_buffer,
 				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-#else
-      gtk_signal_disconnect_by_func(GTK_OBJECT(keyr_note),
-				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-#endif
    }
 }
 
@@ -911,14 +899,7 @@ static int keyr_clear_details()
    gtk_entry_set_text(GTK_ENTRY(entry_name), "");
    gtk_entry_set_text(GTK_ENTRY(entry_account), "");
    gtk_entry_set_text(GTK_ENTRY(entry_password), "");
-#ifdef ENABLE_GTK2
    gtk_text_buffer_set_text(GTK_TEXT_BUFFER(keyr_note_buffer), "", -1);
-#else
-   gtk_text_freeze(GTK_TEXT(keyr_note));
-   gtk_text_backward_delete(GTK_TEXT(keyr_note),
-			    gtk_text_get_length(GTK_TEXT(keyr_note)));
-   gtk_text_thaw(GTK_TEXT(keyr_note));
-#endif
    if (keyr_category==CATEGORY_ALL) 
       new_cat = 0;
    else 
@@ -946,10 +927,8 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    int new_size;
    int flag;
    struct MyKeyRing *mkr;
-#ifdef ENABLE_GTK2
    GtkTextIter start_iter;
    GtkTextIter end_iter;
-#endif
    int i;
    unsigned int unique_id;
 
@@ -978,12 +957,8 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    /* Put the glob_date in the lastChanged part of the record */
    memcpy(&(kr.last_changed), &glob_date, sizeof(struct tm));
    
-#ifdef ENABLE_GTK2
    gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(keyr_note_buffer),&start_iter,&end_iter);
    kr.note = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(keyr_note_buffer),&start_iter,&end_iter,TRUE);
-#else
-   kr.note = (char *)gtk_editable_get_chars(GTK_EDITABLE(keyr_note), 0, -1);
-#endif
 
    /* TODO: Fixed memory leak here with strdup and not freeing kr
     *       by adding calls to free after pack_KeyRing
@@ -1368,23 +1343,13 @@ static void cb_clist_selection(GtkWidget      *clist,
    memcpy(&glob_date, &(mkr->kr.last_changed), sizeof(struct tm));
    update_date_button(date_button, &(mkr->kr.last_changed));
 
-#ifdef ENABLE_GTK2
    gtk_text_buffer_set_text(GTK_TEXT_BUFFER(keyr_note_buffer), "", -1);
-#else
-   gtk_text_set_point(GTK_TEXT(keyr_note), 0);
-   gtk_text_forward_delete(GTK_TEXT(keyr_note),
-			   gtk_text_get_length(GTK_TEXT(keyr_note)));
-#endif
 
    if (mkr->kr.note) {
       temp_str = malloc((len = strlen(mkr->kr.note)*2+1));
       multibyte_safe_strncpy(temp_str, mkr->kr.note, len);
       jp_charset_p2j(temp_str, len);
-#ifdef ENABLE_GTK2
       gtk_text_buffer_set_text(GTK_TEXT_BUFFER(keyr_note_buffer), temp_str, -1);
-#else
-      gtk_text_insert(GTK_TEXT(keyr_note), NULL,NULL,NULL, temp_str, -1);
-#endif
       free(temp_str);
    }
 
@@ -1407,13 +1372,8 @@ static void cb_category(GtkWidget *item, unsigned int selection)
 
       /* remember the previously used category */
       for (old_category=0; old_category<NUM_KEYRING_CAT_ITEMS; old_category++) {
-#ifdef ENABLE_GTK2
 	 if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menu_item_category1[old_category])))
 	   break;
-#else
-	 if (GTK_CHECK_MENU_ITEM(menu_item_category1[old_category])->active)
-	   break;
-#endif
       }
 
       keyr_category = selection;
@@ -1605,9 +1565,7 @@ static int dialog_password(GtkWindow *main_window,
 
    hbox1 = gtk_hbox_new(FALSE, 2);
    gtk_container_add(GTK_CONTAINER(dialog), hbox1);
-#ifdef ENABLE_GTK2
    gtk_box_pack_start(GTK_BOX(hbox1), gtk_image_new_from_stock(GTK_STOCK_DIALOG_AUTHENTICATION, GTK_ICON_SIZE_DIALOG), FALSE, FALSE, 2);
-#endif
 
    vbox1 = gtk_vbox_new(FALSE, 2);
 
@@ -1644,21 +1602,13 @@ static int dialog_password(GtkWindow *main_window,
    gtk_box_pack_start(GTK_BOX(vbox1), hbox1, FALSE, FALSE, 2);
 
    /* Buttons */
-#ifdef ENABLE_GTK2
    button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
-#else
-   button = gtk_button_new_with_label(_("Cancel"));
-#endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_dialog_button),
 		      GINT_TO_POINTER(DIALOG_SAID_1));
    gtk_box_pack_start(GTK_BOX(hbox1), button, FALSE, FALSE, 1);
 
-#ifdef ENABLE_GTK2
    button = gtk_button_new_from_stock(GTK_STOCK_OK);
-#else
-   button = gtk_button_new_with_label(_("OK"));
-#endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_dialog_button),
 		      GINT_TO_POINTER(DIALOG_SAID_2));
@@ -2042,19 +1992,11 @@ int plugin_gui_cleanup() {
    {
       /* Remove the accelerators */
 #ifndef ENABLE_STOCK_BUTTONS
-#ifdef ENABLE_GTK2
       gtk_window_remove_accel_group(GTK_WINDOW(gtk_widget_get_toplevel(pane)), accel_group);
-#else
-      gtk_accel_group_detach(accel_group, GTK_OBJECT(gtk_widget_get_toplevel(pane)));
-#endif
 #endif
 
       /* Record the position of the window pane to restore later */
-#ifdef ENABLE_GTK2
       set_pref(PREF_KEYRING_PANE, gtk_paned_get_position(GTK_PANED(pane)), NULL, TRUE);
-#else
-      set_pref(PREF_KEYRING_PANE, GTK_PANED(pane)->handle_xpos, NULL, TRUE);
-#endif
 
       pane = NULL;
    }
@@ -2074,9 +2016,6 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    GtkWidget *hbox_temp;
    GtkWidget *button;
    GtkWidget *label;
-#ifndef ENABLE_GTK2
-   GtkWidget *vscrollbar;
-#endif
    GtkWidget *table;
    GtkWindow *w;
    GtkWidget *separator;
@@ -2140,7 +2079,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
 
    pane = gtk_hpaned_new();
    get_pref(PREF_KEYRING_PANE, &ivalue, NULL);
-   gtk_paned_set_position(GTK_PANED(pane), ivalue + PANE_CREEP);
+   gtk_paned_set_position(GTK_PANED(pane), ivalue);
 
    gtk_box_pack_start(GTK_BOX(hbox), pane, TRUE, TRUE, 5);
 
@@ -2156,11 +2095,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    /* Make accelerators for some buttons window */
 #ifndef ENABLE_STOCK_BUTTONS
    accel_group = gtk_accel_group_new();
-#ifdef ENABLE_GTK2
    gtk_window_add_accel_group(GTK_WINDOW(gtk_widget_get_toplevel(vbox)), accel_group);
-#else
-   gtk_accel_group_attach(accel_group, GTK_OBJECT(gtk_widget_get_toplevel(vbox)));
-#endif
 #endif
 
    /* Make the menus */
@@ -2329,7 +2264,6 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    hbox_temp = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, TRUE, TRUE, 0);
 
-#ifdef ENABLE_GTK2
    keyr_note = gtk_text_view_new();
    keyr_note_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(keyr_note)));
    gtk_text_view_set_editable(GTK_TEXT_VIEW(keyr_note), TRUE);
@@ -2341,14 +2275,6 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 1);
    gtk_container_add(GTK_CONTAINER(scrolled_window), keyr_note);
    gtk_box_pack_start_defaults(GTK_BOX(hbox_temp), scrolled_window);
-#else
-   keyr_note = gtk_text_new(NULL, NULL);
-   gtk_text_set_editable(GTK_TEXT(keyr_note), TRUE);
-   gtk_text_set_word_wrap(GTK_TEXT(keyr_note), TRUE);
-   vscrollbar = gtk_vscrollbar_new(GTK_TEXT(keyr_note)->vadj);
-   gtk_box_pack_start(GTK_BOX(hbox_temp), keyr_note, TRUE, TRUE, 0);
-   gtk_box_pack_start(GTK_BOX(hbox_temp), vscrollbar, FALSE, FALSE, 0);
-#endif
 
    /**********************************************************************/
 

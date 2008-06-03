@@ -1,13 +1,9 @@
 /* #define FONT_TEST */
 #ifdef FONT_TEST
-# ifndef ENABLE_GTK2
-   GdkFont *f;
-# endif
 #endif
 
 #ifdef FONT_TEST
 
-# ifdef ENABLE_GTK2
 void SetFontRecursively2(GtkWidget *widget, gpointer data)
 {
    GtkStyle *style;
@@ -24,35 +20,12 @@ void SetFontRecursively2(GtkWidget *widget, gpointer data)
       gtk_container_foreach(GTK_CONTAINER(widget), SetFontRecursively2, font_desc);
    }
 }
-# else
-void SetFontRecursively(GtkWidget *widget, gpointer data)
-{
-   GtkStyle *style;
-   GdkFont *f;
-
-   f = (GdkFont *)data;
-
-   style = gtk_widget_get_style(widget);
-   gtk_widget_set_style(widget, style);
-   if (GTK_IS_CONTAINER(widget)) {
-      gtk_container_foreach(GTK_CONTAINER(widget), SetFontRecursively, f);
-   }
-}
-# endif
 void font_selection_ok(GtkWidget *w, GtkFontSelectionDialog *fs)
 {
    gchar *s = gtk_font_selection_dialog_get_font_name(fs);
 
-# ifndef ENABLE_GTK2
-   GdkFont *f;
-# endif
 
-# ifdef ENABLE_GTK2
    SetFontRecursively2(window, s);
-# else
-   f=gdk_fontset_load(s);
-   SetFontRecursively(window, f);
-# endif
 
    g_free(s);
    gtk_widget_destroy(GTK_WIDGET(fs));

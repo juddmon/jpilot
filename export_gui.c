@@ -1,4 +1,4 @@
-/* $Id: export_gui.c,v 1.21 2008/06/01 23:10:30 rikster5 Exp $ */
+/* $Id: export_gui.c,v 1.22 2008/06/03 01:02:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * export_gui.c
@@ -341,20 +341,12 @@ int export_gui(GtkWidget *main_window,
    gtk_button_box_set_spacing(GTK_BUTTON_BOX(hbox), 6);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
-#ifdef ENABLE_GTK2
    button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
-#else
-   button = gtk_button_new_with_label(_("Cancel"));
-#endif
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_export_quit), export_window);
 
-#ifdef ENABLE_GTK2
    button = gtk_button_new_from_stock(GTK_STOCK_OK);
-#else
-   button = gtk_button_new_with_label(_("OK"));
-#endif
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_ok), export_window);

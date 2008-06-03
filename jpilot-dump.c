@@ -1,4 +1,4 @@
-/* $Id: jpilot-dump.c,v 1.26 2007/10/03 13:33:21 rousseau Exp $ */
+/* $Id: jpilot-dump.c,v 1.27 2008/06/03 01:02:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot-dump.c
@@ -52,9 +52,7 @@
 #include "prefs.h"
 
 #include "i18n.h"
-#ifdef ENABLE_GTK2
 #   include "otherconv.h"
-#endif
 
 /********************************* Constants **********************************/
 /* Uncomment for more debug output */
@@ -116,7 +114,6 @@ int sync_once(void *sync_info) { return EXIT_SUCCESS; }
 /* convert from UTF8 to local encoding */
 void utf8_to_local(char *str)
 {
-#ifdef ENABLE_GTK2
    char *local_buf;
    
    if (str == NULL)
@@ -128,7 +125,6 @@ void utf8_to_local(char *str)
       g_strlcpy(str, local_buf, strlen(str)+1);
       free(local_buf);
    }
-#endif
 }
 
 /* Parse the string and replace dangerous characters with spaces */
@@ -1259,12 +1255,10 @@ int main(int argc, char *argv[])
    pref_init();
    pref_read_rc_file();
 
-#ifdef ENABLE_GTK2
    if (otherconv_init()) {
       printf("Error: could not set encoding\n");
       return EXIT_FAILURE;
    }
-#endif
 
    /* dump selected database */
    if (dumpD) {
@@ -1288,9 +1282,7 @@ int main(int argc, char *argv[])
    }
 
    /* clean up */
-#ifdef ENABLE_GTK2
    otherconv_free();
-#endif
 
    return EXIT_SUCCESS;
 }

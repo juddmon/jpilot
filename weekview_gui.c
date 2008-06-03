@@ -1,4 +1,4 @@
-/* $Id: weekview_gui.c,v 1.39 2008/06/02 00:17:40 rikster5 Exp $ */
+/* $Id: weekview_gui.c,v 1.40 2008/06/03 01:02:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * weekview_gui.c
@@ -38,9 +38,7 @@ extern int glob_app;
 GtkWidget *weekview_window=NULL;
 static GtkWidget *glob_dow_labels[8];
 static GtkWidget *glob_week_texts[8];
-#ifdef ENABLE_GTK2
 static GObject   *glob_week_text_buffers[8];
-#endif
 static struct tm glob_week_date;
 
 /* Function prototypes */
@@ -91,11 +89,7 @@ void freeze_weeks_appts()
    int i;
 
    for (i=0; i<8; i++) {
-#ifdef ENABLE_GTK2
       gtk_widget_freeze_child_notify(glob_week_texts[i]);
-#else
-      gtk_text_freeze(GTK_TEXT(glob_week_texts[i]));
-#endif
    }
 }
 
@@ -104,11 +98,7 @@ void thaw_weeks_appts()
    int i;
 
    for (i=0; i<8; i++) {
-#ifdef ENABLE_GTK2
       gtk_widget_thaw_child_notify(glob_week_texts[i]);
-#else
-      gtk_text_thaw(GTK_TEXT(glob_week_texts[i]));
-#endif
    }
 }
 
@@ -132,19 +122,11 @@ static void cb_week_move(GtkWidget *widget, gpointer data)
 int clear_weeks_appts(GtkWidget **day_texts)
 {
    int i;
-#ifdef ENABLE_GTK2
    GObject   *text_buffer;
-#endif
 
    for (i=0; i<8; i++) {
-#ifdef ENABLE_GTK2
       text_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(day_texts[i])));
       gtk_text_buffer_set_text(GTK_TEXT_BUFFER(text_buffer), "", -1);
-#else
-      gtk_text_set_point(GTK_TEXT(day_texts[i]), 0);
-      gtk_text_forward_delete(GTK_TEXT(day_texts[i]),
-			      gtk_text_get_length(GTK_TEXT(day_texts[i])));
-#endif
    }
    return EXIT_SUCCESS;
 }
@@ -177,10 +159,8 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
    long use_db3_tags;
    struct db4_struct db4;
 #endif
-#ifdef ENABLE_GTK2
    GObject *text_buffer;
    char    *markup_str;
-#endif
 
    a_list = NULL;
    text = day_texts;
@@ -201,7 +181,6 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
 
       g_snprintf(str, sizeof(str), "%s %s", str_dow, short_date);
 
-#ifdef ENABLE_GTK2
       if (date.tm_mday == now_today)
       {
 	 markup_str = g_markup_printf_escaped("<b>%s</b>", str);
@@ -212,13 +191,6 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
       }
       gtk_label_set_markup(GTK_LABEL(glob_dow_labels[i]), markup_str);
       g_free(markup_str);
-#else
-      if (date.tm_mday == now_today)
-      {
-	 g_snprintf(str, sizeof(str), "%s%s", str, _(" (TODAY)"));
-      }
-      gtk_label_set_text(GTK_LABEL(glob_dow_labels[i]), str);
-#endif
 
    }
 
@@ -261,12 +233,8 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
 	    append_anni_years(desc, 62, &date, &temp_al->mappt.appt);
 
 	    strcat(desc, "\n");
-#ifdef ENABLE_GTK2
 	    text_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text[n])));
 	    gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(text_buffer),desc,-1);
-#else
-	    gtk_text_insert(GTK_TEXT(text[n]), NULL, NULL, NULL, desc, -1);
-#endif
 	 }
       }
    }
@@ -297,9 +265,6 @@ static void cb_enter_selected_day(GtkWidget *widget,
 void weekview_gui(struct tm *date_in)
 {
    GtkWidget *button;
-#ifndef ENABLE_GTK2
-   GtkWidget *arrow;
-#endif
    GtkWidget *align;
    GtkWidget *vbox, *hbox;
    GtkWidget *hbox_temp;
@@ -349,24 +314,14 @@ void weekview_gui(struct tm *date_in)
    gtk_container_add(GTK_CONTAINER(align), hbox_temp);
 
    /*Make a left arrow for going back a week */
-#ifdef ENABLE_GTK2
    button = gtk_button_new_from_stock(GTK_STOCK_GO_BACK);
-#else
-   button = gtk_button_new();
-   arrow = gtk_arrow_new(GTK_ARROW_LEFT, GTK_SHADOW_OUT);
-   gtk_container_add(GTK_CONTAINER(button), arrow);
-#endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_week_move),
 		      GINT_TO_POINTER(-1));
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
 
    /* Create a "Close" button */
-#ifdef ENABLE_GTK2
    button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
-#else
-   button = gtk_button_new_with_label(_("Close"));
-#endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_weekview_quit), NULL);
    /* Closing the window via a delete event uses the same cleanup routine */
@@ -376,23 +331,13 @@ void weekview_gui(struct tm *date_in)
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
 
    /* Create a "Print" button */
-#ifdef ENABLE_GTK2
    button = gtk_button_new_from_stock(GTK_STOCK_PRINT);
-#else
-   button = gtk_button_new_with_label(_("Print"));
-#endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_week_print), weekview_window);
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
 
    /*Make a right arrow for going forward a week */
-#ifdef ENABLE_GTK2
    button = gtk_button_new_from_stock(GTK_STOCK_GO_FORWARD);
-#else
-   button = gtk_button_new();
-   arrow = gtk_arrow_new(GTK_ARROW_RIGHT, GTK_SHADOW_OUT);
-   gtk_container_add(GTK_CONTAINER(button), arrow);
-#endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_week_move),
 		      GINT_TO_POINTER(1));
@@ -415,7 +360,6 @@ void weekview_gui(struct tm *date_in)
    for (i=0; i<8; i++) {
       glob_dow_labels[i] = gtk_label_new("");
       gtk_misc_set_alignment(GTK_MISC(glob_dow_labels[i]), 0.0, 0.5);
-#ifdef ENABLE_GTK2
       glob_week_texts[i] = gtk_text_view_new();
       glob_week_text_buffers[i] = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(glob_week_texts[i])));
       gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(glob_week_texts[i]), FALSE);
@@ -425,9 +369,6 @@ void weekview_gui(struct tm *date_in)
       gtk_text_buffer_create_tag(GTK_TEXT_BUFFER(glob_week_text_buffers[i]),
 				 "gray_background", "background", "gray",
 			         NULL);
-#else
-      glob_week_texts[i] = gtk_text_new(NULL, NULL);
-#endif
       gtk_widget_set_usize(GTK_WIDGET(glob_week_texts[i]), 10, 10);
       gtk_signal_connect(GTK_OBJECT(glob_week_texts[i]), "button_release_event",
 			 GTK_SIGNAL_FUNC(cb_enter_selected_day),

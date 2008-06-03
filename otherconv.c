@@ -1,4 +1,4 @@
-/* $Id: otherconv.c,v 1.29 2008/05/06 00:11:52 rikster5 Exp $ */
+/* $Id: otherconv.c,v 1.30 2008/06/03 01:02:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * otherconv.c
@@ -30,7 +30,6 @@
 #include "config.h"
 #include <string.h>
 
-#ifdef ENABLE_GTK2
 #include <stdio.h>
 #include <errno.h>
 #include <stdlib.h>
@@ -301,16 +300,4 @@ void UTF_to_other(char *const buf, int buf_len)
 #endif
 }
 
-#else
-
-char *other_to_UTF(const char *buf, int buf_len)
-{
-	return strdup(buf);
-}
-
-void UTF_to_other(char *const buf, int buf_len)
-{
-}
-
-#endif
 

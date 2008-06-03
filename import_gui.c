@@ -1,4 +1,4 @@
-/* $Id: import_gui.c,v 1.25 2008/06/01 23:10:30 rikster5 Exp $ */
+/* $Id: import_gui.c,v 1.26 2008/06/03 01:02:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * import_gui.c
@@ -254,11 +254,7 @@ void import_gui(GtkWidget *main_window, GtkWidget *main_pane,
    gdk_window_get_size(main_window->window, &pw, &ph);
    gdk_window_get_root_origin(main_window->window, &px, &py);
 
-#ifdef ENABLE_GTK2
    pw = gtk_paned_get_position(GTK_PANED(main_pane));
-#else
-   pw = GTK_PANED(main_pane)->handle_xpos;
-#endif
    px+=40;
 
    g_snprintf(title, sizeof(title), "%s %s", PN, _("Import"));
@@ -300,11 +296,7 @@ void import_gui(GtkWidget *main_window, GtkWidget *main_pane,
    gtk_widget_show(label);
 
 
-#ifdef ENABLE_GTK2
    button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
-#else
-   button = gtk_button_new_with_label(_("Done"));
-#endif
    gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->ok_button->parent),
 		      button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button),
@@ -342,13 +334,8 @@ void import_gui(GtkWidget *main_window, GtkWidget *main_pane,
 
    /* This callback is for a file guess algorithm and to pre-push
     * the type buttons */
-#ifdef ENABLE_GTK2
    gtk_signal_connect(GTK_OBJECT(GTK_FILE_SELECTION(filew)->file_list),
 		      "cursor_changed", GTK_SIGNAL_FUNC(cb_import_select_row), NULL);
-#else
-   gtk_signal_connect(GTK_OBJECT(GTK_CLIST(GTK_FILE_SELECTION(filew)->file_list)),
-		      "select_row", GTK_SIGNAL_FUNC(cb_import_select_row), NULL);
-#endif
 
    gtk_widget_show_all(vbox);
 
@@ -385,15 +372,9 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
    GtkWidget *vbox;
    GtkWidget *temp_hbox;
    GtkWidget *textw;
-#ifdef ENABLE_GTK2
    GObject   *textw_buffer;
-#endif
    GtkWidget *label;
-#ifdef ENABLE_GTK2
    GtkWidget *scrolled_window;
-#else
-   GtkWidget *vscrollbar;
-#endif
    int pw, ph;
    gint px, py;
    char str[100];
@@ -410,11 +391,7 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
 
    gdk_window_get_root_origin(main_window->window, &px, &py);
 
-#ifdef ENABLE_GTK2
    pw = gtk_paned_get_position(GTK_PANED(pane));
-#else
-   pw = GTK_PANED(pane)->handle_xpos;
-#endif
    px+=40;
 
    import_record_ask_window = gtk_widget_new(GTK_TYPE_WINDOW,
@@ -468,7 +445,6 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
    temp_hbox = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox), temp_hbox, TRUE, TRUE, 0);
 
-#ifdef ENABLE_GTK2
    textw = gtk_text_view_new();
    textw_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(textw)));
    gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(textw), FALSE);
@@ -481,21 +457,9 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 1);
    gtk_container_add(GTK_CONTAINER(scrolled_window), textw);
    gtk_box_pack_start_defaults(GTK_BOX(temp_hbox), scrolled_window);
-#else
-   textw = gtk_text_new(NULL, NULL);
-   gtk_text_set_editable(GTK_TEXT(textw), FALSE);
-   gtk_text_set_word_wrap(GTK_TEXT(textw), TRUE);
-   vscrollbar = gtk_vscrollbar_new(GTK_TEXT(textw)->vadj);
-   gtk_box_pack_start(GTK_BOX(temp_hbox), textw, TRUE, TRUE, 0);
-   gtk_box_pack_start(GTK_BOX(temp_hbox), vscrollbar, FALSE, FALSE, 0);
-#endif
 
    if (text) {
-#ifdef ENABLE_GTK2
       gtk_text_buffer_set_text(GTK_TEXT_BUFFER(textw_buffer), text, -1);
-#else
-      gtk_text_insert(GTK_TEXT(textw), NULL, NULL, NULL, text, -1);
-#endif
    }
 
    /* Box for buttons  */
@@ -526,11 +490,7 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
 		      GINT_TO_POINTER(DIALOG_SAID_IMPORT_SKIP));
 
    /* Quit button */
-#ifdef ENABLE_GTK2
    button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
-#else
-   button = gtk_button_new_with_label(_("Close"));
-#endif
    gtk_box_pack_start(GTK_BOX(temp_hbox), button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_import_record_ask_quit),

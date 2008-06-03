@@ -1,4 +1,4 @@
-/* $Id: install_gui.c,v 1.24 2008/05/25 09:46:20 rousseau Exp $ */
+/* $Id: install_gui.c,v 1.25 2008/06/03 01:02:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * install_gui.c
@@ -319,33 +319,21 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y)
    gtk_widget_show(label);
 
 
-#ifdef ENABLE_GTK2
    button = gtk_button_new_from_stock(GTK_STOCK_ADD);
-#else
-   button = gtk_button_new_with_label(_("Add"));
-#endif
    gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->ok_button->parent),
 		      button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button),
 		      "clicked", GTK_SIGNAL_FUNC(cb_add), filew);
    gtk_widget_show(button);
 
-#ifdef ENABLE_GTK2
    button = gtk_button_new_from_stock(GTK_STOCK_REMOVE);
-#else
-   button = gtk_button_new_with_label(_("Remove"));
-#endif
    gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->ok_button->parent),
 		      button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button),
 		      "clicked", GTK_SIGNAL_FUNC(cb_remove), filew);
    gtk_widget_show(button);
 
-#ifdef ENABLE_GTK2
    button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
-#else
-   button = gtk_button_new_with_label(_("Close"));
-#endif
    gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->ok_button->parent),
 		      button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button),

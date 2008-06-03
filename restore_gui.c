@@ -1,4 +1,4 @@
-/* $Id: restore_gui.c,v 1.24 2008/06/01 23:10:30 rikster5 Exp $ */
+/* $Id: restore_gui.c,v 1.25 2008/06/03 01:02:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * restore_gui.c
@@ -168,7 +168,6 @@ static int populate_clist_sub(char *path, int check_for_dups, int check_exts)
 	 }
 
 	 row_text[0]=dirent->d_name;
-#ifdef ENABLE_GTK2
 	 {
 	    gchar *utf8_text;
 
@@ -184,9 +183,6 @@ static int populate_clist_sub(char *path, int check_for_dups, int check_exts)
 	    gtk_clist_append(GTK_CLIST(restore_clist), row_text);
 	    g_free(utf8_text);
 	 }
-#else
-	 gtk_clist_append(GTK_CLIST(restore_clist), row_text);
-#endif
 	 num++;
       }
       closedir(dir);
@@ -317,20 +313,12 @@ int restore_gui(GtkWidget *main_window, int w, int h, int x, int y)
    gtk_button_box_set_spacing(GTK_BUTTON_BOX(hbox), 6);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
-#ifdef ENABLE_GTK2
    button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
-#else
-   button = gtk_button_new_with_label(_("Cancel"));
-#endif
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_restore_quit), restore_window);
 
-#ifdef ENABLE_GTK2
    button = gtk_button_new_from_stock(GTK_STOCK_OK);
-#else
-   button = gtk_button_new_with_label(_("OK"));
-#endif
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_restore_ok), restore_window);

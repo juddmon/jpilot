@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.148 2008/06/02 03:43:02 rikster5 Exp $ */
+/* $Id: utils.c,v 1.149 2008/06/03 01:02:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -153,11 +153,7 @@ void get_compile_options(char *string, int len)
 	      _("no"),
 #endif
 	      _("GTK2 support"),
-#ifdef ENABLE_GTK2
 	      _("yes")
-#else
-	      _("no")
-#endif
 	      );
 }
 
@@ -1150,9 +1146,7 @@ void remove_cr_lfs(char *str)
 void lstrncpy_remove_cr_lfs(char *dest, char *src, int len)
 {
    int i;
-#ifdef ENABLE_GTK2
    gchar* end;
-#endif
 
    if ((!src) || (!dest)) {
       return;
@@ -1171,11 +1165,9 @@ void lstrncpy_remove_cr_lfs(char *dest, char *src, int len)
       dest[i]='\0';
    }
 
-#ifdef ENABLE_GTK2
    /* truncate the string on an UTF-8 character boundary */
    if (!g_utf8_validate(dest, -1, (const gchar **)&end))
      *end = 0;
-#endif
 }
 
 /*
@@ -1255,11 +1247,9 @@ void set_fg_rgb_clist_cell(GtkWidget *clist, int row, int col, int r, int g, int
 
 void entry_set_multiline_truncate(GtkEntry *entry, gboolean value)
 {
-#ifdef ENABLE_GTK2
 #  if GTK_MINOR_VERSION >= 10
       entry->truncate_multiline = value; 
 #  endif
-#endif
 }
 
 /*returns 0 if not found, 1 if found */
@@ -1650,11 +1640,7 @@ int cal_dialog(GtkWindow *main_window,
 
 
    /* Bottom Buttons */
-#ifdef ENABLE_GTK2
    button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
-#else
-   button = gtk_button_new_with_label(_("Cancel"));
-#endif
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button), "clicked", GTK_SIGNAL_FUNC(cb_quit),
 		      GINT_TO_POINTER(CAL_CANCEL));
@@ -1664,11 +1650,7 @@ int cal_dialog(GtkWindow *main_window,
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_today), cal);
 
-#ifdef ENABLE_GTK2
    button = gtk_button_new_from_stock(GTK_STOCK_OK);
-#else
-   button = gtk_button_new_with_label(_("OK"));
-#endif
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button), "clicked", GTK_SIGNAL_FUNC(cb_quit),
 		      GINT_TO_POINTER(CAL_DONE));
@@ -1729,10 +1711,8 @@ int dialog_generic(GtkWindow *main_window,
    GtkWidget *button, *label1;
    GtkWidget *hbox1, *vbox1, *vbox2;
    int i;
-#ifdef ENABLE_GTK2
    GtkWidget *image;
    char *markup;
-#endif
 
    /* This gdk function call is required in order to avoid a GTK
     * error which causes X and the mouse pointer to lock up.
@@ -1763,7 +1743,6 @@ int dialog_generic(GtkWindow *main_window,
    hbox1 = gtk_hbox_new(FALSE, 2);
    gtk_container_add(GTK_CONTAINER(vbox1), hbox1);
    gtk_container_set_border_width(GTK_CONTAINER(hbox1), 12);
-#ifdef ENABLE_GTK2
    switch(type)
    {
       case DIALOG_INFO:
@@ -1783,22 +1762,15 @@ int dialog_generic(GtkWindow *main_window,
    }
    if (image)
       gtk_box_pack_start(GTK_BOX(hbox1), image, FALSE, FALSE, 2);
-#endif
 
    vbox2 = gtk_vbox_new(FALSE, 5);
    gtk_container_set_border_width(GTK_CONTAINER(vbox2), 5);
    gtk_box_pack_start(GTK_BOX(hbox1), vbox2, FALSE, FALSE, 2);
 
    label1 = gtk_label_new(NULL);
-#ifdef ENABLE_GTK2
    markup = g_markup_printf_escaped("<b><big>%s</big></b>\n\n%s", title, text);
    gtk_label_set_markup(GTK_LABEL(label1), markup);
    g_free(markup);
-#else
-   gtk_window_set_title(GTK_WINDOW(glob_dialog), title);
-   gtk_label_set_text(GTK_LABEL(label1), text);
-   gtk_label_set_justify(GTK_LABEL(label1), GTK_JUSTIFY_LEFT);
-#endif
    gtk_box_pack_start(GTK_BOX(vbox2), label1, FALSE, FALSE, 2);
 
    hbox1 = gtk_hbutton_box_new();
@@ -1809,7 +1781,6 @@ int dialog_generic(GtkWindow *main_window,
    gtk_box_pack_start(GTK_BOX(vbox1), hbox1, FALSE, FALSE, 2);
 
    for (i=0; i < nob; i++) {
-#ifdef ENABLE_GTK2
       if (0 == strcmp("OK", button_text[i]))
 	 button = gtk_button_new_from_stock(GTK_STOCK_OK);
       else
@@ -1822,7 +1793,6 @@ int dialog_generic(GtkWindow *main_window,
 	       if (0 == strcmp("No", button_text[i]))
 		  button = gtk_button_new_from_stock(GTK_STOCK_NO);
 	       else
-#endif
       button = gtk_button_new_with_label(_(button_text[i]));
       gtk_signal_connect(GTK_OBJECT(button), "clicked",
 			 GTK_SIGNAL_FUNC(cb_dialog_button),
@@ -3632,7 +3602,6 @@ size_t jp_strftime(char *s, size_t max, const char *format, const struct tm *tm)
 {
    size_t ret;
 
-#ifdef ENABLE_GTK2
    gchar *utf8_text;
    gchar *local_format;
 
@@ -3645,9 +3614,6 @@ size_t jp_strftime(char *s, size_t max, const char *format, const struct tm *tm)
    utf8_text = g_locale_to_utf8 (s, -1, NULL, NULL, NULL);
    g_strlcpy(s, utf8_text, max);
    g_free(utf8_text);
-#else
-   ret = strftime(s, max, format, tm);
-#endif
    return ret;
 }
 
@@ -3736,56 +3702,4 @@ int get_highlighted_today(struct tm *date)
    return now_tm->tm_mday;
 }
 
-#ifndef ENABLE_GTK2
-/*	$OpenBSD: strlcpy.c,v 1.8 2003/06/17 21:56:24 millert Exp $	*/
-
-/*
- * Copyright (c) 1998 Todd C. Miller <Todd.Miller@courtesan.com>
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
-
-#include <sys/types.h>
-#include <string.h>
-
-/*
- * Copy src to string dst of size siz.  At most siz-1 characters
- * will be copied.  Always NUL terminates (unless siz == 0).
- * Returns strlen(src); if retval >= siz, truncation occurred.
- */
-size_t g_strlcpy(char *dst, const char *src, size_t siz)
-{
-	char *d = dst;
-	const char *s = src;
-	size_t n = siz;
-
-	/* Copy as many bytes as will fit */
-	if (n != 0 && --n != 0) {
-		do {
-			if ((*d++ = *s++) == 0)
-				break;
-		} while (--n != 0);
-	}
-
-	/* Not enough room in dst, add NUL and traverse rest of src */
-	if (n == 0) {
-		if (siz != 0)
-			*d = '\0';		/* NUL-terminate dst */
-		while (*s++)
-			;
-	}
-
-	return(s - src - 1);	/* count does not include NUL */
-}
-#endif
 

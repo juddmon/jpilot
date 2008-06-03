@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.168 2008/06/02 01:27:26 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.169 2008/06/03 01:02:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -44,9 +44,7 @@
 
 #include "utils.h"
 #include "i18n.h"
-#ifdef ENABLE_GTK2
 #  include "otherconv.h"
-#endif
 #include "libplugin.h"
 #include "datebook.h"
 #include "address.h"
@@ -95,12 +93,8 @@ GtkTooltips *glob_tooltips;
 gint glob_date_timer_tag;
 pid_t glob_child_pid;
 pid_t jpilot_master_pid;
-#ifdef ENABLE_GTK2
 GtkTextView *g_output_text;
 static GtkTextBuffer *g_output_text_buffer;
-#else
-GtkText *g_output_text;
-#endif
 GtkWidget *window;
 static GtkWidget *output_pane;
 int glob_app = 0;
@@ -763,23 +757,17 @@ void output_to_pane(const char *str)
 {
    int w, h, new_y;
    long ivalue;
-#ifdef ENABLE_GTK2
    GtkWidget *pane_hbox;
    GtkRequisition size_requisition;
-#endif
 
    /* Adjust window height to user preference or minimum size */
    get_pref(PREF_OUTPUT_HEIGHT, &ivalue, NULL);
    /* Make them look at something if output happens */
    if (ivalue < 50) {
-#  ifdef ENABLE_GTK2
       /* Ask GTK for size which is just large enough to show both buttons */
       pane_hbox = gtk_paned_get_child2(GTK_PANED(output_pane));
       gtk_widget_size_request(pane_hbox, &size_requisition);
       ivalue = size_requisition.height + 1;
-#  else
-      ivalue = 50;
-#  endif
       set_pref(PREF_OUTPUT_HEIGHT, ivalue, NULL, TRUE);
    }
    gdk_window_get_size(window->window, &w, &h);
@@ -787,7 +775,6 @@ void output_to_pane(const char *str)
    gtk_paned_set_position(GTK_PANED(output_pane), new_y);
 
    /* Output text to window */
-#ifdef ENABLE_GTK2
    GtkTextIter end_iter;
    GtkTextMark *end_mark;
    gboolean scroll_to_end = FALSE;
@@ -826,10 +813,6 @@ void output_to_pane(const char *str)
       gtk_text_view_scroll_to_mark(g_output_text, end_mark, 0, TRUE, 0.0, 0.0);
       gtk_text_buffer_delete_mark(g_output_text_buffer, end_mark);
    }
-#else
-   /* Nothing fancy is done for GTK1 */
-   gtk_text_insert(g_output_text, NULL, NULL, NULL, str, -1);
-#endif
 }
 
 static void cb_read_pipe_from_child(gpointer data,
@@ -1024,9 +1007,7 @@ void cb_about(GtkWidget *widget, gpointer data)
    gdk_window_get_size(window->window, &w, &h);
 
    w = w/2;
-#ifdef ENABLE_GTK2
    h = 1;
-#endif
 
    g_snprintf(about, sizeof(about), _("About %s"), PN);
 
@@ -1149,7 +1130,6 @@ void cb_install_gui(GtkWidget *widget, gpointer data)
    install_gui_and_size(window);
 }
 
-#ifdef ENABLE_GTK2
 #include <gdk-pixbuf/gdk-pixdata.h>
 
 guint8 *get_inline_pixbuf_data(const char **xpm_icon_data, gint icon_size)
@@ -1181,20 +1161,14 @@ guint8 *get_inline_pixbuf_data(const char **xpm_icon_data, gint icon_size)
 
    return data;
 }
-#endif
 
 void get_main_menu(GtkWidget  *my_window,
 		   GtkWidget **menubar,
 		   GList *plugin_list)
 /* Some of this code was copied from the gtk_tut.txt file */
 {
-#ifdef ENABLE_GTK2
 #define ICON(icon) "<StockItem>", icon
 #define ICON_XPM(icon, size) "<ImageItem>", get_inline_pixbuf_data(icon, size)
-#else
-#define ICON(icon) NULL
-#define ICON_XPM(icon, size) NULL
-#endif
 
   GtkItemFactoryEntry menu_items1[]={
   { _("/_File"),                           NULL,         NULL,           0,                  "<Branch>", NULL },
@@ -1434,11 +1408,7 @@ void get_main_menu(GtkWidget  *my_window,
    gtk_item_factory_create_items(item_factory, nmenu_items, menu_items2, NULL);
 
    /* Attach the new accelerator group to the window. */
-#ifdef ENABLE_GTK2
    gtk_window_add_accel_group(GTK_WINDOW(my_window), accel_group);
-#else
-   gtk_accel_group_attach(accel_group, GTK_OBJECT(my_window));
-#endif
 
    if (menubar) {
       /* Finally, return the actual menu bar created by the item factory. */
@@ -1534,17 +1504,9 @@ void cb_output(GtkWidget *widget, gpointer data)
    flags=GPOINTER_TO_INT(data);
 
    if ((flags==OUTPUT_MINIMIZE) || (flags==OUTPUT_RESIZE)) {
-#ifdef ENABLE_GTK2
       jp_logf(JP_LOG_DEBUG,"paned pos = %d\n", gtk_paned_get_position(GTK_PANED(output_pane)));
-#else
-      jp_logf(JP_LOG_DEBUG,"paned pos = %d\n", GTK_PANED(output_pane)->handle_ypos);
-#endif
       gdk_window_get_size(window->window, &w, &h);
-#ifdef ENABLE_GTK2
       output_height = (h - gtk_paned_get_position(GTK_PANED(output_pane)));
-#else
-      output_height = (h - GTK_PANED(output_pane)->handle_ypos);
-#endif
       set_pref(PREF_OUTPUT_HEIGHT, output_height, NULL, TRUE);
       if (flags==OUTPUT_MINIMIZE) {
 	 gtk_paned_set_position(GTK_PANED(output_pane), h);
@@ -1552,14 +1514,7 @@ void cb_output(GtkWidget *widget, gpointer data)
       jp_logf(JP_LOG_DEBUG,"output height = %d\n", output_height);
    }
    if (flags==OUTPUT_CLEAR) {
-#ifdef ENABLE_GTK2
       gtk_text_buffer_set_text(g_output_text_buffer, "", -1);
-#else
-      gtk_text_set_point(g_output_text,
-			 gtk_text_get_length(g_output_text));
-      gtk_text_backward_delete(g_output_text,
-			       gtk_text_get_length(g_output_text));
-#endif
    }
 }
 
@@ -1578,22 +1533,6 @@ static gint cb_output2(GtkWidget *widget, GdkEventButton *event, gpointer data)
    return EXIT_SUCCESS;
 }
 
-#ifndef ENABLE_GTK2
-void jp_window_iconify(GtkWidget *window)
-{
-   GdkWindow * w;
-   Display *display;
-
-   g_return_if_fail(window != NULL);
-
-   w = window->window;
-
-   display = GDK_WINDOW_XDISPLAY(w);
-   XIconifyWindow(display,
-		  GDK_WINDOW_XWINDOW(w),
-		  DefaultScreen(display));
-}
-#endif
 
 
 gint cb_check_version(gpointer main_window)
@@ -1630,23 +1569,15 @@ int main(int argc, char *argv[])
    GtkWidget *temp_vbox;
    GtkWidget *button_datebook,*button_address,*button_todo,*button_memo;
    GtkWidget *button;
-#ifndef ENABLE_GTK2
-   GtkWidget *arrow;
-#endif
    GtkWidget *separator;
    GtkStyle *style;
    GdkBitmap *mask;
    GtkWidget *pixmapwid;
    GdkPixmap *pixmap;
    GtkWidget *menubar;
-#ifdef ENABLE_GTK2
    GtkWidget *scrolled_window;
-#else
-   GtkWidget *vscrollbar;
-#endif
 	GtkAccelGroup *accel_group;
 /* Extract first day of week preference from locale in GTK2 */
-#ifdef ENABLE_GTK2
    int   pref_fdow = 0;
 #  ifdef HAVE__NL_TIME_FIRST_WEEKDAY
       char *langinfo;
@@ -1658,7 +1589,6 @@ int main(int argc, char *argv[])
       char *week_start;
 #    endif
 #  endif
-#endif
    unsigned char skip_past_alarms;
    unsigned char skip_all_alarms;
    int filedesc[2];
@@ -1723,7 +1653,6 @@ int main(int argc, char *argv[])
 
    /* Extract first day of week preference from locale in GTK2 */
 
-#  ifdef ENABLE_GTK2
 #     ifdef HAVE__NL_TIME_FIRST_WEEKDAY
 	 /* GTK 2.8 libraries */
          langinfo = nl_langinfo(_NL_TIME_FIRST_WEEKDAY);
@@ -1755,15 +1684,12 @@ int main(int argc, char *argv[])
 	 pref_fdow = 0;
 
       set_pref_possibility(PREF_FDOW, pref_fdow, TRUE);
-#  endif
 
 
-#ifdef ENABLE_GTK2
    if (otherconv_init()) {
       printf("Error: could not set encoding\n");
       return EXIT_FAILURE;
    }
-#endif
 
    w = h = x = y = bit_mask = 0;
 
@@ -1823,10 +1749,8 @@ int main(int argc, char *argv[])
    /* Enable UTF8 *AFTER* potential printf to stdout for -h or -v */
    /* Not all terminals(xterm, rxvt, etc.) are UTF8 compliant */
 #if defined(ENABLE_NLS)
-# ifdef ENABLE_GTK2
    /* generate UTF-8 strings from gettext() & _() */
    bind_textdomain_codeset(EPN, "UTF-8");
-# endif
 #endif
 
    /*Check to see if ~/.jpilot is there, or create it */
@@ -1996,11 +1920,9 @@ int main(int argc, char *argv[])
      }
 #endif
 
-#ifdef ENABLE_GTK2
    if (iconify) {
       gtk_window_iconify(GTK_WINDOW(window));
    }
-#endif
 
    /* Set a handler for delete_event that immediately exits GTK. */
    gtk_signal_connect(GTK_OBJECT(window), "delete_event",
@@ -2030,10 +1952,6 @@ int main(int argc, char *argv[])
    get_main_menu(window, &menubar, NULL);
 #endif
    gtk_box_pack_start(GTK_BOX(main_vbox), menubar, FALSE, FALSE, 0);
-#ifdef ENABLE_GTK2
-#else
-   gtk_menu_bar_set_shadow_type(GTK_MENU_BAR(menubar), GTK_SHADOW_NONE);
-#endif
 
    gtk_box_pack_start(GTK_BOX(main_vbox), g_hbox, TRUE, TRUE, 3);
    gtk_container_set_border_width(GTK_CONTAINER(g_hbox), 10);
@@ -2048,7 +1966,6 @@ int main(int argc, char *argv[])
    gtk_container_set_border_width(GTK_CONTAINER(temp_vbox), 6);
    gtk_box_pack_end(GTK_BOX(temp_hbox), temp_vbox, FALSE, FALSE, 0);
 
-#ifdef ENABLE_GTK2
    g_output_text = GTK_TEXT_VIEW(gtk_text_view_new());
    g_output_text_buffer = gtk_text_view_get_buffer(g_output_text);
    gtk_text_view_set_cursor_visible(g_output_text, FALSE);
@@ -2061,33 +1978,14 @@ int main(int argc, char *argv[])
 
    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(g_output_text));
    gtk_box_pack_start_defaults(GTK_BOX(temp_hbox), scrolled_window);
-#else
-   g_output_text = GTK_TEXT(gtk_text_new(NULL, NULL));
-   gtk_text_set_editable(g_output_text, FALSE);
-   gtk_text_set_word_wrap(g_output_text, TRUE);
-   vscrollbar = gtk_vscrollbar_new(g_output_text->vadj);
-   gtk_box_pack_start(GTK_BOX(temp_hbox), GTK_WIDGET(g_output_text), TRUE, TRUE, 0);
-   gtk_box_pack_start(GTK_BOX(temp_hbox), vscrollbar, FALSE, FALSE, 0);
-#endif
 
-#ifdef ENABLE_GTK2
    button = gtk_button_new_from_stock(GTK_STOCK_CLEAR);
-#else
-   button = gtk_button_new_with_label(_("Clear"));
-#endif
    gtk_box_pack_start(GTK_BOX(temp_vbox), button, TRUE, TRUE, 3);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_output),
 		      GINT_TO_POINTER(OUTPUT_CLEAR));
 
-#ifdef ENABLE_GTK2
    button = gtk_button_new_from_stock(GTK_STOCK_REMOVE);
-#else
-   /* button = gtk_button_new_with_label(_("Minimize")); */
-   button = gtk_button_new();
-   arrow = gtk_arrow_new(GTK_ARROW_DOWN, GTK_SHADOW_OUT);
-   gtk_container_add(GTK_CONTAINER(button), arrow);
-#endif
    gtk_box_pack_start(GTK_BOX(temp_vbox), button, TRUE, TRUE, 3);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_output),
@@ -2152,35 +2050,20 @@ int main(int argc, char *argv[])
    gtk_box_pack_start(GTK_BOX(g_vbox0), button_locked_masked, FALSE, FALSE, 20);
    gtk_box_pack_start(GTK_BOX(g_vbox0), button_unlocked, FALSE, FALSE, 20);
 
-#ifdef ENABLE_GTK2
    gtk_tooltips_set_tip(glob_tooltips, button_locked,
 			_("Show private records   Ctrl-Z"), NULL);
    gtk_widget_add_accelerator(button_locked, "clicked", accel_group,
       GDK_z, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-#else
-   gtk_tooltips_set_tip(glob_tooltips, button_locked,
-			_("Show private records"), NULL);
-#endif
 
-#ifdef ENABLE_GTK2
    gtk_tooltips_set_tip(glob_tooltips, button_locked_masked,
 			_("Hide private records   Ctrl-Z"), NULL);
    gtk_widget_add_accelerator(button_locked_masked, "clicked", accel_group,
       GDK_z, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-#else
-   gtk_tooltips_set_tip(glob_tooltips, button_locked_masked,
-			_("Hide private records"), NULL);
-#endif
 
-#ifdef ENABLE_GTK2
    gtk_tooltips_set_tip(glob_tooltips, button_unlocked,
 			_("Mask private records   Ctrl-Z"), NULL);
    gtk_widget_add_accelerator(button_unlocked, "clicked", accel_group,
       GDK_z, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-#else
-   gtk_tooltips_set_tip(glob_tooltips, button_unlocked,
-			_("Mask private records"), NULL);
-#endif
 
    /* Create "Sync" button */
    button_sync = gtk_button_new();
@@ -2218,11 +2101,6 @@ int main(int argc, char *argv[])
    gtk_widget_show(window);
 
    /* GTK1 requires the window to be shown before iconized */
-#ifndef ENABLE_GTK2
-   if (iconify) {
-      jp_window_iconify(window);
-   }
-#endif
 
    style = gtk_widget_get_style(window);
 
@@ -2388,7 +2266,6 @@ int main(int argc, char *argv[])
 
    alarms_init(skip_past_alarms, skip_all_alarms);
 
-#ifdef ENABLE_GTK2
 {
    long utf_encoding;
    char *button_text[] = 
@@ -2427,15 +2304,12 @@ int main(int argc, char *argv[])
       } 
    }
 }
-#endif
 
    gtk_idle_add(cb_check_version, window);
 
    gtk_main();
 
-#ifdef ENABLE_GTK2
    otherconv_free();
-#endif
 
    return EXIT_SUCCESS;
 }

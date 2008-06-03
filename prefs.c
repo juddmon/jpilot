@@ -1,4 +1,4 @@
-/* $Id: prefs.c,v 1.75 2008/05/14 18:05:38 rikster5 Exp $ */
+/* $Id: prefs.c,v 1.76 2008/06/03 01:02:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs.c
@@ -30,9 +30,7 @@
 #include "utils.h"
 #include "prefs.h"
 #include "log.h"
-#ifdef ENABLE_GTK2
 #include "otherconv.h"
-#endif
 
 extern int t_fmt_ampm;
 
@@ -67,11 +65,7 @@ static prefType glob_prefs[NUM_PREFS] = {
      {"print_blank_lines", INTTYPE, INTTYPE, 1, NULL, 0},
      {"print_command", CHARTYPE, CHARTYPE, 0, NULL, 0},
      {"char_set", INTTYPE, INTTYPE,
-#ifdef ENABLE_GTK2
      CHAR_SET_1252_UTF
-#else
-     CHAR_SET_LATIN1
-#endif
 	, NULL, 0},
      {"sync_datebook", INTTYPE, INTTYPE, 1, NULL, 0},
      {"sync_address", INTTYPE, INTTYPE, 1, NULL, 0},
@@ -710,11 +704,9 @@ int set_pref_possibility(int which, long n, int save)
    }
    /* #endif */
 
-#ifdef ENABLE_GTK2
    if (PREF_CHAR_SET == which)
       if (otherconv_init())
 	 printf("Error: could not set encoding\n");
-#endif
 
    return r;
 }

@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.119 2008/06/02 03:43:02 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.120 2008/06/03 01:02:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -63,9 +63,7 @@ static int memo_category = CATEGORY_ALL;
 static int clist_row_selected;
 static GtkWidget *clist;
 static GtkWidget *memo_text;
-#ifdef ENABLE_GTK2
 static GObject   *memo_text_buffer;
-#endif
 static GtkWidget *private_checkbox;
 /*Need one extra for the ALL category */
 static GtkWidget *memo_cat_menu_item1[NUM_MEMO_CAT_ITEMS+1];
@@ -190,13 +188,8 @@ static void connect_changed_signals(int con_or_dis)
 			       GTK_SIGNAL_FUNC(cb_record_changed), NULL);
 	 }
       }
-#ifdef ENABLE_GTK2
       g_signal_connect(memo_text_buffer, "changed",
 		       GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-#else
-      gtk_signal_connect(GTK_OBJECT(memo_text), "changed",
-			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-#endif
 
       gtk_signal_connect(GTK_OBJECT(private_checkbox), "toggled",
 			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
@@ -212,13 +205,8 @@ static void connect_changed_signals(int con_or_dis)
 					  GTK_SIGNAL_FUNC(cb_record_changed), NULL);
 	 }
       }
-#ifdef ENABLE_GTK2
       g_signal_handlers_disconnect_by_func(memo_text_buffer,
 					   GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-#else
-      gtk_signal_disconnect_by_func(GTK_OBJECT(memo_text),
-				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-#endif
       gtk_signal_disconnect_by_func(GTK_OBJECT(private_checkbox),
 				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
    }
@@ -313,11 +301,9 @@ int cb_memo_import(GtkWidget *parent_window, const char *file_path, int type)
 	 strcat(text, line);
       }
 
-#ifdef ENABLE_GTK2
       /* convert to valid UTF-8 and recalculate the length */
       jp_charset_p2j(text, sizeof(text));
       text_len = strlen(text);
-#endif
 #ifdef JPILOT_DEBUG
       printf("text=[%s]\n", text);
       printf("text_len=%d\n", text_len);
@@ -665,11 +651,7 @@ int memo_export(GtkWidget *window)
    gdk_window_get_size(window->window, &w, &h);
    gdk_window_get_root_origin(window->window, &x, &y);
 
-#ifdef ENABLE_GTK2
    w = gtk_paned_get_position(GTK_PANED(pane));
-#else
-   w = GTK_PANED(pane)->handle_xpos;
-#endif
    x+=40;
 
    export_gui(window,
@@ -821,17 +803,7 @@ static int memo_clear_details()
    /* Need to disconnect these signals first */
    connect_changed_signals(DISCONNECT_SIGNALS);
 
-#ifdef ENABLE_GTK2
    gtk_text_buffer_set_text(GTK_TEXT_BUFFER(memo_text_buffer), "", -1);
-#else
-   gtk_text_freeze(GTK_TEXT(memo_text));
-
-   gtk_text_set_point(GTK_TEXT(memo_text), 0);
-   gtk_text_forward_delete(GTK_TEXT(memo_text),
-			   gtk_text_get_length(GTK_TEXT(memo_text)));
-
-   gtk_text_thaw(GTK_TEXT(memo_text));
-#endif
 
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(private_checkbox), FALSE);
 
@@ -859,16 +831,11 @@ static int memo_clear_details()
 int memo_get_details(struct Memo *new_memo, unsigned char *attrib)
 {
    int i;
-#ifdef ENABLE_GTK2
    GtkTextIter start_iter;
    GtkTextIter end_iter;
 
    gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(memo_text_buffer),&start_iter,&end_iter);
    new_memo->text = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(memo_text_buffer),&start_iter,&end_iter,TRUE);
-#else
-   new_memo->text = gtk_editable_get_chars
-     (GTK_EDITABLE(memo_text), 0, -1);
-#endif
    if (new_memo->text[0]=='\0') {
       free(new_memo->text);
       new_memo->text=NULL;
@@ -1118,19 +1085,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    }
    gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu2), count);
 
-#ifdef ENABLE_GTK2
    gtk_text_buffer_set_text(GTK_TEXT_BUFFER(memo_text_buffer), memo->text, -1);
-#else
-   gtk_text_freeze(GTK_TEXT(memo_text));
-
-   gtk_text_set_point(GTK_TEXT(memo_text), 0);
-   gtk_text_forward_delete(GTK_TEXT(memo_text),
-			   gtk_text_get_length(GTK_TEXT(memo_text)));
-
-   gtk_text_insert(GTK_TEXT(memo_text), NULL,NULL,NULL, memo->text, -1);
-
-   gtk_text_thaw(GTK_TEXT(memo_text));
-#endif
 
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(private_checkbox),
 				mmemo->attrib & dlpRecAttrSecret);
@@ -1142,20 +1097,16 @@ static gboolean cb_key_pressed_left_side(GtkWidget   *widget,
                                          GdkEventKey *event,
                                          gpointer     next_widget)
 {
-#ifdef ENABLE_GTK2
    GtkTextBuffer *text_buffer;
    GtkTextIter    iter;
-#endif
 
    if (event->keyval == GDK_Return) {
       gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
       gtk_widget_grab_focus(GTK_WIDGET(next_widget));
-#ifdef ENABLE_GTK2
       /* Position cursor at start of text */
       text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(next_widget));
       gtk_text_buffer_get_start_iter(text_buffer, &iter);
       gtk_text_buffer_place_cursor(text_buffer, &iter);
-#endif
       return TRUE;
    }
 
@@ -1429,11 +1380,7 @@ int memo_gui_cleanup()
    }
    free_MemoList(&glob_memo_list);
    connect_changed_signals(DISCONNECT_SIGNALS);
-#ifdef ENABLE_GTK2
    set_pref(PREF_MEMO_PANE, gtk_paned_get_position(GTK_PANED(pane)), NULL, TRUE);
-#else
-   set_pref(PREF_MEMO_PANE, GTK_PANED(pane)->handle_xpos, NULL, TRUE);
-#endif
    set_pref(PREF_LAST_MEMO_CATEGORY, memo_category, NULL, TRUE);
 
    return EXIT_SUCCESS;
@@ -1449,9 +1396,6 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    GtkWidget *vbox1, *vbox2, *hbox_temp;
    GtkWidget *separator;
    GtkWidget *button;
-#ifndef ENABLE_GTK2
-   GtkWidget *vscrollbar;
-#endif
    long ivalue;
    GtkAccelGroup *accel_group;
    long char_set;
@@ -1497,7 +1441,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    pane = gtk_hpaned_new();
    get_pref(PREF_MEMO_PANE, &ivalue, NULL);
-   gtk_paned_set_position(GTK_PANED(pane), ivalue + PANE_CREEP);
+   gtk_paned_set_position(GTK_PANED(pane), ivalue);
 
    gtk_box_pack_start(GTK_BOX(hbox), pane, TRUE, TRUE, 5);
 
@@ -1646,7 +1590,6 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    hbox_temp = gtk_hbox_new (FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, TRUE, TRUE, 0);
 
-#ifdef ENABLE_GTK2
    memo_text = gtk_text_view_new();
    memo_text_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(memo_text)));
    gtk_text_view_set_editable(GTK_TEXT_VIEW(memo_text), TRUE);
@@ -1658,14 +1601,6 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 1);
    gtk_container_add(GTK_CONTAINER(scrolled_window), memo_text);
    gtk_box_pack_start_defaults(GTK_BOX(hbox_temp), scrolled_window);
-#else
-   memo_text = gtk_text_new(NULL, NULL);
-   gtk_text_set_editable(GTK_TEXT(memo_text), TRUE);
-   gtk_text_set_word_wrap(GTK_TEXT(memo_text), TRUE);
-   vscrollbar = gtk_vscrollbar_new(GTK_TEXT(memo_text)->vadj);
-   gtk_box_pack_start(GTK_BOX(hbox_temp), memo_text, TRUE, TRUE, 0);
-   gtk_box_pack_start(GTK_BOX(hbox_temp), vscrollbar, FALSE, FALSE, 0);
-#endif
 
    /* Capture the Enter & Shift-Enter key combinations to move back and 
     * forth between the left- and right-hand sides of the display. */

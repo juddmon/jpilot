@@ -32,9 +32,9 @@ not found in the 3Com desktop.
 
 %build
 if [ ! -f ./configure ]; then
-  ./autogen.sh --prefix=%{prefix} --mandir=%{_mandir} --enable-gtk2
+  ./autogen.sh --prefix=%{prefix} --mandir=%{_mandir}
 else
-  %configure --prefix=%{prefix} --mandir=%{_mandir} --enable-gtk2
+  %configure --prefix=%{prefix} --mandir=%{_mandir}
 fi
 #gzip -9f docs/*.1
 make

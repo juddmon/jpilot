@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.60 2008/06/01 23:10:30 rikster5 Exp $ */
+/* $Id: prefs_gui.c,v 1.61 2008/06/03 01:02:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -458,11 +458,9 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    jp_logf(JP_LOG_DEBUG, "cb_prefs_gui\n");
    if (window) {
       jp_logf(JP_LOG_DEBUG, "pref_window is already up\n");
-#ifdef ENABLE_GTK2
       /* Shift focus to existing window if called again
          and window is still alive. */
       gtk_window_present(GTK_WINDOW(window));
-#endif
       return;
    }
 
@@ -580,19 +578,6 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
 
    /* FDOW */
-#  ifndef ENABLE_GTK2
-   label = gtk_label_new(_("The first day of the week is "));
-   gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
-			     0, 1, 4, 5);
-   gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
-
-   make_pref_menu(&pref_menu, PREF_FDOW);
-   gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(pref_menu),
-			     1, 2, 4, 5);
-
-   get_pref(PREF_FDOW, &ivalue, &cstr);
-   gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
-#  endif
 
    /**********************************************************************/
    /* Settings preference tab */
@@ -1066,11 +1051,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox_temp), GTK_BUTTONBOX_END);
    gtk_box_pack_start(GTK_BOX(vbox), hbox_temp, FALSE, FALSE, 1);
 
-#ifdef ENABLE_GTK2
    button = gtk_button_new_from_stock(GTK_STOCK_OK);
-#else
-   button = gtk_button_new_with_label(_("Done"));
-#endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_quit), window);
    gtk_box_pack_end(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);

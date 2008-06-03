@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.65 2008/06/02 03:43:02 rikster5 Exp $ */
+/* $Id: utils.h,v 1.66 2008/06/03 01:02:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -51,15 +51,6 @@
 #endif
 
 #define	FPI_STRING	"-//Judd Montgomery//NONSGML "PN" "VERSION"//EN"
-
-/* GTK 1 seems to have a problem with reading and setting the pane
- * differing by 2 pixels.  This may not be true on every system.
- */
-#ifdef ENABLE_GTK2
-#  define PANE_CREEP 0
-#else
-#  define PANE_CREEP 2
-#endif
 
 /*This is how often the clock updates in milliseconds */
 #define CLOCK_TICK 1000
@@ -588,7 +579,4 @@ char *charset_p2newj(const char *buf, int max_len, int char_set);
 
 void jp_charset_p2j(char *buf, int max_len);
 size_t jp_strftime(char *s, size_t max, const char *format, const struct tm *tm);
-#ifndef ENABLE_GTK2
-size_t g_strlcpy(char *dst, const char *src, size_t siz);
-#endif
 #endif

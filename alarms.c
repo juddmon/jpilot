@@ -1,4 +1,4 @@
-/* $Id: alarms.c,v 1.44 2007/12/18 00:41:42 rikster5 Exp $ */
+/* $Id: alarms.c,v 1.45 2008/06/03 01:02:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * alarms.c
@@ -172,12 +172,8 @@ int dialog_alarm(char *title, char *reason,
    struct alarm_dialog_data *Pdata;
    long pref_units;
    long pref_entry;
-#ifdef ENABLE_GTK2
    GtkWidget *image;
    char *markup;
-#else
-   char markup[2048];
-#endif
 
    /* Prevent alarms from going crazy and using all resources */
    if (total_alarm_windows > 20) {
@@ -196,9 +192,7 @@ int dialog_alarm(char *title, char *reason,
                       GTK_SIGNAL_FUNC(cb_destroy_dialog), alarm_dialog);
 
    gtk_window_set_transient_for(GTK_WINDOW(alarm_dialog), GTK_WINDOW(window));
-#ifdef ENABLE_GTK2
    gtk_window_stick(GTK_WINDOW(alarm_dialog));
-#endif
 
    vbox1 = gtk_vbox_new(FALSE, 5);
    gtk_container_add(GTK_CONTAINER(alarm_dialog), vbox1);
@@ -206,14 +200,11 @@ int dialog_alarm(char *title, char *reason,
    hbox1 = gtk_hbox_new(FALSE, 5);
    gtk_box_pack_start(GTK_BOX(vbox1), hbox1, FALSE, FALSE, 0);
 
-#ifdef ENABLE_GTK2
    image = gtk_image_new_from_stock(GTK_STOCK_DIALOG_INFO, GTK_ICON_SIZE_DIALOG);
    gtk_box_pack_start(GTK_BOX(hbox1), image, FALSE, FALSE, 12);
-#endif
 
    /* Label */
    label = gtk_label_new("");
-#ifdef ENABLE_GTK2
    if (note_str[0] == '\0') {
       markup = g_markup_printf_escaped("<b><big>%s</big></b>\n\n%s\n\n%s",
                desc_str, reason, time_str);
@@ -223,32 +214,12 @@ int dialog_alarm(char *title, char *reason,
    }
    gtk_label_set_markup(GTK_LABEL(label), markup);
    g_free(markup);
-#else
-   if (note_str[0] == '\0') {
-      g_snprintf(markup, sizeof(markup), "%s\n\n%s\n\n%s",
-                 desc_str, reason, time_str);
-   } else {
-      g_snprintf(markup, sizeof(markup), "%s\n\n%s\n\n%s\n\n%s",
-                 desc_str, reason, time_str, note_str);
-   }
-   gtk_label_set_text(GTK_LABEL(label), markup);
-#endif
    gtk_label_set_line_wrap(GTK_LABEL(label), TRUE);
    gtk_box_pack_start(GTK_BOX(hbox1), label, FALSE, FALSE, 6);
 
    /* remind delay */
    hbox1 = gtk_hbox_new(TRUE, 6);
-#ifdef ENABLE_GTK2
    remind_entry = gtk_spin_button_new_with_range(0, 59, 1);
-#else
-   {
-      GtkAdjustment *spinner_adj;
-
-      spinner_adj = (GtkAdjustment *) gtk_adjustment_new(50.0, 0.0, 59.0,
-                                                          1.0, 5.0, 5.0);
-      remind_entry = gtk_spin_button_new(spinner_adj, 1.0, 0);
-   }
-#endif
    gtk_box_pack_start(GTK_BOX(hbox1), remind_entry, FALSE, TRUE, 5);
 
    vbox_temp = gtk_vbox_new(FALSE, 0);
@@ -283,11 +254,7 @@ int dialog_alarm(char *title, char *reason,
 		      GINT_TO_POINTER(DIALOG_SAID_2));
    gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
 
-#ifdef ENABLE_GTK2
    button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
-#else
-   button = gtk_button_new_with_label(_("OK"));
-#endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_dialog_button),
 		      GINT_TO_POINTER(DIALOG_SAID_1));

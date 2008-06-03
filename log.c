@@ -1,4 +1,4 @@
-/* $Id: log.c,v 1.28 2007/12/11 20:21:05 rousseau Exp $ */
+/* $Id: log.c,v 1.29 2008/06/03 01:02:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * log.c
@@ -117,7 +117,6 @@ int jp_vlogf (int level, char *format, va_list val) {
    size=strlen(buf);
 
    local_buf = buf;
-#ifdef ENABLE_GTK2
    /* UTF-8 text so transform in local encoding */
    if (g_utf8_validate(buf, -1, NULL))
    {
@@ -125,7 +124,6 @@ int jp_vlogf (int level, char *format, va_list val) {
       if (NULL == local_buf)
          local_buf = buf;
    }
-#endif
 
    if ((fp) && (level & glob_log_file_mask)) {
       fwrite(local_buf, size, 1, fp);

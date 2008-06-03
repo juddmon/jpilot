@@ -1,4 +1,4 @@
-/* $Id: category.c,v 1.30 2008/06/01 18:52:53 rikster5 Exp $ */
+/* $Id: category.c,v 1.31 2008/06/03 01:02:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * category.c
@@ -877,21 +877,13 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
    gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox), GTK_BUTTONBOX_END);
    gtk_button_box_set_spacing(GTK_BUTTON_BOX(hbox), 6);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 1);
-#ifdef ENABLE_GTK2
    button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
-#else
-   button = gtk_button_new_with_label(_("Cancel"));
-#endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_edit_button),
 		      GINT_TO_POINTER(EDIT_CAT_ENTRY_CANCEL));
    gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 1);
 
-#ifdef ENABLE_GTK2
    button = gtk_button_new_from_stock(GTK_STOCK_OK);
-#else
-   button = gtk_button_new_with_label(_("OK"));
-#endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_edit_button),
 		      GINT_TO_POINTER(EDIT_CAT_ENTRY_OK));
@@ -911,21 +903,13 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
    gtk_box_pack_start(GTK_BOX(vbox3), hbox, FALSE, FALSE, 2);
 
    /* Buttons */
-#ifdef ENABLE_GTK2
    button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
-#else
-   button = gtk_button_new_with_label(_("Cancel"));
-#endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_dialog_button),
 		      GINT_TO_POINTER(DIALOG_SAID_2));
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 1);
 
-#ifdef ENABLE_GTK2
    button = gtk_button_new_from_stock(GTK_STOCK_OK);
-#else
-   button = gtk_button_new_with_label(_("OK"));
-#endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_dialog_button),
 		      GINT_TO_POINTER(DIALOG_SAID_1));

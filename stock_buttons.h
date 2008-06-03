@@ -1,4 +1,4 @@
-/* $Id: stock_buttons.h,v 1.2 2005/10/24 00:24:19 judd Exp $ */
+/* $Id: stock_buttons.h,v 1.3 2008/06/03 01:02:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * stock_buttons.h
@@ -25,35 +25,28 @@
 extern GtkTooltips *glob_tooltips;
 
 #ifndef ENABLE_STOCK_BUTTONS
+   /* old behavior */
+#  include "gdk/gdkkeysyms.h"
 
-/* old behavior */
-#include "gdk/gdkkeysyms.h"
-
-#define CREATE_BUTTON(widget, text, stock, tooltip, shortcut_key, shortcut_mask, shortcut_text) \
+#  define CREATE_BUTTON(widget, text, stock, tooltip, shortcut_key, shortcut_mask, shortcut_text) \
    widget = gtk_button_new_with_label(text); \
    if (shortcut_key) \
    { \
-	  char str[100]; \
+	   char str[100]; \
       gtk_widget_add_accelerator(widget, "clicked", accel_group, shortcut_key, shortcut_mask, GTK_ACCEL_VISIBLE); \
-	  sprintf(str, "%s   %s", tooltip, shortcut_text); \
+	   sprintf(str, "%s   %s", tooltip, shortcut_text); \
       gtk_tooltips_set_tip(glob_tooltips, widget, str, NULL); \
    } \
    else \
       gtk_tooltips_set_tip(glob_tooltips, widget, tooltip, NULL);\
    gtk_box_pack_start(GTK_BOX(hbox_temp), widget, TRUE, TRUE, 0);
-#else
-
-/* GTK+ stock buttons only if GTK2 is used */
-#ifdef ENABLE_GTK2
-
-#define CREATE_BUTTON(widget, text, stock, tooltip, shortcut_key, shortcut_mask, shortcut_text) \
-   widget = gtk_button_new_from_stock(GTK_STOCK_ ## stock); \
-   gtk_tooltips_set_tip(glob_tooltips, widget, tooltip, NULL); \
-   gtk_box_pack_start(GTK_BOX(hbox_temp), widget, TRUE, TRUE, 0);
 
 #else
-#error "ENABLE_STOCK_BUTTONS can't be used without ENABLE_GTK2"
-#endif
+
+#   define CREATE_BUTTON(widget, text, stock, tooltip, shortcut_key, shortcut_mask, shortcut_text) \
+    widget = gtk_button_new_from_stock(GTK_STOCK_ ## stock); \
+    gtk_tooltips_set_tip(glob_tooltips, widget, tooltip, NULL); \
+    gtk_box_pack_start(GTK_BOX(hbox_temp), widget, TRUE, TRUE, 0);
 
 #endif
 

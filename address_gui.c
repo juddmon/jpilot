@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.206 2008/06/02 03:43:02 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.207 2008/06/03 01:02:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -78,10 +78,8 @@
  * add ifdef/endif blocks around all of them would make the code unreadable.
  * Instead, I use a macro substitution to convert old GTK 1.X calls to
  * GTK 2.X calls. */
-#ifdef ENABLE_GTK2
 #define GTK_TEXT(arg1) GTK_TEXT_BUFFER(gtk_txt_buf_ ## arg1)
 #define gtk_text_insert(buffer,arg2,arg3,arg4,string,length) gtk_text_buffer_insert_at_cursor(buffer,string,length)
-#endif
 
 static address_schema_entry *schema;
 static int schema_size;
@@ -161,16 +159,9 @@ static long address_version=0;
 static GtkWidget *clist;
 #define MAX_NUM_TEXTS contNote+1
 static GtkWidget *address_text[MAX_NUM_TEXTS];
-#ifdef ENABLE_GTK2
 static GObject *gtk_txt_buf_address_text[MAX_NUM_TEXTS];
-#endif
 static GtkWidget *text;
-#ifdef ENABLE_GTK2
 static GObject *gtk_txt_buf_text;
-#endif
-#ifndef ENABLE_GTK2
-static GtkWidget *vscrollbar;
-#endif
 static GtkWidget *notebook_label[NUM_CONTACT_NOTEBOOK_PAGES];
 static GtkWidget *phone_type_list_menu[NUM_PHONE_ENTRIES];
 static GtkWidget *phone_type_menu_item[NUM_PHONE_ENTRIES][NUM_PHONE_LABELS]; /* 7 menus with 8 possible entries */
@@ -373,36 +364,20 @@ static void connect_changed_signals(int con_or_dis)
 	 }
 	 if (GTK_IS_TEXT_BUFFER(w) ||
 	     GTK_IS_ENTRY(w) ||
-#ifdef ENABLE_GTK2
 	     GTK_IS_TEXT_VIEW(w)
-#else
-	     GTK_IS_TEXT(w)
-#endif
 	     ) {
-#ifdef ENABLE_GTK2
 	    g_signal_connect(w, "changed", GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-#else
-	    gtk_signal_connect(GTK_OBJECT(w), "changed", GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-#endif
 	    continue;
 	 }
 	 if (GTK_IS_CHECK_MENU_ITEM(w) ||
 	     GTK_IS_RADIO_BUTTON(w) ||
 	     GTK_IS_CHECK_BUTTON(w)
 	     ) {
-#ifdef ENABLE_GTK2
 	    g_signal_connect(w, "toggled", GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-#else
-	    gtk_signal_connect(GTK_OBJECT(w), "toggled", GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-#endif
 	    continue;
 	 }
 	 if (GTK_IS_BUTTON(w)) {
-#ifdef ENABLE_GTK2
 	    g_signal_connect(w, "pressed", GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-#else
-	    gtk_signal_connect(GTK_OBJECT(w), "pressed", GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-#endif
 	    continue;
 	 }
          jp_logf(JP_LOG_DEBUG, "connect_changed_signals(): Encountered unknown object type.  Skipping\n");
@@ -419,11 +394,7 @@ static void connect_changed_signals(int con_or_dis)
 	    continue;
 	 }
 	 w=temp_list->data;
-#ifdef ENABLE_GTK2
 	 g_signal_handlers_disconnect_by_func(w, GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-#else
-	 gtk_signal_disconnect_by_func(w, GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-#endif
       }
    }
 }
@@ -1469,11 +1440,7 @@ int address_export(GtkWidget *window)
    gdk_window_get_size(window->window, &w, &h);
    gdk_window_get_root_origin(window->window, &x, &y);
 
-#ifdef ENABLE_GTK2
    w = gtk_paned_get_position(GTK_PANED(pane));
-#else
-   w = GTK_PANED(pane)->handle_xpos;
-#endif
    x+=40;
 
    export_gui(window,
@@ -1810,10 +1777,8 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    int flag, type;
    unsigned int unique_id;
    int show_priv;
-#ifdef ENABLE_GTK2
    GtkTextIter start_iter;
    GtkTextIter end_iter;
-#endif
 
    memset(&cont, 0, sizeof(cont));
    flag=GPOINTER_TO_INT(data);
@@ -1895,14 +1860,9 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
 	  case ADDRESS_GUI_IM_MENU_TEXT:
 	  case ADDRESS_GUI_ADDR_MENU_TEXT:
 	  case ADDRESS_GUI_WEBSITE_TEXT:
-#ifdef ENABLE_GTK2
 	    gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(gtk_txt_buf_address_text[schema[i].record_field]),&start_iter,&end_iter);
 	    cont.entry[schema[i].record_field] =
 	      gtk_text_buffer_get_text(GTK_TEXT_BUFFER(gtk_txt_buf_address_text[schema[i].record_field]),&start_iter,&end_iter,TRUE);
-#else
-	    cont.entry[schema[i].record_field] =
-	      gtk_editable_get_chars(GTK_EDITABLE(address_text[schema[i].record_field]), 0, -1);
-#endif
 	    break;
 	  case ADDRESS_GUI_BIRTHDAY:
 	    break;
@@ -1966,13 +1926,7 @@ void addr_clear_details()
    connect_changed_signals(DISCONNECT_SIGNALS);
 
    /* Clear the quickview */
-#ifdef ENABLE_GTK2
    gtk_text_buffer_set_text(GTK_TEXT_BUFFER(gtk_txt_buf_text), "", -1);
-#else
-   gtk_text_set_point(GTK_TEXT(text), 0);
-   gtk_text_forward_delete(GTK_TEXT(text),
-			   gtk_text_get_length(GTK_TEXT(text)));
-#endif
 
    /* Clear all of the text fields */
    for (i=0; i<schema_size; i++) {
@@ -1982,13 +1936,7 @@ void addr_clear_details()
        case ADDRESS_GUI_ADDR_MENU_TEXT:
        case ADDRESS_GUI_IM_MENU_TEXT:
        case ADDRESS_GUI_WEBSITE_TEXT:
-#ifdef ENABLE_GTK2
 	 gtk_text_buffer_set_text(GTK_TEXT_BUFFER(gtk_txt_buf_address_text[schema[i].record_field]), "", -1);
-#else
-	 gtk_text_set_point(GTK_TEXT(address_text[schema[i].record_field]), 0);
-	 gtk_text_forward_delete(GTK_TEXT(address_text[schema[i].record_field]),
-				 gtk_text_get_length(GTK_TEXT(address_text[schema[i].record_field])));
-#endif
       }
    }
    
@@ -2144,20 +2092,14 @@ void cb_dial_or_mail(GtkWidget *widget, gpointer data)
    GtkWidget *text;
    gchar *str;
    int is_mail;
-#ifdef ENABLE_GTK2
    GtkTextIter    start_iter;
    GtkTextIter    end_iter;
    GtkTextBuffer *text_buffer;
-#endif
    text=data;
 
-#ifdef ENABLE_GTK2
    text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text));
    gtk_text_buffer_get_bounds(text_buffer,&start_iter,&end_iter);
    str = gtk_text_buffer_get_text(text_buffer,&start_iter,&end_iter,TRUE);
-#else
-   str=gtk_editable_get_chars(GTK_EDITABLE(text), 0, -1);
-#endif
 
    if (!str) return;
    printf("[%s]\n", str);
@@ -2354,11 +2296,7 @@ static void set_button_label_to_date(GtkWidget *button, struct tm *date)
    birthday_str[0]='\0';
    get_pref(PREF_SHORTDATE, NULL, &pref_date);
    strftime(birthday_str, sizeof(birthday_str), pref_date, date);
-#ifdef ENABLE_GTK2
    gtk_button_set_label(GTK_BUTTON(button), birthday_str);
-#else
-   gtk_object_set(GTK_OBJECT(button), "label", birthday_str, NULL);
-#endif
 }
 
 static void cb_button_birthday(GtkWidget *widget, gpointer data)
@@ -2760,17 +2698,9 @@ static void cb_clist_selection(GtkWidget      *clist,
    /* End category menu */
 
    /* Freeze the "All" text buffer to prevent flicker while updating */
-#ifdef ENABLE_GTK2
    gtk_widget_freeze_child_notify(text);
 
    gtk_text_buffer_set_text(GTK_TEXT_BUFFER(gtk_txt_buf_text), "", -1);
-#else
-   gtk_text_freeze(GTK_TEXT(text));
-
-   gtk_text_set_point(GTK_TEXT(text), 0);
-   gtk_text_forward_delete(GTK_TEXT(text),
-			   gtk_text_get_length(GTK_TEXT(text)));
-#endif
 
    /* Fill out the "All" text buffer */
    s = contact_to_gstring(cont);
@@ -2795,18 +2725,10 @@ static void cb_clist_selection(GtkWidget      *clist,
 	 /* Set dial/email button text and callback data */
 	 if (!strcmp(contact_app_info.phoneLabels[cont->phoneLabel[phone_i]], _("E-mail"))) {
 	    gtk_object_set_data(GTK_OBJECT(dial_button[phone_i]), "mail", GINT_TO_POINTER(1));
-#ifdef ENABLE_GTK2
 	    gtk_button_set_label(GTK_BUTTON(dial_button[phone_i]), _("Mail"));
-#else
-	    gtk_object_set(GTK_OBJECT(dial_button[phone_i]), "label", _("Mail"), NULL);
-#endif
 	 } else {
 	    gtk_object_set_data(GTK_OBJECT(dial_button[phone_i]), "mail", 0);
-#ifdef ENABLE_GTK2
 	    gtk_button_set_label(GTK_BUTTON(dial_button[phone_i]), _("Dial"));
-#else
-	    gtk_object_set(GTK_OBJECT(dial_button[phone_i]), "label", _("Dial"), NULL);
-#endif
 	 }
 	 if ((phone_i<NUM_PHONE_ENTRIES) && (cont->phoneLabel[phone_i] < NUM_PHONE_LABELS)) {
 	    if (GTK_IS_WIDGET(phone_type_menu_item[phone_i][cont->phoneLabel[phone_i]])) {
@@ -2845,13 +2767,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 	 goto set_text;
        case ADDRESS_GUI_WEBSITE_TEXT:
 	 set_text:
-#ifdef ENABLE_GTK2
 	 gtk_text_buffer_set_text(GTK_TEXT_BUFFER(gtk_txt_buf_address_text[schema[i].record_field]), "", -1);
-#else
-	 gtk_text_set_point(GTK_TEXT(address_text[schema[i].record_field]), 0);
-	 gtk_text_forward_delete(GTK_TEXT(address_text[schema[i].record_field]),
-				 gtk_text_get_length(GTK_TEXT(address_text[schema[i].record_field])));
-#endif
 	 if (cont->entry[schema[i].record_field]) {
 	    gtk_text_insert(GTK_TEXT(address_text[schema[i].record_field]),
 			    NULL,NULL,NULL, cont->entry[schema[i].record_field], -1);
@@ -2903,11 +2819,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(private_checkbox),
 				mcont->attrib & dlpRecAttrSecret);
 
-#ifdef ENABLE_GTK2
    gtk_widget_thaw_child_notify(text);
-#else
-   gtk_text_thaw(GTK_TEXT(text));
-#endif
    connect_changed_signals(CONNECT_SIGNALS);
 }
 
@@ -2915,10 +2827,8 @@ static gboolean cb_key_pressed_left_side(GtkWidget   *widget,
                                          GdkEventKey *event)
 {
    GtkWidget *entry_widget;
-#ifdef ENABLE_GTK2
    GtkTextBuffer *text_buffer;
    GtkTextIter    iter;
-#endif
 
    if (event->keyval == GDK_Return) {
       gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
@@ -2966,12 +2876,10 @@ static gboolean cb_key_pressed_left_side(GtkWidget   *widget,
       }
 
       gtk_widget_grab_focus(entry_widget);
-#ifdef ENABLE_GTK2
       /* Position cursor at start of text */
       text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(entry_widget));
       gtk_text_buffer_get_start_iter(text_buffer, &iter);
       gtk_text_buffer_place_cursor(text_buffer, &iter);
-#endif
 
       return TRUE;
    }
@@ -3035,13 +2943,7 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
    /* Clear the text box to make things look nice */
    if (main) {
-#ifdef ENABLE_GTK2
       gtk_text_buffer_set_text(GTK_TEXT_BUFFER(gtk_txt_buf_text), "", -1);
-#else
-      gtk_text_set_point(GTK_TEXT(text), 0);
-      gtk_text_forward_delete(GTK_TEXT(text),
-			      gtk_text_get_length(GTK_TEXT(text)));
-#endif
    }
 
    /* Freeze clist to prevent flicker during updating */
@@ -3535,10 +3437,8 @@ cb_key_pressed_quickfind(GtkWidget *widget, GdkEventKey *event, gpointer data)
    
 static gboolean cb_key_pressed(GtkWidget *widget, GdkEventKey *event)
 {
-#ifdef ENABLE_GTK2
    GtkTextIter    cursor_pos_iter;
    GtkTextBuffer *text_buffer;
-#endif
    int page;
    int first, next;
    int i, j, found;
@@ -3548,14 +3448,9 @@ static gboolean cb_key_pressed(GtkWidget *widget, GdkEventKey *event)
       return FALSE;
    }
    /* See if they are at the end of the text */
-#ifdef ENABLE_GTK2
    text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget));
    gtk_text_buffer_get_iter_at_mark(text_buffer,&cursor_pos_iter,gtk_text_buffer_get_insert(text_buffer));
    if (!(gtk_text_iter_is_end(&cursor_pos_iter)))
-#else
-   if (!(gtk_text_get_point(GTK_TEXT(widget)) ==
-       gtk_text_get_length(GTK_TEXT(widget))))
-#endif
        {
 	  return FALSE;
        }
@@ -3607,11 +3502,7 @@ int address_gui_cleanup()
    free_ContactList(&glob_contact_list);
    free_ContactList(&export_contact_list);
    connect_changed_signals(DISCONNECT_SIGNALS);
-#ifdef ENABLE_GTK2
    set_pref(PREF_ADDRESS_PANE, gtk_paned_get_position(GTK_PANED(pane)), NULL, TRUE);
-#else
-   set_pref(PREF_ADDRESS_PANE, GTK_PANED(pane)->handle_xpos, NULL, TRUE);
-#endif
    set_pref(PREF_LAST_ADDR_CATEGORY, address_category, NULL, TRUE);
 
    if (contact_picture.data) {
@@ -3726,7 +3617,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    pane = gtk_hpaned_new();
    get_pref(PREF_ADDRESS_PANE, &ivalue, NULL);
-   gtk_paned_set_position(GTK_PANED(pane), ivalue + PANE_CREEP);
+   gtk_paned_set_position(GTK_PANED(pane), ivalue);
 
    gtk_box_pack_start(GTK_BOX(hbox), pane, TRUE, TRUE, 5);
 
@@ -4035,7 +3926,6 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 				x-2, x-1, table_y_i, table_y_i+1, GTK_SHRINK, 0, 0, 0);
 	    }
 	    /* Text */
-#ifdef ENABLE_GTK2
 	    address_text[schema[i].record_field] = gtk_text_view_new();
 	    gtk_txt_buf_address_text[schema[i].record_field] = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(address_text[schema[i].record_field])));
 	    gtk_text_view_set_editable(GTK_TEXT_VIEW(address_text[schema[i].record_field]), TRUE);
@@ -4051,11 +3941,6 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	       gtk_container_add(GTK_CONTAINER(scrolled_window), address_text[schema[i].record_field]);
 	    }
 
-#else
-	    address_text[schema[i].record_field] = gtk_text_new(NULL, NULL);
-	    gtk_text_set_editable(GTK_TEXT(address_text[schema[i].record_field]), TRUE);
-	    gtk_text_set_word_wrap(GTK_TEXT(address_text[schema[i].record_field]), TRUE);
-#endif
 	    gtk_widget_set_usize(GTK_WIDGET(address_text[schema[i].record_field]), 0, 25);
 
 	    /* Make a special case for Note so it has a scrollbar and no label */
@@ -4067,11 +3952,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 					 x-1, x, table_y_i, table_y_i+1);
 	    }
 
-#ifdef ENABLE_GTK2
 	    changed_list = g_list_prepend(changed_list, gtk_txt_buf_address_text[schema[i].record_field]);
-#else
-	    changed_list = g_list_prepend(changed_list, address_text[schema[i].record_field]);
-#endif
 	    break;
 	  case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
 	    if (!strcmp(contact_app_info.phoneLabels[phone_i], _("E-mail"))) {
@@ -4096,17 +3977,11 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 			     x-2, x-1, table_y_i, table_y_i+1, GTK_SHRINK, 0, 0, 0);
 
 	    /* Text */
-#ifdef ENABLE_GTK2
 	    address_text[schema[i].record_field] = gtk_text_view_new();
 	    gtk_txt_buf_address_text[schema[i].record_field] = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(address_text[schema[i].record_field])));
 	    gtk_text_view_set_editable(GTK_TEXT_VIEW(address_text[schema[i].record_field]), TRUE);
 	    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(address_text[schema[i].record_field]), GTK_WRAP_CHAR);
 	    gtk_container_set_border_width(GTK_CONTAINER(address_text[schema[i].record_field]), 1);
-#else
-	    address_text[schema[i].record_field] = gtk_text_new(NULL, NULL);
-	    gtk_text_set_editable(GTK_TEXT(address_text[schema[i].record_field]), TRUE);
-	    gtk_text_set_word_wrap(GTK_TEXT(address_text[schema[i].record_field]), TRUE);
-#endif
 	    gtk_widget_set_usize(GTK_WIDGET(address_text[schema[i].record_field]), 0, 25);
 	    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(address_text[schema[i].record_field]),
 			     x-1, x, table_y_i, table_y_i+1);
@@ -4114,11 +3989,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	    gtk_signal_connect(GTK_OBJECT(dial_button[phone_i]), "clicked",
 			       GTK_SIGNAL_FUNC(cb_dial_or_mail),
 			       address_text[schema[i].record_field]);
-#ifdef ENABLE_GTK2
 	    changed_list = g_list_prepend(changed_list, gtk_txt_buf_address_text[schema[i].record_field]);
-#else
-	    changed_list = g_list_prepend(changed_list, address_text[schema[i].record_field]);
-#endif
 	    phone_i++;
 	    break;
 	  case ADDRESS_GUI_ADDR_MENU_TEXT:
@@ -4128,26 +3999,16 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	    address_type_i++;
 	    
 	    /* Text */
-#ifdef ENABLE_GTK2
 	    address_text[schema[i].record_field] = gtk_text_view_new();
 	    gtk_txt_buf_address_text[schema[i].record_field] = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(address_text[schema[i].record_field])));
 	    gtk_text_view_set_editable(GTK_TEXT_VIEW(address_text[schema[i].record_field]), TRUE);
 	    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(address_text[schema[i].record_field]), GTK_WRAP_CHAR);
 	    gtk_container_set_border_width(GTK_CONTAINER(address_text[schema[i].record_field]), 1);
-#else
-	    address_text[schema[i].record_field] = gtk_text_new(NULL, NULL);
-	    gtk_text_set_editable(GTK_TEXT(address_text[schema[i].record_field]), TRUE);
-	    gtk_text_set_word_wrap(GTK_TEXT(address_text[schema[i].record_field]), TRUE);
-#endif
 	    gtk_widget_set_usize(GTK_WIDGET(address_text[schema[i].record_field]), 0, 25);
 	    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(address_text[schema[i].record_field]),
 				      x-1, x, table_y_i, table_y_i+1);
 
-#ifdef ENABLE_GTK2
 	    changed_list = g_list_prepend(changed_list, gtk_txt_buf_address_text[schema[i].record_field]);
-#else
-	    changed_list = g_list_prepend(changed_list, address_text[schema[i].record_field]);
-#endif
 	    break;
 	  case ADDRESS_GUI_IM_MENU_TEXT:
 	    make_IM_type_menu(IM_type_i, IM_type_i, IM_type_i);
@@ -4156,26 +4017,16 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	    IM_type_i++;
 	    
 	    /* Text */
-#ifdef ENABLE_GTK2
 	    address_text[schema[i].record_field] = gtk_text_view_new();
 	    gtk_txt_buf_address_text[schema[i].record_field] = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(address_text[schema[i].record_field])));
 	    gtk_text_view_set_editable(GTK_TEXT_VIEW(address_text[schema[i].record_field]), TRUE);
 	    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(address_text[schema[i].record_field]), GTK_WRAP_CHAR);
 	    gtk_container_set_border_width(GTK_CONTAINER(address_text[schema[i].record_field]), 1);
-#else
-	    address_text[schema[i].record_field] = gtk_text_new(NULL, NULL);
-	    gtk_text_set_editable(GTK_TEXT(address_text[schema[i].record_field]), TRUE);
-	    gtk_text_set_word_wrap(GTK_TEXT(address_text[schema[i].record_field]), TRUE);
-#endif
 	    gtk_widget_set_usize(GTK_WIDGET(address_text[schema[i].record_field]), 0, 25);
 	    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(address_text[schema[i].record_field]),
 				      x-1, x, table_y_i, table_y_i+1);
 
-#ifdef ENABLE_GTK2
 	    changed_list = g_list_prepend(changed_list, gtk_txt_buf_address_text[schema[i].record_field]);
-#else
-	    changed_list = g_list_prepend(changed_list, address_text[schema[i].record_field]);
-#endif
 	    break;
 	  case ADDRESS_GUI_WEBSITE_TEXT:
 	    /* Button used as label */
@@ -4185,26 +4036,16 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(button),
 			     x-2, x-1, table_y_i, table_y_i+1, GTK_SHRINK, 0, 0, 0);
 	    /* Text */
-#ifdef ENABLE_GTK2
 	    address_text[schema[i].record_field] = gtk_text_view_new();
 	    gtk_txt_buf_address_text[schema[i].record_field] = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(address_text[schema[i].record_field])));
 	    gtk_text_view_set_editable(GTK_TEXT_VIEW(address_text[schema[i].record_field]), TRUE);
 	    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(address_text[schema[i].record_field]), GTK_WRAP_CHAR);
 	    gtk_container_set_border_width(GTK_CONTAINER(address_text[schema[i].record_field]), 1);
-#else
-	    address_text[schema[i].record_field] = gtk_text_new(NULL, NULL);
-	    gtk_text_set_editable(GTK_TEXT(address_text[schema[i].record_field]), TRUE);
-	    gtk_text_set_word_wrap(GTK_TEXT(address_text[schema[i].record_field]), TRUE);
-#endif
 	    gtk_widget_set_usize(GTK_WIDGET(address_text[schema[i].record_field]), 0, 25);
 	    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(address_text[schema[i].record_field]),
 				      x-1, x, table_y_i, table_y_i+1);
 
-#ifdef ENABLE_GTK2
 	    changed_list = g_list_prepend(changed_list, gtk_txt_buf_address_text[schema[i].record_field]);
-#else
-	    changed_list = g_list_prepend(changed_list, address_text[schema[i].record_field]);
-#endif
 	    break;
 	  case ADDRESS_GUI_BIRTHDAY:
 	    hbox_temp = gtk_hbox_new(FALSE, 0);
@@ -4292,7 +4133,6 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    hbox_temp = gtk_hbox_new (FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox_temp), hbox_temp, TRUE, TRUE, 0);
 
-#ifdef ENABLE_GTK2
    text = gtk_text_view_new();
    gtk_txt_buf_text = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)));
    gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(text), FALSE);
@@ -4305,14 +4145,6 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 1);
    gtk_container_add(GTK_CONTAINER(scrolled_window), text);
    gtk_box_pack_start(GTK_BOX(hbox_temp), scrolled_window, TRUE, TRUE, 0);
-#else
-   text = gtk_text_new(NULL, NULL);
-   gtk_text_set_editable(GTK_TEXT(text), FALSE);
-   gtk_text_set_word_wrap(GTK_TEXT(text), TRUE);
-   vscrollbar = gtk_vscrollbar_new(GTK_TEXT(text)->vadj);
-   gtk_box_pack_start(GTK_BOX(hbox_temp), text, TRUE, TRUE, 0);
-   gtk_box_pack_start(GTK_BOX(hbox_temp), vscrollbar, FALSE, FALSE, 0);
-#endif
 
    gtk_widget_show_all(vbox);
    gtk_widget_show_all(hbox);

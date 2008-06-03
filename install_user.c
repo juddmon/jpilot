@@ -1,4 +1,4 @@
-/* $Id: install_user.c,v 1.6 2008/04/03 15:59:58 rikster5 Exp $ */
+/* $Id: install_user.c,v 1.7 2008/06/03 01:02:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * install_user.c
@@ -30,9 +30,7 @@
 #include <string.h>
 #include <pwd.h>
 #include "i18n.h"
-#ifdef ENABLE_GTK2
 #include "otherconv.h"
-#endif
 #include "utils.h"
 #include "sync.h"
 #include "prefs.h"
@@ -203,11 +201,7 @@ int dialog_install_user(GtkWindow *main_window, char *user, int user_len, unsign
    gtk_container_set_border_width(GTK_CONTAINER(hbox), 5);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 2);
 
-#ifdef ENABLE_GTK2
    button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
-#else
-   button = gtk_button_new_with_label(_("Cancel"));
-#endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_install_user_button),
 		      GINT_TO_POINTER(DIALOG_SAID_2));

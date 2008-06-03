@@ -1,4 +1,4 @@
-/* $Id: jpilot-sync.c,v 1.26 2006/02/14 20:53:26 rikster5 Exp $ */
+/* $Id: jpilot-sync.c,v 1.27 2008/06/03 01:02:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot-sync.c
@@ -34,9 +34,7 @@
 #include "sync.h"
 #include "plugins.h"
 #include "i18n.h"
-#ifdef ENABLE_GTK2
 #include "otherconv.h"
-#endif
 
 /* this is a hack for now until I clean up the code */
 int *glob_date_label;
@@ -110,12 +108,10 @@ int main(int argc, char *argv[])
 
    pref_init();
    pref_read_rc_file();
-#ifdef ENABLE_GTK2
    if (otherconv_init()) {
       printf("Error: could not set encoding\n");
       return EXIT_FAILURE;
    }
-#endif
 
    pipe_from_parent=STDIN_FILENO;
    pipe_to_parent=STDOUT_FILENO;
@@ -247,9 +243,7 @@ int main(int argc, char *argv[])
       sleep(1);
    } while(loop);
 
-#ifdef ENABLE_GTK2
    otherconv_free();
-#endif
 
    /* r is the return value of setup_sync(), 0 if OK */
    return r;

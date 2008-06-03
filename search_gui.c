@@ -1,4 +1,4 @@
-/* $Id: search_gui.c,v 1.45 2008/04/23 22:14:38 rikster5 Exp $ */
+/* $Id: search_gui.c,v 1.46 2008/06/03 01:02:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * search_gui.c
@@ -150,22 +150,14 @@ static int search_datebook(const char *needle, GtkWidget *clist)
 	 date_str[sizeof(date_str)-1]='\0';
 
 	 if (found == 1) {
-#ifdef ENABLE_GTK2
 	    g_snprintf(str, sizeof(str), "%s\t%s",
-#else
-	    g_snprintf(str, sizeof(str), "%s  %s",
-#endif
 		       date_str,
 		       temp_al->mappt.appt.description);
 	    lstrncpy_remove_cr_lfs(str2, str, SEARCH_MAX_COLUMN_LEN);
 	    gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str2);
 	 }
 	 if (found == 2) {
-#ifdef ENABLE_GTK2
 	    g_snprintf(str, sizeof(str), "%s\t%s",
-#else
-	    g_snprintf(str, sizeof(str), "%s  %s",
-#endif
 		       date_str,
 		       temp_al->mappt.appt.note);
 	    lstrncpy_remove_cr_lfs(str2, str, SEARCH_MAX_COLUMN_LEN);
@@ -561,12 +553,10 @@ void cb_search_gui(GtkWidget *widget, gpointer data)
    char temp[256];
 
    if (GTK_IS_WIDGET(window)) {
-#ifdef ENABLE_GTK2
       /* Shift focus to existing window if called again
          and window is still alive. */
       gtk_window_present(GTK_WINDOW(window));
       gtk_widget_grab_focus(GTK_WIDGET(entry));
-#endif
       return;
    }
 
@@ -637,11 +627,7 @@ void cb_search_gui(GtkWidget *widget, gpointer data)
    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
    /* Create a "Search" button */
-#ifdef ENABLE_GTK2
    button = gtk_button_new_from_stock(GTK_STOCK_FIND);
-#else
-   button = gtk_button_new_with_label(_("Search"));
-#endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_search), clist);
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
@@ -651,11 +637,7 @@ void cb_search_gui(GtkWidget *widget, gpointer data)
 		      GTK_SIGNAL_FUNC(cb_search), clist);
 
    /* Create a "Done" button */
-#ifdef ENABLE_GTK2
    button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
-#else
-   button = gtk_button_new_with_label(_("Close"));
-#endif
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_quit), window);
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);

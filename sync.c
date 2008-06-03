@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.88 2008/06/02 03:43:02 rikster5 Exp $ */
+/* $Id: sync.c,v 1.89 2008/06/03 01:02:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -60,6 +60,8 @@
 
 /********************************* Constants **********************************/
 #define FD_ERROR 1001
+
+#define MAX_DBNAME 50
 
 #ifndef min
 #  define min(a,b) (((a) < (b)) ? (a) : (b))
@@ -1336,7 +1338,6 @@ int slow_sync_application(char *DB_name, int sd)
  */
 void fetch_extra_DBs2(int sd, struct DBInfo info, char *palm_dbname[])
 {
-#define MAX_DBNAME 50
    struct pi_file *pi_fp;
    char full_name[FILENAME_MAX];
    struct stat statb;
@@ -1418,7 +1419,6 @@ void fetch_extra_DBs2(int sd, struct DBInfo info, char *palm_dbname[])
  */
 int fetch_extra_DBs(int sd, char *palm_dbname[])
 {
-#define MAX_DBNAME 50
    int cardno, start;
    struct DBInfo info;
    int dbIndex;
@@ -1527,7 +1527,6 @@ void move_removed_apps(GList *file_list)
  */
 int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
 {
-#define MAX_DBNAME 50
    struct pi_file *pi_fp;
    char full_name[FILENAME_MAX];
    char full_backup_name[FILENAME_MAX];

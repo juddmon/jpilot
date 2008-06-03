@@ -1,4 +1,4 @@
-/* $Id: expense.c,v 1.58 2008/06/02 03:44:21 rikster5 Exp $ */
+/* $Id: expense.c,v 1.59 2008/06/03 01:02:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * expense.c
@@ -160,13 +160,9 @@ static GtkWidget *pane=NULL;
 #ifndef ENABLE_STOCK_BUTTONS
 static GtkAccelGroup *accel_group;
 #endif
-#ifdef ENABLE_GTK2
 static GObject   *text_attendees_buffer;
-#endif
 static GtkWidget *text_note;
-#ifdef ENABLE_GTK2
 static GObject   *text_note_buffer;
-#endif
 
 /* This is the category that is currently being displayed */
 static int show_category;
@@ -371,17 +367,10 @@ static void connect_changed_signals(int con_or_dis)
                          GTK_SIGNAL_FUNC(cb_record_changed), NULL);
       gtk_signal_connect(GTK_OBJECT(entry_city), "changed",
                          GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-#ifdef ENABLE_GTK2
       g_signal_connect(text_attendees_buffer, "changed",
                          GTK_SIGNAL_FUNC(cb_record_changed), NULL);
       g_signal_connect(text_note_buffer, "changed",
                          GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-#else
-      gtk_signal_connect(GTK_OBJECT(text_attendees), "changed",
-                         GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-      gtk_signal_connect(GTK_OBJECT(text_note), "changed",
-                         GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-#endif
    }
 
    /* DISCONNECT */
@@ -429,17 +418,10 @@ static void connect_changed_signals(int con_or_dis)
                                     GTK_SIGNAL_FUNC(cb_record_changed), NULL);
       gtk_signal_disconnect_by_func(GTK_OBJECT(entry_city),
                                     GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-#ifdef ENABLE_GTK2
       g_signal_handlers_disconnect_by_func(text_attendees_buffer,
                                     GTK_SIGNAL_FUNC(cb_record_changed), NULL);
       g_signal_handlers_disconnect_by_func(text_note_buffer,
                                     GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-#else
-      gtk_signal_disconnect_by_func(GTK_OBJECT(text_attendees),
-                                    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-      gtk_signal_disconnect_by_func(GTK_OBJECT(text_note),
-                                    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-#endif
    }
 }
 
@@ -642,15 +624,8 @@ static void clear_details()
    gtk_entry_set_text(GTK_ENTRY(entry_amount), "");
    gtk_entry_set_text(GTK_ENTRY(entry_vendor), "");
    gtk_entry_set_text(GTK_ENTRY(entry_city), "");
-#ifdef ENABLE_GTK2
    gtk_text_buffer_set_text(GTK_TEXT_BUFFER(text_attendees_buffer), "", -1);
    gtk_text_buffer_set_text(GTK_TEXT_BUFFER(text_note_buffer), "", -1);
-#else
-   gtk_text_backward_delete(GTK_TEXT(text_attendees),
-                            gtk_text_get_length(GTK_TEXT(text_attendees)));
-   gtk_text_backward_delete(GTK_TEXT(text_note),
-                            gtk_text_get_length(GTK_TEXT(text_note)));
-#endif
 
    set_new_button_to(CLEAR_FLAG);
 
@@ -697,10 +672,8 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    int flag;
    unsigned int unique_id = 0;
    struct MyExpense *mexp = NULL;
-#ifdef ENABLE_GTK2
    GtkTextIter start_iter;
    GtkTextIter end_iter;
-#endif
 
    jp_logf(JP_LOG_DEBUG, "Expense: cb_add_new_record\n");
 
@@ -755,25 +728,15 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    ex.date.tm_min  = 0;
    ex.date.tm_sec  = 0;
 
-#ifdef ENABLE_GTK2
    gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(text_attendees_buffer),&start_iter,&end_iter);
    ex.attendees = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(text_attendees_buffer),&start_iter,&end_iter,TRUE);
-#else
-   /* gtk_editable_get_chars *does* allocate memory */
-   ex.attendees = gtk_editable_get_chars(GTK_EDITABLE(text_attendees), 0, -1);
-#endif
    if (ex.attendees[0]=='\0') {
       free(ex.attendees);
       ex.attendees=NULL;
    }
 
-#ifdef ENABLE_GTK2
    gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(text_note_buffer),&start_iter,&end_iter);
    ex.note = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(text_note_buffer),&start_iter,&end_iter,TRUE);
-#else
-   /* gtk_editable_get_chars *does* allocate memory */
-   ex.note = gtk_editable_get_chars(GTK_EDITABLE(text_note), 0, -1);
-#endif
    if (ex.note[0]=='\0') {
       free(ex.note);
       ex.note=NULL;
@@ -1208,35 +1171,15 @@ static void cb_clist_selection(GtkWidget      *clist,
       gtk_entry_set_text(GTK_ENTRY(entry_city), "");
    }
    
-#ifdef ENABLE_GTK2
    gtk_text_buffer_set_text(GTK_TEXT_BUFFER(text_attendees_buffer), "", -1);
-#else
-   gtk_text_set_point(GTK_TEXT(text_attendees), 0);
-   gtk_text_forward_delete(GTK_TEXT(text_attendees),
-                           gtk_text_get_length(GTK_TEXT(text_attendees)));
-#endif
 
    if (mexp->ex.attendees) {
-#ifdef ENABLE_GTK2
       gtk_text_buffer_set_text(GTK_TEXT_BUFFER(text_attendees_buffer), mexp->ex.attendees, -1);
-#else
-      gtk_text_insert(GTK_TEXT(text_attendees), NULL,NULL,NULL, mexp->ex.attendees, -1);
-#endif
    }
 
-#ifdef ENABLE_GTK2
    gtk_text_buffer_set_text(GTK_TEXT_BUFFER(text_note_buffer), "", -1);
-#else
-   gtk_text_set_point(GTK_TEXT(text_note), 0);
-   gtk_text_forward_delete(GTK_TEXT(text_note),
-                           gtk_text_get_length(GTK_TEXT(text_note)));
-#endif
    if (mexp->ex.note) {
-#ifdef ENABLE_GTK2
       gtk_text_buffer_set_text(GTK_TEXT_BUFFER(text_note_buffer), mexp->ex.note, -1);
-#else
-      gtk_text_insert(GTK_TEXT(text_note), NULL,NULL,NULL, mexp->ex.note, -1);
-#endif
    }
 
    connect_changed_signals(CONNECT_SIGNALS);
@@ -1529,7 +1472,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
 
    pane = gtk_hpaned_new();
    get_pref(PREF_EXPENSE_PANE, &ivalue, NULL);
-   gtk_paned_set_position(GTK_PANED(pane), ivalue + PANE_CREEP);
+   gtk_paned_set_position(GTK_PANED(pane), ivalue);
 
    gtk_box_pack_start(GTK_BOX(hbox), pane, TRUE, TRUE, 5);
 
@@ -1545,11 +1488,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    /* Make accelerators for some buttons window */
 #ifndef ENABLE_STOCK_BUTTONS
    accel_group = gtk_accel_group_new();
-#ifdef ENABLE_GTK2
    gtk_window_add_accel_group(GTK_WINDOW(gtk_widget_get_toplevel(vbox)), accel_group);
-#else
-   gtk_accel_group_attach(accel_group, GTK_OBJECT(gtk_widget_get_toplevel(vbox)));
-#endif
 #endif
 
    /************************************************************/
@@ -1647,65 +1586,40 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    /* Category Menu */
    label = gtk_label_new(_("Category:"));
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
-#ifdef ENABLE_GTK2
    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(label),
                     0, 1, 0, 1, GTK_FILL, 0, 2, 0);
-#else
-   gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
-                             0, 1, 0, 1);
-#endif
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(menu_category2),
                              1, 2, 0, 1);
 
    /* Type Menu */
    label = gtk_label_new(_("Type:"));
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
-#ifdef ENABLE_GTK2
    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(label),
                     0, 1, 1, 2, GTK_FILL, 0, 2, 0);
-#else
-   gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
-                             0, 1, 1, 2);
-#endif
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(menu_expense_type),
                              1, 2, 1, 2);
 
    /* Payment Menu */
    label = gtk_label_new(_("Payment:"));
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
-#ifdef ENABLE_GTK2
    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(label),
                     0, 1, 2, 3, GTK_FILL, 0, 2, 0);
-#else
-   gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
-                             0, 1, 2, 3);
-#endif
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(menu_payment),
                              1, 2, 2, 3);
 
    /* Currency Menu */
    label = gtk_label_new(_("Currency:"));
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
-#ifdef ENABLE_GTK2
    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(label),
                     0, 1, 3, 4, GTK_FILL, 0, 2, 0);
-#else
-   gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
-                             0, 1, 3, 4);
-#endif
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(menu_currency),
                              1, 2, 3, 4);
 
    /* Date Spinners */
    label = gtk_label_new(_("Date:"));
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
-#ifdef ENABLE_GTK2
    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(label),
                     0, 1, 4, 5, GTK_FILL, 0, 2, 0);
-#else
-   gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
-                             0, 1, 4, 5);
-#endif
 
    hbox_temp = gtk_hbox_new(FALSE, 0);
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(hbox_temp),
@@ -1757,13 +1671,8 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    /* Amount Entry */
    label = gtk_label_new(_("Amount:"));
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
-#ifdef ENABLE_GTK2
    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(label),
                     0, 1, 5, 6, GTK_FILL, 0, 2, 0);
-#else
-   gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
-                             0, 1, 5, 6);
-#endif
    entry_amount = gtk_entry_new();
    entry_set_multiline_truncate(GTK_ENTRY(entry_amount), TRUE);
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(entry_amount),
@@ -1772,13 +1681,8 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    /* Vendor Entry */
    label = gtk_label_new(_("Vendor:"));
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
-#ifdef ENABLE_GTK2
    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(label),
                     0, 1, 6, 7, GTK_FILL, 0, 2, 0);
-#else
-   gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
-                             0, 1, 6, 7);
-#endif
    entry_vendor = gtk_entry_new();
    entry_set_multiline_truncate(GTK_ENTRY(entry_vendor), TRUE);
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(entry_vendor),
@@ -1787,13 +1691,8 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    /* City */
    label = gtk_label_new(_("City:"));
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
-#ifdef ENABLE_GTK2
    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(label),
                     0, 1, 7, 8, GTK_FILL, 0, 2, 0);
-#else
-   gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
-                             0, 1, 7, 8);
-#endif
    entry_city = gtk_entry_new();
    entry_set_multiline_truncate(GTK_ENTRY(entry_city), TRUE);
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(entry_city),
@@ -1811,16 +1710,10 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
                                   GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
    gtk_box_pack_start(GTK_BOX(vbox2), scrolled_window, TRUE, TRUE, 0);
 
-#ifdef ENABLE_GTK2
    text_attendees = gtk_text_view_new();
    text_attendees_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_attendees)));
    gtk_text_view_set_editable(GTK_TEXT_VIEW(text_attendees), TRUE);
    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text_attendees), GTK_WRAP_WORD);
-#else
-   text_attendees = gtk_text_new(NULL, NULL);
-   gtk_text_set_editable(GTK_TEXT(text_attendees), TRUE);
-   gtk_text_set_word_wrap(GTK_TEXT(text_attendees), TRUE);
-#endif
    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(text_attendees));
 
    label = gtk_label_new(_("Note"));
@@ -1834,16 +1727,10 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
                                   GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
    gtk_box_pack_start(GTK_BOX(vbox2), scrolled_window, TRUE, TRUE, 0);
 
-#ifdef ENABLE_GTK2
    text_note = gtk_text_view_new();
    text_note_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_note)));
    gtk_text_view_set_editable(GTK_TEXT_VIEW(text_note), TRUE);
    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text_note), GTK_WRAP_WORD);
-#else
-   text_note = gtk_text_new(NULL, NULL);
-   gtk_text_set_editable(GTK_TEXT(text_note), TRUE);
-   gtk_text_set_word_wrap(GTK_TEXT(text_note), TRUE);
-#endif
    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(text_note));
 
    gtk_widget_show_all(hbox);
@@ -1889,18 +1776,10 @@ int plugin_gui_cleanup() {
    if (pane) {
       /* Remove the accelerators */
 #ifndef ENABLE_STOCK_BUTTONS
-#ifdef ENABLE_GTK2
       gtk_window_remove_accel_group(GTK_WINDOW(gtk_widget_get_toplevel(pane)), accel_group);
-#else
-      gtk_accel_group_detach(accel_group, GTK_OBJECT(gtk_widget_get_toplevel(pane)));
-#endif
 #endif
 
-#ifdef ENABLE_GTK2
       set_pref(PREF_EXPENSE_PANE, gtk_paned_get_position(GTK_PANED(pane)), NULL, TRUE);
-#else
-      set_pref(PREF_EXPENSE_PANE, GTK_PANED(pane)->handle_xpos, NULL, TRUE);
-#endif
       pane = NULL;
    }
 

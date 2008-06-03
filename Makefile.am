@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.57 2008/06/02 17:24:10 rikster5 Exp $
+# $Id: Makefile.am,v 1.58 2008/06/03 01:02:53 rikster5 Exp $
 
 SUBDIRS = Expense SyncTime KeyRing dialer m4 po icons docs empty
 
@@ -182,16 +182,7 @@ peace:
 
 test_compile:
 	@-rm -f autogen.log autogen.log2 make.log
-	@echo "Configuring GTK1 build"
-	autogen.sh --disable-gtk2 > autogen.log 2>&1
-	@-grep -v 'warning: underquoted definition' autogen.log > autogen.log2
-	!(grep 'warn'   autogen.log2)
-	!(grep ' error' autogen.log2)
-	make > make.log 2>&1
-	!(grep 'warn'  make.log)
-	!(grep 'error' make.log)
-	@-rm -f autogen.log autogen.log2 make.log
-	@echo "Configuring GTK2 build"
+	@echo "Configuring Jpilot build"
 	autogen.sh > autogen.log 2>&1
 	@-grep -v 'warning: underquoted definition' autogen.log > autogen.log2
 	!(grep 'warn'   autogen.log2)
