@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.64 2008/06/03 15:44:40 rikster5 Exp $ */
+/* $Id: prefs_gui.c,v 1.65 2008/06/03 19:28:25 rousseau Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -522,11 +522,11 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    /* Locale preference tab */
    table = gtk_table_new(5, 2, FALSE);
    gtk_table_set_row_spacings(GTK_TABLE(table),0);
-   gtk_table_set_col_spacings(GTK_TABLE(table),0);
+   gtk_table_set_col_spacings(GTK_TABLE(table),5);
    gtk_box_pack_start(GTK_BOX(vbox_locale), table, FALSE, FALSE, 0);
 
    /* Character Set */
-   label = gtk_label_new(_("Character Set "));
+   label = gtk_label_new(_("Character Set"));
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
 			     0, 1, 0, 1);
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
@@ -539,7 +539,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
 
    /* Shortdate */
-   label = gtk_label_new(_("Short date format "));
+   label = gtk_label_new(_("Short date format"));
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
 			     0, 1, 1, 2);
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
@@ -552,7 +552,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
 
    /* Longdate */
-   label = gtk_label_new(_("Long date format "));
+   label = gtk_label_new(_("Long date format"));
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
 			     0, 1, 2, 3);
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
@@ -565,7 +565,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
 
    /* Time */
-   label = gtk_label_new(_("Time format "));
+   label = gtk_label_new(_("Time format"));
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
 			     0, 1, 3, 4);
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
@@ -583,11 +583,11 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    /* Settings preference tab */
    table = gtk_table_new(4, 3, FALSE);
    gtk_table_set_row_spacings(GTK_TABLE(table),0);
-   gtk_table_set_col_spacings(GTK_TABLE(table),0);
+   gtk_table_set_col_spacings(GTK_TABLE(table),5);
    gtk_box_pack_start(GTK_BOX(vbox_settings), table, FALSE, FALSE, 0);
 
    /* GTK colors file */
-   label = gtk_label_new(_("GTK color theme file "));
+   label = gtk_label_new(_("GTK color theme file"));
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
 			     0, 2, 0, 1);
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
@@ -601,7 +601,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 
 
    /* Port */
-   label = gtk_label_new(_("Serial Port "));
+   label = gtk_label_new(_("Serial Port"));
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
 			     0, 1, 1, 2);
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
@@ -626,7 +626,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 
 
    /* Rate */
-   label = gtk_label_new(_("Serial Rate "));
+   label = gtk_label_new(_("Serial Rate"));
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
 			     0, 2, 2, 3);
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
@@ -639,7 +639,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
 
    /* Number of backups */
-   label = gtk_label_new(_("Number of backups to be archived "));
+   label = gtk_label_new(_("Number of backups to be archived"));
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
 			     0, 2, 3, 4);
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
