@@ -1,4 +1,4 @@
-/* $Id: i18n.h,v 1.8 2008/06/01 21:55:08 rikster5 Exp $ */
+/* $Id: i18n.h,v 1.9 2008/06/03 19:15:46 rousseau Exp $ */
 
 /*******************************************************************************
  * i18n.h
@@ -33,6 +33,7 @@
 #    define C_(context, str) pgettext(context, str)
 #  else
 #    define _(str) str
+#    define N_(str) str
 #    define C_(context, str) str
 #  endif
 
