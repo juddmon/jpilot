@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.208 2008/06/03 03:23:15 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.209 2008/06/04 17:52:21 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -3967,13 +3967,13 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	    radio_button[phone_i] = gtk_radio_button_new_with_label(group, _("Show In List"));
 	    group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button[phone_i]));
 	    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(radio_button[phone_i]),
-			     x-3, x-2, table_y_i, table_y_i+1, GTK_SHRINK, 0, 0, 0);
+			     x-3, x-2, table_y_i, table_y_i+1, GTK_SHRINK, 0, 2, 0);
 
 	    changed_list = g_list_prepend(changed_list, radio_button[phone_i]);
 	
 	    make_phone_menu(phone_i, phone_i, phone_i);
 	    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(phone_type_list_menu[phone_i]),
-			     x-2, x-1, table_y_i, table_y_i+1, GTK_SHRINK, 0, 0, 0);
+			     x-2, x-1, table_y_i, table_y_i+1, GTK_FILL, 0, 0, 0);
 
 	    /* Text */
 	    address_text[schema[i].record_field] = gtk_text_view_new();
@@ -4012,7 +4012,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	  case ADDRESS_GUI_IM_MENU_TEXT:
 	    make_IM_type_menu(IM_type_i, IM_type_i, IM_type_i);
 	    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(IM_type_list_menu[IM_type_i]),
-			     x-2, x-1, table_y_i, table_y_i+1, GTK_SHRINK, 0, 0, 0);
+			     x-2, x-1, table_y_i, table_y_i+1, GTK_FILL, 0, 0, 0);
 	    IM_type_i++;
 	    
 	    /* Text */
@@ -4033,7 +4033,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
             /* Remove normal button behavior to accept focus */
             gtk_button_set_focus_on_click(GTK_BUTTON(button), FALSE);
 	    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(button),
-			     x-2, x-1, table_y_i, table_y_i+1, GTK_SHRINK, 0, 0, 0);
+			     x-2, x-1, table_y_i, table_y_i+1, GTK_FILL, 0, 0, 0);
 	    /* Text */
 	    address_text[schema[i].record_field] = gtk_text_view_new();
 	    gtk_txt_buf_address_text[schema[i].record_field] = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(address_text[schema[i].record_field])));
