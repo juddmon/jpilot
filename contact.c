@@ -1,4 +1,4 @@
-/* $Id: contact.c,v 1.7 2008/06/02 03:43:02 rikster5 Exp $ */
+/* $Id: contact.c,v 1.8 2008/06/04 05:49:32 rikster5 Exp $ */
 
 /*******************************************************************************
  * contact.c
@@ -490,10 +490,6 @@ int get_contacts2(ContactList **contact_list, int sort_order,
    if (-1 == num)
      return 0;
 
-   /* Go to first entry in the list */
-   for (temp_list = records; temp_list; temp_list = temp_list->prev) {
-      records = temp_list;
-   }
    for (i=0, temp_list = records; temp_list; temp_list = temp_list->next, i++) {
       if (temp_list->data) {
 	 br=temp_list->data;

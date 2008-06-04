@@ -1,4 +1,4 @@
-/* $Id: libplugin.c,v 1.33 2008/06/01 23:10:30 rikster5 Exp $ */
+/* $Id: libplugin.c,v 1.34 2008/06/04 05:49:32 rikster5 Exp $ */
 
 /*******************************************************************************
  * libplugin.c
@@ -915,20 +915,6 @@ int jp_read_DB_files(char *DB_name, GList **records)
 	 temp_br->buf = buf;
 	 temp_br->size = rec_size;
 
-	 /* g_list_append parses the list to get to the end on every call.
-	  * To speed it up we have to give the last record
-	  */
-         /*
-	 if (*records==NULL) {
-	    *records = g_list_append(*records, temp_br);
-	    end_of_list=*records;
-	 } else {
-	    *records = g_list_append(end_of_list, temp_br);
-	    if (end_of_list->next) {
-	       end_of_list=end_of_list->next;
-	    }
-	 }
-         */
          *records = g_list_prepend(*records, temp_br);
 
 	 recs_returned++;
