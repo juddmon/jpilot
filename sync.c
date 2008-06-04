@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.90 2008/06/04 16:58:08 rikster5 Exp $ */
+/* $Id: sync.c,v 1.91 2008/06/04 17:10:19 rikster5 Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -2950,10 +2950,10 @@ int sync_categories(char *DB_name, int sd,
    /* Open the applications database, store access handle in db */
    r = dlp_OpenDB(sd, 0, dlpOpenReadWrite, DB_name, &db);
    if (r < 0) {
-      g_snprintf(log_entry, sizeof(log_entry), _("Unable to open file: %s\n"), DB_name);
-      charset_j2p(log_entry, sizeof(log_entry), char_set);
-      dlp_AddSyncLogEntry(sd, log_entry);
-      jp_logf(JP_LOG_WARN, "sync_categories: %s", log_entry);
+      /* File unable to be opened.  
+       * Return an error but let the main record sync process 
+       * do the logging to the GUI and Palm */
+      jp_logf(JP_LOG_DEBUG, "sync_categories: Unable to open file: %s\n", DB_name);
       return EXIT_FAILURE;
    }
 
