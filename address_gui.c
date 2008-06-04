@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.209 2008/06/04 17:52:21 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.210 2008/06/04 18:07:40 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -206,7 +206,6 @@ static GtkWidget *cancel_record_button;
 static int record_changed;
 
 static GtkWidget *private_checkbox;
-//static GtkWidget *picture_box;
 static GtkWidget *picture_button;
 static GtkWidget *birthday_checkbox;
 static GtkWidget *birthday_button;
@@ -2172,33 +2171,6 @@ static void clear_mycontact(MyContact *mcont)
    mcont->attrib=mcont->attrib & 0xF8;
    memset(&(mcont->cont), 0, sizeof(struct Contact));
 
-   /* Old code for clearing contact structure field by field.  Easier to
-    * simply clear the entire struct with memset 
-   int i;
-
-   for (i=0; i<8; i++) {//TODO: need a define for this
-      mcont->cont.phoneLabel[i]=0;
-   }
-   for (i=0; i<NUM_ADDRESSES; i++) {
-      mcont->cont.addressLabel[i]=0;
-   }
-   for (i=0; i<NUM_IMS; i++) {
-      mcont->cont.IMLabel[i]=0;
-   }
-   mcont->cont.showPhone=0;
-   mcont->cont.birthdayFlag=0;
-   mcont->cont.reminder=0;
-   mcont->cont.advance=0;
-   mcont->cont.advanceUnits=0;
-   memset(&(mcont->cont.birthday), 0, sizeof(struct tm));
-
-   for (i=0; i<NUM_CONTACT_ENTRIES; i++) {
-      if (mcont->cont.entry) {
-	 free(mcont->cont.entry[i]);
-	 mcont->cont.entry[i]=NULL;
-      }
-   }
-   */
    return;
 }
 /* End Masking */
@@ -2375,34 +2347,16 @@ int change_photo(char *filename)
    char buf[0xFFFF];
    int total_read, count, r;
 
-/*   get_home_file_name("photoXXXXXX", full_out, FILENAME_MAX - 5);
-   full_out[FILENAME_MAX - 5]='\0';
-
-   out = mkstemp(full_out);
-   printf("full_out %s\n", full_out);
-   if (out<0) {
-      //undo report error
-      return -1;
-   }
-   printf("close = %d\n", close(out));
-*/
    sprintf(command, "convert -resize %dx%d %s jpg:-", PHOTO_X_SZ, PHOTO_Y_SZ, filename);
-   //printf("calling %s\n", command);
    in = popen(command, "r");
-   //#include <errno.h>
-   //   printf("in=%d errno=%d ECHILD=%d UNDO\n", in, errno, ECHILD);
-   //printf("feof = %d", feof(in));
-   //fread(buf, 1, 1, in);
-   //printf("feof = %d", feof(in));
 
    if (!in) {
-      return -1;
+      return EXIT_FAILURE;
    }
 
    total_read = count = 0;
    while (!feof(in)) {
       count = fread(buf + total_read, 1, 0xFFFF - total_read, in);
-      //printf("count = %d\n", count);
       total_read+=count;
       //fixme possible buffer overflow
       if ((count==0) || (total_read>=0xFFFF)) break;
@@ -2415,7 +2369,7 @@ int change_photo(char *filename)
 			_("J-Pilot can not find the external program \"convert\"\nor an error occurred while executing convert.\nYou may need to install package ImageMagick"));
       jp_logf(JP_LOG_WARN, _("Command executed was \"%s\"\n"), command);
       jp_logf(JP_LOG_WARN, _("return code was %d\n"), r);
-      return -1;
+      return EXIT_FAILURE;
    }
 
    if (image) {
@@ -2436,7 +2390,7 @@ int change_photo(char *filename)
    gtk_container_add(GTK_CONTAINER(picture_button), image);
    gtk_widget_show(image);   
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 //TODO: make a common filesel function
@@ -2650,7 +2604,6 @@ static void cb_clist_selection(GtkWidget      *clist,
       contact_picture.dirty = 0;
       if (image) gtk_widget_destroy(image);
       image = image_from_data(mcont->cont.picture->data, mcont->cont.picture->length);
-      //gtk_box_pack_start(GTK_BOX(picture_box), image, FALSE, FALSE, 0);
       gtk_container_add(GTK_CONTAINER(picture_button), image);
       gtk_widget_show(image);   
    } else {
@@ -3864,23 +3817,14 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 
       gtk_box_pack_start(GTK_BOX(vbox_temp), table, TRUE, TRUE, 0);
 
-      //undo remove picture_box
       if ((page_i==0) && (table_y_i==0) && (address_version==1)) {
 	 GtkWidget *menu, *menu_item;
 
-	 //picture_box = gtk_hbox_new(FALSE, 0);
 	 picture_button = gtk_button_new();
 	 gtk_widget_set_usize(GTK_WIDGET(picture_button), PHOTO_X_SZ+10, PHOTO_Y_SZ+10);
-//	 gtk_button_set_relief(GTK_BUTTON(picture_button), GTK_RELIEF_NONE);
 	 gtk_container_set_border_width(GTK_CONTAINER(picture_button), 0);
 	 gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(picture_button),
 			  0, 2, 0, 4, GTK_SHRINK, GTK_SHRINK, 0, 0);
-	 //undo define for default picture size x and y
-	 //gtk_widget_set_usize(GTK_WIDGET(picture_box), 139, 144);
-	 //gtk_box_pack_start(GTK_BOX(picture_box), picture_button, TRUE, TRUE, 0);
-//	 gtk_signal_connect(GTK_OBJECT(picture_button), "enter",
-//			    GTK_SIGNAL_FUNC(cb_test),
-//			    GINT_TO_POINTER(MODIFY_FLAG));
 
 	 /* Create a photo menu */
 	 menu = gtk_menu_new();
@@ -3900,8 +3844,6 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 				  G_CALLBACK(cb_photo_menu_popup), menu);
 
       }
-      
-      //printf("%s\n", g_find_program_in_path("convert"));
       
       /* Add widgets for each page */
       group=NULL;
