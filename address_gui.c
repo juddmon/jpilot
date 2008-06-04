@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.210 2008/06/04 18:07:40 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.211 2008/06/04 19:17:18 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -3904,7 +3904,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	       gtk_object_set_data(GTK_OBJECT(dial_button[phone_i]), "mail", 0);
 	    }
 	    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(dial_button[phone_i]),
-			     x-4, x-3, table_y_i, table_y_i+1, GTK_SHRINK, 0, 0, 0);
+			     x-4, x-3, table_y_i, table_y_i+1, GTK_FILL, 0, 0, 0);
 	    
 	    radio_button[phone_i] = gtk_radio_button_new_with_label(group, _("Show In List"));
 	    group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button[phone_i]));
