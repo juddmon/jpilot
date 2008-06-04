@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.92 2008/06/04 19:50:42 rousseau Exp $ */
+/* $Id: sync.c,v 1.93 2008/06/04 21:24:23 rikster5 Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -1898,7 +1898,7 @@ static int sync_install(char *filename, int sd)
    creator[2] = (info.creator & 0x0000FF00) >> 8,
    creator[3] = (info.creator & 0x000000FF);
    creator[4] = '\0';
-   jp_logf(JP_LOG_GUI, _("(Creator ID is '%s')..."), creator);
+   jp_logf(JP_LOG_GUI, _("(Creator ID '%s')... "), creator);
 
    r = pi_file_install(f, sd, 0, NULL);
    if (r<0) {
