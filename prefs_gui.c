@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.65 2008/06/03 19:28:25 rousseau Exp $ */
+/* $Id: prefs_gui.c,v 1.66 2008/06/04 16:58:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -802,10 +802,10 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    /* Radio box to choose which database to use: Todo/Task */
    group = NULL;
    radio_button_task_version[0] = 
-     gtk_radio_button_new_with_label(group, _("Use ToDo database (Palm OS < 5.2.1) "));
+     gtk_radio_button_new_with_label(group, _("Use ToDo database (Palm OS < 5.2.1)"));
    group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_todo_version[0]));
    radio_button_todo_version[1] = 
-     gtk_radio_button_new_with_label(group, _("Use Task database (Palm OS > 5.2) "));
+     gtk_radio_button_new_with_label(group, _("Use Task database (Palm OS > 5.2)"));
    group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_todo_version[1]));
    gtk_box_pack_start(GTK_BOX(vbox_todo), radio_button_todo_version[0],
 		      FALSE, FALSE, 0);

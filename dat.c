@@ -1,4 +1,4 @@
-/* $Id: dat.c,v 1.19 2008/06/02 00:12:39 rikster5 Exp $ */
+/* $Id: dat.c,v 1.20 2008/06/04 16:58:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * dat.c
@@ -569,14 +569,12 @@ int dat_read_header(FILE *in,
       jp_logf(JP_LOG_WARN, _("Unknown format, file has wrong schema\n"));
       jp_logf(JP_LOG_WARN, _("File schema is:"));
       for (i=0; i<(*field_count)*2; i++) {
-	 jp_logf(JP_LOG_WARN, " %02d", (char)filler[i]);
+	 jp_logf(JP_LOG_WARN, " %02d\n", (char)filler[i]);
       }
-      jp_logf(JP_LOG_WARN, "\n");
-      jp_logf(JP_LOG_WARN, _("It should be:  "));
+      jp_logf(JP_LOG_WARN, _("It should be:"));
       for (i=0; i<(*field_count)*2; i++) {
-	 jp_logf(JP_LOG_WARN, " %02d", (char)schema[i]);
+	 jp_logf(JP_LOG_WARN, " %02d\n", (char)schema[i]);
       }
-      jp_logf(JP_LOG_WARN, "\n");
       return EXIT_FAILURE;
    }
 

@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.89 2008/06/03 01:02:53 rikster5 Exp $ */
+/* $Id: sync.c,v 1.90 2008/06/04 16:58:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -1898,7 +1898,7 @@ static int sync_install(char *filename, int sd)
    creator[2] = (info.creator & 0x0000FF00) >> 8,
    creator[3] = (info.creator & 0x000000FF);
    creator[4] = '\0';
-   jp_logf(JP_LOG_GUI, _("(Creator ID is '%s')..."), creator);
+   jp_logf(JP_LOG_GUI, _("(Creator ID is '%s')... "), creator);
 
    r = pi_file_install(f, sd, 0, NULL);
    if (r<0) {
@@ -1977,8 +1977,7 @@ static int sync_install(char *filename, int sd)
       return EXIT_FAILURE;
    }
    else {
-      /* the space after the %s is a hack, the last char gets cut off */
-      g_snprintf(log_entry, sizeof(log_entry), _("Installed %s "), Pc);
+      g_snprintf(log_entry, sizeof(log_entry), _("Installed %s"), Pc);
       charset_j2p(log_entry, sizeof(log_entry), char_set);
       dlp_AddSyncLogEntry(sd, log_entry);
       dlp_AddSyncLogEntry(sd, "\n");;

@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.171 2008/06/03 01:02:53 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.172 2008/06/04 16:58:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -302,7 +302,7 @@ int datebook_to_text(struct Appointment *appt, char *text, int len)
    /* Repeat Days (for weekly) */
    text_repeat_days[0]='\0';
    if (appt->repeatType==repeatWeekly) {
-      strcpy(text_repeat_days, _("Repeat Days: "));
+      strcpy(text_repeat_days, _("Repeat Days:"));
       for (i=0; i<7; i++) {
 	 if (appt->repeatDays[i]) {
 	    strcat(text_repeat_days, " ");
