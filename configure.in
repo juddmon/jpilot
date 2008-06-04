@@ -161,7 +161,7 @@ AC_ARG_ENABLE(alarm-shell-danger,
    enable_alarm_shell_danger=no;
    )
 
-if test "$enable_alarm_shell_dange" = "yes"; then
+if test "$enable_alarm_shell_danger" = "yes"; then
    AC_DEFINE(ENABLE_ALARM_SHELL_DANGER, 1, [ Datebook description and note allowed  in shell commands ])
 fi
 
