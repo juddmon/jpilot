@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.76 2008/06/06 15:56:29 rousseau Exp $ */
+/* $Id: keyring.c,v 1.77 2008/06/06 15:57:28 rousseau Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -169,6 +169,8 @@ static void update_date_button(GtkWidget *button, struct tm *t);
 int plugin_unpack_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *record, int len)
 {
    int i, rec;
+
+   jp_logf(JP_LOG_DEBUG, "unpack_keyring_cai_from_ai\n");
 
    if (len < 2 + 16 * 16 + 16 + 2)
       return EXIT_FAILURE;
