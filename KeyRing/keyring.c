@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.75 2008/06/06 15:53:28 rousseau Exp $ */
+/* $Id: keyring.c,v 1.76 2008/06/06 15:56:29 rousseau Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -132,14 +132,10 @@ static int clist_row_selected;
 #ifdef HEADER_NEW_DES_H
 static DES_cblock current_key1;
 static DES_cblock current_key2;
-static DES_cblock new_key1;
-static DES_cblock new_key2;
 static DES_key_schedule s1, s2;
 #else
 static des_cblock current_key1;
 static des_cblock current_key2;
-static des_cblock new_key1;
-static des_cblock new_key2;
 static des_key_schedule s1, s2;
 #endif
   
