@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.74 2008/06/03 01:02:53 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.75 2008/06/06 15:53:28 rousseau Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -130,23 +130,23 @@ static int clist_col_selected;
 static int clist_row_selected;
 
 #ifdef HEADER_NEW_DES_H
-DES_cblock current_key1;
-DES_cblock current_key2;
-DES_cblock new_key1;
-DES_cblock new_key2;
+static DES_cblock current_key1;
+static DES_cblock current_key2;
+static DES_cblock new_key1;
+static DES_cblock new_key2;
 static DES_key_schedule s1, s2;
 #else
-des_cblock current_key1;
-des_cblock current_key2;
-des_cblock new_key1;
-des_cblock new_key2;
+static des_cblock current_key1;
+static des_cblock current_key2;
+static des_cblock new_key1;
+static des_cblock new_key2;
 static des_key_schedule s1, s2;
 #endif
   
-time_t plugin_last_time = 0;
-gboolean plugin_active = FALSE;
+static time_t plugin_last_time = 0;
+static gboolean plugin_active = FALSE;
 
-struct MyKeyRing *glob_keyring_list=NULL;
+static struct MyKeyRing *glob_keyring_list=NULL;
 
 /****************************** Prototypes ************************************/
 static void keyr_update_clist();
