@@ -1,4 +1,4 @@
-/* $Id: libplugin.c,v 1.34 2008/06/04 05:49:32 rikster5 Exp $ */
+/* $Id: libplugin.c,v 1.35 2008/06/06 23:09:00 rikster5 Exp $ */
 
 /*******************************************************************************
  * libplugin.c
@@ -20,6 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  ******************************************************************************/
 
+/********************************* Includes ***********************************/
 #include "config.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -34,6 +35,8 @@
 #include "libplugin.h"
 #include "i18n.h"
 #include "utils.h"
+
+/****************************** Main Code *************************************/
 
 void jp_init()
 {
@@ -188,13 +191,13 @@ int read_header(FILE *pc_in, PC3RecordHeader *header)
       return num;
    }
    unpack_header(header, packed_header);
-#ifdef DEBUG
+#ifdef JPILOT_DEBUG
    printf("header_len    =%ld\n", header->header_len);
    printf("header_version=%ld\n", header->header_version);
    printf("rec_len       =%ld\n", header->rec_len);
    printf("unique_id     =%ld\n", header->unique_id);
    printf("rt            =%ld\n", header->rt);
-   printf("attrib        =%d\n", header->attrib);
+   printf("attrib        =%d\n",  header->attrib);
 #endif
    return 1;
 }
@@ -526,15 +529,13 @@ int jp_delete_record(char *DB_name, buf_rec *br, int flag)
       } else {
 	 header.rt=DELETED_PALM_REC;
       }
-
-      header.rec_len = br->size;
+      header.attrib=br->attrib;
+      header.rec_len=br->size;
 
       jp_logf(JP_LOG_DEBUG, "writing header to pc file\n");
       write_header(pc_in, &header);
-      /*todo write the real appointment from palm db */
-      /*Right now I am just writing an empty record */
-      /*This will be used for making sure that the palm record hasn't changed */
-      /*before we delete it */
+      /* This will be used to make sure the palm record hasn't changed */
+      /* before we delete it */
       jp_logf(JP_LOG_DEBUG, "writing record to pc file, %d bytes\n", header.rec_len);
       fwrite(br->buf, header.rec_len, 1, pc_in);
       jp_logf(JP_LOG_DEBUG, "record deleted\n");

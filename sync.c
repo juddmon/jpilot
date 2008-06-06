@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.93 2008/06/04 21:24:23 rikster5 Exp $ */
+/* $Id: sync.c,v 1.94 2008/06/06 23:09:01 rikster5 Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -57,6 +57,7 @@
 #include <pi-file.h>
 #include <pi-version.h>
 #include <pi-error.h>
+#include <pi-macros.h>
 
 /********************************* Constants **********************************/
 #define FD_ERROR 1001
@@ -226,38 +227,61 @@ static char *get_error_str(int error)
 
 /* Attempt to match records
  *
- * Unfortunately the Palm and Jpilot store some fields differently.
- * This may be caused by endianess issues between the Palm and the host PC.
- * The time structs are also likely to be different since Palm measures from 
- * 1904 and the host PC doesn't.
- * The result is that a direct memcmp usually won't work.  
  * Ideally, one would have comparison routines on a per DB_name basis.
- * Until those are written we fall back on comparing the lengths of records
- * which is imperfect and can obviously hide a lot of simple changes */
-int match_records(void *rrec, int rrec_len, 
-                  void *lrec, int lrec_len, 
-                  char *DB_name)
+ * This involves a lot of overhead and packing/unpacking of records
+ * and the routines are not written.
+ *
+ * A simpler way to compare records is to use memcmp. Some databases, 
+ * however, do not pack tightly into memory and have gaps which are 
+ * do-not-cares during comparison. These gaps can assume any value
+ * but for comparison they are zeroed out, the same value that 
+ * pilot-link uses.
+ *
+ * For databases that we have no knowledge of only simple comparisons
+ * such as record length are possible.  This is almost always good 
+ * enough but single character changes will not be caught. */ 
+int match_records(char *DB_name,
+                  void *rrec, int rrec_len, int rattr, int rcategory,
+                  void *lrec, int lrec_len, int lattr, int lcategory)
 {
 
-   if (!rrec || !lrec) {
-      return FALSE;
-   }
-   
-   if (lrec_len != rrec_len) {
+   if (!rrec || !lrec)         return FALSE;
+   if (rrec_len != lrec_len)   return FALSE;
+   if (rcategory != lcategory) return FALSE;
+   if ((rattr & dlpRecAttrSecret) != (lattr & dlpRecAttrSecret)) {
       return FALSE;
    }
 
    /* memcmp works for a few specific databases */
-   if (!strcmp(DB_name,"MemoDB"))
+   if (!strcmp(DB_name,"DatebookDB")) {
+      /* Hack for gapfill byte */
+      set_byte(rrec+7,0);
+      return !(memcmp(lrec, rrec, lrec_len));
+   }
+
+   if (!strcmp(DB_name,"AddressDB"))
       return !(memcmp(lrec, rrec, lrec_len));
 
-   if (!strcmp(DB_name,"Memo32DB"))
+   /* Commented until someone with newer Palm can test
+   if (!strcmp(DB_name,"ContactsDB-PAdd"))
       return !(memcmp(lrec, rrec, lrec_len));
-
-   if (!strcmp(DB_name,"MemosDB-PMem"))
-      return !(memcmp(lrec, rrec, lrec_len));
-
+   */
    if (!strcmp(DB_name,"ToDoDB"))
+      return !(memcmp(lrec, rrec, lrec_len));
+
+   if (!strcmp(DB_name,"MemoDB")   || 
+       !strcmp(DB_name,"Memo32DB") ||
+       !strcmp(DB_name,"MemosDB-PMem")) {
+      return !(memcmp(lrec, rrec, lrec_len));
+   }
+
+   if (!strcmp(DB_name,"ExpenseDB")) {
+      /* Hack for gapfill byte */
+      set_byte(rrec+5,0);
+      return !(memcmp(lrec, rrec, lrec_len));
+   }
+
+   if (!strcmp(DB_name,"Keys-Gtkr"))
       return !(memcmp(lrec, rrec, lrec_len));
 
    /* Lengths match and no other checks possible */
@@ -1011,13 +1035,14 @@ int slow_sync_application(char *DB_name, int sd)
    FILE *pc_in;
    char pc_filename[FILENAME_MAX];
    PC3RecordHeader header;
+   unsigned long new_unique_id;
    /* local (.pc3) record */
    void *lrec;
    int lrec_len;
    /* remote (Palm) record */
    pi_buffer_t *rrec;
    int  rindex, rattr, rcategory;
-   int  rrec_len;
+   size_t rrec_len;
    long char_set;
    char log_entry[256];
    char write_log_message[256];
@@ -1089,12 +1114,8 @@ int slow_sync_application(char *DB_name, int sd)
    while (!feof(pc_in)) {
       num = read_header(pc_in, &header);
       if (num!=1) {
-	 if (ferror(pc_in)) {
-	    break;
-	 }
-	 if (feof(pc_in)) {
-	    break;
-	 }
+	 if (ferror(pc_in)) break;
+	 if (feof(pc_in))   break;
       }
 
       lrec_len = header.rec_len;
@@ -1108,6 +1129,7 @@ int slow_sync_application(char *DB_name, int sd)
       /* Case 5: */
       if ((header.rt==NEW_PC_REC) || (header.rt==REPLACEMENT_PALM_REC)) {
 	 jp_logf(JP_LOG_DEBUG, "Case 5: new pc record\n");
+
 	 lrec = malloc(lrec_len);
 	 if (!lrec) {
 	    jp_logf(JP_LOG_WARN, "slow_sync_application(): %s\n", _("Out of memory"));
@@ -1120,6 +1142,77 @@ int slow_sync_application(char *DB_name, int sd)
 	       break;
 	    }
 	 }
+
+         if (header.rt==REPLACEMENT_PALM_REC) {
+            /* A replacement must be checked against pdb file to make sure 
+             * a simultaneous modification on the Palm has not occurred */
+            rrec = pi_buffer_new(65536);
+            if (!rrec) {
+               jp_logf(JP_LOG_WARN, "slow_sync_application(), pi_buffer_new: %s\n",
+                                  _("Out of memory"));
+               free(lrec);
+               break;
+            }
+
+            ret = dlp_ReadRecordById(sd, db, header.unique_id, rrec,
+                                     &rindex, &rattr, &rcategory);
+            rrec_len = rrec->used;
+#ifdef JPILOT_DEBUG
+            if (ret>=0 ) {
+               printf("read record by id %s returned %d\n", DB_name, ret);
+               printf("id %ld, index %d, size %d, attr 0x%x, category %d\n",
+                      header.unique_id, rindex, rrec_len, rattr, rcategory);
+            } else {
+               printf("Case 5: read record by id failed\n");
+            }
+#endif
+            if ((ret >=0) && !(dlpRecAttrDeleted & rattr)) {
+               /* Modified record was also found on Palm. */
+               /* Compare records but ignore category changes */
+               /* For simultaneous category changes PC wins */
+               same = match_records(DB_name, 
+                                    rrec->data, rrec_len, rattr, 0,
+                                    lrec, lrec_len, header.attrib&0xF0, 0);
+#ifdef JPILOT_DEBUG
+               printf("Same is %d\n", same);
+#endif
+               if (same && (header.unique_id != 0)) {
+                  /* Records are the same. Add pc3 record over Palm one */
+                  jp_logf(JP_LOG_DEBUG, "Case 5: lrec & rrec match, keeping Jpilot version\n");
+               } else {
+                  /* Record has been changed on the palm as well as the PC. 
+                   *
+                   * The changed record has already been transferred to the 
+                   * local pdb file from the Palm. It must be copied to the 
+                   * Palm and to the local pdb file under a new unique ID 
+                   * in order to prevent overwriting by the modified PC record.
+                   * The record is placed in the Unfiled category so it can 
+                   * be quickly located. */
+                  jp_logf(JP_LOG_DEBUG, "Case 5: duplicating record\n");
+                  jp_logf(JP_LOG_GUI, _("Sync Conflict: a %s record must be manually merged\n"), DB_name);
+
+                  /* Write record to Palm and get new unique ID */
+                  jp_logf(JP_LOG_DEBUG, "Duplicating PC record to palm\n");
+                  ret = dlp_WriteRecord(sd, db, rattr & dlpRecAttrSecret,
+                                        0, 0,
+                                        rrec->data, rrec_len, &new_unique_id);
+
+                  if (ret < 0) {
+                     jp_logf(JP_LOG_WARN, "dlp_WriteRecord failed\n");
+                     charset_j2p(error_log_message_w,255,char_set);
+                     dlp_AddSyncLogEntry(sd, error_log_message_w);
+                     dlp_AddSyncLogEntry(sd, "\n");
+                  } else {
+                     charset_j2p(conflict_log_message,255,char_set);
+                     dlp_AddSyncLogEntry(sd, conflict_log_message);
+                     dlp_AddSyncLogEntry(sd, "\n");
+                  }
+               }
+            }
+
+            pi_buffer_free(rrec);
+
+         } /* endif REPLACEMENT_PALM_REC */
 
 	 jp_logf(JP_LOG_DEBUG, "Writing PC record to palm\n");
 
@@ -1175,6 +1268,7 @@ int slow_sync_application(char *DB_name, int sd)
 	       break;
 	    }
 	 }
+
 	 rrec = pi_buffer_new(65536);
 	 if (!rrec) {
 	    jp_logf(JP_LOG_WARN, "slow_sync_application(), pi_buffer_new: %s\n",
@@ -1182,6 +1276,7 @@ int slow_sync_application(char *DB_name, int sd)
             free(lrec);
 	    break;
 	 }
+
 	 ret = dlp_ReadRecordById(sd, db, header.unique_id, rrec,
 				  &rindex, &rattr, &rcategory);
 	 rrec_len = rrec->used;
@@ -1195,14 +1290,7 @@ int slow_sync_application(char *DB_name, int sd)
          }
 #endif
 
-	 /* Check whether records are the same */
-         /* same = rrec && (lrec_len==rrec_len) */
-         same = match_records(rrec, rrec_len, lrec, lrec_len, DB_name);
-#ifdef JPILOT_DEBUG
-         printf("Same is %d\n", same);
-#endif
-
-         if (ret < 0) {
+         if ((ret < 0) || (dlpRecAttrDeleted & rattr)) {
             /* lrec can't be found which means it has already 
              * been deleted from the Palm side.
              * Mark the local record as deleted */
@@ -1217,75 +1305,47 @@ int slow_sync_application(char *DB_name, int sd)
             }
             header.rt=DELETED_DELETED_PALM_REC;
             write_header(pc_in, &header);
-         } 
-         /* Next check for match between lrec and rrec */
-	 else if (same && (header.unique_id != 0)) {
-	    jp_logf(JP_LOG_DEBUG, "Case 3&4: lrec & rrec match, deleting\n");
-            ret = dlp_DeleteRecord(sd, db, 0, header.unique_id);
-            if (ret < 0) {
-               jp_logf(JP_LOG_WARN, _("dlp_DeleteRecord failed\n"\
-               "This could be because the record was already deleted on the Palm\n"));
-               charset_j2p(error_log_message_d,255,char_set);
-               dlp_AddSyncLogEntry(sd, error_log_message_d);
-               dlp_AddSyncLogEntry(sd, "\n");
-            } else {
-               charset_j2p(delete_log_message,255,char_set);
-               dlp_AddSyncLogEntry(sd, delete_log_message);
-               dlp_AddSyncLogEntry(sd, "\n");
-            }
-	    
-            /* Now mark the record in pc3 file as deleted */
-	    if (fseek(pc_in, -(header.header_len+lrec_len), SEEK_CUR)) {
-               jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
-               fclose(pc_in);
-               dlp_CloseDB(sd, db);
-               free(lrec);
-               pi_buffer_free(rrec);
-               return EXIT_FAILURE;
-            }
-            header.rt=DELETED_DELETED_PALM_REC;
-            write_header(pc_in, &header);
-
-         } else {
-            /* Record has been changed on the palm as well as the PC.  
-             *
-             * It must be copied to the palm under a new unique ID in
-             * order to prevent overwriting by the modified PC record.  */
-            if ((header.rt==MODIFIED_PALM_REC)) {
-               jp_logf(JP_LOG_DEBUG, "Case 4: duplicating record\n");
-               jp_logf(JP_LOG_GUI, "Sync Conflict: a %s record must be manually merged\n", DB_name);
-
-               /* Write record to Palm and get new unique ID */
-               jp_logf(JP_LOG_DEBUG, "Writing PC record to palm\n");
-               ret = dlp_WriteRecord(sd, db, rattr & dlpRecAttrSecret,
-                                     0, rattr & 0x0F,
-                                     rrec->data,
-                                     rrec_len, &header.unique_id);
-
+	 } else {
+	    /* Record exists on the palm and has been deleted from PC 
+             * If the two records are the same, then no changes have
+             * occurred on the Palm and the deletion should occur */
+            same = match_records(DB_name, 
+                                 rrec->data, rrec_len, rattr, rcategory,
+                                 lrec, lrec_len, header.attrib&0xF0,
+                                                 header.attrib&0x0F);
+#ifdef JPILOT_DEBUG
+            printf("Same is %d\n", same);
+#endif
+            if (same && (header.unique_id != 0)) {
+               jp_logf(JP_LOG_DEBUG, "Case 3&4: lrec & rrec match, deleting\n");
+               ret = dlp_DeleteRecord(sd, db, 0, header.unique_id);
                if (ret < 0) {
-                  jp_logf(JP_LOG_WARN, "dlp_WriteRecord failed\n");
-                  charset_j2p(error_log_message_w,255,char_set);
-                  dlp_AddSyncLogEntry(sd, error_log_message_w);
+                  jp_logf(JP_LOG_WARN, _("dlp_DeleteRecord failed\n"\
+                  "This could be because the record was already deleted on the Palm\n"));
+                  charset_j2p(error_log_message_d,255,char_set);
+                  dlp_AddSyncLogEntry(sd, error_log_message_d);
                   dlp_AddSyncLogEntry(sd, "\n");
                } else {
-                  charset_j2p(conflict_log_message,255,char_set);
-                  dlp_AddSyncLogEntry(sd, conflict_log_message);
+                  charset_j2p(delete_log_message,255,char_set);
+                  dlp_AddSyncLogEntry(sd, delete_log_message);
                   dlp_AddSyncLogEntry(sd, "\n");
-                  /* Now mark the record as deleted in the pc file */
-                  if (fseek(pc_in, -(header.header_len+lrec_len), SEEK_CUR)) {
-                     jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
-                     fclose(pc_in);
-                     dlp_CloseDB(sd, db);
-                     free(lrec);
-                     pi_buffer_free(rrec);
-                     return EXIT_FAILURE;
-                  }
-                  header.rt=DELETED_PC_REC;
-                  write_header(pc_in, &header);
                }
+               
+               /* Now mark the record in pc3 file as deleted */
+               if (fseek(pc_in, -(header.header_len+lrec_len), SEEK_CUR)) {
+                  jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
+                  fclose(pc_in);
+                  dlp_CloseDB(sd, db);
+                  free(lrec);
+                  pi_buffer_free(rrec);
+                  return EXIT_FAILURE;
+               }
+               header.rt=DELETED_DELETED_PALM_REC;
+               write_header(pc_in, &header);
+
             } else {
-               /* Record was a deletion on the PC but modified on the Palm
-                * The PC deletion is ignored by skipping the .pc3 file entry */
+               /* Record has been changed on the palm and deletion can't occur
+                * Mark the pc3 record as having been dealt with */
                jp_logf(JP_LOG_DEBUG, "Case 3: skipping PC deleted record\n");
                if (fseek(pc_in, -(header.header_len+lrec_len), SEEK_CUR)) {
                   jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
@@ -1297,18 +1357,17 @@ int slow_sync_application(char *DB_name, int sd)
                }
                header.rt=DELETED_PC_REC;
                write_header(pc_in, &header);
+            } /* end if checking whether old & new records are the same */
+
+            /* free buffers */
+            if (lrec) {
+               free(lrec);
+               lrec = NULL;
             }
 
-         } /* end if checking whether old & new records are the same */
+            pi_buffer_free(rrec);
 
-         /* free buffers */
-	 if (lrec) {
-	    free(lrec);
-	    lrec = NULL;
-	 }
-
-         pi_buffer_free(rrec);
-
+         } /* record found on Palm */
       } /* end if Case 3&4 */
 
       /* move to next record in .pc3 file */
@@ -2254,7 +2313,7 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
    FILE *pc_in;
    char pc_filename[FILENAME_MAX];
    PC3RecordHeader header;
-   unsigned int orig_unique_id;
+   unsigned long orig_unique_id, new_unique_id;
    void *lrec;  /* local (.pc3) record */
    int  lrec_len;
    void *rrec;  /* remote (Palm) record */
@@ -2306,12 +2365,8 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
    while (!feof(pc_in)) {
       num = read_header(pc_in, &header);
       if (num!=1) {
-	 if (ferror(pc_in)) {
-	    break;
-	 }
-	 if (feof(pc_in)) {
-	    break;
-	 }
+	 if (ferror(pc_in)) break;
+	 if (feof(pc_in))   break;
       }
 
       lrec_len = header.rec_len;
@@ -2324,6 +2379,7 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
       /* Case 5: */
       if ((header.rt==NEW_PC_REC) || (header.rt==REPLACEMENT_PALM_REC)) {
 	 jp_logf(JP_LOG_DEBUG, "Case 5: new pc record\n");
+
 	 lrec = malloc(lrec_len);
 	 if (!lrec) {
 	    jp_logf(JP_LOG_WARN, "fast_sync_local_recs(): %s\n", 
@@ -2338,9 +2394,79 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
 	    }
 	 }
 
-	 jp_logf(JP_LOG_DEBUG, "Writing PC record to palm\n");
+         if (header.rt==REPLACEMENT_PALM_REC) {
+            /* A replacement must be checked against pdb file to make sure 
+             * a simultaneous modification on the Palm has not occurred */
+            ret = pdb_file_read_record_by_id(DB_name,
+                                             header.unique_id,
+                                             &rrec, &rrec_len, &rindex,
+                                             &rattr, &rcategory);
+#ifdef JPILOT_DEBUG
+            if (ret>=0 ) {
+               printf("read record by id %s returned %d\n", DB_name, ret);
+               printf("id %ld, index %d, size %d, attr 0x%x, category %d\n",
+                      header.unique_id, rindex, rrec_len, rattr, rcategory);
+            } else {
+               printf("Case 5: read record by id failed\n");
+            }
+#endif
+            if (ret >=0) {
+               /* Modified record was also found on Palm. */
+               /* Compare records but ignore category changes */
+               /* For simultaneous category changes PC wins */
+               same = match_records(DB_name, 
+                                    rrec, rrec_len, rattr, 0,
+                                    lrec, lrec_len, header.attrib&0xF0, 0);
+   #ifdef JPILOT_DEBUG
+               printf("Same is %d\n", same);
+   #endif
+               if (same && (header.unique_id != 0)) {
+                  /* Records are the same. Add pc3 record over Palm one */
+                  jp_logf(JP_LOG_DEBUG, "Case 5: lrec & rrec match, keeping Jpilot version\n");
+               } else {
+                  /* Record has been changed on the palm as well as the PC. 
+                   *
+                   * The changed record has already been transferred to the 
+                   * local pdb file from the Palm. It must be copied to the 
+                   * Palm and to the local pdb file under a new unique ID 
+                   * in order to prevent overwriting by the modified PC record.
+                   * The record is placed in the Unfiled category so it can 
+                   * be quickly located. */
+                  jp_logf(JP_LOG_DEBUG, "Case 5: duplicating record\n");
+                  jp_logf(JP_LOG_GUI, _("Sync Conflict: a %s record must be manually merged\n"), DB_name);
 
+                  /* Write record to Palm and get new unique ID */
+                  jp_logf(JP_LOG_DEBUG, "Duplicating PC record to palm\n");
+                  ret = dlp_WriteRecord(sd, db, rattr & dlpRecAttrSecret,
+                                        0, 0,
+                                        rrec, rrec_len, &new_unique_id);
+
+                  /* Write record to local pdb file */
+                  jp_logf(JP_LOG_DEBUG, "Duplicating PC record to local\n");
+                  if (ret >=0) {
+                     pdb_file_modify_record(DB_name, rrec, rrec_len,
+                                            rattr & dlpRecAttrSecret,
+                                            0, new_unique_id);
+                  }
+
+                  if (ret < 0) {
+                     jp_logf(JP_LOG_WARN, "dlp_WriteRecord failed\n");
+                     charset_j2p(error_log_message_w,255,char_set);
+                     dlp_AddSyncLogEntry(sd, error_log_message_w);
+                     dlp_AddSyncLogEntry(sd, "\n");
+                  } else {
+                     charset_j2p(conflict_log_message,255,char_set);
+                     dlp_AddSyncLogEntry(sd, conflict_log_message);
+                     dlp_AddSyncLogEntry(sd, "\n");
+                  }
+               }
+            }
+         } /* endif REPLACEMENT_PALM_REC */
+
+	 jp_logf(JP_LOG_DEBUG, "Writing PC record to palm\n");
+       
 	 orig_unique_id = header.unique_id;
+
 	 if (header.rt==REPLACEMENT_PALM_REC) {
 	    ret = dlp_WriteRecord(sd, db, header.attrib & dlpRecAttrSecret,
 				  header.unique_id, header.attrib & 0x0F,
@@ -2419,13 +2545,6 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
 	    printf("Case 3&4: read record by id failed\n");
          }
 #endif
-	 /* Check whether records are the same */
-         /* same = rrec && (lrec_len==rrec_len) */
-         same = match_records(rrec, rrec_len, lrec, lrec_len, DB_name);
-#ifdef JPILOT_DEBUG
-         printf("Same is %d\n", same);
-#endif
-
          if (ret < 0) {
             /* lrec can't be found in pdb file which means it
              * has already been deleted from the Palm side.
@@ -2440,83 +2559,46 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
             }
             header.rt=DELETED_DELETED_PALM_REC;
             write_header(pc_in, &header);
-         } 
-         /* Next check for match between lrec and rrec */
-	 else if (same && (header.unique_id != 0)) {
-	    jp_logf(JP_LOG_DEBUG, "Case 3&4: lrec & rrec match, deleting\n");
-            ret = dlp_DeleteRecord(sd, db, 0, header.unique_id);
-            if (ret < 0) {
-               jp_logf(JP_LOG_WARN, _("dlp_DeleteRecord failed\n"
-                                      "This could be because the record was already deleted on the Palm\n"));
-               charset_j2p(error_log_message_d,255,char_set);
-               dlp_AddSyncLogEntry(sd, error_log_message_d);
-               dlp_AddSyncLogEntry(sd, "\n");
-            } else {
-               charset_j2p(delete_log_message,255,char_set);
-               dlp_AddSyncLogEntry(sd, delete_log_message);
-               dlp_AddSyncLogEntry(sd, "\n");
-               pdb_file_delete_record_by_id(DB_name, header.unique_id);
-            }
-	    
-            /* Now mark the record in pc3 file as deleted */
-	    if (fseek(pc_in, -(header.header_len+lrec_len), SEEK_CUR)) {
-               jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
-               fclose(pc_in);
-               free(lrec);
-               free(rrec);
-               return EXIT_FAILURE;
-            }
-            header.rt=DELETED_DELETED_PALM_REC;
-            write_header(pc_in, &header);
-
-         } else {
-            /* Record has been changed on the palm as well as the PC.  
-             *
-             * The changed record has already been transferred to the local pdb 
-             * file from the palm. It must be copied to the palm and to the 
-             * local pdb file under a new unique ID in order to prevent 
-             * overwriting by the modified PC record.  */
-            if ((header.rt==MODIFIED_PALM_REC)) {
-               jp_logf(JP_LOG_DEBUG, "Case 4: duplicating record\n");
-               jp_logf(JP_LOG_GUI, "Sync Conflict: a %s record must be manually merged\n", DB_name);
-
-               /* Write record to Palm and get new unique ID */
-               jp_logf(JP_LOG_DEBUG, "Writing PC record to palm\n");
-               ret = dlp_WriteRecord(sd, db, rattr & dlpRecAttrSecret,
-                                     0, rattr & 0x0F,
-                                     rrec, rrec_len, &header.unique_id);
-
-               /* Write record to local pdb file */
-               jp_logf(JP_LOG_DEBUG, "Writing PC record to local\n");
-               if (ret >=0) {
-                  pdb_file_modify_record(DB_name, rrec, rrec_len,
-                                         rattr & dlpRecAttrSecret,
-                                         rattr & 0x0F, header.unique_id);
-               }
-
+	 } else {
+	    /* Record exists on the palm and has been deleted from PC 
+             * If the two records are the same, then no changes have
+             * occurred on the Palm and the deletion should occur */
+            same = match_records(DB_name, 
+                                 rrec, rrec_len, rattr, rcategory,
+                                 lrec, lrec_len, header.attrib&0xF0,
+                                                 header.attrib&0x0F);
+#ifdef JPILOT_DEBUG
+            printf("Same is %d\n", same);
+#endif
+            if (same && (header.unique_id != 0)) {
+               jp_logf(JP_LOG_DEBUG, "Case 3&4: lrec & rrec match, deleting\n");
+               ret = dlp_DeleteRecord(sd, db, 0, header.unique_id);
                if (ret < 0) {
-                  jp_logf(JP_LOG_WARN, "dlp_WriteRecord failed\n");
-                  charset_j2p(error_log_message_w,255,char_set);
-                  dlp_AddSyncLogEntry(sd, error_log_message_w);
+                  jp_logf(JP_LOG_WARN, _("dlp_DeleteRecord failed\n"
+                                         "This could be because the record was already deleted on the Palm\n"));
+                  charset_j2p(error_log_message_d,255,char_set);
+                  dlp_AddSyncLogEntry(sd, error_log_message_d);
                   dlp_AddSyncLogEntry(sd, "\n");
                } else {
-                  charset_j2p(conflict_log_message,255,char_set);
-                  dlp_AddSyncLogEntry(sd, conflict_log_message);
+                  charset_j2p(delete_log_message,255,char_set);
+                  dlp_AddSyncLogEntry(sd, delete_log_message);
                   dlp_AddSyncLogEntry(sd, "\n");
-                  /* Now mark the record as deleted in the pc file */
-                  if (fseek(pc_in, -(header.header_len+lrec_len), SEEK_CUR)) {
-                     jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
-                     fclose(pc_in);
-                     free(lrec);
-                     free(rrec);
-                     return EXIT_FAILURE;
-                  }
-                  header.rt=DELETED_PC_REC;
-                  write_header(pc_in, &header);
+                  pdb_file_delete_record_by_id(DB_name, header.unique_id);
                }
+               
+               /* Now mark the record in pc3 file as deleted */
+               if (fseek(pc_in, -(header.header_len+lrec_len), SEEK_CUR)) {
+                  jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
+                  fclose(pc_in);
+                  free(lrec);
+                  free(rrec);
+                  return EXIT_FAILURE;
+               }
+               header.rt=DELETED_DELETED_PALM_REC;
+               write_header(pc_in, &header);
             } else {
-               /* Record was a deletion on the PC but modified on the Palm
-                * The PC deletion is ignored by skipping the .pc3 file entry */
+               /* Record has been changed on the palm and deletion can't occur
+                * Mark the pc3 record as having been dealt with */
                jp_logf(JP_LOG_DEBUG, "Case 3: skipping PC deleted record\n");
                if (fseek(pc_in, -(header.header_len+lrec_len), SEEK_CUR)) {
                   jp_logf(JP_LOG_WARN, _("fseek failed - fatal error\n"));
@@ -2527,21 +2609,19 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
                }
                header.rt=DELETED_PC_REC;
                write_header(pc_in, &header);
+            } /* end if checking whether old & new records are the same */
+
+            /* free buffers */
+            if (lrec) {
+               free(lrec);
+               lrec = NULL;
             }
 
-         } /* end if checking whether old & new records are the same */
-
-         /* free buffers */
-	 if (lrec) {
-	    free(lrec);
-	    lrec = NULL;
-	 }
-
-         if (rrec) {
-            free(rrec);
-            rrec = NULL;
-         }
-
+            if (rrec) {
+               free(rrec);
+               rrec = NULL;
+            }
+         } /* record found on Palm */
       } /* end if Case 3&4 */
 
       /* move to next record in .pc3 file */
@@ -2677,7 +2757,10 @@ int fast_sync_application(char *DB_name, int sd)
       if (rattr & dlpRecAttrDirty) {
 	 jp_logf(JP_LOG_DEBUG, "Case 2: found a dirty record on palm\n");
 	 pdb_file_modify_record(DB_name, rrec->data, rrec->used, rattr, rcategory, rid);
+	 pi_buffer_free(rrec);
+	 continue;
       }
+
       pi_buffer_free(rrec);
    } /* end while over Palm records */
 

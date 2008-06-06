@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.150 2008/06/03 03:23:15 rikster5 Exp $ */
+/* $Id: utils.c,v 1.151 2008/06/06 23:09:01 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -2428,6 +2428,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
    pi_buffer_t *RecordBuffer = NULL;
    PCRecType record_type;
    unsigned int unique_id;
+   unsigned char attrib;
    long ivalue, memo_version;
 
    jp_logf(JP_LOG_DEBUG, "delete_pc_record(%d, , %d)\n", app_type, flag);
@@ -2447,24 +2448,28 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       mappt = (MyAppointment *) VP;
       record_type = mappt->rt;
       unique_id = mappt->unique_id;
+      attrib = mappt->attrib;
       strcpy(filename, "DatebookDB.pc3");
       break;
     case ADDRESS:
       maddr = (MyAddress *) VP;
       record_type = maddr->rt;
       unique_id = maddr->unique_id;
+      attrib = maddr->attrib;
       strcpy(filename, "AddressDB.pc3");
       break;
     case CONTACTS:
       mcont = (MyContact *) VP;
       record_type = mcont->rt;
       unique_id = mcont->unique_id;
+      attrib = mcont->attrib;
       strcpy(filename, "ContactsDB-PAdd.pc3");
       break;
     case TODO:
       mtodo = (MyToDo *) VP;
       record_type = mtodo->rt;
       unique_id = mtodo->unique_id;
+      attrib = mtodo->attrib;
 #ifdef ENABLE_MANANA
       get_pref(PREF_MANANA_MODE, &ivalue, NULL);
       if (ivalue) {
@@ -2480,6 +2485,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       mmemo = (MyMemo *) VP;
       record_type = mmemo->rt;
       unique_id = mmemo->unique_id;
+      attrib = mmemo->attrib;
       get_pref(PREF_MEMO_VERSION, &memo_version, NULL);
       get_pref(PREF_MEMO32_MODE, &ivalue, NULL);
       if (ivalue) {
@@ -2553,12 +2559,15 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 	 pi_buffer_free(RecordBuffer);
 	 return EXIT_FAILURE;
       }
+
       header.unique_id=unique_id;
       if (flag==MODIFY_FLAG) {
 	 header.rt=MODIFIED_PALM_REC;
       } else {
 	 header.rt=DELETED_PALM_REC;
       }
+      header.attrib=attrib;
+
       switch (app_type) {
        case DATEBOOK:
 	 appt=&mappt->appt;
@@ -2627,8 +2636,10 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
     default:
       break;
    } /* switch (record_type) */
+
    if (RecordBuffer)
-	   pi_buffer_free(RecordBuffer);
+      pi_buffer_free(RecordBuffer);
+
    return EXIT_SUCCESS;
 }
 
