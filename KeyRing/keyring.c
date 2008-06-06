@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.77 2008/06/06 15:57:28 rousseau Exp $ */
+/* $Id: keyring.c,v 1.78 2008/06/06 16:01:53 rousseau Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -166,7 +166,7 @@ static void update_date_button(GtkWidget *button, struct tm *t);
  * The KeyRing structure is 276 bytes whereas pilot-link uses 278.
  * Code below is taken from unpack_CategoryAppInfo in pilot-link but modified
  * for the shortened structure. */
-int plugin_unpack_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *record, int len)
+static int keyr_plugin_unpack_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *record, int len)
 {
    int i, rec;
 
@@ -192,6 +192,11 @@ int plugin_unpack_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *record
    record += 2;
 
    return EXIT_SUCCESS;
+}
+
+int plugin_unpack_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *record, int len)
+{
+	return keyr_plugin_unpack_cai_from_ai(cai, record, len);
 }
 
 /* Routine to pack CategoryAppInfo struct into non-standard size buffer */
@@ -1446,7 +1451,7 @@ static void make_menus()
     * We still need to write a function to unpack it from its blob form. */
    memset(&cai, 0, sizeof(cai));
    jp_get_app_info("Keys-Gtkr", &buf, &buf_size);
-   plugin_unpack_cai_from_ai(&cai, buf, buf_size);
+   keyr_plugin_unpack_cai_from_ai(&cai, buf, buf_size);
    free(buf);
    
    categories[0]= "All";
