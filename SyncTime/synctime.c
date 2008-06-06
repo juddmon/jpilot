@@ -1,4 +1,4 @@
-/* $Id: synctime.c,v 1.12 2008/06/03 01:04:40 rikster5 Exp $ */
+/* $Id: synctime.c,v 1.13 2008/06/06 01:58:02 rikster5 Exp $ */
 
 /*******************************************************************************
  * synctime.c
@@ -25,6 +25,7 @@
 #include <time.h>
 
 #include <pi-dlp.h>
+#include <pi-source.h>
 
 #include "libplugin.h"
 #include "i18n.h"
