@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.66 2008/06/04 16:58:08 rikster5 Exp $ */
+/* $Id: prefs_gui.c,v 1.67 2008/06/09 16:27:54 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -302,11 +302,6 @@ void cb_checkbox_set_pref(GtkWidget *widget, gpointer data)
    pref = GPOINTER_TO_INT(data);
    value = GTK_TOGGLE_BUTTON(widget)->active;
    set_pref(pref, value, NULL, TRUE);
-   /* FIXME: Should eliminate references to SYNC_MEMO32 and use the preference
-    * SYNC_MEMO instead */
-   if (pref==PREF_SYNC_MEMO) {
-      set_pref(PREF_SYNC_MEMO32, value, NULL, TRUE);
-   }
 }
 
 /*
@@ -316,31 +311,11 @@ void cb_checkbox_set_pref(GtkWidget *widget, gpointer data)
 void cb_radio_set_pref(GtkWidget *widget, gpointer data)
 {
    unsigned long pref, value;
-   long ivalue;
-   const char *cstr;
 
    pref=GPOINTER_TO_INT(data);
    value=pref & 0xFFFF;
    pref >>= 16;
    set_pref(pref, value, NULL, TRUE);
-   /* FIXME: Hack which preserves MEMO32 pref.  This should be
-    * eliminated in favor of just PREF_MEMO_VERSION */
-   if (pref==PREF_MEMO_VERSION) {
-      if (value==2) {
-         set_pref(PREF_MEMO32_MODE, 1, NULL, TRUE);
-
-         get_pref(PREF_SYNC_MEMO, &ivalue, &cstr);
-         if (ivalue) {
-            set_pref(PREF_SYNC_MEMO32, 1, NULL, TRUE);
-         } else {
-            set_pref(PREF_SYNC_MEMO32, 0, NULL, TRUE);
-         }
-
-      } else {
-         set_pref(PREF_MEMO32_MODE, 0, NULL, TRUE);
-         set_pref(PREF_SYNC_MEMO32, 0, NULL, TRUE);
-      }
-   }
 }
 
 
@@ -872,7 +847,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 
    /**********************************************************************/
    /* Memo preference tab */
-   /* Radio box to choose which database to use: Memo/Memo32/Memos*/
+   /* Radio box to choose which database to use: Memo/Memos/Memo32 */
    group = NULL;
    radio_button_memo_version[0] = 
      gtk_radio_button_new_with_label(group, _("Use Memo database (Palm OS < 5.2.1)"));
@@ -900,17 +875,10 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 		      GTK_SIGNAL_FUNC(cb_radio_set_pref),
 		      GINT_TO_POINTER((PREF_MEMO_VERSION<<16)|2));
 
-   /* Backwards compatability with MEMO32 preference */
-   /* FIXME: Would be nice to eliminate all MEMO32 references in
-    * the code and just use PREF_MEMO_VERSION everywhere */
-   get_pref(PREF_MEMO32_MODE, &ivalue, NULL);
-   if (ivalue) {
-      set_pref(PREF_MEMO_VERSION, 2, NULL, TRUE);
-   }
-
    get_pref(PREF_MEMO_VERSION, &ivalue, NULL);
    switch (ivalue) {
     case 0:
+    default:
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_memo_version[0]), TRUE);
       break;
     case 1:
@@ -918,9 +886,6 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
       break;
     case 2:
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_memo_version[2]), TRUE);
-      break;
-    default:
-      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_memo_version[0]), TRUE);
       break;
    }
 
@@ -999,13 +964,6 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    /* Show sync todo check box */
    add_checkbutton(_("Sync todo"),
 		   PREF_SYNC_TODO, vbox_conduits, cb_checkbox_set_pref);
-
-   /* FIXME: Eliminate SYNC_MEMO32 everywhere in the code in favor of
-    * SYNC_MEMO.  This stanza ensures backward compatability */
-   get_pref(PREF_SYNC_MEMO32, &ivalue, NULL);
-   if (ivalue) {
-      set_pref(PREF_SYNC_MEMO, 1, NULL, TRUE);
-   }
 
    /* Show sync memo check box */
    add_checkbutton(_("Sync memo"),

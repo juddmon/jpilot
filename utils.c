@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.151 2008/06/06 23:09:01 rikster5 Exp $ */
+/* $Id: utils.c,v 1.152 2008/06/09 16:27:54 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -213,6 +213,18 @@ void rename_dbnames(char dbname[][32])
 	 }
 	 if (!strcmp(dbname[i], "MemoDB")) {
 	    strcpy(dbname[i], "MemosDB-PMem");
+	 }
+      }
+
+      if (memo_version==2) {
+	 if (!strcmp(dbname[i], "MemoDB.pdb")) {
+	    strcpy(dbname[i], "Memo32DB.pdb");
+	 }
+	 if (!strcmp(dbname[i], "MemoDB.pc3")) {
+	    strcpy(dbname[i], "Memo32DB.pc3");
+	 }
+	 if (!strcmp(dbname[i], "MemoDB")) {
+	    strcpy(dbname[i], "Memo32DB");
 	 }
       }
    }
@@ -2429,7 +2441,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
    PCRecType record_type;
    unsigned int unique_id;
    unsigned char attrib;
-   long ivalue, memo_version;
+   long memo_version;
 
    jp_logf(JP_LOG_DEBUG, "delete_pc_record(%d, , %d)\n", app_type, flag);
 
@@ -2487,15 +2499,17 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       unique_id = mmemo->unique_id;
       attrib = mmemo->attrib;
       get_pref(PREF_MEMO_VERSION, &memo_version, NULL);
-      get_pref(PREF_MEMO32_MODE, &ivalue, NULL);
-      if (ivalue) {
+      switch (memo_version) {
+       case 0:
+       default:
+         strcpy(filename, "MemoDB.pc3");
+         break;
+       case 1:
+         strcpy(filename, "MemosDB-PMem.pc3");
+         break;
+       case 2:
 	 strcpy(filename, "Memo32DB.pc3");
-      } else {
-         if (memo_version==1) {
-            strcpy(filename, "MemosDB-PMem.pc3");
-         } else {
-            strcpy(filename, "MemoDB.pc3");
-         }
+         break;
       }
       break;
     default:
@@ -2654,7 +2668,6 @@ int undelete_pc_record(AppType app_type, void *VP, int flag)
    MyToDo *mtodo;
    MyMemo *mmemo;
    unsigned int unique_id;
-   long ivalue;
    char filename[FILENAME_MAX];
    char filename2[FILENAME_MAX];
    FILE *pc_file  = NULL;
@@ -2664,7 +2677,7 @@ int undelete_pc_record(AppType app_type, void *VP, int flag)
    int ret = -1;
    int num;
    char dbname[][32]={
-      "DatebookDB.pc3",
+   "DatebookDB.pc3",
 	"AddressDB.pc3",
 	"ToDoDB.pc3",
 	"MemoDB.pc3",
@@ -2711,12 +2724,7 @@ int undelete_pc_record(AppType app_type, void *VP, int flag)
     case MEMO:
       mmemo = (MyMemo *) VP;
       unique_id = mmemo->unique_id;
-      get_pref(PREF_MEMO32_MODE, &ivalue, NULL);
-      if (ivalue) {
-	 strcpy(filename, "Memo32DB.pc3");
-      } else {
-	 strcpy(filename, dbname[3]);
-      }
+      strcpy(filename, dbname[3]);
       break;
     default:
       return EXIT_SUCCESS;
@@ -2954,11 +2962,10 @@ int cleanup_pc_files()
    int i;
    char dbname[][32]={
       "DatebookDB",
-	"AddressDB",
-	"ToDoDB",
-	"MemoDB",
-	"Memo32DB",
-	""
+      "AddressDB",
+      "ToDoDB",
+      "MemoDB",
+      ""
    };
 
    /* Convert to new database names if prefs set */

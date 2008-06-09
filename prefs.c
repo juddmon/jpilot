@@ -1,4 +1,4 @@
-/* $Id: prefs.c,v 1.76 2008/06/03 01:02:53 rikster5 Exp $ */
+/* $Id: prefs.c,v 1.77 2008/06/09 16:27:54 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs.c
@@ -805,6 +805,16 @@ static int validate_glob_prefs()
    }
    if (glob_prefs[PREF_NUM_BACKUPS].ivalue < 1) {
       glob_prefs[PREF_NUM_BACKUPS].ivalue = 1;
+   }
+
+   /* Backwards compatability with MEMO32 preference */
+   if (glob_prefs[PREF_MEMO32_MODE].ivalue) {
+      glob_prefs[PREF_MEMO_VERSION].ivalue = 2;
+      glob_prefs[PREF_MEMO32_MODE].ivalue = 0;
+   }
+   if (glob_prefs[PREF_SYNC_MEMO32].ivalue) {
+      glob_prefs[PREF_SYNC_MEMO].ivalue = 1;
+      glob_prefs[PREF_SYNC_MEMO32].ivalue = 0;
    }
 
    get_pref_possibility(PREF_TIME, glob_prefs[PREF_TIME].ivalue, svalue);

@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.94 2008/06/06 23:09:01 rikster5 Exp $ */
+/* $Id: sync.c,v 1.95 2008/06/09 16:27:54 rikster5 Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -573,22 +573,20 @@ int jp_sync(struct my_sync_info *sync_info)
    int i;
    /* rename_dbnames is used to modify this list to newer databases if needed*/
    char dbname[][32]={
-      "DatebookDB",
+   "DatebookDB",
 	"AddressDB",
 	"ToDoDB",
 	"MemoDB",
-	"Memo32DB",
 #ifdef ENABLE_MANANA
 	"MañanaDB",
 #endif
 	""
    };
    int pref_sync_array[]={
-      PREF_SYNC_DATEBOOK,
+   PREF_SYNC_DATEBOOK,
 	PREF_SYNC_ADDRESS,
 	PREF_SYNC_TODO,
 	PREF_SYNC_MEMO,
-	PREF_SYNC_MEMO32,
 #ifdef ENABLE_MANANA
 	PREF_SYNC_MANANA,
 #endif
@@ -1615,7 +1613,6 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
       "AddressDB",
       "ToDoDB",
       "MemoDB",
-      "Memo32DB",
 #ifdef ENABLE_MANANA
       "MañanaDB",
 #endif
@@ -1773,13 +1770,8 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
                      skip_file = 1; 
                   }
                   break;
-                case 4:
-                  if (!get_pref_int_default(PREF_SYNC_MEMO32, 1)) {
-                     skip_file = 1; 
-                  }
-                  break;
 #ifdef ENABLE_MANANA                  
-                case 5:
+                case 4:
                   if (!get_pref_int_default(PREF_SYNC_MANANA, 1)) {
                      skip_file = 1; 
                   }

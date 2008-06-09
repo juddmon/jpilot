@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.122 2008/06/03 03:23:15 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.123 2008/06/09 16:27:54 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -957,7 +957,6 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
    int num;
    size_t size;
    void *buf;
-   long ivalue;
    struct pi_file *pf;
    long memo_version;
      
@@ -965,20 +964,22 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
 
    get_pref(PREF_MEMO_VERSION, &memo_version, NULL);
 
-   get_pref(PREF_MEMO32_MODE, &ivalue, NULL);
-
-   if (ivalue) {
+   switch (memo_version) {
+    case 0:
+    default:
+      strcpy(pdb_name, "MemoDB.pdb");
+      strcpy(db_name, "MemoDB");
+      break;
+    case 1:
+      strcpy(pdb_name, "MemosDB-PMem.pdb");
+      strcpy(db_name, "MemosDB-PMem");
+      break;
+    case 2:
       strcpy(pdb_name, "Memo32DB.pdb");
       strcpy(db_name, "Memo32DB");
-   } else {
-      if (memo_version==1) {
-	 strcpy(pdb_name, "MemosDB-PMem.pdb");
-	 strcpy(db_name, "MemosDB-PMem");
-      } else {
-	 strcpy(pdb_name, "MemoDB.pdb");
-	 strcpy(db_name, "MemoDB");
-      }
+      break;
    }
+
    get_home_file_name(pdb_name, full_name, sizeof(full_name));
 
    buf=NULL;
