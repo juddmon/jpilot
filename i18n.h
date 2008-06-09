@@ -1,4 +1,4 @@
-/* $Id: i18n.h,v 1.10 2008/06/08 14:04:44 rousseau Exp $ */
+/* $Id: i18n.h,v 1.11 2008/06/09 17:23:37 rikster5 Exp $ */
 
 /*******************************************************************************
  * i18n.h
@@ -26,6 +26,7 @@
 #  include "config.h"
 
 #  if defined(ENABLE_NLS)
+#    include <locale.h>
 #    include "gettext.h"
 #    define _(str) gettext(str)
 #    define N_(str) str

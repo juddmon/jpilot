@@ -64,6 +64,10 @@ if test "x$MSGFMT" = "xno"; then
    fi
 fi
 
+dnl gettext macros for context-sensitive messages depend on locale.h
+AC_CHECK_HEADER(locale.h,,
+                AC_MSG_ERROR(gettext requires locale.h.  Install locale.h or disable language support with 'configure --disable-nls'))
+
 dnl ############################################################################
 dnl Process Enable/Disable configure arguments
 dnl ############################################################################
