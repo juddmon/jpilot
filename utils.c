@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.152 2008/06/09 16:27:54 rikster5 Exp $ */
+/* $Id: utils.c,v 1.153 2008/06/09 17:21:31 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -2441,6 +2441,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
    PCRecType record_type;
    unsigned int unique_id;
    unsigned char attrib;
+   long ivalue;
    long memo_version;
 
    jp_logf(JP_LOG_DEBUG, "delete_pc_record(%d, , %d)\n", app_type, flag);
@@ -2676,6 +2677,7 @@ int undelete_pc_record(AppType app_type, void *VP, int flag)
    int found;
    int ret = -1;
    int num;
+   long ivalue;
    char dbname[][32]={
    "DatebookDB.pc3",
 	"AddressDB.pc3",
