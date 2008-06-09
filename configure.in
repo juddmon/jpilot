@@ -392,16 +392,8 @@ AC_CHECK_LIB([crypto], [SSLeay_version], have_libcrypto=1, have_libcrypto=0)
 dnl ############################################################################
 dnl Check for headers needed 
 dnl ############################################################################
-dnl 10/02/06: These macros are obsolecscent.  All new machines are likely to run
-dnl these correctly and the correct ifdefs do not exist in the code to make use
-dnl of them anyways.
-dnl *********************
-AC_HEADER_STDC
-AC_HEADER_SYS_WAIT
-dnl *********************
-
 dnl 10/2/06: only headers used for true code portability right now are locale.h, langinfo.h
-AC_CHECK_HEADERS([fcntl.h langinfo.h locale.h stdlib.h string.h strings.h sys/file.h sys/socket.h sys/time.h unistd.h utime.h])
+AC_CHECK_HEADERS([fcntl.h langinfo.h locale.h stdlib.h string.h sys/file.h sys/socket.h sys/time.h sys/wait.h unistd.h utime.h])
 
 # Headers required for plugins
 AC_CHECK_HEADERS(netinet/in.h, have_netinet=1, have_netinet=0)
