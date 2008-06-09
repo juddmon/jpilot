@@ -38,7 +38,7 @@ static char pidfile[FILENAME_MAX];
 
 void setup_pidfile(void)
 {
-   bzero (pidfile, FILENAME_MAX);
+   memset(pidfile, 0, FILENAME_MAX);
    get_home_file_name (JPILOT_PIDFILE, pidfile, FILENAME_MAX);
 }
 

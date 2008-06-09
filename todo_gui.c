@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.136 2008/06/03 03:23:15 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.137 2008/06/09 15:28:13 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -1087,7 +1087,7 @@ int todo_get_details(struct ToDo *new_todo, unsigned char *attrib)
       jp_logf(JP_LOG_DEBUG, "todo_get_details: setting due date=%d/%d/%d\n", new_todo->due.tm_mon,
 	      new_todo->due.tm_mday, new_todo->due.tm_year);
    } else {
-      bzero(&(new_todo->due), sizeof(new_todo->due));
+      memset(&(new_todo->due), 0, sizeof(new_todo->due));
    }
    new_todo->priority=1;
    for (i=0; i<NUM_TODO_PRIORITIES; i++) {
