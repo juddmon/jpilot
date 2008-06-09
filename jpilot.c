@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.170 2008/06/03 23:47:00 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.171 2008/06/09 16:31:24 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -1614,7 +1614,7 @@ int main(int argc, char *argv[])
 #  ifdef HAVE_LOCALE_H
    char *current_locale;
 #  endif
-# endif
+#endif
    
 
    sync_only=FALSE;
@@ -1635,7 +1635,7 @@ int main(int argc, char *argv[])
    /* enable internationalization(i18n) before printing any output */
 #if defined(ENABLE_NLS)
 #  ifdef HAVE_LOCALE_H
-   current_locale = setlocale(LC_ALL, "");
+      current_locale = setlocale(LC_ALL, "");
 #  endif
    bindtextdomain(EPN, LOCALEDIR);
    textdomain(EPN);
@@ -1653,37 +1653,37 @@ int main(int argc, char *argv[])
 
    /* Extract first day of week preference from locale in GTK2 */
 
-#     ifdef HAVE__NL_TIME_FIRST_WEEKDAY
-	 /* GTK 2.8 libraries */
-         langinfo = nl_langinfo(_NL_TIME_FIRST_WEEKDAY);
-         first_weekday = langinfo[0];
-         langinfo = nl_langinfo(_NL_TIME_WEEK_1STDAY);
-         week_origin = GPOINTER_TO_INT(langinfo);
-         if (week_origin == 19971130)      /* Sunday */
-            week_1stday = 0;
-         else if (week_origin == 19971201) /* Monday */
-            week_1stday = 1;
-         else
-            g_warning ("Unknown value of _NL_TIME_WEEK_1STDAY.\n");
+#  ifdef HAVE__NL_TIME_FIRST_WEEKDAY
+      /* GTK 2.8 libraries */
+      langinfo = nl_langinfo(_NL_TIME_FIRST_WEEKDAY);
+      first_weekday = langinfo[0];
+      langinfo = nl_langinfo(_NL_TIME_WEEK_1STDAY);
+      week_origin = GPOINTER_TO_INT(langinfo);
+      if (week_origin == 19971130)      /* Sunday */
+         week_1stday = 0;
+      else if (week_origin == 19971201) /* Monday */
+         week_1stday = 1;
+      else
+         g_warning ("Unknown value of _NL_TIME_WEEK_1STDAY.\n");
 
-         pref_fdow = (week_1stday + first_weekday - 1) % 7;
-#     else
-	 /* GTK 2.6 libraries */
-#        if defined(ENABLE_NLS)
-	    week_start = dgettext("gtk20", "calendar:week_start:0");
-	    if (strncmp("calendar:week_start:", week_start, 20) == 0) {
-	       pref_fdow = *(week_start + 20) - '0';
-	    } else {
-               pref_fdow = -1;
-            }
-#        endif
+      pref_fdow = (week_1stday + first_weekday - 1) % 7;
+#  else
+      /* GTK 2.6 libraries */
+#     if defined(ENABLE_NLS)
+         week_start = dgettext("gtk20", "calendar:week_start:0");
+         if (strncmp("calendar:week_start:", week_start, 20) == 0) {
+            pref_fdow = *(week_start + 20) - '0';
+         } else {
+            pref_fdow = -1;
+         }
 #     endif
-      if (pref_fdow > 1)
-	 pref_fdow = 1;
-      if (pref_fdow < 0)
-	 pref_fdow = 0;
+#  endif
+   if (pref_fdow > 1)
+      pref_fdow = 1;
+   if (pref_fdow < 0)
+      pref_fdow = 0;
 
-      set_pref_possibility(PREF_FDOW, pref_fdow, TRUE);
+   set_pref_possibility(PREF_FDOW, pref_fdow, TRUE);
 
 
    if (otherconv_init()) {
