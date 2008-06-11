@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.154 2008/06/09 17:47:31 rikster5 Exp $ */
+/* $Id: utils.c,v 1.155 2008/06/11 11:56:07 rousseau Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -2122,7 +2122,22 @@ FILE *jp_open_home_file(char *filename, char *mode)
    if (pc_in)
    {
       /* lock access */
+#ifndef USE_FLOCK
+      struct flock lock;
+      int  r;
+
+      if (*mode == 'r')
+	 lock.l_type = F_RDLCK;
+      else
+	 lock.l_type = F_WRLCK;
+      lock.l_start = 0;
+      lock.l_whence = SEEK_SET;
+      lock.l_len = 0; /*Lock to the end of file */
+      r = fcntl(fileno(pc_in), F_SETLK, &lock);
+      if (r == -1)
+#else
       if (flock(fileno(pc_in), LOCK_EX) < 0)
+#endif
       {
 	 jp_logf(JP_LOG_WARN, "locking %s failed: %s\n", filename, strerror(errno));
 	 if (ENOLCK != errno)
@@ -2144,7 +2159,19 @@ FILE *jp_open_home_file(char *filename, char *mode)
 int jp_close_home_file(FILE *pc_in)
 {
    /* unlock access */
+#ifndef USE_FLOCK
+   struct flock lock;
+   int  r;
+
+   lock.l_type = F_UNLCK;
+   lock.l_start = 0;
+   lock.l_whence = SEEK_SET;
+   lock.l_len = 0;
+   r = fcntl(fileno(pc_in), F_SETLK, &lock);
+   if (r == -1)
+#else
    if (flock(fileno(pc_in), LOCK_UN) < 0)
+#endif
       jp_logf(JP_LOG_WARN, "unlocking failed: %s\n", strerror(errno));
 
    return fclose(pc_in);
