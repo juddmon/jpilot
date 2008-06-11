@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.155 2008/06/11 11:56:07 rousseau Exp $ */
+/* $Id: utils.c,v 1.156 2008/06/11 19:43:47 rousseau Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -2473,7 +2473,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 #endif
    long memo_version;
 
-   jp_logf(JP_LOG_DEBUG, "delete_pc_record(%d, , %d)\n", app_type, flag);
+   jp_logf(JP_LOG_DEBUG, "delete_pc_record(%d, %d)\n", app_type, flag);
 
    if (VP==NULL) {
       return EXIT_FAILURE;
