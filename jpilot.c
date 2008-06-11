@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.171 2008/06/09 16:31:24 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.172 2008/06/11 06:53:45 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -707,6 +707,10 @@ void cb_sync(GtkWidget *widget, unsigned int flags)
       }
    }
 
+#ifdef __APPLE__
+   /* bug 1924 */
+   flags |= SYNC_NO_FORK;
+#endif
    setup_sync(flags);
 
    return;
