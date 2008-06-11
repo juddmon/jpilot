@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.156 2008/06/11 19:43:47 rousseau Exp $ */
+/* $Id: utils.c,v 1.157 2008/06/11 20:39:54 rousseau Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -2472,12 +2472,15 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
    long ivalue;
 #endif
    long memo_version;
+   long char_set;
 
    jp_logf(JP_LOG_DEBUG, "delete_pc_record(%d, %d)\n", app_type, flag);
 
    if (VP==NULL) {
       return EXIT_FAILURE;
    }
+
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
 
    /* to keep the compiler happy with -Wall*/
    mappt=NULL;
@@ -2615,6 +2618,11 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       switch (app_type) {
        case DATEBOOK:
 	 appt=&mappt->appt;
+	 if (char_set != CHAR_SET_LATIN1) {
+	    if (appt->description) charset_j2p(appt->description, strlen(appt->description)+1, char_set);
+	    if (appt->note) charset_j2p(appt->note, strlen(appt->note)+1, char_set);
+	 }
+
 	 /*memset(&appt, 0, sizeof(appt)); */
 	 if (pack_Appointment(appt, RecordBuffer, datebook_v1) == -1) {
 	    PRINT_FILE_LINE;
