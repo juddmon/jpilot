@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.95 2008/06/09 16:27:54 rikster5 Exp $ */
+/* $Id: sync.c,v 1.96 2008/06/11 12:38:06 rousseau Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -148,6 +148,7 @@ int sync_lock(int *fd)
       read(*fd, str, 10);
       pid = atoi(str);
       jp_logf(JP_LOG_FATAL, _("sync file is locked by pid %d\n"), pid);
+      close(*fd);
       return EXIT_FAILURE;
    } else {
       jp_logf(JP_LOG_DEBUG, "lock succeeded\n");
@@ -298,6 +299,14 @@ int sync_once(struct my_sync_info *sync_info)
    struct my_sync_info *sync_info_copy;
    pid_t pid;
 
+#ifdef USE_LOCKING
+   r = sync_lock(&fd);
+   if (r) {
+      jp_logf(JP_LOG_DEBUG, "Child cannot lock file\n");
+      return EXIT_FAILURE;
+   }
+#endif
+
    if (glob_child_pid) {
       jp_logf(JP_LOG_WARN, _("%s: sync process already in progress (process ID = %d\n)"), PN, glob_child_pid);
       jp_logf(JP_LOG_WARN, _("%s: press the hotsync button on the cradle\n"
@@ -342,14 +351,6 @@ int sync_once(struct my_sync_info *sync_info)
 	   close(i);
       }*/
    }
-#ifdef USE_LOCKING
-   r = sync_lock(&fd);
-   if (r) {
-      jp_logf(JP_LOG_DEBUG, "Child cannot lock file\n");
-      free(sync_info_copy);
-      _exit(0);
-   }
-#endif
 
    r = jp_sync(sync_info_copy);
    if (r) {
@@ -362,7 +363,7 @@ int sync_once(struct my_sync_info *sync_info)
    jp_logf(JP_LOG_DEBUG, "sync child exiting\n");
    free(sync_info_copy);
    if (!(sync_info->flags & SYNC_NO_FORK)) {
-      _exit(0);
+      return EXIT_FAILURE;
    } else {
       return r;
    }
