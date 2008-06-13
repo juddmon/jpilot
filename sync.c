@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.97 2008/06/11 12:38:46 rousseau Exp $ */
+/* $Id: sync.c,v 1.98 2008/06/13 01:31:04 rikster5 Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -323,7 +323,7 @@ int sync_once(struct my_sync_info *sync_info)
    }
    memcpy(sync_info_copy, sync_info, sizeof(struct my_sync_info));
 
-   if (!(sync_info->flags & SYNC_NO_FORK)) {
+   if (!(SYNC_NO_FORK & sync_info->flags)) {
       jp_logf(JP_LOG_DEBUG, "forking sync process\n");
       signal(SIGCHLD, sig_handler);
       glob_child_pid = -1;
@@ -363,7 +363,7 @@ int sync_once(struct my_sync_info *sync_info)
 #endif
    jp_logf(JP_LOG_DEBUG, "sync child exiting\n");
    free(sync_info_copy);
-   if (!(sync_info->flags & SYNC_NO_FORK)) {
+   if (!(SYNC_NO_FORK & sync_info->flags)) {
       return EXIT_FAILURE;
    } else {
       return r;
@@ -653,8 +653,8 @@ int jp_sync(struct my_sync_info *sync_info)
 
    /* Load the plugins for a forked process */
 #ifdef ENABLE_PLUGINS
-   if (!(sync_info->flags & SYNC_NO_FORK) &&
-       !(sync_info->flags & SYNC_NO_PLUGINS)) {
+   if (!(SYNC_NO_FORK & sync_info->flags) &&
+       !(SYNC_NO_PLUGINS & sync_info->flags)) {
       jp_logf(JP_LOG_DEBUG, "sync:calling load_plugins\n");
       load_plugins();
    }
@@ -712,7 +712,7 @@ int jp_sync(struct my_sync_info *sync_info)
       return ret;
    }
 
-   if (sync_info->flags & SYNC_INSTALL_USER) {
+   if (SYNC_INSTALL_USER & sync_info->flags) {
       ret = jp_install_user(device, sd, sync_info);
       write_to_parent(PIPE_FINISHED, "\n");
       return ret;
@@ -746,13 +746,13 @@ int jp_sync(struct my_sync_info *sync_info)
     * the last time
     */
    if ( (U.userID == 0) &&
-      (!(sync_info->flags & SYNC_RESTORE)) ) {
+      (!(SYNC_RESTORE & sync_info->flags)) ) {
       jp_logf(JP_LOG_GUI, _("Last Synced Username-->\"%s\"\n"), sync_info->username);
       jp_logf(JP_LOG_GUI, _("Last Synced UserID-->\"%d\"\n"), sync_info->userID);
       jp_logf(JP_LOG_GUI, _(" This Username-->\"%s\"\n"), U.username);
       jp_logf(JP_LOG_GUI, _(" This User ID-->%d\n"), U.userID);
 
-      if (sync_info->flags & SYNC_NO_FORK) {
+      if (SYNC_NO_FORK & sync_info->flags) {
 	 return SYNC_ERROR_NULL_USERID;
       } else {
 	 write_to_parent(PIPE_WAITING_ON_USER, "%d:\n", SYNC_ERROR_NULL_USERID);
@@ -767,14 +767,14 @@ int jp_sync(struct my_sync_info *sync_info)
    }
    if ((sync_info->userID != U.userID) &&
        (sync_info->userID != 0) &&
-       (!(sync_info->flags & SYNC_OVERRIDE_USER)) &&
-       (!(sync_info->flags & SYNC_RESTORE))) {
+       (!(SYNC_OVERRIDE_USER & sync_info->flags)) &&
+       (!(SYNC_RESTORE & sync_info->flags))) {
       jp_logf(JP_LOG_GUI, _("Last Synced Username-->\"%s\"\n"), sync_info->username);
       jp_logf(JP_LOG_GUI, _("Last Synced UserID-->\"%d\"\n"), sync_info->userID);
       jp_logf(JP_LOG_GUI, _(" This Username-->\"%s\"\n"), U.username);
       jp_logf(JP_LOG_GUI, _(" This User ID-->%d\n"), U.userID);
 
-      if (sync_info->flags & SYNC_NO_FORK) {
+      if (SYNC_NO_FORK & sync_info->flags) {
 	 return SYNC_ERROR_NOT_SAME_USERID;
       } else {
 	 write_to_parent(PIPE_WAITING_ON_USER, "%d:\n", SYNC_ERROR_NOT_SAME_USERID);
@@ -788,14 +788,14 @@ int jp_sync(struct my_sync_info *sync_info)
       }
    } else if ((strcmp(sync_info->username, U.username)) &&
               (sync_info->username[0]!='\0') &&
-              (!(sync_info->flags & SYNC_OVERRIDE_USER)) &&
-              (!(sync_info->flags & SYNC_RESTORE))) {
+              (!(SYNC_OVERRIDE_USER & sync_info->flags)) &&
+              (!(SYNC_RESTORE & sync_info->flags))) {
       jp_logf(JP_LOG_GUI, _("Last Synced Username-->\"%s\"\n"), sync_info->username);
       jp_logf(JP_LOG_GUI, _("Last Synced UserID-->\"%d\"\n"), sync_info->userID);
       jp_logf(JP_LOG_GUI, _(" This Username-->\"%s\"\n"), U.username);
       jp_logf(JP_LOG_GUI, _(" This User ID-->%d\n"), U.userID);
       write_to_parent(PIPE_WAITING_ON_USER, "%d:\n", SYNC_ERROR_NOT_SAME_USER);
-      if (sync_info->flags & SYNC_NO_FORK) {
+      if (SYNC_NO_FORK & sync_info->flags) {
 	 return SYNC_ERROR_NOT_SAME_USER;
       } else {
 	 ret = wait_for_response(sd);
@@ -811,7 +811,7 @@ int jp_sync(struct my_sync_info *sync_info)
    /* User name and User ID is read by the parent process and stored
     * in the preferences.
     * So, this is more than just displaying it to the user */
-   if (!(sync_info->flags & SYNC_RESTORE)) {
+   if (!(SYNC_RESTORE & sync_info->flags)) {
       write_to_parent(PIPE_USERNAME, "\"%s\"\n", U.username);
       write_to_parent(PIPE_USERID, "%d", U.userID);
       jp_logf(JP_LOG_GUI, _("Username is \"%s\"\n"), U.username);
@@ -844,7 +844,7 @@ int jp_sync(struct my_sync_info *sync_info)
       jp_logf(JP_LOG_WARN, "dlp_OpenConduit() failed\n");
       jp_logf(JP_LOG_WARN, _("Sync canceled\n"));
 #ifdef ENABLE_PLUGINS
-      if (!(sync_info->flags & SYNC_NO_FORK)) 
+      if (!(SYNC_NO_FORK & sync_info->flags)) 
          free_plugin_list(&plugin_list);
 #endif
       dlp_EndOfSync(sd, 0);
@@ -854,7 +854,7 @@ int jp_sync(struct my_sync_info *sync_info)
 
    sync_process_install_file(sd);
 
-   if ((sync_info->flags & SYNC_RESTORE)) {
+   if ((SYNC_RESTORE & sync_info->flags)) {
       U.userID=sync_info->userID;
       U.viewerID=0;
       U.lastSyncPC=0;
@@ -885,7 +885,7 @@ int jp_sync(struct my_sync_info *sync_info)
 #endif
 
    /* Do a fast, or a slow sync on each application in the arrays */
-   if ( (!(sync_info->flags & SYNC_OVERRIDE_USER)) &&
+   if ( (!(SYNC_OVERRIDE_USER & sync_info->flags)) &&
 	(U.lastSyncPC == sync_info->PC_ID) ) {
       fast_sync=1;
       jp_logf(JP_LOG_GUI, _("Doing a fast sync.\n"));
@@ -981,7 +981,7 @@ int jp_sync(struct my_sync_info *sync_info)
       dlp_EndOfSync(sd, 0);
       pi_close(sd);
 #ifdef ENABLE_PLUGINS
-      if (!(sync_info->flags & SYNC_NO_FORK)) 
+      if (!(SYNC_NO_FORK & sync_info->flags)) 
          free_plugin_list(&plugin_list);
 #endif
       return 0;
@@ -1015,7 +1015,7 @@ int jp_sync(struct my_sync_info *sync_info)
       }
    }
 
-   if (!(sync_info->flags & SYNC_NO_FORK)) {
+   if (!(SYNC_NO_FORK & sync_info->flags)) {
       jp_logf(JP_LOG_DEBUG, "freeing plugin list\n");
       free_plugin_list(&plugin_list);
    }
