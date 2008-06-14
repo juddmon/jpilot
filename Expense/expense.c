@@ -1,4 +1,4 @@
-/* $Id: expense.c,v 1.60 2008/06/04 01:16:34 rikster5 Exp $ */
+/* $Id: expense.c,v 1.61 2008/06/14 22:10:47 rikster5 Exp $ */
 
 /*******************************************************************************
  * expense.c
@@ -155,14 +155,14 @@ static GtkAdjustment *adj_mon, *adj_day, *adj_year;
 static GtkWidget *entry_amount;
 static GtkWidget *entry_vendor;
 static GtkWidget *entry_city;
-static GtkWidget *text_attendees;
 static GtkWidget *pane=NULL;
 #ifndef ENABLE_STOCK_BUTTONS
 static GtkAccelGroup *accel_group;
 #endif
-static GObject   *text_attendees_buffer;
-static GtkWidget *text_note;
-static GObject   *text_note_buffer;
+static GtkWidget *attendees;
+static GObject   *attendees_buffer;
+static GtkWidget *note;
+static GObject   *note_buffer;
 
 /* This is the category that is currently being displayed */
 static int show_category;
@@ -367,9 +367,9 @@ static void connect_changed_signals(int con_or_dis)
                          GTK_SIGNAL_FUNC(cb_record_changed), NULL);
       gtk_signal_connect(GTK_OBJECT(entry_city), "changed",
                          GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-      g_signal_connect(text_attendees_buffer, "changed",
+      g_signal_connect(attendees_buffer, "changed",
                          GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-      g_signal_connect(text_note_buffer, "changed",
+      g_signal_connect(note_buffer, "changed",
                          GTK_SIGNAL_FUNC(cb_record_changed), NULL);
    }
 
@@ -418,9 +418,9 @@ static void connect_changed_signals(int con_or_dis)
                                     GTK_SIGNAL_FUNC(cb_record_changed), NULL);
       gtk_signal_disconnect_by_func(GTK_OBJECT(entry_city),
                                     GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-      g_signal_handlers_disconnect_by_func(text_attendees_buffer,
+      g_signal_handlers_disconnect_by_func(attendees_buffer,
                                     GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-      g_signal_handlers_disconnect_by_func(text_note_buffer,
+      g_signal_handlers_disconnect_by_func(note_buffer,
                                     GTK_SIGNAL_FUNC(cb_record_changed), NULL);
    }
 }
@@ -624,8 +624,8 @@ static void clear_details()
    gtk_entry_set_text(GTK_ENTRY(entry_amount), "");
    gtk_entry_set_text(GTK_ENTRY(entry_vendor), "");
    gtk_entry_set_text(GTK_ENTRY(entry_city), "");
-   gtk_text_buffer_set_text(GTK_TEXT_BUFFER(text_attendees_buffer), "", -1);
-   gtk_text_buffer_set_text(GTK_TEXT_BUFFER(text_note_buffer), "", -1);
+   gtk_text_buffer_set_text(GTK_TEXT_BUFFER(attendees_buffer), "", -1);
+   gtk_text_buffer_set_text(GTK_TEXT_BUFFER(note_buffer), "", -1);
 
    set_new_button_to(CLEAR_FLAG);
 
@@ -728,15 +728,15 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    ex.date.tm_min  = 0;
    ex.date.tm_sec  = 0;
 
-   gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(text_attendees_buffer),&start_iter,&end_iter);
-   ex.attendees = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(text_attendees_buffer),&start_iter,&end_iter,TRUE);
+   gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(attendees_buffer),&start_iter,&end_iter);
+   ex.attendees = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(attendees_buffer),&start_iter,&end_iter,TRUE);
    if (ex.attendees[0]=='\0') {
       free(ex.attendees);
       ex.attendees=NULL;
    }
 
-   gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(text_note_buffer),&start_iter,&end_iter);
-   ex.note = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(text_note_buffer),&start_iter,&end_iter,TRUE);
+   gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(note_buffer),&start_iter,&end_iter);
+   ex.note = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(note_buffer),&start_iter,&end_iter,TRUE);
    if (ex.note[0]=='\0') {
       free(ex.note);
       ex.note=NULL;
@@ -1171,15 +1171,15 @@ static void cb_clist_selection(GtkWidget      *clist,
       gtk_entry_set_text(GTK_ENTRY(entry_city), "");
    }
    
-   gtk_text_buffer_set_text(GTK_TEXT_BUFFER(text_attendees_buffer), "", -1);
+   gtk_text_buffer_set_text(GTK_TEXT_BUFFER(attendees_buffer), "", -1);
 
    if (mexp->ex.attendees) {
-      gtk_text_buffer_set_text(GTK_TEXT_BUFFER(text_attendees_buffer), mexp->ex.attendees, -1);
+      gtk_text_buffer_set_text(GTK_TEXT_BUFFER(attendees_buffer), mexp->ex.attendees, -1);
    }
 
-   gtk_text_buffer_set_text(GTK_TEXT_BUFFER(text_note_buffer), "", -1);
+   gtk_text_buffer_set_text(GTK_TEXT_BUFFER(note_buffer), "", -1);
    if (mexp->ex.note) {
-      gtk_text_buffer_set_text(GTK_TEXT_BUFFER(text_note_buffer), mexp->ex.note, -1);
+      gtk_text_buffer_set_text(GTK_TEXT_BUFFER(note_buffer), mexp->ex.note, -1);
    }
 
    connect_changed_signals(CONNECT_SIGNALS);
@@ -1710,11 +1710,11 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
                                   GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
    gtk_box_pack_start(GTK_BOX(vbox2), scrolled_window, TRUE, TRUE, 0);
 
-   text_attendees = gtk_text_view_new();
-   text_attendees_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_attendees)));
-   gtk_text_view_set_editable(GTK_TEXT_VIEW(text_attendees), TRUE);
-   gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text_attendees), GTK_WRAP_WORD);
-   gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(text_attendees));
+   attendees = gtk_text_view_new();
+   attendees_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(attendees)));
+   gtk_text_view_set_editable(GTK_TEXT_VIEW(attendees), TRUE);
+   gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(attendees), GTK_WRAP_WORD);
+   gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(attendees));
 
    label = gtk_label_new(_("Note"));
    gtk_box_pack_start(GTK_BOX(vbox2), label, FALSE, FALSE, 0);
@@ -1727,11 +1727,11 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
                                   GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
    gtk_box_pack_start(GTK_BOX(vbox2), scrolled_window, TRUE, TRUE, 0);
 
-   text_note = gtk_text_view_new();
-   text_note_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_note)));
-   gtk_text_view_set_editable(GTK_TEXT_VIEW(text_note), TRUE);
-   gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text_note), GTK_WRAP_WORD);
-   gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(text_note));
+   note = gtk_text_view_new();
+   note_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(note)));
+   gtk_text_view_set_editable(GTK_TEXT_VIEW(note), TRUE);
+   gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(note), GTK_WRAP_WORD);
+   gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(note));
 
    gtk_widget_show_all(hbox);
    gtk_widget_show_all(vbox);

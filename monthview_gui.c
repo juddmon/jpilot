@@ -1,4 +1,4 @@
-/* $Id: monthview_gui.c,v 1.43 2008/06/03 01:02:53 rikster5 Exp $ */
+/* $Id: monthview_gui.c,v 1.44 2008/06/14 22:10:47 rikster5 Exp $ */
 
 /*******************************************************************************
  * monthview_gui.c
@@ -38,9 +38,9 @@ extern int glob_app;
 GtkWidget *monthview_window=NULL;
 static GtkWidget *glob_month_vbox;
 static GtkWidget *glob_month_labels[37];
-static GObject   *glob_month_text_buffers[37];
-static GtkWidget *glob_month_text_views[37];
-static GObject   *big_text_buffer;
+static GtkWidget *month_day[37];
+static GObject   *month_day_buffers[37];
+static GObject   *all_appts_buffer;
 static GtkWidget *glob_month_month_label;
 static GtkWidget *glob_last_hbox_row;
 static int glob_offset;
@@ -58,7 +58,7 @@ static gboolean cb_destroy(GtkWidget *widget)
    monthview_window = NULL;
 
    for (n=0; n<37; n++) {
-      text = glob_month_text_views[n];
+      text = month_day[n];
       gstr = gtk_object_get_data(GTK_OBJECT(text), "gstr");
       if (gstr) {
 	 g_string_free(gstr, TRUE);
@@ -90,7 +90,7 @@ static void cb_month_move(GtkWidget *widget, gpointer data)
       add_days_to_date(&glob_month_date, 30);
    }
    hide_show_month_boxes();
-   display_months_appts(&glob_month_date, glob_month_text_views);
+   display_months_appts(&glob_month_date, month_day);
 }
 
 /*----------------------------------------------------------------------
@@ -128,9 +128,9 @@ static void cb_enter_notify(GtkWidget *widget, GdkEvent *event, gpointer data)
    textview = gtk_bin_get_child(GTK_BIN(widget));
    gstr = gtk_object_get_data(GTK_OBJECT(textview), "gstr");
    if (gstr) {
-      gtk_text_buffer_set_text(GTK_TEXT_BUFFER(big_text_buffer), gstr->str, -1);
+      gtk_text_buffer_set_text(GTK_TEXT_BUFFER(all_appts_buffer), gstr->str, -1);
    } else {
-      gtk_text_buffer_set_text(GTK_TEXT_BUFFER(big_text_buffer), "", -1);
+      gtk_text_buffer_set_text(GTK_TEXT_BUFFER(all_appts_buffer), "", -1);
    }
 }
 
@@ -182,7 +182,7 @@ void hide_show_month_boxes()
    }
 
    for (n=0; n<37; n++, d++) {
-      text = glob_month_text_views[n];
+      text = month_day[n];
       g_snprintf(str, sizeof(str), "%d", d);
 
       if (d == now_today)
@@ -242,8 +242,8 @@ void create_month_boxes_texts(GtkWidget *month_vbox)
 	    gtk_box_pack_start(GTK_BOX(vbox), glob_month_labels[n], FALSE, FALSE, 0);
 
 	    /* text variable only used to save some typing */
-	    text = glob_month_text_views[n] = gtk_text_view_new();
-	    glob_month_text_buffers[n] =
+	    text = month_day[n] = gtk_text_view_new();
+	    month_day_buffers[n] =
 	      G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)));
 	    gtk_widget_set_usize(GTK_WIDGET(text), 10, 10);
 	    gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(text), FALSE);
@@ -270,7 +270,7 @@ void create_month_boxes_texts(GtkWidget *month_vbox)
    glob_last_hbox_row = hbox_row;
 
    text = gtk_text_view_new();
-   big_text_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)));
+   all_appts_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)));
    gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(text), FALSE);
    gtk_text_view_set_editable(GTK_TEXT_VIEW(text), FALSE);
    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text), GTK_WRAP_WORD);
@@ -304,13 +304,13 @@ int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
    GtkWidget *temp_text;
 
    texts = &day_texts[glob_offset];
-   text_buffers = &glob_month_text_buffers[glob_offset];
+   text_buffers = &month_day_buffers[glob_offset];
 
    a_list = NULL;
    mask=0;
 
    for (n=0; n<37; n++) {
-      temp_text = glob_month_text_views[n];
+      temp_text = month_day[n];
       gstr = gtk_object_get_data(GTK_OBJECT(temp_text), "gstr");
       if (gstr) {
 	 g_string_free(gstr, TRUE);
@@ -517,5 +517,5 @@ void monthview_gui(struct tm *date_in)
 
    hide_show_month_boxes();
 
-   display_months_appts(&glob_month_date, glob_month_text_views);
+   display_months_appts(&glob_month_date, month_day);
 }

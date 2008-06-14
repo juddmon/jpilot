@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.213 2008/06/14 21:10:34 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.214 2008/06/14 22:10:46 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -151,10 +151,10 @@ static long address_version=0;
 
 static GtkWidget *clist;
 #define MAX_NUM_TEXTS contNote+1
-static GtkWidget *address_text[MAX_NUM_TEXTS];
-static GObject *gtk_txt_buf_address_text[MAX_NUM_TEXTS];
-static GtkWidget *text;
-static GObject *gtk_txt_buf_text;
+static GtkWidget *addr_text[MAX_NUM_TEXTS];
+static GObject   *addr_text_buffer[MAX_NUM_TEXTS];
+static GtkWidget *addr_all;
+static GObject   *addr_all_buffer;
 static GtkWidget *notebook_label[NUM_CONTACT_NOTEBOOK_PAGES];
 static GtkWidget *phone_type_list_menu[NUM_PHONE_ENTRIES];
 static GtkWidget *phone_type_menu_item[NUM_PHONE_ENTRIES][NUM_PHONE_LABELS]; /* 7 menus with 8 possible entries */
@@ -1853,9 +1853,9 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
 	  case ADDRESS_GUI_IM_MENU_TEXT:
 	  case ADDRESS_GUI_ADDR_MENU_TEXT:
 	  case ADDRESS_GUI_WEBSITE_TEXT:
-	    gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(gtk_txt_buf_address_text[schema[i].record_field]),&start_iter,&end_iter);
+	    gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(addr_text_buffer[schema[i].record_field]),&start_iter,&end_iter);
 	    cont.entry[schema[i].record_field] =
-	      gtk_text_buffer_get_text(GTK_TEXT_BUFFER(gtk_txt_buf_address_text[schema[i].record_field]),&start_iter,&end_iter,TRUE);
+	      gtk_text_buffer_get_text(GTK_TEXT_BUFFER(addr_text_buffer[schema[i].record_field]),&start_iter,&end_iter,TRUE);
 	    break;
 	  case ADDRESS_GUI_BIRTHDAY:
 	    break;
@@ -1919,7 +1919,7 @@ void addr_clear_details()
    connect_changed_signals(DISCONNECT_SIGNALS);
 
    /* Clear the quickview */
-   gtk_text_buffer_set_text(GTK_TEXT_BUFFER(gtk_txt_buf_text), "", -1);
+   gtk_text_buffer_set_text(GTK_TEXT_BUFFER(addr_all_buffer), "", -1);
 
    /* Clear all of the text fields */
    for (i=0; i<schema_size; i++) {
@@ -1929,7 +1929,7 @@ void addr_clear_details()
        case ADDRESS_GUI_ADDR_MENU_TEXT:
        case ADDRESS_GUI_IM_MENU_TEXT:
        case ADDRESS_GUI_WEBSITE_TEXT:
-	 gtk_text_buffer_set_text(GTK_TEXT_BUFFER(gtk_txt_buf_address_text[schema[i].record_field]), "", -1);
+	 gtk_text_buffer_set_text(GTK_TEXT_BUFFER(addr_text_buffer[schema[i].record_field]), "", -1);
       }
    }
    
@@ -2018,7 +2018,7 @@ void cb_address_clear(GtkWidget *widget,
    gtk_notebook_set_page(GTK_NOTEBOOK(notebook), 0);
    connect_changed_signals(DISCONNECT_SIGNALS);
    set_new_button_to(NEW_FLAG);
-   gtk_widget_grab_focus(GTK_WIDGET(address_text[0]));
+   gtk_widget_grab_focus(GTK_WIDGET(addr_text[0]));
 }
 
 /* Attempt to make the best possible string out of whatever garbage we find
@@ -2649,21 +2649,21 @@ static void cb_clist_selection(GtkWidget      *clist,
    /* End category menu */
 
    /* Freeze the "All" text buffer to prevent flicker while updating */
-   gtk_widget_freeze_child_notify(text);
+   gtk_widget_freeze_child_notify(addr_all);
 
-   gtk_text_buffer_set_text(GTK_TEXT_BUFFER(gtk_txt_buf_text), "", -1);
+   gtk_text_buffer_set_text(GTK_TEXT_BUFFER(addr_all_buffer), "", -1);
 
    /* Fill out the "All" text buffer */
    s = contact_to_gstring(cont);
    if (s->len) {
-      gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(gtk_txt_buf_text), _("Category: "), -1);
+      gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(addr_all_buffer), _("Category: "), -1);
       char *utf;
       utf = charset_p2newj(contact_app_info.category.name[mcont->attrib & 0x0F], 16, char_set);
-      gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(gtk_txt_buf_text), utf, -1);
+      gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(addr_all_buffer), utf, -1);
       g_free(utf);
-      gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(gtk_txt_buf_text), "\n", -1);
+      gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(addr_all_buffer), "\n", -1);
       
-      gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(gtk_txt_buf_text), s->str, -1);
+      gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(addr_all_buffer), s->str, -1);
    }
    g_string_free(s, TRUE);
 
@@ -2719,9 +2719,9 @@ static void cb_clist_selection(GtkWidget      *clist,
        case ADDRESS_GUI_WEBSITE_TEXT:
 	 set_text:
 	 if (cont->entry[schema[i].record_field]) {
-	    gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(gtk_txt_buf_address_text[schema[i].record_field]), cont->entry[schema[i].record_field], -1);
+	    gtk_text_buffer_set_text(GTK_TEXT_BUFFER(addr_text_buffer[schema[i].record_field]), cont->entry[schema[i].record_field], -1);
 	 } else {
-            gtk_text_buffer_set_text(GTK_TEXT_BUFFER(gtk_txt_buf_address_text[schema[i].record_field]), "", -1);
+           gtk_text_buffer_set_text(GTK_TEXT_BUFFER(addr_text_buffer[schema[i].record_field]), "", -1);
          }
 	 break;
        case ADDRESS_GUI_BIRTHDAY:
@@ -2770,7 +2770,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(private_checkbox),
 				mcont->attrib & dlpRecAttrSecret);
 
-   gtk_widget_thaw_child_notify(text);
+   gtk_widget_thaw_child_notify(addr_all);
    connect_changed_signals(CONNECT_SIGNALS);
 }
 
@@ -2787,42 +2787,42 @@ static gboolean cb_key_pressed_left_side(GtkWidget   *widget,
       if (address_version==0) {
          switch (gtk_notebook_get_current_page(GTK_NOTEBOOK(notebook))) {
            case 0 :
-              entry_widget = address_text[contLastname];
+              entry_widget = addr_text[contLastname];
               break;
            case 1 :
-              entry_widget = address_text[contAddress1];
+              entry_widget = addr_text[contAddress1];
               break;
            case 2 :
-              entry_widget = address_text[contCustom1];
+              entry_widget = addr_text[contCustom1];
               break;
            case 3 :
-              entry_widget = address_text[contNote];
+              entry_widget = addr_text[contNote];
               break;
            default:
-              entry_widget = address_text[0];
+              entry_widget = addr_text[0];
          }
       } else {
          switch (gtk_notebook_get_current_page(GTK_NOTEBOOK(notebook))) {
            case 0 :
-              entry_widget = address_text[contLastname];
+              entry_widget = addr_text[contLastname];
               break;
            case 1 :
-              entry_widget = address_text[contAddress1];
+              entry_widget = addr_text[contAddress1];
               break;
            case 2 :
-              entry_widget = address_text[contAddress2];
+              entry_widget = addr_text[contAddress2];
               break;
            case 3 :
-              entry_widget = address_text[contAddress3];
+              entry_widget = addr_text[contAddress3];
               break;
            case 4 :
-              entry_widget = address_text[contCustom1];
+              entry_widget = addr_text[contCustom1];
               break;
            case 5 :
-              entry_widget = address_text[contNote];
+              entry_widget = addr_text[contNote];
               break;
            default:
-              entry_widget = address_text[0];
+              entry_widget = addr_text[0];
          }
       }
 
@@ -2894,7 +2894,7 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
    /* Clear the text box to make things look nice */
    if (main) {
-      gtk_text_buffer_set_text(GTK_TEXT_BUFFER(gtk_txt_buf_text), "", -1);
+      gtk_text_buffer_set_text(GTK_TEXT_BUFFER(addr_all_buffer), "", -1);
    }
 
    /* Freeze clist to prevent flicker during updating */
@@ -3426,14 +3426,14 @@ static gboolean cb_key_pressed(GtkWidget *widget, GdkEventKey *event)
 	    i = 10000;
 	    break;
 	 }
-	 if (address_text[schema[i].record_field]==widget) {
+	 if (addr_text[schema[i].record_field]==widget) {
 	    found = 1;
 	 }
 	 j++;
       }
    }
    gtk_notebook_set_page(GTK_NOTEBOOK(notebook), page);
-   gtk_widget_grab_focus(GTK_WIDGET(address_text[next]));
+   gtk_widget_grab_focus(GTK_WIDGET(addr_text[next]));
 
    return TRUE;
 }
@@ -3860,11 +3860,11 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 				x-2, x-1, table_y_i, table_y_i+1, GTK_SHRINK, 0, 0, 0);
 	    }
 	    /* Text */
-	    address_text[schema[i].record_field] = gtk_text_view_new();
-	    gtk_txt_buf_address_text[schema[i].record_field] = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(address_text[schema[i].record_field])));
-	    gtk_text_view_set_editable(GTK_TEXT_VIEW(address_text[schema[i].record_field]), TRUE);
-	    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(address_text[schema[i].record_field]), GTK_WRAP_CHAR);
-	    gtk_container_set_border_width(GTK_CONTAINER(address_text[schema[i].record_field]), 1);
+	    addr_text[schema[i].record_field] = gtk_text_view_new();
+	    addr_text_buffer[schema[i].record_field] = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(addr_text[schema[i].record_field])));
+	    gtk_text_view_set_editable(GTK_TEXT_VIEW(addr_text[schema[i].record_field]), TRUE);
+	    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(addr_text[schema[i].record_field]), GTK_WRAP_CHAR);
+	    gtk_container_set_border_width(GTK_CONTAINER(addr_text[schema[i].record_field]), 1);
 
 	    /* Make a special case for Note so it has a scrollbar and no label */
 	    if (schema[i].record_field == contNote) {
@@ -3872,21 +3872,21 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	       gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
 					      GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
 	       gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 1);
-	       gtk_container_add(GTK_CONTAINER(scrolled_window), address_text[schema[i].record_field]);
+	       gtk_container_add(GTK_CONTAINER(scrolled_window), addr_text[schema[i].record_field]);
 	    }
 
-	    gtk_widget_set_usize(GTK_WIDGET(address_text[schema[i].record_field]), 0, 25);
+	    gtk_widget_set_usize(GTK_WIDGET(addr_text[schema[i].record_field]), 0, 25);
 
 	    /* Make a special case for Note so it has a scrollbar and no label */
 	    if (schema[i].record_field == contNote) {
 	       gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(scrolled_window),
 					 x-1, x, table_y_i, table_y_i+1);
 	    } else {
-	       gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(address_text[schema[i].record_field]),
+	       gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(addr_text[schema[i].record_field]),
 					 x-1, x, table_y_i, table_y_i+1);
 	    }
 
-	    changed_list = g_list_prepend(changed_list, gtk_txt_buf_address_text[schema[i].record_field]);
+	    changed_list = g_list_prepend(changed_list, addr_text_buffer[schema[i].record_field]);
 	    break;
 	  case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
 	    if (!strcmp(contact_app_info.phoneLabels[phone_i], _("E-mail"))) {
@@ -3911,19 +3911,19 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 			     x-2, x-1, table_y_i, table_y_i+1, GTK_FILL, 0, 0, 0);
 
 	    /* Text */
-	    address_text[schema[i].record_field] = gtk_text_view_new();
-	    gtk_txt_buf_address_text[schema[i].record_field] = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(address_text[schema[i].record_field])));
-	    gtk_text_view_set_editable(GTK_TEXT_VIEW(address_text[schema[i].record_field]), TRUE);
-	    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(address_text[schema[i].record_field]), GTK_WRAP_CHAR);
-	    gtk_container_set_border_width(GTK_CONTAINER(address_text[schema[i].record_field]), 1);
-	    gtk_widget_set_usize(GTK_WIDGET(address_text[schema[i].record_field]), 0, 25);
-	    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(address_text[schema[i].record_field]),
+	    addr_text[schema[i].record_field] = gtk_text_view_new();
+	    addr_text_buffer[schema[i].record_field] = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(addr_text[schema[i].record_field])));
+	    gtk_text_view_set_editable(GTK_TEXT_VIEW(addr_text[schema[i].record_field]), TRUE);
+	    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(addr_text[schema[i].record_field]), GTK_WRAP_CHAR);
+	    gtk_container_set_border_width(GTK_CONTAINER(addr_text[schema[i].record_field]), 1);
+	    gtk_widget_set_usize(GTK_WIDGET(addr_text[schema[i].record_field]), 0, 25);
+	    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(addr_text[schema[i].record_field]),
 			     x-1, x, table_y_i, table_y_i+1);
 	    
 	    gtk_signal_connect(GTK_OBJECT(dial_button[phone_i]), "clicked",
 			       GTK_SIGNAL_FUNC(cb_dial_or_mail),
-			       address_text[schema[i].record_field]);
-	    changed_list = g_list_prepend(changed_list, gtk_txt_buf_address_text[schema[i].record_field]);
+			       addr_text[schema[i].record_field]);
+	    changed_list = g_list_prepend(changed_list, addr_text_buffer[schema[i].record_field]);
 	    phone_i++;
 	    break;
 	  case ADDRESS_GUI_ADDR_MENU_TEXT:
@@ -3933,16 +3933,16 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	    address_type_i++;
 	    
 	    /* Text */
-	    address_text[schema[i].record_field] = gtk_text_view_new();
-	    gtk_txt_buf_address_text[schema[i].record_field] = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(address_text[schema[i].record_field])));
-	    gtk_text_view_set_editable(GTK_TEXT_VIEW(address_text[schema[i].record_field]), TRUE);
-	    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(address_text[schema[i].record_field]), GTK_WRAP_CHAR);
-	    gtk_container_set_border_width(GTK_CONTAINER(address_text[schema[i].record_field]), 1);
-	    gtk_widget_set_usize(GTK_WIDGET(address_text[schema[i].record_field]), 0, 25);
-	    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(address_text[schema[i].record_field]),
+	    addr_text[schema[i].record_field] = gtk_text_view_new();
+	    addr_text_buffer[schema[i].record_field] = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(addr_text[schema[i].record_field])));
+	    gtk_text_view_set_editable(GTK_TEXT_VIEW(addr_text[schema[i].record_field]), TRUE);
+	    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(addr_text[schema[i].record_field]), GTK_WRAP_CHAR);
+	    gtk_container_set_border_width(GTK_CONTAINER(addr_text[schema[i].record_field]), 1);
+	    gtk_widget_set_usize(GTK_WIDGET(addr_text[schema[i].record_field]), 0, 25);
+	    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(addr_text[schema[i].record_field]),
 				      x-1, x, table_y_i, table_y_i+1);
 
-	    changed_list = g_list_prepend(changed_list, gtk_txt_buf_address_text[schema[i].record_field]);
+	    changed_list = g_list_prepend(changed_list, addr_text_buffer[schema[i].record_field]);
 	    break;
 	  case ADDRESS_GUI_IM_MENU_TEXT:
 	    make_IM_type_menu(IM_type_i, IM_type_i, IM_type_i);
@@ -3951,16 +3951,16 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	    IM_type_i++;
 	    
 	    /* Text */
-	    address_text[schema[i].record_field] = gtk_text_view_new();
-	    gtk_txt_buf_address_text[schema[i].record_field] = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(address_text[schema[i].record_field])));
-	    gtk_text_view_set_editable(GTK_TEXT_VIEW(address_text[schema[i].record_field]), TRUE);
-	    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(address_text[schema[i].record_field]), GTK_WRAP_CHAR);
-	    gtk_container_set_border_width(GTK_CONTAINER(address_text[schema[i].record_field]), 1);
-	    gtk_widget_set_usize(GTK_WIDGET(address_text[schema[i].record_field]), 0, 25);
-	    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(address_text[schema[i].record_field]),
+	    addr_text[schema[i].record_field] = gtk_text_view_new();
+	    addr_text_buffer[schema[i].record_field] = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(addr_text[schema[i].record_field])));
+	    gtk_text_view_set_editable(GTK_TEXT_VIEW(addr_text[schema[i].record_field]), TRUE);
+	    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(addr_text[schema[i].record_field]), GTK_WRAP_CHAR);
+	    gtk_container_set_border_width(GTK_CONTAINER(addr_text[schema[i].record_field]), 1);
+	    gtk_widget_set_usize(GTK_WIDGET(addr_text[schema[i].record_field]), 0, 25);
+	    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(addr_text[schema[i].record_field]),
 				      x-1, x, table_y_i, table_y_i+1);
 
-	    changed_list = g_list_prepend(changed_list, gtk_txt_buf_address_text[schema[i].record_field]);
+	    changed_list = g_list_prepend(changed_list, addr_text_buffer[schema[i].record_field]);
 	    break;
 	  case ADDRESS_GUI_WEBSITE_TEXT:
 	    /* Button used as label */
@@ -3970,16 +3970,16 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(button),
 			     x-2, x-1, table_y_i, table_y_i+1, GTK_FILL, 0, 0, 0);
 	    /* Text */
-	    address_text[schema[i].record_field] = gtk_text_view_new();
-	    gtk_txt_buf_address_text[schema[i].record_field] = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(address_text[schema[i].record_field])));
-	    gtk_text_view_set_editable(GTK_TEXT_VIEW(address_text[schema[i].record_field]), TRUE);
-	    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(address_text[schema[i].record_field]), GTK_WRAP_CHAR);
-	    gtk_container_set_border_width(GTK_CONTAINER(address_text[schema[i].record_field]), 1);
-	    gtk_widget_set_usize(GTK_WIDGET(address_text[schema[i].record_field]), 0, 25);
-	    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(address_text[schema[i].record_field]),
+	    addr_text[schema[i].record_field] = gtk_text_view_new();
+	    addr_text_buffer[schema[i].record_field] = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(addr_text[schema[i].record_field])));
+	    gtk_text_view_set_editable(GTK_TEXT_VIEW(addr_text[schema[i].record_field]), TRUE);
+	    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(addr_text[schema[i].record_field]), GTK_WRAP_CHAR);
+	    gtk_container_set_border_width(GTK_CONTAINER(addr_text[schema[i].record_field]), 1);
+	    gtk_widget_set_usize(GTK_WIDGET(addr_text[schema[i].record_field]), 0, 25);
+	    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(addr_text[schema[i].record_field]),
 				      x-1, x, table_y_i, table_y_i+1);
 
-	    changed_list = g_list_prepend(changed_list, gtk_txt_buf_address_text[schema[i].record_field]);
+	    changed_list = g_list_prepend(changed_list, addr_text_buffer[schema[i].record_field]);
 	    break;
 	  case ADDRESS_GUI_BIRTHDAY:
 	    hbox_temp = gtk_hbox_new(FALSE, 0);
@@ -4046,10 +4046,10 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
        case ADDRESS_GUI_WEBSITE_TEXT:
 	 /* Capture the Shift-Enter key combination to move back to 
 	  * the right-hand side of the display. */
-	 gtk_signal_connect(GTK_OBJECT(address_text[schema[i].record_field]), "key_press_event",
+	 gtk_signal_connect(GTK_OBJECT(addr_text[schema[i].record_field]), "key_press_event",
 			    GTK_SIGNAL_FUNC(cb_key_pressed_right_side), clist);
 
-	 gtk_signal_connect(GTK_OBJECT(address_text[schema[i].record_field]), "key_press_event",
+	 gtk_signal_connect(GTK_OBJECT(addr_text[schema[i].record_field]), "key_press_event",
 			    GTK_SIGNAL_FUNC(cb_key_pressed), 0);
 	 break;
       }
@@ -4067,17 +4067,17 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    hbox_temp = gtk_hbox_new (FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox_temp), hbox_temp, TRUE, TRUE, 0);
 
-   text = gtk_text_view_new();
-   gtk_txt_buf_text = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)));
-   gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(text), FALSE);
-   gtk_text_view_set_editable(GTK_TEXT_VIEW(text), FALSE);
-   gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text), GTK_WRAP_CHAR);
+   addr_all = gtk_text_view_new();
+   addr_all_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(addr_all)));
+   gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(addr_all), FALSE);
+   gtk_text_view_set_editable(GTK_TEXT_VIEW(addr_all), FALSE);
+   gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(addr_all), GTK_WRAP_CHAR);
 
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
 				  GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 1);
-   gtk_container_add(GTK_CONTAINER(scrolled_window), text);
+   gtk_container_add(GTK_CONTAINER(scrolled_window), addr_all);
    gtk_box_pack_start(GTK_BOX(hbox_temp), scrolled_window, TRUE, TRUE, 0);
 
    gtk_widget_show_all(vbox);

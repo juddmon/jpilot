@@ -1,4 +1,4 @@
-/* $Id: weekview_gui.c,v 1.40 2008/06/03 01:02:53 rikster5 Exp $ */
+/* $Id: weekview_gui.c,v 1.41 2008/06/14 22:10:47 rikster5 Exp $ */
 
 /*******************************************************************************
  * weekview_gui.c
@@ -37,8 +37,8 @@ extern int glob_app;
 
 GtkWidget *weekview_window=NULL;
 static GtkWidget *glob_dow_labels[8];
-static GtkWidget *glob_week_texts[8];
-static GObject   *glob_week_text_buffers[8];
+static GtkWidget *week_day_text[8];
+static GObject   *week_day_text_buffer[8];
 static struct tm glob_week_date;
 
 /* Function prototypes */
@@ -89,7 +89,7 @@ void freeze_weeks_appts()
    int i;
 
    for (i=0; i<8; i++) {
-      gtk_widget_freeze_child_notify(glob_week_texts[i]);
+      gtk_widget_freeze_child_notify(week_day_text[i]);
    }
 }
 
@@ -98,7 +98,7 @@ void thaw_weeks_appts()
    int i;
 
    for (i=0; i<8; i++) {
-      gtk_widget_thaw_child_notify(glob_week_texts[i]);
+      gtk_widget_thaw_child_notify(week_day_text[i]);
    }
 }
 
@@ -113,8 +113,8 @@ static void cb_week_move(GtkWidget *widget, gpointer data)
 
    freeze_weeks_appts();
 
-   clear_weeks_appts(glob_week_texts);
-   display_weeks_appts(&glob_week_date, glob_week_texts);
+   clear_weeks_appts(week_day_text);
+   display_weeks_appts(&glob_week_date, week_day_text);
 
    thaw_weeks_appts();
 }
@@ -202,6 +202,7 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
 
 
    for (n=0; n<8; n++, add_days_to_date(&date, 1)) {
+      text_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text[n])));
       for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
 #ifdef ENABLE_DATEBK
 	 get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
@@ -233,7 +234,6 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
 	    append_anni_years(desc, 62, &date, &temp_al->mappt.appt);
 
 	    strcat(desc, "\n");
-	    text_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text[n])));
 	    gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(text_buffer),desc,-1);
 	 }
       }
@@ -360,29 +360,29 @@ void weekview_gui(struct tm *date_in)
    for (i=0; i<8; i++) {
       glob_dow_labels[i] = gtk_label_new("");
       gtk_misc_set_alignment(GTK_MISC(glob_dow_labels[i]), 0.0, 0.5);
-      glob_week_texts[i] = gtk_text_view_new();
-      glob_week_text_buffers[i] = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(glob_week_texts[i])));
-      gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(glob_week_texts[i]), FALSE);
-      gtk_text_view_set_editable(GTK_TEXT_VIEW(glob_week_texts[i]), FALSE);
-      gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(glob_week_texts[i]), GTK_WRAP_WORD);
-      gtk_container_set_border_width(GTK_CONTAINER(glob_week_texts[i]), 1);
-      gtk_text_buffer_create_tag(GTK_TEXT_BUFFER(glob_week_text_buffers[i]),
+      week_day_text[i] = gtk_text_view_new();
+      week_day_text_buffer[i] = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(week_day_text[i])));
+      gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(week_day_text[i]), FALSE);
+      gtk_text_view_set_editable(GTK_TEXT_VIEW(week_day_text[i]), FALSE);
+      gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(week_day_text[i]), GTK_WRAP_WORD);
+      gtk_container_set_border_width(GTK_CONTAINER(week_day_text[i]), 1);
+      gtk_text_buffer_create_tag(GTK_TEXT_BUFFER(week_day_text_buffer[i]),
 				 "gray_background", "background", "gray",
 			         NULL);
-      gtk_widget_set_usize(GTK_WIDGET(glob_week_texts[i]), 10, 10);
-      gtk_signal_connect(GTK_OBJECT(glob_week_texts[i]), "button_release_event",
+      gtk_widget_set_usize(GTK_WIDGET(week_day_text[i]), 10, 10);
+      gtk_signal_connect(GTK_OBJECT(week_day_text[i]), "button_release_event",
 			 GTK_SIGNAL_FUNC(cb_enter_selected_day),
 			 GINT_TO_POINTER(i));
       if (i>3) {
 	 gtk_box_pack_start(GTK_BOX(vbox_right), glob_dow_labels[i], FALSE, FALSE, 0);
-	 gtk_box_pack_start(GTK_BOX(vbox_right), glob_week_texts[i], TRUE, TRUE, 0);
+	 gtk_box_pack_start(GTK_BOX(vbox_right), week_day_text[i], TRUE, TRUE, 0);
       } else {
 	 gtk_box_pack_start(GTK_BOX(vbox_left), glob_dow_labels[i], FALSE, FALSE, 0);
-	 gtk_box_pack_start(GTK_BOX(vbox_left), glob_week_texts[i], TRUE, TRUE, 0);
+	 gtk_box_pack_start(GTK_BOX(vbox_left), week_day_text[i], TRUE, TRUE, 0);
       }
    }
 
-   display_weeks_appts(&glob_week_date, glob_week_texts);
+   display_weeks_appts(&glob_week_date, week_day_text);
 
    gtk_widget_show_all(weekview_window);
 }

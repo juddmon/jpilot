@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.137 2008/06/09 15:28:13 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.138 2008/06/14 22:10:47 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -59,8 +59,8 @@ extern GtkWidget *glob_date_label;
 extern int glob_date_timer_tag;
 
 static GtkWidget *clist;
-static GtkWidget *todo_text, *todo_text_note;
-static GObject   *todo_text_buffer, *todo_text_note_buffer;
+static GtkWidget *todo_desc, *todo_note;
+static GObject   *todo_desc_buffer, *todo_note_buffer;
 static GtkWidget *todo_completed_checkbox;
 static GtkWidget *private_checkbox;
 static struct tm due_date;
@@ -310,9 +310,9 @@ static void connect_changed_signals(int con_or_dis)
 			       GTK_SIGNAL_FUNC(cb_record_changed), NULL);
 	 }
       }
-      g_signal_connect(todo_text_buffer, "changed",
+      g_signal_connect(todo_desc_buffer, "changed",
 		       GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-      g_signal_connect(todo_text_note_buffer, "changed",
+      g_signal_connect(todo_note_buffer, "changed",
 		       GTK_SIGNAL_FUNC(cb_record_changed), NULL);
 
       gtk_signal_connect(GTK_OBJECT(todo_completed_checkbox), "toggled",
@@ -339,9 +339,9 @@ static void connect_changed_signals(int con_or_dis)
 	 gtk_signal_disconnect_by_func(GTK_OBJECT(radio_button_todo[i]),
 				       GTK_SIGNAL_FUNC(cb_record_changed), NULL);
       }
-      g_signal_handlers_disconnect_by_func(todo_text_buffer,
+      g_signal_handlers_disconnect_by_func(todo_desc_buffer,
 					   GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-      g_signal_handlers_disconnect_by_func(todo_text_note_buffer,
+      g_signal_handlers_disconnect_by_func(todo_note_buffer,
 					   GTK_SIGNAL_FUNC(cb_record_changed), NULL);
 
       gtk_signal_disconnect_by_func(GTK_OBJECT(todo_completed_checkbox),
@@ -1023,11 +1023,11 @@ int todo_clear_details()
    /* Need to disconnect these signals first */
    connect_changed_signals(DISCONNECT_SIGNALS);
 
-   gtk_widget_freeze_child_notify(todo_text);
-   gtk_widget_freeze_child_notify(todo_text_note);
+   gtk_widget_freeze_child_notify(todo_desc);
+   gtk_widget_freeze_child_notify(todo_note);
 
-   gtk_text_buffer_set_text(GTK_TEXT_BUFFER(todo_text_buffer), "", -1);
-   gtk_text_buffer_set_text(GTK_TEXT_BUFFER(todo_text_note_buffer), "", -1);
+   gtk_text_buffer_set_text(GTK_TEXT_BUFFER(todo_desc_buffer), "", -1);
+   gtk_text_buffer_set_text(GTK_TEXT_BUFFER(todo_note_buffer), "", -1);
 
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_todo[0]), TRUE);
 
@@ -1050,8 +1050,8 @@ int todo_clear_details()
    }
 
 
-   gtk_widget_thaw_child_notify(todo_text);
-   gtk_widget_thaw_child_notify(todo_text_note);
+   gtk_widget_thaw_child_notify(todo_desc);
+   gtk_widget_thaw_child_notify(todo_note);
 
    if (todo_category==CATEGORY_ALL) {
       new_cat = 0;
@@ -1100,13 +1100,13 @@ int todo_get_details(struct ToDo *new_todo, unsigned char *attrib)
    /*Can there be an entry with no description? */
    /*Yes, but the Palm Pilot gui doesn't allow it to be entered on the Palm, */
    /*it will show it though.  I allow it. */
-   gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(todo_text_buffer),
+   gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(todo_desc_buffer),
 			      &start_iter,&end_iter);
-   new_todo->description = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(todo_text_buffer),
+   new_todo->description = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(todo_desc_buffer),
 						    &start_iter,&end_iter,TRUE);
-   gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(todo_text_note_buffer),
+   gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(todo_note_buffer),
 			      &start_iter,&end_iter);
-   new_todo->note = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(todo_text_note_buffer),
+   new_todo->note = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(todo_note_buffer),
 					     &start_iter,&end_iter,TRUE);
    if (new_todo->note[0]=='\0') {
       free(new_todo->note);
@@ -1172,7 +1172,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
       todo_clear_details();
       connect_changed_signals(DISCONNECT_SIGNALS);
       set_new_button_to(NEW_FLAG);
-      gtk_widget_grab_focus(GTK_WIDGET(todo_text));
+      gtk_widget_grab_focus(GTK_WIDGET(todo_desc));
       return;
    }
    if ((flag!=NEW_FLAG) && (flag!=MODIFY_FLAG) && (flag!=COPY_FLAG)) {
@@ -1448,11 +1448,11 @@ static void cb_clist_selection(GtkWidget      *clist,
    }
    todo=&(mtodo->todo);
 
-   gtk_widget_freeze_child_notify(todo_text);
-   gtk_widget_freeze_child_notify(todo_text_note);
+   gtk_widget_freeze_child_notify(todo_desc);
+   gtk_widget_freeze_child_notify(todo_note);
 
-   gtk_text_buffer_set_text(GTK_TEXT_BUFFER(todo_text_buffer), "", -1);
-   gtk_text_buffer_set_text(GTK_TEXT_BUFFER(todo_text_note_buffer), "", -1);
+   gtk_text_buffer_set_text(GTK_TEXT_BUFFER(todo_desc_buffer), "", -1);
+   gtk_text_buffer_set_text(GTK_TEXT_BUFFER(todo_note_buffer), "", -1);
 
    index = mtodo->attrib & 0x0F;
    sorted_position = find_sorted_cat(index);
@@ -1480,13 +1480,13 @@ static void cb_clist_selection(GtkWidget      *clist,
 
    if (todo->description) {
       if (todo->description[0]) {
-	 gtk_text_buffer_set_text(GTK_TEXT_BUFFER(todo_text_buffer), todo->description, -1);
+	 gtk_text_buffer_set_text(GTK_TEXT_BUFFER(todo_desc_buffer), todo->description, -1);
       }
    }
 
    if (todo->note) {
       if (todo->note[0]) {
-	 gtk_text_buffer_set_text(GTK_TEXT_BUFFER(todo_text_note_buffer), todo->note, -1);
+	 gtk_text_buffer_set_text(GTK_TEXT_BUFFER(todo_note_buffer), todo->note, -1);
       }
    }
 
@@ -1515,8 +1515,8 @@ static void cb_clist_selection(GtkWidget      *clist,
       due_date.tm_year=now->tm_year;
    }
 
-   gtk_widget_thaw_child_notify(todo_text);
-   gtk_widget_thaw_child_notify(todo_text_note);
+   gtk_widget_thaw_child_notify(todo_desc);
+   gtk_widget_thaw_child_notify(todo_note);
 
    /*If they have clicked on the checkmark box then do a modify */
    if (column==0) {
@@ -2224,16 +2224,16 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    hbox_temp = gtk_hbox_new (FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, TRUE, TRUE, 0);
 
-   todo_text = gtk_text_view_new();
-   todo_text_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(todo_text)));
-   gtk_text_view_set_editable(GTK_TEXT_VIEW(todo_text), TRUE);
-   gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(todo_text), GTK_WRAP_WORD);
+   todo_desc = gtk_text_view_new();
+   todo_desc_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(todo_desc)));
+   gtk_text_view_set_editable(GTK_TEXT_VIEW(todo_desc), TRUE);
+   gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(todo_desc), GTK_WRAP_WORD);
 
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
 				  GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 1);
-   gtk_container_add(GTK_CONTAINER(scrolled_window), todo_text);
+   gtk_container_add(GTK_CONTAINER(scrolled_window), todo_desc);
    gtk_box_pack_start_defaults(GTK_BOX(hbox_temp), scrolled_window);
 
    /*The Note text box on the right side */
@@ -2246,34 +2246,34 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    hbox_temp = gtk_hbox_new (FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, TRUE, TRUE, 0);
 
-   todo_text_note = gtk_text_view_new();
-   todo_text_note_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(todo_text_note)));
-   gtk_text_view_set_editable(GTK_TEXT_VIEW(todo_text_note), TRUE);
-   gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(todo_text_note), GTK_WRAP_WORD);
+   todo_note = gtk_text_view_new();
+   todo_note_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(todo_note)));
+   gtk_text_view_set_editable(GTK_TEXT_VIEW(todo_note), TRUE);
+   gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(todo_note), GTK_WRAP_WORD);
 
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
 				  GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 1);
-   gtk_container_add(GTK_CONTAINER(scrolled_window), todo_text_note);
+   gtk_container_add(GTK_CONTAINER(scrolled_window), todo_note);
    gtk_box_pack_start_defaults(GTK_BOX(hbox_temp), scrolled_window);
 
-   gtk_widget_set_usize(GTK_WIDGET(todo_text), 10, 10);
-   gtk_widget_set_usize(GTK_WIDGET(todo_text_note), 10, 10);
+   gtk_widget_set_usize(GTK_WIDGET(todo_desc), 10, 10);
+   gtk_widget_set_usize(GTK_WIDGET(todo_note), 10, 10);
 
    /* Capture the TAB key to change focus with it */
-   gtk_signal_connect(GTK_OBJECT(todo_text), "key_press_event",
-		      GTK_SIGNAL_FUNC(cb_key_pressed), todo_text_note);
+   gtk_signal_connect(GTK_OBJECT(todo_desc), "key_press_event",
+		      GTK_SIGNAL_FUNC(cb_key_pressed), todo_note);
 
    /* Capture the Enter & Shift-Enter key combinations to move back and 
     * forth between the left- and right-hand sides of the display. */
    gtk_signal_connect(GTK_OBJECT(clist), "key_press_event",
-		      GTK_SIGNAL_FUNC(cb_key_pressed_left_side), todo_text);
+		      GTK_SIGNAL_FUNC(cb_key_pressed_left_side), todo_desc);
 
-   gtk_signal_connect(GTK_OBJECT(todo_text), "key_press_event",
+   gtk_signal_connect(GTK_OBJECT(todo_desc), "key_press_event",
 		      GTK_SIGNAL_FUNC(cb_key_pressed_right_side), clist);
 
-   gtk_signal_connect(GTK_OBJECT(todo_text_note), "key_press_event",
+   gtk_signal_connect(GTK_OBJECT(todo_note), "key_press_event",
 		      GTK_SIGNAL_FUNC(cb_key_pressed_right_side), clist);
 
    /**********************************************************************/
