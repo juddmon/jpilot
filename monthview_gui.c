@@ -1,4 +1,4 @@
-/* $Id: monthview_gui.c,v 1.44 2008/06/14 22:10:47 rikster5 Exp $ */
+/* $Id: monthview_gui.c,v 1.45 2008/06/14 22:33:21 rikster5 Exp $ */
 
 /*******************************************************************************
  * monthview_gui.c
@@ -20,6 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  ******************************************************************************/
 
+/********************************* Includes ***********************************/
 #include "config.h"
 #include <stdlib.h>
 #include <string.h>
@@ -32,23 +33,25 @@
 #include "datebook.h"
 #include "print.h"
 
+/******************************* Global vars **********************************/
 extern int datebook_category;
 extern int glob_app;
 
 GtkWidget *monthview_window=NULL;
-static GtkWidget *glob_month_vbox;
-static GtkWidget *glob_month_labels[37];
+static GtkWidget *month_day_label[37];
 static GtkWidget *month_day[37];
-static GObject   *month_day_buffers[37];
+static GObject   *month_day_buffer[37];
 static GObject   *all_appts_buffer;
-static GtkWidget *glob_month_month_label;
+static GtkWidget *month_month_label;
 static GtkWidget *glob_last_hbox_row;
 static int glob_offset;
 static struct tm glob_month_date;
 
+/****************************** Prototypes ************************************/
 int display_months_appts(struct tm *glob_month_date, GtkWidget **glob_month_texts);
 void hide_show_month_boxes();
 
+/****************************** Main Code *************************************/
 static gboolean cb_destroy(GtkWidget *widget)
 {
    int n;
@@ -93,10 +96,6 @@ static void cb_month_move(GtkWidget *widget, gpointer data)
    display_months_appts(&glob_month_date, month_day);
 }
 
-/*----------------------------------------------------------------------
- * cb_month_print	This is where month printing is kicked off from
- *----------------------------------------------------------------------*/
-
 static void cb_month_print(GtkWidget *widget, gpointer data)
 {
    long paper_size;
@@ -111,8 +110,6 @@ static void cb_month_print(GtkWidget *widget, gpointer data)
       }
    }
 }
-
-/*----------------------------------------------------------------------*/
 
 static void cb_enter_notify(GtkWidget *widget, GdkEvent *event, gpointer data)
 {
@@ -134,7 +131,7 @@ static void cb_enter_notify(GtkWidget *widget, GdkEvent *event, gpointer data)
    }
 }
 
-/* Called when a day is clicked on the month view */
+/* Called when a day is clicked on in the month view */
 static void cb_enter_selected_day(GtkWidget *widget, 
                                   GdkEvent  *event, 
 				  gpointer   data)
@@ -193,25 +190,25 @@ void hide_show_month_boxes()
 	 markup_str = g_markup_printf_escaped("%s", str);
          gtk_widget_set_name(text, "");
       }
-      gtk_label_set_markup(GTK_LABEL(glob_month_labels[n]), markup_str);
+      gtk_label_set_markup(GTK_LABEL(month_day_label[n]), markup_str);
       g_free(markup_str);
 
       if (n<7) {
 	 if (d>0) {
 	    gtk_widget_show(GTK_WIDGET(text));
-	    gtk_widget_show(GTK_WIDGET(glob_month_labels[n]));
+	    gtk_widget_show(GTK_WIDGET(month_day_label[n]));
 	 } else {
 	    gtk_widget_hide(GTK_WIDGET(text));
-	    gtk_widget_hide(GTK_WIDGET(glob_month_labels[n]));
+	    gtk_widget_hide(GTK_WIDGET(month_day_label[n]));
 	 }
       }
       if (n>27) {
 	 if (d<=ndim) {
 	    gtk_widget_show(GTK_WIDGET(text));
-	    gtk_widget_show(GTK_WIDGET(glob_month_labels[n]));
+	    gtk_widget_show(GTK_WIDGET(month_day_label[n]));
 	 } else {
 	    gtk_widget_hide(GTK_WIDGET(text));
-	    gtk_widget_hide(GTK_WIDGET(glob_month_labels[n]));
+	    gtk_widget_hide(GTK_WIDGET(month_day_label[n]));
 	 }
       }
    }
@@ -237,13 +234,13 @@ void create_month_boxes_texts(GtkWidget *month_vbox)
 	 if (n<37) {
 	    sprintf(str, "%d", n + 1);
 	    /* Day of month labels */
-	    glob_month_labels[n] = gtk_label_new(str);
-	    gtk_misc_set_alignment(GTK_MISC(glob_month_labels[n]), 0.0, 0.5);
-	    gtk_box_pack_start(GTK_BOX(vbox), glob_month_labels[n], FALSE, FALSE, 0);
+	    month_day_label[n] = gtk_label_new(str);
+	    gtk_misc_set_alignment(GTK_MISC(month_day_label[n]), 0.0, 0.5);
+	    gtk_box_pack_start(GTK_BOX(vbox), month_day_label[n], FALSE, FALSE, 0);
 
 	    /* text variable only used to save some typing */
 	    text = month_day[n] = gtk_text_view_new();
-	    month_day_buffers[n] =
+	    month_day_buffer[n] =
 	      G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)));
 	    gtk_widget_set_usize(GTK_WIDGET(text), 10, 10);
 	    gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(text), FALSE);
@@ -304,7 +301,7 @@ int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
    GtkWidget *temp_text;
 
    texts = &day_texts[glob_offset];
-   text_buffers = &month_day_buffers[glob_offset];
+   text_buffers = &month_day_buffer[glob_offset];
 
    a_list = NULL;
    mask=0;
@@ -320,7 +317,7 @@ int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
 
    /* Set Month name label */
    jp_strftime(str, sizeof(str), "%B %Y", date_in);
-   gtk_label_set_text(GTK_LABEL(glob_month_month_label), str);
+   gtk_label_set_text(GTK_LABEL(month_month_label), str);
 
    memcpy(&date, date_in, sizeof(struct tm));
 
@@ -485,8 +482,8 @@ void monthview_gui(struct tm *date_in)
 
    /* Month name label */
    jp_strftime(str, sizeof(str), "%B %Y", &glob_month_date);
-   glob_month_month_label = gtk_label_new(str);
-   gtk_box_pack_start(GTK_BOX(vbox), glob_month_month_label, FALSE, FALSE, 0);
+   month_month_label = gtk_label_new(str);
+   gtk_box_pack_start(GTK_BOX(vbox), month_month_label, FALSE, FALSE, 0);
 
    /* We know this is on a Sunday */
    memset(&date, 0, sizeof(date));
@@ -508,10 +505,7 @@ void monthview_gui(struct tm *date_in)
       add_days_to_date(&date, 1);
    }
 
-   /* glob_month_vbox */
-   glob_month_vbox = vbox;
-
-   create_month_boxes_texts(glob_month_vbox);
+   create_month_boxes_texts(vbox);
 
    gtk_widget_show_all(monthview_window);
 

@@ -1,4 +1,4 @@
-/* $Id: weekview_gui.c,v 1.41 2008/06/14 22:10:47 rikster5 Exp $ */
+/* $Id: weekview_gui.c,v 1.42 2008/06/14 22:33:21 rikster5 Exp $ */
 
 /*******************************************************************************
  * weekview_gui.c
@@ -20,6 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  ******************************************************************************/
 
+/********************************* Includes ***********************************/
 #include "config.h"
 #include <stdlib.h>
 #include <string.h>
@@ -32,20 +33,21 @@
 #include "datebook.h"
 #include "print.h"
 
+/******************************* Global vars **********************************/
 extern int datebook_category;
 extern int glob_app;
 
 GtkWidget *weekview_window=NULL;
-static GtkWidget *glob_dow_labels[8];
+static GtkWidget *week_day_label[8];
 static GtkWidget *week_day_text[8];
 static GObject   *week_day_text_buffer[8];
 static struct tm glob_week_date;
 
-/* Function prototypes */
+/****************************** Prototypes ************************************/
 int clear_weeks_appts(GtkWidget **day_texts);
 int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts);
 
-
+/****************************** Main Code *************************************/
 static gboolean cb_destroy(GtkWidget *widget)
 {
    weekview_window = NULL;
@@ -189,7 +191,7 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
 	 markup_str = g_markup_printf_escaped("%s", str);
          gtk_widget_set_name(GTK_WIDGET(text[i]), "");
       }
-      gtk_label_set_markup(GTK_LABEL(glob_dow_labels[i]), markup_str);
+      gtk_label_set_markup(GTK_LABEL(week_day_label[i]), markup_str);
       g_free(markup_str);
 
    }
@@ -358,8 +360,8 @@ void weekview_gui(struct tm *date_in)
    sub_days_from_date(&glob_week_date, (7 - fdow + glob_week_date.tm_wday)%7);
 
    for (i=0; i<8; i++) {
-      glob_dow_labels[i] = gtk_label_new("");
-      gtk_misc_set_alignment(GTK_MISC(glob_dow_labels[i]), 0.0, 0.5);
+      week_day_label[i] = gtk_label_new("");
+      gtk_misc_set_alignment(GTK_MISC(week_day_label[i]), 0.0, 0.5);
       week_day_text[i] = gtk_text_view_new();
       week_day_text_buffer[i] = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(week_day_text[i])));
       gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(week_day_text[i]), FALSE);
@@ -374,10 +376,10 @@ void weekview_gui(struct tm *date_in)
 			 GTK_SIGNAL_FUNC(cb_enter_selected_day),
 			 GINT_TO_POINTER(i));
       if (i>3) {
-	 gtk_box_pack_start(GTK_BOX(vbox_right), glob_dow_labels[i], FALSE, FALSE, 0);
+	 gtk_box_pack_start(GTK_BOX(vbox_right), week_day_label[i], FALSE, FALSE, 0);
 	 gtk_box_pack_start(GTK_BOX(vbox_right), week_day_text[i], TRUE, TRUE, 0);
       } else {
-	 gtk_box_pack_start(GTK_BOX(vbox_left), glob_dow_labels[i], FALSE, FALSE, 0);
+	 gtk_box_pack_start(GTK_BOX(vbox_left), week_day_label[i], FALSE, FALSE, 0);
 	 gtk_box_pack_start(GTK_BOX(vbox_left), week_day_text[i], TRUE, TRUE, 0);
       }
    }
