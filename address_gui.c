@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.211 2008/06/04 19:17:18 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.212 2008/06/14 20:57:04 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -78,8 +78,8 @@
  * add ifdef/endif blocks around all of them would make the code unreadable.
  * Instead, I use a macro substitution to convert old GTK 1.X calls to
  * GTK 2.X calls. */
-#define GTK_TEXT(arg1) GTK_TEXT_BUFFER(gtk_txt_buf_ ## arg1)
-#define gtk_text_insert(buffer,arg2,arg3,arg4,string,length) gtk_text_buffer_insert_at_cursor(buffer,string,length)
+//#define GTK_TEXT(arg1) GTK_TEXT_BUFFER(gtk_txt_buf_ ## arg1)
+//#define gtk_text_insert(buffer,arg2,arg3,arg4,string,length) gtk_text_buffer_insert_at_cursor(buffer,string,length)
 
 static address_schema_entry *schema;
 static int schema_size;
@@ -2663,14 +2663,14 @@ static void cb_clist_selection(GtkWidget      *clist,
    /* Fill out the "All" text buffer */
    s = contact_to_gstring(cont);
    if (s->len) {
-      gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL, _("Category: "), -1);
+      gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(text), _("Category: "), -1);
       char *utf;
       utf = charset_p2newj(contact_app_info.category.name[mcont->attrib & 0x0F], 16, char_set);
-      gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL, utf, -1);
+      gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(text), utf, -1);
       g_free(utf);
-      gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL, "\n", -1);
+      gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(text), "\n", -1);
       
-      gtk_text_insert(GTK_TEXT(text), NULL,NULL,NULL, s->str, -1);
+      gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(text), s->str, -1);
    }
    g_string_free(s, TRUE);
 
@@ -2727,8 +2727,8 @@ static void cb_clist_selection(GtkWidget      *clist,
 	 set_text:
 	 gtk_text_buffer_set_text(GTK_TEXT_BUFFER(gtk_txt_buf_address_text[schema[i].record_field]), "", -1);
 	 if (cont->entry[schema[i].record_field]) {
-	    gtk_text_insert(GTK_TEXT(address_text[schema[i].record_field]),
-			    NULL,NULL,NULL, cont->entry[schema[i].record_field], -1);
+	    gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(address_text[schema[i].record_field]),
+			                     cont->entry[schema[i].record_field], -1);
 	 }
 	 break;
        case ADDRESS_GUI_BIRTHDAY:
