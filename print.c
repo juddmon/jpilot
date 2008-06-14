@@ -1,4 +1,4 @@
-/* $Id: print.c,v 1.40 2008/05/05 19:32:07 rikster5 Exp $ */
+/* $Id: print.c,v 1.41 2008/06/14 22:34:12 rikster5 Exp $ */
 
 /*******************************************************************************
  * print.c
@@ -483,7 +483,7 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
    get_pref(PREF_FDOW, &fdow, NULL);
 
    fprintf(out,
-	   "(%s, %d) %d (%s) (%s version %s) %ld InitialisePage\n\n",
+	   "(%s %d) %d (%s) (%s version %s) %ld InitialisePage\n\n",
 	   MonthNames[date_in->tm_mon], date_in->tm_year + 1900,
 	   date.tm_wday,
 	   ctime(&ltime),
