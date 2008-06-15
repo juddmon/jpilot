@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.98 2008/06/13 01:31:04 rikster5 Exp $ */
+/* $Id: sync.c,v 1.99 2008/06/15 05:05:30 rikster5 Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -304,7 +304,11 @@ int sync_once(struct my_sync_info *sync_info)
    r = sync_lock(&fd);
    if (r) {
       jp_logf(JP_LOG_DEBUG, "Child cannot lock file\n");
-      return EXIT_FAILURE;
+      if (!(SYNC_NO_FORK & sync_info->flags)) {
+         _exit(0);
+      } else {
+         return EXIT_FAILURE;
+      }
    }
 #endif
 
@@ -364,7 +368,7 @@ int sync_once(struct my_sync_info *sync_info)
    jp_logf(JP_LOG_DEBUG, "sync child exiting\n");
    free(sync_info_copy);
    if (!(SYNC_NO_FORK & sync_info->flags)) {
-      return EXIT_FAILURE;
+      _exit(0);
    } else {
       return r;
    }
