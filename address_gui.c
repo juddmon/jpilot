@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.214 2008/06/14 22:10:46 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.215 2008/06/15 06:08:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -3541,14 +3541,19 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    }
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
-   for (i=0; i<NUM_ADDRESS_CAT_ITEMS; i++) {
+   for (i=1; i<NUM_ADDRESS_CAT_ITEMS; i++) {
       cat_name = charset_p2newj(contact_app_info.category.name[i], 31, char_set);
-      strcpy(sort_l[i].Pcat, cat_name);
+      strcpy(sort_l[i-1].Pcat, cat_name);
       free(cat_name);
-      sort_l[i].cat_num=i;
+      sort_l[i-1].cat_num=i;
    }
+   /* put reserved 'Unfiled' category at end of list */ 
+   cat_name = charset_p2newj(contact_app_info.category.name[0], 31, char_set);
+   strcpy(sort_l[NUM_ADDRESS_CAT_ITEMS-1].Pcat, cat_name);
+   free(cat_name);
+   sort_l[NUM_ADDRESS_CAT_ITEMS-1].cat_num=0;
 
-   qsort(sort_l, NUM_ADDRESS_CAT_ITEMS, sizeof(struct sorted_cats), cat_compare);
+   qsort(sort_l, NUM_ADDRESS_CAT_ITEMS-1, sizeof(struct sorted_cats), cat_compare);
 #ifdef JPILOT_DEBUG
    for (i=0; i<NUM_ADDRESS_CAT_ITEMS; i++) {
       printf("cat %d [%s]\n", sort_l[i].cat_num, sort_l[i].Pcat);
