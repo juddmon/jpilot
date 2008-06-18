@@ -1,4 +1,4 @@
-/* $Id: expense.c,v 1.61 2008/06/14 22:10:47 rikster5 Exp $ */
+/* $Id: expense.c,v 1.62 2008/06/18 02:40:02 rikster5 Exp $ */
 
 /*******************************************************************************
  * expense.c
@@ -1934,11 +1934,11 @@ int plugin_help(char **text, int *width, int *height)
     */
    *text = strdup(
            /*-------------------------------------------*/
-           "Expense plugin for J-Pilot was written by\n"
-           "Judd Montgomery (c) 1999.\n"
-           "judd@jpilot.org\n"
-           "http://jpilot.org"
-           );
+           _("Expense plugin for J-Pilot was written by\n"
+             "Judd Montgomery (c) 1999.\n"
+             "judd@jpilot.org\n"
+             "http://jpilot.org"
+           ));
    *height = 0;
    *width = 0;
    

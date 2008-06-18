@@ -1,4 +1,4 @@
-/* $Id: synctime.c,v 1.13 2008/06/06 01:58:02 rikster5 Exp $ */
+/* $Id: synctime.c,v 1.14 2008/06/18 02:40:02 rikster5 Exp $ */
 
 /*******************************************************************************
  * synctime.c
@@ -50,16 +50,15 @@ int plugin_get_help_name(char *name, int len)
 
 int plugin_help(char **text, int *width, int *height)
 {
-   /* We could also pass back *text=NULL */
    *text = strdup(
 	   /*-------------------------------------------*/
-	   "SyncTime plugin for J-Pilot was written by\n"
-	   "Judd Montgomery (c) 1999.\n"
-	   "judd@jpilot.org\n"
-	   "http://jpilot.org\n"
-	   "\n"
-	   "SyncTime WILL NOT work with PalmOS 3.3!"
-	   );
+	   _("SyncTime plugin for J-Pilot was written by\n"
+	     "Judd Montgomery (c) 1999.\n"
+	     "judd@jpilot.org\n"
+	     "http://jpilot.org\n"
+	     "\n"
+	     "SyncTime WILL NOT work with PalmOS 3.3!"
+	   ));
    *height = 0;
    *width = 0;
    return EXIT_SUCCESS;
