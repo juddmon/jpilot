@@ -1,4 +1,4 @@
-/* $Id: plugins.c,v 1.20 2008/04/30 23:26:06 rikster5 Exp $ */
+/* $Id: plugins.c,v 1.21 2008/06/19 04:12:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * plugins.c
@@ -20,6 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  ******************************************************************************/
 
+/********************************* Includes ***********************************/
 #include "config.h"
 #ifdef  ENABLE_PLUGINS
 #include <dirent.h>
@@ -33,15 +34,16 @@
 #include <dlfcn.h>
 #include "i18n.h"
 
+/******************************* Global vars **********************************/
 GList *plugins = NULL;
 
+/****************************** Prototypes ************************************/
 static int get_plugin_info(struct plugin_s *p, char *path);
 static int get_plugin_sync_bits();
 gint plugin_sort(gconstpointer a, gconstpointer b);
 
-/*
- * Write out the jpilot.plugins file that tells which plugins to sync
- */
+/****************************** Main Code *************************************/
+/* Write out the jpilot.plugins file that tells which plugins to sync */
 void write_plugin_sync_file()
 {
    FILE *out;
@@ -67,7 +69,6 @@ void write_plugin_sync_file()
    }
    fclose(out);
 }
-
 
 /*
  * This is just a repeated subroutine to load_plugins not needing
@@ -200,7 +201,7 @@ static int get_plugin_sync_bits()
       return EXIT_SUCCESS;
    }
    for (i=0; (!feof(in)); i++) {
-      if (i>1000) {
+      if (i>MAX_NUM_PLUGINS) {
 	 jp_logf(JP_LOG_WARN, "load_plugins(): %s\n", _("infinite loop"));
 	 fclose(in);
 	 return EXIT_FAILURE;
@@ -308,7 +309,6 @@ static int get_plugin_info(struct plugin_s *p, char *path)
    jp_logf(JP_LOG_DEBUG, "This plugin is version (%d.%d).\n",
 	       major_version, minor_version);
 
-
    /* plugin_get_name */
    jp_logf(JP_LOG_DEBUG, "getting plugin_get_name\n");
    p->plugin_get_name = dlsym(h, "plugin_get_name");
@@ -329,7 +329,6 @@ static int get_plugin_info(struct plugin_s *p, char *path)
       p->name = NULL;
    }
 
-
    /* plugin_get_menu_name */
    jp_logf(JP_LOG_DEBUG, "getting plugin_get_menu_name\n");
    p->plugin_get_menu_name = dlsym(h, "plugin_get_menu_name");
@@ -340,7 +339,6 @@ static int get_plugin_info(struct plugin_s *p, char *path)
    } else {
       p->menu_name = NULL;
    }
-
 
    /* plugin_get_help_name */
    jp_logf(JP_LOG_DEBUG, "getting plugin_get_help_name\n");
@@ -356,16 +354,13 @@ static int get_plugin_info(struct plugin_s *p, char *path)
    /* plugin_get_db_name */
    jp_logf(JP_LOG_DEBUG, "getting plugin_get_db_name\n");
    p->plugin_get_db_name = dlsym(h, "plugin_get_db_name");
-
    if (p->plugin_get_db_name) {
       p->plugin_get_db_name(db_name, 50);
       db_name[50]='\0';
    } else {
       db_name[0]='\0';
    }
-
    p->db_name = strdup(db_name);
-
 
    /* plugin_gui */
    p->plugin_gui = dlsym(h, "plugin_gui");

@@ -1,4 +1,4 @@
-/* $Id: alarms.c,v 1.45 2008/06/03 01:02:53 rikster5 Exp $ */
+/* $Id: alarms.c,v 1.46 2008/06/19 04:12:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * alarms.c
@@ -30,6 +30,7 @@
  * remind_time is the time a window is to be popped up (it may be postponed)
  */
 
+/********************************* Includes ***********************************/
 #include "config.h"
 #include <gtk/gtk.h>
 #include <time.h>
@@ -39,12 +40,13 @@
 
 #include <pi-datebook.h>
 
+#include "i18n.h"
 #include "utils.h"
+#include "datebook.h"
 #include "log.h"
 #include "prefs.h"
-#include "i18n.h"
-#include "datebook.h"
 
+/********************************* Constants **********************************/
 /* This is how often to check for alarms in seconds */
 /* Every call takes CPU time(not much), so you may want it to be greater */
 #define ALARM_INTERVAL 10
@@ -60,6 +62,18 @@
 /* Uncomment for verbose debugging of the alarm code */
 /* #define ALARMS_DEBUG */
 
+/******************************* Global vars **********************************/
+/* main jpilot window */
+extern GtkWidget *window;
+
+static struct jp_alarms *alarm_list=NULL;
+static struct jp_alarms *Plast_alarm_list=NULL;
+static struct jp_alarms *next_alarm=NULL;
+
+static int glob_skip_all_alarms;
+static int total_alarm_windows;
+
+/****************************** Prototypes ************************************/
 typedef enum {
    ALARM_NONE = 0,
    ALARM_NEW,
@@ -84,27 +98,17 @@ struct alarm_dialog_data {
    int button_hit;
 };
 
-/* main jpilot window */
-extern GtkWidget *window;
-
-static struct jp_alarms *alarm_list=NULL;
-static struct jp_alarms *Plast_alarm_list=NULL;
-static struct jp_alarms *next_alarm=NULL;
-
-static int glob_skip_all_alarms;
-static int total_alarm_windows;
-
 void alarms_add_to_list(unsigned int unique_id,
 			AlarmType type,
 			time_t alarm_time,
 			time_t alarm_advance);
 int alarms_find_next(struct tm *date1, struct tm *date2, int soonest_only);
 
+/****************************** Main Code *************************************/
 /* Alarm GUI */
 
 /* Start of Dialog window code */
-static void cb_dialog_button(GtkWidget *widget,
-			     gpointer   data)
+static void cb_dialog_button(GtkWidget *widget, gpointer data)
 {
    struct alarm_dialog_data *Pdata;
    GtkWidget *w;
@@ -412,7 +416,7 @@ void alarms_write_file(void)
 
    out=jp_open_home_file(EPN".alarms.tmp", "w");
    if (!out) {
-      jp_logf(JP_LOG_WARN, _("Unable to open %s%s file\n"), EPN, ".alarms.tmp");
+      jp_logf(JP_LOG_WARN, _("Unable to open file: %s%s\n"), EPN, ".alarms.tmp");
       return;
    }
    fail=0;
@@ -542,12 +546,12 @@ int alarms_do_one(struct Appointment *appt,
    memset(command, 0, sizeof(command));
    if (do_command) {
       command[0]='\0';
-      for (i=0; i<MAX_PREF_VALUE-1; i++) {
+      for (i=0; i<MAX_PREF_LEN-1; i++) {
 	 c1 = pref_command[i];
 	 c2 = pref_command[i+1];
 	 len = strlen(command);
-	 /* expand '%t' */
 	 if (c1=='%') {
+            /* expand '%t' */
 	    if (c2=='t') {
 	       i++;
 	       strncat(command, time1_str, sizeof(command)-2-len);
@@ -566,6 +570,7 @@ int alarms_do_one(struct Appointment *appt,
 	       strncat(command, desc_str, sizeof(command)-2-len);
 	       continue;
 	    }
+	    /* expand '%N' */
 	    if (c2=='N') {
 	       i++;
 	       strncat(command, note_str, sizeof(command)-2-len);

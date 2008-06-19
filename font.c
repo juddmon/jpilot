@@ -61,7 +61,7 @@ void font_sel_dialog()
    }
 }
 
-/*fixme move to font.c */
+/* fixme move to font.c */
 void cb_font(GtkWidget *widget, gpointer data)
 {
    font_sel_dialog();

@@ -1,4 +1,4 @@
-/* $Id: prefs.c,v 1.77 2008/06/09 16:27:54 rikster5 Exp $ */
+/* $Id: prefs.c,v 1.78 2008/06/19 04:12:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs.c
@@ -20,22 +20,33 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  ******************************************************************************/
 
+/********************************* Includes ***********************************/
 #include "config.h"
-#include "i18n.h"
 #include <sys/types.h>
 #include <dirent.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "i18n.h"
 #include "utils.h"
 #include "prefs.h"
 #include "log.h"
 #include "otherconv.h"
 
+/********************************* Constants **********************************/
+#define NUM_SHORTDATES 7
+#define NUM_LONGDATES 6
+#define NUM_TIMES 10
+#define NUM_TIMES_NO_AMPM 6
+#define NUM_RATES 11
+#define NUM_PAPER_SIZES 2
+
+/******************************* Global vars **********************************/
 extern int t_fmt_ampm;
 
-/*These are the default settings */
-/*name, usertype, filetype, ivalue, char *svalue, svalue_size; */
+/* These are the default settings */
+/* name, usertype, filetype, ivalue, char *svalue, svalue_size; */
 static prefType glob_prefs[NUM_PREFS] = {
      {"jpilotrc", CHARTYPE, CHARTYPE, 0, NULL, 0},
      {"time", CHARTYPE, INTTYPE, 0, NULL, 0},
@@ -64,9 +75,7 @@ static prefType glob_prefs[NUM_PREFS] = {
      {"print_one_per_page", INTTYPE, INTTYPE, 0, NULL ,0},
      {"print_blank_lines", INTTYPE, INTTYPE, 1, NULL, 0},
      {"print_command", CHARTYPE, CHARTYPE, 0, NULL, 0},
-     {"char_set", INTTYPE, INTTYPE,
-     CHAR_SET_1252_UTF
-	, NULL, 0},
+     {"char_set", INTTYPE, INTTYPE, CHAR_SET_1252_UTF , NULL, 0},
      {"sync_datebook", INTTYPE, INTTYPE, 1, NULL, 0},
      {"sync_address", INTTYPE, INTTYPE, 1, NULL, 0},
      {"sync_todo", INTTYPE, INTTYPE, 1, NULL, 0},
@@ -144,7 +153,7 @@ struct name_list {
 
 static struct name_list *dir_list=NULL;
 
-
+/****************************** Main Code *************************************/
 void pref_init()
 {
    int i;
@@ -275,7 +284,7 @@ int get_pref_time_no_secs_no_ampm(char *datef)
    return EXIT_SUCCESS;
 }
 
-/*This function is used internally to free up any memory that prefs is using */
+/* This function is used internally to free up any memory that prefs is using */
 /* I'm not using this function right now.
 void free_name_list(struct name_list **Plist)
 {
@@ -291,6 +300,7 @@ void free_name_list(struct name_list **Plist)
    *Plist=NULL;
 }
 */
+
 static int get_rcfile_name(int n, char *rc_copy)
 {
    DIR *dir;
@@ -358,7 +368,7 @@ static int get_rcfile_name(int n, char *rc_copy)
    found = 0;
    for (i=0, temp_list=dir_list; temp_list; temp_list=temp_list->next, i++) {
       if (i == n) {
-	 g_strlcpy(rc_copy, temp_list->name, MAX_PREF_VALUE);
+	 g_strlcpy(rc_copy, temp_list->name, MAX_PREF_LEN);
 	 found=1;
 	 break;
       }
@@ -372,14 +382,7 @@ static int get_rcfile_name(int n, char *rc_copy)
    }
 }
 
-#define NUM_SHORTDATES 7
-#define NUM_LONGDATES 6
-#define NUM_TIMES 10
-#define NUM_TIMES_NO_AMPM 6
-#define NUM_RATES 11
-#define NUM_PAPER_SIZES 2
-
-/*if n is out of range then this function will fail */
+/* if n is out of range then this function will fail */
 int get_pref_possibility(int which, int n, char *pref_str)
 {
    const char *short_date_formats[] = {
@@ -468,7 +471,7 @@ int get_pref_possibility(int which, int n, char *pref_str)
       "A4"
    };
 
-   switch(which) {
+   switch (which) {
 
     case PREF_RCFILE:
 	 return get_rcfile_name(n, pref_str);
@@ -547,10 +550,7 @@ int get_pref_possibility(int which, int n, char *pref_str)
    return EXIT_SUCCESS;
 }
 
-/*
- * WARNING
- * Caller must ensure that which is not out of range!
- */
+/* Warning: which must be in the range of choices or this can seg fault */
 int jp_get_pref(prefType prefs[], int which, long *n, const char **string)
 {
    if (which < 0) {
@@ -573,7 +573,7 @@ int jp_get_pref(prefType prefs[], int which, long *n, const char **string)
 
 int get_pref(int which, long *n, const char **string)
 {
-   if (which > NUM_PREFS) {
+   if (which >= NUM_PREFS) {
       return EXIT_FAILURE;
    }
    return jp_get_pref(glob_prefs, which, n, string);
@@ -649,7 +649,7 @@ int jp_set_pref(prefType prefs[], int which, long n, const char *string)
    }
    if (prefs[which].usertype == CHARTYPE) {
       pref_lstrncpy_realloc(&(prefs[which].svalue), Pstr,
-			    &(prefs[which].svalue_size), MAX_PREF_VALUE);
+			    &(prefs[which].svalue_size), MAX_PREF_LEN);
    }
    return EXIT_SUCCESS;
 }
@@ -659,7 +659,7 @@ int set_pref(int which, long n, const char *string, int save)
    const char *str;
    int r;
 
-   if (which > NUM_PREFS) {
+   if (which >= NUM_PREFS) {
       return EXIT_FAILURE;
    }
    str=string;
@@ -672,23 +672,20 @@ int set_pref(int which, long n, const char *string, int save)
       str=glob_prefs[which].svalue;
    }
    r = jp_set_pref(glob_prefs, which, n, str);
-   /* #ifdef ENABLE_PROMETHEON */
-   /* Some people like to just kill the window manager */
-   /* Prometheon kills us, always be prepared for death */
    if (save) {
       pref_write_rc_file();
    }
-   /* #endif */
+
    return r;
 }
 
 int set_pref_possibility(int which, long n, int save)
 {
-   char svalue[MAX_PREF_VALUE];
+   char svalue[MAX_PREF_LEN];
    char *str=NULL;
    int r;
 
-   if (which > NUM_PREFS) {
+   if (which >= NUM_PREFS) {
       return EXIT_FAILURE;
    }
    if (glob_prefs[which].usertype == CHARTYPE) {
@@ -696,17 +693,13 @@ int set_pref_possibility(int which, long n, int save)
       str=svalue;
    }
    r = jp_set_pref(glob_prefs, which, n, str);
-   /* #ifdef ENABLE_PROMETHEON */
-   /* Some people like to just kill the window manager */
-   /* Prometheon kills us, always be prepared for death */
    if (save) {
       pref_write_rc_file();
    }
-   /* #endif */
 
    if (PREF_CHAR_SET == which)
       if (otherconv_init())
-	 printf("Error: could not set encoding\n");
+	 printf("Error: could not set charset encoding\n");
 
    return r;
 }
@@ -714,7 +707,7 @@ int set_pref_possibility(int which, long n, int save)
 static int validate_glob_prefs()
 {
    int i, r;
-   char svalue[MAX_PREF_VALUE];
+   char svalue[MAX_PREF_LEN];
 
    if (t_fmt_ampm) {
       if (glob_prefs[PREF_TIME].ivalue >= NUM_TIMES) {
@@ -819,30 +812,30 @@ static int validate_glob_prefs()
 
    get_pref_possibility(PREF_TIME, glob_prefs[PREF_TIME].ivalue, svalue);
    pref_lstrncpy_realloc(&(glob_prefs[PREF_TIME].svalue), svalue,
-			 &(glob_prefs[PREF_TIME].svalue_size), MAX_PREF_VALUE);
+			 &(glob_prefs[PREF_TIME].svalue_size), MAX_PREF_LEN);
 
    get_pref_possibility(PREF_SHORTDATE, glob_prefs[PREF_SHORTDATE].ivalue, svalue);
    pref_lstrncpy_realloc(&(glob_prefs[PREF_SHORTDATE].svalue), svalue,
-			 &(glob_prefs[PREF_SHORTDATE].svalue_size), MAX_PREF_VALUE);
+			 &(glob_prefs[PREF_SHORTDATE].svalue_size), MAX_PREF_LEN);
 
 
    get_pref_possibility(PREF_LONGDATE, glob_prefs[PREF_LONGDATE].ivalue, svalue);
    pref_lstrncpy_realloc(&(glob_prefs[PREF_LONGDATE].svalue), svalue,
-			 &(glob_prefs[PREF_LONGDATE].svalue_size), MAX_PREF_VALUE);
+			 &(glob_prefs[PREF_LONGDATE].svalue_size), MAX_PREF_LEN);
 
    get_pref_possibility(PREF_FDOW, glob_prefs[PREF_FDOW].ivalue, svalue);
    pref_lstrncpy_realloc(&(glob_prefs[PREF_FDOW].svalue), svalue,
-			 &(glob_prefs[PREF_FDOW].svalue_size), MAX_PREF_VALUE);
+			 &(glob_prefs[PREF_FDOW].svalue_size), MAX_PREF_LEN);
 
    get_pref_possibility(PREF_RATE, glob_prefs[PREF_RATE].ivalue, svalue);
    pref_lstrncpy_realloc(&(glob_prefs[PREF_RATE].svalue), svalue,
-			 &(glob_prefs[PREF_RATE].svalue_size), MAX_PREF_VALUE);
+			 &(glob_prefs[PREF_RATE].svalue_size), MAX_PREF_LEN);
 
    get_pref_possibility(PREF_PAPER_SIZE, glob_prefs[PREF_PAPER_SIZE].ivalue, svalue);
    pref_lstrncpy_realloc(&(glob_prefs[PREF_PAPER_SIZE].svalue), svalue,
-			 &(glob_prefs[PREF_PAPER_SIZE].svalue_size), MAX_PREF_VALUE);
+			 &(glob_prefs[PREF_PAPER_SIZE].svalue_size), MAX_PREF_LEN);
 
-   for (i=0; i<1000; i++) {
+   for (i=0; i<MAX_NUM_PREFS; i++) {
       r = get_pref_possibility(PREF_RCFILE, i, svalue);
       if (r) break;
       if (!strcmp(svalue, glob_prefs[PREF_RCFILE].svalue)) {
@@ -850,6 +843,7 @@ static int validate_glob_prefs()
 	 break;
       }
    }
+
    return EXIT_SUCCESS;
 }
 
@@ -872,7 +866,7 @@ int jp_pref_read_rc_file(char *filename, prefType prefs[], int num_prefs)
       line[sizeof(line)-2] = ' ';
       line[sizeof(line)-1] = '\0';
       field1 = strtok(line, " ");
-      field2 = (field1 != NULL)	? strtok(NULL, "\n") : NULL;/* jonh */
+      field2 = (field1 != NULL)	? strtok(NULL, "\n") : NULL;
       if ((field1 == NULL) || (field2 == NULL)) {
 	 continue;
       }
@@ -887,7 +881,7 @@ int jp_pref_read_rc_file(char *filename, prefType prefs[], int num_prefs)
 	    if (prefs[i].filetype == CHARTYPE) {
 	       if (pref_lstrncpy_realloc(&(prefs[i].svalue), field2,
 					&(prefs[i].svalue_size),
-					MAX_PREF_VALUE)==NULL) {
+					MAX_PREF_LEN)==NULL) {
 		  jp_logf(JP_LOG_WARN, "read_rc_file(): %s\n", _("Out of memory"));
 		  continue;
 	       }
@@ -904,7 +898,7 @@ int pref_read_rc_file()
 {
    int r;
 
-   r=jp_pref_read_rc_file(EPN".rc", glob_prefs, NUM_PREFS);
+   r = jp_pref_read_rc_file(EPN".rc", glob_prefs, NUM_PREFS);
 
    validate_glob_prefs();
 
@@ -942,3 +936,4 @@ int pref_write_rc_file()
 {
    return jp_pref_write_rc_file(EPN".rc", glob_prefs, NUM_PREFS);
 }
+

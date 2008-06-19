@@ -1,4 +1,4 @@
-/* $Id: weekview_gui.c,v 1.42 2008/06/14 22:33:21 rikster5 Exp $ */
+/* $Id: weekview_gui.c,v 1.43 2008/06/19 04:12:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * weekview_gui.c
@@ -26,6 +26,7 @@
 #include <string.h>
 #include <gtk/gtk.h>
 #include <pi-datebook.h>
+
 #include "i18n.h"
 #include "utils.h"
 #include "prefs.h"
@@ -65,10 +66,7 @@ void cb_weekview_quit(GtkWidget *widget, gpointer data)
    gtk_widget_destroy(weekview_window);
 }
 
-/*----------------------------------------------------------------------
- * cb_week_print     This is where week printing is kicked off from
- *----------------------------------------------------------------------*/
-
+/* This is where week printing is kicked off from */
 static void cb_week_print(GtkWidget *widget, gpointer data)
 {
    long paper_size;
@@ -83,8 +81,6 @@ static void cb_week_print(GtkWidget *widget, gpointer data)
       }
    }
 }
-
-/*----------------------------------------------------------------------*/
 
 void freeze_weeks_appts()
 {
@@ -174,6 +170,7 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
       svalue = default_date;
    }
 
+   /* Label each day including special markup for TODAY */
    for (i=0; i<8; i++, add_days_to_date(&date, 1)) {
       strftime(short_date, sizeof(short_date), svalue, &date);
       jp_strftime(str_dow, sizeof(str_dow), "%A", &date);
@@ -199,10 +196,9 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
    /* Get all of the appointments */
    get_days_appointments2(&a_list, NULL, 2, 2, 2, NULL);
 
-   /* iterate through eight days */
    memcpy(&date, date_in, sizeof(struct tm));
 
-
+   /* Iterate through 8 days */
    for (n=0; n<8; n++, add_days_to_date(&date, 1)) {
       text_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text[n])));
       for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
@@ -279,8 +275,7 @@ void weekview_gui(struct tm *date_in)
    if (weekview_window) {
        /* Delete any existing window to ensure that new window is biased
 	* around currently selected date and so that the new window
-	* contents are updated with any changes on the day view.
-	*/
+	* contents are updated with any changes on the day view. */
        gtk_widget_destroy(weekview_window);
    }
 
@@ -296,7 +291,6 @@ void weekview_gui(struct tm *date_in)
 			            NULL);
 
    gtk_window_set_default_size(GTK_WINDOW(weekview_window), w, h);
-
    gtk_container_set_border_width(GTK_CONTAINER(weekview_window), 10);
 
    gtk_signal_connect(GTK_OBJECT(weekview_window), "destroy",
@@ -315,14 +309,14 @@ void weekview_gui(struct tm *date_in)
 
    gtk_container_add(GTK_CONTAINER(align), hbox_temp);
 
-   /*Make a left arrow for going back a week */
+   /* Make a left arrow for going back a week */
    button = gtk_button_new_from_stock(GTK_STOCK_GO_BACK);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_week_move),
 		      GINT_TO_POINTER(-1));
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
 
-   /* Create a "Close" button */
+   /* Close button */
    button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_weekview_quit), NULL);
@@ -332,13 +326,13 @@ void weekview_gui(struct tm *date_in)
 
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
 
-   /* Create a "Print" button */
+   /* Print button */
    button = gtk_button_new_from_stock(GTK_STOCK_PRINT);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_week_print), weekview_window);
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
 
-   /*Make a right arrow for going forward a week */
+   /* Make a right arrow for going forward a week */
    button = gtk_button_new_from_stock(GTK_STOCK_GO_FORWARD);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_week_move),
@@ -359,6 +353,7 @@ void weekview_gui(struct tm *date_in)
    /* Get the first day of the week */
    sub_days_from_date(&glob_week_date, (7 - fdow + glob_week_date.tm_wday)%7);
 
+   /* Make 8 boxes, 1 for each day, to hold appt. descriptions */
    for (i=0; i<8; i++) {
       week_day_label[i] = gtk_label_new("");
       gtk_misc_set_alignment(GTK_MISC(week_day_label[i]), 0.0, 0.5);
@@ -388,3 +383,4 @@ void weekview_gui(struct tm *date_in)
 
    gtk_widget_show_all(weekview_window);
 }
+

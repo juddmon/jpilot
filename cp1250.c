@@ -1,4 +1,4 @@
-/* $Id: cp1250.c,v 1.9 2004/11/29 06:24:46 rikster5 Exp $ */
+/* $Id: cp1250.c,v 1.10 2008/06/19 04:12:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * cp1250.c
@@ -22,19 +22,20 @@
 
 /*
  * Czech, Polish (and other CP 1250 languages) library
- * Convert Palm  <-> Unix:
+ * Convert charsets: Palm <-> Unix:
  * Palm : CP 1250
  * Unix : ISO-8859-2
  */
 
+/********************************* Includes ***********************************/
 #include "config.h"
 #include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 #include "cp1250.h"
-#include "log.h"
 
-/********** Unix: ISO **************************************************/
+/********************************* Constants **********************************/
+#define isCZ(c) ((c) & 0x80)
+
+/***** Unix: ISO *****/
 
 const unsigned char w2l[128] = {
    0x80, 0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88, 0x89, 0xa9, 0x8b,
@@ -64,8 +65,7 @@ const unsigned char l2w[128] = {
    0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff
 };
 
-#define isCZ(c) ((c) & 0x80)
-
+/****************************** Main Code *************************************/
 void Win2Lat(char *const buf, int buf_len)
 {
    unsigned char *p;

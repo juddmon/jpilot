@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.172 2008/06/11 06:53:45 rousseau Exp $ */
+/* $Id: jpilot.c,v 1.173 2008/06/19 04:12:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -23,28 +23,26 @@
 /********************************* Includes ***********************************/
 #include "config.h"
 #include <time.h>
-#include <sys/types.h>
-#include <sys/time.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
 #include <string.h>
 #include <ctype.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <unistd.h>
-#include <fcntl.h>
 #ifdef HAVE_LOCALE_H
 #  include <locale.h>
 #endif
 #ifdef HAVE_LANGINFO_H
 #  include <langinfo.h>
 #endif
-#include <sys/stat.h>
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 
 #include "utils.h"
 #include "i18n.h"
-#  include "otherconv.h"
+#include "otherconv.h"
 #include "libplugin.h"
 #include "datebook.h"
 #include "address.h"
@@ -126,102 +124,6 @@ void install_gui_and_size(GtkWidget *main_window);
 
 /****************************** Main Code *************************************/
 
-/* Parses the -geometry command line parameter
- * gtk_init must already have been called, or will seg fault */
-gboolean parse_geometry(const char *str,
-			int window_width, int window_height,
-			int *w, int *h, int *x, int *y,
-			int *mask)
-{
-   const char *P;
-   int field;
-   int *param;
-   int negative;
-   int max_value;
-   int sub_value;
-
-   jp_logf(JP_LOG_DEBUG, "parse_geometry()\n");
-
-   if (!(x && y && w && h && str && mask)) {
-      return FALSE;
-   }
-
-   *x = *y = *w = *h = *mask = 0;
-   max_value = sub_value = 0;
-   param=w;
-   /* what param are we working on x=1, y=2, w=3, h=4 */
-   field=1;
-   /* 1 for positive, -1 for negative */
-   negative=1;
-
-   for (P=str; *P; P++) {
-      if (isdigit(*P)) {
-	 *mask=(*mask) | 1 << ((4-field) & 0x0F);
-	 if (negative==1) {
-	    *param = (*param) * 10 + (*P) - '0';
-	 }
-	 if (negative==-1) {
-	    sub_value = sub_value * 10 + (*P) - '0';
-	    *param = max_value - sub_value;
-	 }
-      }
-      if ((*P=='x')||(*P=='X')) {
-	 field++;
-	 if (field==2) {
-	    param=h;
-	    negative=1;
-	 } else {
-		 jp_logf(JP_LOG_STDOUT, _("Invalid geometry specification: \"%s\"\n"), str);
-	    return FALSE;
-	 }
-      }
-      if ((*P == '+') || (*P == '-')) {
-	 field++;
-	 if (field<3) {
-	    field=3;
-	 }
-	 if (field>4) {
-		 jp_logf(JP_LOG_STDOUT, _("Invalid geometry specification: \"%s\"\n"), str);
-	    return FALSE;
-	 }
-      }
-      if (*P == '+') {
-	 negative=1;
-	 if (field==3) {
-	    param=x;
-	 }
-	 if (field==4) {
-	    param=y;
-	 }
-	 *param=0;
-      }
-      if (*P == '-') {
-	 negative=-1;
-	 if (field==3) {
-	    param=x;
-	    if (*mask & MASK_WIDTH) {
-	       *param = max_value = gdk_screen_width() - *w;
-	    } else {
-	       *param = max_value = gdk_screen_width() - window_width;
-	    }
-	    sub_value=0;
-	 }
-	 if (field==4) {
-	    param=y;
-	    if (*mask & MASK_HEIGHT) {
-	       *param = max_value = gdk_screen_height() - *h;
-	    } else {
-	       *param = max_value = gdk_screen_height() - window_height;
-	    }
-	    sub_value=0;
-	 }
-      }
-   }
-   jp_logf(JP_LOG_DEBUG, "w=%d, h=%d, x=%d, y=%d, mask=0x%x\n",
-	       *w, *h, *x, *y, *mask);
-   return TRUE;
-}
-
 int create_main_boxes()
 {
    g_hbox2 = gtk_hbox_new(FALSE, 0);
@@ -257,7 +159,7 @@ int gui_cleanup()
    }
 #endif
 
-   switch(glob_app) {
+   switch (glob_app) {
     case DATEBOOK:
       datebook_gui_cleanup();
       break;
@@ -291,7 +193,7 @@ void call_plugin_gui(int number, int unique_id)
    plugin_list = NULL;
    plugin_list = get_plugin_list();
 
-   /* destroy main boxes and recreate them */
+   /* Destroy main boxes and recreate them */
    gtk_widget_destroy(g_vbox0_1);
    gtk_widget_destroy(g_hbox2);
    create_main_boxes();
@@ -300,7 +202,6 @@ void call_plugin_gui(int number, int unique_id)
    }
 
    /* Find out which plugin we are calling */
-
    for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
       plugin = (struct plugin_s *)temp_list->data;
       if (plugin) {
@@ -370,7 +271,7 @@ void cb_print(GtkWidget *widget, gpointer data)
 #endif
    char *button_text[]={N_("OK")};
 
-   switch(glob_app) {
+   switch (glob_app) {
     case DATEBOOK:
       if (print_gui(window, DATEBOOK, 1, 0x07) == DIALOG_SAID_PRINT) {
 	 datebook_print(print_day_week_month);
@@ -438,7 +339,7 @@ void cb_import(GtkWidget *widget, gpointer data)
 #endif
    char *button_text[]={N_("OK")};
 
-   switch(glob_app) {
+   switch (glob_app) {
     case DATEBOOK:
       datebook_import(window);
       return;
@@ -482,7 +383,7 @@ void cb_export(GtkWidget *widget, gpointer data)
 #endif
    char *button_text[]={N_("OK")};
 
-   switch(glob_app) {
+   switch (glob_app) {
     case DATEBOOK:
       datebook_export(window);
       return;
@@ -632,7 +533,7 @@ void cb_app_button(GtkWidget *widget, gpointer data)
       }
    }
 
-   switch(app) {
+   switch (app) {
     case DATEBOOK:
       if (refresh) {
 	 datebook_refresh(TRUE, TRUE);
@@ -669,7 +570,7 @@ void cb_app_button(GtkWidget *widget, gpointer data)
       }
       break;
     default:
-      /*recursion */
+      /* recursion */
       if ((glob_app==DATEBOOK) ||
 	  (glob_app==ADDRESS) ||
 	  (glob_app==TODO) ||
@@ -698,7 +599,7 @@ void cb_sync(GtkWidget *widget, unsigned int flags)
 
       /* If there are files to be installed, ask the user right before sync */
       get_home_file_name("", home_dir, sizeof(home_dir));
-      g_snprintf(file, sizeof(file), "%s/"EPN"_to_install", home_dir);
+      g_snprintf(file, sizeof(file), "%s/"EPN".install", home_dir);
 
       if (!stat(file, &buf)) {
 	 if (buf.st_size > 0) {
@@ -832,16 +733,16 @@ static void cb_read_pipe_from_child(gpointer data,
    int ret, done;
    char *Pstr1, *Pstr2, *Pstr3;
    int user_len;
-   char password[MAX_PREF_VALUE];
+   char password[MAX_PREF_LEN];
    int password_len;
    unsigned long user_id;
    int i, reason;
    int command;
-   char user[MAX_PREF_VALUE];
+   char user[MAX_PREF_LEN];
    char command_str[80];
    long char_set;
    const char *svalue;
-   char title[MAX_PREF_VALUE+256];
+   char title[MAX_PREF_LEN+256];
    char *user_name;
 
    /* This is so we can always look at the previous char in buf */
@@ -899,7 +800,7 @@ static void cb_read_pipe_from_child(gpointer data,
 	    output_to_pane(Pstr1);
 	    break;
 	  case PIPE_USERID:
-	    /* Look for the user ID */
+	    /* Save user ID as pref */
 	    num = sscanf(Pstr1, "%lu", &user_id);
 	    if (num > 0) {
 	       jp_logf(JP_LOG_DEBUG, "pipe_read: user id = %lu\n", user_id);
@@ -909,15 +810,15 @@ static void cb_read_pipe_from_child(gpointer data,
 	    }
 	    break;
 	  case PIPE_USERNAME:
-	    /* Look for the username */
+	    /* Save username as pref */
 	    Pstr2 = strchr(Pstr1, '\"');
 	    if (Pstr2) {
 	       Pstr2++;
 	       Pstr3 = strchr(Pstr2, '\"');
 	       if (Pstr3) {
 		  user_len = Pstr3 - Pstr2;
-		  if (user_len > MAX_PREF_VALUE) {
-		     user_len = MAX_PREF_VALUE;
+		  if (user_len > MAX_PREF_LEN) {
+		     user_len = MAX_PREF_LEN;
 		  }
 		  g_strlcpy(user, Pstr2, user_len+1);
 		  jp_logf(JP_LOG_DEBUG, "pipe_read: user = %s\n", user);
@@ -926,15 +827,15 @@ static void cb_read_pipe_from_child(gpointer data,
 	    }
 	    break;
 	  case PIPE_PASSWORD:
-	    /* Look for the Password */
+	    /* Save password as pref */
 	    Pstr2 = strchr(Pstr1, '\"');
 	    if (Pstr2) {
 	       Pstr2++;
 	       Pstr3 = strchr(Pstr2, '\"');
 	       if (Pstr3) {
 		  password_len = Pstr3 - Pstr2;
-		  if (password_len > MAX_PREF_VALUE) {
-		     password_len = MAX_PREF_VALUE;
+		  if (password_len > MAX_PREF_LEN) {
+		     password_len = MAX_PREF_LEN;
 		  }
 		  g_strlcpy(password, Pstr2, password_len+1);
 		  jp_logf(JP_LOG_DEBUG, "pipe_read: password = %s\n", password);
@@ -960,7 +861,7 @@ static void cb_read_pipe_from_child(gpointer data,
 		(reason == SYNC_ERROR_NOT_SAME_USER) ||
 		(reason == SYNC_ERROR_NULL_USERID)) {
 	       /* Future code */
-	       /* This is where to add an option for the user to add user a
+	       /* This is where to add an option for adding user or 
 		user id to possible ids to sync with. */
 	       ret = bad_sync_exit_status(reason);
 #ifdef PIPE_DEBUG
@@ -968,7 +869,6 @@ static void cb_read_pipe_from_child(gpointer data,
 #endif
 	       if (ret == DIALOG_SAID_2) {
 		  sprintf(command_str, "%d:\n", PIPE_SYNC_CONTINUE);
-		  /* cb_sync(NULL, SYNC_OVERRIDE_USER | (skip_plugins ? SYNC_NO_PLUGINS : 0)); */
 	       } else {
 		  sprintf(command_str, "%d:\n", PIPE_SYNC_CANCEL);
 	       }
@@ -1169,7 +1069,6 @@ guint8 *get_inline_pixbuf_data(const char **xpm_icon_data, gint icon_size)
 void get_main_menu(GtkWidget  *my_window,
 		   GtkWidget **menubar,
 		   GList *plugin_list)
-/* Some of this code was copied from the gtk_tut.txt file */
 {
 #define ICON(icon) "<StockItem>", icon
 #define ICON_XPM(icon, size) "<ImageItem>", get_inline_pixbuf_data(icon, size)
@@ -1490,7 +1389,7 @@ static void cb_delete_event(GtkWidget *widget, GdkEvent *event, gpointer data)
       jp_logf(JP_LOG_DEBUG, "killing %d\n", glob_child_pid);
 	 kill(glob_child_pid, SIGTERM);
    }
-   /* Write the jpilot.rc file from preferences */
+   /* Save preferences in jpilot.rc */
    pref_write_rc_file();
 
    cleanup_pc_files();
@@ -1534,10 +1433,9 @@ static gint cb_output2(GtkWidget *widget, GdkEventButton *event, gpointer data)
    /* Because the pane isn't redrawn yet we can't get positions from it.
     * So we have to call back after everything is drawn */
    gtk_idle_add(cb_output_idle, data);
+
    return EXIT_SUCCESS;
 }
-
-
 
 gint cb_check_version(gpointer main_window)
 {
@@ -1580,28 +1478,26 @@ int main(int argc, char *argv[])
    GdkPixmap *pixmap;
    GtkWidget *menubar;
    GtkWidget *scrolled_window;
-	GtkAccelGroup *accel_group;
+   GtkAccelGroup *accel_group;
 /* Extract first day of week preference from locale in GTK2 */
    int   pref_fdow = 0;
-#  ifdef HAVE__NL_TIME_FIRST_WEEKDAY
-      char *langinfo;
-      int week_1stday = 0;
-      int first_weekday = 1;
-      unsigned int week_origin;
-#  else
-#    ifdef ENABLE_NLS
+#ifdef HAVE__NL_TIME_FIRST_WEEKDAY
+   char *langinfo;
+   int week_1stday = 0;
+   int first_weekday = 1;
+   unsigned int week_origin;
+#else
+#  ifdef ENABLE_NLS
       char *week_start;
-#    endif
 #  endif
+#endif
    unsigned char skip_past_alarms;
    unsigned char skip_all_alarms;
    int filedesc[2];
    long ivalue;
    const char *svalue;
-   int sync_only;
-   int i, x, y, h, w;
-   int bit_mask;
-   char title[MAX_PREF_VALUE+256];
+   int i, ret, height, width;
+   char title[MAX_PREF_LEN+256];
    long pref_width, pref_height, pref_show_tooltips;
    long char_set;
    char *geometry_str=NULL;
@@ -1620,12 +1516,10 @@ int main(int argc, char *argv[])
 #  endif
 #endif
    
-
-   sync_only=FALSE;
    skip_plugins=FALSE;
    skip_past_alarms=FALSE;
    skip_all_alarms=FALSE;
-   /*log all output to a file */
+   /* log all output to a file */
    glob_log_file_mask = JP_LOG_INFO | JP_LOG_WARN | JP_LOG_FATAL | JP_LOG_STDOUT;
    glob_log_stdout_mask = JP_LOG_INFO | JP_LOG_WARN | JP_LOG_FATAL | JP_LOG_STDOUT;
    glob_log_gui_mask = JP_LOG_FATAL | JP_LOG_WARN | JP_LOG_GUI;
@@ -1656,7 +1550,6 @@ int main(int argc, char *argv[])
    pref_read_rc_file();
 
    /* Extract first day of week preference from locale in GTK2 */
-
 #  ifdef HAVE__NL_TIME_FIRST_WEEKDAY
       /* GTK 2.8 libraries */
       langinfo = nl_langinfo(_NL_TIME_FIRST_WEEKDAY);
@@ -1689,13 +1582,10 @@ int main(int argc, char *argv[])
 
    set_pref_possibility(PREF_FDOW, pref_fdow, TRUE);
 
-
    if (otherconv_init()) {
-      printf("Error: could not set encoding\n");
-      return EXIT_FAILURE;
+      printf("Error: could not set character encoding\n");
+      exit(0);
    }
-
-   w = h = x = y = bit_mask = 0;
 
    get_pref(PREF_WINDOW_WIDTH, &pref_width, NULL);
    get_pref(PREF_WINDOW_HEIGHT, &pref_height, NULL);
@@ -1757,7 +1647,7 @@ int main(int argc, char *argv[])
    bind_textdomain_codeset(EPN, "UTF-8");
 #endif
 
-   /*Check to see if ~/.jpilot is there, or create it */
+   /* Check to see if ~/.jpilot is there, or create it */
    jp_logf(JP_LOG_DEBUG, "calling check_hidden_dir\n");
    if (check_hidden_dir()) {
       exit(1);
@@ -1784,8 +1674,8 @@ int main(int argc, char *argv[])
        write_pid();
    }
 
-   /*Check to see if DB files are there */
-   /*If not copy some empty ones over */
+   /* Check to see if DB files are there */
+   /* If not copy some empty ones over */
    check_copy_DBs_to_home();
 
 #ifdef ENABLE_PLUGINS
@@ -1798,11 +1688,6 @@ int main(int argc, char *argv[])
    for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
       plugin = (struct plugin_s *)temp_list->data;
       jp_logf(JP_LOG_DEBUG, "plugin: [%s] was loaded\n", plugin->name);
-   }
-
-
-   for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
-      plugin = (struct plugin_s *)temp_list->data;
       if (plugin) {
 	 if (plugin->plugin_startup) {
 	    info.base_dir = strdup(BASE_DIR);
@@ -1825,7 +1710,7 @@ int main(int argc, char *argv[])
       exit(-1);
    }
    pipe_from_child = filedesc[0];
-   pipe_to_parent = filedesc[1];
+   pipe_to_parent  = filedesc[1];
 
    /* Create a pipe to send data from parent to sync child */
    if (pipe(filedesc) < 0) {
@@ -1833,7 +1718,7 @@ int main(int argc, char *argv[])
       exit(-1);
    }
    pipe_from_parent = filedesc[0];
-   pipe_to_child = filedesc[1];
+   pipe_to_child    = filedesc[1];
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    switch (char_set) {
@@ -1872,17 +1757,13 @@ int main(int argc, char *argv[])
 
    read_gtkrc_file();
 
-   /* gtk_init must already have been called, or will seg fault */
-   parse_geometry(geometry_str, pref_width, pref_height,
-		  &w, &h, &x, &y, &bit_mask);
-
    get_pref(PREF_USER, NULL, &svalue);
 
    strcpy(title, PN" "VERSION);
    if ((svalue) && (svalue[0])) {
       strcat(title, _(" User: "));
-      /* JPA convert user name so that it can be displayed in window title */
-      /* we assume user name is coded in jpilot.rc as it is the Palm Pilot */
+      /* Convert user name so that it can be displayed in window title */
+      /* We assume user name is coded in jpilot.rc as it is on the Palm Pilot */
 	{
 	   char *newvalue;
 
@@ -1892,37 +1773,18 @@ int main(int argc, char *argv[])
 	}
    }
 
-   if ((bit_mask & MASK_X) || (bit_mask & MASK_Y)) {
-      window = gtk_widget_new(GTK_TYPE_WINDOW,
-			      "type", GTK_WINDOW_TOPLEVEL,
-			      "x", x, "y", y,
-			      "title", title,
-			      NULL);
-   } else {
-      window = gtk_widget_new(GTK_TYPE_WINDOW,
-			      "type", GTK_WINDOW_TOPLEVEL,
-			      "title", title,
-			      NULL);
-   }
+   window = gtk_widget_new(GTK_TYPE_WINDOW,
+                           "type", GTK_WINDOW_TOPLEVEL,
+                           "title", title,
+                           NULL);
 
-   if (bit_mask & MASK_WIDTH) {
-      pref_width = w;
+   /* Set default size and position of main window */
+   if (geometry_str) {
+      ret = gtk_window_parse_geometry(GTK_WINDOW(window), geometry_str);
+   } 
+   if ((!geometry_str) || (ret != 1)) {
+      gtk_window_set_default_size(GTK_WINDOW(window), pref_width, pref_height);
    }
-   if (bit_mask & MASK_HEIGHT) {
-      pref_height = h;
-   }
-
-   gtk_window_set_default_size(GTK_WINDOW(window), pref_width, pref_height);
-
-#if 0 /* removeme */
-     {
-	GtkStyle *style;
-	style = gtk_widget_get_style(window);
-	pango_font_description_free(style->font_desc);
-	style->font_desc = pango_font_description_from_string("Sans 16");
-	gtk_widget_set_style(window, style);
-     }
-#endif
 
    if (iconify) {
       gtk_window_iconify(GTK_WINDOW(window));
@@ -1961,7 +1823,7 @@ int main(int argc, char *argv[])
    gtk_container_set_border_width(GTK_CONTAINER(g_hbox), 10);
    gtk_box_pack_start(GTK_BOX(g_hbox), g_vbox0, FALSE, FALSE, 3);
 
-   /* Make the output text window */
+   /* Output Text scrolled window */
    temp_hbox = gtk_hbox_new(FALSE, 0);
    gtk_container_set_border_width(GTK_CONTAINER(temp_hbox), 5);
    gtk_paned_pack2(GTK_PANED(output_pane), temp_hbox, FALSE, TRUE);
@@ -1994,9 +1856,8 @@ int main(int argc, char *argv[])
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_output),
 		      GINT_TO_POINTER(OUTPUT_MINIMIZE));
-   /* End output text */
 
-   /* Create "Datebook" button */
+   /* "Datebook" button */
    temp_hbox = gtk_hbox_new(FALSE, 0);
    button_datebook = gtk_button_new();
    gtk_signal_connect(GTK_OBJECT(button_datebook), "clicked",
@@ -2004,7 +1865,7 @@ int main(int argc, char *argv[])
    gtk_box_pack_start(GTK_BOX(g_vbox0), temp_hbox, FALSE, FALSE, 0);
    gtk_box_pack_start(GTK_BOX(temp_hbox), button_datebook, TRUE, FALSE, 0);
 
-   /* Create "Address" button */
+   /* "Address" button */
    temp_hbox = gtk_hbox_new(FALSE, 0);
    button_address = gtk_button_new();
    gtk_signal_connect(GTK_OBJECT(button_address), "clicked",
@@ -2012,7 +1873,7 @@ int main(int argc, char *argv[])
    gtk_box_pack_start(GTK_BOX(g_vbox0), temp_hbox, FALSE, FALSE, 0);
    gtk_box_pack_start(GTK_BOX(temp_hbox), button_address, TRUE, FALSE, 0);
 
-   /* Create "Todo" button */
+   /* "Todo" button */
    temp_hbox = gtk_hbox_new(FALSE, 0);
    button_todo = gtk_button_new();
    gtk_signal_connect(GTK_OBJECT(button_todo), "clicked",
@@ -2020,7 +1881,7 @@ int main(int argc, char *argv[])
    gtk_box_pack_start(GTK_BOX(g_vbox0), temp_hbox, FALSE, FALSE, 0);
    gtk_box_pack_start(GTK_BOX(temp_hbox), button_todo, TRUE, FALSE, 0);
 
-   /* Create "memo" button */
+   /* "Memo" button */
    temp_hbox = gtk_hbox_new(FALSE, 0);
    button_memo = gtk_button_new();
    gtk_signal_connect(GTK_OBJECT(button_memo), "clicked",
@@ -2036,11 +1897,11 @@ int main(int argc, char *argv[])
    /* Create tooltips */
    glob_tooltips = gtk_tooltips_new();
 
-   /* Create accelerator */
+   /* Create key accelerator */
    accel_group = gtk_accel_group_new();
    gtk_window_add_accel_group(GTK_WINDOW(window), accel_group);
 
-   /* Create Lock/Unlock buttons */
+   /* Lock/Unlock/Mask buttons */
    button_locked = gtk_button_new();
    button_locked_masked = gtk_button_new();
    button_unlocked = gtk_button_new();
@@ -2069,7 +1930,7 @@ int main(int argc, char *argv[])
    gtk_widget_add_accelerator(button_unlocked, "clicked", accel_group,
       GDK_z, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
-   /* Create "Sync" button */
+   /* "Sync" button */
    button_sync = gtk_button_new();
    gtk_signal_connect(GTK_OBJECT(button_sync), "clicked",
 		      GTK_SIGNAL_FUNC(cb_sync),
@@ -2080,7 +1941,7 @@ int main(int argc, char *argv[])
    gtk_widget_add_accelerator(button_sync, "clicked", accel_group, GDK_y,
 	   GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
-   /* Create "Backup" button in left column */
+   /* "Backup" button in left column */
    button_backup = gtk_button_new();
    gtk_signal_connect(GTK_OBJECT(button_backup), "clicked",
 		      GTK_SIGNAL_FUNC(cb_sync),
@@ -2093,21 +1954,19 @@ int main(int argc, char *argv[])
 	                     _("Sync your palm to the desktop\n"
 		                    "and then do a backup"), NULL);
 
-   /*Separator */
+   /* Separator */
    separator = gtk_hseparator_new();
    gtk_box_pack_start(GTK_BOX(g_vbox0), separator, FALSE, TRUE, 5);
 
-   /*This creates the 2 main boxes that are changeable */
+   /* Creates the 2 main boxes that are changeable */
    create_main_boxes();
 
    gtk_widget_show_all(window);
-
    gtk_widget_show(window);
-
-   /* GTK1 requires the window to be shown before iconized */
 
    style = gtk_widget_get_style(window);
 
+   /* Jpilot Icon pixmap */
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask, NULL, jpilot_icon4_xpm);
    gdk_window_set_icon(window->window, NULL, pixmap, mask);
    gdk_window_set_icon_name(window->window, PN);
@@ -2160,7 +2019,7 @@ int main(int argc, char *argv[])
    gtk_container_add(GTK_CONTAINER(button_memo), pixmapwid);
    gtk_button_set_relief(GTK_BUTTON(button_memo), GTK_RELIEF_NONE);
 
-   /* Show locked box */
+   /* Show locked/unlocked/masked button */
 #ifdef ENABLE_PRIVATE
    gtk_widget_show(button_locked);
    gtk_widget_hide(button_locked_masked);
@@ -2227,11 +2086,8 @@ int main(int argc, char *argv[])
    gtk_container_add(GTK_CONTAINER(button_backup), pixmapwid);
 
    gtk_tooltips_set_tip(glob_tooltips, button_datebook, _("Datebook/Go to Today"), NULL);
-
    gtk_tooltips_set_tip(glob_tooltips, button_address, _("Address Book"), NULL);
-
    gtk_tooltips_set_tip(glob_tooltips, button_todo, _("ToDo List"), NULL);
-
    gtk_tooltips_set_tip(glob_tooltips, button_memo, _("Memo Pad"), NULL);
 
    /* Enable tooltips if preference is set */
@@ -2241,14 +2097,13 @@ int main(int argc, char *argv[])
    else
       gtk_tooltips_disable(glob_tooltips);
 
-   /*Set a callback for our pipe from the sync child process */
+   /* Set a callback for our pipe from the sync child process */
    gdk_input_add(pipe_from_child, GDK_INPUT_READ, cb_read_pipe_from_child, window);
 
    get_pref(PREF_LAST_APP, &ivalue, NULL);
    /* We don't want to start up to a plugin because the plugin might
     * repeatedly segfault.  Of course main apps can do that, but since I
-    * handle the email support...
-    */
+    * handle the email support...  */
    if ((ivalue==ADDRESS) ||
        (ivalue==DATEBOOK) ||
        (ivalue==TODO) ||
@@ -2257,19 +2112,14 @@ int main(int argc, char *argv[])
    }
 
    /* Set the pane size */
-   gdk_window_get_size(window->window, &w, &h);
-   gtk_paned_set_position(GTK_PANED(output_pane), h);
-
-   /* TODO: this is broken, it doesn't take into account the window
-    * decorations.  I can't find a GDK call that does */
-   gdk_window_get_origin(window->window, &x, &y);
-   jp_logf(JP_LOG_DEBUG, "x=%d, y=%d\n", x, y);
-
-   gdk_window_get_size(window->window, &w, &h);
-   jp_logf(JP_LOG_DEBUG, "w=%d, h=%d\n", w, h);
+   width = height = 0;
+   gdk_window_get_size(window->window, &width, &height);
+   gtk_paned_set_position(GTK_PANED(output_pane), height);
 
    alarms_init(skip_past_alarms, skip_all_alarms);
 
+   /* In-line code to switch user to UTF-8 encoding.
+    * Should probably be made a subroutine */
 {
    long utf_encoding;
    char *button_text[] = 
@@ -2280,8 +2130,8 @@ int main(int argc, char *argv[])
       set_pref(PREF_UTF_ENCODING, 1, NULL, TRUE);
 
    get_pref(PREF_UTF_ENCODING, &utf_encoding, NULL);
-   if (0 == utf_encoding)
-   { /* user has not switched to UTF */
+   if (0 == utf_encoding) { 
+      /* user has not switched to UTF */
       int ret;
       char text[1000];
 

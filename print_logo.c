@@ -1,4 +1,4 @@
-/* $Id: print_logo.c,v 1.8 2004/11/22 00:52:42 rikster5 Exp $ */
+/* $Id: print_logo.c,v 1.9 2008/06/19 04:12:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * print_logo.c
@@ -20,13 +20,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  ******************************************************************************/
 
+/********************************* Includes ***********************************/
 #include "config.h"
 #include <stdio.h>
-#ifdef HAVE_LOCALE_H
-# include <locale.h>
-#endif
-/*----------------------------------------------------------------------*/
 
+/****************************** Main Code *************************************/
 void print_logo_data(FILE *f)
 {
     fputs(
@@ -429,8 +427,6 @@ void print_logo_data(FILE *f)
 	"\n\n", f);
 }
 
-/*----------------------------------------------------------------------*/
-
 void print_logo(FILE *f, int x, int y, float size)
 {
     fprintf(f,
@@ -453,3 +449,4 @@ void print_logo(FILE *f, int x, int y, float size)
 	  "%% End of logo\n"
 	  "%%----------------------------------------\n", f);
 }
+

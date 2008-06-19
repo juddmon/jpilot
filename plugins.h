@@ -1,4 +1,4 @@
-/* $Id: plugins.h,v 1.9 2004/11/22 00:52:42 rikster5 Exp $ */
+/* $Id: plugins.h,v 1.10 2008/06/19 04:12:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * plugins.h
@@ -32,6 +32,8 @@
 #include <glib.h>
 #include "libplugin.h"
 #include "prefs.h"
+
+#define MAX_NUM_PLUGINS 50
 
 struct plugin_s
 {

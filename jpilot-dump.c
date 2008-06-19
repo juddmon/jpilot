@@ -1,4 +1,4 @@
-/* $Id: jpilot-dump.c,v 1.27 2008/06/03 01:02:53 rikster5 Exp $ */
+/* $Id: jpilot-dump.c,v 1.28 2008/06/19 04:12:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot-dump.c
@@ -19,14 +19,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  ******************************************************************************/
-/*******************************************************************************
- * pre-CVS ChangeLog
- * Paul Landes <landesp@acm.org>: 2/06/2004 added phone label tags
- * hvrietsc: 10/19/2000 added memo dump
- * hvrietsc: 10/17/2000 added %p for priority of todo
- * hvrietsc: 7/18/2000 added %C in todo to print categories
- * hvrietsc: 3/11/00 own version of remove_cr_lfs to take out ` ' " \ stuff
- ******************************************************************************/
 
 /********************************* Includes ***********************************/
 #include "config.h"
@@ -35,7 +27,7 @@
 #include <string.h>
 #include <time.h>
 #ifdef HAVE_LOCALE_H
-#   include <locale.h>
+#  include <locale.h>
 #endif
 
 /* Pilot-link header files */
@@ -52,13 +44,13 @@
 #include "prefs.h"
 
 #include "i18n.h"
-#   include "otherconv.h"
+#include "otherconv.h"
 
 /********************************* Constants **********************************/
+#define LIMIT(a,b,c) if (a < b) {a=b;} if (a > c) {a=c;}
+
 /* Uncomment for more debug output */
 /* #define JDUMP_DEBUG 1 */
-
-#define LIMIT(a,b,c) if (a < b) {a=b;} if (a > c) {a=c;}
 
 /******************************* Global vars **********************************/
 /* dump switches */
@@ -85,8 +77,6 @@ GtkWidget *glob_date_label;
 int pipe_to_parent;
 int t_fmt_ampm;
 /* End hacks */
-
-/****************************** Prototypes ************************************/
 
 /****************************** Main Code *************************************/
 void fprint_jpd_usage_string(FILE *out)
@@ -147,7 +137,6 @@ void takeoutfunnies(char *str)
       }
    }
 }
-
 
 int dumpical()
 {
@@ -276,7 +265,7 @@ int dumpical()
 	 int wcomma, rptday;
 	 char *wday[] = {"SU","MO","TU","WE","TH","FR","SA"};
 	 printf("RRULE:FREQ=");
-	 switch(mappt->appt.repeatType) {
+	 switch (mappt->appt.repeatType) {
 	    case repeatNone:
 	       /* can't happen, just here to quiet gcc down. */
 	       break;
@@ -633,6 +622,129 @@ int dumpbook()
    return EXIT_SUCCESS;
 }
 
+int dumpaddress()
+{
+   AddressList *tal, *al;
+   int num, i;
+   struct AddressAppInfo ai;
+   static struct AddressAppInfo *glob_PAddress_app_info;
+
+   get_address_app_info(&ai);
+   glob_PAddress_app_info = &ai;
+
+   al = NULL;
+   i = 0;
+   num = get_addresses(&al, i);
+
+   for (tal=al; tal; tal = tal->next) {
+      if ((tal->maddr.rt != DELETED_PALM_REC) && 
+          (tal->maddr.rt != MODIFIED_PALM_REC)) {
+         for (num=0; num < 19; num++)
+            utf8_to_local(tal->maddr.addr.entry[num]);
+
+         for ( i=2 ; formatA[i] != '\0' ; i++) {
+            if ( formatA[i] != '%') {
+               printf("%c", formatA[i]);
+            } else {
+               switch (formatA[i+1]) {
+                case '\0':
+                     break;
+                case 'n' :
+                     printf("\n");
+                     i++;
+                     break;
+                case 't' :
+                     printf("\t");
+                     i++;
+                     break;
+                case 'q' :
+                     printf("'");
+                     i++;
+                     break;
+                case 'Q' :
+                     printf("\"");
+                     i++;
+                     break;
+                case 'C' :
+                     printf("%s", glob_PAddress_app_info->category.name[tal->maddr.attrib & 0x0F]);
+                     i++;
+                     break;
+                case 'N' :   /* normal output */
+                     for (num=0; num < 19 ; num++) {
+                        if (tal->maddr.addr.entry[num] == NULL) {
+                           printf("\n");
+                        } else {
+                           printf("%s\n", tal->maddr.addr.entry[num]);
+                        }
+                     }
+                     i++;
+                     break;
+
+#define PRIT if (tal->maddr.addr.entry[num] != NULL) { printf("%s", tal->maddr.addr.entry[num]); }
+
+#define PRITE if (tal->maddr.addr.entry[num + 3] != NULL) { printf("%d", tal->maddr.addr.phoneLabel[num]); }
+
+                case 'l' : num=0; PRIT; i++; break;
+                case 'f' : num=1; PRIT; i++; break;
+                case 'c' : num=2; PRIT; i++; break;
+                case 'p' : num=3;
+                     switch  (formatA[i+2]) {
+                     case '1' : num=3; PRIT; i++; break;
+                     case '2' : num=4; PRIT; i++; break;
+                     case '3' : num=5; PRIT; i++; break;
+                     case '4' : num=6; PRIT; i++; break;
+                     case '5' : num=7; PRIT; i++; break;
+                     }
+                     i++;
+                     break;
+                case 'e' : num = 0;
+                     switch (formatA[i+2]) {
+                     case '1' : num=0; PRITE; i++; break;
+                     case '2' : num=1; PRITE; i++; break;
+                     case '3' : num=2; PRITE; i++; break;
+                     case '4' : num=3; PRITE; i++; break;
+                     case '5' : num=4; PRITE; i++; break;
+                     }
+                     i++;
+                     break;
+                case 'a' : num=8; PRIT; i++; break;
+                case 'T' : num=9; PRIT; i++; break;
+                case 's' : num=10; PRIT; i++; break;
+                case 'z' : num=11; PRIT; i++; break;
+                case 'u' : num=12; PRIT; i++; break;
+                case 'm' : num=13; PRIT; i++; break;
+                case 'U' :
+                     switch (formatA[i+2]) {
+                     case '1' : num=14; PRIT; i++; break;
+                     case '2' : num=15; PRIT; i++; break;
+                     case '3' : num=16; PRIT; i++; break;
+                     case '4' : num=17; PRIT; i++; break;
+                     }
+                     i++;
+                     break;
+                case 'X' :
+                     takeoutfunnies(tal->maddr.addr.entry[18]);
+                     /* fall thru */
+                case 'x' :
+                     if (tal->maddr.addr.entry[18] != NULL) printf("%s", tal->maddr.addr.entry[18]);
+                     i++;
+                     break;
+                default:        /* one letter ones */
+                     printf("%c", formatA[i+1]);
+                     i++;
+                     break;
+               } /* switch one letter ones */
+            } /* fi */
+         } /* for */
+         printf("\n");
+      }/* end if deleted*/
+   }/* end for tal=*/
+
+   free_AddressList(&al);
+   return EXIT_SUCCESS;
+}
+
+
 int dumptodo()
 {
    ToDoList *tal, *al;
@@ -967,128 +1079,6 @@ int dumpmemo()
    } /* end for tal= */
 
    free_MemoList(&al);
-   return EXIT_SUCCESS;
-}
-
-int dumpaddress()
-{
-   AddressList *tal, *al;
-   int num, i;
-   struct AddressAppInfo ai;
-   static struct AddressAppInfo *glob_PAddress_app_info;
-
-   get_address_app_info(&ai);
-   glob_PAddress_app_info = &ai;
-
-   al = NULL;
-   i = 0;
-   num = get_addresses(&al, i);
-
-   for (tal=al; tal; tal = tal->next) {
-      if ((tal->maddr.rt != DELETED_PALM_REC) && 
-          (tal->maddr.rt != MODIFIED_PALM_REC)) {
-         for (num=0; num < 19; num++)
-            utf8_to_local(tal->maddr.addr.entry[num]);
-
-         for ( i=2 ; formatA[i] != '\0' ; i++) {
-            if ( formatA[i] != '%') {
-               printf("%c", formatA[i]);
-            } else {
-               switch (formatA[i+1]) {
-                case '\0':
-                     break;
-                case 'n' :
-                     printf("\n");
-                     i++;
-                     break;
-                case 't' :
-                     printf("\t");
-                     i++;
-                     break;
-                case 'q' :
-                     printf("'");
-                     i++;
-                     break;
-                case 'Q' :
-                     printf("\"");
-                     i++;
-                     break;
-                case 'C' :
-                     printf("%s", glob_PAddress_app_info->category.name[tal->maddr.attrib & 0x0F]);
-                     i++;
-                     break;
-                case 'N' :   /* normal output */
-                     for (num=0; num < 19 ; num++) {
-                        if (tal->maddr.addr.entry[num] == NULL) {
-                           printf("\n");
-                        } else {
-                           printf("%s\n", tal->maddr.addr.entry[num]);
-                        }
-                     }
-                     i++;
-                     break;
-
-#define PRIT if (tal->maddr.addr.entry[num] != NULL) { printf("%s", tal->maddr.addr.entry[num]); }
-
-#define PRITE if (tal->maddr.addr.entry[num + 3] != NULL) { printf("%d", tal->maddr.addr.phoneLabel[num]); }
-
-                case 'l' : num=0; PRIT; i++; break;
-                case 'f' : num=1; PRIT; i++; break;
-                case 'c' : num=2; PRIT; i++; break;
-                case 'p' : num=3;
-                     switch  (formatA[i+2]) {
-                     case '1' : num=3; PRIT; i++; break;
-                     case '2' : num=4; PRIT; i++; break;
-                     case '3' : num=5; PRIT; i++; break;
-                     case '4' : num=6; PRIT; i++; break;
-                     case '5' : num=7; PRIT; i++; break;
-                     }
-                     i++;
-                     break;
-                case 'e' : num = 0;
-                     switch (formatA[i+2]) {
-                     case '1' : num=0; PRITE; i++; break;
-                     case '2' : num=1; PRITE; i++; break;
-                     case '3' : num=2; PRITE; i++; break;
-                     case '4' : num=3; PRITE; i++; break;
-                     case '5' : num=4; PRITE; i++; break;
-                     }
-                     i++;
-                     break;
-                case 'a' : num=8; PRIT; i++; break;
-                case 'T' : num=9; PRIT; i++; break;
-                case 's' : num=10; PRIT; i++; break;
-                case 'z' : num=11; PRIT; i++; break;
-                case 'u' : num=12; PRIT; i++; break;
-                case 'm' : num=13; PRIT; i++; break;
-                case 'U' :
-                     switch (formatA[i+2]) {
-                     case '1' : num=14; PRIT; i++; break;
-                     case '2' : num=15; PRIT; i++; break;
-                     case '3' : num=16; PRIT; i++; break;
-                     case '4' : num=17; PRIT; i++; break;
-                     }
-                     i++;
-                     break;
-                case 'X' :
-                     takeoutfunnies(tal->maddr.addr.entry[18]);
-                     /* fall thru */
-                case 'x' :
-                     if (tal->maddr.addr.entry[18] != NULL) printf("%s", tal->maddr.addr.entry[18]);
-                     i++;
-                     break;
-                default:        /* one letter ones */
-                     printf("%c", formatA[i+1]);
-                     i++;
-                     break;
-               } /* switch one letter ones */
-            } /* fi */
-         } /* for */
-         printf("\n");
-      }/*end if deleted*/
-   }/*end for tal=*/
-
-   free_AddressList(&al);
    return EXIT_SUCCESS;
 }
 

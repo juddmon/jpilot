@@ -1,4 +1,4 @@
-/* $Id: japanese.c,v 1.12 2007/04/13 12:47:58 rousseau Exp $ */
+/* $Id: japanese.c,v 1.13 2008/06/19 04:12:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * japanese.c
@@ -22,21 +22,20 @@
 
 /*
 	Japanization library
-	Convert Palm <-> Unix Japanese Code, ie:
-		Palm : SJIS
-		Unix : EUC
+	Convert charset: Palm <-> Unix Japanese Code, ie:
+		         Palm  :  SJIS
+		         Unix  :  EUC
 */
 
+/********************************* Includes ***********************************/
 #include "config.h"
-#include "japanese.h"
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
-/* In utils.c, also a prototype in utils.h */
-void multibyte_safe_strncpy(char *dst, char *src, size_t max_len);
+#include "japanese.h"
 
+/********************************* Constants **********************************/
 #define isSjis1stByte(c) \
     (((c) >= 0x81 && (c) <= 0x9f) || ((c) >= 0xe0))
 #define isSjisKana(c) \
@@ -46,14 +45,19 @@ void multibyte_safe_strncpy(char *dst, char *src, size_t max_len);
 #define isEuc(c) \
     (0xa0 < ((unsigned char) (c)) && ((unsigned char) (c)) < 0xff)
 
+/****************************** Prototypes ************************************/
+/* In utils.c, also a prototype in utils.h */
+void multibyte_safe_strncpy(char *dst, char *src, size_t max_len);
+
+/****************************** Main Code *************************************/
 /* convert SJIS char to EUC char
 
-   this does not support Machine dependent codes.
+   Does not support Machine dependent codes.
    args: hi: first byte of sjis char.
          lo: second byte of sjis char.
    return:   euc char in 16bit value.
 
- */
+*/
 static unsigned int SjisToEuc(unsigned char hi, unsigned char lo)
 {
   if (lo >= 0x9f)
@@ -64,9 +68,9 @@ static unsigned int SjisToEuc(unsigned char hi, unsigned char lo)
 }
 
 /*
-   args: source char pointer, destination source pointer, a length of srting
+   args: source char pointer, destination char pointer, length of string
    Length include null termination.
-   return the pointer of nul termination code.
+   return: return the pointer of nul termination code.
  */
 char *Sjis2EucCpy(char *dest, char *src, int max_len)
 {
@@ -112,7 +116,6 @@ char *Sjis2EucCpy(char *dest, char *src, int max_len)
    size of buf must be more than max_len.
 
 */
-
 void Sjis2Euc(char *buf, int max_len)
 {
 	char *dst;
@@ -134,7 +137,6 @@ void Sjis2Euc(char *buf, int max_len)
    size of buf must be more than max_len.
 
 */
-
 void Sjis2Euc_x(char *buf, int max_len)
 {
     char *dst;
@@ -170,7 +172,7 @@ static unsigned int EucToSjis(unsigned char hi, unsigned char lo)
 }
 
 /*
-   Convert string from euc to sjis with coping to another buffer.
+   Convert string from euc to sjis with copying to another buffer.
    Theoretically, strlen(EUC) >= strlen(SJIS),
     then it is ok that dest == src.
  */
@@ -210,11 +212,10 @@ char *Euc2SjisCpy(char *dest, char *src, int max_len)
 }
 /*
   convert euc to sjis.
-  size of buf must be more than man_len.
-  it simply call Euc2SjisCpy().
+  size of buf must be more than max_len.
+  function simply calls Euc2SjisCpy().
   this function exists for symmetry.
  */
-
 void Euc2Sjis(char *buf, int max_len)
 {
 	if (buf == NULL) return;
@@ -228,7 +229,6 @@ void Euc2Sjis(char *buf, int max_len)
    size of buf must be more than max_len.
 
 */
-
 void jp_Sjis2Euc(char *buf, int max_len)
 {
 	char dst[65536];

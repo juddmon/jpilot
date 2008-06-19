@@ -1,4 +1,4 @@
-/* $Id: monthview_gui.c,v 1.45 2008/06/14 22:33:21 rikster5 Exp $ */
+/* $Id: monthview_gui.c,v 1.46 2008/06/19 04:12:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * monthview_gui.c
@@ -26,6 +26,7 @@
 #include <string.h>
 #include <gtk/gtk.h>
 #include <pi-datebook.h>
+
 #include "utils.h"
 #include "i18n.h"
 #include "prefs.h"
@@ -449,15 +450,14 @@ void monthview_gui(struct tm *date_in)
 
    gtk_container_add(GTK_CONTAINER(align), hbox_temp);
 
-   /*Make a left arrow for going back a week */
+   /* Make a left arrow for going back a week */
    button = gtk_button_new_from_stock(GTK_STOCK_GO_BACK);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_month_move),
 		      GINT_TO_POINTER(-1));
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 3);
 
-
-   /* Create a "Close" button */
+   /* Close button */
    button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_monthview_quit), monthview_window);
@@ -466,19 +466,18 @@ void monthview_gui(struct tm *date_in)
 		      GTK_SIGNAL_FUNC(cb_monthview_quit), NULL);
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
 
-   /* Create a "Print" button */
+   /* Print button */
    button = gtk_button_new_from_stock(GTK_STOCK_PRINT);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_month_print), monthview_window);
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
 
-   /*Make a right arrow for going forward a week */
+   /* Make a right arrow for going forward a week */
    button = gtk_button_new_from_stock(GTK_STOCK_GO_FORWARD);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_month_move),
 		      GINT_TO_POINTER(1));
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 3);
-
 
    /* Month name label */
    jp_strftime(str, sizeof(str), "%B %Y", &glob_month_date);
@@ -513,3 +512,4 @@ void monthview_gui(struct tm *date_in)
 
    display_months_appts(&glob_month_date, month_day);
 }
+

@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.67 2008/06/09 16:27:54 rikster5 Exp $ */
+/* $Id: prefs_gui.c,v 1.68 2008/06/19 04:12:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -20,17 +20,20 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  ******************************************************************************/
 
+/********************************* Includes ***********************************/
 #include "config.h"
-#include "i18n.h"
-#include <gtk/gtk.h>
 #include <stdlib.h>
 #include <string.h>
-#include "utils.h"
-#include "prefs.h"
+#include <gtk/gtk.h>
+
 #include "prefs_gui.h"
+#include "prefs.h"
+#include "i18n.h"
+#include "utils.h"
 #include "log.h"
 #include "plugins.h"
 
+/******************************* Global vars **********************************/
 static GtkWidget *window;
 static GtkWidget *main_window;
 static GtkWidget *port_entry;
@@ -45,6 +48,17 @@ extern GtkTooltips *glob_tooltips;
 extern unsigned char skip_plugins;
 #endif
 
+/* Serial Port Menu */
+static GtkWidget *port_menu;
+GtkWidget *port_menu_item[10];
+static char *port_choices[]={
+   "other", "usb:",
+     "/dev/ttyUSB0", "/dev/ttyUSB1", "/dev/ttyUSB2", "/dev/ttyUSB3",
+     "/dev/ttyS0", "/dev/ttyS1", "/dev/ttyS2", "/dev/ttyS3",
+     NULL
+};
+
+/****************************** Main Code *************************************/
 #ifdef COLORS
 
 /* This doesn't work quite right.  There is supposedly no way to do it in GTK. */
@@ -76,19 +90,9 @@ void set_colors()
    gtk_widget_queue_draw(window);
    gtk_widget_queue_draw(main_window);
 }
-#endif
+#endif /* #ifdef COLORS */
 
-/* Serial Port Menu code */
-
-static GtkWidget *port_menu;
-GtkWidget *port_menu_item[10];
-static char *port_choices[]={
-   "other", "usb:",
-     "/dev/ttyUSB0", "/dev/ttyUSB1", "/dev/ttyUSB2", "/dev/ttyUSB3",
-     "/dev/ttyS0", "/dev/ttyS1", "/dev/ttyS2", "/dev/ttyS3",
-     NULL
-};
-
+/* Serial Port menu code */
 static void cb_serial_port_menu(GtkWidget *widget,
 				gpointer   data)
 {
@@ -145,8 +149,7 @@ int make_serial_port_menu(GtkWidget **port_menu)
 
 /* End Serial Port Menu code */
 
-static void cb_pref_menu(GtkWidget *widget,
-			 gpointer   data)
+static void cb_pref_menu(GtkWidget *widget, gpointer data)
 {
    int pref;
    int value;
@@ -178,8 +181,8 @@ int make_pref_menu(GtkWidget **pref_menu, int pref_num)
    int i, r;
    long ivalue;
    const char *svalue;
-   char format_text[MAX_PREF_VALUE];
-   char human_text[MAX_PREF_VALUE];
+   char format_text[MAX_PREF_LEN];
+   char human_text[MAX_PREF_LEN];
    time_t ltime;
    struct tm *now;
 
@@ -193,7 +196,7 @@ int make_pref_menu(GtkWidget **pref_menu, int pref_num)
 
    get_pref(pref_num, &ivalue, &svalue);
 
-   for (i=0; i<1000; i++) {
+   for (i=0; i<MAX_NUM_PREFS; i++) {
       r = get_pref_possibility(pref_num, i, format_text);
       if (r) {
 	 break;
@@ -201,13 +204,13 @@ int make_pref_menu(GtkWidget **pref_menu, int pref_num)
       switch (pref_num) {
        case PREF_SHORTDATE:
        case PREF_TIME:
-	 jp_strftime(human_text, MAX_PREF_VALUE, format_text, now);
+	 jp_strftime(human_text, MAX_PREF_LEN, format_text, now);
 	 break;
        case PREF_LONGDATE:
-	 jp_strftime(human_text, MAX_PREF_VALUE, _(format_text), now);
+	 jp_strftime(human_text, MAX_PREF_LEN, _(format_text), now);
 	 break;
        default:
-	 strncpy(human_text, format_text, MAX_PREF_VALUE);
+	 strncpy(human_text, format_text, MAX_PREF_LEN);
 	 break;
       }
       menu_item = gtk_radio_menu_item_new_with_label(
@@ -320,8 +323,7 @@ void cb_radio_set_pref(GtkWidget *widget, gpointer data)
 
 
 #ifdef ENABLE_PLUGINS
-void cb_sync_plugin(GtkWidget *widget,
-		    gpointer data)
+void cb_sync_plugin(GtkWidget *widget, gpointer data)
 {
    GList *plugin_list, *temp_list;
    struct plugin_s *Pplugin;
@@ -351,7 +353,7 @@ void cb_sync_plugin(GtkWidget *widget,
 
 static gboolean cb_destroy(GtkWidget *widget)
 {
-   jp_logf(JP_LOG_DEBUG, "Cleanup\n");
+   jp_logf(JP_LOG_DEBUG, "Pref GUI Cleanup\n");
 
    pref_write_rc_file();
 
@@ -373,11 +375,11 @@ static void cb_quit(GtkWidget *widget, gpointer data)
 }
 
 /* This function adds a simple option checkbutton for the supplied text +
- * option.
- */
-static void
-add_checkbutton(const char *text, int which, GtkWidget *vbox,
-		void cb(GtkWidget *widget, gpointer data))
+ * option.  */
+static void add_checkbutton(const char *text, 
+                            int which, 
+                            GtkWidget *vbox, 
+                            void cb(GtkWidget *widget, gpointer data))
 {
    /* Create button */
    GtkWidget *checkbutton = gtk_check_button_new_with_label(text);
@@ -442,8 +444,6 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    main_window = data;
 
    window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-   /*gtk_window_set_default_size(GTK_WINDOW(window), 500, 300); */
-
    gtk_container_set_border_width(GTK_CONTAINER(window), 10);
    g_snprintf(temp, sizeof(temp), "%s %s", PN, _("Preferences"));
    gtk_window_set_title(GTK_WINDOW(window), temp);
@@ -454,6 +454,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    vbox = gtk_vbox_new(FALSE, 5);
    gtk_container_add(GTK_CONTAINER(window), vbox);
 
+   /* Boxes for each preference tax */
    vbox_locale   = gtk_vbox_new(FALSE, 0);
    vbox_settings = gtk_vbox_new(FALSE, 0);
    vbox_datebook = gtk_vbox_new(FALSE, 0);
@@ -472,7 +473,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_container_set_border_width(GTK_CONTAINER(vbox_alarms), 5);
    gtk_container_set_border_width(GTK_CONTAINER(vbox_conduits), 5);
 
-   /*Add the notebook for repeat types */
+   /* Notebook for preference tabs */
    notebook = gtk_notebook_new();
    gtk_notebook_set_tab_pos(GTK_NOTEBOOK(notebook), GTK_POS_TOP);
    label = gtk_label_new(_("Locale"));
@@ -552,8 +553,6 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    get_pref(PREF_TIME, &ivalue, &cstr);
    gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
 
-   /* FDOW */
-
    /**********************************************************************/
    /* Settings preference tab */
    table = gtk_table_new(4, 3, FALSE);
@@ -574,14 +573,13 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    get_pref(PREF_RCFILE, &ivalue, &cstr);
    gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
 
-
    /* Port */
    label = gtk_label_new(_("Serial Port"));
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
 			     0, 1, 1, 2);
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
 
-   port_entry = gtk_entry_new_with_max_length(MAX_PREF_VALUE - 2);
+   port_entry = gtk_entry_new_with_max_length(MAX_PREF_LEN - 2);
    entry_set_multiline_truncate(GTK_ENTRY(port_entry), TRUE);
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(port_entry),
 			     2, 3, 1, 2);
@@ -599,8 +597,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(port_menu),
 			     1, 2, 1, 2);
 
-
-   /* Rate */
+   /* Serial Rate */
    label = gtk_label_new(_("Serial Rate"));
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
 			     0, 2, 2, 3);
@@ -691,15 +688,14 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 		   PREF_DATEBOOK_HIGHLIGHT_DAYS, vbox_datebook,
 		   cb_checkbox_set_pref);
 
-    /* Highlight today on month and week view */
-    add_checkbutton(_("Annotate today in day, week, and month views"),
+   /* Highlight today on month and week view */
+   add_checkbutton(_("Annotate today in day, week, and month views"),
  		   PREF_DATEBOOK_HI_TODAY, vbox_datebook, cb_checkbox_set_pref);
  
-    /* Show number of years on anniversaries in month and week view */
-    add_checkbutton(
- 	_("Append years on anniversaries in day, week, and month views"),
- 	PREF_DATEBOOK_ANNI_YEARS, vbox_datebook,
- 	cb_checkbox_set_pref);
+   /* Show number of years on anniversaries in month and week view */
+   add_checkbutton(_("Append years on anniversaries in day, week, and month views"),
+ 	           PREF_DATEBOOK_ANNI_YEARS, vbox_datebook,
+ 	           cb_checkbox_set_pref);
 
 #ifdef ENABLE_DATEBK
    /* Show use DateBk check box */
@@ -712,7 +708,6 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_widget_show(checkbutton);
 #endif
  
-
    /**********************************************************************/
    /* Address preference tab */
 
@@ -754,7 +749,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    label = gtk_label_new(_("Mail Command"));
    gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 0);
 
-   mail_command_entry = gtk_entry_new_with_max_length(MAX_PREF_VALUE - 2);
+   mail_command_entry = gtk_entry_new_with_max_length(MAX_PREF_LEN - 2);
 
    get_pref(PREF_MAIL_COMMAND, &ivalue, &cstr);
    if (cstr) {
@@ -806,15 +801,15 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_box_pack_start(GTK_BOX(vbox_address), hseparator, FALSE, FALSE, 3);
 #endif
 
-   /* The hide completed check box */
+   /* hide completed check box */
    add_checkbutton(_("Hide Completed ToDos"),
 		   PREF_TODO_HIDE_COMPLETED, vbox_todo, cb_checkbox_set_pref);
 
-   /* The hide todos not yet due check box */
+   /* hide todos not yet due check box */
    add_checkbutton(_("Hide ToDos not yet due"),
 		   PREF_TODO_HIDE_NOT_DUE, vbox_todo, cb_checkbox_set_pref);
 
-   /* The record todo completion date check box */
+   /* record todo completion date check box */
    add_checkbutton(_("Record Completion Date"),
 		   PREF_TODO_COMPLETION_DATE, vbox_todo, cb_checkbox_set_pref);
 
@@ -831,7 +826,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    add_checkbutton(_("Use default number of days due"),
 		   PREF_TODO_DAYS_DUE, hbox_temp, cb_checkbox_set_pref);
 
-   todo_days_due_entry = gtk_entry_new_with_max_length(MAX_PREF_VALUE - 2);
+   todo_days_due_entry = gtk_entry_new_with_max_length(MAX_PREF_LEN - 2);
    entry_set_multiline_truncate(GTK_ENTRY(todo_days_due_entry), TRUE);
    get_pref(PREF_TODO_DAYS_TILL_DUE, &ivalue, &cstr);
    temp[0]='\0';
@@ -892,27 +887,27 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    /**********************************************************************/
    /* Alarms preference tab */
 
-   /* Show open alarm windows check box */
+   /* Open alarm windows check box */
    add_checkbutton(_("Open alarm windows for appointment reminders"),
 		   PREF_OPEN_ALARM_WINDOWS, vbox_alarms, cb_checkbox_set_pref);
 
-   /* Show open alarm windows check box */
+   /* Execute alarm command check box */
    add_checkbutton(_("Execute this command"),
 		   PREF_DO_ALARM_COMMAND, vbox_alarms, cb_checkbox_set_pref);
 
-   /* Shell warning */
+   /* Shell warning label */
    label = gtk_label_new(_("WARNING: executing arbitrary shell commands can be dangerous!!!"));
    gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.0);
    gtk_box_pack_start(GTK_BOX(vbox_alarms), label, FALSE, FALSE, 0);
 
-   /* Alarm Command */
+   /* Alarm Command to execute */
    hbox_temp = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox_alarms), hbox_temp, FALSE, FALSE, 0);
 
    label = gtk_label_new(_("Alarm Command"));
    gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 10);
 
-   alarm_command_entry = gtk_entry_new_with_max_length(MAX_PREF_VALUE - 2);
+   alarm_command_entry = gtk_entry_new_with_max_length(MAX_PREF_LEN - 2);
    get_pref(PREF_ALARM_COMMAND, &ivalue, &cstr);
    if (cstr) {
       gtk_entry_set_text(GTK_ENTRY(alarm_command_entry), cstr);
@@ -953,24 +948,24 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    /**********************************************************************/
    /* Conduits preference tab */
 
-   /* Show sync datebook check box */
+   /* Sync datebook check box */
    add_checkbutton(_("Sync datebook"),
 		   PREF_SYNC_DATEBOOK, vbox_conduits, cb_checkbox_set_pref);
 
-   /* Show sync address check box */
+   /* Sync address check box */
    add_checkbutton(_("Sync address"),
 		   PREF_SYNC_ADDRESS, vbox_conduits, cb_checkbox_set_pref);
 
-   /* Show sync todo check box */
+   /* Sync todo check box */
    add_checkbutton(_("Sync todo"),
 		   PREF_SYNC_TODO, vbox_conduits, cb_checkbox_set_pref);
 
-   /* Show sync memo check box */
+   /* Sync memo check box */
    add_checkbutton(_("Sync memo"),
 		   PREF_SYNC_MEMO, vbox_conduits, cb_checkbox_set_pref);
 
 #ifdef ENABLE_MANANA
-   /* Show sync Ma~nana check box */
+   /* Show sync Manana check box */
    add_checkbutton(_("Sync Manana"),
 		   PREF_SYNC_MANANA, vbox_conduits, cb_checkbox_set_pref);
 #endif
@@ -989,7 +984,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
       for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
 	 Pplugin = (struct plugin_s *)temp_list->data;
 	 if (Pplugin) {
-	    /* Make a checkbox for each plugin */
+	    /* Make a Sync checkbox for each plugin */
 	    g_snprintf(temp, sizeof(temp), _("Sync %s (%s)"), Pplugin->name, Pplugin->full_path);
 	    checkbutton = gtk_check_button_new_with_label(temp);
 	    gtk_box_pack_start(GTK_BOX(vbox_conduits), checkbutton, FALSE, FALSE, 0);
@@ -1006,7 +1001,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 
 #endif
 
-   /* Create a "Done" button */
+   /* Done button */
    hbox_temp = gtk_hbutton_box_new();
    gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox_temp), GTK_BUTTONBOX_END);
    gtk_box_pack_start(GTK_BOX(vbox), hbox_temp, FALSE, FALSE, 1);
@@ -1018,3 +1013,4 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 
    gtk_widget_show_all(window);
 }
+

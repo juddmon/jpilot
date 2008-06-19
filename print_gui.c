@@ -1,4 +1,4 @@
-/* $Id: print_gui.c,v 1.19 2008/06/03 01:02:53 rikster5 Exp $ */
+/* $Id: print_gui.c,v 1.20 2008/06/19 04:12:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * print_gui.c
@@ -20,17 +20,19 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  ******************************************************************************/
 
+/********************************* Includes ***********************************/
 #include "config.h"
-#include "i18n.h"
-#include <gtk/gtk.h>
 #include <stdlib.h>
 #include <string.h>
+#include <gtk/gtk.h>
+
+#include "i18n.h"
 #include "utils.h"
 #include "prefs.h"
 #include "prefs_gui.h"
 #include "log.h"
 
-
+/******************************* Global vars **********************************/
 static GtkWidget *lines_entry;
 static GtkWidget *print_command_entry;
 static GtkWidget *one_record_checkbutton;
@@ -46,6 +48,7 @@ static int print_dialog;
 /* This is a temporary hack */
 int print_day_week_month;
 
+/****************************** Main Code *************************************/
 static gboolean cb_destroy(GtkWidget *widget)
 {
    const char *entry_text;
@@ -117,7 +120,9 @@ static gboolean cb_destroy(GtkWidget *widget)
    set_pref(PREF_PRINT_COMMAND, 0, entry_text, TRUE);
 
    window = NULL;
+
    gtk_main_quit();
+
    return FALSE;
 }
 
@@ -139,7 +144,7 @@ static void cb_cancel(GtkWidget *widget, gpointer data)
    print_dialog=DIALOG_SAID_CANCEL;
 }
 
-/* year_mon_day is a binary flag to choose which radio buttons appear for
+/* mon_week_day is a binary flag to choose which radio buttons appear for
  * datebook printing.
  * 1 = daily
  * 2 = weekly
@@ -172,7 +177,8 @@ int print_gui(GtkWidget *main_window, int app, int date_button, int mon_week_day
 
    window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
    gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_MOUSE);
-
+   gtk_window_set_modal(GTK_WINDOW(window), TRUE);
+   gtk_window_set_transient_for(GTK_WINDOW(window), GTK_WINDOW(main_window));
 
    gtk_container_set_border_width(GTK_CONTAINER(window), 10);
    g_snprintf(temp, sizeof(temp), "%s %s", PN, _("Print Options"));
@@ -183,7 +189,6 @@ int print_gui(GtkWidget *main_window, int app, int date_button, int mon_week_day
 
    vbox = gtk_vbox_new(FALSE, 0);
    gtk_container_add(GTK_CONTAINER(window), vbox);
-
 
    /* Paper Size */
    hbox = gtk_hbox_new(FALSE, 0);
@@ -197,11 +202,10 @@ int print_gui(GtkWidget *main_window, int app, int date_button, int mon_week_day
 
    get_pref(PREF_PAPER_SIZE, &ivalue, NULL);
    gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
-   /* End paper size */
 
-   radio_button_daily=radio_button_weekly=radio_button_monthly=NULL;
    /* Radio buttons for Datebook */
-   if (app==DATEBOOK) {
+   radio_button_daily=radio_button_weekly=radio_button_monthly=NULL;
+   if (app == DATEBOOK) {
       group = NULL;
 
       if (mon_week_day & 0x01) {
@@ -253,7 +257,7 @@ int print_gui(GtkWidget *main_window, int app, int date_button, int mon_week_day
       }
    }
 
-   if (app!=DATEBOOK) {
+   if (app != DATEBOOK) {
       /* Radio buttons for number of records to print */
       group = NULL;
 
@@ -285,9 +289,8 @@ int print_gui(GtkWidget *main_window, int app, int date_button, int mon_week_day
       gtk_box_pack_start(GTK_BOX(vbox), radio_button_all, FALSE, FALSE, 0);
    }
 
-
-   if (app!=DATEBOOK) {
-      /*One record per page check box */
+   if (app != DATEBOOK) {
+      /* One record per page check box */
       one_record_checkbutton = gtk_check_button_new_with_label
 	(_("One record per page"));
       gtk_box_pack_start(GTK_BOX(vbox), one_record_checkbutton, FALSE, FALSE, 0);
@@ -295,8 +298,7 @@ int print_gui(GtkWidget *main_window, int app, int date_button, int mon_week_day
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(one_record_checkbutton), ivalue);
    }
 
-
-   if (app!=DATEBOOK) {
+   if (app != DATEBOOK) {
       /* Number of blank lines */
       hbox = gtk_hbox_new(FALSE, 0);
       gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
@@ -314,7 +316,6 @@ int print_gui(GtkWidget *main_window, int app, int date_button, int mon_week_day
       gtk_entry_set_text(GTK_ENTRY(lines_entry), temp_str);
    }
 
-
    /* Print Command */
    label = gtk_label_new(_("Print Command (e.g. lpr, or cat > file.ps)"));
    gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
@@ -326,7 +327,7 @@ int print_gui(GtkWidget *main_window, int app, int date_button, int mon_week_day
    gtk_entry_set_text(GTK_ENTRY(print_command_entry), svalue);
 
 
-   /* Create a "Print" button */
+   /* Print button */
    hbox = gtk_hbutton_box_new();
    gtk_container_set_border_width(GTK_CONTAINER(hbox), 6);
    gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox), GTK_BUTTONBOX_END);
@@ -338,7 +339,7 @@ int print_gui(GtkWidget *main_window, int app, int date_button, int mon_week_day
 		      GTK_SIGNAL_FUNC(cb_print), window);
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
 
-   /* Create a "Quit" button */
+   /* Quit button */
    button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_cancel), window);
@@ -346,10 +347,8 @@ int print_gui(GtkWidget *main_window, int app, int date_button, int mon_week_day
 
    gtk_widget_show_all(window);
 
-   gtk_window_set_modal(GTK_WINDOW(window), TRUE);
-   gtk_window_set_transient_for(GTK_WINDOW(window), GTK_WINDOW(main_window));
-
    gtk_main();
 
    return print_dialog;
 }
+

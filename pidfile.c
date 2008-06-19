@@ -17,29 +17,37 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+/********************************* Includes ***********************************/
 #include "config.h"
-
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
-#include <fcntl.h>
+#include <unistd.h>
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <fcntl.h>
 #include <signal.h>
 
+#include "i18n.h"
 #include "log.h"
 #include "utils.h"
 
+/********************************* Constants **********************************/
 #define JPILOT_PIDFILE  "jpilot.pid"
 
+#ifndef O_SYNC
+#  define O_SYNC  0       /* use it if we have it */
+#endif
+
+/******************************* Global vars **********************************/
 static char pidfile[FILENAME_MAX];
 
-
+/****************************** Main Code *************************************/
 void setup_pidfile(void)
 {
    memset(pidfile, 0, FILENAME_MAX);
-   get_home_file_name (JPILOT_PIDFILE, pidfile, FILENAME_MAX);
+   get_home_file_name(JPILOT_PIDFILE, pidfile, FILENAME_MAX);
 }
 
 pid_t check_for_jpilot(void)
@@ -48,16 +56,16 @@ pid_t check_for_jpilot(void)
    int pid;
 
    pid = 0;
-   if ((pidfp = fopen (pidfile, "r")) != NULL) {
-      fscanf (pidfp, "%d", &pid);
+   if ((pidfp = fopen(pidfile, "r")) != NULL) {
+      fscanf(pidfp, "%d", &pid);
 
       if (kill (pid, 0) == -1) {
-         jp_logf (JP_LOG_WARN, "removing stale pidfile\n");
+         jp_logf(JP_LOG_WARN, _("removing stale pidfile\n"));
          pid = 0;
-         unlink (pidfile);
+         unlink(pidfile);
       }
 
-      fclose (pidfp);
+      fclose(pidfp);
    }
 
    return pid;
@@ -68,25 +76,22 @@ void write_pid(void)
    char tmp[20];
    int fd;
 
-#ifndef O_SYNC
-#define O_SYNC  0       /* use it if we have it */
-#endif
-
-   jp_logf (JP_LOG_DEBUG, "pidfile: %s\n", pidfile);
-   if ((fd = open (pidfile, O_WRONLY|O_CREAT|O_EXCL|O_SYNC, S_IRUSR|S_IWUSR)) != -1)
+   jp_logf(JP_LOG_DEBUG, "pidfile: %s\n", pidfile);
+   if ((fd = open(pidfile, O_WRONLY|O_CREAT|O_EXCL|O_SYNC, S_IRUSR|S_IWUSR)) != -1)
    {
-      g_snprintf (tmp, sizeof(tmp), "%d\n", getpid());
-      write (fd, tmp, strlen (tmp));
-      close (fd);
+      g_snprintf(tmp, sizeof(tmp), "%d\n", getpid());
+      write(fd, tmp, strlen (tmp));
+      close(fd);
    }
    else {
-      jp_logf (JP_LOG_FATAL, "create pidfile failed: %s\n", strerror(errno));
-      jp_logf (JP_LOG_WARN, "Warning: hotplug syncing disabled.\n");
+      jp_logf(JP_LOG_FATAL,_("create pidfile failed: %s\n"), strerror(errno));
+      jp_logf(JP_LOG_WARN, _("Warning: hotplug syncing disabled.\n"));
    }
 }
 
 void cleanup_pidfile(void)
 {
    if (getpid() == check_for_jpilot())
-      unlink (pidfile);
+      unlink(pidfile);
 }
+

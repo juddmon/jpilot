@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.139 2008/06/15 06:08:08 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.140 2008/06/19 04:12:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -20,20 +20,22 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  ******************************************************************************/
 
+/********************************* Includes ***********************************/
 #include "config.h"
-#include "i18n.h"
-#include <gtk/gtk.h>
-#include <gdk/gdkkeysyms.h>
-#include <gdk/gdk.h>
-#include <time.h>
 #include <stdlib.h>
+#include <string.h>
+#include <time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #include <dirent.h>
-#include <string.h>
+#include <gtk/gtk.h>
+#include <gdk/gdkkeysyms.h>
 #include <pi-dlp.h>
-#include "utils.h"
+
 #include "todo.h"
+#include "i18n.h"
+#include "utils.h"
 #include "log.h"
 #include "prefs.h"
 #include "password.h"
@@ -41,6 +43,7 @@
 #include "export.h"
 #include "stock_buttons.h"
 
+/********************************* Constants **********************************/
 #define TODO_MAX_COLUMN_LEN 80
 #define MAX_RADIO_BUTTON_LEN 100
 
@@ -50,6 +53,7 @@
 #define CONNECT_SIGNALS 400
 #define DISCONNECT_SIGNALS 401
 
+/******************************* Global vars **********************************/
 /* Keeps track of whether code is using ToDo, or Tasks database
  * 0 is ToDo, 1 is Tasks */
 static long todo_version=0;
@@ -92,6 +96,7 @@ static int clist_col_selected;
 static int clist_row_selected;
 static int record_changed;
 
+/****************************** Prototypes ************************************/
 void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 		       ToDoList **todo_list, int category, int main);
 int todo_clear_details();
@@ -99,20 +104,23 @@ int todo_clist_redraw();
 static void connect_changed_signals(int con_or_dis);
 static int todo_find();
 static void cb_add_new_record(GtkWidget *widget, gpointer data);
-int todo_get_details(struct ToDo *new_todo, unsigned char *attrib);
-static void cb_edit_cats(GtkWidget *widget, gpointer data);
 
-
+/****************************** Main Code *************************************/
 static void init()
 {
    time_t ltime;
    struct tm *now;
    long ivalue;
+   int i;
 
-   clist_col_selected=1;
-   clist_row_selected=0;
+   clist_col_selected = 1;
+   clist_row_selected = 0;
 
-   record_changed=CLEAR_FLAG;
+   for (i=0; i<NUM_TODO_CAT_ITEMS; i++) {
+      todo_cat_menu_item2[i] = NULL;
+   }
+
+   record_changed = CLEAR_FLAG;
    time(&ltime);
    now = localtime(&ltime);
 
@@ -880,14 +888,14 @@ void cb_delete_todo(GtkWidget *widget,
    MyToDo *mtodo;
    int flag;
    int show_priv;
-   long char_set; /* JPA */
+   long char_set;
 
    mtodo = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
    if (mtodo < (MyToDo *)CLIST_MIN_DATA) {
       return;
    }
 
-   /* JPA convert to Palm character set */
+   /* Convert to Palm character set */
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    if (char_set != CHAR_SET_LATIN1) {
       if (mtodo->todo.description)
@@ -965,6 +973,43 @@ static void cb_cancel(GtkWidget *widget, gpointer data)
 {
    set_new_button_to(CLEAR_FLAG);
    todo_refresh();
+}
+
+static void cb_edit_cats(GtkWidget *widget, gpointer data)
+{
+   struct ToDoAppInfo ai;
+   char full_name[FILENAME_MAX];
+   unsigned char buffer[65536];
+   int num;
+   size_t size;
+   void *buf;
+   struct pi_file *pf;
+
+   jp_logf(JP_LOG_DEBUG, "cb_edit_cats\n");
+
+   get_home_file_name("ToDoDB.pdb", full_name, sizeof(full_name));
+
+   buf=NULL;
+   memset(&ai, 0, sizeof(ai));
+
+   pf = pi_file_open(full_name);
+   pi_file_get_app_info(pf, &buf, &size);
+
+   num = unpack_ToDoAppInfo(&ai, buf, size);
+   if (num <= 0) {
+      jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), "ToDoDB.pdb");
+      return;
+   }
+
+   pi_file_close(pf);
+
+   edit_cats(widget, "ToDoDB", &(ai.category));
+
+   size = pack_ToDoAppInfo(&ai, buffer, sizeof(buffer));
+
+   pdb_file_write_app_block("ToDoDB", buffer, size);
+
+   cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
 }
 
 static void cb_category(GtkWidget *item, int selection)
@@ -1097,9 +1142,9 @@ int todo_get_details(struct ToDo *new_todo, unsigned char *attrib)
       }
    }
    new_todo->complete = (GTK_TOGGLE_BUTTON(todo_completed_checkbox)->active);
-   /*Can there be an entry with no description? */
-   /*Yes, but the Palm Pilot gui doesn't allow it to be entered on the Palm, */
-   /*it will show it though.  I allow it. */
+   /* Can there be an entry with no description? */
+   /* Yes, but the Palm Pilot gui doesn't allow it to be entered on the Palm, */
+   /* it will show it though.  I allow it. */
    gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(todo_desc_buffer),
 			      &start_iter,&end_iter);
    new_todo->description = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(todo_desc_buffer),
@@ -1168,7 +1213,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    }
    /* End Masking */
    if (flag==CLEAR_FLAG) {
-      /*Clear button was hit */
+      /* Clear button was hit */
       todo_clear_details();
       connect_changed_signals(DISCONNECT_SIGNALS);
       set_new_button_to(NEW_FLAG);
@@ -1233,42 +1278,6 @@ static void clear_mytodos(MyToDo *mtodo)
 }
 /* End Masking */
 
-static void cb_edit_cats(GtkWidget *widget, gpointer data)
-{
-   struct ToDoAppInfo ai;
-   char full_name[FILENAME_MAX];
-   unsigned char buffer[65536];
-   int num;
-   size_t size;
-   void *buf;
-   struct pi_file *pf;
-
-   jp_logf(JP_LOG_DEBUG, "cb_edit_cats\n");
-
-   get_home_file_name("ToDoDB.pdb", full_name, sizeof(full_name));
-
-   buf=NULL;
-   memset(&ai, 0, sizeof(ai));
-
-   pf = pi_file_open(full_name);
-   pi_file_get_app_info(pf, &buf, &size);
-
-   num = unpack_ToDoAppInfo(&ai, buf, size);
-   if (num <= 0) {
-      jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), "ToDoDB.pdb");
-      return;
-   }
-
-   pi_file_close(pf);
-
-   edit_cats(widget, "ToDoDB", &(ai.category));
-
-   size = pack_ToDoAppInfo(&ai, buffer, sizeof(buffer));
-
-   pdb_file_write_app_block("ToDoDB", buffer, size);
-
-   cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
-}
 
 /* Function is used to sort clist based on the completed checkbox */
 gint GtkClistCompareCheckbox(GtkCList *clist,
@@ -1518,28 +1527,8 @@ static void cb_clist_selection(GtkWidget      *clist,
    gtk_widget_thaw_child_notify(todo_desc);
    gtk_widget_thaw_child_notify(todo_note);
 
-   /*If they have clicked on the checkmark box then do a modify */
+   /* If they have clicked on the checkmark box then do a modify */
    if (column==0) {
-#if 0
-      todo->complete = !(todo->complete);
-      /* See if we need to mark the due date as the date completed */
-      if (todo->complete) {
-	 long todo_completion_date;
-	 get_pref(PREF_TODO_COMPLETION_DATE, &todo_completion_date, NULL);
-	 if (todo_completion_date) {
-	    time_t ltime;
-	    struct tm *now;
-	    time(&ltime);
-	    now = localtime(&ltime);
-	    memcpy(&due_date, now, sizeof(struct tm));
-	    jp_logf(JP_LOG_DEBUG, "cb_clist_selection: setting due date=%d/%d/%d\n", due_date.tm_mon,
-		    due_date.tm_mday, due_date.tm_year);
-	    update_due_button(due_date_button, NULL);
-	    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(todo_no_due_date_checkbox), FALSE);
-	 }
-      }
-      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(todo_completed_checkbox), todo->complete);
-#endif
       gtk_signal_emit_by_name(GTK_OBJECT(todo_completed_checkbox), "clicked");
       gtk_signal_emit_by_name(GTK_OBJECT(apply_record_button), "clicked");
    }
@@ -1668,12 +1657,12 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
          displayed even if it would normally be hidden by option settings */
       if (!glob_find_id || (glob_find_id != temp_todo->mtodo.unique_id))
       {
-	 /*Hide the completed records if need be */
+	 /* Hide the completed records if need be */
 	 if (hide_completed && temp_todo->mtodo.todo.complete) {
 	    continue;
 	 }
 
-	 /*Hide the not due yet records if need be */
+	 /* Hide the not due yet records if need be */
 	 if ((hide_not_due) && (!(temp_todo->mtodo.todo.indefinite))) {
 	    time_t ltime;
 	    struct tm *now, *due;
@@ -1961,11 +1950,6 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    init();
 
-   /* Do some initialization */
-   for (i=0; i<NUM_TODO_CAT_ITEMS; i++) {
-      todo_cat_menu_item2[i] = NULL;
-   }
-
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    get_todo_app_info(&todo_app_info);
 
@@ -2012,23 +1996,21 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_paned_pack1(GTK_PANED(pane), vbox1, TRUE, FALSE);
    gtk_paned_pack2(GTK_PANED(pane), vbox2, TRUE, FALSE);
 
-   /* gtk_widget_set_usize(GTK_WIDGET(vbox1), 260, 0); */
-
-   /*Add buttons in left vbox */
-   /*Separator */
+   /* Left-hand side of GUI */
+   /* Separator */
    separator = gtk_hseparator_new();
    gtk_box_pack_start(GTK_BOX(vbox1), separator, FALSE, FALSE, 5);
 
    time(&ltime);
    now = localtime(&ltime);
 
-   /*Make the Today is: label */
+   /* Make the 'Today is:' label */
    glob_date_label = gtk_label_new(" ");
    gtk_box_pack_start(GTK_BOX(vbox1), glob_date_label, FALSE, FALSE, 0);
    timeout_date(NULL);
    glob_date_timer_tag = gtk_timeout_add(get_timeout_interval(), timeout_date, NULL);
 
-   /*Separator */
+   /* Separator */
    separator = gtk_hseparator_new();
    gtk_box_pack_start(GTK_BOX(vbox1), separator, FALSE, FALSE, 5);
 
@@ -2036,21 +2018,19 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    hbox_temp = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox1), hbox_temp, FALSE, FALSE, 0);
 
-   /*Put the left-hand category menu up */
+   /* left-hand category menu */
    make_category_menu(&category_menu1, todo_cat_menu_item1,
 		      sort_l, cb_category, TRUE, TRUE);
    gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu1, TRUE, TRUE, 0);
 
-   /*Put the todo list window up */
+   /* Scrolled window for todo list */
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
-   /*gtk_widget_set_usize(GTK_WIDGET(scrolled_window), 200, 0); */
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 0);
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
 				  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
    gtk_box_pack_start(GTK_BOX(vbox1), scrolled_window, TRUE, TRUE, 0);
 
    clist = gtk_clist_new_with_titles(5, titles);
-   
    gtk_clist_set_column_title(GTK_CLIST(clist), TODO_TEXT_COLUMN, _("Task"));
    gtk_clist_set_column_title(GTK_CLIST(clist), TODO_DATE_COLUMN, _("Due"));
    /* Put pretty pictures in the clist column headings */
@@ -2103,16 +2083,11 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
 
-   /* */
    /* The right hand part of the main window follows: */
-   /* */
    hbox_temp = gtk_hbox_new(FALSE, 3);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
-
-   /* Add record modification buttons on right side */
-
-   /* Create Cancel button */
+   /* Cancel button */
    CREATE_BUTTON(cancel_record_button, _("Cancel"), CANCEL, _("Cancel the modifications"), GDK_Escape, 0, "ESC")
    gtk_signal_connect(GTK_OBJECT(cancel_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_cancel), NULL);
@@ -2129,19 +2104,19 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 		      GTK_SIGNAL_FUNC(cb_undelete_todo),
 		      GINT_TO_POINTER(UNDELETE_FLAG));
 
-   /* Create "Copy" button */
+   /* Copy button */
    CREATE_BUTTON(copy_record_button, _("Copy"), COPY, _("Copy the selected record"), GDK_o, GDK_CONTROL_MASK, "Ctrl+O")
    gtk_signal_connect(GTK_OBJECT(copy_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record),
 		      GINT_TO_POINTER(COPY_FLAG));
 
-   /* Create "New" button */
+   /* New button */
    CREATE_BUTTON(new_record_button, _("New Record"), NEW, _("Add a new record"), GDK_n, GDK_CONTROL_MASK, "Ctrl+N")
    gtk_signal_connect(GTK_OBJECT(new_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record),
 		      GINT_TO_POINTER(CLEAR_FLAG));
 
-   /* Create "Add Record" button */
+   /* "Add Record" button */
    CREATE_BUTTON(add_record_button, _("Add Record"), ADD, _("Add the new record"), GDK_Return, GDK_CONTROL_MASK, "Ctrl+Enter")
    gtk_signal_connect(GTK_OBJECT(add_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record),
@@ -2151,7 +2126,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 		       "label_high");
 #endif
 
-   /* Create "apply changes" button */
+   /* "Apply Changes" button */
    CREATE_BUTTON(apply_record_button, _("Apply Changes"), APPLY, _("Commit the modifications"), GDK_Return, GDK_CONTROL_MASK, "Ctrl+Enter")
    gtk_signal_connect(GTK_OBJECT(apply_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record),
@@ -2161,17 +2136,17 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 		       "label_high");
 #endif
 
-   /*Separator */
+   /* Separator */
    separator = gtk_hseparator_new();
    gtk_box_pack_start(GTK_BOX(vbox2), separator, FALSE, FALSE, 5);
 
 
-   /*The completed check box */
+   /* Completed checkbox */
    todo_completed_checkbox = gtk_check_button_new_with_label(_("Completed"));
    gtk_box_pack_start(GTK_BOX(vbox2), todo_completed_checkbox, FALSE, FALSE, 0);
 
 
-   /*Priority Radio Buttons */
+   /* Priority radio buttons */
    hbox_temp = gtk_hbox_new (FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
@@ -2183,7 +2158,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
       sprintf(str,"%d",i+1);
       radio_button_todo[i] = gtk_radio_button_new_with_label(group, str);
       group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_todo[i]));
-      /*gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON (radio_button_todo), TRUE); */
+      /* gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON (radio_button_todo), TRUE); */
       gtk_box_pack_start(GTK_BOX(hbox_temp),
 			 radio_button_todo[i], FALSE, FALSE, 0);
       /* gtk_widget_show(radio_button_todo[i]);*/
@@ -2191,41 +2166,41 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_widget_set_usize(hbox_temp, 10, 0);
 
 
-   /* Due date stuff */
+   /* "Due date" label */
    hbox_temp = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
    label = gtk_label_new(_("Date Due:"));
    gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 0);
 
-   /* Due date button */
+   /* "Due Date" button */
    due_date_button = gtk_button_new_with_label("");
    gtk_box_pack_start(GTK_BOX(hbox_temp), due_date_button, FALSE, FALSE, 5);
    gtk_signal_connect(GTK_OBJECT(due_date_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_cal_dialog), NULL);
 
 
-   /*The No due date check box */
+   /* "No Date" check box */
    todo_no_due_date_checkbox = gtk_check_button_new_with_label(_("No Date"));
    gtk_signal_connect(GTK_OBJECT(todo_no_due_date_checkbox), "clicked",
 		      GTK_SIGNAL_FUNC(cb_check_button_no_due_date), NULL);
    gtk_box_pack_start(GTK_BOX(hbox_temp), todo_no_due_date_checkbox, FALSE, FALSE, 0);
 
 
-   /*Private check box */
+   /* Private checkbox */
    hbox_temp = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
    private_checkbox = gtk_check_button_new_with_label(_("Private"));
    gtk_box_pack_end(GTK_BOX(hbox_temp), private_checkbox, FALSE, FALSE, 0);
 
-   /*Put the right-hand category menu up */
+   /* right-hand category menu */
    make_category_menu(&category_menu2, todo_cat_menu_item2,
 		      sort_l, NULL, FALSE, FALSE);
 
    gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu2, TRUE, TRUE, 0);
 
 
-   /*The Description text box on the right side */
+   /* Description */
    hbox_temp = gtk_hbox_new (FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
@@ -2244,7 +2219,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_container_add(GTK_CONTAINER(scrolled_window), todo_desc);
    gtk_box_pack_start_defaults(GTK_BOX(hbox_temp), scrolled_window);
 
-   /*The Note text box on the right side */
+   /* Note */
    hbox_temp = gtk_hbox_new (FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
@@ -2298,3 +2273,4 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    return EXIT_SUCCESS;
 }
+

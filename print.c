@@ -1,4 +1,4 @@
-/* $Id: print.c,v 1.41 2008/06/14 22:34:12 rikster5 Exp $ */
+/* $Id: print.c,v 1.42 2008/06/19 04:12:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * print.c
@@ -20,26 +20,38 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  ******************************************************************************/
 
+/********************************* Includes ***********************************/
 #include "config.h"
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
 #include <ctype.h>
-#include <stdlib.h>
+
+#include "print.h"
+#include "print_headers.h"
+#include "print_logo.h"
 #include "datebook.h"
 #include "address.h"
 #include "todo.h"
 #include "sync.h"
 #include "prefs.h"
-#include "print.h"
-#include "print_logo.h"
-#include "print_headers.h"
 #include "log.h"
 #include "i18n.h"
 #ifdef HAVE_LOCALE_H
-#include <locale.h>
+#  include <locale.h>
 #endif
 
+/********************************* Constants **********************************/
+#ifdef JPILOT_PRINTABLE
+#  define FLAG_CHAR 'A'
+#  define Q_FLAG_CHAR "A"
+#else
+#  define FLAG_CHAR 010
+#  define Q_FLAG_CHAR "\\010"
+#endif
+
+/******************************* Global vars **********************************/
 static FILE *out;
 static int first_hour, first_min, last_hour, last_min;
 extern int datebook_category;
@@ -56,14 +68,7 @@ char *PaperSizes[] = { "Letter", "Legal", "Statement", "Tabloid", "Ledger",
                        "C1", "C2", "C3", "C4", "C5", "C6", "C7", "DL",
                        "Filo" };
 
-#ifdef JPILOT_PRINTABLE
-#define FLAG_CHAR 'A'
-#define Q_FLAG_CHAR "A"
-#else
-#define FLAG_CHAR 010
-#define Q_FLAG_CHAR "\\010"
-#endif
-
+/****************************** Main Code *************************************/
 FILE *print_open()
 {
    const char *command;
@@ -782,11 +787,9 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
      return EXIT_SUCCESS;
 }
 
-/*----------------------------------------------------------------------
- *
+/*
  * Address code
- *
- *----------------------------------------------------------------------*/
+ */
 
 int print_address_header()
 {
@@ -1062,7 +1065,6 @@ int print_contacts(ContactList *contact_list, struct ContactAppInfo *contact_app
       break;
    }
 
-#define NUM_ADDRESS_ENTRIES 19
    get_pref(PREF_PRINT_ONE_PER_PAGE, &one_rec_per_page, NULL);
    get_pref(PREF_NUM_BLANK_LINES, &lines_between_recs, NULL);
 
@@ -1168,9 +1170,7 @@ int print_contacts(ContactList *contact_list, struct ContactAppInfo *contact_app
 }
 
 /*
- *
  * ToDo code
- *
  */
 int print_todos(ToDoList *todo_list, char *category_name)
 {
@@ -1272,9 +1272,7 @@ int print_todos(ToDoList *todo_list, char *category_name)
    return EXIT_SUCCESS;
 }
 /*
- *
  * Memo code
- *
  */
 int print_memos(MemoList *memo_list)
 {
@@ -1331,3 +1329,4 @@ int print_memos(MemoList *memo_list)
 
    return EXIT_SUCCESS;
 }
+

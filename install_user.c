@@ -1,4 +1,4 @@
-/* $Id: install_user.c,v 1.7 2008/06/03 01:02:53 rikster5 Exp $ */
+/* $Id: install_user.c,v 1.8 2008/06/19 04:12:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * install_user.c
@@ -20,21 +20,19 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  ******************************************************************************/
 
+/********************************* Includes ***********************************/
 #include "config.h"
 #include <gtk/gtk.h>
-#ifdef HAVE_LOCALE_H
-#include <locale.h>
-#endif
-
 #include <stdlib.h>
 #include <string.h>
 #include <pwd.h>
+
 #include "i18n.h"
-#include "otherconv.h"
 #include "utils.h"
 #include "sync.h"
 #include "prefs.h"
 
+/****************************** Prototypes ************************************/
 struct install_dialog_data {
    GtkWidget *user_entry;
    GtkWidget *ID_entry;
@@ -43,6 +41,7 @@ struct install_dialog_data {
    unsigned long id;
 };
 
+/****************************** Main Code *************************************/
 /* Allocates memory and returns pointer, or NULL */
 char *jp_user_or_whoami()
 {
@@ -61,8 +60,7 @@ char *jp_user_or_whoami()
    return NULL;
 }
 
-void cb_install_user_button(GtkWidget *widget,
-			    gpointer   data)
+void cb_install_user_button(GtkWidget *widget, gpointer data)
 {
    GtkWidget *w;
    struct install_dialog_data *Pdata;
@@ -90,37 +88,35 @@ static gboolean cb_destroy_dialog(GtkWidget *widget)
    return FALSE;
 }
 
-int dialog_install_user(GtkWindow *main_window, char *user, int user_len, unsigned long *user_id)
+int dialog_install_user(GtkWindow *main_window, 
+                        char *user, int user_len, 
+                        unsigned long *user_id)
 {
    GtkWidget *button, *label;
    GtkWidget *user_entry, *ID_entry;
    GtkWidget *install_user_dialog;
-
    GtkWidget *vbox;
    GtkWidget *hbox;
-   
    /* object data */
    struct install_dialog_data data;
-
    unsigned long id;
    char s_id[32];
    char *whoami;
 
    data.button_hit=0;
+
    install_user_dialog = gtk_widget_new(GTK_TYPE_WINDOW,
 					"type", GTK_WINDOW_TOPLEVEL,
 					"window_position", GTK_WIN_POS_MOUSE,
 					"title", _("Install User"),
 					NULL);
-
-   gtk_signal_connect(GTK_OBJECT(install_user_dialog), "destroy",
-		      GTK_SIGNAL_FUNC(cb_destroy_dialog), install_user_dialog);
-
    gtk_window_set_modal(GTK_WINDOW(install_user_dialog), TRUE);
-
    if (main_window) {
       gtk_window_set_transient_for(GTK_WINDOW(install_user_dialog), GTK_WINDOW(main_window));
    }
+
+   gtk_signal_connect(GTK_OBJECT(install_user_dialog), "destroy",
+		      GTK_SIGNAL_FUNC(cb_destroy_dialog), install_user_dialog);
 
    gtk_object_set_data(GTK_OBJECT(install_user_dialog),
 		       "install_dialog_data", &data);
@@ -145,7 +141,6 @@ int dialog_install_user(GtkWindow *main_window, char *user, int user_len, unsign
    gtk_label_set_line_wrap(GTK_LABEL(label), TRUE);
    gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 2);
 
-   
    srandom(time(NULL));
    /* RAND_MAX is 32768 on Solaris machines for some reason.
     * If someone knows how to fix this, let me know.
@@ -157,9 +152,39 @@ int dialog_install_user(GtkWindow *main_window, char *user, int user_len, unsign
    }
    g_snprintf(s_id, 30, "%ld", id);
 
+   /* User Name entry */
+   
+   hbox = gtk_hbox_new(FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 0);
+
+   /* Instruction label */
+   label = gtk_label_new(_("Most people choose their name or nickname for the user name."));
+   gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_LEFT);
+   gtk_label_set_line_wrap(GTK_LABEL(label), FALSE);
+   gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 2);
+
+   /* User Name */
+   hbox = gtk_hbox_new(FALSE, 5);
+   gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 2);
+   label = gtk_label_new(_("User name"));
    user_entry = gtk_entry_new_with_max_length(128);
    entry_set_multiline_truncate(GTK_ENTRY(user_entry), TRUE);
    data.user_entry = user_entry;
+   gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 2);
+   gtk_box_pack_start(GTK_BOX(hbox), user_entry, TRUE, TRUE, 2);
+
+   /* Instruction label */
+   hbox = gtk_hbox_new(FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 0);
+   label = gtk_label_new(_("The ID should be a random number."));
+   gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_LEFT);
+   gtk_label_set_line_wrap(GTK_LABEL(label), TRUE);
+   gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 2);
+
+   /* User ID */
+   hbox = gtk_hbox_new(FALSE, 5);
+   gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 2);
+   label = gtk_label_new(_("User ID"));
    ID_entry = gtk_entry_new_with_max_length(32);
    entry_set_multiline_truncate(GTK_ENTRY(ID_entry), TRUE);
    data.ID_entry = ID_entry;
@@ -169,32 +194,10 @@ int dialog_install_user(GtkWindow *main_window, char *user, int user_len, unsign
       gtk_entry_set_text(GTK_ENTRY(user_entry), whoami);
       free(whoami);
    }
-   
-   hbox = gtk_hbox_new(FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 0);
-   label = gtk_label_new(_("Most people choose their name or nickname for the user name."));
-   gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_LEFT);
-   gtk_label_set_line_wrap(GTK_LABEL(label), FALSE);
-   gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 2);
-
-   hbox = gtk_hbox_new(FALSE, 5);
-   gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 2);
-   label = gtk_label_new(_("User name"));
-   gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 2);
-   gtk_box_pack_start(GTK_BOX(hbox), user_entry, TRUE, TRUE, 2);
-   hbox = gtk_hbox_new(FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 0);
-   label = gtk_label_new(_("The ID should be a random number."));
-   gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_LEFT);
-   gtk_label_set_line_wrap(GTK_LABEL(label), TRUE);
-   gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 2);
-
-   hbox = gtk_hbox_new(FALSE, 5);
-   gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 2);
-   label = gtk_label_new(_("User ID"));
    gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 2);
    gtk_box_pack_start(GTK_BOX(hbox), ID_entry, TRUE, TRUE, 2);
 
+   /* Cancel/Install buttons */
    hbox = gtk_hbutton_box_new();
    gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox), GTK_BUTTONBOX_END);
    gtk_button_box_set_spacing(GTK_BUTTON_BOX(hbox), 6);
@@ -229,13 +232,13 @@ int dialog_install_user(GtkWindow *main_window, char *user, int user_len, unsign
 void install_user_gui(GtkWidget *main_window)
 {
    int r;
-   char user[MAX_PREF_VALUE];
+   char user[MAX_PREF_LEN];
    unsigned long user_id;
    const char *svalue;
    long ivalue;
    char *old_user;
 
-   r = dialog_install_user(GTK_WINDOW(main_window), user, MAX_PREF_VALUE, &user_id);
+   r = dialog_install_user(GTK_WINDOW(main_window), user, MAX_PREF_LEN, &user_id);
    if (r == DIALOG_SAID_1) {
       /* Temporarily set the user and user ID */
       get_pref(PREF_USER, NULL, &svalue);
@@ -260,3 +263,4 @@ void install_user_gui(GtkWidget *main_window)
       free(old_user);
    }
 }
+

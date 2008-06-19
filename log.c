@@ -1,4 +1,4 @@
-/* $Id: log.c,v 1.29 2008/06/03 01:02:53 rikster5 Exp $ */
+/* $Id: log.c,v 1.30 2008/06/19 04:12:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * log.c
@@ -19,13 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  ******************************************************************************/
-
 /*
  * Thanks to Jason Day for his patches that allowed plugins to log correctly
  */
-
+/********************************* Includes ***********************************/
 #include "config.h"
-#include "i18n.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -33,18 +31,23 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #ifdef USE_FLOCK
-#include <sys/file.h>
+#  include <sys/file.h>
 #else
-#include <fcntl.h>
+#  include <fcntl.h>
 #endif
 #include <signal.h>
 #include <utime.h>
+
+#include "i18n.h"
 #include "log.h"
 #include "utils.h"
 #include "sync.h"
 #include "prefs.h"
 
+/********************************* Constants **********************************/
+#define WRITE_MAX_BUF 4096
 
+/******************************* Global vars **********************************/
 int pipe_to_parent;
 
 int glob_log_file_mask;
@@ -54,6 +57,7 @@ int glob_log_gui_mask;
 extern void output_to_pane(const char *str);
 extern pid_t jpilot_master_pid;
 
+/****************************** Main Code *************************************/
 int jp_logf(int level, char *format, ...)
 {
    va_list val;
@@ -72,7 +76,6 @@ int jp_logf(int level, char *format, ...)
 }
 
 int jp_vlogf (int level, char *format, va_list val) {
-#define WRITE_MAX_BUF	4096
    char       		real_buf[WRITE_MAX_BUF+32];
    char			*buf, *local_buf;
    int			size;
@@ -167,7 +170,6 @@ int jp_vlogf (int level, char *format, va_list val) {
  */
 int write_to_parent(int command, char *format, ...)
 {
-#define WRITE_MAX_BUF 4096
    va_list val;
    int len, size;
    char real_buf[WRITE_MAX_BUF+32];

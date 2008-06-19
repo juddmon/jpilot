@@ -1,4 +1,4 @@
-/* $Id: import_gui.c,v 1.26 2008/06/03 01:02:53 rikster5 Exp $ */
+/* $Id: import_gui.c,v 1.27 2008/06/19 04:12:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * import_gui.c
@@ -20,26 +20,33 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  ******************************************************************************/
 
+/********************************* Includes ***********************************/
 #include "config.h"
-#include "i18n.h"
 #include <gtk/gtk.h>
 #include <string.h>
 #include <stdlib.h>
+#include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+
+#include "i18n.h"
 #include "utils.h"
 #include "prefs.h"
 #include "log.h"
 
+/******************************* Global vars **********************************/
 static GtkWidget *radio_types[MAX_IMPORT_TYPES+1];
 static int radio_file_types[MAX_IMPORT_TYPES+1];
 static int line_selected;
 static GtkWidget *filew=NULL;
 static GtkWidget *import_record_ask_window=NULL;
 static int glob_import_record_ask_button_pressed;
-int (*glob_import_callback)(GtkWidget *parent_window, const char *file_path, int type);
 int glob_type_selected;
 
+/****************************** Prototypes ************************************/
+int (*glob_import_callback)(GtkWidget *parent_window, const char *file_path, int type);
+
+/****************************** Main Code *************************************/
 
 /*
  * This function reads until it finds a non separator character,
@@ -136,19 +143,17 @@ static gboolean cb_destroy(GtkWidget *widget)
    return FALSE;
 }
 
-static void
-cb_quit(GtkWidget *widget,
-	gpointer   data)
+static void cb_quit(GtkWidget *widget, gpointer data)
 {
    const char *sel;
-   char dir[MAX_PREF_VALUE+2];
+   char dir[MAX_PREF_LEN+2];
    int i;
 
    jp_logf(JP_LOG_DEBUG, "Quit\n");
 
    sel = gtk_file_selection_get_filename(GTK_FILE_SELECTION(filew));
-   strncpy(dir, sel, MAX_PREF_VALUE);
-   dir[MAX_PREF_VALUE]='\0';
+   strncpy(dir, sel, MAX_PREF_LEN);
+   dir[MAX_PREF_LEN]='\0';
    i=strlen(dir)-1;
    if (i<0) i=0;
    if (dir[i]!='/') {
@@ -166,16 +171,12 @@ cb_quit(GtkWidget *widget,
    gtk_widget_destroy(data);
 }
 
-static void
-cb_type(GtkWidget *widget,
-	gpointer   data)
+static void cb_type(GtkWidget *widget, gpointer data)
 {
    glob_type_selected=GPOINTER_TO_INT(data);
 }
 
-static void
-cb_import(GtkWidget *widget,
-	  gpointer   filesel)
+static void cb_import(GtkWidget *widget, gpointer filesel)
 {
    const char *sel;
    struct stat statb;
@@ -184,7 +185,7 @@ cb_import(GtkWidget *widget,
    sel = gtk_file_selection_get_filename(GTK_FILE_SELECTION(filesel));
    jp_logf(JP_LOG_DEBUG, "file selected [%s]\n", sel);
 
-   /*Check to see if its a regular file */
+   /* Check to see if its a regular file */
    if (stat(sel, &statb)) {
       jp_logf(JP_LOG_DEBUG, "File selected was not stat-able\n");
       return;
@@ -211,7 +212,7 @@ static void cb_import_select_row(GtkWidget *file_clist,
    jp_logf(JP_LOG_DEBUG, "cb_import_select_row\n");
    sel = gtk_file_selection_get_filename(GTK_FILE_SELECTION(filew));
 
-   /*Check to see if its a regular file */
+   /* Check to see if its a regular file */
    if (stat(sel, &statb)) {
       jp_logf(JP_LOG_DEBUG, "File selected was not stat-able\n");
       return;
@@ -233,121 +234,6 @@ static void cb_import_select_row(GtkWidget *file_clist,
    return;
 }
 
-void import_gui(GtkWidget *main_window, GtkWidget *main_pane,
-		char *type_desc[], int type_int[],
-		int (*import_callback)(GtkWidget *parent_window,
-	        const char *file_path, int type))
-{
-   GtkWidget *button;
-   GtkWidget *vbox, *hbox;
-   GtkWidget *label;
-   char title[256];
-   const char *svalue;
-   GSList *group;
-   int i;
-   int pw, ph, px, py;
-
-   if (filew) return;
-   
-   line_selected = -1;
-
-   gdk_window_get_size(main_window->window, &pw, &ph);
-   gdk_window_get_root_origin(main_window->window, &px, &py);
-
-   pw = gtk_paned_get_position(GTK_PANED(main_pane));
-   px+=40;
-
-   g_snprintf(title, sizeof(title), "%s %s", PN, _("Import"));
-
-   filew = gtk_widget_new(GTK_TYPE_FILE_SELECTION,
-			  "type", GTK_WINDOW_TOPLEVEL,
-			  "title", title,
-			  NULL);
-
-   gtk_window_set_default_size(GTK_WINDOW(filew), pw, ph);
-   gtk_widget_set_uposition(filew, px, py);
-
-   gtk_window_set_modal(GTK_WINDOW(filew), TRUE);
-   gtk_window_set_transient_for(GTK_WINDOW(filew), GTK_WINDOW(main_window));
-
-   get_pref(PREF_MEMO_IMPORT_PATH, NULL, &svalue);
-   if (svalue && svalue[0]) {
-      gtk_file_selection_set_filename(GTK_FILE_SELECTION(filew), svalue);
-   }
-
-   glob_import_callback=import_callback;
-
-   /* Set the type to match the first button, which will be set */
-   glob_type_selected=type_int[0];
-
-   gtk_widget_hide((GTK_FILE_SELECTION(filew)->cancel_button));
-   gtk_signal_connect(GTK_OBJECT(filew), "destroy",
-                      GTK_SIGNAL_FUNC(cb_destroy), filew);
-
-   /*Even though I hide the ok button I still want to connect its signal */
-   /*because a double click on the file name also calls this callback */
-   gtk_widget_hide(GTK_WIDGET(GTK_FILE_SELECTION(filew)->ok_button));
-   gtk_signal_connect(GTK_OBJECT(GTK_FILE_SELECTION(filew)->ok_button),
-		      "clicked", GTK_SIGNAL_FUNC(cb_import), filew);
-
-   label = gtk_label_new(_("To change to a hidden directory type it below and hit TAB"));
-   gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->main_vbox),
-		      label, FALSE, FALSE, 0);
-   gtk_widget_show(label);
-
-
-   button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
-   gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->ok_button->parent),
-		      button, TRUE, TRUE, 0);
-   gtk_signal_connect(GTK_OBJECT(button),
-		      "clicked", GTK_SIGNAL_FUNC(cb_quit), filew);
-   gtk_widget_show(button);
-
-   button = gtk_button_new_with_label(_("Import"));
-   gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->ok_button->parent),
-		      button, TRUE, TRUE, 0);
-   gtk_signal_connect(GTK_OBJECT(button),
-		      "clicked", GTK_SIGNAL_FUNC(cb_import), filew);
-   gtk_widget_show(button);
-
-   /* File Type */
-   vbox=gtk_vbox_new(FALSE, 0);
-   hbox=gtk_hbox_new(FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->action_area),
-		      vbox, TRUE, TRUE, 0);
-   gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 0);
-   label = gtk_label_new(_("Import File Type"));
-   gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
-
-   group = NULL;
-   for (i=0; i<MAX_IMPORT_TYPES; i++) {
-      if (type_desc[i]==NULL) break;
-      radio_types[i] = gtk_radio_button_new_with_label(group, _(type_desc[i]));
-      radio_file_types[i] = type_int[i];
-      group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_types[i]));
-      gtk_box_pack_start(GTK_BOX(vbox), radio_types[i], TRUE, TRUE, 0);
-      gtk_signal_connect(GTK_OBJECT(radio_types[i]), "clicked",
-			 GTK_SIGNAL_FUNC(cb_type), GINT_TO_POINTER(type_int[i]));
-   }
-   radio_types[i]=NULL;
-   radio_file_types[i]=0;
-
-   /* This callback is for a file guess algorithm and to pre-push
-    * the type buttons */
-   gtk_signal_connect(GTK_OBJECT(GTK_FILE_SELECTION(filew)->file_list),
-		      "cursor_changed", GTK_SIGNAL_FUNC(cb_import_select_row), NULL);
-
-   gtk_widget_show_all(vbox);
-
-   gtk_widget_show(filew);
-}
-
-
-/*
- * Import record display and choice.
- * Put up the record for viewing and ask if it should be imported.
- */
-/* Main import file selection window */
 static gboolean cb_import_record_ask_destroy(GtkWidget *widget)
 {
    import_record_ask_window = NULL;
@@ -363,6 +249,10 @@ cb_import_record_ask_quit(GtkWidget *widget,
    gtk_widget_destroy(import_record_ask_window);
 }
 
+/*
+ * Import record display and choice.
+ * Put up the record for viewing and ask if it should be imported.
+ */
 int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
 		      char *text, struct CategoryAppInfo *cai,
 		      char *old_cat_name,
@@ -382,15 +272,13 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
    long char_set;
 
    /* There is no support yet for changing the suggested category */
-   /* Like a menu for selecting cat to be imported into, etc. */
+   /* A menu for selecting cat to be imported into is desirable */
    *new_cat_num = suggested_cat_num;
 
    glob_import_record_ask_button_pressed = DIALOG_SAID_IMPORT_QUIT;
 
    gdk_window_get_size(main_window->window, &pw, &ph);
-
    gdk_window_get_root_origin(main_window->window, &px, &py);
-
    pw = gtk_paned_get_position(GTK_PANED(pane));
    px+=40;
 
@@ -400,11 +288,9 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
 					     NULL);
    gtk_window_set_default_size(GTK_WINDOW(import_record_ask_window), pw, ph);
    gtk_widget_set_uposition(GTK_WIDGET(import_record_ask_window), px, py);
-
+   gtk_container_set_border_width(GTK_CONTAINER(import_record_ask_window), 5);
    gtk_window_set_modal(GTK_WINDOW(import_record_ask_window), TRUE);
    gtk_window_set_transient_for(GTK_WINDOW(import_record_ask_window), GTK_WINDOW(main_window));
-
-   gtk_container_set_border_width(GTK_CONTAINER(import_record_ask_window), 5);
 
    gtk_signal_connect(GTK_OBJECT(import_record_ask_window), "destroy",
                       GTK_SIGNAL_FUNC(cb_import_record_ask_destroy),
@@ -423,7 +309,7 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
    gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
    gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
 
-
+   /* Category */
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    l = charset_p2newj(old_cat_name, 17, char_set);
    g_snprintf(str, sizeof(str), _("Category before import was: [%s]"), l);
@@ -440,8 +326,7 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
    gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
    gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
 
-
-   /* Make a text window with scrollbar */
+   /* Text window with scrollbar to display record */
    temp_hbox = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox), temp_hbox, TRUE, TRUE, 0);
 
@@ -462,7 +347,6 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
       gtk_text_buffer_set_text(GTK_TEXT_BUFFER(textw_buffer), text, -1);
    }
 
-   /* Box for buttons  */
    temp_hbox = gtk_hbutton_box_new();
    gtk_button_box_set_spacing(GTK_BUTTON_BOX(temp_hbox), 6);
    gtk_container_set_border_width(GTK_CONTAINER(temp_hbox), 6);
@@ -502,3 +386,111 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
 
    return glob_import_record_ask_button_pressed;
 }
+
+void import_gui(GtkWidget *main_window, GtkWidget *main_pane,
+		char *type_desc[], int type_int[],
+		int (*import_callback)(GtkWidget *parent_window,
+	        const char *file_path, int type))
+{
+   GtkWidget *button;
+   GtkWidget *vbox, *hbox;
+   GtkWidget *label;
+   char title[256];
+   const char *svalue;
+   GSList *group;
+   int i;
+   int pw, ph, px, py;
+
+   if (filew) return;
+   
+   line_selected = -1;
+
+   gdk_window_get_size(main_window->window, &pw, &ph);
+   gdk_window_get_root_origin(main_window->window, &px, &py);
+   pw = gtk_paned_get_position(GTK_PANED(main_pane));
+   px+=40;
+
+   g_snprintf(title, sizeof(title), "%s %s", PN, _("Import"));
+
+   filew = gtk_widget_new(GTK_TYPE_FILE_SELECTION,
+			  "type", GTK_WINDOW_TOPLEVEL,
+			  "title", title,
+			  NULL);
+   gtk_window_set_default_size(GTK_WINDOW(filew), pw, ph);
+   gtk_widget_set_uposition(filew, px, py);
+   gtk_window_set_modal(GTK_WINDOW(filew), TRUE);
+   gtk_window_set_transient_for(GTK_WINDOW(filew), GTK_WINDOW(main_window));
+
+   get_pref(PREF_MEMO_IMPORT_PATH, NULL, &svalue);
+   if (svalue && svalue[0]) {
+      gtk_file_selection_set_filename(GTK_FILE_SELECTION(filew), svalue);
+   }
+
+   glob_import_callback=import_callback;
+
+   /* Set the type to match the first button, which will be set */
+   glob_type_selected=type_int[0];
+
+   gtk_widget_hide((GTK_FILE_SELECTION(filew)->cancel_button));
+   gtk_signal_connect(GTK_OBJECT(filew), "destroy",
+                      GTK_SIGNAL_FUNC(cb_destroy), filew);
+
+   /* Even though I hide the ok button I still want to connect its signal */
+   /* because a double click on the file name also calls this callback */
+   gtk_widget_hide(GTK_WIDGET(GTK_FILE_SELECTION(filew)->ok_button));
+   gtk_signal_connect(GTK_OBJECT(GTK_FILE_SELECTION(filew)->ok_button),
+		      "clicked", GTK_SIGNAL_FUNC(cb_import), filew);
+
+   label = gtk_label_new(_("To change to a hidden directory type it below and hit TAB"));
+   gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->main_vbox),
+		      label, FALSE, FALSE, 0);
+   gtk_widget_show(label);
+
+
+   /* Quit/Import buttons */
+   button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
+   gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->ok_button->parent),
+		      button, TRUE, TRUE, 0);
+   gtk_signal_connect(GTK_OBJECT(button),
+		      "clicked", GTK_SIGNAL_FUNC(cb_quit), filew);
+   gtk_widget_show(button);
+
+   button = gtk_button_new_with_label(_("Import"));
+   gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->ok_button->parent),
+		      button, TRUE, TRUE, 0);
+   gtk_signal_connect(GTK_OBJECT(button),
+		      "clicked", GTK_SIGNAL_FUNC(cb_import), filew);
+   gtk_widget_show(button);
+
+   /* File Type radio buttons */
+   vbox=gtk_vbox_new(FALSE, 0);
+   hbox=gtk_hbox_new(FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->action_area),
+		      vbox, TRUE, TRUE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 0);
+   label = gtk_label_new(_("Import File Type"));
+   gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
+
+   group = NULL;
+   for (i=0; i<MAX_IMPORT_TYPES; i++) {
+      if (type_desc[i]==NULL) break;
+      radio_types[i] = gtk_radio_button_new_with_label(group, _(type_desc[i]));
+      radio_file_types[i] = type_int[i];
+      group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_types[i]));
+      gtk_box_pack_start(GTK_BOX(vbox), radio_types[i], TRUE, TRUE, 0);
+      gtk_signal_connect(GTK_OBJECT(radio_types[i]), "clicked",
+			 GTK_SIGNAL_FUNC(cb_type), GINT_TO_POINTER(type_int[i]));
+   }
+   radio_types[i]=NULL;
+   radio_file_types[i]=0;
+
+   /* This callback is for a file guess algorithm and to pre-push
+    * the type buttons */
+   gtk_signal_connect(GTK_OBJECT(GTK_FILE_SELECTION(filew)->file_list),
+		      "cursor_changed", GTK_SIGNAL_FUNC(cb_import_select_row), NULL);
+
+   gtk_widget_show_all(vbox);
+
+   gtk_widget_show(filew);
+}
+

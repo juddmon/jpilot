@@ -1,4 +1,4 @@
-/* $Id: restore_gui.c,v 1.25 2008/06/03 01:02:53 rikster5 Exp $ */
+/* $Id: restore_gui.c,v 1.26 2008/06/19 04:12:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * restore_gui.c
@@ -20,35 +20,37 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  ******************************************************************************/
 
+/********************************* Includes ***********************************/
 #include "config.h"
-#include <gtk/gtk.h>
-#include <sys/types.h>
-#include <dirent.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <dirent.h>
+#include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <stdlib.h>
+#include <gtk/gtk.h>
 
+#include "i18n.h"
 #include "utils.h"
 #include "prefs.h"
 #include "sync.h"
 #include "log.h"
-#include "i18n.h"
 
-
+/******************************* Global vars **********************************/
 static GtkWidget *user_entry;
 static GtkWidget *user_id_entry;
 static GtkWidget *restore_clist;
 
+/****************************** Main Code *************************************/
 static gboolean cb_restore_destroy(GtkWidget *widget)
 {
    gtk_main_quit();
+
    return FALSE;
 }
 
-static void
-cb_restore_ok(GtkWidget *widget, gpointer data)
+static void cb_restore_ok(GtkWidget *widget, gpointer data)
 {
    GList *list, *temp_list;
    char *text;
@@ -62,7 +64,7 @@ cb_restore_ok(GtkWidget *widget, gpointer data)
    get_home_file_name("", home_dir, sizeof(home_dir));
 
    /* Remove anything that was supposed to be installed */
-   g_snprintf(file, sizeof(file), "%s/"EPN"_to_install", home_dir);
+   g_snprintf(file, sizeof(file), "%s/"EPN".install", home_dir);
    unlink(file);
 
    jp_logf(JP_LOG_WARN, "%s%s%s\n", "-----===== ", _("Restore Handheld"), " ======-----");
@@ -70,26 +72,25 @@ cb_restore_ok(GtkWidget *widget, gpointer data)
       gtk_clist_get_text(GTK_CLIST(restore_clist), GPOINTER_TO_INT(temp_list->data), 0, &text);
       jp_logf(JP_LOG_DEBUG, "row %ld [%s]\n", (long) temp_list->data, text);
       /* Look for the file in the JPILOT_HOME and JPILOT_HOME/backup.
-       * Restore the newest modified date one, or the only one.
-       */
+       * Restore the newest modified date one, or the only one.  */
       g_snprintf(file, sizeof(file), "%s/%s", home_dir, text);
       g_snprintf(backup_file, sizeof(backup_file), "%s/backup/%s", home_dir, text);
-      r1 = stat(file, &buf);
-      r2 = stat(backup_file, &backup_buf);
-      if ((!r1) && (!r2)) {
+      r1 = ! stat(file, &buf);
+      r2 = ! stat(backup_file, &backup_buf);
+      if (r1 && r2) {
 	 /* found in JPILOT_HOME and JPILOT_HOME/backup */
 	 if (buf.st_mtime > backup_buf.st_mtime) {
-	    jp_logf(JP_LOG_DEBUG, "Restore: home and backup using home file %s\n", text);
+	    jp_logf(JP_LOG_DEBUG, "Restore: found in home and backup, using home file %s\n", text);
 	    install_append_line(file);
 	 } else {
-	    jp_logf(JP_LOG_DEBUG, "Restore: home and backup using home/backup file %s\n", text);
+	    jp_logf(JP_LOG_DEBUG, "Restore: found in home and backup, using home/backup file %s\n", text);
 	    install_append_line(backup_file);
 	 }
-      } else if (!r1) {
+      } else if (r1) {
 	 /* only found in JPILOT_HOME */
 	 install_append_line(file);
 	 jp_logf(JP_LOG_DEBUG, "Restore: using home file %s\n", text);
-      } else if (!r2) {
+      } else if (r2) {
 	 /* only found in JPILOT_HOME/backup */
 	 jp_logf(JP_LOG_DEBUG, "Restore: using home/backup file %s\n", text);
 	 install_append_line(backup_file);
@@ -101,9 +102,7 @@ cb_restore_ok(GtkWidget *widget, gpointer data)
    gtk_widget_destroy(data);
 }
 
-static void
-cb_restore_quit(GtkWidget *widget,
-	       gpointer   data)
+static void cb_restore_quit(GtkWidget *widget, gpointer data)
 {
    gtk_widget_destroy(data);
 }
@@ -192,11 +191,9 @@ static int populate_clist_sub(char *path, int check_for_dups, int check_exts)
    return num;
 }
 
-
 static int populate_clist()
 {
    char path[FILENAME_MAX];
-   int i;
 
    get_home_file_name("backup", path, sizeof(path));
    cleanup_path(path);
@@ -206,13 +203,10 @@ static int populate_clist()
    cleanup_path(path);
    populate_clist_sub(path, 1, 1);
 
-   for (i=0; i<GTK_CLIST(restore_clist)->rows; i++) {
-      clist_select_row(GTK_CLIST(restore_clist), i, 0);
-   }
+   gtk_clist_select_all(GTK_CLIST(restore_clist));
 
    return EXIT_SUCCESS;
 }
-
 
 int restore_gui(GtkWidget *main_window, int w, int h, int x, int y)
 {
@@ -235,11 +229,8 @@ int restore_gui(GtkWidget *main_window, int w, int h, int x, int y)
 
    gtk_window_set_default_size(GTK_WINDOW(restore_window), w, h);
    gtk_widget_set_uposition(restore_window, x, y);
-
    gtk_container_set_border_width(GTK_CONTAINER(restore_window), 5);
-
    gtk_window_set_default_size(GTK_WINDOW(restore_window), w, h);
-
    gtk_window_set_modal(GTK_WINDOW(restore_window), TRUE);
    gtk_window_set_transient_for(GTK_WINDOW(restore_window), GTK_WINDOW(main_window));
 
@@ -266,7 +257,7 @@ int restore_gui(GtkWidget *main_window, int w, int h, int x, int y)
    gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
    gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
 
-   /* Put the memo list window up */
+   /* List of files to restore */
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 0);
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
@@ -274,7 +265,6 @@ int restore_gui(GtkWidget *main_window, int w, int h, int x, int y)
    gtk_box_pack_start(GTK_BOX(vbox), scrolled_window, TRUE, TRUE, 0);
 
    restore_clist = gtk_clist_new(1);
-
    gtk_clist_set_shadow_type(GTK_CLIST(restore_clist), SHADOW);
    gtk_clist_set_selection_mode(GTK_CLIST(restore_clist), GTK_SELECTION_EXTENDED);
 
@@ -293,7 +283,6 @@ int restore_gui(GtkWidget *main_window, int w, int h, int x, int y)
    }
    gtk_box_pack_start(GTK_BOX(hbox), user_entry, TRUE, TRUE, 0);
 
-
    /* User ID entry */
    hbox = gtk_hbox_new(FALSE, 5);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
@@ -306,7 +295,7 @@ int restore_gui(GtkWidget *main_window, int w, int h, int x, int y)
    gtk_entry_set_text(GTK_ENTRY(user_id_entry), str_int);
    gtk_box_pack_start(GTK_BOX(hbox), user_id_entry, TRUE, TRUE, 0);
 
-
+   /* Cancel/OK buttons */
    hbox = gtk_hbutton_box_new();
    gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
    gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox), GTK_BUTTONBOX_END);
@@ -331,3 +320,4 @@ int restore_gui(GtkWidget *main_window, int w, int h, int x, int y)
 
    return EXIT_SUCCESS;
 }
+

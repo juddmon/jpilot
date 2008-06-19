@@ -1,4 +1,4 @@
-/* $Id: prefs.h,v 1.47 2008/05/01 22:29:14 rikster5 Exp $ */
+/* $Id: prefs.h,v 1.48 2008/06/19 04:12:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs.h
@@ -125,32 +125,37 @@
 #define PREF_ADDR_SORT_ORDER 93
 #define PREF_ADDR_NAME_COL_SZ 94
 
+/* Number of preferences in use */
 #define NUM_PREFS 95
+/* Maximum number of preferences */
+#define MAX_NUM_PREFS 250
+
+/* New code should use MAX_PREF_LEN for clarity over MAX_PREF_VALUE */
+#define MAX_PREF_LEN   200
+#define MAX_PREF_VALUE 200
 
 #define MAX_PREF_NUM_BACKUPS 99
 
-#define CHAR_SET_LATIN1   0 /* English, European, Latin based languages */
+#define CHAR_SET_LATIN1   0  /* English, European, Latin based languages */
 #define CHAR_SET_JAPANESE 1
-#define CHAR_SET_1250     2 /* Czech, Polish (Unix: ISO-8859-2) */
-#define CHAR_SET_1251     3 /* Russian; palm koi8-r, host win1251 */
-#define CHAR_SET_1251_B   4 /* Russian; palm win1251, host koi8-r */
+#define CHAR_SET_1250     2  /* Czech, Polish (Unix: ISO-8859-2) */
+#define CHAR_SET_1251     3  /* Russian; palm koi8-r, host win1251 */
+#define CHAR_SET_1251_B   4  /* Russian; palm win1251, host koi8-r */
 #define CHAR_SET_TRADITIONAL_CHINESE  5 /* Taiwan Chinese */
-#define CHAR_SET_KOREAN   6 /* Korean Hangul */
+#define CHAR_SET_KOREAN   6  /* Korean Hangul */
 #define CHAR_SET_UTF      7
-#define CHAR_SET_1250_UTF  7 /* Czech, Polish (latin2, CP1250) */
-#define CHAR_SET_1252_UTF  8 /* Latin European (latin1, CP1252) */
-#define CHAR_SET_1253_UTF  9 /* Modern Greek (CP1253) */
+#define CHAR_SET_1250_UTF 7  /* Czech, Polish (latin2, CP1250) */
+#define CHAR_SET_1252_UTF 8  /* Latin European (latin1, CP1252) */
+#define CHAR_SET_1253_UTF 9  /* Modern Greek (CP1253) */
 #define CHAR_SET_ISO8859_2_UTF 10 /* Czech, Polish (latin2, ISO8859-2) */
 #define CHAR_SET_KOI8_R_UTF 11 /* Cyrillic (KOI8-R) */
 #define CHAR_SET_1251_UTF 12 /* Cyrillic (CP1251) */
-#define CHAR_SET_GBK_UTF 13 /* Chinese (GB2312) */
+#define CHAR_SET_GBK_UTF  13 /* Chinese (GB2312) */
 #define CHAR_SET_SJIS_UTF 14 /* Japanese (SJIS) */
 #define CHAR_SET_1255_UTF 15 /* Hebrew (CP1255) */
 #define CHAR_SET_BIG5_UTF 16 /* Chinese (BIG-5) */
-#define CHAR_SET_949_UTF 17 /* Korean (CP949) */
-#define NUM_CHAR_SETS    18
-
-#define MAX_PREF_VALUE 200
+#define CHAR_SET_949_UTF  17 /* Korean (CP949) */
+#define NUM_CHAR_SETS     18
 
 void pref_init();
 int pref_read_rc_file();

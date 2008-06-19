@@ -1,4 +1,4 @@
-/* $Id: otherconv.c,v 1.30 2008/06/03 01:02:53 rikster5 Exp $ */
+/* $Id: otherconv.c,v 1.31 2008/06/19 04:12:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * otherconv.c
@@ -27,24 +27,19 @@
  * Unix : UTF-8
  */
 
+/********************************* Includes ***********************************/
 #include "config.h"
-#include <string.h>
-
-#include <stdio.h>
-#include <errno.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <errno.h>
 #include <glib.h>
-/* To speed up compilation use these instead of glib.h
-#include <glib/gmacros.h>
-#include <glib/gconvert.h>
-*/
-#include "prefs.h"
+
 #include "otherconv.h"
+#include "prefs.h"
 #include "log.h"
 
-static GIConv glob_topda = NULL;
-static GIConv glob_frompda = NULL;
-
+/********************************* Constants **********************************/
 #define HOST_CS "UTF-8"
 
 /* You can't do #ifndef __FUNCTION__ */
@@ -52,7 +47,15 @@ static GIConv glob_frompda = NULL;
 #define __FUNCTION__ ""
 #endif
 
+#define OC_FREE_ICONV(conv) oc_free_iconv(__FUNCTION__, conv,#conv)
 
+/* #define OTHERCONV_DEBUG */
+
+/******************************* Global vars **********************************/
+static GIConv glob_topda = NULL;
+static GIConv glob_frompda = NULL;
+
+/****************************** Main Code *************************************/
 /*
  * strnlen is not ANSI.
  * To avoid messing with conflicting declarations, I just implement my own version.
@@ -74,8 +77,6 @@ void oc_free_iconv(const char *funcname, GIConv conv, char *convname) {
     }
   }
 }
-
-#define OC_FREE_ICONV(conv) oc_free_iconv(__FUNCTION__, conv,#conv)
 
 /*
  * Convert char_set integer code to iconv charset text string
@@ -260,7 +261,7 @@ void UTF_to_other(char *const buf, int buf_len)
       buf_out_ptr = malloc(buf_len);
       if (NULL == buf_out_ptr)
       {
-	 jp_logf(JP_LOG_WARN, "no more memory");
+	 jp_logf(JP_LOG_WARN, "UTF_to_other: %s\n", "Out of memory");
 	 return;
       }
       outptr = buf_out_ptr;
@@ -299,5 +300,4 @@ void UTF_to_other(char *const buf, int buf_len)
   jp_logf(JP_LOG_DEBUG, "%s:%s converted to [%s]\n", __FILE__, __FUNCTION__, buf);
 #endif
 }
-
 

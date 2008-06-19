@@ -1,4 +1,4 @@
-/* $Id: russian.c,v 1.5 2004/11/29 06:24:46 rikster5 Exp $ */
+/* $Id: russian.c,v 1.6 2008/06/19 04:12:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * russian.c
@@ -21,15 +21,17 @@
  ******************************************************************************/
 
 /*
-	Convert Palm  <-> Unix:
-		Palm : koi8
-		Unix : Win1251
+	Convert charsets: Palm  <-> Unix
+		          Palm   :  koi8
+		          Unix   :  Win1251
 */
 
+/********************************* Includes ***********************************/
 #include "config.h"
-#include <stdio.h>
+#include <stdlib.h>
 #include "russian.h"
 
+/********************************* Constants **********************************/
 const unsigned char k2w[256] = {
    0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,
    0x08,0x09,0x0a,0x0b,0x0c,0x0d,0x0e,0x0f,
@@ -100,6 +102,7 @@ const unsigned char w2k[256] = {
    0xdc,0xdb,0xc7,0xd8,0xdd,0xd9,0xd7,0xda
 };
 
+/****************************** Main Code *************************************/
 void win1251_to_koi8(char *const buf, int buf_len)
 {
    unsigned char *p;
@@ -112,7 +115,6 @@ void win1251_to_koi8(char *const buf, int buf_len)
    }
 }
 
-
 void koi8_to_win1251(char *const buf, int buf_len)
 {
    unsigned char *p;
@@ -124,3 +126,4 @@ void koi8_to_win1251(char *const buf, int buf_len)
         *p = k2w[(*p)];
    }
 }
+

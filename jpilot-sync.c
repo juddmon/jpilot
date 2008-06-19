@@ -1,4 +1,4 @@
-/* $Id: jpilot-sync.c,v 1.27 2008/06/03 01:02:53 rikster5 Exp $ */
+/* $Id: jpilot-sync.c,v 1.28 2008/06/19 04:12:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot-sync.c
@@ -20,22 +20,25 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  ******************************************************************************/
 
+/********************************* Includes ***********************************/
 #include "config.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <signal.h>
 #ifdef HAVE_LOCALE_H
-#include <locale.h>
+#  include <locale.h>
 #endif
+
+#include "i18n.h"
 #include "utils.h"
 #include "log.h"
 #include "prefs.h"
 #include "sync.h"
 #include "plugins.h"
-#include "i18n.h"
 #include "otherconv.h"
 
+/******************************* Global vars **********************************/
 /* this is a hack for now until I clean up the code */
 int *glob_date_label;
 int pipe_to_parent, pipe_from_parent;
@@ -48,30 +51,51 @@ unsigned char skip_plugins;
 
 /* used only in GUI mode */
 pid_t jpilot_master_pid = -1;
-void output_to_pane(const char *str)
-{
-}
 
+/****************************** Main Code *************************************/
 /* hack */
-void cb_app_button(GtkWidget *widget, gpointer data)
-{
-   return;
-}
+void output_to_pane(const char *str) { return; }
+
+void cb_app_button(GtkWidget *widget, gpointer data) { return; }
 
 void fprint_jps_usage_string(FILE *out)
 {
-   fprintf(out, "%s-sync [ -v || -h || [-d] [-P] [-b] [-l] [-p] port]\n", EPN);
+   fprintf(out, "%s-sync [ -v || -h || [-d] [-P] [-b] [-l] [-p port] ]\n", EPN);
    fprintf(out, "%s", _(" J-Pilot preferences are read to get port, rate, number of backups, etc.\n"));
-   fprintf(out, "%s", _(" -v = version\n"));
-   fprintf(out, "%s", _(" -h = help\n"));
-   fprintf(out, "%s", _(" -d = run in debug mode\n"));
-   fprintf(out, "%s", _(" -P = do not load plugins.\n"));
-   fprintf(out, "%s", _(" -b = Do a sync and then a backup, otherwise just do a sync.\n"));
-   fprintf(out, "%s", _(" -l = loop, otherwise sync once and exit.\n"));
-   fprintf(out, "%s", _(" -p {port} = Use this port to sync with instead of getting preferences.\n"));
+   fprintf(out, "%s", _(" -v displays version and compile options and exits.\n"));
+   fprintf(out, "%s", _(" -h displays help and exits.\n"));
+   fprintf(out, "%s", _(" -d displays debug info to stdout.\n"));
+   fprintf(out, "%s", _(" -P skips loading plugins.\n"));
+   fprintf(out, "%s", _(" -b sync and then do a backup\n"));
+   fprintf(out, "%s", _(" -l loop, otherwise sync once and exit.\n"));
+   fprintf(out, "%s", _(" -p {port} use this port to sync with instead of default.\n"));
 }
 
-static void sig_handler(int sig);
+static void sig_handler(int sig)
+{
+#ifdef ENABLE_PLUGINS
+   struct plugin_s *plugin;
+   GList *plugin_list, *temp_list;
+#endif
+
+   jp_logf(JP_LOG_DEBUG, "caught signal %d\n", sig);
+
+#ifdef ENABLE_PLUGINS
+   plugin_list = get_plugin_list();
+
+   for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
+      plugin = (struct plugin_s *)temp_list->data;
+      if (plugin) {
+	 if (plugin->plugin_exit_cleanup) {
+	    jp_logf(JP_LOG_DEBUG, "calling plugin_exit_cleanup\n");
+	    plugin->plugin_exit_cleanup();
+	 }
+      }
+   }
+#endif
+
+   exit(0);
+}
 
 int main(int argc, char *argv[])
 {
@@ -80,7 +104,7 @@ int main(int argc, char *argv[])
    int flags;
    int r, i;
    int loop;
-   char port[MAX_PREF_VALUE];
+   char port[MAX_PREF_LEN];
 #ifdef ENABLE_PLUGINS
    struct plugin_s *plugin;
    GList *plugin_list, *temp_list;
@@ -97,7 +121,6 @@ int main(int argc, char *argv[])
    textdomain(EPN);
 #endif
 
-
    done=cons_errors=0;
    port[0]='\0';
    glob_child_pid=0;
@@ -110,7 +133,7 @@ int main(int argc, char *argv[])
    pref_read_rc_file();
    if (otherconv_init()) {
       printf("Error: could not set encoding\n");
-      return EXIT_FAILURE;
+      exit(1);
    }
 
    pipe_from_parent=STDIN_FILENO;
@@ -125,8 +148,8 @@ int main(int argc, char *argv[])
 	 printf("\n%s\n", options);
 	 exit(0);
       }
-      if ( (!strncmp(argv[i], "-h", 2)) || (!strncasecmp(argv[1], "-?", 2))
-	  ) {
+      if ( (!strncmp(argv[i], "-h", 2)) || 
+           (!strncasecmp(argv[1], "-?", 2))) {
 	 fprint_jps_usage_string(stderr);
 	 exit(0);
       }
@@ -144,12 +167,12 @@ int main(int argc, char *argv[])
       if (!strncmp(argv[i], "-P", 2)) {
 	 skip_plugins = 1;
 	 flags |= SYNC_NO_PLUGINS;
-	 jp_logf(JP_LOG_INFO, "Not loading plugins.\n");
+	 jp_logf(JP_LOG_INFO, _("Not loading plugins.\n"));
       }
       if (!strncmp(argv[i], "-p", 2)) {
 	 i++;
 	 if (i<argc) {
-	    g_strlcpy(port, argv[i], MAX_PREF_VALUE);
+	    g_strlcpy(port, argv[i], MAX_PREF_LEN);
 	    /* Prefs are not saved, so this is not persistent */
 	    set_pref(PREF_PORT, 0, port, FALSE);
 	 }
@@ -167,10 +190,6 @@ int main(int argc, char *argv[])
    for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
       plugin = (struct plugin_s *)temp_list->data;
       jp_logf(JP_LOG_DEBUG, "plugin: [%s] was loaded\n", plugin->name);
-   }
-
-   for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
-      plugin = (struct plugin_s *)temp_list->data;
       if (plugin) {
 	 if (plugin->plugin_startup) {
 	    info.base_dir = strdup(BASE_DIR);
@@ -184,8 +203,8 @@ int main(int argc, char *argv[])
    }
 #endif
 
-   /* After plugin startups are called we want to make sure cleanups are
-      called */
+   /* After plugin startups are called we want to make sure that cleanups
+    * will be called */
    signal(SIGHUP, sig_handler);
    signal(SIGINT, sig_handler);
    signal(SIGTERM, sig_handler);
@@ -194,6 +213,7 @@ int main(int argc, char *argv[])
       r = setup_sync(flags);
       switch (r) {
        case 0:
+         /* sync successful */
 	 break;
        case SYNC_ERROR_BIND:
 	 printf("\n");
@@ -245,32 +265,6 @@ int main(int argc, char *argv[])
 
    otherconv_free();
 
-   /* r is the return value of setup_sync(), 0 if OK */
    return r;
 }
 
-static void sig_handler(int sig)
-{
-#ifdef ENABLE_PLUGINS
-   struct plugin_s *plugin;
-   GList *plugin_list, *temp_list;
-#endif
-
-   jp_logf(JP_LOG_DEBUG, "caught signal %d\n", sig);
-
-#ifdef ENABLE_PLUGINS
-   plugin_list = get_plugin_list();
-
-   for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
-      plugin = (struct plugin_s *)temp_list->data;
-      if (plugin) {
-	 if (plugin->plugin_exit_cleanup) {
-	    jp_logf(JP_LOG_DEBUG, "calling plugin_exit_cleanup\n");
-	    plugin->plugin_exit_cleanup();
-	 }
-      }
-   }
-#endif
-
-   exit(0);
-}

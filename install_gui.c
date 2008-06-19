@@ -1,4 +1,4 @@
-/* $Id: install_gui.c,v 1.25 2008/06/03 01:02:53 rikster5 Exp $ */
+/* $Id: install_gui.c,v 1.26 2008/06/19 04:12:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * install_gui.c
@@ -20,27 +20,29 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  ******************************************************************************/
 
+/********************************* Includes ***********************************/
 #include "config.h"
-#include "i18n.h"
 #include <gtk/gtk.h>
 #include <string.h>
 #include <stdlib.h>
+#include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+
+#include "i18n.h"
 #include "utils.h"
 #include "prefs.h"
 #include "log.h"
 
-
+/******************************* Global vars **********************************/
 static int update_clist();
 
 static GtkWidget *clist;
 static int line_selected;
 static GtkWidget *filew=NULL;
 
-/* */
-/*file must not be open elsewhere when this is called */
-/*the first line is 0 */
+/****************************** Main Code *************************************/
+/* the first line is 0 */
 int install_remove_line(int deleted_line)
 {
    FILE *in;
@@ -49,13 +51,13 @@ int install_remove_line(int deleted_line)
    char *Pc;
    int r, line_count;
 
-   in = jp_open_home_file(EPN"_to_install", "r");
+   in = jp_open_home_file(EPN".install", "r");
    if (!in) {
       jp_logf(JP_LOG_DEBUG, "failed opening install_file\n");
       return EXIT_FAILURE;
    }
 
-   out = jp_open_home_file(EPN"_to_install.tmp", "w");
+   out = jp_open_home_file(EPN".install.tmp", "w");
    if (!out) {
       fclose(in);
       jp_logf(JP_LOG_DEBUG, "failed opening install_file.tmp\n");
@@ -79,7 +81,7 @@ int install_remove_line(int deleted_line)
    fclose(in);
    fclose(out);
 
-   rename_file(EPN"_to_install.tmp", EPN"_to_install");
+   rename_file(EPN".install.tmp", EPN".install");
 
    return EXIT_SUCCESS;
 }
@@ -89,7 +91,7 @@ int install_append_line(const char *line)
    FILE *out;
    int r;
 
-   out = jp_open_home_file(EPN"_to_install", "a");
+   out = jp_open_home_file(EPN".install", "a");
    if (!out) {
       return EXIT_FAILURE;
    }
@@ -104,9 +106,6 @@ int install_append_line(const char *line)
    return EXIT_SUCCESS;
 }
 
-
-
-/*---------- */
 static gboolean cb_destroy(GtkWidget *widget)
 {
    filew = NULL;
@@ -116,12 +115,10 @@ static gboolean cb_destroy(GtkWidget *widget)
    return TRUE;
 }
 
-static void
-  cb_quit(GtkWidget *widget,
-	   gpointer   data)
+static void cb_quit(GtkWidget *widget, gpointer data)
 {
    const char *sel;
-   char dir[MAX_PREF_VALUE+2];
+   char dir[MAX_PREF_LEN+2];
    int i;
 
    jp_logf(JP_LOG_DEBUG, "Quit\n");
@@ -146,9 +143,7 @@ static void
    gtk_widget_destroy(data);
 }
 
-static void
-  cb_add(GtkWidget *widget,
-	 gpointer   data)
+static void cb_add(GtkWidget *widget, gpointer data)
 {
    const char *sel;
    struct stat statb;
@@ -157,7 +152,7 @@ static void
    sel = gtk_file_selection_get_filename(GTK_FILE_SELECTION(data));
    jp_logf(JP_LOG_DEBUG, "file selected [%s]\n", sel);
 
-   /*Check to see if its a regular file */
+   /* Check to see if its a regular file */
    if (stat(sel, &statb)) {
       jp_logf(JP_LOG_DEBUG, "File selected was not stat-able\n");
       return;
@@ -171,9 +166,7 @@ static void
    update_clist();
 }
 
-static void
-  cb_remove(GtkWidget *widget,
-	    gpointer   data)
+static void cb_remove(GtkWidget *widget, gpointer data)
 {
    if (line_selected < 0) {
       return;
@@ -183,8 +176,7 @@ static void
    update_clist();
 }
 
-static int
-  update_clist()
+static int update_clist()
 {
    FILE *in;
    char line[1002];
@@ -199,7 +191,7 @@ static int
 
    kept_line_selected = line_selected;
 
-   in = jp_open_home_file(EPN"_to_install", "r");
+   in = jp_open_home_file(EPN".install", "r");
    if (!in) {
       return EXIT_FAILURE;
    }
@@ -240,8 +232,8 @@ static void cb_clist_selection(GtkWidget      *clist,
 			       GdkEventButton *event,
 			       gpointer       data)
 {
-   /*printf("row = %d\n", row); */
    line_selected = row;
+
    return;
 }
 
@@ -252,7 +244,7 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y)
    GtkWidget *label;
    char temp[256];
    const char *svalue;
-   gchar *titles[2];
+   gchar *titles[] = {_("Files to be installed")};
 
    if (filew) {
       return EXIT_SUCCESS;
@@ -283,22 +275,18 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y)
    gtk_signal_connect(GTK_OBJECT(filew), "destroy",
                       GTK_SIGNAL_FUNC(cb_destroy), filew);
 
-   /*Even though I hide the ok button I still want to connect its signal */
-   /*because a double click on the file name also calls this callback */
+   /* Even though I hide the ok button I still want to connect its signal */
+   /* because a double click on the file name also calls this callback */
    gtk_widget_hide(GTK_WIDGET(GTK_FILE_SELECTION(filew)->ok_button));
    gtk_signal_connect(GTK_OBJECT(GTK_FILE_SELECTION(filew)->ok_button),
 		      "clicked", GTK_SIGNAL_FUNC(cb_add), filew);
 
-   /* i18n hack to have title correctly translated */
-   titles[0] = strdup(_("Files to be installed"));
-   titles[1]=NULL;
    clist = gtk_clist_new_with_titles(1, titles);
-   if (titles[0]) free(titles[0]);
    gtk_widget_set_usize(GTK_WIDGET(clist), 0, 166);
    gtk_clist_column_titles_passive(GTK_CLIST(clist));
    gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
 
-   /*Add the scrolled window */
+   /* Scrolled Window for file list */
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
@@ -312,13 +300,12 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y)
    gtk_widget_show(clist);
    gtk_widget_show(scrolled_window);
 
-
    label = gtk_label_new(_("To change to a hidden directory type it below and hit TAB"));
    gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->main_vbox),
 		      label, FALSE, FALSE, 0);
    gtk_widget_show(label);
 
-
+   /* Add/Remove/Quit buttons */
    button = gtk_button_new_from_stock(GTK_STOCK_ADD);
    gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->ok_button->parent),
 		      button, TRUE, TRUE, 0);
@@ -348,3 +335,4 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y)
 
    return EXIT_SUCCESS;
 }
+

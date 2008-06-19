@@ -1,4 +1,4 @@
-/* $Id: export_gui.c,v 1.23 2008/06/03 03:23:15 rikster5 Exp $ */
+/* $Id: export_gui.c,v 1.24 2008/06/19 04:12:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * export_gui.c
@@ -20,30 +20,38 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  ******************************************************************************/
 
+/********************************* Includes ***********************************/
 #include "config.h"
-#include "i18n.h"
 #include <sys/stat.h>
 #include <gtk/gtk.h>
 #include <stdlib.h>
 #include <string.h>
 #include <pi-appinfo.h>
+
+#include "i18n.h"
 #include "utils.h"
 #include "log.h"
 #include "prefs.h"
 #include "export.h"
 
+/********************************* Constants **********************************/
+#define NUM_CAT_ITEMS 16
 
 #define BROWSE_OK     1
 #define BROWSE_CANCEL 2
 
-#define NUM_CAT_ITEMS 16
-
+/******************************* Global vars **********************************/
 static GtkWidget *export_clist;
-int export_category;
+static int export_category;
 
 static int glob_export_browse_pressed;
 static int glob_pref_export;
 
+static GtkWidget *export_radio_type[10];
+static int glob_export_type;
+static GtkWidget *save_as_entry;
+
+/****************************** Prototypes ************************************/
 static void (*glob_cb_export_menu)(GtkWidget *clist, int category);
 void (*glob_cb_export_done)(GtkWidget *widget,
 			    const char *filename);
@@ -52,24 +60,23 @@ void (*glob_cb_export_ok)(GtkWidget *export_window,
 			  int type,
 			  const char *filename);
 
-/* Browse GUI */
+/****************************** Main Code *************************************/
+/* 
+ * Browse GUI
+ */
 static gboolean cb_export_browse_destroy(GtkWidget *widget)
 {
    gtk_main_quit();
    return FALSE;
 }
 
-static void
-cb_export_browse_cancel(GtkWidget *widget,
-			gpointer   data)
+static void cb_export_browse_cancel(GtkWidget *widget, gpointer data)
 {
    glob_export_browse_pressed=BROWSE_CANCEL;
    gtk_widget_destroy(data);
 }
 
-static void
-cb_export_browse_ok(GtkWidget *widget,
-		    gpointer   data)
+static void cb_export_browse_ok(GtkWidget *widget, gpointer data)
 {
    const char *sel;
 
@@ -85,7 +92,7 @@ int export_browse(GtkWidget *main_window, int pref_export)
 {
    GtkWidget *filesel;
    const char *svalue;
-   char dir[MAX_PREF_VALUE+2];
+   char dir[MAX_PREF_LEN+2];
    int i;
 
    glob_export_browse_pressed = 0;
@@ -137,11 +144,6 @@ int export_browse(GtkWidget *main_window, int pref_export)
 /*
  * Start Export code
  */
-
-static GtkWidget *save_as_entry;
-static GtkWidget *export_radio_type[10];
-static int glob_export_type;
-
 static gboolean cb_export_destroy(GtkWidget *widget)
 {
    const char *filename;
@@ -155,8 +157,7 @@ static gboolean cb_export_destroy(GtkWidget *widget)
    return FALSE;
 }
 
-static void cb_ok(GtkWidget *widget,
-		  gpointer   data)
+static void cb_ok(GtkWidget *widget, gpointer data)
 {
    const char *filename;
 
@@ -169,9 +170,7 @@ static void cb_ok(GtkWidget *widget,
    gtk_widget_destroy(data);
 }
 
-static void
-cb_export_browse(GtkWidget *widget,
-		 gpointer   data)
+static void cb_export_browse(GtkWidget *widget, gpointer data)
 {
    int r;
    const char *svalue;
@@ -185,16 +184,12 @@ cb_export_browse(GtkWidget *widget,
    }
 }
 
-static void
-cb_export_quit(GtkWidget *widget,
-	       gpointer   data)
+static void cb_export_quit(GtkWidget *widget, gpointer data)
 {
    gtk_widget_destroy(data);
 }
 
-static void
-cb_export_type(GtkWidget *widget,
-	       gpointer   data)
+static void cb_export_type(GtkWidget *widget, gpointer data)
 {
    glob_export_type=GPOINTER_TO_INT(data);
 }
@@ -302,8 +297,7 @@ int export_gui(GtkWidget *main_window,
 
    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(export_clist));
 
-
-   /* Export Type Buttons */
+   /* Export Type buttons */
    group = NULL;
    for (i=0; i<100; i++) {
       if (type_text[i]==NULL) break;
@@ -330,11 +324,14 @@ int export_gui(GtkWidget *main_window,
       gtk_entry_set_text(GTK_ENTRY(save_as_entry), svalue);
    }
    gtk_box_pack_start(GTK_BOX(hbox), save_as_entry, TRUE, TRUE, 0);
+
+   /* Browse button */
    button = gtk_button_new_with_label(_("Browse"));
    gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 0);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_export_browse), export_window);
 
+   /* Cancel/OK buttons */
    hbox = gtk_hbutton_box_new();
    gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
    gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox), GTK_BUTTONBOX_END);
@@ -359,11 +356,8 @@ int export_gui(GtkWidget *main_window,
 
    gtk_clist_select_all(GTK_CLIST(export_clist));
 
-
    gtk_main();
 
    return EXIT_SUCCESS;
 }
-/*
- * End Export code
- */
+

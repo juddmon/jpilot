@@ -1,4 +1,4 @@
-/* $Id: search_gui.c,v 1.46 2008/06/03 01:02:53 rikster5 Exp $ */
+/* $Id: search_gui.c,v 1.47 2008/06/19 04:12:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * search_gui.c
@@ -20,13 +20,19 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  ******************************************************************************/
 
+/********************************* Includes ***********************************/
 #include "config.h"
-#include "i18n.h"
+#include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
-#include <string.h>
-#include <ctype.h>
-#include <stdlib.h>
+#include <pi-datebook.h>
+#include <pi-address.h>
+#include <pi-todo.h>
+#include <pi-memo.h>
+
+#include "i18n.h"
 #include "utils.h"
 #include "prefs.h"
 #include "log.h"
@@ -34,17 +40,14 @@
 #include "address.h"
 #include "todo.h"
 #include "memo.h"
-#include <pi-datebook.h>
-#include <pi-address.h>
-#include <pi-todo.h>
-#include <pi-memo.h>
 #ifdef ENABLE_PLUGINS
-#include "plugins.h"
+#  include "plugins.h"
 #endif
 
-
+/********************************* Constants **********************************/
 #define SEARCH_MAX_COLUMN_LEN 80
 
+/******************************* Global vars **********************************/
 static struct search_record *search_rl = NULL;
 static GtkWidget *case_sense_checkbox;
 static GtkWidget *window = NULL;
@@ -53,9 +56,6 @@ static GtkAccelGroup *accel_group = NULL;
 
 static int clist_row_selected;
 
-static void cb_clist_selection(GtkWidget *clist, gint row, gint column,
-      GdkEventButton *event, gpointer data);
-
 /*
  * This keeps track of whether we are using addresses, or contacts
  * 0 is addresses, 1 is contacts
@@ -63,6 +63,11 @@ static void cb_clist_selection(GtkWidget *clist, gint row, gint column,
  */
 static long address_version=0;
 
+/****************************** Prototypes ************************************/
+static void cb_clist_selection(GtkWidget *clist, gint row, gint column,
+      GdkEventButton *event, gpointer data);
+
+/****************************** Main Code *************************************/
 int datebook_search_sort_compare(const void *v1, const void *v2)
 {
    AppointmentList **al1, **al2;
@@ -87,14 +92,15 @@ static int search_datebook(const char *needle, GtkWidget *clist)
    AppointmentList *a_list;
    AppointmentList *temp_al;
    int found, count;
+   int case_sense;
    char str[202];
    char str2[SEARCH_MAX_COLUMN_LEN+2];
    char date_str[52];
    char datef[52];
    const char *svalue1;
    struct search_record *new_sr;
-
-   /*Search Appointments */
+  
+   /* Search Appointments */
    a_list = NULL;
 
    get_days_appointments2(&a_list, NULL, 2, 2, 2, NULL);
@@ -107,21 +113,20 @@ static int search_datebook(const char *needle, GtkWidget *clist)
    datebook_sort(&a_list, datebook_search_sort_compare);
 
    count = 0;
+   case_sense = GTK_TOGGLE_BUTTON(case_sense_checkbox)->active;
 
    for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
       found = 0;
       if ( (temp_al->mappt.appt.description) &&
 	   (temp_al->mappt.appt.description[0]) ) {
-	 if ( jp_strstr(temp_al->mappt.appt.description, needle,
-	      GTK_TOGGLE_BUTTON(case_sense_checkbox)->active) ) {
+	 if (jp_strstr(temp_al->mappt.appt.description, needle, case_sense)) {
 	    found = 1;
 	 }
       }
       if ( !found &&
            (temp_al->mappt.appt.note) &&
 	   (temp_al->mappt.appt.note[0]) ) {
-	 if ( jp_strstr(temp_al->mappt.appt.note, needle,
-	      GTK_TOGGLE_BUTTON(case_sense_checkbox)->active) ) {
+	 if (jp_strstr(temp_al->mappt.appt.note, needle, case_sense )) {
 	    found = 2;
 	 }
       }
@@ -129,17 +134,7 @@ static int search_datebook(const char *needle, GtkWidget *clist)
 	 gtk_clist_prepend(GTK_CLIST(clist), empty_line);
 	 gtk_clist_set_text(GTK_CLIST(clist), 0, 0, _("datebook"));
 
-	 /*Add to the search list */
-	 new_sr = malloc(sizeof(struct search_record));
-	 new_sr->app_type = DATEBOOK;
-	 new_sr->plugin_flag = 0;
-	 new_sr->unique_id = temp_al->mappt.unique_id;
-	 new_sr->next = search_rl;
-	 search_rl = new_sr;
-
-	 gtk_clist_set_row_data(GTK_CLIST(clist), 0, new_sr);
-
-	 /*get the date */
+	 /* get the date */
 	 get_pref(PREF_SHORTDATE, NULL, &svalue1);
 	 if (svalue1 == NULL) {
 	    strcpy(datef, "%x");
@@ -153,16 +148,23 @@ static int search_datebook(const char *needle, GtkWidget *clist)
 	    g_snprintf(str, sizeof(str), "%s\t%s",
 		       date_str,
 		       temp_al->mappt.appt.description);
-	    lstrncpy_remove_cr_lfs(str2, str, SEARCH_MAX_COLUMN_LEN);
-	    gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str2);
-	 }
-	 if (found == 2) {
+         } else {
 	    g_snprintf(str, sizeof(str), "%s\t%s",
 		       date_str,
 		       temp_al->mappt.appt.note);
-	    lstrncpy_remove_cr_lfs(str2, str, SEARCH_MAX_COLUMN_LEN);
-	    gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str2);
-	 }
+         }
+         lstrncpy_remove_cr_lfs(str2, str, SEARCH_MAX_COLUMN_LEN);
+         gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str2);
+
+	 /* Add to the search list */
+	 new_sr = malloc(sizeof(struct search_record));
+	 new_sr->app_type = DATEBOOK;
+	 new_sr->plugin_flag = 0;
+	 new_sr->unique_id = temp_al->mappt.unique_id;
+	 new_sr->next = search_rl;
+	 search_rl = new_sr;
+
+	 gtk_clist_set_row_data(GTK_CLIST(clist), 0, new_sr);
 
 	 count++;
       }
@@ -170,7 +172,7 @@ static int search_datebook(const char *needle, GtkWidget *clist)
 
    jp_logf(JP_LOG_DEBUG, "calling free_AppointmentList\n");
    free_AppointmentList(&a_list);
-   a_list = NULL;
+
    return count;
 }
 
@@ -183,6 +185,7 @@ static int search_address_or_contacts(const char *needle, GtkWidget *clist)
    ContactList *temp_cl;
    struct search_record *new_sr;
    int i, count;
+   int case_sense;
 
    get_pref(PREF_ADDRESS_VERSION, &address_version, NULL);
 
@@ -194,7 +197,6 @@ static int search_address_or_contacts(const char *needle, GtkWidget *clist)
       free_AddressList(&addr_list);
    } else {
       cont_list = NULL;
-      /* Need to get all records including private ones for the tooltips calculation */
       get_contacts2(&cont_list, SORT_ASCENDING, 2, 2, 1, CATEGORY_ALL);
    }
 
@@ -203,12 +205,12 @@ static int search_address_or_contacts(const char *needle, GtkWidget *clist)
    }
 
    count = 0;
+   case_sense = GTK_TOGGLE_BUTTON(case_sense_checkbox)->active;
 
    for (temp_cl = cont_list; temp_cl; temp_cl=temp_cl->next) {
       for (i=0; i<NUM_CONTACT_ENTRIES; i++) {
 	 if (temp_cl->mcont.cont.entry[i]) {
-	    if ( jp_strstr(temp_cl->mcont.cont.entry[i], needle,
-			       GTK_TOGGLE_BUTTON(case_sense_checkbox)->active) ) {
+	    if ( jp_strstr(temp_cl->mcont.cont.entry[i], needle, case_sense) ) {
 	       gtk_clist_prepend(GTK_CLIST(clist), empty_line);
 	       if (address_version==0) {
 		  gtk_clist_set_text(GTK_CLIST(clist), 0, 0, _("address"));
@@ -218,7 +220,7 @@ static int search_address_or_contacts(const char *needle, GtkWidget *clist)
 	       lstrncpy_remove_cr_lfs(str2, temp_cl->mcont.cont.entry[i], SEARCH_MAX_COLUMN_LEN);
 	       gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str2);
 
-	       /*Add to the search list */
+	       /* Add to the search list */
 	       new_sr = malloc(sizeof(struct search_record));
 	       new_sr->app_type = ADDRESS;
 	       new_sr->plugin_flag = 0;
@@ -227,6 +229,7 @@ static int search_address_or_contacts(const char *needle, GtkWidget *clist)
 	       search_rl = new_sr;
 
 	       gtk_clist_set_row_data(GTK_CLIST(clist), 0, new_sr);
+
 	       count++;
 
 	       break;
@@ -237,7 +240,7 @@ static int search_address_or_contacts(const char *needle, GtkWidget *clist)
 
    jp_logf(JP_LOG_DEBUG, "calling free_ContactList\n");
    free_ContactList(&cont_list);
-   cont_list = NULL;
+
    return count;
 }
 
@@ -249,8 +252,9 @@ static int search_todo(const char *needle, GtkWidget *clist)
    ToDoList *temp_todo;
    struct search_record *new_sr;
    int found, count;
+   int case_sense;
 
-   /*Search Appointments */
+   /* Search Appointments */
    todo_list = NULL;
 
    get_todos2(&todo_list, SORT_DESCENDING, 2, 2, 2, 1, CATEGORY_ALL);
@@ -260,29 +264,35 @@ static int search_todo(const char *needle, GtkWidget *clist)
    }
 
    count = 0;
+   case_sense = GTK_TOGGLE_BUTTON(case_sense_checkbox)->active;
 
    for (temp_todo = todo_list; temp_todo; temp_todo=temp_todo->next) {
       found = 0;
       if ( (temp_todo->mtodo.todo.description) &&
 	   (temp_todo->mtodo.todo.description[0]) ) {
-	 if ( jp_strstr(temp_todo->mtodo.todo.description, needle,
-			    GTK_TOGGLE_BUTTON(case_sense_checkbox)->active) ) {
+	 if ( jp_strstr(temp_todo->mtodo.todo.description, needle, case_sense) ) {
 	    found = 1;
 	 }
       }
       if ( !found &&
            (temp_todo->mtodo.todo.note) &&
 	   (temp_todo->mtodo.todo.note[0]) ) {
-	 if ( jp_strstr(temp_todo->mtodo.todo.note, needle,
-			    GTK_TOGGLE_BUTTON(case_sense_checkbox)->active) ) {
+	 if ( jp_strstr(temp_todo->mtodo.todo.note, needle, case_sense) ) {
 	    found = 2;
 	 }
       }
+
       if (found) {
 	 gtk_clist_prepend(GTK_CLIST(clist), empty_line);
 	 gtk_clist_set_text(GTK_CLIST(clist), 0, 0, _("todo"));
+	 if (found == 1) {
+	    lstrncpy_remove_cr_lfs(str2, temp_todo->mtodo.todo.description, SEARCH_MAX_COLUMN_LEN);
+         } else {
+	    lstrncpy_remove_cr_lfs(str2, temp_todo->mtodo.todo.note, SEARCH_MAX_COLUMN_LEN);
+         }
+         gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str2);
 
-	 /*Add to the search list */
+	 /* Add to the search list */
 	 new_sr = malloc(sizeof(struct search_record));
 	 new_sr->app_type = TODO;
 	 new_sr->plugin_flag = 0;
@@ -291,22 +301,14 @@ static int search_todo(const char *needle, GtkWidget *clist)
 	 search_rl = new_sr;
 
 	 gtk_clist_set_row_data(GTK_CLIST(clist), 0, new_sr);
-	 count++;
 
-	 if (found == 1) {
-	    lstrncpy_remove_cr_lfs(str2, temp_todo->mtodo.todo.description, SEARCH_MAX_COLUMN_LEN);
-	    gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str2);
-	 }
-	 if (found == 2) {
-	    lstrncpy_remove_cr_lfs(str2, temp_todo->mtodo.todo.note, SEARCH_MAX_COLUMN_LEN);
-	    gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str2);
-	 }
+	 count++;
       }
    }
 
    jp_logf(JP_LOG_DEBUG, "calling free_ToDoList\n");
    free_ToDoList(&todo_list);
-   todo_list = NULL;
+
    return count;
 }
 
@@ -318,8 +320,9 @@ static int search_memo(const char *needle, GtkWidget *clist)
    MemoList *temp_memo;
    struct search_record *new_sr;
    int count;
+   int case_sense;
 
-   /*Search Memos */
+   /* Search Memos */
    memo_list = NULL;
 
    get_memos2(&memo_list, SORT_DESCENDING, 2, 2, 2, CATEGORY_ALL);
@@ -329,10 +332,10 @@ static int search_memo(const char *needle, GtkWidget *clist)
    }
 
    count = 0;
+   case_sense = GTK_TOGGLE_BUTTON(case_sense_checkbox)->active;
 
    for (temp_memo = memo_list; temp_memo; temp_memo=temp_memo->next) {
-      if (jp_strstr(temp_memo->mmemo.memo.text, needle,
-		 GTK_TOGGLE_BUTTON(case_sense_checkbox)->active) ) {
+      if (jp_strstr(temp_memo->mmemo.memo.text, needle, case_sense) ) {
 	 gtk_clist_prepend(GTK_CLIST(clist), empty_line);
 	 gtk_clist_set_text(GTK_CLIST(clist), 0, 0, _("memo"));
 	 if (temp_memo->mmemo.memo.text) {
@@ -340,7 +343,7 @@ static int search_memo(const char *needle, GtkWidget *clist)
 	    gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str2);
 	 }
 
-	 /*Add to the search list */
+	 /* Add to the search list */
 	 new_sr = malloc(sizeof(struct search_record));
 	 new_sr->app_type = MEMO;
 	 new_sr->plugin_flag = 0;
@@ -349,13 +352,14 @@ static int search_memo(const char *needle, GtkWidget *clist)
 	 search_rl = new_sr;
 
 	 gtk_clist_set_row_data(GTK_CLIST(clist), 0, new_sr);
+
 	 count++;
       }
    }
 
    jp_logf(JP_LOG_DEBUG, "calling free_MemoList\n");
    free_MemoList(&memo_list);
-   memo_list = NULL;
+
    return count;
 }
 
@@ -397,7 +401,7 @@ static int search_plugins(const char *needle, const GtkWidget *clist)
 		     gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str2);
 		  }
 
-		  /*Add to the search list */
+		  /* Add to the search list */
 		  new_sr = malloc(sizeof(struct search_record));
 		  new_sr->app_type = plugin->number;
 		  new_sr->plugin_flag = 1;
@@ -406,6 +410,7 @@ static int search_plugins(const char *needle, const GtkWidget *clist)
 		  search_rl = new_sr;
 
 		  gtk_clist_set_row_data(GTK_CLIST(clist), 0, new_sr);
+
 		  count++;
 	       }
 	       free_search_result(&sr);
@@ -425,6 +430,7 @@ static gboolean cb_destroy(GtkWidget *widget)
       search_rl = NULL;
    }
    window = NULL;
+
    return FALSE;
 }
 
@@ -442,7 +448,6 @@ static void cb_entry(GtkWidget *widget, gpointer data)
 
    jp_logf(JP_LOG_DEBUG, "enter cb_entry\n");
 
-   clist = data;
    entry_text = gtk_entry_get_text(GTK_ENTRY(widget));
    if (!entry_text || !strlen(entry_text)) {
       return;
@@ -450,6 +455,7 @@ static void cb_entry(GtkWidget *widget, gpointer data)
 
    jp_logf(JP_LOG_DEBUG, "entry text = %s\n", entry_text);
 
+   clist = data;
    gtk_clist_clear(GTK_CLIST(clist));
 
    count += search_address_or_contacts(entry_text, clist);
@@ -521,7 +527,7 @@ static void cb_clist_selection(GtkWidget      *clist,
       break;
     default:
 #ifdef ENABLE_PLUGINS
-      /* We didn't find it so it must be a plugin */
+      /* Not one of the main 4 apps so it must be a plugin */
       jp_logf(JP_LOG_DEBUG, "choosing search result from plugin %d\n", sr->app_type);
       call_plugin_gui(sr->app_type, sr->unique_id);
 #endif
@@ -583,19 +589,22 @@ void cb_search_gui(GtkWidget *widget, gpointer data)
    gtk_container_set_border_width(GTK_CONTAINER(hbox), 6);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
+   /* Search label */
    label = gtk_label_new(_("Search for: "));
    gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
 
+   /* Search entry */
    entry = gtk_entry_new();
    gtk_box_pack_start(GTK_BOX(hbox), entry, TRUE, TRUE, 0);
    gtk_widget_grab_focus(GTK_WIDGET(entry));
 
+   /* Case Sensitive checkbox */
    case_sense_checkbox = gtk_check_button_new_with_label(_("Case Sensitive"));
    gtk_box_pack_start(GTK_BOX(hbox), case_sense_checkbox, FALSE, FALSE, 0);
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(case_sense_checkbox),
 				FALSE);
 
-   /*Put the scrolled window up */
+   /* Scrolled window for search results */
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 3);
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
@@ -626,7 +635,7 @@ void cb_search_gui(GtkWidget *widget, gpointer data)
    gtk_button_box_set_spacing(GTK_BUTTON_BOX(hbox), 6);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
-   /* Create a "Search" button */
+   /* Search button */
    button = gtk_button_new_from_stock(GTK_STOCK_FIND);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_search), clist);
@@ -636,7 +645,7 @@ void cb_search_gui(GtkWidget *widget, gpointer data)
    gtk_signal_connect(GTK_OBJECT(case_sense_checkbox), "clicked",
 		      GTK_SIGNAL_FUNC(cb_search), clist);
 
-   /* Create a "Done" button */
+   /* Done button */
    button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_quit), window);
@@ -645,3 +654,4 @@ void cb_search_gui(GtkWidget *widget, gpointer data)
 
    gtk_widget_show_all(window);
 }
+

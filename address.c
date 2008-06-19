@@ -1,4 +1,4 @@
-/* $Id: address.c,v 1.53 2008/06/02 03:43:02 rikster5 Exp $ */
+/* $Id: address.c,v 1.54 2008/06/19 04:12:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * address.c
@@ -20,8 +20,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  ******************************************************************************/
 
+/********************************* Includes ***********************************/
 #include "config.h"
-#include "i18n.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -30,32 +30,24 @@
 #include <pi-socket.h>
 #include <pi-address.h>
 #include <pi-dlp.h>
+
 #include "address.h"
+#include "i18n.h"
 #include "utils.h"
 #include "log.h"
 #include "prefs.h"
 #include "libplugin.h"
 #include "password.h"
 
-#define ADDRESS_EOF 7
-
-static int glob_sort_rule;
+/********************************* Constants **********************************/
 #define SORT_JAPANESE 8
 #define SORT_JOS 16
+
+/******************************* Global vars **********************************/
+static int glob_sort_rule;
 int addr_sort_order;
 
-#ifdef JPILOT_DEBUG
-void print_address_list(AddressList **al)
-{
-   AddressList *temp_al, *prev_al;
-
-   for (prev_al=NULL, temp_al=*al; temp_al;
-	prev_al=temp_al, temp_al=temp_al->next) {
-      jp_logf(JP_LOG_FILE | JP_LOG_STDOUT, "entry[0]=[%s]\n", temp_al->maddr.addr.entry[0]);
-   }
-}
-#endif
-
+/****************************** Main Code *************************************/
 int address_compare(const void *v1, const void *v2)
 {
    AddressList **al1, **al2;
@@ -247,9 +239,7 @@ int address_compare(const void *v1, const void *v2)
    return 0;
 }
 
-/*
- * sort_order: 0=descending,  1=ascending
- */
+/* sort_order: 0=descending,  1=ascending */
 int address_sort(AddressList **al, int sort_order)
 {
    AddressList *temp_al;
@@ -261,7 +251,7 @@ int address_sort(AddressList **al, int sort_order)
    for (count=0, temp_al=*al; temp_al; temp_al=temp_al->next, count++) {}
 
    if (count<2) {
-      /* We don't have to sort less than 2 items */
+      /* No need to sort 0 or 1 items */
       return EXIT_SUCCESS;
    }
 
@@ -292,7 +282,6 @@ int address_sort(AddressList **al, int sort_order)
       sort_al[i] = temp_al;
    }
 
-   /* qsort them */
    qsort(sort_al, count, sizeof(AddressList *), address_compare);
 
    /* Put the linked list in the order of the array */
@@ -312,48 +301,6 @@ int address_sort(AddressList **al, int sort_order)
    }
 
    free(sort_al);
-
-   return EXIT_SUCCESS;
-}
-
-int pc_address_write(struct Address *addr, PCRecType rt, unsigned char attrib,
-		     unsigned int *unique_id)
-{
-   pi_buffer_t *RecordBuffer;
-   int i;
-   buf_rec br;
-   long char_set;
-
-   get_pref(PREF_CHAR_SET, &char_set, NULL);
-   if (char_set != CHAR_SET_LATIN1) {
-      for (i = 0; i < 19; i++) {
-	 if (addr->entry[i]) charset_j2p(addr->entry[i], strlen(addr->entry[i])+1, char_set);
-      }
-   }
-
-   RecordBuffer = pi_buffer_new(0);
-   if (pack_Address(addr, RecordBuffer, address_v1) == -1) {
-      PRINT_FILE_LINE;
-      jp_logf(JP_LOG_WARN, "pack_Address %s\n", _("error"));
-      return EXIT_FAILURE;
-   }
-   br.rt=rt;
-   br.attrib = attrib;
-   br.buf = RecordBuffer->data;
-   br.size = RecordBuffer->used;
-   /* Keep unique ID intact */
-   if (unique_id) {
-      br.unique_id = *unique_id;
-   } else {
-      br.unique_id = 0;
-   }
-
-   jp_pc_write("AddressDB", &br);
-   if (unique_id) {
-      *unique_id = br.unique_id;
-   }
-
-   pi_buffer_free(RecordBuffer);
 
    return EXIT_SUCCESS;
 }
@@ -519,3 +466,58 @@ int get_addresses2(AddressList **address_list, int sort_order,
 
    return recs_returned;
 }
+
+int pc_address_write(struct Address *addr, PCRecType rt, unsigned char attrib,
+		     unsigned int *unique_id)
+{
+   pi_buffer_t *RecordBuffer;
+   int i;
+   buf_rec br;
+   long char_set;
+
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
+   if (char_set != CHAR_SET_LATIN1) {
+      for (i = 0; i < 19; i++) {
+	 if (addr->entry[i]) charset_j2p(addr->entry[i], strlen(addr->entry[i])+1, char_set);
+      }
+   }
+
+   RecordBuffer = pi_buffer_new(0);
+   if (pack_Address(addr, RecordBuffer, address_v1) == -1) {
+      PRINT_FILE_LINE;
+      jp_logf(JP_LOG_WARN, "pack_Address %s\n", _("error"));
+      return EXIT_FAILURE;
+   }
+   br.rt=rt;
+   br.attrib = attrib;
+   br.buf = RecordBuffer->data;
+   br.size = RecordBuffer->used;
+   /* Keep unique ID intact */
+   if (unique_id) {
+      br.unique_id = *unique_id;
+   } else {
+      br.unique_id = 0;
+   }
+
+   jp_pc_write("AddressDB", &br);
+   if (unique_id) {
+      *unique_id = br.unique_id;
+   }
+
+   pi_buffer_free(RecordBuffer);
+
+   return EXIT_SUCCESS;
+}
+
+#ifdef JPILOT_DEBUG
+void print_address_list(AddressList **al)
+{
+   AddressList *temp_al, *prev_al;
+
+   for (prev_al=NULL, temp_al=*al; temp_al;
+	prev_al=temp_al, temp_al=temp_al->next) {
+      jp_logf(JP_LOG_FILE | JP_LOG_STDOUT, "entry[0]=[%s]\n", temp_al->maddr.addr.entry[0]);
+   }
+}
+#endif
+

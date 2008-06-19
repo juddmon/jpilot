@@ -1,4 +1,4 @@
-/* $Id: password.c,v 1.27 2008/06/03 01:02:53 rikster5 Exp $ */
+/* $Id: password.c,v 1.28 2008/06/19 04:12:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * password.c
@@ -20,30 +20,28 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  ******************************************************************************/
 
+/********************************* Includes ***********************************/
 #include "config.h"
 #include <gtk/gtk.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include "password.h"
-#include "prefs.h"
-#include "i18n.h"
 
 #include <pi-version.h>
 #include <pi-md5.h>
 
+#include "password.h"
+#include "i18n.h"
+#include "prefs.h"
+
 #ifdef ENABLE_PRIVATE
 
-struct dialog_data {
-   GtkWidget *entry;
-   int button_hit;
-   char text[PASSWD_LEN+2];
-};
-
+/********************************* Constants **********************************/
 #define DIALOG_SAID_1  454
 #define DIALOG_SAID_2  455
 
+/******************************* Global vars **********************************/
 unsigned char short_salt[]=
 {
    0x09, 0x02, 0x13, 0x45, 0x07, 0x04, 0x13, 0x44,
@@ -63,6 +61,14 @@ unsigned char long_salt[]=
    0x29, 0x86, 0x22, 0x6E, 0xB8, 0x03, 0x62, 0xBC
 };
 
+/****************************** Prototypes ************************************/
+struct dialog_data {
+   GtkWidget *entry;
+   int button_hit;
+   char text[PASSWD_LEN+2];
+};
+
+/****************************** Main Code *************************************/
 /* len is the length of the bin str, hex_str must be at least twice as long */
 void bin_to_hex_str(unsigned char *bin, char *hex_str, int len)
 {
@@ -86,8 +92,7 @@ void palm_encode_hash(unsigned char *ascii, unsigned char *encoded)
    int si, ai, ei; /* salt i, ascii i, encoded i */
    int end;
    int len;
-   int m_array[4]={2,16,24,8
-   };
+   int m_array[4]={2,16,24,8};
    int mi;
    int m;
 
@@ -173,20 +178,18 @@ int verify_password(char *password)
 
    /* Check to see that the password matches */
    palm_encode_hash(password_lower, encoded);
-   bin_to_hex_str(encoded, hex_str, 32);
+   bin_to_hex_str(encoded, hex_str, PASSWD_LEN);
    get_pref(PREF_PASSWORD, NULL, &pref_password);
    if (!strcmp(hex_str, pref_password)) {
       return TRUE;
    }
 
-   /* We need a new pilot-link > 0.11 for this */
    /* The Password didn't match.
     * It could also be an MD5 password.
-    * Try that now.
-    */
+    * Try that now.  */
    palm_encode_md5((unsigned char *)password, encoded);
-   bin_to_hex_str(encoded, hex_str, 32);
-   hex_str[32]='\0';
+   bin_to_hex_str(encoded, hex_str, PASSWD_LEN);
+   hex_str[PASSWD_LEN]='\0';
    get_pref(PREF_PASSWORD, NULL, &pref_password);
    if (!strcmp(hex_str, pref_password)) {
       return TRUE;
@@ -221,9 +224,7 @@ int show_privates(int hide)
 /*
  * PASSWORD GUI
  */
-/*
- * Start of Dialog window code
- */
+/* Start of Dialog window code */
 static void cb_dialog_button(GtkWidget *widget,
 			       gpointer   data)
 {
@@ -283,21 +284,17 @@ int dialog_password(GtkWindow *main_window, char *ascii_password, int retry)
 			   NULL);
 
    gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_MOUSE);
-
+   gtk_window_set_modal(GTK_WINDOW(dialog), TRUE);
+   gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(main_window));
 
    gtk_signal_connect(GTK_OBJECT(dialog), "destroy",
                       GTK_SIGNAL_FUNC(cb_destroy_dialog), dialog);
-
-   gtk_window_set_modal(GTK_WINDOW(dialog), TRUE);
-
-   gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(main_window));
 
    hbox1 = gtk_hbox_new(FALSE, 2);
    gtk_container_add(GTK_CONTAINER(dialog), hbox1);
    gtk_box_pack_start(GTK_BOX(hbox1), gtk_image_new_from_stock(GTK_STOCK_DIALOG_AUTHENTICATION, GTK_ICON_SIZE_DIALOG), FALSE, FALSE, 2);
 
    vbox1 = gtk_vbox_new(FALSE, 2);
-
    gtk_container_set_border_width(GTK_CONTAINER(vbox1), 5);
 
    gtk_container_add(GTK_CONTAINER(hbox1), vbox1);
@@ -306,7 +303,7 @@ int dialog_password(GtkWindow *main_window, char *ascii_password, int retry)
    gtk_container_set_border_width(GTK_CONTAINER(hbox1), 5);
    gtk_box_pack_start(GTK_BOX(vbox1), hbox1, FALSE, FALSE, 2);
 
-   /* Label */
+   /* Instruction label */
    if (retry) {
       label = gtk_label_new(_("Incorrect, Reenter PalmOS Password"));
    } else {
@@ -314,13 +311,13 @@ int dialog_password(GtkWindow *main_window, char *ascii_password, int retry)
    }
    gtk_box_pack_start(GTK_BOX(hbox1), label, FALSE, FALSE, 2);
 
-   entry = gtk_entry_new_with_max_length(32);
+   /* Password entry field */
+   entry = gtk_entry_new_with_max_length(PASSWD_LEN);
    gtk_entry_set_visibility(GTK_ENTRY(entry), FALSE);
    gtk_signal_connect(GTK_OBJECT(entry), "activate",
 		      GTK_SIGNAL_FUNC(cb_dialog_button),
 		      GINT_TO_POINTER(DIALOG_SAID_2));
    gtk_box_pack_start(GTK_BOX(hbox1), entry, TRUE, TRUE, 1);
-
 
    /* Button Box */
    hbox1 = gtk_hbutton_box_new();
@@ -329,13 +326,14 @@ int dialog_password(GtkWindow *main_window, char *ascii_password, int retry)
    gtk_container_set_border_width(GTK_CONTAINER(hbox1), 5);
    gtk_box_pack_start(GTK_BOX(vbox1), hbox1, FALSE, FALSE, 2);
 
-   /* Buttons */
+   /* Cancel Button */
    button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_dialog_button),
 		      GINT_TO_POINTER(DIALOG_SAID_1));
    gtk_box_pack_start(GTK_BOX(hbox1), button, FALSE, FALSE, 1);
 
+   /* OK Button */
    button = gtk_button_new_from_stock(GTK_STOCK_OK);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_dialog_button),
@@ -372,3 +370,4 @@ int dialog_password(GtkWindow *main_window, char *ascii_password, int retry)
    return ret;
 }
 #endif
+

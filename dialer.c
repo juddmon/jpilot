@@ -1,4 +1,4 @@
-/* $Id: dialer.c,v 1.14 2008/06/03 01:02:53 rikster5 Exp $ */
+/* $Id: dialer.c,v 1.15 2008/06/19 04:12:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * dialer.c
@@ -20,21 +20,22 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  ******************************************************************************/
 
+/********************************* Includes ***********************************/
 #include "config.h"
-#include "i18n.h"
-#include "utils.h"
-#include "log.h"
-#include "prefs.h"
 #include <stdlib.h>
 #include <string.h>
 #include <gdk/gdk.h>
 
-/*
- * Start of Dialer Dialog window code
- */
+#include "i18n.h"
+#include "utils.h"
+#include "log.h"
+#include "prefs.h"
+
+/********************************* Constants **********************************/
 #define CHOOSE_PHONE 1
 #define CHOOSE_EXT   2
 
+/****************************** Prototypes ************************************/
 struct dialog_data {
    GtkWidget *entry_pre1;
    GtkWidget *entry_pre2;
@@ -48,6 +49,7 @@ struct dialog_data {
    GtkWidget *label_prefix;
 };
 
+/****************************** Main Code *************************************/
 static void cb_dialog_button(GtkWidget *widget, gpointer data)
 {
    struct dialog_data *Pdata;
@@ -138,7 +140,7 @@ static void dialer(gpointer data, int phone_or_ext)
    pref_command = gtk_entry_get_text(GTK_ENTRY(Pdata->entry_command));
    /* Make a system call command string */
    memset(command, 0, sizeof(command));
-   for (i=0; i<MAX_PREF_VALUE-1; i++) {
+   for (i=0; i<MAX_PREF_LEN-1; i++) {
       c1 = pref_command[i];
       c2 = pref_command[i+1];
       len = strlen(command);
@@ -288,7 +290,7 @@ int dialog_dial(GtkWindow *main_window, char *string, char *ext)
    label = gtk_label_new(_("Phone number:"));
    gtk_box_pack_start(GTK_BOX(hbox1), label, FALSE, FALSE, 2);
 
-   /*  prefix label */
+   /* Prefix label */
    label = gtk_label_new("");
    gtk_box_pack_start(GTK_BOX(hbox1), label, FALSE, FALSE, 2);
    Pdata->label_prefix=label;
@@ -309,7 +311,6 @@ int dialog_dial(GtkWindow *main_window, char *string, char *ext)
    gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
 
    gtk_widget_grab_focus(GTK_WIDGET(button));
-
 
    /* Extension */
    hbox1 = gtk_hbox_new(FALSE, 2);
@@ -333,7 +334,6 @@ int dialog_dial(GtkWindow *main_window, char *string, char *ext)
 		      GTK_SIGNAL_FUNC(cb_dial_ext), Pdata);
    gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
 
-
    /* Command Entry */
    hbox1 = gtk_hbox_new(FALSE, 2);
    gtk_container_set_border_width(GTK_CONTAINER(hbox1), 5);
@@ -353,7 +353,6 @@ int dialog_dial(GtkWindow *main_window, char *string, char *ext)
 
    Pdata->entry_command=entry;
 
-
    /* Button Box */
    hbox1 = gtk_hbutton_box_new();
    gtk_container_set_border_width(GTK_CONTAINER(hbox1), 7);
@@ -366,7 +365,6 @@ int dialog_dial(GtkWindow *main_window, char *string, char *ext)
 		      GTK_SIGNAL_FUNC(cb_dialog_button),
 		      GINT_TO_POINTER(DIALOG_SAID_1));
    gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
-
 
    /* We do this down here because the Pdata structure wasn't complete earlier */
    gtk_signal_connect(GTK_OBJECT(checkbox1), "clicked",

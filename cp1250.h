@@ -1,4 +1,4 @@
-/* $Id: cp1250.h,v 1.7 2004/11/29 06:24:46 rikster5 Exp $ */
+/* $Id: cp1250.h,v 1.8 2008/06/19 04:12:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * cp1250.h
@@ -22,7 +22,7 @@
 
 /*
  * Czech, Polish (and other CP 1250 languages) library header
- * Convert Palm  <-> Unix:
+ * Convert charsets: Palm <-> Unix:
  * Palm : CP 1250
  * Unix : ISO-8859-2
  */

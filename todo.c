@@ -1,4 +1,4 @@
-/* $Id: todo.c,v 1.43 2008/06/02 03:43:02 rikster5 Exp $ */
+/* $Id: todo.c,v 1.44 2008/06/19 04:12:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo.c
@@ -20,8 +20,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  ******************************************************************************/
 
+/********************************* Includes ***********************************/
 #include "config.h"
-#include "i18n.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -29,6 +29,8 @@
 #include <pi-socket.h>
 #include <pi-todo.h>
 #include <pi-dlp.h>
+
+#include "i18n.h"
 #include "utils.h"
 #include "log.h"
 #include "todo.h"
@@ -36,9 +38,299 @@
 #include "libplugin.h"
 #include "password.h"
 
-#define TODO_EOF 7
+/********************************* Constants **********************************/
 
+/******************************* Global vars **********************************/
 static struct ToDoAppInfo *glob_Ptodo_app_info;
+
+/****************************** Prototypes ************************************/
+int todo_sort(ToDoList **todol, int sort_order);
+
+/****************************** Main Code *************************************/
+void free_ToDoList(ToDoList **todo)
+{
+   ToDoList *temp_todo, *temp_todo_next;
+
+   for (temp_todo = *todo; temp_todo; temp_todo=temp_todo_next) {
+      free_ToDo(&(temp_todo->mtodo.todo));
+      temp_todo_next = temp_todo->next;
+      free(temp_todo);
+   }
+   *todo = NULL;
+}
+
+int get_todo_app_info(struct ToDoAppInfo *ai)
+{
+   int num, r;
+   int rec_size;
+   unsigned char *buf;
+#ifdef ENABLE_MANANA
+   long ivalue;
+#endif
+   char DBname[32];
+
+   memset(ai, 0, sizeof(*ai));
+   buf=NULL;
+   /* Put at least one entry in there */
+   strcpy(ai->category.name[0], "Unfiled");
+
+#ifdef ENABLE_MANANA
+   get_pref(PREF_MANANA_MODE, &ivalue, NULL);
+   if (ivalue) {
+      strcpy(DBname, "MañanaDB");
+   } else {
+      strcpy(DBname, "ToDoDB");
+   }
+#else
+   strcpy(DBname, "ToDoDB");
+#endif
+   r = jp_get_app_info(DBname, &buf, &rec_size);
+
+   if ((r<0) || (rec_size<=0)) {
+      jp_logf(JP_LOG_WARN, _("%s:%d Error reading category info %s\n"), __FILE__, __LINE__, DBname);
+      if (buf) {
+	 free(buf);
+      }
+      return EXIT_FAILURE;
+   }
+   num = unpack_ToDoAppInfo(ai, buf, rec_size);
+   if (buf) {
+      free(buf);
+   }
+   if (num <= 0) {
+      jp_logf(JP_LOG_WARN, _("%s:%d Error reading file: %s\n"), __FILE__, __LINE__, DBname);
+      return EXIT_FAILURE;
+   }
+
+   return EXIT_SUCCESS;
+}
+
+int get_todos(ToDoList **todo_list, int sort_order)
+{
+   return get_todos2(todo_list, sort_order, 1, 1, 1, 1, CATEGORY_ALL);
+}
+
+/*
+ * sort_order: 0=descending,  1=ascending
+ * modified, deleted and private, completed:
+ *  0 for no, 1 for yes, 2 for use prefs
+ */
+int get_todos2(ToDoList **todo_list, int sort_order,
+	       int modified, int deleted, int privates, int completed,
+	       int category)
+{
+   GList *records;
+   GList *temp_list;
+   int recs_returned, i, num;
+   struct ToDo todo;
+   ToDoList *temp_todo_list;
+   long keep_modified, keep_deleted, hide_completed;
+   int keep_priv;
+   buf_rec *br;
+   long char_set;
+   char *buf;
+   pi_buffer_t *RecordBuffer;
+#ifdef ENABLE_MANANA
+   long ivalue;
+#endif
+
+   jp_logf(JP_LOG_DEBUG, "get_todos2()\n");
+   if (modified==2) {
+      get_pref(PREF_SHOW_MODIFIED, &keep_modified, NULL);
+   } else {
+      keep_modified = modified;
+   }
+   if (deleted==2) {
+      get_pref(PREF_SHOW_DELETED, &keep_deleted, NULL);
+   } else {
+      keep_deleted = deleted;
+   }
+   if (privates==2) {
+      keep_priv = show_privates(GET_PRIVATES);
+   } else {
+      keep_priv = privates;
+   }
+   if (completed==2) {
+      get_pref(PREF_TODO_HIDE_COMPLETED, &hide_completed, NULL);
+   } else {
+      hide_completed = !completed;
+   }
+
+   *todo_list=NULL;
+   recs_returned = 0;
+
+#ifdef ENABLE_MANANA
+   get_pref(PREF_MANANA_MODE, &ivalue, NULL);
+   if (ivalue) {
+      num = jp_read_DB_files("MañanaDB", &records);
+      if (-1 == num)
+        return 0;
+   } else {
+      num = jp_read_DB_files("ToDoDB", &records);
+      if (-1 == num)
+        return 0;
+   }
+#else
+   num = jp_read_DB_files("ToDoDB", &records);
+   if (-1 == num)
+      return 0;
+#endif
+
+   for (i=0, temp_list = records; temp_list; temp_list = temp_list->next, i++) {
+      if (temp_list->data) {
+	 br=temp_list->data;
+      } else {
+	 continue;
+      }
+      if (!br->buf) {
+	 continue;
+      }
+
+      if ( ((br->rt==DELETED_PALM_REC)  && (!keep_deleted)) ||
+	   ((br->rt==DELETED_PC_REC)    && (!keep_deleted)) ||
+	   ((br->rt==MODIFIED_PALM_REC) && (!keep_modified)) ) {
+	 continue;
+      }
+      if ((keep_priv != SHOW_PRIVATES) &&
+	  (br->attrib & dlpRecAttrSecret)) {
+	 continue;
+      }
+
+      RecordBuffer = pi_buffer_new(br->size);
+      memcpy(RecordBuffer->data, br->buf, br->size);
+      RecordBuffer->used = br->size;
+
+      if (unpack_ToDo(&todo, RecordBuffer, todo_v1) == -1) {
+	 pi_buffer_free(RecordBuffer);
+	 continue;
+      }
+      pi_buffer_free(RecordBuffer);
+
+      if ( ((br->attrib & 0x0F) != category) && category != CATEGORY_ALL) {
+	 continue;
+      }
+
+      if (hide_completed && todo.complete) {
+	 continue;
+      }
+
+      get_pref(PREF_CHAR_SET, &char_set, NULL);
+      if (todo.description) {
+         buf = charset_p2newj(todo.description, strlen(todo.description)+1, char_set);
+         if (buf) {
+	    free(todo.description);
+	    todo.description = buf;
+	 }
+      }
+      if (todo.note) {
+	 buf = charset_p2newj(todo.note, strlen(todo.note)+1, char_set);
+         if (buf) {
+	    free(todo.note);
+	    todo.note = buf;
+	 }
+      }
+      temp_todo_list = malloc(sizeof(ToDoList));
+      if (!temp_todo_list) {
+	 jp_logf(JP_LOG_WARN, "get_todos2(): %s\n", _("Out of memory"));
+	 break;
+      }
+      memcpy(&(temp_todo_list->mtodo.todo), &todo, sizeof(struct ToDo));
+      temp_todo_list->app_type = TODO;
+      temp_todo_list->mtodo.rt = br->rt;
+      temp_todo_list->mtodo.attrib = br->attrib;
+      temp_todo_list->mtodo.unique_id = br->unique_id;
+      temp_todo_list->next = *todo_list;
+      *todo_list = temp_todo_list;
+      recs_returned++;
+   }
+
+   jp_free_DB_records(&records);
+
+   todo_sort(todo_list, sort_order);
+
+   jp_logf(JP_LOG_DEBUG, "Leaving get_todos2()\n");
+
+   return recs_returned;
+}
+
+/*
+ * This function just checks some todo fields to make sure they are valid.
+ * It truncates the description and note fields if necessary.
+ */
+void pc_todo_validate_correct(struct ToDo *todo)
+{
+   if (todo->description) {
+      if ((strlen(todo->description)+1 > MAX_TODO_DESC_LEN)) {
+	 jp_logf(JP_LOG_WARN, _("ToDo description text > %d, truncating to %d\n"), MAX_TODO_DESC_LEN, MAX_TODO_DESC_LEN-1);
+	 todo->description[MAX_TODO_DESC_LEN-1]='\0';
+      }
+   }
+   if (todo->note) {
+      if ((strlen(todo->note)+1 > MAX_TODO_NOTE_LEN)) {
+	 jp_logf(JP_LOG_WARN, _("ToDo note text > %d, truncating to %d\n"), MAX_TODO_NOTE_LEN, MAX_TODO_NOTE_LEN-1);
+	 todo->note[MAX_TODO_NOTE_LEN-1]='\0';
+      }
+   }
+}
+
+int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib,
+		  unsigned int *unique_id)
+{
+   pi_buffer_t *RecordBuffer;
+   buf_rec br;
+   long char_set;
+#ifdef ENABLE_MANANA
+   long ivalue;
+#endif
+
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
+   if (char_set != CHAR_SET_LATIN1) {
+      if (todo->description) {
+	 charset_j2p(todo->description, strlen(todo->description)+1, char_set);
+      }
+      if (todo->note) {
+	 charset_j2p(todo->note, strlen(todo->note)+1, char_set);
+      }
+   }
+
+   pc_todo_validate_correct(todo);
+   RecordBuffer = pi_buffer_new(0);
+   if (pack_ToDo(todo, RecordBuffer, todo_v1) == -1) {
+      PRINT_FILE_LINE;
+      jp_logf(JP_LOG_WARN, "pack_ToDo %s\n", _("error"));
+      pi_buffer_free(RecordBuffer);
+      return EXIT_FAILURE;
+   }
+   br.rt=rt;
+   br.attrib = attrib;
+   br.buf = RecordBuffer->data;
+   br.size = RecordBuffer->used;
+   /* Keep unique ID intact */
+   if (unique_id) {
+      br.unique_id = *unique_id;
+   } else {
+      br.unique_id = 0;
+   }
+
+#ifdef ENABLE_MANANA
+   get_pref(PREF_MANANA_MODE, &ivalue, NULL);
+   if (ivalue) {
+      jp_pc_write("MañanaDB", &br);
+   } else {
+      jp_pc_write("ToDoDB", &br);
+   }
+#else
+   jp_pc_write("ToDoDB", &br);
+#endif
+   if (unique_id) {
+      *unique_id = br.unique_id;
+   }
+
+   pi_buffer_free(RecordBuffer);
+
+   return EXIT_SUCCESS;
+}
+
 /*
  * sort by:
  * priority, due date
@@ -187,12 +479,10 @@ int todo_sort(ToDoList **todol, int sort_order)
    int count, i;
 
    /* Count the entries in the list */
-   for (count=0, temp_todol=*todol; temp_todol; temp_todol=temp_todol->next, count++) {
-      ;
-   }
+   for (count=0, temp_todol=*todol; temp_todol; temp_todol=temp_todol->next, count++) {}
 
    if (count<2) {
-      /* We don't have to sort less than 2 items */
+      /* No need to sort 0 or 1 items */
       return EXIT_SUCCESS;
    }
 
@@ -236,295 +526,3 @@ int todo_sort(ToDoList **todol, int sort_order)
    return EXIT_SUCCESS;
 }
 
-/*
- * This function just checks some todo fields to make sure they are valid.
- * It truncates the description and note fields if necessary.
- */
-void pc_todo_validate_correct(struct ToDo *todo)
-{
-   if (todo->description) {
-      if ((strlen(todo->description)+1 > MAX_TODO_DESC_LEN)) {
-	 jp_logf(JP_LOG_WARN, _("ToDo description text > %d, truncating to %d\n"), MAX_TODO_DESC_LEN, MAX_TODO_DESC_LEN-1);
-	 todo->description[MAX_TODO_DESC_LEN-1]='\0';
-      }
-   }
-   if (todo->note) {
-      if ((strlen(todo->note)+1 > MAX_TODO_NOTE_LEN)) {
-	 jp_logf(JP_LOG_WARN, _("ToDo note text > %d, truncating to %d\n"), MAX_TODO_NOTE_LEN, MAX_TODO_NOTE_LEN-1);
-	 todo->note[MAX_TODO_NOTE_LEN-1]='\0';
-      }
-   }
-}
-
-int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib,
-		  unsigned int *unique_id)
-{
-   pi_buffer_t *RecordBuffer;
-   buf_rec br;
-   long char_set;
-#ifdef ENABLE_MANANA
-   long ivalue;
-#endif
-
-   get_pref(PREF_CHAR_SET, &char_set, NULL);
-   if (char_set != CHAR_SET_LATIN1) {
-      if (todo->description) {
-	 charset_j2p(todo->description, strlen(todo->description)+1, char_set);
-      }
-      if (todo->note) {
-	 charset_j2p(todo->note, strlen(todo->note)+1, char_set);
-      }
-   }
-
-   pc_todo_validate_correct(todo);
-   RecordBuffer = pi_buffer_new(0);
-   if (pack_ToDo(todo, RecordBuffer, todo_v1) == -1) {
-      PRINT_FILE_LINE;
-      jp_logf(JP_LOG_WARN, "pack_ToDo %s\n", _("error"));
-      pi_buffer_free(RecordBuffer);
-      return EXIT_FAILURE;
-   }
-   br.rt=rt;
-   br.attrib = attrib;
-   br.buf = RecordBuffer->data;
-   br.size = RecordBuffer->used;
-   /* Keep unique ID intact */
-   if (unique_id) {
-      br.unique_id = *unique_id;
-   } else {
-      br.unique_id = 0;
-   }
-
-#ifdef ENABLE_MANANA
-   get_pref(PREF_MANANA_MODE, &ivalue, NULL);
-   if (ivalue) {
-      jp_pc_write("MañanaDB", &br);
-   } else {
-      jp_pc_write("ToDoDB", &br);
-   }
-#else
-   jp_pc_write("ToDoDB", &br);
-#endif
-   if (unique_id) {
-      *unique_id = br.unique_id;
-   }
-
-   pi_buffer_free(RecordBuffer);
-
-   return EXIT_SUCCESS;
-}
-
-void free_ToDoList(ToDoList **todo)
-{
-   ToDoList *temp_todo, *temp_todo_next;
-
-   for (temp_todo = *todo; temp_todo; temp_todo=temp_todo_next) {
-      free_ToDo(&(temp_todo->mtodo.todo));
-      temp_todo_next = temp_todo->next;
-      free(temp_todo);
-   }
-   *todo = NULL;
-}
-
-int get_todo_app_info(struct ToDoAppInfo *ai)
-{
-   int num, r;
-   int rec_size;
-   unsigned char *buf;
-#ifdef ENABLE_MANANA
-   long ivalue;
-#endif
-   char DBname[32];
-
-   memset(ai, 0, sizeof(*ai));
-   buf=NULL;
-   /* Put at least one entry in there */
-   strcpy(ai->category.name[0], "Unfiled");
-
-#ifdef ENABLE_MANANA
-   get_pref(PREF_MANANA_MODE, &ivalue, NULL);
-   if (ivalue) {
-      strcpy(DBname, "MañanaDB");
-   } else {
-      strcpy(DBname, "ToDoDB");
-   }
-#else
-   strcpy(DBname, "ToDoDB");
-#endif
-   r = jp_get_app_info(DBname, &buf, &rec_size);
-
-   if ((r<0) || (rec_size<=0)) {
-      jp_logf(JP_LOG_WARN, _("%s:%d Error reading category info %s\n"), __FILE__, __LINE__, DBname);
-      if (buf) {
-	 free(buf);
-      }
-      return EXIT_FAILURE;
-   }
-   num = unpack_ToDoAppInfo(ai, buf, rec_size);
-   if (buf) {
-      free(buf);
-   }
-   if (num <= 0) {
-      jp_logf(JP_LOG_WARN, _("%s:%d Error reading file: %s\n"), __FILE__, __LINE__, DBname);
-      return EXIT_FAILURE;
-   }
-
-   return EXIT_SUCCESS;
-}
-
-int get_todos(ToDoList **todo_list, int sort_order)
-{
-   return get_todos2(todo_list, sort_order, 1, 1, 1, 1, CATEGORY_ALL);
-}
-/*
- * sort_order: 0=descending,  1=ascending
- * modified, deleted and private, completed:
- *  0 for no, 1 for yes, 2 for use prefs
- */
-int get_todos2(ToDoList **todo_list, int sort_order,
-	       int modified, int deleted, int privates, int completed,
-	       int category)
-{
-   GList *records;
-   GList *temp_list;
-   int recs_returned, i, num;
-   struct ToDo todo;
-   ToDoList *temp_todo_list;
-   long keep_modified, keep_deleted, hide_completed;
-   int keep_priv;
-   buf_rec *br;
-   long char_set;
-   char *buf;
-   pi_buffer_t *RecordBuffer;
-#ifdef ENABLE_MANANA
-   long ivalue;
-#endif
-
-   jp_logf(JP_LOG_DEBUG, "get_todos2()\n");
-   if (modified==2) {
-      get_pref(PREF_SHOW_MODIFIED, &keep_modified, NULL);
-   } else {
-      keep_modified = modified;
-   }
-   if (deleted==2) {
-      get_pref(PREF_SHOW_DELETED, &keep_deleted, NULL);
-   } else {
-      keep_deleted = deleted;
-   }
-   if (privates==2) {
-      keep_priv = show_privates(GET_PRIVATES);
-   } else {
-      keep_priv = privates;
-   }
-   if (completed==2) {
-      get_pref(PREF_TODO_HIDE_COMPLETED, &hide_completed, NULL);
-   } else {
-      hide_completed = !completed;
-   }
-
-   *todo_list=NULL;
-   recs_returned = 0;
-
-#ifdef ENABLE_MANANA
-   get_pref(PREF_MANANA_MODE, &ivalue, NULL);
-   if (ivalue) {
-      num = jp_read_DB_files("MañanaDB", &records);
-      if (-1 == num)
-        return 0;
-   } else {
-      num = jp_read_DB_files("ToDoDB", &records);
-      if (-1 == num)
-        return 0;
-   }
-#else
-   num = jp_read_DB_files("ToDoDB", &records);
-   if (-1 == num)
-      return 0;
-#endif
-
-   for (i=0, temp_list = records; temp_list; temp_list = temp_list->next, i++) {
-      if (temp_list->data) {
-	 br=temp_list->data;
-      } else {
-	 continue;
-      }
-      if (!br->buf) {
-	 continue;
-      }
-
-      if ( ((br->rt==DELETED_PALM_REC)  && (!keep_deleted)) ||
-	   ((br->rt==DELETED_PC_REC)    && (!keep_deleted)) ||
-	   ((br->rt==MODIFIED_PALM_REC) && (!keep_modified)) ) {
-	 continue;
-      }
-      if ((keep_priv != SHOW_PRIVATES) &&
-	  (br->attrib & dlpRecAttrSecret)) {
-	 continue;
-      }
-
-      RecordBuffer = pi_buffer_new(br->size);
-      memcpy(RecordBuffer->data, br->buf, br->size);
-      RecordBuffer->used = br->size;
-
-      if (unpack_ToDo(&todo, RecordBuffer, todo_v1) == -1) {
-	 pi_buffer_free(RecordBuffer);
-	 continue;
-      }
-      pi_buffer_free(RecordBuffer);
-
-      if ( ((br->attrib & 0x0F) != category) && category != CATEGORY_ALL) {
-	 continue;
-      }
-
-      if (hide_completed && todo.complete) {
-	 continue;
-      }
-
-      get_pref(PREF_CHAR_SET, &char_set, NULL);
-      if (todo.description) {
-         buf = charset_p2newj(todo.description, strlen(todo.description)+1, char_set);
-         if (buf) {
-	    /* JPA use new conversion routines
-	     if ((buf = malloc(strlen(todo.description)*2+1)) != NULL) {
-	     strcpy(buf, todo.description);
-	     charset_p2j((unsigned char *)buf, strlen(todo.description)*2+1, char_set);
-	     */
-	    free(todo.description);
-	    todo.description = buf;
-	 }
-      }
-      if (todo.note) {
-	 buf = charset_p2newj(todo.note, strlen(todo.note)+1, char_set);
-         if (buf) {
-	    /* JPA use new conversion routines
-	     if ((buf = malloc(strlen(todo.note)*2+1)) != NULL) {
-	     strcpy(buf, todo.note);
-	     charset_p2j((unsigned char *)buf, strlen(todo.note)*2+1, char_set);
-	     */
-	    free(todo.note);
-	    todo.note = buf;
-	 }
-      }
-      temp_todo_list = malloc(sizeof(ToDoList));
-      if (!temp_todo_list) {
-	 jp_logf(JP_LOG_WARN, "get_todos2(): %s\n", _("Out of memory"));
-	 break;
-      }
-      memcpy(&(temp_todo_list->mtodo.todo), &todo, sizeof(struct ToDo));
-      temp_todo_list->app_type = TODO;
-      temp_todo_list->mtodo.rt = br->rt;
-      temp_todo_list->mtodo.attrib = br->attrib;
-      temp_todo_list->mtodo.unique_id = br->unique_id;
-      temp_todo_list->next = *todo_list;
-      *todo_list = temp_todo_list;
-      recs_returned++;
-   }
-
-   jp_free_DB_records(&records);
-
-   todo_sort(todo_list, sort_order);
-
-   jp_logf(JP_LOG_DEBUG, "Leaving get_todos2()\n");
-
-   return recs_returned;
-}

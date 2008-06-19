@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.124 2008/06/15 06:08:08 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.125 2008/06/19 04:12:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -20,36 +20,40 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  ******************************************************************************/
 
+/********************************* Includes ***********************************/
 #include "config.h"
-#include "i18n.h"
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
-#include <time.h>
-#include <stdlib.h>
-#include <string.h>
 #include <pi-dlp.h>
+
+#include "memo.h"
+#include "i18n.h"
 #include "utils.h"
 #include "log.h"
 #include "prefs.h"
 #include "password.h"
 #include "print.h"
-#include "memo.h"
 #include "export.h"
 #include "stock_buttons.h"
 
+/********************************* Constants **********************************/
+#define NUM_MEMO_CAT_ITEMS 16
 
 #define MEMO_MAX_COLUMN_LEN 80
 #define MEMO_CLIST_CHAR_WIDTH 50
 
-#define NUM_MEMO_CAT_ITEMS 16
+#define NUM_MEMO_CSV_FIELDS 3
 
 #define CONNECT_SIGNALS 400
 #define DISCONNECT_SIGNALS 401
 
-#define NUM_MEMO_CSV_FIELDS 3
-
+/******************************* Global vars **********************************/
 /* Keeps track of whether code is using Memo, or Memos database
  * 0 is Memo, 1 is Memos */
 static long memo_version=0;
@@ -84,6 +88,7 @@ static int record_changed;
 static MemoList *glob_memo_list=NULL;
 static MemoList *export_memo_list=NULL;
 
+/****************************** Prototypes ************************************/
 static int memo_clear_details();
 int memo_clist_redraw();
 static void connect_changed_signals(int con_or_dis);
@@ -94,6 +99,7 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 static void cb_add_new_record(GtkWidget *widget, gpointer data);
 static void cb_edit_cats(GtkWidget *widget, gpointer data);
 
+/****************************** Main Code *************************************/
 static void set_new_button_to(int new_state)
 {
    jp_logf(JP_LOG_DEBUG, "set_new_button_to new %d old %d\n", new_state, record_changed);
@@ -179,6 +185,7 @@ static void connect_changed_signals(int con_or_dis)
 {
    int i;
    static int connected=0;
+
    /* CONNECT */
    if ((con_or_dis==CONNECT_SIGNALS) && (!connected)) {
       connected=1;
@@ -316,7 +323,7 @@ int cb_memo_import(GtkWidget *parent_window, const char *file_path, int type)
       ret=import_record_ask(parent_window, pane,
 			    new_memo.text,
 			    &(memo_app_info.category),
-			    "Unfiled",
+			    _("Unfiled"),
 			    0,
 			    attrib & 0x0F,
 			    &new_cat_num);
@@ -490,7 +497,6 @@ int memo_import(GtkWidget *window)
 /*
  * Start Export code
  */
-
 void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 		       int type, const char *filename)
 {
@@ -661,11 +667,9 @@ int memo_export(GtkWidget *window)
 
    return EXIT_SUCCESS;
 }
-
 /*
  * End Export Code
  */
-
 
 static int find_sorted_cat(int cat)
 {
@@ -684,13 +688,13 @@ void cb_delete_memo(GtkWidget *widget,
    MyMemo *mmemo;
    int flag;
    int show_priv;
-   long char_set; /* JPA */
+   long char_set;
 
    mmemo = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
    if (mmemo < (MyMemo *)CLIST_MIN_DATA) {
       return;
    }
-   /* JPA convert to Palm character set */
+   /* Convert to Palm character set */
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    if (char_set != CHAR_SET_LATIN1) {
       if (mmemo->memo.text)
@@ -769,6 +773,65 @@ static void cb_cancel(GtkWidget *widget, gpointer data)
    memo_refresh();
 }
 
+static void cb_edit_cats(GtkWidget *widget, gpointer data)
+{
+   struct MemoAppInfo ai;
+   char db_name[FILENAME_MAX];
+   char pdb_name[FILENAME_MAX];
+   char full_name[FILENAME_MAX];
+   unsigned char buffer[65536];
+   int num;
+   size_t size;
+   void *buf;
+   struct pi_file *pf;
+   long memo_version;
+     
+   jp_logf(JP_LOG_DEBUG, "cb_edit_cats\n");
+
+   get_pref(PREF_MEMO_VERSION, &memo_version, NULL);
+
+   switch (memo_version) {
+    case 0:
+    default:
+      strcpy(pdb_name, "MemoDB.pdb");
+      strcpy(db_name, "MemoDB");
+      break;
+    case 1:
+      strcpy(pdb_name, "MemosDB-PMem.pdb");
+      strcpy(db_name, "MemosDB-PMem");
+      break;
+    case 2:
+      strcpy(pdb_name, "Memo32DB.pdb");
+      strcpy(db_name, "Memo32DB");
+      break;
+   }
+
+   get_home_file_name(pdb_name, full_name, sizeof(full_name));
+
+   buf=NULL;
+   memset(&ai, 0, sizeof(ai));
+
+   pf = pi_file_open(full_name);
+   pi_file_get_app_info(pf, &buf, &size);
+
+   num = unpack_MemoAppInfo(&ai, buf, size);
+   if (num <= 0) {
+      jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), pdb_name);
+      return;
+   }
+
+   pi_file_close(pf);
+
+   edit_cats(widget, db_name, &(ai.category));
+
+   size = pack_MemoAppInfo(&ai, buffer, sizeof(buffer));
+
+   pdb_file_write_app_block(db_name, buffer, size);
+   
+
+   cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
+}
+
 static void cb_category(GtkWidget *item, int selection)
 {
    int b;
@@ -799,7 +862,7 @@ static int memo_clear_details()
 
    jp_logf(JP_LOG_DEBUG, "memo_clear_details()\n");
 
-   /* Need to disconnect these signals first */
+   /* Need to disconnect signals first */
    connect_changed_signals(DISCONNECT_SIGNALS);
 
    gtk_text_buffer_set_text(GTK_TEXT_BUFFER(memo_text_buffer), "", -1);
@@ -840,7 +903,7 @@ int memo_get_details(struct Memo *new_memo, unsigned char *attrib)
       new_memo->text=NULL;
    }
 
-   /*Get the category that is set from the menu */
+   /* Get the category that is set from the menu */
    for (i=0; i<NUM_MEMO_CAT_ITEMS; i++) {
       if (GTK_IS_WIDGET(memo_cat_menu_item2[i])) {
 	 if (GTK_CHECK_MENU_ITEM(memo_cat_menu_item2[i])->active) {
@@ -883,7 +946,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    }
    /* End Masking */
    if (flag==CLEAR_FLAG) {
-      /*Clear button was hit */
+      /* Clear button was hit */
       memo_clear_details();
       connect_changed_signals(DISCONNECT_SIGNALS);
       set_new_button_to(NEW_FLAG);
@@ -946,65 +1009,6 @@ static void clear_mymemo(MyMemo *mmemo)
    return;
 }
 /* End Masking */
-
-static void cb_edit_cats(GtkWidget *widget, gpointer data)
-{
-   struct MemoAppInfo ai;
-   char db_name[FILENAME_MAX];
-   char pdb_name[FILENAME_MAX];
-   char full_name[FILENAME_MAX];
-   unsigned char buffer[65536];
-   int num;
-   size_t size;
-   void *buf;
-   struct pi_file *pf;
-   long memo_version;
-     
-   jp_logf(JP_LOG_DEBUG, "cb_edit_cats\n");
-
-   get_pref(PREF_MEMO_VERSION, &memo_version, NULL);
-
-   switch (memo_version) {
-    case 0:
-    default:
-      strcpy(pdb_name, "MemoDB.pdb");
-      strcpy(db_name, "MemoDB");
-      break;
-    case 1:
-      strcpy(pdb_name, "MemosDB-PMem.pdb");
-      strcpy(db_name, "MemosDB-PMem");
-      break;
-    case 2:
-      strcpy(pdb_name, "Memo32DB.pdb");
-      strcpy(db_name, "Memo32DB");
-      break;
-   }
-
-   get_home_file_name(pdb_name, full_name, sizeof(full_name));
-
-   buf=NULL;
-   memset(&ai, 0, sizeof(ai));
-
-   pf = pi_file_open(full_name);
-   pi_file_get_app_info(pf, &buf, &size);
-
-   num = unpack_MemoAppInfo(&ai, buf, size);
-   if (num <= 0) {
-      jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), pdb_name);
-      return;
-   }
-
-   pi_file_close(pf);
-
-   edit_cats(widget, db_name, &(ai.category));
-
-   size = pack_MemoAppInfo(&ai, buffer, sizeof(buffer));
-
-   pdb_file_write_app_block(db_name, buffer, size);
-   
-
-   cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
-}
 
 static void cb_clist_selection(GtkWidget      *clist,
 			       gint           row,
@@ -1307,7 +1311,6 @@ static int memo_find()
    return EXIT_SUCCESS;
 }
 
-/* This redraws the clist */
 int memo_clist_redraw()
 {
    memo_update_clist(clist, category_menu1, &glob_memo_list, memo_category, TRUE);
@@ -1456,63 +1459,51 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_paned_pack1(GTK_PANED(pane), vbox1, TRUE, FALSE);
    gtk_paned_pack2(GTK_PANED(pane), vbox2, TRUE, FALSE);
 
-   /* gtk_widget_set_usize(GTK_WIDGET(vbox1), 210, 0); */
-
    /* Add buttons in left vbox */
    /* Separator */
    separator = gtk_hseparator_new();
    gtk_box_pack_start(GTK_BOX(vbox1), separator, FALSE, FALSE, 5);
 
-   /* Make the Today is: label */
+   /* 'Today is:' label */
    glob_date_label = gtk_label_new(" ");
    gtk_box_pack_start(GTK_BOX(vbox1), glob_date_label, FALSE, FALSE, 0);
    timeout_date(NULL);
    glob_date_timer_tag = gtk_timeout_add(get_timeout_interval(), timeout_date, NULL);
 
-
    /* Separator */
    separator = gtk_hseparator_new();
    gtk_box_pack_start(GTK_BOX(vbox1), separator, FALSE, FALSE, 5);
 
-
-   /* Category Box */
+   /* Left-side Category menu */
    hbox_temp = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox1), hbox_temp, FALSE, FALSE, 0);
 
-   /* Put the left-hand category menu up */
    make_category_menu(&category_menu1, memo_cat_menu_item1,
 		      sort_l, cb_category, TRUE, TRUE);
    gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu1, TRUE, TRUE, 0);
 
-   /* Put the memo list window up */
+   /* Memo list scrolled window */
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
-   /*gtk_widget_set_usize(GTK_WIDGET(scrolled_window), 330, 100); */
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 0);
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
 				  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
    gtk_box_pack_start(GTK_BOX(vbox1), scrolled_window, TRUE, TRUE, 0);
 
    clist = gtk_clist_new(1);
-
-   gtk_signal_connect(GTK_OBJECT(clist), "select_row",
-		      GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
-
    gtk_clist_set_shadow_type(GTK_CLIST(clist), SHADOW);
    gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
    gtk_clist_set_column_width(GTK_CLIST(clist), 0, 50);
 
+   gtk_signal_connect(GTK_OBJECT(clist), "select_row",
+		      GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
+
    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
 
-   /*
-    * The right hand part of the main window follows:
-    */
+   /* The right hand part of the main window follows: */
    hbox_temp = gtk_hbox_new(FALSE, 3);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
-
-   /* Add record modification buttons on right side */
-
-   /* Create Cancel button */
+   /* Cancel button */
    CREATE_BUTTON(cancel_record_button, _("Cancel"), CANCEL, _("Cancel the modifications"), GDK_Escape, 0, "ESC")
    gtk_signal_connect(GTK_OBJECT(cancel_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_cancel), NULL);
@@ -1529,19 +1520,19 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
 		      GTK_SIGNAL_FUNC(cb_undelete_memo),
 		      GINT_TO_POINTER(UNDELETE_FLAG));
 
-   /* Create "Copy" button */
+   /* Copy button */
    CREATE_BUTTON(copy_record_button, _("Copy"), COPY, _("Copy the selected record"), GDK_o, GDK_CONTROL_MASK, "Ctrl+O")
    gtk_signal_connect(GTK_OBJECT(copy_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record),
 		      GINT_TO_POINTER(COPY_FLAG));
 
-   /* Create "New" button */
+   /* New button */
    CREATE_BUTTON(new_record_button, _("New Record"), NEW, _("Add a new record"), GDK_n, GDK_CONTROL_MASK, "Ctrl+N")
    gtk_signal_connect(GTK_OBJECT(new_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record),
 		      GINT_TO_POINTER(CLEAR_FLAG));
 
-   /* Create "Add Record" button */
+   /* "Add Record" button */
    CREATE_BUTTON(add_record_button, _("Add Record"), ADD, _("Add the new record"), GDK_Return, GDK_CONTROL_MASK, "Ctrl+Enter")
    gtk_signal_connect(GTK_OBJECT(add_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record),
@@ -1551,7 +1542,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
 		       "label_high");
 #endif
 
-   /* Create "apply changes" button */
+   /* "Apply Changes" button */
    CREATE_BUTTON(apply_record_button, _("Apply Changes"), APPLY, _("Commit the modifications"), GDK_Return, GDK_CONTROL_MASK, "Ctrl+Enter")
    gtk_signal_connect(GTK_OBJECT(apply_record_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_add_new_record),
@@ -1562,28 +1553,24 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
 #endif
 
 
-   /*Separator */
+   /* Separator */
    separator = gtk_hseparator_new();
    gtk_box_pack_start(GTK_BOX(vbox2), separator, FALSE, FALSE, 5);
 
-
-   /*Private check box */
+   /* Private check box */
    hbox_temp = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
    private_checkbox = gtk_check_button_new_with_label(_("Private"));
    gtk_box_pack_end(GTK_BOX(hbox_temp), private_checkbox, FALSE, FALSE, 0);
 
-
-   /*Put the right-hand category menu up */
+   /* Put the right-hand category menu up */
    make_category_menu(&category_menu2, memo_cat_menu_item2,
 		      sort_l, NULL, FALSE, FALSE);
    gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu2, TRUE, TRUE, 0);
 
-
-   /*The Description text box on the right side */
+   /* Description text box on the right side */
    hbox_temp = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
-
 
    hbox_temp = gtk_hbox_new (FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, TRUE, TRUE, 0);

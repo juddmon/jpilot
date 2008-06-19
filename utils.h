@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.67 2008/06/03 03:23:15 rikster5 Exp $ */
+/* $Id: utils.h,v 1.68 2008/06/19 04:12:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -60,7 +60,7 @@
 #define SHADOW GTK_SHADOW_ETCHED_OUT
 
 /*
- *          JPA define the maximum length of a category name
+ *             define the maximum length of a category name
  *             when expressed in Pilot character set (assuming 15
  *             character plus a delimiter) or in host character
  *             set (might be 50 or more if UTF-8).

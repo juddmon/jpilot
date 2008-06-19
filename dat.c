@@ -1,4 +1,4 @@
-/* $Id: dat.c,v 1.20 2008/06/04 16:58:08 rikster5 Exp $ */
+/* $Id: dat.c,v 1.21 2008/06/19 04:12:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * dat.c
@@ -34,9 +34,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
-#include "log.h"
-#include "utils.h"
+
 #include "i18n.h"
+#include "utils.h"
+#include "log.h"
 
 /********************************* Constants **********************************/
 #define DAT_STATUS_ADD     0x01
@@ -47,6 +48,7 @@
 /* I made this one up for a bit to store the private flag */
 #define DAT_STATUS_PRIVATE 0x10
 
+/* Repeat types */
 #define DAILY           1
 #define WEEKLY          2
 #define MONTHLY_BY_DAY  3
@@ -54,6 +56,7 @@
 #define YEARLY_BY_DATE  5
 #define YEARLY_BY_DAY   6
 
+/* DAT field types */
 #define DAT_TYPE_INTEGER 1
 #define DAT_TYPE_CSTRING 5
 #define DAT_TYPE_DATE    3
@@ -85,7 +88,6 @@ static long x86_long(unsigned char *str)
 {
    return str[3]*0x1000000 + str[2]*0x0010000 + str[1]*0x0000100 + str[0];
 }
-
 
 /* Returns the length of the CString read */
 static int get_CString(FILE *in, char **PStr)
@@ -135,23 +137,23 @@ static int get_categories(FILE *in, struct CategoryAppInfo *ai)
    ai->lastUniqueID=0;
 
    for (i=0; i<count; i++) {
-      /* This is the category index */
+      /* category index */
       fread(str_long, 4, 1, in);
 
-      /* This is the category ID */
+      /* category ID */
       fread(str_long, 4, 1, in);
       ai->ID[i] = x86_long(str_long);
 
-      /* This is the category dirty flag */
+      /* category dirty flag */
       fread(str_long, 4, 1, in);
 
-      /* Long Category Name */
+      /* long category name */
       get_CString(in, &PStr);
       strncpy(ai->name[i], PStr, 16);
       ai->name[i][15]='\0';
       free(PStr);
 
-      /* Short Category Name */
+      /* short category name */
       get_CString(in, &PStr);
       free(PStr);
    }
@@ -218,7 +220,7 @@ int get_repeat(FILE *in, struct Appointment *appt)
    }
 
    if (s==0xFFFF) {
-      /* We have a Class entry here */
+      /* Class entry here */
       fread(str_short, 2, 1, in);
       s = x86_short(str_short);
 #ifdef JPILOT_DEBUG
@@ -246,7 +248,7 @@ int get_repeat(FILE *in, struct Appointment *appt)
    }
 #ifdef JPILOT_DEBUG
    printf("repeatType=%d ", repeat_type);
-   switch(repeat_type) {
+   switch (repeat_type) {
     case DAILY:
       printf("Daily\n");
       break;
@@ -303,7 +305,7 @@ int get_repeat(FILE *in, struct Appointment *appt)
    printf("First Day of Week = %d\n", l);
 #endif
 
-   switch(repeat_type) {
+   switch (repeat_type) {
     case DAILY:
       fread(str_long, 4, 1, in);
       l = x86_long(str_long);
@@ -372,7 +374,6 @@ int get_repeat(FILE *in, struct Appointment *appt)
    return EXIT_SUCCESS;
 }
 
-
 #ifdef JPILOT_DEBUG
 static int print_date(int palm_date)
 {
@@ -380,7 +381,7 @@ static int print_date(int palm_date)
    struct tm *now;
    char text[256];
 
-   t = palm_date;/* - 20828448800; */
+   t = palm_date;   /* - 20828448800; */
    now = localtime(&t);
    strftime(text, sizeof(text), "%02m/%02d/%Y %02H:%02M:%02S", now);
    printf("%s\n", text);
@@ -393,7 +394,7 @@ static int print_date(int palm_date)
 int print_field(struct field *f)
 {
 
-   switch(f->type) {
+   switch (f->type) {
     case DAT_TYPE_INTEGER:
       printf("%d\n", f->i);
       break;
@@ -436,14 +437,13 @@ int get_field(FILE *in, struct field *f)
    f->type=type;
    f->str=NULL;
 
-   switch(type) {
+   switch (type) {
     case DAT_TYPE_INTEGER:
       fread(str_long, 4, 1, in);
       f->i = x86_long(str_long);
       break;
     case DAT_TYPE_CSTRING:
-      /* padding */
-      fseek(in, 4, SEEK_CUR);
+      fseek(in, 4, SEEK_CUR); /* padding */
       get_CString(in, &PStr);
       f->str = PStr;
       break;
@@ -723,6 +723,7 @@ int dat_get_appointments(FILE *in, AppointmentList **alist, struct CategoryAppIn
       }
       /* Duration */
       /* what is duration? (repeatForever?) */
+
       /* Note */
       if (fa[4].str) {
 	 temp_alist->mappt.appt.note=fa[4].str;

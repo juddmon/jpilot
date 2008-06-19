@@ -1,4 +1,4 @@
-/* $Id: category.c,v 1.31 2008/06/03 01:02:53 rikster5 Exp $ */
+/* $Id: category.c,v 1.32 2008/06/19 04:12:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * category.c
@@ -22,7 +22,6 @@
 
 /********************************* Includes ***********************************/
 #include "config.h"
-#include "i18n.h"
 #include <gtk/gtk.h>
 #include <stdlib.h>
 #include <string.h>
@@ -32,6 +31,8 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <pi-file.h>
+
+#include "i18n.h"
 #include "utils.h"
 #include "log.h"
 #include "prefs.h"
@@ -62,7 +63,6 @@ struct dialog_cats_data {
 };
 
 /****************************** Main Code *************************************/
-
 int count_records_in_cat(char *db_name, int cat_index)
 {
    GList *records;
@@ -232,7 +232,6 @@ int edit_cats_swap_cats_pc3(char *DB_name, int old_cat, int new_cat)
    return _edit_cats_change_cats_pc3(DB_name, old_cat, new_cat, TRUE);
 }
 
-
 /*
  * This routine changes records from old_cat to new_cat.
  *  It does not modify the local pdb file.
@@ -393,14 +392,14 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 {
    struct dialog_cats_data *Pdata;
    int i, r, count;
-   int j; /* JPA */
-   long char_set; /* JPA */
+   int j;
+   long char_set;
    int id;
    int button;
-   int catnum; /* JPA */
-   char currentname[HOSTCAT_NAME_SZ]; /* current category name */
+   int catnum;
+   char currentname[HOSTCAT_NAME_SZ];  /* current category name */
    char previousname[HOSTCAT_NAME_SZ]; /* previous category name */
-   char pilotentry[HOSTCAT_NAME_SZ]; /* entry text, in Pilot character set */
+   char pilotentry[HOSTCAT_NAME_SZ];   /* entry text, in Pilot character set */
    char *button_text[]={N_("OK")};
    char *move_text[]={N_("Move"), N_("Delete"), N_("Cancel")};
    char *text;
@@ -728,7 +727,7 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
    int i, j;
    long char_set;
    char *catname_hchar;    /* Category names in host character set */
-   char *titles[2] = {N_("Category"), NULL};
+   char *titles[2] = {_("Category")};
    gchar *empty_line[] = {""};
 
    jp_logf(JP_LOG_DEBUG, "edit_cats\n");
