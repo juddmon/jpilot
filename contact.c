@@ -1,4 +1,4 @@
-/* $Id: contact.c,v 1.9 2008/06/19 04:12:07 rikster5 Exp $ */
+/* $Id: contact.c,v 1.10 2008/06/20 04:36:41 rikster5 Exp $ */
 
 /*******************************************************************************
  * contact.c
@@ -652,6 +652,7 @@ int get_contacts2(ContactList **contact_list, int sort_order,
    } else {
       keep_priv = privates;
    }
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
 
    *contact_list=NULL;
    recs_returned = 0;
@@ -660,7 +661,7 @@ int get_contacts2(ContactList **contact_list, int sort_order,
    if (-1 == num)
      return 0;
 
-   for (i=0, temp_list = records; temp_list; temp_list = temp_list->next, i++) {
+   for (temp_list = records; temp_list; temp_list = temp_list->next) {
       if (temp_list->data) {
 	 br=temp_list->data;
       } else {
@@ -709,7 +710,6 @@ int get_contacts2(ContactList **contact_list, int sort_order,
 	 continue;
       }
       buf = NULL;
-      get_pref(PREF_CHAR_SET, &char_set, NULL);
       if (char_set != CHAR_SET_LATIN1) {
 	 for (i = 0; i < 39; i++) {
 	    if ((cont.entry[i] != NULL) && (cont.entry[i][0] != '\0')) {

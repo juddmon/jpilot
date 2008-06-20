@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.158 2008/06/19 04:12:08 rikster5 Exp $ */
+/* $Id: utils.c,v 1.159 2008/06/20 04:36:41 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -831,7 +831,7 @@ int clist_find_id(GtkWidget *clist,
 }
 
 /* Encapsulate broken GTK function to make it work as documented */
-void clist_select_row(GtkCList *clist, 
+inline void clist_select_row(GtkCList *clist, 
                       int       row,
 		      int       column)
 {
@@ -1249,7 +1249,7 @@ int dialog_save_changed_record(GtkWidget *widget, int changed)
    return b;
 }
 
-void entry_set_multiline_truncate(GtkEntry *entry, gboolean value)
+inline void entry_set_multiline_truncate(GtkEntry *entry, gboolean value)
 {
 #  if GTK_MINOR_VERSION >= 10
       entry->truncate_multiline = value; 

@@ -1,4 +1,4 @@
-/* $Id: prefs.c,v 1.78 2008/06/19 04:12:07 rikster5 Exp $ */
+/* $Id: prefs.c,v 1.79 2008/06/20 04:36:41 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs.c
@@ -559,15 +559,14 @@ int jp_get_pref(prefType prefs[], int which, long *n, const char **string)
    if (n) {
       *n = prefs[which].ivalue;
    }
-   if (prefs[which].usertype == CHARTYPE) {
-      if (string!=NULL) {
+   if (string!=NULL) {
+      if (prefs[which].usertype == CHARTYPE) {
 	 *string = prefs[which].svalue;
-      }
-   } else {
-      if (string!=NULL) {
+      } else {
 	 *string = NULL;
       }
    }
+
    return EXIT_SUCCESS;
 }
 

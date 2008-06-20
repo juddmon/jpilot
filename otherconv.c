@@ -1,4 +1,4 @@
-/* $Id: otherconv.c,v 1.31 2008/06/19 04:12:07 rikster5 Exp $ */
+/* $Id: otherconv.c,v 1.32 2008/06/20 04:36:41 rikster5 Exp $ */
 
 /*******************************************************************************
  * otherconv.c
@@ -42,6 +42,8 @@
 /********************************* Constants **********************************/
 #define HOST_CS "UTF-8"
 
+#define min(a,b) (((a) < (b)) ? (a) : (b))
+
 /* You can't do #ifndef __FUNCTION__ */
 #if !defined(__GNUC__) && !defined(__IBMC__)
 #define __FUNCTION__ ""
@@ -58,15 +60,11 @@ static GIConv glob_frompda = NULL;
 /****************************** Main Code *************************************/
 /*
  * strnlen is not ANSI.
- * To avoid messing with conflicting declarations, I just implement my own version.
- * (this is easy & portable might not be very efficient) -- Amit Aronovitch
+ * To avoid conflicting declarations, it is reimplemented as a thin
+ * inline function over the library function strlen
  */
-size_t oc_strnlen(const char *s, size_t maxlen) {
-  const char *p,*endp;
-
-  endp = s+maxlen;
-  for (p=s;p<endp;++p) if (! *p) break;
-  return p-s;
+inline size_t oc_strnlen(const char *s, size_t maxlen) {
+  return min(strlen(s), maxlen); 
 }
 
 void oc_free_iconv(const char *funcname, GIConv conv, char *convname) {
@@ -169,6 +167,7 @@ char *other_to_UTF(const char *buf, int buf_len)
   char *outbuf;
   gsize bytes_read;
   GError *err = NULL;
+  size_t str_len;
 
 #ifdef OTHERCONV_DEBUG
   jp_logf(JP_LOG_DEBUG, "%s:%s reset iconv state...\n", __FILE__, __FUNCTION__);
@@ -178,10 +177,13 @@ char *other_to_UTF(const char *buf, int buf_len)
   jp_logf(JP_LOG_DEBUG, "%s:%s converting   [%s]\n", __FILE__, __FUNCTION__, buf);
 #endif
 
+  str_len = oc_strnlen(buf, buf_len);
+
   outbuf = (char *)g_convert_with_iconv((gchar *)buf,
-      oc_strnlen(buf, buf_len) +1, /* see Debian bug #309082 for the +1 */
-      glob_frompda, &bytes_read, NULL, &err);
-  if (err != NULL || bytes_read < oc_strnlen (buf, buf_len)) {
+           str_len + 1, /* see Debian bug #309082 for the +1 */
+           glob_frompda, &bytes_read, NULL, &err);
+
+  if ((err != NULL) || (bytes_read < str_len)) {
       char c;
       char *head, *tail;
       int outbuf_len;
@@ -252,7 +254,7 @@ void UTF_to_other(char *const buf, int buf_len)
   jp_logf(JP_LOG_DEBUG, "%s:%s converting   [%s]\n", __FILE__, __FUNCTION__, buf);
 #endif
 
-  inleft = oc_strnlen(buf,buf_len);
+  inleft = oc_strnlen(buf, buf_len);
   outleft = buf_len-1;
   inptr = buf;
 

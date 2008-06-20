@@ -1,4 +1,4 @@
-/* $Id: todo.c,v 1.44 2008/06/19 04:12:07 rikster5 Exp $ */
+/* $Id: todo.c,v 1.45 2008/06/20 04:36:41 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo.c
@@ -121,7 +121,7 @@ int get_todos2(ToDoList **todo_list, int sort_order,
 {
    GList *records;
    GList *temp_list;
-   int recs_returned, i, num;
+   int recs_returned, num;
    struct ToDo todo;
    ToDoList *temp_todo_list;
    long keep_modified, keep_deleted, hide_completed;
@@ -155,6 +155,7 @@ int get_todos2(ToDoList **todo_list, int sort_order,
    } else {
       hide_completed = !completed;
    }
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
 
    *todo_list=NULL;
    recs_returned = 0;
@@ -176,7 +177,7 @@ int get_todos2(ToDoList **todo_list, int sort_order,
       return 0;
 #endif
 
-   for (i=0, temp_list = records; temp_list; temp_list = temp_list->next, i++) {
+   for (temp_list = records; temp_list; temp_list = temp_list->next) {
       if (temp_list->data) {
 	 br=temp_list->data;
       } else {
@@ -214,7 +215,6 @@ int get_todos2(ToDoList **todo_list, int sort_order,
 	 continue;
       }
 
-      get_pref(PREF_CHAR_SET, &char_set, NULL);
       if (todo.description) {
          buf = charset_p2newj(todo.description, strlen(todo.description)+1, char_set);
          if (buf) {

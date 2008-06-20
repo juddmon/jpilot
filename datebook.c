@@ -1,4 +1,4 @@
-/* $Id: datebook.c,v 1.53 2008/06/19 04:12:07 rikster5 Exp $ */
+/* $Id: datebook.c,v 1.54 2008/06/20 04:36:41 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook.c
@@ -484,7 +484,7 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
 {
    GList *records;
    GList *temp_list;
-   int recs_returned, i, num;
+   int recs_returned, num;
    struct Appointment appt;
    AppointmentList *temp_a_list;
    long keep_modified, keep_deleted;
@@ -525,6 +525,7 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
    } else {
       keep_priv = privates;
    }
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
 
    *appointment_list=NULL;
    recs_returned = 0;
@@ -535,7 +536,7 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
 
    if (total_records) *total_records = num;
 
-   for (i=0, temp_list = records; temp_list; temp_list = temp_list->next, i++) {
+   for (temp_list = records; temp_list; temp_list = temp_list->next) {
       if (temp_list->data) {
 	 br=temp_list->data;
       } else {
@@ -579,8 +580,6 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
 	    continue;
 	 }
       }
-
-      get_pref(PREF_CHAR_SET, &char_set, NULL);
 
       if (appt.description) {
 	 if ((buf = malloc((len = strlen(appt.description)*2+1))) != NULL) {
