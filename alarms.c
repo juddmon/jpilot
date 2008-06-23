@@ -1,4 +1,4 @@
-/* $Id: alarms.c,v 1.46 2008/06/19 04:12:07 rikster5 Exp $ */
+/* $Id: alarms.c,v 1.47 2008/06/23 03:03:45 rikster5 Exp $ */
 
 /*******************************************************************************
  * alarms.c
@@ -983,7 +983,7 @@ int alarms_init(unsigned char skip_past_alarms,
    found_uptodate=0;
    in=jp_open_home_file(EPN".alarms", "r");
    if (!in) {
-      jp_logf(JP_LOG_WARN, _("Unable to open %s.alarms file\n"), EPN);
+      jp_logf(JP_LOG_WARN, _("Unable to open file: %s%s\n"), EPN, ".alarms");
       return EXIT_FAILURE;
    }
 

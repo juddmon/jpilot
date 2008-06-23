@@ -1,4 +1,4 @@
-/* $Id: install_user.c,v 1.8 2008/06/19 04:12:07 rikster5 Exp $ */
+/* $Id: install_user.c,v 1.9 2008/06/23 03:03:45 rikster5 Exp $ */
 
 /*******************************************************************************
  * install_user.c
@@ -166,7 +166,7 @@ int dialog_install_user(GtkWindow *main_window,
    /* User Name */
    hbox = gtk_hbox_new(FALSE, 5);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 2);
-   label = gtk_label_new(_("User name"));
+   label = gtk_label_new(_("User Name"));
    user_entry = gtk_entry_new_with_max_length(128);
    entry_set_multiline_truncate(GTK_ENTRY(user_entry), TRUE);
    data.user_entry = user_entry;

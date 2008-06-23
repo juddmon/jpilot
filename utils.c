@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.159 2008/06/20 04:36:41 rikster5 Exp $ */
+/* $Id: utils.c,v 1.160 2008/06/23 03:03:45 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -575,7 +575,7 @@ int check_hidden_dir()
    }
    /* Is it a directory? */
    if (!S_ISDIR(statb.st_mode)) {
-      jp_logf(JP_LOG_WARN, _("%s is not a directory.\n"), hidden_dir);
+      jp_logf(JP_LOG_WARN, _("%s is not a directory\n"), hidden_dir);
       return EXIT_FAILURE;
    }
    /* Can we write in it? */

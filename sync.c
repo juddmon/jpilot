@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.100 2008/06/19 04:12:07 rikster5 Exp $ */
+/* $Id: sync.c,v 1.101 2008/06/23 03:03:45 rikster5 Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -3291,7 +3291,7 @@ int sync_once(struct my_sync_info *sync_info)
    r = jp_sync(sync_info_copy);
    if (r) {
       jp_logf(JP_LOG_WARN, _("Exiting with status %s\n"), get_error_str(r));
-      jp_logf(JP_LOG_WARN, _("Finished\n"));
+      jp_logf(JP_LOG_WARN, _("Finished.\n"));
    }
 #ifdef USE_LOCKING
    sync_unlock(fd);

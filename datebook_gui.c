@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.174 2008/06/19 04:12:07 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.175 2008/06/23 03:03:45 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -304,7 +304,7 @@ int datebook_to_text(struct Appointment *appt, char *text, int len)
    /* Repeat Days (for weekly) */
    text_repeat_days[0]='\0';
    if (appt->repeatType==repeatWeekly) {
-      strcpy(text_repeat_days, _("Repeat Days:"));
+      strcpy(text_repeat_days, _("Repeat on Days:"));
       for (i=0; i<7; i++) {
 	 if (appt->repeatDays[i]) {
 	    strcat(text_repeat_days, " ");
@@ -1840,7 +1840,7 @@ static int appt_get_details(struct Appointment *appt, unsigned char *attrib)
    char null_str[]="";
 #endif
    const char *period[] = {
-      N_("none"),
+      N_("None"),
       N_("day"),
       N_("week"),
       N_("month"),
@@ -2124,7 +2124,7 @@ static int appt_get_details(struct Appointment *appt, unsigned char *attrib)
    /* We won't allow a weekly repeating that doesn't repeat on any day */
    if ((page == PAGE_WEEK) && (total_repeat_days == 0)) {
       dialog_generic_ok(notebook, _("Error"), DIALOG_ERROR,
-			_("You can not have a weekly repeating appointment that doesn't repeat on any day of the week."));
+			_("You cannot have a weekly repeating appointment that doesn't repeat on any day of the week."));
       return EXIT_FAILURE;
    }
 
@@ -3199,7 +3199,7 @@ static void cb_clist_selection(GtkWidget      *clist,
       gtk_notebook_set_page(GTK_NOTEBOOK(notebook), PAGE_YEAR);
       break;
     default:
-      jp_logf(JP_LOG_WARN, _("Unknown repeatType found in DatebookDB\n"));
+      jp_logf(JP_LOG_WARN, _("Unknown repeatType (%d) found in DatebookDB\n"), appt->repeatFrequency);
    }
 
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(private_checkbox),
@@ -4139,6 +4139,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 3);
    gtk_widget_show(button);
    gtk_label_set_pattern(GTK_LABEL(GTK_BIN(button)->child), "_");
+   /* Accelerator key to use for starting Weekview GUI */
    gtk_widget_add_accelerator(GTK_WIDGET(button), "clicked", accel_group, *_("W"),
 			      GDK_MOD1_MASK, GTK_ACCEL_VISIBLE);
    gtk_tooltips_set_tip(glob_tooltips, button, _("View appointments by week"), NULL);
@@ -4151,6 +4152,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_widget_show(button);
 
    gtk_label_set_pattern(GTK_LABEL(GTK_BIN(button)->child), "_");
+   /* Accelerator key to use for starting Monthview GUI */
    gtk_widget_add_accelerator(GTK_WIDGET(button), "clicked", accel_group, *_("M"),
 			      GDK_MOD1_MASK, GTK_ACCEL_VISIBLE);
    gtk_tooltips_set_tip(glob_tooltips, button, _("View appointments by month"), NULL);

@@ -1,4 +1,4 @@
-/* $Id: print_gui.c,v 1.20 2008/06/19 04:12:07 rikster5 Exp $ */
+/* $Id: print_gui.c,v 1.21 2008/06/23 03:03:45 rikster5 Exp $ */
 
 /*******************************************************************************
  * print_gui.c
@@ -308,8 +308,8 @@ int print_gui(GtkWidget *main_window, int app, int date_button, int mon_week_day
       gtk_widget_set_usize(lines_entry, 30, 0);
       gtk_box_pack_start(GTK_BOX(hbox), lines_entry, FALSE, FALSE, 0);
 
-      label = gtk_label_new(_(" Blank lines between each record"));
-      gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
+      label = gtk_label_new(_("Blank lines between each record"));
+      gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 5);
 
       get_pref(PREF_NUM_BLANK_LINES, &ivalue, NULL);
       sprintf(temp_str, "%ld", ivalue);
