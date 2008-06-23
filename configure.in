@@ -393,7 +393,7 @@ dnl ############################################################################
 dnl Check for headers needed 
 dnl ############################################################################
 dnl 10/2/06: only headers used for true code portability right now are locale.h, langinfo.h
-AC_CHECK_HEADERS([fcntl.h langinfo.h locale.h stdlib.h string.h sys/file.h sys/socket.h sys/time.h sys/wait.h unistd.h utime.h])
+AC_CHECK_HEADERS([fcntl.h langinfo.h locale.h stdlib.h string.h sys/socket.h sys/time.h sys/wait.h unistd.h utime.h])
 
 # Headers required for plugins
 AC_CHECK_HEADERS(netinet/in.h, have_netinet=1, have_netinet=0)
@@ -405,8 +405,8 @@ fi
 AC_CHECK_HEADERS(termio.h, have_termio=1, have_termio=0)
 
 dnl Headers needed to build keyring
-AC_CHECK_HEADERS([openssl/md5.h], have_openssl_md5=1, have_openssl_md5=0)
-AC_CHECK_HEADERS([openssl/des.h], have_openssl_des=1, have_openssl_des=0)
+AC_CHECK_HEADERS(openssl/md5.h, have_openssl_md5=1, have_openssl_md5=0)
+AC_CHECK_HEADERS(openssl/des.h, have_openssl_des=1, have_openssl_des=0)
 
 dnl ############################################################################
 dnl Check for typedefs and structures needed 
@@ -450,10 +450,14 @@ AC_FUNC_STRCOLL
 AC_CHECK_FUNCS(setenv)
 
 AC_ARG_WITH(with_flock,
-   AC_HELP_STRING([--with-flock],[Substitute flock instead of fnctl (for NFS)]))
-if test "x$with_flock" != "x"; then
-   AC_DEFINE(USE_FLOCK, 1, [ Using flock instead of fnctl ])
-   AC_MSG_RESULT(Using flock instead of fnctl)
+   AC_HELP_STRING([--with-flock],[Substitute flock instead of fnctl for file locking (for NFS)]),
+   with_flock=yes)
+
+if test "x$with_flock" = "xyes"; then
+   AC_CHECK_HEADERS(sys/file.h,
+     [AC_DEFINE(USE_FLOCK, 1, [ Using flock instead of fnctl ])
+      AC_MSG_RESULT(Using flock instead of fnctl)],
+     [AC_MSG_FAILURE([--with-flock was given, but sys/file.h was not found])])
 fi
 
 dnl ############################################################################
