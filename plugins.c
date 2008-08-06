@@ -1,4 +1,4 @@
-/* $Id: plugins.c,v 1.21 2008/06/19 04:12:07 rikster5 Exp $ */
+/* $Id: plugins.c,v 1.22 2008/08/06 19:16:17 rousseau Exp $ */
 
 /*******************************************************************************
  * plugins.c
@@ -191,7 +191,7 @@ static int get_plugin_sync_bits()
    int i;
    GList *temp_list;
    struct plugin_s *Pplugin;
-   char line[256];
+   char line[1024];
    char *Pline;
    char *Pc;
    FILE *in;
