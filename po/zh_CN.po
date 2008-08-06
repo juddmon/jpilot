@@ -1256,7 +1256,7 @@ msgstr "/查看(V)/屏蔽私人记录"
 
 #: ../jpilot.c:1424
 msgid "/View/sep1"
-msgstr "/查看(F)/sep1"
+msgstr "/查看(V)/sep1"
 
 #: ../jpilot.c:1425
 msgid "/View/Datebook"
