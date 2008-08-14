@@ -1,4 +1,4 @@
-/* $Id: jpilot-dump.c,v 1.28 2008/06/19 04:12:07 rikster5 Exp $ */
+/* $Id: jpilot-dump.c,v 1.29 2008/08/14 21:18:15 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot-dump.c
@@ -148,6 +148,7 @@ int dumpical()
    char *p;
    time_t ltime;
    struct tm *now;
+   struct tm ical_time;
    char username[256];
    char hostname[256];
    const char *svalue;
@@ -305,10 +306,20 @@ int dumpical()
 	    printf(";INTERVAL=%d", mappt->appt.repeatFrequency);
 	 }
 	 if (!mappt->appt.repeatForever) {
-	    printf(";UNTIL=%04d%02d%02d",
-		  mappt->appt.repeatEnd.tm_year+1900,
-		  mappt->appt.repeatEnd.tm_mon+1,
-		  mappt->appt.repeatEnd.tm_mday);
+            /* RFC 2445 is unclear on how to handle inclusivity for 
+             * dates, rather than datestamps. Because most other
+             * ical parsers assume non-inclusivity Jpilot needs to
+             * add one day to the end date of repeating events. */
+            memset(&ical_time, 0, sizeof(ical_time));
+            ical_time.tm_year = mappt->appt.repeatEnd.tm_year;
+            ical_time.tm_mon  = mappt->appt.repeatEnd.tm_mon;
+            ical_time.tm_mday = mappt->appt.repeatEnd.tm_mday + 1;
+            ical_time.tm_isdst= -1;
+            mktime(&ical_time);
+            printf(";UNTIL=%04d%02d%02d",
+                   ical_time.tm_year+1900,
+                   ical_time.tm_mon+1,
+                   ical_time.tm_mday);
 	 }
 	 printf("\n");
 	 if (mappt->appt.exceptions > 0) {
