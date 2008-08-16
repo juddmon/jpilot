@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.176 2008/08/14 21:18:15 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.177 2008/08/16 07:59:47 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -3279,14 +3279,39 @@ void cb_cal_changed(GtkWidget *widget,
       return;
    }
 
-   b=dialog_save_changed_record(pane, record_changed);
-   if (b==DIALOG_SAID_2) {
-      cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
-   }
-   set_new_button_to(CLEAR_FLAG);
-
+   /* Get selected date from calendar */
    gtk_calendar_get_date(GTK_CALENDAR(main_calendar),
 	                 &cal_year, &cal_month, &cal_day);
+
+   /* Handle modified record before switching to new date */
+   if ((record_changed==MODIFY_FLAG) || (record_changed==NEW_FLAG)) {
+      b=dialog_save_changed_record(pane, record_changed);
+      if (b==DIALOG_SAID_2) {
+         /* cb_add_new_record is troublesome because it attempts to 
+          * change the calendar. Not only must signals be disconnected
+          * to avoid re-triggering cb_cal_changed but the original date
+          * must be re-selected after the add_new_record has changed it */
+
+         gtk_signal_disconnect_by_func(GTK_OBJECT(main_calendar),
+                                       GTK_SIGNAL_FUNC(cb_cal_changed),
+                                       GINT_TO_POINTER(CAL_DAY_SELECTED));
+
+         cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
+
+         gtk_calendar_freeze(GTK_CALENDAR(main_calendar));
+         gtk_calendar_select_month(GTK_CALENDAR(main_calendar),
+                                   cal_month,
+                                   cal_year); 
+         gtk_calendar_select_day(GTK_CALENDAR(main_calendar), cal_day);
+         gtk_calendar_thaw(GTK_CALENDAR(main_calendar));
+
+         gtk_signal_connect(GTK_OBJECT(main_calendar),
+                            "day_selected", GTK_SIGNAL_FUNC(cb_cal_changed),
+                            GINT_TO_POINTER(CAL_DAY_SELECTED));
+      }
+   }
+
+   set_new_button_to(CLEAR_FLAG);
 
    /* Day 0 is used in GTK to unselect the current highlighted day -- 
     * NOT to change to the zeroeth day */
@@ -3424,7 +3449,7 @@ int datebook_refresh(int first, int do_init)
    set_new_button_to(CLEAR_FLAG);
 
    if (do_init)
-       init();
+      init();
 
 #ifdef ENABLE_DATEBK
    if (glob_find_id) {
