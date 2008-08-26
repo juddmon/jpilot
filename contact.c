@@ -1,4 +1,4 @@
-/* $Id: contact.c,v 1.10 2008/06/20 04:36:41 rikster5 Exp $ */
+/* $Id: contact.c,v 1.11 2008/08/26 03:26:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * contact.c
@@ -594,19 +594,19 @@ int get_contact_app_info(struct ContactAppInfo *ai)
 
       for (i = 0; i < 49 + 3; i++)
 	if (ai->labels[i][0] != '\0') {
-	   charset_p2j(ai->labels[i],16, char_set);
+	   charset_p2j(ai->labels[i], 16, char_set);
 	}
       for (i = 0; i < 8; i++)
 	if (ai->phoneLabels[i][0] != '\0') {
-	   charset_p2j(ai->phoneLabels[i],16, char_set);
+	   charset_p2j(ai->phoneLabels[i], 16, char_set);
 	}
       for (i = 0; i < 3; i++)
 	if (ai->addrLabels[i][0] != '\0') {
-	   charset_p2j(ai->addrLabels[i],16, char_set);
+	   charset_p2j(ai->addrLabels[i], 16, char_set);
 	}
       for (i = 0; i < 5; i++)
 	if (ai->IMLabels[i][0] != '\0') {
-	   charset_p2j(ai->IMLabels[i],16, char_set);
+	   charset_p2j(ai->IMLabels[i], 16, char_set);
 	}
    }
 
@@ -713,16 +713,10 @@ int get_contacts2(ContactList **contact_list, int sort_order,
       if (char_set != CHAR_SET_LATIN1) {
 	 for (i = 0; i < 39; i++) {
 	    if ((cont.entry[i] != NULL) && (cont.entry[i][0] != '\0')) {
-               buf = charset_p2newj(cont.entry[i], strlen(cont.entry[i])+1, char_set);
+               buf = charset_p2newj(cont.entry[i], -1, char_set);
                if (buf) {
-		  if (strlen(buf) > strlen(cont.entry[i])) {
-		     free(cont.entry[i]);
-		     cont.entry[i] = strdup(buf);
-		     free(buf);
-		  } else {
-		     multibyte_safe_strncpy(cont.entry[i], buf, strlen(cont.entry[i])+1);
-		     free(buf);
-		  }
+                  free(cont.entry[i]);
+                  cont.entry[i] = buf;
 	       }
 	    }
 	 }
@@ -766,7 +760,8 @@ int pc_contact_write(struct Contact *cont, PCRecType rt, unsigned char attrib,
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    if (char_set != CHAR_SET_LATIN1) {
       for (i = 0; i < 39; i++) {
-	 if (cont->entry[i]) charset_j2p(cont->entry[i], strlen(cont->entry[i])+1, char_set);
+	 if (cont->entry[i]) 
+            charset_j2p(cont->entry[i], strlen(cont->entry[i])+1, char_set);
       }
    }
 

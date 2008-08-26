@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.160 2008/06/23 03:03:45 rikster5 Exp $ */
+/* $Id: utils.c,v 1.161 2008/08/26 03:26:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -52,6 +52,8 @@
 
 #define NUM_CAT_ITEMS 16
 #define DAY_IN_SECS 86400
+
+#define min(a,b) (((a) < (b)) ? (a) : (b))
 
 /******************************* Global vars **********************************/
 /* Stuff for the dialog window */
@@ -418,13 +420,18 @@ static void cb_today(GtkWidget *widget, gpointer data)
    gtk_calendar_select_day(GTK_CALENDAR(cal), now->tm_mday);
 }
 
+/*
+ *         JPA overwrite a host character set string by its
+ *             conversion to a Palm Pilot character string
+ */
 void charset_j2p(char *buf, int max_len, long char_set)
 {
    switch (char_set) {
     case CHAR_SET_JAPANESE: Euc2Sjis(buf, max_len); break;
-    case CHAR_SET_1250: Lat2Win(buf,max_len); break;
-    case CHAR_SET_1251: koi8_to_win1251(buf, max_len); break;
-    case CHAR_SET_1251_B: win1251_to_koi8(buf, max_len); break;
+    case CHAR_SET_LATIN1  : /* No conversion required */ break;
+    case CHAR_SET_1250    : Lat2Win(buf,max_len); break;
+    case CHAR_SET_1251    : koi8_to_win1251(buf, max_len); break;
+    case CHAR_SET_1251_B  : win1251_to_koi8(buf, max_len); break;
     default:
       UTF_to_other(buf, max_len);
       break;
@@ -438,13 +445,21 @@ void charset_j2p(char *buf, int max_len, long char_set)
 void charset_p2j(char *const buf, int max_len, int char_set)
 {
    char *newbuf;
+   gchar *end;
 
    newbuf = charset_p2newj(buf, max_len, char_set);
 
    g_strlcpy(buf, newbuf, max_len);
-   /* note : string may get truncated within a multibyte char */
-   if (strlen(newbuf) >= max_len)
-     jp_logf(JP_LOG_WARN, "charset_p2j: buffer too small - string had to be truncated to [%s]\n", buf);
+
+   if (strlen(newbuf) >= max_len) {
+      jp_logf(JP_LOG_WARN, "charset_p2j: buffer too small - original string before truncation [%s]\n", newbuf);
+      if (char_set > CHAR_SET_UTF) {
+         /* truncate the string on a UTF-8 character boundary */
+         if (!g_utf8_validate(buf, -1, (const gchar **)&end))
+            *end = 0;
+      }
+   }
+
    free(newbuf);
 }
 
@@ -456,31 +471,48 @@ char *charset_p2newj(const char *buf, int max_len, int char_set)
 {
    char *newbuf = NULL;
 
-   /* Allocate a longer buffer if not done in conversion routine */
-   /* Only old conversion routines don't assign a buffer */
+   /* Allocate a longer buffer if not done in conversion routine.
+    * Only old conversion routines don't assign a buffer */
    switch (char_set) {
     case CHAR_SET_JAPANESE:
+      if (max_len == -1) {
+         max_len = 2*strlen(buf) + 1;
+         newbuf = g_malloc(max_len);
+      } else {
+         newbuf = g_malloc(min(2*strlen(buf) + 1, max_len));
+      }
+      if (newbuf) {
+         /* be safe, though string should fit into buf */
+         g_strlcpy(newbuf, buf, max_len);
+      }
+      break;
+    case CHAR_SET_LATIN1:
     case CHAR_SET_1250:
     case CHAR_SET_1251:
     case CHAR_SET_1251_B:
-      if (char_set < CHAR_SET_UTF) {
-         newbuf = g_malloc(2*max_len - 1);
-         if (newbuf) {
-            /* be safe, though string should fit into buf */
-            g_strlcpy(newbuf, buf, max_len);
-         }
+      if (max_len == -1) {
+         max_len = strlen(buf) + 1;
+         newbuf = g_malloc(max_len);
+      } else {
+         newbuf = g_malloc(min(strlen(buf) + 1, max_len));
+      }
+      if (newbuf) {
+         /* be safe, though string should fit into buf */
+         g_strlcpy(newbuf, buf, max_len);
       }
       break;
     default:
+      /* All other encodings get a new buffer from other_to_UTF */
       break;
    }
 
+   /* Now convert character encoding */
    switch (char_set) {
     case CHAR_SET_JAPANESE : Sjis2Euc(newbuf, max_len); break;
-    case CHAR_SET_1250 : Win2Lat(newbuf,max_len); break;
-    case CHAR_SET_1251 : win1251_to_koi8(newbuf, max_len); break;
-    case CHAR_SET_1251_B : koi8_to_win1251(newbuf, max_len); break;
-	case CHAR_SET_LATIN1 : newbuf = g_strdup(buf);
+    case CHAR_SET_LATIN1   : /* No conversion required */ break;
+    case CHAR_SET_1250     : Win2Lat(newbuf, max_len); break;
+    case CHAR_SET_1251     : win1251_to_koi8(newbuf, max_len); break;
+    case CHAR_SET_1251_B   : koi8_to_win1251(newbuf, max_len); break;
     default:
       newbuf = other_to_UTF(buf, max_len);
       break;
@@ -1029,6 +1061,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       switch (app_type) {
        case DATEBOOK:
 	 appt=&mappt->appt;
+         /* %RW Conversion doesn't appear necessary. */
 	 if (char_set != CHAR_SET_LATIN1) {
 	    if (appt->description) charset_j2p(appt->description, strlen(appt->description)+1, char_set);
 	    if (appt->note) charset_j2p(appt->note, strlen(appt->note)+1, char_set);
@@ -2615,7 +2648,7 @@ char *multibyte_safe_memccpy(char *dst, const char *src, int c, size_t len)
    if (char_set == CHAR_SET_JAPANESE ||
        char_set == CHAR_SET_TRADITIONAL_CHINESE ||
        char_set == CHAR_SET_KOREAN
-       ) {  /* Multibyte Charactors */
+       ) {  /* Multibyte Characters */
       char *p, *q;
       int n = 0;
 

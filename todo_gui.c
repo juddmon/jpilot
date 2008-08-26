@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.140 2008/06/19 04:12:07 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.141 2008/08/26 03:26:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -435,7 +435,7 @@ int cb_todo_import(GtkWidget *parent_window, const char *file_path, int type)
 #ifdef JPILOT_DEBUG
 	 printf("category is [%s]\n", text);
 #endif
-	 g_strlcpy(old_cat_name, text, 17);
+	 g_strlcpy(old_cat_name, text, 16);
 	 attrib=0;
 	 /* Figure out what the best category number is */
 	 suggested_cat_num=0;
@@ -542,10 +542,10 @@ int cb_todo_import(GtkWidget *parent_window, const char *file_path, int type)
       for (temp_todolist=todolist; temp_todolist; temp_todolist=temp_todolist->next) {
 	 index=temp_todolist->mtodo.unique_id-1;
 	 if (index<0) {
-	    g_strlcpy(old_cat_name, _("Unfiled"), 17);
+	    g_strlcpy(old_cat_name, _("Unfiled"), 16);
 	    index=0;
 	 } else {
-	    g_strlcpy(old_cat_name, cai.name[index], 17);
+	    g_strlcpy(old_cat_name, cai.name[index], 16);
 	 }
 	 /* Figure out what category it was in the dat file */
 	 index=temp_todolist->mtodo.unique_id-1;

@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.177 2008/08/16 07:59:47 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.178 2008/08/26 03:26:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -405,7 +405,7 @@ int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int type)
 #ifdef JPILOT_DEBUG
 	 printf("category is [%s]\n", text);
 #endif
-	 g_strlcpy(old_cat_name, text, 17);
+	 g_strlcpy(old_cat_name, text, 16);
 	 /* Figure out what the best category number is */
 	 suggested_cat_num=0;
 	 for (i=0; i<NUM_DATEBOOK_CAT_ITEMS; i++) {
@@ -600,10 +600,10 @@ int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int type)
       for (temp_alist=alist; temp_alist; temp_alist=temp_alist->next) {
 	 index=temp_alist->mappt.unique_id-1;
 	 if (index<0) {
-	    g_strlcpy(old_cat_name, _("Unfiled"), 17);
+	    g_strlcpy(old_cat_name, _("Unfiled"), 16);
 	    index=0;
 	 } else {
-	    g_strlcpy(old_cat_name, cai.name[index], 17);
+	    g_strlcpy(old_cat_name, cai.name[index], 16);
 	 }
 	 /* Figure out what category it was in the dat file */
 	 index=temp_alist->mappt.unique_id-1;

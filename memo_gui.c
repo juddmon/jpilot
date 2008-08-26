@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.125 2008/06/19 04:12:07 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.126 2008/08/26 03:26:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -349,7 +349,7 @@ int cb_memo_import(GtkWidget *parent_window, const char *file_path, int type)
 #ifdef JPILOT_DEBUG
 	 printf("category is [%s]\n", text);
 #endif
-	 g_strlcpy(old_cat_name, text, 17);
+	 g_strlcpy(old_cat_name, text, 16);
 	 /* Figure out what the best category number is */
 	 suggested_cat_num=0;
 	 for (i=0; i<NUM_MEMO_CAT_ITEMS; i++) {
@@ -416,10 +416,10 @@ int cb_memo_import(GtkWidget *parent_window, const char *file_path, int type)
 	 new_memo.text=temp_memolist->mmemo.memo.text;
 	 index=temp_memolist->mmemo.unique_id-1;
 	 if (index<0) {
-	    g_strlcpy(old_cat_name, _("Unfiled"), 17);
+	    g_strlcpy(old_cat_name, _("Unfiled"), 16);
 	    index=0;
 	 } else {
-	    g_strlcpy(old_cat_name, cai.name[index], 17);
+	    g_strlcpy(old_cat_name, cai.name[index], 16);
 	 }
 	 attrib=0;
 	 /* Figure out what category it was in the dat file */

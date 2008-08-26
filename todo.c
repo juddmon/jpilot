@@ -1,4 +1,4 @@
-/* $Id: todo.c,v 1.45 2008/06/20 04:36:41 rikster5 Exp $ */
+/* $Id: todo.c,v 1.46 2008/08/26 03:26:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo.c
@@ -216,14 +216,14 @@ int get_todos2(ToDoList **todo_list, int sort_order,
       }
 
       if (todo.description) {
-         buf = charset_p2newj(todo.description, strlen(todo.description)+1, char_set);
+         buf = charset_p2newj(todo.description, -1, char_set);
          if (buf) {
 	    free(todo.description);
 	    todo.description = buf;
 	 }
       }
       if (todo.note) {
-	 buf = charset_p2newj(todo.note, strlen(todo.note)+1, char_set);
+	 buf = charset_p2newj(todo.note, -1, char_set);
          if (buf) {
 	    free(todo.note);
 	    todo.note = buf;

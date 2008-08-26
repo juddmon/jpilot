@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.173 2008/06/19 04:12:07 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.174 2008/08/26 03:26:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -883,7 +883,7 @@ static void cb_read_pipe_from_child(gpointer data,
 	    strcpy(title, PN" "VERSION);
 	    if ((svalue) && (svalue[0])) {
 	       strcat(title, _(" User: "));
-	       user_name = charset_p2newj(svalue, strlen(svalue)+1, char_set);
+	       user_name = charset_p2newj(svalue, -1, char_set);
 	       strcat(title, user_name);
 	       gtk_window_set_title(GTK_WINDOW(window), title);
 	       free(user_name);
@@ -1767,7 +1767,7 @@ int main(int argc, char *argv[])
 	{
 	   char *newvalue;
 
-	   newvalue = charset_p2newj(svalue, strlen(svalue)+1, char_set);
+	   newvalue = charset_p2newj(svalue, -1, char_set);
 	   strcat(title, newvalue);
 	   free(newvalue);
 	}

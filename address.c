@@ -1,4 +1,4 @@
-/* $Id: address.c,v 1.55 2008/06/20 04:36:41 rikster5 Exp $ */
+/* $Id: address.c,v 1.56 2008/08/26 03:26:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * address.c
@@ -425,16 +425,10 @@ int get_addresses2(AddressList **address_list, int sort_order,
       if (char_set != CHAR_SET_LATIN1) {
 	 for (i = 0; i < 19; i++) {
 	    if ((addr.entry[i] != NULL) && (addr.entry[i][0] != '\0')) {
-               buf = charset_p2newj(addr.entry[i], strlen(addr.entry[i])+1, char_set);
+               buf = charset_p2newj(addr.entry[i], -1, char_set);
                if (buf) {
-		  if (strlen(buf) > strlen(addr.entry[i])) {
-		     free(addr.entry[i]);
-		     addr.entry[i] = strdup(buf);
-		     free(buf);
-		  } else {
-		     multibyte_safe_strncpy(addr.entry[i], buf, strlen(addr.entry[i])+1);
-		     free(buf);
-		  }
+                  free(addr.entry[i]);
+                  addr.entry[i] = buf;
 	       }
 	    }
 	 }
@@ -478,7 +472,8 @@ int pc_address_write(struct Address *addr, PCRecType rt, unsigned char attrib,
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    if (char_set != CHAR_SET_LATIN1) {
       for (i = 0; i < 19; i++) {
-	 if (addr->entry[i]) charset_j2p(addr->entry[i], strlen(addr->entry[i])+1, char_set);
+	 if (addr->entry[i]) 
+            charset_j2p(addr->entry[i], strlen(addr->entry[i])+1, char_set);
       }
    }
 

@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.216 2008/06/19 04:12:07 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.217 2008/08/26 03:26:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -580,7 +580,7 @@ int cb_addr_import(GtkWidget *parent_window, const char *file_path, int type)
 #ifdef JPILOT_DEBUG
 	 printf("category is [%s]\n", text);
 #endif
-	 g_strlcpy(old_cat_name, text, 17);
+	 g_strlcpy(old_cat_name, text, 16);
 	 /* Try to match imported category name to an existing category number */
 	 suggested_cat_num = 0;
 	 for (i=0; i<NUM_ADDRESS_CAT_ITEMS; i++) {
@@ -727,10 +727,10 @@ int cb_addr_import(GtkWidget *parent_window, const char *file_path, int type)
       for (temp_addrlist=addrlist; temp_addrlist; temp_addrlist=temp_addrlist->next) {
 	 index=temp_addrlist->maddr.unique_id-1;
 	 if (index<0) {
-	    g_strlcpy(old_cat_name, _("Unfiled"), 17);
+	    g_strlcpy(old_cat_name, _("Unfiled"), 16);
 	    index=0;
 	 } else {
-	    g_strlcpy(old_cat_name, cai.name[index], 17);
+	    g_strlcpy(old_cat_name, cai.name[index], 16);
 	 }
 	 attrib=0;
 	 /* Figure out what category it was in the dat file */

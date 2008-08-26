@@ -1,4 +1,4 @@
-/* $Id: datebook.c,v 1.54 2008/06/20 04:36:41 rikster5 Exp $ */
+/* $Id: datebook.c,v 1.55 2008/08/26 03:26:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook.c
@@ -492,7 +492,6 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
    buf_rec *br;
    long char_set;
    char *buf;
-   size_t len;
    pi_buffer_t *RecordBuffer;
 #ifdef ENABLE_DATEBK
    long use_db3_tags;
@@ -582,29 +581,17 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
       }
 
       if (appt.description) {
-	 if ((buf = malloc((len = strlen(appt.description)*2+1))) != NULL) {
-	    multibyte_safe_strncpy(buf, appt.description, len);
-	    charset_p2j(buf, len, char_set);
-	    if (strlen(buf) > strlen(appt.description)) {
-	       free(appt.description);
-	       appt.description = strdup(buf);
-	    } else {
-	       multibyte_safe_strncpy(appt.description, buf, strlen(appt.description)+1);
-	    }
-	    free(buf);
-	 }
+         buf = charset_p2newj(appt.description, -1, char_set);
+         if (buf) {
+            free(appt.description);
+            appt.description = buf;
+         }
       }
       if (appt.note) {
-	 if ((buf = malloc((len = strlen(appt.note)*2+1))) != NULL) {
-	    multibyte_safe_strncpy(buf, appt.note, len);
-	    charset_p2j(buf, len, char_set);
-	    if (strlen(buf) > strlen(appt.note)) {
-	       free(appt.note);
-	       appt.note = strdup(buf);
-	    } else {
-	       multibyte_safe_strncpy(appt.note, buf, strlen(appt.note)+1);
-	    }
-	    free(buf);
+         buf = charset_p2newj(appt.note, -1, char_set);
+         if (buf) {
+	    free(appt.note);
+	    appt.note = buf;
 	 }
       }
 

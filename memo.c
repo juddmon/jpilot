@@ -1,4 +1,4 @@
-/* $Id: memo.c,v 1.42 2008/06/20 04:36:41 rikster5 Exp $ */
+/* $Id: memo.c,v 1.43 2008/08/26 03:26:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo.c
@@ -192,9 +192,11 @@ int get_memos2(MemoList **memo_list, int sort_order,
 	 continue;
       }
       if (memo.text) {
-         newtext = charset_p2newj(memo.text, strlen(memo.text)+1, char_set);
-         free(memo.text);
-         memo.text = newtext;
+         newtext = charset_p2newj(memo.text, -1, char_set);
+         if (newtext) {
+            free(memo.text);
+            memo.text = newtext;
+         }
       }
 
       temp_memo_list = malloc(sizeof(MemoList));

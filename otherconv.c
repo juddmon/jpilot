@@ -1,4 +1,4 @@
-/* $Id: otherconv.c,v 1.32 2008/06/20 04:36:41 rikster5 Exp $ */
+/* $Id: otherconv.c,v 1.33 2008/08/26 03:26:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * otherconv.c
@@ -51,7 +51,7 @@
 
 #define OC_FREE_ICONV(conv) oc_free_iconv(__FUNCTION__, conv,#conv)
 
-/* #define OTHERCONV_DEBUG */
+#define OTHERCONV_DEBUG
 
 /******************************* Global vars **********************************/
 static GIConv glob_topda = NULL;
@@ -177,19 +177,22 @@ char *other_to_UTF(const char *buf, int buf_len)
   jp_logf(JP_LOG_DEBUG, "%s:%s converting   [%s]\n", __FILE__, __FUNCTION__, buf);
 #endif
 
-  str_len = oc_strnlen(buf, buf_len);
+  if (buf_len == -1) {
+     str_len = -1;
+  } else {
+     str_len = oc_strnlen(buf, buf_len-1);  // -1 leaves room for \0 terminator
+  }
 
   outbuf = (char *)g_convert_with_iconv((gchar *)buf,
-           str_len + 1, /* see Debian bug #309082 for the +1 */
-           glob_frompda, &bytes_read, NULL, &err);
+           str_len, glob_frompda, &bytes_read, NULL, &err);
 
-  if ((err != NULL) || (bytes_read < str_len)) {
+  if (err != NULL) {
       char c;
       char *head, *tail;
-      int outbuf_len;
+      int  outbuf_len;
       char *tmp_buf = (char *)buf;
       static int call_depth = 0;
-
+      printf("ERROR HAPPENED\n");
       if (0 == call_depth)
 	 jp_logf(JP_LOG_WARN, "%s:%s g_convert_with_iconv error: %s, buff: %s\n",
 	    __FILE__, __FUNCTION__, err ? err->message : "last char truncated",
@@ -198,6 +201,10 @@ char *other_to_UTF(const char *buf, int buf_len)
 	 g_error_free(err);
       else
 	 g_free(outbuf);
+
+      if (buf_len == -1) {
+         buf_len = strlen(buf); 
+      }
 
       /* convert the head, skip the problematic char, convert the tail */
       c = tmp_buf[bytes_read];
@@ -244,7 +251,8 @@ void UTF_to_other(char *const buf, int buf_len)
   gchar *inptr, *outptr;
   size_t rc;
   char *errstr;
-  char buf_out[1000], *buf_out_ptr = NULL;
+  char buf_out[1000];
+  char *buf_out_ptr = NULL;
 
 #ifdef OTHERCONV_DEBUG
   jp_logf(JP_LOG_DEBUG, "%s:%s reset iconv state...\n", __FILE__, __FUNCTION__);
@@ -258,21 +266,21 @@ void UTF_to_other(char *const buf, int buf_len)
   outleft = buf_len-1;
   inptr = buf;
 
-   if (buf_len > sizeof(buf_out))
-   {
-      buf_out_ptr = malloc(buf_len);
-      if (NULL == buf_out_ptr)
-      {
-	 jp_logf(JP_LOG_WARN, "UTF_to_other: %s\n", "Out of memory");
-	 return;
-      }
-      outptr = buf_out_ptr;
-   }
-   else
-      outptr = buf_out;
+  /* Most strings can be converted without recourse to malloc */
+  if (buf_len > sizeof(buf_out)) {
+     buf_out_ptr = malloc(buf_len);
+     if (NULL == buf_out_ptr) {
+        jp_logf(JP_LOG_WARN, "UTF_to_other: %s\n", "Out of memory");
+        return;
+     }
+     outptr = buf_out_ptr;
+  } else {
+     outptr = buf_out;
+  }
 
   rc = g_iconv(glob_topda, &inptr, &inleft, &outptr, &outleft);
-  *outptr = 0;
+  *outptr = 0; /* NULL terminate whatever fraction was converted */
+
   if ((size_t)(-1) == rc) {
     switch (errno) {
     case EILSEQ:
@@ -290,13 +298,12 @@ void UTF_to_other(char *const buf, int buf_len)
     jp_logf(JP_LOG_WARN, errstr, inptr - buf);
   }
 
-   if (buf_out_ptr)
-   {
+   if (buf_out_ptr) {
       g_strlcpy(buf, buf_out_ptr, buf_len);
       free(buf_out_ptr);
-   }
-   else
+   } else {
       g_strlcpy(buf, buf_out, buf_len);
+   }
 
 #ifdef OTHERCONV_DEBUG
   jp_logf(JP_LOG_DEBUG, "%s:%s converted to [%s]\n", __FILE__, __FUNCTION__, buf);
