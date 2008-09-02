@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.217 2008/08/26 03:26:53 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.218 2008/09/02 06:20:02 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -1123,17 +1123,17 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 
        case EXPORT_TYPE_VCARD:
 	 /* RFC 2426: vCard MIME Directory Profile */
-	 fprintf(out, "BEGIN:VCARD%s", CRLF);
-	 fprintf(out, "VERSION:3.0%s", CRLF);
-	 fprintf(out, "PRODID:%s%s", FPI_STRING, CRLF);
+	 fprintf(out, "BEGIN:VCARD"CRLF);
+	 fprintf(out, "VERSION:3.0"CRLF);
+	 fprintf(out, "PRODID:%s"CRLF, FPI_STRING);
 	 if (mcont->attrib & dlpRecAttrSecret) {
-	    fprintf(out, "CLASS:PRIVATE%s", CRLF);
+	    fprintf(out, "CLASS:PRIVATE"CRLF);
 	 }
-	 fprintf(out, "UID:palm-addressbook-%08x-%08lx-%s@%s%s",
-		 mcont->unique_id, userid, username, hostname, CRLF);
+	 fprintf(out, "UID:palm-addressbook-%08x-%08lx-%s@%s"CRLF,
+		 mcont->unique_id, userid, username, hostname);
 	 utf = charset_p2newj(contact_app_info.category.name[mcont->attrib & 0x0F], 16, char_set);
 	 str_to_vcard_str(csv_text, sizeof(csv_text), utf);
-	 fprintf(out, "CATEGORIES:%s%s", csv_text, CRLF);
+	 fprintf(out, "CATEGORIES:%s"CRLF, csv_text);
 	 fprintf(out, "\"%s\",", utf);
 	 g_free(utf);
 	 if (mcont->cont.entry[contLastname] || mcont->cont.entry[contFirstname]) {
@@ -1166,29 +1166,29 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	    fprintf(out, CRLF);
 	 } else if (mcont->cont.entry[contCompany]) {
 	    str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[contCompany]);
-	    fprintf(out, "FN:%s%sN:%s%s", csv_text, CRLF, csv_text, CRLF);
+	    fprintf(out, "FN:%s"CRLF"N:%s"CRLF, csv_text, csv_text);
 	 } else {
-	    fprintf(out, "FN:-Unknown-%sN:known-;-Un%s", CRLF, CRLF);
+	    fprintf(out, "FN:-Unknown-"CRLF"N:known-;-Un"CRLF);
 	 }
 	 if (mcont->cont.entry[contTitle]) {
 	    str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[contTitle]);
-	    fprintf(out, "TITLE:%s%s", csv_text, CRLF);
+	    fprintf(out, "TITLE:%s"CRLF, csv_text);
 	 }
 	 if (mcont->cont.entry[contCompany]) {
 	    str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[contCompany]);
-	    fprintf(out, "ORG:%s%s", csv_text, CRLF);
+	    fprintf(out, "ORG:%s"CRLF, csv_text);
 	 }
 	 for (n = contPhone1; n < contPhone7 + 1; n++) {
 	    if (mcont->cont.entry[n]) {
 	       str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[n]);
 	       if (!strcmp(contact_app_info.phoneLabels[mcont->cont.phoneLabel[n-contPhone1]], _("E-mail"))) {
-		  fprintf(out, "EMAIL:%s%s", csv_text, CRLF);
+		  fprintf(out, "EMAIL:%s"CRLF, csv_text);
 	       } else {
 		  fprintf(out, "TEL;TYPE=%s", vCardMapType(mcont->cont.phoneLabel[n - contPhone1]));
 		  if (mcont->cont.showPhone == n - contPhone1) {
 		     fprintf(out, ",pref");
 		  }
-		  fprintf(out, ":%s%s", csv_text, CRLF);
+		  fprintf(out, ":%s"CRLF, csv_text);
 	       }
 	    }
 	 }
@@ -1254,16 +1254,16 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 		     fprintf(out, " ");
 		  }
 		  if (n == contNote && firstnote) {
-		     fprintf(out, "%s\\n%s", csv_text, CRLF);
+		     fprintf(out, "%s\\n"CRLF, csv_text);
 		  } else {
-		     fprintf(out, "%s:\\n%s %s\\n%s", contact_app_info.labels[n], CRLF, csv_text, CRLF);
+		     fprintf(out, "%s:\\n"CRLF" %s\\n"CRLF, contact_app_info.labels[n], csv_text);
 		  }
 		  firstnote=0;
 	       }
 	       if (n == contCustom9) n = contNote - 1;
 	    }
 	 }
-	 fprintf(out, "END:VCARD%s", CRLF);
+	 fprintf(out, "END:VCARD"CRLF);
 	 break;
 
        case EXPORT_TYPE_LDIF:

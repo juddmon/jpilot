@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.178 2008/08/26 03:26:53 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.179 2008/09/02 06:20:02 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -70,6 +70,8 @@
 #define NUM_DATEBOOK_CAT_ITEMS 16
 #define NUM_EXPORT_TYPES 3
 #define NUM_DBOOK_CSV_FIELDS 19
+/* RFCs use CRLF for Internet newline */
+#define CRLF "\x0D\x0A"
 
 #define BROWSE_OK     1
 #define BROWSE_CANCEL 2
@@ -684,9 +686,11 @@ void appt_export_ok(int type, const char *filename)
    char text[1024];
    char csv_text[65550];
    char *p;
+   gchar *end;
    time_t ltime;
    struct tm *now = NULL;
    struct tm ical_time;
+   long char_set;
    char username[256];
    char hostname[256];
    const char *svalue;
@@ -726,14 +730,20 @@ void appt_export_ok(int type, const char *filename)
 
    /* Special setup for ICAL export */
    if (type == EXPORT_TYPE_ICALENDAR) {
+      get_pref(PREF_CHAR_SET, &char_set, NULL);
+      if (char_set < CHAR_SET_UTF) {
+	 jp_logf(JP_LOG_WARN, _("Host character encoding is not UTF-8 based.\n Exported ical file may not be standards-compliant\n"));
+      }
+
       get_pref(PREF_USER, NULL, &svalue);
       g_strlcpy(text, svalue, 128);
+      charset_p2j(text, 128, char_set);
       str_to_ical_str(username, sizeof(username), text);
       get_pref(PREF_USER_ID, &userid, &svalue);
-      gethostname(text, sizeof(text));
-      text[sizeof(text)-1]='\0';
+      gethostname(text, sizeof(hostname));
+      text[sizeof(hostname)-1]='\0';
+      charset_p2j(text, sizeof(hostname), char_set);
       str_to_ical_str(hostname, sizeof(hostname), text);
-
       time(&ltime);
       now = gmtime(&ltime);
    }
@@ -844,45 +854,51 @@ void appt_export_ok(int type, const char *filename)
 	 /* RFC 2445: Internet Calendaring and Scheduling Core
 	  *           Object Specification */
 	 if (i == 0) {
-	    fprintf(out, "BEGIN:VCALENDAR\nVERSION:2.0\n");
-	    fprintf(out, "PRODID:%s\n", FPI_STRING);
+	    fprintf(out, "BEGIN:VCALENDAR"CRLF);
+	    fprintf(out, "VERSION:2.0"CRLF);
+	    fprintf(out, "PRODID:%s"CRLF, FPI_STRING);
 	 }
-	 fprintf(out, "BEGIN:VEVENT\n");
+	 fprintf(out, "BEGIN:VEVENT"CRLF);
 	 /* XXX maybe if it's secret export a VFREEBUSY busy instead? */
 	 if (mappt->attrib & dlpRecAttrSecret) {
-	    fprintf(out, "CLASS:PRIVATE\n");
+	    fprintf(out, "CLASS:PRIVATE"CRLF);
 	 }
-	 fprintf(out, "UID:palm-datebook-%08x-%08lx-%s@%s\n",
+	 fprintf(out, "UID:palm-datebook-%08x-%08lx-%s@%s"CRLF,
 		 mappt->unique_id, userid, username, hostname);
-	 fprintf(out, "DTSTAMP:%04d%02d%02dT%02d%02d%02dZ\n",
+	 fprintf(out, "DTSTAMP:%04d%02d%02dT%02d%02d%02dZ"CRLF,
 		 now->tm_year+1900,
 		 now->tm_mon+1,
 		 now->tm_mday,
 		 now->tm_hour,
 		 now->tm_min,
 		 now->tm_sec);
-	 /* Handle pathological case with null description. */
 	 if (mappt->appt.description) {
 	    g_strlcpy(text, mappt->appt.description, 51);
+            /* truncate the string on a UTF-8 character boundary */
+            if (char_set > CHAR_SET_UTF) {
+               if (!g_utf8_validate(text, -1, (const gchar **)&end))
+                  *end = 0;
+            }
 	 } else {
+            /* Handle pathological case with null description. */
 	    text[0] = '\0';
 	 }
 	 if ((p = strchr(text, '\n'))) {
 	    *p = '\0';
 	 }
 	 str_to_ical_str(csv_text, sizeof(csv_text), text);
-	 fprintf(out, "SUMMARY:%s%s\n", csv_text,
+	 fprintf(out, "SUMMARY:%s%s"CRLF, csv_text,
 		 strlen(text) > 49 ? "..." : "");
 	 str_to_ical_str(csv_text, sizeof(csv_text), mappt->appt.description);
 	 fprintf(out, "DESCRIPTION:%s", csv_text);
 	 if (mappt->appt.note && mappt->appt.note[0]) {
 	    str_to_ical_str(csv_text, sizeof(csv_text), mappt->appt.note);
-	    fprintf(out, "\\n\n %s\n", csv_text);
+	    fprintf(out, "\\n"CRLF" %s"CRLF, csv_text);
 	 } else {
-	    fprintf(out, "\n");
+	    fprintf(out, CRLF);
 	 }
 	 if (mappt->appt.event) {
-	    fprintf(out, "DTSTART;VALUE=DATE:%04d%02d%02d\n",
+	    fprintf(out, "DTSTART;VALUE=DATE:%04d%02d%02d"CRLF,
 		    mappt->appt.begin.tm_year+1900,
 		    mappt->appt.begin.tm_mon+1,
 		    mappt->appt.begin.tm_mday);
@@ -891,7 +907,7 @@ void appt_export_ok(int type, const char *filename)
 	    if (mappt->appt.end.tm_year != mappt->appt.begin.tm_year ||
 		mappt->appt.end.tm_mon != mappt->appt.begin.tm_mon ||
 		mappt->appt.end.tm_mday != mappt->appt.begin.tm_mday) {
-	       fprintf(out, "DTEND;VALUE=DATE:%04d%02d%02d\n",
+	       fprintf(out, "DTEND;VALUE=DATE:%04d%02d%02d"CRLF,
 		       mappt->appt.end.tm_year+1900,
 		       mappt->appt.end.tm_mon+1,
 		       mappt->appt.end.tm_mday);
@@ -915,13 +931,13 @@ void appt_export_ok(int type, const char *filename)
 	     * daylight savings.  This probably depends on the importing
 	     * application.
 	     */
-	    fprintf(out, "DTSTART:%04d%02d%02dT%02d%02d00\n",
+	    fprintf(out, "DTSTART:%04d%02d%02dT%02d%02d00"CRLF,
 		    mappt->appt.begin.tm_year+1900,
 		    mappt->appt.begin.tm_mon+1,
 		    mappt->appt.begin.tm_mday,
 		    mappt->appt.begin.tm_hour,
 		    mappt->appt.begin.tm_min);
-	    fprintf(out, "DTEND:%04d%02d%02dT%02d%02d00\n",
+	    fprintf(out, "DTEND:%04d%02d%02dT%02d%02d00"CRLF,
 		    mappt->appt.end.tm_year+1900,
 		    mappt->appt.end.tm_mon+1,
 		    mappt->appt.end.tm_mday,
@@ -967,6 +983,7 @@ void appt_export_ok(int type, const char *filename)
 	    if (mappt->appt.repeatFrequency != 1) {
 	       if (mappt->appt.repeatType == repeatWeekly &&
 		   mappt->appt.repeatWeekstart >= 0 && mappt->appt.repeatWeekstart < 7) {
+                  fprintf(out, CRLF" ");  // Weekly repeats can exceed RFC line length
 		  fprintf(out, ";WKST=%s", wday[mappt->appt.repeatWeekstart]);
 	       }
 	       fprintf(out, ";INTERVAL=%d", mappt->appt.repeatFrequency);
@@ -987,26 +1004,22 @@ void appt_export_ok(int type, const char *filename)
 		       ical_time.tm_mon+1,
 		       ical_time.tm_mday);
 	    }
-	    fprintf(out, "\n");
+	    fprintf(out, CRLF);
 	    if (mappt->appt.exceptions > 0) {
-	       fprintf(out, "EXDATE;VALUE=DATE:");
 	       for (i=0; i<mappt->appt.exceptions; i++) {
-		  if (i>0) {
-		     fprintf(out, ",");
-		  }
-		  fprintf(out, "%04d%02d%02d",
-			  mappt->appt.exception[i].tm_year+1900,
-			  mappt->appt.exception[i].tm_mon+1,
-			  mappt->appt.exception[i].tm_mday);
-	       }
-	       fprintf(out, "\n");
+                  fprintf(out, "EXDATE;VALUE=DATE:%04d%02d%02d"CRLF,
+                             mappt->appt.exception[i].tm_year+1900,
+                             mappt->appt.exception[i].tm_mon+1,
+                             mappt->appt.exception[i].tm_mday);
+               }
 	    }
 	 }
 	 if (mappt->appt.alarm) {
 	    char *units;
-	    fprintf(out, "BEGIN:VALARM\nACTION:DISPLAY\n");
+	    fprintf(out, "BEGIN:VALARM"CRLF);
+	    fprintf(out, "ACTION:DISPLAY"CRLF);
 	    str_to_ical_str(csv_text, sizeof(csv_text), mappt->appt.description);
-	    fprintf(out, "DESCRIPTION:%s\n", csv_text);
+	    fprintf(out, "DESCRIPTION:%s"CRLF, csv_text);
 	    switch (mappt->appt.advanceUnits) {
 	     case advMinutes:
 	       units = "M";
@@ -1021,12 +1034,12 @@ void appt_export_ok(int type, const char *filename)
 	       units = "?";
 	       break;
 	    }
-	    fprintf(out, "TRIGGER:-PT%d%s\n", mappt->appt.advance, units);
-	    fprintf(out, "END:VALARM\n");
+	    fprintf(out, "TRIGGER:-PT%d%s"CRLF, mappt->appt.advance, units);
+	    fprintf(out, "END:VALARM"CRLF);
 	 }
-	 fprintf(out, "END:VEVENT\n");
+	 fprintf(out, "END:VEVENT"CRLF);
 	 if (temp_list->next == NULL) {
-	    fprintf(out, "END:VCALENDAR\n");
+	    fprintf(out, "END:VCALENDAR"CRLF);
 	 }
 	 break;
        default:

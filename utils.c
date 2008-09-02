@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.161 2008/08/26 03:26:53 rikster5 Exp $ */
+/* $Id: utils.c,v 1.162 2008/09/02 06:20:02 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -52,6 +52,13 @@
 
 #define NUM_CAT_ITEMS 16
 #define DAY_IN_SECS 86400
+/* RFC2445 line length is 75. This length does not include value field such as
+ * "DESCRIPTION:" which brings line length to nearly 75. */
+#define ICAL_LINE_LENGTH 58
+/* RFCs require CRLF for newline */
+#define CRLF "\x0D\x0A"
+#define CR '\x0D'
+#define LF '\x0A'
 
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 
@@ -3321,11 +3328,11 @@ int str_to_ical_str(char *dest, int destsz, char *src)
 /*
  * Quote for iCalendar (RFC 2445) or vCard (RFC 2426).
  * The only difference is that iCalendar also quotes semicolons.
- * Wrap at 60-ish characters.
+ * Wrap at 70-ish characters.
  */
 static int str_to_iv_str(char *dest, int destsz, char *src, int isical)
 {
-   int c;
+   int c, i;
    char *destend, *odest;
 
    if ((!src) || (!dest)) {
@@ -3339,10 +3346,28 @@ static int str_to_iv_str(char *dest, int destsz, char *src, int isical)
       if (dest >= destend) {
 	 break;
       }
-      if (c>60) {
-	 *dest++='\n';
-	 *dest++=' ';
-	 c=0;
+      if (c>ICAL_LINE_LENGTH) {
+         /* Assume UTF-8 coding and stop on a valid character boundary */
+         for (i=0; i<4; i++) {
+            if ((*src & 0xC0) != 0x80) {
+               if (*src) {
+                  *dest++= CR; *dest++= LF;
+                  *dest++=' ';
+               }
+               c=0;
+               break;
+            }
+            *dest++=*src++;
+         }
+
+         if (c != 0) {
+	    jp_logf(JP_LOG_WARN,_("Invalid UTF-8 encoding in export string\n"));
+            /* Force truncation of line anyways */
+            *dest++= CR; *dest++= LF;
+            *dest++=' ';
+            c=0;
+         }  
+         continue;
       }
       if (*src=='\n') {
 	 *dest++='\\';
