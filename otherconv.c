@@ -1,4 +1,4 @@
-/* $Id: otherconv.c,v 1.33 2008/08/26 03:26:53 rikster5 Exp $ */
+/* $Id: otherconv.c,v 1.34 2008/09/03 10:07:43 rousseau Exp $ */
 
 /*******************************************************************************
  * otherconv.c
@@ -63,6 +63,7 @@ static GIConv glob_frompda = NULL;
  * To avoid conflicting declarations, it is reimplemented as a thin
  * inline function over the library function strlen
  */
+size_t oc_strnlen(const char *s, size_t maxlen);
 inline size_t oc_strnlen(const char *s, size_t maxlen) {
   return min(strlen(s), maxlen); 
 }
