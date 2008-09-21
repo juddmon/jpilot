@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.163 2008/09/21 19:06:47 rikster5 Exp $ */
+/* $Id: utils.c,v 1.164 2008/09/21 19:13:11 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -1261,7 +1261,7 @@ int dialog_generic_ok(GtkWidget *widget,
  */
 int dialog_save_changed_record(GtkWidget *widget, int changed)
 {
-   int b;
+   int b=0;
    char *button_text[] = {N_("No"), N_("Yes")};
 
    if ((changed!=MODIFY_FLAG) && (changed!=NEW_FLAG)) {
