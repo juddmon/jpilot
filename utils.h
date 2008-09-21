@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.68 2008/06/19 04:12:08 rikster5 Exp $ */
+/* $Id: utils.h,v 1.69 2008/09/21 19:06:47 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -429,7 +429,7 @@ void ldif_out(FILE *f, char *name, char *fmt, ...);
 /*
  * Output base64-encoded string to file
  */
-void base64_out(FILE *, char *);
+void base64_out(FILE *, unsigned char *);
 
 void cleanup_path(char *path);
 

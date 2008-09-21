@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.141 2008/08/26 03:26:53 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.142 2008/09/21 19:06:47 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -670,20 +670,6 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
       return;
    }
 
-   /* Special setup for ICAL export */
-   if (type == EXPORT_TYPE_ICALENDAR) {
-      get_pref(PREF_USER, NULL, &svalue);
-      g_strlcpy(text, svalue, 128);
-      str_to_ical_str(username, sizeof(username), text);
-      get_pref(PREF_USER_ID, &userid, NULL);
-      gethostname(text, sizeof(text));
-      text[sizeof(text)-1]='\0';
-      str_to_ical_str(hostname, sizeof(hostname), text);
-
-      time(&ltime);
-      now = gmtime(&ltime);
-   }
-
    /* Write a header for TEXT file */
    if (type == EXPORT_TYPE_TEXT) {
       get_pref(PREF_SHORTDATE, NULL, &short_date);
@@ -700,6 +686,20 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
    /* Write a header to the CSV file */
    if (type == EXPORT_TYPE_CSV) {
       fprintf(out, "CSV todo version "VERSION": Category, Private, Indefinite, Due Date, Priority, Completed, ToDo Text, Note\n");
+   }
+
+   /* Special setup for ICAL export */
+   if (type == EXPORT_TYPE_ICALENDAR) {
+      get_pref(PREF_USER, NULL, &svalue);
+      g_strlcpy(text, svalue, 128);
+      str_to_ical_str(username, sizeof(username), text);
+      get_pref(PREF_USER_ID, &userid, NULL);
+      gethostname(text, sizeof(text));
+      text[sizeof(text)-1]='\0';
+      str_to_ical_str(hostname, sizeof(hostname), text);
+
+      time(&ltime);
+      now = gmtime(&ltime);
    }
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);

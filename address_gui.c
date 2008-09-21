@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.218 2008/09/02 06:20:02 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.219 2008/09/21 19:06:47 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -918,17 +918,6 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
       return;
    }
 
-   /* Convert strings for VCARD export */
-   if (type == EXPORT_TYPE_VCARD) {
-      get_pref(PREF_USER, NULL, &svalue);
-      g_strlcpy(text, svalue, sizeof(text));
-      str_to_ical_str(username, sizeof(username), text);
-      get_pref(PREF_USER_ID, &userid, NULL);
-      gethostname(text, sizeof(text));
-      text[sizeof(text)-1]='\0';
-      str_to_ical_str(hostname, sizeof(hostname), text);
-   }
-
    /* Write a header for TEXT file */
    if (type == EXPORT_TYPE_TEXT) {
       get_pref(PREF_SHORTDATE, NULL, &short_date);
@@ -986,6 +975,25 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 
       fprintf(out, "Show in List\n");
    }  /* end writing CSV header */
+
+   /* Special setup for VCARD export */
+   if (type == EXPORT_TYPE_VCARD) {
+      get_pref(PREF_USER, NULL, &svalue);
+      g_strlcpy(text, svalue, sizeof(text));
+      str_to_ical_str(username, sizeof(username), text);
+      get_pref(PREF_USER_ID, &userid, NULL);
+      gethostname(text, sizeof(text));
+      text[sizeof(text)-1]='\0';
+      str_to_ical_str(hostname, sizeof(hostname), text);
+   }
+
+   /* Check encoding for LDIF output */
+   if (type == EXPORT_TYPE_LDIF) {
+      get_pref(PREF_CHAR_SET, &char_set, NULL);
+      if (char_set < CHAR_SET_UTF) {
+	 jp_logf(JP_LOG_WARN, _("Host character encoding is not UTF-8 based.\n Exported ldif file may not be standards-compliant\n"));
+      }
+   }
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    list=GTK_CLIST(clist)->selection;

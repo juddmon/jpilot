@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.162 2008/09/02 06:20:02 rikster5 Exp $ */
+/* $Id: utils.c,v 1.163 2008/09/21 19:06:47 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -216,43 +216,38 @@ void append_anni_years(char *desc, int max, struct tm *date,
    sprintf(&desc[len], " (%d)", 1900 + date->tm_year - year);
 }
 
-const char base64chars[] =
-  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+static const char b64_dict[65] = {
+   "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+   "abcdefghijklmnopqrstuvwxyz"
+   "0123456789+/=" };
 
-/* RFC 1341 et seq. */
-void base64_out(FILE *f, char *str)
+void base64_out(FILE *f, unsigned char *str)
 {
-   char *p;
-   int n;
-   unsigned int val;
-   int pad;
-   int mask, shift;
+   unsigned char *index, char1, char2, char3;
+   int loop, pad;
 
-   n = 0;
-   val = 0;
-   pad = 0;
-   for (p = str; *p || n; *p ? p++ : 0) {
-      if (*p == '\0' && pad == 0) {
-	 pad = n;
-      }
-      val = (val << 8) + *p;
-      n++;
-      if (n == 3) {
-	 mask = 0xfc0000;
-	 shift = 18;
-	 for (n = 0; n < 4; n++) {
-	    if (pad && n > pad) {
-	       fputc('=', f);
-	    } else {
-	       fputc(base64chars[(val & mask) >> shift], f);
-	    }
-	    mask >>= 6;
-	    shift -= 6;
-	 }
-	 n = 0;
-	 val = 0;
-      }
+   loop = strlen((char *)str)/3;     // process groups of 3 chars at a time
+   pad  = strlen((char *)str) % 3;   // must pad if str not multiple of 3
+
+   /* Convert 3 bytes at a time.  Padding at end calculated separately */
+   for (index = str; loop>0; loop--, index+=3) {
+      char1 = *index; char2 = *(index+1); char3 = *(index+2);
+      fputc(b64_dict[char1>>2], f);
+      fputc(b64_dict[(char1<<4 & 0x30) | (char2>>4)], f);
+      fputc(b64_dict[(char2<<2 & 0x3c) | (char3>>6)], f);
+      fputc(b64_dict[char3 & 0x3f], f);
    }
+
+    /* Now deal with the trailing bytes */
+   if (pad)
+   {
+      char1 = *index; char2 = *(index+1); char3 = *(index+2);
+      fputc(b64_dict[char1>>2], f);
+      fputc(b64_dict[(char1<<4 & 0x30) | (pad==2 ? char2>>4 : 0)], f );
+      fputc(pad==1 ? '=' : b64_dict[(char2<<2 & 0x3c)], f );
+      fputc('=', f);
+   }
+
 }
 
 unsigned int bytes_to_bin(unsigned char *bytes, unsigned int num_bytes)
@@ -2495,7 +2490,6 @@ void ldif_out(FILE *f, char *name, char *fmt, ...)
 {
    va_list ap;
    unsigned char buf[8192];
-   unsigned char buf2[2 * sizeof(buf)];
    char *p;
    int printable = 1;
 
@@ -2515,28 +2509,8 @@ void ldif_out(FILE *f, char *name, char *fmt, ...)
    if (printable) {
       fprintf(f, "%s: %s\n", name, buf);
    } else {
-      /*
-       * Convert to UTF-8.
-       * Assume the data on this end is in ISO-8859-1 for now, which
-       * maps directly to a UCS character.  More complete character
-       * set support on the jpilot side will require a way to
-       * translate to UCS and a more complete UCS->UTF8 converter.
-       * TO DO: iconv() can do anything -> UTF-8
-       * iconv_t foo = iconv_open("UTF-8", "ISO-8859-1");
-       * iconv(foo, buf, &sizeof(buf), buf2, &sizeof(buf2));
-       */
-      unsigned char *p, *q;
-      for (p = buf, q = buf2; *p; p++, q++) {
-	 if (*p <= 127) {
-	    *q = *p;
-	 } else {
-	    *q++ = 0xc0 | ((*p >> 6) & 0x03);
-	    *q = 0x80 | (*p & 0x3f);
-	 }
-      }
-      *q = '\0';
       fprintf(f, "%s:: ", name);
-      base64_out(f, (char *)buf2);
+      base64_out(f, buf);
       fprintf(f, "\n");
    }
 }

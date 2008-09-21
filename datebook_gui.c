@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.179 2008/09/02 06:20:02 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.180 2008/09/21 19:06:47 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -728,26 +728,6 @@ void appt_export_ok(int type, const char *filename)
       return;
    }
 
-   /* Special setup for ICAL export */
-   if (type == EXPORT_TYPE_ICALENDAR) {
-      get_pref(PREF_CHAR_SET, &char_set, NULL);
-      if (char_set < CHAR_SET_UTF) {
-	 jp_logf(JP_LOG_WARN, _("Host character encoding is not UTF-8 based.\n Exported ical file may not be standards-compliant\n"));
-      }
-
-      get_pref(PREF_USER, NULL, &svalue);
-      g_strlcpy(text, svalue, 128);
-      charset_p2j(text, 128, char_set);
-      str_to_ical_str(username, sizeof(username), text);
-      get_pref(PREF_USER_ID, &userid, &svalue);
-      gethostname(text, sizeof(hostname));
-      text[sizeof(hostname)-1]='\0';
-      charset_p2j(text, sizeof(hostname), char_set);
-      str_to_ical_str(hostname, sizeof(hostname), text);
-      time(&ltime);
-      now = gmtime(&ltime);
-   }
-
    /* Write a header for TEXT file */
    if (type == EXPORT_TYPE_TEXT) {
       get_pref(PREF_SHORTDATE, NULL, &short_date);
@@ -768,6 +748,26 @@ void appt_export_ok(int type, const char *filename)
               "Advance Units, Repeat Type, Repeat Forever, Repeat End, "
               "Repeat Frequency, Repeat Day, Repeat Days, "
               "Week Start, Number of Exceptions, Exceptions\n");
+   }
+
+   /* Special setup for ICAL export */
+   if (type == EXPORT_TYPE_ICALENDAR) {
+      get_pref(PREF_CHAR_SET, &char_set, NULL);
+      if (char_set < CHAR_SET_UTF) {
+	 jp_logf(JP_LOG_WARN, _("Host character encoding is not UTF-8 based.\n Exported ical file may not be standards-compliant\n"));
+      }
+
+      get_pref(PREF_USER, NULL, &svalue);
+      g_strlcpy(text, svalue, 128);
+      charset_p2j(text, 128, char_set);
+      str_to_ical_str(username, sizeof(username), text);
+      get_pref(PREF_USER_ID, &userid, &svalue);
+      gethostname(text, sizeof(hostname));
+      text[sizeof(hostname)-1]='\0';
+      charset_p2j(text, sizeof(hostname), char_set);
+      str_to_ical_str(hostname, sizeof(hostname), text);
+      time(&ltime);
+      now = gmtime(&ltime);
    }
 
    al=NULL;
