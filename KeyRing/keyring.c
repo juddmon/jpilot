@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.80 2008/10/19 16:13:06 rousseau Exp $ */
+/* $Id: keyring.c,v 1.81 2008/10/19 16:27:44 rousseau Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -2044,7 +2044,7 @@ int plugin_gui_cleanup() {
    free_mykeyring_list(&glob_keyring_list);
 
    /* if the password was correct */
-   if (plugin_last_time) {
+   if (plugin_last_time && (TRUE == plugin_active)) {
       plugin_last_time = time(NULL);
    }
    plugin_active = FALSE;
