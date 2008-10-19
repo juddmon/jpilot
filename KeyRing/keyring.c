@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.81 2008/10/19 16:27:44 rousseau Exp $ */
+/* $Id: keyring.c,v 1.82 2008/10/19 18:54:52 rousseau Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -376,8 +376,7 @@ static int unpack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size)
 	if (err)
 		printf("gcry_cipher_setkey: %s\n", gpg_strerror(err));
 
-	i = strlen(kr->name)+1;
-	err = gcry_cipher_encrypt(hd, &buf[i], n, &buf[i], n);
+	err = gcry_cipher_decrypt(hd, clear_text, rem, P, rem);
 	if (err)
 		printf("gcry_cipher_encrypt: %s\n", gpg_strerror(err));
 
