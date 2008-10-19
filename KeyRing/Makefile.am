@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.8 2008/06/02 17:24:10 rikster5 Exp $
+# $Id: Makefile.am,v 1.9 2008/10/19 19:07:49 rousseau Exp $
 
 libdir = $(prefix)/lib/jpilot/plugins
 
@@ -10,7 +10,7 @@ lib_LTLIBRARIES = libkeyring.la
 
 libkeyring_la_SOURCES = keyring.c
 
-libkeyring_la_CFLAGS = @PILOT_FLAGS@ @GTK_CFLAGS@ -I$(top_srcdir)
-libkeyring_la_LDFLAGS = -lcrypto @GTK_LIBS@
+libkeyring_la_CFLAGS = @PILOT_FLAGS@ @GTK_CFLAGS@ @LIBGCRYPT_CFLAGS@ -I$(top_srcdir)
+libkeyring_la_LDFLAGS = @OPENSSL_LIBS@ @GTK_LIBS@ @LIBGCRYPT_LIBS@
 
 endif
