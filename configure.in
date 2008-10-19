@@ -386,10 +386,14 @@ dnl ******************************
 dnl * End pilot-links tests
 dnl ******************************
 
-dnl Check for OpenSSL libs necessary for Keyring
+dnl Check for gnu crypt lib necessary for Keyring
+AM_PATH_LIBGCRYPT
 AC_CHECK_LIB([gcrypt], [gcry_md_hash_buffer], have_libgcrypt=1, have_libgcrypt=0)
 if test "$have_libgcrypt" = "0"; then
+dnl Check for OpenSSL libs necessary for Keyring
    AC_CHECK_LIB([crypto], [SSLeay_version], have_libcrypto=1, have_libcrypto=0)
+else
+	AC_DEFINE(HAVE_LIBGCRYPT, 1, [ Use lib GNU cryot instead of OpenSSL ])
 fi
 
 dnl ############################################################################
@@ -477,10 +481,11 @@ fi
 if test "$have_libcrypto" = "1"; then
    if test "$have_openssl_md5" = "1" -a "$have_openssl_des" = "1"; then
       make_keyring=yes
-   else
-      AC_MSG_WARN([OpenSSL headers not found, Keyring will not be built])
+	  OPENSSL_LIBS=-lcrypto
    fi
-else
+fi
+AC_SUBST(OPENSSL_LIBS)
+if test "$make_keyring" != "yes"; then
    AC_MSG_WARN([OpenSSL library not found, Keyring will not be built])
 fi
 
