@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.82 2008/10/19 18:54:52 rousseau Exp $ */
+/* $Id: keyring.c,v 1.83 2008/10/19 19:03:34 rousseau Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -31,6 +31,7 @@
 #include <sys/stat.h>
 #include <gtk/gtk.h>
 
+#include "config.h"
 #ifdef HAVE_LIBGCRYPT
 #include <gcrypt.h>
 #else
@@ -295,16 +296,16 @@ static int pack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size,
 #ifdef HAVE_LIBGCRYPT
 	err = gcry_cipher_open(&hd, GCRY_CIPHER_3DES, GCRY_CIPHER_MODE_ECB, 0);
 	if (err)
-		printf("gcry_cipher_open: %s\n", gpg_strerror(err));
+		jp_logf(JP_LOG_DEBUG, "gcry_cipher_open: %s\n", gpg_strerror(err));
 
 	err = gcry_cipher_setkey(hd, key, sizeof(key));
 	if (err)
-		printf("gcry_cipher_setkey: %s\n", gpg_strerror(err));
+		jp_logf(JP_LOG_DEBUG, "gcry_cipher_setkey: %s\n", gpg_strerror(err));
 
 	i = strlen(kr->name)+1;
 	err = gcry_cipher_encrypt(hd, &buf[i], n, &buf[i], n);
 	if (err)
-		printf("gcry_cipher_encrypt: %s\n", gpg_strerror(err));
+		jp_logf(JP_LOG_DEBUG, "gcry_cipher_encrypt: %s\n", gpg_strerror(err));
 
 	gcry_cipher_close(hd);
 #else
@@ -370,15 +371,15 @@ static int unpack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size)
 #ifdef HAVE_LIBGCRYPT
 	err = gcry_cipher_open(&hd, GCRY_CIPHER_3DES, GCRY_CIPHER_MODE_ECB, 0);
 	if (err)
-		printf("gcry_cipher_open: %s\n", gpg_strerror(err));
+		jp_logf(JP_LOG_DEBUG, "gcry_cipher_open: %s\n", gpg_strerror(err));
 
 	err = gcry_cipher_setkey(hd, key, sizeof(key));
 	if (err)
-		printf("gcry_cipher_setkey: %s\n", gpg_strerror(err));
+		jp_logf(JP_LOG_DEBUG, "gcry_cipher_setkey: %s\n", gpg_strerror(err));
 
 	err = gcry_cipher_decrypt(hd, clear_text, rem, P, rem);
 	if (err)
-		printf("gcry_cipher_encrypt: %s\n", gpg_strerror(err));
+		jp_logf(JP_LOG_DEBUG, "gcry_cipher_decrypt: %s\n", gpg_strerror(err));
 
 	gcry_cipher_close(hd);
 #else
