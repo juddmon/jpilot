@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.79 2008/06/18 02:40:02 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.80 2008/10/19 16:13:06 rousseau Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -31,9 +31,13 @@
 #include <sys/stat.h>
 #include <gtk/gtk.h>
 
+#ifdef HAVE_LIBGCRYPT
+#include <gcrypt.h>
+#else
 /* OpenSSL header files */
 #include <openssl/md5.h>
 #include <openssl/des.h>
+#endif
 
 /* Pilot-link header files */
 #include <pi-appinfo.h>
@@ -129,6 +133,9 @@ static int record_changed;
 static int clist_col_selected;
 static int clist_row_selected;
 
+#ifdef HAVE_LIBGCRYPT
+static unsigned char key[24];
+#else
 #ifdef HEADER_NEW_DES_H
 static DES_cblock current_key1;
 static DES_cblock current_key2;
@@ -138,7 +145,8 @@ static des_cblock current_key1;
 static des_cblock current_key2;
 static des_key_schedule s1, s2;
 #endif
-  
+#endif
+
 static time_t plugin_last_time = 0;
 static gboolean plugin_active = FALSE;
 
@@ -238,6 +246,10 @@ static int pack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size,
    char empty[]="";
    char last_changed[2];
    unsigned short packed_date;
+#ifdef HAVE_LIBGCRYPT
+   gcry_error_t err;
+   gcry_cipher_hd_t hd;
+#endif
 
    jp_logf(JP_LOG_DEBUG, "KeyRing: pack_KeyRing()\n");
 
@@ -280,6 +292,22 @@ static int pack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size,
    strcpy((char *)&buf[i], kr->note);
    i += strlen(kr->note)+1;
    strncpy((char *)&buf[i], last_changed, 2);
+#ifdef HAVE_LIBGCRYPT
+	err = gcry_cipher_open(&hd, GCRY_CIPHER_3DES, GCRY_CIPHER_MODE_ECB, 0);
+	if (err)
+		printf("gcry_cipher_open: %s\n", gpg_strerror(err));
+
+	err = gcry_cipher_setkey(hd, key, sizeof(key));
+	if (err)
+		printf("gcry_cipher_setkey: %s\n", gpg_strerror(err));
+
+	i = strlen(kr->name)+1;
+	err = gcry_cipher_encrypt(hd, &buf[i], n, &buf[i], n);
+	if (err)
+		printf("gcry_cipher_encrypt: %s\n", gpg_strerror(err));
+
+	gcry_cipher_close(hd);
+#else
    for (i=strlen(kr->name)+1; i<n; i=i+8) {
 #ifdef HEADER_NEW_DES_H
       DES_ecb3_encrypt((DES_cblock *)&buf[i], (DES_cblock *)&buf[i], 
@@ -289,6 +317,8 @@ static int pack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size,
 		       s1, s2, s1, DES_ENCRYPT);
 #endif
    }
+#endif
+
 #ifdef JPILOT_DEBUG
    for (i=0;i<n; i++) {
       printf("%02x ", (unsigned char)buf[i]);	
@@ -309,6 +339,10 @@ static int unpack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size)
    unsigned char *Pstr[4];
    char *safety[]= {"","","",""};
    unsigned short packed_date;
+#ifdef HAVE_LIBGCRYPT
+   gcry_error_t err;
+   gcry_cipher_hd_t hd;
+#endif
 
    jp_logf(JP_LOG_DEBUG, "KeyRing: unpack_KeyRing\n");
    if (!memchr(buf, '\0', buf_size)) {
@@ -333,6 +367,22 @@ static int unpack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size)
    jp_logf(JP_LOG_DEBUG, "KeyRing: unpack_KeyRing(): rem%%8=%d\n", rem%8);
 
    P=&buf[n];
+#ifdef HAVE_LIBGCRYPT
+	err = gcry_cipher_open(&hd, GCRY_CIPHER_3DES, GCRY_CIPHER_MODE_ECB, 0);
+	if (err)
+		printf("gcry_cipher_open: %s\n", gpg_strerror(err));
+
+	err = gcry_cipher_setkey(hd, key, sizeof(key));
+	if (err)
+		printf("gcry_cipher_setkey: %s\n", gpg_strerror(err));
+
+	i = strlen(kr->name)+1;
+	err = gcry_cipher_encrypt(hd, &buf[i], n, &buf[i], n);
+	if (err)
+		printf("gcry_cipher_encrypt: %s\n", gpg_strerror(err));
+
+	gcry_cipher_close(hd);
+#else
    for (i=0; i<rem; i+=8) {
 #ifdef HEADER_NEW_DES_H
       DES_ecb3_encrypt((DES_cblock *)&P[i], (DES_cblock *)(clear_text+i),
@@ -341,8 +391,8 @@ static int unpack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size)
       des_ecb3_encrypt((const_des_cblock *)&P[i], (des_cblock *)(clear_text+i),
 		       s1, s2, s1, DES_DECRYPT);
 #endif
-		       
    }
+#endif
 
    Pstr[0]=clear_text;
    Pstr[1]=(unsigned char *)safety[1];
@@ -402,7 +452,11 @@ static int set_password_hash(unsigned char *buf, int buf_size, char *passwd)
    memset(buffer, 0, MESSAGE_BUF_SIZE);
    memcpy(buffer, buf, SALT_SIZE);
    strncpy((char *)(buffer+SALT_SIZE), passwd, MESSAGE_BUF_SIZE - SALT_SIZE - 1);
+#ifdef HAVE_LIBGCRYPT
+   gcry_md_hash_buffer(GCRY_MD_MD5, md, buffer, MESSAGE_BUF_SIZE);
+#else
    MD5(buffer, MESSAGE_BUF_SIZE, md);
+#endif
 
    /* wipe out password traces */
    memset(buffer, 0, MESSAGE_BUF_SIZE);
@@ -411,6 +465,11 @@ static int set_password_hash(unsigned char *buf, int buf_size, char *passwd)
       return EXIT_FAILURE;
    }
 
+#ifdef HAVE_LIBGCRYPT
+   gcry_md_hash_buffer(GCRY_MD_MD5, md, passwd, strlen(passwd));
+   memcpy(key, md, 16);	/* k1 and k2 */
+   memcpy(key+16, md, 8);	/* k1 again */
+#else
    MD5((unsigned char *)passwd, strlen(passwd), md);
    memcpy(current_key1, md, 8);
    memcpy(current_key2, md+8, 8);
@@ -420,6 +479,7 @@ static int set_password_hash(unsigned char *buf, int buf_size, char *passwd)
 #else
    des_set_key(&current_key1, s1);
    des_set_key(&current_key2, s2);
+#endif
 #endif
 
    return EXIT_SUCCESS;

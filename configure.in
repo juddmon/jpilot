@@ -387,7 +387,10 @@ dnl * End pilot-links tests
 dnl ******************************
 
 dnl Check for OpenSSL libs necessary for Keyring
-AC_CHECK_LIB([crypto], [SSLeay_version], have_libcrypto=1, have_libcrypto=0)
+AC_CHECK_LIB([gcrypt], [gcry_md_hash_buffer], have_libgcrypt=1, have_libgcrypt=0)
+if test "$have_libgcrypt" = "0"; then
+   AC_CHECK_LIB([crypto], [SSLeay_version], have_libcrypto=1, have_libcrypto=0)
+fi
 
 dnl ############################################################################
 dnl Check for headers needed 
@@ -468,6 +471,9 @@ dnl ############################################################################
 dnl * Work out which plugins to make
 
 make_keyring=no
+if test "$have_libgcrypt" = "1"; then
+   make_keyring=yes
+fi
 if test "$have_libcrypto" = "1"; then
    if test "$have_openssl_md5" = "1" -a "$have_openssl_des" = "1"; then
       make_keyring=yes
