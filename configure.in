@@ -393,7 +393,7 @@ if test "$have_libgcrypt" = "0"; then
 dnl Check for OpenSSL libs necessary for Keyring
    AC_CHECK_LIB([crypto], [SSLeay_version], have_libcrypto=1, have_libcrypto=0)
 else
-	AC_DEFINE(HAVE_LIBGCRYPT, 1, [ Use lib GNU cryot instead of OpenSSL ])
+	AC_DEFINE(HAVE_LIBGCRYPT, 1, [ Use GNU libgcrypt instead of OpenSSL ])
 fi
 
 dnl ############################################################################
