@@ -1,4 +1,4 @@
-/* $Id: alarms.c,v 1.48 2008/10/20 02:24:23 rikster5 Exp $ */
+/* $Id: alarms.c,v 1.49 2008/10/20 04:40:31 rikster5 Exp $ */
 
 /*******************************************************************************
  * alarms.c
@@ -786,14 +786,6 @@ int alarms_find_next(struct tm *date1_in, struct tm *date2_in, int soonest_only)
    strftime(str, sizeof(str), "%B %d, %Y %H:%M", Pnow);
    printf("[Now]=%s\n", str);
 #endif
-
-   /* Data validation.  If the low bound is higher than the upper
-    * bound then convert to the range [t1, t1] */
-   if (t1 > t2)
-   {
-      printf ("Setting t2 = t1\n");
-      t2 = t1;
-   }
 
    if (!soonest_only) {
       free_alarms_list(PREV_ALARM_MASK | NEXT_ALARM_MASK);
