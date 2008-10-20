@@ -1,4 +1,4 @@
-/* $Id: alarms.c,v 1.47 2008/06/23 03:03:45 rikster5 Exp $ */
+/* $Id: alarms.c,v 1.48 2008/10/20 02:24:23 rikster5 Exp $ */
 
 /*******************************************************************************
  * alarms.c
@@ -413,7 +413,13 @@ void alarms_write_file(void)
 
    time(&ltime);
    now = localtime(&ltime);
-
+   /* Alarm is triggered within ALARM_INTERVAL/2 seconds of the minute.
+    * Potentially need to round timestamp up to the correct minute. */
+   if ((59 - now->tm_sec) <= ALARM_INTERVAL/2) {
+      now->tm_min++;
+      mktime(now);
+   }
+   
    out=jp_open_home_file(EPN".alarms.tmp", "w");
    if (!out) {
       jp_logf(JP_LOG_WARN, _("Unable to open file: %s%s\n"), EPN, ".alarms.tmp");
@@ -613,7 +619,7 @@ gint cb_timer_alarms(gpointer data)
    struct jp_alarms *temp_alarm, *ta_next;
    AppointmentList *alm_list;
    AppointmentList *temp_al;
-   static int first=0;
+   static int first=1;
    time_t t, diff;
    time_t t_alarm_time;
    struct tm *Ptm;
@@ -621,9 +627,9 @@ gint cb_timer_alarms(gpointer data)
 
    alm_list=NULL;
 
-   if (!first) {
+   if (first) {
       alarms_write_file();
-      first=1;
+      first=0;
    }
 
    time(&t);
@@ -780,6 +786,14 @@ int alarms_find_next(struct tm *date1_in, struct tm *date2_in, int soonest_only)
    strftime(str, sizeof(str), "%B %d, %Y %H:%M", Pnow);
    printf("[Now]=%s\n", str);
 #endif
+
+   /* Data validation.  If the low bound is higher than the upper
+    * bound then convert to the range [t1, t1] */
+   if (t1 > t2)
+   {
+      printf ("Setting t2 = t1\n");
+      t2 = t1;
+   }
 
    if (!soonest_only) {
       free_alarms_list(PREV_ALARM_MASK | NEXT_ALARM_MASK);
@@ -997,6 +1011,9 @@ int alarms_init(unsigned char skip_past_alarms,
 	 if (n==5) {
 	    found_uptodate=1;
 	 }
+         /* Avoid corner case of retriggering alarms that are set for 
+          * exactly the same time as the UPTODATE timestamp */
+         min = min + 1;
 	 jp_logf(JP_LOG_DEBUG, "UPTODATE %d %d %d %d %d\n", year, mon, day, hour, min);
       }
    }
@@ -1012,6 +1029,20 @@ int alarms_init(unsigned char skip_past_alarms,
    now.tm_isdst=-1;
    mktime(&now);
 
+   /* Corner case where current time == UPTODATE time.
+    * Must adjust current time forward by 1 minute so that upper 
+    * bound of search range (current time) is not smaller than
+    * lower bound (UPTODATE time) */
+   if (found_uptodate &&
+      (now.tm_min  == min-1) &&
+      (now.tm_hour == hour)  &&
+      (now.tm_mon  == mon-1) &&
+      (now.tm_year == year-1900)) {
+      now.tm_min += 1;
+      mktime(&now);
+   }
+
+   /* No UPTODATE, use current time for search lower bound */
    if (!found_uptodate) {
       alarms_write_file();
       year = now.tm_year+1900;

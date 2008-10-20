@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.164 2008/09/21 19:13:11 rikster5 Exp $ */
+/* $Id: utils.c,v 1.165 2008/10/20 02:24:23 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -61,6 +61,9 @@
 #define LF '\x0A'
 
 #define min(a,b) (((a) < (b)) ? (a) : (b))
+
+/* Uncomment for verbose debugging of the alarm code */
+/* #define ALARMS_DEBUG */
 
 /******************************* Global vars **********************************/
 /* Stuff for the dialog window */
@@ -1410,7 +1413,7 @@ int find_prev_next(struct Appointment *appt,
       printf("fpn: repeatNone\n");
 #endif
       t_alarm=mktime_dst_adj(&(appt->begin)) - adv;
-      if ((t_alarm < t2) && (t_alarm > t1)) {
+      if ((t_alarm <= t2) && (t_alarm >= t1)) {
 	 memcpy(tm_prev, &(appt->begin), sizeof(struct tm));
 	 *prev_found=1;
 #ifdef ALARMS_DEBUG
