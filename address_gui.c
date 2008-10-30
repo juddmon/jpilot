@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.220 2008/10/30 14:40:04 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.221 2008/10/30 15:07:12 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -3334,8 +3334,13 @@ int address_refresh()
       jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
    } else {
       int i, index2 = 0;
-      for (i=0; address_cat_menu_item1[i] && (address_cat_menu_item1[i] != address_cat_menu_item1[index]); i++)
-	 index2++;
+      for (i=0; i<NUM_ADDRESS_CAT_ITEMS; i++)
+      {
+	 if (address_cat_menu_item1[i] && (address_cat_menu_item1[i] != address_cat_menu_item1[index]))
+	    index2++;
+	 if (address_cat_menu_item1[i] == address_cat_menu_item1[index])
+	    break;
+      }
       gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), index2);
       gtk_check_menu_item_set_active
 	(GTK_CHECK_MENU_ITEM(address_cat_menu_item1[index]), TRUE);
