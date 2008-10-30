@@ -294,7 +294,7 @@ msgstr "0 enregistrements"
 #: ../todo_gui.c:1798
 #, c-format
 msgid "%d of %d records"
-msgstr "%d de %d enregistrements"
+msgstr "%d enregistrements sur %d"
 
 #: ../address_gui.c:3486 ../address_gui.c:3494 ../KeyRing/keyring.c:2131
 msgid "Name"
