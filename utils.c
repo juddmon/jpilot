@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.165 2008/10/20 02:24:23 rikster5 Exp $ */
+/* $Id: utils.c,v 1.166 2008/10/30 14:40:04 rousseau Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -2591,6 +2591,8 @@ int make_category_menu(GtkWidget **category_menu,
 	 gtk_menu_append(GTK_MENU(menu), cat_menu_item[i+offset]);
 	 gtk_widget_show(cat_menu_item[i+offset]);
       }
+      else
+	 cat_menu_item[i+offset] = NULL;
    }
 
    if (add_edit_cat_item) {

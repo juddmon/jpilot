@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.142 2008/09/21 19:06:47 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.143 2008/10/30 14:40:04 rousseau Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -1898,7 +1898,10 @@ int todo_refresh()
    if (index<0) {
       jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
    } else {
-      gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), index);
+      int i, index2 = 0;
+      for (i=0; todo_cat_menu_item1[i] && (todo_cat_menu_item1[i] != todo_cat_menu_item1[index]); i++)
+	 index2++;
+      gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), index2);
       gtk_check_menu_item_set_active
 	(GTK_CHECK_MENU_ITEM(todo_cat_menu_item1[index]), TRUE);
    }

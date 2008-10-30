@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.126 2008/08/26 03:26:53 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.127 2008/10/30 14:40:04 rousseau Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -1365,7 +1365,10 @@ int memo_refresh()
    if (index<0) {
       jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
    } else {
-      gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), index);
+      int i, index2 = 0;
+      for (i=0; memo_cat_menu_item1[i] && (memo_cat_menu_item1[i] != memo_cat_menu_item1[index]); i++)
+	 index2++;
+      gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), index2);
       gtk_check_menu_item_set_active
 	(GTK_CHECK_MENU_ITEM(memo_cat_menu_item1[index]), TRUE);
    }
