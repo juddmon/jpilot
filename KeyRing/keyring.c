@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.85 2008/11/22 15:58:16 rousseau Exp $ */
+/* $Id: keyring.c,v 1.86 2008/11/22 16:34:45 rousseau Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -1110,6 +1110,8 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
 static void cb_date_button(GtkWidget *widget, gpointer data)
 {
    long fdow;
+   int ret;
+   struct tm temp_glob_date = glob_date;
 
    get_pref(PREF_FDOW, &fdow, NULL);
 
@@ -1121,11 +1123,14 @@ static void cb_date_button(GtkWidget *widget, gpointer data)
 	   glob_date = *localtime(&t);
    }
 
-   jp_cal_dialog(GTK_WINDOW(gtk_widget_get_toplevel(widget)), "", fdow,
+   ret = jp_cal_dialog(GTK_WINDOW(gtk_widget_get_toplevel(widget)), "", fdow,
 		 &(glob_date.tm_mon),
 		 &(glob_date.tm_mday),
 		 &(glob_date.tm_year));
-   update_date_button(date_button, &glob_date);
+   if (ret == CAL_DONE)
+	   update_date_button(date_button, &glob_date);
+   else
+	   glob_date = temp_glob_date;
 }
 
 /* First pass at password generating code */
