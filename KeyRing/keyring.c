@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.83 2008/10/19 19:03:34 rousseau Exp $ */
+/* $Id: keyring.c,v 1.84 2008/11/22 15:31:55 rousseau Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -302,10 +302,14 @@ static int pack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size,
 	if (err)
 		jp_logf(JP_LOG_DEBUG, "gcry_cipher_setkey: %s\n", gpg_strerror(err));
 
-	i = strlen(kr->name)+1;
-	err = gcry_cipher_encrypt(hd, &buf[i], n, &buf[i], n);
-	if (err)
-		jp_logf(JP_LOG_DEBUG, "gcry_cipher_encrypt: %s\n", gpg_strerror(err));
+	for (i = strlen(kr->name)+1; i<n; i+=8)
+	{	
+		char tmp[8];
+		err = gcry_cipher_encrypt(hd, tmp, 8, &buf[i], 8);
+		if (err)
+			jp_logf(JP_LOG_DEBUG, "gcry_cipher_encrypt: %s\n", gpg_strerror(err));
+		memcpy(&buf[i], tmp, 8);
+	}
 
 	gcry_cipher_close(hd);
 #else
