@@ -387,6 +387,7 @@ dnl * End pilot-links tests
 dnl ******************************
 
 dnl Check for gnu crypt lib necessary for Keyring
+crypto_lib="none"
 AM_PATH_LIBGCRYPT
 AC_CHECK_LIB([gcrypt], [gcry_md_hash_buffer], have_libgcrypt=1, have_libgcrypt=0)
 if test "$have_libgcrypt" = "0"; then
@@ -394,6 +395,7 @@ dnl Check for OpenSSL libs necessary for Keyring
    AC_CHECK_LIB([crypto], [SSLeay_version], have_libcrypto=1, have_libcrypto=0)
 else
 	AC_DEFINE(HAVE_LIBGCRYPT, 1, [ Use GNU libgcrypt instead of OpenSSL ])
+	crypto_lib="libgcrypt"
 fi
 
 dnl ############################################################################
@@ -482,6 +484,7 @@ if test "$have_libcrypto" = "1"; then
    if test "$have_openssl_md5" = "1" -a "$have_openssl_des" = "1"; then
       make_keyring=yes
 	  OPENSSL_LIBS=-lcrypto
+	  crypto_lib="OpenSSL"
    fi
 fi
 AC_SUBST(OPENSSL_LIBS)
@@ -571,6 +574,7 @@ AC_MSG_RESULT(Compiling Expense plugin...............   $plugin_support)
 AC_MSG_RESULT(Compiling SyncTime plugin..............   $plugin_support)
 AC_MSG_RESULT(Compiling KeyRing plugin...............   $keyring_plugin)
 AC_MSG_RESULT(Compiling dialer add-on................   $dialer)
+AC_MSG_RESULT(Cryptographic library..................   $crypto_lib)
 AC_MSG_RESULT(GTK-2 support..........................   yes)
 AC_MSG_RESULT(Stock buttons (icons on buttons in GUI)   $enable_stock_buttons)
 AC_MSG_RESULT(NLS support (foreign languages)........   $USE_NLS)
