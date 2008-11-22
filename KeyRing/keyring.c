@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.84 2008/11/22 15:31:55 rousseau Exp $ */
+/* $Id: keyring.c,v 1.85 2008/11/22 15:58:16 rousseau Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -1112,6 +1112,14 @@ static void cb_date_button(GtkWidget *widget, gpointer data)
    long fdow;
 
    get_pref(PREF_FDOW, &fdow, NULL);
+
+   /* date is not set */
+   if (glob_date.tm_mon < 0)
+   {
+	   /* use today date */
+	   time_t t = time(NULL);
+	   glob_date = *localtime(&t);
+   }
 
    jp_cal_dialog(GTK_WINDOW(gtk_widget_get_toplevel(widget)), "", fdow,
 		 &(glob_date.tm_mon),
