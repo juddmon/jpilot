@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.180 2008/09/21 19:06:47 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.181 2008/11/29 22:35:58 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -814,39 +814,51 @@ void appt_export_ok(int type, const char *filename)
 
 	 fprintf(out, "\"%d\",", mappt->appt.repeatType);
 
-	 fprintf(out, "\"%d\",", mappt->appt.repeatForever);
+         if (mappt->appt.repeatType == repeatNone) {
+            /* Single events don't have valid repeat data fields so
+             * a standard output data template is used for them */
+            fprintf(out, "\"0\",\"1970 01 01\",\"0\",\"0\",\"0\",\"0\",\"0\",\"");
+         } else {
+            fprintf(out, "\"%d\",", mappt->appt.repeatForever);
 
-	 fprintf(out, "\"%d %02d %02d\",",
-		 mappt->appt.repeatEnd.tm_year+1900,
-		 mappt->appt.repeatEnd.tm_mon+1,
-		 mappt->appt.repeatEnd.tm_mday);
+            if (mappt->appt.repeatForever) {
+               /* repeatForever events don't have valid end date fields
+                * so a standard output date is used for them */
+               fprintf(out, "\"1970 01 01\",");
+            } else {
+               fprintf(out, "\"%d %02d %02d\",",
+                       mappt->appt.repeatEnd.tm_year+1900,
+                       mappt->appt.repeatEnd.tm_mon+1,
+                       mappt->appt.repeatEnd.tm_mday);
+            }
 
-	 fprintf(out, "\"%d\",", mappt->appt.repeatFrequency);
+            fprintf(out, "\"%d\",", mappt->appt.repeatFrequency);
 
-	 fprintf(out, "\"%d\",", mappt->appt.repeatDay);
+            fprintf(out, "\"%d\",", mappt->appt.repeatDay);
 
-	 fprintf(out, "\"");
-	 for (i=0; i<7; i++) {
-	    fprintf(out, "%d", mappt->appt.repeatDays[i]);
-	 }
-	 fprintf(out, "\",");
+            fprintf(out, "\"");
+            for (i=0; i<7; i++) {
+               fprintf(out, "%d", mappt->appt.repeatDays[i]);
+            }
+            fprintf(out, "\",");
 
-	 fprintf(out, "\"%d\",", mappt->appt.repeatWeekstart);
+            fprintf(out, "\"%d\",", mappt->appt.repeatWeekstart);
 
-	 fprintf(out, "\"%d\",", mappt->appt.exceptions);
+            fprintf(out, "\"%d\",", mappt->appt.exceptions);
 
-	 fprintf(out, "\"");
-	 if (mappt->appt.exceptions > 0) {
-	    for (i=0; i<mappt->appt.exceptions; i++) {
-	       if (i>0) {
-		  fprintf(out, ",");
-	       }
-	       fprintf(out, "%d %02d %02d",
-		       mappt->appt.exception[i].tm_year+1900,
-		       mappt->appt.exception[i].tm_mon+1,
-		       mappt->appt.exception[i].tm_mday);
-	    }
-	 }
+            fprintf(out, "\"");
+            if (mappt->appt.exceptions > 0) {
+               for (i=0; i<mappt->appt.exceptions; i++) {
+                  if (i>0) {
+                     fprintf(out, ",");
+                  }
+                  fprintf(out, "%d %02d %02d",
+                          mappt->appt.exception[i].tm_year+1900,
+                          mappt->appt.exception[i].tm_mon+1,
+                          mappt->appt.exception[i].tm_mday);
+               }
+            }   /* if for exceptions */
+         }   /* else for repeat event */
 	 fprintf(out, "\"\n");
 	 break;
 
