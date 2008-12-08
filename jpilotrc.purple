@@ -54,12 +54,6 @@ bg[PRELIGHT] = { 0.6, 0.4, 0.8 }
 style "toggle_button" = "button"
 {
 #toggle buttons are the buttons that stay down or up when pressed
-#fg[NORMAL]   = { 1.0, 1.0, 1.0 }
-#bg[NORMAL]   = { 0, 0.3, 0.6 }
-#fg[ACTIVE]   = { 1.0, 1.0, 1.0 }
-#bg[ACTIVE]   = { 0.0, 0.4, 0.7 }
-#bg[PRELIGHT] = { 0.0, 0.3, 0.6 }
-#fg[PRELIGHT] = { 1.0, 1.0, 1.0 }
 }
 
 style "radio_button"
@@ -88,8 +82,6 @@ base[NORMAL]    = { 0.85, 0.9, 1.0 }
 
 style "text"
 {
-#This is how to use a different font under GTK 1.x
-#font = "-adobe-courier-medium-o-normal--8-80-75-75-m-50-iso8859-1"
 #This is how to use a different font under GTK 2.x
 #font_name = "Sans 12"
 fg[NORMAL]      = { 0.0, 0.0, 0.0 }
@@ -104,8 +96,8 @@ fg[INSENSITIVE] = { 0.0, 0.0, 0.0 } #fg of scrollbar buttons when insensitive
 bg[INSENSITIVE] = { 0.4, 0.2, 0.6 } #bg of scrollbar buttons when insensitive
 text[NORMAL]    = { 0.0, 0.0, 1.0 }
 base[NORMAL]    = { 0.85, 0.9, 1.0 }
-text[ACTIVE]    = { 0.0, 0.0, 1.0 }  #fg of selected text after focus has left(GTK 2.x)
-base[ACTIVE]    = { 0.85, 0.9, 1.0 } #bg of selected text after focus has left(GTK 2.x)
+text[ACTIVE]    = { 0.0, 0.0, 1.0 }  #fg of selected text after focus has left
+base[ACTIVE]    = { 0.85, 0.9, 1.0 } #bg of selected text after focus has left
 }
 
 style "menu"
@@ -130,16 +122,15 @@ bg[ACTIVE] = { 0.3, 0.1, 0.5 }
 
 style "calendar"
 {
-fg[NORMAL]     = { 1.0, 1.0, 1.0 } #normal days text and month/year text
-bg[NORMAL]     = { 0.5, 0.3, 0.7 } #top header part and off month days
-fg[SELECTED]   = { 1.0, 1.0, 1.0 } # selected and week numbers for GTK1.x
-bg[SELECTED]   = { 0.5, 0.3, 0.7 } # selected and week numbers for GTK1.x
-text[SELECTED] = { 1.0, 1.0, 1.0 } # selected and week numbers for GTK2.x
-base[SELECTED] = { 0.5, 0.3, 0.7 } # selected and week numbers for GTK2.x
-text[ACTIVE]   = { 1.0, 1.0, 1.0 } # week numbers when focus is not on widget for GTK2.x
-base[ACTIVE]   = { 0.5, 0.3, 0.7 } # week numbers when focus is not on widget for GTK2.x
-fg[PRELIGHT]   = { 1.0, 1.0, 0.0 } # prelights for arrows
-bg[PRELIGHT]   = { 0.4, 0.2, 0.6 } # prelights for arrows
+fg[NORMAL]     = { 1.0, 1.0, 1.0 } # month/year text
+bg[NORMAL]     = { 0.5, 0.3, 0.7 } # month/year bg and out-of-month days
+fg[PRELIGHT]   = { 1.0, 1.0, 0.0 } # prelights for month/year arrows
+bg[PRELIGHT]   = { 0.4, 0.2, 0.6 } # prelights for month/year arrows
+text[NORMAL]   = { 1.0, 1.0, 1.0 } # day numbers 
+text[SELECTED] = { 1.0, 1.0, 1.0 } # selected day and week numbers fg
+base[SELECTED] = { 0.5, 0.3, 0.7 } # selected day and week numbers bg
+text[ACTIVE]   = { 1.0, 1.0, 1.0 } # week numbers when focus is not on widget
+base[ACTIVE]   = { 0.5, 0.3, 0.7 } # week numbers when focus is not on widget
 base[NORMAL]   = { 0.4, 0.2, 0.6 } # bg for calendar
 }
 
@@ -154,21 +145,18 @@ widget_class "*GtkNotebook" style "notebook"
 widget_class "*GtkButton*" style "button"
 widget_class "*GtkCheckButton*" style "radio_button"
 widget_class "*GtkRadioButton*" style "radio_button"
-widget_class "*GtkSpinButton" style "spin_button"
 widget_class "*GtkToggleButton*" style "toggle_button"
+widget_class "*GtkSpinButton" style "spin_button"
 widget_class "*Menu*" style "menu"
-#widget_class "*GtkMenu" style "menu"
-#widget_class "*GtkOptionMenu" style "menu"
-#widget_class "*GtkRadioMenuItem" style "menu"
 widget_class "*GtkText" style "text"
 widget_class "*GtkTextView" style "text"
+widget_class "*GtkEntry" style "text"
 widget_class "*GtkCList" style "text"
 widget_class "*GtkVScrollbar" style "text"
 widget_class "*GtkHScrollbar" style "text"
 widget_class "*GtkLabel" style "label"
 widget_class "*GtkEventBox" style "label"
 widget_class "*GtkFrame" style "frame"
-widget_class "*GtkEntry" style "text"
 widget_class "*GtkCalendar" style "calendar"
 ############################################################
 # These set the widget types for named gtk widgets in the C code
