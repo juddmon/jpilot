@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.221 2008/10/30 15:07:12 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.222 2008/12/09 02:33:21 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -2244,6 +2244,8 @@ static void cb_category(GtkWidget *item, int selection)
       jp_logf(JP_LOG_DEBUG, "address_category = %d\n",address_category);
       address_update_clist(clist, category_menu1, &glob_contact_list,
 			   address_category, TRUE);
+      /* gives the focus to the search field */
+      gtk_widget_grab_focus(address_quickfind_entry);
    }
 }
 
