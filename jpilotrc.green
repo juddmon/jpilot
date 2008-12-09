@@ -139,6 +139,6 @@ widget_class "*GtkCalendar" style "calendar"
 widget "*.button_app" style "button_app"
 widget "*.label_high" style "label_high"
 widget "*.today"      style "today"
-widget "gtk-tooltips*" style "tooltips"
+widget "*tooltip*"    style "tooltips"
 
 
