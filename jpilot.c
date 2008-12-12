@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.175 2008/12/12 15:02:47 rousseau Exp $ */
+/* $Id: jpilot.c,v 1.176 2008/12/12 15:06:32 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -1780,6 +1780,7 @@ int main(int argc, char *argv[])
                            NULL);
 
    /* Set default size and position of main window */
+   ret = 0;
    if (geometry_str) {
       ret = gtk_window_parse_geometry(GTK_WINDOW(window), geometry_str);
    } 
