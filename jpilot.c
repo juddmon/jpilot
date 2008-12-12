@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.174 2008/08/26 03:26:53 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.175 2008/12/12 15:02:47 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -474,9 +474,10 @@ static void cb_private(GtkWidget *widget, gpointer data)
 	 gtk_widget_show(button_unlocked);
       }
       else {
-	 /* wrong password, hide the entries */
+	 /* wrong or canceled password, hide the entries */
 	 gtk_check_menu_item_set_active(menu_hide_privates, TRUE);
 	 cb_private(NULL, GINT_TO_POINTER(HIDE_PRIVATES));
+	 return;
       }
       break;
    }
