@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.101 2008/06/23 03:03:45 rikster5 Exp $ */
+/* $Id: sync.c,v 1.102 2008/12/13 05:42:37 rikster5 Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -239,10 +239,12 @@ int match_records(char *DB_name,
    if (!strcmp(DB_name,"AddressDB"))
       return !(memcmp(lrec, rrec, lrec_len));
 
-   /* Commented until someone with newer Palm can test
    if (!strcmp(DB_name,"ContactsDB-PAdd"))
+      /* Hack for gapfill bytes */
+      set_byte(rrec+6,0);
+      set_byte(rrec+16,0);
       return !(memcmp(lrec, rrec, lrec_len));
-   */
+
    if (!strcmp(DB_name,"ToDoDB"))
       return !(memcmp(lrec, rrec, lrec_len));
 
