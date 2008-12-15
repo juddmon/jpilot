@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.176 2008/12/12 15:06:32 rousseau Exp $ */
+/* $Id: jpilot.c,v 1.177 2008/12/15 13:24:04 judd Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -924,26 +924,6 @@ void cb_about(GtkWidget *widget, gpointer data)
    }
 }
 
-void cb_payback(GtkWidget *widget, gpointer data)
-{
-   char *button_text[]={N_("OK")};
-   char *text=
-	   N_("Buy a Palm Tungsten, or Palm Zire, register it on-line and\n"
-         "earn points for the J-Pilot project.\n\n"
-         "If you already own a Tungsten, or Zire Palm, consider registering it\n"
-        "on-line to help J-Pilot.\n"
-        "Visit http://jpilot.org/payback.html for details.\n\n"
-        "This message will not be automatically displayed again and can be found later\n"
-        "in the help menu.\n\n\n"
-        "PALM, TUNGSTEN and ZIRE are among the trademarks of palmOne, Inc.");
-
-   if (GTK_IS_WINDOW(window)) {
-      dialog_generic(GTK_WINDOW(window),
-	    _("Register your Palm in the Payback Program"), DIALOG_INFO,
-	    _(text), 1, button_text);
-   }
-}
-
 /* Experimental webmenu that has never been used in practice */
 #ifdef WEBMENU
 
@@ -1131,7 +1111,6 @@ void get_main_menu(GtkWidget  *my_window,
   { url_commands[KONQUEROR_NEW].desc,      NULL,         cb_web,         KONQUEROR_NEW,      NULL, NULL },
 #endif
   { _("/_Help"),                           NULL,         NULL,           0,                  "<LastBranch>", NULL },
-  { _("/Help/PayBack program"),            NULL,         cb_payback,     0,                  NULL, NULL },
   { _("/Help/About J-Pilot"),              NULL,         cb_about,       0,                  ICON(GTK_STOCK_DIALOG_INFO) },
   { "END",                                 NULL,         NULL,           0,                  NULL, NULL }
  };
@@ -1441,27 +1420,25 @@ static gint cb_output2(GtkWidget *widget, GdkEventButton *event, gpointer data)
 gint cb_check_version(gpointer main_window)
 {
    int major, minor, micro;
-   const char *Pver;
-   long lver;
+   int r;
    char str_ver[8];
 
    jp_logf(JP_LOG_DEBUG, "cb_check_version\n");
 
-   get_pref(PREF_VERSION, NULL, &Pver);
-
-   memset(str_ver, 0, 8);
-   strncpy(str_ver, Pver, 6);
-   lver=atol(str_ver);
-   major=lver/10000;
-   minor=(lver/100)%100;
-   micro=lver%100;
-
-   set_pref(PREF_VERSION, 0, "009907", 1);
-
-   /* 2004 Oct 2 */
-   if ((time(NULL) < 1096675200) && (lver<9907)) {
-      cb_payback(0, 0);
+   r = sscanf(VERSION, "%d.%d.%d", &major, &minor, &micro);
+   if (r!=3) {
+      jp_logf(JP_LOG_DEBUG, "couldn't parse VERSION\n");
+      return FALSE;
    }
+   /* These shouldn't be greater than 100, but just in case */
+   major %= 100;
+   minor %= 100;
+   micro %= 100;
+
+   sprintf(str_ver, "%02d%02d%02d", major, minor, micro);
+
+   set_pref(PREF_VERSION, 0, str_ver, 1);
+
    return FALSE;
 }
 
