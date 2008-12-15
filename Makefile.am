@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.58 2008/06/03 01:02:53 rikster5 Exp $
+# $Id: Makefile.am,v 1.59 2008/12/15 03:35:45 judd Exp $
 
 SUBDIRS = Expense SyncTime KeyRing dialer m4 po icons docs empty
 
@@ -192,8 +192,10 @@ test_compile:
 	!(grep 'error' make.log)
 
 ChangeLog.cvs:
-	rcs2log | perl -pe 's/rousseau /Ludovic Rousseau /; \
-	s/judd /Judd Montgomery /; s/desrod /David A. Desrosiers /; \
-	s/rikster5 /Rik Wehbring /' > $@
+	rcs2log -h hostname | perl -pe \
+	's/<rousseau\@hostname>/Ludovic Rousseau <ludovic.rousseau\@free.fr>/; \
+	s/<judd\@hostname>/Judd Montgomery <judd\@jpilot.org>/; \
+	s/<desrod\@hostname>/David A. Desrosiers <david.a.desrosiers\@gmail.com>/; \
+	s/<rikster5\@hostname>/Rik Wehbring <rdrider0-jpilot\@yahoo.com>/' > $@
 
 
