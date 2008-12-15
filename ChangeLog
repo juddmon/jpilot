@@ -1,8 +1,24 @@
+1.6.1 - 12/15/08
+ Improved internationalization support
+ Added newer category syncronization code
+ Added libgcrypt support
+ Fixed Mac OS X bugs/crash
+ Now requires pilot-link > 0.12.0
+ As always many many bug other fixes and small changes, see Changelog.cvs for details
+
+1.6.0 - 05/27/08
+ Support for MemosDB-PMem
+ Support for ContactsDB-PAdd
+ Syncing merged records fixes
+ Added sortable columns in KeyRing
+ Temporarily removed Edit categories
+ Many many bug fixes and small changes
+
 0.99.9 - 08/27/06
  Fixed a major Memo category sync bug.
  Removed clipboard code, which would cause X to freeze when ran with some
  applications, rdesktop, to name one.
- Many bug fixes, and GUI im[provements, see Changelog.cvs for details.
+ Many bug fixes, and GUI improvements, see Changelog.cvs for details
 
 0.99.9-pre2 - 01/15/06 (Released by Ludovic Rousseau)
  Fix Bugzilla 1533 where null description in appointment crashes ical
