@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.182 2008/11/30 01:11:49 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.183 2008/12/16 21:09:25 rousseau Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -4317,8 +4317,6 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 #endif
 
    /* gtk_clist_set_column_justification(GTK_CLIST(clist), 0, GTK_JUSTIFY_FILL);*/
-   gtk_widget_set_usize(GTK_WIDGET(clist), 10, 10);
-   gtk_widget_set_usize(GTK_WIDGET(scrolled_window), 10, 10);
 
 #ifdef DAY_VIEW
    create_daily_view(scrolled_window, vbox_no_time_appts);
