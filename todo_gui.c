@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.145 2008/12/17 20:01:56 rousseau Exp $ */
+/* $Id: todo_gui.c,v 1.146 2008/12/17 20:07:50 rousseau Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -2209,9 +2209,6 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
 
    /* Description */
-   hbox_temp = gtk_hbox_new (FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
-
    hbox_temp = gtk_hbox_new (FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, TRUE, TRUE, 0);
 
