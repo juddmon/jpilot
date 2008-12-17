@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.144 2008/10/30 15:07:12 rousseau Exp $ */
+/* $Id: todo_gui.c,v 1.145 2008/12/17 20:01:56 rousseau Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -2248,9 +2248,6 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 1);
    gtk_container_add(GTK_CONTAINER(scrolled_window), todo_note);
    gtk_box_pack_start_defaults(GTK_BOX(hbox_temp), scrolled_window);
-
-   gtk_widget_set_usize(GTK_WIDGET(todo_desc), 10, 10);
-   gtk_widget_set_usize(GTK_WIDGET(todo_note), 10, 10);
 
    /* Capture the TAB key to change focus with it */
    gtk_signal_connect(GTK_OBJECT(todo_desc), "key_press_event",

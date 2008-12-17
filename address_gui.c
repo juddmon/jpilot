@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.222 2008/12/09 02:33:21 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.223 2008/12/17 20:01:55 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -3611,7 +3611,6 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    /* Put the address list window up */
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
-   /* gtk_widget_set_usize(GTK_WIDGET(scrolled_window), 150, 0); */
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 0);
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
 				  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
@@ -3884,7 +3883,6 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	       gtk_container_add(GTK_CONTAINER(scrolled_window), addr_text[schema[i].record_field]);
 	    }
 
-	    gtk_widget_set_usize(GTK_WIDGET(addr_text[schema[i].record_field]), 0, 25);
 
 	    /* Make a special case for Note so it has a scrollbar and no label */
 	    if (schema[i].record_field == contNote) {
@@ -3925,7 +3923,6 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	    gtk_text_view_set_editable(GTK_TEXT_VIEW(addr_text[schema[i].record_field]), TRUE);
 	    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(addr_text[schema[i].record_field]), GTK_WRAP_CHAR);
 	    gtk_container_set_border_width(GTK_CONTAINER(addr_text[schema[i].record_field]), 1);
-	    gtk_widget_set_usize(GTK_WIDGET(addr_text[schema[i].record_field]), 0, 25);
 	    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(addr_text[schema[i].record_field]),
 			     x-1, x, table_y_i, table_y_i+1);
 	    
@@ -3947,7 +3944,6 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	    gtk_text_view_set_editable(GTK_TEXT_VIEW(addr_text[schema[i].record_field]), TRUE);
 	    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(addr_text[schema[i].record_field]), GTK_WRAP_CHAR);
 	    gtk_container_set_border_width(GTK_CONTAINER(addr_text[schema[i].record_field]), 1);
-	    gtk_widget_set_usize(GTK_WIDGET(addr_text[schema[i].record_field]), 0, 25);
 	    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(addr_text[schema[i].record_field]),
 				      x-1, x, table_y_i, table_y_i+1);
 
@@ -3965,7 +3961,6 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	    gtk_text_view_set_editable(GTK_TEXT_VIEW(addr_text[schema[i].record_field]), TRUE);
 	    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(addr_text[schema[i].record_field]), GTK_WRAP_CHAR);
 	    gtk_container_set_border_width(GTK_CONTAINER(addr_text[schema[i].record_field]), 1);
-	    gtk_widget_set_usize(GTK_WIDGET(addr_text[schema[i].record_field]), 0, 25);
 	    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(addr_text[schema[i].record_field]),
 				      x-1, x, table_y_i, table_y_i+1);
 
@@ -3984,7 +3979,6 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	    gtk_text_view_set_editable(GTK_TEXT_VIEW(addr_text[schema[i].record_field]), TRUE);
 	    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(addr_text[schema[i].record_field]), GTK_WRAP_CHAR);
 	    gtk_container_set_border_width(GTK_CONTAINER(addr_text[schema[i].record_field]), 1);
-	    gtk_widget_set_usize(GTK_WIDGET(addr_text[schema[i].record_field]), 0, 25);
 	    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(addr_text[schema[i].record_field]),
 				      x-1, x, table_y_i, table_y_i+1);
 
@@ -4025,7 +4019,6 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 
 	    reminder_entry = gtk_entry_new_with_max_length(2);
             entry_set_multiline_truncate(GTK_ENTRY(reminder_entry), TRUE);
-	    gtk_widget_set_usize(reminder_entry, 30, 0);
 	    gtk_box_pack_start(GTK_BOX(reminder_box), reminder_entry, FALSE, FALSE, 0);
 
 	    changed_list = g_list_prepend(changed_list, reminder_entry);

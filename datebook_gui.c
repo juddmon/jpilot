@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.183 2008/12/16 21:09:25 rousseau Exp $ */
+/* $Id: datebook_gui.c,v 1.184 2008/12/17 20:01:56 rousseau Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -4571,8 +4571,6 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 1);
    gtk_container_add(GTK_CONTAINER(scrolled_window), dbook_desc);
    gtk_box_pack_start_defaults(GTK_BOX(hbox_temp), scrolled_window);
-   /* gtk_widget_set_usize(GTK_WIDGET(dbook_desc), 255, 50); */
-   gtk_widget_set_usize(GTK_WIDGET(dbook_desc), 10, 10);
 
    /* Note */
    hbox_temp = gtk_hbox_new(FALSE, 0);
@@ -4589,7 +4587,6 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 1);
    gtk_container_add(GTK_CONTAINER(scrolled_window), dbook_note);
    gtk_box_pack_start_defaults(GTK_BOX(hbox_temp), scrolled_window);
-   gtk_widget_set_usize(GTK_WIDGET(dbook_note), 10, 10);
 
    /* Datebk tags entry */
 #ifdef ENABLE_DATEBK
