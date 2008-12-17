@@ -1,4 +1,4 @@
-/* $Id: prefs.c,v 1.79 2008/06/20 04:36:41 rikster5 Exp $ */
+/* $Id: prefs.c,v 1.80 2008/12/17 20:30:40 rousseau Exp $ */
 
 /*******************************************************************************
  * prefs.c
@@ -144,6 +144,7 @@ static prefType glob_prefs[NUM_PREFS] = {
      {"todo_sort_order", INTTYPE, INTTYPE, 0, NULL, 0},
      {"addr_sort_order", INTTYPE, INTTYPE, 1, NULL, 0},
      {"addr_name_col_sz", INTTYPE, INTTYPE, 140, NULL, 0},
+     {"todo_note_pane", INTTYPE, INTTYPE, 200, NULL, 0},
 };
 
 struct name_list {

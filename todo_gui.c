@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.146 2008/12/17 20:07:50 rousseau Exp $ */
+/* $Id: todo_gui.c,v 1.147 2008/12/17 20:30:40 rousseau Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -84,6 +84,7 @@ static GtkWidget *cancel_record_button;
 static GtkWidget *category_menu1;
 static GtkWidget *category_menu2;
 static GtkWidget *pane;
+static GtkWidget *note_pane;
 
 static ToDoList *glob_todo_list=NULL;
 static ToDoList *export_todo_list=NULL;
@@ -1925,6 +1926,7 @@ int todo_gui_cleanup()
    free_ToDoList(&glob_todo_list);
    connect_changed_signals(DISCONNECT_SIGNALS);
    set_pref(PREF_TODO_PANE, gtk_paned_get_position(GTK_PANED(pane)), NULL, TRUE);
+   set_pref(PREF_TODO_NOTE_PANE, gtk_paned_get_position(GTK_PANED(note_pane)), NULL, TRUE);
    set_pref(PREF_LAST_TODO_CATEGORY, todo_category, NULL, TRUE);
    set_pref(PREF_TODO_SORT_COLUMN, clist_col_selected, NULL, TRUE);
    set_pref(PREF_TODO_SORT_ORDER, GTK_CLIST(clist)->sort_type, NULL, TRUE);
@@ -2207,10 +2209,14 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu2, TRUE, TRUE, 0);
 
+   note_pane = gtk_vpaned_new();
+   get_pref(PREF_TODO_NOTE_PANE, &ivalue, NULL);
+   gtk_paned_set_position(GTK_PANED(note_pane), ivalue);
+   gtk_box_pack_start(GTK_BOX(vbox2), note_pane, TRUE, TRUE, 5);
 
    /* Description */
    hbox_temp = gtk_hbox_new (FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, TRUE, TRUE, 0);
+   gtk_paned_pack1(GTK_PANED(note_pane), hbox_temp, TRUE, FALSE);
 
    todo_desc = gtk_text_view_new();
    todo_desc_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(todo_desc)));
@@ -2226,13 +2232,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    /* Note */
    hbox_temp = gtk_hbox_new (FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
-
-   label = gtk_label_new(_("Note"));
-   gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 0);
-
-   hbox_temp = gtk_hbox_new (FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, TRUE, TRUE, 0);
+   gtk_paned_pack2(GTK_PANED(note_pane), hbox_temp, TRUE, FALSE);
 
    todo_note = gtk_text_view_new();
    todo_note_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(todo_note)));
