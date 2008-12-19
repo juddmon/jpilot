@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.147 2008/12/17 20:30:40 rousseau Exp $ */
+/* $Id: todo_gui.c,v 1.148 2008/12/19 16:01:13 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -1942,6 +1942,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    GdkBitmap *mask;
    GtkWidget *vbox1, *vbox2;
    GtkWidget *hbox_temp;
+   GtkWidget *vbox_temp;
    GtkWidget *separator;
    GtkWidget *label;
    time_t ltime;
@@ -2231,8 +2232,13 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_box_pack_start_defaults(GTK_BOX(hbox_temp), scrolled_window);
 
    /* Note */
-   hbox_temp = gtk_hbox_new (FALSE, 0);
-   gtk_paned_pack2(GTK_PANED(note_pane), hbox_temp, TRUE, FALSE);
+   vbox_temp = gtk_vbox_new(FALSE, 0);
+   gtk_paned_pack2(GTK_PANED(note_pane), vbox_temp, TRUE, FALSE);
+
+   label = gtk_label_new(_("Note"));
+   /* Center Note label visually */
+   gtk_misc_set_alignment(GTK_MISC(label), 0.506, 0.5);
+   gtk_box_pack_start(GTK_BOX(vbox_temp), label, FALSE, FALSE, 0);
 
    todo_note = gtk_text_view_new();
    todo_note_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(todo_note)));
@@ -2244,7 +2250,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 				  GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 1);
    gtk_container_add(GTK_CONTAINER(scrolled_window), todo_note);
-   gtk_box_pack_start_defaults(GTK_BOX(hbox_temp), scrolled_window);
+   gtk_box_pack_start_defaults(GTK_BOX(vbox_temp), scrolled_window);
 
    /* Capture the TAB key to change focus with it */
    gtk_signal_connect(GTK_OBJECT(todo_desc), "key_press_event",
