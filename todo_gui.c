@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.148 2008/12/19 16:01:13 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.149 2008/12/19 16:14:15 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -2226,7 +2226,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
-				  GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
+				  GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 1);
    gtk_container_add(GTK_CONTAINER(scrolled_window), todo_desc);
    gtk_box_pack_start_defaults(GTK_BOX(hbox_temp), scrolled_window);
@@ -2247,7 +2247,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
-				  GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
+				  GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 1);
    gtk_container_add(GTK_CONTAINER(scrolled_window), todo_note);
    gtk_box_pack_start_defaults(GTK_BOX(vbox_temp), scrolled_window);

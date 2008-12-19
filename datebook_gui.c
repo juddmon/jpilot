@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.184 2008/12/17 20:01:56 rousseau Exp $ */
+/* $Id: datebook_gui.c,v 1.185 2008/12/19 16:14:15 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -4567,7 +4567,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
-				  GTK_POLICY_AUTOMATIC, GTK_POLICY_ALWAYS);
+				  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 1);
    gtk_container_add(GTK_CONTAINER(scrolled_window), dbook_desc);
    gtk_box_pack_start_defaults(GTK_BOX(hbox_temp), scrolled_window);
@@ -4583,7 +4583,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    scrolled_window = gtk_scrolled_window_new (NULL, NULL);
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
-				  GTK_POLICY_AUTOMATIC, GTK_POLICY_ALWAYS);
+				  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 1);
    gtk_container_add(GTK_CONTAINER(scrolled_window), dbook_note);
    gtk_box_pack_start_defaults(GTK_BOX(hbox_temp), scrolled_window);
