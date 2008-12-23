@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.185 2008/12/19 16:14:15 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.186 2008/12/23 04:41:27 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -1202,7 +1202,7 @@ static int datebook_export_gui(GtkWidget *main_window, int x, int y)
 
    hbox = gtk_hbutton_box_new();
    gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
-   gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox), GTK_BUTTONBOX_END);
+   gtk_button_box_set_layout(GTK_BUTTON_BOX(hbox), GTK_BUTTONBOX_END);
    gtk_button_box_set_spacing(GTK_BUTTON_BOX(hbox), 6);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
@@ -4432,7 +4432,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 		       "label_high");
 #endif
 
-   /* start details */
+   /* Separator */
    separator = gtk_hseparator_new();
    gtk_box_pack_start(GTK_BOX(vbox2), separator, FALSE, FALSE, 5);
 
@@ -4440,7 +4440,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    hbox_alarm1 = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_alarm1, FALSE, FALSE, 0);
 
-   check_button_alarm = gtk_check_button_new_with_label (_("Alarm"));
+   check_button_alarm = gtk_check_button_new_with_label(_("Alarm"));
    gtk_box_pack_start(GTK_BOX(hbox_alarm1), check_button_alarm, FALSE, FALSE, 5);
    gtk_signal_connect(GTK_OBJECT(check_button_alarm), "clicked",
 		      GTK_SIGNAL_FUNC(cb_check_button_alarm), NULL);
@@ -4581,7 +4581,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_text_view_set_editable(GTK_TEXT_VIEW(dbook_note), TRUE);
    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(dbook_note), GTK_WRAP_WORD);
 
-   scrolled_window = gtk_scrolled_window_new (NULL, NULL);
+   scrolled_window = gtk_scrolled_window_new(NULL, NULL);
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
 				  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 1);
@@ -4635,7 +4635,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    label = gtk_label_new(_("Day(s)"));
    gtk_box_pack_start(GTK_BOX(hbox_repeat_day1), label, FALSE, FALSE, 2);
 
-   check_button_day_endon = gtk_check_button_new_with_label (_("End on"));
+   check_button_day_endon = gtk_check_button_new_with_label(_("End on"));
    gtk_signal_connect(GTK_OBJECT(check_button_day_endon), "clicked",
 		      GTK_SIGNAL_FUNC(cb_check_button_endon),
 		      GINT_TO_POINTER(PAGE_DAY));
@@ -4681,7 +4681,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 		      GTK_SIGNAL_FUNC(cb_cal_dialog),
 		      GINT_TO_POINTER(PAGE_WEEK));
 
-   label = gtk_label_new (_("Repeat on Days:"));
+   label = gtk_label_new(_("Repeat on Days:"));
    gtk_box_pack_start(GTK_BOX(hbox_repeat_week3), label, FALSE, FALSE, 0);
 
    get_pref(PREF_FDOW, &fdow, NULL);
@@ -4718,10 +4718,10 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    entry_set_multiline_truncate(GTK_ENTRY(repeat_mon_entry), TRUE);
    gtk_widget_set_usize(repeat_mon_entry, 30, 0);
    gtk_box_pack_start(GTK_BOX(hbox_repeat_mon1), repeat_mon_entry, FALSE, FALSE, 0);
-   label = gtk_label_new (_("Month(s)"));
+   label = gtk_label_new(_("Month(s)"));
    gtk_box_pack_start(GTK_BOX(hbox_repeat_mon1), label, FALSE, FALSE, 2);
 
-   check_button_mon_endon = gtk_check_button_new_with_label (_("End on"));
+   check_button_mon_endon = gtk_check_button_new_with_label(_("End on"));
    gtk_signal_connect(GTK_OBJECT(check_button_mon_endon), "clicked",
 		      GTK_SIGNAL_FUNC(cb_check_button_endon),
 		      GINT_TO_POINTER(PAGE_MONTH));
@@ -4735,7 +4735,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 		      GINT_TO_POINTER(PAGE_MONTH));
 
 
-   label = gtk_label_new (_("Repeat by:"));
+   label = gtk_label_new(_("Repeat by:"));
    gtk_box_pack_start(GTK_BOX(hbox_repeat_mon3), label, FALSE, FALSE, 0);
 
    toggle_button_repeat_mon_byday = gtk_radio_button_new_with_label
@@ -4759,7 +4759,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_box_pack_start(GTK_BOX(vbox_repeat_year), hbox_repeat_year1, FALSE, FALSE, 2);
    gtk_box_pack_start(GTK_BOX(vbox_repeat_year), hbox_repeat_year2, FALSE, FALSE, 2);
    label = gtk_label_new(_("Frequency is Every"));
-   gtk_box_pack_start(GTK_BOX (hbox_repeat_year1), label, FALSE, FALSE, 2);
+   gtk_box_pack_start(GTK_BOX(hbox_repeat_year1), label, FALSE, FALSE, 2);
    repeat_year_entry = gtk_entry_new_with_max_length(2);
    entry_set_multiline_truncate(GTK_ENTRY(repeat_year_entry), TRUE);
    gtk_widget_set_usize(repeat_year_entry, 30, 0);
@@ -4767,7 +4767,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    label = gtk_label_new(_("Year(s)"));
    gtk_box_pack_start(GTK_BOX(hbox_repeat_year1), label, FALSE, FALSE, 2);
 
-   check_button_year_endon = gtk_check_button_new_with_label (_("End on"));
+   check_button_year_endon = gtk_check_button_new_with_label(_("End on"));
    gtk_signal_connect(GTK_OBJECT(check_button_year_endon), "clicked",
 		      GTK_SIGNAL_FUNC(cb_check_button_endon),
 		      GINT_TO_POINTER(PAGE_YEAR));
