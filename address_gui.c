@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.223 2008/12/17 20:01:55 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.224 2008/12/23 05:48:36 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -3879,7 +3879,6 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 	       scrolled_window = gtk_scrolled_window_new(NULL, NULL);
 	       gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
 					      GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
-	       gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 1);
 	       gtk_container_add(GTK_CONTAINER(scrolled_window), addr_text[schema[i].record_field]);
 	    }
 
@@ -4073,11 +4072,11 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(addr_all), FALSE);
    gtk_text_view_set_editable(GTK_TEXT_VIEW(addr_all), FALSE);
    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(addr_all), GTK_WRAP_CHAR);
+   gtk_container_set_border_width(GTK_CONTAINER(addr_all), 1);
 
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
 				  GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
-   gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 1);
    gtk_container_add(GTK_CONTAINER(scrolled_window), addr_all);
    gtk_box_pack_start(GTK_BOX(hbox_temp), scrolled_window, TRUE, TRUE, 0);
 
