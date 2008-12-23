@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.149 2008/12/19 16:14:15 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.150 2008/12/23 05:03:38 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -2158,7 +2158,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
 
    /* Priority radio buttons */
-   hbox_temp = gtk_hbox_new (FALSE, 0);
+   hbox_temp = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
    label = gtk_label_new(_("Priority: "));
@@ -2213,7 +2213,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    note_pane = gtk_vpaned_new();
    get_pref(PREF_TODO_NOTE_PANE, &ivalue, NULL);
    gtk_paned_set_position(GTK_PANED(note_pane), ivalue);
-   gtk_box_pack_start(GTK_BOX(vbox2), note_pane, TRUE, TRUE, 5);
+   gtk_box_pack_start(GTK_BOX(vbox2), note_pane, TRUE, TRUE, 0);
 
    /* Description */
    hbox_temp = gtk_hbox_new (FALSE, 0);
@@ -2226,10 +2226,11 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
-				  GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+				  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 1);
    gtk_container_add(GTK_CONTAINER(scrolled_window), todo_desc);
    gtk_box_pack_start_defaults(GTK_BOX(hbox_temp), scrolled_window);
+
 
    /* Note */
    vbox_temp = gtk_vbox_new(FALSE, 0);
@@ -2247,7 +2248,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
-				  GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+				  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 1);
    gtk_container_add(GTK_CONTAINER(scrolled_window), todo_note);
    gtk_box_pack_start_defaults(GTK_BOX(vbox_temp), scrolled_window);
