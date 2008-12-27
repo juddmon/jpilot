@@ -1,4 +1,4 @@
-/* $Id: import_gui.c,v 1.28 2008/08/26 03:26:53 rikster5 Exp $ */
+/* $Id: import_gui.c,v 1.29 2008/12/27 01:50:37 rikster5 Exp $ */
 
 /*******************************************************************************
  * import_gui.c
@@ -49,37 +49,29 @@ int (*glob_import_callback)(GtkWidget *parent_window, const char *file_path, int
 /****************************** Main Code *************************************/
 
 /*
- * This function reads until it finds a non separator character,
- * then reads a string.  Spaces, commas, etc. can be inside quotes.
- * Escaped quotes (double quotes) are converted to single.
- * Return value is size of text.
- *  -1 for EOL
+ * This function reads a CSV entry until it finds the next seperator(',').
+ * Spaces, commas, newlines, etc. are allowed inside quotes.
+ * Escaped quotes (double quotes) are converted to single occurrences.
+ * Return value is size of text including null terminator.
  */
-int read_csv_field(FILE *in, char *text, int size, int new_line)
+int read_csv_field(FILE *in, char *text, int size)
 {
    int n, c;
    char sep[]=",\t \r\n";
+   char whitespace[]="\t \r\n";
    int quoted;
 
    n=0;
-   quoted=0;
+   quoted=FALSE;
    text[0]='\0';
-   /* Read until a non separator character is found */
-   while (1) {
-      c=getc(in);
-      if (feof(in)) {
-	 return EXIT_SUCCESS;
-	 text[++n]='\0';
-      }
-      if (!strchr(sep, c)) {
-	 ungetc(c, in);
-	 break;
-      }
-   }
+
    /* Read the field */
    while (1) {
       c=fgetc(in);
-      if (feof(in)) break;
+
+      /* Look for EOF */
+      if (feof(in)) 
+         break;
       /* Look for quote */
       if (c=='"') {
 	 if (quoted) {
@@ -92,24 +84,44 @@ int read_csv_field(FILE *in, char *text, int size, int new_line)
 	       continue;
 	    }
 	 } else {
-	    quoted=1;
+	    quoted=TRUE;
 	    continue;
 	 }
       }
       /* Look for separators */
       if (strchr(sep, c)) {
 	 if (!quoted) {
-	    text[n++]='\0';
-	    break;
-	 }
-      }
+            if (c != ',') {
+               /* skip whitespace  */
+               while (1) {
+                  c=getc(in);
+                  if (feof(in)) {
+                     text[n++]='\0';
+                     return n;
+                  }
+                  if (strchr(whitespace, c)) {
+                     continue;
+                  } else {
+                     ungetc(c, in);
+                     break;
+                  }
+               }
+            }
+            /* after sep processing, break out of reading field */
+            break;   
+	 } /* end if !quoted */
+      } /* end if separator */
+
+      /* Ordinary character, add to field */
       text[n++]=c;
       if (n+1>=size)
       {
 	  text[n++]='\0';
 	  return n;
       }
-   }
+   }   /* end while(1) reading field */
+
+   /* Terminate string and return */
    text[n++]='\0';
    return n;
 }
