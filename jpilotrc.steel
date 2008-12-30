@@ -4,6 +4,12 @@ fg[NORMAL] = { 1.0, 1.0, 1.0 }
 bg[NORMAL] = { 0.4, 0.4, 0.6 }
 }
 
+style "fileselect" = "window"
+{
+text[NORMAL] = { 0.0, 0.0, 1.0 }    # fg of file selection lists
+base[NORMAL] = { 0.85, 0.9, 1.0 }   # bg of file selection lists
+}
+
 style "frame"
 {
 fg[NORMAL] = { 1.0, 1.0, 1.0 }
@@ -136,7 +142,7 @@ base[NORMAL]   = { 0.4, 0.4, 0.6 } # bg for calendar
 widget_class "GtkWindow" style "window"
 widget_class "GtkDialog" style "window"
 widget_class "GtkMessageDialog" style "window"
-widget_class "GtkFileSelection" style "window"
+widget_class "GtkFileSelection*" style "fileselect"
 widget_class "GtkFontSel*" style "notebook"
 widget_class "*GtkNotebook" style "notebook"
 widget_class "*GtkButton*" style "button"
