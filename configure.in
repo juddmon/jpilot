@@ -390,6 +390,9 @@ dnl Check for gnu crypt lib necessary for Keyring
 crypto_lib="none"
 AM_PATH_LIBGCRYPT
 AC_CHECK_LIB([gcrypt], [gcry_md_hash_buffer], have_libgcrypt=1, have_libgcrypt=0)
+AC_ARG_WITH(openssl,
+   AC_HELP_STRING([--with-openssl],[Use OpenSSL instead of GNU libgcrypt]),
+   have_libgcrypt="0")
 if test "$have_libgcrypt" = "0"; then
 dnl Check for OpenSSL libs necessary for Keyring
    AC_CHECK_LIB([crypto], [SSLeay_version], have_libcrypto=1, have_libcrypto=0)
