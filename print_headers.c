@@ -1,4 +1,4 @@
-/* $Id: print_headers.c,v 1.8 2008/06/19 04:12:07 rikster5 Exp $ */
+/* $Id: print_headers.c,v 1.9 2009/01/14 02:20:34 rikster5 Exp $ */
 
 /*******************************************************************************
  * print_headers.c
@@ -744,7 +744,7 @@ void print_month_header(FILE *f)
         "        /FDOM1          edef\n"
         "        /MonthName1     edef\n"
         "\n"
-        "        Col 5 lt {\n"
+        "        Col 5 lt Row 1 gt or {\n"
         "            Row 0 ne {\n"
         "                5 4 MonthName1 NumDays1 FDOM1 SmallMonth\n"
         "                6 4 MonthName2 NumDays2 FDOM2 SmallMonth\n"
