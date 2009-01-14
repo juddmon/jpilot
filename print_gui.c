@@ -1,4 +1,4 @@
-/* $Id: print_gui.c,v 1.21 2008/06/23 03:03:45 rikster5 Exp $ */
+/* $Id: print_gui.c,v 1.22 2009/01/14 04:51:31 rikster5 Exp $ */
 
 /*******************************************************************************
  * print_gui.c
@@ -326,24 +326,25 @@ int print_gui(GtkWidget *main_window, int app, int date_button, int mon_week_day
    get_pref(PREF_PRINT_COMMAND, NULL, &svalue);
    gtk_entry_set_text(GTK_ENTRY(print_command_entry), svalue);
 
-
-   /* Print button */
+   /* Dialog button box */
    hbox = gtk_hbutton_box_new();
    gtk_container_set_border_width(GTK_CONTAINER(hbox), 6);
    gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox), GTK_BUTTONBOX_END);
    gtk_button_box_set_spacing(GTK_BUTTON_BOX(hbox), 6);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 0);
 
+   /* Cancel button */
+   button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
+   gtk_signal_connect(GTK_OBJECT(button), "clicked",
+		      GTK_SIGNAL_FUNC(cb_cancel), window);
+   gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
+
+   /* Print button */
    button = gtk_button_new_from_stock(GTK_STOCK_PRINT);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_print), window);
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
 
-   /* Quit button */
-   button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
-   gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_cancel), window);
-   gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
 
    gtk_widget_show_all(window);
 
