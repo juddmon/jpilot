@@ -1,4 +1,4 @@
-/* $Id: expense.c,v 1.62 2008/06/18 02:40:02 rikster5 Exp $ */
+/* $Id: expense.c,v 1.63 2009/01/16 17:32:54 rikster5 Exp $ */
 
 /*******************************************************************************
  * expense.c
@@ -1449,6 +1449,8 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    struct tm *now;
    long ivalue;
    int i;
+
+   int old_category = show_category;
    
    jp_logf(JP_LOG_DEBUG, "Expense: plugin gui started, unique_id=%d\n", unique_id);
 
@@ -1739,6 +1741,19 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_widget_hide(add_record_button);
    gtk_widget_hide(apply_record_button);
 
+//   if (cycle_category) {
+      old_category++;
+
+      if (menu_item_category1[old_category] == NULL) {
+	 old_category = 0;
+	 show_category = CATEGORY_ALL;
+      }
+
+      gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_item_category1[old_category]), TRUE);
+      gtk_option_menu_set_history(GTK_OPTION_MENU(menu_category1), old_category);
+   //}
+
+
    /* The focus doesn't do any good on the application button */
    gtk_widget_grab_focus(GTK_WIDGET(clist));
 
@@ -1932,13 +1947,20 @@ int plugin_help(char **text, int *width, int *height)
    /* We could also pass back *text=NULL
     * and implement whatever we wanted to here.
     */
-   *text = strdup(
-           /*-------------------------------------------*/
-           _("Expense plugin for J-Pilot was written by\n"
-             "Judd Montgomery (c) 1999.\n"
-             "judd@jpilot.org\n"
-             "http://jpilot.org"
-           ));
+   char plugin_name[200];
+
+   plugin_get_name(&plugin_name[0], 200);
+   *text = g_strdup_printf(
+      /*-------------------------------------------*/
+      _("%s\n"
+        "\n"
+        "Expense plugin for J-Pilot was written by\n"
+        "Judd Montgomery (c) 1999.\n"
+        "judd@jpilot.org\n"
+        "http://jpilot.org"
+        ),
+        plugin_name
+      );
    *height = 0;
    *width = 0;
    
