@@ -1,4 +1,4 @@
-/* $Id: prefs.c,v 1.80 2008/12/17 20:30:40 rousseau Exp $ */
+/* $Id: prefs.c,v 1.81 2009/01/16 02:34:19 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs.c
@@ -52,7 +52,7 @@ static prefType glob_prefs[NUM_PREFS] = {
      {"time", CHARTYPE, INTTYPE, 0, NULL, 0},
      {"sdate", CHARTYPE, INTTYPE, 0, NULL, 0},
      {"ldate", CHARTYPE, INTTYPE, 0, NULL, 0},
-     {"fdow", CHARTYPE, INTTYPE, 0, NULL, 0},
+     {"xxx_internal1_xxx", CHARTYPE, INTTYPE, 0, NULL, 0},
      {"show_deleted", INTTYPE, INTTYPE, 0, NULL, 0},
      {"show_modified", INTTYPE, INTTYPE, 0, NULL, 0},
      {"todo_hide_completed", INTTYPE, INTTYPE, 0, NULL, 0},
