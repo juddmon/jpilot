@@ -1,4 +1,4 @@
-/* $Id: synctime.c,v 1.14 2008/06/18 02:40:02 rikster5 Exp $ */
+/* $Id: synctime.c,v 1.15 2009/01/16 17:31:50 rikster5 Exp $ */
 
 /*******************************************************************************
  * synctime.c
@@ -32,13 +32,13 @@
 
 void plugin_version(int *major_version, int *minor_version)
 {
-   *major_version=0;
-   *minor_version=99;
+   *major_version=1;
+   *minor_version=0;
 }
 
 int plugin_get_name(char *name, int len)
 {
-   strncpy(name, "SyncTime 0.99", len);
+   strncpy(name, "SyncTime 1.0", len);
    return EXIT_SUCCESS;
 }
 
@@ -50,15 +50,22 @@ int plugin_get_help_name(char *name, int len)
 
 int plugin_help(char **text, int *width, int *height)
 {
-   *text = strdup(
-	   /*-------------------------------------------*/
-	   _("SyncTime plugin for J-Pilot was written by\n"
-	     "Judd Montgomery (c) 1999.\n"
-	     "judd@jpilot.org\n"
-	     "http://jpilot.org\n"
-	     "\n"
-	     "SyncTime WILL NOT work with PalmOS 3.3!"
-	   ));
+   char plugin_name[200];
+
+   plugin_get_name(&plugin_name[0], 200);
+   *text = g_strdup_printf(
+      /*-------------------------------------------*/
+      _("%s\n"
+        "\n"
+        "SyncTime plugin for J-Pilot was written by\n"
+        "Judd Montgomery (c) 1999.\n"
+        "judd@jpilot.org\n"
+        "http://jpilot.org\n"
+        "\n"
+        "SyncTime WILL NOT work with PalmOS 3.3!"
+        ),
+        plugin_name
+      );
    *height = 0;
    *width = 0;
    return EXIT_SUCCESS;
