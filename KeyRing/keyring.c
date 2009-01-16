@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.86 2008/11/22 16:34:45 rousseau Exp $ */
+/* $Id: keyring.c,v 1.87 2009/01/16 17:30:30 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -57,7 +57,7 @@
 #define KEYRING_CAT2 2
 #define NUM_KEYRING_CAT_ITEMS 16
 
-#define PASSWD_ENTER	   0
+#define PASSWD_ENTER       0
 #define PASSWD_ENTER_RETRY 1
 #define PASSWD_ENTER_NEW   2
 
@@ -84,10 +84,10 @@
 #define MAX_KR_PASS (25)   /* Maximum auto-generated passwd length */
 
 struct KeyRing {
-   char *name;	   /* Unencrypted */
+   char *name;     /* Unencrypted */
    char *account;  /* Encrypted */
    char *password; /* Encrypted */
-   char *note;	   /* Encrypted */
+   char *note;     /* Encrypted */
    struct tm last_changed; /* Encrypted */
 };
 /* My wrapper to the KeyRing structure so that I can put a few more 
@@ -103,19 +103,20 @@ struct MyKeyRing {
 /******************************* Global vars **********************************/
 /* This is the category that is currently being displayed */
 static int keyr_category = CATEGORY_ALL;
-static int glob_category_number_from_menu_item[NUM_KEYRING_CAT_ITEMS];
 
 static GtkWidget *clist;
 static GtkWidget *entry_name;
 static GtkWidget *entry_account;
 static GtkWidget *entry_password;
 static GtkWidget *keyr_note;
-static GObject	 *keyr_note_buffer;
-static GtkWidget *menu_category1;
-static GtkWidget *menu_category2;
-static int old_category;
-static GtkWidget *menu_item_category1[NUM_KEYRING_CAT_ITEMS+1];
-static GtkWidget *menu_item_category2[NUM_KEYRING_CAT_ITEMS];
+static GObject   *keyr_note_buffer;
+/* Need 1 extra slot for All category */
+static GtkWidget *keyr_cat_menu_item1[NUM_KEYRING_CAT_ITEMS+1];
+static GtkWidget *keyr_cat_menu_item2[NUM_KEYRING_CAT_ITEMS];
+static GtkWidget *category_menu1;
+static GtkWidget *category_menu2;
+static struct sorted_cats sort_l[NUM_KEYRING_CAT_ITEMS];
+static GtkWidget *pane = NULL;
 static GtkWidget *scrolled_window;
 static GtkWidget *new_record_button;
 static GtkWidget *apply_record_button;
@@ -124,7 +125,6 @@ static GtkWidget *delete_record_button;
 static GtkWidget *undelete_record_button;
 static GtkWidget *copy_record_button;
 static GtkWidget *cancel_record_button;
-static GtkWidget *pane = NULL;
 static GtkWidget *date_button;
 struct tm glob_date;
 #ifndef ENABLE_STOCK_BUTTONS
@@ -159,10 +159,10 @@ static void keyr_update_clist();
 static void connect_changed_signals(int con_or_dis);
 
 static void cb_clist_selection(GtkWidget      *clist,
-			       gint	      row,
-			       gint	      column,
-			       GdkEventButton *event,
-			       gpointer       data);
+                               gint           row,
+                               gint           column,
+                               GdkEventButton *event,
+                               gpointer       data);
 
 static int keyring_find(int unique_id);
 
@@ -175,7 +175,9 @@ static void update_date_button(GtkWidget *button, struct tm *t);
  * The KeyRing structure is 276 bytes whereas pilot-link uses 278.
  * Code below is taken from unpack_CategoryAppInfo in pilot-link but modified
  * for the shortened structure. */
-static int keyr_plugin_unpack_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *record, int len)
+static int keyr_plugin_unpack_cai_from_ai(struct CategoryAppInfo *cai, 
+                                          unsigned char *record, 
+                                          int len)
 {
    int i, rec;
 
@@ -203,13 +205,17 @@ static int keyr_plugin_unpack_cai_from_ai(struct CategoryAppInfo *cai, unsigned 
    return EXIT_SUCCESS;
 }
 
-int plugin_unpack_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *record, int len)
+int plugin_unpack_cai_from_ai(struct CategoryAppInfo *cai, 
+                              unsigned char *record, 
+                              int len)
 {
-	return keyr_plugin_unpack_cai_from_ai(cai, record, len);
+   return keyr_plugin_unpack_cai_from_ai(cai, record, len);
 }
 
 /* Routine to pack CategoryAppInfo struct into non-standard size buffer */
-int plugin_pack_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *record, int len)
+int plugin_pack_cai_into_ai(struct CategoryAppInfo *cai, 
+                            unsigned char *record, 
+                            int len)
 {
    int i, rec;
 
@@ -239,8 +245,10 @@ int plugin_pack_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *record, 
    return EXIT_SUCCESS;
 }
 
-static int pack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size,
-			int *wrote_size)
+static int pack_KeyRing(struct KeyRing *kr, 
+                        unsigned char *buf, 
+                        int buf_size,
+                        int *wrote_size)
 {
    int n;
    int i;
@@ -261,10 +269,10 @@ static int pack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size,
 
    *wrote_size=0;
    
-   if (!(kr->name))	kr->name=empty;
-   if (!(kr->account))	kr->account=empty;
+   if (!(kr->name))     kr->name=empty;
+   if (!(kr->account))  kr->account=empty;
    if (!(kr->password)) kr->password=empty;
-   if (!(kr->note))	kr->note=empty;
+   if (!(kr->note))     kr->note=empty;
 
    /* 2 is for the lastChanged date */
    /* 3 chars accounts for NULL string terminators */
@@ -294,39 +302,39 @@ static int pack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size,
    i += strlen(kr->note)+1;
    strncpy((char *)&buf[i], last_changed, 2);
 #ifdef HAVE_LIBGCRYPT
-	err = gcry_cipher_open(&hd, GCRY_CIPHER_3DES, GCRY_CIPHER_MODE_ECB, 0);
-	if (err)
-		jp_logf(JP_LOG_DEBUG, "gcry_cipher_open: %s\n", gpg_strerror(err));
+   err = gcry_cipher_open(&hd, GCRY_CIPHER_3DES, GCRY_CIPHER_MODE_ECB, 0);
+   if (err)
+      jp_logf(JP_LOG_DEBUG, "gcry_cipher_open: %s\n", gpg_strerror(err));
 
-	err = gcry_cipher_setkey(hd, key, sizeof(key));
-	if (err)
-		jp_logf(JP_LOG_DEBUG, "gcry_cipher_setkey: %s\n", gpg_strerror(err));
+   err = gcry_cipher_setkey(hd, key, sizeof(key));
+   if (err)
+      jp_logf(JP_LOG_DEBUG, "gcry_cipher_setkey: %s\n", gpg_strerror(err));
 
-	for (i = strlen(kr->name)+1; i<n; i+=8)
-	{	
-		char tmp[8];
-		err = gcry_cipher_encrypt(hd, tmp, 8, &buf[i], 8);
-		if (err)
-			jp_logf(JP_LOG_DEBUG, "gcry_cipher_encrypt: %s\n", gpg_strerror(err));
-		memcpy(&buf[i], tmp, 8);
-	}
+   for (i = strlen(kr->name)+1; i<n; i+=8)
+   {  
+      char tmp[8];
+      err = gcry_cipher_encrypt(hd, tmp, 8, &buf[i], 8);
+      if (err)
+         jp_logf(JP_LOG_DEBUG, "gcry_cipher_encrypt: %s\n", gpg_strerror(err));
+      memcpy(&buf[i], tmp, 8);
+   }
 
-	gcry_cipher_close(hd);
+   gcry_cipher_close(hd);
 #else
    for (i=strlen(kr->name)+1; i<n; i=i+8) {
 #ifdef HEADER_NEW_DES_H
       DES_ecb3_encrypt((DES_cblock *)&buf[i], (DES_cblock *)&buf[i], 
-		       &s1, &s2, &s1, DES_ENCRYPT);
+                       &s1, &s2, &s1, DES_ENCRYPT);
 #else
       des_ecb3_encrypt((const_des_cblock *)&buf[i], (des_cblock *)(&buf[i]),
-		       s1, s2, s1, DES_ENCRYPT);
+                       s1, s2, s1, DES_ENCRYPT);
 #endif
    }
 #endif
 
 #ifdef JPILOT_DEBUG
    for (i=0;i<n; i++) {
-      printf("%02x ", (unsigned char)buf[i]);	
+      printf("%02x ", (unsigned char)buf[i]);   
    }
    printf("\n");
 #endif
@@ -334,7 +342,9 @@ static int pack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size,
    return n;
 }
 
-static int unpack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size)
+static int unpack_KeyRing(struct KeyRing *kr, 
+                          unsigned char *buf, 
+                          int buf_size)
 {
    int i, j;
    int n;
@@ -373,27 +383,27 @@ static int unpack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size)
 
    P=&buf[n];
 #ifdef HAVE_LIBGCRYPT
-	err = gcry_cipher_open(&hd, GCRY_CIPHER_3DES, GCRY_CIPHER_MODE_ECB, 0);
-	if (err)
-		jp_logf(JP_LOG_DEBUG, "gcry_cipher_open: %s\n", gpg_strerror(err));
+   err = gcry_cipher_open(&hd, GCRY_CIPHER_3DES, GCRY_CIPHER_MODE_ECB, 0);
+   if (err)
+      jp_logf(JP_LOG_DEBUG, "gcry_cipher_open: %s\n", gpg_strerror(err));
 
-	err = gcry_cipher_setkey(hd, key, sizeof(key));
-	if (err)
-		jp_logf(JP_LOG_DEBUG, "gcry_cipher_setkey: %s\n", gpg_strerror(err));
+   err = gcry_cipher_setkey(hd, key, sizeof(key));
+   if (err)
+      jp_logf(JP_LOG_DEBUG, "gcry_cipher_setkey: %s\n", gpg_strerror(err));
 
-	err = gcry_cipher_decrypt(hd, clear_text, rem, P, rem);
-	if (err)
-		jp_logf(JP_LOG_DEBUG, "gcry_cipher_decrypt: %s\n", gpg_strerror(err));
+   err = gcry_cipher_decrypt(hd, clear_text, rem, P, rem);
+   if (err)
+      jp_logf(JP_LOG_DEBUG, "gcry_cipher_decrypt: %s\n", gpg_strerror(err));
 
-	gcry_cipher_close(hd);
+   gcry_cipher_close(hd);
 #else
    for (i=0; i<rem; i+=8) {
 #ifdef HEADER_NEW_DES_H
       DES_ecb3_encrypt((DES_cblock *)&P[i], (DES_cblock *)(clear_text+i),
-		       &s1, &s2, &s1, DES_DECRYPT);
+                       &s1, &s2, &s1, DES_DECRYPT);
 #else
       des_ecb3_encrypt((const_des_cblock *)&P[i], (des_cblock *)(clear_text+i),
-		       s1, s2, s1, DES_DECRYPT);
+                       s1, s2, s1, DES_DECRYPT);
 #endif
    }
 #endif
@@ -405,8 +415,8 @@ static int unpack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size)
 
    for (i=0, j=1; (i<rem) && (j<4); i++) {
       if (!clear_text[i]) {
-	 Pstr[j]=&clear_text[i+1];
-	 j++;
+         Pstr[j]=&clear_text[i+1];
+         j++;
       }
    }
 
@@ -430,14 +440,27 @@ static int unpack_KeyRing(struct KeyRing *kr, unsigned char *buf, int buf_size)
    printf("Pstr1 [%s]\n", Pstr[1]);
    printf("Pstr2 [%s]\n", Pstr[2]);
    printf("last_changed %d-%d-%d\n",
-	  kr->last_changed.tm_year,
-	  kr->last_changed.tm_mon,
-	  kr->last_changed.tm_mday);
+           kr->last_changed.tm_year,
+           kr->last_changed.tm_mon,
+           kr->last_changed.tm_mday);
 #endif
 
    free(clear_text);
 
    return 1;
+}
+
+int get_keyr_cat_info(struct CategoryAppInfo *cai)
+{
+   unsigned char *buf;
+   int buf_size;
+
+   memset(cai, 0, sizeof(struct CategoryAppInfo));
+   jp_get_app_info("Keys-Gtkr", &buf, &buf_size);
+   keyr_plugin_unpack_cai_from_ai(cai, buf, buf_size);
+   free(buf);
+
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -471,8 +494,8 @@ static int set_password_hash(unsigned char *buf, int buf_size, char *passwd)
 
 #ifdef HAVE_LIBGCRYPT
    gcry_md_hash_buffer(GCRY_MD_MD5, md, passwd, strlen(passwd));
-   memcpy(key, md, 16);	/* k1 and k2 */
-   memcpy(key+16, md, 8);	/* k1 again */
+   memcpy(key, md, 16);    /* k1 and k2 */
+   memcpy(key+16, md, 8);  /* k1 again */
 #else
    MD5((unsigned char *)passwd, strlen(passwd), md);
    memcpy(current_key1, md, 8);
@@ -526,28 +549,28 @@ static int get_keyring(struct MyKeyRing **mkr_list, int category)
    /* Sort through list of records masking out unwanted ones */
    for (temp_list = records; temp_list; temp_list = temp_list->next) {
       if (temp_list->data) {
-	 br=temp_list->data;
+         br=temp_list->data;
       } else {
-	 continue;
+         continue;
       }
       if (!br->buf) {
-	 continue;
+         continue;
       }
       /* record 0 is the hash-key record */
       if (br->attrib & dlpRecAttrSecret) {
-	 continue;
+         continue;
       }
 
       /* Filter out deleted or deleted/modified records */
-      if ( ((br->rt==DELETED_PALM_REC)	&& (!keep_deleted)) ||
-	   ((br->rt==DELETED_PC_REC)	&& (!keep_deleted)) ||
-	   ((br->rt==MODIFIED_PALM_REC) && (!keep_modified)) ) {
-	 continue;
+      if ( ((br->rt==DELETED_PALM_REC) && (!keep_deleted)) ||
+           ((br->rt==DELETED_PC_REC)  && (!keep_deleted)) ||
+           ((br->rt==MODIFIED_PALM_REC) && (!keep_modified)) ) {
+         continue;
       }
 
       /* Filter by category */
       if ( ((br->attrib & 0x0F) != category) && category != CATEGORY_ALL) {
-	 continue;
+         continue;
       }
 
       mkr = malloc(sizeof(struct MyKeyRing));
@@ -557,8 +580,8 @@ static int get_keyring(struct MyKeyRing **mkr_list, int category)
       mkr->rt = br->rt;
 
       if (unpack_KeyRing(&(mkr->kr), br->buf, br->size) <=0) {
-	 free(mkr);
-	 continue;
+         free(mkr);
+         continue;
       }
 
       /* prepend to list */
@@ -635,6 +658,17 @@ static void set_new_button_to(int new_state)
    record_changed=new_state;
 }
 
+static int find_sorted_cat(int cat)
+{
+   int i;
+   for (i=0; i< NUM_KEYRING_CAT_ITEMS; i++) {
+      if (sort_l[i].cat_num==cat) {
+         return i;
+      }
+   }
+   return EXIT_FAILURE;
+}
+
 /* Function is used to sort clist based on the Last Changed date field */
 gint GtkClistKeyrCompareDates(GtkCList *clist,
                               gconstpointer ptr1,
@@ -662,8 +696,8 @@ gint GtkClistKeyrCompareDates(GtkCList *clist,
 
 /* Function is used to sort clist case insensitively */
 gint GtkClistKeyrCompareNocase (GtkCList *clist,
-                              gconstpointer ptr1,
-                              gconstpointer ptr2)
+                                gconstpointer ptr1,
+                                gconstpointer ptr2)
 {
    GtkCListRow *row1, *row2;
    gchar *str1, *str2;
@@ -696,10 +730,10 @@ static void cb_clist_click_column(GtkWidget *clist, int column)
    if (clist_col_selected == column)
    {
       if (GTK_CLIST(clist)->sort_type == GTK_SORT_ASCENDING) {
-	 gtk_clist_set_sort_type(GTK_CLIST (clist), GTK_SORT_DESCENDING);
+         gtk_clist_set_sort_type(GTK_CLIST (clist), GTK_SORT_DESCENDING);
       }
       else {
-	 gtk_clist_set_sort_type(GTK_CLIST (clist), GTK_SORT_ASCENDING);
+         gtk_clist_set_sort_type(GTK_CLIST (clist), GTK_SORT_ASCENDING);
       }
    }
    else /* Always sort in ascending order when changing sort column */
@@ -728,8 +762,7 @@ static void cb_clist_click_column(GtkWidget *clist, int column)
    keyring_find(unique_id);
 }
 
-static void cb_record_changed(GtkWidget *widget,
-			      gpointer	 data)
+static void cb_record_changed(GtkWidget *widget, gpointer data)
 {
    int flag;
    struct tm *now;
@@ -742,7 +775,7 @@ static void cb_record_changed(GtkWidget *widget,
    if (record_changed==CLEAR_FLAG) {
       connect_changed_signals(DISCONNECT_SIGNALS);
       if ((GTK_CLIST(clist)->rows > 0)) {
-	 set_new_button_to(MODIFY_FLAG);
+         set_new_button_to(MODIFY_FLAG);
          /* Update the lastChanged field when password is modified */
          if (flag == PASSWD_FLAG)
          {
@@ -752,14 +785,14 @@ static void cb_record_changed(GtkWidget *widget,
             update_date_button(date_button, &glob_date);
          }
       } else {
-	 set_new_button_to(NEW_FLAG);
+         set_new_button_to(NEW_FLAG);
       }
    }
    else if (record_changed==UNDELETE_FLAG)
    {
       jp_logf(JP_LOG_INFO|JP_LOG_GUI,
-	      _("This record is deleted.\n"
-		"Undelete it or copy it to make changes.\n"));
+              _("This record is deleted.\n"
+              "Undelete it or copy it to make changes.\n"));
    }
 }
 
@@ -774,25 +807,25 @@ static void connect_changed_signals(int con_or_dis)
       connected=1;
 
       for (i=0; i<NUM_KEYRING_CAT_ITEMS; i++) {
-	 if (menu_item_category2[i] != NULL) {
-	    gtk_signal_connect(GTK_OBJECT(menu_item_category2[i]), 
+         if (keyr_cat_menu_item2[i] != NULL) {
+            gtk_signal_connect(GTK_OBJECT(keyr_cat_menu_item2[i]), 
                                "toggled",
-			       GTK_SIGNAL_FUNC(cb_record_changed), 
+                               GTK_SIGNAL_FUNC(cb_record_changed), 
                                NULL);
-	 }
+         }
       }
 
       gtk_signal_connect(GTK_OBJECT(entry_name), "changed",
-			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+          GTK_SIGNAL_FUNC(cb_record_changed), NULL);
       gtk_signal_connect(GTK_OBJECT(entry_account), "changed",
-			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+          GTK_SIGNAL_FUNC(cb_record_changed), NULL);
       gtk_signal_connect(GTK_OBJECT(entry_password), "changed",
-			 GTK_SIGNAL_FUNC(cb_record_changed), 
+                         GTK_SIGNAL_FUNC(cb_record_changed), 
                          GINT_TO_POINTER(PASSWD_FLAG));
       gtk_signal_connect(GTK_OBJECT(date_button), "pressed",
-			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+          GTK_SIGNAL_FUNC(cb_record_changed), NULL);
       g_signal_connect(keyr_note_buffer, "changed",
-			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+          GTK_SIGNAL_FUNC(cb_record_changed), NULL);
    }
    
    /* DISCONNECT */
@@ -801,24 +834,24 @@ static void connect_changed_signals(int con_or_dis)
       connected=0;
 
       for (i=0; i<NUM_KEYRING_CAT_ITEMS; i++) {
-	 if (menu_item_category2[i]) {
-	    gtk_signal_disconnect_by_func(GTK_OBJECT(menu_item_category2[i]),
-					  GTK_SIGNAL_FUNC(cb_record_changed), 
-					  NULL);
-	 }
+         if (keyr_cat_menu_item2[i]) {
+            gtk_signal_disconnect_by_func(GTK_OBJECT(keyr_cat_menu_item2[i]),
+                                          GTK_SIGNAL_FUNC(cb_record_changed), 
+                                          NULL);
+    }
       }
 
       gtk_signal_disconnect_by_func(GTK_OBJECT(entry_name),
-				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+                GTK_SIGNAL_FUNC(cb_record_changed), NULL);
       gtk_signal_disconnect_by_func(GTK_OBJECT(entry_account),
-				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+                GTK_SIGNAL_FUNC(cb_record_changed), NULL);
       gtk_signal_disconnect_by_func(GTK_OBJECT(entry_password),
-				    GTK_SIGNAL_FUNC(cb_record_changed), 
+                                    GTK_SIGNAL_FUNC(cb_record_changed), 
                                     GINT_TO_POINTER(PASSWD_FLAG));
       gtk_signal_disconnect_by_func(GTK_OBJECT(date_button),
-				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+                GTK_SIGNAL_FUNC(cb_record_changed), NULL);
       g_signal_handlers_disconnect_by_func(keyr_note_buffer,
-				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+                GTK_SIGNAL_FUNC(cb_record_changed), NULL);
    }
 }
 
@@ -870,10 +903,10 @@ static void cb_delete_keyring(GtkWidget *widget, gpointer data)
    if ((flag==MODIFY_FLAG) || (flag==DELETE_FLAG)) {
       jp_delete_record("Keys-Gtkr", &br, flag);
       if (flag==DELETE_FLAG) {
-	 /* when we redraw we want to go to the line above the deleted one */
-	 if (clist_row_selected>0) {
-	    clist_row_selected--;
-	 }
+        /* when we redraw we want to go to the line above the deleted one */
+         if (clist_row_selected>0) {
+            clist_row_selected--;
+         }
       }
    }
 
@@ -882,8 +915,7 @@ static void cb_delete_keyring(GtkWidget *widget, gpointer data)
    }
 }
 
-static void cb_undelete_keyring(GtkWidget *widget,
-				gpointer   data)
+static void cb_undelete_keyring(GtkWidget *widget, gpointer data)
 {
    struct MyKeyRing *mkr;
    buf_rec br;
@@ -911,14 +943,14 @@ static void cb_undelete_keyring(GtkWidget *widget,
 
    if (flag==UNDELETE_FLAG) {
       if (mkr->rt == DELETED_PALM_REC ||
-	  mkr->rt == DELETED_PC_REC)
+          mkr->rt == DELETED_PC_REC)
       {
-	 jp_undelete_record("Keys-Gtkr", &br, flag);
+         jp_undelete_record("Keys-Gtkr", &br, flag);
       }
       /* Possible later addition of undelete for modified records
       else if (mmemo->rt == MODIFIED_PALM_REC)
       {
-	 cb_add_new_record(widget, GINT_TO_POINTER(COPY_FLAG));
+         cb_add_new_record(widget, GINT_TO_POINTER(COPY_FLAG));
       }
       */
    }
@@ -949,9 +981,10 @@ static void update_date_button(GtkWidget *button, struct tm *t)
  */
 static int keyr_clear_details()
 {
-   int new_cat;
    struct tm *now;
    time_t ltime;
+   int new_cat;
+   int sorted_position;
 
    jp_logf(JP_LOG_DEBUG, "KeyRing: cb_clear\n");
 
@@ -967,15 +1000,21 @@ static int keyr_clear_details()
    gtk_entry_set_text(GTK_ENTRY(entry_account), "");
    gtk_entry_set_text(GTK_ENTRY(entry_password), "");
    gtk_text_buffer_set_text(GTK_TEXT_BUFFER(keyr_note_buffer), "", -1);
-   if (keyr_category==CATEGORY_ALL) 
+   if (keyr_category==CATEGORY_ALL) {
       new_cat = 0;
-   else 
+   } else {
       new_cat = keyr_category;
+   }
+   sorted_position = find_sorted_cat(new_cat);
+   if (sorted_position<0) {
+      jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
+   } else {
+      gtk_check_menu_item_set_active
+         (GTK_CHECK_MENU_ITEM(keyr_cat_menu_item2[sorted_position]), TRUE);
+      gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu2), sorted_position);
+   }
 
-   gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
-				 (menu_item_category2[new_cat]), TRUE);
-   gtk_option_menu_set_history(GTK_OPTION_MENU(menu_category2), new_cat);
-   
+   connect_changed_signals(CONNECT_SIGNALS);
    set_new_button_to(CLEAR_FLAG);
 
    return EXIT_SUCCESS;
@@ -1029,7 +1068,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
 
    /* TODO: Fixed memory leak here with strdup and not freeing kr
     *       by adding calls to free after pack_KeyRing
-    *	    Bigger question is why we even run jp_charset_j2p here */
+    *       Bigger question is why we even run jp_charset_j2p here */
    kr.name = strdup(kr.name);
    jp_charset_j2p(kr.name, strlen(kr.name)+1);
 
@@ -1052,11 +1091,11 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    /* Any attributes go here.  Usually just the category */
    /* grab category from menu */
    for (i=0; i<NUM_KEYRING_CAT_ITEMS; i++) {
-      if (GTK_IS_WIDGET(menu_item_category2[i])) {
-	 if (GTK_CHECK_MENU_ITEM(menu_item_category2[i])->active) {
-	    br.attrib = glob_category_number_from_menu_item[i];
-	    break;
-	 }
+      if (GTK_IS_WIDGET(keyr_cat_menu_item2[i])) {
+         if (GTK_CHECK_MENU_ITEM(keyr_cat_menu_item2[i])->active) {
+            br.attrib = sort_l[i].cat_num;
+            break;
+         }
       }
    }
    jp_logf(JP_LOG_DEBUG, "category is %d\n", br.attrib);
@@ -1070,15 +1109,15 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    if (flag==MODIFY_FLAG) {
       mkr = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
       if (!mkr) {
-	 return;
+         return;
       }
       unique_id = mkr->unique_id;
 
       if ((mkr->rt==DELETED_PALM_REC) ||
-	  (mkr->rt==DELETED_PC_REC)   ||
-	  (mkr->rt==MODIFIED_PALM_REC)) {
-	 jp_logf(JP_LOG_INFO, _("You can't modify a record that is deleted\n"));
-	 return;
+          (mkr->rt==DELETED_PC_REC)   ||
+          (mkr->rt==MODIFIED_PALM_REC)) {
+         jp_logf(JP_LOG_INFO, _("You can't modify a record that is deleted\n"));
+         return;
       }
    }
 
@@ -1086,11 +1125,11 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    if (flag==MODIFY_FLAG) {
       cb_delete_keyring(NULL, data);
       if ((mkr->rt==PALM_REC) || (mkr->rt==REPLACEMENT_PALM_REC)) {
-	 br.unique_id = unique_id;
-	 br.rt = REPLACEMENT_PALM_REC;
+         br.unique_id = unique_id;
+         br.rt = REPLACEMENT_PALM_REC;
       } else {
-	 br.unique_id = 0;
-	 br.rt = NEW_PC_REC;
+         br.unique_id = 0;
+         br.rt = NEW_PC_REC;
       }
    } else {
       br.unique_id = 0;
@@ -1118,29 +1157,29 @@ static void cb_date_button(GtkWidget *widget, gpointer data)
    /* date is not set */
    if (glob_date.tm_mon < 0)
    {
-	   /* use today date */
-	   time_t t = time(NULL);
-	   glob_date = *localtime(&t);
+      /* use today date */
+      time_t t = time(NULL);
+      glob_date = *localtime(&t);
    }
 
    ret = jp_cal_dialog(GTK_WINDOW(gtk_widget_get_toplevel(widget)), "", fdow,
-		 &(glob_date.tm_mon),
-		 &(glob_date.tm_mday),
-		 &(glob_date.tm_year));
+         &(glob_date.tm_mon),
+         &(glob_date.tm_mday),
+         &(glob_date.tm_year));
    if (ret == CAL_DONE)
-	   update_date_button(date_button, &glob_date);
+      update_date_button(date_button, &glob_date);
    else
-	   glob_date = temp_glob_date;
+      glob_date = temp_glob_date;
 }
 
 /* First pass at password generating code */
 static void cb_gen_password(GtkWidget *widget, gpointer data)
 {
    GtkWidget *entry;
-   int	i,
-	length,
-	alpha_size,
-	numer_size;
+   int   i,
+   length,
+   alpha_size,
+   numer_size;
    char alpha[] = "abcdfghjklmnpqrstvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
    char numer[] = "1234567890";
    char passwd[MAX_KR_PASS + 1];
@@ -1157,9 +1196,9 @@ static void cb_gen_password(GtkWidget *widget, gpointer data)
 
    for (i = 0; i < length; i++) {
       if ((i % 2) == 0) {
-	 passwd[i] = alpha[rand() % alpha_size];
+         passwd[i] = alpha[rand() % alpha_size];
       } else {
-	 passwd[i] = numer[rand() % numer_size];
+         passwd[i] = numer[rand() % numer_size];
       }
    }
 
@@ -1178,7 +1217,7 @@ static int display_record(struct MyKeyRing *mkr, int row)
 {
    char temp[8];
    char *temp_str;
-   int	len;
+   int  len;
    const char *svalue;
    char str[50];
 
@@ -1189,17 +1228,17 @@ static int display_record(struct MyKeyRing *mkr, int row)
     case NEW_PC_REC:
     case REPLACEMENT_PALM_REC:
       set_bg_rgb_clist_row(clist, row,
-		       CLIST_NEW_RED, CLIST_NEW_GREEN, CLIST_NEW_BLUE);
+                           CLIST_NEW_RED, CLIST_NEW_GREEN, CLIST_NEW_BLUE);
 
       break;
     case DELETED_PALM_REC:
     case DELETED_PC_REC:
       set_bg_rgb_clist_row(clist, row,
-		       CLIST_DEL_RED, CLIST_DEL_GREEN, CLIST_DEL_BLUE);
+                           CLIST_DEL_RED, CLIST_DEL_GREEN, CLIST_DEL_BLUE);
       break;
     case MODIFIED_PALM_REC:
       set_bg_rgb_clist_row(clist, row,
-		       CLIST_MOD_RED, CLIST_MOD_GREEN, CLIST_MOD_BLUE);
+                           CLIST_MOD_RED, CLIST_MOD_GREEN, CLIST_MOD_BLUE);
       break;
     default:
       gtk_clist_set_row_style(GTK_CLIST(clist), row, NULL);
@@ -1264,7 +1303,7 @@ static void keyr_update_clist()
    gtk_clist_freeze(GTK_CLIST(clist));
    connect_changed_signals(DISCONNECT_SIGNALS);
    gtk_signal_disconnect_by_func(GTK_OBJECT(clist),
-				 GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
+                                 GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
    gtk_clist_clear(GTK_CLIST(clist));
 #ifdef __APPLE__
    gtk_clist_thaw(GTK_CLIST(clist));
@@ -1285,20 +1324,20 @@ static void keyr_update_clist()
    gtk_clist_sort(GTK_CLIST(clist));
 
    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
-		      GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
+                      GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
    
    /* If there are items in the list, highlight the selected row */
    if (entries_shown>0) {
       /* Select the existing requested row, or row 0 if that is impossible */
       if (clist_row_selected <= entries_shown) {
-	 clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
-	 if (!gtk_clist_row_is_visible(GTK_CLIST(clist), clist_row_selected)) {
-	    gtk_clist_moveto(GTK_CLIST(clist), clist_row_selected, 0, 0.5, 0.0);
-	 }
-      }
-      else
+         clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
+         if (!gtk_clist_row_is_visible(GTK_CLIST(clist), clist_row_selected)) {
+            gtk_clist_moveto(GTK_CLIST(clist), clist_row_selected, 0, 0.5, 0.0);
+         }
+      } 
+      else 
       {
-	 clist_select_row(GTK_CLIST(clist), 0, 0);
+         clist_select_row(GTK_CLIST(clist), 0, 0);
       }
    }
 
@@ -1318,13 +1357,13 @@ static void keyr_update_clist()
  * (the details)
  */
 static void cb_clist_selection(GtkWidget      *clist,
-			       gint	      row,
-			       gint	      column,
-			       GdkEventButton *event,
-			       gpointer       data)
+                               gint           row,
+                               gint           column,
+                               GdkEventButton *event,
+                               gpointer       data)
 {
    struct MyKeyRing *mkr;
-   int i, item_num, category;
+   int i, category, sorted_position, count;
    int b;
    unsigned int unique_id = 0;
    char *temp_str;
@@ -1335,21 +1374,21 @@ static void cb_clist_selection(GtkWidget      *clist,
    if ((record_changed==MODIFY_FLAG) || (record_changed==NEW_FLAG)) {
       mkr = gtk_clist_get_row_data(GTK_CLIST(clist), row);
       if (mkr!=NULL) {
-	 unique_id = mkr->unique_id;
+         unique_id = mkr->unique_id;
       }
 
       b=dialog_save_changed_record(clist, record_changed);
       if (b==DIALOG_SAID_2) {
-	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
+         cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
       }
       set_new_button_to(CLEAR_FLAG);
 
-      if (unique_id)
-      {
+      if (unique_id) {
          keyring_find(unique_id);
       } else {
-	 clist_select_row(GTK_CLIST(clist), row, column);
+         clist_select_row(GTK_CLIST(clist), row, column);
       }
+
       return;
    }
 
@@ -1363,7 +1402,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    if (mkr->rt == DELETED_PALM_REC ||
       (mkr->rt == DELETED_PC_REC))
       /* Possible later addition of undelete code for modified deleted records
-	 || mkr->rt == MODIFIED_PALM_REC
+      || mkr->rt == MODIFIED_PALM_REC
       */
    {
       set_new_button_to(UNDELETE_FLAG);
@@ -1376,19 +1415,27 @@ static void cb_clist_selection(GtkWidget      *clist,
    connect_changed_signals(DISCONNECT_SIGNALS);
    
    category = mkr->attrib & 0x0F;
-   item_num=0;
-   for (i=0; i<NUM_KEYRING_CAT_ITEMS; i++) {
-      if (glob_category_number_from_menu_item[i]==category) {
-	 item_num=i;
-	 break;
+   sorted_position = find_sorted_cat(category);
+   if (keyr_cat_menu_item2[sorted_position]==NULL) {
+      /* Illegal category */
+      jp_logf(JP_LOG_DEBUG, "Category is not legal\n");
+      category = sorted_position = 0;
+   }
+   /* We need to count how many items down in the list this is */
+   for (i=sorted_position, count=0; i>=0; i--) {
+      if (keyr_cat_menu_item2[i]) {
+         count++;
       }
    }
+   count--;
 
-   if (item_num < NUM_KEYRING_CAT_ITEMS) {
-      gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
-                                    (menu_item_category2[item_num]), TRUE);
-      gtk_option_menu_set_history(GTK_OPTION_MENU(menu_category2), item_num);
+   if (sorted_position<0) {
+      jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
+   } else {
+      gtk_check_menu_item_set_active
+      (GTK_CHECK_MENU_ITEM(keyr_cat_menu_item2[sorted_position]), TRUE);
    }
+   gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu2), count);
 
    if (mkr->kr.name) {
       temp_str = malloc((len = strlen(mkr->kr.name)*2+1));
@@ -1438,7 +1485,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    jp_logf(JP_LOG_DEBUG, "KeyRing: leaving cb_clist_selection\n");
 }
 
-static void cb_category(GtkWidget *item, unsigned int selection)
+static void cb_category(GtkWidget *item, int selection)
 {
    int b;
    
@@ -1447,109 +1494,13 @@ static void cb_category(GtkWidget *item, unsigned int selection)
    if ((GTK_CHECK_MENU_ITEM(item))->active) {
       b=dialog_save_changed_record(clist, record_changed);
       if (b==DIALOG_SAID_2) {
-	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
+         cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
       }   
-
-      /* remember the previously used category */
-      for (old_category=0; old_category<NUM_KEYRING_CAT_ITEMS; old_category++) {
-	 if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menu_item_category1[old_category])))
-	   break;
-      }
 
       keyr_category = selection;
       clist_row_selected = 0;
       keyr_update_clist();
    }
-}
-
-/*
- * Just a convenience function for passing in an array of strings and getting
- * them all stuffed into a menu.
- */
-static int make_menu(char *items[], int menu_index, GtkWidget **Poption_menu,
-		     GtkWidget *menu_items[])
-{
-   int i, item_num;
-   GSList *group;
-   GtkWidget *option_menu;
-   GtkWidget *menu_item;
-   GtkWidget *menu;
-   
-   jp_logf(JP_LOG_DEBUG, "KeyRing: make_menu\n");
-
-   *Poption_menu = option_menu = gtk_option_menu_new();
-   
-   menu = gtk_menu_new();
-   group = NULL;
-   
-   for (i=0; items[i]; i++) {
-      menu_item = gtk_radio_menu_item_new_with_label(group, _(items[i]));
-      menu_items[i] = menu_item;
-      if (menu_index==KEYRING_CAT1) {
-	 if (i==0) {
-	    item_num=CATEGORY_ALL;
-	 } else {
-	    item_num = i - 1;
-	 }
-      } else {
-	 item_num = i;
-      }
-      if (menu_index==KEYRING_CAT1) {
-	 gtk_signal_connect(GTK_OBJECT(menu_item), "activate",
-			    GTK_SIGNAL_FUNC(cb_category), 
-			    GINT_TO_POINTER(item_num));
-      }
-      group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(menu_item));
-      gtk_menu_append(GTK_MENU(menu), menu_item);
-      gtk_widget_show(menu_item);
-   }
-   gtk_option_menu_set_menu(GTK_OPTION_MENU(option_menu), menu);
-   /* Make this one show up by default */
-   gtk_option_menu_set_history(GTK_OPTION_MENU(option_menu), 0);
-
-   return EXIT_SUCCESS;
-}
-
-/* 
- * This function makes all of the menus on the screen.
- */
-static void make_menus()
-{
-   GList *records;
-   struct CategoryAppInfo cai;
-   unsigned char *buf;
-   int buf_size;
-   int i, count;
-   char *categories[18];
-     
-   jp_logf(JP_LOG_DEBUG, "KeyRing: make_menus\n");
-
-   /* This gets the application specific data out of the database for us.
-    * We still need to write a function to unpack it from its blob form. */
-   memset(&cai, 0, sizeof(cai));
-   jp_get_app_info("Keys-Gtkr", &buf, &buf_size);
-   keyr_plugin_unpack_cai_from_ai(&cai, buf, buf_size);
-   free(buf);
-   
-   categories[0]= "All";
-   for (i=0, count=0; i<NUM_KEYRING_CAT_ITEMS; i++) {
-      glob_category_number_from_menu_item[i]=0;
-      if (cai.name[i][0]=='\0') {
-	 continue;
-      }
-      jp_charset_p2j(cai.name[i], 16);
-      categories[count+1]=cai.name[i];
-      glob_category_number_from_menu_item[count++]=i;
-   }
-   categories[count+1]=NULL;
-   
-   records=NULL;
-   
-   /* TODO: We should probably use the standard menu making function
-    * make_category_menu in utils.c for this rather than code a new version */
-   make_menu(categories, KEYRING_CAT1, &menu_category1, menu_item_category1);
-   /* Skip the ALL for this menu */
-   make_menu(&categories[1], KEYRING_CAT2, &menu_category2, menu_item_category2);   
 }
 
 /***** PASSWORD GUI *****/
@@ -1563,8 +1514,7 @@ struct dialog_data {
    char text[PASSWD_LEN+2];
 };
 
-static void cb_dialog_button(GtkWidget *widget,
-			     gpointer   data)
+static void cb_dialog_button(GtkWidget *widget, gpointer data)
 {
    struct dialog_data *Pdata;
    GtkWidget *w;
@@ -1575,7 +1525,7 @@ static void cb_dialog_button(GtkWidget *widget,
    if (GTK_IS_WINDOW(w)) {
       Pdata = gtk_object_get_data(GTK_OBJECT(w), "dialog_data");
       if (Pdata) {
-	 Pdata->button_hit = GPOINTER_TO_INT(data);
+         Pdata->button_hit = GPOINTER_TO_INT(data);
       }
       gtk_widget_destroy(GTK_WIDGET(w));
    }
@@ -1608,8 +1558,8 @@ static gboolean cb_destroy_dialog(GtkWidget *widget)
  * returns 2 if OK was pressed, 1 if cancel was hit
  */
 static int dialog_password(GtkWindow *main_window, 
-			   char *ascii_password, 
-			   int reason)
+                           char *ascii_password, 
+                           int reason)
 {
    GtkWidget *button, *label;
    GtkWidget *hbox1, *vbox1;
@@ -1625,21 +1575,21 @@ static int dialog_password(GtkWindow *main_window,
    ret = 2; 
   
    dialog = gtk_widget_new(GTK_TYPE_WINDOW,
-			   "type", GTK_WINDOW_TOPLEVEL,
-			   "title", "KeyRing",
-			   NULL);
+            "type", GTK_WINDOW_TOPLEVEL,
+            "title", "KeyRing",
+            NULL);
    
    gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_MOUSE);
 
    gtk_signal_connect(GTK_OBJECT(dialog), "destroy",
-		      GTK_SIGNAL_FUNC(cb_destroy_dialog), dialog);
+                      GTK_SIGNAL_FUNC(cb_destroy_dialog), dialog);
 
    gtk_window_set_modal(GTK_WINDOW(dialog), TRUE);
       
    if (main_window) {
       if (GTK_IS_WINDOW(main_window)) {
-	 gtk_window_set_transient_for(GTK_WINDOW(dialog), 
-				      GTK_WINDOW(main_window));
+         gtk_window_set_transient_for(GTK_WINDOW(dialog), 
+                                      GTK_WINDOW(main_window));
       }
    }
 
@@ -1670,8 +1620,8 @@ static int dialog_password(GtkWindow *main_window,
    entry = gtk_entry_new_with_max_length(32);
    gtk_entry_set_visibility(GTK_ENTRY(entry), FALSE);
    gtk_signal_connect(GTK_OBJECT(entry), "activate",
-		      GTK_SIGNAL_FUNC(cb_dialog_button),
-		      GINT_TO_POINTER(DIALOG_SAID_2));
+                      GTK_SIGNAL_FUNC(cb_dialog_button),
+                      GINT_TO_POINTER(DIALOG_SAID_2));
    gtk_box_pack_start(GTK_BOX(hbox1), entry, TRUE, TRUE, 1);
 
    /* Button Box */
@@ -1684,14 +1634,14 @@ static int dialog_password(GtkWindow *main_window,
    /* Buttons */
    button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_dialog_button),
-		      GINT_TO_POINTER(DIALOG_SAID_1));
+                      GTK_SIGNAL_FUNC(cb_dialog_button),
+                      GINT_TO_POINTER(DIALOG_SAID_1));
    gtk_box_pack_start(GTK_BOX(hbox1), button, FALSE, FALSE, 1);
 
    button = gtk_button_new_from_stock(GTK_STOCK_OK);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_dialog_button),
-		      GINT_TO_POINTER(DIALOG_SAID_2));
+                      GTK_SIGNAL_FUNC(cb_dialog_button),
+                      GINT_TO_POINTER(DIALOG_SAID_2));
    gtk_box_pack_start(GTK_BOX(hbox1), button, FALSE, FALSE, 1);
 
    Pdata = malloc(sizeof(struct dialog_data));
@@ -1701,7 +1651,7 @@ static int dialog_password(GtkWindow *main_window,
       Pdata->entry=entry;
       Pdata->text[0]='\0';
    }
-   gtk_object_set_data(GTK_OBJECT(dialog), "dialog_data", Pdata);		     
+   gtk_object_set_data(GTK_OBJECT(dialog), "dialog_data", Pdata);         
    gtk_widget_grab_focus(GTK_WIDGET(entry));
      
    gtk_widget_show_all(dialog);
@@ -1733,11 +1683,11 @@ static int check_for_db()
    struct stat buf;
 
    home = getenv("JPILOT_HOME");
-   if (!home) { /* Not home; */
+   if (!home) { /* No home; */
       home = getenv("HOME");
       if (!home) {
-	 jp_logf(JP_LOG_WARN, _("Can't get HOME environment variable\n"));
-	 return EXIT_FAILURE;
+         jp_logf(JP_LOG_WARN, _("Can't get HOME environment variable\n"));
+         return EXIT_FAILURE;
       }
    }
    if (strlen(home)>(max_size-strlen(file)-strlen("/.jpilot/")-2)) {
@@ -1750,14 +1700,14 @@ static int check_for_db()
       jp_logf(JP_LOG_FATAL, _("KeyRing: Try Syncing.\n"), full_name);
       return EXIT_FAILURE;
    }
-		 
+       
    return EXIT_SUCCESS;
 }
 
 /*
  * returns EXIT_SUCCESS on password correct, 
- *	   EXIT_FAILURE on password incorrect, 
- *	   <0		on error
+ *         EXIT_FAILURE on password incorrect, 
+ *         <0           on error
  */
 static int verify_pasword(char *ascii_password)
 {
@@ -1782,23 +1732,23 @@ static int verify_pasword(char *ascii_password)
    /* Find special record marked as password */
    for (temp_list = records; temp_list; temp_list = temp_list->next) {
       if (temp_list->data) {
-	 br=temp_list->data;
+         br=temp_list->data;
       } else {
-	 continue;
+         continue;
       }
       if (!br->buf) {
-	 continue;
+         continue;
       }
 
       if ((br->rt == DELETED_PALM_REC) || (br->rt == MODIFIED_PALM_REC)) {
-	 continue;
+         continue;
       }
 
       /* This record should be record 0 and is the hash-key record */
       if (br->attrib & dlpRecAttrSecret) {
-	 password_not_correct = 
-	   set_password_hash(br->buf, br->size, ascii_password);
-	 break;
+         password_not_correct = 
+           set_password_hash(br->buf, br->size, ascii_password);
+         break;
       }
    }
 
@@ -1813,15 +1763,15 @@ static int verify_pasword(char *ascii_password)
 /* This is a mandatory plugin function. */
 void plugin_version(int *major_version, int *minor_version)
 {
-   *major_version=0;
-   *minor_version=99;
+   *major_version=1;
+   *minor_version=1;
 }
 
 /* This is a mandatory plugin function. */
 int plugin_get_name(char *name, int len)
 {
    jp_logf(JP_LOG_DEBUG, "KeyRing: plugin_get_name\n");
-   strncpy(name, "KeyRing 0.01", len);
+   strncpy(name, "KeyRing 1.1", len);
    return EXIT_SUCCESS;
 }
 
@@ -1865,23 +1815,30 @@ int plugin_help(char **text, int *width, int *height)
    /* We could also pass back *text=NULL
     * and implement whatever we wanted to here.
     */
-   *text = strdup(
-	   /*-------------------------------------------*/
-	   _("KeyRing plugin for J-Pilot was written by\n"
-	     "Judd Montgomery (c) 2001.\n"
-	     "judd@jpilot.org\n"
-	     "http://jpilot.org\n"
-	     "\n"
-	     "KeyRing is a free PalmOS program for storing\n"
-	     "passwords and other information encrypted\n"
-	     "http://gnukeyring.sourceforge.net"
-	   ));
+   char plugin_name[200];
+
+   plugin_get_name(&plugin_name[0], 200);
+   *text = g_strdup_printf(
+      /*-------------------------------------------*/
+      _("%s\n"
+        "\n"
+        "KeyRing plugin for J-Pilot was written by\n"
+        "Judd Montgomery (c) 2001.\n"
+        "judd@jpilot.org\n"
+        "http://jpilot.org\n"
+        "\n"
+        "KeyRing is a free PalmOS program for storing\n" 
+        "passwords and other information in encrypted form\n"
+        "http://gnukeyring.sourceforge.net"
+        ),
+        plugin_name
+      );
    *height = 0;
    *width  = 0;
    
    return EXIT_SUCCESS;
 }
-	 
+    
 /*
  * This is a plugin callback function that is executed when J-Pilot starts up.
  * base_dir is where J-Pilot is compiled to be installed at (e.g. /usr/local/)
@@ -1893,7 +1850,7 @@ int plugin_startup(jp_startup_info *info)
    jp_logf(JP_LOG_DEBUG, "KeyRing: plugin_startup\n");
    if (info) {
       if (info->base_dir) {
-	 jp_logf(JP_LOG_DEBUG, "KeyRing: base_dir = [%s]\n", info->base_dir);
+         jp_logf(JP_LOG_DEBUG, "KeyRing: base_dir = [%s]\n", info->base_dir);
       }
    }
    return EXIT_SUCCESS;
@@ -1931,8 +1888,8 @@ int plugin_post_sync(void)
 }
 
 static int add_search_result(const char *line, 
-			     int unique_id, 
-			     struct search_result **sr)
+                             int unique_id, 
+                             struct search_result **sr)
 {
    struct search_result *new_sr;
 
@@ -1955,7 +1912,7 @@ static int add_search_result(const char *line,
  * records which match the search string.
  */
 int plugin_search(const char *search_string, int case_sense,
-		  struct search_result **sr)
+                  struct search_result **sr)
 {
    struct MyKeyRing *mkr_list;
    struct MyKeyRing *temp_list;
@@ -1986,26 +1943,26 @@ int plugin_search(const char *search_string, int case_sense,
 
       /* find in record name */
       if (jp_strstr(mkr.kr.name, search_string, case_sense))
-	 line = mkr.kr.name;
+         line = mkr.kr.name;
 
       /* find in record account */
       if (jp_strstr(mkr.kr.account, search_string, case_sense))
-	 line = mkr.kr.account;
+         line = mkr.kr.account;
 
       /* find in record password */
       if (jp_strstr(mkr.kr.password, search_string, case_sense))
-	 line = mkr.kr.password;
+         line = mkr.kr.password;
 
       /* find in record note */
       if (jp_strstr(mkr.kr.note, search_string, case_sense))
-	 line = mkr.kr.note;
+         line = mkr.kr.note;
 
       if (line) {
-	 /* Add it to our result list */
-	 jp_logf(JP_LOG_DEBUG, "KeyRing: calling add_search_result\n");
-	 add_search_result(line, mkr.unique_id, sr);
-	 jp_logf(JP_LOG_DEBUG, "KeyRing: back from add_search_result\n");
-	 count++;
+         /* Add it to our result list */
+         jp_logf(JP_LOG_DEBUG, "KeyRing: calling add_search_result\n");
+         add_search_result(line, mkr.unique_id, sr);
+         jp_logf(JP_LOG_DEBUG, "KeyRing: back from add_search_result\n");
+         count++;
       }
    }
 
@@ -2020,13 +1977,11 @@ static int keyring_find(int unique_id)
    
    jp_logf(JP_LOG_DEBUG, "KeyRing: keyring_find\n");
 
-   r = clist_find_id(clist,
-		     unique_id,
-		     &found_at);
+   r = clist_find_id(clist, unique_id, &found_at);
    if (r) {
       clist_select_row(GTK_CLIST(clist), found_at, 0);
       if (!gtk_clist_row_is_visible(GTK_CLIST(clist), found_at)) {
-	 gtk_clist_moveto(GTK_CLIST(clist), found_at, 0, 0.5, 0.0);
+         gtk_clist_moveto(GTK_CLIST(clist), found_at, 0, 0.5, 0.0);
       }
    }
 
@@ -2106,6 +2061,11 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    char *titles[3]; /* { "Changed", "Name", "Account" }; */
    int retry;
    int cycle_category = FALSE;
+   struct CategoryAppInfo cai;
+   long char_set;
+   char *cat_name;
+   int new_cat;
+   int index, index2;
    int i;
 
    jp_logf(JP_LOG_DEBUG, "KeyRing: plugin gui started, unique_id=%d\n", unique_id);
@@ -2121,7 +2081,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    /* Change Password button */
    button = gtk_button_new_with_label(_("Change\nKeyRing\nPassword"));
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_change_password), NULL);
+                      GTK_SIGNAL_FUNC(cb_change_password), NULL);
    gtk_box_pack_start(GTK_BOX(vbox), button, TRUE, TRUE, 0);
 #endif
 
@@ -2132,18 +2092,18 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
       password_not_correct = TRUE;
       retry = PASSWD_ENTER;
       while (password_not_correct) {
-	 r = dialog_password(w, ascii_password, retry);
-	 retry = PASSWD_ENTER_RETRY;
-	 if (r != 2) {
-	    memset(ascii_password, 0, PASSWD_LEN-1);
-	    return 0;
-	 }
-	 password_not_correct = (verify_pasword(ascii_password) > 0);
+         r = dialog_password(w, ascii_password, retry);
+         retry = PASSWD_ENTER_RETRY;
+         if (r != 2) {
+            memset(ascii_password, 0, PASSWD_LEN-1);
+            return 0;
+         }
+         password_not_correct = (verify_pasword(ascii_password) > 0);
       }
       memset(ascii_password, 0, PASSWD_LEN-1);
-   }
-   else
+   } else {
       cycle_category = TRUE;
+   }
 
    /* called to display the result of a search */
    if (unique_id) {
@@ -2154,8 +2114,48 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    plugin_last_time = time(NULL);
    plugin_active = TRUE;
 
+   /************************************************************/
+   /* Build GUI */
    record_changed=CLEAR_FLAG;
    clist_row_selected = 0;
+
+   /* Do some initialization */
+   for (i=0; i<NUM_KEYRING_CAT_ITEMS; i++) {
+      keyr_cat_menu_item2[i] = NULL;
+   }
+
+   get_keyr_cat_info(&cai);
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
+
+   for (i=1; i<NUM_KEYRING_CAT_ITEMS; i++) {
+      cat_name = charset_p2newj(cai.name[i], 31, char_set);
+      strcpy(sort_l[i-1].Pcat, cat_name);
+      free(cat_name);
+      sort_l[i-1].cat_num = i;
+   }
+   /* put reserved 'Unfiled' category at end of list */ 
+   cat_name = charset_p2newj(cai.name[0], 31, char_set);
+   strcpy(sort_l[NUM_KEYRING_CAT_ITEMS-1].Pcat, cat_name);
+   free(cat_name);
+   sort_l[NUM_KEYRING_CAT_ITEMS-1].cat_num = 0;
+
+   qsort(sort_l, NUM_KEYRING_CAT_ITEMS-1, sizeof(struct sorted_cats), cat_compare);
+
+#ifdef JPILOT_DEBUG
+   for (i=0; i<NUM_KEYRING_CAT_ITEMS; i++) {
+      printf("cat %d [%s]\n", sort_l[i].cat_num, sort_l[i].Pcat);
+   }
+#endif
+
+   if (keyr_category > NUM_KEYRING_CAT_ITEMS) {
+      keyr_category = CATEGORY_ALL;
+   }
+
+   /* Make accelerators for some buttons window */
+#ifndef ENABLE_STOCK_BUTTONS
+   accel_group = gtk_accel_group_new();
+   gtk_window_add_accel_group(GTK_WINDOW(gtk_widget_get_toplevel(vbox)), accel_group);
+#endif
 
    pane = gtk_hpaned_new();
    get_pref(PREF_KEYRING_PANE, &ivalue, NULL);
@@ -2172,35 +2172,26 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_widget_set_usize(GTK_WIDGET(vbox1), 0, 230);
    gtk_widget_set_usize(GTK_WIDGET(vbox2), 0, 230);
 
-   /* Make accelerators for some buttons window */
-#ifndef ENABLE_STOCK_BUTTONS
-   accel_group = gtk_accel_group_new();
-   gtk_window_add_accel_group(GTK_WINDOW(gtk_widget_get_toplevel(vbox)), accel_group);
-#endif
-
-   /* Make the menus */
-   for (i=0; i<NUM_KEYRING_CAT_ITEMS; i++) {
-      menu_item_category2[i] = NULL;
-   }
-
-   make_menus();
-
    /**********************************************************************/
    /* Left half of screen */
    /**********************************************************************/
-   /* Make a temporary hbox */
+   /* Left-side Category menu */
    hbox_temp = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox1), hbox_temp, FALSE, FALSE, 0);
    
+   /* TODO: Could remove "Category" so that it displays a single 
+    * category bar like the other applications */
    label = gtk_label_new(_("Category: "));
    gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(hbox_temp), menu_category1, TRUE, TRUE, 0);
+   make_category_menu(&category_menu1, keyr_cat_menu_item1,
+                      sort_l, cb_category, TRUE, FALSE);
+   gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu1, TRUE, TRUE, 0);
 
    /* Scrolled window */
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 0);
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
-				  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+                                  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
    gtk_box_pack_start(GTK_BOX(vbox1), scrolled_window, TRUE, TRUE, 0);
    
    /* Clist */
@@ -2216,14 +2207,17 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_clist_set_sort_column(GTK_CLIST(clist), KEYR_NAME_COLUMN);
    gtk_clist_set_compare_func(GTK_CLIST(clist), GtkClistKeyrCompareNocase);
    gtk_clist_set_sort_type(GTK_CLIST(clist), GTK_SORT_ASCENDING);
+   /* TODO: If single category bar is added, switch on shadow type
+   gtk_clist_set_shadow_type(GTK_CLIST(clist), SHADOW);
+   */
    gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
 
    gtk_signal_connect(GTK_OBJECT(clist), "click_column",
                       GTK_SIGNAL_FUNC (cb_clist_click_column), NULL);
 
    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
-		      GTK_SIGNAL_FUNC(cb_clist_selection),
-		      NULL);
+                      GTK_SIGNAL_FUNC(cb_clist_selection),
+                      NULL);
 
    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
    
@@ -2236,50 +2230,48 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    /* Cancel button */
    CREATE_BUTTON(cancel_record_button, _("Cancel"), CANCEL, _("Cancel the modifications"), GDK_Escape, 0, "ESC")
    gtk_signal_connect(GTK_OBJECT(cancel_record_button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_cancel), NULL);
+                      GTK_SIGNAL_FUNC(cb_cancel), NULL);
 
    /* Delete button */
    CREATE_BUTTON(delete_record_button, _("Delete"), DELETE, _("Delete the selected record"), GDK_d, GDK_CONTROL_MASK, "Ctrl+D");
    gtk_signal_connect(GTK_OBJECT(delete_record_button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_delete_keyring),
-		      GINT_TO_POINTER(DELETE_FLAG));
+                      GTK_SIGNAL_FUNC(cb_delete_keyring),
+                      GINT_TO_POINTER(DELETE_FLAG));
 
    /* Undelete button */
    CREATE_BUTTON(undelete_record_button, _("Undelete"), UNDELETE, _("Undelete the selected record"), 0, 0, "")
    gtk_signal_connect(GTK_OBJECT(undelete_record_button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_undelete_keyring),
-		      GINT_TO_POINTER(UNDELETE_FLAG));
+                      GTK_SIGNAL_FUNC(cb_undelete_keyring),
+                      GINT_TO_POINTER(UNDELETE_FLAG));
 
    /* Copy button */
    CREATE_BUTTON(copy_record_button, _("Copy"), COPY, _("Copy the selected record"), GDK_o, GDK_CONTROL_MASK, "Ctrl+O");
    gtk_signal_connect(GTK_OBJECT(copy_record_button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_add_new_record),
-		      GINT_TO_POINTER(COPY_FLAG));
+                      GTK_SIGNAL_FUNC(cb_add_new_record),
+                      GINT_TO_POINTER(COPY_FLAG));
 
    /* New Record button */
    CREATE_BUTTON(new_record_button, _("New Record"), NEW, _("Add a new record"), GDK_n, GDK_CONTROL_MASK, "Ctrl+N")
    gtk_signal_connect(GTK_OBJECT(new_record_button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_add_new_record),
-		      GINT_TO_POINTER(CLEAR_FLAG));
+                      GTK_SIGNAL_FUNC(cb_add_new_record),
+                      GINT_TO_POINTER(CLEAR_FLAG));
 
    /* Add Record button */
    CREATE_BUTTON(add_record_button, _("Add Record"), ADD, _("Add the new record"), GDK_Return, GDK_CONTROL_MASK, "Ctrl+Enter")
    gtk_signal_connect(GTK_OBJECT(add_record_button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_add_new_record),
-		      GINT_TO_POINTER(NEW_FLAG));
+                      GTK_SIGNAL_FUNC(cb_add_new_record),
+                      GINT_TO_POINTER(NEW_FLAG));
 #ifndef ENABLE_STOCK_BUTTONS
-   gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(GTK_BIN(add_record_button)->child)),
-		       "label_high");
+   gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(GTK_BIN(add_record_button)->child)), "label_high");
 #endif
 
    /* Apply Changes button */
    CREATE_BUTTON(apply_record_button, _("Apply Changes"), APPLY, _("Commit the modifications"), GDK_Return, GDK_CONTROL_MASK, "Ctrl+Enter")
    gtk_signal_connect(GTK_OBJECT(apply_record_button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_add_new_record),
-		      GINT_TO_POINTER(MODIFY_FLAG));
+                      GTK_SIGNAL_FUNC(cb_add_new_record),
+                      GINT_TO_POINTER(MODIFY_FLAG));
 #ifndef ENABLE_STOCK_BUTTONS
-   gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(GTK_BIN(apply_record_button)->child)),
-		       "label_high");
+   gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(GTK_BIN(apply_record_button)->child)), "label_high");
 #endif
    
    /* Separator */
@@ -2295,7 +2287,9 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    /* Category menu */
    label = gtk_label_new(_("Category: "));
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label), 0, 1, 0, 1);
-   gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(menu_category2), 1, 10, 0, 1);
+   make_category_menu(&category_menu2, keyr_cat_menu_item2,
+                      sort_l, NULL, FALSE, FALSE);
+   gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(category_menu2), 1, 10, 0, 1);
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
 
    /* Name entry */
@@ -2329,13 +2323,13 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    date_button = gtk_button_new_with_label("");
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(date_button), 1, 10, 4, 5);
    gtk_signal_connect(GTK_OBJECT(date_button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_date_button), date_button);
+                      GTK_SIGNAL_FUNC(cb_date_button), date_button);
 
    /* Generate Password button (creates random password) */
    button = gtk_button_new_with_label(_("Generate Password"));
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(button), 9, 10, 3, 4);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_gen_password), entry_password);
+                      GTK_SIGNAL_FUNC(cb_gen_password), entry_password);
 
    /* Note textbox */
    label = gtk_label_new(_("Note"));
@@ -2351,7 +2345,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
 
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
-				   GTK_POLICY_AUTOMATIC, GTK_POLICY_ALWAYS);
+                                  GTK_POLICY_AUTOMATIC, GTK_POLICY_ALWAYS);
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 1);
    gtk_container_add(GTK_CONTAINER(scrolled_window), keyr_note);
    gtk_box_pack_start_defaults(GTK_BOX(hbox_temp), scrolled_window);
@@ -2367,15 +2361,44 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_widget_hide(cancel_record_button);
 
    if (cycle_category) {
-      old_category++;
-
-      if (menu_item_category1[old_category] == NULL) {
-	 old_category = 0;
-	 keyr_category = CATEGORY_ALL;
+      /* First cycle keyr_category var */
+      if (keyr_category == CATEGORY_ALL) {
+         new_cat = -1;
+      } else {
+         new_cat = find_sorted_cat(keyr_category);
       }
-
-      gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_item_category1[old_category]), TRUE);
-      gtk_option_menu_set_history(GTK_OPTION_MENU(menu_category1), old_category);
+      for (i=0; i<NUM_KEYRING_CAT_ITEMS; i++) {
+         new_cat++;
+         if (new_cat >= NUM_KEYRING_CAT_ITEMS) {
+            keyr_category = CATEGORY_ALL;
+            break;
+         }
+         if ((sort_l[new_cat].Pcat) && (sort_l[new_cat].Pcat[0])) {
+            keyr_category = sort_l[new_cat].cat_num;
+            break;
+         }
+      }
+      /* Then update menu with new keyr_category */
+      if (keyr_category==CATEGORY_ALL) {
+         index=0;
+      } else {
+         index=find_sorted_cat(keyr_category)+1;
+      }
+      if (index<0) {
+         jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
+      } else {
+         index2 = 0;
+         for (i=0; i<NUM_KEYRING_CAT_ITEMS; i++)
+         {
+            if (keyr_cat_menu_item1[i] && (keyr_cat_menu_item1[i] != keyr_cat_menu_item1[index]))
+               index2++;
+            if (keyr_cat_menu_item1[i] == keyr_cat_menu_item1[index])
+               break;
+         }
+         gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), index2);
+         gtk_check_menu_item_set_active
+           (GTK_CHECK_MENU_ITEM(keyr_cat_menu_item1[index]), TRUE);
+      }
    }
    else
    {

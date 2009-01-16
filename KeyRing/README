@@ -1,5 +1,5 @@
-This is a J-Pilot plugin program which provides an interface for 
-KeyRing for PalmOS.  KeyRing is a palm application that stores 
+This is a J-Pilot plugin program which provides an interface to 
+KeyRing for PalmOS.  KeyRing is a Palm application that stores 
 records with 3DES encryption. 
 
 More information on KeyRing and downloads can be found at:
@@ -7,20 +7,21 @@ http://gnukeyring.sourceforge.net
 
 REQUIREMENTS:
 
-OpenSSL was used for encryption.  You will have to get it and install it 
-separately from J-pilot.  Since the U.S.A. exports on encryption have 
-been loosened it should be freely available and included in new distributions.
+GNU libgcrypt is the default library used for encryption as it has fewer
+usage restrictions than the alternative -- OpenSSL libraries.  Use of 
+OpenSSL can be forced by passing --with-openssl to the configure script.
 
-There is no autoconf (configure) detection of OpenSSL, so you may have to
-edit the Makefile appropriately if its not installed in a standard place.
+There is no autoconf (configure) detection of OpenSSL.  If you have not
+installed the libraries in the standard location you may have to
+edit the Makefile appropriately.
 
 BUGS:
  There is one major bug that I know of.  When you change the master 
- passwords on the palm KeyRing program it will re-encrypt all the 
+ password on the Palm KeyRing program it will re-encrypt all the 
  stored password data.  If you have unsynced records in J-Pilot, 
  they will not get re-encrypted and will be garbage.  I could fix this, 
  but its just too much work.  Just sync before changing your password.
 
- Sort order isn't the same that as on the palm.
+ Sort order isn't the same that as on the Palm.
  
 Judd Montgomery <judd@jpilot.org>
