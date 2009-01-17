@@ -1,4 +1,4 @@
-/* $Id: synctime.c,v 1.15 2009/01/16 17:31:50 rikster5 Exp $ */
+/* $Id: synctime.c,v 1.16 2009/01/17 14:32:00 rousseau Exp $ */
 
 /*******************************************************************************
  * synctime.c
@@ -30,16 +30,24 @@
 #include "libplugin.h"
 #include "i18n.h"
 
+#define PLUGIN_MAJOR 1
+#define PLUGIN_MINOR 0
+
 void plugin_version(int *major_version, int *minor_version)
 {
-   *major_version=1;
-   *minor_version=0;
+   *major_version = PLUGIN_MAJOR;
+   *minor_version = PLUGIN_MINOR;
+}
+
+static int static_plugin_get_name(char *name, int len)
+{
+   snprintf(name, len, "SyncTime %d.%d", PLUGIN_MAJOR, PLUGIN_MINOR);
+   return EXIT_SUCCESS;
 }
 
 int plugin_get_name(char *name, int len)
 {
-   strncpy(name, "SyncTime 1.0", len);
-   return EXIT_SUCCESS;
+   return static_plugin_get_name(name, len);
 }
 
 int plugin_get_help_name(char *name, int len)
@@ -52,7 +60,7 @@ int plugin_help(char **text, int *width, int *height)
 {
    char plugin_name[200];
 
-   plugin_get_name(&plugin_name[0], 200);
+   static_plugin_get_name(plugin_name, sizeof(plugin_name));
    *text = g_strdup_printf(
       /*-------------------------------------------*/
       _("%s\n"

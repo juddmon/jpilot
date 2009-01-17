@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.87 2009/01/16 17:30:30 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.88 2009/01/17 14:32:00 rousseau Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -1760,19 +1760,27 @@ static int verify_pasword(char *ascii_password)
       return EXIT_SUCCESS;
 }
 
+#define PLUGIN_MAJOR 1
+#define PLUGIN_MINOR 1
+
 /* This is a mandatory plugin function. */
 void plugin_version(int *major_version, int *minor_version)
 {
-   *major_version=1;
-   *minor_version=1;
+   *major_version = PLUGIN_MAJOR;
+   *minor_version = PLUGIN_MINOR;
+}
+
+static int static_plugin_get_name(char *name, int len)
+{
+   jp_logf(JP_LOG_DEBUG, "KeyRing: plugin_get_name\n");
+   snprintf(name, len, "KeyRing %d.%d", PLUGIN_MAJOR, PLUGIN_MINOR);
+   return EXIT_SUCCESS;
 }
 
 /* This is a mandatory plugin function. */
 int plugin_get_name(char *name, int len)
 {
-   jp_logf(JP_LOG_DEBUG, "KeyRing: plugin_get_name\n");
-   strncpy(name, "KeyRing 1.1", len);
-   return EXIT_SUCCESS;
+   return static_plugin_get_name(name, len);
 }
 
 /*
@@ -1817,7 +1825,7 @@ int plugin_help(char **text, int *width, int *height)
     */
    char plugin_name[200];
 
-   plugin_get_name(&plugin_name[0], 200);
+   static_plugin_get_name(plugin_name, sizeof(plugin_name));
    *text = g_strdup_printf(
       /*-------------------------------------------*/
       _("%s\n"
