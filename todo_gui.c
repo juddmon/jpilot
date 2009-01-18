@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.150 2008/12/23 05:03:38 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.151 2009/01/18 22:46:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -1018,8 +1018,36 @@ static void cb_category(GtkWidget *item, int selection)
    int b;
 
    if ((GTK_CHECK_MENU_ITEM(item))->active) {
-      b=dialog_save_changed_record(pane, record_changed);
-      if (b==DIALOG_SAID_2) {
+      if (todo_category == selection) { return; }
+
+      b=dialog_save_changed_record_with_cancel(pane, record_changed);
+      if (b==DIALOG_SAID_1) { /* Cancel */
+         int i, index, index2 = 0;
+
+         if (todo_category==CATEGORY_ALL) {
+            index=0;
+         } else {
+            index=find_sorted_cat(todo_category)+1;
+         }
+
+         if (index<0) {
+            jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
+         } else {
+            for (i=0; i<NUM_TODO_CAT_ITEMS; i++)
+            {
+               if (todo_cat_menu_item1[i] && (todo_cat_menu_item1[i] != todo_cat_menu_item1[index]))
+                  index2++;
+               if (todo_cat_menu_item1[i] == todo_cat_menu_item1[index])
+                  break;
+            }
+            gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), index2);
+            gtk_check_menu_item_set_active
+              (GTK_CHECK_MENU_ITEM(todo_cat_menu_item1[index]), TRUE);
+         }
+
+	 return;
+      }
+      if (b==DIALOG_SAID_3) { /* Save */
 	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
       }
 
@@ -1409,15 +1437,28 @@ static void cb_clist_selection(GtkWidget      *clist,
    struct tm *now;
 
    if ((record_changed==MODIFY_FLAG) || (record_changed==NEW_FLAG)) {
+      if (clist_row_selected == row) { return; } 
+
       mtodo = gtk_clist_get_row_data(GTK_CLIST(clist), row);
       if (mtodo!=NULL) {
 	 unique_id = mtodo->unique_id;
       }
 
-      b=dialog_save_changed_record(pane, record_changed);
-      if (b==DIALOG_SAID_2) {
+      b=dialog_save_changed_record_with_cancel(pane, record_changed);
+      if (b==DIALOG_SAID_1) { /* Cancel */
+         if (clist_row_selected >=0)
+         {
+            clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
+         } else {
+            clist_row_selected = 0;
+            clist_select_row(GTK_CLIST(clist), 0, 0);
+         }
+         return;
+      }
+      if (b==DIALOG_SAID_3) { /* Save */
 	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
       }
+
       set_new_button_to(CLEAR_FLAG);
 
       if (unique_id)

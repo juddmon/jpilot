@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.88 2009/01/17 14:32:00 rousseau Exp $ */
+/* $Id: keyring.c,v 1.89 2009/01/18 22:46:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -1372,15 +1372,28 @@ static void cb_clist_selection(GtkWidget      *clist,
    jp_logf(JP_LOG_DEBUG, "KeyRing: cb_clist_selection\n");
 
    if ((record_changed==MODIFY_FLAG) || (record_changed==NEW_FLAG)) {
+      if (clist_row_selected == row) { return; } 
+
       mkr = gtk_clist_get_row_data(GTK_CLIST(clist), row);
       if (mkr!=NULL) {
          unique_id = mkr->unique_id;
       }
 
-      b=dialog_save_changed_record(clist, record_changed);
-      if (b==DIALOG_SAID_2) {
-         cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
+      b=dialog_save_changed_record_with_cancel(pane, record_changed);
+      if (b==DIALOG_SAID_1) { /* Cancel */
+         if (clist_row_selected >=0)
+         {
+            clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
+         } else {
+            clist_row_selected = 0;
+            clist_select_row(GTK_CLIST(clist), 0, 0);
+         }
+         return;
       }
+      if (b==DIALOG_SAID_3) { /* Save */
+	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
+      }
+
       set_new_button_to(CLEAR_FLAG);
 
       if (unique_id) {
@@ -1492,10 +1505,38 @@ static void cb_category(GtkWidget *item, int selection)
    jp_logf(JP_LOG_DEBUG, "KeyRing: cb_category\n");
 
    if ((GTK_CHECK_MENU_ITEM(item))->active) {
-      b=dialog_save_changed_record(clist, record_changed);
-      if (b==DIALOG_SAID_2) {
-         cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
-      }   
+      if (keyr_category == selection) { return; }
+
+      b=dialog_save_changed_record_with_cancel(pane, record_changed);
+      if (b==DIALOG_SAID_1) { /* Cancel */
+         int i, index, index2 = 0;
+
+         if (keyr_category==CATEGORY_ALL) {
+            index=0;
+         } else {
+            index=find_sorted_cat(keyr_category)+1;
+         }
+
+         if (index<0) {
+            jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
+         } else {
+            for (i=0; i<NUM_KEYRING_CAT_ITEMS; i++)
+            {
+               if (keyr_cat_menu_item1[i] && (keyr_cat_menu_item1[i] != keyr_cat_menu_item1[index]))
+                  index2++;
+               if (keyr_cat_menu_item1[i] == keyr_cat_menu_item1[index])
+                  break;
+            }
+            gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), index2);
+            gtk_check_menu_item_set_active
+              (GTK_CHECK_MENU_ITEM(keyr_cat_menu_item1[index]), TRUE);
+         }
+
+	 return;
+      }
+      if (b==DIALOG_SAID_3) { /* Save */
+	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
+      }
 
       keyr_category = selection;
       clist_row_selected = 0;

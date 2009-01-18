@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.166 2008/10/30 14:40:04 rousseau Exp $ */
+/* $Id: utils.c,v 1.167 2009/01/18 22:46:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -1195,7 +1195,7 @@ int dialog_generic(GtkWindow *main_window,
    gtk_container_set_border_width(GTK_CONTAINER(vbox2), 5);
    gtk_box_pack_start(GTK_BOX(hbox1), vbox2, FALSE, FALSE, 2);
 
-   /* Titel and Information text */
+   /* Title and Information text */
    label1 = gtk_label_new(NULL);
    markup = g_markup_printf_escaped("<b><big>%s</big></b>\n\n%s", title, text);
    gtk_label_set_markup(GTK_LABEL(label1), markup);
@@ -1282,6 +1282,30 @@ int dialog_save_changed_record(GtkWidget *widget, int changed)
 		       _("Save New Record?"), DIALOG_QUESTION,
 		       _("Do you want to save this new record?"),
 		       2, button_text);
+   }
+
+   return b;
+}
+int dialog_save_changed_record_with_cancel(GtkWidget *widget, int changed)
+{
+   int b=0;
+   char *button_text[] = {N_("Cancel"), N_("No"), N_("Yes")};
+
+   if ((changed!=MODIFY_FLAG) && (changed!=NEW_FLAG)) {
+      return EXIT_SUCCESS;
+   }
+
+   if (changed==MODIFY_FLAG) {
+      b=dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)),
+		       _("Save Changed Record?"), DIALOG_QUESTION,
+		       _("Do you want to save the changes to this record?"),
+		       3, button_text);
+   }
+   if (changed==NEW_FLAG) {
+      b=dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)),
+		       _("Save New Record?"), DIALOG_QUESTION,
+		       _("Do you want to save this new record?"),
+		       3, button_text);
    }
 
    return b;

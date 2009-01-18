@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.186 2008/12/23 04:41:27 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.187 2009/01/18 22:46:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -3001,15 +3001,28 @@ static void cb_clist_selection(GtkWidget      *clist,
 #endif
 
    if ((record_changed==MODIFY_FLAG) || (record_changed==NEW_FLAG)) {
+      if (clist_row_selected == row) { return; } 
+
       mappt = gtk_clist_get_row_data(GTK_CLIST(clist), row);
       if (mappt!=NULL) {
 	 unique_id = mappt->unique_id;
       }
 
-      b=dialog_save_changed_record(pane, record_changed);
-      if (b==DIALOG_SAID_2) {
+      b=dialog_save_changed_record_with_cancel(pane, record_changed);
+      if (b==DIALOG_SAID_1) { /* Cancel */
+         if (clist_row_selected >=0)
+         {
+            clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
+         } else {
+            clist_row_selected = 0;
+            clist_select_row(GTK_CLIST(clist), 0, 0);
+         }
+         return;
+      }
+      if (b==DIALOG_SAID_3) { /* Save */
 	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
       }
+
       set_new_button_to(CLEAR_FLAG);
 
       if (unique_id)
@@ -3310,8 +3323,21 @@ void cb_cal_changed(GtkWidget *widget,
 
    /* Handle modified record before switching to new date */
    if ((record_changed==MODIFY_FLAG) || (record_changed==NEW_FLAG)) {
-      b=dialog_save_changed_record(pane, record_changed);
-      if (b==DIALOG_SAID_2) {
+      if (current_day==cal_day) { return; }
+
+      b=dialog_save_changed_record_with_cancel(pane, record_changed);
+      if (b==DIALOG_SAID_1) { /* Cancel */
+         gtk_signal_disconnect_by_func(GTK_OBJECT(main_calendar),
+                                       GTK_SIGNAL_FUNC(cb_cal_changed),
+                                       GINT_TO_POINTER(CAL_DAY_SELECTED));
+         gtk_calendar_select_month(GTK_CALENDAR(main_calendar), current_month, 1900+current_year);
+         gtk_calendar_select_day(GTK_CALENDAR(main_calendar), current_day);
+         gtk_signal_connect(GTK_OBJECT(main_calendar),
+                            "day_selected", GTK_SIGNAL_FUNC(cb_cal_changed),
+                            GINT_TO_POINTER(CAL_DAY_SELECTED));
+         return;
+      }
+      if (b==DIALOG_SAID_3) { /* Save */
          /* cb_add_new_record is troublesome because it attempts to 
           * change the calendar. Not only must signals be disconnected
           * to avoid re-triggering cb_cal_changed but the original date
@@ -3710,8 +3736,11 @@ static gboolean cb_keyboard(GtkWidget *widget, GdkEventKey *event, gpointer *p)
    if (up || down) {
       gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
 
-      b=dialog_save_changed_record(pane, record_changed);
-      if (b==DIALOG_SAID_2) {
+      b=dialog_save_changed_record_with_cancel(pane, record_changed);
+      if (b==DIALOG_SAID_1) { /* Cancel */
+         return TRUE;
+      }
+      if (b==DIALOG_SAID_3) { /* Save */
 	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
       }
       set_new_button_to(CLEAR_FLAG);

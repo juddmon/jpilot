@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.69 2008/09/21 19:06:47 rikster5 Exp $ */
+/* $Id: utils.h,v 1.70 2009/01/18 22:46:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -317,6 +317,7 @@ int dialog_generic_ok(GtkWidget *widget,
  * changed is MODIFY_FLAG, or NEW_FLAG
  */
 int dialog_save_changed_record(GtkWidget *widget, int changed);
+int dialog_save_changed_record_with_cancel(GtkWidget *widget, int changed);
 
 /* mon 0-11
  * day 1-31
