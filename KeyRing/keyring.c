@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.89 2009/01/18 22:46:07 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.90 2009/01/19 22:17:02 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -658,15 +658,40 @@ static void set_new_button_to(int new_state)
    record_changed=new_state;
 }
 
-static int find_sorted_cat(int cat)
+/* Find position of category in sorted category array 
+ * via its assigned category number */
+static int find_sort_cat_pos(int cat)
 {
    int i;
-   for (i=0; i< NUM_KEYRING_CAT_ITEMS; i++) {
+
+   for (i=0; i<NUM_KEYRING_CAT_ITEMS; i++) {
       if (sort_l[i].cat_num==cat) {
-         return i;
+ 	 return i;
       }
    }
-   return EXIT_FAILURE;
+
+   return -1;
+}
+
+/* Find a category's position in the category menu.
+ * This is equal to the category number except for the Unfiled category.
+ * The Unfiled category is always in the last position which changes as
+ * the number of categories changes */
+static int find_menu_cat_pos(int cat)
+{
+   int i;
+
+   if (cat != NUM_KEYRING_CAT_ITEMS-1) {
+      return cat;
+   } else { /* Unfiled category */
+      /* Count how many category entries are filled */
+      for (i=0; i<NUM_KEYRING_CAT_ITEMS; i++) {
+         if (!sort_l[i].Pcat[0]) {
+            return i;
+         }
+      }
+      return 0;
+   }
 }
 
 /* Function is used to sort clist based on the Last Changed date field */
@@ -1005,13 +1030,14 @@ static int keyr_clear_details()
    } else {
       new_cat = keyr_category;
    }
-   sorted_position = find_sorted_cat(new_cat);
+   sorted_position = find_sort_cat_pos(new_cat);
    if (sorted_position<0) {
       jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
    } else {
       gtk_check_menu_item_set_active
          (GTK_CHECK_MENU_ITEM(keyr_cat_menu_item2[sorted_position]), TRUE);
-      gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu2), sorted_position);
+      gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu2), 
+                                  find_menu_cat_pos(sorted_position));
    }
 
    connect_changed_signals(CONNECT_SIGNALS);
@@ -1363,7 +1389,7 @@ static void cb_clist_selection(GtkWidget      *clist,
                                gpointer       data)
 {
    struct MyKeyRing *mkr;
-   int i, category, sorted_position, count;
+   int index, sorted_position;
    int b;
    unsigned int unique_id = 0;
    char *temp_str;
@@ -1427,20 +1453,13 @@ static void cb_clist_selection(GtkWidget      *clist,
    
    connect_changed_signals(DISCONNECT_SIGNALS);
    
-   category = mkr->attrib & 0x0F;
-   sorted_position = find_sorted_cat(category);
+   index = mkr->attrib & 0x0F;
+   sorted_position = find_sort_cat_pos(index);
    if (keyr_cat_menu_item2[sorted_position]==NULL) {
       /* Illegal category */
       jp_logf(JP_LOG_DEBUG, "Category is not legal\n");
-      category = sorted_position = 0;
+      index = sorted_position = 0;
    }
-   /* We need to count how many items down in the list this is */
-   for (i=sorted_position, count=0; i>=0; i--) {
-      if (keyr_cat_menu_item2[i]) {
-         count++;
-      }
-   }
-   count--;
 
    if (sorted_position<0) {
       jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
@@ -1448,7 +1467,8 @@ static void cb_clist_selection(GtkWidget      *clist,
       gtk_check_menu_item_set_active
       (GTK_CHECK_MENU_ITEM(keyr_cat_menu_item2[sorted_position]), TRUE);
    }
-   gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu2), count);
+   gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu2),
+                               find_menu_cat_pos(sorted_position));
 
    if (mkr->kr.name) {
       temp_str = malloc((len = strlen(mkr->kr.name)*2+1));
@@ -1509,27 +1529,23 @@ static void cb_category(GtkWidget *item, int selection)
 
       b=dialog_save_changed_record_with_cancel(pane, record_changed);
       if (b==DIALOG_SAID_1) { /* Cancel */
-         int i, index, index2 = 0;
+         int index, index2;
 
          if (keyr_category==CATEGORY_ALL) {
-            index=0;
+            index  = 0;
+            index2 = 0;
          } else {
-            index=find_sorted_cat(keyr_category)+1;
+            index=find_sort_cat_pos(keyr_category);
+            index2 = find_menu_cat_pos(index) + 1;
+            index += 1;
          }
 
          if (index<0) {
             jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
          } else {
-            for (i=0; i<NUM_KEYRING_CAT_ITEMS; i++)
-            {
-               if (keyr_cat_menu_item1[i] && (keyr_cat_menu_item1[i] != keyr_cat_menu_item1[index]))
-                  index2++;
-               if (keyr_cat_menu_item1[i] == keyr_cat_menu_item1[index])
-                  break;
-            }
-            gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), index2);
             gtk_check_menu_item_set_active
               (GTK_CHECK_MENU_ITEM(keyr_cat_menu_item1[index]), TRUE);
+            gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), index2);
          }
 
 	 return;
@@ -2414,7 +2430,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
       if (keyr_category == CATEGORY_ALL) {
          new_cat = -1;
       } else {
-         new_cat = find_sorted_cat(keyr_category);
+         new_cat = find_sort_cat_pos(keyr_category);
       }
       for (i=0; i<NUM_KEYRING_CAT_ITEMS; i++) {
          new_cat++;
@@ -2429,24 +2445,19 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
       }
       /* Then update menu with new keyr_category */
       if (keyr_category==CATEGORY_ALL) {
-         index=0;
+         index  = 0;
+         index2 = 0; 
       } else {
-         index=find_sorted_cat(keyr_category)+1;
+         index  = find_sort_cat_pos(keyr_category);
+         index2 = find_menu_cat_pos(index) + 1;
+         index += 1;
       }
       if (index<0) {
          jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
       } else {
-         index2 = 0;
-         for (i=0; i<NUM_KEYRING_CAT_ITEMS; i++)
-         {
-            if (keyr_cat_menu_item1[i] && (keyr_cat_menu_item1[i] != keyr_cat_menu_item1[index]))
-               index2++;
-            if (keyr_cat_menu_item1[i] == keyr_cat_menu_item1[index])
-               break;
-         }
-         gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), index2);
          gtk_check_menu_item_set_active
            (GTK_CHECK_MENU_ITEM(keyr_cat_menu_item1[index]), TRUE);
+         gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), index2);
       }
    }
    else

@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.225 2009/01/18 22:46:07 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.226 2009/01/19 22:17:02 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -1462,15 +1462,40 @@ void cb_resize_column (GtkCList *clist,
    set_pref(PREF_ADDR_NAME_COL_SZ, width, NULL, TRUE);
 }
 
-static int find_sorted_cat(int cat)
+/* Find position of category in sorted category array 
+ * via its assigned category number */
+static int find_sort_cat_pos(int cat)
 {
    int i;
-   for (i=0; i< NUM_ADDRESS_CAT_ITEMS; i++) {
+
+   for (i=0; i<NUM_ADDRESS_CAT_ITEMS; i++) {
       if (sort_l[i].cat_num==cat) {
-	 return i;
+ 	 return i;
       }
    }
-   return EXIT_FAILURE;
+
+   return -1;
+}
+
+/* Find a category's position in the category menu.
+ * This is equal to the category number except for the Unfiled category.
+ * The Unfiled category is always in the last position which changes as
+ * the number of categories changes */
+static int find_menu_cat_pos(int cat)
+{
+   int i;
+
+   if (cat != NUM_ADDRESS_CAT_ITEMS-1) {
+      return cat;
+   } else { /* Unfiled category */
+      /* Count how many category entries are filled */
+      for (i=0; i<NUM_ADDRESS_CAT_ITEMS; i++) {
+         if (!sort_l[i].Pcat[0]) {
+            return i;
+         }
+      }
+      return 0;
+   }
 }
 
 
@@ -1980,6 +2005,8 @@ void addr_clear_details()
       }
    }
 
+   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(private_checkbox), FALSE);
+
    if (image) {
       gtk_widget_destroy(image);
       image = NULL;
@@ -1996,16 +2023,16 @@ void addr_clear_details()
    } else {
       new_cat = address_category;
    }
-   sorted_position = find_sorted_cat(new_cat);
+   sorted_position = find_sort_cat_pos(new_cat);
    if (sorted_position<0) {
       jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
    } else {
       gtk_check_menu_item_set_active
 	(GTK_CHECK_MENU_ITEM(address_cat_menu_item2[sorted_position]), TRUE);
-      gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu2), sorted_position);
+      gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu2), 
+                                  find_menu_cat_pos(sorted_position));
    }
 
-   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(private_checkbox), FALSE);
    set_new_button_to(CLEAR_FLAG);
 
    connect_changed_signals(CONNECT_SIGNALS);
@@ -2234,27 +2261,23 @@ static void cb_category(GtkWidget *item, int selection)
 
       b=dialog_save_changed_record_with_cancel(pane, record_changed);
       if (b==DIALOG_SAID_1) { /* Cancel */
-         int i, index, index2 = 0;
+         int index, index2;
 
          if (address_category==CATEGORY_ALL) {
-            index=0;
+            index  = 0;
+            index2 = 0;
          } else {
-            index=find_sorted_cat(address_category)+1;
+            index=find_sort_cat_pos(address_category);
+            index2 = find_menu_cat_pos(index) + 1;
+            index += 1;
          }
 
          if (index<0) {
             jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
          } else {
-            for (i=0; i<NUM_ADDRESS_CAT_ITEMS; i++)
-            {
-               if (address_cat_menu_item1[i] && (address_cat_menu_item1[i] != address_cat_menu_item1[index]))
-                  index2++;
-               if (address_cat_menu_item1[i] == address_cat_menu_item1[index])
-                  break;
-            }
-            gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), index2);
             gtk_check_menu_item_set_active
               (GTK_CHECK_MENU_ITEM(address_cat_menu_item1[index]), TRUE);
+            gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), index2);
          }
 
 	 return;
@@ -2558,10 +2581,9 @@ static void cb_clist_selection(GtkWidget      *clist,
    /* The rename-able phone entries are indexes 3,4,5,6,7 */
    struct Contact *cont;
    MyContact *mcont;
-   int cat, count, sorted_position;
-   unsigned int unique_id = 0;
-   int i;
    int b;
+   int i, index, sorted_position;
+   unsigned int unique_id = 0;
    char *clist_text;
    const char *entry_text;
    int address_i, IM_i, phone_i;
@@ -2664,21 +2686,14 @@ static void cb_clist_selection(GtkWidget      *clist,
    }
 
    /* category menu */
-   cat = mcont->attrib & 0x0F;
-   sorted_position = find_sorted_cat(cat);
+   index = mcont->attrib & 0x0F;
+   sorted_position = find_sort_cat_pos(index);
    if (address_cat_menu_item2[sorted_position]==NULL) {
       /* Illegal category, Assume that category 0 is Unfiled and valid */
       jp_logf(JP_LOG_DEBUG, "Category is not legal\n");
-      cat = sorted_position = 0;
-      sorted_position = find_sorted_cat(cat);
+      index = sorted_position = 0;
+      sorted_position = find_sort_cat_pos(index);
    }
-   /* We need to count how many items down in the list this is */
-   for (i=sorted_position, count=0; i>=0; i--) {
-      if (address_cat_menu_item2[i]) {
-	 count++;
-      }
-   }
-   count--;
 
    if (sorted_position<0) {
       jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
@@ -2687,7 +2702,8 @@ static void cb_clist_selection(GtkWidget      *clist,
 	 gtk_check_menu_item_set_active
 	   (GTK_CHECK_MENU_ITEM(address_cat_menu_item2[sorted_position]), TRUE);
       }
-      gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu2), count);
+      gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu2),
+                                  find_menu_cat_pos(sorted_position));
    }
    /* End category menu */
 
@@ -3341,8 +3357,9 @@ int address_cycle_cat()
    if (address_category == CATEGORY_ALL) {
       new_cat = -1;
    } else {
-      new_cat = find_sorted_cat(address_category);
+      new_cat = find_sort_cat_pos(address_category);
    }
+
    for (i=0; i<NUM_ADDRESS_CAT_ITEMS; i++) {
       new_cat++;
       if (new_cat >= NUM_ADDRESS_CAT_ITEMS) {
@@ -3354,6 +3371,7 @@ int address_cycle_cat()
 	 break;
       }
    }
+
    clist_row_selected = 0;
 
    return EXIT_SUCCESS;
@@ -3361,32 +3379,27 @@ int address_cycle_cat()
 
 int address_refresh()
 {
-   int index;
+   int index, index2;
 
    if (glob_find_id) {
       address_category = CATEGORY_ALL;
    }
    if (address_category==CATEGORY_ALL) {
-      index=0;
+      index  = 0;
+      index2 = 0; 
    } else {
-      index=find_sorted_cat(address_category)+1;
+      index=find_sort_cat_pos(address_category);
+      index2 = find_menu_cat_pos(index) + 1;
+      index += 1;
    }
    address_update_clist(clist, category_menu1, &glob_contact_list,
 			address_category, TRUE);
    if (index<0) {
       jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
    } else {
-      int i, index2 = 0;
-      for (i=0; i<NUM_ADDRESS_CAT_ITEMS; i++)
-      {
-	 if (address_cat_menu_item1[i] && (address_cat_menu_item1[i] != address_cat_menu_item1[index]))
-	    index2++;
-	 if (address_cat_menu_item1[i] == address_cat_menu_item1[index])
-	    break;
-      }
-      gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), index2);
       gtk_check_menu_item_set_active
 	(GTK_CHECK_MENU_ITEM(address_cat_menu_item1[index]), TRUE);
+      gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), index2);
    }
    address_find();
 

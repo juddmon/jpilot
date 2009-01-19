@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.151 2009/01/18 22:46:07 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.152 2009/01/19 22:17:02 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -872,15 +872,40 @@ int todo_export(GtkWidget *window)
  */
 
 
-static int find_sorted_cat(int cat)
+/* Find position of category in sorted category array 
+ * via its assigned category number */
+static int find_sort_cat_pos(int cat)
 {
    int i;
-   for (i=0; i< NUM_TODO_CAT_ITEMS; i++) {
+
+   for (i=0; i<NUM_TODO_CAT_ITEMS; i++) {
       if (sort_l[i].cat_num==cat) {
  	 return i;
       }
    }
-   return EXIT_FAILURE;
+
+   return -1;
+}
+
+/* Find a category's position in the category menu.
+ * This is equal to the category number except for the Unfiled category.
+ * The Unfiled category is always in the last position which changes as
+ * the number of categories changes */
+static int find_menu_cat_pos(int cat)
+{
+   int i;
+
+   if (cat != NUM_TODO_CAT_ITEMS-1) {
+      return cat;
+   } else { /* Unfiled category */
+      /* Count how many category entries are filled */
+      for (i=0; i<NUM_TODO_CAT_ITEMS; i++) {
+         if (!sort_l[i].Pcat[0]) {
+            return i;
+         }
+      }
+      return 0;
+   }
 }
 
 void cb_delete_todo(GtkWidget *widget,
@@ -1022,27 +1047,23 @@ static void cb_category(GtkWidget *item, int selection)
 
       b=dialog_save_changed_record_with_cancel(pane, record_changed);
       if (b==DIALOG_SAID_1) { /* Cancel */
-         int i, index, index2 = 0;
+         int index, index2;
 
          if (todo_category==CATEGORY_ALL) {
-            index=0;
+            index  = 0;
+            index2 = 0;
          } else {
-            index=find_sorted_cat(todo_category)+1;
+            index  = find_sort_cat_pos(todo_category);
+            index2 = find_menu_cat_pos(index) + 1;
+            index += 1;
          }
 
          if (index<0) {
             jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
          } else {
-            for (i=0; i<NUM_TODO_CAT_ITEMS; i++)
-            {
-               if (todo_cat_menu_item1[i] && (todo_cat_menu_item1[i] != todo_cat_menu_item1[index]))
-                  index2++;
-               if (todo_cat_menu_item1[i] == todo_cat_menu_item1[index])
-                  break;
-            }
-            gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), index2);
             gtk_check_menu_item_set_active
               (GTK_CHECK_MENU_ITEM(todo_cat_menu_item1[index]), TRUE);
+            gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), index2);
          }
 
 	 return;
@@ -1058,7 +1079,6 @@ static void cb_category(GtkWidget *item, int selection)
       }
       clist_row_selected = 0;
       jp_logf(JP_LOG_DEBUG, "todo_category = %d\n",todo_category);
-      todo_clear_details();
       todo_update_clist(clist, category_menu1, &glob_todo_list, todo_category, TRUE);
    }
 }
@@ -1123,7 +1143,6 @@ int todo_clear_details()
       update_due_button(due_date_button, NULL);
    }
 
-
    gtk_widget_thaw_child_notify(todo_desc);
    gtk_widget_thaw_child_notify(todo_note);
 
@@ -1132,13 +1151,14 @@ int todo_clear_details()
    } else {
       new_cat = todo_category;
    }
-   sorted_position = find_sorted_cat(new_cat);
+   sorted_position = find_sort_cat_pos(new_cat);
    if (sorted_position<0) {
       jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
    } else {
       gtk_check_menu_item_set_active
 	(GTK_CHECK_MENU_ITEM(todo_cat_menu_item2[sorted_position]), TRUE);
-      gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu2), sorted_position);
+      gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu2), 
+                                  find_menu_cat_pos(sorted_position));
    }
 
    set_new_button_to(CLEAR_FLAG);
@@ -1429,8 +1449,8 @@ static void cb_clist_selection(GtkWidget      *clist,
 {
    struct ToDo *todo;
    MyToDo *mtodo;
-   int i, index, count, b;
-   int sorted_position;
+   int b;
+   int index, sorted_position;
    unsigned int unique_id = 0;
 
    time_t ltime;
@@ -1506,20 +1526,13 @@ static void cb_clist_selection(GtkWidget      *clist,
    gtk_text_buffer_set_text(GTK_TEXT_BUFFER(todo_note_buffer), "", -1);
 
    index = mtodo->attrib & 0x0F;
-   sorted_position = find_sorted_cat(index);
+   sorted_position = find_sort_cat_pos(index);
    if (todo_cat_menu_item2[sorted_position]==NULL) {
       /* Illegal category */
       jp_logf(JP_LOG_DEBUG, "Category is not legal\n");
       index = sorted_position = 0;
-      sorted_position = find_sorted_cat(index);
+      sorted_position = find_sort_cat_pos(index);
    }
-   /* We need to count how many items down in the list this is */
-   for (i=sorted_position, count=0; i>=0; i--) {
-      if (todo_cat_menu_item2[i]) {
-	 count++;
-      }
-   }
-   count--;
 
    if (sorted_position<0) {
       jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
@@ -1527,7 +1540,8 @@ static void cb_clist_selection(GtkWidget      *clist,
       gtk_check_menu_item_set_active
 	(GTK_CHECK_MENU_ITEM(todo_cat_menu_item2[sorted_position]), TRUE);
    }
-   gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu2), count);
+   gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu2), 
+                               find_menu_cat_pos(sorted_position));
 
    if (todo->description) {
       if (todo->description[0]) {
@@ -1906,8 +1920,9 @@ int todo_cycle_cat()
    if (todo_category == CATEGORY_ALL) {
       new_cat = -1;
    } else {
-      new_cat = find_sorted_cat(todo_category);
+      new_cat = find_sort_cat_pos(todo_category);
    }
+
    for (i=0; i<NUM_TODO_CAT_ITEMS; i++) {
       new_cat++;
       if (new_cat >= NUM_TODO_CAT_ITEMS) {
@@ -1919,6 +1934,7 @@ int todo_cycle_cat()
 	 break;
       }
    }
+
    clist_row_selected = 0;
 
    return EXIT_SUCCESS;
@@ -1926,31 +1942,26 @@ int todo_cycle_cat()
 
 int todo_refresh()
 {
-   int index;
+   int index, index2;
 
    if (glob_find_id) {
       todo_category = CATEGORY_ALL;
    }
    if (todo_category==CATEGORY_ALL) {
-      index=0;
+      index  = 0;
+      index2 = 0; 
    } else {
-      index=find_sorted_cat(todo_category)+1;
+      index=find_sort_cat_pos(todo_category);
+      index2 = find_menu_cat_pos(index) + 1;
+      index += 1;
    }
    todo_update_clist(clist, category_menu1, &glob_todo_list, todo_category, TRUE);
    if (index<0) {
       jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
    } else {
-      int i, index2 = 0;
-      for (i=0; i<NUM_TODO_CAT_ITEMS; i++)
-      {
-	 if (todo_cat_menu_item1[i] && (todo_cat_menu_item1[i] != todo_cat_menu_item1[index]))
-	    index2++;
-	 if (todo_cat_menu_item1[i] == todo_cat_menu_item1[index])
-	    break;
-      }
-      gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), index2);
       gtk_check_menu_item_set_active
 	(GTK_CHECK_MENU_ITEM(todo_cat_menu_item1[index]), TRUE);
+      gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), index2);
    }
    todo_find();
    return EXIT_SUCCESS;
