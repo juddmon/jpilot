@@ -1,4 +1,4 @@
-/* $Id: expense.c,v 1.63 2009/01/16 17:32:54 rikster5 Exp $ */
+/* $Id: expense.c,v 1.64 2009/01/22 02:10:23 rikster5 Exp $ */
 
 /*******************************************************************************
  * expense.c
@@ -42,14 +42,13 @@
 /******************************************************************************/
 /* Constants                                                                  */
 /******************************************************************************/
-#define EXPENSE_CAT1     1
-#define EXPENSE_CAT2     2
 #define EXPENSE_TYPE     3
 #define EXPENSE_PAYMENT  4
 #define EXPENSE_CURRENCY 5
 
-#define MAX_CATEGORY1     17
-#define MAX_CATEGORY2     16
+#define PLUGIN_MAX_INACTIVE_TIME 1
+
+#define NUM_EXP_CAT_ITEMS 16
 #define MAX_EXPENSE_TYPES 28
 #define MAX_PAYMENTS       8
 #define MAX_CURRENCYS     34
@@ -129,9 +128,10 @@ struct currency_s glob_currency[MAX_CURRENCYS]={
 };
 
 /* Left-hand side of GUI */
-static GtkWidget *left_menu_box;
-static GtkWidget *menu_category1;
-static GtkWidget *menu_item_category1[MAX_CATEGORY1];
+static struct sorted_cats sort_l[NUM_EXP_CAT_ITEMS];
+static GtkWidget *category_menu1;
+/* Need two extra slots for the ALL category and Edit Categories... */
+static GtkWidget *exp_cat_menu_item1[NUM_EXP_CAT_ITEMS+2];
 static GtkWidget *scrolled_window;
 static GtkWidget *clist;
 
@@ -142,8 +142,8 @@ static GtkWidget *add_record_button;
 static GtkWidget *delete_record_button;
 static GtkWidget *copy_record_button;
 static GtkWidget *table;
-static GtkWidget *menu_category2;
-static GtkWidget *menu_item_category2[MAX_CATEGORY2];
+static GtkWidget *category_menu2;
+static GtkWidget *exp_cat_menu_item2[NUM_EXP_CAT_ITEMS];
 static GtkWidget *menu_payment;
 static GtkWidget *menu_item_payment[MAX_PAYMENTS];
 static GtkWidget *menu_expense_type;
@@ -165,14 +165,13 @@ static GtkWidget *note;
 static GObject   *note_buffer;
 
 /* This is the category that is currently being displayed */
-static int show_category;
-static int glob_category_number_from_menu_item[MAX_CATEGORY2];
+static int exp_category = CATEGORY_ALL;
+static time_t plugin_last_time = 0;
 
 static int record_changed;
 static int clist_row_selected;
 static int connected=0;
 
-static int glob_detail_category;
 static int glob_detail_type;
 static int glob_detail_payment;
 static int glob_detail_currency_pos;
@@ -194,6 +193,9 @@ static void cb_pulldown_menu(GtkWidget *item, unsigned int value);
 static int  make_menu(char *items[], int menu_index, GtkWidget **Poption_menu,
                      GtkWidget *menu_items[]);
 static int  expense_find(int unique_id);
+static void cb_category(GtkWidget *item, int selection);
+static int find_sort_cat_pos(int cat);
+static int find_menu_cat_pos(int cat);
 
 /******************************************************************************/
 /* Start of code                                                              */
@@ -323,12 +325,10 @@ static void connect_changed_signals(int con_or_dis)
       jp_logf(JP_LOG_DEBUG, "Expense: connect_changed_signals\n");
       connected=1;
 
-      for (i=0; i<MAX_CATEGORY2; i++) {
-         if (menu_item_category2[i] != NULL) {
-            gtk_signal_connect(GTK_OBJECT(menu_item_category2[i]), 
-                               "toggled",
-                               GTK_SIGNAL_FUNC(cb_record_changed), 
-                               NULL);
+      for (i=0; i<NUM_EXP_CAT_ITEMS; i++) {
+         if (exp_cat_menu_item2[i]) {
+            gtk_signal_connect(GTK_OBJECT(exp_cat_menu_item2[i]), "toggled",
+                               GTK_SIGNAL_FUNC(cb_record_changed), NULL);
          }
       }
       for (i=0; i<MAX_EXPENSE_TYPES; i++) {
@@ -378,32 +378,28 @@ static void connect_changed_signals(int con_or_dis)
       jp_logf(JP_LOG_DEBUG, "Expense: disconnect_changed_signals\n");
       connected=0;
 
-      for (i=0; i<MAX_CATEGORY2; i++) {
-         if (menu_item_category2[i]) {
-            gtk_signal_disconnect_by_func(GTK_OBJECT(menu_item_category2[i]), 
-                                          GTK_SIGNAL_FUNC(cb_record_changed), 
-                                          NULL);
+      for (i=0; i<NUM_EXP_CAT_ITEMS; i++) {
+         if (exp_cat_menu_item2[i]) {
+            gtk_signal_disconnect_by_func(GTK_OBJECT(exp_cat_menu_item2[i]), 
+                                          GTK_SIGNAL_FUNC(cb_record_changed), NULL);
          }
       }
       for (i=0; i<MAX_EXPENSE_TYPES; i++) {
          if (menu_item_expense_type[i]) {
             gtk_signal_disconnect_by_func(GTK_OBJECT(menu_item_expense_type[i]),
-                                          GTK_SIGNAL_FUNC(cb_record_changed), 
-                                          NULL);
+                                          GTK_SIGNAL_FUNC(cb_record_changed), NULL);
          }
       }
       for (i=0; i<MAX_PAYMENTS; i++) {
          if (menu_item_payment[i]) {
             gtk_signal_disconnect_by_func(GTK_OBJECT(menu_item_payment[i]), 
-                                          GTK_SIGNAL_FUNC(cb_record_changed), 
-                                          NULL);
+                                          GTK_SIGNAL_FUNC(cb_record_changed), NULL);
          }
       }
       for (i=0; i<MAX_CURRENCYS; i++) {
          if (menu_item_currency[i]) {
             gtk_signal_disconnect_by_func(GTK_OBJECT(menu_item_currency[i]), 
-                                          GTK_SIGNAL_FUNC(cb_record_changed), 
-                                          NULL);
+                                          GTK_SIGNAL_FUNC(cb_record_changed), NULL);
          }
       }
       gtk_signal_disconnect_by_func(GTK_OBJECT(spinner_mon),
@@ -439,24 +435,27 @@ static void free_myexpense_list(struct MyExpense **PPmexp)
    *PPmexp=NULL;
 }
 
-/*
- * This is a mandatory plugin function.
- */
+#define PLUGIN_MAJOR 1
+#define PLUGIN_MINOR 1
+
+/* This is a mandatory plugin function. */
 void plugin_version(int *major_version, int *minor_version)
 {
-   *major_version=0;
-   *minor_version=99;
+   *major_version = PLUGIN_MAJOR;
+   *minor_version = PLUGIN_MINOR;
 }
 
-/*
- * This is a mandatory plugin function.
- */
-int plugin_get_name(char *name, int len)
+static int static_plugin_get_name(char *name, int len)
 {
    jp_logf(JP_LOG_DEBUG, "Expense: plugin_get_name\n");
-
-   strncpy(name, "Expense 0.99", len);
+   snprintf(name, len, "Expense %d.%d", PLUGIN_MAJOR, PLUGIN_MINOR);
    return EXIT_SUCCESS;
+}
+
+/* This is a mandatory plugin function. */
+int plugin_get_name(char *name, int len)
+{
+   return static_plugin_get_name(name, len);
 }
 
 /*
@@ -604,12 +603,14 @@ static void cb_delete(GtkWidget *widget, gpointer data)
  * This is called when the "Clear" button is pressed.
  * It just clears out all the detail fields.
  */
-static void clear_details()
+static void exp_clear_details()
 {
    time_t ltime;
    struct tm *now;
+   int new_cat;
+   int sorted_position;
    
-   jp_logf(JP_LOG_DEBUG, "Expense: clear_details\n");
+   jp_logf(JP_LOG_DEBUG, "Expense: exp_clear_details\n");
 
    time(&ltime);
    now = localtime(&ltime);
@@ -626,6 +627,21 @@ static void clear_details()
    gtk_entry_set_text(GTK_ENTRY(entry_city), "");
    gtk_text_buffer_set_text(GTK_TEXT_BUFFER(attendees_buffer), "", -1);
    gtk_text_buffer_set_text(GTK_TEXT_BUFFER(note_buffer), "", -1);
+
+   if (exp_category==CATEGORY_ALL) {
+      new_cat = 0;
+   } else {
+      new_cat = exp_category;
+   }
+   sorted_position = find_sort_cat_pos(new_cat);
+   if (sorted_position<0) {
+      jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
+   } else {
+      gtk_check_menu_item_set_active
+        (GTK_CHECK_MENU_ITEM(exp_cat_menu_item2[sorted_position]), TRUE);
+      gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu2), 
+                                  find_menu_cat_pos(sorted_position));
+   }
 
    set_new_button_to(CLEAR_FLAG);
 
@@ -670,6 +686,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    unsigned char buf[0xFFFF];
    int size;
    int flag;
+   int i;
    unsigned int unique_id = 0;
    struct MyExpense *mexp = NULL;
    GtkTextIter start_iter;
@@ -680,7 +697,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    flag=GPOINTER_TO_INT(data);
    
    if (flag==CLEAR_FLAG) {
-      clear_details();
+      exp_clear_details();
       connect_changed_signals(DISCONNECT_SIGNALS);
       set_new_button_to(NEW_FLAG);
       return;
@@ -697,7 +714,6 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    }
 
    /* Grab details of record from widgets on right-hand side of screen */
-
    ex.type = glob_detail_type;
    ex.payment = glob_detail_payment;
    ex.currency = position_to_currency_id(glob_detail_currency_pos);
@@ -763,8 +779,15 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    /* The palm will give us an "official" unique ID during the sync */
    
    /* Any attributes go here.  Usually just the category */
-
-   br.attrib = glob_category_number_from_menu_item[glob_detail_category];
+   /* Get the category that is set from the menu */
+   for (i=0; i<NUM_EXP_CAT_ITEMS; i++) {
+      if (GTK_IS_WIDGET(exp_cat_menu_item2[i])) {
+         if (GTK_CHECK_MENU_ITEM(exp_cat_menu_item2[i])->active) {
+            br.attrib = sort_l[i].cat_num;
+            break;
+         }
+      }
+   }
    jp_logf(JP_LOG_DEBUG, "category is %d\n", br.attrib);
    br.buf = buf;
    br.size = size;
@@ -877,7 +900,7 @@ static void display_records()
    free_myexpense_list(&glob_myexpense_list);
 
    /* Clear left-hand side of window */
-   clear_details();
+   exp_clear_details();
 
    /* Freeze clist to prevent flicker during updating */
    gtk_clist_freeze(GTK_CLIST(clist));
@@ -915,10 +938,9 @@ static void display_records()
           (br->rt == MODIFIED_PALM_REC) ) {
          continue;
       }
-      if (show_category < 16) {
-         if ( ((br->attrib & 0x0F) != 
-               glob_category_number_from_menu_item[show_category]) &&
-             show_category != CATEGORY_ALL) {
+      if (exp_category < NUM_EXP_CAT_ITEMS) {
+         if ( ((br->attrib & 0x0F) != exp_category) &&
+                exp_category != CATEGORY_ALL) {
             continue;
          }
       }
@@ -971,58 +993,40 @@ static void display_records()
    jp_logf(JP_LOG_DEBUG, "Expense: leave display_records\n");
 }
 
-
-static void redraw_cat_menus(struct CategoryAppInfo *cai)
+/* Find position of category in sorted category array 
+ * via its assigned category number */
+static int find_sort_cat_pos(int cat)
 {
-   char *categories[MAX_CATEGORY1+1];
-   int  count, i;
-   int  len;
-   char *temp_str;
+   int i;
 
-   categories[0] = "All";
-   for (i=0, count=0; i<MAX_CATEGORY2; i++) {
-      glob_category_number_from_menu_item[i]=0;
-      if (cai->name[i][0]=='\0') {
-         continue;
+   for (i=0; i<NUM_EXP_CAT_ITEMS; i++) {
+      if (sort_l[i].cat_num==cat) {
+         return i;
       }
-      categories[count+1]=cai->name[i];
-      temp_str = malloc((len = strlen(categories[count+1])*2+1));
-      multibyte_safe_strncpy(temp_str, categories[count+1], len);
-      jp_charset_p2j(temp_str, len);
-      categories[count+1]=temp_str;
-      glob_category_number_from_menu_item[count++]=i;
-   }
-   categories[count+1]=NULL;
-
-   gtk_widget_destroy(menu_category1);
-   gtk_widget_destroy(menu_category2);
-   /* destroy frees widgets but does not zero out their pointers */
-   for (i=0; i<MAX_CATEGORY2; i++) {
-      menu_item_category2[i] = NULL;
    }
 
-   make_menu(categories, EXPENSE_CAT1, &menu_category1, menu_item_category1);
-   gtk_box_pack_start(GTK_BOX(left_menu_box), menu_category1, TRUE, TRUE, 0);
-   /* Skip the ALL category for this menu */
-   make_menu(&categories[1], EXPENSE_CAT2, &menu_category2, menu_item_category2);
-   gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(menu_category2),
-                             1, 2, 0, 1);
+   return -1;
+}
 
-   /* New widgets require reconnecting signals */
-   if (connected)
-   {
-      for (i=0; i<MAX_CATEGORY2; i++) {
-         if (menu_item_category2[i]) {
-            gtk_signal_connect(GTK_OBJECT(menu_item_category2[i]), 
-                               "toggled",
-                               GTK_SIGNAL_FUNC(cb_record_changed), 
-                               NULL);
+/* Find a category's position in the category menu.
+ * This is equal to the category number except for the Unfiled category.
+ * The Unfiled category is always in the last position which changes as
+ * the number of categories changes */
+static int find_menu_cat_pos(int cat)
+{
+   int i;
+
+   if (cat != NUM_EXP_CAT_ITEMS-1) {
+      return cat;
+   } else { /* Unfiled category */
+      /* Count how many category entries are filled */
+      for (i=0; i<NUM_EXP_CAT_ITEMS; i++) {
+         if (!sort_l[i].Pcat[0]) {
+            return i;
          }
       }
+      return 0;
    }
-
-   for (i=1; categories[i]; i++)
-       free(categories[i]);
 }
 
 static void cb_edit_cats(GtkWidget *widget, gpointer data)
@@ -1059,8 +1063,56 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
 
    jp_pdb_file_write_app_block("ExpenseDB", buffer, size);
    
-   /* We have to redraw the category menus now */
-   redraw_cat_menus(&ai.category);
+   /* Force refresh and display of CATEGORY_ALL */
+   plugin_gui_refresh(-1);
+}
+
+/* Called when left-hand category menu is used */
+static void cb_category(GtkWidget *item, int selection)
+{
+   int b;
+
+   if ((GTK_CHECK_MENU_ITEM(item))->active) {
+      if (exp_category == selection) { return; }
+
+      b=dialog_save_changed_record_with_cancel(pane, record_changed);
+      if (b==DIALOG_SAID_1) { /* Cancel */
+         int index, index2;
+
+         if (exp_category==CATEGORY_ALL) {
+            index  = 0;
+            index2 = 0;
+         } else {
+            index  = find_sort_cat_pos(exp_category);
+            index2 = find_menu_cat_pos(index) + 1;
+            index += 1;
+         }
+
+         if (index<0) {
+            jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
+         } else {
+            gtk_check_menu_item_set_active
+              (GTK_CHECK_MENU_ITEM(exp_cat_menu_item1[index]), TRUE);
+            gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), index2);
+         }
+
+         return;
+      }
+      if (b==DIALOG_SAID_3) { /* Save */
+         cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
+      }
+
+      if (selection==NUM_EXP_CAT_ITEMS+1) {
+         cb_edit_cats(item, NULL);
+      } else {
+         exp_category = selection;
+      }
+      jp_logf(JP_LOG_DEBUG, "cb_category() cat=%d\n", exp_category);
+
+      clist_row_selected = 0;
+      display_records();
+      jp_logf(JP_LOG_DEBUG, "Leaving cb_category()\n");
+   }
 }
 
 /*
@@ -1074,8 +1126,8 @@ static void cb_clist_selection(GtkWidget      *clist,
                                gpointer       data)
 {
    struct MyExpense *mexp;
-   int i, item_num, category;
    int b;
+   int index, sorted_position;
    int currency_position;
    unsigned int unique_id = 0;
 
@@ -1084,7 +1136,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    if ((record_changed==MODIFY_FLAG) || (record_changed==NEW_FLAG)) {
       mexp = gtk_clist_get_row_data(GTK_CLIST(clist), row);
       if (mexp!=NULL) {
-	 unique_id = mexp->unique_id;
+         unique_id = mexp->unique_id;
       }
 
       b=dialog_save_changed_record(scrolled_window, record_changed);
@@ -1097,7 +1149,7 @@ static void cb_clist_selection(GtkWidget      *clist,
       {
          expense_find(unique_id);
       } else {
-	 clist_select_row(GTK_CLIST(clist), row, column);
+         clist_select_row(GTK_CLIST(clist), row, column);
       }
       return;
    }
@@ -1112,22 +1164,23 @@ static void cb_clist_selection(GtkWidget      *clist,
    set_new_button_to(CLEAR_FLAG);
    /* Need to disconnect signals while changing values */
    connect_changed_signals(DISCONNECT_SIGNALS);
-   
-   category = mexp->attrib & 0x0F;
-   item_num=0;
-   for (i=0; i<16; i++) {
-      if (glob_category_number_from_menu_item[i]==category) {
-         item_num=i;
-         break;
-      }
-   }
 
-   if (item_num < MAX_CATEGORY2) {
-      gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
-                                     (menu_item_category2[item_num]), TRUE);
-   } else {
-      jp_logf(JP_LOG_WARN, _("Expense: Unknown category\n"));
+   index = mexp->attrib & 0x0F;
+   sorted_position = find_sort_cat_pos(index);
+   if (exp_cat_menu_item2[sorted_position]==NULL) {
+      /* Illegal category */
+      jp_logf(JP_LOG_DEBUG, "Category is not legal\n");
+      index = sorted_position = 0;
    }
+   if (sorted_position<0) {
+      jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
+   } else {
+      gtk_check_menu_item_set_active
+        (GTK_CHECK_MENU_ITEM(exp_cat_menu_item2[sorted_position]), TRUE);
+   }
+   gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu2), 
+                               find_menu_cat_pos(sorted_position));
+   
    if (mexp->ex.type < MAX_EXPENSE_TYPES) {
       gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
                                      (menu_item_expense_type[mexp->ex.type]), TRUE);
@@ -1144,7 +1197,6 @@ static void cb_clist_selection(GtkWidget      *clist,
 
    gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
        (menu_item_currency[currency_position]), TRUE);
-   gtk_option_menu_set_history(GTK_OPTION_MENU(menu_category2), item_num);
    gtk_option_menu_set_history(GTK_OPTION_MENU(menu_expense_type), mexp->ex.type);
    gtk_option_menu_set_history(GTK_OPTION_MENU(menu_payment), mexp->ex.payment);
    gtk_option_menu_set_history(GTK_OPTION_MENU(menu_currency), currency_position);
@@ -1194,7 +1246,6 @@ static void cb_clist_selection(GtkWidget      *clist,
 static void cb_pulldown_menu(GtkWidget *item, unsigned int value)
 {
    int menu, sel;
-   int b;
    
    jp_logf(JP_LOG_DEBUG, "Expense: cb_pulldown_menu\n");
 
@@ -1205,19 +1256,6 @@ static void cb_pulldown_menu(GtkWidget *item, unsigned int value)
    sel  =  value & 0x00FF;
 
    switch (menu) {
-    case EXPENSE_CAT1:
-      b=dialog_save_changed_record(scrolled_window, record_changed);
-      if (b==DIALOG_SAID_2) {
-         cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
-      }
-   
-      show_category = sel;
-      clist_row_selected = 0;
-      display_records();
-      break;
-    case EXPENSE_CAT2:
-      glob_detail_category = sel;
-      break;
     case EXPENSE_TYPE:
       glob_detail_type = sel;
       break;
@@ -1254,15 +1292,7 @@ static int make_menu(char *items[], int menu_index, GtkWidget **Poption_menu,
    for (i=0; items[i]; i++) {
       menu_item = gtk_radio_menu_item_new_with_label(group, _(items[i]));
       menu_items[i] = menu_item;
-      if (menu_index==EXPENSE_CAT1) {
-         if (i==0) {
-            item_num=CATEGORY_ALL;
-         } else {
-            item_num = i - 1;
-         }
-      } else {
-         item_num = i;
-      }
+      item_num = i;
       gtk_signal_connect(GTK_OBJECT(menu_item), "activate",
                          GTK_SIGNAL_FUNC(cb_pulldown_menu), 
                          GINT_TO_POINTER(menu_index<<8 | item_num));
@@ -1285,14 +1315,12 @@ static int make_menu(char *items[], int menu_index, GtkWidget **Poption_menu,
  */
 static void make_menus()
 {
-   GList *records;
-   struct ExpenseAppInfo eai;
+   struct ExpenseAppInfo exp_app_info;
    unsigned char *buf;
    int buf_size;
-   int i, count;
-   char *categories[18];
-   int len;
-   char *temp_str;
+   int i;
+   long char_set;
+   char *cat_name;
 
    char *payment[MAX_PAYMENTS+1]={
       N_("American Express"),
@@ -1347,43 +1375,56 @@ static void make_menus()
    }
    currency[MAX_CURRENCYS]=NULL;
 
+   /* Do some category initialization */
+   for (i=0; i<NUM_EXP_CAT_ITEMS; i++) {
+      exp_cat_menu_item2[i] = NULL;
+   }
+
    /* This gets the application specific data out of the database for us.
     * We still need to write a function to unpack it from its blob form. */
    jp_get_app_info("ExpenseDB", &buf, &buf_size);
-   unpack_ExpenseAppInfo(&eai, buf, buf_size);
+   unpack_ExpenseAppInfo(&exp_app_info, buf, buf_size);
    if (buf) {
       free(buf);
    }
 
-   categories[0] = "All";
-   for (i=0, count=0; i<16; i++) {
-      glob_category_number_from_menu_item[i]=0;
-      if (eai.category.name[i][0]=='\0') {
-         continue;
-      }
-      categories[count+1]=eai.category.name[i];
-      temp_str = malloc((len = strlen(categories[count+1])*2+1));
-      multibyte_safe_strncpy(temp_str, categories[count+1], len);
-      jp_charset_p2j(temp_str, len);
-      categories[count+1] = temp_str;
-      glob_category_number_from_menu_item[count++]=i;
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
+
+   for (i=1; i<NUM_EXP_CAT_ITEMS; i++) {
+      cat_name = charset_p2newj(exp_app_info.category.name[i], 31, char_set);
+      strcpy(sort_l[i-1].Pcat, cat_name);
+      free(cat_name);
+      sort_l[i-1].cat_num = i;
    }
-   categories[count+1]=NULL;
+   /* put reserved 'Unfiled' category at end of list */ 
+   cat_name = charset_p2newj(exp_app_info.category.name[0], 31, char_set);
+   strcpy(sort_l[NUM_EXP_CAT_ITEMS-1].Pcat, cat_name);
+   free(cat_name);
+   sort_l[NUM_EXP_CAT_ITEMS-1].cat_num = 0;
 
-   records = NULL;
+   qsort(sort_l, NUM_EXP_CAT_ITEMS-1, sizeof(struct sorted_cats), cat_compare);
 
-   make_menu(categories, EXPENSE_CAT1, &menu_category1, menu_item_category1);
-   /* Skip the ALL for this menu */
-   make_menu(&categories[1], EXPENSE_CAT2, &menu_category2, menu_item_category2);
+#ifdef JPILOT_DEBUG
+   for (i=0; i<NUM_EXP_CAT_ITEMS; i++) {
+      printf("cat %d [%s]\n", sort_l[i].cat_num, sort_l[i].Pcat);
+   }
+#endif
+
+   if ((exp_category != CATEGORY_ALL) && (exp_app_info.category.name[exp_category][0]=='\0')) {
+      exp_category=CATEGORY_ALL;
+   }
+
+   make_category_menu(&category_menu1, exp_cat_menu_item1,
+                      sort_l, cb_category, TRUE, TRUE);
+   /* Skip the ALL category for this menu */
+   make_category_menu(&category_menu2, exp_cat_menu_item2,
+                      sort_l, NULL, FALSE, FALSE);
    make_menu(payment, EXPENSE_PAYMENT, &menu_payment, menu_item_payment);
    make_menu(expense_type, EXPENSE_TYPE, &menu_expense_type, menu_item_expense_type);
    make_menu(currency, EXPENSE_CURRENCY, &menu_currency, menu_item_currency);
-
-   for (i=1; categories[i]; i++)
-       free(categories[i]);
 }
 
-/*returns 0 if not found, 1 if found */
+/* returns 1 if found, 0 if not found */
 static int expense_clist_find_id(GtkWidget *clist,
                                  unsigned int unique_id,
                                  int *found_at)
@@ -1442,20 +1483,33 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    GtkWidget *vbox1, *vbox2;
    GtkWidget *hbox_temp;
    GtkWidget *temp_vbox;
-   GtkWidget *button;
    GtkWidget *label;
    GtkWidget *separator;
    time_t ltime;
    struct tm *now;
    long ivalue;
    int i;
+   int cycle_category=FALSE;
+   int new_cat;
+   int index, index2;
 
-   int old_category = show_category;
-   
    jp_logf(JP_LOG_DEBUG, "Expense: plugin gui started, unique_id=%d\n", unique_id);
 
    record_changed = CLEAR_FLAG;
-   show_category  = CATEGORY_ALL;
+
+   if (difftime(time(NULL), plugin_last_time) > PLUGIN_MAX_INACTIVE_TIME) {
+      cycle_category = FALSE;
+   } else {
+      cycle_category = TRUE;
+   }
+   /* reset time entered */
+   plugin_last_time = time(NULL);
+
+   /* called to display the result of a search */
+   if (unique_id) {
+      cycle_category = FALSE;
+   }
+
    clist_row_selected = 0;
 
    time(&ltime);
@@ -1465,11 +1519,6 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    /* Build the GUI */
 
    /* Make the menus */
-   jp_logf(JP_LOG_DEBUG, "Expense: calling make_menus\n");
-   for (i=0; i<MAX_CATEGORY2; i++) {
-      menu_item_category2[i] = NULL;
-   }
-
    make_menus();
 
    pane = gtk_hpaned_new();
@@ -1497,21 +1546,9 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    /* Left half of screen */
 
    /* Make menu box for category menu */
-   left_menu_box = gtk_hbox_new(FALSE, 0);
-
    hbox_temp = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox1), hbox_temp, FALSE, FALSE, 0);
-   
-   label = gtk_label_new(_("Category: "));
-   gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(hbox_temp), left_menu_box, TRUE, TRUE, 0);
-   gtk_box_pack_start(GTK_BOX(left_menu_box), menu_category1, TRUE, TRUE, 0);
-
-   /* Edit category button */
-   button = gtk_button_new_with_label(_("Edit Categories"));
-   gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                      GTK_SIGNAL_FUNC(cb_edit_cats), NULL);
-   gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu1, TRUE, TRUE, 0);
 
    /* Scrolled Window */
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
@@ -1540,7 +1577,6 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    
    /************************************************************/
    /* Right half of screen */
-
    hbox_temp = gtk_hbox_new(FALSE, 3);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
@@ -1590,7 +1626,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(label),
                     0, 1, 0, 1, GTK_FILL, GTK_FILL, 2, 0);
-   gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(menu_category2),
+   gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(category_menu2),
                              1, 2, 0, 1);
 
    /* Type Menu */
@@ -1741,18 +1777,45 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_widget_hide(add_record_button);
    gtk_widget_hide(apply_record_button);
 
-//   if (cycle_category) {
-      old_category++;
-
-      if (menu_item_category1[old_category] == NULL) {
-	 old_category = 0;
-	 show_category = CATEGORY_ALL;
+   if (cycle_category) {
+      /* First cycle exp_category var */
+      if (exp_category == CATEGORY_ALL) {
+         new_cat = -1;
+      } else {
+         new_cat = find_sort_cat_pos(exp_category);
       }
-
-      gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_item_category1[old_category]), TRUE);
-      gtk_option_menu_set_history(GTK_OPTION_MENU(menu_category1), old_category);
-   //}
-
+      for (i=0; i<NUM_EXP_CAT_ITEMS; i++) {
+         new_cat++;
+         if (new_cat >= NUM_EXP_CAT_ITEMS) {
+            exp_category = CATEGORY_ALL;
+            break;
+         }
+         if ((sort_l[new_cat].Pcat) && (sort_l[new_cat].Pcat[0])) {
+            exp_category = sort_l[new_cat].cat_num;
+            break;
+         }
+      }
+      /* Then update menu with new exp_category */
+      if (exp_category==CATEGORY_ALL) {
+         index  = 0;
+         index2 = 0; 
+      } else {
+         index  = find_sort_cat_pos(exp_category);
+         index2 = find_menu_cat_pos(index) + 1;
+         index += 1;
+      }
+      if (index<0) {
+         jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
+      } else {
+         gtk_check_menu_item_set_active
+           (GTK_CHECK_MENU_ITEM(exp_cat_menu_item1[index]), TRUE);
+         gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), index2);
+      }
+   }
+   else
+   {
+      exp_category = CATEGORY_ALL;
+   }
 
    /* The focus doesn't do any good on the application button */
    gtk_widget_grab_focus(GTK_WIDGET(clist));
@@ -1797,6 +1860,8 @@ int plugin_gui_cleanup() {
       set_pref(PREF_EXPENSE_PANE, gtk_paned_get_position(GTK_PANED(pane)), NULL, TRUE);
       pane = NULL;
    }
+
+   plugin_last_time = time(NULL);
 
    return EXIT_SUCCESS;
 }
@@ -1949,7 +2014,7 @@ int plugin_help(char **text, int *width, int *height)
     */
    char plugin_name[200];
 
-   plugin_get_name(&plugin_name[0], 200);
+   static_plugin_get_name(plugin_name, sizeof(plugin_name));
    *text = g_strdup_printf(
       /*-------------------------------------------*/
       _("%s\n"
@@ -1972,40 +2037,7 @@ int plugin_help(char **text, int *width, int *height)
  */
 int plugin_post_sync(void)
 {
-#if 0
-   struct ExpenseAppInfo ai;
-   char full_name[256];
-   int num;
-   int size;
-   void *buf;
-   struct pi_file *pf;
-#endif
-   /* This redraw code is not necessay because the screen is cleared after
-    * a sync with a plugin on the screen anyway.
-    * If that changes, here is the code */
-
    jp_logf(JP_LOG_DEBUG, "Expense: plugin_post_sync\n");
-#if 0
-   jp_get_home_file_name("ExpenseDB.pdb", full_name, 250);
-
-   buf=NULL;
-   memset(&ai, 0, sizeof(ai));
-
-   pf = pi_file_open(full_name);
-   pi_file_get_app_info(pf, &buf, &size);
-
-   num = unpack_ExpenseAppInfo(&ai, buf, size);
-   if (num <= 0) {
-      jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), "ExpenseDB.pdb");
-      return EXIT_FAILURE;
-   }
-
-   pi_file_close(pf);
-
-   /* We have to redraw the category menus now */
-   redraw_cat_menus(&(ai.category));
-#endif
-
    return EXIT_SUCCESS;
 }
 

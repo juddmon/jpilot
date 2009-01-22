@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.70 2009/01/18 22:46:07 rikster5 Exp $ */
+/* $Id: utils.h,v 1.71 2009/01/22 02:10:23 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -467,6 +467,7 @@ int find_next_rpt_event(struct Appointment *appt,
 void cb_app_button(GtkWidget *widget, gpointer data);
 
 void call_plugin_gui(int number, int unique_id);
+void plugin_gui_refresh(int unique_id);
 
 /*datebook_gui */
 int datebook_refresh(int first, int do_init);

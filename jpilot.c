@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.177 2008/12/15 13:24:04 judd Exp $ */
+/* $Id: jpilot.c,v 1.178 2009/01/22 02:10:23 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -219,6 +219,12 @@ void call_plugin_gui(int number, int unique_id)
 void cb_plugin_gui(GtkWidget *widget, int number)
 {
    call_plugin_gui(number, 0);
+}
+
+/* Redraws plugin GUI after structure changing event such as category editing */
+void plugin_gui_refresh(int unique_id)
+{
+   call_plugin_gui(glob_app, unique_id); 
 }
 
 void call_plugin_help(int number)
