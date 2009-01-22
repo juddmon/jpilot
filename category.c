@@ -1,4 +1,4 @@
-/* $Id: category.c,v 1.32 2008/06/19 04:12:07 rikster5 Exp $ */
+/* $Id: category.c,v 1.33 2009/01/22 17:05:34 rikster5 Exp $ */
 
 /*******************************************************************************
  * category.c
@@ -86,7 +86,10 @@ int count_records_in_cat(char *db_name, int cat_index)
       }
 
       if (!br->buf) continue;
-      if ((br->rt==DELETED_PALM_REC) || (br->rt==MODIFIED_PALM_REC)) continue;
+      if ((br->rt==DELETED_PALM_REC)  || 
+          (br->rt==DELETED_PC_REC)    || 
+          (br->rt==MODIFIED_PALM_REC)) 
+         continue;
       if ((br->attrib & 0x0F) != cat_index) continue;
 
       count++;
