@@ -1,4 +1,4 @@
-/* $Id: expense.c,v 1.64 2009/01/22 02:10:23 rikster5 Exp $ */
+/* $Id: expense.c,v 1.65 2009/01/22 22:09:38 rikster5 Exp $ */
 
 /*******************************************************************************
  * expense.c
@@ -45,6 +45,8 @@
 #define EXPENSE_TYPE     3
 #define EXPENSE_PAYMENT  4
 #define EXPENSE_CURRENCY 5
+
+#define EXP_DATE_COLUMN 0
 
 #define PLUGIN_MAX_INACTIVE_TIME 1
 
@@ -170,6 +172,7 @@ static time_t plugin_last_time = 0;
 
 static int record_changed;
 static int clist_row_selected;
+static int clist_col_selected;
 static int connected=0;
 
 static int glob_detail_type;
@@ -261,6 +264,53 @@ gint sort_compare_date(GtkCList *clist,
    time2 = mktime(&(mexp2->ex.date));
 
    return(time1 - time2);
+}
+
+static void cb_clist_click_column(GtkWidget *clist, int column)
+{
+   struct MyExpense *mexp;
+   unsigned int unique_id;
+
+   /* Remember currently selected item and return to it after sort 
+    * This is critically important because sorting without updating the 
+    * global variable clist_row_selected can cause data loss */
+   mexp = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
+   if (mexp < (struct MyExpense *)CLIST_MIN_DATA) {
+      unique_id = 0;
+   } else {
+      unique_id = mexp->unique_id;
+   }
+   
+   /* Clicking on same column toggles ascending/descending sort */
+   if (clist_col_selected == column)
+   {
+      if (GTK_CLIST(clist)->sort_type == GTK_SORT_ASCENDING) {
+         gtk_clist_set_sort_type(GTK_CLIST (clist), GTK_SORT_DESCENDING);
+      }
+      else {
+         gtk_clist_set_sort_type(GTK_CLIST (clist), GTK_SORT_ASCENDING);
+      }
+   }
+   else /* Always sort in ascending order when changing sort column */
+   {
+      gtk_clist_set_sort_type(GTK_CLIST (clist), GTK_SORT_ASCENDING);
+   }
+
+   clist_col_selected = column;
+
+   gtk_clist_set_sort_column(GTK_CLIST(clist), column);
+   switch (column) {
+    case EXP_DATE_COLUMN:  /* Date column */
+      gtk_clist_set_compare_func(GTK_CLIST(clist), sort_compare_date);
+      break;
+    default: /* All other columns can use GTK default sort function */
+      gtk_clist_set_compare_func(GTK_CLIST(clist), NULL);
+      break;
+   }
+   gtk_clist_sort(GTK_CLIST(clist));
+
+   /* Return to previously selected item */
+   expense_find(unique_id);
 }
 
 static void set_new_button_to(int new_state)
@@ -967,7 +1017,7 @@ static void display_records()
 
    jp_free_DB_records(&records);
 
-   /* Sort the rows by ascending date */
+   /* Sort the clist */
    gtk_clist_sort(GTK_CLIST(clist));
 
    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
@@ -1488,6 +1538,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    time_t ltime;
    struct tm *now;
    long ivalue;
+   char *titles[]={"","",""};
    int i;
    int cycle_category=FALSE;
    int new_cat;
@@ -1558,21 +1609,46 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_box_pack_start(GTK_BOX(vbox1), scrolled_window, TRUE, TRUE, 0);
    
    /* Clist */
-   clist = gtk_clist_new(3);
+   clist = gtk_clist_new_with_titles(3, titles);
 
-   /* gtk_clist_set_shadow_type(GTK_CLIST(clist), SHADOW);*/
-   gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
+   gtk_clist_set_column_title(GTK_CLIST(clist), 0, _("Date"));
+   gtk_clist_set_column_title(GTK_CLIST(clist), 1, _("Type"));
+   gtk_clist_set_column_title(GTK_CLIST(clist), 2, _("Amount"));
+
+   /* TODO: Set auto resize but need a bit more space between columns
+   gtk_clist_set_column_auto_resize(GTK_CLIST(clist), 0, TRUE);
+   gtk_clist_set_column_auto_resize(GTK_CLIST(clist), 1, TRUE);
+   gtk_clist_set_column_auto_resize(GTK_CLIST(clist), 2, FALSE);
+   */ 
    gtk_clist_set_column_width(GTK_CLIST(clist), 0, 50);
    gtk_clist_set_column_width(GTK_CLIST(clist), 1, 140);
    gtk_clist_set_column_width(GTK_CLIST(clist), 2, 70);
+  
+   gtk_clist_column_titles_active(GTK_CLIST(clist));
+   gtk_signal_connect(GTK_OBJECT(clist), "click_column",
+                      GTK_SIGNAL_FUNC (cb_clist_click_column), NULL);
+
    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
                       GTK_SIGNAL_FUNC(cb_clist_selection),
                       NULL);
-   /* Sort column by ascending date */
-   gtk_clist_set_sort_column(GTK_CLIST(clist), 0);
-   gtk_clist_set_compare_func(GTK_CLIST(clist), sort_compare_date);
-   gtk_clist_set_sort_type(GTK_CLIST(clist), GTK_SORT_ASCENDING);
+   /* gtk_clist_set_shadow_type(GTK_CLIST(clist), SHADOW);*/
+   gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
 
+   /* Restore previous sorting configuration */
+   get_pref(PREF_EXPENSE_SORT_COLUMN, &ivalue, NULL);
+   clist_col_selected = ivalue;
+   gtk_clist_set_sort_column(GTK_CLIST(clist), clist_col_selected);
+   switch (clist_col_selected) {
+    case EXP_DATE_COLUMN:  /* Date column */
+      gtk_clist_set_compare_func(GTK_CLIST(clist),sort_compare_date);
+      break;
+    default: /* All other columns can use GTK default sort function */
+      gtk_clist_set_compare_func(GTK_CLIST(clist),NULL);
+      break;
+   }
+   get_pref(PREF_EXPENSE_SORT_ORDER, &ivalue, NULL);
+   gtk_clist_set_sort_type(GTK_CLIST(clist), ivalue);
+   
    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
    
    /************************************************************/
@@ -1860,6 +1936,8 @@ int plugin_gui_cleanup() {
       set_pref(PREF_EXPENSE_PANE, gtk_paned_get_position(GTK_PANED(pane)), NULL, TRUE);
       pane = NULL;
    }
+   set_pref(PREF_EXPENSE_SORT_COLUMN, clist_col_selected, NULL, TRUE);
+   set_pref(PREF_EXPENSE_SORT_ORDER, GTK_CLIST(clist)->sort_type, NULL, TRUE);
 
    plugin_last_time = time(NULL);
 

@@ -1,4 +1,4 @@
-/* $Id: prefs.h,v 1.49 2008/12/17 20:30:40 rousseau Exp $ */
+/* $Id: prefs.h,v 1.50 2009/01/22 22:09:38 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs.h
@@ -125,9 +125,11 @@
 #define PREF_ADDR_SORT_ORDER 93
 #define PREF_ADDR_NAME_COL_SZ 94
 #define PREF_TODO_NOTE_PANE 95
+#define PREF_EXPENSE_SORT_COLUMN 96
+#define PREF_EXPENSE_SORT_ORDER 97
 
 /* Number of preferences in use */
-#define NUM_PREFS 96
+#define NUM_PREFS 98
 /* Maximum number of preferences */
 #define MAX_NUM_PREFS 250
 
