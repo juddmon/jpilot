@@ -1,4 +1,4 @@
-/* $Id: memo.c,v 1.43 2008/08/26 03:26:53 rikster5 Exp $ */
+/* $Id: memo.c,v 1.44 2009/01/26 01:43:03 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo.c
@@ -283,11 +283,13 @@ int memo_sort(MemoList **memol, int sort_order)
       sort_memol[i] = temp_memol;
    }
 
+   /* TODO: Restore code when syncing of AppInfo blocks is implemented
    get_memo_app_info(&memo_ai);
    if (memo_ai.sortByAlpha==1) {
-      /* qsort them */
       qsort(sort_memol, count, sizeof(MemoList *), memo_compare);
    }
+   */
+   qsort(sort_memol, count, sizeof(MemoList *), memo_compare);
 
    /* Put the linked list in the order of the array */
    if (sort_order==SORT_ASCENDING) {
