@@ -1,4 +1,4 @@
-/* $Id: jp-contact.c,v 1.7 2009/02/01 23:52:14 rikster5 Exp $ */
+/* $Id: jp-contact.c,v 1.8 2009/02/02 00:12:40 rikster5 Exp $ */
 
 /*******************************************************************************
  * contact.c:  Translate Palm contact data formats
@@ -33,6 +33,7 @@
 #include "pi-macros.h"
 #include "jp-pi-contact.h"
  
+
 /***********************************************************************
  *
  * Function:   jp_free_Contact
@@ -81,7 +82,6 @@ void jp_free_Contact(struct Contact *c)
  *
  ***********************************************************************/
 int jp_unpack_Contact(struct Contact *c, pi_buffer_t *buf)
-//contactsType type param ???
 {
    unsigned long contents1;
    unsigned long contents2;
@@ -152,8 +152,7 @@ int jp_unpack_Contact(struct Contact *c, pi_buffer_t *buf)
 
    /* I think one of these is a birthday flag and one is an alarm flag.
     * Since both are always set there is no way to know which is which.
-    * It could be something like a flag for advanceUnits also.
-    */
+    * It could be something like a flag for advanceUnits also.  */
    if ((contents2 & 0x0800) || (contents2 & 0x1000)) {
       c->birthdayFlag = 1;
       if (len < 1)
@@ -167,7 +166,7 @@ int jp_unpack_Contact(struct Contact *c, pi_buffer_t *buf)
       c->birthday.tm_sec  = 0;
       c->birthday.tm_isdst= -1;
       mktime(&c->birthday);
-      /* 2 bytes containing a zero (padding) */
+      /* 2 bytes and a zero padding byte */
       len -= 3;
       Pbuf += 3;
       c->advanceUnits = get_byte(Pbuf);
@@ -188,9 +187,7 @@ int jp_unpack_Contact(struct Contact *c, pi_buffer_t *buf)
       c->reminder = 0;
    }
 
-   /*
-    * A blob of size zero would take 6 chars
-    */
+   /* A blob of size zero would take 6 bytes */
    blob_count=0;
    while (len >= 6) {
       if (blob_count >= MAX_CONTACT_BLOBS) {
@@ -213,15 +210,16 @@ int jp_unpack_Contact(struct Contact *c, pi_buffer_t *buf)
          c->picture->data = c->blob[blob_count]->data + 2;
       }
 
-      len -= 6;
       Pbuf += 6;
+      len  -= 6;
       Pbuf += c->blob[blob_count]->length;
-      len -= c->blob[blob_count]->length;
+      len  -= c->blob[blob_count]->length;
       blob_count++;
    }
 
    return (Pbuf - record);
 }
+
 
 /***********************************************************************
  *
@@ -236,7 +234,6 @@ int jp_unpack_Contact(struct Contact *c, pi_buffer_t *buf)
  *             The length of the buffer used on success
  *
  ***********************************************************************/
-//contactsType type parameter???
 int jp_pack_Contact(struct Contact *c, pi_buffer_t *buf)
 {
    int l, destlen = 17;
@@ -316,10 +313,8 @@ int jp_pack_Contact(struct Contact *c, pi_buffer_t *buf)
          (c->birthday.tm_mday & 0x001F);
       set_short(Pbuf, packed_date);
       Pbuf += 2;
-      set_byte(Pbuf, 0);
+      set_byte(Pbuf, 0);  /* padding byte in birthday date */
       Pbuf += 1;
-      //set_byte(Pbuf, 1);
-      //Pbuf += 1;
       if (c->reminder) {
          contents2 |= 0x2000;
          set_byte(Pbuf, c->advanceUnits);
@@ -337,8 +332,7 @@ int jp_pack_Contact(struct Contact *c, pi_buffer_t *buf)
    set_long(record + 8, contents1);
    set_long(record + 12, contents2);
    /* companyOffset is the offset from itself to the company field,
-    * or zero if no company field.  Its not useful to us at all.
-    */
+    * or zero if no company field.  Its not useful to us at all.  */
    if (c->entry[2]) {
       companyOffset++;
       if (c->entry[0]) companyOffset += strlen(c->entry[0]) + 1;
@@ -481,14 +475,8 @@ int jp_unpack_ContactAppInfo(struct ContactAppInfo *ai, pi_buffer_t *buf)
       return i;
    Pbuf += i;
 
-/* r = get_long(record);
-   for (i = 0; i < 22; i++)
-      ai->labelRenamed[i] = !!(r & (1 << i));
-   Pbuf += 4;
-*/
    memcpy(ai->unknown1, Pbuf, 26);
    Pbuf += 26;
-   //memcpy(ai->labels, Pbuf, 16 * 49);
    memcpy(ai->labels, Pbuf, 16 * ai->num_labels);
    Pbuf += 16 * ai->num_labels;
    ai->country = get_byte(Pbuf);
@@ -515,6 +503,7 @@ int jp_unpack_ContactAppInfo(struct ContactAppInfo *ai, pi_buffer_t *buf)
    return (Pbuf - start);
 }
 
+
 /***********************************************************************
  *
  * Function:   jp_pack_ContactAppInfo
@@ -535,7 +524,7 @@ int jp_pack_ContactAppInfo(struct ContactAppInfo *ai, pi_buffer_t *buf)
    if (buf == NULL || buf->data == NULL)
       return -1;
 
-   /* 278 app info, 26 unknown, labels, county, sortBy */
+   /* 278 app info, 26 unknown, labels, country, sortBy */
    destlen = 278 + 26 + (16 * ai->num_labels) + 2 + 2;
 
    pi_buffer_expect(buf, destlen);
@@ -550,22 +539,12 @@ int jp_pack_ContactAppInfo(struct ContactAppInfo *ai, pi_buffer_t *buf)
 
    set_byte(buf->data + buf->used++, ai->country);
    /* Unknown field */
-   //set_byte(pos++, 0x64);
-   //set_byte(pos++, 0x00);
    set_byte(buf->data + buf->used++, 0x00);
 
    set_byte(buf->data + buf->used++, ai->sortByCompany);
    /* Unknown field */
-   //set_byte(pos++, 0x72);
-   //set_byte(pos++, 0x00);
    set_byte(buf->data + buf->used++, 0x00);
-
-   /* r = 0;
-   for (i = 0; i < 22; i++)
-      if (ai->labelRenamed[i])
-         r |= (1 << i);
-   set_long(pos, r);
-   pos += 4;*/
 
    return (buf->used);
 }
+
