@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.226 2009/01/19 22:17:02 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.227 2009/02/02 00:22:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -24,6 +24,7 @@
 #include "config.h"
 #include <stdlib.h>
 #include <string.h>
+#include <signal.h>
 #include <ctype.h>
 #include <sys/stat.h>
 #include <gtk/gtk.h>
@@ -2386,14 +2387,26 @@ GtkWidget *image_from_data(void *buf, size_t size)
     return image;
 }
 
+//#ifndef HAVE_SIGHANDLER_T
+typedef void (*sighandler_t)(int);
+//#endif
+
 int change_photo(char *filename)
 {
    FILE *in;
    char command[FILENAME_MAX + 256];
    char buf[0xFFFF];
    int total_read, count, r;
+   sighandler_t old_sighandler;
+
+
+   /* SIGCHLD handler installed by sync process interferes with pclose.
+    * Temporarily restore SIGCHLD to its default value (null) while
+    * processing command through pipe */
+   old_sighandler = signal(SIGCHLD, SIG_DFL);
 
    sprintf(command, "convert -resize %dx%d %s jpg:-", PHOTO_X_SZ, PHOTO_Y_SZ, filename);
+
    in = popen(command, "r");
 
    if (!in) {
@@ -2435,6 +2448,8 @@ int change_photo(char *filename)
    image = image_from_data(contact_picture.data, contact_picture.length);
    gtk_container_add(GTK_CONTAINER(picture_button), image);
    gtk_widget_show(image);   
+
+   signal(SIGCHLD, old_sighandler);
 
    return EXIT_SUCCESS;
 }
