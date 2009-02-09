@@ -1,4 +1,4 @@
-/* $Id: jp-contact.c,v 1.8 2009/02/02 00:12:40 rikster5 Exp $ */
+/* $Id: jp-contact.c,v 1.9 2009/02/09 00:28:34 rikster5 Exp $ */
 
 /*******************************************************************************
  * contact.c:  Translate Palm contact data formats
@@ -271,6 +271,7 @@ int jp_pack_Contact(struct Contact *c, pi_buffer_t *buf)
 
    Pbuf = record + 17;
    phoneflag = 0;
+   typesflag = 0;
    contents1 = contents2 = 0;
 
    field_i = 0;

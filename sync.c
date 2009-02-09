@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.104 2009/02/01 20:14:38 rikster5 Exp $ */
+/* $Id: sync.c,v 1.105 2009/02/09 00:28:34 rikster5 Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -241,6 +241,7 @@ int match_records(char *DB_name,
 
    if (!strcmp(DB_name,"ContactsDB-PAdd")) {
       /* Hack for gapfill bytes */
+      set_byte(rrec+4,(get_byte(rrec+4)) & 0x0F);
       set_byte(rrec+6,0);
       set_byte(lrec+16,0);
       set_byte(rrec+16,0);
