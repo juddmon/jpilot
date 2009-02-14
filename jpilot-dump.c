@@ -1,4 +1,4 @@
-/* $Id: jpilot-dump.c,v 1.30 2008/09/02 06:20:02 rikster5 Exp $ */
+/* $Id: jpilot-dump.c,v 1.31 2009/02/14 17:32:30 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot-dump.c
@@ -78,7 +78,6 @@ pid_t jpilot_master_pid = -1;
 GtkWidget *glob_dialog;
 GtkWidget *glob_date_label;
 int pipe_to_parent;
-int t_fmt_ampm;
 /* End hacks */
 
 /****************************** Main Code *************************************/

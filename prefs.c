@@ -1,4 +1,4 @@
-/* $Id: prefs.c,v 1.82 2009/01/22 22:09:38 rikster5 Exp $ */
+/* $Id: prefs.c,v 1.83 2009/02/14 17:32:31 rousseau Exp $ */
 
 /*******************************************************************************
  * prefs.c
@@ -27,6 +27,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef HAVE_LANGINFO_H
+#  include <langinfo.h>
+#endif
 
 #include "i18n.h"
 #include "utils.h"
@@ -43,7 +46,7 @@
 #define NUM_PAPER_SIZES 2
 
 /******************************* Global vars **********************************/
-extern int t_fmt_ampm;
+int t_fmt_ampm = TRUE;
 
 /* These are the default settings */
 /* name, usertype, filetype, ivalue, char *svalue, svalue_size; */
@@ -160,6 +163,11 @@ static struct name_list *dir_list=NULL;
 void pref_init()
 {
    int i;
+
+   /* Determine whether locale supports am/pm time formats */
+#  ifdef HAVE_LANGINFO_H
+      t_fmt_ampm = strcmp(nl_langinfo(T_FMT_AMPM), "");
+#  endif
 
    for (i=0; i<NUM_PREFS; i++) {
       switch (i) {

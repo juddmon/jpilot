@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.178 2009/01/22 02:10:23 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.179 2009/02/14 17:32:31 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -106,7 +106,6 @@ static GtkWidget *button_locked,
 GtkCheckMenuItem *menu_hide_privates, 
                  *menu_show_privates, 
                  *menu_mask_privates;
-int t_fmt_ampm = TRUE;
 
 int pipe_from_child, pipe_to_parent;
 int pipe_from_parent, pipe_to_child;
@@ -1524,11 +1523,6 @@ int main(int argc, char *argv[])
 #endif
 
    pref_init();
-
-   /* Determine whether locale supports am/pm time formats */
-#  ifdef HAVE_LANGINFO_H
-      t_fmt_ampm = strcmp(nl_langinfo(T_FMT_AMPM), "");
-#  endif
 
    /* read jpilot.rc file for preferences */
    pref_read_rc_file();

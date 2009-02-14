@@ -1,4 +1,4 @@
-/* $Id: jpilot-sync.c,v 1.28 2008/06/19 04:12:07 rikster5 Exp $ */
+/* $Id: jpilot-sync.c,v 1.29 2009/02/14 17:32:30 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot-sync.c
@@ -46,7 +46,6 @@ pid_t glob_child_pid;
 GtkWidget *glob_dialog;
 pid_t glob_child_pid;
 GtkTooltips *glob_tooltips;
-int t_fmt_ampm;
 unsigned char skip_plugins;
 
 /* used only in GUI mode */
