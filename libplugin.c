@@ -1,4 +1,4 @@
-/* $Id: libplugin.c,v 1.36 2008/06/19 04:12:07 rikster5 Exp $ */
+/* $Id: libplugin.c,v 1.37 2009/02/15 14:01:44 rousseau Exp $ */
 
 /*******************************************************************************
  * libplugin.c
@@ -388,6 +388,9 @@ int jp_read_DB_files(char *DB_name, GList **records)
    mem_rh = last_mem_rh = NULL;
    *records = end_of_list = NULL;
    recs_returned = 0;
+   next_offset = 0;
+   attrib = 0;
+   unique_id = 0;
 
    g_snprintf(PDB_name, sizeof(PDB_name), "%s.pdb", DB_name);
    g_snprintf(PC_name, sizeof(PC_name), "%s.pc3", DB_name);
