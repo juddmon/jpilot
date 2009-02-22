@@ -1,4 +1,4 @@
-/* $Id: jp-contact.c,v 1.9 2009/02/09 00:28:34 rikster5 Exp $ */
+/* $Id: jp-contact.c,v 1.10 2009/02/22 04:03:52 judd Exp $ */
 
 /*******************************************************************************
  * contact.c:  Translate Palm contact data formats
@@ -255,8 +255,14 @@ int jp_pack_Contact(struct Contact *c, pi_buffer_t *buf)
          destlen += (strlen(c->entry[i]) + 1);
       }
    }
-   if (c->birthdayFlag) destlen += 3;
-   if (c->reminder) destlen += 2;
+   if (c->birthdayFlag) {
+      destlen += 3;
+      if (c->reminder) {
+	 destlen += 2;
+      } else {
+	 destlen += 1;
+      }
+   }
 
    /* Check for blobs */
    for (i=0; i<MAX_CONTACT_BLOBS; i++) {
