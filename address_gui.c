@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.227 2009/02/02 00:22:53 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.228 2009/03/15 20:34:38 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -3288,7 +3288,6 @@ static int make_phone_menu(int default_set, unsigned int callback_id, int set)
    int i;
    GSList *group;
    GtkWidget *menu;
-   char *utf;
    long char_set;
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
@@ -3300,10 +3299,8 @@ static int make_phone_menu(int default_set, unsigned int callback_id, int set)
 
    for (i=0; i<NUM_PHONE_LABELS; i++) {
       if (contact_app_info.phoneLabels[i][0]) {
-	 utf = charset_p2newj(contact_app_info.phoneLabels[i], 16, char_set);
 	 phone_type_menu_item[set][i] = gtk_radio_menu_item_new_with_label(
-			group, utf);
-         g_free(utf);
+			group, contact_app_info.phoneLabels[i]);
 	 gtk_signal_connect(GTK_OBJECT(phone_type_menu_item[set][i]), "activate",
 			    GTK_SIGNAL_FUNC(cb_phone_menu),
 			    GINT_TO_POINTER(callback_id<<8 | i));
