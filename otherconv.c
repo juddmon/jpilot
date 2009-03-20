@@ -1,4 +1,4 @@
-/* $Id: otherconv.c,v 1.35 2009/03/20 21:31:25 rousseau Exp $ */
+/* $Id: otherconv.c,v 1.36 2009/03/20 21:32:10 rousseau Exp $ */
 
 /*******************************************************************************
  * otherconv.c
@@ -51,7 +51,7 @@
 
 #define OC_FREE_ICONV(conv) oc_free_iconv(__FUNCTION__, conv,#conv)
 
-#define OTHERCONV_DEBUG
+#undef OTHERCONV_DEBUG
 
 /******************************* Global vars **********************************/
 static GIConv glob_topda = NULL;
