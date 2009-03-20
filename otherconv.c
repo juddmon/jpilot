@@ -1,4 +1,4 @@
-/* $Id: otherconv.c,v 1.34 2008/09/03 10:07:43 rousseau Exp $ */
+/* $Id: otherconv.c,v 1.35 2009/03/20 21:31:25 rousseau Exp $ */
 
 /*******************************************************************************
  * otherconv.c
@@ -254,6 +254,7 @@ void UTF_to_other(char *const buf, int buf_len)
   char *errstr;
   char buf_out[1000];
   char *buf_out_ptr = NULL;
+  int failed = FALSE;
 
 #ifdef OTHERCONV_DEBUG
   jp_logf(JP_LOG_DEBUG, "%s:%s reset iconv state...\n", __FILE__, __FUNCTION__);
@@ -285,18 +286,18 @@ void UTF_to_other(char *const buf, int buf_len)
   if ((size_t)(-1) == rc) {
     switch (errno) {
     case EILSEQ:
-      errstr = "iconv: unconvertable sequence at place %d\n";
+      errstr = "iconv: unconvertable sequence at place %d in %s\n";
+      failed = TRUE;
       break;
     case EINVAL:
-      errstr = "iconv: incomplete UTF-8 sequence at place %d\n";
+      errstr = "iconv: incomplete UTF-8 sequence at place %d in %s\n";
       break;
     case E2BIG:
-      errstr = "iconv: buffer filled. stopped at place %d\n";
+      errstr = "iconv: buffer filled. stopped at place %d in %s\n";
       break;
     default:
-      errstr = "iconv: unexpected error at place %d\n";
+      errstr = "iconv: unexpected error at place %d in %s\n";
     }
-    jp_logf(JP_LOG_WARN, errstr, inptr - buf);
   }
 
    if (buf_out_ptr) {
@@ -304,6 +305,19 @@ void UTF_to_other(char *const buf, int buf_len)
       free(buf_out_ptr);
    } else {
       g_strlcpy(buf, buf_out, buf_len);
+   }
+
+   if ((size_t)(-1) == rc)
+      jp_logf(JP_LOG_WARN, errstr, inptr - buf, buf);
+
+   if (failed)
+   {
+      /* convert the end of the string */
+      int l = inptr - buf;
+
+      buf[l] = '?';
+      UTF_to_other(inptr+1, buf_len-l-1);
+      memmove(buf+l+1, inptr+1, buf_len-l-1);
    }
 
 #ifdef OTHERCONV_DEBUG
