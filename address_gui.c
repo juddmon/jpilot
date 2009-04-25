@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.228 2009/03/15 20:34:38 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.229 2009/04/25 19:05:45 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -1143,7 +1143,6 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 utf = charset_p2newj(contact_app_info.category.name[mcont->attrib & 0x0F], 16, char_set);
 	 str_to_vcard_str(csv_text, sizeof(csv_text), utf);
 	 fprintf(out, "CATEGORIES:%s"CRLF, csv_text);
-	 fprintf(out, "\"%s\",", utf);
 	 g_free(utf);
 	 if (mcont->cont.entry[contLastname] || mcont->cont.entry[contFirstname]) {
 	    char *last = mcont->cont.entry[contLastname];
