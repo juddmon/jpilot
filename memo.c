@@ -1,4 +1,4 @@
-/* $Id: memo.c,v 1.44 2009/01/26 01:43:03 rikster5 Exp $ */
+/* $Id: memo.c,v 1.45 2009/04/27 04:00:21 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo.c
@@ -254,7 +254,7 @@ int memo_compare(const void *v1, const void *v2)
 
 int memo_sort(MemoList **memol, int sort_order)
 {
-   struct MemoAppInfo memo_ai;
+   /* struct MemoAppInfo memo_ai; */
    MemoList *temp_memol;
    MemoList **sort_memol;
    int count, i;
