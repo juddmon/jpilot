@@ -1,4 +1,4 @@
-/* $Id: otherconv.c,v 1.36 2009/03/20 21:32:10 rousseau Exp $ */
+/* $Id: otherconv.c,v 1.37 2009/04/27 04:04:02 rikster5 Exp $ */
 
 /*******************************************************************************
  * otherconv.c
@@ -251,7 +251,7 @@ void UTF_to_other(char *const buf, int buf_len)
   gsize inleft,outleft;
   gchar *inptr, *outptr;
   size_t rc;
-  char *errstr;
+  char *errstr = NULL;
   char buf_out[1000];
   char *buf_out_ptr = NULL;
   int failed = FALSE;
