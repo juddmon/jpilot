@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.229 2009/04/25 19:05:45 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.230 2009/05/01 00:03:48 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -1242,6 +1242,41 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	       }
 	    }
 	    fprintf(out, CRLF);
+	 }
+	 for (i = 0; i < NUM_IMS; i++) {
+	    int im_i = 0;
+	    switch (i) {
+	    case 0:
+	       im_i = contIM1;
+	       break;
+	    case 1:
+	       im_i = contIM2;
+	       break;
+	    }
+	    if (mcont->cont.entry[im_i]) {
+	       int i_label = mcont->cont.IMLabel[i];
+	       const gchar *label = contact_app_info.IMLabels[i_label];
+	       gchar *vlabel;
+	       if (strcmp(label, "AOL ICQ") == 0)
+		  label = "ICQ";
+	       vlabel = g_strcanon(g_ascii_strup(label, -1),
+				   "ABCDEFGHIJKLMNOPQRSTUVWXYZ-", '-');
+	       fprintf(out, "X-%s:", vlabel);
+	       g_free(vlabel);
+	       str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[im_i]);
+	       fprintf(out, "%s"CRLF, csv_text);
+	    }
+	 }
+	 if (mcont->cont.entry[contWebsite]) {
+		 str_to_vcard_str(csv_text, sizeof(csv_text),
+				  mcont->cont.entry[contWebsite]);
+		 fprintf(out, "URL:%s"CRLF, csv_text);
+	 }
+	 if (mcont->cont.birthdayFlag) {
+	    char birthday_str[255];
+	    strftime(birthday_str, sizeof(birthday_str), "%F", &mcont->cont.birthday);
+            str_to_vcard_str(csv_text, sizeof(csv_text), birthday_str);
+	    fprintf(out, "BDAY:%s"CRLF, birthday_str);
 	 }
 	 if (mcont->cont.entry[contCustom1] ||
 	     mcont->cont.entry[contCustom2] ||
