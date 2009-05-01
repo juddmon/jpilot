@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.230 2009/05/01 00:03:48 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.231 2009/05/01 00:06:18 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -1240,8 +1240,8 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 		     fprintf(out, ";");
 		  }
 	       }
+               fprintf(out, CRLF);
 	    }
-	    fprintf(out, CRLF);
 	 }
 	 for (i = 0; i < NUM_IMS; i++) {
 	    int im_i = 0;
