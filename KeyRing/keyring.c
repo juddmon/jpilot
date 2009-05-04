@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.90 2009/01/19 22:17:02 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.91 2009/05/04 19:24:54 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -51,6 +51,7 @@
 #include "i18n.h"
 #include "prefs.h"
 #include "stock_buttons.h"
+#include "export.h"
 
 /********************************* Constants **********************************/
 #define KEYRING_CAT1 1
@@ -102,6 +103,7 @@ struct MyKeyRing {
 
 /******************************* Global vars **********************************/
 /* This is the category that is currently being displayed */
+struct CategoryAppInfo keyr_app_info;
 static int keyr_category = CATEGORY_ALL;
 
 static GtkWidget *clist;
@@ -152,9 +154,11 @@ static time_t plugin_last_time = 0;
 static gboolean plugin_active = FALSE;
 
 static struct MyKeyRing *glob_keyring_list=NULL;
+static struct MyKeyRing *export_keyring_list=NULL;
 
 /****************************** Prototypes ************************************/
-static void keyr_update_clist();
+static void keyr_update_clist(GtkWidget *clist, struct MyKeyRing **keyring_list,
+			      int category, int main);
 
 static void connect_changed_signals(int con_or_dis);
 
@@ -936,7 +940,7 @@ static void cb_delete_keyring(GtkWidget *widget, gpointer data)
    }
 
    if (flag == DELETE_FLAG) {
-      keyr_update_clist();
+      keyr_update_clist(clist, &glob_keyring_list, keyr_category, TRUE);
    }
 }
 
@@ -980,13 +984,13 @@ static void cb_undelete_keyring(GtkWidget *widget, gpointer data)
       */
    }
 
-   keyr_update_clist();
+   keyr_update_clist(clist, &glob_keyring_list, keyr_category, TRUE);
 }
 
 static void cb_cancel(GtkWidget *widget, gpointer data)
 {
    set_new_button_to(CLEAR_FLAG);
-   keyr_update_clist();
+   keyr_update_clist(clist, &glob_keyring_list, keyr_category, TRUE);
 }
 
 static void update_date_button(GtkWidget *button, struct tm *t)
@@ -1040,8 +1044,8 @@ static int keyr_clear_details()
                                   find_menu_cat_pos(sorted_position));
    }
 
-   connect_changed_signals(CONNECT_SIGNALS);
    set_new_button_to(CLEAR_FLAG);
+   connect_changed_signals(CONNECT_SIGNALS);
 
    return EXIT_SUCCESS;
 }
@@ -1165,7 +1169,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    /* Write out the record.  It goes to the .pc3 file until it gets synced */
    jp_pc_write("Keys-Gtkr", &br);
 
-   keyr_update_clist();
+   keyr_update_clist(clist, &glob_keyring_list, keyr_category, TRUE);
 
    keyring_find(br.unique_id);
 
@@ -1305,11 +1309,36 @@ static int display_record(struct MyKeyRing *mkr, int row)
    return EXIT_SUCCESS;
 }
 
+static int display_record_export(GtkWidget *clist, struct MyKeyRing *mkr, int row)
+{
+   char temp[8];
+   char *temp_str;
+   int  len;
+
+   jp_logf(JP_LOG_DEBUG, "KeyRing: display_record_export\n");
+
+   gtk_clist_set_row_data(GTK_CLIST(clist), row, mkr);
+
+   if ( (!(mkr->kr.name)) || (mkr->kr.name[0]=='\0') ) {
+      sprintf(temp, "#%03d", row);
+      gtk_clist_set_text(GTK_CLIST(clist), row, 0, temp);
+   } else {
+      temp_str = malloc((len = strlen(mkr->kr.name)*2+1));
+      multibyte_safe_strncpy(temp_str, mkr->kr.name, len);
+      jp_charset_p2j(temp_str, len);
+      gtk_clist_set_text(GTK_CLIST(clist), row, 0, temp_str);
+      free(temp_str);
+   }
+
+   return EXIT_SUCCESS;
+}
+
 /*
  * This function lists the records in the clist on the left side of
  * the screen.
  */
-static void keyr_update_clist()
+static void keyr_update_clist(GtkWidget *clist, struct MyKeyRing **keyring_list,
+			      int category, int main)
 {
    int num;
    int entries_shown;
@@ -1318,18 +1347,21 @@ static void keyr_update_clist()
    
    jp_logf(JP_LOG_DEBUG, "KeyRing: keyr_update_clist\n");
 
-   free_mykeyring_list(&glob_keyring_list);
+   free_mykeyring_list(keyring_list);
 
    /* This function takes care of reading the database for us */
-   num = get_keyring(&glob_keyring_list, keyr_category);
+   num = get_keyring(keyring_list, category);
 
-   keyr_clear_details();
+   if (main) {
+      keyr_clear_details();
+   }
 
    /* Freeze clist to prevent flicker during updating */
    gtk_clist_freeze(GTK_CLIST(clist));
-   connect_changed_signals(DISCONNECT_SIGNALS);
-   gtk_signal_disconnect_by_func(GTK_OBJECT(clist),
-                                 GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
+   if (main) {
+      gtk_signal_disconnect_by_func(GTK_OBJECT(clist),
+				    GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
+   }
    gtk_clist_clear(GTK_CLIST(clist));
 #ifdef __APPLE__
    gtk_clist_thaw(GTK_CLIST(clist));
@@ -1340,20 +1372,24 @@ static void keyr_update_clist()
 
    entries_shown=0;
 
-   for (temp_list = glob_keyring_list; temp_list; temp_list = temp_list->next) {
+   for (temp_list = *keyring_list; temp_list; temp_list = temp_list->next) {
       gtk_clist_append(GTK_CLIST(clist), empty_line);
-      display_record(temp_list, entries_shown);
+      if (main)
+	 display_record(temp_list, entries_shown);
+      else
+	 display_record_export(clist, temp_list, entries_shown);
       entries_shown++;
    }
 
    /* Sort the clist */
    gtk_clist_sort(GTK_CLIST(clist));
 
-   gtk_signal_connect(GTK_OBJECT(clist), "select_row",
-                      GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
+   if (main)
+      gtk_signal_connect(GTK_OBJECT(clist), "select_row",
+			 GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
    
    /* If there are items in the list, highlight the selected row */
-   if (entries_shown>0) {
+   if ((main) && (entries_shown>0)) {
       /* Select the existing requested row, or row 0 if that is impossible */
       if (clist_row_selected <= entries_shown) {
          clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
@@ -1369,8 +1405,6 @@ static void keyr_update_clist()
 
    /* Unfreeze clist after all changes */
    gtk_clist_thaw(GTK_CLIST(clist));
-
-   connect_changed_signals(CONNECT_SIGNALS);
 
    /* return focus to clist after any big operation which requires a redraw */
    gtk_widget_grab_focus(GTK_WIDGET(clist));
@@ -1556,7 +1590,7 @@ static void cb_category(GtkWidget *item, int selection)
 
       keyr_category = selection;
       clist_row_selected = 0;
-      keyr_update_clist();
+      keyr_update_clist(clist, &glob_keyring_list, keyr_category, TRUE);
    }
 }
 
@@ -2053,6 +2087,152 @@ static int keyring_find(int unique_id)
    return EXIT_SUCCESS;
 }
 
+static void cb_keyr_update_clist(GtkWidget *clist, int category)
+{
+   keyr_update_clist(clist, &export_keyring_list, category, FALSE);
+}
+
+static void cb_keyr_export_done(GtkWidget *widget, const char *filename)
+{
+   free_mykeyring_list(&export_keyring_list);
+   
+   set_pref(PREF_KEYR_EXPORT_FILENAME, 0, filename, TRUE);
+}
+
+void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *clist,
+		       int type, const char *filename)
+{
+   struct MyKeyRing *mkr;
+   GList *list, *temp_list;
+   FILE *out;
+   struct stat statb;
+   int i, r;
+   const char *short_date;
+   time_t ltime;
+   struct tm *now;
+   char *button_text[]={N_("OK")};
+   char *button_overwrite_text[]={N_("No"), N_("Yes")};
+   char text[1024];
+   char str1[256], str2[256];
+   char date_string[1024];
+   char pref_time[40];
+   char csv_text[65550];
+   long char_set;
+   char *utf;
+
+   /* Open file for export, including corner cases where file exists or
+    * can't be opened */
+   if (!stat(filename, &statb)) {
+      if (S_ISDIR(statb.st_mode)) {
+	 g_snprintf(text, sizeof(text), _("%s is a directory"), filename);
+	 dialog_generic(GTK_WINDOW(export_window),
+			_("Error Opening File"),
+			DIALOG_ERROR, text, 1, button_text);
+	 return;
+      }
+      g_snprintf(text,sizeof(text), _("Do you want to overwrite file %s?"), filename);
+      r = dialog_generic(GTK_WINDOW(export_window),
+			 _("Overwrite File?"),
+			 DIALOG_ERROR, text, 2, button_overwrite_text);
+      if (r!=DIALOG_SAID_2) {
+	 return;
+      }
+   }
+
+   out = fopen(filename, "w");
+   if (!out) {
+      g_snprintf(text,sizeof(text), _("Error opening file: %s"), filename);
+      dialog_generic(GTK_WINDOW(export_window),
+		     _("Error Opening File"),
+		     DIALOG_ERROR, text, 1, button_text);
+      return;
+   }
+
+   /* Write a header for TEXT file */
+   if (type == EXPORT_TYPE_TEXT) {
+      get_pref(PREF_SHORTDATE, NULL, &short_date);
+      get_pref_time_no_secs(pref_time);
+      time(&ltime);
+      now = localtime(&ltime);
+      strftime(str1, sizeof(str1), short_date, now);
+      strftime(str2, sizeof(str2), pref_time, now);
+      g_snprintf(date_string, sizeof(date_string), "%s %s", str1, str2);
+      fprintf(out, _("Keys exported from %s %s on %s\n\n"),
+	      PN,VERSION,date_string);
+   }
+
+   /* Write a header to the CSV file */
+   if (type == EXPORT_TYPE_CSV) {
+      fprintf(out, "\"Category\",\"Name\",\"Account\",\"Password\",\"Note\"\n");
+   }
+
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
+   list=GTK_CLIST(clist)->selection;
+
+   for (i=0, temp_list=list; temp_list; temp_list = temp_list->next, i++) {
+      mkr = gtk_clist_get_row_data(GTK_CLIST(clist), GPOINTER_TO_INT(temp_list->data));
+      if (!mkr) {
+	 continue;
+	 jp_logf(JP_LOG_WARN, _("Can't export key %d\n"), (long) temp_list->data + 1);
+      }
+      switch (type) {
+       case EXPORT_TYPE_CSV:
+	 utf = charset_p2newj(keyr_app_info.name[mkr->attrib & 0x0F], 16, char_set);
+	 fprintf(out, "\"%s\",", utf);
+	 g_free(utf);
+	 str_to_csv_str(csv_text, mkr->kr.name);
+	 fprintf(out, "\"%s\",", csv_text);
+	 str_to_csv_str(csv_text, mkr->kr.account);
+	 fprintf(out, "\"%s\",", csv_text);
+	 str_to_csv_str(csv_text, mkr->kr.password);
+	 fprintf(out, "\"%s\",", csv_text);
+	 str_to_csv_str(csv_text, mkr->kr.note);
+	 fprintf(out, "\"%s\"\n", csv_text);
+	 break;
+
+       case EXPORT_TYPE_TEXT:
+	 fprintf(out, "#%d\n", i+1);
+	 fprintf(out, "Name: %s\n", mkr->kr.name);
+	 fprintf(out, "Account: %s\n", mkr->kr.account);
+	 fprintf(out, "Password: %s\n", mkr->kr.password);
+	 fprintf(out, "Note: %s\n", mkr->kr.note );
+	 break;
+
+       default:
+	 jp_logf(JP_LOG_WARN, _("Unknown export type\n"));
+      }
+   }
+
+   if (out) {
+      fclose(out);
+   }
+}
+
+int plugin_export(GtkWidget *window)
+{
+   int w, h, x, y;
+   char *type_text[]={N_("Text"), N_("CSV"), NULL};
+   int type_int[]={EXPORT_TYPE_TEXT, EXPORT_TYPE_CSV};
+
+   gdk_window_get_size(window->window, &w, &h);
+   gdk_window_get_root_origin(window->window, &x, &y);
+
+   w = gtk_paned_get_position(GTK_PANED(pane));
+   x+=40;
+
+   export_gui(window,
+              w, h, x, y, 1, sort_l,
+	      PREF_KEYR_EXPORT_FILENAME,
+	      type_text,
+	      type_int,
+	      cb_keyr_update_clist,
+	      cb_keyr_export_done,
+	      cb_keyr_export_ok
+	      );
+
+   return EXIT_SUCCESS;
+}
+
 /*
  * This is a plugin callback function called during Jpilot program exit.
  */
@@ -2126,7 +2306,6 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    char *titles[3]; /* { "Changed", "Name", "Account" }; */
    int retry;
    int cycle_category = FALSE;
-   struct CategoryAppInfo cai;
    long char_set;
    char *cat_name;
    int new_cat;
@@ -2189,17 +2368,17 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
       keyr_cat_menu_item2[i] = NULL;
    }
 
-   get_keyr_cat_info(&cai);
+   get_keyr_cat_info(&keyr_app_info);
    get_pref(PREF_CHAR_SET, &char_set, NULL);
 
    for (i=1; i<NUM_KEYRING_CAT_ITEMS; i++) {
-      cat_name = charset_p2newj(cai.name[i], 31, char_set);
+      cat_name = charset_p2newj(keyr_app_info.name[i], 31, char_set);
       strcpy(sort_l[i-1].Pcat, cat_name);
       free(cat_name);
       sort_l[i-1].cat_num = i;
    }
    /* put reserved 'Unfiled' category at end of list */ 
-   cat_name = charset_p2newj(cai.name[0], 31, char_set);
+   cat_name = charset_p2newj(keyr_app_info.name[0], 31, char_set);
    strcpy(sort_l[NUM_KEYRING_CAT_ITEMS-1].Pcat, cat_name);
    free(cat_name);
    sort_l[NUM_KEYRING_CAT_ITEMS-1].cat_num = 0;
@@ -2465,7 +2644,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
       keyr_category = CATEGORY_ALL;
    }
 
-   keyr_update_clist();
+   keyr_update_clist(clist, &glob_keyring_list, keyr_category, TRUE);
 
    if (unique_id) {
       keyring_find(unique_id);

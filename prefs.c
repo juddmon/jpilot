@@ -1,4 +1,4 @@
-/* $Id: prefs.c,v 1.83 2009/02/14 17:32:31 rousseau Exp $ */
+/* $Id: prefs.c,v 1.84 2009/05/04 19:24:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs.c
@@ -150,6 +150,7 @@ static prefType glob_prefs[NUM_PREFS] = {
      {"todo_note_pane", INTTYPE, INTTYPE, 200, NULL, 0},
      {"expense_sort_column", INTTYPE, INTTYPE, 0, NULL, 0},
      {"expense_sort_order", INTTYPE, INTTYPE, 0, NULL, 0},
+     {"keyr_export_filename", CHARTYPE, CHARTYPE, 0, NULL, 0},
 };
 
 struct name_list {
