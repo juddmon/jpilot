@@ -1,4 +1,4 @@
-/* $Id: expense.c,v 1.66 2009/05/06 19:28:02 rousseau Exp $ */
+/* $Id: expense.c,v 1.67 2009/05/06 19:40:43 rousseau Exp $ */
 
 /*******************************************************************************
  * expense.c
@@ -85,7 +85,7 @@ struct MyExpense {
 };
 
 struct currency_s {
-   char *country;
+   const char *country;
    int currency;
 };
 
@@ -1372,7 +1372,7 @@ static void make_menus(void)
    long char_set;
    char *cat_name;
 
-   char *payment[MAX_PAYMENTS+1]={
+   const char *payment[MAX_PAYMENTS+1]={
       N_("American Express"),
       N_("Cash"),
       N_("Check"),
@@ -1383,7 +1383,7 @@ static void make_menus(void)
       N_("Unfiled"),
       NULL
    };
-   char *expense_type[MAX_CURRENCYS+1]={
+   const char *expense_type[MAX_CURRENCYS+1]={
       N_("Airfare"),
       N_("Breakfast"),
       N_("Bus"),

@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.95 2009/05/06 19:28:03 rousseau Exp $ */
+/* $Id: keyring.c,v 1.96 2009/05/06 19:42:46 rousseau Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -356,7 +356,7 @@ static int unpack_KeyRing(struct KeyRing *kr,
    unsigned char *clear_text;
    unsigned char *P;
    unsigned char *Pstr[4];
-   char *safety[]= {"","","",""};
+   const char *safety[]= {"","","",""};
    unsigned short packed_date;
 #ifdef HAVE_LIBGCRYPT
    gcry_error_t err;
