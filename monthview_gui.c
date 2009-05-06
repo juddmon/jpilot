@@ -1,4 +1,4 @@
-/* $Id: monthview_gui.c,v 1.46 2008/06/19 04:12:07 rikster5 Exp $ */
+/* $Id: monthview_gui.c,v 1.47 2009/05/06 20:13:58 rousseau Exp $ */
 
 /*******************************************************************************
  * monthview_gui.c
@@ -151,7 +151,7 @@ static void cb_enter_selected_day(GtkWidget *widget,
  * Also, set a global offset for indexing day 1.
  * Also relabel day labels.
  */
-void hide_show_month_boxes()
+void hide_show_month_boxes(void)
 {
    int n;
    int dow, ndim;

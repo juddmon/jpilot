@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.187 2009/01/18 22:46:07 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.188 2009/05/06 20:13:55 rousseau Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -1550,7 +1550,7 @@ void cb_weekview(GtkWidget *widget, gpointer data)
    weekview_gui(&date);
 }
 
-static void init()
+static void init(void)
 {
    time_t ltime;
    struct tm *now;
@@ -1646,7 +1646,7 @@ int dialog_4_or_last(int dow)
 			 text, 2, button_text);
 }
 
-int dialog_current_all_cancel()
+int dialog_current_all_cancel(void)
 {
    char text[]=
       N_("This is a repeating event.\n"
@@ -1772,7 +1772,7 @@ static void set_begin_end_labels(struct tm *begin, struct tm *end, int flags)
    }
 }
 
-static void clear_begin_end_labels()
+static void clear_begin_end_labels(void)
 {
    begin_date.tm_mon = current_month;
    begin_date.tm_mday = current_day;
@@ -1794,7 +1794,7 @@ static void clear_begin_end_labels()
 			UPDATE_DATE_MENUS);
 }
 
-static void appt_clear_details()
+static void appt_clear_details(void)
 {
    int i;
    struct tm today;
@@ -2200,7 +2200,7 @@ static void clear_myappointment(MyAppointment *mappt)
 }
 /* End Masking */
 
-static int datebook_update_clist()
+static int datebook_update_clist(void)
 {
    int num_entries, entries_shown, num;
    AppointmentList *temp_al;
@@ -3259,7 +3259,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    return;
 }
 
-void set_date_labels()
+void set_date_labels(void)
 {
    struct tm now;
    char str[50];
@@ -3438,7 +3438,7 @@ void datebook_gui_setdate(int year, int month, int day)
    }
 }
 
-static void highlight_days()
+static void highlight_days(void)
 {
    int bit, mask;
    int dow_int, ndim, i;
@@ -3465,7 +3465,7 @@ static void highlight_days()
    gtk_calendar_thaw(GTK_CALENDAR(main_calendar));
 }
 
-static int datebook_find()
+static int datebook_find(void)
 {
    int r, found_at;
 
@@ -3778,7 +3778,7 @@ static gboolean cb_keyboard(GtkWidget *widget, GdkEventKey *event, gpointer *p)
    return FALSE;
 }
 
-int datebook_gui_cleanup()
+int datebook_gui_cleanup(void)
 {
    int b;
 

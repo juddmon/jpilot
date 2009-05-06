@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.179 2009/02/14 17:32:31 rousseau Exp $ */
+/* $Id: jpilot.c,v 1.180 2009/05/06 20:13:57 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -123,7 +123,7 @@ void install_gui_and_size(GtkWidget *main_window);
 
 /****************************** Main Code *************************************/
 
-int create_main_boxes()
+int create_main_boxes(void)
 {
    g_hbox2 = gtk_hbox_new(FALSE, 0);
    g_vbox0_1 = gtk_vbox_new(FALSE, 0);
@@ -133,7 +133,7 @@ int create_main_boxes()
    return EXIT_SUCCESS;
 }
 
-int gui_cleanup()
+int gui_cleanup(void)
 {
 #ifdef ENABLE_PLUGINS
    struct plugin_s *plugin;

@@ -1,4 +1,4 @@
-/* $Id: print.c,v 1.42 2008/06/19 04:12:07 rikster5 Exp $ */
+/* $Id: print.c,v 1.43 2009/05/06 20:14:00 rousseau Exp $ */
 
 /*******************************************************************************
  * print.c
@@ -69,7 +69,7 @@ char *PaperSizes[] = { "Letter", "Legal", "Statement", "Tabloid", "Ledger",
                        "Filo" };
 
 /****************************** Main Code *************************************/
-FILE *print_open()
+FILE *print_open(void)
 {
    const char *command;
 
@@ -86,14 +86,14 @@ void print_close(FILE *f)
    pclose(f);
 }
 
-int courier_12()
+int courier_12(void)
 {
    /* fprintf(out, "/Courier 12 selectfont\n"); */
    fprintf(out, "%cC12\n", FLAG_CHAR);
    return EXIT_SUCCESS;
 }
 
-int courier_bold_12()
+int courier_bold_12(void)
 {
    /* fprintf(out, "/Courier-Bold 12 selectfont\n"); */
    fprintf(out, "%cCB12\n", FLAG_CHAR);
@@ -121,7 +121,7 @@ int puttext(float x, float y, char *text)
    return EXIT_SUCCESS;
 }
 
-int header()
+int header(void)
 {
    time_t ltime;
 
@@ -791,7 +791,7 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
  * Address code
  */
 
-int print_address_header()
+int print_address_header(void)
 {
    time_t ltime;
    struct tm *date;

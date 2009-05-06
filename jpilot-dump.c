@@ -1,4 +1,4 @@
-/* $Id: jpilot-dump.c,v 1.31 2009/02/14 17:32:30 rousseau Exp $ */
+/* $Id: jpilot-dump.c,v 1.32 2009/05/06 20:13:56 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot-dump.c
@@ -140,7 +140,7 @@ void takeoutfunnies(char *str)
    }
 }
 
-int dumpical()
+int dumpical(void)
 {
    MyAppointment *mappt;
    AppointmentList *al, *temp_list;
@@ -378,7 +378,7 @@ int dumpical()
    return EXIT_SUCCESS;
 }
 
-int dumpbook()
+int dumpbook(void)
 {
    AppointmentList *tal, *al;
    int num, i;
@@ -644,7 +644,7 @@ int dumpbook()
    return EXIT_SUCCESS;
 }
 
-int dumpaddress()
+int dumpaddress(void)
 {
    AddressList *tal, *al;
    int num, i;
@@ -767,7 +767,7 @@ int dumpaddress()
 }
 
 
-int dumptodo()
+int dumptodo(void)
 {
    ToDoList *tal, *al;
    int num, i;
@@ -1030,7 +1030,7 @@ int dumptodo()
    return EXIT_SUCCESS;
 }
 
-int dumpmemo()
+int dumpmemo(void)
 {
    MemoList *tal, *al;
    int num,i;

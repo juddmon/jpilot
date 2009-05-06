@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.153 2009/05/04 18:38:03 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.154 2009/05/06 20:14:01 rousseau Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -107,7 +107,7 @@ static int todo_find();
 static void cb_add_new_record(GtkWidget *widget, gpointer data);
 
 /****************************** Main Code *************************************/
-static void init()
+static void init(void)
 {
    time_t ltime;
    struct tm *now;
@@ -182,7 +182,7 @@ static void cb_cal_dialog(GtkWidget *widget,
 }
 
 
-int todo_print()
+int todo_print(void)
 {
    long this_many;
    MyToDo *mtodo;
@@ -1102,7 +1102,7 @@ void cb_check_button_no_due_date(GtkWidget *widget, gpointer data)
    }
 }
 
-int todo_clear_details()
+int todo_clear_details(void)
 {
    time_t ltime;
    struct tm *now;
@@ -1861,7 +1861,7 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
 }
 
-static int todo_find()
+static int todo_find(void)
 {
    int r, found_at;
 
@@ -1900,14 +1900,14 @@ static gboolean
 }
 
 /* This redraws the clist and goes back to the same line number */
-int todo_clist_redraw()
+int todo_clist_redraw(void)
 {
    todo_update_clist(clist, category_menu1, &glob_todo_list, todo_category, TRUE);
 
    return EXIT_SUCCESS;
 }
 
-int todo_cycle_cat()
+int todo_cycle_cat(void)
 {
    int b;
    int i, new_cat;
@@ -1940,7 +1940,7 @@ int todo_cycle_cat()
    return EXIT_SUCCESS;
 }
 
-int todo_refresh()
+int todo_refresh(void)
 {
    int index, index2;
 
@@ -1967,7 +1967,7 @@ int todo_refresh()
    return EXIT_SUCCESS;
 }
 
-int todo_gui_cleanup()
+int todo_gui_cleanup(void)
 {
    int b;
 

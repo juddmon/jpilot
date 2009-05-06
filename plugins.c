@@ -1,4 +1,4 @@
-/* $Id: plugins.c,v 1.22 2008/08/06 19:16:17 rousseau Exp $ */
+/* $Id: plugins.c,v 1.23 2009/05/06 20:13:59 rousseau Exp $ */
 
 /*******************************************************************************
  * plugins.c
@@ -44,7 +44,7 @@ gint plugin_sort(gconstpointer a, gconstpointer b);
 
 /****************************** Main Code *************************************/
 /* Write out the jpilot.plugins file that tells which plugins to sync */
-void write_plugin_sync_file()
+void write_plugin_sync_file(void)
 {
    FILE *out;
    GList *temp_list;
@@ -149,7 +149,7 @@ gint plugin_sort(gconstpointer a, gconstpointer b)
    return strcasecmp(ca, cb);
 }
 
-int load_plugins()
+int load_plugins(void)
 {
    DIR *dir;
    char path[FILENAME_MAX];
@@ -186,7 +186,7 @@ int load_plugins()
 /* Now we need to look in the jpilot_plugins file to see which plugins
  * are enabled to sync and which are not
  */
-static int get_plugin_sync_bits()
+static int get_plugin_sync_bits(void)
 {
    int i;
    GList *temp_list;
@@ -408,7 +408,7 @@ static int get_plugin_info(struct plugin_s *p, char *path)
 }
 
 /* This will always return the first plugin list entry */
-GList *get_plugin_list()
+GList *get_plugin_list(void)
 {
    return plugins;
 }

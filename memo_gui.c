@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.130 2009/01/19 22:17:02 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.131 2009/05/06 20:13:58 rousseau Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -218,7 +218,7 @@ static void connect_changed_signals(int con_or_dis)
    }
 }
 
-int memo_print()
+int memo_print(void)
 {
    long this_many;
    MyMemo *mmemo;
@@ -901,7 +901,7 @@ static void cb_category(GtkWidget *item, int selection)
    }
 }
 
-static int memo_clear_details()
+static int memo_clear_details(void)
 {
    int new_cat;
    int sorted_position;
@@ -1346,7 +1346,7 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    jp_logf(JP_LOG_DEBUG, "Leaving memo_update_clist()\n");
 }
 
-static int memo_find()
+static int memo_find(void)
 {
    int r, found_at;
 
@@ -1365,14 +1365,14 @@ static int memo_find()
    return EXIT_SUCCESS;
 }
 
-int memo_clist_redraw()
+int memo_clist_redraw(void)
 {
    memo_update_clist(clist, category_menu1, &glob_memo_list, memo_category, TRUE);
 
    return EXIT_SUCCESS;
 }
 
-int memo_cycle_cat()
+int memo_cycle_cat(void)
 {
    int b;
    int i, new_cat;
@@ -1405,7 +1405,7 @@ int memo_cycle_cat()
    return EXIT_SUCCESS;
 }
 
-int memo_refresh()
+int memo_refresh(void)
 {
    int index, index2;
 
@@ -1432,7 +1432,7 @@ int memo_refresh()
    return EXIT_SUCCESS;
 }
 
-int memo_gui_cleanup()
+int memo_gui_cleanup(void)
 {
    int b;
 

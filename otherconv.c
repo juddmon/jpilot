@@ -1,4 +1,4 @@
-/* $Id: otherconv.c,v 1.37 2009/04/27 04:04:02 rikster5 Exp $ */
+/* $Id: otherconv.c,v 1.38 2009/05/06 20:13:59 rousseau Exp $ */
 
 /*******************************************************************************
  * otherconv.c
@@ -128,7 +128,7 @@ char *char_set_to_text(int char_set)
  * Returns 0 if OK, -1 if iconv could not be initialized
  *  (probably because of bad charset string)
  */
-int otherconv_init() {
+int otherconv_init(void) {
   long char_set;
 
   get_pref(PREF_CHAR_SET, &char_set, NULL);
@@ -153,7 +153,7 @@ int otherconv_init() {
  * Module finalization function
  * closes the iconvs
  */
-void otherconv_free() {
+void otherconv_free(void) {
   OC_FREE_ICONV(glob_topda);
   OC_FREE_ICONV(glob_frompda);
 }
@@ -191,7 +191,7 @@ char *other_to_UTF(const char *buf, int buf_len)
       char c;
       char *head, *tail;
       int  outbuf_len;
-      char *tmp_buf = (char *)buf;
+	  char *tmp_buf = (char *)buf;
       static int call_depth = 0;
       printf("ERROR HAPPENED\n");
       if (0 == call_depth)

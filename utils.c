@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.169 2009/05/06 19:04:10 rikster5 Exp $ */
+/* $Id: utils.c,v 1.170 2009/05/06 20:14:01 rousseau Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -529,7 +529,7 @@ char *charset_p2newj(const char *buf, int max_len, int char_set)
 /* This function will copy an empty DB file 
  * from the share directory to the users JPILOT_HOME directory
  * if it doesn't exist already and its length is > 0 */
-int check_copy_DBs_to_home()
+int check_copy_DBs_to_home(void)
 {
    FILE *in, *out;
    struct stat sbuf;
@@ -588,7 +588,7 @@ int check_copy_DBs_to_home()
    return EXIT_SUCCESS;
 }
 
-int check_hidden_dir()
+int check_hidden_dir(void)
 {
    struct stat statb;
    char hidden_dir[FILENAME_MAX];
@@ -781,7 +781,7 @@ int cleanup_pc_file(char *DB_name, unsigned int *max_id)
 }
 
 /* Compact all pc3 files including plugins */
-int cleanup_pc_files()
+int cleanup_pc_files(void)
 {
    int ret;
    int fail_flag;
@@ -2341,7 +2341,7 @@ char * xpm_float_checked[] = {
    return EXIT_SUCCESS;
 }
 
-int get_timeout_interval()
+int get_timeout_interval(void)
 {
    const char *svalue;
 
@@ -3066,7 +3066,7 @@ void print_string(char *str, int len)
    jp_logf(JP_LOG_STDOUT, "\n");
 }
 
-int read_gtkrc_file()
+int read_gtkrc_file(void)
 {
    char filename[FILENAME_MAX];
    char fullname[FILENAME_MAX];

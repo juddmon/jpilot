@@ -1,4 +1,4 @@
-/* $Id: install_gui.c,v 1.26 2008/06/19 04:12:07 rikster5 Exp $ */
+/* $Id: install_gui.c,v 1.27 2009/05/06 20:13:56 rousseau Exp $ */
 
 /*******************************************************************************
  * install_gui.c
@@ -176,7 +176,7 @@ static void cb_remove(GtkWidget *widget, gpointer data)
    update_clist();
 }
 
-static int update_clist()
+static int update_clist(void)
 {
    FILE *in;
    char line[1002];

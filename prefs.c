@@ -1,4 +1,4 @@
-/* $Id: prefs.c,v 1.84 2009/05/04 19:24:53 rikster5 Exp $ */
+/* $Id: prefs.c,v 1.85 2009/05/06 20:14:00 rousseau Exp $ */
 
 /*******************************************************************************
  * prefs.c
@@ -161,7 +161,7 @@ struct name_list {
 static struct name_list *dir_list=NULL;
 
 /****************************** Main Code *************************************/
-void pref_init()
+void pref_init(void)
 {
    int i;
 
@@ -715,7 +715,7 @@ int set_pref_possibility(int which, long n, int save)
    return r;
 }
 
-static int validate_glob_prefs()
+static int validate_glob_prefs(void)
 {
    int i, r;
    char svalue[MAX_PREF_LEN];
@@ -905,7 +905,7 @@ int jp_pref_read_rc_file(char *filename, prefType prefs[], int num_prefs)
    return EXIT_SUCCESS;
 }
 
-int pref_read_rc_file()
+int pref_read_rc_file(void)
 {
    int r;
 
@@ -943,7 +943,7 @@ int jp_pref_write_rc_file(char *filename, prefType prefs[], int num_prefs)
    return EXIT_SUCCESS;
 }
 
-int pref_write_rc_file()
+int pref_write_rc_file(void)
 {
    return jp_pref_write_rc_file(EPN".rc", glob_prefs, NUM_PREFS);
 }

@@ -1,4 +1,4 @@
-/* $Id: libplugin.c,v 1.37 2009/02/15 14:01:44 rousseau Exp $ */
+/* $Id: libplugin.c,v 1.38 2009/05/06 20:13:58 rousseau Exp $ */
 
 /*******************************************************************************
  * libplugin.c
@@ -231,7 +231,7 @@ int jp_get_home_file_name(char *file, char *full_name, int max_size)
    return get_home_file_name(file, full_name, max_size);
 }
 
-void jp_init()
+void jp_init(void)
 {
    jp_logf(0, "jp_init()\n");
 }

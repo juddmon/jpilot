@@ -1,4 +1,4 @@
-/* $Id: restore_gui.c,v 1.26 2008/06/19 04:12:07 rikster5 Exp $ */
+/* $Id: restore_gui.c,v 1.27 2009/05/06 20:14:01 rousseau Exp $ */
 
 /*******************************************************************************
  * restore_gui.c
@@ -191,7 +191,7 @@ static int populate_clist_sub(char *path, int check_for_dups, int check_exts)
    return num;
 }
 
-static int populate_clist()
+static int populate_clist(void)
 {
    char path[FILENAME_MAX];
 

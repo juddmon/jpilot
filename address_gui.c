@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.231 2009/05/01 00:06:18 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.232 2009/05/06 20:13:54 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -219,7 +219,7 @@ static int address_clist_redraw();
 static int address_find();
 
 /****************************** Main Code *************************************/
-static void init()
+static void init(void)
 {
    int i, j;
    time_t ltime;
@@ -386,7 +386,7 @@ static void connect_changed_signals(int con_or_dis)
    }
 }
 
-int address_print()
+int address_print(void)
 {
    long this_many;
    AddressList *addr_list;
@@ -1961,7 +1961,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    }
 }
 
-void addr_clear_details()
+void addr_clear_details(void)
 {
    int i;
    int new_cat;
@@ -3362,7 +3362,7 @@ static int make_phone_menu(int default_set, unsigned int callback_id, int set)
 }
 
 /* returns 1 if found, 0 if not */
-static int address_find()
+static int address_find(void)
 {
    int r, found_at;
 
@@ -3382,7 +3382,7 @@ static int address_find()
    return r;
 }
 
-int address_clist_redraw()
+int address_clist_redraw(void)
 {
    address_update_clist(clist, category_menu1, &glob_contact_list,
 			address_category, TRUE);
@@ -3390,7 +3390,7 @@ int address_clist_redraw()
    return EXIT_SUCCESS;
 }
 
-int address_cycle_cat()
+int address_cycle_cat(void)
 {
    int b;
    int i, new_cat;
@@ -3423,7 +3423,7 @@ int address_cycle_cat()
    return EXIT_SUCCESS;
 }
 
-int address_refresh()
+int address_refresh(void)
 {
    int index, index2;
 
@@ -3542,7 +3542,7 @@ static gboolean cb_key_pressed(GtkWidget *widget, GdkEventKey *event)
    return TRUE;
 }
 
-int address_gui_cleanup()
+int address_gui_cleanup(void)
 {
    int b;
 
