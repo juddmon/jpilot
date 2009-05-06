@@ -1,4 +1,4 @@
-/* $Id: log.h,v 1.12 2005/10/24 15:27:48 rikster5 Exp $ */
+/* $Id: log.h,v 1.13 2009/05/06 19:38:21 rousseau Exp $ */
 
 /*******************************************************************************
  * log.h
@@ -47,8 +47,8 @@ extern int glob_log_file_mask;
 extern int glob_log_stdout_mask;
 extern int glob_log_gui_mask;
 
-int jp_logf(int log_level, char *format, ...);
-int jp_vlogf (int level, char *format, va_list val);
-int write_to_parent(int command, char *format, ...);
+int jp_logf(int log_level, const char *format, ...);
+int jp_vlogf (int level, const char *format, va_list val);
+int write_to_parent(int command, const char *format, ...);
 
 #endif

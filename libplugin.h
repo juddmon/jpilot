@@ -1,4 +1,4 @@
-/* $Id: libplugin.h,v 1.27 2009/05/06 19:29:47 rousseau Exp $ */
+/* $Id: libplugin.h,v 1.28 2009/05/06 19:38:21 rousseau Exp $ */
 
 /*******************************************************************************
  * libplugin.h
@@ -159,7 +159,7 @@ int get_next_unique_pc_id(unsigned int *next_unique_id);
 
 #define JPILOT_EOF -7
 
-extern int jp_logf(int level, char *format, ...);
+extern int jp_logf(int level, const char *format, ...);
 
 /* This bit means that this record is of no importance anymore */
 #define SPENT_PC_RECORD_BIT 256

@@ -1,4 +1,4 @@
-/* $Id: log.c,v 1.30 2008/06/19 04:12:07 rikster5 Exp $ */
+/* $Id: log.c,v 1.31 2009/05/06 19:38:21 rousseau Exp $ */
 
 /*******************************************************************************
  * log.c
@@ -58,7 +58,7 @@ extern void output_to_pane(const char *str);
 extern pid_t jpilot_master_pid;
 
 /****************************** Main Code *************************************/
-int jp_logf(int level, char *format, ...)
+int jp_logf(int level, const char *format, ...)
 {
    va_list val;
    int rval;
@@ -75,7 +75,7 @@ int jp_logf(int level, char *format, ...)
    return rval;
 }
 
-int jp_vlogf (int level, char *format, va_list val) {
+int jp_vlogf (int level, const char *format, va_list val) {
    char       		real_buf[WRITE_MAX_BUF+32];
    char			*buf, *local_buf;
    int			size;
@@ -168,7 +168,7 @@ int jp_vlogf (int level, char *format, va_list val) {
  * This function writes data to the parent process.
  * A line feed, or a null must be the last character written.
  */
-int write_to_parent(int command, char *format, ...)
+int write_to_parent(int command, const char *format, ...)
 {
    va_list val;
    int len, size;
