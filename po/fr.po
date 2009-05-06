@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jpilot 0.99.9-pre1\n"
 "Report-Msgid-Bugs-To: jpilot-devel@jpilot.org\n"
-"POT-Creation-Date: 2009-04-26 16:54+0200\n"
+"POT-Creation-Date: 2009-05-06 15:16+0200\n"
 "PO-Revision-Date: 2004-10-01 23:05+0100\n"
 "Last-Translator: Ludovic Rousseau <ludovic.rousseau@free.fr>\n"
 "Language-Team: French <traduc@traduc.org>\n"
@@ -19,16 +19,16 @@ msgstr ""
 #: ../dat.c:1140 ../datebook.c:125 ../datebook.c:172 ../datebook.c:179
 #: ../datebook.c:212 ../datebook.c:600 ../jpilot.c:1210 ../libplugin.c:209
 #: ../libplugin.c:456 ../libplugin.c:535 ../libplugin.c:564 ../libplugin.c:812
-#: ../memo.c:204 ../memo.c:277 ../plugins.c:113 ../prefs.c:340 ../prefs.c:365
-#: ../prefs.c:895 ../sync.c:2011 ../sync.c:2028 ../sync.c:2137 ../sync.c:2151
+#: ../memo.c:204 ../memo.c:277 ../plugins.c:113 ../prefs.c:341 ../prefs.c:366
+#: ../prefs.c:896 ../sync.c:2011 ../sync.c:2028 ../sync.c:2137 ../sync.c:2151
 #: ../sync.c:2348 ../sync.c:2487 ../sync.c:3271 ../todo.c:234 ../todo.c:496
 #: ../utils.c:738
 msgid "Out of memory"
 msgstr "Plus de mémoire"
 
-#: ../address.c:336 ../address_gui.c:2191 ../address_gui.c:2230
+#: ../address.c:336 ../address_gui.c:2226 ../address_gui.c:2265
 #: ../contact.c:586 ../datebook.c:464 ../libplugin.c:406 ../libplugin.c:432
-#: ../memo.c:91 ../memo_gui.c:842 ../todo_gui.c:1026 ../Expense/expense.c:1104
+#: ../memo.c:91 ../memo_gui.c:842 ../todo_gui.c:1025 ../Expense/expense.c:1104
 #, c-format
 msgid "Error reading file: %s\n"
 msgstr "Erreur en lecture: %s\n"
@@ -40,7 +40,7 @@ msgid "error"
 msgstr "erreur"
 
 #: ../address_gui.c:333 ../datebook_gui.c:2567 ../memo_gui.c:177
-#: ../todo_gui.c:296 ../KeyRing/keyring.c:819
+#: ../todo_gui.c:296 ../KeyRing/keyring.c:823
 msgid ""
 "This record is deleted.\n"
 "Undelete it or copy it to make changes.\n"
@@ -69,12 +69,12 @@ msgid "File doesn't appear to be address.dat format\n"
 msgstr "Le fichier n'est pas du type carnet d'adresses\n"
 
 #: ../address_gui.c:731 ../datebook_gui.c:605 ../memo_gui.c:324
-#: ../memo_gui.c:417 ../todo_gui.c:546 ../Expense/expense.c:1383
+#: ../memo_gui.c:417 ../todo_gui.c:545 ../Expense/expense.c:1383
 msgid "Unfiled"
 msgstr "Non renseigné"
 
 #: ../address_gui.c:789 ../datebook_gui.c:657 ../memo_gui.c:470
-#: ../todo_gui.c:599
+#: ../todo_gui.c:598
 msgid "CSV (Comma Separated Values)"
 msgstr ""
 
@@ -87,47 +87,50 @@ msgstr ""
 #. entry text, in Pilot character set
 #: ../address_gui.c:879 ../category.c:406 ../datebook_gui.c:684
 #: ../jpilot.c:233 ../jpilot.c:277 ../jpilot.c:345 ../jpilot.c:389
-#: ../jpilot.c:912 ../memo_gui.c:509 ../todo_gui.c:631 ../utils.c:1251
+#: ../jpilot.c:912 ../memo_gui.c:509 ../todo_gui.c:630 ../utils.c:1251
+#: ../KeyRing/keyring.c:2113
 msgid "OK"
 msgstr "OK"
 
 #: ../address_gui.c:880 ../address_gui.c:1016 ../datebook_gui.c:348
-#: ../datebook_gui.c:685 ../memo_gui.c:510 ../memo_gui.c:612 ../todo_gui.c:632
-#: ../todo_gui.c:750 ../todo_gui.c:758 ../utils.c:1268 ../utils.c:1292
+#: ../datebook_gui.c:685 ../memo_gui.c:510 ../memo_gui.c:612 ../todo_gui.c:631
+#: ../todo_gui.c:749 ../todo_gui.c:757 ../utils.c:1268 ../utils.c:1292
+#: ../KeyRing/keyring.c:2114
 msgid "No"
 msgstr "Non"
 
 #: ../address_gui.c:880 ../address_gui.c:1016 ../datebook_gui.c:348
-#: ../datebook_gui.c:685 ../memo_gui.c:510 ../memo_gui.c:612 ../todo_gui.c:632
-#: ../todo_gui.c:750 ../todo_gui.c:758 ../utils.c:1268 ../utils.c:1292
+#: ../datebook_gui.c:685 ../memo_gui.c:510 ../memo_gui.c:612 ../todo_gui.c:631
+#: ../todo_gui.c:749 ../todo_gui.c:757 ../utils.c:1268 ../utils.c:1292
+#: ../KeyRing/keyring.c:2114
 msgid "Yes"
 msgstr "Oui"
 
 #: ../address_gui.c:898 ../datebook_gui.c:707 ../memo_gui.c:523
-#: ../todo_gui.c:650
+#: ../todo_gui.c:649 ../KeyRing/keyring.c:2127
 #, c-format
 msgid "%s is a directory"
 msgstr "%s est un répertoire"
 
 #: ../address_gui.c:900 ../address_gui.c:917 ../datebook_gui.c:709
-#: ../datebook_gui.c:726 ../memo_gui.c:525 ../memo_gui.c:542 ../todo_gui.c:652
-#: ../todo_gui.c:669
+#: ../datebook_gui.c:726 ../memo_gui.c:525 ../memo_gui.c:542 ../todo_gui.c:651
+#: ../todo_gui.c:668 ../KeyRing/keyring.c:2129 ../KeyRing/keyring.c:2146
 msgid "Error Opening File"
 msgstr "Erreur d'ouverture du fichier"
 
 #: ../address_gui.c:904 ../datebook_gui.c:713 ../memo_gui.c:529
-#: ../todo_gui.c:656
+#: ../todo_gui.c:655 ../KeyRing/keyring.c:2133
 #, c-format
 msgid "Do you want to overwrite file %s?"
 msgstr "Voulez vous écraser le fichier %s?"
 
 #: ../address_gui.c:906 ../datebook_gui.c:715 ../memo_gui.c:531
-#: ../todo_gui.c:658
+#: ../todo_gui.c:657 ../KeyRing/keyring.c:2135
 msgid "Overwrite File?"
 msgstr "Écraser le fichier?"
 
 #: ../address_gui.c:915 ../datebook_gui.c:724 ../memo_gui.c:540
-#: ../todo_gui.c:667
+#: ../todo_gui.c:666 ../KeyRing/keyring.c:2144
 #, c-format
 msgid "Error opening file: %s"
 msgstr "Erreur d'ouverture du fichier: %s"
@@ -161,12 +164,12 @@ msgstr ""
 msgid "Can't export address %d\n"
 msgstr "Ne peut pas exporter l'adresse %d\n"
 
-#: ../address_gui.c:1013 ../memo_gui.c:609 ../todo_gui.c:746
+#: ../address_gui.c:1013 ../memo_gui.c:609 ../todo_gui.c:745
 #, c-format
 msgid "Category: %s\n"
 msgstr "Catégorie : %s\n"
 
-#: ../address_gui.c:1015 ../memo_gui.c:611 ../todo_gui.c:749
+#: ../address_gui.c:1015 ../memo_gui.c:611 ../todo_gui.c:748
 #, c-format
 msgid "Private: %s\n"
 msgstr "Privé : %s\n"
@@ -183,76 +186,76 @@ msgid "%s\n"
 msgstr ""
 
 #. Set dial/email button text and callback data
-#: ../address_gui.c:1192 ../address_gui.c:2750 ../address_gui.c:3963
+#: ../address_gui.c:1192 ../address_gui.c:2785 ../address_gui.c:3998
 msgid "E-mail"
 msgstr "E-mail"
 
-#: ../address_gui.c:1400 ../datebook_gui.c:1058 ../memo_gui.c:619
-#: ../todo_gui.c:819
+#: ../address_gui.c:1435 ../datebook_gui.c:1058 ../memo_gui.c:619
+#: ../todo_gui.c:818 ../KeyRing/keyring.c:2202
 msgid "Unknown export type\n"
 msgstr "Type d'export inconnu\n"
 
-#: ../address_gui.c:1426 ../datebook_gui.c:1138 ../memo_gui.c:469
-#: ../memo_gui.c:645 ../todo_gui.c:845
+#: ../address_gui.c:1461 ../datebook_gui.c:1138 ../memo_gui.c:469
+#: ../memo_gui.c:645 ../todo_gui.c:844 ../KeyRing/keyring.c:2214
 msgid "Text"
 msgstr ""
 
-#: ../address_gui.c:1427 ../datebook_gui.c:1139 ../memo_gui.c:646
-#: ../todo_gui.c:846
+#: ../address_gui.c:1462 ../datebook_gui.c:1139 ../memo_gui.c:646
+#: ../todo_gui.c:845 ../KeyRing/keyring.c:2214
 msgid "CSV"
 msgstr ""
 
-#: ../address_gui.c:1428
+#: ../address_gui.c:1463
 msgid "vCard"
 msgstr "vCard"
 
-#: ../address_gui.c:1429
+#: ../address_gui.c:1464
 msgid "ldif"
 msgstr "ldif"
 
 #. Initialize variable if default case taken
-#: ../address_gui.c:1685 ../address_gui.c:3695
+#: ../address_gui.c:1720 ../address_gui.c:3730
 msgid "Last Name/Company"
 msgstr "Nom/Société"
 
-#: ../address_gui.c:1688 ../address_gui.c:3698
+#: ../address_gui.c:1723 ../address_gui.c:3733
 msgid "First Name/Company"
 msgstr "Prénom/Société"
 
-#: ../address_gui.c:1691 ../address_gui.c:3701
+#: ../address_gui.c:1726 ../address_gui.c:3736
 msgid "Company/Last Name"
 msgstr "Société/Nom"
 
-#: ../address_gui.c:1830 ../datebook_gui.c:2649 ../memo_gui.c:1015
-#: ../todo_gui.c:1284 ../KeyRing/keyring.c:1145
+#: ../address_gui.c:1865 ../datebook_gui.c:2649 ../memo_gui.c:1015
+#: ../todo_gui.c:1284 ../KeyRing/keyring.c:1149
 msgid "You can't modify a record that is deleted\n"
 msgstr "Vous ne pouvez pas modifier un enregistrement effacé\n"
 
-#: ../address_gui.c:2028 ../address_gui.c:2276 ../address_gui.c:2713
-#: ../address_gui.c:3409 ../memo_gui.c:879 ../memo_gui.c:925
-#: ../memo_gui.c:1138 ../memo_gui.c:1425 ../todo_gui.c:1062 ../todo_gui.c:1156
+#: ../address_gui.c:2063 ../address_gui.c:2311 ../address_gui.c:2748
+#: ../address_gui.c:3444 ../memo_gui.c:879 ../memo_gui.c:925
+#: ../memo_gui.c:1138 ../memo_gui.c:1425 ../todo_gui.c:1061 ../todo_gui.c:1155
 #: ../todo_gui.c:1538 ../todo_gui.c:1960 ../Expense/expense.c:688
 #: ../Expense/expense.c:1142 ../Expense/expense.c:1226
-#: ../Expense/expense.c:1884 ../KeyRing/keyring.c:1035
-#: ../KeyRing/keyring.c:1465 ../KeyRing/keyring.c:1544
-#: ../KeyRing/keyring.c:2456
+#: ../Expense/expense.c:1884 ../KeyRing/keyring.c:1039
+#: ../KeyRing/keyring.c:1499 ../KeyRing/keyring.c:1578
+#: ../KeyRing/keyring.c:2635
 msgid "Category is not legal\n"
 msgstr "Catégorie illégale\n"
 
-#: ../address_gui.c:2088 ../alarms.c:598 ../dialer.c:165
+#: ../address_gui.c:2123 ../alarms.c:598 ../dialer.c:165
 #, c-format
 msgid "executing command = [%s]\n"
 msgstr "Exécution de la commande = [%s]\n"
 
-#: ../address_gui.c:2331
+#: ../address_gui.c:2366
 msgid "Birthday"
 msgstr "Anniversaire"
 
-#: ../address_gui.c:2426
+#: ../address_gui.c:2461
 msgid "External program not found, or other error"
 msgstr "Programme externe non trouvé, ou autre erreur"
 
-#: ../address_gui.c:2427
+#: ../address_gui.c:2462
 msgid ""
 "J-Pilot can not find the external program \"convert\"\n"
 "or an error occurred while executing convert.\n"
@@ -262,79 +265,79 @@ msgstr ""
 "ou une erreur s'est produite pendant l'excution de convert.\n"
 "Vous devez peut-être installer le paquet ImageMagick"
 
-#: ../address_gui.c:2428
+#: ../address_gui.c:2463
 #, c-format
 msgid "Command executed was \"%s\"\n"
 msgstr "La commande exécutée était \"%s\"\n"
 
-#: ../address_gui.c:2429
+#: ../address_gui.c:2464
 #, c-format
 msgid "return code was %d\n"
 msgstr "le code de retour était %d\n"
 
-#: ../address_gui.c:2508
+#: ../address_gui.c:2543
 msgid "Add Photo"
 msgstr "Ajouter une photo"
 
 #. TODO: Could remove "Category" so that it displays a single
 #. * category bar like the other applications
 #. Category menu
-#: ../address_gui.c:2732 ../KeyRing/keyring.c:2249 ../KeyRing/keyring.c:2353
+#: ../address_gui.c:2767 ../KeyRing/keyring.c:2428 ../KeyRing/keyring.c:2532
 msgid "Category: "
 msgstr "Catégorie : "
 
-#: ../address_gui.c:2752 ../address_gui.c:3964
+#: ../address_gui.c:2787 ../address_gui.c:3999
 msgid "Mail"
 msgstr "Mél"
 
 #. Dial Phone Button
-#: ../address_gui.c:2755 ../address_gui.c:3967 ../dialer.c:308 ../dialer.c:332
+#: ../address_gui.c:2790 ../address_gui.c:4002 ../dialer.c:308 ../dialer.c:332
 msgid "Dial"
 msgstr "Appel"
 
-#: ../address_gui.c:3076 ../address_gui.c:3107
+#: ../address_gui.c:3111 ../address_gui.c:3142
 msgid "-Unnamed-"
 msgstr "-Sans-nom-"
 
-#: ../address_gui.c:3182 ../memo_gui.c:1331 ../todo_gui.c:1851
+#: ../address_gui.c:3217 ../memo_gui.c:1331 ../todo_gui.c:1851
 msgid "0 records"
 msgstr "0 enregistrements"
 
-#: ../address_gui.c:3185 ../datebook_gui.c:2447 ../memo_gui.c:1334
+#: ../address_gui.c:3220 ../datebook_gui.c:2447 ../memo_gui.c:1334
 #: ../todo_gui.c:1854
 #, c-format
 msgid "%d of %d records"
 msgstr "%d enregistrements sur %d"
 
-#: ../address_gui.c:3569 ../address_gui.c:3577 ../KeyRing/keyring.c:2264
+#: ../address_gui.c:3604 ../address_gui.c:3612 ../KeyRing/keyring.c:2443
 msgid "Name"
 msgstr "Nom"
 
-#: ../address_gui.c:3570 ../address_gui.c:3571 ../address_gui.c:3572
-#: ../address_gui.c:3578
+#: ../address_gui.c:3605 ../address_gui.c:3606 ../address_gui.c:3607
+#: ../address_gui.c:3613
 msgid "Address"
 msgstr "Adresse"
 
-#: ../address_gui.c:3573 ../address_gui.c:3579 ../Expense/expense.c:583
+#: ../address_gui.c:3608 ../address_gui.c:3614 ../Expense/expense.c:583
 #: ../Expense/expense.c:1404
 msgid "Other"
 msgstr "Autre"
 
 #. Note textbox
-#: ../address_gui.c:3574 ../address_gui.c:3580 ../todo_gui.c:2291
-#: ../Expense/expense.c:1833 ../KeyRing/keyring.c:2400
+#: ../address_gui.c:3609 ../address_gui.c:3615 ../todo_gui.c:2291
+#: ../Expense/expense.c:1833 ../KeyRing/keyring.c:2579
 msgid "Note"
 msgstr "Note"
 
-#: ../address_gui.c:3592
+#: ../address_gui.c:3627
 msgid "Reverting to Address database\n"
 msgstr "Utilise la base Address\n"
 
-#: ../address_gui.c:3707
+#: ../address_gui.c:3742
 msgid "Phone"
 msgstr "Téléphone"
 
-#: ../address_gui.c:3738
+#: ../address_gui.c:3773
 msgid "Quick Find: "
 msgstr "Recherche rapide : "
 
@@ -342,14 +345,14 @@ msgstr "Recherche rapide : "
 #. Add record modification buttons
 #. Create Cancel button
 #. Cancel button
-#: ../address_gui.c:3755 ../category.c:407 ../datebook_gui.c:1657
+#: ../address_gui.c:3790 ../category.c:407 ../datebook_gui.c:1657
 #: ../datebook_gui.c:4416 ../memo_gui.c:1566 ../todo_gui.c:2154
-#: ../utils.c:1292 ../KeyRing/keyring.c:2296
+#: ../utils.c:1292 ../KeyRing/keyring.c:2475
 msgid "Cancel"
 msgstr "Annuler"
 
-#: ../address_gui.c:3755 ../datebook_gui.c:4416 ../memo_gui.c:1566
-#: ../todo_gui.c:2154 ../KeyRing/keyring.c:2296
+#: ../address_gui.c:3790 ../datebook_gui.c:4416 ../memo_gui.c:1566
+#: ../todo_gui.c:2154 ../KeyRing/keyring.c:2475
 msgid "Cancel the modifications"
 msgstr "Annuler les modifications"
 
@@ -359,14 +362,14 @@ msgstr "Annuler les modifications"
 #. Delete button
 #. Delete, Copy, New, etc. buttons
 #. Delete button
-#: ../address_gui.c:3760 ../category.c:407 ../category.c:850
+#: ../address_gui.c:3795 ../category.c:407 ../category.c:850
 #: ../datebook_gui.c:4421 ../memo_gui.c:1571 ../todo_gui.c:2159
-#: ../Expense/expense.c:1660 ../KeyRing/keyring.c:2301
+#: ../Expense/expense.c:1660 ../KeyRing/keyring.c:2480
 msgid "Delete"
 msgstr "Effacer"
 
-#: ../address_gui.c:3760 ../datebook_gui.c:4421 ../memo_gui.c:1571
-#: ../todo_gui.c:2159 ../Expense/expense.c:1660 ../KeyRing/keyring.c:2301
+#: ../address_gui.c:3795 ../datebook_gui.c:4421 ../memo_gui.c:1571
+#: ../todo_gui.c:2159 ../Expense/expense.c:1660 ../KeyRing/keyring.c:2480
 msgid "Delete the selected record"
 msgstr "Efface l'enregistrement sélectionné"
 
@@ -374,95 +377,95 @@ msgstr "Efface l'enregistrement sélectionné"
 #. Undelete button
 #. Undelete Button
 #. Undelete button
-#: ../address_gui.c:3766 ../datebook_gui.c:4427 ../memo_gui.c:1577
-#: ../todo_gui.c:2165 ../KeyRing/keyring.c:2307
+#: ../address_gui.c:3801 ../datebook_gui.c:4427 ../memo_gui.c:1577
+#: ../todo_gui.c:2165 ../KeyRing/keyring.c:2486
 msgid "Undelete"
 msgstr "Restaurer"
 
-#: ../address_gui.c:3766 ../datebook_gui.c:4427 ../memo_gui.c:1577
-#: ../todo_gui.c:2165 ../KeyRing/keyring.c:2307
+#: ../address_gui.c:3801 ../datebook_gui.c:4427 ../memo_gui.c:1577
+#: ../todo_gui.c:2165 ../KeyRing/keyring.c:2486
 msgid "Undelete the selected record"
 msgstr "Récupérer l'enregistrement sélectionné"
 
 #. Create "Copy" button
 #. Copy button
-#: ../address_gui.c:3772 ../datebook_gui.c:4433 ../memo_gui.c:1583
-#: ../todo_gui.c:2171 ../Expense/expense.c:1665 ../KeyRing/keyring.c:2313
+#: ../address_gui.c:3807 ../datebook_gui.c:4433 ../memo_gui.c:1583
+#: ../todo_gui.c:2171 ../Expense/expense.c:1665 ../KeyRing/keyring.c:2492
 msgid "Copy"
 msgstr "Copier"
 
-#: ../address_gui.c:3772 ../datebook_gui.c:4433 ../memo_gui.c:1583
-#: ../todo_gui.c:2171 ../Expense/expense.c:1665 ../KeyRing/keyring.c:2313
+#: ../address_gui.c:3807 ../datebook_gui.c:4433 ../memo_gui.c:1583
+#: ../todo_gui.c:2171 ../Expense/expense.c:1665 ../KeyRing/keyring.c:2492
 msgid "Copy the selected record"
 msgstr "Copier l'enregistrement sélectionné"
 
 #. Create "New" button
 #. New button
 #. New Record button
-#: ../address_gui.c:3778 ../datebook_gui.c:4439 ../memo_gui.c:1589
-#: ../todo_gui.c:2177 ../Expense/expense.c:1670 ../KeyRing/keyring.c:2319
+#: ../address_gui.c:3813 ../datebook_gui.c:4439 ../memo_gui.c:1589
+#: ../todo_gui.c:2177 ../Expense/expense.c:1670 ../KeyRing/keyring.c:2498
 msgid "New Record"
 msgstr "Nouveau"
 
-#: ../address_gui.c:3778 ../datebook_gui.c:4439 ../memo_gui.c:1589
-#: ../todo_gui.c:2177 ../Expense/expense.c:1670 ../KeyRing/keyring.c:2319
+#: ../address_gui.c:3813 ../datebook_gui.c:4439 ../memo_gui.c:1589
+#: ../todo_gui.c:2177 ../Expense/expense.c:1670 ../KeyRing/keyring.c:2498
 msgid "Add a new record"
 msgstr "Ajouter un nouvel enregistrement"
 
 #. Create "Add Record" button
 #. "Add Record" button
 #. Add Record button
-#: ../address_gui.c:3783 ../datebook_gui.c:4445 ../memo_gui.c:1595
-#: ../todo_gui.c:2183 ../Expense/expense.c:1675 ../KeyRing/keyring.c:2325
+#: ../address_gui.c:3818 ../datebook_gui.c:4445 ../memo_gui.c:1595
+#: ../todo_gui.c:2183 ../Expense/expense.c:1675 ../KeyRing/keyring.c:2504
 msgid "Add Record"
 msgstr "Ajouter"
 
-#: ../address_gui.c:3783 ../datebook_gui.c:4445 ../memo_gui.c:1595
-#: ../todo_gui.c:2183 ../Expense/expense.c:1675 ../KeyRing/keyring.c:2325
+#: ../address_gui.c:3818 ../datebook_gui.c:4445 ../memo_gui.c:1595
+#: ../todo_gui.c:2183 ../Expense/expense.c:1675 ../KeyRing/keyring.c:2504
 msgid "Add the new record"
 msgstr "Ajouter le nouvel enregistrement"
 
 #. "Apply Changes" button
 #. Apply Changes button
-#: ../address_gui.c:3793 ../datebook_gui.c:4455 ../memo_gui.c:1605
-#: ../todo_gui.c:2193 ../Expense/expense.c:1684 ../KeyRing/keyring.c:2334
+#: ../address_gui.c:3828 ../datebook_gui.c:4455 ../memo_gui.c:1605
+#: ../todo_gui.c:2193 ../Expense/expense.c:1684 ../KeyRing/keyring.c:2513
 msgid "Apply Changes"
 msgstr "Appliquer"
 
-#: ../address_gui.c:3793 ../datebook_gui.c:4455 ../memo_gui.c:1605
-#: ../todo_gui.c:2193 ../Expense/expense.c:1684 ../KeyRing/keyring.c:2334
+#: ../address_gui.c:3828 ../datebook_gui.c:4455 ../memo_gui.c:1605
+#: ../todo_gui.c:2193 ../Expense/expense.c:1684 ../KeyRing/keyring.c:2513
 msgid "Commit the modifications"
 msgstr "Appliquer les modifications"
 
 #. Private check box
-#: ../address_gui.c:3810 ../datebook_gui.c:4504 ../memo_gui.c:1622
+#: ../address_gui.c:3845 ../datebook_gui.c:4504 ../memo_gui.c:1622
 #: ../todo_gui.c:2256
 msgid "Private"
 msgstr "Privé"
 
-#: ../address_gui.c:3898
+#: ../address_gui.c:3933
 msgid "Change Photo"
 msgstr "Changer la photo"
 
-#: ../address_gui.c:3903
+#: ../address_gui.c:3938
 msgid "Remove Photo"
 msgstr "Supprimer la photo"
 
-#: ../address_gui.c:3973
+#: ../address_gui.c:4008
 msgid "Show In List"
 msgstr "Montrer dans la liste"
 
-#: ../address_gui.c:4074
+#: ../address_gui.c:4109
 msgid "Reminder"
 msgstr "Me le rappeler"
 
-#: ../address_gui.c:4090 ../datebook_gui.c:226 ../datebook_gui.c:4492
+#: ../address_gui.c:4125 ../datebook_gui.c:226 ../datebook_gui.c:4492
 msgid "Days"
 msgstr "Jours"
 
 #. The Quickview (ALL) page
 #. All button
-#: ../address_gui.c:4125 ../datebook_gui.c:1395 ../datebook_gui.c:1657
+#: ../address_gui.c:4160 ../datebook_gui.c:1395 ../datebook_gui.c:1657
 #: ../utils.c:2595
 msgid "All"
 msgstr "Tous"
@@ -800,7 +803,7 @@ msgstr ""
 msgid "Unknown export type"
 msgstr "Type d'export inconnu"
 
-#: ../datebook_gui.c:1140 ../todo_gui.c:847
+#: ../datebook_gui.c:1140 ../todo_gui.c:846
 msgid "iCalendar"
 msgstr "iCalendar"
 
@@ -840,11 +843,11 @@ msgstr "Date de début"
 msgid "End On Date"
 msgstr "Date de fin"
 
-#: ../datebook_gui.c:1626 ../prefs.c:441
+#: ../datebook_gui.c:1626 ../prefs.c:442
 msgid "Sunday"
 msgstr "Dimanche"
 
-#: ../datebook_gui.c:1627 ../prefs.c:442
+#: ../datebook_gui.c:1627 ../prefs.c:443
 msgid "Monday"
 msgstr "Lundi"
 
@@ -1392,7 +1395,7 @@ msgstr " Utilisateur : "
 msgid "Unknown command from sync process\n"
 msgstr "Commande inconnue du processus de synchronisation\n"
 
-#: ../jpilot.c:922 ../Expense/expense.c:528 ../KeyRing/keyring.c:1860
+#: ../jpilot.c:922 ../Expense/expense.c:528 ../KeyRing/keyring.c:1894
 #: ../SyncTime/synctime.c:55
 #, c-format
 msgid "About %s"
@@ -1838,27 +1841,27 @@ msgstr "Ce greffon est version (%d.%d).\n"
 msgid "It is too old to work with this version of J-Pilot.\n"
 msgstr "Il est trop ancien pour fonctionner avec cette version de J-Pilot.\n"
 
-#: ../prefs.c:410
+#: ../prefs.c:411
 msgid "%B %d, %Y"
 msgstr ""
 
-#: ../prefs.c:411
+#: ../prefs.c:412
 msgid "%d %B %Y"
 msgstr ""
 
-#: ../prefs.c:412
+#: ../prefs.c:413
 msgid "%d. %B %Y"
 msgstr ""
 
-#: ../prefs.c:413
+#: ../prefs.c:414
 msgid "%d %B, %Y"
 msgstr ""
 
-#: ../prefs.c:414
+#: ../prefs.c:415
 msgid "%Y. %B. %d"
 msgstr ""
 
-#: ../prefs.c:415
+#: ../prefs.c:416
 msgid "%Y %B %d"
 msgstr ""
 
@@ -2588,15 +2591,15 @@ msgstr "Note de la tâche trop longue > %d, coupée à %d\n"
 msgid "Due Date"
 msgstr "Date prévue"
 
-#: ../todo_gui.c:536
+#: ../todo_gui.c:535
 msgid "File doesn't appear to be todo.dat format\n"
 msgstr "Le fichier ne semble pas au bon format (todo.dat)\n"
 
-#: ../todo_gui.c:600
+#: ../todo_gui.c:599
 msgid "DAT/TDA (Palm Archive Formats)"
 msgstr ""
 
-#: ../todo_gui.c:683
+#: ../todo_gui.c:682
 #, c-format
 msgid ""
 "ToDo exported from %s %s on %s\n"
@@ -2605,37 +2608,37 @@ msgstr ""
 "ToDo exporté de %s %s le %s\n"
 "\n"
 
-#: ../todo_gui.c:713
+#: ../todo_gui.c:712
 #, c-format
 msgid "Can't export todo %d\n"
 msgstr "Ne peut exporter tâche %d\n"
 
-#: ../todo_gui.c:752
+#: ../todo_gui.c:751
 #, c-format
 msgid "Due Date: None\n"
 msgstr "Date prévue : Aucune\n"
 
-#: ../todo_gui.c:755
+#: ../todo_gui.c:754
 #, c-format
 msgid "Due Date: %s\n"
 msgstr "Date prévue : %s\n"
 
-#: ../todo_gui.c:757
+#: ../todo_gui.c:756
 #, c-format
 msgid "Priority: %d\n"
 msgstr "Priorité : %d\n"
 
-#: ../todo_gui.c:758
+#: ../todo_gui.c:757
 #, c-format
 msgid "Completed: %s\n"
 msgstr "Terminé : %s\n"
 
-#: ../todo_gui.c:760
+#: ../todo_gui.c:759
 #, c-format
 msgid "Description: %s\n"
 msgstr "Description : %s\n"
 
-#: ../todo_gui.c:763
+#: ../todo_gui.c:762
 #, c-format
 msgid ""
 "Note: %s\n"
@@ -2648,7 +2651,7 @@ msgstr ""
 msgid "Priority out of range\n"
 msgstr "Priorité hors limite\n"
 
-#: ../todo_gui.c:1770 ../KeyRing/keyring.c:1276
+#: ../todo_gui.c:1770 ../KeyRing/keyring.c:1280
 #, c-format
 msgid "No date"
 msgstr "Sans date"
@@ -2806,7 +2809,7 @@ msgid "GTK2 support"
 msgstr "support GTK2"
 
 #. No HOME var
-#: ../utils.c:2000 ../KeyRing/keyring.c:1746
+#: ../utils.c:2000 ../KeyRing/keyring.c:1780
 msgid "Can't get HOME environment variable\n"
 msgstr "Ne peut pas récupérer la variable d'environnement HOME\n"
 
@@ -3224,41 +3227,41 @@ msgid ""
 "http://jpilot.org"
 msgstr ""
 
-#: ../KeyRing/keyring.c:289
+#: ../KeyRing/keyring.c:293
 msgid "KeyRing: pack_KeyRing(): buf_size too small\n"
 msgstr "KeyRing : pack_KeyRing() : buf_size trop petite\n"
 
-#: ../KeyRing/keyring.c:1669
+#: ../KeyRing/keyring.c:1703
 msgid "Incorrect, Reenter KeyRing Password"
 msgstr "Erreur, Re-entrez le mot de passe KeyRing"
 
-#: ../KeyRing/keyring.c:1671
+#: ../KeyRing/keyring.c:1705
 msgid "Enter a NEW KeyRing Password"
 msgstr "Tapez le NOUVEAU mot de passe KeyRing"
 
-#: ../KeyRing/keyring.c:1673
+#: ../KeyRing/keyring.c:1707
 msgid "Enter KeyRing Password"
 msgstr "Tapez le mot de passe KeyRing"
 
-#: ../KeyRing/keyring.c:1751
+#: ../KeyRing/keyring.c:1785
 msgid "Your HOME environment variable is too long(>1024)\n"
 msgstr "Votre variable d'environnement HOME est trop longue (>1024)\n"
 
-#: ../KeyRing/keyring.c:1756
+#: ../KeyRing/keyring.c:1790
 #, c-format
 msgid "KeyRing: file %s not found.\n"
 msgstr "KeyRing : fichier %s non trouvé.\n"
 
-#: ../KeyRing/keyring.c:1757
+#: ../KeyRing/keyring.c:1791
 msgid "KeyRing: Try Syncing.\n"
 msgstr "KeyRing : Essayez de synchroniser.\n"
 
-#: ../KeyRing/keyring.c:1849 ../KeyRing/keyring.c:1860
+#: ../KeyRing/keyring.c:1883 ../KeyRing/keyring.c:1894
 msgid "KeyRing"
 msgstr "KeyRing"
 
 #. -------------------------------------------
-#: ../KeyRing/keyring.c:1888
+#: ../KeyRing/keyring.c:1922
 #, c-format
 msgid ""
 "%s\n"
@@ -3273,8 +3276,22 @@ msgid ""
 "http://gnukeyring.sourceforge.net"
 msgstr ""
 
+#: ../KeyRing/keyring.c:2160
+#, c-format
+msgid ""
+"Keys exported from %s %s on %s\n"
+"\n"
+msgstr ""
+"Clés exportés de %s %s le %s\n"
+"\n"
+
+#: ../KeyRing/keyring.c:2176
+#, c-format
+msgid "Can't export key %d\n"
+msgstr "Imposible d'exporter la clé %d\n"
+
 #. Change Password button
-#: ../KeyRing/keyring.c:2147
+#: ../KeyRing/keyring.c:2326
 msgid ""
 "Change\n"
 "KeyRing\n"
@@ -3285,36 +3302,36 @@ msgstr ""
 "Mot de passe"
 
 #. Clist
-#: ../KeyRing/keyring.c:2263
+#: ../KeyRing/keyring.c:2442
 msgid "Changed"
 msgstr "Modifié"
 
-#: ../KeyRing/keyring.c:2265
+#: ../KeyRing/keyring.c:2444
 msgid "Account"
 msgstr "Compte"
 
 #. Name entry
-#: ../KeyRing/keyring.c:2361
+#: ../KeyRing/keyring.c:2540
 msgid "name: "
 msgstr "nom : "
 
 #. Account entry
-#: ../KeyRing/keyring.c:2369
+#: ../KeyRing/keyring.c:2548
 msgid "account: "
 msgstr "compte : "
 
 #. Password entry
-#: ../KeyRing/keyring.c:2377
+#: ../KeyRing/keyring.c:2556
 msgid "password: "
 msgstr "Mot de passe : "
 
 #. Last Changed entry
-#: ../KeyRing/keyring.c:2384
+#: ../KeyRing/keyring.c:2563
 msgid "last changed: "
 msgstr "dernier changement : "
 
 #. Generate Password button (creates random password)
-#: ../KeyRing/keyring.c:2394
+#: ../KeyRing/keyring.c:2573
 msgid "Generate Password"
 msgstr "Génération d'un mot de passe"
 
