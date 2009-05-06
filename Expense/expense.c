@@ -1,4 +1,4 @@
-/* $Id: expense.c,v 1.65 2009/01/22 22:09:38 rikster5 Exp $ */
+/* $Id: expense.c,v 1.66 2009/05/06 19:28:02 rousseau Exp $ */
 
 /*******************************************************************************
  * expense.c
@@ -184,7 +184,7 @@ struct MyExpense *glob_myexpense_list=NULL;
 /******************************************************************************/
 /* Prototypes                                                                 */
 /******************************************************************************/
-static void display_records();
+static void display_records(void);
 static void connect_changed_signals(int con_or_dis);
 static void cb_clist_selection(GtkWidget      *clist,
                                gint           row,
@@ -653,7 +653,7 @@ static void cb_delete(GtkWidget *widget, gpointer data)
  * This is called when the "Clear" button is pressed.
  * It just clears out all the detail fields.
  */
-static void exp_clear_details()
+static void exp_clear_details(void)
 {
    time_t ltime;
    struct tm *now;
@@ -933,7 +933,7 @@ static int display_record(struct MyExpense *mexp, int at_row)
  * This function lists the records in the clist on the left side of
  * the screen.
  */
-static void display_records()
+static void display_records(void)
 {
    int num, i;
    int entries_shown;
@@ -1363,7 +1363,7 @@ static int make_menu(char *items[], int menu_index, GtkWidget **Poption_menu,
 /* 
  * This function makes all of the menus on the screen.
  */
-static void make_menus()
+static void make_menus(void)
 {
    struct ExpenseAppInfo exp_app_info;
    unsigned char *buf;
@@ -1913,7 +1913,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
  * its windows are terminated.  Desirable actions include freeing allocated 
  * memory, storing state variables, etc. 
  */
-int plugin_gui_cleanup() {
+int plugin_gui_cleanup(void) {
    int b;
    
    jp_logf(JP_LOG_DEBUG, "Expense: plugin_gui_cleanup\n");

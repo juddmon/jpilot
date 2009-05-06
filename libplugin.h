@@ -1,4 +1,4 @@
-/* $Id: libplugin.h,v 1.25 2009/05/06 19:04:10 rikster5 Exp $ */
+/* $Id: libplugin.h,v 1.26 2009/05/06 19:28:01 rousseau Exp $ */
 
 /*******************************************************************************
  * libplugin.h
@@ -216,7 +216,7 @@ int plugin_pack_cai_into_ai(struct CategoryAppInfo *cai,
 			    unsigned char *ai_raw, int len);
 /* callbacks are needed for print */
 
-void jp_init();
+void jp_init(void);
 extern FILE *jp_open_home_file(char *filename, char *mode);
 
 /* This takes the value of $JPILOT_HOME and appends /.jpilot/ and {file}

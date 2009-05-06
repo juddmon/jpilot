@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.71 2009/01/22 02:10:23 rikster5 Exp $ */
+/* $Id: utils.h,v 1.72 2009/05/06 19:28:02 rousseau Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -248,7 +248,7 @@ void fprint_usage_string(FILE *out);
 
 int cat_compare(const void *v1, const void *v2);
 
-int get_timeout_interval();
+int get_timeout_interval(void);
 
 gint timeout_date(gpointer data);
 
@@ -257,9 +257,9 @@ int get_pixmaps(GtkWidget *widget,
 		GdkPixmap **out_pixmap,
 		GdkBitmap **out_mask);
 
-int check_hidden_dir();
+int check_hidden_dir(void);
 
-int read_gtkrc_file();
+int read_gtkrc_file(void);
 
 int get_home_file_name(char *file, char *full_name, int max_size);
 
@@ -290,7 +290,7 @@ void print_string(char *str, int len);
 
 int get_app_info(char *DB_name, unsigned char **buf, int *buf_size);
 
-int cleanup_pc_files();
+int cleanup_pc_files(void);
 
 int setup_sync(unsigned int flags);
 
@@ -343,7 +343,7 @@ int clist_find_id(GtkWidget *clist,
 		  unsigned int unique_id,
 		  int *found_at);
 
-int check_copy_DBs_to_home();
+int check_copy_DBs_to_home(void);
 
 int jp_copy_file(char *src, char *dest);
 
@@ -382,10 +382,10 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox);
 int todo_gui(GtkWidget *vbox, GtkWidget *hbox);
 int memo_gui(GtkWidget *vbox, GtkWidget *hbox);
 
-int datebook_gui_cleanup();
-int address_gui_cleanup();
-int todo_gui_cleanup();
-int memo_gui_cleanup();
+int datebook_gui_cleanup(void);
+int address_gui_cleanup(void);
+int todo_gui_cleanup(void);
+int memo_gui_cleanup(void);
 
 void datebook_gui_setdate(int year, int month, int day);
 
@@ -473,16 +473,16 @@ void plugin_gui_refresh(int unique_id);
 int datebook_refresh(int first, int do_init);
 
 /*address_gui */
-int address_refresh();
-int address_cycle_cat();
+int address_refresh(void);
+int address_cycle_cat(void);
  
 /*todo_gui */
-int todo_refresh();
-int todo_cycle_cat();
+int todo_refresh(void);
+int todo_cycle_cat(void);
 
 /*memo_gui */
-int memo_refresh();
-int memo_cycle_cat();
+int memo_refresh(void);
+int memo_cycle_cat(void);
 
 /* monthview_gui */
 void monthview_gui(struct tm *date);

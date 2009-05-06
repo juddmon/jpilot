@@ -1,4 +1,4 @@
-/* $Id: prefs.h,v 1.51 2009/05/04 19:24:54 rikster5 Exp $ */
+/* $Id: prefs.h,v 1.52 2009/05/06 19:28:02 rousseau Exp $ */
 
 /*******************************************************************************
  * prefs.h
@@ -161,16 +161,16 @@
 #define CHAR_SET_949_UTF  17 /* Korean (CP949) */
 #define NUM_CHAR_SETS     18
 
-void pref_init();
-int pref_read_rc_file();
-int pref_write_rc_file();
+void pref_init(void);
+int pref_read_rc_file(void);
+int pref_write_rc_file(void);
 int get_pref(int which, long *n, const char **ret);
 int set_pref(int which, long n, const char *string, int save);
 
 /* Specialized functions */
 int set_pref_possibility(int which, long n, int save);
 int get_pref_possibility(int which, int n, char *ret);
-int get_pref_dmy_order();
+int get_pref_dmy_order(void);
 void get_pref_hour_ampm(char *datef);
 int get_pref_time_no_secs(char *datef);
 int get_pref_time_no_secs_no_ampm(char *datef);

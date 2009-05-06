@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.94 2009/05/06 19:04:11 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.95 2009/05/06 19:28:03 rousseau Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -1014,7 +1014,7 @@ static void update_date_button(GtkWidget *button, struct tm *t)
  * This is called when the "New" button is pressed.
  * It clears out all the detail fields on the right-hand side.
  */
-static int keyr_clear_details()
+static int keyr_clear_details(void)
 {
    struct tm *now;
    time_t ltime;
@@ -1737,7 +1737,7 @@ static int dialog_password(GtkWindow *main_window,
 
 /***** End Password GUI *****/
 
-static int check_for_db()
+static int check_for_db(void)
 {
    char full_name[1024];
    int max_size=1024;
@@ -2218,7 +2218,7 @@ int plugin_exit_cleanup(void)
  * This is a plugin callback function called when the plugin is terminated
  * such as by switching to another application(ToDo, Memo, etc.)
  */
-int plugin_gui_cleanup() {
+int plugin_gui_cleanup(void) {
    int b;
    
    jp_logf(JP_LOG_DEBUG, "KeyRing: plugin_gui_cleanup\n");
