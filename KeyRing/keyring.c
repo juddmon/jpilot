@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.93 2009/05/06 18:53:01 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.94 2009/05/06 19:04:11 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -423,11 +423,17 @@ static int unpack_KeyRing(struct KeyRing *kr,
          j++;
       }
    }
-
+   /*
    kr->name=strdup((char *)buf);
    kr->account=strdup((char *)Pstr[0]);
    kr->password=strdup((char *)Pstr[1]);
    kr->note=strdup((char *)Pstr[2]);
+   */
+
+   kr->name=jp_charset_p2newj((char *)buf,-1);
+   kr->account=jp_charset_p2newj((char *)Pstr[0],-1);
+   kr->password=jp_charset_p2newj((char *)Pstr[1],-1);
+   kr->note=jp_charset_p2newj((char *)Pstr[2],-1);
 
    packed_date = get_short(Pstr[3]);
    kr->last_changed.tm_year = ((packed_date & 0xFE00) >> 9) + 4;
@@ -1054,6 +1060,10 @@ static int keyr_clear_details()
  * This function is called when the user presses the "Add" button.
  * We collect all of the data from the GUI and pack it into a keyring
  * record and then write it out.
+   kr->name=strdup((char *)buf);
+   kr->account=strdup((char *)Pstr[0]);
+   kr->password=strdup((char *)Pstr[1]);
+   kr->note=strdup((char *)Pstr[2]);
  */
 static void cb_add_new_record(GtkWidget *widget, gpointer data)
 {
@@ -1096,9 +1106,6 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(keyr_note_buffer),&start_iter,&end_iter);
    kr.note = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(keyr_note_buffer),&start_iter,&end_iter,TRUE);
 
-   /* TODO: Fixed memory leak here with strdup and not freeing kr
-    *       by adding calls to free after pack_KeyRing
-    *       Bigger question is why we even run jp_charset_j2p here */
    kr.name = strdup(kr.name);
    jp_charset_j2p(kr.name, strlen(kr.name)+1);
 
@@ -1246,8 +1253,6 @@ static void cb_gen_password(GtkWidget *widget, gpointer data)
 static int display_record(struct MyKeyRing *mkr, int row)
 {
    char temp[8];
-   char *temp_str;
-   int  len;
    const char *svalue;
    char str[50];
 
@@ -1289,21 +1294,13 @@ static int display_record(struct MyKeyRing *mkr, int row)
       sprintf(temp, "#%03d", row);
       gtk_clist_set_text(GTK_CLIST(clist), row, KEYR_NAME_COLUMN, temp);
    } else {
-      temp_str = malloc((len = strlen(mkr->kr.name)*2+1));
-      multibyte_safe_strncpy(temp_str, mkr->kr.name, len);
-      jp_charset_p2j(temp_str, len);
-      gtk_clist_set_text(GTK_CLIST(clist), row, KEYR_NAME_COLUMN, temp_str);
-      free(temp_str);
+      gtk_clist_set_text(GTK_CLIST(clist), row, KEYR_NAME_COLUMN, mkr->kr.name);
    }
 
    if ( (!(mkr->kr.account)) || (mkr->kr.account[0]=='\0') ) {
       gtk_clist_set_text(GTK_CLIST(clist), row, KEYR_ACCT_COLUMN, "");
    } else {
-      temp_str = malloc((len = strlen(mkr->kr.account)*2+1));
-      multibyte_safe_strncpy(temp_str, mkr->kr.account, len);
-      jp_charset_p2j(temp_str, len);
-      gtk_clist_set_text(GTK_CLIST(clist), row, KEYR_ACCT_COLUMN, temp_str);
-      free(temp_str);
+      gtk_clist_set_text(GTK_CLIST(clist), row, KEYR_ACCT_COLUMN, mkr->kr.account);
    }
 
    return EXIT_SUCCESS;
@@ -1312,8 +1309,6 @@ static int display_record(struct MyKeyRing *mkr, int row)
 static int display_record_export(GtkWidget *clist, struct MyKeyRing *mkr, int row)
 {
    char temp[8];
-   char *temp_str;
-   int  len;
 
    jp_logf(JP_LOG_DEBUG, "KeyRing: display_record_export\n");
 
@@ -1323,11 +1318,7 @@ static int display_record_export(GtkWidget *clist, struct MyKeyRing *mkr, int ro
       sprintf(temp, "#%03d", row);
       gtk_clist_set_text(GTK_CLIST(clist), row, 0, temp);
    } else {
-      temp_str = malloc((len = strlen(mkr->kr.name)*2+1));
-      multibyte_safe_strncpy(temp_str, mkr->kr.name, len);
-      jp_charset_p2j(temp_str, len);
-      gtk_clist_set_text(GTK_CLIST(clist), row, 0, temp_str);
-      free(temp_str);
+      gtk_clist_set_text(GTK_CLIST(clist), row, 0, mkr->kr.name);
    }
 
    return EXIT_SUCCESS;
@@ -1426,8 +1417,6 @@ static void cb_clist_selection(GtkWidget      *clist,
    int index, sorted_position;
    int b;
    unsigned int unique_id = 0;
-   char *temp_str;
-   int len;
 
    jp_logf(JP_LOG_DEBUG, "KeyRing: cb_clist_selection\n");
 
@@ -1505,31 +1494,19 @@ static void cb_clist_selection(GtkWidget      *clist,
                                find_menu_cat_pos(sorted_position));
 
    if (mkr->kr.name) {
-      temp_str = malloc((len = strlen(mkr->kr.name)*2+1));
-      multibyte_safe_strncpy(temp_str, mkr->kr.name, len);
-      jp_charset_p2j(temp_str, len);
-      gtk_entry_set_text(GTK_ENTRY(entry_name), temp_str);
-      free(temp_str);
+      gtk_entry_set_text(GTK_ENTRY(entry_name), mkr->kr.name);
    } else {
       gtk_entry_set_text(GTK_ENTRY(entry_name), "");
    }
 
    if (mkr->kr.account) {
-      temp_str = malloc((len = strlen(mkr->kr.account)*2+1));
-      multibyte_safe_strncpy(temp_str, mkr->kr.account, len);
-      jp_charset_p2j(temp_str, len);
-      gtk_entry_set_text(GTK_ENTRY(entry_account), temp_str); 
-      free(temp_str);
+      gtk_entry_set_text(GTK_ENTRY(entry_account), mkr->kr.account); 
    } else {
       gtk_entry_set_text(GTK_ENTRY(entry_account), "");
    }
 
    if (mkr->kr.password) {
-      temp_str = malloc((len = strlen(mkr->kr.password)*2+1));
-      multibyte_safe_strncpy(temp_str, mkr->kr.password, len);
-      jp_charset_p2j(temp_str, len);
-      gtk_entry_set_text(GTK_ENTRY(entry_password), temp_str); 
-      free(temp_str);
+      gtk_entry_set_text(GTK_ENTRY(entry_password), mkr->kr.password); 
    } else {
       gtk_entry_set_text(GTK_ENTRY(entry_password), "");
    }
@@ -1538,13 +1515,8 @@ static void cb_clist_selection(GtkWidget      *clist,
    update_date_button(date_button, &(mkr->kr.last_changed));
 
    gtk_text_buffer_set_text(GTK_TEXT_BUFFER(keyr_note_buffer), "", -1);
-
    if (mkr->kr.note) {
-      temp_str = malloc((len = strlen(mkr->kr.note)*2+1));
-      multibyte_safe_strncpy(temp_str, mkr->kr.note, len);
-      jp_charset_p2j(temp_str, len);
-      gtk_text_buffer_set_text(GTK_TEXT_BUFFER(keyr_note_buffer), temp_str, -1);
-      free(temp_str);
+      gtk_text_buffer_set_text(GTK_TEXT_BUFFER(keyr_note_buffer), mkr->kr.note, -1);
    }
 
    connect_changed_signals(CONNECT_SIGNALS);

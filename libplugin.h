@@ -1,4 +1,4 @@
-/* $Id: libplugin.h,v 1.24 2007/10/23 18:29:14 judd Exp $ */
+/* $Id: libplugin.h,v 1.25 2009/05/06 19:04:10 rikster5 Exp $ */
 
 /*******************************************************************************
  * libplugin.h
@@ -245,6 +245,7 @@ int jp_edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai);
  *************************************/
 extern void jp_charset_j2p(char *buf, int max_len);
 extern void jp_charset_p2j(char *buf, int max_len);
+extern char* jp_charset_p2newj(const char *buf, int max_len);
 
 /* file must not be open elsewhere when this is called, the first line is 0 */
 int jp_install_remove_line(int deleted_line);

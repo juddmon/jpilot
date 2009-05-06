@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.168 2009/01/22 16:59:30 rikster5 Exp $ */
+/* $Id: utils.c,v 1.169 2009/05/06 19:04:10 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -2379,6 +2379,14 @@ void jp_charset_p2j(char *const buf, int max_len)
    else 
       charset_p2j(buf, max_len, char_set);
 
+}
+
+char* jp_charset_p2newj(const char *buf, int max_len)
+{
+   long char_set;
+
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
+   return(charset_p2newj(buf, max_len, char_set));
 }
 
 int jp_close_home_file(FILE *pc_in)
