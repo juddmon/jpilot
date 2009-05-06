@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.91 2009/05/04 19:24:54 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.92 2009/05/06 13:33:41 rousseau Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -2175,27 +2175,32 @@ void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 continue;
 	 jp_logf(JP_LOG_WARN, _("Can't export key %d\n"), (long) temp_list->data + 1);
       }
+#define CONVERT_FPRINT(fmt, str) \
+      utf = charset_p2newj(str, -1, char_set); \
+      fprintf(out, fmt, utf); \
+      g_free(utf);
+
       switch (type) {
        case EXPORT_TYPE_CSV:
 	 utf = charset_p2newj(keyr_app_info.name[mkr->attrib & 0x0F], 16, char_set);
 	 fprintf(out, "\"%s\",", utf);
 	 g_free(utf);
 	 str_to_csv_str(csv_text, mkr->kr.name);
-	 fprintf(out, "\"%s\",", csv_text);
+	 CONVERT_FPRINT("\"%s\",", csv_text);
 	 str_to_csv_str(csv_text, mkr->kr.account);
-	 fprintf(out, "\"%s\",", csv_text);
+	 CONVERT_FPRINT("\"%s\",", csv_text);
 	 str_to_csv_str(csv_text, mkr->kr.password);
-	 fprintf(out, "\"%s\",", csv_text);
+	 CONVERT_FPRINT("\"%s\",", csv_text);
 	 str_to_csv_str(csv_text, mkr->kr.note);
-	 fprintf(out, "\"%s\"\n", csv_text);
+	 CONVERT_FPRINT("\"%s\"\n", csv_text);
 	 break;
 
        case EXPORT_TYPE_TEXT:
 	 fprintf(out, "#%d\n", i+1);
-	 fprintf(out, "Name: %s\n", mkr->kr.name);
-	 fprintf(out, "Account: %s\n", mkr->kr.account);
-	 fprintf(out, "Password: %s\n", mkr->kr.password);
-	 fprintf(out, "Note: %s\n", mkr->kr.note );
+	 CONVERT_FPRINT("Name: %s\n", mkr->kr.name);
+	 CONVERT_FPRINT("Account: %s\n", mkr->kr.account);
+	 CONVERT_FPRINT("Password: %s\n", mkr->kr.password);
+	 CONVERT_FPRINT("Note: %s\n", mkr->kr.note );
 	 break;
 
        default:
