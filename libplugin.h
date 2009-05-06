@@ -1,4 +1,4 @@
-/* $Id: libplugin.h,v 1.26 2009/05/06 19:28:01 rousseau Exp $ */
+/* $Id: libplugin.h,v 1.27 2009/05/06 19:29:47 rousseau Exp $ */
 
 /*******************************************************************************
  * libplugin.h
@@ -311,8 +311,6 @@ int dialog_save_changed_record(GtkWidget *widget, int changed);
 int jp_cal_dialog(GtkWindow *main_window,
 		  const char *title, int monday_is_fdow,
 		  int *mon, int *day, int *year);
-
-int dialog_save_changed_record(GtkWidget *widget, int changed);
 
 /*
  * The preferences interface makes it easy to read and write name/value pairs
