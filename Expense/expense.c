@@ -1,4 +1,4 @@
-/* $Id: expense.c,v 1.67 2009/05/06 19:40:43 rousseau Exp $ */
+/* $Id: expense.c,v 1.68 2009/05/10 09:32:38 rousseau Exp $ */
 
 /*******************************************************************************
  * expense.c
@@ -193,7 +193,7 @@ static void cb_clist_selection(GtkWidget      *clist,
                                gpointer       data);
 static void cb_add_new_record(GtkWidget *widget, gpointer data);
 static void cb_pulldown_menu(GtkWidget *item, unsigned int value);
-static int  make_menu(char *items[], int menu_index, GtkWidget **Poption_menu,
+static int  make_menu(const char *items[], int menu_index, GtkWidget **Poption_menu,
                      GtkWidget *menu_items[]);
 static int  expense_find(int unique_id);
 static void cb_category(GtkWidget *item, int selection);
@@ -1322,7 +1322,7 @@ static void cb_pulldown_menu(GtkWidget *item, unsigned int value)
  * Just a convenience function for passing in an array of strings and getting
  * them all stuffed into a menu.
  */
-static int make_menu(char *items[], int menu_index, GtkWidget **Poption_menu,
+static int make_menu(const char *items[], int menu_index, GtkWidget **Poption_menu,
                      GtkWidget *menu_items[])
 {
    int i, item_num;
@@ -1414,7 +1414,7 @@ static void make_menus(void)
       N_("Train"),
       NULL
    };
-   char *currency[MAX_CURRENCYS+1];
+   const char *currency[MAX_CURRENCYS+1];
 
 
    jp_logf(JP_LOG_DEBUG, "Expense: make_menus\n");
