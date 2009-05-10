@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.97 2009/05/06 19:44:51 rousseau Exp $ */
+/* $Id: keyring.c,v 1.98 2009/05/10 09:36:40 rousseau Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -1334,7 +1334,7 @@ static void keyr_update_clist(GtkWidget *clist, struct MyKeyRing **keyring_list,
    int num;
    int entries_shown;
    struct MyKeyRing *temp_list;
-   const gchar *empty_line[] = { "", "", "" };
+   gchar *empty_line[] = { "", "", "" };
    
    jp_logf(JP_LOG_DEBUG, "KeyRing: keyr_update_clist\n");
 
@@ -2082,8 +2082,8 @@ void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *clist,
    const char *short_date;
    time_t ltime;
    struct tm *now;
-   const char *button_text[]={N_("OK")};
-   const char *button_overwrite_text[]={N_("No"), N_("Yes")};
+   char *button_text[]={N_("OK")};
+   char *button_overwrite_text[]={N_("No"), N_("Yes")};
    char text[1024];
    char str1[256], str2[256];
    char date_string[1024];
@@ -2183,7 +2183,7 @@ void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 int plugin_export(GtkWidget *window)
 {
    int w, h, x, y;
-   const char *type_text[]={N_("Text"), N_("CSV"), NULL};
+   char *type_text[]={N_("Text"), N_("CSV"), NULL};
    int type_int[]={EXPORT_TYPE_TEXT, EXPORT_TYPE_CSV};
 
    gdk_window_get_size(window->window, &w, &h);
