@@ -23,6 +23,36 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  ******************************************************************************/
+
+// pilot-link > 0.12.4 compatibility, will remove after pilot-link 0.12.4 makes its way out
+#include "config.h"
+#ifdef PILOT_LINK_GT_0_12_4
+#include <pi-contact.h>
+#define NUM_CONTACT_FIELDS  40
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern void jp_free_Contact
+    PI_ARGS((struct Contact *));
+extern int jp_unpack_Contact
+    PI_ARGS((struct Contact *, pi_buffer_t *));
+extern int jp_pack_Contact
+    PI_ARGS((struct Contact *, pi_buffer_t *));
+extern int jp_unpack_ContactAppInfo
+    PI_ARGS((struct ContactAppInfo *, pi_buffer_t *));
+extern int jp_pack_ContactAppInfo
+    PI_ARGS((struct ContactAppInfo *, pi_buffer_t *buf));
+
+extern int jp_Contact_add_blob
+    PI_ARGS((struct Contact *, struct ContactBlob *));
+extern int jp_Contact_add_picture
+    PI_ARGS((struct Contact *, struct ContactPicture *));
+#ifdef __cplusplus
+}
+#endif /* End of pilot-link > 0.12.4 compatibility */
+#else
+
+
 #ifndef _PILOT_CONTACT_H_
 #define _PILOT_CONTACT_H_
 
@@ -163,3 +193,4 @@ extern int jp_Contact_add_picture
 #include "pi-contact.hxx"
 #endif            /* __cplusplus */
 #endif            /* _PILOT_CONTACT_H_ */
+#endif            /* PILOT_LINK_GT_0_12_4 */

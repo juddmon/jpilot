@@ -1,4 +1,4 @@
-/* $Id: contact.c,v 1.11 2008/08/26 03:26:53 rikster5 Exp $ */
+/* $Id: contact.c,v 1.12 2009/05/29 04:50:58 judd Exp $ */
 
 /*******************************************************************************
  * contact.c
@@ -361,7 +361,11 @@ int copy_address_ai_to_contact_ai(const struct AddressAppInfo *aai, struct Conta
 
    memcpy(&cai->category, &aai->category, sizeof(struct CategoryAppInfo));
 
+#ifdef PILOT_LINK_GT_0_12_4
+   memset(&cai->internal, '\0', 26);
+#else
    memset(&cai->unknown1, '\0', 26);
+#endif
 
    for (i=0; i<NUM_CONTACT_ENTRIES; i++) {
       c_entry = cont_addr_map[i*2];
@@ -377,12 +381,20 @@ int copy_address_ai_to_contact_ai(const struct AddressAppInfo *aai, struct Conta
    }
 
    /* The rest of the labels do not exist in address */
+#ifdef PILOT_LINK_GT_0_12_4
+   if (cai->type==contacts_v10) {
+#else
    if (cai->version==10) {
+#endif
       for (i=NUM_CONTACT_ENTRIES; i<NUM_CONTACT_V10_LABELS; i++) {
 	 cai->labels[i][0]='\0';
       }
    }
+#ifdef PILOT_LINK_GT_0_12_4
+   if (cai->type==contacts_v11) {
+#else
    if (cai->version==11) {
+#endif
       for (i=NUM_CONTACT_ENTRIES; i<NUM_CONTACT_V11_LABELS; i++) {
 	 cai->labels[i][0]='\0';
       }

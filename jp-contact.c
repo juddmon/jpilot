@@ -1,4 +1,4 @@
-/* $Id: jp-contact.c,v 1.10 2009/02/22 04:03:52 judd Exp $ */
+/* $Id: jp-contact.c,v 1.11 2009/05/29 04:50:58 judd Exp $ */
 
 /*******************************************************************************
  * contact.c:  Translate Palm contact data formats
@@ -32,7 +32,47 @@
 
 #include "pi-macros.h"
 #include "jp-pi-contact.h"
+#include "config.h"
  
+#ifdef PILOT_LINK_GT_0_12_4
+#include <pi-contact.h>
+void jp_free_Contact(struct Contact *c)
+{
+   free_Contact(c);
+}
+
+int jp_unpack_Contact(struct Contact *c, pi_buffer_t *buf)
+{
+   // Pilot-link doesn't do anything with the contactsType parameter yet
+   return unpack_Contact(c, buf, contacts_v10);
+}
+
+int jp_pack_Contact(struct Contact *c, pi_buffer_t *buf)
+{
+   // Pilot-link doesn't do anything with the contactsType parameter yet
+   return pack_Contact(c, buf, contacts_v10);
+}
+
+int jp_Contact_add_blob(struct Contact *c, struct ContactBlob *blob)
+{
+   return Contact_add_blob(c, blob);
+}
+
+int jp_Contact_add_picture(struct Contact *c, struct ContactPicture *p)
+{
+   return Contact_add_picture(c, p);
+}
+
+int jp_unpack_ContactAppInfo(struct ContactAppInfo *ai, pi_buffer_t *buf)
+{
+   return unpack_ContactAppInfo(ai, buf);
+}
+
+int jp_pack_ContactAppInfo(struct ContactAppInfo *ai, pi_buffer_t *buf)
+{
+   return pack_ContactAppInfo(ai, buf);
+}
+#else
 
 /***********************************************************************
  *
@@ -555,3 +595,4 @@ int jp_pack_ContactAppInfo(struct ContactAppInfo *ai, pi_buffer_t *buf)
    return (buf->used);
 }
 
+#endif /* NOT pilot-link > 0.12.4 */

@@ -363,6 +363,17 @@ if test $pl_version -eq 0 ; then
    fi
 fi
 
+dnl *** In pilot-link 0.12.4 some #defines changed and jpilot's
+dnl *** contacts code got merged with pilot-link's contacts code
+if test $pl_version -eq 0 ; then
+   if test $pl_major -ge 12 ; then
+      if test $pl_minor -ge 4 ; then
+         AC_MSG_RESULT([pilot-link > 0.12.4 found (jpilot and pilot-link contacts code was merged)])
+         AC_DEFINE(PILOT_LINK_GT_0_12_4, 1, [ Pilot-link greater than 0.12.4 ])
+      fi
+   fi
+fi
+
 dnl ***
 dnl *** check for broken pilot-links
 dnl ***
