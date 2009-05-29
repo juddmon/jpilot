@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.170 2009/05/06 20:14:01 rousseau Exp $ */
+/* $Id: utils.c,v 1.171 2009/05/29 04:39:45 judd Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -1815,7 +1815,7 @@ int forward_backward_in_appt_time(const struct Appointment *appt,
 /* Displays usage string on supplied file handle */
 void fprint_usage_string(FILE *out)
 {
-   fprintf(out, "%s [ -v || -h || [-d] [-p] [-a || -A] [-i] [-geometry] ]\nn", EPN);
+   fprintf(out, "%s [ -v || -h || [-d] [-p] [-a || -A] [-i] [-geometry] ]\n", EPN);
    fprintf(out, "%s", _(" -v displays version and compile options and exits.\n"));
    fprintf(out, "%s", _(" -h displays help and exits.\n"));
    fprintf(out, "%s", _(" -d displays debug info to stdout.\n"));
