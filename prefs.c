@@ -1,4 +1,4 @@
-/* $Id: prefs.c,v 1.85 2009/05/06 20:14:00 rousseau Exp $ */
+/* $Id: prefs.c,v 1.86 2009/05/30 16:09:12 rousseau Exp $ */
 
 /*******************************************************************************
  * prefs.c
@@ -172,6 +172,10 @@ void pref_init(void)
 
    for (i=0; i<NUM_PREFS; i++) {
       switch (i) {
+       case PREF_PORT:
+	 glob_prefs[i].svalue=strdup("usb:");
+	 glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
+         break;
        case PREF_RCFILE:
 	 glob_prefs[i].svalue=strdup(EPN"rc.default");
 	 glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
