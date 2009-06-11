@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.98 2009/05/10 09:36:40 rousseau Exp $ */
+/* $Id: keyring.c,v 1.99 2009/06/11 13:43:55 rousseau Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -443,6 +443,13 @@ static int unpack_KeyRing(struct KeyRing *kr,
    kr->last_changed.tm_min  = 0;
    kr->last_changed.tm_sec  = 0;
    kr->last_changed.tm_isdst= -1;
+
+   if (0 == packed_date)
+   {
+	   kr->last_changed.tm_year = 0;
+	   kr->last_changed.tm_mon = 0;
+	   kr->last_changed.tm_mday = 0;
+   }
 
 #ifdef DEBUG
    printf("name  [%s]\n", buf);
