@@ -1,4 +1,4 @@
-/* $Id: search_gui.c,v 1.47 2008/06/19 04:12:07 rikster5 Exp $ */
+/* $Id: search_gui.c,v 1.48 2009/07/03 20:20:55 rikster5 Exp $ */
 
 /*******************************************************************************
  * search_gui.c
@@ -192,12 +192,12 @@ static int search_address_or_contacts(const char *needle, GtkWidget *clist)
    /* Get addresses and move to a contacts structure, or get contacts directly */
    if (address_version==0) {
       addr_list = NULL;
-      get_addresses2(&addr_list, SORT_ASCENDING, 2, 2, 1, CATEGORY_ALL);
+      get_addresses2(&addr_list, SORT_ASCENDING, 2, 2, 2, CATEGORY_ALL);
       copy_addresses_to_contacts(addr_list, &cont_list);
       free_AddressList(&addr_list);
    } else {
       cont_list = NULL;
-      get_contacts2(&cont_list, SORT_ASCENDING, 2, 2, 1, CATEGORY_ALL);
+      get_contacts2(&cont_list, SORT_ASCENDING, 2, 2, 2, CATEGORY_ALL);
    }
 
    if (cont_list==NULL) {
