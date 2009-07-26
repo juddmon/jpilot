@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.105 2009/02/09 00:28:34 rikster5 Exp $ */
+/* $Id: sync.c,v 1.106 2009/07/26 03:13:06 rikster5 Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -1285,7 +1285,7 @@ int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
       jp_logf(JP_LOG_GUI, "flags=0x%x\n", info.flags);
       jp_logf(JP_LOG_GUI, "backup_flag=%d\n", info.flags & dlpDBFlagBackup);
 #endif
-      /* If modification times are the same then we don t need to fetch it */
+      /* If modification times are the same then we don't need to fetch it */
       if (info.modifyDate == statb.st_mtime) {
 	 jp_logf(JP_LOG_DEBUG, "%s up to date, modify date (2) %ld\n", info.name, info.modifyDate);
 	 jp_logf(JP_LOG_GUI, _("%s (Creator ID '%s') is up to date, fetch skipped.\n"), db_copy_name, creator);
