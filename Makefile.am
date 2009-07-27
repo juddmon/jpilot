@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.59 2008/12/15 03:35:45 judd Exp $
+# $Id: Makefile.am,v 1.60 2009/07/27 20:05:40 rikster5 Exp $
 
 SUBDIRS = Expense SyncTime KeyRing dialer m4 po icons docs empty
 
@@ -196,6 +196,6 @@ ChangeLog.cvs:
 	's/<rousseau\@hostname>/Ludovic Rousseau <ludovic.rousseau\@free.fr>/; \
 	s/<judd\@hostname>/Judd Montgomery <judd\@jpilot.org>/; \
 	s/<desrod\@hostname>/David A. Desrosiers <david.a.desrosiers\@gmail.com>/; \
-	s/<rikster5\@hostname>/Rik Wehbring <rdrider0-jpilot\@yahoo.com>/' > $@
+	s/<rikster5\@hostname>/Rik Wehbring <jpilot\@nomad.inbox5.com>/' > $@
 
 
