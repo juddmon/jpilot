@@ -1,4 +1,4 @@
-/* $Id: otherconv.c,v 1.40 2009/07/31 17:59:08 rikster5 Exp $ */
+/* $Id: otherconv.c,v 1.41 2009/07/31 21:22:17 rikster5 Exp $ */
 
 /*******************************************************************************
  * otherconv.c
@@ -51,7 +51,7 @@
 
 #define OC_FREE_ICONV(conv) oc_free_iconv(__FUNCTION__, conv,#conv)
 
-#undef OTHERCONV_DEBUG
+/* #define OTHERCONV_DEBUG */
 
 /******************************* Global vars **********************************/
 static GIConv glob_topda = NULL;
