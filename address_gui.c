@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.232 2009/05/06 20:13:54 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.233 2009/07/31 02:08:49 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -1286,25 +1286,24 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	     mcont->cont.entry[contCustom6] ||
 	     mcont->cont.entry[contCustom7] ||
 	     mcont->cont.entry[contCustom8] ||
-	     mcont->cont.entry[contCustom9] ||
-	     mcont->cont.entry[contNote]) {
-	    int firstnote=1;
+	     mcont->cont.entry[contCustom9]) { 
+	     for (n=contCustom1; n<=contCustom9; n++) {
+                if (mcont->cont.entry[n]) {
+	           const gchar *label = contact_app_info.customLabels[n-contCustom1];
+	           gchar *vlabel;
+	           vlabel = g_strcanon(g_ascii_strup(label, -1),
+			    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-", '-');
+	           fprintf(out, "X-%s:", vlabel);
+	           g_free(vlabel);
+	           str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[n]);
+	           fprintf(out, "%s"CRLF, csv_text);
+                }
+             }
+	 }
+	 if (mcont->cont.entry[contNote]) {
 	    fprintf(out, "NOTE:");
-	    for (n=contCustom1; n<=contNote; n++) {
-	       if (mcont->cont.entry[n]) {
-		  str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[n]);
-		  if (firstnote == 0) {
-		     fprintf(out, " ");
-		  }
-		  if (n == contNote && firstnote) {
-		     fprintf(out, "%s\\n"CRLF, csv_text);
-		  } else {
-		     fprintf(out, "%s:\\n"CRLF" %s\\n"CRLF, contact_app_info.labels[n], csv_text);
-		  }
-		  firstnote=0;
-	       }
-	       if (n == contCustom9) n = contNote - 1;
-	    }
+            str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[contNote]);
+            fprintf(out, "%s\\n"CRLF, csv_text);
 	 }
 	 fprintf(out, "END:VCARD"CRLF);
 	 break;
