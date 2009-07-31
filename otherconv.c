@@ -1,4 +1,4 @@
-/* $Id: otherconv.c,v 1.39 2009/07/31 05:09:37 rikster5 Exp $ */
+/* $Id: otherconv.c,v 1.40 2009/07/31 17:59:08 rikster5 Exp $ */
 
 /*******************************************************************************
  * otherconv.c
@@ -64,17 +64,19 @@ static GIConv glob_frompda = NULL;
  * inline function over the library function strlen
  */
 size_t oc_strnlen(const char *s, size_t maxlen);
-inline size_t oc_strnlen(const char *s, size_t maxlen) {
-  return min(strlen(s), maxlen); 
+inline size_t oc_strnlen(const char *s, size_t maxlen) 
+{
+   return min(strlen(s), maxlen); 
 }
 
-void oc_free_iconv(const char *funcname, GIConv conv, char *convname) {
-  if (conv != NULL) {
-    if (g_iconv_close(conv) != 0) {
-      jp_logf(JP_LOG_WARN, "%s: error exit from g_iconv_close(%s)\n",
-	      funcname,convname);
-    }
-  }
+void oc_free_iconv(const char *funcname, GIConv conv, char *convname) 
+{
+   if (conv != NULL) {
+      if (g_iconv_close(conv) != 0) {
+         jp_logf(JP_LOG_WARN, "%s: error exit from g_iconv_close(%s)\n",
+            funcname,convname);
+      }
+   }
 }
 
 /*
@@ -82,41 +84,40 @@ void oc_free_iconv(const char *funcname, GIConv conv, char *convname) {
  */
 char *char_set_to_text(int char_set)
 {
-   switch (char_set)
-   {
-      case CHAR_SET_1250_UTF:
-	 return "CP1250";
+   switch (char_set) {
+    case CHAR_SET_1250_UTF:
+      return "CP1250";
 
-      case CHAR_SET_1253_UTF:
-	 return "CP1253";
+    case CHAR_SET_1253_UTF:
+      return "CP1253";
 
-      case CHAR_SET_ISO8859_2_UTF:
-	 return "ISO8859-2";
+    case CHAR_SET_ISO8859_2_UTF:
+      return "ISO8859-2";
 
-      case CHAR_SET_KOI8_R_UTF:
-	 return "KOI8-R";
+    case CHAR_SET_KOI8_R_UTF:
+      return "KOI8-R";
 
-      case CHAR_SET_1251_UTF:
-	 return "CP1251";
+    case CHAR_SET_1251_UTF:
+      return "CP1251";
 
-      case CHAR_SET_GBK_UTF:
-	 return "GBK";
+    case CHAR_SET_GBK_UTF:
+      return "GBK";
 
-      case CHAR_SET_BIG5_UTF:
-	 return "BIG-5";
+    case CHAR_SET_BIG5_UTF:
+      return "BIG-5";
 
-      case CHAR_SET_SJIS_UTF:
-	 return "SJIS";
+    case CHAR_SET_SJIS_UTF:
+      return "SJIS";
 
-      case CHAR_SET_1255_UTF:
-	 return "CP1255";
+    case CHAR_SET_1255_UTF:
+      return "CP1255";
 
-      case CHAR_SET_949_UTF:
-	 return "CP949";
+    case CHAR_SET_949_UTF:
+      return "CP949";
 
-      case CHAR_SET_1252_UTF:
-      default:
-	 return "CP1252";
+    case CHAR_SET_1252_UTF:
+    default:
+      return "CP1252";
    }
 }
 
@@ -128,34 +129,36 @@ char *char_set_to_text(int char_set)
  * Returns 0 if OK, -1 if iconv could not be initialized
  *  (probably because of bad charset string)
  */
-int otherconv_init(void) {
-  long char_set;
-
-  get_pref(PREF_CHAR_SET, &char_set, NULL);
-
-  /* (re)open the "to" iconv */
-  OC_FREE_ICONV(glob_topda);
-  glob_topda = g_iconv_open(char_set_to_text(char_set), HOST_CS);
-  if (glob_topda == (GIConv)(-1))
-     return EXIT_FAILURE;
-
-  /* (re)open the "from" iconv */
-  OC_FREE_ICONV(glob_frompda);
-  glob_frompda = g_iconv_open(HOST_CS, char_set_to_text(char_set));
-  if (glob_frompda == (GIConv)(-1)) {
-    OC_FREE_ICONV(glob_topda);
-     return EXIT_FAILURE;
-  }
-  return EXIT_SUCCESS;
+int otherconv_init(void) 
+{
+   long char_set;
+ 
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
+ 
+   /* (re)open the "to" iconv */
+   OC_FREE_ICONV(glob_topda);
+   glob_topda = g_iconv_open(char_set_to_text(char_set), HOST_CS);
+   if (glob_topda == (GIConv)(-1))
+      return EXIT_FAILURE;
+ 
+   /* (re)open the "from" iconv */
+   OC_FREE_ICONV(glob_frompda);
+   glob_frompda = g_iconv_open(HOST_CS, char_set_to_text(char_set));
+   if (glob_frompda == (GIConv)(-1)) {
+      OC_FREE_ICONV(glob_topda);
+      return EXIT_FAILURE;
+   }
+   return EXIT_SUCCESS;
 }
 
 /*
  * Module finalization function
  * closes the iconvs
  */
-void otherconv_free(void) {
-  OC_FREE_ICONV(glob_topda);
-  OC_FREE_ICONV(glob_frompda);
+void otherconv_free(void) 
+{
+   OC_FREE_ICONV(glob_topda);
+   OC_FREE_ICONV(glob_frompda);
 }
 
 /*
@@ -164,49 +167,50 @@ void otherconv_free(void) {
  */
 char *other_to_UTF(const char *buf, int buf_len)
 {
-  size_t rc;
-  char *outbuf;
-  gsize bytes_read;
-  GError *err = NULL;
-  size_t str_len;
-
+   size_t rc;
+   char *outbuf;
+   gsize bytes_read;
+   GError *err = NULL;
+   size_t str_len;
+ 
 #ifdef OTHERCONV_DEBUG
-  jp_logf(JP_LOG_DEBUG, "%s:%s reset iconv state...\n", __FILE__, __FUNCTION__);
+   jp_logf(JP_LOG_DEBUG, "%s:%s reset iconv state...\n", __FILE__, __FUNCTION__);
 #endif
-  rc = g_iconv(glob_frompda, NULL, NULL, NULL, NULL);
+   rc = g_iconv(glob_frompda, NULL, NULL, NULL, NULL);
 #ifdef OTHERCONV_DEBUG
-  jp_logf(JP_LOG_DEBUG, "%s:%s converting   [%s]\n", __FILE__, __FUNCTION__, buf);
+   jp_logf(JP_LOG_DEBUG, "%s:%s converting   [%s]\n", __FILE__, __FUNCTION__, buf);
 #endif
-
-  if (buf_len == -1) {
-     str_len = -1;
-  } else {
-     str_len = oc_strnlen(buf, buf_len-1);  // -1 leaves room for \0 terminator
-  }
-
-  outbuf = (char *)g_convert_with_iconv((gchar *)buf,
-           str_len, glob_frompda, &bytes_read, NULL, &err);
-
-  if (err != NULL) {
+ 
+   if (buf_len == -1) {
+      str_len = -1;
+   } else {
+      str_len = oc_strnlen(buf, buf_len-1);  // -1 leaves room for \0 terminator
+   }
+ 
+   outbuf = (char *)g_convert_with_iconv((gchar *)buf,
+            str_len, glob_frompda, &bytes_read, NULL, &err);
+ 
+   if (err != NULL) {
       char c;
       char *head, *tail;
       int  outbuf_len;
-	  char *tmp_buf = (char *)buf;
+      char *tmp_buf = (char *)buf;
       static int call_depth = 0;
       printf("ERROR HAPPENED\n");
       if (0 == call_depth)
-	 jp_logf(JP_LOG_WARN, "%s:%s g_convert_with_iconv error: %s, buff: %s\n",
-	    __FILE__, __FUNCTION__, err ? err->message : "last char truncated",
-	 buf);
+         jp_logf(JP_LOG_WARN, "%s:%s g_convert_with_iconv error: %s, buff: %s\n",
+                              __FILE__, __FUNCTION__, 
+                              err ? err->message : "last char truncated",
+                              buf);
       if (err != NULL)
-	 g_error_free(err);
+         g_error_free(err);
       else
-	 g_free(outbuf);
-
+         g_free(outbuf);
+ 
       if (buf_len == -1) {
          buf_len = strlen(buf); 
       }
-
+ 
       /* convert the head, skip the problematic char, convert the tail */
       c = tmp_buf[bytes_read];
       tmp_buf[bytes_read] = '\0';
@@ -216,31 +220,32 @@ char *other_to_UTF(const char *buf, int buf_len)
                                   &bytes_read, 
                                   NULL, NULL);
       tmp_buf[bytes_read] = c;
-
+ 
       call_depth++;
       tail = other_to_UTF(tmp_buf + bytes_read +1, buf_len - bytes_read - 1);
       call_depth--;
-
+ 
       outbuf_len = strlen(head) +4 + strlen(tail)+1;
       outbuf = g_malloc(outbuf_len);
       g_snprintf(outbuf, outbuf_len, "%s\\%02X%s", head, (unsigned char)c, tail);
-
+ 
       g_free(head);
       g_free(tail);
-  }
-
+   }
+ 
 #ifdef OTHERCONV_DEBUG
-  jp_logf(JP_LOG_DEBUG, "%s:%s converted to [%s]\n", __FILE__, __FUNCTION__, outbuf);
+   jp_logf(JP_LOG_DEBUG, "%s:%s converted to [%s]\n", __FILE__, __FUNCTION__, outbuf);
 #endif
-  /*
-   * Note: outbuf was allocated by glib, so should be freed with g_free
-   * To be 100% safe, I should have done strncpy to a new malloc-allocated string.
-   * (at least under an 'if (!g_mem_is_system_malloc())' test)
-   *
-   * However, unless you replace the default GMemVTable, freeing with C free should be fine
-   *  so I decided this is not worth the overhead  -- Amit Aronovitch
-   */
-  return outbuf;
+   /*
+    * Note: outbuf was allocated by glib, so should be freed with g_free
+    * To be 100% safe, I should have done strncpy to a new malloc-allocated 
+    * string. (at least under an 'if (!g_mem_is_system_malloc())' test)
+    *
+    * However, unless you replace the default GMemVTable, freeing with C free
+    * should be fine so I decided this is not worth the overhead.
+    * -- Amit Aronovitch
+    */
+   return outbuf;
 }
 
 /*
@@ -248,57 +253,57 @@ char *other_to_UTF(const char *buf, int buf_len)
  */
 void UTF_to_other(char *const buf, int buf_len)
 {
-  gsize inleft,outleft;
-  gchar *inptr, *outptr;
-  size_t rc;
-  char *errstr = NULL;
-  char buf_out[1000];
-  char *buf_out_ptr = NULL;
-  int failed = FALSE;
+   gsize inleft,outleft;
+   gchar *inptr, *outptr;
+   size_t rc;
+   char *errstr = NULL;
+   char buf_out[1000];
+   char *buf_out_ptr = NULL;
+   int failed = FALSE;
 
 #ifdef OTHERCONV_DEBUG
-  jp_logf(JP_LOG_DEBUG, "%s:%s reset iconv state...\n", __FILE__, __FUNCTION__);
+   jp_logf(JP_LOG_DEBUG, "%s:%s reset iconv state...\n", __FILE__, __FUNCTION__);
 #endif
-  rc = g_iconv(glob_topda, NULL, NULL, NULL, NULL);
+   rc = g_iconv(glob_topda, NULL, NULL, NULL, NULL);
 #ifdef OTHERCONV_DEBUG
-  jp_logf(JP_LOG_DEBUG, "%s:%s converting   [%s]\n", __FILE__, __FUNCTION__, buf);
+   jp_logf(JP_LOG_DEBUG, "%s:%s converting   [%s]\n", __FILE__, __FUNCTION__, buf);
 #endif
 
-  inleft = oc_strnlen(buf, buf_len);
-  outleft = buf_len-1;
-  inptr = buf;
+   inleft = oc_strnlen(buf, buf_len);
+   outleft = buf_len-1;
+   inptr = buf;
 
   /* Most strings can be converted without recourse to malloc */
-  if (buf_len > sizeof(buf_out)) {
-     buf_out_ptr = malloc(buf_len);
-     if (NULL == buf_out_ptr) {
-        jp_logf(JP_LOG_WARN, "UTF_to_other: %s\n", "Out of memory");
-        return;
+   if (buf_len > sizeof(buf_out)) {
+      buf_out_ptr = malloc(buf_len);
+      if (NULL == buf_out_ptr) {
+         jp_logf(JP_LOG_WARN, "UTF_to_other: %s\n", "Out of memory");
+         return;
+      }
+      outptr = buf_out_ptr;
+   } else {
+      outptr = buf_out;
+   }
+
+   rc = g_iconv(glob_topda, &inptr, &inleft, &outptr, &outleft);
+   *outptr = 0; /* NULL terminate whatever fraction was converted */
+ 
+   if ((size_t)(-1) == rc) {
+     switch (errno) {
+      case EILSEQ:
+        errstr = "iconv: unconvertible sequence at place %d in %s\n";
+        failed = TRUE;
+        break;
+      case EINVAL:
+        errstr = "iconv: incomplete UTF-8 sequence at place %d in %s\n";
+        break;
+      case E2BIG:
+        errstr = "iconv: buffer filled. stopped at place %d in %s\n";
+        break;
+      default:
+        errstr = "iconv: unexpected error at place %d in %s\n";
      }
-     outptr = buf_out_ptr;
-  } else {
-     outptr = buf_out;
-  }
-
-  rc = g_iconv(glob_topda, &inptr, &inleft, &outptr, &outleft);
-  *outptr = 0; /* NULL terminate whatever fraction was converted */
-
-  if ((size_t)(-1) == rc) {
-    switch (errno) {
-    case EILSEQ:
-      errstr = "iconv: unconvertible sequence at place %d in %s\n";
-      failed = TRUE;
-      break;
-    case EINVAL:
-      errstr = "iconv: incomplete UTF-8 sequence at place %d in %s\n";
-      break;
-    case E2BIG:
-      errstr = "iconv: buffer filled. stopped at place %d in %s\n";
-      break;
-    default:
-      errstr = "iconv: unexpected error at place %d in %s\n";
-    }
-  }
+   }
 
    if (buf_out_ptr) {
       g_strlcpy(buf, buf_out_ptr, buf_len);
@@ -321,7 +326,7 @@ void UTF_to_other(char *const buf, int buf_len)
    }
 
 #ifdef OTHERCONV_DEBUG
-  jp_logf(JP_LOG_DEBUG, "%s:%s converted to [%s]\n", __FILE__, __FUNCTION__, buf);
+   jp_logf(JP_LOG_DEBUG, "%s:%s converted to [%s]\n", __FILE__, __FUNCTION__, buf);
 #endif
 }
 
