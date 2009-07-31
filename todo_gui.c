@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.154 2009/05/06 20:14:01 rousseau Exp $ */
+/* $Id: todo_gui.c,v 1.155 2009/07/31 16:46:16 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -1003,16 +1003,35 @@ static void cb_cancel(GtkWidget *widget, gpointer data)
 static void cb_edit_cats(GtkWidget *widget, gpointer data)
 {
    struct ToDoAppInfo ai;
+   char db_name[FILENAME_MAX];
+   char pdb_name[FILENAME_MAX];
    char full_name[FILENAME_MAX];
    unsigned char buffer[65536];
    int num;
    size_t size;
    void *buf;
    struct pi_file *pf;
+#ifdef ENABLE_MANANA
+   long ivalue;
+#endif
 
    jp_logf(JP_LOG_DEBUG, "cb_edit_cats\n");
 
-   get_home_file_name("ToDoDB.pdb", full_name, sizeof(full_name));
+#ifdef ENABLE_MANANA
+   get_pref(PREF_MANANA_MODE, &ivalue, NULL);
+   if (ivalue) {
+      strcpy(pdb_name, "MañanaDB.pdb");
+      strcpy(db_name, "MañanaDB");
+   } else {
+      strcpy(pdb_name, "ToDoDB.pdb");
+      strcpy(db_name, "ToDoDB");
+   }
+#else
+   strcpy(pdb_name, "ToDoDB.pdb");
+   strcpy(db_name, "ToDoDB");
+#endif
+
+   get_home_file_name(pdb_name, full_name, sizeof(full_name));
 
    buf=NULL;
    memset(&ai, 0, sizeof(ai));
@@ -1022,17 +1041,17 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
 
    num = unpack_ToDoAppInfo(&ai, buf, size);
    if (num <= 0) {
-      jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), "ToDoDB.pdb");
+      jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), pdb_name);
       return;
    }
 
    pi_file_close(pf);
 
-   edit_cats(widget, "ToDoDB", &(ai.category));
+   edit_cats(widget, db_name, &(ai.category));
 
    size = pack_ToDoAppInfo(&ai, buffer, sizeof(buffer));
 
-   pdb_file_write_app_block("ToDoDB", buffer, size);
+   pdb_file_write_app_block(db_name, buffer, size);
 
    cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
 }

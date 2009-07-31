@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.172 2009/07/26 03:13:07 rikster5 Exp $ */
+/* $Id: utils.c,v 1.173 2009/07/31 16:46:16 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -544,6 +544,7 @@ int check_copy_DBs_to_home(void)
       "ContactsDB-PAdd.pdb",
       "ToDoDB.pdb",
       "TasksDB-PTod.pdb",
+      "MañanaDB.pdb",
       "MemoDB.pdb",
       "MemosDB-PMem.pdb",
       "Memo32DB.pdb",
