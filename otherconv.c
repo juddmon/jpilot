@@ -1,4 +1,4 @@
-/* $Id: otherconv.c,v 1.38 2009/05/06 20:13:59 rousseau Exp $ */
+/* $Id: otherconv.c,v 1.39 2009/07/31 05:09:37 rikster5 Exp $ */
 
 /*******************************************************************************
  * otherconv.c
@@ -286,7 +286,7 @@ void UTF_to_other(char *const buf, int buf_len)
   if ((size_t)(-1) == rc) {
     switch (errno) {
     case EILSEQ:
-      errstr = "iconv: unconvertable sequence at place %d in %s\n";
+      errstr = "iconv: unconvertible sequence at place %d in %s\n";
       failed = TRUE;
       break;
     case EINVAL:
