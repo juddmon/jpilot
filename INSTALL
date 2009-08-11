@@ -1,5 +1,5 @@
 ==============================================================================
-Last updated: 23 Nov 2005 by rw
+Last updated: 11 Aug 2009 by rw
 ==============================================================================
 
 === Web ======================================================================
@@ -10,7 +10,7 @@ http://www.jpilot.org
 
 === Documents ================================================================
 Be sure to read the docs in the doc directory, or if installed from the RPM
-in /usr/share/doc/jpilot-0.99.8/.
+in /usr/share/doc/jpilot-1.6.4/.
 ==============================================================================
 
 
@@ -21,20 +21,21 @@ data just to be on the safe side.
 
 
 === Requirements =============================================================
-To compile J-Pilot you need to have GTK+ 1.2 or higher installed.
-You can find out what version you have by running "gtk-config --version".
-GTK+ requires glib.  The glib version probably should match the gtk version.
+To compile J-Pilot you need to have GTK+ 2.0.3 or higher installed.
+You can find out which version you have by running "gtk-config --version".
+GTK+ requires glib.  The glib version should probably match the gtk version.
 You can also do a "glib-config --version".
 You can get these tools at http://www.gtk.org
 
-Pilot link must be installed and working.
+Pilot-link 0.12.4 or higher must be installed and working.  
 http://www.pilot-link.org
 RedHat users must also have the pilot-link-dev rpm installed for the header
  files so that jpilot can compile.  You don't need these if you install the
 jpilot RPM.
 
-If you want i18n support you should have gettext installed (preferably GNU
-gettext).  If you don't have, or want it, use "configure --disable-nls"
+If you want i18n support you should have gettext 0.16.1 or higher installed
+(preferably GNU gettext).  If you don't have, or want it, 
+use "configure --disable-nls"
 ==============================================================================
 
 
@@ -55,7 +56,7 @@ To make an rpm just do rpm -tb jpilot-{version}.tar.gz
 I have added an example plugin Expense to match the palm Expense application.
 I have included 2 other plugins:
 SyncTime - This sets the time on the pilot from the desktop clock.
-KeyRing - KeyRing is a GNU licensed palm application to keep encrypted
+KeyRing  - KeyRing is a GNU licensed palm application to keep encrypted
  passwords and other data.
 
 configure --disable-plugins can be used if plugins aren't desired.
