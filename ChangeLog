@@ -1,3 +1,16 @@
+1.6.2 - 02/15/09
+ Resolve segmentation fault when editing Contacts with attached pictures
+ Resolve error where Contacts created on Palm could not be deleted with Jpilot
+ Resolve sync error with simultaneously modified Contacts
+ Overhaul of Expense plugin
+ As always many many bug other fixes and small changes, see Changelog.cvs for details
+
+ Added newer category syncronization code
+ Added libgcrypt support
+ Fixed Mac OS X bugs/crash
+ Now requires pilot-link > 0.12.0
+ As always many many bug other fixes and small changes, see Changelog.cvs for details
+
 1.6.1 - 12/15/08
  Improved internationalization support
  Added newer category syncronization code
