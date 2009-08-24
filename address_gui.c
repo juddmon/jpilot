@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.233 2009/07/31 02:08:49 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.234 2009/08/24 14:48:22 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -3493,9 +3493,8 @@ static gboolean cb_key_pressed(GtkWidget *widget, GdkEventKey *event)
 {
    GtkTextIter    cursor_pos_iter;
    GtkTextBuffer *text_buffer;
-   int page;
-   int first, next;
-   int i, j, found;
+   int page, next;
+   int i, j, found, break_loop;
 
    if ((event->keyval != GDK_Tab) &&
        (event->keyval != GDK_ISO_Left_Tab)) {
@@ -3504,37 +3503,43 @@ static gboolean cb_key_pressed(GtkWidget *widget, GdkEventKey *event)
    /* See if they are at the end of the text */
    text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget));
    gtk_text_buffer_get_iter_at_mark(text_buffer,&cursor_pos_iter,gtk_text_buffer_get_insert(text_buffer));
-   if (!(gtk_text_iter_is_end(&cursor_pos_iter)))
-       {
-	  return FALSE;
-       }
+   if (!(gtk_text_iter_is_end(&cursor_pos_iter))) {
+      return FALSE;
+   }
    gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
 
-   page = found = 0;
-   next = first = -1;
-   for (i=j=0; i<schema_size; i++) {
+   // Initialize page and next widget in case search fails
+   page = schema[0].notebook_page;
+   next = schema[0].record_field;
+
+   found = break_loop = 0;
+   for (i=j=0; i<schema_size && !break_loop; i++) {
       switch (schema[i].type) {
        case ADDRESS_GUI_LABEL_TEXT:
        case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
        case ADDRESS_GUI_ADDR_MENU_TEXT:
        case ADDRESS_GUI_IM_MENU_TEXT:
        case ADDRESS_GUI_WEBSITE_TEXT:
-	 if (first < 0) {
-	    page = schema[i].notebook_page;
-	    first = next = schema[i].record_field;
-	 }
-	 if (found) {
-	    page = schema[i].notebook_page;
-	    next = schema[i].record_field;
-	    i = 10000;
-	    break;
-	 }
-	 if (addr_text[schema[i].record_field]==widget) {
-	    found = 1;
-	 }
-	 j++;
+         if (found) {
+            page = schema[i].notebook_page;
+            next = schema[i].record_field;
+            break_loop = 1;
+            break;
+         }
+         if (addr_text[schema[i].record_field]==widget) {
+            found = 1;
+         } else {
+            j = i;
+         }
       }
    }
+
+   if (event->keyval == GDK_ISO_Left_Tab) {
+      j = (j < 0 ? 0 : j);
+      page = schema[j].notebook_page;
+      next = schema[j].record_field;
+   }
+
    gtk_notebook_set_page(GTK_NOTEBOOK(notebook), page);
    gtk_widget_grab_focus(GTK_WIDGET(addr_text[next]));
 

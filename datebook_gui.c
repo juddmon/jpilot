@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.188 2009/05/06 20:13:55 rousseau Exp $ */
+/* $Id: datebook_gui.c,v 1.189 2009/08/24 14:48:22 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -3586,6 +3586,7 @@ cb_hide_menu_time(GtkWidget *widget, gpointer data)
 #define PRESSED_A            101
 #define PRESSED_TAB          102
 #define PRESSED_MINUS        103
+#define PRESSED_SHIFT_TAB    104
 
 static void entry_key_pressed(int next_digit, int begin_or_end)
 {
@@ -3646,24 +3647,28 @@ static gboolean cb_entry_key_pressed(GtkWidget *widget,
    if ((event->keyval >= GDK_0) && (event->keyval <= GDK_9)) {
       digit = (event->keyval)-GDK_0;
    }
-   if ((event->keyval >= GDK_KP_0) && (event->keyval <= GDK_KP_9)) {
+   else if ((event->keyval >= GDK_KP_0) && (event->keyval <= GDK_KP_9)) {
       digit = (event->keyval)-GDK_KP_0;
    }
-   if ((event->keyval == GDK_P) || (event->keyval == GDK_p)) {
+   else if ((event->keyval == GDK_P) || (event->keyval == GDK_p)) {
       digit = PRESSED_P;
    }
-   if ((event->keyval == GDK_A) || (event->keyval == GDK_a)) {
+   else if ((event->keyval == GDK_A) || (event->keyval == GDK_a)) {
       digit = PRESSED_A;
    }
-   if (event->keyval == GDK_Tab) {
+   else if (event->keyval == GDK_Tab) {
       digit = PRESSED_TAB;
    }
-   if ((event->keyval == GDK_KP_Subtract) || (event->keyval == GDK_minus)) {
+   else if (event->keyval == GDK_ISO_Left_Tab) {
+      digit = PRESSED_SHIFT_TAB;
+   }
+   else if ((event->keyval == GDK_KP_Subtract) || (event->keyval == GDK_minus)) {
       digit = PRESSED_MINUS;
    }
 
    /* time entry widgets are cycled focus by pressing "-"
-    * Tab will go to the next text widget */
+    * Tab will go to the next widget
+    * Shift-Tab will go to the previous widget */
    if ((digit==PRESSED_TAB) || (digit==PRESSED_MINUS)) {
       if (widget==begin_time_entry) {
 	 gtk_widget_grab_focus(GTK_WIDGET(end_time_entry));
@@ -3675,6 +3680,14 @@ static gboolean cb_entry_key_pressed(GtkWidget *widget,
 	 if (digit==PRESSED_TAB) {
 	    gtk_widget_grab_focus(GTK_WIDGET(dbook_desc));
 	 }
+      }
+   }
+   else if (digit==PRESSED_SHIFT_TAB) {
+      if (widget==begin_time_entry) {
+         gtk_widget_grab_focus(GTK_WIDGET(begin_date_button));
+      }
+      else if (widget==end_time_entry) {
+         gtk_widget_grab_focus(GTK_WIDGET(begin_time_entry));
       }
    }
 
@@ -3695,22 +3708,33 @@ static gboolean cb_entry_key_pressed(GtkWidget *widget,
    return FALSE;
 }
 
-static gboolean cb_key_pressed(GtkWidget *widget, 
-                               GdkEventKey *event,
-	                       gpointer next_widget)
+static gboolean cb_key_pressed_tab(GtkWidget *widget, 
+                                   GdkEventKey *event,
+                                   gpointer next_widget)
 {
-      GtkTextIter    cursor_pos_iter;
-      GtkTextBuffer *text_buffer;
+   GtkTextIter    cursor_pos_iter;
+   GtkTextBuffer *text_buffer;
 
    if (event->keyval == GDK_Tab) {
       text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget));
       gtk_text_buffer_get_iter_at_mark(text_buffer,&cursor_pos_iter,gtk_text_buffer_get_insert(text_buffer));
-      if (gtk_text_iter_is_end(&cursor_pos_iter))
-	  {
-	     gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
-	     gtk_widget_grab_focus(GTK_WIDGET(next_widget));
-	     return TRUE;
-	  }
+      if (gtk_text_iter_is_end(&cursor_pos_iter)) {
+         gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
+         gtk_widget_grab_focus(GTK_WIDGET(next_widget));
+         return TRUE;
+      }
+   }
+   return FALSE;
+}
+
+static gboolean cb_key_pressed_shift_tab(GtkWidget *widget, 
+                                         GdkEventKey *event,
+                                         gpointer next_widget)
+{
+   if (event->keyval == GDK_ISO_Left_Tab) {
+      gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
+      gtk_widget_grab_focus(GTK_WIDGET(next_widget));
+      return TRUE;
    }
    return FALSE;
 }
@@ -4823,9 +4847,14 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    /* end details */
 
-   /* Capture the TAB key in dbook_desc */
+   /* Capture the TAB key in text fields */
    gtk_signal_connect(GTK_OBJECT(dbook_desc), "key_press_event",
-		      GTK_SIGNAL_FUNC(cb_key_pressed), dbook_note);
+		      GTK_SIGNAL_FUNC(cb_key_pressed_tab), dbook_note);
+   gtk_signal_connect(GTK_OBJECT(dbook_desc), "key_press_event",
+                      GTK_SIGNAL_FUNC(cb_key_pressed_shift_tab), end_time_entry);
+
+   gtk_signal_connect(GTK_OBJECT(dbook_note), "key_press_event",
+                      GTK_SIGNAL_FUNC(cb_key_pressed_shift_tab), dbook_desc);
 
    /* Capture the Enter & Shift-Enter key combinations to move back and 
     * forth between the left- and right-hand sides of the display. */

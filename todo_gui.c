@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.155 2009/07/31 16:46:16 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.156 2009/08/24 14:48:23 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -1899,12 +1899,13 @@ static int todo_find(void)
    return EXIT_SUCCESS;
 }
 
-static gboolean
-  cb_key_pressed(GtkWidget *widget, GdkEventKey *event,
-                 gpointer next_widget)
+static gboolean cb_key_pressed_tab(GtkWidget *widget, 
+                                   GdkEventKey *event,
+                                   gpointer next_widget)
 {
-      GtkTextIter   cursor_pos_iter;
-      GtkTextBuffer *text_buffer;
+   GtkTextIter   cursor_pos_iter;
+   GtkTextBuffer *text_buffer;
+
    if (event->keyval == GDK_Tab) {
       /* See if they are at the end of the text */
       text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget));
@@ -1914,6 +1915,18 @@ static gboolean
          gtk_widget_grab_focus(GTK_WIDGET(next_widget));
          return TRUE;
       }
+   }
+   return FALSE;
+}
+   
+static gboolean cb_key_pressed_shift_tab(GtkWidget *widget, 
+                                         GdkEventKey *event,
+                                         gpointer next_widget)
+{
+   if (event->keyval == GDK_ISO_Left_Tab) {
+      gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
+      gtk_widget_grab_focus(GTK_WIDGET(next_widget));
+      return TRUE;
    }
    return FALSE;
 }
@@ -2326,7 +2339,10 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    /* Capture the TAB key to change focus with it */
    gtk_signal_connect(GTK_OBJECT(todo_desc), "key_press_event",
-                      GTK_SIGNAL_FUNC(cb_key_pressed), todo_note);
+                      GTK_SIGNAL_FUNC(cb_key_pressed_tab), todo_note);
+
+   gtk_signal_connect(GTK_OBJECT(todo_note), "key_press_event",
+                      GTK_SIGNAL_FUNC(cb_key_pressed_shift_tab), todo_desc);
 
    /* Capture the Enter & Shift-Enter key combinations to move back and 
     * forth between the left- and right-hand sides of the display. */
