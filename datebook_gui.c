@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.189 2009/08/24 14:48:22 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.190 2009/08/27 15:05:30 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -4871,15 +4871,6 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_signal_connect(GTK_OBJECT(clist), "key_press_event",
 		      GTK_SIGNAL_FUNC(cb_keyboard), NULL);
 
-   /* Notebook tabs have to be shown before the call to show_all */
-   /* TODO: This seems to be old GTK1 code no longer required 
-    * Commented out (6/16/08).  Remove if no complaints on (7/16/09)
-   gtk_widget_show(notebook_tab1);
-   gtk_widget_show(notebook_tab2);
-   gtk_widget_show(notebook_tab3);
-   gtk_widget_show(notebook_tab4);
-   gtk_widget_show(notebook_tab5);
-   */
    gtk_widget_show_all(vbox);
    gtk_widget_show_all(hbox);
 
