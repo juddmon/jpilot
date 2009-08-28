@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.100 2009/08/28 01:44:52 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.101 2009/08/28 01:51:56 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -2401,10 +2401,6 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    hbox_temp = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox1), hbox_temp, FALSE, FALSE, 0);
    
-   /* TODO: Could remove "Category" so that it displays a single 
-    * category bar like the other applications */
-   label = gtk_label_new(_("Category: "));
-   gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 0);
    make_category_menu(&category_menu1, keyr_cat_menu_item1,
                       sort_l, cb_category, TRUE, FALSE);
    gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu1, TRUE, TRUE, 0);
@@ -2429,9 +2425,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_clist_set_sort_column(GTK_CLIST(clist), KEYR_NAME_COLUMN);
    gtk_clist_set_compare_func(GTK_CLIST(clist), GtkClistKeyrCompareNocase);
    gtk_clist_set_sort_type(GTK_CLIST(clist), GTK_SORT_ASCENDING);
-   /* TODO: If single category bar is added, switch on shadow type
    gtk_clist_set_shadow_type(GTK_CLIST(clist), SHADOW);
-   */
    gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
 
    gtk_signal_connect(GTK_OBJECT(clist), "click_column",
