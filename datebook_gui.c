@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.193 2009/08/28 02:16:12 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.194 2009/08/28 06:19:40 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -4324,7 +4324,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
 		      GTK_SIGNAL_FUNC(cb_clist_selection),
 		      NULL);
-
+   gtk_clist_set_shadow_type(GTK_CLIST(clist), SHADOW);
    gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
 
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), DB_TIME_COLUMN, TRUE);
