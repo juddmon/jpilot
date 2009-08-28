@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.192 2009/08/28 02:01:58 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.193 2009/08/28 02:16:12 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -754,7 +754,8 @@ void appt_export_ok(int type, const char *filename)
    if (type == EXPORT_TYPE_ICALENDAR) {
       get_pref(PREF_CHAR_SET, &char_set, NULL);
       if (char_set < CHAR_SET_UTF) {
-	 jp_logf(JP_LOG_WARN, _("Host character encoding is not UTF-8 based.\n Exported ical file may not be standards-compliant\n"));
+	 jp_logf(JP_LOG_WARN, _("Host character encoding is not UTF-8 based.\n"
+                                " Exported ical file may not be standards-compliant\n"));
       }
 
       get_pref(PREF_USER, NULL, &svalue);

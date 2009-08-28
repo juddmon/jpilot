@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.234 2009/08/24 14:48:22 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.235 2009/08/28 02:16:11 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -992,7 +992,8 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
    if (type == EXPORT_TYPE_LDIF) {
       get_pref(PREF_CHAR_SET, &char_set, NULL);
       if (char_set < CHAR_SET_UTF) {
-	 jp_logf(JP_LOG_WARN, _("Host character encoding is not UTF-8 based.\n Exported ldif file may not be standards-compliant\n"));
+	 jp_logf(JP_LOG_WARN, _("Host character encoding is not UTF-8 based.\n"
+                                " Exported ldif file may not be standards-compliant\n"));
       }
    }
 

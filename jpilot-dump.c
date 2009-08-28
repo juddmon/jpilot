@@ -1,4 +1,4 @@
-/* $Id: jpilot-dump.c,v 1.32 2009/05/06 20:13:56 rousseau Exp $ */
+/* $Id: jpilot-dump.c,v 1.33 2009/08/28 02:16:12 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot-dump.c
@@ -160,11 +160,12 @@ int dumpical(void)
 
    /* ICAL setup */
    get_pref(PREF_CHAR_SET, &char_set, NULL);
-   /* TODO: uncomment and warn user somehow 
    if (char_set < CHAR_SET_UTF) {
-      jp_logf(JP_LOG_WARN, _("Host character encoding is not UTF-8 based.\n Exported ical file may not be standards-compliant\n"));
+      fprintf(stderr, _("Warning: "
+                        "Host character encoding is not UTF-8 based.\n"
+                        "Exported ical file may not be standards-compliant\n"));
    }
-   */
+
    get_pref(PREF_USER, NULL, &svalue);
    g_strlcpy(text, svalue, 128);
    charset_p2j(text, 128, char_set);
