@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.99 2009/06/11 13:43:55 rousseau Exp $ */
+/* $Id: keyring.c,v 1.100 2009/08/28 01:44:52 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -1792,7 +1792,6 @@ static int verify_pasword(char *ascii_password)
       return EXIT_FAILURE;
    }
 
-   /* TODO: Maybe keep records in memory for performance */
    /* This function takes care of reading the Database for us */
    records=NULL;
    if (jp_read_DB_files("Keys-Gtkr", &records) == -1)
