@@ -1,3 +1,6 @@
+/* XPM */
+
+/* Private records locked icon */
 static char *locked_xpm[] = {
    "15 18 4 1",
    "       c None",
@@ -5,9 +8,9 @@ static char *locked_xpm[] = {
    "g      c #777777777777",
    "w      c #FFFFFFFFFFFF",
    "               ",
-   "      bbb      ",
+   "     bbbbb     ",
    "    bwwwwwb    ",
-   "   bwbbbbwbb   ",
+   "   bwbbbbbwb   ",
    "  bwb     bwb  ",
    "  bwb     bwb  ",
    "  bwb     bwb  ",
@@ -24,6 +27,7 @@ static char *locked_xpm[] = {
    "               "
 };
 
+/* Private records masked icon */
 static char *locked_masked_xpm[] = {
    "15 18 4 1",
    "       c None",
@@ -31,9 +35,9 @@ static char *locked_masked_xpm[] = {
    "g      c #777777777777",
    "w      c #FFFFFFFFFFFF",
    "               ",
-   "      bbb      ",
+   "     bbbbb     ",
    "    bwwwwwb    ",
-   "   bwbbbbwbb   ",
+   "   bwbbbbbwb   ",
    "  bwb     bwb  ",
    "  bwb     bwb  ",
    "  bwb     bwb  ",
@@ -50,6 +54,7 @@ static char *locked_masked_xpm[] = {
    "               "
 };
 
+/* Private records unlocked icon */
 static char *unlocked_xpm[] = {
    "21 18 4 1",
    "       c None",
@@ -57,9 +62,9 @@ static char *unlocked_xpm[] = {
    "g      c #777777777777",
    "w      c #FFFFFFFF0000",
    "                      ",
-   "              bbb     ",
+   "             bbbbb    ",
    "            bwwwwwb   ",
-   "           bwbbbbwbb  ",
+   "           bwbbbbbwb  ",
    "          bwb     bwb ",
    "          bwb     bwb ",
    "          bwb     bwb ",
