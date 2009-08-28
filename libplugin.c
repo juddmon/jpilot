@@ -1,4 +1,4 @@
-/* $Id: libplugin.c,v 1.38 2009/05/06 20:13:58 rousseau Exp $ */
+/* $Id: libplugin.c,v 1.39 2009/08/28 05:53:39 rikster5 Exp $ */
 
 /*******************************************************************************
  * libplugin.c
@@ -932,7 +932,7 @@ static int unpack_header(PC3RecordHeader *header, unsigned char *packed_header)
    return EXIT_SUCCESS;
 }
 
-/* Add jp_ and document */
+/* FIXME: Add jp_ and document */
 int write_header(FILE *pc_out, PC3RecordHeader *header)
 {
    unsigned long len;
