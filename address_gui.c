@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.235 2009/08/28 02:16:11 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.236 2009/08/28 05:38:11 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -2451,7 +2451,6 @@ int change_photo(char *filename)
    while (!feof(in)) {
       count = fread(buf + total_read, 1, 0xFFFF - total_read, in);
       total_read+=count;
-      //fixme possible buffer overflow
       if ((count==0) || (total_read>=0xFFFF)) break;
    }
    r = pclose(in);
