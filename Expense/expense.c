@@ -1,4 +1,4 @@
-/* $Id: expense.c,v 1.68 2009/05/10 09:32:38 rousseau Exp $ */
+/* $Id: expense.c,v 1.69 2009/08/28 04:58:48 rikster5 Exp $ */
 
 /*******************************************************************************
  * expense.c
@@ -1615,14 +1615,13 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_clist_set_column_title(GTK_CLIST(clist), 1, _("Type"));
    gtk_clist_set_column_title(GTK_CLIST(clist), 2, _("Amount"));
 
-   /* TODO: Set auto resize but need a bit more space between columns
+   /* auto resize is used in all the other application clists but here
+    * it produces a cramped layout so a minimum width is specified */
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), 0, TRUE);
+   gtk_clist_set_column_min_width(GTK_CLIST(clist), 0, 44);
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), 1, TRUE);
+   gtk_clist_set_column_min_width(GTK_CLIST(clist), 1, 100);
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), 2, FALSE);
-   */ 
-   gtk_clist_set_column_width(GTK_CLIST(clist), 0, 50);
-   gtk_clist_set_column_width(GTK_CLIST(clist), 1, 140);
-   gtk_clist_set_column_width(GTK_CLIST(clist), 2, 70);
   
    gtk_clist_column_titles_active(GTK_CLIST(clist));
    gtk_signal_connect(GTK_OBJECT(clist), "click_column",
@@ -1631,7 +1630,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
                       GTK_SIGNAL_FUNC(cb_clist_selection),
                       NULL);
-   /* gtk_clist_set_shadow_type(GTK_CLIST(clist), SHADOW);*/
+   gtk_clist_set_shadow_type(GTK_CLIST(clist), SHADOW);
    gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
 
    /* Restore previous sorting configuration */
