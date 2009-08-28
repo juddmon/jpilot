@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.191 2009/08/28 01:40:21 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.192 2009/08/28 02:01:58 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -2569,23 +2569,6 @@ cb_record_changed(GtkWidget *widget,
    }
 }
 
-/* TODO: move this to utils? */
-time_t date2seconds(struct tm *date)
-{
-   struct tm date2;
-   memset(&date2, 0, sizeof(date2));
-   memcpy(&date2, date, sizeof(date2));
-   date2.tm_year=date->tm_year;
-   date2.tm_mon=date->tm_mon;
-   date2.tm_mday=date->tm_mday;
-   date2.tm_hour=date->tm_hour;
-   date2.tm_min=date->tm_min;
-   date2.tm_sec=date->tm_sec;
-   date2.tm_isdst=date->tm_isdst;
-
-   return mktime(&date2);
-}
-
 static void cb_add_new_record(GtkWidget *widget,
 			      gpointer   data)
 {
@@ -2680,8 +2663,8 @@ static void cb_add_new_record(GtkWidget *widget,
    }
 
    if ((new_appt.repeatType != repeatNone) && (!(new_appt.repeatForever))) {
-      t_begin = date2seconds(&(new_appt.begin));
-      t_end = date2seconds(&(new_appt.repeatEnd));
+      t_begin = mktime_dst_adj(&(new_appt.begin));
+      t_end = mktime_dst_adj(&(new_appt.repeatEnd));
       if (t_begin > t_end) {
 	 dialog_generic_ok(notebook, _("Invalid Appointment"), DIALOG_ERROR,
 			   _("The End Date of this appointment\nis before the start date."));
