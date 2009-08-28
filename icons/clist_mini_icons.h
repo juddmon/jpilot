@@ -24,6 +24,31 @@ char * xpm_note[] = {
 
 /* Alarm pixmap */
 char * xpm_alarm[] = {
+"16 16 4 1",
+"# c None",
+". c None",
+"a c #000000",
+"b c #cccccc",
+"................",
+".#aaa.aaa.aaa#..",
+".aaaaabbbaaaaa..",
+".aaabbbbbbbaaa..",
+".aabbbbbbbbbaa..",
+"..abbbbabbbba...",
+".abbbbbabbbbba..",
+".abaaaaabbbbba..",
+".abbbbbbbbbbba..",
+"..abbbbbbbbba...",
+"..abbbbbbbbba...",
+"...abbbbbbba....",
+"....aaaaaaa.....",
+"....aaa.aaa.....",
+"................",
+"................"};
+
+/* Old alarm pixmap: < 8/28/2009 */
+/*
+char * xpm_alarm[] = {
    "16 16 3 1",
    "       c None",
    ".      c #000000000000",
@@ -45,6 +70,7 @@ char * xpm_alarm[] = {
    "                ",
    "                "
 };
+*/
 
 /* ToDo checkbox, blank */
 char * xpm_check[] = {
