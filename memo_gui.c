@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.131 2009/05/06 20:13:58 rousseau Exp $ */
+/* $Id: memo_gui.c,v 1.132 2009/08/28 22:19:37 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -643,8 +643,8 @@ int memo_export(GtkWidget *window)
 {
    int w, h, x, y;
    char *type_text[]={N_("Text"), 
-	                   N_("CSV"), 
-							 NULL};
+	              N_("CSV"), 
+		      NULL};
    int type_int[]={EXPORT_TYPE_TEXT, EXPORT_TYPE_CSV};
 
    gdk_window_get_size(window->window, &w, &h);
@@ -721,7 +721,7 @@ void cb_delete_memo(GtkWidget *widget,
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    if (char_set != CHAR_SET_LATIN1) {
       if (mmemo->memo.text)
-	charset_j2p(mmemo->memo.text, strlen(mmemo->memo.text)+1, char_set);
+	 charset_j2p(mmemo->memo.text, strlen(mmemo->memo.text)+1, char_set);
    }
 
    /* Do masking like Palm OS 3.5 */
@@ -750,7 +750,7 @@ void cb_delete_memo(GtkWidget *widget,
 }
 
 void cb_undelete_memo(GtkWidget *widget,
-		    gpointer   data)
+		      gpointer   data)
 {
    MyMemo *mmemo;
    int flag;
@@ -1214,9 +1214,10 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
    /* Freeze clist to prevent flicker during updating */
    gtk_clist_freeze(GTK_CLIST(clist));
-   if (main)
-	   gtk_signal_disconnect_by_func(GTK_OBJECT(clist),
-				 GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
+   if (main) {
+      gtk_signal_disconnect_by_func(GTK_OBJECT(clist),
+				    GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
+   }
    gtk_clist_clear(GTK_CLIST(clist));
 #ifdef __APPLE__
    gtk_clist_thaw(GTK_CLIST(clist));
@@ -1238,7 +1239,8 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       if ((show_priv == MASK_PRIVATES) &&
 	  (temp_memo->mmemo.attrib & dlpRecAttrSecret)) {
 	 gtk_clist_append(GTK_CLIST(clist), empty_line);
-	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, 0, "----------------------------------------");
+	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, 0,
+                            "----------------------------------------");
 	 clear_mymemo(&temp_memo->mmemo);
 	 gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_memo->mmemo));
 	 gtk_clist_set_row_style(GTK_CLIST(clist), entries_shown, NULL);
@@ -1279,21 +1281,21 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
        case NEW_PC_REC:
        case REPLACEMENT_PALM_REC:
 	 set_bg_rgb_clist_row(clist, entries_shown,
-			  CLIST_NEW_RED, CLIST_NEW_GREEN, CLIST_NEW_BLUE);
+			      CLIST_NEW_RED, CLIST_NEW_GREEN, CLIST_NEW_BLUE);
 	 break;
        case DELETED_PALM_REC:
        case DELETED_PC_REC:
 	 set_bg_rgb_clist_row(clist, entries_shown,
-			  CLIST_DEL_RED, CLIST_DEL_GREEN, CLIST_DEL_BLUE);
+			      CLIST_DEL_RED, CLIST_DEL_GREEN, CLIST_DEL_BLUE);
 	 break;
        case MODIFIED_PALM_REC:
 	 set_bg_rgb_clist_row(clist, entries_shown,
-			  CLIST_MOD_RED, CLIST_MOD_GREEN, CLIST_MOD_BLUE);
+			      CLIST_MOD_RED, CLIST_MOD_GREEN, CLIST_MOD_BLUE);
 	 break;
        default:
 	 if (temp_memo->mmemo.attrib & dlpRecAttrSecret) {
 	    set_bg_rgb_clist_row(clist, entries_shown,
-			     CLIST_PRIVATE_RED, CLIST_PRIVATE_GREEN, CLIST_PRIVATE_BLUE);
+			         CLIST_PRIVATE_RED, CLIST_PRIVATE_GREEN, CLIST_PRIVATE_BLUE);
 	 } else {
 	    gtk_clist_set_row_style(GTK_CLIST(clist), entries_shown, NULL);
 	 }
@@ -1328,7 +1330,7 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
    if (tooltip_widget) {
       if (memo_list==NULL) {
-	    gtk_tooltips_set_tip(glob_tooltips, tooltip_widget, _("0 records"), NULL);
+	 gtk_tooltips_set_tip(glob_tooltips, tooltip_widget, _("0 records"), NULL);
       }
       else {
 	 sprintf(str, _("%d of %d records"), entries_shown, num_entries);

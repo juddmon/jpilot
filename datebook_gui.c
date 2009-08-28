@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.195 2009/08/28 21:22:52 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.196 2009/08/28 22:19:37 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -1223,16 +1223,11 @@ static int datebook_export_gui(GtkWidget *main_window, int x, int y)
 
    return EXIT_SUCCESS;
 }
-/*
- * End Export GUI
- */
-/*
- * End Export Code
- */
+/* End Export GUI */
 
-/*
- * Start Datebk3/4 code
- */
+/* End Export Code */
+
+/* Start Datebk3/4 code */
 #ifdef ENABLE_DATEBK
 static GtkWidget *window_date_cats = NULL;
 static GtkWidget *toggle_button[16];
@@ -1407,6 +1402,7 @@ void cb_date_cats(GtkWidget *widget, gpointer data)
    gtk_widget_show_all(window_date_cats);
 }
 #endif
+/* End Datebk3/4 code */
 
 int datebook_print(int type)
 {
@@ -1509,12 +1505,14 @@ static void cb_cal_dialog(GtkWidget *widget, gpointer data)
    get_pref(PREF_FDOW, &fdow, NULL);
 
    if (GPOINTER_TO_INT(data) == BEGIN_DATE_BUTTON) {
-      r = cal_dialog(GTK_WINDOW(gtk_widget_get_toplevel(widget)), _("Begin On Date"), fdow,
+      r = cal_dialog(GTK_WINDOW(gtk_widget_get_toplevel(widget)), 
+                     _("Begin On Date"), fdow,
 		     &(Pt->tm_mon),
 		     &(Pt->tm_mday),
 		     &(Pt->tm_year));
    } else {
-      r = cal_dialog(GTK_WINDOW(gtk_widget_get_toplevel(widget)), _("End On Date"), fdow,
+      r = cal_dialog(GTK_WINDOW(gtk_widget_get_toplevel(widget)), 
+                     _("End On Date"), fdow,
 		     &(Pt->tm_mon),
 		     &(Pt->tm_mday),
 		     &(Pt->tm_year));
@@ -1595,7 +1593,7 @@ static void init(void)
 	    jp_logf(JP_LOG_DEBUG, "init() found glob_find_id\n");
             /* Position calendar on the actual event or 
              * next future occurrence depending  
-             * on what is closest to the current date */
+             * on which is closest to the current date */
             if (temp_al->mappt.appt.repeatType == repeatNone) {
                 next_found = 0;
             } else {
@@ -1686,9 +1684,7 @@ int dialog_easter(int mday)
 			 text, 1, button_text);
 }
 #endif
-/* */
 /* End of Dialog window code */
-/* */
 
 /* month = 0-11 */
 /* dom = day of month 1-31 */
@@ -3622,8 +3618,8 @@ static gboolean cb_entry_pressed(GtkWidget *w, gpointer data)
    set_begin_end_labels(&begin_date, &end_date, UPDATE_DATE_ENTRIES |
 			UPDATE_DATE_MENUS);
 
-   /* return FALSE to let Gtk know we did not handle the event
-    * this allows Gtk to finish handling it.*/
+   /* return FALSE to let GTK know we did not handle the event
+    * this allows GTK to finish handling it.*/
     return FALSE;
 }
 
@@ -3780,7 +3776,7 @@ static gboolean cb_keyboard(GtkWidget *widget, GdkEventKey *event, gpointer *p)
       current_month = day.tm_mon;
       current_day = day.tm_mday;
 
-      /* This next line prevents a Gtk error message from being printed.
+      /* This next line prevents a GTK error message from being printed.
        * e.g.  If the day were 31 and the next month has <31 days then the
        * select month call will cause an error message since the 31st isn't
        * valid in that month.  So, I set it to 1 first.  */
@@ -4055,9 +4051,7 @@ GtkWidget *create_time_menu(int flags)
    return option;
 }
 
-/*
- * TODO code
- */
+/* ToDo code */
 static void cb_todo_clist_selection(GtkWidget      *clist,
 				    gint           row,
 				    gint           column,
@@ -4094,9 +4088,7 @@ void cb_todos_show(GtkWidget *widget, gpointer data)
    }
 }
 
-/*
- * End TODO code
- */
+/* End ToDo code */
 
 #ifdef DAY_VIEW
 static void cb_resize(GtkWidget *widget, gpointer data)

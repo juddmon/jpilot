@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.237 2009/08/28 21:22:52 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.238 2009/08/28 22:19:36 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -1459,10 +1459,10 @@ int address_export(GtkWidget *window)
 {
    int w, h, x, y;
    char *type_text[]={N_("Text"), 
-	                   N_("CSV"), 
-							 N_("vCard"), 
-							 N_("ldif"), 
-							 NULL};
+	              N_("CSV"), 
+		      N_("vCard"), 
+		      N_("ldif"), 
+		      NULL};
    int type_int[]={EXPORT_TYPE_TEXT, EXPORT_TYPE_CSV, EXPORT_TYPE_VCARD, EXPORT_TYPE_LDIF};
 
    gdk_window_get_size(window->window, &w, &h);
@@ -2335,7 +2335,6 @@ static void cb_category(GtkWidget *item, int selection)
    }
 }
 
-/* Do masking like Palm OS 3.5 */
 static void clear_mycontact(MyContact *mcont)
 {
    mcont->unique_id=0;
@@ -2344,7 +2343,6 @@ static void clear_mycontact(MyContact *mcont)
 
    return;
 }
-/* End Masking */
 
 static void set_button_label_to_date(GtkWidget *button, struct tm *date)
 {
@@ -2398,32 +2396,28 @@ static void cb_check_button_reminder(GtkWidget *widget, gpointer data)
    }
 }
 
-/*
- * Photo Code
- */
+/* Photo Code */
 GtkWidget *image_from_data(void *buf, size_t size)
 {
-    GdkPixbufLoader *loader;
-    GError *error;
-    GdkPixbuf *pb;
-    GtkWidget *image;
+   GdkPixbufLoader *loader;
+   GError *error;
+   GdkPixbuf *pb;
+   GtkWidget *image;
 
-    error=NULL;
-    loader = gdk_pixbuf_loader_new();
-    gdk_pixbuf_loader_write(loader, buf, size, &error);
-    pb = gdk_pixbuf_loader_get_pixbuf(loader);
-    image = g_object_ref(gtk_image_new_from_pixbuf(pb));
-    if (loader) {
-	gdk_pixbuf_loader_close(loader, &error);
-	g_object_unref(loader);
-    }
+   error=NULL;
+   loader = gdk_pixbuf_loader_new();
+   gdk_pixbuf_loader_write(loader, buf, size, &error);
+   pb = gdk_pixbuf_loader_get_pixbuf(loader);
+   image = g_object_ref(gtk_image_new_from_pixbuf(pb));
+   if (loader) {
+      gdk_pixbuf_loader_close(loader, &error);
+      g_object_unref(loader);
+   }
 
-    return image;
+   return image;
 }
 
-//#ifndef HAVE_SIGHANDLER_T
 typedef void (*sighandler_t)(int);
-//#endif
 
 int change_photo(char *filename)
 {
@@ -2616,9 +2610,7 @@ static gint cb_photo_menu_popup(GtkWidget *widget, GdkEvent *event)
 
    return FALSE;
 }
-/*
- * End Photo code
- */
+/* End Photo code */
 
 static void cb_clist_selection(GtkWidget      *clist,
 			       gint           row,
@@ -2815,8 +2807,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 					cont->addressLabel[address_i]);
 	    /* We want to make the notebook page tab label match the type of
 	     * address from the menu.  So, we'll find the nth address menu
-	     * and set whatever page the schema says it resides on
-	     */
+	     * and set whatever page the schema says it resides on */
 	    if (GTK_IS_LABEL(notebook_label[schema[i].notebook_page])) {
 	       gtk_label_set_text(GTK_LABEL(notebook_label[schema[i].notebook_page]), contact_app_info.addrLabels[cont->addressLabel[address_i]]);
 	    }
