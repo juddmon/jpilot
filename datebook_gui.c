@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.190 2009/08/27 15:05:30 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.191 2009/08/28 01:40:21 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -2803,12 +2803,22 @@ void cb_delete_appt(GtkWidget *widget, gpointer data)
    int flag;
    int result = 0;
    int show_priv;
+   long char_set;
    int write_flag;
    unsigned int *write_unique_id;
 
    mappt = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
    if (mappt < (MyAppointment *)CLIST_MIN_DATA) {
       return;
+   }
+
+   /* Convert to Palm character set */
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
+   if (char_set != CHAR_SET_LATIN1) {
+      if (appt->description) 
+         charset_j2p(mappt->appt.description, strlen(mappt->appt.description)+1, char_set);
+      if (appt->note) 
+         charset_j2p(mappt->appt.note, strlen(mappt->appt.note)+1, char_set);
    }
 
    /* Do masking like Palm OS 3.5 */

@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.173 2009/07/31 16:46:16 rikster5 Exp $ */
+/* $Id: utils.c,v 1.174 2009/08/28 01:40:22 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -1067,12 +1067,6 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       switch (app_type) {
        case DATEBOOK:
 	 appt=&mappt->appt;
-         /* %RW Conversion doesn't appear necessary. */
-	 if (char_set != CHAR_SET_LATIN1) {
-	    if (appt->description) charset_j2p(appt->description, strlen(appt->description)+1, char_set);
-	    if (appt->note) charset_j2p(appt->note, strlen(appt->note)+1, char_set);
-	 }
-
 	 if (pack_Appointment(appt, RecordBuffer, datebook_v1) == -1) {
 	    PRINT_FILE_LINE;
 	    jp_logf(JP_LOG_WARN, "pack_Appointment %s\n", _("error"));
