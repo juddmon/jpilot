@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.156 2009/08/24 14:48:23 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.157 2009/08/28 21:22:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -2157,6 +2157,8 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), TODO_NOTE_COLUMN, TRUE);
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), TODO_DATE_COLUMN, TRUE);
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), TODO_TEXT_COLUMN, FALSE);
+   gtk_clist_set_column_justification(GTK_CLIST(clist), TODO_CHECK_COLUMN, GTK_JUSTIFY_CENTER);
+   gtk_clist_set_column_justification(GTK_CLIST(clist), TODO_NOTE_COLUMN, GTK_JUSTIFY_CENTER);
 
    /* Restore previous sorting configuration */
    get_pref(PREF_TODO_SORT_COLUMN, &ivalue, NULL);

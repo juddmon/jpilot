@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.194 2009/08/28 06:19:40 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.195 2009/08/28 21:22:52 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -2243,8 +2243,7 @@ static int datebook_update_clist(void)
    new_time.tm_isdst=-1;
    mktime(&new_time);
 
-   num = get_days_appointments2(&glob_al, &new_time, 2, 2, 1,
-					&num_entries);
+   num = get_days_appointments2(&glob_al, &new_time, 2, 2, 1, &num_entries);
 
    jp_logf(JP_LOG_DEBUG, "get_days_appointments==>%d\n", num);
 #ifdef ENABLE_DATEBK
@@ -2266,7 +2265,7 @@ static int datebook_update_clist(void)
    /* Collect preferences and constant pixmaps for loop */
    show_priv = show_privates(GET_PRIVATES);
    get_pixmaps(scrolled_window, PIXMAP_NOTE, &pixmap_note, &mask_note);
-   get_pixmaps(scrolled_window, PIXMAP_ALARM,&pixmap_alarm, &mask_alarm);
+   get_pixmaps(scrolled_window, PIXMAP_ALARM, &pixmap_alarm, &mask_alarm);
 #ifdef __APPLE__
    mask_note = NULL;
    mask_alarm = NULL;
@@ -4331,8 +4330,14 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), DB_APPT_COLUMN, FALSE);
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), DB_NOTE_COLUMN, TRUE);
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), DB_ALARM_COLUMN, TRUE);
+
+   /* Columns with pixmaps need to be centered */
+   gtk_clist_set_column_justification(GTK_CLIST(clist), DB_NOTE_COLUMN, GTK_JUSTIFY_CENTER);
+   gtk_clist_set_column_justification(GTK_CLIST(clist), DB_ALARM_COLUMN, GTK_JUSTIFY_CENTER);
+
 #ifdef ENABLE_DATEBK
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), DB_FLOAT_COLUMN, TRUE);
+   gtk_clist_set_column_justification(GTK_CLIST(clist), DB_FLOAT_COLUMN, GTK_JUSTIFY_CENTER);
 #endif
    gtk_clist_set_column_title(GTK_CLIST(clist), DB_TIME_COLUMN, _("Time"));
    gtk_clist_set_column_title(GTK_CLIST(clist), DB_APPT_COLUMN, _("Appointment"));
@@ -4417,6 +4422,8 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_clist_set_column_auto_resize(GTK_CLIST(todo_clist), TODO_NOTE_COLUMN, TRUE);
    gtk_clist_set_column_auto_resize(GTK_CLIST(todo_clist), TODO_DATE_COLUMN, TRUE);
    gtk_clist_set_column_auto_resize(GTK_CLIST(todo_clist), TODO_TEXT_COLUMN, FALSE);
+   gtk_clist_set_column_justification(GTK_CLIST(todo_clist), TODO_CHECK_COLUMN, GTK_JUSTIFY_CENTER);
+   gtk_clist_set_column_justification(GTK_CLIST(todo_clist), TODO_NOTE_COLUMN, GTK_JUSTIFY_CENTER);
 
    gtk_container_add(GTK_CONTAINER(todo_scrolled_window), GTK_WIDGET(todo_clist));
 

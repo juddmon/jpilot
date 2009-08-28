@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.236 2009/08/28 05:38:11 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.237 2009/08/28 21:22:52 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -3765,6 +3765,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, FALSE);
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), ADDRESS_NOTE_COLUMN, TRUE);
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), ADDRESS_PHONE_COLUMN, FALSE);
+   gtk_clist_set_column_justification(GTK_CLIST(clist), ADDRESS_NOTE_COLUMN, GTK_JUSTIFY_CENTER);
 
    gtk_signal_connect(GTK_OBJECT(clist), "resize-column",
                GTK_SIGNAL_FUNC(cb_resize_column), NULL);
