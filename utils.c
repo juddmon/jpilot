@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.174 2009/08/28 01:40:22 rikster5 Exp $ */
+/* $Id: utils.c,v 1.175 2009/08/28 18:30:52 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -2103,149 +2103,8 @@ int get_pixmaps(GtkWidget *widget,
 		GdkPixmap **out_pixmap,
 		GdkBitmap **out_mask)
 {
-/* Note pixmap */
-char * xpm_note[] = {
-   "11 16 3 1",
-   "       c None",
-   ".      c #000000000000",
-   "X      c #cccccccccccc",
-   "           ",
-   " ......    ",
-   " .XXX.X.   ",
-   " .XXX.XX.  ",
-   " .XXX.XXX. ",
-   " .XXX..... ",
-   " .XXXXXXX. ",
-   " .XXXXXXX. ",
-   " .XXXXXXX. ",
-   " .XXXXXXX. ",
-   " .XXXXXXX. ",
-   " .XXXXXXX. ",
-   " .XXXXXXX. ",
-   " ......... ",
-   "           ",
-   "           "
-};
-
-/* Alarm pixmap */
-char * xpm_alarm[] = {
-   "16 16 3 1",
-   "       c None",
-   ".      c #000000000000",
-   "X      c #cccccccccccc",
-   "                ",
-   "   .       .    ",
-   "  ...     ...   ",
-   "  ...........   ",
-   "   .XXXXXXXX.   ",
-   "  .XXXX.XXXXX.  ",
-   " .XXXXX.XXXXXX. ",
-   " .X.....XXXXXX. ",
-   " .XXXXXXXXXXX.  ",
-   "  .XXXXXXXXX.   ",
-   "   .XXXXXXX.    ",
-   "   .........    ",
-   "   .       .    ",
-   " ....     ....  ",
-   "                ",
-   "                "
-};
-
-char * xpm_check[] = {
-   "12 16 3 1",
-   "       c None",
-   ".      c #000000000000",
-   "X      c #cccccccccccc",
-   "                ",
-   " .........  ",
-   " .XXXXXXX.  ",
-   " .X     X.  ",
-   " .X     X.  ",
-   " .X     X.  ",
-   " .X     X.  ",
-   " .X     X.  ",
-   " .X     X.  ",
-   " .X     X.  ",
-   " .X     X.  ",
-   " .X     X.  ",
-   " .XXXXXXX.  ",
-   " .........  ",
-   "            ",
-   "            "
-};
-
-char * xpm_checked[] = {
-   "12 16 4 1",
-   "       c None",
-   ".      c #000000000000",
-   "X      c #cccccccccccc",
-   "R      c #FFFF00000000",
-   "            ",
-   " .........  ",
-   " .XXXXXXX.RR",
-   " .X     XRR ",
-   " .X     RR  ",
-   " .X    RR.  ",
-   " .X    RR.  ",
-   " .X   RRX.  ",
-   " RR  RR X.  ",
-   " .RR RR X.  ",
-   " .X RR  X.  ",
-   " .X  R  X.  ",
-   " .XXXXXXX.  ",
-   " .........  ",
-   "            ",
-   "            "
-};
-
-char * xpm_float_check[] = {
-   "14 16 4 1",
-   "       c None",
-   ".      c #000000000000",
-   "X      c #CCCCCCCCCCCC",
-   "W      c #FFFFFFFFFFFF",
-   "              ",
-   "     ....     ",
-   "    ......    ",
-   "   ..XXXX..   ",
-   "  ..XWWWWX..  ",
-   " ..XWWWWWWX.. ",
-   " ..XWWWWWWX.. ",
-   " ..XWWWWWWX.. ",
-   " ..XWWWWWWX.. ",
-   " ..XWWWWWWX.. ",
-   "  ..XWWWWX..  ",
-   "   ..XXXX..   ",
-   "    ......    ",
-   "     ....     ",
-   "              ",
-   "              "
-};
-
-char * xpm_float_checked[] = {
-   "14 16 5 1",
-   "       c None",
-   ".      c #000000000000",
-   "X      c #cccccccccccc",
-   "R      c #FFFF00000000",
-   "W      c #FFFFFFFFFFFF",
-   "              ",
-   "     ....     ",
-   "    ...... RR ",
-   "   ..XXXX.RR  ",
-   "  ..XWWWWRR.  ",
-   " ..XWWWWRRX.. ",
-   " ..XWWWWRRX.. ",
-   " ..XWWWRRWX.. ",
-   " .RRWWRRWWX.. ",
-   " ..RRWRRWWX.. ",
-   "  ..XRRWWX..  ",
-   "   ..XRXX..   ",
-   "    ......    ",
-   "     ....     ",
-   "              ",
-   "              "
-};
+   /* Externally stored icon definitions */
+   #include "icons/clist_mini_icons.h"
 
    static int inited=0;
    static GdkPixmap *pixmap_note;
@@ -2262,47 +2121,48 @@ char * xpm_float_checked[] = {
    static GdkBitmap *mask_float_checked;
    GtkStyle *style;
 
-   if (inited) {
-      goto assign;
-   }
+   /* Pixmaps are created only once when procedure is first called */
+   if (!inited) {
 
-   inited=1;
+      inited=1;
 
-   /* Make the note pixmap */
-   /* style = gtk_widget_get_style(window); */
-   style = gtk_widget_get_style(widget);
-   pixmap_note = gdk_pixmap_create_from_xpm_d(widget->window,  &mask_note,
-					      &style->bg[GTK_STATE_NORMAL],
-					      (gchar **)xpm_note);
+      /* Make the note pixmap */
+      /* style = gtk_widget_get_style(window); */
+      style = gtk_widget_get_style(widget);
+      pixmap_note = gdk_pixmap_create_from_xpm_d(widget->window, &mask_note,
+                                                 &style->bg[GTK_STATE_NORMAL],
+                                                 (gchar **)xpm_note);
 
-   /* Make the alarm pixmap */
-   pixmap_alarm = gdk_pixmap_create_from_xpm_d(widget->window,  &mask_alarm,
-					       &style->bg[GTK_STATE_NORMAL],
-					       (gchar **)xpm_alarm);
+      /* Make the alarm pixmap */
+      pixmap_alarm = gdk_pixmap_create_from_xpm_d(widget->window, &mask_alarm,
+                                                  &style->bg[GTK_STATE_NORMAL],
+                                                  (gchar **)xpm_alarm);
 
-   /* Make the check pixmap */
-   pixmap_check = gdk_pixmap_create_from_xpm_d(widget->window,  &mask_check,
-					       &style->bg[GTK_STATE_NORMAL],
-					       (gchar **)xpm_check);
+      /* Make the check pixmap */
+      pixmap_check = gdk_pixmap_create_from_xpm_d(widget->window, &mask_check,
+                                                  &style->bg[GTK_STATE_NORMAL],
+                                                  (gchar **)xpm_check);
 
-   /* Make the checked pixmap */
-   pixmap_checked = gdk_pixmap_create_from_xpm_d(widget->window,  &mask_checked,
-					       &style->bg[GTK_STATE_NORMAL],
-					       (gchar **)xpm_checked);
+      /* Make the checked pixmap */
+      pixmap_checked = gdk_pixmap_create_from_xpm_d
+                         (widget->window, &mask_checked,
+                          &style->bg[GTK_STATE_NORMAL],
+                          (gchar **)xpm_checked);
 
-   /* Make the float_checked pixmap */
-   pixmap_float_check = gdk_pixmap_create_from_xpm_d
-     (widget->window,  &mask_float_check,
-      &style->bg[GTK_STATE_NORMAL],
-      (gchar **)xpm_float_check);
+      /* Make the float_checked pixmap */
+      pixmap_float_check = gdk_pixmap_create_from_xpm_d
+                             (widget->window, &mask_float_check,
+                              &style->bg[GTK_STATE_NORMAL],
+                              (gchar **)xpm_float_check);
 
-   /* Make the float_checked pixmap */
-   pixmap_float_checked = gdk_pixmap_create_from_xpm_d
-     (widget->window,  &mask_float_checked,
-      &style->bg[GTK_STATE_NORMAL],
-      (gchar **)xpm_float_checked);
+      /* Make the float_checked pixmap */
+      pixmap_float_checked = gdk_pixmap_create_from_xpm_d
+                               (widget->window, &mask_float_checked,
+                                &style->bg[GTK_STATE_NORMAL],
+                                (gchar **)xpm_float_checked);
 
-   assign:
+   }   /* End initialization of pixmaps */
+
    switch (which_one) {
     case PIXMAP_NOTE:
       *out_pixmap = pixmap_note;
