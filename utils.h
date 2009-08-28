@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.72 2009/05/06 19:28:02 rousseau Exp $ */
+/* $Id: utils.h,v 1.73 2009/08/28 05:53:12 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -74,7 +74,6 @@
 #define PILOTCAT_NAME_SZ 16
 
 /*Used to mark the entry in the clist to add a record */
-/* FIXME: Move to libplugin */
 #define CLIST_NEW_ENTRY_DATA 100
 #define CLIST_ADDING_ENTRY_DATA 101
 #define CLIST_MIN_DATA 199
