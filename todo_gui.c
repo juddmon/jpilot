@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.157 2009/08/28 21:22:53 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.158 2009/08/28 23:06:52 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -1704,6 +1704,10 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    mask_check = NULL;
    mask_checked = NULL;
 #endif
+   /* Current time used for calculating overdue items */
+   time(&ltime);
+   now = localtime(&ltime);
+   comp_now=now->tm_year*380+now->tm_mon*31+now->tm_mday-1;
 
    entries_shown=0;
    for (temp_todo = *todo_list, i=0; temp_todo; temp_todo=temp_todo->next) {
@@ -1739,12 +1743,6 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
          /* Hide the not due yet records if need be */
          if ((hide_not_due) && (!(temp_todo->mtodo.todo.indefinite))) {
-            time_t ltime;
-            struct tm *now, *due;
-            int comp_now, comp_due;
-            time(&ltime);
-            now = localtime(&ltime);
-            comp_now=now->tm_year*380+now->tm_mon*31+now->tm_mday-1;
             due = &(temp_todo->mtodo.todo.due);
             comp_due=due->tm_year*380+due->tm_mon*31+due->tm_mday-1;
             if (comp_due > comp_now) {
@@ -1820,16 +1818,15 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
          }
       }
 
-      /* Highlight dates of overdue todo items */
+      /* Highlight dates of items overdue or due today */
       if (!(temp_todo->mtodo.todo.indefinite)) {
-         time(&ltime);
-         now = localtime(&ltime);
-         comp_now=now->tm_year*380+now->tm_mon*31+now->tm_mday-1;
          due = &(temp_todo->mtodo.todo.due);
          comp_due=due->tm_year*380+due->tm_mon*31+due->tm_mday-1;
 
          if (comp_due < comp_now) {
             set_fg_rgb_clist_cell(clist, entries_shown, TODO_DATE_COLUMN, CLIST_OVERDUE_RED, CLIST_OVERDUE_GREEN, CLIST_OVERDUE_BLUE);
+         } else if (comp_due == comp_now) {
+            set_fg_rgb_clist_cell(clist, entries_shown, TODO_DATE_COLUMN, CLIST_DUENOW_RED, CLIST_DUENOW_GREEN, CLIST_DUENOW_BLUE);
          }
       }
 

@@ -1,4 +1,4 @@
-/* $Id: libplugin.h,v 1.28 2009/05/06 19:38:21 rousseau Exp $ */
+/* $Id: libplugin.h,v 1.29 2009/08/28 23:06:51 rikster5 Exp $ */
 
 /*******************************************************************************
  * libplugin.h
@@ -137,7 +137,9 @@ int get_next_unique_pc_id(unsigned int *next_unique_id);
 #define CLIST_OVERDUE_RED 0xD900
 #define CLIST_OVERDUE_GREEN 0x0000
 #define CLIST_OVERDUE_BLUE 0x0000
-
+#define CLIST_DUENOW_RED 4369 
+#define CLIST_DUENOW_GREEN 40863   
+#define CLIST_DUENOW_BLUE 35466
 
 #define DIALOG_SAID_1        454
 #define DIALOG_SAID_PRINT    454
