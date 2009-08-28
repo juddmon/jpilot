@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.180 2009/05/06 20:13:57 rousseau Exp $ */
+/* $Id: jpilot.c,v 1.181 2009/08/28 19:04:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -99,7 +99,7 @@ int glob_app = 0;
 GtkWidget *glob_dialog=NULL;
 unsigned char skip_plugins;
 static GtkWidget *button_locked, 
-                 *button_locked_masked, 
+                 *button_masklocked, 
                  *button_unlocked, 
                  *button_sync, 
                  *button_backup;
@@ -450,12 +450,12 @@ static void cb_private(GtkWidget *widget, gpointer data)
    switch (privates) {
     case MASK_PRIVATES:
       gtk_widget_hide(button_locked);
-      gtk_widget_show(button_locked_masked);
+      gtk_widget_show(button_masklocked);
       gtk_widget_hide(button_unlocked);
       break;
     case HIDE_PRIVATES:
       gtk_widget_show(button_locked);
-      gtk_widget_hide(button_locked_masked);
+      gtk_widget_hide(button_masklocked);
       gtk_widget_hide(button_unlocked);
       break;
     case SHOW_PRIVATES:
@@ -475,7 +475,7 @@ static void cb_private(GtkWidget *widget, gpointer data)
 #endif
       if (r_dialog==2) {
 	 gtk_widget_hide(button_locked);
-	 gtk_widget_hide(button_locked_masked);
+	 gtk_widget_hide(button_masklocked);
 	 gtk_widget_show(button_unlocked);
       }
       else {
@@ -1882,16 +1882,16 @@ int main(int argc, char *argv[])
 
    /* Lock/Unlock/Mask buttons */
    button_locked = gtk_button_new();
-   button_locked_masked = gtk_button_new();
+   button_masklocked = gtk_button_new();
    button_unlocked = gtk_button_new();
    gtk_signal_connect(GTK_OBJECT(button_locked), "clicked",
        GTK_SIGNAL_FUNC(cb_private), GINT_TO_POINTER(SHOW_PRIVATES));
-   gtk_signal_connect(GTK_OBJECT(button_locked_masked), "clicked",
+   gtk_signal_connect(GTK_OBJECT(button_masklocked), "clicked",
        GTK_SIGNAL_FUNC(cb_private), GINT_TO_POINTER(HIDE_PRIVATES));
    gtk_signal_connect(GTK_OBJECT(button_unlocked), "clicked",
        GTK_SIGNAL_FUNC(cb_private), GINT_TO_POINTER(MASK_PRIVATES));
    gtk_box_pack_start(GTK_BOX(g_vbox0), button_locked, FALSE, FALSE, 20);
-   gtk_box_pack_start(GTK_BOX(g_vbox0), button_locked_masked, FALSE, FALSE, 20);
+   gtk_box_pack_start(GTK_BOX(g_vbox0), button_masklocked, FALSE, FALSE, 20);
    gtk_box_pack_start(GTK_BOX(g_vbox0), button_unlocked, FALSE, FALSE, 20);
 
    gtk_tooltips_set_tip(glob_tooltips, button_locked,
@@ -1899,9 +1899,9 @@ int main(int argc, char *argv[])
    gtk_widget_add_accelerator(button_locked, "clicked", accel_group,
       GDK_z, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
-   gtk_tooltips_set_tip(glob_tooltips, button_locked_masked,
+   gtk_tooltips_set_tip(glob_tooltips, button_masklocked,
 			_("Hide private records   Ctrl-Z"), NULL);
-   gtk_widget_add_accelerator(button_locked_masked, "clicked", accel_group,
+   gtk_widget_add_accelerator(button_masklocked, "clicked", accel_group,
       GDK_z, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
    gtk_tooltips_set_tip(glob_tooltips, button_unlocked,
@@ -2001,11 +2001,11 @@ int main(int argc, char *argv[])
    /* Show locked/unlocked/masked button */
 #ifdef ENABLE_PRIVATE
    gtk_widget_show(button_locked);
-   gtk_widget_hide(button_locked_masked);
+   gtk_widget_hide(button_masklocked);
    gtk_widget_hide(button_unlocked);
 #else
    gtk_widget_hide(button_locked);
-   gtk_widget_hide(button_locked_masked);
+   gtk_widget_hide(button_masklocked);
    gtk_widget_show(button_unlocked);
 #endif
 
@@ -2023,13 +2023,13 @@ int main(int argc, char *argv[])
    /* Create "locked/masked" pixmap */
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
 					 &style->bg[GTK_STATE_NORMAL],
-					 locked_masked_xpm);
+					 masklocked_xpm);
 #ifdef __APPLE__
    mask = NULL;
 #endif
    pixmapwid = gtk_pixmap_new(pixmap, mask);
    gtk_widget_show(pixmapwid);
-   gtk_container_add(GTK_CONTAINER(button_locked_masked), pixmapwid);
+   gtk_container_add(GTK_CONTAINER(button_masklocked), pixmapwid);
 
    /* Create "unlocked" pixmap */
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,

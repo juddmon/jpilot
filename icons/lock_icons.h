@@ -28,7 +28,7 @@ static char *locked_xpm[] = {
 };
 
 /* Private records masked icon */
-static char *locked_masked_xpm[] = {
+static char *masklocked_xpm[] = {
    "15 18 4 1",
    "       c None",
    "b      c #000000000000",
