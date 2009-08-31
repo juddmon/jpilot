@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.68 2008/06/19 04:12:07 rikster5 Exp $ */
+/* $Id: prefs_gui.c,v 1.69 2009/08/31 22:13:38 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -415,6 +415,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    GtkWidget *hseparator;
    GtkWidget *notebook;
    /* FIXME: Uncomment when support for Calendar and Task has been added */
+   GtkWidget *radio_button_datebook_version[2];
 #if 0
    GtkWidget *radio_button_datebook_version[2];
    GtkWidget *radio_button_todo_version[2];
@@ -650,7 +651,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    /* Datebook preference tab */
 
    /* FIXME: undef when support for Calendar has been coded */
-#if 0
+#if 1
    /* Radio box to choose which database to use: Datebook/Calendar */
    group = NULL;
    radio_button_datebook_version[0] = 
@@ -680,7 +681,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 
    /* Separate database selection from less important options */
    hseparator = gtk_hseparator_new();
-   gtk_box_pack_start(GTK_BOX(vbox_address), hseparator, FALSE, FALSE, 3);
+   gtk_box_pack_start(GTK_BOX(vbox_datebook), hseparator, FALSE, FALSE, 3);
 #endif
 
    /* Show highlight days check box */
@@ -798,7 +799,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 
    /* Separate database selection from less important options */
    hseparator = gtk_hseparator_new();
-   gtk_box_pack_start(GTK_BOX(vbox_address), hseparator, FALSE, FALSE, 3);
+   gtk_box_pack_start(GTK_BOX(vbox_todo), hseparator, FALSE, FALSE, 3);
 #endif
 
    /* hide completed check box */

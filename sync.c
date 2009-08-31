@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.106 2009/07/26 03:13:06 rikster5 Exp $ */
+/* $Id: sync.c,v 1.107 2009/08/31 22:13:38 rikster5 Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -230,7 +230,8 @@ int match_records(char *DB_name,
    }
 
    /* memcmp works for a few specific databases */
-   if (!strcmp(DB_name,"DatebookDB")) {
+   if (!strcmp(DB_name,"DatebookDB") ||
+       !strcmp(DB_name,"CalendarDB-PDat")) {
       /* Hack for gapfill byte */
       set_byte(rrec+7,0);
       return !(memcmp(lrec, rrec, lrec_len));
@@ -711,6 +712,48 @@ static int sync_rotate_backups(const int num_backups)
 
    /* Create the symlink */
    symlink(newdir, full_name);
+
+   return EXIT_SUCCESS;
+}
+
+int unpack_calendar_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
+{
+
+   struct AppointmentAppInfo ai;
+   int r;
+
+   jp_logf(JP_LOG_DEBUG, "unpack_calendar_cai_from_ai\n");
+
+   memset(&ai, 0, sizeof(ai));
+   r = unpack_AppointmentAppInfo(&ai, ai_raw, len);
+   if ((r <= 0) || (len <= 0)) {
+      jp_logf(JP_LOG_DEBUG, "unpack_AppointmentAppInfo failed %s %d\n", __FILE__, __LINE__);
+      return EXIT_FAILURE;
+   }
+   memcpy(cai, &(ai.category), sizeof(struct CategoryAppInfo));
+
+   return EXIT_SUCCESS;
+}
+
+int pack_calendar_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
+{
+   struct AppointmentAppInfo ai;
+   int r;
+
+   jp_logf(JP_LOG_DEBUG, "pack_calendar_cai_into_ai\n");
+
+   r = unpack_AppointmentAppInfo(&ai, ai_raw, len);
+   if (r <= 0) {
+      jp_logf(JP_LOG_DEBUG, "unpack_AppointmentAppInfo failed %s %d\n", __FILE__, __LINE__);
+      return EXIT_FAILURE;
+   }
+   memcpy(&(ai.category), cai, sizeof(struct CategoryAppInfo));
+
+   r = pack_AppointmentAppInfo(&ai, ai_raw, len);
+   if (r <= 0) {
+      jp_logf(JP_LOG_DEBUG, "pack_AppointmentAppInfo failed %s %d\n", __FILE__, __LINE__);
+      return EXIT_FAILURE;
+   }
 
    return EXIT_SUCCESS;
 }
@@ -2823,25 +2866,25 @@ int jp_sync(struct my_sync_info *sync_info)
     */
    int (*unpack_cai_from_buf[])(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len) = {
       NULL,
-	unpack_address_cai_from_ai,
-	unpack_todo_cai_from_ai,
-	unpack_memo_cai_from_ai,
-	unpack_memo_cai_from_ai,
+      unpack_address_cai_from_ai,
+      unpack_todo_cai_from_ai,
+      unpack_memo_cai_from_ai,
+      unpack_memo_cai_from_ai,
 #ifdef ENABLE_MANANA
-	unpack_todo_cai_from_ai,
+      unpack_todo_cai_from_ai,
 #endif
-	NULL
+      NULL
    };
    int (*pack_cai_into_buf[])(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len) = {
       NULL,
-	pack_address_cai_into_ai,
-	pack_todo_cai_into_ai,
-	pack_memo_cai_into_ai,
-	pack_memo_cai_into_ai,
+      pack_address_cai_into_ai,
+      pack_todo_cai_into_ai,
+      pack_memo_cai_into_ai,
+      pack_memo_cai_into_ai,
 #ifdef ENABLE_MANANA
-	pack_todo_cai_into_ai,
+      pack_todo_cai_into_ai,
 #endif
-	NULL
+      NULL
    };
 
    long datebook_version, address_version, todo_version, memo_version;
@@ -2855,19 +2898,22 @@ int jp_sync(struct my_sync_info *sync_info)
    get_pref(PREF_TODO_VERSION, &todo_version, NULL);
    get_pref(PREF_MEMO_VERSION, &memo_version, NULL);
    if (datebook_version==1) {
-      /* Not coded yet */
-      ;
+      unpack_cai_from_buf[0]=unpack_calendar_cai_from_ai;
+      pack_cai_into_buf[0]=pack_calendar_cai_into_ai;
    }
    if (address_version==1) {
       unpack_cai_from_buf[1]=unpack_contact_cai_from_ai;
       pack_cai_into_buf[1]=pack_contact_cai_into_ai;
    }
    if (todo_version==1) {
-      /* Not coded yet */
+      /* FIXME: Uncomment when support for Task has been added
+      unpack_cai_from_buf[2]=unpack_task_cai_from_ai;
+      pack_cai_into_buf[2]=pack_task_cai_into_ai;
+      */
       ;
    }
    if (memo_version==1) {
-      /* Not coded yet */
+      /* No change necessary between Memo and Memos databases */
       ;
    }
 

@@ -1,4 +1,4 @@
-/* $Id: print.c,v 1.43 2009/05/06 20:14:00 rousseau Exp $ */
+/* $Id: print.c,v 1.44 2009/08/31 22:13:38 rikster5 Exp $ */
 
 /*******************************************************************************
  * print.c
@@ -54,7 +54,7 @@
 /******************************* Global vars **********************************/
 static FILE *out;
 static int first_hour, first_min, last_hour, last_min;
-extern int datebook_category;
+extern int datebk_category;
 int fill_in(struct tm *date, AppointmentList *a_list);
 void ps_strncat(char *dest, char *src, int n);
 
@@ -513,7 +513,7 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
 	    ret = db3_parse_tag(temp_al->mappt.appt.note, &db3_type, &db4);
 	    /* jp_logf(JP_LOG_DEBUG, "category = 0x%x\n", db4.category); */
 	    cat_bit=1<<db4.category;
-	    if (!(cat_bit & datebook_category)) {
+	    if (!(cat_bit & datebk_category)) {
 	       jp_logf(JP_LOG_DEBUG, "skipping rec not in this category\n");
 	       continue;
 	    }
@@ -693,7 +693,7 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
 	 if (use_db3_tags) {
 	    ret = db3_parse_tag(temp_al->mappt.appt.note, &db3_type, &db4);
 	    cat_bit=1<<db4.category;
-	    if (!(cat_bit & datebook_category)) continue;
+	    if (!(cat_bit & datebk_category)) continue;
 	 }
 #endif
 	 if (isApptOnDate(&(temp_al->mappt.appt), &date))
@@ -741,7 +741,7 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
 	    ret = db3_parse_tag(temp_al->mappt.appt.note, &db3_type, &db4);
 	    jp_logf(JP_LOG_DEBUG, "category = 0x%x\n", db4.category);
 	    cat_bit=1<<db4.category;
-	    if (!(cat_bit & datebook_category)) {
+	    if (!(cat_bit & datebk_category)) {
 	       jp_logf(JP_LOG_DEBUG, "skip rec not in this category\n");
 	       continue;
 	    }

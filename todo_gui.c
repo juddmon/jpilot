@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.158 2009/08/28 23:06:52 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.159 2009/08/31 22:13:38 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -277,9 +277,8 @@ static void set_new_button_to(int new_state)
    record_changed=new_state;
 }
 
-static void
-cb_record_changed(GtkWidget *widget,
-                  gpointer   data)
+static void cb_record_changed(GtkWidget *widget,
+                              gpointer   data)
 {
    jp_logf(JP_LOG_DEBUG, "cb_record_changed\n");
    if (record_changed==CLEAR_FLAG) {
@@ -604,6 +603,15 @@ int todo_import(GtkWidget *window)
       IMPORT_TYPE_DAT,
       0
    };
+
+   /* Hide ABA import of TaskDB until file format has been decoded */
+   /* FIXME: Uncomment when support for Tasks has been added
+   if (todo_version==1) {
+      type_desc[1] = NULL;
+      type_int[1] = 0;
+
+   } 
+   */
 
    import_gui(window, pane, type_desc, type_int, cb_todo_import);
    return EXIT_SUCCESS;
@@ -2132,6 +2140,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 #endif
    pixmapwid = gtk_pixmap_new(pixmap, mask);
    gtk_clist_set_column_widget(GTK_CLIST(clist), TODO_NOTE_COLUMN, pixmapwid);
+   gtk_clist_set_column_justification(GTK_CLIST(clist), TODO_NOTE_COLUMN, GTK_JUSTIFY_CENTER);
 
    get_pixmaps(vbox, PIXMAP_BOX_CHECKED, &pixmap, &mask);
 #ifdef __APPLE__
@@ -2139,6 +2148,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 #endif
    pixmapwid = gtk_pixmap_new(pixmap, mask);
    gtk_clist_set_column_widget(GTK_CLIST(clist), TODO_CHECK_COLUMN, pixmapwid);
+   gtk_clist_set_column_justification(GTK_CLIST(clist), TODO_CHECK_COLUMN, GTK_JUSTIFY_CENTER);
 
    gtk_clist_column_titles_active(GTK_CLIST(clist));
    gtk_signal_connect(GTK_OBJECT(clist), "click_column",
@@ -2154,8 +2164,6 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), TODO_NOTE_COLUMN, TRUE);
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), TODO_DATE_COLUMN, TRUE);
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), TODO_TEXT_COLUMN, FALSE);
-   gtk_clist_set_column_justification(GTK_CLIST(clist), TODO_CHECK_COLUMN, GTK_JUSTIFY_CENTER);
-   gtk_clist_set_column_justification(GTK_CLIST(clist), TODO_NOTE_COLUMN, GTK_JUSTIFY_CENTER);
 
    /* Restore previous sorting configuration */
    get_pref(PREF_TODO_SORT_COLUMN, &ivalue, NULL);

@@ -1,4 +1,4 @@
-/* $Id: datebook.c,v 1.55 2008/08/26 03:26:53 rikster5 Exp $ */
+/* $Id: datebook.c,v 1.56 2009/08/31 22:13:37 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook.c
@@ -235,7 +235,6 @@ int datebook_sort(AppointmentList **al,
 }
 
 #ifdef ENABLE_DATEBK
-/* Note should be pretty much validated by now */
 void db3_fill_struct(char *note, int type, struct db4_struct *db4)
 {
    /* jp_logf(JP_LOG_WARN, "db3_fill_struct()\n"); */
@@ -322,8 +321,7 @@ int db3_hack_date(struct Appointment *appt, struct tm *today)
 	    appt->end.tm_isdst = today->tm_isdst;
 	    /* If the appointment has an end date, and today is past the end
 	     * date, because of this hack we would never be able to view
-	     * it anymore (or delete it).
-	     */
+	     * it anymore (or delete it).  */
 	    if (!(appt->repeatForever)) {
 	       if (compareTimesToDay(today, &(appt->repeatEnd))==1) {
 		  /* end date is before start date, illegal appointment */
@@ -450,18 +448,28 @@ int get_datebook_app_info(struct AppointmentAppInfo *ai)
    int num;
    int rec_size;
    unsigned char *buf;
+   char DBname[32];
+   long datebook_version;
 
    memset(ai, 0, sizeof(*ai));
    /* Put at least one entry in there */
    strcpy(ai->category.name[0], "Unfiled");
 
-   jp_get_app_info("DatebookDB", &buf, &rec_size);
+   get_pref(PREF_DATEBOOK_VERSION, &datebook_version, NULL);
+
+   if (datebook_version) {
+      strcpy(DBname, "CalendarDB-PDat");
+   } else {
+      strcpy(DBname, "DatebookDB");
+   }
+
+   jp_get_app_info(DBname, &buf, &rec_size);
    num = unpack_AppointmentAppInfo(ai, buf, rec_size);
    if (buf) {
       free(buf);
    }
    if ((num<0) || (rec_size<=0)) {
-      jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), "DatebookDB.pdb");
+      jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), DBname);
       return EXIT_FAILURE;
    }
 
@@ -491,19 +499,19 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
    int keep_priv;
    buf_rec *br;
    long char_set;
+   long datebook_version;
    char *buf;
    pi_buffer_t *RecordBuffer;
 #ifdef ENABLE_DATEBK
    long use_db3_tags;
    time_t ltime;
-   struct tm *Ptoday, today;
+   struct tm today;
 #endif
 
 #ifdef ENABLE_DATEBK
    time(&ltime);
-   Ptoday = localtime(&ltime);
    /* Copy into stable memory */
-   memcpy(&today, Ptoday, sizeof(struct tm));
+   memcpy(&today, localtime(&ltime), sizeof(struct tm));
    get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
 #endif
 
@@ -529,7 +537,13 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
    *appointment_list=NULL;
    recs_returned = 0;
 
-   num = jp_read_DB_files("DatebookDB", &records);
+   get_pref(PREF_DATEBOOK_VERSION, &datebook_version, NULL);
+
+   if (datebook_version) {
+      num = jp_read_DB_files("CalendarDB-PDat", &records);
+   } else {
+      num = jp_read_DB_files("DatebookDB", &records);
+   }
    if (-1 == num)
      return 0;
 
@@ -792,6 +806,9 @@ int pc_datebook_write(struct Appointment *appt, PCRecType rt,
    pi_buffer_t *RecordBuffer;
    buf_rec br;
    long char_set;
+   long datebook_version;
+
+   get_pref(PREF_DATEBOOK_VERSION, &datebook_version, NULL);
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    if (char_set != CHAR_SET_LATIN1) {
@@ -816,7 +833,12 @@ int pc_datebook_write(struct Appointment *appt, PCRecType rt,
       br.unique_id = 0;
    }
 
-   jp_pc_write("DatebookDB", &br);
+   if (datebook_version) {
+      jp_pc_write("CalendarDB-PDat", &br);
+   } else {
+      jp_pc_write("DatebookDB", &br);
+   }
+
    if (unique_id) {
       *unique_id = br.unique_id;
    }

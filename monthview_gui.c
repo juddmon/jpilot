@@ -1,4 +1,4 @@
-/* $Id: monthview_gui.c,v 1.47 2009/05/06 20:13:58 rousseau Exp $ */
+/* $Id: monthview_gui.c,v 1.48 2009/08/31 22:13:37 rikster5 Exp $ */
 
 /*******************************************************************************
  * monthview_gui.c
@@ -35,7 +35,7 @@
 #include "print.h"
 
 /******************************* Global vars **********************************/
-extern int datebook_category;
+extern int datebk_category;
 extern int glob_app;
 
 GtkWidget *monthview_window=NULL;
@@ -350,7 +350,7 @@ int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
 	    ret = db3_parse_tag(temp_al->mappt.appt.note, &db3_type, &db4);
 	    jp_logf(JP_LOG_DEBUG, "category = 0x%x\n", db4.category);
 	    cat_bit=1<<db4.category;
-	    if (!(cat_bit & datebook_category)) {
+	    if (!(cat_bit & datebk_category)) {
 	       jp_logf(JP_LOG_DEBUG, "skipping rec not in this category\n");
 	       continue;
 	    }

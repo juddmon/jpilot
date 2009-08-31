@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.175 2009/08/28 18:30:52 rikster5 Exp $ */
+/* $Id: utils.c,v 1.176 2009/08/31 22:13:38 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -921,6 +921,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
    long ivalue;
 #endif
    long memo_version;
+   long datebook_version;
    long char_set;
 
    jp_logf(JP_LOG_DEBUG, "delete_pc_record(%d, %d)\n", app_type, flag);
@@ -943,7 +944,12 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       record_type = mappt->rt;
       unique_id = mappt->unique_id;
       attrib = mappt->attrib;
-      strcpy(filename, "DatebookDB.pc3");
+      get_pref(PREF_DATEBOOK_VERSION, &datebook_version, NULL);
+      if (datebook_version) {
+	 strcpy(filename, "CalendarDB-PDat.pc3");
+      } else {
+         strcpy(filename, "DatebookDB.pc3");
+      }
       break;
     case ADDRESS:
       maddr = (MyAddress *) VP;
@@ -2998,7 +3004,7 @@ void rename_dbnames(char dbname[][32])
 	    strcpy(dbname[i], "CalendarDB-PDat.pc3");
 	 }
 	 if (!strcmp(dbname[i], "DatebookDB")) {
-	    strcpy(dbname[i], "CalendarDB-Pdat");
+	    strcpy(dbname[i], "CalendarDB-PDat");
 	 }
       }
 
