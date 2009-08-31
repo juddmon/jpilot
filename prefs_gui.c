@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.69 2009/08/31 22:13:38 rikster5 Exp $ */
+/* $Id: prefs_gui.c,v 1.70 2009/08/31 23:13:55 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -650,8 +650,6 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    /**********************************************************************/
    /* Datebook preference tab */
 
-   /* FIXME: undef when support for Calendar has been coded */
-#if 1
    /* Radio box to choose which database to use: Datebook/Calendar */
    group = NULL;
    radio_button_datebook_version[0] = 
@@ -682,7 +680,6 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    /* Separate database selection from less important options */
    hseparator = gtk_hseparator_new();
    gtk_box_pack_start(GTK_BOX(vbox_datebook), hseparator, FALSE, FALSE, 3);
-#endif
 
    /* Show highlight days check box */
    add_checkbutton(_("Highlight calendar days with appointments"),

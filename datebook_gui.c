@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.198 2009/08/31 22:24:56 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.199 2009/08/31 23:13:55 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -374,7 +374,6 @@ int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int type)
    char description[65536];
    char note[65536];
    struct Appointment new_appt;
-//   struct AppointmentAppInfo ai;
    unsigned char attrib;
    int i, str_i, ret, index;
    int import_all;
@@ -3402,8 +3401,6 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
    } else {
       /* Datebook doesn't use categories */
       return;
-      //strcpy(pdb_name, "DatebookDB.pdb");
-      //strcpy(db_name, "DatebookDB");
    }
 
    get_home_file_name(pdb_name, full_name, sizeof(full_name));
