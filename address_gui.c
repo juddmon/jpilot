@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.238 2009/08/28 22:19:36 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.239 2009/08/31 22:15:37 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -2196,7 +2196,7 @@ void cb_address_quickfind(GtkWidget *widget,
    }
 }
 
-static void cb_edit_cats_category(GtkWidget *widget, gpointer data)
+static void cb_edit_cats_contacts(GtkWidget *widget, gpointer data)
 {
    struct ContactAppInfo cai;
    char full_name[FILENAME_MAX];
@@ -2206,7 +2206,7 @@ static void cb_edit_cats_category(GtkWidget *widget, gpointer data)
    struct pi_file *pf;
    pi_buffer_t *pi_buf;
 
-   jp_logf(JP_LOG_DEBUG, "cb_edit_cats_category\n");
+   jp_logf(JP_LOG_DEBUG, "cb_edit_cats_contacts\n");
 
    get_home_file_name("ContactsDB-PAdd.pdb", full_name, sizeof(full_name));
 
@@ -2278,7 +2278,7 @@ static void cb_edit_cats_address(GtkWidget *widget, gpointer data)
 static void cb_edit_cats(GtkWidget *widget, gpointer data)
 {
    if (address_version) {
-      cb_edit_cats_category(widget, data);
+      cb_edit_cats_contacts(widget, data);
    } else {
       cb_edit_cats_address(widget, data);
    }
