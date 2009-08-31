@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.197 2009/08/31 22:13:37 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.198 2009/08/31 22:24:56 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -2431,27 +2431,22 @@ static int datebook_update_clist(void)
 #ifdef ENABLE_DATEBK
       if (use_db3_tags) {
 	 if (db3_type!=DB3_TAG_TYPE_NONE) {
-	    if (db4.note) {
-	       if (db4.note[0]!='\0') {
-		  has_note = 1;
-	       }
+	    if (db4.note && db4.note[0]!='\0') {
+               has_note = 1;
 	    }
 	 } else {
-	    if (temp_al->mappt.appt.note) {
-	       if (temp_al->mappt.appt.note[0]!='\0') {
+	    if (temp_al->mappt.appt.note && 
+               (temp_al->mappt.appt.note[0]!='\0')) {
 		  has_note=1;
-	       }
 	    }
 	 }
       } else {
-	 if (temp_al->mappt.appt.note) {
-	    if (temp_al->mappt.appt.note[0]!='\0') {
+	 if (temp_al->mappt.appt.note && (temp_al->mappt.appt.note[0]!='\0')) {
 	       has_note=1;
-	    }
 	 }
       }
 #else /* Ordinary, non DateBk code */
-      if ((temp_al->mappt.appt.note) && (temp_al->mappt.appt.note[0]!='\0')) {
+      if (temp_al->mappt.appt.note && (temp_al->mappt.appt.note[0]!='\0')) {
          has_note=1;
       }
 #endif
