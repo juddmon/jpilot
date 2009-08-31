@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.70 2009/08/31 23:13:55 rikster5 Exp $ */
+/* $Id: prefs_gui.c,v 1.71 2009/08/31 23:31:50 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -414,12 +414,11 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    GtkWidget *hbox_temp;
    GtkWidget *hseparator;
    GtkWidget *notebook;
-   /* FIXME: Uncomment when support for Calendar and Task has been added */
-   GtkWidget *radio_button_datebook_version[2];
+   /* FIXME: Uncomment when support for Task has been added */
 #if 0
-   GtkWidget *radio_button_datebook_version[2];
    GtkWidget *radio_button_todo_version[2];
 #endif
+   GtkWidget *radio_button_datebook_version[2];
    GtkWidget *radio_button_address_version[2];
    GtkWidget *radio_button_memo_version[3];
    long ivalue;

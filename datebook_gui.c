@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.199 2009/08/31 23:13:55 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.200 2009/08/31 23:31:49 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -154,8 +154,8 @@ static int current_month; /* range 0-11 */
 static int current_year;  /* years since 1900 */
 static int clist_row_selected;
 static int record_changed;
-int datebk_category=0xFFFF; /* This is a bitmask */
 #ifdef ENABLE_DATEBK
+int datebk_category=0xFFFF; /* This is a bitmask */
 static GtkWidget *datebk_entry;
 #endif
 
@@ -1261,7 +1261,6 @@ static int datebook_export_gui(GtkWidget *main_window, int x, int y)
 #ifdef ENABLE_DATEBK
 static GtkWidget *window_datebk_cats = NULL;
 static GtkWidget *toggle_button[16];
-static void cb_toggle(GtkWidget *button, int category);
 
 static gboolean cb_destroy_datebk_cats(GtkWidget *widget)
 {
@@ -1275,6 +1274,36 @@ static void cb_quit_datebk_cats(GtkWidget *widget, gpointer data)
    if (GTK_IS_WIDGET(data)) {
       gtk_widget_destroy(data);
    }
+}
+
+static void cb_toggle(GtkWidget *widget, int category)
+{
+   int bit=1;
+   int cat_bit;
+   int on;
+   static int ignore_count=0;
+
+   if (category & 0x4000) {
+      ignore_count=category & 0xFF;
+      return;
+   }
+   if (ignore_count) {
+      ignore_count--;
+      return;
+   }
+   if (GTK_TOGGLE_BUTTON(toggle_button[category])->active) {
+      on=1;
+   } else {
+      on=0;
+   }
+   cat_bit = bit << category;
+   if (on) {
+      datebk_category |= cat_bit;
+   } else {
+      datebk_category &= ~cat_bit;
+   }
+
+   datebook_update_clist();
 }
 
 static void cb_datebk_category(GtkWidget *widget, gpointer data)
@@ -1309,36 +1338,6 @@ static void cb_datebk_category(GtkWidget *widget, gpointer data)
    } else {
       datebk_category=0x0000;
    }
-   datebook_update_clist();
-}
-
-static void cb_toggle(GtkWidget *widget, int category)
-{
-   int bit=1;
-   int cat_bit;
-   int on;
-   static int ignore_count=0;
-
-   if (category & 0x4000) {
-      ignore_count=category & 0xFF;
-      return;
-   }
-   if (ignore_count) {
-      ignore_count--;
-      return;
-   }
-   if (GTK_TOGGLE_BUTTON(toggle_button[category])->active) {
-      on=1;
-   } else {
-      on=0;
-   }
-   cat_bit = bit << category;
-   if (on) {
-      datebk_category |= cat_bit;
-   } else {
-      datebk_category &= ~cat_bit;
-   }
-
    datebook_update_clist();
 }
 
@@ -3491,7 +3490,7 @@ void cb_cal_changed(GtkWidget *widget,
    if (num!=CAL_DAY_SELECTED) {
       return;
    }
-   printf("running cb_cal_changed\n");
+
    /* Get selected date from calendar */
    gtk_calendar_get_date(GTK_CALENDAR(main_calendar),
 	                 &cal_year, &cal_month, &cal_day);
