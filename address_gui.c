@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.239 2009/08/31 22:15:37 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.240 2009/09/01 01:54:28 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -889,6 +889,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
    char birthday_str[255];
    const char *pref_date;
    int address_i, IM_i, phone_i;
+   int index;
    char *utf;
 
    /* Open file for export, including corner cases where file exists or 
@@ -1020,30 +1021,36 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 for (i=0; i<schema_size; i++) {
             /* Special handling for birthday which doesn't have an entry
              * field but instead has a flag and a tm struct field */
-            if ((schema[i].type == ADDRESS_GUI_BIRTHDAY) &&
-                 mcont->cont.birthdayFlag)
-            {
-               fprintf(out, _("%s: "), contact_app_info.labels[schema[i].record_field] ? contact_app_info.labels[schema[i].record_field] : "");
-               birthday_str[0]='\0';
-               get_pref(PREF_SHORTDATE, NULL, &pref_date);
-               strftime(birthday_str, sizeof(birthday_str), pref_date, &(mcont->cont.birthday));
-               fprintf(out, _("%s\n"), birthday_str);
+            if (schema[i].type == ADDRESS_GUI_BIRTHDAY) {
+               if (mcont->cont.birthdayFlag) {
+                  fprintf(out, _("%s: "), contact_app_info.labels[schema[i].record_field] ? contact_app_info.labels[schema[i].record_field] : "");
+                  birthday_str[0]='\0';
+                  get_pref(PREF_SHORTDATE, NULL, &pref_date);
+                  strftime(birthday_str, sizeof(birthday_str), pref_date, &(mcont->cont.birthday));
+                  fprintf(out, _("%s\n"), birthday_str);
+                  continue;
+               }
             }
 
-	    if (mcont->cont.entry[schema[i].record_field]) {
+            if (mcont->cont.entry[schema[i].record_field]) {
                /* Print labels for menu selectable fields (Work, Fax, etc.) */
 	       switch (schema[i].type) {
 		case ADDRESS_GUI_IM_MENU_TEXT:
-		  fprintf(out, _("%s: "), contact_app_info.IMLabels[mcont->cont.IMLabel[IM_i]]);
-		  IM_i++;
+                  index = mcont->cont.IMLabel[i-contIM1];
+		  fprintf(out, _("%s: "), contact_app_info.IMLabels[index]);
 		  break;
 		case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
-		  fprintf(out, _("%s: "), contact_app_info.phoneLabels[mcont->cont.phoneLabel[phone_i]]);
-		  phone_i++;
+                  index = mcont->cont.phoneLabel[i-contPhone1];
+		  fprintf(out, _("%s: "), contact_app_info.phoneLabels[index]);
 		  break;
 		case ADDRESS_GUI_ADDR_MENU_TEXT:
-		  fprintf(out, _("%s: "), contact_app_info.addrLabels[mcont->cont.addressLabel[address_i]]);
-		  address_i++;
+                  switch (schema[i].record_field) {
+                   case contAddress1 : index = 0; break;
+                   case contAddress2 : index = 1; break;
+                   case contAddress3 : index = 2; break;
+                  }
+                  index = mcont->cont.addressLabel[index];
+		  fprintf(out, _("%s: "), contact_app_info.addrLabels[mcont->cont.addressLabel[index]]);
 		  break;
 		default:
 		  fprintf(out, _("%s: "), contact_app_info.labels[schema[i].record_field] ? contact_app_info.labels[schema[i].record_field] : "");
