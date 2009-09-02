@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.200 2009/08/31 23:31:49 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.201 2009/09/02 22:26:35 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -134,6 +134,8 @@ static GtkWidget *repeat_day_entry;
 static GtkWidget *repeat_week_entry;
 static GtkWidget *repeat_mon_entry;
 static GtkWidget *repeat_year_entry;
+static GtkWidget *radio_button_no_time;
+static GtkWidget *radio_button_appt_time;
 static GtkWidget *radio_button_alarm_min;
 static GtkWidget *radio_button_alarm_hour;
 static GtkWidget *radio_button_alarm_day;
@@ -167,7 +169,6 @@ static struct tm begin_date, end_date;
 static GtkWidget *option1, *option2, *option3, *option4;
 static GtkWidget *begin_date_button;
 static GtkWidget *begin_time_entry, *end_time_entry;
-static GtkWidget *check_button_notime;
 
 static GtkWidget *new_record_button;
 static GtkWidget *apply_record_button;
@@ -1814,7 +1815,7 @@ static void set_begin_end_labels(struct tm *begin, struct tm *end, int flags)
    gtk_label_set_text(GTK_LABEL(GTK_BIN(begin_date_button)->child), str);
 
    if (flags & UPDATE_DATE_ENTRIES) {
-      if (GTK_TOGGLE_BUTTON(check_button_notime)->active) {
+      if (GTK_TOGGLE_BUTTON(radio_button_no_time)->active) {
 	 gtk_entry_set_text(GTK_ENTRY(begin_time_entry), "");
 	 gtk_entry_set_text(GTK_ENTRY(end_time_entry), "");
       } else {
@@ -1854,7 +1855,7 @@ static void clear_begin_end_labels(void)
    end_date.tm_isdst = -1;
 
    set_begin_end_labels(&begin_date, &end_date, UPDATE_DATE_ENTRIES |
-			UPDATE_DATE_MENUS);
+			                        UPDATE_DATE_MENUS);
 }
 
 static void appt_clear_details(void)
@@ -1884,7 +1885,7 @@ static void appt_clear_details(void)
    }
 
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_button_alarm), FALSE);
-   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_button_notime), TRUE);
+   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_no_time), TRUE);
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(private_checkbox), FALSE);
 
    clear_begin_end_labels();
@@ -2005,7 +2006,7 @@ static int appt_get_details(struct Appointment *appt, unsigned char *attrib)
    appt->end.tm_min  = end_date.tm_min;
    appt->end.tm_sec  = 0;
 
-   if (GTK_TOGGLE_BUTTON(check_button_notime)->active) {
+   if (GTK_TOGGLE_BUTTON(radio_button_no_time)->active) {
       appt->event=1;
       /* This event doesn't have a time */
       appt->begin.tm_hour = 0;
@@ -2984,13 +2985,13 @@ void cb_check_button_alarm(GtkWidget *widget, gpointer data)
    }
 }
 
-void cb_check_button_notime(GtkWidget *widget, gpointer data)
+void cb_radio_button_no_time(GtkWidget *widget, gpointer data)
 {
    /* GTK does not handle nested callbacks well!  
     * When a time is selected from the drop-down menus cb_menu_time
     * is called.  cb_menu_time, in turn, de-selects the notime checkbutton
     * which causes a signal to be generated which invokes
-    * cb_check_button_notime.  Finally, both callback routines call
+    * cb_radio_button_no_time.  Finally, both callback routines call
     * set_begin_end_labels and in that routine is a call which sets the
     * currently selected item in the gtk_option_menu.  This sequence of
     * events screws up the option menu for the first click.  One solution
@@ -3138,8 +3139,11 @@ static void cb_clist_selection(GtkWidget      *clist,
                                   find_menu_cat_pos(sorted_position));
    }
 
-   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_button_notime),
-				appt->event);
+   if (appt->event) {
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_no_time), TRUE);
+   } else {
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_appt_time), TRUE);
+   }
 
    gtk_text_buffer_set_text(GTK_TEXT_BUFFER(dbook_desc_buffer), "", -1);
    gtk_text_buffer_set_text(GTK_TEXT_BUFFER(dbook_note_buffer), "", -1);
@@ -3233,7 +3237,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    end_date.tm_min = appt->end.tm_min;
 
    set_begin_end_labels(&begin_date, &end_date, UPDATE_DATE_ENTRIES |
-			UPDATE_DATE_MENUS);
+			                        UPDATE_DATE_MENUS);
 
    /* Do the Repeat information */
    switch (appt->repeatType) {
@@ -3736,7 +3740,7 @@ void cb_menu_time(GtkWidget *item,
       Ptm->tm_min = data&0x3F;
    }
 
-   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_button_notime), 0);
+   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_appt_time), TRUE);
    set_begin_end_labels(&begin_date, &end_date, UPDATE_DATE_ENTRIES);
 }
 
@@ -3792,16 +3796,15 @@ static void entry_key_pressed(int next_digit, int begin_or_end)
    }
 
    set_begin_end_labels(&begin_date, &end_date, UPDATE_DATE_ENTRIES |
-			UPDATE_DATE_MENUS);
+			                        UPDATE_DATE_MENUS);
 }
 
 static gboolean cb_entry_pressed(GtkWidget *w, gpointer data)
 {
-   if (GTK_TOGGLE_BUTTON(check_button_notime)->active) {
-      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_button_notime), FALSE);
-   }
+   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_appt_time), TRUE);
+
    set_begin_end_labels(&begin_date, &end_date, UPDATE_DATE_ENTRIES |
-			UPDATE_DATE_MENUS);
+			                        UPDATE_DATE_MENUS);
 
    /* return FALSE to let GTK know we did not handle the event
     * this allows GTK to finish handling it.*/
@@ -3858,7 +3861,7 @@ static gboolean cb_entry_key_pressed(GtkWidget *widget,
    }
    else if (digit==PRESSED_SHIFT_TAB) {
       if (widget==begin_time_entry) {
-         gtk_widget_grab_focus(GTK_WIDGET(begin_date_button));
+         gtk_widget_grab_focus(GTK_WIDGET(radio_button_no_time));
       }
       else if (widget==end_time_entry) {
          gtk_widget_grab_focus(GTK_WIDGET(begin_time_entry));
@@ -3867,9 +3870,7 @@ static gboolean cb_entry_key_pressed(GtkWidget *widget,
 
    if (digit>=0) {
       if ((digit>=0) && (digit<=9)){
-	 if (GTK_TOGGLE_BUTTON(check_button_notime)->active) {
-	    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_button_notime), FALSE);
-	 }
+         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_appt_time), TRUE);
       }
       if (widget==begin_time_entry) {
 	 entry_key_pressed(digit, 0);
@@ -3883,8 +3884,21 @@ static gboolean cb_entry_key_pressed(GtkWidget *widget,
 }
 
 static gboolean cb_key_pressed_tab(GtkWidget *widget, 
-                                   GdkEventKey *event,
+                                   GdkEventKey *event, 
                                    gpointer next_widget)
+{
+   if (event->keyval == GDK_Tab) {
+      gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
+      gtk_widget_grab_focus(GTK_WIDGET(next_widget));
+      return TRUE;
+   }
+   
+   return FALSE;
+}
+
+static gboolean cb_key_pressed_tab_entry(GtkWidget *widget, 
+                                         GdkEventKey *event,
+                                         gpointer next_widget)
 {
    GtkTextIter    cursor_pos_iter;
    GtkTextBuffer *text_buffer;
@@ -4036,7 +4050,10 @@ static void connect_changed_signals(int con_or_dis)
       gtk_signal_connect(GTK_OBJECT(check_button_alarm), "toggled",
 			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
 
-      gtk_signal_connect(GTK_OBJECT(check_button_notime), "toggled",
+      gtk_signal_connect(GTK_OBJECT(radio_button_no_time), "toggled",
+			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+
+      gtk_signal_connect(GTK_OBJECT(radio_button_appt_time), "toggled",
 			 GTK_SIGNAL_FUNC(cb_record_changed), NULL);
 
       gtk_signal_connect(GTK_OBJECT(begin_date_button), "pressed",
@@ -4131,7 +4148,10 @@ static void connect_changed_signals(int con_or_dis)
       gtk_signal_disconnect_by_func(GTK_OBJECT(check_button_alarm),
 				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
 
-      gtk_signal_disconnect_by_func(GTK_OBJECT(check_button_notime),
+      gtk_signal_disconnect_by_func(GTK_OBJECT(radio_button_no_time),
+				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+
+      gtk_signal_disconnect_by_func(GTK_OBJECT(radio_button_appt_time),
 				    GTK_SIGNAL_FUNC(cb_record_changed), NULL);
 
       gtk_signal_disconnect_by_func(GTK_OBJECT(begin_date_button),
@@ -4313,6 +4333,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    GtkWidget *vbox1, *vbox2;
    GtkWidget *hbox2;
    GtkWidget *hbox_temp;
+   GtkWidget *vbox_temp;
 #ifdef DAY_VIEW
    GtkWidget *vbox_no_time_appts;
    GtkWidget *scrolled_window2;
@@ -4755,35 +4776,52 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
       gtk_box_pack_end(GTK_BOX(hbox_alarm1), private_checkbox, FALSE, FALSE, 0);
    }
 
-   /* Checkbox for timeless events */
+   /* Start date button */
    hbox_temp = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
-   check_button_notime = gtk_check_button_new_with_label(
-      _("This Event has no particular time"));
-   gtk_box_pack_start(GTK_BOX(hbox_temp), check_button_notime, FALSE, FALSE, 5);
-   gtk_signal_connect(GTK_OBJECT(check_button_notime), "clicked",
-		      GTK_SIGNAL_FUNC(cb_check_button_notime), NULL);
-
-   hbox_temp = gtk_hbox_new(FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
-
-   /* Begin date and time */
-   label = gtk_label_new(_("Starts on"));
-   gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 0);
+   label = gtk_label_new(_("Date:"));
+   gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 4);
 
    begin_date_button = gtk_button_new_with_label("");
-   gtk_box_pack_start(GTK_BOX(hbox_temp), begin_date_button, FALSE, FALSE, 5);
+   gtk_box_pack_start(GTK_BOX(hbox_temp), begin_date_button, FALSE, FALSE, 1);
    gtk_signal_connect(GTK_OBJECT(begin_date_button), "clicked",
 		      GTK_SIGNAL_FUNC(cb_cal_dialog),
 		      GINT_TO_POINTER(BEGIN_DATE_BUTTON));
 
+   /* Appointment time selection */
+   vbox_temp = gtk_vbox_new(FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox2), vbox_temp, FALSE, FALSE, 0);
+
+   hbox_temp = gtk_hbox_new(FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox_temp), hbox_temp, FALSE, FALSE, 0);
+   
+   /* No Time radio button */
+   radio_button_no_time = gtk_radio_button_new(NULL);
+   gtk_box_pack_start(GTK_BOX(hbox_temp), radio_button_no_time, FALSE, FALSE, 0);
+   gtk_signal_connect(GTK_OBJECT(radio_button_no_time), "clicked",
+		      GTK_SIGNAL_FUNC(cb_radio_button_no_time), NULL);
+
+   label = gtk_label_new(_("No Time"));
+   gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 0);
+
+   /* Appt Time radio button and entry widgets for selecting time */
+   hbox_temp = gtk_hbox_new(FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox_temp), hbox_temp, FALSE, FALSE, 0);
+
+   radio_button_appt_time = gtk_radio_button_new_from_widget(GTK_RADIO_BUTTON(radio_button_no_time));
+   gtk_box_pack_start(GTK_BOX(hbox_temp), radio_button_appt_time, FALSE, FALSE, 0);
+   /* Currently no need to do anything with appt_time radio button 
+   gtk_signal_connect(GTK_OBJECT(radio_button_appt_time), "clicked",
+		      GTK_SIGNAL_FUNC(cb_radio_button_appt_time), NULL); */
+
    table = gtk_table_new(2, 4, FALSE);
    gtk_table_set_row_spacings(GTK_TABLE(table), 0);
    gtk_table_set_col_spacings(GTK_TABLE(table), 0);
-   gtk_box_pack_start(GTK_BOX(vbox2), table, FALSE, FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(hbox_temp), table, FALSE, FALSE, 0);
 
-   label = gtk_label_new(_("Start Time"));
+   /* Start date and time */
+   label = gtk_label_new(_("Start"));
    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(label), 0, 1, 0, 1,
 		    GTK_SHRINK, GTK_SHRINK, 0, 0);
 
@@ -4800,7 +4838,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 		    3, 4, 0, 1, GTK_SHRINK, GTK_FILL, 0, 0);
 
    /* End date and time */
-   label = gtk_label_new(_("End Time"));
+   label = gtk_label_new(_("End"));
    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(label),
 		    0, 1, 1, 2, GTK_SHRINK, GTK_SHRINK, 0, 0);
 
@@ -4828,6 +4866,13 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 		      GTK_SIGNAL_FUNC(cb_entry_pressed), GINT_TO_POINTER(1));
    gtk_signal_connect(GTK_OBJECT(end_time_entry), "button_press_event",
 		      GTK_SIGNAL_FUNC(cb_entry_pressed), GINT_TO_POINTER(2));
+
+   gtk_signal_connect(GTK_OBJECT(begin_date_button), "key_press_event",
+		      GTK_SIGNAL_FUNC(cb_key_pressed_tab), 
+                      radio_button_no_time);
+   gtk_signal_connect(GTK_OBJECT(radio_button_no_time), "key_press_event",
+		      GTK_SIGNAL_FUNC(cb_key_pressed_tab), 
+                      begin_time_entry);
 
    clear_begin_end_labels();
 
@@ -5076,7 +5121,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    /* Capture the TAB key in text fields */
    gtk_signal_connect(GTK_OBJECT(dbook_desc), "key_press_event",
-		      GTK_SIGNAL_FUNC(cb_key_pressed_tab), dbook_note);
+		      GTK_SIGNAL_FUNC(cb_key_pressed_tab_entry), dbook_note);
    gtk_signal_connect(GTK_OBJECT(dbook_desc), "key_press_event",
                       GTK_SIGNAL_FUNC(cb_key_pressed_shift_tab), end_time_entry);
 
