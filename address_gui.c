@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.240 2009/09/01 01:54:28 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.241 2009/09/02 22:55:18 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -4191,12 +4191,8 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_widget_hide(undelete_record_button);
    gtk_widget_hide(cancel_record_button);
    if (address_version) {
-      if (GTK_IS_WIDGET(reminder_box)) {
-	 gtk_widget_hide(reminder_box);
-      }
-      if (GTK_IS_WIDGET(birthday_box)) {
-	 gtk_widget_hide(birthday_box);
-      }
+      gtk_widget_hide(reminder_box);
+      gtk_widget_hide(birthday_box);
    }
 
    get_pref(PREF_ADDRESS_NOTEBOOK_PAGE, &notebook_page, NULL);
