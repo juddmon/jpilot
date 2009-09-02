@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.201 2009/09/02 22:26:35 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.202 2009/09/02 22:54:11 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -4609,7 +4609,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    /* gtk_clist_set_auto_sort(GTK_CLIST(clist), TRUE); */
 #endif
 
-   /* Hide ToDo button */
+   /* Show ToDos button */
    show_todos_button = gtk_check_button_new_with_label(_("Show ToDos"));
    gtk_box_pack_start(GTK_BOX(vbox1), show_todos_button, FALSE, FALSE, 0);
    gtk_signal_connect(GTK_OBJECT(show_todos_button), "clicked",
@@ -5150,6 +5150,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_widget_hide(apply_record_button);
    gtk_widget_hide(undelete_record_button);
    gtk_widget_hide(cancel_record_button);
+   gtk_widget_hide(hbox_alarm2);
 
    get_pref(PREF_DATEBOOK_TODO_SHOW, &ivalue, NULL);
    if (!ivalue) {
