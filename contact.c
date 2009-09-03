@@ -1,4 +1,4 @@
-/* $Id: contact.c,v 1.13 2009/08/11 20:54:20 rikster5 Exp $ */
+/* $Id: contact.c,v 1.14 2009/09/03 18:45:18 rikster5 Exp $ */
 
 /*******************************************************************************
  * contact.c
@@ -739,9 +739,6 @@ int get_contacts2(ContactList **contact_list, int sort_order,
 
    jp_free_DB_records(&records);
 
-#ifdef JPILOT_DEBUG
-   print_contact_list(contact_list);
-#endif
    contacts_sort(contact_list, sort_order);
 
    jp_logf(JP_LOG_DEBUG, "Leaving get_contacts2()\n");

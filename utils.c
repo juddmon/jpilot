@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.176 2009/08/31 22:13:38 rikster5 Exp $ */
+/* $Id: utils.c,v 1.177 2009/09/03 18:45:18 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -2700,7 +2700,7 @@ int pdb_file_modify_record(char *DB_name, void *record_in, int size_in,
    int found;
    pi_uid_t uid;
 
-   jp_logf(JP_LOG_DEBUG, "pi_file_modify_record\n");
+   jp_logf(JP_LOG_DEBUG, "pdb_file_modify_record\n");
 
    g_snprintf(local_pdb_file, sizeof(local_pdb_file), "%s.pdb", DB_name);
    get_home_file_name(local_pdb_file, full_local_pdb_file, sizeof(full_local_pdb_file));
