@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.159 2009/08/31 22:13:38 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.160 2009/09/04 22:24:33 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -2030,7 +2030,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    GdkPixmap *pixmap;
    GdkBitmap *mask;
    GtkWidget *vbox1, *vbox2;
-   GtkWidget *hbox_temp;
+   GtkWidget *hbox_temp, *hbox_temp2;
    GtkWidget *vbox_temp;
    GtkWidget *separator;
    GtkWidget *label;
@@ -2038,7 +2038,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    struct tm *now;
    char str[MAX_RADIO_BUTTON_LEN];
    int i;
-   GSList    *group;
+   GSList *group;
    long ivalue;
    const char *svalue;
    char *titles[]={"","","","",""};
@@ -2242,6 +2242,17 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    separator = gtk_hseparator_new();
    gtk_box_pack_start(GTK_BOX(vbox2), separator, FALSE, FALSE, 5);
 
+   hbox_temp = gtk_hbox_new(FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
+
+   /* right-hand category menu */
+   make_category_menu(&category_menu2, todo_cat_menu_item2,
+                      sort_l, NULL, FALSE, FALSE);
+   gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu2, TRUE, TRUE, 0);
+
+   /* Private checkbox */
+   private_checkbox = gtk_check_button_new_with_label(_("Private"));
+   gtk_box_pack_end(GTK_BOX(hbox_temp), private_checkbox, FALSE, FALSE, 0);
 
    /* Completed checkbox */
    todo_completed_checkbox = gtk_check_button_new_with_label(_("Completed"));
@@ -2252,25 +2263,26 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    hbox_temp = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
-   label = gtk_label_new(_("Priority: "));
-   gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 0);
+   label = gtk_label_new(_("Priority:"));
+   gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 2);
 
    group = NULL;
    for (i=0; i<NUM_TODO_PRIORITIES; i++) {
       sprintf(str,"%d",i+1);
       radio_button_todo[i] = gtk_radio_button_new_with_label(group, str);
       group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_todo[i]));
-      /* gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON (radio_button_todo), TRUE); */
       gtk_box_pack_start(GTK_BOX(hbox_temp),
                          radio_button_todo[i], FALSE, FALSE, 0);
-      /* gtk_widget_show(radio_button_todo[i]);*/
    }
-   gtk_widget_set_usize(hbox_temp, 10, 0);
 
 
    /* "Due date" label */
    hbox_temp = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
+
+   /* spacer to line up */ 
+   hbox_temp2 = gtk_hbox_new(FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(hbox_temp), hbox_temp2, FALSE, FALSE, 1);
 
    label = gtk_label_new(_("Date Due:"));
    gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 0);
@@ -2281,25 +2293,12 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_signal_connect(GTK_OBJECT(due_date_button), "clicked",
                       GTK_SIGNAL_FUNC(cb_cal_dialog), NULL);
 
-
    /* "No Date" check box */
    todo_no_due_date_checkbox = gtk_check_button_new_with_label(_("No Date"));
    gtk_signal_connect(GTK_OBJECT(todo_no_due_date_checkbox), "clicked",
                       GTK_SIGNAL_FUNC(cb_check_button_no_due_date), NULL);
    gtk_box_pack_start(GTK_BOX(hbox_temp), todo_no_due_date_checkbox, FALSE, FALSE, 0);
 
-
-   /* Private checkbox */
-   hbox_temp = gtk_hbox_new(FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
-   private_checkbox = gtk_check_button_new_with_label(_("Private"));
-   gtk_box_pack_end(GTK_BOX(hbox_temp), private_checkbox, FALSE, FALSE, 0);
-
-   /* right-hand category menu */
-   make_category_menu(&category_menu2, todo_cat_menu_item2,
-                      sort_l, NULL, FALSE, FALSE);
-
-   gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu2, TRUE, TRUE, 0);
 
    note_pane = gtk_vpaned_new();
    get_pref(PREF_TODO_NOTE_PANE, &ivalue, NULL);
