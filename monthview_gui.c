@@ -1,4 +1,4 @@
-/* $Id: monthview_gui.c,v 1.48 2009/08/31 22:13:37 rikster5 Exp $ */
+/* $Id: monthview_gui.c,v 1.49 2009/09/10 06:01:54 rikster5 Exp $ */
 
 /*******************************************************************************
  * monthview_gui.c
@@ -25,7 +25,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <gtk/gtk.h>
-#include <pi-datebook.h>
+
+#include "jp-pi-calendar.h"
 
 #include "utils.h"
 #include "i18n.h"

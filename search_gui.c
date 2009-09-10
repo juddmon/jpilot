@@ -1,4 +1,4 @@
-/* $Id: search_gui.c,v 1.48 2009/07/03 20:20:55 rikster5 Exp $ */
+/* $Id: search_gui.c,v 1.49 2009/09/10 06:01:54 rikster5 Exp $ */
 
 /*******************************************************************************
  * search_gui.c
@@ -27,7 +27,8 @@
 #include <string.h>
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
-#include <pi-datebook.h>
+
+#include "jp-pi-calendar.h"
 #include <pi-address.h>
 #include <pi-todo.h>
 #include <pi-memo.h>
@@ -55,13 +56,6 @@ static GtkWidget *entry = NULL;
 static GtkAccelGroup *accel_group = NULL;
 
 static int clist_row_selected;
-
-/*
- * This keeps track of whether we are using addresses, or contacts
- * 0 is addresses, 1 is contacts
- * We could probably make this global
- */
-static long address_version=0;
 
 /****************************** Prototypes ************************************/
 static void cb_clist_selection(GtkWidget *clist, gint row, gint column,
@@ -99,6 +93,9 @@ static int search_datebook(const char *needle, GtkWidget *clist)
    char datef[52];
    const char *svalue1;
    struct search_record *new_sr;
+   long datebook_version=0;
+
+   get_pref(PREF_DATEBOOK_VERSION, &datebook_version, NULL);
   
    /* Search Appointments */
    a_list = NULL;
@@ -130,9 +127,23 @@ static int search_datebook(const char *needle, GtkWidget *clist)
 	    found = 2;
 	 }
       }
+      if (datebook_version) {
+         if ( !found &&
+              (temp_al->mappt.appt.location) &&
+              (temp_al->mappt.appt.location[0]) ) {
+            if (jp_strstr(temp_al->mappt.appt.location, needle, case_sense )) {
+               found = 3;
+            }
+         }
+      }
+
       if (found) {
 	 gtk_clist_prepend(GTK_CLIST(clist), empty_line);
-	 gtk_clist_set_text(GTK_CLIST(clist), 0, 0, _("datebook"));
+         if (datebook_version==0) {
+            gtk_clist_set_text(GTK_CLIST(clist), 0, 0, _("datebook"));
+         } else {
+            gtk_clist_set_text(GTK_CLIST(clist), 0, 0, _("calendar"));
+         }
 
 	 /* get the date */
 	 get_pref(PREF_SHORTDATE, NULL, &svalue1);
@@ -148,10 +159,14 @@ static int search_datebook(const char *needle, GtkWidget *clist)
 	    g_snprintf(str, sizeof(str), "%s\t%s",
 		       date_str,
 		       temp_al->mappt.appt.description);
-         } else {
+         } else if (found == 2) {
 	    g_snprintf(str, sizeof(str), "%s\t%s",
 		       date_str,
 		       temp_al->mappt.appt.note);
+         } else {
+	    g_snprintf(str, sizeof(str), "%s\t%s",
+		       date_str,
+		       temp_al->mappt.appt.location);
          }
          lstrncpy_remove_cr_lfs(str2, str, SEARCH_MAX_COLUMN_LEN);
          gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str2);
@@ -186,6 +201,7 @@ static int search_address_or_contacts(const char *needle, GtkWidget *clist)
    struct search_record *new_sr;
    int i, count;
    int case_sense;
+   long address_version=0;
 
    get_pref(PREF_ADDRESS_VERSION, &address_version, NULL);
 

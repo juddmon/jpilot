@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.202 2009/09/02 22:54:11 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.203 2009/09/10 06:01:54 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -70,6 +70,7 @@
 #define NUM_DATEBOOK_CAT_ITEMS 16
 #define NUM_EXPORT_TYPES 3
 #define NUM_DBOOK_CSV_FIELDS 19
+#define NUM_CALENDAR_CSV_FIELDS 20
 /* RFCs use CRLF for Internet newline */
 #define CRLF "\x0D\x0A"
 
@@ -139,6 +140,7 @@ static GtkWidget *radio_button_appt_time;
 static GtkWidget *radio_button_alarm_min;
 static GtkWidget *radio_button_alarm_hour;
 static GtkWidget *radio_button_alarm_day;
+static GtkWidget *location_entry;
 static GtkWidget *glob_endon_day_button;
 struct tm glob_endon_day_tm;
 static GtkWidget *glob_endon_week_button;
@@ -338,31 +340,63 @@ int datebook_to_text(struct Appointment *appt, char *text, int len)
       strcat(text_exceptions, "\n");
    }
 
-   g_snprintf(text, len,
-	      "%s %s\n"
-	      "%s %s\n"
-	      "%s\n"
-	      "%s %s%s\n"
-	      "%s %s\n"
-	      "%s"
-	      "%s"
-	      "%s %s\n"
-	      "%s"
-	      "%s"
-	      "%s",
-              _("Description:"), appt->description,
-	      _("Note:"), (appt->note ? appt->note : ""),
-	      text_time,
-	      _("Alarm:"), appt->alarm ? _("Yes"):_("No"), text_alarm,
-	      _("Repeat Type:"), text_repeat_type,
-	      text_repeat_freq,
-	      text_end_date,
-	      _("Start of Week:"), _(days[appt->repeatWeekstart]),
-	      text_repeat_day,
-	      text_repeat_days,
-	      text_exceptions
-	      );
+   if (datebook_version==0) {
+      /* DateBook app */
+      g_snprintf(text, len,
+                 "%s %s\n"
+                 "%s %s\n"
+                 "%s\n"
+                 "%s %s%s\n"
+                 "%s %s\n"
+                 "%s"
+                 "%s"
+                 "%s %s\n"
+                 "%s"
+                 "%s"
+                 "%s",
+                 _("Description:"), appt->description,
+                 _("Note:"), (appt->note ? appt->note : ""),
+                 text_time,
+                 _("Alarm:"), appt->alarm ? _("Yes"):_("No"), text_alarm,
+                 _("Repeat Type:"), text_repeat_type,
+                 text_repeat_freq,
+                 text_end_date,
+                 _("Start of Week:"), _(days[appt->repeatWeekstart]),
+                 text_repeat_day,
+                 text_repeat_days,
+                 text_exceptions
+                 );
+   } else {
+      /* Calendar app */
+      g_snprintf(text, len,
+                 "%s %s\n"
+                 "%s %s\n"
+                 "%s %s\n"
+                 "%s\n"
+                 "%s %s%s\n"
+                 "%s %s\n"
+                 "%s"
+                 "%s"
+                 "%s %s\n"
+                 "%s"
+                 "%s"
+                 "%s",
+                 _("Description:"), appt->description,
+                 _("Note:"), (appt->note ? appt->note : ""),
+                 _("Location:"), (appt->location ? appt->location : ""),
+                 text_time,
+                 _("Alarm:"), appt->alarm ? _("Yes"):_("No"), text_alarm,
+                 _("Repeat Type:"), text_repeat_type,
+                 text_repeat_freq,
+                 text_end_date,
+                 _("Start of Week:"), _(days[appt->repeatWeekstart]),
+                 text_repeat_day,
+                 text_repeat_days,
+                 text_exceptions
+                 );
 
+
+   }
    return EXIT_SUCCESS;
 }
 
@@ -374,6 +408,7 @@ int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int type)
    char text[65536];
    char description[65536];
    char note[65536];
+   char location[65536];
    struct Appointment new_appt;
    unsigned char attrib;
    int i, str_i, ret, index;
@@ -399,7 +434,11 @@ int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int type)
       jp_logf(JP_LOG_DEBUG, "Datebook import CSV [%s]\n", file_path);
       /* Get the first line containing the format and check for reasonableness */
       fgets(text, sizeof(text), in);
-      ret = verify_csv_header(text, NUM_DBOOK_CSV_FIELDS, file_path);
+      if (datebook_version==0) {
+         ret = verify_csv_header(text, NUM_DBOOK_CSV_FIELDS, file_path);
+      } else {
+         ret = verify_csv_header(text, NUM_CALENDAR_CSV_FIELDS, file_path);
+      }
       if (EXIT_FAILURE == ret) return EXIT_FAILURE;
 
       import_all=FALSE;
@@ -446,6 +485,17 @@ int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int type)
 	 } else {
 	    new_appt.note=NULL;
 	 }
+
+         if (datebook_version) {
+            /* Location */
+            ret = read_csv_field(in, location, 65535);
+            location[65535]='\0';
+            if (strlen(location) > 0) {
+               new_appt.location=location;
+            } else {
+               new_appt.location=NULL;
+            }
+         }
 
 	 /* Event */
 	 ret = read_csv_field(in, text, 65535);
@@ -765,7 +815,8 @@ void appt_export_ok(int type, const char *filename)
                  "Week Start, Number of Exceptions, Exceptions\n");
       } else {
          fprintf(out, "CSV calendar version "VERSION": Category, Private, "
-                 "Description, Note, Event, Begin, End, Alarm, Advance, "
+                 "Description, Note, Location, "
+                 "Event, Begin, End, Alarm, Advance, "
                  "Advance Units, Repeat Type, Repeat Forever, Repeat End, "
                  "Repeat Frequency, Repeat Day, Repeat Days, "
                  "Week Start, Number of Exceptions, Exceptions\n");
@@ -824,6 +875,11 @@ void appt_export_ok(int type, const char *filename)
 
 	 str_to_csv_str(csv_text, mappt->appt.note);
 	 fprintf(out, "\"%s\",", csv_text);
+
+         if (datebook_version) {
+            str_to_csv_str(csv_text, mappt->appt.location);
+            fprintf(out, "\"%s\",", csv_text);
+         }
 
 	 fprintf(out, "\"%d\",", mappt->appt.event);
 
@@ -1898,6 +1954,10 @@ static void appt_clear_details(void)
       gtk_entry_set_text(GTK_ENTRY(datebk_entry), "");
    }
 #endif
+   if (datebook_version) {
+      /* Calendar has a location field */
+      gtk_entry_set_text(GTK_ENTRY(location_entry), "");
+   }
 
    /* Clear the notebook pages */
    gtk_notebook_set_page(GTK_NOTEBOOK(notebook), PAGE_NONE);
@@ -2100,7 +2160,7 @@ static int appt_get_details(struct Appointment *appt, unsigned char *attrib)
 	 }
 	 strftime(str, sizeof(str), datef, &appt->repeatEnd);
 
-	 jp_logf(JP_LOG_DEBUG, "repeat_end time = %s\n",str);
+	 jp_logf(JP_LOG_DEBUG, "repeat_end time = %s\n", str);
       } else {
 	 appt->repeatForever=1;
       }
@@ -2134,7 +2194,7 @@ static int appt_get_details(struct Appointment *appt, unsigned char *attrib)
 	 }
 	 strftime(str, sizeof(str), datef, &appt->repeatEnd);
 
-	 jp_logf(JP_LOG_DEBUG, "repeat_end time = %s\n",str);
+	 jp_logf(JP_LOG_DEBUG, "repeat_end time = %s\n", str);
       } else {
 	 appt->repeatForever=1;
       }
@@ -2172,7 +2232,7 @@ static int appt_get_details(struct Appointment *appt, unsigned char *attrib)
 	 str[0]='\0';
 	 strftime(str, sizeof(str), datef, &appt->repeatEnd);
 
-	 jp_logf(JP_LOG_DEBUG, "repeat_end time = %s\n",str);
+	 jp_logf(JP_LOG_DEBUG, "repeat_end time = %s\n", str);
       } else {
 	 appt->repeatForever=1;
       }
@@ -2192,7 +2252,7 @@ static int appt_get_details(struct Appointment *appt, unsigned char *attrib)
       jp_logf(JP_LOG_WARN, _("Appointment description text > %d, truncating to %d\n"), MAX_DESC_LEN, MAX_DESC_LEN);
    }
    if (appt->description) {
-      jp_logf(JP_LOG_DEBUG, "description=[%s]\n",appt->description);
+      jp_logf(JP_LOG_DEBUG, "description=[%s]\n", appt->description);
    }
 
 #ifdef ENABLE_DATEBK
@@ -2224,7 +2284,20 @@ static int appt_get_details(struct Appointment *appt, unsigned char *attrib)
       appt->note=NULL;
    }
    if (appt->note) {
-      jp_logf(JP_LOG_DEBUG, "text note=[%s]\n",appt->note);
+      jp_logf(JP_LOG_DEBUG, "text note=[%s]\n", appt->note);
+   }
+
+   if (datebook_version) {
+      appt->location = strdup(gtk_entry_get_text(GTK_ENTRY(location_entry)));
+      if (appt->location[0]=='\0') {
+         free(appt->location);
+         appt->location=NULL;
+      }
+      if (appt->location) {
+         jp_logf(JP_LOG_DEBUG, "text location=[%s]\n", appt->location);
+      }
+   } else {
+      appt->location=NULL;
    }
 
    /* We won't allow a repeat frequency of less than 1 */
@@ -2278,6 +2351,10 @@ static void clear_myappointment(MyAppointment *mappt)
    if (mappt->appt.note) {
       free(mappt->appt.note);
       mappt->appt.note=strdup("");
+   }
+   if (mappt->appt.location) {
+      free(mappt->appt.location);
+      mappt->appt.location=strdup("");
    }
 
    return;
@@ -2707,7 +2784,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
 
    r = appt_get_details(&new_appt, &attrib);
    if (r != EXIT_SUCCESS) {
-      free_Appointment(&new_appt);
+      jp_free_Appointment(&new_appt);
       return;
    }
 
@@ -2738,7 +2815,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
       if (t_begin > t_end) {
 	 dialog_generic_ok(notebook, _("Invalid Appointment"), DIALOG_ERROR,
 			   _("The End Date of this appointment\nis before the start date."));
-	 free_Appointment(&new_appt);
+	 jp_free_Appointment(&new_appt);
 	 return;
       }
    }
@@ -2791,7 +2868,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
 	 }
 	 unique_id = 0;
 	 pc_datebook_write(&new_appt, NEW_PC_REC, attrib, &unique_id);
-	 free_Appointment(appt);
+	 jp_free_Appointment(appt);
 	 free(appt);
       } else {
 	 if ((mappt->rt==PALM_REC) || (mappt->rt==REPLACEMENT_PALM_REC)) {
@@ -2834,7 +2911,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
       gtk_calendar_thaw(GTK_CALENDAR(main_calendar));
    } 
 
-   free_Appointment(&new_appt);
+   jp_free_Appointment(&new_appt);
 
    datebook_update_clist();
    highlight_days();
@@ -2872,6 +2949,8 @@ void cb_delete_appt(GtkWidget *widget, gpointer data)
          charset_j2p(mappt->appt.description, strlen(mappt->appt.description)+1, char_set);
       if (mappt->appt.note) 
          charset_j2p(mappt->appt.note, strlen(mappt->appt.note)+1, char_set);
+      if (mappt->appt.location) 
+         charset_j2p(mappt->appt.location, strlen(mappt->appt.location)+1, char_set);
    }
 
    /* Do masking like Palm OS 3.5 */
@@ -2918,7 +2997,7 @@ void cb_delete_appt(GtkWidget *widget, gpointer data)
    delete_pc_record(DATEBOOK, mappt, flag);
    if (write_flag) {
       pc_datebook_write(appt, REPLACEMENT_PALM_REC, mappt->attrib, write_unique_id);
-      free_Appointment(appt);
+      jp_free_Appointment(appt);
       free(appt);
    }
 
@@ -3147,6 +3226,9 @@ static void cb_clist_selection(GtkWidget      *clist,
 
    gtk_text_buffer_set_text(GTK_TEXT_BUFFER(dbook_desc_buffer), "", -1);
    gtk_text_buffer_set_text(GTK_TEXT_BUFFER(dbook_note_buffer), "", -1);
+   if (datebook_version) {
+      gtk_entry_set_text(GTK_ENTRY(location_entry), "");
+   }
 #ifdef ENABLE_DATEBK
    if (use_db3_tags) {
       gtk_entry_set_text(GTK_ENTRY(datebk_entry), "");
@@ -3238,6 +3320,13 @@ static void cb_clist_selection(GtkWidget      *clist,
 
    set_begin_end_labels(&begin_date, &end_date, UPDATE_DATE_ENTRIES |
 			                        UPDATE_DATE_MENUS);
+
+   if (datebook_version) {
+      /* Calendar has a location field */
+      if (appt->location) {
+         gtk_entry_set_text(GTK_ENTRY(location_entry), appt->location);
+      }
+   }
 
    /* Do the Repeat information */
    switch (appt->repeatType) {
@@ -3414,7 +3503,7 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
    pf = pi_file_open(full_name);
    pi_file_get_app_info(pf, &buf, &size);
 
-   num = unpack_AppointmentAppInfo(&ai, buf, size);
+   num = jp_unpack_AppointmentAppInfo(&ai, buf, size);
    if (num <= 0) {
       jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), pdb_name);
       return;
@@ -3424,7 +3513,7 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
 
    edit_cats(widget, db_name, &(ai.category));
 
-   size = pack_AppointmentAppInfo(&ai, buffer, sizeof(buffer));
+   size = jp_pack_AppointmentAppInfo(&ai, buffer, sizeof(buffer));
 
    pdb_file_write_app_block(db_name, buffer, size);
    
@@ -4071,7 +4160,10 @@ static void connect_changed_signals(int con_or_dis)
 		       GTK_SIGNAL_FUNC(cb_record_changed), NULL);
       g_signal_connect(dbook_note_buffer, "changed",
 		       GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-
+      if (datebook_version) {
+         g_signal_connect(location_entry, "changed",
+                          GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+      }
 #ifdef ENABLE_DATEBK
       if (use_db3_tags) {
 	 if (datebk_entry) {
@@ -4169,6 +4261,10 @@ static void connect_changed_signals(int con_or_dis)
 					   GTK_SIGNAL_FUNC(cb_record_changed), NULL);
       g_signal_handlers_disconnect_by_func(dbook_note_buffer,
 					   GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+      if (datebook_version) {
+         g_signal_handlers_disconnect_by_func(location_entry,
+                                              GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+      }
 #ifdef ENABLE_DATEBK
       if (use_db3_tags) {
 	 if (datebk_entry) {
@@ -4718,63 +4814,62 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    separator = gtk_hseparator_new();
    gtk_box_pack_start(GTK_BOX(vbox2), separator, FALSE, FALSE, 5);
 
-   if (datebook_version==1) {
-      /* Private check box */
+   if (datebook_version) {
+      /* Calendar supports categories */
       hbox_temp = gtk_hbox_new(FALSE, 0);
       gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
-      private_checkbox = gtk_check_button_new_with_label(_("Private"));
-      gtk_box_pack_end(GTK_BOX(hbox_temp), private_checkbox, FALSE, FALSE, 0);
 
       /* Put the right-hand category menu up */
       make_category_menu(&category_menu2, dbook_cat_menu_item2,
                          sort_l, cb_category, FALSE, TRUE);
       gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu2, TRUE, TRUE, 0);
 
-      /* Put in a box merely to space things correctly. */
-      hbox_temp = gtk_hbox_new(FALSE, 0);
-      gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 1);
+      /* Private check box */
+      private_checkbox = gtk_check_button_new_with_label(_("Private"));
+      gtk_box_pack_end(GTK_BOX(hbox_temp), private_checkbox, FALSE, FALSE, 0);
    }
 
-   /* Alarm checkbox */
-   hbox_alarm1 = gtk_hbox_new(FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(vbox2), hbox_alarm1, FALSE, FALSE, 0);
-
-   check_button_alarm = gtk_check_button_new_with_label(_("Alarm"));
-   gtk_box_pack_start(GTK_BOX(hbox_alarm1), check_button_alarm, FALSE, FALSE, 5);
-   gtk_signal_connect(GTK_OBJECT(check_button_alarm), "clicked",
-		      GTK_SIGNAL_FUNC(cb_check_button_alarm), NULL);
-
-   hbox_alarm2 = gtk_hbox_new(FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(hbox_alarm1), hbox_alarm2, FALSE, FALSE, 0);
-
-   /* Units entry for alarm */
-   units_entry = gtk_entry_new_with_max_length(2);
-   entry_set_multiline_truncate(GTK_ENTRY(units_entry), TRUE);
-   gtk_widget_set_usize(units_entry, 30, 0);
-   gtk_box_pack_start(GTK_BOX(hbox_alarm2), units_entry, FALSE, FALSE, 0);
-
-   radio_button_alarm_min = gtk_radio_button_new_with_label(NULL, _("Minutes"));
-
-   group = NULL;
-   group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_alarm_min));
-   radio_button_alarm_hour = gtk_radio_button_new_with_label(group, _("Hours"));
-   group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_alarm_hour));
-   radio_button_alarm_day = gtk_radio_button_new_with_label(group, _("Days"));
-
-   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_alarm_min), TRUE);
-
-   gtk_box_pack_start(GTK_BOX(hbox_alarm2),
-		      radio_button_alarm_min, FALSE, FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(hbox_alarm2),
-		      radio_button_alarm_hour, FALSE, FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(hbox_alarm2),
-		      radio_button_alarm_day, FALSE, FALSE, 0);
-
+   /* Datebook has alarm checkbox on top */
    if (datebook_version==0) {
+      /* Alarm checkbox */
+      hbox_alarm1 = gtk_hbox_new(FALSE, 0);
+      gtk_box_pack_start(GTK_BOX(vbox2), hbox_alarm1, FALSE, FALSE, 0);
+
+      check_button_alarm = gtk_check_button_new_with_label(_("Alarm"));
+      gtk_box_pack_start(GTK_BOX(hbox_alarm1), check_button_alarm, FALSE, FALSE, 2);
+      gtk_signal_connect(GTK_OBJECT(check_button_alarm), "clicked",
+               GTK_SIGNAL_FUNC(cb_check_button_alarm), NULL);
+
+      hbox_alarm2 = gtk_hbox_new(FALSE, 0);
+      gtk_box_pack_start(GTK_BOX(hbox_alarm1), hbox_alarm2, FALSE, FALSE, 0);
+
+      /* Units entry for alarm */
+      units_entry = gtk_entry_new_with_max_length(2);
+      entry_set_multiline_truncate(GTK_ENTRY(units_entry), TRUE);
+      gtk_widget_set_usize(units_entry, 30, 0);
+      gtk_box_pack_start(GTK_BOX(hbox_alarm2), units_entry, FALSE, FALSE, 0);
+
+      radio_button_alarm_min = gtk_radio_button_new_with_label(NULL, _("Minutes"));
+
+      group = NULL;
+      group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_alarm_min));
+      radio_button_alarm_hour = gtk_radio_button_new_with_label(group, _("Hours"));
+      group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_alarm_hour));
+      radio_button_alarm_day = gtk_radio_button_new_with_label(group, _("Days"));
+
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_alarm_min), TRUE);
+
+      gtk_box_pack_start(GTK_BOX(hbox_alarm2),
+               radio_button_alarm_min, FALSE, FALSE, 0);
+      gtk_box_pack_start(GTK_BOX(hbox_alarm2),
+               radio_button_alarm_hour, FALSE, FALSE, 0);
+      gtk_box_pack_start(GTK_BOX(hbox_alarm2),
+               radio_button_alarm_day, FALSE, FALSE, 0);
+
       /* Private check box */
       private_checkbox = gtk_check_button_new_with_label(_("Private"));
       gtk_box_pack_end(GTK_BOX(hbox_alarm1), private_checkbox, FALSE, FALSE, 0);
-   }
+   }  /* end of Alarm & Private check boxes for Datebook */
 
    /* Start date button */
    hbox_temp = gtk_hbox_new(FALSE, 0);
@@ -4794,10 +4889,11 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_box_pack_start(GTK_BOX(vbox2), vbox_temp, FALSE, FALSE, 0);
 
    hbox_temp = gtk_hbox_new(FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(vbox_temp), hbox_temp, FALSE, FALSE, 0);
-   
+   gtk_box_pack_start(GTK_BOX(vbox_temp), hbox_temp, TRUE, TRUE, 0);
+
    /* No Time radio button */
    radio_button_no_time = gtk_radio_button_new(NULL);
+   gtk_button_set_alignment(GTK_BUTTON(radio_button_no_time), 1.0, 0.0); 
    gtk_box_pack_start(GTK_BOX(hbox_temp), radio_button_no_time, FALSE, FALSE, 0);
    gtk_signal_connect(GTK_OBJECT(radio_button_no_time), "clicked",
 		      GTK_SIGNAL_FUNC(cb_radio_button_no_time), NULL);
@@ -4875,6 +4971,58 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
                       begin_time_entry);
 
    clear_begin_end_labels();
+
+   /* Location Entry for Calendar app */
+   if (datebook_version) {
+      hbox_temp = gtk_hbox_new(FALSE, 0);
+      gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
+
+      label = gtk_label_new(_("Location:"));
+      gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 4);
+
+      location_entry = gtk_entry_new();
+      entry_set_multiline_truncate(GTK_ENTRY(location_entry), TRUE);
+      gtk_entry_set_width_chars(GTK_ENTRY(location_entry), 21); 
+      gtk_box_pack_start(GTK_BOX(hbox_temp), location_entry, FALSE, FALSE, 0);
+   }
+
+   /* Calendar application has alarm checkbox on bottom */
+   if (datebook_version) { 
+      /* Alarm checkbox */
+      hbox_alarm1 = gtk_hbox_new(FALSE, 0);
+      gtk_box_pack_start(GTK_BOX(vbox2), hbox_alarm1, FALSE, FALSE, 0);
+
+      check_button_alarm = gtk_check_button_new_with_label(_("Alarm"));
+      gtk_box_pack_start(GTK_BOX(hbox_alarm1), check_button_alarm, FALSE, FALSE, 2);
+      gtk_signal_connect(GTK_OBJECT(check_button_alarm), "clicked",
+               GTK_SIGNAL_FUNC(cb_check_button_alarm), NULL);
+
+      hbox_alarm2 = gtk_hbox_new(FALSE, 0);
+      gtk_box_pack_start(GTK_BOX(hbox_alarm1), hbox_alarm2, FALSE, FALSE, 0);
+
+      /* Units entry for alarm */
+      units_entry = gtk_entry_new_with_max_length(2);
+      entry_set_multiline_truncate(GTK_ENTRY(units_entry), TRUE);
+      gtk_widget_set_usize(units_entry, 30, 0);
+      gtk_box_pack_start(GTK_BOX(hbox_alarm2), units_entry, FALSE, FALSE, 0);
+
+      radio_button_alarm_min = gtk_radio_button_new_with_label(NULL, _("Minutes"));
+
+      group = NULL;
+      group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_alarm_min));
+      radio_button_alarm_hour = gtk_radio_button_new_with_label(group, _("Hours"));
+      group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_alarm_hour));
+      radio_button_alarm_day = gtk_radio_button_new_with_label(group, _("Days"));
+
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_alarm_min), TRUE);
+
+      gtk_box_pack_start(GTK_BOX(hbox_alarm2),
+               radio_button_alarm_min, FALSE, FALSE, 0);
+      gtk_box_pack_start(GTK_BOX(hbox_alarm2),
+               radio_button_alarm_hour, FALSE, FALSE, 0);
+      gtk_box_pack_start(GTK_BOX(hbox_alarm2),
+               radio_button_alarm_day, FALSE, FALSE, 0);
+   }  /* End of Alarm checkbox for Calendar */
 
    note_pane = gtk_vpaned_new();
    get_pref(PREF_DATEBOOK_NOTE_PANE, &ivalue, NULL);

@@ -1,4 +1,4 @@
-/* $Id: weekview_gui.c,v 1.45 2009/08/31 22:13:39 rikster5 Exp $ */
+/* $Id: weekview_gui.c,v 1.46 2009/09/10 06:01:55 rikster5 Exp $ */
 
 /*******************************************************************************
  * weekview_gui.c
@@ -25,7 +25,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <gtk/gtk.h>
-#include <pi-datebook.h>
+
+#include "jp-pi-calendar.h"
 
 #include "i18n.h"
 #include "utils.h"

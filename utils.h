@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.73 2009/08/28 05:53:12 rikster5 Exp $ */
+/* $Id: utils.h,v 1.74 2009/09/10 06:01:55 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -27,13 +27,14 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/types.h>
-#include <pi-datebook.h>
+#include <gtk/gtk.h>
+
 #include <pi-address.h>
 #include <pi-todo.h>
 #include <pi-memo.h>
 #include <pi-file.h>
+#include "jp-pi-calendar.h"
 #include "jp-pi-contact.h"
-#include <gtk/gtk.h>
 
 #include "libplugin.h"
 #include "japanese.h"

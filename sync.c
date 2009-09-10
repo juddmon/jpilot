@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.107 2009/08/31 22:13:38 rikster5 Exp $ */
+/* $Id: sync.c,v 1.108 2009/09/10 06:01:55 rikster5 Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -725,9 +725,9 @@ int unpack_calendar_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_r
    jp_logf(JP_LOG_DEBUG, "unpack_calendar_cai_from_ai\n");
 
    memset(&ai, 0, sizeof(ai));
-   r = unpack_AppointmentAppInfo(&ai, ai_raw, len);
+   r = jp_unpack_AppointmentAppInfo(&ai, ai_raw, len);
    if ((r <= 0) || (len <= 0)) {
-      jp_logf(JP_LOG_DEBUG, "unpack_AppointmentAppInfo failed %s %d\n", __FILE__, __LINE__);
+      jp_logf(JP_LOG_DEBUG, "jp_unpack_AppointmentAppInfo failed %s %d\n", __FILE__, __LINE__);
       return EXIT_FAILURE;
    }
    memcpy(cai, &(ai.category), sizeof(struct CategoryAppInfo));
@@ -742,16 +742,16 @@ int pack_calendar_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw
 
    jp_logf(JP_LOG_DEBUG, "pack_calendar_cai_into_ai\n");
 
-   r = unpack_AppointmentAppInfo(&ai, ai_raw, len);
+   r = jp_unpack_AppointmentAppInfo(&ai, ai_raw, len);
    if (r <= 0) {
-      jp_logf(JP_LOG_DEBUG, "unpack_AppointmentAppInfo failed %s %d\n", __FILE__, __LINE__);
+      jp_logf(JP_LOG_DEBUG, "jp_unpack_AppointmentAppInfo failed %s %d\n", __FILE__, __LINE__);
       return EXIT_FAILURE;
    }
    memcpy(&(ai.category), cai, sizeof(struct CategoryAppInfo));
 
-   r = pack_AppointmentAppInfo(&ai, ai_raw, len);
+   r = jp_pack_AppointmentAppInfo(&ai, ai_raw, len);
    if (r <= 0) {
-      jp_logf(JP_LOG_DEBUG, "pack_AppointmentAppInfo failed %s %d\n", __FILE__, __LINE__);
+      jp_logf(JP_LOG_DEBUG, "jp_pack_AppointmentAppInfo failed %s %d\n", __FILE__, __LINE__);
       return EXIT_FAILURE;
    }
 

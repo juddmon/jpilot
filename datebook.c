@@ -1,4 +1,4 @@
-/* $Id: datebook.c,v 1.56 2009/08/31 22:13:37 rikster5 Exp $ */
+/* $Id: datebook.c,v 1.57 2009/09/10 06:01:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook.c
@@ -28,15 +28,16 @@
 #include <time.h>
 #include <unistd.h>
 #include <utime.h>
+
 #include <pi-source.h>
 #include <pi-socket.h>
-#include <pi-datebook.h>
+#include "jp-pi-calendar.h"
 #include <pi-dlp.h>
 #include <pi-file.h>
 
 #include "i18n.h"
-#include "datebook.h"
 #include "utils.h"
+#include "datebook.h"
 #include "log.h"
 #include "prefs.h"
 #include "libplugin.h"
@@ -436,7 +437,7 @@ void free_AppointmentList(AppointmentList **al)
 {
    AppointmentList *temp_al, *temp_al_next;
    for (temp_al = *al; temp_al; temp_al=temp_al_next) {
-      free_Appointment(&(temp_al->mappt.appt));
+      jp_free_Appointment(&(temp_al->mappt.appt));
       temp_al_next = temp_al->next;
       free(temp_al);
    }
@@ -464,7 +465,7 @@ int get_datebook_app_info(struct AppointmentAppInfo *ai)
    }
 
    jp_get_app_info(DBname, &buf, &rec_size);
-   num = unpack_AppointmentAppInfo(ai, buf, rec_size);
+   num = jp_unpack_AppointmentAppInfo(ai, buf, rec_size);
    if (buf) {
       free(buf);
    }
@@ -572,11 +573,12 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
       appt.exception=NULL;
       appt.description=NULL;
       appt.note=NULL;
+      appt.location=NULL;
 
       RecordBuffer = pi_buffer_new(br->size);
       memcpy(RecordBuffer->data, br->buf, br->size);
       RecordBuffer->used = br->size;
-      if (unpack_Appointment(&appt, RecordBuffer, datebook_v1) == -1) {
+      if (jp_unpack_Appointment(&appt, RecordBuffer, datebook_v1) == -1) {
 	 pi_buffer_free(RecordBuffer);
 	 continue;
       }
@@ -589,7 +591,7 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
 #endif
       if (now!=NULL) {
 	 if (!isApptOnDate(&appt, now)) {
-	    free_Appointment(&appt);
+	    jp_free_Appointment(&appt);
 	    continue;
 	 }
       }
@@ -608,11 +610,18 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
 	    appt.note = buf;
 	 }
       }
+      if (appt.location) {
+         buf = charset_p2newj(appt.location, -1, char_set);
+         if (buf) {
+	    free(appt.location);
+	    appt.location = buf;
+	 }
+      }
 
       temp_a_list = malloc(sizeof(AppointmentList));
       if (!temp_a_list) {
 	 jp_logf(JP_LOG_WARN, "get_days_appointments(): %s\n", _("Out of memory"));
-	 free_Appointment(&appt);
+	 jp_free_Appointment(&appt);
 	 break;
       }
       memcpy(&(temp_a_list->mappt.appt), &appt, sizeof(struct Appointment));
@@ -817,9 +826,9 @@ int pc_datebook_write(struct Appointment *appt, PCRecType rt,
    }
 
    RecordBuffer = pi_buffer_new(0);
-   if (pack_Appointment(appt, RecordBuffer, datebook_v1) == -1) {
+   if (jp_pack_Appointment(appt, RecordBuffer, datebook_v1) == -1) {
       PRINT_FILE_LINE;
-      jp_logf(JP_LOG_WARN, "pack_Appointment %s\n", _("error"));
+      jp_logf(JP_LOG_WARN, "jp_pack_Appointment %s\n", _("error"));
       return EXIT_FAILURE;
    }
    br.rt=rt;
@@ -984,7 +993,7 @@ int weed_datebook_list(AppointmentList **al, int mon, int year,
 	    *al=tal->next;
 	 }
 	 next_al=tal->next;
-	 free_Appointment(&(tal->mappt.appt));
+	 jp_free_Appointment(&(tal->mappt.appt));
 	 free(tal);
       } else {
 	 prev_al=tal;

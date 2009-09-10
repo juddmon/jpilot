@@ -1,4 +1,4 @@
-/* $Id: alarms.c,v 1.49 2008/10/20 04:40:31 rikster5 Exp $ */
+/* $Id: alarms.c,v 1.50 2009/09/10 06:01:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * alarms.c
@@ -38,7 +38,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <pi-datebook.h>
+#include "jp-pi-calendar.h"
 
 #include "i18n.h"
 #include "utils.h"

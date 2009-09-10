@@ -1,4 +1,4 @@
-/* $Id: datebook.h,v 1.22 2007/12/18 00:41:42 rikster5 Exp $ */
+/* $Id: datebook.h,v 1.23 2009/09/10 06:01:54 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook.h
@@ -24,7 +24,8 @@
 #define __DATEBOOK_H__
 
 #include <stdio.h>
-#include <pi-datebook.h>
+//#include <pi-datebook.h>
+#include "jp-pi-calendar.h"
 #include "utils.h"
 
 #ifdef ENABLE_DATEBK

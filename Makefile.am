@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.61 2009/08/28 18:30:52 rikster5 Exp $
+# $Id: Makefile.am,v 1.62 2009/09/10 06:01:53 rikster5 Exp $
 
 SUBDIRS = Expense SyncTime KeyRing dialer m4 po icons docs empty
 
@@ -53,7 +53,9 @@ jpilot_SOURCES = \
 	japanese.c \
 	japanese.h \
 	jpilot.c \
+	jp-calendar.c \
 	jp-contact.c \
+	jp-pi-calendar.h \
 	jp-pi-contact.h \
 	libplugin.c \
 	libplugin.h \
@@ -123,6 +125,7 @@ jpilot_dump_SOURCES = \
 	russian.c \
 	todo.c \
 	utils.c \
+	jp-calendar.c \
 	jp-contact.c
 
 jpilot-dump.o: jpilot-dump.c config.h utils.h log.h prefs.h \
@@ -142,6 +145,7 @@ jpilot_sync_SOURCES = \
 	russian.c \
 	sync.c \
 	utils.c \
+	jp-calendar.c \
 	jp-contact.c
 
 

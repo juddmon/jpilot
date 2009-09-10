@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.177 2009/09/03 18:45:18 rikster5 Exp $ */
+/* $Id: utils.c,v 1.178 2009/09/10 06:01:55 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -1073,7 +1073,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       switch (app_type) {
        case DATEBOOK:
 	 appt=&mappt->appt;
-	 if (pack_Appointment(appt, RecordBuffer, datebook_v1) == -1) {
+	 if (jp_pack_Appointment(appt, RecordBuffer, datebook_v1) == -1) {
 	    PRINT_FILE_LINE;
 	    jp_logf(JP_LOG_WARN, "pack_Appointment %s\n", _("error"));
 	 }
