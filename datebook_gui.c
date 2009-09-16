@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.203 2009/09/10 06:01:54 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.204 2009/09/16 08:24:19 rousseau Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -3526,7 +3526,9 @@ static void cb_category(GtkWidget *item, int selection)
    if ((GTK_CHECK_MENU_ITEM(item))->active) {
       if (dbook_category == selection) { return; }
 
+#ifdef JPILOT_DEBUG
       printf("dbook_category: %d, selection: %d\n", dbook_category, selection); 
+#endif
 
       /* Check for Edit Categories... */
       if (selection==NUM_DATEBOOK_CAT_ITEMS) {
