@@ -1,4 +1,4 @@
-/* $Id: datebook.c,v 1.58 2009/09/19 12:30:51 rousseau Exp $ */
+/* $Id: datebook.c,v 1.59 2009/09/19 20:59:48 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook.c
@@ -168,6 +168,10 @@ int datebook_compare(const void *v1, const void *v2)
 int datebook_copy_appointment(struct Appointment *a1,
 			     struct Appointment **a2)
 {
+   long datebook_version;
+
+   get_pref(PREF_DATEBOOK_VERSION, &datebook_version, NULL);
+
    *a2=malloc(sizeof(struct Appointment));
    if (!(*a2)) {
       jp_logf(JP_LOG_WARN, "datebook_copy_appointment(): %s\n", _("Out of memory"));
@@ -187,6 +191,12 @@ int datebook_copy_appointment(struct Appointment *a1,
    }
    if (a1->note) {
       (*a2)->note=strdup(a1->note);
+   }
+
+   if (datebook_version) {
+      if (a1->location) {
+         (*a2)->location=strdup(a1->location);
+      } 
    }
 
    return EXIT_SUCCESS;
@@ -823,8 +833,10 @@ int pc_datebook_write(struct Appointment *appt, PCRecType rt,
    if (char_set != CHAR_SET_LATIN1) {
       if (appt->description) charset_j2p(appt->description, strlen(appt->description)+1, char_set);
       if (appt->note) charset_j2p(appt->note, strlen(appt->note)+1, char_set);
-      if (appt->location) 
-         charset_j2p(appt->location, strlen(appt->location)+1, char_set);
+      if (datebook_version) {
+         if (appt->location) 
+            charset_j2p(appt->location, strlen(appt->location)+1, char_set);
+      }
    }
 
    RecordBuffer = pi_buffer_new(0);

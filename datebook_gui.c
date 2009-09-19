@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.205 2009/09/19 11:55:36 rousseau Exp $ */
+/* $Id: datebook_gui.c,v 1.206 2009/09/19 20:59:48 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -975,6 +975,8 @@ void appt_export_ok(int type, const char *filename)
 	 fprintf(out, "DESCRIPTION:%s", csv_text);
 	 if (mappt->appt.note && mappt->appt.note[0]) {
 	    str_to_ical_str(csv_text, sizeof(csv_text), mappt->appt.note);
+            /* FIXME: Add location field to output as well or
+             *        find an ical field for location */
 	    fprintf(out, "\\n"CRLF" %s"CRLF, csv_text);
 	 } else {
 	    fprintf(out, CRLF);
@@ -1101,6 +1103,8 @@ void appt_export_ok(int type, const char *filename)
 	    fprintf(out, "BEGIN:VALARM"CRLF);
 	    fprintf(out, "ACTION:DISPLAY"CRLF);
 	    str_to_ical_str(csv_text, sizeof(csv_text), mappt->appt.description);
+            /* FIXME: Add location in parentheses (loc) as the Palm does.
+             * We would need to check strlen, etc., before adding */
 	    fprintf(out, "DESCRIPTION:%s"CRLF, csv_text);
 	    switch (mappt->appt.advanceUnits) {
 	     case advMinutes:
@@ -2931,8 +2935,10 @@ void cb_delete_appt(GtkWidget *widget, gpointer data)
          charset_j2p(mappt->appt.description, strlen(mappt->appt.description)+1, char_set);
       if (mappt->appt.note) 
          charset_j2p(mappt->appt.note, strlen(mappt->appt.note)+1, char_set);
-      if (mappt->appt.location) 
-         charset_j2p(mappt->appt.location, strlen(mappt->appt.location)+1, char_set);
+      if (datebook_version) {
+         if (mappt->appt.location) 
+            charset_j2p(mappt->appt.location, strlen(mappt->appt.location)+1, char_set);
+      }
    }
 
    /* Do masking like Palm OS 3.5 */
