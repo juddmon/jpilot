@@ -1,4 +1,4 @@
-/* $Id: weekview_gui.c,v 1.46 2009/09/10 06:01:55 rikster5 Exp $ */
+/* $Id: weekview_gui.c,v 1.47 2009/09/19 20:57:27 rikster5 Exp $ */
 
 /*******************************************************************************
  * weekview_gui.c
@@ -225,8 +225,11 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
 	    }
 	    if (temp_al->mappt.appt.description) {
 	       strncat(desc, temp_al->mappt.appt.description, 70);
+               /* FIXME: This kind of truncation is bad for UTF-8 */
 	       desc[62]='\0';
 	    }
+            /* FIXME: Add location in parentheses (loc) as the Palm does.
+             * We would need to check strlen, etc., before adding */
 	    remove_cr_lfs(desc);
 
 	    /* Append number of anniversary years if enabled & appropriate */

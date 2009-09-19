@@ -1,4 +1,4 @@
-/* $Id: print.c,v 1.44 2009/08/31 22:13:38 rikster5 Exp $ */
+/* $Id: print.c,v 1.45 2009/09/19 20:57:27 rikster5 Exp $ */
 
 /*******************************************************************************
  * print.c
@@ -290,6 +290,8 @@ int fill_in(struct tm *date, AppointmentList *a_list)
 	    strcat(str, " ");
 	    strncat(str, temp_al->mappt.appt.description, sizeof(str)-strlen(str)-2);
 	    str[128]='\0';
+            /* FIXME: Add location in parentheses (loc) as the Palm does.
+             * We would need to check strlen, etc., before adding */
 	 }
 	 if (y > 1.0) {
 	    puttext(x, y, str);
@@ -534,6 +536,8 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
 	    if (temp_al->mappt.appt.description) {
 	       ps_strncat(desc, temp_al->mappt.appt.description, 100);
 	       desc[sizeof(desc)-1]='\0';
+               /* FIXME: Add location in parentheses (loc) as the Palm does.
+                * We would need to check strlen, etc., before adding */
 	    }
 	    remove_cr_lfs(desc);
 	    fprintf(out, "%s (%s) %simedItem\n", tmp, desc,
@@ -770,6 +774,8 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
 	      }
 	    if (temp_al->mappt.appt.description) {
 	       ps_strncat(desc, temp_al->mappt.appt.description, 250);
+               /* FIXME: Add location in parentheses (loc) as the Palm does.
+                * We would need to check strlen, etc., before adding */
 	       remove_cr_lfs(desc);
 	    }
 	    fprintf(out, "%s (%s) itemline\n", short_date, desc);

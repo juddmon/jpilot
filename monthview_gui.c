@@ -1,4 +1,4 @@
-/* $Id: monthview_gui.c,v 1.49 2009/09/10 06:01:54 rikster5 Exp $ */
+/* $Id: monthview_gui.c,v 1.50 2009/09/19 20:57:27 rikster5 Exp $ */
 
 /*******************************************************************************
  * monthview_gui.c
@@ -376,8 +376,11 @@ int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
 	    g_string_append(gstr, temp_al->mappt.appt.description);
 	    if (temp_al->mappt.appt.description) {
 	       strncat(desc, temp_al->mappt.appt.description, 36);
+               /* FIXME: This kind of truncation is bad for UTF-8 */ 
 	       desc[35]='\0';
 	    }
+            /* FIXME: Add location in parentheses (loc) as the Palm does.
+             * We would need to check strlen, etc., before adding */
 	    remove_cr_lfs(desc);
 
 	    /* Append number of anniversary years if enabled & appropriate */
