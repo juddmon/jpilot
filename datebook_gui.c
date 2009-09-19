@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.204 2009/09/16 08:24:19 rousseau Exp $ */
+/* $Id: datebook_gui.c,v 1.205 2009/09/19 11:55:36 rousseau Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -445,7 +445,7 @@ int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int type)
       while (1) {
 	 memset(&new_appt, 0, sizeof(new_appt));
 	 /* Read the category field */
-	 ret = read_csv_field(in, text, 65535);
+	 ret = read_csv_field(in, text, sizeof(text));
 	 if (feof(in)) break;
 #ifdef JPILOT_DEBUG
 	 printf("category is [%s]\n", text);
@@ -462,15 +462,14 @@ int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int type)
 	 }
 
 	 /* Read the private field */
-	 ret = read_csv_field(in, text, 65535);
+	 ret = read_csv_field(in, text, sizeof(text));
 #ifdef JPILOT_DEBUG
 	 printf("private is [%s]\n", text);
 #endif
 	 sscanf(text, "%d", &priv);
 
 	 /* Description */
-	 ret = read_csv_field(in, description, 65535);
-	 description[65535]='\0';
+	 ret = read_csv_field(in, description, sizeof(description));
 	 if (strlen(description) > 0) {
             new_appt.description=description;
 	 } else {
@@ -478,8 +477,7 @@ int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int type)
 	 }
 
 	 /* Note */
-	 ret = read_csv_field(in, note, 65535);
-	 note[65535]='\0';
+	 ret = read_csv_field(in, note, sizeof(note));
 	 if (strlen(note) > 0) {
 	    new_appt.note=note;
 	 } else {
@@ -488,8 +486,7 @@ int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int type)
 
          if (datebook_version) {
             /* Location */
-            ret = read_csv_field(in, location, 65535);
-            location[65535]='\0';
+            ret = read_csv_field(in, location, sizeof(location));
             if (strlen(location) > 0) {
                new_appt.location=location;
             } else {
@@ -498,14 +495,12 @@ int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int type)
          }
 
 	 /* Event */
-	 ret = read_csv_field(in, text, 65535);
-	 text[65535]='\0';
+	 ret = read_csv_field(in, text, sizeof(text));
 	 sscanf(text, "%d", &(new_appt.event));
 
 	 /* Begin Time */
 	 memset(&(new_appt.begin), 0, sizeof(new_appt.begin));
-	 ret = read_csv_field(in, text, 65535);
-	 text[65535]='\0';
+	 ret = read_csv_field(in, text, sizeof(text));
 	 sscanf(text, "%d %d %d %d:%d", &year, &month, &day, &hour, &minute);
 	 new_appt.begin.tm_year=year-1900;
 	 new_appt.begin.tm_mon=month-1;
@@ -517,8 +512,7 @@ int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int type)
 
 	 /* End Time */
 	 memset(&(new_appt.end), 0, sizeof(new_appt.end));
-	 ret = read_csv_field(in, text, 65535);
-	 text[65535]='\0';
+	 ret = read_csv_field(in, text, sizeof(text));
 	 sscanf(text, "%d %d %d %d:%d", &year, &month, &day, &hour, &minute);
 	 new_appt.end.tm_year=year-1900;
 	 new_appt.end.tm_mon=month-1;
@@ -529,35 +523,29 @@ int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int type)
 	 mktime(&(new_appt.end));
 
 	 /* Alarm */
-	 ret = read_csv_field(in, text, 65535);
-	 text[65535]='\0';
+	 ret = read_csv_field(in, text, sizeof(text));
 	 sscanf(text, "%d", &(new_appt.alarm));
 
 	 /* Alarm Advance */
-	 ret = read_csv_field(in, text, 65535);
-	 text[65535]='\0';
+	 ret = read_csv_field(in, text, sizeof(text));
 	 sscanf(text, "%d", &(new_appt.advance));
 
 	 /* Advance Units */
-	 ret = read_csv_field(in, text, 65535);
-	 text[65535]='\0';
+	 ret = read_csv_field(in, text, sizeof(text));
 	 sscanf(text, "%d", &(new_appt.advanceUnits));
 
 	 /* Repeat Type */
-	 ret = read_csv_field(in, text, 65535);
-	 text[65535]='\0';
+	 ret = read_csv_field(in, text, sizeof(text));
 	 sscanf(text, "%d", &(i));
 	 new_appt.repeatType=i;
 
 	 /* Repeat Forever */
-	 ret = read_csv_field(in, text, 65535);
-	 text[65535]='\0';
+	 ret = read_csv_field(in, text, sizeof(text));
 	 sscanf(text, "%d", &(new_appt.repeatForever));
 
 	 /* Repeat End */
 	 memset(&(new_appt.repeatEnd), 0, sizeof(new_appt.repeatEnd));
-	 ret = read_csv_field(in, text, 65535);
-	 text[65535]='\0';
+	 ret = read_csv_field(in, text, sizeof(text));
 	 sscanf(text, "%d %d %d", &year, &month, &day);
 	 new_appt.repeatEnd.tm_year=year-1900;
 	 new_appt.repeatEnd.tm_mon=month-1;
@@ -566,36 +554,30 @@ int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int type)
 	 mktime(&(new_appt.repeatEnd));
 
 	 /* Repeat Frequency */
-	 ret = read_csv_field(in, text, 65535);
-	 text[65535]='\0';
+	 ret = read_csv_field(in, text, sizeof(text));
 	 sscanf(text, "%d", &(new_appt.repeatFrequency));
 
 	 /* Repeat Day */
-	 ret = read_csv_field(in, text, 65535);
-	 text[65535]='\0';
+	 ret = read_csv_field(in, text, sizeof(text));
 	 sscanf(text, "%d", &(i));
 	 new_appt.repeatDay=i;
 
 	 /* Repeat Days */
-	 ret = read_csv_field(in, text, 65535);
-	 text[65535]='\0';
+	 ret = read_csv_field(in, text, sizeof(text));
 	 for (i=0; i<7; i++) {
 	    new_appt.repeatDays[i]=(text[i]=='1');
 	 }
 
 	 /* Week Start */
-	 ret = read_csv_field(in, text, 65535);
-	 text[65535]='\0';
+	 ret = read_csv_field(in, text, sizeof(text));
 	 sscanf(text, "%d", &(new_appt.repeatWeekstart));
 
 	 /* Number of Exceptions */
-	 ret = read_csv_field(in, text, 65535);
-	 text[65535]='\0';
+	 ret = read_csv_field(in, text, sizeof(text));
 	 sscanf(text, "%d", &(new_appt.exceptions));
 
 	 /* Exceptions */
-	 ret = read_csv_field(in, text, 65535);
-	 text[65535]='\0';
+	 ret = read_csv_field(in, text, sizeof(text));
 	 new_appt.exception=calloc(new_appt.exceptions, sizeof(struct tm));
 	 for (str_i=0, i=0; i<new_appt.exceptions; i++) {
 	    sscanf(&(text[str_i]), "%d %d %d", &year, &month, &day);
@@ -604,7 +586,7 @@ int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int type)
 	    new_appt.exception[i].tm_mday=day;
 	    new_appt.exception[i].tm_isdst=-1;
 	    mktime(&(new_appt.exception[i]));
-	    for (; (str_i<65535) && (text[str_i]); str_i++) {
+	    for (; (str_i<sizeof(text)) && (text[str_i]); str_i++) {
 	       if (text[str_i]==',') {
 		  str_i++;
 		  break;
