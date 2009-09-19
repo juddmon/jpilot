@@ -1,4 +1,4 @@
-/* $Id: datebook.c,v 1.57 2009/09/10 06:01:53 rikster5 Exp $ */
+/* $Id: datebook.c,v 1.58 2009/09/19 12:30:51 rousseau Exp $ */
 
 /*******************************************************************************
  * datebook.c
@@ -823,6 +823,8 @@ int pc_datebook_write(struct Appointment *appt, PCRecType rt,
    if (char_set != CHAR_SET_LATIN1) {
       if (appt->description) charset_j2p(appt->description, strlen(appt->description)+1, char_set);
       if (appt->note) charset_j2p(appt->note, strlen(appt->note)+1, char_set);
+      if (appt->location) 
+         charset_j2p(appt->location, strlen(appt->location)+1, char_set);
    }
 
    RecordBuffer = pi_buffer_new(0);
