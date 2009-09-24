@@ -1,4 +1,4 @@
-/* $Id: address.h,v 1.16 2008/04/29 04:15:16 rikster5 Exp $ */
+/* $Id: address.h,v 1.17 2009/09/24 03:58:19 rikster5 Exp $ */
 
 /*******************************************************************************
  * address.h
@@ -62,9 +62,6 @@ int pc_address_write(struct Address *a, PCRecType rt, unsigned char attrib,
 
 void free_AddressList(AddressList **al);
 
-/* 
- * sort_order: 0=descending,  1=ascending
- */
 int get_addresses(AddressList **address_list, int sort_order);
 int get_addresses2(AddressList **address_list, int sort_order,
 		  int modified, int deleted, int privates, int category);

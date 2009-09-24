@@ -1,4 +1,4 @@
-/* $Id: address.c,v 1.56 2008/08/26 03:26:53 rikster5 Exp $ */
+/* $Id: address.c,v 1.57 2009/09/24 03:58:18 rikster5 Exp $ */
 
 /*******************************************************************************
  * address.c
@@ -239,7 +239,7 @@ int address_compare(const void *v1, const void *v2)
    return 0;
 }
 
-/* sort_order: 0=descending,  1=ascending */
+/* sort_order: SORT_ASCENDING | SORT_DESCENDING */
 int address_sort(AddressList **al, int sort_order)
 {
    AddressList *temp_al;
@@ -345,7 +345,7 @@ int get_addresses(AddressList **address_list, int sort_order)
    return get_addresses2(address_list, sort_order, 1, 1, 1, CATEGORY_ALL);
 }
 /*
- * sort_order: 0=descending,  1=ascending
+ * sort_order: SORT_ASCENDING | SORT_DESCENDING
  * modified, deleted and private, 0 for no, 1 for yes, 2 for use prefs
  */
 int get_addresses2(AddressList **address_list, int sort_order,

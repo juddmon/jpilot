@@ -1,4 +1,4 @@
-/* $Id: contact.c,v 1.14 2009/09/03 18:45:18 rikster5 Exp $ */
+/* $Id: contact.c,v 1.15 2009/09/24 03:58:19 rikster5 Exp $ */
 
 /*******************************************************************************
  * contact.c
@@ -286,7 +286,7 @@ int contact_compare(const void *v1, const void *v2)
 }
 
 /*
- * sort_order: 0=descending,  1=ascending
+ * sort_order: SORT_ASCENDING | SORT_DESCENDING
  */
 int contacts_sort(ContactList **cl, int sort_order)
 {
@@ -618,8 +618,8 @@ int get_contacts(ContactList **contact_list, int sort_order)
    return get_contacts2(contact_list, sort_order, 1, 1, 1, CATEGORY_ALL);
 }
 /*
- * sort_order: 0=descending,  1=ascending
- * modified, deleted and private, 0 for no, 1 for yes, 2 for use prefs
+ * sort_order: SORT_ASCENDING | SORT_DESCENDING
+ * modified, deleted, private: 0 for no, 1 for yes, 2 for use prefs
  */
 int get_contacts2(ContactList **contact_list, int sort_order,
 		  int modified, int deleted, int privates, int category)

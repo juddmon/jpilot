@@ -1,4 +1,4 @@
-/* $Id: todo.c,v 1.46 2008/08/26 03:26:53 rikster5 Exp $ */
+/* $Id: todo.c,v 1.47 2009/09/24 03:58:19 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo.c
@@ -111,8 +111,8 @@ int get_todos(ToDoList **todo_list, int sort_order)
 }
 
 /*
- * sort_order: 0=descending,  1=ascending
- * modified, deleted and private, completed:
+ * sort_order: SORT_ASCENDING | SORT_DESCENDING
+ * modified, deleted, private, completed:
  *  0 for no, 1 for yes, 2 for use prefs
  */
 int get_todos2(ToDoList **todo_list, int sort_order,

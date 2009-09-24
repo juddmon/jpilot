@@ -1,4 +1,4 @@
-/* $Id: memo.c,v 1.45 2009/04/27 04:00:21 rikster5 Exp $ */
+/* $Id: memo.c,v 1.46 2009/09/24 03:58:19 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo.c
@@ -101,8 +101,9 @@ int get_memos(MemoList **memo_list, int sort_order)
 }
 
 /*
- * sort_order: 0=descending, 1=ascending (memos are sorted if set in pdb file)
- * modified, deleted and private, 0 for no, 1 for yes, 2 for use prefs
+ * sort_order: SORT_ASCENDING | SORT_DESCENDING (used to keep pdb sort order
+ *                                               but not yet implemented)
+ * modified, deleted, private: 0 for no, 1 for yes, 2 for use prefs
  */
 int get_memos2(MemoList **memo_list, int sort_order,
  	       int modified, int deleted, int privates, int category)
