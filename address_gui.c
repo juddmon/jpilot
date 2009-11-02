@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.241 2009/09/02 22:55:18 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.242 2009/11/02 04:29:31 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -1074,7 +1074,8 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
        case EXPORT_TYPE_CSV:
 	 /* Category name */
 	 utf = charset_p2newj(contact_app_info.category.name[mcont->attrib & 0x0F], 16, char_set);
-	 fprintf(out, "\"%s\",", utf);
+	 str_to_csv_str(csv_text, utf);
+	 fprintf(out, "\"%s\",", csv_text);
 	 g_free(utf);
 
 	 /* Private */
@@ -1112,8 +1113,9 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	       break;
 	     case ADDRESS_GUI_LABEL_TEXT:
 	     case ADDRESS_GUI_WEBSITE_TEXT:
-	       fprintf(out, "\"%s\",", mcont->cont.entry[schema[i].record_field] ?
-		       mcont->cont.entry[schema[i].record_field] : "");
+	       str_to_csv_str(csv_text, mcont->cont.entry[schema[i].record_field] ?
+			      mcont->cont.entry[schema[i].record_field] : "");
+	       fprintf(out, "\"%s\",", csv_text);
 	       break;
 	     case ADDRESS_GUI_BIRTHDAY:
 	       if (mcont->cont.birthdayFlag) {

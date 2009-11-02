@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.160 2009/09/04 22:24:33 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.161 2009/11/02 04:29:31 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -722,7 +722,8 @@ void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
       switch (type) {
        case EXPORT_TYPE_CSV:
          utf = charset_p2newj(todo_app_info.category.name[mtodo->attrib & 0x0F], 16, char_set);
-         fprintf(out, "\"%s\",", utf);
+	 str_to_csv_str(csv_text, utf);
+	 fprintf(out, "\"%s\",", csv_text);
          g_free(utf);
          fprintf(out, "\"%s\",", (mtodo->attrib & dlpRecAttrSecret) ? "1":"0");
          fprintf(out, "\"%s\",", mtodo->todo.indefinite ? "1":"0");

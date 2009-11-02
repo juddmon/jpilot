@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.206 2009/09/19 20:59:48 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.207 2009/11/02 04:29:31 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -846,7 +846,8 @@ void appt_export_ok(int type, const char *filename)
             fprintf(out, "\"\",");  /* No category for Datebook */
          } else {
             utf = charset_p2newj(dbook_app_info.category.name[mappt->attrib & 0x0F], 16, char_set);
-            fprintf(out, "\"%s\",", utf);
+            str_to_csv_str(csv_text, utf);
+            fprintf(out, "\"%s\",", csv_text);
             g_free(utf);
          }
 

@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.133 2009/08/31 22:13:37 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.134 2009/11/02 04:29:31 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -588,7 +588,8 @@ void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 }
 	 if (len<256) len=256;
 	 utf = charset_p2newj(memo_app_info.category.name[mmemo->attrib & 0x0F], 16, char_set);
-	 fprintf(out, "\"%s\",", utf);
+	 str_to_csv_str(csv_text, utf);
+	 fprintf(out, "\"%s\",", csv_text);
 	 g_free(utf);
 	 fprintf(out, "\"%s\",", (mmemo->attrib & dlpRecAttrSecret) ? "1":"0");
 	 str_to_csv_str(csv_text, mmemo->memo.text);
