@@ -1,4 +1,4 @@
-/* $Id: datebook.h,v 1.23 2009/09/10 06:01:54 rikster5 Exp $ */
+/* $Id: datebook.h,v 1.24 2009/11/08 17:12:10 rousseau Exp $ */
 
 /*******************************************************************************
  * datebook.h
@@ -74,7 +74,7 @@ struct db4_struct {
 
 int datebook_print(int type);
 int datebook_import(GtkWidget *window);
-int datebook_cleanup();
+int datebook_cleanup(void);
 int pc_datebook_write(struct Appointment *a, PCRecType rt,
 		      unsigned char attrib, unsigned int *unique_id);
 void free_AppointmentList(AppointmentList **al);

@@ -1,4 +1,4 @@
-/* $Id: address.h,v 1.17 2009/09/24 03:58:19 rikster5 Exp $ */
+/* $Id: address.h,v 1.18 2009/11/08 17:12:10 rousseau Exp $ */
 
 /*******************************************************************************
  * address.h
@@ -66,7 +66,7 @@ int get_addresses(AddressList **address_list, int sort_order);
 int get_addresses2(AddressList **address_list, int sort_order,
 		  int modified, int deleted, int privates, int category);
 
-int address_print();
+int address_print(void);
 int address_import(GtkWidget *window);
 int address_export(GtkWidget *window);
 

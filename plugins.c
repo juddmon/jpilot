@@ -1,4 +1,4 @@
-/* $Id: plugins.c,v 1.23 2009/05/06 20:13:59 rousseau Exp $ */
+/* $Id: plugins.c,v 1.24 2009/11/08 17:12:10 rousseau Exp $ */
 
 /*******************************************************************************
  * plugins.c
@@ -39,7 +39,7 @@ GList *plugins = NULL;
 
 /****************************** Prototypes ************************************/
 static int get_plugin_info(struct plugin_s *p, char *path);
-static int get_plugin_sync_bits();
+static int get_plugin_sync_bits(void);
 gint plugin_sort(gconstpointer a, gconstpointer b);
 
 /****************************** Main Code *************************************/

@@ -1,4 +1,4 @@
-/* $Id: install_user.c,v 1.9 2008/06/23 03:03:45 rikster5 Exp $ */
+/* $Id: install_user.c,v 1.10 2009/11/08 17:12:10 rousseau Exp $ */
 
 /*******************************************************************************
  * install_user.c
@@ -43,7 +43,7 @@ struct install_dialog_data {
 
 /****************************** Main Code *************************************/
 /* Allocates memory and returns pointer, or NULL */
-char *jp_user_or_whoami()
+char *jp_user_or_whoami(void)
 {
    struct passwd *pw_ent;
    uid_t uid;

@@ -1,4 +1,4 @@
-/* $Id: install_gui.c,v 1.27 2009/05/06 20:13:56 rousseau Exp $ */
+/* $Id: install_gui.c,v 1.28 2009/11/08 17:12:10 rousseau Exp $ */
 
 /*******************************************************************************
  * install_gui.c
@@ -35,7 +35,7 @@
 #include "log.h"
 
 /******************************* Global vars **********************************/
-static int update_clist();
+static int update_clist(void);
 
 static GtkWidget *clist;
 static int line_selected;

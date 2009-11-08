@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.134 2009/11/02 04:29:31 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.135 2009/11/08 17:12:10 rousseau Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -89,10 +89,10 @@ static MemoList *glob_memo_list=NULL;
 static MemoList *export_memo_list=NULL;
 
 /****************************** Prototypes ************************************/
-static int memo_clear_details();
-int memo_clist_redraw();
+static int memo_clear_details(void);
+int memo_clist_redraw(void);
 static void connect_changed_signals(int con_or_dis);
-static int memo_find();
+static int memo_find(void);
 int memo_get_details(struct Memo *new_memo, unsigned char *attrib);
 static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 			      MemoList **memo_list, int category, int main);

@@ -1,4 +1,4 @@
-/* $Id: monthview_gui.c,v 1.50 2009/09/19 20:57:27 rikster5 Exp $ */
+/* $Id: monthview_gui.c,v 1.51 2009/11/08 17:12:10 rousseau Exp $ */
 
 /*******************************************************************************
  * monthview_gui.c
@@ -51,7 +51,7 @@ static struct tm glob_month_date;
 
 /****************************** Prototypes ************************************/
 int display_months_appts(struct tm *glob_month_date, GtkWidget **glob_month_texts);
-void hide_show_month_boxes();
+void hide_show_month_boxes(void);
 
 /****************************** Main Code *************************************/
 static gboolean cb_destroy(GtkWidget *widget)

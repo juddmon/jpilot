@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.242 2009/11/02 04:29:31 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.243 2009/11/08 17:12:10 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -215,8 +215,8 @@ static GList *changed_list=NULL;
 static void connect_changed_signals(int con_or_dis);
 static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 				 ContactList **cont_list, int category, int main);
-static int address_clist_redraw();
-static int address_find();
+static int address_clist_redraw(void);
+static int address_find(void);
 
 /****************************** Main Code *************************************/
 static void init(void)

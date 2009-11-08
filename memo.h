@@ -1,4 +1,4 @@
-/* $Id: memo.h,v 1.7 2004/11/22 00:52:42 rikster5 Exp $ */
+/* $Id: memo.h,v 1.8 2009/11/08 17:12:10 rousseau Exp $ */
 
 /*******************************************************************************
  * memo.h
@@ -34,7 +34,7 @@ int get_memos2(MemoList **memo_list, int sort_order,
 int pc_memo_write(struct Memo *memo, PCRecType rt, unsigned char attrib,
 		  unsigned int *unique_id);
 
-int memo_print();
+int memo_print(void);
 int memo_import(GtkWidget *window);
 int memo_export(GtkWidget *window);
 

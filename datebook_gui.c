@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.207 2009/11/02 04:29:31 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.208 2009/11/08 17:12:10 rousseau Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -197,9 +197,9 @@ static GtkWidget *export_radio_type[NUM_EXPORT_TYPES+1];
 static int glob_export_type;
 
 /****************************** Prototypes ************************************/
-static void highlight_days();
-static int datebook_find();
-static int datebook_update_clist();
+static void highlight_days(void);
+static int datebook_find(void);
+static int datebook_update_clist(void);
 static void update_endon_button(GtkWidget *button, struct tm *t);
 static void cb_clist_selection(GtkWidget      *clist,
 			       gint           row,

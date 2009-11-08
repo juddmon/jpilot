@@ -1,4 +1,4 @@
-/* $Id: plugins.h,v 1.10 2008/06/19 04:12:07 rikster5 Exp $ */
+/* $Id: plugins.h,v 1.11 2009/11/08 17:12:10 rousseau Exp $ */
 
 /*******************************************************************************
  * plugins.h
@@ -53,7 +53,7 @@ struct plugin_s
    int (*plugin_startup)(jp_startup_info *info);
    int (*plugin_gui)(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id);
    int (*plugin_help)(char **text, int *width, int *height);
-   int (*plugin_print)();
+   int (*plugin_print)(void);
    int (*plugin_import)(GtkWidget *window);
    int (*plugin_export)(GtkWidget *window);
    int (*plugin_gui_cleanup)(void);
@@ -69,8 +69,8 @@ struct plugin_s
 				  unsigned char *ai_raw, int len);
 };
 
-int load_plugins();
-GList *get_plugin_list();
+int load_plugins(void);
+GList *get_plugin_list(void);
 
 /*
  * Free the search_result record list
@@ -80,7 +80,7 @@ void free_search_result(struct search_result **sr);
 /*
  * Write out the jpilot.plugins file that tells which plugins to sync
  */
-void write_plugin_sync_file();
+void write_plugin_sync_file(void);
 
 /*
  * Free the plugin_list

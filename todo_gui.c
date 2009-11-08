@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.161 2009/11/02 04:29:31 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.162 2009/11/08 17:12:10 rousseau Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -100,10 +100,10 @@ static int record_changed;
 /****************************** Prototypes ************************************/
 void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
                        ToDoList **todo_list, int category, int main);
-int todo_clear_details();
-int todo_clist_redraw();
+int todo_clear_details(void);
+int todo_clist_redraw(void);
 static void connect_changed_signals(int con_or_dis);
-static int todo_find();
+static int todo_find(void);
 static void cb_add_new_record(GtkWidget *widget, gpointer data);
 
 /****************************** Main Code *************************************/

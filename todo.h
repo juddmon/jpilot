@@ -1,4 +1,4 @@
-/* $Id: todo.h,v 1.12 2004/11/22 00:52:42 rikster5 Exp $ */
+/* $Id: todo.h,v 1.13 2009/11/08 17:12:10 rousseau Exp $ */
 
 /*******************************************************************************
  * todo.h
@@ -43,7 +43,7 @@ int get_todos2(ToDoList **todo_list, int sort_order,
 int get_todo_app_info(struct ToDoAppInfo *ai);
 int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib,
 		  unsigned int *unique_id);
-int todo_print();
+int todo_print(void);
 int todo_import(GtkWidget *window);
 int todo_export(GtkWidget *window);
 
