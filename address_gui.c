@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.243 2009/11/08 17:12:10 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.244 2009/11/17 04:24:00 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -3500,11 +3500,14 @@ static gboolean cb_key_pressed(GtkWidget *widget, GdkEventKey *event)
        (event->keyval != GDK_ISO_Left_Tab)) {
       return FALSE;
    }
-   /* See if they are at the end of the text */
-   text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget));
-   gtk_text_buffer_get_iter_at_mark(text_buffer,&cursor_pos_iter,gtk_text_buffer_get_insert(text_buffer));
-   if (!(gtk_text_iter_is_end(&cursor_pos_iter))) {
-      return FALSE;
+
+   if (event->keyval == GDK_Tab) {
+      /* See if they are at the end of the text */
+      text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget));
+      gtk_text_buffer_get_iter_at_mark(text_buffer,&cursor_pos_iter,gtk_text_buffer_get_insert(text_buffer));
+      if (!(gtk_text_iter_is_end(&cursor_pos_iter))) {
+         return FALSE;
+      }
    }
    gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
 
