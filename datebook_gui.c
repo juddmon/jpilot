@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.208 2009/11/08 17:12:10 rousseau Exp $ */
+/* $Id: datebook_gui.c,v 1.209 2009/12/12 15:22:06 rousseau Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -2840,6 +2840,21 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    set_new_button_to(CLEAR_FLAG);
 
    if (flag==MODIFY_FLAG) {
+	   long char_set;
+
+	   /* Convert to Palm character set */
+	   get_pref(PREF_CHAR_SET, &char_set, NULL);
+	   if (char_set != CHAR_SET_LATIN1) {
+		   if (mappt->appt.description) 
+			   charset_j2p(mappt->appt.description, strlen(mappt->appt.description)+1, char_set);
+		   if (mappt->appt.note) 
+			   charset_j2p(mappt->appt.note, strlen(mappt->appt.note)+1, char_set);
+		   if (datebook_version) {
+			   if (mappt->appt.location) 
+				   charset_j2p(mappt->appt.location, strlen(mappt->appt.location)+1, char_set);
+		   }
+	   }
+
        /* We need to take care of the 2 options allowed when modifying
         * repeating appointments */
       delete_pc_record(DATEBOOK, mappt, flag);
