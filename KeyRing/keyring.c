@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.101 2009/08/28 01:51:56 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.102 2010/01/20 13:17:53 rousseau Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -2289,6 +2289,9 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    int new_cat;
    int index, index2;
    int i;
+#ifdef HAVE_LIBGCRYPT
+   static int gcrypt_init = 0;
+#endif
 
    jp_logf(JP_LOG_DEBUG, "KeyRing: plugin gui started, unique_id=%d\n", unique_id);
 
@@ -2296,6 +2299,43 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
       return EXIT_FAILURE;
    }
    
+#ifdef HAVE_LIBGCRYPT
+   if (!gcrypt_init)
+   {
+	   gcrypt_init = 1;
+
+	   /* Version check should be the very first call because it
+          makes sure that important subsystems are intialized. */
+       if (!gcry_check_version (GCRYPT_VERSION))
+         {
+           fputs ("libgcrypt version mismatch\n", stderr);
+           exit (2);
+         }
+     
+	   /* We don't want to see any warnings, e.g. because we have not yet
+          parsed program options which might be used to suppress such
+          warnings. */
+       gcry_control (GCRYCTL_SUSPEND_SECMEM_WARN);
+     
+       /* ... If required, other initialization goes here.  Note that the
+          process might still be running with increased privileges and that
+          the secure memory has not been intialized.  */
+     
+       /* Allocate a pool of 16k secure memory.  This make the secure memory
+          available and also drops privileges where needed.  */
+       gcry_control (GCRYCTL_INIT_SECMEM, 16384, 0);
+     
+	   /* It is now okay to let Libgcrypt complain when there was/is
+          a problem with the secure memory. */
+       gcry_control (GCRYCTL_RESUME_SECMEM_WARN);
+     
+       /* ... If required, other initialization goes here.  */
+     
+       /* Tell Libgcrypt that initialization has completed. */
+       gcry_control (GCRYCTL_INITIALIZATION_FINISHED, 0);
+   }
+#endif
+
    /* Find the main window from some widget */
    w = GTK_WINDOW(gtk_widget_get_toplevel(hbox));
 
