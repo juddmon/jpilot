@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.102 2010/01/20 13:17:53 rousseau Exp $ */
+/* $Id: keyring.c,v 1.103 2010/01/20 14:48:29 rousseau Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -2309,7 +2309,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
        if (!gcry_check_version (GCRYPT_VERSION))
          {
            fputs ("libgcrypt version mismatch\n", stderr);
-           exit (2);
+		   return EXIT_FAILURE;
          }
      
 	   /* We don't want to see any warnings, e.g. because we have not yet
