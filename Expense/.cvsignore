@@ -1,6 +1,0 @@
-.deps
-.libs
-Makefile
-Makefile.in
-libexpense_la-expense.lo
-libexpense.la

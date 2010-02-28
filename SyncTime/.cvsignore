@@ -1,6 +1,0 @@
-.deps
-.libs
-Makefile
-Makefile.in
-libsynctime.la
-libsynctime_la-synctime.lo
