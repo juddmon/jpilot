@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.246 2010/02/28 20:30:03 judd Exp $ */
+/* $Id: address_gui.c,v 1.247 2010/02/28 20:34:47 judd Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -2501,7 +2501,7 @@ int change_photo(char *filename)
    return EXIT_SUCCESS;
 }
 
-//TODO: make a common filesel function
+// TODO: make a common filesel function
 static void cb_photo_browse_cancel(GtkWidget *widget, gpointer data)
 {
    gtk_widget_destroy(data);
