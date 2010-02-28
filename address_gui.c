@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.247 2010/02/28 20:34:47 judd Exp $ */
+/* $Id: address_gui.c,v 1.248 2010/02/28 20:37:10 judd Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -3281,7 +3281,7 @@ static int make_IM_type_menu(int default_set, unsigned int callback_id, int set)
 }
 
 
-//TODO: rewrite this crappy function
+// TODO: rewrite this crappy function
 /* default set is which menu item is to be set on by default */
 /* set is which set in the menu_item array to use */
 static int make_address_type_menu(int default_set, int set)
