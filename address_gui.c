@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.245 2010/02/28 19:56:58 judd Exp $ */
+/* $Id: address_gui.c,v 1.246 2010/02/28 20:30:03 judd Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -1659,34 +1659,44 @@ void cb_delete_address_or_contact(GtkWidget *widget, gpointer data)
 void cb_undelete_address(GtkWidget *widget,
 		         gpointer   data)
 {
-   MyAddress *maddr;
+   MyContact *mcont;
+   MyAddress maddr;
    int flag;
    int show_priv;
-/* TODO this needs converted to contacts */
-   maddr = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
-   if (maddr < (MyAddress *)CLIST_MIN_DATA) {
+
+   mcont = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
+   if (mcont < (MyContact *)CLIST_MIN_DATA) {
       return;
    }
 
    /* Do masking like Palm OS 3.5 */
    show_priv = show_privates(GET_PRIVATES);
    if ((show_priv != SHOW_PRIVATES) &&
-       (maddr->attrib & dlpRecAttrSecret)) {
+       (mcont->attrib & dlpRecAttrSecret)) {
       return;
    }
    /* End Masking */
 
-   jp_logf(JP_LOG_DEBUG, "maddr->unique_id = %d\n",maddr->unique_id);
-   jp_logf(JP_LOG_DEBUG, "maddr->rt = %d\n",maddr->rt);
+   jp_logf(JP_LOG_DEBUG, "mcont->unique_id = %d\n",mcont->unique_id);
+   jp_logf(JP_LOG_DEBUG, "mcont->rt = %d\n",mcont->rt);
 
    flag = GPOINTER_TO_INT(data);
    if (flag==UNDELETE_FLAG) {
-      if (maddr->rt == DELETED_PALM_REC ||
-	 (maddr->rt == DELETED_PC_REC)) {
-	 undelete_pc_record(ADDRESS, maddr, flag);
+      if (mcont->rt == DELETED_PALM_REC ||
+	 (mcont->rt == DELETED_PC_REC)) {
+	 if (address_version==0) {
+	    copy_contact_to_address(&(mcont->cont), &(maddr.addr));
+	    maddr.rt = mcont->rt;
+	    maddr.unique_id = mcont->unique_id;
+	    maddr.attrib = mcont->attrib;
+	    undelete_pc_record(ADDRESS, &maddr, flag);
+	    free_Address(&(maddr.addr));
+	 } else {
+	    undelete_pc_record(CONTACTS, mcont, flag);
+	 }
       }
       /* Possible later addition of undelete for modified records
-      else if (maddr->rt == MODIFIED_PALM_REC) {
+      else if (mcont->rt == MODIFIED_PALM_REC) {
          cb_add_new_record(widget, GINT_TO_POINTER(COPY_FLAG));
       }
       */
