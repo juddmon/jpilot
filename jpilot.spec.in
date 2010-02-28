@@ -12,7 +12,7 @@ Packager:  Judd Montgomery <judd@jpilot.org>
 Prefix:    /usr
 DocDir:    %{prefix}/share/doc/%{name}-%{version}
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
-Requires:  pilot-link > 0.11.2
+Requires:  pilot-link > 0.12.5
 
 %description
 J-Pilot is a desktop organizer application for the palm pilot that runs
@@ -23,6 +23,7 @@ not found in the 3Com desktop.
 %define _prefix %{prefix}
 %define _mandir %{prefix}/share/man
 %define _infodir %{prefix}/share/info
+%define _libdir %{prefix}/lib
 %define _datadir %{prefix}/share
 %define _docdir %{prefix}/share/doc/%{name}-%{version}
 
@@ -60,7 +61,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root)
-#%docdir /usr/doc
 %{_docdir}/BUGS
 %{_docdir}/ChangeLog
 %{_docdir}/COPYING
@@ -107,30 +107,12 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/jpilot/MemoDB.pdb
 %{_datadir}/jpilot/Memo32DB.pdb
 %{_datadir}/jpilot/ExpenseDB.pdb
-#%{_libdir}/jpilot/plugins/libexpense.so
-#%{_libdir}/jpilot/plugins/libexpense.so.0
-#%{_libdir}/jpilot/plugins/libexpense.so.0.0.0
-#%{_libdir}/jpilot/plugins/libexpense.la
-#%{_libdir}/jpilot/plugins/libsynctime.so
-#%{_libdir}/jpilot/plugins/libsynctime.so.0
-#%{_libdir}/jpilot/plugins/libsynctime.so.0.0.0
-#%{_libdir}/jpilot/plugins/libsynctime.la
-#%{_libdir}/jpilot/plugins/libkeyring.so
-#%{_libdir}/jpilot/plugins/libkeyring.so.0
-#%{_libdir}/jpilot/plugins/libkeyring.so.0.0.0
-#%{_libdir}/jpilot/plugins/libkeyring.la
-%{prefix}/lib/jpilot/plugins/libexpense.so
-%{prefix}/lib/jpilot/plugins/libexpense.so.0
-%{prefix}/lib/jpilot/plugins/libexpense.so.0.0.0
-%{prefix}/lib/jpilot/plugins/libexpense.la
-%{prefix}/lib/jpilot/plugins/libsynctime.so
-%{prefix}/lib/jpilot/plugins/libsynctime.so.0
-%{prefix}/lib/jpilot/plugins/libsynctime.so.0.0.0
-%{prefix}/lib/jpilot/plugins/libsynctime.la
-%{prefix}/lib/jpilot/plugins/libkeyring.so
-%{prefix}/lib/jpilot/plugins/libkeyring.so.0
-%{prefix}/lib/jpilot/plugins/libkeyring.so.0.0.0
-%{prefix}/lib/jpilot/plugins/libkeyring.la
+%{_libdir}/jpilot/plugins/libexpense.so
+%{_libdir}/jpilot/plugins/libexpense.la
+%{_libdir}/jpilot/plugins/libsynctime.so
+%{_libdir}/jpilot/plugins/libsynctime.la
+%{_libdir}/jpilot/plugins/libkeyring.so
+%{_libdir}/jpilot/plugins/libkeyring.la
 %{_datadir}/locale/*/LC_MESSAGES/jpilot.mo
 %{_mandir}/man1/jpilot.1.gz
 %{_mandir}/man1/jpilot-dial.1.gz
@@ -140,6 +122,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/applications/jpilot.desktop
 
 %changelog
+* Sat Feb 28 2010 rikster5 <jpilot@nomad.inbox5.com>
+- Updated for 1.8.0 release
 * Sat Sep 24 2005 Judd Montgomery <judd@jpilot.org>
 - Updated for SuSE 9.3
 * Sat Feb 22 2003 Judd Montgomery <judd@jpilot.org>
