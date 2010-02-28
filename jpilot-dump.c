@@ -1,4 +1,4 @@
-/* $Id: jpilot-dump.c,v 1.34 2009/09/10 06:01:54 rikster5 Exp $ */
+/* $Id: jpilot-dump.c,v 1.35 2010/02/28 19:24:22 judd Exp $ */
 
 /*******************************************************************************
  * jpilot-dump.c
@@ -34,7 +34,7 @@
 #include <pi-todo.h>
 #include <pi-memo.h>
 #include <pi-address.h>
-#include "jp-pi-calendar.h"
+#include <pi-calendar.h>
 
 /* Jpilot header files */
 #include "datebook.h"

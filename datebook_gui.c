@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.209 2009/12/12 15:22:06 rousseau Exp $ */
+/* $Id: datebook_gui.c,v 1.210 2010/02/28 19:21:59 judd Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -31,6 +31,7 @@
 #include <pi-dlp.h>
 
 #include "datebook.h"
+#include "calendar.h"
 #include "i18n.h"
 #include "utils.h"
 #include "todo.h"
@@ -89,6 +90,7 @@
 #define END_TIME_FLAG   0x80
 #define HOURS_FLAG      0x40
 
+
 /* #define DAY_VIEW */
 
 /******************************* Global vars **********************************/
@@ -112,7 +114,7 @@ static GtkWidget *note_pane;
 static GtkWidget *todo_pane;
 static GtkWidget *todo_vbox;
 
-struct AppointmentAppInfo dbook_app_info;
+struct CalendarAppInfo dbook_app_info;
 static int dbook_category = 0;
 static struct sorted_cats sort_l[NUM_DATEBOOK_CAT_ITEMS];
 
@@ -182,7 +184,7 @@ static GtkWidget *cancel_record_button;
 
 static GtkAccelGroup *accel_group;
 
-static AppointmentList *glob_al;
+static CalendarEventList *glob_cel = NULL;
 
 /* For todo list */
 static GtkWidget *todo_clist;
@@ -213,7 +215,7 @@ static void connect_changed_signals(int con_or_dis);
 static int datebook_export_gui(GtkWidget *main_window, int x, int y);
 
 /****************************** Main Code *************************************/
-int datebook_to_text(struct Appointment *appt, char *text, int len)
+int datebook_to_text(struct CalendarEvent *ce, char *text, int len)
 {
    int i;
    const char *short_date;
@@ -255,20 +257,20 @@ int datebook_to_text(struct Appointment *appt, char *text, int len)
       N_("Su")
    };
 
-   if ((appt->repeatWeekstart<0) ||(appt->repeatWeekstart>6)) {
-      appt->repeatWeekstart=0;
+   if ((ce->repeatWeekstart<0) ||(ce->repeatWeekstart>6)) {
+      ce->repeatWeekstart=0;
    }
    get_pref(PREF_SHORTDATE, NULL, &short_date);
    get_pref(PREF_TIME, NULL, &pref_time);
 
    /* Event date/time */
-   strftime(str_begin_date, sizeof(str_begin_date), short_date, &(appt->begin));
-   if (appt->event) {
+   strftime(str_begin_date, sizeof(str_begin_date), short_date, &(ce->begin));
+   if (ce->event) {
       sprintf(text_time, _("Start Date: %s\nTime: Event"),
 	      str_begin_date);
    } else {
-      strftime(str_begin_time, sizeof(str_begin_time), pref_time, &(appt->begin));
-      strftime(str_end_time, sizeof(str_end_time), pref_time, &(appt->end));
+      strftime(str_begin_time, sizeof(str_begin_time), pref_time, &(ce->begin));
+      strftime(str_end_time, sizeof(str_end_time), pref_time, &(ce->end));
       str_begin_date[19]='\0';
       str_begin_time[19]='\0';
       str_end_time[19]='\0';
@@ -276,9 +278,9 @@ int datebook_to_text(struct Appointment *appt, char *text, int len)
 	      str_begin_date, str_begin_time, str_end_time);
    }
    /* Alarm */
-   if (appt->alarm) {
-      sprintf(text_alarm, " %d ", appt->advance);
-      i=appt->advanceUnits;
+   if (ce->alarm) {
+      sprintf(text_alarm, " %d ", ce->advance);
+      i=ce->advanceUnits;
       if ((i>-1) && (i<3)) {
 	 strcat(text_alarm, adv_type[i]);
       } else {
@@ -288,7 +290,7 @@ int datebook_to_text(struct Appointment *appt, char *text, int len)
       text_alarm[0]='\0';
    }
    /* Repeat Type */
-   i=appt->repeatType;
+   i=ce->repeatType;
    if ((i > -1) && (i < 7)) {
       strcpy(text_repeat_type, _(repeat_type[i]));
    } else {
@@ -296,29 +298,29 @@ int datebook_to_text(struct Appointment *appt, char *text, int len)
    }
    /* End Date */
    strcpy(text_end_date, _("End Date: "));
-   if (appt->repeatForever) {
+   if (ce->repeatForever) {
       strcat(text_end_date, _("Never"));
    } else {
-      strftime(temp, sizeof(temp), short_date, &(appt->repeatEnd));
+      strftime(temp, sizeof(temp), short_date, &(ce->repeatEnd));
       strcat(text_end_date, temp);
    }
    strcat(text_end_date, "\n");
-   sprintf(text_repeat_freq, _("Repeat Frequency: %d\n"), appt->repeatFrequency);
-   if (appt->repeatType==repeatNone) {
+   sprintf(text_repeat_freq, _("Repeat Frequency: %d\n"), ce->repeatFrequency);
+   if (ce->repeatType==calendarRepeatNone) {
       text_end_date[0]='\0';
       text_repeat_freq[0]='\0';
    }
    /* Repeat Day (for MonthlyByDay) */
    text_repeat_day[0]='\0';
-   if (appt->repeatType==repeatMonthlyByDay) {
-      sprintf(text_repeat_day, _("Monthly Repeat Day %d\n"), appt->repeatDay);
+   if (ce->repeatType==calendarRepeatMonthlyByDay) {
+      sprintf(text_repeat_day, _("Monthly Repeat Day %d\n"), ce->repeatDay);
    }
    /* Repeat Days (for weekly) */
    text_repeat_days[0]='\0';
-   if (appt->repeatType==repeatWeekly) {
+   if (ce->repeatType==calendarRepeatWeekly) {
       strcpy(text_repeat_days, _("Repeat on Days:"));
       for (i=0; i<7; i++) {
-	 if (appt->repeatDays[i]) {
+	 if (ce->repeatDays[i]) {
 	    strcat(text_repeat_days, " ");
 	    strcat(text_repeat_days, _(days[i]));
 	 }
@@ -326,11 +328,11 @@ int datebook_to_text(struct Appointment *appt, char *text, int len)
       strcat(text_repeat_days, "\n");
    }
    text_exceptions[0]='\0';
-   if (appt->exceptions > 0) {
-      sprintf(text_exceptions, _("Number of exceptions: %d"), appt->exceptions);
-      for (i=0; i<appt->exceptions; i++) {
+   if (ce->exceptions > 0) {
+      sprintf(text_exceptions, _("Number of exceptions: %d"), ce->exceptions);
+      for (i=0; i<ce->exceptions; i++) {
 	 strcat(text_exceptions, "\n");
-	 strftime(temp, sizeof(temp), short_date, &(appt->exception[i]));
+	 strftime(temp, sizeof(temp), short_date, &(ce->exception[i]));
 	 strcat(text_exceptions, temp);
 	 if (strlen(text_exceptions)>65000) {
 	    strcat(text_exceptions, _("\nmore..."));
@@ -354,14 +356,14 @@ int datebook_to_text(struct Appointment *appt, char *text, int len)
                  "%s"
                  "%s"
                  "%s",
-                 _("Description:"), appt->description,
-                 _("Note:"), (appt->note ? appt->note : ""),
+                 _("Description:"), ce->description,
+                 _("Note:"), (ce->note ? ce->note : ""),
                  text_time,
-                 _("Alarm:"), appt->alarm ? _("Yes"):_("No"), text_alarm,
+                 _("Alarm:"), ce->alarm ? _("Yes"):_("No"), text_alarm,
                  _("Repeat Type:"), text_repeat_type,
                  text_repeat_freq,
                  text_end_date,
-                 _("Start of Week:"), _(days[appt->repeatWeekstart]),
+                 _("Start of Week:"), _(days[ce->repeatWeekstart]),
                  text_repeat_day,
                  text_repeat_days,
                  text_exceptions
@@ -381,15 +383,15 @@ int datebook_to_text(struct Appointment *appt, char *text, int len)
                  "%s"
                  "%s"
                  "%s",
-                 _("Description:"), appt->description,
-                 _("Note:"), (appt->note ? appt->note : ""),
-                 _("Location:"), (appt->location ? appt->location : ""),
+                 _("Description:"), ce->description,
+                 _("Note:"), (ce->note ? ce->note : ""),
+                 _("Location:"), (ce->location ? ce->location : ""),
                  text_time,
-                 _("Alarm:"), appt->alarm ? _("Yes"):_("No"), text_alarm,
+                 _("Alarm:"), ce->alarm ? _("Yes"):_("No"), text_alarm,
                  _("Repeat Type:"), text_repeat_type,
                  text_repeat_freq,
                  text_end_date,
-                 _("Start of Week:"), _(days[appt->repeatWeekstart]),
+                 _("Start of Week:"), _(days[ce->repeatWeekstart]),
                  text_repeat_day,
                  text_repeat_days,
                  text_exceptions
@@ -409,12 +411,13 @@ int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int type)
    char description[65536];
    char note[65536];
    char location[65536];
-   struct Appointment new_appt;
+   struct CalendarEvent new_ce;
    unsigned char attrib;
    int i, str_i, ret, index;
    int import_all;
    AppointmentList *alist;
-   AppointmentList *temp_alist;
+   CalendarEventList *celist;
+   CalendarEventList *temp_celist;
    struct CategoryAppInfo cai;
    char old_cat_name[32];
    int suggested_cat_num;
@@ -443,7 +446,7 @@ int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int type)
 
       import_all=FALSE;
       while (1) {
-	 memset(&new_appt, 0, sizeof(new_appt));
+	 memset(&new_ce, 0, sizeof(new_ce));
 	 /* Read the category field */
 	 ret = read_csv_field(in, text, sizeof(text));
 	 if (feof(in)) break;
@@ -471,121 +474,121 @@ int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int type)
 	 /* Description */
 	 ret = read_csv_field(in, description, sizeof(description));
 	 if (strlen(description) > 0) {
-            new_appt.description=description;
+            new_ce.description=description;
 	 } else {
-            new_appt.description=NULL;
+            new_ce.description=NULL;
 	 }
 
 	 /* Note */
 	 ret = read_csv_field(in, note, sizeof(note));
 	 if (strlen(note) > 0) {
-	    new_appt.note=note;
+	    new_ce.note=note;
 	 } else {
-	    new_appt.note=NULL;
+	    new_ce.note=NULL;
 	 }
 
          if (datebook_version) {
             /* Location */
             ret = read_csv_field(in, location, sizeof(location));
             if (strlen(location) > 0) {
-               new_appt.location=location;
+               new_ce.location=location;
             } else {
-               new_appt.location=NULL;
+               new_ce.location=NULL;
             }
          }
 
 	 /* Event */
 	 ret = read_csv_field(in, text, sizeof(text));
-	 sscanf(text, "%d", &(new_appt.event));
+	 sscanf(text, "%d", &(new_ce.event));
 
 	 /* Begin Time */
-	 memset(&(new_appt.begin), 0, sizeof(new_appt.begin));
+	 memset(&(new_ce.begin), 0, sizeof(new_ce.begin));
 	 ret = read_csv_field(in, text, sizeof(text));
 	 sscanf(text, "%d %d %d %d:%d", &year, &month, &day, &hour, &minute);
-	 new_appt.begin.tm_year=year-1900;
-	 new_appt.begin.tm_mon=month-1;
-	 new_appt.begin.tm_mday=day;
-	 new_appt.begin.tm_hour=hour;
-	 new_appt.begin.tm_min=minute;
-	 new_appt.begin.tm_isdst=-1;
-	 mktime(&(new_appt.begin));
+	 new_ce.begin.tm_year=year-1900;
+	 new_ce.begin.tm_mon=month-1;
+	 new_ce.begin.tm_mday=day;
+	 new_ce.begin.tm_hour=hour;
+	 new_ce.begin.tm_min=minute;
+	 new_ce.begin.tm_isdst=-1;
+	 mktime(&(new_ce.begin));
 
 	 /* End Time */
-	 memset(&(new_appt.end), 0, sizeof(new_appt.end));
+	 memset(&(new_ce.end), 0, sizeof(new_ce.end));
 	 ret = read_csv_field(in, text, sizeof(text));
 	 sscanf(text, "%d %d %d %d:%d", &year, &month, &day, &hour, &minute);
-	 new_appt.end.tm_year=year-1900;
-	 new_appt.end.tm_mon=month-1;
-	 new_appt.end.tm_mday=day;
-	 new_appt.end.tm_hour=hour;
-	 new_appt.end.tm_min=minute;
-	 new_appt.end.tm_isdst=-1;
-	 mktime(&(new_appt.end));
+	 new_ce.end.tm_year=year-1900;
+	 new_ce.end.tm_mon=month-1;
+	 new_ce.end.tm_mday=day;
+	 new_ce.end.tm_hour=hour;
+	 new_ce.end.tm_min=minute;
+	 new_ce.end.tm_isdst=-1;
+	 mktime(&(new_ce.end));
 
 	 /* Alarm */
 	 ret = read_csv_field(in, text, sizeof(text));
-	 sscanf(text, "%d", &(new_appt.alarm));
+	 sscanf(text, "%d", &(new_ce.alarm));
 
 	 /* Alarm Advance */
 	 ret = read_csv_field(in, text, sizeof(text));
-	 sscanf(text, "%d", &(new_appt.advance));
+	 sscanf(text, "%d", &(new_ce.advance));
 
 	 /* Advance Units */
 	 ret = read_csv_field(in, text, sizeof(text));
-	 sscanf(text, "%d", &(new_appt.advanceUnits));
+	 sscanf(text, "%d", &(new_ce.advanceUnits));
 
 	 /* Repeat Type */
 	 ret = read_csv_field(in, text, sizeof(text));
 	 sscanf(text, "%d", &(i));
-	 new_appt.repeatType=i;
+	 new_ce.repeatType=i;
 
 	 /* Repeat Forever */
 	 ret = read_csv_field(in, text, sizeof(text));
-	 sscanf(text, "%d", &(new_appt.repeatForever));
+	 sscanf(text, "%d", &(new_ce.repeatForever));
 
 	 /* Repeat End */
-	 memset(&(new_appt.repeatEnd), 0, sizeof(new_appt.repeatEnd));
+	 memset(&(new_ce.repeatEnd), 0, sizeof(new_ce.repeatEnd));
 	 ret = read_csv_field(in, text, sizeof(text));
 	 sscanf(text, "%d %d %d", &year, &month, &day);
-	 new_appt.repeatEnd.tm_year=year-1900;
-	 new_appt.repeatEnd.tm_mon=month-1;
-	 new_appt.repeatEnd.tm_mday=day;
-	 new_appt.repeatEnd.tm_isdst=-1;
-	 mktime(&(new_appt.repeatEnd));
+	 new_ce.repeatEnd.tm_year=year-1900;
+	 new_ce.repeatEnd.tm_mon=month-1;
+	 new_ce.repeatEnd.tm_mday=day;
+	 new_ce.repeatEnd.tm_isdst=-1;
+	 mktime(&(new_ce.repeatEnd));
 
 	 /* Repeat Frequency */
 	 ret = read_csv_field(in, text, sizeof(text));
-	 sscanf(text, "%d", &(new_appt.repeatFrequency));
+	 sscanf(text, "%d", &(new_ce.repeatFrequency));
 
 	 /* Repeat Day */
 	 ret = read_csv_field(in, text, sizeof(text));
 	 sscanf(text, "%d", &(i));
-	 new_appt.repeatDay=i;
+	 new_ce.repeatDay=i;
 
 	 /* Repeat Days */
 	 ret = read_csv_field(in, text, sizeof(text));
 	 for (i=0; i<7; i++) {
-	    new_appt.repeatDays[i]=(text[i]=='1');
+	    new_ce.repeatDays[i]=(text[i]=='1');
 	 }
 
 	 /* Week Start */
 	 ret = read_csv_field(in, text, sizeof(text));
-	 sscanf(text, "%d", &(new_appt.repeatWeekstart));
+	 sscanf(text, "%d", &(new_ce.repeatWeekstart));
 
 	 /* Number of Exceptions */
 	 ret = read_csv_field(in, text, sizeof(text));
-	 sscanf(text, "%d", &(new_appt.exceptions));
+	 sscanf(text, "%d", &(new_ce.exceptions));
 
 	 /* Exceptions */
 	 ret = read_csv_field(in, text, sizeof(text));
-	 new_appt.exception=calloc(new_appt.exceptions, sizeof(struct tm));
-	 for (str_i=0, i=0; i<new_appt.exceptions; i++) {
+	 new_ce.exception=calloc(new_ce.exceptions, sizeof(struct tm));
+	 for (str_i=0, i=0; i<new_ce.exceptions; i++) {
 	    sscanf(&(text[str_i]), "%d %d %d", &year, &month, &day);
-	    new_appt.exception[i].tm_year=year-1900;
-	    new_appt.exception[i].tm_mon=month-1;
-	    new_appt.exception[i].tm_mday=day;
-	    new_appt.exception[i].tm_isdst=-1;
-	    mktime(&(new_appt.exception[i]));
+	    new_ce.exception[i].tm_year=year-1900;
+	    new_ce.exception[i].tm_mon=month-1;
+	    new_ce.exception[i].tm_mday=day;
+	    new_ce.exception[i].tm_isdst=-1;
+	    mktime(&(new_ce.exception[i]));
 	    for (; (str_i<sizeof(text)) && (text[str_i]); str_i++) {
 	       if (text[str_i]==',') {
 		  str_i++;
@@ -594,7 +597,7 @@ int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int type)
 	    }
 	 }
 
-	 datebook_to_text(&new_appt, text, 65535);
+	 datebook_to_text(&new_ce, text, 65535);
 	 if (!import_all) {
 	    ret=import_record_ask(parent_window, pane,
 				  text,
@@ -614,11 +617,11 @@ int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int type)
 	 attrib = (new_cat_num & 0x0F) |
 	   (priv ? dlpRecAttrSecret : 0);
 	 if ((ret==DIALOG_SAID_IMPORT_YES) || (import_all)) {
-	    if (strlen(new_appt.description)+1 > MAX_DESC_LEN) {
-	       new_appt.description[MAX_DESC_LEN+1]='\0';
+	    if (strlen(new_ce.description)+1 > MAX_DESC_LEN) {
+	       new_ce.description[MAX_DESC_LEN+1]='\0';
 	       jp_logf(JP_LOG_WARN, _("Appointment description text > %d, truncating to %d\n"), MAX_DESC_LEN, MAX_DESC_LEN);
 	    }
-	    pc_datebook_write(&new_appt, NEW_PC_REC, attrib, NULL);
+	    pc_calendar_or_datebook_write(&new_ce, NEW_PC_REC, attrib, NULL, datebook_version);
 	 }
       }
    }
@@ -634,9 +637,14 @@ int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int type)
       }
       alist=NULL;
       dat_get_appointments(in, &alist, &cai);
+
+      /* Copy this to a calendar event list */
+      copy_appointments_to_calendarEvents(alist, &celist);
+      free_AppointmentList(&alist);
+
       import_all=FALSE;
-      for (temp_alist=alist; temp_alist; temp_alist=temp_alist->next) {
-	 index=temp_alist->mappt.unique_id-1;
+      for (temp_celist=celist; temp_celist; temp_celist=temp_celist->next) {
+	 index=temp_celist->mce.unique_id-1;
 	 if (index<0) {
 	    g_strlcpy(old_cat_name, _("Unfiled"), 16);
 	    index=0;
@@ -644,7 +652,7 @@ int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int type)
 	    g_strlcpy(old_cat_name, cai.name[index], 16);
 	 }
 	 /* Figure out what category it was in the dat file */
-	 index=temp_alist->mappt.unique_id-1;
+	 index=temp_celist->mce.unique_id-1;
 	 suggested_cat_num=0;
 	 if (index>-1) {
 	    for (i=0; i<NUM_DATEBOOK_CAT_ITEMS; i++) {
@@ -658,12 +666,12 @@ int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int type)
 
 	 ret=0;
 	 if (!import_all) {
-	    datebook_to_text(&(temp_alist->mappt.appt), text, 65535);
+	    datebook_to_text(&(temp_celist->mce.ce), text, 65535);
 	    ret=import_record_ask(parent_window, pane,
 				  text,
 				  &(dbook_app_info.category),
 				  old_cat_name,
-				  (temp_alist->mappt.attrib & 0x10),
+				  (temp_celist->mce.attrib & 0x10),
 				  suggested_cat_num,
 				  &new_cat_num);
 	 } else {
@@ -674,12 +682,12 @@ int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int type)
 	 if (ret==DIALOG_SAID_IMPORT_ALL)  import_all=TRUE;
 
 	 attrib = (new_cat_num & 0x0F) |
-	   ((temp_alist->mappt.attrib & 0x10) ? dlpRecAttrSecret : 0);
+	   ((temp_celist->mce.attrib & 0x10) ? dlpRecAttrSecret : 0);
 	 if ((ret==DIALOG_SAID_IMPORT_YES) || (import_all)) {
-	    pc_datebook_write(&(temp_alist->mappt.appt), NEW_PC_REC, attrib, NULL);
+	    pc_calendar_or_datebook_write(&(temp_celist->mce.ce), NEW_PC_REC, attrib, NULL, datebook_version);
 	 }
       }
-      free_AppointmentList(&alist);
+      free_CalendarEventList(&celist);
    }
 
    datebook_refresh(FALSE, TRUE);
@@ -714,10 +722,11 @@ int datebook_import(GtkWidget *window)
 
 /*************** Start Export Code ***************/
 
+/* TODO rename */
 void appt_export_ok(int type, const char *filename)
 {
-   MyAppointment *mappt;
-   AppointmentList *al, *temp_list;
+   MyCalendarEvent *mce;
+   CalendarEventList *cel, *temp_list;
    FILE *out;
    struct stat statb;
    int i, r;
@@ -828,16 +837,16 @@ void appt_export_ok(int type, const char *filename)
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
 
-   al=NULL;
-   get_days_appointments2(&al, NULL, 2, 2, 2, NULL);
+   cel=NULL;
+   get_days_calendar_events2(&cel, NULL, 2, 2, 2, CATEGORY_ALL, NULL);
 
-   mappt=NULL;
-   for (i=0, temp_list=al; temp_list; temp_list = temp_list->next, i++) {
-      mappt = &(temp_list->mappt);
+   mce=NULL;
+   for (i=0, temp_list=cel; temp_list; temp_list = temp_list->next, i++) {
+      mce = &(temp_list->mce);
       switch (type) {
        case EXPORT_TYPE_TEXT:
 	 csv_text[0]='\0';
-	 datebook_to_text(&(mappt->appt), csv_text, sizeof(csv_text));
+	 datebook_to_text(&(mce->ce), csv_text, sizeof(csv_text));
 	 fprintf(out, "%s\n", csv_text);
 	 break;
 
@@ -845,88 +854,88 @@ void appt_export_ok(int type, const char *filename)
          if (datebook_version==0) {
             fprintf(out, "\"\",");  /* No category for Datebook */
          } else {
-            utf = charset_p2newj(dbook_app_info.category.name[mappt->attrib & 0x0F], 16, char_set);
+            utf = charset_p2newj(dbook_app_info.category.name[mce->attrib & 0x0F], 16, char_set);
             str_to_csv_str(csv_text, utf);
             fprintf(out, "\"%s\",", csv_text);
             g_free(utf);
          }
 
-	 fprintf(out, "\"%s\",", (mappt->attrib & dlpRecAttrSecret) ? "1":"0");
+	 fprintf(out, "\"%s\",", (mce->attrib & dlpRecAttrSecret) ? "1":"0");
 
-	 str_to_csv_str(csv_text, mappt->appt.description);
+	 str_to_csv_str(csv_text, mce->ce.description);
 	 fprintf(out, "\"%s\",", csv_text);
 
-	 str_to_csv_str(csv_text, mappt->appt.note);
+	 str_to_csv_str(csv_text, mce->ce.note);
 	 fprintf(out, "\"%s\",", csv_text);
 
          if (datebook_version) {
-            str_to_csv_str(csv_text, mappt->appt.location);
+            str_to_csv_str(csv_text, mce->ce.location);
             fprintf(out, "\"%s\",", csv_text);
          }
 
-	 fprintf(out, "\"%d\",", mappt->appt.event);
+	 fprintf(out, "\"%d\",", mce->ce.event);
 
 	 fprintf(out, "\"%d %02d %02d  %02d:%02d\",",
-		 mappt->appt.begin.tm_year+1900,
-		 mappt->appt.begin.tm_mon+1,
-		 mappt->appt.begin.tm_mday,
-		 mappt->appt.begin.tm_hour,
-		 mappt->appt.begin.tm_min);
+		 mce->ce.begin.tm_year+1900,
+		 mce->ce.begin.tm_mon+1,
+		 mce->ce.begin.tm_mday,
+		 mce->ce.begin.tm_hour,
+		 mce->ce.begin.tm_min);
 	 fprintf(out, "\"%d %02d %02d  %02d:%02d\",",
-		 mappt->appt.end.tm_year+1900,
-		 mappt->appt.end.tm_mon+1,
-		 mappt->appt.end.tm_mday,
-		 mappt->appt.end.tm_hour,
-		 mappt->appt.end.tm_min);
+		 mce->ce.end.tm_year+1900,
+		 mce->ce.end.tm_mon+1,
+		 mce->ce.end.tm_mday,
+		 mce->ce.end.tm_hour,
+		 mce->ce.end.tm_min);
 
-	 fprintf(out, "\"%s\",", (mappt->appt.alarm) ? "1":"0");
-	 fprintf(out, "\"%d\",", mappt->appt.advance);
-	 fprintf(out, "\"%d\",", mappt->appt.advanceUnits);
+	 fprintf(out, "\"%s\",", (mce->ce.alarm) ? "1":"0");
+	 fprintf(out, "\"%d\",", mce->ce.advance);
+	 fprintf(out, "\"%d\",", mce->ce.advanceUnits);
 
-	 fprintf(out, "\"%d\",", mappt->appt.repeatType);
+	 fprintf(out, "\"%d\",", mce->ce.repeatType);
 
-         if (mappt->appt.repeatType == repeatNone) {
+         if (mce->ce.repeatType == calendarRepeatNone) {
             /* Single events don't have valid repeat data fields so
              * a standard output data template is used for them */
             fprintf(out, "\"0\",\"1970 01 01\",\"0\",\"0\",\"0\",\"0\",\"0\",\"");
          } else {
-            fprintf(out, "\"%d\",", mappt->appt.repeatForever);
+            fprintf(out, "\"%d\",", mce->ce.repeatForever);
 
-            if (mappt->appt.repeatForever) {
+            if (mce->ce.repeatForever) {
                /* repeatForever events don't have valid end date fields
                 * so a standard output date is used for them */
                fprintf(out, "\"1970 01 01\",");
             } else {
                fprintf(out, "\"%d %02d %02d\",",
-                       mappt->appt.repeatEnd.tm_year+1900,
-                       mappt->appt.repeatEnd.tm_mon+1,
-                       mappt->appt.repeatEnd.tm_mday);
+                       mce->ce.repeatEnd.tm_year+1900,
+                       mce->ce.repeatEnd.tm_mon+1,
+                       mce->ce.repeatEnd.tm_mday);
             }
 
-            fprintf(out, "\"%d\",", mappt->appt.repeatFrequency);
+            fprintf(out, "\"%d\",", mce->ce.repeatFrequency);
 
-            fprintf(out, "\"%d\",", mappt->appt.repeatDay);
+            fprintf(out, "\"%d\",", mce->ce.repeatDay);
 
             fprintf(out, "\"");
             for (i=0; i<7; i++) {
-               fprintf(out, "%d", mappt->appt.repeatDays[i]);
+               fprintf(out, "%d", mce->ce.repeatDays[i]);
             }
             fprintf(out, "\",");
 
-            fprintf(out, "\"%d\",", mappt->appt.repeatWeekstart);
+            fprintf(out, "\"%d\",", mce->ce.repeatWeekstart);
 
-            fprintf(out, "\"%d\",", mappt->appt.exceptions);
+            fprintf(out, "\"%d\",", mce->ce.exceptions);
 
             fprintf(out, "\"");
-            if (mappt->appt.exceptions > 0) {
-               for (i=0; i<mappt->appt.exceptions; i++) {
+            if (mce->ce.exceptions > 0) {
+               for (i=0; i<mce->ce.exceptions; i++) {
                   if (i>0) {
                      fprintf(out, ",");
                   }
                   fprintf(out, "%d %02d %02d",
-                          mappt->appt.exception[i].tm_year+1900,
-                          mappt->appt.exception[i].tm_mon+1,
-                          mappt->appt.exception[i].tm_mday);
+                          mce->ce.exception[i].tm_year+1900,
+                          mce->ce.exception[i].tm_mon+1,
+                          mce->ce.exception[i].tm_mday);
                }
             }   /* if for exceptions */
          }   /* else for repeat event */
@@ -943,11 +952,11 @@ void appt_export_ok(int type, const char *filename)
 	 }
 	 fprintf(out, "BEGIN:VEVENT"CRLF);
 	 /* XXX maybe if it's secret export a VFREEBUSY busy instead? */
-	 if (mappt->attrib & dlpRecAttrSecret) {
+	 if (mce->attrib & dlpRecAttrSecret) {
 	    fprintf(out, "CLASS:PRIVATE"CRLF);
 	 }
 	 fprintf(out, "UID:palm-datebook-%08x-%08lx-%s@%s"CRLF,
-		 mappt->unique_id, userid, username, hostname);
+		 mce->unique_id, userid, username, hostname);
 	 fprintf(out, "DTSTAMP:%04d%02d%02dT%02d%02d%02dZ"CRLF,
 		 now->tm_year+1900,
 		 now->tm_mon+1,
@@ -955,8 +964,8 @@ void appt_export_ok(int type, const char *filename)
 		 now->tm_hour,
 		 now->tm_min,
 		 now->tm_sec);
-	 if (mappt->appt.description) {
-	    g_strlcpy(text, mappt->appt.description, 51);
+	 if (mce->ce.description) {
+	    g_strlcpy(text, mce->ce.description, 51);
             /* truncate the string on a UTF-8 character boundary */
             if (char_set > CHAR_SET_UTF) {
                if (!g_utf8_validate(text, -1, (const gchar **)&end))
@@ -972,30 +981,30 @@ void appt_export_ok(int type, const char *filename)
 	 str_to_ical_str(csv_text, sizeof(csv_text), text);
 	 fprintf(out, "SUMMARY:%s%s"CRLF, csv_text,
 		 strlen(text) > 49 ? "..." : "");
-	 str_to_ical_str(csv_text, sizeof(csv_text), mappt->appt.description);
+	 str_to_ical_str(csv_text, sizeof(csv_text), mce->ce.description);
 	 fprintf(out, "DESCRIPTION:%s", csv_text);
-	 if (mappt->appt.note && mappt->appt.note[0]) {
-	    str_to_ical_str(csv_text, sizeof(csv_text), mappt->appt.note);
+	 if (mce->ce.note && mce->ce.note[0]) {
+	    str_to_ical_str(csv_text, sizeof(csv_text), mce->ce.note);
             /* FIXME: Add location field to output as well or
              *        find an ical field for location */
 	    fprintf(out, "\\n"CRLF" %s"CRLF, csv_text);
 	 } else {
 	    fprintf(out, CRLF);
 	 }
-	 if (mappt->appt.event) {
+	 if (mce->ce.event) {
 	    fprintf(out, "DTSTART;VALUE=DATE:%04d%02d%02d"CRLF,
-		    mappt->appt.begin.tm_year+1900,
-		    mappt->appt.begin.tm_mon+1,
-		    mappt->appt.begin.tm_mday);
+		    mce->ce.begin.tm_year+1900,
+		    mce->ce.begin.tm_mon+1,
+		    mce->ce.begin.tm_mday);
 	    /* XXX unclear: can "event" span multiple days? */
 	    /* since DTEND is "noninclusive", should this be the next day? */
-	    if (mappt->appt.end.tm_year != mappt->appt.begin.tm_year ||
-		mappt->appt.end.tm_mon != mappt->appt.begin.tm_mon ||
-		mappt->appt.end.tm_mday != mappt->appt.begin.tm_mday) {
+	    if (mce->ce.end.tm_year != mce->ce.begin.tm_year ||
+		mce->ce.end.tm_mon != mce->ce.begin.tm_mon ||
+		mce->ce.end.tm_mday != mce->ce.begin.tm_mday) {
 	       fprintf(out, "DTEND;VALUE=DATE:%04d%02d%02d"CRLF,
-		       mappt->appt.end.tm_year+1900,
-		       mappt->appt.end.tm_mon+1,
-		       mappt->appt.end.tm_mday);
+		       mce->ce.end.tm_year+1900,
+		       mce->ce.end.tm_mon+1,
+		       mce->ce.end.tm_mday);
 	    }
 	 } else {
 	    /*
@@ -1017,34 +1026,34 @@ void appt_export_ok(int type, const char *filename)
 	     * application.
 	     */
 	    fprintf(out, "DTSTART:%04d%02d%02dT%02d%02d00"CRLF,
-		    mappt->appt.begin.tm_year+1900,
-		    mappt->appt.begin.tm_mon+1,
-		    mappt->appt.begin.tm_mday,
-		    mappt->appt.begin.tm_hour,
-		    mappt->appt.begin.tm_min);
+		    mce->ce.begin.tm_year+1900,
+		    mce->ce.begin.tm_mon+1,
+		    mce->ce.begin.tm_mday,
+		    mce->ce.begin.tm_hour,
+		    mce->ce.begin.tm_min);
 	    fprintf(out, "DTEND:%04d%02d%02dT%02d%02d00"CRLF,
-		    mappt->appt.end.tm_year+1900,
-		    mappt->appt.end.tm_mon+1,
-		    mappt->appt.end.tm_mday,
-		    mappt->appt.end.tm_hour,
-		    mappt->appt.end.tm_min);
+		    mce->ce.end.tm_year+1900,
+		    mce->ce.end.tm_mon+1,
+		    mce->ce.end.tm_mday,
+		    mce->ce.end.tm_hour,
+		    mce->ce.end.tm_min);
 	 }
-	 if (mappt->appt.repeatType != repeatNone) {
+	 if (mce->ce.repeatType != calendarRepeatNone) {
 	    int wcomma, rptday;
 	    char *wday[] = {"SU","MO","TU","WE","TH","FR","SA"};
 	    fprintf(out, "RRULE:FREQ=");
-	    switch (mappt->appt.repeatType) {
-	     case repeatNone:
+	    switch (mce->ce.repeatType) {
+	     case calendarRepeatNone:
 	       /* can't happen, just here to silence compiler warning */
 	       break;
-	     case repeatDaily:
+	     case calendarRepeatDaily:
 	       fprintf(out, "DAILY");
 	       break;
-	     case repeatWeekly:
+	     case calendarRepeatWeekly:
 	       fprintf(out, "WEEKLY;BYDAY=");
 	       wcomma=0;
 	       for (i=0; i<7; i++) {
-		  if (mappt->appt.repeatDays[i]) {
+		  if (mce->ce.repeatDays[i]) {
 		     if (wcomma) {
 			fprintf(out, ",");
 		     }
@@ -1053,35 +1062,35 @@ void appt_export_ok(int type, const char *filename)
 		  }
 	       }
 	       break;
-	     case repeatMonthlyByDay:
-	       rptday = (mappt->appt.repeatDay / 7) + 1;
+	     case calendarRepeatMonthlyByDay:
+	       rptday = (mce->ce.repeatDay / 7) + 1;
 	       fprintf(out, "MONTHLY;BYDAY=%d%s", rptday == 5 ? -1 : rptday,
-		       wday[mappt->appt.repeatDay % 7]);
+		       wday[mce->ce.repeatDay % 7]);
 	       break;
-	     case repeatMonthlyByDate:
-	       fprintf(out, "MONTHLY;BYMONTHDAY=%d", mappt->appt.begin.tm_mday);
+	     case calendarRepeatMonthlyByDate:
+	       fprintf(out, "MONTHLY;BYMONTHDAY=%d", mce->ce.begin.tm_mday);
 	       break;
-	     case repeatYearly:
+	     case calendarRepeatYearly:
 	       fprintf(out, "YEARLY");
 	       break;
 	    }
-	    if (mappt->appt.repeatFrequency != 1) {
-	       if (mappt->appt.repeatType == repeatWeekly &&
-		   mappt->appt.repeatWeekstart >= 0 && mappt->appt.repeatWeekstart < 7) {
-                  fprintf(out, CRLF" ");  // Weekly repeats can exceed RFC line length
-		  fprintf(out, ";WKST=%s", wday[mappt->appt.repeatWeekstart]);
+	    if (mce->ce.repeatFrequency != 1) {
+	       if (mce->ce.repeatType == calendarRepeatWeekly &&
+		   mce->ce.repeatWeekstart >= 0 && mce->ce.repeatWeekstart < 7) {
+                  fprintf(out, CRLF" ");  /* Weekly repeats can exceed RFC line length */
+		  fprintf(out, ";WKST=%s", wday[mce->ce.repeatWeekstart]);
 	       }
-	       fprintf(out, ";INTERVAL=%d", mappt->appt.repeatFrequency);
+	       fprintf(out, ";INTERVAL=%d", mce->ce.repeatFrequency);
 	    }
-	    if (!mappt->appt.repeatForever) {
+	    if (!mce->ce.repeatForever) {
                /* RFC 2445 is unclear on how to handle inclusivity for 
                 * dates, rather than datestamps. Because most other
                 * ical parsers assume non-inclusivity Jpilot needs to
                 * add one day to the end date of repeating events. */
                memset(&ical_time, 0, sizeof(ical_time));
-               ical_time.tm_year = mappt->appt.repeatEnd.tm_year;
-               ical_time.tm_mon  = mappt->appt.repeatEnd.tm_mon;
-               ical_time.tm_mday = mappt->appt.repeatEnd.tm_mday + 1;
+               ical_time.tm_year = mce->ce.repeatEnd.tm_year;
+               ical_time.tm_mon  = mce->ce.repeatEnd.tm_mon;
+               ical_time.tm_mday = mce->ce.repeatEnd.tm_mday + 1;
                ical_time.tm_isdst= -1;
                mktime(&ical_time);
 	       fprintf(out, ";UNTIL=%04d%02d%02d",
@@ -1090,24 +1099,24 @@ void appt_export_ok(int type, const char *filename)
 		       ical_time.tm_mday);
 	    }
 	    fprintf(out, CRLF);
-	    if (mappt->appt.exceptions > 0) {
-	       for (i=0; i<mappt->appt.exceptions; i++) {
+	    if (mce->ce.exceptions > 0) {
+	       for (i=0; i<mce->ce.exceptions; i++) {
                   fprintf(out, "EXDATE;VALUE=DATE:%04d%02d%02d"CRLF,
-                             mappt->appt.exception[i].tm_year+1900,
-                             mappt->appt.exception[i].tm_mon+1,
-                             mappt->appt.exception[i].tm_mday);
+                             mce->ce.exception[i].tm_year+1900,
+                             mce->ce.exception[i].tm_mon+1,
+                             mce->ce.exception[i].tm_mday);
                }
 	    }
 	 }
-	 if (mappt->appt.alarm) {
+	 if (mce->ce.alarm) {
 	    char *units;
 	    fprintf(out, "BEGIN:VALARM"CRLF);
 	    fprintf(out, "ACTION:DISPLAY"CRLF);
-	    str_to_ical_str(csv_text, sizeof(csv_text), mappt->appt.description);
+	    str_to_ical_str(csv_text, sizeof(csv_text), mce->ce.description);
             /* FIXME: Add location in parentheses (loc) as the Palm does.
              * We would need to check strlen, etc., before adding */
 	    fprintf(out, "DESCRIPTION:%s"CRLF, csv_text);
-	    switch (mappt->appt.advanceUnits) {
+	    switch (mce->ce.advanceUnits) {
 	     case advMinutes:
 	       units = "M";
 	       break;
@@ -1121,7 +1130,7 @@ void appt_export_ok(int type, const char *filename)
 	       units = "?";
 	       break;
 	    }
-	    fprintf(out, "TRIGGER:-PT%d%s"CRLF, mappt->appt.advance, units);
+	    fprintf(out, "TRIGGER:-PT%d%s"CRLF, mce->ce.advance, units);
 	    fprintf(out, "END:VALARM"CRLF);
 	 }
 	 fprintf(out, "END:VEVENT"CRLF);
@@ -1135,7 +1144,7 @@ void appt_export_ok(int type, const char *filename)
       }
    }
 
-   free_AppointmentList(&al);
+   free_CalendarEventList(&cel);
 
    if (out) {
       fclose(out);
@@ -1387,7 +1396,7 @@ static void cb_datebk_category(GtkWidget *widget, gpointer data)
 
 void cb_datebk_cats(GtkWidget *widget, gpointer data)
 {
-   struct AppointmentAppInfo ai;
+   struct CalendarAppInfo cai;
    int i;
    int bit;
    char title[200];
@@ -1403,7 +1412,7 @@ void cb_datebk_cats(GtkWidget *widget, gpointer data)
       return;
    }
 
-   get_datebook_app_info(&ai);
+   get_calendar_or_datebook_app_info(&cai, 0);
 
    window_datebk_cats = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
@@ -1432,10 +1441,10 @@ void cb_datebk_cats(GtkWidget *widget, gpointer data)
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    for (i=0, bit=1; i<16; i++, bit <<= 1) {
-      if (ai.category.name[i][0]) {
+      if (cai.category.name[i][0]) {
 	 char *l;
 
-	 l = charset_p2newj(ai.category.name[i], sizeof(ai.category.name[0]), char_set);
+	 l = charset_p2newj(cai.category.name[i], sizeof(cai.category.name[0]), char_set);
 	 toggle_button[i]=gtk_toggle_button_new_with_label(l);
 	 g_free(l);
 	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(toggle_button[i]),
@@ -1665,8 +1674,8 @@ static void init(void)
    struct tm *now;
    struct tm next_tm;
    int next_found;
-   AppointmentList *a_list;
-   AppointmentList *temp_al;
+   CalendarEventList *ce_list;
+   CalendarEventList *temp_cel;
 #ifdef ENABLE_DATEBK
    long use_db3_tags;
 #endif
@@ -1694,27 +1703,27 @@ static void init(void)
    if (glob_find_id) {
       jp_logf(JP_LOG_DEBUG, "init() glob_find_id = %d\n", glob_find_id);
       /* Search Appointments for this id to get its date */
-      a_list = NULL;
+      ce_list = NULL;
 
-      get_days_appointments2(&a_list, NULL, 1, 1, 1, NULL);
+      get_days_calendar_events2(&ce_list, NULL, 1, 1, 1, CATEGORY_ALL, NULL);
 
-      for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
-	 if (temp_al->mappt.unique_id == glob_find_id) {
+      for (temp_cel = ce_list; temp_cel; temp_cel=temp_cel->next) {
+	 if (temp_cel->mce.unique_id == glob_find_id) {
 	    jp_logf(JP_LOG_DEBUG, "init() found glob_find_id\n");
             /* Position calendar on the actual event or 
              * next future occurrence depending  
              * on which is closest to the current date */
-            if (temp_al->mappt.appt.repeatType == repeatNone) {
+            if (temp_cel->mce.ce.repeatType == calendarRepeatNone) {
                 next_found = 0;
             } else {
-                next_found = find_next_rpt_event(&(temp_al->mappt.appt), 
+                next_found = find_next_rpt_event(&(temp_cel->mce.ce), 
                                                  now, &next_tm);
             }
 
             if (!next_found) {
-               current_month = temp_al->mappt.appt.begin.tm_mon;
-               current_day = temp_al->mappt.appt.begin.tm_mday;
-               current_year = temp_al->mappt.appt.begin.tm_year;
+               current_month = temp_cel->mce.ce.begin.tm_mon;
+               current_day = temp_cel->mce.ce.begin.tm_mday;
+               current_year = temp_cel->mce.ce.begin.tm_year;
             } else {
                current_month = next_tm.tm_mon;
                current_day = next_tm.tm_mday;
@@ -1723,7 +1732,7 @@ static void init(void)
 
          }
       }
-      free_AppointmentList(&a_list);
+      free_CalendarEventList(&ce_list);
    }
 
    clist_row_selected=0;
@@ -1983,7 +1992,8 @@ static void appt_clear_details(void)
    connect_changed_signals(CONNECT_SIGNALS);
 }
 
-static int appt_get_details(struct Appointment *appt, unsigned char *attrib)
+/* TODO rename */
+static int appt_get_details(struct CalendarEvent *ce, unsigned char *attrib)
 {
    int i;
    time_t ltime, ltime2;
@@ -2014,7 +2024,7 @@ static int appt_get_details(struct Appointment *appt, unsigned char *attrib)
    get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
 #endif
 
-   memset(appt, 0, sizeof(*appt));
+   memset(ce, 0, sizeof(*ce));
 
    *attrib = 0;
    if (datebook_version) {
@@ -2029,114 +2039,114 @@ static int appt_get_details(struct Appointment *appt, unsigned char *attrib)
 
    /* The first day of the week */
    /* I always use 0, Sunday is always 0 in this code */
-   appt->repeatWeekstart=0;
+   ce->repeatWeekstart=0;
 
-   appt->exceptions = 0;
-   appt->exception = NULL;
+   ce->exceptions = 0;
+   ce->exception = NULL;
 
    /* daylight savings flag */
-   appt->end.tm_isdst=appt->begin.tm_isdst=-1;
+   ce->end.tm_isdst=ce->begin.tm_isdst=-1;
 
    /* Begin time */
-   appt->begin.tm_mon  = begin_date.tm_mon;
-   appt->begin.tm_mday = begin_date.tm_mday;
-   appt->begin.tm_year = begin_date.tm_year;
-   appt->begin.tm_hour = begin_date.tm_hour;
-   appt->begin.tm_min  = begin_date.tm_min;
-   appt->begin.tm_sec  = 0;
+   ce->begin.tm_mon  = begin_date.tm_mon;
+   ce->begin.tm_mday = begin_date.tm_mday;
+   ce->begin.tm_year = begin_date.tm_year;
+   ce->begin.tm_hour = begin_date.tm_hour;
+   ce->begin.tm_min  = begin_date.tm_min;
+   ce->begin.tm_sec  = 0;
 
    /* End time */
-   appt->end.tm_mon  = end_date.tm_mon;
-   appt->end.tm_mday = end_date.tm_mday;
-   appt->end.tm_year = end_date.tm_year;
-   appt->end.tm_hour = end_date.tm_hour;
-   appt->end.tm_min  = end_date.tm_min;
-   appt->end.tm_sec  = 0;
+   ce->end.tm_mon  = end_date.tm_mon;
+   ce->end.tm_mday = end_date.tm_mday;
+   ce->end.tm_year = end_date.tm_year;
+   ce->end.tm_hour = end_date.tm_hour;
+   ce->end.tm_min  = end_date.tm_min;
+   ce->end.tm_sec  = 0;
 
    if (GTK_TOGGLE_BUTTON(radio_button_no_time)->active) {
-      appt->event=1;
+      ce->event=1;
       /* This event doesn't have a time */
-      appt->begin.tm_hour = 0;
-      appt->begin.tm_min  = 0;
-      appt->begin.tm_sec  = 0;
-      appt->end.tm_hour = 0;
-      appt->end.tm_min  = 0;
-      appt->end.tm_sec  = 0;
+      ce->begin.tm_hour = 0;
+      ce->begin.tm_min  = 0;
+      ce->begin.tm_sec  = 0;
+      ce->end.tm_hour = 0;
+      ce->end.tm_min  = 0;
+      ce->end.tm_sec  = 0;
    } else {
-      appt->event=0;
+      ce->event=0;
    }
 
-   ltime = mktime(&appt->begin);
+   ltime = mktime(&ce->begin);
 
-   ltime2 = mktime(&appt->end);
+   ltime2 = mktime(&ce->end);
 
    if (ltime > ltime2) {
-      memcpy(&(appt->end), &(appt->begin), sizeof(struct tm));
+      memcpy(&(ce->end), &(ce->begin), sizeof(struct tm));
    }
 
    if (GTK_TOGGLE_BUTTON(check_button_alarm)->active) {
-      appt->alarm = 1;
+      ce->alarm = 1;
       text1 = gtk_entry_get_text(GTK_ENTRY(units_entry));
-      appt->advance=atoi(text1);
-      jp_logf(JP_LOG_DEBUG, "alarm advance %d", appt->advance);
+      ce->advance=atoi(text1);
+      jp_logf(JP_LOG_DEBUG, "alarm advance %d", ce->advance);
       if (GTK_TOGGLE_BUTTON(radio_button_alarm_min)->active) {
-	 appt->advanceUnits = advMinutes;
+	 ce->advanceUnits = advMinutes;
 	 jp_logf(JP_LOG_DEBUG, "min\n");
       }
       if (GTK_TOGGLE_BUTTON(radio_button_alarm_hour)->active) {
-	 appt->advanceUnits = advHours;
+	 ce->advanceUnits = advHours;
 	 jp_logf(JP_LOG_DEBUG, "hour\n");
       }
       if (GTK_TOGGLE_BUTTON(radio_button_alarm_day)->active) {
-	 appt->advanceUnits = advDays;
+	 ce->advanceUnits = advDays;
 	 jp_logf(JP_LOG_DEBUG, "day\n");
       }
    } else {
-      appt->alarm = 0;
+      ce->alarm = 0;
    }
 
    page = gtk_notebook_get_current_page(GTK_NOTEBOOK(notebook));
 
-   appt->repeatEnd.tm_hour = 0;
-   appt->repeatEnd.tm_min  = 0;
-   appt->repeatEnd.tm_sec  = 0;
-   appt->repeatEnd.tm_isdst= -1;
+   ce->repeatEnd.tm_hour = 0;
+   ce->repeatEnd.tm_min  = 0;
+   ce->repeatEnd.tm_sec  = 0;
+   ce->repeatEnd.tm_isdst= -1;
 
    switch (page) {
     case PAGE_NONE:
-      appt->repeatType=repeatNone;
+      ce->repeatType=calendarRepeatNone;
       jp_logf(JP_LOG_DEBUG, "no repeat\n");
       break;
     case PAGE_DAY:
-      appt->repeatType=repeatDaily;
+      ce->repeatType=calendarRepeatDaily;
       text1 = gtk_entry_get_text(GTK_ENTRY(repeat_day_entry));
-      appt->repeatFrequency = atoi(text1);
-      jp_logf(JP_LOG_DEBUG, "every %d day(s)\n", appt->repeatFrequency);
+      ce->repeatFrequency = atoi(text1);
+      jp_logf(JP_LOG_DEBUG, "every %d day(s)\n", ce->repeatFrequency);
       if (GTK_TOGGLE_BUTTON(check_button_day_endon)->active) {
-	 appt->repeatForever=0;
+	 ce->repeatForever=0;
 	 jp_logf(JP_LOG_DEBUG, "end on day\n");
-	 appt->repeatEnd.tm_mon = glob_endon_day_tm.tm_mon;
-	 appt->repeatEnd.tm_mday = glob_endon_day_tm.tm_mday;
-	 appt->repeatEnd.tm_year = glob_endon_day_tm.tm_year;
-	 appt->repeatEnd.tm_isdst = -1;
-	 mktime(&appt->repeatEnd);
+	 ce->repeatEnd.tm_mon = glob_endon_day_tm.tm_mon;
+	 ce->repeatEnd.tm_mday = glob_endon_day_tm.tm_mday;
+	 ce->repeatEnd.tm_year = glob_endon_day_tm.tm_year;
+	 ce->repeatEnd.tm_isdst = -1;
+	 mktime(&ce->repeatEnd);
       } else {
-	 appt->repeatForever=1;
+	 ce->repeatForever=1;
       }
       break;
     case PAGE_WEEK:
-      appt->repeatType=repeatWeekly;
+      ce->repeatType=calendarRepeatWeekly;
       text1 = gtk_entry_get_text(GTK_ENTRY(repeat_week_entry));
-      appt->repeatFrequency = atoi(text1);
-      jp_logf(JP_LOG_DEBUG, "every %d week(s)\n", appt->repeatFrequency);
+      ce->repeatFrequency = atoi(text1);
+      jp_logf(JP_LOG_DEBUG, "every %d week(s)\n", ce->repeatFrequency);
       if (GTK_TOGGLE_BUTTON(check_button_week_endon)->active) {
-	 appt->repeatForever=0;
+	 ce->repeatForever=0;
 	 jp_logf(JP_LOG_DEBUG, "end on week\n");
-	 appt->repeatEnd.tm_mon = glob_endon_week_tm.tm_mon;
-	 appt->repeatEnd.tm_mday = glob_endon_week_tm.tm_mday;
-	 appt->repeatEnd.tm_year = glob_endon_week_tm.tm_year;
-	 appt->repeatEnd.tm_isdst = -1;
-	 mktime(&appt->repeatEnd);
+	 ce->repeatEnd.tm_mon = glob_endon_week_tm.tm_mon;
+	 ce->repeatEnd.tm_mday = glob_endon_week_tm.tm_mday;
+	 ce->repeatEnd.tm_year = glob_endon_week_tm.tm_year;
+	 ce->repeatEnd.tm_isdst = -1;
+	 mktime(&ce->repeatEnd);
 
 	 get_pref(PREF_SHORTDATE, NULL, &svalue1);
 	 get_pref(PREF_TIME, NULL, &svalue2);
@@ -2145,32 +2155,32 @@ static int appt_get_details(struct Appointment *appt, unsigned char *attrib)
 	 } else {
 	    sprintf(datef, "%s %s", svalue1, svalue2);
 	 }
-	 strftime(str, sizeof(str), datef, &appt->repeatEnd);
+	 strftime(str, sizeof(str), datef, &ce->repeatEnd);
 
 	 jp_logf(JP_LOG_DEBUG, "repeat_end time = %s\n", str);
       } else {
-	 appt->repeatForever=1;
+	 ce->repeatForever=1;
       }
       jp_logf(JP_LOG_DEBUG, "Repeat Days:");
-      appt->repeatWeekstart = 0;  /* We are going to always use 0 */
+      ce->repeatWeekstart = 0;  /* We are going to always use 0 */
       for (i=0; i<7; i++) {
-	 appt->repeatDays[i]=(GTK_TOGGLE_BUTTON(toggle_button_repeat_days[i])->active);
-	 total_repeat_days += appt->repeatDays[i];
+	 ce->repeatDays[i]=(GTK_TOGGLE_BUTTON(toggle_button_repeat_days[i])->active);
+	 total_repeat_days += ce->repeatDays[i];
       }
       jp_logf(JP_LOG_DEBUG, "\n");
       break;
     case PAGE_MONTH:
       text1 = gtk_entry_get_text(GTK_ENTRY(repeat_mon_entry));
-      appt->repeatFrequency = atoi(text1);
-      jp_logf(JP_LOG_DEBUG, "every %d month(s)\n", appt->repeatFrequency);
+      ce->repeatFrequency = atoi(text1);
+      jp_logf(JP_LOG_DEBUG, "every %d month(s)\n", ce->repeatFrequency);
       if (GTK_TOGGLE_BUTTON(check_button_mon_endon)->active) {
-	 appt->repeatForever=0;
+	 ce->repeatForever=0;
 	 jp_logf(JP_LOG_DEBUG, "end on month\n");
-	 appt->repeatEnd.tm_mon = glob_endon_mon_tm.tm_mon;
-	 appt->repeatEnd.tm_mday = glob_endon_mon_tm.tm_mday;
-	 appt->repeatEnd.tm_year = glob_endon_mon_tm.tm_year;
-	 appt->repeatEnd.tm_isdst = -1;
-	 mktime(&appt->repeatEnd);
+	 ce->repeatEnd.tm_mon = glob_endon_mon_tm.tm_mon;
+	 ce->repeatEnd.tm_mday = glob_endon_mon_tm.tm_mday;
+	 ce->repeatEnd.tm_year = glob_endon_mon_tm.tm_year;
+	 ce->repeatEnd.tm_isdst = -1;
+	 mktime(&ce->repeatEnd);
 
 	 get_pref(PREF_SHORTDATE, NULL, &svalue1);
 	 get_pref(PREF_TIME, NULL, &svalue2);
@@ -2179,35 +2189,35 @@ static int appt_get_details(struct Appointment *appt, unsigned char *attrib)
 	 } else {
 	    sprintf(datef, "%s %s", svalue1, svalue2);
 	 }
-	 strftime(str, sizeof(str), datef, &appt->repeatEnd);
+	 strftime(str, sizeof(str), datef, &ce->repeatEnd);
 
 	 jp_logf(JP_LOG_DEBUG, "repeat_end time = %s\n", str);
       } else {
-	 appt->repeatForever=1;
+	 ce->repeatForever=1;
       }
       if (GTK_TOGGLE_BUTTON(toggle_button_repeat_mon_byday)->active) {
-	 appt->repeatType=repeatMonthlyByDay;
-	 appt->repeatDay = get_dom_type(appt->begin.tm_mon, appt->begin.tm_mday, appt->begin.tm_year, appt->begin.tm_wday);
+	 ce->repeatType=calendarRepeatMonthlyByDay;
+	 ce->repeatDay = get_dom_type(ce->begin.tm_mon, ce->begin.tm_mday, ce->begin.tm_year, ce->begin.tm_wday);
 	 jp_logf(JP_LOG_DEBUG, "***by day\n");
       }
       if (GTK_TOGGLE_BUTTON(toggle_button_repeat_mon_bydate)->active) {
-	 appt->repeatType=repeatMonthlyByDate;
+	 ce->repeatType=calendarRepeatMonthlyByDate;
 	 jp_logf(JP_LOG_DEBUG, "***by date\n");
       }
       break;
     case PAGE_YEAR:
-      appt->repeatType=repeatYearly;
+      ce->repeatType=calendarRepeatYearly;
       text1 = gtk_entry_get_text(GTK_ENTRY(repeat_year_entry));
-      appt->repeatFrequency = atoi(text1);
-      jp_logf(JP_LOG_DEBUG, "every %s year(s)\n", appt->repeatFrequency);
+      ce->repeatFrequency = atoi(text1);
+      jp_logf(JP_LOG_DEBUG, "every %s year(s)\n", ce->repeatFrequency);
       if (GTK_TOGGLE_BUTTON(check_button_year_endon)->active) {
-	 appt->repeatForever=0;
+	 ce->repeatForever=0;
 	 jp_logf(JP_LOG_DEBUG, "end on year\n");
-	 appt->repeatEnd.tm_mon = glob_endon_year_tm.tm_mon;
-	 appt->repeatEnd.tm_mday = glob_endon_year_tm.tm_mday;
-	 appt->repeatEnd.tm_year = glob_endon_year_tm.tm_year;
-	 appt->repeatEnd.tm_isdst = -1;
-	 mktime(&appt->repeatEnd);
+	 ce->repeatEnd.tm_mon = glob_endon_year_tm.tm_mon;
+	 ce->repeatEnd.tm_mday = glob_endon_year_tm.tm_mday;
+	 ce->repeatEnd.tm_year = glob_endon_year_tm.tm_year;
+	 ce->repeatEnd.tm_isdst = -1;
+	 mktime(&ce->repeatEnd);
 
 	 get_pref(PREF_SHORTDATE, NULL, &svalue1);
 	 get_pref(PREF_TIME, NULL, &svalue2);
@@ -2217,29 +2227,29 @@ static int appt_get_details(struct Appointment *appt, unsigned char *attrib)
 	    sprintf(datef, "%s %s", svalue1, svalue2);
 	 }
 	 str[0]='\0';
-	 strftime(str, sizeof(str), datef, &appt->repeatEnd);
+	 strftime(str, sizeof(str), datef, &ce->repeatEnd);
 
 	 jp_logf(JP_LOG_DEBUG, "repeat_end time = %s\n", str);
       } else {
-	 appt->repeatForever=1;
+	 ce->repeatForever=1;
       }
       break;
    }
    gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(dbook_desc_buffer),&start_iter,&end_iter);
-   appt->description = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(dbook_desc_buffer),&start_iter,&end_iter,TRUE);
+   ce->description = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(dbook_desc_buffer),&start_iter,&end_iter,TRUE);
 
    /* Empty appointment descriptions crash PalmOS 2.0, but are fine in
     * later versions */
-   if (appt->description[0]=='\0') {
-      free(appt->description);
-      appt->description=strdup(" ");
+   if (ce->description[0]=='\0') {
+      free(ce->description);
+      ce->description=strdup(" ");
    }
-   if (strlen(appt->description)+1 > MAX_DESC_LEN) {
-      appt->description[MAX_DESC_LEN+1]='\0';
+   if (strlen(ce->description)+1 > MAX_DESC_LEN) {
+      ce->description[MAX_DESC_LEN+1]='\0';
       jp_logf(JP_LOG_WARN, _("Appointment description text > %d, truncating to %d\n"), MAX_DESC_LEN, MAX_DESC_LEN);
    }
-   if (appt->description) {
-      jp_logf(JP_LOG_DEBUG, "description=[%s]\n", appt->description);
+   if (ce->description) {
+      jp_logf(JP_LOG_DEBUG, "description=[%s]\n", ce->description);
    }
 
 #ifdef ENABLE_DATEBK
@@ -2252,7 +2262,7 @@ static int appt_get_details(struct Appointment *appt, unsigned char *attrib)
       /* 8 extra characters is just being paranoid */
       datebk_note_text=malloc(strlen(text1) + strlen(text2) + 8);
       datebk_note_text[0]='\0';
-      appt->note=datebk_note_text;
+      ce->note=datebk_note_text;
       if ((text1) && (text1[0])) {
 	 strcpy(datebk_note_text, text1);
 	 strcat(datebk_note_text, "\n");
@@ -2260,44 +2270,44 @@ static int appt_get_details(struct Appointment *appt, unsigned char *attrib)
       strcat(datebk_note_text, text2);
    } else {
       gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(dbook_note_buffer),&start_iter,&end_iter);
-      appt->note = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(dbook_note_buffer),&start_iter,&end_iter,TRUE);
+      ce->note = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(dbook_note_buffer),&start_iter,&end_iter,TRUE);
    }
 #else /* Datebk #ifdef */
    gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(dbook_note_buffer),&start_iter,&end_iter);
-   appt->note = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(dbook_note_buffer),&start_iter,&end_iter,TRUE);
+   ce->note = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(dbook_note_buffer),&start_iter,&end_iter,TRUE);
 #endif /* Datebk #ifdef */
-   if (appt->note[0]=='\0') {
-      free(appt->note);
-      appt->note=NULL;
+   if (ce->note[0]=='\0') {
+      free(ce->note);
+      ce->note=NULL;
    }
-   if (appt->note) {
-      jp_logf(JP_LOG_DEBUG, "text note=[%s]\n", appt->note);
+   if (ce->note) {
+      jp_logf(JP_LOG_DEBUG, "text note=[%s]\n", ce->note);
    }
 
    if (datebook_version) {
-      appt->location = strdup(gtk_entry_get_text(GTK_ENTRY(location_entry)));
-      if (appt->location[0]=='\0') {
-         free(appt->location);
-         appt->location=NULL;
+      ce->location = strdup(gtk_entry_get_text(GTK_ENTRY(location_entry)));
+      if (ce->location[0]=='\0') {
+         free(ce->location);
+         ce->location=NULL;
       }
-      if (appt->location) {
-         jp_logf(JP_LOG_DEBUG, "text location=[%s]\n", appt->location);
+      if (ce->location) {
+         jp_logf(JP_LOG_DEBUG, "text location=[%s]\n", ce->location);
       }
    } else {
-      appt->location=NULL;
+      ce->location=NULL;
    }
 
    /* We won't allow a repeat frequency of less than 1 */
-   if ((page != PAGE_NONE) && (appt->repeatFrequency < 1)) {
+   if ((page != PAGE_NONE) && (ce->repeatFrequency < 1)) {
       char str[200];
       jp_logf(JP_LOG_WARN,
 	      _("You cannot have an appointment that repeats every %d %s(s)\n"),
-	      appt->repeatFrequency, _(period[page]));
+	      ce->repeatFrequency, _(period[page]));
       g_snprintf(str, sizeof(str),
               _("You cannot have an appointment that repeats every %d %s(s)\n"),
-	      appt->repeatFrequency, _(period[page]));
+	      ce->repeatFrequency, _(period[page]));
       dialog_generic_ok(notebook, _("Error"), DIALOG_ERROR, str);
-      appt->repeatFrequency = 1;
+      ce->repeatFrequency = 1;
       return EXIT_FAILURE;
    }
 
@@ -2327,23 +2337,23 @@ static void update_endon_button(GtkWidget *button, struct tm *t)
 }
 
 /* Do masking like Palm OS 3.5 */
-static void clear_myappointment(MyAppointment *mappt)
+static void clear_myCalendarEvent(MyCalendarEvent *mce)
 {
-   mappt->unique_id=0;
-   mappt->attrib=mappt->attrib & 0xF8;
-   if (mappt->appt.description) {
-      free(mappt->appt.description);
-      mappt->appt.description=strdup("");
+   mce->unique_id=0;
+   mce->attrib=mce->attrib & 0xF8;
+   if (mce->ce.description) {
+      free(mce->ce.description);
+      mce->ce.description=strdup("");
    }
-   if (mappt->appt.note) {
-      free(mappt->appt.note);
-      mappt->appt.note=strdup("");
+   if (mce->ce.note) {
+      free(mce->ce.note);
+      mce->ce.note=strdup("");
    }
-   if (mappt->appt.location) {
-      free(mappt->appt.location);
-      mappt->appt.location=strdup("");
+   if (mce->ce.location) {
+      free(mce->ce.location);
+      mce->ce.location=strdup("");
    }
-
+/* TODO do we need to clear blob and tz? */
    return;
 }
 /* End Masking */
@@ -2351,7 +2361,7 @@ static void clear_myappointment(MyAppointment *mappt)
 static int datebook_update_clist(void)
 {
    int num_entries, entries_shown, num;
-   AppointmentList *temp_al;
+   CalendarEventList *temp_cel;
    gchar *empty_line[] = { "","","","",""};
    char begin_time[32];
    char end_time[32];
@@ -2380,7 +2390,7 @@ static int datebook_update_clist(void)
 
    jp_logf(JP_LOG_DEBUG, "datebook_update_clist()\n");
 
-   free_AppointmentList(&glob_al);
+   free_CalendarEventList(&glob_cel);
 
    memset(&new_time, 0, sizeof(new_time));
    new_time.tm_hour=11;
@@ -2390,7 +2400,7 @@ static int datebook_update_clist(void)
    new_time.tm_isdst=-1;
    mktime(&new_time);
 
-   num = get_days_appointments2(&glob_al, &new_time, 2, 2, 1, &num_entries);
+   num = get_days_calendar_events2(&glob_cel, &new_time, 2, 2, 1, CATEGORY_ALL, &num_entries);
 
    jp_logf(JP_LOG_DEBUG, "get_days_appointments==>%d\n", num);
 #ifdef ENABLE_DATEBK
@@ -2430,11 +2440,11 @@ static int datebook_update_clist(void)
 #endif
 
    entries_shown=0;
-   for (temp_al = glob_al; temp_al; temp_al=temp_al->next) {
+   for (temp_cel = glob_cel; temp_cel; temp_cel=temp_cel->next) {
 #ifdef ENABLE_DATEBK
       ret=0;
       if (use_db3_tags) {
-	 ret = db3_parse_tag(temp_al->mappt.appt.note, &db3_type, &db4);
+	 ret = db3_parse_tag(temp_cel->mce.ce.note, &db3_type, &db4);
 	 jp_logf(JP_LOG_DEBUG, "category = 0x%x\n", db4.category);
 	 cat_bit=1<<db4.category;
 	 if (!(cat_bit & datebk_category)) {
@@ -2445,12 +2455,12 @@ static int datebook_update_clist(void)
 #endif
       /* Do masking like Palm OS 3.5 */
       if ((show_priv == MASK_PRIVATES) &&
-	  (temp_al->mappt.attrib & dlpRecAttrSecret)) {
+	  (temp_cel->mce.attrib & dlpRecAttrSecret)) {
 	 gtk_clist_append(GTK_CLIST(clist), empty_line);
 	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, DB_TIME_COLUMN, "----------");
 	 gtk_clist_set_text(GTK_CLIST(clist), entries_shown, DB_APPT_COLUMN, "---------------");
-	 clear_myappointment(&temp_al->mappt);
-	 gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_al->mappt));
+	 clear_myCalendarEvent(&temp_cel->mce);
+	 gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_cel->mce));
 	 gtk_clist_set_row_style(GTK_CLIST(clist), entries_shown, NULL);
 	 entries_shown++;
 	 continue;
@@ -2459,7 +2469,7 @@ static int datebook_update_clist(void)
 
       /* Hide the private records if need be */
       if ((show_priv != SHOW_PRIVATES) &&
-	  (temp_al->mappt.attrib & dlpRecAttrSecret)) {
+	  (temp_cel->mce.attrib & dlpRecAttrSecret)) {
 	 continue;
       }
 
@@ -2467,14 +2477,14 @@ static int datebook_update_clist(void)
       gtk_clist_append(GTK_CLIST(clist), empty_line);
 
       /* Print the event time */
-      if (temp_al->mappt.appt.event) {
+      if (temp_cel->mce.ce.event) {
 	 /* This is a timeless event */
 	 strcpy(a_time, _("No Time"));
       } else {
 	 get_pref_time_no_secs_no_ampm(datef);
-	 strftime(begin_time, sizeof(begin_time), datef, &(temp_al->mappt.appt.begin));
+	 strftime(begin_time, sizeof(begin_time), datef, &(temp_cel->mce.ce.begin));
 	 get_pref_time_no_secs(datef);
-	 strftime(end_time, sizeof(end_time), datef, &(temp_al->mappt.appt.end));
+	 strftime(end_time, sizeof(end_time), datef, &(temp_cel->mce.ce.end));
 	 g_snprintf(a_time, sizeof(a_time), "%s-%s", begin_time, end_time);
       }
       gtk_clist_set_text(GTK_CLIST(clist), entries_shown, DB_TIME_COLUMN, a_time);
@@ -2498,18 +2508,18 @@ static int datebook_update_clist(void)
                has_note = 1;
 	    }
 	 } else {
-	    if (temp_al->mappt.appt.note && 
-               (temp_al->mappt.appt.note[0]!='\0')) {
+	    if (temp_cel->mce.ce.note && 
+               (temp_cel->mce.ce.note[0]!='\0')) {
 		  has_note=1;
 	    }
 	 }
       } else {
-	 if (temp_al->mappt.appt.note && (temp_al->mappt.appt.note[0]!='\0')) {
+	 if (temp_cel->mce.ce.note && (temp_cel->mce.ce.note[0]!='\0')) {
 	       has_note=1;
 	 }
       }
 #else /* Ordinary, non DateBk code */
-      if (temp_al->mappt.appt.note && (temp_al->mappt.appt.note[0]!='\0')) {
+      if (temp_cel->mce.ce.note && (temp_cel->mce.ce.note[0]!='\0')) {
          has_note=1;
       }
 #endif
@@ -2519,21 +2529,21 @@ static int datebook_update_clist(void)
       }
 
       /* Put an alarm pixmap up */
-      if (temp_al->mappt.appt.alarm) {
+      if (temp_cel->mce.ce.alarm) {
 	 gtk_clist_set_pixmap(GTK_CLIST(clist), entries_shown, DB_ALARM_COLUMN, pixmap_alarm, mask_alarm);
       }
 
       /* Print the appointment description */
-      lstrncpy_remove_cr_lfs(str2, temp_al->mappt.appt.description, DATEBOOK_MAX_COLUMN_LEN);
+      lstrncpy_remove_cr_lfs(str2, temp_cel->mce.ce.description, DATEBOOK_MAX_COLUMN_LEN);
 
       /* Append number of anniversary years if enabled & appropriate */
-      append_anni_years(str2, sizeof(str2), &new_time, &temp_al->mappt.appt);
+      append_anni_years(str2, sizeof(str2), &new_time, NULL, &temp_cel->mce.ce);
 
       gtk_clist_set_text(GTK_CLIST(clist), entries_shown, DB_APPT_COLUMN, str2);
-      gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_al->mappt));
+      gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_cel->mce));
 
       /* Highlight row background depending on status */
-      switch (temp_al->mappt.rt) {
+      switch (temp_cel->mce.rt) {
        case NEW_PC_REC:
        case REPLACEMENT_PALM_REC:
 	 set_bg_rgb_clist_row(clist, entries_shown,
@@ -2549,7 +2559,7 @@ static int datebook_update_clist(void)
 			      CLIST_MOD_RED, CLIST_MOD_GREEN, CLIST_MOD_BLUE);
 	 break;
        default:
-	 if (temp_al->mappt.attrib & dlpRecAttrSecret) {
+	 if (temp_cel->mce.attrib & dlpRecAttrSecret) {
 	    set_bg_rgb_clist_row(clist, entries_shown,
 			     CLIST_PRIVATE_RED, CLIST_PRIVATE_GREEN, CLIST_PRIVATE_BLUE);
 	 } else {
@@ -2707,9 +2717,9 @@ static void cb_record_changed(GtkWidget *widget, gpointer data)
 
 static void cb_add_new_record(GtkWidget *widget, gpointer data)
 {
-   MyAppointment *mappt;
-   struct Appointment *appt;
-   struct Appointment new_appt;
+   MyCalendarEvent *mce;
+   struct CalendarEvent *ce;
+   struct CalendarEvent new_ce;
    int flag;
    int create_exception=0;
    int result;
@@ -2727,18 +2737,18 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
 
    flag=GPOINTER_TO_INT(data);
 
-   mappt=NULL;
+   mce=NULL;
    unique_id=0;
 
    /* Do masking like Palm OS 3.5 */
    if ((flag==COPY_FLAG) || (flag==MODIFY_FLAG)) {
       show_priv = show_privates(GET_PRIVATES);
-      mappt = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
-      if (mappt < (MyAppointment *)CLIST_MIN_DATA) {
+      mce = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
+      if (mce < (MyCalendarEvent *)CLIST_MIN_DATA) {
 	 return;
       }
       if ((show_priv != SHOW_PRIVATES) &&
-	  (mappt->attrib & dlpRecAttrSecret)) {
+	  (mce->attrib & dlpRecAttrSecret)) {
 	 return;
       }
    }
@@ -2756,58 +2766,58 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
       return;
    }
    if (flag==MODIFY_FLAG) {
-      mappt = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
-      unique_id = mappt->unique_id;
-      if (mappt < (MyAppointment *)CLIST_MIN_DATA) {
+      mce = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
+      unique_id = mce->unique_id;
+      if (mce < (MyCalendarEvent *)CLIST_MIN_DATA) {
 	 return;
       }
-      if ((mappt->rt==DELETED_PALM_REC) ||
-	  (mappt->rt==DELETED_PC_REC)   ||
-          (mappt->rt==MODIFIED_PALM_REC)) {
+      if ((mce->rt==DELETED_PALM_REC) ||
+	  (mce->rt==DELETED_PC_REC)   ||
+          (mce->rt==MODIFIED_PALM_REC)) {
 	 jp_logf(JP_LOG_INFO, _("You can't modify a record that is deleted\n"));
 	 return;
       }
    } 
 
-   r = appt_get_details(&new_appt, &attrib);
+   r = appt_get_details(&new_ce, &attrib);
    if (r != EXIT_SUCCESS) {
-      jp_free_Appointment(&new_appt);
+      free_CalendarEvent(&new_ce);
       return;
    }
 
    /* Validate dates for repeating events */
-   if (new_appt.repeatType != repeatNone)
+   if (new_ce.repeatType != calendarRepeatNone)
    {
-      next_found = find_next_rpt_event(&new_appt, &(new_appt.begin), &next_tm);
+      next_found = find_next_rpt_event(&new_ce, &(new_ce.begin), &next_tm);
 
       if (next_found) {
          jp_logf(JP_LOG_DEBUG, "Repeat event begin day shifted from %d to %d\n", 
-                                new_appt.begin.tm_mday, next_tm.tm_mday);
-         new_appt.begin.tm_year = next_tm.tm_year; 
-         new_appt.begin.tm_mon = next_tm.tm_mon; 
-         new_appt.begin.tm_mday = next_tm.tm_mday; 
-         new_appt.begin.tm_isdst = -1;
-         mktime(&(new_appt.begin));
-         new_appt.end.tm_year = next_tm.tm_year; 
-         new_appt.end.tm_mon = next_tm.tm_mon; 
-         new_appt.end.tm_mday = next_tm.tm_mday; 
-         new_appt.end.tm_isdst = -1;
-         mktime(&(new_appt.end));
+                                new_ce.begin.tm_mday, next_tm.tm_mday);
+         new_ce.begin.tm_year = next_tm.tm_year; 
+         new_ce.begin.tm_mon = next_tm.tm_mon; 
+         new_ce.begin.tm_mday = next_tm.tm_mday; 
+         new_ce.begin.tm_isdst = -1;
+         mktime(&(new_ce.begin));
+         new_ce.end.tm_year = next_tm.tm_year; 
+         new_ce.end.tm_mon = next_tm.tm_mon; 
+         new_ce.end.tm_mday = next_tm.tm_mday; 
+         new_ce.end.tm_isdst = -1;
+         mktime(&(new_ce.end));
       }
    }
 
-   if ((new_appt.repeatType != repeatNone) && (!(new_appt.repeatForever))) {
-      t_begin = mktime_dst_adj(&(new_appt.begin));
-      t_end = mktime_dst_adj(&(new_appt.repeatEnd));
+   if ((new_ce.repeatType != calendarRepeatNone) && (!(new_ce.repeatForever))) {
+      t_begin = mktime_dst_adj(&(new_ce.begin));
+      t_end = mktime_dst_adj(&(new_ce.repeatEnd));
       if (t_begin > t_end) {
 	 dialog_generic_ok(notebook, _("Invalid Appointment"), DIALOG_ERROR,
 			   _("The End Date of this appointment\nis before the start date."));
-	 jp_free_Appointment(&new_appt);
+	 free_CalendarEvent(&new_ce);
 	 return;
       }
    }
 
-   if ((flag==MODIFY_FLAG) && (new_appt.repeatType != repeatNone)) {
+   if ((flag==MODIFY_FLAG) && (new_ce.repeatType != calendarRepeatNone)) {
       /* We need more user input. Pop up a dialog */
       result = dialog_current_all_cancel();
       if (result==DIALOG_SAID_CANCEL) {
@@ -2816,87 +2826,99 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
       if (result==DIALOG_SAID_CURRENT) {
  	 /* Create an exception in the appointment */
 	 create_exception=1;
-	 new_appt.repeatType = repeatNone;
-	 new_appt.begin.tm_year = current_year;
-	 new_appt.begin.tm_mon = current_month;
-	 new_appt.begin.tm_mday = current_day;
-	 new_appt.begin.tm_isdst = -1;
-	 mktime(&new_appt.begin);
-	 new_appt.repeatType = repeatNone;
-	 new_appt.end.tm_year = current_year;
-	 new_appt.end.tm_mon = current_month;
-	 new_appt.end.tm_mday = current_day;
-	 new_appt.end.tm_isdst = -1;
-	 mktime(&new_appt.end);
+	 new_ce.repeatType = calendarRepeatNone;
+	 new_ce.begin.tm_year = current_year;
+	 new_ce.begin.tm_mon = current_month;
+	 new_ce.begin.tm_mday = current_day;
+	 new_ce.begin.tm_isdst = -1;
+	 mktime(&new_ce.begin);
+	 new_ce.repeatType = calendarRepeatNone;
+	 new_ce.end.tm_year = current_year;
+	 new_ce.end.tm_mon = current_month;
+	 new_ce.end.tm_mday = current_day;
+	 new_ce.end.tm_isdst = -1;
+	 mktime(&new_ce.end);
       }
       if (result==DIALOG_SAID_ALL) {
 	 /* We still need to keep the exceptions of the original record */
-	 new_appt.exception = malloc(mappt->appt.exceptions * sizeof(struct tm));
-	 memcpy(new_appt.exception, mappt->appt.exception, mappt->appt.exceptions * sizeof(struct tm));
-	 new_appt.exceptions = mappt->appt.exceptions;
+	 new_ce.exception = malloc(mce->ce.exceptions * sizeof(struct tm));
+	 memcpy(new_ce.exception, mce->ce.exception, mce->ce.exceptions * sizeof(struct tm));
+	 new_ce.exceptions = mce->ce.exceptions;
       }
    }
+   /* TODO - take care of blob and tz? */
 
    set_new_button_to(CLEAR_FLAG);
 
    if (flag==MODIFY_FLAG) {
-	   long char_set;
+      long char_set;
 
-	   /* Convert to Palm character set */
-	   get_pref(PREF_CHAR_SET, &char_set, NULL);
-	   if (char_set != CHAR_SET_LATIN1) {
-		   if (mappt->appt.description) 
-			   charset_j2p(mappt->appt.description, strlen(mappt->appt.description)+1, char_set);
-		   if (mappt->appt.note) 
-			   charset_j2p(mappt->appt.note, strlen(mappt->appt.note)+1, char_set);
-		   if (datebook_version) {
-			   if (mappt->appt.location) 
-				   charset_j2p(mappt->appt.location, strlen(mappt->appt.location)+1, char_set);
-		   }
-	   }
+      /* Convert to Palm character set */
+      get_pref(PREF_CHAR_SET, &char_set, NULL);
+      if (char_set != CHAR_SET_LATIN1) {
+	 if (mce->ce.description) 
+	   charset_j2p(mce->ce.description, strlen(mce->ce.description)+1, char_set);
+	 if (mce->ce.note) 
+	   charset_j2p(mce->ce.note, strlen(mce->ce.note)+1, char_set);
+	 if (mce->ce.location) 
+	   charset_j2p(mce->ce.location, strlen(mce->ce.location)+1, char_set);
+	 /* TODO blob and tz? */
+      }
 
        /* We need to take care of the 2 options allowed when modifying
         * repeating appointments */
-      delete_pc_record(DATEBOOK, mappt, flag);
+      if (datebook_version) {
+	 delete_pc_record(CALENDAR, mce, flag);
+      } else {
+	 /* TODO Change delete to do the conversion for you? */
+	 MyAppointment ma;
+	 ma.rt=mce->rt;
+	 ma.unique_id=mce->unique_id;
+	 ma.attrib=mce->attrib;
+	 copy_calendarEvent_to_appointment(&(mce->ce), &(ma.appt));
+	 delete_pc_record(DATEBOOK, &ma, flag);
+	 free_Appointment(&(ma.appt));
+      }
 
       if (create_exception) {
-	 datebook_copy_appointment(&(mappt->appt), &appt);
-	 datebook_add_exception(appt, current_year, current_month, current_day);
-	 if ((mappt->rt==PALM_REC) || (mappt->rt==REPLACEMENT_PALM_REC)) {
+	 copy_calendar_event(&(mce->ce), &ce);
+	 /* TODO rename? */
+	 datebook_add_exception(ce, current_year, current_month, current_day);
+	 if ((mce->rt==PALM_REC) || (mce->rt==REPLACEMENT_PALM_REC)) {
 	    /* The original record gets the same ID, this exception gets a new one. */
-	    pc_datebook_write(appt, REPLACEMENT_PALM_REC, attrib, &unique_id);
+	    pc_calendar_or_datebook_write(ce, REPLACEMENT_PALM_REC, attrib, &unique_id, datebook_version);
 	 } else {
-	    pc_datebook_write(appt, NEW_PC_REC, attrib, NULL);
+	    pc_calendar_or_datebook_write(ce, NEW_PC_REC, attrib, NULL, datebook_version);
 	 }
 	 unique_id = 0;
-	 pc_datebook_write(&new_appt, NEW_PC_REC, attrib, &unique_id);
-	 jp_free_Appointment(appt);
-	 free(appt);
+	 pc_calendar_or_datebook_write(&new_ce, NEW_PC_REC, attrib, &unique_id, datebook_version);
+	 free_CalendarEvent(ce);
+	 free(ce);
       } else {
-	 if ((mappt->rt==PALM_REC) || (mappt->rt==REPLACEMENT_PALM_REC)) {
-	    pc_datebook_write(&new_appt, REPLACEMENT_PALM_REC, attrib, &unique_id);
+	 if ((mce->rt==PALM_REC) || (mce->rt==REPLACEMENT_PALM_REC)) {
+	    pc_calendar_or_datebook_write(&new_ce, REPLACEMENT_PALM_REC, attrib, &unique_id, datebook_version);
 	 } else {
 	    unique_id=0;
-	    pc_datebook_write(&new_appt, NEW_PC_REC, attrib, &unique_id);
+	    pc_calendar_or_datebook_write(&new_ce, NEW_PC_REC, attrib, &unique_id, datebook_version);
 	 }
       }
    } else {
       unique_id=0; /* Palm will supply unique_id for new record */
-      pc_datebook_write(&new_appt, NEW_PC_REC, attrib, &unique_id);
+      pc_calendar_or_datebook_write(&new_ce, NEW_PC_REC, attrib, &unique_id, datebook_version);
    }
 
    /* Position calendar on the actual event or next future occurrence depending
     * on what is closest to the current date */
    if ((flag!=COPY_FLAG))
    {
-      if (new_appt.repeatType == repeatNone) {
-         memcpy(&next_tm, &(new_appt.begin), sizeof(next_tm)); 
+      if (new_ce.repeatType == calendarRepeatNone) {
+         memcpy(&next_tm, &(new_ce.begin), sizeof(next_tm)); 
       } else {
          time(&ltime);
          now = localtime(&ltime);
-         next_found = find_next_rpt_event(&new_appt, now, &next_tm);
+         next_found = find_next_rpt_event(&new_ce, now, &next_tm);
          if (!next_found) {
-            memcpy(&next_tm, &(new_appt.begin), sizeof(next_tm)); 
+            memcpy(&next_tm, &(new_ce.begin), sizeof(next_tm)); 
          }
       }
 
@@ -2913,7 +2935,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
       gtk_calendar_thaw(GTK_CALENDAR(main_calendar));
    } 
 
-   jp_free_Appointment(&new_appt);
+   free_CalendarEvent(&new_ce);
 
    datebook_update_clist();
    highlight_days();
@@ -2930,8 +2952,8 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
 
 void cb_delete_appt(GtkWidget *widget, gpointer data)
 {
-   MyAppointment *mappt;
-   struct Appointment *appt;
+   MyCalendarEvent *mce;
+   struct CalendarEvent *ce;
    int flag;
    int result = 0;
    int show_priv;
@@ -2939,28 +2961,26 @@ void cb_delete_appt(GtkWidget *widget, gpointer data)
    int write_flag;
    unsigned int *write_unique_id;
 
-   mappt = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
-   if (mappt < (MyAppointment *)CLIST_MIN_DATA) {
+   mce = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
+   if (mce < (MyCalendarEvent *)CLIST_MIN_DATA) {
       return;
    }
 
    /* Convert to Palm character set */
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    if (char_set != CHAR_SET_LATIN1) {
-      if (mappt->appt.description) 
-         charset_j2p(mappt->appt.description, strlen(mappt->appt.description)+1, char_set);
-      if (mappt->appt.note) 
-         charset_j2p(mappt->appt.note, strlen(mappt->appt.note)+1, char_set);
-      if (datebook_version) {
-         if (mappt->appt.location) 
-            charset_j2p(mappt->appt.location, strlen(mappt->appt.location)+1, char_set);
-      }
+      if (mce->ce.description) 
+         charset_j2p(mce->ce.description, strlen(mce->ce.description)+1, char_set);
+      if (mce->ce.note) 
+         charset_j2p(mce->ce.note, strlen(mce->ce.note)+1, char_set);
+      if (mce->ce.location) 
+	charset_j2p(mce->ce.location, strlen(mce->ce.location)+1, char_set);
    }
 
    /* Do masking like Palm OS 3.5 */
    show_priv = show_privates(GET_PRIVATES);
    if ((show_priv != SHOW_PRIVATES) &&
-       (mappt->attrib & dlpRecAttrSecret)) {
+       (mce->attrib & dlpRecAttrSecret)) {
       return;
    }
    /* End Masking */
@@ -2974,7 +2994,7 @@ void cb_delete_appt(GtkWidget *widget, gpointer data)
    write_flag = 0;
    write_unique_id = NULL;
 
-   if (mappt->appt.repeatType != repeatNone) {
+   if (mce->ce.repeatType != calendarRepeatNone) {
       /* We need more user input. Pop up a dialog */
       result = dialog_current_all_cancel();
       if (result==DIALOG_SAID_CANCEL) {
@@ -2983,10 +3003,10 @@ void cb_delete_appt(GtkWidget *widget, gpointer data)
       if (result==DIALOG_SAID_CURRENT) {
 	 write_flag = 1;
  	 /* Create an exception in the appointment */
-	 datebook_copy_appointment(&(mappt->appt), &appt);
-	 datebook_add_exception(appt, current_year, current_month, current_day);
-	 if ((mappt->rt==PALM_REC) || (mappt->rt==REPLACEMENT_PALM_REC)) {
-	    write_unique_id = &(mappt->unique_id);
+	 copy_calendar_event(&(mce->ce), &ce);
+	 datebook_add_exception(ce, current_year, current_month, current_day);
+	 if ((mce->rt==PALM_REC) || (mce->rt==REPLACEMENT_PALM_REC)) {
+	    write_unique_id = &(mce->unique_id);
 	 } else {
 	    write_unique_id = NULL;
 	 }
@@ -2998,11 +3018,11 @@ void cb_delete_appt(GtkWidget *widget, gpointer data)
     * record in that order. This is so that the sync code can check to see
     * if the remote record is the same as the removed, or changed local
     * or not before it goes and modifies it. */
-   delete_pc_record(DATEBOOK, mappt, flag);
+   delete_pc_record(CALENDAR, mce, flag);
    if (write_flag) {
-      pc_datebook_write(appt, REPLACEMENT_PALM_REC, mappt->attrib, write_unique_id);
-      jp_free_Appointment(appt);
-      free(appt);
+      pc_calendar_or_datebook_write(&(mce->ce), REPLACEMENT_PALM_REC, mce->attrib, write_unique_id, datebook_version);
+      free_CalendarEvent(ce);
+      free(ce);
    }
 
    if (flag==DELETE_FLAG) {
@@ -3020,35 +3040,46 @@ void cb_delete_appt(GtkWidget *widget, gpointer data)
 
 void cb_undelete_appt(GtkWidget *widget, gpointer data)
 {
-   MyAppointment *mappt;
+   MyCalendarEvent *mce;
    int flag;
    int show_priv;
 
-   mappt = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
-   if (mappt < (MyAppointment *)CLIST_MIN_DATA) {
+   mce = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
+   if (mce < (MyCalendarEvent *)CLIST_MIN_DATA) {
       return;
    }
 
    /* Do masking like Palm OS 3.5 */
    show_priv = show_privates(GET_PRIVATES);
    if ((show_priv != SHOW_PRIVATES) &&
-       (mappt->attrib & dlpRecAttrSecret)) {
+       (mce->attrib & dlpRecAttrSecret)) {
       return;
    }
    /* End Masking */
 
-   jp_logf(JP_LOG_DEBUG, "mappt->unique_id = %d\n",mappt->unique_id);
-   jp_logf(JP_LOG_DEBUG, "mappt->rt = %d\n",mappt->rt);
+   jp_logf(JP_LOG_DEBUG, "mce->unique_id = %d\n",mce->unique_id);
+   jp_logf(JP_LOG_DEBUG, "mce->rt = %d\n",mce->rt);
 
    flag = GPOINTER_TO_INT(data);
    if (flag==UNDELETE_FLAG) {
-      if (mappt->rt == DELETED_PALM_REC ||
-          mappt->rt == DELETED_PC_REC)
+      if (mce->rt == DELETED_PALM_REC ||
+          mce->rt == DELETED_PC_REC)
       {
-	 undelete_pc_record(DATEBOOK, mappt, flag);
+	 if (datebook_version) {
+	    undelete_pc_record(CALENDAR, mce, flag);
+	 } else {
+	    /* TODO, undelete_pc_record only uses the unique_id, so this extra copying is a waste */
+	    MyAppointment ma;
+	    ma.rt=mce->rt;
+	    ma.unique_id=mce->unique_id;
+	    ma.attrib=mce->attrib;
+	    copy_calendarEvent_to_appointment(&(mce->ce), &(ma.appt));
+	    undelete_pc_record(DATEBOOK, &ma, flag);
+	    free_Appointment(&(ma.appt));
+	 }
       }
       /* Possible later addition of undelete for modified records
-      else if (mappt->rt == MODIFIED_PALM_REC)
+      else if (mce->rt == MODIFIED_PALM_REC)
       {
 	 cb_add_new_record(widget, GINT_TO_POINTER(COPY_FLAG));
       }
@@ -3130,8 +3161,8 @@ static void cb_clist_selection(GtkWidget      *clist,
 			       GdkEventButton *event,
 			       gpointer       data)
 {
-   struct Appointment *appt;
-   MyAppointment *mappt;
+   struct CalendarEvent *ce;
+   MyCalendarEvent *mce;
    char tempstr[20];
    int i, b;
    int index, sorted_position;
@@ -3150,9 +3181,9 @@ static void cb_clist_selection(GtkWidget      *clist,
    if ((record_changed==MODIFY_FLAG) || (record_changed==NEW_FLAG)) {
       if (clist_row_selected == row) { return; } 
 
-      mappt = gtk_clist_get_row_data(GTK_CLIST(clist), row);
-      if (mappt!=NULL) {
-	 unique_id = mappt->unique_id;
+      mce = gtk_clist_get_row_data(GTK_CLIST(clist), row);
+      if (mce!=NULL) {
+	 unique_id = mce->unique_id;
       }
 
       b=dialog_save_changed_record_with_cancel(pane, record_changed);
@@ -3184,15 +3215,15 @@ static void cb_clist_selection(GtkWidget      *clist,
 
    clist_row_selected=row;
 
-   mappt = gtk_clist_get_row_data(GTK_CLIST(clist), row);
-   if (mappt==NULL) {
+   mce = gtk_clist_get_row_data(GTK_CLIST(clist), row);
+   if (mce==NULL) {
       return;
    }
 
-   if (mappt->rt == DELETED_PALM_REC ||
-      (mappt->rt == DELETED_PC_REC))
+   if (mce->rt == DELETED_PALM_REC ||
+      (mce->rt == DELETED_PC_REC))
       /* Possible later addition of undelete code for modified deleted records
-         || mmemo->rt == MODIFIED_PALM_REC
+         || mce->rt == MODIFIED_PALM_REC
       */
    {
       set_new_button_to(UNDELETE_FLAG);
@@ -3202,11 +3233,11 @@ static void cb_clist_selection(GtkWidget      *clist,
 
    connect_changed_signals(DISCONNECT_SIGNALS);
 
-   appt=&(mappt->appt);
+   ce=&(mce->ce);
 
    if (datebook_version) {
       /* Calendar supports categories */
-      index = mappt->attrib & 0x0F;
+      index = mce->attrib & 0x0F;
       sorted_position = find_sort_cat_pos(index);
       if (dbook_cat_menu_item2[sorted_position]==NULL) {
          /* Illegal category */
@@ -3222,7 +3253,7 @@ static void cb_clist_selection(GtkWidget      *clist,
                                   find_menu_cat_pos(sorted_position));
    }
 
-   if (appt->event) {
+   if (ce->event) {
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_no_time), TRUE);
    } else {
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_appt_time), TRUE);
@@ -3239,12 +3270,12 @@ static void cb_clist_selection(GtkWidget      *clist,
    }
 #endif
 
-   if (appt->alarm) {
+   if (ce->alarm) {
       /* This is to insure that the callback gets called */
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_button_alarm), FALSE);
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_button_alarm), TRUE);
-      switch (appt->advanceUnits) {
-       case advMinutes:
+      switch (ce->advanceUnits) {
+       case calendar_advMinutes:
 	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
 				      (radio_button_alarm_min), TRUE);
 	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
@@ -3252,7 +3283,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
 				      (radio_button_alarm_day), FALSE);
 	 break;
-       case advHours:
+       case calendar_advHours:
 	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
 				      (radio_button_alarm_min), FALSE);
 	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
@@ -3260,7 +3291,7 @@ static void cb_clist_selection(GtkWidget      *clist,
 	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
 				      (radio_button_alarm_day), FALSE);
 	 break;
-       case advDays:
+       case calendar_advDays:
 	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
 				      (radio_button_alarm_min), FALSE);
 	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
@@ -3269,9 +3300,9 @@ static void cb_clist_selection(GtkWidget      *clist,
 				      (radio_button_alarm_day), TRUE);
 	 break;
        default:
-	 jp_logf(JP_LOG_WARN, _("Error in DateBookDB advanceUnits = %d\n"),appt->advanceUnits);
+	 jp_logf(JP_LOG_WARN, _("Error in DateBookDB or Calendar advanceUnits = %d\n"),ce->advanceUnits);
       }
-      sprintf(tempstr, "%d", appt->advance);
+      sprintf(tempstr, "%d", ce->advance);
       gtk_entry_set_text(GTK_ENTRY(units_entry), tempstr);
    } else {
       /* This is to insure that the callback gets called */
@@ -3279,14 +3310,14 @@ static void cb_clist_selection(GtkWidget      *clist,
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_button_alarm), FALSE);
       gtk_entry_set_text(GTK_ENTRY(units_entry), "0");
    }
-   if (appt->description) {
-      gtk_text_buffer_set_text(GTK_TEXT_BUFFER(dbook_desc_buffer), appt->description, -1);
+   if (ce->description) {
+      gtk_text_buffer_set_text(GTK_TEXT_BUFFER(dbook_desc_buffer), ce->description, -1);
    }
 #ifdef ENABLE_DATEBK
    if (use_db3_tags) {
-      if (db3_parse_tag(appt->note, &type, NULL) > 0) {
+      if (db3_parse_tag(ce->note, &type, NULL) > 0) {
 	 /* There is a datebk tag.  Need to separate it from the note */
-	 note = strdup(appt->note);
+	 note = strdup(ce->note);
 	 len=strlen(note);
 	 for (i=0; i<len; i++) {
 	    if (note[i]=='\n') {
@@ -3297,114 +3328,114 @@ static void cb_clist_selection(GtkWidget      *clist,
 	 gtk_entry_set_text(GTK_ENTRY(datebk_entry), note);
 	 gtk_text_buffer_set_text(GTK_TEXT_BUFFER(dbook_note_buffer), &(note[i+1]), -1);
 	 free(note);
-      } else if (appt->note) {
-         gtk_text_buffer_set_text(GTK_TEXT_BUFFER(dbook_note_buffer), appt->note, -1);
+      } else if (ce->note) {
+         gtk_text_buffer_set_text(GTK_TEXT_BUFFER(dbook_note_buffer), ce->note, -1);
       }
-   } else if (appt->note) { /* Not using db3 tags */
-      gtk_text_buffer_set_text(GTK_TEXT_BUFFER(dbook_note_buffer), appt->note, -1);
+   } else if (ce->note) { /* Not using db3 tags */
+      gtk_text_buffer_set_text(GTK_TEXT_BUFFER(dbook_note_buffer), ce->note, -1);
       
    }
 #else  /* Ordinary, non-DateBk code */
-   if (appt->note) {
-      gtk_text_buffer_set_text(GTK_TEXT_BUFFER(dbook_note_buffer), appt->note, -1);
+   if (ce->note) {
+      gtk_text_buffer_set_text(GTK_TEXT_BUFFER(dbook_note_buffer), ce->note, -1);
    }
 #endif
 
-   begin_date.tm_mon = appt->begin.tm_mon;
-   begin_date.tm_mday = appt->begin.tm_mday;
-   begin_date.tm_year = appt->begin.tm_year;
-   begin_date.tm_hour = appt->begin.tm_hour;
-   begin_date.tm_min = appt->begin.tm_min;
+   begin_date.tm_mon = ce->begin.tm_mon;
+   begin_date.tm_mday = ce->begin.tm_mday;
+   begin_date.tm_year = ce->begin.tm_year;
+   begin_date.tm_hour = ce->begin.tm_hour;
+   begin_date.tm_min = ce->begin.tm_min;
 
-   end_date.tm_mon = appt->end.tm_mon;
-   end_date.tm_mday = appt->end.tm_mday;
-   end_date.tm_year = appt->end.tm_year;
-   end_date.tm_hour = appt->end.tm_hour;
-   end_date.tm_min = appt->end.tm_min;
+   end_date.tm_mon = ce->end.tm_mon;
+   end_date.tm_mday = ce->end.tm_mday;
+   end_date.tm_year = ce->end.tm_year;
+   end_date.tm_hour = ce->end.tm_hour;
+   end_date.tm_min = ce->end.tm_min;
 
    set_begin_end_labels(&begin_date, &end_date, UPDATE_DATE_ENTRIES |
 			                        UPDATE_DATE_MENUS);
 
    if (datebook_version) {
       /* Calendar has a location field */
-      if (appt->location) {
-         gtk_entry_set_text(GTK_ENTRY(location_entry), appt->location);
+      if (ce->location) {
+         gtk_entry_set_text(GTK_ENTRY(location_entry), ce->location);
       }
    }
 
    /* Do the Repeat information */
-   switch (appt->repeatType) {
-    case repeatNone:
+   switch (ce->repeatType) {
+    case calendarRepeatNone:
       gtk_notebook_set_page(GTK_NOTEBOOK(notebook), PAGE_NONE);
       break;
-    case repeatDaily:
-      if ((appt->repeatForever)) {
+    case calendarRepeatDaily:
+      if ((ce->repeatForever)) {
 	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
 				      (check_button_day_endon), FALSE);
       }
       else {
 	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
 				      (check_button_day_endon), TRUE);
-	 glob_endon_day_tm.tm_mon = appt->repeatEnd.tm_mon;
-	 glob_endon_day_tm.tm_mday = appt->repeatEnd.tm_mday;
-	 glob_endon_day_tm.tm_year = appt->repeatEnd.tm_year;
+	 glob_endon_day_tm.tm_mon = ce->repeatEnd.tm_mon;
+	 glob_endon_day_tm.tm_mday = ce->repeatEnd.tm_mday;
+	 glob_endon_day_tm.tm_year = ce->repeatEnd.tm_year;
 	 update_endon_button(glob_endon_day_button, &glob_endon_day_tm);
       }
-      sprintf(tempstr, "%d", appt->repeatFrequency);
+      sprintf(tempstr, "%d", ce->repeatFrequency);
       gtk_entry_set_text(GTK_ENTRY(repeat_day_entry), tempstr);
       gtk_notebook_set_page(GTK_NOTEBOOK(notebook), PAGE_DAY);
       break;
-    case repeatWeekly:
-      if ((appt->repeatForever)) {
+    case calendarRepeatWeekly:
+      if ((ce->repeatForever)) {
 	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
 				      (check_button_week_endon), FALSE);
       }
       else {
 	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
 				      (check_button_week_endon), TRUE);
-	 glob_endon_week_tm.tm_mon = appt->repeatEnd.tm_mon;
-	 glob_endon_week_tm.tm_mday = appt->repeatEnd.tm_mday;
-	 glob_endon_week_tm.tm_year = appt->repeatEnd.tm_year;
+	 glob_endon_week_tm.tm_mon = ce->repeatEnd.tm_mon;
+	 glob_endon_week_tm.tm_mday = ce->repeatEnd.tm_mday;
+	 glob_endon_week_tm.tm_year = ce->repeatEnd.tm_year;
 	 update_endon_button(glob_endon_week_button, &glob_endon_week_tm);
       }
-      sprintf(tempstr, "%d", appt->repeatFrequency);
+      sprintf(tempstr, "%d", ce->repeatFrequency);
       gtk_entry_set_text(GTK_ENTRY(repeat_week_entry), tempstr);
       for (i=0; i<7; i++) {
 	 gtk_toggle_button_set_active
 	   (GTK_TOGGLE_BUTTON(toggle_button_repeat_days[i]),
-	    appt->repeatDays[i]);
+	    ce->repeatDays[i]);
       }
       gtk_notebook_set_page(GTK_NOTEBOOK(notebook), PAGE_WEEK);
       break;
-    case repeatMonthlyByDate:
-    case repeatMonthlyByDay:
-      jp_logf(JP_LOG_DEBUG, "repeat day=%d\n",appt->repeatDay);
-      if ((appt->repeatForever)) {
+    case calendarRepeatMonthlyByDate:
+    case calendarRepeatMonthlyByDay:
+      jp_logf(JP_LOG_DEBUG, "repeat day=%d\n",ce->repeatDay);
+      if ((ce->repeatForever)) {
 	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
 				      (check_button_mon_endon), FALSE);
       }
       else {
 	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
 				      (check_button_mon_endon), TRUE);
-	 glob_endon_mon_tm.tm_mon = appt->repeatEnd.tm_mon;
-	 glob_endon_mon_tm.tm_mday = appt->repeatEnd.tm_mday;
-	 glob_endon_mon_tm.tm_year = appt->repeatEnd.tm_year;
+	 glob_endon_mon_tm.tm_mon = ce->repeatEnd.tm_mon;
+	 glob_endon_mon_tm.tm_mday = ce->repeatEnd.tm_mday;
+	 glob_endon_mon_tm.tm_year = ce->repeatEnd.tm_year;
 	 update_endon_button(glob_endon_mon_button, &glob_endon_mon_tm);
       }
-      sprintf(tempstr, "%d", appt->repeatFrequency);
+      sprintf(tempstr, "%d", ce->repeatFrequency);
       gtk_entry_set_text(GTK_ENTRY(repeat_mon_entry), tempstr);
-      if (appt->repeatType == repeatMonthlyByDay) {
+      if (ce->repeatType == calendarRepeatMonthlyByDay) {
 	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
 				      (toggle_button_repeat_mon_byday), TRUE);
       }
-      if (appt->repeatType == repeatMonthlyByDate) {
+      if (ce->repeatType == calendarRepeatMonthlyByDate) {
 	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
 				      (toggle_button_repeat_mon_bydate), TRUE);
       }
       gtk_notebook_set_page(GTK_NOTEBOOK(notebook), PAGE_MONTH);
       break;
-    case repeatYearly:
-      if ((appt->repeatForever)) {
+    case calendarRepeatYearly:
+      if ((ce->repeatForever)) {
 	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
 				      (check_button_year_endon), FALSE);
       }
@@ -3412,22 +3443,22 @@ static void cb_clist_selection(GtkWidget      *clist,
 	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
 				      (check_button_year_endon), TRUE);
 
-	 glob_endon_year_tm.tm_mon = appt->repeatEnd.tm_mon;
-	 glob_endon_year_tm.tm_mday = appt->repeatEnd.tm_mday;
-	 glob_endon_year_tm.tm_year = appt->repeatEnd.tm_year;
+	 glob_endon_year_tm.tm_mon = ce->repeatEnd.tm_mon;
+	 glob_endon_year_tm.tm_mday = ce->repeatEnd.tm_mday;
+	 glob_endon_year_tm.tm_year = ce->repeatEnd.tm_year;
 	 update_endon_button(glob_endon_year_button, &glob_endon_year_tm);
       }
-      sprintf(tempstr, "%d", appt->repeatFrequency);
+      sprintf(tempstr, "%d", ce->repeatFrequency);
       gtk_entry_set_text(GTK_ENTRY(repeat_year_entry), tempstr);
 
       gtk_notebook_set_page(GTK_NOTEBOOK(notebook), PAGE_YEAR);
       break;
     default:
-      jp_logf(JP_LOG_WARN, _("Unknown repeatType (%d) found in DatebookDB\n"), appt->repeatFrequency);
+      jp_logf(JP_LOG_WARN, _("Unknown repeatType (%d) found in DatebookDB\n"), ce->repeatFrequency);
    }
 
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(private_checkbox),
-				mappt->attrib & dlpRecAttrSecret);
+				mce->attrib & dlpRecAttrSecret);
 
    connect_changed_signals(CONNECT_SIGNALS);
 
@@ -3476,16 +3507,16 @@ static void cb_cancel(GtkWidget *widget, gpointer data)
 
 static void cb_edit_cats(GtkWidget *widget, gpointer data)
 {
-   struct AppointmentAppInfo ai;
+   struct CalendarAppInfo cai;
    char db_name[FILENAME_MAX];
    char pdb_name[FILENAME_MAX];
    char full_name[FILENAME_MAX];
-   unsigned char buffer[65536];
    int num;
    size_t size;
    void *buf;
    struct pi_file *pf;
    long datebook_version;
+   pi_buffer_t pi_buf;
      
    jp_logf(JP_LOG_DEBUG, "cb_edit_cats\n");
 
@@ -3502,12 +3533,16 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
    get_home_file_name(pdb_name, full_name, sizeof(full_name));
 
    buf=NULL;
-   memset(&ai, 0, sizeof(ai));
+   memset(&cai, 0, sizeof(cai));
 
    pf = pi_file_open(full_name);
    pi_file_get_app_info(pf, &buf, &size);
 
-   num = jp_unpack_AppointmentAppInfo(&ai, buf, size);
+   pi_buf.data = buf;
+   pi_buf.used = size;
+   pi_buf.allocated = size;
+
+   num = unpack_CalendarAppInfo(&cai, &pi_buf);
    if (num <= 0) {
       jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), pdb_name);
       return;
@@ -3515,12 +3550,14 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
 
    pi_file_close(pf);
 
-   edit_cats(widget, db_name, &(ai.category));
+   edit_cats(widget, db_name, &(cai.category));
 
-   size = jp_pack_AppointmentAppInfo(&ai, buffer, sizeof(buffer));
+   pi_buf.data = NULL;
+   pi_buf.used = 0;
+   pi_buf.allocated = 0;
+   size = pack_CalendarAppInfo(&cai, &pi_buf);
 
-   pdb_file_write_app_block(db_name, buffer, size);
-   
+   pdb_file_write_app_block(db_name, pi_buf.data, pi_buf.used);
 
    cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
 }
@@ -3724,7 +3761,7 @@ static void highlight_days(void)
 
    get_month_info(current_month, 1, current_year, &dow_int, &ndim);
 
-   appointment_on_day_list(current_month, current_year, &mask);
+   appointment_on_day_list(current_month, current_year, &mask, datebook_version);
 
    gtk_calendar_freeze(GTK_CALENDAR(main_calendar));
 
@@ -4094,7 +4131,7 @@ int datebook_gui_cleanup(void)
       cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
    }
 
-   free_AppointmentList(&glob_al);
+   free_CalendarEventList(&glob_cel);
    free_ToDoList(&datebook_todo_list);
 
    connect_changed_signals(DISCONNECT_SIGNALS);
@@ -4493,7 +4530,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
 #endif
 
-   get_datebook_app_info(&dbook_app_info);
+   get_calendar_or_datebook_app_info(&dbook_app_info, datebook_version);
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
 
