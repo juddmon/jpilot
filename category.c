@@ -1,10 +1,10 @@
-/* $Id: category.c,v 1.33 2009/01/22 17:05:34 rikster5 Exp $ */
+/* $Id: category.c,v 1.34 2010/02/28 18:51:45 judd Exp $ */
 
 /*******************************************************************************
  * category.c
  * A module of J-Pilot http://jpilot.org
  *
- * Copyright (C) 2002 by Judd Montgomery
+ * Copyright (C) 2009-2010 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

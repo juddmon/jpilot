@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.108 2009/09/10 06:01:55 rikster5 Exp $ */
+/* $Id: sync.c,v 1.109 2010/02/28 18:56:52 judd Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -716,16 +716,17 @@ static int sync_rotate_backups(const int num_backups)
    return EXIT_SUCCESS;
 }
 
-int unpack_calendar_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
+int unpack_datebook_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
 {
 
    struct AppointmentAppInfo ai;
    int r;
 
-   jp_logf(JP_LOG_DEBUG, "unpack_calendar_cai_from_ai\n");
+   jp_logf(JP_LOG_DEBUG, "unpack_datebook_cai_from_ai\n");
 
    memset(&ai, 0, sizeof(ai));
-   r = jp_unpack_AppointmentAppInfo(&ai, ai_raw, len);
+
+   r = unpack_AppointmentAppInfo(&ai, ai_raw, len);
    if ((r <= 0) || (len <= 0)) {
       jp_logf(JP_LOG_DEBUG, "jp_unpack_AppointmentAppInfo failed %s %d\n", __FILE__, __LINE__);
       return EXIT_FAILURE;
@@ -735,23 +736,78 @@ int unpack_calendar_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_r
    return EXIT_SUCCESS;
 }
 
-int pack_calendar_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
+int pack_datebook_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
 {
    struct AppointmentAppInfo ai;
    int r;
 
-   jp_logf(JP_LOG_DEBUG, "pack_calendar_cai_into_ai\n");
+   jp_logf(JP_LOG_DEBUG, "pack_datebook_cai_into_ai\n");
 
-   r = jp_unpack_AppointmentAppInfo(&ai, ai_raw, len);
+   r = unpack_AppointmentAppInfo(&ai, ai_raw, len);
    if (r <= 0) {
-      jp_logf(JP_LOG_DEBUG, "jp_unpack_AppointmentAppInfo failed %s %d\n", __FILE__, __LINE__);
+      jp_logf(JP_LOG_DEBUG, "unpack_AppointmentAppInfo failed %s %d\n", __FILE__, __LINE__);
       return EXIT_FAILURE;
    }
    memcpy(&(ai.category), cai, sizeof(struct CategoryAppInfo));
 
-   r = jp_pack_AppointmentAppInfo(&ai, ai_raw, len);
+   r = pack_AppointmentAppInfo(&ai, ai_raw, len);
    if (r <= 0) {
-      jp_logf(JP_LOG_DEBUG, "jp_pack_AppointmentAppInfo failed %s %d\n", __FILE__, __LINE__);
+      jp_logf(JP_LOG_DEBUG, "pack_AppointmentAppInfo failed %s %d\n", __FILE__, __LINE__);
+      return EXIT_FAILURE;
+   }
+
+   return EXIT_SUCCESS;
+}
+
+int unpack_calendar_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
+{
+
+   struct CalendarAppInfo ai;
+   int r;
+   pi_buffer_t pi_buf;
+
+   jp_logf(JP_LOG_DEBUG, "unpack_calendar_cai_from_ai\n");
+
+   memset(&ai, 0, sizeof(ai));
+   pi_buf.data = ai_raw;
+   pi_buf.used = len;
+   pi_buf.allocated = len;
+
+   r = unpack_CalendarAppInfo(&ai, &pi_buf);
+   if ((r <= 0) || (len <= 0)) {
+      jp_logf(JP_LOG_DEBUG, "unpack_CalendarAppInfo failed %s %d\n", __FILE__, __LINE__);
+      return EXIT_FAILURE;
+   }
+   memcpy(cai, &(ai.category), sizeof(struct CategoryAppInfo));
+
+   return EXIT_SUCCESS;
+}
+
+int pack_calendar_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
+{
+   struct CalendarAppInfo ai;
+   int r;
+   pi_buffer_t pi_buf;
+
+   jp_logf(JP_LOG_DEBUG, "pack_calendar_cai_into_ai\n");
+
+   pi_buf.data = ai_raw;
+   pi_buf.used = len;
+   pi_buf.allocated = len;
+   r = unpack_CalendarAppInfo(&ai, &pi_buf);
+   if (r <= 0) {
+      jp_logf(JP_LOG_DEBUG, "unpack_CalendarAppInfo failed %s %d\n", __FILE__, __LINE__);
+      return EXIT_FAILURE;
+   }
+   memcpy(&(ai.category), cai, sizeof(struct CategoryAppInfo));
+
+   pi_buf.data = NULL;
+   pi_buf.used = 0;
+   pi_buf.allocated = 0;
+   r = pack_CalendarAppInfo(&ai, &pi_buf);
+   memcpy(ai_raw, pi_buf.data, len);
+   if (r <= 0) {
+      jp_logf(JP_LOG_DEBUG, "pack_CalendarAppInfo failed %s %d\n", __FILE__, __LINE__);
       return EXIT_FAILURE;
    }
 
@@ -2897,6 +2953,10 @@ int jp_sync(struct my_sync_info *sync_info)
    get_pref(PREF_ADDRESS_VERSION, &address_version, NULL);
    get_pref(PREF_TODO_VERSION, &todo_version, NULL);
    get_pref(PREF_MEMO_VERSION, &memo_version, NULL);
+   if (datebook_version==0) {
+      unpack_cai_from_buf[0]=unpack_datebook_cai_from_ai;
+      pack_cai_into_buf[0]=pack_datebook_cai_into_ai;
+   }
    if (datebook_version==1) {
       unpack_cai_from_buf[0]=unpack_calendar_cai_from_ai;
       pack_cai_into_buf[0]=pack_calendar_cai_into_ai;

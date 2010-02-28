@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.178 2009/09/10 06:01:55 rikster5 Exp $ */
+/* $Id: utils.c,v 1.179 2010/02/28 18:58:25 judd Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -79,7 +79,7 @@ static void cb_quit(GtkWidget *widget, gpointer data);
 static void cb_today(GtkWidget *widget, gpointer data);
 int write_to_next_id(unsigned int unique_id);
 int write_to_next_id_open(FILE *pc_out, unsigned int unique_id);
-int forward_backward_in_appt_time(const struct Appointment *appt,
+int forward_backward_in_ce_time(const struct CalendarEvent *ce,
 				  struct tm *t,
 				  int forward_or_backward);
 static int str_to_iv_str(char *dest, int destsz, char *src, int isical);
@@ -188,14 +188,20 @@ int add_years_to_date(struct tm *date, int n)
  * (i.e. an anniversary) and then if the last 4 characters look like a
  * year. If so then it appends a "number of years" to the description.
  * This is handy for viewing ages on birthdays etc.  */
+/* Either a or ce can be passed as NULL */
 void append_anni_years(char *desc, int max, struct tm *date,
-		       struct Appointment *appt)
+		       struct Appointment *a, struct CalendarEvent *ce)
 {
    int len;
    int year;
    /* Only append the years if this is a yearly repeating type (i.e. an
     * anniversary) */
-   if (appt->repeatType != repeatYearly)
+   if ((!a) && (!ce)) {
+      return;
+   }
+   if ((a) && (a->repeatType != repeatYearly))
+      return;
+   if ((ce) && (ce->repeatType != repeatYearly))
       return;
 
    /* Only display this if the user option is enabled */
@@ -904,6 +910,8 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
    PC3RecordHeader header;
    struct Appointment *appt;
    MyAppointment *mappt;
+   struct CalendarEvent *ce;
+   MyCalendarEvent *mce;
    struct Address *addr;
    MyAddress *maddr;
    struct Contact *cont;
@@ -921,7 +929,6 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
    long ivalue;
 #endif
    long memo_version;
-   long datebook_version;
    long char_set;
 
    jp_logf(JP_LOG_DEBUG, "delete_pc_record(%d, %d)\n", app_type, flag);
@@ -934,6 +941,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 
    /* to keep the compiler happy with -Wall*/
    mappt=NULL;
+   mce=NULL;
    maddr=NULL;
    mcont=NULL;
    mtodo=NULL;
@@ -944,12 +952,14 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       record_type = mappt->rt;
       unique_id = mappt->unique_id;
       attrib = mappt->attrib;
-      get_pref(PREF_DATEBOOK_VERSION, &datebook_version, NULL);
-      if (datebook_version) {
-	 strcpy(filename, "CalendarDB-PDat.pc3");
-      } else {
-         strcpy(filename, "DatebookDB.pc3");
-      }
+      strcpy(filename, "DatebookDB.pc3");
+      break;
+    case CALENDAR:
+      mce = (MyCalendarEvent *) VP;
+      record_type = mce->rt;
+      unique_id = mce->unique_id;
+      attrib = mce->attrib;
+      strcpy(filename, "CalendarDB-PDat.pc3");
       break;
     case ADDRESS:
       maddr = (MyAddress *) VP;
@@ -1073,9 +1083,16 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       switch (app_type) {
        case DATEBOOK:
 	 appt=&mappt->appt;
-	 if (jp_pack_Appointment(appt, RecordBuffer, datebook_v1) == -1) {
+	 if (pack_Appointment(appt, RecordBuffer, datebook_v1) == -1) {
 	    PRINT_FILE_LINE;
 	    jp_logf(JP_LOG_WARN, "pack_Appointment %s\n", _("error"));
+	 }
+	 break;
+       case CALENDAR:
+	 ce=&mce->ce;
+	 if (pack_CalendarEvent(ce, RecordBuffer, calendar_v1) == -1) {
+	    PRINT_FILE_LINE;
+	    jp_logf(JP_LOG_WARN, "pack_CalendarEvent %s\n", _("error"));
 	 }
 	 break;
        case ADDRESS:
@@ -1345,14 +1362,14 @@ int find_next_offset(mem_rec_header *mem_rh, long fpos,
 }
 
 /* Finds next repeating event occurrence closest to srch_start_tm */
-int find_next_rpt_event(struct Appointment *appt,
+int find_next_rpt_event(struct CalendarEvent *ce,
 			struct tm *srch_start_tm,
                         struct tm *next_tm)
 {
    struct tm prev_tm;
    int prev_found, next_found;
 
-   find_prev_next(appt,
+   find_prev_next(ce,
                   0,
                   srch_start_tm,
                   srch_start_tm,
@@ -1378,7 +1395,7 @@ int find_next_rpt_event(struct Appointment *appt,
  *   Alternatively the C math functions such as floor could be used but there 
  *   seems little point in invoking such overhead.
  */
-int find_prev_next(struct Appointment *appt,
+int find_prev_next(struct CalendarEvent *ce,
 			  time_t adv,
 			  struct tm *date1,
 			  struct tm *date2,
@@ -1418,13 +1435,13 @@ int find_prev_next(struct Appointment *appt,
    memset(tm_prev, 0, sizeof(*tm_prev));
    memset(tm_next, 0, sizeof(*tm_next));
 
-   /* Initialize search time with appt start time */
+   /* Initialize search time with ce start time */
    memset(&t, 0, sizeof(t));
-   t.tm_year=appt->begin.tm_year;
-   t.tm_mon=appt->begin.tm_mon;
-   t.tm_mday=appt->begin.tm_mday;
-   t.tm_hour=appt->begin.tm_hour;
-   t.tm_min=appt->begin.tm_min;
+   t.tm_year=ce->begin.tm_year;
+   t.tm_mon=ce->begin.tm_mon;
+   t.tm_mday=ce->begin.tm_mday;
+   t.tm_hour=ce->begin.tm_hour;
+   t.tm_min=ce->begin.tm_min;
    t.tm_isdst=-1;
    mktime(&t);
 #ifdef ALARMS_DEBUG
@@ -1433,19 +1450,19 @@ int find_prev_next(struct Appointment *appt,
 #endif
 
    /* Handle non-repeating appointments */        
-   if (appt->repeatType == repeatNone) {
+   if (ce->repeatType == repeatNone) {
 #ifdef ALARMS_DEBUG
       printf("fpn: repeatNone\n");
 #endif
-      t_alarm=mktime_dst_adj(&(appt->begin)) - adv;
+      t_alarm=mktime_dst_adj(&(ce->begin)) - adv;
       if ((t_alarm <= t2) && (t_alarm >= t1)) {
-	 memcpy(tm_prev, &(appt->begin), sizeof(struct tm));
+	 memcpy(tm_prev, &(ce->begin), sizeof(struct tm));
 	 *prev_found=1;
 #ifdef ALARMS_DEBUG
 	 printf("fpn: prev_found none\n");
 #endif
       } else if (t_alarm > t2) {
-	 memcpy(tm_next, &(appt->begin), sizeof(struct tm));
+	 memcpy(tm_next, &(ce->begin), sizeof(struct tm));
 	 *next_found=1;
 #ifdef ALARMS_DEBUG
 	 printf("fpn: next_found none\n");
@@ -1455,7 +1472,7 @@ int find_prev_next(struct Appointment *appt,
    }
 
    /* Optimize initial start position of search */ 
-   switch (appt->repeatType) {
+   switch (ce->repeatType) {
     case repeatNone:
       /* Already handled.  Here only to shut up compiler warnings */
       break;
@@ -1463,7 +1480,7 @@ int find_prev_next(struct Appointment *appt,
 #ifdef ALARMS_DEBUG
       printf("fpn: repeatDaily\n");
 #endif
-      freq = appt->repeatFrequency;
+      freq = ce->repeatFrequency;
       t_offset = freq * DAY_IN_SECS;
       t_alarm = mktime_dst_adj(&t);
       /* Jump to closest current date if appt. started in the past */
@@ -1481,14 +1498,14 @@ int find_prev_next(struct Appointment *appt,
 #ifdef ALARMS_DEBUG
       printf("fpn: repeatWeekly\n");
 #endif
-      freq = appt->repeatFrequency;
-      begin_days = dateToDays(&(appt->begin));
+      freq = ce->repeatFrequency;
+      begin_days = dateToDays(&(ce->begin));
       date1_days = dateToDays(date1);
       /* Jump to closest current date if appt. started in the past */
       if (date1_days > begin_days) {
 #ifdef ALARMS_DEBUG
          printf("fpn: begin_days %d date1_days %d\n", begin_days, date1_days);
-         printf("fpn: date1->tm_wday %d appt->begin.tm_wday %d\n", date1->tm_wday, appt->begin.tm_wday);
+         printf("fpn: date1->tm_wday %d appt->begin.tm_wday %d\n", date1->tm_wday, ce->begin.tm_wday);
 #endif
          /* Jump by appropriate number of weeks */
          offset = date1_days - begin_days;
@@ -1503,7 +1520,7 @@ int find_prev_next(struct Appointment *appt,
       /* Within the week find which day is a repeat */
       found=0;
       for (count=0, i=t.tm_wday; i>=0; i--, count++) {
-         if (appt->repeatDays[i]) {
+         if (ce->repeatDays[i]) {
             sub_days_from_date(&t, count);
             found=1;
             break;
@@ -1511,7 +1528,7 @@ int find_prev_next(struct Appointment *appt,
       }
       if (!found) {
          for (count=0, i=t.tm_wday; i<7; i++, count++) {
-            if (appt->repeatDays[i]) {
+            if (ce->repeatDays[i]) {
                add_days_to_date(&t, count);
                found=1;
                break;
@@ -1528,19 +1545,19 @@ int find_prev_next(struct Appointment *appt,
       printf("fpn: repeatMonthlyByDay\n");
 #endif
       /* Jump to closest current date if appt. started in the past */
-      if ((date1->tm_year > appt->begin.tm_year) ||
-          (date1->tm_mon  > appt->begin.tm_mon)) {
+      if ((date1->tm_year > ce->begin.tm_year) ||
+          (date1->tm_mon  > ce->begin.tm_mon)) {
          /* First, adjust month */
-         freq = appt->repeatFrequency;
-         offset = ((date1->tm_year - appt->begin.tm_year)*12) -
-                    appt->begin.tm_mon +
+         freq = ce->repeatFrequency;
+         offset = ((date1->tm_year - ce->begin.tm_year)*12) -
+                    ce->begin.tm_mon +
                     date1->tm_mon;
          offset = (offset/freq)*freq;
 	 add_months_to_date(&t, offset);
 
          /* Second, adjust to correct day in new month */
 	 get_month_info(t.tm_mon, 1, t.tm_year, &fdom, &ndim);
-	 t.tm_mday=((appt->repeatDay+7-fdom)%7) - ((appt->repeatDay)%7) + appt->repeatDay + 1;
+	 t.tm_mday=((ce->repeatDay+7-fdom)%7) - ((ce->repeatDay)%7) + ce->repeatDay + 1;
 #ifdef ALARMS_DEBUG
          printf("fpn: months offset = %d\n", offset);
          printf("fpn: %02d/01/%02d, fdom=%d\n", t.tm_mon+1, t.tm_year+1900, fdom);
@@ -1560,11 +1577,11 @@ int find_prev_next(struct Appointment *appt,
       printf("fpn: repeatMonthlyByDate\n");
 #endif
       /* Jump to closest current date if appt. started in the past */
-      if ((date1->tm_year > appt->begin.tm_year) ||
-          (date1->tm_mon  > appt->begin.tm_mon)) {
-         freq = appt->repeatFrequency;
-         offset = ((date1->tm_year - appt->begin.tm_year)*12) -
-                    appt->begin.tm_mon +
+      if ((date1->tm_year > ce->begin.tm_year) ||
+          (date1->tm_mon  > ce->begin.tm_mon)) {
+         freq = ce->repeatFrequency;
+         offset = ((date1->tm_year - ce->begin.tm_year)*12) -
+                    ce->begin.tm_mon +
                     date1->tm_mon;
          offset = (offset/freq)*freq;
 #ifdef ALARMS_DEBUG
@@ -1578,11 +1595,11 @@ int find_prev_next(struct Appointment *appt,
       printf("fpn: repeatYearly\n");
 #endif
       /* Jump to closest current date if appt. started in the past */
-      if (date1->tm_year > appt->begin.tm_year) {
-         freq = appt->repeatFrequency;
-         offset = ((date1->tm_year - appt->begin.tm_year)/freq)*freq;
+      if (date1->tm_year > ce->begin.tm_year) {
+         freq = ce->repeatFrequency;
+         offset = ((date1->tm_year - ce->begin.tm_year)/freq)*freq;
 #ifdef ALARMS_DEBUG
-         printf("fpn: (%d - %d)%%%d\n", date1->tm_year, appt->begin.tm_year, freq);
+         printf("fpn: (%d - %d)%%%d\n", date1->tm_year, ce->begin.tm_year, freq);
          printf("fpn: years offset = %d\n", offset);
 #endif
 	 add_years_to_date(&t, offset);
@@ -1597,8 +1614,8 @@ int find_prev_next(struct Appointment *appt,
       safety_counter++;
       if (safety_counter > 3000) {
 	 jp_logf(JP_LOG_STDOUT|JP_LOG_FILE, "find_prev_next(): %s\n", _("infinite loop, breaking\n"));
-	 if (appt->description) {
-	    jp_logf(JP_LOG_STDOUT|JP_LOG_FILE, "desc=[%s]\n", appt->description);
+	 if (ce->description) {
+	    jp_logf(JP_LOG_STDOUT|JP_LOG_FILE, "desc=[%s]\n", ce->description);
 	 }
 	 break;
       }
@@ -1612,10 +1629,10 @@ int find_prev_next(struct Appointment *appt,
 
       /* Check for exceptions in repeat appointments */
       found_exception=0;
-      for (i=0; i<appt->exceptions; i++) {
-	 if ((t.tm_mday==appt->exception[i].tm_mday) &&
-	     (t.tm_mon==appt->exception[i].tm_mon) &&
-	     (t.tm_year==appt->exception[i].tm_year)
+      for (i=0; i<ce->exceptions; i++) {
+	 if ((t.tm_mday==ce->exception[i].tm_mday) &&
+	     (t.tm_mon==ce->exception[i].tm_mon) &&
+	     (t.tm_year==ce->exception[i].tm_year)
 	     ) {
 	    found_exception=1;
 	    break;
@@ -1623,17 +1640,17 @@ int find_prev_next(struct Appointment *appt,
       }
       if (found_exception) {
 	 if (forward) {
-	    forward_backward_in_appt_time(appt, &t, 1);
+	    forward_backward_in_ce_time(ce, &t, 1);
 	    continue;
 	 }
 	 if (backward) {
-	    forward_backward_in_appt_time(appt, &t, -1);
+	    forward_backward_in_ce_time(ce, &t, -1);
 	    continue;
 	 }
       }
 
       /* Check that proposed alarm is not before the appt begin date */
-      t_begin = mktime_dst_adj(&(appt->begin));
+      t_begin = mktime_dst_adj(&(ce->begin));
       if (t_temp < t_begin) {
 #ifdef ALARMS_DEBUG
 	 printf("fpn: before begin date\n");
@@ -1642,8 +1659,8 @@ int find_prev_next(struct Appointment *appt,
          kill_update_next = 1;
       }
       /* Check that proposed alarm is not past appt end date */
-      if (!(appt->repeatForever)) {
-	 t_end = mktime_dst_adj(&(appt->repeatEnd));
+      if (!(ce->repeatForever)) {
+	 t_end = mktime_dst_adj(&(ce->repeatEnd));
 	 if (t_temp >= t_end) {
 #ifdef ALARMS_DEBUG
 	    printf("fpn: after end date\n");
@@ -1675,11 +1692,11 @@ int find_prev_next(struct Appointment *appt,
       /* Change &t to the next/previous occurrence of the appointment 
        * and try search again */
       if (forward) {
-	 forward_backward_in_appt_time(appt, &t, 1);
+	 forward_backward_in_ce_time(ce, &t, 1);
 	 continue;
       }
       if (backward) {
-	 forward_backward_in_appt_time(appt, &t, -1);
+	 forward_backward_in_ce_time(ce, &t, -1);
 	 continue;
       }
 
@@ -1696,26 +1713,26 @@ int find_prev_next(struct Appointment *appt,
  * t is an in/out parameter
  * forward_or_backward should be 1 for forward or -1 for backward
  */
-int forward_backward_in_appt_time(const struct Appointment *appt,
-				  struct tm *t,
-				  int forward_or_backward)
+int forward_backward_in_ce_time(const struct CalendarEvent *ce,
+				struct tm *t,
+				int forward_or_backward)
 {
    int count, dow, freq, fdom, ndim;
 
-   freq = appt->repeatFrequency;
+   freq = ce->repeatFrequency;
 
    /* Go forward in time */
    if (forward_or_backward==1) {
-      switch (appt->repeatType) {
-       case repeatNone:
+      switch (ce->repeatType) {
+       case calendarRepeatNone:
 #ifdef ALARMS_DEBUG
          printf("fbiat: repeatNone encountered.  This should never happen!\n");
 #endif
 	 break;
-       case repeatDaily:
+       case calendarRepeatDaily:
          add_days_to_date(t, freq);
 	 break;
-       case repeatWeekly:
+       case calendarRepeatWeekly:
 	 for (count=0, dow=t->tm_wday; count<14; count++) {
 	    add_days_to_date(t, 1);
 #ifdef ALARMS_DEBUG
@@ -1729,7 +1746,7 @@ int forward_backward_in_appt_time(const struct Appointment *appt,
 	       add_days_to_date(t, (freq-1)*7);
 	       dow=0;
 	    }
-	    if (appt->repeatDays[dow]) {
+	    if (ce->repeatDays[dow]) {
 #ifdef ALARMS_DEBUG
 	       printf("fbiat: repeatDay[dow] dow=%d\n", dow);
 #endif
@@ -1737,20 +1754,20 @@ int forward_backward_in_appt_time(const struct Appointment *appt,
 	    }
 	 }
 	 break;
-       case repeatMonthlyByDay:
+       case calendarRepeatMonthlyByDay:
 	 add_months_to_date(t, freq);
 	 get_month_info(t->tm_mon, 1, t->tm_year, &fdom, &ndim);
-	 t->tm_mday=((appt->repeatDay+7-fdom)%7) - ((appt->repeatDay)%7) + appt->repeatDay + 1;
+	 t->tm_mday=((ce->repeatDay+7-fdom)%7) - ((ce->repeatDay)%7) + ce->repeatDay + 1;
 	 if (t->tm_mday > ndim-1) {
 	    t->tm_mday -= 7;
 	 }
 	 break;
-       case repeatMonthlyByDate:
-	 t->tm_mday=appt->begin.tm_mday;
+       case calendarRepeatMonthlyByDate:
+	 t->tm_mday=ce->begin.tm_mday;
 	 add_months_to_date(t, freq);
 	 break;
-       case repeatYearly:
-	 t->tm_mday=appt->begin.tm_mday;
+       case calendarRepeatYearly:
+	 t->tm_mday=ce->begin.tm_mday;
 	 add_years_to_date(t, freq);
 	 break;
       } /* switch on repeatType */
@@ -1760,16 +1777,16 @@ int forward_backward_in_appt_time(const struct Appointment *appt,
 
    /* Go back in time */
    if (forward_or_backward==-1) {
-      switch (appt->repeatType) {
-       case repeatNone:
+      switch (ce->repeatType) {
+       case calendarRepeatNone:
 #ifdef ALARMS_DEBUG
          printf("fbiat: repeatNone encountered.  This should never happen!\n");
 #endif
 	 break;
-       case repeatDaily:
+       case calendarRepeatDaily:
          sub_days_from_date(t, freq);
 	 break;
-       case repeatWeekly:
+       case calendarRepeatWeekly:
 	 for (count=0, dow=t->tm_wday; count<14; count++) {
 	    sub_days_from_date(t, 1);
 #ifdef ALARMS_DEBUG
@@ -1783,7 +1800,7 @@ int forward_backward_in_appt_time(const struct Appointment *appt,
 	       sub_days_from_date(t, (freq-1)*7);
 	       dow=6;
 	    }
-	    if (appt->repeatDays[dow]) {
+	    if (ce->repeatDays[dow]) {
 #ifdef ALARMS_DEBUG
 	       printf("fbiat: repeatDay[dow] dow=%d\n", dow);
 #endif
@@ -1791,20 +1808,20 @@ int forward_backward_in_appt_time(const struct Appointment *appt,
 	    }
 	 }
 	 break;
-       case repeatMonthlyByDay:
+       case calendarRepeatMonthlyByDay:
 	 sub_months_from_date(t, freq);
 	 get_month_info(t->tm_mon, 1, t->tm_year, &fdom, &ndim);
-	 t->tm_mday=((appt->repeatDay+7-fdom)%7) - ((appt->repeatDay)%7) + appt->repeatDay + 1;
+	 t->tm_mday=((ce->repeatDay+7-fdom)%7) - ((ce->repeatDay)%7) + ce->repeatDay + 1;
 	 if (t->tm_mday > ndim-1) {
 	    t->tm_mday -= 7;
 	 }
 	 break;
-       case repeatMonthlyByDate:
-	 t->tm_mday=appt->begin.tm_mday;
+       case calendarRepeatMonthlyByDate:
+	 t->tm_mday=ce->begin.tm_mday;
 	 sub_months_from_date(t, freq);
 	 break;
-       case repeatYearly:
-	 t->tm_mday=appt->begin.tm_mday;
+       case calendarRepeatYearly:
+	 t->tm_mday=ce->begin.tm_mday;
 	 sub_years_from_date(t, freq);
 	 break;
       } /* switch on repeatType */
@@ -3396,7 +3413,9 @@ int undelete_pc_record(AppType app_type, void *VP, int flag)
 {
    PC3RecordHeader header;
    MyAppointment *mappt;
+   MyCalendarEvent *mce;
    MyAddress *maddr;
+   MyContact *mcont;
    MyToDo *mtodo;
    MyMemo *mmemo;
    unsigned int unique_id;
@@ -3428,8 +3447,9 @@ int undelete_pc_record(AppType app_type, void *VP, int flag)
    
    /* to keep the compiler happy with -Wall*/
    mappt = NULL;
+   mce = NULL;
    maddr = NULL;
-   mtodo = NULL;
+   mcont = NULL;
    mmemo = NULL;
    switch (app_type) {
     case DATEBOOK:
@@ -3437,9 +3457,19 @@ int undelete_pc_record(AppType app_type, void *VP, int flag)
       unique_id = mappt->unique_id;
       strcpy(filename, dbname[0]);
       break;
+    case CALENDAR:
+      mce = (MyCalendarEvent *) VP;
+      unique_id = mce->unique_id;
+      strcpy(filename, dbname[0]);
+      break;
     case ADDRESS:
       maddr = (MyAddress *) VP;
       unique_id = maddr->unique_id;
+      strcpy(filename, dbname[1]);
+      break;
+    case CONTACTS:
+      mcont = (MyContact *) VP;
+      unique_id = mcont->unique_id;
       strcpy(filename, dbname[1]);
       break;
     case TODO:

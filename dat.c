@@ -1,4 +1,4 @@
-/* $Id: dat.c,v 1.21 2008/06/19 04:12:07 rikster5 Exp $ */
+/* $Id: dat.c,v 1.22 2010/02/28 18:52:09 judd Exp $ */
 
 /*******************************************************************************
  * dat.c
@@ -214,7 +214,7 @@ int get_repeat(FILE *in, struct Appointment *appt)
 
    if (s==0x0000) {
       if (appt) {
-	 appt->repeatType=repeatNone;
+	 appt->repeatType=calendarRepeatNone;
       }
       return EXIT_SUCCESS;
    }

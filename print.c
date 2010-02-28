@@ -1,4 +1,4 @@
-/* $Id: print.c,v 1.45 2009/09/19 20:57:27 rikster5 Exp $ */
+/* $Id: print.c,v 1.46 2010/02/28 19:00:07 judd Exp $ */
 
 /*******************************************************************************
  * print.c
@@ -32,6 +32,7 @@
 #include "print_headers.h"
 #include "print_logo.h"
 #include "datebook.h"
+#include "calendar.h"
 #include "address.h"
 #include "todo.h"
 #include "sync.h"
@@ -55,7 +56,7 @@
 static FILE *out;
 static int first_hour, first_min, last_hour, last_min;
 extern int datebk_category;
-int fill_in(struct tm *date, AppointmentList *a_list);
+int fill_in(struct tm *date, CalendarEventList *a_list);
 void ps_strncat(char *dest, char *src, int n);
 
 char *PaperSizes[] = { "Letter", "Legal", "Statement", "Tabloid", "Ledger",
@@ -155,7 +156,7 @@ int header(void)
    return EXIT_SUCCESS;
 }
 
-int print_dayview(struct tm *date, AppointmentList *a_list)
+int print_dayview(struct tm *date, CalendarEventList *ce_list)
 {
    char str[80];
    char datef[80];
@@ -200,7 +201,7 @@ int print_dayview(struct tm *date, AppointmentList *a_list)
    print_logo(out, 40, 90, 0.35);
 
    /* Put the appointments on the dayview calendar */
-   fill_in(date, a_list);
+   fill_in(date, ce_list);
 
    fprintf(out, "showpage\n");
    fprintf(out, "%%%%EOF\n");
@@ -212,9 +213,9 @@ int print_dayview(struct tm *date, AppointmentList *a_list)
    return EXIT_SUCCESS;
 }
 
-int fill_in(struct tm *date, AppointmentList *a_list)
+int fill_in(struct tm *date, CalendarEventList *ce_list)
 {
-   AppointmentList *temp_al;
+   CalendarEventList *temp_cel;
    int i;
    int hours[24];
    int defaults1=0, defaults2=0;
@@ -244,11 +245,11 @@ int fill_in(struct tm *date, AppointmentList *a_list)
       } else {
 	 clip_to_box(5.0, 0.5, 8.0, 9.5);
       }
-      for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
-	 if (temp_al->mappt.appt.description == NULL) {
+      for (temp_cel = ce_list; temp_cel; temp_cel=temp_cel->next) {
+	 if (temp_cel->mce.ce.description == NULL) {
 	    continue;
 	 }
-	 if (temp_al->mappt.appt.event) {
+	 if (temp_cel->mce.ce.event) {
 	    strcpy(str, " ");
 	    if (!am) {
 	       continue;
@@ -257,7 +258,7 @@ int fill_in(struct tm *date, AppointmentList *a_list)
 	    y=default_y - defaults1 * step;
 	    defaults1++;
 	 } else {
-	    hour24 = temp_al->mappt.appt.begin.tm_hour;
+	    hour24 = temp_cel->mce.ce.begin.tm_hour;
 	    if ((hour24 > 11) && (am)) {
 	       continue;
 	    }
@@ -266,7 +267,7 @@ int fill_in(struct tm *date, AppointmentList *a_list)
 	    }
 
 	    get_pref_time_no_secs(datef);
-	    strftime(str, sizeof(str), datef, &temp_al->mappt.appt.begin);
+	    strftime(str, sizeof(str), datef, &temp_cel->mce.ce.begin);
 
 	    if (hour24 > 11) {
 	       x=indent2;
@@ -286,9 +287,9 @@ int fill_in(struct tm *date, AppointmentList *a_list)
 	       }
 	    }
 	 }
-	 if (temp_al->mappt.appt.description) {
+	 if (temp_cel->mce.ce.description) {
 	    strcat(str, " ");
-	    strncat(str, temp_al->mappt.appt.description, sizeof(str)-strlen(str)-2);
+	    strncat(str, temp_cel->mce.ce.description, sizeof(str)-strlen(str)-2);
 	    str[128]='\0';
             /* FIXME: Add location in parentheses (loc) as the Palm does.
              * We would need to check strlen, etc., before adding */
@@ -307,22 +308,22 @@ int fill_in(struct tm *date, AppointmentList *a_list)
 
 int print_days_appts(struct tm *date)
 {
-   AppointmentList *a_list;
+   CalendarEventList *ce_list;
 
    out = print_open();
    if (!out) {
       return EXIT_FAILURE;
    }
 
-   a_list = NULL;
+   ce_list = NULL;
 
-   get_days_appointments2(&a_list, date, 2, 2, 2, NULL);
+   get_days_calendar_events2(&ce_list, date, 2, 2, 2, CATEGORY_ALL, NULL);
 
-   print_dayview(date, a_list);
+   print_dayview(date, ce_list);
 
    print_close(out);
 
-   free_AppointmentList(&a_list);
+   free_CalendarEventList(&ce_list);
 
    return EXIT_SUCCESS;
 }
@@ -406,8 +407,8 @@ char *MonthNames[] = {
 
 int print_months_appts(struct tm *date_in, PaperSize paper_size)
 {
-   AppointmentList *a_list;
-   AppointmentList *temp_al;
+   CalendarEventList *ce_list;
+   CalendarEventList *temp_cel;
    struct tm date;
    char desc[100];
    time_t ltime;
@@ -469,13 +470,13 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
    /*------------------------------------------------------------------
     * Extract the appointments
     *------------------------------------------------------------------*/
-   a_list = NULL;
+   ce_list = NULL;
    memcpy(&date, date_in, sizeof(struct tm));
    /* Get all of the appointments */
 
-   get_days_appointments2(&a_list, NULL, 2, 2, 2, NULL);
+   get_days_calendar_events2(&ce_list, NULL, 2, 2, 2, CATEGORY_ALL, NULL);
    get_month_info(date.tm_mon, 1, date.tm_year, &dow, &ndim);
-   weed_datebook_list(&a_list, date.tm_mon, date.tm_year, 0, &mask);
+   weed_calendar_event_list(&ce_list, date.tm_mon, date.tm_year, 0, &mask);
 
    /*------------------------------------------------------------------
     * Loop through the days in the month, printing appointments
@@ -509,10 +510,10 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
 	      "%%Stuff for day %2d being printed\n", date.tm_mday);
       fprintf(out, "NextDay\n");
 
-      for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
+      for (temp_cel = ce_list; temp_cel; temp_cel=temp_cel->next) {
 #ifdef ENABLE_DATEBK
 	 if (use_db3_tags) {
-	    ret = db3_parse_tag(temp_al->mappt.appt.note, &db3_type, &db4);
+	    ret = db3_parse_tag(temp_cel->mce.ce.note, &db3_type, &db4);
 	    /* jp_logf(JP_LOG_DEBUG, "category = 0x%x\n", db4.category); */
 	    cat_bit=1<<db4.category;
 	    if (!(cat_bit & datebk_category)) {
@@ -521,20 +522,20 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
 	    }
 	 }
 #endif
-	 if (isApptOnDate(&(temp_al->mappt.appt), &date)) {
+	 if (calendar_isApptOnDate(&(temp_cel->mce.ce), &date)) {
 	    char tmp[20];
 	    char datef1[20];
 	    char datef2[20];
 	    tmp[0]='\0';
-	    if ( ! temp_al->mappt.appt.event) {
+	    if ( ! temp_cel->mce.ce.event) {
 	       get_pref_time_no_secs(datef1);
 	       g_snprintf(datef2, sizeof(datef2), "(%s )", datef1);
-	       strftime(tmp, sizeof(tmp), datef2, &(temp_al->mappt.appt.begin));
+	       strftime(tmp, sizeof(tmp), datef2, &(temp_cel->mce.ce.begin));
 	       tmp[19]='\0';
 	    }
 	    desc[0]='\0';
-	    if (temp_al->mappt.appt.description) {
-	       ps_strncat(desc, temp_al->mappt.appt.description, 100);
+	    if (temp_cel->mce.ce.description) {
+	       ps_strncat(desc, temp_cel->mce.ce.description, 100);
 	       desc[sizeof(desc)-1]='\0';
                /* FIXME: Add location in parentheses (loc) as the Palm does.
                 * We would need to check strlen, etc., before adding */
@@ -562,7 +563,7 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
 
    /*------------------------------------------------------------------*/
 
-   free_AppointmentList(&a_list);
+   free_CalendarEventList(&ce_list);
 
    fprintf(out, "grestore\n");
    print_logo(out, 20, 30, 0.35);
@@ -593,10 +594,10 @@ void reset_first_last(void)
  * check_first_last	Routine to track max/min appointment times
  *----------------------------------------------------------------------*/
 
-void check_first_last(AppointmentList *al)
+void check_first_last(CalendarEventList *cel)
 {
    struct tm *ApptTime;
-   ApptTime = &(al->mappt.appt.begin);
+   ApptTime = &(cel->mce.ce.begin);
    if (ApptTime->tm_hour == first_hour) {
       if (ApptTime->tm_min < first_min) first_min = ApptTime->tm_min;
    }
@@ -605,7 +606,7 @@ void check_first_last(AppointmentList *al)
       first_min  = ApptTime->tm_min;
    }
 
-   ApptTime = &(al->mappt.appt.end);
+   ApptTime = &(cel->mce.ce.end);
    if (ApptTime->tm_hour == last_hour) {
       if (ApptTime->tm_min > last_min) last_min = ApptTime->tm_min;
    } else if (ApptTime->tm_hour > last_hour) {
@@ -622,7 +623,7 @@ void check_first_last(AppointmentList *al)
 
 int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
 {
-   AppointmentList *a_list, *temp_al;
+   CalendarEventList *ce_list, *temp_cel;
    struct tm date;
    struct tm *today_date;
    char desc[256], short_date[32];
@@ -686,23 +687,23 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
    /*------------------------------------------------------------------
     * Run through the appointments, looking for earliest and latest
     *------------------------------------------------------------------*/
-   a_list = NULL;
-   get_days_appointments2(&a_list, NULL, 2, 2, 2, NULL);
+   ce_list = NULL;
+   get_days_calendar_events2(&ce_list, NULL, 2, 2, 2, CATEGORY_ALL, NULL);
    reset_first_last();
 
    memcpy(&date, date_in, sizeof(struct tm));
    for (n = 0; n < 7; n++, add_days_to_date(&date, 1)) {
-      for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
+      for (temp_cel = ce_list; temp_cel; temp_cel=temp_cel->next) {
 #ifdef ENABLE_DATEBK
 	 if (use_db3_tags) {
-	    ret = db3_parse_tag(temp_al->mappt.appt.note, &db3_type, &db4);
+	    ret = db3_parse_tag(temp_cel->mce.ce.note, &db3_type, &db4);
 	    cat_bit=1<<db4.category;
 	    if (!(cat_bit & datebk_category)) continue;
 	 }
 #endif
-	 if (isApptOnDate(&(temp_al->mappt.appt), &date))
-	   if ( ! temp_al->mappt.appt.event)
-	     check_first_last(temp_al);
+	 if (calendar_isApptOnDate(&(temp_cel->mce.ce), &date))
+	   if ( ! temp_cel->mce.ce.event)
+	     check_first_last(temp_cel);
       }
    }
    if (last_min > 0) last_hour++;
@@ -727,10 +728,10 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
    /*------------------------------------------------------------------
     * Run through the appointments, printing them out
     *------------------------------------------------------------------*/
-   a_list = NULL;
+   ce_list = NULL;
 
    /* Get all of the appointments */
-   get_days_appointments2(&a_list, NULL, 2, 2, 2, NULL);
+   get_days_calendar_events2(&ce_list, NULL, 2, 2, 2, CATEGORY_ALL, NULL);
 
    /* iterate through seven days */
    memcpy(&date, date_in, sizeof(struct tm));
@@ -739,10 +740,10 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
       strftime(short_date, sizeof(short_date), "%a, %d %b, %Y", &date);
       fprintf(out, "%d startday\n(%s) dateline\n", n, short_date);
 
-      for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
+      for (temp_cel = ce_list; temp_cel; temp_cel=temp_cel->next) {
 #ifdef ENABLE_DATEBK
 	 if (use_db3_tags) {
-	    ret = db3_parse_tag(temp_al->mappt.appt.note, &db3_type, &db4);
+	    ret = db3_parse_tag(temp_cel->mce.ce.note, &db3_type, &db4);
 	    jp_logf(JP_LOG_DEBUG, "category = 0x%x\n", db4.category);
 	    cat_bit=1<<db4.category;
 	    if (!(cat_bit & datebk_category)) {
@@ -751,29 +752,29 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
 	    }
 	 }
 #endif
-	 if (isApptOnDate(&(temp_al->mappt.appt), &date)) {
+	 if (calendar_isApptOnDate(&(temp_cel->mce.ce), &date)) {
 	    memset(desc, 0, sizeof(desc));
 	    memset(short_date, 0, sizeof(short_date));
 
-	    if ( ! temp_al->mappt.appt.event)
+	    if ( ! temp_cel->mce.ce.event)
 	      {
 		 char t1[6], t2[6], ht[3], mt[3];
 		 int j, m;
 
-		 strftime(ht, sizeof(ht), "%H", &(temp_al->mappt.appt.begin));
-		 strftime(mt, sizeof(mt), "%M", &(temp_al->mappt.appt.begin));
+		 strftime(ht, sizeof(ht), "%H", &(temp_cel->mce.ce.begin));
+		 strftime(mt, sizeof(mt), "%M", &(temp_cel->mce.ce.begin));
 		 m = atoi(mt);
 		 snprintf(t1, sizeof(t1), "%s.%02d", ht, (int)((m * 100.)/60));
 
-		 strftime(ht, sizeof(ht), "%H", &(temp_al->mappt.appt.end));
-		 strftime(mt, sizeof(mt), "%M", &(temp_al->mappt.appt.end));
+		 strftime(ht, sizeof(ht), "%H", &(temp_cel->mce.ce.end));
+		 strftime(mt, sizeof(mt), "%M", &(temp_cel->mce.ce.end));
 		 m = atoi(mt);
 		 snprintf(t2, sizeof(t2), "%s.%02d", ht, (int)((m * 100.)/60));
 		 sprintf(short_date, "%s %s ", t1, t2);
 		 for (j=0; j<30;j++) short_date[j] =tolower(short_date[j]);
 	      }
-	    if (temp_al->mappt.appt.description) {
-	       ps_strncat(desc, temp_al->mappt.appt.description, 250);
+	    if (temp_cel->mce.ce.description) {
+	       ps_strncat(desc, temp_cel->mce.ce.description, 250);
                /* FIXME: Add location in parentheses (loc) as the Palm does.
                 * We would need to check strlen, etc., before adding */
 	       remove_cr_lfs(desc);
@@ -782,7 +783,7 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
 	 }
       }
    }
-   free_AppointmentList(&a_list);
+   free_CalendarEventList(&ce_list);
    fprintf(out, "\nfinishprinting\n");
    fprintf(out, "%%%%EOF\n");
    print_close(out);

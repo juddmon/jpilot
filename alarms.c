@@ -1,4 +1,4 @@
-/* $Id: alarms.c,v 1.50 2009/09/10 06:01:53 rikster5 Exp $ */
+/* $Id: alarms.c,v 1.51 2010/02/28 18:51:00 judd Exp $ */
 
 /*******************************************************************************
  * alarms.c
@@ -38,11 +38,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "jp-pi-calendar.h"
+#include <pi-calendar.h>
 
 #include "i18n.h"
 #include "utils.h"
-#include "datebook.h"
+#include "calendar.h"
 #include "log.h"
 #include "prefs.h"
 
@@ -479,7 +479,7 @@ void make_command_safe(char *command)
  *   Do alarm setting (play sound, or whatever).
  *   if user postpones then put in postponed alarm list.
  */
-int alarms_do_one(struct Appointment *appt,
+int alarms_do_one(struct CalendarEvent *ce,
 		  unsigned long unique_id,
 		  time_t t_alarm,
 		  AlarmType type)
@@ -526,9 +526,9 @@ int alarms_do_one(struct Appointment *appt,
    Pnow = localtime(&t_alarm);
 
    strftime(date_str, sizeof(date_str), pref_date, Pnow);
-   tm_copy_with_dst_adj(&begin, &(appt->begin));
+   tm_copy_with_dst_adj(&begin, &(ce->begin));
    strftime(time1_str, sizeof(time1_str), pref_time, &begin);
-   tm_copy_with_dst_adj(&end, &(appt->end));
+   tm_copy_with_dst_adj(&end, &(ce->end));
    strftime(time2_str, sizeof(time2_str), pref_time, &end);
    if (strcmp(time1_str,time2_str) == 0)
       g_snprintf(time_str, sizeof(time_str), "%s %s", date_str, time1_str);
@@ -537,11 +537,11 @@ int alarms_do_one(struct Appointment *appt,
 
    desc_str[0]='\0';
    note_str[0]='\0';
-   if (appt->description) {
-      g_strlcpy(desc_str, appt->description, sizeof(desc_str));
+   if (ce->description) {
+      g_strlcpy(desc_str, ce->description, sizeof(desc_str));
    }
-   if (appt->note) {
-      g_strlcpy(note_str, appt->note, sizeof(note_str));
+   if (ce->note) {
+      g_strlcpy(note_str, ce->note, sizeof(note_str));
    }
 
    get_pref(PREF_ALARM_COMMAND, NULL, &pref_command);
@@ -617,8 +617,8 @@ int alarms_do_one(struct Appointment *appt,
 gint cb_timer_alarms(gpointer data)
 {
    struct jp_alarms *temp_alarm, *ta_next;
-   AppointmentList *alm_list;
-   AppointmentList *temp_al;
+   CalendarEventList *alm_list;
+   CalendarEventList *temp_al;
    static int first=1;
    time_t t, diff;
    time_t t_alarm_time;
@@ -643,7 +643,7 @@ gint cb_timer_alarms(gpointer data)
 	 }
       }
       if (alm_list==NULL) {
-	 get_days_appointments2(&alm_list, NULL, 0, 0, 1, NULL);
+	 get_days_calendar_events2(&alm_list, NULL, 0, 0, 1, CATEGORY_ALL, NULL);
       }
 #ifdef ALARMS_DEBUG
       printf("unique_id=%d\n", temp_alarm->unique_id);
@@ -652,11 +652,11 @@ gint cb_timer_alarms(gpointer data)
       printf("alarm_advance=%ld\n", temp_alarm->alarm_advance);
 #endif
       for (temp_al = alm_list; temp_al; temp_al=temp_al->next) {
-	 if (temp_al->mappt.unique_id == temp_alarm->unique_id) {
+	 if (temp_al->mce.unique_id == temp_alarm->unique_id) {
 #ifdef ALARMS_DEBUG
-	    printf("%s\n", temp_al->mappt.appt.description);
+	    printf("%s\n", temp_al->mce.ce.description);
 #endif
-	    alarms_do_one(&(temp_al->mappt.appt),
+	    alarms_do_one(&(temp_al->mce.ce),
 			  temp_alarm->unique_id,
 			  temp_alarm->event_time,
 			  ALARM_MISSED);
@@ -665,26 +665,26 @@ gint cb_timer_alarms(gpointer data)
       }
       /* CAUTION, this modifies the list we are parsing and
        removes the current node */
-      alarms_remove_from_to_list(temp_al->mappt.unique_id);
+      alarms_remove_from_to_list(temp_al->mce.unique_id);
    }
 
    if (next_alarm) {
       diff = next_alarm->event_time - t - next_alarm->alarm_advance;
       if (diff <= ALARM_INTERVAL/2) {
 	 if (alm_list==NULL) {
-	    get_days_appointments2(&alm_list, NULL, 0, 0, 1, NULL);
+	    get_days_calendar_events2(&alm_list, NULL, 0, 0, 1, CATEGORY_ALL, NULL);
 	 }
 	 for (temp_alarm=next_alarm; temp_alarm; temp_alarm=ta_next) {
 	    for (temp_al = alm_list; temp_al; temp_al=temp_al->next) {
-	       if (temp_al->mappt.unique_id == temp_alarm->unique_id) {
+	       if (temp_al->mce.unique_id == temp_alarm->unique_id) {
 #ifdef ALARMS_DEBUG
 		  printf("** next unique_id=%d\n", temp_alarm->unique_id);
 		  printf("** next type=%s\n", print_type(temp_alarm->type));
 		  printf("** next event_time=%s\n", print_date(temp_alarm->event_time));
 		  printf("** next alarm_advance=%ld\n", temp_alarm->alarm_advance);
-		  printf("** next %s\n", temp_al->mappt.appt.description);
+		  printf("** next %s\n", temp_al->mce.ce.description);
 #endif
-		  alarms_do_one(&(temp_al->mappt.appt),
+		  alarms_do_one(&(temp_al->mce.ce),
 				temp_alarm->unique_id,
 				temp_alarm->event_time,
 				ALARM_NEW);
@@ -706,7 +706,7 @@ gint cb_timer_alarms(gpointer data)
       }
    }
    if (alm_list) {
-      free_AppointmentList(&alm_list);
+      free_CalendarEventList(&alm_list);
    }
 
    return TRUE;
@@ -720,8 +720,8 @@ gint cb_timer_alarms(gpointer data)
  */
 int alarms_find_next(struct tm *date1_in, struct tm *date2_in, int soonest_only)
 {
-   AppointmentList *alm_list;
-   AppointmentList *temp_al;
+   CalendarEventList *alm_list;
+   CalendarEventList *temp_al;
    struct jp_alarms *ta;
 
    time_t adv;
@@ -794,19 +794,19 @@ int alarms_find_next(struct tm *date1_in, struct tm *date2_in, int soonest_only)
    }
 
    alm_list=NULL;
-   get_days_appointments2(&alm_list, NULL, 0, 0, 1, NULL);
+   get_days_calendar_events2(&alm_list, NULL, 0, 0, 1, CATEGORY_ALL, NULL);
 
    for (temp_al=alm_list; temp_al; temp_al=temp_al->next) {
       /* No alarm, skip */
-      if (!temp_al->mappt.appt.alarm) {
+      if (!temp_al->mce.ce.alarm) {
 	 continue;
       }
 #ifdef ALARMS_DEBUG
-      printf("\n[%s]\n", temp_al->mappt.appt.description);
+      printf("\n[%s]\n", temp_al->mce.ce.description);
 #endif
       /* Check for ordinary non-repeating appt starting before date1 */
-      if (temp_al->mappt.appt.repeatType == repeatNone) {
-	 t_alarm = mktime_dst_adj(&(temp_al->mappt.appt.begin));
+      if (temp_al->mce.ce.repeatType == calendarRepeatNone) {
+	 t_alarm = mktime_dst_adj(&(temp_al->mce.ce.begin));
 	 if (t_alarm < t1) {
 #ifdef ALARMS_DEBUG
 	    printf("afn: non repeat before t1, t_alarm<t1, %ld<%ld\n",t_alarm,t1);
@@ -816,11 +816,11 @@ int alarms_find_next(struct tm *date1_in, struct tm *date2_in, int soonest_only)
       }
 
       /* Check that we are not past any appointment end date */
-      if (!(temp_al->mappt.appt.repeatForever)) {
-	 t_end = mktime_dst_adj(&(temp_al->mappt.appt.repeatEnd));
+      if (!(temp_al->mce.ce.repeatForever)) {
+	 t_end = mktime_dst_adj(&(temp_al->mce.ce.repeatEnd));
 	 /* We need to add 24 hours to the end date to make it inclusive */
 	 t_end += DAY_IN_SECS;
-	 t_begin = mktime_dst_adj(&(temp_al->mappt.appt.begin));
+	 t_begin = mktime_dst_adj(&(temp_al->mce.ce.begin));
 	 if (t_end < t2) {
 #ifdef ALARMS_DEBUG
 	    printf("afn: past end date\n");
@@ -831,21 +831,21 @@ int alarms_find_next(struct tm *date1_in, struct tm *date2_in, int soonest_only)
 
       /* Calculate the alarm advance in seconds */
       adv = 0;
-      switch (temp_al->mappt.appt.advanceUnits) {
+      switch (temp_al->mce.ce.advanceUnits) {
        case advMinutes:
-	 adv = temp_al->mappt.appt.advance*MIN_IN_SECS;
+	 adv = temp_al->mce.ce.advance*MIN_IN_SECS;
          break;
        case advHours:
-	 adv = temp_al->mappt.appt.advance*HR_IN_SECS;
+	 adv = temp_al->mce.ce.advance*HR_IN_SECS;
          break;
        case advDays:
-	 adv = temp_al->mappt.appt.advance*DAY_IN_SECS;
+	 adv = temp_al->mce.ce.advance*DAY_IN_SECS;
          break;
       }
 
 #ifdef ALARMS_DEBUG
-      printf("alarm advance %d ", temp_al->mappt.appt.advance);
-      switch (temp_al->mappt.appt.advanceUnits) {
+      printf("alarm advance %d ", temp_al->mce.ce.advance);
+      switch (temp_al->mce.ce.advanceUnits) {
        case advMinutes:
 	 printf("minutes\n");
          break;
@@ -862,7 +862,7 @@ int alarms_find_next(struct tm *date1_in, struct tm *date2_in, int soonest_only)
       t_prev=t_future=0;
       prev_found=next_found=0;
 
-      find_prev_next(&(temp_al->mappt.appt),
+      find_prev_next(&(temp_al->mce.ce),
 		     adv,
 		     &date1,
 		     &date2,
@@ -890,8 +890,8 @@ int alarms_find_next(struct tm *date1_in, struct tm *date2_in, int soonest_only)
       }
       if (next_found) {
          /* Check that we are not past any appointment end date */
-	 if (!(temp_al->mappt.appt.repeatForever)) {
-	    t_end = mktime_dst_adj(&(temp_al->mappt.appt.repeatEnd));
+	 if (!(temp_al->mce.ce.repeatForever)) {
+	    t_end = mktime_dst_adj(&(temp_al->mce.ce.repeatEnd));
             /* We need to add 24 hours to the end date to make it inclusive */
             t_end += DAY_IN_SECS;
 	    if (t_future > t_end) {
@@ -908,12 +908,12 @@ int alarms_find_next(struct tm *date1_in, struct tm *date2_in, int soonest_only)
       printf("t_prev=   %s\n", prev_found ? print_date(t_prev):"None");
       printf("t_future= %s\n", next_found ? print_date(t_future):"None");
       printf("alarm me= %s\n", next_found ? print_date(t_future-adv):"None");
-      printf("desc=[%s]\n", temp_al->mappt.appt.description);
+      printf("desc=[%s]\n", temp_al->mce.ce.description);
 #endif
 
       if (!soonest_only) {
 	 if (prev_found) {
-	    alarms_add_to_list(temp_al->mappt.unique_id, ALARM_MISSED, t_prev, adv);
+	    alarms_add_to_list(temp_al->mce.unique_id, ALARM_MISSED, t_prev, adv);
 	 }
       }
       if (next_found) {
@@ -940,7 +940,7 @@ int alarms_find_next(struct tm *date1_in, struct tm *date2_in, int soonest_only)
 	    if (ta) {
 	       ta->next = next_alarm;
 	       next_alarm = ta;
-	       next_alarm->unique_id = temp_al->mappt.unique_id;
+	       next_alarm->unique_id = temp_al->mce.unique_id;
 	       next_alarm->type = ALARM_NEW;
 	       next_alarm->event_time = t_future;
 	       next_alarm->alarm_advance = adv;
@@ -948,7 +948,7 @@ int alarms_find_next(struct tm *date1_in, struct tm *date2_in, int soonest_only)
 	 }
       }
    }
-   free_AppointmentList(&alm_list);
+   free_CalendarEventList(&alm_list);
 
    return EXIT_SUCCESS;
 }

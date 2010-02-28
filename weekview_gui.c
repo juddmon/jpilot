@@ -1,4 +1,4 @@
-/* $Id: weekview_gui.c,v 1.47 2009/09/19 20:57:27 rikster5 Exp $ */
+/* $Id: weekview_gui.c,v 1.48 2010/02/28 19:02:34 judd Exp $ */
 
 /*******************************************************************************
  * weekview_gui.c
@@ -26,13 +26,14 @@
 #include <string.h>
 #include <gtk/gtk.h>
 
-#include "jp-pi-calendar.h"
+#include "pi-calendar.h"
 
 #include "i18n.h"
 #include "utils.h"
 #include "prefs.h"
 #include "log.h"
 #include "datebook.h"
+#include "calendar.h"
 #include "print.h"
 
 /******************************* Global vars **********************************/
@@ -138,8 +139,8 @@ int clear_weeks_appts(GtkWidget **day_texts)
  */
 int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
 {
-   AppointmentList *a_list;
-   AppointmentList *temp_al;
+   CalendarEventList *ce_list;
+   CalendarEventList *temp_cel;
    struct tm date;
    GtkWidget **text;
    char desc[256];
@@ -161,7 +162,7 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
    GObject *text_buffer;
    char    *markup_str;
 
-   a_list = NULL;
+   ce_list = NULL;
    text = day_texts;
 
    memcpy(&date, date_in, sizeof(struct tm));
@@ -195,18 +196,18 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
    }
 
    /* Get all of the appointments */
-   get_days_appointments2(&a_list, NULL, 2, 2, 2, NULL);
+   get_days_calendar_events2(&ce_list, NULL, 2, 2, 2, CATEGORY_ALL, NULL);
 
    memcpy(&date, date_in, sizeof(struct tm));
 
    /* Iterate through 8 days */
    for (n=0; n<8; n++, add_days_to_date(&date, 1)) {
       text_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text[n])));
-      for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
+      for (temp_cel = ce_list; temp_cel; temp_cel=temp_cel->next) {
 #ifdef ENABLE_DATEBK
 	 get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
 	 if (use_db3_tags) {
-	    ret = db3_parse_tag(temp_al->mappt.appt.note, &db3_type, &db4);
+	    ret = db3_parse_tag(temp_cel->mce.ce.note, &db3_type, &db4);
 	    jp_logf(JP_LOG_DEBUG, "category = 0x%x\n", db4.category);
 	    cat_bit=1<<db4.category;
 	    if (!(cat_bit & datebk_category)) {
@@ -215,16 +216,16 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
 	    }
 	 }
 #endif
-	 if (isApptOnDate(&(temp_al->mappt.appt), &date)) {
-	    if (temp_al->mappt.appt.event) {
+	 if (calendar_isApptOnDate(&(temp_cel->mce.ce), &date)) {
+	    if (temp_cel->mce.ce.event) {
 	       strcpy(desc, "*");
 	    } else {
 	       get_pref_time_no_secs(datef);
-	       strftime(desc, sizeof(desc), datef, &(temp_al->mappt.appt.begin));
+	       strftime(desc, sizeof(desc), datef, &(temp_cel->mce.ce.begin));
 	       strcat(desc, " ");
 	    }
-	    if (temp_al->mappt.appt.description) {
-	       strncat(desc, temp_al->mappt.appt.description, 70);
+	    if (temp_cel->mce.ce.description) {
+	       strncat(desc, temp_cel->mce.ce.description, 70);
                /* FIXME: This kind of truncation is bad for UTF-8 */
 	       desc[62]='\0';
 	    }
@@ -233,14 +234,14 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
 	    remove_cr_lfs(desc);
 
 	    /* Append number of anniversary years if enabled & appropriate */
-	    append_anni_years(desc, 62, &date, &temp_al->mappt.appt);
+	    append_anni_years(desc, 62, &date, NULL, &temp_cel->mce.ce);
 
 	    strcat(desc, "\n");
 	    gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(text_buffer),desc,-1);
 	 }
       }
    }
-   free_AppointmentList(&a_list);
+   free_CalendarEventList(&ce_list);
 
    return EXIT_SUCCESS;
 }

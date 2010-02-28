@@ -1,4 +1,4 @@
-/* $Id: datebook.h,v 1.24 2009/11/08 17:12:10 rousseau Exp $ */
+/* $Id: datebook.h,v 1.25 2010/02/28 18:53:02 judd Exp $ */
 
 /*******************************************************************************
  * datebook.h
@@ -24,8 +24,8 @@
 #define __DATEBOOK_H__
 
 #include <stdio.h>
-//#include <pi-datebook.h>
-#include "jp-pi-calendar.h"
+#include <pi-datebook.h>
+#include <pi-calendar.h>
 #include "utils.h"
 
 #ifdef ENABLE_DATEBK
@@ -77,6 +77,9 @@ int datebook_import(GtkWidget *window);
 int datebook_cleanup(void);
 int pc_datebook_write(struct Appointment *a, PCRecType rt,
 		      unsigned char attrib, unsigned int *unique_id);
+int pc_calendar_or_datebook_write(struct CalendarEvent *ce, PCRecType rt,
+				  unsigned char attrib, unsigned int *unique_id,
+				  long datebook_version);
 void free_AppointmentList(AppointmentList **al);
 
 /*
@@ -102,6 +105,9 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
 int weed_datebook_list(AppointmentList **al, int mon, int year,
 		       int skip_privates, int *mask);
 
+int weed_calendar_event_list(CalendarEventList **cel, int mon, int year,
+			     int skip_privates, int *mask);
+
 /* Sorts a list of appointments according to the comparison function given */
 int datebook_sort(AppointmentList **al, 
                   int (*compare_func)(const void*, const void*));
@@ -110,20 +116,23 @@ int datebook_sort(AppointmentList **al,
 /* Mon is 0-11 */
 /* Day is 1-31 */
 /* */
-int datebook_add_exception(struct Appointment *a, int year, int mon, int day);
-int get_datebook_app_info(struct AppointmentAppInfo *ai);
+int datebook_add_exception(struct CalendarEvent *ce, int year, int mon, int day);
+int get_calendar_or_datebook_app_info(struct CalendarAppInfo *cai, long datebook_version);
 
 int datebook_copy_appointment(struct Appointment *a1,
 			     struct Appointment **a2);
+int copy_calendar_event(const struct CalendarEvent *source,
+			struct CalendarEvent **dest);
 /* returns a bit mask where bit 1 day one, etc. and it is set if an */
 /* appointment occurs on that day, 0 if not. */
-int appointment_on_day_list(int mon, int year, int *mask);
+int appointment_on_day_list(int mon, int year, int *mask, int datebook_version);
 
 /*
  * returns 1 if an appointment does occur/re-occur on dat
  * else returns 0
  */
 unsigned int isApptOnDate(struct Appointment *a, struct tm *date);
+unsigned int calendar_isApptOnDate(struct CalendarEvent *ce, struct tm *date);
 
 int compareTimesToDay(struct tm *tm1, struct tm *tm2);
 

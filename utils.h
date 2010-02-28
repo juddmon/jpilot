@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.74 2009/09/10 06:01:55 rikster5 Exp $ */
+/* $Id: utils.h,v 1.75 2010/02/28 18:58:25 judd Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -29,11 +29,12 @@
 #include <sys/types.h>
 #include <gtk/gtk.h>
 
+#include <pi-datebook.h>
 #include <pi-address.h>
 #include <pi-todo.h>
 #include <pi-memo.h>
 #include <pi-file.h>
-#include "jp-pi-calendar.h"
+#include <pi-calendar.h>
 #include "jp-pi-contact.h"
 
 #include "libplugin.h"
@@ -208,6 +209,7 @@ typedef struct MemoList_s {
 /*
  * New OS PIM applications in OS 5.x
  */
+/* Contacts */
 typedef struct {
    PCRecType rt;
    unsigned int unique_id;
@@ -220,6 +222,21 @@ typedef struct ContactList_s {
    struct ContactList_s *next;
    MyContact mcont;
 } ContactList;
+
+/* Calendar */
+typedef struct {
+   PCRecType rt;
+   unsigned int unique_id;
+   unsigned char attrib;
+   struct CalendarEvent ce;
+} MyCalendarEvent;
+
+typedef struct CalendarEventList_s {
+   AppType app_type;
+   struct CalendarEventList_s *next;
+   MyCalendarEvent mce;
+} CalendarEventList;
+
 
 struct search_record
 {
@@ -450,7 +467,7 @@ time_t mktime_dst_adj(struct tm *tm);
 
 int dateToDays(struct tm *tm1);
 
-int find_prev_next(struct Appointment *appt,
+int find_prev_next(struct CalendarEvent *ce,
                    time_t adv,
                    struct tm *date1,
                    struct tm *date2,
@@ -459,7 +476,7 @@ int find_prev_next(struct Appointment *appt,
                    int *prev_found,
 		   int *next_found);
 
-int find_next_rpt_event(struct Appointment *appt,
+int find_next_rpt_event(struct CalendarEvent *ce,
                         struct tm *srch_start_tm,
                         struct tm *next_tm);
 
@@ -538,7 +555,7 @@ int pdb_file_write_app_block(char *DB_name, void *bufp, size_t size_in);
 int pdb_file_write_dbinfo(char *DB_name, struct DBInfo *Pinfo_in);
 
 void append_anni_years(char *desc, int max, struct tm *date,
-		       struct Appointment *appt);
+		       struct Appointment *a, struct CalendarEvent *ce);
 int get_highlighted_today(struct tm *date);
 
 /* category.c */

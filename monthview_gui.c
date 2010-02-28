@@ -1,4 +1,4 @@
-/* $Id: monthview_gui.c,v 1.51 2009/11/08 17:12:10 rousseau Exp $ */
+/* $Id: monthview_gui.c,v 1.52 2010/02/28 19:02:40 judd Exp $ */
 
 /*******************************************************************************
  * monthview_gui.c
@@ -26,13 +26,14 @@
 #include <string.h>
 #include <gtk/gtk.h>
 
-#include "jp-pi-calendar.h"
+#include <pi-calendar.h>
 
 #include "utils.h"
 #include "i18n.h"
 #include "prefs.h"
 #include "log.h"
 #include "datebook.h"
+#include "calendar.h"
 #include "print.h"
 
 /******************************* Global vars **********************************/
@@ -279,8 +280,8 @@ void create_month_boxes_texts(GtkWidget *month_vbox)
 
 int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
 {
-   AppointmentList *a_list;
-   AppointmentList *temp_al;
+   CalendarEventList *ce_list;
+   CalendarEventList *temp_cel;
    struct tm date;
    GtkWidget **texts;
    GObject   **text_buffers;
@@ -301,13 +302,16 @@ int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
 #endif
    GString *gstr;
    GtkWidget *temp_text;
+   long datebook_version;
 
    texts = &day_texts[glob_offset];
    text_buffers = &month_day_buffer[glob_offset];
 
-   a_list = NULL;
+   ce_list = NULL;
    mask=0;
 
+   get_pref(PREF_DATEBOOK_VERSION, &datebook_version, NULL);
+   
    for (n=0; n<37; n++) {
       temp_text = month_day[n];
       gstr = gtk_object_get_data(GTK_OBJECT(temp_text), "gstr");
@@ -324,11 +328,11 @@ int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
    memcpy(&date, date_in, sizeof(struct tm));
 
    /* Get all of the appointments */
-   get_days_appointments2(&a_list, NULL, 2, 2, 2, NULL);
+   get_days_calendar_events2(&ce_list, NULL, 2, 2, 2, CATEGORY_ALL, NULL);
 
    get_month_info(date.tm_mon, 1, date.tm_year, &dow, &ndim);
 
-   weed_datebook_list(&a_list, date.tm_mon, date.tm_year, 0, &mask);
+   weed_calendar_event_list(&ce_list, date.tm_mon, date.tm_year, 0, &mask);
 
    for (n=0, date.tm_mday=1; date.tm_mday<=ndim; date.tm_mday++, n++) {
       gstr=NULL;
@@ -344,11 +348,11 @@ int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
       gtk_text_buffer_set_text(GTK_TEXT_BUFFER(text_buffers[n]), "", -1);
 
       num_shown = 0;
-      for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
+      for (temp_cel = ce_list; temp_cel; temp_cel=temp_cel->next) {
 #ifdef ENABLE_DATEBK
 	 get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
 	 if (use_db3_tags) {
-	    ret = db3_parse_tag(temp_al->mappt.appt.note, &db3_type, &db4);
+	    ret = db3_parse_tag(temp_cel->mce.ce.note, &db3_type, &db4);
 	    jp_logf(JP_LOG_DEBUG, "category = 0x%x\n", db4.category);
 	    cat_bit=1<<db4.category;
 	    if (!(cat_bit & datebk_category)) {
@@ -357,7 +361,7 @@ int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
 	    }
 	 }
 #endif
-	 if (isApptOnDate(&(temp_al->mappt.appt), &date)) {
+	 if (calendar_isApptOnDate(&(temp_cel->mce.ce), &date)) {
 	    if (num_shown) {
 	       gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(text_buffers[n]), "\n", -1);
 	       g_string_append(gstr, "\n");
@@ -365,17 +369,17 @@ int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
 	       gstr=g_string_new("");
 	    }
 	    num_shown++;
-	    if (temp_al->mappt.appt.event) {
+	    if (temp_cel->mce.ce.event) {
 	       strcpy(desc, "*");
 	    } else {
 	       get_pref_time_no_secs(datef);
-	       jp_strftime(desc, sizeof(desc), datef, &(temp_al->mappt.appt.begin));
+	       jp_strftime(desc, sizeof(desc), datef, &(temp_cel->mce.ce.begin));
 	       strcat(desc, " ");
 	    }
 	    g_string_append(gstr, desc);
-	    g_string_append(gstr, temp_al->mappt.appt.description);
-	    if (temp_al->mappt.appt.description) {
-	       strncat(desc, temp_al->mappt.appt.description, 36);
+	    g_string_append(gstr, temp_cel->mce.ce.description);
+	    if (temp_cel->mce.ce.description) {
+	       strncat(desc, temp_cel->mce.ce.description, 36);
                /* FIXME: This kind of truncation is bad for UTF-8 */ 
 	       desc[35]='\0';
 	    }
@@ -384,14 +388,14 @@ int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
 	    remove_cr_lfs(desc);
 
 	    /* Append number of anniversary years if enabled & appropriate */
-	    append_anni_years(desc, 35, &date, &temp_al->mappt.appt);
+	    append_anni_years(desc, 35, &date, NULL, &temp_cel->mce.ce);
 
 	    gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(text_buffers[n]), desc, -1);
 	 }
       }
       gtk_object_set_data(GTK_OBJECT(texts[n]), "gstr", gstr);
    }
-   free_AppointmentList(&a_list);
+   free_CalendarEventList(&ce_list);
 
    return EXIT_SUCCESS;
 }

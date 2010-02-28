@@ -1,4 +1,4 @@
-/* $Id: search_gui.c,v 1.49 2009/09/10 06:01:54 rikster5 Exp $ */
+/* $Id: search_gui.c,v 1.50 2010/02/28 19:00:30 judd Exp $ */
 
 /*******************************************************************************
  * search_gui.c
@@ -28,7 +28,7 @@
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 
-#include "jp-pi-calendar.h"
+#include <pi-calendar.h>
 #include <pi-address.h>
 #include <pi-todo.h>
 #include <pi-memo.h>
@@ -38,6 +38,7 @@
 #include "prefs.h"
 #include "log.h"
 #include "datebook.h"
+#include "calendar.h"
 #include "address.h"
 #include "todo.h"
 #include "memo.h"
@@ -64,18 +65,18 @@ static void cb_clist_selection(GtkWidget *clist, gint row, gint column,
 /****************************** Main Code *************************************/
 int datebook_search_sort_compare(const void *v1, const void *v2)
 {
-   AppointmentList **al1, **al2;
-   struct Appointment *appt1, *appt2;
+   CalendarEventList **cel1, **cel2;
+   struct CalendarEvent *ce1, *ce2;
    time_t time1, time2;
 
-   al1=(AppointmentList **)v1;
-   al2=(AppointmentList **)v2;
+   cel1=(CalendarEventList **)v1;
+   cel2=(CalendarEventList **)v2;
 
-   appt1=&((*al1)->mappt.appt);
-   appt2=&((*al2)->mappt.appt);
+   ce1=&((*cel1)->mce.ce);
+   ce2=&((*cel2)->mce.ce);
 
-   time1 = mktime(&(appt1->begin));
-   time2 = mktime(&(appt2->begin));
+   time1 = mktime(&(ce1->begin));
+   time2 = mktime(&(ce2->begin));
 
    return(time2 - time1);
 }
@@ -83,8 +84,8 @@ int datebook_search_sort_compare(const void *v1, const void *v2)
 static int search_datebook(const char *needle, GtkWidget *clist)
 {
    gchar *empty_line[] = { "","" };
-   AppointmentList *a_list;
-   AppointmentList *temp_al;
+   CalendarEventList *ce_list;
+   CalendarEventList *temp_cel;
    int found, count;
    int case_sense;
    char str[202];
@@ -98,40 +99,46 @@ static int search_datebook(const char *needle, GtkWidget *clist)
    get_pref(PREF_DATEBOOK_VERSION, &datebook_version, NULL);
   
    /* Search Appointments */
-   a_list = NULL;
+   ce_list = NULL;
 
-   get_days_appointments2(&a_list, NULL, 2, 2, 2, NULL);
-
-   if (a_list==NULL) {
+   if (datebook_version) {
+      get_days_calendar_events2(&ce_list, NULL, 2, 2, 2, CATEGORY_ALL, NULL);
+   } else {
+      AppointmentList *a_list=NULL;
+      get_days_appointments2(&a_list, NULL, 2, 2, 2, NULL);
+      copy_appointments_to_calendarEvents(a_list, &ce_list);
+      free_AppointmentList(&a_list);
+   }
+   if (ce_list==NULL) {
       return 0;
    }
 
    /* Sort returned results according to date rather than just HH:MM */
-   datebook_sort(&a_list, datebook_search_sort_compare);
+   calendar_sort(&ce_list, datebook_search_sort_compare);
 
    count = 0;
    case_sense = GTK_TOGGLE_BUTTON(case_sense_checkbox)->active;
 
-   for (temp_al = a_list; temp_al; temp_al=temp_al->next) {
+   for (temp_cel = ce_list; temp_cel; temp_cel=temp_cel->next) {
       found = 0;
-      if ( (temp_al->mappt.appt.description) &&
-	   (temp_al->mappt.appt.description[0]) ) {
-	 if (jp_strstr(temp_al->mappt.appt.description, needle, case_sense)) {
+      if ( (temp_cel->mce.ce.description) &&
+	   (temp_cel->mce.ce.description[0]) ) {
+	 if (jp_strstr(temp_cel->mce.ce.description, needle, case_sense)) {
 	    found = 1;
 	 }
       }
       if ( !found &&
-           (temp_al->mappt.appt.note) &&
-	   (temp_al->mappt.appt.note[0]) ) {
-	 if (jp_strstr(temp_al->mappt.appt.note, needle, case_sense )) {
+           (temp_cel->mce.ce.note) &&
+	   (temp_cel->mce.ce.note[0]) ) {
+	 if (jp_strstr(temp_cel->mce.ce.note, needle, case_sense )) {
 	    found = 2;
 	 }
       }
       if (datebook_version) {
          if ( !found &&
-              (temp_al->mappt.appt.location) &&
-              (temp_al->mappt.appt.location[0]) ) {
-            if (jp_strstr(temp_al->mappt.appt.location, needle, case_sense )) {
+              (temp_cel->mce.ce.location) &&
+              (temp_cel->mce.ce.location[0]) ) {
+            if (jp_strstr(temp_cel->mce.ce.location, needle, case_sense )) {
                found = 3;
             }
          }
@@ -152,21 +159,21 @@ static int search_datebook(const char *needle, GtkWidget *clist)
 	 } else {
 	    strncpy(datef, svalue1, sizeof(datef));
 	 }
-	 strftime(date_str, sizeof(date_str), datef, &temp_al->mappt.appt.begin);
+	 strftime(date_str, sizeof(date_str), datef, &temp_cel->mce.ce.begin);
 	 date_str[sizeof(date_str)-1]='\0';
 
 	 if (found == 1) {
 	    g_snprintf(str, sizeof(str), "%s\t%s",
 		       date_str,
-		       temp_al->mappt.appt.description);
+		       temp_cel->mce.ce.description);
          } else if (found == 2) {
 	    g_snprintf(str, sizeof(str), "%s\t%s",
 		       date_str,
-		       temp_al->mappt.appt.note);
+		       temp_cel->mce.ce.note);
          } else {
 	    g_snprintf(str, sizeof(str), "%s\t%s",
 		       date_str,
-		       temp_al->mappt.appt.location);
+		       temp_cel->mce.ce.location);
          }
          lstrncpy_remove_cr_lfs(str2, str, SEARCH_MAX_COLUMN_LEN);
          gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str2);
@@ -175,7 +182,7 @@ static int search_datebook(const char *needle, GtkWidget *clist)
 	 new_sr = malloc(sizeof(struct search_record));
 	 new_sr->app_type = DATEBOOK;
 	 new_sr->plugin_flag = 0;
-	 new_sr->unique_id = temp_al->mappt.unique_id;
+	 new_sr->unique_id = temp_cel->mce.unique_id;
 	 new_sr->next = search_rl;
 	 search_rl = new_sr;
 
@@ -186,7 +193,7 @@ static int search_datebook(const char *needle, GtkWidget *clist)
    }
 
    jp_logf(JP_LOG_DEBUG, "calling free_AppointmentList\n");
-   free_AppointmentList(&a_list);
+   free_CalendarEventList(&ce_list);
 
    return count;
 }
