@@ -1,3 +1,15 @@
+1.8.0 - 02/28/10
+ Added support for Calendar app
+ Requires pilot-link > 0.12.5
+ GTK1 code removed.  GTK2 required
+ Fix Bug 1991 : Categories are lost during first sync
+ Export function for KeyRing data
+ GUI changes: ToDo items due today are marked by a soft green color
+ GUI changes: new alarm clock and lock icons
+ GUI changes: radio buttons to select between timed and untimed events
+ Overhaul VCARD export including adding IM, Birthday, Website fields
+ As always many many bug other fixes and small changes, see Changelog.cvs for details
+
 1.6.2 - 02/15/09
  Resolve segmentation fault when editing Contacts with attached pictures
  Resolve error where Contacts created on Palm could not be deleted with Jpilot
