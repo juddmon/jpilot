@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.244 2009/11/17 04:24:00 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.245 2010/02/28 19:56:58 judd Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -889,7 +889,7 @@ void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
    char birthday_str[255];
    const char *pref_date;
    int address_i, IM_i, phone_i;
-   int index;
+   int index = 0;
    char *utf;
 
    /* Open file for export, including corner cases where file exists or 
@@ -1662,7 +1662,7 @@ void cb_undelete_address(GtkWidget *widget,
    MyAddress *maddr;
    int flag;
    int show_priv;
-
+/* TODO this needs converted to contacts */
    maddr = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
    if (maddr < (MyAddress *)CLIST_MIN_DATA) {
       return;
@@ -1701,6 +1701,7 @@ static void cb_cancel(GtkWidget *widget, gpointer data)
    address_refresh();
 }
 
+/* TODO, this needs converted to Contacts */
 void cb_resort(GtkWidget *widget,
 	       gpointer   data)
 {
