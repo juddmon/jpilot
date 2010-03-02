@@ -4,7 +4,7 @@ dnl ############################################################################
 
 dnl boilerplate to initialize autoconf(AC) and automake(AM)
 AC_PREREQ([2.58])
-AC_INIT(jpilot, 1.8.0)
+AC_INIT(jpilot, 1.7.0)
 AM_INIT_AUTOMAKE([1.8])
 
 dnl use a config.h file rather than string of -DXXX args to compiler
@@ -351,20 +351,18 @@ pl_patch=`$GREP "define PILOT_LINK_PATCH" "$pilot_incl/pi-version.h" | \
 $CUT -d " " -f 3 | $SED -e 's/"//g'`
 AC_MSG_RESULT([pi-version indicates $pl_version.$pl_major.$pl_minor])
 
-dnl *** check for pilot-link 0.12.5 and up
+dnl *** check for pilot-link 0.12.4 and up
 
 if test $pl_version -eq 0 ; then
    if test $pl_major -ge 12 ; then
-      if test $pl_minor -ge 5 ; then
+      if test $pl_minor -ge 4 ; then
          pl_version_check_done=yes;
          AC_MSG_RESULT([pilot-link has USB])
          AC_MSG_RESULT([pilot-link has card support (>12.0)])
-         AC_MSG_RESULT([pilot-link has Calendar support (>12.5)])
       fi
+   else
+      AC_MSG_ERROR([pilot-link version >= 0.12.4 is required])
    fi
-fi
-if test $pl_version_check_done != yes; then
-   AC_MSG_ERROR([pilot-link version >= 0.12.5 is required])
 fi
 
 dnl restore variables after pilot-link testing
