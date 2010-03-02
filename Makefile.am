@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.65 2010/03/02 18:59:24 judd Exp $
+# $Id: Makefile.am,v 1.66 2010/03/02 20:33:38 rousseau Exp $
 
 SUBDIRS = Expense SyncTime KeyRing dialer m4 po icons docs empty
 
@@ -128,9 +128,6 @@ jpilot_dump_SOURCES = \
 	utils.c \
 	jp-contact.c
 
-jpilot-dump.o: jpilot-dump.c calendar.h config.h utils.h log.h prefs.h \
-	datebook.h memo.h address.h todo.h password.h
-
 jpilot_sync_SOURCES = \
 	cp1250.c \
 	category.c \
@@ -147,9 +144,6 @@ jpilot_sync_SOURCES = \
 	utils.c \
 	jp-contact.c
 
-
-jpilot-sync.o: jpilot-sync.c config.h utils.h log.h prefs.h sync.h \
-	libplugin.h password.h
 
 # Include gettext macros that we have placed in the m4 directory
 # and include in the distribution.
@@ -201,5 +195,4 @@ ChangeLog.cvs:
 	s/<judd\@hostname>/Judd Montgomery <judd\@jpilot.org>/; \
 	s/<desrod\@hostname>/David A. Desrosiers <david.a.desrosiers\@gmail.com>/; \
 	s/<rikster5\@hostname>/Rik Wehbring <jpilot\@nomad.inbox5.com>/' > $@
-
 
