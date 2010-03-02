@@ -1,6 +1,7 @@
 address.c
 address_gui.c
 alarms.c
+calendar.c
 category.c
 contact.c
 dat.c
@@ -11,9 +12,9 @@ export_gui.c
 import_gui.c
 install_gui.c
 install_user.c
+jpilot.c
 jpilot-dump.c
 jpilot-sync.c
-jpilot.c
 libplugin.c
 log.c
 memo.c
