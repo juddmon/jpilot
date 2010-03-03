@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.103 2010/01/20 14:48:29 rousseau Exp $ */
+/* $Id: keyring.c,v 1.104 2010/03/03 12:05:05 rousseau Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -467,7 +467,7 @@ static int unpack_KeyRing(struct KeyRing *kr,
    return 1;
 }
 
-int get_keyr_cat_info(struct CategoryAppInfo *cai)
+static int get_keyr_cat_info(struct CategoryAppInfo *cai)
 {
    unsigned char *buf;
    int buf_size;
@@ -712,7 +712,7 @@ static int find_menu_cat_pos(int cat)
 }
 
 /* Function is used to sort clist based on the Last Changed date field */
-gint GtkClistKeyrCompareDates(GtkCList *clist,
+static gint GtkClistKeyrCompareDates(GtkCList *clist,
                               gconstpointer ptr1,
                               gconstpointer ptr2)
 {
@@ -737,7 +737,7 @@ gint GtkClistKeyrCompareDates(GtkCList *clist,
 }
 
 /* Function is used to sort clist case insensitively */
-gint GtkClistKeyrCompareNocase (GtkCList *clist,
+static gint GtkClistKeyrCompareNocase (GtkCList *clist,
                                 gconstpointer ptr1,
                                 gconstpointer ptr2)
 {
@@ -2077,7 +2077,7 @@ static void cb_keyr_export_done(GtkWidget *widget, const char *filename)
    set_pref(PREF_KEYR_EXPORT_FILENAME, 0, filename, TRUE);
 }
 
-void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *clist,
+static void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 		       int type, const char *filename)
 {
    struct MyKeyRing *mkr;
@@ -2186,7 +2186,7 @@ void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *clist,
    }
 }
 
-int plugin_export(GtkWidget *window)
+static int plugin_export(GtkWidget *window)
 {
    int w, h, x, y;
    char *type_text[]={N_("Text"), N_("CSV"), NULL};
