@@ -1,4 +1,4 @@
-/* $Id: search_gui.c,v 1.50 2010/02/28 19:00:30 judd Exp $ */
+/* $Id: search_gui.c,v 1.51 2010/03/03 12:50:00 rousseau Exp $ */
 
 /*******************************************************************************
  * search_gui.c
@@ -63,7 +63,7 @@ static void cb_clist_selection(GtkWidget *clist, gint row, gint column,
       GdkEventButton *event, gpointer data);
 
 /****************************** Main Code *************************************/
-int datebook_search_sort_compare(const void *v1, const void *v2)
+static int datebook_search_sort_compare(const void *v1, const void *v2)
 {
    CalendarEventList **cel1, **cel2;
    struct CalendarEvent *ce1, *ce2;

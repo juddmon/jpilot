@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.71 2009/08/31 23:31:50 rikster5 Exp $ */
+/* $Id: prefs_gui.c,v 1.72 2010/03/03 12:49:59 rousseau Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -107,7 +107,7 @@ static void cb_serial_port_menu(GtkWidget *widget,
    return;
 }
 
-int make_serial_port_menu(GtkWidget **port_menu)
+static int make_serial_port_menu(GtkWidget **port_menu)
 {
    GtkWidget *menu;
    GSList    *group;
@@ -232,7 +232,7 @@ int make_pref_menu(GtkWidget **pref_menu, int pref_num)
    return EXIT_SUCCESS;
 }
 
-void cb_backups_entry(GtkWidget *widget, gpointer data)
+static void cb_backups_entry(GtkWidget *widget, gpointer data)
 {
    const char *entry_text;
    int num_backups;
@@ -250,7 +250,7 @@ void cb_backups_entry(GtkWidget *widget, gpointer data)
    set_pref(PREF_NUM_BACKUPS, num_backups, NULL, FALSE);
 }
 
-void cb_checkbox_todo_days_till_due(GtkWidget *widget, gpointer data)
+static void cb_checkbox_todo_days_till_due(GtkWidget *widget, gpointer data)
 {
    int num_days;
    const char *entry_text;
@@ -262,7 +262,7 @@ void cb_checkbox_todo_days_till_due(GtkWidget *widget, gpointer data)
    set_pref(PREF_TODO_DAYS_TILL_DUE, num_days, NULL, TRUE);
 }
 
-void cb_checkbox_show_tooltips(GtkWidget *widget, gpointer data)
+static void cb_checkbox_show_tooltips(GtkWidget *widget, gpointer data)
 {
    if (GTK_TOGGLE_BUTTON(widget)->active)
       gtk_tooltips_enable(glob_tooltips);
@@ -272,7 +272,7 @@ void cb_checkbox_show_tooltips(GtkWidget *widget, gpointer data)
    set_pref(PREF_SHOW_TOOLTIPS, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
 }
 
-void cb_text_entry(GtkWidget *widget, gpointer data)
+static void cb_text_entry(GtkWidget *widget, gpointer data)
 {
    const char *entry_text;
    int i, found;
@@ -298,7 +298,7 @@ void cb_text_entry(GtkWidget *widget, gpointer data)
    }
 }
 
-void cb_checkbox_set_pref(GtkWidget *widget, gpointer data)
+static void cb_checkbox_set_pref(GtkWidget *widget, gpointer data)
 {
    unsigned long pref, value;
 
@@ -311,7 +311,7 @@ void cb_checkbox_set_pref(GtkWidget *widget, gpointer data)
  * upper 16 bits of data is pref to set
  * lower 16 bits of data is value to set it to
  */
-void cb_radio_set_pref(GtkWidget *widget, gpointer data)
+static void cb_radio_set_pref(GtkWidget *widget, gpointer data)
 {
    unsigned long pref, value;
 
@@ -323,7 +323,7 @@ void cb_radio_set_pref(GtkWidget *widget, gpointer data)
 
 
 #ifdef ENABLE_PLUGINS
-void cb_sync_plugin(GtkWidget *widget, gpointer data)
+static void cb_sync_plugin(GtkWidget *widget, gpointer data)
 {
    GList *plugin_list, *temp_list;
    struct plugin_s *Pplugin;

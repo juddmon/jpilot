@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.109 2010/02/28 18:56:52 judd Exp $ */
+/* $Id: sync.c,v 1.110 2010/03/03 12:50:00 rousseau Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -80,7 +80,7 @@ extern pid_t glob_child_pid;
 /****************************** Prototypes ************************************/
 
 /****************************** Main Code *************************************/
-void sig_handler(int sig)
+static void sig_handler(int sig)
 {
    int status;
 
@@ -94,7 +94,7 @@ void sig_handler(int sig)
 }
 
 #ifdef USE_LOCKING
-int sync_lock(int *fd)
+static int sync_lock(int *fd)
 {
    pid_t pid;
    char lock_file[FILENAME_MAX];
@@ -136,7 +136,7 @@ int sync_lock(int *fd)
    return EXIT_SUCCESS;
 }
 
-int sync_unlock(int fd)
+static int sync_unlock(int fd)
 {
    pid_t pid;
    char lock_file[FILENAME_MAX];
@@ -217,7 +217,7 @@ static char *get_error_str(int error)
  * For databases that we have no knowledge of only simple comparisons
  * such as record length are possible.  This is almost always good 
  * enough but single character changes will not be caught. */ 
-int match_records(char *DB_name,
+static int match_records(char *DB_name,
                   void *rrec, int rrec_len, int rattr, int rcategory,
                   void *lrec, int lrec_len, int lattr, int lcategory)
 {
@@ -377,7 +377,7 @@ static int wait_for_response(int sd)
    return command;
 }
 
-int jp_pilot_connect(int *Psd, const char *device)
+static int jp_pilot_connect(int *Psd, const char *device)
 {
    int sd;
    int ret;
@@ -430,7 +430,7 @@ int jp_pilot_connect(int *Psd, const char *device)
    return EXIT_SUCCESS;
 }
 
-void free_file_name_list(GList **Plist)
+static void free_file_name_list(GList **Plist)
 {
    GList *list, *temp_list;
 
@@ -446,7 +446,7 @@ void free_file_name_list(GList **Plist)
    *Plist=NULL;
 }
 
-void move_removed_apps(GList *file_list)
+static void move_removed_apps(GList *file_list)
 {
    DIR *dir;
    struct dirent *dirent;
@@ -505,7 +505,7 @@ void move_removed_apps(GList *file_list)
    }
 }
 
-int is_backup_dir(char *name)
+static int is_backup_dir(char *name)
 {
    int i;
 
@@ -553,7 +553,7 @@ static int compare_back_dates(char *s1, char *s2)
    return 0;
 }
 
-int sync_remove_r(char *full_path)
+static int sync_remove_r(char *full_path)
 {
    DIR *dir;
    struct dirent *dirent;
@@ -716,7 +716,7 @@ static int sync_rotate_backups(const int num_backups)
    return EXIT_SUCCESS;
 }
 
-int unpack_datebook_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
+static int unpack_datebook_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
 {
 
    struct AppointmentAppInfo ai;
@@ -736,7 +736,7 @@ int unpack_datebook_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_r
    return EXIT_SUCCESS;
 }
 
-int pack_datebook_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
+static int pack_datebook_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
 {
    struct AppointmentAppInfo ai;
    int r;
@@ -759,7 +759,7 @@ int pack_datebook_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw
    return EXIT_SUCCESS;
 }
 
-int unpack_calendar_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
+static int unpack_calendar_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
 {
 
    struct CalendarAppInfo ai;
@@ -783,7 +783,7 @@ int unpack_calendar_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_r
    return EXIT_SUCCESS;
 }
 
-int pack_calendar_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
+static int pack_calendar_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
 {
    struct CalendarAppInfo ai;
    int r;
@@ -814,7 +814,7 @@ int pack_calendar_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw
    return EXIT_SUCCESS;
 }
 
-int unpack_address_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
+static int unpack_address_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
 {
    struct AddressAppInfo ai;
    int r;
@@ -832,7 +832,7 @@ int unpack_address_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_ra
    return EXIT_SUCCESS;
 }
 
-int pack_address_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
+static int pack_address_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
 {
    struct AddressAppInfo ai;
    int r;
@@ -855,7 +855,7 @@ int pack_address_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw,
    return EXIT_SUCCESS;
 }
 
-int unpack_contact_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
+static int unpack_contact_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
 {
    struct ContactAppInfo ai;
    int r;
@@ -877,7 +877,7 @@ int unpack_contact_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_ra
    return EXIT_SUCCESS;
 }
 
-int pack_contact_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
+static int pack_contact_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
 {
    struct ContactAppInfo ai;
    int r;
@@ -910,7 +910,7 @@ int pack_contact_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw,
    return EXIT_SUCCESS;
 }
 
-int unpack_todo_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
+static int unpack_todo_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
 {
    struct ToDoAppInfo ai;
    int r;
@@ -928,7 +928,7 @@ int unpack_todo_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, 
    return EXIT_SUCCESS;
 }
 
-int pack_todo_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
+static int pack_todo_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
 {
    struct ToDoAppInfo ai;
    int r;
@@ -951,7 +951,7 @@ int pack_todo_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, in
    return EXIT_SUCCESS;
 }
 
-int unpack_memo_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
+static int unpack_memo_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
 {
    struct MemoAppInfo ai;
    int r;
@@ -975,7 +975,7 @@ int unpack_memo_cai_from_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, 
    return EXIT_SUCCESS;
 }
 
-int pack_memo_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
+static int pack_memo_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
 {
    struct MemoAppInfo ai;
    int r;
@@ -1001,7 +1001,7 @@ int pack_memo_cai_into_ai(struct CategoryAppInfo *cai, unsigned char *ai_raw, in
 /*
  * Fetch the databases from the palm if modified
  */
-void fetch_extra_DBs2(int sd, struct DBInfo info, char *palm_dbname[])
+static void fetch_extra_DBs2(int sd, struct DBInfo info, char *palm_dbname[])
 {
    struct pi_file *pi_fp;
    char full_name[FILENAME_MAX];
@@ -1082,7 +1082,7 @@ void fetch_extra_DBs2(int sd, struct DBInfo info, char *palm_dbname[])
 /*
  * Fetch the databases from the palm if modified
  */
-int fetch_extra_DBs(int sd, char *palm_dbname[])
+static int fetch_extra_DBs(int sd, char *palm_dbname[])
 {
    int cardno, start;
    struct DBInfo info;
@@ -1114,7 +1114,7 @@ int fetch_extra_DBs(int sd, char *palm_dbname[])
  * Be sure to call free_file_name_list(&file_list); before returning from
  * anywhere in this function.
  */
-int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
+static int sync_fetch(int sd, unsigned int flags, const int num_backups, int fast_sync)
 {
    struct pi_file *pi_fp;
    char full_name[FILENAME_MAX];
@@ -1617,7 +1617,7 @@ static int sync_process_install_file(int sd)
    return EXIT_SUCCESS;
 }
 
-int sync_categories(char *DB_name, int sd,
+static int sync_categories(char *DB_name, int sd,
 		    int (*unpack_cai_from_ai)(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len),
 		    int (*pack_cai_into_ai)(struct CategoryAppInfo *cai, unsigned char *ai_raw, int len)
 )
@@ -2002,7 +2002,7 @@ int sync_categories(char *DB_name, int sd,
    return EXIT_SUCCESS;
 }
 
-int slow_sync_application(char *DB_name, int sd)
+static int slow_sync_application(char *DB_name, int sd)
 {
    int db;
    int ret;
@@ -2367,7 +2367,7 @@ int slow_sync_application(char *DB_name, int sd)
    return EXIT_SUCCESS;
 }
 
-int fast_sync_local_recs(char *DB_name, int sd, int db)
+static int fast_sync_local_recs(char *DB_name, int sd, int db)
 {
    int ret;
    int num;
@@ -2728,7 +2728,7 @@ int fast_sync_local_recs(char *DB_name, int sd, int db)
  *   if new LR
  *     add LR to remote
  */
-int fast_sync_application(char *DB_name, int sd)
+static int fast_sync_application(char *DB_name, int sd)
 {
    int db;
    int ret;
@@ -2849,7 +2849,7 @@ int fast_sync_application(char *DB_name, int sd)
    return EXIT_SUCCESS;
 }
 
-int jp_install_user(const char *device, int sd, struct my_sync_info *sync_info)
+static int jp_install_user(const char *device, int sd, struct my_sync_info *sync_info)
 {
    struct PilotUser U;
 
@@ -2867,7 +2867,7 @@ int jp_install_user(const char *device, int sd, struct my_sync_info *sync_info)
    return EXIT_SUCCESS;
 }
 
-int jp_sync(struct my_sync_info *sync_info)
+static int jp_sync(struct my_sync_info *sync_info)
 {
    int sd;
    int ret;

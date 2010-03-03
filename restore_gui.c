@@ -1,4 +1,4 @@
-/* $Id: restore_gui.c,v 1.27 2009/05/06 20:14:01 rousseau Exp $ */
+/* $Id: restore_gui.c,v 1.28 2010/03/03 12:50:00 rousseau Exp $ */
 
 /*******************************************************************************
  * restore_gui.c
@@ -36,6 +36,7 @@
 #include "prefs.h"
 #include "sync.h"
 #include "log.h"
+#include "restore.h"
 
 /******************************* Global vars **********************************/
 static GtkWidget *user_entry;

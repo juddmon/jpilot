@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.162 2009/11/08 17:12:10 rousseau Exp $ */
+/* $Id: todo_gui.c,v 1.163 2010/03/03 12:50:00 rousseau Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -394,7 +394,7 @@ Description: %s\nNote: %s\n", due, todo->priority, complete,
 /*
  * Start Import Code
  */
-int cb_todo_import(GtkWidget *parent_window, const char *file_path, int type)
+static int cb_todo_import(GtkWidget *parent_window, const char *file_path, int type)
 {
    FILE *in;
    char text[65536];
@@ -624,7 +624,7 @@ int todo_import(GtkWidget *window)
  * Start Export code
  */
 
-void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
+static void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
                        int type, const char *filename)
 {
    MyToDo *mtodo;
@@ -916,7 +916,7 @@ static int find_menu_cat_pos(int cat)
    }
 }
 
-void cb_delete_todo(GtkWidget *widget,
+static void cb_delete_todo(GtkWidget *widget,
                     gpointer   data)
 {
    MyToDo *mtodo;
@@ -962,7 +962,7 @@ void cb_delete_todo(GtkWidget *widget,
    }
 }
 
-void cb_undelete_todo(GtkWidget *widget,
+static void cb_undelete_todo(GtkWidget *widget,
                       gpointer   data)
 {
    MyToDo *mtodo;
@@ -1110,7 +1110,7 @@ static void cb_category(GtkWidget *item, int selection)
    }
 }
 
-void cb_check_button_no_due_date(GtkWidget *widget, gpointer data)
+static void cb_check_button_no_due_date(GtkWidget *widget, gpointer data)
 {
    long till_due;
    struct tm *now;
@@ -1194,7 +1194,7 @@ int todo_clear_details(void)
    return EXIT_SUCCESS;
 }
 
-int todo_get_details(struct ToDo *new_todo, unsigned char *attrib)
+static int todo_get_details(struct ToDo *new_todo, unsigned char *attrib)
 {
    int i;
    GtkTextIter start_iter;
@@ -1357,7 +1357,7 @@ static void clear_mytodos(MyToDo *mtodo)
 
 
 /* Function is used to sort clist based on the completed checkbox */
-gint GtkClistCompareCheckbox(GtkCList *clist,
+static gint GtkClistCompareCheckbox(GtkCList *clist,
                              gconstpointer ptr1,
                              gconstpointer ptr2)
 {
@@ -1388,7 +1388,7 @@ gint GtkClistCompareCheckbox(GtkCList *clist,
 }
 
 /* Function is used to sort clist based on the Due Date field */
-gint GtkClistCompareDates(GtkCList *clist,
+static gint GtkClistCompareDates(GtkCList *clist,
                           gconstpointer ptr1,
                           gconstpointer ptr2)
 {

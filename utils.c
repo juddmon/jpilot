@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.179 2010/02/28 18:58:25 judd Exp $ */
+/* $Id: utils.c,v 1.180 2010/03/03 12:50:00 rousseau Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -380,7 +380,7 @@ static gboolean cb_destroy_dialog(GtkWidget *widget)
    return FALSE;
 }
 
-void cb_dialog_button(GtkWidget *widget,
+static void cb_dialog_button(GtkWidget *widget,
 			gpointer   data)
 {
    dialog_result=GPOINTER_TO_INT(data);
@@ -650,7 +650,7 @@ void cleanup_path(char *path)
 }
 
 /* Compacts pc3 file by removing records which have been synced */
-int cleanup_pc_file(char *DB_name, unsigned int *max_id)
+static int cleanup_pc_file(char *DB_name, unsigned int *max_id)
 {
    PC3RecordHeader header;
    char pc_filename[FILENAME_MAX];

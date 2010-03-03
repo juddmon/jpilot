@@ -1,4 +1,4 @@
-/* $Id: todo.c,v 1.47 2009/09/24 03:58:19 rikster5 Exp $ */
+/* $Id: todo.c,v 1.48 2010/03/03 12:50:00 rousseau Exp $ */
 
 /*******************************************************************************
  * todo.c
@@ -257,7 +257,7 @@ int get_todos2(ToDoList **todo_list, int sort_order,
  * This function just checks some todo fields to make sure they are valid.
  * It truncates the description and note fields if necessary.
  */
-void pc_todo_validate_correct(struct ToDo *todo)
+static void pc_todo_validate_correct(struct ToDo *todo)
 {
    if (todo->description) {
       if ((strlen(todo->description)+1 > MAX_TODO_DESC_LEN)) {
@@ -338,7 +338,7 @@ int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib,
  * category, priority
  * category, due date
  */
-int todo_compare(const void *v1, const void *v2)
+static int todo_compare(const void *v1, const void *v2)
 {
    time_t t1, t2;
    int r;

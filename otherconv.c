@@ -1,4 +1,4 @@
-/* $Id: otherconv.c,v 1.42 2009/08/01 16:47:56 rikster5 Exp $ */
+/* $Id: otherconv.c,v 1.43 2010/03/03 12:49:59 rousseau Exp $ */
 
 /*******************************************************************************
  * otherconv.c
@@ -69,7 +69,7 @@ inline size_t oc_strnlen(const char *s, size_t maxlen)
    return min(strlen(s), maxlen); 
 }
 
-void oc_free_iconv(const char *funcname, GIConv conv, char *convname) 
+static void oc_free_iconv(const char *funcname, GIConv conv, char *convname) 
 {
    if (conv != NULL) {
       if (g_iconv_close(conv) != 0) {
@@ -82,7 +82,7 @@ void oc_free_iconv(const char *funcname, GIConv conv, char *convname)
 /*
  * Convert char_set integer code to iconv charset text string
  */
-char *char_set_to_text(int char_set)
+static char *char_set_to_text(int char_set)
 {
    switch (char_set) {
     case CHAR_SET_1250_UTF:

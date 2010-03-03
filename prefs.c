@@ -1,4 +1,4 @@
-/* $Id: prefs.c,v 1.86 2009/05/30 16:09:12 rousseau Exp $ */
+/* $Id: prefs.c,v 1.87 2010/03/03 12:49:59 rousseau Exp $ */
 
 /*******************************************************************************
  * prefs.c
@@ -614,7 +614,7 @@ long get_pref_int_default(int which, long defval)
  * Treats src==NULL as ""
  * Writes NULL at end of string
  */
-char *pref_lstrncpy_realloc(char **dest, const char *src, int *size, int max_size)
+static char *pref_lstrncpy_realloc(char **dest, const char *src, int *size, int max_size)
 {
    int new_size, len;
    const char null_str[]="";

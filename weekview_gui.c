@@ -1,4 +1,4 @@
-/* $Id: weekview_gui.c,v 1.48 2010/02/28 19:02:34 judd Exp $ */
+/* $Id: weekview_gui.c,v 1.49 2010/03/03 12:50:00 rousseau Exp $ */
 
 /*******************************************************************************
  * weekview_gui.c
@@ -57,6 +57,7 @@ static gboolean cb_destroy(GtkWidget *widget)
    return FALSE;
 }
 
+void cb_weekview_quit(GtkWidget *widget, gpointer data);
 void cb_weekview_quit(GtkWidget *widget, gpointer data)
 {
    int w, h;
@@ -84,7 +85,7 @@ static void cb_week_print(GtkWidget *widget, gpointer data)
    }
 }
 
-void freeze_weeks_appts(void)
+static void freeze_weeks_appts(void)
 {
    int i;
 
@@ -93,7 +94,7 @@ void freeze_weeks_appts(void)
    }
 }
 
-void thaw_weeks_appts(void)
+static void thaw_weeks_appts(void)
 {
    int i;
 

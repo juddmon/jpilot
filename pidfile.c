@@ -32,6 +32,7 @@
 #include "i18n.h"
 #include "log.h"
 #include "utils.h"
+#include "pidfile.h"
 
 /********************************* Constants **********************************/
 #define JPILOT_PIDFILE  "jpilot.pid"

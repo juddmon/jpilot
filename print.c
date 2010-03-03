@@ -1,4 +1,4 @@
-/* $Id: print.c,v 1.46 2010/02/28 19:00:07 judd Exp $ */
+/* $Id: print.c,v 1.47 2010/03/03 12:50:00 rousseau Exp $ */
 
 /*******************************************************************************
  * print.c
@@ -70,7 +70,7 @@ char *PaperSizes[] = { "Letter", "Legal", "Statement", "Tabloid", "Ledger",
                        "Filo" };
 
 /****************************** Main Code *************************************/
-FILE *print_open(void)
+static FILE *print_open(void)
 {
    const char *command;
 
@@ -82,33 +82,33 @@ FILE *print_open(void)
    }
 }
 
-void print_close(FILE *f)
+static void print_close(FILE *f)
 {
    pclose(f);
 }
 
-int courier_12(void)
+static int courier_12(void)
 {
    /* fprintf(out, "/Courier 12 selectfont\n"); */
    fprintf(out, "%cC12\n", FLAG_CHAR);
    return EXIT_SUCCESS;
 }
 
-int courier_bold_12(void)
+static int courier_bold_12(void)
 {
    /* fprintf(out, "/Courier-Bold 12 selectfont\n"); */
    fprintf(out, "%cCB12\n", FLAG_CHAR);
    return EXIT_SUCCESS;
 }
 
-int clip_to_box(float x1, float y1, float x2, float y2)
+static int clip_to_box(float x1, float y1, float x2, float y2)
 {
    fprintf(out, "%g inch %g inch %g inch %g inch rectclip\n",
            x1, y1, x2 - x1, y2 - y1);
    return EXIT_SUCCESS;
 }
 
-int puttext(float x, float y, char *text)
+static int puttext(float x, float y, char *text)
 {
    int len;
    char *buf;
@@ -122,7 +122,7 @@ int puttext(float x, float y, char *text)
    return EXIT_SUCCESS;
 }
 
-int header(void)
+static int header(void)
 {
    time_t ltime;
 
@@ -156,7 +156,7 @@ int header(void)
    return EXIT_SUCCESS;
 }
 
-int print_dayview(struct tm *date, CalendarEventList *ce_list)
+static int print_dayview(struct tm *date, CalendarEventList *ce_list)
 {
    char str[80];
    char datef[80];
@@ -328,7 +328,7 @@ int print_days_appts(struct tm *date)
    return EXIT_SUCCESS;
 }
 
-int f_indent_print(FILE *f, int indent, char *str) {
+static int f_indent_print(FILE *f, int indent, char *str) {
    char *P;
    int i, col;
 
@@ -384,7 +384,7 @@ void ps_strncat(char *dest, char *src, int n)
  *		date passed in.
  *----------------------------------------------------------------------*/
 
-int days_in_mon(struct tm *date)
+static int days_in_mon(struct tm *date)
 {
     int days_in_month[]={ 31,28,31,30,31,30,31,31,30,31,30,31 };
 
@@ -582,7 +582,7 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
  * reset_first_last	Routine to reset max/min appointment times
  *----------------------------------------------------------------------*/
 
-void reset_first_last(void)
+static void reset_first_last(void)
 {
    first_hour = 25;
    first_min  = 61;
@@ -594,7 +594,7 @@ void reset_first_last(void)
  * check_first_last	Routine to track max/min appointment times
  *----------------------------------------------------------------------*/
 
-void check_first_last(CalendarEventList *cel)
+static void check_first_last(CalendarEventList *cel)
 {
    struct tm *ApptTime;
    ApptTime = &(cel->mce.ce.begin);
@@ -798,7 +798,7 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
  * Address code
  */
 
-int print_address_header(void)
+static int print_address_header(void)
 {
    time_t ltime;
    struct tm *date;

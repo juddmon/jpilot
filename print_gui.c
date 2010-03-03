@@ -1,4 +1,4 @@
-/* $Id: print_gui.c,v 1.22 2009/01/14 04:51:31 rikster5 Exp $ */
+/* $Id: print_gui.c,v 1.23 2010/03/03 12:50:00 rousseau Exp $ */
 
 /*******************************************************************************
  * print_gui.c
@@ -31,6 +31,7 @@
 #include "prefs.h"
 #include "prefs_gui.h"
 #include "log.h"
+#include "print.h"
 
 /******************************* Global vars **********************************/
 static GtkWidget *lines_entry;
