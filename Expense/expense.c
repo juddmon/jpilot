@@ -1,4 +1,4 @@
-/* $Id: expense.c,v 1.69 2009/08/28 04:58:48 rikster5 Exp $ */
+/* $Id: expense.c,v 1.70 2010/03/03 11:59:39 rousseau Exp $ */
 
 /*******************************************************************************
  * expense.c
@@ -246,7 +246,7 @@ int plugin_pack_cai_into_ai(struct CategoryAppInfo *cai,
    return EXIT_SUCCESS;
 }
 
-gint sort_compare_date(GtkCList *clist,
+static gint sort_compare_date(GtkCList *clist,
                        gconstpointer ptr1,
                        gconstpointer ptr2)
 {
@@ -699,7 +699,7 @@ static void exp_clear_details(void)
 }
 
 /* returns position, position starts at zero */
-int currency_id_to_position(int currency)
+static int currency_id_to_position(int currency)
 {
    int i;
    int found=0;
@@ -714,7 +714,7 @@ int currency_id_to_position(int currency)
 }
 
 /* returns currency id, position starts at zero */
-int position_to_currency_id(int position)
+static int position_to_currency_id(int position)
 {
    if (position<MAX_CURRENCYS) {
       return glob_currency[position].currency;
