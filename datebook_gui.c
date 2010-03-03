@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.210 2010/02/28 19:21:59 judd Exp $ */
+/* $Id: datebook_gui.c,v 1.211 2010/03/03 10:32:46 rousseau Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -1058,7 +1058,7 @@ void appt_export_ok(int type, const char *filename)
 			fprintf(out, ",");
 		     }
 		     wcomma = 1;
-		     fprintf(out, wday[i]);
+		     fprintf(out, "%s", wday[i]);
 		  }
 	       }
 	       break;
