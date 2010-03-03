@@ -1,4 +1,4 @@
-/* $Id: alarms.c,v 1.51 2010/02/28 18:51:00 judd Exp $ */
+/* $Id: alarms.c,v 1.52 2010/03/03 12:07:45 rousseau Exp $ */
 
 /*******************************************************************************
  * alarms.c
@@ -40,6 +40,7 @@
 
 #include <pi-calendar.h>
 
+#include "alarms.h"
 #include "i18n.h"
 #include "utils.h"
 #include "calendar.h"
@@ -160,7 +161,7 @@ static gboolean cb_destroy_dialog(GtkWidget *widget)
    return TRUE;
 }
 
-int dialog_alarm(char *title, char *reason,
+static int dialog_alarm(char *title, char *reason,
 		 char *time_str, char *desc_str, char *note_str,
 		 unsigned int unique_id,
 		 time_t remind_time)
@@ -282,7 +283,7 @@ int dialog_alarm(char *title, char *reason,
 }
 /* End Alarm GUI */
 
-time_t tm_copy_with_dst_adj(struct tm *dest, struct tm *src)
+static time_t tm_copy_with_dst_adj(struct tm *dest, struct tm *src)
 {
    memcpy(dest, src, sizeof(struct tm));
    dest->tm_isdst=-1;
@@ -346,7 +347,7 @@ void alarms_add_to_list(unsigned int unique_id,
    Plast_alarm_list=temp_alarm;
 }
 
-void alarms_remove_from_to_list(unsigned int unique_id)
+static void alarms_remove_from_to_list(unsigned int unique_id)
 {
    struct jp_alarms *temp_alarm, *prev_alarm, *next_alarm;
 
@@ -380,7 +381,7 @@ void alarms_remove_from_to_list(unsigned int unique_id)
    }
 }
 
-void free_alarms_list(int mask)
+static void free_alarms_list(int mask)
 {
    struct jp_alarms *ta, *ta_next;
 
@@ -401,7 +402,7 @@ void free_alarms_list(int mask)
    }
 }
 
-void alarms_write_file(void)
+static void alarms_write_file(void)
 {
    FILE *out;
    char line[256];
@@ -459,7 +460,7 @@ void alarms_write_file(void)
  * This attempts to make the command safe.
  * I'm sure I'm missing things.
  */
-void make_command_safe(char *command)
+static void make_command_safe(char *command)
 {
    int i, len;
    char c;
@@ -479,7 +480,7 @@ void make_command_safe(char *command)
  *   Do alarm setting (play sound, or whatever).
  *   if user postpones then put in postponed alarm list.
  */
-int alarms_do_one(struct CalendarEvent *ce,
+static int alarms_do_one(struct CalendarEvent *ce,
 		  unsigned long unique_id,
 		  time_t t_alarm,
 		  AlarmType type)
@@ -614,7 +615,7 @@ int alarms_do_one(struct CalendarEvent *ce,
  * See if next_alarm is due in less than ALARM_INTERVAL/2 secs.
  * If it is, then do_alarm and find_next_alarm.
  */
-gint cb_timer_alarms(gpointer data)
+static gint cb_timer_alarms(gpointer data)
 {
    struct jp_alarms *temp_alarm, *ta_next;
    CalendarEventList *alm_list;

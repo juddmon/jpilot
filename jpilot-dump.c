@@ -1,4 +1,4 @@
-/* $Id: jpilot-dump.c,v 1.36 2010/03/03 10:24:29 rousseau Exp $ */
+/* $Id: jpilot-dump.c,v 1.37 2010/03/03 12:16:27 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot-dump.c
@@ -45,6 +45,7 @@
 #include "i18n.h"
 #include "otherconv.h"
 #include "prefs.h"
+#include "sync.h"
 
 /********************************* Constants **********************************/
 /* RFCs use CRLF for Internet newline */
@@ -81,7 +82,7 @@ int pipe_to_parent;
 /* End hacks */
 
 /****************************** Main Code *************************************/
-void fprint_jpd_usage_string(FILE *out)
+static void fprint_jpd_usage_string(FILE *out)
 {
    fprintf(out, "%s-dump [ +format [-v] || [-h] || [-f] || [-D] || [-i] || [-A] || [-T] || [-M] || [-N] ]\n", EPN);
    fprintf(out, "%s", _(" +D +A +T +M format like date +format.\n"));
@@ -99,12 +100,13 @@ void fprint_jpd_usage_string(FILE *out)
 
 /* Hacks: jpilot-dump is a command-line tool and not all subroutines need
  *        coding. */
+void output_to_pane(const char *str);
 void output_to_pane(const char *str) {}
-int sync_once(void *sync_info) { return EXIT_SUCCESS; }
+int sync_once(struct my_sync_info *sync_info) { return EXIT_SUCCESS; }
 /* End hacks */
 
 /* convert from UTF8 to local encoding */
-void utf8_to_local(char *str)
+static void utf8_to_local(char *str)
 {
    char *local_buf;
    
@@ -120,7 +122,7 @@ void utf8_to_local(char *str)
 }
 
 /* Parse the string and replace dangerous characters with spaces */
-void takeoutfunnies(char *str)
+static void takeoutfunnies(char *str)
 {
    int i;
 
@@ -140,7 +142,7 @@ void takeoutfunnies(char *str)
    }
 }
 
-int dumpical(void)
+static int dumpical(void)
 {
    MyAppointment *mappt;
    AppointmentList *al, *temp_list;
@@ -379,7 +381,7 @@ int dumpical(void)
    return EXIT_SUCCESS;
 }
 
-int dumpbook(void)
+static int dumpbook(void)
 {
    AppointmentList *tal, *al;
    int num, i;
@@ -645,7 +647,7 @@ int dumpbook(void)
    return EXIT_SUCCESS;
 }
 
-int dumpaddress(void)
+static int dumpaddress(void)
 {
    AddressList *tal, *al;
    int num, i;
@@ -768,7 +770,7 @@ int dumpaddress(void)
 }
 
 
-int dumptodo(void)
+static int dumptodo(void)
 {
    ToDoList *tal, *al;
    int num, i;
@@ -1031,7 +1033,7 @@ int dumptodo(void)
    return EXIT_SUCCESS;
 }
 
-int dumpmemo(void)
+static int dumpmemo(void)
 {
    MemoList *tal, *al;
    int num,i;

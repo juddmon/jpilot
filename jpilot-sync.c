@@ -1,4 +1,4 @@
-/* $Id: jpilot-sync.c,v 1.29 2009/02/14 17:32:30 rousseau Exp $ */
+/* $Id: jpilot-sync.c,v 1.30 2010/03/03 12:12:44 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot-sync.c
@@ -53,11 +53,12 @@ pid_t jpilot_master_pid = -1;
 
 /****************************** Main Code *************************************/
 /* hack */
+void output_to_pane(const char *str);
 void output_to_pane(const char *str) { return; }
 
 void cb_app_button(GtkWidget *widget, gpointer data) { return; }
 
-void fprint_jps_usage_string(FILE *out)
+static void fprint_jps_usage_string(FILE *out)
 {
    fprintf(out, "%s-sync [ -v || -h || [-d] [-P] [-b] [-l] [-p port] ]\n", EPN);
    fprintf(out, "%s", _(" J-Pilot preferences are read to get port, rate, number of backups, etc.\n"));
