@@ -1,4 +1,4 @@
-/* $Id: jpilot-dump.c,v 1.35 2010/02/28 19:24:22 judd Exp $ */
+/* $Id: jpilot-dump.c,v 1.36 2010/03/03 10:24:29 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot-dump.c
@@ -297,7 +297,7 @@ int dumpical(void)
                      printf(",");
                   }
                   wcomma = 1;
-                  printf(wday[i]);
+                  printf("%s", wday[i]);
                }
             }
             break;
