@@ -1,4 +1,4 @@
-/* $Id: libplugin.h,v 1.29 2009/08/28 23:06:51 rikster5 Exp $ */
+/* $Id: libplugin.h,v 1.30 2010/03/03 12:02:40 rousseau Exp $ */
 
 /*******************************************************************************
  * libplugin.h
@@ -199,6 +199,9 @@ struct search_result
    struct search_result *next;
 };
 
+
+void plugin_version(int *major_version, int *minor_version);
+int plugin_get_help_name(char *name, int len);
 int plugin_get_name(char *name, int len);
 int plugin_get_menu_name(char *name, int len);
 int plugin_get_db_name(char *db_name, int len);
