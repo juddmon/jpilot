@@ -1,4 +1,4 @@
-/* $Id: address.c,v 1.57 2009/09/24 03:58:18 rikster5 Exp $ */
+/* $Id: address.c,v 1.58 2010/03/03 14:42:02 rousseau Exp $ */
 
 /*******************************************************************************
  * address.c
@@ -48,7 +48,7 @@ static int glob_sort_rule;
 int addr_sort_order;
 
 /****************************** Main Code *************************************/
-int address_compare(const void *v1, const void *v2)
+static int address_compare(const void *v1, const void *v2)
 {
    AddressList **al1, **al2;
    struct Address *a1, *a2;
@@ -240,7 +240,7 @@ int address_compare(const void *v1, const void *v2)
 }
 
 /* sort_order: SORT_ASCENDING | SORT_DESCENDING */
-int address_sort(AddressList **al, int sort_order)
+static int address_sort(AddressList **al, int sort_order)
 {
    AddressList *temp_al;
    AddressList **sort_al;

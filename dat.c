@@ -1,4 +1,4 @@
-/* $Id: dat.c,v 1.22 2010/02/28 18:52:09 judd Exp $ */
+/* $Id: dat.c,v 1.23 2010/03/03 14:42:02 rousseau Exp $ */
 
 /*******************************************************************************
  * dat.c
@@ -160,7 +160,7 @@ static int get_categories(FILE *in, struct CategoryAppInfo *ai)
    return count;
 }
 
-int get_repeat(FILE *in, struct Appointment *appt)
+static int get_repeat(FILE *in, struct Appointment *appt)
 {
    time_t t;
    struct tm *now;
@@ -426,7 +426,7 @@ int print_field(struct field *f)
 }
 #endif
 
-int get_field(FILE *in, struct field *f)
+static int get_field(FILE *in, struct field *f)
 {
    unsigned char str_long[4];
    long type;
@@ -499,7 +499,7 @@ int dat_check_if_dat_file(FILE *in)
    return EXIT_SUCCESS;
 }
 
-int dat_read_header(FILE *in,
+static int dat_read_header(FILE *in,
 		    int expected_field_count,
 		    char *schema,
 		    struct CategoryAppInfo *ai,

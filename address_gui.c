@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.248 2010/02/28 20:37:10 judd Exp $ */
+/* $Id: address_gui.c,v 1.249 2010/03/03 14:42:02 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -433,7 +433,7 @@ int address_print(void)
    return EXIT_SUCCESS;
 }
 
-GString *contact_to_gstring(struct Contact *cont)
+static GString *contact_to_gstring(struct Contact *cont)
 {
    GString *s;
    int i;
@@ -523,7 +523,7 @@ GString *contact_to_gstring(struct Contact *cont)
 /*
  * Start Import Code
  */
-int cb_addr_import(GtkWidget *parent_window, const char *file_path, int type)
+static int cb_addr_import(GtkWidget *parent_window, const char *file_path, int type)
 {
    FILE *in;
    char text[65536];
@@ -862,7 +862,7 @@ static char *vCardMapType(int label)
    }
 }
 
-void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
+static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 		       int type, const char *filename)
 {
    MyContact *mcont;
@@ -1496,7 +1496,7 @@ int address_export(GtkWidget *window)
 /*
  * End Export Code
  */
-void cb_resize_column (GtkCList *clist,
+static void cb_resize_column (GtkCList *clist,
                        gint column,
                        gint width,
                        gpointer user_data)
@@ -1543,7 +1543,7 @@ static int find_menu_cat_pos(int cat)
 }
 
 
-void cb_delete_address(GtkWidget *widget, gpointer data)
+static void cb_delete_address(GtkWidget *widget, gpointer data)
 {
    MyAddress maddr;
    MyContact *mcont;
@@ -1600,7 +1600,7 @@ void cb_delete_address(GtkWidget *widget, gpointer data)
    }
 }
 
-void cb_delete_contact(GtkWidget *widget, gpointer data)
+static void cb_delete_contact(GtkWidget *widget, gpointer data)
 {
    MyContact *mcont;
    int flag;
@@ -1646,7 +1646,7 @@ void cb_delete_contact(GtkWidget *widget, gpointer data)
    }
 }
 
-void cb_delete_address_or_contact(GtkWidget *widget, gpointer data)
+static void cb_delete_address_or_contact(GtkWidget *widget, gpointer data)
 {
    if (address_version==0) {
       cb_delete_address(widget, data);
@@ -1656,7 +1656,7 @@ void cb_delete_address_or_contact(GtkWidget *widget, gpointer data)
 }
 
 
-void cb_undelete_address(GtkWidget *widget,
+static void cb_undelete_address(GtkWidget *widget,
 		         gpointer   data)
 {
    MyContact *mcont;
@@ -1712,7 +1712,7 @@ static void cb_cancel(GtkWidget *widget, gpointer data)
 }
 
 /* TODO, this needs converted to Contacts */
-void cb_resort(GtkWidget *widget,
+static void cb_resort(GtkWidget *widget,
 	       gpointer   data)
 {
    MyAddress *maddr;
@@ -1748,7 +1748,7 @@ void cb_resort(GtkWidget *widget,
    }
 }
 
-void cb_phone_menu(GtkWidget *item, unsigned int value)
+static void cb_phone_menu(GtkWidget *item, unsigned int value)
 {
    if (!item)
      return;
@@ -1759,7 +1759,7 @@ void cb_phone_menu(GtkWidget *item, unsigned int value)
    }
 }
 
-void cb_IM_type_menu(GtkWidget *item, unsigned int value)
+static void cb_IM_type_menu(GtkWidget *item, unsigned int value)
 {
    if (!item)
      return;
@@ -1775,7 +1775,7 @@ void cb_IM_type_menu(GtkWidget *item, unsigned int value)
  * The next to least significant byte is the address type menu
  * that is being selected (there are 3 addresses and 3 pulldown menus)
  */
-void cb_address_type_menu(GtkWidget *item, unsigned int value)
+static void cb_address_type_menu(GtkWidget *item, unsigned int value)
 {
    int menu, selection;
    int address_i, i;
@@ -1804,7 +1804,7 @@ void cb_address_type_menu(GtkWidget *item, unsigned int value)
    }
 }
 
-void cb_notebook_changed(GtkWidget *widget,
+static void cb_notebook_changed(GtkWidget *widget,
 			 GtkWidget *widget2,
 			 int        page,
 			 gpointer   data)
@@ -1981,7 +1981,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    }
 }
 
-void addr_clear_details(void)
+static void addr_clear_details(void)
 {
    int i;
    int new_cat;
@@ -2093,7 +2093,7 @@ void addr_clear_details(void)
    connect_changed_signals(CONNECT_SIGNALS);
 }
 
-void cb_address_clear(GtkWidget *widget,
+static void cb_address_clear(GtkWidget *widget,
 		      gpointer   data)
 {
    addr_clear_details();
@@ -2106,7 +2106,7 @@ void cb_address_clear(GtkWidget *widget,
 /* Attempt to make the best possible string out of whatever garbage we find
  * Remove illegal characters, stop at carriage return and at least 1 digit
  */
-void parse_phone_str(char *dest, char *src, int max_len)
+static void parse_phone_str(char *dest, char *src, int max_len)
 {
    int i1, i2;
 
@@ -2125,7 +2125,7 @@ void parse_phone_str(char *dest, char *src, int max_len)
    dest[i2]='\0';
 }
 
-void email_contact(GtkWidget *widget, gchar *str)
+static void email_contact(GtkWidget *widget, gchar *str)
 {
    char command[1024];
    const char *pref_command;
@@ -2144,7 +2144,7 @@ void email_contact(GtkWidget *widget, gchar *str)
    system(command);
 }
 
-void dial_contact(GtkWidget *widget, gchar *str)
+static void dial_contact(GtkWidget *widget, gchar *str)
 {
    char *Px;
    char number[100];
@@ -2162,7 +2162,7 @@ void dial_contact(GtkWidget *widget, gchar *str)
    dialog_dial(GTK_WINDOW(gtk_widget_get_toplevel(widget)), number, ext);
 }
 
-void cb_dial_or_mail(GtkWidget *widget, gpointer data)
+static void cb_dial_or_mail(GtkWidget *widget, gpointer data)
 {
    GtkWidget *text;
    gchar *str;
@@ -2189,7 +2189,7 @@ void cb_dial_or_mail(GtkWidget *widget, gpointer data)
    g_free(str);
 }
 
-void cb_address_quickfind(GtkWidget *widget,
+static void cb_address_quickfind(GtkWidget *widget,
 			  gpointer   data)
 {
    const char *entry_text;
@@ -2417,7 +2417,7 @@ static void cb_check_button_reminder(GtkWidget *widget, gpointer data)
 }
 
 /* Photo Code */
-GtkWidget *image_from_data(void *buf, size_t size)
+static GtkWidget *image_from_data(void *buf, size_t size)
 {
    GdkPixbufLoader *loader;
    GError *error;
@@ -2439,7 +2439,7 @@ GtkWidget *image_from_data(void *buf, size_t size)
 
 typedef void (*sighandler_t)(int);
 
-int change_photo(char *filename)
+static int change_photo(char *filename)
 {
    FILE *in;
    char command[FILENAME_MAX + 256];
@@ -2530,7 +2530,7 @@ static gboolean cb_photo_browse_destroy(GtkWidget *widget)
    return FALSE;
 }
 
-int browse_photo(GtkWidget *main_window)
+static int browse_photo(GtkWidget *main_window)
 {
    GtkWidget *filesel;
    const char *svalue;
@@ -2584,7 +2584,7 @@ int browse_photo(GtkWidget *main_window)
    return 0;
 }
 
-void cb_photo_menu_select(GtkWidget       *item,
+static void cb_photo_menu_select(GtkWidget       *item,
 			  GtkPositionType  selected)
 {
    if (selected == 1) {

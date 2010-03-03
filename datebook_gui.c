@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.211 2010/03/03 10:32:46 rousseau Exp $ */
+/* $Id: datebook_gui.c,v 1.212 2010/03/03 14:42:03 rousseau Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -215,7 +215,7 @@ static void connect_changed_signals(int con_or_dis);
 static int datebook_export_gui(GtkWidget *main_window, int x, int y);
 
 /****************************** Main Code *************************************/
-int datebook_to_text(struct CalendarEvent *ce, char *text, int len)
+static int datebook_to_text(struct CalendarEvent *ce, char *text, int len)
 {
    int i;
    const char *short_date;
@@ -404,7 +404,7 @@ int datebook_to_text(struct CalendarEvent *ce, char *text, int len)
 
 /*************** Start Import Code ***************/
 
-int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int type)
+static int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int type)
 {
    FILE *in;
    char text[65536];
@@ -723,7 +723,7 @@ int datebook_import(GtkWidget *window)
 /*************** Start Export Code ***************/
 
 /* TODO rename */
-void appt_export_ok(int type, const char *filename)
+static void appt_export_ok(int type, const char *filename)
 {
    MyCalendarEvent *mce;
    CalendarEventList *cel, *temp_list;
@@ -1394,7 +1394,7 @@ static void cb_datebk_category(GtkWidget *widget, gpointer data)
    datebook_update_clist();
 }
 
-void cb_datebk_cats(GtkWidget *widget, gpointer data)
+static void cb_datebk_cats(GtkWidget *widget, gpointer data)
 {
    struct CalendarAppInfo cai;
    int i;
@@ -1569,7 +1569,7 @@ int datebook_print(int type)
    return EXIT_SUCCESS;
 }
 
-void cb_monthview(GtkWidget *widget, gpointer data)
+static void cb_monthview(GtkWidget *widget, gpointer data)
 {
    struct tm date;
 
@@ -1652,7 +1652,7 @@ static void cb_cal_dialog(GtkWidget *widget, gpointer data)
    }
 }
 
-void cb_weekview(GtkWidget *widget, gpointer data)
+static void cb_weekview(GtkWidget *widget, gpointer data)
 {
    struct tm date;
 
@@ -1738,7 +1738,7 @@ static void init(void)
    clist_row_selected=0;
 }
 
-int dialog_4_or_last(int dow)
+static int dialog_4_or_last(int dow)
 {
    char *days[]={
       N_("Sunday"),
@@ -1764,7 +1764,7 @@ int dialog_4_or_last(int dow)
 			 text, 2, button_text);
 }
 
-int dialog_current_all_cancel(void)
+static int dialog_current_all_cancel(void)
 {
    char text[]=
       N_("This is a repeating event.\n"
@@ -1811,7 +1811,7 @@ int dialog_easter(int mday)
 /* dow = day of week 0-6, where 0=Sunday, etc. */
 /* */
 /* Returns an enum from DayOfMonthType defined in pi-datebook.h */
-long get_dom_type(int month, int dom, int year, int dow)
+static long get_dom_type(int month, int dom, int year, int dow)
 {
    long r;
    int ndim;     /* ndim = number of days in month 28-31 */
@@ -2950,7 +2950,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
 }
 
 
-void cb_delete_appt(GtkWidget *widget, gpointer data)
+static void cb_delete_appt(GtkWidget *widget, gpointer data)
 {
    MyCalendarEvent *mce;
    struct CalendarEvent *ce;
@@ -3038,7 +3038,7 @@ void cb_delete_appt(GtkWidget *widget, gpointer data)
    }
 }
 
-void cb_undelete_appt(GtkWidget *widget, gpointer data)
+static void cb_undelete_appt(GtkWidget *widget, gpointer data)
 {
    MyCalendarEvent *mce;
    int flag;
@@ -3090,7 +3090,7 @@ void cb_undelete_appt(GtkWidget *widget, gpointer data)
    highlight_days();
 }
 
-void cb_check_button_alarm(GtkWidget *widget, gpointer data)
+static void cb_check_button_alarm(GtkWidget *widget, gpointer data)
 {
    if (GTK_TOGGLE_BUTTON(widget)->active) {
       gtk_widget_show(hbox_alarm2);
@@ -3099,7 +3099,7 @@ void cb_check_button_alarm(GtkWidget *widget, gpointer data)
    }
 }
 
-void cb_radio_button_no_time(GtkWidget *widget, gpointer data)
+static void cb_radio_button_no_time(GtkWidget *widget, gpointer data)
 {
    /* GTK does not handle nested callbacks well!  
     * When a time is selected from the drop-down menus cb_menu_time
@@ -3123,7 +3123,7 @@ void cb_radio_button_no_time(GtkWidget *widget, gpointer data)
    set_begin_end_labels(&begin_date, &end_date, UPDATE_DATE_ENTRIES);
 }
 
-void cb_check_button_endon(GtkWidget *widget, gpointer data)
+static void cb_check_button_endon(GtkWidget *widget, gpointer data)
 {
    GtkWidget *Pbutton;
    struct tm *Pt;
@@ -3465,7 +3465,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    return;
 }
 
-void set_date_labels(void)
+static void set_date_labels(void)
 {
    struct tm now;
    char str[50];
@@ -3610,7 +3610,7 @@ static void cb_category(GtkWidget *item, int selection)
 }
 
 /* When a calendar day is pressed */
-void cb_cal_changed(GtkWidget *widget,
+static void cb_cal_changed(GtkWidget *widget,
 		    gpointer   data)
 {
    int num;
@@ -3856,7 +3856,7 @@ int datebook_refresh(int first, int do_init)
    return EXIT_SUCCESS;
 }
 
-void cb_menu_time(GtkWidget *item,
+static void cb_menu_time(GtkWidget *item,
 		  gint data)
 {
    struct tm *Ptm;
@@ -4361,7 +4361,7 @@ static void connect_changed_signals(int con_or_dis)
    }
 }
 
-GtkWidget *create_time_menu(int flags)
+static GtkWidget *create_time_menu(int flags)
 {
    GtkWidget *option;
    GtkWidget *menu;
@@ -4426,7 +4426,7 @@ static void cb_todo_clist_selection(GtkWidget      *clist,
    cb_app_button(NULL, GINT_TO_POINTER(TODO));
 }
 
-void cb_todos_show(GtkWidget *widget, gpointer data)
+static void cb_todos_show(GtkWidget *widget, gpointer data)
 {
    long ivalue;
 

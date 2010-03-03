@@ -1,4 +1,4 @@
-/* $Id: export_gui.c,v 1.24 2008/06/19 04:12:07 rikster5 Exp $ */
+/* $Id: export_gui.c,v 1.25 2010/03/03 14:42:03 rousseau Exp $ */
 
 /*******************************************************************************
  * export_gui.c
@@ -194,7 +194,7 @@ static void cb_export_type(GtkWidget *widget, gpointer data)
    glob_export_type=GPOINTER_TO_INT(data);
 }
 
-void cb_export_category(GtkWidget *item, int selection)
+static void cb_export_category(GtkWidget *item, int selection)
 {
    if ((GTK_CHECK_MENU_ITEM(item))->active) {
       export_category = selection;

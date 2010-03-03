@@ -1,4 +1,4 @@
-/* $Id: calendar.c,v 1.1 2010/03/02 20:34:46 rousseau Exp $ */
+/* $Id: calendar.c,v 1.2 2010/03/03 14:42:02 rousseau Exp $ */
 
 /*******************************************************************************
  * calendar.c
@@ -38,6 +38,7 @@
 #include "prefs.h"
 #include "libplugin.h"
 #include "password.h"
+#include "calendar.h"
 
 /* Copy AppInfo data structures */
 int copy_appointment_ai_to_calendar_ai(const struct AppointmentAppInfo *aai, struct CalendarAppInfo *cai)
@@ -215,7 +216,7 @@ int get_calendar_app_info(struct CalendarAppInfo *cai)
    return EXIT_SUCCESS;
 }
 
-int calendar_compare(const void *v1, const void *v2)
+static int calendar_compare(const void *v1, const void *v2)
 {
    CalendarEventList **cel1, **cel2;
    struct CalendarEvent *ce1, *ce2;
@@ -288,7 +289,7 @@ int get_days_calendar_events(CalendarEventList **calendar_event_list, struct tm 
 
 
 
-int calendar_db3_hack_date(struct CalendarEvent *ce, struct tm *today)
+static int calendar_db3_hack_date(struct CalendarEvent *ce, struct tm *today)
 {
    int t1, t2;
 

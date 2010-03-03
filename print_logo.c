@@ -1,4 +1,4 @@
-/* $Id: print_logo.c,v 1.9 2008/06/19 04:12:07 rikster5 Exp $ */
+/* $Id: print_logo.c,v 1.10 2010/03/03 14:42:03 rousseau Exp $ */
 
 /*******************************************************************************
  * print_logo.c
@@ -24,8 +24,10 @@
 #include "config.h"
 #include <stdio.h>
 
+#include "print_logo.h"
+
 /****************************** Main Code *************************************/
-void print_logo_data(FILE *f)
+static void print_logo_data(FILE *f)
 {
     fputs(
 	"fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"

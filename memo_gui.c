@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.135 2009/11/08 17:12:10 rousseau Exp $ */
+/* $Id: memo_gui.c,v 1.136 2010/03/03 14:42:03 rousseau Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -256,7 +256,7 @@ int memo_print(void)
 /*
  * Start Import Code
  */
-int cb_memo_import(GtkWidget *parent_window, const char *file_path, int type)
+static int cb_memo_import(GtkWidget *parent_window, const char *file_path, int type)
 {
    FILE *in;
    char line[256];
@@ -495,7 +495,7 @@ int memo_import(GtkWidget *window)
 /*
  * Start Export code
  */
-void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
+static void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 		       int type, const char *filename)
 {
    MyMemo *mmemo;
@@ -706,7 +706,7 @@ static int find_menu_cat_pos(int cat)
    }
 }
 
-void cb_delete_memo(GtkWidget *widget,
+static void cb_delete_memo(GtkWidget *widget,
 		    gpointer   data)
 {
    MyMemo *mmemo;
@@ -750,7 +750,7 @@ void cb_delete_memo(GtkWidget *widget,
    }
 }
 
-void cb_undelete_memo(GtkWidget *widget,
+static void cb_undelete_memo(GtkWidget *widget,
 		      gpointer   data)
 {
    MyMemo *mmemo;

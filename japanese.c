@@ -1,4 +1,4 @@
-/* $Id: japanese.c,v 1.13 2008/06/19 04:12:07 rikster5 Exp $ */
+/* $Id: japanese.c,v 1.14 2010/03/03 14:42:03 rousseau Exp $ */
 
 /*******************************************************************************
  * japanese.c
@@ -72,7 +72,7 @@ static unsigned int SjisToEuc(unsigned char hi, unsigned char lo)
    Length include null termination.
    return: return the pointer of nul termination code.
  */
-char *Sjis2EucCpy(char *dest, char *src, int max_len)
+static char *Sjis2EucCpy(char *dest, char *src, int max_len)
 {
     unsigned char *p, *q;
     unsigned char hi, lo;
@@ -137,7 +137,7 @@ void Sjis2Euc(char *buf, int max_len)
    size of buf must be more than max_len.
 
 */
-void Sjis2Euc_x(char *buf, int max_len)
+static void Sjis2Euc_x(char *buf, int max_len)
 {
     char *dst;
     char *p;
@@ -176,7 +176,7 @@ static unsigned int EucToSjis(unsigned char hi, unsigned char lo)
    Theoretically, strlen(EUC) >= strlen(SJIS),
     then it is ok that dest == src.
  */
-char *Euc2SjisCpy(char *dest, char *src, int max_len)
+static char *Euc2SjisCpy(char *dest, char *src, int max_len)
 {
     unsigned char *p, *q;
     unsigned char hi, lo;

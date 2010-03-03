@@ -1,4 +1,4 @@
-/* $Id: print_headers.c,v 1.9 2009/01/14 02:20:34 rikster5 Exp $ */
+/* $Id: print_headers.c,v 1.10 2010/03/03 14:42:03 rousseau Exp $ */
 
 /*******************************************************************************
  * print_headers.c
@@ -24,6 +24,8 @@
 /********************************* Includes ***********************************/
 #include <stdio.h>
 #include <string.h>
+
+#include "print_headers.h"
 
 /****************************** Main Code *************************************/
 void print_common_prolog(FILE *f)

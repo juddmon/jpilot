@@ -1,4 +1,4 @@
-/* $Id: install_gui.c,v 1.28 2009/11/08 17:12:10 rousseau Exp $ */
+/* $Id: install_gui.c,v 1.29 2010/03/03 14:42:03 rousseau Exp $ */
 
 /*******************************************************************************
  * install_gui.c
@@ -43,7 +43,7 @@ static GtkWidget *filew=NULL;
 
 /****************************** Main Code *************************************/
 /* the first line is 0 */
-int install_remove_line(int deleted_line)
+static int install_remove_line(int deleted_line)
 {
    FILE *in;
    FILE *out;

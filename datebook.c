@@ -1,4 +1,4 @@
-/* $Id: datebook.c,v 1.60 2010/02/28 18:57:18 judd Exp $ */
+/* $Id: datebook.c,v 1.61 2010/03/03 14:42:03 rousseau Exp $ */
 
 /*******************************************************************************
  * datebook.c
@@ -143,7 +143,7 @@ int datebook_add_exception(struct CalendarEvent *ce, int year, int mon, int day)
    return EXIT_SUCCESS;
 }
 
-int datebook_compare(const void *v1, const void *v2)
+static int datebook_compare(const void *v1, const void *v2)
 {
    AppointmentList **al1, **al2;
    struct Appointment *appt1, *appt2;
@@ -258,7 +258,7 @@ int datebook_sort(AppointmentList **al,
 }
 
 #ifdef ENABLE_DATEBK
-void db3_fill_struct(char *note, int type, struct db4_struct *db4)
+static void db3_fill_struct(char *note, int type, struct db4_struct *db4)
 {
    /* jp_logf(JP_LOG_WARN, "db3_fill_struct()\n"); */
    switch (note[2]) {
@@ -310,7 +310,7 @@ void db3_fill_struct(char *note, int type, struct db4_struct *db4)
    /* Byte 19 is a carriage return */
 }
 
-int db3_hack_date(struct Appointment *appt, struct tm *today)
+static int db3_hack_date(struct Appointment *appt, struct tm *today)
 {
    int t1, t2;
 

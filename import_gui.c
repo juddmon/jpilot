@@ -1,4 +1,4 @@
-/* $Id: import_gui.c,v 1.29 2008/12/27 01:50:37 rikster5 Exp $ */
+/* $Id: import_gui.c,v 1.30 2010/03/03 14:42:03 rousseau Exp $ */
 
 /*******************************************************************************
  * import_gui.c
@@ -33,6 +33,7 @@
 #include "utils.h"
 #include "prefs.h"
 #include "log.h"
+#include "export.h"
 
 /******************************* Global vars **********************************/
 static GtkWidget *radio_types[MAX_IMPORT_TYPES+1];
@@ -126,7 +127,7 @@ int read_csv_field(FILE *in, char *text, int size)
    return n;
 }
 
-int guess_file_type(const char *path)
+static int guess_file_type(const char *path)
 {
    FILE *in;
    char text[256];

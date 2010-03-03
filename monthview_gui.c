@@ -1,4 +1,4 @@
-/* $Id: monthview_gui.c,v 1.52 2010/02/28 19:02:40 judd Exp $ */
+/* $Id: monthview_gui.c,v 1.53 2010/03/03 14:42:03 rousseau Exp $ */
 
 /*******************************************************************************
  * monthview_gui.c
@@ -35,6 +35,7 @@
 #include "datebook.h"
 #include "calendar.h"
 #include "print.h"
+#include "jpilot.h"
 
 /******************************* Global vars **********************************/
 extern int datebk_category;
@@ -217,7 +218,7 @@ void hide_show_month_boxes(void)
    }
 }
 
-void create_month_boxes_texts(GtkWidget *month_vbox)
+static void create_month_boxes_texts(GtkWidget *month_vbox)
 {
    int i, j, n;
    GtkWidget *hbox_row;

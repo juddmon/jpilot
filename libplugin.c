@@ -1,4 +1,4 @@
-/* $Id: libplugin.c,v 1.39 2009/08/28 05:53:39 rikster5 Exp $ */
+/* $Id: libplugin.c,v 1.40 2010/03/03 14:42:03 rousseau Exp $ */
 
 /*******************************************************************************
  * libplugin.c
@@ -303,7 +303,7 @@ int jp_install_remove_line(int deleted_line)
    return EXIT_SUCCESS;
 }
 
-void jp_pack_htonl(unsigned char *dest, unsigned long l)
+static void jp_pack_htonl(unsigned char *dest, unsigned long l)
 {
     dest[3]=l & 0xFF;
     dest[2]=l>>8 & 0xFF;
@@ -751,7 +751,7 @@ int jp_undelete_record(char *DB_name, buf_rec *br, int flag)
    return ret;
 }
 
-void jp_unpack_ntohl(unsigned long *l, unsigned char *src)
+static void jp_unpack_ntohl(unsigned long *l, unsigned char *src)
 {
     *l=src[0]<<24 | src[1]<<16 | src[2]<<8 | src[3];
 }

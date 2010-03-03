@@ -1,4 +1,4 @@
-/* $Id: plugins.c,v 1.24 2009/11/08 17:12:10 rousseau Exp $ */
+/* $Id: plugins.c,v 1.25 2010/03/03 14:42:03 rousseau Exp $ */
 
 /*******************************************************************************
  * plugins.c
@@ -75,7 +75,7 @@ void write_plugin_sync_file(void)
  * a name of its own.
  * Assumes dir has already been checked
  */
-int load_plugins_sub1(DIR *dir, char *path, int *number, unsigned char user_only)
+static int load_plugins_sub1(DIR *dir, char *path, int *number, unsigned char user_only)
 {
    int i, r;
    int count;

@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.181 2009/08/28 19:04:53 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.182 2010/03/03 14:42:03 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -59,6 +59,7 @@
 #include "restore.h"
 #include "password.h"
 #include "pidfile.h"
+#include "jpilot.h"
 
 #include "icons/jpilot-icon4.xpm"
 #include "icons/datebook.xpm"
@@ -123,7 +124,7 @@ void install_gui_and_size(GtkWidget *main_window);
 
 /****************************** Main Code *************************************/
 
-int create_main_boxes(void)
+static int create_main_boxes(void)
 {
    g_hbox2 = gtk_hbox_new(FALSE, 0);
    g_vbox0_1 = gtk_vbox_new(FALSE, 0);
@@ -133,7 +134,7 @@ int create_main_boxes(void)
    return EXIT_SUCCESS;
 }
 
-int gui_cleanup(void)
+static int gui_cleanup(void)
 {
 #ifdef ENABLE_PLUGINS
    struct plugin_s *plugin;
@@ -215,7 +216,7 @@ void call_plugin_gui(int number, int unique_id)
    }
 }
 
-void cb_plugin_gui(GtkWidget *widget, int number)
+static void cb_plugin_gui(GtkWidget *widget, int number)
 {
    call_plugin_gui(number, 0);
 }
@@ -226,7 +227,7 @@ void plugin_gui_refresh(int unique_id)
    call_plugin_gui(glob_app, unique_id); 
 }
 
-void call_plugin_help(int number)
+static void call_plugin_help(int number)
 {
    struct plugin_s *plugin;
    GList *plugin_list, *temp_list;
@@ -261,14 +262,14 @@ void call_plugin_help(int number)
    }
 }
 
-void cb_plugin_help(GtkWidget *widget, int number)
+static void cb_plugin_help(GtkWidget *widget, int number)
 {
    call_plugin_help(number);
 }
 
 #endif
 
-void cb_print(GtkWidget *widget, gpointer data)
+static void cb_print(GtkWidget *widget, gpointer data)
 {
 #ifdef ENABLE_PLUGINS
    struct plugin_s *plugin;
@@ -320,7 +321,7 @@ void cb_print(GtkWidget *widget, gpointer data)
 		  1, button_text);
 }
 
-void cb_restore(GtkWidget *widget, gpointer data)
+static void cb_restore(GtkWidget *widget, gpointer data)
 {
    int r;
    int w, h, x, y;
@@ -336,7 +337,7 @@ void cb_restore(GtkWidget *widget, gpointer data)
    r = restore_gui(window, w, h, x, y);
 }
 
-void cb_import(GtkWidget *widget, gpointer data)
+static void cb_import(GtkWidget *widget, gpointer data)
 {
 #ifdef ENABLE_PLUGINS
    struct plugin_s *plugin;
@@ -380,7 +381,7 @@ void cb_import(GtkWidget *widget, gpointer data)
 		  1, button_text);
 }
 
-void cb_export(GtkWidget *widget, gpointer data)
+static void cb_export(GtkWidget *widget, gpointer data)
 {
 #ifdef ENABLE_PLUGINS
    struct plugin_s *plugin;
@@ -509,7 +510,7 @@ static void cb_private(GtkWidget *widget, gpointer data)
       cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
 }
 
-void cb_install_user(GtkWidget *widget, gpointer data)
+static void cb_install_user(GtkWidget *widget, gpointer data)
 {
    install_user_gui(window);
 }
@@ -627,7 +628,7 @@ void cb_sync(GtkWidget *widget, unsigned int flags)
  * This is called when the user name from the palm doesn't match
  * or the user ID from the palm is 0
  */
-int bad_sync_exit_status(int exit_status)
+static int bad_sync_exit_status(int exit_status)
 {
    char text1[] =
       /*-------------------------------------------*/
@@ -907,7 +908,7 @@ static void cb_read_pipe_from_child(gpointer data,
    }
 }
 
-void cb_about(GtkWidget *widget, gpointer data)
+static void cb_about(GtkWidget *widget, gpointer data)
 {
    char *button_text[]={N_("OK")};
    char about[256];
@@ -1013,7 +1014,7 @@ void install_gui_and_size(GtkWidget *main_window)
    install_gui(main_window, w, h, x, y);
 }
 
-void cb_install_gui(GtkWidget *widget, gpointer data)
+static void cb_install_gui(GtkWidget *widget, gpointer data)
 {
    jp_logf(JP_LOG_DEBUG, "cb_install_gui()\n");
 
@@ -1022,7 +1023,7 @@ void cb_install_gui(GtkWidget *widget, gpointer data)
 
 #include <gdk-pixbuf/gdk-pixdata.h>
 
-guint8 *get_inline_pixbuf_data(const char **xpm_icon_data, gint icon_size)
+static guint8 *get_inline_pixbuf_data(const char **xpm_icon_data, gint icon_size)
 {
    GdkPixbuf  *pixbuf;
    GdkPixdata *pixdata;
@@ -1052,7 +1053,7 @@ guint8 *get_inline_pixbuf_data(const char **xpm_icon_data, gint icon_size)
    return data;
 }
 
-void get_main_menu(GtkWidget  *my_window,
+static void get_main_menu(GtkWidget  *my_window,
 		   GtkWidget **menubar,
 		   GList *plugin_list)
 {
@@ -1384,7 +1385,7 @@ static void cb_delete_event(GtkWidget *widget, GdkEvent *event, gpointer data)
    gtk_main_quit();
 }
 
-void cb_output(GtkWidget *widget, gpointer data)
+static void cb_output(GtkWidget *widget, gpointer data)
 {
    int flags;
    int w, h, output_height;
@@ -1422,7 +1423,7 @@ static gint cb_output2(GtkWidget *widget, GdkEventButton *event, gpointer data)
    return EXIT_SUCCESS;
 }
 
-gint cb_check_version(gpointer main_window)
+static gint cb_check_version(gpointer main_window)
 {
    int major, minor, micro;
    int r;

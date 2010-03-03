@@ -1,4 +1,4 @@
-/* $Id: memo.c,v 1.46 2009/09/24 03:58:19 rikster5 Exp $ */
+/* $Id: memo.c,v 1.47 2010/03/03 14:42:03 rousseau Exp $ */
 
 /*******************************************************************************
  * memo.c
@@ -224,7 +224,7 @@ int get_memos2(MemoList **memo_list, int sort_order,
    return recs_returned;
 }
 
-int memo_compare(const void *v1, const void *v2)
+static int memo_compare(const void *v1, const void *v2)
 {
    MemoList **memol1, **memol2;
    char str1[52], str2[52];

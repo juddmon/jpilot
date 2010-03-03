@@ -1,4 +1,4 @@
-/* $Id: contact.c,v 1.15 2009/09/24 03:58:19 rikster5 Exp $ */
+/* $Id: contact.c,v 1.16 2010/03/03 14:42:02 rousseau Exp $ */
 
 /*******************************************************************************
  * contact.c
@@ -93,7 +93,7 @@ static long cont_addr_map[CONT_ADDR_MAP_SIZE]={
 };
 
 /****************************** Main Code *************************************/
-int contact_compare(const void *v1, const void *v2)
+static int contact_compare(const void *v1, const void *v2)
 {
    ContactList **cl1, **cl2;
    struct Contact *c1, *c2;
@@ -288,7 +288,7 @@ int contact_compare(const void *v1, const void *v2)
 /*
  * sort_order: SORT_ASCENDING | SORT_DESCENDING
  */
-int contacts_sort(ContactList **cl, int sort_order)
+static int contacts_sort(ContactList **cl, int sort_order)
 {
    ContactList *temp_cl;
    ContactList **sort_cl;
@@ -479,7 +479,7 @@ int copy_addresses_to_contacts(AddressList *al, ContactList **cl)
    return 0;
 }
 
-int copy_contact_ai_to_address_ai(const struct ContactAppInfo *cai, struct AddressAppInfo *aai)
+static int copy_contact_ai_to_address_ai(const struct ContactAppInfo *cai, struct AddressAppInfo *aai)
 {
    int i, a_entry, c_entry;
 

@@ -1,4 +1,4 @@
-/* $Id: install_user.c,v 1.10 2009/11/08 17:12:10 rousseau Exp $ */
+/* $Id: install_user.c,v 1.11 2010/03/03 14:42:03 rousseau Exp $ */
 
 /*******************************************************************************
  * install_user.c
@@ -31,6 +31,7 @@
 #include "utils.h"
 #include "sync.h"
 #include "prefs.h"
+#include "jpilot.h"
 
 /****************************** Prototypes ************************************/
 struct install_dialog_data {
@@ -43,7 +44,7 @@ struct install_dialog_data {
 
 /****************************** Main Code *************************************/
 /* Allocates memory and returns pointer, or NULL */
-char *jp_user_or_whoami(void)
+static char *jp_user_or_whoami(void)
 {
    struct passwd *pw_ent;
    uid_t uid;
@@ -60,7 +61,7 @@ char *jp_user_or_whoami(void)
    return NULL;
 }
 
-void cb_install_user_button(GtkWidget *widget, gpointer data)
+static void cb_install_user_button(GtkWidget *widget, gpointer data)
 {
    GtkWidget *w;
    struct install_dialog_data *Pdata;
@@ -88,7 +89,7 @@ static gboolean cb_destroy_dialog(GtkWidget *widget)
    return FALSE;
 }
 
-int dialog_install_user(GtkWindow *main_window, 
+static int dialog_install_user(GtkWindow *main_window, 
                         char *user, int user_len, 
                         unsigned long *user_id)
 {
