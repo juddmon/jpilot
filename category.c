@@ -1,4 +1,4 @@
-/* $Id: category.c,v 1.34 2010/02/28 18:51:45 judd Exp $ */
+/* $Id: category.c,v 1.35 2010/03/03 12:09:43 rousseau Exp $ */
 
 /*******************************************************************************
  * category.c
@@ -63,7 +63,7 @@ struct dialog_cats_data {
 };
 
 /****************************** Main Code *************************************/
-int count_records_in_cat(char *db_name, int cat_index)
+static int count_records_in_cat(char *db_name, int cat_index)
 {
    GList *records;
    GList *temp_list;
@@ -102,7 +102,7 @@ int count_records_in_cat(char *db_name, int cat_index)
    return count;
 }
 
-int edit_cats_delete_cats_pc3(char *DB_name, int cat)
+static int edit_cats_delete_cats_pc3(char *DB_name, int cat)
 {
    char local_pc_file[FILENAME_MAX];
    FILE *pc_in;
@@ -157,7 +157,7 @@ int edit_cats_delete_cats_pc3(char *DB_name, int cat)
 
 /* Helper routine to change categories.
  * Function changes category regardless of record type */
-int _edit_cats_change_cats_pc3(char *DB_name, 
+static int _edit_cats_change_cats_pc3(char *DB_name, 
                                int old_cat, int new_cat, 
                                int swap)
 {
@@ -291,7 +291,7 @@ int edit_cats_change_cats_pdb(char *DB_name, int old_cat, int new_cat)
  * option will also change new_index records to old_index ones.
  * Returns the number of records where the category was changed.
  */
-int _change_cat_pdb(char *DB_name, int old_index, int new_index, int swap)
+static int _change_cat_pdb(char *DB_name, int old_index, int new_index, int swap)
 {
    char local_pdb_file[FILENAME_MAX];
    char full_local_pdb_file[FILENAME_MAX];
@@ -384,7 +384,7 @@ int pdb_file_swap_indexes(char *DB_name, int old_cat, int new_cat)
  *  It does not modify a local pdb file.
  *  It does this by writing a modified record to the pc3 file.
  */
-int edit_cats_delete_cats_pdb(char *DB_name, int cat)
+static int edit_cats_delete_cats_pdb(char *DB_name, int cat)
 {
    jp_logf(JP_LOG_DEBUG, "edit_cats_delete_cats_pdb\n");
 
@@ -659,7 +659,7 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 }
 
 
-void cb_clist_edit_cats(GtkWidget *widget,
+static void cb_clist_edit_cats(GtkWidget *widget,
 			gint row, gint column,
 			GdkEventButton *event, gpointer data)
 {
