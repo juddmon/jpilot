@@ -1,4 +1,4 @@
-/* $Id: weekview_gui.c,v 1.49 2010/03/03 12:50:00 rousseau Exp $ */
+/* $Id: weekview_gui.c,v 1.50 2010/03/04 03:27:40 judd Exp $ */
 
 /*******************************************************************************
  * weekview_gui.c
@@ -57,7 +57,6 @@ static gboolean cb_destroy(GtkWidget *widget)
    return FALSE;
 }
 
-void cb_weekview_quit(GtkWidget *widget, gpointer data);
 void cb_weekview_quit(GtkWidget *widget, gpointer data)
 {
    int w, h;
