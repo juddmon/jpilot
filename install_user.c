@@ -1,4 +1,4 @@
-/* $Id: install_user.c,v 1.11 2010/03/03 14:42:03 rousseau Exp $ */
+/* $Id: install_user.c,v 1.12 2010/03/04 17:39:32 rousseau Exp $ */
 
 /*******************************************************************************
  * install_user.c
@@ -32,6 +32,7 @@
 #include "sync.h"
 #include "prefs.h"
 #include "jpilot.h"
+#include "install_user.h"
 
 /****************************** Prototypes ************************************/
 struct install_dialog_data {
