@@ -1,4 +1,4 @@
-/* $Id: jpilot.h,v 1.2 2010/03/04 03:17:20 judd Exp $ */
+/* $Id: jpilot.h,v 1.3 2010/03/04 17:48:25 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -21,4 +21,7 @@
  ******************************************************************************/
 
 void output_to_pane(const char *str);
+
+/* GUI cleanup routines for weekview and monthview windows */
 void cb_monthview_quit(GtkWidget *widget, gpointer data);
+void cb_weekview_quit(GtkWidget *widget, gpointer data);

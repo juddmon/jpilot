@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.182 2010/03/03 14:42:03 rousseau Exp $ */
+/* $Id: jpilot.c,v 1.183 2010/03/04 17:48:25 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -113,10 +113,6 @@ int pipe_from_parent, pipe_to_child;
 
 extern GtkWidget *monthview_window;
 extern GtkWidget *weekview_window;
-
-/* GUI cleanup routines for weekview and monthview windows */
-extern void cb_weekview_quit(GtkWidget *widget, gpointer data);
-extern void cb_monthview_quit(GtkWidget *widget, gpointer data);
 
 /****************************** Prototypes ************************************/
 static void cb_delete_event(GtkWidget *widget, GdkEvent *event, gpointer data);

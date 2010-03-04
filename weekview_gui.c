@@ -1,4 +1,4 @@
-/* $Id: weekview_gui.c,v 1.50 2010/03/04 03:27:40 judd Exp $ */
+/* $Id: weekview_gui.c,v 1.51 2010/03/04 17:48:25 rousseau Exp $ */
 
 /*******************************************************************************
  * weekview_gui.c
@@ -35,6 +35,7 @@
 #include "datebook.h"
 #include "calendar.h"
 #include "print.h"
+#include "jpilot.h"
 
 /******************************* Global vars **********************************/
 extern int datebk_category;
