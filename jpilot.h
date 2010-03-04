@@ -1,4 +1,4 @@
-/* $Id: jpilot.h,v 1.1 2010/03/03 14:38:15 rousseau Exp $ */
+/* $Id: jpilot.h,v 1.2 2010/03/04 03:17:20 judd Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -20,6 +20,5 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  ******************************************************************************/
 
-void install_user_gui(GtkWidget *main_window);
 void output_to_pane(const char *str);
 void cb_monthview_quit(GtkWidget *widget, gpointer data);
