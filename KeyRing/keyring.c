@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.104 2010/03/03 12:05:05 rousseau Exp $ */
+/* $Id: keyring.c,v 1.105 2010/03/07 17:12:42 rousseau Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -917,6 +917,7 @@ static void free_mykeyring_list(struct MyKeyRing **PPmkr)
 static void cb_delete_keyring(GtkWidget *widget, gpointer data)
 {
    struct MyKeyRing *mkr;
+   struct KeyRing kr;
    int new_size;
    char buf[0xFFFF];
    buf_rec br;
@@ -933,7 +934,26 @@ static void cb_delete_keyring(GtkWidget *widget, gpointer data)
     * so that it can be deleted at sync time.  We need the original record
     * so that if it has changed on the pilot we can warn the user that
     * the record has changed on the pilot. */
-   pack_KeyRing(&(mkr->kr), (unsigned char *)buf, 0xFFFF, &new_size);
+   kr = mkr->kr;
+
+   kr.name = strdup(kr.name);
+   jp_charset_j2p(kr.name, strlen(kr.name)+1);
+
+   kr.account = strdup(kr.account);
+   jp_charset_j2p(kr.account, strlen(kr.account)+1);
+   
+   kr.password = strdup(kr.password);
+   jp_charset_j2p(kr.password, strlen(kr.password)+1);
+   
+   kr.note = strdup(kr.note);
+   jp_charset_j2p(kr.note, strlen(kr.note)+1);
+
+   pack_KeyRing(&kr, (unsigned char *)buf, 0xFFFF, &new_size);
+
+   free(kr.name);
+   free(kr.account);
+   free(kr.password);
+   free(kr.note);
    
    br.rt = mkr->rt;
    br.unique_id = mkr->unique_id;
