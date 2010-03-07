@@ -1,6 +1,6 @@
-# $Id: Makefile.am,v 1.68 2010/03/03 14:38:15 rousseau Exp $
+# $Id: Makefile.am,v 1.69 2010/03/07 21:27:58 rikster5 Exp $
 
-SUBDIRS = Expense SyncTime KeyRing dialer m4 po icons docs empty
+SUBDIRS = m4 po Expense SyncTime KeyRing dialer icons docs empty
 
 EXTRA_DIST = config.rpath mkinstalldirs reconf autogen.sh \
 	intltool-extract.in intltool-merge.in intltool-update.in gettext.h \
@@ -13,7 +13,7 @@ EXTRA_DIST = config.rpath mkinstalldirs reconf autogen.sh \
 	$(color_DATA) \
 	jpilot.xpm
 
-DISTCLEANFILES = intltool-extract intltool-merge intltool-update
+DISTCLEANFILES = intltool-extract intltool-merge intltool-update ChangeLog.cvs
 
 desktopdir = $(datadir)/applications
 desktop_DATA = jpilot.desktop
