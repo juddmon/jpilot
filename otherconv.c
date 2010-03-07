@@ -1,4 +1,4 @@
-/* $Id: otherconv.c,v 1.43 2010/03/03 12:49:59 rousseau Exp $ */
+/* $Id: otherconv.c,v 1.44 2010/03/07 21:54:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * otherconv.c
@@ -36,6 +36,7 @@
 #include <glib.h>
 
 #include "otherconv.h"
+#include "i18n.h"
 #include "prefs.h"
 #include "log.h"
 
@@ -73,7 +74,7 @@ static void oc_free_iconv(const char *funcname, GIConv conv, char *convname)
 {
    if (conv != NULL) {
       if (g_iconv_close(conv) != 0) {
-         jp_logf(JP_LOG_WARN, "%s: error exit from g_iconv_close(%s)\n",
+         jp_logf(JP_LOG_WARN, _("%s: error exit from g_iconv_close(%s)\n"),
             funcname,convname);
       }
    }
@@ -198,9 +199,9 @@ char *other_to_UTF(const char *buf, int buf_len)
       static int call_depth = 0;
       printf("ERROR HAPPENED\n");
       if (0 == call_depth)
-         jp_logf(JP_LOG_WARN, "%s:%s g_convert_with_iconv error: %s, buff: %s\n",
+         jp_logf(JP_LOG_WARN, _("%s:%s g_convert_with_iconv error: %s, buff: %s\n"),
                               __FILE__, __FUNCTION__, 
-                              err ? err->message : "last char truncated",
+                              err ? err->message : _("last char truncated"),
                               buf);
       if (err != NULL)
          g_error_free(err);
@@ -277,7 +278,7 @@ void UTF_to_other(char *const buf, int buf_len)
    if (buf_len > sizeof(buf_out)) {
       buf_out_ptr = malloc(buf_len);
       if (NULL == buf_out_ptr) {
-         jp_logf(JP_LOG_WARN, "UTF_to_other: %s\n", "Out of memory");
+         jp_logf(JP_LOG_WARN, _("UTF_to_other: %s\n"), _("Out of memory"));
          return;
       }
       outptr = buf_out_ptr;
@@ -291,17 +292,17 @@ void UTF_to_other(char *const buf, int buf_len)
    if ((size_t)(-1) == rc) {
      switch (errno) {
       case EILSEQ:
-        errstr = "iconv: unconvertible sequence at place %d in \'%s\'\n";
+        errstr = _("iconv: unconvertible sequence at place %d in \'%s\'\n");
         failed = TRUE;
         break;
       case EINVAL:
-        errstr = "iconv: incomplete UTF-8 sequence at place %d in \'%s\'\n";
+        errstr = _("iconv: incomplete UTF-8 sequence at place %d in \'%s\'\n");
         break;
       case E2BIG:
-        errstr = "iconv: buffer filled. stopped at place %d in \'%s\'\n";
+        errstr = _("iconv: buffer filled. stopped at place %d in \'%s\'\n");
         break;
       default:
-        errstr = "iconv: unexpected error at place %d in \'%s\'\n";
+        errstr = _("iconv: unexpected error at place %d in \'%s\'\n");
      }
    }
 

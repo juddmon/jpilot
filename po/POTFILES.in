@@ -20,6 +20,7 @@ log.c
 memo.c
 memo_gui.c
 monthview_gui.c
+otherconv.c
 password.c
 pidfile.c
 plugins.c
