@@ -1,18 +1,17 @@
 %define version @VERSION@
 
-Summary:   palm pilot desktop for Linux
 Name:      jpilot
+Summary:   Desktop organizer software for the Palm Pilot
 Version:   %{version}
 Release:   1
 License:   GPL
 Group:     Applications/Productivity
 Source:    http://jpilot.org/jpilot-%{version}.tar.gz
-URL:       http://jpilot.org
+URL:       http://www.jpilot.org
 Packager:  Judd Montgomery <judd@jpilot.org>
 Prefix:    /usr
-DocDir:    %{prefix}/share/doc/%{name}-%{version}
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
-Requires:  pilot-link > 0.12.5
+Requires:  pilot-link >= 0.12.5
 
 %description
 J-Pilot is a desktop organizer application for the palm pilot that runs
@@ -20,12 +19,12 @@ under Linux and Unix using X-Windows and GTK+.  It is similar in
 functionality to the one that 3Com distributes and has many features
 not found in the 3Com desktop.
 
-%define _prefix %{prefix}
-%define _mandir %{prefix}/share/man
+%define _prefix  %{prefix}
+%define _mandir  %{prefix}/share/man
 %define _infodir %{prefix}/share/info
-%define _libdir %{prefix}/lib
+%define _libdir  %{prefix}/lib
 %define _datadir %{prefix}/share
-%define _docdir %{prefix}/share/doc/%{name}-%{version}
+%define _docdir  %{prefix}/share/doc/%{name}
 
 %prep
 
@@ -37,22 +36,12 @@ if [ ! -f ./configure ]; then
 else
   %configure --prefix=%{prefix} --mandir=%{_mandir}
 fi
-#gzip -9f docs/*.1
 make
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT%{_mandir}/man1
-install docs/jpilot*.1 $RPM_BUILD_ROOT%{_mandir}/man1
-install -d $RPM_BUILD_ROOT%{_datadir}/jpilot/
-install jpilotrc.* $RPM_BUILD_ROOT%{_datadir}/jpilot/
-install empty/*.pdb $RPM_BUILD_ROOT%{_datadir}/jpilot/
 strip jpilot
-install -d $RPM_BUILD_ROOT%{_bindir}
 make DESTDIR=$RPM_BUILD_ROOT install 
-
-#mkdir -p $RPM_BUILD_ROOT%{prefix}/share/pixmaps
-#install -m644 icons/*.xpm $RPM_BUILD_ROOT%{prefix}/share/pixmaps
 
 %post
 
@@ -61,10 +50,20 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root)
-%{_docdir}/BUGS
-%{_docdir}/ChangeLog
-%{_docdir}/COPYING
+%{_bindir}/jpilot
+%{_bindir}/jpilot-dial
+%{_bindir}/jpilot-dump
+%{_bindir}/jpilot-sync
+%{_libdir}/jpilot/plugins/libexpense.la
+%{_libdir}/jpilot/plugins/libexpense.so
+%{_libdir}/jpilot/plugins/libkeyring.la
+%{_libdir}/jpilot/plugins/libkeyring.so
+%{_libdir}/jpilot/plugins/libsynctime.la
+%{_libdir}/jpilot/plugins/libsynctime.so
 %{_docdir}/AUTHORS
+%{_docdir}/BUGS
+%{_docdir}/COPYING
+%{_docdir}/ChangeLog
 %{_docdir}/INSTALL
 %{_docdir}/README
 %{_docdir}/TODO
@@ -73,8 +72,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_docdir}/icons/jpilot-icon2.xpm
 %{_docdir}/icons/jpilot-icon3.xpm
 %{_docdir}/icons/jpilot-icon4.xpm
-%{_docdir}/manual/plugin.html
-%{_docdir}/manual/manual.html
 %{_docdir}/manual/jpilot-address.png
 %{_docdir}/manual/jpilot-datebook.png
 %{_docdir}/manual/jpilot-expense.png
@@ -92,36 +89,35 @@ rm -rf $RPM_BUILD_ROOT
 %{_docdir}/manual/jpilot-search.png
 %{_docdir}/manual/jpilot-todo.png
 %{_docdir}/manual/jpilot-toplogo.jpg
-%{_bindir}/jpilot
-%{_bindir}/jpilot-dump
-%{_bindir}/jpilot-dial
-%{_bindir}/jpilot-sync
+%{_docdir}/manual/manual.html
+%{_docdir}/manual/plugin.html
+%{_datadir}/jpilot/AddressDB.pdb
+%{_datadir}/jpilot/CalendarDB-PDat.pdb
+%{_datadir}/jpilot/ContactsDB-PAdd.pdb
+%{_datadir}/jpilot/DatebookDB.pdb
+%{_datadir}/jpilot/ExpenseDB.pdb
+#%{_datadir}/jpilot/MañanaDB.pdb
+%{_datadir}/jpilot/Ma?anaDB.pdb
+%{_datadir}/jpilot/Memo32DB.pdb
+%{_datadir}/jpilot/MemoDB.pdb
+%{_datadir}/jpilot/MemosDB-PMem.pdb
+%{_datadir}/jpilot/TasksDB-PTod.pdb
+%{_datadir}/jpilot/ToDoDB.pdb
 %{_datadir}/jpilot/jpilotrc.blue
 %{_datadir}/jpilot/jpilotrc.default
 %{_datadir}/jpilot/jpilotrc.green
 %{_datadir}/jpilot/jpilotrc.purple
 %{_datadir}/jpilot/jpilotrc.steel
-%{_datadir}/jpilot/DatebookDB.pdb
-%{_datadir}/jpilot/AddressDB.pdb
-%{_datadir}/jpilot/ToDoDB.pdb
-%{_datadir}/jpilot/MemoDB.pdb
-%{_datadir}/jpilot/Memo32DB.pdb
-%{_datadir}/jpilot/ExpenseDB.pdb
-%{_libdir}/jpilot/plugins/libexpense.so
-%{_libdir}/jpilot/plugins/libexpense.la
-%{_libdir}/jpilot/plugins/libsynctime.so
-%{_libdir}/jpilot/plugins/libsynctime.la
-%{_libdir}/jpilot/plugins/libkeyring.so
-%{_libdir}/jpilot/plugins/libkeyring.la
 %{_datadir}/locale/*/LC_MESSAGES/jpilot.mo
-%{_mandir}/man1/jpilot.1.gz
 %{_mandir}/man1/jpilot-dial.1.gz
-%{_mandir}/man1/jpilot-sync.1.gz
 %{_mandir}/man1/jpilot-dump.1.gz
-#%{prefix}/share/pixmaps/*
+%{_mandir}/man1/jpilot-sync.1.gz
+%{_mandir}/man1/jpilot.1.gz
 %{_datadir}/applications/jpilot.desktop
 
 %changelog
+* Sun Mar 07 2010 rikster5 <jpilot@nomad.inbox5.com>
+- Revamped to include all files from 1.8.0 release
 * Sat Feb 28 2010 rikster5 <jpilot@nomad.inbox5.com>
 - Updated for 1.8.0 release
 * Sat Sep 24 2005 Judd Montgomery <judd@jpilot.org>
