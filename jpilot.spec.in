@@ -2,15 +2,15 @@
 
 Name:      jpilot
 Summary:   Desktop organizer software for the Palm Pilot
-Version:   %{version}
+Version:   @VERSION@
 Release:   1
 License:   GPL
 Group:     Applications/Productivity
-Source:    http://jpilot.org/jpilot-%{version}.tar.gz
+Source:    http://jpilot.org/jpilot-@VERSION@.tar.gz
 URL:       http://www.jpilot.org
 Packager:  Judd Montgomery <judd@jpilot.org>
 Prefix:    /usr
-BuildRoot: %{_tmppath}/%{name}-%{version}-root
+BuildRoot: %{_tmppath}/%{name}-@VERSION@-root
 Requires:  pilot-link >= 0.12.5
 
 %description
@@ -116,6 +116,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/applications/jpilot.desktop
 
 %changelog
+* Mon Mar 08 2010 rikster5 <jpilot@nomad.inbox5.com>
+- Use autoconf to replace VERSION rather than %version which is RedHat specific
 * Sun Mar 07 2010 rikster5 <jpilot@nomad.inbox5.com>
 - Revamped to include all files from 1.8.0 release
 * Sat Feb 28 2010 rikster5 <jpilot@nomad.inbox5.com>
