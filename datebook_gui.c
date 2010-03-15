@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.212 2010/03/03 14:42:03 rousseau Exp $ */
+/* $Id: datebook_gui.c,v 1.213 2010/03/15 22:40:12 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -4110,9 +4110,9 @@ static gboolean cb_keyboard(GtkWidget *widget, GdkEventKey *event, gpointer *p)
       /* This next line prevents a GTK error message from being printed.
        * e.g.  If the day were 31 and the next month has <31 days then the
        * select month call will cause an error message since the 31st isn't
-       * valid in that month.  So, I set it to 1 first.  */
+       * valid in that month.  0 is code for unselect the day */
       gtk_calendar_freeze(GTK_CALENDAR(main_calendar));
-      gtk_calendar_select_day(GTK_CALENDAR(main_calendar), 1);
+      gtk_calendar_select_day(GTK_CALENDAR(main_calendar), 0);
       gtk_calendar_select_month(GTK_CALENDAR(main_calendar), day.tm_mon, day.tm_year+1900);
       gtk_calendar_select_day(GTK_CALENDAR(main_calendar), day.tm_mday);
       gtk_calendar_thaw(GTK_CALENDAR(main_calendar));
