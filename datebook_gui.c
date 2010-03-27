@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.213 2010/03/15 22:40:12 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.214 2010/03/27 15:24:02 rousseau Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -3018,7 +3018,18 @@ static void cb_delete_appt(GtkWidget *widget, gpointer data)
     * record in that order. This is so that the sync code can check to see
     * if the remote record is the same as the removed, or changed local
     * or not before it goes and modifies it. */
-   delete_pc_record(CALENDAR, mce, flag);
+   if (datebook_version)
+      delete_pc_record(CALENDAR, mce, flag);
+   else {
+      /* TODO Change delete to do the conversion for you? */
+      MyAppointment ma;
+      ma.rt=mce->rt;
+      ma.unique_id=mce->unique_id;
+      ma.attrib=mce->attrib;
+      copy_calendarEvent_to_appointment(&(mce->ce), &(ma.appt));
+      delete_pc_record(DATEBOOK, &ma, flag);
+      free_Appointment(&(ma.appt));
+   }
    if (write_flag) {
       pc_calendar_or_datebook_write(&(mce->ce), REPLACEMENT_PALM_REC, mce->attrib, write_unique_id, datebook_version);
       free_CalendarEvent(ce);
