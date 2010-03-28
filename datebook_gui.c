@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.214 2010/03/27 15:24:02 rousseau Exp $ */
+/* $Id: datebook_gui.c,v 1.215 2010/03/28 23:45:57 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -2867,17 +2867,16 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
 
        /* We need to take care of the 2 options allowed when modifying
         * repeating appointments */
-      if (datebook_version) {
-	 delete_pc_record(CALENDAR, mce, flag);
+      if (datebook_version==0) {
+	 MyAppointment mappt;
+	 mappt.rt=mce->rt;
+	 mappt.unique_id=mce->unique_id;
+	 mappt.attrib=mce->attrib;
+	 copy_calendarEvent_to_appointment(&(mce->ce), &(mappt.appt));
+	 delete_pc_record(DATEBOOK, &mappt, flag);
+	 free_Appointment(&(mappt.appt));
       } else {
-	 /* TODO Change delete to do the conversion for you? */
-	 MyAppointment ma;
-	 ma.rt=mce->rt;
-	 ma.unique_id=mce->unique_id;
-	 ma.attrib=mce->attrib;
-	 copy_calendarEvent_to_appointment(&(mce->ce), &(ma.appt));
-	 delete_pc_record(DATEBOOK, &ma, flag);
-	 free_Appointment(&(ma.appt));
+	 delete_pc_record(CALENDAR, mce, flag);
       }
 
       if (create_exception) {
@@ -3018,17 +3017,16 @@ static void cb_delete_appt(GtkWidget *widget, gpointer data)
     * record in that order. This is so that the sync code can check to see
     * if the remote record is the same as the removed, or changed local
     * or not before it goes and modifies it. */
-   if (datebook_version)
+   if (datebook_version==0) {
+      MyAppointment mappt;
+      mappt.rt=mce->rt;
+      mappt.unique_id=mce->unique_id;
+      mappt.attrib=mce->attrib;
+      copy_calendarEvent_to_appointment(&(mce->ce), &(mappt.appt));
+      delete_pc_record(DATEBOOK, &mappt, flag);
+      free_Appointment(&(mappt.appt));
+   } else {
       delete_pc_record(CALENDAR, mce, flag);
-   else {
-      /* TODO Change delete to do the conversion for you? */
-      MyAppointment ma;
-      ma.rt=mce->rt;
-      ma.unique_id=mce->unique_id;
-      ma.attrib=mce->attrib;
-      copy_calendarEvent_to_appointment(&(mce->ce), &(ma.appt));
-      delete_pc_record(DATEBOOK, &ma, flag);
-      free_Appointment(&(ma.appt));
    }
    if (write_flag) {
       pc_calendar_or_datebook_write(&(mce->ce), REPLACEMENT_PALM_REC, mce->attrib, write_unique_id, datebook_version);
@@ -3076,17 +3074,17 @@ static void cb_undelete_appt(GtkWidget *widget, gpointer data)
       if (mce->rt == DELETED_PALM_REC ||
           mce->rt == DELETED_PC_REC)
       {
-	 if (datebook_version) {
-	    undelete_pc_record(CALENDAR, mce, flag);
-	 } else {
+	 if (datebook_version==0) {
 	    /* TODO, undelete_pc_record only uses the unique_id, so this extra copying is a waste */
-	    MyAppointment ma;
-	    ma.rt=mce->rt;
-	    ma.unique_id=mce->unique_id;
-	    ma.attrib=mce->attrib;
-	    copy_calendarEvent_to_appointment(&(mce->ce), &(ma.appt));
-	    undelete_pc_record(DATEBOOK, &ma, flag);
-	    free_Appointment(&(ma.appt));
+	    MyAppointment mappt;
+	    mappt.rt=mce->rt;
+	    mappt.unique_id=mce->unique_id;
+	    mappt.attrib=mce->attrib;
+	    copy_calendarEvent_to_appointment(&(mce->ce), &(mappt.appt));
+	    undelete_pc_record(DATEBOOK, &mappt, flag);
+	    free_Appointment(&(mappt.appt));
+	 } else {
+	    undelete_pc_record(CALENDAR, mce, flag);
 	 }
       }
       /* Possible later addition of undelete for modified records
