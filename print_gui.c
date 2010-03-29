@@ -1,4 +1,4 @@
-/* $Id: print_gui.c,v 1.23 2010/03/03 12:50:00 rousseau Exp $ */
+/* $Id: print_gui.c,v 1.24 2010/03/29 05:44:31 rikster5 Exp $ */
 
 /*******************************************************************************
  * print_gui.c
@@ -61,42 +61,42 @@ static gboolean cb_destroy(GtkWidget *widget)
    /* Get radio button prefs */
    if (radio_button_one) {
       if (GTK_TOGGLE_BUTTON(radio_button_one)->active) {
-	 jp_logf(JP_LOG_DEBUG, "print one");
-	 set_pref(PREF_PRINT_THIS_MANY, 1, NULL, FALSE);
+         jp_logf(JP_LOG_DEBUG, "print one");
+         set_pref(PREF_PRINT_THIS_MANY, 1, NULL, FALSE);
       }
       if (GTK_TOGGLE_BUTTON(radio_button_shown)->active) {
-	 jp_logf(JP_LOG_DEBUG, "print shown");
-	 set_pref(PREF_PRINT_THIS_MANY, 2, NULL, FALSE);
+         jp_logf(JP_LOG_DEBUG, "print shown");
+         set_pref(PREF_PRINT_THIS_MANY, 2, NULL, FALSE);
       }
       if (GTK_TOGGLE_BUTTON(radio_button_all)->active) {
-	 jp_logf(JP_LOG_DEBUG, "print all");
-	 set_pref(PREF_PRINT_THIS_MANY, 3, NULL, FALSE);
+         jp_logf(JP_LOG_DEBUG, "print all");
+         set_pref(PREF_PRINT_THIS_MANY, 3, NULL, FALSE);
       }
    }
 
    /* Get radio button prefs */
    if (radio_button_daily) {
       if (GTK_TOGGLE_BUTTON(radio_button_daily)->active) {
-	 jp_logf(JP_LOG_DEBUG, "print daily");
-	 print_day_week_month=1;
+         jp_logf(JP_LOG_DEBUG, "print daily");
+         print_day_week_month=1;
       }
       if (GTK_TOGGLE_BUTTON(radio_button_weekly)->active) {
-	 jp_logf(JP_LOG_DEBUG, "print weekly");
-	 print_day_week_month=2;
+         jp_logf(JP_LOG_DEBUG, "print weekly");
+         print_day_week_month=2;
       }
       if (GTK_TOGGLE_BUTTON(radio_button_monthly)->active) {
-	 jp_logf(JP_LOG_DEBUG, "print monthly");
-	 print_day_week_month=3;
+         jp_logf(JP_LOG_DEBUG, "print monthly");
+         print_day_week_month=3;
       }
    }
 
    /* Get one record per page pref */
    if (one_record_checkbutton) {
       if (GTK_TOGGLE_BUTTON(one_record_checkbutton)->active) {
-	 jp_logf(JP_LOG_DEBUG, "one record per page");
-	 set_pref(PREF_PRINT_ONE_PER_PAGE, 1, NULL, FALSE);
+         jp_logf(JP_LOG_DEBUG, "one record per page");
+         set_pref(PREF_PRINT_ONE_PER_PAGE, 1, NULL, FALSE);
       } else {
-	 set_pref(PREF_PRINT_ONE_PER_PAGE, 0, NULL, FALSE);
+         set_pref(PREF_PRINT_ONE_PER_PAGE, 0, NULL, FALSE);
       }
    }
 
@@ -106,10 +106,10 @@ static gboolean cb_destroy(GtkWidget *widget)
       jp_logf(JP_LOG_DEBUG, "lines_entry = [%s]\n", lines_text);
       num_lines = atoi(lines_text);
       if (num_lines < 0) {
-	 num_lines = 0;
+         num_lines = 0;
       }
       if (num_lines > 99) {
-	 num_lines = 99;
+         num_lines = 99;
       }
 
       set_pref(PREF_NUM_BLANK_LINES, num_lines, NULL, FALSE);
@@ -210,51 +210,51 @@ int print_gui(GtkWidget *main_window, int app, int date_button, int mon_week_day
       group = NULL;
 
       if (mon_week_day & 0x01) {
-	 radio_button_daily = gtk_radio_button_new_with_label
-	   (group, _("Daily Printout"));
-	 group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_daily));
+         radio_button_daily = gtk_radio_button_new_with_label
+           (group, _("Daily Printout"));
+         group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_daily));
       }
 
       if (mon_week_day & 0x02) {
-	 radio_button_weekly = gtk_radio_button_new_with_label
-	   (group, _("Weekly Printout"));
-	 group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_weekly));
+         radio_button_weekly = gtk_radio_button_new_with_label
+           (group, _("Weekly Printout"));
+         group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_weekly));
       }
 
       if (mon_week_day & 0x04) {
-	 radio_button_monthly = gtk_radio_button_new_with_label
-	   (group, _("Monthly Printout"));
+         radio_button_monthly = gtk_radio_button_new_with_label
+           (group, _("Monthly Printout"));
       }
 
       switch (date_button) {
        case 1:
-	 if (mon_week_day & 0x01) {
-	    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_daily), TRUE);
-	 }
-	 break;
+         if (mon_week_day & 0x01) {
+            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_daily), TRUE);
+         }
+         break;
        case 2:
-	 if (mon_week_day & 0x02) {
-	    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_weekly), TRUE);
-	 }
-	 break;
+         if (mon_week_day & 0x02) {
+            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_weekly), TRUE);
+         }
+         break;
        case 3:
-	 if (mon_week_day & 0x04) {
-	    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_monthly), TRUE);
-	 }
-	 break;
+         if (mon_week_day & 0x04) {
+            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_monthly), TRUE);
+         }
+         break;
        default:
-	 if (mon_week_day & 0x01) {
-	    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_daily), TRUE);
-	 }
+         if (mon_week_day & 0x01) {
+            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_daily), TRUE);
+         }
       }
       if (mon_week_day & 0x01) {
-	 gtk_box_pack_start(GTK_BOX(vbox), radio_button_daily, FALSE, FALSE, 0);
+         gtk_box_pack_start(GTK_BOX(vbox), radio_button_daily, FALSE, FALSE, 0);
       }
       if (mon_week_day & 0x02) {
-	 gtk_box_pack_start(GTK_BOX(vbox), radio_button_weekly, FALSE, FALSE, 0);
+         gtk_box_pack_start(GTK_BOX(vbox), radio_button_weekly, FALSE, FALSE, 0);
       }
       if (mon_week_day & 0x04) {
-	 gtk_box_pack_start(GTK_BOX(vbox), radio_button_monthly, FALSE, FALSE, 0);
+         gtk_box_pack_start(GTK_BOX(vbox), radio_button_monthly, FALSE, FALSE, 0);
       }
    }
 
@@ -263,26 +263,26 @@ int print_gui(GtkWidget *main_window, int app, int date_button, int mon_week_day
       group = NULL;
 
       radio_button_one = gtk_radio_button_new_with_label
-	(group, _("Selected record"));
+        (group, _("Selected record"));
 
       group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_one));
       radio_button_shown = gtk_radio_button_new_with_label
-	(group, _("All records in this category"));
+        (group, _("All records in this category"));
 
       group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_shown));
       radio_button_all = gtk_radio_button_new_with_label
-	(group, _("Print all records"));
+        (group, _("Print all records"));
 
       get_pref(PREF_PRINT_THIS_MANY, &ivalue, NULL);
       switch (ivalue) {
        case 1:
-	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_one), TRUE);
-	 break;
+         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_one), TRUE);
+         break;
        case 2:
-	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_shown), TRUE);
-	 break;
+         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_shown), TRUE);
+         break;
        case 3:
-	 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_all), TRUE);
+         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_all), TRUE);
       }
 
       gtk_box_pack_start(GTK_BOX(vbox), radio_button_one, FALSE, FALSE, 0);
@@ -293,7 +293,7 @@ int print_gui(GtkWidget *main_window, int app, int date_button, int mon_week_day
    if (app != DATEBOOK) {
       /* One record per page check box */
       one_record_checkbutton = gtk_check_button_new_with_label
-	(_("One record per page"));
+        (_("One record per page"));
       gtk_box_pack_start(GTK_BOX(vbox), one_record_checkbutton, FALSE, FALSE, 0);
       get_pref(PREF_PRINT_ONE_PER_PAGE, &ivalue, NULL);
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(one_record_checkbutton), ivalue);
@@ -337,13 +337,13 @@ int print_gui(GtkWidget *main_window, int app, int date_button, int mon_week_day
    /* Cancel button */
    button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_cancel), window);
+                      GTK_SIGNAL_FUNC(cb_cancel), window);
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
 
    /* Print button */
    button = gtk_button_new_from_stock(GTK_STOCK_PRINT);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_print), window);
+                      GTK_SIGNAL_FUNC(cb_print), window);
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
 
 

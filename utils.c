@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.180 2010/03/03 12:50:00 rousseau Exp $ */
+/* $Id: utils.c,v 1.181 2010/03/29 05:44:32 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -79,9 +79,9 @@ static void cb_quit(GtkWidget *widget, gpointer data);
 static void cb_today(GtkWidget *widget, gpointer data);
 int write_to_next_id(unsigned int unique_id);
 int write_to_next_id_open(FILE *pc_out, unsigned int unique_id);
-int forward_backward_in_ce_time(const struct CalendarEvent *ce,
-				  struct tm *t,
-				  int forward_or_backward);
+int forward_backward_in_ce_time(const struct CalendarEvent *cale,
+                                  struct tm *t,
+                                  int forward_or_backward);
 static int str_to_iv_str(char *dest, int destsz, char *src, int isical);
 
 /****************************** Main Code *************************************/
@@ -99,18 +99,18 @@ int add_days_to_date(struct tm *date, int n)
    for (i=0; i<n; i++) {
       flag = 0;
       if (++(date->tm_mday) > ndim) {
-	 date->tm_mday=1;
-	 flag = 1;
-	 if (++(date->tm_mon) > 11) {
-	    date->tm_mon=0;
-	    flag = 1;
-	    if (++(date->tm_year)>137) {
-	       date->tm_year = 137;
-	    }
-	 }
+         date->tm_mday=1;
+         flag = 1;
+         if (++(date->tm_mon) > 11) {
+            date->tm_mon=0;
+            flag = 1;
+            if (++(date->tm_year)>137) {
+               date->tm_year = 137;
+            }
+         }
       }
       if (flag) {
-	 get_month_info(date->tm_mon, 1, date->tm_year, &fdom, &ndim);
+         get_month_info(date->tm_mon, 1, date->tm_year, &fdom, &ndim);
       }
    }
    date->tm_isdst=-1;
@@ -132,10 +132,10 @@ int add_months_to_date(struct tm *date, int n)
 
    for (i=0; i<n; i++) {
       if (++(date->tm_mon) > 11) {
-	 date->tm_mon=0;
-	 if (++(date->tm_year)>137) {
-	    date->tm_year = 137;
-	 }
+         date->tm_mon=0;
+         if (++(date->tm_year)>137) {
+            date->tm_year = 137;
+         }
       }
    }
 
@@ -170,9 +170,9 @@ static int add_or_sub_years_to_date(struct tm *date, int n)
    /* Leap day/year */
    if ((date->tm_mon==1) && (date->tm_mday==29)) {
       if (!((date->tm_year%4 == 0) &&
-	    !(((date->tm_year+1900)%100==0) && ((date->tm_year+1900)%400!=0)))) {
-	 /* Move it back one day */
-	 date->tm_mday=28;
+            !(((date->tm_year+1900)%100==0) && ((date->tm_year+1900)%400!=0)))) {
+         /* Move it back one day */
+         date->tm_mday=28;
       }
    }
    return EXIT_SUCCESS;
@@ -188,20 +188,20 @@ int add_years_to_date(struct tm *date, int n)
  * (i.e. an anniversary) and then if the last 4 characters look like a
  * year. If so then it appends a "number of years" to the description.
  * This is handy for viewing ages on birthdays etc.  */
-/* Either a or ce can be passed as NULL */
+/* Either a or cale can be passed as NULL */
 void append_anni_years(char *desc, int max, struct tm *date,
-		       struct Appointment *a, struct CalendarEvent *ce)
+                       struct Appointment *a, struct CalendarEvent *cale)
 {
    int len;
    int year;
    /* Only append the years if this is a yearly repeating type (i.e. an
     * anniversary) */
-   if ((!a) && (!ce)) {
+   if ((!a) && (!cale)) {
       return;
    }
    if ((a) && (a->repeatType != repeatYearly))
       return;
-   if ((ce) && (ce->repeatType != repeatYearly))
+   if ((cale) && (cale->repeatType != repeatYearly))
       return;
 
    /* Only display this if the user option is enabled */
@@ -276,8 +276,8 @@ unsigned int bytes_to_bin(unsigned char *bytes, unsigned int num_bytes)
  * After a new date is selected it will return mon, day, year
  */
 int cal_dialog(GtkWindow *main_window,
-	       const char *title, int monday_is_fdow,
-	       int *mon, int *day, int *year)
+               const char *title, int monday_is_fdow,
+               int *mon, int *day, int *year)
 {
    GtkWidget *button;
    GtkWidget *vbox;
@@ -293,7 +293,7 @@ int cal_dialog(GtkWindow *main_window,
    gtk_window_set_transient_for(GTK_WINDOW(window), GTK_WINDOW(main_window));
 
    gtk_signal_connect(GTK_OBJECT(window), "destroy",
-		      GTK_SIGNAL_FUNC(cb_destroy), window);
+                      GTK_SIGNAL_FUNC(cb_destroy), window);
 
    vbox = gtk_vbox_new(FALSE, 0);
    gtk_container_add(GTK_CONTAINER(window), vbox);
@@ -308,14 +308,14 @@ int cal_dialog(GtkWindow *main_window,
    gtk_container_add(GTK_CONTAINER(vbox), hbox);
 
    gtk_calendar_display_options(GTK_CALENDAR(cal),
-				GTK_CALENDAR_SHOW_HEADING |
-				GTK_CALENDAR_SHOW_DAY_NAMES |
-				GTK_CALENDAR_SHOW_WEEK_NUMBERS |
-				(monday_is_fdow ? GTK_CALENDAR_WEEK_START_MONDAY : 0));
+                                GTK_CALENDAR_SHOW_HEADING |
+                                GTK_CALENDAR_SHOW_DAY_NAMES |
+                                GTK_CALENDAR_SHOW_WEEK_NUMBERS |
+                                (monday_is_fdow ? GTK_CALENDAR_WEEK_START_MONDAY : 0));
 
    /* gtk_signal_connect(GTK_OBJECT(cal), "day_selected", cb_cal_sel, NULL); */
    gtk_signal_connect(GTK_OBJECT(cal), "day_selected_double_click", GTK_SIGNAL_FUNC(cb_quit),
-		      GINT_TO_POINTER(CAL_DONE));
+                      GINT_TO_POINTER(CAL_DONE));
 
    gtk_calendar_select_month(GTK_CALENDAR(cal), *mon, (*year)+1900);
    gtk_calendar_select_day(GTK_CALENDAR(cal), *day);
@@ -324,17 +324,17 @@ int cal_dialog(GtkWindow *main_window,
    button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button), "clicked", GTK_SIGNAL_FUNC(cb_quit),
-		      GINT_TO_POINTER(CAL_CANCEL));
+                      GINT_TO_POINTER(CAL_CANCEL));
 
    button = gtk_button_new_with_label(_("Today"));
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_today), cal);
+                      GTK_SIGNAL_FUNC(cb_today), cal);
 
    button = gtk_button_new_from_stock(GTK_STOCK_OK);
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button), "clicked", GTK_SIGNAL_FUNC(cb_quit),
-		      GINT_TO_POINTER(CAL_DONE));
+                      GINT_TO_POINTER(CAL_DONE));
 
    gtk_object_set_data(GTK_OBJECT(window), "mon", mon);
    gtk_object_set_data(GTK_OBJECT(window), "day", day);
@@ -381,7 +381,7 @@ static gboolean cb_destroy_dialog(GtkWidget *widget)
 }
 
 static void cb_dialog_button(GtkWidget *widget,
-			gpointer   data)
+                        gpointer   data)
 {
    dialog_result=GPOINTER_TO_INT(data);
 
@@ -404,13 +404,13 @@ static void cb_quit(GtkWidget *widget, gpointer data)
 
    if (*Preturn_code==CAL_DONE) {
       if (cal) {
-	 gtk_calendar_get_date(GTK_CALENDAR(cal),&y,&m,&d);
-	 Pm = gtk_object_get_data(GTK_OBJECT(window), "mon");
-	 Pd = gtk_object_get_data(GTK_OBJECT(window), "day");
-	 Py = gtk_object_get_data(GTK_OBJECT(window), "year");
-	 if (Pm) *Pm=m;
-	 if (Pd) *Pd=d;
-	 if (Py) *Py=y;
+         gtk_calendar_get_date(GTK_CALENDAR(cal),&y,&m,&d);
+         Pm = gtk_object_get_data(GTK_OBJECT(window), "mon");
+         Pd = gtk_object_get_data(GTK_OBJECT(window), "day");
+         Py = gtk_object_get_data(GTK_OBJECT(window), "year");
+         if (Pm) *Pm=m;
+         if (Pd) *Pd=d;
+         if (Py) *Py=y;
       }
    }
 
@@ -562,34 +562,34 @@ int check_copy_DBs_to_home(void)
       get_home_file_name(dbname_pdb[i], destname, sizeof(destname));
       r = stat(destname, &sbuf);
       if (((r)&&(errno==ENOENT)) || (sbuf.st_size==0)) {
-	 /* The file doesn't exist or is zero in size, copy an empty DB file */
-	 if ((strlen(BASE_DIR) + strlen(EPN) + strlen(dbname_pdb[i])) > sizeof(srcname)) {
-	    jp_logf(JP_LOG_DEBUG, "copy_DB_to_home filename too long\n");
-	    return EXIT_FAILURE;
-	 }
-	 g_snprintf(srcname, sizeof(srcname), "%s/%s/%s/%s", BASE_DIR, "share", EPN, dbname_pdb[i]);
-	 in = fopen(srcname, "r");
-	 out = fopen(destname, "w");
-	 if (!in) {
-	    jp_logf(JP_LOG_WARN, _("Couldn't find empty DB file %s: %s\n"),
-		    srcname, strerror(errno));
-	    jp_logf(JP_LOG_WARN, EPN);
-	    jp_logf(JP_LOG_WARN, _(" may not be installed.\n"));
-	    return EXIT_FAILURE;
-	 }
-	 if (!out) {
-	    fclose(in);
-	    return EXIT_FAILURE;
-	 }
-	 while ( (c=fgetc(in)) != EOF ) {
+         /* The file doesn't exist or is zero in size, copy an empty DB file */
+         if ((strlen(BASE_DIR) + strlen(EPN) + strlen(dbname_pdb[i])) > sizeof(srcname)) {
+            jp_logf(JP_LOG_DEBUG, "copy_DB_to_home filename too long\n");
+            return EXIT_FAILURE;
+         }
+         g_snprintf(srcname, sizeof(srcname), "%s/%s/%s/%s", BASE_DIR, "share", EPN, dbname_pdb[i]);
+         in = fopen(srcname, "r");
+         out = fopen(destname, "w");
+         if (!in) {
+            jp_logf(JP_LOG_WARN, _("Couldn't find empty DB file %s: %s\n"),
+                    srcname, strerror(errno));
+            jp_logf(JP_LOG_WARN, EPN);
+            jp_logf(JP_LOG_WARN, _(" may not be installed.\n"));
+            return EXIT_FAILURE;
+         }
+         if (!out) {
+            fclose(in);
+            return EXIT_FAILURE;
+         }
+         while ( (c=fgetc(in)) != EOF ) {
             fputc(c, out);
-	 }
-	 fclose(in);
-	 fclose(out);
-	 /* Set the dates on the file to be old (not up to date) */
-	 times.actime = 1;
-	 times.modtime = 1;
-	 utime(destname, &times);
+         }
+         fclose(in);
+         fclose(out);
+         /* Set the dates on the file to be old (not up to date) */
+         times.actime = 1;
+         times.modtime = 1;
+         utime(destname, &times);
       }
    }
    return EXIT_SUCCESS;
@@ -608,13 +608,13 @@ int check_hidden_dir(void)
        * Only user is given permission to enter and change directory contents
        * which provides some primitive privacy protection. */
       if (mkdir(hidden_dir, 0700)) {
-	 /* Can't create directory */
-	 jp_logf(JP_LOG_WARN, _("Can't create directory %s\n"), hidden_dir);
-	 return EXIT_FAILURE;
+         /* Can't create directory */
+         jp_logf(JP_LOG_WARN, _("Can't create directory %s\n"), hidden_dir);
+         return EXIT_FAILURE;
       }
       if (stat(hidden_dir, &statb)) {
-	 jp_logf(JP_LOG_WARN, _("Can't create directory %s\n"), hidden_dir);
-	 return EXIT_FAILURE;
+         jp_logf(JP_LOG_WARN, _("Can't create directory %s\n"), hidden_dir);
+         return EXIT_FAILURE;
       }
    }
    /* Is it a directory? */
@@ -639,11 +639,11 @@ void cleanup_path(char *path)
    if (!path) return;
    for (s=d=0; path[s]!='\0'; s++,d++) {
       if ((path[s]=='/') && (path[s+1]=='/')) {
-	 d--;
-	 continue;
+         d--;
+         continue;
       }
       if (d!=s) {
-	 path[d]=path[s];
+         path[d]=path[s];
       }
    }
    path[d]='\0';
@@ -683,21 +683,21 @@ static int cleanup_pc_file(char *DB_name, unsigned int *max_id)
    while(!feof(pc_file)) {
       read_header(pc_file, &header);
       if (feof(pc_file)) {
-	 break;
+         break;
       }
       if (header.rt & SPENT_PC_RECORD_BIT) {
-	 compact_it=1;
-	 break;
+         compact_it=1;
+         break;
       }
       if ((header.unique_id > *max_id)
-	  && (header.rt != PALM_REC)
-	  && (header.rt != MODIFIED_PALM_REC)
-	  && (header.rt != DELETED_PALM_REC)
-	  && (header.rt != REPLACEMENT_PALM_REC) ){
-	 *max_id = header.unique_id;
+          && (header.rt != PALM_REC)
+          && (header.rt != MODIFIED_PALM_REC)
+          && (header.rt != DELETED_PALM_REC)
+          && (header.rt != REPLACEMENT_PALM_REC) ){
+         *max_id = header.unique_id;
       }
       if (fseek(pc_file, header.rec_len, SEEK_CUR)) {
-	 jp_logf(JP_LOG_WARN, "fseek failed\n");
+         jp_logf(JP_LOG_WARN, "fseek failed\n");
       }
    }
 
@@ -718,53 +718,53 @@ static int cleanup_pc_file(char *DB_name, unsigned int *max_id)
    while(!feof(pc_file)) {
       read_header(pc_file, &header);
       if (feof(pc_file)) {
-	 break;
+         break;
       }
       if (header.rt & SPENT_PC_RECORD_BIT) {
-	 r++;
-	 if (fseek(pc_file, header.rec_len, SEEK_CUR)) {
-	    jp_logf(JP_LOG_WARN, "fseek failed\n");
-	    r = -1;
-	    break;
-	 }
-	 continue;
+         r++;
+         if (fseek(pc_file, header.rec_len, SEEK_CUR)) {
+            jp_logf(JP_LOG_WARN, "fseek failed\n");
+            r = -1;
+            break;
+         }
+         continue;
       } else {
-	 if (header.rt == NEW_PC_REC) {
-	    header.unique_id = next_id++;
-	 }
-	 if ((header.unique_id > *max_id)
-	     && (header.rt != PALM_REC)
-	     && (header.rt != MODIFIED_PALM_REC)
-	     && (header.rt != DELETED_PALM_REC)
-	     && (header.rt != REPLACEMENT_PALM_REC)
-	     ){
-	    *max_id = header.unique_id;
-	 }
-	 record = malloc(header.rec_len);
-	 if (!record) {
-	    jp_logf(JP_LOG_WARN, "cleanup_pc_file(): %s\n", _("Out of memory"));
-	    r = -1;
-	    break;
-	 }
-	 num = fread(record, header.rec_len, 1, pc_file);
-	 if (num != 1) {
-	    if (ferror(pc_file)) {
-	       r = -1;
-	       break;
-	    }
-	 }
-	 ret = write_header(pc_file2, &header);
-	 /* if (ret != 1) {
-	    r = -1;
-	    break;
-	 }*/
-	 ret = fwrite(record, header.rec_len, 1, pc_file2);
-	 if (ret != 1) {
-	    r = -1;
-	    break;
-	 }
-	 free(record);
-	 record = NULL;
+         if (header.rt == NEW_PC_REC) {
+            header.unique_id = next_id++;
+         }
+         if ((header.unique_id > *max_id)
+             && (header.rt != PALM_REC)
+             && (header.rt != MODIFIED_PALM_REC)
+             && (header.rt != DELETED_PALM_REC)
+             && (header.rt != REPLACEMENT_PALM_REC)
+             ){
+            *max_id = header.unique_id;
+         }
+         record = malloc(header.rec_len);
+         if (!record) {
+            jp_logf(JP_LOG_WARN, "cleanup_pc_file(): %s\n", _("Out of memory"));
+            r = -1;
+            break;
+         }
+         num = fread(record, header.rec_len, 1, pc_file);
+         if (num != 1) {
+            if (ferror(pc_file)) {
+               r = -1;
+               break;
+            }
+         }
+         ret = write_header(pc_file2, &header);
+         /* if (ret != 1) {
+            r = -1;
+            break;
+         }*/
+         ret = fwrite(record, header.rec_len, 1, pc_file2);
+         if (ret != 1) {
+            r = -1;
+            break;
+         }
+         free(record);
+         record = NULL;
       }
    }
 
@@ -817,9 +817,9 @@ int cleanup_pc_files(void)
       ret = cleanup_pc_file(dbname[i], &max_id);
       jp_logf(JP_LOG_DEBUG, "max_id was %d\n", max_id);
       if (ret<0) {
-	 fail_flag=1;
+         fail_flag=1;
       } else if (max_id > max_max_id) {
-	 max_max_id = max_id;
+         max_max_id = max_id;
       }
    }
 
@@ -829,16 +829,16 @@ int cleanup_pc_files(void)
    for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
       plugin = (struct plugin_s *)temp_list->data;
       if ((plugin->db_name==NULL) || (plugin->db_name[0]=='\0')) {
-	 jp_logf(JP_LOG_DEBUG, "not calling cleanup_pc_file for: [%s]\n", plugin->db_name);
-	 continue;
+         jp_logf(JP_LOG_DEBUG, "not calling cleanup_pc_file for: [%s]\n", plugin->db_name);
+         continue;
       }
       jp_logf(JP_LOG_DEBUG, "cleanup_pc_file for [%s]\n", plugin->db_name);
       ret = cleanup_pc_file(plugin->db_name, &max_id);
       jp_logf(JP_LOG_DEBUG, "max_id was %d\n", max_id);
       if (ret<0) {
-	 fail_flag=1;
+         fail_flag=1;
       } else if (max_id > max_max_id) {
-	 max_max_id = max_id;
+         max_max_id = max_id;
       }
    }
 #endif
@@ -851,8 +851,8 @@ int cleanup_pc_files(void)
 
 /* returns 0 if not found, 1 if found */
 int clist_find_id(GtkWidget *clist,
-		  unsigned int unique_id,
-		  int *found_at)
+                  unsigned int unique_id,
+                  int *found_at)
 {
    int i, found;
    MyAddress *maddr;
@@ -862,11 +862,11 @@ int clist_find_id(GtkWidget *clist,
    for (found = i = 0; i<GTK_CLIST(clist)->rows; i++) {
       maddr = gtk_clist_get_row_data(GTK_CLIST(clist), i);
       if (maddr < (MyAddress *)CLIST_MIN_DATA) {
-	 break;
+         break;
       }
       if (maddr->unique_id==unique_id) {
-	 found = TRUE;
-	 *found_at = i;
+         found = TRUE;
+         *found_at = i;
          break;
       }
    }
@@ -877,7 +877,7 @@ int clist_find_id(GtkWidget *clist,
 /* Encapsulate broken GTK function to make it work as documented */
 inline void clist_select_row(GtkCList *clist, 
                       int       row,
-		      int       column)
+                      int       column)
 {
   clist->focus_row = row;
   gtk_clist_select_row(clist, row, column);
@@ -910,8 +910,8 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
    PC3RecordHeader header;
    struct Appointment *appt;
    MyAppointment *mappt;
-   struct CalendarEvent *ce;
-   MyCalendarEvent *mce;
+   struct CalendarEvent *cale;
+   MyCalendarEvent *mcale;
    struct Address *addr;
    MyAddress *maddr;
    struct Contact *cont;
@@ -941,7 +941,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 
    /* to keep the compiler happy with -Wall*/
    mappt=NULL;
-   mce=NULL;
+   mcale=NULL;
    maddr=NULL;
    mcont=NULL;
    mtodo=NULL;
@@ -955,10 +955,10 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       strcpy(filename, "DatebookDB.pc3");
       break;
     case CALENDAR:
-      mce = (MyCalendarEvent *) VP;
-      record_type = mce->rt;
-      unique_id = mce->unique_id;
-      attrib = mce->attrib;
+      mcale = (MyCalendarEvent *) VP;
+      record_type = mcale->rt;
+      unique_id = mcale->unique_id;
+      attrib = mcale->attrib;
       strcpy(filename, "CalendarDB-PDat.pc3");
       break;
     case ADDRESS:
@@ -983,9 +983,9 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 #ifdef ENABLE_MANANA
       get_pref(PREF_MANANA_MODE, &ivalue, NULL);
       if (ivalue) {
-	 strcpy(filename, "MañanaDB.pc3");
+         strcpy(filename, "MañanaDB.pc3");
       } else {
-	 strcpy(filename, "ToDoDB.pc3");
+         strcpy(filename, "ToDoDB.pc3");
       }
 #else
       strcpy(filename, "ToDoDB.pc3");
@@ -1006,7 +1006,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
          strcpy(filename, "MemosDB-PMem.pc3");
          break;
        case 2:
-	 strcpy(filename, "Memo32DB.pc3");
+         strcpy(filename, "Memo32DB.pc3");
          break;
       }
       break;
@@ -1016,7 +1016,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 
    if ((record_type==DELETED_PALM_REC) || (record_type==MODIFIED_PALM_REC)) {
       jp_logf(JP_LOG_INFO|JP_LOG_GUI, _("This record is already deleted.\n"
-	   "It is scheduled to be deleted from the Palm on the next sync.\n"));
+           "It is scheduled to be deleted from the Palm on the next sync.\n"));
       return EXIT_SUCCESS;
    }
    RecordBuffer = pi_buffer_new(0);
@@ -1025,38 +1025,38 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
     case REPLACEMENT_PALM_REC:
       pc_in=jp_open_home_file(filename, "r+");
       if (pc_in==NULL) {
-	 jp_logf(JP_LOG_WARN, _("Unable to open PC records file\n"));
-	 pi_buffer_free(RecordBuffer);
-	 return EXIT_FAILURE;
+         jp_logf(JP_LOG_WARN, _("Unable to open PC records file\n"));
+         pi_buffer_free(RecordBuffer);
+         return EXIT_FAILURE;
       }
       while(!feof(pc_in)) {
-	 read_header(pc_in, &header);
-	 if (feof(pc_in)) {
-	    jp_logf(JP_LOG_WARN, _("Couldn't find record to delete\n"));
-	    pi_buffer_free(RecordBuffer);
-	    jp_close_home_file(pc_in);
-	    return EXIT_FAILURE;
-	 }
-	 /* Keep unique ID intact */
-	 if (header.header_version==2) {
-	    if ((header.unique_id==unique_id) &&
-		((header.rt==NEW_PC_REC)||(header.rt==REPLACEMENT_PALM_REC))) {
-	       if (fseek(pc_in, -header.header_len, SEEK_CUR)) {
-		  jp_logf(JP_LOG_WARN, "fseek failed\n");
-	       }
-	       header.rt=DELETED_PC_REC;
-	       write_header(pc_in, &header);
-	       jp_logf(JP_LOG_DEBUG, "record deleted\n");
-	       jp_close_home_file(pc_in);
-	       pi_buffer_free(RecordBuffer);
-	       return EXIT_SUCCESS;
-	    }
-	 } else {
-	    jp_logf(JP_LOG_WARN, _("Unknown header version %d\n"), header.header_version);
-	 }
-	 if (fseek(pc_in, header.rec_len, SEEK_CUR)) {
-	    jp_logf(JP_LOG_WARN, "fseek failed\n");
-	 }
+         read_header(pc_in, &header);
+         if (feof(pc_in)) {
+            jp_logf(JP_LOG_WARN, _("Couldn't find record to delete\n"));
+            pi_buffer_free(RecordBuffer);
+            jp_close_home_file(pc_in);
+            return EXIT_FAILURE;
+         }
+         /* Keep unique ID intact */
+         if (header.header_version==2) {
+            if ((header.unique_id==unique_id) &&
+                ((header.rt==NEW_PC_REC)||(header.rt==REPLACEMENT_PALM_REC))) {
+               if (fseek(pc_in, -header.header_len, SEEK_CUR)) {
+                  jp_logf(JP_LOG_WARN, "fseek failed\n");
+               }
+               header.rt=DELETED_PC_REC;
+               write_header(pc_in, &header);
+               jp_logf(JP_LOG_DEBUG, "record deleted\n");
+               jp_close_home_file(pc_in);
+               pi_buffer_free(RecordBuffer);
+               return EXIT_SUCCESS;
+            }
+         } else {
+            jp_logf(JP_LOG_WARN, _("Unknown header version %d\n"), header.header_version);
+         }
+         if (fseek(pc_in, header.rec_len, SEEK_CUR)) {
+            jp_logf(JP_LOG_WARN, "fseek failed\n");
+         }
       }
 
       jp_close_home_file(pc_in);
@@ -1067,66 +1067,66 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
       jp_logf(JP_LOG_DEBUG, "Deleting Palm ID %d\n", unique_id);
       pc_in=jp_open_home_file(filename, "a");
       if (pc_in==NULL) {
-	 jp_logf(JP_LOG_WARN, _("Unable to open PC records file\n"));
-	 pi_buffer_free(RecordBuffer);
-	 return EXIT_FAILURE;
+         jp_logf(JP_LOG_WARN, _("Unable to open PC records file\n"));
+         pi_buffer_free(RecordBuffer);
+         return EXIT_FAILURE;
       }
 
       header.unique_id=unique_id;
       if (flag==MODIFY_FLAG) {
-	 header.rt=MODIFIED_PALM_REC;
+         header.rt=MODIFIED_PALM_REC;
       } else {
-	 header.rt=DELETED_PALM_REC;
+         header.rt=DELETED_PALM_REC;
       }
       header.attrib=attrib;
 
       switch (app_type) {
        case DATEBOOK:
-	 appt=&mappt->appt;
-	 if (pack_Appointment(appt, RecordBuffer, datebook_v1) == -1) {
-	    PRINT_FILE_LINE;
-	    jp_logf(JP_LOG_WARN, "pack_Appointment %s\n", _("error"));
-	 }
-	 break;
+         appt=&mappt->appt;
+         if (pack_Appointment(appt, RecordBuffer, datebook_v1) == -1) {
+            PRINT_FILE_LINE;
+            jp_logf(JP_LOG_WARN, "pack_Appointment %s\n", _("error"));
+         }
+         break;
        case CALENDAR:
-	 ce=&mce->ce;
-	 if (pack_CalendarEvent(ce, RecordBuffer, calendar_v1) == -1) {
-	    PRINT_FILE_LINE;
-	    jp_logf(JP_LOG_WARN, "pack_CalendarEvent %s\n", _("error"));
-	 }
-	 break;
+         cale=&mcale->cale;
+         if (pack_CalendarEvent(cale, RecordBuffer, calendar_v1) == -1) {
+            PRINT_FILE_LINE;
+            jp_logf(JP_LOG_WARN, "pack_CalendarEvent %s\n", _("error"));
+         }
+         break;
        case ADDRESS:
-	 addr=&maddr->addr;
-	 if (pack_Address(addr, RecordBuffer, address_v1) == -1) {
-	    PRINT_FILE_LINE;
-	    jp_logf(JP_LOG_WARN, "pack_Address %s\n", _("error"));
-	 }
-	 break;
+         addr=&maddr->addr;
+         if (pack_Address(addr, RecordBuffer, address_v1) == -1) {
+            PRINT_FILE_LINE;
+            jp_logf(JP_LOG_WARN, "pack_Address %s\n", _("error"));
+         }
+         break;
        case CONTACTS:
-	 cont=&mcont->cont;
-	 if (jp_pack_Contact(cont, RecordBuffer) == -1) {
-	    PRINT_FILE_LINE;
-	    jp_logf(JP_LOG_WARN, "jp_pack_Contact %s\n", _("error"));
-	 }
-	 break;
+         cont=&mcont->cont;
+         if (jp_pack_Contact(cont, RecordBuffer) == -1) {
+            PRINT_FILE_LINE;
+            jp_logf(JP_LOG_WARN, "jp_pack_Contact %s\n", _("error"));
+         }
+         break;
        case TODO:
-	 todo=&mtodo->todo;
-	 if (pack_ToDo(todo, RecordBuffer, todo_v1) == -1) {
-	    PRINT_FILE_LINE;
-	    jp_logf(JP_LOG_WARN, "pack_ToDo %s\n", _("error"));
-	 }
-	 break;
+         todo=&mtodo->todo;
+         if (pack_ToDo(todo, RecordBuffer, todo_v1) == -1) {
+            PRINT_FILE_LINE;
+            jp_logf(JP_LOG_WARN, "pack_ToDo %s\n", _("error"));
+         }
+         break;
        case MEMO:
-	 memo=&mmemo->memo;
-	 if (pack_Memo(memo, RecordBuffer, memo_v1) == -1) {
-	    PRINT_FILE_LINE;
-	    jp_logf(JP_LOG_WARN, "pack_Memo %s\n", _("error"));
-	 }
-	 break;
+         memo=&mmemo->memo;
+         if (pack_Memo(memo, RecordBuffer, memo_v1) == -1) {
+            PRINT_FILE_LINE;
+            jp_logf(JP_LOG_WARN, "pack_Memo %s\n", _("error"));
+         }
+         break;
        default:
-	 jp_close_home_file(pc_in);
-	 pi_buffer_free(RecordBuffer);
-	 return EXIT_SUCCESS;
+         jp_close_home_file(pc_in);
+         pi_buffer_free(RecordBuffer);
+         return EXIT_SUCCESS;
       } /* switch */
 
       header.rec_len = RecordBuffer->used;
@@ -1154,8 +1154,8 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 
 /* nob = number of buttons */
 int dialog_generic(GtkWindow *main_window,
-			     char *title, int type,
-			     char *text, int nob, char *button_text[])
+                   char *title, int type,
+                   char *text, int nob, char *button_text[])
 {
    GtkWidget *button, *label1;
    GtkWidget *hbox1, *vbox1, *vbox2;
@@ -1171,9 +1171,9 @@ int dialog_generic(GtkWindow *main_window,
 
    dialog_result=0;
    glob_dialog = gtk_widget_new(GTK_TYPE_WINDOW,
-				"type", GTK_WINDOW_TOPLEVEL,
-				"window_position", GTK_WIN_POS_MOUSE,
-				NULL);
+                                "type", GTK_WINDOW_TOPLEVEL,
+                                "window_position", GTK_WIN_POS_MOUSE,
+                                NULL);
    gtk_window_set_title(GTK_WINDOW(glob_dialog), title);
    gtk_window_set_modal(GTK_WINDOW(glob_dialog), TRUE);
    if (main_window) {
@@ -1192,19 +1192,19 @@ int dialog_generic(GtkWindow *main_window,
    switch (type)
    {
       case DIALOG_INFO:
-	 image = gtk_image_new_from_stock(GTK_STOCK_DIALOG_INFO, GTK_ICON_SIZE_DIALOG);
-	 break;
+         image = gtk_image_new_from_stock(GTK_STOCK_DIALOG_INFO, GTK_ICON_SIZE_DIALOG);
+         break;
       case DIALOG_QUESTION:
-	 image = gtk_image_new_from_stock(GTK_STOCK_DIALOG_QUESTION, GTK_ICON_SIZE_DIALOG);
-	 break;
+         image = gtk_image_new_from_stock(GTK_STOCK_DIALOG_QUESTION, GTK_ICON_SIZE_DIALOG);
+         break;
       case DIALOG_ERROR:
-	 image = gtk_image_new_from_stock(GTK_STOCK_DIALOG_ERROR, GTK_ICON_SIZE_DIALOG);
-	 break;
+         image = gtk_image_new_from_stock(GTK_STOCK_DIALOG_ERROR, GTK_ICON_SIZE_DIALOG);
+         break;
       case DIALOG_WARNING:
-	 image = gtk_image_new_from_stock(GTK_STOCK_DIALOG_WARNING, GTK_ICON_SIZE_DIALOG);
-	 break;
+         image = gtk_image_new_from_stock(GTK_STOCK_DIALOG_WARNING, GTK_ICON_SIZE_DIALOG);
+         break;
       default:
-	 image = NULL;
+         image = NULL;
    }
    if (image)
       gtk_box_pack_start(GTK_BOX(hbox1), image, FALSE, FALSE, 2);
@@ -1230,29 +1230,29 @@ int dialog_generic(GtkWindow *main_window,
 
    for (i=0; i < nob; i++) {
       if (0 == strcmp("OK", button_text[i]))
-	 button = gtk_button_new_from_stock(GTK_STOCK_OK);
+         button = gtk_button_new_from_stock(GTK_STOCK_OK);
       else
-	 if (0 == strcmp("Cancel", button_text[i]))
-	    button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
-	 else
-	    if (0 == strcmp("Yes", button_text[i]))
-	       button = gtk_button_new_from_stock(GTK_STOCK_YES);
-	    else
-	       if (0 == strcmp("No", button_text[i]))
-		  button = gtk_button_new_from_stock(GTK_STOCK_NO);
-	       else
+         if (0 == strcmp("Cancel", button_text[i]))
+            button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
+         else
+            if (0 == strcmp("Yes", button_text[i]))
+               button = gtk_button_new_from_stock(GTK_STOCK_YES);
+            else
+               if (0 == strcmp("No", button_text[i]))
+                  button = gtk_button_new_from_stock(GTK_STOCK_NO);
+               else
       button = gtk_button_new_with_label(_(button_text[i]));
       gtk_signal_connect(GTK_OBJECT(button), "clicked",
-			 GTK_SIGNAL_FUNC(cb_dialog_button),
-			 GINT_TO_POINTER(DIALOG_SAID_1 + i));
+                         GTK_SIGNAL_FUNC(cb_dialog_button),
+                         GINT_TO_POINTER(DIALOG_SAID_1 + i));
       gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
 
       /* default button is the last one */
       if (i == nob-1)
       {
-	 GTK_WIDGET_SET_FLAGS(button, GTK_CAN_DEFAULT);
-	 gtk_widget_grab_default(button);
-	 gtk_widget_grab_focus(button);
+         GTK_WIDGET_SET_FLAGS(button, GTK_CAN_DEFAULT);
+         gtk_widget_grab_default(button);
+         gtk_widget_grab_focus(button);
       }
    }
 
@@ -1264,13 +1264,13 @@ int dialog_generic(GtkWindow *main_window,
 }
 
 int dialog_generic_ok(GtkWidget *widget,
-		      char *title, int type, char *text)
+                      char *title, int type, char *text)
 {
    char *button_text[] = {N_("OK")};
 
    if (widget) {
       return dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(widget))),
-			    title, type, text, 1, button_text);
+                            title, type, text, 1, button_text);
    }
    return dialog_generic(NULL, title, type, text, 1, button_text);
 }
@@ -1291,15 +1291,15 @@ int dialog_save_changed_record(GtkWidget *widget, int changed)
 
    if (changed==MODIFY_FLAG) {
       b=dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)),
-		       _("Save Changed Record?"), DIALOG_QUESTION,
-		       _("Do you want to save the changes to this record?"),
-		       2, button_text);
+                       _("Save Changed Record?"), DIALOG_QUESTION,
+                       _("Do you want to save the changes to this record?"),
+                       2, button_text);
    }
    if (changed==NEW_FLAG) {
       b=dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)),
-		       _("Save New Record?"), DIALOG_QUESTION,
-		       _("Do you want to save this new record?"),
-		       2, button_text);
+                       _("Save New Record?"), DIALOG_QUESTION,
+                       _("Do you want to save this new record?"),
+                       2, button_text);
    }
 
    return b;
@@ -1315,15 +1315,15 @@ int dialog_save_changed_record_with_cancel(GtkWidget *widget, int changed)
 
    if (changed==MODIFY_FLAG) {
       b=dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)),
-		       _("Save Changed Record?"), DIALOG_QUESTION,
-		       _("Do you want to save the changes to this record?"),
-		       3, button_text);
+                       _("Save Changed Record?"), DIALOG_QUESTION,
+                       _("Do you want to save the changes to this record?"),
+                       3, button_text);
    }
    if (changed==NEW_FLAG) {
       b=dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)),
-		       _("Save New Record?"), DIALOG_QUESTION,
-		       _("Do you want to save this new record?"),
-		       3, button_text);
+                       _("Save New Record?"), DIALOG_QUESTION,
+                       _("Do you want to save this new record?"),
+                       3, button_text);
    }
 
    return b;
@@ -1339,8 +1339,8 @@ inline void entry_set_multiline_truncate(GtkEntry *entry, gboolean value)
 /* returns 1 if found */
 /*        0 if eof */
 int find_next_offset(mem_rec_header *mem_rh, long fpos,
-		     unsigned int *next_offset,
-		     unsigned char *attrib, unsigned int *unique_id)
+                     unsigned int *next_offset,
+                     unsigned char *attrib, unsigned int *unique_id)
 {
    mem_rec_header *temp_mem_rh;
    unsigned char found = 0;
@@ -1349,12 +1349,12 @@ int find_next_offset(mem_rec_header *mem_rh, long fpos,
    found_at=0xFFFFFF;
    for (temp_mem_rh=mem_rh; temp_mem_rh; temp_mem_rh = temp_mem_rh->next) {
       if ((temp_mem_rh->offset > fpos) && (temp_mem_rh->offset < found_at)) {
-	 found_at = temp_mem_rh->offset;
+         found_at = temp_mem_rh->offset;
       }
       if ((temp_mem_rh->offset == fpos)) {
-	 found = 1;
-	 *attrib = temp_mem_rh->attrib;
-	 *unique_id = temp_mem_rh->unique_id;
+         found = 1;
+         *attrib = temp_mem_rh->attrib;
+         *unique_id = temp_mem_rh->unique_id;
       }
    }
    *next_offset = found_at;
@@ -1362,14 +1362,14 @@ int find_next_offset(mem_rec_header *mem_rh, long fpos,
 }
 
 /* Finds next repeating event occurrence closest to srch_start_tm */
-int find_next_rpt_event(struct CalendarEvent *ce,
-			struct tm *srch_start_tm,
+int find_next_rpt_event(struct CalendarEvent *cale,
+                        struct tm *srch_start_tm,
                         struct tm *next_tm)
 {
    struct tm prev_tm;
    int prev_found, next_found;
 
-   find_prev_next(ce,
+   find_prev_next(cale,
                   0,
                   srch_start_tm,
                   srch_start_tm,
@@ -1395,14 +1395,14 @@ int find_next_rpt_event(struct CalendarEvent *ce,
  *   Alternatively the C math functions such as floor could be used but there 
  *   seems little point in invoking such overhead.
  */
-int find_prev_next(struct CalendarEvent *ce,
-			  time_t adv,
-			  struct tm *date1,
-			  struct tm *date2,
-			  struct tm *tm_prev,
-			  struct tm *tm_next,
-			  int *prev_found,
-			  int *next_found)
+int find_prev_next(struct CalendarEvent *cale,
+                   time_t adv,
+                   struct tm *date1,
+                   struct tm *date2,
+                   struct tm *tm_prev,
+                   struct tm *tm_next,
+                   int *prev_found,
+                   int *next_found)
 {
    struct tm t;
    time_t t1, t2;
@@ -1435,13 +1435,13 @@ int find_prev_next(struct CalendarEvent *ce,
    memset(tm_prev, 0, sizeof(*tm_prev));
    memset(tm_next, 0, sizeof(*tm_next));
 
-   /* Initialize search time with ce start time */
+   /* Initialize search time with cale start time */
    memset(&t, 0, sizeof(t));
-   t.tm_year=ce->begin.tm_year;
-   t.tm_mon=ce->begin.tm_mon;
-   t.tm_mday=ce->begin.tm_mday;
-   t.tm_hour=ce->begin.tm_hour;
-   t.tm_min=ce->begin.tm_min;
+   t.tm_year=cale->begin.tm_year;
+   t.tm_mon=cale->begin.tm_mon;
+   t.tm_mday=cale->begin.tm_mday;
+   t.tm_hour=cale->begin.tm_hour;
+   t.tm_min=cale->begin.tm_min;
    t.tm_isdst=-1;
    mktime(&t);
 #ifdef ALARMS_DEBUG
@@ -1450,29 +1450,29 @@ int find_prev_next(struct CalendarEvent *ce,
 #endif
 
    /* Handle non-repeating appointments */        
-   if (ce->repeatType == repeatNone) {
+   if (cale->repeatType == repeatNone) {
 #ifdef ALARMS_DEBUG
       printf("fpn: repeatNone\n");
 #endif
-      t_alarm=mktime_dst_adj(&(ce->begin)) - adv;
+      t_alarm=mktime_dst_adj(&(cale->begin)) - adv;
       if ((t_alarm <= t2) && (t_alarm >= t1)) {
-	 memcpy(tm_prev, &(ce->begin), sizeof(struct tm));
-	 *prev_found=1;
+         memcpy(tm_prev, &(cale->begin), sizeof(struct tm));
+         *prev_found=1;
 #ifdef ALARMS_DEBUG
-	 printf("fpn: prev_found none\n");
+         printf("fpn: prev_found none\n");
 #endif
       } else if (t_alarm > t2) {
-	 memcpy(tm_next, &(ce->begin), sizeof(struct tm));
-	 *next_found=1;
+         memcpy(tm_next, &(cale->begin), sizeof(struct tm));
+         *next_found=1;
 #ifdef ALARMS_DEBUG
-	 printf("fpn: next_found none\n");
+         printf("fpn: next_found none\n");
 #endif
       }
       return EXIT_SUCCESS;
    }
 
    /* Optimize initial start position of search */ 
-   switch (ce->repeatType) {
+   switch (cale->repeatType) {
     case repeatNone:
       /* Already handled.  Here only to shut up compiler warnings */
       break;
@@ -1480,13 +1480,13 @@ int find_prev_next(struct CalendarEvent *ce,
 #ifdef ALARMS_DEBUG
       printf("fpn: repeatDaily\n");
 #endif
-      freq = ce->repeatFrequency;
+      freq = cale->repeatFrequency;
       t_offset = freq * DAY_IN_SECS;
       t_alarm = mktime_dst_adj(&t);
       /* Jump to closest current date if appt. started in the past */
       if (t1 - adv > t_alarm)
       {
-	 t_alarm = ((((t1+adv)-t_alarm) / t_offset) * t_offset) + t_alarm;
+         t_alarm = ((((t1+adv)-t_alarm) / t_offset) * t_offset) + t_alarm;
          memcpy(&t, localtime(&t_alarm), sizeof(struct tm));
 #ifdef ALARMS_DEBUG
          strftime(str, sizeof(str), "%B %d, %Y %H:%M", &t);
@@ -1498,14 +1498,14 @@ int find_prev_next(struct CalendarEvent *ce,
 #ifdef ALARMS_DEBUG
       printf("fpn: repeatWeekly\n");
 #endif
-      freq = ce->repeatFrequency;
-      begin_days = dateToDays(&(ce->begin));
+      freq = cale->repeatFrequency;
+      begin_days = dateToDays(&(cale->begin));
       date1_days = dateToDays(date1);
       /* Jump to closest current date if appt. started in the past */
       if (date1_days > begin_days) {
 #ifdef ALARMS_DEBUG
          printf("fpn: begin_days %d date1_days %d\n", begin_days, date1_days);
-         printf("fpn: date1->tm_wday %d appt->begin.tm_wday %d\n", date1->tm_wday, ce->begin.tm_wday);
+         printf("fpn: date1->tm_wday %d appt->begin.tm_wday %d\n", date1->tm_wday, cale->begin.tm_wday);
 #endif
          /* Jump by appropriate number of weeks */
          offset = date1_days - begin_days;
@@ -1520,7 +1520,7 @@ int find_prev_next(struct CalendarEvent *ce,
       /* Within the week find which day is a repeat */
       found=0;
       for (count=0, i=t.tm_wday; i>=0; i--, count++) {
-         if (ce->repeatDays[i]) {
+         if (cale->repeatDays[i]) {
             sub_days_from_date(&t, count);
             found=1;
             break;
@@ -1528,7 +1528,7 @@ int find_prev_next(struct CalendarEvent *ce,
       }
       if (!found) {
          for (count=0, i=t.tm_wday; i<7; i++, count++) {
-            if (ce->repeatDays[i]) {
+            if (cale->repeatDays[i]) {
                add_days_to_date(&t, count);
                found=1;
                break;
@@ -1545,27 +1545,27 @@ int find_prev_next(struct CalendarEvent *ce,
       printf("fpn: repeatMonthlyByDay\n");
 #endif
       /* Jump to closest current date if appt. started in the past */
-      if ((date1->tm_year > ce->begin.tm_year) ||
-          (date1->tm_mon  > ce->begin.tm_mon)) {
+      if ((date1->tm_year > cale->begin.tm_year) ||
+          (date1->tm_mon  > cale->begin.tm_mon)) {
          /* First, adjust month */
-         freq = ce->repeatFrequency;
-         offset = ((date1->tm_year - ce->begin.tm_year)*12) -
-                    ce->begin.tm_mon +
+         freq = cale->repeatFrequency;
+         offset = ((date1->tm_year - cale->begin.tm_year)*12) -
+                    cale->begin.tm_mon +
                     date1->tm_mon;
          offset = (offset/freq)*freq;
-	 add_months_to_date(&t, offset);
+         add_months_to_date(&t, offset);
 
          /* Second, adjust to correct day in new month */
-	 get_month_info(t.tm_mon, 1, t.tm_year, &fdom, &ndim);
-	 t.tm_mday=((ce->repeatDay+7-fdom)%7) - ((ce->repeatDay)%7) + ce->repeatDay + 1;
+         get_month_info(t.tm_mon, 1, t.tm_year, &fdom, &ndim);
+         t.tm_mday=((cale->repeatDay+7-fdom)%7) - ((cale->repeatDay)%7) + cale->repeatDay + 1;
 #ifdef ALARMS_DEBUG
          printf("fpn: months offset = %d\n", offset);
          printf("fpn: %02d/01/%02d, fdom=%d\n", t.tm_mon+1, t.tm_year+1900, fdom);
          printf("fpn: mday = %d\n", t.tm_mday);
 #endif
-	 if (t.tm_mday > ndim-1) {
-	    t.tm_mday -= 7;
-	 }
+         if (t.tm_mday > ndim-1) {
+            t.tm_mday -= 7;
+         }
 #ifdef ALARMS_DEBUG
          strftime(str, sizeof(str), "%B %d, %Y %H:%M", &t);
          printf("fpn: initial monthly by day=%s\n", str);
@@ -1577,17 +1577,17 @@ int find_prev_next(struct CalendarEvent *ce,
       printf("fpn: repeatMonthlyByDate\n");
 #endif
       /* Jump to closest current date if appt. started in the past */
-      if ((date1->tm_year > ce->begin.tm_year) ||
-          (date1->tm_mon  > ce->begin.tm_mon)) {
-         freq = ce->repeatFrequency;
-         offset = ((date1->tm_year - ce->begin.tm_year)*12) -
-                    ce->begin.tm_mon +
+      if ((date1->tm_year > cale->begin.tm_year) ||
+          (date1->tm_mon  > cale->begin.tm_mon)) {
+         freq = cale->repeatFrequency;
+         offset = ((date1->tm_year - cale->begin.tm_year)*12) -
+                    cale->begin.tm_mon +
                     date1->tm_mon;
          offset = (offset/freq)*freq;
 #ifdef ALARMS_DEBUG
          printf("fpn: months offset = %d\n", offset);
 #endif
-	 add_months_to_date(&t, offset);
+         add_months_to_date(&t, offset);
       }
       break;
     case repeatYearly:
@@ -1595,14 +1595,14 @@ int find_prev_next(struct CalendarEvent *ce,
       printf("fpn: repeatYearly\n");
 #endif
       /* Jump to closest current date if appt. started in the past */
-      if (date1->tm_year > ce->begin.tm_year) {
-         freq = ce->repeatFrequency;
-         offset = ((date1->tm_year - ce->begin.tm_year)/freq)*freq;
+      if (date1->tm_year > cale->begin.tm_year) {
+         freq = cale->repeatFrequency;
+         offset = ((date1->tm_year - cale->begin.tm_year)/freq)*freq;
 #ifdef ALARMS_DEBUG
-         printf("fpn: (%d - %d)%%%d\n", date1->tm_year, ce->begin.tm_year, freq);
+         printf("fpn: (%d - %d)%%%d\n", date1->tm_year, cale->begin.tm_year, freq);
          printf("fpn: years offset = %d\n", offset);
 #endif
-	 add_years_to_date(&t, offset);
+         add_years_to_date(&t, offset);
       }
       break;
 
@@ -1613,11 +1613,11 @@ int find_prev_next(struct CalendarEvent *ce,
    while (forward || backward) {
       safety_counter++;
       if (safety_counter > 3000) {
-	 jp_logf(JP_LOG_STDOUT|JP_LOG_FILE, "find_prev_next(): %s\n", _("infinite loop, breaking\n"));
-	 if (ce->description) {
-	    jp_logf(JP_LOG_STDOUT|JP_LOG_FILE, "desc=[%s]\n", ce->description);
-	 }
-	 break;
+         jp_logf(JP_LOG_STDOUT|JP_LOG_FILE, "find_prev_next(): %s\n", _("infinite loop, breaking\n"));
+         if (cale->description) {
+            jp_logf(JP_LOG_STDOUT|JP_LOG_FILE, "desc=[%s]\n", cale->description);
+         }
+         break;
       }
 
       kill_update_next = 0;
@@ -1629,44 +1629,44 @@ int find_prev_next(struct CalendarEvent *ce,
 
       /* Check for exceptions in repeat appointments */
       found_exception=0;
-      for (i=0; i<ce->exceptions; i++) {
-	 if ((t.tm_mday==ce->exception[i].tm_mday) &&
-	     (t.tm_mon==ce->exception[i].tm_mon) &&
-	     (t.tm_year==ce->exception[i].tm_year)
-	     ) {
-	    found_exception=1;
-	    break;
-	 }
+      for (i=0; i<cale->exceptions; i++) {
+         if ((t.tm_mday==cale->exception[i].tm_mday) &&
+             (t.tm_mon==cale->exception[i].tm_mon) &&
+             (t.tm_year==cale->exception[i].tm_year)
+             ) {
+            found_exception=1;
+            break;
+         }
       }
       if (found_exception) {
-	 if (forward) {
-	    forward_backward_in_ce_time(ce, &t, 1);
-	    continue;
-	 }
-	 if (backward) {
-	    forward_backward_in_ce_time(ce, &t, -1);
-	    continue;
-	 }
+         if (forward) {
+            forward_backward_in_ce_time(cale, &t, 1);
+            continue;
+         }
+         if (backward) {
+            forward_backward_in_ce_time(cale, &t, -1);
+            continue;
+         }
       }
 
       /* Check that proposed alarm is not before the appt begin date */
-      t_begin = mktime_dst_adj(&(ce->begin));
+      t_begin = mktime_dst_adj(&(cale->begin));
       if (t_temp < t_begin) {
 #ifdef ALARMS_DEBUG
-	 printf("fpn: before begin date\n");
+         printf("fpn: before begin date\n");
 #endif
-	 backward=0;
+         backward=0;
          kill_update_next = 1;
       }
       /* Check that proposed alarm is not past appt end date */
-      if (!(ce->repeatForever)) {
-	 t_end = mktime_dst_adj(&(ce->repeatEnd));
-	 if (t_temp >= t_end) {
+      if (!(cale->repeatForever)) {
+         t_end = mktime_dst_adj(&(cale->repeatEnd));
+         if (t_temp >= t_end) {
 #ifdef ALARMS_DEBUG
-	    printf("fpn: after end date\n");
+            printf("fpn: after end date\n");
 #endif
-	    forward=0;
-	 }
+            forward=0;
+         }
       }
 
       /* Check if proposed alarm falls within the desired window [t1,t2] */
@@ -1681,23 +1681,23 @@ int find_prev_next(struct CalendarEvent *ce,
 #endif
          }
       } else {
-	 memcpy(tm_prev, &t, sizeof(t));
-	 *prev_found=1;
-	 backward=0;
+         memcpy(tm_prev, &t, sizeof(t));
+         *prev_found=1;
+         backward=0;
 #ifdef ALARMS_DEBUG
-	 printf("fpn: prev_found\n");
+         printf("fpn: prev_found\n");
 #endif
       }
 
       /* Change &t to the next/previous occurrence of the appointment 
        * and try search again */
       if (forward) {
-	 forward_backward_in_ce_time(ce, &t, 1);
-	 continue;
+         forward_backward_in_ce_time(cale, &t, 1);
+         continue;
       }
       if (backward) {
-	 forward_backward_in_ce_time(ce, &t, -1);
-	 continue;
+         forward_backward_in_ce_time(cale, &t, -1);
+         continue;
       }
 
    } /* end of while loop going forward/backward */
@@ -1713,63 +1713,63 @@ int find_prev_next(struct CalendarEvent *ce,
  * t is an in/out parameter
  * forward_or_backward should be 1 for forward or -1 for backward
  */
-int forward_backward_in_ce_time(const struct CalendarEvent *ce,
-				struct tm *t,
-				int forward_or_backward)
+int forward_backward_in_ce_time(const struct CalendarEvent *cale,
+                                struct tm *t,
+                                int forward_or_backward)
 {
    int count, dow, freq, fdom, ndim;
 
-   freq = ce->repeatFrequency;
+   freq = cale->repeatFrequency;
 
    /* Go forward in time */
    if (forward_or_backward==1) {
-      switch (ce->repeatType) {
+      switch (cale->repeatType) {
        case calendarRepeatNone:
 #ifdef ALARMS_DEBUG
          printf("fbiat: repeatNone encountered.  This should never happen!\n");
 #endif
-	 break;
+         break;
        case calendarRepeatDaily:
          add_days_to_date(t, freq);
-	 break;
+         break;
        case calendarRepeatWeekly:
-	 for (count=0, dow=t->tm_wday; count<14; count++) {
-	    add_days_to_date(t, 1);
+         for (count=0, dow=t->tm_wday; count<14; count++) {
+            add_days_to_date(t, 1);
 #ifdef ALARMS_DEBUG
-	    printf("fbiat: weekly forward t.tm_wday=%d, freq=%d\n", t->tm_wday, freq);
+            printf("fbiat: weekly forward t.tm_wday=%d, freq=%d\n", t->tm_wday, freq);
 #endif
-	    dow++;
-	    if (dow==7) {
+            dow++;
+            if (dow==7) {
 #ifdef ALARMS_DEBUG
-	       printf("fbiat: dow==7\n");
+               printf("fbiat: dow==7\n");
 #endif
-	       add_days_to_date(t, (freq-1)*7);
-	       dow=0;
-	    }
-	    if (ce->repeatDays[dow]) {
+               add_days_to_date(t, (freq-1)*7);
+               dow=0;
+            }
+            if (cale->repeatDays[dow]) {
 #ifdef ALARMS_DEBUG
-	       printf("fbiat: repeatDay[dow] dow=%d\n", dow);
+               printf("fbiat: repeatDay[dow] dow=%d\n", dow);
 #endif
-	       break;
-	    }
-	 }
-	 break;
+               break;
+            }
+         }
+         break;
        case calendarRepeatMonthlyByDay:
-	 add_months_to_date(t, freq);
-	 get_month_info(t->tm_mon, 1, t->tm_year, &fdom, &ndim);
-	 t->tm_mday=((ce->repeatDay+7-fdom)%7) - ((ce->repeatDay)%7) + ce->repeatDay + 1;
-	 if (t->tm_mday > ndim-1) {
-	    t->tm_mday -= 7;
-	 }
-	 break;
+         add_months_to_date(t, freq);
+         get_month_info(t->tm_mon, 1, t->tm_year, &fdom, &ndim);
+         t->tm_mday=((cale->repeatDay+7-fdom)%7) - ((cale->repeatDay)%7) + cale->repeatDay + 1;
+         if (t->tm_mday > ndim-1) {
+            t->tm_mday -= 7;
+         }
+         break;
        case calendarRepeatMonthlyByDate:
-	 t->tm_mday=ce->begin.tm_mday;
-	 add_months_to_date(t, freq);
-	 break;
+         t->tm_mday=cale->begin.tm_mday;
+         add_months_to_date(t, freq);
+         break;
        case calendarRepeatYearly:
-	 t->tm_mday=ce->begin.tm_mday;
-	 add_years_to_date(t, freq);
-	 break;
+         t->tm_mday=cale->begin.tm_mday;
+         add_years_to_date(t, freq);
+         break;
       } /* switch on repeatType */
 
       return EXIT_SUCCESS;
@@ -1777,53 +1777,53 @@ int forward_backward_in_ce_time(const struct CalendarEvent *ce,
 
    /* Go back in time */
    if (forward_or_backward==-1) {
-      switch (ce->repeatType) {
+      switch (cale->repeatType) {
        case calendarRepeatNone:
 #ifdef ALARMS_DEBUG
          printf("fbiat: repeatNone encountered.  This should never happen!\n");
 #endif
-	 break;
+         break;
        case calendarRepeatDaily:
          sub_days_from_date(t, freq);
-	 break;
+         break;
        case calendarRepeatWeekly:
-	 for (count=0, dow=t->tm_wday; count<14; count++) {
-	    sub_days_from_date(t, 1);
+         for (count=0, dow=t->tm_wday; count<14; count++) {
+            sub_days_from_date(t, 1);
 #ifdef ALARMS_DEBUG
-	    printf("fbiat: weekly backward t.tm_wday=%d, freq=%d\n", t->tm_wday, freq);
+            printf("fbiat: weekly backward t.tm_wday=%d, freq=%d\n", t->tm_wday, freq);
 #endif
-	    dow--;
-	    if (dow==-1) {
+            dow--;
+            if (dow==-1) {
 #ifdef ALARMS_DEBUG
-	       printf("fbiat: dow==-1\n");
+               printf("fbiat: dow==-1\n");
 #endif
-	       sub_days_from_date(t, (freq-1)*7);
-	       dow=6;
-	    }
-	    if (ce->repeatDays[dow]) {
+               sub_days_from_date(t, (freq-1)*7);
+               dow=6;
+            }
+            if (cale->repeatDays[dow]) {
 #ifdef ALARMS_DEBUG
-	       printf("fbiat: repeatDay[dow] dow=%d\n", dow);
+               printf("fbiat: repeatDay[dow] dow=%d\n", dow);
 #endif
-	       break;
-	    }
-	 }
-	 break;
+               break;
+            }
+         }
+         break;
        case calendarRepeatMonthlyByDay:
-	 sub_months_from_date(t, freq);
-	 get_month_info(t->tm_mon, 1, t->tm_year, &fdom, &ndim);
-	 t->tm_mday=((ce->repeatDay+7-fdom)%7) - ((ce->repeatDay)%7) + ce->repeatDay + 1;
-	 if (t->tm_mday > ndim-1) {
-	    t->tm_mday -= 7;
-	 }
-	 break;
+         sub_months_from_date(t, freq);
+         get_month_info(t->tm_mon, 1, t->tm_year, &fdom, &ndim);
+         t->tm_mday=((cale->repeatDay+7-fdom)%7) - ((cale->repeatDay)%7) + cale->repeatDay + 1;
+         if (t->tm_mday > ndim-1) {
+            t->tm_mday -= 7;
+         }
+         break;
        case calendarRepeatMonthlyByDate:
-	 t->tm_mday=ce->begin.tm_mday;
-	 sub_months_from_date(t, freq);
-	 break;
+         t->tm_mday=cale->begin.tm_mday;
+         sub_months_from_date(t, freq);
+         break;
        case calendarRepeatYearly:
-	 t->tm_mday=ce->begin.tm_mday;
-	 sub_years_from_date(t, freq);
-	 break;
+         t->tm_mday=cale->begin.tm_mday;
+         sub_years_from_date(t, freq);
+         break;
       } /* switch on repeatType */
    }
 
@@ -1911,70 +1911,70 @@ int get_app_info_size(FILE *in, int *size)
 void get_compile_options(char *string, int len)
 {
    g_snprintf(string, len,
-	      PN" version "VERSION"\n"
-	      "  Copyright (C) 1999-2009 by Judd Montgomery\n"
-	      "  judd@jpilot.org, http://jpilot.org\n"
-	      "\n"
-	      PN" comes with ABSOLUTELY NO WARRANTY; for details see the file\n"
-	      "COPYING included with the source code, or in /usr/share/docs/jpilot/.\n\n"
-	      "This program is free software; you can redistribute it and/or modify\n"
-	      "it under the terms of the GNU General Public License as published by\n"
-	      "the Free Software Foundation; version 2 of the License.\n\n"
-	      "%s %s %s\n"
-	      "%s\n"
-	      "  %s - %s\n"
-	      "  %s - %d.%d.%d\n"
-	      "  %s - %s\n"
-	      "  %s - %s\n"
-	      "  %s - %s\n"
-	      "  %s - %s\n"
-	      "  %s - %s\n"
-	      "  %s - %s\n"
-	      "  %s - %s",
-	      _("Date compiled"), __DATE__, __TIME__,
-	      _("Compiled with these options:"),
+              PN" version "VERSION"\n"
+              "  Copyright (C) 1999-2009 by Judd Montgomery\n"
+              "  judd@jpilot.org, http://jpilot.org\n"
+              "\n"
+              PN" comes with ABSOLUTELY NO WARRANTY; for details see the file\n"
+              "COPYING included with the source code, or in /usr/share/docs/jpilot/.\n\n"
+              "This program is free software; you can redistribute it and/or modify\n"
+              "it under the terms of the GNU General Public License as published by\n"
+              "the Free Software Foundation; version 2 of the License.\n\n"
+              "%s %s %s\n"
+              "%s\n"
+              "  %s - %s\n"
+              "  %s - %d.%d.%d\n"
+              "  %s - %s\n"
+              "  %s - %s\n"
+              "  %s - %s\n"
+              "  %s - %s\n"
+              "  %s - %s\n"
+              "  %s - %s\n"
+              "  %s - %s",
+              _("Date compiled"), __DATE__, __TIME__,
+              _("Compiled with these options:"),
 
-	      _("Installed Path"),
-	      BASE_DIR,
-	      _("pilot-link version"),
-	      PILOT_LINK_VERSION,
-	      PILOT_LINK_MAJOR,
-	      PILOT_LINK_MINOR,
-	      _("USB support"),
-	      _("yes"),
-	      _("Private record support"),
+              _("Installed Path"),
+              BASE_DIR,
+              _("pilot-link version"),
+              PILOT_LINK_VERSION,
+              PILOT_LINK_MAJOR,
+              PILOT_LINK_MINOR,
+              _("USB support"),
+              _("yes"),
+              _("Private record support"),
 #ifdef ENABLE_PRIVATE
-	      _("yes"),
+              _("yes"),
 #else
-	      _("no"),
+              _("no"),
 #endif
-	      _("Datebk support"),
+              _("Datebk support"),
 #ifdef ENABLE_DATEBK
-	      _("yes"),
+              _("yes"),
 #else
-	      _("no"),
+              _("no"),
 #endif
-	      _("Plugin support"),
+              _("Plugin support"),
 #ifdef ENABLE_PLUGINS
-	      _("yes"),
+              _("yes"),
 #else
-	      _("no"),
+              _("no"),
 #endif
-	      _("Manana support"),
+              _("Manana support"),
 #ifdef ENABLE_MANANA
-	      _("yes"),
+              _("yes"),
 #else
-	      _("no"),
+              _("no"),
 #endif
-	      _("NLS support (foreign languages)"),
+              _("NLS support (foreign languages)"),
 #ifdef ENABLE_NLS
-	      _("yes"),
+              _("yes"),
 #else
-	      _("no"),
+              _("no"),
 #endif
-	      _("GTK2 support"),
-	      _("yes")
-	      );
+              _("GTK2 support"),
+              _("yes")
+              );
 }
 
 /* Get today's date and work out day in month. This is used to highlight
@@ -2015,7 +2015,7 @@ int get_home_file_name(char *file, char *full_name, int max_size)
    if (!home) {/* No JPILOT_HOME var */
       home = getenv("HOME");
       if (!home) {/* No HOME var */
-	 jp_logf(JP_LOG_WARN, _("Can't get HOME environment variable\n"));
+         jp_logf(JP_LOG_WARN, _("Can't get HOME environment variable\n"));
       }
    }
    if (!home) {
@@ -2061,9 +2061,9 @@ void get_month_info(int month, int day, int year, int *dow, int *ndim)
    /* leap year */
    if (month == 1) {
       if ((year%4 == 0) &&
-	  !(((year+1900)%100==0) && ((year+1900)%400!=0))
-	  ) {
-	 days_in_month[1]++;
+          !(((year+1900)%100==0) && ((year+1900)%400!=0))
+          ) {
+         days_in_month[1]++;
       }
    }
    *ndim = days_in_month[month];
@@ -2122,9 +2122,9 @@ int get_next_unique_pc_id(unsigned int *next_unique_id)
 }
 
 int get_pixmaps(GtkWidget *widget,
-		int which_one,
-		GdkPixmap **out_pixmap,
-		GdkBitmap **out_mask)
+                int which_one,
+                GdkPixmap **out_pixmap,
+                GdkBitmap **out_mask)
 {
    /* Externally stored icon definitions */
    #include "icons/clist_mini_icons.h"
@@ -2231,12 +2231,12 @@ int get_timeout_interval(void)
 }
 
 int jp_cal_dialog(GtkWindow *main_window,
-		  const char *title, int monday_is_fdow,
-		  int *mon, int *day, int *year)
+                  const char *title, int monday_is_fdow,
+                  int *mon, int *day, int *year)
 {
    return cal_dialog(main_window,
-		     title, monday_is_fdow,
-		     mon, day, year);
+                     title, monday_is_fdow,
+                     mon, day, year);
 }
 
 void jp_charset_j2p(char *const buf, int max_len)
@@ -2335,8 +2335,8 @@ FILE *jp_open_home_file(char *filename, char *mode)
    if (pc_in == NULL) {
       pc_in = fopen(fullname, "w+");
       if (pc_in) {
-	 fclose(pc_in);
-	 pc_in = fopen(fullname, mode);
+         fclose(pc_in);
+         pc_in = fopen(fullname, mode);
       }
    }
 
@@ -2349,9 +2349,9 @@ FILE *jp_open_home_file(char *filename, char *mode)
       int  r;
 
       if (*mode == 'r')
-	 lock.l_type = F_RDLCK;
+         lock.l_type = F_RDLCK;
       else
-	 lock.l_type = F_WRLCK;
+         lock.l_type = F_WRLCK;
       lock.l_start = 0;
       lock.l_whence = SEEK_SET;
       lock.l_len = 0; /* Lock to the end of file */
@@ -2361,14 +2361,14 @@ FILE *jp_open_home_file(char *filename, char *mode)
       if (flock(fileno(pc_in), LOCK_EX) < 0)
 #endif
       {
-	 jp_logf(JP_LOG_WARN, "locking %s failed: %s\n", filename, strerror(errno));
-	 if (ENOLCK != errno)
-	 {
-	    fclose(pc_in);
-	    return NULL;
-	 }
-	 else
-	    jp_logf(JP_LOG_WARN, "continue without locking\n");
+         jp_logf(JP_LOG_WARN, "locking %s failed: %s\n", filename, strerror(errno));
+         if (ENOLCK != errno)
+         {
+            fclose(pc_in);
+            return NULL;
+         }
+         else
+            jp_logf(JP_LOG_WARN, "continue without locking\n");
       }
 
       /* Enhance privacy by only allowing user to read & write files */
@@ -2408,15 +2408,15 @@ void ldif_out(FILE *f, char *name, char *fmt, ...)
 
    va_start(ap, fmt);
    vsnprintf((char *)buf, sizeof(buf), fmt, ap);
-   if (buf[0] == ' ' || buf[0] == ':' || buf[0] == '<')	/* SAFE-INIT-CHAR */ {
+   if (buf[0] == ' ' || buf[0] == ':' || buf[0] == '<') /* SAFE-INIT-CHAR */ {
       printable = 0;
    }
    for (p = (char *)buf; *p && printable; p++) {
       if (*p < 32 || *p > 126) { /* SAFE-CHAR, excluding all control chars */
-	 printable = 0;
+         printable = 0;
       }
       if (*p == ' ' && *(p + 1) == '\0') { /* note 8 */
-	 printable = 0;
+         printable = 0;
       }
    }
    if (printable) {
@@ -2442,9 +2442,9 @@ void lstrncpy_remove_cr_lfs(char *dest, char *src, int len)
    dest[0]='\0';
    for (i=0; src[i] && (i<len); i++) {
       if ((src[i]=='\r') || (src[i]=='\n')) {
-	 dest[i]=' ';
+         dest[i]=' ';
       } else {
-	 dest[i]=src[i];
+         dest[i]=src[i];
       }
    }
    if (i==len) {
@@ -2459,12 +2459,12 @@ void lstrncpy_remove_cr_lfs(char *dest, char *src, int len)
 }
 
 int make_category_menu(GtkWidget **category_menu,
-		       GtkWidget **cat_menu_item,
-		       struct sorted_cats *sort_l,
-		       void (*selection_callback)
-		       (GtkWidget *item, int selection),
-		       int add_an_all_item,
-		       int add_edit_cat_item)
+                       GtkWidget **cat_menu_item,
+                       struct sorted_cats *sort_l,
+                       void (*selection_callback)
+                       (GtkWidget *item, int selection),
+                       int add_an_all_item,
+                       int add_edit_cat_item)
 {
    GtkWidget *menu;
    GSList    *group;
@@ -2480,8 +2480,8 @@ int make_category_menu(GtkWidget **category_menu,
    if (add_an_all_item) {
       cat_menu_item[0] = gtk_radio_menu_item_new_with_label(group, _("All"));
       if (selection_callback) {
-	 gtk_signal_connect(GTK_OBJECT(cat_menu_item[0]), "activate",
-			    GTK_SIGNAL_FUNC(selection_callback), GINT_TO_POINTER(CATEGORY_ALL));
+         gtk_signal_connect(GTK_OBJECT(cat_menu_item[0]), "activate",
+                            GTK_SIGNAL_FUNC(selection_callback), GINT_TO_POINTER(CATEGORY_ALL));
       }
       group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(cat_menu_item[0]));
       gtk_menu_append(GTK_MENU(menu), cat_menu_item[0]);
@@ -2491,18 +2491,18 @@ int make_category_menu(GtkWidget **category_menu,
 
    for (i=0; i<NUM_CAT_ITEMS; i++) {
       if (sort_l[i].Pcat[0]) {
-	 cat_menu_item[i+offset] = gtk_radio_menu_item_new_with_label(
-	    group, sort_l[i].Pcat);
-	 if (selection_callback) {
-	    gtk_signal_connect(GTK_OBJECT(cat_menu_item[i+offset]), "activate",
-			       GTK_SIGNAL_FUNC(selection_callback), GINT_TO_POINTER(sort_l[i].cat_num));
-	 }
-	 group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(cat_menu_item[i+offset]));
-	 gtk_menu_append(GTK_MENU(menu), cat_menu_item[i+offset]);
-	 gtk_widget_show(cat_menu_item[i+offset]);
+         cat_menu_item[i+offset] = gtk_radio_menu_item_new_with_label(
+            group, sort_l[i].Pcat);
+         if (selection_callback) {
+            gtk_signal_connect(GTK_OBJECT(cat_menu_item[i+offset]), "activate",
+                               GTK_SIGNAL_FUNC(selection_callback), GINT_TO_POINTER(sort_l[i].cat_num));
+         }
+         group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(cat_menu_item[i+offset]));
+         gtk_menu_append(GTK_MENU(menu), cat_menu_item[i+offset]);
+         gtk_widget_show(cat_menu_item[i+offset]);
       }
       else
-	 cat_menu_item[i+offset] = NULL;
+         cat_menu_item[i+offset] = NULL;
    }
 
    if (add_edit_cat_item) {
@@ -2551,22 +2551,22 @@ char *multibyte_safe_memccpy(char *dst, const char *src, int c, size_t len)
       p = (char *)src;
       q = dst;
       while ((*p) && (n < (len -2))) {
-	 if ((*p) & 0x80) {
-	    *q++ = *p++;
-	    n++;
-	    if (*p) {
-	       *q++ = *p++;
-	       n++;
-	    }
-	 } else {
-	    *q++ = *p++;
-	    n++;
-	 }
-	 if (*(p-1) == (char)(c & 0xff))
-	    return q;
+         if ((*p) & 0x80) {
+            *q++ = *p++;
+            n++;
+            if (*p) {
+               *q++ = *p++;
+               n++;
+            }
+         } else {
+            *q++ = *p++;
+            n++;
+         }
+         if (*(p-1) == (char)(c & 0xff))
+            return q;
       }
       if (!(*p & 0x80) && (n < len-1))
-	*q++ = *p++;
+        *q++ = *p++;
 
       *q = '\0';
       return NULL;
@@ -2588,20 +2588,20 @@ void multibyte_safe_strncpy(char *dst, char *src, size_t len)
       int n = 0;
       p = src; q = dst;
       while ((*p) && n < (len-2)) {
-	 if ((*p) & 0x80) {
-	    *q++ = *p++;
-	    n++;
-	    if (*p) {
-	       *q++ = *p++;
-	       n++;
-	    }
-	 } else {
-	    *q++ = *p++;
-	    n++;
-	 }
+         if ((*p) & 0x80) {
+            *q++ = *p++;
+            n++;
+            if (*p) {
+               *q++ = *p++;
+               n++;
+            }
+         } else {
+            *q++ = *p++;
+            n++;
+         }
       }
       if (!(*p & 0x80 ) && (n < len-1))
-	*q++ = *p++;
+        *q++ = *p++;
 
       *q = '\0';
    } else {
@@ -2699,7 +2699,7 @@ int pdb_file_delete_record_by_id(char *DB_name, pi_uid_t uid_in)
  * new ID is used in the case of an add record
  */
 int pdb_file_modify_record(char *DB_name, void *record_in, int size_in,
-			   int attr_in, int cat_in, pi_uid_t uid_in)
+                           int attr_in, int cat_in, pi_uid_t uid_in)
 {
    char local_pdb_file[FILENAME_MAX];
    char full_local_pdb_file[FILENAME_MAX];
@@ -2748,10 +2748,10 @@ int pdb_file_modify_record(char *DB_name, void *record_in, int size_in,
       r = pi_file_read_record(pf1, idx, &record, &size, &attr, &cat, &uid);
       if (r<0) break;
       if (uid==uid_in) {
-	 pi_file_append_record(pf2, record_in, size_in, attr_in, cat_in, uid_in);
-	 found=1;
+         pi_file_append_record(pf2, record_in, size_in, attr_in, cat_in, uid_in);
+         found=1;
       } else {
-	 pi_file_append_record(pf2, record, size, attr, cat, uid);
+         pi_file_append_record(pf2, record, size, attr, cat, uid);
       }
    }
    if (!found) {
@@ -2769,9 +2769,9 @@ int pdb_file_modify_record(char *DB_name, void *record_in, int size_in,
 }
 
 int pdb_file_read_record_by_id(char *DB_name,
-			       pi_uid_t uid,
-			       void **bufp, size_t *sizep, int *idxp,
-			       int *attrp, int *catp)
+                               pi_uid_t uid,
+                               void **bufp, size_t *sizep, int *idxp,
+                               int *attrp, int *catp)
 {
    char local_pdb_file[FILENAME_MAX];
    char full_local_pdb_file[FILENAME_MAX];
@@ -2795,7 +2795,7 @@ int pdb_file_read_record_by_id(char *DB_name,
    if ( (r>=0) && (*sizep>0) ) {
       *bufp=malloc(*sizep);
       if (*bufp) {
-	 memcpy(*bufp, temp_buf, *sizep);
+         memcpy(*bufp, temp_buf, *sizep);
       }
    } else {
       *bufp=NULL;
@@ -2947,9 +2947,9 @@ void print_string(char *str, int len)
    for (i=0;i<len;i++) {
       c=str[i];
       if (c < ' ' || c >= 0x7f)
-	jp_logf(JP_LOG_STDOUT, "%x", c);
+        jp_logf(JP_LOG_STDOUT, "%x", c);
       else
-	jp_logf(JP_LOG_STDOUT, "%c", c);
+        jp_logf(JP_LOG_STDOUT, "%c", c);
    }
    jp_logf(JP_LOG_STDOUT, "\n");
 }
@@ -2998,7 +2998,7 @@ void remove_cr_lfs(char *str)
    }
    for (i=0; str[i]; i++) {
       if ((str[i]=='\r') || (str[i]=='\n')) {
-	 str[i]=' ';
+         str[i]=' ';
       }
    }
 }
@@ -3014,63 +3014,63 @@ void rename_dbnames(char dbname[][32])
    get_pref(PREF_MEMO_VERSION, &memo_version, NULL);
    for (i=0; dbname[i] && dbname[i][0]; i++) {
       if (datebook_version==1) {
-	 if (!strcmp(dbname[i], "DatebookDB.pdb")) {
-	    strcpy(dbname[i], "CalendarDB-PDat.pdb");
-	 }
-	 if (!strcmp(dbname[i], "DatebookDB.pc3")) {
-	    strcpy(dbname[i], "CalendarDB-PDat.pc3");
-	 }
-	 if (!strcmp(dbname[i], "DatebookDB")) {
-	    strcpy(dbname[i], "CalendarDB-PDat");
-	 }
+         if (!strcmp(dbname[i], "DatebookDB.pdb")) {
+            strcpy(dbname[i], "CalendarDB-PDat.pdb");
+         }
+         if (!strcmp(dbname[i], "DatebookDB.pc3")) {
+            strcpy(dbname[i], "CalendarDB-PDat.pc3");
+         }
+         if (!strcmp(dbname[i], "DatebookDB")) {
+            strcpy(dbname[i], "CalendarDB-PDat");
+         }
       }
 
       if (address_version==1) {
-	 if (!strcmp(dbname[i], "AddressDB.pdb")) {
-	    strcpy(dbname[i], "ContactsDB-PAdd.pdb");
-	 }
-	 if (!strcmp(dbname[i], "AddressDB.pc3")) {
-	    strcpy(dbname[i], "ContactsDB-PAdd.pc3");
-	 }
-	 if (!strcmp(dbname[i], "AddressDB")) {
-	    strcpy(dbname[i], "ContactsDB-PAdd");
-	 }
+         if (!strcmp(dbname[i], "AddressDB.pdb")) {
+            strcpy(dbname[i], "ContactsDB-PAdd.pdb");
+         }
+         if (!strcmp(dbname[i], "AddressDB.pc3")) {
+            strcpy(dbname[i], "ContactsDB-PAdd.pc3");
+         }
+         if (!strcmp(dbname[i], "AddressDB")) {
+            strcpy(dbname[i], "ContactsDB-PAdd");
+         }
       }
 
       if (todo_version==1) {
-	 if (!strcmp(dbname[i], "ToDoDB.pdb")) {
-	    strcpy(dbname[i], "TasksDB-PTod.pdb");
-	 }
-	 if (!strcmp(dbname[i], "ToDoDB.pc3")) {
-	    strcpy(dbname[i], "TasksDB-PTod.pc3");
-	 }
-	 if (!strcmp(dbname[i], "ToDoDB")) {
-	    strcpy(dbname[i], "TasksDB-PTod");
-	 }
+         if (!strcmp(dbname[i], "ToDoDB.pdb")) {
+            strcpy(dbname[i], "TasksDB-PTod.pdb");
+         }
+         if (!strcmp(dbname[i], "ToDoDB.pc3")) {
+            strcpy(dbname[i], "TasksDB-PTod.pc3");
+         }
+         if (!strcmp(dbname[i], "ToDoDB")) {
+            strcpy(dbname[i], "TasksDB-PTod");
+         }
       }
 
       if (memo_version==1) {
-	 if (!strcmp(dbname[i], "MemoDB.pdb")) {
-	    strcpy(dbname[i], "MemosDB-PMem.pdb");
-	 }
-	 if (!strcmp(dbname[i], "MemoDB.pc3")) {
-	    strcpy(dbname[i], "MemosDB-PMem.pc3");
-	 }
-	 if (!strcmp(dbname[i], "MemoDB")) {
-	    strcpy(dbname[i], "MemosDB-PMem");
-	 }
+         if (!strcmp(dbname[i], "MemoDB.pdb")) {
+            strcpy(dbname[i], "MemosDB-PMem.pdb");
+         }
+         if (!strcmp(dbname[i], "MemoDB.pc3")) {
+            strcpy(dbname[i], "MemosDB-PMem.pc3");
+         }
+         if (!strcmp(dbname[i], "MemoDB")) {
+            strcpy(dbname[i], "MemosDB-PMem");
+         }
       }
 
       if (memo_version==2) {
-	 if (!strcmp(dbname[i], "MemoDB.pdb")) {
-	    strcpy(dbname[i], "Memo32DB.pdb");
-	 }
-	 if (!strcmp(dbname[i], "MemoDB.pc3")) {
-	    strcpy(dbname[i], "Memo32DB.pc3");
-	 }
-	 if (!strcmp(dbname[i], "MemoDB")) {
-	    strcpy(dbname[i], "Memo32DB");
-	 }
+         if (!strcmp(dbname[i], "MemoDB.pdb")) {
+            strcpy(dbname[i], "Memo32DB.pdb");
+         }
+         if (!strcmp(dbname[i], "MemoDB.pc3")) {
+            strcpy(dbname[i], "Memo32DB.pc3");
+         }
+         if (!strcmp(dbname[i], "MemoDB")) {
+            strcpy(dbname[i], "Memo32DB");
+         }
       }
    }
 }
@@ -3147,10 +3147,10 @@ int setup_sync(unsigned int flags)
       jp_logf(JP_LOG_DEBUG, "setting PILOTRATE=[%s]\n", svalue);
       if (svalue) {
 #ifdef HAVE_SETENV
-	 setenv("PILOTRATE", svalue, TRUE);
+         setenv("PILOTRATE", svalue, TRUE);
 #else
-	 sprintf(str, "PILOTRATE=%s", svalue);
-	 putenv(str);
+         sprintf(str, "PILOTRATE=%s", svalue);
+         putenv(str);
 #endif
       }
    }
@@ -3170,9 +3170,9 @@ int setup_sync(unsigned int flags)
        * If someone knows how to fix this, let me know.
        */
       if (RAND_MAX==32768) {
-	 sync_info.PC_ID = 1+(2000000000.0*random()/(2147483647+1.0));
+         sync_info.PC_ID = 1+(2000000000.0*random()/(2147483647+1.0));
       } else {
-	 sync_info.PC_ID = 1+(2000000000.0*random()/(RAND_MAX+1.0));
+         sync_info.PC_ID = 1+(2000000000.0*random()/(RAND_MAX+1.0));
       }
       jp_logf(JP_LOG_WARN, _("PC ID is 0.\n"));
       jp_logf(JP_LOG_WARN, _("Generated a new PC ID.  It is %lu\n"), sync_info.PC_ID);
@@ -3206,7 +3206,7 @@ int str_to_csv_str(char *dest, char *src)
    s=d=0;
    while (src[s]) {
       if (src[s]=='\"') {
-	 dest[d++]='\"';
+         dest[d++]='\"';
       }
       dest[d++]=src[s++];
    }
@@ -3239,11 +3239,11 @@ static int str_to_iv_str(char *dest, int destsz, char *src, int isical)
    }
 
    odest = dest;
-   destend = dest + destsz - 4;	/* max 4 chars into dest per loop iteration */
+   destend = dest + destsz - 4; /* max 4 chars into dest per loop iteration */
    c=0;
    while (*src) {
       if (dest >= destend) {
-	 break;
+         break;
       }
       if (c>ICAL_LINE_LENGTH) {
          /* Assume UTF-8 coding and stop on a valid character boundary */
@@ -3260,7 +3260,7 @@ static int str_to_iv_str(char *dest, int destsz, char *src, int isical)
          }
 
          if (c != 0) {
-	    jp_logf(JP_LOG_WARN,_("Invalid UTF-8 encoding in export string\n"));
+            jp_logf(JP_LOG_WARN,_("Invalid UTF-8 encoding in export string\n"));
             /* Force truncation of line anyways */
             *dest++= CR; *dest++= LF;
             *dest++=' ';
@@ -3269,15 +3269,15 @@ static int str_to_iv_str(char *dest, int destsz, char *src, int isical)
          continue;
       }
       if (*src=='\n') {
-	 *dest++='\\';
-	 *dest++='n';
-	 c+=2;
-	 src++;
-	 continue;
+         *dest++='\\';
+         *dest++='n';
+         c+=2;
+         src++;
+         continue;
       }
       if (*src=='\\' || (isical && *src == ';') || *src == ',') {
-	 *dest++='\\';
-	 c++;
+         *dest++='\\';
+         c++;
       }
       *dest++=*src++;
       c++;
@@ -3311,23 +3311,23 @@ int sub_days_from_date(struct tm *date, int n)
    for (i=0; i<n; i++) {
       flag = reset_days = 0;
       if (--(date->tm_mday) < 1) {
-	 date->tm_mday=28;
-	 reset_days = 1;
-	 flag = 1;
-	 if (--(date->tm_mon) < 0) {
-	    date->tm_mon=11;
-	    flag = 1;
-	    if (--(date->tm_year)<3) {
-	       date->tm_year = 3;
-	    }
-	 }
+         date->tm_mday=28;
+         reset_days = 1;
+         flag = 1;
+         if (--(date->tm_mon) < 0) {
+            date->tm_mon=11;
+            flag = 1;
+            if (--(date->tm_year)<3) {
+               date->tm_year = 3;
+            }
+         }
       }
       if (flag) {
-	 get_month_info(date->tm_mon, 1, date->tm_year, &fdom, &ndim);
+         get_month_info(date->tm_mon, 1, date->tm_year, &fdom, &ndim);
       }
       /* this assumes that flag is always set when reset_days is set */
       if (reset_days) {
-	 date->tm_mday=ndim;
+         date->tm_mday=ndim;
       }
    }
    date->tm_isdst=-1;
@@ -3348,10 +3348,10 @@ int sub_months_from_date(struct tm *date, int n)
 
    for (i=0; i<n; i++) {
       if (--(date->tm_mon) < 0) {
-	 date->tm_mon=11;
-	 if (--(date->tm_year)<3) {
-	    date->tm_year = 3;
-	 }
+         date->tm_mon=11;
+         if (--(date->tm_year)<3) {
+            date->tm_year = 3;
+         }
       }
    }
 
@@ -3413,7 +3413,7 @@ int undelete_pc_record(AppType app_type, void *VP, int flag)
 {
    PC3RecordHeader header;
    MyAppointment *mappt;
-   MyCalendarEvent *mce;
+   MyCalendarEvent *mcale;
    MyAddress *maddr;
    MyContact *mcont;
    MyToDo *mtodo;
@@ -3432,10 +3432,10 @@ int undelete_pc_record(AppType app_type, void *VP, int flag)
 #endif
    char dbname[][32]={
    "DatebookDB.pc3",
-	"AddressDB.pc3",
-	"ToDoDB.pc3",
-	"MemoDB.pc3",
-	""
+        "AddressDB.pc3",
+        "ToDoDB.pc3",
+        "MemoDB.pc3",
+        ""
    };
 
    if (VP==NULL) {
@@ -3447,7 +3447,7 @@ int undelete_pc_record(AppType app_type, void *VP, int flag)
    
    /* to keep the compiler happy with -Wall*/
    mappt = NULL;
-   mce = NULL;
+   mcale = NULL;
    maddr = NULL;
    mcont = NULL;
    mmemo = NULL;
@@ -3458,8 +3458,8 @@ int undelete_pc_record(AppType app_type, void *VP, int flag)
       strcpy(filename, dbname[0]);
       break;
     case CALENDAR:
-      mce = (MyCalendarEvent *) VP;
-      unique_id = mce->unique_id;
+      mcale = (MyCalendarEvent *) VP;
+      unique_id = mcale->unique_id;
       strcpy(filename, dbname[0]);
       break;
     case ADDRESS:
@@ -3478,9 +3478,9 @@ int undelete_pc_record(AppType app_type, void *VP, int flag)
 #ifdef ENABLE_MANANA
       get_pref(PREF_MANANA_MODE, &ivalue, NULL);
       if (ivalue) {
-	 strcpy(filename, "MañanaDB.pc3");
+         strcpy(filename, "MañanaDB.pc3");
       } else {
-	 strcpy(filename, dbname[2]);
+         strcpy(filename, dbname[2]);
       }
 #else
       strcpy(filename, dbname[2]);
@@ -3514,45 +3514,45 @@ int undelete_pc_record(AppType app_type, void *VP, int flag)
    while(!feof(pc_file)) {
       read_header(pc_file, &header);
       if (feof(pc_file)) {
-	 break;
+         break;
       }
       /* Skip copying DELETED_PALM_REC entry which undeletes it */
       if (header.unique_id == unique_id &&
-	  header.rt == DELETED_PALM_REC) {
-	 found = TRUE;
-	 if (fseek(pc_file, header.rec_len, SEEK_CUR)) {
-	    jp_logf(JP_LOG_WARN, "fseek failed\n");
-	    ret = -1;
-	    break;
-	 }
-	 continue;
+          header.rt == DELETED_PALM_REC) {
+         found = TRUE;
+         if (fseek(pc_file, header.rec_len, SEEK_CUR)) {
+            jp_logf(JP_LOG_WARN, "fseek failed\n");
+            ret = -1;
+            break;
+         }
+         continue;
       }
       /* Change header on DELETED_PC_REC to undelete this type */
       if (header.unique_id == unique_id &&
           header.rt == DELETED_PC_REC) {
-	  found = TRUE;
+          found = TRUE;
           header.rt = NEW_PC_REC;
       }
 
       /* Otherwise, keep whatever is there by copying it to the new pc3 file */
       record = malloc(header.rec_len);
       if (!record) {
-	 jp_logf(JP_LOG_WARN, "cleanup_pc_file(): Out of memory\n");
-	 ret = -1;
-	 break;
+         jp_logf(JP_LOG_WARN, "cleanup_pc_file(): Out of memory\n");
+         ret = -1;
+         break;
       }
       num = fread(record, header.rec_len, 1, pc_file);
       if (num != 1) {
-	 if (ferror(pc_file)) {
-	    ret = -1;
-	    break;
-	 }
+         if (ferror(pc_file)) {
+            ret = -1;
+            break;
+         }
       }
       ret = write_header(pc_file2, &header);
       ret = fwrite(record, header.rec_len, 1, pc_file2);
       if (ret != 1) {
-	 ret = -1;
-	 break;
+         ret = -1;
+         break;
       }
       free(record);
       record = NULL;
@@ -3625,8 +3625,8 @@ int verify_csv_header(const char *header, int num_fields, const char *file_name)
    }
    if (comma_cnt != num_fields-1) {
       jp_logf(JP_LOG_WARN, _("Incorrect header format for CSV import\n"
-			     "Check line 1 of file %s\n"
-			     "Aborting import\n"), file_name);
+                             "Check line 1 of file %s\n"
+                             "Aborting import\n"), file_name);
       return EXIT_FAILURE;
    } 
 

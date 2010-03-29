@@ -1,4 +1,4 @@
-/* $Id: log.c,v 1.32 2010/03/04 03:18:07 judd Exp $ */
+/* $Id: log.c,v 1.33 2010/03/29 05:44:29 rikster5 Exp $ */
 
 /*******************************************************************************
  * log.c
@@ -76,18 +76,18 @@ int jp_logf(int level, const char *format, ...)
 }
 
 int jp_vlogf (int level, const char *format, va_list val) {
-   char       		real_buf[WRITE_MAX_BUF+32];
-   char			*buf, *local_buf;
-   int			size;
-   int			len;
-   int			r;
-   static FILE		*fp=NULL;
-   static int		err_count=0;
-   char			cmd[16];
+   char                 real_buf[WRITE_MAX_BUF+32];
+   char                 *buf, *local_buf;
+   int                  size;
+   int                  len;
+   int                  r;
+   static FILE          *fp=NULL;
+   static int           err_count=0;
+   char                 cmd[16];
 
    if (!((level & glob_log_file_mask) ||
-	 (level & glob_log_stdout_mask) ||
-	 (level & glob_log_gui_mask))) {
+         (level & glob_log_stdout_mask) ||
+         (level & glob_log_gui_mask))) {
       return EXIT_SUCCESS;
    }
 
@@ -105,8 +105,8 @@ int jp_vlogf (int level, const char *format, va_list val) {
 
       fp = fopen(fullname, "w");
       if (!fp) {
-	 fprintf(stderr, _("Unable to open log file\n"));
-	 err_count++;
+         fprintf(stderr, _("Unable to open log file\n"));
+         err_count++;
       }
    }
 
@@ -145,19 +145,19 @@ int jp_vlogf (int level, const char *format, va_list val) {
       /* do not use a pipe for intra-process log
        * otherwise we may have a dead lock (jpilot freezes) */
       if (getpid() == jpilot_master_pid)
-	 output_to_pane(buf);
+         output_to_pane(buf);
       else {
-	 sprintf(cmd, "%d:", PIPE_PRINT);
-	 len = strlen(cmd);
-	 buf = buf-len;
-	 strncpy(buf, cmd, len);
-	 size += len;
-	 buf[size]='\0';
-	 buf[size+1]='\n';
-	 size += 2;
-	 r = write(pipe_to_parent, buf, size);
-	 if (r<0)
-	    fprintf(stderr, "write returned error %s %d\n", __FILE__, __LINE__);
+         sprintf(cmd, "%d:", PIPE_PRINT);
+         len = strlen(cmd);
+         buf = buf-len;
+         strncpy(buf, cmd, len);
+         size += len;
+         buf[size]='\0';
+         buf[size+1]='\n';
+         size += 2;
+         r = write(pipe_to_parent, buf, size);
+         if (r<0)
+            fprintf(stderr, "write returned error %s %d\n", __FILE__, __LINE__);
       }
    }
 
@@ -173,7 +173,7 @@ int write_to_parent(int command, const char *format, ...)
    va_list val;
    int len, size;
    char real_buf[WRITE_MAX_BUF+32];
-   char	*buf;
+   char *buf;
    char cmd[20];
 
    buf=&(real_buf[16]);
@@ -190,7 +190,7 @@ int write_to_parent(int command, const char *format, ...)
    /* This is for jpilot-sync */
    if (pipe_to_parent==STDOUT_FILENO) {
       if (command==PIPE_PRINT) {
-	 write(pipe_to_parent, buf, strlen(buf));
+         write(pipe_to_parent, buf, strlen(buf));
       }
       return TRUE;
    }

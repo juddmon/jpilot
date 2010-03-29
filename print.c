@@ -1,4 +1,4 @@
-/* $Id: print.c,v 1.47 2010/03/03 12:50:00 rousseau Exp $ */
+/* $Id: print.c,v 1.48 2010/03/29 05:44:30 rikster5 Exp $ */
 
 /*******************************************************************************
  * print.c
@@ -128,17 +128,17 @@ static int header(void)
 
    time(&ltime);
    fprintf(out,
-	   "%%!PS-Adobe-2.0\n"
-	   "%%%%Creator: J-Pilot\n"
-	   "%%%%CreationDate: %s"
+           "%%!PS-Adobe-2.0\n"
+           "%%%%Creator: J-Pilot\n"
+           "%%%%CreationDate: %s"
            "%%%%DocumentData: Clean7Bit\n"
-	   "%%%%Orientation: Portrait\n"
+           "%%%%Orientation: Portrait\n"
            "%%DocumentFonts: Times-Roman Times-Bold Courier Courier-Bold\n"
            "%%%%Magnification: 1.0000\n"
            "%%%%Pages: 1\n"
            "%%%%EndComments\n"
            "%%%%BeginProlog\n"
-	   ,ctime(&ltime));
+           ,ctime(&ltime));
    fprintf(out, "/PageSize (%s) def\n\n", PaperSizes[PAPER_Letter]);
    print_common_prolog(out);
    fprintf(out,
@@ -241,64 +241,64 @@ int fill_in(struct tm *date, CalendarEventList *ce_list)
       am=i%2;
       fprintf(out, "gsave\n");
       if (am) {
-	 clip_to_box(1.25, 0.5, 4.25, 9.5);
+         clip_to_box(1.25, 0.5, 4.25, 9.5);
       } else {
-	 clip_to_box(5.0, 0.5, 8.0, 9.5);
+         clip_to_box(5.0, 0.5, 8.0, 9.5);
       }
       for (temp_cel = ce_list; temp_cel; temp_cel=temp_cel->next) {
-	 if (temp_cel->mce.ce.description == NULL) {
-	    continue;
-	 }
-	 if (temp_cel->mce.ce.event) {
-	    strcpy(str, " ");
-	    if (!am) {
-	       continue;
-	    }
-	    x=indent1;
-	    y=default_y - defaults1 * step;
-	    defaults1++;
-	 } else {
-	    hour24 = temp_cel->mce.ce.begin.tm_hour;
-	    if ((hour24 > 11) && (am)) {
-	       continue;
-	    }
-	    if ((hour24 < 12) && (!am)) {
-	       continue;
-	    }
+         if (temp_cel->mcale.cale.description == NULL) {
+            continue;
+         }
+         if (temp_cel->mcale.cale.event) {
+            strcpy(str, " ");
+            if (!am) {
+               continue;
+            }
+            x=indent1;
+            y=default_y - defaults1 * step;
+            defaults1++;
+         } else {
+            hour24 = temp_cel->mcale.cale.begin.tm_hour;
+            if ((hour24 > 11) && (am)) {
+               continue;
+            }
+            if ((hour24 < 12) && (!am)) {
+               continue;
+            }
 
-	    get_pref_time_no_secs(datef);
-	    strftime(str, sizeof(str), datef, &temp_cel->mce.ce.begin);
+            get_pref_time_no_secs(datef);
+            strftime(str, sizeof(str), datef, &temp_cel->mcale.cale.begin);
 
-	    if (hour24 > 11) {
-	       x=indent2;
-	       y=top_y - (hour24 - 12) * 0.5 - (hours[hour24]) * step;
-	       hours[hour24]++;
-	       if (hours[hour24] > max_per_line) {
-		  y=default_y - defaults2 * step;
-		  defaults2++;
-	       }
-	    } else {
-	       x=indent1;
-	       y=top_y - (hour24) * 0.5 - (hours[hour24]) * step;
-	       hours[hour24]++;
-	       if (hours[hour24] > max_per_line) {
-		  y=default_y - defaults1 * step;
-		  defaults1++;
-	       }
-	    }
-	 }
-	 if (temp_cel->mce.ce.description) {
-	    strcat(str, " ");
-	    strncat(str, temp_cel->mce.ce.description, sizeof(str)-strlen(str)-2);
-	    str[128]='\0';
+            if (hour24 > 11) {
+               x=indent2;
+               y=top_y - (hour24 - 12) * 0.5 - (hours[hour24]) * step;
+               hours[hour24]++;
+               if (hours[hour24] > max_per_line) {
+                  y=default_y - defaults2 * step;
+                  defaults2++;
+               }
+            } else {
+               x=indent1;
+               y=top_y - (hour24) * 0.5 - (hours[hour24]) * step;
+               hours[hour24]++;
+               if (hours[hour24] > max_per_line) {
+                  y=default_y - defaults1 * step;
+                  defaults1++;
+               }
+            }
+         }
+         if (temp_cel->mcale.cale.description) {
+            strcat(str, " ");
+            strncat(str, temp_cel->mcale.cale.description, sizeof(str)-strlen(str)-2);
+            str[128]='\0';
             /* FIXME: Add location in parentheses (loc) as the Palm does.
              * We would need to check strlen, etc., before adding */
-	 }
-	 if (y > 1.0) {
-	    puttext(x, y, str);
-	 } else {
-	    jp_logf(JP_LOG_WARN, "Too many appointments, dropping one\n");
-	 }
+         }
+         if (y > 1.0) {
+            puttext(x, y, str);
+         } else {
+            jp_logf(JP_LOG_WARN, "Too many appointments, dropping one\n");
+         }
       }
       fprintf(out, "grestore\n");
    }
@@ -336,19 +336,19 @@ static int f_indent_print(FILE *f, int indent, char *str) {
    for (P=str; *P; P++) {
       col++;
       if ((*P==10) || (*P==13)) {
-	 fprintf(f, "%c", *P);
-	 for (i=indent; i; i--) {
-	    fprintf(f, " ");
-	 }
-	 col=indent;
-	 continue;
+         fprintf(f, "%c", *P);
+         for (i=indent; i; i--) {
+            fprintf(f, " ");
+         }
+         col=indent;
+         continue;
       }
       if (col>75) {
-	 fprintf(f, "\n");
-	 for (i=indent; i; i--) {
-	    fprintf(f, " ");
-	 }
-	 col=indent+1;
+         fprintf(f, "\n");
+         for (i=indent; i; i--) {
+            fprintf(f, " ");
+         }
+         col=indent+1;
       }
       fprintf(f, "%c", *P);
    }
@@ -356,7 +356,7 @@ static int f_indent_print(FILE *f, int indent, char *str) {
 }
 
 /*----------------------------------------------------------------------
- * ps_strncat	Escapes brackets for printing in PostScript strings
+ * ps_strncat   Escapes brackets for printing in PostScript strings
  *----------------------------------------------------------------------*/
 
 void ps_strncat(char *dest, char *src, int n)
@@ -366,12 +366,12 @@ void ps_strncat(char *dest, char *src, int n)
    dest2 = strchr(dest, '\0');
    while (j < n) {
       if (src[i] == '\0') {
-	 dest2[j]='\0';
-	 break;
+         dest2[j]='\0';
+         break;
       }
       if (strchr("()", src[i]) != NULL) {
-	 if(j<n-1) dest2[j] = '\\'; else dest2[j]=' ';
-	 j++;
+         if(j<n-1) dest2[j] = '\\'; else dest2[j]=' ';
+         j++;
       }
       dest2[j] = src[i];
       i++;
@@ -380,8 +380,8 @@ void ps_strncat(char *dest, char *src, int n)
 }
 
 /*----------------------------------------------------------------------
- * days_in_mon	Returns the number of days in the month containing the
- *		date passed in.
+ * days_in_mon  Returns the number of days in the month containing the
+ *              date passed in.
  *----------------------------------------------------------------------*/
 
 static int days_in_mon(struct tm *date)
@@ -396,8 +396,8 @@ static int days_in_mon(struct tm *date)
 }
 
 /*----------------------------------------------------------------------
- * print_months_appts	Function to print the current month's
- *			appointments.
+ * print_months_appts   Function to print the current month's
+ *                      appointments.
  *----------------------------------------------------------------------*/
 
 char *MonthNames[] = {
@@ -445,17 +445,17 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
    if (! (out = print_open())) return(EXIT_FAILURE);
 
    fprintf(out,
-	   "%%!PS-Adobe-2.0\n"
-	   "%%%%Creator: J-Pilot\n"
-	   "%%%%CreationDate: %s"
+           "%%!PS-Adobe-2.0\n"
+           "%%%%Creator: J-Pilot\n"
+           "%%%%CreationDate: %s"
            "%%%%DocumentData: Clean7Bit\n"
-	   "%%%%Orientation: Landscape\n\n"
+           "%%%%Orientation: Landscape\n\n"
            "%%DocumentFonts: Times-Roman Times-Bold Courier Courier-Bold\n"
            "%%%%Magnification: 1.0000\n"
            "%%%%Pages: 1\n"
            "%%%%EndComments\n"
            "%%%%BeginProlog\n"
-	   ,ctime(&ltime));
+           ,ctime(&ltime));
    fprintf(out, "/PageSize (%s) def\n\n", PaperSizes[paper_size]);
    print_common_prolog(out);
    fprintf(out,
@@ -491,11 +491,11 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
    get_pref(PREF_FDOW, &fdow, NULL);
 
    fprintf(out,
-	   "(%s %d) %d (%s) (%s version %s) %ld InitialisePage\n\n",
-	   MonthNames[date_in->tm_mon], date_in->tm_year + 1900,
-	   date.tm_wday,
-	   ctime(&ltime),
-	   PN, VERSION, fdow);
+           "(%s %d) %d (%s) (%s version %s) %ld InitialisePage\n\n",
+           MonthNames[date_in->tm_mon], date_in->tm_year + 1900,
+           date.tm_wday,
+           ctime(&ltime),
+           PN, VERSION, fdow);
 
    for (n=0, date.tm_mday=1; date.tm_mday<=ndim; date.tm_mday++, n++) {
       date.tm_sec=0;
@@ -507,49 +507,49 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
       mktime(&date);
 
       fprintf(out, "%%--------------------------------------------------\n"
-	      "%%Stuff for day %2d being printed\n", date.tm_mday);
+              "%%Stuff for day %2d being printed\n", date.tm_mday);
       fprintf(out, "NextDay\n");
 
       for (temp_cel = ce_list; temp_cel; temp_cel=temp_cel->next) {
 #ifdef ENABLE_DATEBK
-	 if (use_db3_tags) {
-	    ret = db3_parse_tag(temp_cel->mce.ce.note, &db3_type, &db4);
-	    /* jp_logf(JP_LOG_DEBUG, "category = 0x%x\n", db4.category); */
-	    cat_bit=1<<db4.category;
-	    if (!(cat_bit & datebk_category)) {
-	       jp_logf(JP_LOG_DEBUG, "skipping rec not in this category\n");
-	       continue;
-	    }
-	 }
+         if (use_db3_tags) {
+            ret = db3_parse_tag(temp_cel->mcale.cale.note, &db3_type, &db4);
+            /* jp_logf(JP_LOG_DEBUG, "category = 0x%x\n", db4.category); */
+            cat_bit=1<<db4.category;
+            if (!(cat_bit & datebk_category)) {
+               jp_logf(JP_LOG_DEBUG, "skipping rec not in this category\n");
+               continue;
+            }
+         }
 #endif
-	 if (calendar_isApptOnDate(&(temp_cel->mce.ce), &date)) {
-	    char tmp[20];
-	    char datef1[20];
-	    char datef2[20];
-	    tmp[0]='\0';
-	    if ( ! temp_cel->mce.ce.event) {
-	       get_pref_time_no_secs(datef1);
-	       g_snprintf(datef2, sizeof(datef2), "(%s )", datef1);
-	       strftime(tmp, sizeof(tmp), datef2, &(temp_cel->mce.ce.begin));
-	       tmp[19]='\0';
-	    }
-	    desc[0]='\0';
-	    if (temp_cel->mce.ce.description) {
-	       ps_strncat(desc, temp_cel->mce.ce.description, 100);
-	       desc[sizeof(desc)-1]='\0';
+         if (calendar_isApptOnDate(&(temp_cel->mcale.cale), &date)) {
+            char tmp[20];
+            char datef1[20];
+            char datef2[20];
+            tmp[0]='\0';
+            if ( ! temp_cel->mcale.cale.event) {
+               get_pref_time_no_secs(datef1);
+               g_snprintf(datef2, sizeof(datef2), "(%s )", datef1);
+               strftime(tmp, sizeof(tmp), datef2, &(temp_cel->mcale.cale.begin));
+               tmp[19]='\0';
+            }
+            desc[0]='\0';
+            if (temp_cel->mcale.cale.description) {
+               ps_strncat(desc, temp_cel->mcale.cale.description, 100);
+               desc[sizeof(desc)-1]='\0';
                /* FIXME: Add location in parentheses (loc) as the Palm does.
                 * We would need to check strlen, etc., before adding */
-	    }
-	    remove_cr_lfs(desc);
-	    fprintf(out, "%s (%s) %simedItem\n", tmp, desc,
-		    (strlen(tmp) == 0) ? "Unt" : "T" );
-	 }
+            }
+            remove_cr_lfs(desc);
+            fprintf(out, "%s (%s) %simedItem\n", tmp, desc,
+                    (strlen(tmp) == 0) ? "Unt" : "T" );
+         }
       }
    }
 
    /*------------------------------------------------------------------*/
    memcpy(&date, date_in, sizeof(struct tm));
-   date.tm_mday = 1;	/* Go to the first of the month */
+   date.tm_mday = 1;    /* Go to the first of the month */
    mktime(&date);
    sub_months_from_date(&date, 1);
    strftime(desc, sizeof(desc), "(%B %Y) %w ", &date);
@@ -579,7 +579,7 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
 }
 
 /*----------------------------------------------------------------------
- * reset_first_last	Routine to reset max/min appointment times
+ * reset_first_last     Routine to reset max/min appointment times
  *----------------------------------------------------------------------*/
 
 static void reset_first_last(void)
@@ -591,13 +591,13 @@ static void reset_first_last(void)
 }
 
 /*----------------------------------------------------------------------
- * check_first_last	Routine to track max/min appointment times
+ * check_first_last     Routine to track max/min appointment times
  *----------------------------------------------------------------------*/
 
 static void check_first_last(CalendarEventList *cel)
 {
    struct tm *ApptTime;
-   ApptTime = &(cel->mce.ce.begin);
+   ApptTime = &(cel->mcale.cale.begin);
    if (ApptTime->tm_hour == first_hour) {
       if (ApptTime->tm_min < first_min) first_min = ApptTime->tm_min;
    }
@@ -606,7 +606,7 @@ static void check_first_last(CalendarEventList *cel)
       first_min  = ApptTime->tm_min;
    }
 
-   ApptTime = &(cel->mce.ce.end);
+   ApptTime = &(cel->mcale.cale.end);
    if (ApptTime->tm_hour == last_hour) {
       if (ApptTime->tm_min > last_min) last_min = ApptTime->tm_min;
    } else if (ApptTime->tm_hour > last_hour) {
@@ -616,9 +616,9 @@ static void check_first_last(CalendarEventList *cel)
 }
 
 /*----------------------------------------------------------------------
- * print_weeks_appts	Function to print a weeks appointments onto a
- *			weekly plan. We assume that date_in is the chosen
- *			first day of the week.
+ * print_weeks_appts    Function to print a weeks appointments onto a
+ *                      weekly plan. We assume that date_in is the chosen
+ *                      first day of the week.
  *----------------------------------------------------------------------*/
 
 int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
@@ -654,17 +654,17 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
 
    time(&ltime);
    fprintf(out,
-	   "%%!PS-Adobe-2.0\n"
-	   "%%%%Creator: J-Pilot\n"
-	   "%%%%CreationDate: %s"
+           "%%!PS-Adobe-2.0\n"
+           "%%%%Creator: J-Pilot\n"
+           "%%%%CreationDate: %s"
            "%%%%DocumentData: Clean7Bit\n"
-	   "%%%%Orientation: Landscape\n"
+           "%%%%Orientation: Landscape\n"
            "%%DocumentFonts: Times-Roman Times-Bold Courier Courier-Bold\n"
            "%%%%Magnification: 1.0000\n"
            "%%%%Pages: 1\n"
            "%%%%EndComments\n"
            "%%%%BeginProlog\n"
-	   ,ctime(&ltime));
+           ,ctime(&ltime));
    /*------------------------------------------------------------------
     * These are preferences for page size (passed in), first and last
     * hours on the plan (default; scales if earlier or later are present),
@@ -672,7 +672,7 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
     *------------------------------------------------------------------*/
    fprintf(out, "/PageSize (%s) def\n\n", PaperSizes[paper_size]);
    fprintf(out, "/FirstHour  9 def\n"
-	        "/LastHour  22 def\n");
+                "/LastHour  22 def\n");
    fprintf(out, "/Dashes true def\n");
    print_common_prolog(out);
    fprintf(out,
@@ -695,15 +695,15 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
    for (n = 0; n < 7; n++, add_days_to_date(&date, 1)) {
       for (temp_cel = ce_list; temp_cel; temp_cel=temp_cel->next) {
 #ifdef ENABLE_DATEBK
-	 if (use_db3_tags) {
-	    ret = db3_parse_tag(temp_cel->mce.ce.note, &db3_type, &db4);
-	    cat_bit=1<<db4.category;
-	    if (!(cat_bit & datebk_category)) continue;
-	 }
+         if (use_db3_tags) {
+            ret = db3_parse_tag(temp_cel->mcale.cale.note, &db3_type, &db4);
+            cat_bit=1<<db4.category;
+            if (!(cat_bit & datebk_category)) continue;
+         }
 #endif
-	 if (calendar_isApptOnDate(&(temp_cel->mce.ce), &date))
-	   if ( ! temp_cel->mce.ce.event)
-	     check_first_last(temp_cel);
+         if (calendar_isApptOnDate(&(temp_cel->mcale.cale), &date))
+           if ( ! temp_cel->mcale.cale.event)
+             check_first_last(temp_cel);
       }
    }
    if (last_min > 0) last_hour++;
@@ -715,12 +715,12 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
 
    today_date = localtime(&ltime);
    fprintf(out,
-	   "%%------------------------------------------------------------\n"
-	   "%% This is today's date, the date of printing, plus the hour\n"
-	   "%% before & after the first and last appointments, respectively\n"
-	   "%d %d %d %d %d startprinting\n\n",
-	   today_date->tm_mday, today_date->tm_mon + 1,
-	   today_date->tm_year + 1900, first_hour, last_hour);
+           "%%------------------------------------------------------------\n"
+           "%% This is today's date, the date of printing, plus the hour\n"
+           "%% before & after the first and last appointments, respectively\n"
+           "%d %d %d %d %d startprinting\n\n",
+           today_date->tm_mday, today_date->tm_mon + 1,
+           today_date->tm_year + 1900, first_hour, last_hour);
    fprintf(out, "( by %s version %s) show\n", PN, VERSION);
 
    print_logo(out, 20, 30, 0.35);
@@ -742,45 +742,45 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
 
       for (temp_cel = ce_list; temp_cel; temp_cel=temp_cel->next) {
 #ifdef ENABLE_DATEBK
-	 if (use_db3_tags) {
-	    ret = db3_parse_tag(temp_cel->mce.ce.note, &db3_type, &db4);
-	    jp_logf(JP_LOG_DEBUG, "category = 0x%x\n", db4.category);
-	    cat_bit=1<<db4.category;
-	    if (!(cat_bit & datebk_category)) {
-	       jp_logf(JP_LOG_DEBUG, "skip rec not in this category\n");
-	       continue;
-	    }
-	 }
+         if (use_db3_tags) {
+            ret = db3_parse_tag(temp_cel->mcale.cale.note, &db3_type, &db4);
+            jp_logf(JP_LOG_DEBUG, "category = 0x%x\n", db4.category);
+            cat_bit=1<<db4.category;
+            if (!(cat_bit & datebk_category)) {
+               jp_logf(JP_LOG_DEBUG, "skip rec not in this category\n");
+               continue;
+            }
+         }
 #endif
-	 if (calendar_isApptOnDate(&(temp_cel->mce.ce), &date)) {
-	    memset(desc, 0, sizeof(desc));
-	    memset(short_date, 0, sizeof(short_date));
+         if (calendar_isApptOnDate(&(temp_cel->mcale.cale), &date)) {
+            memset(desc, 0, sizeof(desc));
+            memset(short_date, 0, sizeof(short_date));
 
-	    if ( ! temp_cel->mce.ce.event)
-	      {
-		 char t1[6], t2[6], ht[3], mt[3];
-		 int j, m;
+            if ( ! temp_cel->mcale.cale.event)
+              {
+                 char t1[6], t2[6], ht[3], mt[3];
+                 int j, m;
 
-		 strftime(ht, sizeof(ht), "%H", &(temp_cel->mce.ce.begin));
-		 strftime(mt, sizeof(mt), "%M", &(temp_cel->mce.ce.begin));
-		 m = atoi(mt);
-		 snprintf(t1, sizeof(t1), "%s.%02d", ht, (int)((m * 100.)/60));
+                 strftime(ht, sizeof(ht), "%H", &(temp_cel->mcale.cale.begin));
+                 strftime(mt, sizeof(mt), "%M", &(temp_cel->mcale.cale.begin));
+                 m = atoi(mt);
+                 snprintf(t1, sizeof(t1), "%s.%02d", ht, (int)((m * 100.)/60));
 
-		 strftime(ht, sizeof(ht), "%H", &(temp_cel->mce.ce.end));
-		 strftime(mt, sizeof(mt), "%M", &(temp_cel->mce.ce.end));
-		 m = atoi(mt);
-		 snprintf(t2, sizeof(t2), "%s.%02d", ht, (int)((m * 100.)/60));
-		 sprintf(short_date, "%s %s ", t1, t2);
-		 for (j=0; j<30;j++) short_date[j] =tolower(short_date[j]);
-	      }
-	    if (temp_cel->mce.ce.description) {
-	       ps_strncat(desc, temp_cel->mce.ce.description, 250);
+                 strftime(ht, sizeof(ht), "%H", &(temp_cel->mcale.cale.end));
+                 strftime(mt, sizeof(mt), "%M", &(temp_cel->mcale.cale.end));
+                 m = atoi(mt);
+                 snprintf(t2, sizeof(t2), "%s.%02d", ht, (int)((m * 100.)/60));
+                 sprintf(short_date, "%s %s ", t1, t2);
+                 for (j=0; j<30;j++) short_date[j] =tolower(short_date[j]);
+              }
+            if (temp_cel->mcale.cale.description) {
+               ps_strncat(desc, temp_cel->mcale.cale.description, 250);
                /* FIXME: Add location in parentheses (loc) as the Palm does.
                 * We would need to check strlen, etc., before adding */
-	       remove_cr_lfs(desc);
-	    }
-	    fprintf(out, "%s (%s) itemline\n", short_date, desc);
-	 }
+               remove_cr_lfs(desc);
+            }
+            fprintf(out, "%s (%s) itemline\n", short_date, desc);
+         }
       }
    }
    free_CalendarEventList(&ce_list);
@@ -812,214 +812,215 @@ static int print_address_header(void)
    strftime(str, sizeof(str), svalue, date);
 
    fprintf(out,
-	   "%%!PS-Adobe-2.0\n"
-	   "%%%%Creator: J-Pilot\n"
-	   "%%%%CreationDate: %s"
+           "%%!PS-Adobe-2.0\n"
+           "%%%%Creator: J-Pilot\n"
+           "%%%%CreationDate: %s"
            "%%%%DocumentData: Clean7Bit\n"
-	   /* XXX Title */
-	   "%%%%Orientation: Portrait\n"
+           /* XXX Title */
+           "%%%%Orientation: Portrait\n"
            /* XXX BoundingBox */
            "%%DocumentFonts: Times-Roman Times-Bold "
            "Courier Courier-Bold ZapfDingbats\n"
            "%%%%Magnification: 1.0000\n"
-	   "%%%%BoundingBox: 36 36 576 756\n"
+           "%%%%BoundingBox: 36 36 576 756\n"
            "%%%%EndComments\n",
-	   ctime(&ltime));
+           ctime(&ltime));
    fprintf(out,
            "%%%%BeginProlog\n"
            "%%%%BeginResource: procset\n"
-	   "/inch {72 mul} def\n"
-	   "/left {0.5 inch} def\n"
-	   "/bottom {1.0 inch} def\n"
-	   "/bottom_hline {2.0 inch} def\n"
-	   "/footer {0.9 inch} def\n"
-	   "/top {10.5 inch 14 sub} def\n"
-	   "/buffer 1024 string def\n"
-	   "/scratch 128 string def\n"
-	   "/printobject {\n"
-	   "dup 128 string cvs dup (--nostringval--) eq {\n"
-	   "pop type24 string cvs\n"
-	   "}{\n"
-	   "exch pop\n"
-	   "} ifelse\n"
-	   "} bind def\n");
+           "/inch {72 mul} def\n"
+           "/left {0.5 inch} def\n"
+           "/bottom {1.0 inch} def\n"
+           "/bottom_hline {2.0 inch} def\n"
+           "/footer {0.9 inch} def\n"
+           "/top {10.5 inch 14 sub} def\n"
+           "/buffer 1024 string def\n"
+           "/scratch 128 string def\n"
+           "/printobject {\n"
+           "dup 128 string cvs dup (--nostringval--) eq {\n"
+           "pop type24 string cvs\n"
+           "}{\n"
+           "exch pop\n"
+           "} ifelse\n"
+           "} bind def\n");
    /* Checkbox stuff */
    fprintf(out,
-	   "/checkboxcheck {\n"
-	   "%%currentpoint 6 add moveto\n"
-	   "%%4 -5 rlineto\n"
-	   "%%6 12 rlineto\n"
+           "/checkboxcheck {\n"
+           "%%currentpoint 6 add moveto\n"
+           "%%4 -5 rlineto\n"
+           "%%6 12 rlineto\n"
            "/ZapfDingbats 14 selectfont (4) show\n" /* or 3 if you prefer */
-	   "} bind def\n"
-	   "/checkboxbox {\n"
-	   "8 0 rlineto\n"
-	   "0 8 rlineto\n"
-	   "-8 0 rlineto\n"
-	   "0 -8 rlineto\n"
-	   "} bind def\n"
-	   "/checkbox {\n"
-	   "currentpoint\n"
-	   "gsave\n"
-	   "newpath\n"
-	   "moveto\n"
-	   "1 setlinewidth\n"
-	   "checkboxbox\n"
-	   "stroke\n"
-	   "grestore\n"
-	   "} bind def\n"
-	   "/checkedbox {\n"
-	   "currentpoint\n"
-	   "gsave\n"
-	   "newpath\n"
-	   "moveto\n"
-	   "1 setlinewidth\n"
-	   "checkboxbox\n"
-	   "checkboxcheck\n"
-	   "stroke\n"
-	   "grestore\n"
-	   "} bind def\n"
-	   );
+           "} bind def\n"
+           "/checkboxbox {\n"
+           "8 0 rlineto\n"
+           "0 8 rlineto\n"
+           "-8 0 rlineto\n"
+           "0 -8 rlineto\n"
+           "} bind def\n"
+           "/checkbox {\n"
+           "currentpoint\n"
+           "gsave\n"
+           "newpath\n"
+           "moveto\n"
+           "1 setlinewidth\n"
+           "checkboxbox\n"
+           "stroke\n"
+           "grestore\n"
+           "} bind def\n"
+           "/checkedbox {\n"
+           "currentpoint\n"
+           "gsave\n"
+           "newpath\n"
+           "moveto\n"
+           "1 setlinewidth\n"
+           "checkboxbox\n"
+           "checkboxcheck\n"
+           "stroke\n"
+           "grestore\n"
+           "} bind def\n"
+           );
 
    /* Recode font function */
    fprintf(out,
-	   "/Recode {\n"
-	   "exch\n"
-	   "findfont\n"
-	   "dup length dict\n"
-	   "begin\n"
-	   "{ def\n"
-	   "} forall\n"
-	   "/Encoding ISOLatin1Encoding def\n"
-	   "currentdict\n"
-	   "end\n"
-	   "definefont pop\n"
-	   "} bind def\n");
+           "/Recode {\n"
+           "exch\n"
+           "findfont\n"
+           "dup length dict\n"
+           "begin\n"
+           "{ def\n"
+           "} forall\n"
+           "/Encoding ISOLatin1Encoding def\n"
+           "currentdict\n"
+           "end\n"
+           "definefont pop\n"
+           "} bind def\n");
    fprintf(out,
-	   "/Times-Roman  /Times-Roman-ISOLatin1 Recode\n"
-	   "/Courier      /Courier-ISOLatin1 Recode\n"
-	   "/Courier-Bold /Courier-Bold-ISOLatin1 Recode\n");
+           "/Times-Roman  /Times-Roman-ISOLatin1 Recode\n"
+           "/Courier      /Courier-ISOLatin1 Recode\n"
+           "/Courier-Bold /Courier-Bold-ISOLatin1 Recode\n");
    fprintf(out,
-	  "/hline {\n"
-	   "currentpoint 1 add currentpoint 1 add\n"
-	   "currentpoint 4 add currentpoint 4 add\n"
-	   "gsave\n"
-	   "newpath\n"
-	   "moveto\n"
-	   "exch\n"
-	   "1.0 inch add\n"
-	   "exch\n"
-	   "7 setlinewidth\n"
-	   "lineto\n"
-	   "stroke\n"
-	   "%%\n"
-	   "newpath\n"
-	   "moveto\n"
-	   "exch\n"
-	   "7.5 inch add\n"
-	   "exch\n"
-	   "1 setlinewidth\n"
-	   "lineto\n"
-	   "stroke\n"
-	   "grestore\n"
-	   "} bind def\n"
-	   "%%\n"
-	   "%%\n");
+          "/hline {\n"
+           "currentpoint 1 add currentpoint 1 add\n"
+           "currentpoint 4 add currentpoint 4 add\n"
+           "gsave\n"
+           "newpath\n"
+           "moveto\n"
+           "exch\n"
+           "1.0 inch add\n"
+           "exch\n"
+           "7 setlinewidth\n"
+           "lineto\n"
+           "stroke\n"
+           "%%\n"
+           "newpath\n"
+           "moveto\n"
+           "exch\n"
+           "7.5 inch add\n"
+           "exch\n"
+           "1 setlinewidth\n"
+           "lineto\n"
+           "stroke\n"
+           "grestore\n"
+           "} bind def\n"
+           "%%\n"
+           "%%\n");
    fprintf(out,
-	   "/setup\n"
-	   "{\n"
-	   "/Times-Roman-ISOLatin1 10 selectfont\n"
-	   "left footer moveto\n"
-	   "(%s) show\n"
-	   "7.5 inch footer moveto\n"
-	   "(J-Pilot) show\n"
-	   "%% This assumes that the prev page number is on the stack\n"
-	   "4.25 inch footer moveto\n"
-	   "1 add dup printobject show\n"
-	   "/Courier-ISOLatin1 12 selectfont\n"
-	   "left top moveto\n"
-	   "} bind def\n"
-	   "/printit\n"
-	   "{\n"
-	   "{ %%loop\n"
-	   "currentfile buffer readline { %%ifelse\n"
-	   "("Q_FLAG_CHAR"LINEFEED) search { %%if\n"
-	   "pop pop pop showpage setup ( )\n"
-	   "currentpoint 14 add moveto\n"
-	   "} if\n"
-	   "("Q_FLAG_CHAR"HLINE) search { %%if\n"
-	   "currentpoint exch pop bottom_hline le { %%if\n"
-	   "pop pop pop\n"
-	   "showpage setup\n"
-	   "0 0 0\n"
-	   "} if\n"
-	   "hline\n"
-	   "pop pop pop ( )\n"
-	   "} if\n"
-	   "("Q_FLAG_CHAR"END) search { %%if\n"
-	   "   showpage stop\n"
-	   "} if\n"
-	   "("Q_FLAG_CHAR"C12) search {\n"
-	   "/Courier-ISOLatin1 12 selectfont\n"
-	   "currentpoint 14 add moveto\n"
-	   "pop pop pop ( )\n"
-	   "} if\n"
-	   "("Q_FLAG_CHAR"CB12) search {\n"
-	   "/Courier-Bold-ISOLatin1 12 selectfont\n"
-	   "currentpoint 14 add moveto\n"
-	   "pop pop pop ( )\n"
-	   "} if\n",
-	   str
-	   );
+           "/setup\n"
+           "{\n"
+           "/Times-Roman-ISOLatin1 10 selectfont\n"
+           "left footer moveto\n"
+           "(%s) show\n"
+           "7.5 inch footer moveto\n"
+           "(J-Pilot) show\n"
+           "%% This assumes that the prev page number is on the stack\n"
+           "4.25 inch footer moveto\n"
+           "1 add dup printobject show\n"
+           "/Courier-ISOLatin1 12 selectfont\n"
+           "left top moveto\n"
+           "} bind def\n"
+           "/printit\n"
+           "{\n"
+           "{ %%loop\n"
+           "currentfile buffer readline { %%ifelse\n"
+           "("Q_FLAG_CHAR"LINEFEED) search { %%if\n"
+           "pop pop pop showpage setup ( )\n"
+           "currentpoint 14 add moveto\n"
+           "} if\n"
+           "("Q_FLAG_CHAR"HLINE) search { %%if\n"
+           "currentpoint exch pop bottom_hline le { %%if\n"
+           "pop pop pop\n"
+           "showpage setup\n"
+           "0 0 0\n"
+           "} if\n"
+           "hline\n"
+           "pop pop pop ( )\n"
+           "} if\n"
+           "("Q_FLAG_CHAR"END) search { %%if\n"
+           "   showpage stop\n"
+           "} if\n"
+           "("Q_FLAG_CHAR"C12) search {\n"
+           "/Courier-ISOLatin1 12 selectfont\n"
+           "currentpoint 14 add moveto\n"
+           "pop pop pop ( )\n"
+           "} if\n"
+           "("Q_FLAG_CHAR"CB12) search {\n"
+           "/Courier-Bold-ISOLatin1 12 selectfont\n"
+           "currentpoint 14 add moveto\n"
+           "pop pop pop ( )\n"
+           "} if\n",
+           str
+           );
    /* Check box */
    fprintf(out,
-	   "("Q_FLAG_CHAR"CHECKBOX) search {\n"
-	   "currentpoint exch pop bottom_hline le {\n"
-	   "pop pop pop\n"
-	   "showpage setup\n"
-	   "0 0 0\n"
-	   "} if\n"
-	   "checkbox\n"
-	   "currentpoint 14 add moveto\n"
-	   "pop pop pop ( )\n"
-	   "} if\n"
-	   );
+           "("Q_FLAG_CHAR"CHECKBOX) search {\n"
+           "currentpoint exch pop bottom_hline le {\n"
+           "pop pop pop\n"
+           "showpage setup\n"
+           "0 0 0\n"
+           "} if\n"
+           "checkbox\n"
+           "currentpoint 14 add moveto\n"
+           "pop pop pop ( )\n"
+           "} if\n"
+           );
    /* Check box */
    fprintf(out,
-	   "("Q_FLAG_CHAR"CHECKEDBOX) search {\n"
-	   "currentpoint exch pop bottom_hline le {\n"
-	   "pop pop pop\n"
-	   "showpage setup\n"
-	   "0 0 0\n"
-	   "} if\n"
-	   "checkedbox\n"
-	   "currentpoint 14 add moveto\n"
-	   "pop pop pop ( )\n"
-	   "} if\n"
-	   );
+           "("Q_FLAG_CHAR"CHECKEDBOX) search {\n"
+           "currentpoint exch pop bottom_hline le {\n"
+           "pop pop pop\n"
+           "showpage setup\n"
+           "0 0 0\n"
+           "} if\n"
+           "checkedbox\n"
+           "currentpoint 14 add moveto\n"
+           "pop pop pop ( )\n"
+           "} if\n"
+           );
    fprintf(out,
            "%%%%EndResource\n"
            "%%%%EndProlog\n"); /* XXX not exactly sure about position */
 
     fprintf(out,
-	    "gsave show grestore\n"
-	   "currentpoint 14 sub moveto\n"
-	   "currentpoint exch pop bottom le { %%if\n"
-	   "showpage setup\n"
-	   "} if\n"
-	   "}{ %%else\n"
-	   "showpage exit\n"
-	   "} ifelse\n"
-	   "} loop\n"
-	   "} bind def\n"
-	   "0 %%The page number minus 1\n"
-	   "setup printit\n"
-	   );
+            "gsave show grestore\n"
+           "currentpoint 14 sub moveto\n"
+           "currentpoint exch pop bottom le { %%if\n"
+           "showpage setup\n"
+           "} if\n"
+           "}{ %%else\n"
+           "showpage exit\n"
+           "} ifelse\n"
+           "} loop\n"
+           "} bind def\n"
+           "0 %%The page number minus 1\n"
+           "setup printit\n"
+           );
    return EXIT_SUCCESS;
 }
 
 
-int print_contacts(ContactList *contact_list, struct ContactAppInfo *contact_app_info,
-		   address_schema_entry *schema, int schema_size)
+int print_contacts(ContactList *contact_list, 
+                   struct ContactAppInfo *contact_app_info,
+                   address_schema_entry *schema, int schema_size)
 {
    long one_rec_per_page;
    long lines_between_recs;
@@ -1081,19 +1082,19 @@ int print_contacts(ContactList *contact_list, struct ContactAppInfo *contact_app
 
       str[0]='\0';
       if (temp_cl->mcont.cont.entry[show1] || temp_cl->mcont.cont.entry[show2]) {
-	 if (temp_cl->mcont.cont.entry[show1] && temp_cl->mcont.cont.entry[show2]) {
-	    g_snprintf(str, sizeof(str), "%s, %s", temp_cl->mcont.cont.entry[show1], temp_cl->mcont.cont.entry[show2]);
-	 }
-	 if (temp_cl->mcont.cont.entry[show1] && ! temp_cl->mcont.cont.entry[show2]) {
-	    strncpy(str, temp_cl->mcont.cont.entry[show1], 48);
-	 }
-	 if (! temp_cl->mcont.cont.entry[show1] && temp_cl->mcont.cont.entry[show2]) {
-	    strncpy(str, temp_cl->mcont.cont.entry[show2], 48);
-	 }
+         if (temp_cl->mcont.cont.entry[show1] && temp_cl->mcont.cont.entry[show2]) {
+            g_snprintf(str, sizeof(str), "%s, %s", temp_cl->mcont.cont.entry[show1], temp_cl->mcont.cont.entry[show2]);
+         }
+         if (temp_cl->mcont.cont.entry[show1] && ! temp_cl->mcont.cont.entry[show2]) {
+            strncpy(str, temp_cl->mcont.cont.entry[show1], 48);
+         }
+         if (! temp_cl->mcont.cont.entry[show1] && temp_cl->mcont.cont.entry[show2]) {
+            strncpy(str, temp_cl->mcont.cont.entry[show2], 48);
+         }
       } else if (temp_cl->mcont.cont.entry[show3]) {
-	    strncpy(str, temp_cl->mcont.cont.entry[show3], 48);
+            strncpy(str, temp_cl->mcont.cont.entry[show3], 48);
       } else {
-	    strcpy(str, "-Unnamed-");
+            strcpy(str, "-Unnamed-");
       }
 
       courier_bold_12();
@@ -1103,67 +1104,67 @@ int print_contacts(ContactList *contact_list, struct ContactAppInfo *contact_app
       mcont = &(temp_cl->mcont);
       address_i=phone_i=IM_i=0;
       for (i=0; i<schema_size; i++) {
-	 /* Get the entry texts */
-	 if (mcont->cont.entry[schema[i].record_field]) {
-	    switch (schema[i].type) {
-	     case ADDRESS_GUI_IM_MENU_TEXT:
-	       g_snprintf(str, 18, "%s:%s", contact_app_info->IMLabels[mcont->cont.IMLabel[IM_i]], spaces);
-	       fprintf(out, "%s", str);
-	       IM_i++;
-	       break;
-	     case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
-	       g_snprintf(str, 18, "%s:%s", contact_app_info->phoneLabels[mcont->cont.phoneLabel[phone_i]], spaces);
-	       fprintf(out, "%s", str);
-	       phone_i++;
-	       break;
-	     case ADDRESS_GUI_ADDR_MENU_TEXT:
-	       g_snprintf(str, 18, "%s:%s", contact_app_info->addrLabels[mcont->cont.addressLabel[address_i]], spaces);
-	       fprintf(out, "%s", str);
-	       address_i++;
-	       break;
-	     default:
-	       if (contact_app_info->labels[schema[i].record_field]) {
-		  utf = charset_p2newj(contact_app_info->labels[schema[i].record_field], 16, char_set);
-		  g_snprintf(str, 18, "%s:%s", utf, spaces);
-		  fprintf(out, "%s", str);
-		  g_free(utf);
-	       }
-	       else {
-		  g_snprintf(str, 18, ":%s", spaces);
-		  fprintf(out, "%s", str);
-	       }
-	    }
-	    switch (schema[i].type) {
-	     case ADDRESS_GUI_LABEL_TEXT:
-	     case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
-	     case ADDRESS_GUI_IM_MENU_TEXT:
-	     case ADDRESS_GUI_ADDR_MENU_TEXT:
-	     case ADDRESS_GUI_WEBSITE_TEXT:
-	       f_indent_print(out, 17, mcont->cont.entry[schema[i].record_field]);
-	       fprintf(out, "\n");
-	       break;
-	     case ADDRESS_GUI_BIRTHDAY:
-	       if (mcont->cont.birthdayFlag) {
-		  birthday_str[0]='\0';
-		  get_pref(PREF_SHORTDATE, NULL, &pref_date);
-		  strftime(birthday_str, sizeof(birthday_str), pref_date, &(mcont->cont.birthday));
-		  g_snprintf(str, 18, "%s:%s", contact_app_info->labels[schema[i].record_field] ? contact_app_info->labels[schema[i].record_field] : "",
-			     spaces);
-		  fprintf(out, "%s", str);
-		  f_indent_print(out, 17, birthday_str);
-		  fprintf(out, "\n");
-	       }
-	       break;
-	    }
-	 }
+         /* Get the entry texts */
+         if (mcont->cont.entry[schema[i].record_field]) {
+            switch (schema[i].type) {
+             case ADDRESS_GUI_IM_MENU_TEXT:
+               g_snprintf(str, 18, "%s:%s", contact_app_info->IMLabels[mcont->cont.IMLabel[IM_i]], spaces);
+               fprintf(out, "%s", str);
+               IM_i++;
+               break;
+             case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
+               g_snprintf(str, 18, "%s:%s", contact_app_info->phoneLabels[mcont->cont.phoneLabel[phone_i]], spaces);
+               fprintf(out, "%s", str);
+               phone_i++;
+               break;
+             case ADDRESS_GUI_ADDR_MENU_TEXT:
+               g_snprintf(str, 18, "%s:%s", contact_app_info->addrLabels[mcont->cont.addressLabel[address_i]], spaces);
+               fprintf(out, "%s", str);
+               address_i++;
+               break;
+             default:
+               if (contact_app_info->labels[schema[i].record_field]) {
+                  utf = charset_p2newj(contact_app_info->labels[schema[i].record_field], 16, char_set);
+                  g_snprintf(str, 18, "%s:%s", utf, spaces);
+                  fprintf(out, "%s", str);
+                  g_free(utf);
+               }
+               else {
+                  g_snprintf(str, 18, ":%s", spaces);
+                  fprintf(out, "%s", str);
+               }
+            }
+            switch (schema[i].type) {
+             case ADDRESS_GUI_LABEL_TEXT:
+             case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
+             case ADDRESS_GUI_IM_MENU_TEXT:
+             case ADDRESS_GUI_ADDR_MENU_TEXT:
+             case ADDRESS_GUI_WEBSITE_TEXT:
+               f_indent_print(out, 17, mcont->cont.entry[schema[i].record_field]);
+               fprintf(out, "\n");
+               break;
+             case ADDRESS_GUI_BIRTHDAY:
+               if (mcont->cont.birthdayFlag) {
+                  birthday_str[0]='\0';
+                  get_pref(PREF_SHORTDATE, NULL, &pref_date);
+                  strftime(birthday_str, sizeof(birthday_str), pref_date, &(mcont->cont.birthday));
+                  g_snprintf(str, 18, "%s:%s", contact_app_info->labels[schema[i].record_field] ? contact_app_info->labels[schema[i].record_field] : "",
+                             spaces);
+                  fprintf(out, "%s", str);
+                  f_indent_print(out, 17, birthday_str);
+                  fprintf(out, "\n");
+               }
+               break;
+            }
+         }
       }
 
       if (one_rec_per_page) {
-	 fprintf(out, "%cLINEFEED\n", FLAG_CHAR);
+         fprintf(out, "%cLINEFEED\n", FLAG_CHAR);
       } else {
-	 for (i=lines_between_recs; i>0; i--) {
-	    fprintf(out, "\n");
-	 }
+         for (i=lines_between_recs; i>0; i--) {
+            fprintf(out, "\n");
+         }
       }
    }
 
@@ -1226,46 +1227,46 @@ int print_todos(ToDoList *todo_list, char *category_name)
       fprintf(out, "%d ", todo->priority);
 
       if (todo->indefinite) {
-	 sprintf(str, "%s           ", "No Due");
-	 str[indent-8]='\0';
+         sprintf(str, "%s           ", "No Due");
+         str[indent-8]='\0';
       } else {
-	 strftime(str, sizeof(str), datef, &(todo->due));
+         strftime(str, sizeof(str), datef, &(todo->due));
       }
       fprintf(out, "(%s) ", str);
 
       if (todo->description) {
-	 int len;
-	 char *buf;
+         int len;
+         char *buf;
 
-	 len = strlen(todo->description);
-	 buf = malloc(2 * len + 1);
-	 memset(buf, 0, 2 * len + 1);
-	 ps_strncat(buf, todo->description, 2 * len);
+         len = strlen(todo->description);
+         buf = malloc(2 * len + 1);
+         memset(buf, 0, 2 * len + 1);
+         ps_strncat(buf, todo->description, 2 * len);
 
-	 fprintf(out, "(%s) ", buf);
-	 free(buf);
+         fprintf(out, "(%s) ", buf);
+         free(buf);
       } else {
          fprintf(out, "() ");
       }
 
       if ((todo->note) && todo->note[0]) {
-	 int len;
-	 char *buf;
+         int len;
+         char *buf;
 
-	 len = strlen(todo->note);
-	 buf = malloc(2 * len + 1);
-	 memset(buf, 0, 2 * len + 1);
-	 ps_strncat(buf, todo->note, 2 * len);
+         len = strlen(todo->note);
+         buf = malloc(2 * len + 1);
+         memset(buf, 0, 2 * len + 1);
+         ps_strncat(buf, todo->note, 2 * len);
 
-	 fprintf(out, "(%s) ", buf);
-	 free(buf);
+         fprintf(out, "(%s) ", buf);
+         free(buf);
       } else {
          fprintf(out, "()");
       }
       fprintf(out, " Todo\n");
 
       if (one_rec_per_page) {
-	 fprintf(out, "NewPage\n");
+         fprintf(out, "NewPage\n");
       }
    }
    fprintf(out, "showpage\n");
@@ -1312,17 +1313,17 @@ int print_memos(MemoList *memo_list)
       memo = &(temp_l->mmemo.memo);
 
       if (memo->text) {
-	 fprintf(out, "%cHLINE\n", FLAG_CHAR);
-	 f_indent_print(out, 0, memo->text);
-	 fprintf(out, "\n");
+         fprintf(out, "%cHLINE\n", FLAG_CHAR);
+         f_indent_print(out, 0, memo->text);
+         fprintf(out, "\n");
       }
 
       if (one_rec_per_page) {
-	 fprintf(out, "%cLINEFEED\n", FLAG_CHAR);
+         fprintf(out, "%cLINEFEED\n", FLAG_CHAR);
       } else {
-	 for (i=lines_between_recs; i>0; i--) {
-	    fprintf(out, "\n");
-	 }
+         for (i=lines_between_recs; i>0; i--) {
+            fprintf(out, "\n");
+         }
       }
    }
 

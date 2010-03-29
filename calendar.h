@@ -1,4 +1,4 @@
-/* $Id: calendar.h,v 1.1 2010/03/02 18:59:00 judd Exp $ */
+/* $Id: calendar.h,v 1.2 2010/03/29 05:44:27 rikster5 Exp $ */
 
 /*******************************************************************************
  * calendar.h
@@ -34,11 +34,11 @@ int copy_appointment_ai_to_calendar_ai(const struct AppointmentAppInfo *aai, str
 /* Copy AppInfo data structures */
 int copy_calendar_ai_to_appointment_ai(const struct CalendarAppInfo *cai, struct AppointmentAppInfo *aai);
 
-int copy_appointment_to_calendarEvent(const struct Appointment *a, struct CalendarEvent *ce);
+int copy_appointment_to_calendarEvent(const struct Appointment *a, struct CalendarEvent *cale);
 
 int copy_appointments_to_calendarEvents(AppointmentList *al, CalendarEventList **cel);
 
-int copy_calendarEvent_to_appointment(const struct CalendarEvent *ce, struct Appointment *a);
+int copy_calendarEvent_to_appointment(const struct CalendarEvent *cale, struct Appointment *a);
 
 void free_CalendarEventList(CalendarEventList **cel);
 
@@ -48,8 +48,8 @@ int calendar_sort(CalendarEventList **cel,
                   int (*compare_func)(const void*, const void*));
 
 int get_days_calendar_events2(CalendarEventList **calendar_event_list, struct tm *now,
-			      int modified, int deleted, int privates,
-			      int category, int *total_records);
+                              int modified, int deleted, int privates,
+                              int category, int *total_records);
 
 int get_days_calendar_events(CalendarEventList **calendar_event_list, struct tm *now, int category, int *total_records);
 
@@ -58,10 +58,10 @@ int get_days_calendar_events(CalendarEventList **calendar_event_list, struct tm 
  * modified, deleted and private, 0 for no, 1 for yes, 2 for use prefs
  */
 int get_days_calendar_events2(CalendarEventList **calendar_event_list, struct tm *now,
-			      int modified, int deleted, int privates,
-			      int category, int *total_records);
+                              int modified, int deleted, int privates,
+                              int category, int *total_records);
 
-int pc_calendar_write(struct CalendarEvent *ce, PCRecType rt,
-		      unsigned char attrib, unsigned int *unique_id);
+int pc_calendar_write(struct CalendarEvent *cale, PCRecType rt,
+                      unsigned char attrib, unsigned int *unique_id);
 
 #endif

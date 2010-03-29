@@ -1,4 +1,4 @@
-/* $Id: plugins.c,v 1.25 2010/03/03 14:42:03 rousseau Exp $ */
+/* $Id: plugins.c,v 1.26 2010/03/29 05:44:30 rikster5 Exp $ */
 
 /*******************************************************************************
  * plugins.c
@@ -58,13 +58,13 @@ void write_plugin_sync_file(void)
    for (temp_list = plugins; temp_list; temp_list = temp_list->next) {
       Pplugin = temp_list->data;
       if (Pplugin) {
-	 if (Pplugin->sync_on) {
-	    fwrite("Y ", 2, 1, out);
-	 } else {
-	    fwrite("N ", 2, 1, out);
-	 }
-	 fwrite(Pplugin->full_path, strlen(Pplugin->full_path), 1, out);
-	 fwrite("\n", strlen("\n"), 1, out);
+         if (Pplugin->sync_on) {
+            fwrite("Y ", 2, 1, out);
+         } else {
+            fwrite("N ", 2, 1, out);
+         }
+         fwrite(Pplugin->full_path, strlen(Pplugin->full_path), 1, out);
+         fwrite("\n", strlen("\n"), 1, out);
       }
    }
    fclose(out);
@@ -75,7 +75,8 @@ void write_plugin_sync_file(void)
  * a name of its own.
  * Assumes dir has already been checked
  */
-static int load_plugins_sub1(DIR *dir, char *path, int *number, unsigned char user_only)
+static int load_plugins_sub1(DIR *dir, char *path, int *number, 
+                             unsigned char user_only)
 {
    int i, r;
    int count;
@@ -88,45 +89,45 @@ static int load_plugins_sub1(DIR *dir, char *path, int *number, unsigned char us
    count = 0;
    for (i=0; (dirent = readdir(dir)); i++) {
       if (i>1000) {
-	 jp_logf(JP_LOG_WARN, "load_plugins_sub1(): %s\n", _("infinite loop"));
-	 return 0;
+         jp_logf(JP_LOG_WARN, "load_plugins_sub1(): %s\n", _("infinite loop"));
+         return 0;
       }
       /* If the filename has either of these extensions then plug it in */
       if ((strcmp(&(dirent->d_name[strlen(dirent->d_name)-3]), ".so")) &&
-	  (strcmp(&(dirent->d_name[strlen(dirent->d_name)-3]), ".sl")) &&
-	  (strcmp(&(dirent->d_name[strlen(dirent->d_name)-6]), ".dylib"))) {
-	 continue;
+          (strcmp(&(dirent->d_name[strlen(dirent->d_name)-3]), ".sl")) &&
+          (strcmp(&(dirent->d_name[strlen(dirent->d_name)-6]), ".dylib"))) {
+         continue;
       } else {
-	 jp_logf(JP_LOG_DEBUG, "found plugin %s\n", dirent->d_name);
-	 /* We know path has a trailing slash after it */
-	 g_snprintf(full_name, sizeof(full_name), "%s%s", path, dirent->d_name);
-	 r = get_plugin_info(&temp_plugin, full_name);
-	 temp_plugin.number = *number;
-	 temp_plugin.user_only = user_only;
-	 if (r==0) {
-	    if (temp_plugin.name) {
-	       jp_logf(JP_LOG_DEBUG, "plugin name is [%s]\n", temp_plugin.name);
-	    }
-	    if (g_list_find_custom(plugin_names, temp_plugin.name, (GCompareFunc)strcmp) == NULL) {
-	       new_plugin = malloc(sizeof(struct plugin_s));
-	       if (!new_plugin) {
-		  jp_logf(JP_LOG_WARN, "load plugins(): %s\n", _("Out of memory"));
-		  return count;
-	       }
-	       memcpy(new_plugin, &temp_plugin, sizeof(struct plugin_s));
-	       plugins = g_list_prepend(plugins, new_plugin);
-	       plugin_names = g_list_prepend(plugin_names, g_strdup(temp_plugin.name));
-	       count++;
-	       (*number)++;
-	    }
-	 }
+         jp_logf(JP_LOG_DEBUG, "found plugin %s\n", dirent->d_name);
+         /* We know path has a trailing slash after it */
+         g_snprintf(full_name, sizeof(full_name), "%s%s", path, dirent->d_name);
+         r = get_plugin_info(&temp_plugin, full_name);
+         temp_plugin.number = *number;
+         temp_plugin.user_only = user_only;
+         if (r==0) {
+            if (temp_plugin.name) {
+               jp_logf(JP_LOG_DEBUG, "plugin name is [%s]\n", temp_plugin.name);
+            }
+            if (g_list_find_custom(plugin_names, temp_plugin.name, (GCompareFunc)strcmp) == NULL) {
+               new_plugin = malloc(sizeof(struct plugin_s));
+               if (!new_plugin) {
+                  jp_logf(JP_LOG_WARN, "load plugins(): %s\n", _("Out of memory"));
+                  return count;
+               }
+               memcpy(new_plugin, &temp_plugin, sizeof(struct plugin_s));
+               plugins = g_list_prepend(plugins, new_plugin);
+               plugin_names = g_list_prepend(plugin_names, g_strdup(temp_plugin.name));
+               count++;
+               (*number)++;
+            }
+         }
       }
    }
 
    plugins = g_list_sort(plugins, plugin_sort);
    for (temp_list = plugin_names; temp_list; temp_list = temp_list->next) {
       if (temp_list->data) {
-	 g_free(temp_list->data);
+         g_free(temp_list->data);
       }
    }
    g_list_free(plugin_names);
@@ -202,35 +203,35 @@ static int get_plugin_sync_bits(void)
    }
    for (i=0; (!feof(in)); i++) {
       if (i>MAX_NUM_PLUGINS) {
-	 jp_logf(JP_LOG_WARN, "load_plugins(): %s\n", _("infinite loop"));
-	 fclose(in);
-	 return EXIT_FAILURE;
+         jp_logf(JP_LOG_WARN, "load_plugins(): %s\n", _("infinite loop"));
+         fclose(in);
+         return EXIT_FAILURE;
       }
       line[0]='\0';
       Pc = fgets(line, sizeof(line), in);
       if (!Pc) {
-	 break;
+         break;
       }
       if (line[strlen(line)-1]=='\n') {
-	 line[strlen(line)-1]='\0';
+         line[strlen(line)-1]='\0';
       }
       if ((!strncmp(line, "Version", 7)) && (strcmp(line, "Version 1"))) {
-	 jp_logf(JP_LOG_WARN, _("While reading %s%s line 1:[%s]\n"), EPN, ".plugins", line);
-	 jp_logf(JP_LOG_WARN, _("Wrong Version\n"));
-	 jp_logf(JP_LOG_WARN, _("Check preferences->conduits\n"));
-	 fclose(in);
-	 return EXIT_FAILURE;
+         jp_logf(JP_LOG_WARN, _("While reading %s%s line 1:[%s]\n"), EPN, ".plugins", line);
+         jp_logf(JP_LOG_WARN, _("Wrong Version\n"));
+         jp_logf(JP_LOG_WARN, _("Check preferences->conduits\n"));
+         fclose(in);
+         return EXIT_FAILURE;
       }
       if (i>0) {
-	 if (toupper(line[0])=='N') {
-	    Pline = line + 2;
-	    for (temp_list = plugins; temp_list; temp_list = temp_list->next) {
-	       Pplugin = temp_list->data;
-	       if (!strcmp(Pline, Pplugin->full_path)) {
-		  Pplugin->sync_on=0;
-	       }
-	    }
-	 }
+         if (toupper(line[0])=='N') {
+            Pline = line + 2;
+            for (temp_list = plugins; temp_list; temp_list = temp_list->next) {
+               Pplugin = temp_list->data;
+               if (!strcmp(Pline, Pplugin->full_path)) {
+                  Pplugin->sync_on=0;
+               }
+            }
+         }
       }
    }
    fclose(in);
@@ -274,7 +275,7 @@ static int get_plugin_info(struct plugin_s *p, char *path)
    h = dlopen(path, RTLD_LAZY);
    if (!h) {
       jp_logf(JP_LOG_WARN, _("Open failed on plugin [%s]\n error [%s]\n"), path,
-		  dlerror());
+                  dlerror());
       return EXIT_FAILURE;
    }
    jp_logf(JP_LOG_DEBUG, "opened plugin [%s]\n", path);
@@ -300,14 +301,14 @@ static int get_plugin_info(struct plugin_s *p, char *path)
    if ((major_version <= 0) && (minor_version < 99)) {
       jp_logf(JP_LOG_WARN, _("Plugin:[%s]\n"), path);
       jp_logf(JP_LOG_WARN, _("This plugin is version (%d.%d).\n"),
-		  major_version, minor_version);
+                  major_version, minor_version);
       jp_logf(JP_LOG_WARN, _("It is too old to work with this version of J-Pilot.\n"));
       dlclose(h);
       p->handle=NULL;
       return EXIT_FAILURE;
    }
    jp_logf(JP_LOG_DEBUG, "This plugin is version (%d.%d).\n",
-	       major_version, minor_version);
+               major_version, minor_version);
 
    /* plugin_get_name */
    jp_logf(JP_LOG_DEBUG, "getting plugin_get_name\n");
@@ -420,14 +421,14 @@ void free_plugin_list(GList **plugin_list)
 
    for (temp_list = *plugin_list; temp_list; temp_list = temp_list->next) {
       if (temp_list->data) {
-	 p=temp_list->data;
-	 if (p->full_path) free(p->full_path);
-	 if (p->name)      free(p->name);
-	 if (p->menu_name) free(p->menu_name);
-	 if (p->help_name) free(p->help_name);
-	 if (p->db_name)   free(p->db_name);
+         p=temp_list->data;
+         if (p->full_path) free(p->full_path);
+         if (p->name)      free(p->name);
+         if (p->menu_name) free(p->menu_name);
+         if (p->help_name) free(p->help_name);
+         if (p->db_name)   free(p->db_name);
 
-	 free(p);
+         free(p);
       }
    }
    g_list_free(*plugin_list);
@@ -440,7 +441,7 @@ void free_search_result(struct search_result **sr)
 
    for (temp_sr = *sr; temp_sr; temp_sr=temp_sr_next) {
       if (temp_sr->line) {
-	 free(temp_sr->line);
+         free(temp_sr->line);
       }
       temp_sr_next = temp_sr->next;
       free(temp_sr);

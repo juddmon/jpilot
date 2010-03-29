@@ -1,4 +1,4 @@
-/* $Id: search_gui.c,v 1.51 2010/03/03 12:50:00 rousseau Exp $ */
+/* $Id: search_gui.c,v 1.52 2010/03/29 05:44:31 rikster5 Exp $ */
 
 /*******************************************************************************
  * search_gui.c
@@ -60,7 +60,7 @@ static int clist_row_selected;
 
 /****************************** Prototypes ************************************/
 static void cb_clist_selection(GtkWidget *clist, gint row, gint column,
-      GdkEventButton *event, gpointer data);
+                               GdkEventButton *event, gpointer data);
 
 /****************************** Main Code *************************************/
 static int datebook_search_sort_compare(const void *v1, const void *v2)
@@ -72,8 +72,8 @@ static int datebook_search_sort_compare(const void *v1, const void *v2)
    cel1=(CalendarEventList **)v1;
    cel2=(CalendarEventList **)v2;
 
-   ce1=&((*cel1)->mce.ce);
-   ce2=&((*cel2)->mce.ce);
+   ce1=&((*cel1)->mcale.cale);
+   ce2=&((*cel2)->mcale.cale);
 
    time1 = mktime(&(ce1->begin));
    time2 = mktime(&(ce2->begin));
@@ -121,74 +121,74 @@ static int search_datebook(const char *needle, GtkWidget *clist)
 
    for (temp_cel = ce_list; temp_cel; temp_cel=temp_cel->next) {
       found = 0;
-      if ( (temp_cel->mce.ce.description) &&
-	   (temp_cel->mce.ce.description[0]) ) {
-	 if (jp_strstr(temp_cel->mce.ce.description, needle, case_sense)) {
-	    found = 1;
-	 }
+      if ( (temp_cel->mcale.cale.description) &&
+           (temp_cel->mcale.cale.description[0]) ) {
+         if (jp_strstr(temp_cel->mcale.cale.description, needle, case_sense)) {
+            found = 1;
+         }
       }
       if ( !found &&
-           (temp_cel->mce.ce.note) &&
-	   (temp_cel->mce.ce.note[0]) ) {
-	 if (jp_strstr(temp_cel->mce.ce.note, needle, case_sense )) {
-	    found = 2;
-	 }
+           (temp_cel->mcale.cale.note) &&
+           (temp_cel->mcale.cale.note[0]) ) {
+         if (jp_strstr(temp_cel->mcale.cale.note, needle, case_sense )) {
+            found = 2;
+         }
       }
       if (datebook_version) {
          if ( !found &&
-              (temp_cel->mce.ce.location) &&
-              (temp_cel->mce.ce.location[0]) ) {
-            if (jp_strstr(temp_cel->mce.ce.location, needle, case_sense )) {
+              (temp_cel->mcale.cale.location) &&
+              (temp_cel->mcale.cale.location[0]) ) {
+            if (jp_strstr(temp_cel->mcale.cale.location, needle, case_sense )) {
                found = 3;
             }
          }
       }
 
       if (found) {
-	 gtk_clist_prepend(GTK_CLIST(clist), empty_line);
+         gtk_clist_prepend(GTK_CLIST(clist), empty_line);
          if (datebook_version==0) {
             gtk_clist_set_text(GTK_CLIST(clist), 0, 0, _("datebook"));
          } else {
             gtk_clist_set_text(GTK_CLIST(clist), 0, 0, _("calendar"));
          }
 
-	 /* get the date */
-	 get_pref(PREF_SHORTDATE, NULL, &svalue1);
-	 if (svalue1 == NULL) {
-	    strcpy(datef, "%x");
-	 } else {
-	    strncpy(datef, svalue1, sizeof(datef));
-	 }
-	 strftime(date_str, sizeof(date_str), datef, &temp_cel->mce.ce.begin);
-	 date_str[sizeof(date_str)-1]='\0';
-
-	 if (found == 1) {
-	    g_snprintf(str, sizeof(str), "%s\t%s",
-		       date_str,
-		       temp_cel->mce.ce.description);
-         } else if (found == 2) {
-	    g_snprintf(str, sizeof(str), "%s\t%s",
-		       date_str,
-		       temp_cel->mce.ce.note);
+         /* get the date */
+         get_pref(PREF_SHORTDATE, NULL, &svalue1);
+         if (svalue1 == NULL) {
+            strcpy(datef, "%x");
          } else {
-	    g_snprintf(str, sizeof(str), "%s\t%s",
-		       date_str,
-		       temp_cel->mce.ce.location);
+            strncpy(datef, svalue1, sizeof(datef));
+         }
+         strftime(date_str, sizeof(date_str), datef, &temp_cel->mcale.cale.begin);
+         date_str[sizeof(date_str)-1]='\0';
+
+         if (found == 1) {
+            g_snprintf(str, sizeof(str), "%s\t%s",
+                       date_str,
+                       temp_cel->mcale.cale.description);
+         } else if (found == 2) {
+            g_snprintf(str, sizeof(str), "%s\t%s",
+                       date_str,
+                       temp_cel->mcale.cale.note);
+         } else {
+            g_snprintf(str, sizeof(str), "%s\t%s",
+                       date_str,
+                       temp_cel->mcale.cale.location);
          }
          lstrncpy_remove_cr_lfs(str2, str, SEARCH_MAX_COLUMN_LEN);
          gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str2);
 
-	 /* Add to the search list */
-	 new_sr = malloc(sizeof(struct search_record));
-	 new_sr->app_type = DATEBOOK;
-	 new_sr->plugin_flag = 0;
-	 new_sr->unique_id = temp_cel->mce.unique_id;
-	 new_sr->next = search_rl;
-	 search_rl = new_sr;
+         /* Add to the search list */
+         new_sr = malloc(sizeof(struct search_record));
+         new_sr->app_type = DATEBOOK;
+         new_sr->plugin_flag = 0;
+         new_sr->unique_id = temp_cel->mcale.unique_id;
+         new_sr->next = search_rl;
+         search_rl = new_sr;
 
-	 gtk_clist_set_row_data(GTK_CLIST(clist), 0, new_sr);
+         gtk_clist_set_row_data(GTK_CLIST(clist), 0, new_sr);
 
-	 count++;
+         count++;
       }
    }
 
@@ -232,32 +232,32 @@ static int search_address_or_contacts(const char *needle, GtkWidget *clist)
 
    for (temp_cl = cont_list; temp_cl; temp_cl=temp_cl->next) {
       for (i=0; i<NUM_CONTACT_ENTRIES; i++) {
-	 if (temp_cl->mcont.cont.entry[i]) {
-	    if ( jp_strstr(temp_cl->mcont.cont.entry[i], needle, case_sense) ) {
-	       gtk_clist_prepend(GTK_CLIST(clist), empty_line);
-	       if (address_version==0) {
-		  gtk_clist_set_text(GTK_CLIST(clist), 0, 0, _("address"));
-	       } else {
-		  gtk_clist_set_text(GTK_CLIST(clist), 0, 0, _("contact"));
-	       }
-	       lstrncpy_remove_cr_lfs(str2, temp_cl->mcont.cont.entry[i], SEARCH_MAX_COLUMN_LEN);
-	       gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str2);
+         if (temp_cl->mcont.cont.entry[i]) {
+            if ( jp_strstr(temp_cl->mcont.cont.entry[i], needle, case_sense) ) {
+               gtk_clist_prepend(GTK_CLIST(clist), empty_line);
+               if (address_version==0) {
+                  gtk_clist_set_text(GTK_CLIST(clist), 0, 0, _("address"));
+               } else {
+                  gtk_clist_set_text(GTK_CLIST(clist), 0, 0, _("contact"));
+               }
+               lstrncpy_remove_cr_lfs(str2, temp_cl->mcont.cont.entry[i], SEARCH_MAX_COLUMN_LEN);
+               gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str2);
 
-	       /* Add to the search list */
-	       new_sr = malloc(sizeof(struct search_record));
-	       new_sr->app_type = ADDRESS;
-	       new_sr->plugin_flag = 0;
-	       new_sr->unique_id = temp_cl->mcont.unique_id;
-	       new_sr->next = search_rl;
-	       search_rl = new_sr;
+               /* Add to the search list */
+               new_sr = malloc(sizeof(struct search_record));
+               new_sr->app_type = ADDRESS;
+               new_sr->plugin_flag = 0;
+               new_sr->unique_id = temp_cl->mcont.unique_id;
+               new_sr->next = search_rl;
+               search_rl = new_sr;
 
-	       gtk_clist_set_row_data(GTK_CLIST(clist), 0, new_sr);
+               gtk_clist_set_row_data(GTK_CLIST(clist), 0, new_sr);
 
-	       count++;
+               count++;
 
-	       break;
-	    }
-	 }
+               break;
+            }
+         }
       }
    }
 
@@ -292,40 +292,40 @@ static int search_todo(const char *needle, GtkWidget *clist)
    for (temp_todo = todo_list; temp_todo; temp_todo=temp_todo->next) {
       found = 0;
       if ( (temp_todo->mtodo.todo.description) &&
-	   (temp_todo->mtodo.todo.description[0]) ) {
-	 if ( jp_strstr(temp_todo->mtodo.todo.description, needle, case_sense) ) {
-	    found = 1;
-	 }
+           (temp_todo->mtodo.todo.description[0]) ) {
+         if ( jp_strstr(temp_todo->mtodo.todo.description, needle, case_sense) ) {
+            found = 1;
+         }
       }
       if ( !found &&
            (temp_todo->mtodo.todo.note) &&
-	   (temp_todo->mtodo.todo.note[0]) ) {
-	 if ( jp_strstr(temp_todo->mtodo.todo.note, needle, case_sense) ) {
-	    found = 2;
-	 }
+           (temp_todo->mtodo.todo.note[0]) ) {
+         if ( jp_strstr(temp_todo->mtodo.todo.note, needle, case_sense) ) {
+            found = 2;
+         }
       }
 
       if (found) {
-	 gtk_clist_prepend(GTK_CLIST(clist), empty_line);
-	 gtk_clist_set_text(GTK_CLIST(clist), 0, 0, _("todo"));
-	 if (found == 1) {
-	    lstrncpy_remove_cr_lfs(str2, temp_todo->mtodo.todo.description, SEARCH_MAX_COLUMN_LEN);
+         gtk_clist_prepend(GTK_CLIST(clist), empty_line);
+         gtk_clist_set_text(GTK_CLIST(clist), 0, 0, _("todo"));
+         if (found == 1) {
+            lstrncpy_remove_cr_lfs(str2, temp_todo->mtodo.todo.description, SEARCH_MAX_COLUMN_LEN);
          } else {
-	    lstrncpy_remove_cr_lfs(str2, temp_todo->mtodo.todo.note, SEARCH_MAX_COLUMN_LEN);
+            lstrncpy_remove_cr_lfs(str2, temp_todo->mtodo.todo.note, SEARCH_MAX_COLUMN_LEN);
          }
          gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str2);
 
-	 /* Add to the search list */
-	 new_sr = malloc(sizeof(struct search_record));
-	 new_sr->app_type = TODO;
-	 new_sr->plugin_flag = 0;
-	 new_sr->unique_id = temp_todo->mtodo.unique_id;
-	 new_sr->next = search_rl;
-	 search_rl = new_sr;
+         /* Add to the search list */
+         new_sr = malloc(sizeof(struct search_record));
+         new_sr->app_type = TODO;
+         new_sr->plugin_flag = 0;
+         new_sr->unique_id = temp_todo->mtodo.unique_id;
+         new_sr->next = search_rl;
+         search_rl = new_sr;
 
-	 gtk_clist_set_row_data(GTK_CLIST(clist), 0, new_sr);
+         gtk_clist_set_row_data(GTK_CLIST(clist), 0, new_sr);
 
-	 count++;
+         count++;
       }
    }
 
@@ -359,24 +359,24 @@ static int search_memo(const char *needle, GtkWidget *clist)
 
    for (temp_memo = memo_list; temp_memo; temp_memo=temp_memo->next) {
       if (jp_strstr(temp_memo->mmemo.memo.text, needle, case_sense) ) {
-	 gtk_clist_prepend(GTK_CLIST(clist), empty_line);
-	 gtk_clist_set_text(GTK_CLIST(clist), 0, 0, _("memo"));
-	 if (temp_memo->mmemo.memo.text) {
-	    lstrncpy_remove_cr_lfs(str2, temp_memo->mmemo.memo.text, SEARCH_MAX_COLUMN_LEN);
-	    gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str2);
-	 }
+         gtk_clist_prepend(GTK_CLIST(clist), empty_line);
+         gtk_clist_set_text(GTK_CLIST(clist), 0, 0, _("memo"));
+         if (temp_memo->mmemo.memo.text) {
+            lstrncpy_remove_cr_lfs(str2, temp_memo->mmemo.memo.text, SEARCH_MAX_COLUMN_LEN);
+            gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str2);
+         }
 
-	 /* Add to the search list */
-	 new_sr = malloc(sizeof(struct search_record));
-	 new_sr->app_type = MEMO;
-	 new_sr->plugin_flag = 0;
-	 new_sr->unique_id = temp_memo->mmemo.unique_id;
-	 new_sr->next = search_rl;
-	 search_rl = new_sr;
+         /* Add to the search list */
+         new_sr = malloc(sizeof(struct search_record));
+         new_sr->app_type = MEMO;
+         new_sr->plugin_flag = 0;
+         new_sr->unique_id = temp_memo->mmemo.unique_id;
+         new_sr->next = search_rl;
+         search_rl = new_sr;
 
-	 gtk_clist_set_row_data(GTK_CLIST(clist), 0, new_sr);
+         gtk_clist_set_row_data(GTK_CLIST(clist), 0, new_sr);
 
-	 count++;
+         count++;
       }
    }
 
@@ -409,36 +409,36 @@ static int search_plugins(const char *needle, const GtkWidget *clist)
    for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
       plugin = (struct plugin_s *)temp_list->data;
       if (plugin) {
-	 sr = NULL;
-	 if (plugin->plugin_search) {
-	    if (plugin->plugin_search(needle, case_sense, &sr) > 0) {
-	       for (temp_sr=sr; temp_sr; temp_sr=temp_sr->next) {
-		  gtk_clist_prepend(GTK_CLIST(clist), empty_line);
-		  if (plugin->menu_name) {
-		     gtk_clist_set_text(GTK_CLIST(clist), 0, 0, plugin->menu_name);
-		  } else {
-		     gtk_clist_set_text(GTK_CLIST(clist), 0, 0, _("plugin ?"));
-		  }
-		  if (temp_sr->line) {
-		     lstrncpy_remove_cr_lfs(str2, temp_sr->line, SEARCH_MAX_COLUMN_LEN);
-		     gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str2);
-		  }
+         sr = NULL;
+         if (plugin->plugin_search) {
+            if (plugin->plugin_search(needle, case_sense, &sr) > 0) {
+               for (temp_sr=sr; temp_sr; temp_sr=temp_sr->next) {
+                  gtk_clist_prepend(GTK_CLIST(clist), empty_line);
+                  if (plugin->menu_name) {
+                     gtk_clist_set_text(GTK_CLIST(clist), 0, 0, plugin->menu_name);
+                  } else {
+                     gtk_clist_set_text(GTK_CLIST(clist), 0, 0, _("plugin ?"));
+                  }
+                  if (temp_sr->line) {
+                     lstrncpy_remove_cr_lfs(str2, temp_sr->line, SEARCH_MAX_COLUMN_LEN);
+                     gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str2);
+                  }
 
-		  /* Add to the search list */
-		  new_sr = malloc(sizeof(struct search_record));
-		  new_sr->app_type = plugin->number;
-		  new_sr->plugin_flag = 1;
-		  new_sr->unique_id = temp_sr->unique_id;
-		  new_sr->next = search_rl;
-		  search_rl = new_sr;
+                  /* Add to the search list */
+                  new_sr = malloc(sizeof(struct search_record));
+                  new_sr->app_type = plugin->number;
+                  new_sr->plugin_flag = 1;
+                  new_sr->unique_id = temp_sr->unique_id;
+                  new_sr->next = search_rl;
+                  search_rl = new_sr;
 
-		  gtk_clist_set_row_data(GTK_CLIST(clist), 0, new_sr);
+                  gtk_clist_set_row_data(GTK_CLIST(clist), 0, new_sr);
 
-		  count++;
-	       }
-	       free_search_result(&sr);
-	    }
-	 }
+                  count++;
+               }
+               free_search_result(&sr);
+            }
+         }
       }
    }
 
@@ -512,14 +512,14 @@ static void cb_entry(GtkWidget *widget, gpointer data)
 
 static void cb_search(GtkWidget *widget, gpointer data)
 {
-	cb_entry(entry, data);
+   cb_entry(entry, data);
 }
 
 static void cb_clist_selection(GtkWidget      *clist,
-		               gint           row,
-		               gint           column,
-		               GdkEventButton *event,
-		               gpointer       data)
+                               gint           row,
+                               gint           column,
+                               GdkEventButton *event,
+                               gpointer       data)
 {
    struct search_record *sr;
 
@@ -625,22 +625,22 @@ void cb_search_gui(GtkWidget *widget, gpointer data)
    case_sense_checkbox = gtk_check_button_new_with_label(_("Case Sensitive"));
    gtk_box_pack_start(GTK_BOX(hbox), case_sense_checkbox, FALSE, FALSE, 0);
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(case_sense_checkbox),
-				FALSE);
+                                FALSE);
 
    /* Scrolled window for search results */
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 3);
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
-				  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+                                  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
    gtk_box_pack_start(GTK_BOX(vbox), scrolled_window, TRUE, TRUE, 0);
 
    clist = gtk_clist_new(2);
    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
-		      GTK_SIGNAL_FUNC(cb_clist_selection),
-		      NULL);
+                      GTK_SIGNAL_FUNC(cb_clist_selection),
+                      NULL);
    gtk_signal_connect(GTK_OBJECT(clist), "key_press_event",
-		      GTK_SIGNAL_FUNC(cb_key_pressed_in_clist), 
-		      NULL);
+                      GTK_SIGNAL_FUNC(cb_key_pressed_in_clist), 
+                      NULL);
    gtk_clist_set_shadow_type(GTK_CLIST(clist), SHADOW);
    gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), 0, TRUE);
@@ -649,8 +649,8 @@ void cb_search_gui(GtkWidget *widget, gpointer data)
    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
 
    gtk_signal_connect(GTK_OBJECT(entry), "activate",
-		      GTK_SIGNAL_FUNC(cb_entry),
-		      clist);
+                      GTK_SIGNAL_FUNC(cb_entry),
+                      clist);
 
    hbox = gtk_hbutton_box_new();
    gtk_container_set_border_width(GTK_CONTAINER(hbox), 6);
@@ -661,17 +661,17 @@ void cb_search_gui(GtkWidget *widget, gpointer data)
    /* Search button */
    button = gtk_button_new_from_stock(GTK_STOCK_FIND);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_search), clist);
+                      GTK_SIGNAL_FUNC(cb_search), clist);
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
 
    /* clicking on "Case Sensitive" also starts a search */
    gtk_signal_connect(GTK_OBJECT(case_sense_checkbox), "clicked",
-		      GTK_SIGNAL_FUNC(cb_search), clist);
+                      GTK_SIGNAL_FUNC(cb_search), clist);
 
    /* Done button */
    button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_quit), window);
+                      GTK_SIGNAL_FUNC(cb_quit), window);
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
    gtk_widget_add_accelerator(button, "clicked", accel_group, GDK_Escape, 0, 0);
 

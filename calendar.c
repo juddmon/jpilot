@@ -1,4 +1,4 @@
-/* $Id: calendar.c,v 1.2 2010/03/03 14:42:02 rousseau Exp $ */
+/* $Id: calendar.c,v 1.3 2010/03/29 05:44:27 rikster5 Exp $ */
 
 /*******************************************************************************
  * calendar.c
@@ -58,48 +58,48 @@ int copy_calendar_ai_to_appointment_ai(const struct CalendarAppInfo *cai, struct
    return 0;
 }
 
-int copy_appointment_to_calendarEvent(const struct Appointment *a, struct CalendarEvent *ce)
+int copy_appointment_to_calendarEvent(const struct Appointment *a, struct CalendarEvent *cale)
 {
    int i;
 
-   ce->event = a->event;
-   ce->begin = a->begin;
-   ce->end = a->end;
-   ce->alarm = a->alarm;
-   ce->advance = a->advance;
-   ce->advanceUnits = a->advanceUnits;
-   ce->repeatType = a->repeatType;
-   ce->repeatForever = a->repeatForever;
-   ce->repeatEnd = a->repeatEnd;
-   ce->repeatFrequency = a->repeatFrequency;
-   ce->repeatDay = a->repeatDay;
+   cale->event = a->event;
+   cale->begin = a->begin;
+   cale->end = a->end;
+   cale->alarm = a->alarm;
+   cale->advance = a->advance;
+   cale->advanceUnits = a->advanceUnits;
+   cale->repeatType = a->repeatType;
+   cale->repeatForever = a->repeatForever;
+   cale->repeatEnd = a->repeatEnd;
+   cale->repeatFrequency = a->repeatFrequency;
+   cale->repeatDay = a->repeatDay;
    for (i=0; i<7; i++) {
-      ce->repeatDays[i] = a->repeatDays[i];
+      cale->repeatDays[i] = a->repeatDays[i];
    }
-   ce->repeatWeekstart = a->repeatWeekstart;
-   ce->exceptions = a->exceptions;
+   cale->repeatWeekstart = a->repeatWeekstart;
+   cale->exceptions = a->exceptions;
    if (a->exceptions > 0) {
-      ce->exception = (struct tm *) malloc(a->exceptions * sizeof(struct tm));
-      memcpy(ce->exception, a->exception, a->exceptions * sizeof(struct tm));
+      cale->exception = (struct tm *) malloc(a->exceptions * sizeof(struct tm));
+      memcpy(cale->exception, a->exception, a->exceptions * sizeof(struct tm));
    } else {
-      ce->exception = NULL;
+      cale->exception = NULL;
    }
    if (a->description) {
-      ce->description = strdup(a->description);
+      cale->description = strdup(a->description);
    } else {
-      ce->description = NULL;
+      cale->description = NULL;
    }
    if (a->note) {
-      ce->note = strdup(a->note);
+      cale->note = strdup(a->note);
    } else {
-      ce->note = NULL;
+      cale->note = NULL;
    }
-   ce->location = NULL;
+   cale->location = NULL;
    /* No blobs */
    for (i=0; i<MAX_BLOBS; i++) {
-      ce->blob[i]=NULL;
+      cale->blob[i]=NULL;
    }
-   ce->tz = NULL;
+   cale->tz = NULL;
 
    return 0;
 }
@@ -114,55 +114,55 @@ int copy_appointments_to_calendarEvents(AppointmentList *al, CalendarEventList *
    for (temp_al = al; temp_al; temp_al=temp_al->next) {
       temp_cel = malloc(sizeof(CalendarEventList));
       if (!temp_cel) return -1;
-      temp_cel->mce.rt = temp_al->mappt.rt;
-      temp_cel->mce.unique_id = temp_al->mappt.unique_id;
-      temp_cel->mce.attrib = temp_al->mappt.attrib;
-      copy_appointment_to_calendarEvent(&(temp_al->mappt.appt), &(temp_cel->mce.ce));
+      temp_cel->mcale.rt = temp_al->mappt.rt;
+      temp_cel->mcale.unique_id = temp_al->mappt.unique_id;
+      temp_cel->mcale.attrib = temp_al->mappt.attrib;
+      copy_appointment_to_calendarEvent(&(temp_al->mappt.appt), &(temp_cel->mcale.cale));
       temp_cel->app_type = CALENDAR;
       temp_cel->next=NULL;
       if (!last_cel) {
-	 *cel = last_cel = temp_cel;
+         *cel = last_cel = temp_cel;
       } else {
-	 last_cel->next = temp_cel;
-	 last_cel = temp_cel;
+         last_cel->next = temp_cel;
+         last_cel = temp_cel;
       }
    }
    return 0;
 }
 
-int copy_calendarEvent_to_appointment(const struct CalendarEvent *ce, struct Appointment *a)
+int copy_calendarEvent_to_appointment(const struct CalendarEvent *cale, struct Appointment *a)
 {
    int i;
 
-   a->event = ce->event;
-   a->begin = ce->begin;
-   a->end = ce->end;
-   a->alarm = ce->alarm;
-   a->advance = ce->advance;
-   a->advanceUnits = ce->advanceUnits;
-   a->repeatType = ce->repeatType;
-   a->repeatForever = ce->repeatForever;
-   a->repeatEnd = ce->repeatEnd;
-   a->repeatFrequency = ce->repeatFrequency;
-   a->repeatDay = ce->repeatDay;
+   a->event = cale->event;
+   a->begin = cale->begin;
+   a->end = cale->end;
+   a->alarm = cale->alarm;
+   a->advance = cale->advance;
+   a->advanceUnits = cale->advanceUnits;
+   a->repeatType = cale->repeatType;
+   a->repeatForever = cale->repeatForever;
+   a->repeatEnd = cale->repeatEnd;
+   a->repeatFrequency = cale->repeatFrequency;
+   a->repeatDay = cale->repeatDay;
    for (i=0; i<7; i++) {
-      a->repeatDays[i] = ce->repeatDays[i];
+      a->repeatDays[i] = cale->repeatDays[i];
    }
-   a->repeatWeekstart = ce->repeatWeekstart;
-   a->exceptions = ce->exceptions;
-   if (ce->exceptions > 0) {
-      a->exception = (struct tm *) malloc(ce->exceptions * sizeof(struct tm));
-      memcpy(a->exception, ce->exception, ce->exceptions * sizeof(struct tm));
+   a->repeatWeekstart = cale->repeatWeekstart;
+   a->exceptions = cale->exceptions;
+   if (cale->exceptions > 0) {
+      a->exception = (struct tm *) malloc(cale->exceptions * sizeof(struct tm));
+      memcpy(a->exception, cale->exception, cale->exceptions * sizeof(struct tm));
    } else {
       a->exception = NULL;
    }
-   if (ce->description) {
-      a->description = strdup(ce->description);
+   if (cale->description) {
+      a->description = strdup(cale->description);
    } else {
       a->description = NULL;
    }
-   if (ce->note) {
-      a->note = strdup(ce->note);
+   if (cale->note) {
+      a->note = strdup(cale->note);
    } else {
       a->note = NULL;
    }
@@ -175,7 +175,7 @@ void free_CalendarEventList(CalendarEventList **cel)
    CalendarEventList *temp_cel, *temp_cel_next;
 
    for (temp_cel = *cel; temp_cel; temp_cel=temp_cel_next) {
-      free_CalendarEvent(&(temp_cel->mce.ce));
+      free_CalendarEvent(&(temp_cel->mcale.cale));
       temp_cel_next = temp_cel->next;
       free(temp_cel);
    }
@@ -194,13 +194,13 @@ int get_calendar_app_info(struct CalendarAppInfo *cai)
    strcpy(cai->category.name[0], "Unfiled");
 
    jp_get_app_info("CalendarDB-PDat", &buf, &rec_size);
-   // TODO check return code
+   // TODO: check return code
 
    pi_buf.data = buf;
    pi_buf.used = rec_size;
    pi_buf.allocated = rec_size;
 
-   // TODO - update this function to accept a pi_buffer
+   // TODO: - update this function to accept a pi_buffer
    num = unpack_CalendarAppInfo(cai, &pi_buf);
 
    if (buf) {
@@ -224,8 +224,8 @@ static int calendar_compare(const void *v1, const void *v2)
    cel1=(CalendarEventList **)v1;
    cel2=(CalendarEventList **)v2;
 
-   ce1=&((*cel1)->mce.ce);
-   ce2=&((*cel2)->mce.ce);
+   ce1=&((*cel1)->mcale.cale);
+   ce2=&((*cel2)->mcale.cale);
 
    if ((ce1->event) || (ce2->event)) {
       return ce2->event - ce1->event;
@@ -233,7 +233,7 @@ static int calendar_compare(const void *v1, const void *v2)
 
    /* Jim Rees pointed out my sorting error */
    return ((ce1->begin.tm_hour*60 + ce1->begin.tm_min) -
-	   (ce2->begin.tm_hour*60 + ce2->begin.tm_min));
+           (ce2->begin.tm_hour*60 + ce2->begin.tm_min));
 }
 
 int calendar_sort(CalendarEventList **cel,
@@ -280,8 +280,8 @@ int calendar_sort(CalendarEventList **cel,
 }
 
 int get_days_calendar_events2(CalendarEventList **calendar_event_list, struct tm *now,
-			      int modified, int deleted, int privates,
-			      int category, int *total_records);
+                              int modified, int deleted, int privates,
+                              int category, int *total_records);
 int get_days_calendar_events(CalendarEventList **calendar_event_list, struct tm *now, int category, int *total_records)
 {
    return get_days_calendar_events2(calendar_event_list, now, 1, 1, 1, category, total_records);
@@ -289,68 +289,68 @@ int get_days_calendar_events(CalendarEventList **calendar_event_list, struct tm 
 
 
 
-static int calendar_db3_hack_date(struct CalendarEvent *ce, struct tm *today)
+static int calendar_db3_hack_date(struct CalendarEvent *cale, struct tm *today)
 {
    int t1, t2;
 
    if (today==NULL) {
       return EXIT_SUCCESS;
    }
-   if (!ce->note) {
+   if (!cale->note) {
       return EXIT_SUCCESS;
    }
-   if (strlen(ce->note) > 8) {
-      if ((ce->note[0]=='#') && (ce->note[1]=='#')) {
-	 if (ce->note[2]=='f' || ce->note[2]=='F') {
-	    /* Check to see if its in the future */
-	    t1 = ce->begin.tm_mday + ce->begin.tm_mon*31 + ce->begin.tm_year*372;
-	    t2 = today->tm_mday + today->tm_mon*31 + today->tm_year*372;
-	    if (t1 > t2) return EXIT_SUCCESS;
-	    /* We found some silly hack, so we lie about the date */
-	    /* memcpy(&(ce->begin), today, sizeof(struct tm));*/
-	    /* memcpy(&(ce->end), today, sizeof(struct tm));*/
-	    ce->begin.tm_mday = today->tm_mday;
-	    ce->begin.tm_mon = today->tm_mon;
-	    ce->begin.tm_year = today->tm_year;
-	    ce->begin.tm_wday = today->tm_wday;
-	    ce->begin.tm_yday = today->tm_yday;
-	    ce->begin.tm_isdst = today->tm_isdst;
-	    ce->end.tm_mday = today->tm_mday;
-	    ce->end.tm_mon = today->tm_mon;
-	    ce->end.tm_year = today->tm_year;
-	    ce->end.tm_wday = today->tm_wday;
-	    ce->end.tm_yday = today->tm_yday;
-	    ce->end.tm_isdst = today->tm_isdst;
-	    /* If the appointment has an end date, and today is past the end
-	     * date, because of this hack we would never be able to view
-	     * it anymore (or delete it).  */
-	    if (!(ce->repeatForever)) {
-	       if (compareTimesToDay(today, &(ce->repeatEnd))==1) {
-		  /* end date is before start date, illegal appointment */
-		  /* make it legal, by only floating up to the end date */
-		  memcpy(&(ce->begin), &(ce->repeatEnd), sizeof(struct tm));
-		  memcpy(&(ce->end), &(ce->repeatEnd), sizeof(struct tm));
-	       }
-	    }
-	 }
+   if (strlen(cale->note) > 8) {
+      if ((cale->note[0]=='#') && (cale->note[1]=='#')) {
+         if (cale->note[2]=='f' || cale->note[2]=='F') {
+            /* Check to see if its in the future */
+            t1 = cale->begin.tm_mday + cale->begin.tm_mon*31 + cale->begin.tm_year*372;
+            t2 = today->tm_mday + today->tm_mon*31 + today->tm_year*372;
+            if (t1 > t2) return EXIT_SUCCESS;
+            /* We found some silly hack, so we lie about the date */
+            /* memcpy(&(cale->begin), today, sizeof(struct tm));*/
+            /* memcpy(&(cale->end), today, sizeof(struct tm));*/
+            cale->begin.tm_mday = today->tm_mday;
+            cale->begin.tm_mon = today->tm_mon;
+            cale->begin.tm_year = today->tm_year;
+            cale->begin.tm_wday = today->tm_wday;
+            cale->begin.tm_yday = today->tm_yday;
+            cale->begin.tm_isdst = today->tm_isdst;
+            cale->end.tm_mday = today->tm_mday;
+            cale->end.tm_mon = today->tm_mon;
+            cale->end.tm_year = today->tm_year;
+            cale->end.tm_wday = today->tm_wday;
+            cale->end.tm_yday = today->tm_yday;
+            cale->end.tm_isdst = today->tm_isdst;
+            /* If the appointment has an end date, and today is past the end
+             * date, because of this hack we would never be able to view
+             * it anymore (or delete it).  */
+            if (!(cale->repeatForever)) {
+               if (compareTimesToDay(today, &(cale->repeatEnd))==1) {
+                  /* end date is before start date, illegal appointment */
+                  /* make it legal, by only floating up to the end date */
+                  memcpy(&(cale->begin), &(cale->repeatEnd), sizeof(struct tm));
+                  memcpy(&(cale->end), &(cale->repeatEnd), sizeof(struct tm));
+               }
+            }
+         }
       }
    }
    return EXIT_SUCCESS;
 }
 
-
 /*
  * If Null is passed in for date, then all appointments will be returned
  * modified, deleted and private, 0 for no, 1 for yes, 2 for use prefs
  */
-int get_days_calendar_events2(CalendarEventList **calendar_event_list, struct tm *now,
-			      int modified, int deleted, int privates,
-			      int category, int *total_records)
+int get_days_calendar_events2(CalendarEventList **calendar_event_list, 
+                              struct tm *now,
+                              int modified, int deleted, int privates,
+                              int category, int *total_records)
 {
    GList *records;
    GList *temp_list;
    int recs_returned, num;
-   struct CalendarEvent ce;
+   struct CalendarEvent cale;
    CalendarEventList *temp_ce_list;
    long keep_modified, keep_deleted;
    int keep_priv;
@@ -410,36 +410,36 @@ int get_days_calendar_events2(CalendarEventList **calendar_event_list, struct tm
 
    for (temp_list = records; temp_list; temp_list = temp_list->next) {
       if (temp_list->data) {
-	 br=temp_list->data;
+         br=temp_list->data;
       } else {
-	 continue;
+         continue;
       }
       if (!br->buf) {
-	 continue;
+         continue;
       }
 
       if ( ((br->rt==DELETED_PALM_REC)  && (!keep_deleted)) ||
-	   ((br->rt==DELETED_PC_REC)    && (!keep_deleted)) ||
-	   ((br->rt==MODIFIED_PALM_REC) && (!keep_modified)) ) {
-	 continue;
+           ((br->rt==DELETED_PC_REC)    && (!keep_deleted)) ||
+           ((br->rt==MODIFIED_PALM_REC) && (!keep_modified)) ) {
+         continue;
       }
       if ((keep_priv != SHOW_PRIVATES) &&
-	  (br->attrib & dlpRecAttrSecret)) {
-	 continue;
+          (br->attrib & dlpRecAttrSecret)) {
+         continue;
       }
 
       if ( ((br->attrib & 0x0F) != category) && category != CATEGORY_ALL) {
-	 continue;
+         continue;
       }
 
-      ce.exception=NULL;
-      ce.description=NULL;
-      ce.note=NULL;
-      ce.location=NULL;
+      cale.exception=NULL;
+      cale.description=NULL;
+      cale.note=NULL;
+      cale.location=NULL;
       for (i=0; i< MAX_BLOBS; i++) {
-	 ce.blob[i]=NULL;
+         cale.blob[i]=NULL;
       }
-      ce.tz=NULL;
+      cale.tz=NULL;
 
       /* This is kind of a hack to set the pi_buf directly, but its faster */
       RecordBuffer.data = br->buf;
@@ -447,61 +447,61 @@ int get_days_calendar_events2(CalendarEventList **calendar_event_list, struct tm
       RecordBuffer.allocated = br->size;
 
       if (datebook_version) {
-	 if (unpack_CalendarEvent(&ce, &RecordBuffer, calendar_v1) == -1) {
-	    continue;
-	 }
+         if (unpack_CalendarEvent(&cale, &RecordBuffer, calendar_v1) == -1) {
+            continue;
+         }
       } else {
-	 if (unpack_Appointment(&appt, &RecordBuffer, calendar_v1) == -1) {
-	    continue;
-	 }
-	 copy_appointment_to_calendarEvent(&appt, &ce);
+         if (unpack_Appointment(&appt, &RecordBuffer, calendar_v1) == -1) {
+            continue;
+         }
+         copy_appointment_to_calendarEvent(&appt, &cale);
       }
 
-      //TODO fix this
+      //TODO: fix this
 #ifdef ENABLE_DATEBK
       if (use_db3_tags) {
-	 calendar_db3_hack_date(&ce, &today);
+         calendar_db3_hack_date(&cale, &today);
       }
 #endif
       if (now!=NULL) {
-	 if (! calendar_isApptOnDate(&ce, now)) {
-	    continue;
-	 }
-      }
-
-      if (ce.description) {
-         buf = charset_p2newj(ce.description, -1, char_set);
-         if (buf) {
-            free(ce.description);
-            ce.description = buf;
+         if (! calendar_isApptOnDate(&cale, now)) {
+            continue;
          }
       }
-      if (ce.note) {
-         buf = charset_p2newj(ce.note, -1, char_set);
+
+      if (cale.description) {
+         buf = charset_p2newj(cale.description, -1, char_set);
          if (buf) {
-	    free(ce.note);
-	    ce.note = buf;
-	 }
+            free(cale.description);
+            cale.description = buf;
+         }
       }
-      if (ce.location) {
-         buf = charset_p2newj(ce.location, -1, char_set);
+      if (cale.note) {
+         buf = charset_p2newj(cale.note, -1, char_set);
          if (buf) {
-	    free(ce.location);
-	    ce.location = buf;
-	 }
+            free(cale.note);
+            cale.note = buf;
+         }
+      }
+      if (cale.location) {
+         buf = charset_p2newj(cale.location, -1, char_set);
+         if (buf) {
+            free(cale.location);
+            cale.location = buf;
+         }
       }
 
       temp_ce_list = malloc(sizeof(CalendarEventList));
       if (!temp_ce_list) {
-	 jp_logf(JP_LOG_WARN, "get_days_calendar_events2(): %s\n", _("Out of memory"));
-	 free_CalendarEvent(&ce);
-	 break;
+         jp_logf(JP_LOG_WARN, "get_days_calendar_events2(): %s\n", _("Out of memory"));
+         free_CalendarEvent(&cale);
+         break;
       }
-      memcpy(&(temp_ce_list->mce.ce), &ce, sizeof(struct CalendarEvent));
+      memcpy(&(temp_ce_list->mcale.cale), &cale, sizeof(struct CalendarEvent));
       temp_ce_list->app_type = CALENDAR;
-      temp_ce_list->mce.rt = br->rt;
-      temp_ce_list->mce.attrib = br->attrib;
-      temp_ce_list->mce.unique_id = br->unique_id;
+      temp_ce_list->mcale.rt = br->rt;
+      temp_ce_list->mcale.attrib = br->attrib;
+      temp_ce_list->mcale.unique_id = br->unique_id;
       temp_ce_list->next = *calendar_event_list;
       *calendar_event_list = temp_ce_list;
       recs_returned++;
@@ -516,8 +516,8 @@ int get_days_calendar_events2(CalendarEventList **calendar_event_list, struct tm
    return recs_returned;
 }
 
-int pc_calendar_write(struct CalendarEvent *ce, PCRecType rt,
-		      unsigned char attrib, unsigned int *unique_id)
+int pc_calendar_write(struct CalendarEvent *cale, PCRecType rt,
+                      unsigned char attrib, unsigned int *unique_id)
 {
    pi_buffer_t *RecordBuffer;
    buf_rec br;
@@ -525,14 +525,14 @@ int pc_calendar_write(struct CalendarEvent *ce, PCRecType rt,
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    if (char_set != CHAR_SET_LATIN1) {
-      if (ce->description) charset_j2p(ce->description, strlen(ce->description)+1, char_set);
-      if (ce->note) charset_j2p(ce->note, strlen(ce->note)+1, char_set);
-      if (ce->location) 
-	charset_j2p(ce->location, strlen(ce->location)+1, char_set);
+      if (cale->description) charset_j2p(cale->description, strlen(cale->description)+1, char_set);
+      if (cale->note) charset_j2p(cale->note, strlen(cale->note)+1, char_set);
+      if (cale->location) 
+        charset_j2p(cale->location, strlen(cale->location)+1, char_set);
    }
 
    RecordBuffer = pi_buffer_new(0);
-   if (pack_CalendarEvent(ce, RecordBuffer, calendar_v1) == -1) {
+   if (pack_CalendarEvent(cale, RecordBuffer, calendar_v1) == -1) {
       jp_logf(JP_LOG_WARN, "%s:%d jp_pack_Appointment %s\n", __FILE__, __LINE__, _("error"));
       return EXIT_FAILURE;
    }

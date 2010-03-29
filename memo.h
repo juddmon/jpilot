@@ -1,4 +1,4 @@
-/* $Id: memo.h,v 1.8 2009/11/08 17:12:10 rousseau Exp $ */
+/* $Id: memo.h,v 1.9 2010/03/29 05:44:29 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo.h
@@ -30,9 +30,9 @@ int get_memo_app_info(struct MemoAppInfo *ai);
 void free_MemoList(MemoList **memo);
 int get_memos(MemoList **memo_list, int sort_order);
 int get_memos2(MemoList **memo_list, int sort_order,
- 	       int modified, int deleted, int privates, int category);
+               int modified, int deleted, int privates, int category);
 int pc_memo_write(struct Memo *memo, PCRecType rt, unsigned char attrib,
-		  unsigned int *unique_id);
+                  unsigned int *unique_id);
 
 int memo_print(void);
 int memo_import(GtkWidget *window);

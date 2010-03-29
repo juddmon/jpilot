@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.75 2010/02/28 18:58:25 judd Exp $ */
+/* $Id: utils.h,v 1.76 2010/03/29 05:44:32 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -52,7 +52,7 @@
 #  define EPN "jpilot"
 #endif
 
-#define	FPI_STRING	"-//Judd Montgomery//NONSGML "PN" "VERSION"//EN"
+#define FPI_STRING      "-//Judd Montgomery//NONSGML "PN" "VERSION"//EN"
 
 /*This is how often the clock updates in milliseconds */
 #define CLOCK_TICK 1000
@@ -228,13 +228,13 @@ typedef struct {
    PCRecType rt;
    unsigned int unique_id;
    unsigned char attrib;
-   struct CalendarEvent ce;
+   struct CalendarEvent cale;
 } MyCalendarEvent;
 
 typedef struct CalendarEventList_s {
    AppType app_type;
    struct CalendarEventList_s *next;
-   MyCalendarEvent mce;
+   MyCalendarEvent mcale;
 } CalendarEventList;
 
 
@@ -270,9 +270,9 @@ int get_timeout_interval(void);
 gint timeout_date(gpointer data);
 
 int get_pixmaps(GtkWidget *widget,
-		int which_one,
-		GdkPixmap **out_pixmap,
-		GdkBitmap **out_mask);
+                int which_one,
+                GdkPixmap **out_pixmap,
+                GdkBitmap **out_mask);
 
 int check_hidden_dir(void);
 
@@ -286,8 +286,8 @@ int jp_close_home_file(FILE *pc_in);
 int unpack_db_header(DBHeader *dbh, unsigned char *buffer);
 
 int find_next_offset(mem_rec_header *mem_rh, long fpos,
-		     unsigned int *next_offset,
-		     unsigned char *attrib, unsigned int *unique_id);
+                     unsigned int *next_offset,
+                     unsigned char *attrib, unsigned int *unique_id);
 
 /*The VP is a pointer to MyAddress, MyAppointment, etc. */
 int delete_pc_record(AppType app_type, void *VP, int flag);
@@ -317,8 +317,8 @@ void get_compile_options(char *string, int len);
 
 /* Returns the number of the button that was pressed */
 int dialog_generic(GtkWindow *main_window,
-		   char *title, int type,
-		   char *text, int nob, char *button_text[]);
+                   char *title, int type,
+                   char *text, int nob, char *button_text[]);
 
 /*
  * Widget must be some widget used to get the main window from.
@@ -326,7 +326,7 @@ int dialog_generic(GtkWindow *main_window,
  * This just calls dialog_generic with an OK button.
  */
 int dialog_generic_ok(GtkWidget *widget,
-		      char *title, int type, char *text);
+                      char *title, int type, char *text);
 
 /*
  * Widget must be some widget used to get the main window from.
@@ -343,8 +343,8 @@ int dialog_save_changed_record_with_cancel(GtkWidget *widget, int changed);
  * After a new date is selected it will return mon, day, year
  */
 int cal_dialog(GtkWindow *main_window,
-	       const char *title, int monday_is_fdow,
-	       int *mon, int *day, int *year);
+               const char *title, int monday_is_fdow,
+               int *mon, int *day, int *year);
 
 void set_bg_rgb_clist_row(GtkWidget *clist, int row, int r, int g, int b);
 
@@ -354,11 +354,11 @@ void entry_set_multiline_truncate(GtkEntry *entry, gboolean value);
 
 void clist_select_row(GtkCList *clist, 
                       int       row,
-		      int       column);
+                      int       column);
 
 int clist_find_id(GtkWidget *clist,
-		  unsigned int unique_id,
-		  int *found_at);
+                  unsigned int unique_id,
+                  int *found_at);
 
 int check_copy_DBs_to_home(void);
 
@@ -374,13 +374,13 @@ int install_append_line(const char *line);
 
 /*import_gui.c */
 void import_gui(GtkWidget *main_window, GtkWidget *main_pane,
-		char *type_desc[], int type_int[],
-		int (*import_callback)(GtkWidget *parent_window,
-				       const char *file_path, int type));
+                char *type_desc[], int type_int[],
+                int (*import_callback)(GtkWidget *parent_window,
+                                       const char *file_path, int type));
 int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
-		      char *text, struct CategoryAppInfo *cai,
-		      char *old_cat_name,
-		      int priv, int suggested_cat_num, int *new_cat_num);
+                      char *text, struct CategoryAppInfo *cai,
+                      char *old_cat_name,
+                      int priv, int suggested_cat_num, int *new_cat_num);
 
 int verify_csv_header(const char *header, int num_fields, const char *file_name);
 
@@ -467,16 +467,16 @@ time_t mktime_dst_adj(struct tm *tm);
 
 int dateToDays(struct tm *tm1);
 
-int find_prev_next(struct CalendarEvent *ce,
+int find_prev_next(struct CalendarEvent *cale,
                    time_t adv,
                    struct tm *date1,
                    struct tm *date2,
                    struct tm *tm_prev,
                    struct tm *tm_next,
                    int *prev_found,
-		   int *next_found);
+                   int *next_found);
 
-int find_next_rpt_event(struct CalendarEvent *ce,
+int find_next_rpt_event(struct CalendarEvent *cale,
                         struct tm *srch_start_tm,
                         struct tm *next_tm);
 
@@ -527,7 +527,7 @@ int pdb_file_delete_record_by_id(char *DB_name, pi_uid_t uid_in);
  * the other parameters are set in the pdb file for this record.
  */
 int pdb_file_modify_record(char *DB_name, void *record_in, int size_in,
-			   int attr_in, int cat_in, pi_uid_t uid_in);
+                           int attr_in, int cat_in, pi_uid_t uid_in);
 /*
  * DB_name should be without filename ext, e.g. MemoDB
  * uid is unique id in
@@ -538,9 +538,9 @@ int pdb_file_modify_record(char *DB_name, void *record_in, int size_in,
  * catp is the category (index)
  */
 int pdb_file_read_record_by_id(char *DB_name, 
-			       pi_uid_t uid,
-			       void **bufp, size_t *sizep, int *idxp,
-			       int *attrp, int * catp);
+                               pi_uid_t uid,
+                               void **bufp, size_t *sizep, int *idxp,
+                               int *attrp, int * catp);
 /*
  * DB_name should be without filename ext, e.g. MemoDB
  * bufp is the packed app info block
@@ -555,7 +555,7 @@ int pdb_file_write_app_block(char *DB_name, void *bufp, size_t size_in);
 int pdb_file_write_dbinfo(char *DB_name, struct DBInfo *Pinfo_in);
 
 void append_anni_years(char *desc, int max, struct tm *date,
-		       struct Appointment *a, struct CalendarEvent *ce);
+                       struct Appointment *a, struct CalendarEvent *cale);
 int get_highlighted_today(struct tm *date);
 
 /* category.c */
@@ -577,12 +577,12 @@ int edit_cats_swap_cats_pc3(char *DB_name, int old_cat, int new_cat);
 int edit_cats_change_cats_pdb(char *DB_name, int old_cat, int new_cat);
 
 int make_category_menu(GtkWidget **category_menu,
-		       GtkWidget **cat_menu_item,
-		       struct sorted_cats *sort_l,
-		       void (*selection_callback)
-		       (GtkWidget *item, int selection),
-		       int add_an_all_item,
-		       int add_edit_cat_item);
+                       GtkWidget **cat_menu_item,
+                       struct sorted_cats *sort_l,
+                       void (*selection_callback)
+                       (GtkWidget *item, int selection),
+                       int add_an_all_item,
+                       int add_edit_cat_item);
 
 void multibyte_safe_strncpy(char *dst, char *src, size_t len);
 char *multibyte_safe_memccpy(char *dst, const char *src, int c, size_t len);

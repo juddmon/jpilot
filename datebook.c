@@ -1,4 +1,4 @@
-/* $Id: datebook.c,v 1.61 2010/03/03 14:42:03 rousseau Exp $ */
+/* $Id: datebook.c,v 1.62 2010/03/29 05:44:28 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook.c
@@ -79,16 +79,16 @@ int appointment_on_day_list(int mon, int year, int *mask, int datebook_version)
 
    for (tm_dom.tm_mday=1, bit=1; tm_dom.tm_mday<=ndim; tm_dom.tm_mday++, bit=bit<<1) {
       if (*mask & bit) {
-	 continue;
+         continue;
       }
       mktime(&tm_dom);
 
       for (tal=al; tal; tal = tal->next) {
-	 if (skip_privates && (tal->mappt.attrib & dlpRecAttrSecret)) continue;
-	 if (isApptOnDate(&(tal->mappt.appt), &tm_dom)) {
-	    *mask = *mask | bit;
-	    break;
-	 }
+         if (skip_privates && (tal->mappt.attrib & dlpRecAttrSecret)) continue;
+         if (isApptOnDate(&(tal->mappt.appt), &tm_dom)) {
+            *mask = *mask | bit;
+            break;
+         }
       }
    }
    free_AppointmentList(&al);
@@ -114,24 +114,24 @@ int compareTimesToDay(struct tm *tm1, struct tm *tm2)
 /* Mon is 0-11 */
 /* Day is 1-31 */
 /* */
-int datebook_add_exception(struct CalendarEvent *ce, int year, int mon, int day)
+int datebook_add_exception(struct CalendarEvent *cale, int year, int mon, int day)
 {
    struct tm *new_exception, *Ptm;
 
-   if (ce->exceptions==0) {
-      ce->exception=NULL;
+   if (cale->exceptions==0) {
+      cale->exception=NULL;
    }
 
-   new_exception = malloc((ce->exceptions + 1) * sizeof(struct tm));
+   new_exception = malloc((cale->exceptions + 1) * sizeof(struct tm));
    if (!new_exception) {
       jp_logf(JP_LOG_WARN, "datebook_add_exception(): %s\n", _("Out of memory"));
       return EXIT_FAILURE;
    }
-   memcpy(new_exception, ce->exception, (ce->exceptions) * sizeof(struct tm));
-   free(ce->exception);
-   ce->exceptions++;
-   ce->exception = new_exception;
-   Ptm = &(ce->exception[ce->exceptions - 1]);
+   memcpy(new_exception, cale->exception, (cale->exceptions) * sizeof(struct tm));
+   free(cale->exception);
+   cale->exceptions++;
+   cale->exception = new_exception;
+   Ptm = &(cale->exception[cale->exceptions - 1]);
    Ptm->tm_year = year;
    Ptm->tm_mon = mon;
    Ptm->tm_mday = day;
@@ -160,14 +160,14 @@ static int datebook_compare(const void *v1, const void *v2)
 
    /* Jim Rees pointed out my sorting error */
    return ((appt1->begin.tm_hour*60 + appt1->begin.tm_min) -
-	   (appt2->begin.tm_hour*60 + appt2->begin.tm_min));
+           (appt2->begin.tm_hour*60 + appt2->begin.tm_min));
 }
 
 /*
  * If a copy is made, then it should be freed through free_Appointment
  */
 int datebook_copy_appointment(struct Appointment *a1,
-			     struct Appointment **a2)
+                              struct Appointment **a2)
 {
    long datebook_version;
 
@@ -201,7 +201,7 @@ int datebook_copy_appointment(struct Appointment *a1,
  * If a copy is made, then it should be freed through free_CalendarEvent
  */
 int copy_calendar_event(const struct CalendarEvent *source,
-			struct CalendarEvent **dest)
+                        struct CalendarEvent **dest)
 {
    int r;
 
@@ -322,38 +322,38 @@ static int db3_hack_date(struct Appointment *appt, struct tm *today)
    }
    if (strlen(appt->note) > 8) {
       if ((appt->note[0]=='#') && (appt->note[1]=='#')) {
-	 if (appt->note[2]=='f' || appt->note[2]=='F') {
-	    /* Check to see if its in the future */
-	    t1 = appt->begin.tm_mday + appt->begin.tm_mon*31 + appt->begin.tm_year*372;
-	    t2 = today->tm_mday + today->tm_mon*31 + today->tm_year*372;
-	    if (t1 > t2) return EXIT_SUCCESS;
-	    /* We found some silly hack, so we lie about the date */
-	    /* memcpy(&(appt->begin), today, sizeof(struct tm));*/
-	    /* memcpy(&(appt->end), today, sizeof(struct tm));*/
-	    appt->begin.tm_mday = today->tm_mday;
-	    appt->begin.tm_mon = today->tm_mon;
-	    appt->begin.tm_year = today->tm_year;
-	    appt->begin.tm_wday = today->tm_wday;
-	    appt->begin.tm_yday = today->tm_yday;
-	    appt->begin.tm_isdst = today->tm_isdst;
-	    appt->end.tm_mday = today->tm_mday;
-	    appt->end.tm_mon = today->tm_mon;
-	    appt->end.tm_year = today->tm_year;
-	    appt->end.tm_wday = today->tm_wday;
-	    appt->end.tm_yday = today->tm_yday;
-	    appt->end.tm_isdst = today->tm_isdst;
-	    /* If the appointment has an end date, and today is past the end
-	     * date, because of this hack we would never be able to view
-	     * it anymore (or delete it).  */
-	    if (!(appt->repeatForever)) {
-	       if (compareTimesToDay(today, &(appt->repeatEnd))==1) {
-		  /* end date is before start date, illegal appointment */
-		  /* make it legal, by only floating up to the end date */
-		  memcpy(&(appt->begin), &(appt->repeatEnd), sizeof(struct tm));
-		  memcpy(&(appt->end), &(appt->repeatEnd), sizeof(struct tm));
-	       }
-	    }
-	 }
+         if (appt->note[2]=='f' || appt->note[2]=='F') {
+            /* Check to see if its in the future */
+            t1 = appt->begin.tm_mday + appt->begin.tm_mon*31 + appt->begin.tm_year*372;
+            t2 = today->tm_mday + today->tm_mon*31 + today->tm_year*372;
+            if (t1 > t2) return EXIT_SUCCESS;
+            /* We found some silly hack, so we lie about the date */
+            /* memcpy(&(appt->begin), today, sizeof(struct tm));*/
+            /* memcpy(&(appt->end), today, sizeof(struct tm));*/
+            appt->begin.tm_mday = today->tm_mday;
+            appt->begin.tm_mon = today->tm_mon;
+            appt->begin.tm_year = today->tm_year;
+            appt->begin.tm_wday = today->tm_wday;
+            appt->begin.tm_yday = today->tm_yday;
+            appt->begin.tm_isdst = today->tm_isdst;
+            appt->end.tm_mday = today->tm_mday;
+            appt->end.tm_mon = today->tm_mon;
+            appt->end.tm_year = today->tm_year;
+            appt->end.tm_wday = today->tm_wday;
+            appt->end.tm_yday = today->tm_yday;
+            appt->end.tm_isdst = today->tm_isdst;
+            /* If the appointment has an end date, and today is past the end
+             * date, because of this hack we would never be able to view
+             * it anymore (or delete it).  */
+            if (!(appt->repeatForever)) {
+               if (compareTimesToDay(today, &(appt->repeatEnd))==1) {
+                  /* end date is before start date, illegal appointment */
+                  /* make it legal, by only floating up to the end date */
+                  memcpy(&(appt->begin), &(appt->repeatEnd), sizeof(struct tm));
+                  memcpy(&(appt->end), &(appt->repeatEnd), sizeof(struct tm));
+               }
+            }
+         }
       }
    }
    return EXIT_SUCCESS;
@@ -372,24 +372,24 @@ int db3_parse_tag(char *note, int *type, struct db4_struct *db4)
    /* NULL means any character is allowed */
    char *allowed[]={
       "#", "#", /* First 2 characters are # */
-	"@FfCcd", /* F or f floating, C or c completed, d done */
-	"@blL", /* b bold, l large, L large bold */
-	"@ABCDEFGHIJKLMNO", /* Category */
-	"@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrst", /* icon */
-	"@s", /* Spans midnight */
-	NULL, /* Lower 2 digits of next 2 chars are time zone */
-	NULL,
-	"@l\n", /* l link, EOL for datebk3 tags */
-	NULL, /* Lower 6 bits of next 4 chars make a 24 bit number (advance) */
-	NULL, /* I don't understand this yet and have not coded it */
-	NULL,
-	NULL,
-	NULL, /* Lower 6 bits of next 4 chars make a 24 bit number */
-	NULL, /*  which is the custom sound */
-	NULL,
-	NULL,
-	"@ABCDEFGHIJKLMNO", /* Color */
-	"\n", /* EOL for datebk4 tags */
+        "@FfCcd", /* F or f floating, C or c completed, d done */
+        "@blL", /* b bold, l large, L large bold */
+        "@ABCDEFGHIJKLMNO", /* Category */
+        "@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrst", /* icon */
+        "@s", /* Spans midnight */
+        NULL, /* Lower 2 digits of next 2 chars are time zone */
+        NULL,
+        "@l\n", /* l link, EOL for datebk3 tags */
+        NULL, /* Lower 6 bits of next 4 chars make a 24 bit number (advance) */
+        NULL, /* I don't understand this yet and have not coded it */
+        NULL,
+        NULL,
+        NULL, /* Lower 6 bits of next 4 chars make a 24 bit number */
+        NULL, /*  which is the custom sound */
+        NULL,
+        NULL,
+        "@ABCDEFGHIJKLMNO", /* Color */
+        "\n", /* EOL for datebk4 tags */
    };
    int len, i;
 
@@ -407,37 +407,37 @@ int db3_parse_tag(char *note, int *type, struct db4_struct *db4)
 
    for (i=0; i<20; i++) {
       if (i+1>len) {
-	 return 0;
+         return 0;
       }
       if ((i==3) && (note[i]=='\n')) {
-	 /* If we made it this far and CR then its a db+ tag */
-	 *type=DB3_TAG_TYPE_DBplus;
-	 if (note[i+1]) {
-	    if (db4) {
-	       db4->note=&(note[i+1]);
-	    }
-	 }
-	 if (db4) {
-	    db3_fill_struct(note, DB3_TAG_TYPE_DBplus, db4);
-	 }
-	 return 1;
+         /* If we made it this far and CR then its a db+ tag */
+         *type=DB3_TAG_TYPE_DBplus;
+         if (note[i+1]) {
+            if (db4) {
+               db4->note=&(note[i+1]);
+            }
+         }
+         if (db4) {
+            db3_fill_struct(note, DB3_TAG_TYPE_DBplus, db4);
+         }
+         return 1;
       }
       if ((i==9) && (note[i]=='\n')) {
-	 /* If we made it this far and CR then its a db3 tag */
-	 *type=DB3_TAG_TYPE_DB3;
-	 if (note[i+1]) {
-	    if (db4) {
-	       db4->note=&(note[i+1]);
-	    }
-	 }
-	 if (db4) {
-	    db3_fill_struct(note, DB3_TAG_TYPE_DB3, db4);
-	 }
-	 return 1;
+         /* If we made it this far and CR then its a db3 tag */
+         *type=DB3_TAG_TYPE_DB3;
+         if (note[i+1]) {
+            if (db4) {
+               db4->note=&(note[i+1]);
+            }
+         }
+         if (db4) {
+            db3_fill_struct(note, DB3_TAG_TYPE_DB3, db4);
+         }
+         return 1;
       }
       if (allowed[i]==NULL) continue;
       if (!strchr(allowed[i], note[i])) {
-	 return 0;
+         return 0;
       }
    }
 
@@ -445,7 +445,7 @@ int db3_parse_tag(char *note, int *type, struct db4_struct *db4)
    *type=DB3_TAG_TYPE_DB4;
    if (note[i]) {
       if (db4) {
-	 db4->note=&(note[i]);
+         db4->note=&(note[i]);
       }
    }
    if (db4) {
@@ -466,7 +466,8 @@ void free_AppointmentList(AppointmentList **al)
    *al = NULL;
 }
 
-int get_calendar_or_datebook_app_info(struct CalendarAppInfo *cai, long datebook_version)
+int get_calendar_or_datebook_app_info(struct CalendarAppInfo *cai, 
+                                      long datebook_version)
 {
    int num;
    int rec_size;
@@ -515,7 +516,7 @@ int get_calendar_or_datebook_app_info(struct CalendarAppInfo *cai, long datebook
 }
 
 int get_days_appointments(AppointmentList **appointment_list, struct tm *now,
-			  int *total_records)
+                          int *total_records)
 {
    return get_days_appointments2(appointment_list, now, 1, 1, 1, total_records);
 }
@@ -525,8 +526,8 @@ int get_days_appointments(AppointmentList **appointment_list, struct tm *now,
  * modified, deleted and private, 0 for no, 1 for yes, 2 for use prefs
  */
 int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
-			   int modified, int deleted, int privates,
-			   int *total_records)
+                           int modified, int deleted, int privates,
+                           int *total_records)
 {
    GList *records;
    GList *temp_list;
@@ -589,22 +590,22 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
 
    for (temp_list = records; temp_list; temp_list = temp_list->next) {
       if (temp_list->data) {
-	 br=temp_list->data;
+         br=temp_list->data;
       } else {
-	 continue;
+         continue;
       }
       if (!br->buf) {
-	 continue;
+         continue;
       }
 
       if ( ((br->rt==DELETED_PALM_REC)  && (!keep_deleted)) ||
-	   ((br->rt==DELETED_PC_REC)    && (!keep_deleted)) ||
-	   ((br->rt==MODIFIED_PALM_REC) && (!keep_modified)) ) {
-	 continue;
+           ((br->rt==DELETED_PC_REC)    && (!keep_deleted)) ||
+           ((br->rt==MODIFIED_PALM_REC) && (!keep_modified)) ) {
+         continue;
       }
       if ((keep_priv != SHOW_PRIVATES) &&
-	  (br->attrib & dlpRecAttrSecret)) {
-	 continue;
+          (br->attrib & dlpRecAttrSecret)) {
+         continue;
       }
 
       appt.exception=NULL;
@@ -617,19 +618,19 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
       RecordBuffer.allocated = br->size;
 
       if (unpack_Appointment(&appt, &RecordBuffer, datebook_v1) == -1) {
-	 continue;
+         continue;
       }
 
 #ifdef ENABLE_DATEBK
       if (use_db3_tags) {
-	 db3_hack_date(&appt, &today);
+         db3_hack_date(&appt, &today);
       }
 #endif
       if (now!=NULL) {
-	 if (!isApptOnDate(&appt, now)) {
-	    free_Appointment(&appt);
-	    continue;
-	 }
+         if (!isApptOnDate(&appt, now)) {
+            free_Appointment(&appt);
+            continue;
+         }
       }
 
       if (appt.description) {
@@ -642,16 +643,16 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
       if (appt.note) {
          buf = charset_p2newj(appt.note, -1, char_set);
          if (buf) {
-	    free(appt.note);
-	    appt.note = buf;
-	 }
+            free(appt.note);
+            appt.note = buf;
+         }
       }
 
       temp_a_list = malloc(sizeof(AppointmentList));
       if (!temp_a_list) {
-	 jp_logf(JP_LOG_WARN, "get_days_appointments(): %s\n", _("Out of memory"));
-	 free_Appointment(&appt);
-	 break;
+         jp_logf(JP_LOG_WARN, "get_days_appointments(): %s\n", _("Out of memory"));
+         free_Appointment(&appt);
+         break;
       }
       memcpy(&(temp_a_list->mappt.appt), &appt, sizeof(struct Appointment));
       temp_a_list->app_type = DATEBOOK;
@@ -711,7 +712,7 @@ unsigned int isApptOnDate(struct Appointment *appt, struct tm *date)
    if (!(appt->repeatForever)) {
       r = compareTimesToDay(&(appt->repeatEnd), date);
       if (r == 2) {
-	 return FALSE;
+         return FALSE;
       }
    }
 
@@ -729,8 +730,8 @@ unsigned int isApptOnDate(struct Appointment *appt, struct tm *date)
       get_month_info(date->tm_mon, date->tm_mday, date->tm_year, &dow, &ndim);
       /* See if the appointment repeats on this day */
       if (!(appt->repeatDays[dow])) {
-	 ret = FALSE;
-	 break;
+         ret = FALSE;
+         break;
       }
       /* See if we are in a week that is repeated in */
       begin_days = dateToDays(&(appt->begin));
@@ -742,9 +743,9 @@ unsigned int isApptOnDate(struct Appointment *appt, struct tm *date)
        * Palm tm structure = C tm structure -1 with wraparound for Sunday */
       if (appt->begin.tm_wday == 0)
       {
-	 ret = (days - begin_days) + 6;
+         ret = (days - begin_days) + 6;
       } else {
-	 ret = (days - begin_days) + (appt->begin.tm_wday - 1);
+         ret = (days - begin_days) + (appt->begin.tm_wday - 1);
       }
       ret = ((((int)ret/7) % appt->repeatFrequency) == 0);
       break;
@@ -753,27 +754,27 @@ unsigned int isApptOnDate(struct Appointment *appt, struct tm *date)
       ret = (((date->tm_year - appt->begin.tm_year)*12 +
        (date->tm_mon - appt->begin.tm_mon))%(appt->repeatFrequency)==0);
       if (!ret) {
-	 break;
+         break;
       }
       /* If the days of the week match - good */
       /* e.g. Monday or Thur, etc. */
       if (appt->repeatDay%7 != date->tm_wday) {
-	 ret = FALSE;
-	 break;
+         ret = FALSE;
+         break;
       }
       /* Are they both in the same week in the month */
       /* e.g. The 3rd Mon, or the 2nd Fri, etc. */
       week1 = appt->repeatDay/7;
       week2 = (date->tm_mday - 1)/7;
       if (week1 != week2) {
-	 ret = FALSE;
+         ret = FALSE;
       }
       /* See if the appointment repeats on the last week of the month */
       /* and this is the 4th, and last. */
       if (week1 > 3) {
-	 if ((date->tm_mday + 7) > days_in_month[date->tm_mon]) {
-	    ret = TRUE;
-	 }
+         if ((date->tm_mday + 7) > days_in_month[date->tm_mon]) {
+            ret = TRUE;
+         }
       }
       break;
     case calendarRepeatMonthlyByDate:
@@ -781,38 +782,38 @@ unsigned int isApptOnDate(struct Appointment *appt, struct tm *date)
       ret = (((date->tm_year - appt->begin.tm_year)*12 +
        (date->tm_mon - appt->begin.tm_mon))%(appt->repeatFrequency) == 0);
       if (!ret) {
-	 break;
+         break;
       }
       /* See if this is the date that the appt repeats on */
       if (date->tm_mday == appt->begin.tm_mday) {
-	 ret = TRUE;
-	 break;
+         ret = TRUE;
+         break;
       }
       /* If appt occurs after the last day of the month and this date */
       /* is the last day of the month then it occurs today */
       ret = ((appt->begin.tm_mday > days_in_month[date->tm_mon]) &&
-	     (date->tm_mday == days_in_month[date->tm_mon]));
+             (date->tm_mday == days_in_month[date->tm_mon]));
       break;
     case calendarRepeatYearly:
       if ((date->tm_year - appt->begin.tm_year)%(appt->repeatFrequency) != 0) {
-	 ret = FALSE;
-	 break;
+         ret = FALSE;
+         break;
       }
       if ((date->tm_mday == appt->begin.tm_mday) &&
-	  (date->tm_mon == appt->begin.tm_mon)) {
-	 ret = TRUE;
-	 break;
+          (date->tm_mon == appt->begin.tm_mon)) {
+         ret = TRUE;
+         break;
       }
       /* Take care of Feb 29th (Leap Day) */
       if ((appt->begin.tm_mon == 1) && (appt->begin.tm_mday == 29) &&
-	(date->tm_mon == 1) && (date->tm_mday == 28)) {
-	 ret = TRUE;
-	 break;
+        (date->tm_mon == 1) && (date->tm_mday == 28)) {
+         ret = TRUE;
+         break;
       }
       break;
     default:
       jp_logf(JP_LOG_WARN, _("Unknown repeatType (%d) found in DatebookDB\n"),
-	   appt->repeatType);
+           appt->repeatType);
       ret = FALSE;
    }/* switch */
 
@@ -821,40 +822,40 @@ unsigned int isApptOnDate(struct Appointment *appt, struct tm *date)
       days = dateToDays(date);
       for (i=0; i<appt->exceptions; i++) {
 #ifdef JPILOT_DEBUG
-	 jp_logf(JP_LOG_DEBUG, "exception %d mon %d\n", i, appt->exception[i].tm_mon);
-	 jp_logf(JP_LOG_DEBUG, "exception %d day %d\n", i, appt->exception[i].tm_mday);
-	 jp_logf(JP_LOG_DEBUG, "exception %d year %d\n", i, appt->exception[i].tm_year);
-	 jp_logf(JP_LOG_DEBUG, "exception %d yday %d\n", i, appt->exception[i].tm_yday);
-	 jp_logf(JP_LOG_DEBUG, "today is yday %d\n", date->tm_yday);
+         jp_logf(JP_LOG_DEBUG, "exception %d mon %d\n", i, appt->exception[i].tm_mon);
+         jp_logf(JP_LOG_DEBUG, "exception %d day %d\n", i, appt->exception[i].tm_mday);
+         jp_logf(JP_LOG_DEBUG, "exception %d year %d\n", i, appt->exception[i].tm_year);
+         jp_logf(JP_LOG_DEBUG, "exception %d yday %d\n", i, appt->exception[i].tm_yday);
+         jp_logf(JP_LOG_DEBUG, "today is yday %d\n", date->tm_yday);
 #endif
-	 exception_days = dateToDays(&(appt->exception[i]));
-	 if (exception_days == days) {
-	    ret = FALSE;
-	    break;
-	 }
+         exception_days = dateToDays(&(appt->exception[i]));
+         if (exception_days == days) {
+            ret = FALSE;
+            break;
+         }
       }
    }
 
    return ret;
 }
 
-// TODO convert the above function and remove this one
-unsigned int calendar_isApptOnDate(struct CalendarEvent *ce, struct tm *date)
+// TODO: convert the above function and remove this one
+unsigned int calendar_isApptOnDate(struct CalendarEvent *cale, struct tm *date)
 {
    struct Appointment appt;
    int r;
 
-   /* TODO This could be faster with a shallow copy, or changes to isApptOnDate */
-   copy_calendarEvent_to_appointment(ce, &appt);
+   /* TODO: This could be faster with a shallow copy, or changes to isApptOnDate */
+   copy_calendarEvent_to_appointment(cale, &appt);
    r = isApptOnDate(&appt, date);
    free_Appointment(&appt);
    return r;
 }
 
-//TODO rename this function
-int pc_calendar_or_datebook_write(struct CalendarEvent *ce, PCRecType rt,
-				  unsigned char attrib, unsigned int *unique_id,
-				  long datebook_version)
+//TODO: rename this function
+int pc_calendar_or_datebook_write(struct CalendarEvent *cale, PCRecType rt,
+                                  unsigned char attrib, unsigned int *unique_id,
+                                  long datebook_version)
 {
    Appointment_t appt;
    pi_buffer_t *RecordBuffer;
@@ -864,29 +865,29 @@ int pc_calendar_or_datebook_write(struct CalendarEvent *ce, PCRecType rt,
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    if (char_set != CHAR_SET_LATIN1) {
-      if (ce->description) charset_j2p(ce->description, strlen(ce->description)+1, char_set);
-      if (ce->note) charset_j2p(ce->note, strlen(ce->note)+1, char_set);
+      if (cale->description) charset_j2p(cale->description, strlen(cale->description)+1, char_set);
+      if (cale->note) charset_j2p(cale->note, strlen(cale->note)+1, char_set);
       if (datebook_version) {
-         if (ce->location) 
-            charset_j2p(ce->location, strlen(ce->location)+1, char_set);
+         if (cale->location) 
+            charset_j2p(cale->location, strlen(cale->location)+1, char_set);
       }
    }
 
    RecordBuffer = pi_buffer_new(0);
    if (datebook_version) {
-      if (pack_CalendarEvent(ce, RecordBuffer, calendar_v1) == -1) {
-	 PRINT_FILE_LINE;
-	 jp_logf(JP_LOG_WARN, "pack_CalendarEvent %s\n", _("error"));
-	 return EXIT_FAILURE;
+      if (pack_CalendarEvent(cale, RecordBuffer, calendar_v1) == -1) {
+         PRINT_FILE_LINE;
+         jp_logf(JP_LOG_WARN, "pack_CalendarEvent %s\n", _("error"));
+         return EXIT_FAILURE;
       }
    } else {
-      copy_calendarEvent_to_appointment(ce, &appt);
+      copy_calendarEvent_to_appointment(cale, &appt);
       r = pack_Appointment(&appt, RecordBuffer, datebook_v1);
       free_Appointment(&appt);
       if (r == -1) {
-	 PRINT_FILE_LINE;
-	 jp_logf(JP_LOG_WARN, "pack_Appointment %s\n", _("error"));
-	 return EXIT_FAILURE;
+         PRINT_FILE_LINE;
+         jp_logf(JP_LOG_WARN, "pack_Appointment %s\n", _("error"));
+         return EXIT_FAILURE;
       }
    }
    br.rt=rt;
@@ -915,9 +916,9 @@ int pc_calendar_or_datebook_write(struct CalendarEvent *ce, PCRecType rt,
    return EXIT_SUCCESS;
 }
 
-// TODO get rid of one of these
+// TODO: get rid of one of these
 int weed_datebook_list(AppointmentList **al, int mon, int year,
-		       int skip_privates, int *mask)
+                       int skip_privates, int *mask)
 {
    struct tm tm_fdom;
    struct tm tm_ldom;
@@ -952,119 +953,119 @@ int weed_datebook_list(AppointmentList **al, int mon, int year,
     * search though it ~30 times.  */
    for (prev_al=NULL, tal=*al; tal; tal = next_al) {
       if (skip_privates && (tal->mappt.attrib & dlpRecAttrSecret)) {
-	 next_al=tal->next;
-	 continue;
+         next_al=tal->next;
+         continue;
       }
       trash_it=0;
       /* See if the appointment starts after the last day of the month */
       r = compareTimesToDay(&(tal->mappt.appt.begin), &tm_ldom);
       if (r == 1) {
-	 trash_it=1;
-	 goto trash;
+         trash_it=1;
+         goto trash;
       }
       /* If the appointment has an end date, see if it ended before the 1st */
       if (!(tal->mappt.appt.repeatForever)) {
-	 r = compareTimesToDay(&(tal->mappt.appt.repeatEnd), &tm_fdom);
-	 if (r == 2) {
-	    trash_it=1;
-	    goto trash;
-	 }
+         r = compareTimesToDay(&(tal->mappt.appt.repeatEnd), &tm_fdom);
+         if (r == 2) {
+            trash_it=1;
+            goto trash;
+         }
       }
       /* No repeat */
       /* See if its a non-repeating appointment that is this month/year */
       if (tal->mappt.appt.repeatType==calendarRepeatNone) {
-	 if ((tal->mappt.appt.begin.tm_year==year) &&
-	     (tal->mappt.appt.begin.tm_mon==mon)) {
-	    tm_test.tm_mday=tal->mappt.appt.begin.tm_mday;
-	    mktime(&tm_test);
-	    /* Go ahead and mark this day (highlight it) */
-	    if (isApptOnDate(&(tal->mappt.appt), &tm_test)) {
-	       *mask = *mask | (1 << ((tal->mappt.appt.begin.tm_mday)-1));
-	    }
-	 } else {
-	    trash_it=1;
-	    goto trash;
-	 }
+         if ((tal->mappt.appt.begin.tm_year==year) &&
+             (tal->mappt.appt.begin.tm_mon==mon)) {
+            tm_test.tm_mday=tal->mappt.appt.begin.tm_mday;
+            mktime(&tm_test);
+            /* Go ahead and mark this day (highlight it) */
+            if (isApptOnDate(&(tal->mappt.appt), &tm_test)) {
+               *mask = *mask | (1 << ((tal->mappt.appt.begin.tm_mday)-1));
+            }
+         } else {
+            trash_it=1;
+            goto trash;
+         }
       }
       /* Daily */
       /* See if this daily appt repeats this month or not */
       if (tal->mappt.appt.repeatType==calendarRepeatDaily) {
-	 begin_days = dateToDays(&(tal->mappt.appt.begin));
-	 ret = ((days - begin_days)%(tal->mappt.appt.repeatFrequency));
-	 if ((ret>31) || (ret<-31)) {
-	    trash_it=1;
-	    goto trash;
-	 }
+         begin_days = dateToDays(&(tal->mappt.appt.begin));
+         ret = ((days - begin_days)%(tal->mappt.appt.repeatFrequency));
+         if ((ret>31) || (ret<-31)) {
+            trash_it=1;
+            goto trash;
+         }
       }
       /* Weekly */
       if (tal->mappt.appt.repeatType==calendarRepeatWeekly) {
-	 begin_days = dateToDays(&(tal->mappt.appt.begin));
-	 /* Note: Palm Bug?  I think the palm does this wrong.
-	  * I prefer this way of doing it so that you can have appts repeating
-	  * from Wed->Tue, for example.  The palms way prevents this */
-	 /* ret = (((int)((days - begin_days - fdow)/7))%(appt->repeatFrequency)==0);*/
-	 /* But, here is the palm way */
-	 ret = (((int)((days-begin_days+tal->mappt.appt.begin.tm_wday-fdow)/7))
-		%(tal->mappt.appt.repeatFrequency));
-	 if ((ret>6) || (ret<-6)) {
-	    trash_it=1;
-	    goto trash;
-	 }
+         begin_days = dateToDays(&(tal->mappt.appt.begin));
+         /* Note: Palm Bug?  I think the palm does this wrong.
+          * I prefer this way of doing it so that you can have appts repeating
+          * from Wed->Tue, for example.  The palms way prevents this */
+         /* ret = (((int)((days - begin_days - fdow)/7))%(appt->repeatFrequency)==0);*/
+         /* But, here is the palm way */
+         ret = (((int)((days-begin_days+tal->mappt.appt.begin.tm_wday-fdow)/7))
+                %(tal->mappt.appt.repeatFrequency));
+         if ((ret>6) || (ret<-6)) {
+            trash_it=1;
+            goto trash;
+         }
       }
       /* Monthly */
       if ((tal->mappt.appt.repeatType==calendarRepeatMonthlyByDay) ||
-	  (tal->mappt.appt.repeatType==calendarRepeatMonthlyByDate)) {
-	 /* See if we are in a month that is repeated in */
-	 ret = (((year - tal->mappt.appt.begin.tm_year)*12 +
-		 (mon - tal->mappt.appt.begin.tm_mon))%(tal->mappt.appt.repeatFrequency)==0);
-	 if (!ret) {
-	    trash_it=1;
-	    goto trash;
-	 }
-	 if (tal->mappt.appt.repeatType==calendarRepeatMonthlyByDay) {
-	    tm_test.tm_mday=tal->mappt.appt.begin.tm_mday;
-	    mktime(&tm_test);
-	    if (isApptOnDate(&(tal->mappt.appt), &tm_test)) {
-	       *mask = *mask | (1 << ((tal->mappt.appt.begin.tm_mday)-1));
-	    }
-	 }
+          (tal->mappt.appt.repeatType==calendarRepeatMonthlyByDate)) {
+         /* See if we are in a month that is repeated in */
+         ret = (((year - tal->mappt.appt.begin.tm_year)*12 +
+                 (mon - tal->mappt.appt.begin.tm_mon))%(tal->mappt.appt.repeatFrequency)==0);
+         if (!ret) {
+            trash_it=1;
+            goto trash;
+         }
+         if (tal->mappt.appt.repeatType==calendarRepeatMonthlyByDay) {
+            tm_test.tm_mday=tal->mappt.appt.begin.tm_mday;
+            mktime(&tm_test);
+            if (isApptOnDate(&(tal->mappt.appt), &tm_test)) {
+               *mask = *mask | (1 << ((tal->mappt.appt.begin.tm_mday)-1));
+            }
+         }
       }
       /* Yearly */
       /* See if its a yearly appointment that does reoccur on this month */
       if (tal->mappt.appt.repeatType==calendarRepeatYearly) {
-	 if ((tal->mappt.appt.begin.tm_mon==mon)) {
-	    tm_test.tm_mday=tal->mappt.appt.begin.tm_mday;
-	    mktime(&tm_test);
-	    if (isApptOnDate(&(tal->mappt.appt), &tm_test)) {
-	       *mask = *mask | (1 << ((tal->mappt.appt.begin.tm_mday)-1));
-	    }
-	 } else {
-	    trash_it=1;
-	    goto trash;
-	 }
+         if ((tal->mappt.appt.begin.tm_mon==mon)) {
+            tm_test.tm_mday=tal->mappt.appt.begin.tm_mday;
+            mktime(&tm_test);
+            if (isApptOnDate(&(tal->mappt.appt), &tm_test)) {
+               *mask = *mask | (1 << ((tal->mappt.appt.begin.tm_mday)-1));
+            }
+         } else {
+            trash_it=1;
+            goto trash;
+         }
       }
       /* Remove it from this list if it can't help us */
       trash:
       if (trash_it) {
-	 if (prev_al) {
-	    prev_al->next=tal->next;
-	 } else {
-	    *al=tal->next;
-	 }
-	 next_al=tal->next;
-	 free_Appointment(&(tal->mappt.appt));
-	 free(tal);
+         if (prev_al) {
+            prev_al->next=tal->next;
+         } else {
+            *al=tal->next;
+         }
+         next_al=tal->next;
+         free_Appointment(&(tal->mappt.appt));
+         free(tal);
       } else {
-	 prev_al=tal;
-	 next_al=tal->next;
+         prev_al=tal;
+         next_al=tal->next;
       }
    }
    return EXIT_SUCCESS;
 }
 
-// TODO get rid of one of these
+// TODO: get rid of one of these
 int weed_calendar_event_list(CalendarEventList **cel, int mon, int year,
-			     int skip_privates, int *mask)
+                             int skip_privates, int *mask)
 {
    struct tm tm_fdom;
    struct tm tm_ldom;
@@ -1098,112 +1099,112 @@ int weed_calendar_event_list(CalendarEventList **cel, int mon, int year,
    /* We are going to try to shrink the linked list since we are about to
     * search though it ~30 times.  */
    for (prev_cel=NULL, tcel=*cel; tcel; tcel = next_cel) {
-      if (skip_privates && (tcel->mce.attrib & dlpRecAttrSecret)) {
-	 next_cel=tcel->next;
-	 continue;
+      if (skip_privates && (tcel->mcale.attrib & dlpRecAttrSecret)) {
+         next_cel=tcel->next;
+         continue;
       }
       trash_it=0;
       /* See if the appointment starts after the last day of the month */
-      r = compareTimesToDay(&(tcel->mce.ce.begin), &tm_ldom);
+      r = compareTimesToDay(&(tcel->mcale.cale.begin), &tm_ldom);
       if (r == 1) {
-	 trash_it=1;
-	 goto trash;
+         trash_it=1;
+         goto trash;
       }
       /* If the appointment has an end date, see if it ended before the 1st */
-      if (!(tcel->mce.ce.repeatForever)) {
-	 r = compareTimesToDay(&(tcel->mce.ce.repeatEnd), &tm_fdom);
-	 if (r == 2) {
-	    trash_it=1;
-	    goto trash;
-	 }
+      if (!(tcel->mcale.cale.repeatForever)) {
+         r = compareTimesToDay(&(tcel->mcale.cale.repeatEnd), &tm_fdom);
+         if (r == 2) {
+            trash_it=1;
+            goto trash;
+         }
       }
       /* No repeat */
       /* See if its a non-repeating appointment that is this month/year */
-      if (tcel->mce.ce.repeatType==calendarRepeatNone) {
-	 if ((tcel->mce.ce.begin.tm_year==year) &&
-	     (tcel->mce.ce.begin.tm_mon==mon)) {
-	    tm_test.tm_mday=tcel->mce.ce.begin.tm_mday;
-	    mktime(&tm_test);
-	    /* Go ahead and mark this day (highlight it) */
-	    if (calendar_isApptOnDate(&(tcel->mce.ce), &tm_test)) {
-	       *mask = *mask | (1 << ((tcel->mce.ce.begin.tm_mday)-1));
-	    }
-	 } else {
-	    trash_it=1;
-	    goto trash;
-	 }
+      if (tcel->mcale.cale.repeatType==calendarRepeatNone) {
+         if ((tcel->mcale.cale.begin.tm_year==year) &&
+             (tcel->mcale.cale.begin.tm_mon==mon)) {
+            tm_test.tm_mday=tcel->mcale.cale.begin.tm_mday;
+            mktime(&tm_test);
+            /* Go ahead and mark this day (highlight it) */
+            if (calendar_isApptOnDate(&(tcel->mcale.cale), &tm_test)) {
+               *mask = *mask | (1 << ((tcel->mcale.cale.begin.tm_mday)-1));
+            }
+         } else {
+            trash_it=1;
+            goto trash;
+         }
       }
       /* Daily */
       /* See if this daily appt repeats this month or not */
-      if (tcel->mce.ce.repeatType==calendarRepeatDaily) {
-	 begin_days = dateToDays(&(tcel->mce.ce.begin));
-	 ret = ((days - begin_days)%(tcel->mce.ce.repeatFrequency));
-	 if ((ret>31) || (ret<-31)) {
-	    trash_it=1;
-	    goto trash;
-	 }
+      if (tcel->mcale.cale.repeatType==calendarRepeatDaily) {
+         begin_days = dateToDays(&(tcel->mcale.cale.begin));
+         ret = ((days - begin_days)%(tcel->mcale.cale.repeatFrequency));
+         if ((ret>31) || (ret<-31)) {
+            trash_it=1;
+            goto trash;
+         }
       }
       /* Weekly */
-      if (tcel->mce.ce.repeatType==calendarRepeatWeekly) {
-	 begin_days = dateToDays(&(tcel->mce.ce.begin));
-	 /* Note: Palm Bug?  I think the palm does this wrong.
-	  * I prefer this way of doing it so that you can have appts repeating
-	  * from Wed->Tue, for example.  The palms way prevents this */
-	 /* ret = (((int)((days - begin_days - fdow)/7))%(appt->repeatFrequency)==0);*/
-	 /* But, here is the palm way */
-	 ret = (((int)((days-begin_days+tcel->mce.ce.begin.tm_wday-fdow)/7))
-		%(tcel->mce.ce.repeatFrequency));
-	 if ((ret>6) || (ret<-6)) {
-	    trash_it=1;
-	    goto trash;
-	 }
+      if (tcel->mcale.cale.repeatType==calendarRepeatWeekly) {
+         begin_days = dateToDays(&(tcel->mcale.cale.begin));
+         /* Note: Palm Bug?  I think the palm does this wrong.
+          * I prefer this way of doing it so that you can have appts repeating
+          * from Wed->Tue, for example.  The palms way prevents this */
+         /* ret = (((int)((days - begin_days - fdow)/7))%(appt->repeatFrequency)==0);*/
+         /* But, here is the palm way */
+         ret = (((int)((days-begin_days+tcel->mcale.cale.begin.tm_wday-fdow)/7))
+                %(tcel->mcale.cale.repeatFrequency));
+         if ((ret>6) || (ret<-6)) {
+            trash_it=1;
+            goto trash;
+         }
       }
       /* Monthly */
-      if ((tcel->mce.ce.repeatType==calendarRepeatMonthlyByDay) ||
-	  (tcel->mce.ce.repeatType==calendarRepeatMonthlyByDate)) {
-	 /* See if we are in a month that is repeated in */
-	 ret = (((year - tcel->mce.ce.begin.tm_year)*12 +
-		 (mon - tcel->mce.ce.begin.tm_mon))%(tcel->mce.ce.repeatFrequency)==0);
-	 if (!ret) {
-	    trash_it=1;
-	    goto trash;
-	 }
-	 if (tcel->mce.ce.repeatType==calendarRepeatMonthlyByDay) {
-	    tm_test.tm_mday=tcel->mce.ce.begin.tm_mday;
-	    mktime(&tm_test);
-	    if (calendar_isApptOnDate(&(tcel->mce.ce), &tm_test)) {
-	       *mask = *mask | (1 << ((tcel->mce.ce.begin.tm_mday)-1));
-	    }
-	 }
+      if ((tcel->mcale.cale.repeatType==calendarRepeatMonthlyByDay) ||
+          (tcel->mcale.cale.repeatType==calendarRepeatMonthlyByDate)) {
+         /* See if we are in a month that is repeated in */
+         ret = (((year - tcel->mcale.cale.begin.tm_year)*12 +
+                 (mon - tcel->mcale.cale.begin.tm_mon))%(tcel->mcale.cale.repeatFrequency)==0);
+         if (!ret) {
+            trash_it=1;
+            goto trash;
+         }
+         if (tcel->mcale.cale.repeatType==calendarRepeatMonthlyByDay) {
+            tm_test.tm_mday=tcel->mcale.cale.begin.tm_mday;
+            mktime(&tm_test);
+            if (calendar_isApptOnDate(&(tcel->mcale.cale), &tm_test)) {
+               *mask = *mask | (1 << ((tcel->mcale.cale.begin.tm_mday)-1));
+            }
+         }
       }
       /* Yearly */
       /* See if its a yearly appointment that does reoccur on this month */
-      if (tcel->mce.ce.repeatType==calendarRepeatYearly) {
-	 if ((tcel->mce.ce.begin.tm_mon==mon)) {
-	    tm_test.tm_mday=tcel->mce.ce.begin.tm_mday;
-	    mktime(&tm_test);
-	    if (calendar_isApptOnDate(&(tcel->mce.ce), &tm_test)) {
-	       *mask = *mask | (1 << ((tcel->mce.ce.begin.tm_mday)-1));
-	    }
-	 } else {
-	    trash_it=1;
-	    goto trash;
-	 }
+      if (tcel->mcale.cale.repeatType==calendarRepeatYearly) {
+         if ((tcel->mcale.cale.begin.tm_mon==mon)) {
+            tm_test.tm_mday=tcel->mcale.cale.begin.tm_mday;
+            mktime(&tm_test);
+            if (calendar_isApptOnDate(&(tcel->mcale.cale), &tm_test)) {
+               *mask = *mask | (1 << ((tcel->mcale.cale.begin.tm_mday)-1));
+            }
+         } else {
+            trash_it=1;
+            goto trash;
+         }
       }
       /* Remove it from this list if it can't help us */
       trash:
       if (trash_it) {
-	 if (prev_cel) {
-	    prev_cel->next=tcel->next;
-	 } else {
-	    *cel=tcel->next;
-	 }
-	 next_cel=tcel->next;
-	 free_CalendarEvent(&(tcel->mce.ce));
-	 free(tcel);
+         if (prev_cel) {
+            prev_cel->next=tcel->next;
+         } else {
+            *cel=tcel->next;
+         }
+         next_cel=tcel->next;
+         free_CalendarEvent(&(tcel->mcale.cale));
+         free(tcel);
       } else {
-	 prev_cel=tcel;
-	 next_cel=tcel->next;
+         prev_cel=tcel;
+         next_cel=tcel->next;
       }
    }
    return EXIT_SUCCESS;

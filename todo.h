@@ -1,4 +1,4 @@
-/* $Id: todo.h,v 1.13 2009/11/08 17:12:10 rousseau Exp $ */
+/* $Id: todo.h,v 1.14 2010/03/29 05:44:32 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo.h
@@ -26,8 +26,8 @@
 #include <pi-todo.h>
 #include "utils.h"
 
-#define MAX_TODO_DESC_LEN	256
-#define MAX_TODO_NOTE_LEN	4000
+#define MAX_TODO_DESC_LEN     256
+#define MAX_TODO_NOTE_LEN     4000
 
 #define TODO_CHECK_COLUMN     0
 #define TODO_PRIORITY_COLUMN  1
@@ -38,17 +38,17 @@
 void free_ToDoList(ToDoList **todo);
 int get_todos(ToDoList **todo_list, int sort_order);
 int get_todos2(ToDoList **todo_list, int sort_order,
-	       int modified, int deleted, int privates, int completed,
-	       int category);
+               int modified, int deleted, int privates, int completed,
+               int category);
 int get_todo_app_info(struct ToDoAppInfo *ai);
 int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib,
-		  unsigned int *unique_id);
+                  unsigned int *unique_id);
 int todo_print(void);
 int todo_import(GtkWidget *window);
 int todo_export(GtkWidget *window);
 
 /* I only export this for datebook, don't use this */
 void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
-		       ToDoList **todo_list, int category, int main);
+                       ToDoList **todo_list, int category, int main);
 
 #endif

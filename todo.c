@@ -1,4 +1,4 @@
-/* $Id: todo.c,v 1.48 2010/03/03 12:50:00 rousseau Exp $ */
+/* $Id: todo.c,v 1.49 2010/03/29 05:44:31 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo.c
@@ -89,7 +89,7 @@ int get_todo_app_info(struct ToDoAppInfo *ai)
    if ((r<0) || (rec_size<=0)) {
       jp_logf(JP_LOG_WARN, _("%s:%d Error reading category info %s\n"), __FILE__, __LINE__, DBname);
       if (buf) {
-	 free(buf);
+         free(buf);
       }
       return EXIT_FAILURE;
    }
@@ -116,8 +116,8 @@ int get_todos(ToDoList **todo_list, int sort_order)
  *  0 for no, 1 for yes, 2 for use prefs
  */
 int get_todos2(ToDoList **todo_list, int sort_order,
-	       int modified, int deleted, int privates, int completed,
-	       int category)
+               int modified, int deleted, int privates, int completed,
+               int category)
 {
    GList *records;
    GList *temp_list;
@@ -179,22 +179,22 @@ int get_todos2(ToDoList **todo_list, int sort_order,
 
    for (temp_list = records; temp_list; temp_list = temp_list->next) {
       if (temp_list->data) {
-	 br=temp_list->data;
+         br=temp_list->data;
       } else {
-	 continue;
+         continue;
       }
       if (!br->buf) {
-	 continue;
+         continue;
       }
 
       if ( ((br->rt==DELETED_PALM_REC)  && (!keep_deleted)) ||
-	   ((br->rt==DELETED_PC_REC)    && (!keep_deleted)) ||
-	   ((br->rt==MODIFIED_PALM_REC) && (!keep_modified)) ) {
-	 continue;
+           ((br->rt==DELETED_PC_REC)    && (!keep_deleted)) ||
+           ((br->rt==MODIFIED_PALM_REC) && (!keep_modified)) ) {
+         continue;
       }
       if ((keep_priv != SHOW_PRIVATES) &&
-	  (br->attrib & dlpRecAttrSecret)) {
-	 continue;
+          (br->attrib & dlpRecAttrSecret)) {
+         continue;
       }
 
       RecordBuffer = pi_buffer_new(br->size);
@@ -202,37 +202,37 @@ int get_todos2(ToDoList **todo_list, int sort_order,
       RecordBuffer->used = br->size;
 
       if (unpack_ToDo(&todo, RecordBuffer, todo_v1) == -1) {
-	 pi_buffer_free(RecordBuffer);
-	 continue;
+         pi_buffer_free(RecordBuffer);
+         continue;
       }
       pi_buffer_free(RecordBuffer);
 
       if ( ((br->attrib & 0x0F) != category) && category != CATEGORY_ALL) {
-	 continue;
+         continue;
       }
 
       if (hide_completed && todo.complete) {
-	 continue;
+         continue;
       }
 
       if (todo.description) {
          buf = charset_p2newj(todo.description, -1, char_set);
          if (buf) {
-	    free(todo.description);
-	    todo.description = buf;
-	 }
+            free(todo.description);
+            todo.description = buf;
+         }
       }
       if (todo.note) {
-	 buf = charset_p2newj(todo.note, -1, char_set);
+         buf = charset_p2newj(todo.note, -1, char_set);
          if (buf) {
-	    free(todo.note);
-	    todo.note = buf;
-	 }
+            free(todo.note);
+            todo.note = buf;
+         }
       }
       temp_todo_list = malloc(sizeof(ToDoList));
       if (!temp_todo_list) {
-	 jp_logf(JP_LOG_WARN, "get_todos2(): %s\n", _("Out of memory"));
-	 break;
+         jp_logf(JP_LOG_WARN, "get_todos2(): %s\n", _("Out of memory"));
+         break;
       }
       memcpy(&(temp_todo_list->mtodo.todo), &todo, sizeof(struct ToDo));
       temp_todo_list->app_type = TODO;
@@ -261,20 +261,20 @@ static void pc_todo_validate_correct(struct ToDo *todo)
 {
    if (todo->description) {
       if ((strlen(todo->description)+1 > MAX_TODO_DESC_LEN)) {
-	 jp_logf(JP_LOG_WARN, _("ToDo description text > %d, truncating to %d\n"), MAX_TODO_DESC_LEN, MAX_TODO_DESC_LEN-1);
-	 todo->description[MAX_TODO_DESC_LEN-1]='\0';
+         jp_logf(JP_LOG_WARN, _("ToDo description text > %d, truncating to %d\n"), MAX_TODO_DESC_LEN, MAX_TODO_DESC_LEN-1);
+         todo->description[MAX_TODO_DESC_LEN-1]='\0';
       }
    }
    if (todo->note) {
       if ((strlen(todo->note)+1 > MAX_TODO_NOTE_LEN)) {
-	 jp_logf(JP_LOG_WARN, _("ToDo note text > %d, truncating to %d\n"), MAX_TODO_NOTE_LEN, MAX_TODO_NOTE_LEN-1);
-	 todo->note[MAX_TODO_NOTE_LEN-1]='\0';
+         jp_logf(JP_LOG_WARN, _("ToDo note text > %d, truncating to %d\n"), MAX_TODO_NOTE_LEN, MAX_TODO_NOTE_LEN-1);
+         todo->note[MAX_TODO_NOTE_LEN-1]='\0';
       }
    }
 }
 
 int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib,
-		  unsigned int *unique_id)
+                  unsigned int *unique_id)
 {
    pi_buffer_t *RecordBuffer;
    buf_rec br;
@@ -286,10 +286,10 @@ int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib,
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    if (char_set != CHAR_SET_LATIN1) {
       if (todo->description) {
-	 charset_j2p(todo->description, strlen(todo->description)+1, char_set);
+         charset_j2p(todo->description, strlen(todo->description)+1, char_set);
       }
       if (todo->note) {
-	 charset_j2p(todo->note, strlen(todo->note)+1, char_set);
+         charset_j2p(todo->note, strlen(todo->note)+1, char_set);
       }
    }
 
@@ -361,110 +361,110 @@ static int todo_compare(const void *v1, const void *v2)
    if (sort_by_priority == 0) {
       /* due date, priority */
       if ( !(todo1->indefinite) && (todo2->indefinite) ) {
-	 return 1;
+         return 1;
       }
       if ( (todo1->indefinite) && !(todo2->indefinite) ) {
-	 return -1;
+         return -1;
       }
       if ( !(todo1->indefinite) && !(todo2->indefinite) ) {
-	 t1 = mktime(&(todo1->due));
-	 t2 = mktime(&(todo2->due));
-	 if ( t1 < t2 ) {
-	    return 1;
-	 }
-	 if ( t1 > t2 ) {
-	    return -1;
-	 }
+         t1 = mktime(&(todo1->due));
+         t2 = mktime(&(todo2->due));
+         if ( t1 < t2 ) {
+            return 1;
+         }
+         if ( t1 > t2 ) {
+            return -1;
+         }
       }
       if ( (todo1->priority) < (todo2->priority) ) {
-	 return 1;
+         return 1;
       }
       if ( (todo1->priority) > (todo2->priority) ) {
-	 return -1;
+         return -1;
       }
       /* If all else fails sort alphabetically */
       if ((todo1->description) && (todo2->description)) {
-	 return -(strcoll(todo1->description,todo2->description));
+         return -(strcoll(todo1->description,todo2->description));
       }
    }
 
    if (sort_by_priority == 1) {
       /* priority, due date */
       if ( (todo1->priority) < (todo2->priority) ) {
-	 return 1;
+         return 1;
       }
       if ( (todo1->priority) > (todo2->priority) ) {
-	 return -1;
+         return -1;
       }
       if ( (todo1->indefinite) && (todo2->indefinite) ) {
-	 return 0;
+         return 0;
       }
       if ( !(todo1->indefinite) && (todo2->indefinite) ) {
-	 return 1;
+         return 1;
       }
       if ( (todo1->indefinite) && !(todo2->indefinite) ) {
-	 return -1;
+         return -1;
       }
       t1 = mktime(&(todo1->due));
       t2 = mktime(&(todo2->due));
       if ( t1 < t2 ) {
-	 return 1;
+         return 1;
       }
       if ( t1 > t2 ) {
-	 return -1;
+         return -1;
       }
       /* If all else fails sort alphabetically */
       if ((todo1->description) && (todo2->description)) {
-	 return -(strcoll(todo1->description,todo2->description));
+         return -(strcoll(todo1->description,todo2->description));
       }
    }
 
    if (sort_by_priority == 2) {
       /* category, priority */
       r = strcoll(glob_Ptodo_app_info->category.name[cat1],
-		 glob_Ptodo_app_info->category.name[cat2]);
+                 glob_Ptodo_app_info->category.name[cat2]);
       if (r) {
-	 return -r;
+         return -r;
       }
       if ( (todo1->priority) < (todo2->priority) ) {
-	 return 1;
+         return 1;
       }
       if ( (todo1->priority) > (todo2->priority) ) {
-	 return -1;
+         return -1;
       }
       /* If all else fails sort alphabetically */
       if ((todo1->description) && (todo2->description)) {
-	 return -(strcoll(todo1->description,todo2->description));
+         return -(strcoll(todo1->description,todo2->description));
       }
    }
 
    if (sort_by_priority == 3) {
       /* category, due date */
       r = strcoll(glob_Ptodo_app_info->category.name[cat1],
-		 glob_Ptodo_app_info->category.name[cat2]);
+                 glob_Ptodo_app_info->category.name[cat2]);
       if (r) {
-	 return -r;
+         return -r;
       }
       if ( (todo1->indefinite) && (todo2->indefinite) ) {
-	 return 0;
+         return 0;
       }
       if ( !(todo1->indefinite) && (todo2->indefinite) ) {
-	 return 1;
+         return 1;
       }
       if ( (todo1->indefinite) && !(todo2->indefinite) ) {
-	 return -1;
+         return -1;
       }
       t1 = mktime(&(todo1->due));
       t2 = mktime(&(todo2->due));
       if ( t1 < t2 ) {
-	 return 1;
+         return 1;
       }
       if ( t1 > t2 ) {
-	 return -1;
+         return -1;
       }
       /* If all else fails sort alphabetically */
       if ((todo1->description) && (todo2->description)) {
-	 return -(strcoll(todo1->description,todo2->description));
+         return -(strcoll(todo1->description,todo2->description));
       }
    }
 
@@ -508,7 +508,7 @@ int todo_sort(ToDoList **todol, int sort_order)
    /* Put the linked list in the order of the array */
    if (sort_order==SORT_ASCENDING) {
       for (i=count-1; i>0; i--) {
-	 sort_todol[i]->next=sort_todol[i-1];
+         sort_todol[i]->next=sort_todol[i-1];
       }
       sort_todol[0]->next = NULL;
       *todol = sort_todol[count-1];
@@ -516,7 +516,7 @@ int todo_sort(ToDoList **todol, int sort_order)
       /* Descending order */
       sort_todol[count-1]->next = NULL;
       for (i=count-1; i; i--) {
-	 sort_todol[i-1]->next=sort_todol[i];
+         sort_todol[i-1]->next=sort_todol[i];
       }
       *todol = sort_todol[0];
    }

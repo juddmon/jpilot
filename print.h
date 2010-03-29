@@ -1,4 +1,4 @@
-/* $Id: print.h,v 1.7 2008/02/05 00:57:25 judd Exp $ */
+/* $Id: print.h,v 1.8 2010/03/29 05:44:31 rikster5 Exp $ */
 
 /*******************************************************************************
  * print.h
@@ -68,8 +68,9 @@ int print_days_appts(struct tm *date);
 int print_months_appts(struct tm *date_in, PaperSize paper_size);
 int print_weeks_appts(struct tm *date_in, PaperSize paper_size);
 
-int print_contacts(ContactList *contact_list, struct ContactAppInfo *contact_app_info,
-		   address_schema_entry *schema, int schema_size);
+int print_contacts(ContactList *contact_list, 
+                   struct ContactAppInfo *contact_app_info,
+                   address_schema_entry *schema, int schema_size);
 
 int print_todos(ToDoList *todo_list, char *category_name);
 

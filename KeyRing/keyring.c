@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.105 2010/03/07 17:12:42 rousseau Exp $ */
+/* $Id: keyring.c,v 1.106 2010/03/29 05:44:32 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -33,11 +33,11 @@
 
 #include "config.h"
 #ifdef HAVE_LIBGCRYPT
-#include <gcrypt.h>
+#  include <gcrypt.h>
 #else
-/* OpenSSL header files */
-#include <openssl/md5.h>
-#include <openssl/des.h>
+   /* OpenSSL header files */
+#  include <openssl/md5.h>
+#  include <openssl/des.h>
 #endif
 
 /* Pilot-link header files */
@@ -158,7 +158,7 @@ static struct MyKeyRing *export_keyring_list=NULL;
 
 /****************************** Prototypes ************************************/
 static void keyr_update_clist(GtkWidget *clist, struct MyKeyRing **keyring_list,
-			      int category, int main);
+                              int category, int main);
 
 static void connect_changed_signals(int con_or_dis);
 
@@ -446,9 +446,9 @@ static int unpack_KeyRing(struct KeyRing *kr,
 
    if (0 == packed_date)
    {
-	   kr->last_changed.tm_year = 0;
-	   kr->last_changed.tm_mon = 0;
-	   kr->last_changed.tm_mday = 0;
+           kr->last_changed.tm_year = 0;
+           kr->last_changed.tm_mon = 0;
+           kr->last_changed.tm_mday = 0;
    }
 
 #ifdef DEBUG
@@ -683,7 +683,7 @@ static int find_sort_cat_pos(int cat)
 
    for (i=0; i<NUM_KEYRING_CAT_ITEMS; i++) {
       if (sort_l[i].cat_num==cat) {
- 	 return i;
+         return i;
       }
    }
 
@@ -1356,7 +1356,7 @@ static int display_record_export(GtkWidget *clist, struct MyKeyRing *mkr, int ro
  * the screen.
  */
 static void keyr_update_clist(GtkWidget *clist, struct MyKeyRing **keyring_list,
-			      int category, int main)
+                              int category, int main)
 {
    int num;
    int entries_shown;
@@ -1378,7 +1378,7 @@ static void keyr_update_clist(GtkWidget *clist, struct MyKeyRing **keyring_list,
    gtk_clist_freeze(GTK_CLIST(clist));
    if (main) {
       gtk_signal_disconnect_by_func(GTK_OBJECT(clist),
-				    GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
+                                    GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
    }
    gtk_clist_clear(GTK_CLIST(clist));
 #ifdef __APPLE__
@@ -1393,9 +1393,9 @@ static void keyr_update_clist(GtkWidget *clist, struct MyKeyRing **keyring_list,
    for (temp_list = *keyring_list; temp_list; temp_list = temp_list->next) {
       gtk_clist_append(GTK_CLIST(clist), empty_line);
       if (main)
-	 display_record(temp_list, entries_shown);
+         display_record(temp_list, entries_shown);
       else
-	 display_record_export(clist, temp_list, entries_shown);
+         display_record_export(clist, temp_list, entries_shown);
       entries_shown++;
    }
 
@@ -1404,7 +1404,7 @@ static void keyr_update_clist(GtkWidget *clist, struct MyKeyRing **keyring_list,
 
    if (main)
       gtk_signal_connect(GTK_OBJECT(clist), "select_row",
-			 GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
+                         GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
    
    /* If there are items in the list, highlight the selected row */
    if ((main) && (entries_shown>0)) {
@@ -1467,7 +1467,7 @@ static void cb_clist_selection(GtkWidget      *clist,
          return;
       }
       if (b==DIALOG_SAID_3) { /* Save */
-	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
+         cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
       }
 
       set_new_button_to(CLEAR_FLAG);
@@ -1581,10 +1581,10 @@ static void cb_category(GtkWidget *item, int selection)
             gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), index2);
          }
 
-	 return;
+         return;
       }
       if (b==DIALOG_SAID_3) { /* Save */
-	 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
+         cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
       }
 
       keyr_category = selection;
@@ -2098,7 +2098,7 @@ static void cb_keyr_export_done(GtkWidget *widget, const char *filename)
 }
 
 static void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *clist,
-		       int type, const char *filename)
+                       int type, const char *filename)
 {
    struct MyKeyRing *mkr;
    GList *list, *temp_list;
@@ -2122,18 +2122,18 @@ static void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *clist,
     * can't be opened */
    if (!stat(filename, &statb)) {
       if (S_ISDIR(statb.st_mode)) {
-	 g_snprintf(text, sizeof(text), _("%s is a directory"), filename);
-	 dialog_generic(GTK_WINDOW(export_window),
-			_("Error Opening File"),
-			DIALOG_ERROR, text, 1, button_text);
-	 return;
+         g_snprintf(text, sizeof(text), _("%s is a directory"), filename);
+         dialog_generic(GTK_WINDOW(export_window),
+                        _("Error Opening File"),
+                        DIALOG_ERROR, text, 1, button_text);
+         return;
       }
       g_snprintf(text,sizeof(text), _("Do you want to overwrite file %s?"), filename);
       r = dialog_generic(GTK_WINDOW(export_window),
-			 _("Overwrite File?"),
-			 DIALOG_ERROR, text, 2, button_overwrite_text);
+                         _("Overwrite File?"),
+                         DIALOG_ERROR, text, 2, button_overwrite_text);
       if (r!=DIALOG_SAID_2) {
-	 return;
+         return;
       }
    }
 
@@ -2141,8 +2141,8 @@ static void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *clist,
    if (!out) {
       g_snprintf(text,sizeof(text), _("Error opening file: %s"), filename);
       dialog_generic(GTK_WINDOW(export_window),
-		     _("Error Opening File"),
-		     DIALOG_ERROR, text, 1, button_text);
+                     _("Error Opening File"),
+                     DIALOG_ERROR, text, 1, button_text);
       return;
    }
 
@@ -2156,7 +2156,7 @@ static void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *clist,
       strftime(str2, sizeof(str2), pref_time, now);
       g_snprintf(date_string, sizeof(date_string), "%s %s", str1, str2);
       fprintf(out, _("Keys exported from %s %s on %s\n\n"),
-	      PN,VERSION,date_string);
+              PN,VERSION,date_string);
    }
 
    /* Write a header to the CSV file */
@@ -2170,34 +2170,34 @@ static void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *clist,
    for (i=0, temp_list=list; temp_list; temp_list = temp_list->next, i++) {
       mkr = gtk_clist_get_row_data(GTK_CLIST(clist), GPOINTER_TO_INT(temp_list->data));
       if (!mkr) {
-	 continue;
-	 jp_logf(JP_LOG_WARN, _("Can't export key %d\n"), (long) temp_list->data + 1);
+         continue;
+         jp_logf(JP_LOG_WARN, _("Can't export key %d\n"), (long) temp_list->data + 1);
       }
       switch (type) {
        case EXPORT_TYPE_CSV:
-	 utf = charset_p2newj(keyr_app_info.name[mkr->attrib & 0x0F], 16, char_set);
-	 fprintf(out, "\"%s\",", utf);
-	 g_free(utf);
-	 str_to_csv_str(csv_text, mkr->kr.name);
-	 fprintf(out, "\"%s\",", csv_text);
-	 str_to_csv_str(csv_text, mkr->kr.account);
-	 fprintf(out, "\"%s\",", csv_text);
-	 str_to_csv_str(csv_text, mkr->kr.password);
-	 fprintf(out, "\"%s\",", csv_text);
-	 str_to_csv_str(csv_text, mkr->kr.note);
-	 fprintf(out, "\"%s\"\n", csv_text);
-	 break;
+         utf = charset_p2newj(keyr_app_info.name[mkr->attrib & 0x0F], 16, char_set);
+         fprintf(out, "\"%s\",", utf);
+         g_free(utf);
+         str_to_csv_str(csv_text, mkr->kr.name);
+         fprintf(out, "\"%s\",", csv_text);
+         str_to_csv_str(csv_text, mkr->kr.account);
+         fprintf(out, "\"%s\",", csv_text);
+         str_to_csv_str(csv_text, mkr->kr.password);
+         fprintf(out, "\"%s\",", csv_text);
+         str_to_csv_str(csv_text, mkr->kr.note);
+         fprintf(out, "\"%s\"\n", csv_text);
+         break;
 
        case EXPORT_TYPE_TEXT:
-	 fprintf(out, "#%d\n", i+1);
-	 fprintf(out, "Name: %s\n", mkr->kr.name);
-	 fprintf(out, "Account: %s\n", mkr->kr.account);
-	 fprintf(out, "Password: %s\n", mkr->kr.password);
-	 fprintf(out, "Note: %s\n", mkr->kr.note );
-	 break;
+         fprintf(out, "#%d\n", i+1);
+         fprintf(out, "Name: %s\n", mkr->kr.name);
+         fprintf(out, "Account: %s\n", mkr->kr.account);
+         fprintf(out, "Password: %s\n", mkr->kr.password);
+         fprintf(out, "Note: %s\n", mkr->kr.note );
+         break;
 
        default:
-	 jp_logf(JP_LOG_WARN, _("Unknown export type\n"));
+         jp_logf(JP_LOG_WARN, _("Unknown export type\n"));
       }
    }
 
@@ -2220,13 +2220,13 @@ static int plugin_export(GtkWidget *window)
 
    export_gui(window,
               w, h, x, y, 1, sort_l,
-	      PREF_KEYR_EXPORT_FILENAME,
-	      type_text,
-	      type_int,
-	      cb_keyr_update_clist,
-	      cb_keyr_export_done,
-	      cb_keyr_export_ok
-	      );
+              PREF_KEYR_EXPORT_FILENAME,
+              type_text,
+              type_int,
+              cb_keyr_update_clist,
+              cb_keyr_export_done,
+              cb_keyr_export_ok
+              );
 
    return EXIT_SUCCESS;
 }
@@ -2322,17 +2322,17 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
 #ifdef HAVE_LIBGCRYPT
    if (!gcrypt_init)
    {
-	   gcrypt_init = 1;
+           gcrypt_init = 1;
 
-	   /* Version check should be the very first call because it
+           /* Version check should be the very first call because it
           makes sure that important subsystems are intialized. */
        if (!gcry_check_version (GCRYPT_VERSION))
          {
            fputs ("libgcrypt version mismatch\n", stderr);
-		   return EXIT_FAILURE;
+                   return EXIT_FAILURE;
          }
      
-	   /* We don't want to see any warnings, e.g. because we have not yet
+           /* We don't want to see any warnings, e.g. because we have not yet
           parsed program options which might be used to suppress such
           warnings. */
        gcry_control (GCRYCTL_SUSPEND_SECMEM_WARN);
@@ -2345,7 +2345,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
           available and also drops privileges where needed.  */
        gcry_control (GCRYCTL_INIT_SECMEM, 16384, 0);
      
-	   /* It is now okay to let Libgcrypt complain when there was/is
+           /* It is now okay to let Libgcrypt complain when there was/is
           a problem with the secure memory. */
        gcry_control (GCRYCTL_RESUME_SECMEM_WARN);
      

@@ -1,4 +1,4 @@
-/* $Id: alarms.h,v 1.6 2007/12/18 00:41:42 rikster5 Exp $ */
+/* $Id: alarms.h,v 1.7 2010/03/29 05:44:27 rikster5 Exp $ */
 
 /*******************************************************************************
  * alarms.h
@@ -21,7 +21,7 @@
  ******************************************************************************/
 
 int alarms_init(unsigned char skip_past_alarms,
-		unsigned char skip_all_alarms);
+                unsigned char skip_all_alarms);
 /*
  * find the next alarm to happen after date2, and find all missed alarms
  * between date1 and date2.

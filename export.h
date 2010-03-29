@@ -1,4 +1,4 @@
-/* $Id: export.h,v 1.4 2004/11/22 00:52:42 rikster5 Exp $ */
+/* $Id: export.h,v 1.5 2010/03/29 05:44:28 rikster5 Exp $ */
 
 /*******************************************************************************
  * export.h
@@ -28,19 +28,19 @@
 
 int export_gui(GtkWidget *main_window,
                int w, int h, int x, int y,
-	       int columns,
-	       struct sorted_cats *sort_l,
-	       int pref_export,
-	       char *type_text[],
-	       int type_int[],
-	       void (*cb_export_menu)(GtkWidget *clist, int category),
-	       void (*cb_export_done)(GtkWidget *widget,
-				      const char *filename),
-	       void (*cb_export_ok)(GtkWidget *export_window,
-				    GtkWidget *clist,
-				    int type,
-				    const char *filename)
-	       );
+               int columns,
+               struct sorted_cats *sort_l,
+               int pref_export,
+               char *type_text[],
+               int type_int[],
+               void (*cb_export_menu)(GtkWidget *clist, int category),
+               void (*cb_export_done)(GtkWidget *widget,
+                                      const char *filename),
+               void (*cb_export_ok)(GtkWidget *export_window,
+                                    GtkWidget *clist,
+                                    int type,
+                                    const char *filename)
+               );
 
 /*
  * Actually, this should be in import.h, but I didn't want to create a whole

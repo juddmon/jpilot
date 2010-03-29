@@ -1,4 +1,4 @@
-/* $Id: japanese.c,v 1.14 2010/03/03 14:42:03 rousseau Exp $ */
+/* $Id: japanese.c,v 1.15 2010/03/29 05:44:29 rikster5 Exp $ */
 
 /*******************************************************************************
  * japanese.c
@@ -21,10 +21,10 @@
  ******************************************************************************/
 
 /*
-	Japanization library
-	Convert charset: Palm <-> Unix Japanese Code, ie:
-		         Palm  :  SJIS
-		         Unix  :  EUC
+        Japanization library
+        Convert charset: Palm <-> Unix Japanese Code, ie:
+                         Palm  :  SJIS
+                         Unix  :  EUC
 */
 
 /********************************* Includes ***********************************/
@@ -83,29 +83,29 @@ static char *Sjis2EucCpy(char *dest, char *src, int max_len)
     q = (unsigned char *)dest;
     while ((*p) && (n < max_len-2)) {
         if (isSjis1stByte(*p)) {
-  	    hi = *p++;
-	    lo = *p++;
-	    w = SjisToEuc(hi, lo);
-	    *q++ = (w >> 8) & 0xff;
-	    *q++ = w & 0xff;
-	    n += 2;
-	} else if (isSjisKana(*p)) {                /* sjis(1byte) -> euc(2byte) */
-	    *q++ = (unsigned char)euc_kana;
-	    *q++ = *p++;
-	    n += 2;
-	} else if ((*p) & 0x80) {	            /* irregular japanese char */
-	    p++;                                    /* ??abort and return NULL?? */
-	    /* discard it */
-	} else {
-	    *q++ = *p++;
-	    n++;
-	}
+            hi = *p++;
+            lo = *p++;
+            w = SjisToEuc(hi, lo);
+            *q++ = (w >> 8) & 0xff;
+            *q++ = w & 0xff;
+            n += 2;
+        } else if (isSjisKana(*p)) {                /* sjis(1byte) -> euc(2byte) */
+            *q++ = (unsigned char)euc_kana;
+            *q++ = *p++;
+            n += 2;
+        } else if ((*p) & 0x80) {                   /* irregular japanese char */
+            p++;                                    /* ??abort and return NULL?? */
+            /* discard it */
+        } else {
+            *q++ = *p++;
+            n++;
+        }
     }
     if ((*p) && !(*p & 0x80) && (n < max_len-1)) {
-	    *q++ = *p++;
-	    *q = '\0';
+            *q++ = *p++;
+            *q = '\0';
     } else {
-	    *q = '\0';
+            *q = '\0';
     }
     return (char *)q;
 }
@@ -118,17 +118,17 @@ static char *Sjis2EucCpy(char *dest, char *src, int max_len)
 */
 void Sjis2Euc(char *buf, int max_len)
 {
-	char *dst;
+        char *dst;
 
-	if (buf == NULL) return;
-	if ((dst = malloc(max_len)) != NULL) {
+        if (buf == NULL) return;
+        if ((dst = malloc(max_len)) != NULL) {
                             /* assign buffer for destination. */
-		if (Sjis2EucCpy(dst, buf, max_len) != NULL) {
-			multibyte_safe_strncpy(buf, dst, max_len);
-			buf[max_len-1] = '\0';  /* i am a paranoid B-) */
-		}
-		free(dst);
-	}
+                if (Sjis2EucCpy(dst, buf, max_len) != NULL) {
+                        multibyte_safe_strncpy(buf, dst, max_len);
+                        buf[max_len-1] = '\0';  /* i am a paranoid B-) */
+                }
+                free(dst);
+        }
 }
 
 /*
@@ -145,13 +145,13 @@ static void Sjis2Euc_x(char *buf, int max_len)
     if (buf == NULL) return;
     if ((dst = malloc(max_len*2)) == NULL) return; /* assign buffer for destination. */
     if ((p = Sjis2EucCpy(dst, buf, max_len*2)) != NULL) {
-	if (strlen(dst) > strlen(buf)) {
-	    free(buf);
-	    buf = strdup(dst);
-	} else {
-	    multibyte_safe_strncpy(buf, dst, max_len);
-	    buf[max_len-1] = '\0';  /* i am a paranoid B-) */
-	}
+        if (strlen(dst) > strlen(buf)) {
+            free(buf);
+            buf = strdup(dst);
+        } else {
+            multibyte_safe_strncpy(buf, dst, max_len);
+            buf[max_len-1] = '\0';  /* i am a paranoid B-) */
+        }
     }
     free(dst);
 }
@@ -186,27 +186,27 @@ static char *Euc2SjisCpy(char *dest, char *src, int max_len)
     p = (unsigned char *)src;
     q = (unsigned char *)dest;
     while ((*p) && (n < max_len-2)) {
-	if (isEucKana(*p)) {      /* euc kana(2byte) -> sjis(1byte) */
-	    p++;
-	    *q++ = *p++;
-	    n++;
-	} else if (isEuc(*p) && isEuc(*(p+1))) {
-   	    hi = *p++;
-	    lo = *p++;
-	    w = EucToSjis(hi, lo);
-	    *q++ = (w >> 8) & 0xff;
-	    *q++ = w & 0xff;
-	    n += 2;
-	} else {                  /* ascii or irregular japanese char */
-	    *q++ = *p++;
-	    n++;
-	}
+        if (isEucKana(*p)) {      /* euc kana(2byte) -> sjis(1byte) */
+            p++;
+            *q++ = *p++;
+            n++;
+        } else if (isEuc(*p) && isEuc(*(p+1))) {
+            hi = *p++;
+            lo = *p++;
+            w = EucToSjis(hi, lo);
+            *q++ = (w >> 8) & 0xff;
+            *q++ = w & 0xff;
+            n += 2;
+        } else {                  /* ascii or irregular japanese char */
+            *q++ = *p++;
+            n++;
+        }
     }
     if ((*p) && !(*p & 0x80) && n < max_len-1) {
-	    *q++ = *p++;
-	    *q = '\0';
+            *q++ = *p++;
+            *q = '\0';
     } else {
-	    *q = '\0';
+            *q = '\0';
     }
     return dest;
 }
@@ -218,9 +218,9 @@ static char *Euc2SjisCpy(char *dest, char *src, int max_len)
  */
 void Euc2Sjis(char *buf, int max_len)
 {
-	if (buf == NULL) return;
-	if (max_len <= 0) return;
-	Euc2SjisCpy(buf, buf, max_len);
+        if (buf == NULL) return;
+        if (max_len <= 0) return;
+        Euc2SjisCpy(buf, buf, max_len);
 }
 
 /*
@@ -231,13 +231,13 @@ void Euc2Sjis(char *buf, int max_len)
 */
 void jp_Sjis2Euc(char *buf, int max_len)
 {
-	char dst[65536];
+        char dst[65536];
 
-	if (buf == NULL) return;
-	if (max_len > 0xFFFF) max_len = 0xFFFF;
-	if (Sjis2EucCpy(dst, buf, max_len) != NULL) {
-		multibyte_safe_strncpy(buf, dst, max_len);
-		buf[max_len-1] = '\0';  /* i am a paranoid B-) */
-	}
+        if (buf == NULL) return;
+        if (max_len > 0xFFFF) max_len = 0xFFFF;
+        if (Sjis2EucCpy(dst, buf, max_len) != NULL) {
+                multibyte_safe_strncpy(buf, dst, max_len);
+                buf[max_len-1] = '\0';  /* i am a paranoid B-) */
+        }
 }
 

@@ -1,4 +1,4 @@
-/* $Id: libplugin.h,v 1.30 2010/03/03 12:02:40 rousseau Exp $ */
+/* $Id: libplugin.h,v 1.31 2010/03/29 05:44:29 rikster5 Exp $ */
 
 /*******************************************************************************
  * libplugin.h
@@ -216,9 +216,9 @@ int plugin_search(const char *search_string, int case_sense, struct search_resul
 int plugin_post_sync(void);
 int plugin_exit_cleanup(void);
 int plugin_unpack_cai_from_ai(struct CategoryAppInfo *cai,
-			      unsigned char *ai_raw, int len);
+                              unsigned char *ai_raw, int len);
 int plugin_pack_cai_into_ai(struct CategoryAppInfo *cai,
-			    unsigned char *ai_raw, int len);
+                            unsigned char *ai_raw, int len);
 /* callbacks are needed for print */
 
 void jp_init(void);
@@ -314,8 +314,8 @@ int dialog_save_changed_record(GtkWidget *widget, int changed);
  * After a new date is selected it will return mon, day, year
  */
 int jp_cal_dialog(GtkWindow *main_window,
-		  const char *title, int monday_is_fdow,
-		  int *mon, int *day, int *year);
+                  const char *title, int monday_is_fdow,
+                  int *mon, int *day, int *year);
 
 /*
  * The preferences interface makes it easy to read and write name/value pairs

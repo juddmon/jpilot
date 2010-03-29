@@ -1,4 +1,4 @@
-/* $Id: cp1250.c,v 1.10 2008/06/19 04:12:07 rikster5 Exp $ */
+/* $Id: cp1250.c,v 1.11 2010/03/29 05:44:28 rikster5 Exp $ */
 
 /*******************************************************************************
  * cp1250.c
@@ -75,7 +75,7 @@ void Win2Lat(char *const buf, int buf_len)
 
    for (i=0, p = (unsigned char *)buf; *p && i < buf_len; p++, i++) {
       if (isCZ(*p)) {
-	 *p = w2l[(*p) & 0x7f];
+         *p = w2l[(*p) & 0x7f];
       }
    }
 }
@@ -89,7 +89,7 @@ void Lat2Win(char *const buf, int buf_len)
 
    for (i=0, p = (unsigned char *)buf; *p && i < buf_len; p++, i++) {
       if (isCZ(*p)) {
-	 *p = l2w[(*p) & 0x7f];
+         *p = l2w[(*p) & 0x7f];
       }
    }
 }

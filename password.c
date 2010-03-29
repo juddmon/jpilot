@@ -1,4 +1,4 @@
-/* $Id: password.c,v 1.28 2008/06/19 04:12:07 rikster5 Exp $ */
+/* $Id: password.c,v 1.29 2010/03/29 05:44:30 rikster5 Exp $ */
 
 /*******************************************************************************
  * password.c
@@ -101,14 +101,14 @@ void palm_encode_hash(unsigned char *ascii, unsigned char *encoded)
    if (strlen((char *)ascii)<5) {
       si = (ascii[0] + strlen((char*)ascii)) % PASSWD_LEN;
       for (ai=ei=0; ei<32; ai++, ei++, si++) {
-	 if (ascii[ai]=='\0') {
-	    end=1;
-	 }
-	 if (end) {
-	    encoded[ei]=short_salt[si%PASSWD_LEN];
-	 } else {
-	    encoded[ei]=ascii[ai] ^ short_salt[si%PASSWD_LEN];
-	 }
+         if (ascii[ai]=='\0') {
+            end=1;
+         }
+         if (end) {
+            encoded[ei]=short_salt[si%PASSWD_LEN];
+         } else {
+            encoded[ei]=ascii[ai] ^ short_salt[si%PASSWD_LEN];
+         }
       }
       return;
    }
@@ -124,13 +124,13 @@ void palm_encode_hash(unsigned char *ascii, unsigned char *encoded)
       index = (encoded[m] + encoded[m+1]) & 0x3F;
       shift = (encoded[m+2] + encoded[m+3]) & 0x7;
       for (ei=0; ei<PASSWD_LEN; ei++) {
-	 temp = long_salt[index%64];
-	 temp <<= 8;
-	 temp |= long_salt[index%64];
-	 temp >>= shift;
-	 encoded[m%32] ^= temp & 0xFF;
-	 m++;
-	 index++;
+         temp = long_salt[index%64];
+         temp <<= 8;
+         temp |= long_salt[index%64];
+         temp >>= shift;
+         encoded[m%32] ^= temp & 0xFF;
+         m++;
+         index++;
       }
    }
 }
@@ -226,7 +226,7 @@ int show_privates(int hide)
  */
 /* Start of Dialog window code */
 static void cb_dialog_button(GtkWidget *widget,
-			       gpointer   data)
+                               gpointer   data)
 {
    struct dialog_data *Pdata;
    GtkWidget *w;
@@ -279,9 +279,9 @@ int dialog_password(GtkWindow *main_window, char *ascii_password, int retry)
    ret = 2;
 
    dialog = gtk_widget_new(GTK_TYPE_WINDOW,
-			   "type", GTK_WINDOW_TOPLEVEL,
-			   "title", _("Palm Password"),
-			   NULL);
+                           "type", GTK_WINDOW_TOPLEVEL,
+                           "title", _("Palm Password"),
+                           NULL);
 
    gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_MOUSE);
    gtk_window_set_modal(GTK_WINDOW(dialog), TRUE);
@@ -315,8 +315,8 @@ int dialog_password(GtkWindow *main_window, char *ascii_password, int retry)
    entry = gtk_entry_new_with_max_length(PASSWD_LEN);
    gtk_entry_set_visibility(GTK_ENTRY(entry), FALSE);
    gtk_signal_connect(GTK_OBJECT(entry), "activate",
-		      GTK_SIGNAL_FUNC(cb_dialog_button),
-		      GINT_TO_POINTER(DIALOG_SAID_2));
+                      GTK_SIGNAL_FUNC(cb_dialog_button),
+                      GINT_TO_POINTER(DIALOG_SAID_2));
    gtk_box_pack_start(GTK_BOX(hbox1), entry, TRUE, TRUE, 1);
 
    /* Button Box */
@@ -329,15 +329,15 @@ int dialog_password(GtkWindow *main_window, char *ascii_password, int retry)
    /* Cancel Button */
    button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_dialog_button),
-		      GINT_TO_POINTER(DIALOG_SAID_1));
+                      GTK_SIGNAL_FUNC(cb_dialog_button),
+                      GINT_TO_POINTER(DIALOG_SAID_1));
    gtk_box_pack_start(GTK_BOX(hbox1), button, FALSE, FALSE, 1);
 
    /* OK Button */
    button = gtk_button_new_from_stock(GTK_STOCK_OK);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_dialog_button),
-		      GINT_TO_POINTER(DIALOG_SAID_2));
+                      GTK_SIGNAL_FUNC(cb_dialog_button),
+                      GINT_TO_POINTER(DIALOG_SAID_2));
    gtk_box_pack_start(GTK_BOX(hbox1), button, FALSE, FALSE, 1);
    GTK_WIDGET_SET_FLAGS(button, GTK_CAN_DEFAULT);
    gtk_widget_grab_default(button);

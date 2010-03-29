@@ -1,4 +1,4 @@
-/* $Id: install_user.c,v 1.12 2010/03/04 17:39:32 rousseau Exp $ */
+/* $Id: install_user.c,v 1.13 2010/03/29 05:44:29 rikster5 Exp $ */
 
 /*******************************************************************************
  * install_user.c
@@ -72,11 +72,11 @@ static void cb_install_user_button(GtkWidget *widget, gpointer data)
    if (Pdata) {
       Pdata->button_hit = GPOINTER_TO_INT(data);
       if (Pdata->button_hit == DIALOG_SAID_1) {
-	 g_strlcpy(Pdata->user,
-	       gtk_entry_get_text(GTK_ENTRY(Pdata->user_entry)),
-	       sizeof(Pdata->user));
-	 sscanf(gtk_entry_get_text(GTK_ENTRY(Pdata->ID_entry)), "%lu",
-		&(Pdata->id));
+         g_strlcpy(Pdata->user,
+               gtk_entry_get_text(GTK_ENTRY(Pdata->user_entry)),
+               sizeof(Pdata->user));
+         sscanf(gtk_entry_get_text(GTK_ENTRY(Pdata->ID_entry)), "%lu",
+                &(Pdata->id));
       }
    }
 
@@ -91,8 +91,8 @@ static gboolean cb_destroy_dialog(GtkWidget *widget)
 }
 
 static int dialog_install_user(GtkWindow *main_window, 
-                        char *user, int user_len, 
-                        unsigned long *user_id)
+                               char *user, int user_len, 
+                               unsigned long *user_id)
 {
    GtkWidget *button, *label;
    GtkWidget *user_entry, *ID_entry;
@@ -108,20 +108,20 @@ static int dialog_install_user(GtkWindow *main_window,
    data.button_hit=0;
 
    install_user_dialog = gtk_widget_new(GTK_TYPE_WINDOW,
-					"type", GTK_WINDOW_TOPLEVEL,
-					"window_position", GTK_WIN_POS_MOUSE,
-					"title", _("Install User"),
-					NULL);
+                                        "type", GTK_WINDOW_TOPLEVEL,
+                                        "window_position", GTK_WIN_POS_MOUSE,
+                                        "title", _("Install User"),
+                                        NULL);
    gtk_window_set_modal(GTK_WINDOW(install_user_dialog), TRUE);
    if (main_window) {
       gtk_window_set_transient_for(GTK_WINDOW(install_user_dialog), GTK_WINDOW(main_window));
    }
 
    gtk_signal_connect(GTK_OBJECT(install_user_dialog), "destroy",
-		      GTK_SIGNAL_FUNC(cb_destroy_dialog), install_user_dialog);
+                      GTK_SIGNAL_FUNC(cb_destroy_dialog), install_user_dialog);
 
    gtk_object_set_data(GTK_OBJECT(install_user_dialog),
-		       "install_dialog_data", &data);
+                       "install_dialog_data", &data);
 
    vbox = gtk_vbox_new(FALSE, 5);
 
@@ -208,14 +208,14 @@ static int dialog_install_user(GtkWindow *main_window,
 
    button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_install_user_button),
-		      GINT_TO_POINTER(DIALOG_SAID_2));
+                      GTK_SIGNAL_FUNC(cb_install_user_button),
+                      GINT_TO_POINTER(DIALOG_SAID_2));
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 1);
 
    button = gtk_button_new_with_label(_("Install User"));
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_install_user_button),
-		      GINT_TO_POINTER(DIALOG_SAID_1));
+                      GTK_SIGNAL_FUNC(cb_install_user_button),
+                      GINT_TO_POINTER(DIALOG_SAID_1));
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 1);
    GTK_WIDGET_SET_FLAGS(button, GTK_CAN_DEFAULT);
    gtk_widget_grab_default(button);
@@ -246,9 +246,9 @@ void install_user_gui(GtkWidget *main_window)
       get_pref(PREF_USER, NULL, &svalue);
       get_pref(PREF_USER_ID, &ivalue, NULL);
       if (svalue) {
-	 old_user = strdup(svalue);
+         old_user = strdup(svalue);
       } else {
-	 old_user = strdup("");
+         old_user = strdup("");
       }
 
       set_pref(PREF_USER, 0, user, FALSE);

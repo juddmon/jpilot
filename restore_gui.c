@@ -1,4 +1,4 @@
-/* $Id: restore_gui.c,v 1.28 2010/03/03 12:50:00 rousseau Exp $ */
+/* $Id: restore_gui.c,v 1.29 2010/03/29 05:44:31 rikster5 Exp $ */
 
 /*******************************************************************************
  * restore_gui.c
@@ -79,22 +79,22 @@ static void cb_restore_ok(GtkWidget *widget, gpointer data)
       r1 = ! stat(file, &buf);
       r2 = ! stat(backup_file, &backup_buf);
       if (r1 && r2) {
-	 /* found in JPILOT_HOME and JPILOT_HOME/backup */
-	 if (buf.st_mtime > backup_buf.st_mtime) {
-	    jp_logf(JP_LOG_DEBUG, "Restore: found in home and backup, using home file %s\n", text);
-	    install_append_line(file);
-	 } else {
-	    jp_logf(JP_LOG_DEBUG, "Restore: found in home and backup, using home/backup file %s\n", text);
-	    install_append_line(backup_file);
-	 }
+         /* found in JPILOT_HOME and JPILOT_HOME/backup */
+         if (buf.st_mtime > backup_buf.st_mtime) {
+            jp_logf(JP_LOG_DEBUG, "Restore: found in home and backup, using home file %s\n", text);
+            install_append_line(file);
+         } else {
+            jp_logf(JP_LOG_DEBUG, "Restore: found in home and backup, using home/backup file %s\n", text);
+            install_append_line(backup_file);
+         }
       } else if (r1) {
-	 /* only found in JPILOT_HOME */
-	 install_append_line(file);
-	 jp_logf(JP_LOG_DEBUG, "Restore: using home file %s\n", text);
+         /* only found in JPILOT_HOME */
+         install_append_line(file);
+         jp_logf(JP_LOG_DEBUG, "Restore: using home file %s\n", text);
       } else if (r2) {
-	 /* only found in JPILOT_HOME/backup */
-	 jp_logf(JP_LOG_DEBUG, "Restore: using home/backup file %s\n", text);
-	 install_append_line(backup_file);
+         /* only found in JPILOT_HOME/backup */
+         jp_logf(JP_LOG_DEBUG, "Restore: using home/backup file %s\n", text);
+         install_append_line(backup_file);
       }
    }
 
@@ -129,49 +129,49 @@ static int populate_clist_sub(char *path, int check_for_dups, int check_exts)
       jp_logf(JP_LOG_DEBUG, "opening dir failed\n");
    } else {
       for (i=0; (dirent = readdir(dir)); i++) {
-	 if (i>1000) {
-	    jp_logf(JP_LOG_WARN, "populate_clist_sub(): %s\n", _("infinite loop"));
-	    closedir(dir);
-	    return EXIT_FAILURE;
-	 }
-	 if (dirent->d_name[0]=='.') {
-	    continue;
-	 }
-	 if (!strncmp(dirent->d_name, "Unsaved Preferences", 17)) {
-	    jp_logf(JP_LOG_DEBUG, "skipping %s\n", dirent->d_name);
-	    continue;
-	 }
-	 if (check_exts) {
-	    len = strlen(dirent->d_name);
-	    if (len < 4) {
-	       continue;
-	    }
-	    strncpy(last4, dirent->d_name+len-4, 4);
-	    last4[4]='\0';
-	    if (strcmp(last4, ".pdb") &&
-		strcmp(last4, ".prc") &&
-		strcmp(last4, ".pqa")) {
-	       continue;
-	    }
-	 }
+         if (i>1000) {
+            jp_logf(JP_LOG_WARN, "populate_clist_sub(): %s\n", _("infinite loop"));
+            closedir(dir);
+            return EXIT_FAILURE;
+         }
+         if (dirent->d_name[0]=='.') {
+            continue;
+         }
+         if (!strncmp(dirent->d_name, "Unsaved Preferences", 17)) {
+            jp_logf(JP_LOG_DEBUG, "skipping %s\n", dirent->d_name);
+            continue;
+         }
+         if (check_exts) {
+            len = strlen(dirent->d_name);
+            if (len < 4) {
+               continue;
+            }
+            strncpy(last4, dirent->d_name+len-4, 4);
+            last4[4]='\0';
+            if (strcmp(last4, ".pdb") &&
+                strcmp(last4, ".prc") &&
+                strcmp(last4, ".pqa")) {
+               continue;
+            }
+         }
 
-	 if (check_for_dups) {
-	    found=0;
-	    for (i=0; i<GTK_CLIST(restore_clist)->rows; i++) {
-	       gtk_clist_get_text(GTK_CLIST(restore_clist), i, 0, &text);
-	       if (!(strcmp(dirent->d_name, text))) {
-		  found=1;
-		  break;
-	       }
-	    }
-	    if (found) continue;
-	 }
+         if (check_for_dups) {
+            found=0;
+            for (i=0; i<GTK_CLIST(restore_clist)->rows; i++) {
+               gtk_clist_get_text(GTK_CLIST(restore_clist), i, 0, &text);
+               if (!(strcmp(dirent->d_name, text))) {
+                  found=1;
+                  break;
+               }
+            }
+            if (found) continue;
+         }
 
-	 row_text[0]=dirent->d_name;
-	 {
-	    gchar *utf8_text;
+         row_text[0]=dirent->d_name;
+         {
+            gchar *utf8_text;
 
-	    utf8_text = g_locale_to_utf8(row_text[0], -1, NULL, NULL, NULL);
+            utf8_text = g_locale_to_utf8(row_text[0], -1, NULL, NULL, NULL);
             if (!utf8_text) {
                jp_logf(JP_LOG_GUI, _("Unable to convert filename for GTK display\n"));
                jp_logf(JP_LOG_GUI, _("See console log to find which file will not be restored"));
@@ -179,11 +179,11 @@ static int populate_clist_sub(char *path, int check_for_dups, int check_exts)
                jp_logf(JP_LOG_WARN, _("File %s will not be restored\n"), row_text[0]);
                continue;
             }
-	    row_text[0] = utf8_text;
-	    gtk_clist_append(GTK_CLIST(restore_clist), row_text);
-	    g_free(utf8_text);
-	 }
-	 num++;
+            row_text[0] = utf8_text;
+            gtk_clist_append(GTK_CLIST(restore_clist), row_text);
+            g_free(utf8_text);
+         }
+         num++;
       }
       closedir(dir);
    }
@@ -224,9 +224,9 @@ int restore_gui(GtkWidget *main_window, int w, int h, int x, int y)
    jp_logf(JP_LOG_DEBUG, "restore_gui()\n");
 
    restore_window = gtk_widget_new(GTK_TYPE_WINDOW,
-				   "type", GTK_WINDOW_TOPLEVEL,
-				   "title", _("Restore Handheld"),
-				   NULL);
+                                   "type", GTK_WINDOW_TOPLEVEL,
+                                   "title", _("Restore Handheld"),
+                                   NULL);
 
    gtk_window_set_default_size(GTK_WINDOW(restore_window), w, h);
    gtk_widget_set_uposition(restore_window, x, y);
@@ -236,7 +236,7 @@ int restore_gui(GtkWidget *main_window, int w, int h, int x, int y)
    gtk_window_set_transient_for(GTK_WINDOW(restore_window), GTK_WINDOW(main_window));
 
    gtk_signal_connect(GTK_OBJECT(restore_window), "destroy",
-		      GTK_SIGNAL_FUNC(cb_restore_destroy), restore_window);
+                      GTK_SIGNAL_FUNC(cb_restore_destroy), restore_window);
 
    vbox = gtk_vbox_new(FALSE, 0);
    gtk_container_add(GTK_CONTAINER(restore_window), vbox);
@@ -262,7 +262,7 @@ int restore_gui(GtkWidget *main_window, int w, int h, int x, int y)
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 0);
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
-				  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+                                  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
    gtk_box_pack_start(GTK_BOX(vbox), scrolled_window, TRUE, TRUE, 0);
 
    restore_clist = gtk_clist_new(1);
@@ -306,12 +306,12 @@ int restore_gui(GtkWidget *main_window, int w, int h, int x, int y)
    button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_restore_quit), restore_window);
+                      GTK_SIGNAL_FUNC(cb_restore_quit), restore_window);
 
    button = gtk_button_new_from_stock(GTK_STOCK_OK);
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_restore_ok), restore_window);
+                      GTK_SIGNAL_FUNC(cb_restore_ok), restore_window);
 
    populate_clist();
 

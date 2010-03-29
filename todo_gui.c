@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.163 2010/03/03 12:50:00 rousseau Exp $ */
+/* $Id: todo_gui.c,v 1.164 2010/03/29 05:44:32 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -394,7 +394,8 @@ Description: %s\nNote: %s\n", due, todo->priority, complete,
 /*
  * Start Import Code
  */
-static int cb_todo_import(GtkWidget *parent_window, const char *file_path, int type)
+static int cb_todo_import(GtkWidget *parent_window, 
+                          const char *file_path, int type)
 {
    FILE *in;
    char text[65536];
@@ -609,7 +610,6 @@ int todo_import(GtkWidget *window)
    if (todo_version==1) {
       type_desc[1] = NULL;
       type_int[1] = 0;
-
    } 
    */
 
@@ -625,7 +625,7 @@ int todo_import(GtkWidget *window)
  */
 
 static void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
-                       int type, const char *filename)
+                              int type, const char *filename)
 {
    MyToDo *mtodo;
    GList *list, *temp_list;
@@ -722,8 +722,8 @@ static void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
       switch (type) {
        case EXPORT_TYPE_CSV:
          utf = charset_p2newj(todo_app_info.category.name[mtodo->attrib & 0x0F], 16, char_set);
-	 str_to_csv_str(csv_text, utf);
-	 fprintf(out, "\"%s\",", csv_text);
+         str_to_csv_str(csv_text, utf);
+         fprintf(out, "\"%s\",", csv_text);
          g_free(utf);
          fprintf(out, "\"%s\",", (mtodo->attrib & dlpRecAttrSecret) ? "1":"0");
          fprintf(out, "\"%s\",", mtodo->todo.indefinite ? "1":"0");
@@ -917,7 +917,7 @@ static int find_menu_cat_pos(int cat)
 }
 
 static void cb_delete_todo(GtkWidget *widget,
-                    gpointer   data)
+                           gpointer   data)
 {
    MyToDo *mtodo;
    int flag;
@@ -963,7 +963,7 @@ static void cb_delete_todo(GtkWidget *widget,
 }
 
 static void cb_undelete_todo(GtkWidget *widget,
-                      gpointer   data)
+                             gpointer   data)
 {
    MyToDo *mtodo;
    int flag;
@@ -1358,8 +1358,8 @@ static void clear_mytodos(MyToDo *mtodo)
 
 /* Function is used to sort clist based on the completed checkbox */
 static gint GtkClistCompareCheckbox(GtkCList *clist,
-                             gconstpointer ptr1,
-                             gconstpointer ptr2)
+                                    gconstpointer ptr1,
+                                    gconstpointer ptr2)
 {
    GtkCListRow *row1;
    GtkCListRow *row2;
@@ -1389,8 +1389,8 @@ static gint GtkClistCompareCheckbox(GtkCList *clist,
 
 /* Function is used to sort clist based on the Due Date field */
 static gint GtkClistCompareDates(GtkCList *clist,
-                          gconstpointer ptr1,
-                          gconstpointer ptr2)
+                                 gconstpointer ptr1,
+                                 gconstpointer ptr2)
 {
    GtkCListRow *row1,  *row2;
    MyToDo      *mtodo1,*mtodo2;

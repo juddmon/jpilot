@@ -1,4 +1,7 @@
-/* pidfile.h
+/* $Id: pidfile.h,v 1.2 2010/03/29 05:44:30 rikster5 Exp $ */
+
+/*******************************************************************************
+ * pidfile.h
  * A module of J-Pilot http://jpilot.org
  *
  * Copyright (C) 2005 by Jason Day
@@ -15,7 +18,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
+ ******************************************************************************/
 
 #include "config.h"
 #include <sys/types.h>

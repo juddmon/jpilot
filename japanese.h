@@ -1,4 +1,4 @@
-/* $Id: japanese.h,v 1.7 2004/11/29 06:24:46 rikster5 Exp $ */
+/* $Id: japanese.h,v 1.8 2010/03/29 05:44:29 rikster5 Exp $ */
 
 /*******************************************************************************
  * japanese.h
@@ -21,10 +21,10 @@
  ******************************************************************************/
 
 /*
-	Header for Japanization library
-	Convert Palm <-> Unix Japanese Code, ie:
-		Palm : SJIS
-		Unix : EUC
+        Header for Japanization library
+        Convert Palm <-> Unix Japanese Code, ie:
+                Palm : SJIS
+                Unix : EUC
 */
 
 void Sjis2Euc(char *buf, int max_len);

@@ -1,4 +1,4 @@
-/* $Id: libplugin.c,v 1.40 2010/03/03 14:42:03 rousseau Exp $ */
+/* $Id: libplugin.c,v 1.41 2010/03/29 05:44:29 rikster5 Exp $ */
 
 /*******************************************************************************
  * libplugin.c
@@ -39,8 +39,8 @@
 /****************************** Prototypes ************************************/
 static int pack_header(PC3RecordHeader *header, unsigned char *packed_header);
 static int static_find_next_offset(mem_rec_header *mem_rh, long fpos,
-			    long *next_offset,
-			    unsigned char *attrib, unsigned int *unique_id);
+                            long *next_offset,
+                            unsigned char *attrib, unsigned int *unique_id);
 static void static_free_mem_rec_header(mem_rec_header **mem_rh);
 static int pc_read_next_rec(FILE *in, buf_rec *br);
 static int unpack_header(PC3RecordHeader *header, unsigned char *packed_header);
@@ -63,7 +63,7 @@ int jp_delete_record(char *DB_name, buf_rec *br, int flag)
 
    if ((br->rt==DELETED_PALM_REC) || (br->rt==MODIFIED_PALM_REC)) {
       jp_logf(JP_LOG_INFO, _("This record is already deleted.\n"
-		  "It is scheduled to be deleted from the Palm on the next sync.\n"));
+                  "It is scheduled to be deleted from the Palm on the next sync.\n"));
       return EXIT_SUCCESS;
    }
    switch (br->rt) {
@@ -71,35 +71,35 @@ int jp_delete_record(char *DB_name, buf_rec *br, int flag)
     case REPLACEMENT_PALM_REC:
       pc_in=jp_open_home_file(PC_name, "r+");
       if (pc_in==NULL) {
-	 jp_logf(JP_LOG_WARN, _("Unable to open PC records file\n"));
-	 return EXIT_FAILURE;
+         jp_logf(JP_LOG_WARN, _("Unable to open PC records file\n"));
+         return EXIT_FAILURE;
       }
       while(!feof(pc_in)) {
-	 read_header(pc_in, &header);
-	 if (feof(pc_in)) {
-	    jp_logf(JP_LOG_WARN, _("Couldn't find record to delete\n"));
-	    jp_close_home_file(pc_in);
-	    return EXIT_FAILURE;
-	 }
-	 if (header.header_version==2) {
-	    /* Keep unique ID intact */
-	    if ((header.unique_id==br->unique_id) &&
-	       ((header.rt==NEW_PC_REC) || (header.rt==REPLACEMENT_PALM_REC))) {
-	       if (fseek(pc_in, -header.header_len, SEEK_CUR)) {
-		  jp_logf(JP_LOG_WARN, "fseek failed\n");
-	       }
-	       header.rt=DELETED_PC_REC;
-	       write_header(pc_in, &header);
-	       jp_logf(JP_LOG_DEBUG, "record deleted\n");
-	       jp_close_home_file(pc_in);
-	       return EXIT_SUCCESS;
-	    }
-	 } else {
-	    jp_logf(JP_LOG_WARN, _("Unknown header version %d\n"), header.header_version);
-	 }
-	 if (fseek(pc_in, header.rec_len, SEEK_CUR)) {
-	    jp_logf(JP_LOG_WARN, "fseek failed\n");
-	 }
+         read_header(pc_in, &header);
+         if (feof(pc_in)) {
+            jp_logf(JP_LOG_WARN, _("Couldn't find record to delete\n"));
+            jp_close_home_file(pc_in);
+            return EXIT_FAILURE;
+         }
+         if (header.header_version==2) {
+            /* Keep unique ID intact */
+            if ((header.unique_id==br->unique_id) &&
+               ((header.rt==NEW_PC_REC) || (header.rt==REPLACEMENT_PALM_REC))) {
+               if (fseek(pc_in, -header.header_len, SEEK_CUR)) {
+                  jp_logf(JP_LOG_WARN, "fseek failed\n");
+               }
+               header.rt=DELETED_PC_REC;
+               write_header(pc_in, &header);
+               jp_logf(JP_LOG_DEBUG, "record deleted\n");
+               jp_close_home_file(pc_in);
+               return EXIT_SUCCESS;
+            }
+         } else {
+            jp_logf(JP_LOG_WARN, _("Unknown header version %d\n"), header.header_version);
+         }
+         if (fseek(pc_in, header.rec_len, SEEK_CUR)) {
+            jp_logf(JP_LOG_WARN, "fseek failed\n");
+         }
       }
       jp_close_home_file(pc_in);
       return EXIT_FAILURE;
@@ -108,14 +108,14 @@ int jp_delete_record(char *DB_name, buf_rec *br, int flag)
       jp_logf(JP_LOG_DEBUG, "Deleting Palm ID %d\n", br->unique_id);
       pc_in=jp_open_home_file(PC_name, "a");
       if (pc_in==NULL) {
-	 jp_logf(JP_LOG_WARN, _("Unable to open PC records file\n"));
-	 return EXIT_FAILURE;
+         jp_logf(JP_LOG_WARN, _("Unable to open PC records file\n"));
+         return EXIT_FAILURE;
       }
       header.unique_id=br->unique_id;
       if (flag==MODIFY_FLAG) {
-	 header.rt=MODIFIED_PALM_REC;
+         header.rt=MODIFIED_PALM_REC;
       } else {
-	 header.rt=DELETED_PALM_REC;
+         header.rt=DELETED_PALM_REC;
       }
       header.attrib=br->attrib;
       header.rec_len=br->size;
@@ -148,12 +148,12 @@ int jp_free_DB_records(GList **br_list)
 
    for (temp_list = *br_list; temp_list; temp_list = temp_list->next) {
       if (temp_list->data) {
-	 br=temp_list->data;
-	 if (br->buf) {
-	    free(br->buf);
-	    temp_list->data=NULL;
-	 }
-	 free(br);
+         br=temp_list->data;
+         if (br->buf) {
+            free(br->buf);
+            temp_list->data=NULL;
+         }
+         free(br);
       }
    }
    g_list_free(*br_list);
@@ -186,13 +186,13 @@ int jp_get_app_info(char *DB_name, unsigned char **buf, int *buf_size)
    num = fread(raw_header, LEN_RAW_DB_HEADER, 1, in);
    if (num != 1) {
       if (ferror(in)) {
-	 jp_logf(JP_LOG_WARN, _("%s:%d Error reading file: %s\n"), __FILE__, __LINE__, PDB_name);
-	 jp_close_home_file(in);
-	 return EXIT_FAILURE;
+         jp_logf(JP_LOG_WARN, _("%s:%d Error reading file: %s\n"), __FILE__, __LINE__, PDB_name);
+         jp_close_home_file(in);
+         return EXIT_FAILURE;
       }
       if (feof(in)) {
-	 jp_close_home_file(in);
-	 return JPILOT_EOF;
+         jp_close_home_file(in);
+         return JPILOT_EOF;
       }
    }
    unpack_db_header(&dbh, raw_header);
@@ -213,10 +213,10 @@ int jp_get_app_info(char *DB_name, unsigned char **buf, int *buf_size)
    num = fread(*buf, rec_size, 1, in);
    if (num != 1) {
       if (ferror(in)) {
-	 jp_close_home_file(in);
-	 free(*buf);
-	 jp_logf(JP_LOG_WARN, _("%s:%d Error reading file: %s\n"), __FILE__, __LINE__, PDB_name);
-	 return EXIT_FAILURE;
+         jp_close_home_file(in);
+         free(*buf);
+         jp_logf(JP_LOG_WARN, _("%s:%d Error reading file: %s\n"), __FILE__, __LINE__, PDB_name);
+         return EXIT_FAILURE;
       }
    }
    jp_close_home_file(in);
@@ -285,14 +285,14 @@ int jp_install_remove_line(int deleted_line)
       line[0]='\0';
       Pc = fgets(line, sizeof(line), in);
       if (!Pc) {
-	 break;
+         break;
       }
       if (line_count == deleted_line) {
-	 continue;
+         continue;
       }
       r = fprintf(out, "%s", line);
       if (r==EOF) {
-	 break;
+         break;
       }
    }
    jp_close_home_file(in);
@@ -403,13 +403,13 @@ int jp_read_DB_files(char *DB_name, GList **records)
    num = fread(raw_header, LEN_RAW_DB_HEADER, 1, in);
    if (num != 1) {
       if (ferror(in)) {
-	 jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), PDB_name);
-	 jp_close_home_file(in);
-	 return -1;
+         jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), PDB_name);
+         jp_close_home_file(in);
+         return -1;
       }
       if (feof(in)) {
-	 jp_close_home_file(in);
-	 return JPILOT_EOF;
+         jp_close_home_file(in);
+         return JPILOT_EOF;
       }
    }
    unpack_db_header(&dbh, raw_header);
@@ -428,20 +428,20 @@ int jp_read_DB_files(char *DB_name, GList **records)
    for (i=1; i<num_records+1; i++) {
       num = fread(&rh, sizeof(record_header), 1, in);
       if (num != 1) {
-	 if (ferror(in)) {
-	    jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), PDB_name);
-	    break;
-	 }
-	 if (feof(in)) {
-	    jp_close_home_file(in);
-	    return JPILOT_EOF;
-	 }
+         if (ferror(in)) {
+            jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), PDB_name);
+            break;
+         }
+         if (feof(in)) {
+            jp_close_home_file(in);
+            return JPILOT_EOF;
+         }
       }
 
       offset = ((rh.Offset[0]*256+rh.Offset[1])*256+rh.Offset[2])*256+rh.Offset[3];
 
       if (offset < prev_offset) {
-	 out_of_order = 1;
+         out_of_order = 1;
       }
       prev_offset = offset;
 
@@ -453,8 +453,8 @@ int jp_read_DB_files(char *DB_name, GList **records)
 #endif
       temp_mem_rh = malloc(sizeof(mem_rec_header));
       if (!temp_mem_rh) {
-	 jp_logf(JP_LOG_WARN, "jp_read_DB_files(): %s 1\n", _("Out of memory"));
-	 break;
+         jp_logf(JP_LOG_WARN, "jp_read_DB_files(): %s 1\n", _("Out of memory"));
+         break;
       }
       temp_mem_rh->next = NULL;
       temp_mem_rh->rec_num = i;
@@ -462,88 +462,88 @@ int jp_read_DB_files(char *DB_name, GList **records)
       temp_mem_rh->attrib = rh.attrib;
       temp_mem_rh->unique_id = (rh.unique_ID[0]*256+rh.unique_ID[1])*256+rh.unique_ID[2];
       if (mem_rh == NULL) {
-	 mem_rh = temp_mem_rh;
-	 last_mem_rh = temp_mem_rh;
+         mem_rh = temp_mem_rh;
+         last_mem_rh = temp_mem_rh;
       } else {
-	 last_mem_rh->next = temp_mem_rh;
-	 last_mem_rh = temp_mem_rh;
+         last_mem_rh->next = temp_mem_rh;
+         last_mem_rh = temp_mem_rh;
       }
    }
 
    temp_mem_rh = mem_rh;
    if (num_records) {
       if (out_of_order) {
-	 ret=static_find_next_offset(mem_rh, 0, &next_offset, &attrib, &unique_id);
+         ret=static_find_next_offset(mem_rh, 0, &next_offset, &attrib, &unique_id);
       } else {
-	 if (mem_rh) {
-	    next_offset = mem_rh->offset;
-	    attrib = mem_rh->attrib;
-	    unique_id = mem_rh->unique_id;
-	 }
+         if (mem_rh) {
+            next_offset = mem_rh->offset;
+            attrib = mem_rh->attrib;
+            unique_id = mem_rh->unique_id;
+         }
       }
       fseek(in, next_offset, SEEK_SET);
       while(!feof(in)) {
-	 fpos = ftell(in);
-	 if (out_of_order) {
-	    ret = static_find_next_offset(mem_rh, fpos, &next_offset, &attrib, &unique_id);
-	    if (!ret) {
-	       /* Next offset should be end of file */
-	       fseek(in, 0, SEEK_END);
-	       fend = ftell(in);
-	       fseek(in, fpos, SEEK_SET);
-	       next_offset = fend + 1;
-	    }
-	 } else {
-	    if (temp_mem_rh) {
-	       attrib = temp_mem_rh->attrib;
-	       unique_id = temp_mem_rh->unique_id;
-	       if (temp_mem_rh->next) {
-		  temp_mem_rh = temp_mem_rh->next;
-		  next_offset = temp_mem_rh->offset;
-	       } else {
-		  /* Next offset should be end of file */
-		  fseek(in, 0, SEEK_END);
-		  fend = ftell(in);
-		  fseek(in, fpos, SEEK_SET);
-		  next_offset = fend + 1;
-	       }
-	    }
-	 }
-	 rec_size = next_offset - fpos;
+         fpos = ftell(in);
+         if (out_of_order) {
+            ret = static_find_next_offset(mem_rh, fpos, &next_offset, &attrib, &unique_id);
+            if (!ret) {
+               /* Next offset should be end of file */
+               fseek(in, 0, SEEK_END);
+               fend = ftell(in);
+               fseek(in, fpos, SEEK_SET);
+               next_offset = fend + 1;
+            }
+         } else {
+            if (temp_mem_rh) {
+               attrib = temp_mem_rh->attrib;
+               unique_id = temp_mem_rh->unique_id;
+               if (temp_mem_rh->next) {
+                  temp_mem_rh = temp_mem_rh->next;
+                  next_offset = temp_mem_rh->offset;
+               } else {
+                  /* Next offset should be end of file */
+                  fseek(in, 0, SEEK_END);
+                  fend = ftell(in);
+                  fseek(in, fpos, SEEK_SET);
+                  next_offset = fend + 1;
+               }
+            }
+         }
+         rec_size = next_offset - fpos;
 #ifdef JPILOT_DEBUG
-	 jp_logf(JP_LOG_DEBUG, "rec_size = %u\n",rec_size);
-	 jp_logf(JP_LOG_DEBUG, "fpos,next_offset = %u %u\n",fpos,next_offset);
-	 jp_logf(JP_LOG_DEBUG, "----------\n");
+         jp_logf(JP_LOG_DEBUG, "rec_size = %u\n",rec_size);
+         jp_logf(JP_LOG_DEBUG, "fpos,next_offset = %u %u\n",fpos,next_offset);
+         jp_logf(JP_LOG_DEBUG, "----------\n");
 #endif
-	 buf = malloc(rec_size);
-	 if (!buf) break;
-	 num = fread(buf, 1, rec_size, in);
-	 if (num<rec_size) {
-	    rec_size=num;
-	    buf = realloc(buf, rec_size);
-	 }
-	 if ((num < 1)) {
-	    if (ferror(in)) {
-	       jp_logf(JP_LOG_WARN, _("Error reading %s 5\n"), PDB_name);
-	       free(buf);
-	       break;
-	    }
-	 }
+         buf = malloc(rec_size);
+         if (!buf) break;
+         num = fread(buf, 1, rec_size, in);
+         if (num<rec_size) {
+            rec_size=num;
+            buf = realloc(buf, rec_size);
+         }
+         if ((num < 1)) {
+            if (ferror(in)) {
+               jp_logf(JP_LOG_WARN, _("Error reading %s 5\n"), PDB_name);
+               free(buf);
+               break;
+            }
+         }
 
-	 temp_br = malloc(sizeof(buf_rec));
-	 if (!temp_br) {
-	    jp_logf(JP_LOG_WARN, "jp_read_DB_files(): %s 2\n", _("Out of memory"));
-	    break;
-	 }
-	 temp_br->rt = PALM_REC;
-	 temp_br->unique_id = unique_id;
-	 temp_br->attrib = attrib;
-	 temp_br->buf = buf;
-	 temp_br->size = rec_size;
+         temp_br = malloc(sizeof(buf_rec));
+         if (!temp_br) {
+            jp_logf(JP_LOG_WARN, "jp_read_DB_files(): %s 2\n", _("Out of memory"));
+            break;
+         }
+         temp_br->rt = PALM_REC;
+         temp_br->unique_id = unique_id;
+         temp_br->attrib = attrib;
+         temp_br->buf = buf;
+         temp_br->size = rec_size;
 
          *records = g_list_prepend(*records, temp_br);
 
-	 recs_returned++;
+         recs_returned++;
       }
    }
    jp_close_home_file(in);
@@ -561,30 +561,30 @@ int jp_read_DB_files(char *DB_name, GList **records)
       temp_br_used = 0;
       temp_br = malloc(sizeof(buf_rec));
       if (!temp_br) {
-	 jp_logf(JP_LOG_WARN, "jp_read_DB_files(): %s 3\n", _("Out of memory"));
-	 recs_returned = -1;
-	 break;
+         jp_logf(JP_LOG_WARN, "jp_read_DB_files(): %s 3\n", _("Out of memory"));
+         recs_returned = -1;
+         break;
       }
       r = pc_read_next_rec(pc_in, temp_br);
       if ((r==JPILOT_EOF) || (r<0)) {
-	 free(temp_br);
-	 break;
+         free(temp_br);
+         break;
       }
       if (temp_br->rt!=DELETED_PALM_REC  &&
-	  temp_br->rt!=MODIFIED_PALM_REC &&
-	  temp_br->rt!=DELETED_DELETED_PALM_REC) {
+          temp_br->rt!=MODIFIED_PALM_REC &&
+          temp_br->rt!=DELETED_DELETED_PALM_REC) {
          *records = g_list_prepend(*records, temp_br);
          temp_br_used = 1;
-	 recs_returned++;
+         recs_returned++;
       }
       if ((temp_br->rt==DELETED_PALM_REC) || (temp_br->rt==MODIFIED_PALM_REC)) {
-	 for (temp_list=*records; temp_list; temp_list=temp_list->next) {
-	    if (((buf_rec *)temp_list->data)->unique_id == temp_br->unique_id) {
-	       if (((buf_rec *)temp_list->data)->rt == PALM_REC) {
-		  ((buf_rec *)temp_list->data)->rt = temp_br->rt;
-	       }
-	    }
-	 }
+         for (temp_list=*records; temp_list; temp_list=temp_list->next) {
+            if (((buf_rec *)temp_list->data)->unique_id == temp_br->unique_id) {
+               if (((buf_rec *)temp_list->data)->rt == PALM_REC) {
+                  ((buf_rec *)temp_list->data)->rt = temp_br->rt;
+               }
+            }
+         }
       }
 
       if (!temp_br_used) {
@@ -622,24 +622,24 @@ const char *jp_strstr(const char *haystack, const char *needle, int case_sense)
       Ps1 = needle;
       Ps2 = needle2;
       while (Ps1[0]) {
-	 Ps2[0] = tolower(Ps1[0]);
-	 Ps1++;
-	 Ps2++;
+         Ps2[0] = tolower(Ps1[0]);
+         Ps1++;
+         Ps2++;
       }
       Ps2[0]='\0';
 
       Ps1 = haystack;
       Ps2 = haystack2;
       while (Ps1[0]) {
-	 Ps2[0] = tolower(Ps1[0]);
-	 Ps1++;
-	 Ps2++;
+         Ps2[0] = tolower(Ps1[0]);
+         Ps1++;
+         Ps2++;
       }
       Ps2[0]='\0';
 
       r = strstr(haystack2, needle2);
       if (r) {
-	 r = (char *)((r-haystack2)+haystack);
+         r = (char *)((r-haystack2)+haystack);
       }
       free(needle2);
       free(haystack2);
@@ -688,45 +688,45 @@ int jp_undelete_record(char *DB_name, buf_rec *br, int flag)
    while(!feof(pc_file)) {
       read_header(pc_file, &header);
       if (feof(pc_file)) {
-	 break;
+         break;
       }
       /* Skip copying DELETED_PALM_REC entry which undeletes it */
       if (header.unique_id == unique_id &&
-	  header.rt == DELETED_PALM_REC) {
-	 found = TRUE;
-	 if (fseek(pc_file, header.rec_len, SEEK_CUR)) {
-	    jp_logf(JP_LOG_WARN, "fseek failed\n");
-	    ret = -1;
-	    break;
-	 }
-	 continue;
+          header.rt == DELETED_PALM_REC) {
+         found = TRUE;
+         if (fseek(pc_file, header.rec_len, SEEK_CUR)) {
+            jp_logf(JP_LOG_WARN, "fseek failed\n");
+            ret = -1;
+            break;
+         }
+         continue;
       }
       /* Change header on DELETED_PC_REC to undelete this type */
       if (header.unique_id == unique_id &&
           header.rt == DELETED_PC_REC) {
-	  found = TRUE;
+          found = TRUE;
           header.rt = NEW_PC_REC;
       }
 
       /* Otherwise, keep whatever is there by copying it to the new pc3 file */
       record = malloc(header.rec_len);
       if (!record) {
-	 jp_logf(JP_LOG_WARN, "cleanup_pc_file(): Out of memory\n");
-	 ret = -1;
-	 break;
+         jp_logf(JP_LOG_WARN, "cleanup_pc_file(): Out of memory\n");
+         ret = -1;
+         break;
       }
       num = fread(record, header.rec_len, 1, pc_file);
       if (num != 1) {
-	 if (ferror(pc_file)) {
-	    ret = -1;
-	    break;
-	 }
+         if (ferror(pc_file)) {
+            ret = -1;
+            break;
+         }
       }
       ret = write_header(pc_file2, &header);
       ret = fwrite(record, header.rec_len, 1, pc_file2);
       if (ret != 1) {
-	 ret = -1;
-	 break;
+         ret = -1;
+         break;
       }
       free(record);
       record = NULL;
@@ -799,11 +799,11 @@ static int pc_read_next_rec(FILE *in, buf_rec *br)
    num = read_header(in, &header);
    if (num < 1) {
       if (ferror(in)) {
-	 jp_logf(JP_LOG_WARN, _("Error reading PC file 1\n"));
-	 return JPILOT_EOF;
+         jp_logf(JP_LOG_WARN, _("Error reading PC file 1\n"));
+         return JPILOT_EOF;
       }
       if (feof(in)) {
-	 return JPILOT_EOF;
+         return JPILOT_EOF;
       }
    }
    rec_len = header.rec_len;
@@ -815,9 +815,9 @@ static int pc_read_next_rec(FILE *in, buf_rec *br)
    num = fread(record, rec_len, 1, in);
    if (num != 1) {
       if (ferror(in)) {
-	 jp_logf(JP_LOG_WARN, _("Error reading PC file 2\n"));
-	 free(record);
-	 return JPILOT_EOF;
+         jp_logf(JP_LOG_WARN, _("Error reading PC file 2\n"));
+         free(record);
+         return JPILOT_EOF;
       }
    }
    br->rt = header.rt;
@@ -869,8 +869,8 @@ int read_header(FILE *pc_in, PC3RecordHeader *header)
 /* returns 1 if found */
 /*        0 if eof */
 static int static_find_next_offset(mem_rec_header *mem_rh, long fpos,
-			    long *next_offset,
-			    unsigned char *attrib, unsigned int *unique_id)
+                                   long *next_offset, unsigned char *attrib, 
+                                   unsigned int *unique_id)
 {
    mem_rec_header *temp_mem_rh;
    unsigned char found = 0;
@@ -879,12 +879,12 @@ static int static_find_next_offset(mem_rec_header *mem_rh, long fpos,
    found_at=0x1000000;
    for (temp_mem_rh=mem_rh; temp_mem_rh; temp_mem_rh = temp_mem_rh->next) {
       if ((temp_mem_rh->offset > fpos) && (temp_mem_rh->offset < found_at)) {
-	 found_at = temp_mem_rh->offset;
+         found_at = temp_mem_rh->offset;
       }
       if ((temp_mem_rh->offset == fpos)) {
-	 found = 1;
-	 *attrib = temp_mem_rh->attrib;
-	 *unique_id = temp_mem_rh->unique_id;
+         found = 1;
+         *attrib = temp_mem_rh->attrib;
+         *unique_id = temp_mem_rh->unique_id;
       }
    }
    *next_offset = found_at;

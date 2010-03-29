@@ -1,4 +1,4 @@
-/* $Id: prefs.h,v 1.52 2009/05/06 19:28:02 rousseau Exp $ */
+/* $Id: prefs.h,v 1.53 2010/03/29 05:44:30 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs.h
@@ -29,7 +29,7 @@
 #define PREF_TIME 1
 #define PREF_SHORTDATE 2
 #define PREF_LONGDATE 3
-#define PREF_FDOW 4 /*First Day Of the Week */
+#define PREF_FDOW 4                     /*First Day Of the Week */
 #define PREF_SHOW_DELETED 5
 #define PREF_SHOW_MODIFIED 6
 #define PREF_TODO_HIDE_COMPLETED 7

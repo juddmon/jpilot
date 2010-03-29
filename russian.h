@@ -1,4 +1,4 @@
-/* $Id: russian.h,v 1.3 2004/11/29 06:24:46 rikster5 Exp $ */
+/* $Id: russian.h,v 1.4 2010/03/29 05:44:31 rikster5 Exp $ */
 
 /*******************************************************************************
  * russian.h
@@ -21,10 +21,10 @@
  ******************************************************************************/
 
 /*
-	Header for Russian library
-	Convert Palm  <-> Unix:
-		Palm : koi8
-		Unix : Win1251
+        Header for Russian library
+        Convert Palm  <-> Unix:
+                Palm : koi8
+                Unix : Win1251
 */
 
 void koi8_to_win1251(char *const buf, int buf_len);

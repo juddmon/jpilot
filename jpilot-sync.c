@@ -1,4 +1,4 @@
-/* $Id: jpilot-sync.c,v 1.30 2010/03/03 12:12:44 rousseau Exp $ */
+/* $Id: jpilot-sync.c,v 1.31 2010/03/29 05:44:29 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot-sync.c
@@ -86,10 +86,10 @@ static void sig_handler(int sig)
    for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
       plugin = (struct plugin_s *)temp_list->data;
       if (plugin) {
-	 if (plugin->plugin_exit_cleanup) {
-	    jp_logf(JP_LOG_DEBUG, "calling plugin_exit_cleanup\n");
-	    plugin->plugin_exit_cleanup();
-	 }
+         if (plugin->plugin_exit_cleanup) {
+            jp_logf(JP_LOG_DEBUG, "calling plugin_exit_cleanup\n");
+            plugin->plugin_exit_cleanup();
+         }
       }
    }
 #endif
@@ -143,39 +143,39 @@ int main(int argc, char *argv[])
 
    for (i=1; i<argc; i++) {
       if (!strncasecmp(argv[i], "-v", 2)) {
-	 char options[1024];
-	 get_compile_options(options, sizeof(options));
-	 printf("\n%s\n", options);
-	 exit(0);
+         char options[1024];
+         get_compile_options(options, sizeof(options));
+         printf("\n%s\n", options);
+         exit(0);
       }
       if ( (!strncmp(argv[i], "-h", 2)) || 
            (!strncasecmp(argv[1], "-?", 2))) {
-	 fprint_jps_usage_string(stderr);
-	 exit(0);
+         fprint_jps_usage_string(stderr);
+         exit(0);
       }
       if (!strncasecmp(argv[i], "-d", 2)) {
-	 glob_log_stdout_mask = 0xFFFF;
-	 glob_log_file_mask = 0xFFFF;
-	 jp_logf(JP_LOG_DEBUG, "Debug messages on.\n");
+         glob_log_stdout_mask = 0xFFFF;
+         glob_log_file_mask = 0xFFFF;
+         jp_logf(JP_LOG_DEBUG, "Debug messages on.\n");
       }
       if (!strncmp(argv[i], "-b", 2)) {
-	 flags |= SYNC_FULL_BACKUP;
+         flags |= SYNC_FULL_BACKUP;
       }
       if (!strncmp(argv[i], "-l", 2)) {
-	 loop=1;
+         loop=1;
       }
       if (!strncmp(argv[i], "-P", 2)) {
-	 skip_plugins = 1;
-	 flags |= SYNC_NO_PLUGINS;
-	 jp_logf(JP_LOG_INFO, _("Not loading plugins.\n"));
+         skip_plugins = 1;
+         flags |= SYNC_NO_PLUGINS;
+         jp_logf(JP_LOG_INFO, _("Not loading plugins.\n"));
       }
       if (!strncmp(argv[i], "-p", 2)) {
-	 i++;
-	 if (i<argc) {
-	    g_strlcpy(port, argv[i], MAX_PREF_LEN);
-	    /* Prefs are not saved, so this is not persistent */
-	    set_pref(PREF_PORT, 0, port, FALSE);
-	 }
+         i++;
+         if (i<argc) {
+            g_strlcpy(port, argv[i], MAX_PREF_LEN);
+            /* Prefs are not saved, so this is not persistent */
+            set_pref(PREF_PORT, 0, port, FALSE);
+         }
       }
    }
 
@@ -191,14 +191,14 @@ int main(int argc, char *argv[])
       plugin = (struct plugin_s *)temp_list->data;
       jp_logf(JP_LOG_DEBUG, "plugin: [%s] was loaded\n", plugin->name);
       if (plugin) {
-	 if (plugin->plugin_startup) {
-	    info.base_dir = strdup(BASE_DIR);
-	    jp_logf(JP_LOG_DEBUG, "calling plugin_startup for [%s]\n", plugin->name);
-	    plugin->plugin_startup(&info);
-	    if (info.base_dir) {
-	       free(info.base_dir);
-	    }
-	 }
+         if (plugin->plugin_startup) {
+            info.base_dir = strdup(BASE_DIR);
+            jp_logf(JP_LOG_DEBUG, "calling plugin_startup for [%s]\n", plugin->name);
+            plugin->plugin_startup(&info);
+            if (info.base_dir) {
+               free(info.base_dir);
+            }
+         }
       }
    }
 #endif
@@ -214,51 +214,51 @@ int main(int argc, char *argv[])
       switch (r) {
        case 0:
          /* sync successful */
-	 break;
+         break;
        case SYNC_ERROR_BIND:
-	 printf("\n");
-	 printf("Error: connecting to serial port\n");
-	 break;
+         printf("\n");
+         printf("Error: connecting to serial port\n");
+         break;
        case SYNC_ERROR_LISTEN:
-	 printf("\n");
-	 printf("Error: pi_listen\n");
-	 break;
+         printf("\n");
+         printf("Error: pi_listen\n");
+         break;
        case SYNC_ERROR_OPEN_CONDUIT:
-	 printf("\n");
-	 printf("Error: opening conduit to Palm\n");
-	 break;
+         printf("\n");
+         printf("Error: opening conduit to Palm\n");
+         break;
        case SYNC_ERROR_PI_ACCEPT:
-	 printf("\n");
-	 printf("Error: pi_accept\n");
-	 break;
+         printf("\n");
+         printf("Error: pi_accept\n");
+         break;
        case SYNC_ERROR_NOT_SAME_USER:
-	 printf("\n");
-	 printf("Error: this palm has a different User Name than the last sync.\n");
-	 printf(" Syncing with different palms into the same directory could cross data.\n");
+         printf("\n");
+         printf("Error: this palm has a different User Name than the last sync.\n");
+         printf(" Syncing with different palms into the same directory could cross data.\n");
 #ifdef ENABLE_PROMETHEON
-	 printf(" COPILOT_HOME can be used to sync different palms under the same unix user.\n");
+         printf(" COPILOT_HOME can be used to sync different palms under the same unix user.\n");
 #else
-	 printf(" JPILOT_HOME can be used to sync different palms under the same unix user.\n");
+         printf(" JPILOT_HOME can be used to sync different palms under the same unix user.\n");
 #endif
-	 break;
+         break;
        case SYNC_ERROR_NOT_SAME_USERID:
-	 printf("\n");
-	 printf("Error: this palm has a different ID Name than the last sync.\n");
-	 printf(" Syncing with different palms into the same directory could cross data.\n");
+         printf("\n");
+         printf("Error: this palm has a different ID Name than the last sync.\n");
+         printf(" Syncing with different palms into the same directory could cross data.\n");
 #ifdef ENABLE_PROMETHEON
-	 printf(" COPILOT_HOME can be used to sync different palms under the same unix user.\n");
+         printf(" COPILOT_HOME can be used to sync different palms under the same unix user.\n");
 #else
-	 printf(" JPILOT_HOME can be used to sync different palms under the same unix user.\n");
+         printf(" JPILOT_HOME can be used to sync different palms under the same unix user.\n");
 #endif
-	 break;
+         break;
        case SYNC_ERROR_NULL_USERID:
-	 printf("\n");
-	 printf("Error: this palm has a NULL user ID.\n");
-	 printf(" use \"install-user /dev/pilot name numeric_id\"\n");
-	 break;
+         printf("\n");
+         printf("Error: this palm has a NULL user ID.\n");
+         printf(" use \"install-user /dev/pilot name numeric_id\"\n");
+         break;
        default:
-	 printf("\n");
-	 printf("Error: sync returned error %d\n", r);
+         printf("\n");
+         printf("Error: sync returned error %d\n", r);
       }
       sleep(1);
    } while(loop);

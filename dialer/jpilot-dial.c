@@ -1,4 +1,4 @@
-/* $Id: jpilot-dial.c,v 1.3 2004/11/28 03:54:09 judd Exp $ */
+/* $Id: jpilot-dial.c,v 1.4 2010/03/29 05:44:32 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot-dial.c
@@ -60,7 +60,7 @@ int tone_time   = 100;
 int silent_time = 50;
 int sleep_time  = 500;
 int volume      = 100;
-int format	= AFMT_U8;
+int format      = AFMT_U8;
 int use_audio   = 1;
 
 #define BSIZE 4096
@@ -83,25 +83,25 @@ int fd;
 
 void Usage(void) {
    fprintf(stderr, "usage: jpilot-dial [options] number ...\n"
-	   " Valid options with their default values are:\n"
-	   "   Duration options:\n"
-	   "     --tone-time   100\n"
-	   "     --silent-time 50\n"
-	   "     --sleep-time  500\n"
-	   "   Audio output  options:\n"
-	   "     --output-dev  /dev/dsp\n"
-	   "     --use-audio   1\n"
-	   "     --bufsize     4096\n"
-	   "     --speed       8000\n"
-	   "     --bits        8\n"
-	   "     --lv          default - no change\n"
-	   "     --rv          default - no change\n"
-	   "   Audio generation options:\n"
-	   "     --table-size  256\n"
-	   "     --volume      100\n"
-	   "     --left        0\n"
-	   "     --right       0\n"
-	   );
+           " Valid options with their default values are:\n"
+           "   Duration options:\n"
+           "     --tone-time   100\n"
+           "     --silent-time 50\n"
+           "     --sleep-time  500\n"
+           "   Audio output  options:\n"
+           "     --output-dev  /dev/dsp\n"
+           "     --use-audio   1\n"
+           "     --bufsize     4096\n"
+           "     --speed       8000\n"
+           "     --bits        8\n"
+           "     --lv          default - no change\n"
+           "     --rv          default - no change\n"
+           "   Audio generation options:\n"
+           "     --table-size  256\n"
+           "     --volume      100\n"
+           "     --left        0\n"
+           "     --right       0\n"
+           );
    exit(1);
 }
 
@@ -137,19 +137,19 @@ initialize_audiodev(void) {
      diff = -diff;
    if(diff > 500) {
       fprintf(stderr,
-	      "Your sound card does not support the requested speed\n");
+              "Your sound card does not support the requested speed\n");
       exit(1);
    }
    if(diff != 0) {
       fprintf(stderr,
-	      "Setting speed to %d\n", speed_local);
+              "Setting speed to %d\n", speed_local);
    }
    speed = speed_local;
 }
 
 void
   getvalue(int *arg, int *index, int argc,
-	   char **argv, int min, int max) {
+           char **argv, int min, int max) {
 
      if (*index >= argc-1)
        Usage();
@@ -157,9 +157,9 @@ void
      *arg = atoi(argv[1+*index]);
 
      if(*arg < min || *arg > max) {
-	fprintf(stderr, "Value for %s should be in the range %d..%d\n", 
-		argv[*index]+2, min, max);
-	exit(1);
+        fprintf(stderr, "Value for %s should be in the range %d..%d\n", 
+                argv[*index]+2, min, max);
+        exit(1);
      }
      ++*index;
 }
@@ -181,75 +181,75 @@ int main(int argc, char **argv)
 
    for(i = 1; i < argc; i++) {
       if(argv[i][0] != '-' ||
-	 argv[i][1] != '-')
-	break;
+         argv[i][1] != '-')
+        break;
 
       if(!strcmp(argv[i], "--table-size")) {
-	 getvalue(&tabsize, &i, argc, argv,
-		  MINTABSIZE, MAXTABSIZE);
+         getvalue(&tabsize, &i, argc, argv,
+                  MINTABSIZE, MAXTABSIZE);
       }
       else if(!strcmp(argv[i], "--tone-time")) {
-	 getvalue(&tone_time, &i, argc, argv,
-		  10, 10000);
+         getvalue(&tone_time, &i, argc, argv,
+                  10, 10000);
       }
       else if(!strcmp(argv[i], "--sleep-time")) {
-	 getvalue(&sleep_time, &i, argc, argv,
-		  10, 10000);
+         getvalue(&sleep_time, &i, argc, argv,
+                  10, 10000);
       }
       else if(!strcmp(argv[i], "--silent-time")) {
-	 getvalue(&silent_time, &i, argc, argv,
-		  10, 10000);
+         getvalue(&silent_time, &i, argc, argv,
+                  10, 10000);
       }
       else if(!strcmp(argv[i], "--sleep-time")) {
-	 getvalue(&sleep_time, &i, argc, argv,
-		  10, 100000);
+         getvalue(&sleep_time, &i, argc, argv,
+                  10, 100000);
       }
       else if(!strcmp(argv[i], "--volume")) {
-	 getvalue(&volume, &i, argc, argv,
-		  0, 100);
+         getvalue(&volume, &i, argc, argv,
+                  0, 100);
       }
       else if(!strcmp(argv[i], "--lv")) {
-	 set_left=1;
-	 getvalue(&left_vol_temp, &i, argc, argv,
-		  0, 100);
+         set_left=1;
+         getvalue(&left_vol_temp, &i, argc, argv,
+                  0, 100);
       }
       else if(!strcmp(argv[i], "--rv")) {
-	 set_right=1;
-	 getvalue(&right_vol_temp, &i, argc, argv,
-		  0, 100);
+         set_right=1;
+         getvalue(&right_vol_temp, &i, argc, argv,
+                  0, 100);
       }
       else if(!strcmp(argv[i], "--speed")) {
-	 getvalue(&speed, &i, argc, argv,
-		  5000, 48000);
+         getvalue(&speed, &i, argc, argv,
+                  5000, 48000);
       }
       else if(!strcmp(argv[i], "--bits")) {
-	 getvalue(&bits, &i, argc, argv,
-		  8, 16);
+         getvalue(&bits, &i, argc, argv,
+                  8, 16);
       }
       else if(!strcmp(argv[i], "--bufsize")) {
-	 getvalue(&bufsize, &i, argc, argv,
-		  4, 65536);
+         getvalue(&bufsize, &i, argc, argv,
+                  4, 65536);
       }
       else if(!strcmp(argv[i], "--use-audio")) {
-	 getvalue(&use_audio, &i, argc, argv,
-		  0, 1);
+         getvalue(&use_audio, &i, argc, argv,
+                  0, 1);
       }
       else if(!strcmp(argv[i], "--right")) {
-	 getvalue(&right, &i, argc, argv,
-		  0, 1);
+         getvalue(&right, &i, argc, argv,
+                  0, 1);
       }
       else if(!strcmp(argv[i], "--left")) {
-	 getvalue(&left, &i, argc, argv,
-		  0, 1);
+         getvalue(&left, &i, argc, argv,
+                  0, 1);
       }
       else if(!strcmp(argv[i], "--output-dev")) {
-	 i++;
-	 if(i >= argc)
-	   Usage();
-	 output = argv[i];
+         i++;
+         if(i >= argc)
+           Usage();
+         output = argv[i];
       }
       else
-	Usage();
+        Usage();
    }
 
    if(i >= argc)
@@ -258,54 +258,54 @@ int main(int argc, char **argv)
    if ((set_left) || (set_right)) {
       switch (fork()) {
        case -1:
-	 /* error */
-	 perror("fork");
-	 return 0;
+         /* error */
+         perror("fork");
+         return 0;
        case 0:
-	 /* child */
-	 break;
+         /* child */
+         break;
        default:
-	 /* parent */
-	 /* Open the mixer device first */
-	 if ( (mixer_fd=open(DEV_MIXER, O_RDWR, 0)) < 0 ) {
-	    fprintf(stderr, "Can't open %s: ", DEV_MIXER);
-	    perror("");
-	    exit(2);
-	 }
-	 if ( ioctl(mixer_fd, SOUND_MIXER_READ_VOLUME, &old_vol) < 0 ) {
-	    perror("Can't obtain current volume settings");
-	    exit(2);
-	 }
-	 old_left = old_vol&0xFF;
-	 old_right = old_vol>>8;
+         /* parent */
+         /* Open the mixer device first */
+         if ( (mixer_fd=open(DEV_MIXER, O_RDWR, 0)) < 0 ) {
+            fprintf(stderr, "Can't open %s: ", DEV_MIXER);
+            perror("");
+            exit(2);
+         }
+         if ( ioctl(mixer_fd, SOUND_MIXER_READ_VOLUME, &old_vol) < 0 ) {
+            perror("Can't obtain current volume settings");
+            exit(2);
+         }
+         old_left = old_vol&0xFF;
+         old_right = old_vol>>8;
 
-	 printf("Current volume: L = %d, R = %d\n", old_left, old_right);
+         printf("Current volume: L = %d, R = %d\n", old_left, old_right);
 
-	 new_left=left_vol_temp;
-	 new_right=right_vol_temp;
-	 if (!set_left) new_left = old_left;
-	 if (!set_right) new_right = old_right;
-	 printf("Setting volume: L = %d, R = %d\n", new_left, new_right);
-	 new_vol=(new_right<<8) | (new_left&0xFF);
-	 if ( ioctl(mixer_fd, SOUND_MIXER_WRITE_VOLUME, &new_vol) < 0 ) {
-	    perror("Can't set current volume settings");
-	    exit(2);
-	 }
-	 /* Wait for the sounds to get done playing */
-	 wait(&status);
-	 printf("Setting volume: L = %d, R = %d\n", old_left, old_right);
-	 ioctl(mixer_fd, SOUND_MIXER_WRITE_VOLUME, &old_vol);
-	 return 0;
+         new_left=left_vol_temp;
+         new_right=right_vol_temp;
+         if (!set_left) new_left = old_left;
+         if (!set_right) new_right = old_right;
+         printf("Setting volume: L = %d, R = %d\n", new_left, new_right);
+         new_vol=(new_right<<8) | (new_left&0xFF);
+         if ( ioctl(mixer_fd, SOUND_MIXER_WRITE_VOLUME, &new_vol) < 0 ) {
+            perror("Can't set current volume settings");
+            exit(2);
+         }
+         /* Wait for the sounds to get done playing */
+         wait(&status);
+         printf("Setting volume: L = %d, R = %d\n", old_left, old_right);
+         ioctl(mixer_fd, SOUND_MIXER_WRITE_VOLUME, &old_vol);
+         return 0;
       }
    }
 
    if(!strcmp(output, "-"))
-     fd = 1;		/* stdout */
+     fd = 1;            /* stdout */
    else {
       fd = open(output, O_CREAT|O_TRUNC|O_WRONLY, 0644);
       if(fd < 0) {
-	 perror(output);
-	 exit(1);
+         perror(output);
+         exit(1);
       }
    }
 
@@ -334,28 +334,28 @@ int main(int argc, char **argv)
    for(; i < argc; i++) {
       cp = argv[i];
       if(dialed)
-	silent(sleep_time);
+        silent(sleep_time);
       while(cp && *cp) {
-	 if(*cp == ',' || *cp == ' ')
-	   silent(sleep_time);
-	 else {
-	    if(dialed)
-	      silent(silent_time);
-	    dial_digit(*cp);
-	 }
-	 cp++;
+         if(*cp == ',' || *cp == ' ')
+           silent(sleep_time);
+         else {
+            if(dialed)
+              silent(silent_time);
+            dial_digit(*cp);
+         }
+         cp++;
       }
    }
    if(bufidx > 0) {
 #if 0
       while(bufidx < bufsize) {
-	 if(format == AFMT_U8) {
-	    buf[bufidx++] = 128;
-	 }
-	 else {	/* AFMT_S16_LE */
-	    buf[bufidx++] = 0;
-	    buf[bufidx++] = 0;
-	 }
+         if(format == AFMT_U8) {
+            buf[bufidx++] = 128;
+         }
+         else { /* AFMT_S16_LE */
+            buf[bufidx++] = 0;
+            buf[bufidx++] = 0;
+         }
       }
 #endif
       write(fd, buf, bufidx);
@@ -430,24 +430,24 @@ silent(int msec) {
    time = (msec * speed) / 1000;
    while(--time >= 0) {
       if(format == AFMT_U8) {
-	 buf[bufidx++] = 128;
+         buf[bufidx++] = 128;
       }
-      else {	/* AFMT_S16_LE */
-	 buf[bufidx++] = 0;
-	 buf[bufidx++] = 0;
+      else {    /* AFMT_S16_LE */
+         buf[bufidx++] = 0;
+         buf[bufidx++] = 0;
       }
       if(right || left) {
-	 if(format == AFMT_U8) {
-	    buf[bufidx++] = 128;
-	 }
-	 else {	/* AFMT_S16_LE */
-	    buf[bufidx++] = 0;
-	    buf[bufidx++] = 0;
-	 }
+         if(format == AFMT_U8) {
+            buf[bufidx++] = 128;
+         }
+         else { /* AFMT_S16_LE */
+            buf[bufidx++] = 0;
+            buf[bufidx++] = 0;
+         }
       }
       if(bufidx >= bufsize) {
-	 write(fd, buf, bufsize);
-	 bufidx = 0;
+         write(fd, buf, bufsize);
+         bufidx = 0;
       }
    }
    dialed = 0;
@@ -480,52 +480,52 @@ dial(int f1, int f2, int msec) {
       val = costab[i1] + costab[i2];
 
       if(left || !right) {
-	 if(format == AFMT_U8) {
-	    buf[bufidx++] = 128 + (val >> 8); 
-	 }
-	 else {	/* AFMT_S16_LE */
-	    buf[bufidx++] = val & 0xff;
-	    buf[bufidx++] = (val >> 8) & 0xff;
-	 }
+         if(format == AFMT_U8) {
+            buf[bufidx++] = 128 + (val >> 8); 
+         }
+         else { /* AFMT_S16_LE */
+            buf[bufidx++] = val & 0xff;
+            buf[bufidx++] = (val >> 8) & 0xff;
+         }
       }
       if (left != right) {
-	 if(format == AFMT_U8) {
-	    buf[bufidx++] = 128;
-	 }
-	 else {	/* AFMT_S16_LE */
-	    buf[bufidx++] = 0;
-	    buf[bufidx++] = 0;
-	 }
+         if(format == AFMT_U8) {
+            buf[bufidx++] = 128;
+         }
+         else { /* AFMT_S16_LE */
+            buf[bufidx++] = 0;
+            buf[bufidx++] = 0;
+         }
       }
       if(right) {
-	 if(format == AFMT_U8) {
-	    buf[bufidx++] = 128 + (val >> 8); 
-	 }
-	 else {	/* AFMT_S16_LE */
-	    buf[bufidx++] = val & 0xff;
-	    buf[bufidx++] = (val >> 8) & 0xff;
-	 }
+         if(format == AFMT_U8) {
+            buf[bufidx++] = 128 + (val >> 8); 
+         }
+         else { /* AFMT_S16_LE */
+            buf[bufidx++] = val & 0xff;
+            buf[bufidx++] = (val >> 8) & 0xff;
+         }
       }
 
       i1 += d1;
       if (e1 < 0) {
-	 e1 += speed;
-	 i1 += 1;
+         e1 += speed;
+         i1 += 1;
       }
       if (i1 >= tabsize)
-	i1 -= tabsize;
+        i1 -= tabsize;
 
       i2 += d2;
       if (e2 < 0) {
-	 e2 += speed;
-	 i2 += 1;
+         e2 += speed;
+         i2 += 1;
       }
       if (i2 >= tabsize)
-	i2 -= tabsize;
+        i2 -= tabsize;
 
       if(bufidx >= bufsize) {
-	 write(fd, buf, bufsize);
-	 bufidx = 0;
+         write(fd, buf, bufsize);
+         bufidx = 0;
       }
       e1 -= g1;
       e2 -= g2;

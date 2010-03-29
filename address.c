@@ -1,4 +1,4 @@
-/* $Id: address.c,v 1.59 2010/03/07 21:26:51 rikster5 Exp $ */
+/* $Id: address.c,v 1.60 2010/03/29 05:44:27 rikster5 Exp $ */
 
 /*******************************************************************************
  * address.c
@@ -86,7 +86,7 @@ static int address_compare(const void *v1, const void *v2)
 
    if (!(glob_sort_rule & SORT_JAPANESE) || (glob_sort_rule & SORT_JOS)) { /* normal */
       while (last_cmp1 < 3 && last_cmp2 < 3) {
-	 str1=str2=NULL;
+         str1=str2=NULL;
          /* Find the next non-blank field to use for sorting */
          for (i=last_cmp1+1; i<=3; i++) {
             if (a1->entry[sort_idx[i]]) {
@@ -152,72 +152,72 @@ static int address_compare(const void *v1, const void *v2)
       sort3 = sort_idx[3];
 
       if (a1->entry[sort1] || a1->entry[sort2]) {
-	 if (a1->entry[sort1] && a1->entry[sort2]) {
-	    if (!(tmp_p1 = strchr(a1->entry[sort1],'\1'))) tmp_p1=a1->entry[sort1]+1;
-	    if (!(tmp_p2 = strchr(a1->entry[sort2],'\1'))) tmp_p2=a1->entry[sort2]+1;
-	    if ((str1 = malloc(strlen(tmp_p1)+strlen(tmp_p2)+1)) == NULL) {
-	       return 0;
-	    }
-	    strcpy(str1, tmp_p1);
-	    strcat(str1, tmp_p2);
-	 }
-	 if (a1->entry[sort1] && (!a1->entry[sort2])) {
-	    if (!(tmp_p1 = strchr(a1->entry[sort1],'\1'))) tmp_p1=a1->entry[sort1]+1;
-	    if ((str1 = malloc(strlen(tmp_p1)+1)) == NULL) {
-	       return 0;
-	    }
-	    strcpy(str1, tmp_p1);
-	 }
-	 if ((!a1->entry[sort1]) && a1->entry[sort2]) {
-	    if (!(tmp_p2 = strchr(a1->entry[sort2],'\1'))) tmp_p2=a1->entry[sort2]+1;
-	    if ((str1 = malloc(strlen(tmp_p2)+1)) == NULL) {
-	       return 0;
-	    }
-	    strcpy(str1, tmp_p2);
-	 }
+         if (a1->entry[sort1] && a1->entry[sort2]) {
+            if (!(tmp_p1 = strchr(a1->entry[sort1],'\1'))) tmp_p1=a1->entry[sort1]+1;
+            if (!(tmp_p2 = strchr(a1->entry[sort2],'\1'))) tmp_p2=a1->entry[sort2]+1;
+            if ((str1 = malloc(strlen(tmp_p1)+strlen(tmp_p2)+1)) == NULL) {
+               return 0;
+            }
+            strcpy(str1, tmp_p1);
+            strcat(str1, tmp_p2);
+         }
+         if (a1->entry[sort1] && (!a1->entry[sort2])) {
+            if (!(tmp_p1 = strchr(a1->entry[sort1],'\1'))) tmp_p1=a1->entry[sort1]+1;
+            if ((str1 = malloc(strlen(tmp_p1)+1)) == NULL) {
+               return 0;
+            }
+            strcpy(str1, tmp_p1);
+         }
+         if ((!a1->entry[sort1]) && a1->entry[sort2]) {
+            if (!(tmp_p2 = strchr(a1->entry[sort2],'\1'))) tmp_p2=a1->entry[sort2]+1;
+            if ((str1 = malloc(strlen(tmp_p2)+1)) == NULL) {
+               return 0;
+            }
+            strcpy(str1, tmp_p2);
+         }
       } else if (a1->entry[sort3]) {
-	 if (!(tmp_p3 = strchr(a1->entry[sort3],'\1'))) tmp_p3=a1->entry[sort3]+1;
-	 if ((str1 = malloc(strlen(tmp_p3)+1)) == NULL) {
-	    return 0;
-	 }
-	 strcpy(str1, tmp_p3);
+         if (!(tmp_p3 = strchr(a1->entry[sort3],'\1'))) tmp_p3=a1->entry[sort3]+1;
+         if ((str1 = malloc(strlen(tmp_p3)+1)) == NULL) {
+            return 0;
+         }
+         strcpy(str1, tmp_p3);
       } else {
-	 return 1;
+         return 1;
       }
 
       if (a2->entry[sort1] || a2->entry[sort2]) {
-	 if (a2->entry[sort1] && a2->entry[sort2]) {
-	    if (!(tmp_p1 = strchr(a2->entry[sort1],'\1'))) tmp_p1=a2->entry[sort1]+1;
-	    if (!(tmp_p2 = strchr(a2->entry[sort2],'\1'))) tmp_p2=a2->entry[sort2]+1;
-	    if ((str2 = malloc(strlen(tmp_p1)+strlen(tmp_p2)+1)) == NULL) {
-	       return 0;
-	    }
-	    strcpy(str2, tmp_p1);
-	    strcat(str2, tmp_p2);
-	 }
-	 if (a2->entry[sort1] && (!a2->entry[sort2])) {
-	    if (!(tmp_p1 = strchr(a2->entry[sort1],'\1'))) tmp_p1=a2->entry[sort1]+1;
-	    if ((str2 = malloc(strlen(tmp_p1)+1)) == NULL) {
-	       return 0;
-	    }
-	    strcpy(str2, tmp_p1);
-	 }
-	 if ((!a2->entry[sort1]) && a2->entry[sort2]) {
-	    if (!(tmp_p2 = strchr(a2->entry[sort2],'\1'))) tmp_p2=a2->entry[sort2]+1;
-	    if ((str2 = malloc(strlen(tmp_p2)+1)) == NULL) {
-	       return 0;
-	    }
-	    strcpy(str2, tmp_p2);
-	 }
+         if (a2->entry[sort1] && a2->entry[sort2]) {
+            if (!(tmp_p1 = strchr(a2->entry[sort1],'\1'))) tmp_p1=a2->entry[sort1]+1;
+            if (!(tmp_p2 = strchr(a2->entry[sort2],'\1'))) tmp_p2=a2->entry[sort2]+1;
+            if ((str2 = malloc(strlen(tmp_p1)+strlen(tmp_p2)+1)) == NULL) {
+               return 0;
+            }
+            strcpy(str2, tmp_p1);
+            strcat(str2, tmp_p2);
+         }
+         if (a2->entry[sort1] && (!a2->entry[sort2])) {
+            if (!(tmp_p1 = strchr(a2->entry[sort1],'\1'))) tmp_p1=a2->entry[sort1]+1;
+            if ((str2 = malloc(strlen(tmp_p1)+1)) == NULL) {
+               return 0;
+            }
+            strcpy(str2, tmp_p1);
+         }
+         if ((!a2->entry[sort1]) && a2->entry[sort2]) {
+            if (!(tmp_p2 = strchr(a2->entry[sort2],'\1'))) tmp_p2=a2->entry[sort2]+1;
+            if ((str2 = malloc(strlen(tmp_p2)+1)) == NULL) {
+               return 0;
+            }
+            strcpy(str2, tmp_p2);
+         }
       } else if (a2->entry[sort3]) {
-	 if (!(tmp_p3 = strchr(a2->entry[sort3],'\1'))) tmp_p3=a2->entry[sort3]+1;
-	 if ((str2 = malloc(strlen(tmp_p3)+1)) == NULL) {
-	    return 0;
-	 }
-	 strcpy(str2, tmp_p3);
+         if (!(tmp_p3 = strchr(a2->entry[sort3],'\1'))) tmp_p3=a2->entry[sort3]+1;
+         if ((str2 = malloc(strlen(tmp_p3)+1)) == NULL) {
+            return 0;
+         }
+         strcpy(str2, tmp_p3);
       } else {
-	 free(str1);
-	 return -1;
+         free(str1);
+         return -1;
       }
 
       /* lower case the strings for a better compare */
@@ -288,13 +288,13 @@ static int address_sort(AddressList **al, int sort_order)
    if (sort_order==SORT_ASCENDING) {
       sort_al[count-1]->next = NULL;
       for (i=count-1; i>0; i--) {
-	 sort_al[i-1]->next=sort_al[i];
+         sort_al[i-1]->next=sort_al[i];
       }
       *al = sort_al[0];
    } else {
       /* Descending order */
       for (i=count-1; i>0; i--) {
-	 sort_al[i]->next=sort_al[i-1];
+         sort_al[i]->next=sort_al[i-1];
       }
       sort_al[0]->next = NULL;
       *al = sort_al[count-1];
@@ -349,7 +349,7 @@ int get_addresses(AddressList **address_list, int sort_order)
  * modified, deleted and private, 0 for no, 1 for yes, 2 for use prefs
  */
 int get_addresses2(AddressList **address_list, int sort_order,
-		  int modified, int deleted, int privates, int category)
+                   int modified, int deleted, int privates, int category)
 {
    GList *records;
    GList *temp_list;
@@ -390,22 +390,22 @@ int get_addresses2(AddressList **address_list, int sort_order,
 
    for (temp_list = records; temp_list; temp_list = temp_list->next) {
       if (temp_list->data) {
-	 br=temp_list->data;
+         br=temp_list->data;
       } else {
-	 continue;
+         continue;
       }
       if (!br->buf) {
-	 continue;
+         continue;
       }
 
       if ( ((br->rt==DELETED_PALM_REC)  && (!keep_deleted)) ||
-	   ((br->rt==DELETED_PC_REC)    && (!keep_deleted)) ||
-	   ((br->rt==MODIFIED_PALM_REC) && (!keep_modified)) ) {
-	 continue;
+           ((br->rt==DELETED_PC_REC)    && (!keep_deleted)) ||
+           ((br->rt==MODIFIED_PALM_REC) && (!keep_modified)) ) {
+         continue;
       }
       if ((keep_priv != SHOW_PRIVATES) &&
-	  (br->attrib & dlpRecAttrSecret)) {
-	 continue;
+          (br->attrib & dlpRecAttrSecret)) {
+         continue;
       }
 
       RecordBuffer = pi_buffer_new(br->size);
@@ -413,31 +413,31 @@ int get_addresses2(AddressList **address_list, int sort_order,
       RecordBuffer->used = br->size;
 
       if (unpack_Address(&addr, RecordBuffer, address_v1) == -1) {
-	 pi_buffer_free(RecordBuffer);
-	 continue;
+         pi_buffer_free(RecordBuffer);
+         continue;
       }
       pi_buffer_free(RecordBuffer);
 
       if ( ((br->attrib & 0x0F) != category) && category != CATEGORY_ALL) {
-	 continue;
+         continue;
       }
       buf = NULL;
       if (char_set != CHAR_SET_LATIN1) {
-	 for (i = 0; i < 19; i++) {
-	    if ((addr.entry[i] != NULL) && (addr.entry[i][0] != '\0')) {
+         for (i = 0; i < 19; i++) {
+            if ((addr.entry[i] != NULL) && (addr.entry[i][0] != '\0')) {
                buf = charset_p2newj(addr.entry[i], -1, char_set);
                if (buf) {
                   free(addr.entry[i]);
                   addr.entry[i] = buf;
-	       }
-	    }
-	 }
+               }
+            }
+         }
       }
 
       temp_a_list = malloc(sizeof(AddressList));
       if (!temp_a_list) {
-	 jp_logf(JP_LOG_WARN, "get_addresses2(): %s\n", _("Out of memory"));
-	 break;
+         jp_logf(JP_LOG_WARN, "get_addresses2(): %s\n", _("Out of memory"));
+         break;
       }
       memcpy(&(temp_a_list->maddr.addr), &addr, sizeof(struct Address));
       temp_a_list->app_type = ADDRESS;
@@ -462,7 +462,7 @@ int get_addresses2(AddressList **address_list, int sort_order,
 }
 
 int pc_address_write(struct Address *addr, PCRecType rt, unsigned char attrib,
-		     unsigned int *unique_id)
+                     unsigned int *unique_id)
 {
    pi_buffer_t *RecordBuffer;
    int i;
@@ -472,7 +472,7 @@ int pc_address_write(struct Address *addr, PCRecType rt, unsigned char attrib,
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    if (char_set != CHAR_SET_LATIN1) {
       for (i = 0; i < 19; i++) {
-	 if (addr->entry[i]) 
+         if (addr->entry[i]) 
             charset_j2p(addr->entry[i], strlen(addr->entry[i])+1, char_set);
       }
    }
@@ -510,7 +510,7 @@ void print_address_list(AddressList **al)
    AddressList *temp_al, *prev_al;
 
    for (prev_al=NULL, temp_al=*al; temp_al;
-	prev_al=temp_al, temp_al=temp_al->next) {
+        prev_al=temp_al, temp_al=temp_al->next) {
       jp_logf(JP_LOG_FILE | JP_LOG_STDOUT, "entry[0]=[%s]\n", temp_al->maddr.addr.entry[0]);
    }
 }

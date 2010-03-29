@@ -1,4 +1,4 @@
-/* $Id: contact.c,v 1.17 2010/03/07 21:26:51 rikster5 Exp $ */
+/* $Id: contact.c,v 1.18 2010/03/29 05:44:28 rikster5 Exp $ */
 
 /*******************************************************************************
  * contact.c
@@ -52,44 +52,44 @@ static int glob_sort_rule;
 /* Used for mapping between Contacts and Addresses */
 static long cont_addr_map[CONT_ADDR_MAP_SIZE]={
    contLastname, entryLastname,
-     contFirstname, entryFirstname,
-     contCompany, entryCompany,
-     contTitle, entryTitle,
-     contPhone1, entryPhone1,
-     contPhone2, entryPhone2,
-     contPhone3, entryPhone3,
-     contPhone4, entryPhone4,
-     contPhone5, entryPhone5,
-     contPhone6, -1,
-     contPhone7, -1,
-     contIM1, -1,
-     contIM2, -1,
-     contWebsite, -1,
-     contCustom1, entryCustom1,
-     contCustom2, entryCustom2,
-     contCustom3, entryCustom3,
-     contCustom4, entryCustom4,
-     contCustom5, -1,
-     contCustom6, -1,
-     contCustom7, -1,
-     contCustom8, -1,
-     contCustom9, -1,
-     contAddress1, entryAddress,
-     contCity1, entryCity,
-     contState1, entryState,
-     contZip1, entryZip,
-     contCountry1, entryCountry,
-     contAddress2, -1,
-     contCity2, -1,
-     contState2, -1,
-     contZip2, -1,
-     contCountry2, -1,
-     contAddress3, -1,
-     contCity3, -1,
-     contState3, -1,
-     contZip3, -1,
-     contCountry3, -1,
-     contNote, entryNote
+   contFirstname, entryFirstname,
+   contCompany, entryCompany,
+   contTitle, entryTitle,
+   contPhone1, entryPhone1,
+   contPhone2, entryPhone2,
+   contPhone3, entryPhone3,
+   contPhone4, entryPhone4,
+   contPhone5, entryPhone5,
+   contPhone6, -1,
+   contPhone7, -1,
+   contIM1, -1,
+   contIM2, -1,
+   contWebsite, -1,
+   contCustom1, entryCustom1,
+   contCustom2, entryCustom2,
+   contCustom3, entryCustom3,
+   contCustom4, entryCustom4,
+   contCustom5, -1,
+   contCustom6, -1,
+   contCustom7, -1,
+   contCustom8, -1,
+   contCustom9, -1,
+   contAddress1, entryAddress,
+   contCity1, entryCity,
+   contState1, entryState,
+   contZip1, entryZip,
+   contCountry1, entryCountry,
+   contAddress2, -1,
+   contCity2, -1,
+   contState2, -1,
+   contZip2, -1,
+   contCountry2, -1,
+   contAddress3, -1,
+   contCity3, -1,
+   contState3, -1,
+   contZip3, -1,
+   contCountry3, -1,
+   contNote, entryNote
 };
 
 /****************************** Main Code *************************************/
@@ -131,7 +131,7 @@ static int contact_compare(const void *v1, const void *v2)
 
    if (!(glob_sort_rule & SORT_JAPANESE) || (glob_sort_rule & SORT_JOS)) { /* normal */
       while (last_cmp1 < 3 && last_cmp2 < 3) {
-	 str1=str2=NULL;
+         str1=str2=NULL;
          /* Find the next non-blank field to use for sorting */
          for (i=last_cmp1+1; i<=3; i++) {
             if (c1->entry[sort_idx[i]]) {
@@ -197,72 +197,72 @@ static int contact_compare(const void *v1, const void *v2)
       sort3 = sort_idx[3];
 
       if (c1->entry[sort1] || c1->entry[sort2]) {
-	 if (c1->entry[sort1] && c1->entry[sort2]) {
-	    if (!(tmp_p1 = strchr(c1->entry[sort1],'\1'))) tmp_p1=c1->entry[sort1]+1;
-	    if (!(tmp_p2 = strchr(c1->entry[sort2],'\1'))) tmp_p2=c1->entry[sort2]+1;
-	    if ((str1 = malloc(strlen(tmp_p1)+strlen(tmp_p2)+1)) == NULL) {
-	       return 0;
-	    }
-	    strcpy(str1, tmp_p1);
-	    strcat(str1, tmp_p2);
-	 }
-	 if (c1->entry[sort1] && (!c1->entry[sort2])) {
-	    if (!(tmp_p1 = strchr(c1->entry[sort1],'\1'))) tmp_p1=c1->entry[sort1]+1;
-	    if ((str1 = malloc(strlen(tmp_p1)+1)) == NULL) {
-	       return 0;
-	    }
-	    strcpy(str1, tmp_p1);
-	 }
-	 if ((!c1->entry[sort1]) && c1->entry[sort2]) {
-	    if (!(tmp_p2 = strchr(c1->entry[sort2],'\1'))) tmp_p2=c1->entry[sort2]+1;
-	    if ((str1 = malloc(strlen(tmp_p2)+1)) == NULL) {
-	       return 0;
-	    }
-	    strcpy(str1, tmp_p2);
-	 }
+         if (c1->entry[sort1] && c1->entry[sort2]) {
+            if (!(tmp_p1 = strchr(c1->entry[sort1],'\1'))) tmp_p1=c1->entry[sort1]+1;
+            if (!(tmp_p2 = strchr(c1->entry[sort2],'\1'))) tmp_p2=c1->entry[sort2]+1;
+            if ((str1 = malloc(strlen(tmp_p1)+strlen(tmp_p2)+1)) == NULL) {
+               return 0;
+            }
+            strcpy(str1, tmp_p1);
+            strcat(str1, tmp_p2);
+         }
+         if (c1->entry[sort1] && (!c1->entry[sort2])) {
+            if (!(tmp_p1 = strchr(c1->entry[sort1],'\1'))) tmp_p1=c1->entry[sort1]+1;
+            if ((str1 = malloc(strlen(tmp_p1)+1)) == NULL) {
+               return 0;
+            }
+            strcpy(str1, tmp_p1);
+         }
+         if ((!c1->entry[sort1]) && c1->entry[sort2]) {
+            if (!(tmp_p2 = strchr(c1->entry[sort2],'\1'))) tmp_p2=c1->entry[sort2]+1;
+            if ((str1 = malloc(strlen(tmp_p2)+1)) == NULL) {
+               return 0;
+            }
+            strcpy(str1, tmp_p2);
+         }
       } else if (c1->entry[sort3]) {
-	 if (!(tmp_p3 = strchr(c1->entry[sort3],'\1'))) tmp_p3=c1->entry[sort3]+1;
-	 if ((str1 = malloc(strlen(tmp_p3)+1)) == NULL) {
-	    return 0;
-	 }
-	 strcpy(str1, tmp_p3);
+         if (!(tmp_p3 = strchr(c1->entry[sort3],'\1'))) tmp_p3=c1->entry[sort3]+1;
+         if ((str1 = malloc(strlen(tmp_p3)+1)) == NULL) {
+            return 0;
+         }
+         strcpy(str1, tmp_p3);
       } else {
-	 return 1;
+         return 1;
       }
 
       if (c2->entry[sort1] || c2->entry[sort2]) {
-	 if (c2->entry[sort1] && c2->entry[sort2]) {
-	    if (!(tmp_p1 = strchr(c2->entry[sort1],'\1'))) tmp_p1=c2->entry[sort1]+1;
-	    if (!(tmp_p2 = strchr(c2->entry[sort2],'\1'))) tmp_p2=c2->entry[sort2]+1;
-	    if ((str2 = malloc(strlen(tmp_p1)+strlen(tmp_p2)+1)) == NULL) {
-	       return 0;
-	    }
-	    strcpy(str2, tmp_p1);
-	    strcat(str2, tmp_p2);
-	 }
-	 if (c2->entry[sort1] && (!c2->entry[sort2])) {
-	    if (!(tmp_p1 = strchr(c2->entry[sort1],'\1'))) tmp_p1=c2->entry[sort1]+1;
-	    if ((str2 = malloc(strlen(tmp_p1)+1)) == NULL) {
-	       return 0;
-	    }
-	    strcpy(str2, tmp_p1);
-	 }
-	 if ((!c2->entry[sort1]) && c2->entry[sort2]) {
-	    if (!(tmp_p2 = strchr(c2->entry[sort2],'\1'))) tmp_p2=c2->entry[sort2]+1;
-	    if ((str2 = malloc(strlen(tmp_p2)+1)) == NULL) {
-	       return 0;
-	    }
-	    strcpy(str2, tmp_p2);
-	 }
+         if (c2->entry[sort1] && c2->entry[sort2]) {
+            if (!(tmp_p1 = strchr(c2->entry[sort1],'\1'))) tmp_p1=c2->entry[sort1]+1;
+            if (!(tmp_p2 = strchr(c2->entry[sort2],'\1'))) tmp_p2=c2->entry[sort2]+1;
+            if ((str2 = malloc(strlen(tmp_p1)+strlen(tmp_p2)+1)) == NULL) {
+               return 0;
+            }
+            strcpy(str2, tmp_p1);
+            strcat(str2, tmp_p2);
+         }
+         if (c2->entry[sort1] && (!c2->entry[sort2])) {
+            if (!(tmp_p1 = strchr(c2->entry[sort1],'\1'))) tmp_p1=c2->entry[sort1]+1;
+            if ((str2 = malloc(strlen(tmp_p1)+1)) == NULL) {
+               return 0;
+            }
+            strcpy(str2, tmp_p1);
+         }
+         if ((!c2->entry[sort1]) && c2->entry[sort2]) {
+            if (!(tmp_p2 = strchr(c2->entry[sort2],'\1'))) tmp_p2=c2->entry[sort2]+1;
+            if ((str2 = malloc(strlen(tmp_p2)+1)) == NULL) {
+               return 0;
+            }
+            strcpy(str2, tmp_p2);
+         }
       } else if (c2->entry[sort3]) {
-	 if (!(tmp_p3 = strchr(c2->entry[sort3],'\1'))) tmp_p3=c2->entry[sort3]+1;
-	 if ((str2 = malloc(strlen(tmp_p3)+1)) == NULL) {
-	    return 0;
-	 }
-	 strcpy(str2, tmp_p3);
+         if (!(tmp_p3 = strchr(c2->entry[sort3],'\1'))) tmp_p3=c2->entry[sort3]+1;
+         if ((str2 = malloc(strlen(tmp_p3)+1)) == NULL) {
+            return 0;
+         }
+         strcpy(str2, tmp_p3);
       } else {
-	 free(str1);
-	 return -1;
+         free(str1);
+         return -1;
       }
 
       /* lower case the strings for a better compare */
@@ -337,13 +337,13 @@ static int contacts_sort(ContactList **cl, int sort_order)
    if (sort_order==SORT_ASCENDING) {
       sort_cl[count-1]->next = NULL;
       for (i=count-1; i>0; i--) {
-	 sort_cl[i-1]->next=sort_cl[i];
+         sort_cl[i-1]->next=sort_cl[i];
       }
       *cl = sort_cl[0];
    } else {
       /* Descending order */
       for (i=count-1; i>0; i--) {
-	 sort_cl[i]->next=sort_cl[i-1];
+         sort_cl[i]->next=sort_cl[i-1];
       }
       sort_cl[0]->next = NULL;
       *cl = sort_cl[count-1];
@@ -367,24 +367,24 @@ int copy_address_ai_to_contact_ai(const struct AddressAppInfo *aai, struct Conta
       c_entry = cont_addr_map[i*2];
       a_entry = cont_addr_map[i*2+1];
       if ((c_entry>=0) && (a_entry>=0)) {
-	 strncpy(cai->labels[c_entry], aai->labels[a_entry], 16);
-	 cai->labels[c_entry][15]='\0';
+         strncpy(cai->labels[c_entry], aai->labels[a_entry], 16);
+         cai->labels[c_entry][15]='\0';
       } else {
-	 if (c_entry>=0) {
-	    cai->labels[c_entry][0]='\0';
-	 }
+         if (c_entry>=0) {
+            cai->labels[c_entry][0]='\0';
+         }
       }
    }
 
    /* The rest of the labels do not exist in address */
    if (cai->type==contacts_v10) {
       for (i=NUM_CONTACT_ENTRIES; i<NUM_CONTACT_V10_LABELS; i++) {
-	 cai->labels[i][0]='\0';
+         cai->labels[i][0]='\0';
       }
    }
    if (cai->type==contacts_v11) {
       for (i=NUM_CONTACT_ENTRIES; i<NUM_CONTACT_V11_LABELS; i++) {
-	 cai->labels[i][0]='\0';
+         cai->labels[i][0]='\0';
       }
    }
 
@@ -416,9 +416,9 @@ int copy_address_to_contact(const struct Address *a, struct Contact *c)
       
       c->entry[c_entry]=NULL;
       if ((c_entry>=0) && (a_entry>=0)) {
-	 if (a->entry[a_entry]) {
-	    c->entry[c_entry]=strdup(a->entry[a_entry]);
-	 }
+         if (a->entry[a_entry]) {
+            c->entry[c_entry]=strdup(a->entry[a_entry]);
+         }
       }
    }
 
@@ -443,7 +443,7 @@ int copy_address_to_contact(const struct Address *a, struct Contact *c)
 
    c->reminder = 0;
    c->advance = 0;
-   c->advanceUnits = 0;	   
+   c->advanceUnits = 0;    
    memset(&(c->birthday), 0, sizeof(struct tm));
    for (i=0; i<MAX_CONTACT_BLOBS; i++) {
       c->blob[i] = NULL;
@@ -470,16 +470,17 @@ int copy_addresses_to_contacts(AddressList *al, ContactList **cl)
       temp_cl->app_type = CONTACTS;
       temp_cl->next=NULL;
       if (!last_cl) {
-	 *cl = last_cl = temp_cl;
+         *cl = last_cl = temp_cl;
       } else {
-	 last_cl->next = temp_cl;
-	 last_cl = temp_cl;
+         last_cl->next = temp_cl;
+         last_cl = temp_cl;
       }
    }
    return 0;
 }
 
-static int copy_contact_ai_to_address_ai(const struct ContactAppInfo *cai, struct AddressAppInfo *aai)
+static int copy_contact_ai_to_address_ai(const struct ContactAppInfo *cai, 
+                                         struct AddressAppInfo *aai)
 {
    int i, a_entry, c_entry;
 
@@ -489,12 +490,12 @@ static int copy_contact_ai_to_address_ai(const struct ContactAppInfo *cai, struc
       c_entry = cont_addr_map[i*2];
       a_entry = cont_addr_map[i*2+1];
       if ((c_entry>=0) && (a_entry>=0)) {
-	 strncpy(aai->labels[a_entry], cai->labels[c_entry], 16);
-	 aai->labels[a_entry][15]='\0';
+         strncpy(aai->labels[a_entry], cai->labels[c_entry], 16);
+         aai->labels[a_entry][15]='\0';
       } else {
-	 if (a_entry>=0) {
-	    aai->labels[a_entry][0]='\0';
-	 }
+         if (a_entry>=0) {
+            aai->labels[a_entry][0]='\0';
+         }
       }
    }
 
@@ -523,9 +524,9 @@ int copy_contact_to_address(const struct Contact *c, struct Address *a)
       
       a->entry[a_entry]=NULL;
       if ((c_entry>=0) && (a_entry>=0)) {
-	 if (c->entry[c_entry]) {
-	    a->entry[a_entry]=strdup(c->entry[c_entry]);
-	 }
+         if (c->entry[c_entry]) {
+            a->entry[a_entry]=strdup(c->entry[c_entry]);
+         }
       }
    }
 
@@ -537,10 +538,10 @@ int copy_contact_to_address(const struct Contact *c, struct Address *a)
 
    if (a->showPhone > 4) {
       for (i=0; i<5; i++) {
-	 if (a->entry[entryPhone1 + i]) {
-	    a->showPhone = i;
-	    break;
-	 }
+         if (a->entry[entryPhone1 + i]) {
+            a->showPhone = i;
+            break;
+         }
       }
    }
    return 0;
@@ -593,21 +594,21 @@ int get_contact_app_info(struct ContactAppInfo *ai)
       int i;
 
       for (i = 0; i < 49 + 3; i++)
-	if (ai->labels[i][0] != '\0') {
-	   charset_p2j(ai->labels[i], 16, char_set);
-	}
+        if (ai->labels[i][0] != '\0') {
+           charset_p2j(ai->labels[i], 16, char_set);
+        }
       for (i = 0; i < 8; i++)
-	if (ai->phoneLabels[i][0] != '\0') {
-	   charset_p2j(ai->phoneLabels[i], 16, char_set);
-	}
+        if (ai->phoneLabels[i][0] != '\0') {
+           charset_p2j(ai->phoneLabels[i], 16, char_set);
+        }
       for (i = 0; i < 3; i++)
-	if (ai->addrLabels[i][0] != '\0') {
-	   charset_p2j(ai->addrLabels[i], 16, char_set);
-	}
+        if (ai->addrLabels[i][0] != '\0') {
+           charset_p2j(ai->addrLabels[i], 16, char_set);
+        }
       for (i = 0; i < 5; i++)
-	if (ai->IMLabels[i][0] != '\0') {
-	   charset_p2j(ai->IMLabels[i], 16, char_set);
-	}
+        if (ai->IMLabels[i][0] != '\0') {
+           charset_p2j(ai->IMLabels[i], 16, char_set);
+        }
    }
 
    return EXIT_SUCCESS;
@@ -622,7 +623,7 @@ int get_contacts(ContactList **contact_list, int sort_order)
  * modified, deleted, private: 0 for no, 1 for yes, 2 for use prefs
  */
 int get_contacts2(ContactList **contact_list, int sort_order,
-		  int modified, int deleted, int privates, int category)
+                  int modified, int deleted, int privates, int category)
 {
    GList *records;
    GList *temp_list;
@@ -663,22 +664,22 @@ int get_contacts2(ContactList **contact_list, int sort_order,
 
    for (temp_list = records; temp_list; temp_list = temp_list->next) {
       if (temp_list->data) {
-	 br=temp_list->data;
+         br=temp_list->data;
       } else {
-	 continue;
+         continue;
       }
       if (!br->buf) {
-	 continue;
+         continue;
       }
 
       if ( ((br->rt==DELETED_PALM_REC)  && (!keep_deleted)) ||
-	   ((br->rt==DELETED_PC_REC)    && (!keep_deleted)) ||
-	   ((br->rt==MODIFIED_PALM_REC) && (!keep_modified)) ) {
-	 continue;
+           ((br->rt==DELETED_PC_REC)    && (!keep_deleted)) ||
+           ((br->rt==MODIFIED_PALM_REC) && (!keep_modified)) ) {
+         continue;
       }
       if ((keep_priv != SHOW_PRIVATES) &&
-	  (br->attrib & dlpRecAttrSecret)) {
-	 continue;
+          (br->attrib & dlpRecAttrSecret)) {
+         continue;
       }
 
 //#ifndef PILOT_LINK_0_12
@@ -696,36 +697,36 @@ int get_contacts2(ContactList **contact_list, int sort_order,
 
 //#ifndef PILOT_LINK_0_12
       if (num <= 0) {
-	 continue;
+         continue;
       }
 //#else /* PILOT_LINK_0_12 */
 //      if (jp_unpack_Contact(&cont, RecordBuffer, contact_v1) == -1) {
-//	 pi_buffer_free(RecordBuffer);
-//	 continue;
+//       pi_buffer_free(RecordBuffer);
+//       continue;
 //      }
 //      pi_buffer_free(RecordBuffer);
 //#endif /* PILOT_LINK_0_12 */
 
       if ( ((br->attrib & 0x0F) != category) && category != CATEGORY_ALL) {
-	 continue;
+         continue;
       }
       buf = NULL;
       if (char_set != CHAR_SET_LATIN1) {
-	 for (i = 0; i < 39; i++) {
-	    if ((cont.entry[i] != NULL) && (cont.entry[i][0] != '\0')) {
+         for (i = 0; i < 39; i++) {
+            if ((cont.entry[i] != NULL) && (cont.entry[i][0] != '\0')) {
                buf = charset_p2newj(cont.entry[i], -1, char_set);
                if (buf) {
                   free(cont.entry[i]);
                   cont.entry[i] = buf;
-	       }
-	    }
-	 }
+               }
+            }
+         }
       }
 
       temp_c_list = malloc(sizeof(ContactList));
       if (!temp_c_list) {
-	 jp_logf(JP_LOG_WARN, "get_contacts2(): %s\n", _("Out of memory"));
-	 break;
+         jp_logf(JP_LOG_WARN, "get_contacts2(): %s\n", _("Out of memory"));
+         break;
       }
       memcpy(&(temp_c_list->mcont.cont), &cont, sizeof(struct Contact));
       temp_c_list->app_type = CONTACTS;
@@ -747,7 +748,7 @@ int get_contacts2(ContactList **contact_list, int sort_order,
 }
 
 int pc_contact_write(struct Contact *cont, PCRecType rt, unsigned char attrib,
-		     unsigned int *unique_id)
+                     unsigned int *unique_id)
 {
    pi_buffer_t *RecordBuffer;
    int i;
@@ -757,7 +758,7 @@ int pc_contact_write(struct Contact *cont, PCRecType rt, unsigned char attrib,
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    if (char_set != CHAR_SET_LATIN1) {
       for (i = 0; i < 39; i++) {
-	 if (cont->entry[i]) 
+         if (cont->entry[i]) 
             charset_j2p(cont->entry[i], strlen(cont->entry[i])+1, char_set);
       }
    }

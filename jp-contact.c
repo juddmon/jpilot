@@ -1,4 +1,4 @@
-/* $Id: jp-contact.c,v 1.12 2009/08/11 20:54:20 rikster5 Exp $ */
+/* $Id: jp-contact.c,v 1.13 2010/03/29 05:44:29 rikster5 Exp $ */
 
 /*******************************************************************************
  * contact.c:  Translate Palm contact data formats
@@ -26,6 +26,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  ******************************************************************************/
 
+/********************************* Includes ***********************************/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -35,6 +36,9 @@
 #include "config.h"
  
 #include <pi-contact.h>
+
+/****************************** Main Code *************************************/
+
 void jp_free_Contact(struct Contact *c)
 {
    free_Contact(c);

@@ -1,4 +1,4 @@
-/* $Id: prefs.c,v 1.87 2010/03/03 12:49:59 rousseau Exp $ */
+/* $Id: prefs.c,v 1.88 2010/03/29 05:44:30 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs.c
@@ -51,106 +51,106 @@ int t_fmt_ampm = TRUE;
 /* These are the default settings */
 /* name, usertype, filetype, ivalue, char *svalue, svalue_size; */
 static prefType glob_prefs[NUM_PREFS] = {
-     {"jpilotrc", CHARTYPE, CHARTYPE, 0, NULL, 0},
-     {"time", CHARTYPE, INTTYPE, 0, NULL, 0},
-     {"sdate", CHARTYPE, INTTYPE, 0, NULL, 0},
-     {"ldate", CHARTYPE, INTTYPE, 0, NULL, 0},
-     {"xxx_internal1_xxx", CHARTYPE, INTTYPE, 0, NULL, 0},
-     {"show_deleted", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"show_modified", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"todo_hide_completed", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"datebook_highlight_days", INTTYPE, INTTYPE, 1, NULL, 0},
-     {"port", CHARTYPE, CHARTYPE, 0, NULL, 0},
-     {"rate", CHARTYPE, INTTYPE, 8, NULL, 0},
-     {"user", CHARTYPE, CHARTYPE, 0, NULL, 0},
-     {"user_id", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"pc_id", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"num_backups", INTTYPE, INTTYPE, 2, NULL, 0},
-     {"window_width", INTTYPE, INTTYPE, 640, NULL, 0},
-     {"window_height", INTTYPE, INTTYPE, 480, NULL, 0},
-     {"datebook_pane", INTTYPE, INTTYPE, 370, NULL, 0},
-     {"address_pane", INTTYPE, INTTYPE, 340, NULL, 0},
-     {"todo_pane", INTTYPE, INTTYPE, 370, NULL, 0},
-     {"memo_pane", INTTYPE, INTTYPE, 370, NULL, 0},
-     {"use_db3", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"last_app", INTTYPE, INTTYPE, DATEBOOK, NULL, 0},
-     {"print_this_many", INTTYPE, INTTYPE, 3, NULL, 0},
-     {"print_one_per_page", INTTYPE, INTTYPE, 0, NULL ,0},
-     {"print_blank_lines", INTTYPE, INTTYPE, 1, NULL, 0},
-     {"print_command", CHARTYPE, CHARTYPE, 0, NULL, 0},
-     {"char_set", INTTYPE, INTTYPE, CHAR_SET_1252_UTF , NULL, 0},
-     {"sync_datebook", INTTYPE, INTTYPE, 1, NULL, 0},
-     {"sync_address", INTTYPE, INTTYPE, 1, NULL, 0},
-     {"sync_todo", INTTYPE, INTTYPE, 1, NULL, 0},
-     {"sync_memo", INTTYPE, INTTYPE, 1, NULL, 0},
-     {"sync_memo32", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"address_notebook_page", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"output_height", INTTYPE, INTTYPE, 60, NULL, 0},
-     {"open_alarm_windows", INTTYPE, INTTYPE, 1, NULL, 0},
-     {"do_alarm_command", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"alarm_command", CHARTYPE, CHARTYPE, 0, NULL, 0},
-     {"remind_in", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"remind_units", INTTYPE, INTTYPE, 0, NULL, 0},
+   {"jpilotrc", CHARTYPE, CHARTYPE, 0, NULL, 0},
+   {"time", CHARTYPE, INTTYPE, 0, NULL, 0},
+   {"sdate", CHARTYPE, INTTYPE, 0, NULL, 0},
+   {"ldate", CHARTYPE, INTTYPE, 0, NULL, 0},
+   {"xxx_internal1_xxx", CHARTYPE, INTTYPE, 0, NULL, 0},
+   {"show_deleted", INTTYPE, INTTYPE, 0, NULL, 0},
+   {"show_modified", INTTYPE, INTTYPE, 0, NULL, 0},
+   {"todo_hide_completed", INTTYPE, INTTYPE, 0, NULL, 0},
+   {"datebook_highlight_days", INTTYPE, INTTYPE, 1, NULL, 0},
+   {"port", CHARTYPE, CHARTYPE, 0, NULL, 0},
+   {"rate", CHARTYPE, INTTYPE, 8, NULL, 0},
+   {"user", CHARTYPE, CHARTYPE, 0, NULL, 0},
+   {"user_id", INTTYPE, INTTYPE, 0, NULL, 0},
+   {"pc_id", INTTYPE, INTTYPE, 0, NULL, 0},
+   {"num_backups", INTTYPE, INTTYPE, 2, NULL, 0},
+   {"window_width", INTTYPE, INTTYPE, 640, NULL, 0},
+   {"window_height", INTTYPE, INTTYPE, 480, NULL, 0},
+   {"datebook_pane", INTTYPE, INTTYPE, 370, NULL, 0},
+   {"address_pane", INTTYPE, INTTYPE, 340, NULL, 0},
+   {"todo_pane", INTTYPE, INTTYPE, 370, NULL, 0},
+   {"memo_pane", INTTYPE, INTTYPE, 370, NULL, 0},
+   {"use_db3", INTTYPE, INTTYPE, 0, NULL, 0},
+   {"last_app", INTTYPE, INTTYPE, DATEBOOK, NULL, 0},
+   {"print_this_many", INTTYPE, INTTYPE, 3, NULL, 0},
+   {"print_one_per_page", INTTYPE, INTTYPE, 0, NULL ,0},
+   {"print_blank_lines", INTTYPE, INTTYPE, 1, NULL, 0},
+   {"print_command", CHARTYPE, CHARTYPE, 0, NULL, 0},
+   {"char_set", INTTYPE, INTTYPE, CHAR_SET_1252_UTF , NULL, 0},
+   {"sync_datebook", INTTYPE, INTTYPE, 1, NULL, 0},
+   {"sync_address", INTTYPE, INTTYPE, 1, NULL, 0},
+   {"sync_todo", INTTYPE, INTTYPE, 1, NULL, 0},
+   {"sync_memo", INTTYPE, INTTYPE, 1, NULL, 0},
+   {"sync_memo32", INTTYPE, INTTYPE, 0, NULL, 0},
+   {"address_notebook_page", INTTYPE, INTTYPE, 0, NULL, 0},
+   {"output_height", INTTYPE, INTTYPE, 60, NULL, 0},
+   {"open_alarm_windows", INTTYPE, INTTYPE, 1, NULL, 0},
+   {"do_alarm_command", INTTYPE, INTTYPE, 0, NULL, 0},
+   {"alarm_command", CHARTYPE, CHARTYPE, 0, NULL, 0},
+   {"remind_in", INTTYPE, INTTYPE, 0, NULL, 0},
+   {"remind_units", INTTYPE, INTTYPE, 0, NULL, 0},
    /* This is actually the password, but I wanted to name it something more discreet */
-     {"session_id", CHARTYPE, CHARTYPE, 0, NULL, 0},
-     {"memo32_mode", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"paper_size", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"datebook_export_filename", CHARTYPE, CHARTYPE, 0, NULL, 0},
-     {"datebook_import_path", CHARTYPE, CHARTYPE, 0, NULL, 0},
-     {"address_export_filename", CHARTYPE, CHARTYPE, 0, NULL, 0},
-     {"address_import_path", CHARTYPE, CHARTYPE, 0, NULL, 0},
-     {"todo_export_filename", CHARTYPE, CHARTYPE, 0, NULL, 0},
-     {"todo_import_path", CHARTYPE, CHARTYPE, 0, NULL, 0},
-     {"memo_export_filename", CHARTYPE, CHARTYPE, 0, NULL, 0},
-     {"memo_import_path", CHARTYPE, CHARTYPE, 0, NULL, 0},
-     {"manana_mode", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"sync_manana", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"use_jos", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"phone_prefix1", CHARTYPE, CHARTYPE, 0, NULL, 0},
-     {"phone_prefix1_on", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"phone_prefix2", CHARTYPE, CHARTYPE, 0, NULL, 0},
-     {"phone_prefix2_on", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"phone_prefix3", CHARTYPE, CHARTYPE, 0, NULL, 0},
-     {"phone_prefix3_on", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"dial_command", CHARTYPE, CHARTYPE, 0, NULL, 0},
-     {"datebook_todo_pane", INTTYPE, INTTYPE, 350, NULL, 0},
-     {"datebook_todo_show", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"todo_hide_not_due", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"todo_completion_date", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"install_path", CHARTYPE, CHARTYPE, 0, NULL, 0},
-     {"monthview_width", INTTYPE, INTTYPE, 640, NULL, 0},
-     {"monthview_height", INTTYPE, INTTYPE, 480, NULL, 0},
-     {"weekview_width", INTTYPE, INTTYPE, 640, NULL, 0},
-     {"weekview_height", INTTYPE, INTTYPE, 480, NULL, 0},
-     {"last_date_category", INTTYPE, INTTYPE, CATEGORY_ALL, NULL, 0},
-     {"last_addr_category", INTTYPE, INTTYPE, CATEGORY_ALL, NULL, 0},
-     {"last_todo_category", INTTYPE, INTTYPE, CATEGORY_ALL, NULL, 0},
-     {"last_memo_category", INTTYPE, INTTYPE, CATEGORY_ALL, NULL, 0},
-     {"mail_command", CHARTYPE, CHARTYPE, 0, NULL, 0},
-     {"version", CHARTYPE, CHARTYPE, 0, NULL, 0},
-     {"utf_encoding", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"confirm_file_install", INTTYPE, INTTYPE, 1, NULL, 0},
-     {"todo_days_due", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"todo_days_till_due", INTTYPE, INTTYPE, 7, NULL, 0},
-     {"show_tooltips", INTTYPE, INTTYPE, 1, NULL, 0},
-     {"datebook_note_pane", INTTYPE, INTTYPE, 75, NULL, 0},
-     {"datebook_hi_today", INTTYPE, INTTYPE, 1, NULL, 0},
-     {"datebook_anni_years", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"keyring_pane", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"expense_pane", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"datebook_version", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"address_version", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"todo_version", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"memo_version", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"contacts_photo_filename", CHARTYPE, CHARTYPE, 0, NULL, 0},
-     {"todo_sort_column", INTTYPE, INTTYPE, 1, NULL, 0},
-     {"todo_sort_order", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"addr_sort_order", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"addr_name_col_sz", INTTYPE, INTTYPE, 140, NULL, 0},
-     {"todo_note_pane", INTTYPE, INTTYPE, 200, NULL, 0},
-     {"expense_sort_column", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"expense_sort_order", INTTYPE, INTTYPE, 0, NULL, 0},
-     {"keyr_export_filename", CHARTYPE, CHARTYPE, 0, NULL, 0},
+   {"session_id", CHARTYPE, CHARTYPE, 0, NULL, 0},
+   {"memo32_mode", INTTYPE, INTTYPE, 0, NULL, 0},
+   {"paper_size", INTTYPE, INTTYPE, 0, NULL, 0},
+   {"datebook_export_filename", CHARTYPE, CHARTYPE, 0, NULL, 0},
+   {"datebook_import_path", CHARTYPE, CHARTYPE, 0, NULL, 0},
+   {"address_export_filename", CHARTYPE, CHARTYPE, 0, NULL, 0},
+   {"address_import_path", CHARTYPE, CHARTYPE, 0, NULL, 0},
+   {"todo_export_filename", CHARTYPE, CHARTYPE, 0, NULL, 0},
+   {"todo_import_path", CHARTYPE, CHARTYPE, 0, NULL, 0},
+   {"memo_export_filename", CHARTYPE, CHARTYPE, 0, NULL, 0},
+   {"memo_import_path", CHARTYPE, CHARTYPE, 0, NULL, 0},
+   {"manana_mode", INTTYPE, INTTYPE, 0, NULL, 0},
+   {"sync_manana", INTTYPE, INTTYPE, 0, NULL, 0},
+   {"use_jos", INTTYPE, INTTYPE, 0, NULL, 0},
+   {"phone_prefix1", CHARTYPE, CHARTYPE, 0, NULL, 0},
+   {"phone_prefix1_on", INTTYPE, INTTYPE, 0, NULL, 0},
+   {"phone_prefix2", CHARTYPE, CHARTYPE, 0, NULL, 0},
+   {"phone_prefix2_on", INTTYPE, INTTYPE, 0, NULL, 0},
+   {"phone_prefix3", CHARTYPE, CHARTYPE, 0, NULL, 0},
+   {"phone_prefix3_on", INTTYPE, INTTYPE, 0, NULL, 0},
+   {"dial_command", CHARTYPE, CHARTYPE, 0, NULL, 0},
+   {"datebook_todo_pane", INTTYPE, INTTYPE, 350, NULL, 0},
+   {"datebook_todo_show", INTTYPE, INTTYPE, 0, NULL, 0},
+   {"todo_hide_not_due", INTTYPE, INTTYPE, 0, NULL, 0},
+   {"todo_completion_date", INTTYPE, INTTYPE, 0, NULL, 0},
+   {"install_path", CHARTYPE, CHARTYPE, 0, NULL, 0},
+   {"monthview_width", INTTYPE, INTTYPE, 640, NULL, 0},
+   {"monthview_height", INTTYPE, INTTYPE, 480, NULL, 0},
+   {"weekview_width", INTTYPE, INTTYPE, 640, NULL, 0},
+   {"weekview_height", INTTYPE, INTTYPE, 480, NULL, 0},
+   {"last_date_category", INTTYPE, INTTYPE, CATEGORY_ALL, NULL, 0},
+   {"last_addr_category", INTTYPE, INTTYPE, CATEGORY_ALL, NULL, 0},
+   {"last_todo_category", INTTYPE, INTTYPE, CATEGORY_ALL, NULL, 0},
+   {"last_memo_category", INTTYPE, INTTYPE, CATEGORY_ALL, NULL, 0},
+   {"mail_command", CHARTYPE, CHARTYPE, 0, NULL, 0},
+   {"version", CHARTYPE, CHARTYPE, 0, NULL, 0},
+   {"utf_encoding", INTTYPE, INTTYPE, 0, NULL, 0},
+   {"confirm_file_install", INTTYPE, INTTYPE, 1, NULL, 0},
+   {"todo_days_due", INTTYPE, INTTYPE, 0, NULL, 0},
+   {"todo_days_till_due", INTTYPE, INTTYPE, 7, NULL, 0},
+   {"show_tooltips", INTTYPE, INTTYPE, 1, NULL, 0},
+   {"datebook_note_pane", INTTYPE, INTTYPE, 75, NULL, 0},
+   {"datebook_hi_today", INTTYPE, INTTYPE, 1, NULL, 0},
+   {"datebook_anni_years", INTTYPE, INTTYPE, 0, NULL, 0},
+   {"keyring_pane", INTTYPE, INTTYPE, 0, NULL, 0},
+   {"expense_pane", INTTYPE, INTTYPE, 0, NULL, 0},
+   {"datebook_version", INTTYPE, INTTYPE, 0, NULL, 0},
+   {"address_version", INTTYPE, INTTYPE, 0, NULL, 0},
+   {"todo_version", INTTYPE, INTTYPE, 0, NULL, 0},
+   {"memo_version", INTTYPE, INTTYPE, 0, NULL, 0},
+   {"contacts_photo_filename", CHARTYPE, CHARTYPE, 0, NULL, 0},
+   {"todo_sort_column", INTTYPE, INTTYPE, 1, NULL, 0},
+   {"todo_sort_order", INTTYPE, INTTYPE, 0, NULL, 0},
+   {"addr_sort_order", INTTYPE, INTTYPE, 0, NULL, 0},
+   {"addr_name_col_sz", INTTYPE, INTTYPE, 140, NULL, 0},
+   {"todo_note_pane", INTTYPE, INTTYPE, 200, NULL, 0},
+   {"expense_sort_column", INTTYPE, INTTYPE, 0, NULL, 0},
+   {"expense_sort_order", INTTYPE, INTTYPE, 0, NULL, 0},
+   {"keyr_export_filename", CHARTYPE, CHARTYPE, 0, NULL, 0},
 };
 
 struct name_list {
@@ -173,40 +173,40 @@ void pref_init(void)
    for (i=0; i<NUM_PREFS; i++) {
       switch (i) {
        case PREF_PORT:
-	 glob_prefs[i].svalue=strdup("usb:");
-	 glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
+         glob_prefs[i].svalue=strdup("usb:");
+         glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
          break;
        case PREF_RCFILE:
-	 glob_prefs[i].svalue=strdup(EPN"rc.default");
-	 glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
-	 break;
+         glob_prefs[i].svalue=strdup(EPN"rc.default");
+         glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
+         break;
        case PREF_PRINT_COMMAND:
-	 glob_prefs[i].svalue=strdup("lpr -h");
-	 glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
-	 break;
+         glob_prefs[i].svalue=strdup("lpr -h");
+         glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
+         break;
        case PREF_ALARM_COMMAND:
-	 glob_prefs[i].svalue=strdup("echo %t %d");
-	 glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
-	 break;
+         glob_prefs[i].svalue=strdup("echo %t %d");
+         glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
+         break;
        case PREF_REMIND_IN:
-	 glob_prefs[i].svalue=strdup("5");
-	 glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
-	 break;
+         glob_prefs[i].svalue=strdup("5");
+         glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
+         break;
        case PREF_PASSWORD:
-	 glob_prefs[i].svalue=strdup("09021345070413440c08135a3215135dd217ead3b5df556322e9a14a994b0f88");
-	 glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
-	 break;
+         glob_prefs[i].svalue=strdup("09021345070413440c08135a3215135dd217ead3b5df556322e9a14a994b0f88");
+         glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
+         break;
        case PREF_DIAL_COMMAND:
-	 glob_prefs[i].svalue=strdup("jpilot-dial --lv 0 --rv 50 %n");
-	 glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
-	 break;
+         glob_prefs[i].svalue=strdup("jpilot-dial --lv 0 --rv 50 %n");
+         glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
+         break;
        case PREF_MAIL_COMMAND:
-	 glob_prefs[i].svalue=strdup("mozilla-thunderbird -remote \"mailto(%s)\"");
-	 glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
-	 break;
+         glob_prefs[i].svalue=strdup("mozilla-thunderbird -remote \"mailto(%s)\"");
+         glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
+         break;
        default:
-	 glob_prefs[i].svalue=strdup("");
-	 glob_prefs[i].svalue_size=1;
+         glob_prefs[i].svalue=strdup("");
+         glob_prefs[i].svalue_size=1;
       }
    }
 }
@@ -217,9 +217,9 @@ void jp_pref_init(prefType prefs[], int count)
 
    for (i=0; i<count; i++) {
       if (prefs[i].svalue) {
-	 prefs[i].svalue=strdup(prefs[i].svalue);
+         prefs[i].svalue=strdup(prefs[i].svalue);
       } else {
-	 prefs[i].svalue=strdup("");
+         prefs[i].svalue=strdup("");
       }
       prefs[i].svalue_size=strlen(prefs[i].svalue)+1;
    }
@@ -231,8 +231,8 @@ void jp_free_prefs(prefType prefs[], int count)
 
    for (i=0; i<count; i++) {
       if (prefs[i].svalue) {
-	 free(prefs[i].svalue);
-	 prefs[i].svalue=NULL;
+         free(prefs[i].svalue);
+         prefs[i].svalue=NULL;
       }
    }
 }
@@ -267,16 +267,16 @@ int get_pref_time_no_secs(char *datef)
    }
    for (i1=0, i2=0; ; i1++, i2++) {
       if (svalue[i2]=='S') {
-	 i1-=2;
-	 i2++;
+         i1-=2;
+         i2++;
       }
       if (svalue[i2]==' ') {
-	 i1--;
-	 continue;
+         i1--;
+         continue;
       }
       datef[i1]=svalue[i2];
       if (svalue[i2]=='\0') {
-	 break;
+         break;
       }
    }
    return EXIT_SUCCESS;
@@ -309,7 +309,7 @@ void free_name_list(struct name_list **Plist)
    for (temp_list=*Plist; temp_list; temp_list=next_list) {
       next_list=temp_list->next;
       if (temp_list->name) {
-	 free(temp_list->name);
+         free(temp_list->name);
       }
       free(temp_list);
    }
@@ -334,59 +334,59 @@ static int get_rcfile_name(int n, char *rc_copy)
       jp_logf(JP_LOG_DEBUG, "opening dir %s\n", filename);
       dir = opendir(filename);
       if (dir) {
-	 for(i=0; (dirent = readdir(dir)); i++) {
-	    sprintf(filename, "%s%s", EPN, "rc");
-	    if (strncmp(filename, dirent->d_name, strlen(filename))) {
-	       continue;
-	    } else {
-	       jp_logf(JP_LOG_DEBUG, "found %s\n", dirent->d_name);
-	       new_entry = malloc(sizeof(struct name_list));
-	       if (!new_entry) {
-		  jp_logf(JP_LOG_FATAL, "get_rcfile_name(): %s\n", _("Out of memory"));
-		  return EXIT_FAILURE;
-	       }
-	       new_entry->name = strdup(dirent->d_name);
-	       new_entry->next = dir_list;
-	       dir_list = new_entry;
-	    }
-	 }
+         for(i=0; (dirent = readdir(dir)); i++) {
+            sprintf(filename, "%s%s", EPN, "rc");
+            if (strncmp(filename, dirent->d_name, strlen(filename))) {
+               continue;
+            } else {
+               jp_logf(JP_LOG_DEBUG, "found %s\n", dirent->d_name);
+               new_entry = malloc(sizeof(struct name_list));
+               if (!new_entry) {
+                  jp_logf(JP_LOG_FATAL, "get_rcfile_name(): %s\n", _("Out of memory"));
+                  return EXIT_FAILURE;
+               }
+               new_entry->name = strdup(dirent->d_name);
+               new_entry->next = dir_list;
+               dir_list = new_entry;
+            }
+         }
       }
       if (dir) {
-	 closedir(dir);
+         closedir(dir);
       }
 
       get_home_file_name("", full_name, sizeof(full_name));
       jp_logf(JP_LOG_DEBUG, "opening dir %s\n", full_name);
       dir = opendir(full_name);
       if (dir) {
-	 for(; (dirent = readdir(dir)); i++) {
-	    sprintf(filename, "%s%s", EPN, "rc");
-	    if (strncmp(filename, dirent->d_name, strlen(filename))) {
-	       continue;
-	    } else {
-	       jp_logf(JP_LOG_DEBUG, "found %s\n", dirent->d_name);
-	       new_entry = malloc(sizeof(struct name_list));
-	       if (!new_entry) {
-		  jp_logf(JP_LOG_FATAL, "get_rcfile_name(): %s 2\n", _("Out of memory"));
-		  return EXIT_FAILURE;
-	       }
-	       new_entry->name = strdup(dirent->d_name);
-	       new_entry->next = dir_list;
-	       dir_list = new_entry;
-	    }
-	 }
+         for(; (dirent = readdir(dir)); i++) {
+            sprintf(filename, "%s%s", EPN, "rc");
+            if (strncmp(filename, dirent->d_name, strlen(filename))) {
+               continue;
+            } else {
+               jp_logf(JP_LOG_DEBUG, "found %s\n", dirent->d_name);
+               new_entry = malloc(sizeof(struct name_list));
+               if (!new_entry) {
+                  jp_logf(JP_LOG_FATAL, "get_rcfile_name(): %s 2\n", _("Out of memory"));
+                  return EXIT_FAILURE;
+               }
+               new_entry->name = strdup(dirent->d_name);
+               new_entry->next = dir_list;
+               dir_list = new_entry;
+            }
+         }
       }
       if (dir) {
-	 closedir(dir);
+         closedir(dir);
       }
    }
 
    found = 0;
    for (i=0, temp_list=dir_list; temp_list; temp_list=temp_list->next, i++) {
       if (i == n) {
-	 g_strlcpy(rc_copy, temp_list->name, MAX_PREF_LEN);
-	 found=1;
-	 break;
+         g_strlcpy(rc_copy, temp_list->name, MAX_PREF_LEN);
+         found=1;
+         break;
       }
    }
 
@@ -490,69 +490,69 @@ int get_pref_possibility(int which, int n, char *pref_str)
    switch (which) {
 
     case PREF_RCFILE:
-	 return get_rcfile_name(n, pref_str);
+         return get_rcfile_name(n, pref_str);
       break;
 
     case PREF_TIME:
       if (t_fmt_ampm) {
-	 if ((n >= NUM_TIMES) || (n<0)) {
-	    pref_str[0]='\0';
-	    return EXIT_FAILURE;
-	 }
-	 strcpy(pref_str, time_formats[n]);
+         if ((n >= NUM_TIMES) || (n<0)) {
+            pref_str[0]='\0';
+            return EXIT_FAILURE;
+         }
+         strcpy(pref_str, time_formats[n]);
       } else {
-	 if ((n >= NUM_TIMES_NO_AMPM) || (n<0)) {
-	    pref_str[0]='\0';
-	    return EXIT_FAILURE;
-	 }
-	 strcpy(pref_str, time_formats_no_ampm[n]);
+         if ((n >= NUM_TIMES_NO_AMPM) || (n<0)) {
+            pref_str[0]='\0';
+            return EXIT_FAILURE;
+         }
+         strcpy(pref_str, time_formats_no_ampm[n]);
       }
-	 break;
+         break;
 
     case PREF_SHORTDATE:
       if ((n >= NUM_SHORTDATES) || (n<0)) {
-	 pref_str[0]='\0';
-	 return EXIT_FAILURE;
+         pref_str[0]='\0';
+         return EXIT_FAILURE;
       }
       strcpy(pref_str, short_date_formats[n]);
       break;
 
     case PREF_LONGDATE:
       if ((n >= NUM_LONGDATES) || (n<0)) {
-	 pref_str[0]='\0';
-	 return EXIT_FAILURE;
+         pref_str[0]='\0';
+         return EXIT_FAILURE;
       }
       strcpy(pref_str, long_date_formats[n]);
       break;
 
     case PREF_FDOW:
       if ((n > 1) || (n<0)) {
-	 pref_str[0]='\0';
-	 return EXIT_FAILURE;
+         pref_str[0]='\0';
+         return EXIT_FAILURE;
       }
       strcpy(pref_str, _(days[n]));
       break;
 
     case PREF_RATE:
       if ((n >= NUM_RATES) || (n<0)) {
-	 pref_str[0]='\0';
-	 return EXIT_FAILURE;
+         pref_str[0]='\0';
+         return EXIT_FAILURE;
       }
       strcpy(pref_str, rates[n]);
       break;
 
     case PREF_CHAR_SET:
       if ((n >= NUM_CHAR_SETS) || (n<0)) {
-	 pref_str[0]='\0';
-	 return EXIT_FAILURE;
+         pref_str[0]='\0';
+         return EXIT_FAILURE;
       }
       strcpy(pref_str, char_sets[n]);
       break;
 
     case PREF_PAPER_SIZE:
       if ((n >= NUM_PAPER_SIZES) || (n<0)) {
-	 pref_str[0]='\0';
-	 return EXIT_FAILURE;
+         pref_str[0]='\0';
+         return EXIT_FAILURE;
       }
       strcpy(pref_str, paper_sizes[n]);
       break;
@@ -577,9 +577,9 @@ int jp_get_pref(prefType prefs[], int which, long *n, const char **string)
    }
    if (string!=NULL) {
       if (prefs[which].usertype == CHARTYPE) {
-	 *string = prefs[which].svalue;
+         *string = prefs[which].svalue;
       } else {
-	 *string = NULL;
+         *string = NULL;
       }
    }
 
@@ -614,7 +614,8 @@ long get_pref_int_default(int which, long defval)
  * Treats src==NULL as ""
  * Writes NULL at end of string
  */
-static char *pref_lstrncpy_realloc(char **dest, const char *src, int *size, int max_size)
+static char *pref_lstrncpy_realloc(char **dest, const char *src, 
+                                   int *size, int max_size)
 {
    int new_size, len;
    const char null_str[]="";
@@ -634,12 +635,12 @@ static char *pref_lstrncpy_realloc(char **dest, const char *src, int *size, int 
 
    if (new_size > *size) {
       if (*size == 0) {
-	 *dest=malloc(new_size);
+         *dest=malloc(new_size);
       } else {
-	 *dest=realloc(*dest, new_size);
+         *dest=realloc(*dest, new_size);
       }
       if (!(*dest)) {
-	 return "";
+         return "";
       }
       *size=new_size;
    }
@@ -664,7 +665,7 @@ int jp_set_pref(prefType prefs[], int which, long n, const char *string)
    }
    if (prefs[which].usertype == CHARTYPE) {
       pref_lstrncpy_realloc(&(prefs[which].svalue), Pstr,
-			    &(prefs[which].svalue_size), MAX_PREF_LEN);
+                            &(prefs[which].svalue_size), MAX_PREF_LEN);
    }
    return EXIT_SUCCESS;
 }
@@ -714,7 +715,7 @@ int set_pref_possibility(int which, long n, int save)
 
    if (PREF_CHAR_SET == which)
       if (otherconv_init())
-	 printf("Error: could not set charset encoding\n");
+         printf("Error: could not set charset encoding\n");
 
    return r;
 }
@@ -726,12 +727,12 @@ static int validate_glob_prefs(void)
 
    if (t_fmt_ampm) {
       if (glob_prefs[PREF_TIME].ivalue >= NUM_TIMES) {
-	 glob_prefs[PREF_TIME].ivalue = NUM_TIMES - 1;
+         glob_prefs[PREF_TIME].ivalue = NUM_TIMES - 1;
       }
    }
    else {
       if (glob_prefs[PREF_TIME].ivalue >= NUM_TIMES_NO_AMPM) {
-	 glob_prefs[PREF_TIME].ivalue = NUM_TIMES_NO_AMPM - 1;
+         glob_prefs[PREF_TIME].ivalue = NUM_TIMES_NO_AMPM - 1;
       }
    }
    if (glob_prefs[PREF_TIME].ivalue < 0) {
@@ -827,35 +828,35 @@ static int validate_glob_prefs(void)
 
    get_pref_possibility(PREF_TIME, glob_prefs[PREF_TIME].ivalue, svalue);
    pref_lstrncpy_realloc(&(glob_prefs[PREF_TIME].svalue), svalue,
-			 &(glob_prefs[PREF_TIME].svalue_size), MAX_PREF_LEN);
+                         &(glob_prefs[PREF_TIME].svalue_size), MAX_PREF_LEN);
 
    get_pref_possibility(PREF_SHORTDATE, glob_prefs[PREF_SHORTDATE].ivalue, svalue);
    pref_lstrncpy_realloc(&(glob_prefs[PREF_SHORTDATE].svalue), svalue,
-			 &(glob_prefs[PREF_SHORTDATE].svalue_size), MAX_PREF_LEN);
+                         &(glob_prefs[PREF_SHORTDATE].svalue_size), MAX_PREF_LEN);
 
 
    get_pref_possibility(PREF_LONGDATE, glob_prefs[PREF_LONGDATE].ivalue, svalue);
    pref_lstrncpy_realloc(&(glob_prefs[PREF_LONGDATE].svalue), svalue,
-			 &(glob_prefs[PREF_LONGDATE].svalue_size), MAX_PREF_LEN);
+                         &(glob_prefs[PREF_LONGDATE].svalue_size), MAX_PREF_LEN);
 
    get_pref_possibility(PREF_FDOW, glob_prefs[PREF_FDOW].ivalue, svalue);
    pref_lstrncpy_realloc(&(glob_prefs[PREF_FDOW].svalue), svalue,
-			 &(glob_prefs[PREF_FDOW].svalue_size), MAX_PREF_LEN);
+                         &(glob_prefs[PREF_FDOW].svalue_size), MAX_PREF_LEN);
 
    get_pref_possibility(PREF_RATE, glob_prefs[PREF_RATE].ivalue, svalue);
    pref_lstrncpy_realloc(&(glob_prefs[PREF_RATE].svalue), svalue,
-			 &(glob_prefs[PREF_RATE].svalue_size), MAX_PREF_LEN);
+                         &(glob_prefs[PREF_RATE].svalue_size), MAX_PREF_LEN);
 
    get_pref_possibility(PREF_PAPER_SIZE, glob_prefs[PREF_PAPER_SIZE].ivalue, svalue);
    pref_lstrncpy_realloc(&(glob_prefs[PREF_PAPER_SIZE].svalue), svalue,
-			 &(glob_prefs[PREF_PAPER_SIZE].svalue_size), MAX_PREF_LEN);
+                         &(glob_prefs[PREF_PAPER_SIZE].svalue_size), MAX_PREF_LEN);
 
    for (i=0; i<MAX_NUM_PREFS; i++) {
       r = get_pref_possibility(PREF_RCFILE, i, svalue);
       if (r) break;
       if (!strcmp(svalue, glob_prefs[PREF_RCFILE].svalue)) {
-	 glob_prefs[PREF_RCFILE].ivalue = i;
-	 break;
+         glob_prefs[PREF_RCFILE].ivalue = i;
+         break;
       }
    }
 
@@ -881,27 +882,27 @@ int jp_pref_read_rc_file(char *filename, prefType prefs[], int num_prefs)
       line[sizeof(line)-2] = ' ';
       line[sizeof(line)-1] = '\0';
       field1 = strtok(line, " ");
-      field2 = (field1 != NULL)	? strtok(NULL, "\n") : NULL;
+      field2 = (field1 != NULL) ? strtok(NULL, "\n") : NULL;
       if ((field1 == NULL) || (field2 == NULL)) {
-	 continue;
+         continue;
       }
       if ((Pc = (char *)index(field2, '\n'))) {
-	 Pc[0]='\0';
+         Pc[0]='\0';
       }
       for(i=0; i<num_prefs; i++) {
-	 if (!strcmp(prefs[i].name, field1)) {
-	    if (prefs[i].filetype == INTTYPE) {
-	       prefs[i].ivalue = atoi(field2);
-	    }
-	    if (prefs[i].filetype == CHARTYPE) {
-	       if (pref_lstrncpy_realloc(&(prefs[i].svalue), field2,
-					&(prefs[i].svalue_size),
-					MAX_PREF_LEN)==NULL) {
-		  jp_logf(JP_LOG_WARN, "read_rc_file(): %s\n", _("Out of memory"));
-		  continue;
-	       }
-	    }
-	 }
+         if (!strcmp(prefs[i].name, field1)) {
+            if (prefs[i].filetype == INTTYPE) {
+               prefs[i].ivalue = atoi(field2);
+            }
+            if (prefs[i].filetype == CHARTYPE) {
+               if (pref_lstrncpy_realloc(&(prefs[i].svalue), field2,
+                                        &(prefs[i].svalue_size),
+                                        MAX_PREF_LEN)==NULL) {
+                  jp_logf(JP_LOG_WARN, "read_rc_file(): %s\n", _("Out of memory"));
+                  continue;
+               }
+            }
+         }
       }
    }
    fclose(in);
@@ -935,11 +936,11 @@ int jp_pref_write_rc_file(char *filename, prefType prefs[], int num_prefs)
    for(i=0; i<num_prefs; i++) {
 
       if (prefs[i].filetype == INTTYPE) {
-	 fprintf(out, "%s %ld\n", prefs[i].name, prefs[i].ivalue);
+         fprintf(out, "%s %ld\n", prefs[i].name, prefs[i].ivalue);
       }
 
       if (prefs[i].filetype == CHARTYPE) {
-	 fprintf(out, "%s %s\n", prefs[i].name, prefs[i].svalue);
+         fprintf(out, "%s %s\n", prefs[i].name, prefs[i].svalue);
       }
    }
    jp_close_home_file(out);

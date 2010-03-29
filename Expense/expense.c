@@ -1,9 +1,10 @@
-/* $Id: expense.c,v 1.70 2010/03/03 11:59:39 rousseau Exp $ */
+/* $Id: expense.c,v 1.71 2010/03/29 05:44:32 rikster5 Exp $ */
 
 /*******************************************************************************
  * expense.c
  *
- * This is an example plugin for J-Pilot to demonstrate the plugin API.
+ * This is a plugin for J-Pilot which implements an interface to the
+ * Palm Expense application.
  *
  * Copyright (C) 1999 by Judd Montgomery
  *

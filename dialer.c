@@ -1,4 +1,4 @@
-/* $Id: dialer.c,v 1.15 2008/06/19 04:12:07 rikster5 Exp $ */
+/* $Id: dialer.c,v 1.16 2010/03/29 05:44:28 rikster5 Exp $ */
 
 /*******************************************************************************
  * dialer.c
@@ -79,11 +79,11 @@ static gboolean cb_destroy_dialog(GtkWidget *widget)
    set_pref(PREF_DIAL_COMMAND, 0, txt, FALSE);
 
    set_pref(PREF_CHECK_PREFIX1, GTK_TOGGLE_BUTTON(Pdata->check_pre1)->active,
-	    NULL, FALSE);
+            NULL, FALSE);
    set_pref(PREF_CHECK_PREFIX2, GTK_TOGGLE_BUTTON(Pdata->check_pre2)->active,
-	    NULL, FALSE);
+            NULL, FALSE);
    set_pref(PREF_CHECK_PREFIX3, GTK_TOGGLE_BUTTON(Pdata->check_pre3)->active,
-	    NULL, TRUE);
+            NULL, TRUE);
 
    gtk_main_quit();
 
@@ -95,12 +95,12 @@ static void set_prefix_label(struct dialog_data *Pdata)
    char str[70];
 
    g_snprintf(str, sizeof(str), "%s%s%s",
-	      GTK_TOGGLE_BUTTON(Pdata->check_pre1)->active ?
-	      gtk_entry_get_text(GTK_ENTRY(Pdata->entry_pre1)) : "",
-	      GTK_TOGGLE_BUTTON(Pdata->check_pre2)->active ?
-	      gtk_entry_get_text(GTK_ENTRY(Pdata->entry_pre2)) : "",
-	      GTK_TOGGLE_BUTTON(Pdata->check_pre3)->active ?
-	      gtk_entry_get_text(GTK_ENTRY(Pdata->entry_pre3)) : "");
+              GTK_TOGGLE_BUTTON(Pdata->check_pre1)->active ?
+              gtk_entry_get_text(GTK_ENTRY(Pdata->entry_pre1)) : "",
+              GTK_TOGGLE_BUTTON(Pdata->check_pre2)->active ?
+              gtk_entry_get_text(GTK_ENTRY(Pdata->entry_pre2)) : "",
+              GTK_TOGGLE_BUTTON(Pdata->check_pre3)->active ?
+              gtk_entry_get_text(GTK_ENTRY(Pdata->entry_pre3)) : "");
    gtk_label_set_text(GTK_LABEL(Pdata->label_prefix), str);
 }
 
@@ -123,13 +123,13 @@ static void dialer(gpointer data, int phone_or_ext)
    Pdata=data;
    if (phone_or_ext==CHOOSE_PHONE) {
       g_snprintf(str, sizeof(str), "%s%s%s%s",
-		 GTK_TOGGLE_BUTTON(Pdata->check_pre1)->active ?
-		 gtk_entry_get_text(GTK_ENTRY(Pdata->entry_pre1)) : "",
-		 GTK_TOGGLE_BUTTON(Pdata->check_pre2)->active ?
-		 gtk_entry_get_text(GTK_ENTRY(Pdata->entry_pre2)) : "",
-		 GTK_TOGGLE_BUTTON(Pdata->check_pre3)->active ?
-		 gtk_entry_get_text(GTK_ENTRY(Pdata->entry_pre3)) : "",
-		 gtk_entry_get_text(GTK_ENTRY(Pdata->entry_phone)));
+                 GTK_TOGGLE_BUTTON(Pdata->check_pre1)->active ?
+                 gtk_entry_get_text(GTK_ENTRY(Pdata->entry_pre1)) : "",
+                 GTK_TOGGLE_BUTTON(Pdata->check_pre2)->active ?
+                 gtk_entry_get_text(GTK_ENTRY(Pdata->entry_pre2)) : "",
+                 GTK_TOGGLE_BUTTON(Pdata->check_pre3)->active ?
+                 gtk_entry_get_text(GTK_ENTRY(Pdata->entry_pre3)) : "",
+                 gtk_entry_get_text(GTK_ENTRY(Pdata->entry_phone)));
    }
    if (phone_or_ext==CHOOSE_EXT) {
       Pext=gtk_entry_get_text(GTK_ENTRY(Pdata->entry_ext));
@@ -146,18 +146,18 @@ static void dialer(gpointer data, int phone_or_ext)
       len = strlen(command);
       /* expand '%n' */
       if (c1=='%') {
-	 if (c2=='n') {
-	    i++;
-	    strncat(command, str, 1022-len);
-	    continue;
-	 }
+         if (c2=='n') {
+            i++;
+            strncat(command, str, 1022-len);
+            continue;
+         }
       }
       if (len<1020) {
-	 command[len++]=c1;
-	 command[len]='\0';
+         command[len++]=c1;
+         command[len]='\0';
       }
       if (c1=='\0') {
-	 break;
+         break;
       }
    }
    command[1022]='\0';
@@ -192,9 +192,9 @@ int dialog_dial(GtkWindow *main_window, char *string, char *ext)
    const char *dial_command;
 
    dialog = gtk_widget_new(GTK_TYPE_WINDOW,
-			   "type", GTK_WINDOW_TOPLEVEL,
-			   "title", _("Phone Dialer"),
-			   NULL);
+                           "type", GTK_WINDOW_TOPLEVEL,
+                           "title", _("Phone Dialer"),
+                           NULL);
 
    gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_MOUSE);
 
@@ -299,7 +299,7 @@ int dialog_dial(GtkWindow *main_window, char *string, char *ext)
    entry = gtk_entry_new_with_max_length(32);
    gtk_entry_set_text(GTK_ENTRY(entry), string);
    gtk_signal_connect(GTK_OBJECT(entry), "activate",
-		      GTK_SIGNAL_FUNC(cb_dial_ext), Pdata);
+                      GTK_SIGNAL_FUNC(cb_dial_ext), Pdata);
    gtk_box_pack_start(GTK_BOX(hbox1), entry, TRUE, TRUE, 1);
 
    Pdata->entry_phone=entry;
@@ -307,7 +307,7 @@ int dialog_dial(GtkWindow *main_window, char *string, char *ext)
    /* Dial Phone Button */
    button = gtk_button_new_with_label(_("Dial"));
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_dial_phone), Pdata);
+                      GTK_SIGNAL_FUNC(cb_dial_phone), Pdata);
    gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
 
    gtk_widget_grab_focus(GTK_WIDGET(button));
@@ -323,7 +323,7 @@ int dialog_dial(GtkWindow *main_window, char *string, char *ext)
    entry = gtk_entry_new_with_max_length(32);
    gtk_entry_set_text(GTK_ENTRY(entry), ext);
    gtk_signal_connect(GTK_OBJECT(entry), "activate",
-		      GTK_SIGNAL_FUNC(cb_dial_ext), Pdata);
+                      GTK_SIGNAL_FUNC(cb_dial_ext), Pdata);
    gtk_box_pack_start(GTK_BOX(hbox1), entry, TRUE, TRUE, 1);
 
    Pdata->entry_ext=entry;
@@ -331,7 +331,7 @@ int dialog_dial(GtkWindow *main_window, char *string, char *ext)
    /* Dial Phone Button */
    button = gtk_button_new_with_label(_("Dial"));
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_dial_ext), Pdata);
+                      GTK_SIGNAL_FUNC(cb_dial_ext), Pdata);
    gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
 
    /* Command Entry */
@@ -362,23 +362,23 @@ int dialog_dial(GtkWindow *main_window, char *string, char *ext)
    /* Buttons */
    button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_dialog_button),
-		      GINT_TO_POINTER(DIALOG_SAID_1));
+                      GTK_SIGNAL_FUNC(cb_dialog_button),
+                      GINT_TO_POINTER(DIALOG_SAID_1));
    gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
 
    /* We do this down here because the Pdata structure wasn't complete earlier */
    gtk_signal_connect(GTK_OBJECT(checkbox1), "clicked",
-		      GTK_SIGNAL_FUNC(cb_prefix_change), Pdata);
+                      GTK_SIGNAL_FUNC(cb_prefix_change), Pdata);
    gtk_signal_connect(GTK_OBJECT(checkbox2), "clicked",
-		      GTK_SIGNAL_FUNC(cb_prefix_change), Pdata);
+                      GTK_SIGNAL_FUNC(cb_prefix_change), Pdata);
    gtk_signal_connect(GTK_OBJECT(checkbox3), "clicked",
-		      GTK_SIGNAL_FUNC(cb_prefix_change), Pdata);
+                      GTK_SIGNAL_FUNC(cb_prefix_change), Pdata);
    gtk_signal_connect(GTK_OBJECT(Pdata->entry_pre1), "changed",
-		      GTK_SIGNAL_FUNC(cb_prefix_change), Pdata);
+                      GTK_SIGNAL_FUNC(cb_prefix_change), Pdata);
    gtk_signal_connect(GTK_OBJECT(Pdata->entry_pre2), "changed",
-		      GTK_SIGNAL_FUNC(cb_prefix_change), Pdata);
+                      GTK_SIGNAL_FUNC(cb_prefix_change), Pdata);
    gtk_signal_connect(GTK_OBJECT(Pdata->entry_pre3), "changed",
-		      GTK_SIGNAL_FUNC(cb_prefix_change), Pdata);
+                      GTK_SIGNAL_FUNC(cb_prefix_change), Pdata);
 
    gtk_widget_show_all(dialog);
 

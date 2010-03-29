@@ -1,4 +1,4 @@
-/* $Id: export_gui.c,v 1.25 2010/03/03 14:42:03 rousseau Exp $ */
+/* $Id: export_gui.c,v 1.26 2010/03/29 05:44:28 rikster5 Exp $ */
 
 /*******************************************************************************
  * export_gui.c
@@ -54,11 +54,11 @@ static GtkWidget *save_as_entry;
 /****************************** Prototypes ************************************/
 static void (*glob_cb_export_menu)(GtkWidget *clist, int category);
 void (*glob_cb_export_done)(GtkWidget *widget,
-			    const char *filename);
+                            const char *filename);
 void (*glob_cb_export_ok)(GtkWidget *export_window,
-			  GtkWidget *clist,
-			  int type,
-			  const char *filename);
+                          GtkWidget *clist,
+                          int type,
+                          const char *filename);
 
 /****************************** Main Code *************************************/
 /* 
@@ -109,12 +109,12 @@ int export_browse(GtkWidget *main_window, int pref_export)
       i=strlen(dir)-1;
       if (i<0) i=0;
       if (dir[i]!='/') {
-	 for (i=strlen(dir); i>=0; i--) {
-	    if (dir[i]=='/') {
-	       dir[i+1]='\0';
-	       break;
-	    }
-	 }
+         for (i=strlen(dir); i>=0; i--) {
+            if (dir[i]=='/') {
+               dir[i+1]='\0';
+               break;
+            }
+         }
       }
 
       chdir(dir);
@@ -125,12 +125,12 @@ int export_browse(GtkWidget *main_window, int pref_export)
    gtk_window_set_transient_for(GTK_WINDOW(filesel), GTK_WINDOW(main_window));
 
    gtk_signal_connect(GTK_OBJECT(filesel), "destroy",
-		      GTK_SIGNAL_FUNC(cb_export_browse_destroy), filesel);
+                      GTK_SIGNAL_FUNC(cb_export_browse_destroy), filesel);
 
    gtk_signal_connect(GTK_OBJECT(GTK_FILE_SELECTION(filesel)->ok_button),
-		      "clicked", GTK_SIGNAL_FUNC(cb_export_browse_ok), filesel);
+                      "clicked", GTK_SIGNAL_FUNC(cb_export_browse_ok), filesel);
    gtk_signal_connect(GTK_OBJECT(GTK_FILE_SELECTION(filesel)->cancel_button),
-		      "clicked", GTK_SIGNAL_FUNC(cb_export_browse_cancel), filesel);
+                      "clicked", GTK_SIGNAL_FUNC(cb_export_browse_cancel), filesel);
 
    gtk_widget_show(filesel);
 
@@ -178,8 +178,8 @@ static void cb_export_browse(GtkWidget *widget, gpointer data)
    r = export_browse(GTK_WIDGET(data), glob_pref_export);
    if (r==BROWSE_OK) {
       if (glob_pref_export) {
-	 get_pref(glob_pref_export, NULL, &svalue);
-	 gtk_entry_set_text(GTK_ENTRY(save_as_entry), svalue);
+         get_pref(glob_pref_export, NULL, &svalue);
+         gtk_entry_set_text(GTK_ENTRY(save_as_entry), svalue);
       }
    }
 }
@@ -200,7 +200,7 @@ static void cb_export_category(GtkWidget *item, int selection)
       export_category = selection;
       jp_logf(JP_LOG_DEBUG, "cb_export_category() cat=%d\n", export_category);
       if (glob_cb_export_menu) {
-	 glob_cb_export_menu(export_clist, export_category);
+         glob_cb_export_menu(export_clist, export_category);
       }
       gtk_clist_select_all(GTK_CLIST(export_clist));
       jp_logf(JP_LOG_DEBUG, "Leaving cb_export_category()\n");
@@ -209,19 +209,19 @@ static void cb_export_category(GtkWidget *item, int selection)
 
 int export_gui(GtkWidget *main_window,
                int w, int h, int x, int y,
-	       int columns,
-	       struct sorted_cats *sort_l,
-	       int pref_export,
-	       char *type_text[],
-	       int type_int[],
-	       void (*cb_export_menu)(GtkWidget *clist, int category),
-	       void (*cb_export_done)(GtkWidget *widget,
-				      const char *filename),
-	       void (*cb_export_ok)(GtkWidget *export_window,
-				    GtkWidget *clist,
-				    int type,
-				    const char *filename)
-	       )
+               int columns,
+               struct sorted_cats *sort_l,
+               int pref_export,
+               char *type_text[],
+               int type_int[],
+               void (*cb_export_menu)(GtkWidget *clist, int category),
+               void (*cb_export_done)(GtkWidget *widget,
+                                      const char *filename),
+               void (*cb_export_ok)(GtkWidget *export_window,
+                                    GtkWidget *clist,
+                                    int type,
+                                    const char *filename)
+               )
 {
    GtkWidget *export_window;
    GtkWidget *button;
@@ -251,9 +251,9 @@ int export_gui(GtkWidget *main_window,
    g_snprintf(title, sizeof(title), "%s %s", PN, _("Export"));
 
    export_window = gtk_widget_new(GTK_TYPE_WINDOW,
-				  "type", GTK_WINDOW_TOPLEVEL,
-				  "title", title,
-				  NULL);
+                                  "type", GTK_WINDOW_TOPLEVEL,
+                                  "title", title,
+                                  NULL);
 
    gtk_window_set_default_size(GTK_WINDOW(export_window), w, h);
    gtk_widget_set_uposition(GTK_WIDGET(export_window), x, y);
@@ -264,7 +264,7 @@ int export_gui(GtkWidget *main_window,
    gtk_container_set_border_width(GTK_CONTAINER(export_window), 5);
 
    gtk_signal_connect(GTK_OBJECT(export_window), "destroy",
-		      GTK_SIGNAL_FUNC(cb_export_destroy), export_window);
+                      GTK_SIGNAL_FUNC(cb_export_destroy), export_window);
 
    vbox = gtk_vbox_new(FALSE, 0);
    gtk_container_add(GTK_CONTAINER(export_window), vbox);
@@ -277,14 +277,14 @@ int export_gui(GtkWidget *main_window,
 
    /* Put the export category menu up */
    make_category_menu(&category_menu, cat_menu_item, sort_l,
-		      cb_export_category, TRUE, FALSE);
+                      cb_export_category, TRUE, FALSE);
    gtk_box_pack_start(GTK_BOX(vbox), category_menu, FALSE, FALSE, 0);
 
    /* Put the record list window up */
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 0);
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
-				  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+                                  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
    gtk_box_pack_start(GTK_BOX(vbox), scrolled_window, TRUE, TRUE, 0);
 
    export_clist = gtk_clist_new(columns);
@@ -305,8 +305,8 @@ int export_gui(GtkWidget *main_window,
       group = gtk_radio_button_group(GTK_RADIO_BUTTON(export_radio_type[i]));
       gtk_box_pack_start(GTK_BOX(vbox), export_radio_type[i], FALSE, FALSE, 0);
       gtk_signal_connect(GTK_OBJECT(export_radio_type[i]), "pressed",
-			 GTK_SIGNAL_FUNC(cb_export_type),
-			 GINT_TO_POINTER(type_int[i]));
+                         GTK_SIGNAL_FUNC(cb_export_type),
+                         GINT_TO_POINTER(type_int[i]));
    }
    export_radio_type[i] = NULL;
 
@@ -329,7 +329,7 @@ int export_gui(GtkWidget *main_window,
    button = gtk_button_new_with_label(_("Browse"));
    gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 0);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_export_browse), export_window);
+                      GTK_SIGNAL_FUNC(cb_export_browse), export_window);
 
    /* Cancel/OK buttons */
    hbox = gtk_hbutton_box_new();
@@ -341,12 +341,12 @@ int export_gui(GtkWidget *main_window,
    button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_export_quit), export_window);
+                      GTK_SIGNAL_FUNC(cb_export_quit), export_window);
 
    button = gtk_button_new_from_stock(GTK_STOCK_OK);
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_ok), export_window);
+                      GTK_SIGNAL_FUNC(cb_ok), export_window);
 
    if (glob_cb_export_menu) {
       glob_cb_export_menu(export_clist, export_category);

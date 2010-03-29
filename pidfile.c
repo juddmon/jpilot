@@ -1,4 +1,7 @@
-/* pidfile.c
+/* $Id: pidfile.c,v 1.6 2010/03/29 05:44:30 rikster5 Exp $ */
+
+/*******************************************************************************
+ * pidfile.c
  * A module of J-Pilot http://jpilot.org
  *
  * Copyright (C) 2005 by Jason Day

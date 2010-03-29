@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.183 2010/03/04 17:48:25 rousseau Exp $ */
+/* $Id: jpilot.c,v 1.184 2010/03/29 05:44:29 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -145,12 +145,12 @@ static int gui_cleanup(void)
    for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
       plugin = (struct plugin_s *)temp_list->data;
       if (plugin) {
-	 if (plugin->number == glob_app) {
-	    if (plugin->plugin_gui_cleanup) {
-	       plugin->plugin_gui_cleanup();
-	    }
-	    break;
-	 }
+         if (plugin->number == glob_app) {
+            if (plugin->plugin_gui_cleanup) {
+               plugin->plugin_gui_cleanup();
+            }
+            break;
+         }
       }
    }
 #endif
@@ -201,13 +201,13 @@ void call_plugin_gui(int number, int unique_id)
    for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
       plugin = (struct plugin_s *)temp_list->data;
       if (plugin) {
-	 if (plugin->number == number) {
-	    glob_app = plugin->number;
-	    if (plugin->plugin_gui) {
-	       plugin->plugin_gui(g_vbox0_1, g_hbox2, unique_id);
-	    }
-	    break;
-	 }
+         if (plugin->number == number) {
+            glob_app = plugin->number;
+            if (plugin->plugin_gui) {
+               plugin->plugin_gui(g_vbox0_1, g_hbox2, unique_id);
+            }
+            break;
+         }
       }
    }
 }
@@ -242,18 +242,18 @@ static void call_plugin_help(int number)
    for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
       plugin = (struct plugin_s *)temp_list->data;
       if (plugin) {
-	 if (plugin->number == number) {
-	    if (plugin->plugin_help) {
-	       text = NULL;
-	       plugin->plugin_help(&text, &width, &height);
-	       if (text) {
-		  dialog_generic(GTK_WINDOW(window),
-				 plugin->help_name, DIALOG_INFO, text, 1, button_text);
-		  free(text);
-	       }
-	    }
-	    break;
-	 }
+         if (plugin->number == number) {
+            if (plugin->plugin_help) {
+               text = NULL;
+               plugin->plugin_help(&text, &width, &height);
+               if (text) {
+                  dialog_generic(GTK_WINDOW(window),
+                                 plugin->help_name, DIALOG_INFO, text, 1, button_text);
+                  free(text);
+               }
+            }
+            break;
+         }
       }
    }
 }
@@ -276,22 +276,22 @@ static void cb_print(GtkWidget *widget, gpointer data)
    switch (glob_app) {
     case DATEBOOK:
       if (print_gui(window, DATEBOOK, 1, 0x07) == DIALOG_SAID_PRINT) {
-	 datebook_print(print_day_week_month);
+         datebook_print(print_day_week_month);
       }
       return;
     case ADDRESS:
       if (print_gui(window, ADDRESS, 0, 0x00) == DIALOG_SAID_PRINT) {
-	 address_print();
+         address_print();
       }
       return;
     case TODO:
       if (print_gui(window, TODO, 0, 0x00) == DIALOG_SAID_PRINT) {
-	 todo_print();
+         todo_print();
       }
       return;
     case MEMO:
       if (print_gui(window, MEMO, 0, 0x00) == DIALOG_SAID_PRINT) {
-	 memo_print();
+         memo_print();
       }
       return;
    }
@@ -302,19 +302,19 @@ static void cb_print(GtkWidget *widget, gpointer data)
    for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
       plugin = (struct plugin_s *)temp_list->data;
       if (plugin) {
-	 if (glob_app == plugin->number) {
-	    if (plugin->plugin_print) {
-	       plugin->plugin_print();
-	       return;
-	    }
-	 }
+         if (glob_app == plugin->number) {
+            if (plugin->plugin_print) {
+               plugin->plugin_print();
+               return;
+            }
+         }
       }
    }
 #endif
    dialog_generic(GTK_WINDOW(window),
-		  _("Print"), DIALOG_WARNING,
-		  _("There is no print support for this conduit."),
-		  1, button_text);
+                  _("Print"), DIALOG_WARNING,
+                  _("There is no print support for this conduit."),
+                  1, button_text);
 }
 
 static void cb_restore(GtkWidget *widget, gpointer data)
@@ -362,19 +362,19 @@ static void cb_import(GtkWidget *widget, gpointer data)
    for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
       plugin = (struct plugin_s *)temp_list->data;
       if (plugin) {
-	 if (glob_app == plugin->number) {
-	    if (plugin->plugin_import) {
-	       plugin->plugin_import(window);
-	       return;
-	    }
-	 }
+         if (glob_app == plugin->number) {
+            if (plugin->plugin_import) {
+               plugin->plugin_import(window);
+               return;
+            }
+         }
       }
    }
 #endif
    dialog_generic(GTK_WINDOW(window),
-		  _("Import"), DIALOG_WARNING,
-		  _("There is no import support for this conduit."),
-		  1, button_text);
+                  _("Import"), DIALOG_WARNING,
+                  _("There is no import support for this conduit."),
+                  1, button_text);
 }
 
 static void cb_export(GtkWidget *widget, gpointer data)
@@ -406,19 +406,19 @@ static void cb_export(GtkWidget *widget, gpointer data)
    for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
       plugin = (struct plugin_s *)temp_list->data;
       if (plugin) {
-	 if (glob_app == plugin->number) {
-	    if (plugin->plugin_export) {
-	       plugin->plugin_export(window);
-	       return;
-	    }
-	 }
+         if (glob_app == plugin->number) {
+            if (plugin->plugin_export) {
+               plugin->plugin_export(window);
+               return;
+            }
+         }
       }
    }
 #endif
    dialog_generic(GTK_WINDOW(window),
-		  _("Export"), DIALOG_WARNING,
-		  _("There is no export support for this conduit."),
-		  1, button_text);
+                  _("Export"), DIALOG_WARNING,
+                  _("There is no export support for this conduit."),
+                  1, button_text);
 }
 
 static void cb_private(GtkWidget *widget, gpointer data)
@@ -459,27 +459,27 @@ static void cb_private(GtkWidget *widget, gpointer data)
       /* Ask for the password, or don't depending on configure option */
 #ifdef ENABLE_PRIVATE
       if (was_privates != SHOW_PRIVATES) {
-	 retry=FALSE;
-	 do {
-	    r_dialog = dialog_password(GTK_WINDOW(window),
-				       ascii_password, retry);
-	    r_pass = verify_password(ascii_password);
-	    retry=TRUE;
-	 } while ((r_pass==FALSE) && (r_dialog==2));
+         retry=FALSE;
+         do {
+            r_dialog = dialog_password(GTK_WINDOW(window),
+                                       ascii_password, retry);
+            r_pass = verify_password(ascii_password);
+            retry=TRUE;
+         } while ((r_pass==FALSE) && (r_dialog==2));
       }
 #else
       r_dialog = 2;
 #endif
       if (r_dialog==2) {
-	 gtk_widget_hide(button_locked);
-	 gtk_widget_hide(button_masklocked);
-	 gtk_widget_show(button_unlocked);
+         gtk_widget_hide(button_locked);
+         gtk_widget_hide(button_masklocked);
+         gtk_widget_show(button_unlocked);
       }
       else {
-	 /* wrong or canceled password, hide the entries */
-	 gtk_check_menu_item_set_active(menu_hide_privates, TRUE);
-	 cb_private(NULL, GINT_TO_POINTER(HIDE_PRIVATES));
-	 return;
+         /* wrong or canceled password, hide the entries */
+         gtk_check_menu_item_set_active(menu_hide_privates, TRUE);
+         cb_private(NULL, GINT_TO_POINTER(HIDE_PRIVATES));
+         return;
       }
       break;
    }
@@ -526,59 +526,59 @@ void cb_app_button(GtkWidget *widget, gpointer data)
    if ((!refresh) || (app==REDRAW)) {
       gui_cleanup();
       if (glob_date_timer_tag) {
-	 gtk_timeout_remove(glob_date_timer_tag);
+         gtk_timeout_remove(glob_date_timer_tag);
       }
       gtk_widget_destroy(g_vbox0_1);
       gtk_widget_destroy(g_hbox2);
       create_main_boxes();
       if (app==REDRAW) {
-	 app = glob_app;
+         app = glob_app;
       }
    }
 
    switch (app) {
     case DATEBOOK:
       if (refresh) {
-	 datebook_refresh(TRUE, TRUE);
+         datebook_refresh(TRUE, TRUE);
       } else {
-	 glob_app = DATEBOOK;
-	 datebook_gui(g_vbox0_1, g_hbox2);
+         glob_app = DATEBOOK;
+         datebook_gui(g_vbox0_1, g_hbox2);
       }
       break;
     case ADDRESS:
       if (refresh) {
-	 address_cycle_cat();
-	 address_refresh();
+         address_cycle_cat();
+         address_refresh();
       } else {
-	 glob_app = ADDRESS;
-	 address_gui(g_vbox0_1, g_hbox2);
+         glob_app = ADDRESS;
+         address_gui(g_vbox0_1, g_hbox2);
       }
       break;
     case TODO:
       if (refresh) {
-	 todo_cycle_cat();
-	 todo_refresh();
+         todo_cycle_cat();
+         todo_refresh();
       } else {
-	 glob_app = TODO;
-	 todo_gui(g_vbox0_1, g_hbox2);
+         glob_app = TODO;
+         todo_gui(g_vbox0_1, g_hbox2);
       }
       break;
     case MEMO:
       if (refresh) {
-	 memo_cycle_cat();
-	 memo_refresh();
+         memo_cycle_cat();
+         memo_refresh();
       } else {
-	 glob_app = MEMO;
-	 memo_gui(g_vbox0_1, g_hbox2);
+         glob_app = MEMO;
+         memo_gui(g_vbox0_1, g_hbox2);
       }
       break;
     default:
       /* recursion */
       if ((glob_app==DATEBOOK) ||
-	  (glob_app==ADDRESS) ||
-	  (glob_app==TODO) ||
-	  (glob_app==MEMO) )
-	cb_app_button(NULL, GINT_TO_POINTER(glob_app));
+          (glob_app==ADDRESS) ||
+          (glob_app==TODO) ||
+          (glob_app==MEMO) )
+        cb_app_button(NULL, GINT_TO_POINTER(glob_app));
       break;
    }
 }
@@ -605,9 +605,9 @@ void cb_sync(GtkWidget *widget, unsigned int flags)
       g_snprintf(file, sizeof(file), "%s/"EPN".install", home_dir);
 
       if (!stat(file, &buf)) {
-	 if (buf.st_size > 0) {
-	    install_gui_and_size(window);
-	 }
+         if (buf.st_size > 0) {
+            install_gui_and_size(window);
+         }
       }
    }
 
@@ -652,11 +652,11 @@ static int bad_sync_exit_status(int exit_status)
    if ((exit_status == SYNC_ERROR_NOT_SAME_USERID) ||
        (exit_status == SYNC_ERROR_NOT_SAME_USER)) {
       return dialog_generic(GTK_WINDOW(window),
-			      _("Sync Problem"), DIALOG_WARNING, _(text1), 2, button_text);
+                              _("Sync Problem"), DIALOG_WARNING, _(text1), 2, button_text);
    }
    if (exit_status == SYNC_ERROR_NULL_USERID) {
       return dialog_generic(GTK_WINDOW(window),
-			    _("Sync Problem"), DIALOG_ERROR, _(text2), 1, button_text);
+                            _("Sync Problem"), DIALOG_ERROR, _(text2), 1, button_text);
    }
    return EXIT_FAILURE;
 }
@@ -724,8 +724,8 @@ void output_to_pane(const char *str)
 }
 
 static void cb_read_pipe_from_child(gpointer data,
-				    gint in,
-				    GdkInputCondition condition)
+                                    gint in,
+                                    GdkInputCondition condition)
 {
    int num;
    char buf_space[1026];
@@ -758,29 +758,29 @@ static void cb_read_pipe_from_child(gpointer data,
       buf_len=0;
       /* Read until "\0\n", or buffer full */
       for (i=0; i<1022; i++) {
-	 buf[i]='\0';
-	 /* Linux modifies tv in the select call */
-	 tv.tv_sec=0;
-	 tv.tv_usec=0;
-	 FD_ZERO(&fds);
-	 FD_SET(in, &fds);
-	 ret=select(in+1, &fds, NULL, NULL, &tv);
-	 if ((ret<1) || (!FD_ISSET(in, &fds))) {
-	    done=1; break;
-	 }
-	 ret = read(in, &(buf[i]), 1);
-	 if (ret <= 0) {
-	    done=1; break;
-	 }
-	 if ((buf[i-1]=='\0')&&(buf[i]=='\n')) {
-	    buf_len=buf_len-1;
-	    break;
-	 }
-	 buf_len++;
-	 if (buf_len >= 1022) {
-	    buf[buf_len]='\0';
-	    break;
-	 }
+         buf[i]='\0';
+         /* Linux modifies tv in the select call */
+         tv.tv_sec=0;
+         tv.tv_usec=0;
+         FD_ZERO(&fds);
+         FD_SET(in, &fds);
+         ret=select(in+1, &fds, NULL, NULL, &tv);
+         if ((ret<1) || (!FD_ISSET(in, &fds))) {
+            done=1; break;
+         }
+         ret = read(in, &(buf[i]), 1);
+         if (ret <= 0) {
+            done=1; break;
+         }
+         if ((buf[i-1]=='\0')&&(buf[i]=='\n')) {
+            buf_len=buf_len-1;
+            break;
+         }
+         buf_len++;
+         if (buf_len >= 1022) {
+            buf[buf_len]='\0';
+            break;
+         }
       }
 
       if (buf_len < 1) break;
@@ -791,115 +791,115 @@ static void cb_read_pipe_from_child(gpointer data,
 
       Pstr1 = strstr(buf, ":");
       if (Pstr1 != NULL) {
-	 Pstr1++;
+         Pstr1++;
       }
 #ifdef PIPE_DEBUG
       printf("command=%d [%s]\n", command, Pstr1);
 #endif
       if (Pstr1) {
-	 switch (command) {
-	  case PIPE_PRINT:
-	    /* Output the text to the Sync window */
-	    output_to_pane(Pstr1);
-	    break;
-	  case PIPE_USERID:
-	    /* Save user ID as pref */
-	    num = sscanf(Pstr1, "%lu", &user_id);
-	    if (num > 0) {
-	       jp_logf(JP_LOG_DEBUG, "pipe_read: user id = %lu\n", user_id);
-	       set_pref(PREF_USER_ID, user_id, NULL, TRUE);
-	    } else {
-	       jp_logf(JP_LOG_DEBUG, "pipe_read: trouble reading user id\n");
-	    }
-	    break;
-	  case PIPE_USERNAME:
-	    /* Save username as pref */
-	    Pstr2 = strchr(Pstr1, '\"');
-	    if (Pstr2) {
-	       Pstr2++;
-	       Pstr3 = strchr(Pstr2, '\"');
-	       if (Pstr3) {
-		  user_len = Pstr3 - Pstr2;
-		  if (user_len > MAX_PREF_LEN) {
-		     user_len = MAX_PREF_LEN;
-		  }
-		  g_strlcpy(user, Pstr2, user_len+1);
-		  jp_logf(JP_LOG_DEBUG, "pipe_read: user = %s\n", user);
-		  set_pref(PREF_USER, 0, user, TRUE);
-	       }
-	    }
-	    break;
-	  case PIPE_PASSWORD:
-	    /* Save password as pref */
-	    Pstr2 = strchr(Pstr1, '\"');
-	    if (Pstr2) {
-	       Pstr2++;
-	       Pstr3 = strchr(Pstr2, '\"');
-	       if (Pstr3) {
-		  password_len = Pstr3 - Pstr2;
-		  if (password_len > MAX_PREF_LEN) {
-		     password_len = MAX_PREF_LEN;
-		  }
-		  g_strlcpy(password, Pstr2, password_len+1);
-		  jp_logf(JP_LOG_DEBUG, "pipe_read: password = %s\n", password);
-		  set_pref(PREF_PASSWORD, 0, password, TRUE);
-	       }
-	    }
-	    break;
-	  case PIPE_WAITING_ON_USER:
+         switch (command) {
+          case PIPE_PRINT:
+            /* Output the text to the Sync window */
+            output_to_pane(Pstr1);
+            break;
+          case PIPE_USERID:
+            /* Save user ID as pref */
+            num = sscanf(Pstr1, "%lu", &user_id);
+            if (num > 0) {
+               jp_logf(JP_LOG_DEBUG, "pipe_read: user id = %lu\n", user_id);
+               set_pref(PREF_USER_ID, user_id, NULL, TRUE);
+            } else {
+               jp_logf(JP_LOG_DEBUG, "pipe_read: trouble reading user id\n");
+            }
+            break;
+          case PIPE_USERNAME:
+            /* Save username as pref */
+            Pstr2 = strchr(Pstr1, '\"');
+            if (Pstr2) {
+               Pstr2++;
+               Pstr3 = strchr(Pstr2, '\"');
+               if (Pstr3) {
+                  user_len = Pstr3 - Pstr2;
+                  if (user_len > MAX_PREF_LEN) {
+                     user_len = MAX_PREF_LEN;
+                  }
+                  g_strlcpy(user, Pstr2, user_len+1);
+                  jp_logf(JP_LOG_DEBUG, "pipe_read: user = %s\n", user);
+                  set_pref(PREF_USER, 0, user, TRUE);
+               }
+            }
+            break;
+          case PIPE_PASSWORD:
+            /* Save password as pref */
+            Pstr2 = strchr(Pstr1, '\"');
+            if (Pstr2) {
+               Pstr2++;
+               Pstr3 = strchr(Pstr2, '\"');
+               if (Pstr3) {
+                  password_len = Pstr3 - Pstr2;
+                  if (password_len > MAX_PREF_LEN) {
+                     password_len = MAX_PREF_LEN;
+                  }
+                  g_strlcpy(password, Pstr2, password_len+1);
+                  jp_logf(JP_LOG_DEBUG, "pipe_read: password = %s\n", password);
+                  set_pref(PREF_PASSWORD, 0, password, TRUE);
+               }
+            }
+            break;
+          case PIPE_WAITING_ON_USER:
 #ifdef PIPE_DEBUG
-	    printf("waiting on user\n");
+            printf("waiting on user\n");
 #endif
-	    /* Look for the reason */
-	    num = sscanf(Pstr1, "%d", &reason);
+            /* Look for the reason */
+            num = sscanf(Pstr1, "%d", &reason);
 #ifdef PIPE_DEBUG
-	    printf("reason %d\n", reason);
+            printf("reason %d\n", reason);
 #endif
-	    if (num > 0) {
-	       jp_logf(JP_LOG_DEBUG, "pipe_read: reason = %d\n", reason);
-	    } else {
-	       jp_logf(JP_LOG_DEBUG, "pipe_read: trouble reading reason\n");
-	    }
-	    if ((reason == SYNC_ERROR_NOT_SAME_USERID) ||
-		(reason == SYNC_ERROR_NOT_SAME_USER) ||
-		(reason == SYNC_ERROR_NULL_USERID)) {
-	       /* Future code */
-	       /* This is where to add an option for adding user or 
-		user id to possible ids to sync with. */
-	       ret = bad_sync_exit_status(reason);
+            if (num > 0) {
+               jp_logf(JP_LOG_DEBUG, "pipe_read: reason = %d\n", reason);
+            } else {
+               jp_logf(JP_LOG_DEBUG, "pipe_read: trouble reading reason\n");
+            }
+            if ((reason == SYNC_ERROR_NOT_SAME_USERID) ||
+                (reason == SYNC_ERROR_NOT_SAME_USER) ||
+                (reason == SYNC_ERROR_NULL_USERID)) {
+               /* Future code */
+               /* This is where to add an option for adding user or 
+                user id to possible ids to sync with. */
+               ret = bad_sync_exit_status(reason);
 #ifdef PIPE_DEBUG
-	       printf("ret=%d\n", ret);
+               printf("ret=%d\n", ret);
 #endif
-	       if (ret == DIALOG_SAID_2) {
-		  sprintf(command_str, "%d:\n", PIPE_SYNC_CONTINUE);
-	       } else {
-		  sprintf(command_str, "%d:\n", PIPE_SYNC_CANCEL);
-	       }
-	       write(pipe_to_child, command_str, strlen(command_str));
-	       fsync(pipe_to_child);
-	    }
-	    break;
-	  case PIPE_FINISHED:
-	    /* Update main window title as user name may have changed */
-	    get_pref(PREF_CHAR_SET, &char_set, NULL);
-	    get_pref(PREF_USER, NULL, &svalue);
-	    strcpy(title, PN" "VERSION);
-	    if ((svalue) && (svalue[0])) {
-	       strcat(title, _(" User: "));
-	       user_name = charset_p2newj(svalue, -1, char_set);
-	       strcat(title, user_name);
-	       gtk_window_set_title(GTK_WINDOW(window), title);
-	       free(user_name);
-	    }
+               if (ret == DIALOG_SAID_2) {
+                  sprintf(command_str, "%d:\n", PIPE_SYNC_CONTINUE);
+               } else {
+                  sprintf(command_str, "%d:\n", PIPE_SYNC_CANCEL);
+               }
+               write(pipe_to_child, command_str, strlen(command_str));
+               fsync(pipe_to_child);
+            }
+            break;
+          case PIPE_FINISHED:
+            /* Update main window title as user name may have changed */
+            get_pref(PREF_CHAR_SET, &char_set, NULL);
+            get_pref(PREF_USER, NULL, &svalue);
+            strcpy(title, PN" "VERSION);
+            if ((svalue) && (svalue[0])) {
+               strcat(title, _(" User: "));
+               user_name = charset_p2newj(svalue, -1, char_set);
+               strcat(title, user_name);
+               gtk_window_set_title(GTK_WINDOW(window), title);
+               free(user_name);
+            }
             /* And redraw GUI */
-	    if (Pstr1) {
-	       cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
-	    }
-	    break;
-	  default:
-	    jp_logf(JP_LOG_WARN, _("Unknown command from sync process\n"));
-	    jp_logf(JP_LOG_WARN, "buf=[%s]\n", buf);
-	 }
+            if (Pstr1) {
+               cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
+            }
+            break;
+          default:
+            jp_logf(JP_LOG_WARN, _("Unknown command from sync process\n"));
+            jp_logf(JP_LOG_WARN, "buf=[%s]\n", buf);
+         }
       }
    }
 }
@@ -922,7 +922,7 @@ static void cb_about(GtkWidget *widget, gpointer data)
 
    if (GTK_IS_WINDOW(window)) {
       dialog_generic(GTK_WINDOW(window),
-			       about, DIALOG_INFO, options, 1, button_text);
+                               about, DIALOG_INFO, options, 1, button_text);
    }
 }
 
@@ -1034,7 +1034,7 @@ static guint8 *get_inline_pixbuf_data(const char **xpm_icon_data, gint icon_size
    if (gdk_pixbuf_get_width(pixbuf)  != icon_size ||
        gdk_pixbuf_get_height(pixbuf) != icon_size) {
       scaled_pb = gdk_pixbuf_scale_simple(pixbuf, icon_size, icon_size,
-	 GDK_INTERP_BILINEAR);
+         GDK_INTERP_BILINEAR);
       gdk_pixbuf_unref(pixbuf);
       pixbuf = scaled_pb;
    }
@@ -1050,8 +1050,8 @@ static guint8 *get_inline_pixbuf_data(const char **xpm_icon_data, gint icon_size
 }
 
 static void get_main_menu(GtkWidget  *my_window,
-		   GtkWidget **menubar,
-		   GList *plugin_list)
+                   GtkWidget **menubar,
+                   GList *plugin_list)
 {
 #define ICON(icon) "<StockItem>", icon
 #define ICON_XPM(icon, size) "<ImageItem>", get_inline_pixbuf_data(icon, size)
@@ -1140,27 +1140,27 @@ static void get_main_menu(GtkWidget  *my_window,
    /* So we have to do this to keep the compiler happy */
    for (i=0; i<sizeof(menu_items1)/sizeof(menu_items1[0]); i++) {
       if (menu_items1[i].callback==cb_prefs_gui) {
-	 menu_items1[i].callback_action = GPOINTER_TO_INT(my_window);
-	 break;
+         menu_items1[i].callback_action = GPOINTER_TO_INT(my_window);
+         break;
       }
    }
 
 #ifdef ENABLE_PLUGINS
    /* Count the plugin/ entries */
    for (count=0, temp_list = plugin_list;
-	temp_list; temp_list = temp_list->next) {
+        temp_list; temp_list = temp_list->next) {
       p = (struct plugin_s *)temp_list->data;
       if (p->menu_name) {
-	 count++;
+         count++;
       }
    }
 
    /* Count the help/ entries */
    for (help_count=0, temp_list = plugin_list;
-	temp_list; temp_list = temp_list->next) {
+        temp_list; temp_list = temp_list->next) {
       p = (struct plugin_s *)temp_list->data;
       if (p->help_name) {
-	 help_count++;
+         help_count++;
       }
    }
 
@@ -1177,8 +1177,8 @@ static void get_main_menu(GtkWidget  *my_window,
    for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
       p = (struct plugin_s *)temp_list->data;
       if (p->menu_name) {
-	 g_snprintf(temp_str, sizeof(temp_str), _("/_Plugins/%s"), p->menu_name);
-	 plugin_menu_strings[str_i++]=strdup(temp_str);
+         g_snprintf(temp_str, sizeof(temp_str), _("/_Plugins/%s"), p->menu_name);
+         plugin_menu_strings[str_i++]=strdup(temp_str);
       }
    }
 
@@ -1187,8 +1187,8 @@ static void get_main_menu(GtkWidget  *my_window,
    for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
       p = (struct plugin_s *)temp_list->data;
       if (p->help_name) {
-	 g_snprintf(temp_str, sizeof(temp_str), _("/_Help/%s"), p->help_name);
-	 plugin_help_strings[str_i++]=strdup(temp_str);
+         g_snprintf(temp_str, sizeof(temp_str), _("/_Help/%s"), p->help_name);
+         plugin_help_strings[str_i++]=strdup(temp_str);
       }
    }
 #endif
@@ -1210,7 +1210,7 @@ static void get_main_menu(GtkWidget  *my_window,
    /* Copy the first part of the array until Plugins */
    for (i1=i2=0; ; i1++, i2++) {
       if (!strcmp(menu_items1[i1].path, _("/_Plugins"))) {
-	 break;
+         break;
       }
       menu_items2[i2]=menu_items1[i1];
    }
@@ -1222,24 +1222,24 @@ static void get_main_menu(GtkWidget  *my_window,
       i1++; i2++;
       str_i=0;
       for (temp_list = plugin_list, f_key_count=0;
-	   temp_list;
-	   temp_list = temp_list->next, f_key_count++) {
-	 p = (struct plugin_s *)temp_list->data;
-	 if (!p->menu_name) {
-	    f_key_count--;
-	    continue;
-	 }
-	 menu_items2[i2].path=plugin_menu_strings[str_i];
-	 if (f_key_count < 8) {
-	    menu_items2[i2].accelerator=F_KEYS[f_key_count];
-	 } else {
-	    menu_items2[i2].accelerator=NULL;
-	 }
-	 menu_items2[i2].callback=cb_plugin_gui;
-	 menu_items2[i2].callback_action=p->number;
-	 menu_items2[i2].item_type=0;
-	 str_i++;
-	 i2++;
+           temp_list;
+           temp_list = temp_list->next, f_key_count++) {
+         p = (struct plugin_s *)temp_list->data;
+         if (!p->menu_name) {
+            f_key_count--;
+            continue;
+         }
+         menu_items2[i2].path=plugin_menu_strings[str_i];
+         if (f_key_count < 8) {
+            menu_items2[i2].accelerator=F_KEYS[f_key_count];
+         } else {
+            menu_items2[i2].accelerator=NULL;
+         }
+         menu_items2[i2].callback=cb_plugin_gui;
+         menu_items2[i2].callback_action=p->number;
+         menu_items2[i2].item_type=0;
+         str_i++;
+         i2++;
       }
    } else {
       /* Skip the /_Plugins entry */
@@ -1258,19 +1258,19 @@ static void get_main_menu(GtkWidget  *my_window,
    if (help_count) {
       str_i=0;
       for (temp_list = plugin_list;
-	   temp_list;
-	   temp_list = temp_list->next) {
-	 p = (struct plugin_s *)temp_list->data;
-	 if (!p->help_name) {
-	    continue;
-	 }
-	 menu_items2[i2].path=plugin_help_strings[str_i];
-	 menu_items2[i2].accelerator=NULL;
-	 menu_items2[i2].callback=cb_plugin_help;
-	 menu_items2[i2].callback_action=p->number;
-	 menu_items2[i2].item_type=0;
-	 str_i++;
-	 i2++;
+           temp_list;
+           temp_list = temp_list->next) {
+         p = (struct plugin_s *)temp_list->data;
+         if (!p->help_name) {
+            continue;
+         }
+         menu_items2[i2].path=plugin_help_strings[str_i];
+         menu_items2[i2].accelerator=NULL;
+         menu_items2[i2].callback=cb_plugin_help;
+         menu_items2[i2].callback_action=p->number;
+         menu_items2[i2].item_type=0;
+         str_i++;
+         i2++;
       }
    }
 #endif
@@ -1285,7 +1285,7 @@ static void get_main_menu(GtkWidget  *my_window,
     the accelerator table while generating menus.
     */
    item_factory = gtk_item_factory_new(GTK_TYPE_MENU_BAR, "<main>",
-				       accel_group);
+                                       accel_group);
 
    /* This function generates the menu items. Pass the item factory,
     the number of items in the array, the array itself, and any
@@ -1305,13 +1305,13 @@ static void get_main_menu(GtkWidget  *my_window,
 #ifdef ENABLE_PLUGINS
    if (count) {
       for (str_i=0; str_i < count; str_i++) {
-	 free(plugin_menu_strings[str_i]);
+         free(plugin_menu_strings[str_i]);
       }
       free(plugin_menu_strings);
    }
    if (help_count) {
       for (str_i=0; str_i < help_count; str_i++) {
-	 free(plugin_help_strings[str_i]);
+         free(plugin_help_strings[str_i]);
       }
       free(plugin_help_strings);
    }
@@ -1359,17 +1359,17 @@ static void cb_delete_event(GtkWidget *widget, GdkEvent *event, gpointer data)
    for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
       plugin = (struct plugin_s *)temp_list->data;
       if (plugin) {
-	 if (plugin->plugin_exit_cleanup) {
-	    jp_logf(JP_LOG_DEBUG, "calling plugin_exit_cleanup\n");
-	    plugin->plugin_exit_cleanup();
-	 }
+         if (plugin->plugin_exit_cleanup) {
+            jp_logf(JP_LOG_DEBUG, "calling plugin_exit_cleanup\n");
+            plugin->plugin_exit_cleanup();
+         }
       }
    }
 #endif
 
    if (glob_child_pid) {
       jp_logf(JP_LOG_DEBUG, "killing %d\n", glob_child_pid);
-	 kill(glob_child_pid, SIGTERM);
+         kill(glob_child_pid, SIGTERM);
    }
    /* Save preferences in jpilot.rc */
    pref_write_rc_file();
@@ -1394,7 +1394,7 @@ static void cb_output(GtkWidget *widget, gpointer data)
       output_height = (h - gtk_paned_get_position(GTK_PANED(output_pane)));
       set_pref(PREF_OUTPUT_HEIGHT, output_height, NULL, TRUE);
       if (flags==OUTPUT_MINIMIZE) {
-	 gtk_paned_set_position(GTK_PANED(output_pane), h);
+         gtk_paned_set_position(GTK_PANED(output_pane), h);
       }
       jp_logf(JP_LOG_DEBUG,"output height = %d\n", output_height);
    }
@@ -1568,50 +1568,50 @@ int main(int argc, char *argv[])
    /* parse command line options */
    for (i=1; i<argc; i++) {
       if (!strncasecmp(argv[i], "-v", 3)) {
-	 char options[1024];
-	 get_compile_options(options, sizeof(options));
-	 printf("\n%s\n", options);
-	 exit(0);
+         char options[1024];
+         get_compile_options(options, sizeof(options));
+         printf("\n%s\n", options);
+         exit(0);
       }
       if ( (!strncasecmp(argv[i], "-h", 3)) ||
-	  (!strncasecmp(argv[i], "-?", 3)) ) {
-	 fprint_usage_string(stderr);
-	 exit(0);
+          (!strncasecmp(argv[i], "-?", 3)) ) {
+         fprint_usage_string(stderr);
+         exit(0);
       }
       if (!strncasecmp(argv[i], "-d", 3)) {
-	 glob_log_stdout_mask = 0xFFFF;
-	 glob_log_file_mask = 0xFFFF;
-	 jp_logf(JP_LOG_DEBUG, "Debug messages on.\n");
+         glob_log_stdout_mask = 0xFFFF;
+         glob_log_file_mask = 0xFFFF;
+         jp_logf(JP_LOG_DEBUG, "Debug messages on.\n");
       }
       if (!strncasecmp(argv[i], "-p", 3)) {
-	 skip_plugins = TRUE;
-	 jp_logf(JP_LOG_INFO, _("Not loading plugins.\n"));
+         skip_plugins = TRUE;
+         jp_logf(JP_LOG_INFO, _("Not loading plugins.\n"));
       }
       if (!strncmp(argv[i], "-A", 3)) {
-	 skip_all_alarms = TRUE;
-	 jp_logf(JP_LOG_INFO, _("Ignoring all alarms.\n"));
+         skip_all_alarms = TRUE;
+         jp_logf(JP_LOG_INFO, _("Ignoring all alarms.\n"));
       }
       if (!strncmp(argv[i], "-a", 3)) {
-	 skip_past_alarms = TRUE;
-	 jp_logf(JP_LOG_INFO, _("Ignoring past alarms.\n"));
+         skip_past_alarms = TRUE;
+         jp_logf(JP_LOG_INFO, _("Ignoring past alarms.\n"));
       }
       if ( (!strncmp(argv[i], "-s", 3)) ||
            (!strncmp(argv[i], "--remote-sync", 14))) {
-	 remote_sync = TRUE;
+         remote_sync = TRUE;
       }
       if ( (!strncasecmp(argv[i], "-i", 3)) ||
            (!strncasecmp(argv[i], "--iconic", 9))){
-	 iconify = 1;
+         iconify = 1;
       }
       if (!strncasecmp(argv[i], "-geometry", 9)) {
-	 /* The '=' isn't specified in `man X`, but we will be nice */
-	 if (argv[i][9]=='=') {
-	    geometry_str=argv[i]+9;
-	 } else {
-	    if (i<argc) {
-	       geometry_str=argv[i+1];
-	    }
-	 }
+         /* The '=' isn't specified in `man X`, but we will be nice */
+         if (argv[i][9]=='=') {
+            geometry_str=argv[i]+9;
+         } else {
+            if (i<argc) {
+               geometry_str=argv[i+1];
+            }
+         }
       }
    }
 
@@ -1664,14 +1664,14 @@ int main(int argc, char *argv[])
       plugin = (struct plugin_s *)temp_list->data;
       jp_logf(JP_LOG_DEBUG, "plugin: [%s] was loaded\n", plugin->name);
       if (plugin) {
-	 if (plugin->plugin_startup) {
-	    info.base_dir = strdup(BASE_DIR);
-	    jp_logf(JP_LOG_DEBUG, "calling plugin_startup for [%s]\n", plugin->name);
-	    plugin->plugin_startup(&info);
-	    if (info.base_dir) {
-	       free(info.base_dir);
-	    }
-	 }
+         if (plugin->plugin_startup) {
+            info.base_dir = strdup(BASE_DIR);
+            jp_logf(JP_LOG_DEBUG, "calling plugin_startup for [%s]\n", plugin->name);
+            plugin->plugin_startup(&info);
+            if (info.base_dir) {
+               free(info.base_dir);
+            }
+         }
       }
    }
 #endif
@@ -1739,13 +1739,13 @@ int main(int argc, char *argv[])
       strcat(title, _(" User: "));
       /* Convert user name so that it can be displayed in window title */
       /* We assume user name is coded in jpilot.rc as it is on the Palm Pilot */
-	{
-	   char *newvalue;
+        {
+           char *newvalue;
 
-	   newvalue = charset_p2newj(svalue, -1, char_set);
-	   strcat(title, newvalue);
-	   free(newvalue);
-	}
+           newvalue = charset_p2newj(svalue, -1, char_set);
+           strcat(title, newvalue);
+           free(newvalue);
+        }
    }
 
    window = gtk_widget_new(GTK_TYPE_WINDOW,
@@ -1768,7 +1768,7 @@ int main(int argc, char *argv[])
 
    /* Set a handler for delete_event that immediately exits GTK. */
    gtk_signal_connect(GTK_OBJECT(window), "delete_event",
-		      GTK_SIGNAL_FUNC(cb_delete_event), NULL);
+                      GTK_SIGNAL_FUNC(cb_delete_event), NULL);
 
    gtk_container_set_border_width(GTK_CONTAINER(window), 0);
 
@@ -1780,8 +1780,8 @@ int main(int argc, char *argv[])
    output_pane = gtk_vpaned_new();
 
    gtk_signal_connect(GTK_OBJECT(output_pane), "button_release_event",
-		      GTK_SIGNAL_FUNC(cb_output2),
-		      GINT_TO_POINTER(OUTPUT_RESIZE));
+                      GTK_SIGNAL_FUNC(cb_output2),
+                      GINT_TO_POINTER(OUTPUT_RESIZE));
 
    gtk_container_add(GTK_CONTAINER(window), output_pane);
 
@@ -1816,7 +1816,7 @@ int main(int argc, char *argv[])
 
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
-				  GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
+                                  GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
 
    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(g_output_text));
    gtk_box_pack_start_defaults(GTK_BOX(temp_hbox), scrolled_window);
@@ -1824,20 +1824,20 @@ int main(int argc, char *argv[])
    button = gtk_button_new_from_stock(GTK_STOCK_CLEAR);
    gtk_box_pack_start(GTK_BOX(temp_vbox), button, TRUE, TRUE, 3);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_output),
-		      GINT_TO_POINTER(OUTPUT_CLEAR));
+                      GTK_SIGNAL_FUNC(cb_output),
+                      GINT_TO_POINTER(OUTPUT_CLEAR));
 
    button = gtk_button_new_from_stock(GTK_STOCK_REMOVE);
    gtk_box_pack_start(GTK_BOX(temp_vbox), button, TRUE, TRUE, 3);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_output),
-		      GINT_TO_POINTER(OUTPUT_MINIMIZE));
+                      GTK_SIGNAL_FUNC(cb_output),
+                      GINT_TO_POINTER(OUTPUT_MINIMIZE));
 
    /* "Datebook" button */
    temp_hbox = gtk_hbox_new(FALSE, 0);
    button_datebook = gtk_button_new();
    gtk_signal_connect(GTK_OBJECT(button_datebook), "clicked",
-		      GTK_SIGNAL_FUNC(cb_app_button), GINT_TO_POINTER(DATEBOOK));
+                      GTK_SIGNAL_FUNC(cb_app_button), GINT_TO_POINTER(DATEBOOK));
    gtk_box_pack_start(GTK_BOX(g_vbox0), temp_hbox, FALSE, FALSE, 0);
    gtk_box_pack_start(GTK_BOX(temp_hbox), button_datebook, TRUE, FALSE, 0);
 
@@ -1845,7 +1845,7 @@ int main(int argc, char *argv[])
    temp_hbox = gtk_hbox_new(FALSE, 0);
    button_address = gtk_button_new();
    gtk_signal_connect(GTK_OBJECT(button_address), "clicked",
-		      GTK_SIGNAL_FUNC(cb_app_button), GINT_TO_POINTER(ADDRESS));
+                      GTK_SIGNAL_FUNC(cb_app_button), GINT_TO_POINTER(ADDRESS));
    gtk_box_pack_start(GTK_BOX(g_vbox0), temp_hbox, FALSE, FALSE, 0);
    gtk_box_pack_start(GTK_BOX(temp_hbox), button_address, TRUE, FALSE, 0);
 
@@ -1853,7 +1853,7 @@ int main(int argc, char *argv[])
    temp_hbox = gtk_hbox_new(FALSE, 0);
    button_todo = gtk_button_new();
    gtk_signal_connect(GTK_OBJECT(button_todo), "clicked",
-		      GTK_SIGNAL_FUNC(cb_app_button), GINT_TO_POINTER(TODO));
+                      GTK_SIGNAL_FUNC(cb_app_button), GINT_TO_POINTER(TODO));
    gtk_box_pack_start(GTK_BOX(g_vbox0), temp_hbox, FALSE, FALSE, 0);
    gtk_box_pack_start(GTK_BOX(temp_hbox), button_todo, TRUE, FALSE, 0);
 
@@ -1861,7 +1861,7 @@ int main(int argc, char *argv[])
    temp_hbox = gtk_hbox_new(FALSE, 0);
    button_memo = gtk_button_new();
    gtk_signal_connect(GTK_OBJECT(button_memo), "clicked",
-		      GTK_SIGNAL_FUNC(cb_app_button), GINT_TO_POINTER(MEMO));
+                      GTK_SIGNAL_FUNC(cb_app_button), GINT_TO_POINTER(MEMO));
    gtk_box_pack_start(GTK_BOX(g_vbox0), temp_hbox, FALSE, FALSE, 0);
    gtk_box_pack_start(GTK_BOX(temp_hbox), button_memo, TRUE, FALSE, 0);
 
@@ -1892,43 +1892,43 @@ int main(int argc, char *argv[])
    gtk_box_pack_start(GTK_BOX(g_vbox0), button_unlocked, FALSE, FALSE, 20);
 
    gtk_tooltips_set_tip(glob_tooltips, button_locked,
-			_("Show private records   Ctrl-Z"), NULL);
+                        _("Show private records   Ctrl-Z"), NULL);
    gtk_widget_add_accelerator(button_locked, "clicked", accel_group,
       GDK_z, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
    gtk_tooltips_set_tip(glob_tooltips, button_masklocked,
-			_("Hide private records   Ctrl-Z"), NULL);
+                        _("Hide private records   Ctrl-Z"), NULL);
    gtk_widget_add_accelerator(button_masklocked, "clicked", accel_group,
       GDK_z, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
    gtk_tooltips_set_tip(glob_tooltips, button_unlocked,
-			_("Mask private records   Ctrl-Z"), NULL);
+                        _("Mask private records   Ctrl-Z"), NULL);
    gtk_widget_add_accelerator(button_unlocked, "clicked", accel_group,
       GDK_z, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
    /* "Sync" button */
    button_sync = gtk_button_new();
    gtk_signal_connect(GTK_OBJECT(button_sync), "clicked",
-		      GTK_SIGNAL_FUNC(cb_sync),
-		      GINT_TO_POINTER(skip_plugins ? SYNC_NO_PLUGINS : 0));
+                      GTK_SIGNAL_FUNC(cb_sync),
+                      GINT_TO_POINTER(skip_plugins ? SYNC_NO_PLUGINS : 0));
    gtk_box_pack_start(GTK_BOX(g_vbox0), button_sync, FALSE, FALSE, 3);
 
    gtk_tooltips_set_tip(glob_tooltips, button_sync, _("Sync your palm to the desktop   Ctrl-Y"), NULL);
    gtk_widget_add_accelerator(button_sync, "clicked", accel_group, GDK_y,
-	   GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+           GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
    /* "Backup" button in left column */
    button_backup = gtk_button_new();
    gtk_signal_connect(GTK_OBJECT(button_backup), "clicked",
-		      GTK_SIGNAL_FUNC(cb_sync),
-		      GINT_TO_POINTER
-		      (skip_plugins ? SYNC_NO_PLUGINS | SYNC_FULL_BACKUP
-		      : SYNC_FULL_BACKUP));
+                      GTK_SIGNAL_FUNC(cb_sync),
+                      GINT_TO_POINTER
+                      (skip_plugins ? SYNC_NO_PLUGINS | SYNC_FULL_BACKUP
+                      : SYNC_FULL_BACKUP));
    gtk_box_pack_start(GTK_BOX(g_vbox0), button_backup, FALSE, FALSE, 3);
 
    gtk_tooltips_set_tip(glob_tooltips, button_backup, 
-	                     _("Sync your palm to the desktop\n"
-		                    "and then do a backup"), NULL);
+                             _("Sync your palm to the desktop\n"
+                                    "and then do a backup"), NULL);
 
    /* Separator */
    separator = gtk_hseparator_new();
@@ -1949,8 +1949,8 @@ int main(int argc, char *argv[])
 
    /* Create "Datebook" pixmap */
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
-					 &style->bg[GTK_STATE_NORMAL],
-					 datebook_xpm);
+                                         &style->bg[GTK_STATE_NORMAL],
+                                         datebook_xpm);
 #ifdef __APPLE__
    mask = NULL;
 #endif
@@ -1961,8 +1961,8 @@ int main(int argc, char *argv[])
 
    /* Create "Address" pixmap */
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
-					 &style->bg[GTK_STATE_NORMAL],
-					 address_xpm);
+                                         &style->bg[GTK_STATE_NORMAL],
+                                         address_xpm);
 #ifdef __APPLE__
    mask = NULL;
 #endif
@@ -1973,8 +1973,8 @@ int main(int argc, char *argv[])
 
    /* Create "Todo" pixmap */
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
-					 &style->bg[GTK_STATE_NORMAL],
-					 todo_xpm);
+                                         &style->bg[GTK_STATE_NORMAL],
+                                         todo_xpm);
 #ifdef __APPLE__
    mask = NULL;
 #endif
@@ -1985,8 +1985,8 @@ int main(int argc, char *argv[])
 
    /* Create "Memo" pixmap */
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
-					 &style->bg[GTK_STATE_NORMAL],
-					 memo_xpm);
+                                         &style->bg[GTK_STATE_NORMAL],
+                                         memo_xpm);
 #ifdef __APPLE__
    mask = NULL;
 #endif
@@ -2008,8 +2008,8 @@ int main(int argc, char *argv[])
 
    /* Create "locked" pixmap */
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
-					 &style->bg[GTK_STATE_NORMAL],
-					 locked_xpm);
+                                         &style->bg[GTK_STATE_NORMAL],
+                                         locked_xpm);
 #ifdef __APPLE__
    mask = NULL;
 #endif
@@ -2019,8 +2019,8 @@ int main(int argc, char *argv[])
 
    /* Create "locked/masked" pixmap */
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
-					 &style->bg[GTK_STATE_NORMAL],
-					 masklocked_xpm);
+                                         &style->bg[GTK_STATE_NORMAL],
+                                         masklocked_xpm);
 #ifdef __APPLE__
    mask = NULL;
 #endif
@@ -2030,8 +2030,8 @@ int main(int argc, char *argv[])
 
    /* Create "unlocked" pixmap */
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
-					 &style->bg[GTK_STATE_NORMAL],
-					 unlocked_xpm);
+                                         &style->bg[GTK_STATE_NORMAL],
+                                         unlocked_xpm);
 #ifdef __APPLE__
    mask = NULL;
 #endif
@@ -2041,8 +2041,8 @@ int main(int argc, char *argv[])
 
    /* Create "sync" pixmap */
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
-					 &style->bg[GTK_STATE_NORMAL],
-					 sync_xpm);
+                                         &style->bg[GTK_STATE_NORMAL],
+                                         sync_xpm);
 #ifdef __APPLE__
    mask = NULL;
 #endif
@@ -2052,8 +2052,8 @@ int main(int argc, char *argv[])
 
    /* Create "backup" pixmap */
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
-					 &style->bg[GTK_STATE_NORMAL],
-					 backup_xpm);
+                                         &style->bg[GTK_STATE_NORMAL],
+                                         backup_xpm);
 #ifdef __APPLE__
    mask = NULL;
 #endif

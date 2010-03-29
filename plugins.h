@@ -1,4 +1,4 @@
-/* $Id: plugins.h,v 1.11 2009/11/08 17:12:10 rousseau Exp $ */
+/* $Id: plugins.h,v 1.12 2010/03/29 05:44:30 rikster5 Exp $ */
 
 /*******************************************************************************
  * plugins.h
@@ -64,9 +64,9 @@ struct plugin_s
    int (*plugin_post_sync)(void);
    int (*plugin_exit_cleanup)(void);
    int (*plugin_unpack_cai_from_ai)(struct CategoryAppInfo *cai,
-				    unsigned char *ai_raw, int len);
+                                    unsigned char *ai_raw, int len);
    int (*plugin_pack_cai_into_ai)(struct CategoryAppInfo *cai,
-				  unsigned char *ai_raw, int len);
+                                  unsigned char *ai_raw, int len);
 };
 
 int load_plugins(void);

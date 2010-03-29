@@ -1,4 +1,4 @@
-/* $Id: weekview_gui.c,v 1.51 2010/03/04 17:48:25 rousseau Exp $ */
+/* $Id: weekview_gui.c,v 1.52 2010/03/29 05:44:32 rikster5 Exp $ */
 
 /*******************************************************************************
  * weekview_gui.c
@@ -78,9 +78,9 @@ static void cb_week_print(GtkWidget *widget, gpointer data)
    if (print_gui(weekview_window, DATEBOOK, 2, 0x02) == DIALOG_SAID_PRINT) {
       get_pref(PREF_PAPER_SIZE, &paper_size, NULL);
       if (paper_size==1) {
-	 print_weeks_appts(&glob_week_date, PAPER_A4);
+         print_weeks_appts(&glob_week_date, PAPER_A4);
       } else {
-	 print_weeks_appts(&glob_week_date, PAPER_Letter);
+         print_weeks_appts(&glob_week_date, PAPER_Letter);
       }
    }
 }
@@ -185,10 +185,10 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
 
       if (date.tm_mday == now_today)
       {
-	 markup_str = g_markup_printf_escaped("<b>%s</b>", str);
+         markup_str = g_markup_printf_escaped("<b>%s</b>", str);
          gtk_widget_set_name(GTK_WIDGET(text[i]), "today");
       } else {
-	 markup_str = g_markup_printf_escaped("%s", str);
+         markup_str = g_markup_printf_escaped("%s", str);
          gtk_widget_set_name(GTK_WIDGET(text[i]), "");
       }
       gtk_label_set_markup(GTK_LABEL(week_day_label[i]), markup_str);
@@ -206,40 +206,40 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
       text_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text[n])));
       for (temp_cel = ce_list; temp_cel; temp_cel=temp_cel->next) {
 #ifdef ENABLE_DATEBK
-	 get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
-	 if (use_db3_tags) {
-	    ret = db3_parse_tag(temp_cel->mce.ce.note, &db3_type, &db4);
-	    jp_logf(JP_LOG_DEBUG, "category = 0x%x\n", db4.category);
-	    cat_bit=1<<db4.category;
-	    if (!(cat_bit & datebk_category)) {
-	       jp_logf(JP_LOG_DEBUG, "skipping rec not in this category\n");
-	       continue;
-	    }
-	 }
+         get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
+         if (use_db3_tags) {
+            ret = db3_parse_tag(temp_cel->mcale.cale.note, &db3_type, &db4);
+            jp_logf(JP_LOG_DEBUG, "category = 0x%x\n", db4.category);
+            cat_bit=1<<db4.category;
+            if (!(cat_bit & datebk_category)) {
+               jp_logf(JP_LOG_DEBUG, "skipping rec not in this category\n");
+               continue;
+            }
+         }
 #endif
-	 if (calendar_isApptOnDate(&(temp_cel->mce.ce), &date)) {
-	    if (temp_cel->mce.ce.event) {
-	       strcpy(desc, "*");
-	    } else {
-	       get_pref_time_no_secs(datef);
-	       strftime(desc, sizeof(desc), datef, &(temp_cel->mce.ce.begin));
-	       strcat(desc, " ");
-	    }
-	    if (temp_cel->mce.ce.description) {
-	       strncat(desc, temp_cel->mce.ce.description, 70);
+         if (calendar_isApptOnDate(&(temp_cel->mcale.cale), &date)) {
+            if (temp_cel->mcale.cale.event) {
+               strcpy(desc, "*");
+            } else {
+               get_pref_time_no_secs(datef);
+               strftime(desc, sizeof(desc), datef, &(temp_cel->mcale.cale.begin));
+               strcat(desc, " ");
+            }
+            if (temp_cel->mcale.cale.description) {
+               strncat(desc, temp_cel->mcale.cale.description, 70);
                /* FIXME: This kind of truncation is bad for UTF-8 */
-	       desc[62]='\0';
-	    }
+               desc[62]='\0';
+            }
             /* FIXME: Add location in parentheses (loc) as the Palm does.
              * We would need to check strlen, etc., before adding */
-	    remove_cr_lfs(desc);
+            remove_cr_lfs(desc);
 
-	    /* Append number of anniversary years if enabled & appropriate */
-	    append_anni_years(desc, 62, &date, NULL, &temp_cel->mce.ce);
+            /* Append number of anniversary years if enabled & appropriate */
+            append_anni_years(desc, 62, &date, NULL, &temp_cel->mcale.cale);
 
-	    strcat(desc, "\n");
-	    gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(text_buffer),desc,-1);
-	 }
+            strcat(desc, "\n");
+            gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(text_buffer),desc,-1);
+         }
       }
    }
    free_CalendarEventList(&ce_list);
@@ -250,7 +250,7 @@ int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
 /* Called when a day is clicked on the week view */
 static void cb_enter_selected_day(GtkWidget *widget, 
                                   GdkEvent  *event, 
-				  gpointer   data)
+                                  gpointer   data)
 {
    struct tm date;
 
@@ -280,8 +280,8 @@ void weekview_gui(struct tm *date_in)
 
    if (weekview_window) {
        /* Delete any existing window to ensure that new window is biased
-	* around currently selected date and so that the new window
-	* contents are updated with any changes on the day view. */
+        * around currently selected date and so that the new window
+        * contents are updated with any changes on the day view. */
        gtk_widget_destroy(weekview_window);
    }
 
@@ -292,9 +292,9 @@ void weekview_gui(struct tm *date_in)
 
    g_snprintf(title, sizeof(title), "%s %s", PN, _("Weekly View"));
    weekview_window = gtk_widget_new(GTK_TYPE_WINDOW,
-			            "type", GTK_WINDOW_TOPLEVEL,
-			            "title", title,
-			            NULL);
+                                    "type", GTK_WINDOW_TOPLEVEL,
+                                    "title", title,
+                                    NULL);
 
    gtk_window_set_default_size(GTK_WINDOW(weekview_window), w, h);
    gtk_container_set_border_width(GTK_CONTAINER(weekview_window), 10);
@@ -318,31 +318,31 @@ void weekview_gui(struct tm *date_in)
    /* Make a left arrow for going back a week */
    button = gtk_button_new_from_stock(GTK_STOCK_GO_BACK);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_week_move),
-		      GINT_TO_POINTER(-1));
+                      GTK_SIGNAL_FUNC(cb_week_move),
+                      GINT_TO_POINTER(-1));
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
 
    /* Close button */
    button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_weekview_quit), NULL);
+                      GTK_SIGNAL_FUNC(cb_weekview_quit), NULL);
    /* Closing the window via a delete event uses the same cleanup routine */
    gtk_signal_connect(GTK_OBJECT(weekview_window), "delete_event",
-		      GTK_SIGNAL_FUNC(cb_weekview_quit), NULL);
+                      GTK_SIGNAL_FUNC(cb_weekview_quit), NULL);
 
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
 
    /* Print button */
    button = gtk_button_new_from_stock(GTK_STOCK_PRINT);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_week_print), weekview_window);
+                      GTK_SIGNAL_FUNC(cb_week_print), weekview_window);
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
 
    /* Make a right arrow for going forward a week */
    button = gtk_button_new_from_stock(GTK_STOCK_GO_FORWARD);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_week_move),
-		      GINT_TO_POINTER(1));
+                      GTK_SIGNAL_FUNC(cb_week_move),
+                      GINT_TO_POINTER(1));
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
 
    get_pref(PREF_FDOW, &fdow, NULL);
@@ -370,18 +370,18 @@ void weekview_gui(struct tm *date_in)
       gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(week_day_text[i]), GTK_WRAP_WORD);
       gtk_container_set_border_width(GTK_CONTAINER(week_day_text[i]), 1);
       gtk_text_buffer_create_tag(GTK_TEXT_BUFFER(week_day_text_buffer[i]),
-				 "gray_background", "background", "gray",
-			         NULL);
+                                 "gray_background", "background", "gray",
+                                 NULL);
       gtk_widget_set_usize(GTK_WIDGET(week_day_text[i]), 10, 10);
       gtk_signal_connect(GTK_OBJECT(week_day_text[i]), "button_release_event",
-			 GTK_SIGNAL_FUNC(cb_enter_selected_day),
-			 GINT_TO_POINTER(i));
+                         GTK_SIGNAL_FUNC(cb_enter_selected_day),
+                         GINT_TO_POINTER(i));
       if (i>3) {
-	 gtk_box_pack_start(GTK_BOX(vbox_right), week_day_label[i], FALSE, FALSE, 0);
-	 gtk_box_pack_start(GTK_BOX(vbox_right), week_day_text[i], TRUE, TRUE, 0);
+         gtk_box_pack_start(GTK_BOX(vbox_right), week_day_label[i], FALSE, FALSE, 0);
+         gtk_box_pack_start(GTK_BOX(vbox_right), week_day_text[i], TRUE, TRUE, 0);
       } else {
-	 gtk_box_pack_start(GTK_BOX(vbox_left), week_day_label[i], FALSE, FALSE, 0);
-	 gtk_box_pack_start(GTK_BOX(vbox_left), week_day_text[i], TRUE, TRUE, 0);
+         gtk_box_pack_start(GTK_BOX(vbox_left), week_day_label[i], FALSE, FALSE, 0);
+         gtk_box_pack_start(GTK_BOX(vbox_left), week_day_text[i], TRUE, TRUE, 0);
       }
    }
 

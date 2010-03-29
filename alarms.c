@@ -1,4 +1,4 @@
-/* $Id: alarms.c,v 1.52 2010/03/03 12:07:45 rousseau Exp $ */
+/* $Id: alarms.c,v 1.53 2010/03/29 05:44:27 rikster5 Exp $ */
 
 /*******************************************************************************
  * alarms.c
@@ -19,7 +19,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  ******************************************************************************/
-
 /*
  * The PalmOS datebook will alarm on private records even when they are hidden
  * and they show up on the screen.  Right, or wrong, who knows.
@@ -100,9 +99,9 @@ struct alarm_dialog_data {
 };
 
 void alarms_add_to_list(unsigned int unique_id,
-			AlarmType type,
-			time_t alarm_time,
-			time_t alarm_advance);
+                        AlarmType type,
+                        time_t alarm_time,
+                        time_t alarm_advance);
 int alarms_find_next(struct tm *date1, struct tm *date2, int soonest_only);
 
 /****************************** Main Code *************************************/
@@ -142,19 +141,19 @@ static gboolean cb_destroy_dialog(GtkWidget *widget)
       jp_logf(JP_LOG_DEBUG, "remind = [%d]\n", remind);
       set_pref(PREF_REMIND_IN, remind, NULL, TRUE);
       if (GTK_TOGGLE_BUTTON(Pdata->radio1)->active) {
-	 set_pref(PREF_REMIND_UNITS, 0, NULL, TRUE);
-	 remind *= MIN_IN_SECS;
+         set_pref(PREF_REMIND_UNITS, 0, NULL, TRUE);
+         remind *= MIN_IN_SECS;
       } else {
-	 set_pref(PREF_REMIND_UNITS, 1, NULL, TRUE);
-	 remind *= HR_IN_SECS;
+         set_pref(PREF_REMIND_UNITS, 1, NULL, TRUE);
+         remind *= HR_IN_SECS;
       }
       time(&ltime);
       localtime(&ltime);
       advance = -(ltime + remind - Pdata->remind_time);
       alarms_add_to_list(Pdata->unique_id,
-			 ALARM_POSTPONED,
-			 Pdata->remind_time,
-			 advance);
+                         ALARM_POSTPONED,
+                         Pdata->remind_time,
+                         advance);
    }
    free(Pdata);
 
@@ -162,9 +161,9 @@ static gboolean cb_destroy_dialog(GtkWidget *widget)
 }
 
 static int dialog_alarm(char *title, char *reason,
-		 char *time_str, char *desc_str, char *note_str,
-		 unsigned int unique_id,
-		 time_t remind_time)
+                        char *time_str, char *desc_str, char *note_str,
+                        unsigned int unique_id,
+                        time_t remind_time)
 {
    GSList *group;
    GtkWidget *button, *label;
@@ -189,9 +188,9 @@ static int dialog_alarm(char *title, char *reason,
    printf("total_alarm_windows=%d\n",total_alarm_windows);
 #endif
    alarm_dialog = gtk_widget_new(GTK_TYPE_WINDOW,
-				 "type", GTK_WINDOW_TOPLEVEL,
-				 "title", title,
-				 NULL);
+                                 "type", GTK_WINDOW_TOPLEVEL,
+                                 "title", title,
+                                 NULL);
 
    gtk_signal_connect(GTK_OBJECT(alarm_dialog), "destroy",
                       GTK_SIGNAL_FUNC(cb_destroy_dialog), alarm_dialog);
@@ -255,14 +254,14 @@ static int dialog_alarm(char *title, char *reason,
 
    button = gtk_button_new_with_label(_("Remind me"));
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_dialog_button),
-		      GINT_TO_POINTER(DIALOG_SAID_2));
+                      GTK_SIGNAL_FUNC(cb_dialog_button),
+                      GINT_TO_POINTER(DIALOG_SAID_2));
    gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
 
    button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-		      GTK_SIGNAL_FUNC(cb_dialog_button),
-		      GINT_TO_POINTER(DIALOG_SAID_1));
+                      GTK_SIGNAL_FUNC(cb_dialog_button),
+                      GINT_TO_POINTER(DIALOG_SAID_1));
    gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
 
    Pdata = malloc(sizeof(struct alarm_dialog_data));
@@ -318,9 +317,9 @@ const char *print_type(AlarmType type)
 #endif
 
 void alarms_add_to_list(unsigned int unique_id,
-			AlarmType type,
-			time_t event_time,
-			time_t alarm_advance)
+                        AlarmType type,
+                        time_t event_time,
+                        time_t alarm_advance)
 {
    struct jp_alarms *temp_alarm;
 
@@ -358,25 +357,25 @@ static void alarms_remove_from_to_list(unsigned int unique_id)
        temp_alarm;
        temp_alarm=next_alarm) {
       if (temp_alarm->unique_id==unique_id) {
-	 /* Tail of list? */
-	 if (temp_alarm->next==NULL) {
-	    Plast_alarm_list=prev_alarm;
-	 }
-	 /* Last of list? */
-	 if (Plast_alarm_list==alarm_list) {
-	    Plast_alarm_list=alarm_list=NULL;
-	 }
-	 if (prev_alarm) {
-	    prev_alarm->next=temp_alarm->next;
-	 } else {
-	    /* Head of list */
-	    alarm_list=temp_alarm->next;
-	 }
-	 free(temp_alarm);
-	 return;
+         /* Tail of list? */
+         if (temp_alarm->next==NULL) {
+            Plast_alarm_list=prev_alarm;
+         }
+         /* Last of list? */
+         if (Plast_alarm_list==alarm_list) {
+            Plast_alarm_list=alarm_list=NULL;
+         }
+         if (prev_alarm) {
+            prev_alarm->next=temp_alarm->next;
+         } else {
+            /* Head of list */
+            alarm_list=temp_alarm->next;
+         }
+         free(temp_alarm);
+         return;
       } else {
-	 prev_alarm=temp_alarm;
-	 next_alarm=temp_alarm->next;
+         prev_alarm=temp_alarm;
+         next_alarm=temp_alarm->next;
       }
    }
 }
@@ -387,16 +386,16 @@ static void free_alarms_list(int mask)
 
    if (mask&PREV_ALARM_MASK) {
       for (ta=alarm_list; ta; ta=ta_next) {
-	 ta_next=ta->next;
-	 free(ta);
+         ta_next=ta->next;
+         free(ta);
       }
       Plast_alarm_list=alarm_list=NULL;
    }
 
    if (mask&NEXT_ALARM_MASK) {
       for (ta=next_alarm; ta; ta=ta_next) {
-	 ta_next=ta->next;
-	 free(ta);
+         ta_next=ta->next;
+         free(ta);
       }
       next_alarm=NULL;
    }
@@ -428,22 +427,22 @@ static void alarms_write_file(void)
    }
    fail=0;
    g_snprintf(line, sizeof(line), "%s",
-	   "# This file was generated by "EPN", changes will be lost\n");
+           "# This file was generated by "EPN", changes will be lost\n");
    n = fwrite(line, strlen(line), 1, out);
    if (n<1) fail=1;
 
    g_snprintf(line, sizeof(line), "%s",
-	   "# This is the last time that "EPN" was ran\n");
+           "# This is the last time that "EPN" was ran\n");
    n = fwrite(line, strlen(line), 1, out);
    if (n<1) fail=1;
 
    sprintf(line, "UPTODATE %d %d %d %d %d\n",
-	   now->tm_year+1900,
-	   now->tm_mon+1,
-	   now->tm_mday,
-	   now->tm_hour,
-	   now->tm_min
-	   );
+           now->tm_year+1900,
+           now->tm_mon+1,
+           now->tm_mday,
+           now->tm_hour,
+           now->tm_min
+           );
    n = fwrite(line, strlen(line), 1, out);
    if (n<1) fail=1;
 
@@ -469,7 +468,7 @@ static void make_command_safe(char *command)
    for (i=0; i<len; i++) {
       c=command[i];
       if (strchr("\r\n|&;()<>", c)) {
-	 command[i]=' ';
+         command[i]=' ';
       }
    }
 }
@@ -480,10 +479,10 @@ static void make_command_safe(char *command)
  *   Do alarm setting (play sound, or whatever).
  *   if user postpones then put in postponed alarm list.
  */
-static int alarms_do_one(struct CalendarEvent *ce,
-		  unsigned long unique_id,
-		  time_t t_alarm,
-		  AlarmType type)
+static int alarms_do_one(struct CalendarEvent *cale,
+                  unsigned long unique_id,
+                  time_t t_alarm,
+                  AlarmType type)
 {
    struct tm *Pnow;
    struct tm begin;
@@ -527,9 +526,9 @@ static int alarms_do_one(struct CalendarEvent *ce,
    Pnow = localtime(&t_alarm);
 
    strftime(date_str, sizeof(date_str), pref_date, Pnow);
-   tm_copy_with_dst_adj(&begin, &(ce->begin));
+   tm_copy_with_dst_adj(&begin, &(cale->begin));
    strftime(time1_str, sizeof(time1_str), pref_time, &begin);
-   tm_copy_with_dst_adj(&end, &(ce->end));
+   tm_copy_with_dst_adj(&end, &(cale->end));
    strftime(time2_str, sizeof(time2_str), pref_time, &end);
    if (strcmp(time1_str,time2_str) == 0)
       g_snprintf(time_str, sizeof(time_str), "%s %s", date_str, time1_str);
@@ -538,11 +537,11 @@ static int alarms_do_one(struct CalendarEvent *ce,
 
    desc_str[0]='\0';
    note_str[0]='\0';
-   if (ce->description) {
-      g_strlcpy(desc_str, ce->description, sizeof(desc_str));
+   if (cale->description) {
+      g_strlcpy(desc_str, cale->description, sizeof(desc_str));
    }
-   if (ce->note) {
-      g_strlcpy(note_str, ce->note, sizeof(note_str));
+   if (cale->note) {
+      g_strlcpy(note_str, cale->note, sizeof(note_str));
    }
 
    get_pref(PREF_ALARM_COMMAND, NULL, &pref_command);
@@ -554,44 +553,44 @@ static int alarms_do_one(struct CalendarEvent *ce,
    if (do_command) {
       command[0]='\0';
       for (i=0; i<MAX_PREF_LEN-1; i++) {
-	 c1 = pref_command[i];
-	 c2 = pref_command[i+1];
-	 len = strlen(command);
-	 if (c1=='%') {
+         c1 = pref_command[i];
+         c2 = pref_command[i+1];
+         len = strlen(command);
+         if (c1=='%') {
             /* expand '%t' */
-	    if (c2=='t') {
-	       i++;
-	       strncat(command, time1_str, sizeof(command)-2-len);
-	       continue;
-	    }
-	    /* expand '%d' */
-	    if (c2=='d') {
-	       i++;
-	       strncat(command, date_str, sizeof(command)-2-len);
-	       continue;
-	    }
+            if (c2=='t') {
+               i++;
+               strncat(command, time1_str, sizeof(command)-2-len);
+               continue;
+            }
+            /* expand '%d' */
+            if (c2=='d') {
+               i++;
+               strncat(command, date_str, sizeof(command)-2-len);
+               continue;
+            }
 #ifdef ENABLE_ALARM_SHELL_DANGER
-	    /* expand '%D' */
-	    if (c2=='D') {
-	       i++;
-	       strncat(command, desc_str, sizeof(command)-2-len);
-	       continue;
-	    }
-	    /* expand '%N' */
-	    if (c2=='N') {
-	       i++;
-	       strncat(command, note_str, sizeof(command)-2-len);
-	       continue;
-	    }
+            /* expand '%D' */
+            if (c2=='D') {
+               i++;
+               strncat(command, desc_str, sizeof(command)-2-len);
+               continue;
+            }
+            /* expand '%N' */
+            if (c2=='N') {
+               i++;
+               strncat(command, note_str, sizeof(command)-2-len);
+               continue;
+            }
 #endif
-	 }
-	 if (len<sizeof(command)-4) {
-	    command[len++]=c1;
-	    command[len]='\0';
-	 }
-	 if (c1=='\0') {
-	    break;
-	 }
+         }
+         if (len<sizeof(command)-4) {
+            command[len++]=c1;
+            command[len]='\0';
+         }
+         if (c1=='\0') {
+            break;
+         }
       }
       command[sizeof(command)-2]='\0';
 
@@ -604,9 +603,9 @@ static int alarms_do_one(struct CalendarEvent *ce,
 
    if (wants_windows) {
       return dialog_alarm(_("J-Pilot Alarm"), reason,
-			  time_str, desc_str, note_str,
-			  unique_id,
-			  t_alarm);
+                          time_str, desc_str, note_str,
+                          unique_id,
+                          t_alarm);
    }
    return EXIT_SUCCESS;
 }
@@ -639,12 +638,12 @@ static gint cb_timer_alarms(gpointer data)
       ta_next=temp_alarm->next;
       diff = temp_alarm->event_time - t - temp_alarm->alarm_advance;
       if (temp_alarm->type!=ALARM_MISSED) {
-	 if (diff >= ALARM_INTERVAL/2) {
-	    continue;
-	 }
+         if (diff >= ALARM_INTERVAL/2) {
+            continue;
+         }
       }
       if (alm_list==NULL) {
-	 get_days_calendar_events2(&alm_list, NULL, 0, 0, 1, CATEGORY_ALL, NULL);
+         get_days_calendar_events2(&alm_list, NULL, 0, 0, 1, CATEGORY_ALL, NULL);
       }
 #ifdef ALARMS_DEBUG
       printf("unique_id=%d\n", temp_alarm->unique_id);
@@ -653,57 +652,57 @@ static gint cb_timer_alarms(gpointer data)
       printf("alarm_advance=%ld\n", temp_alarm->alarm_advance);
 #endif
       for (temp_al = alm_list; temp_al; temp_al=temp_al->next) {
-	 if (temp_al->mce.unique_id == temp_alarm->unique_id) {
+         if (temp_al->mcale.unique_id == temp_alarm->unique_id) {
 #ifdef ALARMS_DEBUG
-	    printf("%s\n", temp_al->mce.ce.description);
+            printf("%s\n", temp_al->mcale.cale.description);
 #endif
-	    alarms_do_one(&(temp_al->mce.ce),
-			  temp_alarm->unique_id,
-			  temp_alarm->event_time,
-			  ALARM_MISSED);
-	    break;
-	 }
+            alarms_do_one(&(temp_al->mcale.cale),
+                          temp_alarm->unique_id,
+                          temp_alarm->event_time,
+                          ALARM_MISSED);
+            break;
+         }
       }
       /* CAUTION, this modifies the list we are parsing and
        removes the current node */
-      alarms_remove_from_to_list(temp_al->mce.unique_id);
+      alarms_remove_from_to_list(temp_al->mcale.unique_id);
    }
 
    if (next_alarm) {
       diff = next_alarm->event_time - t - next_alarm->alarm_advance;
       if (diff <= ALARM_INTERVAL/2) {
-	 if (alm_list==NULL) {
-	    get_days_calendar_events2(&alm_list, NULL, 0, 0, 1, CATEGORY_ALL, NULL);
-	 }
-	 for (temp_alarm=next_alarm; temp_alarm; temp_alarm=ta_next) {
-	    for (temp_al = alm_list; temp_al; temp_al=temp_al->next) {
-	       if (temp_al->mce.unique_id == temp_alarm->unique_id) {
+         if (alm_list==NULL) {
+            get_days_calendar_events2(&alm_list, NULL, 0, 0, 1, CATEGORY_ALL, NULL);
+         }
+         for (temp_alarm=next_alarm; temp_alarm; temp_alarm=ta_next) {
+            for (temp_al = alm_list; temp_al; temp_al=temp_al->next) {
+               if (temp_al->mcale.unique_id == temp_alarm->unique_id) {
 #ifdef ALARMS_DEBUG
-		  printf("** next unique_id=%d\n", temp_alarm->unique_id);
-		  printf("** next type=%s\n", print_type(temp_alarm->type));
-		  printf("** next event_time=%s\n", print_date(temp_alarm->event_time));
-		  printf("** next alarm_advance=%ld\n", temp_alarm->alarm_advance);
-		  printf("** next %s\n", temp_al->mce.ce.description);
+                  printf("** next unique_id=%d\n", temp_alarm->unique_id);
+                  printf("** next type=%s\n", print_type(temp_alarm->type));
+                  printf("** next event_time=%s\n", print_date(temp_alarm->event_time));
+                  printf("** next alarm_advance=%ld\n", temp_alarm->alarm_advance);
+                  printf("** next %s\n", temp_al->mcale.cale.description);
 #endif
-		  alarms_do_one(&(temp_al->mce.ce),
-				temp_alarm->unique_id,
-				temp_alarm->event_time,
-				ALARM_NEW);
-		  break;
-	       }
-	    }
-	    /* This may not be exactly right */
-	    t_alarm_time = temp_alarm->event_time + 1;
+                  alarms_do_one(&(temp_al->mcale.cale),
+                                temp_alarm->unique_id,
+                                temp_alarm->event_time,
+                                ALARM_NEW);
+                  break;
+               }
+            }
+            /* This may not be exactly right */
+            t_alarm_time = temp_alarm->event_time + 1;
 #ifdef ALARMS_DEBUG
-	    printf("** t_alarm_time-->%s\n", print_date(t_alarm_time));
+            printf("** t_alarm_time-->%s\n", print_date(t_alarm_time));
 #endif
-	    ta_next=temp_alarm->next;
-	    free(temp_alarm);
-	    next_alarm = ta_next;
-	 }
-	 Ptm = localtime(&t_alarm_time);
-	 memcpy(&copy_tm, Ptm, sizeof(struct tm));
-	 alarms_find_next(&copy_tm, &copy_tm, TRUE);
+            ta_next=temp_alarm->next;
+            free(temp_alarm);
+            next_alarm = ta_next;
+         }
+         Ptm = localtime(&t_alarm_time);
+         memcpy(&copy_tm, Ptm, sizeof(struct tm));
+         alarms_find_next(&copy_tm, &copy_tm, TRUE);
       }
    }
    if (alm_list) {
@@ -799,62 +798,62 @@ int alarms_find_next(struct tm *date1_in, struct tm *date2_in, int soonest_only)
 
    for (temp_al=alm_list; temp_al; temp_al=temp_al->next) {
       /* No alarm, skip */
-      if (!temp_al->mce.ce.alarm) {
-	 continue;
+      if (!temp_al->mcale.cale.alarm) {
+         continue;
       }
 #ifdef ALARMS_DEBUG
-      printf("\n[%s]\n", temp_al->mce.ce.description);
+      printf("\n[%s]\n", temp_al->mcale.cale.description);
 #endif
       /* Check for ordinary non-repeating appt starting before date1 */
-      if (temp_al->mce.ce.repeatType == calendarRepeatNone) {
-	 t_alarm = mktime_dst_adj(&(temp_al->mce.ce.begin));
-	 if (t_alarm < t1) {
+      if (temp_al->mcale.cale.repeatType == calendarRepeatNone) {
+         t_alarm = mktime_dst_adj(&(temp_al->mcale.cale.begin));
+         if (t_alarm < t1) {
 #ifdef ALARMS_DEBUG
-	    printf("afn: non repeat before t1, t_alarm<t1, %ld<%ld\n",t_alarm,t1);
+            printf("afn: non repeat before t1, t_alarm<t1, %ld<%ld\n",t_alarm,t1);
 #endif
-	    continue;
-	 }
+            continue;
+         }
       }
 
       /* Check that we are not past any appointment end date */
-      if (!(temp_al->mce.ce.repeatForever)) {
-	 t_end = mktime_dst_adj(&(temp_al->mce.ce.repeatEnd));
-	 /* We need to add 24 hours to the end date to make it inclusive */
-	 t_end += DAY_IN_SECS;
-	 t_begin = mktime_dst_adj(&(temp_al->mce.ce.begin));
-	 if (t_end < t2) {
+      if (!(temp_al->mcale.cale.repeatForever)) {
+         t_end = mktime_dst_adj(&(temp_al->mcale.cale.repeatEnd));
+         /* We need to add 24 hours to the end date to make it inclusive */
+         t_end += DAY_IN_SECS;
+         t_begin = mktime_dst_adj(&(temp_al->mcale.cale.begin));
+         if (t_end < t2) {
 #ifdef ALARMS_DEBUG
-	    printf("afn: past end date\n");
+            printf("afn: past end date\n");
 #endif
-	    continue;
-	 }
+            continue;
+         }
       }
 
       /* Calculate the alarm advance in seconds */
       adv = 0;
-      switch (temp_al->mce.ce.advanceUnits) {
+      switch (temp_al->mcale.cale.advanceUnits) {
        case advMinutes:
-	 adv = temp_al->mce.ce.advance*MIN_IN_SECS;
+         adv = temp_al->mcale.cale.advance*MIN_IN_SECS;
          break;
        case advHours:
-	 adv = temp_al->mce.ce.advance*HR_IN_SECS;
+         adv = temp_al->mcale.cale.advance*HR_IN_SECS;
          break;
        case advDays:
-	 adv = temp_al->mce.ce.advance*DAY_IN_SECS;
+         adv = temp_al->mcale.cale.advance*DAY_IN_SECS;
          break;
       }
 
 #ifdef ALARMS_DEBUG
-      printf("alarm advance %d ", temp_al->mce.ce.advance);
-      switch (temp_al->mce.ce.advanceUnits) {
+      printf("alarm advance %d ", temp_al->mcale.cale.advance);
+      switch (temp_al->mcale.cale.advanceUnits) {
        case advMinutes:
-	 printf("minutes\n");
+         printf("minutes\n");
          break;
        case advHours:
-	 printf("hours\n");
+         printf("hours\n");
          break;
        case advDays:
-	 printf("days\n");
+         printf("days\n");
          break;
       }
       printf("adv=%ld\n", adv);
@@ -863,45 +862,45 @@ int alarms_find_next(struct tm *date1_in, struct tm *date2_in, int soonest_only)
       t_prev=t_future=0;
       prev_found=next_found=0;
 
-      find_prev_next(&(temp_al->mce.ce),
-		     adv,
-		     &date1,
-		     &date2,
-		     &tm_prev,
-		     &tm_next,
-		     &prev_found,
-		     &next_found);
+      find_prev_next(&(temp_al->mcale.cale),
+                     adv,
+                     &date1,
+                     &date2,
+                     &tm_prev,
+                     &tm_next,
+                     &prev_found,
+                     &next_found);
       t_prev=mktime_dst_adj(&tm_prev);
       t_future=mktime_dst_adj(&tm_next);
 
       /* Skip the alarms if they are before date1 or after date2 */
       if (prev_found) {
-	 if (t_prev - adv < t1) {
+         if (t_prev - adv < t1) {
 #ifdef ALARMS_DEBUG
-	    printf("failed prev is before t1\n");
+            printf("failed prev is before t1\n");
 #endif
-	    prev_found=0;
-	 }
-	 if (t_prev - adv > t2) {
+            prev_found=0;
+         }
+         if (t_prev - adv > t2) {
 #ifdef ALARMS_DEBUG
-	    printf("failed prev is after t2\n");
+            printf("failed prev is after t2\n");
 #endif
-	    continue;
-	 }
+            continue;
+         }
       }
       if (next_found) {
          /* Check that we are not past any appointment end date */
-	 if (!(temp_al->mce.ce.repeatForever)) {
-	    t_end = mktime_dst_adj(&(temp_al->mce.ce.repeatEnd));
+         if (!(temp_al->mcale.cale.repeatForever)) {
+            t_end = mktime_dst_adj(&(temp_al->mcale.cale.repeatEnd));
             /* We need to add 24 hours to the end date to make it inclusive */
             t_end += DAY_IN_SECS;
-	    if (t_future > t_end) {
+            if (t_future > t_end) {
 #ifdef ALARMS_DEBUG
-	       printf("failed future is after t_end\n");
+               printf("failed future is after t_end\n");
 #endif
-	       next_found=0;
-	    }
-	 }
+               next_found=0;
+            }
+         }
       }
 #ifdef ALARMS_DEBUG
       printf("t1=       %s\n", print_date(t1));
@@ -909,44 +908,44 @@ int alarms_find_next(struct tm *date1_in, struct tm *date2_in, int soonest_only)
       printf("t_prev=   %s\n", prev_found ? print_date(t_prev):"None");
       printf("t_future= %s\n", next_found ? print_date(t_future):"None");
       printf("alarm me= %s\n", next_found ? print_date(t_future-adv):"None");
-      printf("desc=[%s]\n", temp_al->mce.ce.description);
+      printf("desc=[%s]\n", temp_al->mcale.cale.description);
 #endif
 
       if (!soonest_only) {
-	 if (prev_found) {
-	    alarms_add_to_list(temp_al->mce.unique_id, ALARM_MISSED, t_prev, adv);
-	 }
+         if (prev_found) {
+            alarms_add_to_list(temp_al->mcale.unique_id, ALARM_MISSED, t_prev, adv);
+         }
       }
       if (next_found) {
-	 add_a_next=0;
-	 if (next_alarm==NULL) {
-	    add_a_next=1;
-	 } else if
-	   (t_future - adv <= (next_alarm->event_time - next_alarm->alarm_advance)) {
-	      add_a_next=1;
-	      if (t_future - adv < (next_alarm->event_time - next_alarm->alarm_advance)) {
+         add_a_next=0;
+         if (next_alarm==NULL) {
+            add_a_next=1;
+         } else if
+           (t_future - adv <= (next_alarm->event_time - next_alarm->alarm_advance)) {
+              add_a_next=1;
+              if (t_future - adv < (next_alarm->event_time - next_alarm->alarm_advance)) {
 #ifdef ALARMS_DEBUG
-		 printf("next alarm=%s\n", print_date(next_alarm->event_time - next_alarm->alarm_advance));
-		 printf("freeing next alarms\n");
+                 printf("next alarm=%s\n", print_date(next_alarm->event_time - next_alarm->alarm_advance));
+                 printf("freeing next alarms\n");
 #endif
-		 free_alarms_list(NEXT_ALARM_MASK);
-	      }
-	   }
+                 free_alarms_list(NEXT_ALARM_MASK);
+              }
+           }
 
-	 if (add_a_next) {
+         if (add_a_next) {
 #ifdef ALARMS_DEBUG
-	    printf("found a new next\n");
+            printf("found a new next\n");
 #endif
-	    ta = malloc(sizeof(struct jp_alarms));
-	    if (ta) {
-	       ta->next = next_alarm;
-	       next_alarm = ta;
-	       next_alarm->unique_id = temp_al->mce.unique_id;
-	       next_alarm->type = ALARM_NEW;
-	       next_alarm->event_time = t_future;
-	       next_alarm->alarm_advance = adv;
-	    }
-	 }
+            ta = malloc(sizeof(struct jp_alarms));
+            if (ta) {
+               ta->next = next_alarm;
+               next_alarm = ta;
+               next_alarm->unique_id = temp_al->mcale.unique_id;
+               next_alarm->type = ALARM_NEW;
+               next_alarm->event_time = t_future;
+               next_alarm->alarm_advance = adv;
+            }
+         }
       }
    }
    free_CalendarEventList(&alm_list);
@@ -960,7 +959,7 @@ int alarms_find_next(struct tm *date1_in, struct tm *date2_in, int soonest_only)
  * Find next alarm and put it in list
  */
 int alarms_init(unsigned char skip_past_alarms,
-		unsigned char skip_all_alarms)
+                unsigned char skip_all_alarms)
 {
    FILE *in;
    time_t ltime;
@@ -1000,14 +999,14 @@ int alarms_init(unsigned char skip_past_alarms,
       line[sizeof(line)-1] = '\0';
       if (line[0]=='#') continue;
       if (!strncmp(line, "UPTODATE ", 9)) {
-	 n = sscanf(line+9, "%d %d %d %d %d\n", &year, &mon, &day, &hour, &min);
-	 if (n==5) {
-	    found_uptodate=1;
-	 }
+         n = sscanf(line+9, "%d %d %d %d %d\n", &year, &mon, &day, &hour, &min);
+         if (n==5) {
+            found_uptodate=1;
+         }
          /* Avoid corner case of retriggering alarms that are set for 
           * exactly the same time as the UPTODATE timestamp */
          min = min + 1;
-	 jp_logf(JP_LOG_DEBUG, "UPTODATE %d %d %d %d %d\n", year, mon, day, hour, min);
+         jp_logf(JP_LOG_DEBUG, "UPTODATE %d %d %d %d %d\n", year, mon, day, hour, min);
       }
    }
 

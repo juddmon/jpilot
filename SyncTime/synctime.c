@@ -1,7 +1,10 @@
-/* $Id: synctime.c,v 1.16 2009/01/17 14:32:00 rousseau Exp $ */
+/* $Id: synctime.c,v 1.17 2010/03/29 05:44:32 rikster5 Exp $ */
 
 /*******************************************************************************
  * synctime.c
+ *
+ * This is a plugin for J-Pilot which sets the time on the handheld
+ * to the current time of the desktop.
  *
  * Copyright (C) 1999 by Judd Montgomery
  *
@@ -20,6 +23,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  ******************************************************************************/
 
+/********************************* Includes ***********************************/
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
@@ -30,9 +34,11 @@
 #include "libplugin.h"
 #include "i18n.h"
 
+/********************************* Constants **********************************/
 #define PLUGIN_MAJOR 1
 #define PLUGIN_MINOR 0
 
+/****************************** Main Code *************************************/
 void plugin_version(int *major_version, int *minor_version)
 {
    *major_version = PLUGIN_MAJOR;
@@ -98,9 +104,9 @@ int plugin_sync(int sd)
 
    if (majorVersion==3) {
       if ((minorVersion==30) || (minorVersion==25)) {
-	 jp_logf(JP_LOG_GUI, _("synctime: Palm OS Version 3.25 and 3.30 do not support SyncTime\n"));
-	 jp_logf(JP_LOG_GUI, _("synctime: NOT setting the time on the pilot\n"));
-	 return EXIT_FAILURE;
+         jp_logf(JP_LOG_GUI, _("synctime: Palm OS Version 3.25 and 3.30 do not support SyncTime\n"));
+         jp_logf(JP_LOG_GUI, _("synctime: NOT setting the time on the pilot\n"));
+         return EXIT_FAILURE;
       }
    }
 

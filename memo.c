@@ -1,4 +1,4 @@
-/* $Id: memo.c,v 1.47 2010/03/03 14:42:03 rousseau Exp $ */
+/* $Id: memo.c,v 1.48 2010/03/29 05:44:29 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo.c
@@ -106,7 +106,7 @@ int get_memos(MemoList **memo_list, int sort_order)
  * modified, deleted, private: 0 for no, 1 for yes, 2 for use prefs
  */
 int get_memos2(MemoList **memo_list, int sort_order,
- 	       int modified, int deleted, int privates, int category)
+               int modified, int deleted, int privates, int category)
 {
    GList *records;
    GList *temp_list;
@@ -161,22 +161,22 @@ int get_memos2(MemoList **memo_list, int sort_order,
 
    for (temp_list = records; temp_list; temp_list = temp_list->next) {
       if (temp_list->data) {
-	 br=temp_list->data;
+         br=temp_list->data;
       } else {
-	 continue;
+         continue;
       }
       if (!br->buf) {
-	 continue;
+         continue;
       }
 
       if ( ((br->rt==DELETED_PALM_REC)  && (!keep_deleted)) ||
-	   ((br->rt==DELETED_PC_REC)    && (!keep_deleted)) ||
-	   ((br->rt==MODIFIED_PALM_REC) && (!keep_modified)) ) {
-	 continue;
+           ((br->rt==DELETED_PC_REC)    && (!keep_deleted)) ||
+           ((br->rt==MODIFIED_PALM_REC) && (!keep_modified)) ) {
+         continue;
       }
       if ((keep_priv != SHOW_PRIVATES) &&
-	  (br->attrib & dlpRecAttrSecret)) {
-	 continue;
+          (br->attrib & dlpRecAttrSecret)) {
+         continue;
       }
 
       RecordBuffer = pi_buffer_new(br->size);
@@ -184,13 +184,13 @@ int get_memos2(MemoList **memo_list, int sort_order,
       RecordBuffer->used = br->size;
 
       if (unpack_Memo(&memo, RecordBuffer, memo_v1) == -1) {
-	 pi_buffer_free(RecordBuffer);
-	 continue;
+         pi_buffer_free(RecordBuffer);
+         continue;
       }
       pi_buffer_free(RecordBuffer);
 
       if ( ((br->attrib & 0x0F) != category) && category != CATEGORY_ALL) {
-	 continue;
+         continue;
       }
       if (memo.text) {
          newtext = charset_p2newj(memo.text, -1, char_set);
@@ -202,8 +202,8 @@ int get_memos2(MemoList **memo_list, int sort_order,
 
       temp_memo_list = malloc(sizeof(MemoList));
       if (!temp_memo_list) {
-	 jp_logf(JP_LOG_WARN, "get_memos2(): %s\n", _("Out of memory"));
-	 break;
+         jp_logf(JP_LOG_WARN, "get_memos2(): %s\n", _("Out of memory"));
+         break;
       }
       memcpy(&(temp_memo_list->mmemo.memo), &memo, sizeof(struct Memo));
       temp_memo_list->app_type = MEMO;
@@ -295,7 +295,7 @@ int memo_sort(MemoList **memol, int sort_order)
    /* Put the linked list in the order of the array */
    if (sort_order==SORT_ASCENDING) {
       for (i=count-1; i>0; i--) {
-	 sort_memol[i]->next=sort_memol[i-1];
+         sort_memol[i]->next=sort_memol[i-1];
       }
       sort_memol[0]->next = NULL;
       *memol = sort_memol[count-1];
@@ -303,7 +303,7 @@ int memo_sort(MemoList **memol, int sort_order)
       /* Descending order */
       sort_memol[count-1]->next = NULL;
       for (i=count-1; i; i--) {
-	 sort_memol[i-1]->next=sort_memol[i];
+         sort_memol[i-1]->next=sort_memol[i];
       }
       *memol = sort_memol[0];
    }
@@ -323,7 +323,7 @@ int memo_sort(MemoList **memol, int sort_order)
  *  else the unique_id passed in is used.
  */
 int pc_memo_write(struct Memo *memo, PCRecType rt, unsigned char attrib,
-		  unsigned int *unique_id)
+                  unsigned int *unique_id)
 {
    pi_buffer_t *RecordBuffer;
    buf_rec br;
@@ -335,7 +335,7 @@ int pc_memo_write(struct Memo *memo, PCRecType rt, unsigned char attrib,
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    if (char_set != CHAR_SET_LATIN1) {
       if (memo->text) {
-	 charset_j2p(memo->text, strlen(memo->text)+1, char_set);
+         charset_j2p(memo->text, strlen(memo->text)+1, char_set);
       }
    }
    RecordBuffer = pi_buffer_new(0);

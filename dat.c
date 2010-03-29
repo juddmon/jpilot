@@ -1,4 +1,4 @@
-/* $Id: dat.c,v 1.23 2010/03/03 14:42:02 rousseau Exp $ */
+/* $Id: dat.c,v 1.24 2010/03/29 05:44:28 rikster5 Exp $ */
 
 /*******************************************************************************
  * dat.c
@@ -25,7 +25,7 @@
  * http://www.geocities.com/Heartland/Acres/3216/todo_dat.htm
  * Scott Leighton helphand@pacbell.net
  *
- * For their descriptions of the dat formats.
+ * for their descriptions of the dat formats.
  */
 
 /********************************* Includes ***********************************/
@@ -184,10 +184,10 @@ static int get_repeat(FILE *in, struct Appointment *appt)
    if (appt) {
       appt->exceptions=s;
       if (s>0) {
-	 appt->exception=malloc(sizeof(struct tm) * s);
-	 if (!(appt->exceptions)) {
-	    jp_logf(JP_LOG_WARN, "get_repeat(): %s\n", _("Out of memory"));
-	 }
+         appt->exception=malloc(sizeof(struct tm) * s);
+         if (!(appt->exceptions)) {
+            jp_logf(JP_LOG_WARN, "get_repeat(): %s\n", _("Out of memory"));
+         }
       }
    }
 
@@ -196,9 +196,9 @@ static int get_repeat(FILE *in, struct Appointment *appt)
       fread(str_long, 4, 1, in);
       l = x86_long(str_long);
       if (appt) {
-	 t = l;
-	 now = localtime(&t);
-	 memcpy(&(appt->exception[i]), now, sizeof(struct tm));
+         t = l;
+         now = localtime(&t);
+         memcpy(&(appt->exception[i]), now, sizeof(struct tm));
       }
 #ifdef JPILOT_DEBUG
       printf("date_exception_entry: ");
@@ -214,7 +214,7 @@ static int get_repeat(FILE *in, struct Appointment *appt)
 
    if (s==0x0000) {
       if (appt) {
-	 appt->repeatType=calendarRepeatNone;
+         appt->repeatType=calendarRepeatNone;
       }
       return EXIT_SUCCESS;
    }
@@ -322,7 +322,7 @@ static int get_repeat(FILE *in, struct Appointment *appt)
 
       fread(str_long, 1, 1, in);
       for (i=0, bit=1; i<7; i++, bit=bit<<1) {
-	 appt->repeatDays[i]=( str_long[0] & bit );
+         appt->repeatDays[i]=( str_long[0] & bit );
       }
 #ifdef JPILOT_DEBUG
       printf("Days Mask = %x\n", str_long[0]);
@@ -400,15 +400,15 @@ int print_field(struct field *f)
       break;
     case DAT_TYPE_CSTRING:
       if (f->str)
-	 printf("%s\n", f->str);
+         printf("%s\n", f->str);
       else
-	 printf("\n");
+         printf("\n");
       break;
     case DAT_TYPE_BOOLEAN:
       if (f->i) {
-	 printf("True\n");
+         printf("True\n");
       } else {
-	 printf("False\n");
+         printf("False\n");
       }
       break;
     case DAT_TYPE_DATE:
@@ -500,10 +500,10 @@ int dat_check_if_dat_file(FILE *in)
 }
 
 static int dat_read_header(FILE *in,
-		    int expected_field_count,
-		    char *schema,
-		    struct CategoryAppInfo *ai,
-		    int *schema_count, int *field_count, long *rec_count)
+                           int expected_field_count,
+                           char *schema,
+                           struct CategoryAppInfo *ai,
+                           int *schema_count, int *field_count, long *rec_count)
 {
    int i;
    unsigned char filler[100];
@@ -545,7 +545,7 @@ static int dat_read_header(FILE *in,
    *field_count=x86_long(filler);
    if (*field_count != expected_field_count) {
       jp_logf(JP_LOG_WARN, _("fields per row count != %d, unknown format\n"),
-		  expected_field_count);
+                  expected_field_count);
       return EXIT_FAILURE;
    }
    /* Schema record ID position */
@@ -559,7 +559,7 @@ static int dat_read_header(FILE *in,
    *field_count = x86_short(filler);
    if (*field_count != expected_field_count) {
       jp_logf(JP_LOG_WARN, _("field count != %d, unknown format\n"),
-		  expected_field_count);
+                  expected_field_count);
       return EXIT_FAILURE;
    }
 
@@ -569,11 +569,11 @@ static int dat_read_header(FILE *in,
       jp_logf(JP_LOG_WARN, _("Unknown format, file has wrong schema\n"));
       jp_logf(JP_LOG_WARN, _("File schema is:"));
       for (i=0; i<(*field_count)*2; i++) {
-	 jp_logf(JP_LOG_WARN, " %02d\n", (char)filler[i]);
+         jp_logf(JP_LOG_WARN, " %02d\n", (char)filler[i]);
       }
       jp_logf(JP_LOG_WARN, _("It should be:"));
       for (i=0; i<(*field_count)*2; i++) {
-	 jp_logf(JP_LOG_WARN, " %02d\n", (char)schema[i]);
+         jp_logf(JP_LOG_WARN, " %02d\n", (char)schema[i]);
       }
       return EXIT_FAILURE;
    }
@@ -590,7 +590,8 @@ static int dat_read_header(FILE *in,
 }
 
 
-int dat_get_appointments(FILE *in, AppointmentList **alist, struct CategoryAppInfo *ai)
+int dat_get_appointments(FILE *in, AppointmentList **alist, 
+                         struct CategoryAppInfo *ai)
 {
 #ifdef JPILOT_DEBUG
    struct field hack_f;
@@ -606,40 +607,40 @@ int dat_get_appointments(FILE *in, AppointmentList **alist, struct CategoryAppIn
    /* Should be 1, 1, 1, 3, 1, 5, 1, 5, 6, 6, 1, 6, 1, 1, 8 */
    char schema[30]={
       DAT_TYPE_INTEGER,0,
-	DAT_TYPE_INTEGER,0,
-	DAT_TYPE_INTEGER,0,
-	DAT_TYPE_DATE,0,
-	DAT_TYPE_INTEGER,0,
-	DAT_TYPE_CSTRING,0,
-	DAT_TYPE_INTEGER,0,
-	DAT_TYPE_CSTRING,0,
-	DAT_TYPE_BOOLEAN,0,
-	DAT_TYPE_BOOLEAN,0,
-	DAT_TYPE_INTEGER,0,
-	DAT_TYPE_BOOLEAN,0,
-	DAT_TYPE_INTEGER,0,
-	DAT_TYPE_INTEGER,0,
-	DAT_TYPE_REPEAT,0
+      DAT_TYPE_INTEGER,0,
+      DAT_TYPE_INTEGER,0,
+      DAT_TYPE_DATE,0,
+      DAT_TYPE_INTEGER,0,
+      DAT_TYPE_CSTRING,0,
+      DAT_TYPE_INTEGER,0,
+      DAT_TYPE_CSTRING,0,
+      DAT_TYPE_BOOLEAN,0,
+      DAT_TYPE_BOOLEAN,0,
+      DAT_TYPE_INTEGER,0,
+      DAT_TYPE_BOOLEAN,0,
+      DAT_TYPE_INTEGER,0,
+      DAT_TYPE_INTEGER,0,
+      DAT_TYPE_REPEAT,0
    };
 #ifdef JPILOT_DEBUG
    char *rec_fields[]={
       "Record ID",
-	"Status field",
-	"Position"
+      "Status field",
+      "Position"
    };
    char *field_names[]={
       "Start Time",
-	"End Time",
-	"Description",
-	"Duration",
-	"Note",
-	"Untimed",
-	"Private",
-	"Category",
-	"Alarm Set",
-	"Alarm Advance Units",
-	"Alarm Advance Type",
-	"Repeat Event"
+      "End Time",
+      "Description",
+      "Duration",
+      "Note",
+      "Untimed",
+      "Private",
+      "Category",
+      "Alarm Set",
+      "Alarm Advance Units",
+      "Alarm Advance Type",
+      "Repeat Event"
    };
 #endif
 
@@ -649,7 +650,7 @@ int dat_get_appointments(FILE *in, AppointmentList **alist, struct CategoryAppIn
    *alist=NULL;
 
    ret = dat_read_header(in, 15, schema, ai,
-			 &schema_count, &field_count, &rec_count);
+                         &schema_count, &field_count, &rec_count);
 
    if (ret<0) return ret;
 
@@ -661,8 +662,8 @@ int dat_get_appointments(FILE *in, AppointmentList **alist, struct CategoryAppIn
    for (i=0; i<rec_count; i++) {
       temp_alist = malloc(sizeof(AppointmentList));
       if (!temp_alist) {
-	 jp_logf(JP_LOG_WARN, "dat_get_appointments(): %s\n", _("Out of memory"));
-	 return i;
+         jp_logf(JP_LOG_WARN, "dat_get_appointments(): %s\n", _("Out of memory"));
+         return i;
       }
 #ifdef JPILOT_DEBUG
       printf("----- record %d -----\n", i+1);
@@ -675,37 +676,37 @@ int dat_get_appointments(FILE *in, AppointmentList **alist, struct CategoryAppIn
       /* Status Field */
       /* Position */
       for (j=0; j<3; j++) {
-	 get_field(in, &(fa[j]));
+         get_field(in, &(fa[j]));
 #ifdef JPILOT_DEBUG
-	 printf("rec field %d %s: ", j, rec_fields[j]); print_field(&(fa[j]));
+         printf("rec field %d %s: ", j, rec_fields[j]); print_field(&(fa[j]));
 #endif
-	 if (fa[j].type!=schema[j*2]) {
-	    jp_logf(JP_LOG_WARN, _("%s:%d Record %d, field %d: Invalid type.  Expected %d, found %d\n"), __FILE__, __LINE__, i+1, j+3, schema[j*2], fa[j].type);
-	    jp_logf(JP_LOG_WARN, _("read of file terminated\n"));
-	    free(temp_alist);
-	    return EXIT_FAILURE;
-	 }
+         if (fa[j].type!=schema[j*2]) {
+            jp_logf(JP_LOG_WARN, _("%s:%d Record %d, field %d: Invalid type.  Expected %d, found %d\n"), __FILE__, __LINE__, i+1, j+3, schema[j*2], fa[j].type);
+            jp_logf(JP_LOG_WARN, _("read of file terminated\n"));
+            free(temp_alist);
+            return EXIT_FAILURE;
+         }
       }
       /* Get Fields */
       for (j=0; j<12; j++) {
-	 get_field(in, &(fa[j]));
+         get_field(in, &(fa[j]));
 #ifdef JPILOT_DEBUG
-	 printf("field %d %s: ", j, field_names[j]); print_field(&(fa[j]));
-	 if (j==1) {
-	    hack_f.type=DAT_TYPE_DATE;
-	    hack_f.date=fa[j].i;
-	    printf("        "); print_field(&hack_f);
-	 }
+         printf("field %d %s: ", j, field_names[j]); print_field(&(fa[j]));
+         if (j==1) {
+            hack_f.type=DAT_TYPE_DATE;
+            hack_f.date=fa[j].i;
+            printf("        "); print_field(&hack_f);
+         }
 #endif
-	 if (fa[j].type!=schema[j*2+6]) {
-	    jp_logf(JP_LOG_WARN, _("%s:%d Record %d, field %d: Invalid type.  Expected %d, found %d\n"), __FILE__, __LINE__, i+1, j+3, schema[j*2+6], fa[j].type);
-	    jp_logf(JP_LOG_WARN, _("read of file terminated\n"));
-	    free(temp_alist);
-	    return EXIT_FAILURE;
-	 }
-	 if (fa[j].type==DAT_TYPE_REPEAT) {
-	    get_repeat(in, &(temp_alist->mappt.appt));
-	 }
+         if (fa[j].type!=schema[j*2+6]) {
+            jp_logf(JP_LOG_WARN, _("%s:%d Record %d, field %d: Invalid type.  Expected %d, found %d\n"), __FILE__, __LINE__, i+1, j+3, schema[j*2+6], fa[j].type);
+            jp_logf(JP_LOG_WARN, _("read of file terminated\n"));
+            free(temp_alist);
+            return EXIT_FAILURE;
+         }
+         if (fa[j].type==DAT_TYPE_REPEAT) {
+            get_repeat(in, &(temp_alist->mappt.appt));
+         }
       }
       /* Start Time */
       t = fa[0].date;
@@ -717,33 +718,33 @@ int dat_get_appointments(FILE *in, AppointmentList **alist, struct CategoryAppIn
       memcpy(&(temp_alist->mappt.appt.end), now, sizeof(struct tm));
       /* Description */
       if (fa[2].str) {
-	 temp_alist->mappt.appt.description=fa[2].str;
+         temp_alist->mappt.appt.description=fa[2].str;
       } else {
-	 temp_alist->mappt.appt.description=strdup("");
+         temp_alist->mappt.appt.description=strdup("");
       }
       /* Duration */
       /* what is duration? (repeatForever?) */
 
       /* Note */
       if (fa[4].str) {
-	 temp_alist->mappt.appt.note=fa[4].str;
+         temp_alist->mappt.appt.note=fa[4].str;
       } else {
-	 temp_alist->mappt.appt.note=strdup("");
+         temp_alist->mappt.appt.note=strdup("");
       }
       /* Untimed */
       temp_alist->mappt.appt.event=fa[5].i;
       /* Private */
       temp_alist->mappt.attrib = 0;
       if (fa[6].i) {
-	 temp_alist->mappt.attrib |= DAT_STATUS_PRIVATE;
+         temp_alist->mappt.attrib |= DAT_STATUS_PRIVATE;
       }
       /* Category */
       temp_alist->mappt.unique_id = fa[7].i;
       if (temp_alist->mappt.unique_id > 15) {
-	 temp_alist->mappt.unique_id = 15;
+         temp_alist->mappt.unique_id = 15;
       }
       if (temp_alist->mappt.unique_id < 0) {
-	 temp_alist->mappt.unique_id = 0;
+         temp_alist->mappt.unique_id = 0;
       }
       /* Alarm Set */
       temp_alist->mappt.appt.alarm=fa[8].i;
@@ -754,17 +755,18 @@ int dat_get_appointments(FILE *in, AppointmentList **alist, struct CategoryAppIn
 
       /* Append onto the end of the list */
       if (last_alist) {
-	 last_alist->next=temp_alist;
-	 last_alist=temp_alist;
+         last_alist->next=temp_alist;
+         last_alist=temp_alist;
       } else {
-	 last_alist=temp_alist;
-	 *alist=last_alist;
+         last_alist=temp_alist;
+         *alist=last_alist;
       }
    }
    return EXIT_SUCCESS;
 }
 
-int dat_get_addresses(FILE *in, AddressList **addrlist, struct CategoryAppInfo *ai)
+int dat_get_addresses(FILE *in, AddressList **addrlist, 
+                      struct CategoryAppInfo *ai)
 {
    int ret, i, j, k;
    struct field fa[28];
@@ -812,37 +814,37 @@ int dat_get_addresses(FILE *in, AddressList **addrlist, struct CategoryAppInfo *
 #ifdef JPILOT_DEBUG
    char *rec_fields[]={
       "Record ID",
-	"Status field",
-	"Position"
+      "Status field",
+      "Position"
    };
    char *field_names[]={
       "Last Name",
-	"First Name",
-	"Title",
-	"Company",
-	"Phone1 Label",
-	"Phone1",
-	"Phone2 Label",
-	"Phone2",
-	"Phone3 Label",
-	"Phone3",
-	"Phone4 Label",
-	"Phone4",
-	"Phone5 Label",
-	"Phone5",
-	"Address",
-	"City",
-	"State",
-	"Zip",
-	"Country",
-	"Note",
-	"Private",
-	"Category",
-	"Custom1",
-	"Custom2",
-	"Custom3",
-	"Custom4",
-	"Display Phone"
+      "First Name",
+      "Title",
+      "Company",
+      "Phone1 Label",
+      "Phone1",
+      "Phone2 Label",
+      "Phone2",
+      "Phone3 Label",
+      "Phone3",
+      "Phone4 Label",
+      "Phone4",
+      "Phone5 Label",
+      "Phone5",
+      "Address",
+      "City",
+      "State",
+      "Zip",
+      "Country",
+      "Note",
+      "Private",
+      "Category",
+      "Custom1",
+      "Custom2",
+      "Custom3",
+      "Custom4",
+      "Display Phone"
    };
 #endif
 
@@ -852,7 +854,7 @@ int dat_get_addresses(FILE *in, AddressList **addrlist, struct CategoryAppInfo *
    *addrlist=NULL;
 
    ret = dat_read_header(in, 30, schema, ai,
-			 &schema_count, &field_count, &rec_count);
+                         &schema_count, &field_count, &rec_count);
 
    if (ret<0) return ret;
 
@@ -864,8 +866,8 @@ int dat_get_addresses(FILE *in, AddressList **addrlist, struct CategoryAppInfo *
    for (i=0; i<rec_count; i++) {
       temp_addrlist = malloc(sizeof(AddressList));
       if (!temp_addrlist) {
-	 jp_logf(JP_LOG_WARN, "dat_get_addresses(): %s\n", _("Out of memory"));
-	 return i;
+         jp_logf(JP_LOG_WARN, "dat_get_addresses(): %s\n", _("Out of memory"));
+         return i;
       }
       temp_addrlist->next=NULL;
       temp_addrlist->app_type=ADDRESS;
@@ -876,32 +878,32 @@ int dat_get_addresses(FILE *in, AddressList **addrlist, struct CategoryAppInfo *
       /* Status Field */
       /* Position */
       for (j=0; j<3; j++) {
-	 get_field(in, &(fa[j]));
+         get_field(in, &(fa[j]));
 #ifdef JPILOT_DEBUG
-	 printf("rec field %d %s: ", j, rec_fields[j]); print_field(&(fa[j]));
+         printf("rec field %d %s: ", j, rec_fields[j]); print_field(&(fa[j]));
 #endif
-	 if (fa[j].type!=schema[j*2]) {
-	    jp_logf(JP_LOG_WARN, _("%s:%d Record %d, field %d: Invalid type.  Expected %d, found %d\n"), __FILE__, __LINE__, i+1, j+3, schema[j*2], fa[j].type);
-	    jp_logf(JP_LOG_WARN, _("read of file terminated\n"));
-	    free(temp_addrlist);
-	    return EXIT_FAILURE;
-	 }
+         if (fa[j].type!=schema[j*2]) {
+            jp_logf(JP_LOG_WARN, _("%s:%d Record %d, field %d: Invalid type.  Expected %d, found %d\n"), __FILE__, __LINE__, i+1, j+3, schema[j*2], fa[j].type);
+            jp_logf(JP_LOG_WARN, _("read of file terminated\n"));
+            free(temp_addrlist);
+            return EXIT_FAILURE;
+         }
       }
       /* Get Fields */
       for (j=0; j<27; j++) {
-	 get_field(in, &(fa[j]));
+         get_field(in, &(fa[j]));
 #ifdef JPILOT_DEBUG
-	 printf("field %d %s: ", j, field_names[j]); print_field(&(fa[j]));
+         printf("field %d %s: ", j, field_names[j]); print_field(&(fa[j]));
 #endif
-	 if (fa[j].type!=schema[j*2+6]) {
-	    jp_logf(JP_LOG_WARN, _("%s:%d Record %d, field %d: Invalid type.  Expected %d, found %d\n"), __FILE__, __LINE__, i+1, j+3, schema[j*2+6], fa[j].type);
-	    jp_logf(JP_LOG_WARN, _("read of file terminated\n"));
-	    free(temp_addrlist);
-	    return EXIT_FAILURE;
-	 }
+         if (fa[j].type!=schema[j*2+6]) {
+            jp_logf(JP_LOG_WARN, _("%s:%d Record %d, field %d: Invalid type.  Expected %d, found %d\n"), __FILE__, __LINE__, i+1, j+3, schema[j*2+6], fa[j].type);
+            jp_logf(JP_LOG_WARN, _("read of file terminated\n"));
+            free(temp_addrlist);
+            return EXIT_FAILURE;
+         }
       }
       for (k=0; k<19; k++) {
-	 temp_addrlist->maddr.addr.entry[k]=fa[dat_order[k]].str;
+         temp_addrlist->maddr.addr.entry[k]=fa[dat_order[k]].str;
       }
       temp_addrlist->maddr.addr.phoneLabel[0] = fa[4].i;
       temp_addrlist->maddr.addr.phoneLabel[1] = fa[6].i;
@@ -911,30 +913,30 @@ int dat_get_addresses(FILE *in, AddressList **addrlist, struct CategoryAppInfo *
       /* Private */
       temp_addrlist->maddr.attrib = 0;
       if (fa[20].i) {
-	 temp_addrlist->maddr.attrib |= DAT_STATUS_PRIVATE;
+         temp_addrlist->maddr.attrib |= DAT_STATUS_PRIVATE;
       }
       /* Category */
       temp_addrlist->maddr.unique_id = fa[21].i;
       if (temp_addrlist->maddr.unique_id > 15) {
-	 temp_addrlist->maddr.unique_id = 15;
+         temp_addrlist->maddr.unique_id = 15;
       }
       if (temp_addrlist->maddr.unique_id < 0) {
-	 temp_addrlist->maddr.unique_id = 0;
+         temp_addrlist->maddr.unique_id = 0;
       }
       /* Show phone in list */
       temp_addrlist->maddr.addr.showPhone = fa[26].i - 1;
       for (k=0; k<19; k++) {
-	 if (temp_addrlist->maddr.addr.entry[k]==NULL) {
-	    temp_addrlist->maddr.addr.entry[k]=strdup("");
-	 }
+         if (temp_addrlist->maddr.addr.entry[k]==NULL) {
+            temp_addrlist->maddr.addr.entry[k]=strdup("");
+         }
       }
       /* Append onto the end of the list */
       if (last_addrlist) {
-	 last_addrlist->next=temp_addrlist;
-	 last_addrlist=temp_addrlist;
+         last_addrlist->next=temp_addrlist;
+         last_addrlist=temp_addrlist;
       } else {
-	 last_addrlist=temp_addrlist;
-	 *addrlist=last_addrlist;
+         last_addrlist=temp_addrlist;
+         *addrlist=last_addrlist;
       }
    }
    return EXIT_SUCCESS;
@@ -966,17 +968,17 @@ int dat_get_todos(FILE *in, ToDoList **todolist, struct CategoryAppInfo *ai)
 #ifdef JPILOT_DEBUG
    char *rec_fields[]={
       "Record ID",
-	"Status field",
-	"Position"
+      "Status field",
+      "Position"
    };
    char *field_names[]={
       "Description",
-	"Due Date",
-	"Completed",
-	"Priority",
-	"Private",
-	"Category",
-	"Note"
+      "Due Date",
+      "Completed",
+      "Priority",
+      "Private",
+      "Category",
+      "Note"
    };
 #endif
 
@@ -986,7 +988,7 @@ int dat_get_todos(FILE *in, ToDoList **todolist, struct CategoryAppInfo *ai)
    *todolist=NULL;
 
    ret = dat_read_header(in, 10, schema, ai,
-			 &schema_count, &field_count, &rec_count);
+                         &schema_count, &field_count, &rec_count);
 
    if (ret<0) return ret;
 
@@ -998,10 +1000,10 @@ int dat_get_todos(FILE *in, ToDoList **todolist, struct CategoryAppInfo *ai)
    for (i=0; i<rec_count; i++) {
       temp_todolist = malloc(sizeof(ToDoList));
       if (!temp_todolist) {
-	 jp_logf(JP_LOG_WARN, "dat_get_todos(): %s\n", _("Out of memory"));
-	 jp_logf(JP_LOG_WARN, _("read of file terminated\n"));
-	 free(temp_todolist);
-	 return i;
+         jp_logf(JP_LOG_WARN, "dat_get_todos(): %s\n", _("Out of memory"));
+         jp_logf(JP_LOG_WARN, _("read of file terminated\n"));
+         free(temp_todolist);
+         return i;
       }
       temp_todolist->next=NULL;
       temp_todolist->app_type=TODO;
@@ -1012,45 +1014,45 @@ int dat_get_todos(FILE *in, ToDoList **todolist, struct CategoryAppInfo *ai)
       /* Status Field */
       /* Position */
       for (j=0; j<3; j++) {
-	 get_field(in, &(fa[j]));
+         get_field(in, &(fa[j]));
 #ifdef JPILOT_DEBUG
-	 printf("rec field %d %s: ", j, rec_fields[j]); print_field(&(fa[j]));
+         printf("rec field %d %s: ", j, rec_fields[j]); print_field(&(fa[j]));
 #endif
-	 if (fa[j].type!=schema[j*2]) {
-	    jp_logf(JP_LOG_WARN, _("%s:%d Record %d, field %d: Invalid type.  Expected %d, found %d\n"), __FILE__, __LINE__, i+1, j+3, schema[j*2], fa[j].type);
-	    jp_logf(JP_LOG_WARN, _("read of file terminated\n"));
-	    free(temp_todolist);
-	    return EXIT_FAILURE;
-	 }
+         if (fa[j].type!=schema[j*2]) {
+            jp_logf(JP_LOG_WARN, _("%s:%d Record %d, field %d: Invalid type.  Expected %d, found %d\n"), __FILE__, __LINE__, i+1, j+3, schema[j*2], fa[j].type);
+            jp_logf(JP_LOG_WARN, _("read of file terminated\n"));
+            free(temp_todolist);
+            return EXIT_FAILURE;
+         }
       }
       /* Get Fields */
       for (j=0; j<7; j++) {
-	 get_field(in, &(fa[j]));
+         get_field(in, &(fa[j]));
 #ifdef JPILOT_DEBUG
-	 printf("field %d %s: ", j, field_names[j]); print_field(&(fa[j]));
+         printf("field %d %s: ", j, field_names[j]); print_field(&(fa[j]));
 #endif
-	 if (fa[j].type!=schema[j*2+6]) {
-	    jp_logf(JP_LOG_WARN, _("%s:%d Record %d, field %d: Invalid type.  Expected %d, found %d\n"), __FILE__, __LINE__, i+1, j+3, schema[j*2+6], fa[j].type);
-	    jp_logf(JP_LOG_WARN, _("read of file terminated\n"));
-	    free(temp_todolist);
-	    return EXIT_FAILURE;
-	 }
+         if (fa[j].type!=schema[j*2+6]) {
+            jp_logf(JP_LOG_WARN, _("%s:%d Record %d, field %d: Invalid type.  Expected %d, found %d\n"), __FILE__, __LINE__, i+1, j+3, schema[j*2+6], fa[j].type);
+            jp_logf(JP_LOG_WARN, _("read of file terminated\n"));
+            free(temp_todolist);
+            return EXIT_FAILURE;
+         }
       }
       /* Description */
       if (fa[0].str) {
-	 temp_todolist->mtodo.todo.description=fa[0].str;
+         temp_todolist->mtodo.todo.description=fa[0].str;
       } else {
-	 temp_todolist->mtodo.todo.description=strdup("");
+         temp_todolist->mtodo.todo.description=strdup("");
       }
       /* Due Date */
       if (fa[1].date==0x749E77BF) {
-	 temp_todolist->mtodo.todo.indefinite=1;
-	 memset(&(temp_todolist->mtodo.todo.due), 0, sizeof(temp_todolist->mtodo.todo.due));
+         temp_todolist->mtodo.todo.indefinite=1;
+         memset(&(temp_todolist->mtodo.todo.due), 0, sizeof(temp_todolist->mtodo.todo.due));
       } else {
-	 t = fa[1].date;
-	 now = localtime(&t);
-	 memcpy(&(temp_todolist->mtodo.todo.due), now, sizeof(struct tm));
-	 temp_todolist->mtodo.todo.indefinite=0;
+         t = fa[1].date;
+         now = localtime(&t);
+         memcpy(&(temp_todolist->mtodo.todo.due), now, sizeof(struct tm));
+         temp_todolist->mtodo.todo.indefinite=0;
       }
       /* Completed */
       temp_todolist->mtodo.todo.complete = (fa[2].i==0) ? 0 : 1;
@@ -1061,7 +1063,7 @@ int dat_get_todos(FILE *in, ToDoList **todolist, struct CategoryAppInfo *ai)
       /* Private */
       temp_todolist->mtodo.attrib = 0;
       if (fa[4].i) {
-	 temp_todolist->mtodo.attrib |= DAT_STATUS_PRIVATE;
+         temp_todolist->mtodo.attrib |= DAT_STATUS_PRIVATE;
       }
       /* Category */
       /* Normally the category would go into 4 bits of the attrib.
@@ -1073,17 +1075,17 @@ int dat_get_todos(FILE *in, ToDoList **todolist, struct CategoryAppInfo *ai)
       temp_todolist->mtodo.unique_id = fa[5].i;
       /* Note */
       if (fa[6].str) {
-	 temp_todolist->mtodo.todo.note=fa[6].str;
+         temp_todolist->mtodo.todo.note=fa[6].str;
       } else {
-	 temp_todolist->mtodo.todo.note=strdup("");
+         temp_todolist->mtodo.todo.note=strdup("");
       }
       /* Append onto the end of the list */
       if (last_todolist) {
-	 last_todolist->next=temp_todolist;
-	 last_todolist=temp_todolist;
+         last_todolist->next=temp_todolist;
+         last_todolist=temp_todolist;
       } else {
-	 last_todolist=temp_todolist;
-	 *todolist=last_todolist;
+         last_todolist=temp_todolist;
+         *todolist=last_todolist;
       }
    }
 
@@ -1109,13 +1111,13 @@ int dat_get_memos(FILE *in, MemoList **memolist, struct CategoryAppInfo *ai)
 #ifdef JPILOT_DEBUG
    char *rec_fields[]={
       "Record ID",
-	"Status field",
-	"Position"
+      "Status field",
+      "Position"
    };
    char *field_names[]={
       "Memo",
-	"Private",
-	"Category"
+      "Private",
+      "Category"
    };
 #endif
 
@@ -1125,7 +1127,7 @@ int dat_get_memos(FILE *in, MemoList **memolist, struct CategoryAppInfo *ai)
    *memolist=NULL;
 
    ret = dat_read_header(in, 6, schema, ai,
-			 &schema_count, &field_count, &rec_count);
+                         &schema_count, &field_count, &rec_count);
 
    if (ret<0) return ret;
 
@@ -1137,8 +1139,8 @@ int dat_get_memos(FILE *in, MemoList **memolist, struct CategoryAppInfo *ai)
    for (i=0; i<rec_count; i++) {
       temp_memolist = malloc(sizeof(MemoList));
       if (!temp_memolist) {
-	 jp_logf(JP_LOG_WARN, "dat_get_memos(): %s\n", _("Out of memory"));
-	 return i;
+         jp_logf(JP_LOG_WARN, "dat_get_memos(): %s\n", _("Out of memory"));
+         return i;
       }
       temp_memolist->next=NULL;
       temp_memolist->app_type=MEMO;
@@ -1149,36 +1151,36 @@ int dat_get_memos(FILE *in, MemoList **memolist, struct CategoryAppInfo *ai)
       /* Status Field */
       /* Position */
       for (j=0; j<3; j++) {
-	 get_field(in, &(fa[j]));
+         get_field(in, &(fa[j]));
 #ifdef JPILOT_DEBUG
-	 printf("rec field %d %s: ", j, rec_fields[j]); print_field(&(fa[j]));
+         printf("rec field %d %s: ", j, rec_fields[j]); print_field(&(fa[j]));
 #endif
-	 if (fa[j].type!=schema[j*2]) {
-	    jp_logf(JP_LOG_WARN, _("%s:%d Record %d, field %d: Invalid type.  Expected %d, found %d\n"), __FILE__, __LINE__, i+1, j+3, schema[j*2], fa[j].type);
-	    jp_logf(JP_LOG_WARN, _("read of file terminated\n"));
-	    free(temp_memolist);
-	    return EXIT_FAILURE;
-	 }
+         if (fa[j].type!=schema[j*2]) {
+            jp_logf(JP_LOG_WARN, _("%s:%d Record %d, field %d: Invalid type.  Expected %d, found %d\n"), __FILE__, __LINE__, i+1, j+3, schema[j*2], fa[j].type);
+            jp_logf(JP_LOG_WARN, _("read of file terminated\n"));
+            free(temp_memolist);
+            return EXIT_FAILURE;
+         }
       }
       /* Get Fields */
       for (j=0; j<3; j++) {
-	 get_field(in, &(fa[j]));
+         get_field(in, &(fa[j]));
 #ifdef JPILOT_DEBUG
-	 printf("field %d %s: ", j, field_names[j]); print_field(&(fa[j]));
+         printf("field %d %s: ", j, field_names[j]); print_field(&(fa[j]));
 #endif
-	 if (fa[j].type!=schema[j*2+6]) {
-	    jp_logf(JP_LOG_WARN, _("%s:%d Record %d, field %d: Invalid type.  Expected %d, found %d\n"), __FILE__, __LINE__, i+1, j+3, schema[j*2+6], fa[j].type);
-	    jp_logf(JP_LOG_WARN, _("read of file terminated\n"));
-	    free(temp_memolist);
-	    return EXIT_FAILURE;
-	 }
+         if (fa[j].type!=schema[j*2+6]) {
+            jp_logf(JP_LOG_WARN, _("%s:%d Record %d, field %d: Invalid type.  Expected %d, found %d\n"), __FILE__, __LINE__, i+1, j+3, schema[j*2+6], fa[j].type);
+            jp_logf(JP_LOG_WARN, _("read of file terminated\n"));
+            free(temp_memolist);
+            return EXIT_FAILURE;
+         }
       }
       /* Memo */
       temp_memolist->mmemo.memo.text=fa[0].str;
       /* Private */
       temp_memolist->mmemo.attrib = 0;
       if (fa[1].i) {
-	 temp_memolist->mmemo.attrib |= DAT_STATUS_PRIVATE;
+         temp_memolist->mmemo.attrib |= DAT_STATUS_PRIVATE;
       }
       /* Category */
       /* Normally the category would go into 4 bits of the attrib.
@@ -1191,11 +1193,11 @@ int dat_get_memos(FILE *in, MemoList **memolist, struct CategoryAppInfo *ai)
       /* Append onto the end of the list */
 
       if (last_memolist) {
-	 last_memolist->next=temp_memolist;
-	 last_memolist=temp_memolist;
+         last_memolist->next=temp_memolist;
+         last_memolist=temp_memolist;
       } else {
-	 last_memolist=temp_memolist;
-	 *memolist=last_memolist;
+         last_memolist=temp_memolist;
+         *memolist=last_memolist;
       }
    }
 

@@ -1,4 +1,4 @@
-/* $Id: install_gui.c,v 1.29 2010/03/03 14:42:03 rousseau Exp $ */
+/* $Id: install_gui.c,v 1.30 2010/03/29 05:44:29 rikster5 Exp $ */
 
 /*******************************************************************************
  * install_gui.c
@@ -68,14 +68,14 @@ static int install_remove_line(int deleted_line)
       line[0]='\0';
       Pc = fgets(line, 1000, in);
       if (!Pc) {
-	 break;
+         break;
       }
       if (line_count == deleted_line) {
-	 continue;
+         continue;
       }
       r = fprintf(out, "%s", line);
       if (r==EOF) {
-	 break;
+         break;
       }
    }
    fclose(in);
@@ -129,10 +129,10 @@ static void cb_quit(GtkWidget *widget, gpointer data)
    if (i<0) i=0;
    if (dir[i]!='/') {
       for (i=strlen(dir); i>=0; i--) {
-	 if (dir[i]=='/') {
-	    dir[i+1]='\0';
-	    break;
-	 }
+         if (dir[i]=='/') {
+            dir[i+1]='\0';
+            break;
+         }
       }
    }
 
@@ -209,7 +209,7 @@ static int update_clist(void)
       line[0]='\0';
       Pc = fgets(line, 1000, in);
       if (!Pc) {
-	 break;
+         break;
       }
       len=strlen(line);
       if ((line[len-1]=='\n') || (line[len-1]=='\r')) line[len-1]='\0';
@@ -227,10 +227,10 @@ static int update_clist(void)
 }
 
 static void cb_clist_selection(GtkWidget      *clist,
-			       gint           row,
-			       gint           column,
-			       GdkEventButton *event,
-			       gpointer       data)
+                               gint           row,
+                               gint           column,
+                               GdkEventButton *event,
+                               gpointer       data)
 {
    line_selected = row;
 
@@ -254,9 +254,9 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y)
 
    g_snprintf(temp, sizeof(temp), "%s %s", PN, _("Install"));
    filew = gtk_widget_new(GTK_TYPE_FILE_SELECTION,
-			  "type", GTK_WINDOW_TOPLEVEL,
-			  "title", temp,
-			  NULL);
+                          "type", GTK_WINDOW_TOPLEVEL,
+                          "title", temp,
+                          NULL);
 
    gtk_window_set_default_size(GTK_WINDOW(filew), w, h);
    gtk_widget_set_uposition(filew, x, y);
@@ -279,7 +279,7 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y)
    /* because a double click on the file name also calls this callback */
    gtk_widget_hide(GTK_WIDGET(GTK_FILE_SELECTION(filew)->ok_button));
    gtk_signal_connect(GTK_OBJECT(GTK_FILE_SELECTION(filew)->ok_button),
-		      "clicked", GTK_SIGNAL_FUNC(cb_add), filew);
+                      "clicked", GTK_SIGNAL_FUNC(cb_add), filew);
 
    clist = gtk_clist_new_with_titles(1, titles);
    gtk_widget_set_usize(GTK_WIDGET(clist), 0, 166);
@@ -290,41 +290,41 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y)
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
-				  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+                                  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 5);
    gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->action_area),
-		      scrolled_window, TRUE, TRUE, 0);
+                      scrolled_window, TRUE, TRUE, 0);
 
    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
-		      GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
+                      GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
    gtk_widget_show(clist);
    gtk_widget_show(scrolled_window);
 
    label = gtk_label_new(_("To change to a hidden directory type it below and hit TAB"));
    gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->main_vbox),
-		      label, FALSE, FALSE, 0);
+                      label, FALSE, FALSE, 0);
    gtk_widget_show(label);
 
    /* Add/Remove/Quit buttons */
    button = gtk_button_new_from_stock(GTK_STOCK_ADD);
    gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->ok_button->parent),
-		      button, TRUE, TRUE, 0);
+                      button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button),
-		      "clicked", GTK_SIGNAL_FUNC(cb_add), filew);
+                      "clicked", GTK_SIGNAL_FUNC(cb_add), filew);
    gtk_widget_show(button);
 
    button = gtk_button_new_from_stock(GTK_STOCK_REMOVE);
    gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->ok_button->parent),
-		      button, TRUE, TRUE, 0);
+                      button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button),
-		      "clicked", GTK_SIGNAL_FUNC(cb_remove), filew);
+                      "clicked", GTK_SIGNAL_FUNC(cb_remove), filew);
    gtk_widget_show(button);
 
    button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
    gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->ok_button->parent),
-		      button, TRUE, TRUE, 0);
+                      button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button),
-		      "clicked", GTK_SIGNAL_FUNC(cb_quit), filew);
+                      "clicked", GTK_SIGNAL_FUNC(cb_quit), filew);
    gtk_widget_show(button);
 
    gtk_widget_show(filew);
