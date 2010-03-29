@@ -1,4 +1,4 @@
-/* $Id: print_headers.c,v 1.11 2010/03/29 05:44:31 rikster5 Exp $ */
+/* $Id: print_headers.c,v 1.12 2010/03/29 21:08:34 rikster5 Exp $ */
 
 /*******************************************************************************
  * print_headers.c
@@ -748,7 +748,7 @@ void print_month_header(FILE *f)
       "        /FDOM1          edef\n"
       "        /MonthName1     edef\n"
       "\n"
-      "        Col 5 lt Row 1 gt or {\n"
+      "        Col 5 lt {\n"
       "            Row 0 ne {\n"
       "                5 4 MonthName1 NumDays1 FDOM1 SmallMonth\n"
       "                6 4 MonthName2 NumDays2 FDOM2 SmallMonth\n"
@@ -757,8 +757,13 @@ void print_month_header(FILE *f)
       "                Col 3 add 0 MonthName2 NumDays2 FDOM2 SmallMonth\n"
       "            } ifelse\n"
       "        } {\n"
-      "            0 0 MonthName1 NumDays1 FDOM1 SmallMonth\n"
-      "            1 0 MonthName2 NumDays2 FDOM2 SmallMonth\n"
+      "            Row 4 eq {\n"
+      "                0 0 MonthName1 NumDays1 FDOM1 SmallMonth\n"
+      "                1 0 MonthName2 NumDays2 FDOM2 SmallMonth\n"
+      "            } {\n"
+      "                5 4 MonthName1 NumDays1 FDOM1 SmallMonth\n"
+      "                6 4 MonthName2 NumDays2 FDOM2 SmallMonth\n"
+      "            } ifelse\n"
       "        } ifelse\n"
       "} def\n"
       "\n"
