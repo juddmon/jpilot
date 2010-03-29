@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.250 2010/03/29 05:44:27 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.251 2010/03/29 15:22:34 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -1665,7 +1665,6 @@ static void cb_undelete_address(GtkWidget *widget,
                                 gpointer   data)
 {
    MyContact *mcont;
-   MyAddress maddr;
    int flag;
    int show_priv;
 
@@ -1690,12 +1689,9 @@ static void cb_undelete_address(GtkWidget *widget,
       if (mcont->rt == DELETED_PALM_REC ||
          (mcont->rt == DELETED_PC_REC)) {
          if (address_version==0) {
-            copy_contact_to_address(&(mcont->cont), &(maddr.addr));
-            maddr.rt = mcont->rt;
+            MyAddress maddr;
             maddr.unique_id = mcont->unique_id;
-            maddr.attrib = mcont->attrib;
             undelete_pc_record(ADDRESS, &maddr, flag);
-            free_Address(&(maddr.addr));
          } else {
             undelete_pc_record(CONTACTS, mcont, flag);
          }

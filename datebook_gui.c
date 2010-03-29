@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.216 2010/03/29 05:44:28 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.217 2010/03/29 15:22:34 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -3074,14 +3074,9 @@ static void cb_undelete_appt(GtkWidget *widget, gpointer data)
           mcale->rt == DELETED_PC_REC)
       {
          if (datebook_version==0) {
-            /* TODO, undelete_pc_record only uses the unique_id, so this extra copying is a waste */
             MyAppointment mappt;
-            mappt.rt=mcale->rt;
             mappt.unique_id=mcale->unique_id;
-            mappt.attrib=mcale->attrib;
-            copy_calendarEvent_to_appointment(&(mcale->cale), &(mappt.appt));
             undelete_pc_record(DATEBOOK, &mappt, flag);
-            free_Appointment(&(mappt.appt));
          } else {
             undelete_pc_record(CALENDAR, mcale, flag);
          }
