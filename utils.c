@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.181 2010/03/29 05:44:32 rikster5 Exp $ */
+/* $Id: utils.c,v 1.182 2010/03/31 20:26:06 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -190,16 +190,16 @@ int add_years_to_date(struct tm *date, int n)
  * This is handy for viewing ages on birthdays etc.  */
 /* Either a or cale can be passed as NULL */
 void append_anni_years(char *desc, int max, struct tm *date,
-                       struct Appointment *a, struct CalendarEvent *cale)
+                       struct Appointment *appt, struct CalendarEvent *cale)
 {
    int len;
    int year;
    /* Only append the years if this is a yearly repeating type (i.e. an
     * anniversary) */
-   if ((!a) && (!cale)) {
+   if ((!appt) && (!cale)) {
       return;
    }
-   if ((a) && (a->repeatType != repeatYearly))
+   if ((appt) && (appt->repeatType != repeatYearly))
       return;
    if ((cale) && (cale->repeatType != repeatYearly))
       return;

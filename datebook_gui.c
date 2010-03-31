@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.218 2010/03/31 20:13:43 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.219 2010/03/31 20:26:05 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -411,7 +411,7 @@ static int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int 
    char description[65536];
    char note[65536];
    char location[65536];
-   struct CalendarEvent new_ce;
+   struct CalendarEvent new_cale;
    unsigned char attrib;
    int i, str_i, ret, index;
    int import_all;
@@ -446,7 +446,7 @@ static int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int 
 
       import_all=FALSE;
       while (1) {
-         memset(&new_ce, 0, sizeof(new_ce));
+         memset(&new_cale, 0, sizeof(new_cale));
          /* Read the category field */
          ret = read_csv_field(in, text, sizeof(text));
          if (feof(in)) break;
@@ -474,121 +474,121 @@ static int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int 
          /* Description */
          ret = read_csv_field(in, description, sizeof(description));
          if (strlen(description) > 0) {
-            new_ce.description=description;
+            new_cale.description=description;
          } else {
-            new_ce.description=NULL;
+            new_cale.description=NULL;
          }
 
          /* Note */
          ret = read_csv_field(in, note, sizeof(note));
          if (strlen(note) > 0) {
-            new_ce.note=note;
+            new_cale.note=note;
          } else {
-            new_ce.note=NULL;
+            new_cale.note=NULL;
          }
 
          if (datebook_version) {
             /* Location */
             ret = read_csv_field(in, location, sizeof(location));
             if (strlen(location) > 0) {
-               new_ce.location=location;
+               new_cale.location=location;
             } else {
-               new_ce.location=NULL;
+               new_cale.location=NULL;
             }
          }
 
          /* Event */
          ret = read_csv_field(in, text, sizeof(text));
-         sscanf(text, "%d", &(new_ce.event));
+         sscanf(text, "%d", &(new_cale.event));
 
          /* Begin Time */
-         memset(&(new_ce.begin), 0, sizeof(new_ce.begin));
+         memset(&(new_cale.begin), 0, sizeof(new_cale.begin));
          ret = read_csv_field(in, text, sizeof(text));
          sscanf(text, "%d %d %d %d:%d", &year, &month, &day, &hour, &minute);
-         new_ce.begin.tm_year=year-1900;
-         new_ce.begin.tm_mon=month-1;
-         new_ce.begin.tm_mday=day;
-         new_ce.begin.tm_hour=hour;
-         new_ce.begin.tm_min=minute;
-         new_ce.begin.tm_isdst=-1;
-         mktime(&(new_ce.begin));
+         new_cale.begin.tm_year=year-1900;
+         new_cale.begin.tm_mon=month-1;
+         new_cale.begin.tm_mday=day;
+         new_cale.begin.tm_hour=hour;
+         new_cale.begin.tm_min=minute;
+         new_cale.begin.tm_isdst=-1;
+         mktime(&(new_cale.begin));
 
          /* End Time */
-         memset(&(new_ce.end), 0, sizeof(new_ce.end));
+         memset(&(new_cale.end), 0, sizeof(new_cale.end));
          ret = read_csv_field(in, text, sizeof(text));
          sscanf(text, "%d %d %d %d:%d", &year, &month, &day, &hour, &minute);
-         new_ce.end.tm_year=year-1900;
-         new_ce.end.tm_mon=month-1;
-         new_ce.end.tm_mday=day;
-         new_ce.end.tm_hour=hour;
-         new_ce.end.tm_min=minute;
-         new_ce.end.tm_isdst=-1;
-         mktime(&(new_ce.end));
+         new_cale.end.tm_year=year-1900;
+         new_cale.end.tm_mon=month-1;
+         new_cale.end.tm_mday=day;
+         new_cale.end.tm_hour=hour;
+         new_cale.end.tm_min=minute;
+         new_cale.end.tm_isdst=-1;
+         mktime(&(new_cale.end));
 
          /* Alarm */
          ret = read_csv_field(in, text, sizeof(text));
-         sscanf(text, "%d", &(new_ce.alarm));
+         sscanf(text, "%d", &(new_cale.alarm));
 
          /* Alarm Advance */
          ret = read_csv_field(in, text, sizeof(text));
-         sscanf(text, "%d", &(new_ce.advance));
+         sscanf(text, "%d", &(new_cale.advance));
 
          /* Advance Units */
          ret = read_csv_field(in, text, sizeof(text));
-         sscanf(text, "%d", &(new_ce.advanceUnits));
+         sscanf(text, "%d", &(new_cale.advanceUnits));
 
          /* Repeat Type */
          ret = read_csv_field(in, text, sizeof(text));
          sscanf(text, "%d", &(i));
-         new_ce.repeatType=i;
+         new_cale.repeatType=i;
 
          /* Repeat Forever */
          ret = read_csv_field(in, text, sizeof(text));
-         sscanf(text, "%d", &(new_ce.repeatForever));
+         sscanf(text, "%d", &(new_cale.repeatForever));
 
          /* Repeat End */
-         memset(&(new_ce.repeatEnd), 0, sizeof(new_ce.repeatEnd));
+         memset(&(new_cale.repeatEnd), 0, sizeof(new_cale.repeatEnd));
          ret = read_csv_field(in, text, sizeof(text));
          sscanf(text, "%d %d %d", &year, &month, &day);
-         new_ce.repeatEnd.tm_year=year-1900;
-         new_ce.repeatEnd.tm_mon=month-1;
-         new_ce.repeatEnd.tm_mday=day;
-         new_ce.repeatEnd.tm_isdst=-1;
-         mktime(&(new_ce.repeatEnd));
+         new_cale.repeatEnd.tm_year=year-1900;
+         new_cale.repeatEnd.tm_mon=month-1;
+         new_cale.repeatEnd.tm_mday=day;
+         new_cale.repeatEnd.tm_isdst=-1;
+         mktime(&(new_cale.repeatEnd));
 
          /* Repeat Frequency */
          ret = read_csv_field(in, text, sizeof(text));
-         sscanf(text, "%d", &(new_ce.repeatFrequency));
+         sscanf(text, "%d", &(new_cale.repeatFrequency));
 
          /* Repeat Day */
          ret = read_csv_field(in, text, sizeof(text));
          sscanf(text, "%d", &(i));
-         new_ce.repeatDay=i;
+         new_cale.repeatDay=i;
 
          /* Repeat Days */
          ret = read_csv_field(in, text, sizeof(text));
          for (i=0; i<7; i++) {
-            new_ce.repeatDays[i]=(text[i]=='1');
+            new_cale.repeatDays[i]=(text[i]=='1');
          }
 
          /* Week Start */
          ret = read_csv_field(in, text, sizeof(text));
-         sscanf(text, "%d", &(new_ce.repeatWeekstart));
+         sscanf(text, "%d", &(new_cale.repeatWeekstart));
 
          /* Number of Exceptions */
          ret = read_csv_field(in, text, sizeof(text));
-         sscanf(text, "%d", &(new_ce.exceptions));
+         sscanf(text, "%d", &(new_cale.exceptions));
 
          /* Exceptions */
          ret = read_csv_field(in, text, sizeof(text));
-         new_ce.exception=calloc(new_ce.exceptions, sizeof(struct tm));
-         for (str_i=0, i=0; i<new_ce.exceptions; i++) {
+         new_cale.exception=calloc(new_cale.exceptions, sizeof(struct tm));
+         for (str_i=0, i=0; i<new_cale.exceptions; i++) {
             sscanf(&(text[str_i]), "%d %d %d", &year, &month, &day);
-            new_ce.exception[i].tm_year=year-1900;
-            new_ce.exception[i].tm_mon=month-1;
-            new_ce.exception[i].tm_mday=day;
-            new_ce.exception[i].tm_isdst=-1;
-            mktime(&(new_ce.exception[i]));
+            new_cale.exception[i].tm_year=year-1900;
+            new_cale.exception[i].tm_mon=month-1;
+            new_cale.exception[i].tm_mday=day;
+            new_cale.exception[i].tm_isdst=-1;
+            mktime(&(new_cale.exception[i]));
             for (; (str_i<sizeof(text)) && (text[str_i]); str_i++) {
                if (text[str_i]==',') {
                   str_i++;
@@ -597,7 +597,7 @@ static int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int 
             }
          }
 
-         datebook_to_text(&new_ce, text, 65535);
+         datebook_to_text(&new_cale, text, 65535);
          if (!import_all) {
             ret=import_record_ask(parent_window, pane,
                                   text,
@@ -617,11 +617,11 @@ static int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int 
          attrib = (new_cat_num & 0x0F) |
            (priv ? dlpRecAttrSecret : 0);
          if ((ret==DIALOG_SAID_IMPORT_YES) || (import_all)) {
-            if (strlen(new_ce.description)+1 > MAX_DESC_LEN) {
-               new_ce.description[MAX_DESC_LEN+1]='\0';
+            if (strlen(new_cale.description)+1 > MAX_DESC_LEN) {
+               new_cale.description[MAX_DESC_LEN+1]='\0';
                jp_logf(JP_LOG_WARN, _("Appointment description text > %d, truncating to %d\n"), MAX_DESC_LEN, MAX_DESC_LEN);
             }
-            pc_calendar_or_datebook_write(&new_ce, NEW_PC_REC, attrib, NULL, datebook_version);
+            pc_calendar_or_datebook_write(&new_cale, NEW_PC_REC, attrib, NULL, datebook_version);
          }
       }
    }
@@ -2718,7 +2718,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
 {
    MyCalendarEvent *mcale;
    struct CalendarEvent *cale;
-   struct CalendarEvent new_ce;
+   struct CalendarEvent new_cale;
    int flag;
    int create_exception=0;
    int result;
@@ -2778,45 +2778,45 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
       }
    } 
 
-   r = appt_get_details(&new_ce, &attrib);
+   r = appt_get_details(&new_cale, &attrib);
    if (r != EXIT_SUCCESS) {
-      free_CalendarEvent(&new_ce);
+      free_CalendarEvent(&new_cale);
       return;
    }
 
    /* Validate dates for repeating events */
-   if (new_ce.repeatType != calendarRepeatNone)
+   if (new_cale.repeatType != calendarRepeatNone)
    {
-      next_found = find_next_rpt_event(&new_ce, &(new_ce.begin), &next_tm);
+      next_found = find_next_rpt_event(&new_cale, &(new_cale.begin), &next_tm);
 
       if (next_found) {
          jp_logf(JP_LOG_DEBUG, "Repeat event begin day shifted from %d to %d\n", 
-                                new_ce.begin.tm_mday, next_tm.tm_mday);
-         new_ce.begin.tm_year = next_tm.tm_year; 
-         new_ce.begin.tm_mon = next_tm.tm_mon; 
-         new_ce.begin.tm_mday = next_tm.tm_mday; 
-         new_ce.begin.tm_isdst = -1;
-         mktime(&(new_ce.begin));
-         new_ce.end.tm_year = next_tm.tm_year; 
-         new_ce.end.tm_mon = next_tm.tm_mon; 
-         new_ce.end.tm_mday = next_tm.tm_mday; 
-         new_ce.end.tm_isdst = -1;
-         mktime(&(new_ce.end));
+                                new_cale.begin.tm_mday, next_tm.tm_mday);
+         new_cale.begin.tm_year = next_tm.tm_year; 
+         new_cale.begin.tm_mon = next_tm.tm_mon; 
+         new_cale.begin.tm_mday = next_tm.tm_mday; 
+         new_cale.begin.tm_isdst = -1;
+         mktime(&(new_cale.begin));
+         new_cale.end.tm_year = next_tm.tm_year; 
+         new_cale.end.tm_mon = next_tm.tm_mon; 
+         new_cale.end.tm_mday = next_tm.tm_mday; 
+         new_cale.end.tm_isdst = -1;
+         mktime(&(new_cale.end));
       }
    }
 
-   if ((new_ce.repeatType != calendarRepeatNone) && (!(new_ce.repeatForever))) {
-      t_begin = mktime_dst_adj(&(new_ce.begin));
-      t_end = mktime_dst_adj(&(new_ce.repeatEnd));
+   if ((new_cale.repeatType != calendarRepeatNone) && (!(new_cale.repeatForever))) {
+      t_begin = mktime_dst_adj(&(new_cale.begin));
+      t_end = mktime_dst_adj(&(new_cale.repeatEnd));
       if (t_begin > t_end) {
          dialog_generic_ok(notebook, _("Invalid Appointment"), DIALOG_ERROR,
                            _("The End Date of this appointment\nis before the start date."));
-         free_CalendarEvent(&new_ce);
+         free_CalendarEvent(&new_cale);
          return;
       }
    }
 
-   if ((flag==MODIFY_FLAG) && (new_ce.repeatType != calendarRepeatNone)) {
+   if ((flag==MODIFY_FLAG) && (new_cale.repeatType != calendarRepeatNone)) {
       /* We need more user input. Pop up a dialog */
       result = dialog_current_all_cancel();
       if (result==DIALOG_SAID_CANCEL) {
@@ -2825,24 +2825,24 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
       if (result==DIALOG_SAID_CURRENT) {
          /* Create an exception in the appointment */
          create_exception=1;
-         new_ce.repeatType = calendarRepeatNone;
-         new_ce.begin.tm_year = current_year;
-         new_ce.begin.tm_mon = current_month;
-         new_ce.begin.tm_mday = current_day;
-         new_ce.begin.tm_isdst = -1;
-         mktime(&new_ce.begin);
-         new_ce.repeatType = calendarRepeatNone;
-         new_ce.end.tm_year = current_year;
-         new_ce.end.tm_mon = current_month;
-         new_ce.end.tm_mday = current_day;
-         new_ce.end.tm_isdst = -1;
-         mktime(&new_ce.end);
+         new_cale.repeatType = calendarRepeatNone;
+         new_cale.begin.tm_year = current_year;
+         new_cale.begin.tm_mon = current_month;
+         new_cale.begin.tm_mday = current_day;
+         new_cale.begin.tm_isdst = -1;
+         mktime(&new_cale.begin);
+         new_cale.repeatType = calendarRepeatNone;
+         new_cale.end.tm_year = current_year;
+         new_cale.end.tm_mon = current_month;
+         new_cale.end.tm_mday = current_day;
+         new_cale.end.tm_isdst = -1;
+         mktime(&new_cale.end);
       }
       if (result==DIALOG_SAID_ALL) {
          /* We still need to keep the exceptions of the original record */
-         new_ce.exception = malloc(mcale->cale.exceptions * sizeof(struct tm));
-         memcpy(new_ce.exception, mcale->cale.exception, mcale->cale.exceptions * sizeof(struct tm));
-         new_ce.exceptions = mcale->cale.exceptions;
+         new_cale.exception = malloc(mcale->cale.exceptions * sizeof(struct tm));
+         memcpy(new_cale.exception, mcale->cale.exception, mcale->cale.exceptions * sizeof(struct tm));
+         new_cale.exceptions = mcale->cale.exceptions;
       }
    }
    /* TODO - take care of blob and tz? */
@@ -2864,8 +2864,6 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
          /* TODO blob and tz? */
       }
 
-       /* We need to take care of the 2 options allowed when modifying
-        * repeating appointments */
       if (datebook_version==0) {
          MyAppointment mappt;
          mappt.rt=mcale->rt;
@@ -2878,6 +2876,8 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
          delete_pc_record(CALENDAR, mcale, flag);
       }
 
+      /* We need to take care of the 2 options allowed when modifying
+       * repeating appointments */
       if (create_exception) {
          copy_calendar_event(&(mcale->cale), &cale);
          /* TODO rename? */
@@ -2889,34 +2889,34 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
             pc_calendar_or_datebook_write(cale, NEW_PC_REC, attrib, NULL, datebook_version);
          }
          unique_id = 0;
-         pc_calendar_or_datebook_write(&new_ce, NEW_PC_REC, attrib, &unique_id, datebook_version);
+         pc_calendar_or_datebook_write(&new_cale, NEW_PC_REC, attrib, &unique_id, datebook_version);
          free_CalendarEvent(cale);
          free(cale);
       } else {
          if ((mcale->rt==PALM_REC) || (mcale->rt==REPLACEMENT_PALM_REC)) {
-            pc_calendar_or_datebook_write(&new_ce, REPLACEMENT_PALM_REC, attrib, &unique_id, datebook_version);
+            pc_calendar_or_datebook_write(&new_cale, REPLACEMENT_PALM_REC, attrib, &unique_id, datebook_version);
          } else {
             unique_id=0;
-            pc_calendar_or_datebook_write(&new_ce, NEW_PC_REC, attrib, &unique_id, datebook_version);
+            pc_calendar_or_datebook_write(&new_cale, NEW_PC_REC, attrib, &unique_id, datebook_version);
          }
       }
    } else {
       unique_id=0; /* Palm will supply unique_id for new record */
-      pc_calendar_or_datebook_write(&new_ce, NEW_PC_REC, attrib, &unique_id, datebook_version);
+      pc_calendar_or_datebook_write(&new_cale, NEW_PC_REC, attrib, &unique_id, datebook_version);
    }
 
    /* Position calendar on the actual event or next future occurrence depending
     * on what is closest to the current date */
    if ((flag!=COPY_FLAG))
    {
-      if (new_ce.repeatType == calendarRepeatNone) {
-         memcpy(&next_tm, &(new_ce.begin), sizeof(next_tm)); 
+      if (new_cale.repeatType == calendarRepeatNone) {
+         memcpy(&next_tm, &(new_cale.begin), sizeof(next_tm)); 
       } else {
          time(&ltime);
          now = localtime(&ltime);
-         next_found = find_next_rpt_event(&new_ce, now, &next_tm);
+         next_found = find_next_rpt_event(&new_cale, now, &next_tm);
          if (!next_found) {
-            memcpy(&next_tm, &(new_ce.begin), sizeof(next_tm)); 
+            memcpy(&next_tm, &(new_cale.begin), sizeof(next_tm)); 
          }
       }
 
@@ -2933,7 +2933,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
       gtk_calendar_thaw(GTK_CALENDAR(main_calendar));
    } 
 
-   free_CalendarEvent(&new_ce);
+   free_CalendarEvent(&new_cale);
 
    datebook_update_clist();
    highlight_days();

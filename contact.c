@@ -1,4 +1,4 @@
-/* $Id: contact.c,v 1.18 2010/03/29 05:44:28 rikster5 Exp $ */
+/* $Id: contact.c,v 1.19 2010/03/31 20:26:05 rikster5 Exp $ */
 
 /*******************************************************************************
  * contact.c
@@ -405,7 +405,6 @@ int copy_address_ai_to_contact_ai(const struct AddressAppInfo *aai, struct Conta
    return 0;
 }
 
-/* Copy AppInfo data structures */
 int copy_address_to_contact(const struct Address *a, struct Contact *c)
 {
    int i, a_entry, c_entry;

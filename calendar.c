@@ -1,4 +1,4 @@
-/* $Id: calendar.c,v 1.3 2010/03/29 05:44:27 rikster5 Exp $ */
+/* $Id: calendar.c,v 1.4 2010/03/31 20:26:05 rikster5 Exp $ */
 
 /*******************************************************************************
  * calendar.c
@@ -58,39 +58,40 @@ int copy_calendar_ai_to_appointment_ai(const struct CalendarAppInfo *cai, struct
    return 0;
 }
 
-int copy_appointment_to_calendarEvent(const struct Appointment *a, struct CalendarEvent *cale)
+int copy_appointment_to_calendarEvent(const struct Appointment *appt, 
+                                      struct CalendarEvent *cale)
 {
    int i;
 
-   cale->event = a->event;
-   cale->begin = a->begin;
-   cale->end = a->end;
-   cale->alarm = a->alarm;
-   cale->advance = a->advance;
-   cale->advanceUnits = a->advanceUnits;
-   cale->repeatType = a->repeatType;
-   cale->repeatForever = a->repeatForever;
-   cale->repeatEnd = a->repeatEnd;
-   cale->repeatFrequency = a->repeatFrequency;
-   cale->repeatDay = a->repeatDay;
+   cale->event = appt->event;
+   cale->begin = appt->begin;
+   cale->end = appt->end;
+   cale->alarm = appt->alarm;
+   cale->advance = appt->advance;
+   cale->advanceUnits = appt->advanceUnits;
+   cale->repeatType = appt->repeatType;
+   cale->repeatForever = appt->repeatForever;
+   cale->repeatEnd = appt->repeatEnd;
+   cale->repeatFrequency = appt->repeatFrequency;
+   cale->repeatDay = appt->repeatDay;
    for (i=0; i<7; i++) {
-      cale->repeatDays[i] = a->repeatDays[i];
+      cale->repeatDays[i] = appt->repeatDays[i];
    }
-   cale->repeatWeekstart = a->repeatWeekstart;
-   cale->exceptions = a->exceptions;
-   if (a->exceptions > 0) {
-      cale->exception = (struct tm *) malloc(a->exceptions * sizeof(struct tm));
-      memcpy(cale->exception, a->exception, a->exceptions * sizeof(struct tm));
+   cale->repeatWeekstart = appt->repeatWeekstart;
+   cale->exceptions = appt->exceptions;
+   if (appt->exceptions > 0) {
+      cale->exception = (struct tm *) malloc(appt->exceptions * sizeof(struct tm));
+      memcpy(cale->exception, appt->exception, appt->exceptions * sizeof(struct tm));
    } else {
       cale->exception = NULL;
    }
-   if (a->description) {
-      cale->description = strdup(a->description);
+   if (appt->description) {
+      cale->description = strdup(appt->description);
    } else {
       cale->description = NULL;
    }
-   if (a->note) {
-      cale->note = strdup(a->note);
+   if (appt->note) {
+      cale->note = strdup(appt->note);
    } else {
       cale->note = NULL;
    }
@@ -130,41 +131,42 @@ int copy_appointments_to_calendarEvents(AppointmentList *al, CalendarEventList *
    return 0;
 }
 
-int copy_calendarEvent_to_appointment(const struct CalendarEvent *cale, struct Appointment *a)
+int copy_calendarEvent_to_appointment(const struct CalendarEvent *cale, 
+                                      struct Appointment *appt)
 {
    int i;
 
-   a->event = cale->event;
-   a->begin = cale->begin;
-   a->end = cale->end;
-   a->alarm = cale->alarm;
-   a->advance = cale->advance;
-   a->advanceUnits = cale->advanceUnits;
-   a->repeatType = cale->repeatType;
-   a->repeatForever = cale->repeatForever;
-   a->repeatEnd = cale->repeatEnd;
-   a->repeatFrequency = cale->repeatFrequency;
-   a->repeatDay = cale->repeatDay;
+   appt->event = cale->event;
+   appt->begin = cale->begin;
+   appt->end = cale->end;
+   appt->alarm = cale->alarm;
+   appt->advance = cale->advance;
+   appt->advanceUnits = cale->advanceUnits;
+   appt->repeatType = cale->repeatType;
+   appt->repeatForever = cale->repeatForever;
+   appt->repeatEnd = cale->repeatEnd;
+   appt->repeatFrequency = cale->repeatFrequency;
+   appt->repeatDay = cale->repeatDay;
    for (i=0; i<7; i++) {
-      a->repeatDays[i] = cale->repeatDays[i];
+      appt->repeatDays[i] = cale->repeatDays[i];
    }
-   a->repeatWeekstart = cale->repeatWeekstart;
-   a->exceptions = cale->exceptions;
+   appt->repeatWeekstart = cale->repeatWeekstart;
+   appt->exceptions = cale->exceptions;
    if (cale->exceptions > 0) {
-      a->exception = (struct tm *) malloc(cale->exceptions * sizeof(struct tm));
-      memcpy(a->exception, cale->exception, cale->exceptions * sizeof(struct tm));
+      appt->exception = (struct tm *) malloc(cale->exceptions * sizeof(struct tm));
+      memcpy(appt->exception, cale->exception, cale->exceptions * sizeof(struct tm));
    } else {
-      a->exception = NULL;
+      appt->exception = NULL;
    }
    if (cale->description) {
-      a->description = strdup(cale->description);
+      appt->description = strdup(cale->description);
    } else {
-      a->description = NULL;
+      appt->description = NULL;
    }
    if (cale->note) {
-      a->note = strdup(cale->note);
+      appt->note = strdup(cale->note);
    } else {
-      a->note = NULL;
+      appt->note = NULL;
    }
 
    return 0;
