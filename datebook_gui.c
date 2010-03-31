@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.217 2010/03/29 15:22:34 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.218 2010/03/31 20:13:43 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -3028,7 +3028,7 @@ static void cb_delete_appt(GtkWidget *widget, gpointer data)
       delete_pc_record(CALENDAR, mcale, flag);
    }
    if (write_flag) {
-      pc_calendar_or_datebook_write(&(mcale->cale), REPLACEMENT_PALM_REC, mcale->attrib, write_unique_id, datebook_version);
+      pc_calendar_or_datebook_write(cale, REPLACEMENT_PALM_REC, mcale->attrib, write_unique_id, datebook_version);
       free_CalendarEvent(cale);
       free(cale);
    }
