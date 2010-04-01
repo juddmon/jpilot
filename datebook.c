@@ -1,4 +1,4 @@
-/* $Id: datebook.c,v 1.62 2010/03/29 05:44:28 rikster5 Exp $ */
+/* $Id: datebook.c,v 1.63 2010/04/01 21:14:35 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook.c
@@ -953,8 +953,8 @@ int weed_datebook_list(AppointmentList **al, int mon, int year,
     * search though it ~30 times.  */
    for (prev_al=NULL, tal=*al; tal; tal = next_al) {
       if (skip_privates && (tal->mappt.attrib & dlpRecAttrSecret)) {
-         next_al=tal->next;
-         continue;
+         trash_it=1;
+         goto trash;
       }
       trash_it=0;
       /* See if the appointment starts after the last day of the month */
