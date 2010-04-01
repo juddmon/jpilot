@@ -1,4 +1,4 @@
-/* $Id: expense.c,v 1.71 2010/03/29 05:44:32 rikster5 Exp $ */
+/* $Id: expense.c,v 1.72 2010/04/01 20:08:44 rikster5 Exp $ */
 
 /*******************************************************************************
  * expense.c
@@ -2081,6 +2081,7 @@ int plugin_search(const char *search_string, int case_sense, struct search_resul
          free_Expense(&(mexp.ex));
       }
    }
+   jp_free_DB_records(&records);
 
    return count;
 }
