@@ -1,4 +1,4 @@
-/* $Id: print.c,v 1.48 2010/03/29 05:44:30 rikster5 Exp $ */
+/* $Id: print.c,v 1.49 2010/04/01 19:54:03 rikster5 Exp $ */
 
 /*******************************************************************************
  * print.c
@@ -728,6 +728,7 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
    /*------------------------------------------------------------------
     * Run through the appointments, printing them out
     *------------------------------------------------------------------*/
+   free_CalendarEventList(&ce_list);
    ce_list = NULL;
 
    /* Get all of the appointments */
