@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.165 2010/04/01 18:28:22 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.166 2010/04/01 18:30:42 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -1658,7 +1658,7 @@ static gboolean cb_key_pressed_right_side(GtkWidget   *widget,
 void todo_clist_clear(GtkCList *clist)
 {
    GtkStyle *base_style, *row_style, *cell_style; 
-   int i, j;
+   int i;
 
    base_style = gtk_widget_get_style(GTK_WIDGET(clist));
   
