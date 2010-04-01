@@ -1,4 +1,4 @@
-/* $Id: contact.c,v 1.20 2010/04/01 05:26:38 rikster5 Exp $ */
+/* $Id: contact.c,v 1.21 2010/04/01 05:32:43 rikster5 Exp $ */
 
 /*******************************************************************************
  * contact.c
@@ -479,6 +479,8 @@ int copy_addresses_to_contacts(AddressList *al, ContactList **cl)
    return EXIT_SUCCESS;
 }
 
+/* Unused at this time: 2010/03/31 */
+/*
 static int copy_contact_ai_to_address_ai(const struct ContactAppInfo *cai, 
                                          struct AddressAppInfo *aai)
 {
@@ -513,6 +515,7 @@ static int copy_contact_ai_to_address_ai(const struct ContactAppInfo *cai,
 
    return EXIT_SUCCESS;
 }
+*/
 
 int copy_contact_to_address(const struct Contact *c, struct Address *a)
 {

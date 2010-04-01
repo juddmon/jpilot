@@ -1,4 +1,4 @@
-/* $Id: japanese.c,v 1.15 2010/03/29 05:44:29 rikster5 Exp $ */
+/* $Id: japanese.c,v 1.16 2010/04/01 05:32:44 rikster5 Exp $ */
 
 /*******************************************************************************
  * japanese.c
@@ -137,24 +137,27 @@ void Sjis2Euc(char *buf, int max_len)
    size of buf must be more than max_len.
 
 */
+/* Unused at this time: 2010/03/31 */
+/*
 static void Sjis2Euc_x(char *buf, int max_len)
 {
     char *dst;
     char *p;
 
     if (buf == NULL) return;
-    if ((dst = malloc(max_len*2)) == NULL) return; /* assign buffer for destination. */
+    if ((dst = malloc(max_len*2)) == NULL) return; // assign buffer for destination.
     if ((p = Sjis2EucCpy(dst, buf, max_len*2)) != NULL) {
         if (strlen(dst) > strlen(buf)) {
             free(buf);
             buf = strdup(dst);
         } else {
             multibyte_safe_strncpy(buf, dst, max_len);
-            buf[max_len-1] = '\0';  /* i am a paranoid B-) */
+            buf[max_len-1] = '\0';  // i am a paranoid B-) 
         }
     }
     free(dst);
 }
+*/
 
 /*
    Convert one char from euc to sjis.
