@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.182 2010/03/31 20:26:06 rikster5 Exp $ */
+/* $Id: utils.c,v 1.183 2010/04/01 18:28:22 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -874,10 +874,30 @@ int clist_find_id(GtkWidget *clist,
    return found;
 }
 
+/* Encapsulate GTK function to make it free all resources */
+void clist_clear(GtkCList *clist)
+{
+   GtkStyle *base_style, *row_style; 
+   int i;
+
+   base_style = gtk_widget_get_style(GTK_WIDGET(clist));
+  
+   for (i=0; i<GTK_CLIST(clist)->rows ; i++)
+   {
+      row_style = gtk_clist_get_row_style(GTK_CLIST(clist), i);
+      if (row_style && (row_style != base_style))
+      {
+         g_object_unref(row_style);  
+      }
+   }
+
+   gtk_clist_clear(GTK_CLIST(clist));
+}
+
 /* Encapsulate broken GTK function to make it work as documented */
 inline void clist_select_row(GtkCList *clist, 
-                      int       row,
-                      int       column)
+                             int       row,
+                             int       column)
 {
   clist->focus_row = row;
   gtk_clist_select_row(clist, row, column);

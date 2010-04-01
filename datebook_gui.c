@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.220 2010/04/01 05:11:01 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.221 2010/04/01 18:28:22 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -2410,7 +2410,7 @@ static int datebook_update_clist(void)
    gtk_clist_freeze(GTK_CLIST(clist));
    gtk_signal_disconnect_by_func(GTK_OBJECT(clist),
                                  GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
-   gtk_clist_clear(GTK_CLIST(clist));
+   clist_clear(GTK_CLIST(clist));
 #ifdef __APPLE__
    gtk_clist_thaw(GTK_CLIST(clist));
    gtk_widget_hide(clist);
@@ -4150,6 +4150,8 @@ int datebook_gui_cleanup(void)
       gtk_widget_destroy(window_datebk_cats);
    }
 #endif
+   clist_clear(GTK_CLIST(clist));
+
    /* Remove the accelerators */
    gtk_window_remove_accel_group(GTK_WINDOW(gtk_widget_get_toplevel(main_calendar)), accel_group);
 

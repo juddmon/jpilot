@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.251 2010/03/29 15:22:34 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.252 2010/04/01 18:28:22 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -3019,7 +3019,7 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       gtk_signal_disconnect_by_func(GTK_OBJECT(clist),
                                     GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
    }
-   gtk_clist_clear(GTK_CLIST(clist));
+   clist_clear(GTK_CLIST(clist));
 #ifdef __APPLE__
    gtk_clist_thaw(GTK_CLIST(clist));
    gtk_widget_hide(clist);
@@ -3579,6 +3579,7 @@ int address_gui_cleanup(void)
    connect_changed_signals(DISCONNECT_SIGNALS);
    set_pref(PREF_ADDRESS_PANE, gtk_paned_get_position(GTK_PANED(pane)), NULL, TRUE);
    set_pref(PREF_LAST_ADDR_CATEGORY, address_category, NULL, TRUE);
+   clist_clear(GTK_CLIST(clist));
 
    if (contact_picture.data) {
       free(contact_picture.data);

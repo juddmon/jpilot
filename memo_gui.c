@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.137 2010/03/29 05:44:30 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.138 2010/04/01 18:28:22 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -1220,7 +1220,8 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       gtk_signal_disconnect_by_func(GTK_OBJECT(clist),
                                     GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
    }
-   gtk_clist_clear(GTK_CLIST(clist));
+
+   clist_clear(GTK_CLIST(clist));
 #ifdef __APPLE__
    gtk_clist_thaw(GTK_CLIST(clist));
    gtk_widget_hide(clist);
@@ -1448,6 +1449,7 @@ int memo_gui_cleanup(void)
    connect_changed_signals(DISCONNECT_SIGNALS);
    set_pref(PREF_MEMO_PANE, gtk_paned_get_position(GTK_PANED(pane)), NULL, TRUE);
    set_pref(PREF_LAST_MEMO_CATEGORY, memo_category, NULL, TRUE);
+   clist_clear(GTK_CLIST(clist));
 
    return EXIT_SUCCESS;
 }

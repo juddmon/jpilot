@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.164 2010/03/29 05:44:32 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.165 2010/04/01 18:28:22 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -1655,6 +1655,30 @@ static gboolean cb_key_pressed_right_side(GtkWidget   *widget,
    return FALSE;
 }
 
+void todo_clist_clear(GtkCList *clist)
+{
+   GtkStyle *base_style, *row_style, *cell_style; 
+   int i, j;
+
+   base_style = gtk_widget_get_style(GTK_WIDGET(clist));
+  
+   for (i=0; i<GTK_CLIST(clist)->rows ; i++)
+   {
+      row_style = gtk_clist_get_row_style(GTK_CLIST(clist), i);
+      if (row_style && (row_style != base_style))
+      {
+         g_object_unref(row_style);  
+      }
+      cell_style = gtk_clist_get_cell_style(GTK_CLIST(clist), i, TODO_DATE_COLUMN);
+      if (cell_style && (cell_style != base_style))
+      {
+         g_object_unref(cell_style);  
+      }
+   }
+
+   gtk_clist_clear(GTK_CLIST(clist));
+
+}
 void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
                        ToDoList **todo_list, int category, int main)
 {
@@ -1693,7 +1717,7 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
       gtk_signal_disconnect_by_func(GTK_OBJECT(clist),
                                     GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
    }
-   gtk_clist_clear(GTK_CLIST(clist));
+   todo_clist_clear(GTK_CLIST(clist));
 #ifdef __APPLE__
    gtk_clist_thaw(GTK_CLIST(clist));
    gtk_widget_hide(clist);
@@ -2020,6 +2044,7 @@ int todo_gui_cleanup(void)
    set_pref(PREF_LAST_TODO_CATEGORY, todo_category, NULL, TRUE);
    set_pref(PREF_TODO_SORT_COLUMN, clist_col_selected, NULL, TRUE);
    set_pref(PREF_TODO_SORT_ORDER, GTK_CLIST(clist)->sort_type, NULL, TRUE);
+   todo_clist_clear(GTK_CLIST(clist));
 
    return EXIT_SUCCESS;
 }
