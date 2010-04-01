@@ -1,4 +1,4 @@
-/* $Id: address.c,v 1.60 2010/03/29 05:44:27 rikster5 Exp $ */
+/* $Id: address.c,v 1.61 2010/04/01 19:54:48 rikster5 Exp $ */
 
 /*******************************************************************************
  * address.c
@@ -419,6 +419,7 @@ int get_addresses2(AddressList **address_list, int sort_order,
       pi_buffer_free(RecordBuffer);
 
       if ( ((br->attrib & 0x0F) != category) && category != CATEGORY_ALL) {
+         free_Address(&addr);
          continue;
       }
       buf = NULL;

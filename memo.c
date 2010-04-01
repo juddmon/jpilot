@@ -1,4 +1,4 @@
-/* $Id: memo.c,v 1.48 2010/03/29 05:44:29 rikster5 Exp $ */
+/* $Id: memo.c,v 1.49 2010/04/01 19:54:48 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo.c
@@ -190,6 +190,7 @@ int get_memos2(MemoList **memo_list, int sort_order,
       pi_buffer_free(RecordBuffer);
 
       if ( ((br->attrib & 0x0F) != category) && category != CATEGORY_ALL) {
+         free_Memo(&memo);
          continue;
       }
       if (memo.text) {

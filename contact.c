@@ -1,4 +1,4 @@
-/* $Id: contact.c,v 1.21 2010/04/01 05:32:43 rikster5 Exp $ */
+/* $Id: contact.c,v 1.22 2010/04/01 19:54:48 rikster5 Exp $ */
 
 /*******************************************************************************
  * contact.c
@@ -712,6 +712,7 @@ int get_contacts2(ContactList **contact_list, int sort_order,
 //#endif /* PILOT_LINK_0_12 */
 
       if ( ((br->attrib & 0x0F) != category) && category != CATEGORY_ALL) {
+         jp_free_Contact(&cont);
          continue;
       }
       buf = NULL;

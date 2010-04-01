@@ -1,4 +1,4 @@
-/* $Id: todo.c,v 1.49 2010/03/29 05:44:31 rikster5 Exp $ */
+/* $Id: todo.c,v 1.50 2010/04/01 19:54:48 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo.c
@@ -208,6 +208,7 @@ int get_todos2(ToDoList **todo_list, int sort_order,
       pi_buffer_free(RecordBuffer);
 
       if ( ((br->attrib & 0x0F) != category) && category != CATEGORY_ALL) {
+         free_ToDo(&todo);
          continue;
       }
 
