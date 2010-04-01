@@ -1,4 +1,4 @@
-/* $Id: export_gui.c,v 1.26 2010/03/29 05:44:28 rikster5 Exp $ */
+/* $Id: export_gui.c,v 1.27 2010/04/01 21:40:47 rikster5 Exp $ */
 
 /*******************************************************************************
  * export_gui.c
@@ -152,6 +152,7 @@ static gboolean cb_export_destroy(GtkWidget *widget)
    if (glob_cb_export_done) {
       glob_cb_export_done(widget, filename);
    }
+   clist_clear(GTK_CLIST(export_clist));
    gtk_main_quit();
 
    return FALSE;
