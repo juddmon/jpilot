@@ -1,4 +1,4 @@
-/* $Id: calendar.c,v 1.6 2010/04/01 05:26:38 rikster5 Exp $ */
+/* $Id: calendar.c,v 1.7 2010/04/01 22:49:01 rikster5 Exp $ */
 
 /*******************************************************************************
  * calendar.c
@@ -205,7 +205,6 @@ int get_calendar_app_info(struct CalendarAppInfo *cai)
    pi_buf.used = rec_size;
    pi_buf.allocated = rec_size;
 
-   // TODO: - update this function to accept a pi_buffer
    num = unpack_CalendarAppInfo(cai, &pi_buf);
 
    if (buf) {
