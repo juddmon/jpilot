@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.106 2010/03/29 05:44:32 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.107 2010/04/01 21:21:22 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -1380,7 +1380,7 @@ static void keyr_update_clist(GtkWidget *clist, struct MyKeyRing **keyring_list,
       gtk_signal_disconnect_by_func(GTK_OBJECT(clist),
                                     GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
    }
-   gtk_clist_clear(GTK_CLIST(clist));
+   clist_clear(GTK_CLIST(clist));
 #ifdef __APPLE__
    gtk_clist_thaw(GTK_CLIST(clist));
    gtk_widget_hide(clist);
@@ -2255,6 +2255,7 @@ int plugin_gui_cleanup(void) {
    }
 
    connect_changed_signals(DISCONNECT_SIGNALS);
+   clist_clear(GTK_CLIST(clist));
 
    free_mykeyring_list(&glob_keyring_list);
 
