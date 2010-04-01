@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.219 2010/03/31 20:26:05 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.220 2010/04/01 05:11:01 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -3562,7 +3562,10 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
 
    pdb_file_write_app_block(db_name, pi_buf.data, pi_buf.used);
 
+   free(pi_buf.data);
+
    cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
+
 }
 
 static void cb_category(GtkWidget *item, int selection)

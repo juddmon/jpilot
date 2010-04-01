@@ -1,4 +1,4 @@
-/* $Id: calendar.c,v 1.4 2010/03/31 20:26:05 rikster5 Exp $ */
+/* $Id: calendar.c,v 1.5 2010/04/01 05:11:01 rikster5 Exp $ */
 
 /*******************************************************************************
  * calendar.c
@@ -457,6 +457,7 @@ int get_days_calendar_events2(CalendarEventList **calendar_event_list,
             continue;
          }
          copy_appointment_to_calendarEvent(&appt, &cale);
+         free_Appointment(&appt);
       }
 
       //TODO: fix this
@@ -467,6 +468,7 @@ int get_days_calendar_events2(CalendarEventList **calendar_event_list,
 #endif
       if (now!=NULL) {
          if (! calendar_isApptOnDate(&cale, now)) {
+            free_CalendarEvent(&cale);
             continue;
          }
       }
