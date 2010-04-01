@@ -1,4 +1,4 @@
-/* $Id: contact.c,v 1.19 2010/03/31 20:26:05 rikster5 Exp $ */
+/* $Id: contact.c,v 1.20 2010/04/01 05:26:38 rikster5 Exp $ */
 
 /*******************************************************************************
  * contact.c
@@ -402,7 +402,7 @@ int copy_address_ai_to_contact_ai(const struct AddressAppInfo *aai, struct Conta
    for (i=0; i<5; i++) {
       cai->IMLabels[i][0] = '\0';
    }
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int copy_address_to_contact(const struct Address *a, struct Contact *c)
@@ -449,7 +449,7 @@ int copy_address_to_contact(const struct Address *a, struct Contact *c)
    }
    c->picture = NULL;
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int copy_addresses_to_contacts(AddressList *al, ContactList **cl)
@@ -475,7 +475,8 @@ int copy_addresses_to_contacts(AddressList *al, ContactList **cl)
          last_cl = temp_cl;
       }
    }
-   return 0;
+
+   return EXIT_SUCCESS;
 }
 
 static int copy_contact_ai_to_address_ai(const struct ContactAppInfo *cai, 
@@ -510,7 +511,7 @@ static int copy_contact_ai_to_address_ai(const struct ContactAppInfo *cai,
       aai->labelRenamed[i]=0;
    }
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int copy_contact_to_address(const struct Contact *c, struct Address *a)
@@ -543,7 +544,8 @@ int copy_contact_to_address(const struct Contact *c, struct Address *a)
          }
       }
    }
-   return 0;
+
+   return EXIT_SUCCESS;
 }
 
 void free_ContactList(ContactList **cl)

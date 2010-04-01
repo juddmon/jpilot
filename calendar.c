@@ -1,4 +1,4 @@
-/* $Id: calendar.c,v 1.5 2010/04/01 05:11:01 rikster5 Exp $ */
+/* $Id: calendar.c,v 1.6 2010/04/01 05:26:38 rikster5 Exp $ */
 
 /*******************************************************************************
  * calendar.c
@@ -47,7 +47,8 @@ int copy_appointment_ai_to_calendar_ai(const struct AppointmentAppInfo *aai, str
    memcpy(&cai->category, &aai->category, sizeof(struct CategoryAppInfo));
    cai->startOfWeek = aai->startOfWeek;
    memset(&cai->internal, '\0', sizeof(cai->internal));
-   return 0;
+
+   return EXIT_SUCCESS;
 }
 
 /* Copy AppInfo data structures */
@@ -55,7 +56,8 @@ int copy_calendar_ai_to_appointment_ai(const struct CalendarAppInfo *cai, struct
 {
    memcpy(&aai->category, &cai->category, sizeof(struct CategoryAppInfo));
    aai->startOfWeek = cai->startOfWeek;
-   return 0;
+
+   return EXIT_SUCCESS;
 }
 
 int copy_appointment_to_calendarEvent(const struct Appointment *appt, 
@@ -102,7 +104,7 @@ int copy_appointment_to_calendarEvent(const struct Appointment *appt,
    }
    cale->tz = NULL;
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 int copy_appointments_to_calendarEvents(AppointmentList *al, CalendarEventList **cel)
@@ -128,7 +130,8 @@ int copy_appointments_to_calendarEvents(AppointmentList *al, CalendarEventList *
          last_cel = temp_cel;
       }
    }
-   return 0;
+
+   return EXIT_SUCCESS;
 }
 
 int copy_calendarEvent_to_appointment(const struct CalendarEvent *cale, 
@@ -169,7 +172,7 @@ int copy_calendarEvent_to_appointment(const struct CalendarEvent *cale,
       appt->note = NULL;
    }
 
-   return 0;
+   return EXIT_SUCCESS;
 }
 
 void free_CalendarEventList(CalendarEventList **cel)
