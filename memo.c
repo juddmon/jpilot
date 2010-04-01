@@ -1,4 +1,4 @@
-/* $Id: memo.c,v 1.49 2010/04/01 19:54:48 rikster5 Exp $ */
+/* $Id: memo.c,v 1.50 2010/04/01 23:09:59 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo.c
@@ -57,7 +57,7 @@ void free_MemoList(MemoList **memo)
 
 int get_memo_app_info(struct MemoAppInfo *ai)
 {
-   int num;
+   int num, r;
    unsigned int rec_size;
    unsigned char *buf;
    char DBname[32];
@@ -82,7 +82,15 @@ int get_memo_app_info(struct MemoAppInfo *ai)
       break;
    }
 
-   jp_get_app_info(DBname, &buf, (int*)&rec_size);
+   r = jp_get_app_info(DBname, &buf, (int*)&rec_size);
+   if ((r != EXIT_SUCCESS) || (rec_size<=0)) {
+      jp_logf(JP_LOG_WARN, _("%s:%d Error reading application info %s\n"), __FILE__, __LINE__, DBname);
+      if (buf) {
+         free(buf);
+      }
+      return EXIT_FAILURE;
+   }
+
    num = unpack_MemoAppInfo(ai, buf, rec_size);
    if (buf) {
       free(buf);

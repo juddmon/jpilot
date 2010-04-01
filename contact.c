@@ -1,4 +1,4 @@
-/* $Id: contact.c,v 1.22 2010/04/01 19:54:48 rikster5 Exp $ */
+/* $Id: contact.c,v 1.23 2010/04/01 23:09:59 rikster5 Exp $ */
 
 /*******************************************************************************
  * contact.c
@@ -565,7 +565,7 @@ void free_ContactList(ContactList **cl)
 
 int get_contact_app_info(struct ContactAppInfo *ai)
 {
-   int num;
+   int num, r;
    int rec_size;
    unsigned char *buf;
    pi_buffer_t pi_buf;
@@ -575,18 +575,23 @@ int get_contact_app_info(struct ContactAppInfo *ai)
    /* Put at least one entry in there */
    strcpy(ai->category.name[0], "Unfiled");
 
-   jp_get_app_info("ContactsDB-PAdd", &buf, &rec_size);
-   //num = jp_unpack_ContactAppInfo(ai, buf, rec_size);
+   r = jp_get_app_info("ContactsDB-PAdd", &buf, &rec_size);
+   if ((r != EXIT_SUCCESS) || (rec_size<=0)) {
+      jp_logf(JP_LOG_WARN, _("%s:%d Error reading application info %s\n"), __FILE__, __LINE__, "ContactsDB-PAdd");
+      if (buf) {
+         free(buf);
+      }
+      return EXIT_FAILURE;
+   }
+
    pi_buf.data = buf;
    pi_buf.used = rec_size;
    pi_buf.allocated = rec_size;
 
    num = jp_unpack_ContactAppInfo(ai, &pi_buf);
-
    if (buf) {
       free(buf);
    }
-
    if ((num<0) || (rec_size<=0)) {
       jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), "ContactsDB-PAdd.pdb");
       return EXIT_FAILURE;

@@ -1,4 +1,4 @@
-/* $Id: todo.c,v 1.50 2010/04/01 19:54:48 rikster5 Exp $ */
+/* $Id: todo.c,v 1.51 2010/04/01 23:09:59 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo.c
@@ -84,15 +84,16 @@ int get_todo_app_info(struct ToDoAppInfo *ai)
 #else
    strcpy(DBname, "ToDoDB");
 #endif
-   r = jp_get_app_info(DBname, &buf, &rec_size);
 
-   if ((r<0) || (rec_size<=0)) {
-      jp_logf(JP_LOG_WARN, _("%s:%d Error reading category info %s\n"), __FILE__, __LINE__, DBname);
+   r = jp_get_app_info(DBname, &buf, &rec_size);
+   if ((r != EXIT_SUCCESS) || (rec_size<=0)) {
+      jp_logf(JP_LOG_WARN, _("%s:%d Error reading application info %s\n"), __FILE__, __LINE__, DBname);
       if (buf) {
          free(buf);
       }
       return EXIT_FAILURE;
    }
+
    num = unpack_ToDoAppInfo(ai, buf, rec_size);
    if (buf) {
       free(buf);

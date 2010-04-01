@@ -1,4 +1,4 @@
-/* $Id: calendar.c,v 1.7 2010/04/01 22:49:01 rikster5 Exp $ */
+/* $Id: calendar.c,v 1.8 2010/04/01 23:09:59 rikster5 Exp $ */
 
 /*******************************************************************************
  * calendar.c
@@ -189,7 +189,7 @@ void free_CalendarEventList(CalendarEventList **cel)
 
 int get_calendar_app_info(struct CalendarAppInfo *cai)
 {
-   int num;
+   int num, r;
    int rec_size;
    unsigned char *buf;
    pi_buffer_t pi_buf;
@@ -198,19 +198,23 @@ int get_calendar_app_info(struct CalendarAppInfo *cai)
    /* Put at least one entry in there */
    strcpy(cai->category.name[0], "Unfiled");
 
-   jp_get_app_info("CalendarDB-PDat", &buf, &rec_size);
-   // TODO: check return code
+   r = jp_get_app_info("CalendarDB-PDat", &buf, &rec_size);
+   if ((r != EXIT_SUCCESS) || (rec_size<=0)) {
+      jp_logf(JP_LOG_WARN, _("%s:%d Error reading application info %s\n"), __FILE__, __LINE__, "CalendarDB-PDat");
+      if (buf) {
+         free(buf);
+      }
+      return EXIT_FAILURE;
+   }
 
    pi_buf.data = buf;
    pi_buf.used = rec_size;
    pi_buf.allocated = rec_size;
 
    num = unpack_CalendarAppInfo(cai, &pi_buf);
-
    if (buf) {
       free(buf);
    }
-
    if ((num<0) || (rec_size<=0)) {
       jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), "CalendarDB-PDat.pdb");
       return EXIT_FAILURE;

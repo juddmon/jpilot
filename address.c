@@ -1,4 +1,4 @@
-/* $Id: address.c,v 1.61 2010/04/01 19:54:48 rikster5 Exp $ */
+/* $Id: address.c,v 1.62 2010/04/01 23:09:59 rikster5 Exp $ */
 
 /*******************************************************************************
  * address.c
@@ -319,7 +319,7 @@ void free_AddressList(AddressList **al)
 
 int get_address_app_info(struct AddressAppInfo *ai)
 {
-   int num;
+   int num, r;
    int rec_size;
    unsigned char *buf;
 
@@ -327,7 +327,15 @@ int get_address_app_info(struct AddressAppInfo *ai)
    /* Put at least one entry in there */
    strcpy(ai->category.name[0], "Unfiled");
 
-   jp_get_app_info("AddressDB", &buf, &rec_size);
+   r = jp_get_app_info("AddressDB", &buf, &rec_size);
+   if ((r != EXIT_SUCCESS) || (rec_size<=0)) {
+      jp_logf(JP_LOG_WARN, _("%s:%d Error reading application info %s\n"), __FILE__, __LINE__, "AddressDB");
+      if (buf) {
+         free(buf);
+      }
+      return EXIT_FAILURE;
+   }
+
    num = unpack_AddressAppInfo(ai, buf, rec_size);
    if (buf) {
       free(buf);

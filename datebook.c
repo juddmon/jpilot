@@ -1,4 +1,4 @@
-/* $Id: datebook.c,v 1.63 2010/04/01 21:14:35 rikster5 Exp $ */
+/* $Id: datebook.c,v 1.64 2010/04/01 23:09:59 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook.c
@@ -469,7 +469,7 @@ void free_AppointmentList(AppointmentList **al)
 int get_calendar_or_datebook_app_info(struct CalendarAppInfo *cai, 
                                       long datebook_version)
 {
-   int num;
+   int num, r;
    int rec_size;
    unsigned char *buf;
    char DBname[32];
@@ -488,7 +488,14 @@ int get_calendar_or_datebook_app_info(struct CalendarAppInfo *cai,
       strcpy(DBname, "DatebookDB");
    }
       
-   jp_get_app_info(DBname, &buf, &rec_size);
+   r = jp_get_app_info(DBname, &buf, &rec_size);
+   if ((r != EXIT_SUCCESS) || (rec_size<=0)) {
+      jp_logf(JP_LOG_WARN, _("%s:%d Error reading application info %s\n"), __FILE__, __LINE__, DBname);
+      if (buf) {
+         free(buf);
+      }
+      return EXIT_FAILURE;
+   }
 
    pi_buf.data = buf;
    pi_buf.used = rec_size;
@@ -499,7 +506,6 @@ int get_calendar_or_datebook_app_info(struct CalendarAppInfo *cai,
    } else {
       num = unpack_AppointmentAppInfo(&aai, buf, rec_size);
    }
-
    if (buf) {
       free(buf);
    }
