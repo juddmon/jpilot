@@ -1,4 +1,4 @@
-/* $Id: libplugin.h,v 1.31 2010/03/29 05:44:29 rikster5 Exp $ */
+/* $Id: libplugin.h,v 1.32 2010/04/01 22:16:19 rikster5 Exp $ */
 
 /*******************************************************************************
  * libplugin.h
@@ -201,13 +201,16 @@ struct search_result
 
 
 void plugin_version(int *major_version, int *minor_version);
-int plugin_get_help_name(char *name, int len);
 int plugin_get_name(char *name, int len);
 int plugin_get_menu_name(char *name, int len);
+int plugin_get_help_name(char *name, int len);
 int plugin_get_db_name(char *db_name, int len);
 int plugin_startup(jp_startup_info *info);
 int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id);
 int plugin_help(char **text, int *width, int *height);
+int plugin_print(void);
+int plugin_import(GtkWidget *window);
+int plugin_export(GtkWidget *window);
 int plugin_gui_cleanup(void);
 int plugin_pre_sync_pre_connect(void);
 int plugin_pre_sync(void);

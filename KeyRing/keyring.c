@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.107 2010/04/01 21:21:22 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.108 2010/04/01 22:16:19 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -2206,7 +2206,10 @@ static void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *clist,
    }
 }
 
-static int plugin_export(GtkWidget *window)
+/*
+ * This is a plugin callback function to export records.
+ */
+int plugin_export(GtkWidget *window)
 {
    int w, h, x, y;
    char *type_text[]={N_("Text"), N_("CSV"), NULL};
@@ -2255,7 +2258,6 @@ int plugin_gui_cleanup(void) {
    }
 
    connect_changed_signals(DISCONNECT_SIGNALS);
-   clist_clear(GTK_CLIST(clist));
 
    free_mykeyring_list(&glob_keyring_list);
 
@@ -2278,6 +2280,8 @@ int plugin_gui_cleanup(void) {
       set_pref(PREF_KEYRING_PANE, gtk_paned_get_position(GTK_PANED(pane)), NULL, TRUE);
 
       pane = NULL;
+
+      clist_clear(GTK_CLIST(clist));
    }
 
    return EXIT_SUCCESS;
