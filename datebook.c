@@ -1,4 +1,4 @@
-/* $Id: datebook.c,v 1.66 2010/04/02 04:26:27 rikster5 Exp $ */
+/* $Id: datebook.c,v 1.67 2010/04/02 04:55:17 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook.c
@@ -139,26 +139,6 @@ int datebook_add_exception(struct CalendarEvent *cale, int year, int mon, int da
    Ptm->tm_isdst = -1;
    mktime(Ptm);
    return EXIT_SUCCESS;
-}
-
-static int datebook_compare(const void *v1, const void *v2)
-{
-   AppointmentList **al1, **al2;
-   struct Appointment *appt1, *appt2;
-
-   al1=(AppointmentList **)v1;
-   al2=(AppointmentList **)v2;
-
-   appt1=&((*al1)->mappt.appt);
-   appt2=&((*al2)->mappt.appt);
-
-   if ((appt1->event) || (appt2->event)) {
-      return appt2->event-appt1->event;
-   }
-
-   /* Jim Rees pointed out my sorting error */
-   return ((appt1->begin.tm_hour*60 + appt1->begin.tm_min) -
-           (appt2->begin.tm_hour*60 + appt2->begin.tm_min));
 }
 
 /*
