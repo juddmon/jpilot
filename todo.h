@@ -1,4 +1,4 @@
-/* $Id: todo.h,v 1.14 2010/03/29 05:44:32 rikster5 Exp $ */
+/* $Id: todo.h,v 1.15 2010/04/02 04:53:49 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo.h
@@ -47,8 +47,9 @@ int todo_print(void);
 int todo_import(GtkWidget *window);
 int todo_export(GtkWidget *window);
 
-/* I only export this for datebook, don't use this */
+/* Exported for datebook use only.  Don't use these */
 void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
                        ToDoList **todo_list, int category, int main);
+void todo_clist_clear(GtkCList *clist);
 
 #endif
