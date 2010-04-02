@@ -1,4 +1,4 @@
-/* $Id: calendar.c,v 1.8 2010/04/01 23:09:59 rikster5 Exp $ */
+/* $Id: calendar.c,v 1.9 2010/04/02 00:44:57 rikster5 Exp $ */
 
 /*******************************************************************************
  * calendar.c
@@ -526,25 +526,46 @@ int get_days_calendar_events2(CalendarEventList **calendar_event_list,
    return recs_returned;
 }
 
-int pc_calendar_write(struct CalendarEvent *cale, PCRecType rt,
-                      unsigned char attrib, unsigned int *unique_id)
+int pc_calendar_write(struct CalendarEvent *cale, 
+                      PCRecType rt, 
+                      unsigned char attrib, 
+                      unsigned int *unique_id)
 {
+   Appointment_t appt;
    pi_buffer_t *RecordBuffer;
    buf_rec br;
    long char_set;
+   long datebook_version;
+   int r;
 
+   get_pref(PREF_DATEBOOK_VERSION, &datebook_version, NULL);
    get_pref(PREF_CHAR_SET, &char_set, NULL);
+
    if (char_set != CHAR_SET_LATIN1) {
       if (cale->description) charset_j2p(cale->description, strlen(cale->description)+1, char_set);
       if (cale->note) charset_j2p(cale->note, strlen(cale->note)+1, char_set);
-      if (cale->location) 
-        charset_j2p(cale->location, strlen(cale->location)+1, char_set);
+      if (datebook_version) {
+         if (cale->location) 
+            charset_j2p(cale->location, strlen(cale->location)+1, char_set);
+      }
    }
 
    RecordBuffer = pi_buffer_new(0);
-   if (pack_CalendarEvent(cale, RecordBuffer, calendar_v1) == -1) {
-      jp_logf(JP_LOG_WARN, "%s:%d jp_pack_Appointment %s\n", __FILE__, __LINE__, _("error"));
-      return EXIT_FAILURE;
+   if (datebook_version) {
+      if (pack_CalendarEvent(cale, RecordBuffer, calendar_v1) == -1) {
+         PRINT_FILE_LINE;
+         jp_logf(JP_LOG_WARN, "pack_CalendarEvent %s\n", _("error"));
+         return EXIT_FAILURE;
+      }
+   } else {
+      copy_calendarEvent_to_appointment(cale, &appt);
+      r = pack_Appointment(&appt, RecordBuffer, datebook_v1);
+      free_Appointment(&appt);
+      if (r == -1) {
+         PRINT_FILE_LINE;
+         jp_logf(JP_LOG_WARN, "pack_Appointment %s\n", _("error"));
+         return EXIT_FAILURE;
+      }
    }
    br.rt=rt;
    br.attrib = attrib;
@@ -557,7 +578,11 @@ int pc_calendar_write(struct CalendarEvent *cale, PCRecType rt,
       br.unique_id = 0;
    }
 
-   jp_pc_write("CalendarDB-PDat", &br);
+   if (datebook_version) {
+      jp_pc_write("CalendarDB-PDat", &br);
+   } else {
+      jp_pc_write("DatebookDB", &br);
+   }
 
    if (unique_id) {
       *unique_id = br.unique_id;

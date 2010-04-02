@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.221 2010/04/01 18:28:22 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.222 2010/04/02 00:44:57 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -621,7 +621,7 @@ static int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int 
                new_cale.description[MAX_DESC_LEN+1]='\0';
                jp_logf(JP_LOG_WARN, _("Appointment description text > %d, truncating to %d\n"), MAX_DESC_LEN, MAX_DESC_LEN);
             }
-            pc_calendar_or_datebook_write(&new_cale, NEW_PC_REC, attrib, NULL, datebook_version);
+            pc_calendar_write(&new_cale, NEW_PC_REC, attrib, NULL);
          }
       }
    }
@@ -684,7 +684,7 @@ static int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int 
          attrib = (new_cat_num & 0x0F) |
            ((temp_celist->mcale.attrib & 0x10) ? dlpRecAttrSecret : 0);
          if ((ret==DIALOG_SAID_IMPORT_YES) || (import_all)) {
-            pc_calendar_or_datebook_write(&(temp_celist->mcale.cale), NEW_PC_REC, attrib, NULL, datebook_version);
+            pc_calendar_write(&(temp_celist->mcale.cale), NEW_PC_REC, attrib, NULL);
          }
       }
       free_CalendarEventList(&celist);
@@ -2884,25 +2884,25 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
          datebook_add_exception(cale, current_year, current_month, current_day);
          if ((mcale->rt==PALM_REC) || (mcale->rt==REPLACEMENT_PALM_REC)) {
             /* The original record gets the same ID, this exception gets a new one. */
-            pc_calendar_or_datebook_write(cale, REPLACEMENT_PALM_REC, attrib, &unique_id, datebook_version);
+            pc_calendar_write(cale, REPLACEMENT_PALM_REC, attrib, &unique_id);
          } else {
-            pc_calendar_or_datebook_write(cale, NEW_PC_REC, attrib, NULL, datebook_version);
+            pc_calendar_write(cale, NEW_PC_REC, attrib, NULL);
          }
          unique_id = 0;
-         pc_calendar_or_datebook_write(&new_cale, NEW_PC_REC, attrib, &unique_id, datebook_version);
+         pc_calendar_write(&new_cale, NEW_PC_REC, attrib, &unique_id);
          free_CalendarEvent(cale);
          free(cale);
       } else {
          if ((mcale->rt==PALM_REC) || (mcale->rt==REPLACEMENT_PALM_REC)) {
-            pc_calendar_or_datebook_write(&new_cale, REPLACEMENT_PALM_REC, attrib, &unique_id, datebook_version);
+            pc_calendar_write(&new_cale, REPLACEMENT_PALM_REC, attrib, &unique_id);
          } else {
             unique_id=0;
-            pc_calendar_or_datebook_write(&new_cale, NEW_PC_REC, attrib, &unique_id, datebook_version);
+            pc_calendar_write(&new_cale, NEW_PC_REC, attrib, &unique_id);
          }
       }
    } else {
       unique_id=0; /* Palm will supply unique_id for new record */
-      pc_calendar_or_datebook_write(&new_cale, NEW_PC_REC, attrib, &unique_id, datebook_version);
+      pc_calendar_write(&new_cale, NEW_PC_REC, attrib, &unique_id);
    }
 
    /* Position calendar on the actual event or next future occurrence depending
@@ -3028,7 +3028,7 @@ static void cb_delete_appt(GtkWidget *widget, gpointer data)
       delete_pc_record(CALENDAR, mcale, flag);
    }
    if (write_flag) {
-      pc_calendar_or_datebook_write(cale, REPLACEMENT_PALM_REC, mcale->attrib, write_unique_id, datebook_version);
+      pc_calendar_write(cale, REPLACEMENT_PALM_REC, mcale->attrib, write_unique_id);
       free_CalendarEvent(cale);
       free(cale);
    }

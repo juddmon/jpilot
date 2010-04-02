@@ -1,4 +1,4 @@
-/* $Id: calendar.h,v 1.2 2010/03/29 05:44:27 rikster5 Exp $ */
+/* $Id: calendar.h,v 1.3 2010/04/02 00:44:57 rikster5 Exp $ */
 
 /*******************************************************************************
  * calendar.h
@@ -61,7 +61,9 @@ int get_days_calendar_events2(CalendarEventList **calendar_event_list, struct tm
                               int modified, int deleted, int privates,
                               int category, int *total_records);
 
-int pc_calendar_write(struct CalendarEvent *cale, PCRecType rt,
-                      unsigned char attrib, unsigned int *unique_id);
+int pc_calendar_write(struct CalendarEvent *cale, 
+                      PCRecType rt,
+                      unsigned char attrib,
+                      unsigned int *unique_id);
 
 #endif
