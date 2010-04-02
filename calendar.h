@@ -1,4 +1,4 @@
-/* $Id: calendar.h,v 1.3 2010/04/02 00:44:57 rikster5 Exp $ */
+/* $Id: calendar.h,v 1.4 2010/04/02 04:26:26 rikster5 Exp $ */
 
 /*******************************************************************************
  * calendar.h
@@ -36,9 +36,11 @@ int copy_calendar_ai_to_appointment_ai(const struct CalendarAppInfo *cai, struct
 
 int copy_appointment_to_calendarEvent(const struct Appointment *a, struct CalendarEvent *cale);
 
+int copy_calendarEvent_to_appointment(const struct CalendarEvent *cale, struct Appointment *a);
+
 int copy_appointments_to_calendarEvents(AppointmentList *al, CalendarEventList **cel);
 
-int copy_calendarEvent_to_appointment(const struct CalendarEvent *cale, struct Appointment *a);
+int copy_calendarEvents_to_appointments(CalendarEventList *cel, AppointmentList **al);
 
 void free_CalendarEventList(CalendarEventList **cel);
 

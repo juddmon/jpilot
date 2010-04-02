@@ -1,4 +1,4 @@
-/* $Id: search_gui.c,v 1.52 2010/03/29 05:44:31 rikster5 Exp $ */
+/* $Id: search_gui.c,v 1.53 2010/04/02 04:26:27 rikster5 Exp $ */
 
 /*******************************************************************************
  * search_gui.c
@@ -101,14 +101,8 @@ static int search_datebook(const char *needle, GtkWidget *clist)
    /* Search Appointments */
    ce_list = NULL;
 
-   if (datebook_version) {
-      get_days_calendar_events2(&ce_list, NULL, 2, 2, 2, CATEGORY_ALL, NULL);
-   } else {
-      AppointmentList *a_list=NULL;
-      get_days_appointments2(&a_list, NULL, 2, 2, 2, NULL);
-      copy_appointments_to_calendarEvents(a_list, &ce_list);
-      free_AppointmentList(&a_list);
-   }
+   get_days_calendar_events2(&ce_list, NULL, 2, 2, 2, CATEGORY_ALL, NULL);
+
    if (ce_list==NULL) {
       return 0;
    }
@@ -192,7 +186,7 @@ static int search_datebook(const char *needle, GtkWidget *clist)
       }
    }
 
-   jp_logf(JP_LOG_DEBUG, "calling free_AppointmentList\n");
+   jp_logf(JP_LOG_DEBUG, "calling free_CalendarEventList\n");
    free_CalendarEventList(&ce_list);
 
    return count;

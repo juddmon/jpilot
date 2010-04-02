@@ -1,4 +1,4 @@
-/* $Id: calendar.c,v 1.9 2010/04/02 00:44:57 rikster5 Exp $ */
+/* $Id: calendar.c,v 1.10 2010/04/02 04:26:26 rikster5 Exp $ */
 
 /*******************************************************************************
  * calendar.c
@@ -107,33 +107,6 @@ int copy_appointment_to_calendarEvent(const struct Appointment *appt,
    return EXIT_SUCCESS;
 }
 
-int copy_appointments_to_calendarEvents(AppointmentList *al, CalendarEventList **cel)
-{
-   CalendarEventList *temp_cel, *last_cel;
-   AppointmentList *temp_al;
-
-   *cel = last_cel = NULL;
-
-   for (temp_al = al; temp_al; temp_al=temp_al->next) {
-      temp_cel = malloc(sizeof(CalendarEventList));
-      if (!temp_cel) return -1;
-      temp_cel->mcale.rt = temp_al->mappt.rt;
-      temp_cel->mcale.unique_id = temp_al->mappt.unique_id;
-      temp_cel->mcale.attrib = temp_al->mappt.attrib;
-      copy_appointment_to_calendarEvent(&(temp_al->mappt.appt), &(temp_cel->mcale.cale));
-      temp_cel->app_type = CALENDAR;
-      temp_cel->next=NULL;
-      if (!last_cel) {
-         *cel = last_cel = temp_cel;
-      } else {
-         last_cel->next = temp_cel;
-         last_cel = temp_cel;
-      }
-   }
-
-   return EXIT_SUCCESS;
-}
-
 int copy_calendarEvent_to_appointment(const struct CalendarEvent *cale, 
                                       struct Appointment *appt)
 {
@@ -170,6 +143,60 @@ int copy_calendarEvent_to_appointment(const struct CalendarEvent *cale,
       appt->note = strdup(cale->note);
    } else {
       appt->note = NULL;
+   }
+
+   return EXIT_SUCCESS;
+}
+
+int copy_appointments_to_calendarEvents(AppointmentList *al, CalendarEventList **cel)
+{
+   CalendarEventList *temp_cel, *last_cel;
+   AppointmentList *temp_al;
+
+   *cel = last_cel = NULL;
+
+   for (temp_al = al; temp_al; temp_al=temp_al->next) {
+      temp_cel = malloc(sizeof(CalendarEventList));
+      if (!temp_cel) return -1;
+      temp_cel->mcale.rt = temp_al->mappt.rt;
+      temp_cel->mcale.unique_id = temp_al->mappt.unique_id;
+      temp_cel->mcale.attrib = temp_al->mappt.attrib;
+      copy_appointment_to_calendarEvent(&(temp_al->mappt.appt), &(temp_cel->mcale.cale));
+      temp_cel->app_type = CALENDAR;
+      temp_cel->next=NULL;
+      if (!last_cel) {
+         *cel = last_cel = temp_cel;
+      } else {
+         last_cel->next = temp_cel;
+         last_cel = temp_cel;
+      }
+   }
+
+   return EXIT_SUCCESS;
+}
+
+int copy_calendarEvents_to_appointments(CalendarEventList *cel, AppointmentList **al)
+{
+   AppointmentList *temp_al, *last_al;
+   CalendarEventList *temp_cel;
+
+   *al = last_al = NULL;
+
+   for (temp_cel = cel; temp_cel; temp_cel=temp_cel->next) {
+      temp_al = malloc(sizeof(AppointmentList));
+      if (!temp_al) return -1;
+      temp_al->mappt.rt = temp_cel->mcale.rt;
+      temp_al->mappt.unique_id = temp_cel->mcale.unique_id;
+      temp_al->mappt.attrib = temp_cel->mcale.attrib;
+      copy_calendarEvent_to_appointment(&(temp_cel->mcale.cale), &(temp_al->mappt.appt));
+      temp_al->app_type = DATEBOOK;
+      temp_al->next=NULL;
+      if (!last_al) {
+         *al = last_al = temp_al;
+      } else {
+         last_al->next = temp_al;
+         last_al = temp_al;
+      }
    }
 
    return EXIT_SUCCESS;
