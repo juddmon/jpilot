@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.183 2010/04/01 18:28:22 rikster5 Exp $ */
+/* $Id: utils.c,v 1.184 2010/04/03 02:08:09 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -1932,7 +1932,7 @@ void get_compile_options(char *string, int len)
 {
    g_snprintf(string, len,
               PN" version "VERSION"\n"
-              "  Copyright (C) 1999-2009 by Judd Montgomery\n"
+              "  Copyright (C) 1999-2010 by Judd Montgomery\n"
               "  judd@jpilot.org, http://jpilot.org\n"
               "\n"
               PN" comes with ABSOLUTELY NO WARRANTY; for details see the file\n"
