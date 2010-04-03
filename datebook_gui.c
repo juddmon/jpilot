@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.223 2010/04/02 04:49:57 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.224 2010/04/03 02:34:03 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -4628,11 +4628,11 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
                       GTK_SIGNAL_FUNC(cb_weekview), NULL);
    gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 3);
    gtk_widget_show(button);
-   gtk_label_set_pattern(GTK_LABEL(GTK_BIN(button)->child), "_");
+
    /* Accelerator key to use for starting Weekview GUI */
-   gtk_widget_add_accelerator(GTK_WIDGET(button), "clicked", accel_group, *_("W"),
-                              GDK_MOD1_MASK, GTK_ACCEL_VISIBLE);
-   gtk_tooltips_set_tip(glob_tooltips, button, _("View appointments by week"), NULL);
+   gtk_widget_add_accelerator(GTK_WIDGET(button), "clicked", accel_group, GDK_w,
+                              GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+   gtk_tooltips_set_tip(glob_tooltips, button, _("View appointments by week   Ctrl+W"), NULL);
 
    /* Make Monthview button */
    button = gtk_button_new_with_label(_("Month"));
@@ -4641,11 +4641,10 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 3);
    gtk_widget_show(button);
 
-   gtk_label_set_pattern(GTK_LABEL(GTK_BIN(button)->child), "_");
    /* Accelerator key to use for starting Monthview GUI */
-   gtk_widget_add_accelerator(GTK_WIDGET(button), "clicked", accel_group, *_("M"),
-                              GDK_MOD1_MASK, GTK_ACCEL_VISIBLE);
-   gtk_tooltips_set_tip(glob_tooltips, button, _("View appointments by month"), NULL);
+   gtk_widget_add_accelerator(GTK_WIDGET(button), "clicked", accel_group, GDK_m,
+                              GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+   gtk_tooltips_set_tip(glob_tooltips, button, _("View appointments by month   Ctrl-M"), NULL);
 
 #ifdef ENABLE_DATEBK
    if (use_db3_tags) {
