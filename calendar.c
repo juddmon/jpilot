@@ -1,4 +1,4 @@
-/* $Id: calendar.c,v 1.10 2010/04/02 04:26:26 rikster5 Exp $ */
+/* $Id: calendar.c,v 1.11 2010/04/05 04:34:31 rikster5 Exp $ */
 
 /*******************************************************************************
  * calendar.c
@@ -493,7 +493,7 @@ int get_days_calendar_events2(CalendarEventList **calendar_event_list,
          free_Appointment(&appt);
       }
 
-      //TODO: fix this
+      //FIXME: verify db3 hack works with new calendar code
 #ifdef ENABLE_DATEBK
       if (use_db3_tags) {
          calendar_db3_hack_date(&cale, &today);
