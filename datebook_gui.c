@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.224 2010/04/03 02:34:03 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.225 2010/04/13 15:54:02 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -4829,7 +4829,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
                       GINT_TO_POINTER(UNDELETE_FLAG));
 
    /* Copy button */
-   CREATE_BUTTON(copy_record_button, _("Copy"), COPY, _("Copy the selected record"), GDK_o, GDK_CONTROL_MASK, "Ctrl+O")
+   CREATE_BUTTON(copy_record_button, _("Copy"), COPY, _("Copy the selected record"), GDK_c, GDK_CONTROL_MASK|GDK_SHIFT_MASK, "Ctrl+Shift+C")
    gtk_signal_connect(GTK_OBJECT(copy_record_button), "clicked",
                       GTK_SIGNAL_FUNC(cb_add_new_record),
                       GINT_TO_POINTER(COPY_FLAG));

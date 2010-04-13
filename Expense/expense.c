@@ -1,4 +1,4 @@
-/* $Id: expense.c,v 1.72 2010/04/01 20:08:44 rikster5 Exp $ */
+/* $Id: expense.c,v 1.73 2010/04/13 15:54:02 rikster5 Exp $ */
 
 /*******************************************************************************
  * expense.c
@@ -1662,7 +1662,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
                       GTK_SIGNAL_FUNC(cb_delete),
                       GINT_TO_POINTER(DELETE_FLAG));
    
-   CREATE_BUTTON(copy_record_button, _("Copy"), COPY, _("Copy the selected record"), GDK_o, GDK_CONTROL_MASK, "Ctrl+O");
+   CREATE_BUTTON(copy_record_button, _("Copy"), COPY, _("Copy the selected record"), GDK_c, GDK_CONTROL_MASK|GDK_SHIFT_MASK, "Ctrl+Shift+C")
    gtk_signal_connect(GTK_OBJECT(copy_record_button), "clicked",
                       GTK_SIGNAL_FUNC(cb_add_new_record), 
                       GINT_TO_POINTER(COPY_FLAG));

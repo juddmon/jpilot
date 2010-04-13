@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.108 2010/04/01 22:16:19 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.109 2010/04/13 15:54:02 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -2526,7 +2526,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
                       GINT_TO_POINTER(UNDELETE_FLAG));
 
    /* Copy button */
-   CREATE_BUTTON(copy_record_button, _("Copy"), COPY, _("Copy the selected record"), GDK_o, GDK_CONTROL_MASK, "Ctrl+O");
+   CREATE_BUTTON(copy_record_button, _("Copy"), COPY, _("Copy the selected record"), GDK_c, GDK_CONTROL_MASK|GDK_SHIFT_MASK, "Ctrl+Shift+C")
    gtk_signal_connect(GTK_OBJECT(copy_record_button), "clicked",
                       GTK_SIGNAL_FUNC(cb_add_new_record),
                       GINT_TO_POINTER(COPY_FLAG));
