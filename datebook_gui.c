@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.225 2010/04/13 15:54:02 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.226 2010/04/14 05:04:37 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -4644,7 +4644,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    /* Accelerator key to use for starting Monthview GUI */
    gtk_widget_add_accelerator(GTK_WIDGET(button), "clicked", accel_group, GDK_m,
                               GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-   gtk_tooltips_set_tip(glob_tooltips, button, _("View appointments by month   Ctrl-M"), NULL);
+   gtk_tooltips_set_tip(glob_tooltips, button, _("View appointments by month   Ctrl+M"), NULL);
 
 #ifdef ENABLE_DATEBK
    if (use_db3_tags) {

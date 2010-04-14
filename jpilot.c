@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.184 2010/03/29 05:44:29 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.185 2010/04/14 05:04:37 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -1892,17 +1892,17 @@ int main(int argc, char *argv[])
    gtk_box_pack_start(GTK_BOX(g_vbox0), button_unlocked, FALSE, FALSE, 20);
 
    gtk_tooltips_set_tip(glob_tooltips, button_locked,
-                        _("Show private records   Ctrl-Z"), NULL);
+                        _("Show private records   Ctrl+Z"), NULL);
    gtk_widget_add_accelerator(button_locked, "clicked", accel_group,
       GDK_z, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
    gtk_tooltips_set_tip(glob_tooltips, button_masklocked,
-                        _("Hide private records   Ctrl-Z"), NULL);
+                        _("Hide private records   Ctrl+Z"), NULL);
    gtk_widget_add_accelerator(button_masklocked, "clicked", accel_group,
       GDK_z, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
    gtk_tooltips_set_tip(glob_tooltips, button_unlocked,
-                        _("Mask private records   Ctrl-Z"), NULL);
+                        _("Mask private records   Ctrl+Z"), NULL);
    gtk_widget_add_accelerator(button_unlocked, "clicked", accel_group,
       GDK_z, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
@@ -1913,7 +1913,7 @@ int main(int argc, char *argv[])
                       GINT_TO_POINTER(skip_plugins ? SYNC_NO_PLUGINS : 0));
    gtk_box_pack_start(GTK_BOX(g_vbox0), button_sync, FALSE, FALSE, 3);
 
-   gtk_tooltips_set_tip(glob_tooltips, button_sync, _("Sync your palm to the desktop   Ctrl-Y"), NULL);
+   gtk_tooltips_set_tip(glob_tooltips, button_sync, _("Sync your palm to the desktop   Ctrl+Y"), NULL);
    gtk_widget_add_accelerator(button_sync, "clicked", accel_group, GDK_y,
            GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
