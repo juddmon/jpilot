@@ -1,4 +1,4 @@
-/* $Id: weekview_gui.c,v 1.52 2010/03/29 05:44:32 rikster5 Exp $ */
+/* $Id: weekview_gui.c,v 1.53 2010/04/20 18:13:26 rikster5 Exp $ */
 
 /*******************************************************************************
  * weekview_gui.c
@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <gtk/gtk.h>
+#include <gdk/gdkkeysyms.h>
 
 #include "pi-calendar.h"
 
@@ -40,6 +41,7 @@
 /******************************* Global vars **********************************/
 extern int datebk_category;
 extern int glob_app;
+extern GtkTooltips *glob_tooltips;
 
 GtkWidget *weekview_window=NULL;
 static GtkWidget *week_day_label[8];
@@ -273,6 +275,7 @@ void weekview_gui(struct tm *date_in)
    GtkWidget *vbox, *hbox;
    GtkWidget *hbox_temp;
    GtkWidget *vbox_left, *vbox_right;
+   GtkAccelGroup *accel_group;
    long fdow;
    int i;
    char title[200];
@@ -305,6 +308,10 @@ void weekview_gui(struct tm *date_in)
    vbox = gtk_vbox_new(FALSE, 0);
    gtk_container_add(GTK_CONTAINER(weekview_window), vbox);
 
+   /* Make accelerators for some buttons window */
+   accel_group = gtk_accel_group_new();
+   gtk_window_add_accel_group(GTK_WINDOW(gtk_widget_get_toplevel(vbox)), accel_group);
+
    /* This box has the close button and arrows in it */
    align = gtk_alignment_new(0.5, 0.5, 0, 0);
    gtk_box_pack_start(GTK_BOX(vbox), align, FALSE, FALSE, 0);
@@ -321,6 +328,12 @@ void weekview_gui(struct tm *date_in)
                       GTK_SIGNAL_FUNC(cb_week_move),
                       GINT_TO_POINTER(-1));
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
+
+   /* Accelerator key for left arrow */
+   gtk_widget_add_accelerator(GTK_WIDGET(button), "clicked", accel_group, 
+                              GDK_Left, GDK_MOD1_MASK, GTK_ACCEL_VISIBLE);
+   gtk_tooltips_set_tip(glob_tooltips, button,
+                        _("Last week   Alt+LeftArrow"), NULL);
 
    /* Close button */
    button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
@@ -344,6 +357,12 @@ void weekview_gui(struct tm *date_in)
                       GTK_SIGNAL_FUNC(cb_week_move),
                       GINT_TO_POINTER(1));
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
+
+   /* Accelerator key for right arrow */
+   gtk_widget_add_accelerator(GTK_WIDGET(button), "clicked", accel_group, 
+                              GDK_Right, GDK_MOD1_MASK, GTK_ACCEL_VISIBLE);
+   gtk_tooltips_set_tip(glob_tooltips, button,
+                        _("Next week   Alt+RightArrow"), NULL);
 
    get_pref(PREF_FDOW, &fdow, NULL);
 

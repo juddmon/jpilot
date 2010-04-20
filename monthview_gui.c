@@ -1,4 +1,4 @@
-/* $Id: monthview_gui.c,v 1.54 2010/03/29 05:44:30 rikster5 Exp $ */
+/* $Id: monthview_gui.c,v 1.55 2010/04/20 18:13:26 rikster5 Exp $ */
 
 /*******************************************************************************
  * monthview_gui.c
@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <gtk/gtk.h>
+#include <gdk/gdkkeysyms.h>
 
 #include <pi-calendar.h>
 
@@ -40,6 +41,7 @@
 /******************************* Global vars **********************************/
 extern int datebk_category;
 extern int glob_app;
+extern GtkTooltips *glob_tooltips;
 
 GtkWidget *monthview_window=NULL;
 static GtkWidget *month_day_label[37];
@@ -410,6 +412,7 @@ void monthview_gui(struct tm *date_in)
    GtkWidget *vbox;
    GtkWidget *hbox;
    GtkWidget *hbox_temp;
+   GtkAccelGroup *accel_group;
    int i;
    char str[256];
    char str_dow[256];
@@ -449,6 +452,10 @@ void monthview_gui(struct tm *date_in)
    vbox = gtk_vbox_new(FALSE, 0);
    gtk_container_add(GTK_CONTAINER(monthview_window), vbox);
 
+   /* Make accelerators for some buttons window */
+   accel_group = gtk_accel_group_new();
+   gtk_window_add_accel_group(GTK_WINDOW(gtk_widget_get_toplevel(vbox)), accel_group);
+
    /* This box has the close button and arrows in it */
    align = gtk_alignment_new(0.5, 0.5, 0, 0);
    gtk_box_pack_start(GTK_BOX(vbox), align, FALSE, FALSE, 0);
@@ -465,6 +472,12 @@ void monthview_gui(struct tm *date_in)
                       GTK_SIGNAL_FUNC(cb_month_move),
                       GINT_TO_POINTER(-1));
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 3);
+
+   /* Accelerator key for left arrow */
+   gtk_widget_add_accelerator(GTK_WIDGET(button), "clicked", accel_group, 
+                              GDK_Left, GDK_MOD1_MASK, GTK_ACCEL_VISIBLE);
+   gtk_tooltips_set_tip(glob_tooltips, button,
+                        _("Last month   Alt+LeftArrow"), NULL);
 
    /* Close button */
    button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
@@ -487,6 +500,12 @@ void monthview_gui(struct tm *date_in)
                       GTK_SIGNAL_FUNC(cb_month_move),
                       GINT_TO_POINTER(1));
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 3);
+
+   /* Accelerator key for right arrow */
+   gtk_widget_add_accelerator(GTK_WIDGET(button), "clicked", accel_group, 
+                              GDK_Right, GDK_MOD1_MASK, GTK_ACCEL_VISIBLE);
+   gtk_tooltips_set_tip(glob_tooltips, button,
+                        _("Next month   Alt+RightArrow"), NULL);
 
    /* Month name label */
    jp_strftime(str, sizeof(str), "%B %Y", &glob_month_date);
