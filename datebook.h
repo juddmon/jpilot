@@ -1,4 +1,4 @@
-/* $Id: datebook.h,v 1.27 2010/04/02 00:44:57 rikster5 Exp $ */
+/* $Id: datebook.h,v 1.28 2010/04/21 05:57:53 rousseau Exp $ */
 
 /*******************************************************************************
  * datebook.h
@@ -144,7 +144,6 @@ int db3_has_tags(struct Appointment *a);
 int db3_which_icon(struct  Appointment *a);
 #endif
 
-int datebook_import(GtkWidget *window);
 int datebook_export(GtkWidget *window);
 
 #endif
