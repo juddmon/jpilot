@@ -1,4 +1,4 @@
-/* $Id: calendar.c,v 1.11 2010/04/05 04:34:31 rikster5 Exp $ */
+/* $Id: calendar.c,v 1.12 2010/04/21 11:44:54 rousseau Exp $ */
 
 /*******************************************************************************
  * calendar.c
@@ -314,9 +314,6 @@ int calendar_sort(CalendarEventList **cel,
    return EXIT_SUCCESS;
 }
 
-int get_days_calendar_events2(CalendarEventList **calendar_event_list, struct tm *now,
-                              int modified, int deleted, int privates,
-                              int category, int *total_records);
 int get_days_calendar_events(CalendarEventList **calendar_event_list, struct tm *now, int category, int *total_records)
 {
    return get_days_calendar_events2(calendar_event_list, now, 1, 1, 1, category, total_records);
