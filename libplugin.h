@@ -1,4 +1,4 @@
-/* $Id: libplugin.h,v 1.33 2010/04/21 11:15:02 rousseau Exp $ */
+/* $Id: libplugin.h,v 1.34 2010/04/21 11:31:06 rousseau Exp $ */
 
 /*******************************************************************************
  * libplugin.h
@@ -27,6 +27,7 @@
 #include <gtk/gtk.h>
 #include <time.h>
 #include <pi-appinfo.h>
+#include "log.h"
 
 /*
  * PLUGIN API for J-Pilot
@@ -160,8 +161,6 @@ int get_next_unique_pc_id(unsigned int *next_unique_id);
 #define JP_LOG_GUI    1024 /*messages always go to the gui window */
 
 #define JPILOT_EOF -7
-
-extern int jp_logf(int level, const char *format, ...);
 
 /* This bit means that this record is of no importance anymore */
 #define SPENT_PC_RECORD_BIT 256
