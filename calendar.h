@@ -1,4 +1,4 @@
-/* $Id: calendar.h,v 1.4 2010/04/02 04:26:26 rikster5 Exp $ */
+/* $Id: calendar.h,v 1.5 2010/04/21 05:56:40 rousseau Exp $ */
 
 /*******************************************************************************
  * calendar.h
@@ -48,10 +48,6 @@ int get_calendar_app_info(struct CalendarAppInfo *cai);
 
 int calendar_sort(CalendarEventList **cel,
                   int (*compare_func)(const void*, const void*));
-
-int get_days_calendar_events2(CalendarEventList **calendar_event_list, struct tm *now,
-                              int modified, int deleted, int privates,
-                              int category, int *total_records);
 
 int get_days_calendar_events(CalendarEventList **calendar_event_list, struct tm *now, int category, int *total_records);
 
