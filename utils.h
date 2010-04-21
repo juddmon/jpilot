@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.77 2010/04/01 18:28:22 rikster5 Exp $ */
+/* $Id: utils.h,v 1.78 2010/04/21 07:28:35 rousseau Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -294,10 +294,6 @@ int delete_pc_record(AppType app_type, void *VP, int flag);
 int undelete_pc_record(AppType app_type, void *VP, int flag);
 
 void get_month_info(int month, int day, int year, int *dow, int *ndim);
-
-time_t pilot_time_to_unix_time (unsigned long raw_time);
-
-unsigned long unix_time_to_pilot_time (time_t t);
 
 unsigned int bytes_to_bin(unsigned char *bytes, unsigned int num_bytes);
 
