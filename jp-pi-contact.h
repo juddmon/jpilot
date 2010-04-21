@@ -1,4 +1,4 @@
-/* $Id: jp-pi-contact.h,v 1.8 2010/03/29 05:44:29 rikster5 Exp $ */
+/* $Id: jp-pi-contact.h,v 1.9 2010/04/21 09:40:05 rousseau Exp $ */
 
 /*******************************************************************************
  * jp-pi-contact.h:  Translate Palm contact data formats
@@ -26,6 +26,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  ******************************************************************************/
 
+#ifndef __JP_PI_CONTACT_H_
+#define __JP_PI_CONTACT_H_
+
 #include "config.h"
 #include <pi-contact.h>
 
@@ -51,5 +54,7 @@ extern int jp_Contact_add_picture
     PI_ARGS((struct Contact *, struct ContactPicture *));
 #ifdef __cplusplus
 }
+#endif
+
 #endif
 
