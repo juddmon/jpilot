@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.78 2010/04/21 07:28:35 rousseau Exp $ */
+/* $Id: utils.h,v 1.79 2010/04/21 11:15:02 rousseau Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -595,6 +595,8 @@ void charset_j2p(char *buf, int max_len, long char_set);
 void charset_p2j(char *buf, int max_len, int char_set);
 char *charset_p2newj(const char *buf, int max_len, int char_set);
 
+void jp_charset_j2p(char *buf, int max_len);
 void jp_charset_p2j(char *buf, int max_len);
+char* jp_charset_p2newj(const char *buf, int max_len);
 size_t jp_strftime(char *s, size_t max, const char *format, const struct tm *tm);
 #endif

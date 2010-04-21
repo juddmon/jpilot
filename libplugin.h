@@ -1,4 +1,4 @@
-/* $Id: libplugin.h,v 1.32 2010/04/01 22:16:19 rikster5 Exp $ */
+/* $Id: libplugin.h,v 1.33 2010/04/21 11:15:02 rousseau Exp $ */
 
 /*******************************************************************************
  * libplugin.h
@@ -225,7 +225,6 @@ int plugin_pack_cai_into_ai(struct CategoryAppInfo *cai,
 /* callbacks are needed for print */
 
 void jp_init(void);
-extern FILE *jp_open_home_file(char *filename, char *mode);
 
 /* This takes the value of $JPILOT_HOME and appends /.jpilot/ and {file}
  * onto it and puts it into full_name.  max_size is the size if the
@@ -247,13 +246,6 @@ int jp_pdb_file_write_app_block(char *DB_name, void *bufp, int size_in);
  * category unpack functions are database specific.
  */
 int jp_edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai);
-
-/*************************************
- * convert char code
- *************************************/
-extern void jp_charset_j2p(char *buf, int max_len);
-extern void jp_charset_p2j(char *buf, int max_len);
-extern char* jp_charset_p2newj(const char *buf, int max_len);
 
 /* file must not be open elsewhere when this is called, the first line is 0 */
 int jp_install_remove_line(int deleted_line);
@@ -302,13 +294,6 @@ int unlink_file(char *filename);
 /*Warning, this function will move the file pointer */
 /* */
 int get_app_info_size(FILE *in, int *size);
-
-/*
- * Widget must be some widget used to get the main window from.
- * The main window passed in would be fastest.
- * changed is MODIFY_FLAG, or NEW_FLAG
- */
-int dialog_save_changed_record(GtkWidget *widget, int changed);
 
 /* mon 0-11
  * day 1-31
