@@ -3,467 +3,855 @@
 # Alexander Bokovoy <ab@altlinux.ru>, 2001, 2002.
 # Andrey Brindeew <abr@altlinux.ru>, 2003.
 # Eugene Morozov <eugene@renice.org>, 2004.
+# Sergey Klimov <dcdarv@gmail.com>, 2010.
 msgid ""
 msgstr ""
 "Project-Id-Version: JPilot\n"
 "Report-Msgid-Bugs-To: jpilot-devel@jpilot.org\n"
-"POT-Creation-Date: 2006-09-28 15:06-0700\n"
-"PO-Revision-Date: 2004-03-19 16:12+0300\n"
-"Last-Translator: Eugene Morozov <eugene@renice.org>\n"
+"POT-Creation-Date: 2010-03-07 13:52-0800\n"
+"PO-Revision-Date: 2010-04-28 18:14+0300\n"
+"Last-Translator: Sergey Klimov <dcdarv@gmail.com>\n"
 "Language-Team: Russian <gnu@mx.ru>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Russian\n"
 
-#: ../address.c:288 ../address.c:552 ../alarms.c:382 ../dat.c:181 ../dat.c:655
-#: ../dat.c:857 ../dat.c:991 ../dat.c:1130 ../datebook.c:89 ../datebook.c:390
-#: ../datebook.c:397 ../datebook.c:427 ../datebook.c:1046 ../jpilot.c:1558
-#: ../libplugin.c:442 ../libplugin.c:724 ../libplugin.c:832 ../libplugin.c:911
-#: ../libplugin.c:952 ../memo.c:95 ../memo.c:367 ../plugins.c:108
-#: ../prefs.c:316 ../prefs.c:341 ../prefs.c:880 ../sync.c:252 ../sync.c:1155
-#: ../sync.c:2319 ../todo.c:206 ../todo.c:548 ../utils.c:2349
+#: ../address.c:276
+#: ../address.c:439
+#: ../alarms.c:333
+#: ../calendar.c:257
+#: ../calendar.c:496
+#: ../contact.c:324
+#: ../contact.c:727
+#: ../dat.c:189
+#: ../dat.c:664
+#: ../dat.c:867
+#: ../dat.c:1001
+#: ../dat.c:1140
+#: ../datebook.c:127
+#: ../datebook.c:178
+#: ../datebook.c:185
+#: ../datebook.c:235
+#: ../datebook.c:652
+#: ../jpilot.c:1207
+#: ../libplugin.c:209
+#: ../libplugin.c:456
+#: ../libplugin.c:535
+#: ../libplugin.c:564
+#: ../libplugin.c:812
+#: ../memo.c:205
+#: ../memo.c:278
+#: ../otherconv.c:281
+#: ../plugins.c:113
+#: ../prefs.c:345
+#: ../prefs.c:370
+#: ../prefs.c:900
+#: ../sync.c:2110
+#: ../sync.c:2127
+#: ../sync.c:2236
+#: ../sync.c:2250
+#: ../sync.c:2447
+#: ../sync.c:2586
+#: ../sync.c:3377
+#: ../todo.c:234
+#: ../todo.c:496
+#: ../utils.c:745
 msgid "Out of memory"
-msgstr ""
+msgstr "Нехватка памяти"
 
-#: ../address.c:345 ../address.c:352 ../datebook.c:340 ../libplugin.c:179
-#: ../memo.c:163 ../memo.c:170 ../todo.c:291 ../todo.c:298 ../utils.c:2010
-#: ../utils.c:2015 ../utils.c:2026 ../utils.c:2031 ../utils.c:2042
-#: ../utils.c:2047 ../utils.c:2059 ../utils.c:2064
-msgid "error"
-msgstr "ошибка"
-
-#: ../address.c:412 ../address_gui.c:1657 ../datebook.c:686 ../libplugin.c:784
-#: ../libplugin.c:809 ../memo.c:244 ../memo_gui.c:977 ../todo_gui.c:1289
-#: ../Expense/expense.c:1122 ../Expense/expense.c:2127
+#: ../address.c:336
+#: ../address_gui.c:2246
+#: ../address_gui.c:2285
+#: ../calendar.c:211
+#: ../contact.c:586
+#: ../datebook.c:506
+#: ../datebook_gui.c:3547
+#: ../libplugin.c:406
+#: ../libplugin.c:432
+#: ../memo.c:91
+#: ../memo_gui.c:843
+#: ../todo_gui.c:1053
+#: ../Expense/expense.c:1104
 #, fuzzy, c-format
 msgid "Error reading file: %s\n"
 msgstr "Ошибка чтения %s\n"
 
-#: ../address_gui.c:249 ../datebook_gui.c:2537 ../memo_gui.c:166
-#: ../todo_gui.c:280 ../KeyRing/keyring.c:619
+#: ../address.c:483
+#: ../calendar.c:536
+#: ../contact.c:769
+#: ../datebook.c:879
+#: ../datebook.c:888
+#: ../libplugin.c:847
+#: ../memo.c:344
+#: ../todo.c:300
+#: ../utils.c:1088
+#: ../utils.c:1095
+#: ../utils.c:1102
+#: ../utils.c:1109
+#: ../utils.c:1116
+#: ../utils.c:1123
+msgid "error"
+msgstr "ошибка"
+
+#: ../address_gui.c:333
+#: ../datebook_gui.c:2713
+#: ../memo_gui.c:177
+#: ../todo_gui.c:295
+#: ../KeyRing/keyring.c:836
 msgid ""
 "This record is deleted.\n"
 "Undelete it or copy it to make changes.\n"
 msgstr ""
 
-#: ../address_gui.c:457 ../category.c:159 ../category.c:165 ../category.c:213
-#: ../category.c:270 ../datebook_gui.c:368 ../memo_gui.c:283 ../sync.c:1118
-#: ../sync.c:1124 ../sync.c:2294 ../sync.c:2514 ../sync.c:2520 ../sync.c:2637
-#: ../sync.c:2903 ../todo_gui.c:420 ../utils.c:2758 ../utils.c:2807
-#: ../utils.c:2813 ../utils.c:2886 ../utils.c:2892 ../utils.c:2955
-#: ../utils.c:3018 ../utils.c:3024 ../utils.c:3087 ../utils.c:3094
+#: ../address_gui.c:460
+#: ../address_gui.c:466
+#: ../address_gui.c:477
+#: ../address_gui.c:489
+#: ../address_gui.c:501
+#: ../address_gui.c:514
+#, c-format
+msgid "%s%s: %s"
+msgstr ""
+
+#: ../address_gui.c:550
+#: ../category.c:118
+#: ../category.c:176
+#: ../category.c:328
+#: ../category.c:334
+#: ../datebook_gui.c:432
+#: ../memo_gui.c:280
+#: ../sync.c:2069
+#: ../sync.c:2075
+#: ../sync.c:2421
+#: ../sync.c:2782
+#: ../todo_gui.c:418
+#: ../utils.c:2627
+#: ../utils.c:2664
+#: ../utils.c:2670
+#: ../utils.c:2729
+#: ../utils.c:2735
+#: ../utils.c:2789
+#: ../utils.c:2843
+#: ../utils.c:2849
+#: ../utils.c:2907
+#: ../utils.c:2914
 #, fuzzy, c-format
 msgid "Unable to open file: %s\n"
 msgstr "Не удается открыть %s\n"
 
-#: ../address_gui.c:535
+#: ../address_gui.c:721
 msgid "File doesn't appear to be address.dat format\n"
 msgstr "Файл не в формате address.dat\n"
 
-#: ../address_gui.c:545 ../datebook_gui.c:577 ../memo_gui.c:417
-#: ../todo_gui.c:545 ../Expense/expense.c:603 ../Expense/expense.c:1397
+#: ../address_gui.c:731
+#: ../datebook_gui.c:649
+#: ../memo_gui.c:324
+#: ../memo_gui.c:417
+#: ../todo_gui.c:544
+#: ../Expense/expense.c:1383
 msgid "Unfiled"
 msgstr "Различное"
 
-#. JPA
+#: ../address_gui.c:789
+#: ../datebook_gui.c:701
+#: ../memo_gui.c:470
+#: ../todo_gui.c:597
+msgid "CSV (Comma Separated Values)"
+msgstr ""
+
+#: ../address_gui.c:790
+msgid "DAT/ABA (Palm Archive Formats)"
+msgstr ""
+
 #. current category name
 #. previous category name
-#. yes!
 #. entry text, in Pilot character set
-#: ../address_gui.c:682 ../alarms.c:289 ../category.c:420 ../category.c:899
-#: ../category.c:952 ../datebook_gui.c:662 ../datebook_gui.c:1161
-#: ../export_gui.c:353 ../jpilot.c:361 ../jpilot.c:406 ../jpilot.c:474
-#: ../jpilot.c:518 ../jpilot.c:991 ../jpilot.c:1892 ../memo_gui.c:505
-#: ../password.c:368 ../restore_gui.c:322 ../todo_gui.c:633 ../utils.c:1122
-#: ../utils.c:1303 ../KeyRing/keyring.c:1582
+#: ../address_gui.c:879
+#: ../category.c:406
+#: ../datebook_gui.c:733
+#: ../jpilot.c:230
+#: ../jpilot.c:274
+#: ../jpilot.c:342
+#: ../jpilot.c:386
+#: ../jpilot.c:909
+#: ../memo_gui.c:509
+#: ../todo_gui.c:638
+#: ../utils.c:1269
+#: ../KeyRing/keyring.c:2111
 msgid "OK"
 msgstr "ОК"
 
-#: ../address_gui.c:683 ../datebook_gui.c:663 ../memo_gui.c:506
-#: ../todo_gui.c:634 ../utils.c:1321
+#: ../address_gui.c:880
+#: ../address_gui.c:1018
+#: ../datebook_gui.c:362
+#: ../datebook_gui.c:390
+#: ../datebook_gui.c:734
+#: ../memo_gui.c:510
+#: ../memo_gui.c:613
+#: ../todo_gui.c:639
+#: ../todo_gui.c:758
+#: ../todo_gui.c:766
+#: ../utils.c:1286
+#: ../utils.c:1310
+#: ../KeyRing/keyring.c:2112
 msgid "No"
 msgstr "Нет"
 
-#: ../address_gui.c:683 ../datebook_gui.c:663 ../memo_gui.c:506
-#: ../todo_gui.c:634 ../utils.c:1321
+#: ../address_gui.c:880
+#: ../address_gui.c:1018
+#: ../datebook_gui.c:362
+#: ../datebook_gui.c:390
+#: ../datebook_gui.c:734
+#: ../memo_gui.c:510
+#: ../memo_gui.c:613
+#: ../todo_gui.c:639
+#: ../todo_gui.c:758
+#: ../todo_gui.c:766
+#: ../utils.c:1286
+#: ../utils.c:1310
+#: ../KeyRing/keyring.c:2112
 msgid "Yes"
 msgstr "Да"
 
-#: ../address_gui.c:706 ../datebook_gui.c:689 ../memo_gui.c:516
-#: ../todo_gui.c:659
+#: ../address_gui.c:899
+#: ../datebook_gui.c:757
+#: ../memo_gui.c:523
+#: ../todo_gui.c:657
+#: ../KeyRing/keyring.c:2125
 #, c-format
 msgid "%s is a directory"
 msgstr "%s является директорией"
 
-#: ../address_gui.c:708 ../address_gui.c:725 ../datebook_gui.c:691
-#: ../datebook_gui.c:708 ../memo_gui.c:518 ../memo_gui.c:535 ../todo_gui.c:661
-#: ../todo_gui.c:678
+#: ../address_gui.c:901
+#: ../address_gui.c:918
+#: ../datebook_gui.c:759
+#: ../datebook_gui.c:776
+#: ../memo_gui.c:525
+#: ../memo_gui.c:542
+#: ../todo_gui.c:659
+#: ../todo_gui.c:676
+#: ../KeyRing/keyring.c:2127
+#: ../KeyRing/keyring.c:2144
 msgid "Error Opening File"
 msgstr "Ошибка открытия файла"
 
-#: ../address_gui.c:712 ../datebook_gui.c:695 ../memo_gui.c:522
-#: ../todo_gui.c:665
+#: ../address_gui.c:905
+#: ../datebook_gui.c:763
+#: ../memo_gui.c:529
+#: ../todo_gui.c:663
+#: ../KeyRing/keyring.c:2131
 #, c-format
 msgid "Do you want to overwrite file %s?"
 msgstr "Перезаписать файл %s?"
 
-#: ../address_gui.c:714 ../datebook_gui.c:697 ../memo_gui.c:524
-#: ../todo_gui.c:667
+#: ../address_gui.c:907
+#: ../datebook_gui.c:765
+#: ../memo_gui.c:531
+#: ../todo_gui.c:665
+#: ../KeyRing/keyring.c:2133
 msgid "Overwrite File?"
 msgstr "Перезаписать файл?"
 
-#: ../address_gui.c:723 ../datebook_gui.c:706 ../memo_gui.c:533
-#: ../todo_gui.c:676
+#: ../address_gui.c:916
+#: ../datebook_gui.c:774
+#: ../memo_gui.c:540
+#: ../todo_gui.c:674
+#: ../KeyRing/keyring.c:2142
 #, fuzzy, c-format
 msgid "Error opening file: %s"
 msgstr "Ошибка открытия файла"
 
-#: ../address_gui.c:734
+#: ../address_gui.c:933
+#, c-format
+msgid ""
+"Address exported from %s %s on %s\n"
+"\n"
+msgstr ""
+
+#: ../address_gui.c:936
+#, c-format
+msgid ""
+"Contact exported from %s %s on %s\n"
+"\n"
+msgstr ""
+
+#: ../address_gui.c:996
+msgid ""
+"Host character encoding is not UTF-8 based.\n"
+" Exported ldif file may not be standards-compliant\n"
+msgstr ""
+
+#: ../address_gui.c:1009
 #, c-format
 msgid "Can't export address %d\n"
+msgstr "Не могу экспортировать адрес\n"
+
+#: ../address_gui.c:1015
+#: ../memo_gui.c:610
+#: ../todo_gui.c:754
+#, fuzzy, c-format
+msgid "Category: %s\n"
+msgstr "Категория"
+
+#: ../address_gui.c:1017
+#: ../memo_gui.c:612
+#: ../todo_gui.c:757
+#, fuzzy, c-format
+msgid "Private: %s\n"
+msgstr "Личное"
+
+#: ../address_gui.c:1026
+#: ../address_gui.c:1040
+#: ../address_gui.c:1044
+#: ../address_gui.c:1053
+#: ../address_gui.c:1056
+#, c-format
+msgid "%s: "
 msgstr ""
 
-#: ../address_gui.c:799 ../address_gui.c:807 ../address_gui.c:824
-#, fuzzy
-msgid "Field"
-msgstr "Финляндия"
+#: ../address_gui.c:1030
+#, c-format
+msgid "%s\n"
+msgstr ""
 
-#: ../address_gui.c:1024 ../datebook_gui.c:982 ../memo_gui.c:591
-#: ../todo_gui.c:815
+#. Set dial/email button text and callback data
+#: ../address_gui.c:1202
+#: ../address_gui.c:2796
+#: ../address_gui.c:4017
+msgid "E-mail"
+msgstr "E-mail"
+
+#: ../address_gui.c:1444
+#: ../datebook_gui.c:1142
+#: ../memo_gui.c:620
+#: ../todo_gui.c:827
+#: ../KeyRing/keyring.c:2200
 msgid "Unknown export type\n"
+msgstr "Неизвестный формат экспорта\n"
+
+#: ../address_gui.c:1470
+#: ../datebook_gui.c:1221
+#: ../memo_gui.c:469
+#: ../memo_gui.c:646
+#: ../todo_gui.c:853
+#: ../KeyRing/keyring.c:2212
+msgid "Text"
 msgstr ""
 
-#: ../address_gui.c:1207 ../address_gui.c:2625
-msgid "Company/Name"
-msgstr "Компания/Имя"
+#: ../address_gui.c:1471
+#: ../datebook_gui.c:1222
+#: ../memo_gui.c:647
+#: ../todo_gui.c:854
+#: ../KeyRing/keyring.c:2212
+msgid "CSV"
+msgstr ""
 
-#: ../address_gui.c:1209 ../address_gui.c:2627
-msgid "Name/Company"
+#: ../address_gui.c:1472
+#, fuzzy
+msgid "vCard"
+msgstr "Очистить"
+
+#: ../address_gui.c:1473
+msgid "ldif"
+msgstr ""
+
+#. Initialize variable if default case taken
+#: ../address_gui.c:1740
+#: ../address_gui.c:3748
+#, fuzzy
+msgid "Last Name/Company"
 msgstr "Имя/Компания"
 
-#: ../address_gui.c:1306 ../datebook_gui.c:2615 ../memo_gui.c:894
-#: ../todo_gui.c:1217 ../KeyRing/keyring.c:959
+#: ../address_gui.c:1743
+#: ../address_gui.c:3751
+#, fuzzy
+msgid "First Name/Company"
+msgstr "Имя/Компания"
+
+#: ../address_gui.c:1746
+#: ../address_gui.c:3754
+#, fuzzy
+msgid "Company/Last Name"
+msgstr "Компания/Имя"
+
+#: ../address_gui.c:1885
+#: ../datebook_gui.c:2777
+#: ../memo_gui.c:1016
+#: ../todo_gui.c:1312
+#: ../KeyRing/keyring.c:1183
 msgid "You can't modify a record that is deleted\n"
-msgstr ""
+msgstr "Вы не можете редактировать удаленную запись \n"
 
-#. Illegal category
-#: ../address_gui.c:1449 ../address_gui.c:1834 ../address_gui.c:2355
-#: ../memo_gui.c:800 ../memo_gui.c:1065 ../memo_gui.c:1355 ../todo_gui.c:1083
-#: ../todo_gui.c:1506 ../todo_gui.c:1519 ../todo_gui.c:1966
+#: ../address_gui.c:2083
+#: ../address_gui.c:2331
+#: ../address_gui.c:2759
+#: ../address_gui.c:3454
+#: ../datebook_gui.c:1930
+#: ../datebook_gui.c:3583
+#: ../memo_gui.c:880
+#: ../memo_gui.c:926
+#: ../memo_gui.c:1139
+#: ../memo_gui.c:1428
+#: ../todo_gui.c:1089
+#: ../todo_gui.c:1183
+#: ../todo_gui.c:1566
+#: ../todo_gui.c:1998
+#: ../Expense/expense.c:688
+#: ../Expense/expense.c:1142
+#: ../Expense/expense.c:1226
+#: ../Expense/expense.c:1883
+#: ../KeyRing/keyring.c:1072
+#: ../KeyRing/keyring.c:1515
+#: ../KeyRing/keyring.c:1577
+#: ../KeyRing/keyring.c:2667
 msgid "Category is not legal\n"
-msgstr ""
+msgstr "Неверная категория\n"
 
-#: ../address_gui.c:1508 ../alarms.c:639 ../dialer.c:163
+#: ../address_gui.c:2143
+#: ../alarms.c:599
+#: ../dialer.c:165
 #, fuzzy, c-format
 msgid "executing command = [%s]\n"
-msgstr "Выполнить команду"
+msgstr "Выполнить команду\n"
+
+#: ../address_gui.c:2384
+msgid "Birthday"
+msgstr "День рождения"
+
+#: ../address_gui.c:2474
+msgid "External program not found, or other error"
+msgstr ""
+
+#: ../address_gui.c:2475
+msgid ""
+"J-Pilot can not find the external program \"convert\"\n"
+"or an error occurred while executing convert.\n"
+"You may need to install package ImageMagick"
+msgstr ""
+
+#: ../address_gui.c:2476
+#, c-format
+msgid "Command executed was \"%s\"\n"
+msgstr ""
+
+#: ../address_gui.c:2477
+#, c-format
+msgid "return code was %d\n"
+msgstr ""
+
+#: ../address_gui.c:2556
+msgid "Add Photo"
+msgstr "Добавить фото"
 
 #. Category menu
-#: ../address_gui.c:1752 ../Expense/expense.c:1594 ../KeyRing/keyring.c:2097
-#: ../KeyRing/keyring.c:2194
+#: ../address_gui.c:2778
+#: ../KeyRing/keyring.c:2564
 msgid "Category: "
 msgstr "Категория"
 
-#: ../address_gui.c:1784 ../address_gui.c:2796
-msgid "kana("
-msgstr "kana("
-
-#: ../address_gui.c:1896 ../address_gui.c:2906
-msgid "E-mail"
-msgstr ""
-
-#: ../address_gui.c:1898 ../address_gui.c:1901 ../address_gui.c:2907
+#: ../address_gui.c:2798
+#: ../address_gui.c:4018
 #, fuzzy
 msgid "Mail"
 msgstr "Бразилия"
 
 #. Dial Phone Button
-#: ../address_gui.c:1906 ../address_gui.c:1909 ../address_gui.c:2910
-#: ../dialer.c:306 ../dialer.c:331
+#: ../address_gui.c:2801
+#: ../address_gui.c:4021
+#: ../dialer.c:308
+#: ../dialer.c:332
 msgid "Dial"
 msgstr "Звонить"
 
-#: ../address_gui.c:2129 ../address_gui.c:2153
+#: ../address_gui.c:3121
+#: ../address_gui.c:3152
 msgid "-Unnamed-"
 msgstr "-БезНазвания-"
 
-#: ../address_gui.c:2226 ../memo_gui.c:1265 ../todo_gui.c:1855
+#: ../address_gui.c:3227
+#: ../memo_gui.c:1334
+#: ../todo_gui.c:1876
 msgid "0 records"
 msgstr "0 записей"
 
-#: ../address_gui.c:2229 ../datebook_gui.c:2414 ../memo_gui.c:1268
-#: ../todo_gui.c:1858
+#: ../address_gui.c:3230
+#: ../datebook_gui.c:2595
+#: ../memo_gui.c:1337
+#: ../todo_gui.c:1879
 #, c-format
 msgid "%d of %d records"
 msgstr "%d записей из %d"
 
-#. Edit category button
-#: ../address_gui.c:2600 ../category.c:450 ../category.c:496 ../category.c:514
-#: ../category.c:593 ../category.c:786 ../memo_gui.c:1483 ../todo_gui.c:2099
-#: ../Expense/expense.c:1600
-msgid "Edit Categories"
-msgstr "Редактирование категорий"
+#: ../address_gui.c:3622
+#: ../address_gui.c:3630
+#: ../KeyRing/keyring.c:2477
+msgid "Name"
+msgstr "Имя"
 
-#: ../address_gui.c:2631
+#: ../address_gui.c:3623
+#: ../address_gui.c:3624
+#: ../address_gui.c:3625
+#: ../address_gui.c:3631
+msgid "Address"
+msgstr "Адрес"
+
+#: ../address_gui.c:3626
+#: ../address_gui.c:3632
+#: ../Expense/expense.c:583
+#: ../Expense/expense.c:1404
+msgid "Other"
+msgstr "Другое"
+
+#. Note textbox
+#: ../address_gui.c:3627
+#: ../address_gui.c:3633
+#: ../todo_gui.c:2330
+#: ../Expense/expense.c:1832
+#: ../KeyRing/keyring.c:2611
+msgid "Note"
+msgstr "Заметка"
+
+#: ../address_gui.c:3645
+msgid "Reverting to Address database\n"
+msgstr ""
+
+#: ../address_gui.c:3760
 msgid "Phone"
 msgstr "Тел."
 
-#: ../address_gui.c:2653
+#: ../address_gui.c:3792
 #, fuzzy
 msgid "Quick Find: "
 msgstr "Быстрый поиск"
 
 #. Create Cancel button
-#. Add record modification buttons on right side
-#. Create "event" button
-#. Create Cancel button
-#. Add record modification buttons on right side
+#. Add record modification buttons
 #. Create Cancel button
 #. Cancel button
-#: ../address_gui.c:2669 ../category.c:421 ../category.c:889 ../category.c:942
-#: ../datebook_gui.c:1152 ../datebook_gui.c:1599 ../datebook_gui.c:4384
-#: ../export_gui.c:344 ../install_user.c:207 ../memo_gui.c:1517
-#: ../password.c:358 ../print_gui.c:348 ../restore_gui.c:313
-#: ../todo_gui.c:2152 ../utils.c:1108 ../KeyRing/keyring.c:1572
-#: ../KeyRing/keyring.c:2135
+#: ../address_gui.c:3809
+#: ../category.c:407
+#: ../datebook_gui.c:1775
+#: ../datebook_gui.c:4808
+#: ../memo_gui.c:1569
+#: ../todo_gui.c:2194
+#: ../utils.c:1310
+#: ../KeyRing/keyring.c:2507
 msgid "Cancel"
 msgstr "Отменить"
 
-#: ../address_gui.c:2669 ../datebook_gui.c:4384 ../memo_gui.c:1517
-#: ../todo_gui.c:2152 ../KeyRing/keyring.c:2135
+#: ../address_gui.c:3809
+#: ../datebook_gui.c:4808
+#: ../memo_gui.c:1569
+#: ../todo_gui.c:2194
+#: ../KeyRing/keyring.c:2507
 #, fuzzy
 msgid "Cancel the modifications"
 msgstr "Собрано со следующими опциями:"
 
 #. Delete Button
-#. Create "Delete" button
+#. Delete button
 #. Delete Button
 #. Delete button
 #. Delete, Copy, New, etc. buttons
 #. Delete button
-#: ../address_gui.c:2674 ../category.c:421 ../category.c:854
-#: ../datebook_gui.c:4389 ../memo_gui.c:1522 ../todo_gui.c:2157
-#: ../Expense/expense.c:1637 ../KeyRing/keyring.c:2140
+#: ../address_gui.c:3814
+#: ../category.c:407
+#: ../category.c:850
+#: ../datebook_gui.c:4813
+#: ../memo_gui.c:1574
+#: ../todo_gui.c:2199
+#: ../Expense/expense.c:1659
+#: ../KeyRing/keyring.c:2512
 msgid "Delete"
 msgstr "Удалить"
 
-#: ../address_gui.c:2674 ../datebook_gui.c:4389 ../memo_gui.c:1522
-#: ../todo_gui.c:2157 ../Expense/expense.c:1637 ../KeyRing/keyring.c:2140
+#: ../address_gui.c:3814
+#: ../datebook_gui.c:4813
+#: ../memo_gui.c:1574
+#: ../todo_gui.c:2199
+#: ../Expense/expense.c:1659
+#: ../KeyRing/keyring.c:2512
 #, fuzzy
 msgid "Delete the selected record"
 msgstr "Удалена запись %s"
 
 #. Undelete Button
-#. Create "Undelete" button
+#. Undelete button
 #. Undelete Button
 #. Undelete button
-#: ../address_gui.c:2680 ../datebook_gui.c:4395 ../memo_gui.c:1528
-#: ../todo_gui.c:2163 ../KeyRing/keyring.c:2146
+#: ../address_gui.c:3820
+#: ../datebook_gui.c:4819
+#: ../memo_gui.c:1580
+#: ../todo_gui.c:2205
+#: ../KeyRing/keyring.c:2518
 #, fuzzy
 msgid "Undelete"
 msgstr "Удалить"
 
-#: ../address_gui.c:2680 ../datebook_gui.c:4395 ../memo_gui.c:1528
-#: ../todo_gui.c:2163 ../KeyRing/keyring.c:2146
+#: ../address_gui.c:3820
+#: ../datebook_gui.c:4819
+#: ../memo_gui.c:1580
+#: ../todo_gui.c:2205
+#: ../KeyRing/keyring.c:2518
 #, fuzzy
 msgid "Undelete the selected record"
 msgstr "Удалена запись %s"
 
 #. Create "Copy" button
 #. Copy button
-#: ../address_gui.c:2686 ../datebook_gui.c:4401 ../memo_gui.c:1534
-#: ../todo_gui.c:2169 ../Expense/expense.c:1642 ../KeyRing/keyring.c:2152
+#: ../address_gui.c:3826
+#: ../datebook_gui.c:4825
+#: ../memo_gui.c:1586
+#: ../todo_gui.c:2211
+#: ../Expense/expense.c:1664
+#: ../KeyRing/keyring.c:2524
 msgid "Copy"
 msgstr "Копировать"
 
-#: ../address_gui.c:2686 ../datebook_gui.c:4401 ../memo_gui.c:1534
-#: ../todo_gui.c:2169 ../Expense/expense.c:1642 ../KeyRing/keyring.c:2152
+#: ../address_gui.c:3826
+#: ../datebook_gui.c:4825
+#: ../memo_gui.c:1586
+#: ../todo_gui.c:2211
+#: ../Expense/expense.c:1664
+#: ../KeyRing/keyring.c:2524
 #, fuzzy
 msgid "Copy the selected record"
 msgstr "Добавить запись"
 
 #. Create "New" button
+#. New button
 #. New Record button
-#: ../address_gui.c:2692 ../datebook_gui.c:4407 ../memo_gui.c:1540
-#: ../todo_gui.c:2175 ../Expense/expense.c:1647 ../KeyRing/keyring.c:2158
+#: ../address_gui.c:3832
+#: ../datebook_gui.c:4831
+#: ../memo_gui.c:1592
+#: ../todo_gui.c:2217
+#: ../Expense/expense.c:1669
+#: ../KeyRing/keyring.c:2530
 msgid "New Record"
 msgstr "Новая запись"
 
-#: ../address_gui.c:2692 ../datebook_gui.c:4407 ../memo_gui.c:1540
-#: ../todo_gui.c:2175 ../Expense/expense.c:1647 ../KeyRing/keyring.c:2158
+#: ../address_gui.c:3832
+#: ../datebook_gui.c:4831
+#: ../memo_gui.c:1592
+#: ../todo_gui.c:2217
+#: ../Expense/expense.c:1669
+#: ../KeyRing/keyring.c:2530
 #, fuzzy
 msgid "Add a new record"
 msgstr "Добавить запись"
 
 #. Create "Add Record" button
+#. "Add Record" button
 #. Add Record button
-#: ../address_gui.c:2697 ../datebook_gui.c:4413 ../memo_gui.c:1546
-#: ../todo_gui.c:2181 ../Expense/expense.c:1652 ../KeyRing/keyring.c:2164
+#: ../address_gui.c:3837
+#: ../datebook_gui.c:4837
+#: ../memo_gui.c:1598
+#: ../todo_gui.c:2223
+#: ../Expense/expense.c:1674
+#: ../KeyRing/keyring.c:2536
 msgid "Add Record"
 msgstr "Добавить запись"
 
-#: ../address_gui.c:2697 ../datebook_gui.c:4413 ../memo_gui.c:1546
-#: ../todo_gui.c:2181 ../Expense/expense.c:1652 ../KeyRing/keyring.c:2164
+#: ../address_gui.c:3837
+#: ../datebook_gui.c:4837
+#: ../memo_gui.c:1598
+#: ../todo_gui.c:2223
+#: ../Expense/expense.c:1674
+#: ../KeyRing/keyring.c:2536
 #, fuzzy
 msgid "Add the new record"
 msgstr "Добавить запись"
 
-#. Create "apply changes" button
+#. "Apply Changes" button
 #. Apply Changes button
-#: ../address_gui.c:2707 ../datebook_gui.c:4423 ../memo_gui.c:1556
-#: ../todo_gui.c:2191 ../Expense/expense.c:1661 ../KeyRing/keyring.c:2174
+#: ../address_gui.c:3847
+#: ../datebook_gui.c:4847
+#: ../memo_gui.c:1608
+#: ../todo_gui.c:2233
+#: ../Expense/expense.c:1683
+#: ../KeyRing/keyring.c:2545
 msgid "Apply Changes"
 msgstr "Применить"
 
-#: ../address_gui.c:2707 ../datebook_gui.c:4423 ../memo_gui.c:1556
-#: ../todo_gui.c:2191 ../Expense/expense.c:1661 ../KeyRing/keyring.c:2174
+#: ../address_gui.c:3847
+#: ../datebook_gui.c:4847
+#: ../memo_gui.c:1608
+#: ../todo_gui.c:2233
+#: ../Expense/expense.c:1683
+#: ../KeyRing/keyring.c:2545
 #, fuzzy
 msgid "Commit the modifications"
 msgstr "Собрано со следующими опциями:"
 
 #. Private check box
-#: ../address_gui.c:2724 ../datebook_gui.c:4474 ../memo_gui.c:1574
-#: ../todo_gui.c:2254
+#. Private checkbox
+#: ../address_gui.c:3864
+#: ../datebook_gui.c:4871
+#: ../datebook_gui.c:4913
+#: ../memo_gui.c:1625
+#: ../todo_gui.c:2255
 msgid "Private"
 msgstr "Личное"
 
-#. Page 1
-#: ../address_gui.c:2744 ../KeyRing/keyring.c:2009
-msgid "Name"
-msgstr "Имя"
+#: ../address_gui.c:3952
+#, fuzzy
+msgid "Change Photo"
+msgstr "Отменить"
 
-#. Page 2
-#: ../address_gui.c:2752 ../prefs_gui.c:370
-msgid "Address"
-msgstr "Адрес"
+#: ../address_gui.c:3957
+#, fuzzy
+msgid "Remove Photo"
+msgstr "Удалить"
 
-#. Page 3
-#: ../address_gui.c:2760 ../Expense/expense.c:555 ../Expense/expense.c:1418
-msgid "Other"
-msgstr "Другое"
-
-#. Page 4
-#. Create a "All" button
-#: ../address_gui.c:2768 ../datebook_gui.c:1350 ../datebook_gui.c:1599
-#: ../utils.c:2714
-msgid "All"
-msgstr "Все"
-
-#: ../address_gui.c:2973
-msgid ""
-"Show\n"
-"In List"
+#: ../address_gui.c:4027
+#, fuzzy
+msgid "Show In List"
 msgstr ""
 "Показать\n"
 "списком"
 
-#. The Quickview page
-#: ../address_gui.c:2981
-msgid "Quick View"
-msgstr "Быстрый просмотр"
+#: ../address_gui.c:4128
+#, fuzzy
+msgid "Reminder"
+msgstr "Напоминание"
 
-#: ../alarms.c:257 ../datebook_gui.c:4456
+#: ../address_gui.c:4144
+#: ../datebook_gui.c:238
+#: ../datebook_gui.c:4901
+#: ../datebook_gui.c:5058
+msgid "Days"
+msgstr "Дни"
+
+#. The Quickview (ALL) page
+#. All button
+#: ../address_gui.c:4179
+#: ../datebook_gui.c:1473
+#: ../datebook_gui.c:1775
+#: ../utils.c:2481
+msgid "All"
+msgstr "Все"
+
+#: ../alarms.c:233
+#: ../datebook_gui.c:236
+#: ../datebook_gui.c:4895
+#: ../datebook_gui.c:5052
 msgid "Minutes"
 msgstr "Минуты"
 
-#: ../alarms.c:259 ../datebook_gui.c:4460
+#: ../alarms.c:235
+#: ../datebook_gui.c:237
+#: ../datebook_gui.c:4899
+#: ../datebook_gui.c:5056
 msgid "Hours"
 msgstr "Часы"
 
-#: ../alarms.c:280
+#: ../alarms.c:256
 msgid "Remind me"
 msgstr "Напоминание"
 
-#: ../alarms.c:469
+#: ../alarms.c:426
+#: ../alarms.c:993
+#: ../sync.c:1586
+#: ../sync.c:1592
+#: ../utils.c:3643
 #, fuzzy, c-format
-msgid "Unable to open %s%s file\n"
+msgid "Unable to open file: %s%s\n"
 msgstr "Не удается открыть %s\n"
 
-#: ../alarms.c:554
+#: ../alarms.c:513
 msgid "Appointment Reminder"
 msgstr "Напоминание о встречах"
 
-#: ../alarms.c:557
+#: ../alarms.c:516
 msgid "Past Appointment"
 msgstr "Прошлые встречи"
 
-#: ../alarms.c:560
+#: ../alarms.c:519
 msgid "Postponed Appointment"
 msgstr "Пропущенные встречи"
 
-#: ../alarms.c:563 ../datebook_gui.c:4292
+#: ../alarms.c:522
+#: ../datebook_gui.c:4710
 msgid "Appointment"
 msgstr "Встреча"
 
-#: ../alarms.c:646
+#: ../alarms.c:606
 msgid "J-Pilot Alarm"
-msgstr ""
+msgstr "Оповещения J-Pilot"
 
-#: ../alarms.c:1163
-msgid "infinite loop, breaking\n"
-msgstr ""
+#: ../category.c:131
+#: ../category.c:188
+#: ../sync.c:2098
+#: ../sync.c:2435
+msgid "PC file corrupt?\n"
+msgstr "Файл на стороне PC поврежден?\n"
 
-#: ../alarms.c:1531
-#, fuzzy, c-format
-msgid "Unable to open %s.alarms file\n"
-msgstr "Не удается открыть %s\n"
+#: ../category.c:138
+#: ../category.c:148
+#: ../category.c:196
+#: ../category.c:206
+#: ../category.c:216
+#: ../sync.c:2220
+#: ../sync.c:2274
+#: ../sync.c:2311
+#: ../sync.c:2326
+#: ../sync.c:2350
+#: ../sync.c:2570
+#: ../sync.c:2615
+#: ../sync.c:2652
+#: ../sync.c:2665
+#: ../sync.c:2690
+msgid "fseek failed - fatal error\n"
+msgstr "Функция fseek провалилась - фатальная ошибка\n"
 
-#: ../category.c:192 ../sync.c:2551 ../utils.c:2834 ../utils.c:2922
-#: ../utils.c:3044 ../utils.c:3114
+#: ../category.c:362
+#: ../utils.c:2691
+#: ../utils.c:2765
+#: ../utils.c:2869
+#: ../utils.c:2934
 #, fuzzy
 msgid "rename failed"
 msgstr "Установку %s не удалось завершить"
 
-#: ../category.c:229 ../category.c:286 ../sync.c:1147 ../sync.c:2310
-msgid "PC file corrupt?\n"
-msgstr "Файл на стороне PC поврежден?\n"
-
-#: ../category.c:236 ../category.c:246 ../category.c:293 ../category.c:304
-#: ../category.c:314 ../sync.c:1192 ../sync.c:1212 ../sync.c:1272
-#: ../sync.c:1283 ../sync.c:2372 ../sync.c:2399 ../sync.c:2451 ../sync.c:2461
-msgid "fseek failed - fatal error\n"
-msgstr "Функция fseek провалилась - фатальная ошибка\n"
-
-#: ../category.c:421
+#: ../category.c:407
 msgid "Move"
 msgstr "Переместить"
 
-#: ../category.c:451
+#: ../category.c:436
+#: ../category.c:498
+#: ../category.c:578
+#: ../category.c:767
+msgid "Edit Categories"
+msgstr "Редактирование категорий"
+
+#: ../category.c:437
 msgid "The maximum number of categories (16) are already used"
 msgstr "Максимальное число категорий (16) уже использовано"
 
-#: ../category.c:454
+#: ../category.c:440
 msgid "Enter New Category"
 msgstr "Добавление новой категории"
 
-#: ../category.c:464 ../category.c:471 ../category.c:489
+#: ../category.c:451
+#: ../category.c:475
 #, fuzzy
 msgid "Edit Categories Error"
 msgstr "Редактирование категорий"
 
-#: ../category.c:465
+#: ../category.c:452
 msgid "You must select a category to rename"
 msgstr "Перед переименованием категорию нужно выбрать"
 
-#: ../category.c:469
-#, c-format
-msgid "You can't edit category %s.\n"
-msgstr "Редактировать категорию %s нельзя.\n"
-
-#: ../category.c:476
+#: ../category.c:461
 msgid "Enter New Category Name"
 msgstr "Введите название новой категории"
 
-#: ../category.c:490
+#: ../category.c:476
 msgid "You must select a category to delete"
 msgstr "Перед удалением категорию необходимо выбрать"
 
 #: ../category.c:494
-#, c-format
-msgid "You can't delete category %s.\n"
-msgstr "Нельзя удалять категорию %s.\n"
-
-#: ../category.c:510
 #, c-format
 msgid ""
 "There are %d records in %s.\n"
@@ -472,200 +860,367 @@ msgstr ""
 "%d записей в %s.\n"
 "Переместить их в %s или удалить?"
 
-#: ../category.c:569
+#: ../category.c:554
 #, c-format
 msgid "invalid state file %s line %d\n"
-msgstr ""
+msgstr "неправильное состояния файла %s в строке %d\n"
 
-#: ../category.c:591
+#: ../category.c:576
 #, c-format
 msgid "The category %s can't be used more than once"
 msgstr "Категория %s не может использоваться дважды"
 
-#. correctly translate title
-#: ../category.c:813
-msgid "category name"
-msgstr "название категории"
+#. Category names in host character set
+#: ../category.c:733
+#, fuzzy
+msgid "Category"
+msgstr "Категория"
 
-#: ../category.c:838
+#: ../category.c:834
 msgid "New"
 msgstr "Создать"
 
-#: ../category.c:845
+#: ../category.c:841
 msgid "Rename"
 msgstr "Переименовать"
 
-#: ../category.c:960
-msgid "debug"
-msgstr "debug"
-
-#: ../dat.c:455
+#: ../dat.c:466
 msgid "unknown type ="
-msgstr ""
+msgstr "неизвестный тип ="
 
-#: ../dat.c:536
+#: ../dat.c:547
 #, c-format
 msgid "fields per row count != %d, unknown format\n"
-msgstr ""
+msgstr "полей в строке != %d, неизвестный формат\n"
 
-#: ../dat.c:550
+#: ../dat.c:561
 #, c-format
 msgid "field count != %d, unknown format\n"
-msgstr ""
+msgstr "полей != %d, неизвестный формат\n"
 
-#: ../dat.c:558
+#: ../dat.c:569
 msgid "Unknown format, file has wrong schema\n"
-msgstr ""
+msgstr "Неизвестный формат, у файла неверная схема\n"
 
-#: ../dat.c:559
+#: ../dat.c:570
 msgid "File schema is:"
-msgstr ""
+msgstr "Схема файла:"
 
-#: ../dat.c:564
-msgid "It should be:  "
-msgstr ""
+#: ../dat.c:574
+#, fuzzy
+msgid "It should be:"
+msgstr "Должно быть: "
 
-#: ../dat.c:674 ../dat.c:692 ../dat.c:874 ../dat.c:887 ../dat.c:1010
-#: ../dat.c:1023 ../dat.c:1147 ../dat.c:1160
+#: ../dat.c:683
+#: ../dat.c:701
+#: ../dat.c:884
+#: ../dat.c:897
+#: ../dat.c:1020
+#: ../dat.c:1033
+#: ../dat.c:1157
+#: ../dat.c:1170
 #, c-format
 msgid "%s:%d Record %d, field %d: Invalid type.  Expected %d, found %d\n"
 msgstr ""
 
-#: ../dat.c:675 ../dat.c:693 ../dat.c:875 ../dat.c:888 ../dat.c:992
-#: ../dat.c:1011 ../dat.c:1024 ../dat.c:1148 ../dat.c:1161
+#: ../dat.c:684
+#: ../dat.c:702
+#: ../dat.c:885
+#: ../dat.c:898
+#: ../dat.c:1002
+#: ../dat.c:1021
+#: ../dat.c:1034
+#: ../dat.c:1158
+#: ../dat.c:1171
 msgid "read of file terminated\n"
 msgstr "чтение файла прекращено\n"
 
-#: ../datebook.c:643
+#: ../datebook.c:814
+#: ../datebook_gui.c:3457
 #, c-format
 msgid "Unknown repeatType (%d) found in DatebookDB\n"
 msgstr ""
 
-#: ../datebook_gui.c:218 ../datebook_gui.c:225 ../datebook_gui.c:4117
-#: ../datebook_gui.c:4124
+#: ../datebook_gui.c:241
+msgid "Repeat Never"
+msgstr "Не повторять"
+
+#: ../datebook_gui.c:242
+msgid "Repeat Daily"
+msgstr "Ежедневно"
+
+#: ../datebook_gui.c:243
+msgid "Repeat Weekly"
+msgstr "Еженедельно"
+
+#: ../datebook_gui.c:244
+msgid "Repeat MonthlyByDay"
+msgstr "Ежемесячно по дню"
+
+#: ../datebook_gui.c:245
+msgid "Repeat MonthlyByDate"
+msgstr "Ежемесячно по дате"
+
+#: ../datebook_gui.c:246
+msgid "Repeat YearlyDate"
+msgstr "Повторять каждую дату"
+
+#: ../datebook_gui.c:247
+msgid "Repeat YearlyDay"
+msgstr "Ежегодно"
+
+#: ../datebook_gui.c:250
+#: ../datebook_gui.c:257
+#: ../datebook_gui.c:4514
+#: ../datebook_gui.c:4521
 msgid "Su"
 msgstr "Вс"
 
-#: ../datebook_gui.c:219 ../datebook_gui.c:4118
+#: ../datebook_gui.c:251
+#: ../datebook_gui.c:4515
 msgid "Mo"
 msgstr "Пн"
 
-#: ../datebook_gui.c:220 ../datebook_gui.c:4119
+#: ../datebook_gui.c:252
+#: ../datebook_gui.c:4516
 msgid "Tu"
 msgstr "Вт"
 
-#: ../datebook_gui.c:221 ../datebook_gui.c:4120
+#: ../datebook_gui.c:253
+#: ../datebook_gui.c:4517
 msgid "We"
 msgstr "Ср"
 
-#: ../datebook_gui.c:222 ../datebook_gui.c:4121
+#: ../datebook_gui.c:254
+#: ../datebook_gui.c:4518
 msgid "Th"
 msgstr "Чт"
 
-#: ../datebook_gui.c:223 ../datebook_gui.c:4122
+#: ../datebook_gui.c:255
+#: ../datebook_gui.c:4519
 msgid "Fr"
 msgstr "Пт"
 
-#: ../datebook_gui.c:224 ../datebook_gui.c:4123
+#: ../datebook_gui.c:256
+#: ../datebook_gui.c:4520
 msgid "Sa"
 msgstr "Сб"
 
-#: ../datebook_gui.c:556 ../datebook_gui.c:2070
+#: ../datebook_gui.c:269
+#, c-format
+msgid ""
+"Start Date: %s\n"
+"Time: Event"
+msgstr ""
+
+#: ../datebook_gui.c:277
+#, c-format
+msgid ""
+"Start Date: %s\n"
+"Time: %s to %s"
+msgstr ""
+
+#: ../datebook_gui.c:287
+#: ../datebook_gui.c:297
+msgid "Unknown"
+msgstr ""
+
+#. End Date
+#: ../datebook_gui.c:300
+msgid "End Date: "
+msgstr "Дата окончания:"
+
+#: ../datebook_gui.c:302
+msgid "Never"
+msgstr ""
+
+#: ../datebook_gui.c:308
+#, c-format
+msgid "Repeat Frequency: %d\n"
+msgstr "Частота повторения: %d\n"
+
+#: ../datebook_gui.c:316
+#, c-format
+msgid "Monthly Repeat Day %d\n"
+msgstr "День ежемесечного повторения %d\n"
+
+#: ../datebook_gui.c:321
+#: ../datebook_gui.c:5200
+msgid "Repeat on Days:"
+msgstr "Повторяется:"
+
+#: ../datebook_gui.c:332
+#, fuzzy, c-format
+msgid "Number of exceptions: %d"
+msgstr "число записей = %d\n"
+
+#: ../datebook_gui.c:338
+msgid ""
+"\n"
+"more..."
+msgstr ""
+
+#: ../datebook_gui.c:359
+#: ../datebook_gui.c:386
+msgid "Description:"
+msgstr ""
+
+#: ../datebook_gui.c:360
+#: ../datebook_gui.c:387
+msgid "Note:"
+msgstr "Заметка:"
+
+#: ../datebook_gui.c:362
+#: ../datebook_gui.c:390
+msgid "Alarm:"
+msgstr "Оповещение:"
+
+#: ../datebook_gui.c:363
+#: ../datebook_gui.c:391
+msgid "Repeat Type:"
+msgstr "Тип повторения:"
+
+#: ../datebook_gui.c:366
+#: ../datebook_gui.c:394
+msgid "Start of Week:"
+msgstr "Начало недели:"
+
+#: ../datebook_gui.c:388
+#: ../datebook_gui.c:5023
+msgid "Location:"
+msgstr ""
+
+#: ../datebook_gui.c:622
+#: ../datebook_gui.c:2249
 #, c-format
 msgid "Appointment description text > %d, truncating to %d\n"
 msgstr "Описание события длиннее %d символов, обрезано до %d символов\n"
 
-#: ../datebook_gui.c:566 ../datebook_gui.c:983 ../datebook_gui.c:2131
-#: ../datebook_gui.c:2138
+#: ../datebook_gui.c:633
+#: ../datebook_gui.c:1143
+#: ../datebook_gui.c:2309
+#: ../datebook_gui.c:2316
 msgid "Error"
 msgstr "Ошибка"
 
-#: ../datebook_gui.c:567
+#: ../datebook_gui.c:634
 msgid "File doesn't appear to be datebook.dat format\n"
 msgstr "Файл не в формате datebook.dat\n"
 
-#: ../datebook_gui.c:983
+#: ../datebook_gui.c:702
+msgid "DAT/DBA (Palm Archive Formats)"
+msgstr ""
+
+#: ../datebook_gui.c:791
+#, c-format
+msgid ""
+"Datebook exported from %s %s on %s\n"
+"\n"
+msgstr ""
+
+#: ../datebook_gui.c:794
+#, c-format
+msgid ""
+"Calendar exported from %s %s on %s\n"
+"\n"
+msgstr ""
+
+#: ../datebook_gui.c:821
+msgid ""
+"Host character encoding is not UTF-8 based.\n"
+" Exported ical file may not be standards-compliant\n"
+msgstr ""
+
+#: ../datebook_gui.c:1143
 msgid "Unknown export type"
 msgstr ""
 
-#: ../datebook_gui.c:1092 ../export_gui.c:257 ../jpilot.c:551
+#: ../datebook_gui.c:1223
+#: ../todo_gui.c:855
+msgid "iCalendar"
+msgstr "iCalendar"
+
+#: ../datebook_gui.c:1235
+#: ../export_gui.c:251
+#: ../jpilot.c:419
 msgid "Export"
 msgstr "Экспортировать"
 
 #. Label for instructions
-#: ../datebook_gui.c:1109
+#: ../datebook_gui.c:1252
 msgid "Export All Datebook Records"
 msgstr "Экспортировать все записи Datebook"
 
-#: ../datebook_gui.c:1128 ../export_gui.c:319
+#: ../datebook_gui.c:1271
+#: ../export_gui.c:316
 msgid "Save as"
 msgstr "Сохранить как"
 
-#: ../datebook_gui.c:1138 ../export_gui.c:330
+#. Browse button
+#: ../datebook_gui.c:1281
+#: ../export_gui.c:329
 msgid "Browse"
 msgstr "Просмотреть"
 
-#: ../datebook_gui.c:1300
-#, fuzzy
+#: ../datebook_gui.c:1427
 msgid "Datebook Categories"
-msgstr "Редактирование категорий"
+msgstr "Категории календаря"
 
-#: ../datebook_gui.c:1343 ../import_gui.c:533 ../install_gui.c:341
-#: ../monthview_gui.c:545 ../search_gui.c:620 ../weekview_gui.c:369
-msgid "Close"
-msgstr "Закрыть"
-
-#. Create a "None" button
-#. labels for notebook
-#: ../datebook_gui.c:1356 ../datebook_gui.c:4639
+#. None button
+#. labels for notebook tabs
+#: ../datebook_gui.c:1479
+#: ../datebook_gui.c:2016
+#: ../datebook_gui.c:5129
 msgid "None"
 msgstr "Нет"
 
-#: ../datebook_gui.c:1468
+#: ../datebook_gui.c:1628
 msgid "Begin On Date"
 msgstr "Начало"
 
-#: ../datebook_gui.c:1473
+#: ../datebook_gui.c:1634
 msgid "End On Date"
 msgstr "Окончание"
 
-#: ../datebook_gui.c:1567 ../prefs.c:424
+#: ../datebook_gui.c:1744
+#: ../prefs.c:446
 msgid "Sunday"
 msgstr "Воскресенье"
 
-#: ../datebook_gui.c:1568 ../prefs.c:425
+#: ../datebook_gui.c:1745
+#: ../prefs.c:447
 msgid "Monday"
 msgstr "Понедельник"
 
-#: ../datebook_gui.c:1569
+#: ../datebook_gui.c:1746
 msgid "Tuesday"
 msgstr "Вторник"
 
-#: ../datebook_gui.c:1570
+#: ../datebook_gui.c:1747
 msgid "Wednesday"
 msgstr "Среда"
 
-#: ../datebook_gui.c:1571
+#: ../datebook_gui.c:1748
 msgid "Thursday"
 msgstr "Четверг"
 
-#: ../datebook_gui.c:1572
+#: ../datebook_gui.c:1749
 msgid "Friday"
 msgstr "Пятница"
 
-#: ../datebook_gui.c:1573
+#: ../datebook_gui.c:1750
 msgid "Saturday"
 msgstr "Субота"
 
-#: ../datebook_gui.c:1576
+#: ../datebook_gui.c:1753
 msgid "4th"
 msgstr "4-й"
 
-#: ../datebook_gui.c:1576
+#: ../datebook_gui.c:1753
 msgid "Last"
 msgstr "Последний"
 
-#: ../datebook_gui.c:1579
+#: ../datebook_gui.c:1756
 #, c-format
 msgid ""
 "This appointment can either\n"
@@ -675,12 +1230,12 @@ msgid ""
 "Which do you want?"
 msgstr ""
 
-#: ../datebook_gui.c:1586 ../datebook_gui.c:1603
+#: ../datebook_gui.c:1763
+#: ../datebook_gui.c:1779
 msgid "Question?"
-msgstr ""
+msgstr "Вопрос?"
 
-#. ---------------------------
-#: ../datebook_gui.c:1594
+#: ../datebook_gui.c:1770
 msgid ""
 "This is a repeating event.\n"
 "Do you want to apply these\n"
@@ -693,53 +1248,47 @@ msgstr ""
 "настройки только для ЭТОЙ даты или\n"
 "также и для ВСЕХ последующих?"
 
-#: ../datebook_gui.c:1599
+#: ../datebook_gui.c:1775
 msgid "Current"
 msgstr "Текущее"
 
-#: ../datebook_gui.c:1838
-msgid "none"
-msgstr "нет"
-
-#: ../datebook_gui.c:1839
+#: ../datebook_gui.c:2017
 msgid "day"
 msgstr "день"
 
-#: ../datebook_gui.c:1840
+#: ../datebook_gui.c:2018
 msgid "week"
 msgstr "неделя"
 
-#: ../datebook_gui.c:1841
+#: ../datebook_gui.c:2019
 msgid "month"
 msgstr "месяц"
 
-#: ../datebook_gui.c:1842
+#: ../datebook_gui.c:2020
 msgid "year"
 msgstr "год"
 
-#: ../datebook_gui.c:2126 ../datebook_gui.c:2129
+#: ../datebook_gui.c:2304
+#: ../datebook_gui.c:2307
 #, c-format
 msgid "You cannot have an appointment that repeats every %d %s(s)\n"
 msgstr "Невозможно назначить встречи с периодом повторения %d %s\n"
 
-#: ../datebook_gui.c:2139
-msgid ""
-"You can not have a weekly repeating appointment that doesn't repeat on any "
-"day of the week."
-msgstr ""
-"Невозможно назначить еженедельную встречу, которая не повторяется в любой "
-"день недели."
+#: ../datebook_gui.c:2317
+msgid "You cannot have a weekly repeating appointment that doesn't repeat on any day of the week."
+msgstr "Невозможно назначить еженедельную встречу без выбора дня недели."
 
 #. This is a timeless event
-#: ../datebook_gui.c:2292
+#: ../datebook_gui.c:2482
+#: ../datebook_gui.c:4944
 msgid "No Time"
 msgstr "Нет времени"
 
-#: ../datebook_gui.c:2631
+#: ../datebook_gui.c:2813
 msgid "Invalid Appointment"
 msgstr "Неверная встреча"
 
-#: ../datebook_gui.c:2632
+#: ../datebook_gui.c:2814
 msgid ""
 "The End Date of this appointment\n"
 "is before the start date."
@@ -747,189 +1296,190 @@ msgstr ""
 "Дата Окончания этой встречи\n"
 "предшествует дате начала."
 
-#. The No due date check box
-#: ../datebook_gui.c:2901 ../datebook_gui.c:4673 ../datebook_gui.c:4703
-#: ../datebook_gui.c:4758 ../datebook_gui.c:4807 ../todo_gui.c:130
-#: ../todo_gui.c:2245
+#. "No Date" check box
+#: ../datebook_gui.c:3154
+#: ../datebook_gui.c:5162
+#: ../datebook_gui.c:5193
+#: ../datebook_gui.c:5246
+#: ../datebook_gui.c:5294
+#: ../todo_gui.c:145
+#: ../todo_gui.c:2298
 msgid "No Date"
 msgstr "Нет даты"
 
-#: ../datebook_gui.c:3021
+#: ../datebook_gui.c:3303
 #, c-format
-msgid "Error in DateBookDB advanceUnits = %d\n"
+msgid "Error in DateBookDB or Calendar advanceUnits = %d\n"
 msgstr ""
 
-#: ../datebook_gui.c:3192
-msgid "Unknown repeatType found in DatebookDB\n"
-msgstr ""
-
-#: ../datebook_gui.c:3225
+#: ../datebook_gui.c:3490
 #, c-format
 msgid "%%a., %s"
 msgstr ""
 
-#: ../datebook_gui.c:3230 ../monthview_gui.c:230 ../weekview_gui.c:219
+#: ../datebook_gui.c:3495
 msgid " (TODAY)"
-msgstr ""
+msgstr "(СЕГОДНЯ)"
 
 #. Make Weekview button
-#: ../datebook_gui.c:4200 ../datebook_gui.c:4641
+#: ../datebook_gui.c:4618
+#: ../datebook_gui.c:5131
 msgid "Week"
 msgstr "Неделя"
 
-#: ../datebook_gui.c:4206
+#. Accelerator key to use for starting Weekview GUI
+#: ../datebook_gui.c:4625
 #, fuzzy
 msgid "W"
 msgstr "Ср"
 
-#: ../datebook_gui.c:4208
+#: ../datebook_gui.c:4627
 msgid "View appointments by week"
 msgstr "Просмотреть события, запланированные на эту неделю"
 
 #. Make Monthview button
-#: ../datebook_gui.c:4211 ../datebook_gui.c:4642
+#: ../datebook_gui.c:4630
+#: ../datebook_gui.c:5132
 msgid "Month"
 msgstr "Месяц"
 
-#: ../datebook_gui.c:4218
+#. Accelerator key to use for starting Monthview GUI
+#: ../datebook_gui.c:4638
 #, fuzzy
 msgid "M"
 msgstr "Пн"
 
-#: ../datebook_gui.c:4220
+#: ../datebook_gui.c:4640
 msgid "View appointments by month"
 msgstr "Просмотреть события, запланированные на этот месяц"
 
 #  Make Category button
 #. Make Category button
-#: ../datebook_gui.c:4225
+#: ../datebook_gui.c:4645
 msgid "Cats"
 msgstr "Категории"
 
-#: ../datebook_gui.c:4291
+#: ../datebook_gui.c:4709
 msgid "Time"
 msgstr "Время"
 
-#.
-#. * Hide ToDo button
-#.
-#: ../datebook_gui.c:4328
+#. Show ToDos button
+#: ../datebook_gui.c:4752
 msgid "Show ToDos"
 msgstr "Показать задачи"
 
-#: ../datebook_gui.c:4343 ../todo_gui.c:2114
+#: ../datebook_gui.c:4766
+#: ../todo_gui.c:2135
 msgid "Task"
 msgstr "Задача"
 
-#: ../datebook_gui.c:4344 ../todo_gui.c:2115
+#: ../datebook_gui.c:4767
+#: ../todo_gui.c:2136
 msgid "Due"
 msgstr "Цель"
 
-#: ../datebook_gui.c:4441
+#: ../datebook_gui.c:4881
+#: ../datebook_gui.c:5038
 msgid "Alarm"
 msgstr "Будильник"
 
-#: ../datebook_gui.c:4462
-msgid "Days"
-msgstr "Дни"
+#. Date Spinners
+#: ../datebook_gui.c:4921
+#: ../Expense/expense.c:1732
+msgid "Date:"
+msgstr "Дата:"
 
-#: ../datebook_gui.c:4485
-msgid "This Event has no particular time"
-msgstr "Для этого события не назначено время"
+#. Start date and time
+#: ../datebook_gui.c:4963
+msgid "Start"
+msgstr "Начинается:"
 
-#: ../datebook_gui.c:4493
-msgid "Starts on"
-msgstr "Начинается"
+#. End date and time
+#: ../datebook_gui.c:4980
+msgid "End"
+msgstr "Заканчивается:"
 
-#: ../datebook_gui.c:4507
-msgid "Start Time"
-msgstr "Время начала"
-
-#: ../datebook_gui.c:4525
-msgid "End Time"
-msgstr "Время окончания"
-
-#: ../datebook_gui.c:4623
+#: ../datebook_gui.c:5113
 msgid "DateBk Tags"
 msgstr "Тэги DateBk"
 
-#: ../datebook_gui.c:4640
+#: ../datebook_gui.c:5130
 msgid "Day"
 msgstr "День"
 
-#: ../datebook_gui.c:4643
+#: ../datebook_gui.c:5133
 msgid "Year"
 msgstr "Год"
 
-#. no repeat page for notebook
-#: ../datebook_gui.c:4647
+#. No Repeat page for notebook
+#: ../datebook_gui.c:5136
 msgid "This event will not repeat"
 msgstr "Это событие не повторится"
 
-#: ../datebook_gui.c:4657 ../datebook_gui.c:4689 ../datebook_gui.c:4744
-#: ../datebook_gui.c:4791
+#: ../datebook_gui.c:5145
+#: ../datebook_gui.c:5178
+#: ../datebook_gui.c:5231
+#: ../datebook_gui.c:5277
 msgid "Frequency is Every"
 msgstr "Частота повторения:"
 
-#: ../datebook_gui.c:4662
+#: ../datebook_gui.c:5151
 msgid "Day(s)"
 msgstr "день (дней)"
 
-#. checkbutton
-#: ../datebook_gui.c:4665 ../datebook_gui.c:4697 ../datebook_gui.c:4752
-#: ../datebook_gui.c:4799
+#: ../datebook_gui.c:5154
+#: ../datebook_gui.c:5187
+#: ../datebook_gui.c:5240
+#: ../datebook_gui.c:5286
 msgid "End on"
 msgstr "Заканчивается:"
 
-#: ../datebook_gui.c:4694
+#: ../datebook_gui.c:5184
 msgid "Week(s)"
 msgstr "неделя (недель)"
 
-#: ../datebook_gui.c:4710
-msgid "Repeat on Days:"
-msgstr "Повторяется:"
-
-#: ../datebook_gui.c:4749
+#: ../datebook_gui.c:5237
 msgid "Month(s)"
 msgstr "месяц(ы)"
 
-#: ../datebook_gui.c:4766
+#: ../datebook_gui.c:5254
 msgid "Repeat by:"
 msgstr "Повторяется:"
 
-#: ../datebook_gui.c:4770
+#: ../datebook_gui.c:5258
 msgid "Day of week"
 msgstr "День недели"
 
-#: ../datebook_gui.c:4779
+#: ../datebook_gui.c:5267
+#: ../Expense/expense.c:1614
 msgid "Date"
 msgstr "Дата"
 
-#: ../datebook_gui.c:4796
+#: ../datebook_gui.c:5283
 msgid "Year(s)"
 msgstr "год(ы)"
 
-#: ../dialer.c:194
+#: ../dialer.c:196
 msgid "Phone Dialer"
 msgstr "Номеронабиратель"
 
-#: ../dialer.c:229
+#: ../dialer.c:231
 msgid "Prefix 1"
 msgstr "Префикс 1"
 
-#: ../dialer.c:251
+#: ../dialer.c:253
 msgid "Prefix 2"
 msgstr "Префикс 2"
 
-#: ../dialer.c:273
+#: ../dialer.c:275
 msgid "Prefix 3"
 msgstr "Префикс 3"
 
-#: ../dialer.c:288
+#: ../dialer.c:290
 msgid "Phone number:"
 msgstr "Номер телефона:"
 
-#: ../dialer.c:319
+#: ../dialer.c:320
 msgid "Extension"
 msgstr "Расширение"
 
@@ -937,494 +1487,376 @@ msgstr "Расширение"
 msgid "Dial Command"
 msgstr "Команда дозвона"
 
-#: ../dialer.c:367
-msgid "Dismiss"
-msgstr "Отмена"
-
-#: ../export_gui.c:115
+#: ../export_gui.c:122
 msgid "File Browser"
 msgstr "Просмотр файлов"
 
 #. Label for instructions
-#: ../export_gui.c:275
+#: ../export_gui.c:273
 msgid "Select records to be exported"
 msgstr "Выберите заметки для экспорта"
 
-#: ../export_gui.c:277
+#: ../export_gui.c:275
 msgid "Use Ctrl and Shift Keys"
 msgstr "Используйте клавиши Ctrl и Shift"
 
 #. Import button
-#: ../import_gui.c:265 ../import_gui.c:315 ../import_gui.c:423
-#: ../import_gui.c:509 ../jpilot.c:507
+#: ../import_gui.c:300
+#: ../import_gui.c:369
+#: ../import_gui.c:426
+#: ../import_gui.c:471
+#: ../jpilot.c:375
 msgid "Import"
 msgstr "Импортировать"
 
-#: ../import_gui.c:298 ../install_gui.c:310
-msgid "To change to a hidden directory type it below and hit TAB"
-msgstr "Для перехода в скрытую директорию, наберите ее имя ниже и нажмите TAB"
-
-#: ../import_gui.c:307 ../prefs_gui.c:771
-msgid "Done"
-msgstr "Завершить"
-
-#: ../import_gui.c:328
-msgid "Import File Type"
-msgstr "Тип импортируемого файла"
-
-#: ../import_gui.c:442
+#: ../import_gui.c:317
+#, c-format
 msgid "Record was marked as private"
 msgstr "Запись была помечена как личная"
 
-#: ../import_gui.c:444
+#: ../import_gui.c:319
+#, c-format
 msgid "Record was not marked as private"
 msgstr "Запись не была помечена как личная"
 
-#: ../import_gui.c:453
+#: ../import_gui.c:328
 #, c-format
 msgid "Category before import was: [%s]"
 msgstr ""
 
-#: ../import_gui.c:461
-#, fuzzy, c-format
+#: ../import_gui.c:336
+#, c-format
 msgid "Record will be put in category [%s]"
-msgstr "Все записи в этой категории"
+msgstr "Запись будет помещена в категорию [%s]"
 
 #. Import All button
-#: ../import_gui.c:516
+#: ../import_gui.c:376
 msgid "Import All"
 msgstr "Импортировать все"
 
 #. Skip button
-#: ../import_gui.c:523
+#: ../import_gui.c:383
 msgid "Skip"
 msgstr "Пропустить"
 
-#: ../install_gui.c:257
-msgid "Install"
-msgstr "Установить"
+#: ../import_gui.c:457
+#: ../install_gui.c:303
+msgid "To change to a hidden directory type it below and hit TAB"
+msgstr "Для перехода в скрытую директорию, наберите ее имя ниже и нажмите TAB"
 
-#. i18n hack to have title correctly translated
-#: ../install_gui.c:287
+#: ../import_gui.c:484
+msgid "Import File Type"
+msgstr "Тип импортируемого файла"
+
+#: ../install_gui.c:247
 msgid "Files to be installed"
 msgstr "Файлы для установки"
 
-#: ../install_gui.c:319
-msgid "Add"
-msgstr "Добавить"
+#: ../install_gui.c:255
+msgid "Install"
+msgstr "Установить"
 
-#: ../install_gui.c:330
-msgid "Remove"
-msgstr "Удалить"
-
-#: ../install_user.c:115 ../install_user.c:214
-#, fuzzy
+#: ../install_user.c:113
+#: ../install_user.c:215
 msgid "Install User"
-msgstr "/Файл/Установить"
+msgstr "Установить ID пользователя"
 
-#: ../install_user.c:138
-msgid ""
-"A PalmOS(c) device needs a user name and a user ID in order to sync properly."
+#: ../install_user.c:134
+msgid "A PalmOS(c) device needs a user name and a user ID in order to sync properly."
 msgstr ""
 
-#: ../install_user.c:145
-msgid ""
-"If you want to sync more than 1 PalmOS(c) device each one should have a "
-"different ID and preferably a different user name."
+#: ../install_user.c:141
+msgid "If you want to sync more than 1 PalmOS(c) device each one should have a different ID and preferably a different user name."
 msgstr ""
 
-#: ../install_user.c:175
+#. Instruction label
+#: ../install_user.c:163
 msgid "Most people choose their name or nickname for the user name."
-msgstr ""
+msgstr "Большинство людей выбирают имя или ник, но мы советуем поставить вам 'kracked dude', чтобы проще было ломать программы"
 
-#: ../install_user.c:182
-#, fuzzy
-msgid "User name"
+#: ../install_user.c:171
+#: ../restore_gui.c:277
+msgid "User Name"
 msgstr "Имя пользователя"
 
-#: ../install_user.c:187
+#: ../install_user.c:181
 msgid "The ID should be a random number."
-msgstr ""
+msgstr "ID должен быть случайным числом."
 
-#: ../install_user.c:194 ../restore_gui.c:295
+#: ../install_user.c:189
+#: ../restore_gui.c:290
 msgid "User ID"
 msgstr "ID пользователя"
 
-#: ../jpilot-dump.c:95
-msgid " +D +A +T +M format like date +format.\n"
-msgstr ""
-
-#: ../jpilot-dump.c:96
-msgid " -v displays version and exits.\n"
-msgstr ""
-
-#: ../jpilot-dump.c:97 ../utils.c:73
-msgid " -h displays help and exits.\n"
-msgstr ""
-
-#: ../jpilot-dump.c:98
-msgid " -f displays help for format codes.\n"
-msgstr ""
-
-#: ../jpilot-dump.c:99
-#, fuzzy
-msgid " -D dump DateBook.\n"
-msgstr "Адресная книга"
-
-#: ../jpilot-dump.c:100
-msgid " -N dump appts for today in DateBook.\n"
-msgstr ""
-
-#: ../jpilot-dump.c:101
-msgid " -NYYYY/MM/DD dump appts on YYYY/MM/DD in DateBook.\n"
-msgstr ""
-
-#: ../jpilot-dump.c:102
-#, fuzzy
-msgid " -A dump Address book.\n"
-msgstr "Адресная книга"
-
-#: ../jpilot-dump.c:103
-msgid " -T dump ToDo list as CSV.\n"
-msgstr ""
-
-#: ../jpilot-dump.c:104
-msgid " -M dump Memos.\n"
-msgstr ""
-
-#: ../jpilot-sync.c:66
-msgid ""
-" J-Pilot preferences are read to get port, rate, number of backups, etc.\n"
-msgstr ""
-
-#: ../jpilot-sync.c:67
-msgid " -v = version\n"
-msgstr ""
-
-#: ../jpilot-sync.c:68
-msgid " -h = help\n"
-msgstr ""
-
-#: ../jpilot-sync.c:69
-msgid " -d = run in debug mode\n"
-msgstr ""
-
-#: ../jpilot-sync.c:70
-msgid " -P = do not load plugins.\n"
-msgstr ""
-
-#: ../jpilot-sync.c:71
-msgid " -b = Do a sync and then a backup, otherwise just do a sync.\n"
-msgstr ""
-
-#: ../jpilot-sync.c:72
-msgid " -l = loop, otherwise sync once and exit.\n"
-msgstr ""
-
-#: ../jpilot-sync.c:73
-msgid ""
-" -p {port} = Use this port to sync with instead of getting preferences.\n"
-msgstr ""
-
-#. The log window hasn't been created yet
-#: ../jpilot.c:140
-#, c-format
-msgid "Invalid geometry specification: \"%s\"\n"
-msgstr ""
-
-#: ../jpilot.c:447 ../monthview_gui.c:555 ../print_gui.c:338
-#: ../weekview_gui.c:379
+#: ../jpilot.c:315
 msgid "Print"
 msgstr "Печать"
 
-#: ../jpilot.c:448
+#: ../jpilot.c:316
 msgid "There is no print support for this conduit."
 msgstr "Этот кондуит не поддерживает печать."
 
-#: ../jpilot.c:508
+#: ../jpilot.c:376
 msgid "There is no import support for this conduit."
 msgstr "Этот кондуит не поддерживает импорт."
 
-#: ../jpilot.c:552
+#: ../jpilot.c:420
 msgid "There is no export support for this conduit."
 msgstr "Этот кондуит не поддерживает экспорт."
 
 #. -------------------------------------------
-#: ../jpilot.c:728
+#: ../jpilot.c:631
 msgid ""
-"This palm doesn't have the same user name\n"
-"or user ID as the one that was synced the\n"
-"last time.  Syncing could have unwanted effects.\n"
+"This handheld does not have the same user name or user ID\n"
+"as the one that was synced the last time.\n"
+"Syncing could have unwanted effects.\n"
+"\n"
 "Read the user manual if you are uncertain."
 msgstr ""
 
 #. -------------------------------------------
-#: ../jpilot.c:735
+#: ../jpilot.c:638
 msgid ""
-"This palm has a NULL user id.\n"
-"Every palm must have a unique user id in order to sync properly.\n"
-"If it has been hard reset, use restore from the menu to restore it,\n"
-"or use pilot-xfer.\n"
-"To add a user name and ID use the install-user command line tool,\n"
-"or use install-user from the menu\n"
+"This handheld has a NULL user ID.\n"
+"Every handheld must have a unique user ID in order to sync properly.\n"
+"If the handheld has been hard reset, \n"
+"   use restore from the menu to restore it.\n"
+"Otherwise, to add a new user name and ID\n"
+"   use install-user from the menu.\n"
+"\n"
 "Read the user manual if you are uncertain."
 msgstr ""
 
-#: ../jpilot.c:742
+#: ../jpilot.c:646
 msgid "Cancel Sync"
 msgstr "Отменить синхронизацию"
 
-#: ../jpilot.c:742
+#: ../jpilot.c:646
 msgid "Sync Anyway"
 msgstr "Синхронизировать в любом случае"
 
-#: ../jpilot.c:751 ../jpilot.c:755
-#, fuzzy
+#: ../jpilot.c:655
+#: ../jpilot.c:659
 msgid "Sync Problem"
-msgstr "Синхронизировать заметки"
+msgstr "Проблема синхронизации"
 
-#: ../jpilot.c:982
+#: ../jpilot.c:888
+#: ../jpilot.c:1739
+msgid " User: "
+msgstr "ID пользователя:"
+
+#: ../jpilot.c:900
 msgid "Unknown command from sync process\n"
 msgstr ""
 
-#: ../jpilot.c:1003 ../Expense/expense.c:500 ../KeyRing/keyring.c:1737
-#: ../SyncTime/synctime.c:48
+#: ../jpilot.c:919
+#: ../Expense/expense.c:528
+#: ../KeyRing/keyring.c:1892
+#: ../SyncTime/synctime.c:55
 #, c-format
 msgid "About %s"
 msgstr "О %s"
 
-#: ../jpilot.c:1406
+#: ../jpilot.c:1060
 msgid "/_File"
 msgstr "/_Файл"
 
-#: ../jpilot.c:1407
+#: ../jpilot.c:1061
 msgid "/File/tear"
 msgstr "/Файл/tear"
 
-#: ../jpilot.c:1408
+#: ../jpilot.c:1062
 msgid "/File/_Find"
 msgstr "/Файл/_Поиск"
 
-#: ../jpilot.c:1409 ../jpilot.c:1415 ../jpilot.c:1418
+#: ../jpilot.c:1063
+#: ../jpilot.c:1069
+#: ../jpilot.c:1072
 msgid "/File/sep1"
 msgstr "/Файл/sep1"
 
-#: ../jpilot.c:1410
+#: ../jpilot.c:1064
 msgid "/File/_Install"
 msgstr "/Файл/Установить"
 
-#: ../jpilot.c:1411
+#: ../jpilot.c:1065
 msgid "/File/Import"
 msgstr "/Файл/Импорт"
 
-#: ../jpilot.c:1412
+#: ../jpilot.c:1066
 msgid "/File/Export"
 msgstr "/Файл/Экспорт"
 
-#: ../jpilot.c:1413 ../jpilot.c:2895
+#: ../jpilot.c:1067
+#: ../jpilot.c:2120
 msgid "/File/Preferences"
 msgstr "/Файл/Настройки"
 
-#: ../jpilot.c:1414
+#: ../jpilot.c:1068
 msgid "/File/_Print"
 msgstr "/Файл/Печать"
 
-#: ../jpilot.c:1416
-#, fuzzy
+#: ../jpilot.c:1070
 msgid "/File/Install User"
-msgstr "/Файл/Установить"
+msgstr "/Файл/Установить HotSync ID"
 
-#: ../jpilot.c:1417
+#: ../jpilot.c:1071
 msgid "/File/Restore Handheld"
 msgstr "/Файл/Восстановить Palm"
 
-#: ../jpilot.c:1419
+#: ../jpilot.c:1073
 msgid "/File/_Quit"
 msgstr "/Файл/Выход"
 
-#: ../jpilot.c:1420
+#: ../jpilot.c:1074
 msgid "/_View"
-msgstr "/_Просмотр"
+msgstr "/Просмотр"
 
-#: ../jpilot.c:1421 ../jpilot.c:1422 ../jpilot.c:1423 ../jpilot.c:1677
-#, fuzzy
+#: ../jpilot.c:1075
+#: ../jpilot.c:1076
+#: ../jpilot.c:1077
+#: ../jpilot.c:1322
 msgid "/View/Hide Private Records"
-msgstr "/Просмотр/Спрятать-показать-замаскировать личные записи"
+msgstr "/Просмотр/Спрятать личные записи"
 
-#: ../jpilot.c:1422
-#, fuzzy
+#: ../jpilot.c:1076
+#: ../jpilot.c:1325
 msgid "/View/Show Private Records"
-msgstr "/Просмотр/Спрятать-показать-замаскировать личные записи"
+msgstr "/Просмотр/Показать личные записи"
 
-#: ../jpilot.c:1423
-#, fuzzy
+#: ../jpilot.c:1077
+#: ../jpilot.c:1328
 msgid "/View/Mask Private Records"
-msgstr "/Просмотр/Спрятать-показать-замаскировать личные записи"
+msgstr "/Просмотр/Замаскировать личные записи"
 
-#: ../jpilot.c:1424
-#, fuzzy
+#: ../jpilot.c:1078
 msgid "/View/sep1"
-msgstr "/Файл/sep1"
+msgstr "/Просмотр/sep1"
 
-#: ../jpilot.c:1425
+#: ../jpilot.c:1079
 msgid "/View/Datebook"
 msgstr "/Просмотр/Календарь"
 
-#: ../jpilot.c:1426
+#: ../jpilot.c:1080
 msgid "/View/Addresses"
 msgstr "/Просмотр/Адреса"
 
-#: ../jpilot.c:1427
+#: ../jpilot.c:1081
 msgid "/View/Todos"
 msgstr "/Просмотр/Задачи"
 
-#: ../jpilot.c:1428
+#: ../jpilot.c:1082
 msgid "/View/Memos"
 msgstr "/Просмотр/Заметки"
 
-#: ../jpilot.c:1429 ../jpilot.c:1563
+#: ../jpilot.c:1083
+#: ../jpilot.c:1212
 msgid "/_Plugins"
 msgstr "/_Дополнения"
 
-#: ../jpilot.c:1431
+#: ../jpilot.c:1085
 msgid "/_Web"
 msgstr "/_Сеть"
 
 #. web
-#: ../jpilot.c:1432
+#: ../jpilot.c:1086
 msgid "/Web/Netscape"
 msgstr "/Сеть/Netscape"
 
-#: ../jpilot.c:1436
+#: ../jpilot.c:1090
 msgid "/Web/Mozilla"
 msgstr "/Сеть/Mozilla"
 
-#: ../jpilot.c:1441
+#: ../jpilot.c:1095
 msgid "/Web/Galeon"
 msgstr "/Сеть/Galeon"
 
-#: ../jpilot.c:1446
+#: ../jpilot.c:1100
 msgid "/Web/Opera"
 msgstr "/Сеть/Opera"
 
-#: ../jpilot.c:1450
+#: ../jpilot.c:1104
 msgid "/Web/GnomeUrl"
 msgstr "/Сеть/GnomeUrl"
 
-#: ../jpilot.c:1452
+#: ../jpilot.c:1106
 msgid "/Web/Lynx"
 msgstr "/Сеть/Lynx"
 
-#: ../jpilot.c:1454
+#: ../jpilot.c:1108
 msgid "/Web/Links"
 msgstr "Сеть/Links"
 
-#: ../jpilot.c:1456
+#: ../jpilot.c:1110
 msgid "/Web/W3M"
 msgstr "/Сеть/W3M"
 
-#: ../jpilot.c:1458
+#: ../jpilot.c:1112
 msgid "/Web/Konqueror"
 msgstr "/Сеть/Konqueror"
 
-#: ../jpilot.c:1461
+#: ../jpilot.c:1115
 msgid "/_Help"
 msgstr "/Справка"
 
-#: ../jpilot.c:1462
-msgid "/Help/PayBack program"
-msgstr "/Справка/Программа PayBack"
-
-#: ../jpilot.c:1463
-#, fuzzy
+#: ../jpilot.c:1116
 msgid "/Help/About J-Pilot"
 msgstr "/Справка/J-Pilot"
 
-#: ../jpilot.c:1530
+#: ../jpilot.c:1180
 #, c-format
 msgid "/_Plugins/%s"
 msgstr "/_Дополнения/%s"
 
-#: ../jpilot.c:1541
+#: ../jpilot.c:1190
 #, c-format
 msgid "/_Help/%s"
 msgstr "/Справка/%s"
 
-#: ../jpilot.c:1840
-msgid "Font Selection Dialog"
-msgstr ""
-
-#: ../jpilot.c:2211
+#: ../jpilot.c:1545
 msgid "calendar:week_start:0"
 msgstr ""
 
-#: ../jpilot.c:2260
+#: ../jpilot.c:1588
+#: ../jpilot-sync.c:170
 msgid "Not loading plugins.\n"
 msgstr ""
 
-#: ../jpilot.c:2264
+#: ../jpilot.c:1592
 msgid "Ignoring all alarms.\n"
 msgstr ""
 
-#: ../jpilot.c:2268
+#: ../jpilot.c:1596
 msgid "Ignoring past alarms.\n"
 msgstr ""
 
-#: ../jpilot.c:2363 ../jpilot.c:2371
+#: ../jpilot.c:1684
+#: ../jpilot.c:1692
 #, fuzzy
 msgid "Unable to open pipe\n"
 msgstr "Не удается открыть %s\n"
 
-#: ../jpilot.c:2422
-#, fuzzy
-msgid " User: "
-msgstr "ID пользователя"
-
-#: ../jpilot.c:2564
-msgid "Clear"
-msgstr "Очистить"
-
-#: ../jpilot.c:2649
+#: ../jpilot.c:1895
 #, fuzzy
 msgid "Show private records   Ctrl-Z"
 msgstr "Показать личные записи"
 
-#: ../jpilot.c:2654
-#, fuzzy
-msgid "Show private records"
-msgstr "Показать личные записи"
-
-#: ../jpilot.c:2659
+#: ../jpilot.c:1900
 #, fuzzy
 msgid "Hide private records   Ctrl-Z"
 msgstr "Спрятать-показать личные записи"
 
-#: ../jpilot.c:2664
-#, fuzzy
-msgid "Hide private records"
-msgstr "Спрятать-показать личные записи"
-
-#: ../jpilot.c:2669
+#: ../jpilot.c:1905
 #, fuzzy
 msgid "Mask private records   Ctrl-Z"
 msgstr "Скрыть личные записи"
 
-#: ../jpilot.c:2674
-#, fuzzy
-msgid "Mask private records"
-msgstr "Скрыть личные записи"
-
-#: ../jpilot.c:2684
+#: ../jpilot.c:1916
 #, fuzzy
 msgid "Sync your palm to the desktop   Ctrl-Y"
 msgstr "Синхронизировать Palm с десктоп"
 
-#. Create "Font" button
-#: ../jpilot.c:2690
-msgid "Font"
-msgstr "Шрифт"
-
-#: ../jpilot.c:2705
+#: ../jpilot.c:1930
 msgid ""
 "Sync your palm to the desktop\n"
 "and then do a backup"
@@ -1432,137 +1864,223 @@ msgstr ""
 "Синхронизировать вначале Palm и десктоп,\n"
 "а затем выполнить архивирование"
 
-#: ../jpilot.c:2819
+#: ../jpilot.c:2064
 msgid "Datebook/Go to Today"
 msgstr "Календарь/Сегодня"
 
-#: ../jpilot.c:2821
+#: ../jpilot.c:2065
 msgid "Address Book"
 msgstr "Адресная книга"
 
-#: ../jpilot.c:2823
+#: ../jpilot.c:2066
 msgid "ToDo List"
 msgstr "Список задач"
 
-#: ../jpilot.c:2825
+#: ../jpilot.c:2067
 msgid "Memo Pad"
 msgstr "Заметки"
 
-#: ../jpilot.c:2877
+#: ../jpilot.c:2102
 msgid "Do it now"
 msgstr ""
 
-#: ../jpilot.c:2877
+#: ../jpilot.c:2102
 #, fuzzy
 msgid "Remind me later"
 msgstr "Напоминание"
 
-#: ../jpilot.c:2877
+#: ../jpilot.c:2102
 msgid "Don't tell me again!"
 msgstr ""
 
-#: ../jpilot.c:2891
+#: ../jpilot.c:2115
+#, c-format
 msgid ""
-"J-Pilot is using the GTK2 graphical toolkit. This version of the toolkit "
-"uses UTF-8 to encode characters.\n"
-"You should select a UTF-8 charset so you can see the non-ASCII characters "
-"(accents for example).\n"
+"J-Pilot uses the GTK2 graphical toolkit. This version of the toolkit uses UTF-8 to encode characters.\n"
+"You should select a UTF-8 charset so that you can see non-ASCII characters (accents for example).\n"
 "\n"
-msgstr ""
-
-#: ../jpilot.c:2894
-msgid "Go to the menu \""
-msgstr ""
-
-#: ../jpilot.c:2896
-msgid "\" and change the \""
+"Go to the menu \"%s\" and change the \"%s\"."
 msgstr ""
 
 #. Character Set
-#: ../jpilot.c:2897 ../prefs_gui.c:390
-msgid "Character Set "
+#: ../jpilot.c:2120
+#: ../prefs_gui.c:505
+#, fuzzy
+msgid "Character Set"
 msgstr "Кодировка "
 
-#: ../jpilot.c:2898
-msgid "\"."
-msgstr ""
-
-#: ../jpilot.c:2900
+#: ../jpilot.c:2122
 msgid "Select a UTF-8 encoding"
 msgstr ""
 
-#: ../libplugin.c:153
-#, c-format
-msgid "Unknown PC header version = %d\n"
+#: ../jpilot-dump.c:88
+msgid " +D +A +T +M format like date +format.\n"
 msgstr ""
 
-#: ../libplugin.c:416
-#, fuzzy, c-format
-msgid "%s:%d Error opening file: %s\n"
-msgstr "%s:%d Ошибка чтения %s\n"
+#: ../jpilot-dump.c:89
+msgid " -v displays version and exits.\n"
+msgstr ""
 
-#: ../libplugin.c:422 ../libplugin.c:451 ../sync.c:2879 ../todo.c:391
-#, fuzzy, c-format
-msgid "%s:%d Error reading file: %s\n"
-msgstr "%s:%d Ошибка чтения %s\n"
+#: ../jpilot-dump.c:90
+#: ../jpilot-sync.c:66
+#: ../utils.c:1838
+msgid " -h displays help and exits.\n"
+msgstr ""
 
-#: ../libplugin.c:478 ../utils.c:1944
+#: ../jpilot-dump.c:91
+msgid " -f displays help for format codes.\n"
+msgstr ""
+
+#: ../jpilot-dump.c:92
+#, fuzzy
+msgid " -D dump DateBook.\n"
+msgstr "Адресная книга"
+
+#: ../jpilot-dump.c:93
+#, fuzzy
+msgid " -i dump DateBook in iCalendar format.\n"
+msgstr "Адресная книга"
+
+#: ../jpilot-dump.c:94
+msgid " -N dump appts for today in DateBook.\n"
+msgstr ""
+
+#: ../jpilot-dump.c:95
+msgid " -NYYYY/MM/DD dump appts on YYYY/MM/DD in DateBook.\n"
+msgstr ""
+
+#: ../jpilot-dump.c:96
+#, fuzzy
+msgid " -A dump Address book.\n"
+msgstr "Адресная книга"
+
+#: ../jpilot-dump.c:97
+msgid " -T dump ToDo list as CSV.\n"
+msgstr ""
+
+#: ../jpilot-dump.c:98
+msgid " -M dump Memos.\n"
+msgstr ""
+
+#: ../jpilot-dump.c:166
+#, c-format
+msgid ""
+"Warning: Host character encoding is not UTF-8 based.\n"
+"Exported ical file may not be standards-compliant\n"
+msgstr ""
+
+#: ../jpilot-sync.c:64
+msgid " J-Pilot preferences are read to get port, rate, number of backups, etc.\n"
+msgstr ""
+
+#: ../jpilot-sync.c:65
+#: ../utils.c:1837
+msgid " -v displays version and compile options and exits.\n"
+msgstr ""
+
+#: ../jpilot-sync.c:67
+#: ../utils.c:1839
+msgid " -d displays debug info to stdout.\n"
+msgstr ""
+
+#: ../jpilot-sync.c:68
+msgid " -P skips loading plugins.\n"
+msgstr ""
+
+#: ../jpilot-sync.c:69
+#, fuzzy
+msgid " -b sync and then do a backup\n"
+msgstr ""
+"Синхронизировать вначале Palm и десктоп,\n"
+"а затем выполнить архивирование"
+
+#: ../jpilot-sync.c:70
+msgid " -l loop, otherwise sync once and exit.\n"
+msgstr ""
+
+#: ../jpilot-sync.c:71
+msgid " -p {port} use this port to sync with instead of default.\n"
+msgstr ""
+
+#: ../libplugin.c:65
+#: ../utils.c:1018
 msgid ""
 "This record is already deleted.\n"
 "It is scheduled to be deleted from the Palm on the next sync.\n"
 msgstr ""
 
-#: ../libplugin.c:487 ../utils.c:1953 ../utils.c:1990
+#: ../libplugin.c:74
+#: ../libplugin.c:111
+#: ../utils.c:1028
+#: ../utils.c:1070
 #, fuzzy
 msgid "Unable to open PC records file\n"
 msgstr "Не удается открыть %s\n"
 
-#: ../libplugin.c:493 ../utils.c:1959
+#: ../libplugin.c:80
+#: ../utils.c:1035
 #, fuzzy
 msgid "Couldn't find record to delete\n"
 msgstr "Невозможно добавить категорию %s удалённо.\n"
 
-#: ../libplugin.c:511 ../utils.c:1977
+#: ../libplugin.c:98
+#: ../utils.c:1055
 #, c-format
 msgid "Unknown header version %d\n"
 msgstr ""
 
-#: ../libplugin.c:524
-#, fuzzy
-msgid "Couldn't open PC records file\n"
-msgstr "Невозможно открыть файл %s\n"
+#: ../libplugin.c:183
+#, fuzzy, c-format
+msgid "%s:%d Error opening file: %s\n"
+msgstr "%s:%d Ошибка чтения %s\n"
 
-#: ../libplugin.c:685 ../libplugin.c:777 ../utils.c:1504 ../utils.c:1517
+#: ../libplugin.c:189
+#: ../libplugin.c:218
+#: ../sync.c:1661
+#: ../todo.c:101
+#, fuzzy, c-format
+msgid "%s:%d Error reading file: %s\n"
+msgstr "%s:%d Ошибка чтения %s\n"
+
+#: ../libplugin.c:341
+#: ../libplugin.c:399
+#: ../utils.c:2082
+#: ../utils.c:2095
 #, fuzzy, c-format
 msgid "Error opening file: %s\n"
 msgstr "Ошибка открытия файла"
 
-#: ../libplugin.c:714
-#, fuzzy
-msgid "Error reading PC file 1\n"
-msgstr "Ошибка чтения %s\n"
-
-#: ../libplugin.c:730
-#, fuzzy
-msgid "Error reading PC file 2\n"
-msgstr "Ошибка чтения %s\n"
-
-#: ../libplugin.c:903
+#: ../libplugin.c:527
 #, fuzzy, c-format
 msgid "Error reading %s 5\n"
 msgstr "Ошибка чтения %s\n"
 
-#: ../log.c:95
+#: ../libplugin.c:802
+#, fuzzy
+msgid "Error reading PC file 1\n"
+msgstr "Ошибка чтения %s\n"
+
+#: ../libplugin.c:818
+#, fuzzy
+msgid "Error reading PC file 2\n"
+msgstr "Ошибка чтения %s\n"
+
+#: ../libplugin.c:924
+#, c-format
+msgid "Unknown PC header version = %d\n"
+msgstr ""
+
+#: ../log.c:98
 #, fuzzy, c-format
 msgid "Unable to open log file, giving up.\n"
 msgstr "Невозможно открыть файл протокола.\n"
 
-#: ../log.c:102
+#: ../log.c:108
 #, fuzzy, c-format
 msgid "Unable to open log file\n"
 msgstr "Не удается открыть %s\n"
 
-#: ../memo_gui.c:300
+#: ../memo_gui.c:302
 msgid "Memo text > 65535, truncating\n"
 msgstr ""
 
@@ -1575,694 +2093,669 @@ msgstr ""
 msgid "File doesn't appear to be memopad.dat format\n"
 msgstr "Файл не в формате memopad.dat\n"
 
-#: ../memo_gui.c:547 ../memo_gui.c:562
+#: ../memo_gui.c:471
+msgid "DAT/MPA (Palm Archive Formats)"
+msgstr ""
+
+#: ../memo_gui.c:557
+#, c-format
+msgid ""
+"Memo exported from %s %s on %s\n"
+"\n"
+msgstr ""
+
+#: ../memo_gui.c:560
+#, c-format
+msgid ""
+"Memos exported from %s %s on %s\n"
+"\n"
+msgstr ""
+
+#: ../memo_gui.c:581
 #, c-format
 msgid "Can't export memo %d\n"
 msgstr ""
 
-#: ../monthview_gui.c:500
+#: ../memo_gui.c:608
+#, fuzzy, c-format
+msgid "Memo: %ld\n"
+msgstr "Заметки"
+
+#: ../memo_gui.c:614
+#, c-format
+msgid "----- Start of Memo -----\n"
+msgstr ""
+
+#: ../memo_gui.c:616
+#, c-format
+msgid ""
+"\n"
+"----- End of Memo -----\n"
+"\n"
+msgstr ""
+
+#: ../monthview_gui.c:435
 msgid "Monthly View"
 msgstr "Весь месяц"
 
-#: ../password.c:302
+#: ../otherconv.c:77
+#, c-format
+msgid "%s: error exit from g_iconv_close(%s)\n"
+msgstr ""
+
+#: ../otherconv.c:202
+#, c-format
+msgid "%s:%s g_convert_with_iconv error: %s, buff: %s\n"
+msgstr ""
+
+#: ../otherconv.c:204
+msgid "last char truncated"
+msgstr ""
+
+#: ../otherconv.c:281
+#, c-format
+msgid "UTF_to_other: %s\n"
+msgstr ""
+
+#: ../otherconv.c:295
+#, c-format
+msgid "iconv: unconvertible sequence at place %d in '%s'\n"
+msgstr ""
+
+#: ../otherconv.c:299
+#, c-format
+msgid "iconv: incomplete UTF-8 sequence at place %d in '%s'\n"
+msgstr ""
+
+#: ../otherconv.c:302
+#, c-format
+msgid "iconv: buffer filled. stopped at place %d in '%s'\n"
+msgstr ""
+
+#: ../otherconv.c:305
+#, c-format
+msgid "iconv: unexpected error at place %d in '%s'\n"
+msgstr ""
+
+#: ../password.c:283
 msgid "Palm Password"
 msgstr "Пароль Palm"
 
-#: ../password.c:333
+#: ../password.c:308
 msgid "Incorrect, Reenter PalmOS Password"
 msgstr "Неверно, введите пароль PalmOS"
 
-#: ../password.c:335
+#: ../password.c:310
 msgid "Enter PalmOS Password"
 msgstr "Введите пароль PalmOS"
 
-#: ../plugins.c:88 ../plugins.c:200 ../restore_gui.c:133
+#: ../pidfile.c:64
+#, fuzzy
+msgid "removing stale pidfile\n"
+msgstr "_to_install файл\n"
+
+#: ../pidfile.c:88
+#, fuzzy, c-format
+msgid "create pidfile failed: %s\n"
+msgstr "Ошибка чтения %s\n"
+
+#: ../pidfile.c:89
+msgid "Warning: hotplug syncing disabled.\n"
+msgstr ""
+
+#: ../plugins.c:91
+#: ../plugins.c:205
+#: ../restore_gui.c:133
 msgid "infinite loop"
 msgstr ""
 
-#: ../plugins.c:213
+#: ../plugins.c:218
 #, c-format
 msgid "While reading %s%s line 1:[%s]\n"
 msgstr ""
 
-#: ../plugins.c:214
+#: ../plugins.c:219
 msgid "Wrong Version\n"
 msgstr ""
 
-#: ../plugins.c:215
+#: ../plugins.c:220
 msgid "Check preferences->conduits\n"
 msgstr ""
 
-#: ../plugins.c:271
+#: ../plugins.c:276
 #, c-format
 msgid ""
 "Open failed on plugin [%s]\n"
 " error [%s]\n"
 msgstr ""
 
-#: ../plugins.c:288 ../plugins.c:314
+#: ../plugins.c:293
+#: ../plugins.c:318
 #, c-format
 msgid " plugin is invalid: [%s]\n"
 msgstr ""
 
-#: ../plugins.c:296
+#: ../plugins.c:301
 #, fuzzy, c-format
 msgid "Plugin:[%s]\n"
 msgstr "/_Дополнения/%s"
 
-#: ../plugins.c:297
+#: ../plugins.c:302
 #, c-format
 msgid "This plugin is version (%d.%d).\n"
 msgstr ""
 
-#: ../plugins.c:299
+#: ../plugins.c:304
 msgid "It is too old to work with this version of J-Pilot.\n"
 msgstr ""
 
-#: ../prefs.c:393
+#: ../prefs.c:415
 msgid "%B %d, %Y"
 msgstr ""
 
-#: ../prefs.c:394
+#: ../prefs.c:416
 msgid "%d %B %Y"
 msgstr ""
 
-#: ../prefs.c:395
+#: ../prefs.c:417
 msgid "%d. %B %Y"
 msgstr ""
 
-#: ../prefs.c:396
+#: ../prefs.c:418
 msgid "%d %B, %Y"
 msgstr ""
 
-#: ../prefs.c:397
+#: ../prefs.c:419
 msgid "%Y. %B. %d"
 msgstr ""
 
-#: ../prefs.c:398
+#: ../prefs.c:420
 msgid "%Y %B %d"
 msgstr ""
 
-#: ../prefs_gui.c:334
+#: ../prefs_gui.c:448
 msgid "Preferences"
 msgstr "Предпочтения"
 
-#: ../prefs_gui.c:364
+#: ../prefs_gui.c:479
 msgid "Locale"
 msgstr "Локализация"
 
-#: ../prefs_gui.c:366
+#: ../prefs_gui.c:481
 msgid "Settings"
 msgstr "Установки"
 
-#: ../prefs_gui.c:368
+#: ../prefs_gui.c:483
 #, fuzzy
 msgid "Datebook"
 msgstr "календарь"
 
-#: ../prefs_gui.c:372
+#: ../prefs_gui.c:487
 msgid "ToDo"
 msgstr "Список задач"
 
-#: ../prefs_gui.c:374
+#: ../prefs_gui.c:489
 #, fuzzy
 msgid "Memo"
 msgstr "заметки"
 
-#: ../prefs_gui.c:376
+#: ../prefs_gui.c:491
 msgid "Alarms"
 msgstr "Будильники"
 
-#: ../prefs_gui.c:378
+#: ../prefs_gui.c:493
 msgid "Conduits"
 msgstr "Кондуиты"
 
 #. Shortdate
-#: ../prefs_gui.c:403
-msgid "Short date format "
+#: ../prefs_gui.c:518
+#, fuzzy
+msgid "Short date format"
 msgstr "Краткий формат даты "
 
 #. Longdate
-#: ../prefs_gui.c:416
-msgid "Long date format "
+#: ../prefs_gui.c:531
+#, fuzzy
+msgid "Long date format"
 msgstr "Полный формат даты "
 
 #. Time
-#: ../prefs_gui.c:429
-msgid "Time format "
+#: ../prefs_gui.c:544
+#, fuzzy
+msgid "Time format"
 msgstr "Формат времени "
 
-#: ../prefs_gui.c:443
-msgid "The first day of the week is "
-msgstr "Первый день недели "
-
 #. GTK colors file
-#: ../prefs_gui.c:464
-msgid "My GTK colors file is "
+#: ../prefs_gui.c:564
+#, fuzzy
+msgid "GTK color theme file"
 msgstr "Файл цветовых настроек GTK+ "
 
 #. Port
-#: ../prefs_gui.c:477
-msgid "Serial Port (/dev/ttyS0, /dev/pilot)"
-msgstr "Порт (/dev/ttyS0, /dev/pilot)"
+#: ../prefs_gui.c:577
+#, fuzzy
+msgid "Serial Port"
+msgstr "Скорость порта "
 
-#. Rate
-#: ../prefs_gui.c:494
-msgid "Serial Rate (Does not affect USB)"
-msgstr "Скорость обмена по последовательному порту (не влияет на USB)"
+#. Serial Rate
+#: ../prefs_gui.c:601
+#, fuzzy
+msgid "Serial Rate"
+msgstr "Скорость порта "
 
 #. Number of backups
-#: ../prefs_gui.c:507
+#: ../prefs_gui.c:614
 msgid "Number of backups to be archived"
 msgstr "Количество архивных копий"
 
 #. Show deleted files check box
-#: ../prefs_gui.c:524
+#: ../prefs_gui.c:632
 msgid "Show deleted records (default NO)"
 msgstr "Показывать удаленные записи (по умолчанию -- НЕТ)"
 
 #. Show modified files check box
-#: ../prefs_gui.c:528
+#: ../prefs_gui.c:636
 msgid "Show modified deleted records (default NO)"
 msgstr "Показывать модифицированные удаленные записи (по умолчанию -- НЕТ)"
 
-#: ../prefs_gui.c:533
+#: ../prefs_gui.c:641
 msgid "Ask confirmation for file installation (J-Pilot -> PDA) (default YES)"
 msgstr ""
 
 #. Show tooltips check box
-#: ../prefs_gui.c:537
+#: ../prefs_gui.c:645
 msgid "Show popup tooltips (default YES)"
 msgstr ""
 
-#. ********************************************************************
-#. Datebook preference tab
+#: ../prefs_gui.c:655
+msgid "Use Datebook database (Palm OS < 5.2.1)"
+msgstr ""
+
+#: ../prefs_gui.c:658
+msgid "Use Calendar database (Palm OS > 5.2)"
+msgstr ""
+
 #. Show highlight days check box
-#: ../prefs_gui.c:545
+#: ../prefs_gui.c:684
 msgid "Highlight calendar days with appointments"
 msgstr "Подсвечивать дни со встречами в календаре"
 
-#. Show use DateBk check box
-#: ../prefs_gui.c:551
-msgid "Use DateBk note tags"
-msgstr "Использовать тэги DateBk для заметок"
-
-#: ../prefs_gui.c:554
-msgid "DateBk support disabled in this build"
-msgstr "Данная сборка не поддерживает DateBk"
-
 #. Highlight today on month and week view
-#: ../prefs_gui.c:561
+#: ../prefs_gui.c:689
 msgid "Annotate today in day, week, and month views"
 msgstr ""
 
-#: ../prefs_gui.c:566
+#. Show number of years on anniversaries in month and week view
+#: ../prefs_gui.c:693
 msgid "Append years on anniversaries in day, week, and month views"
 msgstr ""
 
-#: ../prefs_gui.c:578
+#. Show use DateBk check box
+#: ../prefs_gui.c:699
+msgid "Use DateBk note tags"
+msgstr "Использовать тэги DateBk для заметок"
+
+#: ../prefs_gui.c:702
+msgid "DateBk support disabled in this build"
+msgstr "Данная сборка не поддерживает DateBk"
+
+#: ../prefs_gui.c:714
+msgid "Use Address database (Palm OS < 5.2.1)"
+msgstr ""
+
+#: ../prefs_gui.c:717
+msgid "Use Contacts database (Palm OS > 5.2)"
+msgstr ""
+
+#: ../prefs_gui.c:746
 #, fuzzy
 msgid "Mail Command"
 msgstr "Команда дозвона"
 
-#: ../prefs_gui.c:592
+#: ../prefs_gui.c:760
 #, fuzzy, c-format
 msgid "%s is replaced by the e-mail address"
 msgstr "%t будет заменено временем напоминания"
 
-#. ********************************************************************
-#. ToDo preference tab
-#. The hide completed check box
-#: ../prefs_gui.c:600
+#: ../prefs_gui.c:772
+msgid "Use ToDo database (Palm OS < 5.2.1)"
+msgstr ""
+
+#: ../prefs_gui.c:775
+msgid "Use Task database (Palm OS > 5.2)"
+msgstr ""
+
+#. hide completed check box
+#: ../prefs_gui.c:802
 msgid "Hide Completed ToDos"
 msgstr "Не показывать завершенные задачи"
 
-#. The hide todos not yet due check box
-#: ../prefs_gui.c:604
+#. hide todos not yet due check box
+#: ../prefs_gui.c:806
 msgid "Hide ToDos not yet due"
 msgstr "Скрыть задачи для которых еще не пришло время"
 
-#. The record todo completion date check box
-#: ../prefs_gui.c:608
+#. record todo completion date check box
+#: ../prefs_gui.c:810
 msgid "Record Completion Date"
 msgstr "Сохранять дату выполнения задачи"
 
 #. Use Manana check box
-#: ../prefs_gui.c:613
+#: ../prefs_gui.c:815
 msgid "Use Manana database"
 msgstr "Использовать базу данных Manana"
 
-#: ../prefs_gui.c:621
+#: ../prefs_gui.c:823
 msgid "Use default number of days due"
 msgstr ""
 
-#. ********************************************************************
-#. Memo preference tab
-#. Memo32 check box
-#: ../prefs_gui.c:641
-msgid "Use Memo32 (pedit32)"
+#: ../prefs_gui.c:845
+msgid "Use Memo database (Palm OS < 5.2.1)"
+msgstr ""
+
+#: ../prefs_gui.c:848
+msgid "Use Memos database (Palm OS > 5.2)"
+msgstr ""
+
+#: ../prefs_gui.c:851
+#, fuzzy
+msgid "Use Memo32 database (pedit32)"
 msgstr "Использовать Memo32 (pedit32)"
 
 #. ********************************************************************
 #. Alarms preference tab
-#. Show open alarm windows check box
-#: ../prefs_gui.c:648
+#. Open alarm windows check box
+#: ../prefs_gui.c:888
 msgid "Open alarm windows for appointment reminders"
 msgstr "Открывать окна напоминаний для встреч"
 
-#. Show open alarm windows check box
-#: ../prefs_gui.c:652
+#. Execute alarm command check box
+#: ../prefs_gui.c:892
 msgid "Execute this command"
 msgstr "Выполнить команду"
 
-#. Shell warning
-#: ../prefs_gui.c:656
+#. Shell warning label
+#: ../prefs_gui.c:896
 msgid "WARNING: executing arbitrary shell commands can be dangerous!!!"
-msgstr ""
-"ВНИМАНИЕ: выполнение произвольных команд системной оболочки может быть "
-"опасным!!!"
+msgstr "ВНИМАНИЕ: выполнение произвольных команд системной оболочки может быть опасным!!!"
 
-#: ../prefs_gui.c:664
+#: ../prefs_gui.c:904
 msgid "Alarm Command"
 msgstr "Команда для напоминания"
 
-#: ../prefs_gui.c:677
+#: ../prefs_gui.c:917
 msgid "%t is replaced with the alarm time"
 msgstr "%t будет заменено временем напоминания"
 
-#: ../prefs_gui.c:681
+#: ../prefs_gui.c:921
 #, c-format
 msgid "%d is replaced with the alarm date"
 msgstr "%d будет заменено датой напоминания"
 
-#: ../prefs_gui.c:686
+#: ../prefs_gui.c:926
 msgid "%D is replaced with the alarm description"
 msgstr "%D заменено описанием напоминания"
 
-#: ../prefs_gui.c:690
+#: ../prefs_gui.c:930
 msgid "%N is replaced with the alarm note"
 msgstr "%N заменено примечанием к напоминанию"
 
-#: ../prefs_gui.c:694
+#: ../prefs_gui.c:934
 msgid "%D (description substitution) is disabled in this build"
 msgstr "%D (макрос описания) запрещен в этой сборке"
 
-#: ../prefs_gui.c:698
+#: ../prefs_gui.c:939
 msgid "%N (note substitution) is disabled in this build"
 msgstr "%N (макрос заметки) запрещен в этой сборке"
 
 #. ********************************************************************
 #. Conduits preference tab
-#. Show sync datebook check box
-#: ../prefs_gui.c:707
+#. Sync datebook check box
+#: ../prefs_gui.c:949
 msgid "Sync datebook"
 msgstr "Синхронизировать календарь"
 
-#. Show sync address check box
-#: ../prefs_gui.c:711
+#. Sync address check box
+#: ../prefs_gui.c:953
 msgid "Sync address"
 msgstr "Синхронизировать адресную книгу"
 
-#. Show sync todo check box
-#: ../prefs_gui.c:715
+#. Sync todo check box
+#: ../prefs_gui.c:957
 msgid "Sync todo"
 msgstr "Синхронизировать список задач"
 
-#. Show sync memo check box
-#: ../prefs_gui.c:719
+#. Sync memo check box
+#: ../prefs_gui.c:961
 msgid "Sync memo"
 msgstr "Синхронизировать заметки"
 
-#. Show sync Memo32 check box
-#: ../prefs_gui.c:723
-msgid "Sync memo32 (pedit32)"
-msgstr "Синхронизировать заметки memo32 (pedit32)"
-
-#. Show sync Ma~nana check box
-#: ../prefs_gui.c:728
+#. Show sync Manana check box
+#: ../prefs_gui.c:966
 msgid "Sync Manana"
 msgstr "Синхронизировать Manana"
 
 #. Show use Japanese Kana extention check box
-#: ../prefs_gui.c:734
+#: ../prefs_gui.c:972
 msgid "Use J-OS (Not Japanese PalmOS:WorkPad/CLIE)"
 msgstr "Использовать J-OS (Не японскую PalmOS:WorkPad/CLIE)"
 
-#. Make a checkbox for each plugin
-#: ../prefs_gui.c:747
+#. Make a Sync checkbox for each plugin
+#: ../prefs_gui.c:985
 #, fuzzy, c-format
 msgid "Sync %s (%s)"
 msgstr "Синхронизация %s\n"
 
-#: ../print_gui.c:178
+#: ../print_gui.c:185
 msgid "Print Options"
 msgstr "Опции печати"
 
-#: ../print_gui.c:192
+#: ../print_gui.c:198
 msgid "Paper Size"
 msgstr "Размер бумаги"
 
-#: ../print_gui.c:209
+#: ../print_gui.c:214
 msgid "Daily Printout"
 msgstr "Дневной отчет"
 
-#: ../print_gui.c:215
+#: ../print_gui.c:220
 msgid "Weekly Printout"
 msgstr "Еженедельный отчет"
 
-#: ../print_gui.c:221
+#: ../print_gui.c:226
 msgid "Monthly Printout"
 msgstr "Месячный отчет"
 
-#: ../print_gui.c:261
-msgid "One record"
-msgstr "Одна запись"
+#: ../print_gui.c:266
+#, fuzzy
+msgid "Selected record"
+msgstr "Удалена запись %s"
 
-#: ../print_gui.c:265
+#: ../print_gui.c:270
 msgid "All records in this category"
 msgstr "Все записи в этой категории"
 
-#: ../print_gui.c:269
+#: ../print_gui.c:274
 msgid "Print all records"
 msgstr "Напечатать все записи"
 
-#: ../print_gui.c:292
+#: ../print_gui.c:296
 msgid "One record per page"
 msgstr "Одна запись на страницу"
 
-#: ../print_gui.c:308
-msgid " Blank lines between each record"
+#: ../print_gui.c:312
+#, fuzzy
+msgid "Blank lines between each record"
 msgstr " Пустые строки между записями"
 
 #. Print Command
-#: ../print_gui.c:318
+#: ../print_gui.c:321
 msgid "Print Command (e.g. lpr, or cat > file.ps)"
 msgstr "Команда для печати (например, lpr или cat > file.ps)"
 
-#: ../restore_gui.c:68 ../restore_gui.c:229
+#: ../restore_gui.c:71
+#: ../restore_gui.c:228
 msgid "Restore Handheld"
 msgstr "Восстановить наладонник"
 
+#: ../restore_gui.c:176
+#: ../restore_gui.c:178
+msgid "Unable to convert filename for GTK display\n"
+msgstr ""
+
+#: ../restore_gui.c:177
+msgid "See console log to find which file will not be restored"
+msgstr ""
+
+#: ../restore_gui.c:179
+#, fuzzy, c-format
+msgid "File %s will not be restored\n"
+msgstr "Файлы для установки"
+
 #. Label for instructions
-#: ../restore_gui.c:249
+#: ../restore_gui.c:245
 msgid "To restore your handheld:"
 msgstr "Чтобы восстановить Ваш наладоник:"
 
-#: ../restore_gui.c:252
-msgid ""
-"1. Choose all the applications you wish to restore.  The default is all."
+#: ../restore_gui.c:248
+#, fuzzy
+msgid "1. Choose the applications you wish to restore.  The default is all."
 msgstr "1. Выберите приложения, подлежащие восстановлению (по умолчанию все)."
 
-#: ../restore_gui.c:255
+#: ../restore_gui.c:251
 msgid "2. Enter the User Name and User ID."
 msgstr "2. Введите имя пользователя и пользовательский ID."
 
-#: ../restore_gui.c:258
+#: ../restore_gui.c:254
 msgid "3. Press the OK button."
 msgstr "3. Нажмите кнопку OK."
 
-#: ../restore_gui.c:261
+#: ../restore_gui.c:257
 msgid "This will overwrite data that is currently on the handheld."
 msgstr "Все данные на наладоннике будут перезаписаны."
 
-#: ../restore_gui.c:282
-msgid "User Name"
-msgstr "Имя пользователя"
-
-#: ../search_gui.c:120
+#: ../search_gui.c:150
 msgid "datebook"
 msgstr "календарь"
 
-#: ../search_gui.c:201
+#: ../search_gui.c:152
+#, fuzzy
+msgid "calendar"
+msgstr "Очистить"
+
+#: ../search_gui.c:239
 msgid "address"
 msgstr "адрес"
 
-#: ../search_gui.c:267
+#: ../search_gui.c:241
+msgid "contact"
+msgstr ""
+
+#: ../search_gui.c:310
 #, fuzzy
 msgid "todo"
 msgstr "Синхронизировать список задач"
 
-#: ../search_gui.c:321
+#: ../search_gui.c:363
 msgid "memo"
 msgstr "заметки"
 
-#: ../search_gui.c:377
+#: ../search_gui.c:420
 msgid "plugin ?"
 msgstr "дополнение ?"
 
-#: ../search_gui.c:449
+#: ../search_gui.c:500
 msgid "No records found"
 msgstr "Записей не найдено"
 
-#: ../search_gui.c:547 ../search_gui.c:610
+#: ../search_gui.c:599
 msgid "Search"
 msgstr "Поиск"
 
-#: ../search_gui.c:563
+#. Search label
+#: ../search_gui.c:616
 msgid "Search for: "
 msgstr "Найти: "
 
-#: ../search_gui.c:570
+#. Case Sensitive checkbox
+#: ../search_gui.c:625
 msgid "Case Sensitive"
 msgstr "С учетом регистра"
 
-#: ../sync.c:139
+#: ../sync.c:110
 #, fuzzy
 msgid "open lock file failed\n"
 msgstr "Невозможно открыть файл протокола\n"
 
-#: ../sync.c:152
+#: ../sync.c:123
 #, fuzzy
 msgid "lock failed\n"
 msgstr "Ошибка.\n"
 
-#: ../sync.c:155
+#: ../sync.c:126
 #, c-format
 msgid "sync file is locked by pid %d\n"
 msgstr ""
 
-#: ../sync.c:189
+#: ../sync.c:161
 msgid "unlock failed\n"
 msgstr ""
 
-#: ../sync.c:192
+#: ../sync.c:164
 #, c-format
 msgid "sync is locked by pid %d\n"
 msgstr ""
 
-#: ../sync.c:244
-#, fuzzy, c-format
-msgid "%s: press the hotsync button on the cradle or \"kill %d\"\n"
-msgstr " Нажмите кнопку HotSync\n"
-
-#: ../sync.c:297
-#, c-format
-msgid "Exiting with status %s\n"
-msgstr "Выход со статусом %s\n"
-
-#: ../sync.c:298
-msgid "Finished\n"
-msgstr "Завершено\n"
-
-#: ../sync.c:432
-msgid "Finished installing user information.\n"
-msgstr ""
-
-#: ../sync.c:457 ../sync.c:575
+#: ../sync.c:399
 msgid "Check your serial port and settings\n"
 msgstr "Проверьте настройки серийного порта\n"
 
-#: ../sync.c:674
-#, c-format
-msgid " Syncing on device %s\n"
-msgstr " Синхронизация с устройством %s\n"
+#: ../sync.c:658
+#, fuzzy
+msgid "Unable to read home dir\n"
+msgstr "Не удается открыть %s\n"
 
-#: ../sync.c:675
-msgid " Press the HotSync button now\n"
-msgstr " Нажмите кнопку HotSync\n"
-
-#: ../sync.c:727 ../sync.c:749 ../sync.c:771
-#, c-format
-msgid "Last Synced Username-->\"%s\"\n"
-msgstr "Последний пользователь-->\"%s\"\n"
-
-#: ../sync.c:728 ../sync.c:750 ../sync.c:772
-#, c-format
-msgid "Last Synced UserID-->\"%d\"\n"
-msgstr "ID последнего пользователя-->\"%d\"\n"
-
-#: ../sync.c:729 ../sync.c:751 ../sync.c:773
-#, c-format
-msgid " This Username-->\"%s\"\n"
-msgstr "Имя пользователя-->\"%s\"\n"
-
-#: ../sync.c:730 ../sync.c:752 ../sync.c:774
-#, c-format
-msgid " This User ID-->%d\n"
-msgstr "ID пользователя-->%d\n"
-
-#: ../sync.c:795
-#, c-format
-msgid "Username is \"%s\"\n"
-msgstr "Имя пользователя \"%s\"\n"
-
-#: ../sync.c:796
-#, c-format
-msgid "User ID is %d\n"
-msgstr "ID пользователя %d\n"
-
-#: ../sync.c:798 ../sync.c:804
-#, c-format
-msgid "lastSyncPC = %d\n"
-msgstr "Последний PC, использовавшийся для синхронизации = %d\n"
-
-#: ../sync.c:799
-#, c-format
-msgid "This PC = %lu\n"
-msgstr "Этот PC = %lu\n"
-
-#: ../sync.c:800
-#, c-format
-msgid "Last Username = [%s]\n"
-msgstr "Последний пользователь = [%s]\n"
-
-#: ../sync.c:801
-#, c-format
-msgid "Last UserID = %d\n"
-msgstr "ID последнего пользователя = %d\n"
-
-#: ../sync.c:802
-#, c-format
-msgid "Username = [%s]\n"
-msgstr "Имя пользователя = [%s]\n"
-
-#: ../sync.c:803
-#, c-format
-msgid "userID = %d\n"
-msgstr "ID пользователя = %d\n"
-
-#: ../sync.c:821
-msgid "Sync canceled\n"
-msgstr "Синхронизация отменена\n"
-
-#  Do not translate this text
-#: ../sync.c:843
-msgid "Finished restoring handheld.\n"
-msgstr "Восстановление компьютера завершено\n"
-
-#: ../sync.c:844
-msgid "You may need to sync to update J-Pilot.\n"
-msgstr "Проведите синхронизацию для обновления информации в J-Pilot.\n"
-
-#: ../sync.c:874
-msgid "Doing a fast sync.\n"
-msgstr "Выполнение быстрой синхронизации.\n"
-
-#: ../sync.c:913
-msgid "Doing a slow sync.\n"
-msgstr "Выполнение медленной синхронизации.\n"
-
-#: ../sync.c:1014
-msgid "Thank you for using J-Pilot."
-msgstr "Спасибо Вам за использование J-Pilot."
-
-#: ../sync.c:1056
-msgid "Finished.\n"
-msgstr "Завершено\n"
-
-#: ../sync.c:1092 ../sync.c:2611
-#, c-format
-msgid "Syncing %s\n"
-msgstr "Синхронизация %s\n"
-
-#: ../sync.c:1098 ../sync.c:2275 ../sync.c:2617
-#, c-format
-msgid "Wrote an %s record."
-msgstr "Запись %s сохранена."
-
-#: ../sync.c:1100 ../sync.c:2277 ../sync.c:2619
-#, c-format
-msgid "Writing an %s record failed."
-msgstr "Не удалось напечатать запись %s."
-
-#: ../sync.c:1102 ../sync.c:2279 ../sync.c:2621
-#, c-format
-msgid "Deleting an %s record failed."
-msgstr "Не удалось удалить запись %s."
-
-#: ../sync.c:1104 ../sync.c:2281 ../sync.c:2623
-#, c-format
-msgid "Deleted an %s record."
-msgstr "Запись %s удалена."
-
-#: ../sync.c:1107 ../sync.c:2284 ../sync.c:2626
-#, c-format
-msgid "Wrote a %s record."
-msgstr "Запись %s переписана."
-
-#: ../sync.c:1109 ../sync.c:2286 ../sync.c:2628
-#, c-format
-msgid "Writing a %s record failed."
-msgstr "Не удалось переписать запись %s."
-
-#: ../sync.c:1111 ../sync.c:2288 ../sync.c:2630
-#, c-format
-msgid "Deleting a %s record failed."
-msgstr "Не удалось удалить запись %s."
-
-#: ../sync.c:1113 ../sync.c:2290 ../sync.c:2632
-#, c-format
-msgid "Deleted a %s record."
-msgstr "Удалена запись %s"
-
-#: ../sync.c:1133
-#, c-format
-msgid "number of records = %d\n"
-msgstr "число записей = %d\n"
-
-#: ../sync.c:1260 ../sync.c:2435
-msgid ""
-"dlp_DeleteRecord failed\n"
-"This could be because the record was already deleted on the Palm\n"
-msgstr ""
-"dlp_DeleteRecord завершилась неудачно\n"
-"Причина, возможно, в том, что запись уже была удалена с Palm\n"
-
-#: ../sync.c:1358 ../sync.c:1770
+#: ../sync.c:1053
+#: ../sync.c:1390
 #, c-format
 msgid "%s (Creator ID '%s') is up to date, fetch skipped.\n"
 msgstr "%s (ID автора '%s') не изменялась, пропускается.\n"
 
-#: ../sync.c:1362 ../sync.c:1774
+#: ../sync.c:1057
+#: ../sync.c:1394
 #, c-format
 msgid "Fetching '%s' (Creator ID '%s')... "
 msgstr "Получение '%s' (ID автора '%s')... "
 
-#: ../sync.c:1369 ../sync.c:1780
+#: ../sync.c:1064
+#: ../sync.c:1400
 #, c-format
 msgid "Failed, unable to create file %s\n"
 msgstr "Не удалось создать файл %s\n"
 
-#: ../sync.c:1380 ../sync.c:1789
+#: ../sync.c:1068
+#: ../sync.c:1405
 #, c-format
 msgid "Failed, unable to back up database %s\n"
 msgstr "Не удалось выполнить архивацию базы данных %s\n"
 
-#: ../sync.c:1384 ../sync.c:1793 ../sync.c:1975
+#: ../sync.c:1072
+#: ../sync.c:1409
+#: ../sync.c:1567
 msgid "OK\n"
 msgstr "ОК\n"
 
-#: ../sync.c:1687
+#: ../sync.c:1271
 #, c-format
 msgid "Skipping %s (Creator ID '%s')\n"
 msgstr "Пропуск '%s' (ID автора '%s')\n"
 
-#: ../sync.c:1861
+#: ../sync.c:1462
 #, c-format
 msgid "Installing %s "
 msgstr "Установка %s "
 
-#: ../sync.c:1867
+#: ../sync.c:1468
 #, fuzzy, c-format
 msgid ""
 "\n"
@@ -2271,7 +2764,7 @@ msgstr ""
 "\n"
 "Невозможно открыть '%s': %s!\n"
 
-#: ../sync.c:1871
+#: ../sync.c:1472
 #, fuzzy, c-format
 msgid ""
 "\n"
@@ -2280,735 +2773,1038 @@ msgstr ""
 "\n"
 "Невозможно синхронизировать '%s': файл поврежден?\n"
 
-#: ../sync.c:1883
-#, c-format
-msgid "(Creator ID is '%s')..."
+#: ../sync.c:1484
+#, fuzzy, c-format
+msgid "(Creator ID '%s')... "
 msgstr "(ID автора '%s')..."
 
-#: ../sync.c:1903 ../sync.c:1916 ../sync.c:1931 ../sync.c:1944
+#: ../sync.c:1500
+#: ../sync.c:1513
+#: ../sync.c:1528
+#: ../sync.c:1541
 #, fuzzy, c-format
 msgid ""
 "\n"
 "Unable to open file: %s\n"
 msgstr "Не удается открыть %s\n"
 
-#: ../sync.c:1960
+#: ../sync.c:1553
 #, c-format
 msgid "Install %s failed"
 msgstr "Установку %s не удалось завершить"
 
-#: ../sync.c:1964
+#: ../sync.c:1557
 msgid "Failed.\n"
 msgstr "Ошибка.\n"
 
-#. the space after the %s is a hack, the last char gets cut off
-#: ../sync.c:1971
-#, c-format
-msgid "Installed %s "
+#: ../sync.c:1563
+#, fuzzy, c-format
+msgid "Installed %s"
 msgstr "Установлен %s"
 
-#: ../sync.c:1995 ../sync.c:2001
-#, fuzzy, c-format
-msgid "Unable to open file: %s%s\n"
-msgstr "Не удается открыть %s\n"
-
-#: ../sync.c:2180
-#, fuzzy
-msgid "Unable to read home dir\n"
-msgstr "Не удается открыть %s\n"
-
-#: ../sync.c:2709
-#, c-format
-msgid "palm: number of records = %d\n"
-msgstr "palm: количество записей = %d\n"
-
-#: ../sync.c:2710
-#, c-format
-msgid "disk: number of records = %d\n"
-msgstr "disk: количество записей = %d\n"
-
-#: ../sync.c:2888
+#: ../sync.c:1666
 #, c-format
 msgid "%s:%d Error getting app info %s\n"
 msgstr "%s:%d Ошибка получения app info %s\n"
 
-#: ../sync.c:2894 ../sync.c:2936
+#: ../sync.c:1672
+#: ../sync.c:1702
 #, c-format
 msgid "%s:%d Error unpacking app info %s\n"
 msgstr "%s:%d Ошибка распаковки app info %s\n"
 
-#: ../sync.c:2916 ../sync.c:2928
+#: ../sync.c:1693
 #, c-format
 msgid "Error reading appinfo block for %s\n"
 msgstr "Ошибка чтения блока appinfo для %s\n"
 
 #. Fix - need a func for this logging
-#: ../sync.c:3072 ../sync.c:3076
+#: ../sync.c:1931
+#: ../sync.c:1935
 #, c-format
 msgid "Could not add category %s to remote.\n"
 msgstr "Невозможно добавить категорию %s удалённо.\n"
 
-#: ../sync.c:3073 ../sync.c:3079
+#: ../sync.c:1932
+#: ../sync.c:1938
+#, c-format
 msgid "Too many categories on remote.\n"
 msgstr "Слишком много категорий на удалённом.\n"
 
-#: ../sync.c:3074 ../sync.c:3082
+#: ../sync.c:1933
+#: ../sync.c:1941
 #, c-format
 msgid "All records on desktop in %s will be moved to %s.\n"
 msgstr "Все записи на десктопе в %s перемещены на %s.\n"
 
-#: ../todo.c:248
-#, fuzzy, c-format
-msgid "ToDo description text > %d, truncating to %d\n"
-msgstr "Описание события длиннее %d символов, обрезано до %d символов\n"
+#: ../sync.c:2036
+#: ../sync.c:2754
+#, c-format
+msgid "Syncing %s\n"
+msgstr "Синхронизация %s\n"
 
-#: ../todo.c:255
-#, fuzzy, c-format
-msgid "ToDo note text > %d, truncating to %d\n"
-msgstr "Заметка ToDo слишком длинная, обрезана до %d символов\n"
+#: ../sync.c:2044
+#: ../sync.c:2397
+#: ../sync.c:2762
+#, c-format
+msgid "Wrote an %s record."
+msgstr "Запись %s сохранена."
 
-#: ../todo.c:380
+#: ../sync.c:2046
+#: ../sync.c:2399
+#: ../sync.c:2764
+#, c-format
+msgid "Writing an %s record failed."
+msgstr "Не удалось напечатать запись %s."
+
+#: ../sync.c:2048
+#: ../sync.c:2401
+#: ../sync.c:2766
+#, c-format
+msgid "Deleting an %s record failed."
+msgstr "Не удалось удалить запись %s."
+
+#: ../sync.c:2050
+#: ../sync.c:2403
+#: ../sync.c:2768
+#, c-format
+msgid "Deleted an %s record."
+msgstr "Запись %s удалена."
+
+#: ../sync.c:2052
+#: ../sync.c:2405
+#, fuzzy, c-format
+msgid "Sync Conflict: duplicated an %s record."
+msgstr "Запись %s удалена."
+
+#: ../sync.c:2055
+#: ../sync.c:2408
+#: ../sync.c:2771
+#, c-format
+msgid "Wrote a %s record."
+msgstr "Запись %s переписана."
+
+#: ../sync.c:2057
+#: ../sync.c:2410
+#: ../sync.c:2773
+#, c-format
+msgid "Writing a %s record failed."
+msgstr "Не удалось переписать запись %s."
+
+#: ../sync.c:2059
+#: ../sync.c:2412
+#: ../sync.c:2775
+#, c-format
+msgid "Deleting a %s record failed."
+msgstr "Не удалось удалить запись %s."
+
+#: ../sync.c:2061
+#: ../sync.c:2414
+#: ../sync.c:2777
+#, c-format
+msgid "Deleted a %s record."
+msgstr "Удалена запись %s"
+
+#: ../sync.c:2063
+#: ../sync.c:2416
+#, c-format
+msgid "Sync Conflict: duplicated a %s record."
+msgstr ""
+
+#: ../sync.c:2167
+#: ../sync.c:2497
+#, c-format
+msgid "Sync Conflict: a %s record must be manually merged\n"
+msgstr ""
+
+#: ../sync.c:2298
+#: ../sync.c:2638
+msgid ""
+"dlp_DeleteRecord failed\n"
+"This could be because the record was already deleted on the Palm\n"
+msgstr ""
+"dlp_DeleteRecord завершилась неудачно\n"
+"Причина, возможно, в том, что запись уже была удалена с Palm\n"
+
+#: ../sync.c:2866
+msgid "Finished installing user information.\n"
+msgstr ""
+
+#: ../sync.c:3023
+#, c-format
+msgid " Syncing on device %s\n"
+msgstr " Синхронизация с устройством %s\n"
+
+#: ../sync.c:3024
+msgid " Press the HotSync button now\n"
+msgstr " Нажмите кнопку HotSync\n"
+
+#: ../sync.c:3066
+#: ../sync.c:3088
+#: ../sync.c:3109
+#, c-format
+msgid "Last Synced Username-->\"%s\"\n"
+msgstr "Последний пользователь-->\"%s\"\n"
+
+#: ../sync.c:3067
+#: ../sync.c:3089
+#: ../sync.c:3110
+#, c-format
+msgid "Last Synced UserID-->\"%d\"\n"
+msgstr "ID последнего пользователя-->\"%d\"\n"
+
+#: ../sync.c:3068
+#: ../sync.c:3090
+#: ../sync.c:3111
+#, c-format
+msgid " This Username-->\"%s\"\n"
+msgstr "Имя пользователя-->\"%s\"\n"
+
+#: ../sync.c:3069
+#: ../sync.c:3091
+#: ../sync.c:3112
+#, c-format
+msgid " This User ID-->%d\n"
+msgstr "ID пользователя-->%d\n"
+
+#: ../sync.c:3133
+#, c-format
+msgid "Username is \"%s\"\n"
+msgstr "Имя пользователя \"%s\"\n"
+
+#: ../sync.c:3134
+#, c-format
+msgid "User ID is %d\n"
+msgstr "ID пользователя %d\n"
+
+#: ../sync.c:3136
+#, c-format
+msgid "lastSyncPC = %d\n"
+msgstr "Последний PC, использовавшийся для синхронизации = %d\n"
+
+#: ../sync.c:3137
+#, c-format
+msgid "This PC = %lu\n"
+msgstr "Этот PC = %lu\n"
+
+#: ../sync.c:3161
+msgid "Sync canceled\n"
+msgstr "Синхронизация отменена\n"
+
+#  Do not translate this text
+#: ../sync.c:3184
+msgid "Finished restoring handheld.\n"
+msgstr "Восстановление компьютера завершено\n"
+
+#: ../sync.c:3185
+msgid "You may need to sync to update J-Pilot.\n"
+msgstr "Проведите синхронизацию для обновления информации в J-Pilot.\n"
+
+#: ../sync.c:3207
+msgid "Doing a fast sync.\n"
+msgstr "Выполнение быстрой синхронизации.\n"
+
+#: ../sync.c:3220
+msgid "Doing a slow sync.\n"
+msgstr "Выполнение медленной синхронизации.\n"
+
+#: ../sync.c:3295
+msgid "Thank you for using J-Pilot."
+msgstr "Спасибо Вам за использование J-Pilot."
+
+#: ../sync.c:3340
+#: ../sync.c:3405
+msgid "Finished.\n"
+msgstr "Завершено\n"
+
+#: ../sync.c:3368
+#, c-format
+msgid ""
+"%s: sync process already in progress (process ID = %d\n"
+")"
+msgstr ""
+
+#: ../sync.c:3369
+#, fuzzy, c-format
+msgid ""
+"%s: press the hotsync button on the cradle\n"
+"      or stop the sync by typing \"kill %d\" at the command line\n"
+msgstr " Нажмите кнопку HotSync\n"
+
+#: ../sync.c:3404
+#, c-format
+msgid "Exiting with status %s\n"
+msgstr "Выход со статусом %s\n"
+
+#: ../todo.c:90
 #, c-format
 msgid "%s:%d Error reading category info %s\n"
 msgstr "%s:%d Ошибка чтения информации о категории %s\n"
 
-#: ../todo_gui.c:149
+#: ../todo.c:264
+#, fuzzy, c-format
+msgid "ToDo description text > %d, truncating to %d\n"
+msgstr "Описание события длиннее %d символов, обрезано до %d символов\n"
+
+#: ../todo.c:270
+#, fuzzy, c-format
+msgid "ToDo note text > %d, truncating to %d\n"
+msgstr "Заметка ToDo слишком длинная, обрезана до %d символов\n"
+
+#: ../todo_gui.c:164
 msgid "Due Date"
 msgstr "Дата исполнения"
 
-#: ../todo_gui.c:535
+#: ../todo_gui.c:534
 msgid "File doesn't appear to be todo.dat format\n"
 msgstr "Файл не в формате todo.dat\n"
 
-#: ../todo_gui.c:691 ../todo_gui.c:706
+#: ../todo_gui.c:598
+msgid "DAT/TDA (Palm Archive Formats)"
+msgstr ""
+
+#: ../todo_gui.c:690
+#, c-format
+msgid ""
+"ToDo exported from %s %s on %s\n"
+"\n"
+msgstr ""
+
+#: ../todo_gui.c:720
 #, c-format
 msgid "Can't export todo %d\n"
 msgstr ""
 
-#: ../todo_gui.c:1547
+#: ../todo_gui.c:760
+#, fuzzy, c-format
+msgid "Due Date: None\n"
+msgstr "Дата исполнения"
+
+#: ../todo_gui.c:763
+#, fuzzy, c-format
+msgid "Due Date: %s\n"
+msgstr "Дата исполнения"
+
+#: ../todo_gui.c:765
+#, fuzzy, c-format
+msgid "Priority: %d\n"
+msgstr "Приоритет: "
+
+#: ../todo_gui.c:766
+#, fuzzy, c-format
+msgid "Completed: %s\n"
+msgstr "Завершена"
+
+#: ../todo_gui.c:768
+#, c-format
+msgid "Description: %s\n"
+msgstr ""
+
+#: ../todo_gui.c:771
+#, c-format
+msgid ""
+"Note: %s\n"
+"\n"
+msgstr ""
+
+#: ../todo_gui.c:1587
 msgid "Priority out of range\n"
 msgstr ""
 
-#: ../todo_gui.c:1774 ../KeyRing/keyring.c:1077
+#: ../todo_gui.c:1796
+#: ../KeyRing/keyring.c:1312
 #, c-format
 msgid "No date"
 msgstr "Нет даты"
 
-#. The completed check box
-#: ../todo_gui.c:2206
+#. Completed checkbox
+#: ../todo_gui.c:2259
 msgid "Completed"
 msgstr "Завершена"
 
-#: ../todo_gui.c:2214
-msgid "Priority: "
+#: ../todo_gui.c:2267
+#, fuzzy
+msgid "Priority:"
 msgstr "Приоритет: "
 
-#: ../todo_gui.c:2234
+#: ../todo_gui.c:2288
 msgid "Date Due:"
 msgstr "Дата завершения:"
 
-#. Note textbox
-#: ../todo_gui.c:2296 ../Expense/expense.c:1853 ../KeyRing/keyring.c:2237
-msgid "Note"
-msgstr "Заметка"
-
-#: ../utils.c:72
-msgid " -v displays version and compile options and exits.\n"
-msgstr ""
-
-#: ../utils.c:74
-msgid " -d displays debug info to stdout.\n"
-msgstr ""
-
-#: ../utils.c:75
-msgid " -p skips loading plugins.\n"
-msgstr ""
-
-#: ../utils.c:76
-msgid " -a ignores missed alarms since the last time program was run.\n"
-msgstr ""
-
-#: ../utils.c:77
-msgid " -A ignores all alarms past and future.\n"
-msgstr ""
-
-#: ../utils.c:78
-msgid " -i makes program iconify itself upon launch.\n"
-msgstr ""
-
-#: ../utils.c:79
-msgid " The PILOTPORT, and PILOTRATE env variables are used to specify\n"
-msgstr ""
-
-#: ../utils.c:80
-msgid " which port to sync on, and at what speed.\n"
-msgstr ""
-
-#: ../utils.c:81
-msgid " If PILOTPORT is not set then it defaults to /dev/pilot.\n"
-msgstr ""
-
-#: ../utils.c:107
-msgid "Date compiled"
-msgstr "Дата скомпилирована"
-
-#: ../utils.c:108
-msgid "Compiled with these options:"
-msgstr "Собрано со следующими опциями:"
-
-#: ../utils.c:110
-msgid "Installed Path"
-msgstr "Установленный Путь"
-
-#: ../utils.c:112
-msgid "pilot-link version"
-msgstr "версия pilot-link"
-
-#: ../utils.c:116
-msgid "USB support"
-msgstr "Поддержка USB"
-
-#: ../utils.c:118 ../utils.c:124 ../utils.c:130 ../utils.c:136 ../utils.c:142
-#: ../utils.c:148 ../utils.c:154
-msgid "yes"
-msgstr "да"
-
-#: ../utils.c:120 ../utils.c:126 ../utils.c:132 ../utils.c:138 ../utils.c:144
-#: ../utils.c:150 ../utils.c:156
-msgid "no"
-msgstr "нет"
-
-#: ../utils.c:122
-msgid "Private record support"
-msgstr "Поддержка личных записей"
-
-#: ../utils.c:128
-msgid "Datebk support"
-msgstr "Поддержка Datebk"
-
-#: ../utils.c:134
-msgid "Plugin support"
-msgstr "Поддержка дополнений"
-
-#: ../utils.c:140
-msgid "Manana support"
-msgstr "Поддерка Macana"
-
-#: ../utils.c:146
-msgid "NLS support (foreign languages)"
-msgstr "Поддержка NSL (иностранные языки)"
-
-#: ../utils.c:152
-msgid "GTK2 support"
-msgstr "Поддержка GTK2"
-
-#: ../utils.c:207
-#, c-format
-msgid "Today is %A, %x %X"
-msgstr "Сегодня %A, %x %X"
-
-#: ../utils.c:209
-#, c-format
-msgid "Today is %%A, %s %s"
-msgstr "Сегодня %%A, %s %s"
-
-#: ../utils.c:1114
+#: ../utils.c:329
 msgid "Today"
 msgstr "Сегодня"
 
-#: ../utils.c:1330
-msgid "Save Changed Record?"
-msgstr "Сохранить измененную запись?"
-
-#: ../utils.c:1331
-msgid "Do you want to save the changes to this record?"
-msgstr "Сохранить изменения в этой записи?"
-
-#: ../utils.c:1336
-msgid "Save New Record?"
-msgstr "Сохранить новую запись?"
-
-#: ../utils.c:1337
-msgid "Do you want to save this new record?"
-msgstr "Сохранить эту новую запись?"
-
-#. Not home;
-#: ../utils.c:1357 ../KeyRing/keyring.c:1631
-msgid "Can't get HOME environment variable\n"
-msgstr ""
-
-#: ../utils.c:1364
-msgid "Your HOME environment variable is too long for me\n"
-msgstr ""
-
-#. Can't create directory
-#: ../utils.c:1389 ../utils.c:1393
-#, fuzzy, c-format
-msgid "Can't create directory %s\n"
-msgstr "Нельзя удалять категорию %s.\n"
-
-#: ../utils.c:1399
-#, fuzzy, c-format
-msgid ""
-"%s doesn't appear to be a directory.\n"
-"I need it to be.\n"
-msgstr "Файл не в формате address.dat\n"
-
-#: ../utils.c:1405
-#, fuzzy, c-format
-msgid "I can't write files in directory %s\n"
-msgstr "Нельзя удалять категорию %s.\n"
-
-#: ../utils.c:1461 ../utils.c:1470
-msgid "Error writing PC header to file: next_id\n"
-msgstr ""
-
-#: ../utils.c:1466
-msgid "Error writing next id to file: next_id\n"
-msgstr ""
-
-#: ../utils.c:1483
-#, fuzzy
-msgid "Error opening file: next_id\n"
-msgstr "Ошибка открытия файла"
-
-#: ../utils.c:1657
+#: ../utils.c:574
 #, c-format
 msgid "Couldn't find empty DB file %s: %s\n"
 msgstr "Невозможно найти заготовку пустого файла базы данных %s: %s\n"
 
-#. EPN is jpilot, or copilot depending on configure
-#: ../utils.c:1660
+#: ../utils.c:577
 msgid " may not be installed.\n"
 msgstr " не был корректно установлен.\n"
 
-#: ../utils.c:1839
+#. Can't create directory
+#: ../utils.c:612
+#: ../utils.c:616
+#, fuzzy, c-format
+msgid "Can't create directory %s\n"
+msgstr "Нельзя удалять категорию %s.\n"
+
+#: ../utils.c:622
+#, fuzzy, c-format
+msgid "%s is not a directory\n"
+msgstr "%s является директорией"
+
+#: ../utils.c:627
+#, fuzzy, c-format
+msgid "Unable to get write permission for directory %s\n"
+msgstr "Нельзя удалять категорию %s.\n"
+
+#: ../utils.c:1294
+#: ../utils.c:1318
+msgid "Save Changed Record?"
+msgstr "Сохранить измененную запись?"
+
+#: ../utils.c:1295
+#: ../utils.c:1319
+msgid "Do you want to save the changes to this record?"
+msgstr "Сохранить изменения в этой записи?"
+
+#: ../utils.c:1300
+#: ../utils.c:1324
+msgid "Save New Record?"
+msgstr "Сохранить новую запись?"
+
+#: ../utils.c:1301
+#: ../utils.c:1325
+msgid "Do you want to save this new record?"
+msgstr "Сохранить эту новую запись?"
+
+#: ../utils.c:1616
+msgid "infinite loop, breaking\n"
+msgstr "бесконечный цикл, выходим\n"
+
+#: ../utils.c:1840
+msgid " -p skips loading plugins.\n"
+msgstr ""
+
+#: ../utils.c:1841
+msgid " -a ignores missed alarms since the last time program was run.\n"
+msgstr ""
+
+#: ../utils.c:1842
+msgid " -A ignores all alarms past and future.\n"
+msgstr ""
+
+#: ../utils.c:1843
+msgid " -i makes program iconify itself upon launch.\n"
+msgstr ""
+
+#: ../utils.c:1844
+msgid " -geometry applies X geometry argument to main window\n"
+msgstr ""
+
+#: ../utils.c:1845
+msgid " The PILOTPORT, and PILOTRATE env variables are used to specify\n"
+msgstr ""
+
+#: ../utils.c:1846
+msgid " which port to sync on, and at what speed.\n"
+msgstr ""
+
+#: ../utils.c:1847
+msgid " If PILOTPORT is not set then it defaults to /dev/pilot.\n"
+msgstr ""
+
+#: ../utils.c:1884
 #, fuzzy
 msgid "Error reading file"
 msgstr "Ошибка чтения %s\n"
 
-#: ../utils.c:2516
+#: ../utils.c:1934
+msgid "Date compiled"
+msgstr "Дата скомпилирована"
+
+#: ../utils.c:1935
+msgid "Compiled with these options:"
+msgstr "Собрано со следующими опциями:"
+
+#: ../utils.c:1937
+msgid "Installed Path"
+msgstr "Установленный Путь"
+
+#: ../utils.c:1939
+msgid "pilot-link version"
+msgstr "версия pilot-link"
+
+#: ../utils.c:1943
+msgid "USB support"
+msgstr "Поддержка USB"
+
+#: ../utils.c:1944
+#: ../utils.c:1947
+#: ../utils.c:1953
+#: ../utils.c:1959
+#: ../utils.c:1965
+#: ../utils.c:1971
+#: ../utils.c:1976
+msgid "yes"
+msgstr "да"
+
+#: ../utils.c:1945
+msgid "Private record support"
+msgstr "Поддержка личных записей"
+
+#: ../utils.c:1949
+#: ../utils.c:1955
+#: ../utils.c:1961
+#: ../utils.c:1967
+#: ../utils.c:1973
+msgid "no"
+msgstr "нет"
+
+#: ../utils.c:1951
+msgid "Datebk support"
+msgstr "Поддержка Datebk"
+
+#: ../utils.c:1957
+msgid "Plugin support"
+msgstr "Поддержка дополнений"
+
+#: ../utils.c:1963
+msgid "Manana support"
+msgstr "Поддерка Macana"
+
+#: ../utils.c:1969
+msgid "NLS support (foreign languages)"
+msgstr "Поддержка NSL (иностранные языки)"
+
+#: ../utils.c:1975
+msgid "GTK2 support"
+msgstr "Поддержка GTK2"
+
+#. No HOME var
+#: ../utils.c:2018
+#: ../KeyRing/keyring.c:1779
+msgid "Can't get HOME environment variable\n"
+msgstr ""
+
+#: ../utils.c:2025
+msgid "HOME environment variable is too long to process\n"
+msgstr ""
+
+#: ../utils.c:2510
+#, fuzzy
+msgid "Edit Categories..."
+msgstr "Редактирование категорий"
+
+#: ../utils.c:3177
 msgid "PC ID is 0.\n"
 msgstr "PC ID равен 0.\n"
 
-#: ../utils.c:2517
-#, c-format
-msgid "I generated a new PC ID.  It is %lu\n"
+#: ../utils.c:3178
+#, fuzzy, c-format
+msgid "Generated a new PC ID.  It is %lu\n"
 msgstr "Сгенерирован новый PC ID, равный %lu\n"
 
-#: ../weekview_gui.c:326
+#: ../utils.c:3263
+msgid "Invalid UTF-8 encoding in export string\n"
+msgstr ""
+
+#: ../utils.c:3397
+#, c-format
+msgid "Today is %A, %x %X"
+msgstr "Сегодня %A, %x %X"
+
+#: ../utils.c:3399
+#, c-format
+msgid "Today is %%A, %s %s"
+msgstr "Сегодня %%A, %s %s"
+
+#: ../utils.c:3627
+#, c-format
+msgid ""
+"Incorrect header format for CSV import\n"
+"Check line 1 of file %s\n"
+"Aborting import\n"
+msgstr ""
+
+#: ../utils.c:3664
+#, fuzzy, c-format
+msgid "Error writing version header to file: %s%s\n"
+msgstr "Ошибка чтения %s\n"
+
+#: ../utils.c:3669
+#, fuzzy, c-format
+msgid "Error writing next id to file: %s%s"
+msgstr "Ошибка чтения %s\n"
+
+#: ../weekview_gui.c:293
 msgid "Weekly View"
 msgstr "Вся неделя"
 
-#: ../Expense/expense.c:99
+#: ../Expense/expense.c:96
 msgid "Australia"
 msgstr "Австралия"
 
-#: ../Expense/expense.c:100
+#: ../Expense/expense.c:97
 msgid "Austria"
 msgstr "Австрия"
 
-#: ../Expense/expense.c:101
+#: ../Expense/expense.c:98
 msgid "Belgium"
 msgstr "Бельгия"
 
-#: ../Expense/expense.c:102
+#: ../Expense/expense.c:99
 msgid "Brazil"
 msgstr "Бразилия"
 
-#: ../Expense/expense.c:103
+#: ../Expense/expense.c:100
 msgid "Canada"
 msgstr "Канада"
 
-#: ../Expense/expense.c:104
+#: ../Expense/expense.c:101
 msgid "Denmark"
 msgstr "Дания"
 
-#: ../Expense/expense.c:105
+#: ../Expense/expense.c:102
 msgid "EU (Euro)"
 msgstr "ЕС (Евро)"
 
-#: ../Expense/expense.c:106
+#: ../Expense/expense.c:103
 msgid "Finland"
 msgstr "Финляндия"
 
-#: ../Expense/expense.c:107
+#: ../Expense/expense.c:104
 msgid "France"
 msgstr "Франция"
 
-#: ../Expense/expense.c:108
+#: ../Expense/expense.c:105
 msgid "Germany"
 msgstr "Германия"
 
-#: ../Expense/expense.c:109
+#: ../Expense/expense.c:106
 msgid "Hong Kong"
 msgstr "Гонконг"
 
-#: ../Expense/expense.c:110
+#: ../Expense/expense.c:107
 msgid "Iceland"
 msgstr "Исландия"
 
-#: ../Expense/expense.c:111
+#: ../Expense/expense.c:108
 msgid "India"
 msgstr "Индия"
 
-#: ../Expense/expense.c:112
+#: ../Expense/expense.c:109
 msgid "Indonesia"
 msgstr "Индонезия"
 
-#: ../Expense/expense.c:113
+#: ../Expense/expense.c:110
 msgid "Ireland"
 msgstr "Ирландия"
 
-#: ../Expense/expense.c:114
+#: ../Expense/expense.c:111
 msgid "Italy"
 msgstr "Италия"
 
-#: ../Expense/expense.c:115
+#: ../Expense/expense.c:112
 msgid "Japan"
 msgstr "Япония"
 
-#: ../Expense/expense.c:116
+#: ../Expense/expense.c:113
 msgid "Korea"
 msgstr "Корея"
 
-#: ../Expense/expense.c:117
+#: ../Expense/expense.c:114
 msgid "Luxembourg"
 msgstr "Люксембург"
 
-#: ../Expense/expense.c:118
+#: ../Expense/expense.c:115
 msgid "Malaysia"
 msgstr "Малайзия"
 
-#: ../Expense/expense.c:119
+#: ../Expense/expense.c:116
 msgid "Mexico"
 msgstr "Мексика"
 
-#: ../Expense/expense.c:120
+#: ../Expense/expense.c:117
 msgid "Netherlands"
 msgstr "Нидерланды"
 
-#: ../Expense/expense.c:121
+#: ../Expense/expense.c:118
 msgid "New Zealand"
 msgstr "Новая Зеландия"
 
-#: ../Expense/expense.c:122
+#: ../Expense/expense.c:119
 msgid "Norway"
 msgstr "Норвегия"
 
-#: ../Expense/expense.c:123
+#: ../Expense/expense.c:120
 msgid "P.R.C."
 msgstr "Китайская Народная Республика"
 
-#: ../Expense/expense.c:124
+#: ../Expense/expense.c:121
 msgid "Philippines"
 msgstr "Филиппины"
 
-#: ../Expense/expense.c:125
+#: ../Expense/expense.c:122
 msgid "Singapore"
 msgstr "Сингапур"
 
-#: ../Expense/expense.c:126
+#: ../Expense/expense.c:123
 msgid "Spain"
 msgstr "Испания"
 
-#: ../Expense/expense.c:127
+#: ../Expense/expense.c:124
 msgid "Sweden"
 msgstr "Швеция"
 
-#: ../Expense/expense.c:128
+#: ../Expense/expense.c:125
 msgid "Switzerland"
 msgstr "Швейцария"
 
-#: ../Expense/expense.c:129
+#: ../Expense/expense.c:126
 msgid "Taiwan"
 msgstr "Тайвань"
 
-#: ../Expense/expense.c:130
+#: ../Expense/expense.c:127
 msgid "Thailand"
 msgstr "Таиланд"
 
-#: ../Expense/expense.c:131
+#: ../Expense/expense.c:128
 msgid "United Kingdom"
 msgstr "Соединённое Королевство"
 
-#: ../Expense/expense.c:132
+#: ../Expense/expense.c:129
 msgid "United States"
 msgstr "США"
 
-#: ../Expense/expense.c:489 ../Expense/expense.c:500
+#: ../Expense/expense.c:517
+#: ../Expense/expense.c:528
 msgid "Expense"
 msgstr "Затраты"
 
-#: ../Expense/expense.c:521 ../Expense/expense.c:1401
+#: ../Expense/expense.c:549
+#: ../Expense/expense.c:1387
 msgid "Airfare"
 msgstr "Авиабилеты"
 
-#: ../Expense/expense.c:523 ../Expense/expense.c:1402
+#: ../Expense/expense.c:551
+#: ../Expense/expense.c:1388
 msgid "Breakfast"
 msgstr "Завтрак"
 
-#: ../Expense/expense.c:525 ../Expense/expense.c:1403
+#: ../Expense/expense.c:553
+#: ../Expense/expense.c:1389
 msgid "Bus"
 msgstr "Автобус"
 
-#: ../Expense/expense.c:527 ../Expense/expense.c:1404
+#: ../Expense/expense.c:555
+#: ../Expense/expense.c:1390
 msgid "BusinessMeals"
 msgstr "Обеды по работе"
 
-#: ../Expense/expense.c:529 ../Expense/expense.c:1405
+#: ../Expense/expense.c:557
+#: ../Expense/expense.c:1391
 msgid "CarRental"
 msgstr "Аренда машины"
 
-#: ../Expense/expense.c:531 ../Expense/expense.c:1406
+#: ../Expense/expense.c:559
+#: ../Expense/expense.c:1392
 msgid "Dinner"
 msgstr "Ужины"
 
-#: ../Expense/expense.c:533 ../Expense/expense.c:1407
+#: ../Expense/expense.c:561
+#: ../Expense/expense.c:1393
 msgid "Entertainment"
 msgstr "Развлечение"
 
-#: ../Expense/expense.c:535 ../Expense/expense.c:1408
+#: ../Expense/expense.c:563
+#: ../Expense/expense.c:1394
 msgid "Fax"
 msgstr "Факс"
 
-#: ../Expense/expense.c:537 ../Expense/expense.c:1409
+#: ../Expense/expense.c:565
+#: ../Expense/expense.c:1395
 msgid "Gas"
 msgstr "Топливо"
 
-#: ../Expense/expense.c:539 ../Expense/expense.c:1410
+#: ../Expense/expense.c:567
+#: ../Expense/expense.c:1396
 msgid "Gifts"
 msgstr "Подарки"
 
-#: ../Expense/expense.c:541 ../Expense/expense.c:1411
+#: ../Expense/expense.c:569
+#: ../Expense/expense.c:1397
 msgid "Hotel"
 msgstr "Отель"
 
-#: ../Expense/expense.c:543 ../Expense/expense.c:1412
+#: ../Expense/expense.c:571
+#: ../Expense/expense.c:1398
 msgid "Incidentals"
 msgstr "Неожиданности"
 
-#: ../Expense/expense.c:545 ../Expense/expense.c:1413
+#: ../Expense/expense.c:573
+#: ../Expense/expense.c:1399
 msgid "Laundry"
 msgstr "Прачечная"
 
-#: ../Expense/expense.c:547 ../Expense/expense.c:1414
+#: ../Expense/expense.c:575
+#: ../Expense/expense.c:1400
 msgid "Limo"
 msgstr "Limo"
 
-#: ../Expense/expense.c:549 ../Expense/expense.c:1415
+#: ../Expense/expense.c:577
+#: ../Expense/expense.c:1401
 msgid "Lodging"
 msgstr "Квартира"
 
-#: ../Expense/expense.c:551 ../Expense/expense.c:1416
+#: ../Expense/expense.c:579
+#: ../Expense/expense.c:1402
 msgid "Lunch"
 msgstr "Обеды"
 
-#: ../Expense/expense.c:553 ../Expense/expense.c:1417
+#: ../Expense/expense.c:581
+#: ../Expense/expense.c:1403
 msgid "Mileage"
 msgstr "Расстояние"
 
-#: ../Expense/expense.c:557 ../Expense/expense.c:1419
+#: ../Expense/expense.c:585
+#: ../Expense/expense.c:1405
 msgid "Parking"
 msgstr "Стоянка"
 
-#: ../Expense/expense.c:559 ../Expense/expense.c:1420
+#: ../Expense/expense.c:587
+#: ../Expense/expense.c:1406
 msgid "Postage"
 msgstr "Почтовые расходы"
 
-#: ../Expense/expense.c:561 ../Expense/expense.c:1421
+#: ../Expense/expense.c:589
+#: ../Expense/expense.c:1407
 msgid "Snack"
 msgstr "Закуски"
 
-#: ../Expense/expense.c:563 ../Expense/expense.c:1422
+#: ../Expense/expense.c:591
+#: ../Expense/expense.c:1408
 msgid "Subway"
 msgstr "Метро"
 
-#: ../Expense/expense.c:565 ../Expense/expense.c:1423
+#: ../Expense/expense.c:593
+#: ../Expense/expense.c:1409
 msgid "Supplies"
 msgstr "Расходники"
 
-#: ../Expense/expense.c:567 ../Expense/expense.c:1424
+#: ../Expense/expense.c:595
+#: ../Expense/expense.c:1410
 msgid "Taxi"
 msgstr "Такси"
 
-#: ../Expense/expense.c:569 ../Expense/expense.c:1425
+#: ../Expense/expense.c:597
+#: ../Expense/expense.c:1411
 msgid "Telephone"
 msgstr "Телефон"
 
-#: ../Expense/expense.c:571 ../Expense/expense.c:1426
+#: ../Expense/expense.c:599
+#: ../Expense/expense.c:1412
 msgid "Tips"
 msgstr "На чай"
 
-#: ../Expense/expense.c:573 ../Expense/expense.c:1427
+#: ../Expense/expense.c:601
+#: ../Expense/expense.c:1413
 msgid "Tolls"
 msgstr "Пошлина"
 
-#: ../Expense/expense.c:575 ../Expense/expense.c:1428
+#: ../Expense/expense.c:603
+#: ../Expense/expense.c:1414
 msgid "Train"
 msgstr "Поезд"
 
-#: ../Expense/expense.c:589
-msgid "AmEx"
-msgstr "AmEx"
-
-#: ../Expense/expense.c:591 ../Expense/expense.c:1391
-msgid "Cash"
-msgstr "Наличными"
-
-#: ../Expense/expense.c:593 ../Expense/expense.c:1392
-msgid "Check"
-msgstr "Чеком"
-
-#: ../Expense/expense.c:595
-msgid "CreditCard"
-msgstr "Кредитной картой"
-
-#: ../Expense/expense.c:597
-msgid "MasterCard"
-msgstr "MasterCard"
-
-#: ../Expense/expense.c:599 ../Expense/expense.c:1395
-msgid "Prepaid"
-msgstr "Предоплачено"
-
-#: ../Expense/expense.c:601 ../Expense/expense.c:1396
-msgid "VISA"
-msgstr "VISA"
-
-#: ../Expense/expense.c:1201
-msgid "Expense: Unknown category\n"
-msgstr ""
-
-#: ../Expense/expense.c:1207
+#: ../Expense/expense.c:1238
 msgid "Expense: Unknown expense type\n"
 msgstr ""
 
-#: ../Expense/expense.c:1213
+#: ../Expense/expense.c:1244
 msgid "Expense: Unknown payment type\n"
 msgstr ""
 
-#: ../Expense/expense.c:1390
+#: ../Expense/expense.c:1376
 msgid "American Express"
 msgstr "American Express"
 
-#: ../Expense/expense.c:1393
+#: ../Expense/expense.c:1377
+msgid "Cash"
+msgstr "Наличными"
+
+#: ../Expense/expense.c:1378
+msgid "Check"
+msgstr "Чеком"
+
+#: ../Expense/expense.c:1379
 msgid "Credit Card"
 msgstr "Кредитная карта"
 
-#: ../Expense/expense.c:1394
+#: ../Expense/expense.c:1380
 msgid "Master Card"
 msgstr "Master Card"
 
+#: ../Expense/expense.c:1381
+msgid "Prepaid"
+msgstr "Предоплачено"
+
+#: ../Expense/expense.c:1382
+msgid "VISA"
+msgstr "VISA"
+
+#: ../Expense/expense.c:1615
+#, fuzzy
+msgid "Type"
+msgstr "Тип: "
+
+#: ../Expense/expense.c:1616
+#, fuzzy
+msgid "Amount"
+msgstr "Сумма: "
+
 #. Category Menu
-#: ../Expense/expense.c:1678
+#: ../Expense/expense.c:1700
 #, fuzzy
 msgid "Category:"
 msgstr "Категория"
 
 #. Type Menu
-#: ../Expense/expense.c:1691
+#: ../Expense/expense.c:1708
 #, fuzzy
 msgid "Type:"
 msgstr "Тип: "
 
 #. Payment Menu
-#: ../Expense/expense.c:1704
+#: ../Expense/expense.c:1716
 #, fuzzy
 msgid "Payment:"
 msgstr "Платеж: "
 
 #. Currency Menu
-#: ../Expense/expense.c:1717
+#: ../Expense/expense.c:1724
 #, fuzzy
 msgid "Currency:"
 msgstr "Валюта: "
 
-#. Date Spinners
-#: ../Expense/expense.c:1730
-#, fuzzy
-msgid "Date:"
-msgstr "Дата"
-
-#: ../Expense/expense.c:1747
+#: ../Expense/expense.c:1744
 msgid "Month:"
 msgstr "Месяц:"
 
-#: ../Expense/expense.c:1761
+#: ../Expense/expense.c:1758
 msgid "Day:"
 msgstr "День:"
 
-#: ../Expense/expense.c:1775
+#: ../Expense/expense.c:1772
 msgid "Year:"
 msgstr "Год:"
 
 #. Amount Entry
-#: ../Expense/expense.c:1788
+#: ../Expense/expense.c:1785
 #, fuzzy
 msgid "Amount:"
 msgstr "Сумма: "
 
 #. Vendor Entry
-#: ../Expense/expense.c:1802
+#: ../Expense/expense.c:1795
 #, fuzzy
 msgid "Vendor:"
 msgstr "Поставщик: "
 
 #. City
-#: ../Expense/expense.c:1816
+#: ../Expense/expense.c:1805
 #, fuzzy
 msgid "City:"
 msgstr "Город: "
 
 #. Attendees
-#: ../Expense/expense.c:1830
+#: ../Expense/expense.c:1815
 msgid "Attendees"
 msgstr "Посетители"
 
-#: ../KeyRing/keyring.c:206
+#. -------------------------------------------
+#: ../Expense/expense.c:2097
+#, fuzzy, c-format
+msgid ""
+"%s\n"
+"\n"
+"Expense plugin for J-Pilot was written by\n"
+"Judd Montgomery (c) 1999.\n"
+"judd@jpilot.org\n"
+"http://jpilot.org"
+msgstr ""
+"%s %s был написан\n"
+"Джаддом Монтгомери (c) 1999-2002\n"
+"judd@jpilot.org\n"
+"http://jpilot.org\n"
+
+#: ../KeyRing/keyring.c:293
 msgid "KeyRing: pack_KeyRing(): buf_size too small\n"
 msgstr ""
 
-#: ../KeyRing/keyring.c:1546
+#: ../KeyRing/keyring.c:1702
 msgid "Incorrect, Reenter KeyRing Password"
 msgstr "Неверно, введите пароль для KeyRing"
 
-#: ../KeyRing/keyring.c:1548
+#: ../KeyRing/keyring.c:1704
 msgid "Enter a NEW KeyRing Password"
 msgstr "Введите НОВЫЙ пароль для KeyRing"
 
-#: ../KeyRing/keyring.c:1550
+#: ../KeyRing/keyring.c:1706
 msgid "Enter KeyRing Password"
 msgstr "Введите пароль для KeyRing"
 
-#: ../KeyRing/keyring.c:1636
+#: ../KeyRing/keyring.c:1784
 msgid "Your HOME environment variable is too long(>1024)\n"
 msgstr ""
 
-#: ../KeyRing/keyring.c:1641
+#: ../KeyRing/keyring.c:1789
 #, c-format
 msgid "KeyRing: file %s not found.\n"
 msgstr ""
 
-#: ../KeyRing/keyring.c:1642
+#: ../KeyRing/keyring.c:1790
 msgid "KeyRing: Try Syncing.\n"
 msgstr ""
 
-#: ../KeyRing/keyring.c:1726 ../KeyRing/keyring.c:1737
+#: ../KeyRing/keyring.c:1881
+#: ../KeyRing/keyring.c:1892
 msgid "KeyRing"
 msgstr ""
 
-#: ../KeyRing/keyring.c:2009
-#, fuzzy
-msgid "Changed"
-msgstr "Отменить"
+#. -------------------------------------------
+#: ../KeyRing/keyring.c:1920
+#, c-format
+msgid ""
+"%s\n"
+"\n"
+"KeyRing plugin for J-Pilot was written by\n"
+"Judd Montgomery (c) 2001.\n"
+"judd@jpilot.org\n"
+"http://jpilot.org\n"
+"\n"
+"KeyRing is a free PalmOS program for storing\n"
+"passwords and other information in encrypted form\n"
+"http://gnukeyring.sourceforge.net"
+msgstr ""
 
-#: ../KeyRing/keyring.c:2009
-msgid "Account"
-msgstr "Учетная запись"
+#: ../KeyRing/keyring.c:2158
+#, c-format
+msgid ""
+"Keys exported from %s %s on %s\n"
+"\n"
+msgstr ""
+
+#: ../KeyRing/keyring.c:2174
+#, fuzzy, c-format
+msgid "Can't export key %d\n"
+msgstr "Не могу экспортировать адрес\n"
 
 #. Change Password button
-#: ../KeyRing/keyring.c:2024
+#: ../KeyRing/keyring.c:2364
 msgid ""
 "Change\n"
 "KeyRing\n"
@@ -3018,70 +3814,198 @@ msgstr ""
 "пароль\n"
 "KeyRing"
 
+#. Clist
+#: ../KeyRing/keyring.c:2476
+#, fuzzy
+msgid "Changed"
+msgstr "Отменить"
+
+#: ../KeyRing/keyring.c:2478
+msgid "Account"
+msgstr "Учетная запись"
+
 #. Name entry
-#: ../KeyRing/keyring.c:2200
+#: ../KeyRing/keyring.c:2572
 msgid "name: "
 msgstr "имя: "
 
 #. Account entry
-#: ../KeyRing/keyring.c:2207
+#: ../KeyRing/keyring.c:2580
 msgid "account: "
 msgstr "учетная запись: "
 
 #. Password entry
-#: ../KeyRing/keyring.c:2214
+#: ../KeyRing/keyring.c:2588
 msgid "password: "
 msgstr "пароль: "
 
 #. Last Changed entry
-#: ../KeyRing/keyring.c:2221
+#: ../KeyRing/keyring.c:2595
 msgid "last changed: "
 msgstr ""
 
 #. Generate Password button (creates random password)
-#: ../KeyRing/keyring.c:2231
+#: ../KeyRing/keyring.c:2605
 msgid "Generate Password"
 msgstr "Сгенерировать пароль"
 
-#: ../SyncTime/synctime.c:48
+#: ../SyncTime/synctime.c:55
 #, fuzzy
 msgid "SyncTime"
 msgstr "Синхронизировать заметки"
 
-#: ../SyncTime/synctime.c:88
+#. -------------------------------------------
+#: ../SyncTime/synctime.c:66
+#, fuzzy, c-format
+msgid ""
+"%s\n"
+"\n"
+"SyncTime plugin for J-Pilot was written by\n"
+"Judd Montgomery (c) 1999.\n"
+"judd@jpilot.org\n"
+"http://jpilot.org\n"
+"\n"
+"SyncTime WILL NOT work with PalmOS 3.3!"
+msgstr ""
+"%s %s был написан\n"
+"Джаддом Монтгомери (c) 1999-2002\n"
+"judd@jpilot.org\n"
+"http://jpilot.org\n"
+
+#: ../SyncTime/synctime.c:101
 msgid "synctime: Palm OS Version 3.25 and 3.30 do not support SyncTime\n"
 msgstr ""
 
-#: ../SyncTime/synctime.c:89
+#: ../SyncTime/synctime.c:102
 msgid "synctime: NOT setting the time on the pilot\n"
 msgstr ""
 
-#: ../SyncTime/synctime.c:94
+#: ../SyncTime/synctime.c:107
 msgid "synctime: Setting the time on the pilot... "
 msgstr ""
 
-#: ../SyncTime/synctime.c:99
+#: ../SyncTime/synctime.c:112
 #, fuzzy
 msgid "Done\n"
 msgstr "Завершить"
 
+#, fuzzy
+#~ msgid "Field"
+#~ msgstr "Финляндия"
+#~ msgid "kana("
+#~ msgstr "kana("
+#~ msgid "Quick View"
+#~ msgstr "Быстрый просмотр"
+
+#, fuzzy
+#~ msgid "Unable to open %s%s file\n"
+#~ msgstr "Не удается открыть %s\n"
+
+#, fuzzy
+#~ msgid "Unable to open %s.alarms file\n"
+#~ msgstr "Не удается открыть %s\n"
+#~ msgid "You can't edit category %s.\n"
+#~ msgstr "Редактировать категорию %s нельзя.\n"
+#~ msgid "You can't delete category %s.\n"
+#~ msgstr "Нельзя удалять категорию %s.\n"
+#~ msgid "category name"
+#~ msgstr "название категории"
+#~ msgid "debug"
+#~ msgstr "debug"
+#~ msgid "Close"
+#~ msgstr "Закрыть"
+#~ msgid "none"
+#~ msgstr "нет"
+#~ msgid "This Event has no particular time"
+#~ msgstr "Для этого события не назначено время"
+#~ msgid "Start Time"
+#~ msgstr "Время начала"
+#~ msgid "End Time"
+#~ msgstr "Время окончания"
+#~ msgid "Dismiss"
+#~ msgstr "Отмена"
+#~ msgid "Done"
+#~ msgstr "Завершить"
+#~ msgid "Add"
+#~ msgstr "Добавить"
+
+#, fuzzy
+#~ msgid "User name"
+#~ msgstr "Имя пользователя"
+#~ msgid "/Help/PayBack program"
+#~ msgstr "/Справка/Программа PayBack"
+
+#, fuzzy
+#~ msgid "Show private records"
+#~ msgstr "Показать личные записи"
+
+#, fuzzy
+#~ msgid "Hide private records"
+#~ msgstr "Спрятать-показать личные записи"
+
+#, fuzzy
+#~ msgid "Mask private records"
+#~ msgstr "Скрыть личные записи"
+#~ msgid "Font"
+#~ msgstr "Шрифт"
+
+#, fuzzy
+#~ msgid "Couldn't open PC records file\n"
+#~ msgstr "Невозможно открыть файл %s\n"
+#~ msgid "The first day of the week is "
+#~ msgstr "Первый день недели "
+#~ msgid "Serial Port (/dev/ttyS0, /dev/pilot)"
+#~ msgstr "Порт (/dev/ttyS0, /dev/pilot)"
+#~ msgid "Serial Rate (Does not affect USB)"
+#~ msgstr "Скорость обмена по последовательному порту (не влияет на USB)"
+#~ msgid "Sync memo32 (pedit32)"
+#~ msgstr "Синхронизировать заметки memo32 (pedit32)"
+#~ msgid "One record"
+#~ msgstr "Одна запись"
+#~ msgid "Finished\n"
+#~ msgstr "Завершено\n"
+#~ msgid "Last Username = [%s]\n"
+#~ msgstr "Последний пользователь = [%s]\n"
+#~ msgid "Last UserID = %d\n"
+#~ msgstr "ID последнего пользователя = %d\n"
+#~ msgid "Username = [%s]\n"
+#~ msgstr "Имя пользователя = [%s]\n"
+#~ msgid "userID = %d\n"
+#~ msgstr "ID пользователя = %d\n"
+#~ msgid "palm: number of records = %d\n"
+#~ msgstr "palm: количество записей = %d\n"
+#~ msgid "disk: number of records = %d\n"
+#~ msgstr "disk: количество записей = %d\n"
+
+#, fuzzy
+#~ msgid ""
+#~ "%s doesn't appear to be a directory.\n"
+#~ "I need it to be.\n"
+#~ msgstr "Файл не в формате address.dat\n"
+
+#, fuzzy
+#~ msgid "Error opening file: next_id\n"
+#~ msgstr "Ошибка открытия файла"
+#~ msgid "AmEx"
+#~ msgstr "AmEx"
+#~ msgid "CreditCard"
+#~ msgstr "Кредитной картой"
+#~ msgid "MasterCard"
+#~ msgstr "MasterCard"
 #~ msgid "Quit"
 #~ msgstr "Выход"
-
 #~ msgid "Help"
 #~ msgstr "Справка"
 
 #, fuzzy
 #~ msgid "Directory"
 #~ msgstr "%s является директорией"
-
 #~ msgid "Overwrite File"
 #~ msgstr "Перезаписать файл"
 
 #, fuzzy
 #~ msgid "Filename"
 #~ msgstr "Переименовать"
-
 #~ msgid "Sync"
 #~ msgstr "Синхронизация"
 
@@ -3092,26 +4016,20 @@ msgstr "Завершить"
 #, fuzzy
 #~ msgid "Add the new record   Ctrl+Enter"
 #~ msgstr "Спрятать-показать личные записи"
-
 #~ msgid "Backup"
 #~ msgstr "Архив"
-
 #~ msgid "Quit!"
 #~ msgstr "Выход!"
-
 #~ msgid "Show Preferences"
 #~ msgstr "Показывать настройки"
-
 #~ msgid "About Expense"
 #~ msgstr "О Затратах"
 
 #, fuzzy
 #~ msgid "About KeyRing"
 #~ msgstr "О Затратах"
-
 #~ msgid "\n"
 #~ msgstr "\n"
-
 #~ msgid ""
 #~ " [-v] || [-h] || [-d] || [-a] || [-A] || [-i]\n"
 #~ " -v displays version and compile options and exits.\n"
@@ -3137,132 +4055,80 @@ msgstr "Завершить"
 #~ " Переменные окружения PILOTPORT и PILOTRATE используются для указания\n"
 #~ " порта и скорости синхронизации.\n"
 #~ " При отсутствии PILOTPORT по умолчанию будет использован /dev/pilot.\n"
-
 #~ msgid "slow_sync_application(): Out of memory\n"
 #~ msgstr "slow_sync_application(): нехватка памяти\n"
-
 #~ msgid "dlp_WriteRecord failed\n"
 #~ msgstr "Процедура dlp_WriteRecord провалилась\n"
-
 #~ msgid ""
 #~ "\n"
 #~ "Unable to open '%s'!\n"
 #~ msgstr ""
 #~ "\n"
 #~ "Невозможно открыть '%s'!\n"
-
 #~ msgid "Cannot open %s_to_install file\n"
 #~ msgstr "Невозможно открыть файл %s_to_install\n"
-
 #~ msgid "Cannot open %s_to_install.tmp file\n"
 #~ msgstr "Невозможно открыть файл %s_to_install.tmp\n"
-
 #~ msgid "fast_sync_local_recs(): Out of memory\n"
 #~ msgstr "fast_sync_local_recs(): нехватка памяти\n"
-
 #~ msgid "Error reading at %s : %s %d\n"
 #~ msgstr "Ошибка чтения %s : %s %d\n"
-
 #~ msgid "Warning ToDo description too long, truncating to %d\n"
 #~ msgstr "Описание ToDo слишком длинное, обрезано до %d символов\n"
-
 #~ msgid "/Web/Netscape/%s"
 #~ msgstr "/Сеть/Netscape/%s"
-
 #~ msgid "/Web/Mozilla/%s"
 #~ msgstr "/Сеть/Mozilla/%s"
-
 #~ msgid "/Web/Galeon/%s"
 #~ msgstr "/Сеть/Galeon/%s"
-
 #~ msgid "/Web/Opera/%s"
 #~ msgstr "/Сеть/Opera/%s"
-
 #~ msgid "/Web/GnomeUrl/%s"
 #~ msgstr "/Сеть/GnomeUrl/%s"
-
 #~ msgid "/Web/Lynx/%s"
 #~ msgstr "/Сеть/Lynx/%s"
-
 #~ msgid "/Web/Links/%s"
 #~ msgstr "Сеть/Links/%s"
-
 #~ msgid "/Web/W3M/%s"
 #~ msgstr "/Сеть/W3M/%s"
-
 #~ msgid "/Web/Konqueror/%s"
 #~ msgstr "/Сеть/Konqueror/%s"
-
-#~ msgid "Serial Rate "
-#~ msgstr "Скорость порта "
-
 #~ msgid "Holland"
 #~ msgstr "Голландия"
-
 #~ msgid "U.K."
 #~ msgstr "Великобритания"
-
 #~ msgid "U.S.A."
 #~ msgstr "США"
-
 #~ msgid "Open jpilot.org in existing"
 #~ msgstr "Открыть jpilot.org в текущем окне"
-
 #~ msgid "Open jpilot.org in new window"
 #~ msgstr "Открыть jpilot.org в новом окне"
-
 #~ msgid "Open jpilot.org in new Netscape"
 #~ msgstr "Открыть jpilot.org в новом Netscape"
-
 #~ msgid "Open jpilot.org in new tab"
 #~ msgstr "Открыть jpilot.org в новой вкладке"
-
 #~ msgid "Open jpilot.org in new Mozilla"
 #~ msgstr "Открыть jpilot.org в новой Mozilla"
-
 #~ msgid "Open jpilot.org in new Galeon"
 #~ msgstr "Открыть jpilot.org в новом Galeon"
-
 #~ msgid "Open jpilot.org in new Opera"
 #~ msgstr "Открыть jpilot.org в новой Opera"
-
 #~ msgid "Gnome URL Handler for jpilot.org"
 #~ msgstr "Обработчик ссылок Gnome для jpilot.org"
-
 #~ msgid "Lynx jpilot.org"
 #~ msgstr "Lynx jpilot.org"
-
 #~ msgid "Links jpilot.org"
 #~ msgstr "Links jpilot.org"
-
 #~ msgid "w3m jpilot.org"
 #~ msgstr "w3m jpilot.org"
-
 #~ msgid "Konqueror jpilot.org"
 #~ msgstr "Konqueror jpilot.org"
-
 #~ msgid "Cannot open "
 #~ msgstr "Невозможно открыть "
-
-#~ msgid "_to_install file\n"
-#~ msgstr "_to_install файл\n"
-
 #~ msgid "RTh"
 #~ msgstr "Чт"
-
 #~ msgid "Time:"
 #~ msgstr "Время:"
-
-#~ msgid ""
-#~ "%s %s was written by\n"
-#~ "Judd Montgomery (Copyright) 1999-2002.\n"
-#~ "judd@jpilot.org\n"
-#~ "http://jpilot.org\n"
-#~ msgstr ""
-#~ "%s %s был написан\n"
-#~ "Джаддом Монтгомери (c) 1999-2002\n"
-#~ "judd@jpilot.org\n"
-#~ "http://jpilot.org\n"
-
 #~ msgid "Last Syned UserID-->\"%d\"\n"
 #~ msgstr "ID последнего пользователя-->\"%d\"\n"
+
