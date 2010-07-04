@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.79 2010/04/21 11:15:02 rousseau Exp $ */
+/* $Id: utils.h,v 1.80 2010/07/04 16:58:41 judd Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -122,14 +122,15 @@
 #define IMPORT_TYPE_XML     103
 
 /* Export defines */
-#define EXPORT_TYPE_UNKNOWN    99
-#define EXPORT_TYPE_TEXT      100
-#define EXPORT_TYPE_DAT       101
-#define EXPORT_TYPE_CSV       102
-#define EXPORT_TYPE_XML       103
-#define EXPORT_TYPE_VCARD     104
-#define EXPORT_TYPE_ICALENDAR 105
-#define EXPORT_TYPE_LDIF      106
+#define EXPORT_TYPE_UNKNOWN      99
+#define EXPORT_TYPE_TEXT        100
+#define EXPORT_TYPE_DAT         101
+#define EXPORT_TYPE_CSV         102
+#define EXPORT_TYPE_XML         103
+#define EXPORT_TYPE_VCARD       104
+#define EXPORT_TYPE_VCARD_GMAIL 105
+#define EXPORT_TYPE_ICALENDAR   106
+#define EXPORT_TYPE_LDIF        107
 
 /* Dat file types */
 #define DAT_DATEBOOK_FILE    10

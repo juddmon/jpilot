@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.254 2010/04/13 15:54:01 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.255 2010/07/04 16:58:41 judd Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -1143,6 +1143,7 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
          break;
 
        case EXPORT_TYPE_VCARD:
+       case EXPORT_TYPE_VCARD_GMAIL:
          /* RFC 2426: vCard MIME Directory Profile */
          fprintf(out, "BEGIN:VCARD"CRLF);
          fprintf(out, "VERSION:3.0"CRLF);
@@ -1242,7 +1243,20 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
                 mcont->cont.entry[state_i] ||
                 mcont->cont.entry[zip_i] ||
                 mcont->cont.entry[country_i]) {
-               fprintf(out, "ADR:;;");
+	       /* Should we rely on the label, or the label index for the addr type?
+		* The label depends on the translated text.  I'll go with index for now. */
+	       /* text is here: contact_app_info.addrLabels[mcont->cont.addressLabel[i]] */
+	       switch (mcont->cont.addressLabel[i]) {
+		case 0:
+		  fprintf(out, "ADDR;TYPE=WORK:;;");
+		  break;
+		case 1:
+		  fprintf(out, "ADDR;TYPE=HOME:;;");
+		  break;
+		default:
+		  fprintf(out, "ADDR:;;");
+	       }
+
                for (n = address_i; n < country_i + 1; n++) {
                   if (mcont->cont.entry[n]) {
                      str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[n]);
@@ -1290,33 +1304,61 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
             str_to_vcard_str(csv_text, sizeof(csv_text), birthday_str);
             fprintf(out, "BDAY:%s"CRLF, birthday_str);
          }
-         if (mcont->cont.entry[contCustom1] ||
-             mcont->cont.entry[contCustom2] ||
-             mcont->cont.entry[contCustom3] ||
-             mcont->cont.entry[contCustom4] ||
-             mcont->cont.entry[contCustom5] ||
-             mcont->cont.entry[contCustom6] ||
-             mcont->cont.entry[contCustom7] ||
-             mcont->cont.entry[contCustom8] ||
-             mcont->cont.entry[contCustom9]) { 
-             for (n=contCustom1; n<=contCustom9; n++) {
-                if (mcont->cont.entry[n]) {
-                   const gchar *label = contact_app_info.customLabels[n-contCustom1];
-                   gchar *vlabel;
-                   vlabel = g_strcanon(g_ascii_strup(label, -1),
-                            "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-", '-');
-                   fprintf(out, "X-%s:", vlabel);
-                   g_free(vlabel);
-                   str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[n]);
-                   fprintf(out, "%s"CRLF, csv_text);
-                }
-             }
-         }
-         if (mcont->cont.entry[contNote]) {
-            fprintf(out, "NOTE:");
-            str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[contNote]);
-            fprintf(out, "%s\\n"CRLF, csv_text);
-         }
+	 if (type == EXPORT_TYPE_VCARD_GMAIL) {
+	    /* GMail contacts don't have fields for the custom fields,
+	     * rather than loose them we can stick them all in a note field */
+	    int printed_note = 0;
+	    for (n=contCustom1; n<=contCustom9; n++) {
+	       if (mcont->cont.entry[n]) {
+		  if (!printed_note) {
+		     printed_note=1;
+		     fprintf(out, "NOTE:");
+		  } else {
+		     fprintf(out, " ");
+		  }
+		  str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[n]);
+		  fprintf(out, "%s:%s\\n"CRLF, contact_app_info.customLabels[n-contCustom1], csv_text);
+	       }
+	    }
+	    if (mcont->cont.entry[contNote]) {
+	       if (!printed_note) {
+		  fprintf(out, "NOTE:");
+	       } else {
+		  fprintf(out, " note:");
+	       }
+	       str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[contNote]);
+	       fprintf(out, "%s\\n"CRLF, csv_text);
+	    }
+	 } else { /* Not a GMail optimized export */
+	    if (mcont->cont.entry[contCustom1] ||
+		mcont->cont.entry[contCustom2] ||
+		mcont->cont.entry[contCustom3] ||
+		mcont->cont.entry[contCustom4] ||
+		mcont->cont.entry[contCustom5] ||
+		mcont->cont.entry[contCustom6] ||
+		mcont->cont.entry[contCustom7] ||
+		mcont->cont.entry[contCustom8] ||
+		mcont->cont.entry[contCustom9]) { 
+	       for (n=contCustom1; n<=contCustom9; n++) {
+		  if (mcont->cont.entry[n]) {
+		     const gchar *label = contact_app_info.customLabels[n-contCustom1];
+		     gchar *vlabel;
+		     vlabel = g_strcanon(g_ascii_strup(label, -1),
+					 "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-", '-');
+		     fprintf(out, "X-%s:", vlabel);
+		     g_free(vlabel);
+		     str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[n]);
+		     fprintf(out, "%s"CRLF, csv_text);
+		  }
+	       }
+	    }
+	    if (mcont->cont.entry[contNote]) {
+	       fprintf(out, "NOTE:");
+	       str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[contNote]);
+	       fprintf(out, "%s\\n"CRLF, csv_text);
+	    }
+	 }
+	 
          fprintf(out, "END:VCARD"CRLF);
          break;
 
@@ -1472,11 +1514,13 @@ int address_export(GtkWidget *window)
    char *type_text[]={N_("Text"), 
                       N_("CSV"), 
                       N_("vCard"), 
+                      N_("vCard (Optimized for GMail/Android Import)"), 
                       N_("ldif"), 
                       NULL};
    int type_int[]={EXPORT_TYPE_TEXT, 
                    EXPORT_TYPE_CSV, 
                    EXPORT_TYPE_VCARD, 
+                   EXPORT_TYPE_VCARD_GMAIL,
                    EXPORT_TYPE_LDIF};
 
    gdk_window_get_size(window->window, &w, &h);
