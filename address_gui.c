@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.255 2010/07/04 16:58:41 judd Exp $ */
+/* $Id: address_gui.c,v 1.256 2010/07/08 16:04:37 judd Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -1202,7 +1202,8 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
          for (n = contPhone1; n < contPhone7 + 1; n++) {
             if (mcont->cont.entry[n]) {
                str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[n]);
-               if (!strcmp(contact_app_info.phoneLabels[mcont->cont.phoneLabel[n-contPhone1]], _("E-mail"))) {
+	       /* E-mail should be the Palm dropdown menu item for email */
+               if (!strcasecmp(contact_app_info.phoneLabels[mcont->cont.phoneLabel[n-contPhone1]], _("E-mail"))) {
                   fprintf(out, "EMAIL:%s"CRLF, csv_text);
                } else {
                   fprintf(out, "TEL;TYPE=%s", vCardMapType(mcont->cont.phoneLabel[n - contPhone1]));
@@ -2839,7 +2840,7 @@ static void cb_clist_selection(GtkWidget      *clist,
          goto set_text;
        case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
          /* Set dial/email button text and callback data */
-         if (!strcmp(contact_app_info.phoneLabels[cont->phoneLabel[phone_i]], _("E-mail"))) {
+         if (!strcasecmp(contact_app_info.phoneLabels[cont->phoneLabel[phone_i]], _("E-mail"))) {
             gtk_object_set_data(GTK_OBJECT(dial_button[phone_i]), "mail", GINT_TO_POINTER(1));
             gtk_button_set_label(GTK_BUTTON(dial_button[phone_i]), _("Mail"));
          } else {
@@ -4061,7 +4062,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
             changed_list = g_list_prepend(changed_list, addr_text_buffer[schema[i].record_field]);
             break;
           case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
-            if (!strcmp(contact_app_info.phoneLabels[phone_i], _("E-mail"))) {
+            if (!strcasecmp(contact_app_info.phoneLabels[phone_i], _("E-mail"))) {
                dial_button[phone_i] = gtk_button_new_with_label(_("Mail"));
                gtk_object_set_data(GTK_OBJECT(dial_button[phone_i]), "mail", GINT_TO_POINTER(1));
             } else {
