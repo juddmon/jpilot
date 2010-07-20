@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.256 2010/07/08 16:04:37 judd Exp $ */
+/* $Id: address_gui.c,v 1.257 2010/07/20 14:30:00 judd Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -4030,9 +4030,9 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
                   label = gtk_label_new(utf);
                   g_free(utf);
                }
-               gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
+	       gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.0);
                gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(label),
-                                x-2, x-1, table_y_i, table_y_i+1, GTK_SHRINK, 0, 0, 0);
+                                x-2, x-1, table_y_i, table_y_i+1, GTK_FILL, GTK_FILL, 0, 0);
             }
             /* Text */
             addr_text[schema[i].record_field] = gtk_text_view_new();
