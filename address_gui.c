@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.257 2010/07/20 14:30:00 judd Exp $ */
+/* $Id: address_gui.c,v 1.258 2010/07/23 01:37:44 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -4030,7 +4030,8 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
                   label = gtk_label_new(utf);
                   g_free(utf);
                }
-	       gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.0);
+               gtk_misc_set_padding(GTK_MISC(label), 0, 1);
+               gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.0);
                gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(label),
                                 x-2, x-1, table_y_i, table_y_i+1, GTK_FILL, GTK_FILL, 0, 0);
             }
