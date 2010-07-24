@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.139 2010/04/13 15:54:02 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.140 2010/07/24 05:17:37 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -1039,8 +1039,11 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    free_Memo(&new_memo);
    memo_clist_redraw();
 
-   glob_find_id = unique_id;
-   memo_find();
+   /* Don't return to modified record if search gui active */
+   if (!glob_find_id) {
+      glob_find_id = unique_id;
+      memo_find();
+   }
 
    return;
 }

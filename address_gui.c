@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.258 2010/07/23 01:37:44 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.259 2010/07/24 05:17:37 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -2020,8 +2020,11 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
       }
 
       address_clist_redraw();
-      glob_find_id = unique_id;
-      address_find();
+   /* Don't return to modified record if search gui active */
+      if (!glob_find_id) {
+         glob_find_id = unique_id;
+         address_find();
+      }
    }
 }
 

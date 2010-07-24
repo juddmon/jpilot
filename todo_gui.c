@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.167 2010/04/13 15:54:02 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.168 2010/07/24 05:17:37 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -1331,8 +1331,11 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    }
    todo_clist_redraw();
    free_ToDo(&new_todo);
-   glob_find_id = unique_id;
-   todo_find();
+   /* Don't return to modified record if search gui active */
+   if (!glob_find_id) {
+      glob_find_id = unique_id;
+      todo_find();
+   }
 
    return;
 }

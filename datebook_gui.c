@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.226 2010/04/14 05:04:37 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.227 2010/07/24 05:17:37 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -2938,8 +2938,11 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    datebook_update_clist();
    highlight_days();
 
-   glob_find_id = unique_id;
-   datebook_find();
+   /* Don't return to modified record if search gui active */
+   if (!glob_find_id) {
+      glob_find_id = unique_id;
+      datebook_find();
+   }
 
    /* Make sure that the next alarm will go off */
    alarms_find_next(NULL, NULL, TRUE);
