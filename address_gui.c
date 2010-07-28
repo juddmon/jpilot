@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.260 2010/07/28 13:36:42 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.261 2010/07/28 14:17:48 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -3985,6 +3985,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
       gtk_widget_show(label);
 
       table = gtk_table_new(y, x, FALSE);
+      gtk_table_set_col_spacings(table, 3);
 
       gtk_box_pack_start(GTK_BOX(vbox_temp), table, TRUE, TRUE, 0);
 
@@ -4167,7 +4168,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 
             changed_list = g_list_prepend(changed_list, birthday_checkbox);
 
-            birthday_box = gtk_hbox_new(FALSE, 0);
+            birthday_box = gtk_hbox_new(FALSE, 3);
             gtk_box_pack_start(GTK_BOX(hbox_temp), birthday_box, FALSE, FALSE, 0);
 
             birthday_button = gtk_button_new_with_label("");
