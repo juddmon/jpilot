@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.259 2010/07/24 05:17:37 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.260 2010/07/28 13:36:42 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -2800,7 +2800,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    sorted_position = find_sort_cat_pos(index);
    if (address_cat_menu_item2[sorted_position]==NULL) {
       /* Illegal category, Assume that category 0 is Unfiled and valid */
-      jp_logf(JP_LOG_DEBUG, "Category is not legal\n");
+      jp_logf(JP_LOG_DEBUG, _("Category is not legal\n"));
       index = sorted_position = 0;
       sorted_position = find_sort_cat_pos(index);
    }
