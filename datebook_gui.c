@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.227 2010/07/24 05:17:37 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.228 2010/08/01 18:36:32 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -1082,14 +1082,14 @@ static void appt_export_ok(int type, const char *filename)
                fprintf(out, ";INTERVAL=%d", mcale->cale.repeatFrequency);
             }
             if (!mcale->cale.repeatForever) {
-               /* RFC 2445 is unclear on how to handle inclusivity for 
-                * dates, rather than datestamps. Because most other
-                * ical parsers assume non-inclusivity Jpilot needs to
-                * add one day to the end date of repeating events. */
+               /* RFC 5445, which supercedes RFC 2445, specifies that dates
+                * are inclusive of the last event.  This clears up confusion
+                * in the earlier specification and means that Jpilot no longer
+                * needs to add +1day to the end of repeating events. */
                memset(&ical_time, 0, sizeof(ical_time));
                ical_time.tm_year = mcale->cale.repeatEnd.tm_year;
                ical_time.tm_mon  = mcale->cale.repeatEnd.tm_mon;
-               ical_time.tm_mday = mcale->cale.repeatEnd.tm_mday + 1;
+               ical_time.tm_mday = mcale->cale.repeatEnd.tm_mday;
                ical_time.tm_isdst= -1;
                mktime(&ical_time);
                fprintf(out, ";UNTIL=%04d%02d%02d",
