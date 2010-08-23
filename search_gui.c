@@ -1,4 +1,4 @@
-/* $Id: search_gui.c,v 1.53 2010/04/02 04:26:27 rikster5 Exp $ */
+/* $Id: search_gui.c,v 1.54 2010/08/23 05:11:17 rikster5 Exp $ */
 
 /*******************************************************************************
  * search_gui.c
@@ -338,6 +338,9 @@ static int search_memo(const char *needle, GtkWidget *clist)
    struct search_record *new_sr;
    int count;
    int case_sense;
+   long memo_version=0;
+
+   get_pref(PREF_MEMO_VERSION, &memo_version, NULL);
 
    /* Search Memos */
    memo_list = NULL;
@@ -354,7 +357,11 @@ static int search_memo(const char *needle, GtkWidget *clist)
    for (temp_memo = memo_list; temp_memo; temp_memo=temp_memo->next) {
       if (jp_strstr(temp_memo->mmemo.memo.text, needle, case_sense) ) {
          gtk_clist_prepend(GTK_CLIST(clist), empty_line);
-         gtk_clist_set_text(GTK_CLIST(clist), 0, 0, _("memo"));
+         if (memo_version==0) {
+            gtk_clist_set_text(GTK_CLIST(clist), 0, 0, _("memo"));
+         } else {
+            gtk_clist_set_text(GTK_CLIST(clist), 0, 0, _("memos"));
+         }
          if (temp_memo->mmemo.memo.text) {
             lstrncpy_remove_cr_lfs(str2, temp_memo->mmemo.memo.text, SEARCH_MAX_COLUMN_LEN);
             gtk_clist_set_text(GTK_CLIST(clist), 0, 1, str2);
