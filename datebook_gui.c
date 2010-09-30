@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.228 2010/08/01 18:36:32 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.229 2010/09/30 01:16:12 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -2079,8 +2079,12 @@ static int appt_get_details(struct CalendarEvent *cale, unsigned char *attrib)
 
    ltime2 = mktime(&cale->end);
 
-   if (ltime > ltime2) {
-      memcpy(&(cale->end), &(cale->begin), sizeof(struct tm));
+   /* Datebook does not support events spanning midnight where
+      the beginning time is greater than the ending time */
+   if (datebook_version == 0) {
+      if (ltime > ltime2) {
+         memcpy(&(cale->end), &(cale->begin), sizeof(struct tm));
+      }
    }
 
    if (GTK_TOGGLE_BUTTON(check_button_alarm)->active) {
@@ -3865,8 +3869,7 @@ int datebook_refresh(int first, int do_init)
    return EXIT_SUCCESS;
 }
 
-static void cb_menu_time(GtkWidget *item,
-                  gint data)
+static void cb_menu_time(GtkWidget *item, gint data)
 {
    struct tm *Ptm;
 
@@ -3880,18 +3883,20 @@ static void cb_menu_time(GtkWidget *item,
    } else {
       Ptm->tm_min = data&0x3F;
    }
-
+   
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_appt_time), TRUE);
    set_begin_end_labels(&begin_date, &end_date, UPDATE_DATE_ENTRIES);
 }
 
 static gboolean cb_hide_menu_time(GtkWidget *widget, gpointer data)
 {
-   /* Require that appt. end times be after the begin time */
-   /* This mimics the behavior of PalmOs more closely */
-   if (begin_date.tm_hour > end_date.tm_hour)
-   {
-      end_date.tm_hour = begin_date.tm_hour;
+   /* Datebook does not support events spanning midnight where
+      the beginning time is greater than the ending time */
+   if (datebook_version == 0) {
+      if (begin_date.tm_hour > end_date.tm_hour)
+      {
+         end_date.tm_hour = begin_date.tm_hour;
+      }
    }
 
    set_begin_end_labels(&begin_date, &end_date, UPDATE_DATE_MENUS |
