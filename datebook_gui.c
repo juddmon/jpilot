@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.229 2010/09/30 01:16:12 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.230 2010/10/01 04:08:47 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -3871,19 +3871,38 @@ int datebook_refresh(int first, int do_init)
 
 static void cb_menu_time(GtkWidget *item, gint data)
 {
-   struct tm *Ptm;
+   int span;
 
-   if (data&END_TIME_FLAG) {
-      Ptm=&end_date;
-   } else {
-      Ptm=&begin_date;
+   if (END_TIME_FLAG & data) {
+      if (HOURS_FLAG & data) {
+         end_date.tm_hour = data&0x3F;
+      } else {
+         end_date.tm_min = data&0x3F;
+      }
    }
-   if (data&HOURS_FLAG) {
-      Ptm->tm_hour = data&0x3F;
-   } else {
-      Ptm->tm_min = data&0x3F;
+   else {
+      /* If start time changed then update end time to keep same appt. length */
+      if (HOURS_FLAG & data) {
+         span = end_date.tm_hour - begin_date.tm_hour;
+         begin_date.tm_hour = data&0x3F;
+         span = (begin_date.tm_hour + span) % 24;
+         span < 0 ? span += 24 : span;
+         end_date.tm_hour = span;
+      } else {
+         span = end_date.tm_min - begin_date.tm_min;
+         begin_date.tm_min = data&0x3F;
+         span = begin_date.tm_min + span;
+         if (span >= 60) {
+            span -= 60;
+            end_date.tm_hour = (end_date.tm_hour + 1) % 24;
+         } else if (span < 0) {
+            span += 60;
+            end_date.tm_hour = (end_date.tm_hour - 1) % 24;
+         }
+         end_date.tm_min = span;
+      }
    }
-   
+
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_appt_time), TRUE);
    set_begin_end_labels(&begin_date, &end_date, UPDATE_DATE_ENTRIES);
 }
@@ -3911,33 +3930,58 @@ static gboolean cb_hide_menu_time(GtkWidget *widget, gpointer data)
 #define PRESSED_MINUS        103
 #define PRESSED_SHIFT_TAB    104
 
-static void entry_key_pressed(int next_digit, int begin_or_end)
+static void entry_key_pressed(int next_digit, int end_entry)
 {
-   struct tm *Pt;
+   struct tm *Ptm;
+   int span_hour, span_min;
 
-   if (begin_or_end) {
-      Pt = &end_date;
+   if (end_entry) {
+      Ptm = &end_date;
    } else {
-      Pt = &begin_date;
+      Ptm = &begin_date;
    }
+
+   span_hour = end_date.tm_hour - begin_date.tm_hour;
+   span_min  = end_date.tm_min  - begin_date.tm_min;
 
    if ((next_digit>=0) && (next_digit<=9)) {
-      Pt->tm_hour = ((Pt->tm_hour)*10 + (Pt->tm_min)/10)%100;
-      Pt->tm_min = ((Pt->tm_min)*10)%100 + next_digit;
+      Ptm->tm_hour = ((Ptm->tm_hour)*10 + (Ptm->tm_min)/10)%100;
+      Ptm->tm_min = ((Ptm->tm_min)*10)%100 + next_digit;
+   } 
+   if ((next_digit==PRESSED_P) && ((Ptm->tm_hour)<12)) {
+      (Ptm->tm_hour) += 12;
    }
-   if ((next_digit==PRESSED_P) && ((Pt->tm_hour)<12)) {
-      (Pt->tm_hour) += 12;
+   if ((next_digit==PRESSED_A) && ((Ptm->tm_hour)>11)) {
+      (Ptm->tm_hour) -= 12;
    }
-   if ((next_digit==PRESSED_A) && ((Pt->tm_hour)>11)) {
-      (Pt->tm_hour) -= 12;
-   }
+
    /* Don't let the first digit exceed 2 */
-   if ((int)(Pt->tm_hour/10) > 2) {
-      Pt->tm_hour -= ((int)(Pt->tm_hour/10)-2)*10;
+   if ((int)(Ptm->tm_hour/10) > 2) {
+      Ptm->tm_hour -= ((int)(Ptm->tm_hour/10)-2)*10;
    }
    /* Don't let the hour be > 23 */
-   if (Pt->tm_hour > 23) {
-      Pt->tm_hour = 23;
+   if (Ptm->tm_hour > 23) {
+      Ptm->tm_hour = 23;
+   }
+
+   /* If start time changed then update end time to keep same appt. length */
+   if (!end_entry) {
+      span_hour = (begin_date.tm_hour + span_hour) % 24;
+      span_hour < 0 ? span_hour += 24 : span_hour;
+      end_date.tm_hour = span_hour;
+
+      span_min = begin_date.tm_min + span_min;
+      while (span_min >= 60) {
+         span_min -= 60;
+         span_hour = (span_hour + 1) % 24;
+      } 
+      while (span_min < 0) {
+         span_min += 60;
+         span_hour = (span_hour - 1) % 24;
+      }
+      end_date.tm_min = span_min;
+      span_hour < 0 ? span_hour += 24 : span_hour;
+      end_date.tm_hour = span_hour;
    }
 
    set_begin_end_labels(&begin_date, &end_date, UPDATE_DATE_ENTRIES |
@@ -4394,7 +4438,7 @@ static GtkWidget *create_time_menu(int flags)
    memset(&t, 0, sizeof(t));
 
    /* Hours menu */
-   if (flags&HOURS_FLAG) {
+   if (HOURS_FLAG & flags) {
       i_stop=24;
       cb_factor=1;
       get_pref_hour_ampm(str);
@@ -4403,7 +4447,7 @@ static GtkWidget *create_time_menu(int flags)
       cb_factor=5;
    }
    for (i = 0; i < i_stop; i++) {
-      if (flags&HOURS_FLAG) {
+      if (HOURS_FLAG & flags) {
          t.tm_hour=i;
          jp_strftime(buf, sizeof(buf), str, &t);
       } else {
