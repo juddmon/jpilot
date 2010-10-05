@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.263 2010/08/01 18:00:23 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.264 2010/10/05 21:48:05 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -143,10 +143,8 @@ static address_schema_entry address_schema[NUM_ADDRESS_FIELDS]={
    {contNote,      3, ADDRESS_GUI_LABEL_TEXT}
 };
 
-/*
- * This keeps track of whether we are using addresses, or contacts
- * 0 is addresses, 1 is contacts
- */
+/* Keeps track of whether code is using Address or Contacts database.
+ * 0 is AddressDB, 1 is ContactsDB */
 static long address_version=0;
 
 static GtkWidget *clist;
@@ -219,9 +217,9 @@ static int address_clist_redraw(void);
 static int address_find(void);
 
 /****************************** Main Code *************************************/
+/* Called once on initialization of GUI */
 static void init(void)
 {
-   int i, j;
    time_t ltime;
    struct tm *now;
 
@@ -243,16 +241,10 @@ static void init(void)
    contact_picture.length=0;
    contact_picture.data=NULL;
 
+   clist_row_selected=0;
+
    changed_list=NULL;
    record_changed=CLEAR_FLAG;
-   for (i=0; i<NUM_ADDRESSES; i++) {
-      for (j=0; j<NUM_PHONE_LABELS; j++) {
-         phone_type_menu_item[i][j] = NULL;
-      }
-   }
-   for (i=0; i<NUM_ADDRESS_CAT_ITEMS; i++) {
-      address_cat_menu_item2[i] = NULL;
-   }
 }
 
 static void set_new_button_to(int new_state)
@@ -520,9 +512,7 @@ static GString *contact_to_gstring(struct Contact *cont)
    return s;
 }
 
-/*
- * Start Import Code
- */
+/* Start Import Code */
 static int cb_addr_import(GtkWidget *parent_window, 
                           const char *file_path,
                           int type)
@@ -808,13 +798,10 @@ int address_import(GtkWidget *window)
    import_gui(window, pane, type_desc, type_int, cb_addr_import);
    return EXIT_SUCCESS;
 }
-/*
- * End Import Code
- */
 
-/*
- * Start Export code
- */
+/* End Import Code */
+
+/* Start Export code */
 
 static char *ldifMapType(int label)
 {
@@ -1202,7 +1189,7 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
          for (n = contPhone1; n < contPhone7 + 1; n++) {
             if (mcont->cont.entry[n]) {
                str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[n]);
-	       /* E-mail should be the Palm dropdown menu item for email */
+               /* E-mail should be the Palm dropdown menu item for email */
                if (!strcasecmp(contact_app_info.phoneLabels[mcont->cont.phoneLabel[n-contPhone1]], _("E-mail"))) {
                   fprintf(out, "EMAIL:%s"CRLF, csv_text);
                } else {
@@ -1244,19 +1231,22 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
                 mcont->cont.entry[state_i] ||
                 mcont->cont.entry[zip_i] ||
                 mcont->cont.entry[country_i]) {
-	       /* Should we rely on the label, or the label index for the addr type?
-		* The label depends on the translated text.  I'll go with index for now. */
-	       /* text is here: contact_app_info.addrLabels[mcont->cont.addressLabel[i]] */
-	       switch (mcont->cont.addressLabel[i]) {
-		case 0:
-		  fprintf(out, "ADDR;TYPE=WORK:;;");
-		  break;
-		case 1:
-		  fprintf(out, "ADDR;TYPE=HOME:;;");
-		  break;
-		default:
-		  fprintf(out, "ADDR:;;");
-	       }
+
+               /* Should we rely on the label, or the label index, for the addr
+                * type?  The label depends on the translated text.  I'll go
+                * with index for now.  The text is here:
+               contact_app_info.addrLabels[mcont->cont.addressLabel[i]] */
+
+               switch (mcont->cont.addressLabel[i]) {
+                case 0:
+                  fprintf(out, "ADDR;TYPE=WORK:;;");
+                  break;
+                case 1:
+                  fprintf(out, "ADDR;TYPE=HOME:;;");
+                  break;
+                default:
+                  fprintf(out, "ADDR:;;");
+               }
 
                for (n = address_i; n < country_i + 1; n++) {
                   if (mcont->cont.entry[n]) {
@@ -1305,61 +1295,61 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
             str_to_vcard_str(csv_text, sizeof(csv_text), birthday_str);
             fprintf(out, "BDAY:%s"CRLF, birthday_str);
          }
-	 if (type == EXPORT_TYPE_VCARD_GMAIL) {
-	    /* GMail contacts don't have fields for the custom fields,
-	     * rather than loose them we can stick them all in a note field */
-	    int printed_note = 0;
-	    for (n=contCustom1; n<=contCustom9; n++) {
-	       if (mcont->cont.entry[n]) {
-		  if (!printed_note) {
-		     printed_note=1;
-		     fprintf(out, "NOTE:");
-		  } else {
-		     fprintf(out, " ");
-		  }
-		  str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[n]);
-		  fprintf(out, "%s:%s\\n"CRLF, contact_app_info.customLabels[n-contCustom1], csv_text);
-	       }
-	    }
-	    if (mcont->cont.entry[contNote]) {
-	       if (!printed_note) {
-		  fprintf(out, "NOTE:");
-	       } else {
-		  fprintf(out, " note:");
-	       }
-	       str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[contNote]);
-	       fprintf(out, "%s\\n"CRLF, csv_text);
-	    }
-	 } else { /* Not a GMail optimized export */
-	    if (mcont->cont.entry[contCustom1] ||
-		mcont->cont.entry[contCustom2] ||
-		mcont->cont.entry[contCustom3] ||
-		mcont->cont.entry[contCustom4] ||
-		mcont->cont.entry[contCustom5] ||
-		mcont->cont.entry[contCustom6] ||
-		mcont->cont.entry[contCustom7] ||
-		mcont->cont.entry[contCustom8] ||
-		mcont->cont.entry[contCustom9]) { 
-	       for (n=contCustom1; n<=contCustom9; n++) {
-		  if (mcont->cont.entry[n]) {
-		     const gchar *label = contact_app_info.customLabels[n-contCustom1];
-		     gchar *vlabel;
-		     vlabel = g_strcanon(g_ascii_strup(label, -1),
-					 "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-", '-');
-		     fprintf(out, "X-%s:", vlabel);
-		     g_free(vlabel);
-		     str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[n]);
-		     fprintf(out, "%s"CRLF, csv_text);
-		  }
-	       }
-	    }
-	    if (mcont->cont.entry[contNote]) {
-	       fprintf(out, "NOTE:");
-	       str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[contNote]);
-	       fprintf(out, "%s\\n"CRLF, csv_text);
-	    }
-	 }
-	 
+         if (type == EXPORT_TYPE_VCARD_GMAIL) {
+            /* GMail contacts don't have fields for the custom fields,
+             * rather than lose them we can stick them all in a note field */
+            int printed_note = 0;
+            for (n=contCustom1; n<=contCustom9; n++) {
+               if (mcont->cont.entry[n]) {
+                  if (!printed_note) {
+                     printed_note=1;
+                     fprintf(out, "NOTE:");
+                  } else {
+                     fprintf(out, " ");
+                  }
+                  str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[n]);
+                  fprintf(out, "%s:%s\\n"CRLF, contact_app_info.customLabels[n-contCustom1], csv_text);
+               }
+            }
+            if (mcont->cont.entry[contNote]) {
+               if (!printed_note) {
+                  fprintf(out, "NOTE:");
+               } else {
+                  fprintf(out, " note:");
+               }
+               str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[contNote]);
+               fprintf(out, "%s\\n"CRLF, csv_text);
+            }
+         } else { /* Not a GMail optimized export */
+            if (mcont->cont.entry[contCustom1] ||
+                mcont->cont.entry[contCustom2] ||
+                mcont->cont.entry[contCustom3] ||
+                mcont->cont.entry[contCustom4] ||
+                mcont->cont.entry[contCustom5] ||
+                mcont->cont.entry[contCustom6] ||
+                mcont->cont.entry[contCustom7] ||
+                mcont->cont.entry[contCustom8] ||
+                mcont->cont.entry[contCustom9]) { 
+               for (n=contCustom1; n<=contCustom9; n++) {
+                  if (mcont->cont.entry[n]) {
+                     const gchar *label = contact_app_info.customLabels[n-contCustom1];
+                     gchar *vlabel;
+                     vlabel = g_strcanon(g_ascii_strup(label, -1),
+                                         "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-", '-');
+                     fprintf(out, "X-%s:", vlabel);
+                     g_free(vlabel);
+                     str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[n]);
+                     fprintf(out, "%s"CRLF, csv_text);
+                  }
+               }
+            }
+            if (mcont->cont.entry[contNote]) {
+               fprintf(out, "NOTE:");
+               str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[contNote]);
+               fprintf(out, "%s\\n"CRLF, csv_text);
+            }
+         }
+         
          fprintf(out, "END:VCARD"CRLF);
          break;
 
@@ -1543,9 +1533,8 @@ int address_export(GtkWidget *window)
    return EXIT_SUCCESS;
 }
 
-/*
- * End Export Code
- */
+/* End Export Code */
+
 static void cb_resize_column (GtkCList *clist,
                               gint column,
                               gint width,
@@ -3572,7 +3561,7 @@ static gboolean cb_key_pressed(GtkWidget *widget, GdkEventKey *event)
    }
    gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
 
-   // Initialize page and next widget in case search fails
+   /* Initialize page and next widget in case search fails */
    page = schema[0].notebook_page;
    next = schema[0].record_field;
 
@@ -3639,9 +3628,7 @@ int address_gui_cleanup(void)
    return EXIT_SUCCESS;
 }
 
-/*
- * Main function
- */
+/* Main function */
 int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 {
    GtkWidget *scrolled_window;
@@ -3663,7 +3650,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    int address_type_i, IM_type_i, page_i, table_y_i;
    int x, y;
 
-   int i, phone_i, num_pages;
+   int i, j, phone_i, num_pages;
    long char_set;
    char *cat_name;
 
@@ -3684,8 +3671,6 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
       N_("Note")
    };
    char **page_names;
-
-   clist_row_selected=0;
 
    get_pref(PREF_ADDRESS_VERSION, &address_version, NULL);
    if (address_version) {
@@ -3713,6 +3698,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
       copy_address_ai_to_contact_ai(&address_app_info, &contact_app_info);
    }
 
+   /* Initialize categories */
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    for (i=1; i<NUM_ADDRESS_CAT_ITEMS; i++) {
       cat_name = charset_p2newj(contact_app_info.category.name[i], 31, char_set);
@@ -3736,10 +3722,12 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    get_pref(PREF_LAST_ADDR_CATEGORY, &ivalue, NULL);
    address_category = ivalue;
 
-   if (contact_app_info.category.name[address_category][0]=='\0') {
+   if ((address_category != CATEGORY_ALL) 
+       && (contact_app_info.category.name[address_category][0]=='\0')) {
       address_category=CATEGORY_ALL;
    }
 
+   /* Create basic GUI with left and right boxes and sliding pane */
    accel_group = gtk_accel_group_new();
    gtk_window_add_accel_group(GTK_WINDOW(gtk_widget_get_toplevel(vbox)),
                               accel_group);
@@ -3755,11 +3743,13 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_paned_pack1(GTK_PANED(pane), vbox1, TRUE, FALSE);
    gtk_paned_pack2(GTK_PANED(pane), vbox2, TRUE, FALSE);
 
+   /* Left side of GUI */
+
    /* Separator */
    separator = gtk_hseparator_new();
    gtk_box_pack_start(GTK_BOX(vbox1), separator, FALSE, FALSE, 5);
 
-   /* Make the Today is: label */
+   /* Make the 'Today is:' label */
    glob_date_label = gtk_label_new(" ");
    gtk_box_pack_start(GTK_BOX(vbox1), glob_date_label, FALSE, FALSE, 0);
    timeout_date(NULL);
@@ -3769,16 +3759,16 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    separator = gtk_hseparator_new();
    gtk_box_pack_start(GTK_BOX(vbox1), separator, FALSE, FALSE, 5);
 
-   /* Category Box */
+   /* Left-side Category box */
    hbox_temp = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox1), hbox_temp, FALSE, FALSE, 0);
 
-   /* Put the category menu up */
+   /* Left-side Category menu */
    make_category_menu(&category_menu1, address_cat_menu_item1,
                       sort_l, cb_category, TRUE, TRUE);
    gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu1, TRUE, TRUE, 0);
 
-   /* Put the address list window up */
+   /* Address list scrolled window */
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 0);
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
@@ -3852,11 +3842,12 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
                       NULL);
    gtk_box_pack_start(GTK_BOX(hbox_temp), address_quickfind_entry, TRUE, TRUE, 0);
 
-   /* The new entry gui */
+   /* Right side of GUI */
+
    hbox_temp = gtk_hbox_new(FALSE, 3);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
-   /* Create Cancel button */
+   /* Cancel button */
    CREATE_BUTTON(cancel_record_button, _("Cancel"), CANCEL, _("Cancel the modifications"), GDK_Escape, 0, "ESC")
    gtk_signal_connect(GTK_OBJECT(cancel_record_button), "clicked",
                       GTK_SIGNAL_FUNC(cb_cancel), NULL);
@@ -3873,18 +3864,18 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
                       GTK_SIGNAL_FUNC(cb_undelete_address),
                       GINT_TO_POINTER(UNDELETE_FLAG));
 
-   /* Create "Copy" button */
+   /* Copy button */
    CREATE_BUTTON(copy_record_button, _("Copy"), COPY, _("Copy the selected record"), GDK_c, GDK_CONTROL_MASK|GDK_SHIFT_MASK, "Ctrl+Shift+C")
    gtk_signal_connect(GTK_OBJECT(copy_record_button), "clicked",
                       GTK_SIGNAL_FUNC(cb_add_new_record),
                       GINT_TO_POINTER(COPY_FLAG));
 
-   /* Create "New" button */
+   /* New button */
    CREATE_BUTTON(new_record_button, _("New Record"), NEW, _("Add a new record"), GDK_n, GDK_CONTROL_MASK, "Ctrl+N")
    gtk_signal_connect(GTK_OBJECT(new_record_button), "clicked",
                       GTK_SIGNAL_FUNC(cb_address_clear), NULL);
 
-   /* Create "Add Record" button */
+   /* "Add Record" button */
    CREATE_BUTTON(add_record_button, _("Add Record"), ADD, _("Add the new record"), GDK_Return, GDK_CONTROL_MASK, "Ctrl+Enter")
    gtk_signal_connect(GTK_OBJECT(add_record_button), "clicked",
                       GTK_SIGNAL_FUNC(cb_add_new_record),
@@ -3908,16 +3899,14 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    separator = gtk_hseparator_new();
    gtk_box_pack_start(GTK_BOX(vbox2), separator, FALSE, FALSE, 5);
 
-
-   /* Private check box */
    hbox_temp = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
-   private_checkbox = gtk_check_button_new_with_label(_("Private"));
-   gtk_box_pack_end(GTK_BOX(hbox_temp), private_checkbox, FALSE, FALSE, 0);
 
-   changed_list = g_list_prepend(changed_list, private_checkbox);
-
-   /* Add the new category menu */
+   /* Right-side Category menu */
+   /* Clear GTK option menus before use */
+   for (i=0; i<NUM_ADDRESS_CAT_ITEMS; i++) {
+      address_cat_menu_item2[i] = NULL;
+   }
    make_category_menu(&category_menu2, address_cat_menu_item2,
                       sort_l, NULL, FALSE, FALSE);
 
@@ -3927,7 +3916,13 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
       changed_list = g_list_prepend(changed_list, address_cat_menu_item2[i]);
    }
 
-   /* Add the notebook for new entries */
+   /* Private check box */
+   private_checkbox = gtk_check_button_new_with_label(_("Private"));
+   gtk_box_pack_end(GTK_BOX(hbox_temp), private_checkbox, FALSE, FALSE, 0);
+
+   changed_list = g_list_prepend(changed_list, private_checkbox);
+
+   /* Notebook for new entries */
    notebook = gtk_notebook_new();
    gtk_notebook_set_tab_pos(GTK_NOTEBOOK(notebook), GTK_POS_TOP);
    gtk_notebook_popup_enable(GTK_NOTEBOOK(notebook));
@@ -3936,7 +3931,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    gtk_box_pack_start(GTK_BOX(vbox2), notebook, TRUE, TRUE, 0);
 
-   /* Add the notebook pages and their widgets */
+   /* Add notebook pages and their widgets */
    phone_i = address_type_i = IM_type_i = 0;
    for (page_i=0; page_i<num_pages; page_i++) {
       x=y=0;
@@ -3975,7 +3970,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
          continue;
       }
 
-      /* Add a page */
+      /* Add a notebook page */
       table_y_i=0;
       notebook_label[page_i] = gtk_label_new(_(page_names[page_i]));
       vbox_temp = gtk_vbox_new(FALSE, 0);
@@ -4016,7 +4011,14 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 
       }
       
-      /* Add widgets for each page */
+      /* Add widgets for each notebook page */
+      /* Clear GTK option menus before use */
+      for (i=0; i<NUM_ADDRESSES; i++) {
+         for (j=0; j<NUM_PHONE_LABELS; j++) {
+            phone_type_menu_item[i][j] = NULL;
+         }
+      }
+
       group=NULL;
       for (i=0; i<schema_size; i++) {
          char *utf;
@@ -4024,7 +4026,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
          if (schema[i].notebook_page!=page_i) continue;
          switch (schema[i].type) {
           case ADDRESS_GUI_LABEL_TEXT:
-            /* Make a special case for Note so it has a scrollbar and no label */
+            /* special case for Note which has a scrollbar and no label */
             if (schema[i].record_field != contNote) {
                if (address_version) {
                   label = gtk_label_new(contact_app_info.labels[schema[i].record_field]);
@@ -4045,7 +4047,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
             gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(addr_text[schema[i].record_field]), GTK_WRAP_CHAR);
             gtk_container_set_border_width(GTK_CONTAINER(addr_text[schema[i].record_field]), 1);
 
-            /* Make a special case for Note so it has a scrollbar and no label */
+            /* special case for Note which has a scrollbar and no label */
             if (schema[i].record_field == contNote) {
                scrolled_window = gtk_scrolled_window_new(NULL, NULL);
                gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
@@ -4054,7 +4056,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
             }
 
 
-            /* Make a special case for Note so it has a scrollbar and no label */
+            /* special case for Note which has a scrollbar and no label */
             if (schema[i].record_field == contNote) {
                gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(scrolled_window),
                                          x-1, x, table_y_i, table_y_i+1);
@@ -4231,7 +4233,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    notebook_tab = gtk_label_new(_("All"));
    vbox_temp = gtk_vbox_new(FALSE, 0);
    gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vbox_temp, notebook_tab);
-   /* Notebook tabs have to be shown before the show_all */
+   /* Notebook tabs have to be shown before call to show_all */
    gtk_widget_show(vbox_temp);
    gtk_widget_show(notebook_tab);
 
@@ -4250,6 +4252,8 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
                                   GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
    gtk_container_add(GTK_CONTAINER(scrolled_window), addr_all);
    gtk_box_pack_start(GTK_BOX(hbox_temp), scrolled_window, TRUE, TRUE, 0);
+
+   /**********************************************************************/
 
    gtk_widget_show_all(vbox);
    gtk_widget_show_all(hbox);
@@ -4273,3 +4277,4 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    return EXIT_SUCCESS;
 }
+

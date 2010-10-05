@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.140 2010/07/24 05:17:37 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.141 2010/10/05 21:48:05 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -253,9 +253,8 @@ int memo_print(void)
    return EXIT_SUCCESS;
 }
 
-/*
- * Start Import Code
- */
+/* Start Import Code */
+
 static int cb_memo_import(GtkWidget *parent_window, 
                           const char *file_path, 
                           int type)
@@ -489,13 +488,11 @@ int memo_import(GtkWidget *window)
    import_gui(window, pane, type_desc, type_int, cb_memo_import);
    return EXIT_SUCCESS;
 }
-/*
- * End Import Code
- */
 
-/*
- * Start Export code
- */
+/* End Import Code */
+
+/* Start Export code */
+
 static void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
                               int type, const char *filename)
 {
@@ -667,9 +664,8 @@ int memo_export(GtkWidget *window)
 
    return EXIT_SUCCESS;
 }
-/*
- * End Export Code
- */
+
+/* End Export Code */
 
 /* Find position of category in sorted category array 
  * via its assigned category number */
@@ -1457,9 +1453,7 @@ int memo_gui_cleanup(void)
    return EXIT_SUCCESS;
 }
 
-/*
- * Main function
- */
+/* Main function */
 int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
 {
    int i;
@@ -1473,17 +1467,15 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    get_pref(PREF_MEMO_VERSION, &memo_version, NULL);
 
+   /* Do some initialization */
    clist_row_selected=0;
+
    record_changed=CLEAR_FLAG;
 
-   /* Do some initialization */
-   for (i=0; i<NUM_MEMO_CAT_ITEMS; i++) {
-      memo_cat_menu_item2[i] = NULL;
-   }
-
    get_memo_app_info(&memo_app_info);
-   get_pref(PREF_CHAR_SET, &char_set, NULL);
 
+   /* Initialize categories */
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
    for (i=1; i<NUM_MEMO_CAT_ITEMS; i++) {
       cat_name = charset_p2newj(memo_app_info.category.name[i], 31, char_set);
       strcpy(sort_l[i-1].Pcat, cat_name);
@@ -1507,10 +1499,12 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    get_pref(PREF_LAST_MEMO_CATEGORY, &ivalue, NULL);
    memo_category = ivalue;
 
-   if ((memo_category != CATEGORY_ALL) && (memo_app_info.category.name[memo_category][0]=='\0')) {
+   if ((memo_category != CATEGORY_ALL)
+       && (memo_app_info.category.name[memo_category][0]=='\0')) {
       memo_category=CATEGORY_ALL;
    }
 
+   /* Create basic GUI with left and right boxes and sliding pane */
    accel_group = gtk_accel_group_new();
    gtk_window_add_accel_group(GTK_WINDOW(gtk_widget_get_toplevel(vbox)),
       accel_group);
@@ -1527,7 +1521,8 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_paned_pack1(GTK_PANED(pane), vbox1, TRUE, FALSE);
    gtk_paned_pack2(GTK_PANED(pane), vbox2, TRUE, FALSE);
 
-   /* Add buttons in left vbox */
+   /* Left side of GUI */
+
    /* Separator */
    separator = gtk_hseparator_new();
    gtk_box_pack_start(GTK_BOX(vbox1), separator, FALSE, FALSE, 5);
@@ -1567,7 +1562,8 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
 
-   /* The right hand part of the main window follows: */
+   /* Right side of GUI */
+
    hbox_temp = gtk_hbox_new(FALSE, 3);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
@@ -1620,7 +1616,6 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
                        "label_high");
 #endif
 
-
    /* Separator */
    separator = gtk_hseparator_new();
    gtk_box_pack_start(GTK_BOX(vbox2), separator, FALSE, FALSE, 5);
@@ -1631,12 +1626,16 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    private_checkbox = gtk_check_button_new_with_label(_("Private"));
    gtk_box_pack_end(GTK_BOX(hbox_temp), private_checkbox, FALSE, FALSE, 0);
 
-   /* Put the right-hand category menu up */
+   /* Right-side Category menu */
+   /* Clear GTK option menus before use */
+   for (i=0; i<NUM_MEMO_CAT_ITEMS; i++) {
+      memo_cat_menu_item2[i] = NULL;
+   }
    make_category_menu(&category_menu2, memo_cat_menu_item2,
                       sort_l, NULL, FALSE, FALSE);
    gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu2, TRUE, TRUE, 0);
 
-   /* Description text box on the right side */
+   /* Description text box */
    hbox_temp = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 

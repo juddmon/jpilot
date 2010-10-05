@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.168 2010/07/24 05:17:37 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.169 2010/10/05 21:48:05 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -107,21 +107,13 @@ static int todo_find(void);
 static void cb_add_new_record(GtkWidget *widget, gpointer data);
 
 /****************************** Main Code *************************************/
+/* Called once on initialization of GUI */
 static void init(void)
 {
    time_t ltime;
    struct tm *now;
    long ivalue;
-   int i;
 
-   clist_col_selected = 1;
-   clist_row_selected = 0;
-
-   for (i=0; i<NUM_TODO_CAT_ITEMS; i++) {
-      todo_cat_menu_item2[i] = NULL;
-   }
-
-   record_changed = CLEAR_FLAG;
    time(&ltime);
    now = localtime(&ltime);
 
@@ -129,6 +121,11 @@ static void init(void)
 
    get_pref(PREF_TODO_DAYS_TILL_DUE, &ivalue, NULL);
    add_days_to_date(&due_date, ivalue);
+
+   clist_row_selected = 0;
+   clist_col_selected = 1;
+
+   record_changed = CLEAR_FLAG;
 }
 
 static void update_due_button(GtkWidget *button, struct tm *t)
@@ -2052,6 +2049,7 @@ int todo_gui_cleanup(void)
    return EXIT_SUCCESS;
 }
 
+/* Main function */
 int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 {
    GtkWidget *scrolled_window;
@@ -2079,9 +2077,10 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    init();
 
-   get_pref(PREF_CHAR_SET, &char_set, NULL);
    get_todo_app_info(&todo_app_info);
 
+   /* Initialize categories */
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
    for (i=1; i<NUM_TODO_CAT_ITEMS; i++) {
       cat_name = charset_p2newj(todo_app_info.category.name[i], 31, char_set);
       strcpy(sort_l[i-1].Pcat, cat_name);
@@ -2105,10 +2104,12 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    get_pref(PREF_LAST_TODO_CATEGORY, &ivalue, NULL);
    todo_category = ivalue;
 
-   if ((todo_category != CATEGORY_ALL) && (todo_app_info.category.name[todo_category][0]=='\0')) {
+   if ((todo_category != CATEGORY_ALL)
+       && (todo_app_info.category.name[todo_category][0]=='\0')) {
       todo_category=CATEGORY_ALL;
    }
 
+   /* Create basic GUI with left and right boxes and sliding pane */
    accel_group = gtk_accel_group_new();
    gtk_window_add_accel_group(GTK_WINDOW(gtk_widget_get_toplevel(vbox)),
       accel_group);
@@ -2125,7 +2126,8 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_paned_pack1(GTK_PANED(pane), vbox1, TRUE, FALSE);
    gtk_paned_pack2(GTK_PANED(pane), vbox2, TRUE, FALSE);
 
-   /* Left-hand side of GUI */
+   /* Left side of GUI */
+
    /* Separator */
    separator = gtk_hseparator_new();
    gtk_box_pack_start(GTK_BOX(vbox1), separator, FALSE, FALSE, 5);
@@ -2143,16 +2145,16 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    separator = gtk_hseparator_new();
    gtk_box_pack_start(GTK_BOX(vbox1), separator, FALSE, FALSE, 5);
 
-   /* Category Box */
+   /* Left-side Category box */
    hbox_temp = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox1), hbox_temp, FALSE, FALSE, 0);
 
-   /* left-hand category menu */
+   /* Left-side Category menu */
    make_category_menu(&category_menu1, todo_cat_menu_item1,
                       sort_l, cb_category, TRUE, TRUE);
    gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu1, TRUE, TRUE, 0);
 
-   /* Scrolled window for todo list */
+   /* Todo list scrolled window */
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 0);
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
@@ -2214,7 +2216,8 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
 
-   /* The right hand part of the main window follows: */
+   /* Right side of GUI */
+
    hbox_temp = gtk_hbox_new(FALSE, 3);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
@@ -2274,7 +2277,11 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    hbox_temp = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
-   /* right-hand category menu */
+   /* Right-side Category menu */
+   /* Clear GTK option menus before use */
+   for (i=0; i<NUM_TODO_CAT_ITEMS; i++) {
+      todo_cat_menu_item2[i] = NULL;
+   }
    make_category_menu(&category_menu2, todo_cat_menu_item2,
                       sort_l, NULL, FALSE, FALSE);
    gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu2, TRUE, TRUE, 0);
@@ -2286,7 +2293,6 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    /* Completed checkbox */
    todo_completed_checkbox = gtk_check_button_new_with_label(_("Completed"));
    gtk_box_pack_start(GTK_BOX(vbox2), todo_completed_checkbox, FALSE, FALSE, 0);
-
 
    /* Priority radio buttons */
    hbox_temp = gtk_hbox_new(FALSE, 0);
@@ -2304,19 +2310,18 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
                          radio_button_todo[i], FALSE, FALSE, 0);
    }
 
-
-   /* "Due date" label */
+   /* "Date Due:" label */
    hbox_temp = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
-   /* spacer to line up */ 
+   /* Spacer to line up */ 
    hbox_temp2 = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(hbox_temp), hbox_temp2, FALSE, FALSE, 1);
 
    label = gtk_label_new(_("Date Due:"));
    gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 0);
 
-   /* "Due Date" button */
+   /* "Date Due" button */
    due_date_button = gtk_button_new_with_label("");
    gtk_box_pack_start(GTK_BOX(hbox_temp), due_date_button, FALSE, FALSE, 5);
    gtk_signal_connect(GTK_OBJECT(due_date_button), "clicked",
@@ -2328,13 +2333,12 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
                       GTK_SIGNAL_FUNC(cb_check_button_no_due_date), NULL);
    gtk_box_pack_start(GTK_BOX(hbox_temp), todo_no_due_date_checkbox, FALSE, FALSE, 0);
 
-
    note_pane = gtk_vpaned_new();
    get_pref(PREF_TODO_NOTE_PANE, &ivalue, NULL);
    gtk_paned_set_position(GTK_PANED(note_pane), ivalue);
    gtk_box_pack_start(GTK_BOX(vbox2), note_pane, TRUE, TRUE, 0);
 
-   /* Description */
+   /* Description text box */
    hbox_temp = gtk_hbox_new (FALSE, 0);
    gtk_paned_pack1(GTK_PANED(note_pane), hbox_temp, TRUE, FALSE);
 
@@ -2350,13 +2354,12 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_container_add(GTK_CONTAINER(scrolled_window), todo_desc);
    gtk_box_pack_start_defaults(GTK_BOX(hbox_temp), scrolled_window);
 
-
-   /* Note */
+   /* Note text box */
    vbox_temp = gtk_vbox_new(FALSE, 0);
    gtk_paned_pack2(GTK_PANED(note_pane), vbox_temp, TRUE, FALSE);
 
    label = gtk_label_new(_("Note"));
-   /* Center Note label visually */
+   /* Center "Note" label visually */
    gtk_misc_set_alignment(GTK_MISC(label), 0.506, 0.5);
    gtk_box_pack_start(GTK_BOX(vbox_temp), label, FALSE, FALSE, 0);
 
