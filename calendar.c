@@ -1,4 +1,4 @@
-/* $Id: calendar.c,v 1.12 2010/04/21 11:44:54 rousseau Exp $ */
+/* $Id: calendar.c,v 1.13 2010/10/06 17:35:16 rikster5 Exp $ */
 
 /*******************************************************************************
  * calendar.c
@@ -319,8 +319,7 @@ int get_days_calendar_events(CalendarEventList **calendar_event_list, struct tm 
    return get_days_calendar_events2(calendar_event_list, now, 1, 1, 1, category, total_records);
 }
 
-
-
+#ifdef ENABLE_DATEBK
 static int calendar_db3_hack_date(struct CalendarEvent *cale, struct tm *today)
 {
    int t1, t2;
@@ -369,6 +368,7 @@ static int calendar_db3_hack_date(struct CalendarEvent *cale, struct tm *today)
    }
    return EXIT_SUCCESS;
 }
+#endif
 
 /*
  * If Null is passed in for date, then all appointments will be returned

@@ -1,4 +1,4 @@
-/* $Id: datebook.c,v 1.67 2010/04/02 04:55:17 rikster5 Exp $ */
+/* $Id: datebook.c,v 1.68 2010/10/06 17:35:16 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook.c
@@ -288,6 +288,9 @@ static void db3_fill_struct(char *note, int type, struct db4_struct *db4)
    /* Byte 19 is a carriage return */
 }
 
+// FIXME: verify that new routine calendar_db3_hack_date in calendar.c
+// works for datebook databases as well and then remove.
+#if 0
 static int db3_hack_date(struct Appointment *appt, struct tm *today)
 {
    int t1, t2;
@@ -336,6 +339,7 @@ static int db3_hack_date(struct Appointment *appt, struct tm *today)
    }
    return EXIT_SUCCESS;
 }
+#endif
 
 /*
  * Parses the note tag and looks for db3 or db4 tags.

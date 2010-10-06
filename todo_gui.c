@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.169 2010/10/05 21:48:05 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.170 2010/10/06 17:35:16 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -1264,7 +1264,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
 {
    MyToDo *mtodo;
    struct ToDo new_todo;
-   unsigned char attrib;
+   unsigned char attrib = 0;
    int flag;
    int show_priv;
    unsigned int unique_id;
@@ -2067,7 +2067,6 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    int i;
    GSList *group;
    long ivalue;
-   const char *svalue;
    char *titles[]={"","","","",""};
    GtkAccelGroup *accel_group;
    long char_set;
@@ -2115,7 +2114,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
       accel_group);
 
    pane = gtk_hpaned_new();
-   get_pref(PREF_TODO_PANE, &ivalue, &svalue);
+   get_pref(PREF_TODO_PANE, &ivalue, NULL);
    gtk_paned_set_position(GTK_PANED(pane), ivalue);
 
    gtk_box_pack_start(GTK_BOX(hbox), pane, TRUE, TRUE, 5);
