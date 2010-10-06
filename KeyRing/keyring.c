@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.109 2010/04/13 15:54:02 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.110 2010/10/06 07:08:11 rousseau Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -74,7 +74,7 @@
 
 /* re-ask password PLUGIN_MAX_INACTIVE_TIME seconds after 
  * deselecting the plugin */
-#define PLUGIN_MAX_INACTIVE_TIME 1
+#define PLUGIN_MAX_INACTIVE_TIME 10
 
 /* for password hashes */
 #define SALT_SIZE 4
