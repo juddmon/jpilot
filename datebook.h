@@ -1,4 +1,4 @@
-/* $Id: datebook.h,v 1.28 2010/04/21 05:57:53 rousseau Exp $ */
+/* $Id: datebook.h,v 1.29 2010/10/07 21:04:31 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook.h
@@ -118,9 +118,10 @@ int datebook_copy_appointment(struct Appointment *a1,
                              struct Appointment **a2);
 int copy_calendar_event(const struct CalendarEvent *source,
                         struct CalendarEvent **dest);
-/* returns a bit mask where bit 1 day one, etc. and it is set if an */
+/* returns a bit mask where bit 1 is day one, etc.  Bit is set if an */
 /* appointment occurs on that day, 0 if not. */
-int appointment_on_day_list(int mon, int year, int *mask, int datebook_version);
+int appointment_on_day_list(int mon, int year, int *mask, 
+                            int category, int datebook_version);
 
 /*
  * returns 1 if an appointment does occur/re-occur on dat

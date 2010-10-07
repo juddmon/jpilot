@@ -1,4 +1,4 @@
-/* $Id: datebook.c,v 1.68 2010/10/06 17:35:16 rikster5 Exp $ */
+/* $Id: datebook.c,v 1.69 2010/10/07 21:04:31 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook.c
@@ -45,7 +45,8 @@
 #include "password.h"
 
 /****************************** Main Code *************************************/
-int appointment_on_day_list(int mon, int year, int *mask, int datebook_version)
+int appointment_on_day_list(int mon, int year, int *mask, 
+                            int category, int datebook_version)
 {
    struct tm tm_dom;
    CalendarEventList *tcel, *cel;
@@ -64,7 +65,12 @@ int appointment_on_day_list(int mon, int year, int *mask, int datebook_version)
    /* Get private records back
     * We want to highlight a day with a private record if we are showing or
     * masking private records */
-   num = get_days_calendar_events2(&cel, NULL, 2, 2, 1, CATEGORY_ALL, NULL);
+   if (datebook_version) {
+      /* Calendar supports category option */
+      num = get_days_calendar_events2(&cel, NULL, 2, 2, 1, category, NULL);
+   } else {
+      num = get_days_calendar_events2(&cel, NULL, 2, 2, 1, CATEGORY_ALL, NULL);
+   }
 
    show_priv = show_privates(GET_PRIVATES);
    skip_privates = (show_priv==HIDE_PRIVATES);
@@ -79,10 +85,9 @@ int appointment_on_day_list(int mon, int year, int *mask, int datebook_version)
       if (*mask & bit) {
          continue;
       }
+      
       mktime(&tm_dom);
-
       for (tcel=cel; tcel; tcel = tcel->next) {
-         if (skip_privates && (tcel->mcale.attrib & dlpRecAttrSecret)) continue;
          if (calendar_isApptOnDate(&(tcel->mcale.cale), &tm_dom)) {
             *mask = *mask | bit;
             break;
