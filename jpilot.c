@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.185 2010/04/14 05:04:37 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.186 2010/10/07 21:34:00 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -458,6 +458,7 @@ static void cb_private(GtkWidget *widget, gpointer data)
     case SHOW_PRIVATES:
       /* Ask for the password, or don't depending on configure option */
 #ifdef ENABLE_PRIVATE
+      memset(ascii_password, 0, sizeof(ascii_password)); 
       if (was_privates != SHOW_PRIVATES) {
          retry=FALSE;
          do {

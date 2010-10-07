@@ -1,4 +1,4 @@
-/* $Id: password.c,v 1.29 2010/03/29 05:44:30 rikster5 Exp $ */
+/* $Id: password.c,v 1.30 2010/10/07 21:34:00 rikster5 Exp $ */
 
 /*******************************************************************************
  * password.c
@@ -170,8 +170,8 @@ int verify_password(char *password)
       return FALSE;
    }
 
-   /* It seems that Palm OS lower cases the password first */
-   /* Yes, I have found this documented on Palms site */
+   /* The Palm OS lower cases the password first */
+   /* Yes, I have found this documented on Palm's website */
    for (i=0; i < PASSWD_LEN; i++) {
       password_lower[i] = tolower(password[i]);
    }
