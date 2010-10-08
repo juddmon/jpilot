@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.264 2010/10/05 21:48:05 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.265 2010/10/08 22:22:45 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -2452,26 +2452,32 @@ static void cb_check_button_reminder(GtkWidget *widget, gpointer data)
       gtk_widget_hide(reminder_box);
    }
 }
-
 /* Photo Code */
+
 static GtkWidget *image_from_data(void *buf, size_t size)
 {
    GdkPixbufLoader *loader;
    GError *error;
    GdkPixbuf *pb;
-   GtkWidget *image;
+   GtkWidget *tmp_image = NULL;
 
    error=NULL;
    loader = gdk_pixbuf_loader_new();
    gdk_pixbuf_loader_write(loader, buf, size, &error);
    pb = gdk_pixbuf_loader_get_pixbuf(loader);
-   image = g_object_ref(gtk_image_new_from_pixbuf(pb));
+   tmp_image = g_object_ref(gtk_image_new_from_pixbuf(pb));
+
    if (loader) {
       gdk_pixbuf_loader_close(loader, &error);
       g_object_unref(loader);
    }
 
-   return image;
+   /* Force down reference count to prevent memory leak */
+   if (tmp_image) {
+      g_object_unref(tmp_image);
+   }
+
+   return tmp_image;
 }
 
 typedef void (*sighandler_t)(int);
@@ -2483,7 +2489,6 @@ static int change_photo(char *filename)
    char buf[0xFFFF];
    int total_read, count, r;
    sighandler_t old_sighandler;
-
 
    /* SIGCHLD handler installed by sync process interferes with pclose.
     * Temporarily restore SIGCHLD to its default value (null) while
@@ -2656,11 +2661,10 @@ static gint cb_photo_menu_popup(GtkWidget *widget, GdkEvent *event)
    g_return_val_if_fail(GTK_IS_MENU(widget), FALSE);
    g_return_val_if_fail(event != NULL, FALSE);
 
-   menu = GTK_MENU (widget);
-
    if (event->type == GDK_BUTTON_PRESS) {
       event_button = (GdkEventButton *) event;
       if (event_button->button == 1) {
+         menu = GTK_MENU (widget);
          gtk_menu_popup(menu, NULL, NULL, NULL, NULL, 
                         event_button->button, event_button->time);
          return TRUE;
@@ -2759,8 +2763,10 @@ static void cb_clist_selection(GtkWidget      *clist,
       memcpy(contact_picture.data, mcont->cont.picture->data, mcont->cont.picture->length);
       contact_picture.length = mcont->cont.picture->length;
       contact_picture.dirty = 0;
-      if (image) gtk_widget_destroy(image);
-      image = image_from_data(mcont->cont.picture->data, mcont->cont.picture->length);
+      if (image) {
+         gtk_widget_destroy(image);
+      }
+      image = image_from_data(contact_picture.data, contact_picture.length);
       gtk_container_add(GTK_CONTAINER(picture_button), image);
       gtk_widget_show(image);   
    } else {
@@ -3618,6 +3624,10 @@ int address_gui_cleanup(void)
    set_pref(PREF_LAST_ADDR_CATEGORY, address_category, NULL, TRUE);
    clist_clear(GTK_CLIST(clist));
 
+   if (image) {
+      gtk_widget_destroy(image);
+      image = NULL;
+   }
    if (contact_picture.data) {
       free(contact_picture.data);
    }
