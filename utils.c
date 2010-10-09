@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.184 2010/04/03 02:08:09 rikster5 Exp $ */
+/* $Id: utils.c,v 1.185 2010/10/09 23:14:20 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -3187,8 +3187,7 @@ int setup_sync(unsigned int flags)
    if (sync_info.PC_ID == 0) {
       srandom(time(NULL));
       /* RAND_MAX is 32768 on Solaris machines for some reason.
-       * If someone knows how to fix this, let me know.
-       */
+       * If someone knows how to fix this, let me know. */
       if (RAND_MAX==32768) {
          sync_info.PC_ID = 1+(2000000000.0*random()/(2147483647+1.0));
       } else {

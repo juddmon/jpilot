@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.186 2010/10/07 21:34:00 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.187 2010/10/09 23:14:20 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -69,6 +69,7 @@
 #include "icons/appl_menu_icons.h"
 #include "icons/lock_icons.h"
 #include "icons/sync.xpm"
+#include "icons/cancel_sync.xpm"
 #include "icons/backup.xpm"
 
 /********************************* Constants **********************************/
@@ -99,20 +100,21 @@ static GtkWidget *output_pane;
 int glob_app = 0;
 GtkWidget *glob_dialog=NULL;
 unsigned char skip_plugins;
-static GtkWidget *button_locked, 
-                 *button_masklocked, 
-                 *button_unlocked, 
-                 *button_sync, 
-                 *button_backup;
-GtkCheckMenuItem *menu_hide_privates, 
-                 *menu_show_privates, 
-                 *menu_mask_privates;
+static GtkWidget *button_locked;
+static GtkWidget *button_masklocked;
+static GtkWidget *button_unlocked;
+static GtkWidget *button_sync;
+static GtkWidget *button_cancel_sync;
+static GtkWidget *button_backup;
+GtkCheckMenuItem *menu_hide_privates;
+GtkCheckMenuItem *menu_show_privates;
+GtkCheckMenuItem *menu_mask_privates;
 
 int pipe_from_child, pipe_to_parent;
 int pipe_from_parent, pipe_to_child;
 
-extern GtkWidget *monthview_window;
 extern GtkWidget *weekview_window;
+extern GtkWidget *monthview_window;
 
 /****************************** Prototypes ************************************/
 static void cb_delete_event(GtkWidget *widget, GdkEvent *event, gpointer data);
@@ -579,19 +581,34 @@ void cb_app_button(GtkWidget *widget, gpointer data)
           (glob_app==ADDRESS) ||
           (glob_app==TODO) ||
           (glob_app==MEMO) )
-        cb_app_button(NULL, GINT_TO_POINTER(glob_app));
+         cb_app_button(NULL, GINT_TO_POINTER(glob_app));
       break;
    }
 }
 
 static void sync_sig_handler (int sig)
 {
-    setup_sync (skip_plugins ? SYNC_NO_PLUGINS : 0);
+   unsigned int flags;
+   int r;
+
+   flags = skip_plugins ? SYNC_NO_PLUGINS : 0;
+#ifdef __APPLE__
+   /* bug 1924 */
+   flags |= SYNC_NO_FORK;
+#endif
+
+   r = setup_sync(flags);
+
+   if (!(SYNC_NO_FORK & flags) && (r == EXIT_SUCCESS)) {
+      gtk_widget_hide(button_sync);
+      gtk_widget_show(button_cancel_sync);
+   }
 }
 
 void cb_sync(GtkWidget *widget, unsigned int flags)
 {
    long ivalue;
+   int r;
 
    /* confirm file installation */
    get_pref(PREF_CONFIRM_FILE_INSTALL, &ivalue, NULL);
@@ -616,9 +633,26 @@ void cb_sync(GtkWidget *widget, unsigned int flags)
    /* bug 1924 */
    flags |= SYNC_NO_FORK;
 #endif
-   setup_sync(flags);
 
-   return;
+   r = setup_sync(flags);
+
+   if (!(SYNC_NO_FORK & flags) && (r == EXIT_SUCCESS)) {
+      gtk_widget_hide(button_sync);
+      gtk_widget_show(button_cancel_sync);
+   }
+
+}
+
+void cb_cancel_sync(GtkWidget *widget, unsigned int flags)
+{
+   if (glob_child_pid) {
+      jp_logf(JP_LOG_GUI, "****************************************\n");
+      jp_logf(JP_LOG_GUI, _(" Cancelling HotSync\n"));
+      jp_logf(JP_LOG_GUI, "****************************************\n");
+      kill(glob_child_pid, SIGTERM);
+   }
+   gtk_widget_hide(button_cancel_sync);
+   gtk_widget_show(button_sync);
 }
 
 /*
@@ -700,8 +734,8 @@ void output_to_pane(const char *str)
    sbar_upper = g_output_text->vadjustment->upper;
    /* Keep scrolling to the end only if we are already near(1 window) of the end
     * OR the window has just been created and is blank */
-   if (abs((sbar_value+sbar_page_size) - sbar_upper) < sbar_page_size  ||
-       sbar_page_size == 1) {
+   if ((abs((sbar_value+sbar_page_size) - sbar_upper) < sbar_page_size) 
+       || sbar_page_size == 1) {
       scroll_to_end = TRUE;
    }
 
@@ -1020,7 +1054,8 @@ static void cb_install_gui(GtkWidget *widget, gpointer data)
 
 #include <gdk-pixbuf/gdk-pixdata.h>
 
-static guint8 *get_inline_pixbuf_data(const char **xpm_icon_data, gint icon_size)
+static guint8 *get_inline_pixbuf_data(const char **xpm_icon_data, 
+                                      gint icon_size)
 {
    GdkPixbuf  *pixbuf;
    GdkPixdata *pixdata;
@@ -1035,7 +1070,7 @@ static guint8 *get_inline_pixbuf_data(const char **xpm_icon_data, gint icon_size
    if (gdk_pixbuf_get_width(pixbuf)  != icon_size ||
        gdk_pixbuf_get_height(pixbuf) != icon_size) {
       scaled_pb = gdk_pixbuf_scale_simple(pixbuf, icon_size, icon_size,
-         GDK_INTERP_BILINEAR);
+                                          GDK_INTERP_BILINEAR);
       gdk_pixbuf_unref(pixbuf);
       pixbuf = scaled_pb;
    }
@@ -1051,72 +1086,72 @@ static guint8 *get_inline_pixbuf_data(const char **xpm_icon_data, gint icon_size
 }
 
 static void get_main_menu(GtkWidget  *my_window,
-                   GtkWidget **menubar,
-                   GList *plugin_list)
+                          GtkWidget **menubar,
+                          GList *plugin_list)
 {
 #define ICON(icon) "<StockItem>", icon
 #define ICON_XPM(icon, size) "<ImageItem>", get_inline_pixbuf_data(icon, size)
 
-  GtkItemFactoryEntry menu_items1[]={
-  { _("/_File"),                           NULL,         NULL,           0,                  "<Branch>", NULL },
-  { _("/File/tear"),                       NULL,         NULL,           0,                  "<Tearoff>", NULL },
-  { _("/File/_Find"),                      "<control>F", cb_search_gui,  0,                  ICON(GTK_STOCK_FIND) },
-  { _("/File/sep1"),                       NULL,         NULL,           0,                  "<Separator>", NULL },
-  { _("/File/_Install"),                   "<control>I", cb_install_gui, 0,                  ICON(GTK_STOCK_OPEN) },
-  { _("/File/Import"),                     NULL,         cb_import,      0,                  ICON(GTK_STOCK_GO_FORWARD) },
-  { _("/File/Export"),                     NULL,         cb_export,      0,                  ICON(GTK_STOCK_GO_BACK) },
-  { _("/File/Preferences"),                "<control>S", cb_prefs_gui,   0,                  ICON(GTK_STOCK_PREFERENCES) },
-  { _("/File/_Print"),                     "<control>P", cb_print,       0,                  ICON(GTK_STOCK_PRINT) },
-  { _("/File/sep1"),                       NULL,         NULL,           0,                  "<Separator>", NULL },
-  { _("/File/Install User"),               NULL,         cb_install_user,0,                  ICON_XPM(user_icon, 16) },
-  { _("/File/Restore Handheld"),           NULL,         cb_restore,     0,                  ICON(GTK_STOCK_REDO) },
-  { _("/File/sep1"),                       NULL,         NULL,           0,                  "<Separator>", NULL },
-  { _("/File/_Quit"),                      "<control>Q", cb_delete_event,0,                  ICON(GTK_STOCK_QUIT) },
-  { _("/_View"),                           NULL,         NULL,           0,                  "<Branch>", NULL },
-  { _("/View/Hide Private Records"),       NULL,         cb_private,     HIDE_PRIVATES,      "<RadioItem>", NULL },
-  { _("/View/Show Private Records"),       NULL,         cb_private,     SHOW_PRIVATES,      _("/View/Hide Private Records"), NULL },
-  { _("/View/Mask Private Records"),       NULL,         cb_private,     MASK_PRIVATES,      _("/View/Hide Private Records"), NULL },
-  { _("/View/sep1"),                       NULL,         NULL,           0,                  "<Separator>", NULL },
-  { _("/View/Datebook"),                   "F1",         cb_app_button,  DATEBOOK,           ICON_XPM(date_menu_icon, 16) },
-  { _("/View/Addresses"),                  "F2",         cb_app_button,  ADDRESS,            ICON_XPM(addr_menu_icon, 16) },
-  { _("/View/Todos"),                      "F3",         cb_app_button,  TODO,               ICON_XPM(todo_menu_icon, 14) },
-  { _("/View/Memos"),                      "F4",         cb_app_button,  MEMO,               ICON(GTK_STOCK_JUSTIFY_LEFT) },
-  { _("/_Plugins"),                        NULL,         NULL,           0,                  "<Branch>", NULL },
+   GtkItemFactoryEntry menu_items1[]={
+   { _("/_File"),                           NULL,         NULL,           0,                  "<Branch>", NULL },
+   { _("/File/tear"),                       NULL,         NULL,           0,                  "<Tearoff>", NULL },
+   { _("/File/_Find"),                      "<control>F", cb_search_gui,  0,                  ICON(GTK_STOCK_FIND) },
+   { _("/File/sep1"),                       NULL,         NULL,           0,                  "<Separator>", NULL },
+   { _("/File/_Install"),                   "<control>I", cb_install_gui, 0,                  ICON(GTK_STOCK_OPEN) },
+   { _("/File/Import"),                     NULL,         cb_import,      0,                  ICON(GTK_STOCK_GO_FORWARD) },
+   { _("/File/Export"),                     NULL,         cb_export,      0,                  ICON(GTK_STOCK_GO_BACK) },
+   { _("/File/Preferences"),                "<control>S", cb_prefs_gui,   0,                  ICON(GTK_STOCK_PREFERENCES) },
+   { _("/File/_Print"),                     "<control>P", cb_print,       0,                  ICON(GTK_STOCK_PRINT) },
+   { _("/File/sep1"),                       NULL,         NULL,           0,                  "<Separator>", NULL },
+   { _("/File/Install User"),               NULL,         cb_install_user,0,                  ICON_XPM(user_icon, 16) },
+   { _("/File/Restore Handheld"),           NULL,         cb_restore,     0,                  ICON(GTK_STOCK_REDO) },
+   { _("/File/sep1"),                       NULL,         NULL,           0,                  "<Separator>", NULL },
+   { _("/File/_Quit"),                      "<control>Q", cb_delete_event,0,                  ICON(GTK_STOCK_QUIT) },
+   { _("/_View"),                           NULL,         NULL,           0,                  "<Branch>", NULL },
+   { _("/View/Hide Private Records"),       NULL,         cb_private,     HIDE_PRIVATES,      "<RadioItem>", NULL },
+   { _("/View/Show Private Records"),       NULL,         cb_private,     SHOW_PRIVATES,      _("/View/Hide Private Records"), NULL },
+   { _("/View/Mask Private Records"),       NULL,         cb_private,     MASK_PRIVATES,      _("/View/Hide Private Records"), NULL },
+   { _("/View/sep1"),                       NULL,         NULL,           0,                  "<Separator>", NULL },
+   { _("/View/Datebook"),                   "F1",         cb_app_button,  DATEBOOK,           ICON_XPM(date_menu_icon, 16) },
+   { _("/View/Addresses"),                  "F2",         cb_app_button,  ADDRESS,            ICON_XPM(addr_menu_icon, 16) },
+   { _("/View/Todos"),                      "F3",         cb_app_button,  TODO,               ICON_XPM(todo_menu_icon, 14) },
+   { _("/View/Memos"),                      "F4",         cb_app_button,  MEMO,               ICON(GTK_STOCK_JUSTIFY_LEFT) },
+   { _("/_Plugins"),                        NULL,         NULL,           0,                  "<Branch>", NULL },
 #ifdef WEBMENU
-  { _("/_Web"),                            NULL,         NULL,           0,                  "<Branch>", NULL },/* web */
-  { _("/Web/Netscape"),                    NULL,         NULL,           0,                  "<Branch>", NULL },
-  { url_commands[NETSCAPE_EXISTING].desc,  NULL,         cb_web,         NETSCAPE_EXISTING,  NULL, NULL },
-  { url_commands[NETSCAPE_NEW_WINDOW].desc,NULL,         cb_web,         NETSCAPE_NEW_WINDOW,NULL, NULL },
-  { url_commands[NETSCAPE_NEW].desc,       NULL,         cb_web,         NETSCAPE_NEW,       NULL, NULL },
-  { _("/Web/Mozilla"),                     NULL,         NULL,           0,                  "<Branch>", NULL },
-  { url_commands[MOZILLA_EXISTING].desc,   NULL,         cb_web,         MOZILLA_EXISTING,   NULL, NULL },
-  { url_commands[MOZILLA_NEW_WINDOW].desc, NULL,         cb_web,         MOZILLA_NEW_WINDOW, NULL, NULL },
-  { url_commands[MOZILLA_NEW_TAB].desc,    NULL,         cb_web,         MOZILLA_NEW_TAB,    NULL, NULL },
-  { url_commands[MOZILLA_NEW].desc,        NULL,         cb_web,         MOZILLA_NEW,        NULL, NULL },
-  { _("/Web/Galeon"),                      NULL,         NULL,           0,                  "<Branch>", NULL },
-  { url_commands[GALEON_EXISTING].desc,    NULL,         cb_web,         GALEON_EXISTING,    NULL, NULL },
-  { url_commands[GALEON_NEW_WINDOW].desc,  NULL,         cb_web,         GALEON_NEW_WINDOW,  NULL, NULL },
-  { url_commands[GALEON_NEW_TAB].desc,     NULL,         cb_web,         GALEON_NEW_TAB,     NULL, NULL },
-  { url_commands[GALEON_NEW].desc,         NULL,         cb_web,         GALEON_NEW,         NULL, NULL },
-  { _("/Web/Opera"),                       NULL,         NULL,           0,                  "<Branch>", NULL },
-  { url_commands[OPERA_EXISTING].desc,     NULL,         cb_web,         OPERA_EXISTING,     NULL, NULL },
-  { url_commands[OPERA_NEW_WINDOW].desc,   NULL,         cb_web,         OPERA_NEW_WINDOW,   NULL, NULL },
-  { url_commands[OPERA_NEW].desc,          NULL,         cb_web,         OPERA_NEW,          NULL, NULL },
-  { _("/Web/GnomeUrl"),                    NULL,         NULL,           0,                  "<Branch>", NULL },
-  { url_commands[GNOME_URL].desc,          NULL,         cb_web,         GNOME_URL,          NULL, NULL },
-  { _("/Web/Lynx"),                        NULL,         NULL,           0,                  "<Branch>", NULL },
-  { url_commands[LYNX_NEW].desc,           NULL,         cb_web,         LYNX_NEW,           NULL, NULL },
-  { _("/Web/Links"),                       NULL,         NULL,           0,                  "<Branch>", NULL },
-  { url_commands[LINKS_NEW].desc,          NULL,         cb_web,         LINKS_NEW,          NULL, NULL },
-  { _("/Web/W3M"),                         NULL,         NULL,           0,                  "<Branch>", NULL },
-  { url_commands[W3M_NEW].desc,            NULL,         cb_web,         W3M_NEW,            NULL, NULL },
-  { _("/Web/Konqueror"),                   NULL,         NULL,           0,                  "<Branch>", NULL },
-  { url_commands[KONQUEROR_NEW].desc,      NULL,         cb_web,         KONQUEROR_NEW,      NULL, NULL },
+   { _("/_Web"),                            NULL,         NULL,           0,                  "<Branch>", NULL },/* web */
+   { _("/Web/Netscape"),                    NULL,         NULL,           0,                  "<Branch>", NULL },
+   { url_commands[NETSCAPE_EXISTING].desc,  NULL,         cb_web,         NETSCAPE_EXISTING,  NULL, NULL },
+   { url_commands[NETSCAPE_NEW_WINDOW].desc,NULL,         cb_web,         NETSCAPE_NEW_WINDOW,NULL, NULL },
+   { url_commands[NETSCAPE_NEW].desc,       NULL,         cb_web,         NETSCAPE_NEW,       NULL, NULL },
+   { _("/Web/Mozilla"),                     NULL,         NULL,           0,                  "<Branch>", NULL },
+   { url_commands[MOZILLA_EXISTING].desc,   NULL,         cb_web,         MOZILLA_EXISTING,   NULL, NULL },
+   { url_commands[MOZILLA_NEW_WINDOW].desc, NULL,         cb_web,         MOZILLA_NEW_WINDOW, NULL, NULL },
+   { url_commands[MOZILLA_NEW_TAB].desc,    NULL,         cb_web,         MOZILLA_NEW_TAB,    NULL, NULL },
+   { url_commands[MOZILLA_NEW].desc,        NULL,         cb_web,         MOZILLA_NEW,        NULL, NULL },
+   { _("/Web/Galeon"),                      NULL,         NULL,           0,                  "<Branch>", NULL },
+   { url_commands[GALEON_EXISTING].desc,    NULL,         cb_web,         GALEON_EXISTING,    NULL, NULL },
+   { url_commands[GALEON_NEW_WINDOW].desc,  NULL,         cb_web,         GALEON_NEW_WINDOW,  NULL, NULL },
+   { url_commands[GALEON_NEW_TAB].desc,     NULL,         cb_web,         GALEON_NEW_TAB,     NULL, NULL },
+   { url_commands[GALEON_NEW].desc,         NULL,         cb_web,         GALEON_NEW,         NULL, NULL },
+   { _("/Web/Opera"),                       NULL,         NULL,           0,                  "<Branch>", NULL },
+   { url_commands[OPERA_EXISTING].desc,     NULL,         cb_web,         OPERA_EXISTING,     NULL, NULL },
+   { url_commands[OPERA_NEW_WINDOW].desc,   NULL,         cb_web,         OPERA_NEW_WINDOW,   NULL, NULL },
+   { url_commands[OPERA_NEW].desc,          NULL,         cb_web,         OPERA_NEW,          NULL, NULL },
+   { _("/Web/GnomeUrl"),                    NULL,         NULL,           0,                  "<Branch>", NULL },
+   { url_commands[GNOME_URL].desc,          NULL,         cb_web,         GNOME_URL,          NULL, NULL },
+   { _("/Web/Lynx"),                        NULL,         NULL,           0,                  "<Branch>", NULL },
+   { url_commands[LYNX_NEW].desc,           NULL,         cb_web,         LYNX_NEW,           NULL, NULL },
+   { _("/Web/Links"),                       NULL,         NULL,           0,                  "<Branch>", NULL },
+   { url_commands[LINKS_NEW].desc,          NULL,         cb_web,         LINKS_NEW,          NULL, NULL },
+   { _("/Web/W3M"),                         NULL,         NULL,           0,                  "<Branch>", NULL },
+   { url_commands[W3M_NEW].desc,            NULL,         cb_web,         W3M_NEW,            NULL, NULL },
+   { _("/Web/Konqueror"),                   NULL,         NULL,           0,                  "<Branch>", NULL },
+   { url_commands[KONQUEROR_NEW].desc,      NULL,         cb_web,         KONQUEROR_NEW,      NULL, NULL },
 #endif
-  { _("/_Help"),                           NULL,         NULL,           0,                  "<LastBranch>", NULL },
-  { _("/Help/About J-Pilot"),              NULL,         cb_about,       0,                  ICON(GTK_STOCK_DIALOG_INFO) },
-  { "END",                                 NULL,         NULL,           0,                  NULL, NULL }
- };
+   { _("/_Help"),                           NULL,         NULL,           0,                  "<LastBranch>", NULL },
+   { _("/Help/About J-Pilot"),              NULL,         cb_about,       0,                  ICON(GTK_STOCK_DIALOG_INFO) },
+   { "END",                                 NULL,         NULL,           0,                  NULL, NULL }
+   };
 
    GtkItemFactory *item_factory;
    GtkAccelGroup *accel_group;
@@ -1457,7 +1492,7 @@ int main(int argc, char *argv[])
    GdkBitmap *mask;
    GtkWidget *pixmapwid;
    GdkPixmap *pixmap;
-   GtkWidget *menubar;
+   GtkWidget *menubar = NULL;
    GtkWidget *scrolled_window;
    GtkAccelGroup *accel_group;
 /* Extract first day of week preference from locale in GTK2 */
@@ -1496,7 +1531,7 @@ int main(int argc, char *argv[])
    char *current_locale;
 #  endif
 #endif
-   
+
    skip_plugins=FALSE;
    skip_past_alarms=FALSE;
    skip_all_alarms=FALSE;
@@ -1634,20 +1669,20 @@ int main(int argc, char *argv[])
    pid = check_for_jpilot();
 
    if (remote_sync) {
-       if (pid) {
-           printf ("jpilot: syncing jpilot at %d\n", pid);
-           kill (pid, SIGUSR1);
-           exit (0);
-       }
-       else {
-           fprintf (stderr, "%s\n", "J-Pilot not running.");
-           exit (1);
-       }
+      if (pid) {
+         printf ("jpilot: syncing jpilot at %d\n", pid);
+         kill (pid, SIGUSR1);
+         exit (0);
+      }
+      else {
+         fprintf (stderr, "%s\n", "J-Pilot not running.");
+         exit (1);
+      }
    }
    else if (!pid) {
-       /* JPilot not running, install signal handler and write pid file */
-       signal(SIGUSR1, sync_sig_handler);
-       write_pid();
+      /* JPilot not running, install signal handler and write pid file */
+      signal(SIGUSR1, sync_sig_handler);
+      write_pid();
    }
 
    /* Check to see if DB files are there */
@@ -1740,13 +1775,13 @@ int main(int argc, char *argv[])
       strcat(title, _(" User: "));
       /* Convert user name so that it can be displayed in window title */
       /* We assume user name is coded in jpilot.rc as it is on the Palm Pilot */
-        {
-           char *newvalue;
+      {
+         char *newvalue;
 
-           newvalue = charset_p2newj(svalue, -1, char_set);
-           strcat(title, newvalue);
-           free(newvalue);
-        }
+         newvalue = charset_p2newj(svalue, -1, char_set);
+         strcat(title, newvalue);
+         free(newvalue);
+      }
    }
 
    window = gtk_widget_new(GTK_TYPE_WINDOW,
@@ -1883,11 +1918,14 @@ int main(int argc, char *argv[])
    button_masklocked = gtk_button_new();
    button_unlocked = gtk_button_new();
    gtk_signal_connect(GTK_OBJECT(button_locked), "clicked",
-       GTK_SIGNAL_FUNC(cb_private), GINT_TO_POINTER(SHOW_PRIVATES));
+                      GTK_SIGNAL_FUNC(cb_private),
+                      GINT_TO_POINTER(SHOW_PRIVATES));
    gtk_signal_connect(GTK_OBJECT(button_masklocked), "clicked",
-       GTK_SIGNAL_FUNC(cb_private), GINT_TO_POINTER(HIDE_PRIVATES));
+                      GTK_SIGNAL_FUNC(cb_private),
+                      GINT_TO_POINTER(HIDE_PRIVATES));
    gtk_signal_connect(GTK_OBJECT(button_unlocked), "clicked",
-       GTK_SIGNAL_FUNC(cb_private), GINT_TO_POINTER(MASK_PRIVATES));
+                      GTK_SIGNAL_FUNC(cb_private), 
+                      GINT_TO_POINTER(MASK_PRIVATES));
    gtk_box_pack_start(GTK_BOX(g_vbox0), button_locked, FALSE, FALSE, 20);
    gtk_box_pack_start(GTK_BOX(g_vbox0), button_masklocked, FALSE, FALSE, 20);
    gtk_box_pack_start(GTK_BOX(g_vbox0), button_unlocked, FALSE, FALSE, 20);
@@ -1895,17 +1933,17 @@ int main(int argc, char *argv[])
    gtk_tooltips_set_tip(glob_tooltips, button_locked,
                         _("Show private records   Ctrl+Z"), NULL);
    gtk_widget_add_accelerator(button_locked, "clicked", accel_group,
-      GDK_z, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+                              GDK_z, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
    gtk_tooltips_set_tip(glob_tooltips, button_masklocked,
                         _("Hide private records   Ctrl+Z"), NULL);
    gtk_widget_add_accelerator(button_masklocked, "clicked", accel_group,
-      GDK_z, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+                              GDK_z, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
    gtk_tooltips_set_tip(glob_tooltips, button_unlocked,
                         _("Mask private records   Ctrl+Z"), NULL);
    gtk_widget_add_accelerator(button_unlocked, "clicked", accel_group,
-      GDK_z, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+                              GDK_z, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
    /* "Sync" button */
    button_sync = gtk_button_new();
@@ -1916,7 +1954,16 @@ int main(int argc, char *argv[])
 
    gtk_tooltips_set_tip(glob_tooltips, button_sync, _("Sync your palm to the desktop   Ctrl+Y"), NULL);
    gtk_widget_add_accelerator(button_sync, "clicked", accel_group, GDK_y,
-           GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+                              GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+
+   /* "Cancel Sync" button */
+   button_cancel_sync = gtk_button_new();
+   gtk_signal_connect(GTK_OBJECT(button_cancel_sync), "clicked",
+                      GTK_SIGNAL_FUNC(cb_cancel_sync),
+                      NULL);
+   gtk_box_pack_start(GTK_BOX(g_vbox0), button_cancel_sync, FALSE, FALSE, 3);
+
+   gtk_tooltips_set_tip(glob_tooltips, button_cancel_sync, _("Stop Sync process"), NULL);
 
    /* "Backup" button in left column */
    button_backup = gtk_button_new();
@@ -1928,8 +1975,8 @@ int main(int argc, char *argv[])
    gtk_box_pack_start(GTK_BOX(g_vbox0), button_backup, FALSE, FALSE, 3);
 
    gtk_tooltips_set_tip(glob_tooltips, button_backup, 
-                             _("Sync your palm to the desktop\n"
-                                    "and then do a backup"), NULL);
+                        _("Sync your palm to the desktop\n"
+                          "and then do a backup"), NULL);
 
    /* Separator */
    separator = gtk_hseparator_new();
@@ -2018,7 +2065,7 @@ int main(int argc, char *argv[])
    gtk_widget_show(pixmapwid);
    gtk_container_add(GTK_CONTAINER(button_locked), pixmapwid);
 
-   /* Create "locked/masked" pixmap */
+   /* Create "masked" pixmap */
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
                                          &style->bg[GTK_STATE_NORMAL],
                                          masklocked_xpm);
@@ -2050,6 +2097,20 @@ int main(int argc, char *argv[])
    pixmapwid = gtk_pixmap_new(pixmap, mask);
    gtk_widget_show(pixmapwid);
    gtk_container_add(GTK_CONTAINER(button_sync), pixmapwid);
+
+   /* Create "cancel sync" pixmap */
+   /* Hide until sync process started */
+   gtk_widget_hide(button_cancel_sync);
+   pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,
+                                         &style->bg[GTK_STATE_NORMAL],
+                                         cancel_sync_xpm);
+#ifdef __APPLE__
+   mask = NULL;
+#endif
+   pixmapwid = gtk_pixmap_new(pixmap, mask);
+   gtk_widget_show(pixmapwid);
+   gtk_container_add(GTK_CONTAINER(button_cancel_sync), pixmapwid);
+
 
    /* Create "backup" pixmap */
    pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask,

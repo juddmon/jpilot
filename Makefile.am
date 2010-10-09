@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.69 2010/03/07 21:27:58 rikster5 Exp $
+# $Id: Makefile.am,v 1.70 2010/10/09 23:14:20 rikster5 Exp $
 
 SUBDIRS = m4 po Expense SyncTime KeyRing dialer icons docs empty
 
@@ -104,6 +104,7 @@ jpilot_SOURCES = \
 	icons/memo.xpm \
 	icons/todo.xpm \
 	icons/sync.xpm \
+	icons/cancel_sync.xpm \
 	icons/backup.xpm \
 	icons/clist_mini_icons.h \
 	icons/appl_menu_icons.h \

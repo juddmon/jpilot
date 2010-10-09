@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.111 2010/03/29 05:44:31 rikster5 Exp $ */
+/* $Id: sync.c,v 1.112 2010/10/09 23:14:20 rikster5 Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -85,12 +85,11 @@ static void sig_handler(int sig)
    int status;
 
    jp_logf(JP_LOG_DEBUG, "caught signal SIGCHLD\n");
-   glob_child_pid = 0;
 
    /* wait for any child processes */
    waitpid(-1, &status, WNOHANG);
 
-   return;
+   glob_child_pid = 0;
 }
 
 #ifdef USE_LOCKING
@@ -675,7 +674,7 @@ static int sync_rotate_backups(const int num_backups)
    now = localtime(&ltime);
    /* Create the new backup directory */
    g_snprintf(newdir, sizeof(newdir), "backup%02d%02d%02d%02d",
-           now->tm_mon+1, now->tm_mday, now->tm_hour, now->tm_min);
+              now->tm_mon+1, now->tm_mday, now->tm_hour, now->tm_min);
    if (strncmp(newdir, newest, sizeof(newdir))) {
       g_snprintf(full_newdir, sizeof(full_newdir), "%s/%s", home_dir, newdir);
       if (mkdir(full_newdir, 0700)==0) {
@@ -1192,7 +1191,7 @@ static int sync_fetch(int sd, unsigned int flags,
    unsigned int full_backup;
 
    jp_logf(JP_LOG_DEBUG, "sync_fetch flags=0x%x, num_backups=%d, fast=%d\n",
-           flags, num_backups, fast_sync);
+                                             flags, num_backups, fast_sync);
 
    rename_dbnames(palm_dbname);
 
@@ -1478,8 +1477,8 @@ static int sync_install(char *filename, int sd)
       int fd;
 
       if ((fd = open(filename, O_RDONLY)) < 0) {
-        jp_logf(JP_LOG_WARN, _("\nUnable to open file: '%s': %s!\n"), filename,
-                strerror(errno));
+         jp_logf(JP_LOG_WARN, _("\nUnable to open file: '%s': %s!\n"),
+                                                    filename, strerror(errno));
       } else {
          close(fd);
          jp_logf(JP_LOG_WARN, _("\nUnable to sync file: '%s': file corrupted?\n"),
@@ -3379,11 +3378,14 @@ int sync_once(struct my_sync_info *sync_info)
    }
 #endif
 
+   /* This should never be reached with new cancel sync code
+    * Although, it can be reached through a remote sync. */
    if (glob_child_pid) {
-      jp_logf(JP_LOG_WARN, _("%s: sync process already in progress (process ID = %d\n)"), PN, glob_child_pid);
-      jp_logf(JP_LOG_WARN, _("%s: press the hotsync button on the cradle\n"
-                             "      or stop the sync by typing \"kill %d\" at the command line\n"), PN, glob_child_pid);
-      return EXIT_SUCCESS;
+      jp_logf(JP_LOG_WARN, _("%s: sync process already in progress (process ID = %d)\n"), PN, glob_child_pid);
+      jp_logf(JP_LOG_WARN, _("%s: press the HotSync button on the cradle\n"
+                             "         or stop the sync by using the cancel sync button\n"
+                             "         or stop the sync by typing \"kill %d\" at the command line\n"), PN, glob_child_pid);
+      return EXIT_FAILURE;
    }
 
    /* Make a copy of the sync info for the forked process */
