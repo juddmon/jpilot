@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.185 2010/10/09 23:14:20 rikster5 Exp $ */
+/* $Id: utils.c,v 1.186 2010/10/10 15:05:03 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -1854,15 +1854,16 @@ int forward_backward_in_ce_time(const struct CalendarEvent *cale,
 void fprint_usage_string(FILE *out)
 {
    fprintf(out, "%s [ -v || -h || [-d] [-p] [-a || -A] [-i] [-geometry] ]\n", EPN);
-   fprintf(out, "%s", _(" -v displays version and compile options and exits.\n"));
-   fprintf(out, "%s", _(" -h displays help and exits.\n"));
-   fprintf(out, "%s", _(" -d displays debug info to stdout.\n"));
-   fprintf(out, "%s", _(" -p skips loading plugins.\n"));
-   fprintf(out, "%s", _(" -a ignores missed alarms since the last time program was run.\n"));
-   fprintf(out, "%s", _(" -A ignores all alarms past and future.\n"));
-   fprintf(out, "%s", _(" -i makes program iconify itself upon launch.\n"));
-   fprintf(out, "%s", _(" -geometry applies X geometry argument to main window\n"));
-   fprintf(out, "%s", _(" The PILOTPORT, and PILOTRATE env variables are used to specify\n"));
+   fprintf(out, "%s", _(" -v display version and compile options.\n"));
+   fprintf(out, "%s", _(" -h display help text.\n"));
+   fprintf(out, "%s", _(" -d display debug info to stdout.\n"));
+   fprintf(out, "%s", _(" -p skip loading plugins.\n"));
+   fprintf(out, "%s", _(" -a ignore missed alarms since the last time program was run.\n"));
+   fprintf(out, "%s", _(" -A ignore all alarms past and future.\n"));
+   fprintf(out, "%s", _(" -s start sync using existing instance of GUI.\n"));
+   fprintf(out, "%s", _(" -i iconify program immediately after launch.\n"));
+   fprintf(out, "%s", _(" -geometry {X geometry} use specifed geometry for main window\n"));
+   fprintf(out, "%s", _(" The PILOTPORT and PILOTRATE environment variables specify\n"));
    fprintf(out, "%s", _(" which port to sync on, and at what speed.\n"));
    fprintf(out, "%s", _(" If PILOTPORT is not set then it defaults to /dev/pilot.\n"));
 }
