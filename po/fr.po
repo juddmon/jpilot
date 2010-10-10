@@ -29,9 +29,9 @@ msgstr "Plus de mémoire"
 
 #: ../address.c:332 ../calendar.c:230 ../contact.c:580 ../datebook.c:480
 #: ../memo.c:87 ../todo.c:90
-#, fuzzy, c-format
+#, c-format
 msgid "%s:%d Error reading application info %s\n"
-msgstr "%s:%d Erreur lecture catatégorie %s\n"
+msgstr "%s:%d Erreur de lecture application info %s\n"
 
 #: ../address.c:344 ../address_gui.c:2282 ../address_gui.c:2321
 #: ../calendar.c:246 ../contact.c:596 ../datebook.c:500 ../datebook_gui.c:3586
@@ -997,9 +997,9 @@ msgid "No Date"
 msgstr "Pas de date"
 
 #: ../datebook_gui.c:3343
-#, fuzzy, c-format
+#, c-format
 msgid "Error in DateBookDB or Calendar advanceUnits = %d\n"
-msgstr "Erreur dans DateBookDB advanceUnits = %d\n"
+msgstr "Erreur dans DateBookDB ou Calendar advanceUnits = %d\n"
 
 #: ../datebook_gui.c:3530
 #, c-format
@@ -1016,9 +1016,8 @@ msgid "Week"
 msgstr "Semaine"
 
 #: ../datebook_gui.c:4786
-#, fuzzy
 msgid "View appointments by week   Ctrl+W"
-msgstr "Voir les rendez-vous par semaine"
+msgstr "Voir les rendez-vous par semaine   Ctrl+W"
 
 #. Monthview button
 #: ../datebook_gui.c:4789 ../datebook_gui.c:5295
@@ -1026,9 +1025,8 @@ msgid "Month"
 msgstr "Mois"
 
 #: ../datebook_gui.c:4798
-#, fuzzy
 msgid "View appointments by month   Ctrl+M"
-msgstr "Voir les rendez-vous par mois"
+msgstr "Voir les rendez-vous par mois   Ctrl+M"
 
 #. Make Category button
 #: ../datebook_gui.c:4803
@@ -1274,9 +1272,8 @@ msgid "There is no export support for this conduit."
 msgstr "Pas d'export pour ce conduit"
 
 #: ../jpilot.c:650
-#, fuzzy
 msgid " Cancelling HotSync\n"
-msgstr "Annuler Sync"
+msgstr "Annuler HotSync\n"
 
 #. -------------------------------------------
 #: ../jpilot.c:666
@@ -1509,29 +1506,24 @@ msgid "Unable to open pipe\n"
 msgstr "Impossible d'ouvrir le pipe\n"
 
 #: ../jpilot.c:1934
-#, fuzzy
 msgid "Show private records   Ctrl+Z"
-msgstr "Montrer les enregistrements privés   Ctrl-Z"
+msgstr "Montrer les enregistrements privés   Ctrl+Z"
 
 #: ../jpilot.c:1939
-#, fuzzy
 msgid "Hide private records   Ctrl+Z"
-msgstr "Cacher les enregistrements privés   Ctrl-Z"
+msgstr "Cacher les enregistrements privés   Ctrl+Z"
 
 #: ../jpilot.c:1944
-#, fuzzy
 msgid "Mask private records   Ctrl+Z"
-msgstr "Masquer les enregistrements privés   Ctrl-Z"
+msgstr "Masquer les enregistrements privés   Ctrl+Z"
 
 #: ../jpilot.c:1955
-#, fuzzy
 msgid "Sync your palm to the desktop   Ctrl+Y"
-msgstr "Synchronise le Palm avec l'ordinateur   Ctrl-Y"
+msgstr "Synchronise le Palm avec l'ordinateur   Ctrl+Y"
 
 #: ../jpilot.c:1966
-#, fuzzy
 msgid "Stop Sync process"
-msgstr "Sync carnet d'adresses"
+msgstr "Arrêter la synchronisation"
 
 #: ../jpilot.c:1978
 msgid ""
@@ -1826,9 +1818,8 @@ msgid "%s:%s g_convert_with_iconv error: %s, buff: %s\n"
 msgstr ""
 
 #: ../otherconv.c:204
-#, fuzzy
 msgid "last char truncated"
-msgstr "dernier changement : "
+msgstr "dernier caractère tronqué"
 
 #: ../otherconv.c:281
 #, c-format
@@ -2325,7 +2316,6 @@ msgid "memo"
 msgstr "bloc-notes"
 
 #: ../search_gui.c:363
-#, fuzzy
 msgid "memos"
 msgstr "bloc-notes"
 
@@ -2649,13 +2639,14 @@ msgid "%s: sync process already in progress (process ID = %d)\n"
 msgstr ""
 
 #: ../sync.c:3385
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%s: press the HotSync button on the cradle\n"
 "         or stop the sync by using the cancel sync button\n"
 "         or stop the sync by typing \"kill %d\" at the command line\n"
 msgstr ""
 "%s : appuyez sur le bouton hotsync\n"
+"      ou arrêtez la synchronisaton avec le bouton d'annulation\n"
 "      ou arrétez la synchronisation en tapant \"kill %d\" sur la ligne de "
 "comande\n"
 
