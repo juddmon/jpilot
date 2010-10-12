@@ -1,4 +1,4 @@
-/* $Id: jpilot-dump.c,v 1.37 2010/03/03 12:16:27 rousseau Exp $ */
+/* $Id: jpilot-dump.c,v 1.38 2010/10/12 00:39:12 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot-dump.c
@@ -72,38 +72,37 @@ char *formatM;
 char *formatA;
 char *formatT;
 
-/* Hacks: Various routines we call from the rest of the jpilot codebase 
- *        expect a graphical environment.  In order for the code to link
- *        properly we need to define various things that are never used. */
+/* Start Hack */
+/* FIXME: The following is a hack.
+ * The variables below are global variable in jpilot.c which are unused in this
+ * code but must be instantiated for the code to compile.  The same is true
+ * of the function prototypes which are only used in GUI mode. */
 pid_t jpilot_master_pid = -1;
 GtkWidget *glob_dialog;
 GtkWidget *glob_date_label;
 int pipe_to_parent;
-/* End hacks */
+
+void output_to_pane(const char *str);
+void output_to_pane(const char *str) {}
+int sync_once(struct my_sync_info *sync_info) { return EXIT_SUCCESS; }
+/* End Hack */
 
 /****************************** Main Code *************************************/
 static void fprint_jpd_usage_string(FILE *out)
 {
-   fprintf(out, "%s-dump [ +format [-v] || [-h] || [-f] || [-D] || [-i] || [-A] || [-T] || [-M] || [-N] ]\n", EPN);
-   fprintf(out, "%s", _(" +D +A +T +M format like date +format.\n"));
-   fprintf(out, "%s", _(" -v displays version and exits.\n"));
-   fprintf(out, "%s", _(" -h displays help and exits.\n"));
-   fprintf(out, "%s", _(" -f displays help for format codes.\n"));
-   fprintf(out, "%s", _(" -D dump DateBook.\n"));
-   fprintf(out, "%s", _(" -i dump DateBook in iCalendar format.\n"));
-   fprintf(out, "%s", _(" -N dump appts for today in DateBook.\n"));
-   fprintf(out, "%s", _(" -NYYYY/MM/DD dump appts on YYYY/MM/DD in DateBook.\n"));
-   fprintf(out, "%s", _(" -A dump Address book.\n"));
-   fprintf(out, "%s", _(" -T dump ToDo list as CSV.\n"));
-   fprintf(out, "%s", _(" -M dump Memos.\n"));
+   fprintf(out, "%s-dump [ +format [-v] || [-h] || [-f] || [-D] || [-i] || [-N] || [-A] || [-T] || [-M] ]\n", EPN);
+   fprintf(out, _(" +D +A +T +M format like date +format.\n"));
+   fprintf(out, _(" -v display version and exit\n"));
+   fprintf(out, _(" -h display help text\n"));
+   fprintf(out, _(" -f display help for format codes\n"));
+   fprintf(out, _(" -D dump DateBook\n"));
+   fprintf(out, _(" -i dump DateBook in iCalendar format\n"));
+   fprintf(out, _(" -N dump appts for today in DateBook\n"));
+   fprintf(out, _(" -NYYYY/MM/DD dump appts on YYYY/MM/DD in DateBook\n"));
+   fprintf(out, _(" -A dump Address book\n"));
+   fprintf(out, _(" -T dump ToDo list as CSV\n"));
+   fprintf(out, _(" -M dump Memos\n"));
 }
-
-/* Hacks: jpilot-dump is a command-line tool and not all subroutines need
- *        coding. */
-void output_to_pane(const char *str);
-void output_to_pane(const char *str) {}
-int sync_once(struct my_sync_info *sync_info) { return EXIT_SUCCESS; }
-/* End hacks */
 
 /* convert from UTF8 to local encoding */
 static void utf8_to_local(char *str)
