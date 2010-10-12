@@ -1,4 +1,4 @@
-/* $Id: alarms.c,v 1.53 2010/03/29 05:44:27 rikster5 Exp $ */
+/* $Id: alarms.c,v 1.54 2010/10/12 18:04:36 rikster5 Exp $ */
 
 /*******************************************************************************
  * alarms.c
@@ -554,9 +554,9 @@ static int alarms_do_one(struct CalendarEvent *cale,
       command[0]='\0';
       for (i=0; i<MAX_PREF_LEN-1; i++) {
          c1 = pref_command[i];
-         c2 = pref_command[i+1];
          len = strlen(command);
          if (c1=='%') {
+            c2 = pref_command[i+1];
             /* expand '%t' */
             if (c2=='t') {
                i++;
