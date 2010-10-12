@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.188 2010/10/12 00:07:15 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.189 2010/10/12 20:36:54 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -85,40 +85,42 @@
 
 /* #define PIPE_DEBUG */
 /******************************* Global vars **********************************/
-GtkWidget *g_hbox, *g_vbox0;
-GtkWidget *g_hbox2, *g_vbox0_1;
-
+/* Application-wide globals */
+int pipe_from_child, pipe_to_parent;
+int pipe_from_parent, pipe_to_child;
+/* Main GTK window for application */
+GtkWidget *window;
 GtkWidget *glob_date_label;
 GtkTooltips *glob_tooltips;
+GtkWidget *glob_dialog=NULL;
+int glob_app = 0;
+unsigned char skip_plugins;
 gint glob_date_timer_tag;
 pid_t glob_child_pid;
 pid_t jpilot_master_pid;
-GtkTextView *g_output_text;
+
+/* jpilot.c file globals */
+static GtkWidget *g_hbox, *g_vbox0;
+static GtkWidget *g_hbox2, *g_vbox0_1;
+static GtkTextView *g_output_text;
 static GtkTextBuffer *g_output_text_buffer;
-GtkWidget *window;
 static GtkWidget *output_pane;
-int glob_app = 0;
-GtkWidget *glob_dialog=NULL;
-unsigned char skip_plugins;
 static GtkWidget *button_locked;
 static GtkWidget *button_masklocked;
 static GtkWidget *button_unlocked;
 static GtkWidget *button_sync;
 static GtkWidget *button_cancel_sync;
 static GtkWidget *button_backup;
-GtkCheckMenuItem *menu_hide_privates;
-GtkCheckMenuItem *menu_show_privates;
-GtkCheckMenuItem *menu_mask_privates;
-
-int pipe_from_child, pipe_to_parent;
-int pipe_from_parent, pipe_to_child;
+static GtkCheckMenuItem *menu_hide_privates;
+static GtkCheckMenuItem *menu_show_privates;
+static GtkCheckMenuItem *menu_mask_privates;
 
 extern GtkWidget *weekview_window;
 extern GtkWidget *monthview_window;
 
 /****************************** Prototypes ************************************/
 static void cb_delete_event(GtkWidget *widget, GdkEvent *event, gpointer data);
-void install_gui_and_size(GtkWidget *main_window);
+static void install_gui_and_size(GtkWidget *main_window);
 
 /****************************** Main Code *************************************/
 
@@ -514,7 +516,6 @@ static void cb_install_user(GtkWidget *widget, gpointer data)
    install_user_gui(window);
 }
 
-
 void cb_app_button(GtkWidget *widget, gpointer data)
 {
    int app;
@@ -605,7 +606,7 @@ static void sync_sig_handler (int sig)
    }
 }
 
-void cb_sync(GtkWidget *widget, unsigned int flags)
+static void cb_sync(GtkWidget *widget, unsigned int flags)
 {
    long ivalue;
    int r;
@@ -1021,7 +1022,7 @@ struct url_command url_commands[]={
      {KONQUEROR_NEW, "/Web/Konqueror/Konqueror jpilot.org", "konqueror http://jpilot.org"}
 };
 
-void cb_web(GtkWidget *widget, gpointer data)
+static void cb_web(GtkWidget *widget, gpointer data)
 {
    int sel;
 
@@ -1032,7 +1033,7 @@ void cb_web(GtkWidget *widget, gpointer data)
 
 #endif
 
-void install_gui_and_size(GtkWidget *main_window)
+static void install_gui_and_size(GtkWidget *main_window)
 {
    int w, h, x, y;
 
