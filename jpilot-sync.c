@@ -1,4 +1,4 @@
-/* $Id: jpilot-sync.c,v 1.33 2010/10/12 00:07:14 rikster5 Exp $ */
+/* $Id: jpilot-sync.c,v 1.34 2010/10/12 03:25:38 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot-sync.c
@@ -44,18 +44,18 @@ pid_t glob_child_pid;
 unsigned char skip_plugins;
 
 /* Start Hack */
-/* FIXME: The following is a hack.
- * The variables below are global variable in jpilot.c which are unused in this
- * code but must be instantiated for the code to compile.  The same is true
- * of the function prototypes which are only used in GUI mode. */
+/* FIXME: The following is a hack.  
+ * The variables below are global variables in jpilot.c which are unused in
+ * this code but must be instantiated for the code to compile.  
+ * The same is true of the functions which are only used in GUI mode. */
+pid_t jpilot_master_pid = -1;
 int *glob_date_label;
 GtkWidget *glob_dialog;
 GtkTooltips *glob_tooltips;
-pid_t jpilot_master_pid = -1;
 
-void output_to_pane(const char *str);
 void output_to_pane(const char *str) { return; }
 void cb_app_button(GtkWidget *widget, gpointer data) { return; }
+void cb_cancel_sync(GtkWidget *widget, unsigned int flags) { return; }
 /* End Hack */
 
 /****************************** Main Code *************************************/

@@ -1,4 +1,4 @@
-/* $Id: jpilot-dump.c,v 1.38 2010/10/12 00:39:12 rikster5 Exp $ */
+/* $Id: jpilot-dump.c,v 1.39 2010/10/12 03:25:38 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot-dump.c
@@ -74,16 +74,15 @@ char *formatT;
 
 /* Start Hack */
 /* FIXME: The following is a hack.
- * The variables below are global variable in jpilot.c which are unused in this
- * code but must be instantiated for the code to compile.  The same is true
- * of the function prototypes which are only used in GUI mode. */
+ * The variables below are global variables in jpilot.c which are unused in
+ * this code but must be instantiated for the code to compile.  
+ * The same is true of the functions which are only used in GUI mode. */
 pid_t jpilot_master_pid = -1;
+int pipe_to_parent;
 GtkWidget *glob_dialog;
 GtkWidget *glob_date_label;
-int pipe_to_parent;
 
-void output_to_pane(const char *str);
-void output_to_pane(const char *str) {}
+void output_to_pane(const char *str) { return; }
 int sync_once(struct my_sync_info *sync_info) { return EXIT_SUCCESS; }
 /* End Hack */
 

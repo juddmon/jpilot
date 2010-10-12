@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.112 2010/10/09 23:14:20 rikster5 Exp $ */
+/* $Id: sync.c,v 1.113 2010/10/12 03:25:38 rikster5 Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -78,8 +78,11 @@ extern int pipe_to_parent, pipe_from_parent;
 extern pid_t glob_child_pid;
 
 /****************************** Prototypes ************************************/
+/* From jpilot.c for restoring sync icon after successful sync */
+extern void cb_cancel_sync(GtkWidget *widget, unsigned int flags);
 
 /****************************** Main Code *************************************/
+
 static void sig_handler(int sig)
 {
    int status;
@@ -90,6 +93,7 @@ static void sig_handler(int sig)
    waitpid(-1, &status, WNOHANG);
 
    glob_child_pid = 0;
+   cb_cancel_sync(NULL, 0);
 }
 
 #ifdef USE_LOCKING

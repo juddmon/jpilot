@@ -1,4 +1,4 @@
-/* $Id: jpilot.h,v 1.3 2010/03/04 17:48:25 rousseau Exp $ */
+/* $Id: jpilot.h,v 1.4 2010/10/12 03:25:38 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -20,8 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  ******************************************************************************/
 
-void output_to_pane(const char *str);
-
 /* GUI cleanup routines for weekview and monthview windows */
 void cb_monthview_quit(GtkWidget *widget, gpointer data);
 void cb_weekview_quit(GtkWidget *widget, gpointer data);
+
