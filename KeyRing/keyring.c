@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.110 2010/10/06 07:08:11 rousseau Exp $ */
+/* $Id: keyring.c,v 1.111 2010/10/12 05:22:46 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -1766,25 +1766,12 @@ static int dialog_password(GtkWindow *main_window,
 
 static int check_for_db(void)
 {
-   char full_name[1024];
-   int max_size=1024;
-   char *home;
    char file[]="Keys-Gtkr.pdb";
+   char full_name[1024];
    struct stat buf;
 
-   home = getenv("JPILOT_HOME");
-   if (!home) { /* No home; */
-      home = getenv("HOME");
-      if (!home) {
-         jp_logf(JP_LOG_WARN, _("Can't get HOME environment variable\n"));
-         return EXIT_FAILURE;
-      }
-   }
-   if (strlen(home)>(max_size-strlen(file)-strlen("/.jpilot/")-2)) {
-      jp_logf(JP_LOG_WARN, _("Your HOME environment variable is too long(>1024)\n"));
-      return EXIT_FAILURE;
-   }
-   sprintf(full_name, "%s/.jpilot/%s", home, file);
+   jp_get_home_file_name(file, full_name, sizeof(full_name));
+
    if (stat(full_name, &buf)) {
       jp_logf(JP_LOG_FATAL, _("KeyRing: file %s not found.\n"), full_name);
       jp_logf(JP_LOG_FATAL, _("KeyRing: Try Syncing.\n"), full_name);
