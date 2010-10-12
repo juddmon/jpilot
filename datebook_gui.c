@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.231 2010/10/07 21:04:31 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.232 2010/10/12 00:27:43 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -4259,8 +4259,8 @@ int datebook_gui_cleanup(void)
    set_pref(PREF_DATEBOOK_NOTE_PANE, gtk_paned_get_position(GTK_PANED(note_pane)), NULL, TRUE);
    if (GTK_TOGGLE_BUTTON(show_todos_button)->active) {
       set_pref(PREF_DATEBOOK_TODO_PANE, gtk_paned_get_position(GTK_PANED(todo_pane)), NULL, TRUE);
-      todo_clist_clear(GTK_CLIST(todo_clist));
    }
+   todo_clist_clear(GTK_CLIST(todo_clist));
 #ifdef ENABLE_DATEBK
    if (GTK_IS_WIDGET(window_datebk_cats)) {
       gtk_widget_destroy(window_datebk_cats);
