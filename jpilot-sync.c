@@ -1,4 +1,4 @@
-/* $Id: jpilot-sync.c,v 1.32 2010/04/21 11:18:17 rousseau Exp $ */
+/* $Id: jpilot-sync.c,v 1.33 2010/10/12 00:07:14 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot-sync.c
@@ -39,35 +39,37 @@
 #include "otherconv.h"
 
 /******************************* Global vars **********************************/
-/* this is a hack for now until I clean up the code */
-int *glob_date_label;
 int pipe_to_parent, pipe_from_parent;
 pid_t glob_child_pid;
-GtkWidget *glob_dialog;
-GtkTooltips *glob_tooltips;
 unsigned char skip_plugins;
 
-/* used only in GUI mode */
+/* Start Hack */
+/* FIXME: The following is a hack.
+ * The variables below are global variable in jpilot.c which are unused in this
+ * code but must be instantiated for the code to compile.  The same is true
+ * of the function prototypes which are only used in GUI mode. */
+int *glob_date_label;
+GtkWidget *glob_dialog;
+GtkTooltips *glob_tooltips;
 pid_t jpilot_master_pid = -1;
 
-/****************************** Main Code *************************************/
-/* hack */
 void output_to_pane(const char *str);
 void output_to_pane(const char *str) { return; }
-
 void cb_app_button(GtkWidget *widget, gpointer data) { return; }
+/* End Hack */
 
+/****************************** Main Code *************************************/
 static void fprint_jps_usage_string(FILE *out)
 {
    fprintf(out, "%s-sync [ -v || -h || [-d] [-P] [-b] [-l] [-p port] ]\n", EPN);
-   fprintf(out, "%s", _(" J-Pilot preferences are read to get port, rate, number of backups, etc.\n"));
-   fprintf(out, "%s", _(" -v displays version and compile options and exits.\n"));
-   fprintf(out, "%s", _(" -h displays help and exits.\n"));
-   fprintf(out, "%s", _(" -d displays debug info to stdout.\n"));
-   fprintf(out, "%s", _(" -P skips loading plugins.\n"));
-   fprintf(out, "%s", _(" -b sync and then do a backup\n"));
-   fprintf(out, "%s", _(" -l loop, otherwise sync once and exit.\n"));
-   fprintf(out, "%s", _(" -p {port} use this port to sync with instead of default.\n"));
+   fprintf(out, _(" J-Pilot preferences are read to get sync info such as port, rate, number of backups, etc.\n"));
+   fprintf(out, _(" -v display version and compile options\n"));
+   fprintf(out, _(" -h display help text\n"));
+   fprintf(out, _(" -d display debug info to stdout\n"));
+   fprintf(out, _(" -P skip loading plugins\n"));
+   fprintf(out, _(" -b sync, and then do a backup\n"));
+   fprintf(out, _(" -l loop, otherwise sync once and exit\n"));
+   fprintf(out, _(" -p {port} use this port to sync on instead of default\n"));
 }
 
 static void sig_handler(int sig)
@@ -128,6 +130,7 @@ int main(int argc, char *argv[])
 
    flags = SYNC_NO_FORK;
 
+   /* Read preferences from jpilot.rc file */
    pref_init();
    pref_read_rc_file();
    if (otherconv_init()) {
@@ -138,8 +141,9 @@ int main(int argc, char *argv[])
    pipe_from_parent=STDIN_FILENO;
    pipe_to_parent=STDOUT_FILENO;
    glob_log_stdout_mask = JP_LOG_INFO | JP_LOG_WARN | JP_LOG_FATAL |
-     JP_LOG_STDOUT | JP_LOG_GUI;
+                          JP_LOG_STDOUT | JP_LOG_GUI;
 
+   /* Parse command line options */
    for (i=1; i<argc; i++) {
       if (!strncasecmp(argv[i], "-v", 2)) {
          char options[1024];
@@ -172,7 +176,7 @@ int main(int argc, char *argv[])
          i++;
          if (i<argc) {
             g_strlcpy(port, argv[i], MAX_PREF_LEN);
-            /* Prefs are not saved, so this is not persistent */
+            /* preference is not saved, so this is not persistent */
             set_pref(PREF_PORT, 0, port, FALSE);
          }
       }
@@ -216,51 +220,64 @@ int main(int argc, char *argv[])
          break;
        case SYNC_ERROR_BIND:
          printf("\n");
-         printf("Error: connecting to serial port\n");
+         printf(_("Error: connecting to port %s\n"), port);
          break;
        case SYNC_ERROR_LISTEN:
          printf("\n");
-         printf("Error: pi_listen\n");
+         printf(_("Error: pi_listen\n"));
          break;
        case SYNC_ERROR_OPEN_CONDUIT:
          printf("\n");
-         printf("Error: opening conduit to Palm\n");
+         printf(_("Error: opening conduit to handheld\n"));
          break;
        case SYNC_ERROR_PI_ACCEPT:
          printf("\n");
-         printf("Error: pi_accept\n");
+         printf(_("Error: pi_accept\n"));
          break;
        case SYNC_ERROR_NOT_SAME_USER:
          printf("\n");
-         printf("Error: this palm has a different User Name than the last sync.\n");
-         printf(" Syncing with different palms into the same directory could cross data.\n");
+         printf(_("Error: "));
+         printf(_("This handheld does not have the same user name.\n"));
+         printf(_("as the one that was synced the last time.\n"));
+
+         printf(_("Syncing with different handhelds to the same directory can destroy data.\n"));
 #ifdef ENABLE_PROMETHEON
-         printf(" COPILOT_HOME can be used to sync different palms under the same unix user.\n");
+         printf(_(" COPILOT_HOME"));
 #else
-         printf(" JPILOT_HOME can be used to sync different palms under the same unix user.\n");
+         printf(_(" JPILOT_HOME"));
 #endif
+         printf(_(" environment variable can be used to sync different handhelds,\n"));
+         printf(_(" to different directories for the same UNIX user name.\n"));
          break;
        case SYNC_ERROR_NOT_SAME_USERID:
          printf("\n");
-         printf("Error: this palm has a different ID Name than the last sync.\n");
-         printf(" Syncing with different palms into the same directory could cross data.\n");
+         printf(_("This handheld does not have the same user ID.\n"));
+         printf(_("as the one that was synced the last time.\n"));
+         printf(_(" Syncing with different handhelds to the same directory can destroy data.\n"));
 #ifdef ENABLE_PROMETHEON
-         printf(" COPILOT_HOME can be used to sync different palms under the same unix user.\n");
+         printf(_(" COPILOT_HOME"));
 #else
-         printf(" JPILOT_HOME can be used to sync different palms under the same unix user.\n");
+         printf(_(" JPILOT_HOME"));
 #endif
+         printf(_(" environment variable can be used to sync different handhelds,\n"));
+         printf(_(" to different directories for the same UNIX user name.\n"));
          break;
        case SYNC_ERROR_NULL_USERID:
          printf("\n");
-         printf("Error: this palm has a NULL user ID.\n");
-         printf(" use \"install-user /dev/pilot name numeric_id\"\n");
+         printf(_("Error: "));
+         printf(_("This handheld has a NULL user ID.\n"));
+         printf(_("Every handheld must have a unique user ID in order to sync properly.\n"));
+         printf(_("If the handheld has been hard reset, \n"));
+         printf(_("   use restore from within "EPN" to restore it.\n"));
+         printf(_("Otherwise, to add a new user name and ID\n"));
+         printf(_("   use \"install-user %s name numeric_id\"\n"), port);
          break;
        default:
          printf("\n");
-         printf("Error: sync returned error %d\n", r);
+         printf(_("Error: sync returned error %d\n"), r);
       }
       sleep(1);
-   } while(loop);
+   } while (loop);
 
    otherconv_free();
 
