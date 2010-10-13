@@ -1,4 +1,4 @@
-/* $Id: jpilot-dial.c,v 1.4 2010/03/29 05:44:32 rikster5 Exp $ */
+/* $Id: jpilot-dial.c,v 1.5 2010/10/13 03:19:00 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot-dial.c
@@ -111,36 +111,36 @@ initialize_audiodev(void) {
    int channels = 1;
    int diff;
 
-   if(!use_audio)
-     return;
+   if (!use_audio)
+      return;
 
-   if(right || left)
-     channels = 2;
+   if (right || left)
+      channels = 2;
 
-   if(ioctl(fd, SNDCTL_DSP_CHANNELS, &channels)) {
+   if (ioctl(fd, SNDCTL_DSP_CHANNELS, &channels)) {
       perror("ioctl(SNDCTL_DSP_CHANNELS)");
       exit(1);
    }
 
-   if(ioctl(fd, SNDCTL_DSP_SETFMT, &format)) {
+   if (ioctl(fd, SNDCTL_DSP_SETFMT, &format)) {
       perror("ioctl(SNDCTL_DSP_SPEED)");
       exit(1);
    }
 
-   if(ioctl(fd, SNDCTL_DSP_SPEED, &speed_local)) {
+   if (ioctl(fd, SNDCTL_DSP_SPEED, &speed_local)) {
       perror("ioctl(SNDCTL_DSP_SPEED)");
       exit(1);
    }
 
    diff = speed_local - speed;
-   if(diff < 0)
-     diff = -diff;
-   if(diff > 500) {
+   if (diff < 0)
+      diff = -diff;
+   if (diff > 500) {
       fprintf(stderr,
               "Your sound card does not support the requested speed\n");
       exit(1);
    }
-   if(diff != 0) {
+   if (diff != 0) {
       fprintf(stderr,
               "Setting speed to %d\n", speed_local);
    }
@@ -148,20 +148,20 @@ initialize_audiodev(void) {
 }
 
 void
-  getvalue(int *arg, int *index, int argc,
-           char **argv, int min, int max) {
+getvalue(int *arg, int *index, int argc,
+         char **argv, int min, int max) {
 
-     if (*index >= argc-1)
-       Usage();
+   if (*index >= argc-1)
+      Usage();
 
-     *arg = atoi(argv[1+*index]);
+   *arg = atoi(argv[1+*index]);
 
-     if(*arg < min || *arg > max) {
-        fprintf(stderr, "Value for %s should be in the range %d..%d\n", 
-                argv[*index]+2, min, max);
-        exit(1);
-     }
-     ++*index;
+   if (*arg < min || *arg > max) {
+      fprintf(stderr, "Value for %s should be in the range %d..%d\n", 
+                                 argv[*index]+2,           min,max);
+      exit(1);
+   }
+   ++*index;
 }
 
 int main(int argc, char **argv)
@@ -179,81 +179,80 @@ int main(int argc, char **argv)
    left_vol_temp=right_vol_temp=0;
    set_left=set_right=0;
 
-   for(i = 1; i < argc; i++) {
-      if(argv[i][0] != '-' ||
-         argv[i][1] != '-')
-        break;
+   for (i = 1; i < argc; i++) {
+      if (argv[i][0] != '-' || argv[i][1] != '-')
+         break;
 
-      if(!strcmp(argv[i], "--table-size")) {
+      if (!strcmp(argv[i], "--table-size")) {
          getvalue(&tabsize, &i, argc, argv,
                   MINTABSIZE, MAXTABSIZE);
       }
-      else if(!strcmp(argv[i], "--tone-time")) {
+      else if (!strcmp(argv[i], "--tone-time")) {
          getvalue(&tone_time, &i, argc, argv,
                   10, 10000);
       }
-      else if(!strcmp(argv[i], "--sleep-time")) {
+      else if (!strcmp(argv[i], "--sleep-time")) {
          getvalue(&sleep_time, &i, argc, argv,
                   10, 10000);
       }
-      else if(!strcmp(argv[i], "--silent-time")) {
+      else if (!strcmp(argv[i], "--silent-time")) {
          getvalue(&silent_time, &i, argc, argv,
                   10, 10000);
       }
-      else if(!strcmp(argv[i], "--sleep-time")) {
+      else if (!strcmp(argv[i], "--sleep-time")) {
          getvalue(&sleep_time, &i, argc, argv,
                   10, 100000);
       }
-      else if(!strcmp(argv[i], "--volume")) {
+      else if (!strcmp(argv[i], "--volume")) {
          getvalue(&volume, &i, argc, argv,
                   0, 100);
       }
-      else if(!strcmp(argv[i], "--lv")) {
+      else if (!strcmp(argv[i], "--lv")) {
          set_left=1;
          getvalue(&left_vol_temp, &i, argc, argv,
                   0, 100);
       }
-      else if(!strcmp(argv[i], "--rv")) {
+      else if (!strcmp(argv[i], "--rv")) {
          set_right=1;
          getvalue(&right_vol_temp, &i, argc, argv,
                   0, 100);
       }
-      else if(!strcmp(argv[i], "--speed")) {
+      else if (!strcmp(argv[i], "--speed")) {
          getvalue(&speed, &i, argc, argv,
                   5000, 48000);
       }
-      else if(!strcmp(argv[i], "--bits")) {
+      else if (!strcmp(argv[i], "--bits")) {
          getvalue(&bits, &i, argc, argv,
                   8, 16);
       }
-      else if(!strcmp(argv[i], "--bufsize")) {
+      else if (!strcmp(argv[i], "--bufsize")) {
          getvalue(&bufsize, &i, argc, argv,
                   4, 65536);
       }
-      else if(!strcmp(argv[i], "--use-audio")) {
+      else if (!strcmp(argv[i], "--use-audio")) {
          getvalue(&use_audio, &i, argc, argv,
                   0, 1);
       }
-      else if(!strcmp(argv[i], "--right")) {
+      else if (!strcmp(argv[i], "--right")) {
          getvalue(&right, &i, argc, argv,
                   0, 1);
       }
-      else if(!strcmp(argv[i], "--left")) {
+      else if (!strcmp(argv[i], "--left")) {
          getvalue(&left, &i, argc, argv,
                   0, 1);
       }
-      else if(!strcmp(argv[i], "--output-dev")) {
+      else if (!strcmp(argv[i], "--output-dev")) {
          i++;
-         if(i >= argc)
-           Usage();
+         if (i >= argc)
+            Usage();
          output = argv[i];
       }
       else
-        Usage();
+         Usage();
    }
 
-   if(i >= argc)
-     Usage();
+   if (i >= argc)
+      Usage();
 
    if ((set_left) || (set_right)) {
       switch (fork()) {
@@ -299,11 +298,11 @@ int main(int argc, char **argv)
       }
    }
 
-   if(!strcmp(output, "-"))
-     fd = 1;            /* stdout */
+   if (!strcmp(output, "-"))
+      fd = 1;            /* stdout */
    else {
       fd = open(output, O_CREAT|O_TRUNC|O_WRONLY, 0644);
-      if(fd < 0) {
+      if (fd < 0) {
          perror(output);
          exit(1);
       }
@@ -325,7 +324,7 @@ int main(int argc, char **argv)
 
    gen_costab();
    buf = malloc(bufsize);
-   if(buf == NULL) {
+   if (buf == NULL) {
       perror("malloc buf");
       exit(1);
    }
@@ -333,23 +332,23 @@ int main(int argc, char **argv)
    bufidx = 0;
    for(; i < argc; i++) {
       cp = argv[i];
-      if(dialed)
-        silent(sleep_time);
+      if (dialed)
+         silent(sleep_time);
       while(cp && *cp) {
-         if(*cp == ',' || *cp == ' ')
-           silent(sleep_time);
+         if (*cp == ',' || *cp == ' ')
+            silent(sleep_time);
          else {
-            if(dialed)
-              silent(silent_time);
+            if (dialed)
+               silent(silent_time);
             dial_digit(*cp);
          }
          cp++;
       }
    }
-   if(bufidx > 0) {
+   if (bufidx > 0) {
 #if 0
       while(bufidx < bufsize) {
-         if(format == AFMT_U8) {
+         if (format == AFMT_U8) {
             buf[bufidx++] = 128;
          }
          else { /* AFMT_S16_LE */
@@ -422,22 +421,22 @@ dial_digit(int c) {
 void
 silent(int msec) {
    int time;
-   if(msec <= 0)
-     return; 
+   if (msec <= 0)
+      return; 
 
    DEBUG(fprintf(stderr, "silent %d\n", msec));
 
    time = (msec * speed) / 1000;
    while(--time >= 0) {
-      if(format == AFMT_U8) {
+      if (format == AFMT_U8) {
          buf[bufidx++] = 128;
       }
       else {    /* AFMT_S16_LE */
          buf[bufidx++] = 0;
          buf[bufidx++] = 0;
       }
-      if(right || left) {
-         if(format == AFMT_U8) {
+      if (right || left) {
+         if (format == AFMT_U8) {
             buf[bufidx++] = 128;
          }
          else { /* AFMT_S16_LE */
@@ -445,7 +444,7 @@ silent(int msec) {
             buf[bufidx++] = 0;
          }
       }
-      if(bufidx >= bufsize) {
+      if (bufidx >= bufsize) {
          write(fd, buf, bufsize);
          bufidx = 0;
       }
@@ -459,8 +458,8 @@ dial(int f1, int f2, int msec) {
    int time;
    int val;
 
-   if(msec <= 0)
-     return;
+   if (msec <= 0)
+      return;
 
    DEBUG(fprintf(stderr, "dial %d %d %d\n", f1, f2, msec));
 
@@ -479,8 +478,8 @@ dial(int f1, int f2, int msec) {
    while(--time >= 0) {
       val = costab[i1] + costab[i2];
 
-      if(left || !right) {
-         if(format == AFMT_U8) {
+      if (left || !right) {
+         if (format == AFMT_U8) {
             buf[bufidx++] = 128 + (val >> 8); 
          }
          else { /* AFMT_S16_LE */
@@ -489,7 +488,7 @@ dial(int f1, int f2, int msec) {
          }
       }
       if (left != right) {
-         if(format == AFMT_U8) {
+         if (format == AFMT_U8) {
             buf[bufidx++] = 128;
          }
          else { /* AFMT_S16_LE */
@@ -497,8 +496,8 @@ dial(int f1, int f2, int msec) {
             buf[bufidx++] = 0;
          }
       }
-      if(right) {
-         if(format == AFMT_U8) {
+      if (right) {
+         if (format == AFMT_U8) {
             buf[bufidx++] = 128 + (val >> 8); 
          }
          else { /* AFMT_S16_LE */
@@ -513,7 +512,7 @@ dial(int f1, int f2, int msec) {
          i1 += 1;
       }
       if (i1 >= tabsize)
-        i1 -= tabsize;
+         i1 -= tabsize;
 
       i2 += d2;
       if (e2 < 0) {
@@ -521,9 +520,9 @@ dial(int f1, int f2, int msec) {
          i2 += 1;
       }
       if (i2 >= tabsize)
-        i2 -= tabsize;
+         i2 -= tabsize;
 
-      if(bufidx >= bufsize) {
+      if (bufidx >= bufsize) {
          write(fd, buf, bufsize);
          bufidx = 0;
       }
@@ -539,7 +538,7 @@ gen_costab(void) {
    double d;
 
    costab = (signed short *)malloc(tabsize * sizeof(signed short));
-   if(costab == NULL) {
+   if (costab == NULL) {
       perror("malloc costab");
       exit(1);
    }

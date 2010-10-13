@@ -1,4 +1,4 @@
-/* $Id: category.c,v 1.36 2010/03/29 05:44:27 rikster5 Exp $ */
+/* $Id: category.c,v 1.37 2010/10/13 03:18:58 rikster5 Exp $ */
 
 /*******************************************************************************
  * category.c
@@ -76,7 +76,7 @@ static int count_records_in_cat(char *db_name, int cat_index)
 
    num = jp_read_DB_files(db_name, &records);
    if (-1 == num)
-     return 0;
+      return 0;
 
    for (temp_list = records; temp_list; temp_list = temp_list->next) {
       if (temp_list->data) {
@@ -252,7 +252,7 @@ int edit_cats_change_cats_pdb(char *DB_name, int old_cat, int new_cat)
    count=0;
    num = jp_read_DB_files(DB_name, &records);
    if (-1 == num)
-     return 0;
+      return 0;
 
    for (temp_list = records; temp_list; temp_list = temp_list->next) {
       if (temp_list->data) {
@@ -814,10 +814,10 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
          j++;
       }
       if (j < NUM_CATEGORIES) {
-          /* Must do character set conversion from Palm to Host */
-          catname_hchar = charset_p2newj(cai->name[j], PILOTCAT_NAME_SZ, char_set);
-          gtk_clist_set_text(GTK_CLIST(clist), i-1, 0, catname_hchar);
-          free(catname_hchar);
+         /* Must do character set conversion from Palm to Host */
+         catname_hchar = charset_p2newj(cai->name[j], PILOTCAT_NAME_SZ, char_set);
+         gtk_clist_set_text(GTK_CLIST(clist), i-1, 0, catname_hchar);
+         free(catname_hchar);
       }
    }
 

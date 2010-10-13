@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.111 2010/10/12 05:22:46 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.112 2010/10/13 03:18:59 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -446,9 +446,9 @@ static int unpack_KeyRing(struct KeyRing *kr,
 
    if (0 == packed_date)
    {
-           kr->last_changed.tm_year = 0;
-           kr->last_changed.tm_mon = 0;
-           kr->last_changed.tm_mday = 0;
+      kr->last_changed.tm_year = 0;
+      kr->last_changed.tm_mon  = 0;
+      kr->last_changed.tm_mday = 0;
    }
 
 #ifdef DEBUG
@@ -557,7 +557,7 @@ static int get_keyring(struct MyKeyRing **mkr_list, int category)
 
    /* Read raw database of records */
    if (jp_read_DB_files("Keys-Gtkr", &records) == -1)
-     return 0;
+      return 0;
 
    /* Get preferences used for filtering */
    get_pref(PREF_SHOW_MODIFIED, &keep_modified, NULL);
@@ -858,16 +858,16 @@ static void connect_changed_signals(int con_or_dis)
       }
 
       gtk_signal_connect(GTK_OBJECT(entry_name), "changed",
-          GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+                         GTK_SIGNAL_FUNC(cb_record_changed), NULL);
       gtk_signal_connect(GTK_OBJECT(entry_account), "changed",
-          GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+                         GTK_SIGNAL_FUNC(cb_record_changed), NULL);
       gtk_signal_connect(GTK_OBJECT(entry_password), "changed",
                          GTK_SIGNAL_FUNC(cb_record_changed), 
                          GINT_TO_POINTER(PASSWD_FLAG));
       gtk_signal_connect(GTK_OBJECT(date_button), "pressed",
-          GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+                         GTK_SIGNAL_FUNC(cb_record_changed), NULL);
       g_signal_connect(keyr_note_buffer, "changed",
-          GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+                       GTK_SIGNAL_FUNC(cb_record_changed), NULL);
    }
    
    /* DISCONNECT */
@@ -1802,7 +1802,7 @@ static int verify_pasword(char *ascii_password)
    /* This function takes care of reading the Database for us */
    records=NULL;
    if (jp_read_DB_files("Keys-Gtkr", &records) == -1)
-     return EXIT_SUCCESS;
+      return EXIT_SUCCESS;
 
    password_not_correct = 1;
    /* Find special record marked as password */
@@ -2016,7 +2016,7 @@ int plugin_search(const char *search_string, int case_sense,
    /* This function takes care of reading the Database for us */
    num = get_keyring(&mkr_list, CATEGORY_ALL);
    if (-1 == num)
-     return 0;
+      return 0;
 
    count = 0;
    
@@ -2314,37 +2314,37 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
 #ifdef HAVE_LIBGCRYPT
    if (!gcrypt_init)
    {
-           gcrypt_init = 1;
+      gcrypt_init = 1;
 
-           /* Version check should be the very first call because it
-          makes sure that important subsystems are intialized. */
-       if (!gcry_check_version (GCRYPT_VERSION))
-         {
-           fputs ("libgcrypt version mismatch\n", stderr);
-                   return EXIT_FAILURE;
-         }
-     
-           /* We don't want to see any warnings, e.g. because we have not yet
-          parsed program options which might be used to suppress such
-          warnings. */
-       gcry_control (GCRYCTL_SUSPEND_SECMEM_WARN);
-     
-       /* ... If required, other initialization goes here.  Note that the
-          process might still be running with increased privileges and that
-          the secure memory has not been intialized.  */
-     
-       /* Allocate a pool of 16k secure memory.  This make the secure memory
-          available and also drops privileges where needed.  */
-       gcry_control (GCRYCTL_INIT_SECMEM, 16384, 0);
-     
-           /* It is now okay to let Libgcrypt complain when there was/is
-          a problem with the secure memory. */
-       gcry_control (GCRYCTL_RESUME_SECMEM_WARN);
-     
-       /* ... If required, other initialization goes here.  */
-     
-       /* Tell Libgcrypt that initialization has completed. */
-       gcry_control (GCRYCTL_INITIALIZATION_FINISHED, 0);
+      /* Version check should be the very first call because it
+         makes sure that important subsystems are intialized. */
+      if (!gcry_check_version (GCRYPT_VERSION))
+      {
+         fputs ("libgcrypt version mismatch\n", stderr);
+         return EXIT_FAILURE;
+      }
+
+      /* We don't want to see any warnings, e.g. because we have not yet
+         parsed program options which might be used to suppress such
+         warnings. */
+      gcry_control (GCRYCTL_SUSPEND_SECMEM_WARN);
+
+      /* ... If required, other initialization goes here.  Note that the
+         process might still be running with increased privileges and that
+         the secure memory has not been intialized.  */
+
+      /* Allocate a pool of 16k secure memory.  This make the secure memory
+         available and also drops privileges where needed.  */
+      gcry_control (GCRYCTL_INIT_SECMEM, 16384, 0);
+
+      /* It is now okay to let Libgcrypt complain when there was/is
+         a problem with the secure memory. */
+      gcry_control (GCRYCTL_RESUME_SECMEM_WARN);
+
+      /* ... If required, other initialization goes here.  */
+
+      /* Tell Libgcrypt that initialization has completed. */
+      gcry_control (GCRYCTL_INITIALIZATION_FINISHED, 0);
    }
 #endif
 

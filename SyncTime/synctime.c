@@ -1,4 +1,4 @@
-/* $Id: synctime.c,v 1.17 2010/03/29 05:44:32 rikster5 Exp $ */
+/* $Id: synctime.c,v 1.18 2010/10/13 03:19:00 rikster5 Exp $ */
 
 /*******************************************************************************
  * synctime.c
@@ -82,6 +82,7 @@ int plugin_help(char **text, int *width, int *height)
       );
    *height = 0;
    *width = 0;
+
    return EXIT_SUCCESS;
 }
 

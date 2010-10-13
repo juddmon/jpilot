@@ -1,4 +1,4 @@
-/* $Id: weekview_gui.c,v 1.53 2010/04/20 18:13:26 rikster5 Exp $ */
+/* $Id: weekview_gui.c,v 1.54 2010/10/13 03:18:59 rikster5 Exp $ */
 
 /*******************************************************************************
  * weekview_gui.c
@@ -282,10 +282,10 @@ void weekview_gui(struct tm *date_in)
    long w, h;
 
    if (weekview_window) {
-       /* Delete any existing window to ensure that new window is biased
-        * around currently selected date and so that the new window
-        * contents are updated with any changes on the day view. */
-       gtk_widget_destroy(weekview_window);
+      /* Delete any existing window to ensure that new window is biased
+       * around currently selected date and so that the new window
+       * contents are updated with any changes on the day view. */
+      gtk_widget_destroy(weekview_window);
    }
 
    memcpy(&glob_week_date, date_in, sizeof(struct tm));

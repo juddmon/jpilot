@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.232 2010/10/12 00:27:43 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.233 2010/10/13 03:18:58 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -2884,11 +2884,11 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
       get_pref(PREF_CHAR_SET, &char_set, NULL);
       if (char_set != CHAR_SET_LATIN1) {
          if (mcale->cale.description) 
-           charset_j2p(mcale->cale.description, strlen(mcale->cale.description)+1, char_set);
+            charset_j2p(mcale->cale.description, strlen(mcale->cale.description)+1, char_set);
          if (mcale->cale.note) 
-           charset_j2p(mcale->cale.note, strlen(mcale->cale.note)+1, char_set);
+            charset_j2p(mcale->cale.note, strlen(mcale->cale.note)+1, char_set);
          if (mcale->cale.location) 
-           charset_j2p(mcale->cale.location, strlen(mcale->cale.location)+1, char_set);
+            charset_j2p(mcale->cale.location, strlen(mcale->cale.location)+1, char_set);
          /* TODO blob and tz? */
       }
 
@@ -3003,7 +3003,7 @@ static void cb_delete_appt(GtkWidget *widget, gpointer data)
       if (mcale->cale.note) 
          charset_j2p(mcale->cale.note, strlen(mcale->cale.note)+1, char_set);
       if (mcale->cale.location) 
-        charset_j2p(mcale->cale.location, strlen(mcale->cale.location)+1, char_set);
+         charset_j2p(mcale->cale.location, strlen(mcale->cale.location)+1, char_set);
    }
 
    /* Do masking like Palm OS 3.5 */
@@ -5376,8 +5376,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
          days2[1]='\0';
       }
 
-      toggle_button_repeat_days[j] =
-        gtk_toggle_button_new_with_label(days2);
+      toggle_button_repeat_days[j] = gtk_toggle_button_new_with_label(days2);
       gtk_box_pack_start(GTK_BOX(hbox_repeat_week3),
                          toggle_button_repeat_days[j], FALSE, FALSE, 0);
    }

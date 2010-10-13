@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.73 2010/03/29 05:44:30 rikster5 Exp $ */
+/* $Id: prefs_gui.c,v 1.74 2010/10/13 03:18:59 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -97,7 +97,7 @@ static void cb_serial_port_menu(GtkWidget *widget,
                                 gpointer   data)
 {
    if (!widget)
-     return;
+      return;
    if (!(GTK_CHECK_MENU_ITEM(widget))->active) {
       return;
    }
@@ -155,7 +155,7 @@ static void cb_pref_menu(GtkWidget *widget, gpointer data)
    int value;
 
    if (!widget)
-     return;
+      return;
    if (!(GTK_CHECK_MENU_ITEM(widget))->active) {
       return;
    }
@@ -388,7 +388,7 @@ static void add_checkbutton(const char *text,
 
    /* Set the button state based on option value */
    if (get_pref_int_default(which, 0))
-       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
 
    /* Set button callback */
    gtk_signal_connect(GTK_OBJECT(checkbutton), "clicked", GTK_SIGNAL_FUNC(cb),
@@ -968,9 +968,9 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 #endif
    get_pref(PREF_CHAR_SET, &ivalue, &cstr);
    if (ivalue == CHAR_SET_JAPANESE || ivalue == CHAR_SET_SJIS_UTF) {
-       /* Show use Japanese Kana extention check box */
-       add_checkbutton(_("Use J-OS (Not Japanese PalmOS:WorkPad/CLIE)"),
-                       PREF_USE_JOS, vbox_settings, cb_checkbox_set_pref);
+      /* Show use Japanese Kana extention check box */
+      add_checkbutton(_("Use J-OS (Not Japanese PalmOS:WorkPad/CLIE)"),
+                      PREF_USE_JOS, vbox_settings, cb_checkbox_set_pref);
    }
 
 #ifdef  ENABLE_PLUGINS

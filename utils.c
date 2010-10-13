@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.188 2010/10/12 00:07:15 rikster5 Exp $ */
+/* $Id: utils.c,v 1.189 2010/10/13 03:18:59 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -899,8 +899,8 @@ inline void clist_select_row(GtkCList *clist,
                              int       row,
                              int       column)
 {
-  clist->focus_row = row;
-  gtk_clist_select_row(clist, row, column);
+   clist->focus_row = row;
+   gtk_clist_select_row(clist, row, column);
 }
 
 int dateToDays(struct tm *tm1)
@@ -2565,7 +2565,7 @@ char *multibyte_safe_memccpy(char *dst, const char *src, int c, size_t len)
    if (char_set == CHAR_SET_JAPANESE ||
        char_set == CHAR_SET_TRADITIONAL_CHINESE ||
        char_set == CHAR_SET_KOREAN
-       ) {  /* Multibyte Characters */
+      ) {  /* Multibyte Characters */
       char *p, *q;
       int n = 0;
 
@@ -2592,7 +2592,7 @@ char *multibyte_safe_memccpy(char *dst, const char *src, int c, size_t len)
       *q = '\0';
       return NULL;
    } else
-     return memccpy(dst, src, c, len);
+      return memccpy(dst, src, c, len);
 }
 
 void multibyte_safe_strncpy(char *dst, char *src, size_t len)
@@ -2604,7 +2604,7 @@ void multibyte_safe_strncpy(char *dst, char *src, size_t len)
    if (char_set == CHAR_SET_JAPANESE ||
        char_set == CHAR_SET_TRADITIONAL_CHINESE ||
        char_set == CHAR_SET_KOREAN
-       ) {
+      ) {
       char *p, *q;
       int n = 0;
       p = src; q = dst;
@@ -2968,9 +2968,9 @@ void print_string(char *str, int len)
    for (i=0;i<len;i++) {
       c=str[i];
       if (c < ' ' || c >= 0x7f)
-        jp_logf(JP_LOG_STDOUT, "%x", c);
+         jp_logf(JP_LOG_STDOUT, "%x", c);
       else
-        jp_logf(JP_LOG_STDOUT, "%c", c);
+         jp_logf(JP_LOG_STDOUT, "%c", c);
    }
    jp_logf(JP_LOG_STDOUT, "\n");
 }
@@ -2984,9 +2984,9 @@ int read_gtkrc_file(void)
 
    get_pref(PREF_RCFILE, NULL, &svalue);
    if (svalue) {
-     jp_logf(JP_LOG_DEBUG, "rc file from prefs is %s\n", svalue);
+      jp_logf(JP_LOG_DEBUG, "rc file from prefs is %s\n", svalue);
    } else {
-     jp_logf(JP_LOG_DEBUG, "rc file from prefs is NULL\n");
+      jp_logf(JP_LOG_DEBUG, "rc file from prefs is NULL\n");
    }
 
    g_strlcpy(filename, svalue, sizeof(filename));
@@ -3548,10 +3548,10 @@ int undelete_pc_record(AppType app_type, void *VP, int flag)
          continue;
       }
       /* Change header on DELETED_PC_REC to undelete this type */
-      if (header.unique_id == unique_id &&
-          header.rt == DELETED_PC_REC) {
-          found = TRUE;
-          header.rt = NEW_PC_REC;
+      if ((header.unique_id == unique_id) &&
+          (header.rt == DELETED_PC_REC)) {
+         found = TRUE;
+         header.rt = NEW_PC_REC;
       }
 
       /* Otherwise, keep whatever is there by copying it to the new pc3 file */

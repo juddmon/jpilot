@@ -1,4 +1,4 @@
-/* $Id: memo.c,v 1.50 2010/04/01 23:09:59 rikster5 Exp $ */
+/* $Id: memo.c,v 1.51 2010/10/13 03:18:58 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo.c
@@ -165,7 +165,7 @@ int get_memos2(MemoList **memo_list, int sort_order,
       break;
    }
    if (-1 == num)
-     return 0;
+      return 0;
 
    for (temp_list = records; temp_list; temp_list = temp_list->next) {
       if (temp_list->data) {

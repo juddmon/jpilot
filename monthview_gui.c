@@ -1,4 +1,4 @@
-/* $Id: monthview_gui.c,v 1.55 2010/04/20 18:13:26 rikster5 Exp $ */
+/* $Id: monthview_gui.c,v 1.56 2010/10/13 03:18:58 rikster5 Exp $ */
 
 /*******************************************************************************
  * monthview_gui.c
@@ -423,9 +423,8 @@ void monthview_gui(struct tm *date_in)
    if (monthview_window) {
        /* Delete any existing window to ensure that new window is biased
         * around currently selected date and so that the new window
-        * contents are updated with any changes on the day view.
-        */
-       gtk_widget_destroy(monthview_window);
+        * contents are updated with any changes on the day view. */
+      gtk_widget_destroy(monthview_window);
    }
 
    memcpy(&glob_month_date, date_in, sizeof(struct tm));

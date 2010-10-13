@@ -1,4 +1,4 @@
-/* $Id: import_gui.c,v 1.31 2010/03/29 05:44:29 rikster5 Exp $ */
+/* $Id: import_gui.c,v 1.32 2010/10/13 03:18:58 rikster5 Exp $ */
 
 /*******************************************************************************
  * import_gui.c
@@ -117,8 +117,8 @@ int read_csv_field(FILE *in, char *text, int size)
       text[n++]=c;
       if (n+1>=size)
       {
-          text[n++]='\0';
-          return n;
+         text[n++]='\0';
+         return n;
       }
    }   /* end while(1) reading field */
 

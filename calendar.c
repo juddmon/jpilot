@@ -1,4 +1,4 @@
-/* $Id: calendar.c,v 1.14 2010/10/07 21:04:31 rikster5 Exp $ */
+/* $Id: calendar.c,v 1.15 2010/10/13 03:18:58 rikster5 Exp $ */
 
 /*******************************************************************************
  * calendar.c
@@ -436,7 +436,7 @@ int get_days_calendar_events2(CalendarEventList **calendar_event_list,
       num = jp_read_DB_files("DatebookDB", &records);
    }
    if (-1 == num)
-     return 0;
+      return 0;
 
    if (total_records) *total_records = num;
 

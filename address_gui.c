@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.265 2010/10/08 22:22:45 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.266 2010/10/13 03:18:58 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -1786,7 +1786,7 @@ static void cb_resort(GtkWidget *widget,
 static void cb_phone_menu(GtkWidget *item, unsigned int value)
 {
    if (!item)
-     return;
+      return;
    if ((GTK_CHECK_MENU_ITEM(item))->active) {
       jp_logf(JP_LOG_DEBUG, "phone_menu = %d\n", (value & 0xFF00) >> 8);
       jp_logf(JP_LOG_DEBUG, "selection = %d\n", value & 0xFF);
@@ -1797,7 +1797,7 @@ static void cb_phone_menu(GtkWidget *item, unsigned int value)
 static void cb_IM_type_menu(GtkWidget *item, unsigned int value)
 {
    if (!item)
-     return;
+      return;
    if ((GTK_CHECK_MENU_ITEM(item))->active) {
       jp_logf(JP_LOG_DEBUG, "IM_type_menu = %d\n", (value & 0xFF00) >> 8);
       jp_logf(JP_LOG_DEBUG, "selection = %d\n", value & 0xFF);
@@ -1815,7 +1815,7 @@ static void cb_address_type_menu(GtkWidget *item, unsigned int value)
    int address_i, i;
 
    if (!item)
-     return;
+      return;
    if ((GTK_CHECK_MENU_ITEM(item))->active) {
       menu = (value & 0xFF00) >> 8;
       selection = value & 0xFF;
@@ -2884,7 +2884,7 @@ static void cb_clist_selection(GtkWidget      *clist,
          if (cont->entry[schema[i].record_field]) {
             gtk_text_buffer_set_text(GTK_TEXT_BUFFER(addr_text_buffer[schema[i].record_field]), cont->entry[schema[i].record_field], -1);
          } else {
-           gtk_text_buffer_set_text(GTK_TEXT_BUFFER(addr_text_buffer[schema[i].record_field]), "", -1);
+            gtk_text_buffer_set_text(GTK_TEXT_BUFFER(addr_text_buffer[schema[i].record_field]), "", -1);
          }
          break;
        case ADDRESS_GUI_BIRTHDAY:
@@ -3108,7 +3108,7 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
    for (temp_cl = *cont_list, i=0; temp_cl; temp_cl=temp_cl->next) {
       if ( ((temp_cl->mcont.attrib & 0x0F) != category) &&
-           category != CATEGORY_ALL) {
+             category != CATEGORY_ALL) {
          continue;
       }
       
@@ -3437,7 +3437,7 @@ static int address_find(void)
    return r;
 }
 
-int address_clist_redraw(void)
+static int address_clist_redraw(void)
 {
    address_update_clist(clist, category_menu1, &glob_contact_list,
                         address_category, TRUE);
@@ -3820,7 +3820,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
                       GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
 
-   gtk_clist_set_shadow_type(GTK_CLIST(clist), GTK_SHADOW_ETCHED_OUT);
+   gtk_clist_set_shadow_type(GTK_CLIST(clist), SHADOW);
    gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
 
    gtk_clist_set_column_min_width(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, 60);

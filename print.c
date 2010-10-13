@@ -1,4 +1,4 @@
-/* $Id: print.c,v 1.49 2010/04/01 19:54:03 rikster5 Exp $ */
+/* $Id: print.c,v 1.50 2010/10/13 03:18:59 rikster5 Exp $ */
 
 /*******************************************************************************
  * print.c
@@ -104,7 +104,7 @@ static int courier_bold_12(void)
 static int clip_to_box(float x1, float y1, float x2, float y2)
 {
    fprintf(out, "%g inch %g inch %g inch %g inch rectclip\n",
-           x1, y1, x2 - x1, y2 - y1);
+                 x1,     y1,     x2-x1,  y2-y1);
    return EXIT_SUCCESS;
 }
 
@@ -386,13 +386,13 @@ void ps_strncat(char *dest, char *src, int n)
 
 static int days_in_mon(struct tm *date)
 {
-    int days_in_month[]={ 31,28,31,30,31,30,31,31,30,31,30,31 };
+   int days_in_month[]={ 31,28,31,30,31,30,31,31,30,31,30,31 };
 
-    if ((date->tm_year%4 == 0) &&
-        !(((date->tm_year+1900)%100==0) && ((date->tm_year+1900)%400!=0))) {
-        days_in_month[1]++;
-    }
-    return(days_in_month[date->tm_mon]);
+   if ((date->tm_year%4 == 0) &&
+       !(((date->tm_year+1900)%100==0) && ((date->tm_year+1900)%400!=0))) {
+       days_in_month[1]++;
+   }
+   return(days_in_month[date->tm_mon]);
 }
 
 /*----------------------------------------------------------------------
@@ -702,8 +702,8 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
          }
 #endif
          if (calendar_isApptOnDate(&(temp_cel->mcale.cale), &date))
-           if ( ! temp_cel->mcale.cale.event)
-             check_first_last(temp_cel);
+            if (! temp_cel->mcale.cale.event)
+               check_first_last(temp_cel);
       }
    }
    if (last_min > 0) last_hour++;
@@ -792,7 +792,7 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
 #ifdef HAVE_LOCALE_H
    setlocale(LC_ALL, current_locale);
 #endif
-     return EXIT_SUCCESS;
+   return EXIT_SUCCESS;
 }
 
 /*
@@ -1001,8 +1001,8 @@ static int print_address_header(void)
            "%%%%EndResource\n"
            "%%%%EndProlog\n"); /* XXX not exactly sure about position */
 
-    fprintf(out,
-            "gsave show grestore\n"
+   fprintf(out,
+           "gsave show grestore\n"
            "currentpoint 14 sub moveto\n"
            "currentpoint exch pop bottom le { %%if\n"
            "showpage setup\n"

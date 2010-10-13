@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.170 2010/10/06 17:35:16 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.171 2010/10/13 03:18:59 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -1745,7 +1745,7 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    entries_shown=0;
    for (temp_todo = *todo_list, i=0; temp_todo; temp_todo=temp_todo->next) {
       if ( ((temp_todo->mtodo.attrib & 0x0F) != category) &&
-          category != CATEGORY_ALL) {
+             category != CATEGORY_ALL) {
          continue;
       }
 
@@ -1813,11 +1813,11 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
       /* Print the due date */
       if (!temp_todo->mtodo.todo.indefinite) {
-          get_pref(PREF_SHORTDATE, NULL, &svalue);
-          strftime(str, sizeof(str), svalue, &(temp_todo->mtodo.todo.due));
+         get_pref(PREF_SHORTDATE, NULL, &svalue);
+         strftime(str, sizeof(str), svalue, &(temp_todo->mtodo.todo.due));
       }
       else {
-          sprintf(str, _("No date"));
+         sprintf(str, _("No date"));
       }
       gtk_clist_set_text(GTK_CLIST(clist), entries_shown, TODO_DATE_COLUMN, str);
       /* Print the todo text */

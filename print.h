@@ -1,4 +1,4 @@
-/* $Id: print.h,v 1.8 2010/03/29 05:44:31 rikster5 Exp $ */
+/* $Id: print.h,v 1.9 2010/10/13 03:18:59 rikster5 Exp $ */
 
 /*******************************************************************************
  * print.h
@@ -33,20 +33,20 @@
 extern int print_day_week_month;
 
 typedef enum {
-    PAPER_Letter,    PAPER_Legal,  PAPER_Statement, PAPER_Tabloid,
-    PAPER_Ledger,    PAPER_Folio,  PAPER_Quarto,    PAPER_7x9,
-    PAPER_9x11,      PAPER_9x12,   PAPER_10x13,     PAPER_10x14,
-    PAPER_Executive, PAPER_A0,     PAPER_A1,        PAPER_A2,
-    PAPER_A3,        PAPER_A4,     PAPER_A5,        PAPER_A6,
-    PAPER_A7,        PAPER_A8,     PAPER_A9,        PAPER_A10,
-    PAPER_B0,        PAPER_B1,     PAPER_B2,        PAPER_B3,
-    PAPER_B4,        PAPER_B5,     PAPER_B6,        PAPER_B7,
-    PAPER_B8,        PAPER_B9,     PAPER_B10,       PAPER_ISOB0,
-    PAPER_ISOB1,     PAPER_ISOB2,  PAPER_ISOB3,     PAPER_ISOB4,
-    PAPER_ISOB5,     PAPER_ISOB6,  PAPER_ISOB7,     PAPER_ISOB8,
-    PAPER_ISOB9,     PAPER_ISOB10, PAPER_C0,        PAPER_C1,
-    PAPER_C2,        PAPER_C3,     PAPER_C4,        PAPER_C5,
-    PAPER_C6,        PAPER_C7,     PAPER_DL,        PAPER_Filo
+   PAPER_Letter,    PAPER_Legal,  PAPER_Statement, PAPER_Tabloid,
+   PAPER_Ledger,    PAPER_Folio,  PAPER_Quarto,    PAPER_7x9,
+   PAPER_9x11,      PAPER_9x12,   PAPER_10x13,     PAPER_10x14,
+   PAPER_Executive, PAPER_A0,     PAPER_A1,        PAPER_A2,
+   PAPER_A3,        PAPER_A4,     PAPER_A5,        PAPER_A6,
+   PAPER_A7,        PAPER_A8,     PAPER_A9,        PAPER_A10,
+   PAPER_B0,        PAPER_B1,     PAPER_B2,        PAPER_B3,
+   PAPER_B4,        PAPER_B5,     PAPER_B6,        PAPER_B7,
+   PAPER_B8,        PAPER_B9,     PAPER_B10,       PAPER_ISOB0,
+   PAPER_ISOB1,     PAPER_ISOB2,  PAPER_ISOB3,     PAPER_ISOB4,
+   PAPER_ISOB5,     PAPER_ISOB6,  PAPER_ISOB7,     PAPER_ISOB8,
+   PAPER_ISOB9,     PAPER_ISOB10, PAPER_C0,        PAPER_C1,
+   PAPER_C2,        PAPER_C3,     PAPER_C4,        PAPER_C5,
+   PAPER_C6,        PAPER_C7,     PAPER_DL,        PAPER_Filo
 } PaperSize;
 
 /* The print options window

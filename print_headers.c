@@ -1,4 +1,4 @@
-/* $Id: print_headers.c,v 1.12 2010/03/29 21:08:34 rikster5 Exp $ */
+/* $Id: print_headers.c,v 1.13 2010/10/13 03:18:59 rikster5 Exp $ */
 
 /*******************************************************************************
  * print_headers.c
@@ -132,7 +132,7 @@ void print_common_prolog(FILE *f)
       "] def\n"
       "\n";
 
-    fputs(common_prolog, f);
+   fputs(common_prolog, f);
 }
 
 void print_common_setup(FILE *f)
@@ -158,7 +158,7 @@ void print_common_setup(FILE *f)
       "        } if\n"
       "} forall\n";
 
-    fputs(common_setup, f);
+   fputs(common_setup, f);
 }
 
 /*----------------------------------------------------------------------
@@ -460,7 +460,7 @@ void print_week_header(FILE *f)
       "\n"
       "%-------------------------------------------------------------\n\n\n";
 
-    fputs(week_header, f);
+   fputs(week_header, f);
 }
 
 /*----------------------------------------------------------------------
@@ -772,7 +772,7 @@ void print_month_header(FILE *f)
       "%------------------------------------------------------------------\n"
       "\n";
 
-    fputs(month_header, f);
+   fputs(month_header, f);
 }
 
 /*----------------------------------------------------------------------
@@ -782,46 +782,47 @@ void print_month_header(FILE *f)
 
 void print_day_header(FILE *f)
 {
-    char *day_header =
-        "ScaleY ScaleX Min dup scale\n"
-        "%----------------------------------------\n"
-        "% First the gray background area\n"
-        "newpath\n"
-        "0 slw\n"
-        " 0.5  inch  3.5 inch m\n"
-        " 0          7.0 inch rl\n"
-        " 7.5  inch  0        rl\n"
-        " 0         -1   inch rl\n"
-        "-3    inch  0        rl\n"
-        " 0         -6   inch rl\n"
-        "-0.75 inch  0        rl\n"
-        " 0          6   inch rl\n"
-        "-3    inch  0        rl\n"
-        " 0         -6   inch rl\n"
-        "closepath 0.85 setgray fill stroke\n"
-        "%----------------------------------------\n"
-        "% Next highlighting lines round title\n"
-        "0 setgray\n"
-        "1 slw newpath 0.5 inch 10.5    inch m 7.5 inch 0 rl stroke\n"
-        "      newpath 0.5 inch  9.5625 inch m 7.5 inch 0 rl stroke\n"
-        "2 slw newpath 0.5 inch  9.5    inch m 7.5 inch 0 rl stroke\n\n"
-        "/Times-Roman-ISOLatin1 findfont 14 scalefont setfont\n"
-        "0 slw\n"
-        "0 1 11 {\n"
-        "       /I edef\n"
-        "       %----------------------------------------\n"
-        "       % The hours\n"
-        "       0.5 inch 9.15 inch I 0.5 inch mul sub m\n"
-        "       I 10 lt { (0) show } if I nstr cvs show (:00) show\n"
-        "       4.25 inch 9.15 inch I 0.5 inch mul sub m\n"
-        "       I 12 add nstr cvs show (:00) show\n"
-        "       %----------------------------------------\n"
-        "       % The horizontal lines between hours\n"
-        "       1.25 inch 9 inch I 0.5 inch mul sub m 3 inch 0 rl\n"
-        "       5    inch 9 inch I 0.5 inch mul sub m 3 inch 0 rl\n"
-        "} for\n"
-        "stroke\n";
-    fputs(day_header, f);
+   char *day_header =
+      "ScaleY ScaleX Min dup scale\n"
+      "%----------------------------------------\n"
+      "% First the gray background area\n"
+      "newpath\n"
+      "0 slw\n"
+      " 0.5  inch  3.5 inch m\n"
+      " 0          7.0 inch rl\n"
+      " 7.5  inch  0        rl\n"
+      " 0         -1   inch rl\n"
+      "-3    inch  0        rl\n"
+      " 0         -6   inch rl\n"
+      "-0.75 inch  0        rl\n"
+      " 0          6   inch rl\n"
+      "-3    inch  0        rl\n"
+      " 0         -6   inch rl\n"
+      "closepath 0.85 setgray fill stroke\n"
+      "%----------------------------------------\n"
+      "% Next highlighting lines round title\n"
+      "0 setgray\n"
+      "1 slw newpath 0.5 inch 10.5    inch m 7.5 inch 0 rl stroke\n"
+      "      newpath 0.5 inch  9.5625 inch m 7.5 inch 0 rl stroke\n"
+      "2 slw newpath 0.5 inch  9.5    inch m 7.5 inch 0 rl stroke\n\n"
+      "/Times-Roman-ISOLatin1 findfont 14 scalefont setfont\n"
+      "0 slw\n"
+      "0 1 11 {\n"
+      "       /I edef\n"
+      "       %----------------------------------------\n"
+      "       % The hours\n"
+      "       0.5 inch 9.15 inch I 0.5 inch mul sub m\n"
+      "       I 10 lt { (0) show } if I nstr cvs show (:00) show\n"
+      "       4.25 inch 9.15 inch I 0.5 inch mul sub m\n"
+      "       I 12 add nstr cvs show (:00) show\n"
+      "       %----------------------------------------\n"
+      "       % The horizontal lines between hours\n"
+      "       1.25 inch 9 inch I 0.5 inch mul sub m 3 inch 0 rl\n"
+      "       5    inch 9 inch I 0.5 inch mul sub m 3 inch 0 rl\n"
+      "} for\n"
+      "stroke\n";
+
+   fputs(day_header, f);
 }
 
 /*----------------------------------------------------------------------
@@ -902,6 +903,6 @@ void print_todo_header(FILE *f)
       "        } if\n"
       "} def\n";
 
-    fputs(todo_header, f);
+   fputs(todo_header, f);
 }
 

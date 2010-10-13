@@ -1,4 +1,4 @@
-/* $Id: contact.c,v 1.23 2010/04/01 23:09:59 rikster5 Exp $ */
+/* $Id: contact.c,v 1.24 2010/10/13 03:18:58 rikster5 Exp $ */
 
 /*******************************************************************************
  * contact.c
@@ -603,21 +603,21 @@ int get_contact_app_info(struct ContactAppInfo *ai)
       int i;
 
       for (i = 0; i < 49 + 3; i++)
-        if (ai->labels[i][0] != '\0') {
-           charset_p2j(ai->labels[i], 16, char_set);
-        }
+         if (ai->labels[i][0] != '\0') {
+            charset_p2j(ai->labels[i], 16, char_set);
+         }
       for (i = 0; i < 8; i++)
-        if (ai->phoneLabels[i][0] != '\0') {
-           charset_p2j(ai->phoneLabels[i], 16, char_set);
-        }
+         if (ai->phoneLabels[i][0] != '\0') {
+            charset_p2j(ai->phoneLabels[i], 16, char_set);
+         }
       for (i = 0; i < 3; i++)
-        if (ai->addrLabels[i][0] != '\0') {
-           charset_p2j(ai->addrLabels[i], 16, char_set);
-        }
+         if (ai->addrLabels[i][0] != '\0') {
+            charset_p2j(ai->addrLabels[i], 16, char_set);
+         }
       for (i = 0; i < 5; i++)
-        if (ai->IMLabels[i][0] != '\0') {
-           charset_p2j(ai->IMLabels[i], 16, char_set);
-        }
+         if (ai->IMLabels[i][0] != '\0') {
+            charset_p2j(ai->IMLabels[i], 16, char_set);
+         }
    }
 
    return EXIT_SUCCESS;
@@ -669,7 +669,7 @@ int get_contacts2(ContactList **contact_list, int sort_order,
 
    num = jp_read_DB_files("ContactsDB-PAdd", &records);
    if (-1 == num)
-     return 0;
+      return 0;
 
    for (temp_list = records; temp_list; temp_list = temp_list->next) {
       if (temp_list->data) {

@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.141 2010/10/05 21:48:05 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.142 2010/10/13 03:18:58 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -1233,7 +1233,7 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    entries_shown=0;
    for (temp_memo = *memo_list; temp_memo; temp_memo=temp_memo->next) {
       if ( ((temp_memo->mmemo.attrib & 0x0F) != category) &&
-          category != CATEGORY_ALL) {
+             category != CATEGORY_ALL) {
          continue;
       }
 

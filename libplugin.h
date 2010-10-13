@@ -1,4 +1,4 @@
-/* $Id: libplugin.h,v 1.34 2010/04/21 11:31:06 rousseau Exp $ */
+/* $Id: libplugin.h,v 1.35 2010/10/13 03:18:58 rikster5 Exp $ */
 
 /*******************************************************************************
  * libplugin.h
@@ -54,9 +54,9 @@
 
 
 typedef struct {
-  unsigned char Offset[4];  /*4 bytes offset from BOF to record */
-  unsigned char attrib;
-  unsigned char unique_ID[3];
+   unsigned char Offset[4];  /*4 bytes offset from BOF to record */
+   unsigned char attrib;
+   unsigned char unique_ID[3];
 } record_header;
 
 typedef struct {

@@ -1,4 +1,4 @@
-/* $Id: log.c,v 1.33 2010/03/29 05:44:29 rikster5 Exp $ */
+/* $Id: log.c,v 1.34 2010/10/13 03:18:58 rikster5 Exp $ */
 
 /*******************************************************************************
  * log.c
@@ -139,7 +139,7 @@ int jp_vlogf (int level, const char *format, va_list val) {
 
    /* free the buffer is a conversion was used */
    if (local_buf != buf)
-       g_free(local_buf);
+      g_free(local_buf);
 
    if ((pipe_to_parent) && (level & glob_log_gui_mask)) {
       /* do not use a pipe for intra-process log

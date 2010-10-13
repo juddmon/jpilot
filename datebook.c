@@ -1,4 +1,4 @@
-/* $Id: datebook.c,v 1.69 2010/10/07 21:04:31 rikster5 Exp $ */
+/* $Id: datebook.c,v 1.70 2010/10/13 03:18:58 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook.c
@@ -359,24 +359,24 @@ int db3_parse_tag(char *note, int *type, struct db4_struct *db4)
    /* NULL means any character is allowed */
    char *allowed[]={
       "#", "#", /* First 2 characters are # */
-        "@FfCcd", /* F or f floating, C or c completed, d done */
-        "@blL", /* b bold, l large, L large bold */
-        "@ABCDEFGHIJKLMNO", /* Category */
-        "@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrst", /* icon */
-        "@s", /* Spans midnight */
-        NULL, /* Lower 2 digits of next 2 chars are time zone */
-        NULL,
-        "@l\n", /* l link, EOL for datebk3 tags */
-        NULL, /* Lower 6 bits of next 4 chars make a 24 bit number (advance) */
-        NULL, /* I don't understand this yet and have not coded it */
-        NULL,
-        NULL,
-        NULL, /* Lower 6 bits of next 4 chars make a 24 bit number */
-        NULL, /*  which is the custom sound */
-        NULL,
-        NULL,
-        "@ABCDEFGHIJKLMNO", /* Color */
-        "\n", /* EOL for datebk4 tags */
+      "@FfCcd", /* F or f floating, C or c completed, d done */
+      "@blL", /* b bold, l large, L large bold */
+      "@ABCDEFGHIJKLMNO", /* Category */
+      "@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrst", /* icon */
+      "@s", /* Spans midnight */
+      NULL, /* Lower 2 digits of next 2 chars are time zone */
+      NULL,
+      "@l\n", /* l link, EOL for datebk3 tags */
+      NULL, /* Lower 6 bits of next 4 chars make a 24 bit number (advance) */
+      NULL, /* I don't understand this yet and have not coded it */
+      NULL,
+      NULL,
+      NULL, /* Lower 6 bits of next 4 chars make a 24 bit number */
+      NULL, /*  which is the custom sound */
+      NULL,
+      NULL,
+      "@ABCDEFGHIJKLMNO", /* Color */
+      "\n", /* EOL for datebk4 tags */
    };
    int len, i;
 
@@ -689,7 +689,7 @@ unsigned int calendar_isApptOnDate(struct CalendarEvent *cale, struct tm *date)
       break;
     default:
       jp_logf(JP_LOG_WARN, _("Unknown repeatType (%d) found in DatebookDB\n"),
-           cale->repeatType);
+                                                  cale->repeatType);
       ret = FALSE;
    }/* switch */
 

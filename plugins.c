@@ -1,4 +1,4 @@
-/* $Id: plugins.c,v 1.26 2010/03/29 05:44:30 rikster5 Exp $ */
+/* $Id: plugins.c,v 1.27 2010/10/13 03:18:59 rikster5 Exp $ */
 
 /*******************************************************************************
  * plugins.c
@@ -70,11 +70,9 @@ void write_plugin_sync_file(void)
    fclose(out);
 }
 
-/*
- * This is just a repeated subroutine to load_plugins not needing
+/* This is just a repeated subroutine to load_plugins not needing
  * a name of its own.
- * Assumes dir has already been checked
- */
+ * Assumes dir has already been checked */
 static int load_plugins_sub1(DIR *dir, char *path, int *number, 
                              unsigned char user_only)
 {
@@ -142,10 +140,10 @@ gint plugin_sort(gconstpointer a, gconstpointer b)
 
    /* menu_name is NULL for plugin without menu entry */
    if (ca == NULL)
-     ca = ((struct plugin_s *)a)->name;
+      ca = ((struct plugin_s *)a)->name;
 
    if (cb == NULL)
-     cb = ((struct plugin_s *)b)->name;
+      cb = ((struct plugin_s *)b)->name;
 
    return strcasecmp(ca, cb);
 }
@@ -185,8 +183,7 @@ int load_plugins(void)
 }
 
 /* Now we need to look in the jpilot_plugins file to see which plugins
- * are enabled to sync and which are not
- */
+ * are enabled to sync and which are not */
 static int get_plugin_sync_bits(void)
 {
    int i;

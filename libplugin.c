@@ -1,4 +1,4 @@
-/* $Id: libplugin.c,v 1.41 2010/03/29 05:44:29 rikster5 Exp $ */
+/* $Id: libplugin.c,v 1.42 2010/10/13 03:18:58 rikster5 Exp $ */
 
 /*******************************************************************************
  * libplugin.c
@@ -305,10 +305,10 @@ int jp_install_remove_line(int deleted_line)
 
 static void jp_pack_htonl(unsigned char *dest, unsigned long l)
 {
-    dest[3]=l & 0xFF;
-    dest[2]=l>>8 & 0xFF;
-    dest[1]=l>>16 & 0xFF;
-    dest[0]=l>>24 & 0xFF;
+   dest[3]=l & 0xFF;
+   dest[2]=l>>8 & 0xFF;
+   dest[1]=l>>16 & 0xFF;
+   dest[0]=l>>24 & 0xFF;
 }
 
 /*
@@ -691,8 +691,8 @@ int jp_undelete_record(char *DB_name, buf_rec *br, int flag)
          break;
       }
       /* Skip copying DELETED_PALM_REC entry which undeletes it */
-      if (header.unique_id == unique_id &&
-          header.rt == DELETED_PALM_REC) {
+      if ((header.unique_id == unique_id) &&
+          (header.rt == DELETED_PALM_REC)) {
          found = TRUE;
          if (fseek(pc_file, header.rec_len, SEEK_CUR)) {
             jp_logf(JP_LOG_WARN, "fseek failed\n");
@@ -702,10 +702,10 @@ int jp_undelete_record(char *DB_name, buf_rec *br, int flag)
          continue;
       }
       /* Change header on DELETED_PC_REC to undelete this type */
-      if (header.unique_id == unique_id &&
-          header.rt == DELETED_PC_REC) {
-          found = TRUE;
-          header.rt = NEW_PC_REC;
+      if ((header.unique_id == unique_id) &&
+          (header.rt == DELETED_PC_REC)) {
+         found = TRUE;
+         header.rt = NEW_PC_REC;
       }
 
       /* Otherwise, keep whatever is there by copying it to the new pc3 file */

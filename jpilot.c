@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.189 2010/10/12 20:36:54 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.190 2010/10/13 03:18:58 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -1185,7 +1185,8 @@ static void get_main_menu(GtkWidget  *my_window,
 #ifdef ENABLE_PLUGINS
    /* Count the plugin/ entries */
    for (count=0, temp_list = plugin_list;
-        temp_list; temp_list = temp_list->next) {
+        temp_list; 
+        temp_list = temp_list->next) {
       p = (struct plugin_s *)temp_list->data;
       if (p->menu_name) {
          count++;
@@ -1194,7 +1195,8 @@ static void get_main_menu(GtkWidget  *my_window,
 
    /* Count the help/ entries */
    for (help_count=0, temp_list = plugin_list;
-        temp_list; temp_list = temp_list->next) {
+        temp_list; 
+        temp_list = temp_list->next) {
       p = (struct plugin_s *)temp_list->data;
       if (p->help_name) {
          help_count++;
@@ -1315,18 +1317,17 @@ static void get_main_menu(GtkWidget  *my_window,
    accel_group = gtk_accel_group_new();
 
    /* This function initializes the item factory.
-    Param 1: The type of menu - can be GTK_TYPE_MENU_BAR, GTK_TYPE_MENU,
-    or GTK_TYPE_OPTION_MENU.
-    Param 2: The path of the menu.
-    Param 3: A pointer to a gtk_accel_group.  The item factory sets up
-    the accelerator table while generating menus.
-    */
+    * Param 1: The type of menu - can be GTK_TYPE_MENU_BAR, GTK_TYPE_MENU,
+    * or GTK_TYPE_OPTION_MENU.
+    * Param 2: The path of the menu.
+    * Param 3: A pointer to a gtk_accel_group.  The item factory sets up
+    * the accelerator table while generating menus. */
    item_factory = gtk_item_factory_new(GTK_TYPE_MENU_BAR, "<main>",
                                        accel_group);
 
    /* This function generates the menu items. Pass the item factory,
-    the number of items in the array, the array itself, and any
-    callback data for the the menu items. */
+    * the number of items in the array, the array itself, and any
+    * callback data for the the menu items. */
    gtk_item_factory_create_items(item_factory, nmenu_items, menu_items2, NULL);
 
    /* Attach the new accelerator group to the window. */

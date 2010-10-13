@@ -1,4 +1,4 @@
-/* $Id: address.c,v 1.62 2010/04/01 23:09:59 rikster5 Exp $ */
+/* $Id: address.c,v 1.63 2010/10/13 03:18:58 rikster5 Exp $ */
 
 /*******************************************************************************
  * address.c
@@ -394,7 +394,7 @@ int get_addresses2(AddressList **address_list, int sort_order,
 
    num = jp_read_DB_files("AddressDB", &records);
    if (-1 == num)
-     return 0;
+      return 0;
 
    for (temp_list = records; temp_list; temp_list = temp_list->next) {
       if (temp_list->data) {
@@ -518,7 +518,8 @@ void print_address_list(AddressList **al)
 {
    AddressList *temp_al, *prev_al;
 
-   for (prev_al=NULL, temp_al=*al; temp_al;
+   for (prev_al=NULL, temp_al=*al; 
+        temp_al;
         prev_al=temp_al, temp_al=temp_al->next) {
       jp_logf(JP_LOG_FILE | JP_LOG_STDOUT, "entry[0]=[%s]\n", temp_al->maddr.addr.entry[0]);
    }

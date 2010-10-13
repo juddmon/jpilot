@@ -1,4 +1,4 @@
-/* $Id: otherconv.c,v 1.44 2010/03/07 21:54:53 rikster5 Exp $ */
+/* $Id: otherconv.c,v 1.45 2010/10/13 03:18:59 rikster5 Exp $ */
 
 /*******************************************************************************
  * otherconv.c
@@ -290,20 +290,20 @@ void UTF_to_other(char *const buf, int buf_len)
    *outptr = 0; /* NULL terminate whatever fraction was converted */
  
    if ((size_t)(-1) == rc) {
-     switch (errno) {
-      case EILSEQ:
-        errstr = _("iconv: unconvertible sequence at place %d in \'%s\'\n");
-        failed = TRUE;
+      switch (errno) {
+       case EILSEQ:
+         errstr = _("iconv: unconvertible sequence at place %d in \'%s\'\n");
+         failed = TRUE;
+         break;
+       case EINVAL:
+         errstr = _("iconv: incomplete UTF-8 sequence at place %d in \'%s\'\n");
+         break;
+       case E2BIG:
+         errstr = _("iconv: buffer filled. stopped at place %d in \'%s\'\n");
         break;
-      case EINVAL:
-        errstr = _("iconv: incomplete UTF-8 sequence at place %d in \'%s\'\n");
-        break;
-      case E2BIG:
-        errstr = _("iconv: buffer filled. stopped at place %d in \'%s\'\n");
-        break;
-      default:
-        errstr = _("iconv: unexpected error at place %d in \'%s\'\n");
-     }
+       default:
+         errstr = _("iconv: unexpected error at place %d in \'%s\'\n");
+      }
    }
 
    if (buf_out_ptr) {

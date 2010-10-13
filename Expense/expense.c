@@ -1,4 +1,4 @@
-/* $Id: expense.c,v 1.73 2010/04/13 15:54:02 rikster5 Exp $ */
+/* $Id: expense.c,v 1.74 2010/10/13 03:18:59 rikster5 Exp $ */
 
 /*******************************************************************************
  * expense.c
@@ -62,16 +62,16 @@
 /*  This was copied out of the pilot-link package.
  *  I just like it here for quick reference.
 struct Expense {
- struct tm date;
- enum ExpenseType type;
- enum ExpensePayment payment;
- int currency;
- char * amount;
- char * vendor;
- char * city;
- char * attendees;
- char * note;
- };
+   struct tm date;
+   enum ExpenseType type;
+   enum ExpensePayment payment;
+   int currency;
+   char * amount;
+   char * vendor;
+   char * city;
+   char * attendees;
+   char * note;
+};
 */
 
 /* This is my wrapper to the expense structure so that I can put
@@ -969,7 +969,7 @@ static void display_records(void)
    /* This function takes care of reading the Database for us */
    num = jp_read_DB_files("ExpenseDB", &records);
    if (-1 == num)
-     return;
+      return;
 
    entries_shown = 0;
    for (i=0, temp_list = records; temp_list; temp_list = temp_list->next, i++) {
@@ -2025,7 +2025,7 @@ int plugin_search(const char *search_string, int case_sense, struct search_resul
    /* This function takes care of reading the Database for us */
    num = jp_read_DB_files("ExpenseDB", &records);
    if (-1 == num)
-     return 0;
+      return 0;
 
    count = 0;
    
