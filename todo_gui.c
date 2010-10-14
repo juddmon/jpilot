@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.171 2010/10/13 03:18:59 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.172 2010/10/14 04:43:52 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -52,6 +52,9 @@
 #define NUM_TODO_CSV_FIELDS 8
 #define CONNECT_SIGNALS 400
 #define DISCONNECT_SIGNALS 401
+
+/* RFCs use CRLF for Internet newline */
+#define CRLF "\x0D\x0A"
 
 /******************************* Global vars **********************************/
 /* Keeps track of whether code is using ToDo, or Tasks database
@@ -640,6 +643,7 @@ static void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
    char pref_time[40];
    char csv_text[65550];
    char *p;
+   gchar *end;
    char username[256];
    char hostname[256];
    const char *svalue;
@@ -695,14 +699,21 @@ static void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 
    /* Special setup for ICAL export */
    if (type == EXPORT_TYPE_ICALENDAR) {
+      get_pref(PREF_CHAR_SET, &char_set, NULL);
+      if (char_set < CHAR_SET_UTF) {
+         jp_logf(JP_LOG_WARN, _("Host character encoding is not UTF-8 based.\n"
+                                " Exported ical file may not be standards-compliant\n"));
+      }
+
       get_pref(PREF_USER, NULL, &svalue);
       g_strlcpy(text, svalue, 128);
+      charset_p2j(text, 128, char_set);
       str_to_ical_str(username, sizeof(username), text);
       get_pref(PREF_USER_ID, &userid, NULL);
-      gethostname(text, sizeof(text));
-      text[sizeof(text)-1]='\0';
+      gethostname(text, sizeof(hostname));
+      text[sizeof(hostname)-1]='\0';
+      charset_p2j(text, sizeof(hostname), char_set);
       str_to_ical_str(hostname, sizeof(hostname), text);
-
       time(&ltime);
       now = gmtime(&ltime);
    }
@@ -773,16 +784,17 @@ static void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
          /* RFC 2445: Internet Calendaring and Scheduling Core
           *           Object Specification */
          if (i == 0) {
-            fprintf(out, "BEGIN:VCALENDAR\nVERSION:2.0\n");
-            fprintf(out, "PRODID:%s\n", FPI_STRING);
+            fprintf(out, "BEGIN:VCALENDAR"CRLF);
+            fprintf(out, "VERSION:2.0"CRLF);
+            fprintf(out, "PRODID:%s"CRLF, FPI_STRING);
          }
-         fprintf(out, "BEGIN:VTODO\n");
+         fprintf(out, "BEGIN:VTODO"CRLF);
          if (mtodo->attrib & dlpRecAttrSecret) {
-            fprintf(out, "CLASS:PRIVATE\n");
+            fprintf(out, "CLASS:PRIVATE"CRLF);
          }
-         fprintf(out, "UID:palm-todo-%08x-%08lx-%s@%s\n",
+         fprintf(out, "UID:palm-todo-%08x-%08lx-%s@%s"CRLF,
                  mtodo->unique_id, userid, username, hostname);
-         fprintf(out, "DTSTAMP:%04d%02d%02dT%02d%02d%02dZ\n",
+         fprintf(out, "DTSTAMP:%04d%02d%02dT%02d%02d%02dZ"CRLF,
                  now->tm_year+1900,
                  now->tm_mon+1,
                  now->tm_mday,
@@ -791,33 +803,43 @@ static void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
                  now->tm_sec);
          str_to_ical_str(text, sizeof(text),
                          todo_app_info.category.name[mtodo->attrib & 0x0F]);
-         fprintf(out, "CATEGORIES:%s\n", text);
-         g_snprintf(str1, sizeof(str1), "%s", mtodo->todo.description);
+         fprintf(out, "CATEGORIES:%s"CRLF, text);
+         if (mtodo->todo.description) {
+            g_strlcpy(str1, mtodo->todo.description, 51);
+            /* truncate the string on a UTF-8 character boundary */
+            if (char_set > CHAR_SET_UTF) {
+               if (!g_utf8_validate(str1, -1, (const gchar **)&end))
+                  *end = 0;
+            }
+         } else {
+            /* Handle pathological case with null description. */
+            str1[0] = '\0';
+         }
          if ((p = strchr(str1, '\n'))) {
             *p = '\0';
          }
          str_to_ical_str(text, sizeof(text), str1);
-         fprintf(out, "SUMMARY:%s%s\n", text,
+         fprintf(out, "SUMMARY:%s%s"CRLF, text,
                  strlen(str1) > 49 ? "..." : "");
          str_to_ical_str(text, sizeof(text), mtodo->todo.description);
          fprintf(out, "DESCRIPTION:%s", text);
          if (mtodo->todo.note && mtodo->todo.note[0]) {
             str_to_ical_str(text, sizeof(text), mtodo->todo.note);
-            fprintf(out, "\\n\n %s\n", text);
+            fprintf(out, "\\n"CRLF" %s"CRLF, text);
          } else {
-            fprintf(out, "\n");
+            fprintf(out, ""CRLF);
          }
-         fprintf(out, "STATUS:%s\n", mtodo->todo.complete ? "COMPLETED" : "NEEDS-ACTION");
-         fprintf(out, "PRIORITY:%d\n", mtodo->todo.priority);
+         fprintf(out, "STATUS:%s"CRLF, mtodo->todo.complete ? "COMPLETED" : "NEEDS-ACTION");
+         fprintf(out, "PRIORITY:%d"CRLF, mtodo->todo.priority);
          if (!mtodo->todo.indefinite) {
-            fprintf(out, "DUE;VALUE=DATE:%04d%02d%02d\n",
+            fprintf(out, "DUE;VALUE=DATE:%04d%02d%02d"CRLF,
                     mtodo->todo.due.tm_year+1900,
                     mtodo->todo.due.tm_mon+1,
                     mtodo->todo.due.tm_mday);
          }
-         fprintf(out, "END:VTODO\n");
+         fprintf(out, "END:VTODO"CRLF);
          if (temp_list->next == NULL) {
-            fprintf(out, "END:VCALENDAR\n");
+            fprintf(out, "END:VCALENDAR"CRLF);
          }
          break;
        default:
