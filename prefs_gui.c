@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.74 2010/10/13 03:18:59 rikster5 Exp $ */
+/* $Id: prefs_gui.c,v 1.75 2010/10/14 22:47:32 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -48,7 +48,7 @@ extern GtkTooltips *glob_tooltips;
 extern unsigned char skip_plugins;
 #endif
 
-/* Serial Port Menu */
+/* Sync Port Menu */
 static GtkWidget *port_menu;
 GtkWidget *port_menu_item[10];
 static char *port_choices[]={
@@ -92,7 +92,7 @@ void set_colors()
 }
 #endif /* #ifdef COLORS */
 
-/* Serial Port menu code */
+/* Sync Port menu code */
 static void cb_serial_port_menu(GtkWidget *widget,
                                 gpointer   data)
 {
@@ -147,7 +147,7 @@ static int make_serial_port_menu(GtkWidget **port_menu)
    return EXIT_SUCCESS;
 }
 
-/* End Serial Port Menu code */
+/* End Sync Port Menu code */
 
 static void cb_pref_menu(GtkWidget *widget, gpointer data)
 {
@@ -574,7 +574,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
 
    /* Port */
-   label = gtk_label_new(_("Serial Port"));
+   label = gtk_label_new(_("Sync Port"));
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
                              0, 1, 1, 2);
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
@@ -591,7 +591,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
                       "changed", GTK_SIGNAL_FUNC(cb_text_entry),
                       GINT_TO_POINTER(PREF_PORT));
 
-   /* Serial Port Menu */
+   /* Sync Port Menu */
    /* Note that port_entry must exist before we call this function */
    make_serial_port_menu(&port_menu);
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(port_menu),
