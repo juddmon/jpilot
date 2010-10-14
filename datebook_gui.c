@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.233 2010/10/13 03:18:58 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.234 2010/10/14 04:47:04 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -965,6 +965,18 @@ static void appt_export_ok(int type, const char *filename)
                  now->tm_hour,
                  now->tm_min,
                  now->tm_sec);
+         if (datebook_version) {
+            /* Calendar supports categories and locations */
+            utf = charset_p2newj(dbook_app_info.category.name[mcale->attrib & 0x0F], 16, char_set);
+            str_to_ical_str(text, sizeof(text), utf);
+            fprintf(out, "CATEGORIES:%s"CRLF, text);
+            g_free(utf);
+            if (mcale->cale.location) {
+               str_to_ical_str(text, sizeof(text), mcale->cale.location);
+               fprintf(out, "LOCATION:%s"CRLF, text);
+            }
+         }
+         /* Create truncated description for use in SUMMARY field */
          if (mcale->cale.description) {
             g_strlcpy(text, mcale->cale.description, 51);
             /* truncate the string on a UTF-8 character boundary */
@@ -986,8 +998,6 @@ static void appt_export_ok(int type, const char *filename)
          fprintf(out, "DESCRIPTION:%s", csv_text);
          if (mcale->cale.note && mcale->cale.note[0]) {
             str_to_ical_str(csv_text, sizeof(csv_text), mcale->cale.note);
-            /* FIXME: Add location field to output as well or
-             *        find an ical field for location */
             fprintf(out, "\\n"CRLF" %s"CRLF, csv_text);
          } else {
             fprintf(out, CRLF);
@@ -1114,8 +1124,6 @@ static void appt_export_ok(int type, const char *filename)
             fprintf(out, "BEGIN:VALARM"CRLF);
             fprintf(out, "ACTION:DISPLAY"CRLF);
             str_to_ical_str(csv_text, sizeof(csv_text), mcale->cale.description);
-            /* FIXME: Add location in parentheses (loc) as the Palm does.
-             * We would need to check strlen, etc., before adding */
             fprintf(out, "DESCRIPTION:%s"CRLF, csv_text);
             switch (mcale->cale.advanceUnits) {
              case advMinutes:
