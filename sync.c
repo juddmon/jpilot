@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.113 2010/10/12 03:25:38 rikster5 Exp $ */
+/* $Id: sync.c,v 1.114 2010/10/14 05:16:42 rikster5 Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -3367,7 +3367,7 @@ int sync_once(struct my_sync_info *sync_info)
    int fd;
 #endif
    int r;
-   struct my_sync_info *sync_info_copy;
+   struct my_sync_info sync_info_copy;
    pid_t pid;
 
 #ifdef USE_LOCKING
@@ -3393,12 +3393,7 @@ int sync_once(struct my_sync_info *sync_info)
    }
 
    /* Make a copy of the sync info for the forked process */
-   sync_info_copy = malloc(sizeof(struct my_sync_info));
-   if (!sync_info_copy) {
-      jp_logf(JP_LOG_WARN, PN":sync_once(): %s\n", _("Out of memory"));
-      return 0;
-   }
-   memcpy(sync_info_copy, sync_info, sizeof(struct my_sync_info));
+   memcpy(&sync_info_copy, sync_info, sizeof(struct my_sync_info));
 
    if (!(SYNC_NO_FORK & sync_info->flags)) {
       jp_logf(JP_LOG_DEBUG, "forking sync process\n");
@@ -3420,7 +3415,7 @@ int sync_once(struct my_sync_info *sync_info)
       }
    }
 
-   r = jp_sync(sync_info_copy);
+   r = jp_sync(&sync_info_copy);
    if (r) {
       jp_logf(JP_LOG_WARN, _("Exiting with status %s\n"), get_error_str(r));
       jp_logf(JP_LOG_WARN, _("Finished.\n"));
@@ -3429,7 +3424,6 @@ int sync_once(struct my_sync_info *sync_info)
    sync_unlock(fd);
 #endif
    jp_logf(JP_LOG_DEBUG, "sync child exiting\n");
-   free(sync_info_copy);
    if (!(SYNC_NO_FORK & sync_info->flags)) {
       _exit(0);
    } else {
