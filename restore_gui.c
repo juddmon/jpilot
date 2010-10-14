@@ -1,4 +1,4 @@
-/* $Id: restore_gui.c,v 1.29 2010/03/29 05:44:31 rikster5 Exp $ */
+/* $Id: restore_gui.c,v 1.30 2010/10/14 22:51:10 rikster5 Exp $ */
 
 /*******************************************************************************
  * restore_gui.c
@@ -174,7 +174,7 @@ static int populate_clist_sub(char *path, int check_for_dups, int check_exts)
             utf8_text = g_locale_to_utf8(row_text[0], -1, NULL, NULL, NULL);
             if (!utf8_text) {
                jp_logf(JP_LOG_GUI, _("Unable to convert filename for GTK display\n"));
-               jp_logf(JP_LOG_GUI, _("See console log to find which file will not be restored"));
+               jp_logf(JP_LOG_GUI, _("See console log to find which file will not be restored\n"));
                jp_logf(JP_LOG_WARN, _("Unable to convert filename for GTK display\n"));
                jp_logf(JP_LOG_WARN, _("File %s will not be restored\n"), row_text[0]);
                continue;
