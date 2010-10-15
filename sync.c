@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.115 2010/10/14 22:47:32 rikster5 Exp $ */
+/* $Id: sync.c,v 1.116 2010/10/15 03:23:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -3369,6 +3369,11 @@ int sync_once(struct my_sync_info *sync_info)
    int r;
    struct my_sync_info sync_info_copy;
    pid_t pid;
+
+#ifdef __APPLE__
+   /* bug 1924 */
+   sync_info->flags |= SYNC_NO_FORK;
+#endif
 
 #ifdef USE_LOCKING
    r = sync_lock(&fd);
