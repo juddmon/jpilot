@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.234 2010/10/14 04:47:04 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.235 2010/10/15 14:26:03 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -2971,8 +2971,8 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
 
    free_CalendarEvent(&new_cale);
 
-   datebook_update_clist();
    highlight_days();
+   datebook_update_clist();
 
    /* Don't return to modified record if search gui active */
    if (!glob_find_id) {
@@ -3513,7 +3513,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    return;
 }
 
-static void set_date_labels(void)
+static void set_date_label(void)
 {
    struct tm now;
    char str[50];
@@ -3669,7 +3669,7 @@ static void cb_cal_changed(GtkWidget *widget,
 {
    int num;
    unsigned int cal_year, cal_month, cal_day;
-   int mon_changed;
+   int day_changed, mon_changed, year_changed;
    int b;
 #ifdef EASTER
    static int Easter=0;
@@ -3734,6 +3734,8 @@ static void cb_cal_changed(GtkWidget *widget,
       return;
    }
 
+   day_changed = mon_changed = year_changed = 0;
+
    if (cal_year < 1903) {
       cal_year=1903;
       gtk_calendar_select_month(GTK_CALENDAR(main_calendar),
@@ -3745,21 +3747,21 @@ static void cb_cal_changed(GtkWidget *widget,
                                 cal_month, 2037);
    }
 
-   mon_changed=0;
    if (current_year!=cal_year-1900) {
       current_year=cal_year-1900;
-      mon_changed=1;
+      year_changed = 1;
+      mon_changed = 1;
    }
    if (current_month!=cal_month) {
       current_month=cal_month;
-      mon_changed=1;
+      mon_changed = 1;
    }
+   day_changed = (current_day!=cal_day);
    current_day=cal_day;
 
    jp_logf(JP_LOG_DEBUG, "cb_cal_changed, %02d/%02d/%02d\n", 
                                           cal_month,cal_day,cal_year);
 
-   set_date_labels();
    /* Easter Egg Code */
 #ifdef EASTER
    if (((current_day==29) && (current_month==7)) ||
@@ -3773,10 +3775,14 @@ static void cb_cal_changed(GtkWidget *widget,
       Easter=0;
    }
 #endif
+
    if (mon_changed) {
       highlight_days();
    }
-   clist_row_selected = 0;
+   if (day_changed || mon_changed || year_changed) {
+      set_date_label();
+      clist_row_selected = 0;
+   }
    datebook_update_clist();
 
    /* Keep focus on calendar so that GTK accelerator keys for calendar
@@ -3930,7 +3936,7 @@ int datebook_refresh(int first, int do_init)
       }
    }
    highlight_days();
-   set_date_labels();
+   set_date_label();
 
    datebook_find();
 
