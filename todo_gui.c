@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.172 2010/10/14 04:43:52 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.173 2010/10/15 16:42:14 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -103,11 +103,11 @@ static int record_changed;
 /****************************** Prototypes ************************************/
 void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
                        ToDoList **todo_list, int category, int main);
-int todo_clear_details(void);
-int todo_clist_redraw(void);
-static void connect_changed_signals(int con_or_dis);
+static int todo_clear_details(void);
+static int todo_clist_redraw(void);
 static int todo_find(void);
 static void cb_add_new_record(GtkWidget *widget, gpointer data);
+static void connect_changed_signals(int con_or_dis);
 
 /****************************** Main Code *************************************/
 /* Called once on initialization of GUI */
@@ -1149,7 +1149,7 @@ static void cb_check_button_no_due_date(GtkWidget *widget, gpointer data)
    }
 }
 
-int todo_clear_details(void)
+static int todo_clear_details(void)
 {
    time_t ltime;
    struct tm *now;
@@ -1984,7 +1984,7 @@ static gboolean cb_key_pressed_shift_tab(GtkWidget *widget,
 }
 
 /* This redraws the clist and goes back to the same line number */
-int todo_clist_redraw(void)
+static int todo_clist_redraw(void)
 {
    todo_update_clist(clist, category_menu1, &glob_todo_list, todo_category, TRUE);
 

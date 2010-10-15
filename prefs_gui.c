@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.75 2010/10/14 22:47:32 rikster5 Exp $ */
+/* $Id: prefs_gui.c,v 1.76 2010/10/15 16:42:13 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -62,7 +62,7 @@ static char *port_choices[]={
 #ifdef COLORS
 
 /* This doesn't work quite right.  There is supposedly no way to do it in GTK. */
-void r(GtkWidget *w, gpointer data)
+static void r(GtkWidget *w, gpointer data)
 {
    GtkStyle *style;
 
@@ -73,7 +73,7 @@ void r(GtkWidget *w, gpointer data)
    }
 }
 
-void set_colors()
+static void set_colors()
 {
    GtkStyle* style;
    int i;

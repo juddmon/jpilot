@@ -1,4 +1,4 @@
-/* $Id: dat.c,v 1.24 2010/03/29 05:44:28 rikster5 Exp $ */
+/* $Id: dat.c,v 1.25 2010/10/15 16:42:13 rikster5 Exp $ */
 
 /*******************************************************************************
  * dat.c
@@ -391,7 +391,7 @@ static int print_date(int palm_date)
 #endif
 
 #ifdef JPILOT_DEBUG
-int print_field(struct field *f)
+static int print_field(struct field *f)
 {
 
    switch (f->type) {

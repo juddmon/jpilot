@@ -1,4 +1,4 @@
-/* $Id: log.c,v 1.34 2010/10/13 03:18:58 rikster5 Exp $ */
+/* $Id: log.c,v 1.35 2010/10/15 16:42:13 rikster5 Exp $ */
 
 /*******************************************************************************
  * log.c
@@ -57,6 +57,9 @@ int glob_log_gui_mask;
 extern void output_to_pane(const char *str);
 extern pid_t jpilot_master_pid;
 
+/****************************** Prototypes ************************************/
+static int jp_vlogf (int level, const char *format, va_list val);
+
 /****************************** Main Code *************************************/
 int jp_logf(int level, const char *format, ...)
 {
@@ -75,7 +78,7 @@ int jp_logf(int level, const char *format, ...)
    return rval;
 }
 
-int jp_vlogf (int level, const char *format, va_list val) {
+static int jp_vlogf (int level, const char *format, va_list val) {
    char                 real_buf[WRITE_MAX_BUF+32];
    char                 *buf, *local_buf;
    int                  size;

@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.142 2010/10/13 03:18:58 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.143 2010/10/15 16:42:13 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -90,10 +90,10 @@ static MemoList *export_memo_list=NULL;
 
 /****************************** Prototypes ************************************/
 static int memo_clear_details(void);
-int memo_clist_redraw(void);
+static int memo_clist_redraw(void);
 static void connect_changed_signals(int con_or_dis);
 static int memo_find(void);
-int memo_get_details(struct Memo *new_memo, unsigned char *attrib);
+static int memo_get_details(struct Memo *new_memo, unsigned char *attrib);
 static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
                               MemoList **memo_list, int category, int main);
 static void cb_add_new_record(GtkWidget *widget, gpointer data);
@@ -935,7 +935,7 @@ static int memo_clear_details(void)
    return EXIT_SUCCESS;
 }
 
-int memo_get_details(struct Memo *new_memo, unsigned char *attrib)
+static int memo_get_details(struct Memo *new_memo, unsigned char *attrib)
 {
    int i;
    GtkTextIter start_iter;
@@ -1369,7 +1369,7 @@ static int memo_find(void)
    return EXIT_SUCCESS;
 }
 
-int memo_clist_redraw(void)
+static int memo_clist_redraw(void)
 {
    memo_update_clist(clist, category_menu1, &glob_memo_list, memo_category, TRUE);
 

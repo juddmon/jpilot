@@ -1,4 +1,4 @@
-/* $Id: weekview_gui.c,v 1.54 2010/10/13 03:18:59 rikster5 Exp $ */
+/* $Id: weekview_gui.c,v 1.55 2010/10/15 16:42:14 rikster5 Exp $ */
 
 /*******************************************************************************
  * weekview_gui.c
@@ -50,8 +50,8 @@ static GObject   *week_day_text_buffer[8];
 static struct tm glob_week_date;
 
 /****************************** Prototypes ************************************/
-int clear_weeks_appts(GtkWidget **day_texts);
-int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts);
+static int clear_weeks_appts(GtkWidget **day_texts);
+static int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts);
 
 /****************************** Main Code *************************************/
 static gboolean cb_destroy(GtkWidget *widget)
@@ -122,7 +122,7 @@ static void cb_week_move(GtkWidget *widget, gpointer data)
    thaw_weeks_appts();
 }
 
-int clear_weeks_appts(GtkWidget **day_texts)
+static int clear_weeks_appts(GtkWidget **day_texts)
 {
    int i;
    GObject   *text_buffer;
@@ -140,7 +140,7 @@ int clear_weeks_appts(GtkWidget **day_texts)
  * It will then print the next eight days to the day_texts array of
  * text boxes.
  */
-int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
+static int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
 {
    CalendarEventList *ce_list;
    CalendarEventList *temp_cel;

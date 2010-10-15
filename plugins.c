@@ -1,4 +1,4 @@
-/* $Id: plugins.c,v 1.27 2010/10/13 03:18:59 rikster5 Exp $ */
+/* $Id: plugins.c,v 1.28 2010/10/15 16:42:13 rikster5 Exp $ */
 
 /*******************************************************************************
  * plugins.c
@@ -40,7 +40,7 @@ GList *plugins = NULL;
 /****************************** Prototypes ************************************/
 static int get_plugin_info(struct plugin_s *p, char *path);
 static int get_plugin_sync_bits(void);
-gint plugin_sort(gconstpointer a, gconstpointer b);
+static gint plugin_sort(gconstpointer a, gconstpointer b);
 
 /****************************** Main Code *************************************/
 /* Write out the jpilot.plugins file that tells which plugins to sync */
@@ -133,7 +133,7 @@ static int load_plugins_sub1(DIR *dir, char *path, int *number,
    return count;
 }
 
-gint plugin_sort(gconstpointer a, gconstpointer b)
+static gint plugin_sort(gconstpointer a, gconstpointer b)
 {
    const char *ca = ((struct plugin_s *)a)->menu_name;
    const char *cb = ((struct plugin_s *)b)->menu_name;

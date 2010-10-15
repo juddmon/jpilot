@@ -1,4 +1,4 @@
-/* $Id: password.c,v 1.30 2010/10/07 21:34:00 rikster5 Exp $ */
+/* $Id: password.c,v 1.31 2010/10/15 16:42:13 rikster5 Exp $ */
 
 /*******************************************************************************
  * password.c
@@ -85,7 +85,7 @@ void bin_to_hex_str(unsigned char *bin, char *hex_str, int len)
  * This is the hashing algorithm used in palm OS < 4.0.
  * It is not very secure and is reversible.
  */
-void palm_encode_hash(unsigned char *ascii, unsigned char *encoded)
+static void palm_encode_hash(unsigned char *ascii, unsigned char *encoded)
 {
    unsigned char index, shift;
    unsigned short temp;
@@ -141,7 +141,7 @@ void palm_encode_hash(unsigned char *ascii, unsigned char *encoded)
  * This is the hashing algorithm used in palm OS >= 4.0.
  * Its just a plain ole' MD5.
  */
-void palm_encode_md5(unsigned char *ascii, unsigned char *encoded)
+static void palm_encode_md5(unsigned char *ascii, unsigned char *encoded)
 {
    struct MD5Context m;
    unsigned char digest[20];

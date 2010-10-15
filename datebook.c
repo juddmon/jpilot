@@ -1,4 +1,4 @@
-/* $Id: datebook.c,v 1.70 2010/10/13 03:18:58 rikster5 Exp $ */
+/* $Id: datebook.c,v 1.71 2010/10/15 16:42:13 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook.c
@@ -146,11 +146,15 @@ int datebook_add_exception(struct CalendarEvent *cale, int year, int mon, int da
    return EXIT_SUCCESS;
 }
 
+
+/* All datebook appts are handled as calendar events now.
+ * This code scrap is being kept for reference only. */
+#if 0
 /*
  * If a copy is made, then it should be freed through free_Appointment
  */
-int datebook_copy_appointment(struct Appointment *a1,
-                              struct Appointment **a2)
+static int datebook_copy_appointment(struct Appointment *a1,
+                                     struct Appointment **a2)
 {
    long datebook_version;
 
@@ -179,6 +183,7 @@ int datebook_copy_appointment(struct Appointment *a1,
 
    return EXIT_SUCCESS;
 }
+#endif
 
 /*
  * If a copy is made, then it should be freed through free_CalendarEvent
@@ -197,8 +202,11 @@ int copy_calendar_event(const struct CalendarEvent *source,
    return EXIT_FAILURE;
 }
 
-int datebook_sort(AppointmentList **al,
-                  int (*compare_func)(const void*, const void*))
+/* calendar_sort in calendar.c is now used for all datebook sorting
+ * This code scrap is being kept for reference only. */
+#if 0
+static int datebook_sort(AppointmentList **al,
+                         int (*compare_func)(const void*, const void*))
 {
    AppointmentList *temp_al;
    AppointmentList **sort_al;
@@ -239,6 +247,7 @@ int datebook_sort(AppointmentList **al,
 
    return EXIT_SUCCESS;
 }
+#endif
 
 #ifdef ENABLE_DATEBK
 static void db3_fill_struct(char *note, int type, struct db4_struct *db4)

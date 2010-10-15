@@ -1,4 +1,4 @@
-/* $Id: jpilot-dial.c,v 1.5 2010/10/13 03:19:00 rikster5 Exp $ */
+/* $Id: jpilot-dial.c,v 1.6 2010/10/15 16:42:14 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot-dial.c
@@ -48,10 +48,10 @@
 
 #define DEV_MIXER   "/dev/mixer"
 
-void gen_costab(void);
-void dial_digit(int c);
-void silent(int msec);
-void dial(int f1, int f2, int msec);
+static void gen_costab(void);
+static void dial_digit(int c);
+static void silent(int msec);
+static void dial(int f1, int f2, int msec);
 
 char *output = "/dev/dsp";
 int bits        = 8;
@@ -81,7 +81,7 @@ int left   = 0;
 
 int fd;
 
-void Usage(void) {
+static void Usage(void) {
    fprintf(stderr, "usage: jpilot-dial [options] number ...\n"
            " Valid options with their default values are:\n"
            "   Duration options:\n"
@@ -105,7 +105,7 @@ void Usage(void) {
    exit(1);
 }
 
-void
+static void
 initialize_audiodev(void) {
    int speed_local = speed;
    int channels = 1;
@@ -147,7 +147,7 @@ initialize_audiodev(void) {
    speed = speed_local;
 }
 
-void
+static void
 getvalue(int *arg, int *index, int argc,
          char **argv, int min, int max) {
 
@@ -363,7 +363,7 @@ int main(int argc, char **argv)
    exit(0);
 }
 
-void
+static void
 dial_digit(int c) {
    DEBUG(fprintf(stderr, "dial_digit %#c\n", c));
    switch(c) {
@@ -418,7 +418,7 @@ dial_digit(int c) {
    }
 }
 
-void
+static void
 silent(int msec) {
    int time;
    if (msec <= 0)
@@ -452,7 +452,7 @@ silent(int msec) {
    dialed = 0;
 }
 
-void
+static void
 dial(int f1, int f2, int msec) {
    int i1, i2, d1, d2, e1, e2, g1, g2;
    int time;
@@ -532,7 +532,7 @@ dial(int f1, int f2, int msec) {
    dialed = 1;
 }
 
-void
+static void
 gen_costab(void) {
    int i;
    double d;

@@ -1,4 +1,4 @@
-/* $Id: print.c,v 1.50 2010/10/13 03:18:59 rikster5 Exp $ */
+/* $Id: print.c,v 1.51 2010/10/15 16:42:14 rikster5 Exp $ */
 
 /*******************************************************************************
  * print.c
@@ -56,8 +56,6 @@
 static FILE *out;
 static int first_hour, first_min, last_hour, last_min;
 extern int datebk_category;
-int fill_in(struct tm *date, CalendarEventList *a_list);
-void ps_strncat(char *dest, char *src, int n);
 
 char *PaperSizes[] = { "Letter", "Legal", "Statement", "Tabloid", "Ledger",
                        "Folio", "Quarto", "7x9", "9x11", "9x12", "10x13",
@@ -68,6 +66,10 @@ char *PaperSizes[] = { "Letter", "Legal", "Statement", "Tabloid", "Ledger",
                        "ISOB6", "ISOB7", "ISOB8", "ISOB9", "ISOB10", "C0",
                        "C1", "C2", "C3", "C4", "C5", "C6", "C7", "DL",
                        "Filo" };
+
+/****************************** Prototypes ************************************/
+static int fill_in(struct tm *date, CalendarEventList *a_list);
+static void ps_strncat(char *dest, char *src, int n);
 
 /****************************** Main Code *************************************/
 static FILE *print_open(void)
@@ -213,7 +215,7 @@ static int print_dayview(struct tm *date, CalendarEventList *ce_list)
    return EXIT_SUCCESS;
 }
 
-int fill_in(struct tm *date, CalendarEventList *ce_list)
+static int fill_in(struct tm *date, CalendarEventList *ce_list)
 {
    CalendarEventList *temp_cel;
    int i;

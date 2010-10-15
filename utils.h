@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.81 2010/10/13 03:18:59 rikster5 Exp $ */
+/* $Id: utils.h,v 1.82 2010/10/15 16:42:14 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -292,8 +292,6 @@ int undelete_pc_record(AppType app_type, void *VP, int flag);
 
 void get_month_info(int month, int day, int year, int *dow, int *ndim);
 
-unsigned int bytes_to_bin(unsigned char *bytes, unsigned int num_bytes);
-
 void free_mem_rec_header(mem_rec_header **mem_rh);
 
 void print_string(char *str, int len);
@@ -383,9 +381,6 @@ void lstrncpy_remove_cr_lfs(char *dest, char *src, int len);
  * Name is name of item (e.g. "cn")
  * fmt ... is like printf. */
 void ldif_out(FILE *f, char *name, char *fmt, ...);
-
-/* Output base64-encoded string to file */
-void base64_out(FILE *, unsigned char *);
 
 void cleanup_path(char *path);
 

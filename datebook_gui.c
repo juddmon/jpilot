@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.235 2010/10/15 14:26:03 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.236 2010/10/15 16:42:13 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -1792,7 +1792,7 @@ static int dialog_current_all_cancel(void)
 }
 
 #ifdef EASTER
-int dialog_easter(int mday)
+static int dialog_easter(int mday)
 {
    char text[255];
    char who[50];

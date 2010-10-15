@@ -1,4 +1,4 @@
-/* $Id: todo.c,v 1.52 2010/10/13 03:18:59 rikster5 Exp $ */
+/* $Id: todo.c,v 1.53 2010/10/15 16:42:14 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo.c
@@ -44,7 +44,7 @@
 static struct ToDoAppInfo *glob_Ptodo_app_info;
 
 /****************************** Prototypes ************************************/
-int todo_sort(ToDoList **todol, int sort_order);
+static int todo_sort(ToDoList **todol, int sort_order);
 
 /****************************** Main Code *************************************/
 void free_ToDoList(ToDoList **todo)
@@ -473,7 +473,7 @@ static int todo_compare(const void *v1, const void *v2)
    return 0;
 }
 
-int todo_sort(ToDoList **todol, int sort_order)
+static int todo_sort(ToDoList **todol, int sort_order)
 {
    ToDoList *temp_todol;
    ToDoList **sort_todol;

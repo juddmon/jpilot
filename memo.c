@@ -1,4 +1,4 @@
-/* $Id: memo.c,v 1.51 2010/10/13 03:18:58 rikster5 Exp $ */
+/* $Id: memo.c,v 1.52 2010/10/15 16:42:13 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo.c
@@ -40,7 +40,7 @@
 /********************************* Constants **********************************/
 
 /****************************** Prototypes ************************************/
-int memo_sort(MemoList **memol, int sort_order);
+static int memo_sort(MemoList **memol, int sort_order);
 
 /****************************** Main Code *************************************/
 void free_MemoList(MemoList **memo)
@@ -262,7 +262,7 @@ static int memo_compare(const void *v1, const void *v2)
    return strcoll(str2, str1);
 }
 
-int memo_sort(MemoList **memol, int sort_order)
+static int memo_sort(MemoList **memol, int sort_order)
 {
    /* struct MemoAppInfo memo_ai; */
    MemoList *temp_memol;

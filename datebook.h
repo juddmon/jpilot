@@ -1,4 +1,4 @@
-/* $Id: datebook.h,v 1.29 2010/10/07 21:04:31 rikster5 Exp $ */
+/* $Id: datebook.h,v 1.30 2010/10/15 16:42:13 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook.h
@@ -103,10 +103,6 @@ int weed_datebook_list(AppointmentList **al, int mon, int year,
 int weed_calendar_event_list(CalendarEventList **cel, int mon, int year,
                              int skip_privates, int *mask);
 
-/* Sorts a list of appointments according to the comparison function given */
-int datebook_sort(AppointmentList **al, 
-                  int (*compare_func)(const void*, const void*));
-
 /* Year is years since 1900 */
 /* Mon is 0-11 */
 /* Day is 1-31 */
@@ -114,8 +110,6 @@ int datebook_sort(AppointmentList **al,
 int datebook_add_exception(struct CalendarEvent *cale, int year, int mon, int day);
 int get_calendar_or_datebook_app_info(struct CalendarAppInfo *cai, long datebook_version);
 
-int datebook_copy_appointment(struct Appointment *a1,
-                             struct Appointment **a2);
 int copy_calendar_event(const struct CalendarEvent *source,
                         struct CalendarEvent **dest);
 /* returns a bit mask where bit 1 is day one, etc.  Bit is set if an */

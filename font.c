@@ -4,7 +4,7 @@
 
 #ifdef FONT_TEST
 
-void SetFontRecursively2(GtkWidget *widget, gpointer data)
+static void SetFontRecursively2(GtkWidget *widget, gpointer data)
 {
    GtkStyle *style;
    char *font_desc;
@@ -20,7 +20,7 @@ void SetFontRecursively2(GtkWidget *widget, gpointer data)
       gtk_container_foreach(GTK_CONTAINER(widget), SetFontRecursively2, font_desc);
    }
 }
-void font_selection_ok(GtkWidget *w, GtkFontSelectionDialog *fs)
+static void font_selection_ok(GtkWidget *w, GtkFontSelectionDialog *fs)
 {
    gchar *s = gtk_font_selection_dialog_get_font_name(fs);
 
@@ -32,7 +32,7 @@ void font_selection_ok(GtkWidget *w, GtkFontSelectionDialog *fs)
    cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
 }
 
-void font_sel_dialog()
+static void font_sel_dialog()
 {
    static GtkWidget *fontsel = NULL;
 
@@ -61,7 +61,7 @@ void font_sel_dialog()
    }
 }
 
-void cb_font(GtkWidget *widget, gpointer data)
+static void cb_font(GtkWidget *widget, gpointer data)
 {
    font_sel_dialog();
 

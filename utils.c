@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.189 2010/10/13 03:18:59 rikster5 Exp $ */
+/* $Id: utils.c,v 1.190 2010/10/15 16:42:14 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -77,11 +77,11 @@ unsigned int glob_find_id;
 static gboolean cb_destroy(GtkWidget *widget);
 static void cb_quit(GtkWidget *widget, gpointer data);
 static void cb_today(GtkWidget *widget, gpointer data);
-int write_to_next_id(unsigned int unique_id);
-int write_to_next_id_open(FILE *pc_out, unsigned int unique_id);
-int forward_backward_in_ce_time(const struct CalendarEvent *cale,
-                                  struct tm *t,
-                                  int forward_or_backward);
+static int write_to_next_id(unsigned int unique_id);
+static int write_to_next_id_open(FILE *pc_out, unsigned int unique_id);
+static int forward_backward_in_ce_time(const struct CalendarEvent *cale,
+                                       struct tm *t,
+                                       int forward_or_backward);
 static int str_to_iv_str(char *dest, int destsz, char *src, int isical);
 
 /****************************** Main Code *************************************/
@@ -230,7 +230,7 @@ static const char b64_dict[65] = {
    "abcdefghijklmnopqrstuvwxyz"
    "0123456789+/=" };
 
-void base64_out(FILE *f, unsigned char *str)
+static void base64_out(FILE *f, unsigned char *str)
 {
    unsigned char *index, char1, char2, char3;
    int loop, pad;
@@ -259,7 +259,7 @@ void base64_out(FILE *f, unsigned char *str)
 
 }
 
-unsigned int bytes_to_bin(unsigned char *bytes, unsigned int num_bytes)
+static unsigned int bytes_to_bin(unsigned char *bytes, unsigned int num_bytes)
 {
    unsigned int i, n;
    n=0;
@@ -3653,7 +3653,7 @@ int verify_csv_header(const char *header, int num_fields, const char *file_name)
    return EXIT_SUCCESS;
 }
 
-int write_to_next_id(unsigned int unique_id)
+static int write_to_next_id(unsigned int unique_id)
 {
    FILE *pc_out;
    int ret;
@@ -3671,7 +3671,7 @@ int write_to_next_id(unsigned int unique_id)
    return ret;
 }
 
-int write_to_next_id_open(FILE *pc_out, unsigned int unique_id)
+static int write_to_next_id_open(FILE *pc_out, unsigned int unique_id)
 {
    char id_str[50];
 

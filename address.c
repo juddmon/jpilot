@@ -1,4 +1,4 @@
-/* $Id: address.c,v 1.63 2010/10/13 03:18:58 rikster5 Exp $ */
+/* $Id: address.c,v 1.64 2010/10/15 16:42:13 rikster5 Exp $ */
 
 /*******************************************************************************
  * address.c
@@ -514,7 +514,7 @@ int pc_address_write(struct Address *addr, PCRecType rt, unsigned char attrib,
 }
 
 #ifdef JPILOT_DEBUG
-void print_address_list(AddressList **al)
+static void print_address_list(AddressList **al)
 {
    AddressList *temp_al, *prev_al;
 

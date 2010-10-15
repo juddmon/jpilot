@@ -1,4 +1,4 @@
-/* $Id: monthview_gui.c,v 1.56 2010/10/13 03:18:58 rikster5 Exp $ */
+/* $Id: monthview_gui.c,v 1.57 2010/10/15 16:42:13 rikster5 Exp $ */
 
 /*******************************************************************************
  * monthview_gui.c
@@ -54,8 +54,8 @@ static int glob_offset;
 static struct tm glob_month_date;
 
 /****************************** Prototypes ************************************/
-int display_months_appts(struct tm *glob_month_date, GtkWidget **glob_month_texts);
-void hide_show_month_boxes(void);
+static int display_months_appts(struct tm *glob_month_date, GtkWidget **glob_month_texts);
+static void hide_show_month_boxes(void);
 
 /****************************** Main Code *************************************/
 static gboolean cb_destroy(GtkWidget *widget)
@@ -156,7 +156,7 @@ static void cb_enter_selected_day(GtkWidget *widget,
  * Also, set a global offset for indexing day 1.
  * Also relabel day labels.
  */
-void hide_show_month_boxes(void)
+static void hide_show_month_boxes(void)
 {
    int n;
    int dow, ndim;
@@ -281,7 +281,7 @@ static void create_month_boxes_texts(GtkWidget *month_vbox)
    gtk_box_pack_start(GTK_BOX(month_vbox), text, TRUE, TRUE, 4);
 }
 
-int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
+static int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
 {
    CalendarEventList *ce_list;
    CalendarEventList *temp_cel;
