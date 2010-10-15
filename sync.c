@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.116 2010/10/15 03:23:53 rikster5 Exp $ */
+/* $Id: sync.c,v 1.117 2010/10/15 04:34:39 rikster5 Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -92,8 +92,12 @@ static void sig_handler(int sig)
    /* wait for any child processes */
    waitpid(-1, &status, WNOHANG);
 
-   glob_child_pid = 0;
-   cb_cancel_sync(NULL, 0);
+   /* SIGCHLD status is 0 for innocuous events like suspend/resume. */
+   /* We specifically exit with return code 255 to trigger this cleanup */
+   if (status > 0) {
+      glob_child_pid = 0;
+      cb_cancel_sync(NULL, 0);
+   }
 }
 
 #ifdef USE_LOCKING
@@ -3380,7 +3384,7 @@ int sync_once(struct my_sync_info *sync_info)
    if (r) {
       jp_logf(JP_LOG_DEBUG, "Child cannot lock file\n");
       if (!(SYNC_NO_FORK & sync_info->flags)) {
-         _exit(0);
+         _exit(255);
       } else {
          return EXIT_FAILURE;
       }
@@ -3430,7 +3434,7 @@ int sync_once(struct my_sync_info *sync_info)
 #endif
    jp_logf(JP_LOG_DEBUG, "sync child exiting\n");
    if (!(SYNC_NO_FORK & sync_info->flags)) {
-      _exit(0);
+      _exit(255);
    } else {
       return r;
    }
