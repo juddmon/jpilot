@@ -1,4 +1,4 @@
-/* $Id: alarms.c,v 1.54 2010/10/12 18:04:36 rikster5 Exp $ */
+/* $Id: alarms.c,v 1.55 2010/10/15 23:03:40 rikster5 Exp $ */
 
 /*******************************************************************************
  * alarms.c
@@ -98,11 +98,10 @@ struct alarm_dialog_data {
    int button_hit;
 };
 
-void alarms_add_to_list(unsigned int unique_id,
-                        AlarmType type,
-                        time_t alarm_time,
-                        time_t alarm_advance);
-int alarms_find_next(struct tm *date1, struct tm *date2, int soonest_only);
+static void alarms_add_to_list(unsigned int unique_id,
+                               AlarmType type,
+                               time_t alarm_time,
+                               time_t alarm_advance);
 
 /****************************** Main Code *************************************/
 /* Alarm GUI */
@@ -113,12 +112,12 @@ static void cb_dialog_button(GtkWidget *widget, gpointer data)
    struct alarm_dialog_data *Pdata;
    GtkWidget *w;
 
-   w=gtk_widget_get_toplevel(widget);
+   w = gtk_widget_get_toplevel(widget);
    Pdata = gtk_object_get_data(GTK_OBJECT(w), "alarm");
    if (Pdata) {
       Pdata->button_hit = GPOINTER_TO_INT(data);
    }
-   gtk_widget_destroy(GTK_WIDGET(w));
+   gtk_widget_destroy(w);
 }
 
 static gboolean cb_destroy_dialog(GtkWidget *widget)
@@ -134,7 +133,7 @@ static gboolean cb_destroy_dialog(GtkWidget *widget)
 #endif
    Pdata = gtk_object_get_data(GTK_OBJECT(widget), "alarm");
    if (!Pdata) {
-      return TRUE;
+      return FALSE;
    }
    if (Pdata->button_hit==DIALOG_SAID_2) {
       remind = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(Pdata->remind_entry));
@@ -157,7 +156,8 @@ static gboolean cb_destroy_dialog(GtkWidget *widget)
    }
    free(Pdata);
 
-   return TRUE;
+   /* Done with cleanup.  Let GTK continue with removing widgets */
+   return FALSE;
 }
 
 static int dialog_alarm(char *title, char *reason,
@@ -290,7 +290,7 @@ static time_t tm_copy_with_dst_adj(struct tm *dest, struct tm *src)
 }
 
 #ifdef ALARMS_DEBUG
-const char *print_date(const time_t t1)
+static const char *print_date(const time_t t1)
 {
    struct tm *Pnow;
    static char str[100];
@@ -299,7 +299,7 @@ const char *print_date(const time_t t1)
    strftime(str, sizeof(str), "%B %d, %Y %H:%M:%S", Pnow);
    return str;
 }
-const char *print_type(AlarmType type)
+static const char *print_type(AlarmType type)
 {
    switch (type) {
     case ALARM_NONE:
@@ -316,7 +316,7 @@ const char *print_type(AlarmType type)
 }
 #endif
 
-void alarms_add_to_list(unsigned int unique_id,
+static void alarms_add_to_list(unsigned int unique_id,
                         AlarmType type,
                         time_t event_time,
                         time_t alarm_advance)
@@ -442,7 +442,7 @@ static void alarms_write_file(void)
            now->tm_mday,
            now->tm_hour,
            now->tm_min
-           );
+          );
    n = fwrite(line, strlen(line), 1, out);
    if (n<1) fail=1;
 
@@ -480,9 +480,9 @@ static void make_command_safe(char *command)
  *   if user postpones then put in postponed alarm list.
  */
 static int alarms_do_one(struct CalendarEvent *cale,
-                  unsigned long unique_id,
-                  time_t t_alarm,
-                  AlarmType type)
+                         unsigned long unique_id,
+                         time_t t_alarm,
+                         AlarmType type)
 {
    struct tm *Pnow;
    struct tm begin;
@@ -664,7 +664,7 @@ static gint cb_timer_alarms(gpointer data)
          }
       }
       /* CAUTION, this modifies the list we are parsing and
-       removes the current node */
+       * removes the current node */
       alarms_remove_from_to_list(temp_al->mcale.unique_id);
    }
 
