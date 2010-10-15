@@ -1,4 +1,4 @@
-/* $Id: export_gui.c,v 1.27 2010/04/01 21:40:47 rikster5 Exp $ */
+/* $Id: export_gui.c,v 1.28 2010/10/15 23:50:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * export_gui.c
@@ -53,12 +53,11 @@ static GtkWidget *save_as_entry;
 
 /****************************** Prototypes ************************************/
 static void (*glob_cb_export_menu)(GtkWidget *clist, int category);
-void (*glob_cb_export_done)(GtkWidget *widget,
-                            const char *filename);
-void (*glob_cb_export_ok)(GtkWidget *export_window,
-                          GtkWidget *clist,
-                          int type,
-                          const char *filename);
+static void (*glob_cb_export_done)(GtkWidget *widget, const char *filename);
+static void (*glob_cb_export_ok)(GtkWidget *export_window,
+                                 GtkWidget *clist,
+                                 int type,
+                                 const char *filename);
 
 /****************************** Main Code *************************************/
 /* 

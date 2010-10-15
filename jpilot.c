@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.192 2010/10/15 04:36:12 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.193 2010/10/15 23:50:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -992,14 +992,14 @@ static void cb_about(GtkWidget *widget, gpointer data)
 #define W3M_NEW             17
 #define KONQUEROR_NEW       18
 
-struct url_command {
+static struct url_command {
    int id;
    char *desc;
    char *command;
 };
 
 /* These strings were taken from xchat 2.0.0 */
-struct url_command url_commands[]={
+static struct url_command url_commands[]={
      {NETSCAPE_EXISTING, "/Web/Netscape/Open jpilot.org in existing", "netscape -remote 'openURL(http://jpilot.org)'"},
      {NETSCAPE_NEW_WINDOW, "/Web/Netscape/Open jpilot.org in new window", "netscape -remote 'openURL(http://jpilot.org,new-window)'"},
      {NETSCAPE_NEW, "/Web/Netscape/Open jpilot.org in new Netscape", "netscape http://jpilot.org"},

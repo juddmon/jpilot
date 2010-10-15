@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.267 2010/10/15 01:25:23 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.268 2010/10/15 23:50:06 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -159,9 +159,9 @@ static GtkWidget *address_type_list_menu[NUM_ADDRESSES];
 static GtkWidget *address_type_menu_item[NUM_ADDRESSES][NUM_ADDRESSES]; /* 3 menus with 3 possible entries */
 static GtkWidget *IM_type_list_menu[NUM_IMS];
 static GtkWidget *IM_type_menu_item[NUM_IMS][NUM_IM_LABELS]; /* 2 menus with 5 possible entries */
-int address_phone_label_selected[NUM_PHONE_ENTRIES];
-int address_type_selected[NUM_ADDRESSES];
-int IM_type_selected[NUM_IMS];
+static int address_phone_label_selected[NUM_PHONE_ENTRIES];
+static int address_type_selected[NUM_ADDRESSES];
+static int IM_type_selected[NUM_IMS];
 
 /* Need two extra slots for the ALL category and Edit Categories... */
 static GtkWidget *address_cat_menu_item1[NUM_ADDRESS_CAT_ITEMS+2];
@@ -177,11 +177,8 @@ static GtkWidget *dial_button[NUM_PHONE_ENTRIES];
 static struct AddressAppInfo address_app_info;
 static struct ContactAppInfo contact_app_info;
 static struct sorted_cats sort_l[NUM_ADDRESS_CAT_ITEMS];
-int address_category=CATEGORY_ALL;
+static int address_category=CATEGORY_ALL;
 static int clist_row_selected;
-extern GtkTooltips *glob_tooltips;
-extern GtkWidget *glob_date_label;
-extern int glob_date_timer_tag;
 
 static ContactList *glob_contact_list=NULL;
 static ContactList *export_contact_list=NULL;
@@ -203,11 +200,15 @@ static GtkWidget *birthday_box;
 static GtkWidget *reminder_checkbox;
 static GtkWidget *reminder_entry;
 static GtkWidget *reminder_box;
-struct tm birthday;
+static struct tm birthday;
 static GtkWidget *image=NULL;
-struct ContactPicture contact_picture;
+static struct ContactPicture contact_picture;
 
 static GList *changed_list=NULL;
+
+extern GtkTooltips *glob_tooltips;
+extern GtkWidget *glob_date_label;
+extern int glob_date_timer_tag;
 
 /****************************** Prototypes ************************************/
 static void connect_changed_signals(int con_or_dis);

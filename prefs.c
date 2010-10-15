@@ -1,4 +1,4 @@
-/* $Id: prefs.c,v 1.88 2010/03/29 05:44:30 rikster5 Exp $ */
+/* $Id: prefs.c,v 1.89 2010/10/15 23:50:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs.c
@@ -46,7 +46,7 @@
 #define NUM_PAPER_SIZES 2
 
 /******************************* Global vars **********************************/
-int t_fmt_ampm = TRUE;
+static int t_fmt_ampm = TRUE;
 
 /* These are the default settings */
 /* name, usertype, filetype, ivalue, char *svalue, svalue_size; */

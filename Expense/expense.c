@@ -1,4 +1,4 @@
-/* $Id: expense.c,v 1.74 2010/10/13 03:18:59 rikster5 Exp $ */
+/* $Id: expense.c,v 1.75 2010/10/15 23:50:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * expense.c
@@ -93,7 +93,7 @@ struct currency_s {
 /******************************************************************************/
 /* Global vars                                                                */
 /******************************************************************************/
-struct currency_s glob_currency[MAX_CURRENCYS]={
+static struct currency_s glob_currency[MAX_CURRENCYS]={
    {N_("Australia"),         0},
    {N_("Austria"),           1},
    {N_("Belgium"),           2},
@@ -180,7 +180,7 @@ static int glob_detail_type;
 static int glob_detail_payment;
 static int glob_detail_currency_pos;
 
-struct MyExpense *glob_myexpense_list=NULL;
+static struct MyExpense *glob_myexpense_list=NULL;
 
 /******************************************************************************/
 /* Prototypes                                                                 */

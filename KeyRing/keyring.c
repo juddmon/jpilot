@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.112 2010/10/13 03:18:59 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.113 2010/10/15 23:50:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -103,7 +103,7 @@ struct MyKeyRing {
 
 /******************************* Global vars **********************************/
 /* This is the category that is currently being displayed */
-struct CategoryAppInfo keyr_app_info;
+static struct CategoryAppInfo keyr_app_info;
 static int keyr_category = CATEGORY_ALL;
 
 static GtkWidget *clist;
@@ -128,7 +128,7 @@ static GtkWidget *undelete_record_button;
 static GtkWidget *copy_record_button;
 static GtkWidget *cancel_record_button;
 static GtkWidget *date_button;
-struct tm glob_date;
+static struct tm glob_date;
 #ifndef ENABLE_STOCK_BUTTONS
 static GtkAccelGroup *accel_group;
 #endif

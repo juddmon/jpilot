@@ -1,4 +1,4 @@
-/* $Id: print.c,v 1.51 2010/10/15 16:42:14 rikster5 Exp $ */
+/* $Id: print.c,v 1.52 2010/10/15 23:50:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * print.c
@@ -57,15 +57,15 @@ static FILE *out;
 static int first_hour, first_min, last_hour, last_min;
 extern int datebk_category;
 
-char *PaperSizes[] = { "Letter", "Legal", "Statement", "Tabloid", "Ledger",
-                       "Folio", "Quarto", "7x9", "9x11", "9x12", "10x13",
-                       "10x14", "Executive", "A0", "A1", "A2", "A3", "A4",
-                       "A5", "A6", "A7", "A8", "A9", "A10", "B0", "B1", "B2",
-                       "B3", "B4", "B5", "B6", "B7", "B8", "B9", "B10",
-                       "ISOB0", "ISOB1", "ISOB2", "ISOB3", "ISOB4", "ISOB5",
-                       "ISOB6", "ISOB7", "ISOB8", "ISOB9", "ISOB10", "C0",
-                       "C1", "C2", "C3", "C4", "C5", "C6", "C7", "DL",
-                       "Filo" };
+static char *PaperSizes[] = { 
+   "Letter", "Legal", "Statement", "Tabloid", "Ledger", "Folio", "Quarto",
+   "7x9", "9x11", "9x12", "10x13", "10x14", "Executive", 
+   "A0", "A1", "A2", "A3", "A4", "A5", "A6", "A7", "A8", "A9", "A10",
+   "B0", "B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B9", "B10", 
+   "ISOB0", "ISOB1", "ISOB2", "ISOB3", "ISOB4", "ISOB5", "ISOB6", "ISOB7", 
+   "ISOB8", "ISOB9", "ISOB10", 
+   "C0", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "DL", "Filo"
+};
 
 /****************************** Prototypes ************************************/
 static int fill_in(struct tm *date, CalendarEventList *a_list);
@@ -402,7 +402,7 @@ static int days_in_mon(struct tm *date)
  *                      appointments.
  *----------------------------------------------------------------------*/
 
-char *MonthNames[] = {
+static char *MonthNames[] = {
    "January", "February", "March", "April", "May", "June", "July",
    "August", "September", "October", "November", "December"
 };

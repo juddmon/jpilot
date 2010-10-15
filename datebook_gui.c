@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.236 2010/10/15 16:42:13 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.237 2010/10/15 23:50:06 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -98,23 +98,22 @@
  * 0 is Datebook, 1 is Calendar */
 static long datebook_version=0;
 
-extern GtkTooltips *glob_tooltips;
-extern GtkWidget *glob_date_label;
-extern gint glob_date_timer_tag;
-
 /* This refers to the main jpilot window.  This should probably
  * be replaced somehow by a GTK call which works out what the 
  * top-level window is from the widget.  Right now it relies
  * on the fact that there is only one item titled "window" in 
  * the global name space */
 extern GtkWidget *window;
+extern GtkTooltips *glob_tooltips;
+extern GtkWidget *glob_date_label;
+extern gint glob_date_timer_tag;
 
 static GtkWidget *pane;
 static GtkWidget *note_pane;
 static GtkWidget *todo_pane;
 static GtkWidget *todo_vbox;
 
-struct CalendarAppInfo dbook_app_info;
+static struct CalendarAppInfo dbook_app_info;
 static int dbook_category = CATEGORY_ALL;
 static struct sorted_cats sort_l[NUM_DATEBOOK_CAT_ITEMS];
 
@@ -146,11 +145,11 @@ static GtkWidget *radio_button_alarm_hour;
 static GtkWidget *radio_button_alarm_day;
 static GtkWidget *location_entry;
 static GtkWidget *glob_endon_day_button;
-struct tm glob_endon_day_tm;
+static struct tm glob_endon_day_tm;
 static GtkWidget *glob_endon_week_button;
 static struct tm glob_endon_week_tm;
 static GtkWidget *glob_endon_mon_button;
-struct tm glob_endon_mon_tm;
+static struct tm glob_endon_mon_tm;
 static GtkWidget *glob_endon_year_button;
 static struct tm glob_endon_year_tm;
 static GtkWidget *toggle_button_repeat_days[7];
@@ -195,7 +194,7 @@ static GtkWidget *todo_scrolled_window;
 static ToDoList  *datebook_todo_list=NULL;
 
 /* For export GUI */
-GtkWidget *export_window;
+static GtkWidget *export_window;
 static GtkWidget *save_as_entry;
 static GtkWidget *export_radio_type[NUM_EXPORT_TYPES+1];
 static int glob_export_type;

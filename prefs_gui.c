@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.76 2010/10/15 16:42:13 rikster5 Exp $ */
+/* $Id: prefs_gui.c,v 1.77 2010/10/15 23:50:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -50,7 +50,7 @@ extern unsigned char skip_plugins;
 
 /* Sync Port Menu */
 static GtkWidget *port_menu;
-GtkWidget *port_menu_item[10];
+static GtkWidget *port_menu_item[10];
 static char *port_choices[]={
    "other", "usb:",
    "/dev/ttyUSB0", "/dev/ttyUSB1", "/dev/ttyUSB2", "/dev/ttyUSB3",

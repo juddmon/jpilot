@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.143 2010/10/15 16:42:13 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.144 2010/10/15 23:50:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -62,7 +62,7 @@ extern GtkTooltips *glob_tooltips;
 extern GtkWidget *glob_date_label;
 extern int glob_date_timer_tag;
 
-struct MemoAppInfo memo_app_info;
+static struct MemoAppInfo memo_app_info;
 static int memo_category = CATEGORY_ALL;
 static int clist_row_selected;
 static GtkWidget *clist;

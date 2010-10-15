@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.190 2010/10/15 16:42:14 rikster5 Exp $ */
+/* $Id: utils.c,v 1.191 2010/10/15 23:50:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -69,7 +69,7 @@
 /* Stuff for the dialog window */
 extern GtkWidget *glob_dialog;
 extern GtkWidget *glob_date_label;
-int dialog_result;
+static int dialog_result;
 
 unsigned int glob_find_id;
 
@@ -381,7 +381,7 @@ static gboolean cb_destroy_dialog(GtkWidget *widget)
 }
 
 static void cb_dialog_button(GtkWidget *widget,
-                        gpointer   data)
+                             gpointer   data)
 {
    dialog_result=GPOINTER_TO_INT(data);
 

@@ -1,4 +1,4 @@
-/* $Id: import_gui.c,v 1.32 2010/10/13 03:18:58 rikster5 Exp $ */
+/* $Id: import_gui.c,v 1.33 2010/10/15 23:50:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * import_gui.c
@@ -42,10 +42,10 @@ static int line_selected;
 static GtkWidget *filew=NULL;
 static GtkWidget *import_record_ask_window=NULL;
 static int glob_import_record_ask_button_pressed;
-int glob_type_selected;
+static int glob_type_selected;
 
 /****************************** Prototypes ************************************/
-int (*glob_import_callback)(GtkWidget *parent_window, const char *file_path, int type);
+static int (*glob_import_callback)(GtkWidget *parent_window, const char *file_path, int type);
 
 /****************************** Main Code *************************************/
 

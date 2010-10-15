@@ -1,4 +1,4 @@
-/* $Id: plugins.c,v 1.28 2010/10/15 16:42:13 rikster5 Exp $ */
+/* $Id: plugins.c,v 1.29 2010/10/15 23:50:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * plugins.c
@@ -35,7 +35,7 @@
 #include "i18n.h"
 
 /******************************* Global vars **********************************/
-GList *plugins = NULL;
+static GList *plugins = NULL;
 
 /****************************** Prototypes ************************************/
 static int get_plugin_info(struct plugin_s *p, char *path);

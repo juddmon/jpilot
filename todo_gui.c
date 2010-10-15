@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.173 2010/10/15 16:42:14 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.174 2010/10/15 23:50:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -94,8 +94,8 @@ static ToDoList *export_todo_list=NULL;
 
 static struct sorted_cats sort_l[NUM_TODO_CAT_ITEMS];
 
-struct ToDoAppInfo todo_app_info;
-int todo_category=CATEGORY_ALL;
+static struct ToDoAppInfo todo_app_info;
+static int todo_category=CATEGORY_ALL;
 static int clist_col_selected;
 static int clist_row_selected;
 static int record_changed;
