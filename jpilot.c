@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.191 2010/10/15 03:28:59 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.192 2010/10/15 04:36:12 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -335,6 +335,12 @@ static void cb_restore(GtkWidget *widget, gpointer data)
    x+=40;
 
    r = restore_gui(window, w, h, x, y);
+
+   /* Fork successful, child sync process started */
+   if (glob_child_pid && (r == EXIT_SUCCESS)) {
+      gtk_widget_hide(button_sync);
+      gtk_widget_show(button_cancel_sync);
+   }
 }
 
 static void cb_import(GtkWidget *widget, gpointer data)
