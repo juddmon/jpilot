@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.190 2010/10/13 03:18:58 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.191 2010/10/15 03:28:59 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -513,7 +513,15 @@ static void cb_private(GtkWidget *widget, gpointer data)
 
 static void cb_install_user(GtkWidget *widget, gpointer data)
 {
-   install_user_gui(window);
+   int r;
+
+   r = install_user_gui(window);
+
+   /* Fork successful, child sync process started */
+   if (glob_child_pid && (r == EXIT_SUCCESS)) {
+      gtk_widget_hide(button_sync);
+      gtk_widget_show(button_cancel_sync);
+   }
 }
 
 void cb_app_button(GtkWidget *widget, gpointer data)
@@ -593,14 +601,11 @@ static void sync_sig_handler (int sig)
    int r;
 
    flags = skip_plugins ? SYNC_NO_PLUGINS : 0;
-#ifdef __APPLE__
-   /* bug 1924 */
-   flags |= SYNC_NO_FORK;
-#endif
 
    r = setup_sync(flags);
 
-   if (!(SYNC_NO_FORK & flags) && (r == EXIT_SUCCESS)) {
+   /* Fork successful, child sync process started */
+   if (glob_child_pid && (r == EXIT_SUCCESS)) {
       gtk_widget_hide(button_sync);
       gtk_widget_show(button_cancel_sync);
    }
@@ -630,14 +635,10 @@ static void cb_sync(GtkWidget *widget, unsigned int flags)
       }
    }
 
-#ifdef __APPLE__
-   /* bug 1924 */
-   flags |= SYNC_NO_FORK;
-#endif
-
    r = setup_sync(flags);
 
-   if (!(SYNC_NO_FORK & flags) && (r == EXIT_SUCCESS)) {
+   /* Fork successful, child sync process started */
+   if (glob_child_pid && (r == EXIT_SUCCESS)) {
       gtk_widget_hide(button_sync);
       gtk_widget_show(button_cancel_sync);
    }

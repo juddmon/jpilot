@@ -1,4 +1,4 @@
-/* $Id: install_user.h,v 1.2 2010/03/29 05:44:29 rikster5 Exp $ */
+/* $Id: install_user.h,v 1.3 2010/10/15 03:28:59 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -25,6 +25,6 @@
 
 #include <gtk/gtk.h>
 
-void install_user_gui(GtkWidget *main_window);
+int install_user_gui(GtkWidget *main_window);
 
 #endif

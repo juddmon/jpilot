@@ -1,4 +1,4 @@
-/* $Id: install_user.c,v 1.13 2010/03/29 05:44:29 rikster5 Exp $ */
+/* $Id: install_user.c,v 1.14 2010/10/15 03:28:59 rikster5 Exp $ */
 
 /*******************************************************************************
  * install_user.c
@@ -231,20 +231,20 @@ static int dialog_install_user(GtkWindow *main_window,
    return data.button_hit;
 }
 
-void install_user_gui(GtkWidget *main_window)
+int install_user_gui(GtkWidget *main_window)
 {
    int r;
    char user[MAX_PREF_LEN];
    unsigned long user_id;
    const char *svalue;
-   long ivalue;
+   long old_user_id;
    char *old_user;
 
    r = dialog_install_user(GTK_WINDOW(main_window), user, MAX_PREF_LEN, &user_id);
    if (r == DIALOG_SAID_1) {
       /* Temporarily set the user and user ID */
       get_pref(PREF_USER, NULL, &svalue);
-      get_pref(PREF_USER_ID, &ivalue, NULL);
+      get_pref(PREF_USER_ID, &old_user_id, NULL);
       if (svalue) {
          old_user = strdup(svalue);
       } else {
@@ -256,13 +256,18 @@ void install_user_gui(GtkWidget *main_window)
 
       jp_logf(JP_LOG_DEBUG, "user is %s\n", user);
       jp_logf(JP_LOG_DEBUG, "user id is %ld\n", user_id);
-      setup_sync(SYNC_NO_PLUGINS | SYNC_INSTALL_USER);
+      
+      r = setup_sync(SYNC_NO_PLUGINS | SYNC_INSTALL_USER);
 
-      jp_logf(JP_LOG_DEBUG, "old user is %s\n", user);
-      jp_logf(JP_LOG_DEBUG, "old user id is %ld\n", ivalue);
+      jp_logf(JP_LOG_DEBUG, "old user is %s\n", old_user);
+      jp_logf(JP_LOG_DEBUG, "old user id is %ld\n", old_user_id);
       set_pref(PREF_USER, 0, old_user, FALSE);
-      set_pref(PREF_USER_ID, ivalue, NULL, TRUE);
+      set_pref(PREF_USER_ID, old_user_id, NULL, TRUE);
       free(old_user);
-   }
+      
+      return r;
+   } 
+
+   return -1;
 }
 
