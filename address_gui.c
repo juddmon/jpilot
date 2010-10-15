@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.266 2010/10/13 03:18:58 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.267 2010/10/15 01:25:23 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -2395,6 +2395,7 @@ static void clear_mycontact(MyContact *mcont)
 {
    mcont->unique_id=0;
    mcont->attrib=mcont->attrib & 0xF8;
+   jp_free_Contact(&(mcont->cont));
    memset(&(mcont->cont), 0, sizeof(struct Contact));
 
    return;
