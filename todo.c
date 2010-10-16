@@ -1,4 +1,4 @@
-/* $Id: todo.c,v 1.53 2010/10/15 16:42:14 rikster5 Exp $ */
+/* $Id: todo.c,v 1.54 2010/10/16 22:49:25 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo.c
@@ -362,11 +362,9 @@ static int todo_compare(const void *v1, const void *v2)
 
    if (sort_by_priority == 0) {
       /* due date, priority */
-      if ( !(todo1->indefinite) && (todo2->indefinite) ) {
-         return 1;
-      }
-      if ( (todo1->indefinite) && !(todo2->indefinite) ) {
-         return -1;
+      r = todo2->indefinite - todo1->indefinite;
+      if (r) {
+         return r;
       }
       if ( !(todo1->indefinite) && !(todo2->indefinite) ) {
          t1 = mktime(&(todo1->due));
@@ -378,95 +376,89 @@ static int todo_compare(const void *v1, const void *v2)
             return -1;
          }
       }
-      if ( (todo1->priority) < (todo2->priority) ) {
+      if (todo1->priority < todo2->priority) {
          return 1;
       }
-      if ( (todo1->priority) > (todo2->priority) ) {
+      if (todo1->priority > todo2->priority) {
          return -1;
       }
       /* If all else fails sort alphabetically */
-      if ((todo1->description) && (todo2->description)) {
-         return -(strcoll(todo1->description,todo2->description));
+      if (todo1->description && todo2->description) {
+         return strcoll(todo2->description,todo1->description);
       }
    }
 
    if (sort_by_priority == 1) {
       /* priority, due date */
-      if ( (todo1->priority) < (todo2->priority) ) {
+      if (todo1->priority < todo2->priority) {
          return 1;
       }
-      if ( (todo1->priority) > (todo2->priority) ) {
+      if (todo1->priority > todo2->priority) {
          return -1;
       }
-      if ( (todo1->indefinite) && (todo2->indefinite) ) {
-         return 0;
+      r = todo2->indefinite - todo1->indefinite;
+      if (r) {
+         return r;
       }
-      if ( !(todo1->indefinite) && (todo2->indefinite) ) {
-         return 1;
-      }
-      if ( (todo1->indefinite) && !(todo2->indefinite) ) {
-         return -1;
-      }
-      t1 = mktime(&(todo1->due));
-      t2 = mktime(&(todo2->due));
-      if ( t1 < t2 ) {
-         return 1;
-      }
-      if ( t1 > t2 ) {
-         return -1;
+      if ( !(todo1->indefinite) && !(todo2->indefinite) ) {
+         t1 = mktime(&(todo1->due));
+         t2 = mktime(&(todo2->due));
+         if ( t1 < t2 ) {
+            return 1;
+         }
+         if ( t1 > t2 ) {
+            return -1;
+         }
       }
       /* If all else fails sort alphabetically */
-      if ((todo1->description) && (todo2->description)) {
-         return -(strcoll(todo1->description,todo2->description));
+      if (todo1->description && todo2->description) {
+         return strcoll(todo2->description,todo1->description);
       }
    }
 
    if (sort_by_priority == 2) {
       /* category, priority */
-      r = strcoll(glob_Ptodo_app_info->category.name[cat1],
-                 glob_Ptodo_app_info->category.name[cat2]);
+      r = strcoll(glob_Ptodo_app_info->category.name[cat2],
+                  glob_Ptodo_app_info->category.name[cat1]);
       if (r) {
-         return -r;
+         return r;
       }
-      if ( (todo1->priority) < (todo2->priority) ) {
+      if (todo1->priority < todo2->priority) {
          return 1;
       }
-      if ( (todo1->priority) > (todo2->priority) ) {
+      if (todo1->priority > todo2->priority) {
          return -1;
       }
       /* If all else fails sort alphabetically */
-      if ((todo1->description) && (todo2->description)) {
-         return -(strcoll(todo1->description,todo2->description));
+      if (todo1->description && todo2->description) {
+         return strcoll(todo2->description,todo1->description);
       }
    }
 
    if (sort_by_priority == 3) {
       /* category, due date */
-      r = strcoll(glob_Ptodo_app_info->category.name[cat1],
-                 glob_Ptodo_app_info->category.name[cat2]);
+      r = strcoll(glob_Ptodo_app_info->category.name[cat2],
+                  glob_Ptodo_app_info->category.name[cat1]);
       if (r) {
-         return -r;
+         return r;
       }
-      if ( (todo1->indefinite) && (todo2->indefinite) ) {
-         return 0;
+      r = todo2->indefinite - todo1->indefinite;
+      if (r) {
+         return r;
       }
-      if ( !(todo1->indefinite) && (todo2->indefinite) ) {
-         return 1;
-      }
-      if ( (todo1->indefinite) && !(todo2->indefinite) ) {
-         return -1;
-      }
-      t1 = mktime(&(todo1->due));
-      t2 = mktime(&(todo2->due));
-      if ( t1 < t2 ) {
-         return 1;
-      }
-      if ( t1 > t2 ) {
-         return -1;
+      if ( !(todo1->indefinite) && !(todo2->indefinite) ) {
+         t1 = mktime(&(todo1->due));
+         t2 = mktime(&(todo2->due));
+         if ( t1 < t2 ) {
+            return 1;
+         }
+         if ( t1 > t2 ) {
+            return -1;
+         }
       }
       /* If all else fails sort alphabetically */
-      if ((todo1->description) && (todo2->description)) {
-         return -(strcoll(todo1->description,todo2->description));
+      if (todo1->description && todo2->description) {
+         return strcoll(todo2->description,todo1->description);
       }
    }
 

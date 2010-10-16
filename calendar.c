@@ -1,4 +1,4 @@
-/* $Id: calendar.c,v 1.15 2010/10/13 03:18:58 rikster5 Exp $ */
+/* $Id: calendar.c,v 1.16 2010/10/16 22:49:25 rikster5 Exp $ */
 
 /*******************************************************************************
  * calendar.c
@@ -253,6 +253,8 @@ int get_calendar_app_info(struct CalendarAppInfo *cai)
 
 static int calendar_compare(const void *v1, const void *v2)
 {
+   int r;
+
    CalendarEventList **cel1, **cel2;
    struct CalendarEvent *ce1, *ce2;
 
@@ -262,13 +264,28 @@ static int calendar_compare(const void *v1, const void *v2)
    ce1=&((*cel1)->mcale.cale);
    ce2=&((*cel2)->mcale.cale);
 
-   if ((ce1->event) || (ce2->event)) {
-      return ce2->event - ce1->event;
+   /* Sort by untimed event / timed event */
+   r = ce1->event - ce2->event;
+   if (r) {
+      return r;
    }
 
+   /* Sort by appointment start time */
    /* Jim Rees pointed out my sorting error */
-   return ((ce1->begin.tm_hour*60 + ce1->begin.tm_min) -
-           (ce2->begin.tm_hour*60 + ce2->begin.tm_min));
+   if (!(ce1->event) && !(ce2->event)) {
+      r = (ce2->begin.tm_hour*60 + ce2->begin.tm_min) -
+          (ce1->begin.tm_hour*60 + ce1->begin.tm_min);
+      if (r) {
+         return r;
+      }
+   }
+
+   /* If all else fails sort alphabetically */
+   if (ce1->description && ce2->description) {
+      return strcoll(ce2->description,ce1->description);
+   }
+
+   return 0;
 }
 
 int calendar_sort(CalendarEventList **cel,
@@ -303,11 +320,11 @@ int calendar_sort(CalendarEventList **cel,
 
    /* Put the linked list in the order of the array */
    sort_cel[count-1]->next = NULL;
-   for (i=count-1; i; i--) {
-      sort_cel[i-1]->next=sort_cel[i];
+   for (i=count-1; i>0; i--) {
+      sort_cel[i]->next=sort_cel[i-1];
    }
-
-   *cel = sort_cel[0];
+   sort_cel[0]->next = NULL;
+   *cel = sort_cel[count-1];
 
    free(sort_cel);
 
