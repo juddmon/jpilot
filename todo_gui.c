@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.174 2010/10/15 23:50:07 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.175 2010/10/16 04:03:47 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -1364,6 +1364,9 @@ static void clear_mytodos(MyToDo *mtodo)
 {
    mtodo->unique_id=0;
    mtodo->attrib=mtodo->attrib & 0xF8;
+   mtodo->todo.complete=0;
+   mtodo->todo.priority=1;
+   mtodo->todo.indefinite=1;
    if (mtodo->todo.description) {
       free(mtodo->todo.description);
       mtodo->todo.description=strdup("");

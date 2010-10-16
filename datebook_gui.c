@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.237 2010/10/15 23:50:06 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.238 2010/10/16 04:03:47 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -2367,6 +2367,13 @@ static void clear_myCalendarEvent(MyCalendarEvent *mcale)
 {
    mcale->unique_id=0;
    mcale->attrib=mcale->attrib & 0xF8;
+   mcale->cale.event = 1;
+   mcale->cale.alarm = 0;
+   mcale->cale.repeatType = calendarRepeatNone;
+   if (mcale->cale.location) {
+      free(mcale->cale.location);
+      mcale->cale.location=strdup("");
+   }
    if (mcale->cale.description) {
       free(mcale->cale.description);
       mcale->cale.description=strdup("");
@@ -2374,10 +2381,6 @@ static void clear_myCalendarEvent(MyCalendarEvent *mcale)
    if (mcale->cale.note) {
       free(mcale->cale.note);
       mcale->cale.note=strdup("");
-   }
-   if (mcale->cale.location) {
-      free(mcale->cale.location);
-      mcale->cale.location=strdup("");
    }
 /* TODO do we need to clear blob and tz? */
    return;
