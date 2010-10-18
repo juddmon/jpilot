@@ -1,4 +1,4 @@
-/* $Id: restore_gui.c,v 1.30 2010/10/14 22:51:10 rikster5 Exp $ */
+/* $Id: restore_gui.c,v 1.31 2010/10/18 04:55:45 rikster5 Exp $ */
 
 /*******************************************************************************
  * restore_gui.c
@@ -219,6 +219,7 @@ int restore_gui(GtkWidget *main_window, int w, int h, int x, int y)
    GtkWidget *label;
    const char *svalue;
    long ivalue;
+   long char_set;
    char str_int[20];
 
    jp_logf(JP_LOG_DEBUG, "restore_gui()\n");
@@ -279,8 +280,14 @@ int restore_gui(GtkWidget *main_window, int w, int h, int x, int y)
    user_entry = gtk_entry_new_with_max_length(126);
    entry_set_multiline_truncate(GTK_ENTRY(user_entry), TRUE);
    get_pref(PREF_USER, NULL, &svalue);
-   if (svalue) {
-      gtk_entry_set_text(GTK_ENTRY(user_entry), svalue);
+   if ((svalue) && (svalue[0])) {
+      /* Convert User Name stored in Palm character set */
+      char user_name[128];
+
+      get_pref(PREF_CHAR_SET, &char_set, NULL);
+      g_strlcpy(user_name, svalue, 128);
+      charset_p2j(user_name, 128, char_set);
+      gtk_entry_set_text(GTK_ENTRY(user_entry), user_name);
    }
    gtk_box_pack_start(GTK_BOX(hbox), user_entry, TRUE, TRUE, 0);
 

@@ -1,4 +1,4 @@
-/* $Id: install_user.c,v 1.14 2010/10/15 03:28:59 rikster5 Exp $ */
+/* $Id: install_user.c,v 1.15 2010/10/18 04:55:45 rikster5 Exp $ */
 
 /*******************************************************************************
  * install_user.c
@@ -50,9 +50,14 @@ static char *jp_user_or_whoami(void)
    struct passwd *pw_ent;
    uid_t uid;
    const char *svalue;
+   long char_set;
 
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
    get_pref(PREF_USER, NULL, &svalue);
-   if ((svalue) && strlen(svalue)) return strdup(svalue);
+   if ((svalue) && (svalue[0])) {
+      /* Convert User Name stored in Palm character set */
+      return charset_p2newj(svalue, -1, char_set);
+   }
 
    uid = geteuid();
    pw_ent = getpwuid(uid);

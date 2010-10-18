@@ -1,4 +1,4 @@
-/* $Id: jpilot-dump.c,v 1.39 2010/10/12 03:25:38 rikster5 Exp $ */
+/* $Id: jpilot-dump.c,v 1.40 2010/10/18 04:55:45 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot-dump.c
@@ -168,12 +168,12 @@ static int dumpical(void)
 
    get_pref(PREF_USER, NULL, &svalue);
    g_strlcpy(text, svalue, 128);
+   text[127] = '\0';
    charset_p2j(text, 128, char_set);
    str_to_ical_str(username, sizeof(username), text);
    get_pref(PREF_USER_ID, &userid, &svalue);
    gethostname(text, sizeof(hostname));
    text[sizeof(hostname)-1]='\0';
-   charset_p2j(text, sizeof(hostname), char_set);
    str_to_ical_str(hostname, sizeof(hostname), text);
    time(&ltime);
    now = gmtime(&ltime);

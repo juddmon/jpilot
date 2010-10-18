@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.268 2010/10/15 23:50:06 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.269 2010/10/18 04:55:45 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -970,8 +970,11 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 
    /* Special setup for VCARD export */
    if (type == EXPORT_TYPE_VCARD) {
+      get_pref(PREF_CHAR_SET, &char_set, NULL);
       get_pref(PREF_USER, NULL, &svalue);
-      g_strlcpy(text, svalue, sizeof(text));
+      /* Convert User Name stored in Palm character set */
+      g_strlcpy(text, svalue, 128);
+      charset_p2j(text, 128, char_set);
       str_to_ical_str(username, sizeof(username), text);
       get_pref(PREF_USER_ID, &userid, NULL);
       gethostname(text, sizeof(text));

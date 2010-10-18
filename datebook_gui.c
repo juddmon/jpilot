@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.238 2010/10/16 04:03:47 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.239 2010/10/18 04:55:45 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -822,14 +822,15 @@ static void appt_export_ok(int type, const char *filename)
                                 " Exported ical file may not be standards-compliant\n"));
       }
 
+      /* Convert User Name stored in Palm character set */
       get_pref(PREF_USER, NULL, &svalue);
       g_strlcpy(text, svalue, 128);
+      text[127] = '\0';
       charset_p2j(text, 128, char_set);
       str_to_ical_str(username, sizeof(username), text);
       get_pref(PREF_USER_ID, &userid, &svalue);
       gethostname(text, sizeof(hostname));
       text[sizeof(hostname)-1]='\0';
-      charset_p2j(text, sizeof(hostname), char_set);
       str_to_ical_str(hostname, sizeof(hostname), text);
       time(&ltime);
       now = gmtime(&ltime);
