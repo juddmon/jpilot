@@ -1,4 +1,4 @@
-/* $Id: jpilot-dump.c,v 1.40 2010/10/18 04:55:45 rikster5 Exp $ */
+/* $Id: jpilot-dump.c,v 1.41 2010/10/18 05:01:06 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot-dump.c
@@ -329,7 +329,7 @@ static int dumpical(void)
             memset(&ical_time, 0, sizeof(ical_time));
             ical_time.tm_year = mappt->appt.repeatEnd.tm_year;
             ical_time.tm_mon  = mappt->appt.repeatEnd.tm_mon;
-            ical_time.tm_mday = mappt->appt.repeatEnd.tm_mday + 1;
+            ical_time.tm_mday = mappt->appt.repeatEnd.tm_mday;
             ical_time.tm_isdst= -1;
             mktime(&ical_time);
             printf(";UNTIL=%04d%02d%02d",
