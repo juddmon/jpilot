@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.113 2010/10/15 23:50:07 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.114 2010/10/19 00:00:09 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -1908,8 +1908,7 @@ int plugin_help(char **text, int *width, int *height)
         "\n"
         "KeyRing plugin for J-Pilot was written by\n"
         "Judd Montgomery (c) 2001.\n"
-        "judd@jpilot.org\n"
-        "http://jpilot.org\n"
+        "judd@jpilot.org, http://jpilot.org\n"
         "\n"
         "KeyRing is a free PalmOS program for storing\n" 
         "passwords and other information in encrypted form\n"

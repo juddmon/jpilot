@@ -1,4 +1,4 @@
-/* $Id: synctime.c,v 1.18 2010/10/13 03:19:00 rikster5 Exp $ */
+/* $Id: synctime.c,v 1.19 2010/10/19 00:00:09 rikster5 Exp $ */
 
 /*******************************************************************************
  * synctime.c
@@ -73,8 +73,7 @@ int plugin_help(char **text, int *width, int *height)
         "\n"
         "SyncTime plugin for J-Pilot was written by\n"
         "Judd Montgomery (c) 1999.\n"
-        "judd@jpilot.org\n"
-        "http://jpilot.org\n"
+        "judd@jpilot.org, http://jpilot.org\n"
         "\n"
         "SyncTime WILL NOT work with PalmOS 3.3!"
         ),
