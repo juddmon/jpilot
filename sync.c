@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.117 2010/10/15 04:34:39 rikster5 Exp $ */
+/* $Id: sync.c,v 1.118 2010/10/19 00:34:19 rikster5 Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -85,7 +85,7 @@ extern void cb_cancel_sync(GtkWidget *widget, unsigned int flags);
 
 static void sig_handler(int sig)
 {
-   int status;
+   int status = 0;
 
    jp_logf(JP_LOG_DEBUG, "caught signal SIGCHLD\n");
 
