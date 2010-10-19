@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.239 2010/10/18 04:55:45 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.240 2010/10/19 00:11:09 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -2371,6 +2371,8 @@ static void clear_myCalendarEvent(MyCalendarEvent *mcale)
    mcale->cale.event = 1;
    mcale->cale.alarm = 0;
    mcale->cale.repeatType = calendarRepeatNone;
+   memset(&mcale->cale.begin, 0, sizeof(struct tm));
+   memset(&mcale->cale.end, 0, sizeof(struct tm));
    if (mcale->cale.location) {
       free(mcale->cale.location);
       mcale->cale.location=strdup("");
