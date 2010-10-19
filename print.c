@@ -1,4 +1,4 @@
-/* $Id: print.c,v 1.52 2010/10/15 23:50:07 rikster5 Exp $ */
+/* $Id: print.c,v 1.53 2010/10/19 00:33:39 rikster5 Exp $ */
 
 /*******************************************************************************
  * print.c
@@ -1218,6 +1218,7 @@ int print_todos(ToDoList *todo_list, char *category_name)
    get_pref(PREF_NUM_BLANK_LINES, &lines_between_recs, NULL);
 
    get_pref(PREF_SHORTDATE, NULL, &datef);
+   time(&ltime);
    now = localtime(&ltime);
    strftime(str, sizeof(str), datef, now);
    indent=strlen(str) + 8;
