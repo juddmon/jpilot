@@ -1,4 +1,4 @@
-/* $Id: datebook.c,v 1.71 2010/10/15 16:42:13 rikster5 Exp $ */
+/* $Id: datebook.c,v 1.72 2010/10/22 22:21:02 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook.c
@@ -194,6 +194,11 @@ int copy_calendar_event(const struct CalendarEvent *source,
    int r;
 
    *dest = malloc(sizeof(struct CalendarEvent));
+   if (*dest) {
+      /* zero out memory to remove valgrind warnings */
+      memset(*dest, 0, sizeof(struct CalendarEvent));
+   }
+  
    r = copy_CalendarEvent(source, *dest);
 
    if (!r) {

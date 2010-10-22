@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.82 2010/10/15 16:42:14 rikster5 Exp $ */
+/* $Id: utils.h,v 1.83 2010/10/22 22:21:02 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -84,12 +84,18 @@
 #define DIALOG_SAID_1           454
 #define DIALOG_SAID_PRINT       454
 #define DIALOG_SAID_FOURTH      454
-#define DIALOG_SAID_CURRENT     454
 #define DIALOG_SAID_2           455
 #define DIALOG_SAID_LAST        455
-#define DIALOG_SAID_ALL         455
 #define DIALOG_SAID_3           456
 #define DIALOG_SAID_CANCEL      456
+#define DIALOG_SAID_4           457
+
+/* Repeat event dialog */
+#define DIALOG_SAID_RPT_CURRENT 454
+#define DIALOG_SAID_RPT_FUTURE  455
+#define DIALOG_SAID_RPT_ALL     456
+#define DIALOG_SAID_RPT_CANCEL  457
+
 /* Import dialog */
 #define DIALOG_SAID_IMPORT_YES  455
 #define DIALOG_SAID_IMPORT_ALL  456

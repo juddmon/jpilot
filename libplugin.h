@@ -1,4 +1,4 @@
-/* $Id: libplugin.h,v 1.35 2010/10/13 03:18:58 rikster5 Exp $ */
+/* $Id: libplugin.h,v 1.36 2010/10/22 22:21:02 rikster5 Exp $ */
 
 /*******************************************************************************
  * libplugin.h
@@ -145,12 +145,11 @@ int get_next_unique_pc_id(unsigned int *next_unique_id);
 #define DIALOG_SAID_1        454
 #define DIALOG_SAID_PRINT    454
 #define DIALOG_SAID_FOURTH   454
-#define DIALOG_SAID_CURRENT  454
 #define DIALOG_SAID_2        455
 #define DIALOG_SAID_LAST     455
-#define DIALOG_SAID_ALL      455
 #define DIALOG_SAID_3        456
 #define DIALOG_SAID_CANCEL   456
+#define DIALOG_SAID_4        457
 
 #define JP_LOG_DEBUG  1    /*debugging info for programmers, and bug reports */
 #define JP_LOG_INFO   2    /*info, and misc messages */

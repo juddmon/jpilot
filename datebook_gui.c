@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.240 2010/10/19 00:11:09 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.241 2010/10/22 22:21:02 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -1775,20 +1775,20 @@ static int dialog_4_or_last(int dow)
                          text, 2, button_text);
 }
 
-static int dialog_current_all_cancel(void)
+static int dialog_current_future_all_cancel(void)
 {
    char text[]=
       N_("This is a repeating event.\n"
-         "Do you want to apply these\n"
-         "changes to just the CURRENT\n"
-         "event, or ALL of the\n"
-         "occurrences of this event?");
-   char *button_text[]={ N_("Current"), N_("All"), N_("Cancel")
+         "Do you want to apply these changes to\n"
+         "only the CURRENT event,\n"
+         "just FUTURE events, or\n"
+         "ALL of the occurrences of this event?");
+   char *button_text[]={ N_("Current"), N_("Future"), N_("All"), N_("Cancel")
    };
 
    return dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(scrolled_window)),
                          _("Question?"), DIALOG_QUESTION,
-                         _(text), 3, button_text);
+                         _(text), 4, button_text);
 }
 
 #ifdef EASTER
@@ -2761,8 +2761,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    struct CalendarEvent *cale;
    struct CalendarEvent new_cale;
    int flag;
-   int create_exception=0;
-   int result;
+   int dialog = 0;
    int r;
    unsigned char attrib;
    int show_priv;
@@ -2859,13 +2858,12 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
 
    if ((flag==MODIFY_FLAG) && (new_cale.repeatType != calendarRepeatNone)) {
       /* We need more user input. Pop up a dialog */
-      result = dialog_current_all_cancel();
-      if (result==DIALOG_SAID_CANCEL) {
+      dialog = dialog_current_future_all_cancel();
+      if (dialog==DIALOG_SAID_RPT_CANCEL) {
          return;
       }
-      if (result==DIALOG_SAID_CURRENT) {
+      else if (dialog==DIALOG_SAID_RPT_CURRENT) {
          /* Create an exception in the appointment */
-         create_exception=1;
          new_cale.repeatType = calendarRepeatNone;
          new_cale.begin.tm_year = current_year;
          new_cale.begin.tm_mon = current_month;
@@ -2879,8 +2877,29 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
          new_cale.end.tm_isdst = -1;
          mktime(&new_cale.end);
       }
-      if (result==DIALOG_SAID_ALL) {
-         /* We still need to keep the exceptions of the original record */
+      else if (dialog==DIALOG_SAID_RPT_FUTURE) {
+         /* Change rpt. end date on old appt. to end 1 day before new event*/
+         mcale->cale.repeatForever = 0;
+         memset(&(mcale->cale.repeatEnd), 0, sizeof(struct tm));
+         mcale->cale.repeatEnd.tm_mon = current_month;
+         mcale->cale.repeatEnd.tm_mday = current_day - 1;
+         mcale->cale.repeatEnd.tm_year = current_year;
+         mcale->cale.repeatEnd.tm_isdst = -1;
+         mktime(&(mcale->cale.repeatEnd));
+
+         /* Create new appt. for future including exceptions from previous event */
+         new_cale.begin.tm_year = current_year;
+         new_cale.begin.tm_mon = current_month;
+         new_cale.begin.tm_mday = current_day;
+         new_cale.begin.tm_isdst = -1;
+         mktime(&new_cale.begin);
+
+         new_cale.exception = malloc(mcale->cale.exceptions * sizeof(struct tm));
+         memcpy(new_cale.exception, mcale->cale.exception, mcale->cale.exceptions * sizeof(struct tm));
+         new_cale.exceptions = mcale->cale.exceptions;
+      }
+      else if (dialog==DIALOG_SAID_RPT_ALL) {
+         /* Keep the list of exceptions from the original record */
          new_cale.exception = malloc(mcale->cale.exceptions * sizeof(struct tm));
          memcpy(new_cale.exception, mcale->cale.exception, mcale->cale.exceptions * sizeof(struct tm));
          new_cale.exceptions = mcale->cale.exceptions;
@@ -2889,6 +2908,12 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    /* TODO - take care of blob and tz? */
 
    set_new_button_to(CLEAR_FLAG);
+
+   /* New record */
+   if (flag != MODIFY_FLAG) { 
+      unique_id=0; /* Palm will supply unique_id for new record */
+      pc_calendar_write(&new_cale, NEW_PC_REC, attrib, &unique_id);
+   }
 
    if (flag==MODIFY_FLAG) {
       long char_set;
@@ -2917,9 +2942,9 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
          delete_pc_record(CALENDAR, mcale, flag);
       }
 
-      /* We need to take care of the 2 options allowed when modifying
+      /* We need to take care of the 3 options allowed when modifying
        * repeating appointments */
-      if (create_exception) {
+      if (dialog==DIALOG_SAID_RPT_CURRENT) {
          copy_calendar_event(&(mcale->cale), &cale);
          /* TODO rename? */
          datebook_add_exception(cale, current_year, current_month, current_day);
@@ -2933,6 +2958,17 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
          pc_calendar_write(&new_cale, NEW_PC_REC, attrib, &unique_id);
          free_CalendarEvent(cale);
          free(cale);
+      } else if (dialog==DIALOG_SAID_RPT_FUTURE) {
+         /* Write old record with rpt. end date */
+            if ((mcale->rt==PALM_REC) || (mcale->rt==REPLACEMENT_PALM_REC)) {
+               pc_calendar_write(&(mcale->cale), REPLACEMENT_PALM_REC, attrib, &unique_id);
+            } else {
+               unique_id=0;
+               pc_calendar_write(&(mcale->cale), NEW_PC_REC, attrib, &unique_id);
+            }
+         /* Write new record with future rpt. events */
+         unique_id=0; /* Palm will supply unique_id for new record */
+         pc_calendar_write(&new_cale, NEW_PC_REC, attrib, &unique_id);
       } else {
          if ((mcale->rt==PALM_REC) || (mcale->rt==REPLACEMENT_PALM_REC)) {
             pc_calendar_write(&new_cale, REPLACEMENT_PALM_REC, attrib, &unique_id);
@@ -2941,10 +2977,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
             pc_calendar_write(&new_cale, NEW_PC_REC, attrib, &unique_id);
          }
       }
-   } else {
-      unique_id=0; /* Palm will supply unique_id for new record */
-      pc_calendar_write(&new_cale, NEW_PC_REC, attrib, &unique_id);
-   }
+   } 
 
    /* Position calendar on the actual event or next future occurrence depending
     * on what is closest to the current date */
@@ -2997,10 +3030,9 @@ static void cb_delete_appt(GtkWidget *widget, gpointer data)
    MyCalendarEvent *mcale;
    struct CalendarEvent *cale;
    int flag;
-   int result = 0;
+   int dialog = 0;
    int show_priv;
    long char_set;
-   int write_flag;
    unsigned int *write_unique_id;
 
    mcale = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
@@ -3031,19 +3063,17 @@ static void cb_delete_appt(GtkWidget *widget, gpointer data)
       return;
    }
 
-   /* We need to take care of the 2 options allowed when modifying */
+   /* We need to take care of the 3 options allowed when modifying */
    /* repeating appointments */
-   write_flag = 0;
    write_unique_id = NULL;
 
    if (mcale->cale.repeatType != calendarRepeatNone) {
       /* We need more user input. Pop up a dialog */
-      result = dialog_current_all_cancel();
-      if (result==DIALOG_SAID_CANCEL) {
+      dialog = dialog_current_future_all_cancel();
+      if (dialog==DIALOG_SAID_RPT_CANCEL) {
          return;
       }
-      if (result==DIALOG_SAID_CURRENT) {
-         write_flag = 1;
+      else if (dialog==DIALOG_SAID_RPT_CURRENT) {
          /* Create an exception in the appointment */
          copy_calendar_event(&(mcale->cale), &cale);
          datebook_add_exception(cale, current_year, current_month, current_day);
@@ -3054,6 +3084,22 @@ static void cb_delete_appt(GtkWidget *widget, gpointer data)
          }
          /* Since this was really a modify, and not a delete */
          flag=MODIFY_FLAG;
+      }
+      else if (dialog==DIALOG_SAID_RPT_FUTURE) {
+         /* Set an end date on the repeating event to delete future events */
+         copy_calendar_event(&(mcale->cale), &cale);
+         cale->repeatForever = 0;
+         memset(&(cale->repeatEnd), 0, sizeof(struct tm));
+         cale->repeatEnd.tm_mon = current_month;
+         cale->repeatEnd.tm_mday = current_day - 1;
+         cale->repeatEnd.tm_year = current_year;
+         cale->repeatEnd.tm_isdst = -1;
+         mktime(&(cale->repeatEnd));
+         if ((mcale->rt==PALM_REC) || (mcale->rt==REPLACEMENT_PALM_REC)) {
+            write_unique_id = &(mcale->unique_id);
+         } else {
+            write_unique_id = NULL;
+         }
       }
    }
    /* Its important to write a delete record first and then a new/modified
@@ -3071,7 +3117,9 @@ static void cb_delete_appt(GtkWidget *widget, gpointer data)
    } else {
       delete_pc_record(CALENDAR, mcale, flag);
    }
-   if (write_flag) {
+
+   if (dialog==DIALOG_SAID_RPT_CURRENT ||
+       dialog==DIALOG_SAID_RPT_FUTURE) {
       pc_calendar_write(cale, REPLACEMENT_PALM_REC, mcale->attrib, write_unique_id);
       free_CalendarEvent(cale);
       free(cale);
@@ -3084,7 +3132,7 @@ static void cb_delete_appt(GtkWidget *widget, gpointer data)
       }
    }
 
-   if ((flag == DELETE_FLAG) || (result == DIALOG_SAID_CURRENT))  {
+   if ((flag == DELETE_FLAG) || (dialog==DIALOG_SAID_RPT_CURRENT))  {
       datebook_update_clist();
       highlight_days();
    }
