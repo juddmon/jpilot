@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.269 2010/10/18 04:55:45 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.270 2010/10/23 04:57:46 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -2028,7 +2028,6 @@ static void addr_clear_details(void)
    int sorted_position;
    int address_i, IM_i, phone_i;
    long ivalue;
-   const char *cstr;
    char reminder_str[10];
    /* Palm has phone popup menus in one order and the display of phone tabs 
     * in another. This reorders the tabs to produce the more usable order of 
@@ -2092,7 +2091,7 @@ static void addr_clear_details(void)
        case ADDRESS_GUI_BIRTHDAY:
          gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(birthday_checkbox), 0);
          gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(reminder_checkbox), 0);
-         get_pref(PREF_TODO_DAYS_TILL_DUE, &ivalue, &cstr);
+         get_pref(PREF_TODO_DAYS_TILL_DUE, &ivalue, NULL);
          reminder_str[0]='\0';
          g_snprintf(reminder_str, sizeof(reminder_str), "%ld", ivalue);
          gtk_entry_set_text(GTK_ENTRY(reminder_entry), reminder_str);
@@ -2697,7 +2696,6 @@ static void cb_clist_selection(GtkWidget      *clist,
    int address_i, IM_i, phone_i;
    char birthday_str[255];
    long ivalue;
-   const char *cstr;
    char reminder_str[10];
    GString *s;
    long char_set;
@@ -2893,7 +2891,7 @@ static void cb_clist_selection(GtkWidget      *clist,
          }
          break;
        case ADDRESS_GUI_BIRTHDAY:
-         get_pref(PREF_TODO_DAYS_TILL_DUE, &ivalue, &cstr);
+         get_pref(PREF_TODO_DAYS_TILL_DUE, &ivalue, NULL);
          reminder_str[0]='\0';
          g_snprintf(reminder_str, sizeof(reminder_str), "%ld", ivalue);
 

@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.77 2010/10/15 23:50:07 rikster5 Exp $ */
+/* $Id: prefs_gui.c,v 1.78 2010/10/23 04:57:46 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -511,7 +511,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(pref_menu),
                              1, 2, 0, 1);
 
-   get_pref(PREF_CHAR_SET, &ivalue, &cstr);
+   get_pref(PREF_CHAR_SET, &ivalue, NULL);
    gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
 
    /* Shortdate */
@@ -524,7 +524,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(pref_menu),
                              1, 2, 1, 2);
 
-   get_pref(PREF_SHORTDATE, &ivalue, &cstr);
+   get_pref(PREF_SHORTDATE, &ivalue, NULL);
    gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
 
    /* Longdate */
@@ -537,7 +537,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(pref_menu),
                              1, 2, 2, 3);
 
-   get_pref(PREF_LONGDATE, &ivalue, &cstr);
+   get_pref(PREF_LONGDATE, &ivalue, NULL);
    gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
 
    /* Time */
@@ -550,7 +550,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(pref_menu),
                              1, 2, 3, 4);
 
-   get_pref(PREF_TIME, &ivalue, &cstr);
+   get_pref(PREF_TIME, &ivalue, NULL);
    gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
 
    /**********************************************************************/
@@ -570,7 +570,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(pref_menu),
                              2, 3, 0, 1);
 
-   get_pref(PREF_RCFILE, &ivalue, &cstr);
+   get_pref(PREF_RCFILE, &ivalue, NULL);
    gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
 
    /* Port */
@@ -583,7 +583,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    entry_set_multiline_truncate(GTK_ENTRY(port_entry), TRUE);
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(port_entry),
                              2, 3, 1, 2);
-   get_pref(PREF_PORT, &ivalue, &cstr);
+   get_pref(PREF_PORT, NULL, &cstr);
    if (cstr) {
       gtk_entry_set_text(GTK_ENTRY(port_entry), cstr);
    }
@@ -607,7 +607,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(pref_menu),
                              2, 3, 2, 3);
 
-   get_pref(PREF_RATE, &ivalue, &cstr);
+   get_pref(PREF_RATE, &ivalue, NULL);
    gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
 
    /* Number of backups */
@@ -621,7 +621,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_widget_set_usize(backups_entry, 30, 0);
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(backups_entry),
                              2, 3, 3, 4);
-   get_pref(PREF_NUM_BACKUPS, &ivalue, &cstr);
+   get_pref(PREF_NUM_BACKUPS, &ivalue, NULL);
    sprintf(temp_str, "%ld", ivalue);
    gtk_entry_set_text(GTK_ENTRY(backups_entry), temp_str);
    gtk_signal_connect(GTK_OBJECT(backups_entry),
@@ -748,7 +748,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 
    mail_command_entry = gtk_entry_new_with_max_length(MAX_PREF_LEN - 2);
 
-   get_pref(PREF_MAIL_COMMAND, &ivalue, &cstr);
+   get_pref(PREF_MAIL_COMMAND, NULL, &cstr);
    if (cstr) {
       gtk_entry_set_text(GTK_ENTRY(mail_command_entry), cstr);
    }
@@ -825,7 +825,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 
    todo_days_due_entry = gtk_entry_new_with_max_length(MAX_PREF_LEN - 2);
    entry_set_multiline_truncate(GTK_ENTRY(todo_days_due_entry), TRUE);
-   get_pref(PREF_TODO_DAYS_TILL_DUE, &ivalue, &cstr);
+   get_pref(PREF_TODO_DAYS_TILL_DUE, &ivalue, NULL);
    temp[0]='\0';
    g_snprintf(temp, sizeof(temp), "%ld", ivalue);
       gtk_entry_set_text(GTK_ENTRY(todo_days_due_entry), temp);
@@ -905,7 +905,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 10);
 
    alarm_command_entry = gtk_entry_new_with_max_length(MAX_PREF_LEN - 2);
-   get_pref(PREF_ALARM_COMMAND, &ivalue, &cstr);
+   get_pref(PREF_ALARM_COMMAND, NULL, &cstr);
    if (cstr) {
       gtk_entry_set_text(GTK_ENTRY(alarm_command_entry), cstr);
    }
@@ -966,7 +966,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    add_checkbutton(_("Sync Manana"),
                    PREF_SYNC_MANANA, vbox_conduits, cb_checkbox_set_pref);
 #endif
-   get_pref(PREF_CHAR_SET, &ivalue, &cstr);
+   get_pref(PREF_CHAR_SET, &ivalue, NULL);
    if (ivalue == CHAR_SET_JAPANESE || ivalue == CHAR_SET_SJIS_UTF) {
       /* Show use Japanese Kana extention check box */
       add_checkbutton(_("Use J-OS (Not Japanese PalmOS:WorkPad/CLIE)"),

@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.241 2010/10/22 22:21:02 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.242 2010/10/23 04:57:46 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -828,7 +828,7 @@ static void appt_export_ok(int type, const char *filename)
       text[127] = '\0';
       charset_p2j(text, 128, char_set);
       str_to_ical_str(username, sizeof(username), text);
-      get_pref(PREF_USER_ID, &userid, &svalue);
+      get_pref(PREF_USER_ID, &userid, NULL);
       gethostname(text, sizeof(hostname));
       text[sizeof(hostname)-1]='\0';
       str_to_ical_str(hostname, sizeof(hostname), text);
