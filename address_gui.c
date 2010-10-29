@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.270 2010/10/23 04:57:46 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.271 2010/10/29 04:22:22 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -3944,6 +3944,13 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    gtk_box_pack_start(GTK_BOX(vbox2), notebook, TRUE, TRUE, 0);
 
+   /* Clear GTK option menus before use */
+   for (i=0; i<NUM_ADDRESSES; i++) {
+      for (j=0; j<NUM_PHONE_LABELS; j++) {
+         phone_type_menu_item[i][j] = NULL;
+      }
+   }
+
    /* Add notebook pages and their widgets */
    phone_i = address_type_i = IM_type_i = 0;
    for (page_i=0; page_i<num_pages; page_i++) {
@@ -4025,12 +4032,6 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
       }
       
       /* Add widgets for each notebook page */
-      /* Clear GTK option menus before use */
-      for (i=0; i<NUM_ADDRESSES; i++) {
-         for (j=0; j<NUM_PHONE_LABELS; j++) {
-            phone_type_menu_item[i][j] = NULL;
-         }
-      }
 
       group=NULL;
       for (i=0; i<schema_size; i++) {
