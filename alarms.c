@@ -1,4 +1,4 @@
-/* $Id: alarms.c,v 1.55 2010/10/15 23:03:40 rikster5 Exp $ */
+/* $Id: alarms.c,v 1.56 2010/11/06 06:17:27 rikster5 Exp $ */
 
 /*******************************************************************************
  * alarms.c
@@ -222,20 +222,20 @@ static int dialog_alarm(char *title, char *reason,
    gtk_box_pack_start(GTK_BOX(hbox1), label, FALSE, FALSE, 6);
 
    /* remind delay */
-   hbox1 = gtk_hbox_new(TRUE, 6);
+   hbox1 = gtk_hbox_new(FALSE, 0);
    remind_entry = gtk_spin_button_new_with_range(0, 59, 1);
-   gtk_box_pack_start(GTK_BOX(hbox1), remind_entry, FALSE, TRUE, 5);
+   gtk_box_pack_start(GTK_BOX(hbox1), remind_entry, FALSE, FALSE, 2);
 
    vbox_temp = gtk_vbox_new(FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(hbox1), vbox_temp, FALSE, TRUE, 1);
+   gtk_box_pack_start(GTK_BOX(hbox1), vbox_temp, FALSE, TRUE, 4);
 
    radio1 = gtk_radio_button_new_with_label(NULL, _("Minutes"));
    group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio1));
    radio2 = gtk_radio_button_new_with_label(group, _("Hours"));
    group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio2));
 
-   gtk_box_pack_start(GTK_BOX(vbox_temp), radio1, TRUE, TRUE, 1);
-   gtk_box_pack_start(GTK_BOX(vbox_temp), radio2, TRUE, TRUE, 1);
+   gtk_box_pack_start(GTK_BOX(vbox_temp), radio1, TRUE, TRUE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox_temp), radio2, TRUE, TRUE, 0);
 
    gtk_box_pack_start(GTK_BOX(vbox1), hbox1, TRUE, TRUE, 2);
 
@@ -256,13 +256,13 @@ static int dialog_alarm(char *title, char *reason,
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
                       GTK_SIGNAL_FUNC(cb_dialog_button),
                       GINT_TO_POINTER(DIALOG_SAID_2));
-   gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
+   gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 4);
 
    button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
                       GTK_SIGNAL_FUNC(cb_dialog_button),
                       GINT_TO_POINTER(DIALOG_SAID_1));
-   gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
+   gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 4);
 
    Pdata = malloc(sizeof(struct alarm_dialog_data));
    if (Pdata) {
