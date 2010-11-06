@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.78 2010/10/23 04:57:46 rikster5 Exp $ */
+/* $Id: prefs_gui.c,v 1.79 2010/11/06 06:18:55 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -598,7 +598,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
                              1, 2, 1, 2);
 
    /* Serial Rate */
-   label = gtk_label_new(_("Serial Rate"));
+   label = gtk_label_new(_("Sync Rate"));
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
                              0, 2, 2, 3);
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
