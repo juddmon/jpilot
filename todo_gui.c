@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.176 2010/10/18 04:55:45 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.177 2010/11/06 06:59:58 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -2325,12 +2325,15 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    label = gtk_label_new(_("Priority:"));
    gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 2);
+   gtk_tooltips_set_tip(glob_tooltips, label, _("Set priority   Alt+#"), NULL);
 
    group = NULL;
    for (i=0; i<NUM_TODO_PRIORITIES; i++) {
       sprintf(str,"%d",i+1);
       radio_button_todo[i] = gtk_radio_button_new_with_label(group, str);
       group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_todo[i]));
+      gtk_widget_add_accelerator(radio_button_todo[i], "clicked", accel_group,
+                                 GDK_1+i, GDK_MOD1_MASK, GTK_ACCEL_VISIBLE);
       gtk_box_pack_start(GTK_BOX(hbox_temp),
                          radio_button_todo[i], FALSE, FALSE, 0);
    }
