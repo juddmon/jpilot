@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.79 2010/11/06 06:18:55 rikster5 Exp $ */
+/* $Id: prefs_gui.c,v 1.80 2010/11/06 21:33:25 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -58,6 +58,9 @@ static char *port_choices[]={
    NULL
 };
 
+/* Serial Rate Menu */
+static GtkWidget *rate_menu;
+
 /****************************** Main Code *************************************/
 #ifdef COLORS
 
@@ -102,7 +105,14 @@ static void cb_serial_port_menu(GtkWidget *widget,
       return;
    }
 
-   gtk_entry_set_text(GTK_ENTRY(port_entry), port_choices[GPOINTER_TO_INT(data)]);
+   char *port_str = port_choices[GPOINTER_TO_INT(data)]; 
+   gtk_entry_set_text(GTK_ENTRY(port_entry), port_str);
+   if (! strcmp(port_str, "usb:")) {
+      gtk_widget_set_sensitive(rate_menu, FALSE);
+   } else {
+      gtk_widget_set_sensitive(rate_menu, TRUE);
+   }
+
 
    return;
 }
@@ -134,7 +144,8 @@ static int make_serial_port_menu(GtkWidget **port_menu)
 
       /* We don't want a callback if "other" is selected */
       if (i) {
-         gtk_signal_connect(GTK_OBJECT(port_menu_item[i]), "activate", GTK_SIGNAL_FUNC(cb_serial_port_menu),
+         gtk_signal_connect(GTK_OBJECT(port_menu_item[i]), "activate", 
+                            GTK_SIGNAL_FUNC(cb_serial_port_menu),
                             GINT_TO_POINTER(i));
       }
 
@@ -598,17 +609,24 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
                              1, 2, 1, 2);
 
    /* Serial Rate */
-   label = gtk_label_new(_("Sync Rate"));
+   label = gtk_label_new(_("Serial Rate"));
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
                              0, 2, 2, 3);
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
 
-   make_pref_menu(&pref_menu, PREF_RATE);
-   gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(pref_menu),
+   make_pref_menu(&rate_menu, PREF_RATE);
+   gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(rate_menu),
                              2, 3, 2, 3);
 
    get_pref(PREF_RATE, &ivalue, NULL);
-   gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
+   gtk_option_menu_set_history(GTK_OPTION_MENU(rate_menu), ivalue);
+
+   /* Disable Serial Rate menu if sync port is USB */
+   if (! strcmp(cstr, "usb:")) {
+      gtk_widget_set_sensitive(rate_menu, FALSE);
+   } else {
+      gtk_widget_set_sensitive(rate_menu, TRUE);
+   }
 
    /* Number of backups */
    label = gtk_label_new(_("Number of backups to be archived"));
