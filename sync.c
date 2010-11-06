@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.118 2010/10/19 00:34:19 rikster5 Exp $ */
+/* $Id: sync.c,v 1.119 2010/11/06 23:25:05 rikster5 Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -80,6 +80,9 @@ extern pid_t glob_child_pid;
 /****************************** Prototypes ************************************/
 /* From jpilot.c for restoring sync icon after successful sync */
 extern void cb_cancel_sync(GtkWidget *widget, unsigned int flags);
+
+static int pi_file_install_VFS(const int fd, const char *basename, const int socket, const char *vfspath, progress_func f);
+static int findVFSPath(int sd, const char *path, long *volume, char *rpath, int *rpathlen);
 
 /****************************** Main Code *************************************/
 
@@ -1460,7 +1463,7 @@ static int sync_fetch(int sd, unsigned int flags,
    return EXIT_SUCCESS;
 }
 
-static int sync_install(char *filename, int sd)
+static int sync_install(char *filename, int sd, char *vfspath)
 {
    struct pi_file *f;
    struct  DBInfo info;
@@ -1469,19 +1472,22 @@ static int sync_install(char *filename, int sd)
    int r, try_again;
    long char_set;
    char creator[5];
+   int sdcard_install;
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
 
-   Pc=strrchr(filename, '/');
+   Pc = strrchr(filename, '/');
    if (!Pc) {
       Pc = filename;
    } else {
       Pc++;
    }
 
+   sdcard_install = (vfspath != NULL);
+
    jp_logf(JP_LOG_GUI, _("Installing %s "), Pc);
    f = pi_file_open(filename);
-   if (f==NULL) {
+   if (f==NULL && !sdcard_install) {
       int fd;
 
       if ((fd = open(filename, O_RDONLY)) < 0) {
@@ -1494,17 +1500,43 @@ static int sync_install(char *filename, int sd)
       }
       return EXIT_FAILURE;
    }
-   memset(&info, 0, sizeof(info));
-   pi_file_get_info(f, &info);
-   creator[0] = (info.creator & 0xFF000000) >> 24;
-   creator[1] = (info.creator & 0x00FF0000) >> 16,
-   creator[2] = (info.creator & 0x0000FF00) >> 8,
-   creator[3] = (info.creator & 0x000000FF);
-   creator[4] = '\0';
-   jp_logf(JP_LOG_GUI, _("(Creator ID '%s')... "), creator);
+   if (f != NULL) {
+      memset(&info, 0, sizeof(info));
+      pi_file_get_info(f, &info);
+      creator[0] = (info.creator & 0xFF000000) >> 24;
+      creator[1] = (info.creator & 0x00FF0000) >> 16,
+      creator[2] = (info.creator & 0x0000FF00) >> 8,
+      creator[3] = (info.creator & 0x000000FF);
+      creator[4] = '\0';
+   }
 
-   r = pi_file_install(f, sd, 0, NULL);
-   if (r<0) {
+   if (!sdcard_install) {
+      jp_logf(JP_LOG_GUI, _("(Creator ID '%s')... "), creator);
+      r = pi_file_install(f, sd, 0, NULL);
+   } else {
+      if (f != NULL) {
+         jp_logf(JP_LOG_GUI, _("(Creator ID '%s') "), creator);
+      }
+      jp_logf(JP_LOG_GUI, _("(SDcard dir %s)... "), vfspath);
+      const char *basename = strrchr(filename, '/');
+      if (!basename) {
+         basename = filename;
+      } else {
+         basename++;
+      }
+      int fd;
+      if ((fd = open(filename, O_RDONLY)) < 0)
+      {
+         jp_logf(JP_LOG_WARN, _("\nUnable to open file: '%s': %s!\n"),
+                                                    filename, strerror(errno));
+         pi_file_close(f);
+         return EXIT_FAILURE;
+      }
+      r = pi_file_install_VFS(fd, basename, sd, vfspath, NULL);
+      close(fd);
+   }
+
+   if (r<0 && !sdcard_install) {
       try_again = 0;
       /* TODO: make this generic? Not sure it would work 100% of the time */
       /* Here we make a special exception for graffiti */
@@ -1576,7 +1608,7 @@ static int sync_install(char *filename, int sd)
       dlp_AddSyncLogEntry(sd, "\n");;
       jp_logf(JP_LOG_GUI, _("Failed.\n"));
       jp_logf(JP_LOG_WARN, "%s\n", log_entry);
-      pi_file_close(f);
+      if (f) pi_file_close(f);
       return EXIT_FAILURE;
    }
    else {
@@ -1586,7 +1618,7 @@ static int sync_install(char *filename, int sd)
       dlp_AddSyncLogEntry(sd, "\n");;
       jp_logf(JP_LOG_GUI, _("OK\n"));
    }
-   pi_file_close(f);
+   if (f) pi_file_close(f);
 
    return EXIT_SUCCESS;
 }
@@ -1600,6 +1632,7 @@ static int sync_process_install_file(int sd)
    char line[1002];
    char *Pc;
    int r, line_count;
+   char vfsdir[] = "/PALM/Launcher/";   // Install location for SDCARD files
 
    in = jp_open_home_file(EPN".install", "r");
    if (!in) {
@@ -1623,7 +1656,13 @@ static int sync_process_install_file(int sd)
       if (line[strlen(line)-1]=='\n') {
          line[strlen(line)-1]='\0';
       }
-      r = sync_install(line, sd);
+      if (line[0] == '\001') {
+         /* found SDCARD indicator */
+         r = sync_install(&(line[1]), sd, vfsdir);
+      } else {
+         r = sync_install(line, sd, NULL);
+      }
+      
       if (r==0) {
          continue;
       }
@@ -3438,5 +3477,381 @@ int sync_once(struct my_sync_info *sync_info)
    } else {
       return r;
    }
+}
+
+/***********************************************************************/
+/* Imported from pilot-xfer.c, pilot-link-0.12.5, 2010-10-31 */
+/***********************************************************************/
+
+/***********************************************************************
+ *
+ * Function:    pi_file_install_VFS
+ *
+ * Summary:     Push file(s) to the Palm's VFS (parameters intentionally
+ *              similar to pi_file_install).
+ *
+ * Parameters:  fd       --> open file descriptor for file
+ *              basename --> filename or description of file
+ *              socket   --> sd, connection to Palm
+ *              vfspath  --> target in VFS, may be dir or filename
+ *              f        --> progress function, in the style of pi_file_install
+ *
+ * Returns:     -1 on bad parameters
+ *              -2 on cancelled sync
+ *              -3 on bad vfs path
+ *              -4 on bad local file
+ *              -5 on insufficient VFS space for the file
+ *              -6 on memory allocation error
+ *              >=0 if all went well (size of installed file)
+ *
+ * Note:        Should probably return an ssize_t and refuse to do files >
+ *              2Gb, due to signedness.
+ *
+ ***********************************************************************/
+static int pi_file_install_VFS(const int fd, const char *basename, const int socket, const char *vfspath, progress_func f)
+{
+	enum { bad_parameters=-1,
+	       cancel=-2,
+	       bad_vfs_path=-3,
+	       bad_local_file=-4,
+	       insufficient_space=-5,
+	       internal_=-6
+	} ;
+
+	char        rpath[vfsMAXFILENAME];
+	int         rpathlen = vfsMAXFILENAME;
+	FileRef     file;
+	unsigned long attributes;
+	char        *filebuffer = NULL;
+	long        volume = -1;
+	long        used,
+	            total,
+	            freespace;
+	int
+	            writesize,
+	            offset;
+	size_t      readsize;
+	size_t      written_so_far = 0;
+	enum { no_path=0, appended_filename=1, retried=2, done=3 } path_steps;
+	struct stat sbuf;
+	pi_progress_t progress;
+
+	if (fstat(fd,&sbuf) < 0) {
+		fprintf(stderr,"   ERROR: Cannot stat '%s'.\n",basename);
+		return bad_local_file;
+	}
+
+	if (findVFSPath(socket,vfspath,&volume,rpath,&rpathlen) < 0)
+	{
+		fprintf(stderr,"\n   VFS path '%s' does not exist.\n\n", vfspath);
+		return bad_vfs_path;
+	}
+
+	if (dlp_VFSVolumeSize(socket,volume,&used,&total)<0)
+	{
+		fprintf(stderr,"   Unable to get volume size.\n");
+		return bad_vfs_path;
+	}
+
+	/* Calculate free space but leave last 64k free on card */
+	freespace  = total - used - 65536 ;
+
+	if ((unsigned long)sbuf.st_size > freespace)
+	{
+		fprintf(stderr, "\n\n");
+		fprintf(stderr, "   Insufficient space to install this file on your Palm.\n");
+		fprintf(stderr, "   We needed %lu and only had %lu available..\n\n",
+				(unsigned long)sbuf.st_size, freespace);
+		return insufficient_space;
+	}
+#define APPEND_BASENAME path_steps-=1; \
+			if (rpath[rpathlen-1] != '/') { \
+				rpath[rpathlen++]='/'; \
+					rpath[rpathlen]=0; \
+			} \
+			strncat(rpath,basename,vfsMAXFILENAME-rpathlen-1); \
+			rpathlen = strlen(rpath);
+
+	path_steps = no_path;
+
+	while (path_steps<retried)
+	{
+		/* Don't retry by default. APPEND_BASENAME changes
+		   the file being tries, so it decrements fd again.
+		   Because we add _two_ here, (two steps fwd, one step back)
+		   we try at most twice anyway.
+		      no_path->retried
+		      appended_filename -> done
+		   Note that APPEND_BASENAME takes one off, so
+		      retried->appended_basename
+		*/
+		path_steps+=2;
+
+		if (dlp_VFSFileOpen(socket,volume,rpath,dlpVFSOpenRead,&file) < 0)
+		{
+			/* Target doesn't exist. If it ends with a /, try to
+			create the directory and then act as if the existing
+			directory was given as target. If it doesn't, carry
+			on, it's a regular file to create. */
+			if ('/' == rpath[rpathlen-1])
+			{
+				/* directory, doesn't exist. Don't try to mkdir /. */
+				if ((rpathlen > 1)
+						&& (dlp_VFSDirCreate(socket,volume,rpath) < 0))
+				{
+					fprintf(stderr,"   Could not create destination directory.\n");
+					return bad_vfs_path;
+				}
+				APPEND_BASENAME
+			}
+			if (dlp_VFSFileCreate(socket,volume,rpath) < 0)
+			{
+				fprintf(stderr,"   Cannot create destination file '%s'.\n",
+						rpath);
+				return bad_vfs_path;
+			}
+		}
+		else
+		{
+			/* Exists, and may be a directory, or a filename. If it's
+			a filename, that's fine as long as we're installing
+			just a single file. */
+			if (dlp_VFSFileGetAttributes(socket,file,&attributes) < 0)
+			{
+				fprintf(stderr,"   Could not get attributes for destination.\n");
+				(void) dlp_VFSFileClose(socket,file);
+				return bad_vfs_path;
+			}
+
+			if (attributes & vfsFileAttrDirectory)
+			{
+				APPEND_BASENAME
+				dlp_VFSFileClose(socket,file);
+				/* Now for sure it's a filename in a directory. */
+			} else {
+				dlp_VFSFileClose(socket,file);
+				if ('/' == rpath[rpathlen-1])
+				{
+					/* was expecting a directory */
+					fprintf(stderr,"   Destination is not a directory.\n");
+					return bad_vfs_path;
+				}
+			}
+		}
+	}
+#undef APPEND_BASENAME
+
+	if (dlp_VFSFileOpen(socket,volume,rpath,0x7,&file) < 0)
+	{
+		fprintf(stderr,"   Cannot open destination file '%s'.\n",rpath);
+		return bad_vfs_path;
+	}
+
+	/* If the file already exists we want to truncate it so if we write a smaller file
+	 * the tail of the previous file won't show */
+	if (dlp_VFSFileResize(socket, file, 0) < 0)
+	{
+		fprintf(stderr,"   Cannot truncate file size to 0 '%s'.\n",rpath);
+		/* Non-fatal error, continue */
+	}
+
+#define FBUFSIZ 65536
+	filebuffer = (char *)malloc(FBUFSIZ);
+	if (NULL == filebuffer)
+	{
+		fprintf(stderr,"   Cannot allocate memory for file copy.\n");
+		dlp_VFSFileClose(socket,file);
+		close(fd);
+		return internal_;
+	}
+
+	memset(&progress, 0, sizeof(progress));
+	progress.type = PI_PROGRESS_SEND_VFS;
+	progress.data.vfs.path = (char *) basename;
+	progress.data.vfs.total_bytes = sbuf.st_size;
+
+	writesize = 0;
+	written_so_far = 0;
+	while (writesize >= 0)
+	{
+		readsize = read(fd,filebuffer,FBUFSIZ);
+		if (readsize <= 0) break;
+		offset=0;
+		while (readsize > 0)
+		{
+			writesize = dlp_VFSFileWrite(socket,file,filebuffer+offset,readsize);
+			if (writesize < 0)
+			{
+				fprintf(stderr,"   Error while writing file.\n");
+				break;
+			}
+			readsize -= writesize;
+			offset += writesize;
+			written_so_far += writesize;
+			progress.transferred_bytes += writesize;
+
+			if ((writesize>0) || (readsize > 0)) {
+				if (f && (f(socket, &progress) == PI_TRANSFER_STOP)) {
+					sbuf.st_size = 0;
+					pi_set_error(socket,PI_ERR_FILE_ABORTED);
+					goto cleanup;
+				}
+			}
+		}
+	}
+
+cleanup:
+	free(filebuffer);
+	dlp_VFSFileClose(socket,file);
+   
+	close(fd);
+	return sbuf.st_size;
+}
+
+/***********************************************************************
+ *
+ * Function:    findVFSRoot_clumsy
+ *
+ * Summary:     For internal use only. May contain live weasels.
+ *
+ * Parameters:  root_component --> root path to search for.
+ *              match          <-> volume matching root_component.
+ *
+ * Returns:     -2 on VFSVolumeEnumerate error,
+ *              -1 if no match was found,
+ *              0 if a match was found and @p match is set,
+ *              1 if no match but only one VFS volume exists and
+ *                match is set.
+ *
+ ***********************************************************************/
+static int
+findVFSRoot_clumsy(int sd, const char *root_component, long *match)
+{
+	int				volume_count		= 16;
+	int				volumes[16];
+	struct VFSInfo	info;
+	int				i;
+	int				buflen;
+	char			buf[vfsMAXFILENAME];
+	long			matched_volume		= -1;
+
+	if (dlp_VFSVolumeEnumerate(sd,&volume_count,volumes) < 0)
+	{
+		return -2;
+	}
+
+	/* Here we scan the "root directory" of the Pilot.  We will fake out
+	   a bunch of directories pointing to the various "cards" on the
+	   device. If we're listing, print everything out, otherwise remain
+	   silent and just set matched_volume if there's a match in the
+	   first filename component. */
+	for (i = 0; i<volume_count; ++i)
+	{
+		if (dlp_VFSVolumeInfo(sd,volumes[i],&info) < 0)
+			continue;
+
+		buflen=vfsMAXFILENAME;
+		buf[0]=0;
+		(void) dlp_VFSVolumeGetLabel(sd,volumes[i],&buflen,buf);
+
+		/* Not listing, so just check matches and continue. */
+		if (0 == strcmp(root_component,buf)) {
+			matched_volume = volumes[i];
+			break;
+		}
+		/* volume label no longer important, overwrite */
+		sprintf(buf,"card%d",info.slotRefNum);
+
+		if (0 == strcmp(root_component,buf)) {
+			matched_volume = volumes[i];
+			break;
+		}
+	}
+
+	if (matched_volume >= 0) {
+		*match = matched_volume;
+		return 0;
+	}
+
+	if ((matched_volume < 0) && (1 == volume_count)) {
+		/* Assume that with one card, just go look there. */
+		*match = volumes[0];
+		return 1;
+	}
+	return -1;
+}
+
+/***********************************************************************
+ *
+ * Function:    findVFSPath
+ *
+ * Summary:     Search the VFS volumes for @p path. Sets @p volume
+ *              equal to the VFS volume matching @p path (if any) and
+ *              fills buffer @p rpath with the path to the file relative
+ *              to the volume.
+ *
+ *              Acceptable root components are /cardX/ for card indicators
+ *              or /volumename/ for for identifying VFS volumes by their
+ *              volume name. In the special case that there is only one
+ *              VFS volume, no root component need be specified, and
+ *              "/DCIM/" will map to "/card1/DCIM/".
+ *
+ * Parameters:  path           --> path to search for.
+ *              volume         <-> volume containing path.
+ *              rpath          <-> buffer for path relative to volume.
+ *              rpathlen       <-> in: length of buffer; out: length of
+ *                                 relative path.
+ *
+ * Returns:     -2 on VFSVolumeEnumerate error,
+ *              -1 if no match was found,
+ *              0 if a match was found.
+ *
+ ***********************************************************************/
+static int
+findVFSPath(int sd, const char *path, long *volume, char *rpath, int *rpathlen)
+{
+	char	*s;
+	int		r;
+
+	if ((NULL == path) || (NULL == rpath) || (NULL == rpathlen))
+		return -1;
+	if (*rpathlen < strlen(path))
+		return -1;
+
+	memset(rpath,0,*rpathlen);
+	if ('/'==path[0])
+		strncpy(rpath,path+1,*rpathlen-1);
+	else
+		strncpy(rpath,path,*rpathlen-1);
+	s = strchr(rpath,'/');
+	if (NULL != s)
+		*s=0;
+
+
+	r = findVFSRoot_clumsy(sd, rpath,volume);
+	if (r < 0)
+		return r;
+
+	if (0 == r)
+	{
+		/* Path includes card/volume label. */
+		r = strlen(rpath);
+		if ('/'==path[0])
+			++r; /* adjust for stripped / */
+		memset(rpath,0,*rpathlen);
+		strncpy(rpath,path+r,*rpathlen-1);
+	} else {
+		/* Path without card label */
+		memset(rpath,0,*rpathlen);
+		strncpy(rpath,path,*rpathlen-1);
+	}
+
+	if (!rpath[0])
+	{
+		rpath[0]='/';
+		rpath[1]=0;
+	}
+	*rpathlen = strlen(rpath);
+	return 0;
 }
 

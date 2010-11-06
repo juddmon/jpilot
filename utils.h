@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.83 2010/10/22 22:21:02 rikster5 Exp $ */
+/* $Id: utils.h,v 1.84 2010/11/06 23:25:06 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -116,6 +116,7 @@
 #define PIXMAP_BOX_CHECKED   103
 #define PIXMAP_FLOAT_CHECK   104
 #define PIXMAP_FLOAT_CHECKED 105
+#define PIXMAP_SDCARD        106
 
 #define SORT_ASCENDING       100
 #define SORT_DESCENDING      101

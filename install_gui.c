@@ -1,10 +1,10 @@
-/* $Id: install_gui.c,v 1.30 2010/03/29 05:44:29 rikster5 Exp $ */
+/* $Id: install_gui.c,v 1.31 2010/11/06 23:25:05 rikster5 Exp $ */
 
 /*******************************************************************************
  * install_gui.c
  * A module of J-Pilot http://jpilot.org
  *
- * Copyright (C) 1999-2002 by Judd Montgomery
+ * Copyright (C) 1999-2010 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,16 +34,20 @@
 #include "prefs.h"
 #include "log.h"
 
-/******************************* Global vars **********************************/
-static int update_clist(void);
+/********************************* Constants **********************************/
+#define INST_SDCARD_COLUMN 0
+#define INST_FNAME_COLUMN  1
 
-static GtkWidget *clist;
-static int line_selected;
+/******************************* Global vars **********************************/
 static GtkWidget *filew=NULL;
+static GtkWidget *clist;
+static int clist_row_selected;
+
+/****************************** Prototypes ************************************/
+static int install_update_clist(void);
 
 /****************************** Main Code *************************************/
-/* the first line is 0 */
-static int install_remove_line(int deleted_line)
+static int install_remove_line(int deleted_line_num)
 {
    FILE *in;
    FILE *out;
@@ -64,13 +68,14 @@ static int install_remove_line(int deleted_line)
       return EXIT_FAILURE;
    }
 
-   for (line_count=0; (!feof(in)); line_count++) {
+   /* Delete line by copying file and skipping over line to delete */
+   for (line_count=0; !feof(in); line_count++) {
       line[0]='\0';
       Pc = fgets(line, 1000, in);
       if (!Pc) {
          break;
       }
-      if (line_count == deleted_line) {
+      if (line_count == deleted_line_num) {
          continue;
       }
       r = fprintf(out, "%s", line);
@@ -106,6 +111,51 @@ int install_append_line(const char *line)
    return EXIT_SUCCESS;
 }
 
+static int install_modify_line(int modified_line_num, const char *modified_line)
+{
+   FILE *in;
+   FILE *out;
+   char line[1002];
+   char *Pc;
+   int r, line_count;
+
+   in = jp_open_home_file(EPN".install", "r");
+   if (!in) {
+      jp_logf(JP_LOG_DEBUG, "failed opening install_file\n");
+      return EXIT_FAILURE;
+   }
+
+   out = jp_open_home_file(EPN".install.tmp", "w");
+   if (!out) {
+      fclose(in);
+      jp_logf(JP_LOG_DEBUG, "failed opening install_file.tmp\n");
+      return EXIT_FAILURE;
+   }
+
+   /* Delete line by copying file and skipping over line to delete */
+   for (line_count=0; !feof(in); line_count++) {
+      line[0]='\0';
+      Pc = fgets(line, 1000, in);
+      if (!Pc) {
+         break;
+      }
+      if (line_count == modified_line_num) {
+         r = fprintf(out, "%s\n", modified_line);
+      } else {
+         r = fprintf(out, "%s", line);
+      }
+      if (r==EOF) {
+         break;
+      }
+   }
+   fclose(in);
+   fclose(out);
+
+   rename_file(EPN".install.tmp", EPN".install");
+
+   return EXIT_SUCCESS;
+}
+
 static gboolean cb_destroy(GtkWidget *widget)
 {
    filew = NULL;
@@ -115,19 +165,30 @@ static gboolean cb_destroy(GtkWidget *widget)
    return TRUE;
 }
 
+/* Save working directory for future installs */
 static void cb_quit(GtkWidget *widget, gpointer data)
 {
    const char *sel;
    char dir[MAX_PREF_LEN+2];
+   struct stat statb;
    int i;
 
    jp_logf(JP_LOG_DEBUG, "Quit\n");
 
    sel = gtk_file_selection_get_filename(GTK_FILE_SELECTION(data));
-   g_strlcpy(dir, sel, sizeof(dir));
-   i=strlen(dir)-1;
-   if (i<0) i=0;
-   if (dir[i]!='/') {
+
+   g_strlcpy(dir, sel, MAX_PREF_LEN);
+
+   if (stat(sel, &statb)) {
+      jp_logf(JP_LOG_WARN, "File selected was not stat-able\n");
+   }
+
+   if (S_ISDIR(statb.st_mode)) {
+      /* For directory, add '/' indicator to path */
+      i = strlen(dir);
+      dir[i]='/', dir[i+1]='\0';
+   } else {
+      /* Otherwise, strip off filename to find actual directory */
       for (i=strlen(dir); i>=0; i--) {
          if (dir[i]=='/') {
             dir[i+1]='\0';
@@ -135,7 +196,7 @@ static void cb_quit(GtkWidget *widget, gpointer data)
          }
       }
    }
-
+   
    set_pref(PREF_INSTALL_PATH, 0, dir, TRUE);
 
    filew = NULL;
@@ -148,7 +209,7 @@ static void cb_add(GtkWidget *widget, gpointer data)
    const char *sel;
    struct stat statb;
 
-   jp_logf(JP_LOG_DEBUG, "Add\n");
+   jp_logf(JP_LOG_DEBUG, "install: cb_add\n");
    sel = gtk_file_selection_get_filename(GTK_FILE_SELECTION(data));
    jp_logf(JP_LOG_DEBUG, "file selected [%s]\n", sel);
 
@@ -163,38 +224,79 @@ static void cb_add(GtkWidget *widget, gpointer data)
    }
 
    install_append_line(sel);
-   update_clist();
+   install_update_clist();
 }
 
 static void cb_remove(GtkWidget *widget, gpointer data)
 {
-   if (line_selected < 0) {
+   if (clist_row_selected < 0) {
       return;
    }
-   jp_logf(JP_LOG_DEBUG, "Remove line %d\n", line_selected);
-   install_remove_line(line_selected);
-   update_clist();
+   jp_logf(JP_LOG_DEBUG, "Remove line %d\n", clist_row_selected);
+   install_remove_line(clist_row_selected);
+   install_update_clist();
 }
 
-static int update_clist(void)
+static void cb_clist_selection(GtkWidget      *clist,
+                               gint           row,
+                               gint           column,
+                               GdkEventButton *event,
+                               gpointer       data)
+{
+   char fname[1000];
+   char *gtk_str;
+
+   clist_row_selected = row;
+
+   if (column == INST_SDCARD_COLUMN) {
+      /* Toggle display of SDCARD pixmap */
+      if (gtk_clist_get_text(GTK_CLIST(clist), row, column, NULL)) {
+         GdkPixmap *pixmap;
+         GdkBitmap *mask;
+         get_pixmaps(clist, PIXMAP_SDCARD, &pixmap, &mask);
+         gtk_clist_set_pixmap(GTK_CLIST(clist), row, column, pixmap, mask);
+         
+         gtk_clist_get_text(GTK_CLIST(clist), row, INST_FNAME_COLUMN, &gtk_str); 
+         fname[0] = '\001';
+         g_strlcpy(&fname[1], gtk_str, sizeof(fname)-1);
+         install_modify_line(row, fname);
+
+      } else {
+         gtk_clist_set_text(GTK_CLIST(clist), row, column, "");
+         gtk_clist_get_text(GTK_CLIST(clist), row, INST_FNAME_COLUMN, &gtk_str); 
+         g_strlcpy(&fname[0], gtk_str, sizeof(fname));
+         install_modify_line(row, fname);
+      }
+   }
+
+   return;
+}
+
+static int install_update_clist(void)
 {
    FILE *in;
    char line[1002];
    char *Pc;
-   char *new_line[2];
-   int kept_line_selected;
+   char *new_line[3];
+
+   int last_row_selected;
    int count;
    int len;
+   int sdcard_install;
 
-   new_line[0]=line;
-   new_line[1]=NULL;
+   new_line[0]="";
+   new_line[1]=line;
+   new_line[2]=NULL;
 
-   kept_line_selected = line_selected;
+   last_row_selected = clist_row_selected;
 
    in = jp_open_home_file(EPN".install", "r");
    if (!in) {
       return EXIT_FAILURE;
    }
+
+   gtk_signal_disconnect_by_func(GTK_OBJECT(clist),
+                                 GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
 
    gtk_clist_freeze(GTK_CLIST(clist));
    gtk_clist_clear(GTK_CLIST(clist));
@@ -205,36 +307,50 @@ static int update_clist(void)
    gtk_clist_freeze(GTK_CLIST(clist));
 #endif
 
-   for (count=0; (!feof(in)); count++) {
+   for (count=0; !feof(in); count++) {
       line[0]='\0';
       Pc = fgets(line, 1000, in);
       if (!Pc) {
          break;
       }
+
+      /* Strip newline characters from end of string */
       len=strlen(line);
       if ((line[len-1]=='\n') || (line[len-1]=='\r')) line[len-1]='\0';
       if ((line[len-2]=='\n') || (line[len-2]=='\r')) line[len-2]='\0';
+
+      sdcard_install = (line[0] == '\001');
+      /* Strip char indicating SDCARD install from start of string */
+      if (sdcard_install) {
+         new_line[1] = &line[1];
+      } else {
+         new_line[1] = &line[0];
+      }
+
       gtk_clist_append(GTK_CLIST(clist), new_line);
+
+      /* Add SDCARD icon for files to be installed on SDCARD */
+      if (sdcard_install) {
+         GdkPixmap *pixmap;
+         GdkBitmap *mask;
+         get_pixmaps(clist, PIXMAP_SDCARD, &pixmap, &mask);
+         gtk_clist_set_pixmap(GTK_CLIST(clist), count, INST_SDCARD_COLUMN, pixmap, mask);
+      }
    }
-   if (kept_line_selected > count -1) {
-      kept_line_selected = count - 1;
-   }
-   clist_select_row(GTK_CLIST(clist), kept_line_selected, 0);
    fclose(in);
+
+   gtk_signal_connect(GTK_OBJECT(clist), "select_row",
+                      GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
+
+   if (last_row_selected > count-1) {
+      last_row_selected = count - 1;
+   }
+   if (last_row_selected >= 0) {
+      clist_select_row(GTK_CLIST(clist), last_row_selected, INST_FNAME_COLUMN);
+   }
    gtk_clist_thaw(GTK_CLIST(clist));
 
    return EXIT_SUCCESS;
-}
-
-static void cb_clist_selection(GtkWidget      *clist,
-                               gint           row,
-                               gint           column,
-                               GdkEventButton *event,
-                               gpointer       data)
-{
-   line_selected = row;
-
-   return;
 }
 
 int install_gui(GtkWidget *main_window, int w, int h, int x, int y)
@@ -242,20 +358,23 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y)
    GtkWidget *scrolled_window;
    GtkWidget *button;
    GtkWidget *label;
-   char temp[256];
+   GtkWidget *pixmapwid;
+   GdkPixmap *pixmap;
+   GdkBitmap *mask;
+   char temp_str[256];
    const char *svalue;
-   gchar *titles[] = {_("Files to be installed")};
+   gchar *titles[] = {"", _("Files to install")};
 
    if (filew) {
       return EXIT_SUCCESS;
    }
 
-   line_selected = -1;
+   clist_row_selected = 0;
 
-   g_snprintf(temp, sizeof(temp), "%s %s", PN, _("Install"));
+   g_snprintf(temp_str, sizeof(temp_str), "%s %s", PN, _("Install"));
    filew = gtk_widget_new(GTK_TYPE_FILE_SELECTION,
                           "type", GTK_WINDOW_TOPLEVEL,
-                          "title", temp,
+                          "title", temp_str,
                           NULL);
 
    gtk_window_set_default_size(GTK_WINDOW(filew), w, h);
@@ -281,10 +400,22 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y)
    gtk_signal_connect(GTK_OBJECT(GTK_FILE_SELECTION(filew)->ok_button),
                       "clicked", GTK_SIGNAL_FUNC(cb_add), filew);
 
-   clist = gtk_clist_new_with_titles(1, titles);
+   clist = gtk_clist_new_with_titles(2, titles);
    gtk_widget_set_usize(GTK_WIDGET(clist), 0, 166);
    gtk_clist_column_titles_passive(GTK_CLIST(clist));
+   gtk_clist_set_column_auto_resize(GTK_CLIST(clist), INST_SDCARD_COLUMN, TRUE);
    gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
+
+   get_pixmaps(clist, PIXMAP_SDCARD, &pixmap, &mask);
+#ifdef __APPLE__
+   mask = NULL;
+#endif
+   pixmapwid = gtk_pixmap_new(pixmap, mask);
+   gtk_clist_set_column_widget(GTK_CLIST(clist), INST_SDCARD_COLUMN, pixmapwid);
+   gtk_clist_set_column_justification(GTK_CLIST(clist), INST_SDCARD_COLUMN, GTK_JUSTIFY_CENTER);
+
+   gtk_signal_connect(GTK_OBJECT(clist), "select_row",
+                      GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
 
    /* Scrolled Window for file list */
    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
@@ -295,15 +426,9 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y)
    gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->action_area),
                       scrolled_window, TRUE, TRUE, 0);
 
-   gtk_signal_connect(GTK_OBJECT(clist), "select_row",
-                      GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
-   gtk_widget_show(clist);
-   gtk_widget_show(scrolled_window);
-
    label = gtk_label_new(_("To change to a hidden directory type it below and hit TAB"));
    gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->main_vbox),
                       label, FALSE, FALSE, 0);
-   gtk_widget_show(label);
 
    /* Add/Remove/Quit buttons */
    button = gtk_button_new_from_stock(GTK_STOCK_ADD);
@@ -311,25 +436,27 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y)
                       button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button),
                       "clicked", GTK_SIGNAL_FUNC(cb_add), filew);
-   gtk_widget_show(button);
 
    button = gtk_button_new_from_stock(GTK_STOCK_REMOVE);
    gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->ok_button->parent),
                       button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button),
                       "clicked", GTK_SIGNAL_FUNC(cb_remove), filew);
-   gtk_widget_show(button);
 
    button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
    gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->ok_button->parent),
                       button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button),
                       "clicked", GTK_SIGNAL_FUNC(cb_quit), filew);
-   gtk_widget_show(button);
 
-   gtk_widget_show(filew);
+   /**********************************************************************/
+   gtk_widget_show_all(filew);
 
-   update_clist();
+   /* Hide default buttons not used by Jpilot file selector */
+   gtk_widget_hide(GTK_FILE_SELECTION(filew)->cancel_button);
+   gtk_widget_hide(GTK_FILE_SELECTION(filew)->ok_button);
+
+   install_update_clist();
 
    gtk_main();
 

@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.191 2010/10/15 23:50:07 rikster5 Exp $ */
+/* $Id: utils.c,v 1.192 2010/11/06 23:25:06 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -2143,35 +2143,36 @@ int get_next_unique_pc_id(unsigned int *next_unique_id)
 }
 
 int get_pixmaps(GtkWidget *widget,
-                int which_one,
+                int which_pixmap,
                 GdkPixmap **out_pixmap,
                 GdkBitmap **out_mask)
 {
    /* Externally stored icon definitions */
    #include "icons/clist_mini_icons.h"
 
-   static int inited=0;
+   static int init_done=0;
    static GdkPixmap *pixmap_note;
    static GdkPixmap *pixmap_alarm;
    static GdkPixmap *pixmap_check;
    static GdkPixmap *pixmap_checked;
    static GdkPixmap *pixmap_float_check;
    static GdkPixmap *pixmap_float_checked;
+   static GdkPixmap *pixmap_sdcard;
    static GdkBitmap *mask_note;
    static GdkBitmap *mask_alarm;
    static GdkBitmap *mask_check;
    static GdkBitmap *mask_checked;
    static GdkBitmap *mask_float_check;
    static GdkBitmap *mask_float_checked;
+   static GdkBitmap *mask_sdcard;
    GtkStyle *style;
 
    /* Pixmaps are created only once when procedure is first called */
-   if (!inited) {
+   if (!init_done) {
 
-      inited=1;
+      init_done = 1;
 
       /* Make the note pixmap */
-      /* style = gtk_widget_get_style(window); */
       style = gtk_widget_get_style(widget);
       pixmap_note = gdk_pixmap_create_from_xpm_d(widget->window, &mask_note,
                                                  &style->bg[GTK_STATE_NORMAL],
@@ -2205,9 +2206,14 @@ int get_pixmaps(GtkWidget *widget,
                                 &style->bg[GTK_STATE_NORMAL],
                                 (gchar **)xpm_float_checked);
 
+      /* Make the sdcard pixmap */
+      pixmap_sdcard = gdk_pixmap_create_from_xpm_d(widget->window, &mask_sdcard,
+                                                   &style->bg[GTK_STATE_NORMAL],
+                                                   (gchar **)xpm_sdcard);
+
    }   /* End initialization of pixmaps */
 
-   switch (which_one) {
+   switch (which_pixmap) {
     case PIXMAP_NOTE:
       *out_pixmap = pixmap_note;
       *out_mask = mask_note;
@@ -2231,6 +2237,10 @@ int get_pixmaps(GtkWidget *widget,
     case PIXMAP_FLOAT_CHECKED:
       *out_pixmap = pixmap_float_checked;
       *out_mask = mask_float_checked;
+      break;
+    case PIXMAP_SDCARD:
+      *out_pixmap = pixmap_sdcard;
+      *out_mask = mask_sdcard;
       break;
     default:
       *out_pixmap = NULL;
@@ -3198,7 +3208,7 @@ int setup_sync(unsigned int flags)
       jp_logf(JP_LOG_WARN, _("Generated a new PC ID.  It is %lu\n"), sync_info.PC_ID);
       set_pref(PREF_PC_ID, sync_info.PC_ID, NULL, TRUE);
    }
-
+   
    sync_info.sync_over_ride = 0;
    g_strlcpy(sync_info.port, port, sizeof(sync_info.port));
    sync_info.flags=flags;
