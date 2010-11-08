@@ -1,4 +1,4 @@
-/* $Id: jpilot-dump.c,v 1.42 2010/10/23 04:57:46 rikster5 Exp $ */
+/* $Id: jpilot-dump.c,v 1.43 2010/11/08 22:35:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot-dump.c
@@ -81,6 +81,7 @@ pid_t jpilot_master_pid = -1;
 int pipe_to_parent;
 GtkWidget *glob_dialog;
 GtkWidget *glob_date_label;
+gint glob_date_timer_tag;
 
 void output_to_pane(const char *str) { return; }
 int sync_once(struct my_sync_info *sync_info) { return EXIT_SUCCESS; }

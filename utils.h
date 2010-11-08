@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.84 2010/11/06 23:25:06 rikster5 Exp $ */
+/* $Id: utils.h,v 1.85 2010/11/08 22:35:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -274,6 +274,7 @@ int cat_compare(const void *v1, const void *v2);
 
 int get_timeout_interval(void);
 
+gint timeout_sync_up(gpointer data);
 gint timeout_date(gpointer data);
 
 int get_pixmaps(GtkWidget *widget,

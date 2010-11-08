@@ -1,4 +1,4 @@
-/* $Id: jpilot-sync.c,v 1.34 2010/10/12 03:25:38 rikster5 Exp $ */
+/* $Id: jpilot-sync.c,v 1.35 2010/11/08 22:35:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * jpilot-sync.c
@@ -52,6 +52,7 @@ pid_t jpilot_master_pid = -1;
 int *glob_date_label;
 GtkWidget *glob_dialog;
 GtkTooltips *glob_tooltips;
+gint glob_date_timer_tag;
 
 void output_to_pane(const char *str) { return; }
 void cb_app_button(GtkWidget *widget, gpointer data) { return; }

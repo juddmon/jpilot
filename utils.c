@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.192 2010/11/06 23:25:06 rikster5 Exp $ */
+/* $Id: utils.c,v 1.193 2010/11/08 22:35:53 rikster5 Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -72,6 +72,9 @@ extern GtkWidget *glob_date_label;
 static int dialog_result;
 
 unsigned int glob_find_id;
+
+/* GTK_TIMEOUT timer identifer for "Today:" label */
+extern gint glob_date_timer_tag;
 
 /****************************** Prototypes ************************************/
 static gboolean cb_destroy(GtkWidget *widget);
@@ -3405,6 +3408,33 @@ int sub_years_from_date(struct tm *date, int n)
    return add_or_sub_years_to_date(date, -n);
 }
 
+gint timeout_sync_up(gpointer data)
+{
+   time_t ltime;
+   struct tm *now;
+   int secs, diff_secs;
+   int timeout_interval = get_timeout_interval();
+
+   if (timeout_interval == CLOCK_TICK) {
+      glob_date_timer_tag = gtk_timeout_add(timeout_interval, timeout_date, NULL);
+   } else {
+      /* Interval is in minutes.  Sync up with current time */
+      time(&ltime);
+      now = localtime(&ltime);
+      secs = now->tm_sec;
+      if (secs < 2) {
+         glob_date_timer_tag = gtk_timeout_add(timeout_interval, timeout_date, NULL);
+      } else {
+         diff_secs = (secs < 61) ? 60-secs : 59;   // Account for leap seconds
+         glob_date_timer_tag = gtk_timeout_add(diff_secs*CLOCK_TICK, timeout_sync_up, NULL);
+      }
+   } 
+   
+   timeout_date(NULL);  // Update label
+
+   return FALSE;        // Destroy this timeout
+}
+
 gint timeout_date(gpointer data)
 {
    char str[102];
@@ -3432,6 +3462,7 @@ gint timeout_date(gpointer data)
    str[100]='\0';
 
    gtk_label_set_text(GTK_LABEL(glob_date_label), str);
+
 
    return TRUE;
 }
