@@ -1,4 +1,4 @@
-/* $Id: alarms.c,v 1.56 2010/11/06 06:17:27 rikster5 Exp $ */
+/* $Id: alarms.c,v 1.57 2010/11/08 22:31:39 rikster5 Exp $ */
 
 /*******************************************************************************
  * alarms.c
@@ -1060,7 +1060,7 @@ int alarms_init(unsigned char skip_past_alarms,
     * rather than waiting ALARM_INTERVAL seconds and then doing it */
    cb_timer_alarms(NULL);
 
-   gtk_timeout_add(ALARM_INTERVAL*1000, cb_timer_alarms, NULL);
+   gtk_timeout_add(ALARM_INTERVAL*CLOCK_TICK, cb_timer_alarms, NULL);
 
    return EXIT_SUCCESS;
 }
