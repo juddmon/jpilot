@@ -1,4 +1,4 @@
-/* $Id: stock_buttons.h,v 1.5 2010/10/13 03:18:59 rikster5 Exp $ */
+/* $Id: stock_buttons.h,v 1.6 2010/11/10 03:57:47 rikster5 Exp $ */
 
 /*******************************************************************************
  * stock_buttons.h
@@ -35,17 +35,17 @@ extern GtkTooltips *glob_tooltips;
       char str[100]; \
       gtk_widget_add_accelerator(widget, "clicked", accel_group, shortcut_key, shortcut_mask, GTK_ACCEL_VISIBLE); \
       sprintf(str, "%s   %s", tooltip, shortcut_text); \
-      gtk_tooltips_set_tip(glob_tooltips, widget, str, NULL); \
+      set_tooltip(show_tooltips, glob_tooltips, widget, str, NULL); \
    } \
    else \
-      gtk_tooltips_set_tip(glob_tooltips, widget, tooltip, NULL);\
+      set_tooltip(show_tooltips, glob_tooltips, widget, tooltip, NULL);\
    gtk_box_pack_start(GTK_BOX(hbox_temp), widget, TRUE, TRUE, 0);
 
 #else
 
 #  define CREATE_BUTTON(widget, text, stock, tooltip, shortcut_key, shortcut_mask, shortcut_text) \
    widget = gtk_button_new_from_stock(GTK_STOCK_ ## stock); \
-   gtk_tooltips_set_tip(glob_tooltips, widget, tooltip, NULL); \
+   set_tooltip(show_tooltips, glob_tooltips, widget, tooltip, NULL); \
    gtk_box_pack_start(GTK_BOX(hbox_temp), widget, TRUE, TRUE, 0);
 
 #endif

@@ -1,4 +1,4 @@
-/* $Id: expense.c,v 1.76 2010/10/19 00:00:09 rikster5 Exp $ */
+/* $Id: expense.c,v 1.77 2010/11/10 03:57:48 rikster5 Exp $ */
 
 /*******************************************************************************
  * expense.c
@@ -1539,6 +1539,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    time_t ltime;
    struct tm *now;
    long ivalue;
+   long show_tooltips;
    char *titles[]={"","",""};
    int i;
    int cycle_category=FALSE;
@@ -1569,6 +1570,8 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
 
    /************************************************************/
    /* Build the GUI */
+
+   get_pref(PREF_SHOW_TOOLTIPS, &show_tooltips, NULL);
 
    /* Make the menus */
    make_menus();

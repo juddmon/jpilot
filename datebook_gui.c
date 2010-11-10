@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.243 2010/11/08 22:35:53 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.244 2010/11/10 03:57:46 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -2419,6 +2419,7 @@ static int datebook_update_clist(void)
    int show_priv;
    char str[DATEBOOK_MAX_COLUMN_LEN+2];
    char str2[DATEBOOK_MAX_COLUMN_LEN];
+   long show_tooltips;
 
    jp_logf(JP_LOG_DEBUG, "datebook_update_clist()\n");
 
@@ -2632,8 +2633,9 @@ static int datebook_update_clist(void)
 
    gtk_clist_thaw(GTK_CLIST(clist));
 
+   get_pref(PREF_SHOW_TOOLTIPS, &show_tooltips, NULL);
    g_snprintf(str, sizeof(str), _("%d of %d records"), entries_shown, num_entries);
-   gtk_tooltips_set_tip(glob_tooltips, GTK_CLIST(clist)->column[DB_APPT_COLUMN].button, str, NULL);
+   set_tooltip(show_tooltips, glob_tooltips, GTK_CLIST(clist)->column[DB_APPT_COLUMN].button, str, NULL);
 
    /* return focus to clist after any big operation which requires a redraw */
    gtk_widget_grab_focus(GTK_WIDGET(clist));
@@ -4703,6 +4705,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    long fdow;
    long ivalue;
    long char_set;
+   long show_tooltips;
    char *cat_name;
 #ifdef ENABLE_DATEBK
    long use_db3_tags;
@@ -4768,6 +4771,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    accel_group = gtk_accel_group_new();
    gtk_window_add_accel_group(GTK_WINDOW(gtk_widget_get_toplevel(vbox)),
                               accel_group);
+   get_pref(PREF_SHOW_TOOLTIPS, &show_tooltips, NULL);
 
    pane = gtk_hpaned_new();
    todo_pane = gtk_vpaned_new();
@@ -4850,7 +4854,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    /* Accelerator key for starting Weekview GUI */
    gtk_widget_add_accelerator(GTK_WIDGET(button), "clicked", accel_group, GDK_w,
                               GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-   gtk_tooltips_set_tip(glob_tooltips, button, _("View appointments by week   Ctrl+W"), NULL);
+   set_tooltip(show_tooltips, glob_tooltips, button, _("View appointments by week   Ctrl+W"), NULL);
 
    /* Monthview button */
    button = gtk_button_new_with_label(_("Month"));
@@ -4862,7 +4866,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
    /* Accelerator key for starting Monthview GUI */
    gtk_widget_add_accelerator(GTK_WIDGET(button), "clicked", accel_group, GDK_m,
                               GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-   gtk_tooltips_set_tip(glob_tooltips, button, _("View appointments by month   Ctrl+M"), NULL);
+   set_tooltip(show_tooltips, glob_tooltips, button, _("View appointments by month   Ctrl+M"), NULL);
 
 #ifdef ENABLE_DATEBK
    if (use_db3_tags) {

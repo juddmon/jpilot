@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.80 2010/11/06 21:33:25 rikster5 Exp $ */
+/* $Id: prefs_gui.c,v 1.81 2010/11/10 03:57:47 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -275,11 +275,6 @@ static void cb_checkbox_todo_days_till_due(GtkWidget *widget, gpointer data)
 
 static void cb_checkbox_show_tooltips(GtkWidget *widget, gpointer data)
 {
-   if (GTK_TOGGLE_BUTTON(widget)->active)
-      gtk_tooltips_enable(glob_tooltips);
-   else
-      gtk_tooltips_disable(glob_tooltips);
-
    set_pref(PREF_SHOW_TOOLTIPS, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
 }
 
@@ -660,7 +655,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
       PREF_CONFIRM_FILE_INSTALL, vbox_settings, cb_checkbox_set_pref);
 
    /* Show tooltips check box */
-   add_checkbutton(_("Show popup tooltips (default YES)"),
+   add_checkbutton(_("Show popup tooltips (default YES) (requires restart)"),
                    PREF_SHOW_TOOLTIPS, vbox_settings,
                    cb_checkbox_show_tooltips);
 

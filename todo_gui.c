@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.178 2010/11/08 22:35:53 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.179 2010/11/10 03:57:47 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -1720,8 +1720,8 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    char str[50];
    char str2[TODO_MAX_COLUMN_LEN+2];
    const char *svalue;
-   long hide_completed;
-   long hide_not_due;
+   long hide_completed, hide_not_due;
+   long show_tooltips;
    int show_priv;
    time_t ltime;
    struct tm *now, *due;
@@ -1922,12 +1922,13 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    gtk_clist_thaw(GTK_CLIST(clist));
 
    if (tooltip_widget) {
+      get_pref(PREF_SHOW_TOOLTIPS, &show_tooltips, NULL);
       if (todo_list==NULL) {
-         gtk_tooltips_set_tip(glob_tooltips, tooltip_widget, _("0 records"), NULL);
+         set_tooltip(show_tooltips, glob_tooltips, tooltip_widget, _("0 records"), NULL);
       }
       else {
          sprintf(str, _("%d of %d records"), entries_shown, num_entries);
-         gtk_tooltips_set_tip(glob_tooltips, tooltip_widget, str, NULL);
+         set_tooltip(show_tooltips, glob_tooltips, tooltip_widget, str, NULL);
       }
    }
 
@@ -2096,6 +2097,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    char *titles[]={"","","","",""};
    GtkAccelGroup *accel_group;
    long char_set;
+   long show_tooltips;
    char *cat_name;
 
    get_pref(PREF_TODO_VERSION, &todo_version, NULL);
@@ -2138,6 +2140,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    accel_group = gtk_accel_group_new();
    gtk_window_add_accel_group(GTK_WINDOW(gtk_widget_get_toplevel(vbox)),
       accel_group);
+   get_pref(PREF_SHOW_TOOLTIPS, &show_tooltips, NULL);
 
    pane = gtk_hpaned_new();
    get_pref(PREF_TODO_PANE, &ivalue, NULL);
@@ -2325,7 +2328,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    label = gtk_label_new(_("Priority:"));
    gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 2);
-   gtk_tooltips_set_tip(glob_tooltips, label, _("Set priority   Alt+#"), NULL);
+   set_tooltip(show_tooltips, glob_tooltips, label, _("Set priority   Alt+#"), NULL);
 
    group = NULL;
    for (i=0; i<NUM_TODO_PRIORITIES; i++) {

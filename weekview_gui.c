@@ -1,4 +1,4 @@
-/* $Id: weekview_gui.c,v 1.55 2010/10/15 16:42:14 rikster5 Exp $ */
+/* $Id: weekview_gui.c,v 1.56 2010/11/10 03:57:48 rikster5 Exp $ */
 
 /*******************************************************************************
  * weekview_gui.c
@@ -279,7 +279,7 @@ void weekview_gui(struct tm *date_in)
    long fdow;
    int i;
    char title[200];
-   long w, h;
+   long w, h, show_tooltips;
 
    if (weekview_window) {
       /* Delete any existing window to ensure that new window is biased
@@ -292,6 +292,7 @@ void weekview_gui(struct tm *date_in)
 
    get_pref(PREF_WEEKVIEW_WIDTH, &w, NULL);
    get_pref(PREF_WEEKVIEW_HEIGHT, &h, NULL);
+   get_pref(PREF_SHOW_TOOLTIPS, &show_tooltips, NULL);
 
    g_snprintf(title, sizeof(title), "%s %s", PN, _("Weekly View"));
    weekview_window = gtk_widget_new(GTK_TYPE_WINDOW,
@@ -332,8 +333,8 @@ void weekview_gui(struct tm *date_in)
    /* Accelerator key for left arrow */
    gtk_widget_add_accelerator(GTK_WIDGET(button), "clicked", accel_group, 
                               GDK_Left, GDK_MOD1_MASK, GTK_ACCEL_VISIBLE);
-   gtk_tooltips_set_tip(glob_tooltips, button,
-                        _("Last week   Alt+LeftArrow"), NULL);
+   set_tooltip(show_tooltips, glob_tooltips, 
+               button, _("Last week   Alt+LeftArrow"), NULL);
 
    /* Close button */
    button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
@@ -361,8 +362,8 @@ void weekview_gui(struct tm *date_in)
    /* Accelerator key for right arrow */
    gtk_widget_add_accelerator(GTK_WIDGET(button), "clicked", accel_group, 
                               GDK_Right, GDK_MOD1_MASK, GTK_ACCEL_VISIBLE);
-   gtk_tooltips_set_tip(glob_tooltips, button,
-                        _("Next week   Alt+RightArrow"), NULL);
+   set_tooltip(show_tooltips, glob_tooltips, 
+               button, _("Next week   Alt+RightArrow"), NULL);
 
    get_pref(PREF_FDOW, &fdow, NULL);
 

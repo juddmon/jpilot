@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.272 2010/11/08 22:35:53 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.273 2010/11/10 03:57:46 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -3031,7 +3031,7 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    char str[ADDRESS_MAX_COLUMN_LEN+2];
    char str2[ADDRESS_MAX_COLUMN_LEN+2];
    int show_priv;
-   long use_jos, char_set;
+   long use_jos, char_set, show_tooltips;
    char *tmp_p1, *tmp_p2, *tmp_p3;
    char blank[]="";
    char slash[]=" / ";
@@ -3271,12 +3271,13 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    gtk_clist_thaw(GTK_CLIST(clist));
 
    if (tooltip_widget) {
+      get_pref(PREF_SHOW_TOOLTIPS, &show_tooltips, NULL);
       if (cont_list==NULL) {
-         gtk_tooltips_set_tip(glob_tooltips, category_menu1, _("0 records"), NULL);
+         set_tooltip(show_tooltips, glob_tooltips, category_menu1, _("0 records"), NULL);
       }
       else {
          sprintf(str, _("%d of %d records"), entries_shown, num_entries);
-         gtk_tooltips_set_tip(glob_tooltips, category_menu1, str, NULL);
+         set_tooltip(show_tooltips, glob_tooltips, category_menu1, str, NULL);
       }
    }
 
@@ -3658,6 +3659,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    GtkWidget *notebook_tab;
    GSList *group;
    long ivalue, notebook_page;
+   long show_tooltips;
    char *titles[]={"","",""};
    GtkAccelGroup *accel_group;
    int address_type_i, IM_type_i, page_i, table_y_i;
@@ -3744,6 +3746,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    accel_group = gtk_accel_group_new();
    gtk_window_add_accel_group(GTK_WINDOW(gtk_widget_get_toplevel(vbox)),
                               accel_group);
+   get_pref(PREF_SHOW_TOOLTIPS, &show_tooltips, NULL);
 
    pane = gtk_hpaned_new();
    get_pref(PREF_ADDRESS_PANE, &ivalue, NULL);

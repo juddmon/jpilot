@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.145 2010/11/08 22:35:53 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.146 2010/11/10 03:57:47 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -1199,9 +1199,9 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    char str[MEMO_CLIST_CHAR_WIDTH+10];
    int len, len1;
    int show_priv;
+   long show_tooltips;
 
    jp_logf(JP_LOG_DEBUG, "memo_update_clist()\n");
-
 
    free_MemoList(memo_list);
 
@@ -1331,12 +1331,13 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    gtk_clist_thaw(GTK_CLIST(clist));
 
    if (tooltip_widget) {
+      get_pref(PREF_SHOW_TOOLTIPS, &show_tooltips, NULL);
       if (memo_list==NULL) {
-         gtk_tooltips_set_tip(glob_tooltips, tooltip_widget, _("0 records"), NULL);
+         set_tooltip(show_tooltips, glob_tooltips, tooltip_widget, _("0 records"), NULL);
       }
       else {
          sprintf(str, _("%d of %d records"), entries_shown, num_entries);
-         gtk_tooltips_set_tip(glob_tooltips, tooltip_widget, str, NULL);
+         set_tooltip(show_tooltips, glob_tooltips, tooltip_widget, str, NULL);
       }
    }
 
@@ -1463,6 +1464,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    long ivalue;
    GtkAccelGroup *accel_group;
    long char_set;
+   long show_tooltips;
    char *cat_name;
 
    get_pref(PREF_MEMO_VERSION, &memo_version, NULL);
@@ -1508,6 +1510,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    accel_group = gtk_accel_group_new();
    gtk_window_add_accel_group(GTK_WINDOW(gtk_widget_get_toplevel(vbox)),
       accel_group);
+   get_pref(PREF_SHOW_TOOLTIPS, &show_tooltips, NULL);
 
    pane = gtk_hpaned_new();
    get_pref(PREF_MEMO_PANE, &ivalue, NULL);

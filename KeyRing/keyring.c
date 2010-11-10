@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.114 2010/10/19 00:00:09 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.115 2010/11/10 03:57:48 rikster5 Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -2296,6 +2296,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    int retry;
    int cycle_category = FALSE;
    long char_set;
+   long show_tooltips;
    char *cat_name;
    int new_cat;
    int index, index2;
@@ -2429,6 +2430,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id)
    accel_group = gtk_accel_group_new();
    gtk_window_add_accel_group(GTK_WINDOW(gtk_widget_get_toplevel(vbox)), accel_group);
 #endif
+   get_pref(PREF_SHOW_TOOLTIPS, &show_tooltips, NULL);
 
    pane = gtk_hpaned_new();
    get_pref(PREF_KEYRING_PANE, &ivalue, NULL);
