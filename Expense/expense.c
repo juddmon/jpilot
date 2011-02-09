@@ -1,4 +1,4 @@
-/* $Id: expense.c,v 1.77 2010/11/10 03:57:48 rikster5 Exp $ */
+/* $Id: expense.c,v 1.78 2011/02/09 20:40:43 rousseau Exp $ */
 
 /*******************************************************************************
  * expense.c
@@ -1221,7 +1221,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    if (exp_cat_menu_item2[sorted_position]==NULL) {
       /* Illegal category */
       jp_logf(JP_LOG_DEBUG, "Category is not legal\n");
-      index = sorted_position = 0;
+      sorted_position = 0;
    }
    if (sorted_position<0) {
       jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
