@@ -1,4 +1,4 @@
-/* $Id: category.c,v 1.38 2011/02/09 21:04:44 rousseau Exp $ */
+/* $Id: category.c,v 1.39 2011/02/09 21:07:42 rousseau Exp $ */
 
 /*******************************************************************************
  * category.c
@@ -504,11 +504,11 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 #ifdef EDIT_CATS_DEBUG
                printf("MOVE THEM\n");
 #endif
-               edit_cats_change_cats_pc3(Pdata->db_name, catnum, 0);
+               r = edit_cats_change_cats_pc3(Pdata->db_name, catnum, 0);
 #ifdef EDIT_CATS_DEBUG
                printf("moved %d pc records\n", r);
 #endif
-               edit_cats_change_cats_pdb(Pdata->db_name, catnum, 0);
+               r = edit_cats_change_cats_pdb(Pdata->db_name, catnum, 0);
 #ifdef EDIT_CATS_DEBUG
                printf("moved %d pdb->pc records\n", r);
 #endif
@@ -517,11 +517,11 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 #ifdef EDIT_CATS_DEBUG
                printf("DELETE THEM\n");
 #endif
-               edit_cats_delete_cats_pc3(Pdata->db_name, catnum);
+               r = edit_cats_delete_cats_pc3(Pdata->db_name, catnum);
 #ifdef EDIT_CATS_DEBUG
                printf("deleted %d pc records\n", r);
 #endif
-               edit_cats_delete_cats_pdb(Pdata->db_name, catnum);
+               r = edit_cats_delete_cats_pdb(Pdata->db_name, catnum);
 #ifdef EDIT_CATS_DEBUG
                printf("deleted %d pdb->pc records\n", r);
 #endif
