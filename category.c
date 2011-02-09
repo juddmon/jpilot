@@ -1,4 +1,4 @@
-/* $Id: category.c,v 1.37 2010/10/13 03:18:58 rikster5 Exp $ */
+/* $Id: category.c,v 1.38 2011/02/09 21:04:44 rousseau Exp $ */
 
 /*******************************************************************************
  * category.c
@@ -459,7 +459,7 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
             printf("Trying to rename category 0!\n");
          }
 #endif
-         r = gtk_clist_get_text(GTK_CLIST(Pdata->clist), Pdata->selected, 0, &text);
+         gtk_clist_get_text(GTK_CLIST(Pdata->clist), Pdata->selected, 0, &text);
          gtk_label_set_text(GTK_LABEL(Pdata->label), _("Enter New Category Name"));
          gtk_entry_set_text(GTK_ENTRY(Pdata->entry), text);
          gtk_widget_show(Pdata->entry_box);
@@ -504,11 +504,11 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 #ifdef EDIT_CATS_DEBUG
                printf("MOVE THEM\n");
 #endif
-               r = edit_cats_change_cats_pc3(Pdata->db_name, catnum, 0);
+               edit_cats_change_cats_pc3(Pdata->db_name, catnum, 0);
 #ifdef EDIT_CATS_DEBUG
                printf("moved %d pc records\n", r);
 #endif
-               r = edit_cats_change_cats_pdb(Pdata->db_name, catnum, 0);
+               edit_cats_change_cats_pdb(Pdata->db_name, catnum, 0);
 #ifdef EDIT_CATS_DEBUG
                printf("moved %d pdb->pc records\n", r);
 #endif
@@ -517,11 +517,11 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
 #ifdef EDIT_CATS_DEBUG
                printf("DELETE THEM\n");
 #endif
-               r = edit_cats_delete_cats_pc3(Pdata->db_name, catnum);
+               edit_cats_delete_cats_pc3(Pdata->db_name, catnum);
 #ifdef EDIT_CATS_DEBUG
                printf("deleted %d pc records\n", r);
 #endif
-               r = edit_cats_delete_cats_pdb(Pdata->db_name, catnum);
+               edit_cats_delete_cats_pdb(Pdata->db_name, catnum);
 #ifdef EDIT_CATS_DEBUG
                printf("deleted %d pdb->pc records\n", r);
 #endif
