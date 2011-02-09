@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.115 2010/11/10 03:57:48 rikster5 Exp $ */
+/* $Id: keyring.c,v 1.116 2011/02/09 20:43:23 rousseau Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -204,7 +204,6 @@ static int keyr_plugin_unpack_cai_from_ai(struct CategoryAppInfo *cai,
    memcpy(cai->ID, record, 16);
    record += 16;
    cai->lastUniqueID = get_byte(record);
-   record += 2;
 
    return EXIT_SUCCESS;
 }
@@ -244,7 +243,6 @@ int plugin_pack_cai_into_ai(struct CategoryAppInfo *cai,
    set_byte(record, cai->lastUniqueID);
    record++;
    set_byte(record, 0);      /* gapfill */
-   record++;
 
    return EXIT_SUCCESS;
 }
@@ -1358,7 +1356,6 @@ static int display_record_export(GtkWidget *clist, struct MyKeyRing *mkr, int ro
 static void keyr_update_clist(GtkWidget *clist, struct MyKeyRing **keyring_list,
                               int category, int main)
 {
-   int num;
    int entries_shown;
    struct MyKeyRing *temp_list;
    gchar *empty_line[] = { "", "", "" };
@@ -1368,7 +1365,7 @@ static void keyr_update_clist(GtkWidget *clist, struct MyKeyRing **keyring_list,
    free_mykeyring_list(keyring_list);
 
    /* This function takes care of reading the database for us */
-   num = get_keyring(keyring_list, category);
+   get_keyring(keyring_list, category);
 
    if (main) {
       keyr_clear_details();
@@ -1508,7 +1505,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    if (keyr_cat_menu_item2[sorted_position]==NULL) {
       /* Illegal category */
       jp_logf(JP_LOG_DEBUG, "Category is not legal\n");
-      index = sorted_position = 0;
+      sorted_position = 0;
    }
 
    if (sorted_position<0) {
