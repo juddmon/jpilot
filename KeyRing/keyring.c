@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.116 2011/02/09 20:43:23 rousseau Exp $ */
+/* $Id: keyring.c,v 1.117 2011/02/09 20:48:34 rousseau Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -1652,7 +1652,7 @@ static int dialog_password(GtkWindow *main_window,
    GtkWidget *hbox1, *vbox1;
    GtkWidget *dialog;
    GtkWidget *entry;
-   struct dialog_data *Pdata;
+   struct dialog_data Pdata;
    int ret;
 
    if (!ascii_password) {
@@ -1731,30 +1731,26 @@ static int dialog_password(GtkWindow *main_window,
                       GINT_TO_POINTER(DIALOG_SAID_2));
    gtk_box_pack_start(GTK_BOX(hbox1), button, FALSE, FALSE, 1);
 
-   Pdata = malloc(sizeof(struct dialog_data));
-   if (Pdata) {
-      /* Set the default button pressed to CANCEL */
-      Pdata->button_hit = DIALOG_SAID_1;
-      Pdata->entry=entry;
-      Pdata->text[0]='\0';
-   }
-   gtk_object_set_data(GTK_OBJECT(dialog), "dialog_data", Pdata);         
+   /* Set the default button pressed to CANCEL */
+   Pdata.button_hit = DIALOG_SAID_1;
+   Pdata.entry=entry;
+   Pdata.text[0]='\0';
+ 
+   gtk_object_set_data(GTK_OBJECT(dialog), "dialog_data", &Pdata);
    gtk_widget_grab_focus(GTK_WIDGET(entry));
      
    gtk_widget_show_all(dialog);
 
    gtk_main();
    
-   if (Pdata->button_hit==DIALOG_SAID_1) {
+   if (Pdata.button_hit==DIALOG_SAID_1) {
       ret = 1;
    }
-   if (Pdata->button_hit==DIALOG_SAID_2) {
+   if (Pdata.button_hit==DIALOG_SAID_2) {
       ret = 2;
    }
-   strncpy(ascii_password, Pdata->text, PASSWD_LEN);
-   memset(Pdata->text, 0, PASSWD_LEN);
-
-   free(Pdata);
+   strncpy(ascii_password, Pdata.text, PASSWD_LEN);
+   memset(Pdata.text, 0, PASSWD_LEN);
 
    return ret;
 }
