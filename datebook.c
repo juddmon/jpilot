@@ -1,4 +1,4 @@
-/* $Id: datebook.c,v 1.72 2010/10/22 22:21:02 rikster5 Exp $ */
+/* $Id: datebook.c,v 1.73 2011/02/09 21:18:38 rousseau Exp $ */
 
 /*******************************************************************************
  * datebook.c
@@ -50,7 +50,7 @@ int appointment_on_day_list(int mon, int year, int *mask,
 {
    struct tm tm_dom;
    CalendarEventList *tcel, *cel;
-   int dow, ndim, num;
+   int dow, ndim;
    int bit;
    int show_priv;
    int skip_privates;
@@ -67,9 +67,9 @@ int appointment_on_day_list(int mon, int year, int *mask,
     * masking private records */
    if (datebook_version) {
       /* Calendar supports category option */
-      num = get_days_calendar_events2(&cel, NULL, 2, 2, 1, category, NULL);
+      get_days_calendar_events2(&cel, NULL, 2, 2, 1, category, NULL);
    } else {
-      num = get_days_calendar_events2(&cel, NULL, 2, 2, 1, CATEGORY_ALL, NULL);
+      get_days_calendar_events2(&cel, NULL, 2, 2, 1, CATEGORY_ALL, NULL);
    }
 
    show_priv = show_privates(GET_PRIVATES);
