@@ -1,4 +1,4 @@
-/* $Id: dialer.c,v 1.16 2010/03/29 05:44:28 rikster5 Exp $ */
+/* $Id: dialer.c,v 1.17 2011/02/09 21:26:43 rousseau Exp $ */
 
 /*******************************************************************************
  * dialer.c
@@ -52,11 +52,10 @@ struct dialog_data {
 /****************************** Main Code *************************************/
 static void cb_dialog_button(GtkWidget *widget, gpointer data)
 {
-   struct dialog_data *Pdata;
    GtkWidget *w;
 
    w = gtk_widget_get_toplevel(widget);
-   Pdata = gtk_object_get_data(GTK_OBJECT(w), "dialog_data");
+   gtk_object_get_data(GTK_OBJECT(w), "dialog_data");
    gtk_widget_destroy(GTK_WIDGET(w));
 }
 
