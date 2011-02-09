@@ -1,4 +1,4 @@
-/* $Id: jpilot-sync.c,v 1.35 2010/11/08 22:35:53 rikster5 Exp $ */
+/* $Id: jpilot-sync.c,v 1.36 2011/02/09 21:38:55 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot-sync.c
@@ -101,8 +101,6 @@ static void sig_handler(int sig)
 
 int main(int argc, char *argv[])
 {
-   int done;
-   int cons_errors;
    int flags;
    int r, i;
    int loop;
@@ -123,7 +121,6 @@ int main(int argc, char *argv[])
    textdomain(EPN);
 #endif
 
-   done=cons_errors=0;
    port[0]='\0';
    glob_child_pid=0;
    loop=0;
