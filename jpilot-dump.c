@@ -1,4 +1,4 @@
-/* $Id: jpilot-dump.c,v 1.43 2010/11/08 22:35:53 rikster5 Exp $ */
+/* $Id: jpilot-dump.c,v 1.44 2011/02/09 21:37:28 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot-dump.c
@@ -651,10 +651,8 @@ static int dumpaddress(void)
    AddressList *tal, *al;
    int num, i;
    struct AddressAppInfo ai;
-   static struct AddressAppInfo *glob_PAddress_app_info;
 
    get_address_app_info(&ai);
-   glob_PAddress_app_info = &ai;
 
    al = NULL;
    i = 0;
@@ -690,7 +688,7 @@ static int dumpaddress(void)
                      i++;
                      break;
                 case 'C' :
-                     printf("%s", glob_PAddress_app_info->category.name[tal->maddr.attrib & 0x0F]);
+                     printf("%s", ai.category.name[tal->maddr.attrib & 0x0F]);
                      i++;
                      break;
                 case 'N' :   /* normal output */
@@ -775,10 +773,8 @@ static int dumptodo(void)
    int num, i;
    int year, month, day, hour, minute;
    struct ToDoAppInfo ai;
-   static struct ToDoAppInfo *glob_Ptodo_app_info;
 
    get_todo_app_info(&ai);
-   glob_Ptodo_app_info = &ai;
 
    al = NULL;
    num = get_todos(&al, SORT_ASCENDING);
@@ -826,7 +822,7 @@ static int dumptodo(void)
                      i++;
                      break;
                 case 'C' :
-                     printf("%s", glob_Ptodo_app_info->category.name[tal->mtodo.attrib & 0x0F]);
+                     printf("%s", ai.category.name[tal->mtodo.attrib & 0x0F]);
                      i++;
                      break;
                 case 'A' :
@@ -1037,10 +1033,8 @@ static int dumpmemo(void)
    MemoList *tal, *al;
    int num,i;
    struct MemoAppInfo ai;
-   static struct MemoAppInfo *glob_PMemo_app_info;
 
    get_memo_app_info(&ai);
-   glob_PMemo_app_info = &ai;
 
    al = NULL;
    i = 0;
@@ -1084,7 +1078,7 @@ static int dumpmemo(void)
                      i++;
                      break;
                 case 'C' :
-                     printf("%s", glob_PMemo_app_info->category.name[tal->mmemo.attrib & 0x0F]);
+                     printf("%s", ai.category.name[tal->mmemo.attrib & 0x0F]);
                      i++;
                      break;
                 case 'N' :   /* normal output */
