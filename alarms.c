@@ -1,4 +1,4 @@
-/* $Id: alarms.c,v 1.58 2011/02/09 20:59:21 rousseau Exp $ */
+/* $Id: alarms.c,v 1.59 2011/02/09 21:03:13 rousseau Exp $ */
 
 /*******************************************************************************
  * alarms.c
@@ -665,7 +665,8 @@ static gint cb_timer_alarms(gpointer data)
       }
       /* CAUTION, this modifies the list we are parsing and
        * removes the current node */
-      alarms_remove_from_to_list(temp_al->mcale.unique_id);
+      if (temp_al)
+	 alarms_remove_from_to_list(temp_al->mcale.unique_id);
    }
 
    if (next_alarm) {
