@@ -1,4 +1,4 @@
-/* $Id: dat.c,v 1.27 2011/02/09 21:11:04 rousseau Exp $ */
+/* $Id: dat.c,v 1.28 2011/02/09 21:16:56 rousseau Exp $ */
 
 /*******************************************************************************
  * dat.c
@@ -176,25 +176,24 @@ static int get_repeat(FILE *in, struct Appointment *appt)
    printf("  repeat entry follows:\n");
    printf("%d exceptions\n", s);
 #endif
-   if (appt) {
-      appt->exception=NULL;
-      memset(&(appt->repeatEnd), 0, sizeof(appt->repeatEnd));
-   }
+   if (!appt)
+      return EXIT_FAILURE;
 
-   if (appt) {
-      appt->exceptions=s;
-      if (s>0) {
-         appt->exception=malloc(sizeof(struct tm) * s);
-         if (!(appt->exceptions)) {
-            jp_logf(JP_LOG_WARN, "get_repeat(): %s\n", _("Out of memory"));
-         }
+   appt->exception=NULL;
+   memset(&(appt->repeatEnd), 0, sizeof(appt->repeatEnd));
+
+   appt->exceptions=s;
+   if (s>0) {
+      appt->exception=malloc(sizeof(struct tm) * s);
+      if (!(appt->exceptions)) {
+	 jp_logf(JP_LOG_WARN, "get_repeat(): %s\n", _("Out of memory"));
       }
    }
 
    for (i=0; i<s; i++) {
       fread(str_long, 4, 1, in);
       l = x86_long(str_long);
-      if (appt) {
+      {
          t = l;
          now = localtime(&t);
          memcpy(&(appt->exception[i]), now, sizeof(struct tm));
@@ -212,9 +211,7 @@ static int get_repeat(FILE *in, struct Appointment *appt)
 #endif
 
    if (s==0x0000) {
-      if (appt) {
-         appt->repeatType=calendarRepeatNone;
-      }
+      appt->repeatType=calendarRepeatNone;
       return EXIT_SUCCESS;
    }
 
@@ -242,9 +239,7 @@ static int get_repeat(FILE *in, struct Appointment *appt)
 
    fread(str_long, 4, 1, in);
    repeat_type = x86_long(str_long);
-   if (appt) {
-      appt->repeatType=repeat_type;
-   }
+   appt->repeatType=repeat_type;
 #ifdef JPILOT_DEBUG
    printf("repeatType=%d ", repeat_type);
    switch (repeat_type) {
@@ -276,13 +271,11 @@ static int get_repeat(FILE *in, struct Appointment *appt)
 #ifdef JPILOT_DEBUG
    printf("Interval = %d\n", l);
 #endif
-   if (appt) {
-      appt->repeatFrequency=l;
-   }
+   appt->repeatFrequency=l;
 
    fread(str_long, 4, 1, in);
    l = x86_long(str_long);
-   if (appt) {
+   {
       t = l;
       now = localtime(&t);
       memcpy(&(appt->repeatEnd), now, sizeof(struct tm));
@@ -297,9 +290,7 @@ static int get_repeat(FILE *in, struct Appointment *appt)
 #endif
    fread(str_long, 4, 1, in);
    l = x86_long(str_long);
-   if (appt) {
-      appt->repeatWeekstart=l;
-   }
+   appt->repeatWeekstart=l;
 #ifdef JPILOT_DEBUG
    printf("First Day of Week = %d\n", l);
 #endif
