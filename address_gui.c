@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.273 2010/11/10 03:57:46 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.274 2011/02/09 20:56:00 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -569,7 +569,7 @@ static int cb_addr_import(GtkWidget *parent_window,
       import_all=FALSE;
       while (1) {
          /* Read the category field */
-         ret = read_csv_field(in, text, sizeof(text));
+         read_csv_field(in, text, sizeof(text));
          if (feof(in)) break;
 #ifdef JPILOT_DEBUG
          printf("category is [%s]\n", text);
@@ -586,7 +586,7 @@ static int cb_addr_import(GtkWidget *parent_window,
          }
 
          /* Read the private field */
-         ret = read_csv_field(in, text, sizeof(text));
+         read_csv_field(in, text, sizeof(text));
 #ifdef JPILOT_DEBUG
          printf("private is [%s]\n", text);
 #endif
@@ -596,7 +596,7 @@ static int cb_addr_import(GtkWidget *parent_window,
          memset(&new_cont, 0, sizeof(new_cont));  
          address_i=phone_i=IM_i=0;
          for (i=0; i<schema_size; i++) {
-            ret = read_csv_field(in, text, sizeof(text));
+            read_csv_field(in, text, sizeof(text));
             switch (schema[i].type) {
              case ADDRESS_GUI_IM_MENU_TEXT:
                for (j = 0; j < NUM_IM_LABELS; j++) {
@@ -605,7 +605,7 @@ static int cb_addr_import(GtkWidget *parent_window,
                     break;
                  }
                }
-               ret = read_csv_field(in, text, sizeof(text));
+               read_csv_field(in, text, sizeof(text));
                new_cont.entry[schema[i].record_field] = strdup(text);
                IM_i++;
                break;
@@ -623,7 +623,7 @@ static int cb_addr_import(GtkWidget *parent_window,
                     }
                  }
                }
-               ret = read_csv_field(in, text, sizeof(text));
+               read_csv_field(in, text, sizeof(text));
                new_cont.entry[schema[i].record_field] = strdup(text);
                phone_i++;
                break;
@@ -634,7 +634,7 @@ static int cb_addr_import(GtkWidget *parent_window,
                     break;
                  }
                }
-               ret = read_csv_field(in, text, sizeof(text));
+               read_csv_field(in, text, sizeof(text));
                new_cont.entry[schema[i].record_field] = strdup(text);
                address_i++;
                break;
@@ -653,7 +653,7 @@ static int cb_addr_import(GtkWidget *parent_window,
                   new_cont.birthday.tm_mday=day;
                }
                /* Also get Reminder Advance field */
-               ret = read_csv_field(in, text, sizeof(text));
+               read_csv_field(in, text, sizeof(text));
                if (text[0]) {
                   new_cont.reminder = TRUE;
                   sscanf(text, "%d", &(new_cont.advance));
@@ -722,11 +722,9 @@ static int cb_addr_import(GtkWidget *parent_window,
          index=temp_addrlist->maddr.unique_id-1;
          if (index<0) {
             g_strlcpy(old_cat_name, _("Unfiled"), 16);
-            index=0;
          } else {
             g_strlcpy(old_cat_name, cai.name[index], 16);
          }
-         attrib=0;
          /* Figure out what category it was in the dat file */
          index=temp_addrlist->maddr.unique_id-1;
          suggested_cat_num=0;
@@ -1010,7 +1008,6 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
          fprintf(out, _("Private: %s\n"),
                  (mcont->attrib & dlpRecAttrSecret) ? _("Yes"):_("No"));
 
-         address_i=phone_i=IM_i=0;
          for (i=0; i<schema_size; i++) {
             /* Special handling for birthday which doesn't have an entry
              * field but instead has a flag and a tm struct field */
@@ -2508,7 +2505,7 @@ static int change_photo(char *filename)
       return EXIT_FAILURE;
    }
 
-   total_read = count = 0;
+   total_read = 0;
    while (!feof(in)) {
       count = fread(buf + total_read, 1, 0xFFFF - total_read, in);
       total_read+=count;
@@ -2799,7 +2796,7 @@ static void cb_clist_selection(GtkWidget      *clist,
    if (address_cat_menu_item2[sorted_position]==NULL) {
       /* Illegal category, Assume that category 0 is Unfiled and valid */
       jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
-      index = sorted_position = 0;
+      index = 0;
       sorted_position = find_sort_cat_pos(index);
    }
 
@@ -3022,7 +3019,7 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
                                  ContactList **cont_list, int category, 
                                  int main)
 {
-   int num_entries, entries_shown, i;
+   int num_entries, entries_shown;
    int show1, show2, show3;
    gchar *empty_line[] = { "","","" };
    GdkPixmap *pixmap_note;
@@ -3109,7 +3106,7 @@ static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
    entries_shown=0;
 
-   for (temp_cl = *cont_list, i=0; temp_cl; temp_cl=temp_cl->next) {
+   for (temp_cl = *cont_list; temp_cl; temp_cl=temp_cl->next) {
       if ( ((temp_cl->mcont.attrib & 0x0F) != category) &&
              category != CATEGORY_ALL) {
          continue;
