@@ -1,4 +1,4 @@
-/* $Id: password.c,v 1.32 2010/10/15 23:50:07 rikster5 Exp $ */
+/* $Id: password.c,v 1.33 2011/02/09 21:29:55 rousseau Exp $ */
 
 /*******************************************************************************
  * password.c
@@ -269,7 +269,7 @@ int dialog_password(GtkWindow *main_window, char *ascii_password, int retry)
    GtkWidget *hbox1, *vbox1;
    GtkWidget *dialog;
    GtkWidget *entry;
-   struct dialog_data *Pdata;
+   struct dialog_data Pdata;
    int ret;
 
    if (!ascii_password) {
@@ -342,14 +342,11 @@ int dialog_password(GtkWindow *main_window, char *ascii_password, int retry)
    GTK_WIDGET_SET_FLAGS(button, GTK_CAN_DEFAULT);
    gtk_widget_grab_default(button);
 
-   Pdata = malloc(sizeof(struct dialog_data));
-   if (Pdata) {
-      /* Set the default button pressed to CANCEL */
-      Pdata->button_hit = DIALOG_SAID_1;
-      Pdata->entry=entry;
-      Pdata->text[0]='\0';
-   }
-   gtk_object_set_data(GTK_OBJECT(dialog), "dialog_data", Pdata);
+   /* Set the default button pressed to CANCEL */
+   Pdata.button_hit = DIALOG_SAID_1;
+   Pdata.entry=entry;
+   Pdata.text[0]='\0';
+   gtk_object_set_data(GTK_OBJECT(dialog), "dialog_data", &Pdata);
 
    gtk_widget_grab_focus(GTK_WIDGET(entry));
 
@@ -357,15 +354,13 @@ int dialog_password(GtkWindow *main_window, char *ascii_password, int retry)
 
    gtk_main();
 
-   if (Pdata->button_hit==DIALOG_SAID_1) {
+   if (Pdata.button_hit==DIALOG_SAID_1) {
       ret = 1;
    }
-   if (Pdata->button_hit==DIALOG_SAID_2) {
+   if (Pdata.button_hit==DIALOG_SAID_2) {
       ret = 2;
    }
-   g_strlcpy(ascii_password, Pdata->text, PASSWD_LEN+1);
-
-   free(Pdata);
+   g_strlcpy(ascii_password, Pdata.text, PASSWD_LEN+1);
 
    return ret;
 }
