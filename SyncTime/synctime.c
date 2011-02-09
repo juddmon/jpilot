@@ -1,4 +1,4 @@
-/* $Id: synctime.c,v 1.19 2010/10/19 00:00:09 rikster5 Exp $ */
+/* $Id: synctime.c,v 1.20 2011/02/09 20:41:46 rousseau Exp $ */
 
 /*******************************************************************************
  * synctime.c
@@ -87,7 +87,6 @@ int plugin_help(char **text, int *width, int *height)
 
 int plugin_sync(int sd)
 {
-   int r;
    time_t ltime;
    unsigned long ROMversion, majorVersion, minorVersion;
 
@@ -113,7 +112,7 @@ int plugin_sync(int sd)
    jp_logf(JP_LOG_GUI, _("synctime: Setting the time on the pilot... "));
    
    time(&ltime);
-   r = dlp_SetSysDateTime(sd, ltime);
+   dlp_SetSysDateTime(sd, ltime);
    
    jp_logf(JP_LOG_GUI, _("Done\n"));
 
