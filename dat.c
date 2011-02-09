@@ -1,4 +1,4 @@
-/* $Id: dat.c,v 1.26 2011/02/09 21:09:02 rousseau Exp $ */
+/* $Id: dat.c,v 1.27 2011/02/09 21:11:04 rousseau Exp $ */
 
 /*******************************************************************************
  * dat.c
@@ -162,7 +162,7 @@ static int get_categories(FILE *in, struct CategoryAppInfo *ai)
 
 static int get_repeat(FILE *in, struct Appointment *appt)
 {
-   time_t t;
+   time_t t = 0;
    struct tm *now;
    unsigned char str_long[4];
    unsigned char str_short[2];
