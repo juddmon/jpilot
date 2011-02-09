@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.86 2010/11/10 03:57:47 rikster5 Exp $ */
+/* $Id: utils.h,v 1.87 2011/02/09 22:09:29 rousseau Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -286,7 +286,7 @@ int check_hidden_dir(void);
 
 int read_gtkrc_file(void);
 
-int get_home_file_name(char *file, char *full_name, int max_size);
+int get_home_file_name(const char *file, char *full_name, int max_size);
 
 int unpack_db_header(DBHeader *dbh, unsigned char *buffer);
 

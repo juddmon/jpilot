@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.195 2011/02/09 21:31:39 rousseau Exp $ */
+/* $Id: utils.c,v 1.196 2011/02/09 22:09:29 rousseau Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -2040,7 +2040,7 @@ int get_highlighted_today(struct tm *date)
 }
 
 /* creates the full path name of a file in the ~/.jpilot dir */
-int get_home_file_name(char *file, char *full_name, int max_size)
+int get_home_file_name(const char *file, char *full_name, int max_size)
 {
    char *home, default_path[]=".";
 
