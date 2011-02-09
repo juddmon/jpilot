@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.194 2010/11/10 03:57:47 rikster5 Exp $ */
+/* $Id: utils.c,v 1.195 2011/02/09 21:31:39 rousseau Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -405,7 +405,7 @@ static void cb_quit(GtkWidget *widget, gpointer data)
    if (Preturn_code) *Preturn_code = GPOINTER_TO_INT(data);
    cal = gtk_object_get_data(GTK_OBJECT(window), "cal");
 
-   if (*Preturn_code==CAL_DONE) {
+   if (Preturn_code && *Preturn_code==CAL_DONE) {
       if (cal) {
          gtk_calendar_get_date(GTK_CALENDAR(cal),&y,&m,&d);
          Pm = gtk_object_get_data(GTK_OBJECT(window), "mon");
