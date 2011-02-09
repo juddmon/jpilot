@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.244 2010/11/10 03:57:46 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.245 2011/02/09 21:23:53 rousseau Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -426,8 +426,6 @@ static int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int 
    int priv;
    int year, month, day, hour, minute;
 
-   attrib=0;
-
    in=fopen(file_path, "r");
    if (!in) {
       jp_logf(JP_LOG_WARN, _("Unable to open file: %s\n"), file_path);
@@ -449,7 +447,7 @@ static int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int 
       while (1) {
          memset(&new_cale, 0, sizeof(new_cale));
          /* Read the category field */
-         ret = read_csv_field(in, text, sizeof(text));
+         read_csv_field(in, text, sizeof(text));
          if (feof(in)) break;
 #ifdef JPILOT_DEBUG
          printf("category is [%s]\n", text);
@@ -466,14 +464,14 @@ static int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int 
          }
 
          /* Read the private field */
-         ret = read_csv_field(in, text, sizeof(text));
+         read_csv_field(in, text, sizeof(text));
 #ifdef JPILOT_DEBUG
          printf("private is [%s]\n", text);
 #endif
          sscanf(text, "%d", &priv);
 
          /* Description */
-         ret = read_csv_field(in, description, sizeof(description));
+         read_csv_field(in, description, sizeof(description));
          if (strlen(description) > 0) {
             new_cale.description=description;
          } else {
@@ -481,7 +479,7 @@ static int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int 
          }
 
          /* Note */
-         ret = read_csv_field(in, note, sizeof(note));
+         read_csv_field(in, note, sizeof(note));
          if (strlen(note) > 0) {
             new_cale.note=note;
          } else {
@@ -490,7 +488,7 @@ static int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int 
 
          if (datebook_version) {
             /* Location */
-            ret = read_csv_field(in, location, sizeof(location));
+            read_csv_field(in, location, sizeof(location));
             if (strlen(location) > 0) {
                new_cale.location=location;
             } else {
@@ -499,12 +497,12 @@ static int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int 
          }
 
          /* Event */
-         ret = read_csv_field(in, text, sizeof(text));
+         read_csv_field(in, text, sizeof(text));
          sscanf(text, "%d", &(new_cale.event));
 
          /* Begin Time */
          memset(&(new_cale.begin), 0, sizeof(new_cale.begin));
-         ret = read_csv_field(in, text, sizeof(text));
+         read_csv_field(in, text, sizeof(text));
          sscanf(text, "%d %d %d %d:%d", &year, &month, &day, &hour, &minute);
          new_cale.begin.tm_year=year-1900;
          new_cale.begin.tm_mon=month-1;
@@ -516,7 +514,7 @@ static int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int 
 
          /* End Time */
          memset(&(new_cale.end), 0, sizeof(new_cale.end));
-         ret = read_csv_field(in, text, sizeof(text));
+         read_csv_field(in, text, sizeof(text));
          sscanf(text, "%d %d %d %d:%d", &year, &month, &day, &hour, &minute);
          new_cale.end.tm_year=year-1900;
          new_cale.end.tm_mon=month-1;
@@ -527,29 +525,29 @@ static int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int 
          mktime(&(new_cale.end));
 
          /* Alarm */
-         ret = read_csv_field(in, text, sizeof(text));
+         read_csv_field(in, text, sizeof(text));
          sscanf(text, "%d", &(new_cale.alarm));
 
          /* Alarm Advance */
-         ret = read_csv_field(in, text, sizeof(text));
+         read_csv_field(in, text, sizeof(text));
          sscanf(text, "%d", &(new_cale.advance));
 
          /* Advance Units */
-         ret = read_csv_field(in, text, sizeof(text));
+         read_csv_field(in, text, sizeof(text));
          sscanf(text, "%d", &(new_cale.advanceUnits));
 
          /* Repeat Type */
-         ret = read_csv_field(in, text, sizeof(text));
+         read_csv_field(in, text, sizeof(text));
          sscanf(text, "%d", &(i));
          new_cale.repeatType=i;
 
          /* Repeat Forever */
-         ret = read_csv_field(in, text, sizeof(text));
+         read_csv_field(in, text, sizeof(text));
          sscanf(text, "%d", &(new_cale.repeatForever));
 
          /* Repeat End */
          memset(&(new_cale.repeatEnd), 0, sizeof(new_cale.repeatEnd));
-         ret = read_csv_field(in, text, sizeof(text));
+         read_csv_field(in, text, sizeof(text));
          sscanf(text, "%d %d %d", &year, &month, &day);
          new_cale.repeatEnd.tm_year=year-1900;
          new_cale.repeatEnd.tm_mon=month-1;
@@ -558,26 +556,26 @@ static int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int 
          mktime(&(new_cale.repeatEnd));
 
          /* Repeat Frequency */
-         ret = read_csv_field(in, text, sizeof(text));
+         read_csv_field(in, text, sizeof(text));
          sscanf(text, "%d", &(new_cale.repeatFrequency));
 
          /* Repeat Day */
-         ret = read_csv_field(in, text, sizeof(text));
+         read_csv_field(in, text, sizeof(text));
          sscanf(text, "%d", &(i));
          new_cale.repeatDay=i;
 
          /* Repeat Days */
-         ret = read_csv_field(in, text, sizeof(text));
+         read_csv_field(in, text, sizeof(text));
          for (i=0; i<7; i++) {
             new_cale.repeatDays[i]=(text[i]=='1');
          }
 
          /* Week Start */
-         ret = read_csv_field(in, text, sizeof(text));
+         read_csv_field(in, text, sizeof(text));
          sscanf(text, "%d", &(new_cale.repeatWeekstart));
 
          /* Number of Exceptions */
-         ret = read_csv_field(in, text, sizeof(text));
+         read_csv_field(in, text, sizeof(text));
          sscanf(text, "%d", &(new_cale.exceptions));
 
          /* Exceptions */
@@ -648,7 +646,6 @@ static int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int 
          index=temp_celist->mcale.unique_id-1;
          if (index<0) {
             g_strlcpy(old_cat_name, _("Unfiled"), 16);
-            index=0;
          } else {
             g_strlcpy(old_cat_name, cai.name[index], 16);
          }
@@ -2012,7 +2009,6 @@ static int appt_get_details(struct CalendarEvent *cale, unsigned char *attrib)
 {
    int i;
    time_t ltime, ltime2;
-   struct tm *now;
    char str[30];
    gint page;
    int total_repeat_days;
@@ -2056,7 +2052,7 @@ static int appt_get_details(struct CalendarEvent *cale, unsigned char *attrib)
    }
 
    time(&ltime);
-   now = localtime(&ltime);
+   localtime(&ltime);
 
    total_repeat_days=0;
 
@@ -2405,7 +2401,6 @@ static int datebook_update_clist(void)
    GdkBitmap *mask_alarm;
    int has_note;
 #ifdef ENABLE_DATEBK
-   int ret;
    int cat_bit;
    int db3_type;
    long use_db3_tags;
@@ -2483,9 +2478,8 @@ static int datebook_update_clist(void)
          }
       }
 #ifdef ENABLE_DATEBK
-      ret=0;
       if (use_db3_tags) {
-         ret = db3_parse_tag(temp_cel->mcale.cale.note, &db3_type, &db4);
+         db3_parse_tag(temp_cel->mcale.cale.note, &db3_type, &db4);
          jp_logf(JP_LOG_DEBUG, "category = 0x%x\n", db4.category);
          cat_bit=1<<db4.category;
          if (!(cat_bit & datebk_category)) {
@@ -3339,7 +3333,7 @@ static void cb_clist_selection(GtkWidget      *clist,
       if (dbook_cat_menu_item2[sorted_position]==NULL) {
          /* Illegal category */
          jp_logf(JP_LOG_DEBUG, "Category is not legal\n");
-         index = sorted_position = 0;
+         index = 0;
          sorted_position = find_sort_cat_pos(index);
       }
       if (sorted_position<0) {
@@ -3789,7 +3783,7 @@ static void cb_cal_changed(GtkWidget *widget,
       return;
    }
 
-   day_changed = mon_changed = year_changed = 0;
+   mon_changed = year_changed = 0;
 
    if (cal_year < 1903) {
       cal_year=1903;
