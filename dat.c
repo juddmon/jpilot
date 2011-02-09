@@ -1,4 +1,4 @@
-/* $Id: dat.c,v 1.25 2010/10/15 16:42:13 rikster5 Exp $ */
+/* $Id: dat.c,v 1.26 2011/02/09 21:09:02 rousseau Exp $ */
 
 /*******************************************************************************
  * dat.c
@@ -191,7 +191,6 @@ static int get_repeat(FILE *in, struct Appointment *appt)
       }
    }
 
-   l=0;
    for (i=0; i<s; i++) {
       fread(str_long, 4, 1, in);
       l = x86_long(str_long);
