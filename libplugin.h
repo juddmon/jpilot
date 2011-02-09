@@ -1,4 +1,4 @@
-/* $Id: libplugin.h,v 1.36 2010/10/22 22:21:02 rikster5 Exp $ */
+/* $Id: libplugin.h,v 1.37 2011/02/09 20:36:45 rousseau Exp $ */
 
 /*******************************************************************************
  * libplugin.h
@@ -228,14 +228,14 @@ void jp_init(void);
  * onto it and puts it into full_name.  max_size is the size if the
  * supplied buffer full_name
  */
-int jp_get_home_file_name(char *file, char *full_name, int max_size);
+int jp_get_home_file_name(const char *file, char *full_name, int max_size);
 
 /*
  * DB_name should be without filename ext, e.g. MemoDB
  * bufp is the packed app info block
  * size_in is the size of bufp
  */
-int jp_pdb_file_write_app_block(char *DB_name, void *bufp, int size_in);
+int jp_pdb_file_write_app_block(const char *DB_name, void *bufp, int size_in);
 
 /*
  * widget is a widget inside the main window used to get main window handle
@@ -253,27 +253,27 @@ int jp_install_append_line(char *line);
 /*
  * Get the application info block
  */
-int jp_get_app_info(char *DB_name, unsigned char **buf, int *buf_size);
+int jp_get_app_info(const char *DB_name, unsigned char **buf, int *buf_size);
 /*
  * Read a pdb file out of the $(JPILOT_HOME || HOME)/.jpilot/ directory
  * It also reads the PC file
  */
-int jp_read_DB_files(char *DB_name, GList **records);
+int jp_read_DB_files(const char *DB_name, GList **records);
 
 /*
  *This deletes a record from the appropriate Datafile
  */
-int jp_delete_record(char *DB_name, buf_rec *br, int flag);
+int jp_delete_record(const char *DB_name, buf_rec *br, int flag);
 /*
  *This undeletes a record from the appropriate Datafile
  */
-int jp_undelete_record(char *DB_name, buf_rec *br, int flag);
+int jp_undelete_record(const char *DB_name, buf_rec *br, int flag);
 /*
  * Free the record list
  */
 int jp_free_DB_records(GList **records);
 
-int jp_pc_write(char *DB_name, buf_rec *br);
+int jp_pc_write(const char *DB_name, buf_rec *br);
 
 const char *jp_strstr(const char *haystack, const char *needle, int case_sense);
 

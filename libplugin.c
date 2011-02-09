@@ -1,4 +1,4 @@
-/* $Id: libplugin.c,v 1.42 2010/10/13 03:18:58 rikster5 Exp $ */
+/* $Id: libplugin.c,v 1.43 2011/02/09 20:36:45 rousseau Exp $ */
 
 /*******************************************************************************
  * libplugin.c
@@ -49,7 +49,7 @@ static int unpack_header(PC3RecordHeader *header, unsigned char *packed_header);
 /*
  * This deletes a record from the appropriate Datafile
  */
-int jp_delete_record(char *DB_name, buf_rec *br, int flag)
+int jp_delete_record(const char *DB_name, buf_rec *br, int flag)
 {
    FILE *pc_in;
    PC3RecordHeader header;
@@ -162,7 +162,7 @@ int jp_free_DB_records(GList **br_list)
    return EXIT_SUCCESS;
 }
 
-int jp_get_app_info(char *DB_name, unsigned char **buf, int *buf_size)
+int jp_get_app_info(const char *DB_name, unsigned char **buf, int *buf_size)
 {
    FILE *in;
    int num;
@@ -226,7 +226,7 @@ int jp_get_app_info(char *DB_name, unsigned char **buf, int *buf_size)
    return EXIT_SUCCESS;
 }
 
-int jp_get_home_file_name(char *file, char *full_name, int max_size)
+int jp_get_home_file_name(const char *file, char *full_name, int max_size)
 {
    return get_home_file_name(file, full_name, max_size);
 }
@@ -315,7 +315,7 @@ static void jp_pack_htonl(unsigned char *dest, unsigned long l)
  * if buf_rec->unique_id==0 then the palm assigns an ID, else
  *  use buf_rec->unique_id.
  */
-int jp_pc_write(char *DB_name, buf_rec *br)
+int jp_pc_write(const char *DB_name, buf_rec *br)
 {
    PC3RecordHeader header;
    FILE *out;
@@ -355,12 +355,12 @@ int jp_pc_write(char *DB_name, buf_rec *br)
    return EXIT_SUCCESS;
 }
 
-int jp_pdb_file_write_app_block(char *DB_name, void *bufp, int size_in)
+int jp_pdb_file_write_app_block(const char *DB_name, void *bufp, int size_in)
 {
    return pdb_file_write_app_block(DB_name, bufp, size_in);
 }
 
-int jp_read_DB_files(char *DB_name, GList **records)
+int jp_read_DB_files(const char *DB_name, GList **records)
 {
    FILE *in;
    FILE *pc_in;
@@ -650,7 +650,7 @@ const char *jp_strstr(const char *haystack, const char *needle, int case_sense)
 /*
  * This undeletes a record from the appropriate Datafile
  */
-int jp_undelete_record(char *DB_name, buf_rec *br, int flag)
+int jp_undelete_record(const char *DB_name, buf_rec *br, int flag)
 {
    char filename[FILENAME_MAX];
    char filename2[FILENAME_MAX];
