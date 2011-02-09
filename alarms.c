@@ -1,4 +1,4 @@
-/* $Id: alarms.c,v 1.57 2010/11/08 22:31:39 rikster5 Exp $ */
+/* $Id: alarms.c,v 1.58 2011/02/09 20:59:21 rousseau Exp $ */
 
 /*******************************************************************************
  * alarms.c
@@ -232,7 +232,7 @@ static int dialog_alarm(char *title, char *reason,
    radio1 = gtk_radio_button_new_with_label(NULL, _("Minutes"));
    group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio1));
    radio2 = gtk_radio_button_new_with_label(group, _("Hours"));
-   group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio2));
+   gtk_radio_button_group(GTK_RADIO_BUTTON(radio2));
 
    gtk_box_pack_start(GTK_BOX(vbox_temp), radio1, TRUE, TRUE, 0);
    gtk_box_pack_start(GTK_BOX(vbox_temp), radio2, TRUE, TRUE, 0);
@@ -728,7 +728,7 @@ int alarms_find_next(struct tm *date1_in, struct tm *date2_in, int soonest_only)
    time_t ltime;
    time_t t1, t2;
    time_t t_alarm;
-   time_t t_begin, t_end;
+   time_t t_end;
    time_t t_prev;
    time_t t_future;
    struct tm *tm_temp;
@@ -820,7 +820,6 @@ int alarms_find_next(struct tm *date1_in, struct tm *date2_in, int soonest_only)
          t_end = mktime_dst_adj(&(temp_al->mcale.cale.repeatEnd));
          /* We need to add 24 hours to the end date to make it inclusive */
          t_end += DAY_IN_SECS;
-         t_begin = mktime_dst_adj(&(temp_al->mcale.cale.begin));
          if (t_end < t2) {
 #ifdef ALARMS_DEBUG
             printf("afn: past end date\n");
@@ -859,7 +858,6 @@ int alarms_find_next(struct tm *date1_in, struct tm *date2_in, int soonest_only)
       printf("adv=%ld\n", adv);
 #endif
 
-      t_prev=t_future=0;
       prev_found=next_found=0;
 
       find_prev_next(&(temp_al->mcale.cale),
