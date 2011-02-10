@@ -1,4 +1,4 @@
-/* $Id: prefs.h,v 1.53 2010/03/29 05:44:30 rikster5 Exp $ */
+/* $Id: prefs.h,v 1.54 2011/02/10 23:28:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs.h
@@ -128,9 +128,10 @@
 #define PREF_EXPENSE_SORT_COLUMN 96
 #define PREF_EXPENSE_SORT_ORDER 97
 #define PREF_KEYR_EXPORT_FILENAME 98
+#define PREF_EXTERNAL_EDITOR 99
 
 /* Number of preferences in use */
-#define NUM_PREFS 99
+#define NUM_PREFS 100
 /* Maximum number of preferences */
 #define MAX_NUM_PREFS 250
 

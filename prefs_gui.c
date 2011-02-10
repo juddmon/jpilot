@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.81 2010/11/10 03:57:47 rikster5 Exp $ */
+/* $Id: prefs_gui.c,v 1.82 2011/02/10 23:28:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -38,6 +38,7 @@ static GtkWidget *window;
 static GtkWidget *main_window;
 static GtkWidget *port_entry;
 static GtkWidget *backups_entry;
+static GtkWidget *ext_editor_entry;
 static GtkWidget *alarm_command_entry;
 static GtkWidget *mail_command_entry;
 static GtkWidget *todo_days_due_entry;
@@ -893,6 +894,30 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_memo_version[2]), TRUE);
       break;
    }
+
+   hseparator = gtk_hseparator_new();
+   gtk_box_pack_start(GTK_BOX(vbox_memo), hseparator, FALSE, FALSE, 3);
+
+   /* External Editor Command to execute */
+   hbox_temp = gtk_hbox_new(FALSE, 0);
+   gtk_box_pack_start(GTK_BOX(vbox_memo), hbox_temp, FALSE, FALSE, 0);
+
+   label = gtk_label_new(_("External Editor"));
+   gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 0);
+
+   ext_editor_entry = gtk_entry_new_with_max_length(MAX_PREF_LEN - 2);
+   get_pref(PREF_EXTERNAL_EDITOR, NULL, &cstr);
+   if (cstr) {
+      gtk_entry_set_text(GTK_ENTRY(ext_editor_entry), cstr);
+   }
+   gtk_signal_connect(GTK_OBJECT(ext_editor_entry),
+                      "changed", GTK_SIGNAL_FUNC(cb_text_entry),
+                      GINT_TO_POINTER(PREF_EXTERNAL_EDITOR));
+   gtk_box_pack_start(GTK_BOX(hbox_temp), ext_editor_entry, TRUE, TRUE, 1);
+
+   label = gtk_label_new(_("Use Ctrl-E inside a memo to launch external editor for memo text"));
+   gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.0);
+   gtk_box_pack_start(GTK_BOX(vbox_memo), label, FALSE, FALSE, 0);
 
    /**********************************************************************/
    /* Alarms preference tab */

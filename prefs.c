@@ -1,4 +1,4 @@
-/* $Id: prefs.c,v 1.89 2010/10/15 23:50:07 rikster5 Exp $ */
+/* $Id: prefs.c,v 1.90 2011/02/10 23:28:07 rikster5 Exp $ */
 
 /*******************************************************************************
  * prefs.c
@@ -151,6 +151,7 @@ static prefType glob_prefs[NUM_PREFS] = {
    {"expense_sort_column", INTTYPE, INTTYPE, 0, NULL, 0},
    {"expense_sort_order", INTTYPE, INTTYPE, 0, NULL, 0},
    {"keyr_export_filename", CHARTYPE, CHARTYPE, 0, NULL, 0},
+   {"external_editor", CHARTYPE, CHARTYPE, 0, NULL, 0},
 };
 
 struct name_list {
@@ -202,6 +203,10 @@ void pref_init(void)
          break;
        case PREF_MAIL_COMMAND:
          glob_prefs[i].svalue=strdup("mozilla-thunderbird -remote \"mailto(%s)\"");
+         glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
+         break;
+       case PREF_EXTERNAL_EDITOR:
+         glob_prefs[i].svalue=strdup("gvim -f");
          glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
          break;
        default:
