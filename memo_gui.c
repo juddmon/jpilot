@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.147 2011/02/10 23:28:07 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.148 2011/03/14 23:51:37 rikster5 Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -1198,8 +1198,10 @@ static gboolean cb_key_pressed_right_side(GtkWidget   *widget,
       text_out = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(memo_text_buffer),
                                           &start_iter, &end_iter, TRUE);
 
-      char *tmp_fname = tmpnam(NULL);
-      if (tmp_fname == NULL)
+      
+      char tmp_fname[] = "jpilot.XXXXXX";
+      int tmpfd = mkstemp(tmp_fname);
+      if (tmpfd < 0)
       {
          jp_logf(JP_LOG_WARN, _("Could not get temporary file name\n"));
          if (text_out)
@@ -1207,8 +1209,7 @@ static gboolean cb_key_pressed_right_side(GtkWidget   *widget,
          return TRUE;
       }
 
-      FILE *fptr;
-      fptr = fopen(tmp_fname, "w");
+      FILE *fptr = fdopen(tmpfd, "w");
       if (!fptr) {
          jp_logf(JP_LOG_WARN, _("Could not open temporary file for external editor\n"));
          if (text_out)
