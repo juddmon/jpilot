@@ -1,4 +1,4 @@
-/* $Id: libplugin.c,v 1.43 2011/02/09 20:36:45 rousseau Exp $ */
+/* $Id: libplugin.c,v 1.44 2011/03/14 23:50:59 rikster5 Exp $ */
 
 /*******************************************************************************
  * libplugin.c
@@ -357,7 +357,7 @@ int jp_pc_write(const char *DB_name, buf_rec *br)
 
 int jp_pdb_file_write_app_block(const char *DB_name, void *bufp, int size_in)
 {
-   return pdb_file_write_app_block(DB_name, bufp, size_in);
+   return pdb_file_write_app_block((char *)DB_name, bufp, size_in);
 }
 
 int jp_read_DB_files(const char *DB_name, GList **records)
