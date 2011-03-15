@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.245 2011/02/09 21:23:53 rousseau Exp $ */
+/* $Id: datebook_gui.c,v 1.246 2011/03/15 18:59:36 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -2728,6 +2728,94 @@ static gboolean cb_key_pressed_right_side(GtkWidget   *widget,
       gtk_widget_grab_focus(GTK_WIDGET(next_widget));
       return TRUE;
    }
+   /* Call external editor for note text */
+   if ((event->keyval == GDK_e) && (event->state & GDK_CONTROL_MASK)) {
+      gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
+
+      /* Get current text and place in temporary file */
+      GtkTextIter start_iter;
+      GtkTextIter end_iter;
+      char *text_out;
+
+      gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(dbook_note_buffer),
+                                 &start_iter, &end_iter);
+      text_out = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(dbook_note_buffer),
+                                          &start_iter, &end_iter, TRUE);
+
+      
+      char tmp_fname[] = "jpilot.XXXXXX";
+      int tmpfd = mkstemp(tmp_fname);
+      if (tmpfd < 0)
+      {
+         jp_logf(JP_LOG_WARN, _("Could not get temporary file name\n"));
+         if (text_out)
+            free(text_out);
+         return TRUE;
+      }
+
+      FILE *fptr = fdopen(tmpfd, "w");
+      if (!fptr) {
+         jp_logf(JP_LOG_WARN, _("Could not open temporary file for external editor\n"));
+         if (text_out)
+            free(text_out);
+         return TRUE;
+      }
+      fwrite(text_out, strlen(text_out), 1, fptr);
+      fwrite("\n", 1, 1, fptr);
+      fclose(fptr);
+
+      /* Call external editor */
+      char command[1024];
+      const char *ext_editor;
+
+      get_pref(PREF_EXTERNAL_EDITOR, NULL, &ext_editor);
+      if (!ext_editor) {
+         jp_logf(JP_LOG_INFO, "External Editor command empty\n");
+         if (text_out)
+            free(text_out);
+         return TRUE;
+      }
+
+      if ((strlen(ext_editor) + strlen(tmp_fname) + 1) > sizeof(command))
+      {
+         jp_logf(JP_LOG_WARN, _("External editor command too long to execute\n"));
+         if (text_out)
+            free(text_out);
+         return TRUE;
+      }
+      g_snprintf(command, sizeof(command), "%s %s", ext_editor, tmp_fname);
+
+      /* jp_logf(JP_LOG_STDOUT|JP_LOG_FILE, _("executing command = [%s]\n"), command); */
+      int r = system(command);
+      
+      if (!r)
+      {
+         /* Read data back from temporary file into memo */
+         char text_in[0xFFFF];
+         size_t bytes_read;
+
+         fptr = fopen(tmp_fname, "rb");
+         if (!fptr) {
+            jp_logf(JP_LOG_WARN, _("Could not open temporary file from external editor\n"));
+            return TRUE;
+         }
+         bytes_read = fread(text_in, 1, 0xFFFF, fptr);
+         fclose(fptr);
+         unlink(tmp_fname);
+
+         text_in[--bytes_read] = '\0';  /* Strip final newline */
+         /* Only update text if it has changed */
+         if (strcmp(text_out, text_in)) {
+            gtk_text_buffer_set_text(GTK_TEXT_BUFFER(dbook_note_buffer),
+                                     text_in, -1);
+         }
+      }
+
+      if (text_out)
+         free(text_out);
+
+      return TRUE;
+   }   /* End of external editor if */
 
    return FALSE;
 }
@@ -5552,6 +5640,9 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
                       GTK_SIGNAL_FUNC(cb_key_pressed_left_side), dbook_desc);
 
    gtk_signal_connect(GTK_OBJECT(dbook_desc), "key_press_event",
+                      GTK_SIGNAL_FUNC(cb_key_pressed_right_side), clist);
+
+   gtk_signal_connect(GTK_OBJECT(dbook_note), "key_press_event",
                       GTK_SIGNAL_FUNC(cb_key_pressed_right_side), clist);
 
    /* Allow PgUp and PgDown to move selected day in calendar */
