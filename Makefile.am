@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.70 2010/10/09 23:14:20 rikster5 Exp $
+# $Id: Makefile.am,v 1.71 2011/04/05 19:49:34 judd Exp $
 
 SUBDIRS = m4 po Expense SyncTime KeyRing dialer icons docs empty
 
@@ -26,7 +26,7 @@ color_DATA = \
 
 # Instructions for the code to build begins here
 
-bin_PROGRAMS = jpilot jpilot-dump jpilot-sync
+bin_PROGRAMS = jpilot jpilot-dump jpilot-sync jpilot-merge
 
 jpilot_SOURCES = \
 	address.c \
@@ -146,6 +146,18 @@ jpilot_sync_SOURCES = \
 	utils.c \
 	jp-contact.c
 
+jpilot_merge_SOURCES = \
+	cp1250.c \
+	japanese.c \
+	libplugin.c \
+	log.c \
+	merge.c \
+	otherconv.c \
+	plugins.c \
+	prefs.c \
+	russian.c \
+	utils.c
+
 
 # Include gettext macros that we have placed in the m4 directory
 # and include in the distribution.
@@ -163,6 +175,7 @@ jpilot_LDADD=@LIBS@ @PILOT_LIBS@ @GTK_LIBS@
 jpilot_dump_LDADD=@LIBS@ @PILOT_LIBS@ @GTK_LIBS@
 jpilot_sync_LDFLAGS = -export-dynamic
 jpilot_sync_LDADD=@LIBS@ @PILOT_LIBS@ @GTK_LIBS@
+jpilot_merge_LDADD=@LIBS@ @PILOT_LIBS@ @GTK_LIBS@
 
 ################################################################################
 ## The rest of the file is copied over to the Makefile with only variable
