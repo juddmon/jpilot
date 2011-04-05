@@ -1,3 +1,19 @@
+1.8.1 - 04/05/11
+ Added a jpilot-merge utility for merging unsynced records into a pdb file
+ Fixes Debian bug #574030: jpilot: can't delete appointments
+ Resolve bug 2012 where small months in Postcript printout overlapped a calendar event. 
+ Fix multiple memory leaks all over code base
+ Added a VCard export format optimized for GMail/Android import
+ Correct iCal export for repeating events with an end date
+ Add Category and Location fields to Calendar iCal export
+ Add categories to left-hand side of Calendar application
+ Add "cancel sync" button and icon to main jpilot window
+ use CRLF for ToDo iCal export per RFC
+ Add new "future" button to repeat appt. modification dialog so that changes only affect future occurrences
+ Ability to install files directly to SDCARD, hardcoded to /PALM/Launcher/ directory
+ Keyboard shortcuts to set priority of ToDo items with Alt+# where # is 1-5
+ Add ability to launch external editor to quickly edit memo or note text.  Bound to Ctrl-E.
+
 1.8.0 - 02/28/10
  Added support for Calendar app
  Requires pilot-link > 0.12.5
