@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.180 2011/03/15 18:59:36 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.181 2011/04/05 16:33:16 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -1349,13 +1349,13 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
       unique_id=0;
       pc_todo_write(&new_todo, NEW_PC_REC, attrib, &unique_id);
    }
-   todo_clist_redraw();
    free_ToDo(&new_todo);
+
    /* Don't return to modified record if search gui active */
    if (!glob_find_id) {
       glob_find_id = unique_id;
-      todo_find();
    }
+   todo_clist_redraw();
 
    return;
 }
@@ -1992,14 +1992,20 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
    /* If there are items in the list, highlight the selected row */
    if ((main) && (entries_shown>0)) {
-      /* Select the existing requested row, or row 0 if that is impossible */
-      if (clist_row_selected < entries_shown)
+      /* First, select any record being searched for */
+      if (glob_find_id)
+      {
+         todo_find();
+      }
+      /* Second, try the currently selected row */
+      else if (clist_row_selected < entries_shown)
       {
          clist_select_row(GTK_CLIST(clist), clist_row_selected, TODO_PRIORITY_COLUMN);
          if (!gtk_clist_row_is_visible(GTK_CLIST(clist), clist_row_selected)) {
             gtk_clist_moveto(GTK_CLIST(clist), clist_row_selected, 0, 0.5, 0.0);
          }
       }
+      /* Third, select row 0 if nothing else is possible */
       else
       {
          clist_select_row(GTK_CLIST(clist), 0, TODO_PRIORITY_COLUMN);
@@ -2140,7 +2146,7 @@ int todo_refresh(void)
         (GTK_CHECK_MENU_ITEM(todo_cat_menu_item1[index]), TRUE);
       gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), index2);
    }
-   todo_find();
+
    return EXIT_SUCCESS;
 }
 

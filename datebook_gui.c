@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.246 2011/03/15 18:59:36 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.247 2011/04/05 16:33:15 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -2609,13 +2609,20 @@ static int datebook_update_clist(void)
 
    /* If there are items in the list, highlight the selected row */
    if (entries_shown>0) {
-      /* Select the existing requested row, or row 0 if that is impossible */
-      if (clist_row_selected < entries_shown) {
+      /* First, select any record being searched for */
+      if (glob_find_id)
+      {
+         datebook_find();
+      }
+      /* Second, try the currently selected row */
+      else if (clist_row_selected < entries_shown)
+      {
          clist_select_row(GTK_CLIST(clist), clist_row_selected, 1);
          if (!gtk_clist_row_is_visible(GTK_CLIST(clist), clist_row_selected)) {
             gtk_clist_moveto(GTK_CLIST(clist), clist_row_selected, 0, 0.5, 0.0);
          }
       }
+      /* Third, select row 0 if nothing else is possible */
       else
       {
          clist_select_row(GTK_CLIST(clist), 0, 1);
@@ -3094,13 +3101,12 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
    free_CalendarEvent(&new_cale);
 
    highlight_days();
-   datebook_update_clist();
-
    /* Don't return to modified record if search gui active */
    if (!glob_find_id) {
       glob_find_id = unique_id;
-      datebook_find();
    }
+   datebook_update_clist();
+
 
    /* Make sure that the next alarm will go off */
    alarms_find_next(NULL, NULL, TRUE);
@@ -4074,8 +4080,6 @@ int datebook_refresh(int first, int do_init)
    }
    highlight_days();
    set_date_label();
-
-   datebook_find();
 
    return EXIT_SUCCESS;
 }
