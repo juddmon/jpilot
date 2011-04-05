@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.181 2011/04/05 16:33:16 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.182 2011/04/05 16:45:25 rikster5 Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -1667,18 +1667,19 @@ static gboolean cb_key_pressed_left_side(GtkWidget   *widget,
 
 static gboolean cb_key_pressed_right_side(GtkWidget   *widget, 
                                           GdkEventKey *event,
-                                          gpointer     next_widget)
+                                          gpointer     data)
 {
    if ((event->keyval == GDK_Return) && (event->state & GDK_SHIFT_MASK)) {
       gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
       /* Call clist_selection to handle any cleanup such as a modified record */
       cb_clist_selection(clist, clist_row_selected, TODO_PRIORITY_COLUMN, 
                          GINT_TO_POINTER(1), NULL);
-      gtk_widget_grab_focus(GTK_WIDGET(next_widget));
+      gtk_widget_grab_focus(GTK_WIDGET(clist));
       return TRUE;
    }
    /* Call external editor for note text */
-   if ((event->keyval == GDK_e) && (event->state & GDK_CONTROL_MASK)) {
+   if (data != NULL &&
+      (event->keyval == GDK_e) && (event->state & GDK_CONTROL_MASK)) {
       gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
 
       /* Get current text and place in temporary file */
@@ -2513,10 +2514,11 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
                       GTK_SIGNAL_FUNC(cb_key_pressed_left_side), todo_desc);
 
    gtk_signal_connect(GTK_OBJECT(todo_desc), "key_press_event",
-                      GTK_SIGNAL_FUNC(cb_key_pressed_right_side), clist);
+                      GTK_SIGNAL_FUNC(cb_key_pressed_right_side), NULL);
 
    gtk_signal_connect(GTK_OBJECT(todo_note), "key_press_event",
-                      GTK_SIGNAL_FUNC(cb_key_pressed_right_side), clist);
+                      GTK_SIGNAL_FUNC(cb_key_pressed_right_side),
+                      GINT_TO_POINTER(1));
 
    /**********************************************************************/
 

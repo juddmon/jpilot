@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.247 2011/04/05 16:33:15 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.248 2011/04/05 16:45:25 rikster5 Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -2726,17 +2726,18 @@ static gboolean cb_key_pressed_left_side(GtkWidget   *widget,
 
 static gboolean cb_key_pressed_right_side(GtkWidget   *widget, 
                                           GdkEventKey *event,
-                                          gpointer     next_widget)
+                                          gpointer     data)
 {
    if ((event->keyval == GDK_Return) && (event->state & GDK_SHIFT_MASK)) {
       gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
       /* Call clist_selection to handle any cleanup such as a modified record */
       cb_clist_selection(clist, clist_row_selected, 1, GINT_TO_POINTER(1), NULL);
-      gtk_widget_grab_focus(GTK_WIDGET(next_widget));
+      gtk_widget_grab_focus(GTK_WIDGET(clist));
       return TRUE;
    }
    /* Call external editor for note text */
-   if ((event->keyval == GDK_e) && (event->state & GDK_CONTROL_MASK)) {
+   if (data != NULL &&
+      (event->keyval == GDK_e) && (event->state & GDK_CONTROL_MASK)) {
       gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
 
       /* Get current text and place in temporary file */
@@ -5644,10 +5645,11 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
                       GTK_SIGNAL_FUNC(cb_key_pressed_left_side), dbook_desc);
 
    gtk_signal_connect(GTK_OBJECT(dbook_desc), "key_press_event",
-                      GTK_SIGNAL_FUNC(cb_key_pressed_right_side), clist);
+                      GTK_SIGNAL_FUNC(cb_key_pressed_right_side), NULL);
 
    gtk_signal_connect(GTK_OBJECT(dbook_note), "key_press_event",
-                      GTK_SIGNAL_FUNC(cb_key_pressed_right_side), clist);
+                      GTK_SIGNAL_FUNC(cb_key_pressed_right_side),
+                      GINT_TO_POINTER(1));
 
    /* Allow PgUp and PgDown to move selected day in calendar */
    gtk_signal_connect(GTK_OBJECT(main_calendar), "key_press_event",
