@@ -32,8 +32,17 @@ int sync_once(struct my_sync_info *sync_info) { return EXIT_SUCCESS; }
 GtkWidget *glob_dialog;
 int *glob_date_label;
 pid_t jpilot_master_pid = -1;
-int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai) {}
-int jp_pack_Contact(struct Contact *c, pi_buffer_t *buf) {}
+
+/* dummy functions to satisfy the link */
+int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
+{
+	return 0;
+}
+
+int jp_pack_Contact(struct Contact *c, pi_buffer_t *buf)
+{
+	return 0;
+}
 
 int read_pc_recs(char *file_name, GList **records)
 {
