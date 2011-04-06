@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.83 2011/04/06 12:01:03 rousseau Exp $ */
+/* $Id: prefs_gui.c,v 1.84 2011/04/06 12:02:28 rousseau Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -52,7 +52,7 @@ extern unsigned char skip_plugins;
 /* Sync Port Menu */
 static GtkWidget *port_menu;
 static GtkWidget *port_menu_item[10];
-static char *port_choices[]={
+static const char *port_choices[]={
    "other", "usb:",
    "/dev/ttyUSB0", "/dev/ttyUSB1", "/dev/ttyUSB2", "/dev/ttyUSB3",
    "/dev/ttyS0", "/dev/ttyS1", "/dev/ttyS2", "/dev/ttyS3",
@@ -106,7 +106,7 @@ static void cb_serial_port_menu(GtkWidget *widget,
       return;
    }
 
-   char *port_str = port_choices[GPOINTER_TO_INT(data)]; 
+   const char *port_str = port_choices[GPOINTER_TO_INT(data)]; 
    gtk_entry_set_text(GTK_ENTRY(port_entry), port_str);
    if (! strcmp(port_str, "usb:")) {
       gtk_widget_set_sensitive(rate_menu, FALSE);
