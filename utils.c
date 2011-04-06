@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.196 2011/02/09 22:09:29 rousseau Exp $ */
+/* $Id: utils.c,v 1.197 2011/04/06 11:54:57 rousseau Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -899,7 +899,7 @@ void clist_clear(GtkCList *clist)
 
 /* Encapsulate GTK tooltip function which no longer supports disabling as
  * of GTK 2.12 */
-inline void set_tooltip(int show_tooltip, 
+void set_tooltip(int show_tooltip, 
                         GtkTooltips *tooltips,
                         GtkWidget *widget,
                         const gchar *tip_text,
@@ -911,7 +911,7 @@ inline void set_tooltip(int show_tooltip,
 
 
 /* Encapsulate broken GTK function to make it work as documented */
-inline void clist_select_row(GtkCList *clist, 
+void clist_select_row(GtkCList *clist, 
                              int       row,
                              int       column)
 {
@@ -1365,7 +1365,7 @@ int dialog_save_changed_record_with_cancel(GtkWidget *widget, int changed)
    return b;
 }
 
-inline void entry_set_multiline_truncate(GtkEntry *entry, gboolean value)
+void entry_set_multiline_truncate(GtkEntry *entry, gboolean value)
 {
 #  if GTK_MINOR_VERSION >= 10
       entry->truncate_multiline = value; 

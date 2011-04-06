@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.87 2011/02/09 22:09:29 rousseau Exp $ */
+/* $Id: utils.h,v 1.88 2011/04/06 11:54:57 rousseau Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -349,7 +349,7 @@ void entry_set_multiline_truncate(GtkEntry *entry, gboolean value);
 
 void clist_clear(GtkCList *clist);
 
-inline void set_tooltip(int show_tooltip, 
+void set_tooltip(int show_tooltip, 
                         GtkTooltips *tooltips,
                         GtkWidget *widget,
                         const gchar *tip_text,
