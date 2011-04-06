@@ -1,4 +1,4 @@
-/* $Id: todo_gui.c,v 1.182 2011/04/05 16:45:25 rikster5 Exp $ */
+/* $Id: todo_gui.c,v 1.183 2011/04/06 12:47:09 rousseau Exp $ */
 
 /*******************************************************************************
  * todo_gui.c
@@ -61,7 +61,6 @@
  * 0 is ToDo, 1 is Tasks */
 static long todo_version=0;
 
-extern GtkTooltips *glob_tooltips;
 extern GtkWidget *glob_date_label;
 extern int glob_date_timer_tag;
 
@@ -101,8 +100,6 @@ static int clist_row_selected;
 static int record_changed;
 
 /****************************** Prototypes ************************************/
-void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
-                       ToDoList **todo_list, int category, int main);
 static int todo_clear_details(void);
 static int todo_clist_redraw(void);
 static int todo_find(void);
