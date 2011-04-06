@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.277 2011/04/06 12:43:44 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.278 2011/04/06 12:51:38 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -206,7 +206,6 @@ static struct ContactPicture contact_picture;
 
 static GList *changed_list=NULL;
 
-extern GtkTooltips *glob_tooltips;
 extern GtkWidget *glob_date_label;
 extern int glob_date_timer_tag;
 

@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.248 2011/04/05 16:45:25 rikster5 Exp $ */
+/* $Id: datebook_gui.c,v 1.249 2011/04/06 12:51:39 rousseau Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -104,7 +104,6 @@ static long datebook_version=0;
  * on the fact that there is only one item titled "window" in 
  * the global name space */
 extern GtkWidget *window;
-extern GtkTooltips *glob_tooltips;
 extern GtkWidget *glob_date_label;
 extern gint glob_date_timer_tag;
 

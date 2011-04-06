@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.149 2011/04/05 16:33:15 rikster5 Exp $ */
+/* $Id: memo_gui.c,v 1.150 2011/04/06 12:51:39 rousseau Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -58,7 +58,6 @@
  * 0 is Memo, 1 is Memos */
 static long memo_version=0;
 
-extern GtkTooltips *glob_tooltips;
 extern GtkWidget *glob_date_label;
 extern int glob_date_timer_tag;
 
