@@ -1,4 +1,4 @@
-/* $Id: clist_mini_icons.h,v 1.5 2010/11/06 23:25:06 rikster5 Exp $ */
+/* $Id: clist_mini_icons.h,v 1.6 2011/04/06 12:43:45 rousseau Exp $ */
 
 /*******************************************************************************
  * clist_mini_icons.h
@@ -21,7 +21,7 @@
  ******************************************************************************/
 
 /* Note pixmap */
-char * xpm_note[] = {
+const char * xpm_note[] = {
 "12 16 3 1",
 " 	c None",
 ".	c #000000",
@@ -44,7 +44,7 @@ char * xpm_note[] = {
 "            "};
 
 /* Alarm pixmap */
-char * xpm_alarm[] = {
+const char * xpm_alarm[] = {
 "16 16 4 1",
 "# c None",
 ". c None",
@@ -94,7 +94,7 @@ char * xpm_alarm[] = {
 */
 
 /* ToDo checkbox, blank */
-char * xpm_check[] = {
+const char * xpm_check[] = {
    "12 16 3 1",
    "       c None",
    ".      c #000000000000",
@@ -118,7 +118,7 @@ char * xpm_check[] = {
 };
 
 /* ToDo checkbox, checked */
-char * xpm_checked[] = {
+const char * xpm_checked[] = {
    "12 16 4 1",
    "       c None",
    ".      c #000000000000",
@@ -142,7 +142,7 @@ char * xpm_checked[] = {
    "            "
 };
 
-char * xpm_float_check[] = {
+const char * xpm_float_check[] = {
    "14 16 4 1",
    "       c None",
    ".      c #000000000000",
@@ -166,7 +166,7 @@ char * xpm_float_check[] = {
    "              "
 };
 
-char * xpm_float_checked[] = {
+const char * xpm_float_checked[] = {
    "14 16 5 1",
    "       c None",
    ".      c #000000000000",
@@ -192,7 +192,7 @@ char * xpm_float_checked[] = {
 };
 
 /* SDcard pixmap */
-char * xpm_sdcard[] = {
+const char * xpm_sdcard[] = {
 "12 16 3 1",
 " 	c None",
 ".	c #000000",

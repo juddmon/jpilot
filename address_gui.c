@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.276 2011/04/05 16:33:15 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.277 2011/04/06 12:43:44 rousseau Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -802,7 +802,7 @@ int address_import(GtkWidget *window)
 
 /* Start Export code */
 
-static char *ldifMapType(int label)
+static const char *ldifMapType(int label)
 {
    switch (label) {
     case 0:
@@ -826,7 +826,7 @@ static char *ldifMapType(int label)
    }
 }
 
-static char *vCardMapType(int label)
+static const char *vCardMapType(int label)
 {
    switch (label) {
     case 0:

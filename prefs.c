@@ -1,4 +1,4 @@
-/* $Id: prefs.c,v 1.90 2011/02/10 23:28:07 rikster5 Exp $ */
+/* $Id: prefs.c,v 1.91 2011/04/06 12:43:45 rousseau Exp $ */
 
 /*******************************************************************************
  * prefs.c
@@ -447,7 +447,7 @@ int get_pref_possibility(int which, int n, char *pref_str)
       "%H,%M"
    };
 
-   static char *days[] = {
+   static const char *days[] = {
       N_("Sunday"),
       N_("Monday")
    };

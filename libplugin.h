@@ -1,4 +1,4 @@
-/* $Id: libplugin.h,v 1.38 2011/04/06 11:42:27 rousseau Exp $ */
+/* $Id: libplugin.h,v 1.39 2011/04/06 12:43:45 rousseau Exp $ */
 
 /*******************************************************************************
  * libplugin.h
@@ -315,7 +315,7 @@ int jp_cal_dialog(GtkWindow *main_window,
 
 /* I explain these below */
 typedef struct {
-   char *name;
+   const char *name;
    int usertype;
    int filetype;
    long ivalue;

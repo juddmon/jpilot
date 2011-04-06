@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.88 2011/04/06 11:54:57 rousseau Exp $ */
+/* $Id: utils.h,v 1.89 2011/04/06 12:43:45 rousseau Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -394,7 +394,7 @@ void lstrncpy_remove_cr_lfs(char *dest, char *src, int len);
 /* Output LDIF format (RFC 2849) to file.
  * Name is name of item (e.g. "cn")
  * fmt ... is like printf. */
-void ldif_out(FILE *f, char *name, char *fmt, ...);
+void ldif_out(FILE *f, const char *name, const char *fmt, ...);
 
 void cleanup_path(char *path);
 
@@ -473,7 +473,7 @@ int make_category_menu(GtkWidget **category_menu,
                        int add_edit_cat_item);
 
 int jp_copy_file(char *src, char *dest);
-FILE *jp_open_home_file(char *filename, char *mode);
+FILE *jp_open_home_file(const char *filename, const char *mode);
 int jp_close_home_file(FILE *pc_in);
 
 /* Routines used for i18n string manipulation */

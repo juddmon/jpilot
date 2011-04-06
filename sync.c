@@ -1,4 +1,4 @@
-/* $Id: sync.c,v 1.119 2010/11/06 23:25:05 rikster5 Exp $ */
+/* $Id: sync.c,v 1.120 2011/04/06 12:43:45 rousseau Exp $ */
 
 /*******************************************************************************
  * sync.c
@@ -183,7 +183,7 @@ static int sync_unlock(int fd)
 }
 #endif
 
-static char *get_error_str(int error)
+static const char *get_error_str(int error)
 {
    static char buf[10];
 
@@ -1182,7 +1182,7 @@ static int sync_fetch(int sd, unsigned int flags,
    typedef struct skip_db_t {
       unsigned int flags;
       unsigned int not_flags;
-      char *creator;
+      const char *creator;
       char *dbname;
    } skip_db_t ;
 

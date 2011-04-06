@@ -1,4 +1,4 @@
-/* $Id: otherconv.c,v 1.46 2010/10/15 16:42:13 rikster5 Exp $ */
+/* $Id: otherconv.c,v 1.47 2011/04/06 12:43:45 rousseau Exp $ */
 
 /*******************************************************************************
  * otherconv.c
@@ -82,7 +82,7 @@ static void oc_free_iconv(const char *funcname, GIConv conv, char *convname)
 /*
  * Convert char_set integer code to iconv charset text string
  */
-static char *char_set_to_text(int char_set)
+static const char *char_set_to_text(int char_set)
 {
    switch (char_set) {
     case CHAR_SET_1250_UTF:

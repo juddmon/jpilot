@@ -1,4 +1,4 @@
-/* $Id: jpilot-dump.c,v 1.44 2011/02/09 21:37:28 rousseau Exp $ */
+/* $Id: jpilot-dump.c,v 1.45 2011/04/06 12:43:44 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot-dump.c
@@ -67,10 +67,10 @@ int  Nday;
 int  dumpA;
 int  dumpM;
 int  dumpT;
-char *formatD;
-char *formatM;
-char *formatA;
-char *formatT;
+const char *formatD;
+const char *formatM;
+const char *formatA;
+const char *formatT;
 
 /* Start Hack */
 /* FIXME: The following is a hack.
@@ -280,7 +280,7 @@ static int dumpical(void)
       }
       if (mappt->appt.repeatType != repeatNone) {
          int wcomma, rptday;
-         char *wday[] = {"SU","MO","TU","WE","TH","FR","SA"};
+         const char *wday[] = {"SU","MO","TU","WE","TH","FR","SA"};
          printf("RRULE:FREQ=");
          switch (mappt->appt.repeatType) {
           case repeatNone:
@@ -349,7 +349,7 @@ static int dumpical(void)
          }
       }
       if (mappt->appt.alarm) {
-         char *units;
+         const char *units;
          printf("BEGIN:VALARM"CRLF);
          printf("ACTION:DISPLAY"CRLF);
          str_to_ical_str(csv_text, sizeof(csv_text), mappt->appt.description);

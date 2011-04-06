@@ -1,4 +1,4 @@
-/* $Id: print_headers.c,v 1.13 2010/10/13 03:18:59 rikster5 Exp $ */
+/* $Id: print_headers.c,v 1.14 2011/04/06 12:43:45 rousseau Exp $ */
 
 /*******************************************************************************
  * print_headers.c
@@ -30,7 +30,7 @@
 /****************************** Main Code *************************************/
 void print_common_prolog(FILE *f)
 {
-   char *common_prolog =
+   const char *common_prolog =
       "/Recode {\n"
       "  exch\n"
       "  findfont\n"
@@ -137,7 +137,7 @@ void print_common_prolog(FILE *f)
 
 void print_common_setup(FILE *f)
 {
-   char *common_setup =
+   const char *common_setup =
       "%------------------------------------------------------------------\n"
       "/Times-Roman      /Times-Roman-ISOLatin1 Recode\n"
       "/Times-Bold       /Times-Bold-ISOLatin1 Recode\n"
@@ -168,7 +168,7 @@ void print_common_setup(FILE *f)
 
 void print_week_header(FILE *f)
 {
-   char *week_header =
+   const char *week_header =
       "/TM 560 def     % top margin\n"
       "/BM  30 def     % bottom margin\n"
       "/LM  30 def     % left margin\n"
@@ -470,7 +470,7 @@ void print_week_header(FILE *f)
 
 void print_month_header(FILE *f)
 {
-   char *month_header =
+   const char *month_header =
       "/Row 0 def\n"
       "/Col 0 def\n"
       "/DayNumber 0 def\n"
@@ -782,7 +782,7 @@ void print_month_header(FILE *f)
 
 void print_day_header(FILE *f)
 {
-   char *day_header =
+   const char *day_header =
       "ScaleY ScaleX Min dup scale\n"
       "%----------------------------------------\n"
       "% First the gray background area\n"
@@ -831,7 +831,7 @@ void print_day_header(FILE *f)
 
 void print_todo_header(FILE *f)
 {
-   char *todo_header =
+   const char *todo_header =
       "%------------------------------------------------------------------\n"
       "() CategoryName eq {\n"
       "        /CategoryName (All Categories) def\n"

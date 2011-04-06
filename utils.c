@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.197 2011/04/06 11:54:57 rousseau Exp $ */
+/* $Id: utils.c,v 1.198 2011/04/06 12:43:45 rousseau Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -2371,7 +2371,7 @@ int jp_copy_file(char *src, char *dest)
    return EXIT_SUCCESS;
 }
 
-FILE *jp_open_home_file(char *filename, char *mode)
+FILE *jp_open_home_file(const char *filename, const char *mode)
 {
    char fullname[FILENAME_MAX];
    FILE *pc_in;
@@ -2446,7 +2446,7 @@ size_t jp_strftime(char *s, size_t max, const char *format, const struct tm *tm)
 }
 
 /* RFC 2849 */
-void ldif_out(FILE *f, char *name, char *fmt, ...)
+void ldif_out(FILE *f, const char *name, const char *fmt, ...)
 {
    va_list ap;
    unsigned char buf[8192];
