@@ -1,4 +1,4 @@
-/* $Id: libplugin.c,v 1.45 2011/04/05 20:00:37 judd Exp $ */
+/* $Id: libplugin.c,v 1.46 2011/04/06 11:42:27 rousseau Exp $ */
 
 /*******************************************************************************
  * libplugin.c
@@ -42,7 +42,6 @@ static int static_find_next_offset(mem_rec_header *mem_rh, long fpos,
                             long *next_offset,
                             unsigned char *attrib, unsigned int *unique_id);
 static void static_free_mem_rec_header(mem_rec_header **mem_rh);
-int pc_read_next_rec(FILE *in, buf_rec *br);
 static int unpack_header(PC3RecordHeader *header, unsigned char *packed_header);
 
 /****************************** Main Code *************************************/

@@ -1,4 +1,4 @@
-/* $Id: libplugin.h,v 1.37 2011/02/09 20:36:45 rousseau Exp $ */
+/* $Id: libplugin.h,v 1.38 2011/04/06 11:42:27 rousseau Exp $ */
 
 /*******************************************************************************
  * libplugin.h
@@ -276,6 +276,8 @@ int jp_free_DB_records(GList **records);
 int jp_pc_write(const char *DB_name, buf_rec *br);
 
 const char *jp_strstr(const char *haystack, const char *needle, int case_sense);
+
+int pc_read_next_rec(FILE *in, buf_rec *br);
 
 int read_header(FILE *pc_in, PC3RecordHeader *header);
 
