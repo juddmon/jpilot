@@ -44,7 +44,7 @@ int jp_pack_Contact(struct Contact *c, pi_buffer_t *buf)
 	return 0;
 }
 
-int read_pc_recs(char *file_name, GList **records)
+static int read_pc_recs(char *file_name, GList **records)
 {
    FILE *pc_in;
    int recs_returned;
@@ -81,7 +81,7 @@ int read_pc_recs(char *file_name, GList **records)
    return 0;
 }
 
-int merge_pdb_file(char *src_pdb_file, char *src_pc_file, char *dest_pdb_file)
+static int merge_pdb_file(char *src_pdb_file, char *src_pc_file, char *dest_pdb_file)
 {
    struct pi_file *pf1, *pf2;
    struct DBInfo infop;
