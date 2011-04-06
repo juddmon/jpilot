@@ -1,3 +1,5 @@
+/* $Id: merge.c,v 1.4 2011/04/06 11:43:18 rousseau Exp $ */
+
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
