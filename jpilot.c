@@ -1,4 +1,4 @@
-/* $Id: jpilot.c,v 1.194 2010/11/10 03:57:46 rikster5 Exp $ */
+/* $Id: jpilot.c,v 1.195 2011/04/06 12:58:50 rousseau Exp $ */
 
 /*******************************************************************************
  * jpilot.c
@@ -651,6 +651,7 @@ static void cb_sync(GtkWidget *widget, unsigned int flags)
 
 }
 
+void cb_cancel_sync(GtkWidget *widget, unsigned int flags);
 void cb_cancel_sync(GtkWidget *widget, unsigned int flags)
 {
    if (glob_child_pid) {
