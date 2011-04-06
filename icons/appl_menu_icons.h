@@ -1,4 +1,4 @@
-/* $Id: appl_menu_icons.h,v 1.3 2010/10/05 21:43:28 rikster5 Exp $ */
+/* $Id: appl_menu_icons.h,v 1.4 2011/04/06 13:03:56 rousseau Exp $ */
 
 /*******************************************************************************
  * appl_menu_icons.h
@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  ******************************************************************************/
 
-const static char *todo_menu_icon[]={
+static const char *todo_menu_icon[]={
    "14 14 38 1",
    "# c None",
    ". c #000000",
@@ -75,7 +75,7 @@ const static char *todo_menu_icon[]={
    ".aIhhhhhhhhJ.#",
    ".............#"};
 
-const static char *addr_menu_icon[] = {
+static const char *addr_menu_icon[] = {
    "16 16 43 1",
    " 	c None",
    ".	c #000000",
@@ -137,7 +137,7 @@ const static char *addr_menu_icon[] = {
    "                ",
    "                "};
 
-const static char *date_menu_icon[] = {
+static const char *date_menu_icon[] = {
    "16 16 68 1",
    " 	c None",
    ".	c #000000",
@@ -224,7 +224,7 @@ const static char *date_menu_icon[] = {
    "  ..2,zAB.<C292.",
    "   ............l"};
 
-const static char *user_icon[] = {
+static const char *user_icon[] = {
    "16 16 34 1",
    " 	c None",
    ".	c #FFFFFF",
