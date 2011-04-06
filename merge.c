@@ -1,4 +1,4 @@
-/* $Id: merge.c,v 1.4 2011/04/06 11:43:18 rousseau Exp $ */
+/* $Id: merge.c,v 1.5 2011/04/06 11:47:38 rousseau Exp $ */
 
 #include <stdlib.h>
 #include <string.h>
@@ -103,7 +103,7 @@ static int merge_pdb_file(char *src_pdb_file, char *src_pc_file, char *dest_pdb_
    GList *pdb_records = NULL;
    GList *pc_records = NULL;
    int dont_add;
-   int next_available_unique_id;
+   unsigned int next_available_unique_id;
    // Statistics
    int pdb_count=0;
    int recs_added = 0;
