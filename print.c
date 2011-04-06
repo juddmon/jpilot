@@ -1,4 +1,4 @@
-/* $Id: print.c,v 1.54 2011/04/06 11:56:52 rousseau Exp $ */
+/* $Id: print.c,v 1.55 2011/04/06 11:58:47 rousseau Exp $ */
 
 /*******************************************************************************
  * print.c
@@ -69,7 +69,7 @@ static const char *PaperSizes[] = {
 
 /****************************** Prototypes ************************************/
 static int fill_in(struct tm *date, CalendarEventList *a_list);
-static void ps_strncat(char *dest, char *src, int n);
+static void ps_strncat(char *dest, const char *src, int n);
 
 /****************************** Main Code *************************************/
 static FILE *print_open(void)
@@ -110,7 +110,7 @@ static int clip_to_box(float x1, float y1, float x2, float y2)
    return EXIT_SUCCESS;
 }
 
-static int puttext(float x, float y, char *text)
+static int puttext(float x, float y, const char *text)
 {
    int len;
    char *buf;
@@ -361,7 +361,7 @@ static int f_indent_print(FILE *f, int indent, char *str) {
  * ps_strncat   Escapes brackets for printing in PostScript strings
  *----------------------------------------------------------------------*/
 
-void ps_strncat(char *dest, char *src, int n)
+void ps_strncat(char *dest, const char *src, int n)
 {
    int i = 0, j = 0;
    char *dest2;
