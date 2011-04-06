@@ -1,4 +1,4 @@
-/* $Id: prefs_gui.c,v 1.82 2011/02/10 23:28:07 rikster5 Exp $ */
+/* $Id: prefs_gui.c,v 1.83 2011/04/06 12:01:03 rousseau Exp $ */
 
 /*******************************************************************************
  * prefs_gui.c
@@ -436,7 +436,6 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 #ifdef ENABLE_PLUGINS
    GList *plugin_list, *temp_list;
    struct plugin_s *Pplugin;
-   extern unsigned char skip_plugins;
 #endif
 
    jp_logf(JP_LOG_DEBUG, "cb_prefs_gui\n");
