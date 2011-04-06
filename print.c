@@ -1,4 +1,4 @@
-/* $Id: print.c,v 1.53 2010/10/19 00:33:39 rikster5 Exp $ */
+/* $Id: print.c,v 1.54 2011/04/06 11:56:52 rousseau Exp $ */
 
 /*******************************************************************************
  * print.c
@@ -57,7 +57,7 @@ static FILE *out;
 static int first_hour, first_min, last_hour, last_min;
 extern int datebk_category;
 
-static char *PaperSizes[] = { 
+static const char *PaperSizes[] = { 
    "Letter", "Legal", "Statement", "Tabloid", "Ledger", "Folio", "Quarto",
    "7x9", "9x11", "9x12", "10x13", "10x14", "Executive", 
    "A0", "A1", "A2", "A3", "A4", "A5", "A6", "A7", "A8", "A9", "A10",
@@ -402,7 +402,7 @@ static int days_in_mon(struct tm *date)
  *                      appointments.
  *----------------------------------------------------------------------*/
 
-static char *MonthNames[] = {
+static const char *MonthNames[] = {
    "January", "February", "March", "April", "May", "June", "July",
    "August", "September", "October", "November", "December"
 };
