@@ -17,5 +17,9 @@ WARNING: Make a backup copy of your databases before proceeding.
 .P
 It is quite simple to destroy your databases by accidentally merging
 address records into datebook databases, etc.
+.SH BUGS
+See @DOCDIR@/BUGS
 .SH SEE ALSO
 jpilot(1)
+.SH AUTHOR
+Judd Montgomery <judd@jpilot.org>
