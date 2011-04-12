@@ -2,15 +2,20 @@
 .SH NAME
 jpilot-merge \- merge an unsynced records file (pc3) into the corresponding palm database (pdb) file
 .SH SYNOPSIS
-.B jpilot-merge {input pdb file} {input pc file} {output pdb file}
+.B jpilot-merge {input pdb file} {input pc3 file} {output pdb file}
 .SH "DESCRIPTION"
 This program will merge an unsynced records file (pc3) into the
 corresponding palm database (pdb) file.
 .P
-Only run it if you know what you are doing!!!
+WARNING: Only run this utility if you understand the consequences!
 .P
-This will leave your databases in an unsync-able state.  It is possible
-to merge address records into datebook, etc., you do not want to do
-this!!!
+The merge will leave your databases in an unsync-able state.
+It is intended for cases where J-pilot is being used as a standalone PIM
+and where no syncing occurs to physical hardware.
+.P
+WARNING: Make a backup copy of your databases before proceeding.
+.P
+It is quite simple to destroy your databases by accidentally merging
+address records into datebook databases, etc.
 .SH SEE ALSO
 jpilot(1)
