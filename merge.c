@@ -1,4 +1,4 @@
-/* $Id: merge.c,v 1.6 2011/04/06 15:04:39 judd Exp $ */
+/* $Id: merge.c,v 1.7 2011/04/12 04:07:32 rikster5 Exp $ */
 
 /*******************************************************************************
  * merge.c
@@ -20,6 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  ******************************************************************************/
 
+/********************************* Includes ***********************************/
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
@@ -44,27 +45,28 @@
 #include "utils.h"
 #include "sync.h"
 
+/******************************* Global vars **********************************/
 /* In jpilot.c, referenced from utils.c */
 gint glob_date_timer_tag;
 
-
-void output_to_pane(const char *str);
-void output_to_pane(const char *str) {}
-int sync_once(struct my_sync_info *sync_info) { return EXIT_SUCCESS; }
 GtkWidget *glob_dialog;
 int *glob_date_label;
 pid_t jpilot_master_pid = -1;
 
+/****************************** Prototypes ************************************/
 /* dummy functions to satisfy the link */
+void output_to_pane(const char *str) {}
+
+int sync_once(struct my_sync_info *sync_info) { return EXIT_SUCCESS; }
+
 int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
 {
-	return 0;
+   return 0;
 }
 
-int jp_pack_Contact(struct Contact *c, pi_buffer_t *buf)
-{
-	return 0;
-}
+int jp_pack_Contact(struct Contact *c, pi_buffer_t *buf) { return 0; }
+
+/****************************** Main Code *************************************/
 
 static int read_pc_recs(char *file_name, GList **records)
 {
@@ -84,14 +86,14 @@ static int read_pc_recs(char *file_name, GList **records)
    while(!feof(pc_in)) {
       temp_br = malloc(sizeof(buf_rec));
       if (!temp_br) {
-	 fprintf(stderr, "Out of memory");
-	 recs_returned = -1;
-	 break;
+         fprintf(stderr, "Out of memory");
+         recs_returned = -1;
+         break;
       }
       r = pc_read_next_rec(pc_in, temp_br);
       if ((r==JPILOT_EOF) || (r<0)) {
-	 free(temp_br);
-	 break;
+         free(temp_br);
+         break;
       }
 
       *records = g_list_prepend(*records, temp_br);
@@ -103,7 +105,9 @@ static int read_pc_recs(char *file_name, GList **records)
    return 0;
 }
 
-static int merge_pdb_file(char *src_pdb_file, char *src_pc_file, char *dest_pdb_file)
+static int merge_pdb_file(char *src_pdb_file, 
+                          char *src_pc_file, 
+                          char *dest_pdb_file)
 {
    struct pi_file *pf1, *pf2;
    struct DBInfo infop;
@@ -186,35 +190,37 @@ static int merge_pdb_file(char *src_pdb_file, char *src_pc_file, char *dest_pdb_
 
       // Look through the pc record list
       for (Ppc_record=pc_records; Ppc_record; Ppc_record=Ppc_record->next) {
-	 temp_br_pc = (buf_rec *)Ppc_record->data;
-	 if ((temp_br_pc->rt==DELETED_PC_REC) || (temp_br_pc->rt==DELETED_DELETED_PALM_REC)) {
-	    continue;
-	 }
-	 if ((temp_br_pc->rt==DELETED_PALM_REC) || (temp_br_pc->rt==MODIFIED_PALM_REC)) {
-	    if (temp_br_pdb->unique_id == temp_br_pc->unique_id) {
-	       // Don't add it to the pdb list
-	       dont_add=1;
-	       if (temp_br_pc->rt==DELETED_PALM_REC) {
-		  recs_deleted++;
-	       }
-	       break;
-	    }
-	 }
+         temp_br_pc = (buf_rec *)Ppc_record->data;
+         if ((temp_br_pc->rt==DELETED_PC_REC) || 
+             (temp_br_pc->rt==DELETED_DELETED_PALM_REC)) {
+            continue;
+         }
+         if ((temp_br_pc->rt==DELETED_PALM_REC) || 
+             (temp_br_pc->rt==MODIFIED_PALM_REC)) {
+            if (temp_br_pdb->unique_id == temp_br_pc->unique_id) {
+               // Don't add it to the pdb list
+               dont_add=1;
+               if (temp_br_pc->rt==DELETED_PALM_REC) {
+                  recs_deleted++;
+               }
+               break;
+            }
+         }
 
-	 if ((temp_br_pc->rt==REPLACEMENT_PALM_REC)) {
-	    if (temp_br_pdb->unique_id == temp_br_pc->unique_id) {
-	       // Replace the record data in the pdb record with replacement record data
-	       //printf("REPLACEMENT\n");
-	       dont_add=1;
-	       pdb_records = g_list_prepend(pdb_records, temp_br_pc);
-	       recs_modified++;
-	       //break;
-	    }
-	 }
+         if ((temp_br_pc->rt==REPLACEMENT_PALM_REC)) {
+            if (temp_br_pdb->unique_id == temp_br_pc->unique_id) {
+               // Replace the record data in the pdb record with replacement record data
+               //printf("REPLACEMENT\n");
+               dont_add=1;
+               pdb_records = g_list_prepend(pdb_records, temp_br_pc);
+               recs_modified++;
+               //break;
+            }
+         }
       }
 
       if (! dont_add) {
-	 pdb_records = g_list_prepend(pdb_records, temp_br_pdb);
+         pdb_records = g_list_prepend(pdb_records, temp_br_pdb);
       }
    }
 
@@ -224,7 +230,7 @@ static int merge_pdb_file(char *src_pdb_file, char *src_pc_file, char *dest_pdb_
    for (Ppdb_record=pdb_records; Ppdb_record; Ppdb_record=Ppdb_record->next) {
       temp_br_pdb = (buf_rec *)Ppdb_record->data;
       if (temp_br_pdb->unique_id > next_available_unique_id) {
-	 next_available_unique_id = temp_br_pdb->unique_id + 1;
+         next_available_unique_id = temp_br_pdb->unique_id + 1;
       }
    }
 
@@ -232,10 +238,10 @@ static int merge_pdb_file(char *src_pdb_file, char *src_pc_file, char *dest_pdb_
    for (Ppc_record=pc_records; Ppc_record; Ppc_record=Ppc_record->next) {
       temp_br_pc = (buf_rec *)Ppc_record->data;
       if ((temp_br_pc->rt==NEW_PC_REC)) {
-	 temp_br_pc->unique_id = next_available_unique_id++;
-	 pdb_records = g_list_prepend(pdb_records, temp_br_pc);
-	 recs_added++;
-	 continue;
+         temp_br_pc->unique_id = next_available_unique_id++;
+         pdb_records = g_list_prepend(pdb_records, temp_br_pc);
+         recs_added++;
+         continue;
       }
    }
 
@@ -266,26 +272,30 @@ static int merge_pdb_file(char *src_pdb_file, char *src_pc_file, char *dest_pdb_
 }
 
 
-
 int main(int argc, char *argv[])
 {
-   if (argc < 3) {
-      fprintf(stderr, "Usage: %s {input pdb file} {input pc file} {output pdb file}\n", argv[0]);
+   if (argc != 3) {
+      fprintf(stderr, "Usage: %s {input pdb file} {input pc3 file} {output pdb file}\n", argv[0]);
       fprintf(stderr, "  This program will merge an unsynced records file (pc3)\n");
-      fprintf(stderr, "  into the corresponding palm database (pdb) file.\n");
-      fprintf(stderr, "  Only run it if you know what you are doing!!!\n");
-      fprintf(stderr, "  This will leave your databases in an unsync-able state.\n");
-      fprintf(stderr, "  It is possible to merge address records into datebook, etc., you do not want to do this!!!\n");
-      exit(1);
+      fprintf(stderr, "  into the corresponding palm database (pdb) file.\n\n");
+      fprintf(stderr, "  WARNING: Only run this utility if you understand the consequences!\n");
+      fprintf(stderr, "  The merge will leave your databases in an unsync-able state.\n");
+      fprintf(stderr, "  It is intended for cases where J-pilot is being used as a standalone PIM\n");
+      fprintf(stderr, "  and where no syncing occurs to physical hardware.\n");
+      fprintf(stderr, "  WARNING: Make a backup copy of your databases before proceeding.\n");
+      fprintf(stderr, "  It is quite simple to destroy your databases by accidentally merging\n");
+      fprintf(stderr, "  address records into datebook databases, etc.\n");
+      
+      exit(EXIT_FAILURE);
    }
    char *in_pdb;
    char *in_pc;
    char *out_pdb;
-   in_pdb = argv[1];
-   in_pc = argv[2];
+   in_pdb  = argv[1];
+   in_pc   = argv[2];
    out_pdb = argv[3];
    
    merge_pdb_file(in_pdb, in_pc, out_pdb);
    
-   return 0;
+   return EXIT_SUCCESS;
 }
