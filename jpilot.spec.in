@@ -53,6 +53,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/jpilot
 %{_bindir}/jpilot-dial
 %{_bindir}/jpilot-dump
+%{_bindir}/jpilot-merge
 %{_bindir}/jpilot-sync
 %{_libdir}/jpilot/plugins/libexpense.la
 %{_libdir}/jpilot/plugins/libexpense.so
@@ -62,8 +63,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/jpilot/plugins/libsynctime.so
 %{_docdir}/AUTHORS
 %{_docdir}/BUGS
-%{_docdir}/COPYING
 %{_docdir}/ChangeLog
+%{_docdir}/COPYING
 %{_docdir}/INSTALL
 %{_docdir}/README
 %{_docdir}/TODO
@@ -111,11 +112,16 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/locale/*/LC_MESSAGES/jpilot.mo
 %{_mandir}/man1/jpilot-dial.1.gz
 %{_mandir}/man1/jpilot-dump.1.gz
+%{_mandir}/man1/jpilot-merge.1.gz
 %{_mandir}/man1/jpilot-sync.1.gz
 %{_mandir}/man1/jpilot.1.gz
 %{_datadir}/applications/jpilot.desktop
 
 %changelog
+* Mon Apr 11 2011 rikster5 <jpilot@nomad.inbox5.com>
+- Add jpilot-merge to distribution
+* Mon Mar 08 2010 rikster5 <jpilot@nomad.inbox5.com>
+- Use autoconf to replace VERSION rather than %version which is RedHat specific
 * Mon Mar 08 2010 rikster5 <jpilot@nomad.inbox5.com>
 - Use autoconf to replace VERSION rather than %version which is RedHat specific
 * Sun Mar 07 2010 rikster5 <jpilot@nomad.inbox5.com>
