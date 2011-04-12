@@ -14,6 +14,7 @@ install_gui.c
 install_user.c
 jpilot.c
 jpilot-dump.c
+jpilot-merge.c
 jpilot-sync.c
 libplugin.c
 log.c
