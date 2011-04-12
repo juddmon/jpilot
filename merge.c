@@ -1,4 +1,4 @@
-/* $Id: merge.c,v 1.7 2011/04/12 04:07:32 rikster5 Exp $ */
+/* $Id: merge.c,v 1.8 2011/04/12 04:27:51 rikster5 Exp $ */
 
 /*******************************************************************************
  * merge.c
@@ -21,6 +21,7 @@
  ******************************************************************************/
 
 /********************************* Includes ***********************************/
+#include "config.h"
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
@@ -33,7 +34,11 @@
 #include <utime.h>
 #include <stdio.h>
 #include <ctype.h>
+#ifdef HAVE_LOCALE_H
+#  include <locale.h>
+#endif
 
+/* Pilot-link header files */
 #include <pi-source.h>
 #include <pi-socket.h>
 #include <pi-dlp.h>
@@ -41,30 +46,32 @@
 
 #include <gdk/gdk.h>
 
-#include "libplugin.h"
+/* Jpilot header files */
 #include "utils.h"
+#include "i18n.h"
+#include "otherconv.h"
+#include "libplugin.h"
 #include "sync.h"
 
 /******************************* Global vars **********************************/
-/* In jpilot.c, referenced from utils.c */
+/* Start Hack */
+/* FIXME: The following is a hack.
+ * The variables below are global variables in jpilot.c which are unused in
+ * this code but must be instantiated for the code to compile.  
+ * The same is true of the functions which are only used in GUI mode. */
+pid_t jpilot_master_pid = -1;
+GtkWidget *glob_dialog;
+GtkWidget *glob_date_label;
 gint glob_date_timer_tag;
 
-GtkWidget *glob_dialog;
-int *glob_date_label;
-pid_t jpilot_master_pid = -1;
-
-/****************************** Prototypes ************************************/
-/* dummy functions to satisfy the link */
 void output_to_pane(const char *str) {}
-
 int sync_once(struct my_sync_info *sync_info) { return EXIT_SUCCESS; }
-
+int jp_pack_Contact(struct Contact *c, pi_buffer_t *buf) { return 0; }
 int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
 {
    return 0;
 }
-
-int jp_pack_Contact(struct Contact *c, pi_buffer_t *buf) { return 0; }
+/* End Hack */
 
 /****************************** Main Code *************************************/
 
@@ -75,18 +82,17 @@ static int read_pc_recs(char *file_name, GList **records)
    buf_rec *temp_br;
    int r;
 
-
    /* Get the records out of the PC database */
    pc_in = fopen(file_name, "r");
    if (pc_in==NULL) {
-      fprintf(stderr, "open file failed: %s\n", file_name);
+      fprintf(stderr, _("Unable to open file: %s\n"), file_name);
       return -1;
    }
 
    while(!feof(pc_in)) {
       temp_br = malloc(sizeof(buf_rec));
       if (!temp_br) {
-         fprintf(stderr, "Out of memory");
+         fprintf(stderr, _("Out of memory"));
          recs_returned = -1;
          break;
       }
@@ -137,12 +143,12 @@ static int merge_pdb_file(char *src_pdb_file,
    
 
    if (access(src_pdb_file, R_OK)) {
-      fprintf(stderr, "Can not open %s for reading\n", src_pdb_file);
+      fprintf(stderr, _("Unable to open file: %s\n"), src_pdb_file);
       return 1;
    }
 
    if (access(src_pc_file, R_OK)) {
-      fprintf(stderr, "Can not open %s for reading\n", src_pc_file);
+      fprintf(stderr, _("Unable to open file: %s\n"), src_pc_file);
       return 1;
    }
 
@@ -154,13 +160,13 @@ static int merge_pdb_file(char *src_pdb_file,
 
    pf1 = pi_file_open(src_pdb_file);
    if (!pf1) {
-      fprintf(stderr, "%s: Could not open %s\n", "pi_file_open", src_pdb_file);
+      fprintf(stderr, _("%s: Unable to open file:%s\n"), "pi_file_open", src_pdb_file);
       exit(1);
    }
    pi_file_get_info(pf1, &infop);
    pf2 = pi_file_create(dest_pdb_file, &infop);
    if (!pf2) {
-      fprintf(stderr, "%s: Could not open %s\n", "pi_file_open", dest_pdb_file);
+      fprintf(stderr, _("%s: Unable to open file:%s\n"), "pi_file_open", dest_pdb_file);
       exit(1);
    }
 
@@ -262,11 +268,11 @@ static int merge_pdb_file(char *src_pdb_file,
    pi_file_close(pf1);
    pi_file_close(pf2);
 
-   printf("Records read from pdb = %d\n", pdb_count);
-   printf("Records added         = %d\n", recs_added);
-   printf("Records deleted       = %d\n", recs_deleted);
-   printf("Records modified      = %d\n", recs_modified);
-   printf("Records written       = %d\n", recs_written);
+   printf(_("Records read from pdb = %d\n"), pdb_count);
+   printf(_("Records added         = %d\n"), recs_added);
+   printf(_("Records deleted       = %d\n"), recs_deleted);
+   printf(_("Records modified      = %d\n"), recs_modified);
+   printf(_("Records written       = %d\n"), recs_written);
 
    return 0;
 }
@@ -274,17 +280,26 @@ static int merge_pdb_file(char *src_pdb_file,
 
 int main(int argc, char *argv[])
 {
+   /* enable internationalization(i18n) before printing any output */
+#if defined(ENABLE_NLS)
+#  ifdef HAVE_LOCALE_H
+   setlocale(LC_ALL, "");
+#  endif
+   bindtextdomain(EPN, LOCALEDIR);
+   textdomain(EPN);
+#endif
+
    if (argc != 3) {
-      fprintf(stderr, "Usage: %s {input pdb file} {input pc3 file} {output pdb file}\n", argv[0]);
-      fprintf(stderr, "  This program will merge an unsynced records file (pc3)\n");
-      fprintf(stderr, "  into the corresponding palm database (pdb) file.\n\n");
-      fprintf(stderr, "  WARNING: Only run this utility if you understand the consequences!\n");
-      fprintf(stderr, "  The merge will leave your databases in an unsync-able state.\n");
-      fprintf(stderr, "  It is intended for cases where J-pilot is being used as a standalone PIM\n");
-      fprintf(stderr, "  and where no syncing occurs to physical hardware.\n");
-      fprintf(stderr, "  WARNING: Make a backup copy of your databases before proceeding.\n");
-      fprintf(stderr, "  It is quite simple to destroy your databases by accidentally merging\n");
-      fprintf(stderr, "  address records into datebook databases, etc.\n");
+      fprintf(stderr, _("Usage: %s {input pdb file} {input pc3 file} {output pdb file}\n"), argv[0]);
+      fprintf(stderr, _("  This program will merge an unsynced records file (pc3)\n"));
+      fprintf(stderr, _("  into the corresponding palm database (pdb) file.\n\n"));
+      fprintf(stderr, _("  WARNING: Only run this utility if you understand the consequences!\n"));
+      fprintf(stderr, _("  The merge will leave your databases in an unsync-able state.\n"));
+      fprintf(stderr, _("  It is intended for cases where J-pilot is being used as a standalone PIM\n"));
+      fprintf(stderr, _("  and where no syncing occurs to physical hardware.\n"));
+      fprintf(stderr, _("  WARNING: Make a backup copy of your databases before proceeding.\n"));
+      fprintf(stderr, _("  It is quite simple to destroy your databases by accidentally merging\n"));
+      fprintf(stderr, _("  address records into datebook databases, etc.\n"));
       
       exit(EXIT_FAILURE);
    }
