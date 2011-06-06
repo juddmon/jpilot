@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.278 2011/04/06 12:51:38 rousseau Exp $ */
+/* $Id: address_gui.c,v 1.279 2011/06/06 17:14:45 rikster5 Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -1239,13 +1239,13 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 
                switch (mcont->cont.addressLabel[i]) {
                 case 0:
-                  fprintf(out, "ADDR;TYPE=WORK:;;");
+                  fprintf(out, "ADR;TYPE=WORK:;;");
                   break;
                 case 1:
-                  fprintf(out, "ADDR;TYPE=HOME:;;");
+                  fprintf(out, "ADR;TYPE=HOME:;;");
                   break;
                 default:
-                  fprintf(out, "ADDR:;;");
+                  fprintf(out, "ADR:;;");
                }
 
                for (n = address_i; n < country_i + 1; n++) {
