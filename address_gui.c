@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.280 2011/11/11 02:25:02 judd Exp $ */
+/* $Id: address_gui.c,v 1.281 2011/11/11 02:38:37 judd Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -1299,7 +1299,7 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
             fprintf(out, "BDAY:%s"CRLF, birthday_str);
          }
          if (type == EXPORT_TYPE_VCARD_GMAIL) {
-            /* GMail contacts don't have fields for the custom fields,
+            /* Gmail contacts don't have fields for the custom fields,
              * rather than lose them we can stick them all in a note field */
             int printed_note = 0;
             for (n=contCustom1; n<=contCustom9; n++) {
@@ -1323,7 +1323,7 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
                str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[contNote]);
                fprintf(out, "%s\\n"CRLF, csv_text);
             }
-         } else { /* Not a GMail optimized export */
+         } else { /* Not a Gmail optimized export */
             if (mcont->cont.entry[contCustom1] ||
                 mcont->cont.entry[contCustom2] ||
                 mcont->cont.entry[contCustom3] ||
@@ -1508,7 +1508,7 @@ int address_export(GtkWidget *window)
    char *type_text[]={N_("Text"), 
                       N_("CSV"), 
                       N_("vCard"), 
-                      N_("vCard (Optimized for GMail/Android Import)"), 
+                      N_("vCard (Optimized for Gmail/Android Import)"), 
                       N_("ldif"), 
                       NULL};
    int type_int[]={EXPORT_TYPE_TEXT, 
