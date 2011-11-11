@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.279 2011/06/06 17:14:45 rikster5 Exp $ */
+/* $Id: address_gui.c,v 1.280 2011/11/11 02:25:02 judd Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -557,7 +557,9 @@ static int cb_addr_import(GtkWidget *parent_window,
       }
       
       /* Get the first line containing the format and check for reasonableness */
-      fgets(text, sizeof(text), in);
+      if (! fgets(text, sizeof(text), in)) {
+         jp_logf(JP_LOG_WARN, _("Unable to read file: %s\n"), file_path);
+      }
       if (address_version) {
          ret = verify_csv_header(text, NUM_CONT_CSV_FIELDS, file_path);
       } else {
@@ -966,7 +968,8 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
    }  /* end writing CSV header */
 
    /* Special setup for VCARD export */
-   if (type == EXPORT_TYPE_VCARD) {
+   if ((type == EXPORT_TYPE_VCARD) ||
+      (type == EXPORT_TYPE_VCARD_GMAIL) ){
       get_pref(PREF_CHAR_SET, &char_set, NULL);
       get_pref(PREF_USER, NULL, &svalue);
       /* Convert User Name stored in Palm character set */
@@ -2174,7 +2177,10 @@ static void email_contact(GtkWidget *widget, gchar *str)
    command[1023]='\0';
 
    jp_logf(JP_LOG_STDOUT|JP_LOG_FILE, _("executing command = [%s]\n"), command);
-   system(command);
+   if (system(command) < 0) {
+      jp_logf(JP_LOG_STDOUT|JP_LOG_FILE, _("Failed to execute [%s]\n"), command);
+   }
+   
 }
 
 static void dial_contact(GtkWidget *widget, gchar *str)
@@ -2593,7 +2599,9 @@ static int browse_photo(GtkWidget *main_window)
       }
    }
 
-   chdir(dir);
+   if (chdir(dir)) {
+      jp_logf(JP_LOG_WARN, _("chdir() failed\n"));
+   }
 
    filesel = gtk_file_selection_new(_("Add Photo"));
 
