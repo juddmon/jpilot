@@ -1,4 +1,4 @@
-/* $Id: memo_gui.c,v 1.150 2011/04/06 12:51:39 rousseau Exp $ */
+/* $Id: memo_gui.c,v 1.151 2011/12/22 03:43:07 judd Exp $ */
 
 /*******************************************************************************
  * memo_gui.c
@@ -568,6 +568,12 @@ static void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
       }
    }
 
+   /* Write a header to the BFOLDERS CSV file */
+   if (type == EXPORT_TYPE_BFOLDERS) {
+      fprintf(out, "Notes:\n");
+      fprintf(out, "Note,Folder\n");
+   }
+
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    list=GTK_CLIST(clist)->selection;
 
@@ -591,6 +597,23 @@ static void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
          fprintf(out, "\"%s\",", (mmemo->attrib & dlpRecAttrSecret) ? "1":"0");
          str_to_csv_str(csv_text, mmemo->memo.text);
          fprintf(out, "\"%s\"\n", csv_text);
+         break;
+
+       case EXPORT_TYPE_BFOLDERS:
+         len=0;
+         str_to_csv_str(csv_text, mmemo->memo.text);
+         fprintf(out, "\"%s\",", csv_text);
+
+         if (mmemo->memo.text) {
+            len=strlen(mmemo->memo.text) * 2 + 4;
+         }
+         if (len<256) len=256;
+	 printf("\"RAW %d %s\"\n", mmemo->attrib & 0x0F, memo_app_info.category.name[mmemo->attrib & 0x0F]);
+         utf = charset_p2newj(memo_app_info.category.name[mmemo->attrib & 0x0F], 16, char_set);
+         str_to_csv_str(csv_text, utf);
+         fprintf(out, "\"Memos > %s\"\n", csv_text);
+         printf("\"Memos > %s\"\n", utf, csv_text);
+         g_free(utf);
          break;
 
        case EXPORT_TYPE_TEXT:
@@ -642,8 +665,9 @@ int memo_export(GtkWidget *window)
    int w, h, x, y;
    char *type_text[]={N_("Text"), 
                       N_("CSV"), 
+                      N_("B-Folders CSV"), 
                       NULL};
-   int type_int[]={EXPORT_TYPE_TEXT, EXPORT_TYPE_CSV};
+   int type_int[]={EXPORT_TYPE_TEXT, EXPORT_TYPE_CSV, EXPORT_TYPE_BFOLDERS};
 
    gdk_window_get_size(window->window, &w, &h);
    gdk_window_get_root_origin(window->window, &x, &y);
