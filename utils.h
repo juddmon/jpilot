@@ -1,4 +1,4 @@
-/* $Id: utils.h,v 1.89 2011/04/06 12:43:45 rousseau Exp $ */
+/* $Id: utils.h,v 1.90 2011/12/22 00:46:37 judd Exp $ */
 
 /*******************************************************************************
  * utils.h
@@ -139,6 +139,7 @@
 #define EXPORT_TYPE_VCARD_GMAIL 105
 #define EXPORT_TYPE_ICALENDAR   106
 #define EXPORT_TYPE_LDIF        107
+#define EXPORT_TYPE_BFOLDERS    108
 
 /* DAT file types */
 #define DAT_DATEBOOK_FILE    10

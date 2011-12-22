@@ -1,4 +1,4 @@
-/* $Id: keyring.c,v 1.117 2011/02/09 20:48:34 rousseau Exp $ */
+/* $Id: keyring.c,v 1.118 2011/12/22 00:46:49 judd Exp $ */
 
 /*******************************************************************************
  * keyring.c
@@ -2143,6 +2143,15 @@ static void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *clist,
       fprintf(out, "\"Category\",\"Name\",\"Account\",\"Password\",\"Note\"\n");
    }
 
+   /* Write a header to the CSV file */
+   if (type == EXPORT_TYPE_BFOLDERS) {
+      fprintf(out, "Login passwords:\n");
+      fprintf(out, "Title,Location,Usename,Password, "
+	      "\"Custom Label 1\",\"Custom Value 1\",\"Custom Label 2\",\"Custom Value 2\","
+	      "\"Custom Label 3\",\"Custom Value 3\",\"Custom Label 4\",\"Custom Value 4\","
+	      "\"Custom Label 5\",\"Custom Value 5\", Note,Folder\n");
+   }
+
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    list=GTK_CLIST(clist)->selection;
 
@@ -2165,6 +2174,32 @@ static void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *clist,
          fprintf(out, "\"%s\",", csv_text);
          str_to_csv_str(csv_text, mkr->kr.note);
          fprintf(out, "\"%s\"\n", csv_text);
+         break;
+
+       case EXPORT_TYPE_BFOLDERS:
+         str_to_csv_str(csv_text, mkr->kr.name);
+         fprintf(out, "\"%s\",", csv_text);
+
+         fprintf(out, "\"\",", csv_text);
+
+         str_to_csv_str(csv_text, mkr->kr.account);
+         fprintf(out, "\"%s\",", csv_text);
+         str_to_csv_str(csv_text, mkr->kr.password);
+         fprintf(out, "\"%s\",", csv_text);
+
+	 fprintf(out, "\"\",\"\",\"\",\"\","
+		 "\"\",\"\",\"\",\"\","
+		 "\"\",\"\",");
+
+         str_to_csv_str(csv_text, mkr->kr.note);
+         fprintf(out, "\"%s\",", csv_text);
+
+         fprintf(out, "\"KeyRing > ");
+
+	 utf = charset_p2newj(keyr_app_info.name[mkr->attrib & 0x0F], 16, char_set);
+         fprintf(out, "%s\"\n", utf);
+         g_free(utf);
+
          break;
 
        case EXPORT_TYPE_TEXT:
@@ -2191,8 +2226,8 @@ static void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 int plugin_export(GtkWidget *window)
 {
    int w, h, x, y;
-   char *type_text[]={N_("Text"), N_("CSV"), NULL};
-   int type_int[]={EXPORT_TYPE_TEXT, EXPORT_TYPE_CSV};
+   char *type_text[]={N_("Text"), N_("CSV"), N_("B-FOLDERS CSV"), NULL};
+   int type_int[]={EXPORT_TYPE_TEXT, EXPORT_TYPE_CSV, EXPORT_TYPE_BFOLDERS};
 
    gdk_window_get_size(window->window, &w, &h);
    gdk_window_get_root_origin(window->window, &x, &y);
