@@ -1,4 +1,4 @@
-/* $Id: utils.c,v 1.198 2011/04/06 12:43:45 rousseau Exp $ */
+/* $Id: utils.c,v 1.199 2012/01/08 12:39:08 rousseau Exp $ */
 
 /*******************************************************************************
  * utils.c
@@ -1878,7 +1878,7 @@ void fprint_usage_string(FILE *out)
    fprintf(out, _(" -A ignore all alarms past and future\n"));
    fprintf(out, _(" -s start sync using existing instance of GUI\n"));
    fprintf(out, _(" -i iconify program immediately after launch\n"));
-   fprintf(out, _(" -geometry {X geometry} use specifed geometry for main window\n\n"));
+   fprintf(out, _(" -geometry {X geometry} use specified geometry for main window\n\n"));
    fprintf(out, _(" The PILOTPORT and PILOTRATE environment variables specify\n"));
    fprintf(out, _(" which port to sync on, and at what speed.\n"));
    fprintf(out, _(" If PILOTPORT is not set then it defaults to /dev/pilot.\n"));
