@@ -1,4 +1,4 @@
-/* $Id: address_gui.c,v 1.281 2011/11/11 02:38:37 judd Exp $ */
+/* $Id: address_gui.c,v 1.282 2012/10/23 01:57:58 judd Exp $ */
 
 /*******************************************************************************
  * address_gui.c
@@ -967,6 +967,17 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
       fprintf(out, "Show in List\n");
    }  /* end writing CSV header */
 
+   /* Write a header to the B-Folders CSV file */
+   if (type == EXPORT_TYPE_BFOLDERS) {
+      fprintf(out, "%s",
+	      "Contacts:\nName, Email, Phone (mobile), Company, Title, Website, Phone (work),"
+	      "Phone 2(work), Fax (work), Address (work), Phone (home), Address (home), "
+	      "\"Custom Label 1\", \"Custom Value 1\", \"Custom Label 2\", \"Custom Value 2\","
+	      "\"Custom Label 3\",\"Custom Value 3\",\"Custom Label 4\",\"Custom Value 4\","
+	      "\"Custom Label 5\",\"Custom Value 5\",Note,Folder");
+   }  /* end writing CSV header */
+
+   
    /* Special setup for VCARD export */
    if ((type == EXPORT_TYPE_VCARD) ||
       (type == EXPORT_TYPE_VCARD_GMAIL) ){
@@ -1132,6 +1143,49 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
          fprintf(out, "\"%d\"\n", mcont->cont.showPhone);
          break;
 
+       case EXPORT_TYPE_BFOLDERS:
+	 /* fprintf(out, "%s",
+		 "Name, Email, Phone (mobile), Company, Title, Website, Phone (work),"
+		 "Phone 2(work), Fax (work), Address (work), Phone (home), Address (home), "
+		 "\"Custom Label 1\", \"Custom Value 1\", \"Custom Label 2\", \"Custom Value 2\","
+		 "\"Custom Label 3\",\"Custom Value 3\",\"Custom Label 4\",\"Custom Value 4\","
+		 "\"Custom Label 5\",\"Custom Value 5\",Note,Folder");
+	  */
+         address_i=phone_i=IM_i=0;
+         for (i=0; i<schema_size; i++) {
+            if (schema[i].record_field == contLastname) {
+               str_to_csv_str(csv_text, mcont->cont.entry[schema[i].record_field] ?
+                              mcont->cont.entry[schema[i].record_field] : "");
+               fprintf(out, "\"%s, ", csv_text);
+	    }
+	 }
+         for (i=0; i<schema_size; i++) {
+            if (schema[i].record_field == contFirstname) {
+               str_to_csv_str(csv_text, mcont->cont.entry[schema[i].record_field] ?
+                              mcont->cont.entry[schema[i].record_field] : "");
+               fprintf(out, "%s\",", csv_text);
+	    }
+	 }
+	 /* E-Mail */
+	 /*
+         for (i=0; i<schema_size; i++) {
+	    if (!strcasecmp(contact_app_info.phoneLabels[cont->phoneLabel[phone_i]], _("E-mail"))) {
+	       gtk_object_set_data(GTK_OBJECT(dial_button[phone_i]), "mail", GINT_TO_POINTER(1));
+	       gtk_button_set_label(GTK_BUTTON(dial_button[phone_i]), _("Mail"));
+	    }
+	    fprintf(out, "%s\",", csv_text);
+	 }
+*/
+	 fprintf(out, "%s",
+		 "\"\", \"\", \"\", \"\", \"\","
+		 "\"\", \"\", \"\", \"\", \"\", "
+		 "\"Custom Label 1\", \"Custom Value 1\", \"Custom Label 2\", \"Custom Value 2\","
+		 "\"Custom Label 3\",\"Custom Value 3\",\"Custom Label 4\",\"Custom Value 4\","
+		 "\"Custom Label 5\",\"Custom Value 5\",\"Note\",\"Contacts\"");
+	 fprintf(out, "\n");
+
+	 break;
+	 
        case EXPORT_TYPE_VCARD:
        case EXPORT_TYPE_VCARD_GMAIL:
          /* RFC 2426: vCard MIME Directory Profile */
@@ -1510,12 +1564,14 @@ int address_export(GtkWidget *window)
                       N_("vCard"), 
                       N_("vCard (Optimized for Gmail/Android Import)"), 
                       N_("ldif"), 
+                      N_("B-Folders CSV"), 
                       NULL};
    int type_int[]={EXPORT_TYPE_TEXT, 
                    EXPORT_TYPE_CSV, 
                    EXPORT_TYPE_VCARD, 
                    EXPORT_TYPE_VCARD_GMAIL,
-                   EXPORT_TYPE_LDIF};
+                   EXPORT_TYPE_LDIF,
+                   EXPORT_TYPE_BFOLDERS};
 
    gdk_window_get_size(window->window, &w, &h);
    gdk_window_get_root_origin(window->window, &x, &y);
