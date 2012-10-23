@@ -1,4 +1,4 @@
-/* $Id: datebook_gui.c,v 1.249 2011/04/06 12:51:39 rousseau Exp $ */
+/* $Id: datebook_gui.c,v 1.250 2012/10/23 01:59:55 judd Exp $ */
 
 /*******************************************************************************
  * datebook_gui.c
@@ -4921,10 +4921,10 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
                                 GTK_CALENDAR_SHOW_HEADING |
                                 GTK_CALENDAR_SHOW_DAY_NAMES |
                                 GTK_CALENDAR_SHOW_WEEK_NUMBERS | fdow);
-   // This way produces a calendar which fills the pane
-   //gtk_box_pack_start(GTK_BOX(hbox_temp), main_calendar, FALSE, FALSE, 0);
+   // This way produces a small calendar on the left
+   gtk_box_pack_start(GTK_BOX(hbox_temp), main_calendar, FALSE, FALSE, 0);
    // This way produces a centered, small calendar
-   gtk_box_pack_start(GTK_BOX(hbox_temp), main_calendar, TRUE, FALSE, 0);
+   // gtk_box_pack_start(GTK_BOX(hbox_temp), main_calendar, TRUE, FALSE, 0);
 
    gtk_signal_connect(GTK_OBJECT(main_calendar),
                       "day_selected", GTK_SIGNAL_FUNC(cb_cal_changed),
