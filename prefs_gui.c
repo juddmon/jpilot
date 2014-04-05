@@ -1,5 +1,3 @@
-/* $Id: prefs_gui.c,v 1.84 2011/04/06 12:02:28 rousseau Exp $ */
-
 /*******************************************************************************
  * prefs_gui.c
  * A module of J-Pilot http://jpilot.org

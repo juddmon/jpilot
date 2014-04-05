@@ -1,5 +1,3 @@
-/* $Id: install_user.c,v 1.15 2010/10/18 04:55:45 rikster5 Exp $ */
-
 /*******************************************************************************
  * install_user.c
  * A module of J-Pilot http://jpilot.org

@@ -1,5 +1,3 @@
-/* $Id: jpilot-dial.c,v 1.6 2010/10/15 16:42:14 rikster5 Exp $ */
-
 /*******************************************************************************
  * jpilot-dial.c
  * A module of J-Pilot http://jpilot.org

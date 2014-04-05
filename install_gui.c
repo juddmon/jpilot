@@ -1,5 +1,3 @@
-/* $Id: install_gui.c,v 1.31 2010/11/06 23:25:05 rikster5 Exp $ */
-
 /*******************************************************************************
  * install_gui.c
  * A module of J-Pilot http://jpilot.org

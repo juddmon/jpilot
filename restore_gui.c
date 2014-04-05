@@ -1,5 +1,3 @@
-/* $Id: restore_gui.c,v 1.32 2010/10/23 04:25:47 rikster5 Exp $ */
-
 /*******************************************************************************
  * restore_gui.c
  * A module of J-Pilot http://jpilot.org

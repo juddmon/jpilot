@@ -1,5 +1,3 @@
-/* $Id: print_headers.c,v 1.14 2011/04/06 12:43:45 rousseau Exp $ */
-
 /*******************************************************************************
  * print_headers.c
  * A module of J-Pilot http://jpilot.org

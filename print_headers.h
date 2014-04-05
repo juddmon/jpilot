@@ -1,5 +1,3 @@
-/* $Id: print_headers.h,v 1.4 2010/03/29 05:44:31 rikster5 Exp $ */
-
 /*******************************************************************************
  * print_headers.h
  * A module of J-Pilot http://jpilot.org

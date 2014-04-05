@@ -1,5 +1,3 @@
-/* $Id: jp-contact.c,v 1.13 2010/03/29 05:44:29 rikster5 Exp $ */
-
 /*******************************************************************************
  * contact.c:  Translate Palm contact data formats
  * A module of J-Pilot http://jpilot.org

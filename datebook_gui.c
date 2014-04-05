@@ -1,5 +1,3 @@
-/* $Id: datebook_gui.c,v 1.250 2012/10/23 01:59:55 judd Exp $ */
-
 /*******************************************************************************
  * datebook_gui.c
  * A module of J-Pilot http://jpilot.org

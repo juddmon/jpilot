@@ -1,5 +1,3 @@
-/* $Id: calendar.h,v 1.5 2010/04/21 05:56:40 rousseau Exp $ */
-
 /*******************************************************************************
  * calendar.h
  * A module of J-Pilot http://jpilot.org

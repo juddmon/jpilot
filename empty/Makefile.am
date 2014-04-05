@@ -1,5 +1,3 @@
-# $Id: Makefile.am,v 1.5 2009/07/31 16:46:16 rikster5 Exp $
-
 # install blank pdb files
 pdbdir = $(datadir)/$(PACKAGE)
 

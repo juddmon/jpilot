@@ -1,5 +1,3 @@
-# $Id: Makefile.am,v 1.5 2007/06/15 14:53:54 rousseau Exp $
-
 icondir = $(datadir)/doc/$(PACKAGE)/icons
 icon_DATA = \
 	jpilot-icon1.xpm \

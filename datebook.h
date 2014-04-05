@@ -1,5 +1,3 @@
-/* $Id: datebook.h,v 1.30 2010/10/15 16:42:13 rikster5 Exp $ */
-
 /*******************************************************************************
  * datebook.h
  * A module of J-Pilot http://jpilot.org

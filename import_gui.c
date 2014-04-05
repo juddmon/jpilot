@@ -1,5 +1,3 @@
-/* $Id: import_gui.c,v 1.33 2010/10/15 23:50:07 rikster5 Exp $ */
-
 /*******************************************************************************
  * import_gui.c
  * A module of J-Pilot http://jpilot.org

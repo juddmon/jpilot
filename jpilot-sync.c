@@ -1,5 +1,3 @@
-/* $Id: jpilot-sync.c,v 1.36 2011/02/09 21:38:55 rousseau Exp $ */
-
 /*******************************************************************************
  * jpilot-sync.c
  * A module of J-Pilot http://jpilot.org

@@ -1,5 +1,3 @@
-/* $Id: libplugin.c,v 1.46 2011/04/06 11:42:27 rousseau Exp $ */
-
 /*******************************************************************************
  * libplugin.c
  * A module of J-Pilot http://jpilot.org

@@ -1,5 +1,3 @@
-/* $Id: calendar.c,v 1.16 2010/10/16 22:49:25 rikster5 Exp $ */
-
 /*******************************************************************************
  * calendar.c
  * A module of J-Pilot http://jpilot.org

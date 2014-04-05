@@ -1,5 +1,3 @@
-# $Id: Makefile.am,v 1.8 2009/08/11 20:13:41 rikster5 Exp $
-
 libdir = @libdir@/@PACKAGE@/plugins
 
 if MAKE_EXPENSE

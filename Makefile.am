@@ -1,5 +1,3 @@
-# $Id: Makefile.am,v 1.72 2011/04/12 05:36:38 rikster5 Exp $
-
 SUBDIRS = m4 po Expense SyncTime KeyRing dialer icons docs empty
 
 EXTRA_DIST = config.rpath mkinstalldirs reconf autogen.sh \

@@ -1,5 +1,3 @@
-/* $Id: otherconv.c,v 1.47 2011/04/06 12:43:45 rousseau Exp $ */
-
 /*******************************************************************************
  * otherconv.c
  * A module of J-Pilot http://jpilot.org

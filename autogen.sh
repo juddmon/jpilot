@@ -1,5 +1,3 @@
-# $Id: autogen.sh,v 1.17 2008/06/01 16:30:23 rikster5 Exp $
-
 # Exit if a command fails
 set -e
 
