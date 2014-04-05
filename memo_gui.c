@@ -510,6 +510,8 @@ static void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
    char csv_text[65550];
    long char_set;
    char *utf;
+   int cat;
+   int j;
 
    /* Open file for export, including corner cases where file exists or 
     * can't be opened */
@@ -570,6 +572,15 @@ static void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
    if (type == EXPORT_TYPE_BFOLDERS) {
       fprintf(out, "Notes:\n");
       fprintf(out, "Note,Folder\n");
+   }
+
+   /* Write a header to the KeePassX XML file */
+   if (type == EXPORT_TYPE_KEEPASSX) {
+      fprintf(out, "<!DOCTYPE KEEPASSX_DATABASE>\n");
+      fprintf(out, "<database>\n");
+      fprintf(out, " <group>\n");
+      fprintf(out, "  <title>Memos</title>\n");
+      fprintf(out, "  <icon>7</icon>\n");
    }
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
@@ -634,8 +645,74 @@ static void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
          fprintf(out, _("\n----- End of Memo -----\n\n"));
          break;
 
+       case EXPORT_TYPE_KEEPASSX:
+	 break;
+
        default:
          jp_logf(JP_LOG_WARN, _("Unknown export type\n"));
+      }
+   }
+
+   /* I'm writing a second loop for the KeePassX XML file because I want to
+    * put each category into a folder and we need to write the tag for a folder
+    * and then find each record in that category/folder
+    */
+   if (type==EXPORT_TYPE_KEEPASSX) {
+      for (cat=0; cat < 16; cat++) {
+	 if (memo_app_info.category.name[cat][0]=='\0') {
+	    continue;
+	 }
+	 /* Write a folder XML tag */
+         utf = charset_p2newj(memo_app_info.category.name[cat], 16, char_set);
+         fprintf(out, "  <group>\n", utf);
+	 fprintf(out, "   <title>%s</title>\n", utf);
+	 fprintf(out, "   <icon>7</icon>\n");
+	 g_free(utf);
+	 for (i=0, temp_list=list; temp_list; temp_list = temp_list->next, i++) {
+	    mmemo = gtk_clist_get_row_data(GTK_CLIST(clist), GPOINTER_TO_INT(temp_list->data));
+	    if (!mmemo) {
+	       continue;
+	       jp_logf(JP_LOG_WARN, _("Can't export memo %d\n"), (long) temp_list->data + 1);
+	    }
+	    if ((mmemo->attrib & 0x0F) != cat) {
+	       continue;
+	    }
+	    fprintf(out, "   <entry>\n");
+	    
+	    /* Create a title (which is the first line of the memo) */
+	    for (j=0; j<100; j++) {
+	       str1[j]=mmemo->memo.text[j];
+	       if (str1[j] == '\0') {
+		  break;
+	       }
+	       if (str1[j] == '\n') {
+		  str1[j]='\0';
+		  break;
+	       }
+	    }
+	    str1[100]='\0';
+	    str_to_keepass_str(csv_text, str1);
+	    fprintf(out, "    <title>%s</title>\n", csv_text);
+	    /* No keyring field for username */
+	    /* No keyring field for password */
+	    /* No keyring field for url */
+	    str_to_keepass_str(csv_text, mmemo->memo.text);
+	    fprintf(out, "    <comment>%s</comment>\n", csv_text);
+	    fprintf(out, "    <icon>7</icon>\n", csv_text);
+	    /* No keyring field for creation */
+	    /* No keyring field for lastaccess */
+	    /* No keyring field for lastmod */
+	    /* No keyring field for expire */
+	    fprintf(out, "    <expire>Never</expire>\n");
+	    fprintf(out, "   </entry>\n");
+	 }
+	 fprintf(out, "  </group>\n");
+      }
+
+      /* Write a footer to the KeePassX XML file */
+      if (type == EXPORT_TYPE_KEEPASSX) {
+	 fprintf(out, " </group>\n");
+	 fprintf(out, "</database>\n");
       }
    }
 
@@ -663,9 +740,10 @@ int memo_export(GtkWidget *window)
    int w, h, x, y;
    char *type_text[]={N_("Text"), 
                       N_("CSV"), 
-                      N_("B-Folders CSV"), 
+                      N_("B-Folders CSV"),
+                      N_("KeePassX XML"),
                       NULL};
-   int type_int[]={EXPORT_TYPE_TEXT, EXPORT_TYPE_CSV, EXPORT_TYPE_BFOLDERS};
+   int type_int[]={EXPORT_TYPE_TEXT, EXPORT_TYPE_CSV, EXPORT_TYPE_BFOLDERS, EXPORT_TYPE_KEEPASSX};
 
    gdk_window_get_size(window->window, &w, &h);
    gdk_window_get_root_origin(window->window, &x, &y);
