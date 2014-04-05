@@ -2361,7 +2361,7 @@ msgstr "Date de fin de l'enregistrement"
 #. Use Manana check box
 #: ../prefs_gui.c:828
 msgid "Use Manana database"
-msgstr "Utiliser la base de données Mañana"
+msgstr "Utiliser la base de données Manana"
 
 #: ../prefs_gui.c:836
 msgid "Use default number of days due"
@@ -2458,7 +2458,7 @@ msgstr "Sync bloc-notes"
 #. Show sync Manana check box
 #: ../prefs_gui.c:1003
 msgid "Sync Manana"
-msgstr "Sync Mañana"
+msgstr "Sync Manana"
 
 #. Show use Japanese Kana extention check box
 #: ../prefs_gui.c:1009
@@ -3169,7 +3169,7 @@ msgstr "Support des greffons"
 
 #: ../utils.c:2000
 msgid "Manana support"
-msgstr "Support Mañana"
+msgstr "Support Manana"
 
 #: ../utils.c:2006
 msgid "NLS support (foreign languages)"
