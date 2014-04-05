@@ -130,7 +130,7 @@ fi
 dnl ************************************************************ 
 
 AC_ARG_ENABLE(manana,
-   AC_HELP_STRING([--disable-manana],[Disable Mañana support]),
+   AC_HELP_STRING([--disable-manana],[Disable Manana support]),
    enable_manana=$enableval,
    enable_manana=yes)
 

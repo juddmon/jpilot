@@ -7,7 +7,7 @@ pdb_DATA = DatebookDB.pdb \
            ContactsDB-PAdd.pdb \
            ToDoDB.pdb \
            TasksDB-PTod.pdb \
-           MañanaDB.pdb \
+           MananaDB.pdb \
            MemoDB.pdb \
            MemosDB-PMem.pdb \
            Memo32DB.pdb \
