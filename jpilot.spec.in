@@ -97,8 +97,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/jpilot/ContactsDB-PAdd.pdb
 %{_datadir}/jpilot/DatebookDB.pdb
 %{_datadir}/jpilot/ExpenseDB.pdb
-#%{_datadir}/jpilot/MañanaDB.pdb
-%{_datadir}/jpilot/Ma?anaDB.pdb
+%{_datadir}/jpilot/MananaDB.pdb
 %{_datadir}/jpilot/Memo32DB.pdb
 %{_datadir}/jpilot/MemoDB.pdb
 %{_datadir}/jpilot/MemosDB-PMem.pdb

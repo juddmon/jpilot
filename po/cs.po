@@ -1663,7 +1663,7 @@ msgstr "Zaznamenat datum dokončení"
 
 #: prefs_gui.c:612
 msgid "Use Manana database"
-msgstr "Použít databázi Mañana"
+msgstr "Použít databázi Manana"
 
 #: prefs_gui.c:620
 msgid "Use default number of days due"
@@ -1736,7 +1736,7 @@ msgstr "Synchronizovat memo32 (pedit32)"
 
 #: prefs_gui.c:727
 msgid "Sync Manana"
-msgstr "Synchronizovat Mañana"
+msgstr "Synchronizovat Manana"
 
 #: prefs_gui.c:733
 msgid "Use J-OS (Not Japanese PalmOS:WorkPad/CLIE)"
@@ -2320,7 +2320,7 @@ msgstr "Podpora zásuvných modulů"
 
 #: utils.c:143
 msgid "Manana support"
-msgstr "Podpora Mañana"
+msgstr "Podpora Manana"
 
 #: utils.c:149
 msgid "NLS support (foreign languages)"
