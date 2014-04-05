@@ -138,6 +138,7 @@
 #define EXPORT_TYPE_ICALENDAR   106
 #define EXPORT_TYPE_LDIF        107
 #define EXPORT_TYPE_BFOLDERS    108
+#define EXPORT_TYPE_KEEPASSX    109
 
 /* DAT file types */
 #define DAT_DATEBOOK_FILE    10
@@ -373,6 +374,13 @@ void free_search_record_list(struct search_record **sr);
  * dest could be as long as strlen(src)*2.
  * Return value is the number of chars written to dest. */
 int str_to_csv_str(char *dest, char *src);
+
+/*
+ * Copy src string into dest while escaping carriage returns with <br/>
+ * dest could be as long as strlen(src)*5.
+ * Return value is the number of chars written to dest.
+ */
+int str_to_keepass_str(char *dest, char *src);
 
 /* Copy src string into dest while escaping carriage returns,
  * backslashes, commas and semicolons.  Also do line wrapping.

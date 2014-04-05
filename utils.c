@@ -3260,6 +3260,63 @@ int str_to_csv_str(char *dest, char *src)
 }
 
 /*
+ * Copy src string into dest while escaping carriage returns with <br/>
+ * dest could be as long as strlen(src)*5.
+ * Return value is the number of chars written to dest.
+ */
+int str_to_keepass_str(char *dest, char *src)
+{
+   int s, d;
+
+   if (dest) dest[0]='\0';
+   if ((!src) || (!dest)) {
+      return EXIT_SUCCESS;
+   }
+
+   s=d=0;
+   while (src[s]) {
+      if (src[s]=='\n') {
+         dest[d++]='<';
+         dest[d++]='b';
+         dest[d++]='r';
+         dest[d++]='/';
+         dest[d++]='>';
+	 s++;
+	 continue;
+      }
+      if (src[s]=='&') {
+         dest[d++]='&';
+         dest[d++]='a';
+         dest[d++]='m';
+         dest[d++]='p';
+         dest[d++]=';';
+	 s++;
+	 continue;
+      }
+      if (src[s]=='<') {
+         dest[d++]='&';
+         dest[d++]='l';
+         dest[d++]='t';
+         dest[d++]=';';
+	 s++;
+	 continue;
+      }
+      if (src[s]=='>') {
+         dest[d++]='&';
+         dest[d++]='g';
+         dest[d++]='t';
+         dest[d++]=';';
+	 s++;
+	 continue;
+      }
+      dest[d++]=src[s++];
+   }
+   dest[d++]='\0';
+
+   return d;
+}
+
+/*
  * Quote a TEXT format string as specified by RFC 2445.
  * Wrap it at 60-ish characters.
  */
