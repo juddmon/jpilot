@@ -1,5 +1,3 @@
-/* $Id: otherconv.h,v 1.5 2010/03/29 05:44:30 rikster5 Exp $ */
-
 /*******************************************************************************
  * otherconv.h
  * A module of J-Pilot http://jpilot.org

@@ -1,5 +1,3 @@
-/* $Id: monthview_gui.c,v 1.58 2010/11/10 03:57:47 rikster5 Exp $ */
-
 /*******************************************************************************
  * monthview_gui.c
  * A module of J-Pilot http://jpilot.org

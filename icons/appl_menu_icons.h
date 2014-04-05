@@ -1,5 +1,3 @@
-/* $Id: appl_menu_icons.h,v 1.4 2011/04/06 13:03:56 rousseau Exp $ */
-
 /*******************************************************************************
  * appl_menu_icons.h
  * A module of J-Pilot http://jpilot.org

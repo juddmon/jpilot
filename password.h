@@ -1,5 +1,3 @@
-/* $Id: password.h,v 1.11 2010/10/15 16:42:13 rikster5 Exp $ */
-
 /*******************************************************************************
  * password.h
  * A module of J-Pilot http://jpilot.org

@@ -1,5 +1,3 @@
-/* $Id: stock_buttons.h,v 1.6 2010/11/10 03:57:47 rikster5 Exp $ */
-
 /*******************************************************************************
  * stock_buttons.h
  * A module of J-Pilot http://jpilot.org

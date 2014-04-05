@@ -1,5 +1,3 @@
-/* $Id: category.c,v 1.39 2011/02/09 21:07:42 rousseau Exp $ */
-
 /*******************************************************************************
  * category.c
  * A module of J-Pilot http://jpilot.org

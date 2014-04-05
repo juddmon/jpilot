@@ -1,5 +1,3 @@
-/* $Id: weekview_gui.c,v 1.56 2010/11/10 03:57:48 rikster5 Exp $ */
-
 /*******************************************************************************
  * weekview_gui.c
  * A module of J-Pilot http://jpilot.org

@@ -1,5 +1,3 @@
-/* $Id: prefs_gui.h,v 1.6 2010/03/29 05:44:30 rikster5 Exp $ */
-
 /*******************************************************************************
  * prefs_gui.h
  * A module of J-Pilot http://jpilot.org

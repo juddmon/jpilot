@@ -1,5 +1,3 @@
-/* $Id: lock_icons.h,v 1.4 2010/03/29 05:44:32 rikster5 Exp $ */
-
 /*******************************************************************************
  * lock_icons.h
  * A module of J-Pilot http://jpilot.org

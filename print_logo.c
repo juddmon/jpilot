@@ -1,5 +1,3 @@
-/* $Id: print_logo.c,v 1.11 2010/03/29 05:44:31 rikster5 Exp $ */
-
 /*******************************************************************************
  * print_logo.c
  * A module of J-Pilot http://jpilot.org

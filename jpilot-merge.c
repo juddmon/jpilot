@@ -1,5 +1,3 @@
-/* $Id: jpilot-merge.c,v 1.1 2011/04/12 05:36:38 rikster5 Exp $ */
-
 /*******************************************************************************
  * merge.c
  * A module of J-Pilot http://jpilot.org

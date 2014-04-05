@@ -1,5 +1,3 @@
-/* $Id: address_gui.c,v 1.282 2012/10/23 01:57:58 judd Exp $ */
-
 /*******************************************************************************
  * address_gui.c
  * A module of J-Pilot http://jpilot.org

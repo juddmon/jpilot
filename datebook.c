@@ -1,5 +1,3 @@
-/* $Id: datebook.c,v 1.73 2011/02/09 21:18:38 rousseau Exp $ */
-
 /*******************************************************************************
  * datebook.c
  * A module of J-Pilot http://jpilot.org

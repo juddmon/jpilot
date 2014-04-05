@@ -1,5 +1,3 @@
-/* $Id: password.c,v 1.33 2011/02/09 21:29:55 rousseau Exp $ */
-
 /*******************************************************************************
  * password.c
  * A module of J-Pilot http://jpilot.org

@@ -1,5 +1,3 @@
-/* $Id: search_gui.c,v 1.54 2010/08/23 05:11:17 rikster5 Exp $ */
-
 /*******************************************************************************
  * search_gui.c
  * A module of J-Pilot http://jpilot.org

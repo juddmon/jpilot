@@ -1,5 +1,3 @@
-# $Id: Makefile.am,v 1.17 2011/11/11 17:37:23 judd Exp $
-
 # Install the man pages
 raw_mans = jpilot.man jpilot-dial.man jpilot-sync.man jpilot-dump.man jpilot-merge.man
 man_MANS = jpilot.1 jpilot-dial.1 jpilot-sync.1 jpilot-dump.1 jpilot-merge.1

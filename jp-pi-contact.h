@@ -1,5 +1,3 @@
-/* $Id: jp-pi-contact.h,v 1.9 2010/04/21 09:40:05 rousseau Exp $ */
-
 /*******************************************************************************
  * jp-pi-contact.h:  Translate Palm contact data formats
  * A module of J-Pilot http://jpilot.org

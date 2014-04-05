@@ -1,5 +1,3 @@
-/* $Id: clist_mini_icons.h,v 1.6 2011/04/06 12:43:45 rousseau Exp $ */
-
 /*******************************************************************************
  * clist_mini_icons.h
  * A module of J-Pilot http://jpilot.org

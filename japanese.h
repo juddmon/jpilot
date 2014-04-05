@@ -1,5 +1,3 @@
-/* $Id: japanese.h,v 1.8 2010/03/29 05:44:29 rikster5 Exp $ */
-
 /*******************************************************************************
  * japanese.h
  * A module of J-Pilot http://jpilot.org

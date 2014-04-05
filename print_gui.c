@@ -1,5 +1,3 @@
-/* $Id: print_gui.c,v 1.24 2010/03/29 05:44:31 rikster5 Exp $ */
-
 /*******************************************************************************
  * print_gui.c
  * A module of J-Pilot http://jpilot.org
