@@ -917,7 +917,9 @@ static void cb_read_pipe_from_child(gpointer data,
                } else {
                   sprintf(command_str, "%d:\n", PIPE_SYNC_CANCEL);
                }
-               write(pipe_to_child, command_str, strlen(command_str));
+               if (write(pipe_to_child, command_str, strlen(command_str)) < 0) {
+                  jp_logf(JP_LOG_WARN, "write failed\n");
+               }
                fsync(pipe_to_child);
             }
             break;
@@ -1078,7 +1080,7 @@ static guint8 *get_inline_pixbuf_data(const char **xpm_icon_data,
        gdk_pixbuf_get_height(pixbuf) != icon_size) {
       scaled_pb = gdk_pixbuf_scale_simple(pixbuf, icon_size, icon_size,
                                           GDK_INTERP_BILINEAR);
-      gdk_pixbuf_unref(pixbuf);
+      g_object_unref(pixbuf);
       pixbuf = scaled_pb;
    }
 
@@ -1086,7 +1088,7 @@ static guint8 *get_inline_pixbuf_data(const char **xpm_icon_data,
    gdk_pixdata_from_pixbuf(pixdata, pixbuf, FALSE);
    data = gdk_pixdata_serialize(pixdata, &len);
 
-   gdk_pixbuf_unref(pixbuf);
+   g_object_unref(pixbuf);
    g_free(pixdata);
 
    return data;

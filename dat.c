@@ -94,13 +94,17 @@ static int get_CString(FILE *in, char **PStr)
    unsigned char size2[2];
    int size;
 
-   fread(&size1, 1, 1, in);
+   if (fread(&size1, 1, 1, in) < 1) {
+      jp_logf(JP_LOG_WARN, "fread failed\n");
+   }
    if (size1==0) {
       *PStr = NULL;
       return 0;
    }
    if (size1==0xFF) {
-      fread(size2, 2, 1, in);
+      if (fread(size2, 2, 1, in) < 1) {
+         jp_logf(JP_LOG_WARN, "fread failed\n");
+      }
       size = x86_short(size2);
 #ifdef JPILOT_DEBUG
       printf("BIG STRING size=%d\n", size);
@@ -110,7 +114,9 @@ static int get_CString(FILE *in, char **PStr)
    }
    /* malloc an extra byte just to be safe */
    *PStr=malloc(size+2);
-   fread(*PStr, size, 1, in);
+   if (fread(*PStr, size, 1, in) < 1) {
+      jp_logf(JP_LOG_WARN, "fread failed\n");
+   }
    (*PStr)[size]='\0';
 
    return size;
@@ -124,7 +130,9 @@ static int get_categories(FILE *in, struct CategoryAppInfo *ai)
    int i;
 
    /* Get the category count */
-   fread(str_long, 4, 1, in);
+   if (fread(str_long, 4, 1, in) < 1) {
+      jp_logf(JP_LOG_WARN, "fread failed\n");
+   }
    count = x86_long(str_long);
 
    for (i=0; i<16; i++) {
@@ -136,14 +144,20 @@ static int get_categories(FILE *in, struct CategoryAppInfo *ai)
 
    for (i=0; i<count; i++) {
       /* category index */
-      fread(str_long, 4, 1, in);
+      if (fread(str_long, 4, 1, in) < 1) {
+         jp_logf(JP_LOG_WARN, "fread failed\n");
+      }
 
       /* category ID */
-      fread(str_long, 4, 1, in);
+      if (fread(str_long, 4, 1, in) < 1) {
+         jp_logf(JP_LOG_WARN, "fread failed\n");
+      }
       ai->ID[i] = x86_long(str_long);
 
       /* category dirty flag */
-      fread(str_long, 4, 1, in);
+      if (fread(str_long, 4, 1, in) < 1) {
+         jp_logf(JP_LOG_WARN, "fread failed\n");
+      }
 
       /* long category name */
       get_CString(in, &PStr);
@@ -168,7 +182,9 @@ static int get_repeat(FILE *in, struct Appointment *appt)
    char *PStr;
    int repeat_type;
 
-   fread(str_short, 2, 1, in);
+   if (fread(str_short, 2, 1, in) < 1) {
+      jp_logf(JP_LOG_WARN, "fread failed\n");
+   }
    s = x86_short(str_short);
 #ifdef JPILOT_DEBUG
    printf("  repeat entry follows:\n");
@@ -189,7 +205,9 @@ static int get_repeat(FILE *in, struct Appointment *appt)
    }
 
    for (i=0; i<s; i++) {
-      fread(str_long, 4, 1, in);
+      if (fread(str_long, 4, 1, in) < 1) {
+         jp_logf(JP_LOG_WARN, "fread failed\n");
+      }
       l = x86_long(str_long);
       {
          t = l;
@@ -202,7 +220,9 @@ static int get_repeat(FILE *in, struct Appointment *appt)
 #endif
    }
 
-   fread(str_short, 2, 1, in);
+   if (fread(str_short, 2, 1, in) < 1) {
+      jp_logf(JP_LOG_WARN, "fread failed\n");
+   }
    s = x86_short(str_short);
 #ifdef JPILOT_DEBUG
    printf("0x%x repeat event flag\n", s);
@@ -215,19 +235,25 @@ static int get_repeat(FILE *in, struct Appointment *appt)
 
    if (s==0xFFFF) {
       /* Class entry here */
-      fread(str_short, 2, 1, in);
+      if (fread(str_short, 2, 1, in) < 1) {
+         jp_logf(JP_LOG_WARN, "fread failed\n");
+      }
       s = x86_short(str_short);
 #ifdef JPILOT_DEBUG
       printf("constant of 1 = %d\n", s);
 #endif
-      fread(str_short, 2, 1, in);
+      if (fread(str_short, 2, 1, in) < 1) {
+         jp_logf(JP_LOG_WARN, "fread failed\n");
+      }
       s = x86_short(str_short);
 #ifdef JPILOT_DEBUG
       printf("class name length = %d\n", s);
 #endif
 
       PStr = malloc(s+1);
-      fread(PStr, s, 1, in);
+      if (fread(PStr, s, 1, in) < 1) {
+         jp_logf(JP_LOG_WARN, "fread failed\n");
+      }
       PStr[s]='\0';
 #ifdef JPILOT_DEBUG
       printf("class = [%s]\n", PStr);
@@ -235,7 +261,9 @@ static int get_repeat(FILE *in, struct Appointment *appt)
       free(PStr);
    }
 
-   fread(str_long, 4, 1, in);
+   if (fread(str_long, 4, 1, in) < 1) {
+      jp_logf(JP_LOG_WARN, "fread failed\n");
+   }
    repeat_type = x86_long(str_long);
    appt->repeatType=repeat_type;
 #ifdef JPILOT_DEBUG
@@ -264,14 +292,18 @@ static int get_repeat(FILE *in, struct Appointment *appt)
    }
 #endif
 
-   fread(str_long, 4, 1, in);
+   if (fread(str_long, 4, 1, in) < 1) {
+      jp_logf(JP_LOG_WARN, "fread failed\n");
+   }
    l = x86_long(str_long);
 #ifdef JPILOT_DEBUG
    printf("Interval = %d\n", l);
 #endif
    appt->repeatFrequency=l;
 
-   fread(str_long, 4, 1, in);
+   if (fread(str_long, 4, 1, in) < 1) {
+      jp_logf(JP_LOG_WARN, "fread failed\n");
+   }
    l = x86_long(str_long);
    {
       t = l;
@@ -286,7 +318,9 @@ static int get_repeat(FILE *in, struct Appointment *appt)
 #ifdef JPILOT_DEBUG
    printf("repeatEnd: 0x%x -> ", l); print_date(l);
 #endif
-   fread(str_long, 4, 1, in);
+   if (fread(str_long, 4, 1, in) < 1) {
+      jp_logf(JP_LOG_WARN, "fread failed\n");
+   }
    l = x86_long(str_long);
    appt->repeatWeekstart=l;
 #ifdef JPILOT_DEBUG
@@ -295,20 +329,26 @@ static int get_repeat(FILE *in, struct Appointment *appt)
 
    switch (repeat_type) {
     case DAILY:
-      fread(str_long, 4, 1, in);
+      if (fread(str_long, 4, 1, in) < 1) {
+         jp_logf(JP_LOG_WARN, "fread failed\n");
+      }
       l = x86_long(str_long);
 #ifdef JPILOT_DEBUG
       printf("Day Index = %d\n", l);
 #endif
       break;
     case WEEKLY:
-      fread(str_long, 4, 1, in);
+      if (fread(str_long, 4, 1, in) < 1) {
+         jp_logf(JP_LOG_WARN, "fread failed\n");
+      }
       l = x86_long(str_long);
 #ifdef JPILOT_DEBUG
       printf("Day Index = %d\n", l);
 #endif
 
-      fread(str_long, 1, 1, in);
+      if (fread(str_long, 1, 1, in) < 1) {
+         jp_logf(JP_LOG_WARN, "fread failed\n");
+      }
       for (i=0, bit=1; i<7; i++, bit=bit<<1) {
          appt->repeatDays[i]=( str_long[0] & bit );
       }
@@ -317,13 +357,17 @@ static int get_repeat(FILE *in, struct Appointment *appt)
 #endif
       break;
     case MONTHLY_BY_DAY:
-      fread(str_long, 4, 1, in);
+      if (fread(str_long, 4, 1, in) < 1) {
+         jp_logf(JP_LOG_WARN, "fread failed\n");
+      }
       s = x86_long(str_long);
 #ifdef JPILOT_DEBUG
       printf("Day Index = %d\n", l);
 #endif
 
-      fread(str_long, 4, 1, in);
+      if (fread(str_long, 4, 1, in) < 1) {
+         jp_logf(JP_LOG_WARN, "fread failed\n");
+      }
       l = x86_long(str_long);
 #ifdef JPILOT_DEBUG
       printf("Week Index = %d\n", l);
@@ -332,19 +376,25 @@ static int get_repeat(FILE *in, struct Appointment *appt)
       appt->repeatDay = 7*l + s;
       break;
     case MONTHLY_BY_DATE:
-      fread(str_long, 4, 1, in);
+      if (fread(str_long, 4, 1, in) < 1) {
+         jp_logf(JP_LOG_WARN, "fread failed\n");
+      }
       l = x86_long(str_long);
 #ifdef JPILOT_DEBUG
       printf("Day Number = %d\n", l);
 #endif
       break;
     case YEARLY_BY_DATE:
-      fread(str_long, 4, 1, in);
+      if (fread(str_long, 4, 1, in) < 1) {
+         jp_logf(JP_LOG_WARN, "fread failed\n");
+      }
       l = x86_long(str_long);
 #ifdef JPILOT_DEBUG
       printf("Day Number = %d\n", l);
 #endif
-      fread(str_long, 4, 1, in);
+      if (fread(str_long, 4, 1, in) < 1) {
+         jp_logf(JP_LOG_WARN, "fread failed\n");
+      }
       l = x86_long(str_long);
 #ifdef JPILOT_DEBUG
       printf("Month Index = %d\n", l);
@@ -420,14 +470,18 @@ static int get_field(FILE *in, struct field *f)
    long type;
    char *PStr;
 
-   fread(str_long, 4, 1, in);
+   if (fread(str_long, 4, 1, in) < 1) {
+      jp_logf(JP_LOG_WARN, "fread failed\n");
+   }
    type = x86_long(str_long);
    f->type=type;
    f->str=NULL;
 
    switch (type) {
     case DAT_TYPE_INTEGER:
-      fread(str_long, 4, 1, in);
+      if (fread(str_long, 4, 1, in) < 1) {
+         jp_logf(JP_LOG_WARN, "fread failed\n");
+      }
       f->i = x86_long(str_long);
       break;
     case DAT_TYPE_CSTRING:
@@ -436,11 +490,15 @@ static int get_field(FILE *in, struct field *f)
       f->str = PStr;
       break;
     case DAT_TYPE_BOOLEAN:
-      fread(str_long, 4, 1, in);
+      if (fread(str_long, 4, 1, in) < 1) {
+         jp_logf(JP_LOG_WARN, "fread failed\n");
+      }
       f->i = x86_long(str_long);
       break;
     case DAT_TYPE_DATE:
-      fread(str_long, 4, 1, in);
+      if (fread(str_long, 4, 1, in) < 1) {
+         jp_logf(JP_LOG_WARN, "fread failed\n");
+      }
       f->date = x86_long(str_long);
       break;
     case DAT_TYPE_BITFLAG:
@@ -465,7 +523,9 @@ int dat_check_if_dat_file(FILE *in)
    memset(version, 0, sizeof(version));
    fseek(in, 0, SEEK_SET);
    /* Version */
-   fread(version, 4, 1, in);
+   if (fread(version, 4, 1, in) < 1) {
+      jp_logf(JP_LOG_WARN, "fread failed\n");
+   }
    fseek(in, 0, SEEK_SET);
    jp_logf(JP_LOG_DEBUG, "dat_check_if_dat_file(): version = [%c%c%d%d]\n", version[3],version[2],version[1],version[0]);
    if ((version[3]=='D') && (version[2]=='B') &&
@@ -502,7 +562,9 @@ static int dat_read_header(FILE *in,
    fseek(in, 0, SEEK_SET);
 
    /* Version */
-   fread(version, 4, 1, in);
+   if (fread(version, 4, 1, in) < 1) {
+      jp_logf(JP_LOG_WARN, "fread failed\n");
+   }
    jp_logf(JP_LOG_DEBUG, "version = [%c%c%d%d]\n", version[3],version[2],version[1],version[0]);
 
    /* Full file path name */
@@ -516,7 +578,9 @@ static int dat_read_header(FILE *in,
    free(PStr);
 
    /* Next free category ID */
-   fread(filler, 4, 1, in);
+   if (fread(filler, 4, 1, in) < 1) {
+      jp_logf(JP_LOG_WARN, "fread failed\n");
+   }
 
    /* Categories */
    get_categories(in, ai);
@@ -527,9 +591,13 @@ static int dat_read_header(FILE *in,
 #endif
 
    /* Schema resource ID */
-   fread(filler, 4, 1, in);
+   if (fread(filler, 4, 1, in) < 1) {
+      jp_logf(JP_LOG_WARN, "fread failed\n");
+   }
    /* Schema fields per row */
-   fread(filler, 4, 1, in);
+   if (fread(filler, 4, 1, in) < 1) {
+      jp_logf(JP_LOG_WARN, "fread failed\n");
+   }
    *field_count=x86_long(filler);
    if (*field_count != expected_field_count) {
       jp_logf(JP_LOG_WARN, _("fields per row count != %d, unknown format\n"),
@@ -537,13 +605,21 @@ static int dat_read_header(FILE *in,
       return EXIT_FAILURE;
    }
    /* Schema record ID position */
-   fread(filler, 4, 1, in);
+   if (fread(filler, 4, 1, in) < 1) {
+      jp_logf(JP_LOG_WARN, "fread failed\n");
+   }
    /* Schema record status position */
-   fread(filler, 4, 1, in);
+   if (fread(filler, 4, 1, in) < 1) {
+      jp_logf(JP_LOG_WARN, "fread failed\n");
+   }
    /* Schema placement position */
-   fread(filler, 4, 1, in);
+   if (fread(filler, 4, 1, in) < 1) {
+      jp_logf(JP_LOG_WARN, "fread failed\n");
+   }
    /* Schema fields count */
-   fread(filler, 2, 1, in);
+   if (fread(filler, 2, 1, in) < 1) {
+      jp_logf(JP_LOG_WARN, "fread failed\n");
+   }
    *field_count = x86_short(filler);
    if (*field_count != expected_field_count) {
       jp_logf(JP_LOG_WARN, _("field count != %d, unknown format\n"),
@@ -552,7 +628,9 @@ static int dat_read_header(FILE *in,
    }
 
    /* Schema fields */
-   fread(filler, (*field_count)*2, 1, in);
+   if (fread(filler, (*field_count)*2, 1, in) < 1) {
+      jp_logf(JP_LOG_WARN, "fread failed\n");
+   }
    if (memcmp(filler, schema, (*field_count)*2)) {
       jp_logf(JP_LOG_WARN, _("Unknown format, file has wrong schema\n"));
       jp_logf(JP_LOG_WARN, _("File schema is:"));
@@ -567,7 +645,9 @@ static int dat_read_header(FILE *in,
    }
 
    /* Get record count */
-   fread(str_long, 4, 1, in);
+   if (fread(str_long, 4, 1, in) < 1) {
+      jp_logf(JP_LOG_WARN, "fread failed\n");
+   }
    if ((*field_count)) {
       *rec_count = x86_long(str_long) / (*field_count);
    }

@@ -114,7 +114,9 @@ int export_browse(GtkWidget *main_window, int pref_export)
          }
       }
 
-      chdir(dir);
+      if (chdir(dir)<0) {
+         jp_logf(JP_LOG_WARN, "chdir failed\n");
+      }
    }
    filesel = gtk_file_selection_new(_("File Browser"));
 

@@ -1914,7 +1914,9 @@ int get_app_info_size(FILE *in, int *size)
 
    fseek(in, 0, SEEK_SET);
 
-   fread(raw_header, LEN_RAW_DB_HEADER, 1, in);
+   if (fread(raw_header, LEN_RAW_DB_HEADER, 1, in) < 1) {
+      jp_logf(JP_LOG_WARN, "fread failed\n");
+   }
    if (feof(in)) {
       jp_logf(JP_LOG_WARN, "get_app_info_size(): %s\n", _("Error reading file"));
       return EXIT_FAILURE;
@@ -1936,7 +1938,9 @@ int get_app_info_size(FILE *in, int *size)
       return EXIT_SUCCESS;
    }
 
-   fread(&rh, sizeof(record_header), 1, in);
+   if (fread(&rh, sizeof(record_header), 1, in) < 1) {
+      jp_logf(JP_LOG_WARN, "fread failed\n");
+   }
    offset = ((rh.Offset[0]*256+rh.Offset[1])*256+rh.Offset[2])*256+rh.Offset[3];
    *size=offset - dbh.app_info_offset;
 
@@ -2131,17 +2135,25 @@ int get_next_unique_pc_id(unsigned int *next_unique_id)
       return EXIT_FAILURE;
    }
    memset(str, '\0', sizeof(FILE_VERSION)+4);
-   fread(str, 1, strlen(FILE_VERSION), pc_in_out);
+   if (fread(str, strlen(FILE_VERSION), 1, pc_in_out) < 1) {
+      jp_logf(JP_LOG_WARN, "fread failed\n");
+   }
    if (!strcmp(str, FILE_VERSION)) {
       /* Must be a versioned file */
       fseek(pc_in_out, 0, SEEK_SET);
-      fgets(str, 200, pc_in_out);
-      fgets(str, 200, pc_in_out);
+      if (fgets(str, 200, pc_in_out) == NULL) {
+         jp_logf(JP_LOG_WARN, "fgets failed\n");
+      }
+      if (fgets(str, 200, pc_in_out) == NULL) {
+         jp_logf(JP_LOG_WARN, "fgets failed\n");
+      }
       str[200]='\0';
       *next_unique_id = atoi(str);
    } else {
       fseek(pc_in_out, 0, SEEK_SET);
-      fread(next_unique_id, sizeof(*next_unique_id), 1, pc_in_out);
+      if (fread(next_unique_id, sizeof(*next_unique_id), 1, pc_in_out) < 1) {
+         jp_logf(JP_LOG_WARN, "fread failed\n");
+      }
    }
    (*next_unique_id)++;
    if (fseek(pc_in_out, 0, SEEK_SET)) {

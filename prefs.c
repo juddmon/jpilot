@@ -880,7 +880,9 @@ int jp_pref_read_rc_file(char *filename, prefType prefs[], int num_prefs)
    }
 
    while (!feof(in)) {
-      fgets(line, sizeof(line), in);
+      if (fgets(line, sizeof(line), in) == NULL) {
+         jp_logf(JP_LOG_WARN, "fgets failed\n");
+      }
       if (feof(in)) break;
       line[sizeof(line)-2] = ' ';
       line[sizeof(line)-1] = '\0';

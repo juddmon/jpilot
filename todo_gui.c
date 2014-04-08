@@ -419,7 +419,9 @@ static int cb_todo_import(GtkWidget *parent_window,
    if (type==IMPORT_TYPE_CSV) {
       jp_logf(JP_LOG_DEBUG, "Todo import CSV [%s]\n", file_path);
       /* Get the first line containing the format and check for reasonableness */
-      fgets(text, sizeof(text), in);
+      if (fgets(text, sizeof(text), in) == NULL) {
+         jp_logf(JP_LOG_WARN, "fgets failed\n");
+      }
       ret = verify_csv_header(text, NUM_TODO_CSV_FIELDS, file_path);
       if (EXIT_FAILURE == ret) return EXIT_FAILURE;
 

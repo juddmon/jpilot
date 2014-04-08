@@ -138,7 +138,9 @@ static int guess_file_type(const char *path)
       return IMPORT_TYPE_DAT;
    }
    fseek(in, 0, SEEK_SET);
-   fread(text, 1, 15, in);
+   if (fread(text, 1, 15, in) < 1) {
+      jp_logf(JP_LOG_WARN, "fread failed\n");
+   }
    if (!strncmp(text, "CSV ", 4)) {
       fclose(in);
       return IMPORT_TYPE_CSV;

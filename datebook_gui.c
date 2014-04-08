@@ -432,7 +432,9 @@ static int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int 
    if (type==IMPORT_TYPE_CSV) {
       jp_logf(JP_LOG_DEBUG, "Datebook import CSV [%s]\n", file_path);
       /* Get the first line containing the format and check for reasonableness */
-      fgets(text, sizeof(text), in);
+      if (fgets(text, sizeof(text), in) == NULL) {
+         jp_logf(JP_LOG_WARN, "fgets failed\n");
+      }
       if (datebook_version==0) {
          ret = verify_csv_header(text, NUM_DBOOK_CSV_FIELDS, file_path);
       } else {
