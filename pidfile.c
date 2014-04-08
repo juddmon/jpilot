@@ -87,7 +87,7 @@ void write_pid(void)
    {
       g_snprintf(tmp, sizeof(tmp), "%d\n", getpid());
       if (write(fd, tmp, strlen (tmp)) < 0) {
-         jp_logf(JP_LOG_WARN, "write failed\n");
+         jp_logf(JP_LOG_WARN, "write failed %s %d\n", __FILE__, __LINE__);
       }
       close(fd);
    }

@@ -130,7 +130,7 @@ static int sync_lock(int *fd)
    if (r == -1){
       jp_logf(JP_LOG_WARN, _("lock failed\n"));
       if (read(*fd, str, 10) < 0) {
-         jp_logf(JP_LOG_WARN, "read failed\n");
+         jp_logf(JP_LOG_WARN, "fread failed %s %d\n", __FILE__, __LINE__);
       }
       pid = atoi(str);
       jp_logf(JP_LOG_FATAL, _("sync file is locked by pid %d\n"), pid);
@@ -141,10 +141,10 @@ static int sync_lock(int *fd)
       pid=getpid();
       sprintf(str, "%d\n", pid);
       if (write(*fd, str, strlen(str)+1) < 0) {
-         jp_logf(JP_LOG_WARN, "write failed\n");
+         jp_logf(JP_LOG_WARN, "write failed %s %d\n", __FILE__, __LINE__);
       }
       if (ftruncate(*fd, strlen(str)+1) == -1) {
-         jp_logf(JP_LOG_WARN, "ftruncate failed\n");
+         jp_logf(JP_LOG_WARN, "ftruncate failed %s %d\n", __FILE__, __LINE__);
       }
    }
    return EXIT_SUCCESS;
@@ -174,7 +174,7 @@ static int sync_unlock(int fd)
    if (r == -1) {
       jp_logf(JP_LOG_WARN, _("unlock failed\n"));
       if (read(fd, str, 10) < 0) {
-         jp_logf(JP_LOG_WARN, "read failed\n");
+         jp_logf(JP_LOG_WARN, "fread failed %s %d\n", __FILE__, __LINE__);
       }
       pid = atoi(str);
       jp_logf(JP_LOG_WARN, _("sync is locked by pid %d\n"), pid);
@@ -183,7 +183,7 @@ static int sync_unlock(int fd)
    } else {
       jp_logf(JP_LOG_DEBUG, "unlock succeeded\n");
       if (ftruncate(fd, 0) == -1) {
-         jp_logf(JP_LOG_WARN, "ftruncate failed\n");
+         jp_logf(JP_LOG_WARN, "ftruncate failed %s %d\n", __FILE__, __LINE__);
       }
       close(fd);
    }
@@ -731,7 +731,7 @@ static int sync_rotate_backups(const int num_backups)
 
    /* Create the symlink */
    if (symlink(newdir, full_name) != 0) {
-      jp_logf(JP_LOG_WARN, "symlink failed\n");
+      jp_logf(JP_LOG_WARN, "symlink failed %s %d\n", __FILE__, __LINE__);
    }
 
    return EXIT_SUCCESS;

@@ -139,7 +139,7 @@ static int guess_file_type(const char *path)
    }
    fseek(in, 0, SEEK_SET);
    if (fread(text, 1, 15, in) < 1) {
-      jp_logf(JP_LOG_WARN, "fread failed\n");
+      jp_logf(JP_LOG_WARN, "fread failed %s %d\n", __FILE__, __LINE__);
    }
    if (!strncmp(text, "CSV ", 4)) {
       fclose(in);

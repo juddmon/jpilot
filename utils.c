@@ -1915,7 +1915,7 @@ int get_app_info_size(FILE *in, int *size)
    fseek(in, 0, SEEK_SET);
 
    if (fread(raw_header, LEN_RAW_DB_HEADER, 1, in) < 1) {
-      jp_logf(JP_LOG_WARN, "fread failed\n");
+      jp_logf(JP_LOG_WARN, "fread failed %s %d\n", __FILE__, __LINE__);
    }
    if (feof(in)) {
       jp_logf(JP_LOG_WARN, "get_app_info_size(): %s\n", _("Error reading file"));
@@ -1939,7 +1939,7 @@ int get_app_info_size(FILE *in, int *size)
    }
 
    if (fread(&rh, sizeof(record_header), 1, in) < 1) {
-      jp_logf(JP_LOG_WARN, "fread failed\n");
+      jp_logf(JP_LOG_WARN, "fread failed %s %d\n", __FILE__, __LINE__);
    }
    offset = ((rh.Offset[0]*256+rh.Offset[1])*256+rh.Offset[2])*256+rh.Offset[3];
    *size=offset - dbh.app_info_offset;
@@ -2136,28 +2136,28 @@ int get_next_unique_pc_id(unsigned int *next_unique_id)
    }
    memset(str, '\0', sizeof(FILE_VERSION)+4);
    if (fread(str, strlen(FILE_VERSION), 1, pc_in_out) < 1) {
-      jp_logf(JP_LOG_WARN, "fread failed\n");
+      jp_logf(JP_LOG_WARN, "fread failed %s %d\n", __FILE__, __LINE__);
    }
    if (!strcmp(str, FILE_VERSION)) {
       /* Must be a versioned file */
       fseek(pc_in_out, 0, SEEK_SET);
       if (fgets(str, 200, pc_in_out) == NULL) {
-         jp_logf(JP_LOG_WARN, "fgets failed\n");
+         jp_logf(JP_LOG_WARN, "fgets failed %s %d\n", __FILE__, __LINE__);
       }
       if (fgets(str, 200, pc_in_out) == NULL) {
-         jp_logf(JP_LOG_WARN, "fgets failed\n");
+         jp_logf(JP_LOG_WARN, "fgets failed %s %d\n" __FILE__, __LINE__);
       }
       str[200]='\0';
       *next_unique_id = atoi(str);
    } else {
       fseek(pc_in_out, 0, SEEK_SET);
       if (fread(next_unique_id, sizeof(*next_unique_id), 1, pc_in_out) < 1) {
-         jp_logf(JP_LOG_WARN, "fread failed\n");
+         jp_logf(JP_LOG_WARN, "fread failed %s %d\n", __FILE__, __LINE__);
       }
    }
    (*next_unique_id)++;
    if (fseek(pc_in_out, 0, SEEK_SET)) {
-      jp_logf(JP_LOG_WARN, "fseek failed\n");
+      jp_logf(JP_LOG_WARN, "fseek failed %s %d\n", __FILE__, __LINE__);
    }
    /* rewind(pc_in_out); */
    /* todo - if > 16777216 then cleanup */

@@ -918,7 +918,7 @@ static void cb_read_pipe_from_child(gpointer data,
                   sprintf(command_str, "%d:\n", PIPE_SYNC_CANCEL);
                }
                if (write(pipe_to_child, command_str, strlen(command_str)) < 0) {
-                  jp_logf(JP_LOG_WARN, "write failed\n");
+                  jp_logf(JP_LOG_WARN, "write failed %s %d\n", __FILE__, __LINE__);
                }
                fsync(pipe_to_child);
             }
@@ -1036,7 +1036,9 @@ static void cb_web(GtkWidget *widget, gpointer data)
 
    sel=GPOINTER_TO_INT(data);
    jp_logf(JP_LOG_INFO, PN": executing %s\n", url_commands[sel].command);
-   system(url_commands[sel].command);
+   if (system(url_commands[sel].command) == -1) {
+      jp_logf(JP_LOG_WARN, "system call failed %s %d\n", __FILE__, __LINE__);
+   }
 }
 
 #endif

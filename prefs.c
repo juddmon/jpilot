@@ -881,7 +881,7 @@ int jp_pref_read_rc_file(char *filename, prefType prefs[], int num_prefs)
 
    while (!feof(in)) {
       if (fgets(line, sizeof(line), in) == NULL) {
-         jp_logf(JP_LOG_WARN, "fgets failed\n");
+         jp_logf(JP_LOG_WARN, "fgets failed %s %d\n",  __FILE__, __LINE__);
       }
       if (feof(in)) break;
       line[sizeof(line)-2] = ' ';

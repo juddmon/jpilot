@@ -191,7 +191,7 @@ int write_to_parent(int command, const char *format, ...)
    if (pipe_to_parent==STDOUT_FILENO) {
       if (command==PIPE_PRINT) {
          if (write(pipe_to_parent, buf, strlen(buf)) < 0) {
-            jp_logf(JP_LOG_WARN, "write failed\n");
+            jp_logf(JP_LOG_WARN, "write failed %s %d\n", __FILE__, __LINE__);
          }
       }
       return TRUE;
@@ -208,7 +208,7 @@ int write_to_parent(int command, const char *format, ...)
    buf[size+1]='\n';
    size += 2;
    if (write(pipe_to_parent, buf, size) < 0) {
-      jp_logf(JP_LOG_WARN, "write failed\n");
+      jp_logf(JP_LOG_WARN, "write failed %s %d\n", __FILE__, __LINE__);
    }
 
    return TRUE;

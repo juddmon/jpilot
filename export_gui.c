@@ -115,7 +115,7 @@ int export_browse(GtkWidget *main_window, int pref_export)
       }
 
       if (chdir(dir)<0) {
-         jp_logf(JP_LOG_WARN, "chdir failed\n");
+         jp_logf(JP_LOG_WARN, "chdir failed %s %d\n", __FILE__, __LINE__);
       }
    }
    filesel = gtk_file_selection_new(_("File Browser"));

@@ -292,7 +292,7 @@ static int cb_memo_import(GtkWidget *parent_window,
       while (!feof(in)) {
          line[0]='\0';
          if (fgets(line, 255, in) == NULL) {
-            jp_logf(JP_LOG_WARN, "write failed\n");
+            jp_logf(JP_LOG_WARN, "write failed %s %d\n", __FILE__, __LINE__);
          }
          line[255] = '\0';
          len=strlen(line);
@@ -336,7 +336,7 @@ static int cb_memo_import(GtkWidget *parent_window,
       jp_logf(JP_LOG_DEBUG, "Memo import CSV [%s]\n", file_path);
       /* Get the first line containing the format and check for reasonableness */
       if (fgets(text, sizeof(text), in) == NULL) {
-         jp_logf(JP_LOG_WARN, "fgets failed\n");
+         jp_logf(JP_LOG_WARN, "fgets failed %s %d\n", __FILE__, __LINE__);
       }
       ret = verify_csv_header(text, NUM_MEMO_CSV_FIELDS, file_path);
       if (EXIT_FAILURE == ret) return EXIT_FAILURE;
@@ -1344,10 +1344,7 @@ static gboolean cb_key_pressed_right_side(GtkWidget   *widget,
       g_snprintf(command, sizeof(command), "%s %s", ext_editor, tmp_fname);
 
       /* jp_logf(JP_LOG_STDOUT|JP_LOG_FILE, _("executing command = [%s]\n"), command); */
-      int r = system(command);
-      
-      if (!r)
-      {
+      if (system(command) == -1) {
          /* Read data back from temporary file into memo */
          char text_in[0xFFFF];
          size_t bytes_read;
