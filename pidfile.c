@@ -61,7 +61,7 @@ pid_t check_for_jpilot(void)
    if ((pidfp = fopen(pidfile, "r")) != NULL) {
       if (fscanf(pidfp, "%d", &pid) == EOF) {
          if (ferror(pidfp)) {
-            jp_logf(JP_LOG_WARN, "fscanf failed\n");
+            jp_logf(JP_LOG_WARN, "fscanf failed %s %d\n", __FILE__, __LINE__);
          }
       }
 
