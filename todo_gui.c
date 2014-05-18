@@ -1046,8 +1046,8 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data)
 #ifdef ENABLE_MANANA
    get_pref(PREF_MANANA_MODE, &ivalue, NULL);
    if (ivalue) {
-      strcpy(pdb_name, "MañanaDB.pdb");
-      strcpy(db_name, "MañanaDB");
+      strcpy(pdb_name, "MananaDB.pdb");
+      strcpy(db_name, "MananaDB");
    } else {
       strcpy(pdb_name, "ToDoDB.pdb");
       strcpy(db_name, "ToDoDB");

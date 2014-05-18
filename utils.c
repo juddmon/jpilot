@@ -551,7 +551,7 @@ int check_copy_DBs_to_home(void)
       "ContactsDB-PAdd.pdb",
       "ToDoDB.pdb",
       "TasksDB-PTod.pdb",
-      "MañanaDB.pdb",
+      "MananaDB.pdb",
       "MemoDB.pdb",
       "MemosDB-PMem.pdb",
       "Memo32DB.pdb",
@@ -1017,7 +1017,7 @@ int delete_pc_record(AppType app_type, void *VP, int flag)
 #ifdef ENABLE_MANANA
       get_pref(PREF_MANANA_MODE, &ivalue, NULL);
       if (ivalue) {
-         strcpy(filename, "MañanaDB.pc3");
+         strcpy(filename, "MananaDB.pc3");
       } else {
          strcpy(filename, "ToDoDB.pc3");
       }
@@ -3619,7 +3619,7 @@ int undelete_pc_record(AppType app_type, void *VP, int flag)
 #ifdef ENABLE_MANANA
       get_pref(PREF_MANANA_MODE, &ivalue, NULL);
       if (ivalue) {
-         strcpy(filename, "MañanaDB.pc3");
+         strcpy(filename, "MananaDB.pc3");
       } else {
          strcpy(filename, dbname[2]);
       }

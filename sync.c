@@ -1179,7 +1179,7 @@ static int sync_fetch(int sd, unsigned int flags,
       "ToDoDB",
       "MemoDB",
 #ifdef ENABLE_MANANA
-      "MañanaDB",
+      "MananaDB",
 #endif
       "Saved Preferences",
       ""
@@ -2970,7 +2970,7 @@ static int jp_sync(struct my_sync_info *sync_info)
       "ToDoDB",
       "MemoDB",
 #ifdef ENABLE_MANANA
-      "MañanaDB",
+      "MananaDB",
 #endif
       ""
    };
