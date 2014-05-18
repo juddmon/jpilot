@@ -2050,14 +2050,14 @@ int get_home_file_name(const char *file, char *full_name, int max_size)
    if (!home) {/* No JPILOT_HOME var */
       home = getenv("HOME");
       if (!home) {/* No HOME var */
-         jp_logf(JP_LOG_WARN, _("Can't get HOME environment variable\n"));
+         fprintf(stderr, _("Can't get HOME environment variable\n"));
       }
    }
    if (!home) {
       home = default_path;
    }
    if (strlen(home)>(max_size-strlen(file)-strlen("/."EPN"/")-2)) {
-      jp_logf(JP_LOG_WARN, _("HOME environment variable is too long to process\n"));
+      fprintf(stderr, _("HOME environment variable is too long to process\n"));
       home=default_path;
    }
    sprintf(full_name, "%s/."EPN"/%s", home, file);
