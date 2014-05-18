@@ -59,7 +59,11 @@ pid_t check_for_jpilot(void)
 
    pid = 0;
    if ((pidfp = fopen(pidfile, "r")) != NULL) {
-      fscanf(pidfp, "%d", &pid);
+      if (fscanf(pidfp, "%d", &pid) == EOF) {
+         if (ferror(pidfp)) {
+            jp_logf(JP_LOG_WARN, "fscanf failed %s %d\n", __FILE__, __LINE__);
+         }
+      }
 
       if (kill (pid, 0) == -1) {
          jp_logf(JP_LOG_WARN, _("removing stale pidfile\n"));
@@ -82,7 +86,9 @@ void write_pid(void)
    if ((fd = open(pidfile, O_WRONLY|O_CREAT|O_EXCL|O_SYNC, S_IRUSR|S_IWUSR)) != -1)
    {
       g_snprintf(tmp, sizeof(tmp), "%d\n", getpid());
-      write(fd, tmp, strlen (tmp));
+      if (write(fd, tmp, strlen (tmp)) < 0) {
+         jp_logf(JP_LOG_WARN, "write failed %s %d\n", __FILE__, __LINE__);
+      }
       close(fd);
    }
    else {

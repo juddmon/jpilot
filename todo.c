@@ -75,7 +75,7 @@ int get_todo_app_info(struct ToDoAppInfo *ai)
 #ifdef ENABLE_MANANA
    get_pref(PREF_MANANA_MODE, &ivalue, NULL);
    if (ivalue) {
-      strcpy(DBname, "MañanaDB");
+      strcpy(DBname, "MananaDB");
    } else {
       strcpy(DBname, "ToDoDB");
    }
@@ -162,7 +162,7 @@ int get_todos2(ToDoList **todo_list, int sort_order,
 #ifdef ENABLE_MANANA
    get_pref(PREF_MANANA_MODE, &ivalue, NULL);
    if (ivalue) {
-      num = jp_read_DB_files("MañanaDB", &records);
+      num = jp_read_DB_files("MananaDB", &records);
       if (-1 == num)
          return 0;
    } else {
@@ -315,7 +315,7 @@ int pc_todo_write(struct ToDo *todo, PCRecType rt, unsigned char attrib,
 #ifdef ENABLE_MANANA
    get_pref(PREF_MANANA_MODE, &ivalue, NULL);
    if (ivalue) {
-      jp_pc_write("MañanaDB", &br);
+      jp_pc_write("MananaDB", &br);
    } else {
       jp_pc_write("ToDoDB", &br);
    }

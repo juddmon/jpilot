@@ -555,7 +555,7 @@ static int cb_addr_import(GtkWidget *parent_window,
       }
       
       /* Get the first line containing the format and check for reasonableness */
-      if (! fgets(text, sizeof(text), in)) {
+      if (fgets(text, sizeof(text), in) == NULL) {
          jp_logf(JP_LOG_WARN, _("Unable to read file: %s\n"), file_path);
       }
       if (address_version) {
@@ -2231,8 +2231,8 @@ static void email_contact(GtkWidget *widget, gchar *str)
    command[1023]='\0';
 
    jp_logf(JP_LOG_STDOUT|JP_LOG_FILE, _("executing command = [%s]\n"), command);
-   if (system(command) < 0) {
-      jp_logf(JP_LOG_STDOUT|JP_LOG_FILE, _("Failed to execute [%s]\n"), command);
+   if (system(command) == -1) {
+      jp_logf(JP_LOG_STDOUT|JP_LOG_FILE, _("Failed to execute [%s] at %s %d\n"), command, __FILE__, __LINE__);
    }
    
 }
@@ -3130,10 +3130,7 @@ static gboolean cb_key_pressed_right_side(GtkWidget   *widget,
       g_snprintf(command, sizeof(command), "%s %s", ext_editor, tmp_fname);
 
       /* jp_logf(JP_LOG_STDOUT|JP_LOG_FILE, _("executing command = [%s]\n"), command); */
-      int r = system(command);
-      
-      if (!r)
-      {
+      if (system(command) == -1) {
          /* Read data back from temporary file into memo */
          char text_in[0xFFFF];
          size_t bytes_read;

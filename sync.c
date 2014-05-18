@@ -129,7 +129,9 @@ static int sync_lock(int *fd)
 #endif
    if (r == -1){
       jp_logf(JP_LOG_WARN, _("lock failed\n"));
-      read(*fd, str, 10);
+      if (read(*fd, str, 10) < 0) {
+         jp_logf(JP_LOG_WARN, "fread failed %s %d\n", __FILE__, __LINE__);
+      }
       pid = atoi(str);
       jp_logf(JP_LOG_FATAL, _("sync file is locked by pid %d\n"), pid);
       close(*fd);
@@ -138,8 +140,12 @@ static int sync_lock(int *fd)
       jp_logf(JP_LOG_DEBUG, "lock succeeded\n");
       pid=getpid();
       sprintf(str, "%d\n", pid);
-      write(*fd, str, strlen(str)+1);
-      ftruncate(*fd, strlen(str)+1);
+      if (write(*fd, str, strlen(str)+1) < 0) {
+         jp_logf(JP_LOG_WARN, "write failed %s %d\n", __FILE__, __LINE__);
+      }
+      if (ftruncate(*fd, strlen(str)+1) == -1) {
+         jp_logf(JP_LOG_WARN, "ftruncate failed %s %d\n", __FILE__, __LINE__);
+      }
    }
    return EXIT_SUCCESS;
 }
@@ -167,14 +173,18 @@ static int sync_unlock(int fd)
 #endif
    if (r == -1) {
       jp_logf(JP_LOG_WARN, _("unlock failed\n"));
-      read(fd, str, 10);
+      if (read(fd, str, 10) < 0) {
+         jp_logf(JP_LOG_WARN, "fread failed %s %d\n", __FILE__, __LINE__);
+      }
       pid = atoi(str);
       jp_logf(JP_LOG_WARN, _("sync is locked by pid %d\n"), pid);
       close(fd);
       return EXIT_FAILURE;
    } else {
       jp_logf(JP_LOG_DEBUG, "unlock succeeded\n");
-      ftruncate(fd, 0);
+      if (ftruncate(fd, 0) == -1) {
+         jp_logf(JP_LOG_WARN, "ftruncate failed %s %d\n", __FILE__, __LINE__);
+      }
       close(fd);
    }
    return EXIT_SUCCESS;
@@ -720,7 +730,9 @@ static int sync_rotate_backups(const int num_backups)
    unlink(full_name);
 
    /* Create the symlink */
-   symlink(newdir, full_name);
+   if (symlink(newdir, full_name) != 0) {
+      jp_logf(JP_LOG_WARN, "symlink failed %s %d\n", __FILE__, __LINE__);
+   }
 
    return EXIT_SUCCESS;
 }
@@ -1167,7 +1179,7 @@ static int sync_fetch(int sd, unsigned int flags,
       "ToDoDB",
       "MemoDB",
 #ifdef ENABLE_MANANA
-      "MañanaDB",
+      "MananaDB",
 #endif
       "Saved Preferences",
       ""
@@ -2958,7 +2970,7 @@ static int jp_sync(struct my_sync_info *sync_info)
       "ToDoDB",
       "MemoDB",
 #ifdef ENABLE_MANANA
-      "MañanaDB",
+      "MananaDB",
 #endif
       ""
    };

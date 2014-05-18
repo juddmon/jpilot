@@ -746,7 +746,7 @@ static gint GtkClistKeyrCompareNocase (GtkCList *clist,
    str1 = GTK_CELL_TEXT(row1->cell[clist->sort_column])->text;
    str2 = GTK_CELL_TEXT(row2->cell[clist->sort_column])->text;
 
-   return g_strcasecmp(str1, str2);
+   return g_ascii_strcasecmp(str1, str2);
 }
 
 static void cb_clist_click_column(GtkWidget *clist, int column)
@@ -2188,7 +2188,7 @@ static void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *clist,
          str_to_csv_str(csv_text, mkr->kr.name);
          fprintf(out, "\"%s\",", csv_text);
 
-         fprintf(out, "\"\",", csv_text);
+         fprintf(out, "\"\",");
 
          str_to_csv_str(csv_text, mkr->kr.account);
          fprintf(out, "\"%s\",", csv_text);
@@ -2237,7 +2237,7 @@ static void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 }
 	 /* Write a folder XML tag */
          utf = charset_p2newj(keyr_app_info.name[cat], 16, char_set);
-         fprintf(out, "  <group>\n", utf);
+         fprintf(out, "  <group>\n");
 	 fprintf(out, "   <title>%s</title>\n", utf);
 	 fprintf(out, "   <icon>13</icon>\n");
 	 g_free(utf);
@@ -2261,7 +2261,7 @@ static void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	    /* No keyring field for url */
 	    str_to_keepass_str(csv_text, mkr->kr.note);
 	    fprintf(out, "    <comment>%s</comment>\n", csv_text);
-	    fprintf(out, "    <icon>0</icon>\n", csv_text);
+	    fprintf(out, "    <icon>0</icon>\n");
 	    /* No keyring field for creation */
 	    /* No keyring field for lastaccess */
 	    /* lastmod */

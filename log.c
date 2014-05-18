@@ -81,7 +81,6 @@ static int jp_vlogf (int level, const char *format, va_list val) {
    char                 *buf, *local_buf;
    int                  size;
    int                  len;
-   int                  r;
    static FILE          *fp=NULL;
    static int           err_count=0;
    char                 cmd[16];
@@ -156,9 +155,9 @@ static int jp_vlogf (int level, const char *format, va_list val) {
          buf[size]='\0';
          buf[size+1]='\n';
          size += 2;
-         r = write(pipe_to_parent, buf, size);
-         if (r<0)
+         if (write(pipe_to_parent, buf, size) < 0) {
             fprintf(stderr, "write returned error %s %d\n", __FILE__, __LINE__);
+         }
       }
    }
 
@@ -191,7 +190,9 @@ int write_to_parent(int command, const char *format, ...)
    /* This is for jpilot-sync */
    if (pipe_to_parent==STDOUT_FILENO) {
       if (command==PIPE_PRINT) {
-         write(pipe_to_parent, buf, strlen(buf));
+         if (write(pipe_to_parent, buf, strlen(buf)) < 0) {
+            jp_logf(JP_LOG_WARN, "write failed %s %d\n", __FILE__, __LINE__);
+         }
       }
       return TRUE;
    }
@@ -206,7 +207,9 @@ int write_to_parent(int command, const char *format, ...)
    buf[size]='\0';
    buf[size+1]='\n';
    size += 2;
-   write(pipe_to_parent, buf, size);
+   if (write(pipe_to_parent, buf, size) < 0) {
+      jp_logf(JP_LOG_WARN, "write failed %s %d\n", __FILE__, __LINE__);
+   }
 
    return TRUE;
 }

@@ -594,7 +594,9 @@ static int alarms_do_one(struct CalendarEvent *cale,
 
       make_command_safe(command);
       jp_logf(JP_LOG_STDOUT|JP_LOG_FILE, _("executing command = [%s]\n"), command);
-      system(command);
+      if (system(command) == -1) {
+         jp_logf(JP_LOG_WARN, "system call failed %s %d\n", __FILE__, __LINE__);
+      }
    }
 
    get_pref(PREF_OPEN_ALARM_WINDOWS, &wants_windows, NULL);
@@ -992,7 +994,10 @@ int alarms_init(unsigned char skip_past_alarms,
 
    while (!feof(in)) {
       line[0]='\0';
-      fgets(line, sizeof(line)-1, in);
+      if (fgets(line, sizeof(line)-1, in) == NULL) {
+         // jp_logf(JP_LOG_WARN, "fgets failed %s %d\n", __FILE__, __LINE__);
+         break;
+      }
       line[sizeof(line)-1] = '\0';
       if (line[0]=='#') continue;
       if (!strncmp(line, "UPTODATE ", 9)) {

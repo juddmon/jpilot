@@ -160,7 +160,9 @@ static void dialer(gpointer data, int phone_or_ext)
    command[1022]='\0';
 
    jp_logf(JP_LOG_STDOUT|JP_LOG_FILE, _("executing command = [%s]\n"), command);
-   system(command);
+   if (system(command) == -1) {
+      jp_logf(JP_LOG_WARN, "system call failed %s %d\n", __FILE__, __LINE__);
+   }
 }
 
 static void cb_dial_ext(GtkWidget *widget, gpointer data)

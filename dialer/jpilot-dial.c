@@ -355,7 +355,9 @@ int main(int argc, char **argv)
          }
       }
 #endif
-      write(fd, buf, bufidx);
+      if (write(fd, buf, bufidx) < 0) {
+         fprintf(stderr, "write failed %s %d\n", __FILE__, __LINE__);
+      }
    }
 
    exit(0);
@@ -443,7 +445,9 @@ silent(int msec) {
          }
       }
       if (bufidx >= bufsize) {
-         write(fd, buf, bufsize);
+         if (write(fd, buf, bufsize) < 0) {
+            fprintf(stderr, "write failed %s %d\n", __FILE__, __LINE__);
+         }
          bufidx = 0;
       }
    }
@@ -521,7 +525,9 @@ dial(int f1, int f2, int msec) {
          i2 -= tabsize;
 
       if (bufidx >= bufsize) {
-         write(fd, buf, bufsize);
+         if (write(fd, buf, bufsize) < 0) {
+            fprintf(stderr, "write failed %s %d\n", __FILE__, __LINE__);
+         }
          bufidx = 0;
       }
       e1 -= g1;
