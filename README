@@ -108,7 +108,20 @@ HOME env variable.
 
 Future version of J-Pilot will probably sync multiple palms into a
 subdirectory under the JPILOT_HOME/.jpilot directory.
+
 ==============================================================================
+UBUNTU DIALOUT USER
+
+In ubuntu you must be a member of the dialout group in order to sync over USB.
+Users will not be in this group by default. If you are using serial ports see the README file.
+
+sudo usermod -a -G dialout $USER
+
+==============================================================================
+SYNCING
+
+Most users find it easiest to sync by pressing the sync button on the PalmOS device
+and then within a second or a few pressing the sync button on jpilot.
 
 ==============================================================================
 OOPS, REVERTING:
