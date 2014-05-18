@@ -27,7 +27,6 @@ The Sync button will sync the 4 applications with the palm pilot and any plugins
 The Backup button will backup every program and database from the palm pilot, except for AvantGo files (these are usually big and change daily).  
   
 If you get an error saying that you have a NULL user ID, then you need to run install-user from the pilot-link suite.  
-e.g.
 ```shell
 install-user /dev/pilot Judd 1234
 ```
