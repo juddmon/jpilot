@@ -1,3 +1,11 @@
+1.8.2 - 05/18/14
+ Many bug fixes
+ Fixed VCard output
+ Added export for B-Folders
+ Added export for KeePassX
+ Changed the "enye" letter in Manana an "n", got tired of it causing problems (Ma\303\261ana to Manana)
+ Made lots of stupid code changes to make the compiler warnings go away
+
 1.8.1 - 04/05/11
  Added a jpilot-merge utility for merging unsynced records into a pdb file
  Fixes Debian bug #574030: jpilot: can't delete appointments
