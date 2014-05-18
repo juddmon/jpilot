@@ -2,16 +2,15 @@ SUBDIRS = m4 po Expense SyncTime KeyRing dialer icons docs empty
 
 EXTRA_DIST = config.rpath mkinstalldirs reconf autogen.sh \
 	intltool-extract.in intltool-merge.in intltool-update.in gettext.h \
-	ChangeLog ChangeLog.cvs \
+	ChangeLog ChangeLog.git \
 	po/POTFILES \
-	po/jpilot.pot \
 	jpilot.spec \
 	SlackBuild description-pak \
 	jpilot.desktop \
 	$(color_DATA) \
 	jpilot.xpm
 
-DISTCLEANFILES = intltool-extract intltool-merge intltool-update ChangeLog.cvs
+DISTCLEANFILES = intltool-extract intltool-merge intltool-update ChangeLog.git
 
 desktopdir = $(datadir)/applications
 desktop_DATA = jpilot.desktop
@@ -210,3 +209,6 @@ ChangeLog.cvs:
 	s/<rikster5\@hostname>/Rik Wehbring <jpilot\@nomad.inbox5.com>/' > $@
 .PHONY: ChangeLog.cvs
 
+ChangeLog.git:
+	git log --pretty > $@
+.PHONY: ChangeLog.git
