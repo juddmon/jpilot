@@ -1,5 +1,5 @@
 ### What J-Pilot is
-J-Pilot is a PalmOS device desktop for Linux/Unix.  The latest version is 1.8.2
+J-Pilot is a PalmOS device desktop for Linux/Unix.  The latest version is 1.8.2 released on 2014-05-25
 ### J-Pilot plugins
 J-Pilot has a few plugins written for it.  They allow jpilot to have an interface and sync with Palm apps.  
 [Manana page](http://bill.sexton.tripod.com/download.htm)  
