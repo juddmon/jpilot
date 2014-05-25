@@ -2,7 +2,7 @@
  * utils.c
  * A module of J-Pilot http://jpilot.org
  *
- * Copyright (C) 1999-2002 by Judd Montgomery
+ * Copyright (C) 1999-2014 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1951,7 +1951,7 @@ void get_compile_options(char *string, int len)
 {
    g_snprintf(string, len,
               PN" version "VERSION"\n"
-              "  Copyright (C) 1999-2010 by Judd Montgomery\n"
+              "  Copyright (C) 1999-2014 by Judd Montgomery\n"
               "  judd@jpilot.org, http://jpilot.org\n"
               "\n"
               PN" comes with ABSOLUTELY NO WARRANTY; for details see the file\n"

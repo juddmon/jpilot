@@ -4,7 +4,7 @@
  * This is a plugin for J-Pilot for the KeyRing Palm program.
  * It keeps records and uses DES3 encryption.
  *
- * Copyright (C) 2001 by Judd Montgomery
+ * Copyright (C) 2001-2014 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
