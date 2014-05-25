@@ -2,7 +2,7 @@
  * contact.c:  Translate Palm contact data formats
  * A module of J-Pilot http://jpilot.org
  *
- * Copyright (C) 2003-2006 by Judd Montgomery
+ * Copyright (C) 2003-2014 by Judd Montgomery
  *
  * This code is NOT derived from contact.c from pilot-link
  *  pilot-link's contact.c was based on this code.

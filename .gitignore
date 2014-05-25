@@ -43,3 +43,5 @@ po/quot.sed
 po/stamp-it
 SlackBuild
 stamp-h1
+po/*.po
+m4/*

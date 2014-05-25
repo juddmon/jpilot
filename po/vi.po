@@ -1,44 +1,59 @@
 # Vietnamese translation for JPilot.
 # Copyright © 2006 Free Software Foundation, Inc.
 # Clytie Siddall <clytie@riverland.net.au>, 2006.
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: jpilot-0.99.8-pre12\n"
 "Report-Msgid-Bugs-To: jpilot-devel@jpilot.org\n"
-"POT-Creation-Date: 2005-10-07 22:31+0200\n"
+"POT-Creation-Date: 2014-05-24 22:46-0400\n"
 "PO-Revision-Date: 2006-02-09 20:14+1030\n"
 "Last-Translator: Clytie Siddall <clytie@riverland.net.au>\n"
 "Language-Team: Vietnamese <gnomevi-list@lists.sourceforge.net>\n"
+"Language: vi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0\n"
 "X-Generator: LocFactoryEditor 1.6b36\n"
 
-#: address.c:288 address.c:552 alarms.c:352 dat.c:181 dat.c:655 dat.c:857
-#: dat.c:991 dat.c:1130 datebook.c:96 datebook.c:397 datebook.c:404
-#: datebook.c:434 datebook.c:1053 jpilot.c:1534 libplugin.c:467
-#: libplugin.c:646 libplugin.c:753 libplugin.c:832 libplugin.c:873 memo.c:95
-#: memo.c:367 plugins.c:108 prefs.c:314 prefs.c:339 prefs.c:854 sync.c:252
-#: sync.c:1153 sync.c:2320 todo.c:206 todo.c:548 utils.c:2307
+#: ../address.c:274 ../address.c:446 ../alarms.c:330 ../calendar.c:307
+#: ../calendar.c:545 ../contact.c:322 ../contact.c:736 ../dat.c:203
+#: ../dat.c:733 ../dat.c:937 ../dat.c:1071 ../dat.c:1210 ../datebook.c:128
+#: ../datebook.c:163 ../datebook.c:170 ../datebook.c:229 ../jpilot.c:1256
+#: ../jpilot-merge.c:93 ../libplugin.c:206 ../libplugin.c:453
+#: ../libplugin.c:532 ../libplugin.c:561 ../libplugin.c:809 ../memo.c:212
+#: ../memo.c:285 ../otherconv.c:278 ../plugins.c:110 ../prefs.c:348
+#: ../prefs.c:373 ../prefs.c:906 ../sync.c:2180 ../sync.c:2197 ../sync.c:2306
+#: ../sync.c:2320 ../sync.c:2517 ../sync.c:2656 ../todo.c:234 ../todo.c:488
+#: ../utils.c:746
+#, c-format
 msgid "Out of memory"
 msgstr "Hết bộ nhớ"
 
-#: address.c:345 address.c:352 datebook.c:347 libplugin.c:179 memo.c:163
-#: memo.c:170 todo.c:291 todo.c:298 utils.c:1965 utils.c:1970 utils.c:1981
-#: utils.c:1986 utils.c:1997 utils.c:2002 utils.c:2014 utils.c:2019
-msgid "error"
-msgstr "lỗi"
+#: ../address.c:330 ../calendar.c:228 ../contact.c:578 ../datebook.c:492
+#: ../memo.c:85 ../todo.c:88
+#, fuzzy, c-format
+msgid "%s:%d Error reading application info %s\n"
+msgstr "%s:%d Gặp lỗi khi đọc thông tin phân loại %s\n"
 
-#: address.c:412 address_gui.c:1686 datebook.c:693 libplugin.c:706
-#: libplugin.c:730 memo.c:244 memo_gui.c:996 todo_gui.c:1318
-#: Expense/expense.c:1138 Expense/expense.c:2152
+#: ../address.c:342 ../address_gui.c:2339 ../address_gui.c:2378
+#: ../calendar.c:244 ../contact.c:594 ../datebook.c:512 ../datebook_gui.c:3734
+#: ../libplugin.c:403 ../libplugin.c:429 ../memo.c:97 ../memo_gui.c:943
+#: ../todo_gui.c:1070 ../Expense/expense.c:1103
 #, c-format
 msgid "Error reading file: %s\n"
 msgstr "Gặp lỗi khi đọc tập tin: %s\n"
 
-#: address_gui.c:261 datebook_gui.c:2524 memo_gui.c:184 todo_gui.c:305
+#: ../address.c:490 ../calendar.c:596 ../calendar.c:605 ../contact.c:778
+#: ../libplugin.c:844 ../memo.c:351 ../todo.c:300 ../utils.c:1122
+#: ../utils.c:1129 ../utils.c:1136 ../utils.c:1143 ../utils.c:1150
+#: ../utils.c:1157
+msgid "error"
+msgstr "lỗi"
+
+#: ../address_gui.c:323 ../datebook_gui.c:2841 ../memo_gui.c:174
+#: ../todo_gui.c:290 ../KeyRing/keyring.c:832
 msgid ""
 "This record is deleted.\n"
 "Undelete it or copy it to make changes.\n"
@@ -46,362 +61,557 @@ msgstr ""
 "Mục ghi này bị xoá bỏ.\n"
 "Để thay đổi gì, hãy hủy xoá bỏ nó hoặc sao chép nó.\n"
 
-#: address_gui.c:469 category.c:159 category.c:165 category.c:213
-#: category.c:270 datebook_gui.c:372 memo_gui.c:301 sync.c:1116 sync.c:1122
-#: sync.c:2295 sync.c:2515 sync.c:2521 sync.c:2638 sync.c:2904 todo_gui.c:445
-#: utils.c:2721 utils.c:2770 utils.c:2776 utils.c:2849 utils.c:2855
-#: utils.c:2918 utils.c:2981 utils.c:2987 utils.c:3050 utils.c:3057
+#: ../address_gui.c:450 ../address_gui.c:456 ../address_gui.c:467
+#: ../address_gui.c:479 ../address_gui.c:491 ../address_gui.c:504
+#, c-format
+msgid "%s%s: %s"
+msgstr ""
+
+#: ../address_gui.c:540 ../category.c:116 ../category.c:174 ../category.c:328
+#: ../category.c:334 ../datebook_gui.c:428 ../jpilot-merge.c:86
+#: ../jpilot-merge.c:144 ../jpilot-merge.c:149 ../memo_gui.c:278
+#: ../sync.c:2139 ../sync.c:2145 ../sync.c:2491 ../sync.c:2852
+#: ../todo_gui.c:414 ../utils.c:2684 ../utils.c:2721 ../utils.c:2727
+#: ../utils.c:2786 ../utils.c:2792 ../utils.c:2846 ../utils.c:2900
+#: ../utils.c:2906 ../utils.c:2964 ../utils.c:2971
 #, c-format
 msgid "Unable to open file: %s\n"
 msgstr "Không thể mở tập tin: %s\n"
 
-#: address_gui.c:548
+#: ../address_gui.c:559
+#, fuzzy, c-format
+msgid "Unable to read file: %s\n"
+msgstr "Không thể mở tập tin: %s\n"
+
+#: ../address_gui.c:713
 msgid "File doesn't appear to be address.dat format\n"
 msgstr "Tập tin này có vẻ không phải là tập tin dạng <địa_chỉ.dat>.\n"
 
-#: address_gui.c:558 datebook_gui.c:582 memo_gui.c:436 todo_gui.c:571
-#: Expense/expense.c:619 Expense/expense.c:1406
+#: ../address_gui.c:723 ../datebook_gui.c:647 ../memo_gui.c:324
+#: ../memo_gui.c:419 ../todo_gui.c:542 ../Expense/expense.c:1382
 msgid "Unfiled"
 msgstr "Chưa ghi lưu"
 
-#: address_gui.c:697 alarms.c:226 category.c:420 category.c:871 category.c:911
-#: datebook_gui.c:669 datebook_gui.c:1149 export_gui.c:339 jpilot.c:363
-#: jpilot.c:409 jpilot.c:477 jpilot.c:521 jpilot.c:968 jpilot.c:1869
-#: memo_gui.c:526 password.c:352 restore_gui.c:307 todo_gui.c:661 utils.c:1084
-#: utils.c:1256 KeyRing/keyring.c:1322
+#: ../address_gui.c:779 ../datebook_gui.c:698 ../memo_gui.c:472
+#: ../todo_gui.c:595
+msgid "CSV (Comma Separated Values)"
+msgstr ""
+
+#: ../address_gui.c:780
+msgid "DAT/ABA (Palm Archive Formats)"
+msgstr ""
+
+#. current category name
+#. previous category name
+#. entry text, in Pilot character set
+#: ../address_gui.c:866 ../category.c:406 ../datebook_gui.c:729
+#: ../jpilot.c:232 ../jpilot.c:276 ../jpilot.c:350 ../jpilot.c:394
+#: ../jpilot.c:953 ../memo_gui.c:508 ../todo_gui.c:635 ../utils.c:1303
+#: ../KeyRing/keyring.c:2088
 msgid "OK"
 msgstr "Được"
 
-#: address_gui.c:698 datebook_gui.c:670 memo_gui.c:527 todo_gui.c:662
-#: utils.c:1274
-msgid "Yes"
-msgstr "Có"
-
-#: address_gui.c:698 datebook_gui.c:670 memo_gui.c:527 todo_gui.c:662
-#: utils.c:1274
+#: ../address_gui.c:867 ../address_gui.c:1020 ../datebook_gui.c:360
+#: ../datebook_gui.c:388 ../datebook_gui.c:730 ../memo_gui.c:509
+#: ../memo_gui.c:646 ../todo_gui.c:636 ../todo_gui.c:764 ../todo_gui.c:772
+#: ../utils.c:1320 ../utils.c:1344 ../KeyRing/keyring.c:2089
 msgid "No"
 msgstr "Không"
 
-#: address_gui.c:722 datebook_gui.c:697 memo_gui.c:537 todo_gui.c:688
+#: ../address_gui.c:867 ../address_gui.c:1020 ../datebook_gui.c:360
+#: ../datebook_gui.c:388 ../datebook_gui.c:730 ../memo_gui.c:509
+#: ../memo_gui.c:646 ../todo_gui.c:636 ../todo_gui.c:764 ../todo_gui.c:772
+#: ../utils.c:1320 ../utils.c:1344 ../KeyRing/keyring.c:2089
+msgid "Yes"
+msgstr "Có"
+
+#: ../address_gui.c:886 ../datebook_gui.c:753 ../memo_gui.c:524
+#: ../todo_gui.c:655 ../KeyRing/keyring.c:2103
 #, c-format
 msgid "%s is a directory"
 msgstr "%s là thư mục"
 
-#: address_gui.c:724 address_gui.c:741 datebook_gui.c:699 datebook_gui.c:716
-#: memo_gui.c:539 memo_gui.c:556 todo_gui.c:690 todo_gui.c:707
+#: ../address_gui.c:888 ../address_gui.c:905 ../datebook_gui.c:755
+#: ../datebook_gui.c:772 ../memo_gui.c:526 ../memo_gui.c:543 ../todo_gui.c:657
+#: ../todo_gui.c:674 ../KeyRing/keyring.c:2105 ../KeyRing/keyring.c:2122
 msgid "Error Opening File"
 msgstr "Gặp lỗi khi mở tập tin"
 
-#: address_gui.c:725 datebook_gui.c:700 memo_gui.c:540 todo_gui.c:691
-msgid "Directory"
-msgstr "Thư mục"
-
-#: address_gui.c:728 datebook_gui.c:703 memo_gui.c:543 todo_gui.c:694
+#: ../address_gui.c:892 ../datebook_gui.c:759 ../memo_gui.c:530
+#: ../todo_gui.c:661 ../KeyRing/keyring.c:2109
 #, c-format
 msgid "Do you want to overwrite file %s?"
 msgstr "Bạn có muốn ghi đè lên tập tin %s không?"
 
-#: address_gui.c:730 datebook_gui.c:705 memo_gui.c:545 todo_gui.c:696
+#: ../address_gui.c:894 ../datebook_gui.c:761 ../memo_gui.c:532
+#: ../todo_gui.c:663 ../KeyRing/keyring.c:2111
 msgid "Overwrite File?"
 msgstr "Ghi đè tập tin không?"
 
-#: address_gui.c:731 datebook_gui.c:706 memo_gui.c:546 todo_gui.c:697
-msgid "Overwrite File"
-msgstr "Ghi đè tập tin"
-
-#: address_gui.c:739 datebook_gui.c:714 memo_gui.c:554 todo_gui.c:705
+#: ../address_gui.c:903 ../datebook_gui.c:770 ../memo_gui.c:541
+#: ../todo_gui.c:672 ../KeyRing/keyring.c:2120
 #, c-format
 msgid "Error opening file: %s"
 msgstr "Gặp lỗi khi mở tập tin: %s"
 
-#: address_gui.c:742 datebook_gui.c:717 memo_gui.c:557 todo_gui.c:708
-msgid "Filename"
-msgstr "Tên tập tin"
+#: ../address_gui.c:920
+#, c-format
+msgid ""
+"Address exported from %s %s on %s\n"
+"\n"
+msgstr ""
 
-#: address_gui.c:750
+#: ../address_gui.c:923
+#, c-format
+msgid ""
+"Contact exported from %s %s on %s\n"
+"\n"
+msgstr ""
+
+#: ../address_gui.c:998
+msgid ""
+"Host character encoding is not UTF-8 based.\n"
+" Exported ldif file may not be standards-compliant\n"
+msgstr ""
+
+#: ../address_gui.c:1011
 #, c-format
 msgid "Can't export address %d\n"
 msgstr "Không thể xuất địa chỉ %d.\n"
 
-#: address_gui.c:815 address_gui.c:823 address_gui.c:840
-msgid "Field"
-msgstr "Trường"
+#: ../address_gui.c:1017 ../memo_gui.c:643 ../todo_gui.c:760
+#, fuzzy, c-format
+msgid "Category: %s\n"
+msgstr "Loại: "
 
-#: address_gui.c:1039 datebook_gui.c:985 memo_gui.c:612 todo_gui.c:844
+#: ../address_gui.c:1019 ../memo_gui.c:645 ../todo_gui.c:763
+#, fuzzy, c-format
+msgid "Private: %s\n"
+msgstr "Riêng"
+
+#: ../address_gui.c:1027 ../address_gui.c:1041 ../address_gui.c:1045
+#: ../address_gui.c:1054 ../address_gui.c:1057
+#, c-format
+msgid "%s: "
+msgstr ""
+
+#: ../address_gui.c:1031
+#, c-format
+msgid "%s\n"
+msgstr ""
+
+#. E-mail should be the Palm dropdown menu item for email
+#. Set dial/email button text and callback data
+#: ../address_gui.c:1248 ../address_gui.c:2900 ../address_gui.c:4236
+msgid "E-mail"
+msgstr "Thư điện tử"
+
+#: ../address_gui.c:1534 ../datebook_gui.c:1147 ../memo_gui.c:656
+#: ../todo_gui.c:844 ../KeyRing/keyring.c:2225
 msgid "Unknown export type\n"
 msgstr "Kiểu xuất lạ\n"
 
-#: address_gui.c:1230 address_gui.c:2655
-msgid "Company/Name"
-msgstr "Công ty/Tên"
+#: ../address_gui.c:1560 ../datebook_gui.c:1226 ../memo_gui.c:471
+#: ../memo_gui.c:745 ../todo_gui.c:870 ../KeyRing/keyring.c:2296
+msgid "Text"
+msgstr ""
 
-#: address_gui.c:1232 address_gui.c:2657
-msgid "Name/Company"
+#: ../address_gui.c:1561 ../datebook_gui.c:1227 ../memo_gui.c:746
+#: ../todo_gui.c:871 ../KeyRing/keyring.c:2296
+msgid "CSV"
+msgstr ""
+
+#: ../address_gui.c:1562
+msgid "vCard"
+msgstr ""
+
+#: ../address_gui.c:1563
+msgid "vCard (Optimized for Gmail/Android Import)"
+msgstr ""
+
+#: ../address_gui.c:1564
+msgid "ldif"
+msgstr ""
+
+#: ../address_gui.c:1565 ../memo_gui.c:747 ../KeyRing/keyring.c:2296
+msgid "B-Folders CSV"
+msgstr ""
+
+#. Initialize variable if default case taken
+#: ../address_gui.c:1831 ../address_gui.c:3953
+#, fuzzy
+msgid "Last Name/Company"
 msgstr "Tên/Công ty"
 
-#: address_gui.c:1330 datebook_gui.c:2602 memo_gui.c:913 todo_gui.c:1246
+#: ../address_gui.c:1834 ../address_gui.c:3956
+#, fuzzy
+msgid "First Name/Company"
+msgstr "Tên/Công ty"
+
+#: ../address_gui.c:1837 ../address_gui.c:3959
+#, fuzzy
+msgid "Company/Last Name"
+msgstr "Công ty/Tên"
+
+#: ../address_gui.c:1974 ../datebook_gui.c:2904 ../memo_gui.c:1116
+#: ../todo_gui.c:1329 ../KeyRing/keyring.c:1179
 msgid "You can't modify a record that is deleted\n"
 msgstr "Bạn không thể sửa đổi một mục ghi bị xoá bỏ.\n"
 
-#: address_gui.c:1473 address_gui.c:1857 address_gui.c:2368 memo_gui.c:821
-#: memo_gui.c:1079 memo_gui.c:1358 todo_gui.c:1112 todo_gui.c:1515
-#: todo_gui.c:1528 todo_gui.c:1961
+#. Illegal category, Assume that category 0 is Unfiled and valid
+#: ../address_gui.c:2173 ../address_gui.c:2424 ../address_gui.c:2857
+#: ../address_gui.c:2863 ../address_gui.c:3652 ../datebook_gui.c:1994
+#: ../datebook_gui.c:3431 ../datebook_gui.c:3780 ../datebook_gui.c:4071
+#: ../memo_gui.c:980 ../memo_gui.c:1026 ../memo_gui.c:1241 ../memo_gui.c:1625
+#: ../todo_gui.c:1106 ../todo_gui.c:1200 ../todo_gui.c:1589 ../todo_gui.c:2138
+#: ../Expense/expense.c:687 ../Expense/expense.c:1141
+#: ../Expense/expense.c:1225 ../Expense/expense.c:1885
+#: ../KeyRing/keyring.c:1068 ../KeyRing/keyring.c:1510
+#: ../KeyRing/keyring.c:1572 ../KeyRing/keyring.c:2755
 msgid "Category is not legal\n"
 msgstr "Phân loại không được phép\n"
 
-#: address_gui.c:1531 alarms.c:607 dialer.c:165
+#: ../address_gui.c:2233 ../alarms.c:596 ../dialer.c:162
 #, c-format
 msgid "executing command = [%s]\n"
 msgstr "đang thực hiện lệnh = [%s]\n"
 
-#: address_gui.c:1775 Expense/expense.c:1603 KeyRing/keyring.c:1577
-#: KeyRing/keyring.c:1656
+#: ../address_gui.c:2235
+#, c-format
+msgid "Failed to execute [%s] at %s %d\n"
+msgstr ""
+
+#: ../address_gui.c:2479
+msgid "Birthday"
+msgstr ""
+
+#: ../address_gui.c:2575
+msgid "External program not found, or other error"
+msgstr ""
+
+#: ../address_gui.c:2577
+msgid ""
+"J-Pilot can not find the external program \"convert\"\n"
+"or an error occurred while executing convert.\n"
+"You may need to install package ImageMagick"
+msgstr ""
+
+#: ../address_gui.c:2578
+#, c-format
+msgid "Command executed was \"%s\"\n"
+msgstr ""
+
+#: ../address_gui.c:2579
+#, c-format
+msgid "return code was %d\n"
+msgstr ""
+
+#: ../address_gui.c:2657
+#, fuzzy
+msgid "chdir() failed\n"
+msgstr "việc khoá bị lỗi\n"
+
+#: ../address_gui.c:2660
+msgid "Add Photo"
+msgstr ""
+
+#. Category menu
+#: ../address_gui.c:2882 ../KeyRing/keyring.c:2652
 msgid "Category: "
 msgstr "Loại: "
 
-# Literal: don't translate / Nghĩa chữ: đừng dịch
-#: address_gui.c:1807 address_gui.c:2827
-msgid "kana("
-msgstr "kana("
-
-#: address_gui.c:1919 address_gui.c:2937
-msgid "E-mail"
-msgstr "Thư điện tử"
-
-#: address_gui.c:1921 address_gui.c:1924 address_gui.c:2938
+#: ../address_gui.c:2902 ../address_gui.c:4237
 msgid "Mail"
 msgstr "Lá thư"
 
-#: address_gui.c:1929 address_gui.c:1932 address_gui.c:2941 dialer.c:308
-#: dialer.c:333
+#. Dial Phone Button
+#: ../address_gui.c:2905 ../address_gui.c:4240 ../dialer.c:307 ../dialer.c:331
 msgid "Dial"
 msgstr "Quay số"
 
-#: address_gui.c:2142 address_gui.c:2166
+#: ../address_gui.c:3095 ../datebook_gui.c:2757 ../memo_gui.c:1308
+#: ../todo_gui.c:1697
+msgid "Could not get temporary file name\n"
+msgstr ""
+
+#: ../address_gui.c:3103 ../datebook_gui.c:2765 ../memo_gui.c:1316
+#: ../todo_gui.c:1705
+msgid "Could not open temporary file for external editor\n"
+msgstr ""
+
+#: ../address_gui.c:3140 ../datebook_gui.c:2803 ../memo_gui.c:1354
+#: ../todo_gui.c:1743
+msgid "Could not open temporary file from external editor\n"
+msgstr ""
+
+#: ../address_gui.c:3312 ../address_gui.c:3343
 msgid "-Unnamed-"
 msgstr "-Không tên-"
 
-#: address_gui.c:2239 memo_gui.c:1268 todo_gui.c:1850
+#: ../address_gui.c:3425 ../memo_gui.c:1531 ../todo_gui.c:2016
 msgid "0 records"
 msgstr "0 mục ghi"
 
-#: address_gui.c:2242 datebook_gui.c:2399 memo_gui.c:1271 todo_gui.c:1853
+#: ../address_gui.c:3428 ../datebook_gui.c:2637 ../memo_gui.c:1534
+#: ../todo_gui.c:2019
 #, c-format
 msgid "%d of %d records"
 msgstr "%d trên %d bản ghi"
 
-#: address_gui.c:2635 category.c:450 category.c:464 category.c:471
-#: category.c:489 category.c:496 category.c:514 category.c:594 category.c:789
-#: memo_gui.c:1508 todo_gui.c:2116 Expense/expense.c:1609
-msgid "Edit Categories"
-msgstr "Sửa đổi phân loại"
-
-#: address_gui.c:2662
-msgid "Phone"
-msgstr "Điện thoại"
-
-#: address_gui.c:2684
-msgid "Quick Find: "
-msgstr "Tìm nhanh: "
-
-#: address_gui.c:2700 category.c:421 category.c:877 category.c:917
-#: datebook_gui.c:1154 datebook_gui.c:1582 datebook_gui.c:4371
-#: export_gui.c:344 memo_gui.c:1552 password.c:362 print_gui.c:338
-#: restore_gui.c:312 todo_gui.c:2169 utils.c:1094 KeyRing/keyring.c:1332
-msgid "Cancel"
-msgstr "Thôi"
-
-#: address_gui.c:2700 datebook_gui.c:4371 memo_gui.c:1552 todo_gui.c:2169
-msgid "Cancel the modifications"
-msgstr "Thôi sửa đổi gì"
-
-#: address_gui.c:2705 category.c:421 category.c:844 datebook_gui.c:4376
-#: memo_gui.c:1557 todo_gui.c:2174 Expense/expense.c:1646
-#: KeyRing/keyring.c:1612
-msgid "Delete"
-msgstr "Xoá bỏ"
-
-#: address_gui.c:2705 datebook_gui.c:4376 memo_gui.c:1557 todo_gui.c:2174
-#: Expense/expense.c:1646 KeyRing/keyring.c:1612
-msgid "Delete the selected record"
-msgstr "Xoá bỏ mục ghi được chọn"
-
-#: address_gui.c:2711 datebook_gui.c:4382 memo_gui.c:1563 todo_gui.c:2180
-msgid "Undelete"
-msgstr "Phục hồi"
-
-#: address_gui.c:2711 datebook_gui.c:4382 memo_gui.c:1563 todo_gui.c:2180
-msgid "Undelete the selected record"
-msgstr "Phục hồi mục ghi được chọn"
-
-#: address_gui.c:2717 datebook_gui.c:4388 memo_gui.c:1569 todo_gui.c:2186
-#: Expense/expense.c:1651 KeyRing/keyring.c:1617
-msgid "Copy"
-msgstr "Chép"
-
-#: address_gui.c:2717 datebook_gui.c:4388 memo_gui.c:1569 todo_gui.c:2186
-#: Expense/expense.c:1651 KeyRing/keyring.c:1617
-msgid "Copy the selected record"
-msgstr "Sao chép mục ghi được chọn"
-
-#: address_gui.c:2723 datebook_gui.c:4394 memo_gui.c:1575 todo_gui.c:2192
-#: Expense/expense.c:1656 KeyRing/keyring.c:1622
-msgid "New Record"
-msgstr "Mục ghi mới"
-
-#: address_gui.c:2723 datebook_gui.c:4394 memo_gui.c:1575 todo_gui.c:2192
-#: Expense/expense.c:1656 KeyRing/keyring.c:1622
-msgid "Add a new record"
-msgstr "Thêm một mục ghi mới"
-
-#: address_gui.c:2728 datebook_gui.c:4400 memo_gui.c:1581 todo_gui.c:2198
-#: Expense/expense.c:1661 KeyRing/keyring.c:1627
-msgid "Add Record"
-msgstr "Thêm mục ghi"
-
-#: address_gui.c:2728 datebook_gui.c:4400 memo_gui.c:1581 todo_gui.c:2198
-#: Expense/expense.c:1661 KeyRing/keyring.c:1627
-msgid "Add the new record"
-msgstr "Thêm mục ghi mới đó"
-
-#: address_gui.c:2738 datebook_gui.c:4410 memo_gui.c:1591 todo_gui.c:2208
-#: Expense/expense.c:1670 KeyRing/keyring.c:1636
-msgid "Apply Changes"
-msgstr "Áp dụng thay đổi"
-
-#: address_gui.c:2738 datebook_gui.c:4410 memo_gui.c:1591 todo_gui.c:2208
-#: Expense/expense.c:1670 KeyRing/keyring.c:1636
-msgid "Commit the modifications"
-msgstr "Ghi lưu các sửa đổi"
-
-#: address_gui.c:2755 datebook_gui.c:4461 memo_gui.c:1609 todo_gui.c:2271
-msgid "Private"
-msgstr "Riêng"
-
-#: address_gui.c:2775 KeyRing/keyring.c:1485
+#: ../address_gui.c:3823 ../address_gui.c:3831 ../KeyRing/keyring.c:2565
 msgid "Name"
 msgstr "Tên"
 
-#: address_gui.c:2783 prefs_gui.c:370
+#: ../address_gui.c:3824 ../address_gui.c:3825 ../address_gui.c:3826
+#: ../address_gui.c:3832
 msgid "Address"
 msgstr "Địa chỉ"
 
-#: address_gui.c:2791 Expense/expense.c:571 Expense/expense.c:1427
+#: ../address_gui.c:3827 ../address_gui.c:3833 ../Expense/expense.c:582
+#: ../Expense/expense.c:1403
 msgid "Other"
 msgstr "Khác"
 
-#: address_gui.c:2799 datebook_gui.c:1332 datebook_gui.c:1582 utils.c:2677
-msgid "All"
-msgstr "Tất cả"
+#. Note textbox
+#: ../address_gui.c:3828 ../address_gui.c:3834 ../todo_gui.c:2481
+#: ../Expense/expense.c:1834 ../KeyRing/keyring.c:2699
+msgid "Note"
+msgstr "Ghi chú"
 
-#: address_gui.c:3002
-msgid ""
-"Show\n"
-"In List"
+#: ../address_gui.c:3844
+msgid "Reverting to Address database\n"
+msgstr ""
+
+#: ../address_gui.c:3965
+msgid "Phone"
+msgstr "Điện thoại"
+
+#: ../address_gui.c:3997
+msgid "Quick Find: "
+msgstr "Tìm nhanh: "
+
+#. Cancel button
+#. Add record modification buttons
+#. Cancel button
+#: ../address_gui.c:4015 ../category.c:407 ../datebook_gui.c:1782
+#: ../datebook_gui.c:5121 ../memo_gui.c:1769 ../todo_gui.c:2342
+#: ../utils.c:1344 ../KeyRing/keyring.c:2595
+msgid "Cancel"
+msgstr "Thôi"
+
+#: ../address_gui.c:4015 ../datebook_gui.c:5121 ../memo_gui.c:1769
+#: ../todo_gui.c:2342 ../KeyRing/keyring.c:2595
+msgid "Cancel the modifications"
+msgstr "Thôi sửa đổi gì"
+
+#. Delete Button
+#. Delete button
+#. Delete Button
+#. Delete button
+#. Delete, Copy, New, etc. buttons
+#. Delete button
+#: ../address_gui.c:4020 ../category.c:407 ../category.c:850
+#: ../datebook_gui.c:5126 ../memo_gui.c:1774 ../todo_gui.c:2347
+#: ../Expense/expense.c:1661 ../KeyRing/keyring.c:2600
+msgid "Delete"
+msgstr "Xoá bỏ"
+
+#: ../address_gui.c:4020 ../datebook_gui.c:5126 ../memo_gui.c:1774
+#: ../todo_gui.c:2347 ../Expense/expense.c:1661 ../KeyRing/keyring.c:2600
+msgid "Delete the selected record"
+msgstr "Xoá bỏ mục ghi được chọn"
+
+#. Undelete Button
+#. Undelete button
+#. Undelete Button
+#. Undelete button
+#: ../address_gui.c:4026 ../datebook_gui.c:5132 ../memo_gui.c:1780
+#: ../todo_gui.c:2353 ../KeyRing/keyring.c:2606
+msgid "Undelete"
+msgstr "Phục hồi"
+
+#: ../address_gui.c:4026 ../datebook_gui.c:5132 ../memo_gui.c:1780
+#: ../todo_gui.c:2353 ../KeyRing/keyring.c:2606
+msgid "Undelete the selected record"
+msgstr "Phục hồi mục ghi được chọn"
+
+#. Copy button
+#: ../address_gui.c:4032 ../datebook_gui.c:5138 ../memo_gui.c:1786
+#: ../todo_gui.c:2359 ../Expense/expense.c:1666 ../KeyRing/keyring.c:2612
+msgid "Copy"
+msgstr "Chép"
+
+#: ../address_gui.c:4032 ../datebook_gui.c:5138 ../memo_gui.c:1786
+#: ../todo_gui.c:2359 ../Expense/expense.c:1666 ../KeyRing/keyring.c:2612
+msgid "Copy the selected record"
+msgstr "Sao chép mục ghi được chọn"
+
+#. New button
+#. New Record button
+#: ../address_gui.c:4038 ../datebook_gui.c:5144 ../memo_gui.c:1792
+#: ../todo_gui.c:2365 ../Expense/expense.c:1671 ../KeyRing/keyring.c:2618
+msgid "New Record"
+msgstr "Mục ghi mới"
+
+#: ../address_gui.c:4038 ../datebook_gui.c:5144 ../memo_gui.c:1792
+#: ../todo_gui.c:2365 ../Expense/expense.c:1671 ../KeyRing/keyring.c:2618
+msgid "Add a new record"
+msgstr "Thêm một mục ghi mới"
+
+#. "Add Record" button
+#. Add Record button
+#: ../address_gui.c:4043 ../datebook_gui.c:5150 ../memo_gui.c:1798
+#: ../todo_gui.c:2371 ../Expense/expense.c:1676 ../KeyRing/keyring.c:2624
+msgid "Add Record"
+msgstr "Thêm mục ghi"
+
+#: ../address_gui.c:4043 ../datebook_gui.c:5150 ../memo_gui.c:1798
+#: ../todo_gui.c:2371 ../Expense/expense.c:1676 ../KeyRing/keyring.c:2624
+msgid "Add the new record"
+msgstr "Thêm mục ghi mới đó"
+
+#. "Apply Changes" button
+#. Apply Changes button
+#: ../address_gui.c:4053 ../datebook_gui.c:5160 ../memo_gui.c:1808
+#: ../todo_gui.c:2381 ../Expense/expense.c:1685 ../KeyRing/keyring.c:2633
+msgid "Apply Changes"
+msgstr "Áp dụng thay đổi"
+
+#: ../address_gui.c:4053 ../datebook_gui.c:5160 ../memo_gui.c:1808
+#: ../todo_gui.c:2381 ../Expense/expense.c:1685 ../KeyRing/keyring.c:2633
+msgid "Commit the modifications"
+msgstr "Ghi lưu các sửa đổi"
+
+#. Private check box
+#. Private checkbox
+#: ../address_gui.c:4084 ../datebook_gui.c:5188 ../datebook_gui.c:5230
+#: ../memo_gui.c:1824 ../todo_gui.c:2407
+msgid "Private"
+msgstr "Riêng"
+
+#: ../address_gui.c:4169
+msgid "Change Photo"
+msgstr ""
+
+#: ../address_gui.c:4174
+#, fuzzy
+msgid "Remove Photo"
+msgstr "Gỡ bỏ"
+
+#: ../address_gui.c:4246
+#, fuzzy
+msgid "Show In List"
 msgstr ""
 "Hiện trong\n"
 "danh sách"
 
-#: address_gui.c:3010
-msgid "Quick View"
-msgstr "Xem nhanh"
-
-#: alarms.c:232
-msgid "Remind me"
+#: ../address_gui.c:4347
+#, fuzzy
+msgid "Reminder"
 msgstr "Nhắc nhở tôi"
 
-#: alarms.c:242 datebook_gui.c:4443
+#: ../address_gui.c:4363 ../datebook_gui.c:236 ../datebook_gui.c:5218
+#: ../datebook_gui.c:5375
+msgid "Days"
+msgstr "Ngày"
+
+#. The Quickview (ALL) page
+#. All button
+#: ../address_gui.c:4407 ../datebook_gui.c:1478 ../datebook_gui.c:1782
+#: ../utils.c:2538
+msgid "All"
+msgstr "Tất cả"
+
+#: ../alarms.c:230 ../datebook_gui.c:234 ../datebook_gui.c:5212
+#: ../datebook_gui.c:5369
 msgid "Minutes"
 msgstr "Phút"
 
-#: alarms.c:244 datebook_gui.c:4447
+#: ../alarms.c:232 ../datebook_gui.c:235 ../datebook_gui.c:5216
+#: ../datebook_gui.c:5373
 msgid "Hours"
 msgstr "Giờ"
 
-#: alarms.c:439
-#, c-format
-msgid "Unable to open %s%s file\n"
-msgstr "Không thể mở tập tin %s%s.\n"
+#: ../alarms.c:253
+msgid "Remind me"
+msgstr "Nhắc nhở tôi"
 
-#: alarms.c:524
+#: ../alarms.c:423 ../alarms.c:991 ../sync.c:1649 ../sync.c:1655
+#: ../utils.c:3784
+#, c-format
+msgid "Unable to open file: %s%s\n"
+msgstr "Không thể mở tập tin: %s%s\n"
+
+#: ../alarms.c:510
 msgid "Appointment Reminder"
 msgstr "Bộ nhắc nhở cuộc hẹn"
 
-#: alarms.c:527
+#: ../alarms.c:513
 msgid "Past Appointment"
 msgstr "Cuộc hẹn qua"
 
-#: alarms.c:530
+#: ../alarms.c:516
 msgid "Postponed Appointment"
 msgstr "Cuộc hẹn đã hoãn"
 
-#: alarms.c:533 datebook_gui.c:4279
+#: ../alarms.c:519 ../datebook_gui.c:5022
 msgid "Appointment"
 msgstr "Cuộc hẹn"
 
-#: alarms.c:614
+#: ../alarms.c:605
 msgid "J-Pilot Alarm"
 msgstr "Báo động J-Pilot"
 
-#: alarms.c:1131
-msgid "infinite loop, breaking\n"
-msgstr "bị lặp vô hạn nên ngắt nó\n"
-
-#: alarms.c:1499
-#, c-format
-msgid "Unable to open %s.alarms file\n"
-msgstr "Không thể mở tập tin <%s.alarms>.\n"
-
-#: category.c:192 sync.c:2552 utils.c:2797 utils.c:2885 utils.c:3007
-#: utils.c:3077
-msgid "rename failed"
-msgstr "việc thay đổi tên bị lỗi"
-
-#: category.c:229 category.c:286 sync.c:1145 sync.c:2311
+#: ../category.c:129 ../category.c:186 ../sync.c:2168 ../sync.c:2505
 msgid "PC file corrupt?\n"
 msgstr "Tập tin PC bị hỏng không?\n"
 
-#: category.c:236 category.c:246 category.c:293 category.c:304 category.c:314
-#: sync.c:1190 sync.c:1210 sync.c:1270 sync.c:1281 sync.c:2373 sync.c:2400
-#: sync.c:2452 sync.c:2462
+#: ../category.c:136 ../category.c:146 ../category.c:194 ../category.c:204
+#: ../category.c:214 ../sync.c:2290 ../sync.c:2344 ../sync.c:2381
+#: ../sync.c:2396 ../sync.c:2420 ../sync.c:2640 ../sync.c:2685 ../sync.c:2722
+#: ../sync.c:2735 ../sync.c:2760
 msgid "fseek failed - fatal error\n"
 msgstr "việc fseek bị lỗi — lỗi nghiêm trọng\n"
 
-#: category.c:421
+#: ../category.c:362 ../utils.c:2748 ../utils.c:2822 ../utils.c:2926
+#: ../utils.c:2991
+msgid "rename failed"
+msgstr "việc thay đổi tên bị lỗi"
+
+#: ../category.c:407
 msgid "Move"
 msgstr "Chuyển"
 
-#: category.c:451
+#: ../category.c:436 ../category.c:498 ../category.c:578 ../category.c:767
+msgid "Edit Categories"
+msgstr "Sửa đổi phân loại"
+
+#: ../category.c:437
 msgid "The maximum number of categories (16) are already used"
 msgstr "Số phân loại tối (16) đa được dùng"
 
-#: category.c:454
+#: ../category.c:440
 msgid "Enter New Category"
 msgstr "Gõ loại mới"
 
-#: category.c:465
+#: ../category.c:451 ../category.c:475
+#, fuzzy
+msgid "Edit Categories Error"
+msgstr "Sửa đổi phân loại"
+
+#: ../category.c:452
 msgid "You must select a category to rename"
 msgstr "Bạn phải chọn phân loại cần thay đổi tên"
 
-#: category.c:469
-#, c-format
-msgid "You can't edit category %s.\n"
-msgstr "Bạn không thể hiệu chỉnh phân loại %s.\n"
-
-#: category.c:476
+#: ../category.c:461
 msgid "Enter New Category Name"
 msgstr "Gõ tên loại mới"
 
-#: category.c:490
+#: ../category.c:476
 msgid "You must select a category to delete"
 msgstr "Bạn phải chọn phân loại cần xoá bỏ"
 
-#: category.c:494
-#, c-format
-msgid "You can't delete category %s.\n"
-msgstr "Bạn không thể xoá bỏ phân loại %s.\n"
-
-#: category.c:510
+#: ../category.c:494
 #, c-format
 msgid ""
 "There are %d records in %s.\n"
@@ -410,194 +620,338 @@ msgstr ""
 "Có %d mục ghi trong %s.\n"
 "Bạn có muốn di chuyển chúng vào %s, hoặc xoá bỏ chúng không?"
 
-#: category.c:569
+#: ../category.c:554
 #, c-format
 msgid "invalid state file %s line %d\n"
 msgstr "tập tin tính trạng không hợp lệ %s, dòng %d\n"
 
-#: category.c:592
+#: ../category.c:576
 #, c-format
 msgid "The category %s can't be used more than once"
 msgstr "Không thể dùng phân loại %s nhiều lần."
 
-#: category.c:814
-msgid "category name"
-msgstr "tên loại"
+#. Category names in host character set
+#: ../category.c:733
+#, fuzzy
+msgid "Category"
+msgstr "Loại:"
 
-#: category.c:832
+#: ../category.c:834
 msgid "New"
 msgstr "Mới"
 
-#: category.c:838
+#: ../category.c:841
 msgid "Rename"
 msgstr "Đổi tên"
 
-#: category.c:924
-msgid "debug"
-msgstr "gỡ lỗi"
-
-#: dat.c:455
+#: ../dat.c:512
 msgid "unknown type ="
 msgstr "không biết kiểu ="
 
-#: dat.c:536
+#: ../dat.c:603
 #, c-format
 msgid "fields per row count != %d, unknown format\n"
 msgstr "số trường trong mỗi hàng != %d, dạng thức không rõ\n"
 
-#: dat.c:550
+#: ../dat.c:625
 #, c-format
 msgid "field count != %d, unknown format\n"
 msgstr "số trường != %d, dạng thức không rõ\n"
 
-#: dat.c:558
+#: ../dat.c:635
 msgid "Unknown format, file has wrong schema\n"
 msgstr "Dạng thức không rõ, tập tin có giản đồ không đúng.\n"
 
-#: dat.c:559
+#: ../dat.c:636
 msgid "File schema is:"
 msgstr "Giản đồ tập tin là:"
 
-#: dat.c:564
-msgid "It should be:  "
+#: ../dat.c:640
+#, fuzzy
+msgid "It should be:"
 msgstr "Nó nên là:  "
 
-#: dat.c:674 dat.c:692 dat.c:874 dat.c:887 dat.c:1010 dat.c:1023 dat.c:1147
-#: dat.c:1160
+#: ../dat.c:752 ../dat.c:770 ../dat.c:954 ../dat.c:967 ../dat.c:1090
+#: ../dat.c:1103 ../dat.c:1227 ../dat.c:1240
 #, c-format
 msgid "%s:%d Record %d, field %d: Invalid type.  Expected %d, found %d\n"
 msgstr "%s:%d Mục ghi %d, trường %d: Kiểu không hợp lệ.  Ngờ %d, còn tìm %d\n"
 
-#: dat.c:675 dat.c:693 dat.c:875 dat.c:888 dat.c:992 dat.c:1011 dat.c:1024
-#: dat.c:1148 dat.c:1161
+#: ../dat.c:753 ../dat.c:771 ../dat.c:955 ../dat.c:968 ../dat.c:1072
+#: ../dat.c:1091 ../dat.c:1104 ../dat.c:1228 ../dat.c:1241
 msgid "read of file terminated\n"
 msgstr "việc đọc tập tin bị chấm dứt\n"
 
-#: datebook.c:650
+#: ../datebook.c:703 ../datebook_gui.c:3645
 #, c-format
 msgid "Unknown repeatType (%d) found in DatebookDB\n"
-msgstr "Không biết kiểu làm lại repeatType (%d) được tìm trong cơ sở dữ liệu lịch DatebookDB\n"
+msgstr ""
+"Không biết kiểu làm lại repeatType (%d) được tìm trong cơ sở dữ liệu lịch "
+"DatebookDB\n"
 
-#: datebook_gui.c:222 datebook_gui.c:229 datebook_gui.c:4078
-#: datebook_gui.c:4085
+#: ../datebook_gui.c:239
+#, fuzzy
+msgid "Repeat Never"
+msgstr "Lặp lại theo :"
+
+#: ../datebook_gui.c:240
+#, fuzzy
+msgid "Repeat Daily"
+msgstr "Lập lại vào Hôm:"
+
+#: ../datebook_gui.c:241
+#, fuzzy
+msgid "Repeat Weekly"
+msgstr "Lặp lại theo :"
+
+#: ../datebook_gui.c:242
+#, fuzzy
+msgid "Repeat MonthlyByDay"
+msgstr "Lập lại vào Hôm:"
+
+#: ../datebook_gui.c:243
+#, fuzzy
+msgid "Repeat MonthlyByDate"
+msgstr "Lập lại vào Hôm:"
+
+#: ../datebook_gui.c:244
+msgid "Repeat YearlyDate"
+msgstr ""
+
+#: ../datebook_gui.c:245
+#, fuzzy
+msgid "Repeat YearlyDay"
+msgstr "Lập lại vào Hôm:"
+
+#: ../datebook_gui.c:248 ../datebook_gui.c:255 ../datebook_gui.c:4800
+#: ../datebook_gui.c:4807
 msgid "Su"
 msgstr "CN"
 
-#: datebook_gui.c:223 datebook_gui.c:4079
+#: ../datebook_gui.c:249 ../datebook_gui.c:4801
 msgid "Mo"
 msgstr "T2"
 
-#: datebook_gui.c:224 datebook_gui.c:4080
+#: ../datebook_gui.c:250 ../datebook_gui.c:4802
 msgid "Tu"
 msgstr "T3"
 
-#: datebook_gui.c:225 datebook_gui.c:4081
+#: ../datebook_gui.c:251 ../datebook_gui.c:4803
 msgid "We"
 msgstr "T4"
 
-#: datebook_gui.c:226 datebook_gui.c:4082
+#: ../datebook_gui.c:252 ../datebook_gui.c:4804
 msgid "Th"
 msgstr "T5"
 
-#: datebook_gui.c:227 datebook_gui.c:4083
+#: ../datebook_gui.c:253 ../datebook_gui.c:4805
 msgid "Fr"
 msgstr "T6"
 
-#: datebook_gui.c:228 datebook_gui.c:4084
+#: ../datebook_gui.c:254 ../datebook_gui.c:4806
 msgid "Sa"
 msgstr "T7"
 
-#: datebook_gui.c:561 datebook_gui.c:2055
+#: ../datebook_gui.c:267
+#, c-format
+msgid ""
+"Start Date: %s\n"
+"Time: Event"
+msgstr ""
+
+#: ../datebook_gui.c:275
+#, c-format
+msgid ""
+"Start Date: %s\n"
+"Time: %s to %s"
+msgstr ""
+
+#: ../datebook_gui.c:285 ../datebook_gui.c:295
+msgid "Unknown"
+msgstr ""
+
+#. End Date
+#: ../datebook_gui.c:298
+#, fuzzy
+msgid "End Date: "
+msgstr "Ngày cuối"
+
+#: ../datebook_gui.c:300
+msgid "Never"
+msgstr ""
+
+#: ../datebook_gui.c:306
+#, c-format
+msgid "Repeat Frequency: %d\n"
+msgstr ""
+
+#: ../datebook_gui.c:314
+#, c-format
+msgid "Monthly Repeat Day %d\n"
+msgstr ""
+
+#: ../datebook_gui.c:319 ../datebook_gui.c:5517
+msgid "Repeat on Days:"
+msgstr "Lập lại vào Hôm:"
+
+#: ../datebook_gui.c:330
+#, fuzzy, c-format
+msgid "Number of exceptions: %d"
+msgstr "số mục ghi = %d\n"
+
+#: ../datebook_gui.c:336
+msgid ""
+"\n"
+"more..."
+msgstr ""
+
+#: ../datebook_gui.c:357 ../datebook_gui.c:384
+msgid "Description:"
+msgstr ""
+
+#: ../datebook_gui.c:358 ../datebook_gui.c:385
+#, fuzzy
+msgid "Note:"
+msgstr "Ghi chú"
+
+#: ../datebook_gui.c:360 ../datebook_gui.c:388
+#, fuzzy
+msgid "Alarm:"
+msgstr "Báo động"
+
+#: ../datebook_gui.c:361 ../datebook_gui.c:389
+#, fuzzy
+msgid "Repeat Type:"
+msgstr "Lặp lại theo :"
+
+#: ../datebook_gui.c:364 ../datebook_gui.c:392
+#, fuzzy
+msgid "Start of Week:"
+msgstr "Hôm của tuần"
+
+#: ../datebook_gui.c:386 ../datebook_gui.c:5340
+msgid "Location:"
+msgstr ""
+
+#: ../datebook_gui.c:620 ../datebook_gui.c:2271
 #, c-format
 msgid "Appointment description text > %d, truncating to %d\n"
 msgstr "Chuỗi mô tả cuộc hẹn > %d nên cắt xén nó thành %d\n"
 
-#: datebook_gui.c:571 datebook_gui.c:986 datebook_gui.c:2116
-#: datebook_gui.c:2123
+#: ../datebook_gui.c:631 ../datebook_gui.c:1148 ../datebook_gui.c:2331
+#: ../datebook_gui.c:2338
 msgid "Error"
 msgstr "Lỗi"
 
-#: datebook_gui.c:572
+#: ../datebook_gui.c:632
 msgid "File doesn't appear to be datebook.dat format\n"
 msgstr "Tập tin có vẻ không phải có dạng thức <sổ_ngày.dat>\n"
 
-#: datebook_gui.c:986
+#: ../datebook_gui.c:699
+msgid "DAT/DBA (Palm Archive Formats)"
+msgstr ""
+
+#: ../datebook_gui.c:787
+#, c-format
+msgid ""
+"Datebook exported from %s %s on %s\n"
+"\n"
+msgstr ""
+
+#: ../datebook_gui.c:790
+#, c-format
+msgid ""
+"Calendar exported from %s %s on %s\n"
+"\n"
+msgstr ""
+
+#: ../datebook_gui.c:817 ../todo_gui.c:701
+msgid ""
+"Host character encoding is not UTF-8 based.\n"
+" Exported ical file may not be standards-compliant\n"
+msgstr ""
+
+#: ../datebook_gui.c:1148
 msgid "Unknown export type"
 msgstr "Không biết kiểu xuất"
 
-#: datebook_gui.c:1095 export_gui.c:258 jpilot.c:554
+#: ../datebook_gui.c:1228 ../todo_gui.c:872
+msgid "iCalendar"
+msgstr ""
+
+#: ../datebook_gui.c:1240 ../export_gui.c:251 ../jpilot.c:427
 msgid "Export"
 msgstr "Xuất"
 
-#: datebook_gui.c:1112
+#. Label for instructions
+#: ../datebook_gui.c:1257
 msgid "Export All Datebook Records"
 msgstr "Xuất ra mọi mục ghi của Sổ Ngày"
 
-#: datebook_gui.c:1131 export_gui.c:320
+#: ../datebook_gui.c:1276 ../export_gui.c:316
 msgid "Save as"
 msgstr "Lưu dạng"
 
-#: datebook_gui.c:1141 export_gui.c:331
+#. Browse button
+#: ../datebook_gui.c:1286 ../export_gui.c:329
 msgid "Browse"
 msgstr "Duyệt"
 
-#: datebook_gui.c:1291
+#: ../datebook_gui.c:1432
 msgid "Datebook Categories"
 msgstr "Loại Sổ Ngày"
 
-#: datebook_gui.c:1326 import_gui.c:311 prefs_gui.c:763
-msgid "Done"
-msgstr "Đã xong"
-
-#: datebook_gui.c:1338 datebook_gui.c:4626
+#. None button
+#. Labels for notebook tabs
+#: ../datebook_gui.c:1484 ../datebook_gui.c:2026 ../datebook_gui.c:5446
 msgid "None"
 msgstr "Không có"
 
-#: datebook_gui.c:1450
+#: ../datebook_gui.c:1633
 msgid "Begin On Date"
 msgstr "Ngày đầu"
 
-#: datebook_gui.c:1455
+#: ../datebook_gui.c:1639
 msgid "End On Date"
 msgstr "Ngày cuối"
 
-#: datebook_gui.c:1549 prefs.c:413
+#: ../datebook_gui.c:1751 ../prefs.c:449
 msgid "Sunday"
 msgstr "Chủ Nhật"
 
-#: datebook_gui.c:1550 prefs.c:414
+#: ../datebook_gui.c:1752 ../prefs.c:450
 msgid "Monday"
 msgstr "Thứ Hai"
 
-#: datebook_gui.c:1551
+#: ../datebook_gui.c:1753
 msgid "Tuesday"
 msgstr "Thứ Ba"
 
-#: datebook_gui.c:1552
+#: ../datebook_gui.c:1754
 msgid "Wednesday"
 msgstr "Thứ Tư"
 
-#: datebook_gui.c:1553
+#: ../datebook_gui.c:1755
 msgid "Thursday"
 msgstr "Thứ Năm"
 
-#: datebook_gui.c:1554
+#: ../datebook_gui.c:1756
 msgid "Friday"
 msgstr "Thứ Sáu"
 
-#: datebook_gui.c:1555
+#: ../datebook_gui.c:1757
 msgid "Saturday"
 msgstr "Thứ Bảy"
 
-#: datebook_gui.c:1558
+#: ../datebook_gui.c:1760
 msgid "4th"
 msgstr "thứ 4"
 
-#: datebook_gui.c:1558
+#: ../datebook_gui.c:1760
 msgid "Last"
 msgstr "Cuối"
 
-#: datebook_gui.c:1561
+#: ../datebook_gui.c:1763
 #, c-format
 msgid ""
 "This appointment can either\n"
@@ -612,21 +966,18 @@ msgstr ""
 "cuối của tháng.\n"
 "Bạn có muốn chón gì?"
 
-#: datebook_gui.c:1569 datebook_gui.c:1587
+#: ../datebook_gui.c:1770 ../datebook_gui.c:1786
 msgid "Question?"
 msgstr "Hỏi ?"
 
-#: datebook_gui.c:1569 datebook_gui.c:1587
-msgid "Answer: "
-msgstr "Đáp :"
-
-#: datebook_gui.c:1577
+#: ../datebook_gui.c:1777
+#, fuzzy
 msgid ""
 "This is a repeating event.\n"
-"Do you want to apply these\n"
-"changes to just the CURRENT\n"
-"event, or ALL of the\n"
-"occurrences of this event?"
+"Do you want to apply these changes to\n"
+"only the CURRENT event,\n"
+"just FUTURE events, or\n"
+"ALL of the occurrences of this event?"
 msgstr ""
 "Sự kiện này lặp lại.\n"
 "Bạn có muốn áp dụng các\n"
@@ -634,48 +985,57 @@ msgstr ""
 "HIỆN THỜI, hoặc vào MỌI\n"
 "lần gặp sự kiện này?"
 
-#: datebook_gui.c:1582
+#: ../datebook_gui.c:1782
 msgid "Current"
 msgstr "Hiện có"
 
-#: datebook_gui.c:1823
-msgid "none"
-msgstr "không có"
+#: ../datebook_gui.c:1782
+msgid "Future"
+msgstr ""
 
-#: datebook_gui.c:1824
+#: ../datebook_gui.c:2027
 msgid "day"
 msgstr "ngày"
 
-#: datebook_gui.c:1825
+#: ../datebook_gui.c:2028
 msgid "week"
 msgstr "tuần"
 
-#: datebook_gui.c:1826
+#: ../datebook_gui.c:2029
 msgid "month"
 msgstr "tháng"
 
-#: datebook_gui.c:1827
+#: ../datebook_gui.c:2030
 msgid "year"
 msgstr "năm"
 
-#: datebook_gui.c:2111 datebook_gui.c:2114
+#: ../datebook_gui.c:2326 ../datebook_gui.c:2329
 #, c-format
 msgid "You cannot have an appointment that repeats every %d %s(s)\n"
 msgstr "Bạn không thể có cuộc hẹn lặp lại từng %d %s\n"
 
-#: datebook_gui.c:2124
-msgid "You can not have a weekly repeating appointment that doesn't repeat on any day of the week."
-msgstr "Bạn không thể có cuộc hẹn lặp lại từng tuần mà không lặp lại vào hôm nào."
+#: ../datebook_gui.c:2339
+#, fuzzy
+msgid ""
+"You cannot have a weekly repeating appointment that doesn't repeat on any "
+"day of the week."
+msgstr ""
+"Bạn không thể có cuộc hẹn lặp lại từng tuần mà không lặp lại vào hôm nào."
 
-#: datebook_gui.c:2277
+#. This is a timeless event
+#: ../datebook_gui.c:2516 ../datebook_gui.c:5261
 msgid "No Time"
 msgstr "Chưa có giờ"
 
-#: datebook_gui.c:2618
+#: ../datebook_gui.c:2788 ../memo_gui.c:1339 ../todo_gui.c:1728
+msgid "External editor command too long to execute\n"
+msgstr ""
+
+#: ../datebook_gui.c:2940
 msgid "Invalid Appointment"
 msgstr "Cuộc hẹn không hợp lệ"
 
-#: datebook_gui.c:2619
+#: ../datebook_gui.c:2941
 msgid ""
 "The End Date of this appointment\n"
 "is before the start date."
@@ -683,361 +1043,304 @@ msgstr ""
 "Ngày cuối cua cuộc hẹn này\n"
 "nằm trước ngày đầu."
 
-#: datebook_gui.c:2874 datebook_gui.c:4660 datebook_gui.c:4690
-#: datebook_gui.c:4746 datebook_gui.c:4795 todo_gui.c:135 todo_gui.c:2262
+#. "No Date" check box
+#: ../datebook_gui.c:3336 ../datebook_gui.c:5479 ../datebook_gui.c:5510
+#: ../datebook_gui.c:5562 ../datebook_gui.c:5610 ../todo_gui.c:140
+#: ../todo_gui.c:2451
 msgid "No Date"
 msgstr "Chưa có ngày"
 
-#: datebook_gui.c:2988
-#, c-format
-msgid "Error in DateBookDB advanceUnits = %d\n"
+#: ../datebook_gui.c:3491
+#, fuzzy, c-format
+msgid "Error in DateBookDB or Calendar advanceUnits = %d\n"
 msgstr "Gặp lỗi trong cơ sở dữ liệu Sổ Ngày DateBookDB advanceUnits = %d\n"
 
-#: datebook_gui.c:3159
-msgid "Unknown repeatType found in DatebookDB\n"
-msgstr "Không biết kiểu lặp lại repeatType được tìm trong cơ sở dữ liệu Sổ Ngày DatebookDB\n"
-
 # Variable: don't translate / Biến: đừng dịch
-#: datebook_gui.c:3192
+#: ../datebook_gui.c:3678
 #, c-format
 msgid "%%a., %s"
 msgstr "%%a., %s"
 
-#: datebook_gui.c:3197 monthview_gui.c:210 weekview_gui.c:204
+#: ../datebook_gui.c:3683
 msgid " (TODAY)"
 msgstr " (HÔM NAY)"
 
-#: datebook_gui.c:4184 datebook_gui.c:4628
+#. Weekview button
+#: ../datebook_gui.c:4931 ../datebook_gui.c:5448
 msgid "Week"
 msgstr "Tuần"
 
-#: datebook_gui.c:4190
-msgid "W"
-msgstr "Tn"
-
-#: datebook_gui.c:4192
-msgid "View appointments by week"
+#: ../datebook_gui.c:4940
+#, fuzzy
+msgid "View appointments by week   Ctrl+W"
 msgstr "Xem cuộc hẹn theo tuần"
 
-#: datebook_gui.c:4195 datebook_gui.c:4629
+#. Monthview button
+#: ../datebook_gui.c:4943 ../datebook_gui.c:5449
 msgid "Month"
 msgstr "Tháng"
 
-#: datebook_gui.c:4202
-msgid "M"
-msgstr "Th"
-
-#: datebook_gui.c:4204
-msgid "View appointments by month"
+#: ../datebook_gui.c:4952
+#, fuzzy
+msgid "View appointments by month   Ctrl+M"
 msgstr "Xem cuộc hẹn theo tháng"
 
-#: datebook_gui.c:4209
+#. Make Category button
+#: ../datebook_gui.c:4957
 msgid "Cats"
 msgstr "Ploại"
 
-#: datebook_gui.c:4278
+#: ../datebook_gui.c:5021
 msgid "Time"
 msgstr "Giờ"
 
-#: datebook_gui.c:4315
+#. "Show ToDos" button
+#: ../datebook_gui.c:5064
 msgid "Show ToDos"
 msgstr "Hiện Cần Làm"
 
-#: datebook_gui.c:4330 todo_gui.c:2131
+#: ../datebook_gui.c:5078 ../todo_gui.c:2282
 msgid "Task"
 msgstr "Tác vụ"
 
-#: datebook_gui.c:4331 todo_gui.c:2132
+#: ../datebook_gui.c:5079 ../todo_gui.c:2283
 msgid "Due"
 msgstr "Đến hạn"
 
-#: datebook_gui.c:4428
+#: ../datebook_gui.c:5198 ../datebook_gui.c:5355
 msgid "Alarm"
 msgstr "Báo động"
 
-#: datebook_gui.c:4449
-msgid "Days"
-msgstr "Ngày"
+#. Date Spinners
+#: ../datebook_gui.c:5238 ../Expense/expense.c:1734
+msgid "Date:"
+msgstr "Ngày:"
 
-#: datebook_gui.c:4472
-msgid "This Event has no particular time"
-msgstr "Sự kiện này không có giờ riêng"
-
-#: datebook_gui.c:4480
-msgid "Starts on"
+#. Start date and time
+#: ../datebook_gui.c:5280
+#, fuzzy
+msgid "Start"
 msgstr "Bắt đầu"
 
-#: datebook_gui.c:4494
-msgid "Start Time"
-msgstr "Giờ đầu"
+#. End date and time
+#: ../datebook_gui.c:5297
+#, fuzzy
+msgid "End"
+msgstr "Kết thúc vào"
 
-#: datebook_gui.c:4512
-msgid "End Time"
-msgstr "Giờ cuối"
-
-#: datebook_gui.c:4610
+#: ../datebook_gui.c:5430
 msgid "DateBk Tags"
 msgstr "Thẻ Sổ Ngày"
 
-#: datebook_gui.c:4627
+#: ../datebook_gui.c:5447
 msgid "Day"
 msgstr "Ngày"
 
-#: datebook_gui.c:4630
+#: ../datebook_gui.c:5450
 msgid "Year"
 msgstr "Năm"
 
-#: datebook_gui.c:4634
+#. "No Repeat" page for notebook
+#: ../datebook_gui.c:5453
 msgid "This event will not repeat"
 msgstr "Sự kiện này không lặp lại."
 
-#: datebook_gui.c:4644 datebook_gui.c:4676 datebook_gui.c:4732
-#: datebook_gui.c:4779
+#: ../datebook_gui.c:5462 ../datebook_gui.c:5495 ../datebook_gui.c:5547
+#: ../datebook_gui.c:5593
 msgid "Frequency is Every"
 msgstr "Tần số là Từng"
 
-#: datebook_gui.c:4649
+#: ../datebook_gui.c:5468
 msgid "Day(s)"
 msgstr "Ngày"
 
-#: datebook_gui.c:4652 datebook_gui.c:4684 datebook_gui.c:4740
-#: datebook_gui.c:4787
+#: ../datebook_gui.c:5471 ../datebook_gui.c:5504 ../datebook_gui.c:5556
+#: ../datebook_gui.c:5602
 msgid "End on"
 msgstr "Kết thúc vào"
 
-#: datebook_gui.c:4681
+#: ../datebook_gui.c:5501
 msgid "Week(s)"
 msgstr "Tuần"
 
-#: datebook_gui.c:4697
-msgid "Repeat on Days:"
-msgstr "Lập lại vào Hôm:"
-
-#: datebook_gui.c:4737
+#: ../datebook_gui.c:5553
 msgid "Month(s)"
 msgstr "Tháng"
 
-#: datebook_gui.c:4754
+#: ../datebook_gui.c:5570
 msgid "Repeat by:"
 msgstr "Lặp lại theo :"
 
-#: datebook_gui.c:4758
+#: ../datebook_gui.c:5574
 msgid "Day of week"
 msgstr "Hôm của tuần"
 
-#: datebook_gui.c:4767
+#: ../datebook_gui.c:5583 ../Expense/expense.c:1616
 msgid "Date"
 msgstr "Ngày"
 
-#: datebook_gui.c:4784
+#: ../datebook_gui.c:5599
 msgid "Year(s)"
 msgstr "Năm"
 
-#: dialer.c:196
+#: ../dialer.c:195
 msgid "Phone Dialer"
 msgstr "Bộ Quay số Điện thoại"
 
-#: dialer.c:231
+#: ../dialer.c:230
 msgid "Prefix 1"
 msgstr "Tiền tố 1"
 
-#: dialer.c:253
+#: ../dialer.c:252
 msgid "Prefix 2"
 msgstr "Tiền tố 2"
 
-#: dialer.c:275
+#: ../dialer.c:274
 msgid "Prefix 3"
 msgstr "Tiền tố 3"
 
-#: dialer.c:290
+#: ../dialer.c:289
 msgid "Phone number:"
 msgstr "Số điện thoại:"
 
-#: dialer.c:321
+#: ../dialer.c:319
 msgid "Extension"
 msgstr "Phần mở rộng"
 
-#: dialer.c:344
+#: ../dialer.c:341
 msgid "Dial Command"
 msgstr "Lệnh Quay số"
 
-#: dialer.c:365
-msgid "Dismiss"
-msgstr "Bỏ qua"
-
-#: export_gui.c:116
+#: ../export_gui.c:121
 msgid "File Browser"
 msgstr "Bộ duyệt tập tin"
 
-#: export_gui.c:276
+#. Label for instructions
+#: ../export_gui.c:273
 msgid "Select records to be exported"
 msgstr "Chọn mục ghi cần xuất"
 
-#: export_gui.c:278
+#: ../export_gui.c:275
 msgid "Use Ctrl and Shift Keys"
 msgstr "Dùng phím Ctrl và Shift"
 
-#: import_gui.c:265 import_gui.c:304 import_gui.c:417 import_gui.c:497
-#: jpilot.c:510
+#. Import button
+#: ../import_gui.c:300 ../import_gui.c:369 ../import_gui.c:426
+#: ../import_gui.c:471 ../jpilot.c:383
 msgid "Import"
 msgstr "Nhập"
 
-#: import_gui.c:298 install_gui.c:311
-msgid "To change to a hidden directory type it below and hit TAB"
-msgstr "Để chuyển đổi sang một kiểu thư mục bị ẩn, hãy gõ nó dưới đây rồi bấm phím TAB."
-
-#: import_gui.c:324
-msgid "Import File Type"
-msgstr "Kiểu tập tin nhập"
-
-#: import_gui.c:436
+#: ../import_gui.c:317
+#, c-format
 msgid "Record was marked as private"
 msgstr "Mục ghi có nhãn Riêng"
 
-#: import_gui.c:438
+#: ../import_gui.c:319
+#, c-format
 msgid "Record was not marked as private"
 msgstr "Mục ghi không có nhãn Riêng"
 
-#: import_gui.c:445
+#: ../import_gui.c:328
 #, c-format
 msgid "Category before import was: [%s]"
 msgstr "Phân loại trước khi nhập là: [%s]"
 
-#: import_gui.c:451
+#: ../import_gui.c:336
 #, c-format
 msgid "Record will be put in category [%s]"
 msgstr "Mục ghi sẽ nằm trong phân loại [%s]"
 
-#: import_gui.c:504
+#. Import All button
+#: ../import_gui.c:376
 msgid "Import All"
 msgstr "Nhập hết"
 
-#: import_gui.c:511
+#. Skip button
+#: ../import_gui.c:383
 msgid "Skip"
 msgstr "Bỏ qua"
 
-#: import_gui.c:518
-msgid "Quit"
-msgstr "Thoát"
+#: ../import_gui.c:457 ../install_gui.c:427
+msgid "To change to a hidden directory type it below and hit TAB"
+msgstr ""
+"Để chuyển đổi sang một kiểu thư mục bị ẩn, hãy gõ nó dưới đây rồi bấm phím "
+"TAB."
 
-#: install_gui.c:258
+#: ../import_gui.c:484
+msgid "Import File Type"
+msgstr "Kiểu tập tin nhập"
+
+#: ../install_gui.c:364
+#, fuzzy
+msgid "Files to install"
+msgstr "Tập tin cần cài đặt"
+
+#: ../install_gui.c:372
 msgid "Install"
 msgstr "Cài đặt"
 
-#: install_gui.c:288
-msgid "Files to be installed"
-msgstr "Tập tin cần cài đặt"
+#: ../install_user.c:116 ../install_user.c:218
+#, fuzzy
+msgid "Install User"
+msgstr "/Tập tin/Cài đặt người dùng"
 
-#: install_gui.c:317
-msgid "Add"
-msgstr "Thêm"
+#: ../install_user.c:137
+msgid ""
+"A PalmOS(c) device needs a user name and a user ID in order to sync properly."
+msgstr ""
 
-#: install_gui.c:324
-msgid "Remove"
-msgstr "Gỡ bỏ"
+#: ../install_user.c:144
+msgid ""
+"If you want to sync more than 1 PalmOS(c) device each one should have a "
+"different ID and preferably a different user name."
+msgstr ""
 
-#: install_gui.c:331 monthview_gui.c:511 search_gui.c:585 weekview_gui.c:337
-msgid "Close"
-msgstr "Đóng"
+#. Instruction label
+#: ../install_user.c:166
+msgid "Most people choose their name or nickname for the user name."
+msgstr ""
 
-#: jpilot-dump.c:64
-msgid " +B +M +A +T format like date +format (use -? for more info).\n"
-msgstr " dạng thức +B +M +A +T giống như dạng thức date+ (dùng « -? » sẽ xem thông tin thêm).\n"
+#: ../install_user.c:174 ../restore_gui.c:276
+msgid "User Name"
+msgstr "Tên người dùng"
 
-#: jpilot-dump.c:65
-msgid " -v displays version and exits.\n"
-msgstr " -v hiện phiên bản rồi thoát.\n"
+#: ../install_user.c:184
+msgid "The ID should be a random number."
+msgstr ""
 
-#: jpilot-dump.c:66 utils.c:77
-msgid " -h displays help and exits.\n"
-msgstr " -h hiện trợ giúp rồi thoát.\n"
+#: ../install_user.c:192 ../restore_gui.c:295
+msgid "User ID"
+msgstr "ID người dùng"
 
-#: jpilot-dump.c:67
-msgid " -B dump dateBook.\n"
-msgstr " -B đổ Sổ Ngày.\n"
-
-#: jpilot-dump.c:68
-msgid " -NYYYY/MM/DD dump apps on YYYY/MM/DD in dateBook.\n"
-msgstr " -NNĂM/Th/Ng đổ các cuộc hẹn của NĂM/Th/Ng trong Sổ Ngày.\n"
-
-#: jpilot-dump.c:69
-msgid " -N dump apps on today in dateBook.\n"
-msgstr " -N đổ các cuộc hẹn của hôm nay trong Sổ Ngày\n"
-
-#: jpilot-dump.c:70
-msgid " -M dump Memos.\n"
-msgstr " -M đổ các Ghi nhớ\n"
-
-#: jpilot-dump.c:71
-msgid " -A dump Address book.\n"
-msgstr " -A đổ Sổ địa chỉ\n"
-
-#: jpilot-dump.c:72
-msgid " -T dump Todo list as CSV.\n"
-msgstr " -T đổ danh sách Cần Làm dạng .csv\n"
-
-#: jpilot-sync.c:65
-msgid " J-Pilot preferences are read to get port, rate, number of backups, etc.\n"
-msgstr "Tùy thích J-Pilot được đọc để biết cổng, tốc độ, số bản sao lưu v.v.\n"
-
-#: jpilot-sync.c:66
-msgid " -v = version\n"
-msgstr " -v = phiên bản\n"
-
-#: jpilot-sync.c:67
-msgid " -h = help\n"
-msgstr " -h = trợ giúp\n"
-
-#: jpilot-sync.c:68
-msgid " -d = run in debug mode\n"
-msgstr " -d = chạy trong chế độ gỡ lỗi\n"
-
-#: jpilot-sync.c:69
-msgid " -P = do not load plugins.\n"
-msgstr " -P = đừng tải bộ cầm phít\n"
-
-#: jpilot-sync.c:70
-msgid " -b = Do a sync and then a backup, otherwise just do a sync.\n"
-msgstr " -b = đồng bộ hóa rồi sao lưu hết, không thì chỉ đồng bộ hóa.\n"
-
-#: jpilot-sync.c:71
-msgid " -l = loop, otherwise sync once and exit.\n"
-msgstr " -l = lặp lại, không thì đồng bộ hóa một lần rồi thoát.\n"
-
-#: jpilot-sync.c:72
-msgid " -p {port} = Use this port to sync with instead of getting preferences.\n"
-msgstr " -p (cổng) = dùng cổng này để đồng bộ hóa, không đọc cổng từ tùy thích.\n"
-
-#: jpilot.c:142
-#, c-format
-msgid "Invalid geometry specification: \"%s\"\n"
-msgstr "Đặc tả dạng hình không hợp lệ: « %s ».\n"
-
-#: jpilot.c:386
-msgid "Help"
-msgstr "Trợ giúp"
-
-#: jpilot.c:450 monthview_gui.c:517 print_gui.c:332 weekview_gui.c:343
+#: ../jpilot.c:317
 msgid "Print"
 msgstr "In"
 
-#: jpilot.c:451
+#: ../jpilot.c:318
 msgid "There is no print support for this conduit."
 msgstr "Không hỗ trợ khả năng in cho ống dẫn này."
 
-#: jpilot.c:511
+#: ../jpilot.c:384
 msgid "There is no import support for this conduit."
 msgstr "Không hỗ trợ khả năng nhập cho ống dẫn này."
 
-#: jpilot.c:555
+#: ../jpilot.c:428
 msgid "There is no export support for this conduit."
 msgstr "Không hỗ trợ khả năng xuất cho ống dẫn này."
 
-#: jpilot.c:731
+#: ../jpilot.c:657
+#, fuzzy
+msgid " Cancelling HotSync\n"
+msgstr "Thôi đồng bộ"
+
+#. -------------------------------------------
+#: ../jpilot.c:673
+#, fuzzy
 msgid ""
-"This palm doesn't have the same user name\n"
-"or user ID as the one that was synced the\n"
-"last time.  Syncing could have unwanted effects.\n"
+"This handheld does not have the same user name or user ID\n"
+"as the one that was synced the last time.\n"
+"Syncing could have unwanted effects including data loss.\n"
+"\n"
 "Read the user manual if you are uncertain."
 msgstr ""
 "Máy Palm này không có cùng một tên người\n"
@@ -1045,14 +1348,17 @@ msgstr ""
 "lần trước. Như thế thì việc đồng bộ hóa có thể\n"
 "tác động một cách sai. Hãy đọc Sổ Tay nếu chưa chắc."
 
-#: jpilot.c:738
+#. -------------------------------------------
+#: ../jpilot.c:680
+#, fuzzy
 msgid ""
-"This palm has a NULL user id.\n"
-"Every palm must have a unique user id in order to sync properly.\n"
-"If it has been hard reset, use restore from the menu to restore it,\n"
-"or use pilot-xfer.\n"
-"To add a user name and ID use the install-user command line tool,\n"
-"or use install-user from the menu\n"
+"This handheld has a NULL user ID.\n"
+"Every handheld must have a unique user ID in order to sync properly.\n"
+"If the handheld has been hard reset, \n"
+"   use restore from the menu to restore it.\n"
+"Otherwise, to add a new user name and ID\n"
+"   use install-user from the menu.\n"
+"\n"
 "Read the user manual if you are uncertain."
 msgstr ""
 "Máy Palm này có ID người dùng RỖNG.\n"
@@ -1063,248 +1369,228 @@ msgstr ""
 "« install-user », hoặc dùng « Cài đặt người dùng » từ trình đơn.\n"
 "Hãy đọc Sổ Tay nếu chưa chắc."
 
-#: jpilot.c:745
+#: ../jpilot.c:688
 msgid "Cancel Sync"
 msgstr "Thôi đồng bộ"
 
-#: jpilot.c:745
+#: ../jpilot.c:688
 msgid "Sync Anyway"
 msgstr "Vẫn đồng bộ"
 
-#: jpilot.c:755 jpilot.c:760
+#: ../jpilot.c:697 ../jpilot.c:701
 msgid "Sync Problem"
 msgstr "Lỗi đồng bộ"
 
-#: jpilot.c:755 jpilot.c:760
-msgid "Sync"
-msgstr "Đồng bộ"
+#: ../jpilot.c:932 ../jpilot.c:1787
+msgid " User: "
+msgstr " Người dùng: "
 
-#: jpilot.c:959
+#: ../jpilot.c:944
 msgid "Unknown command from sync process\n"
 msgstr "Không biết lệnh từ tiến trình đồng bộ\n"
 
-#: jpilot.c:980 Expense/expense.c:516 KeyRing/keyring.c:512
+#: ../jpilot.c:963 ../Expense/expense.c:527 ../KeyRing/keyring.c:1870
+#: ../SyncTime/synctime.c:59
 #, c-format
 msgid "About %s"
 msgstr "Giới thiệu về %s"
 
-#: jpilot.c:1382
+#: ../jpilot.c:1107
 msgid "/_File"
 msgstr "/_Tập tin"
 
-#: jpilot.c:1383
+#: ../jpilot.c:1108
 msgid "/File/tear"
 msgstr "/Tập tin/tách rời"
 
-#: jpilot.c:1384
+#: ../jpilot.c:1109
 msgid "/File/_Find"
 msgstr "/Tập tin/_Tìm"
 
-#: jpilot.c:1385 jpilot.c:1391 jpilot.c:1394
+#: ../jpilot.c:1110 ../jpilot.c:1116 ../jpilot.c:1119
 msgid "/File/sep1"
 msgstr "/Tập tin/sep1"
 
-#: jpilot.c:1386
+#: ../jpilot.c:1111
 msgid "/File/_Install"
 msgstr "/Tập tin/_Cài đặt"
 
-#: jpilot.c:1387
+#: ../jpilot.c:1112
 msgid "/File/Import"
 msgstr "/Tập tin/Nhập"
 
-#: jpilot.c:1388
+#: ../jpilot.c:1113
 msgid "/File/Export"
 msgstr "/Tập tin/Xuất"
 
-#: jpilot.c:1389 jpilot.c:2825
+#: ../jpilot.c:1114 ../jpilot.c:2192
 msgid "/File/Preferences"
 msgstr "/Tập tin/Tùy thích"
 
-#: jpilot.c:1390
+#: ../jpilot.c:1115
 msgid "/File/_Print"
 msgstr "/Tập tin/_In"
 
-#: jpilot.c:1392
+#: ../jpilot.c:1117
 msgid "/File/Install User"
 msgstr "/Tập tin/Cài đặt người dùng"
 
-#: jpilot.c:1393
+#: ../jpilot.c:1118
 msgid "/File/Restore Handheld"
 msgstr "/Tập tin/Phục hồi bộ cầm tay"
 
-#: jpilot.c:1395
+#: ../jpilot.c:1120
 msgid "/File/_Quit"
 msgstr "/Tập tin/T_hoát"
 
-#: jpilot.c:1396
+#: ../jpilot.c:1121
 msgid "/_View"
 msgstr "/_Xem"
 
-#: jpilot.c:1397 jpilot.c:1398 jpilot.c:1399 jpilot.c:1653
+#: ../jpilot.c:1122 ../jpilot.c:1123 ../jpilot.c:1124 ../jpilot.c:1370
 msgid "/View/Hide Private Records"
 msgstr "/Xem/Ẩn các mục ghi riêng"
 
-#: jpilot.c:1398
+#: ../jpilot.c:1123 ../jpilot.c:1373
 msgid "/View/Show Private Records"
 msgstr "/Xem/Hiện các mục ghi riêng"
 
-#: jpilot.c:1399
+#: ../jpilot.c:1124 ../jpilot.c:1376
 msgid "/View/Mask Private Records"
 msgstr "/Xem/Lọc các mục ghi riêng"
 
-#: jpilot.c:1400
+#: ../jpilot.c:1125
 msgid "/View/sep1"
 msgstr "/Xem/sep1"
 
-#: jpilot.c:1401
+#: ../jpilot.c:1126
 msgid "/View/Datebook"
 msgstr "/Xem/Sổ Ngày"
 
-#: jpilot.c:1402
+#: ../jpilot.c:1127
 msgid "/View/Addresses"
 msgstr "/Xem/Địa chỉ"
 
-#: jpilot.c:1403
+#: ../jpilot.c:1128
 msgid "/View/Todos"
 msgstr "/Xem/Cần làm"
 
-#: jpilot.c:1404
+#: ../jpilot.c:1129
 msgid "/View/Memos"
 msgstr "/Xem/Ghi nhớ"
 
-#: jpilot.c:1405 jpilot.c:1539
+#: ../jpilot.c:1130 ../jpilot.c:1261
 msgid "/_Plugins"
 msgstr "/Xem/Bộ cầm _phít"
 
-#: jpilot.c:1407
+#: ../jpilot.c:1132
 msgid "/_Web"
 msgstr "/_Mạng"
 
 # Name: don't translate /Tên: đừng dịch
-#: jpilot.c:1408
+#. web
+#: ../jpilot.c:1133
 msgid "/Web/Netscape"
 msgstr "/Mạng/Netscape"
 
 # Name: don't translate / Tên: đừng dịch
-#: jpilot.c:1412
+#: ../jpilot.c:1137
 msgid "/Web/Mozilla"
 msgstr "/Mạng/Mozilla"
 
-#: jpilot.c:1417
+#: ../jpilot.c:1142
 msgid "/Web/Galeon"
 msgstr "/Mạng/Galeon"
 
-#: jpilot.c:1422
+#: ../jpilot.c:1147
 msgid "/Web/Opera"
 msgstr "/Mạng/Opera"
 
-#: jpilot.c:1426
+#: ../jpilot.c:1151
 msgid "/Web/GnomeUrl"
 msgstr "/Mạng/GnomeUrl"
 
-#: jpilot.c:1428
+#: ../jpilot.c:1153
 msgid "/Web/Lynx"
 msgstr "/Mạng/Lynx"
 
-#: jpilot.c:1430
+#: ../jpilot.c:1155
 msgid "/Web/Links"
 msgstr "/Mạng/Links"
 
-#: jpilot.c:1432
+#: ../jpilot.c:1157
 msgid "/Web/W3M"
 msgstr "/Mạng/W3M"
 
-#: jpilot.c:1434
+#: ../jpilot.c:1159
 msgid "/Web/Konqueror"
 msgstr "/Mạng/Konqueror"
 
-#: jpilot.c:1437
+#: ../jpilot.c:1162
 msgid "/_Help"
 msgstr "/Trợ _giúp"
 
-#: jpilot.c:1438
-msgid "/Help/PayBack program"
-msgstr "/Trợ giúp/Chương trìinh trả lại"
-
-#: jpilot.c:1439
-msgid "/Help/J-Pilot"
+#: ../jpilot.c:1163
+#, fuzzy
+msgid "/Help/About J-Pilot"
 msgstr "/Trợ giúp/J-Pilot"
 
-#: jpilot.c:1506
+#: ../jpilot.c:1229
 #, c-format
 msgid "/_Plugins/%s"
 msgstr "/Bộ cầm _phít/%s"
 
-#: jpilot.c:1517
+#: ../jpilot.c:1239
 #, c-format
 msgid "/_Help/%s"
 msgstr "/Trợ _giúp/%s"
 
-#: jpilot.c:1816
-msgid "Font Selection Dialog"
-msgstr "Hộp thoại chọn phông chữ"
-
-#: jpilot.c:2154
+#: ../jpilot.c:1593
 msgid "calendar:week_start:0"
 msgstr "calendar:week_start:0"
 
-#: jpilot.c:2199
+#: ../jpilot.c:1636 ../jpilot-sync.c:169
 msgid "Not loading plugins.\n"
 msgstr "Không tải bộ cầm phít.\n"
 
-#: jpilot.c:2203
+#: ../jpilot.c:1640
 msgid "Ignoring all alarms.\n"
 msgstr "Bỏ qua mọi bảo động.\n"
 
-#: jpilot.c:2207
+#: ../jpilot.c:1644
 msgid "Ignoring past alarms.\n"
 msgstr "Bỏ qua các bảo động qua.\n"
 
-#: jpilot.c:2302 jpilot.c:2310
+#: ../jpilot.c:1732 ../jpilot.c:1740
 msgid "Unable to open pipe\n"
 msgstr "Không thể mở ống\n"
 
-#: jpilot.c:2361
-msgid " User: "
-msgstr " Người dùng: "
-
-#: jpilot.c:2508
-msgid "Clear"
-msgstr "Xoá"
-
-#: jpilot.c:2579
-msgid "Show private records   Ctrl-Z"
+#: ../jpilot.c:1949
+#, fuzzy
+msgid "Show private records   Ctrl+Z"
 msgstr "Hiện bản ghi riêng   Ctrl-Z"
 
-#: jpilot.c:2584
-msgid "Show private records"
-msgstr "Hiện bản ghi riêng"
-
-#: jpilot.c:2589
-msgid "Hide private records   Ctrl-Z"
+#: ../jpilot.c:1954
+#, fuzzy
+msgid "Hide private records   Ctrl+Z"
 msgstr "Ẩn bản ghi riêng   Ctrl-Z"
 
-#: jpilot.c:2594
-msgid "Hide private records"
-msgstr "Ẩn bản ghi riêng"
-
-#: jpilot.c:2599
-msgid "Mask private records   Ctrl-Z"
+#: ../jpilot.c:1959
+#, fuzzy
+msgid "Mask private records   Ctrl+Z"
 msgstr "Lọc bản ghi riêng   Ctrl-Z"
 
-#: jpilot.c:2604
-msgid "Mask private records"
-msgstr "Lọc bản ghi riêng"
-
-#: jpilot.c:2614
-msgid "Sync your palm to the desktop   Ctrl-Y"
+#: ../jpilot.c:1971
+#, fuzzy
+msgid "Sync your palm to the desktop   Ctrl+Y"
 msgstr "Đồng bộ hóa Palm với máy tính   Ctrl-Y"
 
-#: jpilot.c:2620
-msgid "Font"
-msgstr "Phông chữ"
+#: ../jpilot.c:1983
+#, fuzzy
+msgid "Stop Sync process"
+msgstr "Đồng bộ hóa Địa chỉ"
 
-#: jpilot.c:2635
+#: ../jpilot.c:1995
 msgid ""
 "Sync your palm to the desktop\n"
 "and then do a backup"
@@ -1312,80 +1598,354 @@ msgstr ""
 "Đồng bộ hóa Palm với máy tính\n"
 "rồi sao lưu hết"
 
-#: jpilot.c:2749
+#: ../jpilot.c:2143
 msgid "Datebook/Go to Today"
 msgstr "Sổ Ngày/Đi tới ngày hôm nay"
 
-#: jpilot.c:2751
+#: ../jpilot.c:2144
 msgid "Address Book"
 msgstr "Sổ địa chỉ"
 
-#: jpilot.c:2753
+#: ../jpilot.c:2145
 msgid "ToDo List"
 msgstr "Danh sách Cần làm"
 
-#: jpilot.c:2755
+#: ../jpilot.c:2146
 msgid "Memo Pad"
 msgstr "Tập giấy Ghi nhớ"
 
-#: jpilot.c:2807
+#: ../jpilot.c:2174
 msgid "Do it now"
 msgstr "Làm ngay"
 
-#: jpilot.c:2807
+#: ../jpilot.c:2174
 msgid "Remind me later"
 msgstr "Nhắc nhở lần sau"
 
-#: jpilot.c:2807
+#: ../jpilot.c:2174
 msgid "Don't tell me again!"
 msgstr "Đừng nói điều này lần nữa."
 
-#: jpilot.c:2821
+#: ../jpilot.c:2187
+#, fuzzy, c-format
 msgid ""
-"J-Pilot is using the GTK2 graphical toolkit. This version of the toolkit uses UTF-8 to encode characters.\n"
-"You should select a UTF-8 charset so you can see the non-ASCII characters (accents for example).\n"
+"J-Pilot uses the GTK2 graphical toolkit. This version of the toolkit uses "
+"UTF-8 to encode characters.\n"
+"You should select a UTF-8 charset so that you can see non-ASCII characters "
+"(accents for example).\n"
 "\n"
+"Go to the menu \"%s\" and change the \"%s\"."
 msgstr ""
-"Chương trình J-Pilot đang dùng bộ công cụ đồ họa GTK2. Phiên bản bộ công cụ này dùng UTF-8 để mã hóa ký tự.\n"
-"Bạn nên chọn một bộ ký tự UTF-8 để có khả năng xem ký tự khác ASCII, v.d. chữ có giọng.\n"
+"Chương trình J-Pilot đang dùng bộ công cụ đồ họa GTK2. Phiên bản bộ công cụ "
+"này dùng UTF-8 để mã hóa ký tự.\n"
+"Bạn nên chọn một bộ ký tự UTF-8 để có khả năng xem ký tự khác ASCII, v.d. "
+"chữ có giọng.\n"
 "\n"
 
-#: jpilot.c:2824
-msgid "Go to the menu \""
-msgstr "Đi tới trình đơn \""
-
-#: jpilot.c:2826
-msgid "\" and change the \""
-msgstr "\" và thay đổi \""
-
-#: jpilot.c:2827 prefs_gui.c:390
-msgid "Character Set "
+#. Character Set
+#: ../jpilot.c:2192 ../prefs_gui.c:509
+#, fuzzy
+msgid "Character Set"
 msgstr "Bộ ký tự"
 
-#: jpilot.c:2828
-msgid "\"."
-msgstr "\"."
-
-#: jpilot.c:2830
+#: ../jpilot.c:2194
 msgid "Select a UTF-8 encoding"
 msgstr "Chọn bảng mã UTF-8"
 
-#: libplugin.c:153
-#, c-format
-msgid "Unknown PC header version = %d\n"
-msgstr "Không biết phiên bản phần đầu PC = %d\n"
+#: ../jpilot-dump.c:92
+#, fuzzy, c-format
+msgid " +D +A +T +M format like date +format.\n"
+msgstr ""
+" dạng thức +B +M +A +T giống như dạng thức date+ (dùng « -? » sẽ xem thông "
+"tin thêm).\n"
 
-#: libplugin.c:441
-#, c-format
-msgid "%s:%d Error opening file: %s\n"
-msgstr "%s:%d Gặp lỗi khi mở tập tin: %s\n"
+#: ../jpilot-dump.c:93
+#, fuzzy, c-format
+msgid " -v display version and exit\n"
+msgstr " -v hiện phiên bản rồi thoát.\n"
 
-#: libplugin.c:447 libplugin.c:476 sync.c:2880 todo.c:391
-#, c-format
-msgid "%s:%d Error reading file: %s\n"
-msgstr "%s:%d Gặp lỗi khi đọc tập tin: %s\n"
+#: ../jpilot-dump.c:94 ../jpilot-sync.c:66 ../utils.c:1872
+#, fuzzy, c-format
+msgid " -h display help text\n"
+msgstr " -h hiện trợ giúp rồi thoát.\n"
 
-#: libplugin.c:503 utils.c:1899
+#: ../jpilot-dump.c:95
+#, fuzzy, c-format
+msgid " -f display help for format codes\n"
+msgstr " -h hiện trợ giúp rồi thoát.\n"
+
+#: ../jpilot-dump.c:96
+#, fuzzy, c-format
+msgid " -D dump DateBook\n"
+msgstr " -B đổ Sổ Ngày.\n"
+
+#: ../jpilot-dump.c:97
+#, c-format
+msgid " -i dump DateBook in iCalendar format\n"
+msgstr ""
+
+#: ../jpilot-dump.c:98
+#, fuzzy, c-format
+msgid " -N dump appts for today in DateBook\n"
+msgstr " -N đổ các cuộc hẹn của hôm nay trong Sổ Ngày\n"
+
+#: ../jpilot-dump.c:99
+#, fuzzy, c-format
+msgid " -NYYYY/MM/DD dump appts on YYYY/MM/DD in DateBook\n"
+msgstr " -NNĂM/Th/Ng đổ các cuộc hẹn của NĂM/Th/Ng trong Sổ Ngày.\n"
+
+#: ../jpilot-dump.c:100
+#, fuzzy, c-format
+msgid " -A dump Address book\n"
+msgstr " -A đổ Sổ địa chỉ\n"
+
+#: ../jpilot-dump.c:101
+#, fuzzy, c-format
+msgid " -T dump ToDo list as CSV\n"
+msgstr " -T đổ danh sách Cần Làm dạng .csv\n"
+
+#: ../jpilot-dump.c:102
+#, fuzzy, c-format
+msgid " -M dump Memos\n"
+msgstr " -M đổ các Ghi nhớ\n"
+
+#: ../jpilot-dump.c:163
+#, c-format
+msgid ""
+"Warning: Host character encoding is not UTF-8 based.\n"
+"Exported ical file may not be standards-compliant\n"
+msgstr ""
+
+#: ../jpilot-merge.c:161 ../jpilot-merge.c:167
+#, fuzzy, c-format
+msgid "%s: Unable to open file:%s\n"
+msgstr "Không thể mở tập tin: %s\n"
+
+#: ../jpilot-merge.c:269
+#, c-format
+msgid "Records read from pdb = %d\n"
+msgstr ""
+
+#: ../jpilot-merge.c:270
+#, c-format
+msgid "Records added         = %d\n"
+msgstr ""
+
+#: ../jpilot-merge.c:271
+#, c-format
+msgid "Records deleted       = %d\n"
+msgstr ""
+
+#: ../jpilot-merge.c:272
+#, c-format
+msgid "Records modified      = %d\n"
+msgstr ""
+
+#: ../jpilot-merge.c:273
+#, c-format
+msgid "Records written       = %d\n"
+msgstr ""
+
+#: ../jpilot-merge.c:291
+#, c-format
+msgid "Usage: %s {input pdb file} {input pc3 file} {output pdb file}\n"
+msgstr ""
+
+#: ../jpilot-merge.c:292
+#, c-format
+msgid "  This program will merge an unsynced records file (pc3)\n"
+msgstr ""
+
+#: ../jpilot-merge.c:293
+#, c-format
+msgid ""
+"  into the corresponding palm database (pdb) file.\n"
+"\n"
+msgstr ""
+
+#: ../jpilot-merge.c:294
+#, c-format
+msgid "  WARNING: Only run this utility if you understand the consequences!\n"
+msgstr ""
+
+#: ../jpilot-merge.c:295
+#, c-format
+msgid "  The merge will leave your databases in an unsync-able state.\n"
+msgstr ""
+
+#: ../jpilot-merge.c:296
+#, c-format
+msgid ""
+"  It is intended for cases where J-pilot is being used as a standalone PIM\n"
+msgstr ""
+
+#: ../jpilot-merge.c:297
+#, c-format
+msgid "  and where no syncing occurs to physical hardware.\n"
+msgstr ""
+
+#: ../jpilot-merge.c:298
+#, c-format
+msgid "  WARNING: Make a backup copy of your databases before proceeding.\n"
+msgstr ""
+
+#: ../jpilot-merge.c:299
+#, c-format
+msgid ""
+"  It is quite simple to destroy your databases by accidentally merging\n"
+msgstr ""
+
+#: ../jpilot-merge.c:300
+#, c-format
+msgid "  address records into datebook databases, etc.\n"
+msgstr ""
+
+#: ../jpilot-sync.c:64
+#, fuzzy, c-format
+msgid ""
+" J-Pilot preferences are read to get sync info such as port, rate, number of "
+"backups, etc.\n"
+msgstr "Tùy thích J-Pilot được đọc để biết cổng, tốc độ, số bản sao lưu v.v.\n"
+
+#: ../jpilot-sync.c:65 ../utils.c:1871
+#, fuzzy, c-format
+msgid " -v display version and compile options\n"
+msgstr " -v hiện phiên bản và tùy chọn biên dịch rồi thoát.\n"
+
+#: ../jpilot-sync.c:67 ../utils.c:1873
+#, fuzzy, c-format
+msgid " -d display debug info to stdout\n"
+msgstr " -d hiện thông tin gỡ lỗi vào thiết bị xuất chuẩn.\n"
+
+#: ../jpilot-sync.c:68
+#, fuzzy, c-format
+msgid " -P skip loading plugins\n"
+msgstr "Không tải bộ cầm phít.\n"
+
+#: ../jpilot-sync.c:69
+#, c-format
+msgid " -b sync, and then do a backup\n"
+msgstr ""
+
+#: ../jpilot-sync.c:70
+#, fuzzy, c-format
+msgid " -l loop, otherwise sync once and exit\n"
+msgstr " -l = lặp lại, không thì đồng bộ hóa một lần rồi thoát.\n"
+
+#: ../jpilot-sync.c:71
+#, fuzzy, c-format
+msgid " -p {port} use this port to sync on instead of default\n"
+msgstr ""
+" -p (cổng) = dùng cổng này để đồng bộ hóa, không đọc cổng từ tùy thích.\n"
+
+#: ../jpilot-sync.c:219
+#, fuzzy, c-format
+msgid "Error: connecting to port %s\n"
+msgstr "Gặp lỗi khi mở tập tin: %s\n"
+
+#: ../jpilot-sync.c:223
+#, c-format
+msgid "Error: pi_listen\n"
+msgstr ""
+
+#: ../jpilot-sync.c:227
+#, fuzzy, c-format
+msgid "Error: opening conduit to handheld\n"
+msgstr "Gặp lỗi khi mở tập tin: next_id\n"
+
+#: ../jpilot-sync.c:231
+#, c-format
+msgid "Error: pi_accept\n"
+msgstr ""
+
+#: ../jpilot-sync.c:235 ../jpilot-sync.c:263
+#, fuzzy, c-format
+msgid "Error: "
+msgstr "Lỗi"
+
+#: ../jpilot-sync.c:236
+#, c-format
+msgid "This handheld does not have the same user name.\n"
+msgstr ""
+
+#: ../jpilot-sync.c:237 ../jpilot-sync.c:251
+#, c-format
+msgid "as the one that was synced the last time.\n"
+msgstr ""
+
+#: ../jpilot-sync.c:239
+#, c-format
+msgid ""
+"Syncing with different handhelds to the same directory can destroy data.\n"
+msgstr ""
+
+#: ../jpilot-sync.c:241 ../jpilot-sync.c:254
+#, c-format
+msgid " COPILOT_HOME"
+msgstr ""
+
+#: ../jpilot-sync.c:243 ../jpilot-sync.c:256
+#, c-format
+msgid " JPILOT_HOME"
+msgstr ""
+
+#: ../jpilot-sync.c:245 ../jpilot-sync.c:258
+#, fuzzy, c-format
+msgid " environment variable can be used to sync different handhelds,\n"
+msgstr "Biến môi trường HOME của bạn là quá dài.\n"
+
+#: ../jpilot-sync.c:246 ../jpilot-sync.c:259
+#, c-format
+msgid " to different directories for the same UNIX user name.\n"
+msgstr ""
+
+#: ../jpilot-sync.c:250
+#, c-format
+msgid "This handheld does not have the same user ID.\n"
+msgstr ""
+
+#: ../jpilot-sync.c:252
+#, c-format
+msgid ""
+" Syncing with different handhelds to the same directory can destroy data.\n"
+msgstr ""
+
+#: ../jpilot-sync.c:264
+#, c-format
+msgid "This handheld has a NULL user ID.\n"
+msgstr ""
+
+#: ../jpilot-sync.c:265
+#, c-format
+msgid "Every handheld must have a unique user ID in order to sync properly.\n"
+msgstr ""
+
+#: ../jpilot-sync.c:266
+#, c-format
+msgid "If the handheld has been hard reset, \n"
+msgstr ""
+
+#: ../jpilot-sync.c:267
+#, c-format
+msgid "   use restore from within "
+msgstr ""
+
+#: ../jpilot-sync.c:268
+#, c-format
+msgid "Otherwise, to add a new user name and ID\n"
+msgstr ""
+
+#: ../jpilot-sync.c:269
+#, c-format
+msgid "   use \"install-user %s name numeric_id\"\n"
+msgstr ""
+
+#: ../jpilot-sync.c:273
+#, c-format
+msgid "Error: sync returned error %d\n"
+msgstr ""
+
+#: ../libplugin.c:62 ../utils.c:1052
 msgid ""
 "This record is already deleted.\n"
 "It is scheduled to be deleted from the Palm on the next sync.\n"
@@ -1393,103 +1953,214 @@ msgstr ""
 "Mục ghi đã bị xoá bỏ.\n"
 "Nó sẽ bị xoá bỏ ra máy Palm vào lúc đồng bộ hóa kế tiếp.\n"
 
-#: libplugin.c:512 utils.c:1908 utils.c:1945
+#: ../libplugin.c:71 ../libplugin.c:108 ../utils.c:1062 ../utils.c:1104
 msgid "Unable to open PC records file\n"
 msgstr "Không thể mở tập tin mục ghi PC.\n"
 
-#: libplugin.c:518 utils.c:1914
+#: ../libplugin.c:77 ../utils.c:1069
 msgid "Couldn't find record to delete\n"
 msgstr "Không thể tìm thấy mục ghi cần xoá bỏ.\n"
 
-#: libplugin.c:537 utils.c:1932
+#: ../libplugin.c:95 ../utils.c:1089
 #, c-format
 msgid "Unknown header version %d\n"
 msgstr "Không biết phiên bản phần đầu %d\n"
 
-#: libplugin.c:550
-msgid "Couldn't open PC records file\n"
-msgstr "Không thể mở tập tin mục ghi PC\n"
+#: ../libplugin.c:180
+#, c-format
+msgid "%s:%d Error opening file: %s\n"
+msgstr "%s:%d Gặp lỗi khi mở tập tin: %s\n"
 
-#: libplugin.c:607 libplugin.c:699 utils.c:1459 utils.c:1471
+#: ../libplugin.c:186 ../libplugin.c:215 ../sync.c:1731 ../todo.c:100
+#, c-format
+msgid "%s:%d Error reading file: %s\n"
+msgstr "%s:%d Gặp lỗi khi đọc tập tin: %s\n"
+
+#: ../libplugin.c:338 ../libplugin.c:396 ../utils.c:2121 ../utils.c:2134
 #, c-format
 msgid "Error opening file: %s\n"
 msgstr "Gặp lỗi khi mở tập tin: %s\n"
 
-#: libplugin.c:636
-msgid "Error reading PC file 1\n"
-msgstr "Gặp lỗi khi đọc tập tin PC 1\n"
-
-#: libplugin.c:652
-msgid "Error reading PC file 2\n"
-msgstr "Gặp lỗi khi đọc tập tin PC 2\n"
-
-#: libplugin.c:824
+#: ../libplugin.c:524
 #, c-format
 msgid "Error reading %s 5\n"
 msgstr "Gặp lỗi khi đọc %s 5.\n"
 
-#: log.c:95
+#: ../libplugin.c:799
+msgid "Error reading PC file 1\n"
+msgstr "Gặp lỗi khi đọc tập tin PC 1\n"
+
+#: ../libplugin.c:815
+msgid "Error reading PC file 2\n"
+msgstr "Gặp lỗi khi đọc tập tin PC 2\n"
+
+#: ../libplugin.c:921
+#, c-format
+msgid "Unknown PC header version = %d\n"
+msgstr "Không biết phiên bản phần đầu PC = %d\n"
+
+#: ../log.c:98
 #, c-format
 msgid "Unable to open log file, giving up.\n"
 msgstr "Không thể mở tập tin bản ghi nên chịu thua.\n"
 
-#: log.c:102
+#: ../log.c:108
 #, c-format
 msgid "Unable to open log file\n"
 msgstr "Không thể mở tập tin bản ghi.\n"
 
-#: memo_gui.c:318
+#: ../memo_gui.c:302
 msgid "Memo text > 65535, truncating\n"
 msgstr "Chuỗi ghi nhớ >65535 nên cắt xén nó\n"
 
-#: memo_gui.c:348
+#: ../memo_gui.c:330
 #, c-format
 msgid "Imported Memo %s\n"
 msgstr "Ghi nhớ đã nhập %s\n"
 
-#: memo_gui.c:419
+#: ../memo_gui.c:402
 msgid "File doesn't appear to be memopad.dat format\n"
 msgstr "Tập tin có vẻ không phải có dạng thức <tập_giấy_ghi_nhớ.dat>.\n"
 
-#: memo_gui.c:568 memo_gui.c:583
+#: ../memo_gui.c:473
+msgid "DAT/MPA (Palm Archive Formats)"
+msgstr ""
+
+#: ../memo_gui.c:558
+#, c-format
+msgid ""
+"Memo exported from %s %s on %s\n"
+"\n"
+msgstr ""
+
+#: ../memo_gui.c:561
+#, c-format
+msgid ""
+"Memos exported from %s %s on %s\n"
+"\n"
+msgstr ""
+
+#: ../memo_gui.c:597 ../memo_gui.c:679
 #, c-format
 msgid "Can't export memo %d\n"
 msgstr "Không thể xuất ghi nhớ %d.\n"
 
-#: monthview_gui.c:475
+#: ../memo_gui.c:641
+#, fuzzy, c-format
+msgid "Memo: %ld\n"
+msgstr "Tập giấy Ghi nhớ"
+
+#: ../memo_gui.c:647
+#, c-format
+msgid "----- Start of Memo -----\n"
+msgstr ""
+
+#: ../memo_gui.c:649
+#, c-format
+msgid ""
+"\n"
+"----- End of Memo -----\n"
+"\n"
+msgstr ""
+
+#: ../memo_gui.c:748 ../KeyRing/keyring.c:2296
+msgid "KeePassX XML"
+msgstr ""
+
+#: ../monthview_gui.c:436
 msgid "Monthly View"
 msgstr "Xem tháng"
 
-#: password.c:304
+#: ../monthview_gui.c:478
+msgid "Last month   Alt+LeftArrow"
+msgstr ""
+
+#: ../monthview_gui.c:506
+msgid "Next month   Alt+RightArrow"
+msgstr ""
+
+#: ../otherconv.c:74
+#, c-format
+msgid "%s: error exit from g_iconv_close(%s)\n"
+msgstr ""
+
+#: ../otherconv.c:199
+#, c-format
+msgid "%s:%s g_convert_with_iconv error: %s, buff: %s\n"
+msgstr ""
+
+#: ../otherconv.c:201
+msgid "last char truncated"
+msgstr ""
+
+#: ../otherconv.c:278
+#, c-format
+msgid "UTF_to_other: %s\n"
+msgstr ""
+
+#: ../otherconv.c:292
+#, c-format
+msgid "iconv: unconvertible sequence at place %d in '%s'\n"
+msgstr ""
+
+#: ../otherconv.c:296
+#, c-format
+msgid "iconv: incomplete UTF-8 sequence at place %d in '%s'\n"
+msgstr ""
+
+#: ../otherconv.c:299
+#, c-format
+msgid "iconv: buffer filled. stopped at place %d in '%s'\n"
+msgstr ""
+
+#: ../otherconv.c:302
+#, c-format
+msgid "iconv: unexpected error at place %d in '%s'\n"
+msgstr ""
+
+#: ../password.c:281
 msgid "Palm Password"
 msgstr "Mật khẩu Palm"
 
-#: password.c:329
+#: ../password.c:306
 msgid "Incorrect, Reenter PalmOS Password"
 msgstr "Sai, hãy gõ lại mật khẩu PalmOS"
 
-#: password.c:331
+#: ../password.c:308
 msgid "Enter PalmOS Password"
 msgstr "Gõ mật khẩu PalmOS"
 
-#: plugins.c:88 plugins.c:200 restore_gui.c:133
+#: ../pidfile.c:69
+msgid "removing stale pidfile\n"
+msgstr ""
+
+#: ../pidfile.c:95
+#, fuzzy, c-format
+msgid "create pidfile failed: %s\n"
+msgstr "Gặp lỗi khi đọc tập tin: %s\n"
+
+#: ../pidfile.c:96
+msgid "Warning: hotplug syncing disabled.\n"
+msgstr ""
+
+#: ../plugins.c:88 ../plugins.c:201 ../restore_gui.c:131
 msgid "infinite loop"
 msgstr "bị lặp vô hạn"
 
-#: plugins.c:213
+#: ../plugins.c:214
 #, c-format
 msgid "While reading %s%s line 1:[%s]\n"
 msgstr "Trong khi đọc %s%s dòng 1:[%s]\n"
 
-#: plugins.c:214
+#: ../plugins.c:215
 msgid "Wrong Version\n"
 msgstr "Phiên bản không đúng\n"
 
-#: plugins.c:215
+#: ../plugins.c:216
 msgid "Check preferences->conduits\n"
 msgstr "Kiểm tra Tùy thích → Ống dẫn\n"
 
-#: plugins.c:271
+#: ../plugins.c:272
 #, c-format
 msgid ""
 "Open failed on plugin [%s]\n"
@@ -1498,602 +2169,530 @@ msgstr ""
 "Việc mở bị lỗi trên bộ cầm phít [%s]\n"
 " lỗi [%s]\n"
 
-#: plugins.c:288 plugins.c:314
+#: ../plugins.c:289 ../plugins.c:314
 #, c-format
 msgid " plugin is invalid: [%s]\n"
 msgstr " bộ cầm phít không hợp lệ: [%s]\n"
 
-#: plugins.c:296
+#: ../plugins.c:297
 #, c-format
 msgid "Plugin:[%s]\n"
 msgstr "Bộ cầm phít:[%s]\n"
 
-#: plugins.c:297
+#: ../plugins.c:298
 #, c-format
 msgid "This plugin is version (%d.%d).\n"
 msgstr "Bộ cầm phít này là phiên bản (%d.%d).\n"
 
-#: plugins.c:299
+#: ../plugins.c:300
 msgid "It is too old to work with this version of J-Pilot.\n"
 msgstr "nó quá cũ để hoạt động với phiên bản J-Pilot này.\n"
 
-#: prefs.c:391
+#: ../prefs.c:418
 msgid "%B %d, %Y"
 msgstr "%B %d, %Y"
 
-#: prefs.c:392
+#: ../prefs.c:419
 msgid "%d %B %Y"
 msgstr "%d %B %Y"
 
-#: prefs.c:393
+#: ../prefs.c:420
 msgid "%d. %B %Y"
 msgstr "%d. %B %Y"
 
-#: prefs.c:394
+#: ../prefs.c:421
 msgid "%d %B, %Y"
 msgstr "%d %B, %Y"
 
-#: prefs.c:395
+#: ../prefs.c:422
 msgid "%Y. %B. %d"
 msgstr "%Y. %B. %d"
 
-#: prefs.c:396
+#: ../prefs.c:423
 msgid "%Y %B %d"
 msgstr "%Y %B %d"
 
-#: prefs_gui.c:334
+#: ../prefs_gui.c:452
 msgid "Preferences"
 msgstr "Tùy thích"
 
-#: prefs_gui.c:364
+#: ../prefs_gui.c:483
 msgid "Locale"
 msgstr "Miền địa phương"
 
-#: prefs_gui.c:366
+#: ../prefs_gui.c:485
 msgid "Settings"
 msgstr "Thiết lập"
 
-#: prefs_gui.c:368
+#: ../prefs_gui.c:487
 msgid "Datebook"
 msgstr "Sổ Ngày"
 
-#: prefs_gui.c:372
+#: ../prefs_gui.c:491
 msgid "ToDo"
 msgstr "Cần làm"
 
-#: prefs_gui.c:374
+#: ../prefs_gui.c:493
 msgid "Memo"
 msgstr "Ghi nhớ"
 
-#: prefs_gui.c:376
+#: ../prefs_gui.c:495
 msgid "Alarms"
 msgstr "Báo động"
 
-#: prefs_gui.c:378
+#: ../prefs_gui.c:497
 msgid "Conduits"
 msgstr "Ống dẫn"
 
-#: prefs_gui.c:403
-msgid "Short date format "
+#. Shortdate
+#: ../prefs_gui.c:522
+#, fuzzy
+msgid "Short date format"
 msgstr "Dạng ngày ngắn"
 
-#: prefs_gui.c:416
-msgid "Long date format "
+#. Longdate
+#: ../prefs_gui.c:535
+#, fuzzy
+msgid "Long date format"
 msgstr "Dạng ngày dài"
 
-#: prefs_gui.c:429
-msgid "Time format "
+#. Time
+#: ../prefs_gui.c:548
+#, fuzzy
+msgid "Time format"
 msgstr "Dạng giờ"
 
-#: prefs_gui.c:443
-msgid "The first day of the week is "
-msgstr "Hôm thứ nhất trong tuần là "
-
-#: prefs_gui.c:464
-msgid "My GTK colors file is "
+#. GTK colors file
+#: ../prefs_gui.c:568
+#, fuzzy
+msgid "GTK color theme file"
 msgstr "Tập tin màu sắc GTK của tôi là "
 
-#: prefs_gui.c:477
-msgid "Serial Port (/dev/ttyS0, /dev/pilot)"
-msgstr "Cổng nối tiếp (/dev/ttyS0, /dev/pilot)"
+#. Port
+#: ../prefs_gui.c:581
+#, fuzzy
+msgid "Sync Port"
+msgstr "Lỗi đồng bộ"
 
-#: prefs_gui.c:494
-msgid "Serial Rate (Does not affect USB)"
-msgstr "Tốc độ nối tiếp (không có tác động USB)"
+#. Serial Rate
+#: ../prefs_gui.c:605
+msgid "Serial Rate"
+msgstr ""
 
-#: prefs_gui.c:507
+#. Number of backups
+#: ../prefs_gui.c:625
 msgid "Number of backups to be archived"
 msgstr "Số bản sao lưu cần lưu trữ"
 
-#: prefs_gui.c:524
+#. Show deleted files check box
+#: ../prefs_gui.c:643
 msgid "Show deleted records (default NO)"
 msgstr "Hiển thị mục ghi bị xoá bỏ (mặc định là KHÔNG)"
 
-#: prefs_gui.c:528
+#. Show modified files check box
+#: ../prefs_gui.c:647
 msgid "Show modified deleted records (default NO)"
 msgstr "Hiển thị mục ghi bị xoá bỏ đã sửa đổi (mặc định là KHÔNG)"
 
-#: prefs_gui.c:533
+#: ../prefs_gui.c:652
 msgid "Ask confirmation for file installation (J-Pilot -> PDA) (default YES)"
 msgstr "Nhắc xác nhận cài đặt tập tin (J-Pilot → PDA) (mặc định là CÓ)"
 
-#: prefs_gui.c:537
-msgid "Show popup tooltips (default YES)"
+#. Show tooltips check box
+#: ../prefs_gui.c:656
+#, fuzzy
+msgid "Show popup tooltips (default YES) (requires restart)"
 msgstr "Hiển thị mẹo công cụ bật lên (mặc định là CÓ)"
 
-#: prefs_gui.c:545
+#: ../prefs_gui.c:666
+msgid "Use Datebook database (Palm OS < 5.2.1)"
+msgstr ""
+
+#: ../prefs_gui.c:669
+msgid "Use Calendar database (Palm OS > 5.2)"
+msgstr ""
+
+#. Show highlight days check box
+#: ../prefs_gui.c:695
 msgid "Highlight calendar days with appointments"
 msgstr "Làm nổi bật ngày trên lịch có cuộc hẹn"
 
-#: prefs_gui.c:551
-msgid "Use DateBk note tags"
-msgstr "Dùng thẻ ghi chú Sổ Ngày"
-
-#: prefs_gui.c:554
-msgid "DateBk support disabled in this build"
-msgstr "Bản xây dựng này không hỗ trợ Sổ Ngày (DateBk)"
-
-#: prefs_gui.c:560
+#. Highlight today on month and week view
+#: ../prefs_gui.c:700
 msgid "Annotate today in day, week, and month views"
 msgstr "Đánh dấu ngày hôm nay trong khung xem ngày, tuần và tháng đều"
 
-#: prefs_gui.c:565
+#. Show number of years on anniversaries in month and week view
+#: ../prefs_gui.c:704
 msgid "Append years on anniversaries in day, week, and month views"
 msgstr "Phụ thêm năm vào ngày kỉ niệm trong khung xem ngày, tuần và tháng đều"
 
-#: prefs_gui.c:577
+#. Show use DateBk check box
+#: ../prefs_gui.c:710
+msgid "Use DateBk note tags"
+msgstr "Dùng thẻ ghi chú Sổ Ngày"
+
+#: ../prefs_gui.c:713
+msgid "DateBk support disabled in this build"
+msgstr "Bản xây dựng này không hỗ trợ Sổ Ngày (DateBk)"
+
+#: ../prefs_gui.c:725
+msgid "Use Address database (Palm OS < 5.2.1)"
+msgstr ""
+
+#: ../prefs_gui.c:728
+msgid "Use Contacts database (Palm OS > 5.2)"
+msgstr ""
+
+#: ../prefs_gui.c:757
 msgid "Mail Command"
 msgstr "Lệnh thư"
 
-#: prefs_gui.c:591
+#: ../prefs_gui.c:771
 #, c-format
 msgid "%s is replaced by the e-mail address"
 msgstr "%s được thay thế bằng địa chỉ thư điện tử"
 
-#: prefs_gui.c:599
+#: ../prefs_gui.c:783
+msgid "Use ToDo database (Palm OS < 5.2.1)"
+msgstr ""
+
+#: ../prefs_gui.c:786
+msgid "Use Task database (Palm OS > 5.2)"
+msgstr ""
+
+#. hide completed check box
+#: ../prefs_gui.c:813
 msgid "Hide Completed ToDos"
 msgstr "Ẩn mọi tác vụ hoàn tất"
 
-#: prefs_gui.c:603
+#. hide todos not yet due check box
+#: ../prefs_gui.c:817
 msgid "Hide ToDos not yet due"
 msgstr "Ẩn tác vụ chưa tới hạn"
 
-#: prefs_gui.c:607
+#. record todo completion date check box
+#: ../prefs_gui.c:821
 msgid "Record Completion Date"
 msgstr "Ghi lưu Ngày hoàn tất"
 
-#: prefs_gui.c:612
+#. Use Manana check box
+#: ../prefs_gui.c:826
 msgid "Use Manana database"
 msgstr "Dùng cơ sở dữ liệu Manana"
 
-#: prefs_gui.c:620
+#: ../prefs_gui.c:834
 msgid "Use default number of days due"
 msgstr "Dùng số ngày tới hạn mặc định"
 
-#: prefs_gui.c:640
-msgid "Use Memo32 (pedit32)"
+#: ../prefs_gui.c:856
+msgid "Use Memo database (Palm OS < 5.2.1)"
+msgstr ""
+
+#: ../prefs_gui.c:859
+msgid "Use Memos database (Palm OS > 5.2)"
+msgstr ""
+
+#: ../prefs_gui.c:862
+#, fuzzy
+msgid "Use Memo32 database (pedit32)"
 msgstr "Dùng Memo32 (pedit32)"
 
-#: prefs_gui.c:647
+#: ../prefs_gui.c:902
+msgid "External Editor"
+msgstr ""
+
+#: ../prefs_gui.c:915
+msgid "Use Ctrl-E inside a memo to launch external editor for memo text"
+msgstr ""
+
+#. ********************************************************************
+#. Alarms preference tab
+#. Open alarm windows check box
+#: ../prefs_gui.c:923
 msgid "Open alarm windows for appointment reminders"
 msgstr "Mở cửa sổ báo động khi nhắc nhở cuộc hẹn"
 
-#: prefs_gui.c:651
+#. Execute alarm command check box
+#: ../prefs_gui.c:927
 msgid "Execute this command"
 msgstr "Thi hành lệnh này"
 
-#: prefs_gui.c:655
+#. Shell warning label
+#: ../prefs_gui.c:931
 msgid "WARNING: executing arbitrary shell commands can be dangerous!!!"
 msgstr "Cảnh báo : thực thi lệnh hệ vỏ tùy ý có thể gây nguy hiểm !!!"
 
-#: prefs_gui.c:663
+#: ../prefs_gui.c:939
 msgid "Alarm Command"
 msgstr "Lệnh báo động"
 
-#: prefs_gui.c:676
+#: ../prefs_gui.c:952
 msgid "%t is replaced with the alarm time"
 msgstr "%t được thay thế bằng giờ báo động"
 
-#: prefs_gui.c:680
+#: ../prefs_gui.c:956
 #, c-format
 msgid "%d is replaced with the alarm date"
 msgstr "%d được thay thế bằng ngày báo động"
 
-#: prefs_gui.c:685
+#: ../prefs_gui.c:961
 msgid "%D is replaced with the alarm description"
 msgstr "%D được thay thế bằng mô tả báo động"
 
-#: prefs_gui.c:689
+#: ../prefs_gui.c:965
 msgid "%N is replaced with the alarm note"
 msgstr "%N được thay thế bằng ghi chú báo động"
 
-#: prefs_gui.c:693
+#: ../prefs_gui.c:969
 msgid "%D (description substitution) is disabled in this build"
 msgstr "%D (thay thế mô tả) bị tắt trong bản xây dụng này"
 
-#: prefs_gui.c:697
+#: ../prefs_gui.c:974
 msgid "%N (note substitution) is disabled in this build"
 msgstr "%N (thay thế ghi chú) bị tắt trong bản xây dụng này"
 
-#: prefs_gui.c:706
+#. ********************************************************************
+#. Conduits preference tab
+#. Sync datebook check box
+#: ../prefs_gui.c:984
 msgid "Sync datebook"
 msgstr "Đồng bộ hóa Sổ Ngày"
 
-#: prefs_gui.c:710
+#. Sync address check box
+#: ../prefs_gui.c:988
 msgid "Sync address"
 msgstr "Đồng bộ hóa Địa chỉ"
 
-#: prefs_gui.c:714
+#. Sync todo check box
+#: ../prefs_gui.c:992
 msgid "Sync todo"
 msgstr "Đồng bộ hóa Cần làm"
 
-#: prefs_gui.c:718
+#. Sync memo check box
+#: ../prefs_gui.c:996
 msgid "Sync memo"
 msgstr "Đồng bộ hóa Ghi nhớ"
 
-#: prefs_gui.c:722
-msgid "Sync memo32 (pedit32)"
-msgstr "Đồng bộ hóa memo32 (pedit32)"
-
-#: prefs_gui.c:727
+#. Show sync Manana check box
+#: ../prefs_gui.c:1001
 msgid "Sync Manana"
 msgstr "Đồng bộ hóa Manana"
 
-#: prefs_gui.c:733
+#. Show use Japanese Kana extention check box
+#: ../prefs_gui.c:1007
 msgid "Use J-OS (Not Japanese PalmOS:WorkPad/CLIE)"
 msgstr "Dùng J-OS (không phải PalmOS của Nhật: WorkPad/CLIE)"
 
-#: prefs_gui.c:746
+#. Make a Sync checkbox for each plugin
+#: ../prefs_gui.c:1020
 #, c-format
 msgid "Sync %s (%s)"
 msgstr "Đồng bộ hóa %s (%s)"
 
-#: print_gui.c:178
+#: ../print_gui.c:183
 msgid "Print Options"
 msgstr "Tùy chọn in"
 
-#: print_gui.c:192
+#: ../print_gui.c:196
 msgid "Paper Size"
 msgstr "Cỡ giấy"
 
-#: print_gui.c:209
+#: ../print_gui.c:212
 msgid "Daily Printout"
 msgstr "Bản in hàng ngày"
 
-#: print_gui.c:215
+#: ../print_gui.c:218
 msgid "Weekly Printout"
 msgstr "Bản in hàng tuần"
 
-#: print_gui.c:221
+#: ../print_gui.c:224
 msgid "Monthly Printout"
 msgstr "Bản in hàng tháng"
 
-#: print_gui.c:261
-msgid "One record"
-msgstr "Một mục ghi"
+#: ../print_gui.c:264
+#, fuzzy
+msgid "Selected record"
+msgstr "Mới xoá bỏ mục ghi %s."
 
-#: print_gui.c:265
+#: ../print_gui.c:268
 msgid "All records in this category"
 msgstr "Mọi mục ghi trong phân loại này"
 
-#: print_gui.c:269
+#: ../print_gui.c:272
 msgid "Print all records"
 msgstr "In mọi mục ghi"
 
-#: print_gui.c:292
+#: ../print_gui.c:294
 msgid "One record per page"
 msgstr "Một mục ghi trong mỗi trang"
 
-#: print_gui.c:308
-msgid " Blank lines between each record"
+#: ../print_gui.c:310
+#, fuzzy
+msgid "Blank lines between each record"
 msgstr " Dòng trắng giữa hai mục ghi"
 
-#: print_gui.c:318
+#. Print Command
+#: ../print_gui.c:319
 msgid "Print Command (e.g. lpr, or cat > file.ps)"
 msgstr "Lệnh in (ví dụ: lpr hay cat > tập_tin.ps)"
 
-#: restore_gui.c:68 restore_gui.c:229
+#: ../restore_gui.c:69 ../restore_gui.c:227
 msgid "Restore Handheld"
 msgstr "Phục hồi bộ cầm tay"
 
-#: restore_gui.c:249
+#: ../restore_gui.c:174 ../restore_gui.c:176
+msgid "Unable to convert filename for GTK display\n"
+msgstr ""
+
+#: ../restore_gui.c:175
+msgid "See console log to find which file will not be restored\n"
+msgstr ""
+
+#: ../restore_gui.c:177
+#, fuzzy, c-format
+msgid "File %s will not be restored\n"
+msgstr "Tập tin cần cài đặt"
+
+#. Label for instructions
+#: ../restore_gui.c:244
 msgid "To restore your handheld:"
 msgstr "Để phục hồi bộ cầm tay của bạn:"
 
-#: restore_gui.c:252
-msgid "1. Choose all the applications you wish to restore.  The default is all."
+#: ../restore_gui.c:247
+#, fuzzy
+msgid "1. Choose the applications you wish to restore.  The default is all."
 msgstr "1. Chọn mọi ứng dụng bạn muốn phục hồi. (Mặc định là tất cả.)"
 
-#: restore_gui.c:255
+#: ../restore_gui.c:250
 msgid "2. Enter the User Name and User ID."
 msgstr "2. Gõ tên người dùng và ID người dùng."
 
-#: restore_gui.c:258
+#: ../restore_gui.c:253
 msgid "3. Press the OK button."
 msgstr "3. Nhấn nút Được."
 
-#: restore_gui.c:261
+#: ../restore_gui.c:256
 msgid "This will overwrite data that is currently on the handheld."
 msgstr "Việc này sẽ ghi đè lên toàn bộ dữ liệu hiện thời trên bộ cầm phít."
 
-#: restore_gui.c:282
-msgid "User Name"
-msgstr "Tên người dùng"
-
-#: restore_gui.c:295
-msgid "User ID"
-msgstr "ID người dùng"
-
-#: search_gui.c:118
+#: ../search_gui.c:142
 msgid "datebook"
 msgstr "sổ ngày"
 
-#: search_gui.c:199
+#: ../search_gui.c:144
+msgid "calendar"
+msgstr ""
+
+#: ../search_gui.c:231
 msgid "address"
 msgstr "địa chỉ"
 
-#: search_gui.c:265
+#: ../search_gui.c:233
+msgid "contact"
+msgstr ""
+
+#: ../search_gui.c:302
 msgid "todo"
 msgstr "cần làm"
 
-#: search_gui.c:319
+#: ../search_gui.c:359
 msgid "memo"
 msgstr "ghi nhớ"
 
-#: search_gui.c:375
+#: ../search_gui.c:361
+#, fuzzy
+msgid "memos"
+msgstr "ghi nhớ"
+
+#: ../search_gui.c:419
 msgid "plugin ?"
 msgstr "bộ cầm phít ?"
 
-#: search_gui.c:447
+#: ../search_gui.c:499
 msgid "No records found"
 msgstr "Không tìm thấy"
 
-#: search_gui.c:526 search_gui.c:579
+#: ../search_gui.c:598
 msgid "Search"
 msgstr "Tìm kiếm"
 
-#: search_gui.c:541
+#. Search label
+#: ../search_gui.c:615
 msgid "Search for: "
 msgstr "Tìm kiếm:"
 
-#: search_gui.c:548
+#. Case Sensitive checkbox
+#: ../search_gui.c:624
 msgid "Case Sensitive"
 msgstr "Phân biệt chữ hoa/thường"
 
-#: sync.c:139
+#: ../sync.c:118
 msgid "open lock file failed\n"
 msgstr "việc mở tập tin khoá bị lỗi\n"
 
-#: sync.c:152
+#: ../sync.c:131
 msgid "lock failed\n"
 msgstr "việc khoá bị lỗi\n"
 
-#: sync.c:155
+#: ../sync.c:136
 #, c-format
 msgid "sync file is locked by pid %d\n"
 msgstr "tập tin đồng bộ bị khoá bởi PID %d\n"
 
-#: sync.c:189
+#: ../sync.c:175
 msgid "unlock failed\n"
 msgstr "việc mở khoá bị lỗi\n"
 
-#: sync.c:192
+#: ../sync.c:180
 #, c-format
 msgid "sync is locked by pid %d\n"
 msgstr "việc đồng bộ bị khoá bởi PID %d\n"
 
-#: sync.c:244
-#, c-format
-msgid "%s: press the hotsync button on the cradle or \"kill %d\"\n"
-msgstr "%s: bấm nút Hotsync trên giá để, hoặc « kill %d ».\n"
-
-#: sync.c:297
-#, c-format
-msgid "Exiting with status %s\n"
-msgstr "Đang thoát với trạng thái %s\n"
-
-#: sync.c:298
-msgid "Finished\n"
-msgstr "Đã xong\n"
-
-#: sync.c:432
-msgid "Finished installing user information.\n"
-msgstr "Mới cài đặt xong thông tin người dùng.\n"
-
-#: sync.c:457 sync.c:574
-msgid "Check your serial port and settings\n"
+#: ../sync.c:418
+#, fuzzy
+msgid "Check your sync port and settings\n"
 msgstr "Hãy kiểm tra cổng nối tiếp và thiết lập\n"
 
-#: sync.c:672
-#, c-format
-msgid " Syncing on device %s\n"
-msgstr " Đang đồng bộ hóa thiết bị %s\n"
+#: ../sync.c:677
+msgid "Unable to read home dir\n"
+msgstr "Không thể đọc thư mục chính\n"
 
-#: sync.c:673
-msgid " Press the HotSync button now\n"
-msgstr " Hãy nhấn ngay nút HotSync\n"
-
-#: sync.c:725 sync.c:747 sync.c:769
-#, c-format
-msgid "Last Synced Username-->\"%s\"\n"
-msgstr "Tên người dùng được đồng bộ hóa mới đây → « %s »\n"
-
-#: sync.c:726 sync.c:748 sync.c:770
-#, c-format
-msgid "Last Synced UserID-->\"%d\"\n"
-msgstr "ID người dùng được sync mới đây → « %d »\n"
-
-#: sync.c:727 sync.c:749 sync.c:771
-#, c-format
-msgid " This Username-->\"%s\"\n"
-msgstr " Tên người dùng này → « %s »\n"
-
-#: sync.c:728 sync.c:750 sync.c:772
-#, c-format
-msgid " This User ID-->%d\n"
-msgstr " ID người dùng này → %d\n"
-
-#: sync.c:793
-#, c-format
-msgid "Username is \"%s\"\n"
-msgstr "Tên người dùng là « %s »\n"
-
-#: sync.c:794
-#, c-format
-msgid "User ID is %d\n"
-msgstr "ID người dùng là %d\n"
-
-#: sync.c:796 sync.c:802
-#, c-format
-msgid "lastSyncPC = %d\n"
-msgstr "đồng bộ hóa PC mới đây = %d\n"
-
-#: sync.c:797
-#, c-format
-msgid "This PC = %lu\n"
-msgstr "PC này = %lu\n"
-
-#: sync.c:798
-#, c-format
-msgid "Last Username = [%s]\n"
-msgstr "Tên ngưởi dùng cuối cùng = [%s]\n"
-
-#: sync.c:799
-#, c-format
-msgid "Last UserID = %d\n"
-msgstr "ID người dùng mới đây = %d\n"
-
-#: sync.c:800
-#, c-format
-msgid "Username = [%s]\n"
-msgstr "Tên người dùng = [%s]\n"
-
-#: sync.c:801
-#, c-format
-msgid "userID = %d\n"
-msgstr "ID người dùng = %d\n"
-
-#: sync.c:819
-msgid "Sync canceled\n"
-msgstr "Đồng bộ hóa bị thôi\n"
-
-#: sync.c:841
-msgid "Finished restoring handheld.\n"
-msgstr "Mới phục hồi xong bộ cầm tay.\n"
-
-#: sync.c:842
-msgid "You may need to sync to update J-Pilot.\n"
-msgstr "Có lẽ bạn cần phải đồng bộ hóa để cập nhật J-Pilot.\n"
-
-#: sync.c:872
-msgid "Doing a fast sync.\n"
-msgstr "Đang đồng bộ hóa nhanh.\n"
-
-#: sync.c:911
-msgid "Doing a slow sync.\n"
-msgstr "Đang đồng bộ hóa chậm.\n"
-
-#: sync.c:1012
-msgid "Thank you for using J-Pilot."
-msgstr "Cám ơn bạn đã dùng J-Pilot."
-
-#: sync.c:1054
-msgid "Finished.\n"
-msgstr "Đã xong.\n"
-
-#: sync.c:1090 sync.c:2612
-#, c-format
-msgid "Syncing %s\n"
-msgstr "Đang đồng bộ hóa %s\n"
-
-#: sync.c:1096 sync.c:2276 sync.c:2618
-#, c-format
-msgid "Wrote an %s record."
-msgstr "Mới ghi một mục ghi %s."
-
-#: sync.c:1098 sync.c:2278 sync.c:2620
-#, c-format
-msgid "Writing an %s record failed."
-msgstr "Việc ghi mục ghi %s bị lỗi."
-
-#: sync.c:1100 sync.c:2280 sync.c:2622
-#, c-format
-msgid "Deleting an %s record failed."
-msgstr "Việc xoá bỏ mục ghi %s bị lỗi."
-
-#: sync.c:1102 sync.c:2282 sync.c:2624
-#, c-format
-msgid "Deleted an %s record."
-msgstr "Đang xoá bỏ mục ghi %s."
-
-#: sync.c:1105 sync.c:2285 sync.c:2627
-#, c-format
-msgid "Wrote a %s record."
-msgstr "Mới ghi mục ghi %s."
-
-#: sync.c:1107 sync.c:2287 sync.c:2629
-#, c-format
-msgid "Writing a %s record failed."
-msgstr "Việc ghi mục ghi %s bị lỗi."
-
-#: sync.c:1109 sync.c:2289 sync.c:2631
-#, c-format
-msgid "Deleting a %s record failed."
-msgstr "Việc xoá bỏ mục ghi %s bị lỗi."
-
-#: sync.c:1111 sync.c:2291 sync.c:2633
-#, c-format
-msgid "Deleted a %s record."
-msgstr "Mới xoá bỏ mục ghi %s."
-
-#: sync.c:1131
-#, c-format
-msgid "number of records = %d\n"
-msgstr "số mục ghi = %d\n"
-
-#: sync.c:1258 sync.c:2436
-msgid ""
-"dlp_DeleteRecord failed\n"
-"This could be because the record was already deleted on the Palm\n"
-msgstr ""
-"Việc « dlp_DeleteRecord » (xoá bỏ mục ghi) bị lỗi.\n"
-"Có lẽ vì mục ghi đó đã bị xoá bỏ trên Palm.\n"
-
-#: sync.c:1357 sync.c:1770
+#: ../sync.c:1085 ../sync.c:1423
 #, c-format
 msgid "%s (Creator ID '%s') is up to date, fetch skipped.\n"
 msgstr "%s (ID người tạo « %s ») là hiện thời nên việc lấy đã bỏ qua.\n"
 
-#: sync.c:1361 sync.c:1774
+#: ../sync.c:1089 ../sync.c:1427
 #, c-format
 msgid "Fetching '%s' (Creator ID '%s')... "
 msgstr "Đang lấy « %s » (ID người tạo « %s »)..."
 
-#: sync.c:1368 sync.c:1780
+#: ../sync.c:1096 ../sync.c:1433
 #, c-format
 msgid "Failed, unable to create file %s\n"
 msgstr "Bị lỗi, không thể tạo tập tin %s.\n"
 
-#: sync.c:1379 sync.c:1789
+#: ../sync.c:1100 ../sync.c:1438
 #, c-format
 msgid "Failed, unable to back up database %s\n"
 msgstr "Bị lỗi, không thể cập nhật cơ sở dữ liệu %s.\n"
 
-#: sync.c:1383 sync.c:1793 sync.c:1975
+#: ../sync.c:1104 ../sync.c:1442 ../sync.c:1629
 msgid "OK\n"
 msgstr "Được\n"
 
-#: sync.c:1686
+#: ../sync.c:1304
 #, c-format
 msgid "Skipping %s (Creator ID '%s')\n"
 msgstr "Đang bỏ qua %s  (ID người tạo « %s »)\n"
 
-#: sync.c:1861
+#: ../sync.c:1498
 #, c-format
 msgid "Installing %s "
 msgstr "Đang cài đặt %s..."
 
-#: sync.c:1867
+#: ../sync.c:1504 ../sync.c:1540
 #, c-format
 msgid ""
 "\n"
@@ -2102,7 +2701,7 @@ msgstr ""
 "\n"
 "Không thể mở tập tin « %s »: %s\n"
 
-#: sync.c:1871
+#: ../sync.c:1508
 #, c-format
 msgid ""
 "\n"
@@ -2111,12 +2710,22 @@ msgstr ""
 "\n"
 "Không thể đồng bộ hóa tập tin « %s »: tập tin bị hỏng không?\n"
 
-#: sync.c:1883
-#, c-format
-msgid "(Creator ID is '%s')..."
+#: ../sync.c:1524
+#, fuzzy, c-format
+msgid "(Creator ID '%s')... "
 msgstr " (ID người tạo « %s »)..."
 
-#: sync.c:1903 sync.c:1916 sync.c:1931 sync.c:1944
+#: ../sync.c:1528
+#, fuzzy, c-format
+msgid "(Creator ID '%s') "
+msgstr " (ID người tạo « %s »)..."
+
+#: ../sync.c:1530
+#, c-format
+msgid "(SDcard dir %s)... "
+msgstr ""
+
+#: ../sync.c:1562 ../sync.c:1575 ../sync.c:1590 ../sync.c:1603
 #, c-format
 msgid ""
 "\n"
@@ -2125,692 +2734,954 @@ msgstr ""
 "\n"
 "Không thể mở tập tin: %s\n"
 
-#: sync.c:1960
+#: ../sync.c:1615
 #, c-format
 msgid "Install %s failed"
 msgstr "Việc cài đặt %s bị lỗi."
 
-#: sync.c:1964
+#: ../sync.c:1619
 msgid "Failed.\n"
 msgstr "Bị lỗi.\n"
 
-#: sync.c:1971
-#, c-format
-msgid "Installed %s "
+#: ../sync.c:1625
+#, fuzzy, c-format
+msgid "Installed %s"
 msgstr "Đã cài đặt %s"
 
-#: sync.c:1995 sync.c:2001
-#, c-format
-msgid "Unable to open file: %s%s\n"
-msgstr "Không thể mở tập tin: %s%s\n"
-
-#: sync.c:2181
-msgid "Unable to read home dir\n"
-msgstr "Không thể đọc thư mục chính\n"
-
-#: sync.c:2710
-#, c-format
-msgid "palm: number of records = %d\n"
-msgstr "palm: số mục ghi = %d\n"
-
-#: sync.c:2711
-#, c-format
-msgid "disk: number of records = %d\n"
-msgstr "đĩa: số mục ghi = %d\n"
-
-#: sync.c:2889
+#: ../sync.c:1736
 #, c-format
 msgid "%s:%d Error getting app info %s\n"
 msgstr "%s:%d Gặp lỗi khi lấy thông tin về ứng dụng %s\n"
 
-#: sync.c:2895 sync.c:2937
+#: ../sync.c:1742 ../sync.c:1772
 #, c-format
 msgid "%s:%d Error unpacking app info %s\n"
 msgstr "%s:%d Gặp lỗi khi giải nén thông tin về ứng dụng %s\n"
 
-#: sync.c:2917 sync.c:2929
+#: ../sync.c:1763
 #, c-format
 msgid "Error reading appinfo block for %s\n"
 msgstr "Gặp lỗi khi đọc khối thông tin về ứng dụng cho %s\n"
 
-#: sync.c:3077 sync.c:3081
+#. Fix - need a func for this logging
+#: ../sync.c:2001 ../sync.c:2005
 #, c-format
 msgid "Could not add category %s to remote.\n"
 msgstr "Không thể thêm phân loại %s vào bộ ở xa.\n"
 
-#: sync.c:3078 sync.c:3084
+#: ../sync.c:2002 ../sync.c:2008
+#, c-format
 msgid "Too many categories on remote.\n"
 msgstr "Quá nhiều phân loại trên bộ ở xa.\n"
 
-#: sync.c:3079 sync.c:3087
+#: ../sync.c:2003 ../sync.c:2011
 #, c-format
 msgid "All records on desktop in %s will be moved to %s.\n"
 msgstr "Mọi mục ghi trên máy tính trong %s sẽ được di chuyển sang %s.\n"
 
-#: todo.c:248
+#: ../sync.c:2106 ../sync.c:2824
+#, c-format
+msgid "Syncing %s\n"
+msgstr "Đang đồng bộ hóa %s\n"
+
+#: ../sync.c:2114 ../sync.c:2467 ../sync.c:2832
+#, c-format
+msgid "Wrote an %s record."
+msgstr "Mới ghi một mục ghi %s."
+
+#: ../sync.c:2116 ../sync.c:2469 ../sync.c:2834
+#, c-format
+msgid "Writing an %s record failed."
+msgstr "Việc ghi mục ghi %s bị lỗi."
+
+#: ../sync.c:2118 ../sync.c:2471 ../sync.c:2836
+#, c-format
+msgid "Deleting an %s record failed."
+msgstr "Việc xoá bỏ mục ghi %s bị lỗi."
+
+#: ../sync.c:2120 ../sync.c:2473 ../sync.c:2838
+#, c-format
+msgid "Deleted an %s record."
+msgstr "Đang xoá bỏ mục ghi %s."
+
+#: ../sync.c:2122 ../sync.c:2475
+#, fuzzy, c-format
+msgid "Sync Conflict: duplicated an %s record."
+msgstr "Đang xoá bỏ mục ghi %s."
+
+#: ../sync.c:2125 ../sync.c:2478 ../sync.c:2841
+#, c-format
+msgid "Wrote a %s record."
+msgstr "Mới ghi mục ghi %s."
+
+#: ../sync.c:2127 ../sync.c:2480 ../sync.c:2843
+#, c-format
+msgid "Writing a %s record failed."
+msgstr "Việc ghi mục ghi %s bị lỗi."
+
+#: ../sync.c:2129 ../sync.c:2482 ../sync.c:2845
+#, c-format
+msgid "Deleting a %s record failed."
+msgstr "Việc xoá bỏ mục ghi %s bị lỗi."
+
+#: ../sync.c:2131 ../sync.c:2484 ../sync.c:2847
+#, c-format
+msgid "Deleted a %s record."
+msgstr "Mới xoá bỏ mục ghi %s."
+
+#: ../sync.c:2133 ../sync.c:2486
+#, c-format
+msgid "Sync Conflict: duplicated a %s record."
+msgstr ""
+
+#: ../sync.c:2237 ../sync.c:2567
+#, c-format
+msgid "Sync Conflict: a %s record must be manually merged\n"
+msgstr ""
+
+#: ../sync.c:2368 ../sync.c:2708
+msgid ""
+"dlp_DeleteRecord failed\n"
+"This could be because the record was already deleted on the Palm\n"
+msgstr ""
+"Việc « dlp_DeleteRecord » (xoá bỏ mục ghi) bị lỗi.\n"
+"Có lẽ vì mục ghi đó đã bị xoá bỏ trên Palm.\n"
+
+#: ../sync.c:2937
+msgid "Finished installing user information.\n"
+msgstr "Mới cài đặt xong thông tin người dùng.\n"
+
+#: ../sync.c:3094
+#, c-format
+msgid " Syncing on device %s\n"
+msgstr " Đang đồng bộ hóa thiết bị %s\n"
+
+#: ../sync.c:3095
+msgid " Press the HotSync button now\n"
+msgstr " Hãy nhấn ngay nút HotSync\n"
+
+#: ../sync.c:3137 ../sync.c:3159 ../sync.c:3180
+#, c-format
+msgid "Last Synced Username-->\"%s\"\n"
+msgstr "Tên người dùng được đồng bộ hóa mới đây → « %s »\n"
+
+#: ../sync.c:3138 ../sync.c:3160 ../sync.c:3181
+#, c-format
+msgid "Last Synced UserID-->\"%d\"\n"
+msgstr "ID người dùng được sync mới đây → « %d »\n"
+
+#: ../sync.c:3139 ../sync.c:3161 ../sync.c:3182
+#, c-format
+msgid " This Username-->\"%s\"\n"
+msgstr " Tên người dùng này → « %s »\n"
+
+#: ../sync.c:3140 ../sync.c:3162 ../sync.c:3183
+#, c-format
+msgid " This User ID-->%d\n"
+msgstr " ID người dùng này → %d\n"
+
+#: ../sync.c:3204
+#, c-format
+msgid "Username is \"%s\"\n"
+msgstr "Tên người dùng là « %s »\n"
+
+#: ../sync.c:3205
+#, c-format
+msgid "User ID is %d\n"
+msgstr "ID người dùng là %d\n"
+
+#: ../sync.c:3207
+#, c-format
+msgid "lastSyncPC = %d\n"
+msgstr "đồng bộ hóa PC mới đây = %d\n"
+
+#: ../sync.c:3208
+#, c-format
+msgid "This PC = %lu\n"
+msgstr "PC này = %lu\n"
+
+#: ../sync.c:3232
+msgid "Sync canceled\n"
+msgstr "Đồng bộ hóa bị thôi\n"
+
+#: ../sync.c:3255
+msgid "Finished restoring handheld.\n"
+msgstr "Mới phục hồi xong bộ cầm tay.\n"
+
+#: ../sync.c:3256
+msgid "You may need to sync to update J-Pilot.\n"
+msgstr "Có lẽ bạn cần phải đồng bộ hóa để cập nhật J-Pilot.\n"
+
+#: ../sync.c:3278
+msgid "Doing a fast sync.\n"
+msgstr "Đang đồng bộ hóa nhanh.\n"
+
+#: ../sync.c:3291
+msgid "Doing a slow sync.\n"
+msgstr "Đang đồng bộ hóa chậm.\n"
+
+#: ../sync.c:3366
+msgid "Thank you for using J-Pilot."
+msgstr "Cám ơn bạn đã dùng J-Pilot."
+
+#: ../sync.c:3411 ../sync.c:3479
+msgid "Finished.\n"
+msgstr "Đã xong.\n"
+
+#: ../sync.c:3446
+#, c-format
+msgid "%s: sync process already in progress (process ID = %d)\n"
+msgstr ""
+
+#: ../sync.c:3447
+#, c-format
+msgid ""
+"%s: press the HotSync button on the cradle\n"
+"         or stop the sync by using the cancel sync button\n"
+"         or stop the sync by typing \"kill %d\" at the command line\n"
+msgstr ""
+
+#: ../sync.c:3478
+#, c-format
+msgid "Exiting with status %s\n"
+msgstr "Đang thoát với trạng thái %s\n"
+
+#: ../todo.c:264
 #, c-format
 msgid "ToDo description text > %d, truncating to %d\n"
 msgstr "Chuỗi mô tả Cần làm > %d nên cắt xén nó thành %d\n"
 
-#: todo.c:255
+#: ../todo.c:270
 #, c-format
 msgid "ToDo note text > %d, truncating to %d\n"
 msgstr "Chuỗi ghi chú Cần làm > %d nên cắt xén nó thành %d\n"
 
-#: todo.c:380
-#, c-format
-msgid "%s:%d Error reading category info %s\n"
-msgstr "%s:%d Gặp lỗi khi đọc thông tin phân loại %s\n"
-
-#: todo_gui.c:154
+#: ../todo_gui.c:159
 msgid "Due Date"
 msgstr "Ngày đến hạn"
 
-#: todo_gui.c:561
+#: ../todo_gui.c:532
 msgid "File doesn't appear to be todo.dat format\n"
 msgstr "Tập tin có vẻ không phải có dạng thức <cần_làm.dat>.\n"
 
-#: todo_gui.c:720 todo_gui.c:735
+#: ../todo_gui.c:596
+msgid "DAT/TDA (Palm Archive Formats)"
+msgstr ""
+
+#: ../todo_gui.c:688
+#, c-format
+msgid ""
+"ToDo exported from %s %s on %s\n"
+"\n"
+msgstr ""
+
+#: ../todo_gui.c:726
 #, c-format
 msgid "Can't export todo %d\n"
 msgstr "Không thể xuất Cần làm %d\n"
 
-#: todo_gui.c:1556
+#: ../todo_gui.c:766
+#, fuzzy, c-format
+msgid "Due Date: None\n"
+msgstr "Ngày đến hạn"
+
+#: ../todo_gui.c:769
+#, fuzzy, c-format
+msgid "Due Date: %s\n"
+msgstr "Ngày đến hạn"
+
+#: ../todo_gui.c:771
+#, fuzzy, c-format
+msgid "Priority: %d\n"
+msgstr "Ưu tiên: "
+
+#: ../todo_gui.c:772
+#, fuzzy, c-format
+msgid "Completed: %s\n"
+msgstr "Hoàn tất"
+
+#: ../todo_gui.c:774
+#, c-format
+msgid "Description: %s\n"
+msgstr ""
+
+#: ../todo_gui.c:777
+#, c-format
+msgid ""
+"Note: %s\n"
+"\n"
+msgstr ""
+
+#: ../todo_gui.c:1610
 msgid "Priority out of range\n"
 msgstr "Ưu tiên ở ngoại phạm vi.\n"
 
-#: todo_gui.c:1772
+#: ../todo_gui.c:1929 ../KeyRing/keyring.c:1308
 #, c-format
 msgid "No date"
 msgstr "Không có ngày"
 
-#: todo_gui.c:2223
+#. Completed checkbox
+#: ../todo_gui.c:2411
 msgid "Completed"
 msgstr "Hoàn tất"
 
-#: todo_gui.c:2231
-msgid "Priority: "
+#: ../todo_gui.c:2418
+#, fuzzy
+msgid "Priority:"
 msgstr "Ưu tiên: "
 
-#: todo_gui.c:2251
+#: ../todo_gui.c:2420
+msgid "Set priority   Alt+#"
+msgstr ""
+
+#: ../todo_gui.c:2441
 msgid "Date Due:"
 msgstr "Ngày tới hạn:"
 
-#: todo_gui.c:2313 Expense/expense.c:1862 KeyRing/keyring.c:1689
-msgid "Note"
-msgstr "Ghi chú"
-
-#: utils.c:76
-msgid " -v displays version and compile options and exits.\n"
-msgstr " -v hiện phiên bản và tùy chọn biên dịch rồi thoát.\n"
-
-#: utils.c:78
-msgid " -d displays debug info to stdout.\n"
-msgstr " -d hiện thông tin gỡ lỗi vào thiết bị xuất chuẩn.\n"
-
-#: utils.c:79
-msgid " -p do not load plugins.\n"
-msgstr " -p đừng tải bộ cầm phít.\n"
-
-#: utils.c:80
-msgid " -a ignore missed alarms since the last time this program was run.\n"
-msgstr " -a bỏ qua các báo động nhỡ sau khi lần cuối cùng chạy chương trình này.\n"
-
-#: utils.c:81
-msgid " -A ignore all alarms)); past and future.\n"
-msgstr " -A bỏ qua mọi báo động)); qua và tới.\n"
-
-#: utils.c:82
-msgid " -i makes jpilot iconify itself upon launch\n"
-msgstr " -i thu gọn J-Pilot vào lúc khởi chạy\n"
-
-#: utils.c:83
-msgid " The PILOTPORT, and PILOTRATE env variables are used to specify\n"
-msgstr " Hai biến môi trường PILOTPORT và PILOTRATE được dùng để ghi rõ\n"
-
-#: utils.c:84
-msgid " which port to sync on, and at what speed.\n"
-msgstr " cổng nào nơi cần đồng bộ hóa, tại tốc độ nào.\n"
-
-#: utils.c:85
-msgid " If PILOTPORT is not set then it defaults to /dev/pilot.\n"
-msgstr "Nếu chưa đặt cổng PILOTPORT nên mặc định là </dev/pilot>.\n"
-
-#: utils.c:110
-msgid "Date compiled"
-msgstr "Ngày đã biên dịch"
-
-#: utils.c:111
-msgid "Compiled with these options:"
-msgstr "Đã biên dịch với những tùy chọn này:"
-
-#: utils.c:113
-msgid "Installed Path"
-msgstr "Đường dẫn đã cài đặt"
-
-#: utils.c:115
-msgid "pilot-link version"
-msgstr "phiên bản pilot-link"
-
-#: utils.c:119
-msgid "USB support"
-msgstr "Hỗ trợ USB"
-
-#: utils.c:121 utils.c:127 utils.c:133 utils.c:139 utils.c:145 utils.c:151
-#: utils.c:157
-msgid "yes"
-msgstr "có"
-
-#: utils.c:123 utils.c:129 utils.c:135 utils.c:141 utils.c:147 utils.c:153
-#: utils.c:159
-msgid "no"
-msgstr "không"
-
-#: utils.c:125
-msgid "Private record support"
-msgstr "Hỗ trợ mục ghi riêng"
-
-#: utils.c:131
-msgid "Datebk support"
-msgstr "Hỗ trợ Sổ Ngày"
-
-#: utils.c:137
-msgid "Plugin support"
-msgstr "Hỗ trợ bộ cầm phít"
-
-#: utils.c:143
-msgid "Manana support"
-msgstr "Hỗ trợ Manana"
-
-#: utils.c:149
-msgid "NLS support (foreign languages)"
-msgstr "Hỗ trợ NLS (tiếng nước ngoài)"
-
-#: utils.c:155
-msgid "GTK2 support"
-msgstr "Hỗ trợ GTK2"
-
-#: utils.c:198
-#, c-format
-msgid "Today is %A, %x %X"
-msgstr "Ngày hôm nay là %A, %x %X"
-
-#: utils.c:200
-#, c-format
-msgid "Today is %%A, %s %s"
-msgstr "Ngày hôm nay là %%A, %s %s"
-
-#: utils.c:1089
+#: ../utils.c:330
 msgid "Today"
 msgstr "Hôm nay"
 
-#: utils.c:1283
-msgid "Save Changed Record?"
-msgstr "Lưu mục ghi đã thay đổi không?"
-
-#: utils.c:1284
-msgid "Do you want to save the changes to this record?"
-msgstr "Bạn có muốn lưu các thay đổi của mục ghi này không?"
-
-#: utils.c:1289
-msgid "Save New Record?"
-msgstr "Lưu mục ghi mới không?"
-
-#: utils.c:1290
-msgid "Do you want to save this new record?"
-msgstr "Bạn có muốn lưu mục ghi mới này không?"
-
-#: utils.c:1310 KeyRing/keyring.c:1385
-msgid "Can't get HOME environment variable\n"
-msgstr "Không thể lấy biến môi trường HOME\n"
-
-#: utils.c:1317 KeyRing/keyring.c:1390
-msgid "Your HOME environment variable is too long for me\n"
-msgstr "Biến môi trường HOME của bạn là quá dài.\n"
-
-#: utils.c:1342 utils.c:1346
-#, c-format
-msgid "Can't create directory %s\n"
-msgstr "Không thể tạo thư mục %s\n"
-
-#: utils.c:1352
-#, c-format
-msgid ""
-"%s doesn't appear to be a directory.\n"
-"I need it to be.\n"
-msgstr ""
-"%s không có vẻ là thư mục.\n"
-"Phải là thư mục.\n"
-
-#: utils.c:1360
-#, c-format
-msgid "I can't write files in directory %s\n"
-msgstr "Không thể ghi tập tin trong thư mục %s\n"
-
-#: utils.c:1418 utils.c:1427
-msgid "Error writing PC header to file: next_id\n"
-msgstr "Gặp lỗi khi ghi phần đầu PC vào tập tin: next_id\n"
-
-#: utils.c:1423
-msgid "Error writing next id to file: next_id\n"
-msgstr "Gặp lỗi khi ghi ID kế tiếp vào tập tin: next_id\n"
-
-#: utils.c:1440
-msgid "Error opening file: next_id\n"
-msgstr "Gặp lỗi khi mở tập tin: next_id\n"
-
-#: utils.c:1608
+#: ../utils.c:575
 #, c-format
 msgid "Couldn't find empty DB file %s: %s\n"
 msgstr "Không tìm thấy tập tin cơ sở dữ liệu rỗng %s: %s\n"
 
-#: utils.c:1611
+#: ../utils.c:578
 msgid " may not be installed.\n"
 msgstr " không thể được cài đặt.\n"
 
-#: utils.c:1794
+#. Can't create directory
+#: ../utils.c:613 ../utils.c:617
+#, c-format
+msgid "Can't create directory %s\n"
+msgstr "Không thể tạo thư mục %s\n"
+
+#: ../utils.c:623
+#, fuzzy, c-format
+msgid "%s is not a directory\n"
+msgstr "%s là thư mục"
+
+#: ../utils.c:628
+#, fuzzy, c-format
+msgid "Unable to get write permission for directory %s\n"
+msgstr "Không thể ghi tập tin trong thư mục %s\n"
+
+#: ../utils.c:1328 ../utils.c:1352
+msgid "Save Changed Record?"
+msgstr "Lưu mục ghi đã thay đổi không?"
+
+#: ../utils.c:1329 ../utils.c:1353
+msgid "Do you want to save the changes to this record?"
+msgstr "Bạn có muốn lưu các thay đổi của mục ghi này không?"
+
+#: ../utils.c:1334 ../utils.c:1358
+msgid "Save New Record?"
+msgstr "Lưu mục ghi mới không?"
+
+#: ../utils.c:1335 ../utils.c:1359
+msgid "Do you want to save this new record?"
+msgstr "Bạn có muốn lưu mục ghi mới này không?"
+
+#: ../utils.c:1650
+msgid "infinite loop, breaking\n"
+msgstr "bị lặp vô hạn nên ngắt nó\n"
+
+#: ../utils.c:1874
+#, fuzzy, c-format
+msgid " -p skip loading plugins\n"
+msgstr "Không tải bộ cầm phít.\n"
+
+#: ../utils.c:1875
+#, fuzzy, c-format
+msgid " -a ignore missed alarms since the last time program was run\n"
+msgstr ""
+" -a bỏ qua các báo động nhỡ sau khi lần cuối cùng chạy chương trình này.\n"
+
+#: ../utils.c:1876
+#, fuzzy, c-format
+msgid " -A ignore all alarms past and future\n"
+msgstr " -A bỏ qua mọi báo động)); qua và tới.\n"
+
+#: ../utils.c:1877
+#, c-format
+msgid " -s start sync using existing instance of GUI\n"
+msgstr ""
+
+#: ../utils.c:1878
+#, c-format
+msgid " -i iconify program immediately after launch\n"
+msgstr ""
+
+#: ../utils.c:1879
+#, c-format
+msgid ""
+" -geometry {X geometry} use specified geometry for main window\n"
+"\n"
+msgstr ""
+
+#: ../utils.c:1880
+#, fuzzy, c-format
+msgid " The PILOTPORT and PILOTRATE environment variables specify\n"
+msgstr " Hai biến môi trường PILOTPORT và PILOTRATE được dùng để ghi rõ\n"
+
+#: ../utils.c:1881
+#, c-format
+msgid " which port to sync on, and at what speed.\n"
+msgstr " cổng nào nơi cần đồng bộ hóa, tại tốc độ nào.\n"
+
+#: ../utils.c:1882
+#, c-format
+msgid " If PILOTPORT is not set then it defaults to /dev/pilot.\n"
+msgstr "Nếu chưa đặt cổng PILOTPORT nên mặc định là </dev/pilot>.\n"
+
+#: ../utils.c:1921
 msgid "Error reading file"
 msgstr "Lỗi đọc tập tin"
 
-#: utils.c:2475
+#: ../utils.c:1973
+msgid "Date compiled"
+msgstr "Ngày đã biên dịch"
+
+#: ../utils.c:1974
+msgid "Compiled with these options:"
+msgstr "Đã biên dịch với những tùy chọn này:"
+
+#: ../utils.c:1976
+msgid "Installed Path"
+msgstr "Đường dẫn đã cài đặt"
+
+#: ../utils.c:1978
+msgid "pilot-link version"
+msgstr "phiên bản pilot-link"
+
+#: ../utils.c:1982
+msgid "USB support"
+msgstr "Hỗ trợ USB"
+
+#: ../utils.c:1983 ../utils.c:1986 ../utils.c:1992 ../utils.c:1998
+#: ../utils.c:2004 ../utils.c:2010 ../utils.c:2015
+msgid "yes"
+msgstr "có"
+
+#: ../utils.c:1984
+msgid "Private record support"
+msgstr "Hỗ trợ mục ghi riêng"
+
+#: ../utils.c:1988 ../utils.c:1994 ../utils.c:2000 ../utils.c:2006
+#: ../utils.c:2012
+msgid "no"
+msgstr "không"
+
+#: ../utils.c:1990
+msgid "Datebk support"
+msgstr "Hỗ trợ Sổ Ngày"
+
+#: ../utils.c:1996
+msgid "Plugin support"
+msgstr "Hỗ trợ bộ cầm phít"
+
+#: ../utils.c:2002
+msgid "Manana support"
+msgstr "Hỗ trợ Manana"
+
+#: ../utils.c:2008
+msgid "NLS support (foreign languages)"
+msgstr "Hỗ trợ NLS (tiếng nước ngoài)"
+
+#: ../utils.c:2014
+msgid "GTK2 support"
+msgstr "Hỗ trợ GTK2"
+
+#. No HOME var
+#: ../utils.c:2057
+#, c-format
+msgid "Can't get HOME environment variable\n"
+msgstr "Không thể lấy biến môi trường HOME\n"
+
+#: ../utils.c:2064
+#, fuzzy, c-format
+msgid "HOME environment variable is too long to process\n"
+msgstr "Biến môi trường HOME của bạn là quá dài.\n"
+
+#: ../utils.c:2567
+#, fuzzy
+msgid "Edit Categories..."
+msgstr "Sửa đổi phân loại"
+
+#: ../utils.c:3233
 msgid "PC ID is 0.\n"
 msgstr "ID PC là 0.\n"
 
-#: utils.c:2476
-#, c-format
-msgid "I generated a new PC ID.  It is %lu\n"
+#: ../utils.c:3234
+#, fuzzy, c-format
+msgid "Generated a new PC ID.  It is %lu\n"
 msgstr "Đã tạo ra một ID PC mới. Đó là %lu\n"
 
-#: weekview_gui.c:303
+#: ../utils.c:3376
+msgid "Invalid UTF-8 encoding in export string\n"
+msgstr ""
+
+#: ../utils.c:3537
+#, c-format
+msgid "Today is %A, %x %X"
+msgstr "Ngày hôm nay là %A, %x %X"
+
+#: ../utils.c:3539
+#, c-format
+msgid "Today is %%A, %s %s"
+msgstr "Ngày hôm nay là %%A, %s %s"
+
+#: ../utils.c:3768
+#, c-format
+msgid ""
+"Incorrect header format for CSV import\n"
+"Check line 1 of file %s\n"
+"Aborting import\n"
+msgstr ""
+
+#: ../utils.c:3805
+#, fuzzy, c-format
+msgid "Error writing version header to file: %s%s\n"
+msgstr "Gặp lỗi khi ghi phần đầu PC vào tập tin: next_id\n"
+
+#: ../utils.c:3810
+#, fuzzy, c-format
+msgid "Error writing next id to file: %s%s"
+msgstr "Gặp lỗi khi ghi ID kế tiếp vào tập tin: next_id\n"
+
+#: ../weekview_gui.c:295
 msgid "Weekly View"
 msgstr "Xem tuần"
 
-#: Expense/expense.c:99
+#: ../weekview_gui.c:335
+msgid "Last week   Alt+LeftArrow"
+msgstr ""
+
+#: ../weekview_gui.c:364
+msgid "Next week   Alt+RightArrow"
+msgstr ""
+
+#: ../Expense/expense.c:95
 msgid "Australia"
 msgstr "Úc"
 
-#: Expense/expense.c:100
+#: ../Expense/expense.c:96
 msgid "Austria"
 msgstr "Áo"
 
-#: Expense/expense.c:101
+#: ../Expense/expense.c:97
 msgid "Belgium"
 msgstr "Bỉ"
 
-#: Expense/expense.c:102
+#: ../Expense/expense.c:98
 msgid "Brazil"
 msgstr "Bra-xin"
 
-#: Expense/expense.c:103
+#: ../Expense/expense.c:99
 msgid "Canada"
 msgstr "Ca-na-đa"
 
-#: Expense/expense.c:104
+#: ../Expense/expense.c:100
 msgid "Denmark"
 msgstr "Đan-mạch"
 
-#: Expense/expense.c:105
+#: ../Expense/expense.c:101
 msgid "EU (Euro)"
 msgstr "EU (đồng Âu €)"
 
-#: Expense/expense.c:106
+#: ../Expense/expense.c:102
 msgid "Finland"
 msgstr "Phần-lan"
 
-#: Expense/expense.c:107
+#: ../Expense/expense.c:103
 msgid "France"
 msgstr "Pháp"
 
-#: Expense/expense.c:108
+#: ../Expense/expense.c:104
 msgid "Germany"
 msgstr "Đức"
 
-#: Expense/expense.c:109
+#: ../Expense/expense.c:105
 msgid "Hong Kong"
 msgstr "Hồng Kông"
 
-#: Expense/expense.c:110
+#: ../Expense/expense.c:106
 msgid "Iceland"
 msgstr "Băng-đảo"
 
-#: Expense/expense.c:111
+#: ../Expense/expense.c:107
 msgid "India"
 msgstr "Ấn-độ"
 
-#: Expense/expense.c:112
+#: ../Expense/expense.c:108
 msgid "Indonesia"
 msgstr "Nam-dương"
 
-#: Expense/expense.c:113
+#: ../Expense/expense.c:109
 msgid "Ireland"
 msgstr "Ái-nhĩ-lan"
 
-#: Expense/expense.c:114
+#: ../Expense/expense.c:110
 msgid "Italy"
 msgstr "Ý"
 
-#: Expense/expense.c:115
+#: ../Expense/expense.c:111
 msgid "Japan"
 msgstr "Nhật-bản"
 
-#: Expense/expense.c:116
+#: ../Expense/expense.c:112
 msgid "Korea"
 msgstr "Triều-tiên"
 
-#: Expense/expense.c:117
+#: ../Expense/expense.c:113
 msgid "Luxembourg"
 msgstr "Lúc-xăm-buac"
 
-#: Expense/expense.c:118
+#: ../Expense/expense.c:114
 msgid "Malaysia"
 msgstr "Ma-lay-xi-a"
 
-#: Expense/expense.c:119
+#: ../Expense/expense.c:115
 msgid "Mexico"
 msgstr "Mê-hi-cô"
 
-#: Expense/expense.c:120
+#: ../Expense/expense.c:116
 msgid "Netherlands"
 msgstr "Hoà-lan"
 
-#: Expense/expense.c:121
+#: ../Expense/expense.c:117
 msgid "New Zealand"
 msgstr "Niu Di-lân"
 
-#: Expense/expense.c:122
+#: ../Expense/expense.c:118
 msgid "Norway"
 msgstr "Na-uy"
 
-#: Expense/expense.c:123
+#: ../Expense/expense.c:119
 msgid "P.R.C."
 msgstr "P.R.C."
 
-#: Expense/expense.c:124
+#: ../Expense/expense.c:120
 msgid "Philippines"
 msgstr "Phi-luật-tân"
 
-#: Expense/expense.c:125
+#: ../Expense/expense.c:121
 msgid "Singapore"
 msgstr "Xin-ga-po"
 
-#: Expense/expense.c:126
+#: ../Expense/expense.c:122
 msgid "Spain"
 msgstr "Tây-ban-nha"
 
-#: Expense/expense.c:127
+#: ../Expense/expense.c:123
 msgid "Sweden"
 msgstr "Thụy-điển"
 
-#: Expense/expense.c:128
+#: ../Expense/expense.c:124
 msgid "Switzerland"
 msgstr "Thụy-sĩ"
 
-#: Expense/expense.c:129
+#: ../Expense/expense.c:125
 msgid "Taiwan"
 msgstr "Đài-loan"
 
-#: Expense/expense.c:130
+#: ../Expense/expense.c:126
 msgid "Thailand"
 msgstr "Thái-lan"
 
-#: Expense/expense.c:131
+#: ../Expense/expense.c:127
 msgid "United Kingdom"
 msgstr "Vương quốc Anh Thống nhất"
 
-#: Expense/expense.c:132
+#: ../Expense/expense.c:128
 msgid "United States"
 msgstr "Mỹ"
 
-#: Expense/expense.c:505 Expense/expense.c:516
+#: ../Expense/expense.c:516 ../Expense/expense.c:527
 msgid "Expense"
 msgstr "Phí tổn"
 
-#: Expense/expense.c:537 Expense/expense.c:1410
+#: ../Expense/expense.c:548 ../Expense/expense.c:1386
 msgid "Airfare"
 msgstr "Tiền vé"
 
-#: Expense/expense.c:539 Expense/expense.c:1411
+#: ../Expense/expense.c:550 ../Expense/expense.c:1387
 msgid "Breakfast"
 msgstr "Ăn sáng"
 
-#: Expense/expense.c:541 Expense/expense.c:1412
+#: ../Expense/expense.c:552 ../Expense/expense.c:1388
 msgid "Bus"
 msgstr "Xe búyt"
 
-#: Expense/expense.c:543 Expense/expense.c:1413
+#: ../Expense/expense.c:554 ../Expense/expense.c:1389
 msgid "BusinessMeals"
 msgstr "Ăn làm việc"
 
-#: Expense/expense.c:545 Expense/expense.c:1414
+#: ../Expense/expense.c:556 ../Expense/expense.c:1390
 msgid "CarRental"
 msgstr "Thuê xe"
 
-#: Expense/expense.c:547 Expense/expense.c:1415
+#: ../Expense/expense.c:558 ../Expense/expense.c:1391
 msgid "Dinner"
 msgstr "Ăn cơm"
 
-#: Expense/expense.c:549 Expense/expense.c:1416
+#: ../Expense/expense.c:560 ../Expense/expense.c:1392
 msgid "Entertainment"
 msgstr "Giải trí"
 
-#: Expense/expense.c:551 Expense/expense.c:1417
+#: ../Expense/expense.c:562 ../Expense/expense.c:1393
 msgid "Fax"
 msgstr "Điện thư"
 
-#: Expense/expense.c:553 Expense/expense.c:1418
+#: ../Expense/expense.c:564 ../Expense/expense.c:1394
 msgid "Gas"
 msgstr "Dầu"
 
-#: Expense/expense.c:555 Expense/expense.c:1419
+#: ../Expense/expense.c:566 ../Expense/expense.c:1395
 msgid "Gifts"
 msgstr "Quà biếu"
 
-#: Expense/expense.c:557 Expense/expense.c:1420
+#: ../Expense/expense.c:568 ../Expense/expense.c:1396
 msgid "Hotel"
 msgstr "Khách san"
 
-#: Expense/expense.c:559 Expense/expense.c:1421
+#: ../Expense/expense.c:570 ../Expense/expense.c:1397
 msgid "Incidentals"
 msgstr "Lặt vặt"
 
-#: Expense/expense.c:561 Expense/expense.c:1422
+#: ../Expense/expense.c:572 ../Expense/expense.c:1398
 msgid "Laundry"
 msgstr "Giặt"
 
-#: Expense/expense.c:563 Expense/expense.c:1423
+#: ../Expense/expense.c:574 ../Expense/expense.c:1399
 msgid "Limo"
 msgstr "Xe hòm"
 
-#: Expense/expense.c:565 Expense/expense.c:1424
+#: ../Expense/expense.c:576 ../Expense/expense.c:1400
 msgid "Lodging"
 msgstr "Chỗ trợ"
 
-#: Expense/expense.c:567 Expense/expense.c:1425
+#: ../Expense/expense.c:578 ../Expense/expense.c:1401
 msgid "Lunch"
 msgstr "Ăn trưa"
 
-#: Expense/expense.c:569 Expense/expense.c:1426
+#: ../Expense/expense.c:580 ../Expense/expense.c:1402
 msgid "Mileage"
 msgstr "Lý/giờ"
 
-#: Expense/expense.c:573 Expense/expense.c:1428
+#: ../Expense/expense.c:584 ../Expense/expense.c:1404
 msgid "Parking"
 msgstr "Đậu xe"
 
-#: Expense/expense.c:575 Expense/expense.c:1429
+#: ../Expense/expense.c:586 ../Expense/expense.c:1405
 msgid "Postage"
 msgstr "Bưu phí"
 
-#: Expense/expense.c:577 Expense/expense.c:1430
+#: ../Expense/expense.c:588 ../Expense/expense.c:1406
 msgid "Snack"
 msgstr "Ăn vội vàng"
 
-#: Expense/expense.c:579 Expense/expense.c:1431
+#: ../Expense/expense.c:590 ../Expense/expense.c:1407
 msgid "Subway"
 msgstr "Xe điện ngầm"
 
-#: Expense/expense.c:581 Expense/expense.c:1432
+#: ../Expense/expense.c:592 ../Expense/expense.c:1408
 msgid "Supplies"
 msgstr "Đồ cung cấp"
 
-#: Expense/expense.c:583 Expense/expense.c:1433
+#: ../Expense/expense.c:594 ../Expense/expense.c:1409
 msgid "Taxi"
 msgstr "Xe tắc xi"
 
-#: Expense/expense.c:585 Expense/expense.c:1434
+#: ../Expense/expense.c:596 ../Expense/expense.c:1410
 msgid "Telephone"
 msgstr "Điện thoại"
 
-#: Expense/expense.c:587 Expense/expense.c:1435
+#: ../Expense/expense.c:598 ../Expense/expense.c:1411
 msgid "Tips"
 msgstr "Tiền chè lá "
 
-#: Expense/expense.c:589 Expense/expense.c:1436
+#: ../Expense/expense.c:600 ../Expense/expense.c:1412
 msgid "Tolls"
 msgstr "Thuế qua đường"
 
-#: Expense/expense.c:591 Expense/expense.c:1437
+#: ../Expense/expense.c:602 ../Expense/expense.c:1413
 msgid "Train"
 msgstr "Xe lửa"
 
-#: Expense/expense.c:605
-msgid "AmEx"
-msgstr "AmEx"
-
-#: Expense/expense.c:607 Expense/expense.c:1400
-msgid "Cash"
-msgstr "Tiền mặt"
-
-#: Expense/expense.c:609 Expense/expense.c:1401
-msgid "Check"
-msgstr "Séc"
-
-#: Expense/expense.c:611
-msgid "CreditCard"
-msgstr "Thẻ tín dụng"
-
-# Name: don't translate / Tên: đừng dịch
-#: Expense/expense.c:613
-msgid "MasterCard"
-msgstr "MasterCard"
-
-#: Expense/expense.c:615 Expense/expense.c:1404
-msgid "Prepaid"
-msgstr "Trả trước"
-
-# Name: don't translate / Tên: đừng dịch
-#: Expense/expense.c:617 Expense/expense.c:1405
-msgid "VISA"
-msgstr "VISA"
-
-#: Expense/expense.c:1210
-msgid "Expense: Unknown category\n"
-msgstr "Phí tổn: phân loại không rõ\n"
-
-#: Expense/expense.c:1216
+#: ../Expense/expense.c:1237
 msgid "Expense: Unknown expense type\n"
 msgstr "Phí tổn: kiểu phí tổn không rõ\n"
 
-#: Expense/expense.c:1222
+#: ../Expense/expense.c:1243
 msgid "Expense: Unknown payment type\n"
 msgstr "Phí tổn: kiểu trả không rõ\n"
 
 # Name: don't translate / Tên: đừng dịch
-#: Expense/expense.c:1399
+#: ../Expense/expense.c:1375
 msgid "American Express"
 msgstr "American Express"
 
-#: Expense/expense.c:1402
+#: ../Expense/expense.c:1376
+msgid "Cash"
+msgstr "Tiền mặt"
+
+#: ../Expense/expense.c:1377
+msgid "Check"
+msgstr "Séc"
+
+#: ../Expense/expense.c:1378
 msgid "Credit Card"
 msgstr "Thẻ tín dụng"
 
 # Name: don't translate / Tên: đừng dịch
-#: Expense/expense.c:1403
+#: ../Expense/expense.c:1379
 msgid "Master Card"
 msgstr "Master Card"
 
-#: Expense/expense.c:1687
+#: ../Expense/expense.c:1380
+msgid "Prepaid"
+msgstr "Trả trước"
+
+# Name: don't translate / Tên: đừng dịch
+#: ../Expense/expense.c:1381
+msgid "VISA"
+msgstr "VISA"
+
+#: ../Expense/expense.c:1617
+#, fuzzy
+msgid "Type"
+msgstr "Kiểu :"
+
+#: ../Expense/expense.c:1618
+#, fuzzy
+msgid "Amount"
+msgstr "Số tiền:"
+
+#. Category Menu
+#: ../Expense/expense.c:1702
 msgid "Category:"
 msgstr "Loại:"
 
-#: Expense/expense.c:1700
+#. Type Menu
+#: ../Expense/expense.c:1710
 msgid "Type:"
 msgstr "Kiểu :"
 
-#: Expense/expense.c:1713
+#. Payment Menu
+#: ../Expense/expense.c:1718
 msgid "Payment:"
 msgstr "Số tiền trả:"
 
-#: Expense/expense.c:1726
+#. Currency Menu
+#: ../Expense/expense.c:1726
 msgid "Currency:"
 msgstr "Tiền tệ:"
 
-#: Expense/expense.c:1739
-msgid "Date:"
-msgstr "Ngày:"
-
-#: Expense/expense.c:1756
+#: ../Expense/expense.c:1746
 msgid "Month:"
 msgstr "Tháng:"
 
-#: Expense/expense.c:1770
+#: ../Expense/expense.c:1760
 msgid "Day:"
 msgstr "Hôm:"
 
-#: Expense/expense.c:1784
+#: ../Expense/expense.c:1774
 msgid "Year:"
 msgstr "Năm:"
 
-#: Expense/expense.c:1797
+#. Amount Entry
+#: ../Expense/expense.c:1787
 msgid "Amount:"
 msgstr "Số tiền:"
 
-#: Expense/expense.c:1811
+#. Vendor Entry
+#: ../Expense/expense.c:1797
 msgid "Vendor:"
 msgstr "Nhà bán:"
 
-#: Expense/expense.c:1825
+#. City
+#: ../Expense/expense.c:1807
 msgid "City:"
 msgstr "Phố :"
 
-#: Expense/expense.c:1839
+#. Attendees
+#: ../Expense/expense.c:1817
 msgid "Attendees"
 msgstr "Người dự"
 
-#: KeyRing/keyring.c:182
+#. -------------------------------------------
+#: ../Expense/expense.c:2100
+#, c-format
+msgid ""
+"%s\n"
+"\n"
+"Expense plugin for J-Pilot was written by\n"
+"Judd Montgomery (c) 1999.\n"
+"judd@jpilot.org, http://jpilot.org"
+msgstr ""
+
+#: ../KeyRing/keyring.c:289
 msgid "KeyRing: pack_KeyRing(): buf_size too small\n"
-msgstr "Vòng chìa khoá: pack_KeyRing(): « buf_size » (kích cỡ bộ đệm) quá nhõ\n"
+msgstr ""
+"Vòng chìa khoá: pack_KeyRing(): « buf_size » (kích cỡ bộ đệm) quá nhõ\n"
 
-#: KeyRing/keyring.c:501 KeyRing/keyring.c:512
-msgid "KeyRing"
-msgstr "Vòng chìa khoá"
-
-#: KeyRing/keyring.c:1297
+#: ../KeyRing/keyring.c:1697
 msgid "Incorrect, Reenter KeyRing Password"
 msgstr "Không đúng, gõ lại mật khẩu vòng chìa khoá"
 
-#: KeyRing/keyring.c:1299
+#: ../KeyRing/keyring.c:1699
 msgid "Enter a NEW KeyRing Password"
 msgstr "Gõ mật khẩu vòng chìa khoá MỚI"
 
-#: KeyRing/keyring.c:1301
+#: ../KeyRing/keyring.c:1701
 msgid "Enter KeyRing Password"
 msgstr "Gõ mật khẩu vòng chìa khoá"
 
-#: KeyRing/keyring.c:1395
+#: ../KeyRing/keyring.c:1767
 #, c-format
 msgid "KeyRing: file %s not found.\n"
 msgstr "KeyRing: không tìm thấy tập tin %s.\n"
 
-#: KeyRing/keyring.c:1396
+#: ../KeyRing/keyring.c:1768
 msgid "KeyRing: Try Syncing.\n"
 msgstr "KeyRing: hãy cố đồng bộ hoá.\n"
 
-#: KeyRing/keyring.c:1485
-msgid "Account"
-msgstr "Tài khoản"
+#: ../KeyRing/keyring.c:1859 ../KeyRing/keyring.c:1870
+msgid "KeyRing"
+msgstr "Vòng chìa khoá"
 
-#: KeyRing/keyring.c:1498
+#. -------------------------------------------
+#: ../KeyRing/keyring.c:1898
+#, c-format
+msgid ""
+"%s\n"
+"\n"
+"KeyRing plugin for J-Pilot was written by\n"
+"Judd Montgomery (c) 2001.\n"
+"judd@jpilot.org, http://jpilot.org\n"
+"\n"
+"KeyRing is a free PalmOS program for storing\n"
+"passwords and other information in encrypted form\n"
+"http://gnukeyring.sourceforge.net"
+msgstr ""
+
+#: ../KeyRing/keyring.c:2136
+#, c-format
+msgid ""
+"Keys exported from %s %s on %s\n"
+"\n"
+msgstr ""
+
+#: ../KeyRing/keyring.c:2170 ../KeyRing/keyring.c:2249
+#, fuzzy, c-format
+msgid "Can't export key %d\n"
+msgstr "Không thể xuất ghi nhớ %d.\n"
+
+#. Change Password button
+#: ../KeyRing/keyring.c:2451
 msgid ""
 "Change\n"
 "KeyRing\n"
@@ -2820,21 +3691,273 @@ msgstr ""
 "mật khẩu\n"
 "vòng chìa khoá"
 
-#: KeyRing/keyring.c:1662
+#. Clist
+#: ../KeyRing/keyring.c:2564
+#, fuzzy
+msgid "Changed"
+msgstr "Áp dụng thay đổi"
+
+#: ../KeyRing/keyring.c:2566
+msgid "Account"
+msgstr "Tài khoản"
+
+#. Name entry
+#: ../KeyRing/keyring.c:2660
 msgid "name: "
 msgstr "tên: "
 
-#: KeyRing/keyring.c:1669
+#. Account entry
+#: ../KeyRing/keyring.c:2668
 msgid "account: "
 msgstr "tài khoản: "
 
-#: KeyRing/keyring.c:1676
+#. Password entry
+#: ../KeyRing/keyring.c:2676
 msgid "password: "
 msgstr "mật khẩu : "
 
-#: KeyRing/keyring.c:1682
+#. Last Changed entry
+#: ../KeyRing/keyring.c:2683
+msgid "last changed: "
+msgstr ""
+
+#. Generate Password button (creates random password)
+#: ../KeyRing/keyring.c:2693
 msgid "Generate Password"
 msgstr "Tạo ra mật khẩu"
+
+#: ../SyncTime/synctime.c:59
+#, fuzzy
+msgid "SyncTime"
+msgstr "Đồng bộ hóa Ghi nhớ"
+
+#. -------------------------------------------
+#: ../SyncTime/synctime.c:70
+#, c-format
+msgid ""
+"%s\n"
+"\n"
+"SyncTime plugin for J-Pilot was written by\n"
+"Judd Montgomery (c) 1999.\n"
+"judd@jpilot.org, http://jpilot.org\n"
+"\n"
+"SyncTime WILL NOT work with PalmOS 3.3!"
+msgstr ""
+
+#: ../SyncTime/synctime.c:104
+msgid "synctime: Palm OS Version 3.25 and 3.30 do not support SyncTime\n"
+msgstr ""
+
+#: ../SyncTime/synctime.c:105
+msgid "synctime: NOT setting the time on the pilot\n"
+msgstr ""
+
+#: ../SyncTime/synctime.c:110
+msgid "synctime: Setting the time on the pilot... "
+msgstr ""
+
+#: ../SyncTime/synctime.c:115
+#, fuzzy
+msgid "Done\n"
+msgstr "Đã xong"
+
+#, fuzzy
+#~ msgid "Overwrite"
+#~ msgstr "Ghi đè tập tin"
+
+#~ msgid "Directory"
+#~ msgstr "Thư mục"
+
+#~ msgid "Filename"
+#~ msgstr "Tên tập tin"
+
+#~ msgid "Field"
+#~ msgstr "Trường"
+
+# Literal: don't translate / Nghĩa chữ: đừng dịch
+#~ msgid "kana("
+#~ msgstr "kana("
+
+#~ msgid "Quick View"
+#~ msgstr "Xem nhanh"
+
+#~ msgid "Unable to open %s%s file\n"
+#~ msgstr "Không thể mở tập tin %s%s.\n"
+
+#~ msgid "Unable to open %s.alarms file\n"
+#~ msgstr "Không thể mở tập tin <%s.alarms>.\n"
+
+#~ msgid "You can't edit category %s.\n"
+#~ msgstr "Bạn không thể hiệu chỉnh phân loại %s.\n"
+
+#~ msgid "You can't delete category %s.\n"
+#~ msgstr "Bạn không thể xoá bỏ phân loại %s.\n"
+
+#~ msgid "category name"
+#~ msgstr "tên loại"
+
+#~ msgid "debug"
+#~ msgstr "gỡ lỗi"
+
+#~ msgid "Answer: "
+#~ msgstr "Đáp :"
+
+#~ msgid "none"
+#~ msgstr "không có"
+
+#~ msgid "Unknown repeatType found in DatebookDB\n"
+#~ msgstr ""
+#~ "Không biết kiểu lặp lại repeatType được tìm trong cơ sở dữ liệu Sổ Ngày "
+#~ "DatebookDB\n"
+
+#~ msgid "W"
+#~ msgstr "Tn"
+
+#~ msgid "M"
+#~ msgstr "Th"
+
+#~ msgid "This Event has no particular time"
+#~ msgstr "Sự kiện này không có giờ riêng"
+
+#~ msgid "Start Time"
+#~ msgstr "Giờ đầu"
+
+#~ msgid "End Time"
+#~ msgstr "Giờ cuối"
+
+#~ msgid "Dismiss"
+#~ msgstr "Bỏ qua"
+
+#~ msgid "Quit"
+#~ msgstr "Thoát"
+
+#~ msgid "Add"
+#~ msgstr "Thêm"
+
+#~ msgid "Close"
+#~ msgstr "Đóng"
+
+#~ msgid " -v = version\n"
+#~ msgstr " -v = phiên bản\n"
+
+#~ msgid " -h = help\n"
+#~ msgstr " -h = trợ giúp\n"
+
+#~ msgid " -d = run in debug mode\n"
+#~ msgstr " -d = chạy trong chế độ gỡ lỗi\n"
+
+#~ msgid " -P = do not load plugins.\n"
+#~ msgstr " -P = đừng tải bộ cầm phít\n"
+
+#~ msgid " -b = Do a sync and then a backup, otherwise just do a sync.\n"
+#~ msgstr " -b = đồng bộ hóa rồi sao lưu hết, không thì chỉ đồng bộ hóa.\n"
+
+#~ msgid "Invalid geometry specification: \"%s\"\n"
+#~ msgstr "Đặc tả dạng hình không hợp lệ: « %s ».\n"
+
+#~ msgid "Help"
+#~ msgstr "Trợ giúp"
+
+#~ msgid "Sync"
+#~ msgstr "Đồng bộ"
+
+#~ msgid "/Help/PayBack program"
+#~ msgstr "/Trợ giúp/Chương trìinh trả lại"
+
+#~ msgid "Font Selection Dialog"
+#~ msgstr "Hộp thoại chọn phông chữ"
+
+#~ msgid "Clear"
+#~ msgstr "Xoá"
+
+#~ msgid "Show private records"
+#~ msgstr "Hiện bản ghi riêng"
+
+#~ msgid "Hide private records"
+#~ msgstr "Ẩn bản ghi riêng"
+
+#~ msgid "Mask private records"
+#~ msgstr "Lọc bản ghi riêng"
+
+#~ msgid "Font"
+#~ msgstr "Phông chữ"
+
+#~ msgid "Go to the menu \""
+#~ msgstr "Đi tới trình đơn \""
+
+#~ msgid "\" and change the \""
+#~ msgstr "\" và thay đổi \""
+
+#~ msgid "\"."
+#~ msgstr "\"."
+
+#~ msgid "Couldn't open PC records file\n"
+#~ msgstr "Không thể mở tập tin mục ghi PC\n"
+
+#~ msgid "The first day of the week is "
+#~ msgstr "Hôm thứ nhất trong tuần là "
+
+#~ msgid "Serial Port (/dev/ttyS0, /dev/pilot)"
+#~ msgstr "Cổng nối tiếp (/dev/ttyS0, /dev/pilot)"
+
+#~ msgid "Serial Rate (Does not affect USB)"
+#~ msgstr "Tốc độ nối tiếp (không có tác động USB)"
+
+#~ msgid "Sync memo32 (pedit32)"
+#~ msgstr "Đồng bộ hóa memo32 (pedit32)"
+
+#~ msgid "One record"
+#~ msgstr "Một mục ghi"
+
+#~ msgid "%s: press the hotsync button on the cradle or \"kill %d\"\n"
+#~ msgstr "%s: bấm nút Hotsync trên giá để, hoặc « kill %d ».\n"
+
+#~ msgid "Finished\n"
+#~ msgstr "Đã xong\n"
+
+#~ msgid "Last Username = [%s]\n"
+#~ msgstr "Tên ngưởi dùng cuối cùng = [%s]\n"
+
+#~ msgid "Last UserID = %d\n"
+#~ msgstr "ID người dùng mới đây = %d\n"
+
+#~ msgid "Username = [%s]\n"
+#~ msgstr "Tên người dùng = [%s]\n"
+
+#~ msgid "userID = %d\n"
+#~ msgstr "ID người dùng = %d\n"
+
+#~ msgid "palm: number of records = %d\n"
+#~ msgstr "palm: số mục ghi = %d\n"
+
+#~ msgid "disk: number of records = %d\n"
+#~ msgstr "đĩa: số mục ghi = %d\n"
+
+#~ msgid " -p do not load plugins.\n"
+#~ msgstr " -p đừng tải bộ cầm phít.\n"
+
+#~ msgid " -i makes jpilot iconify itself upon launch\n"
+#~ msgstr " -i thu gọn J-Pilot vào lúc khởi chạy\n"
+
+#~ msgid ""
+#~ "%s doesn't appear to be a directory.\n"
+#~ "I need it to be.\n"
+#~ msgstr ""
+#~ "%s không có vẻ là thư mục.\n"
+#~ "Phải là thư mục.\n"
+
+#~ msgid "AmEx"
+#~ msgstr "AmEx"
+
+#~ msgid "CreditCard"
+#~ msgstr "Thẻ tín dụng"
+
+# Name: don't translate / Tên: đừng dịch
+#~ msgid "MasterCard"
+#~ msgstr "MasterCard"
+
+#~ msgid "Expense: Unknown category\n"
+#~ msgstr "Phí tổn: phân loại không rõ\n"
 
 #~ msgid "\n"
 #~ msgstr "\n"
