@@ -232,7 +232,7 @@ pilotlibs=${FORCE_PILOT_LIBS:-no}
 PILOT_LIBS="-lpisock"
 
 if test "$pilotlibs" = "no" ; then
-for pilot_libs in $pilot_prefix/lib /usr/lib /usr/local/lib/ \
+for pilot_libs in $pilot_prefix/lib /usr/lib /usr/local/lib/ /usr/local/lib64 \
    /usr/extra/pilot/lib $pilot_prefix/lib64 /usr/lib64 ; do
    if test -r $pilot_libs/libpisock.so >/dev/null 2>&1 ; then
       pilotlibs=yes
