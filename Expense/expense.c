@@ -4,7 +4,7 @@
  * This is a plugin for J-Pilot which implements an interface to the
  * Palm Expense application.
  *
- * Copyright (C) 1999 by Judd Montgomery
+ * Copyright (C) 1999-2014 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

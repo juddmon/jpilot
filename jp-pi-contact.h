@@ -2,7 +2,7 @@
  * jp-pi-contact.h:  Translate Palm contact data formats
  * A module of J-Pilot http://jpilot.org
  *
- * Copyright (C) 2003-2006 by Judd Montgomery
+ * Copyright (C) 2003-2014 by Judd Montgomery
  *
  * This code is NOT derived from pi-contact.h from pilot-link.
  *  pilot-link's pi-contact.h was based on this code.

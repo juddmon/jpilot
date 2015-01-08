@@ -4,7 +4,7 @@
  * This is a plugin for J-Pilot for the KeyRing Palm program.
  * It keeps records and uses DES3 encryption.
  *
- * Copyright (C) 2001 by Judd Montgomery
+ * Copyright (C) 2001-2014 by Judd Montgomery
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+#include <errno.h>
 #include <sys/stat.h>
 #include <gtk/gtk.h>
 
@@ -2087,6 +2088,8 @@ static void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *clist,
    struct tm *now;
    char *button_text[]={N_("OK")};
    char *button_overwrite_text[]={N_("No"), N_("Yes")};
+   char *button_keepassx_text[]={N_("Cancel"), N_("Overwrite"), N_("Append")};
+   enum { NA=0, cancel=DIALOG_SAID_1, overwrite=DIALOG_SAID_2, append=DIALOG_SAID_3 } keepassx_answer = NA;
    char text[1024];
    char str1[256], str2[256];
    char date_string[1024];
@@ -2106,16 +2109,30 @@ static void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *clist,
                         DIALOG_ERROR, text, 1, button_text);
          return;
       }
-      g_snprintf(text,sizeof(text), _("Do you want to overwrite file %s?"), filename);
-      r = dialog_generic(GTK_WINDOW(export_window),
-                         _("Overwrite File?"),
-                         DIALOG_ERROR, text, 2, button_overwrite_text);
-      if (r!=DIALOG_SAID_2) {
-         return;
+      if (type == EXPORT_TYPE_KEEPASSX) {
+         g_snprintf(text, sizeof(text), _("KeePassX XML File exists, Do you want to"));
+         keepassx_answer = dialog_generic(GTK_WINDOW(export_window),
+                            _("Overwrite File?"),
+                            DIALOG_ERROR, text, 3, button_keepassx_text);
+         if (keepassx_answer==cancel) {
+            return;
+         }
+      } else {
+         g_snprintf(text, sizeof(text), _("Do you want to overwrite file %s?"), filename);
+         r = dialog_generic(GTK_WINDOW(export_window),
+                            _("Overwrite File?"),
+                            DIALOG_ERROR, text, 2, button_overwrite_text);
+         if (r!=DIALOG_SAID_2) {
+            return;
+         }
       }
    }
 
-   out = fopen(filename, "w");
+   if ((keepassx_answer==append)) {
+      out = fopen(filename, "r+");
+   } else {
+      out = fopen(filename, "w");
+   }
    if (!out) {
       g_snprintf(text,sizeof(text), _("Error opening file: %s"), filename);
       dialog_generic(GTK_WINDOW(export_window),
@@ -2151,10 +2168,25 @@ static void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	      "\"Custom Label 5\",\"Custom Value 5\", Note,Folder\n");
    }
 
-   /* Write a header to the KeePassX XML file */
    if (type == EXPORT_TYPE_KEEPASSX) {
-      fprintf(out, "<!DOCTYPE KEEPASSX_DATABASE>\n");
-      fprintf(out, "<database>\n");
+      if (keepassx_answer!=append) {
+         /* Write a database header to the KeePassX XML file */
+         /* If we append to an XML file we don't need another header */
+         fprintf(out, "<!DOCTYPE KEEPASSX_DATABASE>\n");
+         fprintf(out, "<database>\n");
+      } else {
+         /* We'll need to remove the last part of the XML file */
+         r = fseek(out, -12L, SEEK_END);
+         r = fread(text, 11, 1, out);
+         text[11]='\0';
+         if (strncmp(text, "</database>", 11)) {
+            jp_logf(JP_LOG_WARN, _("This doesn't look like a KeePassX XML file\n"));
+            fseek(out, 0L, SEEK_END);
+         } else {
+            fseek(out, -12L, SEEK_END);
+         }
+      }
+      /* Write a group header to the KeePassX XML file */
       fprintf(out, " <group>\n");
       fprintf(out, "  <title>Keyring</title>\n");
       fprintf(out, "  <icon>0</icon>\n");
@@ -2279,7 +2311,6 @@ static void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 	 fprintf(out, " </group>\n");
 	 fprintf(out, "</database>\n");
       }
-
    }
 
    if (out) {
