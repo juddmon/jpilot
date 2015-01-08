@@ -128,6 +128,16 @@ static struct currency_s glob_currency[MAX_CURRENCYS]={
    {N_("United States"),    23}
 };
 
+const char *date_formats[] = {
+   "%1$02d/%2$02d",
+   "%2$02d/%1$02d",
+   "%2$02d.%1$02d.",
+   "%2$02d-%1$02d",
+   "%1$02d/%2$02d",
+   "%1$02d.%2$02d.",
+   "%1$02d-%2$02d"
+};
+
 /* Left-hand side of GUI */
 static struct sorted_cats sort_l[NUM_EXP_CAT_ITEMS];
 static GtkWidget *category_menu1;
@@ -864,7 +874,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data)
  * This function just adds the record to the clist on the left side of
  * the screen.
  */
-static int display_record(struct MyExpense *mexp, int at_row)
+static int display_record(struct MyExpense *mexp, int at_row, const char *dateformat)
 {
    char *Ptype;
    char date[12];
@@ -915,7 +925,7 @@ static int display_record(struct MyExpense *mexp, int at_row)
 
    gtk_clist_set_row_data(GTK_CLIST(clist), at_row, mexp);
 
-   sprintf(date, "%02d/%02d", mexp->ex.date.tm_mon+1, mexp->ex.date.tm_mday);
+   sprintf(date, dateformat, mexp->ex.date.tm_mon+1, mexp->ex.date.tm_mday);
    gtk_clist_set_text(GTK_CLIST(clist), at_row, 0, date);
 
    Ptype = get_entry_type(mexp->ex.type);
@@ -941,6 +951,7 @@ static void display_records(void)
    GList *temp_list;
    buf_rec *br;
    gchar *empty_line[] = { "","","" };
+   const char *dateformat = date_formats[get_pref_int_default(PREF_SHORTDATE,0)];
    
    jp_logf(JP_LOG_DEBUG, "Expense: display_records\n");
 
@@ -1005,7 +1016,7 @@ static void display_records(void)
        * an unpack must be written for each type of application */
       if (unpack_Expense(&(mexp->ex), br->buf, br->size)!=0) {
          gtk_clist_append(GTK_CLIST(clist), empty_line);
-         display_record(mexp, entries_shown);
+         display_record(mexp, entries_shown, dateformat);
          entries_shown++;
       }
 

@@ -3530,6 +3530,7 @@ static int make_phone_menu(int default_set, unsigned int callback_id, int set)
    int i;
    GSList *group;
    GtkWidget *menu;
+   char *utf;
    long char_set;
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
@@ -3540,9 +3541,10 @@ static int make_phone_menu(int default_set, unsigned int callback_id, int set)
    group = NULL;
 
    for (i=0; i<NUM_PHONE_LABELS; i++) {
+      utf = charset_p2newj(contact_app_info.phoneLabels[i], 16, char_set);
       if (contact_app_info.phoneLabels[i][0]) {
          phone_type_menu_item[set][i] = gtk_radio_menu_item_new_with_label(
-                        group, contact_app_info.phoneLabels[i]);
+                        group, utf);
          gtk_signal_connect(GTK_OBJECT(phone_type_menu_item[set][i]), "activate",
                             GTK_SIGNAL_FUNC(cb_phone_menu),
                             GINT_TO_POINTER(callback_id<<8 | i));
@@ -3552,6 +3554,7 @@ static int make_phone_menu(int default_set, unsigned int callback_id, int set)
 
          changed_list = g_list_prepend(changed_list, phone_type_menu_item[set][i]);
       }
+      g_free(utf);
    }
    /* Set this one to active */
    if (GTK_IS_WIDGET(phone_type_menu_item[set][default_set])) {
