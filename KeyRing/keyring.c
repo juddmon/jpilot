@@ -2163,9 +2163,9 @@ static void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *clist,
    if (type == EXPORT_TYPE_BFOLDERS) {
       fprintf(out, "Login passwords:\n");
       fprintf(out, "Title,Location,Usename,Password, "
-	      "\"Custom Label 1\",\"Custom Value 1\",\"Custom Label 2\",\"Custom Value 2\","
-	      "\"Custom Label 3\",\"Custom Value 3\",\"Custom Label 4\",\"Custom Value 4\","
-	      "\"Custom Label 5\",\"Custom Value 5\", Note,Folder\n");
+              "\"Custom Label 1\",\"Custom Value 1\",\"Custom Label 2\",\"Custom Value 2\","
+              "\"Custom Label 3\",\"Custom Value 3\",\"Custom Label 4\",\"Custom Value 4\","
+              "\"Custom Label 5\",\"Custom Value 5\", Note,Folder\n");
    }
 
    if (type == EXPORT_TYPE_KEEPASSX) {
@@ -2227,16 +2227,16 @@ static void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *clist,
          str_to_csv_str(csv_text, mkr->kr.password);
          fprintf(out, "\"%s\",", csv_text);
 
-	 fprintf(out, "\"\",\"\",\"\",\"\","
-		 "\"\",\"\",\"\",\"\","
-		 "\"\",\"\",");
+         fprintf(out, "\"\",\"\",\"\",\"\","
+                 "\"\",\"\",\"\",\"\","
+                 "\"\",\"\",");
 
          str_to_csv_str(csv_text, mkr->kr.note);
          fprintf(out, "\"%s\",", csv_text);
 
          fprintf(out, "\"KeyRing > ");
 
-	 utf = charset_p2newj(keyr_app_info.name[mkr->attrib & 0x0F], 16, char_set);
+         utf = charset_p2newj(keyr_app_info.name[mkr->attrib & 0x0F], 16, char_set);
          fprintf(out, "%s\"\n", utf);
          g_free(utf);
 
