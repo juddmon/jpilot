@@ -666,7 +666,7 @@ static gint cb_timer_alarms(gpointer data)
       /* CAUTION, this modifies the list we are parsing and
        * removes the current node */
       if (temp_al)
-	 alarms_remove_from_to_list(temp_al->mcale.unique_id);
+         alarms_remove_from_to_list(temp_al->mcale.unique_id);
    }
 
    if (next_alarm) {

@@ -200,7 +200,7 @@ static int get_repeat(FILE *in, struct Appointment *appt)
    if (s>0) {
       appt->exception=malloc(sizeof(struct tm) * s);
       if (!(appt->exceptions)) {
-	 jp_logf(JP_LOG_WARN, "get_repeat(): %s\n", _("Out of memory"));
+         jp_logf(JP_LOG_WARN, "get_repeat(): %s\n", _("Out of memory"));
       }
    }
 
