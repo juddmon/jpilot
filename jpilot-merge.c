@@ -287,7 +287,7 @@ int main(int argc, char *argv[])
    textdomain(EPN);
 #endif
 
-   if (argc != 3) {
+   if (argc != 4) {
       fprintf(stderr, _("Usage: %s {input pdb file} {input pc3 file} {output pdb file}\n"), argv[0]);
       fprintf(stderr, _("  This program will merge an unsynced records file (pc3)\n"));
       fprintf(stderr, _("  into the corresponding palm database (pdb) file.\n\n"));
