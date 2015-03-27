@@ -318,7 +318,6 @@ int jp_pc_write(const char *DB_name, buf_rec *br)
    FILE *out;
    unsigned int next_unique_id;
    unsigned char packed_header[256];
-   int len;
    char PC_name[FILENAME_MAX];
 
    g_snprintf(PC_name, sizeof(PC_name), "%s.pc3", DB_name);
@@ -343,7 +342,7 @@ int jp_pc_write(const char *DB_name, buf_rec *br)
    header.rt=br->rt;
    header.attrib=br->attrib;
 
-   len = pack_header(&header, packed_header);
+   pack_header(&header, packed_header);
    write_header(out, &header);
    fwrite(br->buf, header.rec_len, 1, out);
 
@@ -756,9 +755,7 @@ static void jp_unpack_ntohl(unsigned long *l, unsigned char *src)
 static int pack_header(PC3RecordHeader *header, unsigned char *packed_header)
 {
    unsigned char *p;
-   unsigned long l;
 
-   l=0;
    p=packed_header;
    /*
     * Header structure:

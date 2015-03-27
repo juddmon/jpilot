@@ -391,7 +391,6 @@ static int search_plugins(const char *needle, const GtkWidget *clist)
    GList *plugin_list, *temp_list;
    gchar *empty_line[] = { "","" };
    char str2[SEARCH_MAX_COLUMN_LEN+2];
-   int found;
    int count;
    int case_sense;
    struct search_result *sr, *temp_sr;
@@ -401,7 +400,6 @@ static int search_plugins(const char *needle, const GtkWidget *clist)
    plugin_list = NULL;
    plugin_list = get_plugin_list();
 
-   found = 0;
    case_sense = GTK_TOGGLE_BUTTON(case_sense_checkbox)->active;
 
    count = 0;

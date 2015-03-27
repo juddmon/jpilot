@@ -165,7 +165,6 @@ void otherconv_free(void)
  */
 char *other_to_UTF(const char *buf, int buf_len)
 {
-   size_t rc;
    char *outbuf;
    gsize bytes_read;
    GError *err = NULL;
@@ -174,7 +173,7 @@ char *other_to_UTF(const char *buf, int buf_len)
 #ifdef OTHERCONV_DEBUG
    jp_logf(JP_LOG_DEBUG, "%s:%s reset iconv state...\n", __FILE__, __FUNCTION__);
 #endif
-   rc = g_iconv(glob_frompda, NULL, NULL, NULL, NULL);
+   g_iconv(glob_frompda, NULL, NULL, NULL, NULL);
 #ifdef OTHERCONV_DEBUG
    jp_logf(JP_LOG_DEBUG, "%s:%s converting   [%s]\n", __FILE__, __FUNCTION__, buf);
 #endif

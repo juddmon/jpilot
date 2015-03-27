@@ -776,6 +776,8 @@ static int dumptodo(void)
 
    al = NULL;
    num = get_todos(&al, SORT_ASCENDING);
+   if (num == 0)
+      return (0);
 
    for (tal=al; tal; tal = tal->next) {
       if ((tal->mtodo.rt != DELETED_PALM_REC) && 
@@ -1037,6 +1039,8 @@ static int dumpmemo(void)
    al = NULL;
    i = 0;
    num = get_memos(&al, i);
+   if (num == 0)
+      return (0);
 
    for (tal=al; tal; tal = tal->next) {
       if ((tal->mmemo.rt != DELETED_PALM_REC) && 

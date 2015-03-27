@@ -1162,7 +1162,6 @@ static int sync_fetch(int sd, unsigned int flags,
    struct DBInfo info;
    char db_copy_name[MAX_DBNAME];
    GList *file_list;
-   GList *end_of_list;
    int palmos_error;
    int dbIndex;
    pi_buffer_t *buffer;
@@ -1216,8 +1215,6 @@ static int sync_fetch(int sd, unsigned int flags,
 
    rename_dbnames(palm_dbname);
 
-   end_of_list=NULL;
-
    full_backup = flags & SYNC_FULL_BACKUP;
 
    /* Fast sync still needs to fetch Saved Preferences before exiting */
@@ -1235,7 +1232,6 @@ static int sync_fetch(int sd, unsigned int flags,
 
    start=cardno=0;
    file_list=NULL;
-   end_of_list=NULL;
 
    buffer = pi_buffer_new(32 * sizeof(struct DBInfo));
 

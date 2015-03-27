@@ -1791,7 +1791,7 @@ void todo_clist_clear(GtkCList *clist)
 void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
                        ToDoList **todo_list, int category, int main)
 {
-   int num_entries, entries_shown, i;
+   int num_entries, entries_shown;
    gchar *empty_line[] = { "","","","","" };
    GdkPixmap *pixmap_note;
    GdkPixmap *pixmap_check;
@@ -1852,7 +1852,7 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
    comp_now=now->tm_year*380+now->tm_mon*31+now->tm_mday-1;
 
    entries_shown=0;
-   for (temp_todo = *todo_list, i=0; temp_todo; temp_todo=temp_todo->next) {
+   for (temp_todo = *todo_list; temp_todo; temp_todo=temp_todo->next) {
       if ( ((temp_todo->mtodo.attrib & 0x0F) != category) &&
              category != CATEGORY_ALL) {
          continue;
@@ -2177,8 +2177,6 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    GtkWidget *vbox_temp;
    GtkWidget *separator;
    GtkWidget *label;
-   time_t ltime;
-   struct tm *now;
    char str[MAX_RADIO_BUTTON_LEN];
    int i;
    GSList *group;
@@ -2249,8 +2247,8 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    separator = gtk_hseparator_new();
    gtk_box_pack_start(GTK_BOX(vbox1), separator, FALSE, FALSE, 5);
 
-   time(&ltime);
-   now = localtime(&ltime);
+   //time(&ltime);
+   //now = localtime(&ltime);
 
    /* Make the 'Today is:' label */
    glob_date_label = gtk_label_new(" ");

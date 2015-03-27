@@ -621,7 +621,7 @@ static void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
             len=strlen(mmemo->memo.text) * 2 + 4;
          }
          if (len<256) len=256;
-	 printf("\"RAW %d %s\"\n", mmemo->attrib & 0x0F, memo_app_info.category.name[mmemo->attrib & 0x0F]);
+         printf("\"RAW %d %s\"\n", mmemo->attrib & 0x0F, memo_app_info.category.name[mmemo->attrib & 0x0F]);
          utf = charset_p2newj(memo_app_info.category.name[mmemo->attrib & 0x0F], 16, char_set);
          str_to_csv_str(csv_text, utf);
          fprintf(out, "\"Memos > %s\"\n", csv_text);

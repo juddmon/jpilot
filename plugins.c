@@ -239,7 +239,7 @@ static int get_plugin_info(struct plugin_s *p, char *path)
    const char *err;
    char name[52];
    char db_name[52];
-   int version, major_version, minor_version;
+   int major_version, minor_version;
    void (*plugin_versionM)(int *major_version, int *minor_version);
 
    p->full_path = NULL;
@@ -292,7 +292,6 @@ static int get_plugin_info(struct plugin_s *p, char *path)
       return EXIT_FAILURE;
    }
    plugin_versionM(&major_version, &minor_version);
-   version=major_version*1000+minor_version;
    if ((major_version <= 0) && (minor_version < 99)) {
       jp_logf(JP_LOG_WARN, _("Plugin:[%s]\n"), path);
       jp_logf(JP_LOG_WARN, _("This plugin is version (%d.%d).\n"),

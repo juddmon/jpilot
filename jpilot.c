@@ -1538,11 +1538,6 @@ int main(int argc, char *argv[])
 #endif
    int pid;
    int remote_sync = FALSE;
-#if defined(ENABLE_NLS)
-#  ifdef HAVE_LOCALE_H
-   char *current_locale;
-#  endif
-#endif
 
    skip_plugins=FALSE;
    skip_past_alarms=FALSE;
@@ -1561,7 +1556,7 @@ int main(int argc, char *argv[])
    /* enable internationalization(i18n) before printing any output */
 #if defined(ENABLE_NLS)
 #  ifdef HAVE_LOCALE_H
-      current_locale = setlocale(LC_ALL, "");
+      setlocale(LC_ALL, "");
 #  endif
    bindtextdomain(EPN, LOCALEDIR);
    textdomain(EPN);
