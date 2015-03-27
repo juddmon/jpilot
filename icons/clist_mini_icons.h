@@ -21,9 +21,9 @@
 /* Note pixmap */
 const char * xpm_note[] = {
 "12 16 3 1",
-" 	c None",
-".	c #000000",
-"+	c #CCCCCC",
+"  c None",
+". c #000000",
+"+ c #CCCCCC",
 "            ",
 " ......     ",
 " .+++.+.    ",
@@ -192,9 +192,9 @@ const char * xpm_float_checked[] = {
 /* SDcard pixmap */
 const char * xpm_sdcard[] = {
 "12 16 3 1",
-" 	c None",
-".	c #000000",
-"+	c #CCCCCC",
+"  c None",
+". c #000000",
+"+ c #CCCCCC",
 "            ",
 " ......     ",
 " .+++++.    ",
