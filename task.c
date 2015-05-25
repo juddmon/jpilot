@@ -1,5 +1,5 @@
 /*******************************************************************************
- * pi-task.h
+ * task.c
  * A module of J-Pilot http://jpilot.org
  *
  * Copyright (C) 2004-2015 by Judd Montgomery
