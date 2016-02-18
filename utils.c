@@ -2358,10 +2358,10 @@ int jp_copy_file(char *src, char *dest)
    }
 
    in = fopen(src, "r");
-   out = fopen(dest, "w");
    if (!in) {
       return EXIT_FAILURE;
    }
+   out = fopen(dest, "w");
    if (!out) {
       fclose(in);
       return EXIT_FAILURE;
