@@ -105,12 +105,14 @@ jpilot_SOURCES = \
 	icons/backup.xpm \
 	icons/clist_mini_icons.h \
 	icons/appl_menu_icons.h \
-	icons/lock_icons.h
+	icons/lock_icons.h \
+	icons/icons.c
 
 jpilot_dump_SOURCES = \
 	address.c \
 	calendar.c \
 	category.c \
+	contact.c \
 	cp1250.c \
 	datebook.c \
 	japanese.c \

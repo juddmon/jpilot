@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <sys/stat.h>
 #ifdef HAVE_LOCALE_H
 #  include <locale.h>
 #endif
@@ -63,6 +64,8 @@ int  Nyear;
 int  Nmonth;
 int  Nday;
 int  dumpA;
+int  dumpC;
+int  dumpC_type;
 int  dumpM;
 int  dumpT;
 const char *formatD;
@@ -85,21 +88,119 @@ void output_to_pane(const char *str) { return; }
 int sync_once(struct my_sync_info *sync_info) { return EXIT_SUCCESS; }
 /* End Hack */
 
+/* Structs needed for ContactsDB export */
+
+static address_schema_entry contact_schema[NUM_CONTACT_FIELDS]={
+   {contLastname,  0, ADDRESS_GUI_LABEL_TEXT},
+   {contFirstname, 0, ADDRESS_GUI_LABEL_TEXT},
+   {contCompany,   0, ADDRESS_GUI_LABEL_TEXT},
+   {contTitle,     0, ADDRESS_GUI_LABEL_TEXT},
+   {contPhone1,    0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
+   {contPhone2,    0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
+   {contPhone3,    0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
+   {contPhone4,    0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
+   {contPhone5,    0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
+   {contPhone6,    0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
+   {contPhone7,    0, ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT},
+   {contIM1,       0, ADDRESS_GUI_IM_MENU_TEXT},
+   {contIM2,       0, ADDRESS_GUI_IM_MENU_TEXT},
+   {contWebsite,   0, ADDRESS_GUI_WEBSITE_TEXT},
+   {contAddress1,  1, ADDRESS_GUI_ADDR_MENU_TEXT},
+   {contCity1,     1, ADDRESS_GUI_LABEL_TEXT},
+   {contState1,    1, ADDRESS_GUI_LABEL_TEXT},
+   {contZip1,      1, ADDRESS_GUI_LABEL_TEXT},
+   {contCountry1,  1, ADDRESS_GUI_LABEL_TEXT},
+   {contAddress2,  2, ADDRESS_GUI_ADDR_MENU_TEXT},
+   {contCity2,     2, ADDRESS_GUI_LABEL_TEXT},
+   {contState2,    2, ADDRESS_GUI_LABEL_TEXT},
+   {contZip2,      2, ADDRESS_GUI_LABEL_TEXT},
+   {contCountry2,  2, ADDRESS_GUI_LABEL_TEXT},
+   {contAddress3,  3, ADDRESS_GUI_ADDR_MENU_TEXT},
+   {contCity3,     3, ADDRESS_GUI_LABEL_TEXT},
+   {contState3,    3, ADDRESS_GUI_LABEL_TEXT},
+   {contZip3,      3, ADDRESS_GUI_LABEL_TEXT},
+   {contCountry3,  3, ADDRESS_GUI_LABEL_TEXT},
+   {contBirthday,  4, ADDRESS_GUI_BIRTHDAY},
+   {contCustom1,   4, ADDRESS_GUI_LABEL_TEXT},
+   {contCustom2,   4, ADDRESS_GUI_LABEL_TEXT},
+   {contCustom3,   4, ADDRESS_GUI_LABEL_TEXT},
+   {contCustom4,   4, ADDRESS_GUI_LABEL_TEXT},
+   {contCustom5,   4, ADDRESS_GUI_LABEL_TEXT},
+   {contCustom6,   4, ADDRESS_GUI_LABEL_TEXT},
+   {contCustom7,   4, ADDRESS_GUI_LABEL_TEXT},
+   {contCustom8,   4, ADDRESS_GUI_LABEL_TEXT},
+   {contCustom9,   4, ADDRESS_GUI_LABEL_TEXT},
+   {contNote,      5, ADDRESS_GUI_LABEL_TEXT}
+};
+
+static char *ldifMapType(int label)
+{
+   switch (label) {
+    case 0:
+      return "telephoneNumber";
+    case 1:
+      return "homePhone";
+    case 2:
+      return "facsimileTelephoneNumber";
+    case 3:
+      return "xotherTelephoneNumber";
+    case 4:
+      return "mail";
+    case 5:
+      return "xmainTelephoneNumber";
+    case 6:
+      return "pager";
+    case 7:
+      return "mobile";
+    default:
+      return "xunknownTelephoneNumber";
+   }
+}
+
+static char *vCardMapType(int label)
+{
+   switch (label) {
+    case 0:
+      return "work";
+    case 1:
+      return "home";
+    case 2:
+      return "fax";
+    case 3:
+      return "x-other";
+    case 4:
+      return "email";
+    case 5:
+      return "x-main";
+    case 6:
+      return "pager";
+    case 7:
+      return "cell";
+    default:
+      return "x-unknown";
+   }
+}
+
 /****************************** Main Code *************************************/
 static void fprint_jpd_usage_string(FILE *out)
 {
-   fprintf(out, "%s-dump [ +format [-v] || [-h] || [-f] || [-D] || [-i] || [-N] || [-A] || [-T] || [-M] ]\n", EPN);
+   fprintf(out, "%s-dump [ +format [-v] || [-h] || [-f] || [-D] || [-i] || [-A] || [-C] || [-T] || [-M] || [-N] ]\n", EPN);
    fprintf(out, _(" +D +A +T +M format like date +format.\n"));
-   fprintf(out, _(" -v display version and exit\n"));
-   fprintf(out, _(" -h display help text\n"));
-   fprintf(out, _(" -f display help for format codes\n"));
-   fprintf(out, _(" -D dump DateBook\n"));
-   fprintf(out, _(" -i dump DateBook in iCalendar format\n"));
-   fprintf(out, _(" -N dump appts for today in DateBook\n"));
-   fprintf(out, _(" -NYYYY/MM/DD dump appts on YYYY/MM/DD in DateBook\n"));
-   fprintf(out, _(" -A dump Address book\n"));
-   fprintf(out, _(" -T dump ToDo list as CSV\n"));
-   fprintf(out, _(" -M dump Memos\n"));
+   fprintf(out, _(" -v displays version and exits.\n"));
+   fprintf(out, _(" -h displays help and exits.\n"));
+   fprintf(out, _(" -f displays help for format codes.\n"));
+   fprintf(out, _(" -D dump DateBook.\n"));
+   fprintf(out, _(" -i dump DateBook in iCalendar format.\n"));
+   fprintf(out, _(" -N dump appts for today in DateBook.\n"));
+   fprintf(out, _(" -NYYYY/MM/DD dump appts on YYYY/MM/DD in DateBook.\n"));
+   fprintf(out, _(" -A dump Address book.\n"));
+   fprintf(out, _(" -C dumps Contacts database:-\n"));
+   fprintf(out, _("    -Ct dumps as text (default).\n"));
+   fprintf(out, _("    -Cc dumps as csv.\n"));
+   fprintf(out, _("    -Cv dumps as vcard.\n"));
+   fprintf(out, _("    -Cl dumps as ldif.\n"));
+   fprintf(out, _(" -T dump ToDo list as CSV.\n"));
+   fprintf(out, _(" -M dump Memos.\n"));
 }
 
 /* convert from UTF8 to local encoding */
@@ -764,6 +865,499 @@ static int dumpaddress(void)
    return EXIT_SUCCESS;
 }
 
+int dumpcontact()
+{
+   MyContact *mcont;
+   struct stat statb;
+   const char *short_date;
+   time_t ltime;
+   struct tm *now;
+   char str1[256], str2[256];
+   char pref_time[40];
+   int i, r, n;
+   int record_num;
+   char *button_text[]={N_("OK")};
+   char *button_overwrite_text[]={N_("No"), N_("Yes")};
+   char text[1024];
+   char date_string[1024];
+   char csv_text[65550];
+   long char_set;
+   char username[256];
+   char hostname[256];
+   const char *svalue;
+   long userid;
+   char birthday_str[255];
+   const char *pref_date;
+   int address_i, IM_i, phone_i;
+   char *utf;
+
+   static struct ContactAppInfo contact_app_info;
+
+   ContactList *tcl, *cl;
+   get_contact_app_info(&contact_app_info);
+   cl = NULL;
+   record_num = get_contacts(&cl, SORT_ASCENDING);
+
+   /* Write a header for TEXT file */
+   if (dumpC_type == EXPORT_TYPE_TEXT) {
+      get_pref(PREF_SHORTDATE, NULL, &short_date);
+      get_pref_time_no_secs(pref_time);
+      time(&ltime);
+      now = localtime(&ltime);
+      strftime(str1, sizeof(str1), short_date, now);
+      strftime(str2, sizeof(str2), pref_time, now);
+      g_snprintf(date_string, sizeof(date_string), "%s %s", str1, str2);
+      printf("Contact exported from %s %s on %s\n\n", 
+                                               PN,VERSION,date_string);
+   }
+
+   /* Write a header to the CSV file */
+   if (dumpC_type == EXPORT_TYPE_CSV) {
+      printf("CSV contacts version "VERSION": Category, Private, ");
+
+      address_i=phone_i=IM_i=0;
+      for (i=0; i<NUM_CONTACT_FIELDS; i++) {
+          switch (contact_schema[i].type) {
+           case ADDRESS_GUI_IM_MENU_TEXT:
+             printf("IM %d label, ", IM_i);
+             printf("IM %d, ", IM_i);
+             IM_i++;
+             break;
+           case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
+             printf("Phone %d label, ", phone_i);
+             printf("Phone %d, ", phone_i);
+             phone_i++;
+             break;
+           case ADDRESS_GUI_ADDR_MENU_TEXT:
+             printf("Address %d label, ", address_i);
+             printf("Address %d, ", address_i);
+             address_i++;
+             break;
+           case ADDRESS_GUI_BIRTHDAY:
+             printf("%s, ", contact_app_info.labels[contact_schema[i].record_field]);
+             printf("Reminder Advance, ");
+                  break;
+           case ADDRESS_GUI_LABEL_TEXT:
+           case ADDRESS_GUI_WEBSITE_TEXT:
+             printf("%s, ", contact_app_info.labels[contact_schema[i].record_field]);
+             break;
+          }
+      }
+
+      printf("Show in List\n");
+   }  /* end writing CSV header */
+
+   /* Special setup for VCARD export */
+   if (dumpC_type == EXPORT_TYPE_VCARD) {
+      get_pref(PREF_USER, NULL, &svalue);
+      g_strlcpy(text, svalue, sizeof(text));
+      str_to_ical_str(username, sizeof(username), text);
+      get_pref(PREF_USER_ID, &userid, NULL);
+      gethostname(text, sizeof(text));
+      text[sizeof(text)-1]='\0';
+      str_to_ical_str(hostname, sizeof(hostname), text);
+   }
+
+   /* Check encoding for LDIF output */
+   if (dumpC_type == EXPORT_TYPE_LDIF) {
+      get_pref(PREF_CHAR_SET, &char_set, NULL);
+      if (char_set < CHAR_SET_UTF) {
+         jp_logf(JP_LOG_WARN, _("Host character encoding is not UTF-8 based.\n Exported ldif file may not be standards-compliant\n"));
+      }
+   }
+
+   get_pref(PREF_CHAR_SET, &char_set, NULL);
+
+   for (record_num=0, tcl=cl; tcl; tcl = tcl->next, record_num++) {
+      mcont = &tcl->mcont;
+      switch (dumpC_type) {
+         case EXPORT_TYPE_TEXT:
+            utf = charset_p2newj(contact_app_info.category.name[mcont->attrib & 0x0F], 16, char_set);
+            printf(("Category: %s\n"), utf);
+            g_free(utf);
+            printf(("Private: %s\n"),
+            (mcont->attrib & dlpRecAttrSecret) ? _("Yes"):_("No"));
+
+            address_i=phone_i=IM_i=0;
+            for (i=0; i<NUM_CONTACT_FIELDS; i++) {
+               /* Special handling for birthday which doesn't have an entry
+                * field but instead has a flag and a tm struct field */
+               if ((contact_schema[i].type == ADDRESS_GUI_BIRTHDAY) &&
+                   mcont->cont.birthdayFlag)
+               {
+                  printf(("%s: "), contact_app_info.labels[contact_schema[i].record_field] ? contact_app_info.labels[contact_schema[i].record_field] : "");
+                  birthday_str[0]='\0';
+                  get_pref(PREF_SHORTDATE, NULL, &pref_date);
+                  strftime(birthday_str, sizeof(birthday_str), pref_date, &(mcont->cont.birthday));
+                  printf(("%s\n"), birthday_str);
+               }
+
+               if (mcont->cont.entry[contact_schema[i].record_field]) {
+                  /* Print labels for menu selectable fields (Work, Fax, etc.) */
+                  switch (contact_schema[i].type) {
+                     case ADDRESS_GUI_IM_MENU_TEXT:
+                        printf(("%s: "), contact_app_info.IMLabels[mcont->cont.IMLabel[IM_i]]);
+                        IM_i++;
+                        break;
+                     case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
+                        printf(("%s: "), contact_app_info.phoneLabels[mcont->cont.phoneLabel[phone_i]]);
+                        phone_i++;
+                        break;
+                     case ADDRESS_GUI_ADDR_MENU_TEXT:
+                        printf(("%s: "), contact_app_info.addrLabels[mcont->cont.addressLabel[address_i]]);
+                        address_i++;
+                        break;
+                     default:
+                        printf(("%s: "), contact_app_info.labels[contact_schema[i].record_field] ? contact_app_info.labels[contact_schema[i].record_field] : "");
+                  }
+                  /* Next print the entry field */
+                  switch (contact_schema[i].type) {
+                     case ADDRESS_GUI_LABEL_TEXT:
+                     case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
+                     case ADDRESS_GUI_IM_MENU_TEXT:
+                     case ADDRESS_GUI_ADDR_MENU_TEXT:
+                     case ADDRESS_GUI_WEBSITE_TEXT:
+                        printf("%s\n", mcont->cont.entry[contact_schema[i].record_field]);
+                        break;
+                  }
+               }
+            }
+            printf("\n");
+
+            break;
+
+         case EXPORT_TYPE_CSV:
+            /* Category name */
+            utf = charset_p2newj(contact_app_info.category.name[mcont->attrib & 0x0F], 16, char_set);
+            printf("\"%s\",", utf);
+            g_free(utf);
+
+            /* Private */
+            printf("\"%s\",", (mcont->attrib & dlpRecAttrSecret) ? "1":"0");
+
+            address_i=phone_i=IM_i=0;
+            /* The Contact entry values */
+            for (i=0; i<NUM_CONTACT_FIELDS; i++) {
+               switch (contact_schema[i].type) {
+                  /* For labels that are menu selectable ("Work", Fax", etc)
+                   * we list what they are set to in the record */
+                  case ADDRESS_GUI_IM_MENU_TEXT:
+                     str_to_csv_str(csv_text, contact_app_info.IMLabels[mcont->cont.IMLabel[IM_i]]);
+                     printf("\"%s\",", csv_text);
+                     str_to_csv_str(csv_text, mcont->cont.entry[contact_schema[i].record_field] ? mcont->cont.entry[contact_schema[i].record_field] : "");
+                     printf("\"%s\",", csv_text);
+                     IM_i++;
+                     break;
+                  case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
+                     str_to_csv_str(csv_text, contact_app_info.phoneLabels[mcont->cont.phoneLabel[phone_i]]);
+                     printf("\"%s\",", csv_text);
+                     str_to_csv_str(csv_text, mcont->cont.entry[contact_schema[i].record_field] ? mcont->cont.entry[contact_schema[i].record_field] : "");
+                     printf("\"%s\",", csv_text);
+                     phone_i++;
+                     break;
+                  case ADDRESS_GUI_ADDR_MENU_TEXT:
+                     str_to_csv_str(csv_text, contact_app_info.addrLabels[mcont->cont.addressLabel[address_i]]);
+                     printf("\"%s\",", csv_text);
+                     str_to_csv_str(csv_text, mcont->cont.entry[contact_schema[i].record_field] ? mcont->cont.entry[contact_schema[i].record_field] : "");
+                     printf("\"%s\",", csv_text);
+                     address_i++;
+                     break;
+                  case ADDRESS_GUI_LABEL_TEXT:
+                  case ADDRESS_GUI_WEBSITE_TEXT:
+                     printf("\"%s\",", mcont->cont.entry[contact_schema[i].record_field] ? mcont->cont.entry[contact_schema[i].record_field] : "");
+                     break;
+                  case ADDRESS_GUI_BIRTHDAY:
+                     if (mcont->cont.birthdayFlag) {
+                        birthday_str[0]='\0'; 
+                        strftime(birthday_str, sizeof(birthday_str), "%Y/%02m/%02d", &(mcont->cont.birthday));
+                        printf("\"%s\",", birthday_str);
+
+                           if (mcont->cont.reminder) {
+                               printf("\"%d\",", mcont->cont.advance);
+                           } else {
+                               printf("\"\",");
+                           }
+
+                     } else {
+                        printf("\"\",");  /* for null Birthday field */
+                        printf("\"\",");  /* for null Birthday Reminder field */
+                     }
+                     break;
+               }
+            }
+
+            printf("\"%d\"\n", mcont->cont.showPhone);
+            break;
+
+         case EXPORT_TYPE_VCARD:
+            /* RFC 2426: vCard MIME Directory Profile */
+            printf("BEGIN:VCARD"CRLF);
+            printf("VERSION:3.0"CRLF);
+            printf("PRODID:%s"CRLF, FPI_STRING);
+            if (mcont->attrib & dlpRecAttrSecret) {
+               printf("CLASS:PRIVATE"CRLF);
+            }
+            printf("UID:palm-addressbook-%08x-%08lx-%s@%s"CRLF, mcont->unique_id, userid, username, hostname);
+            utf = charset_p2newj(contact_app_info.category.name[mcont->attrib & 0x0F], 16, char_set);
+            str_to_vcard_str(csv_text, sizeof(csv_text), utf);
+            printf("CATEGORIES:%s"CRLF, csv_text);
+            printf("\"%s\",", utf);
+            g_free(utf);
+            if (mcont->cont.entry[contLastname] || mcont->cont.entry[contFirstname]) {
+               char *last = mcont->cont.entry[contLastname];
+               char *first = mcont->cont.entry[contFirstname];
+               printf("FN:");
+               if (first) {
+                  str_to_vcard_str(csv_text, sizeof(csv_text), first);
+                  printf("%s", csv_text);
+               }
+               if (first && last) {
+                  printf(" ");
+               }
+               if (last) {
+                  str_to_vcard_str(csv_text, sizeof(csv_text), last);
+                  printf("%s", csv_text);
+               }
+               printf(CRLF);
+               printf("N:");
+               if (last) {
+                  str_to_vcard_str(csv_text, sizeof(csv_text), last);
+                  printf("%s", csv_text);
+               }
+               printf(";");
+               /* split up first into first + middle and do first;middle,middle*/
+               if (first) {
+                  str_to_vcard_str(csv_text, sizeof(csv_text), first);
+                  printf("%s", csv_text);
+               }
+               printf(CRLF);
+            } else if (mcont->cont.entry[contCompany]) {
+               str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[contCompany]);
+               printf("FN:%s"CRLF"N:%s"CRLF, csv_text, csv_text);
+            } else {
+               printf("FN:-Unknown-"CRLF"N:known-;-Un"CRLF);
+            }
+            if (mcont->cont.entry[contTitle]) {
+               str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[contTitle]);
+               printf("TITLE:%s"CRLF, csv_text);
+            }
+            if (mcont->cont.entry[contCompany]) {
+               str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[contCompany]);
+               printf("ORG:%s"CRLF, csv_text);
+            }
+            for (n = contPhone1; n < contPhone7 + 1; n++) {
+               if (mcont->cont.entry[n]) {
+                  str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[n]);
+                  if (!strcmp(contact_app_info.phoneLabels[mcont->cont.phoneLabel[n-contPhone1]], _("E-mail"))) {
+                     printf("EMAIL:%s"CRLF, csv_text);
+                  } else {
+                     printf("TEL;TYPE=%s", vCardMapType(mcont->cont.phoneLabel[n - contPhone1]));
+                     if (mcont->cont.showPhone == n - contPhone1) {
+                        printf(",pref");
+                     }
+                     printf(":%s"CRLF, csv_text);
+                  }
+               }
+            }
+            for (i=0; i<NUM_ADDRESSES; i++) {
+               int address_i = 0, city_i = 0, state_i = 0, zip_i = 0, country_i = 0;
+               switch (i) {
+                  case 0:
+                     address_i = contAddress1;
+                     city_i = contCity1;
+                     state_i = contState1;
+                     zip_i = contZip1;
+                     country_i = contCountry1;
+                     break;
+                  case 1:
+                     address_i = contAddress2;
+                     city_i = contCity2;
+                     state_i = contState2;
+                     zip_i = contZip2;
+                     country_i = contCountry2;
+                     break;
+                  case 2:
+                     address_i = contAddress3;
+                     city_i = contCity3;
+                     state_i = contState3;
+                     zip_i = contZip3;
+                     country_i = contCountry3;
+                     break;
+               }
+               if (mcont->cont.entry[address_i] ||
+                     mcont->cont.entry[city_i] ||
+                     mcont->cont.entry[state_i] ||
+                     mcont->cont.entry[zip_i] ||
+                     mcont->cont.entry[country_i]) {
+                  printf("ADR:;;");
+                  for (n = address_i; n < country_i + 1; n++) {
+                     if (mcont->cont.entry[n]) {
+                        str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[n]);
+                        printf("%s", csv_text);
+                     }
+                     if (n < country_i) {
+                        printf(";");
+                     }
+                  }
+               }
+               printf(CRLF);
+            }
+            if (mcont->cont.entry[contCustom1] ||
+                  mcont->cont.entry[contCustom2] ||
+                  mcont->cont.entry[contCustom3] ||
+                  mcont->cont.entry[contCustom4] ||
+                  mcont->cont.entry[contCustom5] ||
+                  mcont->cont.entry[contCustom6] ||
+                  mcont->cont.entry[contCustom7] ||
+                  mcont->cont.entry[contCustom8] ||
+                  mcont->cont.entry[contCustom9] ||
+                  mcont->cont.entry[contNote]) {
+               int firstnote=1;
+               printf("NOTE:");
+               for (n=contCustom1; n<=contNote; n++) {
+                  if (mcont->cont.entry[n]) {
+                     str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[n]);
+                     if (firstnote == 0) {
+                        printf(" ");
+                     }
+                     if (n == contNote && firstnote) {
+                        printf("%s\\n"CRLF, csv_text);
+                     } else {
+                        printf("%s:\\n"CRLF" %s\\n"CRLF, contact_app_info.labels[n], csv_text);
+                     }
+                     firstnote=0;
+                  }
+                  if (n == contCustom9) n = contNote - 1;
+               }
+            }
+            printf("END:VCARD"CRLF);
+            break;
+
+         case EXPORT_TYPE_LDIF:
+            /* RFC 2256 - organizationalPerson */
+            /* RFC 2798 - inetOrgPerson */
+            /* RFC 2849 - LDIF file format */
+            if (record_num == 0) {
+               printf("version: 1\n");
+            }
+            {
+               char *cn;
+               char *email = NULL;
+               char *last = mcont->cont.entry[contLastname];
+               char *first = mcont->cont.entry[contFirstname];
+               for (n = contPhone1; n <= contPhone7; n++) {
+                  if (mcont->cont.entry[n] && mcont->cont.phoneLabel[n - contPhone1] == 4) {
+                     email = mcont->cont.entry[n];
+                     break;
+                  }
+               }
+               if (first || last) {
+                  cn = csv_text;
+                  snprintf(csv_text, sizeof(csv_text), "%s%s%s", first ? first : "",
+                  first && last ? " " : "", last ? last : "");
+                  if (!last) {
+                     last = first;
+                     first = NULL;
+                  }
+               } else if (mcont->cont.entry[contCompany]) {
+                  last = mcont->cont.entry[contCompany];
+                  cn = last;
+               } else {
+                  last = "Unknown";
+                  cn = last;
+               }
+               /* maybe add dc=%s for each part of the email address? */
+               /* Mozilla just does mail=%s */
+               printf("dn", "cn=%s%s%s", cn, email ? ",mail=" : "", email ? email : "");
+               printf("dnQualifier: %s\n", PN);
+               printf("objectClass: top\nobjectClass: person\n");
+               printf("objectClass: organizationalPerson\n");
+               printf("objectClass: inetOrgPerson\n");
+               printf("cn", "%s", cn);
+               printf("sn", "%s", last);
+               if (first)
+                  printf("givenName", "%s", first);
+               if (mcont->cont.entry[contCompany])
+                  printf("o", "%s", mcont->cont.entry[contCompany]);
+               for (n = contPhone1; n <= contPhone7; n++) {
+                  if (mcont->cont.entry[n]) {
+                     printf(ldifMapType(mcont->cont.phoneLabel[n - contPhone1]), "%s", mcont->cont.entry[n]);
+                  }
+               }
+               if (mcont->cont.entry[contAddress1])
+                  printf("postalAddress", "%s", mcont->cont.entry[contAddress1]);
+               if (mcont->cont.entry[contCity1])
+                  printf("l", "%s", mcont->cont.entry[contCity1]);
+               if (mcont->cont.entry[contState1])
+                  printf("st", "%s", mcont->cont.entry[contState1]);
+               if (mcont->cont.entry[contZip1])
+                  printf("postalCode", "%s", mcont->cont.entry[contZip1]);
+               if (mcont->cont.entry[contCountry1])
+                  printf("c", "%s", mcont->cont.entry[contCountry1]);
+
+               if (mcont->cont.entry[contAddress2])
+                  printf("postalAddress", "%s", mcont->cont.entry[contAddress2]);
+               if (mcont->cont.entry[contCity2])
+                  printf("l", "%s", mcont->cont.entry[contCity2]);
+               if (mcont->cont.entry[contState2])
+                  printf("st", "%s", mcont->cont.entry[contState2]);
+               if (mcont->cont.entry[contZip2])
+                  printf("postalCode", "%s", mcont->cont.entry[contZip2]);
+               if (mcont->cont.entry[contCountry2])
+                  printf("c", "%s", mcont->cont.entry[contCountry2]);
+
+               if (mcont->cont.entry[contAddress3])
+                  printf("postalAddress", "%s", mcont->cont.entry[contAddress3]);
+               if (mcont->cont.entry[contCity3])
+                  printf("l", "%s", mcont->cont.entry[contCity3]);
+               if (mcont->cont.entry[contState3])
+                  printf("st", "%s", mcont->cont.entry[contState3]);
+               if (mcont->cont.entry[contZip3])
+                  printf("postalCode", "%s", mcont->cont.entry[contZip3]);
+               if (mcont->cont.entry[contCountry3])
+                  printf("c", "%s", mcont->cont.entry[contCountry3]);
+
+               if (mcont->cont.entry[contIM1]) {
+                  strncpy(text, contact_app_info.IMLabels[mcont->cont.IMLabel[0]], 100);
+                  printf(text, "%s", mcont->cont.entry[contIM1]);
+               }
+               if (mcont->cont.entry[contIM2]) {
+                  strncpy(text, contact_app_info.IMLabels[mcont->cont.IMLabel[1]], 100);
+                  printf(text, "%s", mcont->cont.entry[contIM2]);
+               }
+
+               if (mcont->cont.entry[contWebsite])
+                  printf("website", "%s", mcont->cont.entry[contWebsite]);
+               if (mcont->cont.entry[contTitle])
+                  printf("title", "%s", mcont->cont.entry[contTitle]);
+               if (mcont->cont.entry[contCustom1])
+                  printf("custom1", "%s", mcont->cont.entry[contCustom1]);
+               if (mcont->cont.entry[contCustom2])
+                  printf("custom2", "%s", mcont->cont.entry[contCustom2]);
+               if (mcont->cont.entry[contCustom3])
+                  printf("custom3", "%s", mcont->cont.entry[contCustom3]);
+               if (mcont->cont.entry[contCustom4])
+                  printf("custom4", "%s", mcont->cont.entry[contCustom4]);
+               if (mcont->cont.entry[contCustom5])
+                  printf("custom5", "%s", mcont->cont.entry[contCustom5]);
+               if (mcont->cont.entry[contCustom6])
+                  printf("custom6", "%s", mcont->cont.entry[contCustom6]);
+               if (mcont->cont.entry[contCustom7])
+                  printf("custom7", "%s", mcont->cont.entry[contCustom7]);
+               if (mcont->cont.entry[contCustom8])
+                  printf("custom8", "%s", mcont->cont.entry[contCustom8]);
+               if (mcont->cont.entry[contCustom9])
+                  printf("custom9", "%s", mcont->cont.entry[contCustom9]);
+               if (mcont->cont.entry[contNote])
+                  printf("description", "%s", mcont->cont.entry[contNote]);
+               printf("\n");
+               break;
+            }
+         default:
+            jp_logf(JP_LOG_WARN, _("Unknown export type\n"));
+      }
+   }
+}
 
 static int dumptodo(void)
 {
@@ -1189,6 +1783,26 @@ int main(int argc, char *argv[])
       if (!strncasecmp(argv[i], "-A", 2)) {
          dumpA = TRUE;
       }
+      if (!strncasecmp(argv[i], "-C", 2)) {
+         dumpC = TRUE;
+         dumpC_type = EXPORT_TYPE_TEXT;
+         if ( strlen(argv[i]) == 3 ) {
+            switch (argv[i][2]) {
+               case 't':
+                  dumpC_type = EXPORT_TYPE_TEXT;
+                  break;
+               case 'c':
+                  dumpC_type = EXPORT_TYPE_CSV;
+                  break;
+               case 'v':
+                  dumpC_type = EXPORT_TYPE_VCARD;
+                  break;
+               case 'l':
+                  dumpC_type = EXPORT_TYPE_LDIF;
+                  break;
+            }
+         }
+      }
       if (!strncasecmp(argv[i], "-T", 2)) {
          dumpT = TRUE;
       }
@@ -1281,6 +1895,10 @@ int main(int argc, char *argv[])
 
    if (dumpA) {
       dumpaddress();
+   }
+
+   if (dumpC) {
+      dumpcontact();
    }
 
    if (dumpT) {
