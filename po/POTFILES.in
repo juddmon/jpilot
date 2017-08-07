@@ -9,6 +9,7 @@ datebook.c
 datebook_gui.c
 dialer.c
 export_gui.c
+font.c
 import_gui.c
 install_gui.c
 install_user.c
