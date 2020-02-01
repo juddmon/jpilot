@@ -189,8 +189,8 @@ dnl ############################################################################
 dnl ******************************
 dnl * GTK2 libraries
 dnl ******************************
-AM_PATH_GTK_2_0(2.0.3, ,
-  AC_MSG_ERROR([*** GTK >= 2.0.3 not found ***]))
+AM_PATH_GTK_2_0(2.2.24, ,
+  AC_MSG_ERROR([*** GTK >= 2.2.24 not found ***]))
 
 dnl ******************************
 dnl * pilot-link libs
@@ -354,8 +354,8 @@ AC_MSG_RESULT([pi-version indicates $pl_version.$pl_major.$pl_minor])
 dnl *** check for pilot-link 0.12.5 and up
 
 if test $pl_version -eq 0 ; then
-   if test $pl_major -ge 12 ; then
-      if test $pl_minor -ge 5 ; then
+   if test $pl_major -ge 13 ; then
+      if test $pl_minor -ge 0 ; then
          pl_version_check_done=yes;
          AC_MSG_RESULT([pilot-link has USB])
          AC_MSG_RESULT([pilot-link has card support (>12.0)])
