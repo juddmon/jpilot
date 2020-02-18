@@ -63,6 +63,8 @@ extern GtkWidget *glob_date_label;
 extern int glob_date_timer_tag;
 
 static GtkWidget *clist;
+static GtkWidget *treeView;
+static GtkListStore  *listStore;
 static GtkWidget *todo_desc, *todo_note;
 static GObject   *todo_desc_buffer, *todo_note_buffer;
 static GtkWidget *todo_completed_checkbox;
@@ -104,6 +106,15 @@ static int todo_find(void);
 static void cb_add_new_record(GtkWidget *widget, gpointer data);
 static void connect_changed_signals(int con_or_dis);
 
+enum
+{
+    TODO_CHECK_COLUMN_ENUM = 0,
+    TODO_PRIORITY_COLUMN_ENUM,
+    TODO_NOTE_COLUMN_ENUM,
+    TODO_DATE_COLUMN_ENUM,
+    TODO_TEXT_COLUMN_ENUM,
+    TODO_NUM_COLS
+} ;
 /****************************** Main Code *************************************/
 /* Called once on initialization of GUI */
 static void init(void)
@@ -2182,6 +2193,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    GSList *group;
    long ivalue;
    char *titles[]={"","","","",""};
+
    GtkAccelGroup *accel_group;
    long char_set;
    long show_tooltips;
@@ -2274,9 +2286,72 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 0);
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
                                   GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+   gtk_scrolled_window_set_shadow_type(scrolled_window,GTK_TYPE_SHADOW_TYPE);
    gtk_box_pack_start(GTK_BOX(vbox1), scrolled_window, TRUE, TRUE, 0);
-
+   //
    clist = gtk_clist_new_with_titles(5, titles);
+   treeView = gtk_tree_view_new ();
+    listStore = gtk_list_store_new (TODO_NUM_COLS, GDK_TYPE_PIXMAP, G_TYPE_INT,G_TYPE_ICON,G_TYPE_DATE,G_TYPE_STRING);
+   /**
+    *  TODO_PRIORITY_COLUMN_ENUM,
+    TODO_NOTE_COLUMN_ENUM,
+    TODO_DATE_COLUMN_ENUM,
+    TODO_TEXT_COLUMN_ENUM,
+    */
+    GtkCellRenderer *renderer = gtk_cell_renderer_text_new ();
+
+    GtkTreeViewColumn *taskColumn = gtk_tree_view_column_new_with_attributes ("Task",
+                                                                          renderer,
+                                                                          "text", TODO_TEXT_COLUMN_ENUM,
+                                                                          NULL);
+
+    renderer = gtk_cell_renderer_text_new ();
+
+    GtkTreeViewColumn *dateColumn = gtk_tree_view_column_new_with_attributes ("Due",
+                                                                              renderer,
+                                                                              "text", TODO_DATE_COLUMN_ENUM,
+                                                                              NULL);
+
+    renderer = gtk_cell_renderer_text_new ();
+    GtkTreeViewColumn *priorityColumn = gtk_tree_view_column_new_with_attributes ("",
+                                                                              renderer,
+                                                                              "text", TODO_PRIORITY_COLUMN_ENUM,
+                                                                              NULL);
+
+    renderer = gtk_cell_renderer_text_new ();
+    GtkTreeViewColumn *noteColumn = gtk_tree_view_column_new_with_attributes ("",
+                                                                              renderer,
+                                                                              "pixbuf", TODO_NOTE_COLUMN_ENUM,
+                                                                              NULL);
+
+    renderer = gtk_cell_renderer_pixbuf_new ();
+
+    GtkTreeViewColumn *checkColumn = gtk_tree_view_column_new_with_attributes ("",
+                                                                              renderer,
+                                                                              "pixbuf", TODO_CHECK_COLUMN_ENUM,
+                                                                              NULL);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW (treeView),checkColumn,TODO_CHECK_COLUMN_ENUM);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW (treeView),priorityColumn,TODO_PRIORITY_COLUMN_ENUM);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW (treeView),noteColumn,TODO_NOTE_COLUMN_ENUM);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW (treeView),dateColumn,TODO_DATE_COLUMN_ENUM);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW (treeView),taskColumn,TODO_TEXT_COLUMN_ENUM);
+    gtk_tree_view_column_set_clickable(checkColumn,gtk_true());
+    gtk_tree_view_column_set_clickable(priorityColumn,gtk_true());
+    gtk_tree_view_column_set_clickable(noteColumn,gtk_true());
+    gtk_tree_view_column_set_clickable(dateColumn,gtk_true());
+    gtk_tree_view_column_set_clickable(taskColumn,gtk_true());
+    gtk_tree_view_column_set_sizing(checkColumn,GTK_TREE_VIEW_COLUMN_AUTOSIZE );
+    gtk_tree_view_column_set_sizing(dateColumn,GTK_TREE_VIEW_COLUMN_AUTOSIZE );
+    gtk_tree_view_column_set_sizing(priorityColumn,GTK_TREE_VIEW_COLUMN_AUTOSIZE );
+    gtk_tree_view_column_set_sizing(noteColumn,GTK_TREE_VIEW_COLUMN_AUTOSIZE );
+    gtk_tree_view_column_set_sizing(taskColumn,GTK_TREE_VIEW_COLUMN_FIXED);
+    gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView)),
+                                GTK_SELECTION_BROWSE);
+
+    //gtk_tree_view_column_set_
+    //gtk_clist_set_shadow_type(GTK_CLIST(clist), SHADOW);
+    //   gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
+   // gtk_tree_view_column_set_
    gtk_clist_set_column_title(GTK_CLIST(clist), TODO_TEXT_COLUMN, _("Task"));
    gtk_clist_set_column_title(GTK_CLIST(clist), TODO_DATE_COLUMN, _("Due"));
    /* Put pretty pictures in the clist column headings */
@@ -2285,6 +2360,9 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    mask = NULL;
 #endif
    pixmapwid = gtk_pixmap_new(pixmap, mask);
+   gtk_tree_view_column_set_widget(noteColumn,pixmapwid);
+   gtk_tree_view_column_set_alignment(noteColumn,GTK_JUSTIFY_CENTER);
+
    gtk_clist_set_column_widget(GTK_CLIST(clist), TODO_NOTE_COLUMN, pixmapwid);
    gtk_clist_set_column_justification(GTK_CLIST(clist), TODO_NOTE_COLUMN, GTK_JUSTIFY_CENTER);
 
@@ -2293,18 +2371,23 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    mask = NULL;
 #endif
    pixmapwid = gtk_pixmap_new(pixmap, mask);
+    gtk_tree_view_column_set_widget(checkColumn,pixmapwid);
+    gtk_tree_view_column_set_alignment(checkColumn,GTK_JUSTIFY_CENTER);
    gtk_clist_set_column_widget(GTK_CLIST(clist), TODO_CHECK_COLUMN, pixmapwid);
    gtk_clist_set_column_justification(GTK_CLIST(clist), TODO_CHECK_COLUMN, GTK_JUSTIFY_CENTER);
 
+   //todo:  Find the gtk_tree_view equivalant.
    gtk_clist_column_titles_active(GTK_CLIST(clist));
+   // register function to handle clicks..
    gtk_signal_connect(GTK_OBJECT(clist), "click_column",
                       GTK_SIGNAL_FUNC (cb_clist_click_column), NULL);
-
+    // register function to handle row selection.
    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
                       GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
    gtk_clist_set_shadow_type(GTK_CLIST(clist), SHADOW);
    gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
 
+   //todo: figure gtk_tree_view equivalant..
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), TODO_CHECK_COLUMN, TRUE);
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), TODO_PRIORITY_COLUMN, TRUE);
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), TODO_NOTE_COLUMN, TRUE);
@@ -2315,22 +2398,39 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    get_pref(PREF_TODO_SORT_COLUMN, &ivalue, NULL);
    clist_col_selected = ivalue;
    gtk_clist_set_sort_column(GTK_CLIST(clist), clist_col_selected);
+   for(int x = 0; x < TODO_NUM_COLS; x++){
+       gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(treeView,x),gtk_false());
+   }
+   gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(treeView,clist_col_selected),gtk_true());
+   gtk_tree_view_columns_autosize(treeView);
    switch (clist_col_selected) {
     case TODO_CHECK_COLUMN: /* Checkbox column */
+    //todo: implement sort..
+      //gtk_tree_sortable_set_sort_func()
       gtk_clist_set_compare_func(GTK_CLIST(clist),GtkClistCompareCheckbox);
       break;
     case TODO_DATE_COLUMN:  /* Due Date column */
+        //todo: implement sort..
       gtk_clist_set_compare_func(GTK_CLIST(clist),GtkClistCompareDates);
       break;
     default: /* All other columns can use GTK default sort function */
+        //todo: implement sort..
       gtk_clist_set_compare_func(GTK_CLIST(clist),NULL);
       break;
    }
    get_pref(PREF_TODO_SORT_ORDER, &ivalue, NULL);
    gtk_clist_set_sort_type(GTK_CLIST (clist), ivalue);
 
-   gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
+  // gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
+   //todo: make this display
+   ////GTK_TREE_MODEL (store);
+    //    gtk_tree_view_set_model (GTK_TREE_VIEW (view), model);
+    GtkTreeModel        *model = GTK_TREE_MODEL(listStore);
 
+
+    gtk_tree_view_set_model(GTK_TREE_VIEW(treeView),model);
+    g_object_unref (model);
+    gtk_container_add(GTK_CONTAINER(scrolled_window),GTK_WIDGET(treeView));
    /* Right side of GUI */
 
    hbox_temp = gtk_hbox_new(FALSE, 3);
