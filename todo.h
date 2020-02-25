@@ -50,4 +50,6 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
                        ToDoList **todo_list, int category, int main);
 void todo_clist_clear(GtkCList *clist);
 
+void todo_liststore_clear(GtkListStore *pListStore);
+
 #endif

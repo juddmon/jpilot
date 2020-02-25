@@ -30,6 +30,7 @@
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 #include <pi-dlp.h>
+#include <slcurses.h>
 
 #include "todo.h"
 #include "i18n.h"
@@ -105,6 +106,9 @@ static int todo_clist_redraw(void);
 static int todo_find(void);
 static void cb_add_new_record(GtkWidget *widget, gpointer data);
 static void connect_changed_signals(int con_or_dis);
+
+void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
+                           ToDoList **todo_list, int category, int main);
 
 enum
 {
@@ -1774,7 +1778,11 @@ static gboolean cb_key_pressed_right_side(GtkWidget   *widget,
 
    return FALSE;
 }
+void todo_liststore_clear(GtkListStore *pListStore)
+{
+   gtk_list_store_clear(pListStore);
 
+}
 void todo_clist_clear(GtkCList *clist)
 {
    GtkStyle *base_style, *row_style, *cell_style; 
@@ -1985,7 +1993,7 @@ void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
       entries_shown++;
    }
-
+ //todo resume logic copy from here..
    jp_logf(JP_LOG_DEBUG, "entries_shown=%d\n",entries_shown);
 
    /* Sort the clist */
@@ -2145,6 +2153,7 @@ int todo_refresh(void)
       index += 1;
    }
    todo_update_clist(clist, category_menu1, &glob_todo_list, todo_category, TRUE);
+   todo_update_liststore(listStore, category_menu1, &glob_todo_list, todo_category, TRUE);
    if (index<0) {
       jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
    } else {
@@ -2154,6 +2163,210 @@ int todo_refresh(void)
    }
 
    return EXIT_SUCCESS;
+}
+
+void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
+                           ToDoList **todo_list, int category, int main) {
+    GtkTreeIter    iter;
+    int num_entries, entries_shown;
+    gchar *empty_line[] = { "","","","","" };
+    GdkPixbuf *pixbuf_note;
+    GdkPixbuf *pixbuf_check;
+    GdkPixbuf *pixbuf_checked;
+    GdkPixbuf *checkColumnDisplay;
+    GdkPixbuf *noteColumnDisplay;
+    ToDoList *temp_todo;
+    char dateDisplay[50];
+    char priorityDisplay[50];
+    char textDisplay[50];
+    char descriptionDisplay[TODO_MAX_COLUMN_LEN + 2];
+    const char *svalue;
+    long hide_completed, hide_not_due;
+    long show_tooltips;
+    int show_priv;
+    time_t ltime;
+    struct tm *now, *due;
+    int comp_now, comp_due;
+
+    free_ToDoList(todo_list);
+
+    /* Need to get all records including private ones for the tooltips calculation */
+    num_entries = get_todos2(todo_list, SORT_ASCENDING, 2, 2, 1, 1, CATEGORY_ALL);
+
+    /* Start by clearing existing entry if in main window */
+    if (main) {
+        todo_clear_details();
+    }
+
+    /* Freeze clist to prevent flicker during updating */
+    if (main) {
+        /** todo  hook this signal up
+        gtk_signal_disconnect_by_func(GTK_OBJECT(clist),
+                                      GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
+       */
+    }
+    todo_liststore_clear(pListStore);
+/*#ifdef __APPLE__
+    gtk_clist_thaw(GTK_CLIST(clist));
+   gtk_widget_hide(clist);
+   gtk_widget_show_all(clist);
+   gtk_clist_freeze(GTK_CLIST(clist));
+#endif
+ */
+
+    /* Collect preferences and constant pixmaps for loop */
+    get_pref(PREF_TODO_HIDE_COMPLETED, &hide_completed, NULL);
+    get_pref(PREF_TODO_HIDE_NOT_DUE, &hide_not_due, NULL);
+    show_priv = show_privates(GET_PRIVATES);
+    get_pixbufs(PIXMAP_NOTE, &pixbuf_note);
+    get_pixbufs(PIXMAP_BOX_CHECK, &pixbuf_check);
+    get_pixbufs(PIXMAP_BOX_CHECKED, &pixbuf_checked);
+/*#ifdef __APPLE__
+    mask_note = NULL;
+   mask_check = NULL;
+   mask_checked = NULL;
+#endif
+ */
+    /* Current time used for calculating overdue items */
+    time(&ltime);
+    now = localtime(&ltime);
+    comp_now=now->tm_year*380+now->tm_mon*31+now->tm_mday-1;
+
+    entries_shown=0;
+    for (temp_todo = *todo_list; temp_todo; temp_todo=temp_todo->next) {
+
+        if ( ((temp_todo->mtodo.attrib & 0x0F) != category) &&
+             category != CATEGORY_ALL) {
+            continue;
+        }
+
+        /* Do masking like Palm OS 3.5 */
+        if ((show_priv == MASK_PRIVATES) &&
+            (temp_todo->mtodo.attrib & dlpRecAttrSecret)) {
+            gtk_list_store_append (pListStore, &iter);
+            gtk_list_store_set(pListStore,&iter,
+                               TODO_CHECK_COLUMN_ENUM,"---",
+                               TODO_PRIORITY_COLUMN_ENUM,"---",
+                               TODO_TEXT_COLUMN_ENUM,"--------------------",
+                               TODO_DATE_COLUMN_ENUM,"----------",
+                               -1);
+            clear_mytodos(&temp_todo->mtodo);
+           // gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_todo->mtodo));
+          //  gtk_clist_set_row_style(GTK_CLIST(clist), entries_shown, NULL);
+            entries_shown++;
+            continue;
+        }
+        /* End Masking */
+
+        /* Allow a record found through search window to temporarily be
+           displayed even if it would normally be hidden by option settings */
+        if (!glob_find_id || (glob_find_id != temp_todo->mtodo.unique_id))
+        {
+            /* Hide the completed records if need be */
+            if (hide_completed && temp_todo->mtodo.todo.complete) {
+                continue;
+            }
+
+            /* Hide the not due yet records if need be */
+            if ((hide_not_due) && (!(temp_todo->mtodo.todo.indefinite))) {
+                due = &(temp_todo->mtodo.todo.due);
+                comp_due=due->tm_year*380+due->tm_mon*31+due->tm_mday-1;
+                if (comp_due > comp_now) {
+                    continue;
+                }
+            }
+        }
+
+        /* Hide the private records if need be */
+        if ((show_priv != SHOW_PRIVATES) &&
+            (temp_todo->mtodo.attrib & dlpRecAttrSecret)) {
+            continue;
+        }
+
+
+
+        /* Put a checkbox or checked checkbox pixmap up */
+        if (temp_todo->mtodo.todo.complete) {
+            checkColumnDisplay = pixbuf_checked;
+             } else {
+            checkColumnDisplay = pixbuf_check;
+        }
+
+        /* Print the priority number */
+        sprintf(priorityDisplay, "%d", temp_todo->mtodo.todo.priority);
+
+        /* Put a note pixmap up */
+        if (temp_todo->mtodo.todo.note[0]) {
+            noteColumnDisplay = pixbuf_note;
+        } else {
+            noteColumnDisplay = NULL;
+        }
+
+        /* Print the due date */
+        if (!temp_todo->mtodo.todo.indefinite) {
+            get_pref(PREF_SHORTDATE, NULL, &svalue);
+            strftime(dateDisplay, sizeof(dateDisplay), svalue, &(temp_todo->mtodo.todo.due));
+        }
+        else {
+            sprintf(dateDisplay, _("No date"));
+        }
+
+        /* Print the todo text */
+        lstrncpy_remove_cr_lfs(descriptionDisplay, temp_todo->mtodo.todo.description, TODO_MAX_COLUMN_LEN);
+           gtk_list_store_append (pListStore, &iter);
+        gtk_list_store_set(pListStore,&iter,
+                           TODO_CHECK_COLUMN_ENUM,checkColumnDisplay,
+                           TODO_PRIORITY_COLUMN_ENUM,priorityDisplay,
+                           TODO_NOTE_COLUMN_ENUM,noteColumnDisplay,
+                           TODO_TEXT_COLUMN_ENUM,descriptionDisplay,
+                           TODO_DATE_COLUMN_ENUM,dateDisplay,
+
+                           -1);
+        /* Highlight row background depending on status */
+      /*  switch (temp_todo->mtodo.rt) {
+            case NEW_PC_REC:
+            case REPLACEMENT_PALM_REC:
+                set_bg_rgb_clist_row(clist, entries_shown,
+                                     CLIST_NEW_RED, CLIST_NEW_GREEN, CLIST_NEW_BLUE);
+                break;
+            case DELETED_PALM_REC:
+            case DELETED_PC_REC:
+                set_bg_rgb_clist_row(clist, entries_shown,
+                                     CLIST_DEL_RED, CLIST_DEL_GREEN, CLIST_DEL_BLUE);
+                break;
+            case MODIFIED_PALM_REC:
+                set_bg_rgb_clist_row(clist, entries_shown,
+                                     CLIST_MOD_RED, CLIST_MOD_GREEN, CLIST_MOD_BLUE);
+                break;
+            default:
+                if (temp_todo->mtodo.attrib & dlpRecAttrSecret) {
+                    set_bg_rgb_clist_row(clist, entries_shown,
+                                         CLIST_PRIVATE_RED, CLIST_PRIVATE_GREEN, CLIST_PRIVATE_BLUE);
+                } else {
+                    gtk_clist_set_row_style(GTK_CLIST(clist), entries_shown, NULL);
+                }
+        } */
+
+        /* Highlight dates of items overdue or due today */
+      /*  if (!(temp_todo->mtodo.todo.indefinite)) {
+            due = &(temp_todo->mtodo.todo.due);
+            comp_due=due->tm_year*380+due->tm_mon*31+due->tm_mday-1;
+
+            if (comp_due < comp_now) {
+                set_fg_rgb_clist_cell(clist, entries_shown, TODO_DATE_COLUMN, CLIST_OVERDUE_RED, CLIST_OVERDUE_GREEN, CLIST_OVERDUE_BLUE);
+            } else if (comp_due == comp_now) {
+                set_fg_rgb_clist_cell(clist, entries_shown, TODO_DATE_COLUMN, CLIST_DUENOW_RED, CLIST_DUENOW_GREEN, CLIST_DUENOW_BLUE);
+            }
+        } */
+
+        entries_shown++;
+    }
+   /* gtk_list_store_append (pListStore, &iter);
+
+    gtk_list_store_set(pListStore,&iter,
+                       TODO_CHECK_COLUMN_ENUM,pixbuf_checked,
+                       TODO_PRIORITY_COLUMN_ENUM,num_entries,
+                       TODO_TEXT_COLUMN_ENUM,"text3",-1);*/
 }
 
 int todo_gui_cleanup(void)
@@ -2291,7 +2504,20 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    //
    clist = gtk_clist_new_with_titles(5, titles);
    treeView = gtk_tree_view_new ();
-    listStore = gtk_list_store_new (TODO_NUM_COLS, GDK_TYPE_PIXMAP, G_TYPE_INT,G_TYPE_ICON,G_TYPE_DATE,G_TYPE_STRING);
+    listStore = gtk_list_store_new (TODO_NUM_COLS, GDK_TYPE_PIXBUF, G_TYPE_STRING,GDK_TYPE_PIXBUF,G_TYPE_STRING,G_TYPE_STRING);
+    //GtkTreeIter    iter;
+    //
+    //    store = gtk_list_store_new (NUM_COLS, G_TYPE_STRING, G_TYPE_UINT,G_TYPE_STRING);
+    //
+    //    /* Append a row and fill in some data */
+    //    gtk_list_store_append (store, &iter);
+    //    gtk_list_store_set (store, &iter,
+    //                        COL_NAME, "Heinz El-Mann",
+    //                        COL_AGE, 51,
+    //                        DUMMMY,"",
+    //                        -1);
+
+
    /**
     *  TODO_PRIORITY_COLUMN_ENUM,
     TODO_NOTE_COLUMN_ENUM,
@@ -2318,18 +2544,18 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
                                                                               "text", TODO_PRIORITY_COLUMN_ENUM,
                                                                               NULL);
 
-    renderer = gtk_cell_renderer_text_new ();
+    renderer = gtk_cell_renderer_pixbuf_new ();
     GtkTreeViewColumn *noteColumn = gtk_tree_view_column_new_with_attributes ("",
                                                                               renderer,
                                                                               "pixbuf", TODO_NOTE_COLUMN_ENUM,
                                                                               NULL);
 
     renderer = gtk_cell_renderer_pixbuf_new ();
+    GtkTreeViewColumn *checkColumn = gtk_tree_view_column_new();
+    gtk_tree_view_column_set_title(checkColumn,"");
+    gtk_tree_view_column_pack_start(checkColumn,renderer,gtk_true());
+    gtk_tree_view_column_set_attributes(checkColumn,renderer,"pixbuf",TODO_CHECK_COLUMN_ENUM,NULL);
 
-    GtkTreeViewColumn *checkColumn = gtk_tree_view_column_new_with_attributes ("",
-                                                                              renderer,
-                                                                              "pixbuf", TODO_CHECK_COLUMN_ENUM,
-                                                                              NULL);
     gtk_tree_view_insert_column(GTK_TREE_VIEW (treeView),checkColumn,TODO_CHECK_COLUMN_ENUM);
     gtk_tree_view_insert_column(GTK_TREE_VIEW (treeView),priorityColumn,TODO_PRIORITY_COLUMN_ENUM);
     gtk_tree_view_insert_column(GTK_TREE_VIEW (treeView),noteColumn,TODO_NOTE_COLUMN_ENUM);

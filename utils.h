@@ -282,6 +282,9 @@ int get_pixmaps(GtkWidget *widget,
                 GdkPixmap **out_pixmap,
                 GdkBitmap **out_mask);
 
+int get_pixbufs(int which_one,
+                GdkPixbuf **out_pixbuf);
+
 int check_hidden_dir(void);
 
 int read_gtkrc_file(void);
