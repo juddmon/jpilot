@@ -1425,6 +1425,44 @@ static gint GtkClistCompareCheckbox(GtkCList *clist,
 
 }
 
+
+static gint GtkTreeColumnCompare(GtkTreeModel *model,
+                                   GtkTreeIter  *left,
+                                   GtkTreeIter  *right,
+                                   gpointer      columnId)
+{
+    gint sortcol = GPOINTER_TO_INT(columnId);
+    gint ret = 0;
+    switch (sortcol) {
+        case TODO_NOTE_COLUMN_ENUM:  {
+            GtkPixmap *name1, *name2;
+
+            gtk_tree_model_get(model, left, TODO_NOTE_COLUMN_ENUM, &name1, -1);
+            gtk_tree_model_get(model, right, TODO_NOTE_COLUMN_ENUM, &name2, -1);
+
+            if(name1 == NULL && name2 == NULL){
+                ret=0;
+            }else if (name1 == NULL && name2 != NULL){
+                ret = -1;
+            } else if(name1 != NULL && name2 == NULL){
+                ret = 1;
+            }else {
+                ret= 0;
+            }
+
+            g_free(name1);
+            g_free(name2);
+        }
+        break;
+        case TODO_CHECK_COLUMN_ENUM: {
+           ret = 0;
+        }
+        break;
+    }
+    return ret;
+
+}
+
 /* Function is used to sort clist based on the Due Date field */
 static gint GtkClistCompareDates(GtkCList *clist,
                                  gconstpointer ptr1,
@@ -2503,8 +2541,18 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_box_pack_start(GTK_BOX(vbox1), scrolled_window, TRUE, TRUE, 0);
    //
    clist = gtk_clist_new_with_titles(5, titles);
-   treeView = gtk_tree_view_new ();
+
     listStore = gtk_list_store_new (TODO_NUM_COLS, GDK_TYPE_PIXBUF, G_TYPE_STRING,GDK_TYPE_PIXBUF,G_TYPE_STRING,G_TYPE_STRING);
+    GtkTreeSortable *sortable;
+    sortable = GTK_TREE_SORTABLE(listStore);
+    gtk_tree_sortable_set_sort_column_id(sortable, TODO_NOTE_COLUMN_ENUM, GTK_SORT_ASCENDING);
+    gtk_tree_sortable_set_sort_func(sortable, TODO_NOTE_COLUMN_ENUM, GtkTreeColumnCompare,
+                                    GINT_TO_POINTER(TODO_NOTE_COLUMN_ENUM), NULL);
+    gtk_tree_sortable_set_sort_column_id(sortable, TODO_CHECK_COLUMN_ENUM, GTK_SORT_ASCENDING);
+    gtk_tree_sortable_set_sort_func(sortable, TODO_CHECK_COLUMN_ENUM, GtkTreeColumnCompare,
+                                    GINT_TO_POINTER(TODO_CHECK_COLUMN_ENUM), NULL);
+    GtkTreeModel        *model = GTK_TREE_MODEL(listStore);
+    treeView = gtk_tree_view_new_with_model(model);
     //GtkTreeIter    iter;
     //
     //    store = gtk_list_store_new (NUM_COLS, G_TYPE_STRING, G_TYPE_UINT,G_TYPE_STRING);
@@ -2530,6 +2578,8 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
                                                                           renderer,
                                                                           "text", TODO_TEXT_COLUMN_ENUM,
                                                                           NULL);
+    gtk_tree_view_column_set_sort_column_id(taskColumn,TODO_TEXT_COLUMN_ENUM);
+
 
     renderer = gtk_cell_renderer_text_new ();
 
@@ -2537,25 +2587,30 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
                                                                               renderer,
                                                                               "text", TODO_DATE_COLUMN_ENUM,
                                                                               NULL);
+    gtk_tree_view_column_set_sort_column_id(dateColumn,TODO_DATE_COLUMN_ENUM);
 
     renderer = gtk_cell_renderer_text_new ();
     GtkTreeViewColumn *priorityColumn = gtk_tree_view_column_new_with_attributes ("",
                                                                               renderer,
                                                                               "text", TODO_PRIORITY_COLUMN_ENUM,
                                                                               NULL);
+    gtk_tree_view_column_set_sort_column_id(priorityColumn,TODO_PRIORITY_COLUMN_ENUM);
 
     renderer = gtk_cell_renderer_pixbuf_new ();
     GtkTreeViewColumn *noteColumn = gtk_tree_view_column_new_with_attributes ("",
                                                                               renderer,
                                                                               "pixbuf", TODO_NOTE_COLUMN_ENUM,
                                                                               NULL);
+    gtk_tree_view_column_set_sort_column_id(noteColumn,TODO_NOTE_COLUMN_ENUM);
+
+
 
     renderer = gtk_cell_renderer_pixbuf_new ();
     GtkTreeViewColumn *checkColumn = gtk_tree_view_column_new();
     gtk_tree_view_column_set_title(checkColumn,"");
     gtk_tree_view_column_pack_start(checkColumn,renderer,gtk_true());
     gtk_tree_view_column_set_attributes(checkColumn,renderer,"pixbuf",TODO_CHECK_COLUMN_ENUM,NULL);
-
+    gtk_tree_view_column_set_sort_column_id(checkColumn,TODO_CHECK_COLUMN_ENUM);
     gtk_tree_view_insert_column(GTK_TREE_VIEW (treeView),checkColumn,TODO_CHECK_COLUMN_ENUM);
     gtk_tree_view_insert_column(GTK_TREE_VIEW (treeView),priorityColumn,TODO_PRIORITY_COLUMN_ENUM);
     gtk_tree_view_insert_column(GTK_TREE_VIEW (treeView),noteColumn,TODO_NOTE_COLUMN_ENUM);
@@ -2629,6 +2684,10 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    }
    gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(treeView,clist_col_selected),gtk_true());
    gtk_tree_view_columns_autosize(treeView);
+
+
+
+
    switch (clist_col_selected) {
     case TODO_CHECK_COLUMN: /* Checkbox column */
     //todo: implement sort..
@@ -2651,10 +2710,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    //todo: make this display
    ////GTK_TREE_MODEL (store);
     //    gtk_tree_view_set_model (GTK_TREE_VIEW (view), model);
-    GtkTreeModel        *model = GTK_TREE_MODEL(listStore);
 
-
-    gtk_tree_view_set_model(GTK_TREE_VIEW(treeView),model);
     g_object_unref (model);
     gtk_container_add(GTK_CONTAINER(scrolled_window),GTK_WIDGET(treeView));
    /* Right side of GUI */
