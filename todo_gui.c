@@ -2714,6 +2714,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
       break;
    }
    get_pref(PREF_TODO_SORT_ORDER, &ivalue, NULL);
+   gtk_tree_sortable_set_sort_column_id(sortable,clist_col_selected,ivalue);
    gtk_clist_set_sort_type(GTK_CLIST (clist), ivalue);
 
   // gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
