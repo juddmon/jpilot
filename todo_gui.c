@@ -1435,7 +1435,7 @@ static gint GtkTreeColumnCompare(GtkTreeModel *model,
     gint ret = 0;
     switch (sortcol) {
         case TODO_NOTE_COLUMN_ENUM:  {
-            GtkPixmap *name1, *name2;
+            GdkPixbuf *name1, *name2;
 
             gtk_tree_model_get(model, left, TODO_NOTE_COLUMN_ENUM, &name1, -1);
             gtk_tree_model_get(model, right, TODO_NOTE_COLUMN_ENUM, &name2, -1);
@@ -1449,13 +1449,25 @@ static gint GtkTreeColumnCompare(GtkTreeModel *model,
             }else {
                 ret= 0;
             }
-
-            g_free(name1);
-            g_free(name2);
         }
         break;
         case TODO_CHECK_COLUMN_ENUM: {
-           ret = 0;
+            GdkPixbuf *name1, *name2;
+            GdkPixbuf *pixbuf_checked;
+            get_pixbufs(PIXMAP_BOX_CHECKED, &pixbuf_checked);
+            gtk_tree_model_get(model, left, TODO_CHECK_COLUMN_ENUM, &name1, -1);
+            gtk_tree_model_get(model, right, TODO_CHECK_COLUMN_ENUM, &name2, -1);
+
+            if(name1 == NULL && name2 == NULL){
+                ret=0;
+            }else if (name1 == pixbuf_checked && name2 != pixbuf_checked){
+                ret = -1;
+            } else if(name1 != pixbuf_checked && name2 == pixbuf_checked){
+                ret = 1;
+            }else {
+                ret= 0;
+            }
+
         }
         break;
     }
@@ -2545,10 +2557,8 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
     listStore = gtk_list_store_new (TODO_NUM_COLS, GDK_TYPE_PIXBUF, G_TYPE_STRING,GDK_TYPE_PIXBUF,G_TYPE_STRING,G_TYPE_STRING);
     GtkTreeSortable *sortable;
     sortable = GTK_TREE_SORTABLE(listStore);
-    gtk_tree_sortable_set_sort_column_id(sortable, TODO_NOTE_COLUMN_ENUM, GTK_SORT_ASCENDING);
     gtk_tree_sortable_set_sort_func(sortable, TODO_NOTE_COLUMN_ENUM, GtkTreeColumnCompare,
                                     GINT_TO_POINTER(TODO_NOTE_COLUMN_ENUM), NULL);
-    gtk_tree_sortable_set_sort_column_id(sortable, TODO_CHECK_COLUMN_ENUM, GTK_SORT_ASCENDING);
     gtk_tree_sortable_set_sort_func(sortable, TODO_CHECK_COLUMN_ENUM, GtkTreeColumnCompare,
                                     GINT_TO_POINTER(TODO_CHECK_COLUMN_ENUM), NULL);
     GtkTreeModel        *model = GTK_TREE_MODEL(listStore);
