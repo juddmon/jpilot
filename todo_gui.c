@@ -65,6 +65,7 @@ extern int glob_date_timer_tag;
 
 static GtkWidget *clist;
 static GtkWidget *treeView;
+static GtkTreeSelection  *selection;
 static GtkListStore  *listStore;
 static GtkWidget *todo_desc, *todo_note;
 static GObject   *todo_desc_buffer, *todo_note_buffer;
@@ -117,6 +118,7 @@ enum
     TODO_NOTE_COLUMN_ENUM,
     TODO_DATE_COLUMN_ENUM,
     TODO_TEXT_COLUMN_ENUM,
+    TODO_DATA_COLUMN_ENUM,
     TODO_NUM_COLS
 } ;
 /****************************** Main Code *************************************/
@@ -1433,18 +1435,20 @@ static gint GtkTreeColumnCompare(GtkTreeModel *model,
 {
     gint sortcol = GPOINTER_TO_INT(columnId);
     gint ret = 0;
+    clist_col_selected = sortcol;
     switch (sortcol) {
+
         case TODO_NOTE_COLUMN_ENUM:  {
-            GdkPixbuf *name1, *name2;
+            GdkPixbuf *note1, *note2;
 
-            gtk_tree_model_get(model, left, TODO_NOTE_COLUMN_ENUM, &name1, -1);
-            gtk_tree_model_get(model, right, TODO_NOTE_COLUMN_ENUM, &name2, -1);
+            gtk_tree_model_get(model, left, TODO_NOTE_COLUMN_ENUM, &note1, -1);
+            gtk_tree_model_get(model, right, TODO_NOTE_COLUMN_ENUM, &note2, -1);
 
-            if(name1 == NULL && name2 == NULL){
+            if(note1 == NULL && note2 == NULL){
                 ret=0;
-            }else if (name1 == NULL && name2 != NULL){
+            }else if (note1 == NULL && note2 != NULL){
                 ret = -1;
-            } else if(name1 != NULL && name2 == NULL){
+            } else if(note1 != NULL && note2 == NULL){
                 ret = 1;
             }else {
                 ret= 0;
@@ -1508,6 +1512,11 @@ static gint GtkClistCompareDates(GtkCList *clist,
    return(time1 - time2);
 }
 
+static void column_clicked_cb(GtkTreeViewColumn * column) {
+   clist_col_selected =  column->sort_column_id;
+
+}
+
 static void cb_clist_click_column(GtkWidget *clist, int column)
 {
    MyToDo *mtodo;
@@ -1556,7 +1565,33 @@ static void cb_clist_click_column(GtkWidget *clist, int column)
    /* Return to previously selected item */
    todo_find();
 }
+static gboolean handleRowSelection(GtkTreeSelection *selection,
+                                   GtkTreeModel     *model,
+                                   GtkTreePath      *path,
+                                   gboolean          path_currently_selected,
+                                   gpointer          userdata){
+    GtkTreeIter iter;
 
+    struct ToDo *todo;
+    MyToDo *mtodo;
+    int b;
+    int index, sorted_position;
+    unsigned int unique_id = 0;
+    int * i ;
+    if ( (gtk_tree_model_get_iter(model, &iter, path)) &&  (!path_currently_selected)) {
+
+        i = gtk_tree_path_get_indices ( path ) ;
+        int index = i [ 0 ] ;
+        g_print ("%d is going to be selected.\n", index);
+        gtk_tree_model_get(model,&iter,TODO_DATA_COLUMN_ENUM,&mtodo,-1);
+        g_print ("%s is going to be selected.\n", mtodo ->todo.description);
+
+    }
+       // gtk_tree_model_get(model, &iter, TODO_TEXT_COLUMN_ENUM, &name, -1);
+
+
+    return TRUE; /* allow selection state to change */
+}
 static void cb_clist_selection(GtkWidget      *clist,
                                gint           row,
                                gint           column,
@@ -2299,6 +2334,7 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
                                TODO_PRIORITY_COLUMN_ENUM,"---",
                                TODO_TEXT_COLUMN_ENUM,"--------------------",
                                TODO_DATE_COLUMN_ENUM,"----------",
+                               TODO_DATA_COLUMN_ENUM,&(temp_todo->mtodo),
                                -1);
             clear_mytodos(&temp_todo->mtodo);
            // gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_todo->mtodo));
@@ -2370,6 +2406,7 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
                            TODO_NOTE_COLUMN_ENUM,noteColumnDisplay,
                            TODO_TEXT_COLUMN_ENUM,descriptionDisplay,
                            TODO_DATE_COLUMN_ENUM,dateDisplay,
+                           TODO_DATA_COLUMN_ENUM,&(temp_todo->mtodo),
 
                            -1);
         /* Highlight row background depending on status */
@@ -2554,7 +2591,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
    //
    clist = gtk_clist_new_with_titles(5, titles);
 
-    listStore = gtk_list_store_new (TODO_NUM_COLS, GDK_TYPE_PIXBUF, G_TYPE_STRING,GDK_TYPE_PIXBUF,G_TYPE_STRING,G_TYPE_STRING);
+    listStore = gtk_list_store_new (TODO_NUM_COLS, GDK_TYPE_PIXBUF, G_TYPE_STRING,GDK_TYPE_PIXBUF,G_TYPE_STRING,G_TYPE_STRING,G_TYPE_POINTER);
     GtkTreeSortable *sortable;
     sortable = GTK_TREE_SORTABLE(listStore);
     gtk_tree_sortable_set_sort_func(sortable, TODO_NOTE_COLUMN_ENUM, GtkTreeColumnCompare,
@@ -2669,8 +2706,16 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    //todo:  Find the gtk_tree_view equivalant.
    gtk_clist_column_titles_active(GTK_CLIST(clist));
-   // register function to handle clicks..
-   gtk_signal_connect(GTK_OBJECT(clist), "click_column",
+   // register function to handle column header clicks..
+    g_signal_connect (taskColumn, "clicked", G_CALLBACK (column_clicked_cb), NULL);
+    g_signal_connect (noteColumn, "clicked", G_CALLBACK (column_clicked_cb), NULL);
+    g_signal_connect (checkColumn, "clicked", G_CALLBACK (column_clicked_cb), NULL);
+    g_signal_connect (priorityColumn, "clicked", G_CALLBACK (column_clicked_cb), NULL);
+    g_signal_connect (dateColumn, "clicked", G_CALLBACK (column_clicked_cb), NULL);
+    selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
+    gtk_tree_selection_set_select_function(selection, handleRowSelection, NULL, NULL);
+
+    gtk_signal_connect(GTK_OBJECT(clist), "click_column",
                       GTK_SIGNAL_FUNC (cb_clist_click_column), NULL);
     // register function to handle row selection.
    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
