@@ -1429,21 +1429,18 @@ static gint GtkTreeColumnCompare(GtkTreeModel *model,
         }
             break;
         case TODO_CHECK_COLUMN_ENUM: {
-            GdkPixbuf *name1, *name2;
-            GdkPixbuf *pixbuf_checked;
-            get_pixbufs(PIXMAP_BOX_CHECKED, &pixbuf_checked);
+            gboolean *name1, *name2;
+
             gtk_tree_model_get(model, left, TODO_CHECK_COLUMN_ENUM, &name1, -1);
             gtk_tree_model_get(model, right, TODO_CHECK_COLUMN_ENUM, &name2, -1);
-
-            if (name1 == NULL && name2 == NULL) {
-                ret = 0;
-            } else if (name1 == pixbuf_checked && name2 != pixbuf_checked) {
-                ret = -1;
-            } else if (name1 != pixbuf_checked && name2 == pixbuf_checked) {
+            if(!name1 && name2){
                 ret = 1;
-            } else {
+            }else if(name1 && !name2){
+                ret = -1;
+            }else {
                 ret = 0;
             }
+
 
         }
             break;
@@ -1591,50 +1588,33 @@ tree_view_get_cell_from_pos(GtkTreeView *view, guint x, guint y, GtkCellRenderer
     return FALSE; /* not found */
 }
 
-static gboolean
-onButtonPress (GtkWidget *view, GdkEventButton *bevent, gpointer data)
-{
-    GtkCellRenderer *renderer = NULL;
 
-    if (tree_view_get_cell_from_pos(GTK_TREE_VIEW(view), bevent->x, bevent->y, &renderer))
-        g_print ("Renderer found\n");
-    else
-        g_print ("Renderer not found!\n");
+static void populateChecks(GtkTreeViewColumn *col,
+                           GtkCellRendererToggle   *renderer,
+                           GtkTreeModel      *model,
+                           GtkTreeIter       *iter,
+                           gpointer           user_data) {
+    gboolean isChecked;
+   // GtkCellRendererToggle *toggle = (GtkCellRendererToggle)renderer;
+
+    gtk_tree_model_get(model, iter, TODO_CHECK_COLUMN_ENUM, &isChecked, -1);
+    renderer ->active = isChecked;
+
 }
-static void checkedCallBack(GtkCellRendererToggle *toggle,
-                            char *path_string,
-                            GtkTreeView *           view)
+
+
+
+static void checkedCallBack(GtkCellRendererToggle* renderer, gchar* pathStr, gpointer data)
 {
-    //GtkTreeView  *view;
-    GtkTreeModel *model;
-    GtkListStore *store;
-    GtkTreeSelection *selection;
-    GtkTreePath  *path;
-    GtkTreeIter   iter;
-    gboolean      enabled;
-
-    //view = GTK_TREE_VIEW (priv->treeview_spell_checker);
-    model = gtk_tree_view_get_model (view);
-   store = GTK_LIST_STORE (model);
-    selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(view));
-    //if(gtk_tree_selection_iter_is_selected(selection,&iter)) {
-        // gtk_tree_selection_set_select_function(selection, G_CALLBACK(handleRowSelection), &toggle, NULL);
-        path = gtk_tree_path_new_from_string(path_string);
-
-        if (gtk_tree_model_get_iter(model, &iter, path)) {
-
-         //   gtk_tree_model_get(model, &iter, TODO_CHECK_COLUMN_ENUM, &enabled, -1);
-
-          //  enabled ^= 1;
-            toggle->active = !toggle->active;
-
-
-        }
- //   }
-    gtk_tree_path_free (path);
-    /* */
-       g_print("checkboxcallback calleed\n");
-
+    GtkTreeIter iter;
+    gboolean enabled;
+    GtkTreePath* path = gtk_tree_path_new_from_string(pathStr);
+    gtk_tree_model_get_iter(GTK_TREE_MODEL (data), &iter, path);
+    gtk_tree_model_get(GTK_TREE_MODEL (data), &iter, TODO_CHECK_COLUMN_ENUM, &enabled, -1);
+    enabled = !enabled;
+    //gtk_list_store_set_value(GTK_LIST_STORE(data),&iter,TODO_CHECK_COLUMN_ENUM,&enabled);
+    //gtk_list_store_set(store, &iter, LIST_ITEM, str, DUMMY_ITEM,po, -1);
+    gtk_list_store_set(GTK_LIST_STORE (data), &iter, TODO_CHECK_COLUMN_ENUM, &enabled,-1);
 }
 
 
@@ -1779,7 +1759,7 @@ static gboolean handleRowSelection(GtkTreeSelection *selection,
     // gtk_tree_model_get(model, &iter, TODO_TEXT_COLUMN_ENUM, &name, -1);
 
 
-    return FALSE; /* allow selection state to change */
+    return TRUE; /* allow selection state to change */
 }
 
 static void cb_clist_selection(GtkWidget *clist,
@@ -2762,8 +2742,8 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     sortable = GTK_TREE_SORTABLE(listStore);
     gtk_tree_sortable_set_sort_func(sortable, TODO_NOTE_COLUMN_ENUM, GtkTreeColumnCompare,
                                     GINT_TO_POINTER(TODO_NOTE_COLUMN_ENUM), NULL);
-   // gtk_tree_sortable_set_sort_func(sortable, TODO_CHECK_COLUMN_ENUM, GtkTreeColumnCompare,
-     //                               GINT_TO_POINTER(TODO_CHECK_COLUMN_ENUM), NULL);
+    gtk_tree_sortable_set_sort_func(sortable, TODO_CHECK_COLUMN_ENUM, GtkTreeColumnCompare,
+                                    GINT_TO_POINTER(TODO_CHECK_COLUMN_ENUM), NULL);
     GtkTreeModel *model = GTK_TREE_MODEL(listStore);
     treeView = gtk_tree_view_new_with_model(model);
     //GtkTreeIter    iter;
@@ -2822,9 +2802,10 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     renderer = gtk_cell_renderer_toggle_new();
 
     GtkTreeViewColumn *checkColumn = gtk_tree_view_column_new_with_attributes("",renderer,"active",TODO_CHECK_COLUMN_ENUM,NULL);
+    gtk_tree_view_column_set_cell_data_func(checkColumn, renderer, populateChecks, NULL, NULL);
     g_signal_connect (renderer, "toggled",
-                      G_CALLBACK (checkedCallBack),
-                      treeView);
+                       G_CALLBACK(checkedCallBack),
+                      GTK_TREE_MODEL(listStore));
    // gtk_tree_view_column_set_title(checkColumn, "");
     //gtk_tree_view_column_pack_start(checkColumn, renderer, gtk_true());
    // gtk_tree_view_column_set_cell_data_func(checkColumn, renderer, checkedCallBack, NULL, NULL);
