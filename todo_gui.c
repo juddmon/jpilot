@@ -1630,6 +1630,7 @@ static gboolean handleRowSelection(GtkTreeSelection *selection,
     if ((gtk_tree_model_get_iter(model, &iter, path)) && (!path_currently_selected)) {
 
       int * i = gtk_tree_path_get_indices ( path ) ;
+      clist_row_selected = i[0];
         gtk_tree_model_get(model, &iter, TODO_DATA_COLUMN_ENUM, &mtodo, -1);
         if ((record_changed == MODIFY_FLAG) || (record_changed == NEW_FLAG)) {
             if (mtodo != NULL) {
