@@ -1630,9 +1630,7 @@ static gboolean handleRowSelection(GtkTreeSelection *selection,
     if ((gtk_tree_model_get_iter(model, &iter, path)) && (!path_currently_selected)) {
 
       int * i = gtk_tree_path_get_indices ( path ) ;
-        g_print("%d %d is going to be selected.\n", i[0],userdata);
         gtk_tree_model_get(model, &iter, TODO_DATA_COLUMN_ENUM, &mtodo, -1);
-        g_print("%s is going to be selected.\n", mtodo->todo.description);
         if ((record_changed == MODIFY_FLAG) || (record_changed == NEW_FLAG)) {
             if (mtodo != NULL) {
                 unique_id = mtodo->unique_id;
@@ -2515,7 +2513,6 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
 
 
         /* Put a checkbox or checked checkbox pixmap up */
-        g_print("data %d",temp_todo->mtodo.todo.complete);
         if (temp_todo->mtodo.todo.complete > 0) {
             checkColumnDisplay = TRUE;
         } else {
