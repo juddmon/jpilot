@@ -1589,32 +1589,26 @@ tree_view_get_cell_from_pos(GtkTreeView *view, guint x, guint y, GtkCellRenderer
 }
 
 
-static void populateChecks(GtkTreeViewColumn *col,
-                           GtkCellRendererToggle   *renderer,
-                           GtkTreeModel      *model,
-                           GtkTreeIter       *iter,
-                           gpointer           user_data) {
-    gboolean isChecked;
-   // GtkCellRendererToggle *toggle = (GtkCellRendererToggle)renderer;
-
-    gtk_tree_model_get(model, iter, TODO_CHECK_COLUMN_ENUM, &isChecked, -1);
-    renderer ->active = isChecked;
-
-}
-
-
-
-static void checkedCallBack(GtkCellRendererToggle* renderer, gchar* pathStr, gpointer data)
+static void checkedCallBack(GtkCellRendererToggle * renderer, gchar* path, GtkListStore * model)
 {
     GtkTreeIter iter;
-    gboolean enabled;
-    GtkTreePath* path = gtk_tree_path_new_from_string(pathStr);
-    gtk_tree_model_get_iter(GTK_TREE_MODEL (data), &iter, path);
-    gtk_tree_model_get(GTK_TREE_MODEL (data), &iter, TODO_CHECK_COLUMN_ENUM, &enabled, -1);
-    enabled = !enabled;
-    //gtk_list_store_set_value(GTK_LIST_STORE(data),&iter,TODO_CHECK_COLUMN_ENUM,&enabled);
-    //gtk_list_store_set(store, &iter, LIST_ITEM, str, DUMMY_ITEM,po, -1);
-    gtk_list_store_set(GTK_LIST_STORE (data), &iter, TODO_CHECK_COLUMN_ENUM, &enabled,-1);
+    gboolean active;
+    struct ToDo *todo;
+    MyToDo *mtodo;
+    active = gtk_cell_renderer_toggle_get_active (renderer);
+
+    gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL (model), &iter, path);
+    gtk_tree_model_get(model, &iter, TODO_DATA_COLUMN_ENUM, &mtodo, -1);
+    if (active) {
+       // gtk_cell_renderer_set_alignment(GTK_CELL_RENDERER(renderer), 0, 0);
+        gtk_list_store_set (GTK_LIST_STORE (model), &iter, TODO_CHECK_COLUMN_ENUM, FALSE, -1);
+        mtodo->todo.complete = 0;
+    }
+    else {
+       // gtk_cell_renderer_set_alignment(GTK_CELL_RENDERER(renderer), 0.5, 0.5);
+        gtk_list_store_set (GTK_LIST_STORE (model), &iter, TODO_CHECK_COLUMN_ENUM, TRUE, -1);
+        mtodo->todo.complete = 1;
+    }
 }
 
 
@@ -2521,10 +2515,11 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
 
 
         /* Put a checkbox or checked checkbox pixmap up */
-        if (temp_todo->mtodo.todo.complete) {
-            checkColumnDisplay = gtk_true();
+        g_print("data %d",temp_todo->mtodo.todo.complete);
+        if (temp_todo->mtodo.todo.complete > 0) {
+            checkColumnDisplay = TRUE;
         } else {
-            checkColumnDisplay = gtk_false();
+            checkColumnDisplay = FALSE;
         }
 
         /* Print the priority number */
@@ -2556,6 +2551,7 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
                            TODO_DATE_COLUMN_ENUM, dateDisplay,
                            TODO_DATA_COLUMN_ENUM, &(temp_todo->mtodo),
                            -1);
+
         /* Highlight row background depending on status */
         /*  switch (temp_todo->mtodo.rt) {
               case NEW_PC_REC:
@@ -2765,52 +2761,44 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
      TODO_DATE_COLUMN_ENUM,
      TODO_TEXT_COLUMN_ENUM,
      */
-    GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
+    GtkCellRenderer *taskRenderer = gtk_cell_renderer_text_new();
 
     GtkTreeViewColumn *taskColumn = gtk_tree_view_column_new_with_attributes("Task",
-                                                                             renderer,
+                                                                             taskRenderer,
                                                                              "text", TODO_TEXT_COLUMN_ENUM,
                                                                              NULL);
     gtk_tree_view_column_set_sort_column_id(taskColumn, TODO_TEXT_COLUMN_ENUM);
 
 
-    renderer = gtk_cell_renderer_text_new();
+    GtkCellRenderer *dateRenderer = gtk_cell_renderer_text_new();
 
     GtkTreeViewColumn *dateColumn = gtk_tree_view_column_new_with_attributes("Due",
-                                                                             renderer,
+                                                                             dateRenderer,
                                                                              "text", TODO_DATE_COLUMN_ENUM,
                                                                              NULL);
     gtk_tree_view_column_set_sort_column_id(dateColumn, TODO_DATE_COLUMN_ENUM);
 
-    renderer = gtk_cell_renderer_text_new();
+    GtkCellRenderer *priorityRenderer  = gtk_cell_renderer_text_new();
     GtkTreeViewColumn *priorityColumn = gtk_tree_view_column_new_with_attributes("",
-                                                                                 renderer,
+                                                                                 priorityRenderer,
                                                                                  "text", TODO_PRIORITY_COLUMN_ENUM,
                                                                                  NULL);
     gtk_tree_view_column_set_sort_column_id(priorityColumn, TODO_PRIORITY_COLUMN_ENUM);
 
-    renderer = gtk_cell_renderer_pixbuf_new();
+    GtkCellRenderer *noteRenderer  = gtk_cell_renderer_pixbuf_new();
     GtkTreeViewColumn *noteColumn = gtk_tree_view_column_new_with_attributes("",
-                                                                             renderer,
+                                                                             noteRenderer,
                                                                              "pixbuf", TODO_NOTE_COLUMN_ENUM,
                                                                              NULL);
     gtk_tree_view_column_set_sort_column_id(noteColumn, TODO_NOTE_COLUMN_ENUM);
-//
 
 
+    GtkCellRenderer *checkRenderer = gtk_cell_renderer_toggle_new();
 
-    renderer = gtk_cell_renderer_toggle_new();
-
-    GtkTreeViewColumn *checkColumn = gtk_tree_view_column_new_with_attributes("",renderer,"active",TODO_CHECK_COLUMN_ENUM,NULL);
-    gtk_tree_view_column_set_cell_data_func(checkColumn, renderer, populateChecks, NULL, NULL);
-    g_signal_connect (renderer, "toggled",
-                       G_CALLBACK(checkedCallBack),
-                      GTK_TREE_MODEL(listStore));
-   // gtk_tree_view_column_set_title(checkColumn, "");
-    //gtk_tree_view_column_pack_start(checkColumn, renderer, gtk_true());
-   // gtk_tree_view_column_set_cell_data_func(checkColumn, renderer, checkedCallBack, NULL, NULL);
-    //g_signal_connect(treeView,"button-pressed-event",onButtonPress,NULL);
-    gtk_tree_view_column_set_attributes(checkColumn,renderer,NULL,TODO_CHECK_COLUMN_ENUM,NULL);
+    GtkTreeViewColumn *checkColumn = gtk_tree_view_column_new_with_attributes("",checkRenderer,"active",TODO_CHECK_COLUMN_ENUM,NULL);
+    g_signal_connect (checkRenderer, "toggled",
+                      G_CALLBACK(checkedCallBack),
+                      listStore);
     gtk_tree_view_column_set_sort_column_id(checkColumn, TODO_CHECK_COLUMN_ENUM);
     gtk_tree_view_insert_column(GTK_TREE_VIEW (treeView), checkColumn, TODO_CHECK_COLUMN_ENUM);
     gtk_tree_view_insert_column(GTK_TREE_VIEW (treeView), priorityColumn, TODO_PRIORITY_COLUMN_ENUM);
@@ -2860,6 +2848,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     //todo:  Find the gtk_tree_view equivalant.
     gtk_clist_column_titles_active(GTK_CLIST(clist));
+
     // register function to handle column header clicks..
     g_signal_connect (taskColumn, "clicked", G_CALLBACK(column_clicked_cb), NULL);
     g_signal_connect (noteColumn, "clicked", G_CALLBACK(column_clicked_cb), NULL);
