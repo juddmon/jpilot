@@ -1125,6 +1125,7 @@ static void cb_category(GtkWidget *item, int selection) {
         clist_row_selected = 0;
         jp_logf(JP_LOG_DEBUG, "todo_category = %d\n", todo_category);
         todo_update_clist(clist, category_menu1, &glob_todo_list, todo_category, TRUE);
+        todo_update_liststore(listStore,category_menu1,&glob_todo_list,todo_category,TRUE);
     }
 }
 
