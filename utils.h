@@ -346,6 +346,8 @@ int cal_dialog(GtkWindow *main_window,
 
 void set_bg_rgb_clist_row(GtkWidget *clist, int row, int r, int g, int b);
 
+GdkColor get_color(int r, int g, int b);
+
 void set_fg_rgb_clist_cell(GtkWidget *clist, int row, int col, int r, int g, int b);
 
 void entry_set_multiline_truncate(GtkEntry *entry, gboolean value);

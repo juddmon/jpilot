@@ -122,6 +122,10 @@ enum {
     TODO_DATE_COLUMN_ENUM,
     TODO_TEXT_COLUMN_ENUM,
     TODO_DATA_COLUMN_ENUM,
+    TODO_BACKGROUND_COLOR_ENUM,
+    TODO_BACKGROUND_COLOR_ENABLED_ENUM,
+    TODO_FOREGROUND_COLOR_ENUM,
+    TODO_FORGROUND_COLOR_ENABLED_ENUM,
     TODO_NUM_COLS
 };
 /****************************** Main Code *************************************/
@@ -2398,6 +2402,8 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
     GtkTreeIter iter;
     int num_entries, entries_shown;
     gchar *empty_line[] = {"", "", "", "", ""};
+    char str[50];
+    char str2[TODO_MAX_COLUMN_LEN + 2];
     GdkPixbuf *pixbuf_note;
     GdkPixbuf *pixbuf_check;
     GdkPixbuf *pixbuf_checked;
@@ -2541,6 +2547,51 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
         /* Print the todo text */
         lstrncpy_remove_cr_lfs(descriptionDisplay, temp_todo->mtodo.todo.description, TODO_MAX_COLUMN_LEN);
         gtk_list_store_append(pListStore, &iter);
+
+        GdkColor bgColor;
+        gboolean showBgColor = FALSE;
+        GdkColor fgColor;
+        gboolean showFgColor = FALSE;
+        switch (temp_todo->mtodo.rt) {
+            case NEW_PC_REC:
+            case REPLACEMENT_PALM_REC:
+
+                bgColor = get_color(CLIST_NEW_GREEN, CLIST_NEW_GREEN, CLIST_NEW_BLUE);
+                showBgColor = TRUE;
+                break;
+            case DELETED_PALM_REC:
+            case DELETED_PC_REC:
+
+                bgColor = get_color(CLIST_DEL_RED, CLIST_DEL_GREEN, CLIST_DEL_BLUE);
+                showBgColor = TRUE;
+                break;
+            case MODIFIED_PALM_REC:
+
+                bgColor = get_color(CLIST_MOD_RED, CLIST_MOD_GREEN, CLIST_MOD_BLUE);
+                showBgColor = TRUE;
+                break;
+            default:
+                if (temp_todo->mtodo.attrib & dlpRecAttrSecret) {
+
+                    bgColor = get_color(CLIST_PRIVATE_RED, CLIST_PRIVATE_GREEN, CLIST_PRIVATE_BLUE);
+                    showBgColor = TRUE;
+                } else {
+                    showBgColor = FALSE;
+                }
+        }
+
+        if (!(temp_todo->mtodo.todo.indefinite)) {
+            due = &(temp_todo->mtodo.todo.due);
+            comp_due=due->tm_year*380+due->tm_mon*31+due->tm_mday-1;
+
+            if (comp_due < comp_now) {
+                fgColor = get_color(CLIST_OVERDUE_RED,CLIST_OVERDUE_GREEN,CLIST_OVERDUE_BLUE);
+
+            } else if (comp_due == comp_now) {
+                fgColor = get_color(CLIST_DUENOW_RED,CLIST_DUENOW_GREEN,CLIST_DUENOW_BLUE);
+            }
+            showFgColor=TRUE;
+        }
         gtk_list_store_set(pListStore, &iter,
                            TODO_CHECK_COLUMN_ENUM, checkColumnDisplay,
                            TODO_PRIORITY_COLUMN_ENUM, priorityDisplay,
@@ -2548,46 +2599,24 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
                            TODO_TEXT_COLUMN_ENUM, descriptionDisplay,
                            TODO_DATE_COLUMN_ENUM, dateDisplay,
                            TODO_DATA_COLUMN_ENUM, &(temp_todo->mtodo),
+                           TODO_BACKGROUND_COLOR_ENUM, showBgColor ? &bgColor : NULL,
+                           TODO_BACKGROUND_COLOR_ENABLED_ENUM, showBgColor,
+                           TODO_FOREGROUND_COLOR_ENUM,showFgColor ? gdk_color_to_string(&fgColor) : NULL,
+                           TODO_FORGROUND_COLOR_ENABLED_ENUM,showFgColor,
                            -1);
 
-        /* Highlight row background depending on status */
-        /*  switch (temp_todo->mtodo.rt) {
-              case NEW_PC_REC:
-              case REPLACEMENT_PALM_REC:
-                  set_bg_rgb_clist_row(clist, entries_shown,
-                                       CLIST_NEW_RED, CLIST_NEW_GREEN, CLIST_NEW_BLUE);
-                  break;
-              case DELETED_PALM_REC:
-              case DELETED_PC_REC:
-                  set_bg_rgb_clist_row(clist, entries_shown,
-                                       CLIST_DEL_RED, CLIST_DEL_GREEN, CLIST_DEL_BLUE);
-                  break;
-              case MODIFIED_PALM_REC:
-                  set_bg_rgb_clist_row(clist, entries_shown,
-                                       CLIST_MOD_RED, CLIST_MOD_GREEN, CLIST_MOD_BLUE);
-                  break;
-              default:
-                  if (temp_todo->mtodo.attrib & dlpRecAttrSecret) {
-                      set_bg_rgb_clist_row(clist, entries_shown,
-                                           CLIST_PRIVATE_RED, CLIST_PRIVATE_GREEN, CLIST_PRIVATE_BLUE);
-                  } else {
-                      gtk_clist_set_row_style(GTK_CLIST(clist), entries_shown, NULL);
-                  }
-          } */
 
-        /* Highlight dates of items overdue or due today */
-        /*  if (!(temp_todo->mtodo.todo.indefinite)) {
-              due = &(temp_todo->mtodo.todo.due);
-              comp_due=due->tm_year*380+due->tm_mon*31+due->tm_mday-1;
-
-              if (comp_due < comp_now) {
-                  set_fg_rgb_clist_cell(clist, entries_shown, TODO_DATE_COLUMN, CLIST_OVERDUE_RED, CLIST_OVERDUE_GREEN, CLIST_OVERDUE_BLUE);
-              } else if (comp_due == comp_now) {
-                  set_fg_rgb_clist_cell(clist, entries_shown, TODO_DATE_COLUMN, CLIST_DUENOW_RED, CLIST_DUENOW_GREEN, CLIST_DUENOW_BLUE);
-              }
-          } */
 
         entries_shown++;
+    }
+    if (tooltip_widget) {
+        get_pref(PREF_SHOW_TOOLTIPS, &show_tooltips, NULL);
+        if (todo_list == NULL) {
+            set_tooltip(show_tooltips, glob_tooltips, tooltip_widget, _("0 records"), NULL);
+        } else {
+            sprintf(str, _("%d of %d records"), entries_shown, num_entries);
+            set_tooltip(show_tooltips, glob_tooltips, tooltip_widget, str, NULL);
+        }
     }
     /* gtk_list_store_append (pListStore, &iter);
 
@@ -2731,7 +2760,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     clist = gtk_clist_new_with_titles(5, titles);
 
     listStore = gtk_list_store_new(TODO_NUM_COLS, G_TYPE_BOOLEAN, G_TYPE_STRING, GDK_TYPE_PIXBUF, G_TYPE_STRING,
-                                   G_TYPE_STRING, G_TYPE_POINTER);
+                                   G_TYPE_STRING, G_TYPE_POINTER,GDK_TYPE_COLOR,G_TYPE_BOOLEAN,G_TYPE_STRING,G_TYPE_BOOLEAN);
     GtkTreeSortable *sortable;
     sortable = GTK_TREE_SORTABLE(listStore);
     gtk_tree_sortable_set_sort_func(sortable, TODO_NOTE_COLUMN_ENUM, GtkTreeColumnCompare,
@@ -2763,7 +2792,8 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     GtkTreeViewColumn *taskColumn = gtk_tree_view_column_new_with_attributes("Task",
                                                                              taskRenderer,
-                                                                             "text", TODO_TEXT_COLUMN_ENUM,
+                                                                             "text", TODO_TEXT_COLUMN_ENUM,"cell-background-gdk",TODO_BACKGROUND_COLOR_ENUM,
+                                                                             "cell-background-set",TODO_BACKGROUND_COLOR_ENABLED_ENUM,
                                                                              NULL);
     gtk_tree_view_column_set_sort_column_id(taskColumn, TODO_TEXT_COLUMN_ENUM);
 
@@ -2772,28 +2802,34 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     GtkTreeViewColumn *dateColumn = gtk_tree_view_column_new_with_attributes("Due",
                                                                              dateRenderer,
-                                                                             "text", TODO_DATE_COLUMN_ENUM,
+                                                                             "text", TODO_DATE_COLUMN_ENUM,"cell-background-gdk",TODO_BACKGROUND_COLOR_ENUM,
+                                                                             "cell-background-set",TODO_BACKGROUND_COLOR_ENABLED_ENUM,
+                                                                             "foreground",TODO_FOREGROUND_COLOR_ENUM,
+                                                                             "foreground-set",TODO_FORGROUND_COLOR_ENABLED_ENUM,
                                                                              NULL);
     gtk_tree_view_column_set_sort_column_id(dateColumn, TODO_DATE_COLUMN_ENUM);
 
     GtkCellRenderer *priorityRenderer  = gtk_cell_renderer_text_new();
     GtkTreeViewColumn *priorityColumn = gtk_tree_view_column_new_with_attributes("",
                                                                                  priorityRenderer,
-                                                                                 "text", TODO_PRIORITY_COLUMN_ENUM,
+                                                                                 "text", TODO_PRIORITY_COLUMN_ENUM,"cell-background-gdk",TODO_BACKGROUND_COLOR_ENUM,
+                                                                                 "cell-background-set",TODO_BACKGROUND_COLOR_ENABLED_ENUM,
                                                                                  NULL);
     gtk_tree_view_column_set_sort_column_id(priorityColumn, TODO_PRIORITY_COLUMN_ENUM);
 
     GtkCellRenderer *noteRenderer  = gtk_cell_renderer_pixbuf_new();
     GtkTreeViewColumn *noteColumn = gtk_tree_view_column_new_with_attributes("",
                                                                              noteRenderer,
-                                                                             "pixbuf", TODO_NOTE_COLUMN_ENUM,
+                                                                             "pixbuf", TODO_NOTE_COLUMN_ENUM,"cell-background-gdk",TODO_BACKGROUND_COLOR_ENUM,
+                                                                             "cell-background-set",TODO_BACKGROUND_COLOR_ENABLED_ENUM,
                                                                              NULL);
     gtk_tree_view_column_set_sort_column_id(noteColumn, TODO_NOTE_COLUMN_ENUM);
 
 
     GtkCellRenderer *checkRenderer = gtk_cell_renderer_toggle_new();
 
-    GtkTreeViewColumn *checkColumn = gtk_tree_view_column_new_with_attributes("",checkRenderer,"active",TODO_CHECK_COLUMN_ENUM,NULL);
+    GtkTreeViewColumn *checkColumn = gtk_tree_view_column_new_with_attributes("",checkRenderer,"active",TODO_CHECK_COLUMN_ENUM,"cell-background-gdk",TODO_BACKGROUND_COLOR_ENUM,
+                                                                              "cell-background-set",TODO_BACKGROUND_COLOR_ENABLED_ENUM,NULL);
     g_signal_connect (checkRenderer, "toggled",
                       G_CALLBACK(checkedCallBack),
                       listStore);

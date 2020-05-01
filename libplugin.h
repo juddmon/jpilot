@@ -121,9 +121,9 @@ int get_next_unique_pc_id(unsigned int *next_unique_id);
 #define COPY_FLAG     6
 #define UNDELETE_FLAG 7
 
-#define CLIST_DEL_RED 0xCCCC
-#define CLIST_DEL_GREEN 0xCCCC
-#define CLIST_DEL_BLUE 0xCCCC
+#define CLIST_DEL_RED 52428
+#define CLIST_DEL_GREEN 52428
+#define CLIST_DEL_BLUE 52428
 #define CLIST_NEW_RED 55000
 #define CLIST_NEW_GREEN 55000
 #define CLIST_NEW_BLUE 65535
@@ -133,9 +133,9 @@ int get_next_unique_pc_id(unsigned int *next_unique_id);
 #define CLIST_PRIVATE_RED 60000
 #define CLIST_PRIVATE_GREEN 55000
 #define CLIST_PRIVATE_BLUE 55000
-#define CLIST_OVERDUE_RED 0xD900
-#define CLIST_OVERDUE_GREEN 0x0000
-#define CLIST_OVERDUE_BLUE 0x0000
+#define CLIST_OVERDUE_RED 55552
+#define CLIST_OVERDUE_GREEN 0
+#define CLIST_OVERDUE_BLUE 0
 #define CLIST_DUENOW_RED 4369 
 #define CLIST_DUENOW_GREEN 40863   
 #define CLIST_DUENOW_BLUE 35466
