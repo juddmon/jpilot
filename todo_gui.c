@@ -117,6 +117,12 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
 void addNewRecordToDataStructure(MyToDo * mtodo, gpointer data);
 void deleteTodo(MyToDo * mtodo, gpointer data);
 void undeleteTodo(MyToDo * mtodo, gpointer data);
+int printTodo(MyToDo * mtodo, gpointer data);
+gboolean printRecord(GtkTreeModel *model,
+                     GtkTreePath  *path,
+                     GtkTreeIter  *iter,
+                     gpointer data);
+
 enum {
     TODO_CHECK_COLUMN_ENUM = 0,
     TODO_PRIORITY_COLUMN_ENUM,
@@ -199,10 +205,8 @@ static void cb_cal_dialog(GtkWidget *widget,
     }
 }
 
-
-int todo_print(void) {
+int printTodo(MyToDo * mtodo,gpointer data) {
     long this_many;
-    MyToDo *mtodo;
     ToDoList *todo_list;
     ToDoList todo_list1;
 
@@ -210,7 +214,6 @@ int todo_print(void) {
 
     todo_list = NULL;
     if (this_many == 1) {
-        mtodo = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
         if (mtodo < (MyToDo *) CLIST_MIN_DATA) {
             return EXIT_FAILURE;
         }
@@ -232,6 +235,12 @@ int todo_print(void) {
     }
 
     return EXIT_SUCCESS;
+}
+
+int todo_print(void) {
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), printRecord, NULL);
+    return EXIT_SUCCESS;
+
 }
 
 static void set_new_button_to(int new_state) {
@@ -938,10 +947,10 @@ static int find_menu_cat_pos(int cat) {
                 return i;
             }
         }
-        return 0
+        return 0;
     }
 }
-;
+
 gboolean deleteRecord(GtkTreeModel *model,
                        GtkTreePath  *path,
                        GtkTreeIter  *iter,
@@ -1022,6 +1031,23 @@ gboolean undeleteRecord(GtkTreeModel *model,
 
 
 }
+gboolean printRecord(GtkTreeModel *model,
+                        GtkTreePath  *path,
+                        GtkTreeIter  *iter,
+                        gpointer data) {
+    int * i = gtk_tree_path_get_indices ( path ) ;
+    if(i[0] == clist_row_selected){
+        MyToDo * mytodo = NULL;
+        gtk_tree_model_get(model,iter,TODO_DATA_COLUMN_ENUM,&mytodo,-1);
+        printTodo(mytodo,data);
+        return TRUE;
+    }
+
+    return FALSE;
+
+
+}
+
 void undeleteTodo(MyToDo * mtodo,gpointer data){
     int flag;
     int show_priv;
@@ -1608,7 +1634,7 @@ static void checkedCallBack(GtkCellRendererToggle * renderer, gchar* path, GtkLi
     active = gtk_cell_renderer_toggle_get_active (renderer);
 
     gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL (model), &iter, path);
-    gtk_tree_model_get(model, &iter, TODO_DATA_COLUMN_ENUM, &mtodo, -1);
+    gtk_tree_model_get(GTK_TREE_MODEL(model), &iter, TODO_DATA_COLUMN_ENUM, &mtodo, -1);
     if (active) {
        // gtk_cell_renderer_set_alignment(GTK_CELL_RENDERER(renderer), 0, 0);
         gtk_list_store_set (GTK_LIST_STORE (model), &iter, TODO_CHECK_COLUMN_ENUM, FALSE, -1);
@@ -2760,7 +2786,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 0);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
                                    GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-    gtk_scrolled_window_set_shadow_type(scrolled_window, GTK_TYPE_SHADOW_TYPE);
+    gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolled_window), GTK_TYPE_SHADOW_TYPE);
     gtk_box_pack_start(GTK_BOX(vbox1), scrolled_window, TRUE, TRUE, 0);
     //
     clist = gtk_clist_new_with_titles(5, titles);
@@ -2919,10 +2945,10 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     clist_col_selected = ivalue;
     gtk_clist_set_sort_column(GTK_CLIST(clist), clist_col_selected);
     for (int x = 0; x < TODO_NUM_COLS - 5; x++) {
-        gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(treeView, x), gtk_false());
+        gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), x), gtk_false());
     }
-    gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(treeView, clist_col_selected), gtk_true());
-    gtk_tree_view_columns_autosize(treeView);
+    gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), clist_col_selected), gtk_true());
+    gtk_tree_view_columns_autosize(GTK_TREE_VIEW(treeView));
 
 
     switch (clist_col_selected) {
