@@ -104,7 +104,7 @@ static int record_changed;
 /****************************** Prototypes ************************************/
 static int todo_clear_details(void);
 
-static int todo_clist_redraw(void);
+static int todo_redraw(void);
 
 static int todo_find(void);
 
@@ -114,6 +114,8 @@ static void connect_changed_signals(int con_or_dis);
 
 void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
                            ToDoList **todo_list, int category, int main);
+void addNewRecordToDataStructure(MyToDo * mtodo, gpointer data);
+void deleteTodo(MyToDo * mtodo, gpointer data);
 
 enum {
     TODO_CHECK_COLUMN_ENUM = 0,
@@ -936,18 +938,32 @@ static int find_menu_cat_pos(int cat) {
                 return i;
             }
         }
-        return 0;
+        return 0
     }
 }
+;
+gboolean deleteRecord(GtkTreeModel *model,
+                       GtkTreePath  *path,
+                       GtkTreeIter  *iter,
+                       gpointer data) {
+    int * i = gtk_tree_path_get_indices ( path ) ;
+    if(i[0] == clist_row_selected){
+        MyToDo * mytodo = NULL;
+        gtk_tree_model_get(model,iter,TODO_DATA_COLUMN_ENUM,&mytodo,-1);
+        deleteTodo(mytodo,data);
+        return TRUE;
+    }
 
-static void cb_delete_todo(GtkWidget *widget,
-                           gpointer data) {
-    MyToDo *mtodo;
+    return FALSE;
+
+
+}
+void deleteTodo(MyToDo * mtodo,gpointer data){
+
     int flag;
     int show_priv;
     long char_set;
 
-    mtodo = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
     if (mtodo < (MyToDo *) CLIST_MIN_DATA) {
         return;
     }
@@ -981,8 +997,14 @@ static void cb_delete_todo(GtkWidget *widget,
     }
 
     if (flag == DELETE_FLAG) {
-        todo_clist_redraw();
+        todo_redraw();
     }
+}
+static void cb_delete_todo(GtkWidget *widget,
+                           gpointer data) {
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), deleteRecord, data);
+    return;
+
 }
 
 static void cb_undelete_todo(GtkWidget *widget,
@@ -1021,7 +1043,7 @@ static void cb_undelete_todo(GtkWidget *widget,
         */
     }
 
-    todo_clist_redraw();
+    todo_redraw();
 }
 
 static void cb_cancel(GtkWidget *widget, gpointer data) {
@@ -1278,24 +1300,42 @@ static int todo_get_details(struct ToDo *new_todo, unsigned char *attrib) {
 
     return EXIT_SUCCESS;
 }
+gboolean
+addNewRecord (GtkTreeModel *model,
+              GtkTreePath  *path,
+              GtkTreeIter  *iter,
+              gpointer data) {
 
-static void cb_add_new_record(GtkWidget *widget, gpointer data) {
-    MyToDo *mtodo;
+    int * i = gtk_tree_path_get_indices ( path ) ;
+    if(i[0] == clist_row_selected){
+        MyToDo * mytodo = NULL;
+        gtk_tree_model_get(model,iter,TODO_DATA_COLUMN_ENUM,&mytodo,-1);
+        addNewRecordToDataStructure(mytodo,data);
+        return TRUE;
+    }
+
+    return FALSE;
+
+
+}
+
+void addNewRecordToDataStructure(MyToDo * mtodo, gpointer data){
+
     struct ToDo new_todo;
     unsigned char attrib = 0;
     int flag;
     int show_priv;
     unsigned int unique_id;
-
     flag = GPOINTER_TO_INT(data);
     unique_id = 0;
-    mtodo = NULL;
 
+
+    //while(gtk_tree_path_)
     /* Do masking like Palm OS 3.5 */
     if ((flag == COPY_FLAG) || (flag == MODIFY_FLAG)) {
         show_priv = show_privates(GET_PRIVATES);
-        mtodo = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
         if (mtodo < (MyToDo *) CLIST_MIN_DATA) {
+            g_print("mtdo is less than CLIST_MIN_DATA?  ");
             return;
         }
         if ((show_priv != SHOW_PRIVATES) &&
@@ -1316,7 +1356,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data) {
         return;
     }
     if (flag == MODIFY_FLAG) {
-        mtodo = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
+
         unique_id = mtodo->unique_id;
         if (mtodo < (MyToDo *) CLIST_MIN_DATA) {
             return;
@@ -1344,15 +1384,23 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data) {
         unique_id = 0;
         pc_todo_write(&new_todo, NEW_PC_REC, attrib, &unique_id);
     }
+    g_print("description is %s",mtodo->todo.description);
+    g_print("new description is %s",new_todo.description);
     free_ToDo(&new_todo);
 
     /* Don't return to modified record if search gui active */
     if (!glob_find_id) {
         glob_find_id = unique_id;
     }
-    todo_clist_redraw();
+    todo_redraw();
+
 
     return;
+}
+
+static void cb_add_new_record(GtkWidget *widget, gpointer data) {
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), addNewRecord, data);
+   return;
 }
 
 /* Do masking like Palm OS 3.5 */
@@ -1535,64 +1583,6 @@ static void cb_clist_click_column(GtkWidget *clist, int column) {
     /* Return to previously selected item */
     todo_find();
 }
-
-static gboolean
-tree_view_get_cell_from_pos(GtkTreeView *view, guint x, guint y, GtkCellRenderer **cell)
-{
-    GtkTreeViewColumn *col = NULL;
-    GList             *node, *columns, *cells;
-    guint              colx = 0;
-
-    g_return_val_if_fail ( view != NULL, FALSE );
-    g_return_val_if_fail ( cell != NULL, FALSE );
-
-    /* (1) find column and column x relative to tree view coordinates */
-
-    columns = gtk_tree_view_get_columns(view);
-
-    for (node = columns;  node != NULL && col == NULL;  node = node->next)
-    {
-        GtkTreeViewColumn *checkcol = (GtkTreeViewColumn*) node->data;
-
-        if (x >= colx  &&  x < (colx + checkcol->width))
-            col = checkcol;
-        else
-            colx += checkcol->width;
-    }
-
-    g_list_free(columns);
-
-    if (col == NULL)
-        return FALSE; /* not found */
-
-    /* (2) find the cell renderer within the column */
-
-    cells = gtk_tree_view_column_get_cell_renderers(col);
-
-    for (node = cells;  node != NULL;  node = node->next)
-    {
-        GtkCellRenderer *checkcell = (GtkCellRenderer*) node->data;
-        guint            width = 0, height = 0;
-
-        /* Will this work for all packing modes? doesn't that
-         *  return a random width depending on the last content
-         * rendered? */
-        gtk_cell_renderer_get_size(checkcell, GTK_WIDGET(view), NULL, NULL, NULL, &width, NULL);
-
-        if (x >= colx && x < (colx + width))
-        {
-            *cell = checkcell;
-            g_list_free(cells);
-            return TRUE;
-        }
-
-        colx += width;
-    }
-
-    g_list_free(cells);
-    return FALSE; /* not found */
-}
-
 
 static void checkedCallBack(GtkCellRendererToggle * renderer, gchar* path, GtkListStore * model)
 {
@@ -2333,9 +2323,9 @@ static gboolean cb_key_pressed_shift_tab(GtkWidget *widget,
 }
 
 /* This redraws the clist and goes back to the same line number */
-static int todo_clist_redraw(void) {
-    todo_update_clist(clist, category_menu1, &glob_todo_list, todo_category, TRUE);
-
+static int todo_redraw(void) {
+    //todo_update_clist(clist, category_menu1, &glob_todo_list, todo_category, TRUE);
+    todo_update_liststore(listStore,category_menu1,&glob_todo_list, todo_category, TRUE);
     return EXIT_SUCCESS;
 }
 
@@ -2913,7 +2903,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     get_pref(PREF_TODO_SORT_COLUMN, &ivalue, NULL);
     clist_col_selected = ivalue;
     gtk_clist_set_sort_column(GTK_CLIST(clist), clist_col_selected);
-    for (int x = 0; x < TODO_NUM_COLS; x++) {
+    for (int x = 0; x < TODO_NUM_COLS - 5; x++) {
         gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(treeView, x), gtk_false());
     }
     gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(treeView, clist_col_selected), gtk_true());
