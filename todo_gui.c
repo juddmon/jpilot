@@ -116,7 +116,7 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
                            ToDoList **todo_list, int category, int main);
 void addNewRecordToDataStructure(MyToDo * mtodo, gpointer data);
 void deleteTodo(MyToDo * mtodo, gpointer data);
-
+void undeleteTodo(MyToDo * mtodo, gpointer data);
 enum {
     TODO_CHECK_COLUMN_ENUM = 0,
     TODO_PRIORITY_COLUMN_ENUM,
@@ -1006,14 +1006,25 @@ static void cb_delete_todo(GtkWidget *widget,
     return;
 
 }
+gboolean undeleteRecord(GtkTreeModel *model,
+                      GtkTreePath  *path,
+                      GtkTreeIter  *iter,
+                      gpointer data) {
+    int * i = gtk_tree_path_get_indices ( path ) ;
+    if(i[0] == clist_row_selected){
+        MyToDo * mytodo = NULL;
+        gtk_tree_model_get(model,iter,TODO_DATA_COLUMN_ENUM,&mytodo,-1);
+        undeleteTodo(mytodo,data);
+        return TRUE;
+    }
 
-static void cb_undelete_todo(GtkWidget *widget,
-                             gpointer data) {
-    MyToDo *mtodo;
+    return FALSE;
+
+
+}
+void undeleteTodo(MyToDo * mtodo,gpointer data){
     int flag;
     int show_priv;
-
-    mtodo = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
     if (mtodo < (MyToDo *) CLIST_MIN_DATA) {
         return;
     }
@@ -1044,6 +1055,13 @@ static void cb_undelete_todo(GtkWidget *widget,
     }
 
     todo_redraw();
+}
+static void cb_undelete_todo(GtkWidget *widget,
+                             gpointer data) {
+
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), undeleteRecord, data);
+    return;
+
 }
 
 static void cb_cancel(GtkWidget *widget, gpointer data) {
@@ -1335,7 +1353,6 @@ void addNewRecordToDataStructure(MyToDo * mtodo, gpointer data){
     if ((flag == COPY_FLAG) || (flag == MODIFY_FLAG)) {
         show_priv = show_privates(GET_PRIVATES);
         if (mtodo < (MyToDo *) CLIST_MIN_DATA) {
-            g_print("mtdo is less than CLIST_MIN_DATA?  ");
             return;
         }
         if ((show_priv != SHOW_PRIVATES) &&
@@ -1384,8 +1401,6 @@ void addNewRecordToDataStructure(MyToDo * mtodo, gpointer data){
         unique_id = 0;
         pc_todo_write(&new_todo, NEW_PC_REC, attrib, &unique_id);
     }
-    g_print("description is %s",mtodo->todo.description);
-    g_print("new description is %s",new_todo.description);
     free_ToDo(&new_todo);
 
     /* Don't return to modified record if search gui active */
