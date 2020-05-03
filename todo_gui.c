@@ -2107,6 +2107,26 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
 
         entries_shown++;
     }
+    if ((main) && (entries_shown>0)) {
+        /* First, select any record being searched for */
+        if (glob_find_id)
+        {
+            todo_find();
+        }
+            /* Second, try the currently selected row */
+        else if (clist_row_selected < entries_shown)
+        {
+            clist_select_row(GTK_CLIST(clist), clist_row_selected, TODO_PRIORITY_COLUMN);
+            if (!gtk_clist_row_is_visible(GTK_CLIST(clist), clist_row_selected)) {
+                gtk_clist_moveto(GTK_CLIST(clist), clist_row_selected, 0, 0.5, 0.0);
+            }
+        }
+            /* Third, select row 0 if nothing else is possible */
+        else
+        {
+            clist_select_row(GTK_CLIST(clist), 0, TODO_PRIORITY_COLUMN);
+        }
+    }
     if (tooltip_widget) {
         get_pref(PREF_SHOW_TOOLTIPS, &show_tooltips, NULL);
         if (todo_list == NULL) {
