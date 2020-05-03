@@ -155,7 +155,7 @@ static void init(void) {
     add_days_to_date(&due_date, ivalue);
 
     clist_row_selected = 0;
-    clist_col_selected = 1;
+    clist_col_selected = 0;
 
     record_changed = CLEAR_FLAG;
 }
@@ -1477,7 +1477,6 @@ static gint GtkTreeColumnCompare(GtkTreeModel *model,
                                  gpointer columnId) {
     gint sortcol = GPOINTER_TO_INT(columnId);
     gint ret = 0;
-    clist_col_selected = sortcol;
     switch (sortcol) {
         case TODO_NOTE_COLUMN_ENUM: {
             ret = compareNoteColumn(model, left, right);
@@ -2266,8 +2265,8 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     sortable = GTK_TREE_SORTABLE(listStore);
     gtk_tree_sortable_set_sort_func(sortable, TODO_NOTE_COLUMN_ENUM, GtkTreeColumnCompare,
                                     GINT_TO_POINTER(TODO_NOTE_COLUMN_ENUM), NULL);
-    gtk_tree_sortable_set_sort_func(sortable, TODO_CHECK_COLUMN_ENUM, GtkTreeColumnCompare,
-                                    GINT_TO_POINTER(TODO_CHECK_COLUMN_ENUM), NULL);
+   // gtk_tree_sortable_set_sort_func(sortable, TODO_CHECK_COLUMN_ENUM, GtkTreeColumnCompare,
+    //                                GINT_TO_POINTER(TODO_CHECK_COLUMN_ENUM), NULL);
     GtkTreeModel *model = GTK_TREE_MODEL(listStore);
     treeView = gtk_tree_view_new_with_model(model);
     //GtkTreeIter    iter;
@@ -2360,6 +2359,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     mask = NULL;
 #endif
     pixmapwid = gtk_pixmap_new(pixmap, mask);
+    gtk_widget_show(GTK_WIDGET(pixmapwid));
     gtk_tree_view_column_set_widget(noteColumn, pixmapwid);
     gtk_tree_view_column_set_alignment(noteColumn, GTK_JUSTIFY_CENTER);
     get_pixmaps(vbox, PIXMAP_BOX_CHECKED, &pixmap, &mask);
@@ -2367,7 +2367,9 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     mask = NULL;
 #endif
     pixmapwid = gtk_pixmap_new(pixmap, mask);
+    gtk_widget_show(GTK_WIDGET(pixmapwid));
     gtk_tree_view_column_set_widget(checkColumn, pixmapwid);
+
     gtk_tree_view_column_set_alignment(checkColumn, GTK_JUSTIFY_CENTER);
 
     // register function to handle column header clicks..
@@ -2394,10 +2396,10 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_tree_sortable_set_sort_column_id(sortable, clist_col_selected, ivalue);
 
 
-    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(treeView));
+    //gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(treeView));
 
     g_object_unref(model);
-
+    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(treeView));
     /* Right side of GUI */
 
     hbox_temp = gtk_hbox_new(FALSE, 3);
