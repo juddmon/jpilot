@@ -4412,7 +4412,8 @@ int datebook_gui_cleanup(void)
    if (GTK_TOGGLE_BUTTON(show_todos_button)->active) {
       set_pref(PREF_DATEBOOK_TODO_PANE, gtk_paned_get_position(GTK_PANED(todo_pane)), NULL, TRUE);
    }
-   todo_clist_clear(GTK_CLIST(todo_clist));
+   //TODO: change this to liststoreclear when implempenting datebook changes.
+  // todo_clist_clear(GTK_CLIST(todo_clist));
 #ifdef ENABLE_DATEBK
    if (GTK_IS_WIDGET(window_datebk_cats)) {
       gtk_widget_destroy(window_datebk_cats);
