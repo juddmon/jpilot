@@ -2261,29 +2261,9 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     sortable = GTK_TREE_SORTABLE(listStore);
     gtk_tree_sortable_set_sort_func(sortable, TODO_NOTE_COLUMN_ENUM, sortNoteColumn,
                                     GINT_TO_POINTER(TODO_NOTE_COLUMN_ENUM), NULL);
-   // gtk_tree_sortable_set_sort_func(sortable, TODO_CHECK_COLUMN_ENUM, sortNoteColumn,
-    //                                GINT_TO_POINTER(TODO_CHECK_COLUMN_ENUM), NULL);
     GtkTreeModel *model = GTK_TREE_MODEL(listStore);
     treeView = gtk_tree_view_new_with_model(model);
-    //GtkTreeIter    iter;
-    //
-    //    store = gtk_list_store_new (NUM_COLS, G_TYPE_STRING, G_TYPE_UINT,G_TYPE_STRING);
-    //
-    //    /* Append a row and fill in some data */
-    //    gtk_list_store_append (store, &iter);
-    //    gtk_list_store_set (store, &iter,
-    //                        COL_NAME, "Heinz El-Mann",
-    //                        COL_AGE, 51,
-    //                        DUMMMY,"",
-    //                        -1);
-
-
-    /**
-     *  TODO_PRIORITY_COLUMN_ENUM,
-     TODO_NOTE_COLUMN_ENUM,
-     TODO_DATE_COLUMN_ENUM,
-     TODO_TEXT_COLUMN_ENUM,
-     */
+  
     GtkCellRenderer *taskRenderer = gtk_cell_renderer_text_new();
 
     GtkTreeViewColumn *taskColumn = gtk_tree_view_column_new_with_attributes("Task",
