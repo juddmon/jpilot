@@ -2190,8 +2190,6 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
                                TODO_DATA_COLUMN_ENUM, &(temp_todo->mtodo),
                                -1);
             clear_mytodos(&temp_todo->mtodo);
-            // gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_todo->mtodo));
-            //  gtk_clist_set_row_style(GTK_CLIST(clist), entries_shown, NULL);
             entries_shown++;
             continue;
         }
@@ -2426,9 +2424,6 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     separator = gtk_hseparator_new();
     gtk_box_pack_start(GTK_BOX(vbox1), separator, FALSE, FALSE, 5);
 
-    //time(&ltime);
-    //now = localtime(&ltime);
-
     /* Make the 'Today is:' label */
     glob_date_label = gtk_label_new(" ");
     gtk_box_pack_start(GTK_BOX(vbox1), glob_date_label, FALSE, FALSE, 0);
@@ -2455,7 +2450,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
                                    GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
     gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolled_window), GTK_TYPE_SHADOW_TYPE);
     gtk_box_pack_start(GTK_BOX(vbox1), scrolled_window, TRUE, TRUE, 0);
-    //
+
     clist = gtk_clist_new_with_titles(5, titles);
 
     listStore = gtk_list_store_new(TODO_NUM_COLS, G_TYPE_BOOLEAN, G_TYPE_STRING, GDK_TYPE_PIXBUF, G_TYPE_STRING,
@@ -2468,25 +2463,6 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
                                     GINT_TO_POINTER(TODO_CHECK_COLUMN_ENUM), NULL);
     GtkTreeModel *model = GTK_TREE_MODEL(listStore);
     treeView = gtk_tree_view_new_with_model(model);
-    //GtkTreeIter    iter;
-    //
-    //    store = gtk_list_store_new (NUM_COLS, G_TYPE_STRING, G_TYPE_UINT,G_TYPE_STRING);
-    //
-    //    /* Append a row and fill in some data */
-    //    gtk_list_store_append (store, &iter);
-    //    gtk_list_store_set (store, &iter,
-    //                        COL_NAME, "Heinz El-Mann",
-    //                        COL_AGE, 51,
-    //                        DUMMMY,"",
-    //                        -1);
-
-
-    /**
-     *  TODO_PRIORITY_COLUMN_ENUM,
-     TODO_NOTE_COLUMN_ENUM,
-     TODO_DATE_COLUMN_ENUM,
-     TODO_TEXT_COLUMN_ENUM,
-     */
     GtkCellRenderer *taskRenderer = gtk_cell_renderer_text_new();
 
     GtkTreeViewColumn *taskColumn = gtk_tree_view_column_new_with_attributes("Task",
@@ -2551,10 +2527,6 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView)),
                                 GTK_SELECTION_BROWSE);
 
-    //gtk_tree_view_column_set_
-    //gtk_clist_set_shadow_type(GTK_CLIST(clist), SHADOW);
-    //   gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
-    // gtk_tree_view_column_set_
     gtk_clist_set_column_title(GTK_CLIST(clist), TODO_TEXT_COLUMN, _("Task"));
     gtk_clist_set_column_title(GTK_CLIST(clist), TODO_DATE_COLUMN, _("Due"));
     /* Put pretty pictures in the clist column headings */
@@ -2606,10 +2578,6 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_tree_sortable_set_sort_column_id(sortable, clist_col_selected, ivalue);
     gtk_clist_set_sort_type(GTK_CLIST (clist), ivalue);
 
-    // gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
-    //todo: make this display
-    ////GTK_TREE_MODEL (store);
-    //    gtk_tree_view_set_model (GTK_TREE_VIEW (view), model);
 
     g_object_unref(model);
     gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(treeView));
