@@ -23,10 +23,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <dirent.h>
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 #include <pi-dlp.h>
@@ -152,7 +150,7 @@ static void init(void) {
     memcpy(&due_date, now, sizeof(struct tm));
 
     get_pref(PREF_TODO_DAYS_TILL_DUE, &ivalue, NULL);
-    add_days_to_date(&due_date, ivalue);
+    add_days_to_date(&due_date,(int) ivalue);
 
     clist_row_selected = 0;
     clist_col_selected = 0;
@@ -188,7 +186,7 @@ static void cb_cal_dialog(GtkWidget *widget,
 
     get_pref(PREF_FDOW, &fdow, NULL);
 
-    r = cal_dialog(GTK_WINDOW(gtk_widget_get_toplevel(widget)), _("Due Date"), fdow,
+    r = cal_dialog(GTK_WINDOW(gtk_widget_get_toplevel(widget)), _("Due Date"), (int) fdow,
                    &(t.tm_mon),
                    &(t.tm_mday),
                    &(t.tm_year));
@@ -407,8 +405,7 @@ static int todo_to_text(struct ToDo *todo, char *text, int len) {
     complete = todo->complete ? yes : no;
     description = todo->description ? todo->description : empty;
     note = todo->note ? todo->note : empty;
-
-    g_snprintf(text, len, "Due: %s\nPriority: %d\nComplete: %s\n\
+    g_snprintf(text, (gulong) len, "Due: %s\nPriority: %d\nComplete: %s\n\
 Description: %s\nNote: %s\n", due, todo->priority, complete,
                description, note);
     return EXIT_SUCCESS;
@@ -545,7 +542,7 @@ static int cb_todo_import(GtkWidget *parent_window,
             if (ret == DIALOG_SAID_IMPORT_SKIP) continue;
             if (ret == DIALOG_SAID_IMPORT_ALL) import_all = TRUE;
 
-            attrib = (new_cat_num & 0x0F) | (priv ? dlpRecAttrSecret : 0);
+            attrib =(unsigned char)((new_cat_num & 0x0F) | (priv ? dlpRecAttrSecret : 0));
             if ((ret == DIALOG_SAID_IMPORT_YES) || (import_all)) {
                 pc_todo_write(&new_todo, NEW_PC_REC, attrib, NULL);
             }
@@ -601,8 +598,8 @@ static int cb_todo_import(GtkWidget *parent_window,
             if (ret == DIALOG_SAID_IMPORT_SKIP) continue;
             if (ret == DIALOG_SAID_IMPORT_ALL) import_all = TRUE;
 
-            attrib = (new_cat_num & 0x0F) |
-                     ((temp_todolist->mtodo.attrib & 0x10) ? dlpRecAttrSecret : 0);
+            attrib = (unsigned char) ((new_cat_num & 0x0F) |
+                     ((temp_todolist->mtodo.attrib & 0x10) ? dlpRecAttrSecret : 0));
             if ((ret == DIALOG_SAID_IMPORT_YES) || (import_all)) {
                 pc_todo_write(&(temp_todolist->mtodo.todo), NEW_PC_REC,
                               attrib, NULL);
@@ -656,7 +653,7 @@ static void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
     FILE *out;
     struct stat statb;
     int i, r;
-    const char *short_date;
+    const char *short_date = NULL;
     time_t ltime;
     struct tm *now = NULL;
     char *button_text[] = {N_("OK")};
@@ -671,7 +668,7 @@ static void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
     char username[256];
     char hostname[256];
     const char *svalue;
-    long userid;
+    long userid = -1;
     long char_set;
     char *utf;
 
@@ -734,7 +731,7 @@ static void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
         /* Convert User Name stored in Palm character set */
         g_strlcpy(text, svalue, 128);
         text[127] = '\0';
-        charset_p2j(text, 128, char_set);
+        charset_p2j(text, 128, (int) char_set);
         str_to_ical_str(username, sizeof(username), text);
         get_pref(PREF_USER_ID, &userid, NULL);
         gethostname(text, sizeof(hostname));
@@ -755,7 +752,7 @@ static void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
         }
         switch (type) {
             case EXPORT_TYPE_CSV:
-                utf = charset_p2newj(todo_app_info.category.name[mtodo->attrib & 0x0F], 16, char_set);
+                utf = charset_p2newj(todo_app_info.category.name[mtodo->attrib & 0x0F], 16, (int) char_set);
                 str_to_csv_str(csv_text, utf);
                 fprintf(out, "\"%s\",", csv_text);
                 g_free(utf);
@@ -784,7 +781,7 @@ static void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
                 break;
 
             case EXPORT_TYPE_TEXT:
-                utf = charset_p2newj(todo_app_info.category.name[mtodo->attrib & 0x0F], 16, char_set);
+                utf = charset_p2newj(todo_app_info.category.name[mtodo->attrib & 0x0F], 16, (int) char_set);
                 fprintf(out, _("Category: %s\n"), utf);
                 g_free(utf);
 
@@ -988,9 +985,9 @@ void deleteTodo(MyToDo * mtodo,gpointer data){
     get_pref(PREF_CHAR_SET, &char_set, NULL);
     if (char_set != CHAR_SET_LATIN1) {
         if (mtodo->todo.description)
-            charset_j2p(mtodo->todo.description, strlen(mtodo->todo.description) + 1, char_set);
+            charset_j2p(mtodo->todo.description, (int) strlen(mtodo->todo.description) + 1, char_set);
         if (mtodo->todo.note)
-            charset_j2p(mtodo->todo.note, strlen(mtodo->todo.note) + 1, char_set);
+            charset_j2p(mtodo->todo.note, (int) strlen(mtodo->todo.note) + 1, char_set);
     }
 
     /* Do masking like Palm OS 3.5 */
@@ -1150,9 +1147,9 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data) {
 
     edit_cats(widget, db_name, &(ai.category));
 
-    size = pack_ToDoAppInfo(&ai, buffer, sizeof(buffer));
+    size = (size_t) pack_ToDoAppInfo(&ai, buffer, sizeof(buffer));
 
-    pdb_file_write_app_block(db_name, buffer, size);
+    pdb_file_write_app_block(db_name, buffer, (int) size);
 
     cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
 }
@@ -1181,7 +1178,7 @@ static void cb_category(GtkWidget *item, int selection) {
             } else {
                 gtk_check_menu_item_set_active
                         (GTK_CHECK_MENU_ITEM(todo_cat_menu_item1[index]), TRUE);
-                gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), index2);
+                gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), (guint) index2);
             }
 
             return;
@@ -1214,7 +1211,7 @@ static void cb_check_button_no_due_date(GtkWidget *widget, gpointer data) {
         memcpy(&due_date, now, sizeof(struct tm));
 
         get_pref(PREF_TODO_DAYS_TILL_DUE, &till_due, NULL);
-        add_days_to_date(&due_date, till_due);
+        add_days_to_date(&due_date, (int) till_due);
 
         update_due_button(due_date_button, &due_date);
     }
@@ -1253,7 +1250,7 @@ static int todo_clear_details(void) {
     memcpy(&due_date, now, sizeof(struct tm));
 
     if (default_due) {
-        add_days_to_date(&due_date, till_due);
+        add_days_to_date(&due_date, (int) till_due);
         update_due_button(due_date_button, &due_date);
     } else {
         update_due_button(due_date_button, NULL);
@@ -1274,7 +1271,7 @@ static int todo_clear_details(void) {
         gtk_check_menu_item_set_active
                 (GTK_CHECK_MENU_ITEM(todo_cat_menu_item2[sorted_position]), TRUE);
         gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu2),
-                                    find_menu_cat_pos(sorted_position));
+                                    (guint)find_menu_cat_pos(sorted_position));
     }
 
     set_new_button_to(CLEAR_FLAG);
@@ -1325,7 +1322,7 @@ static int todo_get_details(struct ToDo *new_todo, unsigned char *attrib) {
     for (i = 0; i < NUM_TODO_CAT_ITEMS; i++) {
         if (GTK_IS_WIDGET(todo_cat_menu_item2[i])) {
             if (GTK_CHECK_MENU_ITEM(todo_cat_menu_item2[i])->active) {
-                *attrib = sort_l[i].cat_num;
+                *attrib = (unsigned char) sort_l[i].cat_num;
                 break;
             }
         }
@@ -1453,7 +1450,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data) {
 /* Do masking like Palm OS 3.5 */
 static void clear_mytodos(MyToDo *mtodo) {
     mtodo->unique_id = 0;
-    mtodo->attrib = mtodo->attrib & 0xF8;
+    mtodo->attrib = (unsigned char) (mtodo->attrib & 0xF8);
     mtodo->todo.complete = 0;
     mtodo->todo.priority = 1;
     mtodo->todo.indefinite = 1;
@@ -1481,6 +1478,8 @@ static gint sortNoteColumn(GtkTreeModel *model,
         case TODO_NOTE_COLUMN_ENUM: {
             ret = compareNoteColumn(model, left, right);
         }
+        break;
+        default:
             break;
     }
     return ret;
@@ -1532,7 +1531,6 @@ static void checkedCallBack(GtkCellRendererToggle * renderer, gchar* path, GtkLi
 {
     GtkTreeIter iter;
     gboolean active;
-    struct ToDo *todo;
     MyToDo *mtodo;
     active = gtk_cell_renderer_toggle_get_active (renderer);
 
@@ -1637,7 +1635,7 @@ static gboolean handleRowSelection(GtkTreeSelection *selection,
                     (GTK_CHECK_MENU_ITEM(todo_cat_menu_item2[sorted_position]), TRUE);
         }
         gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu2),
-                                    find_menu_cat_pos(sorted_position));
+                                    (guint) find_menu_cat_pos(sorted_position));
 
         if (todo->description) {
             if (todo->description[0]) {
@@ -1901,7 +1899,7 @@ int todo_refresh(void) {
     } else {
         gtk_check_menu_item_set_active
                 (GTK_CHECK_MENU_ITEM(todo_cat_menu_item1[index]), TRUE);
-        gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), index2);
+        gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), (guint) index2);
     }
 
     return EXIT_SUCCESS;
@@ -1911,9 +1909,7 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
                            ToDoList **todo_list, int category, int main) {
     GtkTreeIter iter;
     int num_entries, entries_shown;
-    gchar *empty_line[] = {"", "", "", "", ""};
     char str[50];
-    char str2[TODO_MAX_COLUMN_LEN + 2];
     GdkPixbuf *pixbuf_note;
     GdkPixbuf *pixbuf_check;
     GdkPixbuf *pixbuf_checked;
@@ -1922,7 +1918,6 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
     ToDoList *temp_todo;
     char dateDisplay[50];
     char priorityDisplay[50];
-    char textDisplay[50];
     char descriptionDisplay[TODO_MAX_COLUMN_LEN + 2];
     const char *svalue;
     long hide_completed, hide_not_due;
@@ -2115,10 +2110,10 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
     if (tooltip_widget) {
         get_pref(PREF_SHOW_TOOLTIPS, &show_tooltips, NULL);
         if (todo_list == NULL) {
-            set_tooltip(show_tooltips, glob_tooltips, tooltip_widget, _("0 records"), NULL);
+            set_tooltip((int) show_tooltips, glob_tooltips, tooltip_widget, _("0 records"), NULL);
         } else {
             sprintf(str, _("%d of %d records"), entries_shown, num_entries);
-            set_tooltip(show_tooltips, glob_tooltips, tooltip_widget, str, NULL);
+            set_tooltip((int) show_tooltips, glob_tooltips, tooltip_widget, str, NULL);
         }
     }
 
@@ -2158,8 +2153,6 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     int i;
     GSList *group;
     long ivalue;
-    char *titles[] = {"", "", "", "", ""};
-
     GtkAccelGroup *accel_group;
     long char_set;
     long show_tooltips;
@@ -2174,13 +2167,13 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     /* Initialize categories */
     get_pref(PREF_CHAR_SET, &char_set, NULL);
     for (i = 1; i < NUM_TODO_CAT_ITEMS; i++) {
-        cat_name = charset_p2newj(todo_app_info.category.name[i], 31, char_set);
+        cat_name = charset_p2newj(todo_app_info.category.name[i], 31, (int) char_set);
         strcpy(sort_l[i - 1].Pcat, cat_name);
         free(cat_name);
         sort_l[i - 1].cat_num = i;
     }
     /* put reserved 'Unfiled' category at end of list */
-    cat_name = charset_p2newj(todo_app_info.category.name[0], 31, char_set);
+    cat_name = charset_p2newj(todo_app_info.category.name[0], 31, (int) char_set);
     strcpy(sort_l[NUM_TODO_CAT_ITEMS - 1].Pcat, cat_name);
     free(cat_name);
     sort_l[NUM_TODO_CAT_ITEMS - 1].cat_num = 0;
@@ -2194,7 +2187,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
 #endif
 
     get_pref(PREF_LAST_TODO_CATEGORY, &ivalue, NULL);
-    todo_category = ivalue;
+    todo_category = (int) ivalue;
 
     if ((todo_category != CATEGORY_ALL)
         && (todo_app_info.category.name[todo_category][0] == '\0')) {
@@ -2209,7 +2202,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     pane = gtk_hpaned_new();
     get_pref(PREF_TODO_PANE, &ivalue, NULL);
-    gtk_paned_set_position(GTK_PANED(pane), ivalue);
+    gtk_paned_set_position(GTK_PANED(pane), (gint) ivalue);
 
     gtk_box_pack_start(GTK_BOX(hbox), pane, TRUE, TRUE, 5);
 
@@ -2252,7 +2245,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 0);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
                                    GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-    gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolled_window), GTK_TYPE_SHADOW_TYPE);
+    gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolled_window), (GtkShadowType) GTK_TYPE_SHADOW_TYPE);
     gtk_box_pack_start(GTK_BOX(vbox1), scrolled_window, TRUE, TRUE, 0);
     //
     listStore = gtk_list_store_new(TODO_NUM_COLS, G_TYPE_BOOLEAN, G_TYPE_STRING, GDK_TYPE_PIXBUF, G_TYPE_STRING,
@@ -2360,7 +2353,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     /* Restore previous sorting configuration */
     get_pref(PREF_TODO_SORT_COLUMN, &ivalue, NULL);
-    clist_col_selected = ivalue;
+    clist_col_selected = (int) ivalue;
 
     for (int x = 0; x < TODO_NUM_COLS - 5; x++) {
         gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), x), gtk_false());
@@ -2369,7 +2362,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_tree_view_columns_autosize(GTK_TREE_VIEW(treeView));
 
     get_pref(PREF_TODO_SORT_ORDER, &ivalue, NULL);
-    gtk_tree_sortable_set_sort_column_id(sortable, clist_col_selected, ivalue);
+    gtk_tree_sortable_set_sort_column_id(sortable, clist_col_selected, (GtkSortType)  ivalue);
 
 
     //gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(treeView));
@@ -2464,7 +2457,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     label = gtk_label_new(_("Priority:"));
     gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 2);
-    set_tooltip(show_tooltips, glob_tooltips, label, _("Set priority   Alt+#"), NULL);
+    set_tooltip((int) show_tooltips, glob_tooltips, label, _("Set priority   Alt+#"), NULL);
 
     group = NULL;
     for (i = 0; i < NUM_TODO_PRIORITIES; i++) {
@@ -2472,7 +2465,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
         radio_button_todo[i] = gtk_radio_button_new_with_label(group, str);
         group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_todo[i]));
         gtk_widget_add_accelerator(radio_button_todo[i], "clicked", accel_group,
-                                   GDK_1 + i, GDK_MOD1_MASK, GTK_ACCEL_VISIBLE);
+                                   (guint) GDK_1 + i, GDK_MOD1_MASK, GTK_ACCEL_VISIBLE);
         gtk_box_pack_start(GTK_BOX(hbox_temp),
                            radio_button_todo[i], FALSE, FALSE, 0);
     }
@@ -2502,7 +2495,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     note_pane = gtk_vpaned_new();
     get_pref(PREF_TODO_NOTE_PANE, &ivalue, NULL);
-    gtk_paned_set_position(GTK_PANED(note_pane), ivalue);
+    gtk_paned_set_position(GTK_PANED(note_pane), (gint) ivalue);
     gtk_box_pack_start(GTK_BOX(vbox2), note_pane, TRUE, TRUE, 0);
 
     /* Description text box */
