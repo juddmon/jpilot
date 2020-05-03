@@ -1471,19 +1471,15 @@ static void clear_mytodos(MyToDo *mtodo) {
 /* End Masking */
 
 
-static gint GtkTreeColumnCompare(GtkTreeModel *model,
-                                 GtkTreeIter *left,
-                                 GtkTreeIter *right,
-                                 gpointer columnId) {
+static gint sortNoteColumn(GtkTreeModel *model,
+                           GtkTreeIter *left,
+                           GtkTreeIter *right,
+                           gpointer columnId) {
     gint sortcol = GPOINTER_TO_INT(columnId);
     gint ret = 0;
     switch (sortcol) {
         case TODO_NOTE_COLUMN_ENUM: {
             ret = compareNoteColumn(model, left, right);
-        }
-            break;
-        case TODO_CHECK_COLUMN_ENUM: {
-            ret = compareCheckColumn(model, left, right);
         }
             break;
     }
@@ -2263,9 +2259,9 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
                                    G_TYPE_STRING, G_TYPE_POINTER,GDK_TYPE_COLOR,G_TYPE_BOOLEAN,G_TYPE_STRING,G_TYPE_BOOLEAN);
     GtkTreeSortable *sortable;
     sortable = GTK_TREE_SORTABLE(listStore);
-    gtk_tree_sortable_set_sort_func(sortable, TODO_NOTE_COLUMN_ENUM, GtkTreeColumnCompare,
+    gtk_tree_sortable_set_sort_func(sortable, TODO_NOTE_COLUMN_ENUM, sortNoteColumn,
                                     GINT_TO_POINTER(TODO_NOTE_COLUMN_ENUM), NULL);
-   // gtk_tree_sortable_set_sort_func(sortable, TODO_CHECK_COLUMN_ENUM, GtkTreeColumnCompare,
+   // gtk_tree_sortable_set_sort_func(sortable, TODO_CHECK_COLUMN_ENUM, sortNoteColumn,
     //                                GINT_TO_POINTER(TODO_CHECK_COLUMN_ENUM), NULL);
     GtkTreeModel *model = GTK_TREE_MODEL(listStore);
     treeView = gtk_tree_view_new_with_model(model);
