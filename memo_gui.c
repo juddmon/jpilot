@@ -63,6 +63,8 @@ static struct MemoAppInfo memo_app_info;
 static int memo_category = CATEGORY_ALL;
 static int clist_row_selected;
 static GtkWidget *clist;
+static GtkWidget *treeView;
+static GtkListStore *listStore;
 static GtkWidget *memo_text;
 static GObject   *memo_text_buffer;
 static GtkWidget *private_checkbox;
@@ -93,8 +95,27 @@ static int memo_find(void);
 static int memo_get_details(struct Memo *new_memo, unsigned char *attrib);
 static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
                               MemoList **memo_list, int category, int main);
+static void memo_update_liststore(GtkWidget *listStore, GtkWidget *tooltip_widget,
+                              MemoList **memo_list, int category, int main);
 static void cb_add_new_record(GtkWidget *widget, gpointer data);
 static void cb_edit_cats(GtkWidget *widget, gpointer data);
+
+void initializeTreeView();
+gboolean handleRowSelectionForMemo(GtkTreeSelection *selection,
+                                   GtkTreeModel *model,
+                                   GtkTreePath *path,
+                                   gboolean path_currently_selected,
+                                   gpointer userdata);
+
+enum {
+    MEMO_COLUMN_ENUM = 0,
+    MEMO_DATA_COLUMN_ENUM,
+    MEMO_BACKGROUND_COLOR_ENUM,
+    MEMO_BACKGROUND_COLOR_ENABLED_ENUM,
+    MEMO_FOREGROUND_COLOR_ENUM,
+    MEMO_FORGROUND_COLOR_ENABLED_ENUM,
+    MEMO_NUM_COLS
+};
 
 /****************************** Main Code *************************************/
 static void set_new_button_to(int new_state)
@@ -1374,7 +1395,164 @@ static gboolean cb_key_pressed_right_side(GtkWidget   *widget,
 
    return FALSE;
 }
+static void memo_update_liststore(GtkWidget *listStore, GtkWidget *tooltip_widget,
+                              MemoList **memo_list, int category, int main)
+{
+    int num_entries, entries_shown;
+    size_t copy_max_length;
+    char *last;
+    gchar *empty_line[] = { "" };
+    char str2[MEMO_MAX_COLUMN_LEN];
+    MemoList *temp_memo;
+    char str[MEMO_CLIST_CHAR_WIDTH+10];
+    int len, len1;
+    int show_priv;
+    long show_tooltips;
 
+    jp_logf(JP_LOG_DEBUG, "memo_update_clist()\n");
+
+    free_MemoList(memo_list);
+
+    /* Need to get all records including private ones for the tooltips calculation */
+    num_entries = get_memos2(memo_list, SORT_ASCENDING, 2, 2, 1, CATEGORY_ALL);
+
+    /* Start by clearing existing entry if in main window */
+    if (main) {
+        memo_clear_details();
+    }
+    gtk_list_store_clear(GTK_LIST_STORE(listStore));
+
+#ifdef __APPLE__
+    gtk_clist_thaw(GTK_CLIST(clist));
+   gtk_widget_hide(clist);
+   gtk_widget_show_all(clist);
+   gtk_clist_freeze(GTK_CLIST(clist));
+#endif
+
+    show_priv = show_privates(GET_PRIVATES);
+
+    entries_shown=0;
+    for (temp_memo = *memo_list; temp_memo; temp_memo=temp_memo->next) {
+        if ( ((temp_memo->mmemo.attrib & 0x0F) != category) &&
+             category != CATEGORY_ALL) {
+            continue;
+        }
+
+        /* Do masking like Palm OS 3.5 */
+        if ((show_priv == MASK_PRIVATES) &&
+            (temp_memo->mmemo.attrib & dlpRecAttrSecret)) {
+            gtk_clist_append(GTK_CLIST(clist), empty_line);
+            gtk_clist_set_text(GTK_CLIST(clist), entries_shown, 0,
+                               "----------------------------------------");
+            clear_mymemo(&temp_memo->mmemo);
+            gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_memo->mmemo));
+            gtk_clist_set_row_style(GTK_CLIST(clist), entries_shown, NULL);
+            entries_shown++;
+            continue;
+        }
+        /* End Masking */
+
+        /* Hide the private records if need be */
+        if ((show_priv != SHOW_PRIVATES) &&
+            (temp_memo->mmemo.attrib & dlpRecAttrSecret)) {
+            continue;
+        }
+
+        /* Add entry to clist */
+        gtk_clist_append(GTK_CLIST(clist), empty_line);
+
+        sprintf(str, "%d. ", entries_shown + 1);
+
+        len1 = strlen(str);
+        len = strlen(temp_memo->mmemo.memo.text)+1;
+        /* ..memo clist does not display '/n' */
+        if ((copy_max_length = len) > MEMO_CLIST_CHAR_WIDTH) {
+            copy_max_length = MEMO_CLIST_CHAR_WIDTH;
+        }
+        last = (char *)multibyte_safe_memccpy(str+len1, temp_memo->mmemo.memo.text,'\n', copy_max_length);
+        if (last) {
+            *(last-1)='\0';
+        } else {
+            str[copy_max_length + len1]='\0';
+        }
+        lstrncpy_remove_cr_lfs(str2, str, MEMO_MAX_COLUMN_LEN);
+        gtk_clist_set_text(GTK_CLIST(clist), entries_shown, 0, str2);
+        gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_memo->mmemo));
+
+        /* Highlight row background depending on status */
+        switch (temp_memo->mmemo.rt) {
+            case NEW_PC_REC:
+            case REPLACEMENT_PALM_REC:
+                set_bg_rgb_clist_row(clist, entries_shown,
+                                     CLIST_NEW_RED, CLIST_NEW_GREEN, CLIST_NEW_BLUE);
+                break;
+            case DELETED_PALM_REC:
+            case DELETED_PC_REC:
+                set_bg_rgb_clist_row(clist, entries_shown,
+                                     CLIST_DEL_RED, CLIST_DEL_GREEN, CLIST_DEL_BLUE);
+                break;
+            case MODIFIED_PALM_REC:
+                set_bg_rgb_clist_row(clist, entries_shown,
+                                     CLIST_MOD_RED, CLIST_MOD_GREEN, CLIST_MOD_BLUE);
+                break;
+            default:
+                if (temp_memo->mmemo.attrib & dlpRecAttrSecret) {
+                    set_bg_rgb_clist_row(clist, entries_shown,
+                                         CLIST_PRIVATE_RED, CLIST_PRIVATE_GREEN, CLIST_PRIVATE_BLUE);
+                } else {
+                    gtk_clist_set_row_style(GTK_CLIST(clist), entries_shown, NULL);
+                }
+        }
+        entries_shown++;
+    }
+
+    jp_logf(JP_LOG_DEBUG, "entries_shown=%d\n", entries_shown);
+
+    /* If there are items in the list, highlight the selected row */
+    if ((main) && (entries_shown>0)) {
+        /* First, select any record being searched for */
+        if (glob_find_id)
+        {
+            memo_find();
+        }
+            /* Second, try the currently selected row */
+        else if (clist_row_selected < entries_shown)
+        {
+            clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
+            if (!gtk_clist_row_is_visible(GTK_CLIST(clist), clist_row_selected)) {
+                gtk_clist_moveto(GTK_CLIST(clist), clist_row_selected, 0, 0.5, 0.0);
+            }
+        }
+            /* Third, select row 0 if nothing else is possible */
+        else
+        {
+            clist_select_row(GTK_CLIST(clist), 0, 0);
+        }
+    }
+
+    /* Unfreeze clist after all changes */
+    gtk_clist_thaw(GTK_CLIST(clist));
+
+    if (tooltip_widget) {
+        get_pref(PREF_SHOW_TOOLTIPS, &show_tooltips, NULL);
+        if (memo_list==NULL) {
+            set_tooltip(show_tooltips, glob_tooltips, tooltip_widget, _("0 records"), NULL);
+        }
+        else {
+            sprintf(str, _("%d of %d records"), entries_shown, num_entries);
+            set_tooltip(show_tooltips, glob_tooltips, tooltip_widget, str, NULL);
+        }
+    }
+
+    if (main) {
+        connect_changed_signals(CONNECT_SIGNALS);
+    }
+
+    /* return focus to clist after any big operation which requires a redraw */
+    gtk_widget_grab_focus(GTK_WIDGET(clist));
+
+    jp_logf(JP_LOG_DEBUG, "Leaving memo_update_clist()\n");
+}
 static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
                               MemoList **memo_list, int category, int main)
 {
@@ -1670,6 +1848,8 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    record_changed=CLEAR_FLAG;
 
    get_memo_app_info(&memo_app_info);
+   listStore = gtk_list_store_new(MEMO_NUM_COLS, G_TYPE_STRING, G_TYPE_POINTER,GDK_TYPE_COLOR,
+           G_TYPE_BOOLEAN,G_TYPE_STRING,G_TYPE_BOOLEAN);
 
    /* Initialize categories */
    get_pref(PREF_CHAR_SET, &char_set, NULL);
@@ -1751,6 +1931,8 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_box_pack_start(GTK_BOX(vbox1), scrolled_window, TRUE, TRUE, 0);
 
    clist = gtk_clist_new(1);
+   initializeTreeView();
+   gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(treeView));
    gtk_clist_set_shadow_type(GTK_CLIST(clist), SHADOW);
    gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
    gtk_clist_set_column_width(GTK_CLIST(clist), 0, 50);
@@ -1758,7 +1940,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
                       GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
 
-   gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
+  // gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
 
    /* Right side of GUI */
 
@@ -1873,4 +2055,24 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox)
    memo_refresh();
 
    return EXIT_SUCCESS;
+}
+
+void initializeTreeView() {
+    GtkTreeSelection * treeSelection = NULL;
+    treeView = gtk_tree_view_new_with_model(GTK_TREE_MODEL(listStore));
+    GtkCellRenderer * columnRenderer = gtk_cell_renderer_text_new();
+    GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes("",columnRenderer,"text",0,NULL);
+    gtk_tree_view_column_set_fixed_width(column,(gint) 50);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW(treeView),column,0);
+    gtk_tree_view_column_set_sizing(column, GTK_TREE_VIEW_COLUMN_FIXED);
+    treeSelection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
+    gtk_tree_selection_set_select_function(treeSelection, handleRowSelectionForMemo, NULL, NULL);
+
+}
+gboolean handleRowSelectionForMemo(GtkTreeSelection *selection,
+                                   GtkTreeModel *model,
+                                   GtkTreePath *path,
+                                   gboolean path_currently_selected,
+                                   gpointer userdata) {
+
 }
