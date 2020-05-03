@@ -5108,7 +5108,8 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    gtk_container_add(GTK_CONTAINER(todo_scrolled_window), GTK_WIDGET(todo_clist));
 
-   todo_update_clist(todo_clist, NULL, &datebook_todo_list, CATEGORY_ALL, FALSE);
+   //TODO: switch to todo_update_listStore when starting to convert this one.
+   // todo_update_clist(todo_clist, NULL, &datebook_todo_list, CATEGORY_ALL, FALSE);
    /* End ToDo clist code */
 
    /* Right side of GUI */
