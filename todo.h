@@ -46,9 +46,6 @@ int todo_import(GtkWidget *window);
 int todo_export(GtkWidget *window);
 
 /* Exported for datebook use only.  Don't use these */
-void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
-                       ToDoList **todo_list, int category, int main);
-void todo_clist_clear(GtkCList *clist);
 
 void todo_liststore_clear(GtkListStore *pListStore);
 
