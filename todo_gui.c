@@ -2263,7 +2263,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
                                     GINT_TO_POINTER(TODO_NOTE_COLUMN_ENUM), NULL);
     GtkTreeModel *model = GTK_TREE_MODEL(listStore);
     treeView = gtk_tree_view_new_with_model(model);
-  
+
     GtkCellRenderer *taskRenderer = gtk_cell_renderer_text_new();
 
     GtkTreeViewColumn *taskColumn = gtk_tree_view_column_new_with_attributes("Task",
