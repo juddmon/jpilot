@@ -123,6 +123,10 @@ gboolean printRecord(GtkTreeModel *model,
                      GtkTreeIter  *iter,
                      gpointer data);
 
+gint compareNoteColumn(const GtkTreeModel *model, const GtkTreeIter *left, const GtkTreeIter *right);
+
+gint compareCheckColumn(const GtkTreeModel *model, const GtkTreeIter *left, const GtkTreeIter *right);
+
 enum {
     TODO_CHECK_COLUMN_ENUM = 0,
     TODO_PRIORITY_COLUMN_ENUM,
@@ -307,7 +311,7 @@ static void cb_record_changed(GtkWidget *widget,
     jp_logf(JP_LOG_DEBUG, "cb_record_changed\n");
     if (record_changed == CLEAR_FLAG) {
         connect_changed_signals(DISCONNECT_SIGNALS);
-        if (GTK_CLIST(clist)->rows > 0) {
+        if (gtk_tree_model_iter_n_children(GTK_TREE_MODEL(listStore),NULL) > 0) {
             set_new_button_to(MODIFY_FLAG);
         } else {
             set_new_button_to(NEW_FLAG);
@@ -1468,37 +1472,6 @@ static void clear_mytodos(MyToDo *mtodo) {
 /* End Masking */
 
 
-/* Function is used to sort clist based on the completed checkbox */
-static gint GtkClistCompareCheckbox(GtkCList *clist,
-                                    gconstpointer ptr1,
-                                    gconstpointer ptr2) {
-    GtkCListRow *row1;
-    GtkCListRow *row2;
-    MyToDo *mtodo1;
-    MyToDo *mtodo2;
-    struct ToDo *todo1;
-    struct ToDo *todo2;
-
-    row1 = (GtkCListRow *) ptr1;
-    row2 = (GtkCListRow *) ptr2;
-
-    mtodo1 = row1->data;
-    mtodo2 = row2->data;
-
-    todo1 = &(mtodo1->todo);
-    todo2 = &(mtodo2->todo);
-
-    if (todo1->complete && !todo2->complete) {
-        return -1;
-    } else if (todo2->complete && !todo1->complete) {
-        return 1;
-    } else {
-        return 0;
-    }
-
-}
-
-
 static gint GtkTreeColumnCompare(GtkTreeModel *model,
                                  GtkTreeIter *left,
                                  GtkTreeIter *right,
@@ -1507,38 +1480,12 @@ static gint GtkTreeColumnCompare(GtkTreeModel *model,
     gint ret = 0;
     clist_col_selected = sortcol;
     switch (sortcol) {
-
         case TODO_NOTE_COLUMN_ENUM: {
-            GdkPixbuf *note1, *note2;
-
-            gtk_tree_model_get(model, left, TODO_NOTE_COLUMN_ENUM, &note1, -1);
-            gtk_tree_model_get(model, right, TODO_NOTE_COLUMN_ENUM, &note2, -1);
-
-            if (note1 == NULL && note2 == NULL) {
-                ret = 0;
-            } else if (note1 == NULL && note2 != NULL) {
-                ret = -1;
-            } else if (note1 != NULL && note2 == NULL) {
-                ret = 1;
-            } else {
-                ret = 0;
-            }
+            ret = compareNoteColumn(model, left, right);
         }
             break;
         case TODO_CHECK_COLUMN_ENUM: {
-            gboolean *name1, *name2;
-
-            gtk_tree_model_get(model, left, TODO_CHECK_COLUMN_ENUM, &name1, -1);
-            gtk_tree_model_get(model, right, TODO_CHECK_COLUMN_ENUM, &name2, -1);
-            if(!name1 && name2){
-                ret = 1;
-            }else if(name1 && !name2){
-                ret = -1;
-            }else {
-                ret = 0;
-            }
-
-
+            ret = compareCheckColumn(model, left, right);
         }
             break;
     }
@@ -1546,37 +1493,41 @@ static gint GtkTreeColumnCompare(GtkTreeModel *model,
 
 }
 
-/* Function is used to sort clist based on the Due Date field */
-static gint GtkClistCompareDates(GtkCList *clist,
-                                 gconstpointer ptr1,
-                                 gconstpointer ptr2) {
-    GtkCListRow *row1, *row2;
-    MyToDo *mtodo1, *mtodo2;
-    struct ToDo *todo1, *todo2;
-    time_t time1, time2;
+gint compareCheckColumn(const GtkTreeModel *model, const GtkTreeIter *left, const GtkTreeIter *right) {
+    gint ret;
+    gboolean *name1, *name2;
 
-    row1 = (GtkCListRow *) ptr1;
-    row2 = (GtkCListRow *) ptr2;
-
-    mtodo1 = row1->data;
-    mtodo2 = row2->data;
-
-    todo1 = &(mtodo1->todo);
-    todo2 = &(mtodo2->todo);
-
-    if (!(todo1->indefinite) && (todo2->indefinite)) {
-        return -1;
+    gtk_tree_model_get(model, left, TODO_CHECK_COLUMN_ENUM, &name1, -1);
+    gtk_tree_model_get(model, right, TODO_CHECK_COLUMN_ENUM, &name2, -1);
+    if(!name1 && name2){
+        ret = 1;
+    }else if(name1 && !name2){
+        ret = -1;
+    }else {
+        ret = 0;
     }
-    if ((todo1->indefinite) && !(todo2->indefinite)) {
-        return 1;
-    }
-
-    /* Both todos have due dates which requires further comparison */
-    time1 = mktime(&(todo1->due));
-    time2 = mktime(&(todo2->due));
-
-    return (time1 - time2);
+    return ret;
 }
+
+gint compareNoteColumn(const GtkTreeModel *model, const GtkTreeIter *left, const GtkTreeIter *right) {
+    gint ret;
+    GdkPixbuf *note1, *note2;
+
+    gtk_tree_model_get(model, left, TODO_NOTE_COLUMN_ENUM, &note1, -1);
+    gtk_tree_model_get(model, right, TODO_NOTE_COLUMN_ENUM, &note2, -1);
+
+    if (note1 == NULL && note2 == NULL) {
+        ret = 0;
+    } else if (note1 == NULL && note2 != NULL) {
+        ret = -1;
+    } else if (note1 != NULL && note2 == NULL) {
+        ret = 1;
+    } else {
+        ret = 0;
+    }
+    return ret;
+}
+
 
 static void column_clicked_cb(GtkTreeViewColumn *column) {
     clist_col_selected = column->sort_column_id;
@@ -1920,10 +1871,7 @@ static gboolean cb_key_pressed_right_side(GtkWidget *widget,
                                           gpointer data) {
     if ((event->keyval == GDK_Return) && (event->state & GDK_SHIFT_MASK)) {
         gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
-        /* Call clist_selection to handle any cleanup such as a modified record */
-        cb_clist_selection(clist, clist_row_selected, TODO_PRIORITY_COLUMN,
-                           GINT_TO_POINTER(1), NULL);
-        gtk_widget_grab_focus(GTK_WIDGET(clist));
+        gtk_widget_grab_focus(GTK_WIDGET(treeView));
         return TRUE;
     }
     /* Call external editor for note text */
@@ -2644,13 +2592,6 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     gtk_tree_selection_set_select_function(treeSelection, handleRowSelection, NULL, NULL);
 
-        // register function to handle row selection.
-    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
-                       GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
-
-
-
-
     /* Restore previous sorting configuration */
     get_pref(PREF_TODO_SORT_COLUMN, &ivalue, NULL);
     clist_col_selected = ivalue;
@@ -2661,22 +2602,6 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), clist_col_selected), gtk_true());
     gtk_tree_view_columns_autosize(GTK_TREE_VIEW(treeView));
 
-
-    switch (clist_col_selected) {
-        case TODO_CHECK_COLUMN: /* Checkbox column */
-            //todo: implement sort..
-            //gtk_tree_sortable_set_sort_func()
-            gtk_clist_set_compare_func(GTK_CLIST(clist), GtkClistCompareCheckbox);
-            break;
-        case TODO_DATE_COLUMN:  /* Due Date column */
-            //todo: implement sort..
-            gtk_clist_set_compare_func(GTK_CLIST(clist), GtkClistCompareDates);
-            break;
-        default: /* All other columns can use GTK default sort function */
-            //todo: implement sort..
-            gtk_clist_set_compare_func(GTK_CLIST(clist), NULL);
-            break;
-    }
     get_pref(PREF_TODO_SORT_ORDER, &ivalue, NULL);
     gtk_tree_sortable_set_sort_column_id(sortable, clist_col_selected, ivalue);
     gtk_clist_set_sort_type(GTK_CLIST (clist), ivalue);
@@ -2863,7 +2788,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     /* Capture the Enter & Shift-Enter key combinations to move back and
      * forth between the left- and right-hand sides of the display. */
-    gtk_signal_connect(GTK_OBJECT(clist), "key_press_event",
+    gtk_signal_connect(GTK_OBJECT(treeView), "key_press_event",
                        GTK_SIGNAL_FUNC(cb_key_pressed_left_side), todo_desc);
 
     gtk_signal_connect(GTK_OBJECT(todo_desc), "key_press_event",
