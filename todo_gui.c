@@ -644,6 +644,8 @@ int todo_import(GtkWidget *window) {
  * Start Export code
  */
 
+
+
 static void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
                               int type, const char *filename) {
     MyToDo *mtodo;
@@ -1580,51 +1582,6 @@ static void column_clicked_cb(GtkTreeViewColumn *column) {
 
 }
 
-static void cb_clist_click_column(GtkWidget *clist, int column) {
-    MyToDo *mtodo;
-
-    /* Remember currently selected item and return to it after sort
-     * This is critically important because sorting without updating the
-     * global variable clist_row_selected can cause data loss */
-    mtodo = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
-    if (mtodo < (MyToDo *) CLIST_MIN_DATA) {
-        glob_find_id = 0;
-    } else {
-        glob_find_id = mtodo->unique_id;
-    }
-
-    /* Clicking on same column toggles ascending/descending sort */
-    if (clist_col_selected == column) {
-        if (GTK_CLIST(clist)->sort_type == GTK_SORT_ASCENDING) {
-            gtk_clist_set_sort_type(GTK_CLIST (clist), GTK_SORT_DESCENDING);
-        } else {
-            gtk_clist_set_sort_type(GTK_CLIST (clist), GTK_SORT_ASCENDING);
-        }
-    } else /* Always sort in ascending order when changing sort column */
-    {
-        gtk_clist_set_sort_type(GTK_CLIST (clist), GTK_SORT_ASCENDING);
-    }
-
-    clist_col_selected = column;
-
-    gtk_clist_set_sort_column(GTK_CLIST(clist), column);
-    switch (column) {
-        case TODO_CHECK_COLUMN: /* Checkbox column */
-            gtk_clist_set_compare_func(GTK_CLIST(clist), GtkClistCompareCheckbox);
-            break;
-        case TODO_DATE_COLUMN:  /* Due Date column */
-            gtk_clist_set_compare_func(GTK_CLIST(clist), GtkClistCompareDates);
-            break;
-        default: /* All other columns can use GTK default sort function */
-            gtk_clist_set_compare_func(GTK_CLIST(clist), NULL);
-            break;
-    }
-    gtk_clist_sort(GTK_CLIST (clist));
-
-    /* Return to previously selected item */
-    todo_find();
-}
-
 static void checkedCallBack(GtkCellRendererToggle * renderer, gchar* path, GtkListStore * model)
 {
     GtkTreeIter iter;
@@ -1690,7 +1647,7 @@ static gboolean handleRowSelection(GtkTreeSelection *selection,
 
             if (unique_id) {
                 glob_find_id = unique_id;
-                todo_find();
+               // todo_find();
             } else {
                 // clist_select_row(GTK_CLIST(clist), row, column);
             }
@@ -2650,12 +2607,7 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
             set_tooltip(show_tooltips, glob_tooltips, tooltip_widget, str, NULL);
         }
     }
-    /* gtk_list_store_append (pListStore, &iter);
 
-     gtk_list_store_set(pListStore,&iter,
-                        TODO_CHECK_COLUMN_ENUM,pixbuf_checked,
-                        TODO_PRIORITY_COLUMN_ENUM,num_entries,
-                        TODO_TEXT_COLUMN_ENUM,"text3",-1);*/
 }
 
 int todo_gui_cleanup(void) {
@@ -2925,9 +2877,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     gtk_tree_selection_set_select_function(treeSelection, handleRowSelection, NULL, NULL);
 
-    gtk_signal_connect(GTK_OBJECT(clist), "click_column",
-                       GTK_SIGNAL_FUNC(cb_clist_click_column), NULL);
-    // register function to handle row selection.
+        // register function to handle row selection.
     gtk_signal_connect(GTK_OBJECT(clist), "select_row",
                        GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
     gtk_clist_set_shadow_type(GTK_CLIST(clist), SHADOW);
