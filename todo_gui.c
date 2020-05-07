@@ -119,8 +119,18 @@ gboolean printRecord(GtkTreeModel *model,
                      GtkTreePath  *path,
                      GtkTreeIter  *iter,
                      gpointer data);
+gboolean
+findRecord (GtkTreeModel *model,
+              GtkTreePath  *path,
+              GtkTreeIter  *iter,
+              gpointer data);
+gboolean
+selectRecordByRow (GtkTreeModel *model,
+                   GtkTreePath  *path,
+                   GtkTreeIter  *iter,
+                   gpointer data);
 
-gint compareNoteColumn(GtkTreeModel *model, GtkTreeIter *left, GtkTreeIter *right);
+        gint compareNoteColumn(GtkTreeModel *model, GtkTreeIter *left, GtkTreeIter *right);
 
 gint compareCheckColumn(GtkTreeModel *model, GtkTreeIter *left, GtkTreeIter *right);
 
@@ -1590,8 +1600,9 @@ static gboolean handleRowSelection(GtkTreeSelection *selection,
             set_new_button_to(CLEAR_FLAG);
 
             if (unique_id) {
-                glob_find_id = unique_id;
+                //glob_find_id = unique_id;
                // todo_find();
+
             }
             return TRUE;
         }
@@ -2103,8 +2114,6 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
                            TODO_FORGROUND_COLOR_ENABLED_ENUM,showFgColor,
                            -1);
 
-
-
         entries_shown++;
     }
     if ((main) && (entries_shown>0)) {
@@ -2116,16 +2125,15 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
             /* Second, try the currently selected row */
         else if (clist_row_selected < entries_shown)
         {
-            clist_select_row(GTK_CLIST(clist), clist_row_selected, TODO_PRIORITY_COLUMN);
-            if (!gtk_clist_row_is_visible(GTK_CLIST(clist), clist_row_selected)) {
-                gtk_clist_moveto(GTK_CLIST(clist), clist_row_selected, 0, 0.5, 0.0);
-            }
+            gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), selectRecordByRow, NULL);
         }
             /* Third, select row 0 if nothing else is possible */
         else
         {
-            clist_select_row(GTK_CLIST(clist), 0, TODO_PRIORITY_COLUMN);
+            clist_row_selected = 0;
+            gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), selectRecordByRow, NULL);
         }
+
     }
     if (tooltip_widget) {
         get_pref(PREF_SHOW_TOOLTIPS, &show_tooltips, NULL);
@@ -2138,24 +2146,50 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
     }
 
 }
-
-static int todo_find(void)
-{
-    int r, found_at;
+gboolean
+findRecord (GtkTreeModel *model,
+              GtkTreePath  *path,
+              GtkTreeIter  *iter,
+              gpointer data) {
 
     if (glob_find_id) {
-        r = clist_find_id(clist,
-                          glob_find_id,
-                          &found_at);
-        if (r) {
-            clist_select_row(GTK_CLIST(clist), found_at, TODO_PRIORITY_COLUMN);
-            if (!gtk_clist_row_is_visible(GTK_CLIST(clist), found_at)) {
-                gtk_clist_moveto(GTK_CLIST(clist), found_at, 0, 0.5, 0.0);
-            }
+        MyToDo * mytodo = NULL;
+
+        gtk_tree_model_get(model,iter,TODO_DATA_COLUMN_ENUM,&mytodo,-1);
+        if(mytodo->unique_id == glob_find_id){
+            GtkTreeSelection * selection = NULL;
+            selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
+            gtk_tree_selection_select_path(selection, path);
+            gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, TODO_TEXT_COLUMN_ENUM, FALSE, 1.0, 0.0);
+            glob_find_id = 0;
+            return TRUE;
         }
-        glob_find_id = 0;
     }
+    return FALSE;
+}
+
+
+gboolean
+selectRecordByRow (GtkTreeModel *model,
+                   GtkTreePath  *path,
+                   GtkTreeIter  *iter,
+                   gpointer data) {
+    int * i = gtk_tree_path_get_indices ( path ) ;
+    if(i[0] == clist_row_selected){
+        GtkTreeSelection * selection = NULL;
+        selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
+        gtk_tree_selection_select_path(selection, path);
+        gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, TODO_TEXT_COLUMN_ENUM, FALSE, 1.0, 0.0);
+        return TRUE;
+    }
+
+    return FALSE;
+}
+static int todo_find(void)
+{
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), findRecord, NULL);
     return EXIT_SUCCESS;
+
 }
 
 int todo_gui_cleanup(void) {
