@@ -119,8 +119,18 @@ gboolean printRecord(GtkTreeModel *model,
                      GtkTreePath  *path,
                      GtkTreeIter  *iter,
                      gpointer data);
+gboolean
+findRecord (GtkTreeModel *model,
+              GtkTreePath  *path,
+              GtkTreeIter  *iter,
+              gpointer data);
+gboolean
+selectRecordByRow (GtkTreeModel *model,
+                   GtkTreePath  *path,
+                   GtkTreeIter  *iter,
+                   gpointer data);
 
-gint compareNoteColumn(GtkTreeModel *model, GtkTreeIter *left, GtkTreeIter *right);
+        gint compareNoteColumn(GtkTreeModel *model, GtkTreeIter *left, GtkTreeIter *right);
 
 gint compareCheckColumn(GtkTreeModel *model, GtkTreeIter *left, GtkTreeIter *right);
 
@@ -1590,8 +1600,9 @@ static gboolean handleRowSelection(GtkTreeSelection *selection,
             set_new_button_to(CLEAR_FLAG);
 
             if (unique_id) {
-                glob_find_id = unique_id;
+                //glob_find_id = unique_id;
                // todo_find();
+
             }
             return TRUE;
         }
@@ -2103,9 +2114,26 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
                            TODO_FORGROUND_COLOR_ENABLED_ENUM,showFgColor,
                            -1);
 
-
-
         entries_shown++;
+    }
+    if ((main) && (entries_shown>0)) {
+        /* First, select any record being searched for */
+        if (glob_find_id)
+        {
+            todo_find();
+        }
+            /* Second, try the currently selected row */
+        else if (clist_row_selected < entries_shown)
+        {
+            gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), selectRecordByRow, NULL);
+        }
+            /* Third, select row 0 if nothing else is possible */
+        else
+        {
+            clist_row_selected = 0;
+            gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), selectRecordByRow, NULL);
+        }
+
     }
     if (tooltip_widget) {
         get_pref(PREF_SHOW_TOOLTIPS, &show_tooltips, NULL);
@@ -2116,6 +2144,51 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
             set_tooltip((int) show_tooltips, glob_tooltips, tooltip_widget, str, NULL);
         }
     }
+
+}
+gboolean
+findRecord (GtkTreeModel *model,
+              GtkTreePath  *path,
+              GtkTreeIter  *iter,
+              gpointer data) {
+
+    if (glob_find_id) {
+        MyToDo * mytodo = NULL;
+
+        gtk_tree_model_get(model,iter,TODO_DATA_COLUMN_ENUM,&mytodo,-1);
+        if(mytodo->unique_id == glob_find_id){
+            GtkTreeSelection * selection = NULL;
+            selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
+            gtk_tree_selection_select_path(selection, path);
+            gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, TODO_TEXT_COLUMN_ENUM, FALSE, 1.0, 0.0);
+            glob_find_id = 0;
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
+
+gboolean
+selectRecordByRow (GtkTreeModel *model,
+                   GtkTreePath  *path,
+                   GtkTreeIter  *iter,
+                   gpointer data) {
+    int * i = gtk_tree_path_get_indices ( path ) ;
+    if(i[0] == clist_row_selected){
+        GtkTreeSelection * selection = NULL;
+        selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
+        gtk_tree_selection_select_path(selection, path);
+        gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, TODO_TEXT_COLUMN_ENUM, FALSE, 1.0, 0.0);
+        return TRUE;
+    }
+
+    return FALSE;
+}
+static int todo_find(void)
+{
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), findRecord, NULL);
+    return EXIT_SUCCESS;
 
 }
 
