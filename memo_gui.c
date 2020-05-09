@@ -121,8 +121,6 @@ enum {
     MEMO_DATA_COLUMN_ENUM,
     MEMO_BACKGROUND_COLOR_ENUM,
     MEMO_BACKGROUND_COLOR_ENABLED_ENUM,
-    MEMO_FOREGROUND_COLOR_ENUM,
-    MEMO_FORGROUND_COLOR_ENABLED_ENUM,
     MEMO_NUM_COLS
 };
 
@@ -749,7 +747,7 @@ static void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 
 static void cb_memo_update_clist(GtkWidget *clist, int category) {
     memo_update_liststore(listStore, NULL, &export_memo_list, category, FALSE);
-    memo_update_clist(clist, NULL, &export_memo_list, category, FALSE);
+    //memo_update_clist(clist, NULL, &export_memo_list, category, FALSE);
 }
 
 
@@ -1009,7 +1007,7 @@ static void cb_category(GtkWidget *item, int selection) {
         clist_row_selected = 0;
         jp_logf(JP_LOG_DEBUG, "cb_category() cat=%d\n", memo_category);
         memo_update_liststore(listStore,category_menu1, &glob_memo_list, memo_category, TRUE);
-        memo_update_clist(clist, category_menu1, &glob_memo_list, memo_category, TRUE);
+        //memo_update_clist(clist, category_menu1, &glob_memo_list, memo_category, TRUE);
         jp_logf(JP_LOG_DEBUG, "Leaving cb_category()\n");
     }
 }
@@ -1492,7 +1490,7 @@ static void memo_update_liststore(GtkWidget *pListStore, GtkWidget *tooltip_widg
                            MEMO_COLUMN_ENUM, str2,
                            MEMO_DATA_COLUMN_ENUM, &(temp_memo->mmemo),
                            MEMO_BACKGROUND_COLOR_ENUM, showBgColor ? &bgColor : NULL,
-                           MEMO_BACKGROUND_COLOR_ENABLED_ENUM,showBgColor
+                           MEMO_BACKGROUND_COLOR_ENABLED_ENUM,showBgColor,
                            -1);
         entries_shown++;
     }
@@ -1725,7 +1723,7 @@ static int memo_find(void) {
 
 static int memo_clist_redraw(void) {
     memo_update_liststore(listStore,category_menu1, &glob_memo_list, memo_category, TRUE);
-    memo_update_clist(clist, category_menu1, &glob_memo_list, memo_category, TRUE);
+    //memo_update_clist(clist, category_menu1, &glob_memo_list, memo_category, TRUE);
 
     return EXIT_SUCCESS;
 }
@@ -1777,7 +1775,7 @@ int memo_refresh(void) {
         index += 1;
     }
     memo_update_liststore(listStore,category_menu1, &glob_memo_list, memo_category, TRUE);
-    memo_update_clist(clist, category_menu1, &glob_memo_list, memo_category, TRUE);
+    //memo_update_clist(clist, category_menu1, &glob_memo_list, memo_category, TRUE);
     if (index < 0) {
         jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
     } else {
@@ -2056,5 +2054,77 @@ gboolean handleRowSelectionForMemo(GtkTreeSelection *selection,
                                    GtkTreePath *path,
                                    gboolean path_currently_selected,
                                    gpointer userdata) {
+    GtkTreeIter iter;
 
+    struct Memo *memo;
+    MyMemo *mmemo;
+    int b;
+    int index, sorted_position;
+    unsigned int unique_id = 0;
+
+    if ((gtk_tree_model_get_iter(model, &iter, path)) && (!path_currently_selected)) {
+        int * i = gtk_tree_path_get_indices ( path ) ;
+        clist_row_selected = i[0];
+        gtk_tree_model_get(model, &iter, MEMO_DATA_COLUMN_ENUM, &mmemo, -1);
+        if ((record_changed == MODIFY_FLAG) || (record_changed == NEW_FLAG)) {
+            if (mmemo != NULL) {
+                unique_id = mmemo->unique_id;
+            }
+
+            b = dialog_save_changed_record_with_cancel(pane, record_changed);
+            if (b == DIALOG_SAID_1) { /* Cancel */
+                return TRUE;
+            }
+            if (b == DIALOG_SAID_3) { /* Save */
+                cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
+            }
+
+            set_new_button_to(CLEAR_FLAG);
+            return TRUE;
+        }
+        if (mmemo == NULL) {
+            return TRUE;
+        }
+
+        if (mmemo->rt == DELETED_PALM_REC ||
+            (mmemo->rt == DELETED_PC_REC))
+            /* Possible later addition of undelete code for modified deleted records
+               || mmemo->rt == MODIFIED_PALM_REC
+            */
+        {
+            set_new_button_to(UNDELETE_FLAG);
+        } else {
+            set_new_button_to(CLEAR_FLAG);
+        }
+
+        connect_changed_signals(DISCONNECT_SIGNALS);
+
+        memo = &(mmemo->memo);
+
+        index = mmemo->attrib & 0x0F;
+        sorted_position = find_sort_cat_pos(index);
+        if (memo_cat_menu_item2[sorted_position] == NULL) {
+            /* Illegal category */
+            jp_logf(JP_LOG_DEBUG, "Category is not legal\n");
+            index = sorted_position = 0;
+        }
+
+        if (sorted_position < 0) {
+            jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
+        } else {
+            gtk_check_menu_item_set_active
+                    (GTK_CHECK_MENU_ITEM(memo_cat_menu_item2[sorted_position]), TRUE);
+        }
+        gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu2),
+                                    find_menu_cat_pos(sorted_position));
+
+        gtk_text_buffer_set_text(GTK_TEXT_BUFFER(memo_text_buffer), memo->text, -1);
+
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(private_checkbox),
+                                     mmemo->attrib & dlpRecAttrSecret);
+
+        connect_changed_signals(CONNECT_SIGNALS);
+        return TRUE; /* allow selection state to change */
+    }
+    return TRUE; /* allow selection state to change */
 }

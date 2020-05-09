@@ -1585,25 +1585,13 @@ static gboolean handleRowSelection(GtkTreeSelection *selection,
             }
             b = dialog_save_changed_record_with_cancel(pane, record_changed);
             if (b == DIALOG_SAID_1) { /* Cancel */
-                /** if (clist_row_selected >=0)
-                 {
-                     clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
-                 } else {
-                     clist_row_selected = 0;
-                     clist_select_row(GTK_CLIST(clist), 0, 0);
-                 } */
-                return TRUE;
+               return TRUE;
             }
             if (b == DIALOG_SAID_3) { /* Save */
                 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
             }
             set_new_button_to(CLEAR_FLAG);
 
-            if (unique_id) {
-                //glob_find_id = unique_id;
-               // todo_find();
-
-            }
             return TRUE;
         }
         time(&ltime);
