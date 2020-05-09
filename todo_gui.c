@@ -2065,7 +2065,7 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
             case NEW_PC_REC:
             case REPLACEMENT_PALM_REC:
 
-                bgColor = get_color(CLIST_NEW_GREEN, CLIST_NEW_GREEN, CLIST_NEW_BLUE);
+                bgColor = get_color(CLIST_NEW_RED, CLIST_NEW_GREEN, CLIST_NEW_BLUE);
                 showBgColor = TRUE;
                 break;
             case DELETED_PALM_REC:
