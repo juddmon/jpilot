@@ -115,6 +115,22 @@ gboolean handleRowSelectionForMemo(GtkTreeSelection *selection,
                                    GtkTreePath *path,
                                    gboolean path_currently_selected,
                                    gpointer userdata);
+gboolean
+addNewRecordMemo(GtkTreeModel *model,
+              GtkTreePath  *path,
+              GtkTreeIter  *iter,
+              gpointer data);
+
+gboolean deleteRecordMemo(GtkTreeModel *model,
+                      GtkTreePath  *path,
+                      GtkTreeIter  *iter,
+                      gpointer data);
+void delete_memo(MyMemo * mmemo, gpointer data);
+void undelete_memo(MyMemo *mmemo, gpointer data);
+gboolean undeleteRecordMemo(GtkTreeModel *model,
+                            GtkTreePath  *path,
+                            GtkTreeIter  *iter,
+                            gpointer data);
 
 enum {
     MEMO_COLUMN_ENUM = 0,
@@ -821,14 +837,44 @@ static int find_menu_cat_pos(int cat) {
     }
 }
 
-static void cb_delete_memo(GtkWidget *widget,
-                           gpointer data) {
-    MyMemo *mmemo;
+gboolean deleteRecordMemo(GtkTreeModel *model,
+                      GtkTreePath  *path,
+                      GtkTreeIter  *iter,
+                      gpointer data) {
+    int * i = gtk_tree_path_get_indices ( path ) ;
+    if(i[0] == clist_row_selected){
+        MyMemo *mmemo = NULL;
+        gtk_tree_model_get(model,iter,MEMO_DATA_COLUMN_ENUM,&mmemo,-1);
+        delete_memo(mmemo,data);
+        return TRUE;
+    }
+
+    return FALSE;
+
+
+}
+gboolean undeleteRecordMemo(GtkTreeModel *model,
+                          GtkTreePath  *path,
+                          GtkTreeIter  *iter,
+                          gpointer data) {
+    int *i = gtk_tree_path_get_indices(path);
+    if (i[0] == clist_row_selected) {
+        MyMemo *mmemo = NULL;
+        gtk_tree_model_get(model, iter, MEMO_DATA_COLUMN_ENUM, &mmemo, -1);
+        undelete_memo(mmemo, data);
+        return TRUE;
+    }
+
+    return FALSE;
+
+}
+
+void delete_memo(MyMemo * mmemo, gpointer data) {
+
     int flag;
     int show_priv;
     long char_set;
 
-    mmemo = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
     if (mmemo < (MyMemo *) CLIST_MIN_DATA) {
         return;
     }
@@ -864,13 +910,19 @@ static void cb_delete_memo(GtkWidget *widget,
     }
 }
 
-static void cb_undelete_memo(GtkWidget *widget,
-                             gpointer data) {
-    MyMemo *mmemo;
+static void cb_delete_memo(GtkWidget *widget,
+                           gpointer data) {
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), deleteRecordMemo, data);
+    return;
+
+}
+
+void undelete_memo(MyMemo *mmemo, gpointer data) {
+
     int flag;
     int show_priv;
 
-    mmemo = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
+
     if (mmemo < (MyMemo *) CLIST_MIN_DATA) {
         return;
     }
@@ -901,6 +953,15 @@ static void cb_undelete_memo(GtkWidget *widget,
     }
 
     memo_clist_redraw();
+}
+
+static void cb_undelete_memo(GtkWidget *widget,
+                             gpointer data) {
+
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), undeleteRecordMemo, data);
+    return;
+
+
 }
 
 static void cb_cancel(GtkWidget *widget, gpointer data) {
@@ -1073,84 +1134,99 @@ static int memo_get_details(struct Memo *new_memo, unsigned char *attrib) {
     }
     return EXIT_SUCCESS;
 }
+gboolean
+addNewRecordMemo (GtkTreeModel *model,
+              GtkTreePath  *path,
+              GtkTreeIter  *iter,
+              gpointer data) {
 
-static void cb_add_new_record(GtkWidget *widget, gpointer data) {
-    MyMemo *mmemo;
-    struct Memo new_memo;
-    unsigned char attrib;
-    int flag;
-    unsigned int unique_id;
-    int show_priv;
+    int * i = gtk_tree_path_get_indices ( path ) ;
+    if(i[0] == clist_row_selected){
+        MyMemo *mmemo;
+        struct Memo new_memo;
+        unsigned char attrib;
+        int flag;
+        unsigned int unique_id;
+        int show_priv;
 
-    flag = GPOINTER_TO_INT(data);
+        flag = GPOINTER_TO_INT(data);
 
-    mmemo = NULL;
-    unique_id = 0;
+        mmemo = NULL;
+        unique_id = 0;
+        gtk_tree_model_get(model,iter,MEMO_DATA_COLUMN_ENUM,&mmemo,-1);
+        /* Do masking like Palm OS 3.5 */
+        if ((flag == COPY_FLAG) || (flag == MODIFY_FLAG)) {
+            show_priv = show_privates(GET_PRIVATES);
 
-    /* Do masking like Palm OS 3.5 */
-    if ((flag == COPY_FLAG) || (flag == MODIFY_FLAG)) {
-        show_priv = show_privates(GET_PRIVATES);
-        mmemo = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
-        if (mmemo < (MyMemo *) CLIST_MIN_DATA) {
-            return;
+
+            if (mmemo < (MyMemo *) CLIST_MIN_DATA) {
+                return TRUE;
+            }
+            if ((show_priv != SHOW_PRIVATES) &&
+                (mmemo->attrib & dlpRecAttrSecret)) {
+                return TRUE;
+            }
         }
-        if ((show_priv != SHOW_PRIVATES) &&
-            (mmemo->attrib & dlpRecAttrSecret)) {
-            return;
+        /* End Masking */
+        if (flag == CLEAR_FLAG) {
+            /* Clear button was hit */
+            memo_clear_details();
+            connect_changed_signals(DISCONNECT_SIGNALS);
+            set_new_button_to(NEW_FLAG);
+            gtk_widget_grab_focus(GTK_WIDGET(memo_text));
+            return TRUE;
         }
-    }
-    /* End Masking */
-    if (flag == CLEAR_FLAG) {
-        /* Clear button was hit */
-        memo_clear_details();
-        connect_changed_signals(DISCONNECT_SIGNALS);
-        set_new_button_to(NEW_FLAG);
-        gtk_widget_grab_focus(GTK_WIDGET(memo_text));
-        return;
-    }
-    if ((flag != NEW_FLAG) && (flag != MODIFY_FLAG) && (flag != COPY_FLAG)) {
-        return;
-    }
-    if (flag == MODIFY_FLAG) {
-        mmemo = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
-        unique_id = mmemo->unique_id;
-        if (mmemo < (MyMemo *) CLIST_MIN_DATA) {
-            return;
+        if ((flag != NEW_FLAG) && (flag != MODIFY_FLAG) && (flag != COPY_FLAG)) {
+            return TRUE;
         }
-        if ((mmemo->rt == DELETED_PALM_REC) ||
-            (mmemo->rt == DELETED_PC_REC) ||
-            (mmemo->rt == MODIFIED_PALM_REC)) {
-            jp_logf(JP_LOG_INFO, _("You can't modify a record that is deleted\n"));
-            return;
-        }
-    }
-    memo_get_details(&new_memo, &attrib);
+        if (flag == MODIFY_FLAG) {
 
-    set_new_button_to(CLEAR_FLAG);
+            unique_id = mmemo->unique_id;
+            if (mmemo < (MyMemo *) CLIST_MIN_DATA) {
+                return TRUE;
+            }
+            if ((mmemo->rt == DELETED_PALM_REC) ||
+                (mmemo->rt == DELETED_PC_REC) ||
+                (mmemo->rt == MODIFIED_PALM_REC)) {
+                jp_logf(JP_LOG_INFO, _("You can't modify a record that is deleted\n"));
+                return TRUE;
+            }
+        }
+        memo_get_details(&new_memo, &attrib);
 
-    /* Keep unique ID intact */
-    if (flag == MODIFY_FLAG) {
-        cb_delete_memo(NULL, data);
-        if ((mmemo->rt == PALM_REC) || (mmemo->rt == REPLACEMENT_PALM_REC)) {
-            pc_memo_write(&new_memo, REPLACEMENT_PALM_REC, attrib, &unique_id);
+        set_new_button_to(CLEAR_FLAG);
+
+        /* Keep unique ID intact */
+        if (flag == MODIFY_FLAG) {
+            cb_delete_memo(NULL, data);
+            if ((mmemo->rt == PALM_REC) || (mmemo->rt == REPLACEMENT_PALM_REC)) {
+                pc_memo_write(&new_memo, REPLACEMENT_PALM_REC, attrib, &unique_id);
+            } else {
+                unique_id = 0;
+                pc_memo_write(&new_memo, NEW_PC_REC, attrib, &unique_id);
+            }
         } else {
             unique_id = 0;
             pc_memo_write(&new_memo, NEW_PC_REC, attrib, &unique_id);
         }
-    } else {
-        unique_id = 0;
-        pc_memo_write(&new_memo, NEW_PC_REC, attrib, &unique_id);
+
+        free_Memo(&new_memo);
+        /* Don't return to modified record if search gui active */
+        if (!glob_find_id) {
+            glob_find_id = unique_id;
+        }
+        memo_clist_redraw();
+        return TRUE;
     }
 
-    free_Memo(&new_memo);
-    /* Don't return to modified record if search gui active */
-    if (!glob_find_id) {
-        glob_find_id = unique_id;
-    }
-    memo_clist_redraw();
+    return FALSE;
 
 
+}
+static void cb_add_new_record(GtkWidget *widget, gpointer data) {
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), addNewRecordMemo, data);
     return;
+
 }
 
 /* Do masking like Palm OS 3.5 */
