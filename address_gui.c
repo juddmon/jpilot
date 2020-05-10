@@ -236,9 +236,17 @@ findAndSetGlobalAddressId (GtkTreeModel *model,
                            GtkTreePath  *path,
                            GtkTreeIter  *iter,
                            gpointer data);
+
+gboolean printAddreessRecord(GtkTreeModel *model,
+                             GtkTreePath  *path,
+                             GtkTreeIter  *iter,
+                             gpointer data);
         static int address_redraw(void);
 
+int printAddress(MyContact * mcont, gpointer data);
+
 static int address_find(void);
+
 
 static gboolean handleRowSelectionForAddress(GtkTreeSelection *selection,
                                              GtkTreeModel *model,
@@ -413,10 +421,25 @@ static void connect_changed_signals(int con_or_dis) {
     }
 }
 
-int address_print(void) {
+gboolean printAddreessRecord(GtkTreeModel *model,
+                     GtkTreePath  *path,
+                     GtkTreeIter  *iter,
+                     gpointer data) {
+    int * i = gtk_tree_path_get_indices ( path ) ;
+    if(i[0] == clist_row_selected){
+        MyContact * myContact = NULL;
+        gtk_tree_model_get(model,iter,ADDRESS_DATA_COLUMN_ENUM,&myContact,-1);
+        printAddress(myContact,data);
+        return TRUE;
+    }
+
+    return FALSE;
+
+
+}
+int printAddress(MyContact * mcont, gpointer data){
     long this_many;
     AddressList *addr_list;
-    MyContact *mcont;
     ContactList *cont_list;
     ContactList cont_list1;
     int get_category;
@@ -425,7 +448,6 @@ int address_print(void) {
 
     cont_list = NULL;
     if (this_many == 1) {
-        mcont = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
         if (mcont < (MyContact *) CLIST_MIN_DATA) {
             return EXIT_FAILURE;
         }
@@ -457,6 +479,12 @@ int address_print(void) {
     }
 
     return EXIT_SUCCESS;
+}
+
+int address_print(void) {
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), printAddreessRecord, NULL);
+    return EXIT_SUCCESS;
+
 }
 
 static GString *contact_to_gstring(struct Contact *cont) {
