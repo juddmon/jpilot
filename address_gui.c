@@ -213,6 +213,9 @@ extern int glob_date_timer_tag;
 static void connect_changed_signals(int con_or_dis);
 static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
                                  ContactList **cont_list, int category, int main);
+static void address_update_listStore(GtkListStore *listStore, GtkWidget *tooltip_widget,
+                                 ContactList **cont_list, int category,
+                                 int main);
 static gint sortNameColumn(GtkTreeModel *model,
                            GtkTreeIter *left,
                            GtkTreeIter *right,
@@ -1559,7 +1562,8 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 
 static void cb_addr_update_clist(GtkWidget *clist, int category)
 {
-   address_update_clist(clist, NULL, &export_contact_list, category, FALSE);
+  // address_update_clist(clist, NULL, &export_contact_list, category, FALSE);
+    address_update_listStore(listStore,NULL, &export_contact_list, category, FALSE);
 }
 
 
@@ -2457,8 +2461,10 @@ static void cb_category(GtkWidget *item, int selection)
       }
       clist_row_selected = 0;
       jp_logf(JP_LOG_DEBUG, "address_category = %d\n",address_category);
-      address_update_clist(clist, category_menu1, &glob_contact_list,
-                           address_category, TRUE);
+      //address_update_clist(clist, category_menu1, &glob_contact_list,
+       //                    address_category, TRUE);
+       address_update_listStore(listStore,category_menu1, &glob_contact_list,
+                                address_category, TRUE);
       /* gives the focus to the search field */
       gtk_widget_grab_focus(address_quickfind_entry);
    }
@@ -3176,6 +3182,272 @@ static gboolean cb_key_pressed_right_side(GtkWidget   *widget,
 
    return FALSE;
 }
+static void address_update_listStore(GtkListStore * pListStore, GtkWidget *tooltip_widget,
+                                 ContactList **cont_list, int category,
+                                 int main){
+    GtkTreeIter iter;
+    int num_entries, entries_shown;
+    int show1, show2, show3;
+    gchar *empty_line[] = { "","","" };
+    GdkPixbuf *pixbuf_note;
+    GdkPixbuf *noteColumnDisplay;
+    GdkPixmap *pixmap_note;
+    GdkBitmap *mask_note;
+    ContactList *temp_cl;
+    char str[ADDRESS_MAX_COLUMN_LEN+2];
+    char str2[ADDRESS_MAX_COLUMN_LEN+2];
+    char phone[ADDRESS_MAX_COLUMN_LEN+2];
+    int show_priv;
+    long use_jos, char_set, show_tooltips;
+    char *tmp_p1, *tmp_p2, *tmp_p3;
+    char blank[]="";
+    char slash[]=" / ";
+    char comma_space[]=", ";
+    char *field1, *field2, *field3;
+    char *delim1, *delim2;
+    char *tmp_delim1, *tmp_delim2;
+    AddressList *addr_list;
+
+    free_ContactList(cont_list);
+
+    if (address_version==0) {
+        addr_list = NULL;
+        num_entries = get_addresses2(&addr_list, SORT_ASCENDING, 2, 2, 1, CATEGORY_ALL);
+        copy_addresses_to_contacts(addr_list, cont_list);
+        free_AddressList(&addr_list);
+    } else {
+        /* Need to get all records including private ones for the tooltips calculation */
+        num_entries = get_contacts2(cont_list, SORT_ASCENDING, 2, 2, 1, CATEGORY_ALL);
+    }
+
+    /* Start by clearing existing entry if in main window */
+    if (main) {
+        addr_clear_details();
+        gtk_text_buffer_set_text(GTK_TEXT_BUFFER(addr_all_buffer), "", -1);
+    }
+
+   gtk_list_store_clear(GTK_LIST_STORE(listStore));
+   /* Collect preferences and pixmaps before loop */
+    get_pref(PREF_CHAR_SET, &char_set, NULL);
+    get_pref(PREF_USE_JOS, &use_jos, NULL);
+    show_priv = show_privates(GET_PRIVATES);
+    get_pixbufs(PIXMAP_NOTE, &pixbuf_note);
+    get_pixmaps(clist, PIXMAP_NOTE, &pixmap_note, &mask_note);
+#ifdef __APPLE__
+    mask_note = NULL;
+#endif
+
+    switch (addr_sort_order) {
+        case SORT_BY_LNAME:
+        default:
+            show1=contLastname;
+            show2=contFirstname;
+            show3=contCompany;
+            delim1 = comma_space;
+            delim2 = slash;
+            break;
+        case SORT_BY_FNAME:
+            show1=contFirstname;
+            show2=contLastname;
+            show3=contCompany;
+            delim1 = comma_space;
+            delim2 = slash;
+            break;
+        case SORT_BY_COMPANY:
+            show1=contCompany;
+            show2=contLastname;
+            show3=contFirstname;
+            delim1 = slash;
+            delim2 = comma_space;
+            break;
+    }
+
+    entries_shown=0;
+
+    for (temp_cl = *cont_list; temp_cl; temp_cl=temp_cl->next) {
+        if ( ((temp_cl->mcont.attrib & 0x0F) != category) &&
+             category != CATEGORY_ALL) {
+            continue;
+        }
+
+        /* Do masking like Palm OS 3.5 */
+        if ((show_priv == MASK_PRIVATES) &&
+            (temp_cl->mcont.attrib & dlpRecAttrSecret)) {
+            gtk_list_store_append(pListStore, &iter);
+            clear_mycontact(&temp_cl->mcont);
+            gtk_list_store_set(pListStore, &iter,
+                               ADDRESS_NAME_COLUMN_ENUM, "---------------",
+                               ADDRESS_PHONE_COLUMN_ENUM, "---------------",
+                               ADDRESS_DATA_COLUMN_ENUM, &temp_cl->mcont,
+                               -1);
+           entries_shown++;
+            continue;
+        }
+        /* End Masking */
+
+        /* Hide the private records if need be */
+        if ((show_priv != SHOW_PRIVATES) &&
+            (temp_cl->mcont.attrib & dlpRecAttrSecret)) {
+            continue;
+        }
+
+        if (!use_jos && (char_set == CHAR_SET_JAPANESE || char_set == CHAR_SET_SJIS_UTF)) {
+            str[0]='\0';
+            if (temp_cl->mcont.cont.entry[show1] || temp_cl->mcont.cont.entry[show2]) {
+                if (temp_cl->mcont.cont.entry[show1] && temp_cl->mcont.cont.entry[show2]) {
+                    if ((tmp_p1 = strchr(temp_cl->mcont.cont.entry[show1],'\1'))) *tmp_p1='\0';
+                    if ((tmp_p2 = strchr(temp_cl->mcont.cont.entry[show2],'\1'))) *tmp_p2='\0';
+                    g_snprintf(str, ADDRESS_MAX_CLIST_NAME, "%s, %s", temp_cl->mcont.cont.entry[show1], temp_cl->mcont.cont.entry[show2]);
+                    if (tmp_p1) *tmp_p1='\1';
+                    if (tmp_p2) *tmp_p2='\1';
+                }
+                if (temp_cl->mcont.cont.entry[show1] && ! temp_cl->mcont.cont.entry[show2]) {
+                    if ((tmp_p1 = strchr(temp_cl->mcont.cont.entry[show1],'\1'))) *tmp_p1='\0';
+                    if (temp_cl->mcont.cont.entry[show3]) {
+                        if ((tmp_p3 = strchr(temp_cl->mcont.cont.entry[show3],'\1'))) *tmp_p3='\0';
+                        g_snprintf(str, ADDRESS_MAX_CLIST_NAME, "%s, %s", temp_cl->mcont.cont.entry[show1], temp_cl->mcont.cont.entry[show3]);
+                        if (tmp_p3) *tmp_p3='\1';
+                    } else {
+                        multibyte_safe_strncpy(str, temp_cl->mcont.cont.entry[show1], ADDRESS_MAX_CLIST_NAME);
+                    }
+                    if (tmp_p1) *tmp_p1='\1';
+                }
+                if (! temp_cl->mcont.cont.entry[show1] && temp_cl->mcont.cont.entry[show2]) {
+                    if ((tmp_p2 = strchr(temp_cl->mcont.cont.entry[show2],'\1'))) *tmp_p2='\0';
+                    multibyte_safe_strncpy(str, temp_cl->mcont.cont.entry[show2], ADDRESS_MAX_CLIST_NAME);
+                    if (tmp_p2) *tmp_p2='\1';
+                }
+            } else if (temp_cl->mcont.cont.entry[show3]) {
+                if ((tmp_p3 = strchr(temp_cl->mcont.cont.entry[show3],'\1'))) *tmp_p3='\0';
+                multibyte_safe_strncpy(str, temp_cl->mcont.cont.entry[show3], ADDRESS_MAX_CLIST_NAME);
+                if (tmp_p3) *tmp_p3='\1';
+            } else {
+                strcpy(str, _("-Unnamed-"));
+            }
+           // gtk_clist_append(GTK_CLIST(clist), empty_line);
+        } else {
+            str[0]='\0';
+            field1=field2=field3=blank;
+            tmp_delim1=delim1;
+            tmp_delim2=delim2;
+            if (temp_cl->mcont.cont.entry[show1]) field1=temp_cl->mcont.cont.entry[show1];
+            if (temp_cl->mcont.cont.entry[show2]) field2=temp_cl->mcont.cont.entry[show2];
+            if (temp_cl->mcont.cont.entry[show3]) field3=temp_cl->mcont.cont.entry[show3];
+            switch (addr_sort_order) {
+                case SORT_BY_LNAME:
+                default:
+                    if ((!field1[0]) || (!field2[0])) tmp_delim1=blank;
+                    if (!(field3[0])) tmp_delim2=blank;
+                    if ((!field1[0]) && (!field2[0])) tmp_delim2=blank;
+                    break;
+                case SORT_BY_FNAME:
+                    if ((!field1[0]) || (!field2[0])) tmp_delim1=blank;
+                    if (!(field3[0])) tmp_delim2=blank;
+                    if ((!field1[0]) && (!field2[0])) tmp_delim2=blank;
+                    break;
+                case SORT_BY_COMPANY:
+                    if (!(field1[0])) tmp_delim1=blank;
+                    if ((!field2[0]) || (!field3[0])) tmp_delim2=blank;
+                    if ((!field2[0]) && (!field3[0])) tmp_delim1=blank;
+                    break;
+            }
+            g_snprintf(str, ADDRESS_MAX_COLUMN_LEN, "%s%s%s%s%s",
+                       field1, tmp_delim1, field2, tmp_delim2, field3);
+            if (strlen(str)<1) strcpy(str, _("-Unnamed-"));
+            str[ADDRESS_MAX_COLUMN_LEN]='\0';
+
+           // gtk_clist_append(GTK_CLIST(clist), empty_line);
+        }
+
+        lstrncpy_remove_cr_lfs(str2, str, ADDRESS_MAX_COLUMN_LEN);
+
+        /* Clear string so previous data won't be used inadvertently in next set_text */
+        phone[0] = '\0';
+        lstrncpy_remove_cr_lfs(phone, temp_cl->mcont.cont.entry[temp_cl->mcont.cont.showPhone + 4], ADDRESS_MAX_COLUMN_LEN);
+        GdkColor bgColor;
+        gboolean showBgColor = FALSE;
+        GdkColor fgColor;
+        gboolean showFgColor = FALSE;
+        /* Highlight row background depending on status */
+        switch (temp_cl->mcont.rt) {
+            case NEW_PC_REC:
+            case REPLACEMENT_PALM_REC:
+                bgColor = get_color(CLIST_NEW_RED, CLIST_NEW_GREEN, CLIST_NEW_BLUE);
+                showBgColor = TRUE;
+                break;
+            case DELETED_PALM_REC:
+            case DELETED_PC_REC:
+                bgColor = get_color(CLIST_DEL_RED, CLIST_DEL_GREEN, CLIST_DEL_BLUE);
+                showBgColor = TRUE;
+                break;
+            case MODIFIED_PALM_REC:
+                bgColor = get_color(CLIST_MOD_RED, CLIST_MOD_GREEN, CLIST_MOD_BLUE);
+                showBgColor = TRUE;
+                break;
+            default:
+                if (temp_cl->mcont.attrib & dlpRecAttrSecret) {
+                    bgColor = get_color(CLIST_PRIVATE_RED, CLIST_PRIVATE_GREEN, CLIST_PRIVATE_BLUE);
+                    showBgColor = TRUE;
+                } else {
+                    showBgColor = FALSE;
+                }
+        }
+
+        /* Put a note pixmap up */
+        if (temp_cl->mcont.cont.entry[contNote]) {
+            noteColumnDisplay = pixbuf_note;
+        } else {
+            noteColumnDisplay = NULL;
+        }
+        gtk_list_store_append(pListStore, &iter);
+        gtk_list_store_set(pListStore,&iter,ADDRESS_NAME_COLUMN_ENUM,str2,
+                ADDRESS_NOTE_COLUMN_ENUM,noteColumnDisplay,
+                ADDRESS_PHONE_COLUMN_ENUM,phone,
+                ADDRESS_DATA_COLUMN_ENUM,&(temp_cl->mcont),
+                ADDRESS_BACKGROUND_COLOR_ENUM,showBgColor ? &bgColor : NULL,
+                ADDRESS_BACKGROUND_COLOR_ENABLED_ENUM,showBgColor,
+                ADDRESS_FOREGROUND_COLOR_ENUM,showFgColor ? gdk_color_to_string(&fgColor) : NULL,
+                ADDRESSS_FOREGROUND_COLOR_ENABLED_ENUM,showFgColor,-1);
+        entries_shown++;
+    }
+
+    /* If there are items in the list, highlight the selected row */
+    if ((main) && (entries_shown>0)) {
+        /* First, select any record being searched for */
+        if (glob_find_id)
+        {
+           // address_find();
+        }
+            /* Second, try the currently selected row */
+        else if (clist_row_selected < entries_shown)
+        {
+           // clist_select_row(GTK_CLIST(clist), clist_row_selected, ADDRESS_PHONE_COLUMN);
+          //  if (!gtk_clist_row_is_visible(GTK_CLIST(clist), clist_row_selected)) {
+           //     gtk_clist_moveto(GTK_CLIST(clist), clist_row_selected, 0, 0.5, 0.0);
+          //  }
+        }
+        else
+            /* Third, select row 0 if nothing else is possible */
+        {
+           // clist_select_row(GTK_CLIST(clist), 0, ADDRESS_PHONE_COLUMN);
+        }
+    }
+
+    if (tooltip_widget) {
+        get_pref(PREF_SHOW_TOOLTIPS, &show_tooltips, NULL);
+        if (cont_list==NULL) {
+            set_tooltip(show_tooltips, glob_tooltips, category_menu1, _("0 records"), NULL);
+        }
+        else {
+            sprintf(str, _("%d of %d records"), entries_shown, num_entries);
+            set_tooltip(show_tooltips, glob_tooltips, category_menu1, str, NULL);
+        }
+    }
+
+    /* return focus to clist after any big operation which requires a redraw */
+    gtk_widget_grab_focus(GTK_WIDGET(treeView));
+
+}
 
 static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
                                  ContactList **cont_list, int category, 
@@ -3611,9 +3883,10 @@ static int address_find(void)
 
 static int address_clist_redraw(void)
 {
-   address_update_clist(clist, category_menu1, &glob_contact_list,
-                        address_category, TRUE);
-
+  // address_update_clist(clist, category_menu1, &glob_contact_list,
+    //                    address_category, TRUE);
+    address_update_listStore(listStore,category_menu1, &glob_contact_list,
+                             address_category, TRUE);
    return EXIT_SUCCESS;
 }
 
@@ -3665,8 +3938,10 @@ int address_refresh(void)
       index2 = find_menu_cat_pos(index) + 1;
       index += 1;
    }
-   address_update_clist(clist, category_menu1, &glob_contact_list,
-                        address_category, TRUE);
+   //address_update_clist(clist, category_menu1, &glob_contact_list,
+    //                    address_category, TRUE);
+    address_update_listStore(listStore,category_menu1, &glob_contact_list,
+                             address_category, TRUE);
    if (index<0) {
       jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
    } else {
