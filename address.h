@@ -33,6 +33,9 @@ typedef struct {
    int type;
 } address_schema_entry;
 
+static char *const ADDRESS_LAST_NAME_COMPANY = "Last Name/Company";
+static char *const FIRST_NAME_COMPANY = "First Name/Company";
+static char *const COMPANY_LAST_NAME = "Company/Last Name";
 #define NUM_IMS 2
 #define NUM_ADDRESSES 3
 #define NUM_CONTACT_NOTEBOOK_PAGES 6

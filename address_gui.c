@@ -146,6 +146,9 @@ static address_schema_entry address_schema[NUM_ADDRESS_FIELDS]={
 static long address_version=0;
 
 static GtkWidget *clist;
+static GtkWidget *treeView;
+static GtkTreeSelection *treeSelection;
+static GtkListStore *listStore;
 static GtkWidget *addr_text[MAX_NUM_TEXTS];
 static GObject   *addr_text_buffer[MAX_NUM_TEXTS];
 static GtkWidget *addr_all;
@@ -201,7 +204,6 @@ static GtkWidget *reminder_box;
 static struct tm birthday;
 static GtkWidget *image=NULL;
 static struct ContactPicture contact_picture;
-
 static GList *changed_list=NULL;
 
 extern GtkWidget *glob_date_label;
@@ -211,9 +213,23 @@ extern int glob_date_timer_tag;
 static void connect_changed_signals(int con_or_dis);
 static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
                                  ContactList **cont_list, int category, int main);
-static int address_clist_redraw(void);
+static gint sortNameColumn(GtkTreeModel *model,
+                           GtkTreeIter *left,
+                           GtkTreeIter *right,
+                           gpointer columnId);
+        static int address_clist_redraw(void);
 static int address_find(void);
-
+enum {
+    ADDRESS_NAME_COLUMN_ENUM,
+    ADDRESS_NOTE_COLUMN_ENUM,
+    ADDRESS_PHONE_COLUMN_ENUM,
+    ADDRESS_DATA_COLUMN_ENUM,
+    ADDRESS_BACKGROUND_COLOR_ENUM,
+    ADDRESS_BACKGROUND_COLOR_ENABLED_ENUM,
+    ADDRESS_FOREGROUND_COLOR_ENUM,
+    ADDRESSS_FOREGROUND_COLOR_ENABLED_ENUM,
+    ADDRESS_NUM_COL
+};
 /****************************** Main Code *************************************/
 /* Called once on initialization of GUI */
 static void init(void)
@@ -1828,13 +1844,13 @@ static void cb_resort(GtkWidget *widget,
    /* Update labels AFTER redrawing clist to work around GTK bug */
    switch (addr_sort_order) {
     case SORT_BY_LNAME: 
-      gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, _("Last Name/Company"));
+      gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, _(ADDRESS_LAST_NAME_COMPANY));
       break;
     case SORT_BY_FNAME: 
-      gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, _("First Name/Company"));
+      gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, _(FIRST_NAME_COMPANY));
       break;
     case SORT_BY_COMPANY: 
-      gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, _("Company/Last Name"));
+      gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, _(COMPANY_LAST_NAME));
       break;
    }
 }
@@ -3793,6 +3809,38 @@ int address_gui_cleanup(void)
    return EXIT_SUCCESS;
 }
 
+static gint sortNameColumn(GtkTreeModel *model,
+                           GtkTreeIter *left,
+                           GtkTreeIter *right,
+                           gpointer columnId) {
+    gint sortcol = GPOINTER_TO_INT(columnId);
+    gint ret = 0;
+    GtkTreeViewColumn * nameColumn = gtk_tree_view_get_column(GTK_TREE_VIEW(treeView),sortcol);
+    switch (sortcol) {
+        case ADDRESS_NAME_COLUMN_ENUM: {
+            switch (addr_sort_order) {
+                case SORT_BY_LNAME:
+                default:
+                    addr_sort_order = SORT_BY_LNAME;  /* Initialize variable if default case taken */
+                    gtk_tree_view_column_set_title(nameColumn,ADDRESS_LAST_NAME_COMPANY);
+                    break;
+                case SORT_BY_FNAME:
+                    gtk_tree_view_column_set_title(nameColumn,ADDRESS_LAST_NAME_COMPANY);
+                    break;
+                case SORT_BY_COMPANY:
+                    gtk_tree_view_column_set_title(nameColumn,ADDRESS_LAST_NAME_COMPANY);
+                     break;
+            }
+            ret = 1;
+        }
+            break;
+        default:
+            break;
+    }
+    return ret;
+
+}
+
 /* Main function */
 int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 {
@@ -3863,7 +3911,9 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
       get_address_app_info(&address_app_info);
       copy_address_ai_to_contact_ai(&address_app_info, &contact_app_info);
    }
-
+    listStore = gtk_list_store_new(ADDRESS_NUM_COL, G_TYPE_STRING,GDK_TYPE_PIXBUF,
+            G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_COLOR,
+                                   G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_BOOLEAN);
    /* Initialize categories */
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    for (i=1; i<NUM_ADDRESS_CAT_ITEMS; i++) {
@@ -3943,23 +3993,51 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_box_pack_start(GTK_BOX(vbox1), scrolled_window, TRUE, TRUE, 0);
 
    clist = gtk_clist_new_with_titles(3, titles);
-   
+
    gtk_clist_column_title_passive(GTK_CLIST(clist), ADDRESS_PHONE_COLUMN);
    gtk_clist_column_title_passive(GTK_CLIST(clist), ADDRESS_NOTE_COLUMN);
 
    get_pref(PREF_ADDR_SORT_ORDER, &ivalue, NULL);
-   addr_sort_order = ivalue;
+   addr_sort_order = (int) ivalue;
+    treeView = gtk_tree_view_new_with_model(GTK_TREE_MODEL(listStore));
+    GtkCellRenderer *nameRenderer = gtk_cell_renderer_text_new();
+    GtkTreeViewColumn *nameColumn = gtk_tree_view_column_new_with_attributes(ADDRESS_LAST_NAME_COMPANY, nameRenderer, "text", 0, NULL);
+    gtk_tree_view_column_set_clickable(nameColumn,TRUE);
+
+    GtkCellRenderer *noteRenderer = gtk_cell_renderer_pixbuf_new();
+    GtkTreeViewColumn *noteColumn = gtk_tree_view_column_new_with_attributes("", noteRenderer, "pixbuf", 0, NULL);
+    gtk_tree_view_column_set_clickable(noteColumn,FALSE);
+
+    GtkCellRenderer *phoneRenderer = gtk_cell_renderer_text_new();
+    GtkTreeViewColumn *phoneColumn = gtk_tree_view_column_new_with_attributes("Phone", phoneRenderer, "text", 0, NULL);
+    gtk_tree_view_column_set_clickable(phoneColumn,FALSE);
+
+    gtk_tree_view_insert_column(GTK_TREE_VIEW(treeView), nameColumn, ADDRESS_NAME_COLUMN_ENUM);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW(treeView), noteColumn, ADDRESS_NOTE_COLUMN_ENUM);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW(treeView), phoneColumn, ADDRESS_PHONE_COLUMN_ENUM);
+    treeSelection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
+
+    // gtk_tree_selection_set_select_function(treeSelection, handleRowSelectionForAddress, NULL, NULL);
+
+    GtkTreeSortable *sortable;
+    sortable = GTK_TREE_SORTABLE(listStore);
+    gtk_tree_sortable_set_sort_func(sortable, ADDRESS_NAME_COLUMN_ENUM, sortNameColumn,
+                                    GINT_TO_POINTER(ADDRESS_NAME_COLUMN_ENUM), NULL);
+    gtk_tree_view_column_set_sort_column_id(nameColumn, ADDRESS_NAME_COLUMN_ENUM);
    switch (addr_sort_order) {
     case SORT_BY_LNAME: 
     default:
       addr_sort_order = SORT_BY_LNAME;  /* Initialize variable if default case taken */
-      gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, _("Last Name/Company"));
+      gtk_tree_view_column_set_title(nameColumn,ADDRESS_LAST_NAME_COMPANY);
+      gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, _(ADDRESS_LAST_NAME_COMPANY));
       break;
-    case SORT_BY_FNAME: 
-      gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, _("First Name/Company"));
+    case SORT_BY_FNAME:
+        gtk_tree_view_column_set_title(nameColumn,FIRST_NAME_COMPANY);
+      gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, _(FIRST_NAME_COMPANY));
       break;
-    case SORT_BY_COMPANY: 
-      gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, _("Company/Last Name"));
+    case SORT_BY_COMPANY:
+        gtk_tree_view_column_set_title(nameColumn,COMPANY_LAST_NAME);
+      gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, _(COMPANY_LAST_NAME));
       break;
    }
    gtk_signal_connect(GTK_OBJECT(GTK_CLIST(clist)->column[ADDRESS_NAME_COLUMN].button),
@@ -3972,6 +4050,8 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    mask = NULL;
 #endif
    pixmapwid = gtk_pixmap_new(pixmap, mask);
+   gtk_tree_view_column_set_widget(noteColumn, pixmapwid);
+   gtk_tree_view_column_set_alignment(noteColumn, GTK_JUSTIFY_CENTER);
    gtk_clist_set_column_widget(GTK_CLIST(clist), ADDRESS_NOTE_COLUMN, pixmapwid);
 
    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
@@ -3979,11 +4059,16 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
 
    gtk_clist_set_shadow_type(GTK_CLIST(clist), SHADOW);
    gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
+   gtk_tree_view_column_set_min_width(nameColumn,60);
 
    gtk_clist_set_column_min_width(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, 60);
    get_pref(PREF_ADDR_NAME_COL_SZ, &ivalue, NULL);
+   gtk_tree_view_column_set_fixed_width(nameColumn,ivalue);
    gtk_clist_set_column_width(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, ivalue);
-
+   gtk_tree_view_column_set_resizable(nameColumn,FALSE);
+   gtk_tree_view_column_set_resizable(noteColumn,TRUE);
+   gtk_tree_view_column_set_resizable(phoneColumn,FALSE);
+   gtk_tree_view_column_set_alignment(noteColumn,GTK_JUSTIFY_CENTER);
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, FALSE);
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), ADDRESS_NOTE_COLUMN, TRUE);
    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), ADDRESS_PHONE_COLUMN, FALSE);
@@ -3992,8 +4077,8 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox)
    gtk_signal_connect(GTK_OBJECT(clist), "resize-column",
                GTK_SIGNAL_FUNC(cb_resize_column), NULL);
 
-   gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
-
+  // gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
+   gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(treeView));
    hbox_temp = gtk_hbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox1), hbox_temp, FALSE, FALSE, 0);
 
