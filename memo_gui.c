@@ -131,14 +131,20 @@ gboolean undeleteRecordMemo(GtkTreeModel *model,
                             GtkTreePath  *path,
                             GtkTreeIter  *iter,
                             gpointer data);
+gboolean printRecordMemo(GtkTreeModel *model,
+                         GtkTreePath  *path,
+                         GtkTreeIter  *iter,
+                         gpointer data);
 
-enum {
+        enum {
     MEMO_COLUMN_ENUM = 0,
     MEMO_DATA_COLUMN_ENUM,
     MEMO_BACKGROUND_COLOR_ENUM,
     MEMO_BACKGROUND_COLOR_ENABLED_ENUM,
     MEMO_NUM_COLS
 };
+
+int print_memo(MyMemo *mmemo );
 
 /****************************** Main Code *************************************/
 static void set_new_button_to(int new_state) {
@@ -254,9 +260,8 @@ static void connect_changed_signals(int con_or_dis) {
     }
 }
 
-int memo_print(void) {
+int print_memo(MyMemo *mmemo ) {
     long this_many;
-    MyMemo *mmemo;
     MemoList *memo_list;
     MemoList memo_list1;
 
@@ -264,7 +269,6 @@ int memo_print(void) {
 
     memo_list = NULL;
     if (this_many == 1) {
-        mmemo = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
         if (mmemo < (MyMemo *) CLIST_MIN_DATA) {
             return EXIT_FAILURE;
         }
@@ -285,6 +289,28 @@ int memo_print(void) {
         free_MemoList(&memo_list);
     }
 
+    return EXIT_SUCCESS;
+}
+
+gboolean printRecordMemo(GtkTreeModel *model,
+                     GtkTreePath  *path,
+                     GtkTreeIter  *iter,
+                     gpointer data) {
+    int * i = gtk_tree_path_get_indices ( path ) ;
+    if(i[0] == clist_row_selected){
+        MyMemo *mmemo = NULL;
+        gtk_tree_model_get(model,iter,MEMO_DATA_COLUMN_ENUM,&mmemo,-1);
+        print_memo(mmemo);
+        return TRUE;
+    }
+
+    return FALSE;
+
+
+}
+
+int memo_print(void) {
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), printRecordMemo, NULL);
     return EXIT_SUCCESS;
 }
 
