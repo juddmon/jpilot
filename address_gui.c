@@ -230,7 +230,13 @@ selectRecordAddressByRow (GtkTreeModel *model,
                           GtkTreePath  *path,
                           GtkTreeIter  *iter,
                           gpointer data);
-static int address_redraw(void);
+
+gboolean
+findAndSetGlobalAddressId (GtkTreeModel *model,
+                           GtkTreePath  *path,
+                           GtkTreeIter  *iter,
+                           gpointer data);
+        static int address_redraw(void);
 
 static int address_find(void);
 
@@ -1839,8 +1845,9 @@ static void cb_resortNameColumn(GtkTreeViewColumn *nameColumn) {
     addr_sort_order = addr_sort_order << 1;
     if (!(addr_sort_order & 0x07)) addr_sort_order = SORT_BY_LNAME;
     set_pref(PREF_ADDR_SORT_ORDER, addr_sort_order, NULL, TRUE);
+    //find Id to keep selected.
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), findAndSetGlobalAddressId, NULL);
     address_redraw();
-    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), findAddressRecordAndSelect, NULL);
     switch (addr_sort_order) {
         case SORT_BY_LNAME:
         default:
@@ -3205,7 +3212,7 @@ findAddressRecordAndSelect(GtkTreeModel *model,
         if (maddr->unique_id == glob_find_id) {
             GtkTreeSelection *selection = NULL;
             int * i = gtk_tree_path_get_indices ( path ) ;
-            clist_row_selected = i[0];
+           // clist_row_selected = i[0];
             selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
             gtk_tree_selection_select_path(selection, path);
             gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, ADDRESS_PHONE_COLUMN_ENUM, FALSE, 1.0, 0.0);
@@ -3216,6 +3223,26 @@ findAddressRecordAndSelect(GtkTreeModel *model,
     return FALSE;
 }
 
+gboolean
+findAndSetGlobalAddressId (GtkTreeModel *model,
+GtkTreePath  *path,
+        GtkTreeIter  *iter,
+gpointer data) {
+int * i = gtk_tree_path_get_indices ( path ) ;
+if(i[0] == clist_row_selected){
+    MyContact *maddr = NULL;
+
+    gtk_tree_model_get(model, iter, ADDRESS_DATA_COLUMN_ENUM, &maddr, -1);
+    if(maddr != NULL){
+        glob_find_id = maddr->unique_id;
+    }else {
+        glob_find_id = 0;
+    }
+return TRUE;
+}
+
+return FALSE;
+}
 gboolean
 selectRecordAddressByRow (GtkTreeModel *model,
                    GtkTreePath  *path,
