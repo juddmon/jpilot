@@ -135,6 +135,11 @@ gboolean printRecordMemo(GtkTreeModel *model,
                          GtkTreePath  *path,
                          GtkTreeIter  *iter,
                          gpointer data);
+gboolean
+findRecordMemo (GtkTreeModel *model,
+                GtkTreePath  *path,
+                GtkTreeIter  *iter,
+                gpointer data);
 
         enum {
     MEMO_COLUMN_ENUM = 0,
@@ -1804,22 +1809,30 @@ static void memo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
 
     jp_logf(JP_LOG_DEBUG, "Leaving memo_update_clist()\n");
 }
-
-static int memo_find(void) {
-    int r, found_at;
+gboolean
+findRecordMemo (GtkTreeModel *model,
+            GtkTreePath  *path,
+            GtkTreeIter  *iter,
+            gpointer data) {
 
     if (glob_find_id) {
-        r = clist_find_id(clist,
-                          glob_find_id,
-                          &found_at);
-        if (r) {
-            clist_select_row(GTK_CLIST(clist), found_at, 0);
-            if (!gtk_clist_row_is_visible(GTK_CLIST(clist), found_at)) {
-                gtk_clist_moveto(GTK_CLIST(clist), found_at, 0, 0.5, 0.0);
-            }
+        MyMemo *mmemo = NULL;
+        gtk_tree_model_get(model,iter,MEMO_DATA_COLUMN_ENUM,&mmemo,-1);
+
+        if(mmemo->unique_id == glob_find_id){
+            GtkTreeSelection * selection = NULL;
+            selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
+            gtk_tree_selection_select_path(selection, path);
+            gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, MEMO_DATA_COLUMN_ENUM, FALSE, 1.0, 0.0);
+            glob_find_id = 0;
+            return TRUE;
         }
-        glob_find_id = 0;
     }
+    return FALSE;
+}
+
+static int memo_find(void) {
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), findRecordMemo, NULL);
     return EXIT_SUCCESS;
 }
 
@@ -2144,6 +2157,7 @@ void initializeTreeView() {
     GtkCellRenderer *columnRenderer = gtk_cell_renderer_text_new();
     GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes("", columnRenderer, "text", 0, NULL);
     gtk_tree_view_column_set_fixed_width(column, (gint) 50);
+    gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(treeView), FALSE);
     gtk_tree_view_insert_column(GTK_TREE_VIEW(treeView), column, 0);
     gtk_tree_view_column_set_sizing(column, GTK_TREE_VIEW_COLUMN_FIXED);
     treeSelection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
