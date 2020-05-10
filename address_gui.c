@@ -359,7 +359,7 @@ static void cb_record_changed(GtkWidget *widget,
     jp_logf(JP_LOG_DEBUG, "cb_record_changed\n");
     if (record_changed == CLEAR_FLAG) {
         connect_changed_signals(DISCONNECT_SIGNALS);
-        if (GTK_CLIST(clist)->rows > 0) {
+        if (gtk_tree_model_iter_n_children(GTK_TREE_MODEL(listStore),NULL) > 0) {
             set_new_button_to(MODIFY_FLAG);
         } else {
             set_new_button_to(NEW_FLAG);
