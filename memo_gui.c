@@ -23,7 +23,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <gtk/gtk.h>
@@ -98,7 +97,7 @@ static int memo_find(void);
 
 static int memo_get_details(struct Memo *new_memo, unsigned char *attrib);
 
-static void memo_update_liststore(GtkWidget *listStore, GtkWidget *tooltip_widget,
+static void memo_update_liststore(GtkListStore *listStore, GtkWidget *tooltip_widget,
                                   MemoList **memo_list, int category, int main);
 
 static void cb_add_new_record(GtkWidget *widget, gpointer data);
@@ -365,7 +364,7 @@ static int cb_memo_import(GtkWidget *parent_window,
                 jp_logf(JP_LOG_WARN, "write failed %s %d\n", __FILE__, __LINE__);
             }
             line[255] = '\0';
-            len = strlen(line);
+            len = (unsigned int) strlen(line);
             if (text_len + len > 65534) {
                 len = 65534 - text_len;
                 line[len] = '\0';
@@ -379,7 +378,7 @@ static int cb_memo_import(GtkWidget *parent_window,
 
         /* convert to valid UTF-8 and recalculate the length */
         jp_charset_p2j(text, sizeof(text));
-        text_len = strlen(text);
+        text_len = (unsigned int)  strlen(text);
 #ifdef JPILOT_DEBUG
         printf("text=[%s]\n", text);
         printf("text_len=%d\n", text_len);
@@ -457,8 +456,8 @@ static int cb_memo_import(GtkWidget *parent_window,
             if (ret == DIALOG_SAID_IMPORT_SKIP) continue;
             if (ret == DIALOG_SAID_IMPORT_ALL) import_all = TRUE;
 
-            attrib = (new_cat_num & 0x0F) |
-                     (priv ? dlpRecAttrSecret : 0);
+            attrib = (unsigned char) ((new_cat_num & 0x0F) |
+                     (priv ? dlpRecAttrSecret : 0));
             if ((ret == DIALOG_SAID_IMPORT_YES) || (import_all)) {
                 pc_memo_write(&new_memo, NEW_PC_REC, attrib, NULL);
             }
@@ -521,8 +520,8 @@ static int cb_memo_import(GtkWidget *parent_window,
             if (ret == DIALOG_SAID_IMPORT_SKIP) continue;
             if (ret == DIALOG_SAID_IMPORT_ALL) import_all = TRUE;
 
-            attrib = (new_cat_num & 0x0F) |
-                     ((temp_memolist->mmemo.attrib & 0x10) ? dlpRecAttrSecret : 0);
+            attrib = (unsigned char) ((new_cat_num & 0x0F) |
+                     ((temp_memolist->mmemo.attrib & 0x10) ? dlpRecAttrSecret : 0));
             if ((ret == DIALOG_SAID_IMPORT_YES) || (import_all)) {
                 pc_memo_write(&new_memo, NEW_PC_REC, attrib, NULL);
             }
@@ -668,10 +667,10 @@ static void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
             case EXPORT_TYPE_CSV:
                 len = 0;
                 if (mmemo->memo.text) {
-                    len = strlen(mmemo->memo.text) * 2 + 4;
+                    len = (unsigned int) strlen(mmemo->memo.text) * 2 + 4;
                 }
                 if (len < 256) len = 256;
-                utf = charset_p2newj(memo_app_info.category.name[mmemo->attrib & 0x0F], 16, char_set);
+                utf = charset_p2newj(memo_app_info.category.name[mmemo->attrib & 0x0F], 16, (int) char_set);
                 str_to_csv_str(csv_text, utf);
                 fprintf(out, "\"%s\",", csv_text);
                 g_free(utf);
@@ -686,11 +685,11 @@ static void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
                 fprintf(out, "\"%s\",", csv_text);
 
                 if (mmemo->memo.text) {
-                    len = strlen(mmemo->memo.text) * 2 + 4;
+                    len = (unsigned int)  strlen(mmemo->memo.text) * 2 + 4;
                 }
                 if (len < 256) len = 256;
                 printf("\"RAW %d %s\"\n", mmemo->attrib & 0x0F, memo_app_info.category.name[mmemo->attrib & 0x0F]);
-                utf = charset_p2newj(memo_app_info.category.name[mmemo->attrib & 0x0F], 16, char_set);
+                utf = charset_p2newj(memo_app_info.category.name[mmemo->attrib & 0x0F], 16, (int)char_set);
                 str_to_csv_str(csv_text, utf);
                 fprintf(out, "\"Memos > %s\"\n", csv_text);
                 printf("\"Memos > %s\"\n", utf);
@@ -707,7 +706,7 @@ static void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
                 g_snprintf(text, sizeof(text), "%s %s", str1, str2);
 
                 fprintf(out, _("Memo: %ld\n"), (long) temp_list->data + 1);
-                utf = charset_p2newj(memo_app_info.category.name[mmemo->attrib & 0x0F], 16, char_set);
+                utf = charset_p2newj(memo_app_info.category.name[mmemo->attrib & 0x0F], 16, (int)char_set);
                 fprintf(out, _("Category: %s\n"), utf);
                 g_free(utf);
                 fprintf(out, _("Private: %s\n"),
@@ -735,7 +734,7 @@ static void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
                 continue;
             }
             /* Write a folder XML tag */
-            utf = charset_p2newj(memo_app_info.category.name[cat], 16, char_set);
+            utf = charset_p2newj(memo_app_info.category.name[cat], 16, (int) char_set);
             fprintf(out, "  <group>\n");
             fprintf(out, "   <title>%s</title>\n", utf);
             fprintf(out, "   <icon>7</icon>\n");
@@ -915,7 +914,7 @@ void delete_memo(MyMemo * mmemo, gpointer data) {
     get_pref(PREF_CHAR_SET, &char_set, NULL);
     if (char_set != CHAR_SET_LATIN1) {
         if (mmemo->memo.text)
-            charset_j2p(mmemo->memo.text, strlen(mmemo->memo.text) + 1, char_set);
+            charset_j2p(mmemo->memo.text, strlen(mmemo->memo.text) + 1, (int) char_set);
     }
 
     /* Do masking like Palm OS 3.5 */
@@ -1084,7 +1083,7 @@ static void cb_category(GtkWidget *item, int selection) {
             } else {
                 gtk_check_menu_item_set_active
                         (GTK_CHECK_MENU_ITEM(memo_cat_menu_item1[index]), TRUE);
-                gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), index2);
+                gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), (guint) index2);
             }
 
             return;
@@ -1131,7 +1130,7 @@ static int memo_clear_details(void) {
         gtk_check_menu_item_set_active
                 (GTK_CHECK_MENU_ITEM(memo_cat_menu_item2[sorted_position]), TRUE);
         gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu2),
-                                    find_menu_cat_pos(sorted_position));
+                                    (guint) find_menu_cat_pos(sorted_position));
     }
 
     set_new_button_to(CLEAR_FLAG);
@@ -1157,7 +1156,7 @@ static int memo_get_details(struct Memo *new_memo, unsigned char *attrib) {
     for (i = 0; i < NUM_MEMO_CAT_ITEMS; i++) {
         if (GTK_IS_WIDGET(memo_cat_menu_item2[i])) {
             if (GTK_CHECK_MENU_ITEM(memo_cat_menu_item2[i])->active) {
-                *attrib = sort_l[i].cat_num;
+                *attrib = (unsigned char) sort_l[i].cat_num;
                 break;
             }
         }
@@ -1265,7 +1264,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data) {
 /* Do masking like Palm OS 3.5 */
 static void clear_mymemo(MyMemo *mmemo) {
     mmemo->unique_id = 0;
-    mmemo->attrib = mmemo->attrib & 0xF8;
+    mmemo->attrib = (unsigned char) (mmemo->attrib & 0xF8);
     if (mmemo->memo.text) {
         free(mmemo->memo.text);
         mmemo->memo.text = strdup("");
@@ -1409,13 +1408,12 @@ selectRecordByRowMemo (GtkTreeModel *model,
     return FALSE;
 }
 
-static void memo_update_liststore(GtkWidget *pListStore, GtkWidget *tooltip_widget,
+static void memo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
                                   MemoList **memo_list, int category, int main) {
     int num_entries, entries_shown;
     GtkTreeIter iter;
     size_t copy_max_length;
     char *last;
-    gchar *empty_line[] = {""};
     char str2[MEMO_MAX_COLUMN_LEN];
     MemoList *temp_memo;
     char str[MEMO_CLIST_CHAR_WIDTH + 10];
@@ -1474,13 +1472,13 @@ static void memo_update_liststore(GtkWidget *pListStore, GtkWidget *tooltip_widg
 
        sprintf(str, "%d. ", entries_shown + 1);
 
-        len1 = strlen(str);
-        len = strlen(temp_memo->mmemo.memo.text) + 1;
+        len1 = ( int) strlen(str);
+        len = ((int) strlen(temp_memo->mmemo.memo.text)) + 1;
         /* ..memo clist does not display '/n' */
-        if ((copy_max_length = len) > MEMO_CLIST_CHAR_WIDTH) {
+        if ((copy_max_length = (size_t) len) > MEMO_CLIST_CHAR_WIDTH) {
             copy_max_length = MEMO_CLIST_CHAR_WIDTH;
         }
-        last = (char *) multibyte_safe_memccpy(str + len1, temp_memo->mmemo.memo.text, '\n', copy_max_length);
+        last =  multibyte_safe_memccpy(str + len1, temp_memo->mmemo.memo.text, '\n', copy_max_length);
         if (last) {
             *(last - 1) = '\0';
         } else {
@@ -1492,8 +1490,6 @@ static void memo_update_liststore(GtkWidget *pListStore, GtkWidget *tooltip_widg
         /* Highlight row background depending on status */
         GdkColor bgColor;
         gboolean showBgColor = FALSE;
-        GdkColor fgColor;
-        gboolean showFgColor = FALSE;
         switch (temp_memo->mmemo.rt) {
             case NEW_PC_REC:
             case REPLACEMENT_PALM_REC:
@@ -1549,10 +1545,10 @@ static void memo_update_liststore(GtkWidget *pListStore, GtkWidget *tooltip_widg
     if (tooltip_widget) {
         get_pref(PREF_SHOW_TOOLTIPS, &show_tooltips, NULL);
         if (memo_list == NULL) {
-            set_tooltip(show_tooltips, glob_tooltips, tooltip_widget, _("0 records"), NULL);
+            set_tooltip((int) show_tooltips, glob_tooltips, tooltip_widget, _("0 records"), NULL);
         } else {
             sprintf(str, _("%d of %d records"), entries_shown, num_entries);
-            set_tooltip(show_tooltips, glob_tooltips, tooltip_widget, str, NULL);
+            set_tooltip((int) show_tooltips, glob_tooltips, tooltip_widget, str, NULL);
         }
     }
 
@@ -1651,7 +1647,7 @@ int memo_refresh(void) {
     } else {
         gtk_check_menu_item_set_active
                 (GTK_CHECK_MENU_ITEM(memo_cat_menu_item1[index]), TRUE);
-        gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), index2);
+        gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), (guint) index2);
     }
 
     return EXIT_SUCCESS;
@@ -1699,13 +1695,13 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     /* Initialize categories */
     get_pref(PREF_CHAR_SET, &char_set, NULL);
     for (i = 1; i < NUM_MEMO_CAT_ITEMS; i++) {
-        cat_name = charset_p2newj(memo_app_info.category.name[i], 31, char_set);
+        cat_name = charset_p2newj(memo_app_info.category.name[i], 31, (int) char_set);
         strcpy(sort_l[i - 1].Pcat, cat_name);
         free(cat_name);
         sort_l[i - 1].cat_num = i;
     }
     /* put reserved 'Unfiled' category at end of list */
-    cat_name = charset_p2newj(memo_app_info.category.name[0], 31, char_set);
+    cat_name = charset_p2newj(memo_app_info.category.name[0], 31, (int) char_set);
     strcpy(sort_l[NUM_MEMO_CAT_ITEMS - 1].Pcat, cat_name);
     free(cat_name);
     sort_l[NUM_MEMO_CAT_ITEMS - 1].cat_num = 0;
@@ -1719,7 +1715,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox) {
 #endif
 
     get_pref(PREF_LAST_MEMO_CATEGORY, &ivalue, NULL);
-    memo_category = ivalue;
+    memo_category = (int) ivalue;
 
     if ((memo_category != CATEGORY_ALL)
         && (memo_app_info.category.name[memo_category][0] == '\0')) {
@@ -1734,7 +1730,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     pane = gtk_hpaned_new();
     get_pref(PREF_MEMO_PANE, &ivalue, NULL);
-    gtk_paned_set_position(GTK_PANED(pane), ivalue);
+    gtk_paned_set_position(GTK_PANED(pane), (gint) ivalue);
 
     gtk_box_pack_start(GTK_BOX(hbox), pane, TRUE, TRUE, 5);
 
@@ -1923,7 +1919,7 @@ gboolean handleRowSelectionForMemo(GtkTreeSelection *selection,
     MyMemo *mmemo;
     int b;
     int index, sorted_position;
-    unsigned int unique_id = 0;
+    int unique_id;
 
     if ((gtk_tree_model_get_iter(model, &iter, path)) && (!path_currently_selected)) {
         int * i = gtk_tree_path_get_indices ( path ) ;
@@ -1979,7 +1975,7 @@ gboolean handleRowSelectionForMemo(GtkTreeSelection *selection,
                     (GTK_CHECK_MENU_ITEM(memo_cat_menu_item2[sorted_position]), TRUE);
         }
         gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu2),
-                                    find_menu_cat_pos(sorted_position));
+                                    (guint) find_menu_cat_pos(sorted_position));
 
         gtk_text_buffer_set_text(GTK_TEXT_BUFFER(memo_text_buffer), memo->text, -1);
 
