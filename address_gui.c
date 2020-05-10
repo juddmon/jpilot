@@ -220,20 +220,27 @@ static void address_update_listStore(GtkListStore *listStore, GtkWidget *tooltip
                                      int main);
 
 gboolean
-findAddressRecordAndSelect (GtkTreeModel *model,
-                            GtkTreePath  *path,
-                            GtkTreeIter  *iter,
-                            gpointer data);
-static int address_clist_redraw(void);
+findAddressRecordAndSelect(GtkTreeModel *model,
+                           GtkTreePath *path,
+                           GtkTreeIter *iter,
+                           gpointer data);
+
+gboolean
+selectRecordAddressByRow (GtkTreeModel *model,
+                          GtkTreePath  *path,
+                          GtkTreeIter  *iter,
+                          gpointer data);
+static int address_redraw(void);
 
 static int address_find(void);
+
 static gboolean handleRowSelectionForAddress(GtkTreeSelection *selection,
                                              GtkTreeModel *model,
                                              GtkTreePath *path,
                                              gboolean path_currently_selected,
                                              gpointer userdata);
 
-        enum {
+enum {
     ADDRESS_NAME_COLUMN_ENUM,
     ADDRESS_NOTE_COLUMN_ENUM,
     ADDRESS_PHONE_COLUMN_ENUM,
@@ -1713,7 +1720,7 @@ static void cb_delete_address(GtkWidget *widget, gpointer data) {
     free_Address(&(maddr.addr));
 
     if (flag == DELETE_FLAG) {
-        address_clist_redraw();
+        address_redraw();
     }
 }
 
@@ -1758,7 +1765,7 @@ static void cb_delete_contact(GtkWidget *widget, gpointer data) {
     }
 
     if (flag == DELETE_FLAG) {
-        address_clist_redraw();
+        address_redraw();
     }
 }
 
@@ -1812,13 +1819,14 @@ static void cb_undelete_address(GtkWidget *widget,
       */
     }
 
-    address_clist_redraw();
+    address_redraw();
 }
 
 static void cb_cancel(GtkWidget *widget, gpointer data) {
     set_new_button_to(CLEAR_FLAG);
     address_refresh();
 }
+
 /**
  * This is a bit hacky.
  * The sort should probably be done on the column sort,
@@ -1831,7 +1839,7 @@ static void cb_resortNameColumn(GtkTreeViewColumn *nameColumn) {
     addr_sort_order = addr_sort_order << 1;
     if (!(addr_sort_order & 0x07)) addr_sort_order = SORT_BY_LNAME;
     set_pref(PREF_ADDR_SORT_ORDER, addr_sort_order, NULL, TRUE);
-    address_clist_redraw();
+    address_redraw();
     gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), findAddressRecordAndSelect, NULL);
     switch (addr_sort_order) {
         case SORT_BY_LNAME:
@@ -1849,6 +1857,7 @@ static void cb_resortNameColumn(GtkTreeViewColumn *nameColumn) {
 
 
 }
+
 /* TODO, this needs converted to Contacts */
 static void cb_resort(GtkWidget *widget,
                       gpointer data) {
@@ -1867,7 +1876,7 @@ static void cb_resort(GtkWidget *widget,
         glob_find_id = maddr->unique_id;
     }
 
-    address_clist_redraw();
+    address_redraw();
 
     /* Update labels AFTER redrawing clist to work around GTK bug */
     GtkTreeViewColumn *nameColumn = gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), ADDRESS_NAME_COLUMN_ENUM);
@@ -2113,7 +2122,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data) {
         if (!glob_find_id) {
             glob_find_id = unique_id;
         }
-        address_clist_redraw();
+        address_redraw();
     }
 }
 
@@ -3184,20 +3193,22 @@ static gboolean cb_key_pressed_right_side(GtkWidget *widget,
 }
 
 gboolean
-findAddressRecordAndSelect (GtkTreeModel *model,
-                            GtkTreePath  *path,
-                            GtkTreeIter  *iter,
-                            gpointer data) {
+findAddressRecordAndSelect(GtkTreeModel *model,
+                           GtkTreePath *path,
+                           GtkTreeIter *iter,
+                           gpointer data) {
 
     if (glob_find_id) {
-        MyAddress *maddr = NULL;
+        MyContact *maddr = NULL;
 
-        gtk_tree_model_get(model,iter,ADDRESS_DATA_COLUMN_ENUM,&maddr,-1);
-        if(maddr->unique_id == glob_find_id){
-            GtkTreeSelection * selection = NULL;
+        gtk_tree_model_get(model, iter, ADDRESS_DATA_COLUMN_ENUM, &maddr, -1);
+        if (maddr->unique_id == glob_find_id) {
+            GtkTreeSelection *selection = NULL;
+            int * i = gtk_tree_path_get_indices ( path ) ;
+            clist_row_selected = i[0];
             selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
             gtk_tree_selection_select_path(selection, path);
-            gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, ADDRESS_DATA_COLUMN_ENUM, FALSE, 1.0, 0.0);
+            gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, ADDRESS_PHONE_COLUMN_ENUM, FALSE, 1.0, 0.0);
             glob_find_id = 0;
             return TRUE;
         }
@@ -3205,6 +3216,22 @@ findAddressRecordAndSelect (GtkTreeModel *model,
     return FALSE;
 }
 
+gboolean
+selectRecordAddressByRow (GtkTreeModel *model,
+                   GtkTreePath  *path,
+                   GtkTreeIter  *iter,
+                   gpointer data) {
+    int * i = gtk_tree_path_get_indices ( path ) ;
+    if(i[0] == clist_row_selected){
+        GtkTreeSelection * selection = NULL;
+        selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
+        gtk_tree_selection_select_path(selection, path);
+        gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, ADDRESS_PHONE_COLUMN_ENUM, FALSE, 1.0, 0.0);
+        return TRUE;
+    }
+
+    return FALSE;
+}
 static void address_update_listStore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
                                      ContactList **cont_list, int category,
                                      int main) {
@@ -3386,13 +3413,9 @@ static void address_update_listStore(GtkListStore *pListStore, GtkWidget *toolti
         }
 
         lstrncpy_remove_cr_lfs(name, str, ADDRESS_MAX_COLUMN_LEN);
-        // strcpy(name,str2);
-        /* Clear string so previous data won't be used inadvertently in next set_text */
         phone[0] = '\0';
-        //temp_cl->mcont.cont.entry[temp_cl->mcont.cont.showPhone + 4]
         lstrncpy_remove_cr_lfs(phone, temp_cl->mcont.cont.entry[temp_cl->mcont.cont.showPhone + 4],
                                ADDRESS_MAX_COLUMN_LEN);
-        //strcpy(phone,str2);
         GdkColor bgColor;
         gboolean showBgColor = FALSE;
         GdkColor fgColor;
@@ -3444,18 +3467,16 @@ static void address_update_listStore(GtkListStore *pListStore, GtkWidget *toolti
     if ((main) && (entries_shown > 0)) {
         /* First, select any record being searched for */
         if (glob_find_id) {
-            // address_find();
+             address_find();
         }
             /* Second, try the currently selected row */
         else if (clist_row_selected < entries_shown) {
-            // clist_select_row(GTK_CLIST(clist), clist_row_selected, ADDRESS_PHONE_COLUMN);
-            //  if (!gtk_clist_row_is_visible(GTK_CLIST(clist), clist_row_selected)) {
-            //     gtk_clist_moveto(GTK_CLIST(clist), clist_row_selected, 0, 0.5, 0.0);
-            //  }
+            gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), selectRecordAddressByRow, NULL);
         } else
             /* Third, select row 0 if nothing else is possible */
         {
-            // clist_select_row(GTK_CLIST(clist), 0, ADDRESS_PHONE_COLUMN);
+            clist_row_selected = 0;
+            gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), selectRecordAddressByRow, NULL);
         }
     }
 
@@ -3880,27 +3901,15 @@ static int make_phone_menu(int default_set, unsigned int callback_id, int set) {
     return EXIT_SUCCESS;
 }
 
+
+
 /* returns 1 if found, 0 if not */
 static int address_find(void) {
-    int r, found_at;
-
-    r = 0;
-    if (glob_find_id) {
-        r = clist_find_id(clist,
-                          glob_find_id,
-                          &found_at);
-        if (r) {
-            clist_select_row(GTK_CLIST(clist), found_at, ADDRESS_PHONE_COLUMN);
-            if (!gtk_clist_row_is_visible(GTK_CLIST(clist), found_at)) {
-                gtk_clist_moveto(GTK_CLIST(clist), found_at, 0, 0.5, 0.0);
-            }
-        }
-        glob_find_id = 0;
-    }
-    return r;
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), findAddressRecordAndSelect, NULL);
+    return EXIT_SUCCESS;
 }
 
-static int address_clist_redraw(void) {
+static int address_redraw(void) {
     // address_update_clist(clist, category_menu1, &glob_contact_list,
     //                    address_category, TRUE);
     address_update_listStore(listStore, category_menu1, &glob_contact_list,
@@ -4098,12 +4107,11 @@ int address_gui_cleanup(void) {
 }
 
 
-
 static gboolean handleRowSelectionForAddress(GtkTreeSelection *selection,
-                                   GtkTreeModel *model,
-                                   GtkTreePath *path,
-                                   gboolean path_currently_selected,
-                                   gpointer userdata) {
+                                             GtkTreeModel *model,
+                                             GtkTreePath *path,
+                                             gboolean path_currently_selected,
+                                             gpointer userdata) {
     GtkTreeIter iter;
     /* The rename-able phone entries are indexes 3,4,5,6,7 */
     struct Contact *cont;
@@ -4122,11 +4130,11 @@ static gboolean handleRowSelectionForAddress(GtkTreeSelection *selection,
 
     if ((gtk_tree_model_get_iter(model, &iter, path)) && (!path_currently_selected)) {
 
-        int * path_index = gtk_tree_path_get_indices ( path ) ;
+        int *path_index = gtk_tree_path_get_indices(path);
         clist_row_selected = path_index[0];
         get_pref(PREF_CHAR_SET, &char_set, NULL);
 
-        gtk_tree_model_get(model,&iter,ADDRESS_DATA_COLUMN_ENUM,&mcont,-1);
+        gtk_tree_model_get(model, &iter, ADDRESS_DATA_COLUMN_ENUM, &mcont, -1);
 
         if ((record_changed == MODIFY_FLAG) || (record_changed == NEW_FLAG)) {
 
@@ -4139,7 +4147,7 @@ static gboolean handleRowSelectionForAddress(GtkTreeSelection *selection,
                 if (clist_row_selected >= 0) {
                     //clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
                 } else {
-                   // clist_row_selected = 0;
+                    // clist_row_selected = 0;
                     //clist_select_row(GTK_CLIST(clist), 0, 0);
                 }
                 return TRUE;
@@ -4579,10 +4587,9 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
             gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, _(ADDRESS_COMPANY_LAST_NAME));
             break;
     }
-  //  gtk_signal_connect(GTK_OBJECT(GTK_CLIST(clist)->column[ADDRESS_NAME_COLUMN].button),
-   //                    "clicked", GTK_SIGNAL_FUNC(cb_resort), NULL);
+    //  gtk_signal_connect(GTK_OBJECT(GTK_CLIST(clist)->column[ADDRESS_NAME_COLUMN].button),
+    //                    "clicked", GTK_SIGNAL_FUNC(cb_resort), NULL);
     g_signal_connect (nameColumn, "clicked", G_CALLBACK(cb_resortNameColumn), NULL);
-
 
 
     gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_PHONE_COLUMN, _("Phone"));
