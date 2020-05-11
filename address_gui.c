@@ -1752,7 +1752,6 @@ void deleteAddressContact(MyContact * mcont, gpointer data){
     long char_set;
     int i;
 
-    mcont = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
     if (mcont < (MyContact *) CLIST_MIN_DATA) {
         return;
     }
@@ -1843,11 +1842,11 @@ void deleteAddress(MyContact * mcont,gpointer data){
     }
 }
 static void cb_delete_address(GtkWidget *widget, gpointer data) {
-    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), deleteAddressRecord, NULL);
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), deleteAddressRecord, data);
 }
 
 static void cb_delete_contact(GtkWidget *widget, gpointer data) {
-    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), deleteAddressContactRecord, NULL);
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), deleteAddressContactRecord, data);
 }
 
 static void cb_delete_address_or_contact(GtkWidget *widget, gpointer data) {
