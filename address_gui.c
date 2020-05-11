@@ -27,17 +27,8 @@
 #include <sys/stat.h>
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
-#include <time.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <pi-dlp.h>
-#include "jp-pi-contact.h"
-
 #include "address.h"
 #include "i18n.h"
-#include "utils.h"
-#include "log.h"
 #include "prefs.h"
 #include "print.h"
 #include "password.h"
