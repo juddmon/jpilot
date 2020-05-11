@@ -249,7 +249,11 @@ gboolean deleteAddressContactRecord(GtkTreeModel *model,
                                     GtkTreePath  *path,
                                     GtkTreeIter  *iter,
                                     gpointer data);
-
+gboolean undeleteAddressRecord(GtkTreeModel *model,
+                               GtkTreePath  *path,
+                               GtkTreeIter  *iter,
+                               gpointer data);
+void undeleteAddress(MyContact * mcont,gpointer data);
 void deleteAddress(MyContact * mcont,gpointer data);
 void deleteAddressContact(MyContact * mcont,gpointer data);
 static int address_redraw(void);
@@ -1746,6 +1750,23 @@ gboolean deleteAddressContactRecord(GtkTreeModel *model,
 
 }
 
+gboolean undeleteAddressRecord(GtkTreeModel *model,
+                                    GtkTreePath  *path,
+                                    GtkTreeIter  *iter,
+                                    gpointer data) {
+    int * i = gtk_tree_path_get_indices ( path ) ;
+    if(i[0] == clist_row_selected){
+        MyContact *mcont = NULL;
+        gtk_tree_model_get(model,iter,ADDRESS_DATA_COLUMN_ENUM,&mcont,-1);
+        undeleteAddress(mcont,data);
+        return TRUE;
+    }
+
+    return FALSE;
+
+
+}
+
 void deleteAddressContact(MyContact * mcont, gpointer data){
     int flag;
     int show_priv;
@@ -1857,14 +1878,10 @@ static void cb_delete_address_or_contact(GtkWidget *widget, gpointer data) {
     }
 }
 
-
-static void cb_undelete_address(GtkWidget *widget,
-                                gpointer data) {
-    MyContact *mcont;
+void undeleteAddress(MyContact * mcont,gpointer data){
     int flag;
     int show_priv;
 
-    mcont = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
     if (mcont < (MyContact *) CLIST_MIN_DATA) {
         return;
     }
@@ -1900,6 +1917,12 @@ static void cb_undelete_address(GtkWidget *widget,
     }
 
     address_redraw();
+}
+static void cb_undelete_address(GtkWidget *widget,
+                                gpointer data) {
+
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), undeleteAddressRecord, data);
+
 }
 
 static void cb_cancel(GtkWidget *widget, gpointer data) {
