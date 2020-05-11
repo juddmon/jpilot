@@ -237,11 +237,22 @@ findAndSetGlobalAddressId (GtkTreeModel *model,
                            GtkTreeIter  *iter,
                            gpointer data);
 
-gboolean printAddreessRecord(GtkTreeModel *model,
+gboolean printAddressRecord(GtkTreeModel *model,
+                            GtkTreePath  *path,
+                            GtkTreeIter  *iter,
+                            gpointer data);
+gboolean deleteAddressRecord(GtkTreeModel *model,
                              GtkTreePath  *path,
                              GtkTreeIter  *iter,
                              gpointer data);
-        static int address_redraw(void);
+gboolean deleteAddressContactRecord(GtkTreeModel *model,
+                                    GtkTreePath  *path,
+                                    GtkTreeIter  *iter,
+                                    gpointer data);
+
+void deleteAddress(MyContact * mcont,gpointer data);
+void deleteAddressContact(MyContact * mcont,gpointer data);
+static int address_redraw(void);
 
 int printAddress(MyContact * mcont, gpointer data);
 
@@ -421,10 +432,10 @@ static void connect_changed_signals(int con_or_dis) {
     }
 }
 
-gboolean printAddreessRecord(GtkTreeModel *model,
-                     GtkTreePath  *path,
-                     GtkTreeIter  *iter,
-                     gpointer data) {
+gboolean printAddressRecord(GtkTreeModel *model,
+                            GtkTreePath  *path,
+                            GtkTreeIter  *iter,
+                            gpointer data) {
     int * i = gtk_tree_path_get_indices ( path ) ;
     if(i[0] == clist_row_selected){
         MyContact * myContact = NULL;
@@ -482,7 +493,7 @@ int printAddress(MyContact * mcont, gpointer data){
 }
 
 int address_print(void) {
-    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), printAddreessRecord, NULL);
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), printAddressRecord, NULL);
     return EXIT_SUCCESS;
 
 }
@@ -1701,16 +1712,90 @@ static int find_menu_cat_pos(int cat) {
     }
 }
 
+gboolean deleteAddressRecord(GtkTreeModel *model,
+                      GtkTreePath  *path,
+                      GtkTreeIter  *iter,
+                      gpointer data) {
+    int * i = gtk_tree_path_get_indices ( path ) ;
+    if(i[0] == clist_row_selected){
+        MyContact *mcont = NULL;
+        gtk_tree_model_get(model,iter,ADDRESS_DATA_COLUMN_ENUM,&mcont,-1);
+        deleteAddress(mcont,data);
+        return TRUE;
+    }
 
-static void cb_delete_address(GtkWidget *widget, gpointer data) {
-    MyAddress maddr;
-    MyContact *mcont;
+    return FALSE;
+
+
+}
+
+gboolean deleteAddressContactRecord(GtkTreeModel *model,
+                             GtkTreePath  *path,
+                             GtkTreeIter  *iter,
+                             gpointer data) {
+    int * i = gtk_tree_path_get_indices ( path ) ;
+    if(i[0] == clist_row_selected){
+        MyContact *mcont = NULL;
+        gtk_tree_model_get(model,iter,ADDRESS_DATA_COLUMN_ENUM,&mcont,-1);
+        deleteAddressContact(mcont,data);
+        return TRUE;
+    }
+
+    return FALSE;
+
+
+}
+
+void deleteAddressContact(MyContact * mcont, gpointer data){
     int flag;
     int show_priv;
     long char_set;
     int i;
 
     mcont = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
+    if (mcont < (MyContact *) CLIST_MIN_DATA) {
+        return;
+    }
+    /* convert to Palm character set */
+    get_pref(PREF_CHAR_SET, &char_set, NULL);
+    if (char_set != CHAR_SET_LATIN1) {
+        for (i = 0; i < NUM_CONTACT_ENTRIES; i++) {
+            if (mcont->cont.entry[i]) {
+                charset_j2p(mcont->cont.entry[i],
+                            strlen(mcont->cont.entry[i]) + 1, char_set);
+            }
+        }
+    }
+
+    /* Do masking like Palm OS 3.5 */
+    show_priv = show_privates(GET_PRIVATES);
+    if ((show_priv != SHOW_PRIVATES) &&
+        (mcont->attrib & dlpRecAttrSecret)) {
+        return;
+    }
+    /* End Masking */
+    flag = GPOINTER_TO_INT(data);
+    if ((flag == MODIFY_FLAG) || (flag == DELETE_FLAG)) {
+        delete_pc_record(CONTACTS, mcont, flag);
+        if (flag == DELETE_FLAG) {
+            /* when we redraw we want to go to the line above the deleted one */
+            if (clist_row_selected > 0) {
+                clist_row_selected--;
+            }
+        }
+    }
+
+    if (flag == DELETE_FLAG) {
+        address_redraw();
+    }
+}
+
+void deleteAddress(MyContact * mcont,gpointer data){
+    MyAddress maddr;
+    int flag;
+    int show_priv;
+    long char_set;
+    int i;
 
     if (mcont < (MyContact *) CLIST_MIN_DATA) {
         return;
@@ -1757,50 +1842,12 @@ static void cb_delete_address(GtkWidget *widget, gpointer data) {
         address_redraw();
     }
 }
+static void cb_delete_address(GtkWidget *widget, gpointer data) {
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), deleteAddressRecord, NULL);
+}
 
 static void cb_delete_contact(GtkWidget *widget, gpointer data) {
-    MyContact *mcont;
-    int flag;
-    int show_priv;
-    long char_set;
-    int i;
-
-    mcont = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
-    if (mcont < (MyContact *) CLIST_MIN_DATA) {
-        return;
-    }
-    /* convert to Palm character set */
-    get_pref(PREF_CHAR_SET, &char_set, NULL);
-    if (char_set != CHAR_SET_LATIN1) {
-        for (i = 0; i < NUM_CONTACT_ENTRIES; i++) {
-            if (mcont->cont.entry[i]) {
-                charset_j2p(mcont->cont.entry[i],
-                            strlen(mcont->cont.entry[i]) + 1, char_set);
-            }
-        }
-    }
-
-    /* Do masking like Palm OS 3.5 */
-    show_priv = show_privates(GET_PRIVATES);
-    if ((show_priv != SHOW_PRIVATES) &&
-        (mcont->attrib & dlpRecAttrSecret)) {
-        return;
-    }
-    /* End Masking */
-    flag = GPOINTER_TO_INT(data);
-    if ((flag == MODIFY_FLAG) || (flag == DELETE_FLAG)) {
-        delete_pc_record(CONTACTS, mcont, flag);
-        if (flag == DELETE_FLAG) {
-            /* when we redraw we want to go to the line above the deleted one */
-            if (clist_row_selected > 0) {
-                clist_row_selected--;
-            }
-        }
-    }
-
-    if (flag == DELETE_FLAG) {
-        address_redraw();
-    }
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), deleteAddressContactRecord, NULL);
 }
 
 static void cb_delete_address_or_contact(GtkWidget *widget, gpointer data) {
