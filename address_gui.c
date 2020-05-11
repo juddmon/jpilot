@@ -594,6 +594,8 @@ static GString *contact_to_gstring(struct Contact *cont) {
                 g_free(utf);
                 NL[0] = '\n';
                 break;
+            default:
+                break;
         }
     }
     return s;
@@ -745,6 +747,8 @@ static int cb_addr_import(GtkWidget *parent_window,
                                 new_cont.advanceUnits = 1;  /* Days */
                             }
                             break;
+                        default:
+                            break;
                     }
                 }
 
@@ -851,7 +855,8 @@ static int cb_addr_import(GtkWidget *parent_window,
             }
             free_AddressList(&addrlist);
             break;
-
+        default:
+            break;
     }  /* end switch for import types */
 
     address_refresh();
@@ -1041,6 +1046,8 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
                 case ADDRESS_GUI_WEBSITE_TEXT:
                     fprintf(out, "%s, ", contact_app_info.labels[schema[i].record_field]);
                     break;
+                default:
+                    break;
             }
         }
 
@@ -1138,6 +1145,8 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
                                     case contAddress3 :
                                         index = 2;
                                         break;
+                                    default:
+                                        break;
                                 }
                                 index = mcont->cont.addressLabel[index];
                                 fprintf(out, _("%s: "), contact_app_info.addrLabels[mcont->cont.addressLabel[index]]);
@@ -1154,6 +1163,8 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
                             case ADDRESS_GUI_ADDR_MENU_TEXT:
                             case ADDRESS_GUI_WEBSITE_TEXT:
                                 fprintf(out, "%s\n", mcont->cont.entry[schema[i].record_field]);
+                                break;
+                            default:
                                 break;
                         }
                     }
@@ -1224,6 +1235,8 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
                                 fprintf(out, "\"\",");  /* for null Birthday field */
                                 fprintf(out, "\"\",");  /* for null Birthday Reminder field */
                             }
+                            break;
+                        default:
                             break;
                     }
                 }
@@ -1348,31 +1361,33 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
                     }
                 }
                 for (i = 0; i < NUM_ADDRESSES; i++) {
-                    int address_i = 0, city_i = 0, state_i = 0, zip_i = 0, country_i = 0;
+                    int address_il = 0, city_i = 0, state_i = 0, zip_i = 0, country_i = 0;
                     switch (i) {
                         case 0:
-                            address_i = contAddress1;
+                            address_il = contAddress1;
                             city_i = contCity1;
                             state_i = contState1;
                             zip_i = contZip1;
                             country_i = contCountry1;
                             break;
                         case 1:
-                            address_i = contAddress2;
+                            address_il = contAddress2;
                             city_i = contCity2;
                             state_i = contState2;
                             zip_i = contZip2;
                             country_i = contCountry2;
                             break;
                         case 2:
-                            address_i = contAddress3;
+                            address_il = contAddress3;
                             city_i = contCity3;
                             state_i = contState3;
                             zip_i = contZip3;
                             country_i = contCountry3;
                             break;
+                        default:
+                            break;
                     }
-                    if (mcont->cont.entry[address_i] ||
+                    if (mcont->cont.entry[address_il] ||
                         mcont->cont.entry[city_i] ||
                         mcont->cont.entry[state_i] ||
                         mcont->cont.entry[zip_i] ||
@@ -1394,7 +1409,7 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
                                 fprintf(out, "ADR:;;");
                         }
 
-                        for (n = address_i; n < country_i + 1; n++) {
+                        for (n = address_il; n < country_i + 1; n++) {
                             if (mcont->cont.entry[n]) {
                                 str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[n]);
                                 fprintf(out, "%s", csv_text);
@@ -1414,6 +1429,8 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
                             break;
                         case 1:
                             im_i = contIM2;
+                            break;
+                        default:
                             break;
                     }
                     if (mcont->cont.entry[im_i]) {
@@ -1436,9 +1453,9 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
                     fprintf(out, "URL:%s"CRLF, csv_text);
                 }
                 if (mcont->cont.birthdayFlag) {
-                    char birthday_str[255];
-                    strftime(birthday_str, sizeof(birthday_str), "%F", &mcont->cont.birthday);
-                    str_to_vcard_str(csv_text, sizeof(csv_text), birthday_str);
+                    char birthday_str_l[255];
+                    strftime(birthday_str_l, sizeof(birthday_str), "%F", &mcont->cont.birthday);
+                    str_to_vcard_str(csv_text, sizeof(csv_text), birthday_str_l);
                     fprintf(out, "BDAY:%s"CRLF, birthday_str);
                 }
                 if (type == EXPORT_TYPE_VCARD_GMAIL) {
@@ -1836,6 +1853,8 @@ void addNewAddressRecordToDataStructure(MyContact * mcont, gpointer data){
                 case ADDRESS_GUI_LABEL_TEXT:
                 case ADDRESS_GUI_WEBSITE_TEXT:
                     break;
+                default:
+                    break;
             }
         }
 
@@ -1854,6 +1873,8 @@ void addNewAddressRecordToDataStructure(MyContact * mcont, gpointer data){
                                                      &start_iter, &end_iter, TRUE);
                     break;
                 case ADDRESS_GUI_BIRTHDAY:
+                    break;
+                default:
                     break;
             }
         }
@@ -2247,6 +2268,8 @@ static void addr_clear_details(void) {
             case ADDRESS_GUI_IM_MENU_TEXT:
             case ADDRESS_GUI_WEBSITE_TEXT:
                 gtk_text_buffer_set_text(GTK_TEXT_BUFFER(addr_text_buffer[schema[i].record_field]), "", -1);
+            default:
+                break;
         }
     }
 
@@ -2294,6 +2317,8 @@ static void addr_clear_details(void) {
                 reminder_str[0] = '\0';
                 g_snprintf(reminder_str, sizeof(reminder_str), "%ld", ivalue);
                 gtk_entry_set_text(GTK_ENTRY(reminder_entry), reminder_str);
+                break;
+            default:
                 break;
         }
     }
@@ -3640,6 +3665,9 @@ static gboolean cb_key_pressed(GtkWidget *widget, GdkEventKey *event) {
                 } else {
                     j = i;
                 }
+                break;
+            default:
+                break;
         }
     }
 
@@ -3724,12 +3752,6 @@ static gboolean handleRowSelectionForAddress(GtkTreeSelection *selection,
 
             b = dialog_save_changed_record_with_cancel(pane, record_changed);
             if (b == DIALOG_SAID_1) { /* Cancel */
-                if (clist_row_selected >= 0) {
-                    //clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
-                } else {
-                    // clist_row_selected = 0;
-                    //clist_select_row(GTK_CLIST(clist), 0, 0);
-                }
                 return TRUE;
             }
             if (b == DIALOG_SAID_3) { /* Save */
@@ -3934,6 +3956,8 @@ static gboolean handleRowSelectionForAddress(GtkTreeSelection *selection,
                                                      FALSE);
                         gtk_entry_set_text(GTK_ENTRY(reminder_entry), reminder_str);
                     }
+                    break;
+                default:
                     break;
             }
         }
@@ -4335,6 +4359,8 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                     if (x < 2) x = 2;
                     y++;
                     break;
+                default:
+                    break;
             }
         }
 
@@ -4571,7 +4597,9 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                     gtk_box_pack_start(GTK_BOX(reminder_box), label, FALSE, FALSE, 0);
 
                     break;
-            };
+                default:
+                    break;
+            }
             table_y_i++;
         }
     }
@@ -4606,6 +4634,8 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
                 gtk_signal_connect(GTK_OBJECT(addr_text[schema[i].record_field]), "key_press_event",
                                    GTK_SIGNAL_FUNC(cb_key_pressed), 0);
+                break;
+            default:
                 break;
         }
     }
