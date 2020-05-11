@@ -1658,7 +1658,7 @@ int address_export(GtkWidget *window) {
 
 /* End Export Code */
 
-static void cb_resize_column(GtkCList *clist,
+static void cb_resize_column(GtkTreeView *pTreeView,
                              gint column,
                              gint width,
                              gpointer user_data) {
@@ -4669,8 +4669,8 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     get_pref(PREF_ADDR_NAME_COL_SZ, &ivalue, NULL);
     gtk_tree_view_column_set_fixed_width(nameColumn, ivalue);
     gtk_clist_set_column_width(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, ivalue);
-    gtk_tree_view_column_set_resizable(nameColumn, FALSE);
-    gtk_tree_view_column_set_resizable(noteColumn, TRUE);
+    gtk_tree_view_column_set_resizable(nameColumn, TRUE);
+    gtk_tree_view_column_set_resizable(noteColumn, FALSE);
     gtk_tree_view_column_set_resizable(phoneColumn, FALSE);
     gtk_tree_view_column_set_alignment(noteColumn, GTK_JUSTIFY_CENTER);
     gtk_clist_set_column_auto_resize(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, FALSE);
@@ -4678,7 +4678,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_clist_set_column_auto_resize(GTK_CLIST(clist), ADDRESS_PHONE_COLUMN, FALSE);
     gtk_clist_set_column_justification(GTK_CLIST(clist), ADDRESS_NOTE_COLUMN, GTK_JUSTIFY_CENTER);
 
-    gtk_signal_connect(GTK_OBJECT(clist), "resize-column",
+    gtk_signal_connect(GTK_OBJECT(treeView), "resize-column",
                        GTK_SIGNAL_FUNC(cb_resize_column), NULL);
 
     // gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
