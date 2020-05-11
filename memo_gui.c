@@ -1898,7 +1898,8 @@ void initializeTreeView() {
     GtkTreeSelection *treeSelection = NULL;
     treeView = gtk_tree_view_new_with_model(GTK_TREE_MODEL(listStore));
     GtkCellRenderer *columnRenderer = gtk_cell_renderer_text_new();
-    GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes("", columnRenderer, "text", 0, NULL);
+    GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes("", columnRenderer, "text", MEMO_COLUMN_ENUM,
+            "cell-background-gdk",MEMO_BACKGROUND_COLOR_ENUM, "cell-background-set",MEMO_BACKGROUND_COLOR_ENABLED_ENUM,NULL);
     gtk_tree_view_column_set_fixed_width(column, (gint) 50);
     gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(treeView), FALSE);
     gtk_tree_view_insert_column(GTK_TREE_VIEW(treeView), column, 0);
