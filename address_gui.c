@@ -145,7 +145,6 @@ static address_schema_entry address_schema[NUM_ADDRESS_FIELDS] = {
  * 0 is AddressDB, 1 is ContactsDB */
 static long address_version = 0;
 
-static GtkWidget *clist;
 static GtkWidget *treeView;
 static GtkTreeSelection *treeSelection;
 static GtkListStore *listStore;
@@ -212,9 +211,6 @@ extern int glob_date_timer_tag;
 /****************************** Prototypes ************************************/
 static void connect_changed_signals(int con_or_dis);
 
-static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
-                                 ContactList **cont_list, int category, int main);
-
 static void address_update_listStore(GtkListStore *listStore, GtkWidget *tooltip_widget,
                                      ContactList **cont_list, int category,
                                      int main);
@@ -226,41 +222,62 @@ findAddressRecordAndSelect(GtkTreeModel *model,
                            gpointer data);
 
 gboolean
-selectRecordAddressByRow (GtkTreeModel *model,
-                          GtkTreePath  *path,
-                          GtkTreeIter  *iter,
-                          gpointer data);
+findAddressRecordByTextAndSelect(GtkTreeModel *model,
+                                 GtkTreePath *path,
+                                 GtkTreeIter *iter,
+                                 char *entry_text);
 
 gboolean
-findAndSetGlobalAddressId (GtkTreeModel *model,
-                           GtkTreePath  *path,
-                           GtkTreeIter  *iter,
-                           gpointer data);
+selectRecordAddressByRow(GtkTreeModel *model,
+                         GtkTreePath *path,
+                         GtkTreeIter *iter,
+                         gpointer data);
+
+gboolean
+findAndSetGlobalAddressId(GtkTreeModel *model,
+                          GtkTreePath *path,
+                          GtkTreeIter *iter,
+                          gpointer data);
 
 gboolean printAddressRecord(GtkTreeModel *model,
-                            GtkTreePath  *path,
-                            GtkTreeIter  *iter,
+                            GtkTreePath *path,
+                            GtkTreeIter *iter,
                             gpointer data);
+
 gboolean deleteAddressRecord(GtkTreeModel *model,
-                             GtkTreePath  *path,
-                             GtkTreeIter  *iter,
+                             GtkTreePath *path,
+                             GtkTreeIter *iter,
                              gpointer data);
+
+gboolean addNewAddressRecord(GtkTreeModel *model,
+                             GtkTreePath *path,
+                             GtkTreeIter *iter,
+                             gpointer data);
+
 gboolean deleteAddressContactRecord(GtkTreeModel *model,
-                                    GtkTreePath  *path,
-                                    GtkTreeIter  *iter,
+                                    GtkTreePath *path,
+                                    GtkTreeIter *iter,
                                     gpointer data);
+
 gboolean undeleteAddressRecord(GtkTreeModel *model,
-                               GtkTreePath  *path,
-                               GtkTreeIter  *iter,
+                               GtkTreePath *path,
+                               GtkTreeIter *iter,
                                gpointer data);
-void undeleteAddress(MyContact * mcont,gpointer data);
-void deleteAddress(MyContact * mcont,gpointer data);
-void deleteAddressContact(MyContact * mcont,gpointer data);
+
+void undeleteAddress(MyContact *mcont, gpointer data);
+static void cb_delete_address_or_contact(GtkWidget *widget, gpointer data);
+
+void deleteAddress(MyContact *mcont, gpointer data);
+
+void deleteAddressContact(MyContact *mcont, gpointer data);
+void addNewAddressRecordToDataStructure(MyContact * mcont, gpointer data);
+
 static int address_redraw(void);
 
-int printAddress(MyContact * mcont, gpointer data);
+int printAddress(MyContact *mcont, gpointer data);
 
 static int address_find(void);
+static void get_address_attrib(unsigned char *attrib);
 
 
 static gboolean handleRowSelectionForAddress(GtkTreeSelection *selection,
@@ -374,7 +391,7 @@ static void cb_record_changed(GtkWidget *widget,
     jp_logf(JP_LOG_DEBUG, "cb_record_changed\n");
     if (record_changed == CLEAR_FLAG) {
         connect_changed_signals(DISCONNECT_SIGNALS);
-        if (gtk_tree_model_iter_n_children(GTK_TREE_MODEL(listStore),NULL) > 0) {
+        if (gtk_tree_model_iter_n_children(GTK_TREE_MODEL(listStore), NULL) > 0) {
             set_new_button_to(MODIFY_FLAG);
         } else {
             set_new_button_to(NEW_FLAG);
@@ -437,14 +454,14 @@ static void connect_changed_signals(int con_or_dis) {
 }
 
 gboolean printAddressRecord(GtkTreeModel *model,
-                            GtkTreePath  *path,
-                            GtkTreeIter  *iter,
+                            GtkTreePath *path,
+                            GtkTreeIter *iter,
                             gpointer data) {
-    int * i = gtk_tree_path_get_indices ( path ) ;
-    if(i[0] == clist_row_selected){
-        MyContact * myContact = NULL;
-        gtk_tree_model_get(model,iter,ADDRESS_DATA_COLUMN_ENUM,&myContact,-1);
-        printAddress(myContact,data);
+    int *i = gtk_tree_path_get_indices(path);
+    if (i[0] == clist_row_selected) {
+        MyContact *myContact = NULL;
+        gtk_tree_model_get(model, iter, ADDRESS_DATA_COLUMN_ENUM, &myContact, -1);
+        printAddress(myContact, data);
         return TRUE;
     }
 
@@ -452,7 +469,8 @@ gboolean printAddressRecord(GtkTreeModel *model,
 
 
 }
-int printAddress(MyContact * mcont, gpointer data){
+
+int printAddress(MyContact *mcont, gpointer data) {
     long this_many;
     AddressList *addr_list;
     ContactList *cont_list;
@@ -922,7 +940,7 @@ static const char *vCardMapType(int label) {
             return "x-unknown";
     }
 }
-
+//TODO: fix this when working on exports
 static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
                               int type, const char *filename) {
     MyContact *mcont;
@@ -1625,7 +1643,6 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
 
 
 static void cb_addr_update_clist(GtkWidget *clist, int category) {
-    // address_update_clist(clist, NULL, &export_contact_list, category, FALSE);
     address_update_listStore(listStore, NULL, &export_contact_list, category, FALSE);
 }
 
@@ -1636,6 +1653,8 @@ static void cb_addr_export_done(GtkWidget *widget, const char *filename) {
     set_pref(PREF_ADDRESS_EXPORT_FILENAME, 0, filename, TRUE);
 }
 
+
+//TODO: fix this when working on exports.
 int address_export(GtkWidget *window) {
     int w, h, x, y;
     char *type_text[] = {N_("Text"),
@@ -1717,31 +1736,14 @@ static int find_menu_cat_pos(int cat) {
 }
 
 gboolean deleteAddressRecord(GtkTreeModel *model,
-                      GtkTreePath  *path,
-                      GtkTreeIter  *iter,
-                      gpointer data) {
-    int * i = gtk_tree_path_get_indices ( path ) ;
-    if(i[0] == clist_row_selected){
-        MyContact *mcont = NULL;
-        gtk_tree_model_get(model,iter,ADDRESS_DATA_COLUMN_ENUM,&mcont,-1);
-        deleteAddress(mcont,data);
-        return TRUE;
-    }
-
-    return FALSE;
-
-
-}
-
-gboolean deleteAddressContactRecord(GtkTreeModel *model,
-                             GtkTreePath  *path,
-                             GtkTreeIter  *iter,
+                             GtkTreePath *path,
+                             GtkTreeIter *iter,
                              gpointer data) {
-    int * i = gtk_tree_path_get_indices ( path ) ;
-    if(i[0] == clist_row_selected){
+    int *i = gtk_tree_path_get_indices(path);
+    if (i[0] == clist_row_selected) {
         MyContact *mcont = NULL;
-        gtk_tree_model_get(model,iter,ADDRESS_DATA_COLUMN_ENUM,&mcont,-1);
-        deleteAddressContact(mcont,data);
+        gtk_tree_model_get(model, iter, ADDRESS_DATA_COLUMN_ENUM, &mcont, -1);
+        deleteAddress(mcont, data);
         return TRUE;
     }
 
@@ -1749,346 +1751,24 @@ gboolean deleteAddressContactRecord(GtkTreeModel *model,
 
 
 }
-
-gboolean undeleteAddressRecord(GtkTreeModel *model,
-                                    GtkTreePath  *path,
-                                    GtkTreeIter  *iter,
-                                    gpointer data) {
+gboolean addNewAddressRecord(GtkTreeModel *model,
+                             GtkTreePath *path,
+                             GtkTreeIter *iter,
+                             gpointer data){
     int * i = gtk_tree_path_get_indices ( path ) ;
     if(i[0] == clist_row_selected){
         MyContact *mcont = NULL;
         gtk_tree_model_get(model,iter,ADDRESS_DATA_COLUMN_ENUM,&mcont,-1);
-        undeleteAddress(mcont,data);
+        addNewAddressRecordToDataStructure(mcont,data);
         return TRUE;
     }
 
     return FALSE;
-
-
 }
 
-void deleteAddressContact(MyContact * mcont, gpointer data){
-    int flag;
-    int show_priv;
-    long char_set;
-    int i;
-
-    if (mcont < (MyContact *) CLIST_MIN_DATA) {
-        return;
-    }
-    /* convert to Palm character set */
-    get_pref(PREF_CHAR_SET, &char_set, NULL);
-    if (char_set != CHAR_SET_LATIN1) {
-        for (i = 0; i < NUM_CONTACT_ENTRIES; i++) {
-            if (mcont->cont.entry[i]) {
-                charset_j2p(mcont->cont.entry[i],
-                            strlen(mcont->cont.entry[i]) + 1, char_set);
-            }
-        }
-    }
-
-    /* Do masking like Palm OS 3.5 */
-    show_priv = show_privates(GET_PRIVATES);
-    if ((show_priv != SHOW_PRIVATES) &&
-        (mcont->attrib & dlpRecAttrSecret)) {
-        return;
-    }
-    /* End Masking */
-    flag = GPOINTER_TO_INT(data);
-    if ((flag == MODIFY_FLAG) || (flag == DELETE_FLAG)) {
-        delete_pc_record(CONTACTS, mcont, flag);
-        if (flag == DELETE_FLAG) {
-            /* when we redraw we want to go to the line above the deleted one */
-            if (clist_row_selected > 0) {
-                clist_row_selected--;
-            }
-        }
-    }
-
-    if (flag == DELETE_FLAG) {
-        address_redraw();
-    }
-}
-
-void deleteAddress(MyContact * mcont,gpointer data){
-    MyAddress maddr;
-    int flag;
-    int show_priv;
-    long char_set;
-    int i;
-
-    if (mcont < (MyContact *) CLIST_MIN_DATA) {
-        return;
-    }
-
-    copy_contact_to_address(&(mcont->cont), &(maddr.addr));
-    maddr.rt = mcont->rt;
-    maddr.unique_id = mcont->unique_id;
-    maddr.attrib = mcont->attrib;
-
-    /* convert to Palm character set */
-    get_pref(PREF_CHAR_SET, &char_set, NULL);
-    if (char_set != CHAR_SET_LATIN1) {
-        for (i = 0; i < NUM_ADDRESS_FIELDS; i++) {
-            if (maddr.addr.entry[i]) {
-                charset_j2p(maddr.addr.entry[i],
-                            strlen(maddr.addr.entry[i]) + 1, char_set);
-            }
-        }
-    }
-
-    /* Do masking like Palm OS 3.5 */
-    show_priv = show_privates(GET_PRIVATES);
-    if ((show_priv != SHOW_PRIVATES) &&
-        (maddr.attrib & dlpRecAttrSecret)) {
-        free_Address(&(maddr.addr));
-        return;
-    }
-    /* End Masking */
-    flag = GPOINTER_TO_INT(data);
-    if ((flag == MODIFY_FLAG) || (flag == DELETE_FLAG)) {
-        delete_pc_record(ADDRESS, &maddr, flag);
-        if (flag == DELETE_FLAG) {
-            /* when we redraw we want to go to the line above the deleted one */
-            if (clist_row_selected > 0) {
-                clist_row_selected--;
-            }
-        }
-    }
-
-    free_Address(&(maddr.addr));
-
-    if (flag == DELETE_FLAG) {
-        address_redraw();
-    }
-}
-static void cb_delete_address(GtkWidget *widget, gpointer data) {
-    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), deleteAddressRecord, data);
-}
-
-static void cb_delete_contact(GtkWidget *widget, gpointer data) {
-    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), deleteAddressContactRecord, data);
-}
-
-static void cb_delete_address_or_contact(GtkWidget *widget, gpointer data) {
-    if (address_version == 0) {
-        cb_delete_address(widget, data);
-    } else {
-        cb_delete_contact(widget, data);
-    }
-}
-
-void undeleteAddress(MyContact * mcont,gpointer data){
-    int flag;
-    int show_priv;
-
-    if (mcont < (MyContact *) CLIST_MIN_DATA) {
-        return;
-    }
-
-    /* Do masking like Palm OS 3.5 */
-    show_priv = show_privates(GET_PRIVATES);
-    if ((show_priv != SHOW_PRIVATES) &&
-        (mcont->attrib & dlpRecAttrSecret)) {
-        return;
-    }
-    /* End Masking */
-
-    jp_logf(JP_LOG_DEBUG, "mcont->unique_id = %d\n", mcont->unique_id);
-    jp_logf(JP_LOG_DEBUG, "mcont->rt = %d\n", mcont->rt);
-
-    flag = GPOINTER_TO_INT(data);
-    if (flag == UNDELETE_FLAG) {
-        if (mcont->rt == DELETED_PALM_REC ||
-            (mcont->rt == DELETED_PC_REC)) {
-            if (address_version == 0) {
-                MyAddress maddr;
-                maddr.unique_id = mcont->unique_id;
-                undelete_pc_record(ADDRESS, &maddr, flag);
-            } else {
-                undelete_pc_record(CONTACTS, mcont, flag);
-            }
-        }
-        /* Possible later addition of undelete for modified records
-      else if (mcont->rt == MODIFIED_PALM_REC) {
-         cb_add_new_record(widget, GINT_TO_POINTER(COPY_FLAG));
-      }
-      */
-    }
-
-    address_redraw();
-}
-static void cb_undelete_address(GtkWidget *widget,
-                                gpointer data) {
-
-    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), undeleteAddressRecord, data);
-
-}
-
-static void cb_cancel(GtkWidget *widget, gpointer data) {
-    set_new_button_to(CLEAR_FLAG);
-    address_refresh();
-}
-
-/**
- * This is a bit hacky.
- * The sort should probably be done on the column sort,
- * but since there are 3 ways to sort, I'm not positive
- * it will work well.
- * @param nameColumn
- */
-static void cb_resortNameColumn(GtkTreeViewColumn *nameColumn) {
-    MyAddress *maddr;
-    addr_sort_order = addr_sort_order << 1;
-    if (!(addr_sort_order & 0x07)) addr_sort_order = SORT_BY_LNAME;
-    set_pref(PREF_ADDR_SORT_ORDER, addr_sort_order, NULL, TRUE);
-    //find Id to keep selected.
-    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), findAndSetGlobalAddressId, NULL);
-    address_redraw();
-    switch (addr_sort_order) {
-        case SORT_BY_LNAME:
-        default:
-            addr_sort_order = SORT_BY_LNAME;  /* Initialize variable if default case taken */
-            gtk_tree_view_column_set_title(nameColumn, ADDRESS_LAST_NAME_COMPANY);
-            break;
-        case SORT_BY_FNAME:
-            gtk_tree_view_column_set_title(nameColumn, ADDRESS_FIRST_NAME_COMPANY);
-            break;
-        case SORT_BY_COMPANY:
-            gtk_tree_view_column_set_title(nameColumn, ADDRESS_COMPANY_LAST_NAME);
-            break;
-    }
-
-
-}
-
-/* TODO, this needs converted to Contacts */
-static void cb_resort(GtkWidget *widget,
-                      gpointer data) {
-    MyAddress *maddr;
-
-    /* Rotate address sort order among 3 possibilities */
-    addr_sort_order = addr_sort_order << 1;
-    if (!(addr_sort_order & 0x07)) addr_sort_order = SORT_BY_LNAME;
-    set_pref(PREF_ADDR_SORT_ORDER, addr_sort_order, NULL, TRUE);
-
-    /* Return to this record after resorting */
-    maddr = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
-    if (maddr < (MyAddress *) CLIST_MIN_DATA) {
-        glob_find_id = 0;
-    } else {
-        glob_find_id = maddr->unique_id;
-    }
-
-    address_redraw();
-
-    /* Update labels AFTER redrawing clist to work around GTK bug */
-    GtkTreeViewColumn *nameColumn = gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), ADDRESS_NAME_COLUMN_ENUM);
-    switch (addr_sort_order) {
-        case SORT_BY_LNAME:
-            gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, _(ADDRESS_LAST_NAME_COMPANY));
-            gtk_tree_view_column_set_title(nameColumn, ADDRESS_LAST_NAME_COMPANY);
-            break;
-        case SORT_BY_FNAME:
-            gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, _(ADDRESS_FIRST_NAME_COMPANY));
-            gtk_tree_view_column_set_title(nameColumn, ADDRESS_FIRST_NAME_COMPANY);
-            break;
-        case SORT_BY_COMPANY:
-            gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, _(ADDRESS_COMPANY_LAST_NAME));
-            gtk_tree_view_column_set_title(nameColumn, ADDRESS_COMPANY_LAST_NAME);
-            break;
-    }
-}
-
-static void cb_phone_menu(GtkWidget *item, unsigned int value) {
-    if (!item)
-        return;
-    if ((GTK_CHECK_MENU_ITEM(item))->active) {
-        jp_logf(JP_LOG_DEBUG, "phone_menu = %d\n", (value & 0xFF00) >> 8);
-        jp_logf(JP_LOG_DEBUG, "selection = %d\n", value & 0xFF);
-        address_phone_label_selected[(value & 0xFF00) >> 8] = value & 0xFF;
-    }
-}
-
-static void cb_IM_type_menu(GtkWidget *item, unsigned int value) {
-    if (!item)
-        return;
-    if ((GTK_CHECK_MENU_ITEM(item))->active) {
-        jp_logf(JP_LOG_DEBUG, "IM_type_menu = %d\n", (value & 0xFF00) >> 8);
-        jp_logf(JP_LOG_DEBUG, "selection = %d\n", value & 0xFF);
-        IM_type_selected[(value & 0xFF00) >> 8] = value & 0xFF;
-    }
-}
-
-/* The least significant byte of value is the selection of the menu,
- * i.e., which item is chosen (Work, Office, Home).
- * The next to least significant byte is the address type menu
- * that is being selected (there are 3 addresses and 3 pulldown menus) */
-static void cb_address_type_menu(GtkWidget *item, unsigned int value) {
-    int menu, selection;
-    int address_i, i;
-
-    if (!item)
-        return;
-    if ((GTK_CHECK_MENU_ITEM(item))->active) {
-        menu = (value & 0xFF00) >> 8;
-        selection = value & 0xFF;
-        jp_logf(JP_LOG_DEBUG, "addr_type_menu = %d\n", menu);
-        jp_logf(JP_LOG_DEBUG, "selection = %d\n", selection);
-        address_type_selected[menu] = selection;
-        /* We want to make the notebook page tab label match the type of
-       * address from the menu.  So, we'll find the nth address menu
-       * and set whatever page the schema says it resides on */
-        address_i = 0;
-        for (i = 0; i < schema_size; i++) {
-            if (schema[i].type == ADDRESS_GUI_ADDR_MENU_TEXT) {
-                if (address_i == menu) {
-                    gtk_label_set_text(GTK_LABEL(notebook_label[schema[i].notebook_page]),
-                                       contact_app_info.addrLabels[selection]);
-                }
-                address_i++;
-            }
-        }
-    }
-}
-
-static void cb_notebook_changed(GtkWidget *widget,
-                                GtkWidget *widget2,
-                                int page,
-                                gpointer data) {
-    int prev_page;
-
-    /* GTK calls this function while it is destroying the notebook
-    * I use this function to tell if it is being destroyed */
-    prev_page = gtk_notebook_get_current_page(GTK_NOTEBOOK(widget));
-    if (prev_page < 0) return;
-
-    jp_logf(JP_LOG_DEBUG, "cb_notebook_changed(), prev_page=%d, page=%d\n", prev_page, page);
-    set_pref(PREF_ADDRESS_NOTEBOOK_PAGE, page, NULL, TRUE);
-}
-
-static void get_address_attrib(unsigned char *attrib) {
-    int i;
-    /* Get the category that is set from the menu */
-    *attrib = 0;
-    for (i = 0; i < NUM_ADDRESS_CAT_ITEMS; i++) {
-        if (GTK_IS_WIDGET(address_cat_menu_item2[i])) {
-            if (GTK_CHECK_MENU_ITEM(address_cat_menu_item2[i])->active) {
-                *attrib = sort_l[i].cat_num;
-                break;
-            }
-        }
-    }
-    /* Get private flag */
-    if (GTK_TOGGLE_BUTTON(private_checkbox)->active) {
-        *attrib |= dlpRecAttrSecret;
-    }
-}
-
-static void cb_add_new_record(GtkWidget *widget, gpointer data) {
+void addNewAddressRecordToDataStructure(MyContact * mcont, gpointer data){
     int i;
     struct Contact cont;
-    MyContact *mcont;
     struct Address addr;
     unsigned char attrib;
     int address_i, IM_i, phone_i;
@@ -2106,7 +1786,6 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data) {
     /* Do masking like Palm OS 3.5 */
     if ((flag == COPY_FLAG) || (flag == MODIFY_FLAG)) {
         show_priv = show_privates(GET_PRIVATES);
-        mcont = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
         if (mcont < (MyContact *) CLIST_MIN_DATA) {
             return;
         }
@@ -2119,7 +1798,6 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data) {
     if ((flag == NEW_FLAG) || (flag == COPY_FLAG) || (flag == MODIFY_FLAG)) {
         /* These rec_types are both the same for now */
         if (flag == MODIFY_FLAG) {
-            mcont = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
             unique_id = mcont->unique_id;
             if (mcont < (MyContact *) CLIST_MIN_DATA) {
                 return;
@@ -2228,6 +1906,327 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data) {
         }
         address_redraw();
     }
+}
+
+gboolean deleteAddressContactRecord(GtkTreeModel *model,
+                                    GtkTreePath *path,
+                                    GtkTreeIter *iter,
+                                    gpointer data) {
+    int *i = gtk_tree_path_get_indices(path);
+    if (i[0] == clist_row_selected) {
+        MyContact *mcont = NULL;
+        gtk_tree_model_get(model, iter, ADDRESS_DATA_COLUMN_ENUM, &mcont, -1);
+        deleteAddressContact(mcont, data);
+        return TRUE;
+    }
+
+    return FALSE;
+
+
+}
+
+gboolean undeleteAddressRecord(GtkTreeModel *model,
+                               GtkTreePath *path,
+                               GtkTreeIter *iter,
+                               gpointer data) {
+    int *i = gtk_tree_path_get_indices(path);
+    if (i[0] == clist_row_selected) {
+        MyContact *mcont = NULL;
+        gtk_tree_model_get(model, iter, ADDRESS_DATA_COLUMN_ENUM, &mcont, -1);
+        undeleteAddress(mcont, data);
+        return TRUE;
+    }
+
+    return FALSE;
+
+
+}
+
+void deleteAddressContact(MyContact *mcont, gpointer data) {
+    int flag;
+    int show_priv;
+    long char_set;
+    int i;
+
+    if (mcont < (MyContact *) CLIST_MIN_DATA) {
+        return;
+    }
+    /* convert to Palm character set */
+    get_pref(PREF_CHAR_SET, &char_set, NULL);
+    if (char_set != CHAR_SET_LATIN1) {
+        for (i = 0; i < NUM_CONTACT_ENTRIES; i++) {
+            if (mcont->cont.entry[i]) {
+                charset_j2p(mcont->cont.entry[i],
+                            strlen(mcont->cont.entry[i]) + 1, char_set);
+            }
+        }
+    }
+
+    /* Do masking like Palm OS 3.5 */
+    show_priv = show_privates(GET_PRIVATES);
+    if ((show_priv != SHOW_PRIVATES) &&
+        (mcont->attrib & dlpRecAttrSecret)) {
+        return;
+    }
+    /* End Masking */
+    flag = GPOINTER_TO_INT(data);
+    if ((flag == MODIFY_FLAG) || (flag == DELETE_FLAG)) {
+        delete_pc_record(CONTACTS, mcont, flag);
+        if (flag == DELETE_FLAG) {
+            /* when we redraw we want to go to the line above the deleted one */
+            if (clist_row_selected > 0) {
+                clist_row_selected--;
+            }
+        }
+    }
+
+    if (flag == DELETE_FLAG) {
+        address_redraw();
+    }
+}
+
+void deleteAddress(MyContact *mcont, gpointer data) {
+    MyAddress maddr;
+    int flag;
+    int show_priv;
+    long char_set;
+    int i;
+
+    if (mcont < (MyContact *) CLIST_MIN_DATA) {
+        return;
+    }
+
+    copy_contact_to_address(&(mcont->cont), &(maddr.addr));
+    maddr.rt = mcont->rt;
+    maddr.unique_id = mcont->unique_id;
+    maddr.attrib = mcont->attrib;
+
+    /* convert to Palm character set */
+    get_pref(PREF_CHAR_SET, &char_set, NULL);
+    if (char_set != CHAR_SET_LATIN1) {
+        for (i = 0; i < NUM_ADDRESS_FIELDS; i++) {
+            if (maddr.addr.entry[i]) {
+                charset_j2p(maddr.addr.entry[i],
+                            strlen(maddr.addr.entry[i]) + 1, char_set);
+            }
+        }
+    }
+
+    /* Do masking like Palm OS 3.5 */
+    show_priv = show_privates(GET_PRIVATES);
+    if ((show_priv != SHOW_PRIVATES) &&
+        (maddr.attrib & dlpRecAttrSecret)) {
+        free_Address(&(maddr.addr));
+        return;
+    }
+    /* End Masking */
+    flag = GPOINTER_TO_INT(data);
+    if ((flag == MODIFY_FLAG) || (flag == DELETE_FLAG)) {
+        delete_pc_record(ADDRESS, &maddr, flag);
+        if (flag == DELETE_FLAG) {
+            /* when we redraw we want to go to the line above the deleted one */
+            if (clist_row_selected > 0) {
+                clist_row_selected--;
+            }
+        }
+    }
+
+    free_Address(&(maddr.addr));
+
+    if (flag == DELETE_FLAG) {
+        address_redraw();
+    }
+}
+
+static void cb_delete_address(GtkWidget *widget, gpointer data) {
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), deleteAddressRecord, data);
+}
+
+static void cb_delete_contact(GtkWidget *widget, gpointer data) {
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), deleteAddressContactRecord, data);
+}
+
+static void cb_delete_address_or_contact(GtkWidget *widget, gpointer data) {
+    if (address_version == 0) {
+        cb_delete_address(widget, data);
+    } else {
+        cb_delete_contact(widget, data);
+    }
+}
+
+void undeleteAddress(MyContact *mcont, gpointer data) {
+    int flag;
+    int show_priv;
+
+    if (mcont < (MyContact *) CLIST_MIN_DATA) {
+        return;
+    }
+
+    /* Do masking like Palm OS 3.5 */
+    show_priv = show_privates(GET_PRIVATES);
+    if ((show_priv != SHOW_PRIVATES) &&
+        (mcont->attrib & dlpRecAttrSecret)) {
+        return;
+    }
+    /* End Masking */
+
+    jp_logf(JP_LOG_DEBUG, "mcont->unique_id = %d\n", mcont->unique_id);
+    jp_logf(JP_LOG_DEBUG, "mcont->rt = %d\n", mcont->rt);
+
+    flag = GPOINTER_TO_INT(data);
+    if (flag == UNDELETE_FLAG) {
+        if (mcont->rt == DELETED_PALM_REC ||
+            (mcont->rt == DELETED_PC_REC)) {
+            if (address_version == 0) {
+                MyAddress maddr;
+                maddr.unique_id = mcont->unique_id;
+                undelete_pc_record(ADDRESS, &maddr, flag);
+            } else {
+                undelete_pc_record(CONTACTS, mcont, flag);
+            }
+        }
+        /* Possible later addition of undelete for modified records
+      else if (mcont->rt == MODIFIED_PALM_REC) {
+         cb_add_new_record(widget, GINT_TO_POINTER(COPY_FLAG));
+      }
+      */
+    }
+
+    address_redraw();
+}
+
+static void cb_undelete_address(GtkWidget *widget,
+                                gpointer data) {
+
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), undeleteAddressRecord, data);
+
+}
+
+static void cb_cancel(GtkWidget *widget, gpointer data) {
+    set_new_button_to(CLEAR_FLAG);
+    address_refresh();
+}
+
+/**
+ * This is a bit hacky.
+ * The sort should probably be done on the column sort,
+ * but since there are 3 ways to sort, I'm not positive
+ * it will work well.
+ * @param nameColumn
+ */
+static void cb_resortNameColumn(GtkTreeViewColumn *nameColumn) {
+    MyAddress *maddr;
+    addr_sort_order = addr_sort_order << 1;
+    if (!(addr_sort_order & 0x07)) addr_sort_order = SORT_BY_LNAME;
+    set_pref(PREF_ADDR_SORT_ORDER, addr_sort_order, NULL, TRUE);
+    //find Id to keep selected.
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), findAndSetGlobalAddressId, NULL);
+    address_redraw();
+    switch (addr_sort_order) {
+        case SORT_BY_LNAME:
+        default:
+            addr_sort_order = SORT_BY_LNAME;  /* Initialize variable if default case taken */
+            gtk_tree_view_column_set_title(nameColumn, ADDRESS_LAST_NAME_COMPANY);
+            break;
+        case SORT_BY_FNAME:
+            gtk_tree_view_column_set_title(nameColumn, ADDRESS_FIRST_NAME_COMPANY);
+            break;
+        case SORT_BY_COMPANY:
+            gtk_tree_view_column_set_title(nameColumn, ADDRESS_COMPANY_LAST_NAME);
+            break;
+    }
+
+
+}
+
+
+static void cb_phone_menu(GtkWidget *item, unsigned int value) {
+    if (!item)
+        return;
+    if ((GTK_CHECK_MENU_ITEM(item))->active) {
+        jp_logf(JP_LOG_DEBUG, "phone_menu = %d\n", (value & 0xFF00) >> 8);
+        jp_logf(JP_LOG_DEBUG, "selection = %d\n", value & 0xFF);
+        address_phone_label_selected[(value & 0xFF00) >> 8] = value & 0xFF;
+    }
+}
+
+static void cb_IM_type_menu(GtkWidget *item, unsigned int value) {
+    if (!item)
+        return;
+    if ((GTK_CHECK_MENU_ITEM(item))->active) {
+        jp_logf(JP_LOG_DEBUG, "IM_type_menu = %d\n", (value & 0xFF00) >> 8);
+        jp_logf(JP_LOG_DEBUG, "selection = %d\n", value & 0xFF);
+        IM_type_selected[(value & 0xFF00) >> 8] = value & 0xFF;
+    }
+}
+
+/* The least significant byte of value is the selection of the menu,
+ * i.e., which item is chosen (Work, Office, Home).
+ * The next to least significant byte is the address type menu
+ * that is being selected (there are 3 addresses and 3 pulldown menus) */
+static void cb_address_type_menu(GtkWidget *item, unsigned int value) {
+    int menu, selection;
+    int address_i, i;
+
+    if (!item)
+        return;
+    if ((GTK_CHECK_MENU_ITEM(item))->active) {
+        menu = (value & 0xFF00) >> 8;
+        selection = value & 0xFF;
+        jp_logf(JP_LOG_DEBUG, "addr_type_menu = %d\n", menu);
+        jp_logf(JP_LOG_DEBUG, "selection = %d\n", selection);
+        address_type_selected[menu] = selection;
+        /* We want to make the notebook page tab label match the type of
+       * address from the menu.  So, we'll find the nth address menu
+       * and set whatever page the schema says it resides on */
+        address_i = 0;
+        for (i = 0; i < schema_size; i++) {
+            if (schema[i].type == ADDRESS_GUI_ADDR_MENU_TEXT) {
+                if (address_i == menu) {
+                    gtk_label_set_text(GTK_LABEL(notebook_label[schema[i].notebook_page]),
+                                       contact_app_info.addrLabels[selection]);
+                }
+                address_i++;
+            }
+        }
+    }
+}
+
+static void cb_notebook_changed(GtkWidget *widget,
+                                GtkWidget *widget2,
+                                int page,
+                                gpointer data) {
+    int prev_page;
+
+    /* GTK calls this function while it is destroying the notebook
+    * I use this function to tell if it is being destroyed */
+    prev_page = gtk_notebook_get_current_page(GTK_NOTEBOOK(widget));
+    if (prev_page < 0) return;
+
+    jp_logf(JP_LOG_DEBUG, "cb_notebook_changed(), prev_page=%d, page=%d\n", prev_page, page);
+    set_pref(PREF_ADDRESS_NOTEBOOK_PAGE, page, NULL, TRUE);
+}
+
+static void get_address_attrib(unsigned char *attrib) {
+    int i;
+    /* Get the category that is set from the menu */
+    *attrib = 0;
+    for (i = 0; i < NUM_ADDRESS_CAT_ITEMS; i++) {
+        if (GTK_IS_WIDGET(address_cat_menu_item2[i])) {
+            if (GTK_CHECK_MENU_ITEM(address_cat_menu_item2[i])->active) {
+                *attrib = sort_l[i].cat_num;
+                break;
+            }
+        }
+    }
+    /* Get private flag */
+    if (GTK_TOGGLE_BUTTON(private_checkbox)->active) {
+        *attrib |= dlpRecAttrSecret;
+    }
+}
+
+static void cb_add_new_record(GtkWidget *widget, gpointer data) {
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), addNewAddressRecord, data);    
 }
 
 static void addr_clear_details(void) {
@@ -2447,18 +2446,8 @@ static void cb_address_quickfind(GtkWidget *widget,
     if (!strlen(entry_text)) {
         return;
     }
-
-    for (i = 0; i < GTK_CLIST(clist)->rows; i++) {
-        r = gtk_clist_get_text(GTK_CLIST(clist), i, ADDRESS_NAME_COLUMN, &clist_text);
-        if (!r) {
-            break;
-        }
-        if (!strncasecmp(clist_text, entry_text, strlen(entry_text))) {
-            clist_select_row(GTK_CLIST(clist), i, ADDRESS_NAME_COLUMN);
-            gtk_clist_moveto(GTK_CLIST(clist), i, 0, 0.5, 0.0);
-            break;
-        }
-    }
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), findAddressRecordByTextAndSelect, &entry_text);
+    
 }
 
 static void cb_edit_cats_contacts(GtkWidget *widget, gpointer data) {
@@ -2589,8 +2578,6 @@ static void cb_category(GtkWidget *item, int selection) {
         }
         clist_row_selected = 0;
         jp_logf(JP_LOG_DEBUG, "address_category = %d\n", address_category);
-        //address_update_clist(clist, category_menu1, &glob_contact_list,
-        //                    address_category, TRUE);
         address_update_listStore(listStore, category_menu1, &glob_contact_list,
                                  address_category, TRUE);
         /* gives the focus to the search field */
@@ -2831,7 +2818,7 @@ static int browse_photo(GtkWidget *main_window) {
 static void cb_photo_menu_select(GtkWidget *item,
                                  GtkPositionType selected) {
     if (selected == 1) {
-        if (0 == browse_photo(gtk_widget_get_toplevel(clist)))
+        if (0 == browse_photo(gtk_widget_get_toplevel(treeView)))
             /* change photo canceled */
             return;
     }
@@ -2873,266 +2860,6 @@ static gint cb_photo_menu_popup(GtkWidget *widget, GdkEvent *event) {
 }
 
 /* End Photo code */
-
-static void cb_clist_selection(GtkWidget *clist,
-                               gint row,
-                               gint column,
-                               GdkEventButton *event,
-                               gpointer data) {
-    /* The rename-able phone entries are indexes 3,4,5,6,7 */
-    struct Contact *cont;
-    MyContact *mcont;
-    int b;
-    int i, index, sorted_position;
-    unsigned int unique_id = 0;
-    char *clist_text;
-    const char *entry_text;
-    int address_i, IM_i, phone_i;
-    char birthday_str[255];
-    long ivalue;
-    char reminder_str[10];
-    GString *s;
-    long char_set;
-
-    get_pref(PREF_CHAR_SET, &char_set, NULL);
-
-    if ((record_changed == MODIFY_FLAG) || (record_changed == NEW_FLAG)) {
-        if (clist_row_selected == row) { return; }
-
-        mcont = gtk_clist_get_row_data(GTK_CLIST(clist), row);
-        if (mcont != NULL) {
-            unique_id = mcont->unique_id;
-        }
-
-        b = dialog_save_changed_record_with_cancel(pane, record_changed);
-        if (b == DIALOG_SAID_1) { /* Cancel */
-            if (clist_row_selected >= 0) {
-                clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
-            } else {
-                clist_row_selected = 0;
-                clist_select_row(GTK_CLIST(clist), 0, 0);
-            }
-            return;
-        }
-        if (b == DIALOG_SAID_3) { /* Save */
-            cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
-        }
-
-        set_new_button_to(CLEAR_FLAG);
-
-        if (unique_id) {
-            glob_find_id = unique_id;
-            address_find();
-        } else {
-            clist_select_row(GTK_CLIST(clist), row, column);
-        }
-        return;
-    }
-
-    clist_row_selected = row;
-
-    mcont = gtk_clist_get_row_data(GTK_CLIST(clist), row);
-    if (mcont == NULL) {
-        return;
-    }
-
-    if (mcont->rt == DELETED_PALM_REC ||
-        (mcont->rt == DELETED_PC_REC))
-        /* Possible later addition of undelete code for modified deleted records
-         || mcont->rt == MODIFIED_PALM_REC
-      */
-    {
-        set_new_button_to(UNDELETE_FLAG);
-    } else {
-        set_new_button_to(CLEAR_FLAG);
-    }
-
-    connect_changed_signals(DISCONNECT_SIGNALS);
-
-    if (mcont->cont.picture && mcont->cont.picture->data) {
-        if (contact_picture.data) {
-            free(contact_picture.data);
-        }
-        /* Set global variables to keep the picture data */
-        contact_picture.data = malloc(mcont->cont.picture->length);
-        memcpy(contact_picture.data, mcont->cont.picture->data, mcont->cont.picture->length);
-        contact_picture.length = mcont->cont.picture->length;
-        contact_picture.dirty = 0;
-        if (image) {
-            gtk_widget_destroy(image);
-        }
-        image = image_from_data(contact_picture.data, contact_picture.length);
-        gtk_container_add(GTK_CONTAINER(picture_button), image);
-        gtk_widget_show(image);
-    } else {
-        if (image) {
-            gtk_widget_destroy(image);
-            image = NULL;
-        }
-        if (contact_picture.data) {
-            free(contact_picture.data);
-            contact_picture.dirty = 0;
-            contact_picture.length = 0;
-            contact_picture.data = NULL;
-        }
-    }
-
-    cont = &(mcont->cont);
-    clist_text = NULL;
-    gtk_clist_get_text(GTK_CLIST(clist), row, ADDRESS_NAME_COLUMN, &clist_text);
-    entry_text = gtk_entry_get_text(GTK_ENTRY(address_quickfind_entry));
-    if (strncasecmp(clist_text, entry_text, strlen(entry_text))) {
-        gtk_entry_set_text(GTK_ENTRY(address_quickfind_entry), "");
-    }
-
-    /* category menu */
-    index = mcont->attrib & 0x0F;
-    sorted_position = find_sort_cat_pos(index);
-    if (address_cat_menu_item2[sorted_position] == NULL) {
-        /* Illegal category, Assume that category 0 is Unfiled and valid */
-        jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
-        index = 0;
-        sorted_position = find_sort_cat_pos(index);
-    }
-
-    if (sorted_position < 0) {
-        jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
-    } else {
-        if (address_cat_menu_item2[sorted_position]) {
-            gtk_check_menu_item_set_active
-                    (GTK_CHECK_MENU_ITEM(address_cat_menu_item2[sorted_position]), TRUE);
-        }
-        gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu2),
-                                    find_menu_cat_pos(sorted_position));
-    }
-    /* End category menu */
-
-    /* Freeze the "All" text buffer to prevent flicker while updating */
-    gtk_widget_freeze_child_notify(addr_all);
-
-    gtk_text_buffer_set_text(GTK_TEXT_BUFFER(addr_all_buffer), "", -1);
-
-    /* Fill out the "All" text buffer */
-    s = contact_to_gstring(cont);
-    if (s->len) {
-        gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(addr_all_buffer), _("Category: "), -1);
-        char *utf;
-        utf = charset_p2newj(contact_app_info.category.name[mcont->attrib & 0x0F], 16, char_set);
-        gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(addr_all_buffer), utf, -1);
-        g_free(utf);
-        gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(addr_all_buffer), "\n", -1);
-
-        gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(addr_all_buffer), s->str, -1);
-    }
-    g_string_free(s, TRUE);
-
-    address_i = phone_i = IM_i = 0;
-    for (i = 0; i < schema_size; i++) {
-        switch (schema[i].type) {
-            case ADDRESS_GUI_LABEL_TEXT:
-                goto set_text;
-            case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
-                /* Set dial/email button text and callback data */
-                if (!strcasecmp(contact_app_info.phoneLabels[cont->phoneLabel[phone_i]], _("E-mail"))) {
-                    gtk_object_set_data(GTK_OBJECT(dial_button[phone_i]), "mail", GINT_TO_POINTER(1));
-                    gtk_button_set_label(GTK_BUTTON(dial_button[phone_i]), _("Mail"));
-                } else {
-                    gtk_object_set_data(GTK_OBJECT(dial_button[phone_i]), "mail", 0);
-                    gtk_button_set_label(GTK_BUTTON(dial_button[phone_i]), _("Dial"));
-                }
-                if ((phone_i < NUM_PHONE_ENTRIES) && (cont->phoneLabel[phone_i] < NUM_PHONE_LABELS)) {
-                    if (GTK_IS_WIDGET(phone_type_menu_item[phone_i][cont->phoneLabel[phone_i]])) {
-                        gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
-                                                       (phone_type_menu_item[phone_i][cont->phoneLabel[phone_i]]),
-                                                       TRUE);
-                        gtk_option_menu_set_history(GTK_OPTION_MENU(phone_type_list_menu[phone_i]),
-                                                    cont->phoneLabel[phone_i]);
-                    }
-                }
-                phone_i++;
-                goto set_text;
-            case ADDRESS_GUI_IM_MENU_TEXT:
-                if (GTK_IS_WIDGET(IM_type_menu_item[IM_i][cont->IMLabel[IM_i]])) {
-                    gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
-                                                   (IM_type_menu_item[IM_i][cont->IMLabel[IM_i]]), TRUE);
-                    gtk_option_menu_set_history(GTK_OPTION_MENU(IM_type_list_menu[IM_i]),
-                                                cont->IMLabel[IM_i]);
-                }
-                IM_i++;
-                goto set_text;
-            case ADDRESS_GUI_ADDR_MENU_TEXT:
-                if (GTK_IS_WIDGET(address_type_menu_item[address_i][cont->addressLabel[address_i]])) {
-                    gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
-                                                   (address_type_menu_item[address_i][cont->addressLabel[address_i]]),
-                                                   TRUE);
-                    gtk_option_menu_set_history(GTK_OPTION_MENU(address_type_list_menu[address_i]),
-                                                cont->addressLabel[address_i]);
-                    /* We want to make the notebook page tab label match the type of
-             * address from the menu.  So, we'll find the nth address menu
-             * and set whatever page the schema says it resides on */
-                    if (GTK_IS_LABEL(notebook_label[schema[i].notebook_page])) {
-                        gtk_label_set_text(GTK_LABEL(notebook_label[schema[i].notebook_page]),
-                                           contact_app_info.addrLabels[cont->addressLabel[address_i]]);
-                    }
-                }
-                address_i++;
-                goto set_text;
-            case ADDRESS_GUI_WEBSITE_TEXT:
-            set_text:
-                if (cont->entry[schema[i].record_field]) {
-                    gtk_text_buffer_set_text(GTK_TEXT_BUFFER(addr_text_buffer[schema[i].record_field]),
-                                             cont->entry[schema[i].record_field], -1);
-                } else {
-                    gtk_text_buffer_set_text(GTK_TEXT_BUFFER(addr_text_buffer[schema[i].record_field]), "", -1);
-                }
-                break;
-            case ADDRESS_GUI_BIRTHDAY:
-                get_pref(PREF_TODO_DAYS_TILL_DUE, &ivalue, NULL);
-                reminder_str[0] = '\0';
-                g_snprintf(reminder_str, sizeof(reminder_str), "%ld", ivalue);
-
-                if (cont->birthdayFlag) {
-                    memcpy(&birthday, &cont->birthday, sizeof(struct tm));
-                    set_button_label_to_date(birthday_button, &birthday);
-
-                    /* Birthday checkbox */
-                    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(birthday_checkbox),
-                                                 TRUE);
-
-                    if (cont->reminder) {
-                        sprintf(birthday_str, "%d", cont->advance);
-                        gtk_entry_set_text(GTK_ENTRY(reminder_entry), birthday_str);
-
-                        /* Reminder checkbox */
-                        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(reminder_checkbox),
-                                                     cont->reminder);
-                    } else {
-                        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(reminder_checkbox), FALSE);
-                        gtk_entry_set_text(GTK_ENTRY(reminder_entry), reminder_str);
-                    }
-                } else {
-                    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(birthday_checkbox),
-                                                 FALSE);
-                    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(reminder_checkbox),
-                                                 FALSE);
-                    gtk_entry_set_text(GTK_ENTRY(reminder_entry), reminder_str);
-                }
-                break;
-        }
-    }
-
-    /* Set phone grouped radio buttons */
-    if ((cont->showPhone > -1) && (cont->showPhone < NUM_PHONE_ENTRIES)) {
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button[cont->showPhone]), TRUE);
-    }
-
-    /* Private checkbox */
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(private_checkbox),
-                                 mcont->attrib & dlpRecAttrSecret);
-
-    gtk_widget_thaw_child_notify(addr_all);
-    connect_changed_signals(CONNECT_SIGNALS);
-}
 
 static gboolean cb_key_pressed_left_side(GtkWidget *widget,
                                          GdkEventKey *event) {
@@ -3202,10 +2929,7 @@ static gboolean cb_key_pressed_right_side(GtkWidget *widget,
                                           gpointer data) {
     if ((event->keyval == GDK_Return) && (event->state & GDK_SHIFT_MASK)) {
         gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
-        /* Call clist_selection to handle any cleanup such as a modified record */
-        cb_clist_selection(clist, clist_row_selected, ADDRESS_PHONE_COLUMN,
-                           GINT_TO_POINTER(1), NULL);
-        gtk_widget_grab_focus(GTK_WIDGET(clist));
+        gtk_widget_grab_focus(GTK_WIDGET(treeView));
         return TRUE;
     }
     /* Call external editor for note text */
@@ -3297,6 +3021,25 @@ static gboolean cb_key_pressed_right_side(GtkWidget *widget,
 }
 
 gboolean
+findAddressRecordByTextAndSelect(GtkTreeModel *model,
+                                 GtkTreePath *path,
+                                 GtkTreeIter *iter,
+                                 char *entry_text) {
+    int *i = gtk_tree_path_get_indices(path);
+    char *clist_text;
+    //int i, r;
+    gtk_tree_model_get(model,&iter,ADDRESS_NAME_COLUMN_ENUM,&clist_text);
+    if (!strncasecmp(clist_text, entry_text, strlen(entry_text))) {
+        GtkTreeSelection *selection = NULL;
+        selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
+        gtk_tree_selection_select_path(selection, path);
+        gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, ADDRESS_PHONE_COLUMN_ENUM, FALSE, 1.0, 0.0);
+        clist_row_selected = i[0];
+    }
+   
+}
+
+gboolean
 findAddressRecordAndSelect(GtkTreeModel *model,
                            GtkTreePath *path,
                            GtkTreeIter *iter,
@@ -3308,8 +3051,8 @@ findAddressRecordAndSelect(GtkTreeModel *model,
         gtk_tree_model_get(model, iter, ADDRESS_DATA_COLUMN_ENUM, &maddr, -1);
         if (maddr->unique_id == glob_find_id) {
             GtkTreeSelection *selection = NULL;
-            int * i = gtk_tree_path_get_indices ( path ) ;
-           // clist_row_selected = i[0];
+            int *i = gtk_tree_path_get_indices(path);
+            // clist_row_selected = i[0];
             selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
             gtk_tree_selection_select_path(selection, path);
             gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, ADDRESS_PHONE_COLUMN_ENUM, FALSE, 1.0, 0.0);
@@ -3321,33 +3064,34 @@ findAddressRecordAndSelect(GtkTreeModel *model,
 }
 
 gboolean
-findAndSetGlobalAddressId (GtkTreeModel *model,
-GtkTreePath  *path,
-        GtkTreeIter  *iter,
-gpointer data) {
-int * i = gtk_tree_path_get_indices ( path ) ;
-if(i[0] == clist_row_selected){
-    MyContact *maddr = NULL;
+findAndSetGlobalAddressId(GtkTreeModel *model,
+                          GtkTreePath *path,
+                          GtkTreeIter *iter,
+                          gpointer data) {
+    int *i = gtk_tree_path_get_indices(path);
+    if (i[0] == clist_row_selected) {
+        MyContact *maddr = NULL;
 
-    gtk_tree_model_get(model, iter, ADDRESS_DATA_COLUMN_ENUM, &maddr, -1);
-    if(maddr != NULL){
-        glob_find_id = maddr->unique_id;
-    }else {
-        glob_find_id = 0;
+        gtk_tree_model_get(model, iter, ADDRESS_DATA_COLUMN_ENUM, &maddr, -1);
+        if (maddr != NULL) {
+            glob_find_id = maddr->unique_id;
+        } else {
+            glob_find_id = 0;
+        }
+        return TRUE;
     }
-return TRUE;
+
+    return FALSE;
 }
 
-return FALSE;
-}
 gboolean
-selectRecordAddressByRow (GtkTreeModel *model,
-                   GtkTreePath  *path,
-                   GtkTreeIter  *iter,
-                   gpointer data) {
-    int * i = gtk_tree_path_get_indices ( path ) ;
-    if(i[0] == clist_row_selected){
-        GtkTreeSelection * selection = NULL;
+selectRecordAddressByRow(GtkTreeModel *model,
+                         GtkTreePath *path,
+                         GtkTreeIter *iter,
+                         gpointer data) {
+    int *i = gtk_tree_path_get_indices(path);
+    if (i[0] == clist_row_selected) {
+        GtkTreeSelection *selection = NULL;
         selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
         gtk_tree_selection_select_path(selection, path);
         gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, ADDRESS_PHONE_COLUMN_ENUM, FALSE, 1.0, 0.0);
@@ -3356,6 +3100,7 @@ selectRecordAddressByRow (GtkTreeModel *model,
 
     return FALSE;
 }
+
 static void address_update_listStore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
                                      ContactList **cont_list, int category,
                                      int main) {
@@ -3591,7 +3336,7 @@ static void address_update_listStore(GtkListStore *pListStore, GtkWidget *toolti
     if ((main) && (entries_shown > 0)) {
         /* First, select any record being searched for */
         if (glob_find_id) {
-             address_find();
+            address_find();
         }
             /* Second, try the currently selected row */
         else if (clist_row_selected < entries_shown) {
@@ -3616,278 +3361,6 @@ static void address_update_listStore(GtkListStore *pListStore, GtkWidget *toolti
 
     /* return focus to clist after any big operation which requires a redraw */
     gtk_widget_grab_focus(GTK_WIDGET(treeView));
-
-}
-
-static void address_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
-                                 ContactList **cont_list, int category,
-                                 int main) {
-    int num_entries, entries_shown;
-    int show1, show2, show3;
-    gchar *empty_line[] = {"", "", ""};
-    GdkPixmap *pixmap_note;
-    GdkBitmap *mask_note;
-    ContactList *temp_cl;
-    char str[ADDRESS_MAX_COLUMN_LEN + 2];
-    char str2[ADDRESS_MAX_COLUMN_LEN + 2];
-    int show_priv;
-    long use_jos, char_set, show_tooltips;
-    char *tmp_p1, *tmp_p2, *tmp_p3;
-    char blank[] = "";
-    char slash[] = " / ";
-    char comma_space[] = ", ";
-    char *field1, *field2, *field3;
-    char *delim1, *delim2;
-    char *tmp_delim1, *tmp_delim2;
-    AddressList *addr_list;
-
-    free_ContactList(cont_list);
-
-    if (address_version == 0) {
-        addr_list = NULL;
-        num_entries = get_addresses2(&addr_list, SORT_ASCENDING, 2, 2, 1, CATEGORY_ALL);
-        copy_addresses_to_contacts(addr_list, cont_list);
-        free_AddressList(&addr_list);
-    } else {
-        /* Need to get all records including private ones for the tooltips calculation */
-        num_entries = get_contacts2(cont_list, SORT_ASCENDING, 2, 2, 1, CATEGORY_ALL);
-    }
-
-    /* Start by clearing existing entry if in main window */
-    if (main) {
-        addr_clear_details();
-        gtk_text_buffer_set_text(GTK_TEXT_BUFFER(addr_all_buffer), "", -1);
-    }
-
-    /* Freeze clist to prevent flicker during updating */
-    gtk_clist_freeze(GTK_CLIST(clist));
-    if (main) {
-        gtk_signal_disconnect_by_func(GTK_OBJECT(clist),
-                                      GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
-    }
-    clist_clear(GTK_CLIST(clist));
-#ifdef __APPLE__
-                                                                                                                            gtk_clist_thaw(GTK_CLIST(clist));
-   gtk_widget_hide(clist);
-   gtk_widget_show_all(clist);
-   gtk_clist_freeze(GTK_CLIST(clist));
-#endif
-
-    /* Collect preferences and pixmaps before loop */
-    get_pref(PREF_CHAR_SET, &char_set, NULL);
-    get_pref(PREF_USE_JOS, &use_jos, NULL);
-    show_priv = show_privates(GET_PRIVATES);
-    get_pixmaps(clist, PIXMAP_NOTE, &pixmap_note, &mask_note);
-#ifdef __APPLE__
-    mask_note = NULL;
-#endif
-
-    switch (addr_sort_order) {
-        case SORT_BY_LNAME:
-        default:
-            show1 = contLastname;
-            show2 = contFirstname;
-            show3 = contCompany;
-            delim1 = comma_space;
-            delim2 = slash;
-            break;
-        case SORT_BY_FNAME:
-            show1 = contFirstname;
-            show2 = contLastname;
-            show3 = contCompany;
-            delim1 = comma_space;
-            delim2 = slash;
-            break;
-        case SORT_BY_COMPANY:
-            show1 = contCompany;
-            show2 = contLastname;
-            show3 = contFirstname;
-            delim1 = slash;
-            delim2 = comma_space;
-            break;
-    }
-
-    entries_shown = 0;
-
-    for (temp_cl = *cont_list; temp_cl; temp_cl = temp_cl->next) {
-        if (((temp_cl->mcont.attrib & 0x0F) != category) &&
-            category != CATEGORY_ALL) {
-            continue;
-        }
-
-        /* Do masking like Palm OS 3.5 */
-        if ((show_priv == MASK_PRIVATES) &&
-            (temp_cl->mcont.attrib & dlpRecAttrSecret)) {
-            gtk_clist_append(GTK_CLIST(clist), empty_line);
-            gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_NAME_COLUMN, "---------------");
-            gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_PHONE_COLUMN, "---------------");
-            clear_mycontact(&temp_cl->mcont);
-            gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_cl->mcont));
-            gtk_clist_set_row_style(GTK_CLIST(clist), entries_shown, NULL);
-            entries_shown++;
-            continue;
-        }
-        /* End Masking */
-
-        /* Hide the private records if need be */
-        if ((show_priv != SHOW_PRIVATES) &&
-            (temp_cl->mcont.attrib & dlpRecAttrSecret)) {
-            continue;
-        }
-
-        if (!use_jos && (char_set == CHAR_SET_JAPANESE || char_set == CHAR_SET_SJIS_UTF)) {
-            str[0] = '\0';
-            if (temp_cl->mcont.cont.entry[show1] || temp_cl->mcont.cont.entry[show2]) {
-                if (temp_cl->mcont.cont.entry[show1] && temp_cl->mcont.cont.entry[show2]) {
-                    if ((tmp_p1 = strchr(temp_cl->mcont.cont.entry[show1], '\1'))) *tmp_p1 = '\0';
-                    if ((tmp_p2 = strchr(temp_cl->mcont.cont.entry[show2], '\1'))) *tmp_p2 = '\0';
-                    g_snprintf(str, ADDRESS_MAX_CLIST_NAME, "%s, %s", temp_cl->mcont.cont.entry[show1],
-                               temp_cl->mcont.cont.entry[show2]);
-                    if (tmp_p1) *tmp_p1 = '\1';
-                    if (tmp_p2) *tmp_p2 = '\1';
-                }
-                if (temp_cl->mcont.cont.entry[show1] && !temp_cl->mcont.cont.entry[show2]) {
-                    if ((tmp_p1 = strchr(temp_cl->mcont.cont.entry[show1], '\1'))) *tmp_p1 = '\0';
-                    if (temp_cl->mcont.cont.entry[show3]) {
-                        if ((tmp_p3 = strchr(temp_cl->mcont.cont.entry[show3], '\1'))) *tmp_p3 = '\0';
-                        g_snprintf(str, ADDRESS_MAX_CLIST_NAME, "%s, %s", temp_cl->mcont.cont.entry[show1],
-                                   temp_cl->mcont.cont.entry[show3]);
-                        if (tmp_p3) *tmp_p3 = '\1';
-                    } else {
-                        multibyte_safe_strncpy(str, temp_cl->mcont.cont.entry[show1], ADDRESS_MAX_CLIST_NAME);
-                    }
-                    if (tmp_p1) *tmp_p1 = '\1';
-                }
-                if (!temp_cl->mcont.cont.entry[show1] && temp_cl->mcont.cont.entry[show2]) {
-                    if ((tmp_p2 = strchr(temp_cl->mcont.cont.entry[show2], '\1'))) *tmp_p2 = '\0';
-                    multibyte_safe_strncpy(str, temp_cl->mcont.cont.entry[show2], ADDRESS_MAX_CLIST_NAME);
-                    if (tmp_p2) *tmp_p2 = '\1';
-                }
-            } else if (temp_cl->mcont.cont.entry[show3]) {
-                if ((tmp_p3 = strchr(temp_cl->mcont.cont.entry[show3], '\1'))) *tmp_p3 = '\0';
-                multibyte_safe_strncpy(str, temp_cl->mcont.cont.entry[show3], ADDRESS_MAX_CLIST_NAME);
-                if (tmp_p3) *tmp_p3 = '\1';
-            } else {
-                strcpy(str, _("-Unnamed-"));
-            }
-            gtk_clist_append(GTK_CLIST(clist), empty_line);
-        } else {
-            str[0] = '\0';
-            field1 = field2 = field3 = blank;
-            tmp_delim1 = delim1;
-            tmp_delim2 = delim2;
-            if (temp_cl->mcont.cont.entry[show1]) field1 = temp_cl->mcont.cont.entry[show1];
-            if (temp_cl->mcont.cont.entry[show2]) field2 = temp_cl->mcont.cont.entry[show2];
-            if (temp_cl->mcont.cont.entry[show3]) field3 = temp_cl->mcont.cont.entry[show3];
-            switch (addr_sort_order) {
-                case SORT_BY_LNAME:
-                default:
-                    if ((!field1[0]) || (!field2[0])) tmp_delim1 = blank;
-                    if (!(field3[0])) tmp_delim2 = blank;
-                    if ((!field1[0]) && (!field2[0])) tmp_delim2 = blank;
-                    break;
-                case SORT_BY_FNAME:
-                    if ((!field1[0]) || (!field2[0])) tmp_delim1 = blank;
-                    if (!(field3[0])) tmp_delim2 = blank;
-                    if ((!field1[0]) && (!field2[0])) tmp_delim2 = blank;
-                    break;
-                case SORT_BY_COMPANY:
-                    if (!(field1[0])) tmp_delim1 = blank;
-                    if ((!field2[0]) || (!field3[0])) tmp_delim2 = blank;
-                    if ((!field2[0]) && (!field3[0])) tmp_delim1 = blank;
-                    break;
-            }
-            g_snprintf(str, ADDRESS_MAX_COLUMN_LEN, "%s%s%s%s%s",
-                       field1, tmp_delim1, field2, tmp_delim2, field3);
-            if (strlen(str) < 1) strcpy(str, _("-Unnamed-"));
-            str[ADDRESS_MAX_COLUMN_LEN] = '\0';
-
-            gtk_clist_append(GTK_CLIST(clist), empty_line);
-        }
-
-        lstrncpy_remove_cr_lfs(str2, str, ADDRESS_MAX_COLUMN_LEN);
-        gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_NAME_COLUMN, str2);
-        /* Clear string so previous data won't be used inadvertently in next set_text */
-        str2[0] = '\0';
-        lstrncpy_remove_cr_lfs(str2, temp_cl->mcont.cont.entry[temp_cl->mcont.cont.showPhone + 4],
-                               ADDRESS_MAX_COLUMN_LEN);
-        gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_PHONE_COLUMN, str2);
-        gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_cl->mcont));
-
-        /* Highlight row background depending on status */
-        switch (temp_cl->mcont.rt) {
-            case NEW_PC_REC:
-            case REPLACEMENT_PALM_REC:
-                set_bg_rgb_clist_row(clist, entries_shown,
-                                     CLIST_NEW_RED, CLIST_NEW_GREEN, CLIST_NEW_BLUE);
-                break;
-            case DELETED_PALM_REC:
-            case DELETED_PC_REC:
-                set_bg_rgb_clist_row(clist, entries_shown,
-                                     CLIST_DEL_RED, CLIST_DEL_GREEN, CLIST_DEL_BLUE);
-                break;
-            case MODIFIED_PALM_REC:
-                set_bg_rgb_clist_row(clist, entries_shown,
-                                     CLIST_MOD_RED, CLIST_MOD_GREEN, CLIST_MOD_BLUE);
-                break;
-            default:
-                if (temp_cl->mcont.attrib & dlpRecAttrSecret) {
-                    set_bg_rgb_clist_row(clist, entries_shown,
-                                         CLIST_PRIVATE_RED, CLIST_PRIVATE_GREEN, CLIST_PRIVATE_BLUE);
-                } else {
-                    gtk_clist_set_row_style(GTK_CLIST(clist), entries_shown, NULL);
-                }
-        }
-
-        /* Put a note pixmap up */
-        if (temp_cl->mcont.cont.entry[contNote]) {
-            gtk_clist_set_pixmap(GTK_CLIST(clist), entries_shown, ADDRESS_NOTE_COLUMN, pixmap_note, mask_note);
-        } else {
-            gtk_clist_set_text(GTK_CLIST(clist), entries_shown, ADDRESS_NOTE_COLUMN, "");
-        }
-
-        entries_shown++;
-    }
-
-    if (main) {
-        gtk_signal_connect(GTK_OBJECT(clist), "select_row",
-                           GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
-    }
-
-    /* If there are items in the list, highlight the selected row */
-    if ((main) && (entries_shown > 0)) {
-        /* First, select any record being searched for */
-        if (glob_find_id) {
-            address_find();
-        }
-            /* Second, try the currently selected row */
-        else if (clist_row_selected < entries_shown) {
-            clist_select_row(GTK_CLIST(clist), clist_row_selected, ADDRESS_PHONE_COLUMN);
-            if (!gtk_clist_row_is_visible(GTK_CLIST(clist), clist_row_selected)) {
-                gtk_clist_moveto(GTK_CLIST(clist), clist_row_selected, 0, 0.5, 0.0);
-            }
-        } else
-            /* Third, select row 0 if nothing else is possible */
-        {
-            clist_select_row(GTK_CLIST(clist), 0, ADDRESS_PHONE_COLUMN);
-        }
-    }
-
-    /* Unfreeze clist after all changes */
-    gtk_clist_thaw(GTK_CLIST(clist));
-
-    if (tooltip_widget) {
-        get_pref(PREF_SHOW_TOOLTIPS, &show_tooltips, NULL);
-        if (cont_list == NULL) {
-            set_tooltip(show_tooltips, glob_tooltips, category_menu1, _("0 records"), NULL);
-        } else {
-            sprintf(str, _("%d of %d records"), entries_shown, num_entries);
-            set_tooltip(show_tooltips, glob_tooltips, category_menu1, str, NULL);
-        }
-    }
-
-    /* return focus to clist after any big operation which requires a redraw */
-    gtk_widget_grab_focus(GTK_WIDGET(clist));
 
 }
 
@@ -4026,7 +3499,6 @@ static int make_phone_menu(int default_set, unsigned int callback_id, int set) {
 }
 
 
-
 /* returns 1 if found, 0 if not */
 static int address_find(void) {
     gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), findAddressRecordAndSelect, NULL);
@@ -4034,8 +3506,6 @@ static int address_find(void) {
 }
 
 static int address_redraw(void) {
-    // address_update_clist(clist, category_menu1, &glob_contact_list,
-    //                    address_category, TRUE);
     address_update_listStore(listStore, category_menu1, &glob_contact_list,
                              address_category, TRUE);
     return EXIT_SUCCESS;
@@ -4087,8 +3557,6 @@ int address_refresh(void) {
         index2 = find_menu_cat_pos(index) + 1;
         index += 1;
     }
-    //address_update_clist(clist, category_menu1, &glob_contact_list,
-    //                    address_category, TRUE);
     address_update_listStore(listStore, category_menu1, &glob_contact_list,
                              address_category, TRUE);
     if (index < 0) {
@@ -4120,7 +3588,7 @@ cb_key_pressed_quickfind(GtkWidget *widget, GdkEventKey *event, gpointer data) {
         add = -1;
     }
     if (!add) return FALSE;
-    row_count = GTK_CLIST(clist)->rows;
+    row_count = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(listStore), NULL);
     if (!row_count) return FALSE;
 
     gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
@@ -4132,10 +3600,8 @@ cb_key_pressed_quickfind(GtkWidget *widget, GdkEventKey *event, gpointer data) {
     if (select_row < 0) {
         select_row = row_count - 1;
     }
-    clist_select_row(GTK_CLIST(clist), select_row, ADDRESS_NAME_COLUMN);
-    if (!gtk_clist_row_is_visible(GTK_CLIST(clist), select_row)) {
-        gtk_clist_moveto(GTK_CLIST(clist), select_row, 0, 0.5, 0.0);
-    }
+    clist_row_selected = select_row;
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), selectRecordAddressByRow, NULL);
     return TRUE;
 }
 
@@ -4214,8 +3680,7 @@ int address_gui_cleanup(void) {
     connect_changed_signals(DISCONNECT_SIGNALS);
     set_pref(PREF_ADDRESS_PANE, gtk_paned_get_position(GTK_PANED(pane)), NULL, TRUE);
     set_pref(PREF_LAST_ADDR_CATEGORY, address_category, NULL, TRUE);
-    clist_clear(GTK_CLIST(clist));
-
+    gtk_list_store_clear(GTK_LIST_STORE(listStore));
     if (image) {
         gtk_widget_destroy(image);
         image = NULL;
@@ -4646,12 +4111,6 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
                                    GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
     gtk_box_pack_start(GTK_BOX(vbox1), scrolled_window, TRUE, TRUE, 0);
-
-    clist = gtk_clist_new_with_titles(3, titles);
-
-    gtk_clist_column_title_passive(GTK_CLIST(clist), ADDRESS_PHONE_COLUMN);
-    gtk_clist_column_title_passive(GTK_CLIST(clist), ADDRESS_NOTE_COLUMN);
-
     get_pref(PREF_ADDR_SORT_ORDER, &ivalue, NULL);
     addr_sort_order = (int) ivalue;
     GtkTreeModel *model = GTK_TREE_MODEL(listStore);
@@ -4700,23 +4159,18 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
         default:
             addr_sort_order = SORT_BY_LNAME;  /* Initialize variable if default case taken */
             gtk_tree_view_column_set_title(nameColumn, ADDRESS_LAST_NAME_COMPANY);
-            gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, _(ADDRESS_LAST_NAME_COMPANY));
             break;
         case SORT_BY_FNAME:
             gtk_tree_view_column_set_title(nameColumn, ADDRESS_FIRST_NAME_COMPANY);
-            gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, _(ADDRESS_FIRST_NAME_COMPANY));
             break;
         case SORT_BY_COMPANY:
             gtk_tree_view_column_set_title(nameColumn, ADDRESS_COMPANY_LAST_NAME);
-            gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, _(ADDRESS_COMPANY_LAST_NAME));
             break;
     }
-    //  gtk_signal_connect(GTK_OBJECT(GTK_CLIST(clist)->column[ADDRESS_NAME_COLUMN].button),
-    //                    "clicked", GTK_SIGNAL_FUNC(cb_resort), NULL);
     g_signal_connect (nameColumn, "clicked", G_CALLBACK(cb_resortNameColumn), NULL);
 
 
-    gtk_clist_set_column_title(GTK_CLIST(clist), ADDRESS_PHONE_COLUMN, _("Phone"));
+
     /* Put pretty pictures in the clist column headings */
     get_pixmaps(vbox, PIXMAP_NOTE, &pixmap, &mask);
 #ifdef __APPLE__
@@ -4725,32 +4179,23 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     pixmapwid = gtk_pixmap_new(pixmap, mask);
     gtk_tree_view_column_set_widget(noteColumn, pixmapwid);
     gtk_tree_view_column_set_alignment(noteColumn, GTK_JUSTIFY_CENTER);
-    gtk_clist_set_column_widget(GTK_CLIST(clist), ADDRESS_NOTE_COLUMN, pixmapwid);
 
-    //gtk_signal_connect(GTK_OBJECT(clist), "select_row",
-    //                   GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
-
-    gtk_clist_set_shadow_type(GTK_CLIST(clist), SHADOW);
-    gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
     gtk_tree_view_column_set_min_width(nameColumn, 60);
 
-    gtk_clist_set_column_min_width(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, 60);
+
     get_pref(PREF_ADDR_NAME_COL_SZ, &ivalue, NULL);
     gtk_tree_view_column_set_fixed_width(nameColumn, ivalue);
-    gtk_clist_set_column_width(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, ivalue);
+
     gtk_tree_view_column_set_resizable(nameColumn, TRUE);
     gtk_tree_view_column_set_resizable(noteColumn, FALSE);
     gtk_tree_view_column_set_resizable(phoneColumn, FALSE);
     gtk_tree_view_column_set_alignment(noteColumn, GTK_JUSTIFY_CENTER);
-    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), ADDRESS_NAME_COLUMN, FALSE);
-    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), ADDRESS_NOTE_COLUMN, TRUE);
-    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), ADDRESS_PHONE_COLUMN, FALSE);
-    gtk_clist_set_column_justification(GTK_CLIST(clist), ADDRESS_NOTE_COLUMN, GTK_JUSTIFY_CENTER);
+
 
     gtk_signal_connect(GTK_OBJECT(treeView), "resize-column",
                        GTK_SIGNAL_FUNC(cb_resize_column), NULL);
 
-    // gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
+
     gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(treeView));
     hbox_temp = gtk_hbox_new(FALSE, 0);
     gtk_box_pack_start(GTK_BOX(vbox1), hbox_temp, FALSE, FALSE, 0);
@@ -5143,7 +4588,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     /* Connect keypress signals to callbacks */
 
     /* Capture the Enter key to move to the left-hand side of the display */
-    gtk_signal_connect(GTK_OBJECT(clist), "key_press_event",
+    gtk_signal_connect(GTK_OBJECT(treeView), "key_press_event",
                        GTK_SIGNAL_FUNC(cb_key_pressed_left_side),
                        NULL);
 
