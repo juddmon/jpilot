@@ -42,10 +42,6 @@
 #define MAX_NUM_TEXTS contNote+1
 #define NUM_IM_LABELS 5
 
-#define ADDRESS_NAME_COLUMN  0
-#define ADDRESS_NOTE_COLUMN  1
-#define ADDRESS_PHONE_COLUMN 2
-
 #define ADDRESS_MAX_CLIST_NAME 30
 #define ADDRESS_MAX_COLUMN_LEN 80
 #define NUM_CONT_CSV_FIELDS 56
@@ -1252,7 +1248,7 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
                  "\"Custom Label 3\",\"Custom Value 3\",\"Custom Label 4\",\"Custom Value 4\","
                  "\"Custom Label 5\",\"Custom Value 5\",Note,Folder");
           */
-                address_i = phone_i = IM_i = 0;
+                //address_i = phone_i = IM_i = 0;
                 for (i = 0; i < schema_size; i++) {
                     if (schema[i].record_field == contLastname) {
                         str_to_csv_str(csv_text, mcont->cont.entry[schema[i].record_field] ?
@@ -1704,7 +1700,7 @@ static void cb_resize_column(GtkTreeView *pTreeView,
                              gint column,
                              gint width,
                              gpointer user_data) {
-    if (column != ADDRESS_NAME_COLUMN) return;
+    if (column != ADDRESS_NAME_COLUMN_ENUM) return;
 
     set_pref(PREF_ADDR_NAME_COL_SZ, width, NULL, TRUE);
 }
@@ -2127,7 +2123,6 @@ static void cb_cancel(GtkWidget *widget, gpointer data) {
  * @param nameColumn
  */
 static void cb_resortNameColumn(GtkTreeViewColumn *nameColumn) {
-    MyAddress *maddr;
     addr_sort_order = addr_sort_order << 1;
     if (!(addr_sort_order & 0x07)) addr_sort_order = SORT_BY_LNAME;
     set_pref(PREF_ADDR_SORT_ORDER, addr_sort_order, NULL, TRUE);
@@ -2453,9 +2448,6 @@ static void cb_dial_or_mail(GtkWidget *widget, gpointer data) {
 static void cb_address_quickfind(GtkWidget *widget,
                                  gpointer data) {
     const char *entry_text;
-    char *clist_text;
-    int i, r;
-
     jp_logf(JP_LOG_DEBUG, "cb_address_quickfind\n");
 
     entry_text = gtk_entry_get_text(GTK_ENTRY(widget));
@@ -3067,8 +3059,6 @@ findAddressRecordAndSelect(GtkTreeModel *model,
         gtk_tree_model_get(model, iter, ADDRESS_DATA_COLUMN_ENUM, &maddr, -1);
         if (maddr->unique_id == glob_find_id) {
             GtkTreeSelection *selection = NULL;
-            int *i = gtk_tree_path_get_indices(path);
-            // clist_row_selected = i[0];
             selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
             gtk_tree_selection_select_path(selection, path);
             gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, ADDRESS_PHONE_COLUMN_ENUM, FALSE, 1.0, 0.0);
@@ -3123,14 +3113,10 @@ static void address_update_listStore(GtkListStore *pListStore, GtkWidget *toolti
     GtkTreeIter iter;
     int num_entries, entries_shown;
     int show1, show2, show3;
-    gchar *empty_line[] = {"", "", ""};
     GdkPixbuf *pixbuf_note;
     GdkPixbuf *noteColumnDisplay;
-    GdkPixmap *pixmap_note;
-    GdkBitmap *mask_note;
     ContactList *temp_cl;
     char str[ADDRESS_MAX_COLUMN_LEN + 2];
-    char str2[ADDRESS_MAX_COLUMN_LEN + 2];
     char phone[ADDRESS_MAX_COLUMN_LEN + 2];
     char name[ADDRESS_MAX_COLUMN_LEN + 2];
     int show_priv;
@@ -3994,7 +3980,6 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     GSList *group;
     long ivalue, notebook_page;
     long show_tooltips;
-    char *titles[] = {"", "", ""};
     GtkAccelGroup *accel_group;
     int address_type_i, IM_type_i, page_i, table_y_i;
     int x, y;
