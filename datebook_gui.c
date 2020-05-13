@@ -224,9 +224,16 @@ static int datebook_export_gui(GtkWidget *main_window, int x, int y);
 
 void selectFirstTodoRow();
 
-void
-clickedTodoButton(GtkTreeSelection *treeselection,
-                  gpointer user_data);
+gboolean
+clickedTodoButton(GtkTreeSelection *selection,
+                  GtkTreeModel *model,
+                  GtkTreePath *path,
+                  gboolean path_currently_selected,
+                  gpointer userdata);
+
+gint cb_todo_treeview_selection_event( GtkWidget *widget,
+                                 GdkEvent  *event,
+                                 gpointer   callback_data );
 
 /****************************** Main Code *************************************/
 static int datebook_to_text(struct CalendarEvent *cale, char *text, int len) {
@@ -5104,9 +5111,10 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     selectFirstTodoRow();
     todo_treeSelection = gtk_tree_view_get_selection(GTK_TREE_VIEW(todo_treeView));
-    g_signal_connect (todo_treeSelection, "changed",
-                      G_CALLBACK(clickedTodoButton),
-                      NULL);
+
+    gtk_tree_selection_set_select_function(todo_treeSelection, clickedTodoButton, NULL, NULL);
+
+    g_signal_connect (todo_treeView, "button_release_event", GTK_SIGNAL_FUNC(cb_todo_treeview_selection_event), NULL);
     gtk_container_add(GTK_CONTAINER(todo_scrolled_window), GTK_WIDGET(todo_treeView));
 
     /* End ToDo clist code */
@@ -5696,31 +5704,31 @@ void selectFirstTodoRow() {
 
 }
 
-void
-clickedTodoButton(GtkTreeSelection *treeselection,
-                  gpointer user_data) {
+gboolean
+clickedTodoButton(GtkTreeSelection *selection,
+                  GtkTreeModel *model,
+                  GtkTreePath *path,
+                  gboolean path_currently_selected,
+                  gpointer userdata) {
     GtkTreeIter iter;
     MyToDo *mtodo;
-    GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(todo_treeView));
-    gint rows = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(model),NULL);
-    gtk_tree_model_get_iter_first(model,&iter);
-    int x = 0;
-    while(!gtk_tree_selection_iter_is_selected(treeselection,&iter) && x++ < rows -1){
-        gtk_tree_model_iter_next(model,&iter);
-    }
-    gtk_tree_model_get(model, &iter, TODO_DATA_COLUMN_ENUM, &mtodo, -1);
-    if (mtodo == NULL) {
-        g_object_unref(model);
-        return;
-    }
-    glob_find_id = mtodo->unique_id;
+    if ((gtk_tree_model_get_iter(model, &iter, path)) && (!path_currently_selected)) {
 
-    g_object_unref(model);
-    // todo_liststore_clear(todo_listStore);
-    //todo: This line is when called causes a segfault.  I
-    cb_app_button(NULL, GINT_TO_POINTER(TODO));
-    return;
+        gtk_tree_model_get(model, &iter, TODO_DATA_COLUMN_ENUM, &mtodo, -1);
+        if (mtodo == NULL) {
+            return TRUE;
+        }
+        glob_find_id = mtodo->unique_id;
+        return TRUE;
+    }
 
 
 }
+gint cb_todo_treeview_selection_event( GtkWidget *widget,
+                    GdkEvent  *event,
+                    gpointer   callback_data ){
 
+    if (!event) return 1;
+    cb_app_button(NULL, GINT_TO_POINTER(TODO));
+    return 1;
+}
