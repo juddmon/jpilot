@@ -109,8 +109,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data);
 
 static void connect_changed_signals(int con_or_dis);
 
-void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
-                           ToDoList **todo_list, int category, int main);
+
 void addNewRecordToDataStructure(MyToDo * mtodo, gpointer data);
 void deleteTodo(MyToDo * mtodo, gpointer data);
 void undeleteTodo(MyToDo * mtodo, gpointer data);
@@ -134,19 +133,7 @@ selectRecordByRow (GtkTreeModel *model,
 
 gint compareCheckColumn(GtkTreeModel *model, GtkTreeIter *left, GtkTreeIter *right);
 
-enum {
-    TODO_CHECK_COLUMN_ENUM = 0,
-    TODO_PRIORITY_COLUMN_ENUM,
-    TODO_NOTE_COLUMN_ENUM,
-    TODO_DATE_COLUMN_ENUM,
-    TODO_TEXT_COLUMN_ENUM,
-    TODO_DATA_COLUMN_ENUM,
-    TODO_BACKGROUND_COLOR_ENUM,
-    TODO_BACKGROUND_COLOR_ENABLED_ENUM,
-    TODO_FOREGROUND_COLOR_ENUM,
-    TODO_FORGROUND_COLOR_ENABLED_ENUM,
-    TODO_NUM_COLS
-};
+
 /****************************** Main Code *************************************/
 /* Called once on initialization of GUI */
 static void init(void) {
@@ -2218,21 +2205,21 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     long char_set;
     long show_tooltips;
     char *cat_name;
-
+    g_print("here\n");
     get_pref(PREF_TODO_VERSION, &todo_version, NULL);
-
+    g_print("here\n");
     init();
-
+    g_print("here\n");
     get_todo_app_info(&todo_app_info);
-
+    g_print("here\n");
     /* Initialize categories */
-    get_pref(PREF_CHAR_SET, &char_set, NULL);
+    get_pref(PREF_CHAR_SET, &char_set, NULL); g_print("here\n");
     for (i = 1; i < NUM_TODO_CAT_ITEMS; i++) {
         cat_name = charset_p2newj(todo_app_info.category.name[i], 31, (int) char_set);
         strcpy(sort_l[i - 1].Pcat, cat_name);
         free(cat_name);
         sort_l[i - 1].cat_num = i;
-    }
+    } g_print("herewwww\n");
     /* put reserved 'Unfiled' category at end of list */
     cat_name = charset_p2newj(todo_app_info.category.name[0], 31, (int) char_set);
     strcpy(sort_l[NUM_TODO_CAT_ITEMS - 1].Pcat, cat_name);
@@ -2408,7 +2395,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     g_signal_connect (checkColumn, "clicked", G_CALLBACK(column_clicked_cb), NULL);
     g_signal_connect (priorityColumn, "clicked", G_CALLBACK(column_clicked_cb), NULL);
     g_signal_connect (dateColumn, "clicked", G_CALLBACK(column_clicked_cb), NULL);
-     treeSelection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
+    treeSelection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
 
     gtk_tree_selection_set_select_function(treeSelection, handleRowSelection, NULL, NULL);
 
