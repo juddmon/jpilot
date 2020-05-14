@@ -5569,6 +5569,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
 void
 buildTreeView(const GtkWidget *vbox, char *const *titles, long use_db3_tags, GtkWidget **pixmapwid, GdkPixmap **pixmap,
               GdkBitmap **mask) {
+
     GtkCellRenderer *timeRenderer = gtk_cell_renderer_text_new();
 
     GtkTreeViewColumn *timeColumn = gtk_tree_view_column_new_with_attributes("Time",
@@ -5657,9 +5658,7 @@ buildTreeView(const GtkWidget *vbox, char *const *titles, long use_db3_tags, Gtk
     mask = NULL;
 #endif
     (*pixmapwid) = gtk_pixmap_new((*pixmap), (*mask));
-    gtk_clist_set_column_widget(GTK_CLIST(clist), DB_NOTE_COLUMN, (*pixmapwid));
-    gtk_clist_set_column_justification(GTK_CLIST(clist), DB_NOTE_COLUMN, GTK_JUSTIFY_CENTER);
-    gtk_widget_show(GTK_WIDGET((*pixmapwid)));
+     gtk_widget_show(GTK_WIDGET((*pixmapwid)));
     gtk_tree_view_column_set_widget(noteColumn, (*pixmapwid));
     gtk_tree_view_column_set_alignment(noteColumn, GTK_JUSTIFY_CENTER);
     get_pixmaps(vbox, PIXMAP_ALARM, pixmap, mask);
@@ -5667,22 +5666,17 @@ buildTreeView(const GtkWidget *vbox, char *const *titles, long use_db3_tags, Gtk
     mask = NULL;
 #endif
     (*pixmapwid) = gtk_pixmap_new((*pixmap), (*mask));
-    gtk_clist_set_column_widget(GTK_CLIST(clist), DB_ALARM_COLUMN, (*pixmapwid));
-    gtk_clist_set_column_justification(GTK_CLIST(clist), DB_ALARM_COLUMN, GTK_JUSTIFY_CENTER);
     gtk_widget_show(GTK_WIDGET((*pixmapwid)));
     gtk_tree_view_column_set_widget(alarmColumn, (*pixmapwid));
     gtk_tree_view_column_set_alignment(alarmColumn, GTK_JUSTIFY_CENTER);
 #ifdef ENABLE_DATEBK
     if (use_db3_tags) {
-        gtk_clist_set_column_auto_resize(GTK_CLIST(clist), DB_FLOAT_COLUMN, TRUE);
-        gtk_clist_set_column_justification(GTK_CLIST(clist), DB_FLOAT_COLUMN, GTK_JUSTIFY_CENTER);
         get_pixmaps(vbox, PIXMAP_FLOAT_CHECKED, pixmap, mask);
 
 #  ifdef __APPLE__
         mask = NULL;
 #  endif
         (*pixmapwid) = gtk_pixmap_new((*pixmap), (*mask));
-        gtk_clist_set_column_widget(GTK_CLIST(clist), DB_FLOAT_COLUMN, (*pixmapwid));
         gtk_widget_show(GTK_WIDGET((*pixmapwid)));
         gtk_tree_view_column_set_widget(floatColumn, (*pixmapwid));
         gtk_tree_view_column_set_alignment(floatColumn, GTK_JUSTIFY_CENTER);
