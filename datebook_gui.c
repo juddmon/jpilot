@@ -56,6 +56,10 @@
 #define MAX_DESC_LEN 255
 #define DATEBOOK_MAX_COLUMN_LEN 80
 
+//todo: these need to be replaced with
+// the enum.  treeview can always have all 5 columns
+// and just show/hide the 'float' column
+// as needed.
 #define DB_TIME_COLUMN  0
 #define DB_NOTE_COLUMN  1
 #define DB_ALARM_COLUMN 2
@@ -117,6 +121,8 @@ static struct sorted_cats sort_l[NUM_DATEBOOK_CAT_ITEMS];
 static GtkWidget *main_calendar;
 static GtkWidget *dow_label;
 static GtkWidget *clist;
+static GtkTreeView *treeView;
+static GtkListStore *listStore;
 static GtkWidget *dbook_desc, *dbook_note;
 static GObject *dbook_desc_buffer, *dbook_note_buffer;
 /* Need two extra slots for the ALL category and Edit Categories... */
@@ -183,6 +189,30 @@ static GtkWidget *cancel_record_button;
 static GtkAccelGroup *accel_group;
 
 static CalendarEventList *glob_cel = NULL;
+/*
+ * #define DB_TIME_COLUMN  0
+#define DB_NOTE_COLUMN  1
+#define DB_ALARM_COLUMN 2
+#ifdef ENABLE_DATEBK
+#  define DB_FLOAT_COLUMN 3
+static int DB_APPT_COLUMN = 4;
+#else
+static int DB_APPT_COLUMN=3;
+#endif
+ */
+enum {
+    DATE_TIME_COLUMN_ENUM = 0,
+    DATE_NOTE_COLUMN_ENUM,
+    DATE_ALARM_COLUMN_ENUM,
+    DATE_FLOAT_COLUMN_ENUM,
+    DATE_APPT_COLUMN_ENUM,
+    DATE_DATA_COLUMN_ENUM,
+    DATE_BACKGROUND_COLOR_ENUM,
+    DATE_BACKGROUND_COLOR_ENABLED_ENUM,
+    DATE_FOREGROUND_COLOR_ENUM,
+    DATE_FORGROUND_COLOR_ENABLED_ENUM,
+    DATE_NUM_COLS
+};
 
 /* For todo list */
 static GtkTreeView *todo_treeView;
@@ -234,6 +264,12 @@ clickedTodoButton(GtkTreeSelection *selection,
 gint cb_todo_treeview_selection_event( GtkWidget *widget,
                                  GdkEvent  *event,
                                  gpointer   callback_data );
+
+void buildToDoList(const GtkWidget *vbox, GtkWidget *pixmapwid, GdkPixmap **pixmap, GdkBitmap **mask);
+
+void
+buildTreeView(const GtkWidget *vbox, char *const *titles, long use_db3_tags, GtkWidget **pixmapwid, GdkPixmap **pixmap,
+              GdkBitmap **mask);
 
 /****************************** Main Code *************************************/
 static int datebook_to_text(struct CalendarEvent *cale, char *text, int len) {
@@ -4929,68 +4965,19 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
                                    GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 
     gtk_box_pack_start(GTK_BOX(vbox1), scrolled_window, TRUE, TRUE, 0);
+    listStore = gtk_list_store_new(DATE_NUM_COLS, G_TYPE_STRING, GDK_TYPE_PIXBUF, GDK_TYPE_PIXBUF, GDK_TYPE_PIXBUF,
+            G_TYPE_STRING, G_TYPE_POINTER,GDK_TYPE_COLOR,G_TYPE_BOOLEAN,G_TYPE_STRING,G_TYPE_BOOLEAN);
 
-#ifdef ENABLE_DATEBK
-    if (use_db3_tags) {
-        clist = gtk_clist_new_with_titles(5, titles);
-    } else {
-        clist = gtk_clist_new_with_titles(4, titles);
-    }
-#else
-    clist = gtk_clist_new_with_titles(4, titles);
-#endif
+    GtkTreeModel *model = GTK_TREE_MODEL(listStore);
+    treeView = gtk_tree_view_new_with_model(model);
+    buildTreeView(vbox, titles, use_db3_tags, &pixmapwid, &pixmap, &mask);
 
-    gtk_clist_column_titles_passive(GTK_CLIST(clist));
-
-    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
-                       GTK_SIGNAL_FUNC(cb_clist_selection),
-                       NULL);
-    gtk_clist_set_shadow_type(GTK_CLIST(clist), SHADOW);
-    gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
-
-    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), DB_TIME_COLUMN, TRUE);
-    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), DB_APPT_COLUMN, FALSE);
-    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), DB_NOTE_COLUMN, TRUE);
-    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), DB_ALARM_COLUMN, TRUE);
-
-    gtk_clist_set_column_title(GTK_CLIST(clist), DB_TIME_COLUMN, _("Time"));
-    gtk_clist_set_column_title(GTK_CLIST(clist), DB_APPT_COLUMN, _("Appointment"));
-
-    /* Put pretty pictures in the clist column headings */
-    get_pixmaps(vbox, PIXMAP_NOTE, &pixmap, &mask);
-#ifdef __APPLE__
-    mask = NULL;
-#endif
-    pixmapwid = gtk_pixmap_new(pixmap, mask);
-    gtk_clist_set_column_widget(GTK_CLIST(clist), DB_NOTE_COLUMN, pixmapwid);
-    gtk_clist_set_column_justification(GTK_CLIST(clist), DB_NOTE_COLUMN, GTK_JUSTIFY_CENTER);
-
-    get_pixmaps(vbox, PIXMAP_ALARM, &pixmap, &mask);
-#ifdef __APPLE__
-    mask = NULL;
-#endif
-    pixmapwid = gtk_pixmap_new(pixmap, mask);
-    gtk_clist_set_column_widget(GTK_CLIST(clist), DB_ALARM_COLUMN, pixmapwid);
-    gtk_clist_set_column_justification(GTK_CLIST(clist), DB_ALARM_COLUMN, GTK_JUSTIFY_CENTER);
-
-#ifdef ENABLE_DATEBK
-    if (use_db3_tags) {
-        gtk_clist_set_column_auto_resize(GTK_CLIST(clist), DB_FLOAT_COLUMN, TRUE);
-        gtk_clist_set_column_justification(GTK_CLIST(clist), DB_FLOAT_COLUMN, GTK_JUSTIFY_CENTER);
-        get_pixmaps(vbox, PIXMAP_FLOAT_CHECKED, &pixmap, &mask);
-#  ifdef __APPLE__
-        mask = NULL;
-#  endif
-        pixmapwid = gtk_pixmap_new(pixmap, mask);
-        gtk_clist_set_column_widget(GTK_CLIST(clist), DB_FLOAT_COLUMN, pixmapwid);
-    }
-#endif
 
 #ifdef DAY_VIEW
                                                                                                                             create_daily_view(scrolled_window, vbox_no_time_appts);
    gtk_idle_add(cb_datebook_idle, NULL);
 #else
-    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
+    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(treeView));
     /* gtk_clist_set_sort_column (GTK_CLIST(clist), 0); */
     /* gtk_clist_set_auto_sort(GTK_CLIST(clist), TRUE); */
 #endif
@@ -5001,123 +4988,9 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_signal_connect(GTK_OBJECT(show_todos_button), "clicked",
                        GTK_SIGNAL_FUNC(cb_todos_show), NULL);
 
-    /* ToDo clist */
-    todo_scrolled_window = gtk_scrolled_window_new(NULL, NULL);
-    gtk_container_set_border_width(GTK_CONTAINER(todo_scrolled_window), 0);
-    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(todo_scrolled_window),
-                                   GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-    gtk_box_pack_start(GTK_BOX(todo_vbox), todo_scrolled_window, TRUE, TRUE, 0);
-    todo_listStore = gtk_list_store_new(TODO_NUM_COLS, G_TYPE_BOOLEAN, G_TYPE_STRING, GDK_TYPE_PIXBUF, G_TYPE_STRING,
-                                        G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_COLOR, G_TYPE_BOOLEAN, G_TYPE_STRING,
-                                        G_TYPE_BOOLEAN);
-    GtkTreeModel *model = GTK_TREE_MODEL(todo_listStore);
-    todo_treeView = gtk_tree_view_new_with_model(model);
-    GtkCellRenderer *taskRenderer = gtk_cell_renderer_text_new();
-
-    GtkTreeViewColumn *taskColumn = gtk_tree_view_column_new_with_attributes("Task",
-                                                                             taskRenderer,
-                                                                             "text", TODO_TEXT_COLUMN_ENUM,
-                                                                             "cell-background-gdk",
-                                                                             TODO_BACKGROUND_COLOR_ENUM,
-                                                                             "cell-background-set",
-                                                                             TODO_BACKGROUND_COLOR_ENABLED_ENUM,
-                                                                             NULL);
-    gtk_tree_view_column_set_sort_column_id(taskColumn, TODO_TEXT_COLUMN_ENUM);
-
-
-    GtkCellRenderer *dateRenderer = gtk_cell_renderer_text_new();
-
-    GtkTreeViewColumn *dateColumn = gtk_tree_view_column_new_with_attributes("Due",
-                                                                             dateRenderer,
-                                                                             "text", TODO_DATE_COLUMN_ENUM,
-                                                                             "cell-background-gdk",
-                                                                             TODO_BACKGROUND_COLOR_ENUM,
-                                                                             "cell-background-set",
-                                                                             TODO_BACKGROUND_COLOR_ENABLED_ENUM,
-                                                                             "foreground", TODO_FOREGROUND_COLOR_ENUM,
-                                                                             "foreground-set",
-                                                                             TODO_FORGROUND_COLOR_ENABLED_ENUM,
-                                                                             NULL);
-    gtk_tree_view_column_set_sort_column_id(dateColumn, TODO_DATE_COLUMN_ENUM);
-
-    GtkCellRenderer *priorityRenderer = gtk_cell_renderer_text_new();
-    GtkTreeViewColumn *priorityColumn = gtk_tree_view_column_new_with_attributes("",
-                                                                                 priorityRenderer,
-                                                                                 "text", TODO_PRIORITY_COLUMN_ENUM,
-                                                                                 "cell-background-gdk",
-                                                                                 TODO_BACKGROUND_COLOR_ENUM,
-                                                                                 "cell-background-set",
-                                                                                 TODO_BACKGROUND_COLOR_ENABLED_ENUM,
-                                                                                 NULL);
-    gtk_tree_view_column_set_sort_column_id(priorityColumn, TODO_PRIORITY_COLUMN_ENUM);
-
-    GtkCellRenderer *noteRenderer = gtk_cell_renderer_pixbuf_new();
-    GtkTreeViewColumn *noteColumn = gtk_tree_view_column_new_with_attributes("",
-                                                                             noteRenderer,
-                                                                             "pixbuf", TODO_NOTE_COLUMN_ENUM,
-                                                                             "cell-background-gdk",
-                                                                             TODO_BACKGROUND_COLOR_ENUM,
-                                                                             "cell-background-set",
-                                                                             TODO_BACKGROUND_COLOR_ENABLED_ENUM,
-                                                                             NULL);
-    gtk_tree_view_column_set_sort_column_id(noteColumn, TODO_NOTE_COLUMN_ENUM);
-
-
-    GtkCellRenderer *checkRenderer = gtk_cell_renderer_toggle_new();
-
-    GtkTreeViewColumn *checkColumn = gtk_tree_view_column_new_with_attributes("", checkRenderer, "active",
-                                                                              TODO_CHECK_COLUMN_ENUM,
-                                                                              "cell-background-gdk",
-                                                                              TODO_BACKGROUND_COLOR_ENUM,
-                                                                              "cell-background-set",
-                                                                              TODO_BACKGROUND_COLOR_ENABLED_ENUM, NULL);
-    gtk_tree_view_insert_column(GTK_TREE_VIEW (todo_treeView), checkColumn, TODO_CHECK_COLUMN_ENUM);
-    gtk_tree_view_insert_column(GTK_TREE_VIEW (todo_treeView), priorityColumn, TODO_PRIORITY_COLUMN_ENUM);
-    gtk_tree_view_insert_column(GTK_TREE_VIEW (todo_treeView), noteColumn, TODO_NOTE_COLUMN_ENUM);
-    gtk_tree_view_insert_column(GTK_TREE_VIEW (todo_treeView), dateColumn, TODO_DATE_COLUMN_ENUM);
-    gtk_tree_view_insert_column(GTK_TREE_VIEW (todo_treeView), taskColumn, TODO_TEXT_COLUMN_ENUM);
-    gtk_tree_view_column_set_sizing(checkColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
-    gtk_tree_view_column_set_sizing(dateColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
-    gtk_tree_view_column_set_sizing(priorityColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
-    gtk_tree_view_column_set_sizing(noteColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
-    gtk_tree_view_column_set_sizing(taskColumn, GTK_TREE_VIEW_COLUMN_FIXED);
-    gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(todo_treeView)),
-                                GTK_SELECTION_BROWSE);
-    /* Put pretty pictures in the clist column headings */
-    get_pixmaps(vbox, PIXMAP_NOTE, &pixmap, &mask);
-#ifdef __APPLE__
-    mask = NULL;
-#endif
-    pixmapwid = gtk_pixmap_new(pixmap, mask);
-    gtk_widget_show(GTK_WIDGET(pixmapwid));
-    gtk_tree_view_column_set_widget(noteColumn, pixmapwid);
-    gtk_tree_view_column_set_alignment(noteColumn, GTK_JUSTIFY_CENTER);
-    get_pixmaps(vbox, PIXMAP_BOX_CHECKED, &pixmap, &mask);
-#ifdef __APPLE__
-    mask = NULL;
-#endif
-    pixmapwid = gtk_pixmap_new(pixmap, mask);
-    gtk_widget_show(GTK_WIDGET(pixmapwid));
-    gtk_tree_view_column_set_widget(checkColumn, pixmapwid);
-    gtk_tree_view_column_set_alignment(checkColumn, GTK_JUSTIFY_CENTER);
-    gtk_tree_view_column_set_clickable(checkColumn, gtk_false());
-    gtk_tree_view_column_set_clickable(priorityColumn, gtk_false());
-    gtk_tree_view_column_set_clickable(noteColumn, gtk_false());
-    gtk_tree_view_column_set_clickable(dateColumn, gtk_false());
-    gtk_tree_view_column_set_clickable(taskColumn, gtk_false());
-
-
-    todo_update_liststore(todo_listStore, NULL, &datebook_todo_list, CATEGORY_ALL, FALSE);
-
-    selectFirstTodoRow();
-    todo_treeSelection = gtk_tree_view_get_selection(GTK_TREE_VIEW(todo_treeView));
-
-    gtk_tree_selection_set_select_function(todo_treeSelection, clickedTodoButton, NULL, NULL);
-
-    g_signal_connect (todo_treeView, "button_release_event", GTK_SIGNAL_FUNC(cb_todo_treeview_selection_event), NULL);
-    gtk_container_add(GTK_CONTAINER(todo_scrolled_window), GTK_WIDGET(todo_treeView));
-
-    /* End ToDo clist code */
+    /* ToDo  */
+    buildToDoList(vbox, pixmapwid, &pixmap, &mask);
+    /* End ToDo code */
 
     /* Right side of GUI */
 
@@ -5691,6 +5564,248 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_widget_grab_focus(GTK_WIDGET(main_calendar));
 
     return EXIT_SUCCESS;
+}
+
+void
+buildTreeView(const GtkWidget *vbox, char *const *titles, long use_db3_tags, GtkWidget **pixmapwid, GdkPixmap **pixmap,
+              GdkBitmap **mask) {
+    GtkCellRenderer *timeRenderer = gtk_cell_renderer_text_new();
+
+    GtkTreeViewColumn *timeColumn = gtk_tree_view_column_new_with_attributes("Time",
+                                                                             timeColumn,
+                                                                             "text", DATE_TIME_COLUMN_ENUM,"cell-background-gdk",DATE_BACKGROUND_COLOR_ENUM,
+                                                                             "cell-background-set",DATE_BACKGROUND_COLOR_ENABLED_ENUM,
+                                                                             NULL);
+    GtkCellRenderer *appointmentRenderer = gtk_cell_renderer_text_new();
+
+    GtkTreeViewColumn *appointmentColumn = gtk_tree_view_column_new_with_attributes("Appointment",
+                                                                                    appointmentRenderer,
+                                                                             "text", DATE_APPT_COLUMN_ENUM,"cell-background-gdk",DATE_BACKGROUND_COLOR_ENUM,
+                                                                             "cell-background-set",DATE_BACKGROUND_COLOR_ENABLED_ENUM,
+                                                                              NULL);
+    GtkCellRenderer *noteRenderer  = gtk_cell_renderer_pixbuf_new();
+    GtkTreeViewColumn *noteColumn = gtk_tree_view_column_new_with_attributes("",
+                                                                             noteRenderer,
+                                                                             "pixbuf", DATE_NOTE_COLUMN_ENUM,"cell-background-gdk",DATE_BACKGROUND_COLOR_ENUM,
+                                                                             "cell-background-set",DATE_BACKGROUND_COLOR_ENABLED_ENUM,
+                                                                             NULL);
+
+    GtkCellRenderer *alarmRenderer  = gtk_cell_renderer_pixbuf_new();
+    GtkTreeViewColumn *alarmColumn = gtk_tree_view_column_new_with_attributes("",
+                                                                             noteRenderer,
+                                                                             "pixbuf", DATE_ALARM_COLUMN_ENUM,"cell-background-gdk",DATE_BACKGROUND_COLOR_ENUM,
+                                                                             "cell-background-set",DATE_BACKGROUND_COLOR_ENABLED_ENUM,
+                                                                             NULL);
+
+    GtkCellRenderer *floatRenderer  = gtk_cell_renderer_pixbuf_new();
+    GtkTreeViewColumn *floatColumn = gtk_tree_view_column_new_with_attributes("",
+                                                                             noteRenderer,
+                                                                             "pixbuf", DATE_FLOAT_COLUMN_ENUM,"cell-background-gdk",DATE_BACKGROUND_COLOR_ENUM,
+                                                                             "cell-background-set",DATE_BACKGROUND_COLOR_ENABLED_ENUM,
+                                                                             NULL);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW (treeView), timeColumn, DATE_TIME_COLUMN_ENUM);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW (treeView), noteColumn, DATE_NOTE_COLUMN_ENUM);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW (treeView), alarmColumn, DATE_ALARM_COLUMN_ENUM);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW (treeView), floatColumn, DATE_FLOAT_COLUMN_ENUM);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW (treeView), appointmentColumn, DATE_APPT_COLUMN_ENUM);
+    gtk_tree_view_column_set_sizing(timeColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+    gtk_tree_view_column_set_sizing(noteColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+    gtk_tree_view_column_set_sizing(alarmColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+    gtk_tree_view_column_set_sizing(floatColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+    gtk_tree_view_column_set_sizing(appointmentColumn, GTK_TREE_VIEW_COLUMN_FIXED);
+    gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView)),
+                                GTK_SELECTION_BROWSE);
+    gtk_tree_view_column_set_clickable(timeColumn, gtk_false());
+    gtk_tree_view_column_set_clickable(noteColumn, gtk_false());
+    gtk_tree_view_column_set_clickable(alarmColumn, gtk_false());
+    gtk_tree_view_column_set_clickable(floatColumn, gtk_false());
+    gtk_tree_view_column_set_clickable(appointmentColumn, gtk_false());
+
+
+#ifdef ENABLE_DATEBK
+    if(!use_db3_tags){
+        gtk_tree_view_column_set_visible(floatColumn,FALSE);
+    }
+    if (use_db3_tags) {
+        clist = gtk_clist_new_with_titles(5, titles);
+    } else {
+        clist = gtk_clist_new_with_titles(4, titles);
+    }
+#else
+    clist = gtk_clist_new_with_titles(4, titles);
+#endif
+
+    gtk_clist_column_titles_passive(GTK_CLIST(clist));
+
+    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
+                       GTK_SIGNAL_FUNC(cb_clist_selection),
+                       NULL);
+    gtk_clist_set_shadow_type(GTK_CLIST(clist), SHADOW);
+    gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
+
+    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), DB_TIME_COLUMN, TRUE);
+    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), DB_APPT_COLUMN, FALSE);
+    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), DB_NOTE_COLUMN, TRUE);
+    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), DB_ALARM_COLUMN, TRUE);
+
+    gtk_clist_set_column_title(GTK_CLIST(clist), DB_TIME_COLUMN, _("Time"));
+    gtk_clist_set_column_title(GTK_CLIST(clist), DB_APPT_COLUMN, _("Appointment"));
+
+    /* Put pretty pictures in the clist column headings */
+    get_pixmaps(vbox, PIXMAP_NOTE, pixmap, mask);
+#ifdef __APPLE__
+    mask = NULL;
+#endif
+    (*pixmapwid) = gtk_pixmap_new((*pixmap), (*mask));
+    gtk_clist_set_column_widget(GTK_CLIST(clist), DB_NOTE_COLUMN, (*pixmapwid));
+    gtk_clist_set_column_justification(GTK_CLIST(clist), DB_NOTE_COLUMN, GTK_JUSTIFY_CENTER);
+    gtk_widget_show(GTK_WIDGET((*pixmapwid)));
+    gtk_tree_view_column_set_widget(noteColumn, (*pixmapwid));
+    gtk_tree_view_column_set_alignment(noteColumn, GTK_JUSTIFY_CENTER);
+    get_pixmaps(vbox, PIXMAP_ALARM, pixmap, mask);
+#ifdef __APPLE__
+    mask = NULL;
+#endif
+    (*pixmapwid) = gtk_pixmap_new((*pixmap), (*mask));
+    gtk_clist_set_column_widget(GTK_CLIST(clist), DB_ALARM_COLUMN, (*pixmapwid));
+    gtk_clist_set_column_justification(GTK_CLIST(clist), DB_ALARM_COLUMN, GTK_JUSTIFY_CENTER);
+    gtk_widget_show(GTK_WIDGET((*pixmapwid)));
+    gtk_tree_view_column_set_widget(alarmColumn, (*pixmapwid));
+    gtk_tree_view_column_set_alignment(alarmColumn, GTK_JUSTIFY_CENTER);
+#ifdef ENABLE_DATEBK
+    if (use_db3_tags) {
+        gtk_clist_set_column_auto_resize(GTK_CLIST(clist), DB_FLOAT_COLUMN, TRUE);
+        gtk_clist_set_column_justification(GTK_CLIST(clist), DB_FLOAT_COLUMN, GTK_JUSTIFY_CENTER);
+        get_pixmaps(vbox, PIXMAP_FLOAT_CHECKED, pixmap, mask);
+
+#  ifdef __APPLE__
+        mask = NULL;
+#  endif
+        (*pixmapwid) = gtk_pixmap_new((*pixmap), (*mask));
+        gtk_clist_set_column_widget(GTK_CLIST(clist), DB_FLOAT_COLUMN, (*pixmapwid));
+        gtk_widget_show(GTK_WIDGET((*pixmapwid)));
+        gtk_tree_view_column_set_widget(floatColumn, (*pixmapwid));
+        gtk_tree_view_column_set_alignment(floatColumn, GTK_JUSTIFY_CENTER);
+    }
+#endif
+
+}
+
+void buildToDoList(const GtkWidget *vbox, GtkWidget *pixmapwid, GdkPixmap **pixmap, GdkBitmap **mask) {
+    todo_scrolled_window = gtk_scrolled_window_new(NULL, NULL);
+    gtk_container_set_border_width(GTK_CONTAINER(todo_scrolled_window), 0);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(todo_scrolled_window),
+                                   GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    gtk_box_pack_start(GTK_BOX(todo_vbox), todo_scrolled_window, TRUE, TRUE, 0);
+    todo_listStore = gtk_list_store_new(TODO_NUM_COLS, G_TYPE_BOOLEAN, G_TYPE_STRING, GDK_TYPE_PIXBUF, G_TYPE_STRING,
+                                        G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_COLOR, G_TYPE_BOOLEAN, G_TYPE_STRING,
+                                        G_TYPE_BOOLEAN);
+    GtkTreeModel *model = GTK_TREE_MODEL(todo_listStore);
+    todo_treeView = gtk_tree_view_new_with_model(model);
+    GtkCellRenderer *taskRenderer = gtk_cell_renderer_text_new();
+
+    GtkTreeViewColumn *taskColumn = gtk_tree_view_column_new_with_attributes("Task",
+                                                                             taskRenderer,
+                                                                             "text", TODO_TEXT_COLUMN_ENUM,
+                                                                             "cell-background-gdk",
+                                                                             TODO_BACKGROUND_COLOR_ENUM,
+                                                                             "cell-background-set",
+                                                                             TODO_BACKGROUND_COLOR_ENABLED_ENUM,
+                                                                             NULL);
+    gtk_tree_view_column_set_sort_column_id(taskColumn, TODO_TEXT_COLUMN_ENUM);
+
+
+    GtkCellRenderer *dateRenderer = gtk_cell_renderer_text_new();
+
+    GtkTreeViewColumn *dateColumn = gtk_tree_view_column_new_with_attributes("Due",
+                                                                             dateRenderer,
+                                                                             "text", TODO_DATE_COLUMN_ENUM,
+                                                                             "cell-background-gdk",
+                                                                             TODO_BACKGROUND_COLOR_ENUM,
+                                                                             "cell-background-set",
+                                                                             TODO_BACKGROUND_COLOR_ENABLED_ENUM,
+                                                                             "foreground", TODO_FOREGROUND_COLOR_ENUM,
+                                                                             "foreground-set",
+                                                                             TODO_FORGROUND_COLOR_ENABLED_ENUM,
+                                                                             NULL);
+    gtk_tree_view_column_set_sort_column_id(dateColumn, TODO_DATE_COLUMN_ENUM);
+
+    GtkCellRenderer *priorityRenderer = gtk_cell_renderer_text_new();
+    GtkTreeViewColumn *priorityColumn = gtk_tree_view_column_new_with_attributes("",
+                                                                                 priorityRenderer,
+                                                                                 "text", TODO_PRIORITY_COLUMN_ENUM,
+                                                                                 "cell-background-gdk",
+                                                                                 TODO_BACKGROUND_COLOR_ENUM,
+                                                                                 "cell-background-set",
+                                                                                 TODO_BACKGROUND_COLOR_ENABLED_ENUM,
+                                                                                 NULL);
+    gtk_tree_view_column_set_sort_column_id(priorityColumn, TODO_PRIORITY_COLUMN_ENUM);
+
+    GtkCellRenderer *noteRenderer = gtk_cell_renderer_pixbuf_new();
+    GtkTreeViewColumn *noteColumn = gtk_tree_view_column_new_with_attributes("",
+                                                                             noteRenderer,
+                                                                             "pixbuf", TODO_NOTE_COLUMN_ENUM,
+                                                                             "cell-background-gdk",
+                                                                             TODO_BACKGROUND_COLOR_ENUM,
+                                                                             "cell-background-set",
+                                                                             TODO_BACKGROUND_COLOR_ENABLED_ENUM,
+                                                                             NULL);
+    gtk_tree_view_column_set_sort_column_id(noteColumn, TODO_NOTE_COLUMN_ENUM);
+
+
+    GtkCellRenderer *checkRenderer = gtk_cell_renderer_toggle_new();
+
+    GtkTreeViewColumn *checkColumn = gtk_tree_view_column_new_with_attributes("", checkRenderer, "active",
+                                                                              TODO_CHECK_COLUMN_ENUM,
+                                                                              "cell-background-gdk",
+                                                                              TODO_BACKGROUND_COLOR_ENUM,
+                                                                              "cell-background-set",
+                                                                              TODO_BACKGROUND_COLOR_ENABLED_ENUM, NULL);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW (todo_treeView), checkColumn, TODO_CHECK_COLUMN_ENUM);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW (todo_treeView), priorityColumn, TODO_PRIORITY_COLUMN_ENUM);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW (todo_treeView), noteColumn, TODO_NOTE_COLUMN_ENUM);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW (todo_treeView), dateColumn, TODO_DATE_COLUMN_ENUM);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW (todo_treeView), taskColumn, TODO_TEXT_COLUMN_ENUM);
+    gtk_tree_view_column_set_sizing(checkColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+    gtk_tree_view_column_set_sizing(dateColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+    gtk_tree_view_column_set_sizing(priorityColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+    gtk_tree_view_column_set_sizing(noteColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+    gtk_tree_view_column_set_sizing(taskColumn, GTK_TREE_VIEW_COLUMN_FIXED);
+    gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(todo_treeView)),
+                                GTK_SELECTION_BROWSE);
+    /* Put pretty pictures in the clist column headings */
+    get_pixmaps(vbox, PIXMAP_NOTE, pixmap, mask);
+#ifdef __APPLE__
+    mask = NULL;
+#endif
+    pixmapwid = gtk_pixmap_new((*pixmap), (*mask));
+    gtk_widget_show(GTK_WIDGET(pixmapwid));
+    gtk_tree_view_column_set_widget(noteColumn, pixmapwid);
+    gtk_tree_view_column_set_alignment(noteColumn, GTK_JUSTIFY_CENTER);
+    get_pixmaps(vbox, PIXMAP_BOX_CHECKED, pixmap, mask);
+#ifdef __APPLE__
+    mask = NULL;
+#endif
+    pixmapwid = gtk_pixmap_new((*pixmap), (*mask));
+    gtk_widget_show(GTK_WIDGET(pixmapwid));
+    gtk_tree_view_column_set_widget(checkColumn, pixmapwid);
+    gtk_tree_view_column_set_alignment(checkColumn, GTK_JUSTIFY_CENTER);
+    gtk_tree_view_column_set_clickable(checkColumn, gtk_false());
+    gtk_tree_view_column_set_clickable(priorityColumn, gtk_false());
+    gtk_tree_view_column_set_clickable(noteColumn, gtk_false());
+    gtk_tree_view_column_set_clickable(dateColumn, gtk_false());
+    gtk_tree_view_column_set_clickable(taskColumn, gtk_false());
+
+
+    todo_update_liststore(todo_listStore, NULL, &datebook_todo_list, CATEGORY_ALL, FALSE);
+
+    selectFirstTodoRow();
+    todo_treeSelection = gtk_tree_view_get_selection(GTK_TREE_VIEW(todo_treeView));
+
+    gtk_tree_selection_set_select_function(todo_treeSelection, clickedTodoButton, NULL, NULL);
+
+    g_signal_connect (todo_treeView, "button_release_event", GTK_SIGNAL_FUNC(cb_todo_treeview_selection_event), NULL);
+    gtk_container_add(GTK_CONTAINER(todo_scrolled_window), GTK_WIDGET(todo_treeView));
 }
 
 void selectFirstTodoRow() {
