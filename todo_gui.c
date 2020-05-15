@@ -2205,21 +2205,17 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     long char_set;
     long show_tooltips;
     char *cat_name;
-    g_print("here\n");
     get_pref(PREF_TODO_VERSION, &todo_version, NULL);
-    g_print("here\n");
     init();
-    g_print("here\n");
     get_todo_app_info(&todo_app_info);
-    g_print("here\n");
-    /* Initialize categories */
-    get_pref(PREF_CHAR_SET, &char_set, NULL); g_print("here\n");
+     /* Initialize categories */
+    get_pref(PREF_CHAR_SET, &char_set, NULL);
     for (i = 1; i < NUM_TODO_CAT_ITEMS; i++) {
         cat_name = charset_p2newj(todo_app_info.category.name[i], 31, (int) char_set);
         strcpy(sort_l[i - 1].Pcat, cat_name);
         free(cat_name);
         sort_l[i - 1].cat_num = i;
-    } g_print("herewwww\n");
+    }
     /* put reserved 'Unfiled' category at end of list */
     cat_name = charset_p2newj(todo_app_info.category.name[0], 31, (int) char_set);
     strcpy(sort_l[NUM_TODO_CAT_ITEMS - 1].Pcat, cat_name);

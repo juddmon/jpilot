@@ -254,8 +254,30 @@ static void connect_changed_signals(int con_or_dis);
 static int datebook_export_gui(GtkWidget *main_window, int x, int y);
 
 void selectFirstTodoRow();
+gboolean
+findDateRecord (GtkTreeModel *model,
+                GtkTreePath  *path,
+                GtkTreeIter  *iter,
+                gpointer data);
+gboolean
+addNewDateRecord (GtkTreeModel *model,
+                  GtkTreePath  *path,
+                  GtkTreeIter  *iter,
+                  gpointer data);
+static gboolean handleDateRowSelection(GtkTreeSelection *selection,
+                                   GtkTreeModel *model,
+                                   GtkTreePath *path,
+                                   gboolean path_currently_selected,
+                                   gpointer userdata);
 
 gboolean
+selectDateRecordByRow (GtkTreeModel *model,
+                       GtkTreePath  *path,
+                       GtkTreeIter  *iter,
+                       gpointer data);
+void addNewDateRecordToDataStructure(MyCalendarEvent * mcale, gpointer data);
+
+        gboolean
 clickedTodoButton(GtkTreeSelection *selection,
                   GtkTreeModel *model,
                   GtkTreePath *path,
@@ -2416,7 +2438,22 @@ static void clear_myCalendarEvent(MyCalendarEvent *mcale) {
 }
 
 /* End Masking */
+gboolean
+selectDateRecordByRow (GtkTreeModel *model,
+                   GtkTreePath  *path,
+                   GtkTreeIter  *iter,
+                   gpointer data) {
+    int * i = gtk_tree_path_get_indices ( path ) ;
+    if(i[0] == clist_row_selected){
+        GtkTreeSelection * selection = NULL;
+        selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
+        gtk_tree_selection_select_path(selection, path);
+        gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, DATE_APPT_COLUMN_ENUM, FALSE, 1.0, 0.0);
+        return TRUE;
+    }
 
+    return FALSE;
+}
 static int datebook_update_listStore(void) {
     GtkTreeIter iter;
     int num_entries, entries_shown, num;
@@ -2652,17 +2689,17 @@ static int datebook_update_listStore(void) {
     if (entries_shown > 0) {
         /* First, select any record being searched for */
         if (glob_find_id) {
-           // datebook_find();
+            datebook_find();
         }
             /* Second, try the currently selected row */
         else if (clist_row_selected < entries_shown) {
-           // gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), selectRecordByRow, NULL);
+            gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), selectDateRecordByRow, NULL);
 
         }
             /* Third, select row 0 if nothing else is possible */
         else {
            //clist_row_selected = 0;
-           // gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), selectRecordByRow, NULL);
+            gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), selectDateRecordByRow, NULL);
 
         }
     } else {
@@ -2676,262 +2713,6 @@ static int datebook_update_listStore(void) {
 
     /* return focus to clist after any big operation which requires a redraw */
     gtk_widget_grab_focus(GTK_WIDGET(treeView));
-
-    return EXIT_SUCCESS;
-}
-
-static int datebook_update_clist(void) {
-    int num_entries, entries_shown, num;
-    CalendarEventList *temp_cel;
-    gchar *empty_line[] = {"", "", "", "", ""};
-    char begin_time[32];
-    char end_time[32];
-    char a_time[sizeof(begin_time) + sizeof(end_time) + 1];
-    char datef[20];
-    GdkPixmap *pixmap_note;
-    GdkPixmap *pixmap_alarm;
-    GdkBitmap *mask_note;
-    GdkBitmap *mask_alarm;
-    int has_note;
-#ifdef ENABLE_DATEBK
-    int cat_bit;
-    int db3_type;
-    long use_db3_tags;
-    struct db4_struct db4;
-    GdkPixmap *pixmap_float_check;
-    GdkPixmap *pixmap_float_checked;
-    GdkBitmap *mask_float_check;
-    GdkBitmap *mask_float_checked;
-#endif
-    struct tm new_time;
-    int show_priv;
-    char str[DATEBOOK_MAX_COLUMN_LEN + 2];
-    char str2[DATEBOOK_MAX_COLUMN_LEN];
-    long show_tooltips;
-
-    jp_logf(JP_LOG_DEBUG, "datebook_update_clist()\n");
-
-    free_CalendarEventList(&glob_cel);
-
-    memset(&new_time, 0, sizeof(new_time));
-    new_time.tm_hour = 11;
-    new_time.tm_mday = current_day;
-    new_time.tm_mon = current_month;
-    new_time.tm_year = current_year;
-    new_time.tm_isdst = -1;
-    mktime(&new_time);
-
-    num = get_days_calendar_events2(&glob_cel, &new_time, 2, 2, 1, CATEGORY_ALL, &num_entries);
-
-    jp_logf(JP_LOG_DEBUG, "get_days_appointments==>%d\n", num);
-#ifdef ENABLE_DATEBK
-    jp_logf(JP_LOG_DEBUG, "datebk_category = 0x%x\n", datebk_category);
-#endif
-
-    /* Freeze clist to prevent flicker during updating */
-    gtk_clist_freeze(GTK_CLIST(clist));
-    gtk_signal_disconnect_by_func(GTK_OBJECT(clist),
-                                  GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
-    clist_clear(GTK_CLIST(clist));
-#ifdef __APPLE__
-                                                                                                                            gtk_clist_thaw(GTK_CLIST(clist));
-   gtk_widget_hide(clist);
-   gtk_widget_show_all(clist);
-   gtk_clist_freeze(GTK_CLIST(clist));
-#endif
-
-    /* Collect preferences and constant pixmaps for loop */
-    show_priv = show_privates(GET_PRIVATES);
-    get_pixmaps(scrolled_window, PIXMAP_NOTE, &pixmap_note, &mask_note);
-    get_pixmaps(scrolled_window, PIXMAP_ALARM, &pixmap_alarm, &mask_alarm);
-#ifdef __APPLE__
-                                                                                                                            mask_note = NULL;
-   mask_alarm = NULL;
-#endif
-#ifdef ENABLE_DATEBK
-    get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
-    get_pixmaps(scrolled_window, PIXMAP_FLOAT_CHECK,
-                &pixmap_float_check, &mask_float_check);
-    get_pixmaps(scrolled_window, PIXMAP_FLOAT_CHECKED,
-                &pixmap_float_checked, &mask_float_checked);
-#  ifdef __APPLE__
-                                                                                                                            mask_float_check = NULL;
-   mask_float_checked = NULL;
-#  endif
-#endif
-
-    entries_shown = 0;
-    for (temp_cel = glob_cel; temp_cel; temp_cel = temp_cel->next) {
-
-        if (datebook_version) {
-            /* Filter by category for Calendar application */
-            if (((temp_cel->mcale.attrib & 0x0F) != dbook_category) &&
-                dbook_category != CATEGORY_ALL) {
-                continue;
-            }
-        }
-#ifdef ENABLE_DATEBK
-        if (use_db3_tags) {
-            db3_parse_tag(temp_cel->mcale.cale.note, &db3_type, &db4);
-            jp_logf(JP_LOG_DEBUG, "category = 0x%x\n", db4.category);
-            cat_bit = 1 << db4.category;
-            if (!(cat_bit & datebk_category)) {
-                jp_logf(JP_LOG_DEBUG, "skipping rec not in this category\n");
-                continue;
-            }
-        }
-#endif
-        /* Do masking like Palm OS 3.5 */
-        if ((show_priv == MASK_PRIVATES) &&
-            (temp_cel->mcale.attrib & dlpRecAttrSecret)) {
-            gtk_clist_append(GTK_CLIST(clist), empty_line);
-            gtk_clist_set_text(GTK_CLIST(clist), entries_shown, DB_TIME_COLUMN, "----------");
-            gtk_clist_set_text(GTK_CLIST(clist), entries_shown, DB_APPT_COLUMN, "---------------");
-            clear_myCalendarEvent(&temp_cel->mcale);
-            gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_cel->mcale));
-            gtk_clist_set_row_style(GTK_CLIST(clist), entries_shown, NULL);
-            entries_shown++;
-            continue;
-        }
-        /* End Masking */
-
-        /* Hide the private records if need be */
-        if ((show_priv != SHOW_PRIVATES) &&
-            (temp_cel->mcale.attrib & dlpRecAttrSecret)) {
-            continue;
-        }
-
-        /* Add entry to clist */
-        gtk_clist_append(GTK_CLIST(clist), empty_line);
-
-        /* Print the event time */
-        if (temp_cel->mcale.cale.event) {
-            /* This is a timeless event */
-            strcpy(a_time, _("No Time"));
-        } else {
-            get_pref_time_no_secs_no_ampm(datef);
-            strftime(begin_time, sizeof(begin_time), datef, &(temp_cel->mcale.cale.begin));
-            get_pref_time_no_secs(datef);
-            strftime(end_time, sizeof(end_time), datef, &(temp_cel->mcale.cale.end));
-            g_snprintf(a_time, sizeof(a_time), "%s-%s", begin_time, end_time);
-        }
-        gtk_clist_set_text(GTK_CLIST(clist), entries_shown, DB_TIME_COLUMN, a_time);
-
-#ifdef ENABLE_DATEBK
-        if (use_db3_tags) {
-            if (db4.floating_event == DB3_FLOAT) {
-                gtk_clist_set_pixmap(GTK_CLIST(clist), entries_shown, DB_FLOAT_COLUMN, pixmap_float_check,
-                                     mask_float_check);
-            }
-            if (db4.floating_event == DB3_FLOAT_COMPLETE) {
-                gtk_clist_set_pixmap(GTK_CLIST(clist), entries_shown, DB_FLOAT_COLUMN, pixmap_float_checked,
-                                     mask_float_checked);
-            }
-        }
-#endif
-
-        has_note = 0;
-#ifdef ENABLE_DATEBK
-        if (use_db3_tags) {
-            if (db3_type != DB3_TAG_TYPE_NONE) {
-                if (db4.note && db4.note[0] != '\0') {
-                    has_note = 1;
-                }
-            } else {
-                if (temp_cel->mcale.cale.note &&
-                    (temp_cel->mcale.cale.note[0] != '\0')) {
-                    has_note = 1;
-                }
-            }
-        } else {
-            if (temp_cel->mcale.cale.note && (temp_cel->mcale.cale.note[0] != '\0')) {
-                has_note = 1;
-            }
-        }
-#else /* Ordinary, non DateBk code */
-                                                                                                                                if (temp_cel->mcale.cale.note && (temp_cel->mcale.cale.note[0]!='\0')) {
-         has_note=1;
-      }
-#endif
-        /* Put a note pixmap up */
-        if (has_note) {
-            gtk_clist_set_pixmap(GTK_CLIST(clist), entries_shown, DB_NOTE_COLUMN, pixmap_note, mask_note);
-        }
-
-        /* Put an alarm pixmap up */
-        if (temp_cel->mcale.cale.alarm) {
-            gtk_clist_set_pixmap(GTK_CLIST(clist), entries_shown, DB_ALARM_COLUMN, pixmap_alarm, mask_alarm);
-        }
-
-        /* Print the appointment description */
-        lstrncpy_remove_cr_lfs(str2, temp_cel->mcale.cale.description, DATEBOOK_MAX_COLUMN_LEN);
-
-        /* Append number of anniversary years if enabled & appropriate */
-        append_anni_years(str2, sizeof(str2), &new_time, NULL, &temp_cel->mcale.cale);
-
-        gtk_clist_set_text(GTK_CLIST(clist), entries_shown, DB_APPT_COLUMN, str2);
-        gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_cel->mcale));
-
-        /* Highlight row background depending on status */
-        switch (temp_cel->mcale.rt) {
-            case NEW_PC_REC:
-            case REPLACEMENT_PALM_REC:
-                set_bg_rgb_clist_row(clist, entries_shown,
-                                     CLIST_NEW_RED, CLIST_NEW_GREEN, CLIST_NEW_BLUE);
-                break;
-            case DELETED_PALM_REC:
-            case DELETED_PC_REC:
-                set_bg_rgb_clist_row(clist, entries_shown,
-                                     CLIST_DEL_RED, CLIST_DEL_GREEN, CLIST_DEL_BLUE);
-                break;
-            case MODIFIED_PALM_REC:
-                set_bg_rgb_clist_row(clist, entries_shown,
-                                     CLIST_MOD_RED, CLIST_MOD_GREEN, CLIST_MOD_BLUE);
-                break;
-            default:
-                if (temp_cel->mcale.attrib & dlpRecAttrSecret) {
-                    set_bg_rgb_clist_row(clist, entries_shown,
-                                         CLIST_PRIVATE_RED, CLIST_PRIVATE_GREEN, CLIST_PRIVATE_BLUE);
-                } else {
-                    gtk_clist_set_row_style(GTK_CLIST(clist), entries_shown, NULL);
-                }
-        }
-        entries_shown++;
-    }
-
-    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
-                       GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
-
-    /* If there are items in the list, highlight the selected row */
-    if (entries_shown > 0) {
-        /* First, select any record being searched for */
-        if (glob_find_id) {
-            datebook_find();
-        }
-            /* Second, try the currently selected row */
-        else if (clist_row_selected < entries_shown) {
-            clist_select_row(GTK_CLIST(clist), clist_row_selected, 1);
-            if (!gtk_clist_row_is_visible(GTK_CLIST(clist), clist_row_selected)) {
-                gtk_clist_moveto(GTK_CLIST(clist), clist_row_selected, 0, 0.5, 0.0);
-            }
-        }
-            /* Third, select row 0 if nothing else is possible */
-        else {
-            clist_select_row(GTK_CLIST(clist), 0, 1);
-        }
-    } else {
-        set_new_button_to(CLEAR_FLAG);
-        appt_clear_details();
-    }
-
-    gtk_clist_thaw(GTK_CLIST(clist));
-
-    get_pref(PREF_SHOW_TOOLTIPS, &show_tooltips, NULL);
-    g_snprintf(str, sizeof(str), _("%d of %d records"), entries_shown, num_entries);
-    set_tooltip(show_tooltips, glob_tooltips, GTK_CLIST(clist)->column[DB_APPT_COLUMN].button, str, NULL);
-
-    /* return focus to clist after any big operation which requires a redraw */
-    gtk_widget_grab_focus(GTK_WIDGET(clist));
 
     return EXIT_SUCCESS;
 }
@@ -3020,8 +2801,7 @@ static gboolean cb_key_pressed_right_side(GtkWidget *widget,
     if ((event->keyval == GDK_Return) && (event->state & GDK_SHIFT_MASK)) {
         gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
         /* Call clist_selection to handle any cleanup such as a modified record */
-        cb_clist_selection(clist, clist_row_selected, 1, GINT_TO_POINTER(1), NULL);
-        gtk_widget_grab_focus(GTK_WIDGET(clist));
+        gtk_widget_grab_focus(GTK_WIDGET(treeView));
         return TRUE;
     }
     /* Call external editor for note text */
@@ -3127,9 +2907,25 @@ static void cb_record_changed(GtkWidget *widget, gpointer data) {
                   "Undelete it or copy it to make changes.\n"));
     }
 }
+gboolean
+addNewDateRecord (GtkTreeModel *model,
+              GtkTreePath  *path,
+              GtkTreeIter  *iter,
+              gpointer data) {
 
-static void cb_add_new_record(GtkWidget *widget, gpointer data) {
-    MyCalendarEvent *mcale;
+    int * i = gtk_tree_path_get_indices ( path ) ;
+    if(i[0] == clist_row_selected){
+        MyCalendarEvent * mycale = NULL;
+        gtk_tree_model_get(model,iter,DATE_DATA_COLUMN_ENUM,&mycale,-1);
+        addNewDateRecordToDataStructure(mycale,data);
+        return TRUE;
+    }
+
+    return FALSE;
+
+
+}
+void addNewDateRecordToDataStructure(MyCalendarEvent * mcale, gpointer data) {
     struct CalendarEvent *cale;
     struct CalendarEvent new_cale;
     int flag;
@@ -3177,7 +2973,6 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data) {
         return;
     }
     if (flag == MODIFY_FLAG) {
-        mcale = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
         unique_id = mcale->unique_id;
         if (mcale < (MyCalendarEvent *) CLIST_MIN_DATA) {
             return;
@@ -3387,6 +3182,10 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data) {
     /* Make sure that the next alarm will go off */
     alarms_find_next(NULL, NULL, TRUE);
 
+    return;
+}
+static void cb_add_new_record(GtkWidget *widget, gpointer data) {
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), addNewDateRecord, data);
     return;
 }
 
@@ -3607,7 +3406,308 @@ static void cb_check_button_endon(GtkWidget *widget, gpointer data) {
         gtk_label_set_text(GTK_LABEL(GTK_BIN(Pbutton)->child), _("No Date"));
     }
 }
+static gboolean handleDateRowSelection(GtkTreeSelection *selection,
+                                   GtkTreeModel *model,
+                                   GtkTreePath *path,
+                                   gboolean path_currently_selected,
+                                   gpointer userdata) {
+    GtkTreeIter iter;
+    struct CalendarEvent *cale;
+    MyCalendarEvent *mcale;
+    char tempstr[20];
+    int i, b;
+    int index, sorted_position;
+    unsigned int unique_id = 0;
+#ifdef ENABLE_DATEBK
+    int type;
+    char *note;
+    int len;
+    long use_db3_tags;
+#endif
 
+#ifdef ENABLE_DATEBK
+    get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
+#endif
+    if ((gtk_tree_model_get_iter(model, &iter, path)) && (!path_currently_selected)) {
+
+        int *index = gtk_tree_path_get_indices(path);
+        clist_row_selected = index[0];
+        gtk_tree_model_get(model, &iter, DATE_DATA_COLUMN_ENUM, &mcale, -1);
+        if ((record_changed == MODIFY_FLAG) || (record_changed == NEW_FLAG)) {
+            if (mcale != NULL) {
+                unique_id = mcale->unique_id;
+            }
+
+            b = dialog_save_changed_record_with_cancel(pane, record_changed);
+            if (b == DIALOG_SAID_1) { /* Cancel */
+                return TRUE;
+            }
+            if (b == DIALOG_SAID_3) { /* Save */
+                cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
+            }
+
+            set_new_button_to(CLEAR_FLAG);
+
+            if (unique_id) {
+                glob_find_id = unique_id;
+                datebook_find();
+            }
+            return TRUE;
+        }
+
+
+        if (mcale == NULL) {
+            return TRUE;
+
+        }
+
+        if (mcale->rt == DELETED_PALM_REC ||
+            (mcale->rt == DELETED_PC_REC))
+            /* Possible later addition of undelete code for modified deleted records
+             || mcale->rt == MODIFIED_PALM_REC
+          */
+        {
+            set_new_button_to(UNDELETE_FLAG);
+        } else {
+            set_new_button_to(CLEAR_FLAG);
+        }
+
+        connect_changed_signals(DISCONNECT_SIGNALS);
+
+        cale = &(mcale->cale);
+
+        if (datebook_version) {
+            /* Calendar supports categories */
+            index = mcale->attrib & 0x0F;
+            sorted_position = find_sort_cat_pos(index);
+            if (dbook_cat_menu_item2[sorted_position] == NULL) {
+                /* Illegal category */
+                jp_logf(JP_LOG_DEBUG, "Category is not legal\n");
+                index = 0;
+                sorted_position = find_sort_cat_pos(index);
+            }
+            if (sorted_position < 0) {
+                jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
+            } else {
+
+                if (dbook_cat_menu_item2[sorted_position]) {
+                    gtk_check_menu_item_set_active
+                            (GTK_CHECK_MENU_ITEM(dbook_cat_menu_item2[sorted_position]), TRUE);
+                }
+                gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu2),
+                                            find_menu_cat_pos(sorted_position));
+
+            }
+        }   /* End check for datebook version */
+
+        if (cale->event) {
+            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_no_time), TRUE);
+        } else {
+            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_appt_time), TRUE);
+        }
+
+        gtk_text_buffer_set_text(GTK_TEXT_BUFFER(dbook_desc_buffer), "", -1);
+        gtk_text_buffer_set_text(GTK_TEXT_BUFFER(dbook_note_buffer), "", -1);
+        if (datebook_version) {
+            gtk_entry_set_text(GTK_ENTRY(location_entry), "");
+        }
+#ifdef ENABLE_DATEBK
+        if (use_db3_tags) {
+            gtk_entry_set_text(GTK_ENTRY(datebk_entry), "");
+        }
+#endif
+
+        if (cale->alarm) {
+            /* This is to insure that the callback gets called */
+            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_button_alarm), FALSE);
+            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_button_alarm), TRUE);
+            switch (cale->advanceUnits) {
+                case calendar_advMinutes:
+                    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
+                                                 (radio_button_alarm_min), TRUE);
+                    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
+                                                 (radio_button_alarm_hour), FALSE);
+                    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
+                                                 (radio_button_alarm_day), FALSE);
+                    break;
+                case calendar_advHours:
+                    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
+                                                 (radio_button_alarm_min), FALSE);
+                    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
+                                                 (radio_button_alarm_hour), TRUE);
+                    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
+                                                 (radio_button_alarm_day), FALSE);
+                    break;
+                case calendar_advDays:
+                    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
+                                                 (radio_button_alarm_min), FALSE);
+                    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
+                                                 (radio_button_alarm_hour), FALSE);
+                    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
+                                                 (radio_button_alarm_day), TRUE);
+                    break;
+                default:
+                    jp_logf(JP_LOG_WARN, _("Error in DateBookDB or Calendar advanceUnits = %d\n"), cale->advanceUnits);
+            }
+            sprintf(tempstr, "%d", cale->advance);
+            gtk_entry_set_text(GTK_ENTRY(units_entry), tempstr);
+        } else {
+            /* This is to insure that the callback gets called */
+            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_button_alarm), TRUE);
+            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_button_alarm), FALSE);
+            gtk_entry_set_text(GTK_ENTRY(units_entry), "0");
+        }
+        if (cale->description) {
+            gtk_text_buffer_set_text(GTK_TEXT_BUFFER(dbook_desc_buffer), cale->description, -1);
+        }
+#ifdef ENABLE_DATEBK
+        if (use_db3_tags) {
+            if (db3_parse_tag(cale->note, &type, NULL) > 0) {
+                /* There is a datebk tag.  Need to separate it from the note */
+                note = strdup(cale->note);
+                len = strlen(note);
+                for (i = 0; i < len; i++) {
+                    if (note[i] == '\n') {
+                        note[i] = '\0';
+                        break;
+                    }
+                }
+                gtk_entry_set_text(GTK_ENTRY(datebk_entry), note);
+                gtk_text_buffer_set_text(GTK_TEXT_BUFFER(dbook_note_buffer), &(note[i + 1]), -1);
+                free(note);
+            } else if (cale->note) {
+                gtk_text_buffer_set_text(GTK_TEXT_BUFFER(dbook_note_buffer), cale->note, -1);
+            }
+        } else if (cale->note) { /* Not using db3 tags */
+            gtk_text_buffer_set_text(GTK_TEXT_BUFFER(dbook_note_buffer), cale->note, -1);
+
+        }
+#else  /* Ordinary, non-DateBk code */
+        if (cale->note) {
+          gtk_text_buffer_set_text(GTK_TEXT_BUFFER(dbook_note_buffer), cale->note, -1);
+       }
+#endif
+
+        begin_date.tm_mon = cale->begin.tm_mon;
+        begin_date.tm_mday = cale->begin.tm_mday;
+        begin_date.tm_year = cale->begin.tm_year;
+        begin_date.tm_hour = cale->begin.tm_hour;
+        begin_date.tm_min = cale->begin.tm_min;
+
+        end_date.tm_mon = cale->end.tm_mon;
+        end_date.tm_mday = cale->end.tm_mday;
+        end_date.tm_year = cale->end.tm_year;
+        end_date.tm_hour = cale->end.tm_hour;
+        end_date.tm_min = cale->end.tm_min;
+
+        set_begin_end_labels(&begin_date, &end_date, UPDATE_DATE_ENTRIES |
+                                                     UPDATE_DATE_MENUS);
+
+        if (datebook_version) {
+            /* Calendar has a location field */
+            if (cale->location) {
+                gtk_entry_set_text(GTK_ENTRY(location_entry), cale->location);
+            }
+        }
+
+        /* Do the Repeat information */
+        switch (cale->repeatType) {
+            case calendarRepeatNone:
+                gtk_notebook_set_page(GTK_NOTEBOOK(notebook), PAGE_NONE);
+                break;
+            case calendarRepeatDaily:
+                if ((cale->repeatForever)) {
+                    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
+                                                 (check_button_day_endon), FALSE);
+                } else {
+                    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
+                                                 (check_button_day_endon), TRUE);
+                    glob_endon_day_tm.tm_mon = cale->repeatEnd.tm_mon;
+                    glob_endon_day_tm.tm_mday = cale->repeatEnd.tm_mday;
+                    glob_endon_day_tm.tm_year = cale->repeatEnd.tm_year;
+                    update_endon_button(glob_endon_day_button, &glob_endon_day_tm);
+                }
+                sprintf(tempstr, "%d", cale->repeatFrequency);
+                gtk_entry_set_text(GTK_ENTRY(repeat_day_entry), tempstr);
+                gtk_notebook_set_page(GTK_NOTEBOOK(notebook), PAGE_DAY);
+                break;
+            case calendarRepeatWeekly:
+                if ((cale->repeatForever)) {
+                    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
+                                                 (check_button_week_endon), FALSE);
+                } else {
+                    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
+                                                 (check_button_week_endon), TRUE);
+                    glob_endon_week_tm.tm_mon = cale->repeatEnd.tm_mon;
+                    glob_endon_week_tm.tm_mday = cale->repeatEnd.tm_mday;
+                    glob_endon_week_tm.tm_year = cale->repeatEnd.tm_year;
+                    update_endon_button(glob_endon_week_button, &glob_endon_week_tm);
+                }
+                sprintf(tempstr, "%d", cale->repeatFrequency);
+                gtk_entry_set_text(GTK_ENTRY(repeat_week_entry), tempstr);
+                for (i = 0; i < 7; i++) {
+                    gtk_toggle_button_set_active
+                            (GTK_TOGGLE_BUTTON(toggle_button_repeat_days[i]),
+                             cale->repeatDays[i]);
+                }
+                gtk_notebook_set_page(GTK_NOTEBOOK(notebook), PAGE_WEEK);
+                break;
+            case calendarRepeatMonthlyByDate:
+            case calendarRepeatMonthlyByDay:
+                jp_logf(JP_LOG_DEBUG, "repeat day=%d\n", cale->repeatDay);
+                if ((cale->repeatForever)) {
+                    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
+                                                 (check_button_mon_endon), FALSE);
+                } else {
+                    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
+                                                 (check_button_mon_endon), TRUE);
+                    glob_endon_mon_tm.tm_mon = cale->repeatEnd.tm_mon;
+                    glob_endon_mon_tm.tm_mday = cale->repeatEnd.tm_mday;
+                    glob_endon_mon_tm.tm_year = cale->repeatEnd.tm_year;
+                    update_endon_button(glob_endon_mon_button, &glob_endon_mon_tm);
+                }
+                sprintf(tempstr, "%d", cale->repeatFrequency);
+                gtk_entry_set_text(GTK_ENTRY(repeat_mon_entry), tempstr);
+                if (cale->repeatType == calendarRepeatMonthlyByDay) {
+                    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
+                                                 (toggle_button_repeat_mon_byday), TRUE);
+                }
+                if (cale->repeatType == calendarRepeatMonthlyByDate) {
+                    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
+                                                 (toggle_button_repeat_mon_bydate), TRUE);
+                }
+                gtk_notebook_set_page(GTK_NOTEBOOK(notebook), PAGE_MONTH);
+                break;
+            case calendarRepeatYearly:
+                if ((cale->repeatForever)) {
+                    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
+                                                 (check_button_year_endon), FALSE);
+                } else {
+                    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
+                                                 (check_button_year_endon), TRUE);
+
+                    glob_endon_year_tm.tm_mon = cale->repeatEnd.tm_mon;
+                    glob_endon_year_tm.tm_mday = cale->repeatEnd.tm_mday;
+                    glob_endon_year_tm.tm_year = cale->repeatEnd.tm_year;
+                    update_endon_button(glob_endon_year_button, &glob_endon_year_tm);
+                }
+                sprintf(tempstr, "%d", cale->repeatFrequency);
+                gtk_entry_set_text(GTK_ENTRY(repeat_year_entry), tempstr);
+
+                gtk_notebook_set_page(GTK_NOTEBOOK(notebook), PAGE_YEAR);
+                break;
+            default:
+                jp_logf(JP_LOG_WARN, _("Unknown repeatType (%d) found in DatebookDB\n"), cale->repeatFrequency);
+        }
+
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(private_checkbox),
+                                     mcale->attrib & dlpRecAttrSecret);
+
+        connect_changed_signals(CONNECT_SIGNALS);
+    }
+
+    return TRUE;
+}
 static void cb_clist_selection(GtkWidget *clist,
                                gint row,
                                gint column,
@@ -4231,8 +4331,30 @@ static void highlight_days(void) {
     }
     gtk_calendar_thaw(GTK_CALENDAR(main_calendar));
 }
+gboolean
+findDateRecord (GtkTreeModel *model,
+            GtkTreePath  *path,
+            GtkTreeIter  *iter,
+            gpointer data) {
 
+    if (glob_find_id) {
+        MyCalendarEvent * mycal = NULL;
+
+        gtk_tree_model_get(model,iter,TODO_DATA_COLUMN_ENUM,&mycal,-1);
+        if(mycal->unique_id == glob_find_id){
+            GtkTreeSelection * selection = NULL;
+            selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
+            gtk_tree_selection_select_path(selection, path);
+            gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, DATE_APPT_COLUMN_ENUM, FALSE, 1.0, 0.0);
+            glob_find_id = 0;
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
 static int datebook_find(void) {
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), findDateRecord, NULL);
+    return EXIT_SUCCESS;
     int r, found_at;
 
     jp_logf(JP_LOG_DEBUG, "datebook_find(), glob_find_id = %d\n", glob_find_id);
@@ -5918,11 +6040,11 @@ buildTreeView(const GtkWidget *vbox, char *const *titles, long use_db3_tags, Gtk
 
     gtk_clist_column_titles_passive(GTK_CLIST(clist));
 
-    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
-                       GTK_SIGNAL_FUNC(cb_clist_selection),
-                       NULL);
+
     gtk_clist_set_shadow_type(GTK_CLIST(clist), SHADOW);
     gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
+    GtkTreeSelection * treeSelection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
+    gtk_tree_selection_set_select_function(treeSelection, handleDateRowSelection, NULL, NULL);
 
     gtk_clist_set_column_auto_resize(GTK_CLIST(clist), DB_TIME_COLUMN, TRUE);
     gtk_clist_set_column_auto_resize(GTK_CLIST(clist), DB_APPT_COLUMN, FALSE);
