@@ -234,6 +234,7 @@ static void highlight_days(void);
 static int datebook_find(void);
 
 static int datebook_update_clist(void);
+static int datebook_update_listStore(void);
 
 static void update_endon_button(GtkWidget *button, struct tm *t);
 
@@ -261,9 +262,9 @@ clickedTodoButton(GtkTreeSelection *selection,
                   gboolean path_currently_selected,
                   gpointer userdata);
 
-gint cb_todo_treeview_selection_event( GtkWidget *widget,
-                                 GdkEvent  *event,
-                                 gpointer   callback_data );
+gint cb_todo_treeview_selection_event(GtkWidget *widget,
+                                      GdkEvent *event,
+                                      gpointer callback_data);
 
 void buildToDoList(const GtkWidget *vbox, GtkWidget *pixmapwid, GdkPixmap **pixmap, GdkBitmap **mask);
 
@@ -1407,7 +1408,7 @@ static void cb_toggle(GtkWidget *widget, int category) {
         datebk_category &= ~cat_bit;
     }
 
-    datebook_update_clist();
+    datebook_update_listStore();
 }
 
 static void cb_datebk_category(GtkWidget *widget, gpointer data) {
@@ -1441,7 +1442,7 @@ static void cb_datebk_category(GtkWidget *widget, gpointer data) {
     } else {
         datebk_category = 0x0000;
     }
-    datebook_update_clist();
+    datebook_update_listStore();
 }
 
 static void cb_datebk_cats(GtkWidget *widget, gpointer data) {
@@ -2416,6 +2417,269 @@ static void clear_myCalendarEvent(MyCalendarEvent *mcale) {
 
 /* End Masking */
 
+static int datebook_update_listStore(void) {
+    GtkTreeIter iter;
+    int num_entries, entries_shown, num;
+    CalendarEventList *temp_cel;
+    gchar *empty_line[] = {"", "", "", "", ""};
+    char begin_time[32];
+    char end_time[32];
+    char a_time[sizeof(begin_time) + sizeof(end_time) + 1];
+    char datef[20];
+    GdkPixbuf *pixmap_note;
+    GdkPixbuf *pixmap_alarm;
+    GdkPixbuf *mask_note;
+    GdkPixbuf *mask_alarm;
+    int has_note;
+#ifdef ENABLE_DATEBK
+    int cat_bit;
+    int db3_type;
+    long use_db3_tags;
+    struct db4_struct db4;
+    GdkPixbuf *pixmap_float_check;
+    GdkPixbuf *pixmap_float_checked;
+    GdkPixbuf *mask_float_check;
+    GdkPixbuf *mask_float_checked;
+    GdkPixbuf *noteColumnDisplay;
+    GdkPixbuf *alarmColumnDisplay;
+    GdkPixbuf *floatColumnDisplay;
+#endif
+    struct tm new_time;
+    int show_priv;
+    char str[DATEBOOK_MAX_COLUMN_LEN + 2];
+    char str2[DATEBOOK_MAX_COLUMN_LEN];
+    long show_tooltips;
+
+    jp_logf(JP_LOG_DEBUG, "datebook_update_clist()\n");
+
+    free_CalendarEventList(&glob_cel);
+
+    memset(&new_time, 0, sizeof(new_time));
+    new_time.tm_hour = 11;
+    new_time.tm_mday = current_day;
+    new_time.tm_mon = current_month;
+    new_time.tm_year = current_year;
+    new_time.tm_isdst = -1;
+    mktime(&new_time);
+
+    num = get_days_calendar_events2(&glob_cel, &new_time, 2, 2, 1, CATEGORY_ALL, &num_entries);
+
+    jp_logf(JP_LOG_DEBUG, "get_days_appointments==>%d\n", num);
+#ifdef ENABLE_DATEBK
+    jp_logf(JP_LOG_DEBUG, "datebk_category = 0x%x\n", datebk_category);
+#endif
+
+    gtk_list_store_clear(GTK_LIST_STORE(listStore));
+
+#ifdef __APPLE__
+
+#endif
+
+    /* Collect preferences and constant pixmaps for loop */
+    show_priv = show_privates(GET_PRIVATES);
+    get_pixbufs(PIXMAP_NOTE, &pixmap_note);
+    get_pixbufs(PIXMAP_ALARM, &pixmap_alarm);
+
+#ifdef ENABLE_DATEBK
+    get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
+    get_pixbufs(PIXMAP_FLOAT_CHECK, &pixmap_float_check);
+    get_pixbufs(PIXMAP_FLOAT_CHECKED, &pixmap_float_checked);
+#endif
+
+    entries_shown = 0;
+    for (temp_cel = glob_cel; temp_cel; temp_cel = temp_cel->next) {
+
+        if (datebook_version) {
+            /* Filter by category for Calendar application */
+            if (((temp_cel->mcale.attrib & 0x0F) != dbook_category) &&
+                dbook_category != CATEGORY_ALL) {
+                continue;
+            }
+        }
+#ifdef ENABLE_DATEBK
+        if (use_db3_tags) {
+            db3_parse_tag(temp_cel->mcale.cale.note, &db3_type, &db4);
+            jp_logf(JP_LOG_DEBUG, "category = 0x%x\n", db4.category);
+            cat_bit = 1 << db4.category;
+            if (!(cat_bit & datebk_category)) {
+                jp_logf(JP_LOG_DEBUG, "skipping rec not in this category\n");
+                continue;
+            }
+        }
+#endif
+        /* Do masking like Palm OS 3.5 */
+        if ((show_priv == MASK_PRIVATES) &&
+            (temp_cel->mcale.attrib & dlpRecAttrSecret)) {
+            clear_myCalendarEvent(&temp_cel->mcale);
+            gtk_list_store_append(listStore, &iter);
+            gtk_list_store_set(listStore, &iter,
+                               DATE_TIME_COLUMN_ENUM, "----------",
+                               DATE_APPT_COLUMN_ENUM, "---------------",
+                               DATE_DATA_COLUMN_ENUM, &(temp_cel->mcale),
+                               -1);
+            entries_shown++;
+            continue;
+        }
+        /* End Masking */
+
+        /* Hide the private records if need be */
+        if ((show_priv != SHOW_PRIVATES) &&
+            (temp_cel->mcale.attrib & dlpRecAttrSecret)) {
+            continue;
+        }
+
+        /* Add entry to clist */
+
+
+        /* Print the event time */
+        if (temp_cel->mcale.cale.event) {
+            /* This is a timeless event */
+            strcpy(a_time, _("No Time"));
+        } else {
+            get_pref_time_no_secs_no_ampm(datef);
+            strftime(begin_time, sizeof(begin_time), datef, &(temp_cel->mcale.cale.begin));
+            get_pref_time_no_secs(datef);
+            strftime(end_time, sizeof(end_time), datef, &(temp_cel->mcale.cale.end));
+            g_snprintf(a_time, sizeof(a_time), "%s-%s", begin_time, end_time);
+        }
+        floatColumnDisplay = NULL;
+        noteColumnDisplay = NULL;
+        alarmColumnDisplay = NULL;
+#ifdef ENABLE_DATEBK
+        if (use_db3_tags) {
+            if (db4.floating_event == DB3_FLOAT) {
+                floatColumnDisplay = pixmap_float_check;
+
+            }
+            if (db4.floating_event == DB3_FLOAT_COMPLETE) {
+                floatColumnDisplay = pixmap_float_checked;
+
+            }
+        }
+#endif
+
+        has_note = 0;
+#ifdef ENABLE_DATEBK
+        if (use_db3_tags) {
+            if (db3_type != DB3_TAG_TYPE_NONE) {
+                if (db4.note && db4.note[0] != '\0') {
+                    has_note = 1;
+                }
+            } else {
+                if (temp_cel->mcale.cale.note &&
+                    (temp_cel->mcale.cale.note[0] != '\0')) {
+                    has_note = 1;
+                }
+            }
+        } else {
+            if (temp_cel->mcale.cale.note && (temp_cel->mcale.cale.note[0] != '\0')) {
+                has_note = 1;
+            }
+        }
+#else /* Ordinary, non DateBk code */
+        if (temp_cel->mcale.cale.note && (temp_cel->mcale.cale.note[0]!='\0')) {
+         has_note=1;
+      }
+#endif
+        /* Put a note pixmap up */
+        if (has_note) {
+            noteColumnDisplay = pixmap_note;
+        } else {
+            noteColumnDisplay = NULL;
+        }
+
+        /* Put an alarm pixmap up */
+        if (temp_cel->mcale.cale.alarm) {
+            alarmColumnDisplay = pixmap_alarm;
+        }else {
+            alarmColumnDisplay = NULL;
+        }
+
+        /* Print the appointment description */
+        lstrncpy_remove_cr_lfs(str2, temp_cel->mcale.cale.description, DATEBOOK_MAX_COLUMN_LEN);
+
+        /* Append number of anniversary years if enabled & appropriate */
+        append_anni_years(str2, sizeof(str2), &new_time, NULL, &temp_cel->mcale.cale);
+
+
+
+        /* Highlight row background depending on status */
+        GdkColor bgColor;
+        gboolean showBgColor = FALSE;
+        GdkColor fgColor;
+        gboolean showFgColor = FALSE;
+        switch (temp_cel->mcale.rt) {
+            case NEW_PC_REC:
+            case REPLACEMENT_PALM_REC:
+                bgColor = get_color(CLIST_NEW_RED, CLIST_NEW_GREEN, CLIST_NEW_BLUE);
+                showBgColor = TRUE;
+                break;
+            case DELETED_PALM_REC:
+            case DELETED_PC_REC:
+                bgColor = get_color(CLIST_DEL_RED, CLIST_DEL_GREEN, CLIST_DEL_BLUE);
+                showBgColor = TRUE;
+                break;
+            case MODIFIED_PALM_REC:
+                bgColor = get_color(CLIST_MOD_RED, CLIST_MOD_GREEN, CLIST_MOD_BLUE);
+                showBgColor = TRUE;
+                break;
+            default:
+                if (temp_cel->mcale.attrib & dlpRecAttrSecret) {
+                    bgColor = get_color(CLIST_PRIVATE_RED, CLIST_PRIVATE_GREEN, CLIST_PRIVATE_BLUE);
+                    showBgColor = TRUE;
+                } else {
+                    showBgColor = FALSE;
+                }
+        }
+        int x = 0;
+        gtk_list_store_append(listStore, &iter);
+        gtk_list_store_set(listStore, &iter,
+                           DATE_TIME_COLUMN_ENUM, a_time,
+                           DATE_NOTE_COLUMN_ENUM, noteColumnDisplay,
+                           DATE_ALARM_COLUMN_ENUM, alarmColumnDisplay,
+                           DATE_FLOAT_COLUMN_ENUM, floatColumnDisplay,
+                           DATE_APPT_COLUMN_ENUM, str2,
+                            DATE_DATA_COLUMN_ENUM, &(temp_cel->mcale),
+                           DATE_BACKGROUND_COLOR_ENUM, showBgColor ? &bgColor : NULL,
+                           DATE_BACKGROUND_COLOR_ENABLED_ENUM, showBgColor,
+                           -1);
+        entries_shown++;
+    }
+
+
+
+    /* If there are items in the list, highlight the selected row */
+    if (entries_shown > 0) {
+        /* First, select any record being searched for */
+        if (glob_find_id) {
+           // datebook_find();
+        }
+            /* Second, try the currently selected row */
+        else if (clist_row_selected < entries_shown) {
+           // gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), selectRecordByRow, NULL);
+
+        }
+            /* Third, select row 0 if nothing else is possible */
+        else {
+           //clist_row_selected = 0;
+           // gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), selectRecordByRow, NULL);
+
+        }
+    } else {
+        set_new_button_to(CLEAR_FLAG);
+        appt_clear_details();
+    }
+
+    get_pref(PREF_SHOW_TOOLTIPS, &show_tooltips, NULL);
+    g_snprintf(str, sizeof(str), _("%d of %d records"), entries_shown, num_entries);
+    set_tooltip(show_tooltips, glob_tooltips, GTK_CLIST(clist)->column[DB_APPT_COLUMN].button, str, NULL);
+
+    /* return focus to clist after any big operation which requires a redraw */
+    gtk_widget_grab_focus(GTK_WIDGET(treeView));
+
+    return EXIT_SUCCESS;
+}
+
 static int datebook_update_clist(void) {
     int num_entries, entries_shown, num;
     CalendarEventList *temp_cel;
@@ -3117,7 +3381,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data) {
     if (!glob_find_id) {
         glob_find_id = unique_id;
     }
-    datebook_update_clist();
+    datebook_update_listStore();
 
 
     /* Make sure that the next alarm will go off */
@@ -3232,7 +3496,7 @@ static void cb_delete_appt(GtkWidget *widget, gpointer data) {
     }
 
     if ((flag == DELETE_FLAG) || (dialog == DIALOG_SAID_RPT_CURRENT)) {
-        datebook_update_clist();
+        datebook_update_listStore();
         highlight_days();
     }
 }
@@ -3278,7 +3542,7 @@ static void cb_undelete_appt(GtkWidget *widget, gpointer data) {
       */
     }
 
-    datebook_update_clist();
+    datebook_update_listStore();
     highlight_days();
 }
 
@@ -3793,7 +4057,7 @@ static void cb_category(GtkWidget *item, int selection) {
         }
         clist_row_selected = 0;
         jp_logf(JP_LOG_DEBUG, "cb_category() cat=%d\n", dbook_category);
-        datebook_update_clist();
+        datebook_update_listStore();
         highlight_days();
         jp_logf(JP_LOG_DEBUG, "Leaving cb_category()\n");
     }
@@ -3918,7 +4182,7 @@ static void cb_cal_changed(GtkWidget *widget,
         set_date_label();
         clist_row_selected = 0;
     }
-    datebook_update_clist();
+    datebook_update_listStore();
 
     /* Keep focus on calendar so that GTK accelerator keys for calendar
     * can continue to be used */
@@ -4056,7 +4320,7 @@ int datebook_refresh(int first, int do_init) {
                        "day_selected", GTK_SIGNAL_FUNC(cb_cal_changed),
                        GINT_TO_POINTER(CAL_DAY_SELECTED));
 
-    datebook_update_clist();
+    datebook_update_listStore();
     if (datebook_version) {
         if (index < 0) {
             jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
@@ -4966,7 +5230,8 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     gtk_box_pack_start(GTK_BOX(vbox1), scrolled_window, TRUE, TRUE, 0);
     listStore = gtk_list_store_new(DATE_NUM_COLS, G_TYPE_STRING, GDK_TYPE_PIXBUF, GDK_TYPE_PIXBUF, GDK_TYPE_PIXBUF,
-            G_TYPE_STRING, G_TYPE_POINTER,GDK_TYPE_COLOR,G_TYPE_BOOLEAN,G_TYPE_STRING,G_TYPE_BOOLEAN);
+                                   G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_COLOR, G_TYPE_BOOLEAN, G_TYPE_STRING,
+                                   G_TYPE_BOOLEAN);
 
     GtkTreeModel *model = GTK_TREE_MODEL(listStore);
     treeView = gtk_tree_view_new_with_model(model);
@@ -5573,37 +5838,52 @@ buildTreeView(const GtkWidget *vbox, char *const *titles, long use_db3_tags, Gtk
     GtkCellRenderer *timeRenderer = gtk_cell_renderer_text_new();
 
     GtkTreeViewColumn *timeColumn = gtk_tree_view_column_new_with_attributes("Time",
-                                                                             timeColumn,
-                                                                             "text", DATE_TIME_COLUMN_ENUM,"cell-background-gdk",DATE_BACKGROUND_COLOR_ENUM,
-                                                                             "cell-background-set",DATE_BACKGROUND_COLOR_ENABLED_ENUM,
+                                                                             timeRenderer,
+                                                                             "text", DATE_TIME_COLUMN_ENUM,
+                                                                             "cell-background-gdk",
+                                                                             DATE_BACKGROUND_COLOR_ENUM,
+                                                                             "cell-background-set",
+                                                                             DATE_BACKGROUND_COLOR_ENABLED_ENUM,
                                                                              NULL);
     GtkCellRenderer *appointmentRenderer = gtk_cell_renderer_text_new();
 
     GtkTreeViewColumn *appointmentColumn = gtk_tree_view_column_new_with_attributes("Appointment",
                                                                                     appointmentRenderer,
-                                                                             "text", DATE_APPT_COLUMN_ENUM,"cell-background-gdk",DATE_BACKGROUND_COLOR_ENUM,
-                                                                             "cell-background-set",DATE_BACKGROUND_COLOR_ENABLED_ENUM,
-                                                                              NULL);
-    GtkCellRenderer *noteRenderer  = gtk_cell_renderer_pixbuf_new();
+                                                                                    "text", DATE_APPT_COLUMN_ENUM,
+                                                                                    "cell-background-gdk",
+                                                                                    DATE_BACKGROUND_COLOR_ENUM,
+                                                                                    "cell-background-set",
+                                                                                    DATE_BACKGROUND_COLOR_ENABLED_ENUM,
+                                                                                    NULL);
+    GtkCellRenderer *noteRenderer = gtk_cell_renderer_pixbuf_new();
     GtkTreeViewColumn *noteColumn = gtk_tree_view_column_new_with_attributes("",
                                                                              noteRenderer,
-                                                                             "pixbuf", DATE_NOTE_COLUMN_ENUM,"cell-background-gdk",DATE_BACKGROUND_COLOR_ENUM,
-                                                                             "cell-background-set",DATE_BACKGROUND_COLOR_ENABLED_ENUM,
+                                                                             "pixbuf", DATE_NOTE_COLUMN_ENUM,
+                                                                             "cell-background-gdk",
+                                                                             DATE_BACKGROUND_COLOR_ENUM,
+                                                                             "cell-background-set",
+                                                                             DATE_BACKGROUND_COLOR_ENABLED_ENUM,
                                                                              NULL);
 
-    GtkCellRenderer *alarmRenderer  = gtk_cell_renderer_pixbuf_new();
+    GtkCellRenderer *alarmRenderer = gtk_cell_renderer_pixbuf_new();
     GtkTreeViewColumn *alarmColumn = gtk_tree_view_column_new_with_attributes("",
-                                                                             noteRenderer,
-                                                                             "pixbuf", DATE_ALARM_COLUMN_ENUM,"cell-background-gdk",DATE_BACKGROUND_COLOR_ENUM,
-                                                                             "cell-background-set",DATE_BACKGROUND_COLOR_ENABLED_ENUM,
-                                                                             NULL);
+                                                                              noteRenderer,
+                                                                              "pixbuf", DATE_ALARM_COLUMN_ENUM,
+                                                                              "cell-background-gdk",
+                                                                              DATE_BACKGROUND_COLOR_ENUM,
+                                                                              "cell-background-set",
+                                                                              DATE_BACKGROUND_COLOR_ENABLED_ENUM,
+                                                                              NULL);
 
-    GtkCellRenderer *floatRenderer  = gtk_cell_renderer_pixbuf_new();
+    GtkCellRenderer *floatRenderer = gtk_cell_renderer_pixbuf_new();
     GtkTreeViewColumn *floatColumn = gtk_tree_view_column_new_with_attributes("",
-                                                                             noteRenderer,
-                                                                             "pixbuf", DATE_FLOAT_COLUMN_ENUM,"cell-background-gdk",DATE_BACKGROUND_COLOR_ENUM,
-                                                                             "cell-background-set",DATE_BACKGROUND_COLOR_ENABLED_ENUM,
-                                                                             NULL);
+                                                                              noteRenderer,
+                                                                              "pixbuf", DATE_FLOAT_COLUMN_ENUM,
+                                                                              "cell-background-gdk",
+                                                                              DATE_BACKGROUND_COLOR_ENUM,
+                                                                              "cell-background-set",
+                                                                              DATE_BACKGROUND_COLOR_ENABLED_ENUM,
+                                                                              NULL);
     gtk_tree_view_insert_column(GTK_TREE_VIEW (treeView), timeColumn, DATE_TIME_COLUMN_ENUM);
     gtk_tree_view_insert_column(GTK_TREE_VIEW (treeView), noteColumn, DATE_NOTE_COLUMN_ENUM);
     gtk_tree_view_insert_column(GTK_TREE_VIEW (treeView), alarmColumn, DATE_ALARM_COLUMN_ENUM);
@@ -5624,8 +5904,8 @@ buildTreeView(const GtkWidget *vbox, char *const *titles, long use_db3_tags, Gtk
 
 
 #ifdef ENABLE_DATEBK
-    if(!use_db3_tags){
-        gtk_tree_view_column_set_visible(floatColumn,FALSE);
+    if (!use_db3_tags) {
+        gtk_tree_view_column_set_visible(floatColumn, FALSE);
     }
     if (use_db3_tags) {
         clist = gtk_clist_new_with_titles(5, titles);
@@ -5658,7 +5938,7 @@ buildTreeView(const GtkWidget *vbox, char *const *titles, long use_db3_tags, Gtk
     mask = NULL;
 #endif
     (*pixmapwid) = gtk_pixmap_new((*pixmap), (*mask));
-     gtk_widget_show(GTK_WIDGET((*pixmapwid)));
+    gtk_widget_show(GTK_WIDGET((*pixmapwid)));
     gtk_tree_view_column_set_widget(noteColumn, (*pixmapwid));
     gtk_tree_view_column_set_alignment(noteColumn, GTK_JUSTIFY_CENTER);
     get_pixmaps(vbox, PIXMAP_ALARM, pixmap, mask);
@@ -5833,9 +6113,10 @@ clickedTodoButton(GtkTreeSelection *selection,
 
 
 }
-gint cb_todo_treeview_selection_event( GtkWidget *widget,
-                    GdkEvent  *event,
-                    gpointer   callback_data ){
+
+gint cb_todo_treeview_selection_event(GtkWidget *widget,
+                                      GdkEvent *event,
+                                      gpointer callback_data) {
 
     if (!event) return 1;
     cb_app_button(NULL, GINT_TO_POINTER(TODO));
