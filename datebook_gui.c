@@ -238,12 +238,6 @@ static int datebook_update_listStore(void);
 
 static void update_endon_button(GtkWidget *button, struct tm *t);
 
-static void cb_clist_selection(GtkWidget *clist,
-                               gint row,
-                               gint column,
-                               GdkEventButton *event,
-                               gpointer data);
-
 static void cb_add_new_record(GtkWidget *widget,
                               gpointer data);
 
@@ -269,13 +263,24 @@ static gboolean handleDateRowSelection(GtkTreeSelection *selection,
                                    GtkTreePath *path,
                                    gboolean path_currently_selected,
                                    gpointer userdata);
+gboolean undeleteDateRecord(GtkTreeModel *model,
+                            GtkTreePath  *path,
+                            GtkTreeIter  *iter,
+                            gpointer data);
 
 gboolean
 selectDateRecordByRow (GtkTreeModel *model,
                        GtkTreePath  *path,
                        GtkTreeIter  *iter,
                        gpointer data);
+gboolean
+deleteDateRecord (GtkTreeModel *model,
+                  GtkTreePath  *path,
+                  GtkTreeIter  *iter,
+                  gpointer data);
 void addNewDateRecordToDataStructure(MyCalendarEvent * mcale, gpointer data);
+void deleteDateRecordFromDataStructure(MyCalendarEvent * mcale, gpointer data);
+void undeleteDate(MyCalendarEvent * mcale,gpointer data);
 
         gboolean
 clickedTodoButton(GtkTreeSelection *selection,
@@ -2925,6 +2930,130 @@ addNewDateRecord (GtkTreeModel *model,
 
 
 }
+gboolean
+deleteDateRecord (GtkTreeModel *model,
+                  GtkTreePath  *path,
+                  GtkTreeIter  *iter,
+                  gpointer data) {
+
+    int * i = gtk_tree_path_get_indices ( path ) ;
+    if(i[0] == clist_row_selected){
+        MyCalendarEvent * mycale = NULL;
+        gtk_tree_model_get(model,iter,DATE_DATA_COLUMN_ENUM,&mycale,-1);
+        deleteDateRecordFromDataStructure(mycale,data);
+        return TRUE;
+    }
+
+    return FALSE;
+
+
+}
+void deleteDateRecordFromDataStructure(MyCalendarEvent * mcale, gpointer data) {
+    struct CalendarEvent *cale;
+    int flag;
+    int dialog = 0;
+    int show_priv;
+    long char_set;
+    unsigned int *write_unique_id;
+    if (mcale < (MyCalendarEvent *) CLIST_MIN_DATA) {
+        return;
+    }
+
+    /* Convert to Palm character set */
+    get_pref(PREF_CHAR_SET, &char_set, NULL);
+    if (char_set != CHAR_SET_LATIN1) {
+        if (mcale->cale.description)
+            charset_j2p(mcale->cale.description, strlen(mcale->cale.description) + 1, char_set);
+        if (mcale->cale.note)
+            charset_j2p(mcale->cale.note, strlen(mcale->cale.note) + 1, char_set);
+        if (mcale->cale.location)
+            charset_j2p(mcale->cale.location, strlen(mcale->cale.location) + 1, char_set);
+    }
+
+    /* Do masking like Palm OS 3.5 */
+    show_priv = show_privates(GET_PRIVATES);
+    if ((show_priv != SHOW_PRIVATES) &&
+        (mcale->attrib & dlpRecAttrSecret)) {
+        return;
+    }
+    /* End Masking */
+    flag = GPOINTER_TO_INT(data);
+    if ((flag != MODIFY_FLAG) && (flag != DELETE_FLAG)) {
+        return;
+    }
+
+    /* We need to take care of the 3 options allowed when modifying */
+    /* repeating appointments */
+    write_unique_id = NULL;
+
+    if (mcale->cale.repeatType != calendarRepeatNone) {
+        /* We need more user input. Pop up a dialog */
+        dialog = dialog_current_future_all_cancel();
+        if (dialog == DIALOG_SAID_RPT_CANCEL) {
+            return;
+        } else if (dialog == DIALOG_SAID_RPT_CURRENT) {
+            /* Create an exception in the appointment */
+            copy_calendar_event(&(mcale->cale), &cale);
+            datebook_add_exception(cale, current_year, current_month, current_day);
+            if ((mcale->rt == PALM_REC) || (mcale->rt == REPLACEMENT_PALM_REC)) {
+                write_unique_id = &(mcale->unique_id);
+            } else {
+                write_unique_id = NULL;
+            }
+            /* Since this was really a modify, and not a delete */
+            flag = MODIFY_FLAG;
+        } else if (dialog == DIALOG_SAID_RPT_FUTURE) {
+            /* Set an end date on the repeating event to delete future events */
+            copy_calendar_event(&(mcale->cale), &cale);
+            cale->repeatForever = 0;
+            memset(&(cale->repeatEnd), 0, sizeof(struct tm));
+            cale->repeatEnd.tm_mon = current_month;
+            cale->repeatEnd.tm_mday = current_day - 1;
+            cale->repeatEnd.tm_year = current_year;
+            cale->repeatEnd.tm_isdst = -1;
+            mktime(&(cale->repeatEnd));
+            if ((mcale->rt == PALM_REC) || (mcale->rt == REPLACEMENT_PALM_REC)) {
+                write_unique_id = &(mcale->unique_id);
+            } else {
+                write_unique_id = NULL;
+            }
+        }
+    }
+    /* Its important to write a delete record first and then a new/modified
+    * record in that order. This is so that the sync code can check to see
+    * if the remote record is the same as the removed, or changed local
+    * or not before it goes and modifies it. */
+    if (datebook_version == 0) {
+        MyAppointment mappt;
+        mappt.rt = mcale->rt;
+        mappt.unique_id = mcale->unique_id;
+        mappt.attrib = mcale->attrib;
+        copy_calendarEvent_to_appointment(&(mcale->cale), &(mappt.appt));
+        delete_pc_record(DATEBOOK, &mappt, flag);
+        free_Appointment(&(mappt.appt));
+    } else {
+        delete_pc_record(CALENDAR, mcale, flag);
+    }
+
+    if (dialog == DIALOG_SAID_RPT_CURRENT ||
+        dialog == DIALOG_SAID_RPT_FUTURE) {
+        pc_calendar_write(cale, REPLACEMENT_PALM_REC, mcale->attrib, write_unique_id);
+        free_CalendarEvent(cale);
+        free(cale);
+    }
+
+    if (flag == DELETE_FLAG) {
+        /* when we redraw we want to go to the line above the deleted one */
+        if (clist_row_selected > 0) {
+            clist_row_selected--;
+        }
+    }
+
+    if ((flag == DELETE_FLAG) || (dialog == DIALOG_SAID_RPT_CURRENT)) {
+        datebook_update_listStore();
+        highlight_days();
+    }
+}
 void addNewDateRecordToDataStructure(MyCalendarEvent * mcale, gpointer data) {
     struct CalendarEvent *cale;
     struct CalendarEvent new_cale;
@@ -2950,7 +3079,6 @@ void addNewDateRecordToDataStructure(MyCalendarEvent * mcale, gpointer data) {
     /* Do masking like Palm OS 3.5 */
     if ((flag == COPY_FLAG) || (flag == MODIFY_FLAG)) {
         show_priv = show_privates(GET_PRIVATES);
-        mcale = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
         if (mcale < (MyCalendarEvent *) CLIST_MIN_DATA) {
             return;
         }
@@ -3191,121 +3319,29 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data) {
 
 
 static void cb_delete_appt(GtkWidget *widget, gpointer data) {
-    MyCalendarEvent *mcale;
-    struct CalendarEvent *cale;
-    int flag;
-    int dialog = 0;
-    int show_priv;
-    long char_set;
-    unsigned int *write_unique_id;
-
-    mcale = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
-    if (mcale < (MyCalendarEvent *) CLIST_MIN_DATA) {
-        return;
-    }
-
-    /* Convert to Palm character set */
-    get_pref(PREF_CHAR_SET, &char_set, NULL);
-    if (char_set != CHAR_SET_LATIN1) {
-        if (mcale->cale.description)
-            charset_j2p(mcale->cale.description, strlen(mcale->cale.description) + 1, char_set);
-        if (mcale->cale.note)
-            charset_j2p(mcale->cale.note, strlen(mcale->cale.note) + 1, char_set);
-        if (mcale->cale.location)
-            charset_j2p(mcale->cale.location, strlen(mcale->cale.location) + 1, char_set);
-    }
-
-    /* Do masking like Palm OS 3.5 */
-    show_priv = show_privates(GET_PRIVATES);
-    if ((show_priv != SHOW_PRIVATES) &&
-        (mcale->attrib & dlpRecAttrSecret)) {
-        return;
-    }
-    /* End Masking */
-    flag = GPOINTER_TO_INT(data);
-    if ((flag != MODIFY_FLAG) && (flag != DELETE_FLAG)) {
-        return;
-    }
-
-    /* We need to take care of the 3 options allowed when modifying */
-    /* repeating appointments */
-    write_unique_id = NULL;
-
-    if (mcale->cale.repeatType != calendarRepeatNone) {
-        /* We need more user input. Pop up a dialog */
-        dialog = dialog_current_future_all_cancel();
-        if (dialog == DIALOG_SAID_RPT_CANCEL) {
-            return;
-        } else if (dialog == DIALOG_SAID_RPT_CURRENT) {
-            /* Create an exception in the appointment */
-            copy_calendar_event(&(mcale->cale), &cale);
-            datebook_add_exception(cale, current_year, current_month, current_day);
-            if ((mcale->rt == PALM_REC) || (mcale->rt == REPLACEMENT_PALM_REC)) {
-                write_unique_id = &(mcale->unique_id);
-            } else {
-                write_unique_id = NULL;
-            }
-            /* Since this was really a modify, and not a delete */
-            flag = MODIFY_FLAG;
-        } else if (dialog == DIALOG_SAID_RPT_FUTURE) {
-            /* Set an end date on the repeating event to delete future events */
-            copy_calendar_event(&(mcale->cale), &cale);
-            cale->repeatForever = 0;
-            memset(&(cale->repeatEnd), 0, sizeof(struct tm));
-            cale->repeatEnd.tm_mon = current_month;
-            cale->repeatEnd.tm_mday = current_day - 1;
-            cale->repeatEnd.tm_year = current_year;
-            cale->repeatEnd.tm_isdst = -1;
-            mktime(&(cale->repeatEnd));
-            if ((mcale->rt == PALM_REC) || (mcale->rt == REPLACEMENT_PALM_REC)) {
-                write_unique_id = &(mcale->unique_id);
-            } else {
-                write_unique_id = NULL;
-            }
-        }
-    }
-    /* Its important to write a delete record first and then a new/modified
-    * record in that order. This is so that the sync code can check to see
-    * if the remote record is the same as the removed, or changed local
-    * or not before it goes and modifies it. */
-    if (datebook_version == 0) {
-        MyAppointment mappt;
-        mappt.rt = mcale->rt;
-        mappt.unique_id = mcale->unique_id;
-        mappt.attrib = mcale->attrib;
-        copy_calendarEvent_to_appointment(&(mcale->cale), &(mappt.appt));
-        delete_pc_record(DATEBOOK, &mappt, flag);
-        free_Appointment(&(mappt.appt));
-    } else {
-        delete_pc_record(CALENDAR, mcale, flag);
-    }
-
-    if (dialog == DIALOG_SAID_RPT_CURRENT ||
-        dialog == DIALOG_SAID_RPT_FUTURE) {
-        pc_calendar_write(cale, REPLACEMENT_PALM_REC, mcale->attrib, write_unique_id);
-        free_CalendarEvent(cale);
-        free(cale);
-    }
-
-    if (flag == DELETE_FLAG) {
-        /* when we redraw we want to go to the line above the deleted one */
-        if (clist_row_selected > 0) {
-            clist_row_selected--;
-        }
-    }
-
-    if ((flag == DELETE_FLAG) || (dialog == DIALOG_SAID_RPT_CURRENT)) {
-        datebook_update_listStore();
-        highlight_days();
-    }
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), deleteDateRecord, data);
+    return;
 }
+gboolean undeleteDateRecord(GtkTreeModel *model,
+                        GtkTreePath  *path,
+                        GtkTreeIter  *iter,
+                        gpointer data) {
+    int * i = gtk_tree_path_get_indices ( path ) ;
+    if(i[0] == clist_row_selected){
+        MyCalendarEvent * mcale = NULL;
+        gtk_tree_model_get(model,iter,DATE_DATA_COLUMN_ENUM,&mcale,-1);
+        undeleteDate(mcale,data);
+        return TRUE;
+    }
 
-static void cb_undelete_appt(GtkWidget *widget, gpointer data) {
-    MyCalendarEvent *mcale;
+    return FALSE;
+
+
+}
+void undeleteDate(MyCalendarEvent * mcale,gpointer data) {
     int flag;
     int show_priv;
 
-    mcale = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
     if (mcale < (MyCalendarEvent *) CLIST_MIN_DATA) {
         return;
     }
@@ -3343,6 +3379,10 @@ static void cb_undelete_appt(GtkWidget *widget, gpointer data) {
 
     datebook_update_listStore();
     highlight_days();
+}
+static void cb_undelete_appt(GtkWidget *widget, gpointer data) {
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), undeleteDateRecord, data);
+    return;
 }
 
 static void cb_check_button_alarm(GtkWidget *widget, gpointer data) {
@@ -3707,314 +3747,6 @@ static gboolean handleDateRowSelection(GtkTreeSelection *selection,
     }
 
     return TRUE;
-}
-static void cb_clist_selection(GtkWidget *clist,
-                               gint row,
-                               gint column,
-                               GdkEventButton *event,
-                               gpointer data) {
-    struct CalendarEvent *cale;
-    MyCalendarEvent *mcale;
-    char tempstr[20];
-    int i, b;
-    int index, sorted_position;
-    unsigned int unique_id = 0;
-#ifdef ENABLE_DATEBK
-    int type;
-    char *note;
-    int len;
-    long use_db3_tags;
-#endif
-
-#ifdef ENABLE_DATEBK
-    get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
-#endif
-
-    if ((record_changed == MODIFY_FLAG) || (record_changed == NEW_FLAG)) {
-        if (clist_row_selected == row) { return; }
-
-        mcale = gtk_clist_get_row_data(GTK_CLIST(clist), row);
-        if (mcale != NULL) {
-            unique_id = mcale->unique_id;
-        }
-
-        b = dialog_save_changed_record_with_cancel(pane, record_changed);
-        if (b == DIALOG_SAID_1) { /* Cancel */
-            if (clist_row_selected >= 0) {
-                clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
-            } else {
-                clist_row_selected = 0;
-                clist_select_row(GTK_CLIST(clist), 0, 0);
-            }
-            return;
-        }
-        if (b == DIALOG_SAID_3) { /* Save */
-            cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
-        }
-
-        set_new_button_to(CLEAR_FLAG);
-
-        if (unique_id) {
-            glob_find_id = unique_id;
-            datebook_find();
-        } else {
-            clist_select_row(GTK_CLIST(clist), row, column);
-        }
-        return;
-    }
-
-    clist_row_selected = row;
-
-    mcale = gtk_clist_get_row_data(GTK_CLIST(clist), row);
-    if (mcale == NULL) {
-        return;
-    }
-
-    if (mcale->rt == DELETED_PALM_REC ||
-        (mcale->rt == DELETED_PC_REC))
-        /* Possible later addition of undelete code for modified deleted records
-         || mcale->rt == MODIFIED_PALM_REC
-      */
-    {
-        set_new_button_to(UNDELETE_FLAG);
-    } else {
-        set_new_button_to(CLEAR_FLAG);
-    }
-
-    connect_changed_signals(DISCONNECT_SIGNALS);
-
-    cale = &(mcale->cale);
-
-    if (datebook_version) {
-        /* Calendar supports categories */
-        index = mcale->attrib & 0x0F;
-        sorted_position = find_sort_cat_pos(index);
-        if (dbook_cat_menu_item2[sorted_position] == NULL) {
-            /* Illegal category */
-            jp_logf(JP_LOG_DEBUG, "Category is not legal\n");
-            index = 0;
-            sorted_position = find_sort_cat_pos(index);
-        }
-        if (sorted_position < 0) {
-            jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
-        } else {
-
-            if (dbook_cat_menu_item2[sorted_position]) {
-                gtk_check_menu_item_set_active
-                        (GTK_CHECK_MENU_ITEM(dbook_cat_menu_item2[sorted_position]), TRUE);
-            }
-            gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu2),
-                                        find_menu_cat_pos(sorted_position));
-
-        }
-    }   /* End check for datebook version */
-
-    if (cale->event) {
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_no_time), TRUE);
-    } else {
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_appt_time), TRUE);
-    }
-
-    gtk_text_buffer_set_text(GTK_TEXT_BUFFER(dbook_desc_buffer), "", -1);
-    gtk_text_buffer_set_text(GTK_TEXT_BUFFER(dbook_note_buffer), "", -1);
-    if (datebook_version) {
-        gtk_entry_set_text(GTK_ENTRY(location_entry), "");
-    }
-#ifdef ENABLE_DATEBK
-    if (use_db3_tags) {
-        gtk_entry_set_text(GTK_ENTRY(datebk_entry), "");
-    }
-#endif
-
-    if (cale->alarm) {
-        /* This is to insure that the callback gets called */
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_button_alarm), FALSE);
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_button_alarm), TRUE);
-        switch (cale->advanceUnits) {
-            case calendar_advMinutes:
-                gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
-                                             (radio_button_alarm_min), TRUE);
-                gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
-                                             (radio_button_alarm_hour), FALSE);
-                gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
-                                             (radio_button_alarm_day), FALSE);
-                break;
-            case calendar_advHours:
-                gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
-                                             (radio_button_alarm_min), FALSE);
-                gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
-                                             (radio_button_alarm_hour), TRUE);
-                gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
-                                             (radio_button_alarm_day), FALSE);
-                break;
-            case calendar_advDays:
-                gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
-                                             (radio_button_alarm_min), FALSE);
-                gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
-                                             (radio_button_alarm_hour), FALSE);
-                gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
-                                             (radio_button_alarm_day), TRUE);
-                break;
-            default:
-                jp_logf(JP_LOG_WARN, _("Error in DateBookDB or Calendar advanceUnits = %d\n"), cale->advanceUnits);
-        }
-        sprintf(tempstr, "%d", cale->advance);
-        gtk_entry_set_text(GTK_ENTRY(units_entry), tempstr);
-    } else {
-        /* This is to insure that the callback gets called */
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_button_alarm), TRUE);
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_button_alarm), FALSE);
-        gtk_entry_set_text(GTK_ENTRY(units_entry), "0");
-    }
-    if (cale->description) {
-        gtk_text_buffer_set_text(GTK_TEXT_BUFFER(dbook_desc_buffer), cale->description, -1);
-    }
-#ifdef ENABLE_DATEBK
-    if (use_db3_tags) {
-        if (db3_parse_tag(cale->note, &type, NULL) > 0) {
-            /* There is a datebk tag.  Need to separate it from the note */
-            note = strdup(cale->note);
-            len = strlen(note);
-            for (i = 0; i < len; i++) {
-                if (note[i] == '\n') {
-                    note[i] = '\0';
-                    break;
-                }
-            }
-            gtk_entry_set_text(GTK_ENTRY(datebk_entry), note);
-            gtk_text_buffer_set_text(GTK_TEXT_BUFFER(dbook_note_buffer), &(note[i + 1]), -1);
-            free(note);
-        } else if (cale->note) {
-            gtk_text_buffer_set_text(GTK_TEXT_BUFFER(dbook_note_buffer), cale->note, -1);
-        }
-    } else if (cale->note) { /* Not using db3 tags */
-        gtk_text_buffer_set_text(GTK_TEXT_BUFFER(dbook_note_buffer), cale->note, -1);
-
-    }
-#else  /* Ordinary, non-DateBk code */
-                                                                                                                            if (cale->note) {
-      gtk_text_buffer_set_text(GTK_TEXT_BUFFER(dbook_note_buffer), cale->note, -1);
-   }
-#endif
-
-    begin_date.tm_mon = cale->begin.tm_mon;
-    begin_date.tm_mday = cale->begin.tm_mday;
-    begin_date.tm_year = cale->begin.tm_year;
-    begin_date.tm_hour = cale->begin.tm_hour;
-    begin_date.tm_min = cale->begin.tm_min;
-
-    end_date.tm_mon = cale->end.tm_mon;
-    end_date.tm_mday = cale->end.tm_mday;
-    end_date.tm_year = cale->end.tm_year;
-    end_date.tm_hour = cale->end.tm_hour;
-    end_date.tm_min = cale->end.tm_min;
-
-    set_begin_end_labels(&begin_date, &end_date, UPDATE_DATE_ENTRIES |
-                                                 UPDATE_DATE_MENUS);
-
-    if (datebook_version) {
-        /* Calendar has a location field */
-        if (cale->location) {
-            gtk_entry_set_text(GTK_ENTRY(location_entry), cale->location);
-        }
-    }
-
-    /* Do the Repeat information */
-    switch (cale->repeatType) {
-        case calendarRepeatNone:
-            gtk_notebook_set_page(GTK_NOTEBOOK(notebook), PAGE_NONE);
-            break;
-        case calendarRepeatDaily:
-            if ((cale->repeatForever)) {
-                gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
-                                             (check_button_day_endon), FALSE);
-            } else {
-                gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
-                                             (check_button_day_endon), TRUE);
-                glob_endon_day_tm.tm_mon = cale->repeatEnd.tm_mon;
-                glob_endon_day_tm.tm_mday = cale->repeatEnd.tm_mday;
-                glob_endon_day_tm.tm_year = cale->repeatEnd.tm_year;
-                update_endon_button(glob_endon_day_button, &glob_endon_day_tm);
-            }
-            sprintf(tempstr, "%d", cale->repeatFrequency);
-            gtk_entry_set_text(GTK_ENTRY(repeat_day_entry), tempstr);
-            gtk_notebook_set_page(GTK_NOTEBOOK(notebook), PAGE_DAY);
-            break;
-        case calendarRepeatWeekly:
-            if ((cale->repeatForever)) {
-                gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
-                                             (check_button_week_endon), FALSE);
-            } else {
-                gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
-                                             (check_button_week_endon), TRUE);
-                glob_endon_week_tm.tm_mon = cale->repeatEnd.tm_mon;
-                glob_endon_week_tm.tm_mday = cale->repeatEnd.tm_mday;
-                glob_endon_week_tm.tm_year = cale->repeatEnd.tm_year;
-                update_endon_button(glob_endon_week_button, &glob_endon_week_tm);
-            }
-            sprintf(tempstr, "%d", cale->repeatFrequency);
-            gtk_entry_set_text(GTK_ENTRY(repeat_week_entry), tempstr);
-            for (i = 0; i < 7; i++) {
-                gtk_toggle_button_set_active
-                        (GTK_TOGGLE_BUTTON(toggle_button_repeat_days[i]),
-                         cale->repeatDays[i]);
-            }
-            gtk_notebook_set_page(GTK_NOTEBOOK(notebook), PAGE_WEEK);
-            break;
-        case calendarRepeatMonthlyByDate:
-        case calendarRepeatMonthlyByDay:
-            jp_logf(JP_LOG_DEBUG, "repeat day=%d\n", cale->repeatDay);
-            if ((cale->repeatForever)) {
-                gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
-                                             (check_button_mon_endon), FALSE);
-            } else {
-                gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
-                                             (check_button_mon_endon), TRUE);
-                glob_endon_mon_tm.tm_mon = cale->repeatEnd.tm_mon;
-                glob_endon_mon_tm.tm_mday = cale->repeatEnd.tm_mday;
-                glob_endon_mon_tm.tm_year = cale->repeatEnd.tm_year;
-                update_endon_button(glob_endon_mon_button, &glob_endon_mon_tm);
-            }
-            sprintf(tempstr, "%d", cale->repeatFrequency);
-            gtk_entry_set_text(GTK_ENTRY(repeat_mon_entry), tempstr);
-            if (cale->repeatType == calendarRepeatMonthlyByDay) {
-                gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
-                                             (toggle_button_repeat_mon_byday), TRUE);
-            }
-            if (cale->repeatType == calendarRepeatMonthlyByDate) {
-                gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
-                                             (toggle_button_repeat_mon_bydate), TRUE);
-            }
-            gtk_notebook_set_page(GTK_NOTEBOOK(notebook), PAGE_MONTH);
-            break;
-        case calendarRepeatYearly:
-            if ((cale->repeatForever)) {
-                gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
-                                             (check_button_year_endon), FALSE);
-            } else {
-                gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
-                                             (check_button_year_endon), TRUE);
-
-                glob_endon_year_tm.tm_mon = cale->repeatEnd.tm_mon;
-                glob_endon_year_tm.tm_mday = cale->repeatEnd.tm_mday;
-                glob_endon_year_tm.tm_year = cale->repeatEnd.tm_year;
-                update_endon_button(glob_endon_year_button, &glob_endon_year_tm);
-            }
-            sprintf(tempstr, "%d", cale->repeatFrequency);
-            gtk_entry_set_text(GTK_ENTRY(repeat_year_entry), tempstr);
-
-            gtk_notebook_set_page(GTK_NOTEBOOK(notebook), PAGE_YEAR);
-            break;
-        default:
-            jp_logf(JP_LOG_WARN, _("Unknown repeatType (%d) found in DatebookDB\n"), cale->repeatFrequency);
-    }
-
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(private_checkbox),
-                                 mcale->attrib & dlpRecAttrSecret);
-
-    connect_changed_signals(CONNECT_SIGNALS);
-
-    return;
 }
 
 static void set_date_label(void) {
