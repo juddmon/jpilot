@@ -120,7 +120,6 @@ static struct sorted_cats sort_l[NUM_DATEBOOK_CAT_ITEMS];
 
 static GtkWidget *main_calendar;
 static GtkWidget *dow_label;
-static GtkWidget *clist;
 static GtkTreeView *treeView;
 static GtkListStore *listStore;
 static GtkWidget *dbook_desc, *dbook_note;
@@ -233,7 +232,6 @@ static void highlight_days(void);
 
 static int datebook_find(void);
 
-static int datebook_update_clist(void);
 static int datebook_update_listStore(void);
 
 static void update_endon_button(GtkWidget *button, struct tm *t);
@@ -2714,7 +2712,9 @@ static int datebook_update_listStore(void) {
 
     get_pref(PREF_SHOW_TOOLTIPS, &show_tooltips, NULL);
     g_snprintf(str, sizeof(str), _("%d of %d records"), entries_shown, num_entries);
-    set_tooltip(show_tooltips, glob_tooltips, GTK_CLIST(clist)->column[DB_APPT_COLUMN].button, str, NULL);
+    GtkTreeViewColumn * column = gtk_tree_view_get_column(GTK_TREE_VIEW(treeView),DATE_APPT_COLUMN_ENUM);
+    //column->
+    set_tooltip(show_tooltips, glob_tooltips, column->button, str, NULL);
 
     /* return focus to clist after any big operation which requires a redraw */
     gtk_widget_grab_focus(GTK_WIDGET(treeView));
@@ -2901,7 +2901,7 @@ static void cb_record_changed(GtkWidget *widget, gpointer data) {
     jp_logf(JP_LOG_DEBUG, "cb_record_changed\n");
     if (record_changed == CLEAR_FLAG) {
         connect_changed_signals(DISCONNECT_SIGNALS);
-        if (GTK_CLIST(clist)->rows > 0) {
+        if (gtk_tree_model_iter_n_children(GTK_TREE_MODEL(listStore),NULL) > 0) {
             set_new_button_to(MODIFY_FLAG);
         } else {
             set_new_button_to(NEW_FLAG);
@@ -4087,23 +4087,6 @@ findDateRecord (GtkTreeModel *model,
 static int datebook_find(void) {
     gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), findDateRecord, NULL);
     return EXIT_SUCCESS;
-    int r, found_at;
-
-    jp_logf(JP_LOG_DEBUG, "datebook_find(), glob_find_id = %d\n", glob_find_id);
-    if (glob_find_id) {
-        r = clist_find_id(clist,
-                          glob_find_id,
-                          &found_at);
-        if (r) {
-            if (!gtk_clist_row_is_visible(GTK_CLIST(clist), found_at)) {
-                gtk_clist_moveto(GTK_CLIST(clist), found_at, 0, 0.5, 0.0);
-            }
-            jp_logf(JP_LOG_DEBUG, "datebook_find(), selecting row %d\n", found_at);
-            clist_select_row(GTK_CLIST(clist), found_at, 1);
-        }
-        glob_find_id = 0;
-    }
-    return EXIT_SUCCESS;
 }
 
 int datebook_refresh(int first, int do_init) {
@@ -4508,14 +4491,14 @@ int datebook_gui_cleanup(void) {
         gtk_widget_destroy(window_datebk_cats);
     }
 #endif
-    clist_clear(GTK_CLIST(clist));
+    gtk_list_store_clear(GTK_LIST_STORE(listStore));
 
     /* Remove the accelerators */
     gtk_window_remove_accel_group(GTK_WINDOW(gtk_widget_get_toplevel(main_calendar)), accel_group);
 
     gtk_signal_disconnect_by_func(GTK_OBJECT(main_calendar),
                                   GTK_SIGNAL_FUNC(cb_keyboard), NULL);
-    gtk_signal_disconnect_by_func(GTK_OBJECT(clist),
+    gtk_signal_disconnect_by_func(GTK_OBJECT(treeView),
                                   GTK_SIGNAL_FUNC(cb_keyboard), NULL);
 
     return EXIT_SUCCESS;
@@ -5641,7 +5624,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     /* Capture the Enter & Shift-Enter key combinations to move back and
     * forth between the left- and right-hand sides of the display. */
-    gtk_signal_connect(GTK_OBJECT(clist), "key_press_event",
+    gtk_signal_connect(GTK_OBJECT(treeView), "key_press_event",
                        GTK_SIGNAL_FUNC(cb_key_pressed_left_side), dbook_desc);
 
     gtk_signal_connect(GTK_OBJECT(dbook_desc), "key_press_event",
@@ -5655,7 +5638,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_signal_connect(GTK_OBJECT(main_calendar), "key_press_event",
                        GTK_SIGNAL_FUNC(cb_keyboard), NULL);
 
-    gtk_signal_connect(GTK_OBJECT(clist), "key_press_event",
+    gtk_signal_connect(GTK_OBJECT(treeView), "key_press_event",
                        GTK_SIGNAL_FUNC(cb_keyboard), NULL);
 
     /**********************************************************************/
@@ -5760,33 +5743,14 @@ buildTreeView(const GtkWidget *vbox, char *const *titles, long use_db3_tags, Gtk
 #ifdef ENABLE_DATEBK
     if (!use_db3_tags) {
         gtk_tree_view_column_set_visible(floatColumn, FALSE);
+    }else {
+        gtk_tree_view_column_set_visible(floatColumn,TRUE);
     }
-    if (use_db3_tags) {
-        clist = gtk_clist_new_with_titles(5, titles);
-    } else {
-        clist = gtk_clist_new_with_titles(4, titles);
-    }
-#else
-    clist = gtk_clist_new_with_titles(4, titles);
 #endif
 
-    gtk_clist_column_titles_passive(GTK_CLIST(clist));
-
-
-    gtk_clist_set_shadow_type(GTK_CLIST(clist), SHADOW);
-    gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
     GtkTreeSelection * treeSelection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
     gtk_tree_selection_set_select_function(treeSelection, handleDateRowSelection, NULL, NULL);
-
-    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), DB_TIME_COLUMN, TRUE);
-    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), DB_APPT_COLUMN, FALSE);
-    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), DB_NOTE_COLUMN, TRUE);
-    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), DB_ALARM_COLUMN, TRUE);
-
-    gtk_clist_set_column_title(GTK_CLIST(clist), DB_TIME_COLUMN, _("Time"));
-    gtk_clist_set_column_title(GTK_CLIST(clist), DB_APPT_COLUMN, _("Appointment"));
-
-    /* Put pretty pictures in the clist column headings */
+    /* Put pretty pictures in the treeView column headings */
     get_pixmaps(vbox, PIXMAP_NOTE, pixmap, mask);
 #ifdef __APPLE__
     mask = NULL;
