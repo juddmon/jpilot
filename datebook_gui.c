@@ -3073,7 +3073,7 @@ void addNewDateRecordToDataStructure(MyCalendarEvent * mcale, gpointer data) {
 
     flag = GPOINTER_TO_INT(data);
 
-    mcale = NULL;
+
     unique_id = 0;
 
     /* Do masking like Palm OS 3.5 */
