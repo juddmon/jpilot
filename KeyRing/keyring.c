@@ -106,6 +106,7 @@ static struct CategoryAppInfo keyr_app_info;
 static int keyr_category = CATEGORY_ALL;
 
 static GtkWidget *clist;
+static GtkTreeView *treeView;
 static GtkWidget *entry_name;
 static GtkWidget *entry_account;
 static GtkWidget *entry_password;
