@@ -1334,7 +1334,7 @@ static int display_record(struct MyKeyRing *mkr, int row,GtkTreeIter * iter) {
     return EXIT_SUCCESS;
 }
 
-static int display_record_export(GtkWidget *clist,GtkListStore * pListStore, struct MyKeyRing *mkr, int row,,GtkTreeIter * iter) {
+static int display_record_export(GtkWidget *clist,GtkListStore * pListStore, struct MyKeyRing *mkr, int row,GtkTreeIter * iter) {
     char temp[8];
     char * nameTxt;
 
@@ -2876,7 +2876,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
         keyr_category = CATEGORY_ALL;
     }
 
-    keyr_update_clist(clist, &glob_keyring_list, keyr_category, TRUE);
+   // keyr_update_clist(clist, &glob_keyring_list, keyr_category, TRUE);
     keyr_update_liststore(listStore, &glob_keyring_list, keyr_category, TRUE);
 
     if (unique_id) {
