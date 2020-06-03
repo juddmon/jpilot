@@ -1283,9 +1283,6 @@ static int display_record(struct MyKeyRing *mkr, int row, GtkTreeIter *iter) {
 
     /* Highlight row background depending on status */
     GdkColor bgColor;
-    gboolean showBgColor = FALSE;
-    GdkColor fgColor;
-    gboolean showFgColor = FALSE;
     switch (mkr->rt) {
         case NEW_PC_REC:
         case REPLACEMENT_PALM_REC:
@@ -1360,7 +1357,7 @@ display_record_export(GtkListStore *pListStore, struct MyKeyRing *mkr, int row, 
     }
     //KEYRING_CHANGED_COLUMN_ENUM
     gtk_list_store_append(pListStore, iter);
-    gtk_list_store_set(pListStore, &iter,
+    gtk_list_store_set(pListStore, iter,
                        KEYRING_CHANGED_COLUMN_ENUM, nameTxt, -1);
     return EXIT_SUCCESS;
 }
@@ -1370,7 +1367,6 @@ void keyr_update_liststore(GtkListStore *pListStore, struct MyKeyRing **keyring_
     GtkTreeIter iter;
     int entries_shown;
     struct MyKeyRing *temp_list;
-    gchar *empty_line[] = {"", "", ""};
 
     jp_logf(JP_LOG_DEBUG, "KeyRing: keyr_update_clist\n");
 
@@ -2124,8 +2120,8 @@ static void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *clist,
             fprintf(out, "<database>\n");
         } else {
             /* We'll need to remove the last part of the XML file */
-            r = fseek(out, -12L, SEEK_END);
-            r = fread(text, 11, 1, out);
+            fseek(out, -12L, SEEK_END);
+            fread(text, 11, 1, out);
             text[11] = '\0';
             if (strncmp(text, "</database>", 11)) {
                 jp_logf(JP_LOG_WARN, _("This doesn't look like a KeePassX XML file\n"));
