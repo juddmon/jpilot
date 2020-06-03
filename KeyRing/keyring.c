@@ -736,6 +736,39 @@ static gint GtkClistKeyrCompareDates(GtkCList *clist,
     return (time1 - time2);
 }
 
+static gint GtkTreeModelKeyrCompareDates(GtkTreeModel *model,
+                           GtkTreeIter *left,
+                           GtkTreeIter *right,
+                           gpointer columnId) {
+
+
+     struct MyKeyRing *mkr1, *mkr2;
+
+    struct KeyRing *keyr1, *keyr2;
+    time_t time1, time2;
+    gtk_tree_model_get(GTK_TREE_MODEL(model), left, KEYRING_DATA_COLUMN_ENUM, &mkr1, -1);
+    gtk_tree_model_get(GTK_TREE_MODEL(model), right, KEYRING_DATA_COLUMN_ENUM, &mkr2, -1);
+    keyr1 = &(mkr1->kr);
+    keyr2 = &(mkr2->kr);
+
+    time1 = mktime(&(keyr1->last_changed));
+    time2 = mktime(&(keyr2->last_changed));
+
+    return (time1 - time2);
+}
+
+static gint GtkTreeModelKeyrCompareNocase(GtkTreeModel *model,
+                                         GtkTreeIter *left,
+                                         GtkTreeIter *right,
+                                         gpointer columnId) {
+
+
+    gchar *str1, *str2;
+    gtk_tree_model_get(GTK_TREE_MODEL(model), left, KEYRING_NAME_COLUMN_ENUM, &str1, -1);
+    gtk_tree_model_get(GTK_TREE_MODEL(model), right, KEYRING_NAME_COLUMN_ENUM, &str2, -1);
+   return g_ascii_strcasecmp(str1, str2);
+}
+
 /* Function is used to sort clist case insensitively */
 static gint GtkClistKeyrCompareNocase(GtkCList *clist,
                                       gconstpointer ptr1,
@@ -2643,6 +2676,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
                                                                                 "cell-background-set",
                                                                                 KEYRING_BACKGROUND_COLOR_ENABLED_ENUM,
                                                                                 NULL);
+    gtk_tree_view_column_set_sort_column_id(changedColumn, KEYRING_CHANGED_COLUMN_ENUM);
     GtkCellRenderer *nameRenderer = gtk_cell_renderer_text_new();
     GtkTreeViewColumn *nameColumn = gtk_tree_view_column_new_with_attributes("Name",
                                                                              nameRenderer,
@@ -2652,6 +2686,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
                                                                              "cell-background-set",
                                                                              KEYRING_BACKGROUND_COLOR_ENABLED_ENUM,
                                                                              NULL);
+    gtk_tree_view_column_set_sort_column_id(nameColumn, KEYRING_NAME_COLUMN_ENUM);
     GtkCellRenderer *accountRenderer = gtk_cell_renderer_text_new();
     GtkTreeViewColumn *accountColumn = gtk_tree_view_column_new_with_attributes("Account",
                                                                                 accountRenderer,
@@ -2661,6 +2696,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
                                                                                 "cell-background-set",
                                                                                 KEYRING_BACKGROUND_COLOR_ENABLED_ENUM,
                                                                                 NULL);
+    gtk_tree_view_column_set_sort_column_id(accountColumn, KEYRING_ACCOUNT_COLUMN_ENUM);
     gtk_tree_view_insert_column(GTK_TREE_VIEW(treeView), changedColumn, KEYRING_CHANGED_COLUMN_ENUM);
     gtk_tree_view_insert_column(GTK_TREE_VIEW(treeView), nameColumn, KEYRING_NAME_COLUMN_ENUM);
     gtk_tree_view_insert_column(GTK_TREE_VIEW(treeView), accountColumn, KEYRING_ACCOUNT_COLUMN_ENUM);
@@ -2672,13 +2708,15 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     gtk_tree_view_column_set_sizing(accountColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
     gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView)),
                                 GTK_SELECTION_BROWSE);
-    //todo: implement these if col_selected is really neeeded.
-    // sort technically should already be implemented, though if
-    // ignoring case is needed, then some sort functions can be registered, and knowing
-    // the columnId isn't needed for it.
-    // g_signal_connect (taskColumn, "clicked", G_CALLBACK(column_clicked_cb), NULL);
-    // g_signal_connect (noteColumn, "clicked", G_CALLBACK(column_clicked_cb), NULL);
-    // g_signal_connect (checkColumn, "clicked", G_CALLBACK(column_clicked_cb), NULL);
+    GtkTreeSortable *sortable = GTK_TREE_SORTABLE(listStore);
+    gtk_tree_sortable_set_sort_func(sortable,KEYRING_CHANGED_COLUMN_ENUM,GtkTreeModelKeyrCompareDates,
+                                    GINT_TO_POINTER(KEYRING_CHANGED_COLUMN_ENUM), NULL);
+    gtk_tree_sortable_set_sort_func(sortable,KEYRING_NAME_COLUMN_ENUM,GtkTreeModelKeyrCompareNocase,
+                                  GINT_TO_POINTER(KEYRING_NAME_COLUMN_ENUM), NULL);
+    for (int x = 0; x < KEYRING_NUM_COLS - 5; x++) {
+        gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), x), gtk_false());
+    }
+    gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), clist_col_selected), gtk_true());
 
     clist = gtk_clist_new_with_titles(3, titles);
 
