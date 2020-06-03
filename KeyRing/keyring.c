@@ -120,7 +120,6 @@ struct MyKeyRing {
 static struct CategoryAppInfo keyr_app_info;
 static int keyr_category = CATEGORY_ALL;
 
-static GtkWidget *clist;
 static GtkTreeView *treeView;
 static GtkListStore *listStore;
 static GtkWidget *entry_name;
@@ -173,8 +172,9 @@ static struct MyKeyRing *glob_keyring_list = NULL;
 static struct MyKeyRing *export_keyring_list = NULL;
 
 /****************************** Prototypes ************************************/
-static void keyr_update_clist(GtkWidget *clist, struct MyKeyRing **keyring_list,
-                              int category, int main);
+
+void keyr_update_liststore(GtkListStore *pListStore, struct MyKeyRing **keyring_list,
+                           int category, int main);
 
 static void connect_changed_signals(int con_or_dis);
 
@@ -187,6 +187,12 @@ static gboolean handleKeyringRowSelection(GtkTreeSelection *selection,
                                           GtkTreePath *path,
                                           gboolean path_currently_selected,
                                           gpointer userdata);
+
+void deleteKeyRing(struct MyKeyRing *mkr, gpointer data);
+
+void undeleteKeyRing(struct MyKeyRing *mkr, gpointer data);
+
+void addKeyRing(struct MyKeyRing *mkr, gpointer data);
 
 /****************************** Main Code *************************************/
 
@@ -712,37 +718,14 @@ static int find_menu_cat_pos(int cat) {
     }
 }
 
-/* Function is used to sort clist based on the Last Changed date field */
-static gint GtkClistKeyrCompareDates(GtkCList *clist,
-                                     gconstpointer ptr1,
-                                     gconstpointer ptr2) {
-    GtkCListRow *row1, *row2;
-    struct MyKeyRing *mkr1, *mkr2;
-    struct KeyRing *keyr1, *keyr2;
-    time_t time1, time2;
-
-    row1 = (GtkCListRow *) ptr1;
-    row2 = (GtkCListRow *) ptr2;
-
-    mkr1 = row1->data;
-    mkr2 = row2->data;
-
-    keyr1 = &(mkr1->kr);
-    keyr2 = &(mkr2->kr);
-
-    time1 = mktime(&(keyr1->last_changed));
-    time2 = mktime(&(keyr2->last_changed));
-
-    return (time1 - time2);
-}
 
 static gint GtkTreeModelKeyrCompareDates(GtkTreeModel *model,
-                           GtkTreeIter *left,
-                           GtkTreeIter *right,
-                           gpointer columnId) {
+                                         GtkTreeIter *left,
+                                         GtkTreeIter *right,
+                                         gpointer columnId) {
 
 
-     struct MyKeyRing *mkr1, *mkr2;
+    struct MyKeyRing *mkr1, *mkr2;
 
     struct KeyRing *keyr1, *keyr2;
     time_t time1, time2;
@@ -757,79 +740,19 @@ static gint GtkTreeModelKeyrCompareDates(GtkTreeModel *model,
     return (time1 - time2);
 }
 
+/* Function is used to sort clist case insensitively
+ * not sure if this is really needed as the default sort seems to do the same thing
+ */
 static gint GtkTreeModelKeyrCompareNocase(GtkTreeModel *model,
-                                         GtkTreeIter *left,
-                                         GtkTreeIter *right,
-                                         gpointer columnId) {
+                                          GtkTreeIter *left,
+                                          GtkTreeIter *right,
+                                          gpointer columnId) {
 
 
     gchar *str1, *str2;
     gtk_tree_model_get(GTK_TREE_MODEL(model), left, KEYRING_NAME_COLUMN_ENUM, &str1, -1);
     gtk_tree_model_get(GTK_TREE_MODEL(model), right, KEYRING_NAME_COLUMN_ENUM, &str2, -1);
-   return g_ascii_strcasecmp(str1, str2);
-}
-
-/* Function is used to sort clist case insensitively */
-static gint GtkClistKeyrCompareNocase(GtkCList *clist,
-                                      gconstpointer ptr1,
-                                      gconstpointer ptr2) {
-    GtkCListRow *row1, *row2;
-    gchar *str1, *str2;
-
-    row1 = (GtkCListRow *) ptr1;
-    row2 = (GtkCListRow *) ptr2;
-
-    str1 = GTK_CELL_TEXT(row1->cell[clist->sort_column])->text;
-    str2 = GTK_CELL_TEXT(row2->cell[clist->sort_column])->text;
-
     return g_ascii_strcasecmp(str1, str2);
-}
-
-static void cb_clist_click_column(GtkWidget *clist, int column) {
-    struct MyKeyRing *mkr;
-    unsigned int unique_id;
-
-    /* Return to the selected record after sorting.
-     * This is critically important because sorting without updating the
-     * global variable clist_row_selected can cause data loss */
-    mkr = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
-    if (mkr < (struct MyKeyRing *) CLIST_MIN_DATA) {
-        unique_id = 0;
-    } else {
-        unique_id = mkr->unique_id;
-    }
-
-    /* Clicking on same column toggles ascending/descending sort */
-    if (clist_col_selected == column) {
-        if (GTK_CLIST(clist)->sort_type == GTK_SORT_ASCENDING) {
-            gtk_clist_set_sort_type(GTK_CLIST (clist), GTK_SORT_DESCENDING);
-        } else {
-            gtk_clist_set_sort_type(GTK_CLIST (clist), GTK_SORT_ASCENDING);
-        }
-    } else /* Always sort in ascending order when changing sort column */
-    {
-        gtk_clist_set_sort_type(GTK_CLIST (clist), GTK_SORT_ASCENDING);
-    }
-
-    clist_col_selected = column;
-
-    gtk_clist_set_sort_column(GTK_CLIST(clist), column);
-    switch (column) {
-        case KEYR_CHGD_COLUMN:  // Last Changed column
-            gtk_clist_set_compare_func(GTK_CLIST(clist), GtkClistKeyrCompareDates);
-            break;
-        case KEYR_NAME_COLUMN:
-            gtk_clist_set_compare_func(GTK_CLIST(clist), GtkClistKeyrCompareNocase);
-            break;
-        default: // All other columns can use GTK default sort function
-            gtk_clist_set_compare_func(GTK_CLIST(clist), NULL);
-            break;
-    }
-
-    gtk_clist_sort(GTK_CLIST(clist));
-
-    /* return to previously selected record */
-    keyring_find(unique_id);
 }
 
 static void cb_record_changed(GtkWidget *widget, gpointer data) {
@@ -843,7 +766,7 @@ static void cb_record_changed(GtkWidget *widget, gpointer data) {
 
     if (record_changed == CLEAR_FLAG) {
         connect_changed_signals(DISCONNECT_SIGNALS);
-        if ((GTK_CLIST(clist)->rows > 0)) {
+        if (gtk_tree_model_iter_n_children(GTK_TREE_MODEL(listStore), NULL) > 0) {
             set_new_button_to(MODIFY_FLAG);
             /* Update the lastChanged field when password is modified */
             if (flag == PASSWD_FLAG) {
@@ -935,9 +858,80 @@ static void free_mykeyring_list(struct MyKeyRing **PPmkr) {
     *PPmkr = NULL;
 }
 
-/* This function gets called when the "delete" button is pressed */
-static void cb_delete_keyring(GtkWidget *widget, gpointer data) {
-    struct MyKeyRing *mkr;
+gboolean deleteKeyRingRecord(GtkTreeModel *model,
+                             GtkTreePath *path,
+                             GtkTreeIter *iter,
+                             gpointer data) {
+    int *i = gtk_tree_path_get_indices(path);
+    if (i[0] == clist_row_selected) {
+        struct MyKeyRing *mkr = NULL;
+        gtk_tree_model_get(model, iter, KEYRING_DATA_COLUMN_ENUM, &mkr, -1);
+        deleteKeyRing(mkr, data);
+        return TRUE;
+    }
+
+    return FALSE;
+
+
+}
+
+gboolean undeleteKeyRingRecord(GtkTreeModel *model,
+                               GtkTreePath *path,
+                               GtkTreeIter *iter,
+                               gpointer data) {
+    int *i = gtk_tree_path_get_indices(path);
+    if (i[0] == clist_row_selected) {
+        struct MyKeyRing *mkr = NULL;
+        gtk_tree_model_get(model, iter, KEYRING_DATA_COLUMN_ENUM, &mkr, -1);
+        undeleteKeyRing(mkr, data);
+        return TRUE;
+    }
+
+    return FALSE;
+
+
+}
+
+void undeleteKeyRing(struct MyKeyRing *mkr, gpointer data) {
+
+    buf_rec br;
+    char buf[0xFFFF];
+    int new_size;
+    int flag;
+    if (mkr == NULL) {
+        return;
+    }
+
+    jp_logf(JP_LOG_DEBUG, "mkr->unique_id = %d\n", mkr->unique_id);
+    jp_logf(JP_LOG_DEBUG, "mkr->rt = %d\n", mkr->rt);
+
+    pack_KeyRing(&(mkr->kr), (unsigned char *) buf, 0xFFFF, &new_size);
+
+    br.rt = mkr->rt;
+    br.unique_id = mkr->unique_id;
+    br.attrib = mkr->attrib;
+    br.buf = buf;
+    br.size = new_size;
+
+    flag = GPOINTER_TO_INT(data);
+
+    if (flag == UNDELETE_FLAG) {
+        if (mkr->rt == DELETED_PALM_REC ||
+            mkr->rt == DELETED_PC_REC) {
+            jp_undelete_record("Keys-Gtkr", &br, flag);
+        }
+        /* Possible later addition of undelete for modified records
+        else if (mmemo->rt == MODIFIED_PALM_REC)
+        {
+           cb_add_new_record(widget, GINT_TO_POINTER(COPY_FLAG));
+        }
+        */
+    }
+
+    keyr_update_liststore(listStore, &glob_keyring_list, keyr_category, TRUE);
+}
+
+void deleteKeyRing(struct MyKeyRing *mkr, gpointer data) {
     struct KeyRing kr;
     int new_size;
     char buf[0xFFFF];
@@ -946,7 +940,6 @@ static void cb_delete_keyring(GtkWidget *widget, gpointer data) {
 
     jp_logf(JP_LOG_DEBUG, "KeyRing: cb_delete_keyring\n");
 
-    mkr = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
     if (!mkr) {
         return;
     }
@@ -994,54 +987,23 @@ static void cb_delete_keyring(GtkWidget *widget, gpointer data) {
     }
 
     if (flag == DELETE_FLAG) {
-        keyr_update_clist(clist, &glob_keyring_list, keyr_category, TRUE);
+        keyr_update_liststore(listStore, &glob_keyring_list, keyr_category, TRUE);
     }
 }
 
+/* This function gets called when the "delete" button is pressed */
+static void cb_delete_keyring(GtkWidget *widget, gpointer data) {
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), deleteKeyRingRecord, data);
+}
+
 static void cb_undelete_keyring(GtkWidget *widget, gpointer data) {
-    struct MyKeyRing *mkr;
-    buf_rec br;
-    char buf[0xFFFF];
-    int new_size;
-    int flag;
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), undeleteKeyRingRecord, data);
 
-    mkr = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
-    if (mkr == NULL) {
-        return;
-    }
-
-    jp_logf(JP_LOG_DEBUG, "mkr->unique_id = %d\n", mkr->unique_id);
-    jp_logf(JP_LOG_DEBUG, "mkr->rt = %d\n", mkr->rt);
-
-    pack_KeyRing(&(mkr->kr), (unsigned char *) buf, 0xFFFF, &new_size);
-
-    br.rt = mkr->rt;
-    br.unique_id = mkr->unique_id;
-    br.attrib = mkr->attrib;
-    br.buf = buf;
-    br.size = new_size;
-
-    flag = GPOINTER_TO_INT(data);
-
-    if (flag == UNDELETE_FLAG) {
-        if (mkr->rt == DELETED_PALM_REC ||
-            mkr->rt == DELETED_PC_REC) {
-            jp_undelete_record("Keys-Gtkr", &br, flag);
-        }
-        /* Possible later addition of undelete for modified records
-        else if (mmemo->rt == MODIFIED_PALM_REC)
-        {
-           cb_add_new_record(widget, GINT_TO_POINTER(COPY_FLAG));
-        }
-        */
-    }
-
-    keyr_update_clist(clist, &glob_keyring_list, keyr_category, TRUE);
 }
 
 static void cb_cancel(GtkWidget *widget, gpointer data) {
     set_new_button_to(CLEAR_FLAG);
-    keyr_update_clist(clist, &glob_keyring_list, keyr_category, TRUE);
+    keyr_update_liststore(listStore, &glob_keyring_list, keyr_category, TRUE);
 }
 
 static void update_date_button(GtkWidget *button, struct tm *t) {
@@ -1099,28 +1061,36 @@ static int keyr_clear_details(void) {
     return EXIT_SUCCESS;
 }
 
-/*
- * This function is called when the user presses the "Add" button.
- * We collect all of the data from the GUI and pack it into a keyring
- * record and then write it out.
-   kr->name=strdup((char *)buf);
-   kr->account=strdup((char *)Pstr[0]);
-   kr->password=strdup((char *)Pstr[1]);
-   kr->note=strdup((char *)Pstr[2]);
- */
-static void cb_add_new_record(GtkWidget *widget, gpointer data) {
+gboolean addKeyRingRecord(GtkTreeModel *model,
+                          GtkTreePath *path,
+                          GtkTreeIter *iter,
+                          gpointer data) {
+    int *i = gtk_tree_path_get_indices(path);
+    if (i[0] == clist_row_selected) {
+        struct MyKeyRing *mkr = NULL;
+        gtk_tree_model_get(model, iter, KEYRING_DATA_COLUMN_ENUM, &mkr, -1);
+        addKeyRing(mkr, data);
+        return TRUE;
+    }
+
+    return FALSE;
+
+
+}
+
+void addKeyRing(struct MyKeyRing *mkr, gpointer data) {
     struct KeyRing kr;
     buf_rec br;
     unsigned char buf[0x10000];
     int new_size;
     int flag;
-    struct MyKeyRing *mkr;
+
     GtkTextIter start_iter;
     GtkTextIter end_iter;
     int i;
     unsigned int unique_id;
 
-    mkr = NULL;
+
     unique_id = 0;
 
     jp_logf(JP_LOG_DEBUG, "KeyRing: cb_add_new_record\n");
@@ -1186,7 +1156,6 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data) {
 
     /* Keep unique ID intact */
     if (flag == MODIFY_FLAG) {
-        mkr = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
         if (!mkr) {
             return;
         }
@@ -1218,11 +1187,25 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data) {
     /* Write out the record.  It goes to the .pc3 file until it gets synced */
     jp_pc_write("Keys-Gtkr", &br);
 
-    keyr_update_clist(clist, &glob_keyring_list, keyr_category, TRUE);
+    keyr_update_liststore(listStore, &glob_keyring_list, keyr_category, TRUE);
 
     keyring_find(br.unique_id);
 
-    return;
+
+}
+
+/*
+ * This function is called when the user presses the "Add" button.
+ * We collect all of the data from the GUI and pack it into a keyring
+ * record and then write it out.
+   kr->name=strdup((char *)buf);
+   kr->account=strdup((char *)Pstr[0]);
+   kr->password=strdup((char *)Pstr[1]);
+   kr->note=strdup((char *)Pstr[2]);
+ */
+static void cb_add_new_record(GtkWidget *widget, gpointer data) {
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), addKeyRingRecord, data);
+
 }
 
 static void cb_date_button(GtkWidget *widget, gpointer data) {
@@ -1306,26 +1289,19 @@ static int display_record(struct MyKeyRing *mkr, int row, GtkTreeIter *iter) {
     switch (mkr->rt) {
         case NEW_PC_REC:
         case REPLACEMENT_PALM_REC:
-            set_bg_rgb_clist_row(clist, row,
-                                 CLIST_NEW_RED, CLIST_NEW_GREEN, CLIST_NEW_BLUE);
             bgColor = get_color(CLIST_NEW_RED, CLIST_NEW_GREEN, CLIST_NEW_BLUE);
             showBgColor = TRUE;
             break;
         case DELETED_PALM_REC:
         case DELETED_PC_REC:
-            set_bg_rgb_clist_row(clist, row,
-                                 CLIST_DEL_RED, CLIST_DEL_GREEN, CLIST_DEL_BLUE);
             bgColor = get_color(CLIST_DEL_RED, CLIST_DEL_GREEN, CLIST_DEL_BLUE);
             showBgColor = TRUE;
             break;
         case MODIFIED_PALM_REC:
-            set_bg_rgb_clist_row(clist, row,
-                                 CLIST_MOD_RED, CLIST_MOD_GREEN, CLIST_MOD_BLUE);
             bgColor = get_color(CLIST_MOD_RED, CLIST_MOD_GREEN, CLIST_MOD_BLUE);
             showBgColor = TRUE;
             break;
         default:
-            gtk_clist_set_row_style(GTK_CLIST(clist), row, NULL);
             showBgColor = FALSE;
     }
 
@@ -1370,23 +1346,20 @@ static int display_record(struct MyKeyRing *mkr, int row, GtkTreeIter *iter) {
 }
 
 static int
-display_record_export(GtkWidget *clist, GtkListStore *pListStore, struct MyKeyRing *mkr, int row, GtkTreeIter *iter) {
+display_record_export(GtkListStore *pListStore, struct MyKeyRing *mkr, int row, GtkTreeIter *iter) {
     char temp[8];
     char *nameTxt;
 
     jp_logf(JP_LOG_DEBUG, "KeyRing: display_record_export\n");
 
-    gtk_clist_set_row_data(GTK_CLIST(clist), row, mkr);
-
     if ((!(mkr->kr.name)) || (mkr->kr.name[0] == '\0')) {
         sprintf(temp, "#%03d", row);
         nameTxt = temp;
-        gtk_clist_set_text(GTK_CLIST(clist), row, 0, temp);
     } else {
         nameTxt = mkr->kr.name;
-        gtk_clist_set_text(GTK_CLIST(clist), row, 0, mkr->kr.name);
     }
     //KEYRING_CHANGED_COLUMN_ENUM
+    gtk_list_store_append(pListStore, iter);
     gtk_list_store_set(pListStore, &iter,
                        KEYRING_CHANGED_COLUMN_ENUM, nameTxt, -1);
     return EXIT_SUCCESS;
@@ -1411,14 +1384,6 @@ void keyr_update_liststore(GtkListStore *pListStore, struct MyKeyRing **keyring_
     }
 
     gtk_list_store_clear(pListStore);
-/* #ifdef __APPLE__
-    gtk_clist_thaw(GTK_CLIST(clist));
-   gtk_widget_hide(clist);
-   gtk_widget_show_all(clist);
-   gtk_clist_freeze(GTK_CLIST(clist));
-#endif
- */
-
     entries_shown = 0;
 
     for (temp_list = *keyring_list; temp_list; temp_list = temp_list->next) {
@@ -1426,107 +1391,11 @@ void keyr_update_liststore(GtkListStore *pListStore, struct MyKeyRing **keyring_
         if (main) {
             display_record(temp_list, entries_shown, &iter);
         } else {
-            display_record_export(clist, pListStore, temp_list, entries_shown, &iter);
+            display_record_export(pListStore, temp_list, entries_shown, &iter);
         }
         entries_shown++;
     }
-
-/*  if (main)
-     gtk_signal_connect(GTK_OBJECT(clist), "select_row",
-                        GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
-                        */
-
-/* If there are items in the list, highlight the selected row */
-/*  if ((main) && (entries_shown > 0)) {
-      /* Select the existing requested row, or row 0 if that is impossible */
-/*       if (clist_row_selected <= entries_shown) {
-           clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
-           if (!gtk_clist_row_is_visible(GTK_CLIST(clist), clist_row_selected)) {
-               gtk_clist_moveto(GTK_CLIST(clist), clist_row_selected, 0, 0.5, 0.0);
-           }
-       } else {
-           clist_select_row(GTK_CLIST(clist), 0, 0);
-       }
-   }*/
-
-
-
     jp_logf(JP_LOG_DEBUG, "KeyRing: leave keyr_update_clist\n");
-}
-
-/*
- * This function lists the records in the clist on the left side of
- * the screen.
- */
-static void keyr_update_clist(GtkWidget *clist, struct MyKeyRing **keyring_list,
-                              int category, int main) {
-    /*  int entries_shown;
-      struct MyKeyRing *temp_list;
-      gchar *empty_line[] = {"", "", ""};
-
-      jp_logf(JP_LOG_DEBUG, "KeyRing: keyr_update_clist\n");
-
-      free_mykeyring_list(keyring_list);
-
-      /* This function takes care of reading the database for us */
-    /*   get_keyring(keyring_list, category);
-
-       if (main) {
-           keyr_clear_details();
-       }
-
-       /* Freeze clist to prevent flicker during updating */
-    /*  gtk_clist_freeze(GTK_CLIST(clist));
-      if (main) {
-          gtk_signal_disconnect_by_func(GTK_OBJECT(clist),
-                                        GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
-      }
-      clist_clear(GTK_CLIST(clist));
-  #ifdef __APPLE__
-      gtk_clist_thaw(GTK_CLIST(clist));
-      gtk_widget_hide(clist);
-      gtk_widget_show_all(clist);
-      gtk_clist_freeze(GTK_CLIST(clist));
-  #endif
-
-      entries_shown = 0;
-
-      for (temp_list = *keyring_list; temp_list; temp_list = temp_list->next) {
-          gtk_clist_append(GTK_CLIST(clist), empty_line);
-          if (main)
-              //display_record(temp_list, entries_shown);
-          else
-           //   display_record_export(clist, temp_list, entries_shown);
-          entries_shown++;
-      }
-
-      /* Sort the clist */
-    /*gtk_clist_sort(GTK_CLIST(clist));
-
-    if (main)
-        gtk_signal_connect(GTK_OBJECT(clist), "select_row",
-                           GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
-
-    /* If there are items in the list, highlight the selected row */
-    /*  if ((main) && (entries_shown > 0)) {
-          /* Select the existing requested row, or row 0 if that is impossible */
-    /*   if (clist_row_selected <= entries_shown) {
-           clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
-           if (!gtk_clist_row_is_visible(GTK_CLIST(clist), clist_row_selected)) {
-               gtk_clist_moveto(GTK_CLIST(clist), clist_row_selected, 0, 0.5, 0.0);
-           }
-       } else {
-           clist_select_row(GTK_CLIST(clist), 0, 0);
-       }
-   }
-
-   /* Unfreeze clist after all changes */
-    // gtk_clist_thaw(GTK_CLIST(clist));
-
-    /* return focus to clist after any big operation which requires a redraw */
-    //  gtk_widget_grab_focus(GTK_WIDGET(clist));
-
-    // jp_logf(JP_LOG_DEBUG, "KeyRing: leave keyr_update_clist\n");
 }
 
 static gboolean handleKeyringRowSelection(GtkTreeSelection *selection,
@@ -1540,7 +1409,7 @@ static gboolean handleKeyringRowSelection(GtkTreeSelection *selection,
     int b;
     unsigned int unique_id = 0;
 
-    jp_logf(JP_LOG_DEBUG, "KeyRing: cb_clist_selection\n");
+    jp_logf(JP_LOG_DEBUG, "KeyRing: handleKeyringRowSelection\n");
     if ((gtk_tree_model_get_iter(model, &iter, path)) && (!path_currently_selected)) {
         int *i = gtk_tree_path_get_indices(path);
         clist_row_selected = i[0];
@@ -1632,7 +1501,7 @@ static gboolean handleKeyringRowSelection(GtkTreeSelection *selection,
 
         connect_changed_signals(CONNECT_SIGNALS);
     }
-    jp_logf(JP_LOG_DEBUG, "KeyRing: leaving cb_clist_selection\n");
+    jp_logf(JP_LOG_DEBUG, "KeyRing: leaving handleKeyringRowSelection\n");
     return TRUE;
 }
 
@@ -1673,7 +1542,7 @@ static void cb_category(GtkWidget *item, int selection) {
 
         keyr_category = selection;
         clist_row_selected = 0;
-        keyr_update_clist(clist, &glob_keyring_list, keyr_category, TRUE);
+        keyr_update_liststore(listStore, &glob_keyring_list, keyr_category, TRUE);
     }
 }
 
@@ -2117,24 +1986,34 @@ int plugin_search(const char *search_string, int case_sense,
     return count;
 }
 
-static int keyring_find(int unique_id) {
-    int r, found_at;
+gboolean
+findKeyRingRecord (GtkTreeModel *model,
+            GtkTreePath  *path,
+            GtkTreeIter  *iter,
+            gpointer data) {
+    int uniqueId = GPOINTER_TO_INT(data);
+    if (uniqueId) {
+        struct MyKeyRing *mkr = NULL;
 
-    jp_logf(JP_LOG_DEBUG, "KeyRing: keyring_find\n");
-
-    r = clist_find_id(clist, unique_id, &found_at);
-    if (r) {
-        clist_select_row(GTK_CLIST(clist), found_at, 0);
-        if (!gtk_clist_row_is_visible(GTK_CLIST(clist), found_at)) {
-            gtk_clist_moveto(GTK_CLIST(clist), found_at, 0, 0.5, 0.0);
+        gtk_tree_model_get(model,iter,KEYRING_DATA_COLUMN_ENUM,&mkr,-1);
+        if(mkr->unique_id == uniqueId){
+            GtkTreeSelection * selection = NULL;
+            selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
+            gtk_tree_selection_select_path(selection, path);
+            gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, KEYRING_CHANGED_COLUMN_ENUM, FALSE, 1.0, 0.0);
+            return TRUE;
         }
     }
-
+    return FALSE;
+}
+static int keyring_find(int unique_id) {
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), findKeyRingRecord, GINT_TO_POINTER(unique_id));
     return EXIT_SUCCESS;
 }
 
 static void cb_keyr_update_clist(GtkWidget *clist, int category) {
-    keyr_update_clist(clist, &export_keyring_list, category, FALSE);
+    // keyr_update_clist(clist, &export_keyring_list, category, FALSE);
+    // keyr_update_liststore(listStore, &export_keyring_list, keyr_category, TRUE);
 }
 
 static void cb_keyr_export_done(GtkWidget *widget, const char *filename) {
@@ -2431,7 +2310,7 @@ int plugin_gui_cleanup(void) {
 
     jp_logf(JP_LOG_DEBUG, "KeyRing: plugin_gui_cleanup\n");
 
-    b = dialog_save_changed_record(clist, record_changed);
+    b = dialog_save_changed_record(GTK_WIDGET(treeView), record_changed);
     if (b == DIALOG_SAID_2) {
         cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
     }
@@ -2459,7 +2338,7 @@ int plugin_gui_cleanup(void) {
 
         pane = NULL;
 
-        clist_clear(GTK_CLIST(clist));
+        gtk_list_store_clear(listStore);
     }
 
     return EXIT_SUCCESS;
@@ -2709,26 +2588,16 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView)),
                                 GTK_SELECTION_BROWSE);
     GtkTreeSortable *sortable = GTK_TREE_SORTABLE(listStore);
-    gtk_tree_sortable_set_sort_func(sortable,KEYRING_CHANGED_COLUMN_ENUM,GtkTreeModelKeyrCompareDates,
+    gtk_tree_sortable_set_sort_func(sortable, KEYRING_CHANGED_COLUMN_ENUM, GtkTreeModelKeyrCompareDates,
                                     GINT_TO_POINTER(KEYRING_CHANGED_COLUMN_ENUM), NULL);
-    gtk_tree_sortable_set_sort_func(sortable,KEYRING_NAME_COLUMN_ENUM,GtkTreeModelKeyrCompareNocase,
-                                  GINT_TO_POINTER(KEYRING_NAME_COLUMN_ENUM), NULL);
+    gtk_tree_sortable_set_sort_func(sortable, KEYRING_NAME_COLUMN_ENUM, GtkTreeModelKeyrCompareNocase,
+                                    GINT_TO_POINTER(KEYRING_NAME_COLUMN_ENUM), NULL);
     for (int x = 0; x < KEYRING_NUM_COLS - 5; x++) {
         gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), x), gtk_false());
     }
-    gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), clist_col_selected), gtk_true());
+    gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), clist_col_selected),
+                                           gtk_true());
 
-    clist = gtk_clist_new_with_titles(3, titles);
-
-    gtk_clist_column_titles_active(GTK_CLIST(clist));
-    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), KEYR_CHGD_COLUMN, TRUE);
-    gtk_clist_set_column_width(GTK_CLIST(clist), KEYR_NAME_COLUMN, 150);
-
-    gtk_clist_set_sort_column(GTK_CLIST(clist), KEYR_NAME_COLUMN);
-    gtk_clist_set_compare_func(GTK_CLIST(clist), GtkClistKeyrCompareNocase);
-    gtk_clist_set_sort_type(GTK_CLIST(clist), GTK_SORT_ASCENDING);
-    gtk_clist_set_shadow_type(GTK_CLIST(clist), SHADOW);
-    gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
     g_signal_connect (changedColumn, "clicked", G_CALLBACK(column_clicked_cb), NULL);
     g_signal_connect (nameColumn, "clicked", G_CALLBACK(column_clicked_cb), NULL);
     g_signal_connect (accountColumn, "clicked", G_CALLBACK(column_clicked_cb), NULL);
