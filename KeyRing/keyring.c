@@ -40,6 +40,7 @@
 /* OpenSSL header files */
 #  include <openssl/md5.h>
 #  include <openssl/des.h>
+
 #endif
 
 /* Pilot-link header files */
@@ -1255,7 +1256,7 @@ static void cb_gen_password(GtkWidget *widget, gpointer data) {
  * This function just adds the record to the clist on the left side of
  * the screen.
  */
-static int display_record(struct MyKeyRing *mkr, int row,GtkTreeIter * iter) {
+static int display_record(struct MyKeyRing *mkr, int row, GtkTreeIter *iter) {
     char temp[8];
     char *nameTxt;
     char *accountTxt;
@@ -1295,48 +1296,50 @@ static int display_record(struct MyKeyRing *mkr, int row,GtkTreeIter * iter) {
             showBgColor = FALSE;
     }
 
-    gtk_clist_set_row_data(GTK_CLIST(clist), row, mkr);
+    // gtk_clist_set_row_data(GTK_CLIST(clist), row, mkr);
 
     if (mkr->kr.last_changed.tm_year == 0) {
         sprintf(changedTxt, _("No date"));
-        gtk_clist_set_text(GTK_CLIST(clist), row, KEYR_CHGD_COLUMN, changedTxt);
+        // gtk_clist_set_text(GTK_CLIST(clist), row, KEYR_CHGD_COLUMN, changedTxt);
     } else {
         get_pref(PREF_SHORTDATE, NULL, &svalue);
         strftime(changedTxt, sizeof(changedTxt), svalue, &(mkr->kr.last_changed));
-        gtk_clist_set_text(GTK_CLIST(clist), row, KEYR_CHGD_COLUMN, changedTxt);
+        //   gtk_clist_set_text(GTK_CLIST(clist), row, KEYR_CHGD_COLUMN, changedTxt);
     }
 
     if ((!(mkr->kr.name)) || (mkr->kr.name[0] == '\0')) {
         sprintf(temp, "#%03d", row);
         nameTxt = temp;
-        gtk_clist_set_text(GTK_CLIST(clist), row, KEYR_NAME_COLUMN, temp);
+        // gtk_clist_set_text(GTK_CLIST(clist), row, KEYR_NAME_COLUMN, temp);
     } else {
         nameTxt = mkr->kr.name;
-        gtk_clist_set_text(GTK_CLIST(clist), row, KEYR_NAME_COLUMN, mkr->kr.name);
+        //   gtk_clist_set_text(GTK_CLIST(clist), row, KEYR_NAME_COLUMN, mkr->kr.name);
     }
 
     if ((!(mkr->kr.account)) || (mkr->kr.account[0] == '\0')) {
         accountTxt = "";
-        gtk_clist_set_text(GTK_CLIST(clist), row, KEYR_ACCT_COLUMN, "");
+        // gtk_clist_set_text(GTK_CLIST(clist), row, KEYR_ACCT_COLUMN, "");
     } else {
         accountTxt = mkr->kr.account;
-        gtk_clist_set_text(GTK_CLIST(clist), row, KEYR_ACCT_COLUMN, mkr->kr.account);
+        // gtk_clist_set_text(GTK_CLIST(clist), row, KEYR_ACCT_COLUMN, mkr->kr.account);
     }
-    gtk_list_store_set(listStore, &iter,
-                       KEYRING_DATA_COLUMN_ENUM, mkr,
+    gtk_list_store_append(listStore, iter);
+    gtk_list_store_set(listStore, iter,
                        KEYRING_CHANGED_COLUMN_ENUM, changedTxt,
-                       KEYRING_NAME_COLUMN_ENUM,nameTxt,
-            KEYRING_ACCOUNT_COLUMN_ENUM,accountTxt,
-            KEYRING_BACKGROUND_COLOR_ENABLED_ENUM,showBgColor,
-            KEYRING_BACKGROUND_COLOR_ENUM,showBgColor ? &bgColor : NULL,-1);
+                       KEYRING_NAME_COLUMN_ENUM, nameTxt,
+                       KEYRING_ACCOUNT_COLUMN_ENUM, accountTxt,
+                       KEYRING_DATA_COLUMN_ENUM, mkr,
+                       KEYRING_BACKGROUND_COLOR_ENABLED_ENUM, showBgColor,
+                       KEYRING_BACKGROUND_COLOR_ENUM, showBgColor ? &bgColor : NULL, -1);
 
 
     return EXIT_SUCCESS;
 }
 
-static int display_record_export(GtkWidget *clist,GtkListStore * pListStore, struct MyKeyRing *mkr, int row,GtkTreeIter * iter) {
+static int
+display_record_export(GtkWidget *clist, GtkListStore *pListStore, struct MyKeyRing *mkr, int row, GtkTreeIter *iter) {
     char temp[8];
-    char * nameTxt;
+    char *nameTxt;
 
     jp_logf(JP_LOG_DEBUG, "KeyRing: display_record_export\n");
 
@@ -1350,9 +1353,9 @@ static int display_record_export(GtkWidget *clist,GtkListStore * pListStore, str
         nameTxt = mkr->kr.name;
         gtk_clist_set_text(GTK_CLIST(clist), row, 0, mkr->kr.name);
     }
-  //KEYRING_CHANGED_COLUMN_ENUM
-  gtk_list_store_set(pListStore, &iter,
-    KEYRING_CHANGED_COLUMN_ENUM, nameTxt,-1);
+    //KEYRING_CHANGED_COLUMN_ENUM
+    gtk_list_store_set(pListStore, &iter,
+                       KEYRING_CHANGED_COLUMN_ENUM, nameTxt, -1);
     return EXIT_SUCCESS;
 }
 
@@ -1386,32 +1389,32 @@ void keyr_update_liststore(GtkListStore *pListStore, struct MyKeyRing **keyring_
     entries_shown = 0;
 
     for (temp_list = *keyring_list; temp_list; temp_list = temp_list->next) {
-        gtk_clist_append(GTK_CLIST(clist), empty_line);
-        gtk_list_store_append(pListStore, &iter);
-        if (main)
-            display_record(temp_list, entries_shown,&iter);
-        else
-            display_record_export(clist, pListStore, temp_list, entries_shown,&iter);
+
+        if (main) {
+            display_record(temp_list, entries_shown, &iter);
+        } else {
+            display_record_export(clist, pListStore, temp_list, entries_shown, &iter);
+        }
         entries_shown++;
     }
 
-   /*  if (main)
-        gtk_signal_connect(GTK_OBJECT(clist), "select_row",
-                           GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
-                           */
+/*  if (main)
+     gtk_signal_connect(GTK_OBJECT(clist), "select_row",
+                        GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
+                        */
 
-    /* If there are items in the list, highlight the selected row */
-  /*  if ((main) && (entries_shown > 0)) {
-        /* Select the existing requested row, or row 0 if that is impossible */
- /*       if (clist_row_selected <= entries_shown) {
-            clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
-            if (!gtk_clist_row_is_visible(GTK_CLIST(clist), clist_row_selected)) {
-                gtk_clist_moveto(GTK_CLIST(clist), clist_row_selected, 0, 0.5, 0.0);
-            }
-        } else {
-            clist_select_row(GTK_CLIST(clist), 0, 0);
-        }
-    }*/
+/* If there are items in the list, highlight the selected row */
+/*  if ((main) && (entries_shown > 0)) {
+      /* Select the existing requested row, or row 0 if that is impossible */
+/*       if (clist_row_selected <= entries_shown) {
+           clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
+           if (!gtk_clist_row_is_visible(GTK_CLIST(clist), clist_row_selected)) {
+               gtk_clist_moveto(GTK_CLIST(clist), clist_row_selected, 0, 0.5, 0.0);
+           }
+       } else {
+           clist_select_row(GTK_CLIST(clist), 0, 0);
+       }
+   }*/
 
 
 
@@ -1424,47 +1427,47 @@ void keyr_update_liststore(GtkListStore *pListStore, struct MyKeyRing **keyring_
  */
 static void keyr_update_clist(GtkWidget *clist, struct MyKeyRing **keyring_list,
                               int category, int main) {
-  /*  int entries_shown;
-    struct MyKeyRing *temp_list;
-    gchar *empty_line[] = {"", "", ""};
+    /*  int entries_shown;
+      struct MyKeyRing *temp_list;
+      gchar *empty_line[] = {"", "", ""};
 
-    jp_logf(JP_LOG_DEBUG, "KeyRing: keyr_update_clist\n");
+      jp_logf(JP_LOG_DEBUG, "KeyRing: keyr_update_clist\n");
 
-    free_mykeyring_list(keyring_list);
+      free_mykeyring_list(keyring_list);
 
-    /* This function takes care of reading the database for us */
- /*   get_keyring(keyring_list, category);
+      /* This function takes care of reading the database for us */
+    /*   get_keyring(keyring_list, category);
 
-    if (main) {
-        keyr_clear_details();
-    }
+       if (main) {
+           keyr_clear_details();
+       }
 
-    /* Freeze clist to prevent flicker during updating */
-  /*  gtk_clist_freeze(GTK_CLIST(clist));
-    if (main) {
-        gtk_signal_disconnect_by_func(GTK_OBJECT(clist),
-                                      GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
-    }
-    clist_clear(GTK_CLIST(clist));
-#ifdef __APPLE__
-    gtk_clist_thaw(GTK_CLIST(clist));
-    gtk_widget_hide(clist);
-    gtk_widget_show_all(clist);
-    gtk_clist_freeze(GTK_CLIST(clist));
-#endif
+       /* Freeze clist to prevent flicker during updating */
+    /*  gtk_clist_freeze(GTK_CLIST(clist));
+      if (main) {
+          gtk_signal_disconnect_by_func(GTK_OBJECT(clist),
+                                        GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
+      }
+      clist_clear(GTK_CLIST(clist));
+  #ifdef __APPLE__
+      gtk_clist_thaw(GTK_CLIST(clist));
+      gtk_widget_hide(clist);
+      gtk_widget_show_all(clist);
+      gtk_clist_freeze(GTK_CLIST(clist));
+  #endif
 
-    entries_shown = 0;
+      entries_shown = 0;
 
-    for (temp_list = *keyring_list; temp_list; temp_list = temp_list->next) {
-        gtk_clist_append(GTK_CLIST(clist), empty_line);
-        if (main)
-            //display_record(temp_list, entries_shown);
-        else
-         //   display_record_export(clist, temp_list, entries_shown);
-        entries_shown++;
-    }
+      for (temp_list = *keyring_list; temp_list; temp_list = temp_list->next) {
+          gtk_clist_append(GTK_CLIST(clist), empty_line);
+          if (main)
+              //display_record(temp_list, entries_shown);
+          else
+           //   display_record_export(clist, temp_list, entries_shown);
+          entries_shown++;
+      }
 
-    /* Sort the clist */
+      /* Sort the clist */
     /*gtk_clist_sort(GTK_CLIST(clist));
 
     if (main)
@@ -1472,25 +1475,25 @@ static void keyr_update_clist(GtkWidget *clist, struct MyKeyRing **keyring_list,
                            GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
 
     /* If there are items in the list, highlight the selected row */
-  /*  if ((main) && (entries_shown > 0)) {
-        /* Select the existing requested row, or row 0 if that is impossible */
-     /*   if (clist_row_selected <= entries_shown) {
-            clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
-            if (!gtk_clist_row_is_visible(GTK_CLIST(clist), clist_row_selected)) {
-                gtk_clist_moveto(GTK_CLIST(clist), clist_row_selected, 0, 0.5, 0.0);
-            }
-        } else {
-            clist_select_row(GTK_CLIST(clist), 0, 0);
-        }
-    }
+    /*  if ((main) && (entries_shown > 0)) {
+          /* Select the existing requested row, or row 0 if that is impossible */
+    /*   if (clist_row_selected <= entries_shown) {
+           clist_select_row(GTK_CLIST(clist), clist_row_selected, 0);
+           if (!gtk_clist_row_is_visible(GTK_CLIST(clist), clist_row_selected)) {
+               gtk_clist_moveto(GTK_CLIST(clist), clist_row_selected, 0, 0.5, 0.0);
+           }
+       } else {
+           clist_select_row(GTK_CLIST(clist), 0, 0);
+       }
+   }
 
-    /* Unfreeze clist after all changes */
-   // gtk_clist_thaw(GTK_CLIST(clist));
+   /* Unfreeze clist after all changes */
+    // gtk_clist_thaw(GTK_CLIST(clist));
 
     /* return focus to clist after any big operation which requires a redraw */
-  //  gtk_widget_grab_focus(GTK_WIDGET(clist));
+    //  gtk_widget_grab_focus(GTK_WIDGET(clist));
 
-   // jp_logf(JP_LOG_DEBUG, "KeyRing: leave keyr_update_clist\n");
+    // jp_logf(JP_LOG_DEBUG, "KeyRing: leave keyr_update_clist\n");
 }
 
 static gboolean handleKeyringRowSelection(GtkTreeSelection *selection,
@@ -2428,6 +2431,7 @@ int plugin_gui_cleanup(void) {
 
     return EXIT_SUCCESS;
 }
+
 static void column_clicked_cb(GtkTreeViewColumn *column) {
     clist_col_selected = column->sort_column_id;
 
@@ -2628,6 +2632,8 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     titles[0] = _("Changed");
     titles[1] = _("Name");
     titles[2] = _("Account");
+    GtkTreeModel *model = GTK_TREE_MODEL(listStore);
+    treeView = gtk_tree_view_new_with_model(model);
     GtkCellRenderer *changedRenderer = gtk_cell_renderer_text_new();
     GtkTreeViewColumn *changedColumn = gtk_tree_view_column_new_with_attributes("Changed",
                                                                                 changedRenderer,
@@ -2876,7 +2882,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
         keyr_category = CATEGORY_ALL;
     }
 
-   // keyr_update_clist(clist, &glob_keyring_list, keyr_category, TRUE);
+    // keyr_update_clist(clist, &glob_keyring_list, keyr_category, TRUE);
     keyr_update_liststore(listStore, &glob_keyring_list, keyr_category, TRUE);
 
     if (unique_id) {
