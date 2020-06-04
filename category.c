@@ -432,13 +432,7 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
    if (Pdata) {
       switch (button) {
        case EDIT_CAT_NEW:
-         count=0;
-         for (i=0; i<NUM_CATEGORIES-1; i++) {
-            r = gtk_clist_get_text(GTK_CLIST(Pdata->clist), i, 0, &text);
-            if ((r) && (text[0])) {
-               count++;
-            }
-         }
+         count = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(Pdata->listStore), NULL);
          if (count>NUM_CATEGORIES-2) {
             dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(widget)),
                            _("Edit Categories"), DIALOG_ERROR,
@@ -831,7 +825,7 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
 
    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
                       GTK_SIGNAL_FUNC(cb_clist_edit_cats), &Pdata);
-    gtk_tree_selection_set_select_function(gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView)), handleCategorySelection, &Pdata, NULL);
+   gtk_tree_selection_set_select_function(gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView)), handleCategorySelection, &Pdata, NULL);
    gtk_box_pack_start(GTK_BOX(vbox1), GTK_WIDGET(treeView), TRUE, TRUE, 1);
 
    /* Fill clist with categories except for category 0, Unfiled,
