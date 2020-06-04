@@ -666,7 +666,20 @@ static void cb_edit_button(GtkWidget *widget, gpointer data)
    }
 }
 
-
+static gboolean handleCategorySelection(GtkTreeSelection *selection,
+                                          GtkTreeModel *model,
+                                          GtkTreePath *path,
+                                          gboolean path_currently_selected,
+                                          gpointer data) {
+    struct dialog_cats_data *Pdata;
+    GtkTreeIter iter;
+    Pdata=data;
+    if ((gtk_tree_model_get_iter(model, &iter, path)) && (!path_currently_selected)) {
+        int *i = gtk_tree_path_get_indices(path);
+        Pdata->selected = i[0];
+    }
+    return TRUE;
+}
 static void cb_clist_edit_cats(GtkWidget *widget,
                                gint row, gint column,
                                GdkEventButton *event, gpointer data)
@@ -818,6 +831,7 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
 
    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
                       GTK_SIGNAL_FUNC(cb_clist_edit_cats), &Pdata);
+    gtk_tree_selection_set_select_function(gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView)), handleCategorySelection, &Pdata, NULL);
    gtk_box_pack_start(GTK_BOX(vbox1), GTK_WIDGET(treeView), TRUE, TRUE, 1);
 
    /* Fill clist with categories except for category 0, Unfiled,
