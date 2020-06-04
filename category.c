@@ -51,6 +51,8 @@ struct dialog_cats_data {
    int selected;
    int state;
    GtkWidget *clist;
+   GtkTreeView *treeView;
+   GtkListStore *listStore;
    GtkWidget *button_box;
    GtkWidget *entry_box;
    GtkWidget *entry;
@@ -58,6 +60,12 @@ struct dialog_cats_data {
    char db_name[16];
    struct CategoryAppInfo cai1;
    struct CategoryAppInfo cai2;
+};
+
+enum {
+    CATEGORY_TITLE_COLUMN_ENUM,
+    CATEGORY_DATA_COLUMN_ENUM,
+    CATEGORY_NUM_COLS
 };
 
 /****************************** Main Code *************************************/
@@ -723,6 +731,8 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
    GtkWidget *vbox1, *vbox2, *vbox3;
    GtkWidget *dialog;
    GtkWidget *clist;
+   GtkListStore *listStore;
+   GtkTreeView *treeView;
    GtkWidget *entry;
    GtkWidget *label;
    GtkWidget *separator;
@@ -786,7 +796,19 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
 
    vbox2 = gtk_vbox_new(FALSE, 0);
    gtk_box_pack_start(GTK_BOX(hbox), vbox2, FALSE, FALSE, 1);
-
+   listStore = gtk_list_store_new(CATEGORY_NUM_COLS, G_TYPE_STRING,G_TYPE_POINTER);
+   treeView = gtk_tree_view_new_with_model(GTK_TREE_MODEL(listStore));
+    GtkCellRenderer *titleRenderer = gtk_cell_renderer_text_new();
+    GtkTreeViewColumn *titleColumn = gtk_tree_view_column_new_with_attributes("Category",
+                                                                                titleRenderer,
+                                                                                "text", CATEGORY_TITLE_COLUMN_ENUM,
+                                                                                NULL);
+    gtk_tree_view_column_set_clickable(titleColumn,gtk_false());
+    gtk_tree_view_column_set_min_width(titleColumn,100);
+    gtk_tree_view_column_set_sizing(titleColumn,GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+    gtk_tree_view_insert_column(treeView,titleColumn,CATEGORY_TITLE_COLUMN_ENUM);
+    gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView)),
+                                GTK_SELECTION_BROWSE);
    clist = gtk_clist_new_with_titles(1, titles);
 
    gtk_clist_column_titles_passive(GTK_CLIST(clist));
@@ -796,13 +818,15 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
 
    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
                       GTK_SIGNAL_FUNC(cb_clist_edit_cats), &Pdata);
-   gtk_box_pack_start(GTK_BOX(vbox1), clist, TRUE, TRUE, 1);
+   gtk_box_pack_start(GTK_BOX(vbox1), GTK_WIDGET(treeView), TRUE, TRUE, 1);
 
    /* Fill clist with categories except for category 0, Unfiled,
     * which is not editable */
    get_pref(PREF_CHAR_SET, &char_set, NULL);
+   GtkTreeIter iter;
    for (i=j=1; i<NUM_CATEGORIES; i++,j++) {
       gtk_clist_append(GTK_CLIST(clist), empty_line);
+
       /* Hide void category names */
       while ((j < NUM_CATEGORIES) && ((cai->name[j][0] == '\0') || (!cai->ID[j]))) {
          /* Remove categories which have a null ID 
@@ -814,12 +838,16 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai)
       if (j < NUM_CATEGORIES) {
          /* Must do character set conversion from Palm to Host */
          catname_hchar = charset_p2newj(cai->name[j], PILOTCAT_NAME_SZ, char_set);
+         gtk_list_store_append(listStore,&iter);
+         gtk_list_store_set(listStore,&iter,CATEGORY_TITLE_COLUMN_ENUM,catname_hchar,-1);
          gtk_clist_set_text(GTK_CLIST(clist), i-1, 0, catname_hchar);
          free(catname_hchar);
       }
    }
 
    Pdata.clist = clist;
+   Pdata.treeView = treeView;
+   Pdata.listStore = listStore;
 
    /* Buttons */
    hbox = gtk_hbutton_box_new();

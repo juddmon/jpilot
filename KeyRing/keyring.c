@@ -1283,6 +1283,7 @@ static int display_record(struct MyKeyRing *mkr, int row, GtkTreeIter *iter) {
 
     /* Highlight row background depending on status */
     GdkColor bgColor;
+    gboolean showBgColor;
     switch (mkr->rt) {
         case NEW_PC_REC:
         case REPLACEMENT_PALM_REC:
