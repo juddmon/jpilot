@@ -1357,7 +1357,6 @@ addNewRecord (GtkTreeModel *model,
         addNewRecordToDataStructure(mytodo,data);
         return TRUE;
     }
-
     return FALSE;
 
 
@@ -1440,8 +1439,12 @@ void addNewRecordToDataStructure(MyToDo * mtodo, gpointer data){
 }
 
 static void cb_add_new_record(GtkWidget *widget, gpointer data) {
-    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), addNewRecord, data);
-   return;
+    if(gtk_tree_model_iter_n_children(GTK_TREE_MODEL(listStore), NULL) != 0) {
+        gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), addNewRecord, data);
+    }else {
+        //no records exist in category yet.
+        addNewRecordToDataStructure(NULL,data);
+    }
 }
 
 /* Do masking like Palm OS 3.5 */
@@ -2445,7 +2448,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     /* New button */
     CREATE_BUTTON(new_record_button, _("New Record"), NEW, _("Add a new record"), GDK_n, GDK_CONTROL_MASK, "Ctrl+N")
-    gtk_signal_connect(GTK_OBJECT(new_record_button), "clicked",
+    g_signal_connect(GTK_OBJECT(new_record_button), "clicked",
                        GTK_SIGNAL_FUNC(cb_add_new_record),
                        GINT_TO_POINTER(CLEAR_FLAG));
 
