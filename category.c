@@ -130,7 +130,7 @@ static int edit_cats_delete_cats_pc3(char *DB_name, int cat) {
             if (feof(pc_in)) break;
         }
 
-        rec_len = header.rec_len;
+        rec_len = (int) header.rec_len;
         if (rec_len > 0x10000) {
             jp_logf(JP_LOG_WARN, _("PC file corrupt?\n"));
             fclose(pc_in);
@@ -186,7 +186,7 @@ static int _edit_cats_change_cats_pc3(char *DB_name,
             if (ferror(pc_in)) break;
             if (feof(pc_in)) break;
         }
-        rec_len = header.rec_len;
+        rec_len = (int) header.rec_len;
         if (rec_len > 0x10000) {
             jp_logf(JP_LOG_WARN, _("PC file corrupt?\n"));
             fclose(pc_in);
@@ -200,7 +200,7 @@ static int _edit_cats_change_cats_pc3(char *DB_name,
                 fclose(pc_in);
                 return EXIT_FAILURE;
             }
-            header.attrib = (header.attrib & 0xFFFFFFF0) | new_cat;
+            header.attrib = (unsigned char) ((header.attrib & 0xFFFFFFF0) | new_cat);
             write_header(pc_in, &header);
             count++;
         }
@@ -210,7 +210,7 @@ static int _edit_cats_change_cats_pc3(char *DB_name,
                 fclose(pc_in);
                 return EXIT_FAILURE;
             }
-            header.attrib = (header.attrib & 0xFFFFFFF0) | old_cat;
+            header.attrib = (unsigned char) ((header.attrib & 0xFFFFFFF0) | old_cat);
             write_header(pc_in, &header);
             count++;
         }
@@ -271,7 +271,7 @@ int edit_cats_change_cats_pdb(char *DB_name, int old_cat, int new_cat) {
                 count++;
             } else {
                 /* write a deleted rec */
-                br->attrib = (br->attrib & 0xFFFFFFF0) | (new_cat & 0x0F);
+                br->attrib = (unsigned char) ((br->attrib & 0xFFFFFFF0) | (new_cat & 0x0F));
                 jp_delete_record(DB_name, br, MODIFY_FLAG);
                 br->rt = REPLACEMENT_PALM_REC;
                 jp_pc_write(DB_name, br);
@@ -395,7 +395,6 @@ deleteCategory(GtkTreeModel *model,
                GtkTreeIter *iter,
                gpointer data) {
     struct dialog_cats_data *Pdata;
-    char *text;
     Pdata = data;
     int *i = gtk_tree_path_get_indices(path);
     if (Pdata->selected == i[0]) {
@@ -478,12 +477,9 @@ static void cb_edit_button(GtkWidget *widget, gpointer data) {
     int id;
     int button;
     int catnum;
-    char currentname[HOSTCAT_NAME_SZ];  /* current category name */
-    char previousname[HOSTCAT_NAME_SZ]; /* previous category name */
-    char pilotentry[HOSTCAT_NAME_SZ];   /* entry text, in Pilot character set */
+     char pilotentry[HOSTCAT_NAME_SZ];   /* entry text, in Pilot character set */
     char *button_text[] = {N_("OK")};
     char *move_text[] = {N_("Move"), N_("Delete"), N_("Cancel")};
-    char *text;
     const char *entry_text;
     char temp[256];
 
@@ -596,6 +592,8 @@ static void cb_edit_button(GtkWidget *widget, gpointer data) {
                             printf("Delete Canceled\n");
 #endif
                             return;
+                        default:
+                            return;
                     }
                 }
                 /* delete the category */
@@ -685,7 +683,7 @@ static void cb_edit_button(GtkWidget *widget, gpointer data) {
                             /* JPA get the old text from listbox, to avoid making */
                             /* character set conversions */
                             strcpy(Pdata->cai2.name[i], pilotentry);
-                            Pdata->cai2.ID[i] = id;
+                            Pdata->cai2.ID[i] = (unsigned char) id;
                             Pdata->cai2.renamed[i] = 1;
 
                             break;
@@ -864,7 +862,7 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai) {
         }
         if (j < NUM_CATEGORIES) {
             /* Must do character set conversion from Palm to Host */
-            catname_hchar = charset_p2newj(cai->name[j], PILOTCAT_NAME_SZ, char_set);
+            catname_hchar = charset_p2newj(cai->name[j], PILOTCAT_NAME_SZ, (int) char_set);
             gtk_list_store_append(listStore, &iter);
             gtk_list_store_set(listStore, &iter, CATEGORY_TITLE_COLUMN_ENUM, catname_hchar, CATEGORY_DATA_COLUMN_ENUM,
                                j, -1);
