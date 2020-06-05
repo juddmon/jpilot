@@ -454,6 +454,30 @@ editCategoryRename(GtkTreeModel *model,
     return FALSE;
 }
 
+gboolean
+selectCategoryRecordByRow (GtkTreeModel *model,
+                   GtkTreePath  *path,
+                   GtkTreeIter  *iter,
+                   gpointer data) {
+    struct dialog_cats_data *Pdata;
+    Pdata = data;
+    int * i = gtk_tree_path_get_indices ( path ) ;
+    int rowToCheck = Pdata->selected;
+    //rowToCheck is > than number of rows, so select the last row.
+    if(Pdata->selected >= gtk_tree_model_iter_n_children(GTK_TREE_MODEL(model), NULL)){
+        rowToCheck--;
+    }
+    g_print("i = %d, rowToCheck = %d",i[0],rowToCheck);
+    if(i[0] == rowToCheck){
+        GtkTreeSelection * selection = NULL;
+        selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(Pdata->treeView));
+        gtk_tree_selection_select_path(selection, path);
+        gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(Pdata->treeView), path, CATEGORY_TITLE_COLUMN_ENUM, FALSE, 1.0, 0.0);
+        return TRUE;
+    }
+
+    return FALSE;
+}
 static void cb_edit_button(GtkWidget *widget, gpointer data) {
     struct dialog_cats_data *Pdata;
     int i, r, count;
@@ -593,6 +617,8 @@ static void cb_edit_button(GtkWidget *widget, gpointer data) {
                 /* we get the old text from listbox, to avoid making */
                 /* character set conversions */
                 gtk_tree_model_foreach(GTK_TREE_MODEL(Pdata->listStore), deleteCategory, Pdata);
+                gtk_tree_model_foreach(GTK_TREE_MODEL(Pdata->listStore), selectCategoryRecordByRow, Pdata);
+
                 break;
 
             case EDIT_CAT_ENTRY_OK:
