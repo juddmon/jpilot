@@ -413,19 +413,10 @@ renameCategory(GtkTreeModel *model,
     struct dialog_cats_data *Pdata;
     char *text;
     Pdata = data;
-    long char_set;
     int *i = gtk_tree_path_get_indices(path);
     if (Pdata->selected == i[0]) {
-        get_pref(PREF_CHAR_SET, &char_set, NULL); /* JPA be prepared to make conversions */
-
-        /* JPA assuming gtk makes a copy */
         text = Pdata->entryText;
         gtk_list_store_set(GTK_LIST_STORE(Pdata->listStore), iter, CATEGORY_TITLE_COLUMN_ENUM, text, -1);
-
-        /* JPA enter new category name in Palm Pilot character set */
-        charset_j2p(text, HOSTCAT_NAME_SZ, char_set);
-        g_strlcpy(Pdata->cai2.name[i[0]], text, PILOTCAT_NAME_SZ);
-        Pdata->cai2.renamed[i[0]] = 1;
         return TRUE;
     }
     return FALSE;
@@ -455,21 +446,21 @@ editCategoryRename(GtkTreeModel *model,
 }
 
 gboolean
-selectCategoryRecordByRow (GtkTreeModel *model,
-                   GtkTreePath  *path,
-                   GtkTreeIter  *iter,
-                   gpointer data) {
+selectCategoryRecordByRow(GtkTreeModel *model,
+                          GtkTreePath *path,
+                          GtkTreeIter *iter,
+                          gpointer data) {
     struct dialog_cats_data *Pdata;
     Pdata = data;
-    int * i = gtk_tree_path_get_indices ( path ) ;
+    int *i = gtk_tree_path_get_indices(path);
     int rowToCheck = Pdata->selected;
     //rowToCheck is > than number of rows, so select the last row.
-    if(Pdata->selected >= gtk_tree_model_iter_n_children(GTK_TREE_MODEL(model), NULL)){
+    if (Pdata->selected >= gtk_tree_model_iter_n_children(GTK_TREE_MODEL(model), NULL)) {
         rowToCheck--;
     }
-    g_print("i = %d, rowToCheck = %d",i[0],rowToCheck);
-    if(i[0] == rowToCheck){
-        GtkTreeSelection * selection = NULL;
+    g_print("i = %d, rowToCheck = %d", i[0], rowToCheck);
+    if (i[0] == rowToCheck) {
+        GtkTreeSelection *selection = NULL;
         selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(Pdata->treeView));
         gtk_tree_selection_select_path(selection, path);
         gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(Pdata->treeView), path, CATEGORY_TITLE_COLUMN_ENUM, FALSE, 1.0, 0.0);
@@ -478,6 +469,7 @@ selectCategoryRecordByRow (GtkTreeModel *model,
 
     return FALSE;
 }
+
 static void cb_edit_button(GtkWidget *widget, gpointer data) {
     struct dialog_cats_data *Pdata;
     int i, r, count;
@@ -659,6 +651,10 @@ static void cb_edit_button(GtkWidget *widget, gpointer data) {
 #endif
                     Pdata->entryText = (char *) entry_text;
                     gtk_tree_model_foreach(GTK_TREE_MODEL(Pdata->listStore), renameCategory, Pdata);
+                    /* JPA enter new category name in Palm Pilot character set */
+                    charset_j2p((char *) entry_text, HOSTCAT_NAME_SZ, char_set);
+                    g_strlcpy(Pdata->cai2.name[catnum], entry_text, PILOTCAT_NAME_SZ);
+                    Pdata->cai2.renamed[catnum] = 1;
 
                 }
 
@@ -723,13 +719,12 @@ static gboolean handleCategorySelection(GtkTreeSelection *selection,
     Pdata = data;
     if ((gtk_tree_model_get_iter(model, &iter, path)) && (!path_currently_selected)) {
         int *i = gtk_tree_path_get_indices(path);
-        if (Pdata->state==EDIT_CAT_START) {
+        if (Pdata->state == EDIT_CAT_START) {
             Pdata->selected = i[0];
         }
     }
     return TRUE;
 }
-
 
 
 #ifdef EDIT_CATS_DEBUG
