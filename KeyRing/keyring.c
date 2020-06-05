@@ -1204,7 +1204,14 @@ void addKeyRing(struct MyKeyRing *mkr, gpointer data) {
    kr->note=strdup((char *)Pstr[2]);
  */
 static void cb_add_new_record(GtkWidget *widget, gpointer data) {
-    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), addKeyRingRecord, data);
+
+    if(gtk_tree_model_iter_n_children(GTK_TREE_MODEL(listStore), NULL) != 0) {
+        gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), addKeyRingRecord, data);
+    }else {
+        //no records exist in category yet.
+        addKeyRing(NULL,data);
+    }
+
 
 }
 
@@ -1283,6 +1290,7 @@ static int display_record(struct MyKeyRing *mkr, int row, GtkTreeIter *iter) {
 
     /* Highlight row background depending on status */
     GdkColor bgColor;
+    gboolean showBgColor;
     switch (mkr->rt) {
         case NEW_PC_REC:
         case REPLACEMENT_PALM_REC:

@@ -1766,7 +1766,6 @@ gboolean addNewAddressRecord(GtkTreeModel *model,
         addNewAddressRecordToDataStructure(mcont,data);
         return TRUE;
     }
-
     return FALSE;
 }
 
@@ -2233,7 +2232,13 @@ static void get_address_attrib(unsigned char *attrib) {
 }
 
 static void cb_add_new_record(GtkWidget *widget, gpointer data) {
-    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), addNewAddressRecord, data);    
+
+    if(gtk_tree_model_iter_n_children(GTK_TREE_MODEL(listStore), NULL) != 0) {
+        gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), addNewAddressRecord, data);
+    }else {
+        //no records exist in category yet.
+        addNewAddressRecordToDataStructure(NULL,data);
+    }
 }
 
 static void addr_clear_details(void) {

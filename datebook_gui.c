@@ -3297,8 +3297,12 @@ void addNewDateRecordToDataStructure(MyCalendarEvent * mcale, gpointer data) {
     return;
 }
 static void cb_add_new_record(GtkWidget *widget, gpointer data) {
-    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), addNewDateRecord, data);
-    return;
+    if(gtk_tree_model_iter_n_children(GTK_TREE_MODEL(listStore), NULL) != 0) {
+        gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), addNewDateRecord, data);
+    }else {
+        //no records exist in category yet.
+        addNewDateRecordToDataStructure(NULL,data);
+    }
 }
 
 

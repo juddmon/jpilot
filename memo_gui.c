@@ -152,6 +152,8 @@ selectRecordByRowMemo (GtkTreeModel *model,
 
 int print_memo(MyMemo *mmemo );
 
+gboolean addNewMemo(MyMemo *mmemo, const void *data);
+
 /****************************** Main Code *************************************/
 static void set_new_button_to(int new_state) {
     jp_logf(JP_LOG_DEBUG, "set_new_button_to new %d old %d\n", new_state, record_changed);
@@ -1173,92 +1175,104 @@ addNewRecordMemo (GtkTreeModel *model,
               gpointer data) {
 
     int * i = gtk_tree_path_get_indices ( path ) ;
+
     if(i[0] == clist_row_selected){
-        MyMemo *mmemo;
-        struct Memo new_memo;
-        unsigned char attrib;
-        int flag;
-        unsigned int unique_id;
-        int show_priv;
-
-        flag = GPOINTER_TO_INT(data);
-
-        mmemo = NULL;
-        unique_id = 0;
+        MyMemo * mmemo = NULL;
         gtk_tree_model_get(model,iter,MEMO_DATA_COLUMN_ENUM,&mmemo,-1);
-        /* Do masking like Palm OS 3.5 */
-        if ((flag == COPY_FLAG) || (flag == MODIFY_FLAG)) {
-            show_priv = show_privates(GET_PRIVATES);
+        return addNewMemo(mmemo, data);
 
-
-            if (mmemo < (MyMemo *) CLIST_MIN_DATA) {
-                return TRUE;
-            }
-            if ((show_priv != SHOW_PRIVATES) &&
-                (mmemo->attrib & dlpRecAttrSecret)) {
-                return TRUE;
-            }
-        }
-        /* End Masking */
-        if (flag == CLEAR_FLAG) {
-            /* Clear button was hit */
-            memo_clear_details();
-            connect_changed_signals(DISCONNECT_SIGNALS);
-            set_new_button_to(NEW_FLAG);
-            gtk_widget_grab_focus(GTK_WIDGET(memo_text));
-            return TRUE;
-        }
-        if ((flag != NEW_FLAG) && (flag != MODIFY_FLAG) && (flag != COPY_FLAG)) {
-            return TRUE;
-        }
-        if (flag == MODIFY_FLAG) {
-
-            unique_id = mmemo->unique_id;
-            if (mmemo < (MyMemo *) CLIST_MIN_DATA) {
-                return TRUE;
-            }
-            if ((mmemo->rt == DELETED_PALM_REC) ||
-                (mmemo->rt == DELETED_PC_REC) ||
-                (mmemo->rt == MODIFIED_PALM_REC)) {
-                jp_logf(JP_LOG_INFO, _("You can't modify a record that is deleted\n"));
-                return TRUE;
-            }
-        }
-        memo_get_details(&new_memo, &attrib);
-
-        set_new_button_to(CLEAR_FLAG);
-
-        /* Keep unique ID intact */
-        if (flag == MODIFY_FLAG) {
-            cb_delete_memo(NULL, data);
-            if ((mmemo->rt == PALM_REC) || (mmemo->rt == REPLACEMENT_PALM_REC)) {
-                pc_memo_write(&new_memo, REPLACEMENT_PALM_REC, attrib, &unique_id);
-            } else {
-                unique_id = 0;
-                pc_memo_write(&new_memo, NEW_PC_REC, attrib, &unique_id);
-            }
-        } else {
-            unique_id = 0;
-            pc_memo_write(&new_memo, NEW_PC_REC, attrib, &unique_id);
-        }
-
-        free_Memo(&new_memo);
-        /* Don't return to modified record if search gui active */
-        if (!glob_find_id) {
-            glob_find_id = unique_id;
-        }
-        memo_redraw();
-        return TRUE;
     }
 
     return FALSE;
 
 
 }
-static void cb_add_new_record(GtkWidget *widget, gpointer data) {
-    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), addNewRecordMemo, data);
-    return;
 
+gboolean addNewMemo(MyMemo *mmemo, const void *data) {
+    struct Memo new_memo;
+    unsigned char attrib;
+    int flag;
+    unsigned int unique_id;
+    int show_priv;
+
+    flag = GPOINTER_TO_INT(data);
+
+
+    unique_id = 0;
+
+    /* Do masking like Palm OS 3.5 */
+    if ((flag == COPY_FLAG) || (flag == MODIFY_FLAG)) {
+        show_priv = show_privates(GET_PRIVATES);
+
+
+        if (mmemo < (MyMemo *) CLIST_MIN_DATA) {
+            return TRUE;
+        }
+        if ((show_priv != SHOW_PRIVATES) &&
+            (mmemo->attrib & dlpRecAttrSecret)) {
+            return TRUE;
+        }
+    }
+    /* End Masking */
+    if (flag == CLEAR_FLAG) {
+        /* Clear button was hit */
+        memo_clear_details();
+        connect_changed_signals(DISCONNECT_SIGNALS);
+        set_new_button_to(NEW_FLAG);
+        gtk_widget_grab_focus(GTK_WIDGET(memo_text));
+        return TRUE;
+    }
+    if ((flag != NEW_FLAG) && (flag != MODIFY_FLAG) && (flag != COPY_FLAG)) {
+        return TRUE;
+    }
+    if (flag == MODIFY_FLAG) {
+
+        unique_id = mmemo->unique_id;
+        if (mmemo < (MyMemo *) CLIST_MIN_DATA) {
+            return TRUE;
+        }
+        if ((mmemo->rt == DELETED_PALM_REC) ||
+            (mmemo->rt == DELETED_PC_REC) ||
+            (mmemo->rt == MODIFIED_PALM_REC)) {
+            jp_logf(JP_LOG_INFO, _("You can't modify a record that is deleted\n"));
+            return TRUE;
+        }
+    }
+    memo_get_details(&new_memo, &attrib);
+
+    set_new_button_to(CLEAR_FLAG);
+
+    /* Keep unique ID intact */
+    if (flag == MODIFY_FLAG) {
+        cb_delete_memo(NULL, data);
+        if ((mmemo->rt == PALM_REC) || (mmemo->rt == REPLACEMENT_PALM_REC)) {
+            pc_memo_write(&new_memo, REPLACEMENT_PALM_REC, attrib, &unique_id);
+        } else {
+            unique_id = 0;
+            pc_memo_write(&new_memo, NEW_PC_REC, attrib, &unique_id);
+        }
+    } else {
+        unique_id = 0;
+        pc_memo_write(&new_memo, NEW_PC_REC, attrib, &unique_id);
+    }
+
+    free_Memo(&new_memo);
+    /* Don't return to modified record if search gui active */
+    if (!glob_find_id) {
+        glob_find_id = unique_id;
+    }
+    memo_redraw();
+    return TRUE;
+}
+
+static void cb_add_new_record(GtkWidget *widget, gpointer data) {
+
+    if(gtk_tree_model_iter_n_children(GTK_TREE_MODEL(listStore), NULL) != 0) {
+        gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), addNewRecordMemo, data);
+    }else {
+        //no records exist in category yet.
+        addNewMemo(NULL,data);
+    }
 }
 
 /* Do masking like Palm OS 3.5 */
